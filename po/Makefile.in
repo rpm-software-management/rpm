@@ -15,9 +15,15 @@ CATALOGS = sv.mo fr.mo de.mo pt-br.mo tr.mo
 
 POTFILES  = $(topdir)/rpm.c 		$(topdir)/query.c 		\
 	    $(topdir)/install.c 	$(topdir)/verify.c 		\
-	    $(topdir)/checksig.c 					\
+	    $(topdir)/checksig.c 	$(topdir)/url.c			\
+	    $(topdir)/ftp.c 	        $(topdir)/url.c			\
 	    $(topdir)/lib/uninstall.c	$(topdir)/lib/rpmdb.c		\
-	    $(topdir)/lib/signature.c
+	    $(topdir)/lib/signature.c	$(topdir)/lib/dbindex.c		\
+	    $(topdir)/lib/depends.c	$(topdir)/lib/formats.c		\
+	    $(topdir)/lib/fs.c		$(topdir)/lib/header.c		\
+	    $(topdir)/lib/lookup.c	$(topdir)/lib/rebuilddb.c	\
+	    $(topdir)/lib/messages.c	$(topdir)/lib/package.c		\
+	    $(topdir)/lib/rpmlead.c	$(topdir)/lib/rpmrc.c		\
 
 all: $(NLSPACKAGE).pot $(CATALOGS)
 
