@@ -28,7 +28,7 @@ staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 noinst_PROGRAMS = dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps rpmfile
+pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps @WITH_RPMFILE@
 MAGIC	= $(pkgbindir)/magic
 
 bin_PROGRAMS =	rpmgraph

@@ -549,10 +549,12 @@ WITH_MAGIC_INCLUDE=
 WITH_MAGIC_LIB=
 
 if test -d file ; then
+  WITH_RPMFILE=rpmfile
   WITH_MAGIC_SUBDIR=file
   WITH_MAGIC_INCLUDE="-I\${top_srcdir}/${WITH_MAGIC_SUBDIR}/src"
   WITH_MAGIC_LIB="\${top_builddir}/${WITH_MAGIC_SUBDIR}/src/libmagic.la"
 else
+  WITH_RPMFILE=
   AC_CHECK_HEADER([magic.h], [
     AC_CHECK_LIB(magic, magic_open, [
       WITH_MAGIC_SUBDIR=
@@ -562,6 +564,7 @@ else
   ])
 fi
 
+AC_SUBST(WITH_RPMFILE)
 AC_SUBST(WITH_MAGIC_SUBDIR)
 AC_SUBST(WITH_MAGIC_INCLUDE)
 AC_SUBST(WITH_MAGIC_LIB)

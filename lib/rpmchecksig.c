@@ -306,6 +306,12 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    xx = getSignid(sigh, sigtag, oldsignid);
 
 	    switch (sigtag) {
+	    case RPMSIGTAG_DSA:
+		xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
+		/*@switchbreak@*/ break;
+	    case RPMSIGTAG_RSA:
+		xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP);
+		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
 		/*@fallthrough@*/
