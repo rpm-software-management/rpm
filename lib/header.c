@@ -559,7 +559,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 		}
 		break;
 	    case BIN_TYPE:
-	      while (c) {
+	      while (c > 0) {
 		  fprintf(f, "       Data: %.3d ", ct);
 		  while (c--) {
 		      fprintf(f, "%02x ", (unsigned char) *(int_8 *)dp);
