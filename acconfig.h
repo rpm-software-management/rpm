@@ -141,6 +141,12 @@
 /* define if experimental support for packages with bzip2 payloads is desired */
 #undef ENABLE_BZIP2_PAYLOAD
 
+/* Use the included regex.c? */
+#undef USE_GNU_REGEX
+
+/* Use the included glob.c? */
+#undef USE_GNU_GLOB
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:
