@@ -24,7 +24,7 @@
 struct hardLink {
     struct hardLink * next;
     const char ** files;	/* nlink of these, used by install */
-    int * fileMaps;		/* used by build */
+    const struct cpioFileMapping ** fileMaps;
     dev_t dev;
     ino_t inode;
     int nlink;
@@ -78,6 +78,75 @@ static void prtli(const char *msg, struct hardLink * li)
     fprintf(stderr, " next %p files %p fileMaps %p dev %x ino %x nlink %d left %d createdPath %d size %d\n", li->next, li->files, li->fileMaps, (unsigned)li->dev, (unsigned)li->inode, li->nlink, li->linksLeft, li->createdPath, li->sb.st_size);
 }
 #endif
+
+static int mapFlags(const void * this, cpioMapFlags mask) {
+    const struct cpioFileMapping * map = this;
+    return (map->mapFlags & mask);
+}
+
+static const char * mapArchivePath(const void * this) {
+    const struct cpioFileMapping * map = this;
+    return map->archivePath;
+}
+
+static /*@only@*/ const char * mapFsPath(const void * this) {
+    const struct cpioFileMapping * map = this;
+    char * t = xmalloc(	strlen(map->dirName) + strlen(map->baseName) + 1);
+    (void) stpcpy( stpcpy(t, map->dirName), map->baseName);
+    return t;
+}
+
+static mode_t mapFinalMode(const void * this) {
+    const struct cpioFileMapping * map = this;
+    return map->finalMode;
+}
+
+static uid_t mapFinalUid(const void * this) {
+    const struct cpioFileMapping * map = this;
+    return map->finalUid;
+}
+
+static gid_t mapFinalGid(const void * this) {
+    const struct cpioFileMapping * map = this;
+    return map->finalGid;
+}
+
+static const char * mapMd5sum(const void * this) {
+    const struct cpioFileMapping * map = this;
+    return map->md5sum;
+}
+
+struct mapi {
+    const struct cpioFileMapping * mappings;
+    int numMappings;
+    int i;
+};
+
+static void mapFreeIterator(/*@only@*/ void * mi) {
+    free(mi);
+}
+
+static void * mapInitIterator(const struct cpioFileMapping * mappings,
+		int numMappings)
+{
+    struct mapi * mapi = xmalloc(sizeof(*mapi));
+    mapi->mappings = mappings;
+    mapi->numMappings = numMappings;
+    mapi->i = 0;
+    return mapi;
+}
+
+static const struct cpioFileMapping * mapNextIterator(void * mi)
+{
+    struct mapi * mapi = mi;
+    const struct cpioFileMapping * map;
+
+    if (!(mapi->i < mapi->numMappings))
+	return NULL;
+    map = mapi->mappings + mapi->i;
+    mapi->i++;
+    return map;
+}
 
 /**
  * Read data from payload.
@@ -298,29 +367,23 @@ int cpioFileMapCmp(const void * a, const void * b)
 static int createDirectory(const char * path, mode_t perms)
 	/*@modifies fileSystem @*/
 {
-    struct stat sb;
+    struct stat st;
 
-    if (!lstat(path, &sb)) {
-	int dounlink = 0;	/* XXX eliminate, dounlink==1 on all paths */
-	if (S_ISDIR(sb.st_mode)) {
+    if (!lstat(path, &st)) {
+	if (S_ISDIR(st.st_mode))
 	    return 0;
-	} else if (S_ISLNK(sb.st_mode)) {
-	    if (stat(path, &sb)) {
+	if (S_ISLNK(st.st_mode)) {
+	    if (stat(path, &st)) {
 		if (errno != ENOENT)
 		    return CPIOERR_STAT_FAILED;
-		dounlink = 1;
 	    } else {
-		if (S_ISDIR(sb.st_mode))
+		if (S_ISDIR(st.st_mode))
 		    return 0;
-		dounlink = 1;
 	    }
-	} else {
-	    dounlink = 1;
 	}
 
-	if (dounlink && unlink(path)) {
+	if (unlink(path))
 	    return CPIOERR_UNLINK_FAILED;
-	}
     }
 
     if (mkdir(path, 000))
@@ -728,7 +791,6 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 {
     struct cpioHeader ch, *hdr = &ch;
     struct cpioFileMapping * map = NULL;
-    struct cpioFileMapping needle;
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     struct hardLink * links = NULL;
     struct hardLink * li = NULL;
@@ -766,6 +828,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 	    break;
 
 	if (mappings) {
+	    struct cpioFileMapping needle;
 	    needle.archivePath = hdr->path;
 	    map = bsearch(&needle, mappings, numMappings, sizeof(needle),
 			  cpioFileMapCmp);
@@ -775,20 +838,17 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 	    eatBytes(cfd, st->st_size);
 	} else {
 	    if (map) {
-		if (map->mapFlags & CPIO_MAP_PATH) {
-		    char * t = xmalloc(	strlen(map->dirName) +
-					strlen(map->baseName) + 1);
-		    (void) stpcpy( stpcpy(t, map->dirName), map->baseName);
+		if (mapFlags(map, CPIO_MAP_PATH)) {
 		    if (hdr->path) free((void *)hdr->path);
-		    hdr->path = t;
+		    hdr->path = mapFsPath(map);
 		}
 
-		if (map->mapFlags & CPIO_MAP_MODE)
-		    st->st_mode = map->finalMode;
-		if (map->mapFlags & CPIO_MAP_UID)
-		    st->st_uid = map->finalUid;
-		if (map->mapFlags & CPIO_MAP_GID)
-		    st->st_gid = map->finalGid;
+		if (mapFlags(map, CPIO_MAP_MODE))
+		    st->st_mode = mapFinalMode(map);
+		if (mapFlags(map,  CPIO_MAP_UID))
+		    st->st_uid = mapFinalUid(map);
+		if (mapFlags(map, CPIO_MAP_GID))
+		    st->st_gid = mapFinalGid(map);
 	    }
 
 	    /* This won't get hard linked symlinks right, but I can't seem
@@ -826,7 +886,8 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 
 		if (!rc) {
 		    if (S_ISREG(st->st_mode))
-			rc = expandRegular(cfd, hdr, map->md5sum, cb, cbData);
+			rc = expandRegular(cfd, hdr, mapMd5sum(map),
+				cb, cbData);
 		    else if (S_ISDIR(st->st_mode))
 			rc = createDirectory(hdr->path, 000);
 		    else if (S_ISLNK(st->st_mode))
@@ -918,41 +979,38 @@ static int writeFile(FD_t cfd, const struct stat * st,
 	int writeData)
 	/*@modifies cfd, *sizep @*/
 {
+    const char * fsPath = mapFsPath(map);
+    const char * archivePath = !mapFlags(map, CPIO_MAP_PATH)
+		? fsPath : mapArchivePath(map);
     struct cpioCrcPhysicalHeader hdr;
-    char * fsPath = alloca(strlen(map->dirName) + strlen(map->baseName) + 1);
     char buf[8192], symbuf[2048];
     dev_t num;
     FD_t datafd;
     size_t st_size = st->st_size;	/* XXX hard links need size preserved */
-    const char * archivePath;
     mode_t st_mode = st->st_mode;
     uid_t st_uid = st->st_uid;
     gid_t st_gid = st->st_gid;
     size_t size, amount = 0;
     int rc;
 
-    *fsPath = '\0';
-    (void) stpcpy( stpcpy(fsPath, map->dirName), map->baseName);
-
-    archivePath = (!(map->mapFlags & CPIO_MAP_PATH))
-	? fsPath : map->archivePath;
-
-    if (map->mapFlags & CPIO_MAP_MODE)
-	st_mode = (st_mode & S_IFMT) | map->finalMode;
-    if (map->mapFlags & CPIO_MAP_UID)
-	st_uid = map->finalUid;
-    if (map->mapFlags & CPIO_MAP_GID)
-	st_gid = map->finalGid;
+    if (mapFlags(map, CPIO_MAP_MODE))
+	st_mode = (st_mode & S_IFMT) | mapFinalMode(map);
+    if (mapFlags(map, CPIO_MAP_UID))
+	st_uid = mapFinalUid(map);
+    if (mapFlags(map, CPIO_MAP_GID))
+	st_gid = mapFinalGid(map);
 
     if (!writeData || S_ISDIR(st_mode)) {
 	st_size = 0;
     } else if (S_ISLNK(st_mode)) {
-	/* While linux puts the size of a symlink in the st_size field,
-	   I don't think that's a specified standard */
-
+	/*
+	 * While linux puts the size of a symlink in the st_size field,
+	 * I don't think that's a specified standard.
+	 */
 	amount = Readlink(fsPath, symbuf, sizeof(symbuf));
 	if (amount <= 0) {
-	    return CPIOERR_READLINK_FAILED;
+	    rc = CPIOERR_READLINK_FAILED;
+	    goto exit;
 	}
 
 	st_size = amount;
@@ -976,12 +1034,12 @@ static int writeFile(FD_t cfd, const struct stat * st,
     memcpy(hdr.checksum, "00000000", 8);
 
     if ((rc = safewrite(cfd, &hdr, PHYS_HDR_SIZE)) != PHYS_HDR_SIZE)
-	return rc;
+	goto exit;
     if ((rc = safewrite(cfd, archivePath, num)) != num)
-	return rc;
+	goto exit;
     size = PHYS_HDR_SIZE + num;
     if ((rc = padoutfd(cfd, &size, 4)))
-	return rc;
+	goto exit;
 
     if (writeData && S_ISREG(st_mode)) {
 	char *b;
@@ -992,8 +1050,10 @@ static int writeFile(FD_t cfd, const struct stat * st,
 
 	/* XXX unbuffered mmap generates *lots* of fdio debugging */
 	datafd = Fopen(fsPath, "r.ufdio");
-	if (datafd == NULL || Ferror(datafd))
-	    return CPIOERR_OPEN_FAILED;
+	if (datafd == NULL || Ferror(datafd)) {
+	    rc = CPIOERR_OPEN_FAILED;
+	    goto exit;
+	}
 
 #if HAVE_MMAP
 	nmapped = 0;
@@ -1023,7 +1083,8 @@ static int writeFile(FD_t cfd, const struct stat * st,
 		int olderrno = errno;
 		Fclose(datafd);
 		errno = olderrno;
-		return CPIOERR_READ_FAILED;
+		rc = CPIOERR_READ_FAILED;
+		goto exit;
 	    }
 	  }
 
@@ -1031,7 +1092,7 @@ static int writeFile(FD_t cfd, const struct stat * st,
 		int olderrno = errno;
 		Fclose(datafd);
 		errno = olderrno;
-		return rc;
+		goto exit;
 	    }
 
 	    st_size -= amount;
@@ -1046,25 +1107,27 @@ static int writeFile(FD_t cfd, const struct stat * st,
 	Fclose(datafd);
     } else if (writeData && S_ISLNK(st_mode)) {
 	if ((rc = safewrite(cfd, symbuf, amount)) != amount)
-	    return rc;
+	    goto exit;
 	size += amount;
     }
 
     /* this is a noop for most file types */
     if ((rc = padoutfd(cfd, &size, 4)))
-	return rc;
+	goto exit;
 
     if (sizep)
 	*sizep = size;
+    rc = 0;
 
-    return 0;
+exit:
+    if (fsPath) free((void *)fsPath);
+    return rc;
 }
 
 /**
  * Write set of linked files to payload stream.
  * @param cfd		payload file handle
  * @param hlink		set of linked files
- * @param mappings	mapping name and flags for linked files
  * @param cb		callback function
  * @param cbData	callback private data
  * @retval sizep	address of no. bytes written
@@ -1072,7 +1135,6 @@ static int writeFile(FD_t cfd, const struct stat * st,
  * @return		0 on success
  */
 static int writeLinkedFile(FD_t cfd, const struct hardLink * hlink,
-			   const struct cpioFileMapping * mappings,
 			   cpioCallback cb, void * cbData,
 			   /*@out@*/size_t * sizep,
 			   /*@out@*/const char ** failedFile)
@@ -1081,39 +1143,32 @@ static int writeLinkedFile(FD_t cfd, const struct hardLink * hlink,
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     size_t total = 0;
     const struct cpioFileMapping * map;
-    char * t;
     size_t size;
     int i, rc;
 
     for (i = hlink->nlink - 1; i > hlink->linksLeft; i--) {
-	map = mappings + hlink->fileMaps[i];
+	map = hlink->fileMaps[i];
 	if ((rc = writeFile(cfd, &hlink->sb, map, &size, 0)) != 0) {
-	    if (failedFile) {
-		t = xmalloc(strlen(map->dirName) + strlen(map->baseName) + 1);
-		(void) stpcpy( stpcpy(t, map->dirName), map->baseName);
-		*failedFile = t;
-	    }
+	    if (failedFile)
+		*failedFile = mapFsPath(map);;
 	    return rc;
 	}
 
 	total += size;
 
 	if (cb) {
-	    cbInfo.file = mappings[i].archivePath;
+	    cbInfo.file = mapArchivePath(map);
 	    cb(&cbInfo, cbData);
 	}
     }
 
     i = hlink->linksLeft;
-    map = mappings + hlink->fileMaps[i];
+    map = hlink->fileMaps[i];
     if ((rc = writeFile(cfd, &hlink->sb, map, &size, 1))) {
 	if (sizep)
 	    *sizep = total;
-	if (failedFile) {
-	    t = xmalloc(strlen(map->dirName) + strlen(map->baseName) + 1);
-	    (void) stpcpy( stpcpy(t, map->dirName), map->baseName);
-	    *failedFile = t;
-	}
+	if (failedFile)
+	    *failedFile = mapFsPath(map);;
 	return rc;
     }
     total += size;
@@ -1122,7 +1177,7 @@ static int writeLinkedFile(FD_t cfd, const struct hardLink * hlink,
 	*sizep = total;
 
     if (cb) {
-	cbInfo.file = mappings[i].archivePath;
+	cbInfo.file = mapArchivePath(map);
 	cb(&cbInfo, cbData);
     }
 
@@ -1135,7 +1190,6 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 {
     size_t size, totalsize = 0;
     int rc;
-    int i;
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     struct cpioCrcPhysicalHeader hdr;
 /*@-fullinitblock@*/
@@ -1143,25 +1197,25 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 /*@=fullinitblock@*/
     struct stat * st = (struct stat *) &hlinkList.sb;
     struct hardLink * hlink;
+    void * mapi;
+    const struct cpioFileMapping * map;
 
     hlinkList.next = NULL;
 
-    for (i = 0; i < numMappings; i++) {
-	const struct cpioFileMapping * map;
-	char fsPath[8192];
+    mapi = mapInitIterator(mappings, numMappings);
+    while ((map = mapNextIterator(mapi)) != NULL) {
+	const char * fsPath;
 
-	map = mappings + i;
-	fsPath[0] = '\0';
-	(void) stpcpy( stpcpy(fsPath, map->dirName), map->baseName);
+	fsPath = mapFsPath(map);
 
-	if (map->mapFlags & CPIO_FOLLOW_SYMLINKS)
+	if (mapFlags(map, CPIO_FOLLOW_SYMLINKS))
 	    rc = Stat(fsPath, st);
 	else
 	    rc = Lstat(fsPath, st);
 
 	if (rc) {
 	    if (failedFile)
-		*failedFile = xstrdup(fsPath);
+		*failedFile = fsPath;
 	    return CPIOERR_STAT_FAILED;
 	}
 
@@ -1176,13 +1230,15 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		hlinkList.next = hlink;
 	    }
 
-	    hlink->fileMaps[--hlink->linksLeft] = i;
+	    hlink->fileMaps[--hlink->linksLeft] = map;
 
 	    if (hlink->linksLeft == 0) {
 		struct hardLink * prev;
-		if ((rc = writeLinkedFile(cfd, hlink, mappings, cb, cbData,
-			 		  &size, failedFile)))
+		rc = writeLinkedFile(cfd, hlink, cb, cbData, &size, failedFile);
+		if (rc) {
+		    free((void *)fsPath);
 		    return rc;
+		}
 
 		totalsize += size;
 
@@ -1200,18 +1256,21 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 	} else {
 	    if ((rc = writeFile(cfd, st, map, &size, 1))) {
 		if (failedFile)
-		    *failedFile = xstrdup(fsPath);
+		    *failedFile = fsPath;
 		return rc;
 	    }
 
 	    if (cb) {
-		cbInfo.file = map->archivePath;
+		cbInfo.file = mapArchivePath(map);
 		cb(&cbInfo, cbData);
 	    }
 
 	    totalsize += size;
 	}
+	free((void *)fsPath);
+	fsPath = NULL;
     }
+    mapFreeIterator(mapi);
 
     rc = 0;
     while ((hlink = hlinkList.next) != NULL) {
@@ -1219,8 +1278,7 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 	hlink->next = NULL;
 
 	if (rc == 0) {
-	    rc = writeLinkedFile(cfd, hlink, mappings, cb, cbData,
-				  &size, failedFile);
+	    rc = writeLinkedFile(cfd, hlink, cb, cbData, &size, failedFile);
 	    totalsize += size;
 	}
 	freeHardLink(hlink);

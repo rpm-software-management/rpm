@@ -302,6 +302,7 @@ INPUT                  = \
 	./lib/poptQV.c \
 	./lib/problems.c \
 	./lib/query.c \
+	./lib/rollback.c \
 	./lib/rpmchecksig.c \
 	./lib/rpmdb.c \
 	./lib/rpmdb.h \

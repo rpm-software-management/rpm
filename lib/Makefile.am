@@ -25,7 +25,8 @@ librpm_la_SOURCES = \
 	cpio.c $(DBLIBSRCS) depends.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
 	md5.c md5sum.c misc.c package.c problems.c \
-	poptBT.c poptQV.c query.c rpmchecksig.c rpmdb.c rpminstall.c \
+	poptBT.c poptQV.c query.c rollback.c \
+	rpmchecksig.c rpmdb.c rpminstall.c \
 	rpmlead.c rpmlibprov.c rpmrc.c scriptlet.c signature.c stringbuf.c \
 	tagName.c tagtable.c transaction.c uninstall.c verify.c
 librpm_la_LDFLAGS = @libdb3@ @libdb2@ @libdb1@
