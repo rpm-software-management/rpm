@@ -59,6 +59,12 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+AC_MSG_CHECKING(for GNU xgettext)
+xgettext --version 2>&1 | grep 'GNU gettext' >/dev/null 2>&1 || AC_MSG_ERROR([
+*** GNU gettext is required. The latest version
+*** is always available from ftp://ftp.gnu.org/gnu/gettext/.])
+AC_MSG_RESULT(yes)
+
 AC_CHECK_FUNCS(strerror mtrace)
 dnl AC_CHECK_FUNCS(gettext)
 dnl AC_CHECK_FUNCS(dgettext)
