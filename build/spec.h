@@ -11,4 +11,6 @@ typedef struct SpecRec *Spec;
 Spec parseSpec(FILE *f);
 void freeSpec(Spec s);
 
+void dumpSpec(Spec s, FILE *f);
+
 #endif _spec_h
