@@ -1,11 +1,11 @@
 ###############################################################################
 #
-#   (c) Copyright @ 2000, Red Hat Software, Inc.,
+#   (c) Copyright @ 2000, Randy J. Ray <rjray@blackperl.com>
 #               All Rights Reserved
 #
 ###############################################################################
 #
-#   $Id: Database.pm,v 1.2 2000/05/30 01:03:13 rjray Exp $
+#   $Id: Database.pm,v 1.3 2000/06/22 08:42:00 rjray Exp $
 #
 #   Description:    The RPM::Database class provides access to the RPM database
 #                   as a tied hash, whose keys are taken as the names of
@@ -37,7 +37,7 @@ require RPM;
 require RPM::Header;
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 

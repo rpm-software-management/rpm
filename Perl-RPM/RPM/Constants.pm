@@ -1,11 +1,11 @@
 ###############################################################################
 #
-#   (c) Copyright @ 2000, Red Hat Software, Inc.,
+#   (c) Copyright @ 2000, Randy J. Ray <rjray@blackperl.com>
 #               All Rights Reserved
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.2 2000/06/05 08:10:32 rjray Exp $
+#   $Id: Constants.pm,v 1.3 2000/06/22 08:42:00 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -27,7 +27,7 @@ use RPM;
 @ISA = qw(Exporter);
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE

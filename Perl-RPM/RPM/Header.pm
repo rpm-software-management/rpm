@@ -1,11 +1,11 @@
 ###############################################################################
 #
-#   (c) Copyright @ 2000, Red Hat Software, Inc.,
+#   (c) Copyright @ 2000, Randy J. Ray <rjray@blackperl.com>
 #               All Rights Reserved
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.5 2000/06/17 08:10:05 rjray Exp $
+#   $Id: Header.pm,v 1.6 2000/06/22 08:42:00 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -35,7 +35,7 @@ use RPM::Error;
 use RPM::Constants ':rpmerr';
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.6 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
