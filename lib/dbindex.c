@@ -1,7 +1,11 @@
 #include "config.h"
 #include "miscfn.h"
 
+#ifdef HAVE_DB_185_H
+#include <db_185.h>
+#else
 #include <db.h>
+#endif
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>

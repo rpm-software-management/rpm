@@ -7,7 +7,11 @@ extern "C" {
 
 /* this will break if sizeof(int) != 4 */
 
+#ifdef HAVE_DB_185_H
+#include <db_185.h>
+#else
 #include <db.h>
+#endif
 
 typedef struct {
     unsigned int recOffset;

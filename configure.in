@@ -356,6 +356,7 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
 AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
 AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
+AC_CHECK_HEADERS(db_185.h)
 
 if test "$PO" = po; then
     AC_CHECK_HEADERS(libintl.h)
