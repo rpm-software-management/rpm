@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Database.pm,v 1.6 2000/08/07 09:17:37 rjray Exp $
+#   $Id: Database.pm,v 1.7 2000/08/07 09:28:14 rjray Exp $
 #
 #   Description:    The RPM::Database class provides access to the RPM database
 #                   as a tied hash, whose keys are taken as the names of
@@ -13,9 +13,7 @@
 #                   objects.
 #
 #   Functions:      new
-#                   STORE
-#                   CLEAR
-#                   DELETE
+#                   import
 #
 #   Libraries:      RPM
 #                   RPM::Header
@@ -31,14 +29,14 @@ package RPM::Database;
 require 5.005;
 
 use strict;
-use vars qw($VERSION $revision %RPM);
+use vars qw($VERSION $revision %RPM $RPM);
 use subs qw(new import);
 
 require RPM;
 require RPM::Header;
 
 $VERSION = '0.27';
-$revision = do { my @r=(q$Revision: 1.6 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.7 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -59,8 +57,8 @@ sub new
 #                   import from this package. If they do, check that it is
 #                   allowed and do it if it is.
 #
-#                   At present, only "%RPM" is allowed. If that is the
-#                   requested export, then the hash is tied to the RPM
+#                   At present, only "%RPM" or "$RPM" is allowed. If that is
+#                   the requested export, then the hash is tied to the RPM
 #                   database (with no extra arguments) then exported to the
 #                   caller's namespace.
 #
@@ -79,22 +77,28 @@ sub import
 {
     my ($class, @args) = @_;
 
-    # We only currently support one export: %RPM
-    my $arg = $args[0];
-    return unless $arg;
-
-    unless ($arg eq '%RPM')
-    {
-	warn "$class: Unknown exports requested (@args)";
-	return;
-    }
-
     my $callpkg = caller(0);
 
     no strict 'refs';
 
-    tie %RPM, "RPM::Database";
-    *{"${callpkg}::RPM"} = \%{"${class}::RPM"};
+    for my $arg (@args)
+    {
+        if ($arg eq '%RPM' and ! (tied %RPM))
+        {
+            tie %RPM, "RPM::Database";
+            *{"${callpkg}::RPM"} = \%{"${class}::RPM"};
+        }
+        elsif ($arg eq '$RPM' and ! $RPM)
+        {
+            $RPM = new RPM::Database;
+            *{"${callpkg}::RPM"} = \${"${class}::RPM"};
+        }
+        else
+        {
+            warn "$class: Unknown export requested: $arg, ";
+            return;
+        }
+    }
 }
 
 __END__
@@ -198,6 +202,25 @@ List those packages that have conflicts based on the value of "conflicts".
 This performs the search by a specific package name. This is the API call
 used by the FETCH tied-hash method, but this differs in that if there is
 in fact more than one matching record, all are returned.
+
+=back
+
+=head2 Importable Defaults
+
+Given that there may be only one concurrent process with the rpm database
+open, and given that such would lead to a lot of program code starting with
+the same sequence of use/tie or use/new, the following identifiers may be
+imported from the package:
+
+=over
+
+=item %RPM
+
+A hash pre-tied to the RPM::Database package (and thus the rpm database).
+
+=item $RPM
+
+A RPM::Database object, referencing a hash tied to the rpm database.
 
 =back
 
