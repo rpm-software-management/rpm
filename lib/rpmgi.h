@@ -18,6 +18,7 @@ extern int _rpmgi_debug;
 /*@=exportlocal@*/
 
 /**
+ * Iterator types.
  */
 typedef enum rpmgiTag_e {
     RPMGI_RPMDB		= RPMDBI_PACKAGES,
@@ -31,10 +32,14 @@ typedef enum rpmgiTag_e {
  */
 struct rpmgi_s {
 /*@refcounted@*/
-    rpmts ts;
-    int tag;
-    int i;
-    const char * queryFormat;
+    rpmts ts;			/*!< Iterator transaction set. */
+    int tag;			/*!< Iterator type. */
+    int active;			/*!< Iterator is initialized? */
+    int i;			/*!< Element index. */
+    const char * queryFormat;	/*!< Iterator query format. */
+    const char * hdrPath;	/*!< Path to header objects. */
+/*@refcounted@*/ /*@null@*/
+    Header h;			/*!< Current iterator header. */
 
 /*@relnull@*/
     rpmdbMatchIterator mi;
@@ -46,11 +51,13 @@ struct rpmgi_s {
     int argc;
 
     int ftsOpts;
+/*@null@*/
     FTS * ftsp;
+/*@null@*/
     FTSENT * fts;
 
 /*@refs@*/
-    int nrefs;
+    int nrefs;			/*!< Reference count. */
 };
 #endif
 
@@ -111,10 +118,11 @@ rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
  */
 /*@null@*/
 rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, h_errno, internalState @*/;
+	/*@globals internalState @*/
+	/*@modifies ts, internalState @*/;
 
-/** Return next iteration element.
+/**
+ * Return next iteration element.
  * @param gi		generalized iterator
  * @returns		next element
  */
@@ -123,7 +131,40 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
         /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
 
+/**
+ * Return iterator query format.
+ * @param gi		generalized iterator
+ * @returns		query format
+ */
+/*@observer@*/
+const char * rpmgiQueryFormat(rpmgi gi)
+	/*@*/;
+
+/**
+ * Set iterator query format.
+ * @param gi		generalized iterator
+ * @param queryFormat	query format
+ * @returns		0
+ */
 int rpmgiSetQueryFormat(rpmgi gi, const char * queryFormat)
+	/*@modifies gi @*/;
+
+/**
+ * Return iterator header objects path.
+ * @param gi		generalized iterator
+ * @returns		header path
+ */
+/*@observer@*/
+const char * rpmgiHdrPath(rpmgi gi)
+	/*@*/;
+
+/**
+ * Set iterator header objects path.
+ * @param gi		generalized iterator
+ * @param hdrPath	header path
+ * @returns		0
+ */
+int rpmgiSetHdrPath(rpmgi gi, const char * hdrPath)
 	/*@modifies gi @*/;
 
 #ifdef __cplusplus
