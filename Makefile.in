@@ -106,6 +106,7 @@ clean:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 	rm -f *.a *.o core *~ $(PROGS) rpm.shared
+	find . -name core | xargs rm
 
 depend:
 	$(CPP) $(CFLAGS) -M *.c > .depend
