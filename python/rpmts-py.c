@@ -727,14 +727,14 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args)
     int fdno;
     rpmRC rpmrc;
 
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p\n", s, s->ts);
-
     if (!PyArg_ParseTuple(args, "i:HdrFromFdno", &fdno)) return NULL;
 
     fd = fdDup(fdno);
     rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
     Fclose(fd);
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
 
     switch (rpmrc) {
     case RPMRC_OK:

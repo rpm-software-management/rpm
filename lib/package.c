@@ -818,16 +818,13 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
     {	int lvl = (rpmtsStashKeyid(ts) ? RPMMESS_DEBUG : RPMMESS_WARNING);
 	rpmMessage(lvl, "%s: %s", fn, buf);
-	rc = RPMRC_OK;
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
 	rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
-	rc = RPMRC_OK;
 	break;
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */
 	rpmMessage(RPMMESS_ERROR, "%s: %s", fn, buf);
-	rc = RPMRC_FAIL;
 	break;
     }
 
