@@ -80,7 +80,7 @@ The general form of a rpm build command is
 .PP
     \fBrpm \-b\fIO\fP [build\-options] <package_spec>+\fP
 .PP
-where \fB\-bO\fP specifies the stages of building and
+where \fB\-b\fIO\fR specifies the stages of building and
 packaging to be done and is one of:
 
 .IP "\fB\-bp\fP"
@@ -110,7 +110,7 @@ to the specified stage).  Only valid with \fB\-bc\fP and \fB\-bi\fP.
 .IP "\fB\-\-clean\fP"
 Remove the build tree after the packages are made.
 .IP "\fB\-\-test\fP"
-Do not execute any build stages.  Implies \fB\-\-keep\-temps\fP.
+Do not execute any build stages.
 Useful for testing out spec files.
 .IP "\fB\-\-sign\fP"
 Embed a PGP signature in the package.  This signature can be used
@@ -120,7 +120,7 @@ section on PGP SIGNATURES for /etc/rpmrc details.
 .SH QUERY OPTIONS
 
 You may specify the format that package information should be printed 
-in. To do this, you use the \fB\--queryformat\fP option, followed by 
+in. To do this, you use the \fB\-\-queryformat\fP option, followed by 
 the format string.
 
 Query formats are modifed versions of the standard \fBprintf(3)\fP
@@ -131,16 +131,16 @@ already knows the type to print, the type specifier must be
 omitted however, and replaced by the name of the header tag to
 be printed, enclosed by \fB{}\fP characters. The 
 \fBRPMTAG_\fP portion of the tag name may be omitted, and the
-tag name may be preceded by a \fB-\fP to format the tag as
+tag name may be preceded by a \fB\-\fP to format the tag as
 a date if possible.
 
 For example, to print only the names of the packages queried, you
 could use \fB%{NAME}\fP as the format string. To print the packages
 name and distribution information in two columns, you could use
-\fB%-30{NAME}%{DISTRIBUTION}\fP.
+\fB%\-30{NAME}%{DISTRIBUTION}\fP.
 
 \fBrpm\fP will print a list of all of the tags it knows about when
-it is invoked with the \fB--querytags\fP argument.
+it is invoked with the \fB\-\-querytags\fP argument.
 
 There are two subsets of options for querying: package selection, and
 information selection.
@@ -169,10 +169,10 @@ Information selection options:
 .br
 .IP "\fB\-i\fP"
 Display package information, including name, version, and description. This
-uses the \fB--queryformat\fP if one was specified.
+uses the \fB\-\-queryformat\fP if one was specified.
 .IP "\fB\-R\fP"
-List packages this one depends on (same as \fB--requires\fP).
-.IP "\fB\--provides\fP"
+List packages this one depends on (same as \fB\-\-requires\fP).
+.IP "\fB\-\-provides\fP"
 List capabilities this package provides.
 .IP "\fB\-l\fP"
 List files in package.
@@ -303,7 +303,7 @@ be built and signed.
 /var/lib/rpm/packages
 /var/lib/rpm/pathidx
 /var/lib/rpm/nameidx
-/tmp/rpm-*
+/tmp/rpm*
 .fi
 .El
 .SH SEE ALSO
