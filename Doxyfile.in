@@ -323,8 +323,7 @@ INPUT                  = \
 	./lib/uninstall.c \
 	./lib/verify.c \
 	./rpmio/macro.c \
-	./rpmio/messages.c \
-	./rpmio/rpmerr.c \
+	./rpmio/rpmlog.c \
 	./rpmio/rpmerr.h \
 	./rpmio/rpmio.c \
 	./rpmio/rpmio.h \

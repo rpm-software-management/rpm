@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.96 2000/08/29 22:04:38 jbj Exp $
+# $Id: sl.po,v 1.97 2000/08/31 02:39:00 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-29 15:35-0400\n"
+"POT-Creation-Date: 2000-08-30 22:29-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:25 lib/rpminstall.c:458
+#: build.c:25 lib/rpminstall.c:459
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "datoteke %s/packages.rpm ni mo¾no odpreti\n"
@@ -1103,39 +1103,39 @@ msgstr "--sign smemo podati samo ob izgradnji paketa"
 msgid "exec failed\n"
 msgstr "exec neuspe¹en\n"
 
-#: rpm.c:1029 rpmqv.c:1472
+#: rpm.c:1029 rpmqv.c:1471
 msgid "unexpected arguments to --querytags "
 msgstr "neprièakovani argumenti za --querytags "
 
-#: rpm.c:1040 rpmqv.c:1494
+#: rpm.c:1040 rpmqv.c:1493
 msgid "no packages given for signature check"
 msgstr "paketi za preverjanje podpisa niso navedeni"
 
-#: rpm.c:1051 rpmqv.c:1505
+#: rpm.c:1051 rpmqv.c:1504
 msgid "no packages given for signing"
 msgstr "paketi za podpisovanje niso navedeni"
 
-#: rpm.c:1067 rpmqv.c:1344
+#: rpm.c:1067 rpmqv.c:1343
 msgid "no packages given for uninstall"
 msgstr "paketi za odstranitev niso navedeni"
 
-#: rpm.c:1118 rpmqv.c:1395
+#: rpm.c:1118 rpmqv.c:1394
 msgid "no packages given for install"
 msgstr "paketi za namestitev niso navedeni"
 
-#: rpm.c:1141 rpmqv.c:1435
+#: rpm.c:1141 rpmqv.c:1434
 msgid "extra arguments given for query of all packages"
 msgstr "pri poizvedbi paketov so podani odveèni argumenti"
 
-#: rpm.c:1146 rpmqv.c:1440
+#: rpm.c:1146 rpmqv.c:1439
 msgid "no arguments given for query"
 msgstr "argumenti za poizvedbo niso podani"
 
-#: rpm.c:1163 rpmqv.c:1460
+#: rpm.c:1163 rpmqv.c:1459
 msgid "extra arguments given for verify of all packages"
 msgstr "pri preverjanju paketov so podani odveèni argumenti"
 
-#: rpm.c:1167 rpmqv.c:1464
+#: rpm.c:1167 rpmqv.c:1463
 msgid "no arguments given for verify"
 msgstr "argumenti za preverjanje niso podani"
 
@@ -1549,11 +1549,11 @@ msgstr "--justdb smemo podati samo ob namestitvi ali odstranitvi paketa"
 msgid "no packages files given for rebuild"
 msgstr "paketi za vnovièno izgradnjo niso navedeni"
 
-#: rpmqv.c:1312
+#: rpmqv.c:1311
 msgid "no spec files given for build"
 msgstr "datoteka spec za izgradnjo manjka"
 
-#: rpmqv.c:1314
+#: rpmqv.c:1313
 msgid "no tar files given for build"
 msgstr "arhiv tar za izgradnjo manjka"
 
@@ -1923,7 +1923,7 @@ msgstr "Neuspe¹no ustvarjanje izhodne datoteke za paket %s: %s\n"
 msgid "cannot create %s: %s\n"
 msgstr "ni mo¾no ustvariti %s: %s\n"
 
-#: build/parseBuildInstallClean.c:32
+#: build/parseBuildInstallClean.c:31
 #, c-format
 msgid "line %d: second %s"
 msgstr "vrstica %d: %s sekund"
@@ -1956,17 +1956,17 @@ msgstr "opis v %%changelog manjka"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%description: %s"
 
-#: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:174
+#: build/parseDescription.c:52 build/parseFiles.c:46 build/parseScript.c:173
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "vrstica %d: Okvarjena izbira %s: %s"
 
-#: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:187
+#: build/parseDescription.c:65 build/parseFiles.c:58 build/parseScript.c:186
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "vrstica %d: Preveè imen: %s"
 
-#: build/parseDescription.c:75 build/parseFiles.c:68 build/parseScript.c:197
+#: build/parseDescription.c:75 build/parseFiles.c:67 build/parseScript.c:196
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "vrstica %d: Paket ne obstaja: %s"
@@ -1976,11 +1976,11 @@ msgstr "vrstica %d: Paket ne obstaja: %s"
 msgid "line %d: Second description"
 msgstr "vrstica %d: Drugi opis"
 
-#: build/parseFiles.c:33
+#: build/parseFiles.c:32
 msgid "line %d: Error parsing %%files: %s"
 msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%Files: %s"
 
-#: build/parseFiles.c:75
+#: build/parseFiles.c:74
 msgid "line %d: Second %%files list"
 msgstr "vrstica %d: Drugi seznam %%Files"
 
@@ -2045,7 +2045,7 @@ msgstr "vrstica %d: Prazna znaèka: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:439 build/parseSpec.c:386
+#: build/parsePreamble.c:439 build/parseSpec.c:388
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot ne more biti \"/\": %s"
@@ -2075,22 +2075,22 @@ msgstr "vrstica %d: okvarjena oblika BuildArchitecture: %s"
 msgid "Internal error: Bogus tag %d"
 msgstr "Interna napaka: Neprava znaèka %d"
 
-#: build/parsePreamble.c:682
+#: build/parsePreamble.c:681
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Okvarjeno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:688
+#: build/parsePreamble.c:687
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paket ¾e obstaja: %s"
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:714
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "vrstica %d: Neznana znaèka: %s"
 
-#: build/parsePreamble.c:740
+#: build/parsePreamble.c:739
 msgid "Spec file can't use BuildRoot"
 msgstr "Datoteka spec ne more uporabiti BuildRoot"
 
@@ -2150,7 +2150,7 @@ msgstr "Preveè krparij!"
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "vrstica %d: Okvarjen argument za %%patch: %s"
 
-#: build/parsePrep.c:459
+#: build/parsePrep.c:458
 msgid "line %d: second %%prep"
 msgstr "vrstica %d: drugi %%prep"
 
@@ -2177,65 +2177,65 @@ msgstr "vrstica %d: Ime datoteke z razlièico ni dovoljeno: %s"
 msgid "line %d: Version required: %s"
 msgstr "vrstica %d: Zahtevana razlièica: %s"
 
-#: build/parseScript.c:142
+#: build/parseScript.c:141
 #, c-format
 msgid "line %d: triggers must have --: %s"
 msgstr "vrstica %d: pro¾ila morajo vsebovati --: %s"
 
-#: build/parseScript.c:152 build/parseScript.c:215
+#: build/parseScript.c:151 build/parseScript.c:214
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "vrstica %d: Napaka pri razèlembi %s: %s"
 
-#: build/parseScript.c:162
+#: build/parseScript.c:161
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "vrstica %d: skriptni program se mora zaèeti z ,/`: %s"
 
-#: build/parseScript.c:206
+#: build/parseScript.c:205
 #, c-format
 msgid "line %d: Second %s"
 msgstr "vrstica %d: Drugi %s"
 
-#: build/parseSpec.c:136
+#: build/parseSpec.c:138
 #, c-format
 msgid "line %d: %s"
 msgstr "vrstica %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:188
+#: build/parseSpec.c:190
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/parseSpec.c:200
+#: build/parseSpec.c:202
 msgid "Unclosed %%if"
 msgstr "Nezakljuèeni %%if"
 
-#: build/parseSpec.c:271
+#: build/parseSpec.c:273
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s:%d: parseExpressionBoolean vrne %d"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:279
+#: build/parseSpec.c:281
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Najden %%else brez pripadajoèega if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:290
+#: build/parseSpec.c:292
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Najden %%endif brez pripadajoèega if"
 
-#: build/parseSpec.c:304 build/parseSpec.c:313
+#: build/parseSpec.c:306 build/parseSpec.c:315
 msgid "malformed %%include statement"
 msgstr "Deformiran stavek %%include"
 
-#: build/parseSpec.c:489
+#: build/parseSpec.c:491
 msgid "No buildable architectures"
 msgstr "Arhitektura za izgradnjo manjka"
 
-#: build/parseSpec.c:544
+#: build/parseSpec.c:546
 msgid "Package has no %%description: %s"
 msgstr "V paketu manjka %%description: %s"
 
@@ -2696,39 +2696,39 @@ msgstr "izvorni paket ne vsebuje datoteke .spec"
 msgid "renaming %s to %s\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/install.c:803 lib/install.c:1070 lib/uninstall.c:40
+#: lib/install.c:803 lib/install.c:1071 lib/uninstall.c:40
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "preimenovanje %s v %s neuspe¹no: %s"
 
-#: lib/install.c:892
+#: lib/install.c:893
 msgid "source package expected, binary found"
 msgstr "prièakovan izvorni paket, najden binarni"
 
-#: lib/install.c:939
+#: lib/install.c:940
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/install.c:999
+#: lib/install.c:1000
 msgid "stopping install as we're running --test\n"
 msgstr "ustavljamo namestitev ker teèemo kot --test\n"
 
-#: lib/install.c:1004
+#: lib/install.c:1005
 msgid "running preinstall script (if any)\n"
 msgstr "poganjamo prednamestitvene skripte (èe obstajajo)\n"
 
-#: lib/install.c:1029
+#: lib/install.c:1030
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/install.c:1066
+#: lib/install.c:1067
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/install.c:1154
+#: lib/install.c:1155
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjamo ponamestitvene skripte (èe obstajajo)\n"
 
@@ -3036,81 +3036,81 @@ msgid "can't query %s: %s\n"
 msgstr "ni mo¾no zbrisati %s: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:497
+#: lib/query.c:496
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s neuspe¹no: %s\n"
 
-#: lib/query.c:515
+#: lib/query.c:514
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:524 lib/rpminstall.c:240
+#: lib/query.c:523 lib/rpminstall.c:241
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s najverjetneje ni paket RPM\n"
 
-#: lib/query.c:528
+#: lib/query.c:527
 #, c-format
 msgid "query of %s failed\n"
 msgstr "poizvedba po %s neuspe¹na\n"
 
-#: lib/query.c:561
+#: lib/query.c:560
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "poizvedba po datoteki spec %s neuspe¹na, razèlemba ni mo¾na\n"
 
-#: lib/query.c:584
+#: lib/query.c:583
 #, fuzzy
 msgid "no packages\n"
 msgstr "najdeno %d paketov\n"
 
-#: lib/query.c:594
+#: lib/query.c:593
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s ne vsebuje nobenega paketa\n"
 
-#: lib/query.c:604
+#: lib/query.c:603
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/query.c:614
+#: lib/query.c:613
 #, c-format
 msgid "no package requires %s\n"
 msgstr "noben paket ne potrebuje %s\n"
 
-#: lib/query.c:625
+#: lib/query.c:624
 #, c-format
 msgid "no package provides %s\n"
 msgstr "noben paket ne nudi %s\n"
 
-#: lib/query.c:655
+#: lib/query.c:654
 #, c-format
 msgid "file %s: %s\n"
 msgstr "datoteka %s: %s\n"
 
-#: lib/query.c:658
+#: lib/query.c:657
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ni del nobenega paketa\n"
 
-#: lib/query.c:684
+#: lib/query.c:683
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/query.c:687
+#: lib/query.c:686
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "¹tevilka zapisa paketa: %d\n"
 
-#: lib/query.c:691
+#: lib/query.c:690
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:702 lib/rpminstall.c:471
+#: lib/query.c:701 lib/rpminstall.c:472
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -3389,104 +3389,104 @@ msgstr "ustvarjamo imenik: %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
 
-#: lib/rpminstall.c:134
+#: lib/rpminstall.c:135
 msgid "counting packages to install\n"
 msgstr "¹tetje paketov za namestitev\n"
 
-#: lib/rpminstall.c:138
+#: lib/rpminstall.c:139
 #, c-format
 msgid "found %d packages\n"
 msgstr "najdeno %d paketov\n"
 
-#: lib/rpminstall.c:143
+#: lib/rpminstall.c:144
 msgid "looking for packages to download\n"
 msgstr "iskanje paketov za prenos po omre¾ju\n"
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:159
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "preskakujemo %s - rpmGlob neuspe¹en(%d)\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:174
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prena¹amo %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:183
+#: lib/rpminstall.c:184
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... kot %s\n"
 
-#: lib/rpminstall.c:187
+#: lib/rpminstall.c:188
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "preskakujemo %s - prenos neuspe¹en - %s\n"
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:215
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "prenesli smo %d paketov\n"
 
-#: lib/rpminstall.c:226 lib/rpminstall.c:395
+#: lib/rpminstall.c:227 lib/rpminstall.c:396
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:244 lib/rpminstall.c:536
+#: lib/rpminstall.c:245 lib/rpminstall.c:537
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
-#: lib/rpminstall.c:259
+#: lib/rpminstall.c:260
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "paketa ni mo¾no odpreti: %s\n"
 
-#: lib/rpminstall.c:279
+#: lib/rpminstall.c:280
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paketa %s ni mo¾no prestaviti\n"
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:325
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "napaka pri branju iz datoteke %s\n"
 
-#: lib/rpminstall.c:329
+#: lib/rpminstall.c:330
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:346
+#: lib/rpminstall.c:347
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "najdeno %d izvornih in %d binarnih paketov\n"
 
-#: lib/rpminstall.c:357
+#: lib/rpminstall.c:358
 msgid "failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpminstall.c:375
+#: lib/rpminstall.c:376
 msgid "installing binary packages\n"
 msgstr "name¹èamo binarne pakete\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:475
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veèterne pakete\n"
 
-#: lib/rpminstall.c:497
+#: lib/rpminstall.c:498
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranitev teh paketov bi podrla soodvisnosti:\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:526
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:532
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èamo %s\n"
@@ -3850,21 +3850,17 @@ msgstr "Datoteka %s: %s"
 msgid "File %s is smaller than %d bytes"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"
 
-#: rpmio/messages.c:59
+#: rpmio/rpmlog.c:83
 msgid "warning: "
 msgstr "opozorilo: "
 
-#: rpmio/messages.c:68
+#: rpmio/rpmlog.c:92
 msgid "error: "
 msgstr "napaka: "
 
-#: rpmio/messages.c:77
+#: rpmio/rpmlog.c:103
 msgid "fatal error: "
 msgstr "usodna napaka: "
-
-#: rpmio/messages.c:86
-msgid "internal error (rpm bug?): "
-msgstr "interna napaka (hro¹è v rpm?): "
 
 #: rpmio/rpmmalloc.c:13
 #, c-format
@@ -3910,6 +3906,9 @@ msgstr "neuspe¹no odpiranje %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#~ msgid "internal error (rpm bug?): "
+#~ msgstr "interna napaka (hro¹è v rpm?): "
 
 #~ msgid "missing second ':' at %s:%d"
 #~ msgstr "manjka drugi ,:` v %s:%d"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-29 15:35-0400\n"
+"POT-Creation-Date: 2000-08-30 22:29-0400\n"
 "PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: build.c:25 lib/rpminstall.c:458
+#: build.c:25 lib/rpminstall.c:459
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kan inte öppna %s/packages.rpm\n"
@@ -1069,39 +1069,39 @@ msgstr "--sign kan enbart användas vid pakettillverkning"
 msgid "exec failed\n"
 msgstr "exec misslyckades\n"
 
-#: rpm.c:1029 rpmqv.c:1472
+#: rpm.c:1029 rpmqv.c:1471
 msgid "unexpected arguments to --querytags "
 msgstr "oväntade argument till --querytags "
 
-#: rpm.c:1040 rpmqv.c:1494
+#: rpm.c:1040 rpmqv.c:1493
 msgid "no packages given for signature check"
 msgstr "inga paket angivna för signaturkontroll"
 
-#: rpm.c:1051 rpmqv.c:1505
+#: rpm.c:1051 rpmqv.c:1504
 msgid "no packages given for signing"
 msgstr "inga paket angivna för signering"
 
-#: rpm.c:1067 rpmqv.c:1344
+#: rpm.c:1067 rpmqv.c:1343
 msgid "no packages given for uninstall"
 msgstr "inga paket angivna för avinstallation"
 
-#: rpm.c:1118 rpmqv.c:1395
+#: rpm.c:1118 rpmqv.c:1394
 msgid "no packages given for install"
 msgstr "inga paket angivna för installation"
 
-#: rpm.c:1141 rpmqv.c:1435
+#: rpm.c:1141 rpmqv.c:1434
 msgid "extra arguments given for query of all packages"
 msgstr "extra argument angivna för förfrågan om alla paket"
 
-#: rpm.c:1146 rpmqv.c:1440
+#: rpm.c:1146 rpmqv.c:1439
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för undersökning"
 
-#: rpm.c:1163 rpmqv.c:1460
+#: rpm.c:1163 rpmqv.c:1459
 msgid "extra arguments given for verify of all packages"
 msgstr "extra argument angivna för verifiering av alla paket"
 
-#: rpm.c:1167 rpmqv.c:1464
+#: rpm.c:1167 rpmqv.c:1463
 msgid "no arguments given for verify"
 msgstr "inga parametrar angivna för verifiering"
 
@@ -1458,11 +1458,11 @@ msgstr ""
 msgid "no packages files given for rebuild"
 msgstr "inga paketfiler angivna för omtillverkning"
 
-#: rpmqv.c:1312
+#: rpmqv.c:1311
 msgid "no spec files given for build"
 msgstr "ingen spec-filer angivna för tillverkning"
 
-#: rpmqv.c:1314
+#: rpmqv.c:1313
 msgid "no tar files given for build"
 msgstr "inga tar-filer angivna för tillverkning"
 
@@ -1831,7 +1831,7 @@ msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
 
-#: build/parseBuildInstallClean.c:32
+#: build/parseBuildInstallClean.c:31
 #, c-format
 msgid "line %d: second %s"
 msgstr "rad %d: andra %s"
@@ -1864,17 +1864,17 @@ msgstr "ingen beskrivning i %%changelog"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "rad %d: Fel i parsning av %%description: %s"
 
-#: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:174
+#: build/parseDescription.c:52 build/parseFiles.c:46 build/parseScript.c:173
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "rad %d: otillåten flagga %s: %s"
 
-#: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:187
+#: build/parseDescription.c:65 build/parseFiles.c:58 build/parseScript.c:186
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "rad %d: För många namn: %s"
 
-#: build/parseDescription.c:75 build/parseFiles.c:68 build/parseScript.c:197
+#: build/parseDescription.c:75 build/parseFiles.c:67 build/parseScript.c:196
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "rad %d: Paketet existerar inte: %s"
@@ -1884,11 +1884,11 @@ msgstr "rad %d: Paketet existerar inte: %s"
 msgid "line %d: Second description"
 msgstr "rad %d: En andra beskrivning"
 
-#: build/parseFiles.c:33
+#: build/parseFiles.c:32
 msgid "line %d: Error parsing %%files: %s"
 msgstr "rad %d: Fel i parsning av %%files: %s"
 
-#: build/parseFiles.c:75
+#: build/parseFiles.c:74
 msgid "line %d: Second %%files list"
 msgstr "rad %d: En andra %%files-lista"
 
@@ -1953,7 +1953,7 @@ msgstr "rad %d: Tom tagg: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s"
 
-#: build/parsePreamble.c:439 build/parseSpec.c:386
+#: build/parsePreamble.c:439 build/parseSpec.c:388
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot kan inte vara \"/\": %s"
@@ -1983,22 +1983,22 @@ msgstr "rad %d: Felaktig BuildArchitecture-format: %s"
 msgid "Internal error: Bogus tag %d"
 msgstr "Internt fel: felaktig tagg %d"
 
-#: build/parsePreamble.c:682
+#: build/parsePreamble.c:681
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Felaktig paketspecifikation: %s"
 
-#: build/parsePreamble.c:688
+#: build/parsePreamble.c:687
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paketet existerar redan: %s"
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:714
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "rad %d: Okänd tagg: %s"
 
-#: build/parsePreamble.c:740
+#: build/parsePreamble.c:739
 msgid "Spec file can't use BuildRoot"
 msgstr "Spec-fil kan inte använda BuildRoot"
 
@@ -2058,7 +2058,7 @@ msgstr "För många patchar!"
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "rad %d: Felaktigt argument till %%patch: %s"
 
-#: build/parsePrep.c:459
+#: build/parsePrep.c:458
 msgid "line %d: second %%prep"
 msgstr "rad %d: andra %%prep"
 
@@ -2083,65 +2083,65 @@ msgstr "rad %d: Versionsfilnamn inte tillåtet: %s"
 msgid "line %d: Version required: %s"
 msgstr "rad %d: Version krävs: %s"
 
-#: build/parseScript.c:142
+#: build/parseScript.c:141
 #, c-format
 msgid "line %d: triggers must have --: %s"
 msgstr "rad %d: utlösare måste ha --: %s"
 
-#: build/parseScript.c:152 build/parseScript.c:215
+#: build/parseScript.c:151 build/parseScript.c:214
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "rad %d: Fel vid parsning av %s: %s"
 
-#: build/parseScript.c:162
+#: build/parseScript.c:161
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "rad %d: skriptprogram måste börja med \"/\": %s"
 
-#: build/parseScript.c:206
+#: build/parseScript.c:205
 #, c-format
 msgid "line %d: Second %s"
 msgstr "rad %d: En andra %s"
 
-#: build/parseSpec.c:136
+#: build/parseSpec.c:138
 #, c-format
 msgid "line %d: %s"
 msgstr "rad %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:188
+#: build/parseSpec.c:190
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Kan inte öppna %s: %s\n"
 
-#: build/parseSpec.c:200
+#: build/parseSpec.c:202
 msgid "Unclosed %%if"
 msgstr "Oavslutat %%if"
 
-#: build/parseSpec.c:271
+#: build/parseSpec.c:273
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s:%d: parseExpressionBoolean returnerar %d"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:279
+#: build/parseSpec.c:281
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Fick ett %%else utan något if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:290
+#: build/parseSpec.c:292
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Fick ett %%endif utan något if"
 
-#: build/parseSpec.c:304 build/parseSpec.c:313
+#: build/parseSpec.c:306 build/parseSpec.c:315
 msgid "malformed %%include statement"
 msgstr "felformaterad %%include-sats"
 
-#: build/parseSpec.c:489
+#: build/parseSpec.c:491
 msgid "No buildable architectures"
 msgstr "Inga byggbara arkitekturer"
 
-#: build/parseSpec.c:544
+#: build/parseSpec.c:546
 msgid "Package has no %%description: %s"
 msgstr "Paketet har ingen %%description: %s"
 
@@ -2603,39 +2603,39 @@ msgstr "källpaket innehåller ingen spec-fil"
 msgid "renaming %s to %s\n"
 msgstr "byter namn på %s till %s\n"
 
-#: lib/install.c:803 lib/install.c:1070 lib/uninstall.c:40
+#: lib/install.c:803 lib/install.c:1071 lib/uninstall.c:40
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "namnbyte från %s till %s misslyckades: %s"
 
-#: lib/install.c:892
+#: lib/install.c:893
 msgid "source package expected, binary found"
 msgstr "källpaket förväntades, fann binärpaket"
 
-#: lib/install.c:939
+#: lib/install.c:940
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s filtest = %d\n"
 
-#: lib/install.c:999
+#: lib/install.c:1000
 msgid "stopping install as we're running --test\n"
 msgstr "avbryter installation eftersom vi kör --test\n"
 
-#: lib/install.c:1004
+#: lib/install.c:1005
 msgid "running preinstall script (if any)\n"
 msgstr "kör (eventuellt) preinstalltionsskript\n"
 
-#: lib/install.c:1029
+#: lib/install.c:1030
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "varning: %s skapades som %s"
 
-#: lib/install.c:1066
+#: lib/install.c:1067
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "varning: %s sparades som %s"
 
-#: lib/install.c:1154
+#: lib/install.c:1155
 msgid "running postinstall scripts (if any)\n"
 msgstr "kör (eventuellt) postinstallationsskript\n"
 
@@ -2929,80 +2929,80 @@ msgid "can't query %s: %s\n"
 msgstr "kan inte fråga om %s: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:497
+#: lib/query.c:496
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades öppna %s: %s\n"
 
-#: lib/query.c:515
+#: lib/query.c:514
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går ej att fråga om\n"
 
-#: lib/query.c:524 lib/rpminstall.c:240
+#: lib/query.c:523 lib/rpminstall.c:241
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s verkar inte vara ett RPM-paket\n"
 
-#: lib/query.c:528
+#: lib/query.c:527
 #, c-format
 msgid "query of %s failed\n"
 msgstr "fråga om %s misslyckades\n"
 
-#: lib/query.c:561
+#: lib/query.c:560
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga om spec-fil %s misslyckades, kan inte parsa\n"
 
-#: lib/query.c:584
+#: lib/query.c:583
 msgid "no packages\n"
 msgstr "inga paket\n"
 
-#: lib/query.c:594
+#: lib/query.c:593
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:604
+#: lib/query.c:603
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:614
+#: lib/query.c:613
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:625
+#: lib/query.c:624
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:655
+#: lib/query.c:654
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:658
+#: lib/query.c:657
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s ägs inte av något paket\n"
 
-#: lib/query.c:684
+#: lib/query.c:683
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:687
+#: lib/query.c:686
 #, c-format
 msgid "package record number: %u\n"
 msgstr "paketpost nummer: %u\n"
 
-#: lib/query.c:691
+#: lib/query.c:690
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:702 lib/rpminstall.c:471
+#: lib/query.c:701 lib/rpminstall.c:472
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -3305,104 +3305,104 @@ msgstr "tar bort katalog %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"
 
-#: lib/rpminstall.c:134
+#: lib/rpminstall.c:135
 msgid "counting packages to install\n"
 msgstr "räknar paket att installera\n"
 
-#: lib/rpminstall.c:138
+#: lib/rpminstall.c:139
 #, c-format
 msgid "found %d packages\n"
 msgstr "hittade %d paket\n"
 
-#: lib/rpminstall.c:143
+#: lib/rpminstall.c:144
 msgid "looking for packages to download\n"
 msgstr "letar efter paket att hämta\n"
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:159
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "hoppar över %s - rpmGlob misslyckades(%d)\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:174
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hämtar %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:183
+#: lib/rpminstall.c:184
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:187
+#: lib/rpminstall.c:188
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "hoppar över %s - överföring misslyckades - %s\n"
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:215
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "hämtade %d paket\n"
 
-#: lib/rpminstall.c:226 lib/rpminstall.c:395
+#: lib/rpminstall.c:227 lib/rpminstall.c:396
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kan inte öppna filen %s: %s\n"
 
-#: lib/rpminstall.c:244 lib/rpminstall.c:536
+#: lib/rpminstall.c:245 lib/rpminstall.c:537
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
-#: lib/rpminstall.c:259
+#: lib/rpminstall.c:260
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/rpminstall.c:279
+#: lib/rpminstall.c:280
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paket %s är inte relokerbart\n"
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:325
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fel vid läsning från fil %s\n"
 
-#: lib/rpminstall.c:329
+#: lib/rpminstall.c:330
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s behöver en nyare version av RPM\n"
 
-#: lib/rpminstall.c:346
+#: lib/rpminstall.c:347
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "hittade %d käll- och %d binärpaket\n"
 
-#: lib/rpminstall.c:357
+#: lib/rpminstall.c:358
 msgid "failed dependencies:\n"
 msgstr "ouppfyllda beroenden:\n"
 
-#: lib/rpminstall.c:375
+#: lib/rpminstall.c:376
 msgid "installing binary packages\n"
 msgstr "installerar binärpaket\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:475
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:497
+#: lib/rpminstall.c:498
 msgid "removing these packages would break dependencies:\n"
 msgstr "att ta bort dessa paket skulle göra sönder beroenden:\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:526
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:532
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
@@ -3766,21 +3766,17 @@ msgstr "Fil %s: %s"
 msgid "File %s is smaller than %d bytes"
 msgstr "Filen %s är mindre än %d byte"
 
-#: rpmio/messages.c:59
+#: rpmio/rpmlog.c:83
 msgid "warning: "
 msgstr "varning: "
 
-#: rpmio/messages.c:68
+#: rpmio/rpmlog.c:92
 msgid "error: "
 msgstr "fel: "
 
-#: rpmio/messages.c:77
+#: rpmio/rpmlog.c:103
 msgid "fatal error: "
 msgstr "fatalt fel: "
-
-#: rpmio/messages.c:86
-msgid "internal error (rpm bug?): "
-msgstr "internt fel (fel i rpm?): "
 
 #: rpmio/rpmmalloc.c:13
 #, c-format
@@ -3826,6 +3822,9 @@ msgstr "kunde inte öppna %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
+
+#~ msgid "internal error (rpm bug?): "
+#~ msgstr "internt fel (fel i rpm?): "
 
 #~ msgid "missing second ':' at %s:%d"
 #~ msgstr "andra \":\" saknas vid %s:%d"

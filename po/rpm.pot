@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-08-30 13:29-0400\n"
+"POT-Creation-Date: 2000-08-30 22:29-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1034,39 +1034,39 @@ msgstr ""
 msgid "exec failed\n"
 msgstr ""
 
-#: rpm.c:1029 rpmqv.c:1472
+#: rpm.c:1029 rpmqv.c:1471
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpm.c:1040 rpmqv.c:1494
+#: rpm.c:1040 rpmqv.c:1493
 msgid "no packages given for signature check"
 msgstr ""
 
-#: rpm.c:1051 rpmqv.c:1505
+#: rpm.c:1051 rpmqv.c:1504
 msgid "no packages given for signing"
 msgstr ""
 
-#: rpm.c:1067 rpmqv.c:1344
+#: rpm.c:1067 rpmqv.c:1343
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: rpm.c:1118 rpmqv.c:1395
+#: rpm.c:1118 rpmqv.c:1394
 msgid "no packages given for install"
 msgstr ""
 
-#: rpm.c:1141 rpmqv.c:1435
+#: rpm.c:1141 rpmqv.c:1434
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: rpm.c:1146 rpmqv.c:1440
+#: rpm.c:1146 rpmqv.c:1439
 msgid "no arguments given for query"
 msgstr ""
 
-#: rpm.c:1163 rpmqv.c:1460
+#: rpm.c:1163 rpmqv.c:1459
 msgid "extra arguments given for verify of all packages"
 msgstr ""
 
-#: rpm.c:1167 rpmqv.c:1464
+#: rpm.c:1167 rpmqv.c:1463
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -1416,11 +1416,11 @@ msgstr ""
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: rpmqv.c:1312
+#: rpmqv.c:1311
 msgid "no spec files given for build"
 msgstr ""
 
-#: rpmqv.c:1314
+#: rpmqv.c:1313
 msgid "no tar files given for build"
 msgstr ""
 
@@ -3686,20 +3686,16 @@ msgstr ""
 msgid "File %s is smaller than %d bytes"
 msgstr ""
 
-#: rpmio/messages.c:59
+#: rpmio/rpmlog.c:83
 msgid "warning: "
 msgstr ""
 
-#: rpmio/messages.c:68
+#: rpmio/rpmlog.c:92
 msgid "error: "
 msgstr ""
 
-#: rpmio/messages.c:77
+#: rpmio/rpmlog.c:103
 msgid "fatal error: "
-msgstr ""
-
-#: rpmio/messages.c:86
-msgid "internal error (rpm bug?): "
 msgstr ""
 
 #: rpmio/rpmmalloc.c:13

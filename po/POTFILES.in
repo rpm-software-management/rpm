@@ -56,8 +56,7 @@ lib/uninstall.c
 lib/verify.c
 rpmio/rpmio.c
 rpmio/macro.c
-rpmio/messages.c
+rpmio/rpmlog.c
 rpmio/rpmmalloc.c
-rpmio/rpmerr.c
 rpmio/ugid.c
 rpmio/url.c

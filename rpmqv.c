@@ -1235,7 +1235,7 @@ int main(int argc, const char ** argv)
       case MODE_REBUILD:
       case MODE_RECOMPILE:
       { const char * pkg;
-        if (rpmGetVerbosity() == RPMMESS_NORMAL)
+        if (rpmIsNormal())
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
 
 	if (!poptPeekArg(optCon))
@@ -1273,11 +1273,10 @@ int main(int argc, const char ** argv)
       case MODE_BUILD:
       case MODE_TARBUILD:
       { const char * pkg;
-        if (rpmGetVerbosity() == RPMMESS_NORMAL)
+        if (rpmIsNormal())
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
        
 	switch (ba->buildChar) {
-	  /* these fallthroughs are intentional */
 	  case 'a':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	    /*@fallthrough@*/

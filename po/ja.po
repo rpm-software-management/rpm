@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-29 15:35-0400\n"
+"POT-Creation-Date: 2000-08-30 22:29-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: EUC-JP\n"
 
-#: build.c:25 lib/rpminstall.c:458
+#: build.c:25 lib/rpminstall.c:459
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "%s/packages.rpm をオープンできません\n"
@@ -83,7 +83,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.111 2000/08/29 22:04:37 jbj Exp $
+# $Id: ja.po,v 1.112 2000/08/31 02:38:59 jbj Exp $
 #: rpm.c:178 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -1125,40 +1125,40 @@ msgstr "--sign はパッケージ作成時のみ使用できます"
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
-#: rpm.c:1029 rpmqv.c:1472
+#: rpm.c:1029 rpmqv.c:1471
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags の引数が間違っています"
 
-#: rpm.c:1040 rpmqv.c:1494
+#: rpm.c:1040 rpmqv.c:1493
 msgid "no packages given for signature check"
 msgstr "署名検査のためのパッケージがありません"
 
-#: rpm.c:1051 rpmqv.c:1505
+#: rpm.c:1051 rpmqv.c:1504
 msgid "no packages given for signing"
 msgstr "署名のためのパッケージがありません"
 
-#: rpm.c:1067 rpmqv.c:1344
+#: rpm.c:1067 rpmqv.c:1343
 msgid "no packages given for uninstall"
 msgstr "アンインストールのためのパッケージがありません"
 
-#: rpm.c:1118 rpmqv.c:1395
+#: rpm.c:1118 rpmqv.c:1394
 msgid "no packages given for install"
 msgstr "インストールのためのパッケージがありません"
 
-#: rpm.c:1141 rpmqv.c:1435
+#: rpm.c:1141 rpmqv.c:1434
 msgid "extra arguments given for query of all packages"
 msgstr "全パッケージの問い合わせのために余分な引数があります"
 
-#: rpm.c:1146 rpmqv.c:1440
+#: rpm.c:1146 rpmqv.c:1439
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数がありません"
 
-#: rpm.c:1163 rpmqv.c:1460
+#: rpm.c:1163 rpmqv.c:1459
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "全パッケージの検証のために余分な引数があります"
 
-#: rpm.c:1167 rpmqv.c:1464
+#: rpm.c:1167 rpmqv.c:1463
 msgid "no arguments given for verify"
 msgstr "検証のための引数がありません"
 
@@ -1544,11 +1544,11 @@ msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 msgid "no packages files given for rebuild"
 msgstr "再作成するためのパッケージファイルがありません"
 
-#: rpmqv.c:1312
+#: rpmqv.c:1311
 msgid "no spec files given for build"
 msgstr "作成のための spec ファイルがありません"
 
-#: rpmqv.c:1314
+#: rpmqv.c:1313
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
@@ -1923,7 +1923,7 @@ msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
 
-#: build/parseBuildInstallClean.c:32
+#: build/parseBuildInstallClean.c:31
 #, c-format
 msgid "line %d: second %s"
 msgstr "%d 行目: 2番目の %s"
@@ -1956,17 +1956,17 @@ msgstr "%%changelog 中に説明がありません"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "%d 行目: %%description の解析エラー: %s"
 
-#: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:174
+#: build/parseDescription.c:52 build/parseFiles.c:46 build/parseScript.c:173
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "%d 行目: 不正なオプション %s:%s"
 
-#: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:187
+#: build/parseDescription.c:65 build/parseFiles.c:58 build/parseScript.c:186
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "%d 行目: 名前が多すぎます: %s"
 
-#: build/parseDescription.c:75 build/parseFiles.c:68 build/parseScript.c:197
+#: build/parseDescription.c:75 build/parseFiles.c:67 build/parseScript.c:196
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "%d 行目: パッケージが存在しません: %s"
@@ -1976,11 +1976,11 @@ msgstr "%d 行目: パッケージが存在しません: %s"
 msgid "line %d: Second description"
 msgstr "%d 行目: 2番目の説明"
 
-#: build/parseFiles.c:33
+#: build/parseFiles.c:32
 msgid "line %d: Error parsing %%files: %s"
 msgstr "%d 行目: %%files の解析エラー: %s"
 
-#: build/parseFiles.c:75
+#: build/parseFiles.c:74
 msgid "line %d: Second %%files list"
 msgstr "%d 行目: 2番目の %%files リスト"
 
@@ -2045,7 +2045,7 @@ msgstr "%d 行目: 空のタグ: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:439 build/parseSpec.c:386
+#: build/parsePreamble.c:439 build/parseSpec.c:388
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
@@ -2075,22 +2075,22 @@ msgstr "%d 行目: 不正な BuildArchitecture フォーマット: %s"
 msgid "Internal error: Bogus tag %d"
 msgstr "内部エラー: にせのタグ %d"
 
-#: build/parsePreamble.c:682
+#: build/parsePreamble.c:681
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "不正なパッケージの指定: %s"
 
-#: build/parsePreamble.c:688
+#: build/parsePreamble.c:687
 #, c-format
 msgid "Package already exists: %s"
 msgstr "パッケージはすでに存在しています: %s"
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:714
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "%d 行目: 不明なタグ: %s"
 
-#: build/parsePreamble.c:740
+#: build/parsePreamble.c:739
 msgid "Spec file can't use BuildRoot"
 msgstr "スペックファイルは BuildRoot を使用できません"
 
@@ -2150,7 +2150,7 @@ msgstr "パッチが多すぎます"
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "%d 行目: %%patch への不正な引数: %s"
 
-#: build/parsePrep.c:459
+#: build/parsePrep.c:458
 msgid "line %d: second %%prep"
 msgstr "%d 行目: 2番目の %%prep"
 
@@ -2176,67 +2176,67 @@ msgstr "%d 行目: バージョン付けされたファイル名は許可されていません: %s"
 msgid "line %d: Version required: %s"
 msgstr "%d 行目: バージョンが必要です: %s"
 
-#: build/parseScript.c:142
+#: build/parseScript.c:141
 #, c-format
 msgid "line %d: triggers must have --: %s"
 msgstr "%d 行目: トリガーは -- がなければなりません: %s"
 
-#: build/parseScript.c:152 build/parseScript.c:215
+#: build/parseScript.c:151 build/parseScript.c:214
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "%d 行目: %s の構文解析エラー: %s"
 
-#: build/parseScript.c:162
+#: build/parseScript.c:161
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "%d 行目: スクリプトプログラムは '/' で始まらなければなりません: %s"
 
-#: build/parseScript.c:206
+#: build/parseScript.c:205
 #, c-format
 msgid "line %d: Second %s"
 msgstr "%d 行目: 2番目の %s"
 
-#: build/parseSpec.c:136
+#: build/parseSpec.c:138
 #, c-format
 msgid "line %d: %s"
 msgstr "%d 行目: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:188
+#: build/parseSpec.c:190
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "オープンできません: %s\n"
 
-#: build/parseSpec.c:200
+#: build/parseSpec.c:202
 msgid "Unclosed %%if"
 msgstr "%%if が閉じていません"
 
-#: build/parseSpec.c:271
+#: build/parseSpec.c:273
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s%d: parseExpressionBoolean が %d を返しました"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:279
+#: build/parseSpec.c:281
 #, fuzzy
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: if がないのに %%else があります"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:290
+#: build/parseSpec.c:292
 #, fuzzy
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: if がないのに %%endif があります"
 
-#: build/parseSpec.c:304 build/parseSpec.c:313
+#: build/parseSpec.c:306 build/parseSpec.c:315
 msgid "malformed %%include statement"
 msgstr "おかしな %%include ステートメントです"
 
-#: build/parseSpec.c:489
+#: build/parseSpec.c:491
 msgid "No buildable architectures"
 msgstr "作成(build)可能なアーキテクチャはありません"
 
-#: build/parseSpec.c:544
+#: build/parseSpec.c:546
 msgid "Package has no %%description: %s"
 msgstr "パッケージには %%description がありません: %s"
 
@@ -2705,39 +2705,39 @@ msgstr "ソースパッケージは .spec ファイルを含んでいません"
 msgid "renaming %s to %s\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/install.c:803 lib/install.c:1070 lib/uninstall.c:40
+#: lib/install.c:803 lib/install.c:1071 lib/uninstall.c:40
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s を %s にする名前の変更に失敗: %s"
 
-#: lib/install.c:892
+#: lib/install.c:893
 msgid "source package expected, binary found"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/install.c:939
+#: lib/install.c:940
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/install.c:999
+#: lib/install.c:1000
 msgid "stopping install as we're running --test\n"
 msgstr "--test を実行するようにインストールを中止しています\n"
 
-#: lib/install.c:1004
+#: lib/install.c:1005
 msgid "running preinstall script (if any)\n"
 msgstr "プリインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/install.c:1029
+#: lib/install.c:1030
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "警告: %s は %s として作成されます"
 
-#: lib/install.c:1066
+#: lib/install.c:1067
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/install.c:1154
+#: lib/install.c:1155
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
@@ -3068,81 +3068,81 @@ msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:497
+#: lib/query.c:496
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:515
+#: lib/query.c:514
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:524 lib/rpminstall.c:240
+#: lib/query.c:523 lib/rpminstall.c:241
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s は RPM パッケージではありません\n"
 
-#: lib/query.c:528
+#: lib/query.c:527
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:561
+#: lib/query.c:560
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:584
+#: lib/query.c:583
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:594
+#: lib/query.c:593
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:604
+#: lib/query.c:603
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:614
+#: lib/query.c:613
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:625
+#: lib/query.c:624
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:655
+#: lib/query.c:654
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:658
+#: lib/query.c:657
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:684
+#: lib/query.c:683
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:687
+#: lib/query.c:686
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:691
+#: lib/query.c:690
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:702 lib/rpminstall.c:471
+#: lib/query.c:701 lib/rpminstall.c:472
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -3423,104 +3423,104 @@ msgstr "ディレクトリの作成: %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
 
-#: lib/rpminstall.c:134
+#: lib/rpminstall.c:135
 msgid "counting packages to install\n"
 msgstr "インストールするパッケージを数えています\n"
 
-#: lib/rpminstall.c:138
+#: lib/rpminstall.c:139
 #, c-format
 msgid "found %d packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/rpminstall.c:143
+#: lib/rpminstall.c:144
 msgid "looking for packages to download\n"
 msgstr "ダウンロードするパッケージを探しています\n"
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:159
 #, fuzzy, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:174
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s を取得しています\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:183
+#: lib/rpminstall.c:184
 #, c-format
 msgid " ... as %s\n"
 msgstr "%s として...\n"
 
-#: lib/rpminstall.c:187
+#: lib/rpminstall.c:188
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:215
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "%d 個のパッケージを取得しました\n"
 
-#: lib/rpminstall.c:226 lib/rpminstall.c:395
+#: lib/rpminstall.c:227 lib/rpminstall.c:396
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/rpminstall.c:244 lib/rpminstall.c:536
+#: lib/rpminstall.c:245 lib/rpminstall.c:537
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
 
-#: lib/rpminstall.c:259
+#: lib/rpminstall.c:260
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/rpminstall.c:279
+#: lib/rpminstall.c:280
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:325
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s からの読み込みエラー "
 
-#: lib/rpminstall.c:329
+#: lib/rpminstall.c:330
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
 
-#: lib/rpminstall.c:346
+#: lib/rpminstall.c:347
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:357
+#: lib/rpminstall.c:358
 msgid "failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:375
+#: lib/rpminstall.c:376
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:475
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:497
+#: lib/rpminstall.c:498
 msgid "removing these packages would break dependencies:\n"
 msgstr "これらのパッケージを削除すると依存性を破壊します:\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:526
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:532
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
@@ -3909,21 +3909,17 @@ msgstr "ファイル %s: %s"
 msgid "File %s is smaller than %d bytes"
 msgstr "ファイル %s: は %d バイトより小さいです"
 
-#: rpmio/messages.c:59
+#: rpmio/rpmlog.c:83
 msgid "warning: "
 msgstr "警告: "
 
-#: rpmio/messages.c:68
+#: rpmio/rpmlog.c:92
 msgid "error: "
 msgstr "エラー: "
 
-#: rpmio/messages.c:77
+#: rpmio/rpmlog.c:103
 msgid "fatal error: "
 msgstr "致命的なエラー: "
-
-#: rpmio/messages.c:86
-msgid "internal error (rpm bug?): "
-msgstr "内部的なエラー (rpm のバグ?)"
 
 #: rpmio/rpmmalloc.c:13
 #, c-format
@@ -3970,6 +3966,9 @@ msgstr "%s のオープンに失敗: %s"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#~ msgid "internal error (rpm bug?): "
+#~ msgstr "内部的なエラー (rpm のバグ?)"
 
 #~ msgid "missing second ':' at %s:%d"
 #~ msgstr "2番目の ':' がありません(%s:%d で)"

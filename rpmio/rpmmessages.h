@@ -3,20 +3,36 @@
 
 /** \ingroup rpmio
  * \file rpmio/rpmmessages.h
+ * @todo Eliminate from API.
  */
+
+#include "rpmlog.h"
+
+#define	RPMMESS_DEBUG		RPMLOG_DEBUG
+#define	RPMMESS_VERBOSE		RPMLOG_INFO
+#define	RPMMESS_NORMAL		RPMLOG_NOTICE
+#define	RPMMESS_WARNING		RPMLOG_WARNING
+#define	RPMMESS_ERROR		RPMLOG_ERR
+#define	RPMMESS_FATALERROR	RPMLOG_CRIT
+
+#define	RPMMESS_QUIET		RPMMESS_WARNING
+
+#define	rpmMessage		rpmlog
+#define	rpmSetVerbosity(_lvl)	\
+	((void)rpmlogSetMask( RPMLOG_UPTO( RPMLOG_PRI(_lvl))))
+#define	rpmIncreaseVerbosity()	\
+	((void)rpmlogSetMask((((rpmlogSetMask(0) & 0xff) << 1) | 1)))
+#define	rpmDecreaseVerbosity()	\
+	((void)rpmlogSetMask(((rpmlogSetMask(0) & 0xff) >> 1)))
+#define	rpmIsNormal()		\
+	(rpmlogSetMask(0) & RPMLOG_MASK( RPMMESS_NORMAL ))
+#define	rpmIsVerbose()		\
+	(rpmlogSetMask(0) & RPMLOG_MASK( RPMMESS_VERBOSE ))
+#define	rpmIsDebug()		\
+	(rpmlogSetMask(0) & RPMLOG_MASK( RPMMESS_DEBUG ))
 
 /**
  */
-typedef enum rpmmsgLevel_e {
-    RPMMESS_DEBUG	= 1,	/*!< */
-    RPMMESS_VERBOSE	= 2,	/*!< */
-    RPMMESS_NORMAL	= 3,	/*!< */
-    RPMMESS_WARNING	= 4,	/*!< */
-    RPMMESS_ERROR	= 5,	/*!< */
-    RPMMESS_FATALERROR	= 6 	/*!< */
-} rpmmsgLevel;
-#define	RPMMESS_QUIET (RPMMESS_NORMAL + 1)
-
 typedef enum rpmCallbackType_e {
     RPMCALLBACK_INST_PROGRESS,
     RPMCALLBACK_INST_START,
@@ -30,13 +46,13 @@ typedef enum rpmCallbackType_e {
     RPMCALLBACK_UNINST_STOP
 } rpmCallbackType;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  */
 typedef void * rpmCallbackData;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  */
@@ -51,35 +67,6 @@ typedef void * (*rpmCallbackFunction)(const void * h,
  */
 void urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
 		int notifyCount);
-
-/**
- */
-void rpmIncreaseVerbosity(void);
-
-/**
- */
-void rpmSetVerbosity(int level);
-
-/**
- */
-int rpmGetVerbosity(void);
-
-/**
- */
-int rpmIsVerbose(void);
-
-/**
- */
-int rpmIsDebug(void);
-
-/**
- */
-#if defined(__GNUC__)
-void rpmMessage(rpmmsgLevel level, const char * format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
-#else
-void rpmMessage(rpmmsgLevel level, const char * format, ...);
-#endif
-
 
 #ifdef __cplusplus
 }

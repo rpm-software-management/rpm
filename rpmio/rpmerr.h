@@ -3,118 +3,81 @@
 
 /** \ingroup rpmio
  * \file rpmio/rpmerr.h
+ * @todo Eliminate from API.
  */
+
+#include "rpmlog.h"
+
+#define	_em(_e)	\
+    (0x80000000 | ((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_ERR))
 
 /**
  * Tokens used by rpmError().
  */
 typedef enum rpmerrCode_e {
-    RPMERR_GDBMOPEN	= -2,	/*!< gdbm open failed */
-    RPMERR_GDBMREAD	= -3,	/*!< gdbm read failed */
-    RPMERR_GDBMWRITE	= -4,	/*!< gdbm write failed */
-    RPMERR_INTERNAL	= -5,	/*!< internal RPM error */
-    RPMERR_DBCORRUPT	= -6,	/*!< rpm database is corrupt */
-    RPMERR_OLDDBCORRUPT	= -7,	/*!< old style rpm database is corrupt */
-    RPMERR_OLDDBMISSING	= -8,	/*!< old style rpm database is missing */
-    RPMERR_NOCREATEDB	= -9,	/*!< cannot create new database */
-    RPMERR_DBOPEN	= -10,	/*!< database open failed */
-    RPMERR_DBGETINDEX	= -11,	/*!< database get from index failed */
-    RPMERR_DBPUTINDEX	= -12,	/*!< database get from index failed */
-    RPMERR_NEWPACKAGE	= -13,	/*!< package is too new to handle */
-    RPMERR_BADMAGIC	= -14,	/*!< bad magic for an RPM */
-    RPMERR_RENAME	= -15,	/*!< rename(2) failed */
-    RPMERR_UNLINK	= -16,	/*!< unlink(2) failed */
-    RPMERR_RMDIR	= -17,	/*!< rmdir(2) failed */
-    RPMERR_PKGINSTALLED	= -18,	/*!< package already installed */
-    RPMERR_CHOWN	= -19,	/*!< chown() call failed */
-    RPMERR_NOUSER	= -20,	/*!< user does not exist */
-    RPMERR_NOGROUP	= -21,	/*!< group does not exist */
-    RPMERR_MKDIR	= -22,	/*!< mkdir() call failed */
-    RPMERR_FILECONFLICT	= -23,	/*!< file being installed exists */
-    RPMERR_RPMRC	= -24,	/*!< bad line in rpmrc */
-    RPMERR_NOSPEC	= -25,	/*!< .spec file is missing */
-    RPMERR_NOTSRPM	= -26,	/*!< a source rpm was expected */
-    RPMERR_FLOCK	= -27,	/*!< locking the database failed */
-    RPMERR_OLDPACKAGE	= -28,	/*!< trying upgrading to old version */
-/*    	RPMERR_BADARCH  = -29,	bad architecture or arch mismatch */
-    RPMERR_CREATE	= -30,	/*!< failed to create a file */
-    RPMERR_NOSPACE	= -31,	/*!< out of disk space */
-    RPMERR_NORELOCATE	= -32,	/*!< tried to do improper relocatation */
-/*    	RPMERR_BADOS    = -33,	bad architecture or arch mismatch */
-    RPMMESS_BACKUP	= -34,	/*!< backup made during [un]install */
-    RPMERR_MTAB		= -35,	/*!< failed to read mount table */
-    RPMERR_STAT		= -36,	/*!< failed to stat something */
-    RPMERR_BADDEV	= -37,	/*!< file on device not listed in mtab */
-    RPMMESS_ALTNAME	= -38,	/*!< file written as .rpmnew */
-    RPMMESS_PREREQLOOP	= -39,	/*!< loop in prerequisites */
-    RPMERR_BADRELOCATE	= -40,	/*!< bad relocation was specified */
-    RPMERR_OLDDB	= -41,	/*!< old format database */
+    RPMERR_GDBMOPEN	= _em(2),   /*!< gdbm open failed */
+    RPMERR_GDBMREAD	= _em(3),   /*!< gdbm read failed */
+    RPMERR_GDBMWRITE	= _em(4),   /*!< gdbm write failed */
+    RPMERR_INTERNAL	= _em(5),   /*!< internal RPM error */
+    RPMERR_DBCORRUPT	= _em(6),   /*!< rpm database is corrupt */
+    RPMERR_OLDDBCORRUPT	= _em(7),   /*!< old style rpm database is corrupt */
+    RPMERR_OLDDBMISSING	= _em(8),   /*!< old style rpm database is missing */
+    RPMERR_NOCREATEDB	= _em(9),   /*!< cannot create new database */
+    RPMERR_DBOPEN	= _em(10),  /*!< database open failed */
+    RPMERR_DBGETINDEX	= _em(11),  /*!< database get from index failed */
+    RPMERR_DBPUTINDEX	= _em(12),  /*!< database get from index failed */
+    RPMERR_NEWPACKAGE	= _em(13),  /*!< package is too new to handle */
+    RPMERR_BADMAGIC	= _em(14),  /*!< bad magic for an RPM */
+    RPMERR_RENAME	= _em(15),  /*!< rename(2) failed */
+    RPMERR_UNLINK	= _em(16),  /*!< unlink(2) failed */
+    RPMERR_RMDIR	= _em(17),  /*!< rmdir(2) failed */
+    RPMERR_PKGINSTALLED	= _em(18),  /*!< package already installed */
+    RPMERR_CHOWN	= _em(19),  /*!< chown() call failed */
+    RPMERR_NOUSER	= _em(20),  /*!< user does not exist */
+    RPMERR_NOGROUP	= _em(21),  /*!< group does not exist */
+    RPMERR_MKDIR	= _em(22),  /*!< mkdir() call failed */
+    RPMERR_FILECONFLICT	= _em(23),  /*!< file being installed exists */
+    RPMERR_RPMRC	= _em(24),  /*!< bad line in rpmrc */
+    RPMERR_NOSPEC	= _em(25),  /*!< .spec file is missing */
+    RPMERR_NOTSRPM	= _em(26),  /*!< a source rpm was expected */
+    RPMERR_FLOCK	= _em(27),  /*!< locking the database failed */
+    RPMERR_OLDPACKAGE	= _em(28),  /*!< trying upgrading to old version */
+/*    	RPMERR_BADARCH  = _em(29),  bad architecture or arch mismatch */
+    RPMERR_CREATE	= _em(30),  /*!< failed to create a file */
+    RPMERR_NOSPACE	= _em(31),  /*!< out of disk space */
+    RPMERR_NORELOCATE	= _em(32),  /*!< tried to do improper relocatation */
+/*    	RPMERR_BADOS    = _em(33),  bad architecture or arch mismatch */
+    RPMMESS_BACKUP	= _em(34),  /*!< backup made during [un]install */
+    RPMERR_MTAB		= _em(35),  /*!< failed to read mount table */
+    RPMERR_STAT		= _em(36),  /*!< failed to stat something */
+    RPMERR_BADDEV	= _em(37),  /*!< file on device not listed in mtab */
+    RPMMESS_ALTNAME	= _em(38),  /*!< file written as .rpmnew */
+    RPMMESS_PREREQLOOP	= _em(39),  /*!< loop in prerequisites */
+    RPMERR_BADRELOCATE	= _em(40),  /*!< bad relocation was specified */
+    RPMERR_OLDDB	= _em(41),  /*!< old format database */
 
 /* spec.c build.c pack.c */
-    RPMERR_UNMATCHEDIF	= -107,	/*!< unclosed %ifarch or %ifos */
-    RPMERR_BADARG	= -109,	/*!< @todo Document. */
-    RPMERR_SCRIPT	= -110,	/*!< errors related to script exec */
-    RPMERR_READERROR	= -111,	/*!< @todo Document. */
-    RPMERR_UNKNOWNOS	= -112,	/*!< @todo Document. */
-    RPMERR_UNKNOWNARCH	= -113,	/*!< @todo Document. */
-    RPMERR_EXEC		= -114,	/*!< @todo Document. */
-    RPMERR_FORK		= -115,	/*!< @todo Document. */
-    RPMERR_CPIO		= -116,	/*!< @todo Document. */
-    RPMERR_GZIP		= -117,	/*!< @todo Document. */
-    RPMERR_BADSPEC	= -118,	/*!< @todo Document. */
-    RPMERR_LDD		= -119,	/*!< couldn't understand ldd output */
-    RPMERR_BADFILENAME	= -120,	/*!< @todo Document. */
+    RPMERR_UNMATCHEDIF	= _em(107), /*!< unclosed %ifarch or %ifos */
+    RPMERR_BADARG	= _em(109), /*!< @todo Document. */
+    RPMERR_SCRIPT	= _em(110), /*!< errors related to script exec */
+    RPMERR_READERROR	= _em(111), /*!< @todo Document. */
+    RPMERR_UNKNOWNOS	= _em(112), /*!< @todo Document. */
+    RPMERR_UNKNOWNARCH	= _em(113), /*!< @todo Document. */
+    RPMERR_EXEC		= _em(114), /*!< @todo Document. */
+    RPMERR_FORK		= _em(115), /*!< @todo Document. */
+    RPMERR_CPIO		= _em(116), /*!< @todo Document. */
+    RPMERR_GZIP		= _em(117), /*!< @todo Document. */
+    RPMERR_BADSPEC	= _em(118), /*!< @todo Document. */
+    RPMERR_LDD		= _em(119), /*!< couldn't understand ldd output */
+    RPMERR_BADFILENAME	= _em(120), /*!< @todo Document. */
 
-    RPMERR_BADSIGTYPE	= -200,	/*!< Unknown signature type */
-    RPMERR_SIGGEN	= -201	/*!< Error generating signature */
+    RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
+    RPMERR_SIGGEN	= _em(201)  /*!< Error generating signature */
 } rpmerrCode;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
+ * Retrofit rpmError() onto rpmlog sub-system.
  */
-typedef void (*rpmErrorCallBackType)(void);
-
-/**
- */
-#if defined(__GNUC__)
-void rpmError(rpmerrCode code, const char * format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
-#else
-void rpmError(rpmerrCode code, const char * format, ...);
-#endif
-
-/**
- * @todo Implement or eliminate.
- * @return		NULL always
- */
-/*@observer@*/ /*@null@*/ const char * rpmErrorCodeString( /*@unused@*/ rpmerrCode code);
-
-/**
- * @todo Implement or eliminate.
- */
-typedef /*@abstract@*/ struct rpmerrRec_s {
-    rpmerrCode	code;
-    char	string[1024];
-} * rpmerrRec;
-
-/**
- * @return		error record code
- */
-rpmerrCode rpmErrorCode(void);
-
-/**
- * @return		error record string
- */
-char * rpmErrorString(void);
-
-/**
- */
-rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
-
-#ifdef __cplusplus
-}
-#endif
+#define	rpmError	rpmlog
 
 #endif  /* H_RPMERR */

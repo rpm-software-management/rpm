@@ -6,12 +6,12 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib \
 	-I$(top_srcdir)/popt @INCPATH@
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmio.h rpmurl.h rpmmacro.h rpmmessages.h rpmerr.h
+pkginc_HEADERS = rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h
 noinst_HEADERS = rpmio_internal.h ugid.h
 
 lib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c \
-	ugid.c rpmmalloc.c rpmerr.c messages.c
+	ugid.c rpmmalloc.c rpmlog.c
 
 # XXX Add internal libtool dependence
 install-data-local:
