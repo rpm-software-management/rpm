@@ -1209,7 +1209,7 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     const char * prefix = NULL;
-    rpmRC res;
+    rpmRC res = RPMRC_OK;
     int xx;
 
     *t = '\0';
@@ -1223,7 +1223,6 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 
     if (md5ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
 	res = RPMRC_NOKEY;
-	goto exit;
     }
 
     /* Verify the desired signature match. */
@@ -1234,8 +1233,7 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 	/*@fallthrough@*/
     default:
 	res = RPMRC_NOKEY;
-	goto exit;
-	/*@notreached@*/ break;
+	break;
     }
 
     /* Verify the desired hash match. */
@@ -1250,6 +1248,7 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 	prefix = "3021300906052b0e03021a05000414";
 	break;
     case PGPHASHALGO_RIPEMD160:
+	res = RPMRC_NOKEY;
 	prefix = NULL;
 	break;
     case PGPHASHALGO_MD2:
@@ -1257,9 +1256,11 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 	prefix = "3020300c06082a864886f70d020205000410";
 	break;
     case PGPHASHALGO_TIGER192:
+	res = RPMRC_NOKEY;
 	prefix = NULL;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
+	res = RPMRC_NOKEY;
 	prefix = NULL;
 	break;
     case PGPHASHALGO_SHA256:
@@ -1275,15 +1276,15 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 	prefix = "3051300d060960864801650304020305000440";
 	break;
     default:
+	res = RPMRC_NOKEY;
 	prefix = NULL;
 	break;
     }
 
-    if (prefix == NULL) {
-	res = RPMRC_NOKEY;
+    t = stpcpy(t, _(" signature: "));
+    if (res != RPMRC_OK) {
 	goto exit;
     }
-    t = stpcpy(t, _(" signature: "));
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
@@ -1399,8 +1400,8 @@ verifyDSASignature(rpmts ts, /*@out@*/ char * t,
 	t = stpcpy(t, _("Header "));
     *t++ = 'V';
     switch (sigp->version) {
-    case 3:	*t++ = '3';	break;
-    case 4:	*t++ = '4';	break;
+    case 3:    *t++ = '3';     break;
+    case 4:    *t++ = '4';     break;
     }
     t = stpcpy(t, _(" DSA signature: "));
 
@@ -1503,7 +1504,9 @@ rpmVerifySignature(const rpmts ts, char * result)
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyRSASignature(ts, result, dig->md5ctx);
+	res = verifyRSASignature(ts, result,
+		((dig->signature.hash_algo == PGPHASHALGO_MD5)
+			? dig->md5ctx : dig->sha1ctx));
 	break;
     case RPMSIGTAG_DSA:
 	res = verifyDSASignature(ts, result, dig->hdrsha1ctx);

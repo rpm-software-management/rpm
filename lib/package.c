@@ -554,7 +554,7 @@ verifyinfo_exit:
 	ildl[1] = htonl(ildl[1]);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 
 	b = (unsigned char *) header_magic;
 	nb = sizeof(header_magic);
@@ -929,7 +929,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	(void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
 	dig->nbytes += sizeof(header_magic);
 	(void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
@@ -999,17 +999,23 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* XXX Steal the digest-in-progress from the file handle. */
 	for (i = fd->ndigests - 1; i >= 0; i--) {
 	    FDDIGEST_t fddig = fd->digests + i;
-	    if (fddig->hashctx == NULL)
-		continue;
-	    if (fddig->hashalgo == PGPHASHALGO_MD5) {
+	    if (fddig->hashctx != NULL)
+	    switch (fddig->hashalgo) {
+	    case PGPHASHALGO_MD5:
 		dig->md5ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
-		continue;
-	    }
-	    if (fddig->hashalgo == PGPHASHALGO_SHA1) {
+		/*@switchbreak@*/ break;
+	    case PGPHASHALGO_SHA1:
+#if HAVE_BEECRYPT_API_H
+	    case PGPHASHALGO_SHA256:
+	    case PGPHASHALGO_SHA384:
+	    case PGPHASHALGO_SHA512:
+#endif
 		dig->sha1ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
-		continue;
+		/*@switchbreak@*/ break;
+	    default:
+		/*@switchbreak@*/ break;
 	    }
 	}
 	break;

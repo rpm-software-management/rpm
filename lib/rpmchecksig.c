@@ -661,7 +661,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
-	    dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
 	    (void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	    uh = headerFreeData(uh, uht);
@@ -680,19 +680,25 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     /* XXX Steal the digest-in-progress from the file handle. */
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
-	if (fddig->hashctx == NULL)
-	    continue;
-	if (fddig->hashalgo == PGPHASHALGO_MD5) {
+	if (fddig->hashctx != NULL)
+	switch (fddig->hashalgo) {
+	case PGPHASHALGO_MD5:
 assert(dig->md5ctx == NULL);
 	    dig->md5ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;
-	    continue;
-	}
-	if (fddig->hashalgo == PGPHASHALGO_SHA1) {
+	    /*@switchbreak@*/ break;
+	case PGPHASHALGO_SHA1:
+#if HAVE_BEECRYPT_API_H
+	case PGPHASHALGO_SHA256:
+	case PGPHASHALGO_SHA384:
+	case PGPHASHALGO_SHA512:
+#endif
 assert(dig->sha1ctx == NULL);
 	    dig->sha1ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;
-	    continue;
+	    /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
 	}
     }
 
@@ -785,15 +791,27 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
 	}
 
+	dig = rpmtsDig(ts);
+	sigp = rpmtsSignature(ts);
+
+	/* XXX RSA needs the hash_algo, so decode early. */
+	if (sigtag == RPMSIGTAG_RSA) {
+	    xx = headerGetEntry(sigh, sigtag, &sigtype, &sig, &siglen);
+	    xx = pgpPrtPkts(sig, siglen, dig, 0);
+	    sig = headerFreeData(sig, sigtype);
+	    /* XXX assume same hash_algo in header-only and header+payload */
+	    if ((headerIsEntry(sigh, RPMSIGTAG_PGP)
+	      || headerIsEntry(sigh, RPMSIGTAG_PGP5))
+	     && dig->signature.hash_algo != PGPHASHALGO_MD5)
+		fdInitDigest(fd, dig->signature.hash_algo, 0);
+	}
+
 	if (headerIsEntry(sigh, RPMSIGTAG_PGP)
 	||  headerIsEntry(sigh, RPMSIGTAG_PGP5)
 	||  headerIsEntry(sigh, RPMSIGTAG_MD5))
 	    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	if (headerIsEntry(sigh, RPMSIGTAG_GPG))
 	    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-
-	dig = rpmtsDig(ts);
-	sigp = rpmtsSignature(ts);
 
 	/* Read the file, generating digest(s) on the fly. */
 	if (dig == NULL || sigp == NULL || readFile(fd, fn, dig)) {
