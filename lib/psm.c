@@ -558,11 +558,11 @@ static int markReplacedFiles(const rpmTransactionSet ts, const TFI_t fi)
  * @param allFiles	install all files?
  * @return		0 on success
  */
-static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
+static int installArchive(PSM_t psm, int allFiles)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
     struct availablePackage * alp = fi->ap;
-    const char * failedFile = NULL;
-    char * rpmio_flags;
     int saveerrno;
     int rc;
 
@@ -580,7 +580,7 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	if (!headerGetEntry(fi->h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
 			    (void **) &payload_compressor, NULL))
 	    payload_compressor = "gzip";
-	rpmio_flags = t = alloca(sizeof("r.gzdio"));
+	psm->rpmio_flags = t = xmalloc(sizeof("r.gzdio"));
 	*t++ = 'r';
 	if (!strcmp(payload_compressor, "gzip"))
 	    t = stpcpy(t, ".gzdio");
@@ -588,17 +588,20 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	    t = stpcpy(t, ".bzdio");
     }
 
-    {	FD_t cfd;
+    {
 
-	cfd = Fdopen(fdDup(Fileno(alp->fd)), rpmio_flags);
+	psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
 
-	rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi, cfd, NULL, &failedFile);
+	rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
+			psm->cfd, NULL, &psm->failedFile);
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	Fclose(cfd);
+	Fclose(psm->cfd);
+	psm->cfd = NULL;
 	(void) fsmTeardown(fi->fsm);
 
 	if (!rc && ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT) {
-	    rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi, NULL, NULL, &failedFile);
+	    rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
+			NULL, NULL, &psm->failedFile);
 	    (void) fsmTeardown(fi->fsm);
 	}
     }
@@ -610,8 +613,8 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	 */
 	errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 	rpmError(RPMERR_CPIO, _("unpacking of archive failed%s%s: %s\n"),
-		(failedFile != NULL ? _(" on file ") : ""),
-		(failedFile != NULL ? failedFile : ""),
+		(psm->failedFile != NULL ? _(" on file ") : ""),
+		(psm->failedFile != NULL ? psm->failedFile : ""),
 		cpioStrerror(rc));
 	rc = 1;
     } else {
@@ -623,7 +626,8 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	}
     }
 
-    failedFile = _free(failedFile);
+    psm->failedFile = _free(psm->failedFile);
+    psm->rpmio_flags = _free(psm->rpmio_flags);
 
     return rc;
 }
@@ -735,7 +739,14 @@ static rpmRC installSources(const rpmTransactionSet ts, TFI_t fi,
 	goto exit;
     }
 
-    rc = installArchive(ts, fi, 1);
+    {	struct psm_s psmbuf;
+	PSM_t psm = &psmbuf;
+	memset(psm, 0, sizeof(*psm));
+	psm->ts = ts;
+	psm->fi = fi;
+
+	rc = installArchive(psm, 1);
+    }
 
     if (rc) {
 	rc = RPMRC_FAIL;
@@ -1342,6 +1353,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
+    HGE_t hge = (HGE_t)fi->hge;
     int rc = psm->rc;
     int i;
 
@@ -1360,13 +1372,58 @@ int psmStage(PSM_t psm, pkgStage stage)
 	break;
     case PSM_FINI:
 	break;
-    case PSM_NOTIFY:
+
+    case PSM_PKGINSTALL:
+	rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
+			psm->cfd, NULL, &psm->failedFile);
+	(void) fsmTeardown(fi->fsm);
 	break;
-    case PSM_COMMIT:
+    case PSM_PKGERASE:
+	if (fi->fc <= 0)				break;
+	if (ts->transFlags & RPMTRANS_FLAG_JUSTDB)	break;
+    {	const void * pkgKey = NULL;
+
+	if (ts->notify)
+	    (void)ts->notify(fi->h, RPMCALLBACK_UNINST_START,
+				fi->fc, fi->fc, pkgKey, ts->notifyData);
+
+	/* XXX failedFile? */
+	rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi,
+			NULL, NULL, &psm->failedFile);
+	(void) fsmTeardown(fi->fsm);
+
+	if (ts->notify)
+	    (void)ts->notify(fi->h, RPMCALLBACK_UNINST_STOP,
+				0, fi->fc, pkgKey, ts->notifyData);
+    }	break;
+    case PSM_PKGCOMMIT:
+	if (!(ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT)) break;
+	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
+			NULL, NULL, &psm->failedFile);
+	(void) fsmTeardown(fi->fsm);
 	break;
+    case PSM_PKGSAVE:
+    {	fileAction * actions = fi->actions;
+	fileAction action = fi->action;
+
+	fi->action = FA_COPYOUT;
+	fi->actions = NULL;
+
+	/* XXX failedFile? */
+	rc = fsmSetup(fi->fsm, FSM_PKGSAVE, ts, fi, psm->cfd, NULL, NULL);
+	(void) fsmTeardown(fi->fsm);
+
+	fi->action = action;
+	fi->actions = actions;
+    }	break;
+
     case PSM_CREATE:
 	break;
+    case PSM_NOTIFY:
+	break;
     case PSM_DESTROY:
+	break;
+    case PSM_COMMIT:
 	break;
 
     case PSM_CHROOT_IN:
@@ -1407,12 +1464,49 @@ int psmStage(PSM_t psm, pkgStage stage)
 	rc = runInstScript(psm);
 	break;
     case PSM_TRIGGERS:
-	if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS))
-	    rc = runTriggers(psm);
+	if (ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)	break;
+	rc = runTriggers(psm);
 	break;
     case PSM_IMMED_TRIGGERS:
-	if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS))
-	    rc = runImmedTriggers(psm);
+	if (ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)	break;
+	rc = runImmedTriggers(psm);
+	break;
+
+    case PSM_RPMIO_FLAGS:
+    {	const char * payload_compressor = NULL;
+	char * t;
+
+	if (!hge(fi->h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
+			    (void **) &payload_compressor, NULL))
+	    payload_compressor = "gzip";
+	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
+	t = stpcpy(t, "w9");
+	if (!strcmp(payload_compressor, "gzip"))
+	    t = stpcpy(t, ".gzdio");
+	if (!strcmp(payload_compressor, "bzip2"))
+	    t = stpcpy(t, ".bzdio");
+    }	break;
+
+    case PSM_RPMDB_LOAD:
+    {	rpmdbMatchIterator mi = NULL;
+
+	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
+				&fi->record, sizeof(fi->record));
+
+	fi->h = rpmdbNextIterator(mi);
+	if (fi->h)
+	    fi->h = headerLink(fi->h);
+	else
+	    rc = 2;
+	rpmdbFreeIterator(mi);
+    }	break;
+    case PSM_RPMDB_ADD:
+	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
+	rc = rpmdbAdd(ts->rpmdb, ts->id, fi->h);
+	break;
+    case PSM_RPMDB_REMOVE:
+	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
+	rc = rpmdbRemove(ts->rpmdb, ts->id, fi->record);
 	break;
 
     default:
@@ -1436,6 +1530,7 @@ int installBinaryPackage(PSM_t psm)
     int ec = 2;		/* assume error return */
     int rc;
 
+psm->goal = PSM_PKGINSTALL;
 psm->stepName = " install";
 
     rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
@@ -1519,7 +1614,7 @@ psm->stepName = " install";
 
 	setFileOwners(fi);
 
-	rc = installArchive(ts, fi, 0);
+	rc = installArchive(psm, 0);
 
 	if (rc)
 	    goto exit;
@@ -1602,10 +1697,9 @@ int removeBinaryPackage(PSM_t psm)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
-    const char * failedFile = NULL;
-    const void * pkgKey = NULL;
     int rc = 0;
 
+psm->goal = PSM_PKGERASE;
 psm->stepName = "   erase";
     rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
 		psm->stepName, fi->name, fi->version, fi->release,
@@ -1664,12 +1758,14 @@ assert(fi->type == TR_REMOVED);
     }
 
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
+	const void * pkgKey = NULL;
 
 	if (ts->notify)
 	    (void)ts->notify(fi->h, RPMCALLBACK_UNINST_START, fi->fc, fi->fc,
 		pkgKey, ts->notifyData);
 
-	rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi, NULL, NULL, &failedFile);
+	rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi,
+			NULL, NULL, &psm->failedFile);
 	(void) fsmTeardown(fi->fsm);
 
 	if (ts->notify)
@@ -1704,6 +1800,7 @@ exit:
 	headerFree(fi->h);
 	fi->h = NULL;
     }
+    psm->failedFile = _free(psm->failedFile);
 
     return rc;
 }
@@ -1713,15 +1810,16 @@ int repackage(PSM_t psm)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
-    HFD_t hfd = fi->hfd;
     FD_t fd = NULL;
     const char * pkgURL = NULL;
     const char * pkgfn = NULL;
     Header h = NULL;
     Header oh = NULL;
-    char * rpmio_flags;
     int saveerrno;
     int rc = 0;
+
+psm->goal = PSM_PKGSAVE;
+psm->stepName = "    save";
 
 assert(fi->type == TR_REMOVED);
     /* Retrieve installed header. */
@@ -1743,6 +1841,7 @@ assert(fi->type == TR_REMOVED);
     /* Regenerate original header. */
     {	void * uh = NULL;
 	int_32 uht, uhc;
+	HFD_t hfd = fi->hfd;
 
 	if (headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
 	    oh = headerCopyLoad(uh);
@@ -1777,7 +1876,7 @@ assert(fi->type == TR_REMOVED);
 	if (!hge(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
 			    (void **) &payload_compressor, NULL))
 	    payload_compressor = "gzip";
-	rpmio_flags = t = alloca(sizeof("w9.gzdio"));
+	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
 	t = stpcpy(t, "w9");
 	if (!strcmp(payload_compressor, "gzip"))
 	    t = stpcpy(t, ".gzdio");
@@ -1833,7 +1932,7 @@ assert(fi->type == TR_REMOVED);
     (void) psmStage(psm, PSM_CHROOT_IN);
 
     /* Write the payload into the package. */
-    {	FD_t cfd;
+    {
 	fileAction * actions = fi->actions;
 	fileAction action = fi->action;
 
@@ -1841,14 +1940,15 @@ assert(fi->type == TR_REMOVED);
 	fi->actions = NULL;
 
 	Fflush(fd);
-	cfd = Fdopen(fdDup(Fileno(fd)), rpmio_flags);
+	psm->cfd = Fdopen(fdDup(Fileno(fd)), psm->rpmio_flags);
 
 	/* XXX failedFile? */
-	rc = fsmSetup(fi->fsm, FSM_PKGSAVE, ts, fi, cfd, NULL, NULL);
+	rc = fsmSetup(fi->fsm, FSM_PKGSAVE, ts, fi, psm->cfd, NULL, NULL);
 	(void) fsmTeardown(fi->fsm);
 
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	Fclose(cfd);
+	Fclose(psm->cfd);
+	psm->cfd = NULL;
 	errno = saveerrno;
 	fi->action = action;
 	fi->actions = actions;
@@ -1870,6 +1970,7 @@ exit:
 	rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"), pkgURL);
 
     pkgURL = _free(pkgURL);
+    psm->rpmio_flags = _free(psm->rpmio_flags);
 
     return rc;
 }

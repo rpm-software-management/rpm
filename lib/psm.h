@@ -97,22 +97,35 @@ struct transactionFileInfo_s {
 #define	_fs(_a)		((_a) | (PSM_INTERNAL | PSM_SYSCALL))
 #define	_fd(_a)		((_a) | (PSM_INTERNAL | PSM_DEAD))
 typedef enum pkgStage_e {
-    PSM_UNKNOWN =  0,
-    PSM_INIT	=  1,
-    PSM_PRE	=  2,
-    PSM_PROCESS	=  3,
-    PSM_POST	=  4,
-    PSM_UNDO	=  5,
-    PSM_FINI	=  6,
-    PSM_NOTIFY	=  7,
-    PSM_COMMIT	=  8,
-    PSM_CREATE	=  9,
-    PSM_DESTROY	=  10,
-    PSM_CHROOT_IN= 11,
-    PSM_CHROOT_OUT=12,
-    PSM_SCRIPT	=  13,
-    PSM_TRIGGERS=  14,
-    PSM_IMMED_TRIGGERS= 15,
+    PSM_UNKNOWN		=  0,
+    PSM_INIT		=  1,
+    PSM_PRE		=  2,
+    PSM_PROCESS		=  3,
+    PSM_POST		=  4,
+    PSM_UNDO		=  5,
+    PSM_FINI		=  6,
+
+    PSM_PKGINSTALL	=  7,
+    PSM_PKGERASE	=  8,
+    PSM_PKGCOMMIT	= 10,
+    PSM_PKGSAVE		= 12,
+
+    PSM_CREATE		= 17,
+    PSM_NOTIFY		= 22,
+    PSM_DESTROY		= 23,
+    PSM_COMMIT		= 25,
+
+    PSM_CHROOT_IN	= 51,
+    PSM_CHROOT_OUT	= 52,
+    PSM_SCRIPT		= 53,
+    PSM_TRIGGERS	= 54,
+    PSM_IMMED_TRIGGERS	= 55,
+    PSM_RPMIO_FLAGS	= 56,
+
+    PSM_RPMDB_LOAD	= 97,
+    PSM_RPMDB_ADD	= 98,
+    PSM_RPMDB_REMOVE	= 99,
+
 } pkgStage;
 #undef	_fv
 #undef	_fi
@@ -124,7 +137,10 @@ typedef enum pkgStage_e {
 struct psm_s {
     rpmTransactionSet ts;
     TFI_t fi;
+    FD_t cfd;
 /*@observer@*/ const char * stepName;
+/*@owned@*/ const char * rpmio_flags;
+/*@owned@*/ const char * failedFile;
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int scriptArg;		/*!< No. of installed instances. */
@@ -132,6 +148,7 @@ struct psm_s {
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int rc;
+    pkgStage goal;
     pkgStage stage;
 };
 
