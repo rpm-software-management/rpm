@@ -833,7 +833,7 @@ fprintf(stderr, "  Register: %p[%d:%d:%d] = %p\n", psmtbl.psms, empty, psmtbl.np
     if ((psm->child = fork()) != 0) {
 /*@-modfilesys@*/
 if (_psm_debug)
-fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, pid);
+fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
 /*@=modfilesys@*/
     }
 
@@ -856,8 +856,11 @@ static int psmWaitUnregister(rpmpsm psm, pid_t child)
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
     
     /*@-infloops@*/
-    while (psm->reaped != psm->child)
+    while (psm->reaped != psm->child) {
+	(void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
 	(void) pause();
+	(void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+    }
     /*@=infloops@*/
 
 /*@-modfilesys@*/
