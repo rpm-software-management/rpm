@@ -7,21 +7,16 @@
 /* Data read from file descriptors is expected to be in          */
 /* network byte order and is converted on the fly to host order. */
 
-#ifdef HAVE_ASM_BYTEORDER_H
-# include <asm/byteorder.h>
-#endif
-
 #include <stdlib.h>
 #include <ctype.h>
 #include <malloc.h>
 #include <string.h>
 #include <unistd.h>
 #include <netinet/in.h>
-#include <sys/time.h>
-#include <sys/types.h>
 
 #include "header.h"
 #include "rpmlib.h"		/* necessary only for dumpHeader() */
+#include "tread.h"
 
 #define INDEX_MALLOC_SIZE 8
 #define DATA_MALLOC_SIZE 1024
@@ -279,36 +274,6 @@ static void *dataHostToNetwork(Header h)
     }
     
     return data;
-}
-
-int timedRead(int fd, void * bufptr, int length) {
-    int bytesRead;
-    int total = 0;
-    char * buf = bufptr;
-    struct fd_set readSet;
-    struct timeval tv;
-
-    while  (total < length) {
-	FD_ZERO(&readSet);
-	FD_SET(fd, &readSet);
-
-	tv.tv_sec = 5;			/* FIXME: this should be configurable */
-	tv.tv_usec = 0;
-
-	if (select(fd + 1, &readSet, NULL, NULL, &tv) != 1) 
-	    return total;
-
-	bytesRead = read(fd, buf + total, length - total);
-
-	if (bytesRead < 0)
-	    return bytesRead;
-	else if (bytesRead == 0) 
-	    return total;
-
-	total += bytesRead;
-    }
-
-    return length;
 }
 
 Header readHeader(int fd, int magicp)
