@@ -2304,7 +2304,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 #: lib/query.c:897
 #, c-format
 msgid "record %u could not be read\n"
-msgstr "záznam %d nelze pøeèíst\n"
+msgstr "záznam %u nelze pøeèíst\n"
 
 #: lib/query.c:908 lib/rpminstall.c:660
 #, c-format

@@ -2938,7 +2938,7 @@ msgstr "pgp が署名を書き込むのに失敗しました"
 #: lib/signature.c:370
 #, c-format
 msgid "PGP sig size: %d\n"
-msgstr "PGP 署名サイズ: %s\n"
+msgstr "PGP 署名サイズ: %d\n"
 
 #. @=boundswrite@
 #: lib/signature.c:388 lib/signature.c:502

@@ -2286,7 +2286,7 @@ msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 #: lib/rpminstall.c:875 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
-msgstr "otwarcie %s nie powiod³o siê\n"
+msgstr "otwarcie %s nie powiod³o siê: %s\n"
 
 #: lib/query.c:578
 #, c-format

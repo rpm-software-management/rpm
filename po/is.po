@@ -2716,7 +2716,7 @@ msgstr "Get ekki opnað %s til lesturs: %s.\n"
 #: lib/rpmts.c:136 lib/rpmts.c:193
 #, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "get ekki opnað pakka gagnagrunn í\n"
+msgstr "get ekki opnað pakka gagnagrunn í %s\n"
 
 #. Get available space on mounted file systems.
 #: lib/rpmts.c:584
