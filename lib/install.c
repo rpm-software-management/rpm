@@ -514,17 +514,18 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 	    getEntry(sech, RPMTAG_RELEASE, &type, (void **) &secRelease, 
 			&count);
 
-	    freeHeader(sech);
-
 	    if (!strcmp(secVersion, version) && !strcmp(secRelease, release)) {
 		*offset = matches.recs[i].recOffset;
 		if (!(flags & INSTALL_REPLACEPKG)) {
 		    error(RPMERR_PKGINSTALLED, 
 			  "package %s-%s-%s is already installed",
 			  name, version, release);
+		    freeHeader(sech);
 		    return 1;
 		}
 	    }
+
+	    freeHeader(sech);
 	}
     }
 
