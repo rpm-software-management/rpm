@@ -10,7 +10,7 @@ build, install, query, verify, update, and uninstall individual
 software packages.  A \fIpackage\fP consists of an archive of files,
 and package information, including name, version, and description.
 
-There are size basic modes of operation, and each takes a different
+There are five basic modes of operation, and each takes a different
 set of options.  They are \fIbuild\fP, \fIinstall\fP, \fIquery\fP,
 \fIverify\fP, \FIsignature check\fP, and \fIuninstall\fP.
 
@@ -22,7 +22,7 @@ set of options.  They are \fIbuild\fP, \fIinstall\fP, \fIquery\fP,
 .br
 .I "\fBrpm \-\-checksig <package_file>+\fP"
 .br
-.I "\fBrpm \-u <package_name>+\fP"
+.I "\fBrpm \-e <package_name>+\fP"
 .br
 .I "\fBrpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
 
@@ -101,6 +101,10 @@ Remove the build tree after the packages are made.
 .IP "\fB\-\-test\fP"
 Do not execute any build stages.  Implies \fB\-\-keep\-temps\fP.
 Useful for testing out spec files.
+.IP "\fB\-\-sign\fP"
+Embed a PGP signature in the package.  This signature can be used
+to verify the integrity and the origin of the package.  See the
+section on PGP SIGNATURES for /etc/rpmrc details.
 
 .SH QUERY OPTIONS
 There are two sets of options for querying: package selection, and
@@ -144,9 +148,35 @@ verifying compares the size, MD5 sum, permissions, type, owner and group
 of each file.  Any discrepencies are displayed.  The package specification
 options are the same as for package querying.
 
+The format of the output is a string of 8 characters, an optional "\fBc\fP"
+denoting a configuration file, and then the file name.  Each of the 8
+characters denotes the result of a comparison of one aspect of the file
+to that aspect as recorded in the RPM database.  A single "\fB.\fP" (period)
+means the test passed.  The following characters denote failure of certain
+tests:
+
+.IP "\fB5\fP"
+MD5 sum
+.IP "\fBS\fP"
+File size
+.IP "\fBL\fP"
+Symlink
+.IP "\fBT\fP"
+Mtime
+.IP "\fBD\fP"
+Device
+.IP "\fBU\fP"
+User
+.IP "\fBG\fP"
+Group
+.IP "\fBM\fP"
+Mode (includes permissions and file type)
+
 .SH SIGNATURE CHECKING
-This checks the PGP signature built into a package to ensure it came from
-a particular source. The PGP configuration information is read from /etc/rpmrc.
+This checks the PGP signature built into a package to ensure the integrity
+and the origin of the package.
+PGP configuration information is read from /etc/rpmrc.
+See the section on PGP SIGNATURES for details.
 
 .SH REBUILD OPTION
 
@@ -165,7 +195,6 @@ There is one more option that can be used to invoke rpm:
 This causes rpm to search the locations listed in /etc/rpmrc for any rpm
 matching those listed as arguments on the command line.
 
-
 .SH GENERAL OPTIONS
 These options can be used in all the different modes.
 .IP "\fB\-vv\fP"
@@ -182,6 +211,51 @@ Print a longer usage message then normal.
 Print a single line containing the version number of rpm being used.
 .IP "\fB\-\-root <dir>\fP"
 Use the directory given as top level directory for all operations.
+
+.SH PGP SIGNATURES
+
+In order to use the signature feature RPM must be able to run PGP
+(it must be installed and in your path), and it must be able to
+find a public key ring with RPM public keys in it.  By default,
+RPM looks in /usr/lib/rpm for both pubring.pgp and secring.pgp
+(which is used during package builds).  If your key rings are not
+located there you must set the following on your /etc/rpmrc
+
+.IP "\fBpgp_path\fP"
+Replacement path for /usr/lib/rpm.  Must contain your key rings.
+.IP "\fBpgp_pubring\fP"
+The full path to your public key ring.
+.IP "\fBpgp_secring\fP"
+The full path to your public key ring.
+.PP
+The bare minimum you need to do to get PGP singature checking working
+is install PGP and run the following:
+
+.nf
+mkdir -p /usr/lib/rpm
+cd /usr/lib/rpm
+cp /mnt/crom/RPM-PGP-KEY .
+touch config.txt
+pgp -ka RPM-PGP-KEY pubring.pgp
+.fi
+
+You should then be able to check the signatures of packages produced
+by Red Hat Software using pgp \-K.
+
+If you want to be able to sign packages you create yourself, you also
+need to create your own public and secret key pair (see the PGP manual).
+In addition to the above /etc/rpmrc entries, you should add the following:
+
+.IP "\fBsignature\fP"
+The signature type.  Right now only pgp is supported.
+.IP "\fBpgp_name\fP"
+The name of the "user" whose key you wish to use to sign your packages.
+.PP
+
+When building packages you then add \-\-sign to the command line.
+You will be prompted for your pass phrase, and your package will
+be built and signed.
+
 
 .SH FILES
 .nf
