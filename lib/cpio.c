@@ -357,7 +357,7 @@ static int expandRegular(CFD_t * cfd, struct cpioHeader * hdr,
     /* Rename the old file before attempting unlink to avoid EBUSY errors */
     if (!lstat(hdr->path, &sb)) {
 	strcpy(buf, hdr->path);
-	strcpy(buf, "-RPMDELETE");
+	strcat(buf, "-RPMDELETE");
 	if (rename(hdr->path, buf)) {
 	    fprintf(stderr, _("can't rename %s to %x: %s\n"),
 		hdr->path, buf, strerror(errno));
