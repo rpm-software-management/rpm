@@ -1,3 +1,8 @@
+2.3.1 -> 2.3.2:
+	- fixed bug in new rpmVersionCompare() which made it worse then
+	  useless (thanks to Norbert Kiesel)
+	- fixed silly message
+
 2.3 -> 2.3.1:
 	- changed --help routing to have intelligent line wrapping
 	  to make i18n efforts easier
