@@ -12,6 +12,7 @@
 #include "messages.h"
 #include "md5.h"
 #include "misc.h"
+#include "rpmdb.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
 
