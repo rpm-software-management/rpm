@@ -525,8 +525,10 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;
+/*@-nullstate@*/
 			spec = freeSpec(spec);
 			return RPMERR_BADSPEC;
+/*@=nullstate@*/
 		}
 #ifdef	DYING
 		rpmSetMachine(saveArch, NULL);
@@ -539,10 +541,12 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
 	    spec->BACount = index;
 	    if (! index) {
-		spec = freeSpec(spec);
 		rpmError(RPMERR_BADSPEC,
 			_("No compatible architectures found for build\n"));
+/*@-nullstate@*/
+		spec = freeSpec(spec);
 		return RPMERR_BADSPEC;
+/*@=nullstate@*/
 	    }
 
 	    /*

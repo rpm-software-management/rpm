@@ -471,10 +471,8 @@ int parseSpec(rpmts ts, const char * specFile,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,
 		int anyarch, int force)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies *specp,
-		rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  * Build stages state machine driver.
@@ -484,8 +482,7 @@ int parseSpec(rpmts ts, const char * specFile,
  * @return		0 on success
  */
 int buildSpec(Spec spec, int what, int test)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
 		spec->sourceRpmName, spec->sourcePkgId,
 		spec->macros, spec->BASpecs,
@@ -500,9 +497,8 @@ int buildSpec(Spec spec, int what, int test)
  * @return		0 on success
  */
 int packageBinaries(Spec spec)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies spec->packages->header,
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies spec->packages->header, spec->packages->cpioList,
 		spec->sourceRpmName,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -512,9 +508,8 @@ int packageBinaries(Spec spec)
  * @return		0 on success
  */
 int packageSources(Spec spec)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies spec->sourceHeader, spec->cookie,
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies spec->sourceHeader, spec->cookie, spec->sourceCpioList,
 		spec->sourceRpmName, spec->sourcePkgId,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 

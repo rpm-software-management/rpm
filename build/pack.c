@@ -698,14 +698,13 @@ exit:
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sig != NULL && pkgidp != NULL) {
-	HGE_t hge = (HGE_t)headerGetEntry;
-	unsigned char * md5 = NULL;
-	rpmTagType type;
+	int_32 tagType;
+	unsigned char * MD5 = NULL;
 	int_32 c;
 	int xx;
-	xx = hge(sig, RPMSIGTAG_MD5, &type, (void **)&md5, &c);
-	if (type == RPM_BIN_TYPE && md5 != NULL && c == 16)
-	    *pkgidp = md5;
+	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, (void **)&MD5, &c);
+	if (tagType == RPM_BIN_TYPE && MD5 != NULL && c == 16)
+	    *pkgidp = MD5;
     }
 
     sig = rpmFreeSignature(sig);
@@ -834,7 +833,7 @@ int packageBinaries(Spec spec)
 	rc = writeRPM(&pkg->header, NULL, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 
-	csa->cpioList = rpmfiFree(pkg->cpioList);
+	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 	/*@=type@*/
 	fn = _free(fn);
@@ -880,7 +879,7 @@ int packageSources(Spec spec)
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
 
-	csa->cpioList = rpmfiFree(spec->sourceCpioList);
+	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 	/*@=type@*/
 	fn = _free(fn);

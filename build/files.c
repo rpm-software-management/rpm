@@ -1370,6 +1370,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
 
     /* Make the cpio list */
+    if (fi->dil != NULL)	/* XXX can't happen */
     for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
 	char * b;
 
@@ -1425,12 +1426,12 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
 
     }
-    /*@-branchstate@*/
+    /*@-branchstate -compdef@*/
     if (fip)
 	*fip = fi;
     else
 	fi = rpmfiFree(fi);
-    /*@=branchstate@*/
+    /*@=branchstate =compdef@*/
   }
 }
 /*@=bounds@*/

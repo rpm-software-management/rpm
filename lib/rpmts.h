@@ -741,6 +741,7 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
  * @param ts		transaction set
  * @return		spec control structure
  */
+/*@null@*/
 Spec rpmtsSpec(rpmts ts)
 	/*@*/;
 
@@ -750,6 +751,7 @@ Spec rpmtsSpec(rpmts ts)
  * @param spec		new spec control structure
  * @return		previous spec control structure
  */
+/*@null@*/
 Spec rpmtsSetSpec(rpmts ts, /*@null@*/ Spec spec)
 	/*@modifies ts @*/;
 

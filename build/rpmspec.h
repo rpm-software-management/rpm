@@ -148,6 +148,7 @@ struct Spec_s {
     unsigned char * sourcePkgId;
 /*@refcounted@*/
     Header sourceHeader;
+/*@refcounted@*/
     rpmfi sourceCpioList;
 
 /*@dependent@*/ /*@null@*/ MacroContext macros;
@@ -175,6 +176,7 @@ struct Package_s {
     Header header;
 /*@refcounted@*/
     rpmds this;
+/*@refcounted@*/
     rpmfi cpioList;
 
 /*@owned@*/

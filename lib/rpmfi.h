@@ -51,7 +51,7 @@ struct rpmfi_s {
 /*@only@*/ /*@null@*/
     const char ** flangs;	/*!< File lang(s) (from header) */
 
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
           uint_32 * dil;	/*!< Directory indice(s) (from header) */
 /*@only@*/ /*?null?*/
     const uint_32 * fflags;	/*!< File flag(s) (from header) */

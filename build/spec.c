@@ -705,6 +705,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     if (qva->qva_showPackage == NULL)
 	goto exit;
 
+/*@-branchstate@*/
     /*@-mods@*/ /* FIX: make spec abstract */
     if (parseSpec(ts, arg, "/", buildRoot, recursing, passPhrase,
 		cookie, anyarch, force)
@@ -715,6 +716,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	goto exit;
     }
     /*@=mods@*/
+/*@=branchstate@*/
 
     res = 0;
     if (specedit) {

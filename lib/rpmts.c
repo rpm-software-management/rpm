@@ -1103,13 +1103,17 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
 
 Spec rpmtsSpec(rpmts ts)
 {
+/*@-compdef -retexpose -usereleased@*/
     return ts->spec;
+/*@=compdef =retexpose =usereleased@*/
 }
 
 Spec rpmtsSetSpec(rpmts ts, Spec spec)
 {
     Spec ospec = ts->spec;
+/*@-assignexpose -temptrans@*/
     ts->spec = spec;
+/*@=assignexpose =temptrans@*/
     return ospec;
 }
 
