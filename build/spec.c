@@ -41,6 +41,7 @@ static int check_part(char *line, char **s);
 int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags);
 static void dumpPackage(struct PackageRec *p, FILE *f);
 char *chop_line(char *s);
+void parseForDocFiles(Spec spec, char *line);
 
 /**********************************************************************/
 /*                                                                    */
@@ -221,6 +222,7 @@ void freeSpec(Spec s)
     freeStringBuf(s->prep);
     freeStringBuf(s->build);
     freeStringBuf(s->install);
+    freeStringBuf(s->doc);
     freeStringBuf(s->clean);
     free_packagerec(s->packages);
     free(s);
@@ -511,6 +513,24 @@ char *chop_line(char *s)
     return p;
 }
 
+void parseForDocFiles(Spec spec, char *line)
+{
+    if (strncmp(line, "%doc", 4)) {
+	return;
+    }
+
+    line += 4;
+    line += strspn(line, " \t\n");
+    if ((! *line) || (*line == '/')) {
+	return;
+    }
+    
+    appendLineStringBuf(spec->doc, "mkdir -p $DOCDIR");
+    appendStringBuf(spec->doc, "cp -ar ");
+    appendStringBuf(spec->doc, line);
+    appendLineStringBuf(spec->doc, " $DOCDIR");
+}
+
 /**********************************************************************/
 /*                                                                    */
 /* Main specfile parsing routine                                      */
@@ -540,11 +560,17 @@ Spec parseSpec(FILE *f, char *specfile)
     spec->prep = newStringBuf();
     spec->build = newStringBuf();
     spec->install = newStringBuf();
+    spec->doc = newStringBuf();
     spec->clean = newStringBuf();
     spec->packages = NULL;
 
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
+
+    appendLineStringBuf(spec->doc, "DOCDIR=$RPM_DOC_DIR/"
+			"$RPM_PACKAGE_NAME-$RPM_PACKAGE_VERSION"
+			"-$RPM_PACKAGE_RELEASE");
+    appendLineStringBuf(spec->doc, "rm -rf $DOCDIR");
     
     cur_part = PREAMBLE_PART;
     while ((x = read_line(f, buf)) > 0) {
@@ -729,6 +755,7 @@ Spec parseSpec(FILE *f, char *specfile)
 	  case FILES_PART:
 	    cur_package->files++;
 	    appendLineStringBuf(cur_package->filelist, line);
+	    parseForDocFiles(spec, line);
 	    break;
 	  default:
 	    error(RPMERR_INTERNAL, "Bad part");
