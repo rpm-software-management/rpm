@@ -354,10 +354,11 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	SINGLE_TOKEN_ONLY;
 	if (! spec->buildRoot) {
 	    if (rpmGetVar(RPMVAR_BUILDROOT)) {
-		spec->buildRoot = strdup(rpmGetVar(RPMVAR_BUILDROOT));
+		spec->buildRoot = rpmGetVar(RPMVAR_BUILDROOT);
 	    } else {
-		spec->buildRoot = strdup(field);
+		spec->buildRoot = field;
 	    }
+	    spec->buildRoot = strdup(cleanFileName(spec->buildRoot));
 	}
 	if (!strcmp(spec->buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,

@@ -200,3 +200,27 @@ StringBuf getOutputFrom(char *dir, char *argv[],
 
     return readBuff;
 }
+
+char *cleanFileName(char *name)
+{
+    static char res[BUFSIZ];
+    char *copyTo, *copyFrom, copied;
+
+    /* Copy to fileName, eliminate duplicate "/" and trailing "/" */
+    copyTo = res;
+    copied = '\0';
+    copyFrom = name;
+    while (*copyFrom) {
+	if (*copyFrom != '/' || copied != '/') {
+	    *copyTo++ = copied = *copyFrom;
+	}
+	copyFrom++;
+    }
+    *copyTo = '\0';
+    copyTo--;
+    if ((copyTo != res) && (*copyTo == '/')) {
+	*copyTo = '\0';
+    }
+
+    return res;
+}

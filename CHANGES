@@ -4,6 +4,7 @@
 	- allow spaces in group names
 	- fix bug in memory allocation of special doc stuff
 	- Jeff Johnson's mode/dev fixes
+	- clean up buildroot
 
 2.4.101 -> 2.4.102:
 	- fixed spelling of "instchangelog" in lib-rpmrc.in

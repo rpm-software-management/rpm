@@ -23,5 +23,6 @@ int parseNum(char *line, int *res);
 StringBuf getOutputFrom(char *dir, char *argv[],
 			char *writePtr, int writeBytesLeft,
 			int failNonZero);
+char *cleanFileName(char *name);
 
 #endif

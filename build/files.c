@@ -426,6 +426,7 @@ static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
 	if (installSpecialDoc) {
 	    doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, 0);
 	}
+
 	/* fl.current now takes on "ownership" of the specialDocAttrRec */
 	/* allocated string data.                                       */
 	fl.current = specialDocAttrRec;
@@ -708,28 +709,13 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 {
     char fileName[BUFSIZ];
     char diskName[BUFSIZ];
-    char *copyTo, *copyFrom, copied;
     char *prefixTest, *prefixPtr;
     struct stat statbuf;
     int_16 fileMode;
     int fileUid, fileGid;
     char *fileUname, *fileGname;
     
-    /* Copy to fileName, eliminate duplicate "/" and trailing "/" */
-    copyTo = fileName;
-    copied = '\0';
-    copyFrom = name;
-    while (*copyFrom) {
-	if (*copyFrom != '/' || copied != '/') {
-	    *copyTo++ = copied = *copyFrom;
-	}
-	copyFrom++;
-    }
-    *copyTo = '\0';
-    copyTo--;
-    if ((copyTo != fileName) && (*copyTo == '/')) {
-	*copyTo = '\0';
-    }
+    strcpy(fileName, cleanFileName(name));
 
     if (fl->inFtw) {
 	/* Any buildRoot is already prepended */
