@@ -8,6 +8,7 @@
 	- RPM_INSTALL_PREFIX wasn't being set properly (this should be
 	  fixed now)
 	- replaced temporary file creation to be race-condition safe
+	- prerequisites may not specify versions
 
 2.4.4 -> 2.4.5:
 	- call getpwnam()/endpwent() once before a chroot(), forcing name 
