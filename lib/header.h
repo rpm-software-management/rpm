@@ -14,6 +14,7 @@ typedef short int int_16;
 typedef char int_8;
 
 typedef unsigned int uint_32;
+typedef unsigned short uint_16;
 
 #else
 
@@ -23,6 +24,7 @@ typedef short int int_16;
 typedef char int_8;
 
 typedef unsigned int uint_32;
+typedef unsigned short uint_16;
 #endif
 
 typedef struct headerToken *Header;
