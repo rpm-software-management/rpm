@@ -351,7 +351,8 @@ dnl Checks for header files we can live without.
 AC_HEADER_STDC
 AC_HEADER_MAJOR
 AC_CHECK_HEADERS(netinet/in_systm.h limits.h)
-AC_CHECK_HEADERS(alloca.h dirent.h sys/socket.h sys/select.h)
+AC_CHECK_HEADERS(alloca.h sys/socket.h sys/select.h)
+AC_HEADER_DIRENT
 AC_CHECK_HEADERS(machine/types.h string.h)
 AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h unistd.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)

@@ -1,4 +1,5 @@
 2.5.5 -> 2.9
+	- more portable dirent handling (Hermann Lauer).
 	- add Slovak translation (Stanislav Meduna <stano@trillian.eunet.sk>)
 	- gettextify rpmMessage/rpmError/fprintf messages.
 	- update po files; add cz to catalogs.

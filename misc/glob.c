@@ -1,15 +1,3 @@
-#ifdef __sgi
-#define SYSDIR
-#endif
-
-#ifdef __hpux
-#define SYSDIR
-#endif
-
-#if defined(sun) && !defined(__svr4__)
-#define SYSDIR
-#endif
-
 /* Copyright (C) 1991, 1992, 1993, 1994 Free Software Foundation, Inc.
 
 This library is free software; you can redistribute it and/or
@@ -65,27 +53,6 @@ extern int errno;
 #ifndef	NULL
 #define	NULL	0
 #endif
-
-#if	defined (POSIX) || defined (DIRENT) || defined (__GNU_LIBRARY__)  || defined(HAVE_DIRENT_H)
-#include <dirent.h>
-#ifndef	__GNU_LIBRARY__
-#define D_NAMLEN(d) strlen((d)->d_name)
-#else	/* GNU C library.  */
-#define D_NAMLEN(d) ((d)->d_namlen)
-#endif	/* Not GNU C library.  */
-#else	/* Not POSIX or DIRENT.  */
-#define direct dirent
-#define D_NAMLEN(d) ((d)->d_namlen)
-#ifdef	SYSNDIR
-#include <sys/ndir.h>
-#endif	/* SYSNDIR */
-#ifdef	SYSDIR
-#include <sys/dir.h>
-#endif	/* SYSDIR */
-#ifdef NDIR
-#include <ndir.h>
-#endif	/* NDIR */
-#endif	/* POSIX or DIRENT or __GNU_LIBRARY__.  */
 
 #if defined (POSIX) && !defined (__GNU_LIBRARY__)
 /* Posix does not require that the d_ino field be present, and some
@@ -578,11 +545,7 @@ glob_in_dir (pattern, directory, flags, errfunc, pglob)
 		if (! REAL_DIR_ENTRY (d))
 		  continue;
 		name = d->d_name;
-#ifdef	HAVE_D_NAMLEN
-		len = d->d_namlen;
-#else
-		len = 0;
-#endif
+		len = NLENGTH(d);
 	      }
 		
 	    if (fnmatch (pattern, name,
