@@ -35,7 +35,7 @@ void printHelp(void);
 void printVersion(void);
 void printBanner(void);
 void printUsage(void);
-int build(char * arg, int buildAmount, char *passPhrase);
+int build(char *arg, int buildAmount, char *passPhrase, char *prefixOverride);
 
 void printVersion(void) {
     printf(_("RPM version %s\n"), version);
@@ -159,6 +159,7 @@ void printHelp(void) {
     puts(_("      --short-circuit   - skip straight to specified stage (only for c,i)"));
     puts(_("      --clean           - remove build tree when done"));
     puts(_("      --sign            - generate PGP signature"));
+    puts(_("      --buildprefix <s> - use s as the build prefix"));
     puts(_("      --test            - do not execute any stages"));
     puts(_("      --time-check <s>  - set the time check to S seconds (0 disables it)"));
     puts(_(""));
@@ -176,7 +177,7 @@ void printHelp(void) {
     puts(_("    --initdb            - make sure a valid database exists"));
 }
 
-int build(char * arg, int buildAmount, char *passPhrase) {
+int build(char *arg, int buildAmount, char *passPhrase, char *prefixOverride) {
     FILE *f;
     Spec s;
     char * specfile;
@@ -196,7 +197,7 @@ int build(char * arg, int buildAmount, char *passPhrase) {
 	fprintf(stderr, _("unable to open: %s\n"), specfile);
 	return 1;
     }
-    s = parseSpec(f, specfile);
+    s = parseSpec(f, specfile, prefixOverride);
     fclose(f);
     if (s) {
 	if (verifySpec(s)) {
@@ -243,6 +244,7 @@ int main(int argc, char ** argv) {
     char * prefix = "/";
     char * specFile;
     char *passPhrase = "";
+    char *prefixOverride = NULL;
     char *arch = NULL;
     char *os = NULL;
     char * smallArgv[2] = { NULL, NULL };
@@ -253,6 +255,7 @@ int main(int argc, char ** argv) {
 	    { "all", 0, 0, 'a' },
 	    { "arch", 1, 0, 0 },
 	    { "build", 1, 0, 'b' },
+	    { "buildprefix", 1, 0, 0 },
 	    { "checksig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
@@ -562,6 +565,11 @@ int main(int argc, char ** argv) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
 		    argerror(_("only one major mode may be specified"));
 		bigMode = MODE_RECOMPILE;
+	    } else if (!strcmp(options[long_index].name, "buildprefix")) {
+		if (bigMode != MODE_UNKNOWN &&
+		    bigMode != MODE_BUILD && bigMode != MODE_REBUILD)
+		    argerror(_("only one major mode may be specified"));
+		prefixOverride = optarg;
 	    } else if (!strcmp(options[long_index].name, "resign")) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		    argerror(_("only one major mode may be specified"));
@@ -614,6 +622,10 @@ int main(int argc, char ** argv) {
 	else
 	    bigMode = MODE_QUERYTAGS;
 
+    if (prefixOverride && bigMode != MODE_BUILD && bigMode != MODE_REBUILD) {
+	argerror("--buildprefix may only be used during package builds");
+    }
+    
     if (bigMode != MODE_QUERY && queryFor) 
 	argerror(_("unexpected query specifiers"));
 
@@ -771,7 +783,7 @@ int main(int argc, char ** argv) {
 	    if (doSourceInstall("/", argv[optind++], &specFile))
 		exit(1);
 
-	    if (build(specFile, buildAmount, passPhrase)) {
+	    if (build(specFile, buildAmount, passPhrase, prefixOverride)) {
 		exit(1);
 	    }
 	}
@@ -811,7 +823,8 @@ int main(int argc, char ** argv) {
 	    argerror(_("no spec files given for build"));
 
 	while (optind < argc) 
-	    if (build(argv[optind++], buildAmount, passPhrase)) {
+	    if (build(argv[optind++], buildAmount,
+		      passPhrase, prefixOverride)) {
 		exit(1);
 	    }
 	break;
