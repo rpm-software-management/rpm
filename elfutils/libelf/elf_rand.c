@@ -33,7 +33,7 @@ elf_rand (Elf *elf, size_t offset)
     return 0;
 
   /* Save the old offset and set the offset.  */
-  elf->state.ar.offset = offset;
+  elf->state.ar.offset = elf->start_offset + offset;
 
   /* Get the next archive header.  */
   if (__libelf_next_arhdr (elf) != 0)
