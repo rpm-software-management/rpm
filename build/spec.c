@@ -497,9 +497,11 @@ static void generateNamesAndDocScript(Spec s)
 	appendStringBuf(s->doc, "DOCDIR=$RPM_ROOT_DIR/$RPM_DOC_DIR/");
 	sprintf(fullname, "%s-%s-%s", name, packageVersion, packageRelease);
 	appendLineStringBuf(s->doc, fullname);
-	appendLineStringBuf(s->doc, "rm -rf $DOCDIR");
 	docs = getStringBuf(package->doc);
-	appendLineStringBuf(s->doc, docs);
+	if (*docs) {
+	    appendLineStringBuf(s->doc, "rm -rf $DOCDIR");
+	    appendLineStringBuf(s->doc, docs);
+	}
 	
 	package = package->next;
     }
