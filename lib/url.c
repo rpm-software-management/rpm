@@ -9,9 +9,11 @@
 #include <netinet/in.h>
 #endif	/* __LCLINT__ */
 
-#include "build/rpmbuild.h"
+#include "rpmbuild.h"
 
 #include <rpmurl.h>
+
+/*@access FD_t@*/
 
 static struct urlstring {
     const char *leadin;
@@ -68,7 +70,7 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 {
     urlinfo *u;
     urlinfo **empty;
-    static urlinfo **uCache = NULL;
+    /*@only@*/static urlinfo **uCache = NULL;
     static int uCount = 0;
     int i;
 
@@ -284,9 +286,9 @@ int urlSplit(const char * url, urlinfo **uret)
     u->host = strdup(f);
 
     if (u->port < 0 && u->service != NULL) {
-	struct servent *se;
-	if ((se = getservbyname(u->service, "tcp")) != NULL)
-	    u->port = ntohs(se->s_port);
+	struct servent *serv;
+	if ((serv = getservbyname(u->service, "tcp")) != NULL)
+	    u->port = ntohs(serv->s_port);
 	else if (!strcasecmp(u->service, "ftp"))
 	    u->port = IPPORT_FTP;
 	else if (!strcasecmp(u->service, "http"))
@@ -301,7 +303,7 @@ int urlSplit(const char * url, urlinfo **uret)
     return 0;
 }
 
-static int urlConnect(const char * url, urlinfo ** uret)
+static int urlConnect(const char * url, /*@out@*/urlinfo ** uret)
 {
     urlinfo *u;
 
@@ -476,17 +478,18 @@ int urlGetFile(const char * url, const char * dest) {
 
 const char *urlStrerror(const char *url)
 {
+    const char *retstr;
     urlinfo *u;
     switch (urlIsURL(url)) {
+/* XXX This only works for httpOpen/ftpOpen/ftpGetFileDesc failures */
     case URL_IS_FTP:
     case URL_IS_HTTP:
-	if (urlSplit(url, &u))
-	    return "Malformed URL";
-/* XXX This only works for httpOpen/ftpOpen/ftpGetFileDesc failures */
-	return ftpStrerror(u->openError);
+	retstr = !urlSplit(url, &u)
+		? ftpStrerror(u->openError) : "Malformed URL";
 	break;
     default:
+	retstr = strerror(errno);
 	break;
     }
-    return strerror(errno);
+    return retstr;
 }
