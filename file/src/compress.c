@@ -324,7 +324,8 @@ uncompressbuf(struct magic_set *ms, size_t method, const unsigned char *old,
 {
 	int fdin[2], fdout[2];
 	int r;
-
+	pid_t pid1, pid2;
+	
 	/* The buffer is NUL terminated, and we don't need that. */
 	n--;
 	 
@@ -337,7 +338,7 @@ uncompressbuf(struct magic_set *ms, size_t method, const unsigned char *old,
 		file_error(ms, errno, "cannot create pipe");	
 		return 0;
 	}
-	switch (fork()) {
+	switch ((pid1=fork())) {
 	case 0:	/* child */
 		(void) close(0);
 		(void) dup(fdin[0]);
@@ -363,7 +364,7 @@ uncompressbuf(struct magic_set *ms, size_t method, const unsigned char *old,
 		(void) close(fdin[0]);
 		(void) close(fdout[1]);
 		/* fork again, to avoid blocking because both pipes filled */
-		switch (fork()) {
+		switch ((pid2=fork())) {
 		case 0: /* child */
 			(void)close(fdout[0]);
 			if (swrite(fdin[1], old, n) != n)
@@ -398,12 +399,8 @@ err:
 		if (fdin[1] != -1)
 			(void) close(fdin[1]);
 		(void) close(fdout[0]);
-#ifdef WNOHANG
-		while (waitpid(-1, NULL, WNOHANG) != -1)
-			continue;
-#else
-		(void)wait(NULL);
-#endif
+		waitpid(pid1, NULL, 0);
+		waitpid(pid2, NULL, 0);
 		return n;
 	}
 	/*@notreached@*/
