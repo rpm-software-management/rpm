@@ -131,6 +131,7 @@
 	- check inodes (but not blocks) on FAT file systems (#64256).
 	- add /usr/lib/rpm/redhat/* per-vendor configuration.
 	- remove build mode compatibility aliases, documented and gone.
+	- document digital signature verification in rpm.8.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

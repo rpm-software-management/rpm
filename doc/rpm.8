@@ -19,6 +19,10 @@ rpm \- RPM Package Manager
 
 
 
+\fBrpm\fR \fB--import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
+
+
+
 \fBrpm\fR {\fB-K|--checksig\fR} [\fB--nogpg\fR] [\fB--nopgp\fR] [\fB--nomd5\fR]
     \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
@@ -362,6 +366,70 @@ on this system.
 \fB--test\fR
 Do not install the package, simply check for and report
 potential conflicts.
+.SS "ERASE OPTIONS"
+.PP
+The general form of an rpm erase command is 
+.PP
+
+\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+
+.PP
+The following options may also be used:
+.TP
+\fB--allmatches\fR
+Remove all versions of the package which match
+\fIPACKAGE_NAME\fR. Normally an
+error is issued if \fIPACKAGE_NAME\fR
+matches multiple packages.
+.TP
+\fB--nodeps\fR
+Don't check dependencies before uninstalling the packages.
+.TP
+\fB--noscripts\fR
+.TP
+\fB--nopreun\fR
+.TP
+\fB--nopostun\fR
+Don't execute the scriptlet of the same name.
+The \fB--noscripts\fR option during package erase is
+equivalent to
+
+\fB--nopreun\fR
+\fB--nopostun\fR
+
+and turns off the execution of the corresponding
+\fB%preun\fR, and
+\fB%postun\fR
+scriptlet(s).
+.TP
+\fB--notriggers\fR
+.TP
+\fB--notriggerun\fR
+.TP
+\fB--notriggerpostun\fR
+Don't execute any trigger scriptlet of the named type.
+The \fB--notriggers\fR option is equivalent to
+
+\fB--notriggerun\fR
+\fB--notriggerpostun\fR
+
+and turns off execution of the corresponding
+\fB%triggerun\fR, and
+\fB%triggerpostun\fR
+scriptlet(s).
+.TP
+\fB--repackage\fR
+Re-package the files before erasing. The previously installed
+package will be named according to the macro
+\fB%_repackage_name_fmt\fR
+and will be created in the directory named by
+the macro \fB%_repackage_dir\fR (default value
+is \fI/var/tmp\fR).
+.TP
+\fB--test\fR
+Don't really uninstall anything, just go through the motions.
+Useful in conjunction with the \fB-vv\fR option
+for debugging.
 .SS "QUERY OPTIONS"
 .PP
 The general form of an rpm query command is 
@@ -384,19 +452,48 @@ characters) and \fBprintf(3)\fR type formatters.
 As \fBrpm\fR already knows the type to print, the
 type specifier must be omitted however, and replaced by the name
 of the header tag to be printed, enclosed by \fB{}\fR
-characters. Tag names are case insesitive, and the
+characters. Tag names are case insesitive, and the leading
 \fBRPMTAG_\fR portion of the tag name may be omitted
 as well.
 .PP
 Alternate output formats may be requested by following
 the tag with \fB:\fItypetag\fB\fR.
 Currently, the following types are supported:
-\fBoctal\fR,
-\fBdate\fR,
-\fBshescape\fR,
-\fBperms\fR,
-\fBfflags\fR, and
-\fBdepflags\fR.
+.TP
+\fB:armor\fR
+   
+Wrap a public key in ASCII armor.
+.TP
+\fB:base64\fR
+Encode binary data using base64.
+.TP
+\fB:date\fR
+Use strftime(3) "%c" format.
+.TP
+\fB:day\fR
+Use strftime(3) "%a %b %d %Y" format.
+.TP
+\fB:depflags\fR
+Format dependency flags.
+.TP
+\fB:fflags\fR
+Format file flags.
+.TP
+\fB:hex\fR
+Format in hexadecimal.
+.TP
+\fB:octal\fR
+Format in octal.
+.TP
+\fB:perms\fR
+Format file permissions.
+.TP
+\fB:shescape\fR
+Escape single quotes for use in a script.
+.TP
+\fB:triggertype\fR
+Display trigger suffix.
+.PP
 For example, to print only the names of the packages queried,
 you could use \fB%{NAME}\fR as the format string.
 To print the packages name and distribution information in
@@ -628,100 +725,60 @@ the corresponding \fB--verify\fR test:
 \fBT\fR m\fBT\fRime differs
 .fi
 
-.SS "SIGNATURE CHECKING"
+.SS "DIGITAL SIGNATURE AND DIGEST VERIFICATION"
 .PP
-The general form of an rpm signature check command is 
+The general forms of rpm digital signature commands are
 .PP
 
-\fBrpm\fR {\fB--checksig\fR} [\fB--nogpg\fR] [\fB--nopgp\fR] [\fB--nomd5\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+
+\fBrpm\fR \fB--import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
+
+
+\fBrpm\fR {\fB--checksig\fR} [\fB--nogpg\fR] [\fB--nopgp\fR] [\fB--nomd5\fR]
+    \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
-This checks the GPG signature of package
+The \fB--checksig\fR option checks all the digests and signatures contained in
 \fIPACKAGE_FILE\fR to ensure
-its integrity and origin. GPG configuration information is
-read from configuration files.  See the section on GPG SIGNATURES
-for details.
-.SS "ERASE OPTIONS"
+the integrity and origin of the package. Note that
+signatures are now verified whenever a package is read,
+and \fB--checksig\fR is useful to verify
+all of the digests and signatures associated with a package.
 .PP
-The general form of an rpm erase command is 
+Digital signatures cannot be verified without a public key.
+An ascii armored public key can be added to the \fBrpm\fR database
+using \fB--import\fR. An imported public key is
+carried in a header, and key ring management is performed
+exactly like package management. For example, all currently imported
+public keys can be displayed by:
 .PP
-
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
-
+\fBrpm -qa gpg-pubkey*\fR
 .PP
-The following options may also be used:
-.TP
-\fB--allmatches\fR
-Remove all versions of the package which match
-\fIPACKAGE_NAME\fR. Normally an
-error is issued if \fIPACKAGE_NAME\fR
-matches multiple packages.
-.TP
-\fB--nodeps\fR
-Don't check dependencies before uninstalling the packages.
-.TP
-\fB--noscripts\fR
-.TP
-\fB--nopreun\fR
-.TP
-\fB--nopostun\fR
-Don't execute the scriptlet of the same name.
-The \fB--noscripts\fR option during package erase is
-equivalent to
-
-\fB--nopreun\fR
-\fB--nopostun\fR
-
-and turns off the execution of the corresponding
-\fB%preun\fR, and
-\fB%postun\fR
-scriptlet(s).
-.TP
-\fB--notriggers\fR
-.TP
-\fB--notriggerun\fR
-.TP
-\fB--notriggerpostun\fR
-Don't execute any trigger scriptlet of the named type.
-The \fB--notriggers\fR option is equivalent to
-
-\fB--notriggerun\fR
-\fB--notriggerpostun\fR
-
-and turns off execution of the corresponding
-\fB%triggerun\fR, and
-\fB%triggerpostun\fR
-scriptlet(s).
-.TP
-\fB--repackage\fR
-Re-package the files before erasing. The previously installed
-package will be named according to the macro
-\fB%_repackage_name_fmt\fR
-and will be created in the directory named by
-the macro \fB%_repackage_dir\fR (default value
-is \fI/var/tmp\fR).
-.TP
-\fB--test\fR
-Don't really uninstall anything, just go through the motions.
-Useful in conjunction with the \fB-vv\fR option
-for debugging.
+Details about a specific public key, when imported, can be displayed
+by querying.  Here's information about the Red Hat GPG/DSA key:
+.PP
+\fBrpm -qi gpg-pubkey-db42a60e\fR
+.PP
+Finally, public keys can be erased after importing just like
+packages. Here's how to remove the Red Hat GPG/DSA key
+.PP
+\fBrpm -e gpg-pubkey-db42a60e\fR
 .SS "SIGNING A PACKAGE"
 .PP
 
-\fBrpm\fR {\fB--addsign|--resign\fR} \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR \fB--addsign|--resign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
-The \fB--addsign\fR option generates and inserts
-new signatures for each package.  Any existing signatures will
-be discarded.
+Both of the \fB--addsign\fR and \fB--resign\fR
+options generate and insert new signatures for each package
+\fIPACKAGE_FILE\fR given, replacing any
+existing signatures. There are two options for historical reasons,
+there is no difference in behavior currently.
+.SS "USING GPG TO SIGN PACKAGES"
 .PP
-The \fB--resign\fR option generates and appends signatures
-for the listed packages while preserving the existing signatures.
-.SS "GPG SIGNATURES"
-.PP
-In order to use the signature feature, \fBrpm\fR
-must be configured to run GPG and be able to find a public key
-ring with Red Hat (or other vendor) public keys. By default,
+In order to sign packages using GPG, \fBrpm\fR
+must be configured to run GPG and be able to find a key
+ring with the appropriate keys. By default,
 \fBrpm\fR uses the same conventions as GPG
 to find key rings, namely the \fB$GPGPATH\fR environment
 variable.  If your key rings are not located where GPG expects
@@ -729,9 +786,14 @@ them to be, you will need to configure the macro
 \fB%_gpg_path\fR
 to be the location of the GPG key rings to use.
 .PP
+For compatibility with older versions of GPG, PGP, and rpm,
+only V3 OpenPGP signature packets should be configured.
+Either DSA or RSA verification algorithms can be used, but DSA
+is preferred.
+.PP
 If you want to be able to sign packages you create yourself, you
 also need to create your own public and secret key pair (see the
-GPG manual). You will also need to configure the macros
+GPG manual). You will also need to configure the \fBrpm\fR macros
 .TP
 \fB%_signature\fR
 The signature type.  Right now only gpg and pgp are supported.
@@ -739,15 +801,11 @@ The signature type.  Right now only gpg and pgp are supported.
 \fB%_gpg_name\fR
 The name of the "user" whose key you wish to use to sign your packages.
 .PP
-When building packages you then add \fB--sign\fR to
-the command line. You will be prompted for your pass phrase, and
-your package will be built and signed.  For example, to be able
-to use GPG to sign packages as the user
+For example, to be able to use GPG to sign packages as the user
 \fI"John Doe <jdoe@foo.com>"\fR
 from the key rings located in \fI/etc/rpm/.gpg\fR
 using the executable \fI/usr/bin/gpg\fR you would include
 .PP
-
 .nf
 %_signature gpg
 %_gpg_path /etc/rpm/.gpg

@@ -11,6 +11,7 @@
 #include "debug.h"
 
 /**
+ * Identify type of trigger.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	(unused)
@@ -35,6 +36,7 @@ static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
 }
 
 /**
+ * Format file permissions for display.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -65,6 +67,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * form
 }
 
 /**
+ * Format file flags for display.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -96,6 +99,10 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 	    strcat(buf, "n");
 	if (anint & RPMFILE_GHOST)
 	    strcat(buf, "g");
+	if (anint & RPMFILE_LICENSE)
+	    strcat(buf, "l");
+	if (anint & RPMFILE_README)
+	    strcat(buf, "r");
 
 	val = xmalloc(5 + padding);
 	strcat(formatPrefix, "s");
@@ -108,6 +115,7 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 }
 
 /**
+ * Wrap a pubkey in ascii armor for display.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -194,6 +202,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 }
 
 /**
+ * Encode binary data in base64 for display.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -262,6 +271,7 @@ static /*@only@*/ char * pgppktFormat(int_32 type, const void * data,
 #endif
 
 /**
+ * Format dependency flags for display.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix

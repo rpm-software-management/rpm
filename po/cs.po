@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-09 15:27-0400\n"
+"POT-Creation-Date: 2002-06-10 12:05-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1510,21 +1510,21 @@ msgstr "========== pokraèuje tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
+#: lib/formats.c:30 lib/formats.c:55 lib/formats.c:87 lib/formats.c:291
 #: rpmdb/header.c:2990 rpmdb/header.c:3011 rpmdb/header.c:3033
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
-#: lib/formats.c:139
+#: lib/formats.c:147
 #, fuzzy
 msgid "(not base64)"
 msgstr "(není èíslo)"
 
-#: lib/formats.c:149
+#: lib/formats.c:157
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:211 lib/formats.c:256
+#: lib/formats.c:220 lib/formats.c:265
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(není èíslo)"
@@ -1912,6 +1912,11 @@ msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 #: lib/poptQV.c:111
 msgid "rpm query mode"
 msgstr "re¾im dotazù"
+
+#: lib/poptQV.c:113
+#, fuzzy
+msgid "query/verify a header instance"
+msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 
 #: lib/poptQV.c:115
 msgid "display known query tags"

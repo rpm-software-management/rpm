@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.253 2002/06/09 22:15:45 jbj Exp $
+# $Id: sl.po,v 1.254 2002/06/10 16:08:57 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-09 15:27-0400\n"
+"POT-Creation-Date: 2002-06-10 12:05-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1540,21 +1540,21 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
+#: lib/formats.c:30 lib/formats.c:55 lib/formats.c:87 lib/formats.c:291
 #: rpmdb/header.c:2990 rpmdb/header.c:3011 rpmdb/header.c:3033
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
-#: lib/formats.c:139
+#: lib/formats.c:147
 #, fuzzy
 msgid "(not base64)"
 msgstr "(ni ¹tevilo)"
 
-#: lib/formats.c:149
+#: lib/formats.c:157
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:211 lib/formats.c:256
+#: lib/formats.c:220 lib/formats.c:265
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(ni ¹tevilo)"
@@ -1956,6 +1956,11 @@ msgstr "poizvedba po paketu, ki vsebuje datoteko"
 #, fuzzy
 msgid "rpm query mode"
 msgstr "poizvedbeni naèin"
+
+#: lib/poptQV.c:113
+#, fuzzy
+msgid "query/verify a header instance"
+msgstr "poizvedba po paketu, ki vsebuje datoteko"
 
 #: lib/poptQV.c:115
 msgid "display known query tags"

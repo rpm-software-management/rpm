@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-06-09 15:27-0400\n"
+"POT-Creation-Date: 2002-06-10 12:05-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1496,20 +1496,20 @@ msgstr "========== tsort를 진행합니다...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
+#: lib/formats.c:30 lib/formats.c:55 lib/formats.c:87 lib/formats.c:291
 #: rpmdb/header.c:2990 rpmdb/header.c:3011 rpmdb/header.c:3033
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
-#: lib/formats.c:139
+#: lib/formats.c:147
 msgid "(not base64)"
 msgstr "(base64가 아닙니다)"
 
-#: lib/formats.c:149
+#: lib/formats.c:157
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
 
-#: lib/formats.c:211 lib/formats.c:256
+#: lib/formats.c:220 lib/formats.c:265
 msgid "(not a blob)"
 msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
 
@@ -1897,6 +1897,11 @@ msgstr "패키지 식별자(identifier)를 사용하여 패키지를 질의/검증 합니다"
 #: lib/poptQV.c:111
 msgid "rpm query mode"
 msgstr "rpm 질의 모드"
+
+#: lib/poptQV.c:113
+#, fuzzy
+msgid "query/verify a header instance"
+msgstr "헤더 식별자(identifier)를 사용하여 패키지를 질의/검증 합니다"
 
 #: lib/poptQV.c:115
 msgid "display known query tags"
