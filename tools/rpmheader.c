@@ -8,21 +8,22 @@
 
 int main(int argc, char **argv)
 {
-    int fd;
+    FD_t fdi, fdo;
     struct rpmlead lead;
     Header hd;
     
     if (argc == 1) {
-	fd = 0;
+	fdi = fdDup(0);
     } else {
-	fd = open(argv[1], O_RDONLY, 0644);
+	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
 
-    readLead(fd, &lead);
-    rpmReadSignature(fd, NULL, lead.signature_type);
-    hd = headerRead(fd, (lead.major >= 3) ?
+    readLead(fdi, &lead);
+    rpmReadSignature(fdi, NULL, lead.signature_type);
+    hd = headerRead(fdi, (lead.major >= 3) ?
 		    HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-    headerWrite(1, hd, HEADER_MAGIC_YES);
+    fdo = fdDup(1);
+    headerWrite(fdo, hd, HEADER_MAGIC_YES);
     
     return 0;
 }

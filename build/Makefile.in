@@ -121,7 +121,8 @@ AUTOMAKE_OPTIONS = 1.3 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/lib @INCPATH@
 
-include_HEADERS = rpmbuild.h rpmspec.h
+rpmincdir = $(includedir)/rpm
+rpminc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h myftw.h
 
 lib_LIBRARIES = librpmbuild.a
@@ -147,7 +148,7 @@ parseScript.o parseSpec.o reqprov.o spec.o
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
-HEADERS =  $(include_HEADERS) $(noinst_HEADERS)
+HEADERS =  $(noinst_HEADERS) $(rpminc_HEADERS)
 
 DIST_COMMON =  Makefile.am Makefile.in TODO
 
@@ -229,19 +230,19 @@ librpmbuild.a: $(librpmbuild_a_OBJECTS) $(librpmbuild_a_DEPENDENCIES)
 	$(AR) cru librpmbuild.a $(librpmbuild_a_OBJECTS) $(librpmbuild_a_LIBADD)
 	$(RANLIB) librpmbuild.a
 
-install-includeHEADERS: $(include_HEADERS)
+install-rpmincHEADERS: $(rpminc_HEADERS)
 	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(includedir)
-	@list='$(include_HEADERS)'; for p in $$list; do \
+	$(mkinstalldirs) $(DESTDIR)$(rpmincdir)
+	@list='$(rpminc_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
-	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(includedir)/$$p"; \
-	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(includedir)/$$p; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(rpmincdir)/$$p"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(rpmincdir)/$$p; \
 	done
 
-uninstall-includeHEADERS:
+uninstall-rpmincHEADERS:
 	@$(NORMAL_UNINSTALL)
-	list='$(include_HEADERS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(includedir)/$$p; \
+	list='$(rpminc_HEADERS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(rpmincdir)/$$p; \
 	done
 
 tags: TAGS
@@ -317,18 +318,18 @@ installcheck:
 install-exec: install-libLIBRARIES
 	@$(NORMAL_INSTALL)
 
-install-data: install-includeHEADERS
+install-data: install-rpmincHEADERS
 	@$(NORMAL_INSTALL)
 
 install: install-exec install-data all
 	@:
 
-uninstall: uninstall-libLIBRARIES uninstall-includeHEADERS
+uninstall: uninstall-libLIBRARIES uninstall-rpmincHEADERS
 
 install-strip:
 	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
 installdirs:
-	$(mkinstalldirs)  $(DATADIR)$(libdir) $(DATADIR)$(includedir)
+	$(mkinstalldirs)  $(DATADIR)$(libdir) $(DATADIR)$(rpmincdir)
 
 
 mostlyclean-generic:
@@ -365,8 +366,8 @@ maintainer-clean:  maintainer-clean-libLIBRARIES \
 .PHONY: mostlyclean-libLIBRARIES distclean-libLIBRARIES \
 clean-libLIBRARIES maintainer-clean-libLIBRARIES uninstall-libLIBRARIES \
 install-libLIBRARIES mostlyclean-compile distclean-compile \
-clean-compile maintainer-clean-compile uninstall-includeHEADERS \
-install-includeHEADERS tags mostlyclean-tags distclean-tags clean-tags \
+clean-compile maintainer-clean-compile uninstall-rpmincHEADERS \
+install-rpmincHEADERS tags mostlyclean-tags distclean-tags clean-tags \
 maintainer-clean-tags distdir mostlyclean-depend distclean-depend \
 clean-depend maintainer-clean-depend info dvi installcheck install-exec \
 install-data install uninstall all installdirs mostlyclean-generic \

@@ -24,10 +24,11 @@ extern int h_errno;
 
 #include <stdarg.h>
 
-
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <arpa/inet.h>
+
+#include "rpmio.h"
 
 #if !defined(HAVE_INET_ATON)
 int inet_aton(const char *cp, struct in_addr *inp);
@@ -48,7 +49,7 @@ int inet_aton(const char *cp, struct in_addr *inp);
 
 static int ftpCheckResponse(int sock, char ** str);
 static int ftpCommand(int sock, char * command, ...);
-static int ftpReadData(int sock, int out);
+static int ftpReadData(int sock, FD_t fdo);
 static int getHostAddress(const char * host, struct in_addr * address);
 
 static int ftpCheckResponse(int sock, char ** str) {
@@ -285,7 +286,7 @@ int ftpOpen(char * host, char * name, char * password, char * proxy,
     return sock;
 }
 
-int ftpReadData(int sock, int out) {
+int ftpReadData(int sock, FD_t fdo) {
     char buf[BUFFER_SIZE];
     fd_set emptySet, readSet;
     struct timeval timeout;
@@ -314,7 +315,7 @@ int ftpReadData(int sock, int out) {
 	    return 0;
 	}
 
-	if (write(out, buf, bytesRead) != bytesRead) {
+	if (fdWrite(fdo, buf, bytesRead) != bytesRead) {
 	    close(sock);
 	    return FTPERR_FILE_IO_ERROR;
 	}
@@ -404,7 +405,7 @@ int ftpGetFileDone(int sock) {
     return 0;
 }
 
-int ftpGetFile(int sock, char * remotename, int dest) {
+int ftpGetFile(int sock, char * remotename, FD_t dest) {
     int dataSocket, rc;
 
     dataSocket = ftpGetFileDesc(sock, remotename);

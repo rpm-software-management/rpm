@@ -11,9 +11,8 @@
 
 #include <netinet/in.h>
 
+#include "rpmio.h"
 #include "header.h"
-
-#include "tread.h"
 
 #define INDEX_MALLOC_SIZE 8
 
@@ -251,7 +250,7 @@ Header headerCopy(Header h)
 /*                                                                  */
 /********************************************************************/
 
-void headerWrite(int fd, Header h, int magicp)
+void headerWrite(FD_t fd, Header h, int magicp)
 {
     void * p;
     int length;
@@ -260,17 +259,17 @@ void headerWrite(int fd, Header h, int magicp)
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	(void)write(fd, header_magic, sizeof(header_magic));
+	(void)fdWrite(fd, header_magic, sizeof(header_magic));
 	l = htonl(0);
-	(void)write(fd, &l, sizeof(l));
+	(void)fdWrite(fd, &l, sizeof(l));
     }
     
-    (void)write(fd, p, length);
+    (void)fdWrite(fd, p, length);
 
     free(p);
 }
 
-Header headerRead(int fd, int magicp)
+Header headerRead(FD_t fd, int magicp)
 {
     int_32 reserved;
     int_32 * p;
@@ -866,6 +865,7 @@ static int dataLength(int_32 type, void * p, int_32 count, int onDisk) {
     int thisLen, length, i;
     char ** src, * chptr;
 
+    length = 0;
     switch (type) {
       case RPM_STRING_TYPE:
 	if (count == 1) {
@@ -1865,7 +1865,7 @@ static struct extensionCache * allocateExtensionCache(
     return calloc(i, sizeof(struct extensionCache));
 }
 
-void freeExtensionCache(const struct headerSprintfExtension * extensions,
+static void freeExtensionCache(const struct headerSprintfExtension * extensions,
 		        struct extensionCache * cache) {
     const struct headerSprintfExtension * ext = extensions;
     int i = 0;
@@ -2131,4 +2131,25 @@ char *headerFindI18NString(Header h, struct indexEntry *entry)
     }
 
     return entry->data;
+}
+
+void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy)
+{
+    int *p;
+
+    if (headerFrom == headerTo)
+	return;
+
+    for (p = tagstocopy; *p != 0; p++) {
+	char *s;
+	int type, count;
+	if (headerIsEntry(headerTo, *p))
+	    continue;
+	if (!headerGetEntry(headerFrom, *p, &type, (void **) &s, &count))
+	    continue;
+	headerAddEntry(headerTo, *p, type, s, count);
+	if (s != NULL &&
+	   (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE))
+	    free(s);
+    }
 }

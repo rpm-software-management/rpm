@@ -34,8 +34,8 @@
 Header rpmNewSignature(void);
 
 /* If an old-style signature is found, we emulate a new style one */
-int rpmReadSignature(int fd, Header *header, short sig_type);
-int rpmWriteSignature(int fd, Header header);
+int rpmReadSignature(FD_t fd, Header *header, short sig_type);
+int rpmWriteSignature(FD_t fd, Header header);
 
 /* Generate a signature of data in file, insert in header */
 int rpmAddSignature(Header header, char *file,

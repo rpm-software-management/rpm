@@ -7,24 +7,25 @@
 
 int main(int argc, char **argv)
 {
-    int fd;
+    FD_t fdi, fdo;
     struct rpmlead lead;
     Header sig;
     
     if (argc == 1) {
-	fd = 0;
+	fdi = fdDup(0);
     } else {
-	fd = open(argv[1], O_RDONLY, 0644);
+	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
 
-    readLead(fd, &lead);
-    rpmReadSignature(fd, &sig, lead.signature_type);
+    readLead(fdi, &lead);
+    rpmReadSignature(fdi, &sig, lead.signature_type);
     switch (lead.signature_type) {
       case RPMSIG_NONE:
 	fprintf(stderr, _("No signature available.\n"));
 	break;
       default:
-	rpmWriteSignature(1, sig);
+	fdo = fdDup(1);
+	rpmWriteSignature(fdo, sig);
     }
     
     return 0;

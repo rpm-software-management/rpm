@@ -5,27 +5,28 @@
 int main(int argc, char ** argv)
 {
     Header h;
-    int fd;
+    FD_t fdi, fdo;
 
     if (argc == 1) {
-	fd = 0;
+	fdi = fdDup(0);
     } else {
-	fd = open(argv[1], O_RDONLY, 0644);
+	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
 
-    if (fd < 0) {
+    if (fdFileno(fdi) < 0) {
 	fprintf(stderr, _("cannot open %s: %s\n"), argv[1], strerror(errno));
 	exit(1);
     }
 
-    h = headerRead(fd, HEADER_MAGIC_YES);
+    h = headerRead(fdi, HEADER_MAGIC_YES);
     if (!h) {
 	fprintf(stderr, _("headerRead error: %s\n"), strerror(errno));
 	exit(1);
     }
-    close(fd);
+    fdClose(fdi);
   
-    headerDump(h, stdout, 1, rpmTagTable);
+    fdo = fdDup(1);
+    headerDump(h, stdout, fdo, rpmTagTable);
     headerFree(h);
 
     return 0;

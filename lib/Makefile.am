@@ -27,13 +27,14 @@ rpmrc.o: rpmrc.c
 	$(COMPILE) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
 
 tagtable.c: rpmlib.h 
-	echo '#include "rpmlib.h"' > tagtable.c
-	echo '' >> tagtable.c
-	echo 'const struct headerTagTableEntry rpmTagTable[] = {' >> tagtable.c
-	awk '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ { printf("\t{ \"%s\", %s },\n", $$2, $$3); }' < $(srcdir)/rpmlib.h >> tagtable.c
-	echo '	{ NULL, 0 }' >> tagtable.c
-	echo '};' >> tagtable.c
-	echo '' >> tagtable.c
-	echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry) - 1;' >> tagtable.c
+	@echo '#include "system.h"' > tagtable.c
+	@echo '#include "rpmlib.h"' >> tagtable.c
+	@echo '' >> tagtable.c
+	@echo 'const struct headerTagTableEntry rpmTagTable[] = {' >> tagtable.c
+	@awk '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ { printf("\t{ \"%s\", %s },\n", $$2, $$3); }' < $(srcdir)/rpmlib.h >> tagtable.c
+	@echo '	{ NULL, 0 }' >> tagtable.c
+	@echo '};' >> tagtable.c
+	@echo '' >> tagtable.c
+	@echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry) - 1;' >> tagtable.c
 
 BUILT_SOURCES = tagtable.c

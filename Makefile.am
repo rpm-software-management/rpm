@@ -49,8 +49,10 @@ rpmconvert_LDADD =	-lrpmbuild -lpopt -lrpm -lgdbm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/var/lib/rpm
-	@rm -f $(DESTDIR)/$(libdir)/rpmrc && ln -s rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
-	@rm -f $(DESTDIR)/$(libdir)/rpmpopt && ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
+	@rm -f $(DESTDIR)/$(libdir)/rpmrc
+	@ln -s rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
+	@rm -f $(DESTDIR)/$(libdir)/rpmpopt
+	@ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@

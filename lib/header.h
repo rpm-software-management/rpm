@@ -70,8 +70,8 @@ struct headerSprintfExtension {
 extern const struct headerSprintfExtension headerDefaultFormats[];
 
 /* read and write a header from a file */
-Header headerRead(int fd, int magicp);
-void headerWrite(int fd, Header h, int magicp);
+Header headerRead(FD_t fd, int magicp);
+void headerWrite(FD_t fd, Header h, int magicp);
 Header headerGzRead(gzFile fd, int magicp);
 void headerGzWrite(gzFile fd, Header h, int magicp);
 unsigned int headerSizeof(Header h, int magicp);
@@ -160,6 +160,8 @@ void headerSetLangPath(Header h, char * lang);
 
 Header headerCopy(Header h);
 void headerSort(Header h);
+
+void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy);
 
 /* Entry Types */
 

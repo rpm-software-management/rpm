@@ -413,7 +413,6 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 	     char * arg, char * queryFormat) {
     Header h;
     int offset;
-    int fd;
     int rc;
     int isSource;
     rpmdb db;
@@ -422,7 +421,6 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
     int retcode = 0;
     char *end = NULL;
     struct urlContext context;
-    int isUrl = 0;
     char path[PATH_MAX];
 
     if (source != QUERY_RPM) {
@@ -433,25 +431,30 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 
     switch (source) {
       case QUERY_RPM:
+      { FD_t fd = NULL;
+	int isUrl = 0;
 	if (urlIsURL(arg)) {
+	    int fdno;
 	    isUrl = 1;
-	    if ((fd = urlGetFd(arg, &context)) < 0) {
+	    if ((fdno = urlGetFd(arg, &context)) < 0) {
 		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
-			ftpStrerror(fd));
+			ftpStrerror(fdno));
 	    }
+	    fd = fdDup(fdno);
+	    close(fdno);
 	} else if (!strcmp(arg, "-")) {
-	    fd = 0;
+	    fd = fdDup(0);
 	} else {
-	    if ((fd = open(arg, O_RDONLY)) < 0) {
+	    if (fdFileno(fd = fdOpen( arg, O_RDONLY, 0)) < 0) {
 		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 			strerror(errno));
 	    }
 	}
 
-	if (fd >= 0) {
+	if (fd != NULL && fdFileno(fd) >= 0) {
 	    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 
-	    close(fd);
+	    fdClose(fd);
 	    if (isUrl) {
 		urlFinishedFd(&context);
 	    }
@@ -475,10 +478,8 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 		    fprintf(stderr, _("query of %s failed\n"), arg);
 		    retcode = 1;
 	    }
-
 	}
-		
-	break;
+      } break;
 
       case QUERY_ALL:
 	offset = rpmdbFirstRecNum(db);

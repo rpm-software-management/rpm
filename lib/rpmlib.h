@@ -5,6 +5,7 @@
 
 /* and it shouldn't need these :-( */
 
+#include "rpmio.h"
 #include "dbindex.h"
 #include "header.h"
 
@@ -12,8 +13,8 @@
 extern "C" {
 #endif
 
-int rpmReadPackageInfo(int fd, Header * signatures, Header * hdr);
-int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
+int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr);
+int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
 			 int * minor);
    /* 0 = success */
    /* 1 = bad magic */
@@ -313,10 +314,10 @@ struct rpmRelocation {
     char * newPath;     /* odd behavior is only for backwards compatibility */
 };
 
-int rpmInstallSourcePackage(char * root, int fd, char ** specFile,
+int rpmInstallSourcePackage(char * root, FD_t fd, char ** specFile,
 			    rpmNotifyFunction notify, char * labelFormat,
 			    char ** cookie);
-int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
+int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 		      struct rpmRelocation * relocations,
 		      int flags, rpmNotifyFunction notify, char * labelFormat);
 int rpmVersionCompare(Header first, Header second);
@@ -325,7 +326,7 @@ int rpmdbRebuild(char * root);
 
 int rpmVerifyFile(char * root, Header h, int filenum, int * result,
 		  int omitMask);
-int rpmVerifyScript(char * root, Header h, int err);
+int rpmVerifyScript(char * root, Header h, FD_t err);
 
 typedef struct rpmDependencyCheck * rpmDependencies;
 

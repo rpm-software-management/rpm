@@ -213,27 +213,6 @@ static int checkForRequired(Header h, char *name)
     return res;
 }
 
-void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy)
-{
-    int *p;
-
-    if (headerFrom == headerTo)
-	return;
-
-    for (p = tagstocopy; *p != 0; p++) {
-	if (!headerIsEntry(headerTo, *p)) {
-	    char *s;
-	    int type, count;
-	    if (headerGetEntry(headerFrom, *p, &type, (void **) &s, &count)) {
-		headerAddEntry(headerTo, *p, type, s, count);
-		if (type == RPM_STRING_ARRAY_TYPE) {
-		    FREE(s);
-		}
-	    }
-	}
-    }
-}
-
 static int checkForDuplicates(Header h, char *name)
 {
     int res = 0;
@@ -282,7 +261,7 @@ static int readIcon(Header h, char *file)
 {
     char buf[BUFSIZ], *icon;
     struct stat statbuf;
-    int fd;
+    FD_t fd;
 
     strcpy(buf, "%{_sourcedir}/");
     expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
@@ -293,13 +272,13 @@ static int readIcon(Header h, char *file)
 	return RPMERR_BADSPEC;
     }
     icon = malloc(statbuf.st_size);
-    fd = open(buf, O_RDONLY);
-    if (read(fd, icon, statbuf.st_size) != statbuf.st_size) {
-	close(fd);
+    fd = fdOpen(buf, O_RDONLY, 0);
+    if (fdRead(fd, icon, statbuf.st_size) != statbuf.st_size) {
+	fdClose(fd);
 	rpmError(RPMERR_BADSPEC, _("Unable to read icon: %s"), file);
 	return RPMERR_BADSPEC;
     }
-    close(fd);
+    fdClose(fd);
 
     if (! strncmp(icon, "GIF", 3)) {
 	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, statbuf.st_size);

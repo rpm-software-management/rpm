@@ -176,15 +176,14 @@ int urlGetFile(char * url, char * dest) {
     char * fileName;
     int ftpconn;
     int rc;
-    int fd;
+    FD_t fd;
 
     rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
 
     if ((ftpconn = urlFtpLogin(url, &fileName)) < 0) return ftpconn;
 
-    fd = creat(dest, 0600);
-
-    if (fd < 0) {
+    fd = fdOpen(dest, O_CREAT|O_WRONLY|O_TRUNC, 0600);
+    if (fdFileno(fd) < 0) {
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);
 	ftpClose(ftpconn);
 	free(fileName);
@@ -194,7 +193,7 @@ int urlGetFile(char * url, char * dest) {
     if ((rc = ftpGetFile(ftpconn, fileName, fd))) {
 	free(fileName);
 	unlink(dest);
-	close(fd);
+	fdClose(fd);
 	ftpClose(ftpconn);
 	return rc;
     }    

@@ -48,7 +48,7 @@ static char *_preScriptChdir =
 
 int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 {
-    int fd;
+    FD_t fd;
     FILE *f;
     char *scriptName;
     int pid;
@@ -84,11 +84,14 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     }
     
     if (makeTempFile(NULL, &scriptName, &fd) ||
-	fchmod(fd, 0600) < 0 ||
-	(f = fdopen(fd, "w")) == NULL) {
+	fdFchmod(fd, 0600) < 0 ||
+	(f = fdopen(dup(fdFileno(fd)), "w")) == NULL) {
+	    fdClose(fd);
+	    FREE(scriptName);
 	    rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
 	    return RPMERR_SCRIPT;
     }
+    fdClose(fd);
     
     strcpy(buf, _preScriptEnvironment);
     expandMacros(spec, spec->macros, buf, sizeof(buf));

@@ -5,7 +5,7 @@
 
 /* Other definitions went to rpmlib.h */
 
-int writeLead(int fd, struct rpmlead *lead);
-int readLead(int fd, struct rpmlead *lead);
+int writeLead(FD_t fd, struct rpmlead *lead);
+int readLead(FD_t fd, struct rpmlead *lead);
 
 #endif	/* _H_RPMLEAD */

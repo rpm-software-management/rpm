@@ -1,36 +1,28 @@
--I. -I.. -I../lib
-
--Du_long=unsigned
--Du_int=unsigned
--Du_short=short
--Du_char=char
-
--Du_int32_t=unsigned
--Du_int16_t=short
-
--Dfd_set=void
+-I. -I.. -I../lib -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 
-+unixlib	#-> +posixlib
 -warnunixlib
+-warnposix
 
-+boolint
--boolops
++unixlib
+
 -fixedformalarray
--formattype
 -fullinitblock
-+ignorequals
-+ignoresigns
-+longintegral
-+matchanyintegral
--mustfree
--nullpass
--observertrans
--predboolint
--predboolothers
--redef
--retvalint
--retvalother
--shiftsigned
 -type
+
+# -weak paramaters
+#+boolint
+#-boolops
+#+ignorequals
+#+ignoresigns
+#-mustfree
+#+longintegral
+#+matchanyintegral
+#-nullpass
+#-observertrans
+#-predboolint
+#-predboolothers
+#-retvalint
+#-retvalother
+#-shiftsigned

@@ -11,12 +11,12 @@
 
 /* 0 = success */
 /* !0 = error */
-static int readOldHeader(int fd, Header * hdr, int * isSource);
+static int readOldHeader(FD_t fd, Header * hdr, int * isSource);
 
 /* 0 = success */
 /* 1 = bad magic */
 /* 2 = error */
-static int readPackageHeaders(int fd, struct rpmlead * leadPtr, 
+static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr, 
 			      Header * sigs, Header * hdrPtr) {
     Header hdrBlock;
     struct rpmlead leadBlock;
@@ -33,7 +33,7 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 
     oldLead = (struct oldrpmlead *) lead;
 
-    fstat(fd, &sb);
+    fdFstat(fd, &sb);
     /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
     if (S_ISREG(sb.st_mode) && sb.st_size < sizeof(*lead)) return 1;
 
@@ -55,7 +55,7 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
 	    rpmMessage(RPMMESS_DEBUG, _("archive offset is %d\n"), 
 			oldLead->archiveOffset);
-	    (void)lseek(fd, oldLead->archiveOffset, SEEK_SET);
+	    (void)fdLseek(fd, oldLead->archiveOffset, SEEK_SET);
 	    
 	    /* we can't put togeher a header for old format source packages,
 	       there just isn't enough information there. We'll return
@@ -107,14 +107,14 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 /* 0 = success */
 /* 1 = bad magic */
 /* 2 = error */
-int rpmReadPackageInfo(int fd, Header * signatures, Header * hdr) {
+int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr) {
     return readPackageHeaders(fd, NULL, signatures, hdr);
 }
 
 /* 0 = success */
 /* 1 = bad magic */
 /* 2 = error */
-int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
+int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
 		  int * minor) {
     int rc;
     struct rpmlead lead;
@@ -129,7 +129,7 @@ int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
     return 0;
 }
 
-static int readOldHeader(int fd, Header * hdr, int * isSource) {
+static int readOldHeader(FD_t fd, Header * hdr, int * isSource) {
     struct oldrpmHeader oldheader;
     struct oldrpmHeaderSpec spec;
     Header dbentry;
@@ -148,7 +148,7 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
     int i, j;
     char ** unames, ** gnames;
 
-    (void)lseek(fd, 0, SEEK_SET);
+    (void)fdLseek(fd, 0, SEEK_SET);
     if (oldhdrReadFromStream(fd, &oldheader)) {
 	return 1;
     }

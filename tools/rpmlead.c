@@ -2,21 +2,23 @@
 
 #include "system.h"
 
+#include "rpmio.h"
 #include "rpmlead.h"
 
 int main(int argc, char **argv)
 {
-    int fd;
+    FD_t fdi, fdo;
     struct rpmlead lead;
     
     if (argc == 1) {
-	fd = 0;
+	fdi = fdDup(0);
     } else {
-	fd = open(argv[1], O_RDONLY, 0644);
+	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
 
-    readLead(fd, &lead);
-    writeLead(1, &lead);
+    readLead(fdi, &lead);
+    fdo = fdDup(1);
+    writeLead(fdo, &lead);
     
     return 0;
 }

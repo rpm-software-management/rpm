@@ -15,7 +15,7 @@ char *zlib_err [] = {
 
 int main(int argc, char **argv)
 {
-    int fd;
+    FD_t fdi, fdo;
     Header hd;
     int rc, isSource;
     char buffer[1024];
@@ -23,17 +23,18 @@ int main(int argc, char **argv)
     gzFile stream;
     
     if (argc == 1) {
-	fd = 0;
+	fdi = fdDup(0);
     } else {
-	fd = open(argv[1], O_RDONLY, 0644);
+	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
 
-    if (fd < 0) {
+    if (fdFileno(fdi) < 0) {
 	perror("cannot open package");
 	exit(1);
     }
+    fdo = fdDup(1);
 
-    rc = rpmReadPackageHeader(fd, &hd, &isSource, NULL, NULL);
+    rc = rpmReadPackageHeader(fdi, &hd, &isSource, NULL, NULL);
     if (rc == 1) {
 	fprintf(stderr, _("argument is not an RPM package\n"));
 	exit(1);
@@ -42,10 +43,10 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    stream = gzdopen(fd, "r");
+    stream = gzdopen(fdFileno(fdi), "r");
 
     while ((ct = gzread(stream, &buffer, 1024)) > 0) {
-	write(1, &buffer, ct);
+	fdWrite(fdo, &buffer, ct);
     }
     if (ct < 0){
         int zerror;

@@ -19,10 +19,6 @@
 	    { 0, 0, 0, 0, 0 }
     };
 
-#ifdef	__LCLINT__
-#define	MKDIR_P	"mkdir -p"
-#endif
-
 #ifdef DYING
 static int doSetupMacro(Spec spec, char *line);
 static int doPatchMacro(Spec spec, char *line);

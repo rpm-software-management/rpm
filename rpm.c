@@ -9,12 +9,6 @@
 #include "popt/popt.h"
 #include "verify.h"
 
-#ifdef	__LCLINT__
-#define	VERSION			"3.0"
-#define	LIBRPMALIAS_FILENAME	"/usr/lib/rpm/rpmpopt"
-#define	RPMCONFIGDIR		"/usr/lib/rpm"
-#endif
-
 #define GETOPT_REBUILD		1003
 #define GETOPT_RECOMPILE	1004
 #define GETOPT_ADDSIGN		1005
@@ -564,8 +558,11 @@ int main(int argc, char ** argv) {
     /* set up the correct locale */
     (void)setlocale(LC_ALL, "" );
 
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
+#ifdef	__LCLINT__
+#define	LOCALEDIR	"/usr/share/locale"
+#endif
+    (void)bindtextdomain(PACKAGE, LOCALEDIR);
+    (void)textdomain(PACKAGE);
 
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 

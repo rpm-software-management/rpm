@@ -1197,18 +1197,20 @@ freeMacros(MacroContext *mc)
 
 int isCompressed(char *file, int *compressed)
 {
-    int fd, nb, rderrno;
+    FD_t fd;
+    ssize_t nb;
+    int rderrno;
     unsigned char magic[4];
 
     *compressed = COMPRESSED_NOT;
 
-    if ((fd = open(file, O_RDONLY)) < 0) {
+    if (fdFileno(fd = fdOpen(file, O_RDONLY, 0)) < 0) {
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(errno));
 	return 1;
     }
-    nb = read(fd, magic, sizeof(magic));
+    nb = fdRead(fd, magic, sizeof(magic));
     rderrno = errno;
-    close(fd);
+    fdClose(fd);
 
     if (nb < 0) {
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(rderrno));

@@ -270,7 +270,7 @@ static int poTags[] = {
 };
 
 static int
-gettextfile(int fd, const char *file, FILE *fp, int *poTags)
+gettextfile(FD_t fd, const char *file, FILE *fp, int *poTags)
 {
     struct rpmlead lead;
     Header h;
@@ -721,7 +721,7 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
     DPRINTF(99, ("rewriteBinaryRPM(\"%s\",\"%s\",%p)\n", fni, fno, mlp));
 
     csa->cpioArchiveSize = 0;
-    csa->cpioFdIn = -1;
+    csa->cpioFdIn = fdNew();
     csa->cpioList = NULL;
     csa->cpioCount = 0;
     csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
@@ -744,8 +744,7 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
     }
 
 exit:
-    if (csa->cpioFdIn >= 0)
-	close(csa->cpioFdIn);
+    fdClose(csa->cpioFdIn);
     return rc;
 
 }
@@ -756,7 +755,7 @@ exit:
 
 #define	RPMGETTEXT	"rpmgettext"
 static int
-rpmgettext(int fd, const char *file, FILE *ofp)
+rpmgettext(FD_t fd, const char *file, FILE *ofp)
 {
 	char fni[BUFSIZ], fno[BUFSIZ];
 	const char *fn;
@@ -797,7 +796,7 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 	    }
 	}
 
-	if ((fd = open(fni, O_RDONLY, 0644)) < 0) {
+	if (fdFileno(fd = fdOpen(fni, O_RDONLY, 0644)) < 0) {
 	    fprintf(stderr, _("rpmgettext: open %s: %s\n"), fni, strerror(errno));
 	    return 2;
 	}
@@ -808,8 +807,7 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 
 	if (ofp != stdout)
 	    fclose(ofp);
-	if (fd != 0)
-	    close(fd);
+	fdClose(fd);
 
 	return 0;
 }
@@ -824,7 +822,7 @@ static char *archs[] = {
 
 #define	RPMPUTTEXT	"rpmputtext"
 static int
-rpmputtext(int fd, const char *file, FILE *ofp)
+rpmputtext(FD_t fd, const char *file, FILE *ofp)
 {
 	string_list_ty *flp;
 	message_list_ty *mlp;
@@ -835,7 +833,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 	int deletefni = 0;
 	int deletefno = 0;
 
-	DPRINTF(99, ("rpmputtext(%d,\"%s\",%p)\n", fd, file, ofp));
+	DPRINTF(99, ("rpmputtext(%x,\"%s\",%p)\n", fd, file, ofp));
 
 	/* Read the po file, parsing out xref files */
 	if ((rc = parsepofile(file, &mlp, &flp)) != 0)
@@ -934,7 +932,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 
 #define	RPMCHKTEXT	"rpmchktext"
 static int
-rpmchktext(int fd, const char *file, FILE *ofp)
+rpmchktext(FD_t fd, const char *file, FILE *ofp)
 {
 	DPRINTF(99, ("rpmchktext(%d,\"%s\",%p)\n", fd, file, ofp));
 	return parsepofile(file, NULL, NULL);
@@ -948,6 +946,7 @@ main(int argc, char **argv)
     extern char *optarg;
     extern int optind;
     int errflg = 0;
+    FD_t fdi;
 
     program_name = basename(argv[0]);
 
@@ -989,12 +988,14 @@ main(int argc, char **argv)
     /* XXX I don't want to read rpmrc yet */
     rpmSetVar(RPMVAR_TMPPATH, "/tmp");
 
+    fdi = fdDup(0);
+
     if (!strcmp(program_name, RPMGETTEXT)) {
 	if (optind == argc) {
-	    rc = rpmgettext(0, STDINFN, stdout);
+	    rc = rpmgettext(fdi, STDINFN, stdout);
 	} else {
 	    for ( ; optind < argc; optind++ ) {
-		if ((rc = rpmgettext(0, argv[optind], stdout)) != 0)
+		if ((rc = rpmgettext(fdi, argv[optind], stdout)) != 0)
 		    break;
 	    }
 	}
@@ -1004,16 +1005,16 @@ main(int argc, char **argv)
 		exit(1);
 	}
 	if (optind == argc) {
-	    rc = rpmputtext(0, STDINFN, stdout);
+	    rc = rpmputtext(fdi, STDINFN, stdout);
 	} else {
 	    for ( ; optind < argc; optind++ ) {
-		if ((rc = rpmputtext(0, argv[optind], stdout)) != 0)
+		if ((rc = rpmputtext(fdi, argv[optind], stdout)) != 0)
 		    break;
 	    }
 	}
     } else if (!strcmp(program_name, RPMCHKTEXT)) {
 	if (optind == argc) {
-	    rc = rpmchktext(0, STDINFN, stdout);
+	    rc = rpmchktext(fdi, STDINFN, stdout);
 	} else {
 	    for ( ; optind < argc; optind++ ) {
 		if ((rc = rpmchktext(0, argv[optind], stdout)) != 0)

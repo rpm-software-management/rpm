@@ -7,22 +7,27 @@
 
 +unixlib
 
-+boolint
--boolops
+# not-yet normal parameters
+-boolops		# w->n
 -fixedformalarray
--formattype
 -fullinitblock
-+ignorequals
-+ignoresigns
-+longintegral
-+matchanyintegral
--mustfree
--nullpass
--observertrans
--predboolint
--predboolothers
--redef
--retvalint
--retvalother
--shiftsigned
+-null
+-predboolint		# w->n
+-predboolothers		# w->n
 -type
+
+# not-yet -weak paramaters
+#+boolint
+#-boolops
+#+ignorequals
+#+ignoresigns
+#-mustfree
+#+longintegral
+#+matchanyintegral
+#-nullpass
+#-observertrans
+#-predboolint
+#-predboolothers
+#-retvalint
+#-retvalother
+#-shiftsigned

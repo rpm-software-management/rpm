@@ -2,7 +2,7 @@
 srcdir = .
 top_srcdir = ..
 
-LOCALEDIR=/usr/local/share/locale
+LOCALEDIR=/usr/share/locale
 
 INSTALL= /usr/bin/install -c
 INSTALL_PROGRAM= ${INSTALL}

@@ -11,11 +11,6 @@
 
 #include "misc.h"
 
-#ifdef	__LCLINT__
-#define	LIBRPMRC_FILENAME	"/usr/lib/rpm/rpmrc"
-#define	MACROFILES		"/usr/lib/rpm/macros"
-#endif
-
 static char *usrlibrpmrc = LIBRPMRC_FILENAME;
 static char *etcrpmrc = "/etc/rpmrc";
 static char *macrofiles = MACROFILES;
@@ -152,7 +147,7 @@ static struct rpmvarValue values[RPMVAR_NUM];
 
 /* prototypes */
 static void defaultMachine(char ** arch, char ** os);
-static int doReadRC(int fd, char * filename);
+static int doReadRC(FD_t fd, char * filename);
 static int optionCompare(const void * a, const void * b);
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 		   char *fn, int lineNum);
@@ -532,7 +527,7 @@ static void setDefaults(void) {
 }
 
 int rpmReadRC(char * file) {
-    int fd;
+    FD_t fd;
     char * fn;
     char * home;
     int rc = 0;
@@ -543,10 +538,10 @@ int rpmReadRC(char * file) {
 	first = 0;
     }
 
-    fd = open(usrlibrpmrc, O_RDONLY);
-    if (fd >= 0) {
+    fd = fdOpen(usrlibrpmrc, O_RDONLY, 0);
+    if (fdFileno(fd) >= 0) {
 	rc = doReadRC(fd, usrlibrpmrc);
-	close(fd);
+	fdClose(fd);
  	if (rc) return rc;
     } else {
 	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
@@ -559,10 +554,10 @@ int rpmReadRC(char * file) {
     else
 	fn = etcrpmrc;
 
-    fd = open(fn, O_RDONLY);
-    if (fd >= 0) {
+    fd = fdOpen(fn, O_RDONLY, 0);
+    if (fdFileno(fd) >= 0) {
 	rc = doReadRC(fd, fn);
-	close(fd);
+	fdClose(fd);
 	if (rc) return rc;
     } else if (file) {
 	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."), file,
@@ -576,10 +571,10 @@ int rpmReadRC(char * file) {
 	    fn = alloca(strlen(home) + 8);
 	    strcpy(fn, home);
 	    strcat(fn, "/.rpmrc");
-	    fd = open(fn, O_RDONLY);
-	    if (fd >= 0) {
+	    fd = fdOpen(fn, O_RDONLY, 0);
+	    if (fdFileno(fd) >= 0) {
 		rc |= doReadRC(fd, fn);
-		close(fd);
+		fdClose(fd);
 		if (rc) return rc;
 	    }
 	}
@@ -599,7 +594,7 @@ int rpmReadRC(char * file) {
     return 0;
 }
 
-static int doReadRC(int fd, char * filename) {
+static int doReadRC(FD_t fd, char * filename) {
     char buf[BUFSIZ];
     char * start, * chptr, * next, * rest;
     int linenum = 0;
@@ -609,9 +604,9 @@ static int doReadRC(int fd, char * filename) {
     int rc;
 
   { struct stat sb;
-    fstat(fd, &sb);
+    fdFstat(fd, &sb);
     next = alloca(sb.st_size + 2);
-    if (read(fd, next, sb.st_size) != sb.st_size) {
+    if (fdRead(fd, next, sb.st_size) != sb.st_size) {
 	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,
 		 strerror(errno));
 	return 1;
@@ -714,7 +709,7 @@ static int doReadRC(int fd, char * filename) {
 #endif	/* defined(RPMVAR_SETENV) */
 
 	    case RPMVAR_INCLUDE:
-	      {	int fdinc;
+	      {	FD_t fdinc;
 
 		rpmRebuildPlatformVars(NULL,NULL,NULL);
 
@@ -725,13 +720,13 @@ static int doReadRC(int fd, char * filename) {
 		    return 1;
 		}
 
-		if ((fdinc = open(buf, O_RDONLY)) < 0) {
+		if (fdFileno(fdinc = fdOpen(buf, O_RDONLY, 0)) < 0) {
 		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d"),
 			buf, filename, linenum);
 			return 1;
 		}
 		rc = doReadRC(fdinc, buf);
-		close(fdinc);
+		fdClose(fdinc);
 		if (rc) return rc;
 	      }	break;
 	    default:
@@ -872,12 +867,12 @@ static void defaultMachine(char ** arch, char ** os) {
                  !strncmp(un.release, "4.0", 3)) {
            /* we are on ncr-sysv4 */
 	   char *prelid = NULL;
-           int fd = open("/etc/.relid", O_RDONLY, 0700);
-           if (fd >0) {
+           FD_t fd = fdOpen("/etc/.relid", O_RDONLY, 0700);
+           if (fdFileno(fd) > 0) {
               chptr = (char *) calloc(256,1);
               if (chptr != NULL) {
                  int irelid = read(fd, (void *)chptr, 256);
-                 close(fd);
+                 fdClose(fd);
                  /* example: "112393 RELEASE 020200 Version 01 OS" */
                  if (irelid > 0) {
                     if ((prelid=strstr(chptr, "RELEASE "))){

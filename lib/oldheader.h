@@ -51,7 +51,7 @@ struct oldrpmHeaderSpec {
     struct oldrpmFileInfo * files;
 } ;
 
-char * oldhdrReadFromStream(int fd, struct oldrpmHeader * header);
+char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header);
 char * oldhdrReadFromFile(char * filename, struct oldrpmHeader * header);
 char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * spec);
 void   oldhdrFree(struct oldrpmHeader * header);

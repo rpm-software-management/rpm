@@ -10,7 +10,8 @@
 
 int doReSign(int add, char *passPhrase, char **argv)
 {
-    int fd, ofd, count;
+    FD_t fd, ofd;
+    int count;
     struct rpmlead lead;
     unsigned short sigtype;
     char *rpm, *sigtarget;
@@ -21,7 +22,7 @@ int doReSign(int add, char *passPhrase, char **argv)
     while (*argv) {
 	rpm = *argv++;
 	fprintf(stdout, "%s:\n", rpm);
-	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
+	if (fdFileno(fd = fdOpen(rpm, O_RDONLY, 0644)) < 0) {
 	    fprintf(stderr, _("%s: Open failed\n"), rpm);
 	    exit(1);
 	}
@@ -49,32 +50,32 @@ int doReSign(int add, char *passPhrase, char **argv)
 	if (makeTempFile(NULL, &sigtarget, &ofd))
 	    exit(1);
 
-	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
+	while ((count = fdRead(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
 		perror(_("Couldn't read the header/archive"));
-		close(ofd);
+		fdClose(ofd);
 		unlink(sigtarget);
 		free(sigtarget);
 		exit(1);
 	    }
-	    if (write(ofd, buffer, count) < 0) {
+	    if (fdWrite(ofd, buffer, count) < 0) {
 		perror(_("Couldn't write header/archive to temp file"));
-		close(ofd);
+		fdClose(ofd);
 		unlink(sigtarget);
 		free(sigtarget);
 		exit(1);
 	    }
 	}
-	close(fd);
-	close(ofd);
+	fdClose(fd);
+	fdClose(ofd);
 
 	/* Start writing the new RPM */
 	sprintf(tmprpm, "%s.tmp", rpm);
-	ofd = open(tmprpm, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+	ofd = fdOpen(tmprpm, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	lead.signature_type = RPMSIG_HEADERSIG;
 	if (writeLead(ofd, &lead)) {
 	    perror("writeLead()");
-	    close(ofd);
+	    fdClose(ofd);
 	    unlink(sigtarget);
 	    unlink(tmprpm);
 	    free(sigtarget);
@@ -93,7 +94,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	    rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
 	}
 	if (rpmWriteSignature(ofd, sig)) {
-	    close(ofd);
+	    fdClose(ofd);
 	    unlink(sigtarget);
 	    unlink(tmprpm);
 	    free(sigtarget);
@@ -103,29 +104,29 @@ int doReSign(int add, char *passPhrase, char **argv)
 	rpmFreeSignature(sig);
 
 	/* Append the header and archive */
-	fd = open(sigtarget, O_RDONLY);
-	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
+	fd = fdOpen(sigtarget, O_RDONLY, 0);
+	while ((count = fdRead(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
 		perror(_("Couldn't read sigtarget"));
-		close(ofd);
-		close(fd);
+		fdClose(ofd);
+		fdClose(fd);
 		unlink(sigtarget);
 		unlink(tmprpm);
 		free(sigtarget);
 		exit(1);
 	    }
-	    if (write(ofd, buffer, count) < 0) {
+	    if (fdWrite(ofd, buffer, count) < 0) {
 		perror(_("Couldn't write package"));
-		close(ofd);
-		close(fd);
+		fdClose(ofd);
+		fdClose(fd);
 		unlink(sigtarget);
 		unlink(tmprpm);
 		free(sigtarget);
 		exit(1);
 	    }
 	}
-	close(fd);
-	close(ofd);
+	fdClose(fd);
+	fdClose(ofd);
 	unlink(sigtarget);
 	free(sigtarget);
 
@@ -139,7 +140,8 @@ int doReSign(int add, char *passPhrase, char **argv)
 
 int doCheckSig(int flags, char **argv)
 {
-    int fd, ofd, res, res2, res3, missingKeys;
+    FD_t fd, ofd;
+    int res, res2, res3, missingKeys;
     struct rpmlead lead;
     char *rpm;
     char result[1024], * sigtarget;
@@ -152,7 +154,7 @@ int doCheckSig(int flags, char **argv)
     res = 0;
     while (*argv) {
 	rpm = *argv++;
-	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
+	if (fdFileno(fd = fdOpen(rpm, O_RDONLY, 0644)) < 0) {
 	    fprintf(stderr, _("%s: Open failed\n"), rpm);
 	    res++;
 	    continue;
@@ -180,25 +182,25 @@ int doCheckSig(int flags, char **argv)
 	/* Write the rest to a temp file */
 	if (makeTempFile(NULL, &sigtarget, &ofd))
 	    exit(1);
-	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
+	while ((count = fdRead(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
 		perror(_("Couldn't read the header/archive"));
-		close(ofd);
+		fdClose(ofd);
 		unlink(sigtarget);
 		free(sigtarget);
 		exit(1);
 	    }
-	    if (write(ofd, buffer, count) < 0) {
+	    if (fdWrite(ofd, buffer, count) < 0) {
 		fprintf(stderr, _("Unable to write %s"), sigtarget);
 		perror("");
-		close(ofd);
+		fdClose(ofd);
 		unlink(sigtarget);
 		free(sigtarget);
 		exit(1);
 	    }
 	}
-	close(fd);
-	close(ofd);
+	fdClose(fd);
+	fdClose(ofd);
 
 	sigIter = headerInitIterator(sig);
 	res2 = 0;

@@ -21,7 +21,7 @@ static void freeTriggerFiles(struct TriggerFileEntry *p)
     }
 }
 
-void freeCpioList(struct cpioFileMapping *cpioList, int cpioCount)
+static void freeCpioList(struct cpioFileMapping *cpioList, int cpioCount)
 {
     struct cpioFileMapping *p = cpioList;
 

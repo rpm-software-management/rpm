@@ -4,9 +4,6 @@
 
 #include "misc.h"
 
-#ifdef __LCLINT__
-#define	VERSION	"3.0"
-#endif
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
 
 char ** splitString(char * str, int length, char sep) {
@@ -315,9 +312,9 @@ char * gidToGname(gid_t gid) {
     }
 }
 
-int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
+int makeTempFile(char * prefix, char ** fnptr, FD_t * fdptr) {
     char * fn;
-    int fd;
+    FD_t fd;
     int ran;
     char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
     struct stat sb, sb2;
@@ -333,8 +330,8 @@ int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
 
     do {
 	sprintf(fn, "%s%s/rpm-tmp.%d", prefix, tmpdir, ran++);
-	fd = open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
-    } while (fd < 0 && errno == EEXIST);
+	fd = fdOpen(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
+    } while (fdFileno(fd) < 0 && errno == EEXIST);
 
     if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
@@ -346,7 +343,7 @@ int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
 	return 1;
     }
 
-    fstat(fd, &sb2);
+    fdFstat(fd, &sb2);
     if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
 	return 1;

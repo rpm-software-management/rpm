@@ -10,12 +10,6 @@
 #include "md5.h"
 #include "rpmmacro.h"
 
-#ifdef	__LCLINT__
-#define	FINDPROVIDES	"/usr/lib/rpm/find-provides"
-#define	FINDREQUIRES	"/usr/lib/rpm/find-requires"
-#define	MKDIR_P		"mkdir -p"
-#endif
-
 #define MAXDOCDIR 1024
 
 struct FileListRec {

@@ -6,7 +6,6 @@
 
 #include "misc.h"
 #include "oldheader.h"
-#include "tread.h"
 
 /* This *can't* read 1.0 headers -- it needs 1.1 (w/ group and icon fields)
    or better. I'd be surprised if any 1.0 headers are left anywhere anyway.
@@ -29,7 +28,7 @@ struct literalHeader {
 
 /* this leaves the file pointer pointing at the data section */
 
-char * oldhdrReadFromStream(int fd, struct oldrpmHeader * header) {
+char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
     struct literalHeader lit;
     char * chptr;
     int bytesRead;
@@ -137,13 +136,13 @@ char * oldhdrReadFromStream(int fd, struct oldrpmHeader * header) {
 
 char * oldhdrReadFromFile(char * filename, struct oldrpmHeader * header) {
     char * rc;
-    int fd;
+    FD_t fd;
 
-    fd = open(filename, O_RDONLY);
-    if (fd < 0) return strerror(errno);
+    fd = fdOpen(filename, O_RDONLY, 0);
+    if (fdFileno(fd) < 0) return strerror(errno);
     
     rc = oldhdrReadFromStream(fd, header);
-    close(fd);
+    fdClose(fd);
     
     return rc;
 }

@@ -4,6 +4,8 @@
 #include <zlib.h>
 #include <sys/types.h>
 
+#include "rpmio.h"
+
 /* Note the CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
    be positive numbers or this setting the high bit stuff is a bad idea. */
 #define CPIO_CHECK_ERRNO	0x80000000
@@ -54,7 +56,7 @@ struct cpioCallbackInfo {
 
 typedef struct CFD {
     union {
-	int	_cfdu_fd;
+	FD_t	_cfdu_fd;
 #define	cpioFd	_cfdu._cfdu_fd
 	FILE *	_cfdu_fp;
 #define	cpioFp	_cfdu._cfdu_fp

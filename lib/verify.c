@@ -195,7 +195,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     return 0;
 }
 
-int rpmVerifyScript(char * root, Header h, int err) {
+int rpmVerifyScript(char * root, Header h, FD_t err) {
     return runInstScript(root, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
 		     0, 0, err);
 }

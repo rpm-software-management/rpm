@@ -105,6 +105,7 @@ static int verifyDependencies(rpmdb db, Header h) {
 
 static int verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
     int ec, rc;
+    FD_t fdo;
     ec = 0;
     if ((verifyFlags & VERIFY_DEPS) &&
 	(rc = verifyDependencies(db, h)) != 0)
@@ -112,8 +113,9 @@ static int verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
     if ((verifyFlags & VERIFY_FILES) &&
 	(rc = verifyHeader(root, h, verifyFlags)) != 0)
 	    ec = rc;;
+    fdo = fdDup(1);
     if ((verifyFlags & VERIFY_SCRIPT) &&
-	(rc = rpmVerifyScript(root, h, 1)) != 0)
+	(rc = rpmVerifyScript(root, h, fdo)) != 0)
 	    ec = rc;
     return ec;
 }
@@ -148,7 +150,6 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 	      int verifyFlags) {
     Header h;
     int offset;
-    int fd;
     int ec, rc;
     int isSource;
     rpmdb db;
@@ -187,24 +188,28 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 	    rc = 0;
 	    switch (source) {
 	      case VERIFY_RPM:
+	      { FD_t fd = NULL;
 		if (urlIsURL(arg)) {
+		    int fdno;
 		    isUrl = 1;
-		    if ((fd = urlGetFd(arg, &context)) < 0) {
+		    if ((fdno = urlGetFd(arg, &context)) < 0) {
 			fprintf(stderr, _("open of %s failed: %s\n"), arg, 
-				ftpStrerror(fd));
+				ftpStrerror(fdno));
 		    }
+		    fd = fdDup(fdno);
+		    close(fdno);
 		} else if (!strcmp(arg, "-")) {
-		    fd = 0;
+		    fd = fdDup(0);
 		} else {
-		    if ((fd = open(arg, O_RDONLY)) < 0) {
+		    if (fdFileno(fd = fdOpen(arg, O_RDONLY, 0)) < 0) {
 			fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 				strerror(errno));
 		    }
 		}
 
-		if (fd >= 0) {
+		if (fdFileno(fd) >= 0) {
 		    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-		    close(fd);
+		    fdClose(fd);
 		    switch (rc) {
 			case 0:
 			    rc = verifyPackage(prefix, db, h, verifyFlags);
@@ -215,7 +220,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		    }
 		}
 			
-		break;
+	      }	break;
 
 	      case VERIFY_GRP:
 		if (rpmdbFindByGroup(db, arg, &matches)) {

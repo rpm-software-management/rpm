@@ -6,7 +6,7 @@
    uses 32 bit offsets on all platforms and should be byte order independent */
 
 typedef /*@abstract@*/ struct faFile_s {
-    int fd;
+    FD_t fd;
     int readOnly;
     unsigned int firstFree;
     unsigned long fileSize;
@@ -23,9 +23,9 @@ unsigned int faAlloc(faFile fa, unsigned int size); /* returns 0 on failure */
 void faFree(faFile fa, unsigned int offset);
 void faClose(faFile fa);
 
+FD_t faFileno(faFile fa);
+off_t faLseek(faFile fa, off_t off, int op);
 int faFcntl(faFile fa, int op, void *lip);
-int faLseek(faFile fa, off_t off, int op);
-int faFileno(faFile);
 
 int faFirstOffset(faFile fa);
 int faNextOffset(faFile fa, unsigned int lastOffset);  /* 0 at end */

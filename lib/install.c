@@ -53,7 +53,7 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
 				char * dbMd5, char * dbLink, short newMode, 
 				char * newMd5, char * newLink, int newFlags,
 				int instFlags, int brokenMd5);
-static int installArchive(int fd, struct fileInfo * files,
+static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  char ** specFile, int archiveSize);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
@@ -62,7 +62,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 				 struct fileInfo * files,
 				 int fileCount, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags);
-static int installSources(Header h, char * rootdir, int fd, 
+static int installSources(Header h, char * rootdir, FD_t fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
 			  char * labelFormat);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
@@ -81,7 +81,7 @@ static void trimChangelog(Header h);
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
+int rpmInstallSourcePackage(char * rootdir, FD_t fd, char ** specFile,
 			    rpmNotifyFunction notify, char * labelFormat,
 			    char ** cookie) {
     int rc, isSource;
@@ -409,7 +409,7 @@ static void trimChangelog(Header h) {
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
+int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 		      struct rpmRelocation * relocations,
 		      int flags, rpmNotifyFunction notify, char * labelFormat) {
     int rc, isSource, major, minor;
@@ -962,7 +962,7 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data) {
 }
 
 /* NULL files means install all files */
-static int installArchive(int fd, struct fileInfo * files,
+static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  char ** specFile, int archiveSize) {
     int rc, i;
@@ -1008,7 +1008,7 @@ static int installArchive(int fd, struct fileInfo * files,
 
   { CFD_t cfdbuf, *cfd = &cfdbuf;
     cfd->cpioIoType = cpioIoTypeGzFd;
-    cfd->cpioGzFd = gzdopen(fd, "r");
+    cfd->cpioGzFd = gzdopen(fdFileno(fd), "r");
     rc = cpioInstallArchive(cfd, map, mappedFiles, 
 			    ((notify && archiveSize) || specFile) ? 
 				callback : NULL, 
@@ -1375,7 +1375,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-static int installSources(Header h, char * rootdir, int fd, 
+static int installSources(Header h, char * rootdir, FD_t fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
 			  char * labelFormat) {
     char * specFile;

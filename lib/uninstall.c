@@ -21,7 +21,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 		      short mode, fileActions_t action, 
 		      int brokenMd5, int test);
 static int runScript(Header h, char * root, int progArgc, char ** progArgv, 
-		     char * script, int arg1, int arg2, int errfd);
+		     char * script, int arg1, int arg2, FD_t errfd);
 
 static int sharedFileCmp(const void * one, const void * two) {
     if (((struct sharedFile *) one)->secRecOffset <
@@ -361,7 +361,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 }
 
 static int runScript(Header h, char * root, int progArgc, char ** progArgv, 
-		     char * script, int arg1, int arg2, int errfd) {
+		     char * script, int arg1, int arg2, FD_t errfd) {
     char ** argv;
     int argc;
     char ** prefixes = NULL;
@@ -373,7 +373,6 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
     pid_t child;
     int status;
     char * fn;
-    int fd;
     int i;
     int freePrefixes = 0;
     int pipes[2];
@@ -412,6 +411,7 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
     prefixBuf = alloca(maxPrefixLength + 50);
 
     if (script) {
+	FD_t fd;
 	if (makeTempFile(root, &fn, &fd)) {
 	    free(argv);
 	    if (freePrefixes) free(prefixes);
@@ -420,10 +420,10 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 
 	if (rpmIsDebug() &&
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
-	    (void)write(fd, "set -x\n", 7);
+	    (void)fdWrite(fd, "set -x\n", 7);
 
-	(void)write(fd, script, strlen(script));
-	close(fd);
+	(void)fdWrite(fd, script, strlen(script));
+	fdClose(fd);
 
 	argv[argc++] = fn + strlen(root);
 	if (arg1 >= 0) {
@@ -438,13 +438,13 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 
     argv[argc] = NULL;
 
-    if (errfd) {
+    if (errfd != NULL) {
 	if (rpmIsVerbose()) {
-	    out = errfd;
+	    out = fdFileno(errfd);
 	} else {
 	    out = open("/dev/null", O_WRONLY);
 	    if (out < 0) {
-		out = errfd;
+		out = fdFileno(errfd);
 	    }
 	}
     }
@@ -456,12 +456,12 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 	dup2(pipes[0], 0);
 	close(pipes[0]);
 
-	if (errfd) {
-	    if (errfd != 2) dup2(errfd, 2);
+	if (errfd != NULL) {
+	    if (fdFileno(errfd) != 2) dup2(fdFileno(errfd), 2);
 	    if (out != 1) dup2(out, 1);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (errfd > 2) close (errfd);
-	    if (out > 2 && out != errfd) close (out); 
+	    if (out > 2 && out != fdFileno(errfd)) close (out); 
+	    if (fdFileno(errfd) > 2) fdClose (errfd);
 	}
 
 	doputenv(SCRIPT_PATH);
@@ -491,9 +491,9 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 
     if (freePrefixes) free(prefixes);
 
-    if (errfd) {
+    if (errfd != NULL) {
 	if (out > 2) close(out);
-	if (errfd > 2) close(errfd);
+	if (fdFileno(errfd) > 2) fdClose(errfd);
     }
     
     if (script) {
@@ -510,7 +510,7 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 }
 
 int runInstScript(char * root, Header h, int scriptTag, int progTag,
-	          int arg, int norunScripts, int err) {
+	          int arg, int norunScripts, FD_t err) {
     void ** programArgv;
     int programArgc;
     char ** argv;

@@ -19,13 +19,12 @@
 #include "misc.h"
 #include "rpmlead.h"
 #include "signature.h"
-#include "tread.h"
 
 typedef int (*md5func)(char * fn, unsigned char * digest);
 
 static int makePGPSignature(char *file, void **sig, int_32 *size,
 			    char *passPhrase);
-static int checkSize(int fd, int size, int sigsize);
+static int checkSize(FD_t fd, int size, int sigsize);
 static int verifySizeSignature(char *datafile, int_32 size, char *result);
 static int verifyMD5Signature(char *datafile, unsigned char *sig,
 			      char *result, md5func fn);
@@ -54,7 +53,7 @@ int rpmLookupSignatureType(void)
 /* old-style one.  It also immediately verifies the header+archive  */
 /* size and returns an error if it doesn't match.                   */
 
-int rpmReadSignature(int fd, Header *header, short sig_type)
+int rpmReadSignature(FD_t fd, Header *header, short sig_type)
 {
     unsigned char buf[2048];
     int sigSize, pad;
@@ -125,7 +124,7 @@ int rpmReadSignature(int fd, Header *header, short sig_type)
     return 0;
 }
 
-int rpmWriteSignature(int fd, Header header)
+int rpmWriteSignature(FD_t fd, Header header)
 {
     int sigSize, pad;
     unsigned char buf[8];
@@ -137,7 +136,7 @@ int rpmWriteSignature(int fd, Header header)
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	memset(buf, 0, pad);
-	(void)write(fd, buf, pad);
+	(void)fdWrite(fd, buf, pad);
     }
     return 0;
 }
@@ -184,7 +183,8 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
     char name[1024];
     char sigfile[1024];
     int pid, status;
-    int fd, inpipe[2];
+    FD_t fd;
+    int inpipe[2];
     FILE *fpipe;
     struct stat statbuf;
 
@@ -233,15 +233,15 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
     rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *size);
     *sig = malloc(*size);
     
-    fd = open(sigfile, O_RDONLY);
+    fd = fdOpen(sigfile, O_RDONLY, 0);
     if (timedRead(fd, *sig, *size) != *size) {
 	unlink(sigfile);
-	close(fd);
+	fdClose(fd);
 	free(*sig);
 	rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
 	return 1;
     }
-    close(fd);
+    fdClose(fd);
     unlink(sigfile);
 
     rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of PGP sig\n"), *size);
@@ -249,12 +249,12 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
     return 0;
 }
 
-static int checkSize(int fd, int size, int sigsize)
+static int checkSize(FD_t fd, int size, int sigsize)
 {
     int headerArchiveSize;
     struct stat statbuf;
 
-    fstat(fd, &statbuf);
+    fdFstat(fd, &statbuf);
 
     if (S_ISREG(statbuf.st_mode)) {
 	headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;
@@ -353,7 +353,8 @@ static int verifyMD5Signature(char *datafile, unsigned char *sig,
 static int verifyPGPSignature(char *datafile, void *sig,
 			      int count, char *result)
 {
-    int pid, status, outpipe[2], sfd;
+    int pid, status, outpipe[2];
+    FD_t sfd;
     char *sigfile;
     unsigned char buf[8192];
     FILE *file;
@@ -361,9 +362,9 @@ static int verifyPGPSignature(char *datafile, void *sig,
 
     /* Write out the signature */
     sigfile = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsig");
-    sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    (void)write(sfd, sig, count);
-    close(sfd);
+    sfd = fdOpen(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    (void)fdWrite(sfd, sig, count);
+    fdClose(sfd);
 
     /* Now run PGP */
     pipe(outpipe);

@@ -9,11 +9,10 @@
 #include "rpmlib.h"
 
 #include "rpmlead.h"
-#include "tread.h"
 
 /* The lead needs to be 8 byte aligned */
 
-int writeLead(int fd, struct rpmlead *lead)
+int writeLead(FD_t fd, struct rpmlead *lead)
 {
     struct rpmlead l;
 
@@ -29,14 +28,14 @@ int writeLead(int fd, struct rpmlead *lead)
     l.osnum = htons(l.osnum);
     l.signature_type = htons(l.signature_type);
 	
-    if (write(fd, &l, sizeof(l)) < 0) {
+    if (fdWrite(fd, &l, sizeof(l)) < 0) {
 	return 1;
     }
 
     return 0;
 }
 
-int readLead(int fd, struct rpmlead *lead)
+int readLead(FD_t fd, struct rpmlead *lead)
 {
     if (timedRead(fd, lead, sizeof(*lead)) != sizeof(*lead)) {
 	rpmError(RPMERR_READERROR, _("read failed: %s (%d)"), strerror(errno), 

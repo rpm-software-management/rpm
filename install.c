@@ -41,7 +41,8 @@ static int installPackages(char * rootdir, char ** packages,
 			    int numPackages, int installFlags, 
 			    int interfaceFlags, rpmdb db,
 			    struct rpmRelocation * relocations) {
-    int i, fd;
+    FD_t fd;
+    int i;
     int numFailed = 0;
     char ** filename;
     char * printFormat = NULL;
@@ -61,8 +62,8 @@ static int installPackages(char * rootdir, char ** packages,
 
 	hashesPrinted = 0;
 
-	fd = open(*filename, O_RDONLY);
-	if (fd < 0) {
+	fd = fdOpen(*filename, O_RDONLY, 0);
+	if (fdFileno(fd) < 0) {
 	    fprintf(stderr, _("error: cannot open file %s\n"), *filename);
 	    numFailed++;
 	    *filename = NULL;
@@ -107,7 +108,7 @@ static int installPackages(char * rootdir, char ** packages,
 	    numFailed++;
 	}
 
-	close(fd);
+	fdClose(fd);
     }
 
     return numFailed;
@@ -116,7 +117,8 @@ static int installPackages(char * rootdir, char ** packages,
 int doInstall(char * rootdir, char ** argv, int installFlags, 
 	      int interfaceFlags, struct rpmRelocation * relocations) {
     rpmdb db;
-    int fd, i;
+    FD_t fd;
+    int i;
     int mode, rc;
     char ** packages, ** tmpPackages;
     char ** filename;
@@ -149,6 +151,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     rpmMessage(RPMMESS_DEBUG, _("looking for packages to download\n"));
     for (filename = argv, i = 0; *filename; filename++) {
 	if (urlIsURL(*filename)) {
+	    int myrc;
 	    if (rpmIsVerbose()) {
 		fprintf(stdout, _("Retrieving %s\n"), *filename);
 	    }
@@ -158,11 +161,11 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 		    rpmGetVar(RPMVAR_TMPPATH), tmpnum++, (int) getpid());
 	    rpmMessage(RPMMESS_DEBUG, 
 			_("getting %s as %s\n"), *filename, packages[i]);
-	    fd = urlGetFile(*filename, packages[i]);
-	    if (fd < 0) {
+	    myrc = urlGetFile(*filename, packages[i]);
+	    if (myrc < 0) {
 		fprintf(stderr, 
 			_("error: skipping %s - transfer failed - %s\n"), 
-			*filename, ftpStrerror(fd));
+			*filename, ftpStrerror(myrc));
 		numFailed++;
 	    } else {
 		tmpPackages[numTmpPackages++] = packages[i];
@@ -177,8 +180,8 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 
     rpmMessage(RPMMESS_DEBUG, _("finding source and binary packages\n"));
     for (filename = packages; *filename; filename++) {
-	fd = open(*filename, O_RDONLY);
-	if (fd < 0) {
+	fd = fdOpen(*filename, O_RDONLY, 0);
+	if (fdFileno(fd) < 0) {
 	    fprintf(stderr, _("error: cannot open file %s\n"), *filename);
 	    numFailed++;
 	    *filename = NULL;
@@ -188,7 +191,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	rc = rpmReadPackageHeader(fd, &binaryHeaders[numBinaryPackages], 
 					&isSource, NULL, NULL);
 
-	close(fd);
+	fdClose(fd);
 	
 	if (rc == 1) {
 	    fprintf(stderr, 
@@ -392,11 +395,11 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 
 int doSourceInstall(char * rootdir, char * arg, char ** specFile,
 		    char ** cookie) {
-    int fd;
+    FD_t fd;
     int rc;
 
-    fd = open(arg, O_RDONLY);
-    if (fd < 0) {
+    fd = fdOpen(arg, O_RDONLY, 0);
+    if (fdFileno(fd) < 0) {
 	fprintf(stderr, _("error: cannot open %s\n"), arg);
 	return 1;
     }
@@ -411,7 +414,7 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile,
 	if (cookie) free(*cookie);
     }
 
-    close(fd);
+    fdClose(fd);
 
     return rc;
 }

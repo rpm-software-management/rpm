@@ -13,7 +13,7 @@ struct sharedFile {
 int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 		    struct sharedFile ** listPtr, int * listCountPtr);
 int runInstScript(char * prefix, Header h, int scriptTag, int progTag,
-	          int arg, int norunScripts, int err);
+	          int arg, int norunScripts, FD_t err);
 /* this looks for triggers in the database which h would set off */
 int runTriggers(char * root, rpmdb db, int sense, Header h,
 		int countCorrection);
