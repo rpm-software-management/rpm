@@ -15,6 +15,7 @@ struct rpmTagTableEntry {
     int val;
 };
 
+int rpmReadPackageInfo(int fd, Header * signatures, Header * hdr);
 int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
 		  int * minor);
    /* 0 = success */
@@ -98,6 +99,8 @@ extern const int rpmTagTableSize;
 #define RPMTAG_TRIGGERFLAGS             1068
 #define RPMTAG_TRIGGERINDEX             1069
 #define RPMTAG_VERIFYSCRIPT             1079
+
+#define RPMTAG_EXTERNAL_TAG		1000000
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
