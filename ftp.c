@@ -7,12 +7,10 @@
 #endif
 
 #ifdef HAVE_NETINET_IN_SYSTM_H
+# include <sys/types.h>
 # include <netinet/in_systm.h>
 #endif
 
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <arpa/inet.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -26,6 +24,12 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <arpa/inet.h>
+
+#include "inet_aton.h"		/* for systems too stupid to provide this */
 
 #define TIMEOUT_SECS 60
 #define BUFFER_SIZE 4096
