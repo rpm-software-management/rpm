@@ -1,3 +1,7 @@
+#!/bin/perl
+
+# $Id: Makefile.PL,v 1.11 2000/10/10 08:28:10 rjray Exp $
+
 use Config;
 use ExtUtils::MakeMaker;
 
@@ -54,15 +58,14 @@ die "RPM version must be at least 3.0.4, due to I/O features not available
 prior to that version. Stopped"
     unless ($rpm_version >= 3000004);
 # Starting with RPM 4.0, there are a number of subtle-but-significant changes
+$rpm_defines = "-DRPM_MAJOR=$rpm_version[0] -DRPM_MINOR=$rpm_version[1]" .
+    " -DRPM_PATCH=$rpm_version[2]";
 if ($rpm_version >= 4000000)
 {
-    $rpm_defines = "-DRPM_MAJOR=$rpm_version[0] -DRPM_MINOR=$rpm_version[1]" .
-        " -DRPM_PATCH=$rpm_version[2]";
     $rpm_libs = '-lrpm -lrpmio -lpopt';
 }
 else
 {
-    $rpm_defines = '';
     $rpm_libs = '-lrpm -lpopt';
 }
 
@@ -75,7 +78,7 @@ for (qw(/usr/include /usr/local/include /opt/include /opt/rpm/include))
 }
 die "Header file 'rpmlib.h' not found. This is needed for compiling the XS glue
 code. If this is present, edit $0 and add the correct directory to the search
-list at line 58. Stopped"
+list near line 75. Stopped"
     unless $rpm_libdir;
 
 WriteMakefile(
