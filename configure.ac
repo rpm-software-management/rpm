@@ -374,6 +374,8 @@ dnl
 
 dnl Checks for libraries.
 
+#=================
+# Check for beecrypt library. Prefer external, otherwise internal.
 WITH_ELFUTILS_SUBDIR=
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
@@ -408,6 +410,8 @@ AC_CHECK_HEADER([dwarf.h], [
 ])
 AC_SUBST(WITH_LIBDWARF_INCLUDE)
 
+#=================
+# Check for beecrypt library. Prefer external, otherwise internal.
 WITH_BEECRYPT_SUBDIR=
 WITH_BEECRYPT_INCLUDE=
 WITH_BEECRYPT_LIB=
@@ -431,6 +435,32 @@ AC_CHECK_HEADER([beecrypt/beecrypt.h], [
 AC_SUBST(WITH_BEECRYPT_SUBDIR)
 AC_SUBST(WITH_BEECRYPT_INCLUDE)
 AC_SUBST(WITH_BEECRYPT_LIB)
+
+#=================
+# Check for neon library. Prefer external, otherwise internal.
+WITH_NEON_SUBDIR=
+WITH_NEON_INCLUDE=
+WITH_NEON_LIB=
+AC_CHECK_HEADER([neon/ne_session.h], [
+	AC_CHECK_LIB(neon, ne_session_create, [
+	    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the `neon' library (-lneon).])
+	    AC_CHECK_LIB(neon, ne_get_response_header, [
+		AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
+		])
+	    WITH_NEON_INCLUDE="-I/usr/include/neon"
+	    WITH_NEON_LIB="-lneon"
+	])
+    ], [
+	if test -d neon ; then
+	    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the `neon' library (-lneon).])
+	    WITH_NEON_SUBDIR=neon
+	    WITH_NEON_INCLUDE="-I\${top_srcdir}/${WITH_NEON_SUBDIR}/src"
+	    WITH_NEON_LIB="\${top_builddir}/${WITH_NEON_SUBDIR}/src/libneon.la"
+	fi
+])
+AC_SUBST(WITH_NEON_SUBDIR)
+AC_SUBST(WITH_NEON_INCLUDE)
+AC_SUBST(WITH_NEON_LIB)
 
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])

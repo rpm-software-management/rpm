@@ -1,5 +1,8 @@
-#/*! \page config_rpmpopt Default configuration: /usr/lib/rpm/rpmpopt-@VERSION@
+#/*! \page config_rpmpopt Default configuration: @RPMCONFIGDIR@/rpmpopt-@VERSION@
 # \verbatim
+#
+# @RPMCONFIGDIR@/@configure_input@
+# $Id: rpmpopt.in,v 2.39.2.1 2005/01/09 17:48:19 jbj Exp $
 #
 # This file *should not be modified*. Local customizations
 # belong in /etc/popt, not here. This file will be replaced
