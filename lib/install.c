@@ -362,10 +362,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		newpath = malloc(strlen(prefixedFileList[i]) + 20);
 		strcpy(newpath, prefixedFileList[i]);
 		strcat(newpath, ext);
-		message(MESS_WARNING, "%s saved as %s\n", prefixedFileList[i], 
-			newpath);
-		/* XXX this message is a bad idea - it'll make glint more
-		   difficult */
+		error(RPMMESS_BACKUP, "%s saved as %s\n", 
+			prefixedFileList[i], newpath);
 
 		if (rename(prefixedFileList[i], newpath)) {
 		    error(RPMERR_RENAME, "rename of %s to %s failed: %s\n",
