@@ -288,7 +288,7 @@ typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
 
 typedef enum rpmCallbackType_e 
 	{ RPMCALLBACK_INST_PROGRESS, RPMCALLBACK_INST_START,
-	  RPMCALLBACK_INST_OPEN_FILE, RPMCALLBACK_INST_CLOSE_FILE 
+	  RPMCALLBACK_INST_OPEN_FILE, RPMCALLBACK_INST_CLOSE_FILE,
 	} rpmCallbackType;
 typedef void * (*rpmCallbackFunction)(const Header h, 
 				      const rpmCallbackType what, 
@@ -367,6 +367,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key);
 void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
 void rpmtransFree(/*@only@*/ rpmTransactionSet rpmdep);
+void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd);
 
 /* this checks for dependency satisfaction, but *not* ordering */
 int rpmdepCheck(rpmTransactionSet rpmdep,

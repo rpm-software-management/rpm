@@ -41,6 +41,7 @@ struct rpmTransactionSet_s {
     int numRemovedPackages, allocedRemovedPackages;
     struct availableList addedPackages, availablePackages;
     char * root;
+    FD_t scriptFd;
 };
 
 struct problemsSet {

@@ -17,7 +17,7 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 		     const char * script, int arg1, int arg2, FD_t errfd);
 
 int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset, 
-			int flags, enum fileActions * actions) {
+			int flags, enum fileActions * actions, FD_t scriptFd) {
     Header h;
     int i;
     int fileCount;
@@ -59,18 +59,18 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
     if (!(flags & RPMUNINSTALL_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
-	if (runImmedTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1)) {
+	if (runImmedTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1, scriptFd)) {
 	    return 2;
 	}
 
 	/* run triggers which are set off by the removal of this package */
-	if (runTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1))
+	if (runTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
 	    return 1;
     }
 
     if (!(flags & RPMUNINSTALL_TEST)) {
 	if (runInstScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
-		          flags & RPMUNINSTALL_NOSCRIPTS, 0)) {
+		          flags & RPMUNINSTALL_NOSCRIPTS, scriptFd)) {
 	    headerFree(h);
 	    return 1;
 	}
@@ -123,12 +123,12 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
     if (!(flags & RPMUNINSTALL_TEST)) {
 	rpmMessage(RPMMESS_DEBUG, _("running postuninstall script (if any)\n"));
 	runInstScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
-		      flags & RPMUNINSTALL_NOSCRIPTS, 0);
+		      flags & RPMUNINSTALL_NOSCRIPTS, scriptFd);
     }
 
     if (!(flags & RPMUNINSTALL_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal */
-	if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, 0)) {
+	if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, 0, scriptFd)) {
 	    return 2;
 	}
     }
@@ -377,7 +377,7 @@ static int removeFile(char * file, unsigned int flags, short mode,
 
 static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourceH,
 			    Header triggeredH, int arg1correction, int arg2,
-			    char * triggersAlreadyRun) {
+			    char * triggersAlreadyRun, FD_t scriptFd) {
     const char ** triggerNames;
     const char ** triggerVersions;
     const char ** triggerScripts;
@@ -438,7 +438,8 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
 	    rc = runScript(triggeredH, root, 1, triggerProgs + index,
 			    triggerScripts[index], 
-			    dbiIndexSetCount(matches) + arg1correction, arg2, 0);
+			    dbiIndexSetCount(matches) + arg1correction, arg2, 
+			    scriptFd);
 	    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
 	}
 
@@ -456,7 +457,7 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 }
 
 int runTriggers(const char * root, rpmdb db, int sense, Header h,
-		int countCorrection) {
+		int countCorrection, FD_t scriptFd) {
     char * packageName;
     dbiIndexSet matches, otherMatches;
     Header triggeredH;
@@ -482,7 +483,7 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 	    return 1;
 
 	rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
-			       NULL);
+			       NULL, scriptFd);
 	
 	headerFree(triggeredH);
     }
@@ -494,7 +495,7 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 }
 
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
-		     int countCorrection) {
+		     int countCorrection, FD_t scriptFd) {
     int rc = 0;
     dbiIndexSet matches;
     char ** triggerNames;
@@ -525,7 +526,8 @@ int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 	    if ((sourceH = rpmdbGetRecord(db, recOffset)) == NULL) 
 		return 1;
 	    rc |= handleOneTrigger(root, db, sense, sourceH, h, 
-				   countCorrection, dbiIndexSetCount(matches), triggersRun);
+				   countCorrection, dbiIndexSetCount(matches), 
+				   triggersRun, scriptFd);
 	    headerFree(sourceH);
 	    if (triggersRun[triggerIndices[i]]) break;
 	}

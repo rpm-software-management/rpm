@@ -202,6 +202,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root) {
 
     rpmdep = malloc(sizeof(*rpmdep));
     rpmdep->db = db;
+    rpmdep->scriptFd = NULL;
     rpmdep->numRemovedPackages = 0;
     rpmdep->allocedRemovedPackages = 5;
     rpmdep->removedPackages = malloc(sizeof(int) * 

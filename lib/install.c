@@ -263,7 +263,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		         int flags, rpmCallbackFunction notify, 
 			 void * notifyData, const void * pkgKey, 
 			 enum fileActions * actions, 
-			 struct sharedFileInfo * sharedList) {
+			 struct sharedFileInfo * sharedList, FD_t scriptFd) {
     int rc;
     char * name, * version, * release;
     int fileCount, type, count;
@@ -355,7 +355,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
     rpmMessage(RPMMESS_DEBUG, _("running preinstall script (if any)\n"));
     if (runInstScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
-		      flags & RPMINSTALL_NOSCRIPTS, 0)) {
+		      flags & RPMINSTALL_NOSCRIPTS, scriptFd)) {
 	if (freeFileMem) freeFileMemory(fileMem);
 
 	if (rootdir) {
@@ -509,19 +509,19 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     rpmMessage(RPMMESS_DEBUG, _("running postinstall script (if any)\n"));
 
     if (runInstScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
-		      flags & RPMINSTALL_NOSCRIPTS, 0)) {
+		      flags & RPMINSTALL_NOSCRIPTS, scriptFd)) {
 	return 2;
     }
 
     if (!(flags & RPMINSTALL_NOTRIGGERS)) {
 	/* Run triggers this package sets off */
-	if (runTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0)) {
+	if (runTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0, scriptFd)) {
 	    return 2;
 	}
 
 	/* Run triggers in this package which are set off by other things in
 	   the database. */
-	if (runImmedTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0)) {
+	if (runImmedTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0, scriptFd)) {
 	    return 2;
 	}
     }
