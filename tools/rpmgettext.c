@@ -35,6 +35,7 @@ char *inputdir = "/mnt/redhat/comps/dist/5.2";
 char *outputdir = "/tmp/OUT";
 int nlangs = 0;
 char *onlylang[128];
+int metamsgid = 0;
 
 int gentran = 0;
 
@@ -319,14 +320,38 @@ gettextfile(FD_t fd, const char *file, FILE *fp, int *poTags)
 	
 
 	/* Print xref comment */
-	fprintf(fp, "\n# %s\n", getTagString(*tp));
-	fprintf(fp, "#: %s:%d\n", basename(file), *tp);
+	fprintf(fp, "\n#: %s:%d\n", basename(file), *tp);
 	if (sourcerpm)
 	    fprintf(fp, "#: %s:%d\n", sourcerpm, *tp);
 
 	/* Print msgid */
 	e = *s;
 	expandRpmPO(buf, e);
+
+	if (metamsgid) {
+	    char name[1024], *np;
+	    char lctag[128], *lctp;
+	    strcpy(name, basename(file));
+	    if ((np = strrchr(name, '-')) != NULL) {
+		*np = '\0';
+		if ((np = strrchr(name, '-')) != NULL) {
+		    *np = '\0';
+		}
+	    }
+	    strcpy(lctag, getTagString(*tp));
+	    for (lctp = lctag; *lctp; lctp++)
+		*lctp = tolower(*lctp);
+	    if ((lctp = strchr(lctag, '_')) != NULL)
+		lctp++;
+	    else
+		lctp = lctag;
+	
+	    fprintf(fp, "msgid \"%s(%s)\"\n", name, lctp);
+	    fprintf(fp, "msgstr");
+	    fprintf(fp, " %s\n", buf);
+	    continue;
+	}
+
 	fprintf(fp, "msgid %s\n", buf);
 
 	nmsgstrs = 0;
@@ -950,7 +975,7 @@ main(int argc, char **argv)
 
     program_name = basename(argv[0]);
 
-    while((c = getopt(argc, argv, "deEl:I:O:Tv")) != EOF)
+    while((c = getopt(argc, argv, "deEMl:I:O:Tv")) != EOF)
     switch (c) {
     case 'd':
 	debug++;
@@ -972,6 +997,10 @@ main(int argc, char **argv)
 	break;
     case 'T':
 	gentran++;
+	break;
+    case 'M':
+	metamsgid++;
+	break;
     case 'v':
 	verbose++;
 	break;
