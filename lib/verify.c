@@ -290,30 +290,20 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 
     psm->ts = rpmtsLink(ts, "rpmVerifyScript");
 
-    if (scriptFd != NULL) {
-	/*@-type@*/ /* FIX: ??? */
+    if (scriptFd != NULL)
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
-	/*@=type@*/
-    }
-    /*@-type@*/
+
     psm->fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, 1);
-    /*@=type@*/
     if (psm->fi != NULL) {	/* XXX can't happen */
 	psm->stepName = "verify";
 	psm->scriptTag = RPMTAG_VERIFYSCRIPT;
 	psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
 	rc = psmStage(psm, PSM_SCRIPT);
     }
-    /*@-type@*/
     psm->fi = fiFree(psm->fi, 1);
-    /*@=type@*/
 
-    if (scriptFd != NULL) {
-	/*@-type@*/ /* FIX: ??? */
+    if (ts->scriptFd != NULL)
 	ts->scriptFd = fdFree(ts->scriptFd, "rpmVerifyScript");
-	/*@=type@*/
-	ts->scriptFd = NULL;
-    }
 
     rpmtransClean(ts);	/* XXX this is sure to cause heartburn */
 

@@ -154,7 +154,7 @@ int rpmProblemSetTrim(rpmProblemSet ps, rpmProblemSet filter)
 	    continue;
 	}
 	while ((t - ps->probs) < ps->numProblems) {
-	    /*@-nullpass@*/	/* LCL: looks good to me */
+	    /*@-nullpass@*/	/* LCL: looks good to me <shrug> */
 	    if (f->type == t->type && t->key == f->key &&
 		     XSTRCMP(f->str1, t->str1))
 		/*@innerbreak@*/ break;

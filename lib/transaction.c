@@ -111,9 +111,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
 	    default:
-		/*@-mods@*/	/* FIX: double indirection. */
 		*e = NULL;
-		/*@=mods@*/
 		/*@switchbreak@*/ break;
 	    }
 	    e++;
@@ -335,7 +333,6 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 			fi->fmodes[fileNum],
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
-	    /*@-compdef@*/ /* FIX: *fi->replaced undefined */
 	    if (reportConflicts) {
 		const char * altNEVR = hGetNEVR(h, NULL);
 		rpmProblemSetAppend(ts->probs, RPMPROB_FILE_CONFLICT,
@@ -345,10 +342,9 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 			0);
 		altNEVR = _free(altNEVR);
 	    }
-	    /*@=compdef@*/
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
-		/*@-assignexpose@*/
+		/*@-assignexpose@*/ /* FIX: p->replaced, not fi */
 		if (!shared->isRemoved)
 		    fi->replaced[numReplaced++] = *shared;
 		/*@=assignexpose@*/
@@ -545,7 +541,6 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	    }
 
 	    /* Mark added overlapped non-identical files as a conflict. */
-	    /*@-branchstate@*/ /* FIX: p->key ??? */
 	    if ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
 	     && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
 			recs[otherPkgNum]->fmd5s[otherFileNum],
@@ -561,7 +556,6 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 			altNEVR,
 			0);
 	    }
-	    /*@=branchstate@*/
 
 	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = recs[otherPkgNum]->fsizes[otherFileNum];
@@ -673,7 +667,6 @@ static int ensureOlder(rpmTransactionSet ts,
     rc = headerMatchesDepFlags(h, req);
     req = dsFree(req);
 
-    /*@-branchstate@*/ /* FIX: p->key ??? */
     if (rc == 0) {
 	const char * altNEVR = hGetNEVR(h, NULL);
 	rpmProblemSetAppend(ts->probs, RPMPROB_OLDPACKAGE,
@@ -685,7 +678,6 @@ static int ensureOlder(rpmTransactionSet ts,
 	rc = 1;
     } else
 	rc = 0;
-    /*@=branchstate@*/
 
     return rc;
 }
@@ -904,10 +896,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     ts->notify = notify;
     ts->notifyData = notifyData;
-    /*@-assignexpose@*/
-    ts->probs = *newProbs = rpmProblemSetCreate();
+    ts->probs = rpmProblemSetFree(ts->probs);
+    ts->probs = rpmProblemSetCreate();
     *newProbs = rpmpsLink(ts->probs, "RunTransactions");
-    /*@=assignexpose@*/
     ts->ignoreSet = ignoreSet;
     ts->currDir = _free(ts->currDir);
     ts->currDir = currentDirectory();
@@ -916,9 +907,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     ts->id = (int_32) time(NULL);
 
     memset(psm, 0, sizeof(*psm));
-    /*@-assignexpose@*/
     psm->ts = rpmtsLink(ts, "tsRun");
-    /*@=assignexpose@*/
 
     /* Get available space on mounted file systems. */
     if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
@@ -991,19 +980,19 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
 	rpmdbMatchIterator mi;
 
-	/*@-branchstate@*/ /* FIX: p->key ??? */
-	if (!archOkay(p->arch) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
-	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
+	if (!(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
+	    if (!archOkay(p->arch))
+		rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
 			p->NEVR, p->key,
 			p->arch, NULL,
 			NULL, 0);
 
-	if (!osOkay(p->os) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
-	    rpmProblemSetAppend(ts->probs, RPMPROB_BADOS,
+	if (!(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
+	    if (!osOkay(p->os))
+		rpmProblemSetAppend(ts->probs, RPMPROB_BADOS,
 			p->NEVR, p->key,
 			p->os, NULL,
 			NULL, 0);
-	/*@=branchstate@*/
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
@@ -1319,9 +1308,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     {
 	if (psm->ts != NULL)
 	    psm->ts = rpmtsUnlink(psm->ts, "tsRun (problems)");
-	/*@-nullstate@*/ /* FIX: ts->flList may be NULL */
 	return ts->orderCount;
-	/*@=nullstate@*/
     }
 
     /* ===============================================
@@ -1374,24 +1361,20 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s\n", p->NEVR);
 	    h = NULL;
 	    {
-		/*@-noeffectuncon @*/ /* FIX: ??? */
 		p->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
 				p->key, ts->notifyData);
-		/*@=noeffectuncon @*/
 		if (p->fd != NULL) {
 		    rpmRC rpmrc;
 
-		    /*@-mustmod@*/	/* LCL: segfault */
+		    /*@=mustmod@*/	/* LCL: segfault */
 		    rpmrc = rpmReadPackageFile(ts, p->fd,
 				"rpmRunTransactions", &h);
 		    /*@=mustmod@*/
 
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
-			/*@-noeffectuncon @*/ /* FIX: check rc */
-			(void) ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
+			p->fd = ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
 					0, 0,
 					p->key, ts->notifyData);
-			/*@=noeffectuncon @*/
 			p->fd = NULL;
 			ourrc++;
 		    }

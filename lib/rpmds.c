@@ -20,6 +20,12 @@
 /*@unchecked@*/
 static int _fi_debug = 0;
 
+/**
+ * Enable noisy range comparison debugging message?
+ */
+/*@unchecked@*/
+static int _noisy_range_comparison_debug_message = 0;
+
 TFI_t XrpmfiUnlink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
@@ -810,6 +816,7 @@ int dsCompare(const rpmDepSet A, const rpmDepSet B)
     }
 
 exit:
+    if (_noisy_range_comparison_debug_message)
     rpmMessage(RPMMESS_DEBUG, _("  %s    A %s\tB %s\n"),
 	(result ? _("YES") : _("NO ")), aDepend, bDepend);
     aDepend = _free(aDepend);

@@ -543,10 +543,8 @@ int showMatches(QVA_t qva, rpmTransactionSet ts)
 
     while ((h = rpmdbNextIterator(qva->qva_mi)) != NULL) {
 	int rc;
-	/*@-nullpass@*/
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
-	/*@=nullpass@*/
     }
     qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
     return ec;
@@ -571,6 +569,7 @@ int rpmQueryVerify(QVA_t qva, rpmTransactionSet ts, const char * arg)
     int res = 0;
     Header h;
     int rc;
+    int xx;
 
     if (qva->qva_showPackage == NULL)
 	return 1;
@@ -605,7 +604,7 @@ restart:
 	    }
 
 	    ts->verify_legacy = 1;
-	    /*@-mustmod@*/	/* LCL: something fishy here, was segfault */
+	    /*@=mustmod@*/	/* LCL: something fishy here, was segfault */
     	    rpmrc = rpmReadPackageFile(ts, fd, fileURL, &h);
 	    /*@=mustmod@*/
 	    ts->verify_legacy = 0;
@@ -683,7 +682,7 @@ restart:
 	int anyarch = 1;
 	int force = 1;
 
-	/*@-mods@*/
+	/*@-mods@*/ /* FIX: make spec abstract */
 	rc = parseSpecVec(&spec, arg, "/", buildRoot, recursing, passPhrase,
 		cookie, anyarch, force);
 	/*@=mods@*/
@@ -702,11 +701,8 @@ restart:
 	    break;
 	}
 
-	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	    /*@-noeffectuncon@*/ /* FIX: check rc */
-	    (void) qva->qva_showPackage(qva, ts, pkg->header);
-	    /*@=noeffectuncon@*/
-	}
+	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
+	    xx = qva->qva_showPackage(qva, ts, pkg->header);
 	spec = freeSpecVec(spec);
       }	break;
 
@@ -782,9 +778,7 @@ restart:
 
 	if (*s == '\0') {
 	    char fnbuf[PATH_MAX];
-	    /*@-unrecog -moduncon @*/
 	    fn = realpath(arg, fnbuf);
-	    /*@=unrecog =moduncon @*/;
 	    if (fn)
 		fn = xstrdup(fn);
 	    else

@@ -1628,6 +1628,10 @@ typedef enum rpmprobFilterFlags_e {
 
 /** \ingroup rpmtrans
  * Process all packages in transaction set.
+ *
+ * @warning The value returned in *newProbs is now refcounted, and should
+ * be free'd using rpmProblemSetFree().
+ *
  * @param ts		transaction set
  * @param notify	progress callback
  * @param notifyData	progress callback private data

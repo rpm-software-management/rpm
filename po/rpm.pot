@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-12 15:50-0500\n"
+"POT-Creation-Date: 2001-11-12 17:47-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1449,11 +1449,11 @@ msgstr ""
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:795 lib/rpmds.c:656 lib/rpmds.c:814
+#: lib/depends.c:795 lib/rpmds.c:662 lib/rpmds.c:821
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:795 lib/rpmds.c:656 lib/rpmds.c:814
+#: lib/depends.c:795 lib/rpmds.c:662 lib/rpmds.c:821
 msgid "YES"
 msgstr ""
 
@@ -2318,81 +2318,81 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:600 lib/query.c:638 lib/rpminstall.c:328 lib/rpminstall.c:470
+#: lib/query.c:599 lib/query.c:637 lib/rpminstall.c:328 lib/rpminstall.c:470
 #: lib/rpminstall.c:840
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:616
+#: lib/query.c:615
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:622
+#: lib/query.c:621
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:648 lib/rpminstall.c:483
+#: lib/query.c:647 lib/rpminstall.c:483
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
 
-#: lib/query.c:692
+#: lib/query.c:691
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:716
+#: lib/query.c:712
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:736
+#: lib/query.c:732
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:746
+#: lib/query.c:742
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:756
+#: lib/query.c:752
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:767
+#: lib/query.c:763
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:804
+#: lib/query.c:798
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:808
+#: lib/query.c:802
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:835
+#: lib/query.c:829
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:838
+#: lib/query.c:832
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:843
+#: lib/query.c:837
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:854 lib/rpminstall.c:628
+#: lib/query.c:848 lib/rpminstall.c:628
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2469,20 +2469,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:784
+#: lib/rpmds.c:790
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:813
+#: lib/rpmds.c:820
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:837
+#: lib/rpmds.c:844
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -2811,18 +2811,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:187
+#: lib/transaction.c:185
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:858
+#: lib/transaction.c:850
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:929
+#: lib/transaction.c:918
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2834,17 +2834,17 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:418
+#: lib/verify.c:408
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:515
+#: lib/verify.c:505
 #, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr ""
 
-#: lib/verify.c:553
+#: lib/verify.c:543
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
