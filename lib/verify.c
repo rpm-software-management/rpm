@@ -65,11 +65,12 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
     } 
     if (flags & VERIFY_LINKTO) {
 	getEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &linktoList, &count);
-	if ((size = readlink(filespec, linkto, sizeof(linkto))))
+	size = readlink(filespec, linkto, sizeof(linkto));
+	if (size == -1)
 	    *result |= VERIFY_LINKTO;
 	else 
-	    filespec[size] = '\0';
-	    if (strcmp(filespec, linktoList[filenum]))
+	    linkto[size] = '\0';
+	    if (strcmp(linkto, linktoList[filenum]))
 		*result |= VERIFY_LINKTO;
 	free(linktoList);
     } 
