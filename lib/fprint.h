@@ -48,8 +48,9 @@ unsigned int fpHashFunction(const void * key);
 int fpEqual(const void * key1, const void * key2);
 
 /* scareMemory is assumed for both of these! */
-void fpLookupList(fingerPrintCache cache, char ** dirNames, char ** baseNames,
-		  int * dirIndexes, int fileCount, fingerPrint * fpList);
+void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
+		  const char ** baseNames, const int * dirIndexes, 
+		  int fileCount, fingerPrint * fpList);
 void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList);
 
 #ifdef __cplusplus

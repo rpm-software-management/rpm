@@ -464,7 +464,9 @@ void compressFilelist(Header h) {
 
 /* this is pretty straight-forward. The only thing that even resembles a trick
    is getting all of this into a single xmalloc'd block */
-void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
+static void doBuildFileList(Header h, char *** fileListPtr, 
+			    int * fileCountPtr, int baseNameTag,
+			    int dirListTag, int dirIndexesTag) {
     int * dirList;
     char ** dirs;
     char ** tails;
@@ -474,14 +476,14 @@ void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
     char * data;
     int i;
 
-    if (!headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &tails,
+    if (!headerGetEntry(h, baseNameTag, NULL, (void **) &tails,
 			&count)) 
 	/* no file list */
 	return;
 
-    headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirs,
+    headerGetEntry(h, dirListTag, NULL, (void **) &dirs,
 			&count); 
-    headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &dirList,
+    headerGetEntry(h, dirIndexesTag, NULL, (void **) &dirList,
 			&count); 
 
     size = sizeof(*fileList) * count;
@@ -501,4 +503,14 @@ void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
 
     *fileListPtr = fileList;
     *fileCountPtr = count;
+}
+
+void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
+    doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_COMPFILELIST,
+		    RPMTAG_COMPDIRLIST, RPMTAG_COMPFILEDIRS);
+}
+
+void buildOrigFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
+    doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_ORIGCOMPFILELIST,
+		    RPMTAG_ORIGCOMPDIRLIST, RPMTAG_ORIGCOMPFILEDIRS);
 }

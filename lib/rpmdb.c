@@ -843,7 +843,8 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     int start, end;
     int num;
     int_32 fc;
-    char ** dirNames, ** fullBaseNames, ** baseNames;
+    const char ** dirNames, ** baseNames;
+    const char ** fullBaseNames;
     int_32 * dirIndexes, * fullDirIndexes;
     fingerPrintCache fpc;
 

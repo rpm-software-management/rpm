@@ -183,9 +183,9 @@ static void psAppendFile(rpmProblemSet probs, rpmProblemType type,
 		     const void * key, Header h, const char * dirName,
 		     const char * baseName, Header altH, unsigned long ulong1)
 {
-    char * str = alloca(strlen(dirName) + strlen(baseName) + 2);
+    char * str = alloca(strlen(dirName) + strlen(baseName) + 1);
 
-    sprintf(str, "%s/%s", dirName, baseName);
+    sprintf(str, "%s%s", dirName, baseName);
     psAppend(probs, type, key, h, str, altH, ulong1);
 }
 
@@ -448,7 +448,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    int k;
 
 	    haveRelocatedFile = 1;
-	    newDirList = xmalloc(sizeof(*newDirList) * (dirCount + 1));
+	    newDirList = malloc(sizeof(*newDirList) * (dirCount + 1));
 	    for (k = 0; k < dirCount; k++) {
 		newDirList[k] = alloca(strlen(dirNames[k]) + 1);
 		strcpy(newDirList[k], dirNames[k]);
@@ -456,7 +456,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    free(dirNames);
 	    dirNames = newDirList;
 	} else {
-	    dirNames = xrealloc(dirNames, 
+	    dirNames = realloc(dirNames, 
 			       sizeof(*dirNames) * (dirCount + 1));
 	}
 
@@ -469,6 +469,7 @@ static Header relocateFileList(struct availablePackage * alp,
     /* Start off by relocating directories. */
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
+	    int len;
 
 	    len = strlen(relocations[j].oldPath);
 	    if (strncmp(relocations[j].oldPath, dirNames[i], len))
@@ -622,9 +623,9 @@ static enum fileActions decideFileFate(const char * dirName,
     struct stat sb;
     int i, rc;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
-    char * filespec = alloca(strlen(dirName) + strlen(baseName) + 2);
+    char * filespec = alloca(strlen(dirName) + strlen(baseName) + 1);
 
-    sprintf(filespec, "%s/%s", dirName, baseName);
+    sprintf(filespec, "%s%s", dirName, baseName);
 
     if (lstat(filespec, &sb)) {
 	/*
@@ -858,13 +859,13 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 	if (XFA_SKIPPING(fi->actions[i]))
 	    continue;
 
-	j = strlen(strlen(fi->dnl[fi->dil[i]]) + fi->bnl[i] + 2);
+	j = strlen(fi->dnl[fi->dil[i]]) + strlen(fi->bnl[i]) + 1;
 	if (j > fileSpecAlloced) {
 	    fileSpecAlloced = j * 2;
 	    filespec = xrealloc(filespec, fileSpecAlloced);
 	}
 
-	sprintf(filespec, "%s/%s", fi->dnl[fi->dil[i]], fi->bnl[i]);
+	sprintf(filespec, "%s%s", fi->dnl[fi->dil[i]], fi->bnl[i]);
 
 	if (dsl) {
 	    ds = dsl;
@@ -1153,7 +1154,7 @@ static void skipFiles(TFI_t * fi, int noDocs)
     if (languages) freeSplitString((char **)languages);
 }
 
-#define	NOTIFY(_x)	if (notify) (void) notify _x
+#define	NOTIFY(_x)	if (notify) notify _x
 
 /* Return -1 on error, > 0 if newProbs is set, 0 if everything happened */
 
@@ -1348,9 +1349,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	}
 
 	headerGetEntry(fi->h, RPMTAG_COMPFILEDIRS, NULL, (void **) &fi->dil, 
-		       &fi->fc);
+		       NULL);
 	headerGetEntry(fi->h, RPMTAG_COMPDIRLIST, NULL, (void **) &fi->dnl, 
-		       &fi->fc);
+		       NULL);
 
 	/* actions is initialized earlier for added packages */
 	if (fi->actions == NULL)
@@ -1379,6 +1380,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 				fi->fmodes, fi->fc * sizeof(*fi->fmodes));
 	    fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
 				fi->fstates, fi->fc * sizeof(*fi->fstates));
+	    fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
+				fi->dil, fi->fc * sizeof(*fi->dil));
 	    headerFree(fi->h);
 	    fi->h = NULL;
 	    break;
@@ -1408,7 +1411,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     }
 
     chdir("/");
-    /*@-unrecog@*/ chroot(ts->root); /*@=unrecog@*/
+    chroot(ts->root);
 
     ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
     fpc = fpCacheCreate(totalFileCount);
@@ -1417,7 +1420,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
      * Add fingerprint for each file not skipped.
      */
     for (fi = flList; (fi - flList) < flEntries; fi++) {
-	fpLookupHeader(fpc, fi->h, fi->fps);
+	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 	for (i = 0; i < fi->fc; i++) {
 	    if (XFA_SKIPPING(fi->actions[i]))
 		continue;
@@ -1605,7 +1608,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		    headerFree(hdrs[i]);
 		    rc = rpmReadPackageHeader(fd, &h, NULL, NULL, NULL);
 		    if (rc) {
-			(void)notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
+			notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
 				    alp->key, notifyData);
 			ourrc++;
 			fd = NULL;
@@ -1633,7 +1636,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    headerFree(hdrs[i]);
 
 	    if (alp->fd == NULL && fd)
-		(void)notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key,
+		notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key,
 		   notifyData);
 	    break;
 	case TR_REMOVED:

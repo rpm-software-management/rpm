@@ -26,7 +26,7 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
 }
 
 static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
-			    char * baseName, int scareMemory) {
+			    const char * baseName, int scareMemory) {
     char dir[PATH_MAX];
     const char * chptr1;
     char * end, * bn;
@@ -140,8 +140,9 @@ int fpEqual(const void * key1, const void * key2)
     return FP_EQUAL(*((const fingerPrint *) key1), *((fingerPrint *) key2));
 }
 
-void fpLookupList(fingerPrintCache cache, char ** dirNames, char ** baseNames,
-		  int * dirIndexes, int fileCount, fingerPrint * fpList) {
+void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
+		  const char ** baseNames, const int * dirIndexes, 
+		  int fileCount, fingerPrint * fpList) {
     int i;
 
     for (i = 0; i < fileCount; i++) {
@@ -160,12 +161,13 @@ void fpLookupList(fingerPrintCache cache, char ** dirNames, char ** baseNames,
 
 void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList) {
     int fileCount;
-    char ** baseNames, ** dirNames;
+    const char ** baseNames, ** dirNames;
     int_32 * dirIndexes;
 
-    if (!headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseNames,
-			&fileCount)) return;
-    headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirNames, NULL);
+    if (!headerGetEntryMinMemory(h, RPMTAG_COMPFILELIST, NULL, 
+			(void **) &baseNames, &fileCount)) return;
+    headerGetEntryMinMemory(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirNames, 
+			NULL);
     headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &dirIndexes, NULL);
 			
     fpLookupList(cache, dirNames, baseNames, dirIndexes, fileCount, fpList);

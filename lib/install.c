@@ -106,17 +106,15 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 
     *memPtr = mem;
 
-    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &mem->names, 
-		        fileCountPtr))
-	return 0;
+    if (!headerIsEntry(h, RPMTAG_COMPFILELIST)) return 0; 
 
-#if 0
-    if (!headerGetEntry(h, RPMTAG_ORIGFILENAMES, NULL, 
-			(void **) &mem->cpioNames, NULL))
-	headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &mem->cpioNames, 
-		           fileCountPtr);
-    headerRemoveEntry(h, RPMTAG_ORIGFILENAMES);
-#endif
+    buildFileList(h, (char ***) &mem->names, fileCountPtr);
+
+    if (headerIsEntry(h, RPMTAG_ORIGCOMPFILELIST)) {
+	buildOrigFileList(h, (char ***) &mem->cpioNames, fileCountPtr);
+    } else {
+	buildFileList(h, (char ***) &mem->cpioNames, fileCountPtr);
+    }
 
     fileCount = *fileCountPtr;
 
@@ -589,7 +587,7 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-const char *const fileActionString(enum fileActions a)
+const char * fileActionString(enum fileActions a)
 {
     switch (a) {
       case FA_UNKNOWN: return "unknown";
