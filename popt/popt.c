@@ -154,7 +154,8 @@ static int handleAlias(poptContext con, char * longName, char shortName,
     if (con->os->currAlias && con->os->currAlias->longName && longName &&
 	!strcmp(con->os->currAlias->longName, longName)) 
 	return 0;
-    if (con->os->currAlias && shortName == con->os->currAlias->shortName)
+    if (con->os->currAlias && shortName && 
+	    shortName == con->os->currAlias->shortName)
 	return 0;
 
     i = con->numAliases - 1;
