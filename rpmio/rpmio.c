@@ -487,6 +487,10 @@ DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned l
 
     fdno = open(path, flags, mode);
     if (fdno < 0) return NULL;
+    if (fcntl(fdno, F_SETFD, FD_CLOEXEC)) {
+	(void) close(fdno);
+	return NULL;
+    }
     fd = fdNew("open (fdOpen)");
     fdSetFdno(fd, fdno);
     fd->flags = flags;

@@ -7,6 +7,9 @@
 /*@unchecked@*/
 static int _debug = 0;
 
+/* just to put a marker in librpm.a */
+const char * RPMVERSION = VERSION;
+
 #include "rpmio_internal.h"
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
@@ -17,9 +20,6 @@ static int _debug = 0;
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
-
-/* just to put a marker in librpm.a */
-const char * RPMVERSION = VERSION;
 
 char ** splitString(const char * str, int length, char sep)
 {

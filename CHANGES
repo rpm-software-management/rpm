@@ -123,6 +123,7 @@
 	- generate index for hdrid (aka Sha1header) tag, query/verify by hdrid.
 	- generate index for fileid (aka Filemd5s) tag, query/verify by fileid.
 	- query/verify by install transaction id.
+	- rpm-4.0.4 release candidate.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
