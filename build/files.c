@@ -566,6 +566,7 @@ static void resetDocdir(void)
     docdirs[docdir_count++] = strdup("/usr/doc");
     docdirs[docdir_count++] = strdup("/usr/man");
     docdirs[docdir_count++] = strdup("/usr/info");
+    docdirs[docdir_count++] = strdup("/usr/X11R6/man");
 }
 
 static void addDocdir(char *dirname)
