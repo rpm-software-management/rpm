@@ -21,7 +21,8 @@ int poptDupArgv(int argc, const char **argv,
 	nb += strlen(argv[i]) + 1;
     }
 	
-    argv2 = (void *) dst = malloc(nb);
+    dst = malloc(nb);
+    argv2 = (void *) dst;
     dst += (argc + 1) * sizeof(*argv);
 
     for (i = 0; i < argc; i++) {

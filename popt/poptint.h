@@ -23,10 +23,10 @@ typedef struct {
 
 struct optionStackEntry {
     int argc;
-    /*@keep@*/ const char ** argv;
+    /*@only@*/ const char ** argv;
     /*@only@*/ pbm_set * argb;
     int next;
-    /*@keep@*/ const char * nextArg;
+    /*@only@*/ const char * nextArg;
     /*@keep@*/ const char * nextCharArg;
     /*@dependent@*/ struct poptAlias * currAlias;
     int stuffed;

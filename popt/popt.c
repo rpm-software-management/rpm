@@ -111,8 +111,12 @@ void poptResetContext(poptContext con) {
     con->restLeftover = 0;
     con->doExec = NULL;
 
-    for (i = 0; i < con->finalArgvCount; i++)
-	xfree(con->finalArgv[i]);
+    for (i = 0; i < con->finalArgvCount; i++) {
+	if (con->finalArgv[i]) {
+	    xfree(con->finalArgv[i]);
+	    con->finalArgv[i] = NULL;
+	}
+    }
 
     con->finalArgvCount = 0;
 }
@@ -329,7 +333,7 @@ static const char *findNextArg(poptContext con, unsigned argx, int delete)
     return arg;
 }
 
-static const char * expandNextArg(poptContext con, const char * s)
+static /*@only@*/ const char * expandNextArg(poptContext con, const char * s)
 {
     const char *a;
     size_t alen;
