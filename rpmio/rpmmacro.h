@@ -16,8 +16,6 @@ typedef /*@abstract@*/ struct MacroContext {
 	int		firstFree;
 } MacroContext;
 
-extern MacroContext globalMacroContext;
-
 /*
  * Markers for types of macros added throughout rpm.
  */

@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.12 1999/03/20 21:10:10 jbj Exp $
+# $Id: macros.in,v 1.13 1999/04/01 22:27:03 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -18,22 +18,30 @@
 
 #==============================================================================
 # ---- path macros
+#	XXX The use of which here is overly simple.
 #
-%__bzip2                 %(which bzip2)
-%__cat                   %(which cat)
-%__chgrp                 %(which chgrp)
-%__chmod                 %(which chmod)
-%__chown                 %(which chown)
-%__gzip                  %(which gzip)
-%__install               %(which install)
-%__libtoolize            %(which libtoolize)
-%__make                  %(which make)
-%__mkdir                 %(which mkdir)
-%__patch                 %(which patch)
-%__ranlib                %(which ranlib)
-%__rm                    %(which rm)
-%__strip                 %(which strip)
-%__tar                   %(which tar)
+%__bzip2		%(which bzip2)
+%__cat			%(which cat)
+%__chgrp		%(which chgrp)
+%__chmod		%(which chmod)
+%__chown		%(which chown)
+%__cpio			%(which cpio)
+%__gzip			%(which gzip)
+%__install		%(which install)
+%__make			%(which make)
+%__mkdir		%(which mkdir)
+%__patch		%(which patch)
+%__ranlib		%(which ranlib)
+%__rm			%(which rm)
+%__strip		%(which strip)
+%__tar			%(which tar)
+
+# XXX avoid weird failures from which if tools are not installed
+%__libtoolize		libtoolize
+%__aclocal		aclocal
+%__autoheader		autoheader
+%__automake		automake
+%__autoconf		autoconf
 
 #==============================================================================
 # ---- Required rpmrc macros.
@@ -42,18 +50,19 @@
 #	(e.g. per-platform, per-system, per-packager) macro files.
 #
 %_builddir		%{_topdir}/BUILD
-%_buildshell		@testdir@/bin/sh
-%_bzip2bin		@testdir@@BZIP2BIN@
+%_buildshell		/bin/sh
+%_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
 %_defaultdocdir		%{_usr}/doc
 #
 # XXX fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
-#%_fixowner		chown -R root
-#%_fixgroup		chgrp -R @ROOT_GROUP@
+%_fixowner		[ `id -u` = '0' ] && chown -R root
+%_fixgroup		[ `id -u` = '0' ] && chgrp -R @ROOT_GROUP@
 %_fixperms		chmod -R @FIXPERMS@
 #
-%_gzipbin		@testdir@@GZIPBIN@
+%_gzipbin		@GZIPBIN@
 %_instchangelog		5
+%_pgpbin		@PGPBIN@
 %_rpmdir		%{_topdir}/RPMS
 #
 # XXX Note escaped %% for use in headerSprintf
@@ -87,6 +96,7 @@
 #%_pgp_path
 #%_provides
 #%_timecheck
+#%vendor
 
 #==============================================================================
 # ---- per-platform macros.
@@ -94,9 +104,9 @@
 #	will be used if the per-platform macro file does not exist..
 #
 %_arch			@RPMCANONARCH@
-%vendor			@RPMCANONVENDOR@
+%_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
-%_target_platform	%{_target_cpu}-%{vendor}-%{_target_os}
+%_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
 #
 # XXX use the rpmrc instantiated macro for now
 #%optflags		-O2
@@ -109,8 +119,8 @@
 	RPM_SOURCE_DIR=\"%{_sourcedir}\"\
 	RPM_BUILD_DIR=\"%{_builddir}\"\
 	RPM_OPT_FLAGS=\"%{optflags}\"\
-	RPM_ARCH=\"%{_target_cpu}\"\
-	RPM_OS=\"%{_target_os}\"\
+	RPM_ARCH=\"%{_arch}\"\
+	RPM_OS=\"%{_os}\"\
 	export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
 	RPM_DOC_DIR=\"%{_docdir}\"\
 	export RPM_DOC_DIR\
@@ -160,4 +170,18 @@
 #
 %configure	\
   %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
+  CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}
+
+#------------------------------------------------------------------------------
+# The GNUconfigure macro does the following:
+#	update config.guess and config.sub.
+#	regenerate all autoconf/automake files
+#	run configure with correct prefix, platform, and CFLAGS.
+#
+%GNUconfigure	\
+  %{__libtoolize} --copy --force \
+  %{__aclocal} \
+  %{__autoheader} \
+  %{__automake} \
+  %{__autoconf} \
   CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}

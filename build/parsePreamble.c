@@ -36,19 +36,6 @@ static int requiredTags[] = {
     0
 };
 
-#ifdef DYING
-static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
-			     char *lang);
-static void initPreambleList(void);
-static int findPreambleTag(Spec spec, int *tag, char **macro, char *lang);
-static int checkForRequired(Header h, char *name);
-static int checkForDuplicates(Header h, char *name);
-static void fillOutMainPackage(Header h);
-static int checkForValidArchitectures(Spec spec);
-static int isMemberInEntry(Header header, char *name, int tag);
-static int readIcon(Header h, char *file);
-#endif	/* DYING */
-    
 static void addOrAppendListEntry(Header h, int_32 tag, char *line)
 {
     int argc;
@@ -462,8 +449,8 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	    return RPMERR_BADSPEC;
 	}
 	macro = NULL;
-	delMacro(&globalMacroContext, "_docdir");
-	addMacro(&globalMacroContext, "_docdir", NULL, field, RMIL_SPEC);
+	delMacro(NULL, "_docdir");
+	addMacro(NULL, "_docdir", NULL, field, RMIL_SPEC);
 	break;
       case RPMTAG_EPOCH:
 	SINGLE_TOKEN_ONLY;

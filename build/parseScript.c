@@ -4,7 +4,38 @@
 
 #include "popt/popt.h"
 
-static int addTriggerIndex(Package pkg, char *file, char *script, char *prog);
+static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
+{
+    struct TriggerFileEntry *new;
+    struct TriggerFileEntry *list = pkg->triggerFiles;
+    struct TriggerFileEntry *last = NULL;
+    int index = 0;
+
+    while (list) {
+	last = list;
+	list = list->next;
+    }
+
+    if (last) {
+	index = last->index + 1;
+    }
+
+    new = malloc(sizeof(*new));
+
+    new->fileName = (file) ? strdup(file) : NULL;
+    new->script = (*script) ? strdup(script) : NULL;
+    new->prog = strdup(prog);
+    new->index = index;
+    new->next = NULL;
+
+    if (last) {
+	last->next = new;
+    } else {
+	pkg->triggerFiles = new;
+    }
+
+    return index;
+}
 
 /* these have to be global because of stupid compilers */
     static char *name;
@@ -254,37 +285,4 @@ int parseScript(Spec spec, int parsePart)
     poptFreeContext(optCon);
     
     return nextPart;
-}
-
-static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
-{
-    struct TriggerFileEntry *new;
-    struct TriggerFileEntry *list = pkg->triggerFiles;
-    struct TriggerFileEntry *last = NULL;
-    int index = 0;
-
-    while (list) {
-	last = list;
-	list = list->next;
-    }
-
-    if (last) {
-	index = last->index + 1;
-    }
-
-    new = malloc(sizeof(*new));
-
-    new->fileName = (file) ? strdup(file) : NULL;
-    new->script = (*script) ? strdup(script) : NULL;
-    new->prog = strdup(prog);
-    new->index = index;
-    new->next = NULL;
-
-    if (last) {
-	last->next = new;
-    } else {
-	pkg->triggerFiles = new;
-    }
-
-    return index;
 }

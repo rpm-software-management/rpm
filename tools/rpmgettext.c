@@ -1017,7 +1017,7 @@ main(int argc, char **argv)
     }
 
     /* XXX I don't want to read rpmrc */
-    addMacro(&globalMacroContext, "_tmppath", NULL, "/tmp", RMIL_DEFAULT);
+    addMacro(NULL, "_tmppath", NULL, "/tmp", RMIL_DEFAULT);
 
     fdi = fdDup(STDIN_FILENO);
 

@@ -4,12 +4,6 @@
 #include "popt/popt.h"
 #include "build.h"
 
-#ifdef DYING
-int buildForTarget(char *arg, int buildAmount, char *passPhrase,
-	          char *buildRoot, int fromTarball, int test, char *cookie,
-		  force);
-#endif
-
 static int buildForTarget(const char *arg, int buildAmount, const char *passPhrase,
 	          const char *buildRoot, int fromTarball, int test, char *cookie,
 		  int force)
@@ -110,7 +104,7 @@ static int buildForTarget(const char *arg, int buildAmount, const char *passPhra
 	while (*cmd != '/') cmd--;
 	*cmd = '\0';
 
-	addMacro(&globalMacroContext, "_sourcedir", NULL, buf, RMIL_TARBALL);
+	addMacro(NULL, "_sourcedir", NULL, buf, RMIL_TARBALL);
 	xfree(specDir);
 	xfree(tmpSpecFile);
 	specfile = s;
@@ -197,6 +191,8 @@ int build(const char *arg, int buildAmount, const char *passPhrase,
 	    fromTarball, test, cookie, force);
 	if (rc)
 	    return rc;
+
+	freeMacros(NULL);
     }
 
     return 0;

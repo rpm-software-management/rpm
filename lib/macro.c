@@ -18,6 +18,8 @@
 
 #include "rpmmacro.h"
 
+struct MacroContext globalMacroContext;
+
 typedef struct MacroBuf {
 	const char *s;		/* text to expand */
 	char *t;		/* expansion buffer */
@@ -97,6 +99,8 @@ dumpMacroTable(MacroContext *mc, FILE *f)
 	int nempty = 0;
 	int nactive = 0;
 
+	if (mc == NULL)
+		mc = &globalMacroContext;
 	if (f == NULL)
 		f = stderr;
     
@@ -126,6 +130,8 @@ findEntry(MacroContext *mc, const char *name, size_t namelen)
 	MacroEntry keybuf, *key, **ret;
 	char namebuf[1024];
 
+	if (mc == NULL)
+		mc = &globalMacroContext;
 	if (! mc->firstFree)
 		return NULL;
 
@@ -1077,6 +1083,8 @@ expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
 
 	if (s == NULL || slen <= 0)
 		return 0;
+	if (mc == NULL)
+		mc = &globalMacroContext;
 
 	tbuf = alloca(slen + 1);
 	memset(tbuf, 0, (slen + 1));
@@ -1107,6 +1115,9 @@ addMacro(MacroContext *mc, const char *n, const char *o, const char *b, int leve
 {
 	MacroEntry **mep;
 
+	if (mc == NULL)
+		mc = &globalMacroContext;
+
 	/* If new name, expand macro table */
 	if ((mep = findEntry(mc, n, 0)) == NULL) {
 		if (mc->firstFree == mc->macrosAllocated)
@@ -1127,6 +1138,8 @@ delMacro(MacroContext *mc, const char *name)
 {
 	MacroEntry **mep = findEntry(mc, name, 0);
 
+	if (mc == NULL)
+		mc = &globalMacroContext;
 	/* If name exists, pop entry */
 	if ((mep = findEntry(mc, name, 0)) != NULL)
 		popMacro(mep);
@@ -1147,18 +1160,11 @@ void
 initMacros(MacroContext *mc, const char *macrofiles)
 {
 	char *m, *mfile, *me;
-	static int first = 1;
-
-	/* XXX initialization should be per macro context, not per execution */
-	if (first) {
-		mc->macroTable = NULL;
-		expandMacroTable(mc);
-		max_macro_depth = MAX_MACRO_DEPTH;	/* XXX Assume good ol' macro expansion */
-		first = 0;
-	}
 
 	if (macrofiles == NULL)
 		return;
+	if (mc == NULL)
+		mc = &globalMacroContext;
 
 	for (mfile = m = strdup(macrofiles); *mfile; mfile = me) {
 		FILE *fp;
@@ -1210,6 +1216,9 @@ freeMacros(MacroContext *mc)
 {
 	int i;
     
+	if (mc == NULL)
+		mc = &globalMacroContext;
+
 	for (i = 0; i < mc->firstFree; i++) {
 		MacroEntry *me;
 		while ((me = mc->macroTable[i]) != NULL) {
@@ -1222,6 +1231,7 @@ freeMacros(MacroContext *mc)
 		}
 	}
 	FREE(mc->macroTable);
+	memset(mc, 0, sizeof(*mc));
 }
 
 /* =============================================================== */
@@ -1291,7 +1301,7 @@ rpmExpand(const char *arg, ...)
 	*pe = '\0';
     }
     va_end(ap);
-    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+    expandMacros(NULL, NULL, buf, sizeof(buf));
     return strdup(buf);
 }
 
@@ -1350,7 +1360,7 @@ rpmGetPath(const char *path, ...)
 	}
     }
     va_end(ap);
-    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+    expandMacros(NULL, NULL, buf, sizeof(buf));
     return strdup(buf);
 }
 

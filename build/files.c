@@ -76,30 +76,6 @@ struct FileList {
     int fileListRecsUsed;
 };
 
-#ifdef	DYING
-static int processPackageFiles(Spec spec, Package pkg,
-			       int installSpecialDoc, int test);
-static void freeFileList(FileListRec *fileList, int count);
-static int compareFileListRecs(const void *ap, const void *bp);
-static int isDoc(struct FileList *fl, const char *fileName);
-static int processBinaryFile(Package pkg, struct FileList *fl, const char *fileName);
-static int addFile(struct FileList *fl, const char *name, struct stat *statp);
-static int parseForSimple(Spec spec, Package pkg, char *buf,
-			  struct FileList *fl, const char **fileName);
-static int parseForVerify(char *buf, struct FileList *fl);
-static int parseForLang(char *buf, struct FileList *fl);
-static int parseForAttr(char *buf, struct FileList *fl);
-static int parseForConfig(char *buf, struct FileList *fl);
-static int parseForRegexLang(const char *fileName, char **lang);
-static int myGlobPatternP(const char *pattern);
-static int glob_error(const char *foo, int bar);
-static void timeCheck(int tc, Header h);
-static void genCpioListAndHeader(struct FileList *fl,
-				 struct cpioFileMapping **cpioList,
-				 int *cpioCount, Header h, int isSrc);
-static char *strtokWithQuotes(char *s, char *delim);
-#endif
-
 static void freeAttrRec(AttrRec *ar) {
     FREE(ar->ar_fmodestr);
     FREE(ar->ar_dmodestr);

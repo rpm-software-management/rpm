@@ -2,12 +2,6 @@
 
 #include "rpmbuild.h"
 
-#ifdef	DYING
-static void addChangelogEntry(Header h, int time, char *name, char *text);
-static int addChangelog(Header h, StringBuf sb);
-static int dateToTimet(const char * datestr, time_t * secs);
-#endif
-
 static void addChangelogEntry(Header h, int time, char *name, char *text)
 {
     if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {

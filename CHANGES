@@ -16,6 +16,9 @@
 	- fix: specfile BuildRoot was masking rpmrc macro.
 	- expand twiddles in macrofiles list.
 	- add explicit macrofiles path to rpmrc.
+	- add per-target macrofiles to search path.
+	- take globalMacroContext out of macro api.
+	- fix: flush all macros between builds.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.

@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.20 1999/03/30 19:34:01 jbj Exp $
+# $Id: macros.in,v 1.21 1999/04/01 22:26:47 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -179,7 +179,7 @@
 #	run configure with correct prefix, platform, and CFLAGS.
 #
 %GNUconfigure	\
-  %{__libtoolize} --copy --force} \
+  %{__libtoolize} --copy --force \
   %{__aclocal} \
   %{__autoheader} \
   %{__automake} \

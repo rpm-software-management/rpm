@@ -2,10 +2,6 @@
 
 #include "rpmbuild.h"
 
-#ifdef	DYING
-static void doRmSource(Spec spec);
-#endif
-
 static void doRmSource(Spec spec)
 {
     struct Source *p;

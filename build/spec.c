@@ -4,11 +4,8 @@
 #include "buildio.h"
 
 extern int specedit;
+extern MacroContext globalMacroContext;
 
-#ifdef	DYING
-static void freeTriggerFiles(struct TriggerFileEntry *p);
-#endif
-    
 static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
 {
     struct TriggerFileEntry *o, *q = p;
@@ -171,11 +168,6 @@ void freePackages(Spec spec)
 	freePackage(p);
     }
 }
-
-#ifdef	DYING
-static char *getSourceAux(Spec spec, int num, int flag, int full);
-static struct Source *findSource(Spec spec, int num, int flag);
-#endif
 
 static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag)
 {

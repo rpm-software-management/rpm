@@ -15,12 +15,6 @@
 
 static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 
-#if UNUSED
-static const char *macrofiles = MACROFILES;
-#endif
-
-struct MacroContext globalMacroContext;
-
 struct machCacheEntry {
     char * name;
     int count;
@@ -94,10 +88,10 @@ static struct tableType tables[RPM_MACHTABLE_COUNT] = {
 /* The order of the flags is archSpecific, required, macroize, localize */
 
 static struct rpmOption optionTable[] = {
-    { "include",		RPMVAR_INCLUDE,			0, 1,	1, 2 },
-    { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	1, 1 },
+    { "include",		RPMVAR_INCLUDE,			0, 1,	0, 2 },
+    { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	0, 1 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
-    { "provides",               RPMVAR_PROVIDES,                0, 0,	1, 0 },
+    { "provides",               RPMVAR_PROVIDES,                0, 0,	0, 0 },
 };
 /*@=fullinitblock@*/
 static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
@@ -449,7 +443,7 @@ static void setVarDefault(int var, const char *macroname, const char *val, const
     }
     if (body == NULL)
 	body = val;
-    addMacro(&globalMacroContext, macroname, NULL, body, RMIL_DEFAULT);
+    addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
 }
 
 static void setPathDefault(int var, const char *macroname, const char *subdir)
@@ -478,7 +472,7 @@ static void setPathDefault(int var, const char *macroname, const char *subdir)
 	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir));
 	strcpy(body, _TOPDIRMACRO);
 	strcat(body, subdir);
-	addMacro(&globalMacroContext, macroname, NULL, body, RMIL_DEFAULT);
+	addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
 #undef _TOPDIRMACRO
     }
 }
@@ -491,7 +485,7 @@ RPM_ARCH=\"%{_arch}\"\n\
 RPM_OS=\"%{_os}\"\n\
 export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\n\
 RPM_DOC_DIR=\"%{_docdir}\"\n\
-export RPM_DOC_DIR\
+export RPM_DOC_DIR\n\
 RPM_PACKAGE_NAME=\"%{name}\"\n\
 RPM_PACKAGE_VERSION=\"%{version}\"\n\
 RPM_PACKAGE_RELEASE=\"%{release}\"\n\
@@ -502,15 +496,11 @@ export RPM_BUILD_ROOT\n}\
 
 static void setDefaults(void) {
 
-    initMacros(&globalMacroContext, NULL); /* XXX initialize data structures */
-    addMacro(&globalMacroContext, "_usr", NULL, "/usr", RMIL_DEFAULT);
-    addMacro(&globalMacroContext, "_var", NULL, "/var", RMIL_DEFAULT);
+    addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
+    addMacro(NULL, "_var", NULL, "/var", RMIL_DEFAULT);
 
-    addMacro(&globalMacroContext, "_preScriptEnvironment", NULL,
-	prescriptenviron, RMIL_DEFAULT);
+    addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
 
-    setVarDefault(RPMVAR_MACROFILES,	"_macrofiles",
-		"/usr/lib/rpm/macros", "%{_usr}/lib/rpm/macros");
     setVarDefault(-1,			"_topdir",
 		"/usr/src/redhat",	"%{_usr}/src/redhat");
     setVarDefault(-1,			"_tmppath",
@@ -520,7 +510,11 @@ static void setDefaults(void) {
     setVarDefault(-1,			"_defaultdocdir",
 		"/usr/doc",		"%{_usr}/doc");
 
-    setVarDefault(RPMVAR_OPTFLAGS,	"optflags",	"-O2",		NULL);
+    setVarDefault(-1,			"_rpmfilename",
+	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
+
+    setVarDefault(RPMVAR_OPTFLAGS,	"optflags",
+		"-O2",			NULL);
     setVarDefault(-1,			"sigtype",
 		"none",			NULL);
     setVarDefault(-1,			"_buildshell",
@@ -573,7 +567,7 @@ int rpmReadRC(const char * rcfiles)
 	    r++;
 	}
 	strcat(fn, r);
-	    
+
 	/* Read another rcfile */
 	fd = fdOpen(fn, O_RDONLY, 0);
 	if (fdFileno(fd) < 0) {
@@ -596,7 +590,7 @@ int rpmReadRC(const char * rcfiles)
     rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
     if ((r = rpmGetVar(RPMVAR_MACROFILES)) != NULL)
-	initMacros(&globalMacroContext, r);
+	initMacros(NULL, r);
 
     return rc;
 }
@@ -674,9 +668,9 @@ static int doReadRC(FD_t fd, const char * filename) {
 		rpmRebuildTargetVars(NULL, NULL);
 
 		strcpy(buf, start);
-		if (expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
-		    rpmError(RPMERR_RPMRC, _("expansion failed at %s:%d \"%s\""),
-			filename, linenum, start);
+		if (expandMacros(NULL, NULL, buf, sizeof(buf))) {
+		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
+			option->name, filename, linenum, start);
 		    return 1;
 		}
 
@@ -689,6 +683,16 @@ static int doReadRC(FD_t fd, const char * filename) {
 		fdClose(fdinc);
 		if (rc) return rc;
 	      }	break;
+	    case RPMVAR_MACROFILES:
+		buf[0] = '\0';
+		strncat(buf, start, sizeof(buf) - strlen(buf));
+		if (expandMacros(NULL, NULL, buf, sizeof(buf))) {
+		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
+			option->name, filename, linenum, start);
+		    return 1;
+		}
+		start = buf;
+		break;
 	    default:
 		break;
 	    }
@@ -718,7 +722,7 @@ static int doReadRC(FD_t fd, const char * filename) {
 		    if (option->localize)
 			*s++ = '_';
 		    strcpy(s, option->name);
-		    addMacro(&globalMacroContext, buf, NULL, chptr, RMIL_RPMRC);
+		    addMacro(NULL, buf, NULL, chptr, RMIL_RPMRC);
 		}
 	    } else {
 		start = NULL;	/* no arch */
@@ -728,7 +732,7 @@ static int doReadRC(FD_t fd, const char * filename) {
 		    if (option->localize)
 			*s++ = '_';
 		    strcpy(s, option->name);
-		    addMacro(&globalMacroContext, buf, NULL, chptr, RMIL_RPMRC);
+		    addMacro(NULL, buf, NULL, chptr, RMIL_RPMRC);
 		}
 	    }
 	    rpmSetVarArch(option->var, chptr, start);
@@ -805,7 +809,7 @@ static void defaultMachine(char ** arch, char ** os) {
                  }
               sprintf(un.sysname,"sunos%s",un.release);
            }
-           
+
            else /* Solaris 2.x: n.x.x becomes n-3.x.x */
               sprintf(un.sysname,"solaris%1d%s",atoi(un.release)-3,un.release+1+(atoi(un.release)/10));
         }
@@ -842,7 +846,7 @@ static void defaultMachine(char ** arch, char ** os) {
 		 }
                  free (chptr);
               }
-           }           
+           }
            if (!prelid)
               /* parsing /etc/.relid file failed */
               strcpy(un.sysname,"ncr-sysv4");
@@ -850,7 +854,7 @@ static void defaultMachine(char ** arch, char ** os) {
            strcpy(un.machine,"i486");
         }
 #endif	/* __linux__ */
-                   
+
 	/* get rid of the hyphens in the sysname */
 	for (chptr = un.machine; *chptr; chptr++)
 	    if (*chptr == '/') *chptr = '-';
@@ -1120,7 +1124,6 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 {
 
     char *ca = NULL, *co = NULL, *ct;
-    const char * target = NULL;
     int x;
 
     /* Rebuild the compat table to recalculate the current target arch.  */
@@ -1130,15 +1133,20 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
     if (buildtarget && *buildtarget) {
+	char *c;
 	/* Set arch and os from specified build target */
-	ca = ct = strdup(*buildtarget);
-	if ((co = strrchr(ct, '-')) != NULL) {
-	    *co++ = '\0';
-	    if (!strcmp(co, "gnu") && (co = strrchr(ct, '-')) != NULL)
-		*co++ = '\0';
+	ca = strdup(*buildtarget);
+	if ((c = strchr(ca, '-')) != NULL)
+	    *c++ = '\0';
+	    
+	if ((co = strrchr(c, '-')) == NULL) {
+	    co = c;
+	} else {
+	    if (!strcmp(co, "-gnu"))
+		*co = '\0';
+	    co = strrchr(c, '-');
 	}
-	if (co == NULL)
-	    co = "linux";
+	ct = strdup(*buildtarget);
     } else {
 	/* Set build target from default arch and os */
 	rpmGetArchInfo(&ca,NULL);
@@ -1146,32 +1154,34 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 
 	if (ca == NULL) defaultMachine(&ca, NULL);
 	if (co == NULL) defaultMachine(NULL, &co);
-
+	ca = strdup(ca);
 	for (x = 0; ca[x]; x++)
 	    ca[x] = tolower(ca[x]);
+	co = strdup(co);
 	for (x = 0; co[x]; x++)
 	    co[x] = tolower(co[x]);
 
 	ct = malloc(strlen(co)+strlen(ca)+2);
 	sprintf(ct, "%s-%s", ca, co);
-	target = ct;
     }
 
 /*
  * XXX All this macro pokery/jiggery could be achieved by doing a delayed
- *	initMacros(&globalMacroContext, PER-PLATFORM-MACRO-FILE-NAMES);
+ *	initMacros(NULL, PER-PLATFORM-MACRO-FILE-NAMES);
  */
-    delMacro(&globalMacroContext, "_target");
-    addMacro(&globalMacroContext, "_target", NULL, target, RMIL_RPMRC);
-    delMacro(&globalMacroContext, "_target_cpu");
-    addMacro(&globalMacroContext, "_target_cpu", NULL, ca, RMIL_RPMRC);
-    delMacro(&globalMacroContext, "_target_os");
-    addMacro(&globalMacroContext, "_target_os", NULL, co, RMIL_RPMRC);
+    delMacro(NULL, "_target");
+    addMacro(NULL, "_target", NULL, ct, RMIL_RPMRC);
+    delMacro(NULL, "_target_cpu");
+    addMacro(NULL, "_target_cpu", NULL, ca, RMIL_RPMRC);
+    delMacro(NULL, "_target_os");
+    addMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
 
     if (canontarget)
-	*canontarget = target;
-    if (ct != NULL && ct != target)
+	*canontarget = ct;
+    else
 	free(ct);
+    free(ca);
+    free(co);
 }
 
 int rpmShowRC(FILE *f)
@@ -1223,7 +1233,7 @@ int rpmShowRC(FILE *f)
 	    fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }
 
-    dumpMacroTable(&globalMacroContext, f);
+    dumpMacroTable(NULL, f);
 
     return 0;
 }

@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.5 1999/03/31 20:38:00 jbj Exp $
+# $Id: rpmrc.in,v 2.6 1999/04/01 22:26:49 jbj Exp $
 
 #############################################################
 
@@ -185,8 +185,8 @@ buildarch_compat: armv4l: noarch
 buildarch_compat: parisc: noarch
 
 #############################################################
+#macrofiles:	@RPMCONFIGDIR@/macros:@SYSCONFIGDIR@/macros:~/.rpmmacros
 
-macrofiles:	@RPMCONFIGDIR@/macros:@SYSCONFIGDIR@/macros:~/.rpmmacros
+macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 
-#macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 #include: @RPMCONFIGDIR@/%{_target}/rpmrc

@@ -822,12 +822,12 @@ int main(int argc, char ** argv) {
 	  case GETOPT_DBPATH:
             if (optArg[0] != '/')
                 argerror(_("arguments to --dbpath must begin with a /"));
-	    addMacro(&globalMacroContext,"_dbpath", NULL, optArg, RMIL_CMDLINE);
+	    addMacro(NULL,"_dbpath", NULL, optArg, RMIL_CMDLINE);
 	    gotDbpath = 1;
 	    break;
 
 	  case GETOPT_DEFINEMACRO:
-	    rpmDefineMacro(&globalMacroContext, optArg, RMIL_CMDLINE);
+	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
 	    break;
 
 	  case GETOPT_PREFIX:	/* XXX FIXME */
@@ -840,7 +840,7 @@ int main(int argc, char ** argv) {
 	    if ((*tce) || (tce == optArg) || (timeCheck == ULONG_MAX)) {
 		argerror("Argument to --timecheck must be integer");
 	    }
-	    addMacro(&globalMacroContext, "_timecheck", NULL, optArg, RMIL_CMDLINE);
+	    addMacro(NULL, "_timecheck", NULL, optArg, RMIL_CMDLINE);
 	    timeCheck = 1;
 	    break;
 
@@ -1089,16 +1089,16 @@ int main(int argc, char ** argv) {
 		   "package verification"));
 
     if (ftpProxy) {
-	addMacro(&globalMacroContext, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
+	addMacro(NULL, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
     }
     if (ftpPort) {
-	addMacro(&globalMacroContext, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
+	addMacro(NULL, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
     }
     if (httpProxy) {
-	addMacro(&globalMacroContext, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
+	addMacro(NULL, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
     }
     if (httpPort) {
-	addMacro(&globalMacroContext, "_httpport", NULL, httpPort, RMIL_CMDLINE);
+	addMacro(NULL, "_httpport", NULL, httpPort, RMIL_CMDLINE);
     }
 
     if (signIt) {

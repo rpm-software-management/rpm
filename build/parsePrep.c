@@ -19,15 +19,6 @@
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-#ifdef DYING
-static int doSetupMacro(Spec spec, char *line);
-static int doPatchMacro(Spec spec, char *line);
-static char *doPatch(Spec spec, int c, int strip, char *db,
-		     int reverse, int removeEmpties);
-static int checkOwners(const char *file);
-static char *doUntar(Spec spec, int c, int quietly);
-#endif
-
 static int checkOwners(const char *file)
 {
     struct stat sb;

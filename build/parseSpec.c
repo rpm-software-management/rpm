@@ -63,10 +63,6 @@ int isPart(char *line)
     }
 }
 
-#ifdef	DYING
-static int matchTok(char *token, char *line);
-#endif
-
 static int matchTok(char *token, char *line)
 {
     char buf[BUFSIZ], *bp, *tok;
@@ -308,7 +304,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 	spec->gotBuildRoot = 1;
 	spec->buildRoot = strdup(buildRoot);
     }
-    addMacro(&globalMacroContext, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
+    addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->inBuildArchitectures = inBuildArch;
     spec->anyarch = anyarch;
     spec->force = force;
