@@ -5,6 +5,10 @@ AC_GCC_TRADITIONAL
 AC_PROG_RANLIB
 AC_PROG_INSTALL
 
+if test $CC = gcc; then
+    CFLAGS="-Wall $CFLAGS"
+fi
+
 dnl
 dnl if CC is gcc, we can rebuild the dependencies (since the depend rule
 dnl requires gcc).  If it's not, don't rebuild dependencies -- use what was
