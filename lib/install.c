@@ -516,6 +516,8 @@ static int setFileOwner(char * prefix, char * file, char * owner,
     if (chown(filespec, uid, gid)) {
 	error(RPMERR_CHOWN, "cannot set owner and group for %s - %s\n",
 		filespec, strerror(errno));
+	/* screw with the permissions so it's not SUID and 0.0 */
+	chmod(filespec, 0644);
 	return 1;
     }
 
