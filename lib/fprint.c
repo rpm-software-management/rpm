@@ -93,7 +93,7 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
 	stripCount++;
 
 	/* as we're stating paths here, we want to follow symlinks */
-	if (!stat(buf, &sb)) {
+	if (!stat(*buf ? buf : "/", &sb)) {
 	    chptr1 = fullName + (end - buf) + 1;
 	    if (scareMemory)
 		fp.basename = chptr1;
