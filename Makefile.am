@@ -48,8 +48,8 @@ rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
 rpmconvert_LDADD =	-lrpmbuild -lpopt -lrpm -lgdbm
 
 install-data-local:
-	ln -s rpm/rpmrc $(libdir)/rpmrc
-	ln -s rpm/rpmpopt $(libdir)/rpmpopt
+	@rm -f $(libdir)/rpmrc	&& ln -s rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
+	@rm -f $(libdir)/rpmpopt && ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
 
 # FIXME: these should be generated in configure.in
 find-requires: find-requires.sh
