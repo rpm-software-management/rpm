@@ -16,13 +16,14 @@ NLSPACKAGE = popt
 LINGUAS = 
 CATALOGS = $(addsuffix .mo, $(LINGUAS))
 
-POTFILES = \
+POTFILES = $(shell ls ../*.c)
 
 all: $(NLSPACKAGE).pot $(CATALOGS)
 
 $(NLSPACKAGE).pot: $(POTFILES)
 	xgettext --default-domain=$(NLSPACKAGE) \
-	    --add-comments --keyword=_ --keyword=N_ $(POTFILES)
+	    --add-comments --keyword=_ --keyword=N_ \
+	    --keyword=POPT_ $(POTFILES)
 	if cmp -s $(NLSPACKAGE).po $(NLSPACKAGE).pot; then \
 	    rm -f $(NLSPACKAGE).po; \
 	else \
@@ -70,11 +71,6 @@ POTFILES: POTFILES.in
 	  sed -e '/^#/d' -e '/^[ 	]*$$/d' \
 	      -e "s@.*@	$$posrcprefix& \\\\@" \
 	      -e '$$s/\(.*\) \\/\1/' < $(srcdir)/POTFILES.in > POTFILES )
-
-Makefile: Makefile.in.in ../config.status POTFILES
-	cd .. \
-	  && CONFIG_FILES=po/$@.in CONFIG_HEADERS= \
-	       $(SHELL) ./config.status
 
 %.mo: %.po
 	msgfmt -o $@ $<
