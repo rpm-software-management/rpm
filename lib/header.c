@@ -598,7 +598,7 @@ static struct indexEntry *findEntry(Header h, int_32 tag)
     struct indexEntry *index = h->index;
     int x = h->entries_used;
 
-    if (! h->fully_sorted) {
+    if (h->fully_sorted) {
 	return bsearch(&tag, index, x, sizeof(struct indexEntry), tagCompare);
     } else {
 	while (x && (tag != index->tag)) {
@@ -624,6 +624,7 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     /* First find the tag */
     index = findEntry(h, tag);
     if (! index) {
+	**p = NULL;
 	return 0;
     }
 
