@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 use Config;
 use File::Basename qw(&basename &dirname);
@@ -36,7 +36,8 @@ $Config{'startperl'}
 print OUT <<'!NO!SUBS!';
 
 use strict;
-use vars qw($USAGE $cmd %opts %RPM $file $hdr $installed $ret);
+use vars qw($USAGE $VERSION $revision $cmd %opts %RPM $file $hdr $installed
+            $ret);
 
 use Getopt::Long;
 use File::Basename qw(basename);
@@ -45,6 +46,8 @@ use RPM::Database;
 use RPM::Header;
 
 $cmd = basename $0;
+$revision = q$Revision: 1.2 $;
+$VERSION = sprintf("%d.%02d", $revision =~ /(\d+)\.(\d+)/);
 $USAGE = "USAGE:
     $cmd [ --newer ] [ --older ] [ --equal ] [ --uninst ]
         [ --invert ] file [ file ... ]
@@ -117,7 +120,7 @@ rpmprune - Remove unneeded files from a list of RPM package files
 
 =head1 SYNOPSIS
 
-rpmprune [ --help ] [ --newer ] [ --older ] [ --equal ] [ --uninst ]
+rpmprune [ --newer ] [ --older ] [ --equal ] [ --uninst ]
     [ --invert ] filelist ...
 
 =head1 DESCRIPTION
@@ -153,6 +156,8 @@ realistically put to use:
 =over
 
 =item --help
+
+Print a summary of the options and general usage.
 
 =item --newer (--nonewer)
 
@@ -195,3 +200,5 @@ Randy J. Ray <rjray@blackperl.com>
 close OUT or die "Can't close $file: $!";
 chmod 0755, $file or die "Can't reset permissions for $file: $!\n";
 exec("$Config{'eunicefix'} $file") if $Config{'eunicefix'} ne ':';
+
+=cut
