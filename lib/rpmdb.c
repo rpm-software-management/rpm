@@ -55,6 +55,23 @@ static int intMatchCmp(const void * one, const void * two) {
     return 0;
 };
 
+int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp) {
+    const char * dbpath;
+
+    dbpath = rpmGetPath("%{_dbpath}", NULL);
+    if (dbpath == NULL || dbpath[0] == '%') {
+	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
+	return 1;
+    }
+
+    if (openDatabase(prefix, dbpath, rpmdbp, O_RDONLY, 0644, 
+		     RPMDB_FLAG_MINIMAL)) {
+	return 1;
+    }
+
+    return 0;
+}
+
 int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     const char * dbpath;
     int rc;

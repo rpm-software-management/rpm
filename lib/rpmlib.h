@@ -299,6 +299,9 @@ int rpmdbOpen (const char * root, rpmdb * dbp, int mode, int perms);
 int rpmdbInit(const char * root, int perms);
     /* nonzero on error */
 void rpmdbClose (rpmdb db);
+/* Databases like this should only have rpmdb*RecNum and rpmdbGetRecord
+   used on them. Anything else could fail! */
+int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp);
 
 int rpmdbFirstRecNum(rpmdb db);
 int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
