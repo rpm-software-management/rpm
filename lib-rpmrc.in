@@ -1,43 +1,58 @@
 # Please send new entries to rpm-list@redhat.com
 
-# Architecture translations
+#############################################################
+# Canonical arch names and numbers
 
-arch_data: osfmach3_i986: i986 1
-arch_data: osfmach3_i886: i886 1
-arch_data: osfmach3_i786: i786 1
-arch_data: osfmach3_i686: i686 1
-arch_data: osfmach3_i586: i586 1
-arch_data: osfmach3_i486: i486 1
-arch_data: osfmach3_i386: i386 1
-arch_data: i986: i986 1
-arch_data: i886: i886 1
-arch_data: i786: i786 1
-arch_data: i686: i686 1
-arch_data: i586: i586 1
-arch_data: i486: i486 1
-arch_data: i386: i386 1
+arch_canon: i986: i986 1
+arch_canon: i886: i886 1
+arch_canon: i786: i786 1
+arch_canon: i686: i686 1
+arch_canon: i586: i586 1
+arch_canon: i486: i486 1
+arch_canon: i386: i386 1
 
-arch_data: alpha: axp 2
+arch_canon: alpha: axp 2
 
-arch_data: sparc: sparc 3
-arch_data: sun4:  sparc 3
+arch_canon: sparc: sparc 3
+arch_canon: sun4:  sparc 3
 
 # This is really a place holder for MIPS.
-arch_data: mips: mips 4
+arch_canon: mips: mips 4
 
-arch_data: ppc:          ppc 5
-arch_data: osfmach3_ppc: ppc 5
+arch_canon: ppc:          ppc 5
 
 # This is really a place holder for 68000
-arch_data: 68000: 68k 6
+arch_canon: 68000: 68k 6
 
 # This is wrong.
-arch_data: IP: sgi 7
+arch_canon: IP: sgi 7
 
-# OS Translations
+#############################################################
+# Canonical OS names and numbers
 
-os_data: Linux:  Linux   1
-os_data: IRIX:   Irix    2
+os_canon: Linux:  Linux   1
+os_canon: IRIX:   Irix    2
 # This is wrong
-os_data: SunOS5: solaris 3
-os_data: SunOS4: SunOS   4
+os_canon: SunOS5: solaris 3
+os_canon: SunOS4: SunOS   4
+
+#############################################################
+# For a given uname().machine, the default build arch
+
+buildarchtranslate: osfmach3_i986: i386
+buildarchtranslate: osfmach3_i886: i386
+buildarchtranslate: osfmach3_i786: i386
+buildarchtranslate: osfmach3_i686: i386
+buildarchtranslate: osfmach3_i586: i386
+buildarchtranslate: osfmach3_i486: i386
+buildarchtranslate: osfmach3_i386: i386
+
+buildarchtranslate: i986: i386
+buildarchtranslate: i886: i386
+buildarchtranslate: i786: i386
+buildarchtranslate: i686: i386
+buildarchtranslate: i586: i386
+buildarchtranslate: i486: i386
+buildarchtranslate: i386: i386
+
+buildarchtranslate: osfmach3_ppc: ppc
