@@ -405,9 +405,8 @@ static /*@only@*/ const char * expandNextArg(poptContext con, const char * s)
 
 static void poptStripArg(poptContext con, int which)
 {
-    if (con->arg_strip == NULL) {
+    if (con->arg_strip == NULL)
 	con->arg_strip = PBM_ALLOC(con->optionStack[0].argc);
-    }
     PBM_SET(which, con->arg_strip);
 }
 
@@ -461,10 +460,10 @@ static int poptSaveInt(const struct poptOption * opt, long aLong) {
 static void prtcon(const char *msg, poptContext con)
 {
     if (msg) fprintf(stderr, "%s", msg);
-    fprintf(stderr, "\tcon %p os %p nextCharArg %p \"%s\" argv[%d] \"%s\"\n",
+    fprintf(stderr, "\tcon %p os %p nextCharArg \"%s\" nextArg \"%s\" argv[%d] \"%s\"\n",
 	con, con->os,
-	con->os->nextCharArg,
 	(con->os->nextCharArg ? con->os->nextCharArg : ""),
+	(con->os->nextArg ? con->os->nextArg : ""),
 	con->os->next,
 	(con->os->argv && con->os->argv[con->os->next]
 		? con->os->argv[con->os->next] : ""));
@@ -679,15 +678,19 @@ int poptGetNextOpt(poptContext con)
 
 	{   char *s = malloc((opt->longName ? strlen(opt->longName) : 0) + 3);
 	    if (opt->longName)
-		sprintf(s, "--%s", opt->longName);
+		sprintf(s, "%s%s",
+		    ((opt->argInfo & POPT_ARGFLAG_ONEDASH) ? "-" : "--"),
+		    opt->longName);
 	    else
 		sprintf(s, "-%c", opt->shortName);
 	    con->finalArgv[con->finalArgvCount++] = s;
 	}
 
-	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) {
-	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_VAL) {
-	} else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
+	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE)
+	    /*@-ifempty@*/ ;
+	else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_VAL)
+	    /*@-ifempty@*/ ;
+	else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
 	    con->finalArgv[con->finalArgvCount++] = xstrdup(con->os->nextArg);
 	}
     }
@@ -702,13 +705,15 @@ const char * poptGetOptArg(poptContext con) {
 }
 
 const char * poptGetArg(poptContext con) {
-    if (con->numLeftovers == con->nextLeftover) return NULL;
-    return con->leftovers[con->nextLeftover++];
+    const char * ret = (con->nextLeftover < con->numLeftovers)
+	? con->leftovers[con->nextLeftover++] : NULL;
+    return ret;
 }
 
 const char * poptPeekArg(poptContext con) {
-    if (con->numLeftovers == con->nextLeftover) return NULL;
-    return con->leftovers[con->nextLeftover];
+    const char * ret = (con->nextLeftover < con->numLeftovers)
+	? con->leftovers[con->nextLeftover] : NULL;
+    return ret;
 }
 
 const char ** poptGetArgs(poptContext con) {
@@ -835,23 +840,17 @@ int poptStrippedArgv(poptContext con, int argc, char **argv)
 {
     int i,j=1, numargs=argc;
     
-    for(i=1; i<argc; i++) {
-	if (PBM_ISSET(i, con->arg_strip)) {
+    for (i = 1; i < argc; i++) {
+	if (PBM_ISSET(i, con->arg_strip))
 	    numargs--;
-	}
     }
     
-    for(i=1; i<argc; i++) {
-	if (PBM_ISSET(i, con->arg_strip)) {
+    for (i = 1; i < argc; i++) {
+	if (PBM_ISSET(i, con->arg_strip))
 	    continue;
-	} else {
-	    if (j<numargs) {
-		argv[j++]=argv[i];
-	    } else {
-		argv[j++]='\0';
-	    }
-	}
+	argv[j] = (j < numargs) ? argv[i] : '\0';
+	j++;
     }
     
-    return(numargs);
+    return numargs;
 }
