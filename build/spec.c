@@ -463,10 +463,10 @@ static struct part_rec {
     {BUILD_PART,     0, "%build"},
     {INSTALL_PART,   0, "%install"},
     {CLEAN_PART,     0, "%clean"},
-    {PREIN_PART,     0, "%pre"},
-    {POSTIN_PART,    0, "%post"},
     {PREUN_PART,     0, "%preun"},
     {POSTUN_PART,    0, "%postun"},
+    {PREIN_PART,     0, "%pre"},
+    {POSTIN_PART,    0, "%post"},
     {FILES_PART,     0, "%files"},
     {CHANGELOG_PART, 0, "%changelog"},
     {0, 0, 0}
