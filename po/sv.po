@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.112 $
+# $Revision: 1.113 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-06 04:54-0400\n"
+"POT-Creation-Date: 2000-06-06 15:54-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2483,41 +2483,51 @@ msgstr "paket %s står i konflikt: %s\n"
 msgid "loop in prerequisite chain: %s"
 msgstr "cirkularitet i kedja av förutsättningar: %s"
 
-#: lib/db1.c:386
+#: lib/db1.c:95 lib/db3.c:433
+#, c-format
+msgid "db%d error(%d)"
+msgstr ""
+
+#: lib/db1.c:97 lib/db3.c:435
+#, c-format
+msgid " performing %s"
+msgstr ""
+
+#: lib/db1.c:382
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:389
+#: lib/db1.c:385
 #, fuzzy, c-format
 msgid "removed db file        %s\n"
 msgstr "tar bort filindex för %s\n"
 
-#: lib/db1.c:420
+#: lib/db1.c:416
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "felaktig filstatus: %s"
 
-#: lib/db1.c:425
+#: lib/db1.c:421
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "öppnar databas med rättighet 0x%x i %s\n"
 
-#: lib/db1.c:434 lib/url.c:445
+#: lib/db1.c:430 lib/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunde inte öppna %s: %s\n"
 
-#: lib/db1.c:450
+#: lib/db1.c:446
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "kan inte få %s lås på databas"
 
-#: lib/db1.c:451 lib/db3.c:1081
+#: lib/db1.c:447 lib/db3.c:1078
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: lib/db1.c:451 lib/db3.c:1081
+#: lib/db1.c:447 lib/db3.c:1078
 msgid "shared"
 msgstr "delat"
 
@@ -2566,37 +2576,37 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:464
+#: lib/db3.c:461
 #, fuzzy, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr "tar bort filindex för %s\n"
 
-#: lib/db3.c:476
+#: lib/db3.c:473
 #, fuzzy, c-format
 msgid "removed db environment %s/%s\n"
 msgstr "tar bort filindex för %s\n"
 
-#: lib/db3.c:513
+#: lib/db3.c:510
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:884
+#: lib/db3.c:881
 #, fuzzy, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "tar bort filindex för %s\n"
 
-#: lib/db3.c:974
+#: lib/db3.c:971
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar databas med rättighet 0x%x i %s\n"
 
-#: lib/db3.c:1079
+#: lib/db3.c:1076
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på databas"
 
-#: lib/db3.c:1086
+#: lib/db3.c:1083
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "tar bort filindex för %s\n"
@@ -3404,7 +3414,7 @@ msgstr "OK"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:218
+#: lib/rpmdb.c:226
 msgid ""
 "\n"
 "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
@@ -3414,12 +3424,12 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:251
+#: lib/rpmdb.c:259
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpmdb.c:259
+#: lib/rpmdb.c:267
 msgid ""
 "\n"
 "--> The database is in db%d format, not the suggested db%d format.\n"
@@ -3430,7 +3440,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:272
+#: lib/rpmdb.c:280
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the database is db%d format.\n"
@@ -3440,26 +3450,26 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:341
+#: lib/rpmdb.c:345
 #, fuzzy, c-format
-msgid "error getting \"%s\" records from %s index"
+msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "fel när post %s hämtades från %s"
 
-#: lib/rpmdb.c:458
-#, c-format
-msgid "error storing record %s into %s"
+#: lib/rpmdb.c:463
+#, fuzzy, c-format
+msgid "error(%d) storing record %s into %s"
 msgstr "fel när post %s sparades i %s"
 
-#: lib/rpmdb.c:467
+#: lib/rpmdb.c:472
 #, fuzzy, c-format
-msgid "error removing record %s from %s"
+msgid "error(%d) removing record %s from %s"
 msgstr "fel när post %s togs bort ur %s"
 
-#: lib/rpmdb.c:689 lib/rpmdb.c:2200
+#: lib/rpmdb.c:695 lib/rpmdb.c:2200
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
-#: lib/rpmdb.c:786
+#: lib/rpmdb.c:792
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -3468,12 +3478,12 @@ msgstr ""
 "i nytt format"
 
 #. error
-#: lib/rpmdb.c:990
+#: lib/rpmdb.c:996
 #, fuzzy, c-format
-msgid "cannot retrieve package \"%s\" from db"
-msgstr "kan inte öppna paket: %s\n"
+msgid "error(%d) counting packages"
+msgstr "fel vid sökning efter paket %s\n"
 
-#: lib/rpmdb.c:1056 lib/rpmdb.c:1574 lib/uninstall.c:90
+#: lib/rpmdb.c:1054 lib/rpmdb.c:1574 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "kan inte läsa huvud vid %d för uppslagning"
@@ -3499,9 +3509,9 @@ msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:1788
-#, fuzzy
-msgid "cannot allocate new instance in database"
-msgstr "kan inte allokera plats för databas"
+#, fuzzy, c-format
+msgid "error(%d) allocating new package instance"
+msgstr "fel vid sökning efter paket %s\n"
 
 #: lib/rpmdb.c:1843
 #, c-format
@@ -4080,6 +4090,14 @@ msgstr "saknas     %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
+#, fuzzy
+#~ msgid "cannot retrieve package \"%s\" from db"
+#~ msgstr "kan inte öppna paket: %s\n"
+
+#, fuzzy
+#~ msgid "cannot allocate new instance in database"
+#~ msgstr "kan inte allokera plats för databas"
+
 #~ msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 #~ msgstr "--buildarch är föråldrat.  Använd flaggan --target istället.\n"
 
@@ -4165,9 +4183,6 @@ msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
 #~ msgid "error: could not read database record\n"
 #~ msgstr "fel: kunde inte lästa databaspost\n"
-
-#~ msgid "error looking for package %s\n"
-#~ msgstr "fel vid sökning efter paket %s\n"
 
 #~ msgid "cannot read header at %d for lookup"
 #~ msgstr "kan inte läsa huvud vid %d för uppslagning"

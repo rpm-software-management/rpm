@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-06 04:54-0400\n"
+"POT-Creation-Date: 2000-06-06 15:54-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2568,41 +2568,51 @@ msgstr "%s paketi %s altýnda gözükmüyor"
 msgid "loop in prerequisite chain: %s"
 msgstr "gerekenler zincirinde döngü: %s"
 
-#: lib/db1.c:386
+#: lib/db1.c:95 lib/db3.c:433
+#, c-format
+msgid "db%d error(%d)"
+msgstr ""
+
+#: lib/db1.c:97 lib/db3.c:435
+#, c-format
+msgid " performing %s"
+msgstr ""
+
+#: lib/db1.c:382
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:389
+#: lib/db1.c:385
 #, c-format
 msgid "removed db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:420
+#: lib/db1.c:416
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "%s açýlamadý: %s"
 
-#: lib/db1.c:425
+#: lib/db1.c:421
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/db1.c:434 lib/url.c:445
+#: lib/db1.c:430 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/db1.c:450
+#: lib/db1.c:446
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "Veritabaný için %s kilit (lock) alýnamadý"
 
-#: lib/db1.c:451 lib/db3.c:1081
+#: lib/db1.c:447 lib/db3.c:1078
 msgid "exclusive"
 msgstr "özel"
 
-#: lib/db1.c:451 lib/db3.c:1081
+#: lib/db1.c:447 lib/db3.c:1078
 msgid "shared"
 msgstr "paylaþýlan (shared)"
 
@@ -2651,37 +2661,37 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:464
+#: lib/db3.c:461
 #, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:476
+#: lib/db3.c:473
 #, c-format
 msgid "removed db environment %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:513
+#: lib/db3.c:510
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:884
+#: lib/db3.c:881
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:974
+#: lib/db3.c:971
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/db3.c:1079
+#: lib/db3.c:1076
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "Veritabaný için %s kilit (lock) alýnamadý"
 
-#: lib/db3.c:1086
+#: lib/db3.c:1083
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""
@@ -3509,7 +3519,7 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:218
+#: lib/rpmdb.c:226
 msgid ""
 "\n"
 "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
@@ -3519,12 +3529,12 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:251
+#: lib/rpmdb.c:259
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "hata: %s eriþilemiyor\n"
 
-#: lib/rpmdb.c:259
+#: lib/rpmdb.c:267
 msgid ""
 "\n"
 "--> The database is in db%d format, not the suggested db%d format.\n"
@@ -3535,7 +3545,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:272
+#: lib/rpmdb.c:280
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the database is db%d format.\n"
@@ -3545,38 +3555,38 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:341
+#: lib/rpmdb.c:345
 #, fuzzy, c-format
-msgid "error getting \"%s\" records from %s index"
+msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
-#: lib/rpmdb.c:458
-#, c-format
-msgid "error storing record %s into %s"
+#: lib/rpmdb.c:463
+#, fuzzy, c-format
+msgid "error(%d) storing record %s into %s"
 msgstr "%s kaydý %s dosyasýna yazýlamýyor"
 
-#: lib/rpmdb.c:467
+#: lib/rpmdb.c:472
 #, fuzzy, c-format
-msgid "error removing record %s from %s"
+msgid "error(%d) removing record %s from %s"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:689 lib/rpmdb.c:2200
+#: lib/rpmdb.c:695 lib/rpmdb.c:2200
 msgid "no dbpath has been set"
 msgstr "dbpath deðeri girilmemiþ"
 
-#: lib/rpmdb.c:786
+#: lib/rpmdb.c:792
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:990
+#: lib/rpmdb.c:996
 #, fuzzy, c-format
-msgid "cannot retrieve package \"%s\" from db"
-msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
+msgid "error(%d) counting packages"
+msgstr "%s pakedi aranýrken hata oluþtu\n"
 
-#: lib/rpmdb.c:1056 lib/rpmdb.c:1574 lib/uninstall.c:90
+#: lib/rpmdb.c:1054 lib/rpmdb.c:1574 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
@@ -3601,11 +3611,10 @@ msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 msgid "%6d %s\n"
 msgstr ""
 
-# reservieren???
 #: lib/rpmdb.c:1788
-#, fuzzy
-msgid "cannot allocate new instance in database"
-msgstr "Veritabaný için yer bulunamadý"
+#, fuzzy, c-format
+msgid "error(%d) allocating new package instance"
+msgstr "%s pakedi aranýrken hata oluþtu\n"
 
 #: lib/rpmdb.c:1843
 #, c-format
@@ -4207,6 +4216,15 @@ msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 
 #, fuzzy
+#~ msgid "cannot retrieve package \"%s\" from db"
+#~ msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
+
+# reservieren???
+#, fuzzy
+#~ msgid "cannot allocate new instance in database"
+#~ msgstr "Veritabaný için yer bulunamadý"
+
+#, fuzzy
 #~ msgid "override build architecture"
 #~ msgstr "paket mimarisini doðrulamaz"
 
@@ -4284,9 +4302,6 @@ msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 
 #~ msgid "error: could not read database record\n"
 #~ msgstr "hata: veritabaný kaydý okunamadý\n"
-
-#~ msgid "error looking for package %s\n"
-#~ msgstr "%s pakedi aranýrken hata oluþtu\n"
 
 #~ msgid "cannot read header at %d for lookup"
 #~ msgstr "%d kaydýndan baþlýk bilgisi okunamadý"

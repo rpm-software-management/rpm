@@ -53,6 +53,7 @@
 	- change %configure, add %makeinstall macros to handle FHS changes.
 	- add optflags for i486 and i586.
 	- fix: segfault with legacy packages missing RPMTAG_FILEINODES.
+	- require db3 in default configuration.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

@@ -1451,10 +1451,11 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     }
 
     /* now look at the removed packages and make sure they aren't critical */
-    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_PACKAGES, NULL, 0);
-    rpmdbAppendIterator(mi, rpmdep->removedPackages,
+    if (rpmdep->numRemovedPackages > 0) {
+      mi = rpmdbInitIterator(rpmdep->db, RPMDBI_PACKAGES, NULL, 0);
+      rpmdbAppendIterator(mi, rpmdep->removedPackages,
 		rpmdep->numRemovedPackages);
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+      while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	{   const char * name;
 	    headerNVR(h, &name, NULL, NULL);
@@ -1521,8 +1522,9 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    }
 	}
 
+      }
+      rpmdbFreeIterator(mi);
     }
-    rpmdbFreeIterator(mi);
 
     if (!ps.num) {
 	free(ps.problems);

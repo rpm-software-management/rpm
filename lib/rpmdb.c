@@ -156,7 +156,7 @@ fprintf(stderr, "--- RMW %s (%s:%u)\n", tagName(dbi->dbi_rpmtag), f, l);
 
 inline int dbiDel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags) {
 if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "    %s Del key (%p,%ld) %s\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""));
+fprintf(stderr, "    Del %s key (%p,%ld) %s\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""));
     return (*dbi->dbi_vec->cdel) (dbi, keyp, keylen, flags);
 }
 
@@ -165,10 +165,18 @@ inline int dbiGet(dbiIndex dbi, void ** keypp, size_t * keylenp,
     int rc;
     rc = (*dbi->dbi_vec->cget) (dbi, keypp, keylenp, datapp, datalenp, flags);
 if (_debug < 0 || dbi->dbi_debug) {
+char keyval[32];
 int dataval = 0xdeadbeef;
-if (rc == 0 && datapp && *datapp) memcpy(&dataval, *datapp, sizeof(dataval));
-fprintf(stderr, "    %s Get key (%p,%ld) data (%p,%ld) %s %x\n", tagName(dbi->dbi_rpmtag), *keypp, (long)*keylenp, *datapp, (long)*datalenp,
-(dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)*keypp : ""), dataval);
+if (dbi->dbi_rpmtag == RPMDBI_PACKAGES && keypp && *keypp && keylenp && *keylenp >= sizeof(keyval)) {
+    int keyint;
+    memcpy(&keyint, *keypp, sizeof(keyint));
+    sprintf(keyval, "%d", keyint);
+} else keyval[0] = '\0';
+if (rc == 0 && datapp && *datapp && datalenp && *datalenp >= sizeof(dataval))
+    memcpy(&dataval, *datapp, sizeof(dataval));
+fprintf(stderr, "    Get %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n",
+    tagName(dbi->dbi_rpmtag), *keypp, (long)*keylenp, *datapp, (long)*datalenp,
+    (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)*keypp : keyval), dataval, rc);
 }
     return rc;
 }
@@ -178,7 +186,7 @@ inline int dbiPut(dbiIndex dbi, const void * keyp, size_t keylen,
 if (_debug < 0 || dbi->dbi_debug) {
 int dataval = 0xdeadbeef;
 if (datap) memcpy(&dataval, datap, sizeof(dataval));
-fprintf(stderr, "    %s Put key (%p,%ld) data (%p,%ld) %s %x\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), dataval);
+fprintf(stderr, "    Put %s key (%p,%ld) data (%p,%ld) \"%s\" %x\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), dataval);
 }
     return (*dbi->dbi_vec->cput) (dbi, keyp, keylen, datap, datalen, flags);
 }
@@ -328,19 +336,16 @@ static int dbiSearch(dbiIndex dbi, const char * keyp, size_t keylen,
     size_t datalen;
     int rc;
 
-    if (setp) {
-	if (*setp)
-	    dbiFreeIndexSet(*setp);
-	*setp = NULL;
-    }
+    if (setp) *setp = NULL;
     if (keylen == 0) keylen = strlen(keyp);
 
     rc = dbiGet(dbi, (void **)&keyp, &keylen, &datap, &datalen, 0);
 
-    if (rc < 0) {
-	rpmError(RPMERR_DBGETINDEX, _("error getting \"%s\" records from %s index"),
-		keyp, tagName(dbi->dbi_rpmtag));
-    } else if (rc == 0 && setp) {
+    if (rc > 0) {
+	rpmError(RPMERR_DBGETINDEX, _("error(%d) getting \"%s\" records from %s index"),
+		rc, keyp, tagName(dbi->dbi_rpmtag));
+    } else
+    if (rc == 0 && setp) {
 	int _dbbyteswapped = dbiByteSwapped(dbi);
 	const char * sdbir = datap;
 	dbiIndexSet set;
@@ -455,8 +460,8 @@ static int dbiUpdateIndex(dbiIndex dbi, const char * keyp, dbiIndexSet set)
 	rc = dbiPut(dbi, keyp, keylen, datap, datalen, 0);
 
 	if (rc) {
-	    rpmError(RPMERR_DBPUTINDEX, _("error storing record %s into %s"),
-		keyp, tagName(dbi->dbi_rpmtag));
+	    rpmError(RPMERR_DBPUTINDEX, _("error(%d) storing record %s into %s"),
+		rc, keyp, tagName(dbi->dbi_rpmtag));
 	}
 
     } else {
@@ -464,8 +469,8 @@ static int dbiUpdateIndex(dbiIndex dbi, const char * keyp, dbiIndexSet set)
 	rc = dbiDel(dbi, keyp, keylen, 0);
 
 	if (rc) {
-	    rpmError(RPMERR_DBPUTINDEX, _("error removing record %s from %s"),
-		keyp, tagName(dbi->dbi_rpmtag));
+	    rpmError(RPMERR_DBPUTINDEX, _("error(%d) removing record %s from %s"),
+		rc, keyp, tagName(dbi->dbi_rpmtag));
 	}
 
     }
@@ -651,9 +656,10 @@ int rpmdbSync(rpmdb rpmdb)
     int dbix;
 
     for (dbix = 0; dbix < rpmdb->db_ndbi; dbix++) {
+	int xx;
 	if (rpmdb->_dbi[dbix] == NULL)
 	    continue;
-    	dbiSync(rpmdb->_dbi[dbix], 0);
+    	xx = dbiSync(rpmdb->_dbi[dbix], 0);
     }
     return 0;
 }
@@ -984,20 +990,12 @@ int rpmdbCountPackages(rpmdb rpmdb, const char * name)
 	xx = dbiCclose(dbi, NULL, 0);
     }
 
-    switch (rc) {
-    default:
-    case -1:		/* error */
-	rpmError(RPMERR_DBCORRUPT, _("cannot retrieve package \"%s\" from db"),
-		name);
-	rc = -1;
-	break;
-    case 1:		/* not found */
-	rc = 0;
-	break;
-    case 0:		/* success */
+    if (rc == 0)	/* success */
 	rc = dbiIndexSetCount(matches);
-	break;
-    }
+    else if (rc > 0)	/* error */
+	rpmError(RPMERR_DBCORRUPT, _("error(%d) counting packages"), rc);
+    else		/* not found */
+	rc = 0;
 
     if (matches)
 	dbiFreeIndexSet(matches);
@@ -1104,6 +1102,7 @@ static int dbiFindByLabel(dbiIndex dbi, const char * arg, dbiIndexSet * matches)
     /* did they give us just a name? */
     rc = dbiFindMatches(dbi, arg, NULL, NULL, matches);
     if (rc != 1) return rc;
+    if (*matches) dbiFreeIndexSet(*matches);
 
     /* maybe a name and a release */
     localarg = alloca(strlen(arg) + 1);
@@ -1116,6 +1115,7 @@ static int dbiFindByLabel(dbiIndex dbi, const char * arg, dbiIndexSet * matches)
     *chptr = '\0';
     rc = dbiFindMatches(dbi, localarg, chptr + 1, NULL, matches);
     if (rc != 1) return rc;
+    if (*matches) dbiFreeIndexSet(*matches);
     
     /* how about name-version-release? */
 
@@ -1785,7 +1785,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
     }
 
     if (rc) {
-	rpmError(RPMERR_DBCORRUPT, _("cannot allocate new instance in database"));
+	rpmError(RPMERR_DBCORRUPT, _("error(%d) allocating new package instance"), rc);
 	goto exit;
     }
 
@@ -2342,7 +2342,7 @@ int rpmdbRebuild(const char * rootdir)
     rc = 0;
 
 exit:
-    if (removedir) {
+    if (removedir && !(rc == 0 && nocleanup)) {
 	rpmMessage(RPMMESS_DEBUG, _("removing directory %s\n"), newrootdbpath);
 	if (Rmdir(newrootdbpath))
 	    rpmMessage(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),

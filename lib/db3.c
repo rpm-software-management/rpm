@@ -427,16 +427,13 @@ static int db_env_create(DB_ENV **dbenvp, int foo)
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
     int rc = 0;
 
-    if (error == 0)
-	rc = 0;
-    else if (error < 0)
-	rc = 1;
-    else if (error > 0)
-	rc = -1;
+    rc = error;
 
     if (printit && rc) {
-	fprintf(stderr, "*** db%d %s rc %d %s\n", dbi->dbi_api, msg,
-		rc, db_strerror(error));
+	fprintf(stderr, _("db%d error(%d)"), dbi->dbi_api, rc);
+	if (msg)
+	    fprintf(stderr, _(" performing %s"), msg);
+	fprintf(stderr, ": %s\n", db_strerror(error));
     }
 
     return rc;

@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.32
+Release: 0.33
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -88,7 +88,6 @@ capabilities.
 
 %prep
 %setup -q
-
 
 %build
 %ifos linux
@@ -252,6 +251,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jun  6 2000 Jeff Johnson <jbj@redhat.com>
+- require db3 in default configuration.
+
 * Mon Jun  5 2000 Jeff Johnson <jbj@redhat.com>
 - add optflags for i486 and i586.
 - fix: segfault with legacy packages missing RPMTAG_FILEINODES.

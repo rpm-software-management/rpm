@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-06-06 04:54-0400\n"
+"POT-Creation-Date: 2000-06-06 15:54-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2514,41 +2514,51 @@ msgstr "balík %s koliduje: %s\n"
 msgid "loop in prerequisite chain: %s"
 msgstr "sluèka v re»azi po¾iadaviek: %s"
 
-#: lib/db1.c:386
+#: lib/db1.c:95 lib/db3.c:433
+#, c-format
+msgid "db%d error(%d)"
+msgstr ""
+
+#: lib/db1.c:97 lib/db3.c:435
+#, c-format
+msgid " performing %s"
+msgstr ""
+
+#: lib/db1.c:382
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:389
+#: lib/db1.c:385
 #, fuzzy, c-format
 msgid "removed db file        %s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/db1.c:420
+#: lib/db1.c:416
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "chybný stav súboru: %s"
 
-#: lib/db1.c:425
+#: lib/db1.c:421
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/db1.c:434 lib/url.c:445
+#: lib/db1.c:430 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/db1.c:450
+#: lib/db1.c:446
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: lib/db1.c:451 lib/db3.c:1081
+#: lib/db1.c:447 lib/db3.c:1078
 msgid "exclusive"
 msgstr "výhradný"
 
-#: lib/db1.c:451 lib/db3.c:1081
+#: lib/db1.c:447 lib/db3.c:1078
 msgid "shared"
 msgstr "zdieµaný"
 
@@ -2597,37 +2607,37 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:464
+#: lib/db3.c:461
 #, fuzzy, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/db3.c:476
+#: lib/db3.c:473
 #, fuzzy, c-format
 msgid "removed db environment %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/db3.c:513
+#: lib/db3.c:510
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:884
+#: lib/db3.c:881
 #, fuzzy, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/db3.c:974
+#: lib/db3.c:971
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/db3.c:1079
+#: lib/db3.c:1076
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: lib/db3.c:1086
+#: lib/db3.c:1083
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
@@ -3432,7 +3442,7 @@ msgstr "V PORIADKU"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:218
+#: lib/rpmdb.c:226
 msgid ""
 "\n"
 "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
@@ -3442,12 +3452,12 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:251
+#: lib/rpmdb.c:259
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpmdb.c:259
+#: lib/rpmdb.c:267
 msgid ""
 "\n"
 "--> The database is in db%d format, not the suggested db%d format.\n"
@@ -3458,7 +3468,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:272
+#: lib/rpmdb.c:280
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the database is db%d format.\n"
@@ -3468,26 +3478,26 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:341
+#: lib/rpmdb.c:345
 #, fuzzy, c-format
-msgid "error getting \"%s\" records from %s index"
+msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: lib/rpmdb.c:458
-#, c-format
-msgid "error storing record %s into %s"
+#: lib/rpmdb.c:463
+#, fuzzy, c-format
+msgid "error(%d) storing record %s into %s"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: lib/rpmdb.c:467
+#: lib/rpmdb.c:472
 #, fuzzy, c-format
-msgid "error removing record %s from %s"
+msgid "error(%d) removing record %s from %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: lib/rpmdb.c:689 lib/rpmdb.c:2200
+#: lib/rpmdb.c:695 lib/rpmdb.c:2200
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: lib/rpmdb.c:786
+#: lib/rpmdb.c:792
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -3496,12 +3506,12 @@ msgstr ""
 "databázy v novom formáte"
 
 #. error
-#: lib/rpmdb.c:990
+#: lib/rpmdb.c:996
 #, fuzzy, c-format
-msgid "cannot retrieve package \"%s\" from db"
-msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
+msgid "error(%d) counting packages"
+msgstr "chyba pri hµadaní balíka %s\n"
 
-#: lib/rpmdb.c:1056 lib/rpmdb.c:1574 lib/uninstall.c:90
+#: lib/rpmdb.c:1054 lib/rpmdb.c:1574 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
@@ -3527,9 +3537,9 @@ msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:1788
-#, fuzzy
-msgid "cannot allocate new instance in database"
-msgstr "nie je mo¾né prideli» miesto pre databázu"
+#, fuzzy, c-format
+msgid "error(%d) allocating new package instance"
+msgstr "chyba pri hµadaní balíka %s\n"
 
 #: lib/rpmdb.c:1843
 #, c-format
@@ -4113,6 +4123,14 @@ msgstr "chýbajúce    %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
+#, fuzzy
+#~ msgid "cannot retrieve package \"%s\" from db"
+#~ msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
+
+#, fuzzy
+#~ msgid "cannot allocate new instance in database"
+#~ msgstr "nie je mo¾né prideli» miesto pre databázu"
+
 #~ msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 #~ msgstr "Voµba --buildarch je zastaralá. Pou¾ite namiesto nej --target.\n"
 
@@ -4193,9 +4211,6 @@ msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
 #~ msgid "error: could not read database record\n"
 #~ msgstr "chyba: nie je mo¾né preèíta» záznam v databáze\n"
-
-#~ msgid "error looking for package %s\n"
-#~ msgstr "chyba pri hµadaní balíka %s\n"
 
 #~ msgid "cannot read header at %d for lookup"
 #~ msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-06-06 04:54-0400\n"
+msgstr "POT-Creation-Date: 2000-06-06 15:54-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:422
 #, c-format
@@ -2553,41 +2553,51 @@ msgstr "aucun package n'a été spécifié pour la désinstallation"
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: lib/db1.c:386
+#: lib/db1.c:95 lib/db3.c:433
+#, c-format
+msgid "db%d error(%d)"
+msgstr ""
+
+#: lib/db1.c:97 lib/db3.c:435
+#, c-format
+msgid " performing %s"
+msgstr ""
+
+#: lib/db1.c:382
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:389
+#: lib/db1.c:385
 #, c-format
 msgid "removed db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:420
+#: lib/db1.c:416
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/db1.c:425
+#: lib/db1.c:421
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/db1.c:434 lib/url.c:445
+#: lib/db1.c:430 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/db1.c:450
+#: lib/db1.c:446
 #, fuzzy, c-format
 msgid "cannot get %s lock on database"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: lib/db1.c:451 lib/db3.c:1081
+#: lib/db1.c:447 lib/db3.c:1078
 msgid "exclusive"
 msgstr ""
 
-#: lib/db1.c:451 lib/db3.c:1081
+#: lib/db1.c:447 lib/db3.c:1078
 msgid "shared"
 msgstr ""
 
@@ -2636,37 +2646,37 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:464
+#: lib/db3.c:461
 #, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:476
+#: lib/db3.c:473
 #, c-format
 msgid "removed db environment %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:513
+#: lib/db3.c:510
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:884
+#: lib/db3.c:881
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:974
+#: lib/db3.c:971
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/db3.c:1079
+#: lib/db3.c:1076
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: lib/db3.c:1086
+#: lib/db3.c:1083
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""
@@ -3494,7 +3504,7 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:218
+#: lib/rpmdb.c:226
 msgid ""
 "\n"
 "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
@@ -3504,12 +3514,12 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:251
+#: lib/rpmdb.c:259
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:259
+#: lib/rpmdb.c:267
 msgid ""
 "\n"
 "--> The database is in db%d format, not the suggested db%d format.\n"
@@ -3520,7 +3530,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:272
+#: lib/rpmdb.c:280
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the database is db%d format.\n"
@@ -3530,38 +3540,38 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:341
+#: lib/rpmdb.c:345
 #, fuzzy, c-format
-msgid "error getting \"%s\" records from %s index"
+msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:458
-#, c-format
-msgid "error storing record %s into %s"
-msgstr ""
-
-#: lib/rpmdb.c:467
+#: lib/rpmdb.c:463
 #, fuzzy, c-format
-msgid "error removing record %s from %s"
+msgid "error(%d) storing record %s into %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:689 lib/rpmdb.c:2200
+#: lib/rpmdb.c:472
+#, fuzzy, c-format
+msgid "error(%d) removing record %s from %s"
+msgstr "impossible d'ouvrir: %s\n"
+
+#: lib/rpmdb.c:695 lib/rpmdb.c:2200
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:786
+#: lib/rpmdb.c:792
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:990
+#: lib/rpmdb.c:996
 #, fuzzy, c-format
-msgid "cannot retrieve package \"%s\" from db"
-msgstr "impossible d'ouvrir: %s\n"
+msgid "error(%d) counting packages"
+msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/rpmdb.c:1056 lib/rpmdb.c:1574 lib/uninstall.c:90
+#: lib/rpmdb.c:1054 lib/rpmdb.c:1574 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
@@ -3587,7 +3597,8 @@ msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:1788
-msgid "cannot allocate new instance in database"
+#, c-format
+msgid "error(%d) allocating new package instance"
 msgstr ""
 
 #: lib/rpmdb.c:1843
@@ -4170,6 +4181,10 @@ msgstr ""
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
+
+#, fuzzy
+#~ msgid "cannot retrieve package \"%s\" from db"
+#~ msgstr "impossible d'ouvrir: %s\n"
 
 #, fuzzy
 #~ msgid "override build architecture"

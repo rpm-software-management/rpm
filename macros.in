@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.62 2000/06/05 16:40:04 jbj Exp $
+# $Id: macros.in,v 1.63 2000/06/06 20:06:09 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -208,12 +208,13 @@
 # Choose db interface:
 #	0	same as 1
 #	1	native db1 interface (e.g. linux glibc libdb1 routines).
-#	2	native db2 interface.
+#	2	native db2 interface (not currently implemented, may never be).
 #	3	native db3 interface.
 #	-1	db3 -> db2 -> db1 (as available).
 #
-# There are two macros so that --rebuilddb can convert db1 -> db3
-%_dbapi			-1
+# There are two macros so that --rebuilddb can convert db1 -> db3.
+#
+%_dbapi			3
 %_dbapi_rebuild		3
 
 #

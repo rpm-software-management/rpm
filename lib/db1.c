@@ -56,19 +56,46 @@ char * db1basename (int rpmtag) {
     return xstrdup(base);
 }
 
+static /*@observer@*/ const char * db_strerror(int error)
+{
+    if (error == 0)
+	return ("Successful return: 0");
+    if (error > 0)
+	return (strerror(error));
+
+    switch (error) {
+    default:
+      {
+	/*
+	 * !!!
+	 * Room for a 64-bit number + slop.  This buffer is only used
+	 * if we're given an unknown error, which should never happen.
+	 * Note, however, we're no longer thread-safe if it does.
+	 */
+	static char ebuf[40];
+
+	(void)snprintf(ebuf, sizeof(ebuf), "Unknown error: %d", error);
+	return(ebuf);
+      }
+    }
+    /*@notreached@*/
+}
+
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
     int rc = 0;
 
     if (error == 0)
 	rc = 0;
     else if (error < 0)
-	rc = -1;
+	rc = errno;
     else if (error > 0)
-	rc = 1;
+	rc = -1;
 
     if (printit && rc) {
-	fprintf(stderr, "*** db%d %s rc %d error %d\n", dbi->dbi_api, msg,
-		rc, error);
+	fprintf(stderr, _("db%d error(%d)"), dbi->dbi_api, rc);
+	if (msg)
+	    fprintf(stderr, _(" performing %s"), msg);
+	fprintf(stderr, ": %s\n", db_strerror(error));
     }
 
     return rc;
@@ -81,25 +108,13 @@ static int db1sync(dbiIndex dbi, unsigned int flags) {
 	if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	    FD_t pkgs = dbi->dbi_db;
 	    int fdno = Fileno(pkgs);
-	    if (fdno >= 0)
-		rc = fsync(fdno);
+	    if (fdno >= 0 && (rc = fsync(fdno)) != 0)
+		rc = errno;
 	} else {
 	    DB * db = dbi->dbi_db;
 	    rc = db->sync(db, flags);
+	    rc = cvtdberr(dbi, "db->sync", rc, _debug);
 	}
-    }
-
-    switch (rc) {
-    default:
-    case RET_ERROR:	/* -1 */
-	rc = -1;
-	break;
-    case RET_SPECIAL:	/* 1 */
-	rc = 1;
-	break;
-    case RET_SUCCESS:	/* 0 */
-	rc = 0;
-	break;
     }
 
     return rc;
@@ -113,10 +128,13 @@ static int db1byteswapped(dbiIndex dbi)
 static void * doGetRecord(FD_t pkgs, unsigned int offset)
 {
     void * uh = NULL;
-    Header h;
+    Header h = NULL;
     const char ** fileNames;
     int fileCount = 0;
     int i;
+
+    if (offset >= fadGetFileSize(pkgs))
+	goto exit;
 
     (void)Fseek(pkgs, offset, SEEK_SET);
 
@@ -194,7 +212,7 @@ static int db1cget(dbiIndex dbi, void ** keyp, size_t * keylen,
     int rc = 0;
 
     if (dbi == NULL)
-	return 1;
+	return EFAULT;
 
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
@@ -225,7 +243,7 @@ static int db1cget(dbiIndex dbi, void ** keyp, size_t * keylen,
 	if (offset == 0) {	/* XXX simulated offset 0 record */
 	    offset = fadAlloc(pkgs, newSize);
 	    if (offset == 0)
-		return -1;
+		return ENOMEM;
 	    offset--;	/* XXX hack: caller will increment */
 	    /* XXX hack: return offset as data, free in db1cput */
 	    data.data = xmalloc(sizeof(offset));
@@ -235,14 +253,14 @@ static int db1cget(dbiIndex dbi, void ** keyp, size_t * keylen,
 	    data.data = doGetRecord(pkgs, offset);
 	    data.size = 0;	/* XXX WRONG */
 	    if (data.data == NULL)
-		rc = 1;
+		rc = EFAULT;
 	}
     } else {
 	DB * db;
 	int _printit;
 
 	if ((db = dbi->dbi_db) == NULL)
-	    return 1;
+	    return EFAULT;
 
 	if (key.data == NULL) {
 	    rc = db->seq(db, &key, &data, (dbi->dbi_lastoffset++ ? R_NEXT : R_FIRST));
@@ -255,21 +273,11 @@ static int db1cget(dbiIndex dbi, void ** keyp, size_t * keylen,
 	}
     }
 
-    switch (rc) {
-    default:
-    case RET_ERROR:	/* -1 */
-	rc = -1;
-	break;
-    case RET_SPECIAL:	/* 1 */
-	rc = 1;
-	break;
-    case RET_SUCCESS:	/* 0 */
-	rc = 0;
+    if (rc == 0) {
 	if (keyp)	*keyp = key.data;
 	if (keylen)	*keylen = key.size;
 	if (datap)	*datap = data.data;
 	if (datalen)	*datalen = data.size;
-	break;
     }
 
     return rc;
@@ -334,7 +342,7 @@ static int db1cput(dbiIndex dbi, const void * keyp, size_t keylen,
             rc = headerWrite(pkgs, h, HEADER_MAGIC_NO);
             fdSetContentLength(pkgs, -1);
 	    if (rc)
-		rc = -1;
+		rc = EIO;
 	    headerFree(h);
 	}
     } else {
@@ -363,25 +371,13 @@ static int db1close(dbiIndex dbi, unsigned int flags) {
 	} else {
 	    DB * db = dbi->dbi_db;
 	    rc = db->close(db);
+	    rc = cvtdberr(dbi, "db->close", rc, _debug);
 	}
 	dbi->dbi_db = NULL;
     }
 
     if (dbi->dbi_debug)
 	fprintf(stderr, "db1close: rc %d db %p\n", rc, dbi->dbi_db);
-
-    switch (rc) {
-    default:
-    case RET_ERROR:	/* -1 */
-	rc = -1;
-	break;
-    case RET_SPECIAL:	/* 1 */
-	rc = 1;
-	break;
-    case RET_SUCCESS:	/* 0 */
-	rc = 0;
-	break;
-    }
 
     rpmMessage(RPMMESS_DEBUG, _("closed  db file        %s\n"), urlfn);
     /* Remove temporary databases */
@@ -410,7 +406,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if (dbip)
 	*dbip = NULL;
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
-	return -1;
+	return EFAULT;
     dbi->dbi_api = DB_VERSION_MAJOR;
 
     base = db1basename(rpmtag);
@@ -418,7 +414,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     (void) urlPath(urlfn, &fn);
     if (!(fn && *fn != '\0')) {
 	rpmError(RPMERR_DBOPEN, _("bad db file %s"), urlfn);
-	rc = -1;
+	rc = EFAULT;
 	goto exit;
     }
 
@@ -430,7 +426,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 	pkgs = fadOpen(fn, dbi->dbi_mode, dbi->dbi_perms);
 	if (Ferror(pkgs)) {
-	    rc = errno;
+	    rc = EFAULT;
 	    rpmError(RPMERR_DBOPEN, _("failed to open %s: %s\n"), urlfn,
 		Fstrerror(pkgs));
 	    goto exit;
@@ -446,7 +442,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
 
 	    if (Fcntl(pkgs, F_SETLK, (void *) &l)) {
-		rc = errno;
+		rc = EFAULT;
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"),
 		    ((dbi->dbi_mode & O_RDWR) ? _("exclusive") : _("shared")));
 		goto exit;
