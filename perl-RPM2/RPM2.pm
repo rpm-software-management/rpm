@@ -22,7 +22,7 @@ sub open_rpm_db {
   my %params = @_;
 
   my $self = bless { }, $class;
-  $self->{db} = RPM2::_open_rpm_db($params{-path}, $params{-read_only} ? 0 : 1);
+  $self->{db} = RPM2::_open_rpm_db($params{-path}, $params{-readwrite} ? 1 : 0);
 
   return $self;
 }
@@ -40,7 +40,12 @@ sub open_package_file {
   $hdr = RPM2::Header->_new_raw($hdr, 1);
   $sigs = RPM2::Header->_new_raw($sigs, 1);
 
-  return ($hdr, $sigs);
+  if (wantarray) {
+    return ($hdr, $sigs);
+  }
+  else {
+    return $hdr;
+  }
 }
 
 sub close_rpm_db {
@@ -51,12 +56,64 @@ sub close_rpm_db {
   $self->{db} = undef;
 }
 
+sub find_all_iter {
+  my $self = shift;
+
+  return $self->iterator("RPMTAG_NAME")
+}
+
+sub find_all {
+  my $self = shift;
+
+  return $self->iterator()->expand_iter();
+}
+
+sub find_by_name_iter {
+  my $self = shift;
+  my $name = shift;
+
+  return $self->iterator("RPMTAG_NAME", $name);
+}
+sub find_by_name {
+  my $self = shift;
+  my $name = shift;
+
+  return $self->find_by_name_iter($name)->expand_iter;
+}
+
+sub find_by_provides_iter {
+  my $self = shift;
+  my $name = shift;
+
+  return $self->iterator("RPMTAG_PROVIDES", $name);
+}
+sub find_by_provides {
+  my $self = shift;
+  my $name = shift;
+
+  return $self->find_by_provides_iter($name)->expand_iter;
+}
+
+sub find_by_file_iter {
+  my $self = shift;
+  my $name = shift;
+
+  return $self->iterator("RPMTAG_BASENAMES", $name);
+}
+sub find_by_file {
+  my $self = shift;
+  my $name = shift;
+
+  return $self->find_by_file_iter($name)->expand_iter;
+}
+
 sub iterator {
   my $self = shift;
+  my $tag = shift;
   my $str = shift;
 
   die "db closed" unless $self->{db};
-  my $iter = RPM2::PackageIterator->new_iterator($self->{db}, $str);
+  my $iter = RPM2::PackageIterator->new_iterator($self->{db}, $tag, $str);
 
   return $iter;
 }
@@ -95,6 +152,12 @@ sub tag {
   return RPM2::_header_tag($self->{header}, $tagmap{$tag});
 }
 
+sub is_source_package {
+  my $self = shift;
+
+  return RPM2::_header_is_source($self->{header});
+}
+
 sub as_nvre {
   my $self = shift;
   my $epoch = $self->tag('epoch');
@@ -105,6 +168,26 @@ sub as_nvre {
   my $ret = $epoch_str . join("-", map { $self->tag($_) } qw/name version release/);
 
   return $ret;
+}
+
+foreach my $tag (keys %tagmap) {
+  $tag =~ s/^RPMTAG_//g;
+
+  my $sub = q {
+    sub [[method]] {
+      my $self = shift;
+      return $self->tag("[[tag]]");
+    }
+  };
+
+  my $method = lc $tag;
+  $sub =~ s/\[\[method\]\]/$method/g;
+  $sub =~ s/\[\[tag\]\]/$tag/g;
+  eval $sub;
+
+  if ($@) {
+    die $@;
+  }
 }
 
 sub files {
@@ -136,15 +219,14 @@ sub DESTROY {
 
 package RPM2::PackageIterator;
 
-sub RPMDBI_PACKAGES { 0; }
-
 sub new_iterator {
   my $class = shift;
   my $db = shift;
+  my $tag = shift;
   my $key = shift;
 
   my $self = bless {}, $class;
-  $self->{iter} = RPM2::_init_iterator($db, RPM2::PackageIterator::RPMDBI_PACKAGES, $key, defined $key ? length $key : 0);
+  $self->{iter} = RPM2::_init_iterator($db, $tagmap{$tag}, $key, defined $key ? length $key : 0);
   $self->{db} = $db;
 
   return $self;
@@ -153,7 +235,7 @@ sub new_iterator {
 sub next {
   my $self = shift;
 
-  die "no iterator" unless $self->{iter};
+  return unless $self->{iter};
 
   my $hdr = RPM2::_iterator_next($self->{iter});
   return unless $hdr;
@@ -161,19 +243,23 @@ sub next {
   return RPM2::Header->_new_raw($hdr, 1);
 }
 
-sub _cleanup {
+sub expand_iter {
   my $self = shift;
-  return unless $self->{iter};
 
-  RPM2::_destroy_iterator($self->{iter});
+  my @ret;
+  while (my $h = $self->next) {
+    push @ret, $h;
+  }
 
-  delete $self->{$_} foreach keys %$self;
+  return @ret;
 }
 
 sub DESTROY {
   my $self = shift;
 
-  $self->_cleanup();
+  if ($self->{iter}) {
+    RPM2::_destroy_iter($self->{iter});
+  }
 }
 
 # Preloaded methods go here.
@@ -184,46 +270,70 @@ __END__
 
 =head1 NAME
 
-RPM2 - Perl extension for blah blah blah
+RPM2 - Perl bindings for the RPM Package Manager API
 
 =head1 SYNOPSIS
 
   use RPM2;
-  blah blah blah
+
+  my $db = RPM2->open_rpm_db();
+
+  my $i = $db->find_all_iter();
+  print "The following packages are installed (aka, 'rpm -qa'):\n";
+  while (my $pkg = $i->next) {
+    print $pkg->as_nvre, "\n";
+  }
+
+  $i = $db->find_by_name_iter("kernel");
+  print "The following kernels are installed (aka, 'rpm -q kernel'):\n";
+  while (my $pkg = $i->next) {
+    print $pkg->as_nvre, " ", int($pkg->size()/1024), "k\n";
+  }
+
+  $i = $db->find_by_provides_iter("kernel");
+  print "The following packages provide 'kernel' (aka, 'rpm -q --whatprovides kernel'):\n";
+  while (my $pkg = $i->next) {
+    print $pkg->as_nvre, " ", int($pkg->size()/1024), "k\n";
+  }
+
+  print "The following packages are installed (aka, 'rpm -qa' once more):\n";
+  foreach my $pkg ($db->find_by_file("/bin/sh")) {
+    print $pkg->as_nvre, "\n";
+  }
+
+  my $pkg = RPM2->open_package_file("/tmp/XFree86-4.1.0-15.src.rpm");
+  print "Package opened: ", $pkg->as_nvre(), ", is source: ", $pkg->is_source_package, "\n";
 
 =head1 DESCRIPTION
 
-Stub documentation for RPM2, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
+The RPM2 module provides an object-oriented interface to querying both
+the installed RPM database as well as files on the filesystem.
 
-Blah blah blah.
+TODO: Everything, including:
 
-=head2 EXPORT
+The above methods need documenting.
 
-None by default.
+Package installation and removal.
 
+Signature validation.
 
 =head1 HISTORY
 
 =over 8
 
 =item 0.01
-
-Original version; created by h2xs 1.21 with options
-
-  -AC
-	RPM2
+Initial release
 
 =back
 
 
 =head1 AUTHOR
 
-A. U. Thor, E<lt>a.u.thor@a.galaxy.far.far.awayE<gt>
+Chip Turner E<lt>cturner@redhat.comE<gt>
 
 =head1 SEE ALSO
 
 L<perl>.
+The original L<RPM> module.
 
 =cut

@@ -162,6 +162,13 @@ _header_tag(h, tag)
 	}
 	headerFreeData(ret, type);
 
+int
+_header_is_source(h)
+	Header h
+    CODE:
+	RETVAL = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+    OUTPUT:
+	RETVAL
 
 void
 _populate_header_tags(href)

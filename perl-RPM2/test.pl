@@ -21,20 +21,20 @@ ok(RPM2::rpmvercmp("1.1", "1.0") == 1);
 ok(RPM2::rpmvercmp("1.0", "1.0") == 0);
 ok(RPM2::rpmvercmp("1.a", "1.0") == RPM2::rpmvercmp("1.0", "1.a"));
 
-my $db = RPM2->open_rpm_db(-read_only => 1);
+my $db = RPM2->open_rpm_db;
 ok(defined $db);
 
-while(1) {
+if (1) {
   my @h;
   push @h, [ RPM2->open_package_file($_) ]
     foreach <~/rhn/bs/6.2/RPMS/*.rpm>;
 
-  print $_->[0]->as_nvre, "\n" foreach @h;
+  print $_->[0]->name, " ", $_->[0]->as_nvre, "\n" foreach @h;
 }
 
 #exit;
 
-while (1) {
+if (1) {
   my $i = $db->iterator();
   while (my $h = $i->next) {
     my $epoch = $h->tag('epoch');
@@ -48,4 +48,29 @@ while (1) {
     print "\n";
   }
 }
-$db->close_rpm_db();
+
+my $i = $db->find_all_iter();
+print "The following packages are installed (aka, 'rpm -qa'):\n";
+while (my $pkg = $i->next) {
+  print $pkg->as_nvre, "\n";
+}
+
+$i = $db->find_by_name_iter("kernel");
+print "The following kernels are installed (aka, 'rpm -q kernel'):\n";
+while (my $pkg = $i->next) {
+  print $pkg->as_nvre, " ", int($pkg->size()/1024), "k\n";
+}
+
+$i = $db->find_by_provides_iter("kernel");
+print "The following packages provide 'kernel' (aka, 'rpm -q --whatprovides kernel'):\n";
+while (my $pkg = $i->next) {
+  print $pkg->as_nvre, " ", int($pkg->size()/1024), "k\n";
+}
+
+print "The following packages are installed (aka, 'rpm -qa' once more):\n";
+foreach my $pkg ($db->find_by_file("/bin/sh")) {
+  print $pkg->as_nvre, "\n";
+}
+
+my $pkg = RPM2->open_package_file("/home/cturner/XFree86-4.1.0-15.src.rpm");
+print "Package opened: ", $pkg->as_nvre(), ", is source: ", $pkg->is_source_package, "\n";
