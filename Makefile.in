@@ -61,16 +61,18 @@ rpmconvert: lib/librpm.a convertdb.o
 	
 make-subdirs:
 	for d in $(SUBDIRS); do \
-		(cd $$d; $(MAKE)) ;\
-	done
+		(cd $$d; $(MAKE)) \
+		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
+	done && test -z "$$fail"
 
 newtree:
 	rm -f RCS
 	ln -sf /usr/rhs/RCS/rpm-2.0 RCS
 	for d in $(SUBDIRS); do \
 		mkdir -p $$d ;\
-		(cd $$d; rm -f RCS; ln -sf /usr/rhs/RCS/rpm-2.0/$$d RCS) ;\
-	done
+		(cd $$d; rm -f RCS; ln -sf /usr/rhs/RCS/rpm-2.0/$$d RCS) \
+		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
+	done && test -z "$$fail"
 
 $(PROGS): $(OBJS)
 
