@@ -263,32 +263,21 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
 ;
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 	rc = rpmRunTransactions(rpmdep, showProgress, (void *) notifyFlags, 
-				    NULL, &probs, transFlags);
+				    NULL, &probs, transFlags, probFilter);
+
 	if (rc < 0) {
-	    numFailed += numPackages;
+	    numFailed += numBinaryPackages;
 	} else if (rc) {
-	    rpmProblemSet finalProbs = NULL;
-	    rpmProblemSetFilter(probs, probFilter);
-
-	    rc = rpmRunTransactions(rpmdep, showProgress, (void *) notifyFlags, 
-					probs, &finalProbs, transFlags);
-	    rpmProblemSetFree(probs);
-	    probs = NULL;
-
-	    if (rc < 0) {
-		numFailed += numBinaryPackages;
-	    } else if (rc) {
-		numFailed += rc;
-		for (i = 0; i < finalProbs->numProblems; i++) {
-		    if (!finalProbs->probs[i].ignoreProblem) {
-			char *msg = rpmProblemString(finalProbs->probs[i]);
-			rpmMessage(RPMMESS_ERROR, "%s\n", msg);
-			free(msg);
-		    }
+	    numFailed += rc;
+	    for (i = 0; i < probs->numProblems; i++) {
+		if (!probs->probs[i].ignoreProblem) {
+		    char *msg = rpmProblemString(probs->probs[i]);
+		    rpmMessage(RPMMESS_ERROR, "%s\n", msg);
+		    free(msg);
 		}
 	    }
-	    if (finalProbs) rpmProblemSetFree(finalProbs);
 	}
+
 	if (probs) rpmProblemSetFree(probs);
     }
 
@@ -410,7 +399,7 @@ int doUninstall(const char * rootdir, const char ** argv, int transFlags,
 
     if (!stopUninstall) {
 	numFailed += rpmRunTransactions(rpmdep, NULL, NULL, NULL, &probs,
-					transFlags);
+					transFlags, 0);
     }
 
     rpmtransFree(rpmdep);
