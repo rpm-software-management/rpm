@@ -234,7 +234,7 @@ int processSourceFiles(Spec spec)
 	}
 	fl.fileList[x].fileName = strdup(fn);
 	fl.fileList[x].verifyFlags = RPMVERIFY_ALL;
-	lstat(s, &sb);
+	stat(s, &sb);
 	fl.fileList[x].mode = sb.st_mode;
 	fl.fileList[x].uid = sb.st_uid;
 	fl.fileList[x].gid = sb.st_gid;
@@ -562,6 +562,9 @@ static void genCpioListAndHeader(struct FileList *fl,
 	    cpioListPtr->finalGid = p->gid;
 	    cpioListPtr->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE |
 		CPIO_MAP_UID | CPIO_MAP_GID;
+	    if (isSrc) {
+		cpioListPtr->mapFlags |= CPIO_FOLLOW_SYMLINKS;
+	    }
 	    cpioListPtr++;
 	    (*cpioCount)++;
 	}

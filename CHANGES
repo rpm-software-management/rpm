@@ -1,6 +1,8 @@
 2.5.1 -> 2.5.2:
 	- added -bs to build just a source package
 	- included irix.req and irix.prov (Tim Mooney)
+	- copy CHANGELOG* and URL tags to all subpackages
+	- follow symlinks when packaging sources
 	
 2.5 -> 2.5.1:
 	- fail if sources are not regular files
