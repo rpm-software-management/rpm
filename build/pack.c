@@ -63,7 +63,7 @@ int packageSources(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew();
+	csa->cpioFdIn = fdNew(&fdio);
 	csa->cpioList = spec->sourceCpioList;
 	csa->cpioCount = spec->sourceCpioCount;
 
@@ -158,7 +158,7 @@ int packageBinaries(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew();
+	csa->cpioFdIn = fdNew(&fdio);
 	csa->cpioList = pkg->cpioList;
 	csa->cpioCount = pkg->cpioCount;
 
@@ -190,12 +190,13 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     }
 
     /* Get copy of lead */
-    if ((rc = fdRead(fdi, lead, sizeof(*lead))) != sizeof(*lead)) {
+    if ((rc = Fread(lead, sizeof(*lead), 1, fdi)) != sizeof(*lead)) {
 	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"), fileName,
 	    strerror(errno));
 	return RPMERR_BADMAGIC;
     }
-    (void)fdLseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
+
+    (void)Fseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
 
     /* Reallocate build data structures */
     spec = newSpec();
@@ -228,7 +229,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     if (csa) {
 	csa->cpioFdIn = fdi;
     } else {
-	fdClose(fdi);
+	Fclose(fdi);
     }
 
     return 0;
@@ -279,7 +280,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	}
     }
     if (rc != 0) {
-	fdClose(fd);
+	Fclose(fd);
 	unlink(sigtarget);
 	xfree(sigtarget);
 	return rc;
@@ -290,11 +291,13 @@ int writeRPM(Header h, const char *fileName, int type,
 	headerModifyEntry(h, RPMTAG_ARCHIVESIZE,
 		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
     }
-    (void)fdLseek(fd, 0,  SEEK_SET);
+
+    (void)Fseek(fd, 0,  SEEK_SET);
+
     if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	rc = RPMERR_NOSPACE;
 
-    fdClose(fd);
+    Fclose(fd);
     unlink(fileName);
 
     if (rc) {
@@ -339,7 +342,7 @@ int writeRPM(Header h, const char *fileName, int type,
     if (writeLead(fd, &lead)) {
 	rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
 		 strerror(errno));
-	fdClose(fd);
+	Fclose(fd);
 	unlink(sigtarget);
 	xfree(sigtarget);
 	unlink(fileName);
@@ -356,7 +359,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
     }
     if ((rc = rpmWriteSignature(fd, sig))) {
-	fdClose(fd);
+	Fclose(fd);
 	unlink(sigtarget);
 	xfree(sigtarget);
 	unlink(fileName);
@@ -367,30 +370,30 @@ int writeRPM(Header h, const char *fileName, int type,
 	
     /* Append the header and archive */
     ifd = fdOpen(sigtarget, O_RDONLY, 0);
-    while ((count = fdRead(ifd, buf, sizeof(buf))) > 0) {
+    while ((count = Fread(buf, sizeof(buf), 1, ifd)) > 0) {
 	if (count == -1) {
 	    rpmError(RPMERR_READERROR, _("Unable to read sigtarget: %s"),
 		     strerror(errno));
-	    fdClose(ifd);
-	    fdClose(fd);
+	    Fclose(ifd);
+	    Fclose(fd);
 	    unlink(sigtarget);
 	    xfree(sigtarget);
 	    unlink(fileName);
 	    return RPMERR_READERROR;
 	}
-	if (fdWrite(fd, buf, count) < 0) {
+	if (Fwrite(buf, count, 1, fd) < 0) {
 	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
 		     strerror(errno));
-	    fdClose(ifd);
-	    fdClose(fd);
+	    Fclose(ifd);
+	    Fclose(fd);
 	    unlink(sigtarget);
 	    xfree(sigtarget);
 	    unlink(fileName);
 	    return RPMERR_NOSPACE;
 	}
     }
-    fdClose(ifd);
-    fdClose(fd);
+    Fclose(ifd);
+    Fclose(fd);
     unlink(sigtarget);
     xfree(sigtarget);
 
@@ -402,12 +405,11 @@ int writeRPM(Header h, const char *fileName, int type,
 #if ENABLE_BZIP2_PAYLOAD
 static int cpio_bzip2(FD_t fdo, CSA_t *csa)
 {
-    CFD_t *cfd = &csa->cpioCfd;
+    FD_t cfd;
     int rc;
     const char *failedFile = NULL;
 
-    cfd->cpioIoType = cpioIoTypeBzFd;
-    cfd->cpioBzFd = bzdFdopen(fdDup(fdFileno(fdo)), "w9");
+    cfd = bzdFdopen(fdDup(fdFileno(fdo)), "w9");
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {
@@ -416,7 +418,7 @@ static int cpio_bzip2(FD_t fdo, CSA_t *csa)
       rc = 1;
     }
 
-    bzdClose(cfd->cpioBzFd);
+    Fclose(cfd);
     if (failedFile)
 	xfree(failedFile);
 
@@ -426,12 +428,11 @@ static int cpio_bzip2(FD_t fdo, CSA_t *csa)
 
 static int cpio_gzip(FD_t fdo, CSA_t *csa)
 {
-    CFD_t *cfd = &csa->cpioCfd;
+    FD_t cfd;
     int rc;
     const char *failedFile = NULL;
 
-    cfd->cpioIoType = cpioIoTypeGzFd;
-    cfd->cpioGzFd = gzdFdopen(fdDup(fdFileno(fdo)), "w9");
+    cfd = gzdFdopen(fdDup(fdFileno(fdo)), "w9");
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {
@@ -440,8 +441,7 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa)
       rc = 1;
     }
 
-    gzdClose(cfd->cpioGzFd);
-    cfd->cpioGzFd = NULL;
+    Fclose(cfd);
     if (failedFile)
 	xfree(failedFile);
 
@@ -453,8 +453,8 @@ static int cpio_copy(FD_t fdo, CSA_t *csa)
     char buf[BUFSIZ];
     ssize_t nb;
 
-    while((nb = fdRead(csa->cpioFdIn, buf, sizeof(buf))) > 0) {
-	if (fdWrite(fdo, buf, nb) != nb) {
+    while((nb = Fread(buf, sizeof(buf), 1, csa->cpioFdIn)) > 0) {
+	if (Fwrite(buf, nb, 1, fdo) != nb) {
 	    rpmError(RPMERR_CPIO, _("cpio_copy write failed: %s"),
 		strerror(errno));
 	    return 1;

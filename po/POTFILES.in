@@ -47,7 +47,6 @@ lib/package.c
 lib/problems.c
 lib/query.c
 lib/rebuilddb.c
-lib/rpmbzio.c
 lib/rpmchecksig.c
 lib/rpmdb.c
 lib/rpmerr.c

@@ -303,7 +303,7 @@ static Header doGetRecord(rpmdb db, unsigned int offset, int pristine) {
     int fileCount = 0;
     int i;
 
-    (void)faLseek(db->pkgs, offset, SEEK_SET);
+    (void)faSeek(db->pkgs, offset, SEEK_SET);
 
     h = headerRead(faFileno(db->pkgs), HEADER_MAGIC_NO);
 
@@ -659,7 +659,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     if (!dboffset) {
 	rc = 1;
     } else {
-	(void)faLseek(db->pkgs, dboffset, SEEK_SET);
+	(void)faSeek(db->pkgs, dboffset, SEEK_SET);
 	rc = headerWrite(faFileno(db->pkgs), dbentry, HEADER_MAGIC_NO);
     }
 
@@ -741,7 +741,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
     } else {
 	blockSignals();
 
-	(void)faLseek(db->pkgs, offset, SEEK_SET);
+	(void)faSeek(db->pkgs, offset, SEEK_SET);
 
 	rc = headerWrite(faFileno(db->pkgs), newHeader, HEADER_MAGIC_NO);
 

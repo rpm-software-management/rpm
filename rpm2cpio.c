@@ -42,18 +42,18 @@ int main(int argc, char **argv)
 
     gzdi = gzdFdopen(fdi, "r");	/* XXX gzdi == fdi */
 
-    while ((ct = gzdRead(gzdi, &buffer, sizeof(buffer))) > 0) {
-	fdWrite(fdo, &buffer, ct);
+    while ((ct = Fread(buffer, sizeof(buffer), 1, gzdi)) > 0) {
+	Fwrite(buffer, ct, 1, fdo);
     }
 
     if (ct < 0) {
-        fprintf (stderr, "rpm2cpio: zlib: %s\n", gzdStrerror(gzdi));
+        fprintf (stderr, "rpm2cpio: zlib: %s\n", Fstrerror(gzdi));
 	rc = EXIT_FAILURE;
     } else {
 	rc = EXIT_SUCCESS;
     }
 
-    gzdClose(gzdi);	/* XXX gzdi == fdi */
+    Fclose(gzdi);	/* XXX gzdi == fdi */
 
     return rc;
 }

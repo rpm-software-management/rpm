@@ -278,15 +278,15 @@ void rpmSetVar(int var, const char *val);
 
 int rpmReadConfigFiles(const char * file, const char * target);
 int rpmReadRC(const char * file);
-void rpmGetArchInfo( /*@out@*/ char ** name, /*@out@*/ int * num);
-void rpmGetOsInfo( /*@out@*/ char ** name, /*@out@*/ int * num);
-int rpmMachineScore(int type, char * name);
+void rpmGetArchInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
+void rpmGetOsInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
+int rpmMachineScore(int type, const char * name);
 int rpmShowRC(FILE *f);
 void rpmSetTables(int archTable, int osTable);  /* only used by build code */
 /* if either are NULL, they are set to the default value (munged uname())
    pushed through a translation table (if appropriate) */
 void rpmSetMachine(const char * arch, const char * os);
-void rpmGetMachine( /*@out@*/ char **arch, /*@out@*/ char **os);
+void rpmGetMachine( /*@out@*/ const char **arch, /*@out@*/ const char **os);
 void rpmFreeRpmrc(void);
 
 /** **/

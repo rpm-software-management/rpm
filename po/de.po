@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-10-04 16:05-0400\n"
+"POT-Creation-Date: 1999-10-27 12:52-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1351,36 +1351,36 @@ msgstr "Es wurden keine Pakete für die Signatur angeben"
 msgid "no packages files given for rebuild"
 msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
 
-#: rpm.c:1230
+#: rpm.c:1234
 msgid "no spec files given for build"
 msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
 
-#: rpm.c:1232
+#: rpm.c:1236
 msgid "no tar files given for build"
 msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
 
-#: rpm.c:1244
+#: rpm.c:1248
 msgid "no packages given for uninstall"
 msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
 
-#: rpm.c:1294
+#: rpm.c:1298
 msgid "no packages given for install"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: rpm.c:1317
+#: rpm.c:1321
 msgid "extra arguments given for query of all packages"
 msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
-#: rpm.c:1322
+#: rpm.c:1326
 msgid "no arguments given for query"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
-#: rpm.c:1339
+#: rpm.c:1343
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
-#: rpm.c:1343
+#: rpm.c:1347
 msgid "no arguments given for verify"
 msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 
@@ -1394,7 +1394,7 @@ msgid "error reading header from package\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
 # , c-format
-#: build/build.c:83 build/pack.c:263
+#: build/build.c:83 build/pack.c:267
 #, fuzzy
 msgid "Unable to open temp file"
 msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
@@ -1415,60 +1415,60 @@ msgstr "öffnen von %s fehlgeschlagen: %s\n"
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
-#: build/expression.c:208
+#: build/expression.c:207
 #, fuzzy
 msgid "syntax error while parsing =="
 msgstr "? im Ausdruck erwartet"
 
-#: build/expression.c:238
+#: build/expression.c:237
 #, fuzzy
 msgid "syntax error while parsing &&"
 msgstr "? im Ausdruck erwartet"
 
-#: build/expression.c:247
+#: build/expression.c:246
 #, fuzzy
 msgid "syntax error while parsing ||"
 msgstr "? im Ausdruck erwartet"
 
-#: build/expression.c:289
+#: build/expression.c:288
 #, fuzzy
 msgid "parse error in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: build/expression.c:319
+#: build/expression.c:318
 msgid "unmatched ("
 msgstr ""
 
-#: build/expression.c:337
+#: build/expression.c:336
 msgid "undefined identifier"
 msgstr ""
 
-#: build/expression.c:356
+#: build/expression.c:355
 msgid "- only on numbers"
 msgstr ""
 
-#: build/expression.c:372
+#: build/expression.c:371
 msgid "! only on numbers"
 msgstr ""
 
-#: build/expression.c:411 build/expression.c:456 build/expression.c:513
-#: build/expression.c:600
+#: build/expression.c:410 build/expression.c:455 build/expression.c:512
+#: build/expression.c:599
 msgid "types must match"
 msgstr ""
 
-#: build/expression.c:424
+#: build/expression.c:423
 msgid "* / not suported for strings"
 msgstr ""
 
-#: build/expression.c:472
+#: build/expression.c:471
 msgid "- not suported for strings"
 msgstr ""
 
-#: build/expression.c:613
+#: build/expression.c:612
 msgid "&& and || not suported for strings"
 msgstr ""
 
-#: build/expression.c:644 build/expression.c:689
+#: build/expression.c:645 build/expression.c:692
 #, fuzzy
 msgid "syntax error in expression"
 msgstr "? im Ausdruck erwartet"
@@ -1554,86 +1554,86 @@ msgid "File listed twice: %s"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build/files.c:951
+#: build/files.c:953
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:961
+#: build/files.c:963
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1004
+#: build/files.c:1006
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1018
+#: build/files.c:1020
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:1088
+#: build/files.c:1090
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1132
+#: build/files.c:1134
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1174
+#: build/files.c:1176
 #, fuzzy
 msgid "Could not open %%files file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/files.c:1181 build/pack.c:485
+#: build/files.c:1183 build/pack.c:488
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1508 build/parsePrep.c:29
+#: build/files.c:1510 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: build/files.c:1562
+#: build/files.c:1564
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:1567
+#: build/files.c:1569
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:1649
+#: build/files.c:1651
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:1653
+#: build/files.c:1655
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:1742
+#: build/files.c:1744
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1770 build/files.c:1779
+#: build/files.c:1772 build/files.c:1781
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:1885
+#: build/files.c:1887
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -1651,112 +1651,112 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:131
+#: build/pack.c:132
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:148
+#: build/pack.c:149
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
 # , c-format
-#: build/pack.c:183
+#: build/pack.c:184
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/pack.c:193
+#: build/pack.c:194
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/pack.c:213
+#: build/pack.c:215
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "Fehler: %s scheint zu keinem RPM-Paket zu gehören\n"
 
-#: build/pack.c:219
+#: build/pack.c:221
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "Fehler beim Eintrag %s von %s"
 
-#: build/pack.c:274
+#: build/pack.c:278
 msgid "Bad CSA data"
 msgstr ""
 
 # , c-format
-#: build/pack.c:305
+#: build/pack.c:311
 #, fuzzy, c-format
 msgid "Could not open %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/pack.c:337 build/pack.c:379
+#: build/pack.c:343 build/pack.c:385
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:352
+#: build/pack.c:358
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "PGP-Signatur generieren"
 
 # , c-format
-#: build/pack.c:369
+#: build/pack.c:375
 #, fuzzy, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:394
+#: build/pack.c:400
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
 # , c-format
-#: build/pack.c:411 build/pack.c:435
+#: build/pack.c:416 build/pack.c:439
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/pack.c:455
+#: build/pack.c:458
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:462
+#: build/pack.c:465
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "lesen fehlgeschlagen: %s (%d)"
 
-#: build/pack.c:541
+#: build/pack.c:544
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:548
+#: build/pack.c:551
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:555
+#: build/pack.c:558
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:562
+#: build/pack.c:565
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:570
+#: build/pack.c:573
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:586
+#: build/pack.c:589
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -1800,17 +1800,17 @@ msgstr ""
 msgid "line %d: Bad option %s: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/parseDescription.c:60 build/parseFiles.c:54 build/parseScript.c:182
+#: build/parseDescription.c:59 build/parseFiles.c:53 build/parseScript.c:181
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr ""
 
-#: build/parseDescription.c:70 build/parseFiles.c:64 build/parseScript.c:192
+#: build/parseDescription.c:69 build/parseFiles.c:63 build/parseScript.c:191
 #, fuzzy, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: build/parseDescription.c:82
+#: build/parseDescription.c:81
 #, c-format
 msgid "line %d: Second description"
 msgstr ""
@@ -1819,7 +1819,7 @@ msgstr ""
 msgid "line %d: Error parsing %%files: %s"
 msgstr ""
 
-#: build/parseFiles.c:72
+#: build/parseFiles.c:71
 msgid "line %d: Second %%files list"
 msgstr ""
 
@@ -1917,22 +1917,22 @@ msgstr "fehlende Architektur für %s bei %s:%d"
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:657
+#: build/parsePreamble.c:656
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Optionen der Paketauswahl:"
 
-#: build/parsePreamble.c:663
+#: build/parsePreamble.c:662
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:690
+#: build/parsePreamble.c:689
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:714
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -1958,43 +1958,43 @@ msgstr ""
 msgid "Couldn't download nosource %s: %s"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/parsePrep.c:191
+#: build/parsePrep.c:190
 msgid "Error parsing %%setup: %s"
 msgstr ""
 
-#: build/parsePrep.c:206
+#: build/parsePrep.c:205
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr ""
 
-#: build/parsePrep.c:227
+#: build/parsePrep.c:223
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: build/parsePrep.c:351
+#: build/parsePrep.c:346
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: build/parsePrep.c:359
+#: build/parsePrep.c:354
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: build/parsePrep.c:371
+#: build/parsePrep.c:366
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:377
+#: build/parsePrep.c:372
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:384
+#: build/parsePrep.c:379
 msgid "Too many patches!"
 msgstr ""
 
-#: build/parsePrep.c:388
+#: build/parsePrep.c:383
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: build/parsePrep.c:424
+#: build/parsePrep.c:419
 msgid "line %d: second %%prep"
 msgstr ""
 
@@ -2030,7 +2030,7 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "line %d: triggers must have --: %s"
 msgstr ""
 
-#: build/parseScript.c:146 build/parseScript.c:210
+#: build/parseScript.c:146 build/parseScript.c:209
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr ""
@@ -2040,7 +2040,7 @@ msgstr ""
 msgid "line %d: script program must begin with '/': %s"
 msgstr ""
 
-#: build/parseScript.c:201
+#: build/parseScript.c:200
 #, c-format
 msgid "line %d: Second %s"
 msgstr ""
@@ -2052,45 +2052,45 @@ msgid "line %d: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/parseSpec.c:172
+#: build/parseSpec.c:173
 #, fuzzy, c-format
 msgid "Unable to open: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
-#: build/parseSpec.c:184
+#: build/parseSpec.c:185
 msgid "Unclosed %%if"
 msgstr ""
 
-#: build/parseSpec.c:243
+#: build/parseSpec.c:244
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:251
+#: build/parseSpec.c:252
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: build/parseSpec.c:262
+#: build/parseSpec.c:263
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: build/parseSpec.c:276 build/parseSpec.c:285
+#: build/parseSpec.c:277 build/parseSpec.c:286
 msgid "malformed %%include statement"
 msgstr ""
 
-#: build/parseSpec.c:366
+#: build/parseSpec.c:367
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: build/parseSpec.c:449
+#: build/parseSpec.c:450
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: build/parseSpec.c:494
+#: build/parseSpec.c:497
 #, fuzzy
 msgid "Package has no %%description: %s"
 msgstr "Paket %s wird nicht in %s aufgeführt"
@@ -2116,53 +2116,53 @@ msgid "line %d: Bad %s number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
 # , c-format
-#: lib/cpio.c:385
+#: lib/cpio.c:335
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: lib/cpio.c:391
+#: lib/cpio.c:341
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:582
+#: lib/cpio.c:532
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1044
+#: lib/cpio.c:995
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "Fehler: "
 
-#: lib/cpio.c:1047
+#: lib/cpio.c:998
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1048
+#: lib/cpio.c:999
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1066
+#: lib/cpio.c:1017
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1067
+#: lib/cpio.c:1018
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(unbekannter Typ)"
 
-#: lib/cpio.c:1068
+#: lib/cpio.c:1019
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1069
+#: lib/cpio.c:1020
 #, fuzzy
 msgid "Internal error"
 msgstr "Fataler Fehler: "
 
-#: lib/cpio.c:1078
+#: lib/cpio.c:1029
 #, fuzzy
 msgid " failed - "
 msgstr "pgp fehlgeschlagen"
@@ -2189,90 +2189,90 @@ msgid "error removing record %s into %s"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:339
+#: lib/depends.c:404
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:368
+#: lib/depends.c:433
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:460
+#: lib/depends.c:525
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:695
-#, fuzzy, c-format
-msgid "%s: %s satisfied by added package.\n"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
-
-#: lib/depends.c:712
-#, c-format
-msgid "%s: %s satisfied by added provide.\n"
-msgstr ""
-
-#: lib/depends.c:717
+#: lib/depends.c:760
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:747
+#: lib/depends.c:799
+#, fuzzy, c-format
+msgid "%s: %s satisfied by added package.\n"
+msgstr "die Datei »%s« gehört zu keinem Paket\n"
+
+#: lib/depends.c:816
+#, c-format
+msgid "%s: %s satisfied by added provide.\n"
+msgstr ""
+
+#: lib/depends.c:847
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:775
+#: lib/depends.c:875
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:797
+#: lib/depends.c:897
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:819
+#: lib/depends.c:919
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:832
+#: lib/depends.c:932
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:842
+#: lib/depends.c:942
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:890
+#: lib/depends.c:990
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:952
+#: lib/depends.c:1052
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/depends.c:1007 lib/depends.c:1311
+#: lib/depends.c:1107 lib/depends.c:1415
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Abhängigkeiten zu prüfen"
 
-#: lib/depends.c:1102
+#: lib/depends.c:1202
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: lib/falloc.c:160
+#: lib/falloc.c:157
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -2282,8 +2282,8 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:66 lib/formats.c:84 lib/formats.c:105 lib/formats.c:138
-#: lib/header.c:2122 lib/header.c:2139 lib/header.c:2159
+#: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
+#: lib/header.c:2138 lib/header.c:2155 lib/header.c:2175
 msgid "(not a number)"
 msgstr "(keine Zahl)"
 
@@ -2388,77 +2388,77 @@ msgstr ""
 msgid "Data type %d not supprted\n"
 msgstr ""
 
-#: lib/header.c:1119
+#: lib/header.c:1120
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1520
+#: lib/header.c:1529
 #, c-format
 msgid "missing { after %"
 msgstr "fehlende { nach %{"
 
-#: lib/header.c:1548
+#: lib/header.c:1557
 msgid "missing } after %{"
 msgstr "fehlende } nach %{"
 
 # »Tag« übersetzen??? -ke-
-#: lib/header.c:1560
+#: lib/header.c:1569
 msgid "empty tag format"
 msgstr "leeres »Tag«-Format"
 
-#: lib/header.c:1570
+#: lib/header.c:1579
 msgid "empty tag name"
 msgstr "leerer »Tag«-Name"
 
-#: lib/header.c:1585
+#: lib/header.c:1594
 msgid "unknown tag"
 msgstr "unbekannter »Tag«"
 
-#: lib/header.c:1611
+#: lib/header.c:1620
 msgid "] expected at end of array"
 msgstr "] am Ende des Arrays erwartet"
 
-#: lib/header.c:1627
+#: lib/header.c:1636
 msgid "unexpected ]"
 msgstr "unerwartete ]"
 
-#: lib/header.c:1629
+#: lib/header.c:1638
 msgid "unexpected }"
 msgstr "unerwartete }"
 
-#: lib/header.c:1682
+#: lib/header.c:1692
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: lib/header.c:1689
+#: lib/header.c:1699
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ nach ? im Ausdruck erwartet"
 
-#: lib/header.c:1699 lib/header.c:1731
+#: lib/header.c:1709 lib/header.c:1744
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
-#: lib/header.c:1706
+#: lib/header.c:1717
 msgid ": expected following ? subexpression"
 msgstr ": nach ? Unterausdruck erwartet"
 
-#: lib/header.c:1719
+#: lib/header.c:1731
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ nach : im Ausdruck erwartet"
 
-#: lib/header.c:1738
+#: lib/header.c:1752
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
-#: lib/header.c:1905
+#: lib/header.c:1921
 msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
 # , c-format
-#: lib/install.c:141 lib/uninstall.c:179
+#: lib/install.c:141 lib/uninstall.c:193
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -2479,90 +2479,90 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:358
+#: lib/install.c:355
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:359
+#: lib/install.c:356
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:402
+#: lib/install.c:399
 #, fuzzy
 msgid "installing a source package\n"
 msgstr "Paket installieren"
 
-#: lib/install.c:413
+#: lib/install.c:410
 #, fuzzy, c-format
 msgid "cannot create %s: %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/install.c:421 lib/install.c:443
+#: lib/install.c:418 lib/install.c:440
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/install.c:425
+#: lib/install.c:422
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:436
+#: lib/install.c:433
 #, fuzzy, c-format
 msgid "cannot create %s"
 msgstr "kann Datei %s nicht öffnen: "
 
 # , c-format
-#: lib/install.c:447
+#: lib/install.c:444
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/install.c:481 lib/install.c:509
+#: lib/install.c:478 lib/install.c:506
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/install.c:530
+#: lib/install.c:527
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:532 lib/install.c:810 lib/uninstall.c:26
+#: lib/install.c:529 lib/install.c:807 lib/uninstall.c:26
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
 
-#: lib/install.c:622
+#: lib/install.c:619
 msgid "source package expected, binary found"
 msgstr ""
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/install.c:679
+#: lib/install.c:676
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/install.c:740
+#: lib/install.c:737
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:745
+#: lib/install.c:742
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:770
+#: lib/install.c:767
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:806
+#: lib/install.c:803
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:880
+#: lib/install.c:877
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2571,85 +2571,85 @@ msgstr ""
 msgid "cannot read header at %d for lookup"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
-#: lib/macro.c:149
+#: lib/macro.c:151
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: lib/macro.c:243
+#: lib/macro.c:245
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: lib/macro.c:278
+#: lib/macro.c:280
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: lib/macro.c:457
+#: lib/macro.c:459
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: lib/macro.c:483
+#: lib/macro.c:485
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: lib/macro.c:489
+#: lib/macro.c:491
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: lib/macro.c:494
+#: lib/macro.c:496
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: lib/macro.c:499
+#: lib/macro.c:501
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: lib/macro.c:524
+#: lib/macro.c:526
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: lib/macro.c:601
+#: lib/macro.c:603
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: lib/macro.c:698
+#: lib/macro.c:700
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: lib/macro.c:870
+#: lib/macro.c:872
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: lib/macro.c:936 lib/macro.c:952
+#: lib/macro.c:938 lib/macro.c:954
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: lib/macro.c:992
+#: lib/macro.c:994
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: lib/macro.c:1115
+#: lib/macro.c:1117
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/macro.c:1196
+#: lib/macro.c:1198
 msgid "Target buffer overflow"
 msgstr ""
 
 # , c-format
-#: lib/macro.c:1343 lib/macro.c:1351
+#: lib/macro.c:1345 lib/macro.c:1353
 #, fuzzy, c-format
 msgid "File %s: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/macro.c:1354
+#: lib/macro.c:1356
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -2681,24 +2681,24 @@ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 msgid "bad file state: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/package.c:234
+#: lib/package.c:237
 msgid "package is a version one package!\n"
 msgstr ""
 
-#: lib/package.c:239
+#: lib/package.c:242
 msgid "old style source package -- I'll do my best\n"
 msgstr ""
 
-#: lib/package.c:242
+#: lib/package.c:245
 #, c-format
 msgid "archive offset is %d\n"
 msgstr ""
 
-#: lib/package.c:252
+#: lib/package.c:256
 msgid "old style binary package\n"
 msgstr ""
 
-#: lib/package.c:298
+#: lib/package.c:316
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
@@ -2768,207 +2768,207 @@ msgstr ""
 msgid "error in format: %s\n"
 msgstr "Fehler beim Format %s\n"
 
-#: lib/query.c:180
+#: lib/query.c:181
 msgid "(contains no files)"
 msgstr "(beinhaltet keine Dateien)"
 
-#: lib/query.c:233
+#: lib/query.c:238
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:235
+#: lib/query.c:240
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:237
+#: lib/query.c:242
 #, fuzzy
 msgid "not installed "
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/query.c:239
+#: lib/query.c:244
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:241
+#: lib/query.c:246
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(unbekannter Typ)"
 
-#: lib/query.c:245
+#: lib/query.c:250
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:261 lib/query.c:291
+#: lib/query.c:267 lib/query.c:308
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:400
+#: lib/query.c:421
 #, c-format
 msgid "record number %u\n"
 msgstr ""
 
-#: lib/query.c:404
+#: lib/query.c:425
 msgid "error: could not read database record\n"
 msgstr "Fehler: konnte Datenbank-Eintrag nicht lesen\n"
 
-#: lib/query.c:442
+#: lib/query.c:463
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/query.c:455
+#: lib/query.c:476
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:464 lib/rpminstall.c:203
+#: lib/query.c:485 lib/rpminstall.c:203
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
-#: lib/query.c:467
+#: lib/query.c:488
 #, c-format
 msgid "query of %s failed\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:494
+#: lib/query.c:515
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:519
+#: lib/query.c:540
 msgid "could not read database record!\n"
 msgstr "kann Datenbank-Eintrag nicht lesen!\n"
 
-#: lib/query.c:530
+#: lib/query.c:551
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
 # oder besser: ... listet %s auf? -ke-
-#: lib/query.c:540
+#: lib/query.c:561
 #, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
-#: lib/query.c:550
+#: lib/query.c:571
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "kein Paket triggert %s\n"
 
-#: lib/query.c:560
+#: lib/query.c:581
 #, c-format
 msgid "no package requires %s\n"
 msgstr "kein Paket verlangt %s\n"
 
 # , c-format
-#: lib/query.c:575
+#: lib/query.c:596
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/query.c:578
+#: lib/query.c:599
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/query.c:591
+#: lib/query.c:612
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:594
+#: lib/query.c:615
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:597
+#: lib/query.c:618
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:609 lib/rpminstall.c:393
+#: lib/query.c:630 lib/rpminstall.c:393
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/query.c:612
+#: lib/query.c:633
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/query.c:634
+#: lib/query.c:655
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: lib/query.c:693
+#: lib/query.c:714
 #, fuzzy
 msgid "query package owning file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:695
+#: lib/query.c:716
 #, fuzzy
 msgid "query packages in group"
 msgstr "Paket hat keinen Namen"
 
-#: lib/query.c:697
+#: lib/query.c:718
 #, fuzzy
 msgid "query a package file"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/query.c:701
+#: lib/query.c:722
 #, fuzzy
 msgid "query a spec file"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:703
+#: lib/query.c:724
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:705
+#: lib/query.c:726
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
-#: lib/query.c:707
+#: lib/query.c:728
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
-#: lib/query.c:746
+#: lib/query.c:767
 #, fuzzy
 msgid "list all configuration files"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
-#: lib/query.c:748
+#: lib/query.c:769
 #, fuzzy
 msgid "list all documentation files"
 msgstr "Dokumentation installieren"
 
-#: lib/query.c:750
+#: lib/query.c:771
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paketinformationen anzeigen"
 
-#: lib/query.c:752
+#: lib/query.c:773
 #, fuzzy
 msgid "list files in package"
 msgstr "Paket installieren"
 
-#: lib/query.c:756
+#: lib/query.c:777
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:758
+#: lib/query.c:779
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:761
+#: lib/query.c:782
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:763
+#: lib/query.c:784
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Dateiliste des Pakets anzeigen"
@@ -3047,12 +3047,12 @@ msgstr "%s: Öffnen fehlgeschlagen\n"
 
 #: lib/rpmchecksig.c:74
 #, fuzzy, c-format
-msgid "%s: fdWrite failed: %s\n"
-msgstr "%s: Öffnen fehlgeschlagen\n"
+msgid "%s: Fwrite failed: %s\n"
+msgstr "%s: »readLead« fehlgeschlagen\n"
 
 #: lib/rpmchecksig.c:80
 #, fuzzy, c-format
-msgid "%s: fdRead failed: %s\n"
+msgid "%s: Fread failed: %s\n"
 msgstr "%s: »readLead« fehlgeschlagen\n"
 
 #: lib/rpmchecksig.c:113 lib/rpmchecksig.c:242
@@ -3150,82 +3150,82 @@ msgid ""
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:439
+#: lib/rpmdb.c:468
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/rpmdb.c:450
+#: lib/rpmdb.c:479
 #, c-format
 msgid "package %s not found in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:475 lib/uninstall.c:85
+#: lib/rpmdb.c:503 lib/uninstall.c:85
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
-#: lib/rpmdb.c:483
+#: lib/rpmdb.c:511
 msgid "package has no name"
 msgstr "Paket hat keinen Namen"
 
-#: lib/rpmdb.c:485
+#: lib/rpmdb.c:513
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:490
+#: lib/rpmdb.c:518
 #, fuzzy
 msgid "package has no group\n"
 msgstr "Paket hat keinen Namen"
 
-#: lib/rpmdb.c:492
+#: lib/rpmdb.c:520
 msgid "removing group index\n"
 msgstr ""
 
 # FIXME
-#: lib/rpmdb.c:499
+#: lib/rpmdb.c:527
 #, fuzzy, c-format
 msgid "removing provides index for %s\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:514
+#: lib/rpmdb.c:542
 #, fuzzy, c-format
 msgid "removing requiredby index for %s\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:526
+#: lib/rpmdb.c:554
 #, fuzzy, c-format
 msgid "removing trigger index for %s\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:537
+#: lib/rpmdb.c:565
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:554
+#: lib/rpmdb.c:576
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:563
+#: lib/rpmdb.c:585
 #, fuzzy
 msgid "package has no files\n"
 msgstr "Paket hat keinen Namen"
 
 # reservieren???
-#: lib/rpmdb.c:645
+#: lib/rpmdb.c:667
 msgid "cannot allocate space for database"
 msgstr "kann keinen Platz für die Datenbank bekommen"
 
-#: lib/rpmdb.c:711
+#: lib/rpmdb.c:726
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
 
-#: lib/rpmdb.c:720
+#: lib/rpmdb.c:735
 msgid "header changed size!"
 msgstr ""
 
@@ -3391,38 +3391,38 @@ msgstr "Lesen von %s fehlgeschlagen: %s."
 msgid "missing ':' at %s:%d"
 msgstr "fehlender ':' bei %s:%d"
 
-#: lib/rpmrc.c:655 lib/rpmrc.c:729
+#: lib/rpmrc.c:655 lib/rpmrc.c:730
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr "fehlendes Argument für %s bei %s:%d"
 
 # , c-format
-#: lib/rpmrc.c:672 lib/rpmrc.c:694
+#: lib/rpmrc.c:672 lib/rpmrc.c:695
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/rpmrc.c:680
+#: lib/rpmrc.c:681
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/rpmrc.c:721
+#: lib/rpmrc.c:722
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr "fehlende Architektur für %s bei %s:%d"
 
-#: lib/rpmrc.c:788
+#: lib/rpmrc.c:789
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr "unzureichende Option '%s' bei %s:%d"
 
-#: lib/rpmrc.c:1147
+#: lib/rpmrc.c:1149
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1148
+#: lib/rpmrc.c:1150
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3575,18 +3575,28 @@ msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 
-#: lib/transaction.c:363
+# , c-format
+#: lib/transaction.c:386
+#, fuzzy, c-format
+msgid "excluding file %s%s\n"
+msgstr "Hole %s heraus\n"
+
+#: lib/transaction.c:412 lib/transaction.c:496
+#, fuzzy, c-format
+msgid "excluding directory %s\n"
+msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+
+#: lib/transaction.c:417
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-# , c-format
-#: lib/transaction.c:370
-#, fuzzy, c-format
-msgid "excluding %s\n"
-msgstr "Hole %s heraus\n"
-
 #: lib/transaction.c:489
+#, fuzzy, c-format
+msgid "relocating directory %s to %s\n"
+msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+
+#: lib/transaction.c:637
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3616,15 +3626,15 @@ msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:191
+#: lib/uninstall.c:207
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:204
+#: lib/uninstall.c:220
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:365
+#: lib/uninstall.c:381
 msgid "execution of script failed"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
@@ -3660,28 +3670,32 @@ msgstr "anlegen von %s fehlgeschlagen\n"
 msgid "don't verify files in package"
 msgstr "Paket installieren"
 
-#: lib/verify.c:208
+#: lib/verify.c:213
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:226
+#: lib/verify.c:231
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:259
+#: lib/verify.c:266
 #, fuzzy, c-format
 msgid "missing    %s\n"
 msgstr "fehlende { nach %{"
 
-#: lib/verify.c:321
+#: lib/verify.c:328
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
 
-#: lib/verify.c:369
+#: lib/verify.c:376
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
+
+#, fuzzy
+#~ msgid "%s: fdWrite failed: %s\n"
+#~ msgstr "%s: Öffnen fehlgeschlagen\n"
 
 #, fuzzy
 #~ msgid "failed build prerequisites:\n"

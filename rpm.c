@@ -499,7 +499,7 @@ static void printHelp(void) {
 		  _("use <dir> as the top level directory"));
 }
 
-int main(int argc, char ** argv)
+int main(int argc, const char ** argv)
 {
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t *qva = &rpmQVArgs;
@@ -514,7 +514,7 @@ int main(int argc, char ** argv)
     char * tce;
     char * passPhrase = "";
     char * cookie = NULL;
-    char * optArg;
+    const char * optArg;
     pid_t pipeChild = 0;
     const char * pkg;
     char * errString = NULL;

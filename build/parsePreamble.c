@@ -37,7 +37,7 @@ static int requiredTags[] = {
 static void addOrAppendListEntry(Header h, int_32 tag, char *line)
 {
     int argc;
-    char **argv;
+    const char **argv;
 
     poptParseArgvString(line, &argc, &argv);
     if (argc) {
@@ -105,7 +105,7 @@ static char *findLastChar(char *s)
     return res;
 }
 
-static int isMemberInEntry(Header header, char *name, int tag)
+static int isMemberInEntry(Header header, const char *name, int tag)
 {
     char **names;
     int count;
@@ -131,7 +131,7 @@ static int isMemberInEntry(Header header, char *name, int tag)
 
 static int checkForValidArchitectures(Spec spec)
 {
-    char *arch, *os;
+    const char *arch, *os;
 
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);
@@ -244,8 +244,8 @@ static int readIcon(Header h, const char *file)
     icon = xmalloc(statbuf.st_size);
     *icon = '\0';
     fd = fdOpen(fn, O_RDONLY, 0);
-    nb = fdRead(fd, icon, statbuf.st_size);
-    fdClose(fd);
+    nb = Fread(icon, statbuf.st_size, 1, fd);
+    Fclose(fd);
     if (nb != statbuf.st_size) {
 	rpmError(RPMERR_BADSPEC, _("Unable to read icon: %s"), fn);
 	rc = RPMERR_BADSPEC;

@@ -66,7 +66,7 @@ static void resetVars(void)
     pass2 = 0;
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, const char ** argv) {
     int rc;
     int ec = 0;
     poptContext optCon;

@@ -46,7 +46,7 @@ char *fax			= NULL;
 
 
 int 
-main(int argc, char**argv ) {
+main(int argc, const char ** argv) {
 
     poptContext optCon;   /* context for parsing command-line options */
     struct poptOption userOptionsTable[] = {

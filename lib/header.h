@@ -124,7 +124,8 @@ char **headerGetLangs(Header h);
    more fine grained control use headerAddEntry() and headerModifyEntry()
    but be careful!
 */
-int headerAddI18NString(Header h, int_32 tag, char * string, char * lang);
+int headerAddI18NString(Header h, int_32 tag, const char * string,
+	const char * lang);
 
 /* Appends item p to entry w/ tag and type as passed. Won't work on
    RPM_STRING_TYPE. Any pointers from headerGetEntry() for this entry

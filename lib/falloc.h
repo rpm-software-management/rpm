@@ -5,16 +5,15 @@
    are compacted. Minimal fragmentation is more important then speed. This
    uses 32 bit offsets on all platforms and should be byte order independent */
 
+#if 0
 typedef /*@abstract@*/ struct faFile_s {
     /*@owned@*/ FD_t fd;
     int readOnly;
     unsigned int firstFree;
     unsigned long fileSize;
 } * faFile;
-
-#ifdef	UNUSED
-struct FaPlace_s;
-typedef struct FaPlace * faPlace;
+#else
+typedef FD_t faFile;
 #endif
 
 #ifdef __cplusplus
@@ -25,10 +24,11 @@ extern "C" {
 /*@only@*/ faFile faOpen(const char * path, int flags, int perms);
 unsigned int faAlloc(faFile fa, unsigned int size); /* returns 0 on failure */
 void faFree(faFile fa, unsigned int offset);
-void faClose( /*@only@*/ faFile fa);
 
 FD_t faFileno(faFile fa);
-off_t faLseek(faFile fa, off_t off, int op);
+int faSeek(faFile fa, off_t pos, int whence);
+int faClose( /*@only@*/ faFile fa);
+
 int faFcntl(faFile fa, int op, void *lip);
 
 int faFirstOffset(faFile fa);

@@ -6,7 +6,6 @@
 #include "cpio.h"
 
 typedef struct cpioSourceArchive {
-    CFD_t	cpioCfd;
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
     /*@dependent@*/ struct cpioFileMapping *cpioList;

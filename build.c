@@ -61,8 +61,8 @@ static int isSpecFile(const char *specfile)
 	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
 	return 0;
     }
-    count = fdRead(fd, buf, sizeof(buf));
-    fdClose(fd);
+    count = Fread(buf, sizeof(buf), 1, fd);
+    Fclose(fd);
 
     checking = 1;
     for (s = buf; count--; s++) {

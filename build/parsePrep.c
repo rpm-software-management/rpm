@@ -5,7 +5,7 @@
 /* These have to be global to make up for stupid compilers */
     static int leaveDirs, skipDefaultAction;
     static int createDir, quietly;
-    /*@observer@*/ /*@null@*/ static char * dirName;
+    /*@observer@*/ /*@null@*/ static const char * dirName = NULL;
     static struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
@@ -176,9 +176,9 @@ static int doSetupMacro(Spec spec, char *line)
     StringBuf after;
     poptContext optCon;
     int argc;
-    char ** argv;
+    const char ** argv;
     int arg;
-    char * optArg;
+    const char * optArg;
     int rc;
     int num;
 

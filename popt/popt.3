@@ -6,7 +6,7 @@ popt \- Parse command line options
 .B #include <popt.h>
 .sp
 .BI "poptContext poptGetContext(const char * " name ", int " argc ,
-.BI "                           har ** "argv ,
+.BI "                           const char ** "argv ,
 .BI "                           const struct poptOption * " options ,
 .BI "                           int " flags );
 .sp
@@ -16,9 +16,9 @@ popt \- Parse command line options
 .sp
 .BI "int poptGetNextOpt(poptContext " con );
 .sp
-.BI "char * poptGetOptArg(poptContext " con );
+.BI "const char * poptGetOptArg(poptContext " con );
 .sp
-.BI "char * poptGetArg(poptContext " con );
+.BI "const char * poptGetArg(poptContext " con );
 .sp
 .BI "const char * poptPeekArg(poptContext " con );
 .sp
@@ -246,7 +246,7 @@ modified outside the popt library.
 .sp
 .nf
 .BI "poptContext poptGetContext(const char * " name ", int "argc ",
-.BI "                           char ** "argv ",
+.BI "                           const char ** "argv ",
 .BI "                           const struct poptOption * "options ",
 .BI "                           int "flags ");"
 .fi
@@ -333,7 +333,7 @@ ways to discover them. One is to ask popt to fill in a variable with the
 .sp
 .nf
 .B #include <popt.h>
-.BI "char * poptGetOptArg(poptContext " con ");"
+.BI "const char * poptGetOptArg(poptContext " con ");"
 .fi
 .sp
 This function returns the argument given for the final option returned by
@@ -347,7 +347,7 @@ of leftover arguments. Three functions allow applications to access such
 arguments:
 .nf
 .HP
-.BI "char * poptGetArg(poptContext " con ");"
+.BI "const char * poptGetArg(poptContext " con ");"
 .fi
 This function returns the next leftover argument and marks it as
 processed.

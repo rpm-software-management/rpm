@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 		    HEADER_MAGIC_YES : HEADER_MAGIC_NO);
 
     fdo = fdDup(STDOUT_FILENO);
-    while ((ct = fdRead(fdi, &buffer, 1024))) {
-	fdWrite(fdo, &buffer, ct);
+    while ((ct = Fread(buffer, sizeof(buffer), 1, fdi))) {
+	Fwrite(buffer, ct, 1, fdo);
     }
     
     return 0;

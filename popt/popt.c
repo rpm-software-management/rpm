@@ -43,7 +43,7 @@ static void invokeCallbacks(poptContext con, const struct poptOption * table,
     }
 }
 
-poptContext poptGetContext(const char * name, int argc, char ** argv,
+poptContext poptGetContext(const char * name, int argc, const char ** argv,
 			   const struct poptOption * options, int flags) {
     poptContext con = malloc(sizeof(*con));
 
@@ -51,7 +51,7 @@ poptContext poptGetContext(const char * name, int argc, char ** argv,
 
     con->os = con->optionStack;
     con->os->argc = argc;
-    con->os->argv = (const char **) argv;	/* XXX don't change the API */
+    con->os->argv = argv;
     con->os->argb = NULL;
 
     if (!(flags & POPT_CONTEXT_KEEP_FIRST))
@@ -569,15 +569,15 @@ int poptGetNextOpt(poptContext con)
     return opt->val;
 }
 
-char * poptGetOptArg(poptContext con) {
-    char * ret = (char *)con->os->nextArg;	/* XXX don't change the API */
+const char * poptGetOptArg(poptContext con) {
+    const char * ret = con->os->nextArg;
     con->os->nextArg = NULL;
     return ret;
 }
 
-char * poptGetArg(poptContext con) {
+const char * poptGetArg(poptContext con) {
     if (con->numLeftovers == con->nextLeftover) return NULL;
-    return (char *)con->leftovers[con->nextLeftover++];	/* XXX don't change the API */
+    return con->leftovers[con->nextLeftover++];
 }
 
 const char * poptPeekArg(poptContext con) {

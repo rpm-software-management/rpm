@@ -149,7 +149,7 @@ char * oldhdrReadFromFile(char * filename, struct oldrpmHeader * header) {
     if (fdFileno(fd) < 0) return strerror(errno);
     
     rc = oldhdrReadFromStream(fd, header);
-    fdClose(fd);
+    Fclose(fd);
     
     return rc;
 }

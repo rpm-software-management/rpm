@@ -24,7 +24,7 @@ int main(int argc, char ** argv)
 	fprintf(stderr, _("headerRead error: %s\n"), strerror(errno));
 	exit(1);
     }
-    fdClose(fdi);
+    Fclose(fdi);
   
     headerDump(h, stdout, HEADER_DUMP_INLINE, rpmTagTable);
     headerFree(h);

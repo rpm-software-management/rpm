@@ -357,7 +357,7 @@ int showVerifyPackage(QVA_t *qva, rpmdb db, Header h)
     if ((qva->qva_flags & VERIFY_SCRIPT) &&
 	(rc = rpmVerifyScript(qva->qva_prefix, h, fdo)) != 0)
 	    ec = rc;
-    fdClose(fdo);
+    Fclose(fdo);
     return ec;
 }
 

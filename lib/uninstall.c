@@ -288,10 +288,10 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 
 	if (rpmIsDebug() &&
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
-	    (void)fdWrite(fd, "set -x\n", 7);
+	    (void)Fwrite("set -x\n", 7, 1, fd);
 
-	(void)fdWrite(fd, script, strlen(script));
-	fdClose(fd);
+	(void)Fwrite(script, strlen(script), 1, fd);
+	Fclose(fd);
 
 	argv[argc++] = fn + strlen(root);
 	if (arg1 >= 0) {
@@ -337,9 +337,9 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 		dup2(fdFileno(out), STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
 	    if (fdFileno(out) > STDERR_FILENO && fdFileno(out) != fdFileno(errfd))
-		fdClose (out);
+		Fclose (out);
 	    if (fdFileno(errfd) > STDERR_FILENO)
-		fdClose (errfd);
+		Fclose (errfd);
 	}
 
 	doputenv(SCRIPT_PATH);
@@ -370,7 +370,7 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 
     if (freePrefixes) free(prefixes);
 
-    fdClose(out);	/* XXX dup'd STDOUT_FILENO */
+    Fclose(out);	/* XXX dup'd STDOUT_FILENO */
     
     if (script) {
 	if (!rpmIsDebug()) unlink(fn);

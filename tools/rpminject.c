@@ -444,7 +444,7 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
     int rc;
 
     csa->cpioArchiveSize = 0;
-    csa->cpioFdIn = fdNew();
+    csa->cpioFdIn = fdNew(&fdio);
     csa->cpioList = NULL;
     csa->cpioCount = 0;
     csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
@@ -467,7 +467,7 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
     }
 
 exit:
-    fdClose(csa->cpioFdIn);
+    Fclose(csa->cpioFdIn);
     return rc;
 
 }

@@ -61,31 +61,6 @@ struct cpioCallbackInfo {
     long bytesProcessed;		/* bytes in archive read */
 };
 
-typedef struct CFD {
-    union {
-	/*@owned@*/FD_t	_cfdu_fd;
-#define	cpioFd	_cfdu._cfdu_fd
-	/*@owned@*/FILE *_cfdu_fp;
-#define	cpioFp	_cfdu._cfdu_fp
-	/*@owned@*/FD_t	_cfdu_gzfd;
-#define	cpioGzFd	_cfdu._cfdu_gzfd
-#if ENABLE_BZIP2_PAYLOAD
-	/*@owned@*/FD_t	_cfdu_bzfd;
-#define	cpioBzFd	_cfdu._cfdu_bzfd
-#endif
-    } _cfdu;
-    int		cpioPos;
-    enum cpioIoType {
-	cpioIoTypeDebug,
-	cpioIoTypeFd,
-	cpioIoTypeFp,
-	cpioIoTypeGzFd,
-#if ENABLE_BZIP2_PAYLOAD
-	cpioIoTypeBzFd,
-#endif
-    } cpioIoType;
-} CFD_t;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -99,10 +74,10 @@ typedef void (*cpioCallback)(struct cpioCallbackInfo * filespec, void * data);
    directory. The mode mapping is only used for the permission bits, not
    for the file type. The owner/group mappings are ignored for the nonroot
    user. If *failedFile is non-NULL on return, it should be free()d. */
-int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
+int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
 		       /*@out@*/const char ** failedFile);
-int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
+int cpioBuildArchive(FD_t cfd, struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, /*@out@*/const char ** failedFile);
 

@@ -86,16 +86,16 @@ typedef void (*poptCallbackType)(poptContext con,
 				 const char * arg, const void * data);
 
 /*@only@*/ poptContext poptGetContext(/*@keep@*/ const char * name,
-		int argc, /*@keep@*/ char ** argv,
+		int argc, /*@keep@*/ const char ** argv,
 		/*@keep@*/ const struct poptOption * options, int flags);
 void poptResetContext(poptContext con);
 
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
 int poptGetNextOpt(poptContext con);
 /* returns NULL if no argument is available */
-/*@observer@*/ /*@null@*/ char * poptGetOptArg(poptContext con);
+/*@observer@*/ /*@null@*/ const char * poptGetOptArg(poptContext con);
 /* returns NULL if no more options are available */
-/*@observer@*/ /*@null@*/ char * poptGetArg(poptContext con);
+/*@observer@*/ /*@null@*/ const char * poptGetArg(poptContext con);
 /*@observer@*/ /*@null@*/ const char * poptPeekArg(poptContext con);
 /*@observer@*/ /*@null@*/ const char ** poptGetArgs(poptContext con);
 /* returns the option which caused the most recent error */

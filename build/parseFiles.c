@@ -3,8 +3,8 @@
 #include "rpmbuild.h"
 
 /* These have to be global scope to make up for *stupid* compilers */
-    /*@observer@*/ /*@null@*/ static char *name;
-    /*@observer@*/ /*@null@*/ static char *file;
+    /*@observer@*/ /*@null@*/ static const char *name = NULL;
+    /*@observer@*/ /*@null@*/ static const char *file = NULL;
     static struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
 	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
@@ -17,7 +17,7 @@ int parseFiles(Spec spec)
     Package pkg;
     int rc, argc;
     int arg;
-    char **argv = NULL;
+    const char **argv = NULL;
     int flag = PART_SUBNAME;
     poptContext optCon = NULL;
 
@@ -47,9 +47,8 @@ int parseFiles(Spec spec)
     }
 
     if (poptPeekArg(optCon)) {
-	if (! name) {
+	if (name == NULL)
 	    name = poptGetArg(optCon);
-	}
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s"),
 		     spec->lineNum,

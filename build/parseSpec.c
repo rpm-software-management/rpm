@@ -159,7 +159,8 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 
 int readLine(Spec spec, int strip)
 {
-    char  *s, *arch, *os;
+    const char *arch, *os;
+    char  *s;
     int match;
     struct ReadLevelEntry *rl;
     OFI_t *ofi = spec->fileStack;
@@ -330,7 +331,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
     int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
     char *name;
-    char *saveArch;
+    const char *saveArch;
     Package pkg;
     int x, index;
     Spec spec;
@@ -439,7 +440,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 			return RPMERR_BADSPEC;
 		    }
 		    rpmSetMachine(saveArch, NULL);
-		    free(saveArch);
+		    xfree(saveArch);
 		    index++;
 		}
 	    }
@@ -473,7 +474,8 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
     }
 
     /* Check for description in each package and add arch and os */
-    { char *arch, *os, *myos = NULL;
+    { const char *arch, *os;
+      char *myos = NULL;
 
       rpmGetArchInfo(&arch, NULL);
       rpmGetOsInfo(&os, NULL);
@@ -484,8 +486,9 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
        * XXX A copy of this string is embedded in headers.
        */
       if (!strcmp(os, "linux")) {
-	os = myos = xstrdup(os);
-	*os = 'L';
+	myos = xstrdup(os);
+	*myos = 'L';
+	os = myos;
       }
 
       for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {

@@ -17,23 +17,23 @@ void fpCacheFree(fingerPrintCache cache) {
 
 static const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    fingerPrintCache cache,
-			    const char * dirName) {
+			    const char * dirName)
+{
     const void ** data;
-    int count;
 
-    if (htGetEntry(cache->ht, dirName, &data, &count, NULL)) return NULL;
+    if (htGetEntry(cache->ht, dirName, &data, NULL, NULL))
+	return NULL;
     return data[0];
 }
 
 static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
-			    const char * baseName, int scareMemory) {
+			    const char * baseName, int scareMemory)
+{
     char dir[PATH_MAX];
-    const char * chptr1;
-    char * end, * bn;
+    char * end;
     fingerPrint fp;
     struct stat sb;
     char * buf;
-    int stripCount;
     const struct fprintCacheEntry_s * cacheHit;
     struct fprintCacheEntry_s * newEntry;
 
@@ -54,7 +54,7 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 	if ( /*@-unrecog@*/ realpath(".", dir) /*@=unrecog@*/ != NULL) {
 	    char *s = alloca(strlen(dir) + strlen(dirName) + 2);
 	    sprintf(s, "%s/%s", dir, dirName);
-	    dirName = chptr1 = s;
+	    dirName = s;
 	}
     }
 
@@ -63,12 +63,9 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 
     buf = alloca(strlen(dirName) + 1);
     strcpy(buf, dirName);
-    end = bn = strrchr(buf, '/');
-    stripCount = 0;
+    end = buf + strlen(buf);
     fp.entry = NULL;
     while (*buf) {
-	*end = '\0';
-	stripCount++;
 
 	/* as we're stating paths here, we want to follow symlinks */
 
@@ -87,11 +84,13 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 	}
 
         if (fp.entry) {
-	    chptr1 = dirName + (end - buf) + 1;
-	    if (scareMemory)
-		fp.subdir = chptr1;
+	    fp.subdir = dirName + (end - buf);
+	    if (fp.subdir[0] == '/' && fp.subdir[1] != '\0')
+		fp.subdir++;
 	    else
-		fp.subdir = xstrdup(chptr1);	/* XXX memory leak, but how
+		fp.subdir = "";
+	    if (!scareMemory && fp.subdir != NULL)
+		fp.subdir = xstrdup(fp.subdir);	/* XXX memory leak, but how
 						   do we know we can free it? 
 						   Using the (new) cache would
 						   work if hash tables allowed
@@ -102,6 +101,7 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 
 	end--;
 	while ((end > buf) && *end != '/') end--;
+	*end = '\0';
     }
 
     /* This can't happen, or stat('/') just failed! */
@@ -113,8 +113,15 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * fullName, 
 		     int scareMemory) {
-    /* XXX FIXME */
-    abort();
+    char *dn = strcpy(alloca(strlen(fullName)+1), fullName);
+    char *bn = strrchr(dn, '/');
+
+    if (bn)
+	*bn++ = '\0';
+    else
+	bn = dn;
+
+    return doLookup(cache, dn, bn, scareMemory);
 }
 
 unsigned int fpHashFunction(const void * key)
@@ -137,7 +144,10 @@ unsigned int fpHashFunction(const void * key)
 
 int fpEqual(const void * key1, const void * key2)
 {
-    return FP_EQUAL(*((const fingerPrint *) key1), *((fingerPrint *) key2));
+    const fingerPrint *k1 = key1;
+    const fingerPrint *k2 = key2;
+    /* XXX negated to preserve strcmp return behavior in ht->eq */
+    return (FP_EQUAL(*k1, *k2) ? 0 : 1);
 }
 
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 

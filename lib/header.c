@@ -482,20 +482,20 @@ int headerWrite(FD_t fd, Header h, int magicp)
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	nb = fdWrite(fd, header_magic, sizeof(header_magic));
+	nb = Fwrite(header_magic, sizeof(header_magic), 1, fd);
 	if (nb != sizeof(header_magic)) {
 	    free(p);
 	    return 1;
 	}
 	l = htonl(0);
-	nb = fdWrite(fd, &l, sizeof(l));
+	nb = Fwrite(&l, sizeof(l), 1, fd);
 	if (nb != sizeof(l)) {
 	    free(p);
 	    return 1;
 	}
     }
     
-    nb = fdWrite(fd, p, length);
+    nb = Fwrite(p, length, 1, fd);
     if (nb != length) {
 	free(p);
 	return 1;
@@ -571,20 +571,20 @@ int headerGzWrite(FD_t fd, Header h, int magicp)
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	nb = gzdWrite(fd, header_magic, sizeof(header_magic));
+	nb = Fwrite(header_magic, sizeof(header_magic), 1, fd);
 	if (nb != sizeof(header_magic)) {
 	    free(p);
 	    return 1;
 	}
 	l = htonl(0);
-	nb = gzdWrite(fd, &l, sizeof(l));
+	nb = Fwrite(&l, sizeof(l), 1, fd);
 	if (nb != sizeof(l)) {
 	    free(p);
 	    return 1;
 	}
     }
     
-    nb = gzdWrite(fd, p, length);
+    nb = Fwrite(p, length, 1, fd);
     if (nb != length) {
 	free(p);
 	return 1;
@@ -605,24 +605,24 @@ Header headerGzRead(FD_t fd, int magicp)
     int totalSize;
 
     if (magicp == HEADER_MAGIC_YES) {
-	if (gzdRead(fd, &magic, sizeof(magic)) != sizeof(magic))
+	if (Fread(&magic, sizeof(magic), 1, fd) != sizeof(magic))
 	    return NULL;
 	if (memcmp(&magic, header_magic, sizeof(magic))) {
 	    return NULL;
 	}
 
-	if (gzdRead(fd, &reserved, sizeof(reserved)) != sizeof(reserved))
+	if (Fread(&reserved, sizeof(reserved), 1, fd) != sizeof(reserved))
 	    return NULL;
     }
     
     /* First read the index length (count of index entries) */
-    if (gzdRead(fd, &il, sizeof(il)) != sizeof(il)) 
+    if (Fread(&il, sizeof(il), 1, fd) != sizeof(il)) 
 	return NULL;
 
     il = ntohl(il);
 
     /* Then read the data length (number of bytes) */
-    if (gzdRead(fd, &dl, sizeof(dl)) != sizeof(dl)) 
+    if (Fread(&dl, sizeof(dl), 1, fd) != sizeof(dl)) 
 	return NULL;
 
     dl = ntohl(dl);
@@ -635,7 +635,7 @@ Header headerGzRead(FD_t fd, int magicp)
     *p++ = htonl(dl);
 
     totalSize -= sizeof(int_32) + sizeof(int_32);
-    if (gzdRead(fd, p, totalSize) != totalSize)
+    if (Fread(p, totalSize, 1, fd) != totalSize)
 	return NULL;
     
     h = headerLoad(block);
@@ -1163,11 +1163,11 @@ headerGetLangs(Header h)
     return table;
 }
 
-int headerAddI18NString(Header h, int_32 tag, char * string, char * lang)
+int headerAddI18NString(Header h, int_32 tag, const char * string, const char * lang)
 {
     struct indexEntry * table, * entry;
     char * chptr;
-    char ** strArray;
+    const char ** strArray;
     int length;
     int ghosts;
     int i, langNum;
@@ -1181,7 +1181,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang)
     }
 
     if (!table && !entry) {
-	char * charArray[2];
+	const char * charArray[2];
 	int count = 0;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
 	    charArray[count++] = "C";

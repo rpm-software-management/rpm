@@ -370,7 +370,7 @@ int ufdClose(FD_t fd)
 	    u->ftpControl = -1;
 	}
     }
-    return fdClose(fd);
+    return Fclose(fd);
 }
 
 FD_t ufdOpen(const char *url, int flags, mode_t mode)
@@ -382,7 +382,7 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
     case URL_IS_FTP:
 	if (urlConnect(url, &u) < 0)
 	    break;
-	if ((fd = fdNew()) == NULL)
+	if ((fd = fdNew(&fdio)) == NULL)
 	    break;
 	fd->fd_url = u;
 	if ((u->openError = ftpGetFileDesc(fd)) < 0) {
@@ -393,7 +393,7 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
     case URL_IS_HTTP:
 	if (urlSplit(url, &u))
 	    break;
-	if ((fd = fdNew()) == NULL)
+	if ((fd = fdNew(&fdio)) == NULL)
 	    break;
 	fd->fd_url = u;
 	fd->fd_fd = httpOpen(u);
@@ -444,7 +444,7 @@ int urlGetFile(const char * url, const char * dest) {
     tfd = fdOpen(dest, O_CREAT|O_WRONLY|O_TRUNC, 0600);
     if (fdFileno(tfd) < 0) {
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);
-	fdClose(tfd);
+	Fclose(tfd);
 	ufdClose(sfd);
 	return FTPERR_UNKNOWN;
     }
@@ -472,7 +472,7 @@ int urlGetFile(const char * url, const char * dest) {
 	break;
     }
 
-    fdClose(tfd);
+    Fclose(tfd);
 
     return rc;
 }

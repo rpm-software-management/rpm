@@ -12,7 +12,7 @@ int timedRead(FD_t fd, void * bufptr, int length) {
 
     fstat(fdFileno(fd), &sb);
     if (S_ISREG(sb.st_mode))
-	return fdRead(fd, buf, length);
+	return Fread(buf, length, 1, fd);
 
     while  (total < length) {
 	FD_ZERO(&readSet);
@@ -24,7 +24,7 @@ int timedRead(FD_t fd, void * bufptr, int length) {
 	if (select(fdFileno(fd) + 1, &readSet, NULL, NULL, &tv) != 1) 
 	    return total;
 
-	bytesRead = fdRead(fd, buf + total, length - total);
+	bytesRead = Fread(buf + total, length - total, 1, fd);
 
 	if (bytesRead < 0)
 	    return bytesRead;

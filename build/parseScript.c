@@ -2,7 +2,7 @@
 
 #include "rpmbuild.h"
 
-static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
+static int addTriggerIndex(Package pkg, const char *file, const char *script, const char *prog)
 {
     struct TriggerFileEntry *new;
     struct TriggerFileEntry *list = pkg->triggerFiles;
@@ -36,9 +36,9 @@ static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
 }
 
 /* these have to be global because of stupid compilers */
-    /*@observer@*/ /*@null@*/ static char *name;
-    /*@observer@*/ /*@null@*/ static char *prog;
-    /*@observer@*/ /*@null@*/ static char *file;
+    /*@observer@*/ /*@null@*/ static const char *name = NULL;
+    /*@observer@*/ /*@null@*/ static const char *prog = NULL;
+    /*@observer@*/ /*@null@*/ static const char *file = NULL;
     static struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
@@ -61,7 +61,7 @@ int parseScript(Spec spec, int parsePart)
     /*  -f <file>                          */
 
     char *p;
-    char **progArgv = NULL;
+    const char **progArgv = NULL;
     int progArgc;
     char *partname = NULL;
     int reqtag = 0;
@@ -76,7 +76,7 @@ int parseScript(Spec spec, int parsePart)
 
     int rc, argc;
     int arg;
-    char **argv = NULL;
+    const char **argv = NULL;
     poptContext optCon = NULL;
     
     name = NULL;
@@ -175,9 +175,8 @@ int parseScript(Spec spec, int parsePart)
     }
 
     if (poptPeekArg(optCon)) {
-	if (! name) {
+	if (name == NULL)
 	    name = poptGetArg(optCon);
-	}
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s"),
 		     spec->lineNum,

@@ -78,7 +78,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     }
     
     if (makeTempFile(NULL, &scriptName, &fd)) {
-	    fdClose(fd);
+	    Fclose(fd);
 	    FREE(scriptName);
 	    rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
 	    return RPMERR_SCRIPT;

@@ -24,9 +24,9 @@ static /*@shared@*/ struct hashBucket * findEntry(hashTable ht, const void * key
     struct hashBucket * b;
 
     hash = ht->fn(key) % ht->numBuckets;
-    b = ht->buckets[hash]; 
+    b = ht->buckets[hash];
 
-    while (b && b->key && !ht->eq(b->key, key)) 
+    while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
 
     return b;
@@ -74,15 +74,15 @@ hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
 void htAddEntry(hashTable ht, const void * key, const void * data)
 {
     unsigned int hash;
-    struct hashBucket * b, * ob;
+    struct hashBucket * b;
 
     hash = ht->fn(key) % ht->numBuckets;
-    b = ob = ht->buckets[hash]; 
+    b = ht->buckets[hash];
 
-    while (b && b->key && !ht->eq(b->key, key)) 
+    while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
-   
-    if (!b) {
+
+    if (b == NULL) {
 	b = xmalloc(sizeof(*b));
 	if (ht->keySize) {
 	    char *k = xmalloc(ht->keySize);
@@ -128,16 +128,20 @@ int htHasEntry(hashTable ht, const void * key)
     if (!(b = findEntry(ht, key))) return 0; else return 1;
 }
 
-int htGetEntry(hashTable ht, const void * key, const void *** data, 
+int htGetEntry(hashTable ht, const void * key, const void *** data,
 	       int * dataCount, const void ** tableKey)
 {
     struct hashBucket * b;
 
-    if (!(b = findEntry(ht, key))) return 1;
+    if ((b = findEntry(ht, key)) == NULL)
+	return 1;
 
-    *data = b->data;
-    *dataCount = b->dataCount;
-    if (tableKey) *tableKey = b->key;
+    if (data)
+	*data = b->data;
+    if (dataCount)
+	*dataCount = b->dataCount;
+    if (tableKey)
+	*tableKey = b->key;
 
     return 0;
 }

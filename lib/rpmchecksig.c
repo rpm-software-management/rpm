@@ -19,7 +19,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 
     /* close and reset *fdp to NULL */
     if (*fdp && (fnp == NULL || *fnp == NULL)) {
-	fdClose(*fdp);
+	Fclose(*fdp);
 	*fdp = NULL;
 	return 0;
     }
@@ -69,15 +69,15 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	goto exit;
 
-    while ((count = fdRead(*sfdp, buffer, sizeof(buffer))) > 0) {
-	if (fdWrite(*tfdp, buffer, count) < 0) {
-	    fprintf(stderr, _("%s: fdWrite failed: %s\n"), *tfnp,
+    while ((count = Fread(buffer, sizeof(buffer), 1, *sfdp)) > 0) {
+	if (Fwrite(buffer, count, 1, *tfdp) < 0) {
+	    fprintf(stderr, _("%s: Fwrite failed: %s\n"), *tfnp,
 		strerror(errno));
 	    goto exit;
 	}
     }
     if (count < 0) {
-	fprintf(stderr, _("%s: fdRead failed: %s\n"), *sfnp, strerror(errno));
+	fprintf(stderr, _("%s: Fread failed: %s\n"), *sfnp, strerror(errno));
 	goto exit;
     }
 

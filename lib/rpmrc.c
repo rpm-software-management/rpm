@@ -104,7 +104,7 @@ static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 static struct rpmvarValue values[RPMVAR_NUM];
 
 /* prototypes */
-static void defaultMachine(/*@out@*/char ** arch, /*@out@*/char ** os);
+static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char ** os);
 static int doReadRC(FD_t fd, const char * filename);
 static int optionCompare(const void * a, const void * b);
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
@@ -124,24 +124,24 @@ static void setVarDefault(int var, const char *macroname, const char *val, const
 static void setPathDefault(int var, const char *macroname, const char *subdir);
 static void setDefaults(void);
 
-static void rebuildCompatTables(int type, char *name);
+static void rebuildCompatTables(int type, const char *name);
 
 /* compatiblity tables */
 static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 				struct machCache * cache);
 static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
-						  char * key);
+						  const char * key);
 static struct machEquivInfo * machEquivSearch(
-		struct machEquivTable * table, char * name);
-static void machAddEquiv(struct machEquivTable * table, char * name,
+		struct machEquivTable * table, const char * name);
+static void machAddEquiv(struct machEquivTable * table, const char * name,
 			   int distance);
 static void machCacheEntryVisit(struct machCache * cache,
 				  struct machEquivTable * table,
-				  char * name,
+				  const char * name,
 	  			  int distance);
 static void machFindEquivs(struct machCache * cache,
 			     struct machEquivTable * table,
-			     char * key);
+			     const char * key);
 
 static int optionCompare(const void * a, const void * b) {
     return strcasecmp(((struct rpmOption *) a)->name,
@@ -151,7 +151,7 @@ static int optionCompare(const void * a, const void * b) {
 static void rpmRebuildTargetVars(const char **target, const char ** canontarget);
 
 static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
-						  char * key)
+						  const char * key)
 {
     int i;
 
@@ -229,7 +229,7 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 }
 
 static struct machEquivInfo * machEquivSearch(
-		struct machEquivTable * table, char * name)
+		struct machEquivTable * table, const char * name)
 {
     int i;
 
@@ -248,7 +248,7 @@ static struct machEquivInfo * machEquivSearch(
     return NULL;
 }
 
-static void machAddEquiv(struct machEquivTable * table, char * name,
+static void machAddEquiv(struct machEquivTable * table, const char * name,
 			   int distance)
 {
     struct machEquivInfo * equiv;
@@ -268,7 +268,7 @@ static void machAddEquiv(struct machEquivTable * table, char * name,
 
 static void machCacheEntryVisit(struct machCache * cache,
 				  struct machEquivTable * table,
-				  char * name,
+				  const char * name,
 	  			  int distance)
 {
     struct machCacheEntry * entry;
@@ -290,7 +290,7 @@ static void machCacheEntryVisit(struct machCache * cache,
 
 static void machFindEquivs(struct machCache * cache,
 			     struct machEquivTable * table,
-			     char * key)
+			     const char * key)
 {
     int i;
 
@@ -579,7 +579,7 @@ int rpmReadRC(const char * rcfiles)
 	    break;
 	}
 	rc = doReadRC(fd, fn);
-	fdClose(fd);
+	Fclose(fd);
  	if (rc) break;
     }
     if (myrcfiles)	free(myrcfiles);
@@ -604,7 +604,7 @@ static int doReadRC(FD_t fd, const char * filename)
   { struct stat sb;
     fstat(fdFileno(fd), &sb);
     next = alloca(sb.st_size + 2);
-    if (fdRead(fd, next, sb.st_size) != sb.st_size) {
+    if (Fread(next, sb.st_size, 1, fd) != sb.st_size) {
 	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,
 		 strerror(errno));
 	return 1;
@@ -683,7 +683,7 @@ static int doReadRC(FD_t fd, const char * filename)
 		    rc = 1;
 		} else {
 		    rc = doReadRC(fdinc, fn);
-		    fdClose(fdinc);
+		    Fclose(fdinc);
 		}
 		if (fn) xfree(fn);
 		if (rc) return rc;
@@ -795,7 +795,7 @@ static int doReadRC(FD_t fd, const char * filename)
     return 0;
 }
 
-static void defaultMachine(char ** arch, char ** os) {
+static void defaultMachine(const char ** arch, const char ** os) {
     static struct utsname un;
     static int gotDefaults = 0;
     char * chptr;
@@ -851,8 +851,8 @@ static void defaultMachine(char ** arch, char ** os) {
            if (fdFileno(fd) > 0) {
               chptr = (char *) xcalloc(1, 256);
               if (chptr != NULL) {
-                 int irelid = fdRead(fd, (void *)chptr, 256);
-                 fdClose(fd);
+                 int irelid = Fread(chptr, 256, 1, fd);
+                 Fclose(fd);
                  /* example: "112393 RELEASE 020200 Version 01 OS" */
                  if (irelid > 0) {
                     if ((prelid=strstr(chptr, "RELEASE "))){
@@ -1046,7 +1046,7 @@ static void rpmSetVarArch(int var, const char * val, const char * arch) {
 }
 
 void rpmSetTables(int archTable, int osTable) {
-    char * arch, * os;
+    const char * arch, * os;
 
     defaultMachine(&arch, &os);
 
@@ -1061,12 +1061,12 @@ void rpmSetTables(int archTable, int osTable) {
     }
 }
 
-int rpmMachineScore(int type, char * name) {
+int rpmMachineScore(int type, const char * name) {
     struct machEquivInfo * info = machEquivSearch(&tables[type].equiv, name);
     return (info != NULL ? info->score : 0);
 }
 
-void rpmGetMachine(char **arch, char **os)
+void rpmGetMachine(const char **arch, const char **os)
 {
     if (arch)
 	*arch = current[ARCH];
@@ -1076,7 +1076,7 @@ void rpmGetMachine(char **arch, char **os)
 }
 
 void rpmSetMachine(const char * arch, const char * os) {
-    char * host_cpu, * host_os;
+    const char * host_cpu, * host_os;
 
     defaultMachine(&host_cpu, &host_os);
 
@@ -1119,13 +1119,13 @@ void rpmSetMachine(const char * arch, const char * os) {
     }
 }
 
-static void rebuildCompatTables(int type, char * name) {
+static void rebuildCompatTables(int type, const char * name) {
     machFindEquivs(&tables[currTables[type]].cache,
 		   &tables[currTables[type]].equiv,
 		   name);
 }
 
-static void getMachineInfo(int type, /*@only@*/ /*@out@*/ char ** name,
+static void getMachineInfo(int type, /*@only@*/ /*@out@*/ const char ** name,
 			/*@out@*/int * num)
 {
     struct canonEntry * canon;
@@ -1152,11 +1152,11 @@ static void getMachineInfo(int type, /*@only@*/ /*@out@*/ char ** name,
     }
 }
 
-void rpmGetArchInfo(char ** name, int * num) {
+void rpmGetArchInfo(const char ** name, int * num) {
     getMachineInfo(ARCH, name, num);
 }
 
-void rpmGetOsInfo(char ** name, int * num) {
+void rpmGetOsInfo(const char ** name, int * num) {
     getMachineInfo(OS, name, num);
 }
 
@@ -1192,24 +1192,27 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	    if (co != NULL) co = xstrdup(co);
 	}
     } else {
+	const char *a, *o;
 	/* Set build target from rpm arch and os */
-	rpmGetArchInfo(&ca,NULL);
-	if (ca)	ca = xstrdup(ca);
-	rpmGetOsInfo(&co,NULL);
-	if (co)	co = xstrdup(co);
+	rpmGetArchInfo(&a,NULL);
+	ca = (a) ? xstrdup(a) : NULL;
+	rpmGetOsInfo(&o,NULL);
+	co = (o) ? xstrdup(o) : NULL;
     }
 
     /* If still not set, Set target arch/os from default uname(2) values */
     if (ca == NULL) {
-	defaultMachine(&ca, NULL);
-	ca = xstrdup(ca);
+	const char *a;
+	defaultMachine(&a, NULL);
+	ca = (a) ? xstrdup(a) : NULL;
      }
     for (x = 0; ca[x]; x++)
 	ca[x] = tolower(ca[x]);
 
     if (co == NULL) {
-	defaultMachine(NULL, &co);
-	co = xstrdup(co);
+	const char *o;
+	defaultMachine(NULL, &o);
+	co = (o) ? xstrdup(co) : NULL;
     }
     for (x = 0; co[x]; x++)
 	co[x] = tolower(co[x]);

@@ -3,7 +3,9 @@
 #include <assert.h>
 #include <stdarg.h>
 
+#if !defined(isblank)
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
+#endif
 #define	iseol(_c)	((_c) == '\n' || (_c) == '\r')
 
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
@@ -25,8 +27,8 @@
 typedef	int FD_t;
 #define	fdFileno(_x)	(_x)
 #define	fdOpen		open
-#define	fdRead		read
-#define	fdClose		close
+#define	Fread(_b, _s, _n, _fd)	read(_fd, _b, _s)
+#define	Fclose(_fd)		close(_fd)
 #else
 #include <rpmlib.h>
 #endif
@@ -1343,9 +1345,9 @@ int isCompressed(const char *file, int *compressed)
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(errno));
 	return 1;
     }
-    nb = fdRead(fd, magic, sizeof(magic));
+    nb = Fread(magic, sizeof(magic), 1, fd);
     rderrno = errno;
-    fdClose(fd);
+    Fclose(fd);
 
     if (nb < 0) {
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(rderrno));

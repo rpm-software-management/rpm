@@ -456,13 +456,13 @@ static int copyData( /*@only@*/ FD_t sfd, FD_t tfd) {
 	    break;
 	}
 
-	bytesRead = fdRead(sfd, buf, sizeof(buf));
+	bytesRead = Fread(buf, sizeof(buf), 1, sfd);
 	if (bytesRead == 0) {
 	    rc = 0;
 	    break;
 	}
 
-	if (fdWrite(tfd, buf, bytesRead) != bytesRead) {
+	if (Fwrite(buf, bytesRead, 1, tfd) != bytesRead) {
 	    rc = FTPERR_FILE_IO_ERROR;
 	    break;
 	}
@@ -485,7 +485,7 @@ fprintf(stderr, "++ copied %d bytes: %s\n", bytesCopied, ftpStrerror(rc));
 		bytesCopied, bytesCopied, NULL, urlNotifyData);
     }
     
-    fdClose(sfd);
+    Fclose(sfd);
     return rc;
 }
 
@@ -519,7 +519,7 @@ fprintf(stderr, "-> ABOR\n");
     ftpTimeoutSecs = tosecs;
 
     if (fdFileno(fd) >= 0)
-	fdClose(fd);
+	Fclose(fd);
     return 0;
 }
 
@@ -609,7 +609,7 @@ fprintf(stderr, "-> PASV\n");
 	        sizeof(dataAddress)) < 0) {
 	if (errno == EINTR)
 	    continue;
-	fdClose(fd);
+	Fclose(fd);
 	return FTPERR_FAILED_DATA_CONNECT;
     }
 
@@ -620,7 +620,7 @@ fprintf(stderr, "-> %s", retrCommand);
     }
 
     if ((rc = ftpCheckResponse(u, NULL))) {
-	fdClose(fd);
+	Fclose(fd);
 	return rc;
     }
 
@@ -642,7 +642,7 @@ int ftpGetFile(FD_t sfd, FD_t tfd)
 
     /* XXX normally sfd = ufdOpen(...) and this code does not execute */
     if (fdFileno(sfd) < 0 && (rc = ftpGetFileDesc(sfd)) < 0) {
-	fdClose(sfd);
+	Fclose(sfd);
 	return rc;
     }
 

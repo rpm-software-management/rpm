@@ -5,8 +5,8 @@
 extern int noLang;		/* XXX FIXME: pass as arg */
 
 /* These have to be global scope to make up for *stupid* compilers */
-    /*@observer@*/ /*@null@*/ static char *name;
-    /*@observer@*/ /*@null@*/ static char *lang;
+    /*@observer@*/ /*@null@*/ static const char *name = NULL;
+    /*@observer@*/ /*@null@*/ static const char *lang = NULL;
 
     static struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
@@ -22,7 +22,7 @@ int parseDescription(Spec spec)
     Package pkg;
     int rc, argc;
     int arg;
-    char **argv = NULL;
+    const char **argv = NULL;
     poptContext optCon = NULL;
     struct spectag *t = NULL;
 
@@ -53,9 +53,8 @@ int parseDescription(Spec spec)
     }
 
     if (poptPeekArg(optCon)) {
-	if (! name) {
+	if (name == NULL)
 	    name = poptGetArg(optCon);
-	}
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s"),
 		     spec->lineNum,

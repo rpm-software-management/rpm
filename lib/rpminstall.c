@@ -50,7 +50,7 @@ static void * showProgress(const Header h, const rpmCallbackType what,
 	return fd;
 
       case RPMCALLBACK_INST_CLOSE_FILE:
-	fdClose(fd);
+	Fclose(fd);
 	break;
 
       case RPMCALLBACK_INST_START:
@@ -198,7 +198,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 
 	switch (rc) {
 	case 1:
-	    fdClose(fd);
+	    Fclose(fd);
 	    rpmMessage(RPMMESS_ERROR, 
 			_("%s does not appear to be a RPM package\n"), 
 			*filename);
@@ -211,7 +211,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 	case 0:
 	    if (isSource) {
 		sourcePackages[numSourcePackages++] = *filename;
-		fdClose(fd);
+		Fclose(fd);
 	    } else {
 		if (!dbIsOpen) {
 		    if (rpmdbOpen(rootdir, &db, mode, 0644)) {
@@ -251,7 +251,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 			       relocations);
 
 		headerFree(h);	/* XXX reference held by transaction set */
-		fdClose(fd);
+		Fclose(fd);
 
 		switch(rc) {
 		case 0:
@@ -338,7 +338,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
 				showProgress, (void *) notifyFlags, NULL);
 
-	    fdClose(fd);
+	    Fclose(fd);
 	}
     }
 
@@ -471,7 +471,7 @@ int rpmInstallSource(const char * rootdir, const char * arg, const char ** specF
 	if (cookie && *cookie) free(*cookie);
     }
 
-    fdClose(fd);
+    Fclose(fd);
 
     return rc;
 }

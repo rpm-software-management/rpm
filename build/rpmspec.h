@@ -90,7 +90,7 @@ struct SpecStruct {
 
     /*@refcounted@*/ Header buildRestrictions;
     /*@owned@*/ struct SpecStruct **buildArchitectureSpecs;
-    char ** buildArchitectures;
+    /*@only@*/ const char ** buildArchitectures;
     int buildArchitectureCount;
     int inBuildArchitectures;
 

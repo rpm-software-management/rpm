@@ -21,7 +21,7 @@ FD_t bzdOpen(const char *pathname, const char *mode) {
     BZFILE *bzfile;;
     if ((bzfile = bzopen(pathname, mode)) == NULL)
 	return NULL;
-    fd = fdNew();
+    fd = fdNew(&bzdio);
     fd->fd_bzd = bzfile;
     return fd;
 }
@@ -36,15 +36,6 @@ FD_t bzdFdopen(FD_t fd, const char *mode) {
     return NULL;
 }
 
-ssize_t bzdRead(FD_t fd, void * buf, size_t count) {
-    *((char *)buf) = '\0';
-    return bzread(bzdFileno(fd), buf, count);
-}
-
-ssize_t bzdWrite(FD_t fd, const void * buf, size_t count) {
-    return bzwrite(bzdFileno(fd), (void *)buf, count);
-}
-
 int bzdFlush(FD_t fd) {
     return bzflush(bzdFileno(fd));
 }
@@ -54,7 +45,24 @@ const char * bzdStrerror(FD_t fd) {
     return bzerror(bzdFileno(fd), &bzerr);
 }
 
-int bzdClose(FD_t fd) {
+/* =============================================================== */
+static ssize_t bzdRead(void * cookie, char * buf, size_t count) {
+    FD_t fd = cookie;
+    *((char *)buf) = '\0';
+    return bzread(bzdFileno(fd), buf, count);
+}
+
+static ssize_t bzdWrite(void * cookie, const char * buf, size_t count) {
+    FD_t fd = cookie;
+    return bzwrite(bzdFileno(fd), (void *)buf, count);
+}
+
+static int bzdSeek(void * cookie, off_t pos, int whence) {
+    return -1;
+}
+
+static int bzdClose(void * cookie) {
+    FD_t fd = cookie;
     BZFILE *bzfile;
 
     if (fd != NULL && (bzfile = bzdFileno(fd)) != NULL) {
@@ -67,4 +75,7 @@ int bzdClose(FD_t fd) {
     }
     return -2;
 }
+
+cookie_io_functions_t bzdio = { bzdRead, bzdWrite, bzdSeek, bzdClose };
+
 #endif	/* HAVE_BZLIB_H */

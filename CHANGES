@@ -1,4 +1,6 @@
 3.0.3 -> 3.0.4
+	- use compressed filenames on install side.
+	- start unifying FD types, CFD_t now gone.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

@@ -202,7 +202,7 @@ int rpmWriteSignature(FD_t fd, Header header)
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	memset(buf, 0, pad);
-	if (fdWrite(fd, buf, pad) != pad)
+	if (Fwrite(buf, pad, 1, fd) != pad)
 	    rc = 1;
     }
     return rc;
@@ -294,7 +294,7 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 	fd = fdOpen(sigfile, O_RDONLY, 0);
 	rc = timedRead(fd, *sig, *size);
 	unlink(sigfile);
-	fdClose(fd);
+	Fclose(fd);
 	if (rc != *size) {
 	    free(*sig);
 	    rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
@@ -371,7 +371,7 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 	fd = fdOpen(sigfile, O_RDONLY, 0);
 	rc = timedRead(fd, *sig, *size);
 	unlink(sigfile);
-	fdClose(fd);
+	Fclose(fd);
 	if (rc != *size) {
 	    free(*sig);
 	    rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
@@ -506,8 +506,8 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     xfree(tmppath);
   }
     sfd = fdOpen(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    (void)fdWrite(sfd, sig, count);
-    fdClose(sfd);
+    (void)Fwrite(sig, count, 1, sfd);
+    Fclose(sfd);
 
     /* Now run PGP */
     outpipe[0] = outpipe[1] = 0;
@@ -601,8 +601,8 @@ static int verifyGPGSignature(const char *datafile, void *sig,
     xfree(tmppath);
   }
     sfd = fdOpen(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    (void)fdWrite(sfd, sig, count);
-    fdClose(sfd);
+    (void)Fwrite(sig, count, 1, sfd);
+    Fclose(sfd);
 
     /* Now run GPG */
     outpipe[0] = outpipe[1] = 0;

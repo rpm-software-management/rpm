@@ -301,6 +301,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     int mappedFiles = 0;
     const char * failedFile = NULL;
     struct callbackInfo info;
+    FD_t cfd;
 
     if (!files) {
 	/* install all files */
@@ -341,15 +342,11 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 	(void)notify(h, RPMCALLBACK_INST_PROGRESS, 0, archiveSize, pkgKey, 
 	       notifyData);
 
-  { CFD_t cfdbuf, *cfd = &cfdbuf;
-    cfd->cpioPos = 0;
-    cfd->cpioIoType = cpioIoTypeGzFd;
-    cfd->cpioGzFd = gzdFdopen(fdDup(fdFileno(fd)), "r");
+    cfd = gzdFdopen(fdDup(fdFileno(fd)), "r");
     rc = cpioInstallArchive(cfd, map, mappedFiles, 
 		    ((notify && archiveSize) || specFile) ? callback : NULL, 
 		    &info, &failedFile);
-    gzdClose(cfd->cpioGzFd);
-  }
+    Fclose(cfd);
     headerFree(info.h);
 
     if (rc) {

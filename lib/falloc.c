@@ -35,24 +35,23 @@ struct faFooter {
 } ;
 
 FD_t faFileno(faFile fa) {
-    return fa->fd;
+    return fa;
 }
 
-static inline ssize_t faRead(faFile fa, /*@out@*/void *buf, size_t count) {
-    return fdRead(faFileno(fa), buf, count);
+static inline ssize_t faRead(faFile fa, /*@out@*/ void *buf, size_t count) {
+    return Fread(buf, count, 1, faFileno(fa));
 }
 
 static inline ssize_t faWrite(faFile fa, const void *buf, size_t count) {
-    return fdWrite(faFileno(fa), buf, count);
+    return Fwrite(buf, count, 1, faFileno(fa));
 }
 
-off_t faLseek(faFile fa, off_t off, int op) {
-    return fdLseek(faFileno(fa), off, op);
+int faSeek(faFile fa, off_t pos, int whence) {
+    return Fseek(faFileno(fa), pos, whence);
 }
 
-void faClose(faFile fa) {
-    fdClose(fa->fd);
-    free(fa);
+int faClose(faFile fa) {
+    return Fclose(faFileno(fa));
 }
 
 int faFcntl(faFile fa, int op, void *lip) {
@@ -60,13 +59,13 @@ int faFcntl(faFile fa, int op, void *lip) {
 }
 
 static inline ssize_t faPRead(faFile fa, /*@out@*/void *buf, size_t count, off_t offset) {
-    if (faLseek(fa, offset, SEEK_SET) < 0)
+    if (faSeek(fa, offset, SEEK_SET) < 0)
 	return -1;
     return faRead(fa, buf, count);
 }
 
 static inline ssize_t faPWrite(faFile fa, const void *buf, size_t count, off_t offset) {
-    if (faLseek(fa, offset, SEEK_SET) < 0)
+    if (faSeek(fa, offset, SEEK_SET) < 0)
 	return -1;
     return faWrite(fa, buf, count);
 }
@@ -75,59 +74,43 @@ static inline ssize_t faPWrite(faFile fa, const void *buf, size_t count, off_t o
 faFile faOpen(const char * path, int flags, int perms)
 {
     struct faFileHeader newHdr;
-    struct faFile_s fas;
     faFile fa;
-    off_t end;
 
-    if (flags & O_WRONLY) {
+    if (flags & O_WRONLY)
 	return NULL;
-    }
-    if (flags & O_RDWR) {
-	fas.readOnly = 0;
-    } else {
-	fas.readOnly = 1;
-    }
 
-    fas.fd = fdOpen(path, flags, perms);
-    if (fdFileno(fas.fd) < 0) return NULL;
-    fas.firstFree = 0;
-    fas.fileSize = 0;
+    fa = fdOpen(path, flags, perms);
+    if (fdFileno(faFileno(fa)) < 0)
+	return NULL;
+
+    fa->readOnly = (flags & O_RDWR) ? 0 : 1;
+    fa->firstFree = 0;
 
     /* is this file brand new? */
-    end = faLseek(&fas, 0, SEEK_END);
-    if (!end) {
+    if ((fa->fileSize = faSeek(fa, 0, SEEK_END)) < 0) {
 	newHdr.magic = FA_MAGIC;
 	newHdr.firstFree = 0;
-	if (faWrite(&fas, &newHdr, sizeof(newHdr)) != sizeof(newHdr)) {
-	    close(fdFileno(fas.fd));
+	if (faWrite(fa, &newHdr, sizeof(newHdr)) != sizeof(newHdr)) {
+	    faClose(fa);
 	    return NULL;
 	}
-	fas.firstFree = 0;
-	fas.fileSize = sizeof(newHdr);
+	fa->firstFree = 0;
+	fa->fileSize = sizeof(newHdr);
     } else {
-	if (faPRead(&fas, &newHdr, sizeof(newHdr), 0) != sizeof(newHdr)) {
-	    fdClose(fas.fd);
+	if (faPRead(fa, &newHdr, sizeof(newHdr), 0) != sizeof(newHdr)) {
+	    faClose(fa);
 	    return NULL;
 	}
 	if (newHdr.magic != FA_MAGIC) {
-	    fdClose(fas.fd);
+	    faClose(fa);
 	    return NULL;
 	}
-	fas.firstFree = newHdr.firstFree;
+	fa->firstFree = newHdr.firstFree;
 
-	if (faLseek(&fas, 0, SEEK_END) < 0) {
-	    fdClose(fas.fd);
+	if ((fa->fileSize = faSeek(fa, 0, SEEK_END)) < 0) {
+	    faClose(fa);
 	    return NULL;
 	}
-	
-	fas.fileSize = faLseek(&fas, 0, SEEK_CUR);
-    }
-
-    if ((fa = malloc(sizeof(*fa))) != NULL) {
-	fa->fd = fas.fd;
-	fa->readOnly = fas.readOnly;
-	fa->firstFree = fas.firstFree;
-	fa->fileSize = fas.fileSize;
     }
 
     return fa;
@@ -298,7 +281,8 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	footerOffset = newBlockOffset + size - sizeof(footer);
 
 	space = alloca(size);
-	if (!space) return 0;
+	if (space == NULL) return 0;
+	memset(space, 0, size);
 
 	footer.isFree = header.isFree = 0;
 	footer.size = header.size = size;
@@ -410,16 +394,16 @@ int faNextOffset(faFile fa, unsigned int lastOffset)
     struct faHeader header;
     int offset;
 
-    if (lastOffset) {
-	offset = lastOffset - sizeof(header);
-    } else {
-	offset = sizeof(struct faFileHeader);
-    }
+    offset = (lastOffset)
+	? (lastOffset - sizeof(header))
+	: sizeof(struct faFileHeader);
 
-    if (offset >= fa->fileSize) return 0;
+    if (offset >= fa->fileSize)
+	return 0;
 
     if (faPRead(fa, &header, sizeof(header), offset) != sizeof(header))
 	return 0;
+
     if (!lastOffset && !header.isFree)
 	return (offset + sizeof(header));
 
