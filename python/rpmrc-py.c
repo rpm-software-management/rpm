@@ -27,7 +27,7 @@ extern PyTypeObject PyDictIter_Type;
 static int _rc_debug = 0;
 
 /** \ingroup python
- * \class rpm.rc
+ * \class Rpmrc
  * \brief A python rpm.rc object encapsulates rpmlib configuration.
  */
 

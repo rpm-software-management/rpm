@@ -14,7 +14,7 @@
 #include "debug.h"
 
 /** \ingroup python
- * \class rpm.mi
+ * \class Rpmmi
  * \brief A python rpm.mi match iterator object represents the result of a
  *	database query.
  *
@@ -73,7 +73,7 @@
  */
 
 /** \ingroup python
- * \name Class: rpm.mi
+ * \name Class: Rpmmi
  */
 /*@{*/
 
@@ -102,7 +102,7 @@ rpmmi_Next(rpmmiObject * s)
 }
 #endif
 
-/** \ingroup python
+/**
  */
 static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args)

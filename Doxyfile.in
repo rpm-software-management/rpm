@@ -449,13 +449,30 @@ INPUT                  = \
 	@top_srcdir@/popt/popthelp.c \
 	@top_srcdir@/popt/poptint.h \
 	@top_srcdir@/popt/poptparse.c \
-	@top_srcdir@/python/db-py.c \
-	@top_srcdir@/python/db-py.h \
+	@top_srcdir@/python/_rpmdb.c \
 	@top_srcdir@/python/hash.c \
 	@top_srcdir@/python/hash.h \
 	@top_srcdir@/python/header-py.c \
 	@top_srcdir@/python/header-py.h \
+	@top_srcdir@/python/rpmal-py.c \
+	@top_srcdir@/python/rpmal-py.h \
+	@top_srcdir@/python/rpmdb-py.c \
+	@top_srcdir@/python/rpmdb-py.h \
+	@top_srcdir@/python/rpmds-py.c \
+	@top_srcdir@/python/rpmds-py.h \
+	@top_srcdir@/python/rpmfd-py.c \
+	@top_srcdir@/python/rpmfd-py.h \
+	@top_srcdir@/python/rpmfi-py.c \
+	@top_srcdir@/python/rpmfi-py.h \
+	@top_srcdir@/python/rpmmi-py.c \
+	@top_srcdir@/python/rpmmi-py.h \
 	@top_srcdir@/python/rpmmodule.c \
+	@top_srcdir@/python/rpmrc-py.c \
+	@top_srcdir@/python/rpmrc-py.h \
+	@top_srcdir@/python/rpmte-py.c \
+	@top_srcdir@/python/rpmte-py.h \
+	@top_srcdir@/python/rpmts-py.c \
+	@top_srcdir@/python/rpmts-py.h \
 	@top_srcdir@/python/upgrade.c \
 	@top_srcdir@/python/upgrade.h \
 	@top_srcdir@/tools/dump.c \

@@ -14,7 +14,7 @@
 #include "debug.h"
 
 /** \ingroup python
- * \class rpm.db
+ * \class Rpmdb
  * \brief A python rpmdb object represents an RPM database.
  * 
  * Instances of the rpmdb object provide access to the records of a

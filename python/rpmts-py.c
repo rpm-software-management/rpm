@@ -23,8 +23,8 @@
 #include "debug.h"
 
 /** \ingroup python
- * \name Class: rpm.ts
- * \class rpm.ts
+ * \name Class: Rpmts
+ * \class Rpmts
  * \brief A python rpm.ts object represents an RPM transaction set.
  * 
  * The transaction set is the workhorse of RPM.  It performs the

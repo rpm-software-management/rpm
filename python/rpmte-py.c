@@ -19,8 +19,8 @@
 #include "debug.h"
 
 /** \ingroup python
- * \name Class: rpm.te
- * \class rpm.te
+ * \name Class: Rpmte
+ * \class Rpmte
  * \brief An python rpm.te object represents an element of a transaction set.
  */
 

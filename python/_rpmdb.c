@@ -1,3 +1,7 @@
+/** \ingroup python
+ * \file python/_rpmdb.c
+ */
+
 /*----------------------------------------------------------------------
   Copyright (c) 1999-2001, Digital Creations, Fredericksburg, VA, USA
   and Andrew Kuchling. All rights reserved.
@@ -88,7 +92,7 @@
 
 #define PY_BSDDB_VERSION "3.3.1"
 
-static char *rcs_id = "$Id: _rpmdb.c,v 1.2 2002/06/03 20:44:08 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.3 2002/06/03 23:27:05 jbj Exp $";
 
 
 #ifdef WITH_THREAD

@@ -23,7 +23,7 @@
 #include "debug.h"
 
 /** \ingroup python
- * \class rpm.hdr
+ * \class Rpmhdr
  * \brief A python header object represents an RPM package header.
  * 
  * All RPM packages have headers that provide metadata for the package.

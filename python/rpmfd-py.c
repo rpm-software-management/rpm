@@ -20,8 +20,8 @@
 extern int _rpmio_debug;
 
 /** \ingroup python
- * \name Class: rpm.fd
- * \class rpm.fd
+ * \name Class: Rpmfd
+ * \class Rpmfd
  * \brief An python rpm.fd object represents an rpm I/O handle.
  */
 

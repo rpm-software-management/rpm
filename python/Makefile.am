@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 PYVER= @WITH_PYTHON_VERSION@
 
-SUBDIRS = rpmdb
+SUBDIRS = rpmdb test
 
 INCLUDES = -I. \
 	-I$(top_srcdir)/lib \

@@ -454,6 +454,7 @@ fi
 %defattr(-,root,root)
 %{__prefix}/lib/python%{with_python_version}/site-packages/rpmmodule.so
 #%{__prefix}/lib/python%{with_python_version}/site-packages/poptmodule.so
+%{__prefix}/lib/python%{with_python_version}/site-packages/rpmdb
 %endif
 
 %if %{with_perl_subpackage}
