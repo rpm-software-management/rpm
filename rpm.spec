@@ -259,7 +259,7 @@ fi
 - fix: segfault with legacy packages missing RPMTAG_FILEINODES.
 
 * Tue May 30 2000 Matt Wilson <msw@redhat.com>
-- change %configure, add %makeinstall macros to handle FHS changes.
+- change %%configure, add %%makeinstall macros to handle FHS changes.
 
 * Tue May 30 2000 Jeff Johnson <jbj@redhat.com>
 - mark packaging with version 4 to reflect filename/provide changes.
