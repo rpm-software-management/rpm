@@ -280,7 +280,7 @@ int runScript(char * prefix, Header h, int tag, int norunScripts) {
     int child;
     int status;
 
-    if (!norunScripts) return 0;
+    if (norunScripts) return 0;
     
     if (getEntry(h, tag, &type, (void **) &script, &count)) {
 	fn = tmpnam(NULL);
