@@ -1,9 +1,3 @@
-#if defined HAVE_ENDIAN_H
-# include <endian.h>
-#else defined HAVE_MACHINE_ENDIAN_H
-# include <machine/endian.h>
-#endif
-
 #include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
