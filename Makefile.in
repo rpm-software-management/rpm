@@ -77,6 +77,7 @@ install: all
 	install -m 755 -o 0 -g 0 gendiff $(BINDIR)
 	install -m 755 -o 0 -g 0 rpm2cpio $(BINDIR)
 	install -m 644 -o 0 -g 0 rpm.8 $(MANDIR)
+	install -m 644 -o 0 -g 0 rpm2cpio.8 $(MANDIR)
 	if [ ! -f $(ETCDIR)/rpmrc ]; then \
 		install -m 644 -o 0 -g 0 rpmrc $(ETCDIR)/rpmrc; \
 	fi
