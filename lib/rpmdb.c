@@ -34,15 +34,20 @@ struct intMatch {
     int fpNum;
 };
 
-static void removeIndexEntry(dbiIndex * dbi, char * name, dbiIndexRecord rec,
-		             int tolerant, char * idxName);
-static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
-		         unsigned int fileNumber);
-static void blockSignals(void);
-static void unblockSignals(void);
-static int intMatchCmp(const void * one, const void * two);
-
 static sigset_t signalMask;
+
+static void blockSignals(void)
+{
+    sigset_t newMask;
+
+    sigfillset(&newMask);		/* block all signals */
+    sigprocmask(SIG_BLOCK, &newMask, &signalMask);
+}
+
+static void unblockSignals(void)
+{
+    sigprocmask(SIG_SETMASK, &signalMask, NULL);
+}
 
 static int intMatchCmp(const void * one, const void * two) {
     const struct intMatch * a = one;
@@ -662,17 +667,6 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
     }
 
     return 0;
-}
-
-static void blockSignals(void) {
-    sigset_t newMask;
-
-    sigfillset(&newMask);		/* block all signals */
-    sigprocmask(SIG_BLOCK, &newMask, &signalMask);
-}
-
-static void unblockSignals(void) {
-    sigprocmask(SIG_SETMASK, &signalMask, NULL);
 }
 
 void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath) { 
