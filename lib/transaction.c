@@ -872,7 +872,7 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 			     rpmProblemSet probs) {
     int i, j;
-    struct fileInfo ** recs, * otherRec = NULL;
+    struct fileInfo ** recs;
     int numRecs;
     int otherPkgNum, otherFileNum;
     struct stat sb;
@@ -898,15 +898,13 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 				 recs[otherPkgNum]->fps[otherFileNum])) 
 			break;
 		if ((otherFileNum >= 0) && 
-		    (recs[otherPkgNum]->actions[otherFileNum] != UNKNOWN)) {
-		    otherRec = recs[otherPkgNum];
+		    (recs[otherPkgNum]->actions[otherFileNum] != UNKNOWN))
 		    break;
-		}
 	    }
 	    otherPkgNum--;
 	}
 
-	if (fi->type == ADDED && !otherRec) {
+	if (fi->type == ADDED && otherPkgNum < 0) {
 	    /* If it isn't in the database, install it. 
 	       FIXME: check for config files here for .rpmorig purporses! */
 	    if (fi->actions[i] == UNKNOWN) {
@@ -917,22 +915,22 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		    fi->actions[i] = CREATE;
 	    }
 	} else if (fi->type == ADDED) {
-	    if (filecmp(otherRec->fmodes[otherFileNum],
-			otherRec->fmd5s[otherFileNum],
-			otherRec->flinks[otherFileNum],
+	    if (filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
+			recs[otherPkgNum]->fmd5s[otherFileNum],
+			recs[otherPkgNum]->flinks[otherFileNum],
 			fi->fmodes[i],
 			fi->fmd5s[i],
 			fi->flinks[i])) {
 		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap->key, 
-			 fi->ap->h, fi->fl[i], otherRec->ap->h);
+			 fi->ap->h, fi->fl[i], recs[otherPkgNum]->ap->h);
 	    }
 
 	    /* FIXME: is this right??? it locks us into the config
 	       file handling choice we already made, which may very
 	       well be exactly right. */
-	    fi->actions[i] = otherRec->actions[otherFileNum];
+	    fi->actions[i] = recs[otherPkgNum]->actions[otherFileNum];
 	    recs[otherPkgNum]->actions[otherFileNum] = SKIP;
-	} else if (fi->type == REMOVED && otherRec) {
+	} else if (fi->type == REMOVED && otherPkgNum >= 0) {
 	    fi->actions[i] = SKIP;
 	} else if (fi->type == REMOVED) {
 	    if (fi->actions[i] != SKIP && fi->actions[i] != SKIPNSTATE &&
