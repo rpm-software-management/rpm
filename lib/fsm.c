@@ -298,12 +298,12 @@ static /*@only@*/ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 		if (j == 0) {
 		    j = 1;
 		    rpmMessage(RPMMESS_DEBUG,
-	_("========= Directories not explictly included in package:\n"));
+	_("========== Directories not explictly included in package:\n"));
 		}
-		rpmMessage(RPMMESS_DEBUG, _("%9d %s\n"), i, fi->dnl[i]);
+		rpmMessage(RPMMESS_DEBUG, _("%10d %s\n"), i, fi->dnl[i]);
 	    }
 	    if (j)
-		rpmMessage(RPMMESS_DEBUG, "=========\n");
+		rpmMessage(RPMMESS_DEBUG, "==========\n");
 	}
     }
     return dnli;

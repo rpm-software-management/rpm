@@ -1333,7 +1333,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     char * a, * d;
 
     fi->type = TR_ADDED;
-    loadFi(h, fi);
+    /* XXX add trnsaction set */
+    loadFi(NULL, fi, h, 1);
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
 

@@ -289,7 +289,7 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
     /*@=type@*/
     fi->magic = TFIMAGIC;
-    loadFi(h, fi);
+    loadFi(ts, fi, h, 1);
     memset(psm, 0, sizeof(*psm));
     psm->ts = ts;
     psm->fi = fi;

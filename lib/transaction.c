@@ -8,7 +8,6 @@
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "fprint.h"
-#include "rpmhash.h"
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 #include "rpmdb.h"
 
@@ -25,7 +24,7 @@ extern const char * chroot_prefix;
 #if defined(__LCLINT__)
 /*@-declundef -exportheader -protoparammatch @*/ /* LCL: missing annotation */
 extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *buf, fileSystem @*/;
 /*@=declundef =exportheader =protoparammatch @*/
 /*@=incondefs@*/
@@ -136,6 +135,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
     return rc;
 }
 
+#ifdef	DYING
 /**
  */
 static rpmProblemSet psCreate(void)
@@ -216,6 +216,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 	t = stpcpy(t, r);
     }
 }
+#endif	/* DYING */
 
 /**
  */
@@ -291,6 +292,7 @@ void rpmProblemSetFree(rpmProblemSet probs)
     free(probs);
 }
 
+#ifdef	DYING
 /**
  */
 static /*@observer@*/ const char *const ftstring (fileTypes ft)
@@ -345,7 +347,6 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     HME_t hme = fi->hme;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
-    rpmProblemSet probs = ts->probs;
     int allowBadRelocate = (ts->ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation * rawRelocations = alp->relocs;
     rpmRelocation * relocations = NULL;
@@ -439,7 +440,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		    /*@innerbreak@*/ break;
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions)
-		psAppend(probs, RPMPROB_BADRELOCATE, alp,
+		psAppend(ts->probs, RPMPROB_BADRELOCATE, alp,
 			 relocations[i].oldPath, NULL, NULL, 0);
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
@@ -755,6 +756,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
     return h;
 }
+#endif /* DYING */
 
 /**
  * Filter a problem set.
@@ -832,8 +834,8 @@ static fileAction decideFileFate(const char * dirName,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
 			rpmtransFlags transFlags)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     char buffer[1024];
     const char * dbAttr, * newAttr;
@@ -943,16 +945,18 @@ static int filecmp(short mode1, const char * md51, const char * link1,
 
 /**
  */
-static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
-			            struct sharedFileInfo * shared,
-			            int sharedCount, int reportConflicts,
-				    rpmProblemSet probs,
-				    rpmtransFlags transFlags)
-	/*@globals fileSystem@*/
-	/*@modifies fi, db, probs, fileSystem @*/
+/* XXX ts->{probs,rpmdb} modified, could be const ... ts */
+static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
+		struct sharedFileInfo * shared,
+		int sharedCount, int reportConflicts)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fi, fileSystem @*/
 {
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
+    rpmdb db = ts->rpmdb;
+    rpmProblemSet probs = ts->probs;
+    rpmtransFlags transFlags = ts->transFlags;
     rpmTagType oltype, omtype;
     Header h;
     int i;
@@ -1043,13 +1047,14 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 
 /**
  */
-static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
-			            struct sharedFileInfo * shared,
-			            int sharedCount)
-	/*@globals fileSystem@*/
-	/*@modifies fi, db, fileSystem @*/
+/* XXX ts->rpmdb modified, could be const ... ts */
+static int handleRmvdInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
+		struct sharedFileInfo * shared, int sharedCount)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fi, fileSystem @*/
 {
     HGE_t hge = fi->hge;
+    rpmdb db = ts->rpmdb;
     Header h;
     const char * otherStates;
     int i, xx;
@@ -1085,16 +1090,20 @@ static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 /**
  * Update disk space needs on each partition for this package.
  */
-static void handleOverlappedFiles(TFI_t fi, hashTable ht,
-			   rpmProblemSet probs, struct diskspaceInfo * dsl)
-	/*@globals fileSystem@*/
-	/*@modifies fi, probs, dsl, fileSystem @*/
+/* XXX ts->{probs,di} modified, could be const ... ts */
+static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fi, fileSystem @*/
 {
-    int i, j;
+    struct diskspaceInfo * dsl = ts->di;
+    rpmProblemSet probs = (ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
+	? NULL : ts->probs;
+    hashTable ht = ts->ht;
     struct diskspaceInfo * ds = NULL;
     uint_32 fixupSize = 0;
     char * filespec = NULL;
     int fileSpecAlloced = 0;
+    int i, j;
   
     for (i = 0; i < fi->fc; i++) {
 	int otherPkgNum, otherFileNum;
@@ -1597,7 +1606,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     int ourrc = 0;
     struct availablePackage * alp;
     int totalFileCount = 0;
-    hashTable ht;
     TFI_t fi;
     struct diskspaceInfo * dip;
     struct sharedFileInfo * shared, * sharedList;
@@ -1782,17 +1790,22 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/*@-branchstate@*/
 	switch (fi->type) {
 	case TR_ADDED:
+#ifdef	DYING
 	    i = ts->order[oc].u.addedIndex;
+#endif
 	    /* XXX watchout: fi->type must be set for tsGetAlp() to "work" */
 	    fi->ap = tsGetAlp(tsi);
 	    fi->record = 0;
-	    loadFi(fi->ap->h, fi);
+	    loadFi(ts, fi, fi->ap->h, 1);
+/* XXX free fi->ap->h here */
 	    if (fi->fc == 0)
 		continue;
 
+#ifdef	DYING
 	    {   Header foo = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
 		foo = headerFree(foo);
 	    }
+#endif
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    skipFiles(ts, fi);
@@ -1800,6 +1813,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	case TR_REMOVED:
 	    fi->ap = NULL;
 	    fi->record = ts->order[oc].u.removed.dboffset;
+	    /* Retrieve erased package header from the database. */
 	    {	rpmdbMatchIterator mi;
 
 		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
@@ -1813,7 +1827,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		continue;
 	    }
 	    /* XXX header arg unused. */
-	    loadFi(fi->h, fi);
+	    loadFi(ts, fi, fi->h, 0);
 	    /*@switchbreak@*/ break;
 	}
 	/*@=branchstate@*/
@@ -1837,7 +1851,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/*@=onlytrans@*/
     }
 
-    ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
+    ts->ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
     fpc = fpCacheCreate(totalFileCount);
 
     /* ===============================================
@@ -1850,7 +1864,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@innercontinue@*/ continue;
 	    /*@-dependenttrans@*/
-	    htAddEntry(ht, fi->fps + i, fi);
+	    htAddEntry(ts->ht, fi->fps + i, fi);
 	    /*@=dependenttrans@*/
 	}
     }
@@ -1946,13 +1960,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    /* Determine the fate of each file. */
 	    switch (fi->type) {
 	    case TR_ADDED:
-		xx = handleInstInstalledFiles(fi, ts->rpmdb, shared, nexti - i,
-		!(beingRemoved || (ts->ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)),
-			 ts->probs, ts->transFlags);
+		xx = handleInstInstalledFiles(ts, fi, shared, nexti - i,
+	!(beingRemoved || (ts->ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)));
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
 		if (!beingRemoved)
-		    xx = handleRmvdInstalledFiles(fi, ts->rpmdb, shared, nexti - i);
+		    xx = handleRmvdInstalledFiles(ts, fi, shared, nexti - i);
 		/*@switchbreak@*/ break;
 	    }
 	}
@@ -1960,9 +1973,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	free(sharedList);
 
 	/* Update disk space needs on each partition for this package. */
-	handleOverlappedFiles(fi, ht,
-	       ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
-		    ? NULL : ts->probs), ts->di);
+	handleOverlappedFiles(ts, fi);
 
 	/* Check added package has sufficient space on each partition used. */
 	switch (fi->type) {
@@ -2025,7 +2036,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     tsi = tsFreeIterator(tsi);
 
     fpCacheFree(fpc);
-    htFree(ht);
+    htFree(ts->ht);
+    ts->ht = NULL;
 
     /* ===============================================
      * If unfiltered problems exist, free memory and return.
@@ -2079,7 +2091,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 assert(alp == fi->ap);
 	    i = alp - ts->addedPackages.list;
 
-	    h = headerLink(fi->h);
+	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s-%s-%s\n",
+			fi->name, fi->version, fi->release);
+	    h = (fi->h ? headerLink(fi->h) : NULL);
 	    /*@-branchstate@*/
 	    if (alp->fd == NULL) {
 		alp->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
@@ -2099,7 +2113,7 @@ assert(alp == fi->ap);
 			/*@=noeffectuncon @*/
 			alp->fd = NULL;
 			ourrc++;
-		    } else {
+		    } else if (fi->h != NULL) {
 			Header foo = relocateFileList(ts, fi, alp, h, NULL);
 			h = headerFree(h);
 			h = headerLink(foo);
@@ -2116,8 +2130,24 @@ assert(alp == fi->ap);
 		if (fi->h) {
 		    hsave = headerLink(fi->h);
 		    fi->h = headerFree(fi->h);
+		    fi->h = headerLink(h);
+		} else {
+char * fstates = fi->fstates;
+fileAction * actions = fi->actions;
+fi->fstates = NULL;
+fi->actions = NULL;
+		    freeFi(fi);
+oc = tsGetOc(tsi);
+fi->magic = TFIMAGIC;
+fi->type = ts->order[oc].type;
+fi->ap = tsGetAlp(tsi);
+fi->record = 0;
+		    loadFi(ts, fi, h, 1);
+fi->fstates = _free(fi->fstates);
+fi->fstates = fstates;
+fi->actions = _free(fi->actions);
+fi->actions = actions;
 		}
-		fi->h = headerLink(h);
 		if (alp->multiLib)
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
@@ -2145,16 +2175,18 @@ assert(alp == fi->ap);
 		/*@=noeffectuncon @*/
 		alp->fd = NULL;
 	    }
+	    freeFi(fi);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
+	    rpmMessage(RPMMESS_DEBUG, "========== --- %s-%s-%s\n",
+			fi->name, fi->version, fi->release);
 	    oc = tsGetOc(tsi);
 	    /* If install failed, then we shouldn't erase. */
-	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
-		/*@switchbreak@*/ break;
-
-	    if (psmStage(psm, PSM_PKGERASE))
-		ourrc++;
-
+	    if (ts->order[oc].u.removed.dependsOnIndex != lastFailed) {
+		if (psmStage(psm, PSM_PKGERASE))
+		    ourrc++;
+	    }
+	    freeFi(fi);
 	    /*@switchbreak@*/ break;
 	}
 	xx = rpmdbSync(ts->rpmdb);

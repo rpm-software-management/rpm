@@ -31,7 +31,7 @@ struct transactionFileInfo_s {
     HME_t hme;			/*!< Vector to headerModifyEntry() */
     HRE_t hre;			/*!< Vector to headerRemoveEntry() */
     HFD_t hfd;			/*!< Vector to headerFreeData() */
-    Header h;			/*!< Package header */
+/*@null@*/ Header h;		/*!< Package header */
 /*@owned@*/ const char * name;
 /*@owned@*/ const char * version;
 /*@owned@*/ const char * release;
@@ -133,8 +133,10 @@ typedef enum pkgStage_e {
 /**
  */
 struct psm_s {
-/*@kept@*/ rpmTransactionSet ts;/*!< transaction set */
-/*@kept@*/ TFI_t fi;		/*!< transaction element file info */
+/*@kept@*/
+    rpmTransactionSet ts;	/*!< transaction set */
+/*@kept@*/
+    TFI_t fi;			/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage/multilib header. */
@@ -164,12 +166,55 @@ extern "C" {
 #endif
 
 /**
- * Load data from header into transaction file element info.
- * @param h		header
- * @param fi		transaction element file info
+ * Create problem set.
  */
-void loadFi(Header h, TFI_t fi)
-	/*@modifies h, fi @*/;
+rpmProblemSet psCreate(void)
+	/*@*/;
+
+/**
+ * Append problem to set.
+ */
+void psAppend(rpmProblemSet probs, rpmProblemType type,
+		const struct availablePackage * alp,
+		const char * dn, const char * bn,
+		Header altH, unsigned long ulong1)
+	/*@modifies probs, alp @*/;
+
+/**
+ * Return file type from mode_t.
+ * @param mode		file mode bits (from header)
+ * @return		file type
+ */
+fileTypes whatis(uint_16 mode)
+	/*@*/;
+
+/**
+ * Relocate files in header.
+ * @todo multilib file dispositions need to be checked.
+ * @param ts		transaction set
+ * @param fi		transaction element file info
+ * @param alp		available package
+ * @param origH		package header
+ * @param actions	file dispositions
+ * @return		header with relocated files
+ */
+Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
+		struct availablePackage * alp,
+		Header origH, fileAction * actions)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fi, alp, origH, actions, fileSystem @*/;
+
+/**
+ * Load data from header into transaction file element info.
+ * @param ts		transaction set
+ * @param fi		transaction element file info
+ * @param h		header
+ * @param scareMem	use header memory?
+ */
+void loadFi(/*@null@*/ const rpmTransactionSet ts, TFI_t fi,
+		Header h, int scareMem)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fi, h, fileSystem @*/;
 
 /**
  * Destroy transaction element file info.

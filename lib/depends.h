@@ -7,6 +7,7 @@
  */
 
 #include <header.h>
+#include <rpmhash.h>
 
 /** \ingroup rpmdep
  * Dependncy ordering information.
@@ -139,6 +140,7 @@ struct rpmTransactionSet_s {
 /*@dependent@*/ const char ** filesystems; /*!< Mounted filesystem names. */
 /*@only@*/ struct diskspaceInfo * di;	/*!< Per filesystem disk/inode usage. */
 /*@kept@*/ /*@null@*/ rpmdb rpmdb;	/*!< Database handle. */
+/*@only@*/ hashTable ht;		/*!< Fingerprint hash table. */
 /*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;		/*!< No. removed rpmdb instances. */
     int allocedRemovedPackages;		/*!< Size of removed packages array. */

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-10-17 12:38-0400\n"
+"POT-Creation-Date: 2001-10-18 12:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1393,88 +1393,88 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1487
+#: build/files.c:1488
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1511
+#: build/files.c:1512
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1554 build/files.c:2166 build/parsePrep.c:50
+#: build/files.c:1555 build/files.c:2167 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1566
+#: build/files.c:1567
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1670
+#: build/files.c:1671
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1693
+#: build/files.c:1694
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:1708
+#: build/files.c:1709
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1770
+#: build/files.c:1771
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1781 build/pack.c:150
+#: build/files.c:1782 build/pack.c:150
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:2154
+#: build/files.c:2155
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2228
+#: build/files.c:2229
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:2233
+#: build/files.c:2234
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:2317
+#: build/files.c:2318
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:2321
+#: build/files.c:2322
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2457
+#: build/files.c:2458
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2483 build/files.c:2497
+#: build/files.c:2484 build/files.c:2498
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2618
+#: build/files.c:2619
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1613,7 +1613,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:595 lib/psm.c:1562
+#: build/pack.c:595 lib/psm.c:2147
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1643,7 +1643,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:675 lib/psm.c:1827
+#: build/pack.c:675 lib/psm.c:2413
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2173,7 +2173,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:160
-#: lib/header.c:2869 lib/header.c:2890 lib/header.c:2912
+#: lib/header.c:2902 lib/header.c:2923 lib/header.c:2945
 msgid "(not a number)"
 msgstr ""
 
@@ -2211,12 +2211,12 @@ msgid "file %s is on an unknown device\n"
 msgstr ""
 
 #: lib/fsm.c:301
-msgid "========= Directories not explictly included in package:\n"
+msgid "========== Directories not explictly included in package:\n"
 msgstr ""
 
 #: lib/fsm.c:303
 #, c-format
-msgid "%9d %s\n"
+msgid "%10d %s\n"
 msgstr ""
 
 #: lib/fsm.c:1163
@@ -2256,88 +2256,88 @@ msgstr ""
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:309
+#: lib/header.c:314
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:346 lib/header_internal.c:161 lib/psm.c:401
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:971
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2155
+#: lib/header.c:2186
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2185
+#: lib/header.c:2216
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2199
+#: lib/header.c:2230
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2213
+#: lib/header.c:2244
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2230
+#: lib/header.c:2261
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2257
+#: lib/header.c:2288
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2275
+#: lib/header.c:2306
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2279
+#: lib/header.c:2310
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2345
+#: lib/header.c:2376
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2354
+#: lib/header.c:2385
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2367 lib/header.c:2409
+#: lib/header.c:2398 lib/header.c:2440
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2377
+#: lib/header.c:2408
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2394
+#: lib/header.c:2425
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2419
+#: lib/header.c:2450
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2615
+#: lib/header.c:2646
 msgid "(unknown type)"
 msgstr ""
 
@@ -2799,74 +2799,113 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:598
+#: lib/psm.c:313 lib/transaction.c:478
+msgid "========== relocations\n"
+msgstr ""
+
+#: lib/psm.c:317 lib/transaction.c:482
+#, c-format
+msgid "%5d exclude  %s\n"
+msgstr ""
+
+#: lib/psm.c:320 lib/transaction.c:485
+#, c-format
+msgid "%5d relocate %s -> %s\n"
+msgstr ""
+
+#: lib/psm.c:390 lib/transaction.c:555
+#, c-format
+msgid "excluding multilib path %s%s\n"
+msgstr ""
+
+#: lib/psm.c:456 lib/transaction.c:621
+#, c-format
+msgid "excluding %s %s\n"
+msgstr ""
+
+#: lib/psm.c:466 lib/transaction.c:631
+#, c-format
+msgid "relocating %s to %s\n"
+msgstr ""
+
+#: lib/psm.c:545 lib/transaction.c:710
+#, c-format
+msgid "relocating directory %s to %s\n"
+msgstr ""
+
+#: lib/psm.c:1168
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:604
+#: lib/psm.c:1174
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:642
+#: lib/psm.c:1212
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:749
+#: lib/psm.c:1323
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:1021
+#: lib/psm.c:1430
+#, c-format
+msgid "%s: running %s scriptlet\n"
+msgstr ""
+
+#: lib/psm.c:1598
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1028
+#: lib/psm.c:1605
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1367
+#: lib/psm.c:1952
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1484
+#: lib/psm.c:2069
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1599
+#: lib/psm.c:2184
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1608
+#: lib/psm.c:2193
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1649
+#: lib/psm.c:2234
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1650
+#: lib/psm.c:2235
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1835
+#: lib/psm.c:2421
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1838
+#: lib/psm.c:2424
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/psm.c:1937
+#: lib/psm.c:2524
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
@@ -3389,47 +3428,13 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:477
-msgid "========== relocations\n"
-msgstr ""
-
-#: lib/transaction.c:481
-#, c-format
-msgid "%5d exclude  %s\n"
-msgstr ""
-
-#: lib/transaction.c:484
-#, c-format
-msgid "%5d relocate %s -> %s\n"
-msgstr ""
-
-#: lib/transaction.c:554
-#, c-format
-msgid "excluding multilib path %s%s\n"
-msgstr ""
-
-#: lib/transaction.c:620
-#, c-format
-msgid "excluding %s %s\n"
-msgstr ""
-
-#: lib/transaction.c:630
-#, c-format
-msgid "relocating %s to %s\n"
-msgstr ""
-
-#: lib/transaction.c:709
-#, c-format
-msgid "relocating directory %s to %s\n"
-msgstr ""
-
-#: lib/transaction.c:855
+#: lib/transaction.c:857
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:1476
+#: lib/transaction.c:1485
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

@@ -247,7 +247,9 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 	break;
     }
 
+    /*@-sizeoftype@*/
     size += 2 * sizeof(int_32);	/* count of index entries */
+    /*@=sizeoftype@*/
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	unsigned diff;
@@ -257,8 +259,10 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
         if (ENTRY_IS_REGION(entry)) {
 	    size += entry->length;
 	    /* XXX Legacy regions do not include the region tag and data. */
+	    /*@-sizeoftype@*/
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY))
 		size += sizeof(struct entryInfo) + entry->info.count;
+	    /*@=sizeoftype@*/
 	    continue;
         }
 
@@ -276,7 +280,9 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 	    }
 	}
 
+	/*@-sizeoftype@*/
 	size += sizeof(struct entryInfo) + entry->length;
+	/*@=sizeoftype@*/
     }
 
     return size;
@@ -426,8 +432,10 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	} else {
 	    tprev = dataStart;
 	    /* XXX HEADER_IMAGE tags don't include region sub-tag. */
+	    /*@-sizeoftype@*/
 	    if (ie.info.tag != HEADER_IMMUTABLE)
 		tprev -= REGION_TAG_COUNT;
+	    /*@=sizeoftype@*/
 	}
 
 	/* Perform endian conversions */
@@ -462,8 +470,10 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
      *	1) tl is 16b (i.e. REGION_TAG_COUNT) short while doing headerReload().
      *	2) the 8/98 rpm bug with inserting i18n tags needs to use tl, not dl.
      */
+    /*@-sizeoftype@*/
     if (tl+REGION_TAG_COUNT == dl)
 	tl += REGION_TAG_COUNT;
+    /*@=sizeoftype@*/
 
     return dl;
 }
@@ -697,8 +707,10 @@ t = te;
 	    src = entry->data;
 	    while (count--) {
 		*((int_32 *)te) = htonl(*((int_32 *)src));
+		/*@-sizeoftype@*/
 		te += sizeof(int_32);
 		src += sizeof(int_32);
+		/*@=sizeoftype@*/
 	    }
 	    /*@switchbreak@*/ break;
 
@@ -707,8 +719,10 @@ t = te;
 	    src = entry->data;
 	    while (count--) {
 		*((int_16 *)te) = htons(*((int_16 *)src));
+		/*@-sizeoftype@*/
 		te += sizeof(int_16);
 		src += sizeof(int_16);
+		/*@=sizeoftype@*/
 	    }
 	    /*@switchbreak@*/ break;
 
@@ -861,8 +875,10 @@ Header headerLoad(/*@kept@*/ void * uh)
     int_32 * ei = (int_32 *) uh;
     int_32 il = ntohl(ei[0]);		/* index length */
     int_32 dl = ntohl(ei[1]);		/* data length */
+    /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
                (il * sizeof(struct entryInfo)) + dl;
+    /*@=sizeoftype@*/
     void * pv = uh;
     Header h = NULL;
     entryInfo pe;
@@ -911,7 +927,9 @@ Header headerLoad(/*@kept@*/ void * uh)
 	h->flags |= HEADERFLAG_LEGACY;
 	entry->info.type = REGION_TAG_TYPE;
 	entry->info.tag = HEADER_IMAGE;
+	/*@-sizeoftype@*/
 	entry->info.count = REGION_TAG_COUNT;
+	/*@=sizeoftype@*/
 	entry->info.offset = ((char *)pe - dataStart); /* negative offset */
 
 	/*@-assignexpose@*/
@@ -954,7 +972,9 @@ Header headerLoad(/*@kept@*/ void * uh)
 		entry->info.tag = htonl(pe->tag);
 	    } else {
 		ril = il;
+		/*@-sizeoftype@*/
 		rdl = (ril * sizeof(struct entryInfo));
+		/*@=sizeoftype@*/
 		entry->info.tag = HEADER_IMAGE;
 	    }
 	}
@@ -1071,8 +1091,10 @@ Header headerCopyLoad(const void * uh)
     int_32 * ei = (int_32 *) uh;
     int_32 il = ntohl(ei[0]);		/* index length */
     int_32 dl = ntohl(ei[1]);		/* data length */
+    /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
 			(il * sizeof(struct entryInfo)) + dl;
+    /*@=sizeoftype@*/
     void * nuh = NULL;
     Header h = NULL;
 
@@ -1133,7 +1155,9 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     il = ntohl(block[i++]);
     dl = ntohl(block[i++]);
 
+    /*@-sizeoftype@*/
     len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo)) + dl;
+    /*@=sizeoftype@*/
 
     /* Sanity checks on header intro. */
     if (hdrchkTags(il) || hdrchkData(dl) || len > headerMaxbytes)
@@ -1186,7 +1210,9 @@ int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
 	return 1;
     switch (magicp) {
     case HEADER_MAGIC_YES:
+	/*@-sizeoftype@*/
 	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
+	/*@=sizeoftype@*/
 	if (nb != sizeof(header_magic))
 	    goto exit;
 	break;
@@ -1194,7 +1220,9 @@ int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
 	break;
     }
 
+    /*@-sizeoftype@*/
     nb = Fwrite(uh, sizeof(char), length, fd);
+    /*@=sizeoftype@*/
 
 exit:
     uh = _free(uh);
@@ -1249,6 +1277,7 @@ static int copyEntry(const indexEntry entry,
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
 
+	    /*@-sizeoftype@*/
 	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) +
 			entry->rdlen + REGION_TAG_COUNT;
 	    *p = xmalloc(count);
@@ -1260,6 +1289,7 @@ static int copyEntry(const indexEntry entry,
 	    /*@=castexpose@*/
 	    dataStart = (char *) memcpy(pe + ril, dataStart,
 					(entry->rdlen + REGION_TAG_COUNT));
+	    /*@=sizeoftype@*/
 
 	    rc = regionSwab(NULL, ril, 0, pe, dataStart, 0);
 	    /* XXX 1 on success. */
@@ -1280,7 +1310,9 @@ static int copyEntry(const indexEntry entry,
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
     {	const char ** ptrEntry;
+	/*@-sizeoftype@*/
 	int tableSize = count * sizeof(char *);
+	/*@=sizeoftype@*/
 	char * t;
 	int i;
 
@@ -2753,7 +2785,9 @@ allocateExtensionCache(const headerSprintfExtension extensions)
 	    ext++;
     }
 
+    /*@-sizeoftype@*/
     return xcalloc(i, sizeof(struct extensionCache));
+    /*@=sizeoftype@*/
 }
 
 /**
@@ -3062,7 +3096,7 @@ HSTATIC
 HeaderIterator headerInitIterator(Header h)
 	/*@modifies h */
 {
-    HeaderIterator hi = xmalloc(sizeof(struct headerIteratorS));
+    HeaderIterator hi = xmalloc(sizeof(*hi));
 
     headerSort(h);
 
