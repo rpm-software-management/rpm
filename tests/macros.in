@@ -121,4 +121,4 @@
 #
 %configure	\
   %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
-  CFLAGS="%{optflags}" ../configure %{_target_platform} --prefix=%{_prefix}
+  CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}
