@@ -196,95 +196,102 @@ static int intcmp(const void * a, const void *b)
 
 static void parseEVR(char *evr, const char **ep, const char **vp, const char **rp)
 {
-    const char *epoch = NULL;
-    const char *version = evr;		/* assume only version is present */
-    const char *release = NULL;
+    const char *epoch;
+    const char *version;		/* assume only version is present */
+    const char *release;
     char *s, *se;
 
     s = evr;
     while (*s && isdigit(*s)) s++;	/* s points to epoch terminator */
     se = strrchr(s, '-');		/* se points to version terminator */
 
-    if (*s == ':' || se) {
-	if (*s == ':') {
-	    epoch = evr;
-	    *s++ = '\0';
-	    version = s;
-	    if (*epoch == '\0') epoch = "0";
-	} else {
-	    epoch = NULL;
-	    version = evr;
-	}
-	if (se) {
-	    *se++ = '\0';
-	    release = se;
-	}
+    if (*s == ':') {
+	epoch = evr;
+	*s++ = '\0';
+	version = s;
+	if (*epoch == '\0') epoch = "0";
+    } else {
+	epoch = "0";
+	version = evr;
     }
+    if (se) {
+	*se++ = '\0';
+	release = se;
+    } else {
+	release = NULL;
+    }
+
     if (ep) *ep = epoch;
     if (vp) *vp = version;
     if (rp) *rp = release;
 }
 
-typedef int (*dbrecMatch_t) (Header h, const char *reqName, const char * reqEVR, int reqFlags);
+static char *rpmName = PACKAGE;
+static char *rpmEVR = VERSION;
+static int rpmFlags = RPMSENSE_EQUAL;
 
-/* Provide the rpm version in case nothing else does. */
-static int rpmMatchesDepFlags(const char *reqName, const char * reqEVR, int reqFlags)
+static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
+	const char *BName, const char *BEVR, int BFlags)
 {
-    static const char *name = PACKAGE;
-    static const char *epoch = "0";
-    static const char *version = VERSION;
-    static const char *release = NULL;
-    const char * reqEpoch = NULL;
-    const char * reqVersion = NULL;
-    const char * reqRelease = NULL;
-    char *rEVR;
+    char *aEVR, *bEVR;
+    const char *aE, *aV, *aR, *bE, *bV, *bR;
     int result;
     int sense;
 
-    if (strcmp(name, reqName))	return 0;
+    /* Different names don't overlap. */
+    if (strcmp(AName, BName))
+	return 0;
 
-    /* Parse requires version into components */
-    rEVR = strdup(reqEVR);
-    parseEVR(rEVR, &reqEpoch, &reqVersion, &reqRelease);
+    /* Same name. If either A or B is an existence test, always overlap. */
+    if (!((AFlags & RPMSENSE_SENSEMASK) && (BFlags & RPMSENSE_SENSEMASK)))
+	return 1;
 
-    /* Compare {package,requires} [epoch:]version[-release] */
-    sense = ((reqEpoch != NULL) ? rpmvercmp(epoch, reqEpoch) : 0);
+    /* If either EVR is non-existent or empty, always overlap. */
+    if (!(AEVR && *AEVR && BEVR && *BEVR))
+	return 1;
+
+    /* Both AEVR and BEVR exist. */
+    aEVR = strdup(AEVR);
+    parseEVR(aEVR, &aE, &aV, &aR);
+    bEVR = strdup(BEVR);
+    parseEVR(bEVR, &bE, &bV, &bR);
+
+    /* Compare {A,B} [epoch:]version[-release] */
+    sense = ((aE && *aE && bE && *bE) ? rpmvercmp(aE, bE) : 0);
     if (sense == 0) {
-	sense = rpmvercmp(version, reqVersion);
-	if (sense == 0 && reqRelease && *reqRelease) {
-	    sense = rpmvercmp(release, reqRelease);
+	sense = rpmvercmp(aV, bV);
+	if (sense == 0 && aR && *aR && bR && *bR) {
+	    sense = rpmvercmp(aR, bR);
 	}
     }
-    if (rEVR) free(rEVR);
+    free(aEVR);
+    free(bEVR);
 
+    /* Detect overlap of {A,B} range. */
     result = 0;
-    if ((reqFlags & RPMSENSE_LESS) && sense < 0) {
+    if (sense < 0 && ((AFlags & RPMSENSE_GREATER) || (BFlags & RPMSENSE_LESS))) {
 	result = 1;
-    } else if ((reqFlags & RPMSENSE_EQUAL) && sense == 0) {
+    } else if (sense > 0 && ((AFlags & RPMSENSE_LESS) || (BFlags & RPMSENSE_GREATER))) {
 	result = 1;
-    } else if ((reqFlags & RPMSENSE_GREATER) && sense > 0) {
+    } else if (sense == 0 &&
+	(((AFlags & RPMSENSE_EQUAL) && (BFlags & RPMSENSE_EQUAL)) ||
+	 ((AFlags & RPMSENSE_LESS) && (BFlags & RPMSENSE_LESS)) ||
+	 ((AFlags & RPMSENSE_GREATER) && (BFlags & RPMSENSE_GREATER)))) {
 	result = 1;
     }
 
     return result;
 }
 
+typedef int (*dbrecMatch_t) (Header h, const char *reqName, const char * reqEVR, int reqFlags);
+
 static int rangeMatchesDepFlags (Header h, const char *reqName, const char * reqEVR, int reqFlags)
 {
     const char ** provides;
     const char ** providesEVR;
-    int_32 * providesFlags;
+    int_32 * provideFlags;
     int providesCount;
-    const char * proEpoch = NULL;
-    const char * proVersion = NULL;
-    const char * proRelease = NULL;
-    char *pEVR;
-    const char * reqEpoch = NULL;
-    const char * reqVersion = NULL;
-    const char * reqRelease = NULL;
-    char *rEVR;
     int result;
-    int sense;
     int type;
     int i;
 
@@ -301,7 +308,7 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 	return 1;
 
     headerGetEntry(h, RPMTAG_PROVIDEFLAGS, &type,
-	(void **) &providesFlags, &providesCount);
+	(void **) &provideFlags, &providesCount);
 
     if (!headerGetEntry(h, RPMTAG_PROVIDENAME, &type,
 		(void **) &provides, &providesCount)) {
@@ -309,102 +316,47 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 	return 0;	/* XXX should never happen */
     }
 
-    /* Parse requires version into components */
-    rEVR = strdup(reqEVR);
-    parseEVR(rEVR, &reqEpoch, &reqVersion, &reqRelease);
-
     result = 0;
     for (i = 0; i < providesCount; i++) {
 
-	if (strcmp(reqName, provides[i]))
-	    continue;
+	result = rangesOverlap(provides[i], providesEVR[i], provideFlags[i],
+		reqName, reqEVR, reqFlags);
 
-	/* Parse provides version into components */
-	pEVR = strdup(providesEVR[i]);
-	parseEVR(pEVR, &proEpoch, &proVersion, &proRelease);
-
-	/* Compare {provides,requires} [epoch:]version[-release] range */
-	sense = ((proEpoch != NULL && reqEpoch != NULL)
-			? rpmvercmp(proEpoch, reqEpoch) : 0);
-	if (sense == 0) {
-	    sense = rpmvercmp(proVersion, reqVersion);
-	    if (sense == 0 && proRelease && *proRelease &&
-	      reqRelease && *reqRelease) {
-		sense = rpmvercmp(proRelease, reqRelease);
-	    }
-	}
-	free(pEVR); pEVR = NULL;
-
-	if ((reqFlags & RPMSENSE_LESS) && sense < 0) {
-	    result = 1;
-	} else if ((reqFlags & RPMSENSE_EQUAL) && sense == 0) {
-	    result = (providesFlags[i] & RPMSENSE_EQUAL) ? 1 : 0;
-	} else if ((reqFlags & RPMSENSE_GREATER) && sense > 0) {
-	    result = 1;
-	}
-
-	/* If this provide matches the require, we're done */
+	/* If this provide matches the require, we're done. */
 	if (result)
 	    break;
     }
 
     if (provides) xfree(provides);
     if (providesEVR) xfree(providesEVR);
-    if (rEVR) free(rEVR);
 
     return result;
 }
 
-int headerMatchesDepFlags(Header h, /*@unused@*/const char *reqName, const char * reqEVR, int reqFlags)
+int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, int reqFlags)
 {
-    const char * epoch, * version, * release;
-    const char * reqEpoch = NULL;
-    const char * reqVersion = NULL;
-    const char * reqRelease = NULL;
-    char *rEVR;
-    int type, count;
+    const char *name, *version, *release;
     int_32 * epochval;
-    char buf[20];
-    int result;
-    int sense;
+    char *pkgEVR;
+    int pkgFlags = RPMSENSE_EQUAL;
+    int type, count;
 
-    if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqEVR || !strlen(reqEVR))
+    if (!((reqFlags & RPMSENSE_SENSEMASK) && reqEVR && *reqEVR))
 	return 1;
 
     /* Get package information from header */
-    headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epochval, &count);
-    if (epochval == NULL) {
-	epoch = "0";	/* assume package is epoch 0 */
-    } else {
-	sprintf(buf, "%d", *epochval);
-	epoch = buf;
-    }
-    headerNVR(h, NULL, &version, &release);
+    headerNVR(h, &name, &version, &release);
 
-    /* Parse requires version into components */
-    rEVR = strdup(reqEVR);
-    parseEVR(rEVR, &reqEpoch, &reqVersion, &reqRelease);
+    pkgEVR = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    *pkgEVR = '\0';
+    if (headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epochval, &count))
+	sprintf(pkgEVR, "%d:", *epochval);
+    strcat(pkgEVR, version);
+    strcat(pkgEVR, "-");
+    strcat(pkgEVR, release);
 
-    /* Compare {package,requires} [epoch:]version[-release] */
-    sense = ((reqEpoch != NULL) ? rpmvercmp(epoch, reqEpoch) : 0);
-    if (sense == 0) {
-	sense = rpmvercmp(version, reqVersion);
-	if (sense == 0 && reqRelease && *reqRelease) {
-	    sense = rpmvercmp(release, reqRelease);
-	}
-    }
-    if (rEVR) free(rEVR);
+    return rangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
 
-    result = 0;
-    if ((reqFlags & RPMSENSE_LESS) && sense < 0) {
-	result = 1;
-    } else if ((reqFlags & RPMSENSE_EQUAL) && sense == 0) {
-	result = 1;
-    } else if ((reqFlags & RPMSENSE_GREATER) && sense > 0) {
-	result = 1;
-    }
-
-    return result;
 }
 
 static inline int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset, 
@@ -646,23 +598,23 @@ static struct availablePackage * alSatisfiesDepend(struct availableList * al,
 
 /* 2 == error */
 /* 1 == dependency not satisfied */
-static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * reqName, 
-			     const char * reqEVR, int reqFlags, 
+static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * keyName, 
+			     const char * keyEVR, int keyFlags, 
 			     struct availablePackage ** suggestion)
 {
     dbiIndexSet matches;
     int i;
     
-    rpmMessage(RPMMESS_DEBUG, _("dependencies: looking for %s\n"), reqName);
+    rpmMessage(RPMMESS_DEBUG, _("dependencies: looking for %s\n"), keyName);
 
     if (suggestion) *suggestion = NULL;
 
   { const char * rcProvidesString;
     const char * start;
-    if (!(reqFlags & RPMSENSE_SENSEMASK) &&
+    if (!(keyFlags & RPMSENSE_SENSEMASK) &&
 	(rcProvidesString = rpmGetVar(RPMVAR_PROVIDES))) {
-	i = strlen(reqName);
-	while ((start = strstr(rcProvidesString, reqName))) {
+	i = strlen(keyName);
+	while ((start = strstr(rcProvidesString, keyName))) {
 	    if (isspace(start[i]) || start[i] == '\0' || start[i] == ',')
 		return 0;
 	    rcProvidesString = start + 1;
@@ -670,13 +622,13 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * reqName,
     }
   }
 
-    if (alSatisfiesDepend(&rpmdep->addedPackages, reqName, reqEVR, reqFlags))
+    if (alSatisfiesDepend(&rpmdep->addedPackages, keyName, keyEVR, keyFlags))
 	return 0;
 
     if (rpmdep->db != NULL) {
-	if (*reqName == '/') {
-	    /* reqFlags better be 0! */
-	    if (!rpmdbFindByFile(rpmdep->db, reqName, &matches)) {
+	if (*keyName == '/') {
+	    /* keyFlags better be 0! */
+	    if (!rpmdbFindByFile(rpmdep->db, keyName, &matches)) {
 		for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
 		    if (bsearch(&recOffset, 
@@ -692,7 +644,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * reqName,
 	    }
 	}
 
-	if (!rpmdbFindByProvides(rpmdep->db, reqName, &matches)) {
+	if (!rpmdbFindByProvides(rpmdep->db, keyName, &matches)) {
 	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
 		if (bsearch(&recOffset,
@@ -701,7 +653,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * reqName,
 			    sizeof(int), intcmp)) 
 		    continue;
 		if (dbrecMatchesDepFlags(rpmdep, recOffset,
-			 reqName, reqEVR, reqFlags, rangeMatchesDepFlags)) {
+			 keyName, keyEVR, keyFlags, rangeMatchesDepFlags)) {
 		    break;
 		}
 	    }
@@ -710,7 +662,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * reqName,
 	    if (i < dbiIndexSetCount(matches)) return 0;
 	}
 
-	if (!rpmdbFindPackage(rpmdep->db, reqName, &matches)) {
+	if (!rpmdbFindPackage(rpmdep->db, keyName, &matches)) {
 	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
 		if (bsearch(&recOffset,
@@ -720,7 +672,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * reqName,
 		    continue;
 
 		if (dbrecMatchesDepFlags(rpmdep, recOffset,
-			 reqName, reqEVR, reqFlags, headerMatchesDepFlags)) {
+			 keyName, keyEVR, keyFlags, headerMatchesDepFlags)) {
 		    break;
 		}
 	    }
@@ -734,19 +686,19 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * reqName,
 	 * version. Provide implicit rpm version in last ditch effort to
 	 * satisfy an rpm dependency.
 	 */
-	if (rpmMatchesDepFlags(reqName, reqEVR, reqFlags))
+	if (rangesOverlap(keyName, keyEVR, keyFlags, rpmName, rpmEVR, rpmFlags))
 	    return 0;
     }
 
     if (suggestion) 
-	*suggestion = alSatisfiesDepend(&rpmdep->availablePackages, reqName, 
-					reqEVR, reqFlags);
+	*suggestion = alSatisfiesDepend(&rpmdep->availablePackages, keyName, 
+					keyEVR, keyFlags);
 
     return 1;
 }
 
 static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
-			Header h, const char * requirement)
+		Header h, const char *keyName, const char *keyEVR, int keyFlags)
 {
     const char * name, * version, * release;
     const char ** requires, ** requiresEVR;
@@ -755,7 +707,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
     int type;
     int i, rc;
     int ourrc = 0;
-    int_32 * requireFlags, * conflictsFlags;
+    int_32 * requireFlags, * conflictFlags;
     struct availablePackage * suggestion;
 
     if (!headerGetEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requires, 
@@ -773,17 +725,29 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	conflictsCount = 0;
     } else {
 	headerGetEntry(h, RPMTAG_CONFLICTFLAGS, &type, 
-		(void **) &conflictsFlags, &conflictsCount);
+		(void **) &conflictFlags, &conflictsCount);
 	headerGetEntry(h, RPMTAG_CONFLICTVERSION, &type,
 		(void **) &conflictsEVR, &conflictsCount);
     }
 
     for (i = 0; i < requiresCount && !ourrc; i++) {
-	if (requirement && strcmp(requirement, requires[i])) continue;
+
+	if (keyName) {
+	    if (strcmp(keyName, requires[i]))
+		continue;
+	    rc = rangesOverlap(keyName, keyEVR, keyFlags,
+			requires[i], requiresEVR[i], requireFlags[i]);
+	    if (rc)
+		continue;
+	}
 
 	rc = unsatisfiedDepend(rpmdep, requires[i], requiresEVR[i], 
 			       requireFlags[i], &suggestion);
-	if (rc == 1) {
+
+	switch (rc) {
+	case 0:		/* database satisfies package requirement */
+	    break;
+	case 1:		/* database does not satisfy package requirement */
 	    headerNVR(h, &name, &version, &release);
 
 	    rpmMessage(RPMMESS_DEBUG, _("package %s require not satisfied: %s\n"),
@@ -809,20 +773,32 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 		psp->problems[psp->num].suggestedPackage = NULL;
 
 	    psp->num++;
-	} else if (rc == 2) {
-	    /* something went wrong! */
+	    break;
+	case 2:		/* something went wrong! */
+	default:
 	    ourrc = 1;
+	    break;
 	}
     }
 
     for (i = 0; i < conflictsCount && !ourrc; i++) {
-	if (requirement && strcmp(requirement, conflicts[i])) continue;
+
+	if (keyName) {
+	    if (strcmp(keyName, conflicts[i]))
+		continue;
+	    rc = rangesOverlap(keyName, keyEVR, keyFlags,
+			conflicts[i], conflictsEVR[i], conflictFlags[i]);
+	    if (!rc) {
+		continue;
+	    }
+	}
 
 	rc = unsatisfiedDepend(rpmdep, conflicts[i], conflictsEVR[i], 
-			       conflictsFlags[i], NULL);
+			       conflictFlags[i], NULL);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
-	if (rc == 0) {
+	switch (rc) {
+	case 0:		/* database has conflicts with package */
 	    headerNVR(h, &name, &version, &release);
 
 	    rpmMessage(RPMMESS_DEBUG, _("package %s conflicts: %s\n"),
@@ -839,14 +815,18 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	    psp->problems[psp->num].byRelease = strdup(release);
 	    psp->problems[psp->num].needsName = strdup(conflicts[i]);
 	    psp->problems[psp->num].needsVersion = strdup(conflictsEVR[i]);
-	    psp->problems[psp->num].needsFlags = conflictsFlags[i];
+	    psp->problems[psp->num].needsFlags = conflictFlags[i];
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_CONFLICTS;
 	    psp->problems[psp->num].suggestedPackage = NULL;
 
 	    psp->num++;
-	} else if (rc == 2) {
-	    /* something went wrong! */
+	    break;
+	case 1:		/* database does not have conflicts with package */
+	    break;
+	case 2:		/* something went wrong! */
+	default:
 	    ourrc = 1;
+	    break;
 	}
     }
 
@@ -864,10 +844,10 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 }
 
 static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp, 
-			    const char * package, dbiIndexSet * matches)
+	const char *key, const char *keyEVR, int keyFlags, dbiIndexSet *matches)
 {
-    int i;
     Header h;
+    int i;
 
     for (i = 0; i < matches->count; i++) {
 	unsigned int recOffset = dbiIndexRecordOffset(*matches, i);
@@ -883,7 +863,7 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	    return 1;
 	}
 
-	if (checkPackageDeps(rpmdep, psp, h, package)) {
+	if (checkPackageDeps(rpmdep, psp, h, key, keyEVR, keyFlags)) {
 	    headerFree(h);
 	    return 1;
 	}
@@ -895,34 +875,34 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 }
 
 static int checkDependentPackages(rpmTransactionSet rpmdep, 
-			    struct problemsSet * psp, const char * key)
+  struct problemsSet * psp, const char * key, const char *keyEVR, int keyFlags)
 {
     dbiIndexSet matches;
     int rc;
 
-    if (rpmdbFindByRequiredBy(rpmdep->db, key, &matches))  {
+    if (rpmdbFindByRequiredBy(rpmdep->db, key, &matches))
 	return 0;
-    }
 
-    rc = checkPackageSet(rpmdep, psp, key, &matches);
+    rc = checkPackageSet(rpmdep, psp, key, keyEVR, keyFlags, &matches);
     dbiFreeIndexRecord(matches);
 
     return rc;
 }
 
 static int checkDependentConflicts(rpmTransactionSet rpmdep, 
-			    struct problemsSet * psp, const char * package)
+			    struct problemsSet * psp,
+		const char * key, const char *keyEVR, int keyFlags)
 {
     dbiIndexSet matches;
     int rc;
 
     if (rpmdep->db == NULL) return 0;
 
-    if (rpmdbFindByConflicts(rpmdep->db, package, &matches)) {
+    if (rpmdbFindByConflicts(rpmdep->db, key, &matches)) {
 	return 0;
     }
 
-    rc = checkPackageSet(rpmdep, psp, package, &matches);
+    rc = checkPackageSet(rpmdep, psp, key, keyEVR, keyFlags, &matches);
     dbiFreeIndexRecord(matches);
 
     return rc;
@@ -1122,17 +1102,34 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     return 0;
 }
 
+static char *buildEVR(const char *v, const char *r)
+{
+    char *pEVR = malloc(strlen(v) + 1 + strlen(r) + 1);
+    strcpy(pEVR, v);
+    strcat(pEVR, "-");
+    strcat(pEVR, r);
+    return pEVR;
+}
+
 int rpmdepCheck(rpmTransactionSet rpmdep, 
 		struct rpmDependencyConflict ** conflicts, int * numConflicts)
 {
     struct availablePackage * p;
     int i, j;
-    const char ** provides, ** files;
-    int providesCount, fileCount;
+    const char ** provides;
+    const char ** providesEVR;
+    int_32 * providesFlags;
+    int providesCount;
+    const char ** files;
+    int fileCount;
+    int count;
+    const char *proEVR;
+    int proFlags;
+    int rc;
     int type;
-    char * name;
-    Header h;
+    Header h = NULL;
     struct problemsSet ps;
+    char *pEVR = NULL;
 
     ps.alloced = 5;
     ps.num = 0;
@@ -1151,77 +1148,100 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
        are satisfied */
     p = rpmdep->addedPackages.list;
     for (i = 0; i < rpmdep->addedPackages.size; i++, p++) {
-	if (checkPackageDeps(rpmdep, &ps, p->h, NULL)) {
-	    free(ps.problems);
-	    return 1;
-	}
-	if (checkDependentConflicts(rpmdep, &ps, p->name)) {
-	    free(ps.problems);
-	    return 1;
-	}
+	pEVR = buildEVR(p->version, p->release);
 
-	/* XXX FIXME: provide with versions??? */
-	if (headerGetEntry(p->h, RPMTAG_PROVIDENAME, &type, (void **) &provides, 
-		 &providesCount)) {
-	    for (j = 0; j < providesCount; j++) {
-		if (checkDependentConflicts(rpmdep, &ps, provides[j])) {
-		    free(ps.problems);
-		    return 1;
-		}
+	if (checkPackageDeps(rpmdep, &ps, p->h, NULL, NULL, 0))
+	    goto exit;
+
+	if (checkDependentConflicts(rpmdep, &ps, p->name, pEVR, RPMSENSE_EQUAL))
+	    goto exit;
+
+	free(pEVR);	pEVR = NULL;
+
+	if (!headerGetEntry(p->h, RPMTAG_PROVIDENAME, &type, (void **)&provides, 
+		 &providesCount))
+		continue;
+
+	if (!headerGetEntry(p->h, RPMTAG_PROVIDEVERSION, &type,
+		(void **) &providesEVR, &count))
+	    providesEVR = NULL;
+	if (!headerGetEntry(p->h, RPMTAG_PROVIDEFLAGS, &type,
+		(void **) &providesFlags, &count))
+	    providesFlags = NULL;
+
+	rc = 0;
+	for (j = 0; j < providesCount; j++) {
+	    proEVR = providesEVR ? providesEVR[j] : NULL;
+	    proFlags = providesFlags ? providesFlags[j] : 0;
+	    if (checkDependentConflicts(rpmdep, &ps, provides[j], proEVR, proFlags)) {
+		rc = 1;
+		break;
 	    }
-	    free(provides);
 	}
+	free(provides);
+	if (providesEVR) free(providesEVR);
+	if (rc)	goto exit;
     }
 
     /* now look at the removed packages and make sure they aren't critical */
     for (i = 0; i < rpmdep->numRemovedPackages; i++) {
+	const char *name, *version, *release;
+
 	h = rpmdbGetRecord(rpmdep->db, rpmdep->removedPackages[i]);
 	if (h == NULL) {
 	    rpmError(RPMERR_DBCORRUPT, 
 			_("cannot read header at %d for dependency check"),
 		        rpmdep->removedPackages[i]);
-	    free(ps.problems);
-	    return 1;
+	    goto exit;
 	}
 	
-	headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &providesCount);
+	headerNVR(h, &name, &version, &release);
+	pEVR = buildEVR(version, release);
 
-	if (checkDependentPackages(rpmdep, &ps, name)) {
-	    free(ps.problems);
-	    headerFree(h);
-	    return 1;
-	}
+	if (checkDependentPackages(rpmdep, &ps, name, pEVR, RPMSENSE_EQUAL))
+	    goto exit;
+	free(pEVR);	pEVR = NULL;
 
-	/* XXX FIXME: provide with versions??? */
 	if (headerGetEntry(h, RPMTAG_PROVIDENAME, NULL, (void **) &provides, 
 		 &providesCount)) {
+
+	    if (!headerGetEntry(h, RPMTAG_PROVIDEVERSION, &type,
+		(void **) &providesEVR, &count))
+		    providesEVR = NULL;
+	    if (!headerGetEntry(h, RPMTAG_PROVIDEFLAGS, &type,
+		(void **) &providesFlags, &count))
+		    providesFlags = NULL;
+
+	    rc = 0;
 	    for (j = 0; j < providesCount; j++) {
-		if (checkDependentPackages(rpmdep, &ps, provides[j])) {
-		    free(provides);
-		    free(ps.problems);
-		    headerFree(h);
-		    return 1;
+		proEVR = providesEVR ? providesEVR[j] : NULL;
+		proFlags = providesFlags ? providesFlags[j] : 0;
+		if (checkDependentPackages(rpmdep, &ps, provides[j], proEVR, proFlags)) {
+		    rc = 1;
+		    break;
 		}
 	    }
 
 	    free(provides);
+	    if (providesEVR) free(providesEVR);
+	    if (rc)	goto exit;
 	}
 
 	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &files, 
 		 &fileCount)) {
+	    rc = 0;
 	    for (j = 0; j < fileCount; j++) {
-		if (checkDependentPackages(rpmdep, &ps, files[j])) {
-		    free(files);
-		    free(ps.problems);
-		    headerFree(h);
-		    return 1;
+		if (checkDependentPackages(rpmdep, &ps, files[j], NULL, 0)) {
+		    rc = 1;
+		    break;
 		}
 	    }
 
 	    free(files);
+	    if (rc) goto exit;
 	}
 
-	headerFree(h);
+	headerFree(h);	h = NULL;
     }
 
     if (!ps.num) 
@@ -1232,4 +1252,10 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     }
 
     return 0;
+
+exit:
+    if (pEVR)		free(pEVR);
+    if (h)		headerFree(h);
+    if (ps.problems)	free(ps.problems);
+    return 1;
 }
