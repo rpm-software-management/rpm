@@ -407,6 +407,7 @@ Spec newSpec(void)
     spec->lbuf[0] = '\0';
     spec->line = spec->lbuf;
     spec->nextline = NULL;
+    spec->nextpeekc = '\0';
     spec->lineNum = 0;
     spec->readStack = malloc(sizeof(struct ReadLevelEntry));
     spec->readStack->next = NULL;

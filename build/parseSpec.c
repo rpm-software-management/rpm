@@ -106,7 +106,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     char ch;
 
     /* Restore 1st char in (possible) next line */
-    if (spec->nextpeekc) {
+    if (spec->nextline != NULL && spec->nextpeekc != '\0') {
 	*spec->nextline = spec->nextpeekc;
 	spec->nextpeekc = '\0';
     }
