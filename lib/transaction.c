@@ -188,10 +188,11 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
  * filesystem type, and is always 0 when statfs is called on a mounted
  * filesystem, as we're doing.
  */
-	    if (statfs(filesystems[i], &sfb, sizeof(sfb), 0)) {
+	    if (statfs(filesystems[i], &sfb, sizeof(sfb), 0))
 #else
-	    if (statfs(filesystems[i], &sfb)) {
+	    if (statfs(filesystems[i], &sfb))
 #endif
+	    {
 		di = NULL;
 	    } else {
 		di[i].block = sfb.f_bsize;
