@@ -2,6 +2,7 @@
 dbpath:		@varprefix@/lib/rpm
 topdir:		@prefix@/src/redhat
 tmppath:	@tmpdir@
+cpiobin:	@CPIOBIN@
 
 #############################################################
 
@@ -20,6 +21,8 @@ arch_canon:	i386:	i386	1
 arch_canon:	alpha:	axp	2
 arch_canon: 	sparc:	sparc	3
 arch_canon: 	sun4:	sparc	3
+arch_canon: 	sun4m:	sparc	3
+arch_canon: 	sun4c:	sparc	3
 # This is really a place holder for MIPS.
 arch_canon:	mips:	mips	4
 arch_canon:	ppc:	ppc	5
@@ -44,6 +47,7 @@ os_canon:	SunOS4:	SunOS	4
 os_canon:      AmigaOS: AmigaOS 5
 os_canon:          AIX: AIX     5
 os_canon:        HP-UX: hpux10  6
+os_canon:         OSF1: osf1    7
 
 #############################################################
 # For a given uname().machine, the default build arch
