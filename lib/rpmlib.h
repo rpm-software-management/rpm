@@ -33,5 +33,23 @@
 #define RPMTAG_POSTIN                   1024
 #define RPMTAG_PREUN                    1025
 #define RPMTAG_POSTUN                   1026
+#define RPMTAG_FILENAMES		1027
+#define RPMTAG_FILESIZES		1028
+#define RPMTAG_FILESTATES		1029
+#define RPMTAG_FILEMODES		1030
+#define RPMTAG_FILEUIDS			1031
+#define RPMTAG_FILEGIDS			1032
+#define RPMTAG_FILERDEVS		1033
+#define RPMTAG_FILEMTIMES		1034
+#define RPMTAG_FILEMD5S			1035
+#define RPMTAG_FILELINKTOS		1036
+#define RPMTAG_FILEFLAGS		1037
+
+#define RPMFILE_STATE_NORMAL 		0
+#define RPMFILE_STATE_REPLACED 		1
+
+/* these can be ORed together */
+#define RPMFILE_CONFIG			1
+#define RPMFILE_DOC			2
 
 #endif
