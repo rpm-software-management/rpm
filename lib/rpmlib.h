@@ -158,8 +158,8 @@ typedef void (*notifyFunction)(const unsigned long amount,
 
 int rpmdbOpen (char * prefix, rpmdb * dbp, int mode, int perms);
     /* 0 on error */
-int rpmdbCreate (rpmdb  db, int mode, int perms);
-    /* this fails if any part of the db already exists */
+int rpmdbInit(char * prefix, int perms);
+    /* nonzero on error */
 void rpmdbClose (rpmdb db);
 
 unsigned int rpmdbFirstRecNum(rpmdb db);

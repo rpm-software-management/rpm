@@ -10,6 +10,7 @@
 #include "dbindex.h"
 #include "falloc.h"
 #include "header.h"
+#include "misc.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
 
@@ -36,10 +37,23 @@ static int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
 		         unsigned int fileNumber);
 static void blockSignals(void);
 static void unblockSignals(void);
+static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
+	           int justcheck);
 
 static sigset_t signalMask;
 
 int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
+    return doopen(prefix, rpmdbp, mode, perms, 0);
+}
+
+int rpmdbInit (char * prefix, int perms) {
+    rpmdb db;
+
+    return doopen(prefix, &db, O_CREAT | O_RDWR, perms, 1);
+}
+
+static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms, 
+	       int justcheck) {
     char * filename;
     struct rpmdb db;
     
@@ -50,92 +64,114 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
 
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/packages.rpm");
-    db.pkgs = faOpen(filename, mode, 0644);
-    if (!db.pkgs) {
-	error(RPMERR_DBOPEN, "failed to open %s\n", filename);
-	return 1;
-    }
 
-    /* try and get a lock - this is released by the kernel when we close
-       the file */
-    if (mode & O_RDWR) {
-        if (flock(db.pkgs->fd, LOCK_EX | LOCK_NB)) {
-	    error(RPMERR_FLOCK, "cannot get %s lock on database", "exclusive");
+    memset(&db, 0, sizeof(db));
+
+    if (!justcheck || !exists(filename)) {
+	db.pkgs = faOpen(filename, mode, 0644);
+	if (!db.pkgs) {
+	    error(RPMERR_DBOPEN, "failed to open %s\n", filename);
 	    return 1;
-	} 
-    } else {
-        if (flock(db.pkgs->fd, LOCK_SH | LOCK_NB)) {
-	    error(RPMERR_FLOCK, "cannot get %s lock on database", "shared");
-	    return 1;
-	} 
+	}
+
+	/* try and get a lock - this is released by the kernel when we close
+	   the file */
+	if (mode & O_RDWR) {
+	    if (flock(db.pkgs->fd, LOCK_EX | LOCK_NB)) {
+		error(RPMERR_FLOCK, "cannot get %s lock on database", 
+			"exclusive");
+		return 1;
+	    } 
+	} else {
+	    if (flock(db.pkgs->fd, LOCK_SH | LOCK_NB)) {
+		error(RPMERR_FLOCK, "cannot get %s lock on database", "shared");
+		return 1;
+	    } 
+	}
     }
     
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/nameindex.rpm");
-    db.nameIndex = openDBIndex(filename, mode, 0644);
-    if (!db.nameIndex) {
-	faClose(db.pkgs);
-	return 1;
+
+    if (!justcheck || !exists(filename)) {
+	db.nameIndex = openDBIndex(filename, mode, 0644);
+	if (!db.nameIndex) {
+	    faClose(db.pkgs);
+	    return 1;
+	}
     }
-    
+
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/fileindex.rpm");
-    db.fileIndex = openDBIndex(filename, mode, 0644);
-    if (!db.fileIndex) {
-	faClose(db.pkgs);
-	closeDBIndex(db.nameIndex);
-	return 1;
+
+    if (!justcheck || !exists(filename)) {
+	db.fileIndex = openDBIndex(filename, mode, 0644);
+	if (!db.fileIndex) {
+	    faClose(db.pkgs);
+	    closeDBIndex(db.nameIndex);
+	    return 1;
+	}
     }
     
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/groupindex.rpm");
-    db.groupIndex = openDBIndex(filename, mode, 0644);
-    if (!db.groupIndex) {
-	faClose(db.pkgs);
-	closeDBIndex(db.nameIndex);
-	closeDBIndex(db.fileIndex);
-	return 1;
+
+    if (!justcheck || !exists(filename)) {
+	db.groupIndex = openDBIndex(filename, mode, 0644);
+	if (!db.groupIndex) {
+	    faClose(db.pkgs);
+	    closeDBIndex(db.nameIndex);
+	    closeDBIndex(db.fileIndex);
+	    return 1;
+	}
     }
 
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/providesindex.rpm");
-    db.providesIndex = openDBIndex(filename, mode, 0644);
-    if (!db.providesIndex) {
-	faClose(db.pkgs);
-	closeDBIndex(db.fileIndex);
-	closeDBIndex(db.nameIndex);
-	closeDBIndex(db.groupIndex);
-	return 1;
+
+    if (!justcheck || !exists(filename)) {
+	db.providesIndex = openDBIndex(filename, mode, 0644);
+	if (!db.providesIndex) {
+	    faClose(db.pkgs);
+	    closeDBIndex(db.fileIndex);
+	    closeDBIndex(db.nameIndex);
+	    closeDBIndex(db.groupIndex);
+	    return 1;
+	}
     }
 
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/requiredby.rpm");
-    db.requiredbyIndex = openDBIndex(filename, mode, 0644);
-    if (!db.requiredbyIndex) {
-	faClose(db.pkgs);
-	closeDBIndex(db.fileIndex);
-	closeDBIndex(db.nameIndex);
-	closeDBIndex(db.groupIndex);
-	closeDBIndex(db.providesIndex);
-	return 1;
+
+    if (!justcheck || !exists(filename)) {
+	db.requiredbyIndex = openDBIndex(filename, mode, 0644);
+	if (!db.requiredbyIndex) {
+	    faClose(db.pkgs);
+	    closeDBIndex(db.fileIndex);
+	    closeDBIndex(db.nameIndex);
+	    closeDBIndex(db.groupIndex);
+	    closeDBIndex(db.providesIndex);
+	    return 1;
+	}
     }
 
     *rpmdbp = malloc(sizeof(struct rpmdb));
     **rpmdbp = db;
 
+    if (justcheck) {
+	rpmdbClose(*rpmdbp);
+    }
+
     return 0;
 }
 
-int rpmdbCreate (rpmdb db, int mode, int perms);
-    /* this fails if any part of the db already exists */
-
 void rpmdbClose (rpmdb db) {
-    faClose(db->pkgs);
-    closeDBIndex(db->fileIndex);
-    closeDBIndex(db->groupIndex);
-    closeDBIndex(db->nameIndex);
-    closeDBIndex(db->providesIndex);
-    closeDBIndex(db->requiredbyIndex);
+    if (db->pkgs) faClose(db->pkgs);
+    if (db->fileIndex) closeDBIndex(db->fileIndex);
+    if (db->groupIndex) closeDBIndex(db->groupIndex);
+    if (db->nameIndex) closeDBIndex(db->nameIndex);
+    if (db->providesIndex) closeDBIndex(db->providesIndex);
+    if (db->requiredbyIndex) closeDBIndex(db->requiredbyIndex);
     free(db);
 }
 
