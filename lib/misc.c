@@ -113,7 +113,7 @@ static void init_arch_os(void)
 	(!strcmp(un.machine, "i686")) ||
 	(!strcmp(un.machine, "i586")) ||
 	(!strcmp(un.machine, "i486")) ||
-	(!strcmp(un.machine, "i386")) {
+	(!strcmp(un.machine, "i386"))) {
 	archnum = 1;
 	archname = "i386";
     } else if (!strcmp(un.machine, "alpha")) {
