@@ -38,13 +38,14 @@ typedef unsigned short ush;
 typedef ush FAR ushf;
 typedef unsigned long  ulg;
 
+/*@unchecked@*/ /*@observer@*/
 extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
 
 #define ERR_MSG(err) z_errmsg[Z_NEED_DICT-(err)]
 
 #define ERR_RETURN(strm,err) \
-  return (strm->msg = (char*)ERR_MSG(err), (err))
+  /*@-mods@*/ return (strm->msg = (char*)ERR_MSG(err), (err)) /*@=mods@*/
 /* To be used only when the state is known to be valid */
 
         /* common constants */
@@ -79,8 +80,10 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  if defined(__TURBOC__) || defined(__BORLANDC__)
 #    if(__STDC__ == 1) && (defined(__LARGE__) || defined(__COMPACT__))
        /* Allow compilation with ANSI keywords only enabled */
-       void _Cdecl farfree( void *block );
-       void *_Cdecl farmalloc( unsigned long nbytes );
+       void _Cdecl farfree( void *block )
+	/*@*/;
+       void *_Cdecl farmalloc( unsigned long nbytes )
+	/*@*/;
 #    else
 #      include <alloc.h>
 #    endif
@@ -195,7 +198,8 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 
 #ifdef HAVE_STRERROR
 #  ifndef VMS
-     extern char *strerror OF((int));
+     extern char *strerror OF((int))
+	/*@*/;
 #  endif
 #  define zstrerror(errnum) strerror(errnum)
 #else
@@ -226,16 +230,20 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define zmemzero(dest, len) memset(dest, 0, len)
 #  endif
 #else
-   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len));
-   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len));
-   extern void zmemzero OF((Bytef* dest, uInt len));
+   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len))
+	/*@*/;
+   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len))
+	/*@*/;
+   extern void zmemzero OF((Bytef* dest, uInt len))
+	/*@*/;
 #endif
 
 /* Diagnostic functions */
 #ifdef DEBUG
 #  include <stdio.h>
    extern int z_verbose;
-   extern void z_error    OF((char *m));
+   extern void z_error    OF((char *m))
+	/*@*/;
 #  define Assert(cond,msg) {if(!(cond)) z_error(msg);}
 #  define Trace(x) {if (z_verbose>=0) fprintf x ;}
 #  define Tracev(x) {if (z_verbose>0) fprintf x ;}
@@ -252,8 +260,11 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 
 
-voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size));
-void   zcfree  OF((voidpf opaque, voidpf ptr));
+/*@only@*/ /*@null@*/
+voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size))
+	/*@*/;
+void   zcfree  OF((voidpf opaque, /*@only@*/ voidpf ptr))
+	/*@modifies ptr @*/;
 
 #define ZALLOC(strm, items, size) \
            (*((strm)->zalloc))((strm)->opaque, (items), (size))

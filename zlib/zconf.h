@@ -12,47 +12,87 @@
  * If you *really* need a unique prefix for all types and library functions,
  * compile with -DZ_PREFIX. The "standard" zlib should be compiled without it.
  */
+#define	Z_PREFIX
 #ifdef Z_PREFIX
-#  define deflateInit_          z_deflateInit_
-#  define deflate               z_deflate
-#  define deflateEnd            z_deflateEnd
-#  define inflateInit_          z_inflateInit_
-#  define inflate               z_inflate
-#  define inflateEnd            z_inflateEnd
-#  define deflateInit2_         z_deflateInit2_
-#  define deflateSetDictionary  z_deflateSetDictionary
-#  define deflateCopy           z_deflateCopy
-#  define deflateReset          z_deflateReset
-#  define deflateParams         z_deflateParams
-#  define deflateBound          z_deflateBound
-#  define deflatePrime          z_deflatePrime
-#  define inflateInit2_         z_inflateInit2_
-#  define inflateSetDictionary  z_inflateSetDictionary
-#  define inflateSync           z_inflateSync
-#  define inflateSyncPoint      z_inflateSyncPoint
-#  define inflateCopy           z_inflateCopy
-#  define inflateReset          z_inflateReset
-#  define inflateBack           z_inflateBack
-#  define inflateBackEnd        z_inflateBackEnd
-#  define compress              z_compress
-#  define compress2             z_compress2
-#  define compressBound         z_compressBound
-#  define uncompress            z_uncompress
-#  define adler32               z_adler32
-#  define crc32                 z_crc32
-#  define get_crc_table         z_get_crc_table
-#  define zError                z_zError
 
-#  define Byte                  z_Byte
-#  define uInt                  z_uInt
-#  define uLong                 z_uLong
-#  define Bytef                 z_Bytef
-#  define charf                 z_charf
-#  define intf                  z_intf
-#  define uIntf                 z_uIntf
-#  define uLongf                z_uLongf
-#  define voidpf                z_voidpf
-#  define voidp                 z_voidp
+#  define deflateInit_	rpmz_deflateInit_
+#  define deflate	rpmz_deflate
+#  define deflateEnd	rpmz_deflateEnd
+#  define inflateInit_ 	rpmz_inflateInit_
+#  define inflate	rpmz_inflate
+#  define inflateEnd	rpmz_inflateEnd
+#  define deflateInit2_	rpmz_deflateInit2_
+#  define deflateSetDictionary rpmz_deflateSetDictionary
+#  define deflateCopy	rpmz_deflateCopy
+#  define deflateReset	rpmz_deflateReset
+#  define deflateParams	rpmz_deflateParams
+#  define deflateBound	rpmz_deflateBound
+#  define inflateInit2_	rpmz_inflateInit2_
+#  define inflateSetDictionary rpmz_inflateSetDictionary
+#  define inflateSync	rpmz_inflateSync
+#  define inflateSyncPoint rpmz_inflateSyncPoint
+#  define inflateCopy	rpmz_inflateCopy
+#  define inflateReset	rpmz_inflateReset
+#  define compress	rpmz_compress
+#  define compress2	rpmz_compress2
+#  define compressBound	rpmz_compressBound
+#  define uncompress	rpmz_uncompress
+#  define adler32	rpmz_adler32
+#  define crc32		rpmz_crc32
+#  define get_crc_table rpmz_get_crc_table
+
+#  define Byte		rpmz_Byte
+#  define uInt		rpmz_uInt
+#  define uLong		rpmz_uLong
+#  define Bytef	        rpmz_Bytef
+#  define charf		rpmz_charf
+#  define intf		rpmz_intf
+#  define uIntf		rpmz_uIntf
+#  define uLongf	rpmz_uLongf
+#  define voidpf	rpmz_voidpf
+#  define voidp		rpmz_voidp
+
+#  define gzclose	rpmz_gzclose
+#  define gzdopen	rpmz_gzdopen
+#  define gzeof		rpmz_gzeof
+#  define gzerror	rpmz_gzerror
+#  define gzflush	rpmz_gzflush
+#  define gzgetc	rpmz_gzgetc
+#  define gzgets	rpmz_gzgets
+#  define gz_magic	rpmz_gz_magic
+#  define gzopen	rpmz_gzopen
+#  define gz_open	rpmz_gz_open
+#  define gzprintf	rpmz_gzprintf
+#  define gzputc	rpmz_gzputc
+#  define gzputs	rpmz_gzputs
+#  define gzread	rpmz_gzread
+#  define gzrewind	rpmz_gzrewind
+#  define gzseek	rpmz_gzseek
+#  define gzsetparams	rpmz_gzsetparams
+#  define gztell	rpmz_gztell
+#  define gzwrite	rpmz_gzwrite
+
+#  define inflateBack		rpmz_inflateBack
+#  define inflateBackEnd	rpmz_inflateBackEnd
+#  define inflateBackInit_	rpmz_inflateBackInit_
+#  define inflate_fast		rpmz_inflate_fast
+#  define inflate_table		rpmz_inflate_table
+#  define _tr_align		rpmz__tr_align
+#  define _tr_flush_block	rpmz__tr_flush_block
+#  define _tr_init		rpmz__tr_init
+#  define _tr_stored_block	rpmz__tr_stored_block
+#  define _tr_tally		rpmz__tr_tally
+#  define zcalloc		rpmz_zcalloc
+#  define zcfree		rpmz_zcfree
+#  define z_errmsg		rpmz_z_errmsg
+#  define zError		rpmz_zError
+#  define zlibVersion		rpmz_zlibVersion
+
+#  define deflate_copyright	rpmz_deflate_copyright
+#  define inflate_copyright	rpmz_inflate_copyright
+#  define _dist_code		rpmz__dist_code
+#  define _length_code		rpmz__length_code
+
 #endif
 
 #if defined(__MSDOS__) && !defined(MSDOS)

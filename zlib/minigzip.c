@@ -71,35 +71,47 @@
 #  define local
 #endif
 
+/*@unchecked@*/
 char *prog;
 
-void error            OF((const char *msg));
-void gz_compress      OF((FILE   *in, gzFile out));
+void error            OF((const char *msg))
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+void gz_compress      OF((FILE   *in, gzFile out))
+	/*@globals fileSystem @*/
+	/*@modifies in, out, fileSystem @*/;
 #ifdef USE_MMAP
-int  gz_compress_mmap OF((FILE   *in, gzFile out));
+int  gz_compress_mmap OF((FILE   *in, gzFile out))
+	/*@globals fileSystem @*/
+	/*@modifies in, out, fileSystem @*/;
 #endif
-void gz_uncompress    OF((gzFile in, FILE   *out));
-void file_compress    OF((char  *file, char *mode));
-void file_uncompress  OF((char  *file));
-int  main             OF((int argc, char *argv[]));
+void gz_uncompress    OF((gzFile in, FILE   *out))
+	/*@globals fileSystem @*/
+	/*@modifies in, out, fileSystem @*/;
+void file_compress    OF((char  *file, char *mode))
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+void file_uncompress  OF((char  *file))
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+int  main             OF((int argc, char *argv[]))
+	/*@globals prog, fileSystem @*/
+	/*@modifies prog, fileSystem @*/;
 
 /* ===========================================================================
  * Display error message and exit
  */
-void error(msg)
-    const char *msg;
+void error(const char *msg)
 {
     fprintf(stderr, "%s: %s\n", prog, msg);
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 /* ===========================================================================
  * Compress input to output then close both files.
  */
 
-void gz_compress(in, out)
-    FILE   *in;
-    gzFile out;
+void gz_compress(FILE   *in, gzFile out)
 {
     local char buf[BUFLEN];
     int len;
@@ -115,7 +127,7 @@ void gz_compress(in, out)
         len = (int)fread(buf, 1, sizeof(buf), in);
         if (ferror(in)) {
             perror("fread");
-            exit(1);
+            exit(EXIT_FAILURE);
         }
         if (len == 0) break;
 
@@ -130,9 +142,7 @@ void gz_compress(in, out)
 /* Try compressing the input file at once using mmap. Return Z_OK if
  * if success, Z_ERRNO otherwise.
  */
-int gz_compress_mmap(in, out)
-    FILE   *in;
-    gzFile out;
+int gz_compress_mmap(FILE   *in, gzFile out)
 {
     int len;
     int err;
@@ -165,9 +175,7 @@ int gz_compress_mmap(in, out)
 /* ===========================================================================
  * Uncompress input to output then close both files.
  */
-void gz_uncompress(in, out)
-    gzFile in;
-    FILE   *out;
+void gz_uncompress(gzFile in, FILE   *out)
 {
     local char buf[BUFLEN];
     int len;
@@ -192,9 +200,7 @@ void gz_uncompress(in, out)
  * Compress the given file: create a corresponding .gz file and remove the
  * original.
  */
-void file_compress(file, mode)
-    char  *file;
-    char  *mode;
+void file_compress(char  *file, char  *mode)
 {
     local char outfile[MAX_NAME_LEN];
     FILE  *in;
@@ -206,12 +212,12 @@ void file_compress(file, mode)
     in = fopen(file, "rb");
     if (in == NULL) {
         perror(file);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     out = gzopen(outfile, mode);
     if (out == NULL) {
         fprintf(stderr, "%s: can't gzopen %s\n", prog, outfile);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     gz_compress(in, out);
 
@@ -222,8 +228,7 @@ void file_compress(file, mode)
 /* ===========================================================================
  * Uncompress the given file and remove the original.
  */
-void file_uncompress(file)
-    char  *file;
+void file_uncompress(char * file)
 {
     local char buf[MAX_NAME_LEN];
     char *infile, *outfile;
@@ -245,12 +250,12 @@ void file_uncompress(file)
     in = gzopen(infile, "rb");
     if (in == NULL) {
         fprintf(stderr, "%s: can't gzopen %s\n", prog, infile);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     out = fopen(outfile, "wb");
     if (out == NULL) {
         perror(file);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     gz_uncompress(in, out);
@@ -268,9 +273,7 @@ void file_uncompress(file)
  *   -1 to -9 : compression level
  */
 
-int main(argc, argv)
-    int argc;
-    char *argv[];
+int main(int argc, char *argv[])
 {
     int uncompr = 0;
     gzFile file;

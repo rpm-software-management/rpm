@@ -12,6 +12,10 @@
 +strict			# lclint level
 
 # --- in progress
+-abstract
+-noeffect		# 1
+-exportheader		# 7
+
 -infloops		# 1
 
 -aliasunique		# 2

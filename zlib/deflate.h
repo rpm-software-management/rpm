@@ -74,8 +74,10 @@ typedef struct ct_data_s {
 typedef struct static_tree_desc_s  static_tree_desc;
 
 typedef struct tree_desc_s {
+/*@dependent@*/
     ct_data *dyn_tree;           /* the dynamic tree */
     int     max_code;            /* largest code with non zero frequency */
+/*@observer@*/
     static_tree_desc *stat_desc; /* the corresponding static tree */
 } FAR tree_desc;
 
@@ -90,8 +92,10 @@ typedef unsigned IPos;
 typedef struct internal_state {
     z_streamp strm;      /* pointer back to this zlib stream */
     int   status;        /* as the name implies */
+/*@owned@*/
     Bytef *pending_buf;  /* output still pending */
     ulg   pending_buf_size; /* size of pending_buf */
+/*@dependent@*/
     Bytef *pending_out;  /* next pending byte to output to the stream */
     int   pending;       /* nb of bytes in the pending buffer */
     int   wrap;          /* bit 0 true for zlib, bit 1 true for gzip */
@@ -205,6 +209,7 @@ typedef struct internal_state {
     /* Depth of each subtree used as tie breaker for trees of equal frequency
      */
 
+/*@kept@*/
     uchf *l_buf;          /* buffer for literals or lengths */
 
     uInt  lit_bufsize;
@@ -273,13 +278,18 @@ typedef struct internal_state {
  */
 
         /* in trees.c */
-void _tr_init         OF((deflate_state *s));
-int  _tr_tally        OF((deflate_state *s, unsigned dist, unsigned lc));
+void _tr_init         OF((deflate_state *s))
+	/*@modifies s @*/;
+int  _tr_tally        OF((deflate_state *s, unsigned dist, unsigned lc))
+	/*@modifies s @*/;
 void _tr_flush_block  OF((deflate_state *s, charf *buf, ulg stored_len,
-                          int eof));
-void _tr_align        OF((deflate_state *s));
+                          int eof))
+	/*@modifies s @*/;
+void _tr_align        OF((deflate_state *s))
+	/*@modifies s @*/;
 void _tr_stored_block OF((deflate_state *s, charf *buf, ulg stored_len,
-                          int eof));
+                          int eof))
+	/*@modifies s @*/;
 
 #define d_code(dist) \
    ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])
@@ -295,7 +305,9 @@ void _tr_stored_block OF((deflate_state *s, charf *buf, ulg stored_len,
   extern uch _length_code[];
   extern uch _dist_code[];
 #else
+/*@unchecked@*/ /*@observer@*/
   extern const uch _length_code[];
+/*@unchecked@*/ /*@observer@*/
   extern const uch _dist_code[];
 #endif
 
