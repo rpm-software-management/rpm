@@ -32,7 +32,7 @@
 struct rpmdb {
     faFile pkgs;
     dbIndex * nameIndex, * fileIndex, * groupIndex, * providesIndex;
-    dbIndex * requiredbyIndex;
+    dbIndex * requiredbyIndex, * conflictsIndex;
 };
 
 static void removeIndexEntry(dbIndex * dbi, char * name, dbIndexRecord rec,
@@ -198,6 +198,23 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 	}
     }
 
+    strcpy(filename, prefix); 
+    strcat(filename, dbpath);
+    strcat(filename, "conflictsindex.rpm");
+
+    if (!justcheck || !exists(filename)) {
+	db.conflictsIndex = openDBIndex(filename, mode, 0644);
+	if (!db.conflictsIndex) {
+	    faClose(db.pkgs);
+	    closeDBIndex(db.fileIndex);
+	    closeDBIndex(db.nameIndex);
+	    closeDBIndex(db.groupIndex);
+	    closeDBIndex(db.providesIndex);
+	    closeDBIndex(db.requiredbyIndex);
+	    return 1;
+	}
+    }
+
     *rpmdbp = malloc(sizeof(struct rpmdb));
     **rpmdbp = db;
 
@@ -215,6 +232,7 @@ void rpmdbClose (rpmdb db) {
     if (db->nameIndex) closeDBIndex(db->nameIndex);
     if (db->providesIndex) closeDBIndex(db->providesIndex);
     if (db->requiredbyIndex) closeDBIndex(db->requiredbyIndex);
+    if (db->conflictsIndex) closeDBIndex(db->conflictsIndex);
     free(db);
 }
 
@@ -243,6 +261,10 @@ int rpmdbFindByProvides(rpmdb db, char * filespec, dbIndexSet * matches) {
 
 int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches) {
     return searchDBIndex(db->requiredbyIndex, filespec, matches);
+}
+
+int rpmdbFindByConflicts(rpmdb db, char * filespec, dbIndexSet * matches) {
+    return searchDBIndex(db->conflictsIndex, filespec, matches);
 }
 
 int rpmdbFindByGroup(rpmdb db, char * group, dbIndexSet * matches) {
@@ -285,6 +307,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     unsigned int count;
     dbIndexRecord rec;
     char ** fileList, ** providesList, ** requiredbyList;
+    char ** conflictList;
     int i;
 
     rec.recOffset = offset;
@@ -333,6 +356,17 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 			     tolerant, "requiredby index");
 	}
 	free(requiredbyList);
+    }
+
+    if (getEntry(h, RPMTAG_CONFLICTNAME, &type, (void **) &conflictList, 
+	 &count)) {
+	for (i = 0; i < count; i++) {
+	    message(MESS_DEBUG, "removing conflict index for %s\n", 
+		    conflictList[i]);
+	    removeIndexEntry(db->conflictsIndex, conflictList[i], rec, 
+			     tolerant, "conflict index");
+	}
+	free(conflictList);
     }
 
     if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
@@ -387,8 +421,9 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     char ** fileList;
     char ** providesList;
     char ** requiredbyList;
+    char ** conflictList;
     char * name, * group;
-    int count, providesCount, requiredbyCount;
+    int count, providesCount, requiredbyCount, conflictCount;
     int type;
     int rc = 0;
 
@@ -412,6 +447,11 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	requiredbyCount = 0;
     } 
 
+    if (!getEntry(dbentry, RPMTAG_CONFLICTNAME, &type, 
+		  (void **) &conflictList, &conflictCount)) {
+	conflictCount = 0;
+    } 
+
     blockSignals();
 
     dboffset = faAlloc(db->pkgs, sizeofHeader(dbentry, NO_HEADER_MAGIC));
@@ -432,6 +472,11 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	rc = 1;
     if (addIndexEntry(db->groupIndex, group, dboffset, 0))
 	rc = 1;
+
+    for (i = 0; i < conflictCount; i++) {
+	if (addIndexEntry(db->conflictsIndex, conflictList[i], dboffset, 0))
+	    rc = 1;
+    }
 
     for (i = 0; i < requiredbyCount; i++) {
 	if (addIndexEntry(db->requiredbyIndex, requiredbyList[i], dboffset, 0))
