@@ -12,6 +12,8 @@
 	- rpm-devel should require popt (#3125).
 	- don't spin while waiting for delayed requires/provides input (#3289).
 	- common parse for all dependency token syntax.
+	- eliminate find-requirements on libNoVersion (Red Hat linux only).
+	- add new-fangled requires on "libc.so.6(GLIBC_2.1)" (sparc-linux only).
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

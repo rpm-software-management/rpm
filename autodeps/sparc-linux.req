@@ -18,10 +18,23 @@ done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | grep -v '4[um]l
 
 for f in $liblist; do
     ldd $f | awk '/=>/ { print $1 }'
-done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | grep -v '4[um]lib.so' | sort -u
+done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | grep -v 'libNoVersion.so' | grep -v '4[um]lib.so' | sort -u
 
 for f in $scriptlist; do
     if [ -x $f ]; then
 	head -1 $f | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1
     fi
+done | sort -u
+
+for f in $liblist $exelist ; do
+    objdump -p $f | awk '
+	BEGIN { START=0; LIBNAME=""; }
+	/Version References:/ { START=1; }
+	/required from/ && (START==1) {
+	    sub(/:/, "", $3);
+	    LIBNAME=$3;
+	}
+	(START==1) && (LIBNAME!="") && ($4!="") { print LIBNAME "(" $4 ")"; }
+	/^$/ { START=0; }
+    '
 done | sort -u
