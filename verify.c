@@ -5,12 +5,15 @@
 #include <unistd.h>
 
 #include "lib/messages.h"
+#include "install.h"
 #include "query.h"
 #include "rpmlib.h"
 #include "verify.h"
 
 static void verifyHeader(char * prefix, Header h);
-static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches);
+static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches,
+			  int verifyFlags);
+static void verifyDependencies(rpmdb db, Header h);
 
 static void verifyHeader(char * prefix, Header h) {
     char ** fileList;
@@ -61,7 +64,40 @@ static void verifyHeader(char * prefix, Header h) {
     }
 }
 
-static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches) {
+static void verifyDependencies(rpmdb db, Header h) {
+    rpmDependencies rpmdep;
+    struct rpmDependencyConflict * conflicts;
+    int numConflicts;
+    char * name, * version, * release;
+    int type, count, i;
+
+    rpmdep = rpmdepDependencies(db);
+    rpmdepAddPackage(rpmdep, h);
+
+    rpmdepCheck(rpmdep, &conflicts, &numConflicts);
+    rpmdepDone(rpmdep);
+
+    if (numConflicts) {
+	getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
+	getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
+	getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
+	printf("Unsatisfied dependencies for %s-%s-%s: ", name, version, 
+		release);
+	for (i = 0; i < numConflicts; i++) {
+	    if (i) printf(", ");
+	    printf("%s", conflicts[i].needsName);
+	    if (conflicts[i].needsFlags) {
+		printDepFlags(stdout, conflicts[i].needsVersion, 
+			      conflicts[i].needsFlags);
+	    }
+	}
+	printf("\n");
+	free(conflicts);
+    }
+}
+
+static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches,
+			  int verifyFlags) {
     int i;
     Header h;
 
@@ -74,14 +110,18 @@ static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches) {
 	    if (!h) {
 		fprintf(stderr, "error: could not read database record\n");
 	    } else {
-		verifyHeader(prefix, h);
+		if (verifyFlags & VERIFY_DEPS)
+		    verifyDependencies(db, h);
+		if (verifyFlags & VERIFY_FILES)
+		    verifyHeader(prefix, h);
 		freeHeader(h);
 	    }
 	}
     }
 }
 
-void doVerify(char * prefix, enum verifysources source, char ** argv) {
+void doVerify(char * prefix, enum verifysources source, char ** argv,
+	      int verifyFlags) {
     Header h;
     int offset;
     int fd;
@@ -111,7 +151,10 @@ void doVerify(char * prefix, enum verifysources source, char ** argv) {
 		fprintf(stderr, "could not read database record!\n");
 		exit(1);
 	    }
-	    verifyHeader(prefix, h);
+	    if (verifyFlags & VERIFY_DEPS)
+		verifyDependencies(db, h);
+	    if (verifyFlags & VERIFY_FILES)
+		verifyHeader(prefix, h);
 	    freeHeader(h);
 	    offset = rpmdbNextRecNum(db, offset);
 	}
@@ -131,7 +174,10 @@ void doVerify(char * prefix, enum verifysources source, char ** argv) {
 		    close(fd);
 		    switch (rc) {
 			case 0:
-			    verifyHeader(prefix, h);
+			    if (verifyFlags & VERIFY_DEPS)
+				verifyDependencies(db, h);
+			    if (verifyFlags & VERIFY_FILES)
+				verifyHeader(prefix, h);
 			    freeHeader(h);
 			    break;
 			case 1:
@@ -147,7 +193,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv) {
 		    fprintf(stderr, "group %s does not contain any pacakges\n", 
 				     arg);
 		} else {
-		    verifyMatches(prefix, db, matches);
+		    verifyMatches(prefix, db, matches, verifyFlags);
 		    freeDBIndexRecord(matches);
 		}
 		break;
@@ -158,7 +204,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv) {
 		    fprintf(stderr, "file %s is not owned by any package\n", 
 				arg);
 		} else {
-		    verifyMatches(prefix, db, matches);
+		    verifyMatches(prefix, db, matches, verifyFlags);
 		    freeDBIndexRecord(matches);
 		}
 		break;
@@ -171,7 +217,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv) {
 		else if (rc == 2) {
 		    fprintf(stderr, "error looking for package %s\n", arg);
 		} else {
-		    verifyMatches(prefix, db, matches);
+		    verifyMatches(prefix, db, matches, verifyFlags);
 		    freeDBIndexRecord(matches);
 		}
 		break;
