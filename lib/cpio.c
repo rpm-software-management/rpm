@@ -197,14 +197,19 @@ static int setInfo(struct cpioHeader * hdr) {
     int rc = 0;
     struct utimbuf stamp = { hdr->mtime, hdr->mtime };
 
-    if (!getuid() && !rc && chown(hdr->path, hdr->uid, hdr->gid))
-	rc = CPIO_CHOWN_FAILED;
 
     if (!S_ISLNK(hdr->mode)) {
+	if (!getuid() && !rc && chown(hdr->path, hdr->uid, hdr->gid))
+	    rc = CPIO_CHOWN_FAILED;
 	if (!rc && chmod(hdr->path, hdr->mode & 07777))
 	    rc = CPIO_CHMOD_FAILED;
 	if (!rc && utime(hdr->path, &stamp))
 	    rc = CPIO_UTIME_FAILED;
+    } else {
+	#if ! CHOWN_FOLLOWS_SYMLINK
+	    if (!getuid() && !rc && chown(hdr->path, hdr->uid, hdr->gid))
+		rc = CPIO_CHOWN_FAILED;
+	#endif
     }
 
     return rc;

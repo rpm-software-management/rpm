@@ -95,8 +95,12 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     if (S_ISDIR(sb.st_mode))
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
 			RPMVERIFY_LINKTO);
-    else if (S_ISLNK(sb.st_mode))
+    else if (S_ISLNK(sb.st_mode)) {
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME);
+        #if CHOWN_FOLLOWS_SYMLINK
+	    flags &= ~(RPMVERIFY_OWNER | RPM_VERIFY_GROUP);
+        #endif
+    }
     else if (S_ISFIFO(sb.st_mode))
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
 			RPMVERIFY_LINKTO);
