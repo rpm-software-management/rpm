@@ -462,10 +462,19 @@ extern struct poptOption		rpmBuildPoptTable[];
 /* --- install/upgrade/erase modes */
 
 /*@unchecked@*/
-extern int packagesTotal;
+extern int rpmcliPackagesTotal;
+/*@unchecked@*/
+extern int rpmcliHashesCurrent;
+/*@unchecked@*/
+extern int rpmcliHashesTotal;
+/*@unchecked@*/
+extern int rpmcliProgressCurrent;
+/*@unchecked@*/
+extern int rpmcliProgressTotal;
 
 /** \ingroup rpmcli
- * The rpm CLI generic transaction callback.
+ * The rpm CLI generic transaction callback handler.
+ * @todo Remove headerSprintf() from the progress callback.
  * @deprecated Transaction callback arguments need to change, so don't rely on
  * this routine in the rpmcli API.
  *
@@ -483,8 +492,12 @@ extern int packagesTotal;
 		const unsigned long total,
 		/*@null@*/ fnpyKey key,
 		/*@null@*/ void * data)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals rpmcliHashesCurrent,
+		rpmcliProgressCurrent, rpmcliProgressTotal,
+		fileSystem, internalState @*/
+	/*@modifies rpmcliHashesCurrent,
+		rpmcliProgressCurrent, rpmcliProgressTotal,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Install source rpm package.

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-02 17:50-0400\n"
+"POT-Creation-Date: 2002-08-04 11:49-0400\n"
 
 #: build.c:40
 #, fuzzy
@@ -464,209 +464,209 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr ""
 
-#: build/files.c:286
+#: build/files.c:288
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:350 build/files.c:550 build/files.c:746
+#: build/files.c:352 build/files.c:552 build/files.c:748
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr ""
 
-#: build/files.c:361 build/files.c:680 build/files.c:757
+#: build/files.c:363 build/files.c:682 build/files.c:759
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:399 build/files.c:705
+#: build/files.c:401 build/files.c:707
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:509
+#: build/files.c:511
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr ""
 
-#: build/files.c:566
+#: build/files.c:568
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:604
+#: build/files.c:606
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:614
+#: build/files.c:616
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:626
+#: build/files.c:628
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:784
+#: build/files.c:786
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
 #. @innercontinue@
-#: build/files.c:795
+#: build/files.c:797
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:958
+#: build/files.c:960
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:964
+#: build/files.c:966
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 # , c-format
 #. We already got a file -- error
-#: build/files.c:992
+#: build/files.c:994
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:1007
+#: build/files.c:1009
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "argumentos para o --dbpath devem comear com uma /"
 
-#: build/files.c:1020
+#: build/files.c:1022
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1172
+#: build/files.c:1174
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:1316
+#: build/files.c:1318
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1561
+#: build/files.c:1565
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:1585
+#: build/files.c:1589
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: build/files.c:1628 build/files.c:2270 build/parsePrep.c:50
+#: build/files.c:1632 build/files.c:2274 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1641
+#: build/files.c:1645
 #, fuzzy, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:1758
+#: build/files.c:1762
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "argumentos para o --dbpath devem comear com uma /"
 
 # , c-format
-#: build/files.c:1781
+#: build/files.c:1785
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:1796
+#: build/files.c:1800
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
 # , c-format
-#: build/files.c:1860
+#: build/files.c:1864
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/files.c:1871 build/pack.c:156
+#: build/files.c:1875 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:2258
+#: build/files.c:2262
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
 #. XXX this error message is probably not seen.
-#: build/files.c:2333
+#: build/files.c:2337
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:2338
+#: build/files.c:2342
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:2422
+#: build/files.c:2426
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: build/files.c:2426
+#: build/files.c:2430
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "No consegui abrir o pipe tar: %s\n"
 
 # , c-format
-#: build/files.c:2584
+#: build/files.c:2590
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:2614 build/files.c:2628
+#: build/files.c:2620 build/files.c:2634
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "No consegui abrir o pipe tar: %s\n"
 
-#: build/files.c:2764
+#: build/files.c:2772
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "instale pacote"
 
-#: build/files.c:2782
+#: build/files.c:2790
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2809
+#: build/files.c:2820
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -828,7 +828,7 @@ msgid "Could not open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:629 lib/psm.c:1404
+#: build/pack.c:629 lib/psm.c:1406
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -863,7 +863,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/pack.c:710 lib/psm.c:1702
+#: build/pack.c:710 lib/psm.c:1712
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1645,18 +1645,18 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/fsm.c:1242
+#: lib/fsm.c:1235
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1537
+#: lib/fsm.c:1533
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:1664 lib/fsm.c:1796
+#: lib/fsm.c:1660 lib/fsm.c:1796
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -2290,77 +2290,77 @@ msgstr "gere assinatura PGP"
 
 #. @=boundsread@
 #. @-modfilesys@
-#: lib/psm.c:244 rpmdb/header.c:386 rpmdb/header_internal.c:164
+#: lib/psm.c:246 rpmdb/header.c:386 rpmdb/header_internal.c:164
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/psm.c:440
+#: lib/psm.c:442
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:559
+#: lib/psm.c:561
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: lib/psm.c:679
+#: lib/psm.c:681
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "no execute nenhum estgio"
 
-#: lib/psm.c:849
+#: lib/psm.c:851
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:856
+#: lib/psm.c:858
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1185
+#: lib/psm.c:1187
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/psm.c:1307
+#: lib/psm.c:1309
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
 # , c-format
-#: lib/psm.c:1417
+#: lib/psm.c:1419
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/psm.c:1463
+#: lib/psm.c:1465
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1472
+#: lib/psm.c:1474
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1514
+#: lib/psm.c:1522
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/psm.c:1515
+#: lib/psm.c:1523
 msgid " on file "
 msgstr ""
 
 # , c-format
-#: lib/psm.c:1710
+#: lib/psm.c:1720
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/psm.c:1713
+#: lib/psm.c:1723
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "Construo falhou.\n"
@@ -2417,8 +2417,8 @@ msgstr "no foi passado pacote para instalao"
 msgid "can't query %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:368 lib/rpminstall.c:499
-#: lib/rpminstall.c:899 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:421 lib/rpminstall.c:552
+#: lib/rpminstall.c:952 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "Construo falhou.\n"
@@ -2432,7 +2432,7 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:609 lib/rpminstall.c:512
+#: lib/query.c:609 lib/rpminstall.c:565
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "no foram passados pacotes para assinatura"
@@ -2503,7 +2503,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:907 lib/rpminstall.c:680
+#: lib/query.c:907 lib/rpminstall.c:733
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "no foi passado pacote para instalao"
@@ -2613,28 +2613,28 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:475 lib/rpmds.c:645
+#: lib/rpmds.c:477 lib/rpmds.c:647
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:475 lib/rpmds.c:645
+#: lib/rpmds.c:477 lib/rpmds.c:647
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:611
+#: lib/rpmds.c:613
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:644
+#: lib/rpmds.c:646
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:668
+#: lib/rpmds.c:670
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "no foi passado pacote para instalao"
@@ -2700,14 +2700,31 @@ msgstr "No consegui abrir: %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:166
+#: lib/rpminstall.c:179
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:168
+#: lib/rpminstall.c:181
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "no foi passado pacote para instalao"
+
+#: lib/rpminstall.c:199
+msgid "Repackaging..."
+msgstr ""
+
+#: lib/rpminstall.c:201
+msgid "Repackaging erased files..."
+msgstr ""
+
+#: lib/rpminstall.c:220
+msgid "Upgrading..."
+msgstr ""
+
+#: lib/rpminstall.c:222
+#, fuzzy
+msgid "Upgrading packages..."
+msgstr "instale pacote"
 
 # "Project-Id-Version: rpm-2.5.3\n"
 # "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
@@ -2717,89 +2734,89 @@ msgstr "no foi passado pacote para instalao"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpminstall.c:315
+#: lib/rpminstall.c:368
 #, fuzzy, c-format
 msgid "Retrieving %s\n"
 msgstr "RPM verso %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:328
+#: lib/rpminstall.c:381
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:332
+#: lib/rpminstall.c:385
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:423
+#: lib/rpminstall.c:476
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpminstall.c:473
+#: lib/rpminstall.c:526
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:479
+#: lib/rpminstall.c:532
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:491 lib/rpminstall.c:755 tools/rpmgraph.c:156
+#: lib/rpminstall.c:544 lib/rpminstall.c:808 tools/rpmgraph.c:156
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:580
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:541 lib/rpminstall.c:708 lib/rpminstall.c:1086
+#: lib/rpminstall.c:594 lib/rpminstall.c:761 lib/rpminstall.c:1154
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "lista dependncias do pacote"
 
-#: lib/rpminstall.c:548 tools/rpmgraph.c:208
+#: lib/rpminstall.c:601 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:578
+#: lib/rpminstall.c:631
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "instale pacote"
 
 # , c-format
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:655
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:683
+#: lib/rpminstall.c:736
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
 # , c-format
-#: lib/rpminstall.c:742
+#: lib/rpminstall.c:795
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:748
+#: lib/rpminstall.c:801
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1080
-#, fuzzy, c-format
-msgid "rollback %d packages to %s"
-msgstr "no foi passado pacote para desinstalao"
+#: lib/rpminstall.c:1148
+#, c-format
+msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+msgstr ""
 
 # , c-format
 #: lib/rpmlead.c:53
@@ -3206,7 +3223,7 @@ msgstr "RPM verso %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1022
+#: lib/transaction.c:1024
 #, c-format
 msgid "sanity checking %d elments\n"
 msgstr ""
@@ -3219,7 +3236,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1103
+#: lib/transaction.c:1105
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3227,21 +3244,14 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1175
+#: lib/transaction.c:1180
 msgid "computing file dispositions\n"
-msgstr ""
-
-#. ===============================================
-#. * Save removed files before erasing.
-#.
-#: lib/transaction.c:1341
-msgid "repackage about-to-be-erased packages\n"
 msgstr ""
 
 #. ===============================================
 #. * Install and remove packages.
 #.
-#: lib/transaction.c:1371
+#: lib/transaction.c:1389
 #, c-format
 msgid "install/erase %d elements\n"
 msgstr ""
@@ -3314,22 +3324,22 @@ msgstr ""
 msgid "locked   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/dbconfig.c:324
+#: rpmdb/dbconfig.c:327
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:364
+#: rpmdb/dbconfig.c:367
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:373
+#: rpmdb/dbconfig.c:376
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:382
+#: rpmdb/dbconfig.c:385
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3448,154 +3458,154 @@ msgstr "No consegui abrir: %s\n"
 msgid "cannot open %s index\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:947
+#: rpmdb/rpmdb.c:960
 msgid "no dbpath has been set\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2410
-#: rpmdb/rpmdb.c:2518 rpmdb/rpmdb.c:3247
+#: rpmdb/rpmdb.c:1269 rpmdb/rpmdb.c:1402 rpmdb/rpmdb.c:1452 rpmdb/rpmdb.c:2425
+#: rpmdb/rpmdb.c:2533 rpmdb/rpmdb.c:3262
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2303 rpmdb/rpmdb.c:3050
+#: rpmdb/rpmdb.c:1695 rpmdb/rpmdb.c:2318 rpmdb/rpmdb.c:3065
 msgid "rpmdb: skipping"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:1690
+#: rpmdb/rpmdb.c:1705
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:2330
+#: rpmdb/rpmdb.c:2345
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2606
+#: rpmdb/rpmdb.c:2621
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "no foi passado pacote para desinstalao"
 
 # , c-format
-#: rpmdb/rpmdb.c:2669
+#: rpmdb/rpmdb.c:2684
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:2784
+#: rpmdb/rpmdb.c:2799
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:2788
+#: rpmdb/rpmdb.c:2803
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:2816
+#: rpmdb/rpmdb.c:2831
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:2837
+#: rpmdb/rpmdb.c:2852
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:2847
+#: rpmdb/rpmdb.c:2862
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:2996
+#: rpmdb/rpmdb.c:3011
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "no foi passado pacote para instalao"
 
-#: rpmdb/rpmdb.c:3222
+#: rpmdb/rpmdb.c:3237
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:3226
+#: rpmdb/rpmdb.c:3241
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3266
+#: rpmdb/rpmdb.c:3281
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3627
+#: rpmdb/rpmdb.c:3642
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3665
+#: rpmdb/rpmdb.c:3680
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3697
+#: rpmdb/rpmdb.c:3712
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3701
+#: rpmdb/rpmdb.c:3716
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:3707
+#: rpmdb/rpmdb.c:3722
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3709
+#: rpmdb/rpmdb.c:3724
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3716
+#: rpmdb/rpmdb.c:3731
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3729
+#: rpmdb/rpmdb.c:3744
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3758
+#: rpmdb/rpmdb.c:3773
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3798
+#: rpmdb/rpmdb.c:3813
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3816
+#: rpmdb/rpmdb.c:3831
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3824
+#: rpmdb/rpmdb.c:3839
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3826
+#: rpmdb/rpmdb.c:3841
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
@@ -3608,13 +3618,13 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: rpmdb/rpmdb.c:3836
+#: rpmdb/rpmdb.c:3851
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "RPM verso %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3838
+#: rpmdb/rpmdb.c:3853
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -3892,6 +3902,10 @@ msgstr "No consegui abrir: %s\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "No consegui abrir: %s\n"
+
+#, fuzzy
+#~ msgid "rollback %d packages to %s"
+#~ msgstr "no foi passado pacote para desinstalao"
 
 # , c-format
 #, fuzzy

@@ -524,10 +524,11 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     }
     fsm->iter = mapInitIterator(ts, fi);
 
-    if (fsm->goal == FSM_PKGINSTALL) {
+    if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	void * ptr;
+	fi->archivePos = 0;
 	ptr = rpmtsNotify(ts, fi->te,
-			RPMCALLBACK_INST_START, 0, fi->archiveSize);
+		RPMCALLBACK_INST_START, fi->archivePos, fi->archiveSize);
     }
 
 /*@-boundswrite@*/
@@ -808,7 +809,6 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
     const char * opath = fsm->opath;
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
-    size_t pos = fdGetCpioPos(fsm->cfd);
     char * symbuf = NULL;
     int left;
     int xx;
@@ -922,13 +922,6 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 
     rc = fsmStage(fsm, FSM_PAD);
     if (rc) goto exit;
-
-    {	const rpmts ts = fsmGetTs(fsm);
-	rpmfi fi = fsmGetFi(fsm);
-	size_t size = (fdGetCpioPos(fsm->cfd) - pos);
-	void * ptr;
-	ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS, size, size);
-    }
 
     rc = 0;
 
@@ -1430,6 +1423,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		/*@loopbreak@*/ break;
 	    }
 
+	    /* Notify on success. */
+	    (void) fsmStage(fsm, FSM_NOTIFY);
+
 	    if (fsmStage(fsm, FSM_FINI))
 		/*@loopbreak@*/ break;
 	}
@@ -1741,8 +1737,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rpmts ts = fsmGetTs(fsm);
 	    rpmfi fi = fsmGetFi(fsm);
 	    void * ptr;
-	    ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,
-			fdGetCpioPos(fsm->cfd), fi->archiveSize);
+	    unsigned int archivePos = fdGetCpioPos(fsm->cfd);
+	    if (archivePos > fi->archivePos) {
+		fi->archivePos = archivePos;
+		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,
+			fi->archivePos, fi->archiveSize);
+	    }
 	}
 	break;
     case FSM_UNDO:

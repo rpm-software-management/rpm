@@ -1026,6 +1026,7 @@ rpmfi rpmfiNew(rpmts ts, rpmfi fi,
 
     /* 0 means unknown */
     xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
+    fi->archivePos = 0;
     fi->archiveSize = (xx ? *uip : 0);
 
     if (!hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {

@@ -967,6 +967,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
     rpmtsi pi;	rpmte p;
     rpmtsi qi;	rpmte q;
+    int numAdded;
+    int numRemoved;
     int xx;
 
     /* FIXME: what if the same package is included in ts twice? */
@@ -1101,6 +1103,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elments\n"), rpmtsNElements(ts))
      * worth the trouble though.
      */
 rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
+    numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
@@ -1112,12 +1115,14 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	/*@-branchstate@*/
 	switch (rpmteType(p)) {
 	case TR_ADDED:
+	    numAdded++;
 	    fi->record = 0;
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    if (fc > 0)
 		skipFiles(ts, fi);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
+	    numRemoved++;
 	    fi->record = rpmteDBOffset(p);
 	    /*@switchbreak@*/ break;
 	}
@@ -1338,8 +1343,9 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     /* ===============================================
      * Save removed files before erasing.
      */
-rpmMessage(RPMMESS_DEBUG, _("repackage about-to-be-erased packages\n"));
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
+	int progress;
+	progress = 0;
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	    fi = rpmtsiFi(pi);
@@ -1349,6 +1355,14 @@ rpmMessage(RPMMESS_DEBUG, _("repackage about-to-be-erased packages\n"));
 	    case TR_REMOVED:
 		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
 		    /*@switchbreak@*/ break;
+		if (!progress)
+		    NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_START,
+				7, numRemoved, NULL, ts->notifyData));
+
+		NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_PROGRESS, progress,
+                        numRemoved, NULL, ts->notifyData));
+		progress++;
+
 		psm->te = p;
 		psm->fi = rpmfiLink(fi, "tsRepackage");
 	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
@@ -1363,6 +1377,10 @@ rpmMessage(RPMMESS_DEBUG, _("repackage about-to-be-erased packages\n"));
 	    }
 	}
 	pi = rpmtsiFree(pi);
+	if (progress) {
+	    NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_STOP, 7, numRemoved,
+			NULL, ts->notifyData));
+	}
     }
 
     /* ===============================================

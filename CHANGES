@@ -209,6 +209,9 @@
 	- check header blobs on export (i.e. rpmdbAdd()).
 	- enable iterator header blob checks for install/erase modes.
 	- python: _vsflags_up2date macro to configure verify signature flags.
+	- resurrect --rollback.
+	- renumber the callback types to be an orthogonal bit mask.
+	- provide repackage progress callbacks, compression is slow.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

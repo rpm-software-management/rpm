@@ -118,6 +118,7 @@ struct rpmfi_s {
 
     int astriplen;
     int striplen;
+    unsigned int archivePos;
     unsigned int archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
     mode_t fperms;		/*!< File perms (0644) if not mapped. */

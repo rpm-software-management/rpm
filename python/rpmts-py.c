@@ -11,6 +11,7 @@
 #endif
 
 #include <rpmlib.h>
+#include <rpmmacro.h>
 
 #include "header-py.h"
 #include "rpmdb-py.h"

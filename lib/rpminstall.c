@@ -24,52 +24,60 @@
 /*@access IDT @*/
 
 /*@unchecked@*/
-static int hashesPrinted = 0;
-
+int rpmcliPackagesTotal = 0;
 /*@unchecked@*/
-int packagesTotal = 0;
+int rpmcliHashesCurrent = 0;
 /*@unchecked@*/
-static int progressTotal = 0;
+int rpmcliHashesTotal = 0;
 /*@unchecked@*/
-static int progressCurrent = 0;
+int rpmcliProgressCurrent = 0;
+/*@unchecked@*/
+int rpmcliProgressTotal = 0;
 
 /**
+ * Print a CLI progress bar.
+ * @todo Unsnarl isatty(STDOUT_FILENO) from the control flow.
+ * @param amount	current
+ * @param total		final
  */
 static void printHash(const unsigned long amount, const unsigned long total)
-	/*@globals hashesPrinted, progressCurrent, fileSystem @*/
-	/*@modifies hashesPrinted, progressCurrent, fileSystem @*/
+	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, fileSystem @*/
+	/*@modifies rpmcliHashesCurrent, rpmcliProgressCurrent, fileSystem @*/
 {
     int hashesNeeded;
-    int hashesTotal = 50;
 
-    if (isatty (STDOUT_FILENO))
-	hashesTotal = 44;
+    rpmcliHashesTotal = (isatty (STDOUT_FILENO) ? 44 : 50);
 
-    if (hashesPrinted != hashesTotal) {
-	hashesNeeded = hashesTotal * (total ? (((float) amount) / total) : 1);
-	while (hashesNeeded > hashesPrinted) {
+    if (rpmcliHashesCurrent != rpmcliHashesTotal) {
+	float pct = (total ? (((float) amount) / total) : 1);
+	hashesNeeded = rpmcliHashesTotal * pct;
+	while (hashesNeeded > rpmcliHashesCurrent) {
 	    if (isatty (STDOUT_FILENO)) {
 		int i;
-		for (i = 0; i < hashesPrinted; i++) (void) putchar ('#');
-		for (; i < hashesTotal; i++) (void) putchar (' ');
-		fprintf(stdout, "(%3d%%)",
-			(int)(100 * (total ? (((float) amount) / total) : 1)));
-		for (i = 0; i < (hashesTotal + 6); i++) (void) putchar ('\b');
+		for (i = 0; i < rpmcliHashesCurrent; i++)
+		    (void) putchar ('#');
+		for (; i < rpmcliHashesTotal; i++)
+		    (void) putchar (' ');
+		fprintf(stdout, "(%3d%%)", (int)(100 * pct));
+		for (i = 0; i < (rpmcliHashesTotal + 6); i++)
+		    (void) putchar ('\b');
 	    } else
 		fprintf(stdout, "#");
 
-	    hashesPrinted++;
+	    rpmcliHashesCurrent++;
 	}
 	(void) fflush(stdout);
-	hashesPrinted = hashesNeeded;
 
-	if (hashesPrinted == hashesTotal) {
+	if (rpmcliHashesCurrent == rpmcliHashesTotal) {
 	    int i;
-	    progressCurrent++;
+	    rpmcliProgressCurrent++;
 	    if (isatty(STDOUT_FILENO)) {
-	        for (i = 1; i < hashesPrinted; i++) (void) putchar ('#');
-		fprintf(stdout, " [%3d%%]", (int)(100 * (progressTotal ?
-			(((float) progressCurrent) / progressTotal) : 1)));
+	        for (i = 1; i < rpmcliHashesCurrent; i++)
+		    (void) putchar ('#');
+		pct = (rpmcliProgressTotal
+		    ? (((float) rpmcliProgressCurrent) / rpmcliProgressTotal)
+		    : 1);
+		fprintf(stdout, " [%3d%%]", (int)(100 * pct));
 	    }
 	    fprintf(stdout, "\n");
 	}
@@ -83,9 +91,9 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 			const unsigned long total,
 			/*@null@*/ fnpyKey key,
 			/*@null@*/ void * data)
-	/*@globals hashesPrinted, progressCurrent, progressTotal,
+	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
 		fileSystem @*/
-	/*@modifies hashesPrinted, progressCurrent, progressTotal,
+	/*@modifies rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
 		fileSystem @*/
 {
     /*@-castexpose@*/
@@ -124,14 +132,19 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	break;
 
     case RPMCALLBACK_INST_START:
-	hashesPrinted = 0;
+#if 0
+if (_hash_debug)
+fprintf(stderr, "--- INST_START: %p %lu:%lu %p %p\n", arg, amount, total, key, data);
+#endif
+	rpmcliHashesCurrent = 0;
 	if (h == NULL || !(flags & INSTALL_LABEL))
 	    break;
+	/* @todo Remove headerSprintf() on a progress callback. */
 	if (flags & INSTALL_HASH) {
 	    s = headerSprintf(h, "%{NAME}",
 				rpmTagTable, rpmHeaderFormats, NULL);
 	    if (isatty (STDOUT_FILENO))
-		fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
+		fprintf(stdout, "%4d:%-23.23s", rpmcliProgressCurrent + 1, s);
 	    else
 		fprintf(stdout, "%-28.28s", s);
 	    (void) fflush(stdout);
@@ -157,9 +170,9 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	break;
 
     case RPMCALLBACK_TRANS_START:
-	hashesPrinted = 0;
-	progressTotal = 1;
-	progressCurrent = 0;
+	rpmcliHashesCurrent = 0;
+	rpmcliProgressTotal = 1;
+	rpmcliProgressCurrent = 0;
 	if (!(flags & INSTALL_LABEL))
 	    break;
 	if (flags & INSTALL_HASH)
@@ -172,16 +185,56 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     case RPMCALLBACK_TRANS_STOP:
 	if (flags & INSTALL_HASH)
 	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
-	progressTotal = packagesTotal;
-	progressCurrent = 0;
+	rpmcliProgressTotal = rpmcliPackagesTotal;
+	rpmcliProgressCurrent = 0;
+	break;
+
+    case RPMCALLBACK_REPACKAGE_START:
+	rpmcliHashesCurrent = 0;
+	rpmcliProgressTotal = total;
+	rpmcliProgressCurrent = 0;
+	if (!(flags & INSTALL_LABEL))
+	    break;
+	if (flags & INSTALL_HASH)
+	    fprintf(stdout, "%-28s\n", _("Repackaging..."));
+	else
+	    fprintf(stdout, "%s\n", _("Repackaging erased files..."));
+	(void) fflush(stdout);
+	break;
+
+    case RPMCALLBACK_REPACKAGE_PROGRESS:
+	if (amount && (flags & INSTALL_HASH))
+	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
+	break;
+
+    case RPMCALLBACK_REPACKAGE_STOP:
+	rpmcliProgressTotal = total;
+	rpmcliProgressCurrent = total;
+	if (flags & INSTALL_HASH)
+	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
+	rpmcliProgressTotal = rpmcliPackagesTotal;
+	rpmcliProgressCurrent = 0;
+	if (!(flags & INSTALL_LABEL))
+	    break;
+	if (flags & INSTALL_HASH)
+	    fprintf(stdout, "%-28s\n", _("Upgrading..."));
+	else
+	    fprintf(stdout, "%s\n", _("Upgrading packages..."));
+	(void) fflush(stdout);
 	break;
 
     case RPMCALLBACK_UNINST_PROGRESS:
+	break;
     case RPMCALLBACK_UNINST_START:
+	break;
     case RPMCALLBACK_UNINST_STOP:
+	break;
     case RPMCALLBACK_UNPACK_ERROR:
+	break;
     case RPMCALLBACK_CPIO_ERROR:
-	/* ignore */
+	break;
+    case RPMCALLBACK_UNKNOWN:
+    default:
 	break;
     }
 
@@ -573,7 +626,7 @@ restart:
 
     if (eiu->numRPMS && !stopInstall) {
 
-	packagesTotal = eiu->numRPMS + eiu->numSRPMS;
+	rpmcliPackagesTotal = eiu->numRPMS + eiu->numSRPMS;
 
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 
@@ -949,15 +1002,10 @@ int rpmRollback(rpmts ts,
 		/*@unused@*/ struct rpmInstallArguments_s * ia,
 		const char ** argv)
 {
-#ifdef	NOTYET
-    rpmdb db = NULL;
-    rpmts ts = NULL;
-    rpmps ps;
     int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
     unsigned thistid = 0xffffffff;
     unsigned prevtid;
     time_t tid;
-#endif
     IDTX itids = NULL;
     IDTX rtids = NULL;
     IDT rp;
@@ -965,11 +1013,27 @@ int rpmRollback(rpmts ts,
     IDT ip;
     int niids = 0;
     int rc = 0;
+    int vsflags, ovsflags;
+    int numAdded;
+    int numRemoved;
+    rpmps ps;
 
     if (argv != NULL && *argv != NULL) {
 	rc = -1;
 	goto exit;
     }
+
+    vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
+    if (ia->qva_flags & VERIFY_DIGEST)
+	vsflags |= _RPMTS_VSF_NODIGESTS;
+    if (ia->qva_flags & VERIFY_SIGNATURE)
+	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+    if (ia->qva_flags & VERIFY_HDRCHK)
+	vsflags |= _RPMTS_VSF_NOHDRCHK;
+    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
+    ovsflags = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
+
+    (void) rpmtsSetFlags(ts, ia->transFlags);
 
     itids = IDTXload(ts, RPMTAG_INSTALLTID);
     if (itids != NULL) {
@@ -997,20 +1061,19 @@ int rpmRollback(rpmts ts,
 	globstr = _free(globstr);
     }
 
-#ifdef	NOTYET
-    {	int notifyFlags;
+    {	int notifyFlags, xx;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
 			rpmShowProgress, (void *) ((long)notifyFlags));
     }
 
-    (void) rpmtsSetFlags(ts, ia->transFlags);
-
     /* Run transactions until rollback goal is achieved. */
     do {
 	prevtid = thistid;
 	rc = 0;
-	packagesTotal = 0;
+	rpmcliPackagesTotal = 0;
+	numAdded = 0;
+	numRemoved = 0;
 	ia->installInterfaceFlags &= ~ifmask;
 
 	/* Find larger of the remaining install/erase transaction id's. */
@@ -1034,7 +1097,8 @@ int rpmRollback(rpmts ts,
 	    if (rc != 0)
 		goto exit;
 
-	    packagesTotal++;
+	    numAdded++;
+	    rpmcliPackagesTotal++;
 	    if (!(ia->installInterfaceFlags & ifmask))
 		ia->installInterfaceFlags |= INSTALL_UPGRADE;
 
@@ -1054,11 +1118,14 @@ int rpmRollback(rpmts ts,
 	    rpmMessage(RPMMESS_DEBUG,
 			"\t--- rpmdb instance #%u\n", ip->instance);
 
-	    rc = rpmtsAddEraseElement(ts, ip->instance);
+	    rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
 	    if (rc != 0)
 		goto exit;
 
-	    packagesTotal++;
+	    numRemoved++;
+#ifdef	NOTYET	/* XXX don't count erasures yet */
+	    rpmcliPackagesTotal++;
+#endif
 	    if (!(ia->installInterfaceFlags & ifmask))
 		ia->installInterfaceFlags |= INSTALL_ERASE;
 
@@ -1073,12 +1140,13 @@ int rpmRollback(rpmts ts,
 	}
 
 	/* Anything to do? */
-	if (packagesTotal <= 0)
+	if (rpmcliPackagesTotal <= 0)
 	    break;
 
 	tid = (time_t)thistid;
-	rpmMessage(RPMMESS_DEBUG, _("rollback %d packages to %s"),
-			packagesTotal, ctime(&tid));
+	rpmMessage(RPMMESS_NORMAL,
+		_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
+			numAdded, numRemoved, ctime(&tid), tid);
 
 	rc = rpmtsCheck(ts);
 	ps = rpmtsProblems(ts);
@@ -1117,7 +1185,6 @@ int rpmRollback(rpmts ts,
 	}
 
     } while (1);
-#endif
 
 exit:
 

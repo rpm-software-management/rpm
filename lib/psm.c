@@ -21,6 +21,8 @@
 
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
+
+#define	_RPMTS_INTERNAL		/* XXX ts->notify */
 #include "rpmts.h"
 
 #include "rpmlead.h"		/* writeLead proto */
@@ -1509,6 +1511,12 @@ psm->te->h = headerLink(fi->h);
 	    if (!rc)
 		rc = psmStage(psm, PSM_COMMIT);
 
+	    /* XXX make sure progress is closed out */
+	    psm->what = RPMCALLBACK_INST_PROGRESS;
+	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
+	    psm->total = psm->amount;
+	    xx = psmStage(psm, PSM_NOTIFY);
+
 	    if (rc) {
 		rpmError(RPMERR_CPIO,
 			_("unpacking of archive failed%s%s: %s\n"),
@@ -1525,10 +1533,6 @@ psm->te->h = headerLink(fi->h);
 
 		break;
 	    }
-	    psm->what = RPMCALLBACK_INST_PROGRESS;
-	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
-	    psm->total = psm->amount;
-	    xx = psmStage(psm, PSM_NOTIFY);
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    int fc = rpmfiFC(fi);
@@ -1582,6 +1586,12 @@ psm->te->h = headerLink(fi->h);
 	    /*@-mods@*/
 	    errno = saveerrno;
 	    /*@=mods@*/
+
+	    /* XXX make sure progress is closed out */
+	    psm->what = RPMCALLBACK_INST_PROGRESS;
+	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
+	    psm->total = psm->amount;
+	    xx = psmStage(psm, PSM_NOTIFY);
 
 	    fi->action = action;
 	    fi->actions = actions;
@@ -1698,7 +1708,7 @@ psm->te->h = headerLink(fi->h);
 	}
 
 	if (psm->goal == PSM_PKGSAVE) {
-	    if (!rc) {
+	    if (!rc && ts && ts->notify == NULL) {
 		rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"),
 			(psm->pkgURL ? psm->pkgURL : "???"));
 	    }
