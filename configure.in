@@ -82,10 +82,15 @@ else
 fi
 AC_MSG_RESULT($LDFLAGS_STATIC)
 
-if test -n "$LDFLAGS_STATIC"; then
-    RPM=rpm
-else
-    RPM=rpm.shared
+if test -n "$LDFLAGS_STATIC"
+then
+  AC_CHECKING(if we can link dynamically and still access the services switch)
+  AC_CHECK_LIB(c,gethostbyname,
+    AC_MSG_RESULT(will build static executable)
+     RPM=rpm,
+    AC_MSG_RESULT(will have to link dynamically)
+     RPM=rpm.shared,
+    $LDFLAGS_STATIC)
 fi
 
 AC_MSG_CHECKING(POSIX chmod)
@@ -510,7 +515,6 @@ fi
 
 if echo "$build_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
-	RPM=rpm.shared
 	AC_DEFINE(NEED_STRINGS_H)
 	AC_DEFINE(HAVE_STRUCT_MNTTAB)
 elif echo "$build_os" | grep sunos > /dev/null; then
@@ -520,16 +524,8 @@ elif echo "$build_os" | grep sunos > /dev/null; then
 	AC_DEFINE(NEED_MYREALLOC)
 	MISCOBJS="$MISCOBJS myrealloc.o"
 elif echo "$build_os" | grep hpux > /dev/null; then
-	#RPM=rpm.shared
-	RPM=rpm
 	LIBDL=-ldld
 	echo "hacking things up for hpux"
-elif echo "$build_os" | grep irix > /dev/null; then
-	RPM=rpm.shared
-	echo "hacking things up for irix"
-elif echo "$build_os" | grep aix > /dev/null; then
-	RPM=rpm.shared
-	echo "hacking things up for aix"
 fi
 
 #
