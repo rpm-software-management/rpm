@@ -292,7 +292,8 @@ int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
 	    return 1;
 	}
 	break;
-      case RPMSIGTAG_LITTLEENDIANMD5:
+      case RPMSIGTAG_LEMD5_1:
+      case RPMSIGTAG_LEMD5_2:
 	if (verifyMD5Signature(file, sig, result, mdbinfileBroken)) {
 	    return 1;
 	}

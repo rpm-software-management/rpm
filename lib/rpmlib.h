@@ -96,6 +96,7 @@ extern const int rpmTagTableSize;
 #define RPMTAG_CHANGELOGTIME            1080
 #define RPMTAG_CHANGELOGNAME            1081
 #define RPMTAG_CHANGELOGTEXT            1082
+#define RPMTAG_BROKENMD5                1083 /* internal */
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 
@@ -386,10 +387,11 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 /**************************************************/
 
 #define RPMSIGTAG_SIZE         	        1000
-/* the md5 sum was broken on big endian machines for a while */
-#define RPMSIGTAG_LITTLEENDIANMD5	1001
+/* the md5 sum was broken *twice* on big endian machines */
+#define RPMSIGTAG_LEMD5_1		1001
 #define RPMSIGTAG_PGP          	        1002
-#define RPMSIGTAG_MD5		        1003
+#define RPMSIGTAG_LEMD5_2		1003
+#define RPMSIGTAG_MD5		        1004
 
 /**************************************************/
 /*                                                */
