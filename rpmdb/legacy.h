@@ -59,7 +59,7 @@ void rpmfiBuildFNames(Header h, rpmTag tagN,
 	/*@modifies *fnp, *fcp @*/;
 
 /**
- * Convert (dirname,basename,dirindex) tags to absolute path tags.
+ * Convert (dirname,basename,dirindex) tags to absolute path tag.
  * @param h		header
  */
 void expandFilelist(Header h)

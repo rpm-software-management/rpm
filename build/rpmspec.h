@@ -151,7 +151,8 @@ struct Spec_s {
 /*@refcounted@*/
     rpmfi sourceCpioList;
 
-/*@dependent@*/ /*@null@*/ MacroContext macros;
+/*@dependent@*/ /*@null@*/
+    MacroContext macros;
 
 /*@only@*/
     StringBuf prep;		/*!< %prep scriptlet. */
@@ -240,10 +241,10 @@ extern "C" {
  * @return		0 on success, else no. of failures
  */
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
-        /*@globals rpmGlobalMacroContext,
-                fileSystem, internalState @*/
-        /*@modifies ts, qva, rpmGlobalMacroContext,
-                fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, qva, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  */

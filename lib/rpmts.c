@@ -778,8 +778,8 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 /*@+voidabstract@*/
 	if (scriptFd != NULL)
 	    ts->scriptFd = fdLink((void *)scriptFd, "rpmtsSetScriptFd");
-    }
 /*@=voidabstract@*/
+    }
 }
 
 int rpmtsChrootDone(rpmts ts)
@@ -978,8 +978,8 @@ int rpmtsInitDSI(const rpmts ts)
 	/* XXX Avoid FAT and other file systems that have not inodes. */
 	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
-        rpmMessage(RPMMESS_DEBUG, _("%5d 0x%04x %5u %12ld %12ld %s\n"),
-                i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
+	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%04x %5u %12ld %12ld %s\n"),
+		i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
 		(signed long) dsi->bavail, (signed long) dsi->iavail,
 		ts->filesystems[i]);
     }

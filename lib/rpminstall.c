@@ -937,7 +937,6 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
     HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
 
-rpmMessage(RPMMESS_DEBUG, "IDTXload(%p, %d)\n", ts, tag);
     /*@-branchstate@*/
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
 #ifdef	NOTYET

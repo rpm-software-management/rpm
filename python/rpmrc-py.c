@@ -64,34 +64,6 @@ PyObject * rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args)
 }
 
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
-
-/**
- */
-static PyObject *
-rpmrc_getstate(rpmrcObject *s, PyObject *args)
-	/*@*/
-{
-    if (!PyArg_ParseTuple(args, ":getstate"))
-	return NULL;
-    return PyInt_FromLong(s->state);
-}
-
-/**
- */
-static PyObject *
-rpmrc_setstate(rpmrcObject *s, PyObject *args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
-{
-    int state;
-
-    if (!PyArg_ParseTuple(args, "i:setstate", &state))
-	return NULL;
-    s->state = state;
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 /**
  */
 static void rpmrc_dealloc(PyObject * s)
@@ -277,15 +249,6 @@ fprintf(stderr, "*** rpmrc_next(%p[%s],%p)\n", s, lbl(s), args);
     return NULL;
 }
 
-/*@-fullinitblock@*/
-/*@unchecked@*/ /*@observer@*/
-static PyMemberDef rpmrc_members[] = {
-    {"state", T_INT, offsetof(rpmrcObject, state), READONLY,
-         "an int variable for demonstration purposes"},
-    {0}
-};
-/*@=fullinitblock@*/
-
 /** \ingroup python
  */
 static int rpmrc_init(PyObject * s, PyObject *args, PyObject *kwds)
@@ -295,7 +258,6 @@ if (_rc_debug)
 fprintf(stderr, "*** rpmrc_init(%p[%s],%p,%p)\n", s, lbl(s), args, kwds);
     if (PyDict_Type.tp_init(s, args, kwds) < 0)
 	return -1;
-    ((rpmrcObject *)s)->state = 0;
     return 0;
 }
 
@@ -353,10 +315,6 @@ static struct PyMethodDef rpmrc_methods[] = {
     { "delMacro",	(PyCFunction) rpmrc_DelMacro, METH_VARARGS,
 	NULL },
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
-    { "getstate",	(PyCFunction) rpmrc_getstate, METH_VARARGS,
-	"getstate() -> state"},
-    { "setstate",	(PyCFunction) rpmrc_setstate, METH_VARARGS,
-	"setstate(state)"},
     { "next",		(PyCFunction) rpmrc_next,     METH_VARARGS,
 	"next() -- get the next value, or raise StopIteration"},
 #endif
@@ -398,7 +356,7 @@ PyTypeObject rpmrc_Type = {
 	rpmrc_iter,			/* tp_iter */
 	rpmrc_iternext,			/* tp_iternext */
 	rpmrc_methods,			/* tp_methods */
-	rpmrc_members,			/* tp_members */
+	0,				/* tp_members */
 	0,				/* tp_getset */
 	&PyDict_Type,			/* tp_base */
 	0,				/* tp_dict */

@@ -789,7 +789,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     if (ret)
 	ret[found] = NULL;
 
-/*@-nullstate@*/ /* FIX: *kep may be NULL */
+/*@-nullstate@*/ /* FIX: *keyp may be NULL */
     return ret;
 /*@=nullstate@*/
 }

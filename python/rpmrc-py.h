@@ -14,7 +14,6 @@ typedef struct rpmrcObject_s rpmrcObject;
 struct rpmrcObject_s {
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
     PyDictObject dict;
-    int state;
 #else
     PyObject_HEAD
 #endif

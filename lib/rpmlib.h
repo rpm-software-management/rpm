@@ -442,7 +442,7 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
     RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude */
     RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
-    RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
+    RPMFILE_PUBKEY	= (1 << 11)	/*!< from %%pubkey */
 } rpmfileAttrs;
 
 #define	RPMFILE_ALL	~(RPMFILE_NONE)

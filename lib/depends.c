@@ -1612,7 +1612,7 @@ int rpmtsCheck(rpmts ts)
 	rpmds provides;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
-        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s %s/%s 0x%x\n",
+	rpmMessage(RPMMESS_DEBUG,  "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 	rc = checkPackageDeps(ts, rpmteNEVR(p),

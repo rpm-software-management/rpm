@@ -11,8 +11,9 @@ javadeps
 rpmarchive
 rpmcache
 rpmdeps
-rpmheader
+rpmfile
 rpmgraph
+rpmheader
 rpminject
 rpmlead
 rpmsort

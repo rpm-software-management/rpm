@@ -389,7 +389,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@defines fsm->li @*/
 	/*@releases fsm->path @*/
 	/*@globals errno, fileSystem, internalState @*/
-	/*@modifies errno, fsm, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     struct stat * st = &fsm->sb;
     int rc = 0;
@@ -2215,7 +2215,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = CPIOERR_OPEN_FAILED;
 	    break;
 	}
-/*@=voidabstract@*/
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
 		fsm->path, fsm->rfd, fsm->rdbuf);
@@ -2295,7 +2294,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FA_ERASE:	return "erase";
     case FA_SKIPNSTATE: return "skipnstate";
     case FA_SKIPNETSHARED: return "skipnetshared";
-    case FA_SKIPCOLOR: return "skipcolor";
+    case FA_SKIPCOLOR:	return "skipcolor";
     default:		return "???";
     }
     /*@notreached@*/

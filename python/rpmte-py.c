@@ -295,7 +295,7 @@ rpmte_FI(rpmteObject * s, PyObject * args)
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmte_methods[] = {
     {"Debug",	(PyCFunction)rpmte_Debug,	METH_VARARGS,
-        NULL},
+	NULL},
     {"Type",	(PyCFunction)rpmte_TEType,	METH_VARARGS,
 "te.Type() -> Type\n\
 - Return element type (rpm.TR_ADDED | rpm.TR_REMOVED).\n" },
@@ -321,27 +321,27 @@ static struct PyMethodDef rpmte_methods[] = {
 "te.NEVR() -> NEVR\n\
 - Return element name-version-release.\n" },
     {"Color",(PyCFunction)rpmte_Color,		METH_VARARGS,
-        NULL},
+	NULL},
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_VARARGS,
-        NULL},
+	NULL},
     {"Depth",	(PyCFunction)rpmte_Depth,	METH_VARARGS,
-        NULL},
+	NULL},
     {"Npreds",	(PyCFunction)rpmte_Npreds,	METH_VARARGS,
-        NULL},
+	NULL},
     {"Degree",	(PyCFunction)rpmte_Degree,	METH_VARARGS,
-        NULL},
+	NULL},
     {"Parent",	(PyCFunction)rpmte_Parent,	METH_VARARGS,
-        NULL},
+	NULL},
     {"Tree",	(PyCFunction)rpmte_Tree,	METH_VARARGS,
-        NULL},
+	NULL},
     {"AddedKey",(PyCFunction)rpmte_AddedKey,	METH_VARARGS,
-        NULL},
+	NULL},
     {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_VARARGS,
-        NULL},
+	NULL},
     {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_VARARGS,
-        NULL},
-    {"Key",	(PyCFunction)rpmte_Key,	METH_VARARGS,
-        NULL},
+	NULL},
+    {"Key",	(PyCFunction)rpmte_Key,		METH_VARARGS,
+	NULL},
     {"DS",	(PyCFunction)rpmte_DS,		METH_VARARGS,
 "te.DS(TagN) -> DS\n\
 - Return the TagN dependency set (or None). TagN is one of\n\
@@ -357,8 +357,8 @@ static struct PyMethodDef rpmte_methods[] = {
 
 static int
 rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ int flags)
-        /*@globals fileSystem @*/
-        /*@modifies fp, fileSystem @*/
+	/*@globals fileSystem @*/
+	/*@modifies fp, fileSystem @*/
 {
     const char * tstr;
     if (!(s && s->te))

@@ -57,7 +57,8 @@ struct headerToken {
     struct HV_s hv;		/*!< Header public methods. */
 /*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */
-/*@owned@*/ indexEntry index;	/*!< Array of tags. */
+/*@owned@*/
+    indexEntry index;		/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
     int flags;
