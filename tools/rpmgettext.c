@@ -925,6 +925,12 @@ DPRINTF(1, ("injecting %s msgid\n", getTagString(*tp)));
 		    continue;
 
 DPRINTF(1, ("\tmsgstr(%s)\n", langs[i]));
+#if 1
+		headerAddI18NString(h, *tp, (char *)mvp->msgstr, langs[i]);
+#else
+DPRINTF(1, ("headerAddI18NString(%x,%d,%x,\"%s\")\n%s\n",
+h, *tp, mvp->msgstr, langs[i], mvp->msgstr));
+#endif
 
 	    }
 

@@ -1055,24 +1055,39 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
 	entry->length += length;
 	entry->info.count = langNum + 1;
     } else {
-	/* tricky... we need to add one to the middle (or beginning). This
-	   will replace an existing entry as well */
-	buf = malloc(strlen(string) + entry->length);
+	char *b, *be, *e, *ee, *t;
+	size_t bn, sn, en;
 
-	chptr = entry->data, length = 0;
-	for (i = 0; i < langNum; i++) 
-	    length += strlen(chptr + length) + 1;
+	/* Set beginning/end pointers to previous data */
+	b = ee = entry->data;
+	for (i = 0; i < table->info.count; i++) {
+	    if (i == langNum)
+		be = ee;
+	    ee += strlen(ee) + 1;
+	    if (i == langNum)
+		e  = ee;
+	}
 
-	memcpy(buf, entry->data, length);
-	strcpy(buf + length, string);
-	i = strlen(chptr + length) + 1;
-	memcpy(buf + length + strlen(string) + 1,
-	       ((char *) entry->data) + length + i, 
-	       entry->length - length - i);
+	/* Get storage for new buffer */
+	bn = (be-b);
+	sn = strlen(string) + 1;
+	en = (ee-e);
+	length = bn + sn + en;
+	t = buf = malloc(length);
 
+	/* Copy values into new storage */
+	memcpy(t, b, bn);
+	t += bn;
+	memcpy(t, string, sn);
+	t += sn;
+	memcpy(t, e, en);
+	t += en;
+
+	/* Replace I18N string array */
+	entry->length -= strlen(be) + 1;
+	entry->length += sn;
 	free(entry->data);
 	entry->data = buf;
-	entry->length += length;
     }
 
     return 0;
