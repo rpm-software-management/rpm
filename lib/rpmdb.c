@@ -568,7 +568,7 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
  * @param sorted	array is already sorted?
  * @return		0 success, 1 failure (no items found)
  */
-static INLINE int dbiPruneSet(dbiIndexSet set, const void * recs, int nrecs,
+static INLINE int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
 	size_t recsize, int sorted)
 {
     int from;
@@ -1468,7 +1468,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
     return rc;
 }
 
-int rpmdbPruneIterator(rpmdbMatchIterator mi, const int * hdrNums,
+int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
 	int nHdrNums, int sorted)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
@@ -1558,7 +1558,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
 	mi_keyp = k;
     }
 
-    mi = xcalloc(sizeof(*mi), 1);
+    mi = xcalloc(1, sizeof(*mi));
     mi->mi_keyp = mi_keyp;
     mi->mi_keylen = keylen;
 

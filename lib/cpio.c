@@ -34,6 +34,8 @@ struct cpioFileMapping {
 /*@dependent@*/ const char * baseName;	/*!< Payload file base name. */
 /*@dependent@*/ const char * suffix;
 /*@dependent@*/ const char * md5sum;	/*!< File MD5 sum (NULL disables). */
+    fileAction action;
+    int commit;
     mode_t finalMode;		/*!< Mode of payload file (from header). */
     uid_t finalUid;		/*!< Uid of payload file (from header). */
     gid_t finalGid;		/*!< Gid of payload file (from header). */
@@ -41,12 +43,12 @@ struct cpioFileMapping {
 };
 
 /** \ingroup payload
- * Keeps track of set of all hard linked files in archive.
+ * Keeps track of the set of all hard links to a file in an archive.
  */
 struct hardLink {
-    struct hardLink * next;
-    const char ** files;	/* nlink of these, used by install */
-    const void ** fileMaps;
+/*@dependent@*/ struct hardLink * next;
+/*@owned@*/ const char ** files;	/* nlink of these, used by install */
+/*@owned@*/ const void ** fileMaps;
     dev_t dev;
     ino_t inode;
     int nlink;
@@ -98,11 +100,14 @@ struct cpioHeader {
 /*@dependent@*/ struct hardLink * li;
 /*@dependent@*/ const char ** failedFile;
     const char * subdir;
+    char subbuf[64];
     const char * suffix;
+    char sufbuf[64];
     int postpone;
     mode_t dperms;
     mode_t fperms;
     int rc;
+    int action;
     fileStage a;
     struct stat sb;
 };
@@ -127,25 +132,45 @@ static int mapFlags(const void * this, cpioMapFlags mask) {
 
 /**
  */
+static int mapCommit(const void * this) {
+    const struct cpioFileMapping * map = this;
+    return map->commit;
+}
+
+/**
+ */
+static int mapAction(const void * this) {
+    const struct cpioFileMapping * map = this;
+    return map->action;
+}
+
+/**
+ */
 static /*@only@*/ const char * mapArchivePath(const void * this) {
     const struct cpioFileMapping * map = this;
     return xstrdup(map->archivePath);
 }
 
 /**
+ * @param this
+ * @param st			path mode type (dirs map differently)
  */
-static /*@only@*/ const char * mapFsPath(const void * this) {
+static /*@only@*/ const char * mapFsPath(const void * this,
+	const struct stat * st)
+{
     const struct cpioFileMapping * map = this;
     int nb = strlen(map->dirName) +
-	(map->subdir ? strlen(map->subdir) : 0) +
-	(map->suffix ? strlen(map->suffix) : 0) +
+	(st && map->subdir && !S_ISDIR(st->st_mode) ? strlen(map->subdir) : 0) +
+	(st && map->suffix && !S_ISDIR(st->st_mode) ? strlen(map->suffix) : 0) +
 	strlen(map->baseName) + 1;
     char * t = xmalloc(nb);
     const char * s = t;
     t = stpcpy(t, map->dirName);
-    if (map->subdir) t = stpcpy(t, map->subdir);
+    if (st && map->subdir && !S_ISDIR(st->st_mode))
+	t = stpcpy(t, map->subdir);
     t = stpcpy(t, map->baseName);
-    if (map->suffix) t = stpcpy(t, map->suffix);
+    if (st && map->suffix && !S_ISDIR(st->st_mode))
+	t = stpcpy(t, map->suffix);
     return s;
 }
 
@@ -253,9 +278,10 @@ mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
  */
 static const void * mapNextIterator(void * this) {
     struct mapi * mapi = this;
+    rpmTransactionSet ts = mapi->ts;
     TFI_t fi = mapi->fi;
     struct cpioFileMapping * map = &mapi->map;
-    int i = mapi->i;
+    int i;
 
     do {
 	if (!((i = mapi->i) < fi->fc))
@@ -268,6 +294,12 @@ static const void * mapNextIterator(void * this) {
     map->dirName = fi->dnl[fi->dil[i]];
     map->baseName = fi->bnl[i];
     map->md5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
+    map->action = (fi->actions ? fi->actions[i] : FA_UNKNOWN);
+
+#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
+    map->commit = (ts->transFlags & _tsmask) ? 0 : 1;
+#undef _tsmask
+
     map->finalMode = fi->fmodes[i];
     map->finalUid = (fi->fuids ? fi->fuids[i] : fi->uid); /* XXX chmod u-s */
     map->finalGid = (fi->fgids ? fi->fgids[i] : fi->gid); /* XXX chmod g-s */
@@ -306,25 +338,6 @@ static const void * mapFind(void * this, const char * hdrPath) {
     }
     mapi->i = p - fi->apath;
     return mapNextIterator(this);
-}
-
-/**
- */
-static void pkgCallback(const struct cpioHeader * hdr)
-{
-    struct mapi * mapi = hdr->mapi;
-    rpmTransactionSet ts;
-    TFI_t fi;
-
-    if (mapi == NULL)
-	return;
-    ts = mapi->ts;
-    fi = mapi->fi;
-
-    if (ts && ts->notify)
-        (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
-			fdGetCpioPos(hdr->cfd), fi->archiveSize,
-		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
 }
 
 /**
@@ -566,48 +579,38 @@ static int createDirectory(struct cpioHeader * hdr)
  */
 static int inline checkDirectory(struct cpioHeader * hdr)	/*@*/
 {
-    const char * fn = hdr->path;
-    int length = strlen(fn);
-    /*@only@*/ static char * lastDir = NULL;	/* XXX memory leak */
+/*@only@*/ static char * lastDir = NULL;	/* XXX memory leak */
     static int lastDirLength = 0;
     static int lastDirAlloced = 0;
-    char * buf;
-    char * chptr;
+    char * dn = alloca_strdup(hdr->path);
+    char * te = strrchr(dn, '/');
+    int dnlen = (te ? (te - dn) : 0);
     int rc = 0;
 
-    buf = alloca(length + 1);
-    strcpy(buf, fn);
+    if (dnlen == 0) return rc;	/* /filename - no directories */
 
-    for (chptr = buf + length - 1; chptr > buf; chptr--) {
-	if (*chptr == '/') break;
-    }
+    *te = '\0';			/* buffer is now just directories */
 
-    if (chptr == buf) return 0;     /* /filename - no directories */
-
-    *chptr = '\0';                  /* buffer is now just directories */
-
-    length = strlen(buf);
-    if (lastDirLength == length && !strcmp(buf, lastDir)) return 0;
-
-    if (lastDirAlloced < (length + 1)) {
-	lastDirAlloced = length + 100;
+    if (lastDirLength == dnlen && !strcmp(dn, lastDir)) return 0;
+    if (lastDirAlloced < (dnlen + 1)) {
+	lastDirAlloced = dnlen + 100;
 	lastDir = xrealloc(lastDir, lastDirAlloced);	/* XXX memory leak */
     }
+    strcpy(lastDir, dn);
+    lastDirLength = dnlen;
 
-    strcpy(lastDir, buf);
-    lastDirLength = length;
-
-    hdr->path = buf;		/* XXX abuse hdr->path */
-    for (chptr = buf + 1; *chptr; chptr++) {
-	if (*chptr != '/')
-	    continue;
-	*chptr = '\0';
-	rc = createDirectory(hdr);
-	*chptr = '/';
-	if (rc) break;
+    {	const char * path = hdr->path;
+	hdr->path = dn;		/* XXX abuse hdr->path */
+	for (te = dn + 1; *te; te++) {
+	    if (*te != '/') continue;
+	    *te = '\0';
+	    rc = createDirectory(hdr);
+	    *te = '/';
+	    if (rc) break;
+	}
+	if (!rc) rc = createDirectory(hdr);
+	hdr->path = path;		/* XXX restore hdr->path */
     }
-    if (!rc) rc = createDirectory(hdr);
-    hdr->path = fn;		/* XXX restore hdr->path */
 
     return rc;
 }
@@ -658,7 +661,7 @@ static int expandRegular(struct cpioHeader * hdr)
 
 	/* don't call this with fileSize == fileComplete */
 	if (!rc && left)
-	    pkgCallback(hdr);
+	    (void) hdrStage(hdr, FI_NOTIFY);
     }
 
     if (filemd5) {
@@ -677,87 +680,6 @@ static int expandRegular(struct cpioHeader * hdr)
     }
 
     Fclose(ofd);
-
-    return rc;
-}
-
-/**
- * Create symlink from payload stream.
- * @param hdr		file path and stat info
- * @return		0 on success
- */
-static int expandSymlink(struct cpioHeader * hdr)
-		/*@modifies fileSystem, hdr->cfd @*/
-{
-    char buf[2048];
-    const struct stat * st = &hdr->sb;
-    int rc = 0;
-
-    if ((st->st_size + 1)> sizeof(buf))
-	return CPIOERR_HDR_SIZE;
-
-    if (ourread(hdr->cfd, buf, st->st_size) != st->st_size)
-	return CPIOERR_READ_FAILED;
-    buf[st->st_size] = '\0';
-
-    {	const char * opath = hdr->opath;
-	hdr->opath = buf;
-	rc = hdrStage(hdr, FI_VERIFY);
-	hdr->opath = opath;
-    }
-    if (rc != CPIOERR_LSTAT_FAILED) return rc;
-    rc = 0;
-
-	/* XXX symlink(hdr->opath, hdr->path) */
-    {   const char * opath = hdr->opath;
-	hdr->opath = buf;
-	rc = hdrStage(hdr, FI_SYMLINK);
-	hdr->opath = opath;
-	if (rc) return rc;
-    }
-
-    return rc;
-}
-
-/**
- * Create fifo from payload stream.
- * @param hdr		file path and stat info
- * @return		0 on success
- */
-static int expandFifo(struct cpioHeader * hdr)
-		/*@modifies fileSystem @*/
-{
-    int rc = 0;
-    rc = hdrStage(hdr, FI_VERIFY);
-    if (rc != CPIOERR_LSTAT_FAILED) return rc;
-    rc = 0;
-
-    {	mode_t st_mode = hdr->sb.st_mode;
-	hdr->sb.st_mode = 0000;		/* XXX abuse hdr->sb.st_mode */
-	rc = hdrStage(hdr, FI_MKFIFO);
-	hdr->sb.st_mode = st_mode;	/* XXX restore hdr->sb.st_mode */
-	if (rc) return rc;
-    }
-
-    return rc;
-}
-
-/**
- * Create fifo from payload stream.
- * @param hdr		file path and stat info
- * @return		0 on success
- */
-static int expandDevice(struct cpioHeader * hdr)
-		/*@modifies fileSystem @*/
-{
-    int rc = 0;
-
-    rc = hdrStage(hdr, FI_VERIFY);
-    if (rc != CPIOERR_LSTAT_FAILED) return rc;
-    rc = 0;
-
-    rc = hdrStage(hdr, FI_MKNOD);
-    if (rc) return rc;
 
     return rc;
 }
@@ -908,14 +830,13 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
 #if 1
     if (!(a & FI_INTERNAL))
 #else
-    if (a != FI_CREATE)
+    if (!(a == FI_CREATE || a == FI_NOTIFY))
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("%8x %s -> %s path %s\n"), rc, prev, cur,
 		hdr->path);
 
     switch (a) {
     case FI_CREATE:
-	memset(hdr, 0, sizeof(*hdr));
 	hdr->path = NULL;
 	hdr->map = NULL;
 	hdr->links = NULL;
@@ -930,29 +851,33 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
 	hdr->dperms = 0755;
 	hdr->fperms = 0644;
 	hdr->subdir = NULL;
-	hdr->suffix = ".XXX";	/* XXX can't use suffix on upgrade. */
+	hdr->suffix = (hdr->sufbuf[0] != '\0' ? hdr->sufbuf : NULL);
+	hdr->action = FA_UNKNOWN;
 	rc = getNextHeader(hdr);
 	break;
     case FI_MAP:
-	if (hdr->mapi) {
-	    hdr->map = mapFind(hdr->mapi, hdr->path);
-	    if (hdr->map) {
-		if (mapFlags(hdr->map, CPIO_MAP_PATH)) {
-		    struct cpioFileMapping * map =
-			(struct cpioFileMapping *) hdr->map;
-		    if (hdr->path) free((void *)hdr->path);
-		    map->subdir = (hdr->subdir ? hdr->subdir : NULL);
-		    map->suffix = (hdr->suffix ? hdr->suffix : NULL);
-		    hdr->path = mapFsPath(hdr->map);
-		}
+	if (hdr->mapi == NULL)
+	    break;
+	hdr->map = mapFind(hdr->mapi, hdr->path);
+	if (hdr->map) {
 
-		if (mapFlags(hdr->map, CPIO_MAP_MODE))
-		    st->st_mode = mapFinalMode(hdr->map);
-		if (mapFlags(hdr->map,  CPIO_MAP_UID))
-		    st->st_uid = mapFinalUid(hdr->map);
-		if (mapFlags(hdr->map, CPIO_MAP_GID))
-		    st->st_gid = mapFinalGid(hdr->map);
+	    hdr->action = mapAction(hdr->map);
+
+	    if (mapFlags(hdr->map, CPIO_MAP_PATH)) {
+		struct cpioFileMapping * map =
+			(struct cpioFileMapping *) hdr->map;
+		map->subdir = (hdr->subdir ? hdr->subdir : NULL);
+		map->suffix = (hdr->suffix ? hdr->suffix : NULL);
+		if (hdr->path) free((void *)hdr->path);
+		hdr->path = mapFsPath(hdr->map, st);
 	    }
+
+	    if (mapFlags(hdr->map, CPIO_MAP_MODE))
+		st->st_mode = mapFinalMode(hdr->map);
+	    if (mapFlags(hdr->map,  CPIO_MAP_UID))
+		st->st_uid = mapFinalUid(hdr->map);
+	    if (mapFlags(hdr->map, CPIO_MAP_GID))
+		st->st_gid = mapFinalGid(hdr->map);
 	}
 	break;
     case FI_SKIP:
@@ -982,8 +907,7 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
 	if (S_ISREG(st->st_mode) && st->st_nlink > 1 &&
 	    !st->st_size && hdr->li->createdPath == -1)
 	{
-		/* defer file creation */
-	    hdr->postpone = 1;
+	    hdr->postpone = 1;		/* defer file creation */
 	} else if (S_ISREG(st->st_mode) && st->st_nlink > 1 &&
 		   hdr->li->createdPath != -1)
 	{
@@ -997,7 +921,7 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
 	    * code, so what the heck? GNU cpio handles this well fwiw.
 	    */
 	    eatBytes(hdr->cfd, st->st_size);
-	    hdr->postpone = 1;
+	    hdr->postpone = 1;		/* defer file creation */
 	} else {
 	    /* XXX keep track of created directories. */
 	    rc = checkDirectory(hdr);
@@ -1006,35 +930,59 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
     case FI_PROCESS:
 	if (hdr->postpone)
 	    break;
-	if (S_ISREG(st->st_mode))
+	if (S_ISREG(st->st_mode)) {
 	    rc = expandRegular(hdr);
-	else if (S_ISDIR(st->st_mode)) {
+	} else if (S_ISDIR(st->st_mode)) {
 	    mode_t dperms = hdr->dperms;
 	    hdr->dperms = 0000; 	/* XXX abuse hdr->dperms */
 	    rc = createDirectory(hdr);
 	    hdr->dperms = dperms;	/* XXX restore hdr->dperms */
-	}
-	else if (S_ISLNK(st->st_mode))
-	    rc = expandSymlink(hdr);
-	else if (S_ISFIFO(st->st_mode))
-	    rc = expandFifo(hdr);
-	else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
-	    rc = expandDevice(hdr);
-	else if (S_ISSOCK(st->st_mode))
-	    /* this mimics cpio but probably isnt' right */
-	    rc = expandFifo(hdr);
-	else
+	} else if (S_ISLNK(st->st_mode)) {
+	    const char * opath = hdr->opath;
+	    char buf[2048];
+
+	    if ((st->st_size + 1)> sizeof(buf)) {
+		rc = CPIOERR_HDR_SIZE;
+		break;
+	    }
+	    if (ourread(hdr->cfd, buf, st->st_size) != st->st_size) {
+		rc = CPIOERR_READ_FAILED;
+		break;
+	    }
+	    buf[st->st_size] = '\0';
+
+	    /* XXX symlink(hdr->opath, hdr->path) */
+	    hdr->opath = buf;		/* XXX abuse hdr->path */
+	    rc = hdrStage(hdr, FI_VERIFY);
+	    if (rc == CPIOERR_LSTAT_FAILED)
+		rc = hdrStage(hdr, FI_SYMLINK);
+	    hdr->opath = opath;		/* XXX restore hdr->path */
+	} else if (S_ISFIFO(st->st_mode) || S_ISSOCK(st->st_mode)) {
+	    mode_t st_mode = hdr->sb.st_mode;
+	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
+	    rc = hdrStage(hdr, FI_VERIFY);
+	    if (rc == CPIOERR_LSTAT_FAILED) {
+		hdr->sb.st_mode = 0000;		/* XXX abuse hdr->sb.st_mode */
+		rc = hdrStage(hdr, FI_MKFIFO);
+		hdr->sb.st_mode = st_mode;	/* XXX restore */
+	    }
+	} else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
+	    rc = hdrStage(hdr, FI_VERIFY);
+	    if (rc == CPIOERR_LSTAT_FAILED)
+		rc = hdrStage(hdr, FI_MKNOD);
+	} else {
 	    rc = CPIOERR_UNKNOWN_FILETYPE;
+	}
 	break;
     case FI_POST:
 	if (hdr->postpone)
 	    break;
-	if (!S_ISLNK(st->st_mode)) {
+	if (S_ISLNK(st->st_mode)) {
+	    if (!getuid())	rc = hdrStage(hdr, FI_LCHOWN);
+	} else {
 	    if (!getuid())	rc = hdrStage(hdr, FI_CHOWN);
 	    if (!rc)		rc = hdrStage(hdr, FI_CHMOD);
 	    if (!rc)		rc = hdrStage(hdr, FI_UTIME);
-	} else {
-	    if (!getuid())	rc = hdrStage(hdr, FI_LCHOWN);
 	}
 	if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
 	    hdr->li->createdPath = --hdr->li->linksLeft;
@@ -1042,12 +990,25 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
 	}
 	break;
     case FI_NOTIFY:
-	pkgCallback(hdr);
+	{   struct mapi * mapi = hdr->mapi;
+	    if (mapi) {
+		rpmTransactionSet ts = mapi->ts;
+		TFI_t fi = mapi->fi;
+		if (ts && ts->notify)
+		    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
+			fdGetCpioPos(hdr->cfd), fi->archiveSize,
+			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+	    }
+	}
 	return rc;
 	/*@notreached@*/ break;
     case FI_UNDO:
 	{   int olderrno = errno;
-	    (void) hdrStage(hdr, FI_UNLINK);
+	    if (S_ISDIR(st->st_mode)) {
+		(void) hdrStage(hdr, FI_RMDIR);
+	    } else {
+		(void) hdrStage(hdr, FI_UNLINK);
+	    }
 	    /* XXX remove created directories. */
 	    errno = olderrno;
 	    if (hdr->failedFile && *hdr->failedFile == NULL)
@@ -1055,12 +1016,12 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
 	}
 	break;
     case FI_COMMIT:
-	if (hdr->subdir || hdr->suffix) {
+	if (mapCommit(hdr->map) && (hdr->subdir || hdr->suffix)) {
 	    struct cpioFileMapping * map = (struct cpioFileMapping *) hdr->map;
 	    map->subdir = NULL;
 	    map->suffix = NULL;
 	    hdr->opath = hdr->path;
-	    hdr->path = mapFsPath(hdr->map);
+	    hdr->path = mapFsPath(hdr->map, st);
 	    rc = hdrStage(hdr, FI_RENAME);
 	    /* XXX remove created subdirs. */
 	    free((void *)hdr->opath);
@@ -1095,7 +1056,9 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
 	    if (rc < 0 && errno == ENOENT)
 		errno = saveerrno;
 	    if (rc < 0) return CPIOERR_LSTAT_FAILED;
+
 	/* XXX handle upgrade actions right here. */
+
 	    if (S_ISREG(st->st_mode)) {
 		char * path = alloca(strlen(hdr->path) + sizeof("-RPMDELETE"));
 		(void) stpcpy( stpcpy(path, hdr->path), "-RPMDELETE");
@@ -1106,14 +1069,13 @@ static int hdrStage(struct cpioHeader * hdr, fileStage a)
 		hdr->opath = hdr->path;
 		hdr->path = path;
 		rc = hdrStage(hdr, FI_RENAME);
+		if (!rc)
+		    (void) hdrStage(hdr, FI_UNLINK);
+		else
+		    rc = CPIOERR_UNLINK_FAILED;
 		hdr->path = hdr->opath;
 		hdr->opath = NULL;
-		if (rc) return CPIOERR_UNLINK_FAILED;
-		hdr->opath = hdr->path;
-		hdr->path = path;
-		(void) hdrStage(hdr, FI_UNLINK);
-		hdr->path = hdr->opath;
-		hdr->opath = NULL;
+		return (rc ? rc : CPIOERR_LSTAT_FAILED);
 		break;
 	    } else if (S_ISDIR(st->st_mode)) {
 		if (S_ISDIR(sb.st_mode))		return 0;
@@ -1240,6 +1202,7 @@ int cpioInstallArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 #endif
 
     /* Initialize hdr. */
+    memset(hdr, 0, sizeof(*hdr));
     rc = hdrStage(hdr, FI_CREATE);
     hdr->cfd = fdLink(cfd, "persist (cpioInstallArchive");
     fdSetCpioPos(hdr->cfd, 0);
@@ -1247,6 +1210,8 @@ int cpioInstallArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
     hdr->failedFile = failedFile;
     if (hdr->failedFile)
 	*hdr->failedFile = NULL;
+    if (ts->id > 0)
+	sprintf(hdr->sufbuf, ";%08x", ts->id);
 
     do {
 
@@ -1323,7 +1288,7 @@ static int writeFile(const rpmTransactionSet ts, TFI_t fi, FD_t cfd,
 	int writeData)
 	/*@modifies cfd, *sizep @*/
 {
-    const char * fsPath = mapFsPath(map);
+    const char * fsPath = mapFsPath(map, NULL);
     const char * archivePath = NULL;
     const char * hdrPath = !mapFlags(map, CPIO_MAP_PATH)
 		? fsPath : (archivePath = mapArchivePath(map));
@@ -1500,7 +1465,7 @@ static int writeLinkedFile(const rpmTransactionSet ts, TFI_t fi, FD_t cfd,
 	map = hlink->fileMaps[i];
 	if ((rc = writeFile(ts, fi, cfd, &hlink->sb, map, &size, 0)) != 0) {
 	    if (failedFile)
-		*failedFile = mapFsPath(map);
+		*failedFile = mapFsPath(map, NULL);
 	    goto exit;
 	}
 
@@ -1515,7 +1480,7 @@ static int writeLinkedFile(const rpmTransactionSet ts, TFI_t fi, FD_t cfd,
 	if (sizep)
 	    *sizep = total;
 	if (failedFile)
-	    *failedFile = mapFsPath(map);
+	    *failedFile = mapFsPath(map, NULL);
 	goto exit;
     }
     total += size;
@@ -1550,7 +1515,7 @@ int cpioBuildArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
     while ((map = mapNextIterator(mapi)) != NULL) {
 	const char * fsPath;
 
-	fsPath = mapFsPath(map);
+	fsPath = mapFsPath(map, NULL);
 
 	if (mapFlags(map, CPIO_FOLLOW_SYMLINKS))
 	    rc = Stat(fsPath, st);

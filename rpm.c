@@ -78,7 +78,13 @@ static char * pipeOutput;
 static char * prefix;
 static int quiet;
 static char * rcfile;
+
 static int rePackage;
+static int pkgCommit;
+static int pkgUndo;
+static int tsCommit;
+static int tsUndo;
+
 static int replaceFiles;
 static int replacePackages;
 static char * rootdir;
@@ -143,6 +149,8 @@ static struct poptOption optionsTable[] = {
  { "oldpackage", '\0', 0, &oldPackage, 0,	NULL, NULL},
  { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
+ { "pkgcommit", '\0', POPT_ARG_VAL, &pkgCommit, 1,	NULL, NULL},
+ { "pkgundo", '\0', POPT_ARG_VAL, &pkgUndo, 1,	NULL, NULL},
  { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
 #ifndef	DYING
@@ -161,6 +169,8 @@ static struct poptOption optionsTable[] = {
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
  { "test", '\0', 0, &test, 0,			NULL, NULL},
+ { "commit", '\0', POPT_ARG_VAL, &tsCommit, 1,	NULL, NULL},
+ { "undo", '\0', POPT_ARG_VAL, &tsUndo, 1,	NULL, NULL},
  { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL, &_url_debug, -1,		NULL, NULL},
  { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
@@ -1091,6 +1101,10 @@ int main(int argc, const char ** argv)
 	if (justdb) transFlags |= RPMTRANS_FLAG_JUSTDB;
 	if (dirStash) transFlags |= RPMTRANS_FLAG_DIRSTASH;
 	if (rePackage) transFlags |= RPMTRANS_FLAG_REPACKAGE;
+	if (pkgCommit) transFlags |= RPMTRANS_FLAG_PKGCOMMIT;
+	if (pkgUndo) transFlags |= RPMTRANS_FLAG_PKGUNDO;
+	if (tsCommit) transFlags |= RPMTRANS_FLAG_COMMIT;
+	if (tsUndo) transFlags |= RPMTRANS_FLAG_UNDO;
 
 	if (noDeps) eraseInterfaceFlags |= UNINSTALL_NODEPS;
 	if (allMatches) eraseInterfaceFlags |= UNINSTALL_ALLMATCHES;
@@ -1129,6 +1143,10 @@ int main(int argc, const char ** argv)
 	if (allFiles) transFlags |= RPMTRANS_FLAG_ALLFILES;
 	if (dirStash) transFlags |= RPMTRANS_FLAG_DIRSTASH;
 	if (rePackage) transFlags |= RPMTRANS_FLAG_REPACKAGE;
+	if (pkgCommit) transFlags |= RPMTRANS_FLAG_PKGCOMMIT;
+	if (pkgUndo) transFlags |= RPMTRANS_FLAG_PKGUNDO;
+	if (tsCommit) transFlags |= RPMTRANS_FLAG_COMMIT;
+	if (tsUndo) transFlags |= RPMTRANS_FLAG_UNDO;
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
 	if (showPercents) installInterfaceFlags |= INSTALL_PERCENT;

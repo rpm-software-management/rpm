@@ -638,7 +638,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums,
  * @param sorted	is the array sorted? (array will be sorted on return)
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbPruneIterator(rpmdbMatchIterator mi, const int * hdrNums,
+int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
 	int nHdrNums, int sorted)
 		/*@modifies mi @*/;
 
@@ -989,6 +989,10 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_MULTILIB	= (1 <<  8),	/*!< @todo Document. */
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
+    RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),
+    RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
+    RPMTRANS_FLAG_COMMIT	= (1 << 13),
+    RPMTRANS_FLAG_UNDO		= (1 << 14),
 } rpmtransFlags;
 
 /** \ingroup rpmtrans
@@ -1476,7 +1480,7 @@ typedef enum rpmVerifySignatureReturn_e {
     RPMSIG_UNKNOWN	= 1,	/*!< Signature is unknown. */
     RPMSIG_BAD		= 2,	/*!< Signature does not verify. */
     RPMSIG_NOKEY	= 3,	/*!< Key is unavailable. */
-    RPMSIG_NOTTRUSTED = 4	/*!< Signature is OK, but key is not trusted. */
+    RPMSIG_NOTTRUSTED	= 4,	/*!< Signature is OK, but key is not trusted. */
 } rpmVerifySignatureReturn;
 
 /** \ingroup signature
@@ -1505,7 +1509,7 @@ typedef enum rpmCheckSigFlags_e {
     CHECKSIG_NONE	= 0,		/*!< Don't check any signatures. */
     CHECKSIG_PGP	= (1 << 0),	/*!< if not --nopgp */
     CHECKSIG_MD5	= (1 << 1),	/*!< if not --nomd5 */
-    CHECKSIG_GPG	= (1 << 2)	/*!< if not --nogpg */
+    CHECKSIG_GPG	= (1 << 2),	/*!< if not --nogpg */
 } rpmCheckSigFlags;
 
 /** \ingroup rpmcli
@@ -1521,7 +1525,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv);
  */
 typedef enum rpmResignFlags_e {
     RESIGN_NEW_SIGNATURE = 0,	/*!< from --resign */
-    RESIGN_ADD_SIGNATURE	/*!< from --addsign */
+    RESIGN_ADD_SIGNATURE,	/*!< from --addsign */
 } rpmResignFlags;
 
 /** \ingroup rpmcli

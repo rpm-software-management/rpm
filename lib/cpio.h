@@ -60,29 +60,13 @@ typedef enum cpioMapFlags_e {
     CPIO_MAP_MODE		= (1 << 1),
     CPIO_MAP_UID		= (1 << 2),
     CPIO_MAP_GID		= (1 << 3),
-    CPIO_FOLLOW_SYMLINKS	= (1 << 4), /* @todo Implement. */
-    CPIO_MULTILIB		= (1 << 31) /* internal, only for building */
+    CPIO_FOLLOW_SYMLINKS	= (1 << 4), /* only for building. */
+    CPIO_MULTILIB		= (1 << 31) /* internal, only for building. */
 } cpioMapFlags;
-
-/** \ingroup payload
- * The first argument passed in a cpio progress callback.
- *
- * @note When building the cpio payload, only "file" is filled in.
- */
-struct cpioCallbackInfo {
-/*@owned@*/ const char * file;	/*!< File name being installed. */
-    long fileSize;		/*!< Total file size. */
-    long fileComplete;		/*!< Amount of file unpacked. */
-    long bytesProcessed;	/*!< No. bytes in archive read. */
-};
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/** \ingroup payload
- */
-typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
 
 /** \ingroup payload
  * The RPM internal equivalent of the command line "cpio -i".
