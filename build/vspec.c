@@ -65,14 +65,13 @@ static struct packageFieldsRec packageFields[] = {
 
 static struct packageFieldsRec subpackageFields[] = {
     { RPMTAG_NAME,            0, MUST },  /* This is inserted automaticaly */
-/*    { RPMTAG_SUMMARY,         0, MUST }, */
+    { RPMTAG_SUMMARY,         0, MUST },
     { RPMTAG_DESCRIPTION,     0, MUST },
     { RPMTAG_GROUP,           0, MUST },
     { RPMTAG_NAME,            0, 0 },
     { RPMTAG_COPYRIGHT,       0, 0 },
     { RPMTAG_PACKAGER,        0, 0 },
-    { RPMTAG_DEFAULTPREFIX,   0, 0 },
-    { RPMTAG_BUILDROOT  ,     0, 0 },
+    { RPMTAG_BUILDROOT,       0, 0 },
     { 0, 0, 0 },
 };
 
