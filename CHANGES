@@ -15,6 +15,7 @@
 	- copy the I18N table to the source header so i18n stuff works
 	- fixed multiple memory leaks in install code
 	- fixed bug in part recognition
+	- shared files weren't being handled properly in net shared paths
 
 2.4.108 -> 2.4.109:
         - remove icons with --rmsource
