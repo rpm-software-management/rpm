@@ -373,7 +373,7 @@ void freeSpec(Spec s)
     FREE(s->noSource);
     FREE(s->noPatch);
     FREE(s->prefix);
-    FREE(s->buildprefix);
+    FREE(s->buildroot);
     freeSources(s);
     freeStringBuf(s->prep);
     freeStringBuf(s->build);
@@ -647,7 +647,7 @@ struct preamble_line {
     {RPMTAG_REQUIREFLAGS,  0, "requires"},
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
     {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
-    {RPMTAG_BUILDPREFIX,   0, "buildprefix"},
+    {RPMTAG_BUILDROOT,   0, "buildroot"},
     {0, 0, 0}
 };
 
@@ -768,7 +768,7 @@ static void parseForDocFiles(struct PackageRec *package, char *line)
 /*                                                                    */
 /**********************************************************************/
 
-Spec parseSpec(FILE *f, char *specfile, char *prefixOverride)
+Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 {
     char buf[LINE_BUF_SIZE]; /* read buffer          */
     char buf2[LINE_BUF_SIZE];
@@ -780,7 +780,7 @@ Spec parseSpec(FILE *f, char *specfile, char *prefixOverride)
     StringBuf sb;
     char *s = NULL;
     char *s1, *s2;
-    int gotBuildPrefix = 0;
+    int gotBuildroot = 0;
     int gotRoot = 0;
 
     struct PackageRec *cur_package = NULL;
@@ -802,7 +802,7 @@ Spec parseSpec(FILE *f, char *specfile, char *prefixOverride)
     spec->numNoSource = 0;
     spec->numNoPatch = 0;
     spec->prefix = NULL;
-    spec->buildprefix = NULL;
+    spec->buildroot = NULL;
 
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
@@ -1003,9 +1003,9 @@ Spec parseSpec(FILE *f, char *specfile, char *prefixOverride)
 		  case RPMTAG_URL:
 		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
 		    break;
-		  case RPMTAG_BUILDPREFIX:
-		    gotBuildPrefix = 1;
-		    spec->buildprefix = strdup(s);
+		  case RPMTAG_BUILDROOT:
+		    gotBuildroot = 1;
+		    spec->buildroot = strdup(s);
 		    break;
 		  case RPMTAG_DEFAULTPREFIX:
 		    spec->prefix = strdup(s);
@@ -1036,7 +1036,7 @@ Spec parseSpec(FILE *f, char *specfile, char *prefixOverride)
 		    /* special case */
 		    gotRoot = 1;
 		    message(MESS_DEBUG, "Got root: %s\n", s);
-		    message(MESS_WARNING, "The Root: tag is depricated.  Use Buildprefix: instead\n");
+		    message(MESS_WARNING, "The Root: tag is depricated.  Use Buildroot: instead\n");
 		    setVar(RPMVAR_ROOT, s);
 		    break;
 		  case RPMTAG_ICON:
@@ -1122,30 +1122,30 @@ Spec parseSpec(FILE *f, char *specfile, char *prefixOverride)
 	return NULL;
     }
 
-    if (gotRoot && gotBuildPrefix) {
+    if (gotRoot && gotBuildroot) {
 	freeSpec(spec);
 	error(RPMERR_BADSPEC,
-	      "Spec file can not have both Root: and Buildprefix:");
+	      "Spec file can not have both Root: and Buildroot:");
 	return NULL;
     }
-    if (spec->buildprefix) {
+    if (spec->buildroot) {
 	/* This package can do build prefixes */
-	if (prefixOverride) {
-	    setVar(RPMVAR_ROOT, prefixOverride);
-	    setVar(RPMVAR_BUILDPREFIX, prefixOverride);
+	if (buildRootOverride) {
+	    setVar(RPMVAR_ROOT, buildRootOverride);
+	    setVar(RPMVAR_BUILDROOT, buildRootOverride);
 	} else {
-	    if ((s = getVar(RPMVAR_BUILDPREFIX))) {
+	    if ((s = getVar(RPMVAR_BUILDROOT))) {
 		/* Take build prefix from rpmrc */
 		setVar(RPMVAR_ROOT, s);
 	    } else {
 		/* Use default */
-		setVar(RPMVAR_ROOT, spec->buildprefix);
-		setVar(RPMVAR_BUILDPREFIX, spec->buildprefix);
+		setVar(RPMVAR_ROOT, spec->buildroot);
+		setVar(RPMVAR_BUILDROOT, spec->buildroot);
 	    }
 	}
     } else {
 	/* Package can not do build prefixes */
-	if (prefixOverride) {
+	if (buildRootOverride) {
 	    freeSpec(spec);
 	    error(RPMERR_BADARG, "Package can not do build prefixes");
 	    return NULL;

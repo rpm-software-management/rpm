@@ -83,7 +83,7 @@ extern const int rpmTagTableSize;
 #define RPMTAG_CONFLICTNAME             1054
 #define RPMTAG_CONFLICTVERSION          1055
 #define RPMTAG_DEFAULTPREFIX            1056
-#define RPMTAG_BUILDPREFIX              1057
+#define RPMTAG_BUILDROOT                1057
 #define RPMTAG_INSTALLPREFIX		1058
 
 #define RPMFILE_STATE_NORMAL 		0
@@ -154,7 +154,7 @@ extern const int rpmTagTableSize;
 #define RPMVAR_EXCLUDEDOCS              23
 #define RPMVAR_BUILDARCH                24
 #define RPMVAR_OS                       25
-#define RPMVAR_BUILDPREFIX              26
+#define RPMVAR_BUILDROOT                26
 #define RPMVAR_DBPATH                   27
 #define RPMVAR_LASTVAR	                28 /* IMPORTANT to keep right! */
 

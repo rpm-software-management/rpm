@@ -25,7 +25,7 @@
 #define GETOPT_RECOMPILE	1004
 #define GETOPT_ADDSIGN		1005
 #define GETOPT_RESIGN		1006
-#define GETOPT_BUILDPREFIX	1007
+#define GETOPT_BUILDROOT 	1007
 #define GETOPT_PROVIDES		1008
 #define GETOPT_QUERYBYNUMBER	1009
 #define GETOPT_DBPATH		1010
@@ -48,7 +48,8 @@ void printHelp(void);
 void printVersion(void);
 void printBanner(void);
 void printUsage(void);
-int build(char *arg, int buildAmount, char *passPhrase, char *prefixOverride);
+int build(char *arg, int buildAmount, char *passPhrase,
+	  char *buildRootOverride);
 
 void printVersion(void) {
     printf(_("RPM version %s\n"), version);
@@ -178,7 +179,7 @@ void printHelp(void) {
     puts(_("      --short-circuit   - skip straight to specified stage (only for c,i)"));
     puts(_("      --clean           - remove build tree when done"));
     puts(_("      --sign            - generate PGP signature"));
-    puts(_("      --buildprefix <s> - use s as the build prefix"));
+    puts(_("      --buildroot <s>   - use s as the build root"));
     puts(_("      --test            - do not execute any stages"));
     puts(_("      --time-check <s>  - set the time check to S seconds (0 disables it)"));
     puts(_(""));
@@ -196,7 +197,8 @@ void printHelp(void) {
     puts(_("    --initdb            - make sure a valid database exists"));
 }
 
-int build(char *arg, int buildAmount, char *passPhrase, char *prefixOverride) {
+int build(char *arg, int buildAmount, char *passPhrase,
+	  char *buildRootOverride) {
     FILE *f;
     Spec s;
     char * specfile;
@@ -216,7 +218,7 @@ int build(char *arg, int buildAmount, char *passPhrase, char *prefixOverride) {
 	fprintf(stderr, _("unable to open: %s\n"), specfile);
 	return 1;
     }
-    s = parseSpec(f, specfile, prefixOverride);
+    s = parseSpec(f, specfile, buildRootOverride);
     fclose(f);
     if (s) {
 	if (verifySpec(s)) {
@@ -265,7 +267,7 @@ int main(int argc, char ** argv) {
     char * rootdir = "/";
     char * specFile;
     char *passPhrase = "";
-    char *prefixOverride = NULL;
+    char *buildRootOverride = NULL;
     char *arch = NULL;
     char *os = NULL;
     char * smallArgv[2] = { NULL, NULL };
@@ -276,7 +278,7 @@ int main(int argc, char ** argv) {
 	    { "all", 0, 0, 'a' },
 	    { "arch", 1, 0, 0 },
 	    { "build", 1, 0, 'b' },
-	    { "buildprefix", 1, 0, GETOPT_BUILDPREFIX },
+	    { "buildroot", 1, 0, GETOPT_BUILDROOT },
 	    { "checksig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
@@ -605,11 +607,11 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_RECOMPILE;
 	    break;
 
-	  case GETOPT_BUILDPREFIX:
+	  case GETOPT_BUILDROOT:
 	    if (bigMode != MODE_UNKNOWN &&
 		bigMode != MODE_BUILD && bigMode != MODE_REBUILD)
 		argerror(_("only one major mode may be specified"));
-	    prefixOverride = optarg;
+	    buildRootOverride = optarg;
 	    break;
 
 	  case GETOPT_RESIGN:
@@ -679,8 +681,9 @@ int main(int argc, char ** argv) {
 	else
 	    bigMode = MODE_QUERYTAGS;
 
-    if (prefixOverride && bigMode != MODE_BUILD && bigMode != MODE_REBUILD) {
-	argerror("--buildprefix may only be used during package builds");
+    if (buildRootOverride && bigMode != MODE_BUILD &&
+	bigMode != MODE_REBUILD) {
+	argerror("--buildroot may only be used during package builds");
     }
 
     if (bigMode != MODE_QUERY && bigMode != MODE_INSTALL && 
@@ -846,7 +849,7 @@ int main(int argc, char ** argv) {
 	    if (doSourceInstall("/", argv[optind++], &specFile))
 		exit(1);
 
-	    if (build(specFile, buildAmount, passPhrase, prefixOverride)) {
+	    if (build(specFile, buildAmount, passPhrase, buildRootOverride)) {
 		exit(1);
 	    }
 	}
@@ -887,7 +890,7 @@ int main(int argc, char ** argv) {
 
 	while (optind < argc) 
 	    if (build(argv[optind++], buildAmount,
-		      passPhrase, prefixOverride)) {
+		      passPhrase, buildRootOverride)) {
 		exit(1);
 	    }
 	break;

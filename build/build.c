@@ -76,11 +76,11 @@ struct Script *openScript(Spec spec, int builddir, char *name)
     } else {
 	fprintf(script->file, "RPM_ROOT_DIR=\"\"\n");
     }
-    if (getVar(RPMVAR_BUILDPREFIX)) {
-	fprintf(script->file, "RPM_BUILD_PREFIX=\"%s\"\n",
-		getVar(RPMVAR_BUILDPREFIX));
+    if (getVar(RPMVAR_BUILDROOT)) {
+	fprintf(script->file, "RPM_BUILD_ROOT=\"%s\"\n",
+		getVar(RPMVAR_BUILDROOT));
     } else {
-	fprintf(script->file, "RPM_BUILD_PREFIX=\"\"\n");
+	fprintf(script->file, "RPM_BUILD_ROOT=\"\"\n");
     }
 
     fprintf(script->file, "RPM_PACKAGE_NAME=\"%s\"\n", spec->name);
