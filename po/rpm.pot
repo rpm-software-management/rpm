@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-02-04 18:15-0500\n"
+"POT-Creation-Date: 2002-02-10 11:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1456,42 +1456,42 @@ msgstr ""
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:958
+#: lib/depends.c:962
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1073
+#: lib/depends.c:1081
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1341
+#: lib/depends.c:1349
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1447
+#: lib/depends.c:1455
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1540
+#: lib/depends.c:1548
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1610
+#: lib/depends.c:1618
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1645
+#: lib/depends.c:1653
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1650
+#: lib/depends.c:1658
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2267,52 +2267,52 @@ msgstr ""
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:774 lib/query.c:795 lib/query.c:813 lib/query.c:844
+#: lib/query.c:774 lib/query.c:796 lib/query.c:814 lib/query.c:845
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr ""
 
-#: lib/query.c:783 lib/query.c:801 lib/query.c:819 lib/query.c:849
+#: lib/query.c:784 lib/query.c:802 lib/query.c:820 lib/query.c:850
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr ""
 
-#: lib/query.c:860
+#: lib/query.c:861
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:871
+#: lib/query.c:872
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:905
+#: lib/query.c:906
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:909
+#: lib/query.c:910
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:936
+#: lib/query.c:937
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:939
+#: lib/query.c:940
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:944
+#: lib/query.c:945
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:955 lib/rpminstall.c:633
+#: lib/query.c:956 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2457,7 +2457,7 @@ msgstr ""
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:521 lib/rpminstall.c:1030
+#: lib/rpminstall.c:521 lib/rpminstall.c:1029
 msgid "failed dependencies:\n"
 msgstr ""
 
@@ -2489,7 +2489,7 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1023
+#: lib/rpminstall.c:1022
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -3235,59 +3235,59 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:660
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:663
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:666
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:669
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:672
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:671
+#: rpmio/rpmio.c:675
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:678
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:681
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:684
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:683
+#: rpmio/rpmio.c:687
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:690
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:689
+#: rpmio/rpmio.c:693
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:697
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1365
+#: rpmio/rpmio.c:1369
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

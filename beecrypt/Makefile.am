@@ -65,7 +65,7 @@ beetest: all
 
 .PHONY: sources
 sources:
-	@echo $(libbeecrypt_la_SOURCES:%=beecrypt/%)
+	@echo $(libbeecrypt_la_SOURCES:%=beecrypt/%) | sed -e 's,beecrypt/javaglue.c,,'
 
 .PHONY: lclint
 lclint:
