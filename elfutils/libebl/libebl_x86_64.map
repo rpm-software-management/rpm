@@ -1,0 +1,11 @@
+ELFUTILS_1.0 {
+  global:
+    x86_64_backend_name;
+    x86_64_destr;
+    x86_64_init;
+    x86_64_reloc_type_check;
+    x86_64_reloc_type_name;
+
+  local:
+    *;
+};
