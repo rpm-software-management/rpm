@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <ctype.h>
 #include "stringbuf.h"
 
 #define BUF_CHUNK 1024
@@ -34,6 +35,18 @@ void truncStringBuf(StringBuf sb)
     sb->buf[0] = '\0';
     sb->tail = sb->buf;
     sb->free = sb->allocated;
+}
+
+void stripTrailingBlanksStringBuf(StringBuf sb)
+{
+    while (sb->free != sb->allocated) {
+	if (! isspace(*(sb->tail - 1))) {
+	    break;
+	}
+	sb->free++;
+	sb->tail--;
+    }
+    sb->tail[0] = '\0';
 }
 
 char *getStringBuf(StringBuf sb)
