@@ -29,7 +29,6 @@ struct headerToken {
     int data_malloced;
     int data_used;
 
-    int mutable;
     int fully_sorted;  /* This means the index and the data! */
 };
 
@@ -178,7 +177,7 @@ void writeHeader(int fd, Header h)
     void *converted_data;
 
     /* This magic actually sorts the data */
-    sizeofHeader(h);
+    h = copyHeader(h);
 
     /* We must write using network byte order! */
     
@@ -213,6 +212,8 @@ void writeHeader(int fd, Header h)
     converted_data = dataHostToNetwork(h);
     write(fd, converted_data, h->data_used);
     free(converted_data);
+
+    free(h);
 }
 
 static void *dataHostToNetwork(Header h)
@@ -311,7 +312,6 @@ Header readHeader(int fd)
     h->data = converted_data;
 
     h->fully_sorted = 1;
-    h->mutable = 0;
 
     return h;
 }
@@ -374,7 +374,7 @@ static void *dataNetworkToHost(Header h)
 
 Header loadHeader(void *pv)
 {
-    int_32 il, dl;
+    int_32 il, dl;		/* index length, data length */
     char *p = pv;
     struct headerToken *h = malloc(sizeof(struct headerToken));
 
@@ -385,16 +385,17 @@ Header loadHeader(void *pv)
 
     h->entries_malloced = il;
     h->entries_used = il;
-    h->index = (struct indexEntry *) p;
+    h->index = malloc(il * sizeof(struct indexEntry));
+    memcpy(h->index, p, il * sizeof(struct indexEntry));
     p += il * sizeof(struct indexEntry);
 
     h->data_malloced = dl;
     h->data_used = dl;
-    h->data = p;
+    h->data = malloc(dl);
+    memcpy(h->data, p, dl);
 
     /* This assumes you only loadHeader() something you unloadHeader()-ed */
     h->fully_sorted = 1;
-    h->mutable = 0;
 
     return h;
 }
@@ -403,9 +404,10 @@ void *unloadHeader(Header h)
 {
     void *p;
     int_32 *pi;
+    char * chptr;
 
     /* This magic actually sorts the data */
-    sizeofHeader(h);
+    h = copyHeader(h);
 
     pi = p = malloc(2 * sizeof(int_32) +
 		    h->entries_used * sizeof(struct indexEntry) +
@@ -413,9 +415,14 @@ void *unloadHeader(Header h)
 
     *pi++ = h->entries_used;
     *pi++ = h->data_used;
-    memcpy(pi, h->index, h->entries_used * sizeof(struct indexEntry));
-    pi += h->entries_used * sizeof(struct indexEntry);
-    memcpy(pi, h->data, h->data_used);
+
+    chptr = (char *) pi;
+
+    memcpy(chptr, h->index, h->entries_used * sizeof(struct indexEntry));
+    chptr += h->entries_used * sizeof(struct indexEntry);
+    memcpy(chptr, h->data, h->data_used);
+
+    freeHeader(h);
    
     return p;
 }
@@ -591,7 +598,7 @@ static struct indexEntry *findEntry(Header h, int_32 tag)
     struct indexEntry *index = h->index;
     int x = h->entries_used;
 
-    if (! h->mutable) {
+    if (! h->fully_sorted) {
 	return bsearch(&tag, index, x, sizeof(struct indexEntry), tagCompare);
     } else {
 	while (x && (tag != index->tag)) {
@@ -689,40 +696,30 @@ Header newHeader()
     h->entries_used = 0;
 
     h->fully_sorted = 0;
-    h->mutable = 1;
 
     return (Header) h;
 }
 
 void freeHeader(Header h)
 {
-    if (h->mutable) {
-	free(h->index);
-	free(h->data);
-    }
+    free(h->index);
+    free(h->data);
     free(h);
 }
 
 unsigned int sizeofHeader(Header h)
 {
     unsigned int size;
-    Header newh;
-    Header temph;
 
     /* Do some real magic to determine the ON-DISK size */
-    if (!h->fully_sorted) {
-        newh = copyHeader(h);
-        temph = malloc(sizeof(*temph));
-        *temph = *h;
-        *h = *newh;
-        freeHeader(temph);
-        free(newh);
-    }
+    h = copyHeader(h);
    
     size = sizeof(int_32);	/* count of index entries */
     size += sizeof(int_32);	/* length of data */
     size += sizeof(struct indexEntry) * h->entries_used;
     size += h->data_used;
+
+    freeHeader(h);
    
     return size;
 }
@@ -744,10 +741,6 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 
     if (c <= 0) {
 	fprintf(stderr, "Bad count for addEntry(): %d\n", (int) c);
-	exit(1);
-    }
-    if (h->mutable == 0) {
-	fprintf(stderr, "Attempted addEntry() to immutable header.\n");
 	exit(1);
     }
 
