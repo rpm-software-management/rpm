@@ -112,8 +112,9 @@ struct rpmts_s {
     rpmdb sdb;			/*!< Solve database handle. */
     int sdbmode;		/*!< Solve database open mode. */
 /*@null@*/
-    int (*solve) (rpmts ts, const rpmds key)
+    int (*solve) (rpmts ts, rpmds key, const void * data)
 	/*@modifies ts @*/;	/*!< Search for NEVRA key. */
+    const void * solveData;	/*!< Solve callback data */
     int nsuggests;		/*!< No. of depCheck suggestions. */
 /*@only@*/ /*@null@*/
     const void ** suggests;	/*!< Possible depCheck suggestions. */
@@ -370,13 +371,14 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 /*@=exportlocal@*/
 
 /**
- * Attempt to solve a needed dependency using the solve database..
+ * Attempt to solve a needed dependency using the solve database.
  * @param ts		transaction set
  * @param ds		dependency set
- * @return		0 if resolved (and added to ts), 1 not found
+ * @param data		opaque data associated with callback
+ * @return		0 if resolved, 1 not found
  */
 /*@-exportlocal@*/
-int rpmtsSolve(rpmts ts, rpmds ds)
+int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
@@ -392,6 +394,18 @@ int rpmtsSolve(rpmts ts, rpmds ds)
 int rpmtsAvailable(rpmts ts, const rpmds ds)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/;
+
+/**
+ * Set dependency solver callback.
+ * @param ts		transaction set
+ * @param (*solve)	dependency solver callback
+ * @param solveData	dependency solver callback data (opaque)
+ * @return		0 on success
+ */
+int rpmtsSetSolveCallback(rpmts ts,
+		int (*solve) (rpmts ts, rpmds ds, const void * data),
+		const void * solveData)
+	/*@modifies ts @*/;
 
 /**
  * Return current transaction set problems.

@@ -341,7 +341,7 @@ static int sugcmp(const void * a, const void * b)
 }
 
 /*@-bounds@*/
-int rpmtsSolve(rpmts ts, rpmds ds)
+int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
     const char * errstr;
     const char * str;
@@ -462,6 +462,18 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 /*@-nullstate@*/ /* FIX: ts->suggests[] may be NULL */
     return rc;
 /*@=nullstate@*/
+}
+
+int rpmtsSetSolveCallback(rpmts ts,
+		int (*solve) (rpmts ts, rpmds key, const void * data),
+		const void * solveData)
+{
+    int rc = 0;
+    if (ts) {
+	ts->solve = solve;
+	ts->solveData = solveData;
+    }
+    return rc;
 }
 
 rpmps rpmtsProblems(rpmts ts)
@@ -1043,6 +1055,7 @@ rpmts rpmtsCreate(void)
     ts->dsi = NULL;
 
     ts->solve = rpmtsSolve;
+    ts->solveData = NULL;
     ts->nsuggests = 0;
     ts->suggests = NULL;
     ts->sdb = NULL;

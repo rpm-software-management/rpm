@@ -517,9 +517,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Thu Aug  8 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.76
+* Fri Aug  9 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.76
 - python: add return codes for rollbacks and fooDB methods.
 - avoid generating fingerprints for locale/zoneinfo sub-directories.
+- python: add (optional) ts.check() callback.
 
 * Wed Aug  7 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.75
 - fix: src.rpm installs need fd pos at payload.

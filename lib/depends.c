@@ -502,7 +502,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 /*@-boundsread@*/
     if (adding && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
 	if (ts->solve != NULL)
-	    xx = (*ts->solve) (ts, dep);
+	    xx = (*ts->solve) (ts, dep, ts->solveData);
     }
 /*@=boundsread@*/
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-08 18:03-0400\n"
+"POT-Creation-Date: 2002-08-09 18:19-0400\n"
 "PO-Revision-Date: 2002-04-09 16:44-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2813,7 +2813,7 @@ msgid "cannot open Solve database in %s\n"
 msgstr "невозможно открыть базу данных RPM в %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:797
+#: lib/rpmts.c:809
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
