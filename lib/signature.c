@@ -135,12 +135,12 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, int datalen)
     } else if (fstat(fdno, &st) < 0)
 	return RPMRC_FAIL;
 
-    /*@-sizeoftype@*/
+/*@-sizeoftype@*/
     rpmMessage(RPMMESS_DEBUG,
 	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
 		(int)sizeof(struct rpmlead)+siglen+pad+datalen,
 		(int)sizeof(struct rpmlead), siglen, pad, datalen);
-    /*@=sizeoftype@*/
+/*@=sizeoftype@*/
     rpmMessage(RPMMESS_DEBUG,
 	_("  Actual size: %12d\n"), (int)st.st_size);
 
@@ -905,8 +905,8 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 
 char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 {
-    char *pass;
-    int aok;
+    char *pass = NULL;
+    int aok = 0;
 
     switch (sigTag) {
     case RPMSIGTAG_DSA:
@@ -917,11 +917,10 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 	name = _free(name);
       }
 /*@=boundsread@*/
-	if (!aok) {
-	    rpmError(RPMERR_SIGGEN,
+	if (aok)
+	    break;
+	rpmError(RPMERR_SIGGEN,
 		_("You must set \"%%_gpg_name\" in your macro file\n"));
-	    return NULL;
-	}
 	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_PGP5: 	/* XXX legacy */
@@ -932,27 +931,27 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 	name = _free(name);
       }
 /*@=boundsread@*/
-	if (!aok) {
-	    rpmError(RPMERR_SIGGEN,
+	if (aok)
+	    break;
+	rpmError(RPMERR_SIGGEN,
 		_("You must set \"%%_pgp_name\" in your macro file\n"));
-	    return NULL;
-	}
 	break;
     default:
 	/* Currently the calling function (rpm.c:main) is checking this and
 	 * doing a better job.  This section should never be accessed.
 	 */
 	rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
-	return NULL;
-	/*@notreached@*/ break;
+	break;
     }
 
-/*@-moduncon -nullpass @*/
-    pass = /*@-unrecog@*/ getpass( (prompt ? prompt : "") ) /*@=unrecog@*/ ;
-/*@=moduncon -nullpass @*/
+    if (aok) {
+/*@-moduncon -nullpass -unrecog @*/
+	pass = getpass( (prompt ? prompt : "") );
+/*@=moduncon =nullpass =unrecog @*/
 
-    if (checkPassPhrase(pass, sigTag))
-	return NULL;
+	if (checkPassPhrase(pass, sigTag))
+	    pass = NULL;
+    }
 
     return pass;
 }
@@ -1138,14 +1137,14 @@ static inline unsigned char nibble(char c)
 
 /*@-boundswrite@*/
 /**
- * Verify PGP (aka RSA/MD5) signature.
+ * Verify RSA signature.
  * @param ts		transaction set
  * @retval t		verbose success/failure text
  * @param md5ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
+verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
@@ -1157,6 +1156,7 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
     int_32 sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
+    const char * prefix = NULL;
     rpmRC res;
     int xx;
 
@@ -1168,11 +1168,54 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 	goto exit;
     }
 
-    /* XXX sanity check on sigtag and signature agreement. */
-    if (!(sigtag == RPMSIGTAG_PGP
-    	&& sigp->pubkey_algo == PGPPUBKEYALGO_RSA
-    	&& sigp->hash_algo == PGPHASHALGO_MD5))
-    {
+    /* Verify the desired signature match. */
+    switch (sigp->pubkey_algo) {
+    case PGPPUBKEYALGO_RSA:
+	if (sigtag == RPMSIGTAG_PGP)
+	    break;
+	/*@fallthrough@*/
+    default:
+	res = RPMRC_NOKEY;
+	goto exit;
+	/*@notreached@*/ break;
+    }
+
+    /* Verify the desired hash match. */
+    /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
+    switch (sigp->hash_algo) {
+    case PGPHASHALGO_MD5:
+	prefix = "3020300c06082a864886f70d020505000410";
+	break;
+    case PGPHASHALGO_SHA1:
+	prefix = "3021300906052b0e03021a05000414";
+	break;
+    case PGPHASHALGO_RIPEMD160:
+	prefix = NULL;
+	break;
+    case PGPHASHALGO_MD2:
+	prefix = "3020300c06082a864886f70d020205000410";
+	break;
+    case PGPHASHALGO_TIGER192:
+	prefix = NULL;
+	break;
+    case PGPHASHALGO_HAVAL_5_160:
+	prefix = NULL;
+	break;
+    case PGPHASHALGO_SHA256:
+	prefix = "3031300d060960864801650304020105000420";
+	break;
+    case PGPHASHALGO_SHA384:
+	prefix = "3041300d060960864801650304020205000430";
+	break;
+    case PGPHASHALGO_SHA512:
+	prefix = "3051300d060960864801650304020305000440";
+	break;
+    default:
+	prefix = NULL;
+	break;
+    }
+
+    if (prefix == NULL) {
 	res = RPMRC_NOKEY;
 	goto exit;
     }
@@ -1185,8 +1228,8 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
-#ifdef	NOTYET	/* XXX not for binary/text document signatures. */
-	if (sigp->sigtype == 4) {
+#ifdef	NOTYET	/* XXX not for binary/text signatures as in packages. */
+	if (!(sigp->sigtype == PGPSIGTYPE_BINARY || sigp->sigtype == PGP_SIGTYPE_TEXT)) {
 	    int nb = dig->nbytes + sigp->hashlen;
 	    byte trailer[6];
 	    nb = htonl(nb);
@@ -1209,15 +1252,15 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
-
     }
 
-    {	const char * prefix = "3020300c06082a864886f70d020505000410";
-	unsigned int nbits = 1024;
+    /* Generate RSA modulus parameter. */
+    {	unsigned int nbits = MP_WORDS_TO_BITS(dig->c.size);
 	unsigned int nb = (nbits + 7) >> 3;
 	const char * hexstr;
 	char * tt;
 
+assert(prefix != NULL);
 	hexstr = tt = xmalloc(2 * nb + 1);
 	memset(tt, 'f', (2 * nb));
 	tt[0] = '0'; tt[1] = '0';
@@ -1263,7 +1306,7 @@ exit:
 /*@=boundswrite@*/
 
 /**
- * Verify GPG (aka DSA) signature.
+ * Verify DSA signature.
  * @param ts		transaction set
  * @retval t		verbose success/failure text
  * @param sha1ctx
@@ -1271,7 +1314,7 @@ exit:
  */
 /*@-boundswrite@*/
 static rpmRC
-verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
+verifyDSASignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
@@ -1391,13 +1434,13 @@ rpmVerifySignature(const rpmts ts, char * result)
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyPGPSignature(ts, result, dig->md5ctx);
+	res = verifyRSASignature(ts, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_DSA:
-	res = verifyGPGSignature(ts, result, dig->hdrsha1ctx);
+	res = verifyDSASignature(ts, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_GPG:
-	res = verifyGPGSignature(ts, result, dig->sha1ctx);
+	res = verifyDSASignature(ts, result, dig->sha1ctx);
 	break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:
