@@ -8,7 +8,7 @@
 
    You should have received a copy of the Open Software License along
    with this program; if not, you may obtain a copy of the Open Software
-   License version 1.0 from http://www.opensource.org/license/osl.php or
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
    by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
    3001 King Ranch Road, Ukiah, CA 95482.   */
 
@@ -31,13 +31,8 @@
 #endif
 
 
-extern uint32_t crc32 (uint32_t crc, unsigned char *buf, size_t len)
-     attribute_hidden
-	/*@*/;
-
-
 #define process_block(crc, data) \
-  crc32 (crc, data->d_buf, data->d_size)
+  __libelf_crc32 (crc, data->d_buf, data->d_size)
 
 
 long int

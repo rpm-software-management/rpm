@@ -9,17 +9,15 @@
 ##
 ## You should have received a copy of the Open Software License along
 ## with this program; if not, you may obtain a copy of the Open Software
-## License version 1.0 from http://www.opensource.org/license/osl.php or
+## License version 1.0 from http://www.opensource.org/licenses/osl.php or
 ## by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
 ## 3001 King Ranch Road, Ukiah, CA 95482.   */
 ##
 
 ACLOCAL_AMFLAGS = -I m4
 
-#SUBDIRS = m4 doc lib libltdl libelf libebl libdwarf libcpu libasm src \
-#	  libelf-po libebl-po libdwarf-po libasm-po po tests
-
-SUBDIRS = m4 doc lib libltdl libelf libebl libdwarf libcpu libasm libelf-po libebl-po libdwarf-po libasm-po po
+SUBDIRS = m4 doc lib libelf libebl libdwarf libdw libcpu libasm src \
+	  libelf-po libebl-po libdwarf-po libasm-po po tests
 
 EXTRA_DIST = config.rpath splint.rc elfutils.spec GPG-KEY NOTES
 

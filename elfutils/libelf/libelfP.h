@@ -1,4 +1,4 @@
-/* Internal Interfaces for libelf.
+/* Internal interfaces for libelf.
    Copyright (C) 1998, 1999, 2000, 2001, 2002 Red Hat, Inc.
    Contributed by Ulrich Drepper <drepper@redhat.com>, 1998.
 
@@ -8,7 +8,7 @@
 
    You should have received a copy of the Open Software License along
    with this program; if not, you may obtain a copy of the Open Software
-   License version 1.0 from http://www.opensource.org/license/osl.php or
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
    by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
    3001 King Ranch Road, Ukiah, CA 95482.   */
 
@@ -547,6 +547,10 @@ extern GElf_Shdr *__gelf_getshdr_internal (Elf_Scn *__scn, GElf_Shdr *__dst)
 extern GElf_Sym *__gelf_getsym_internal (Elf_Data *__data, int __ndx,
 					 GElf_Sym *__dst) attribute_hidden
 	/*@*/;
+
+
+extern uint32_t __libelf_crc32 (uint32_t crc, unsigned char *buf, size_t len)
+     attribute_hidden;
 
 
 /* We often have to update a flag iff a value changed.  Make this

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-11-24 02:45-0800\n"
+"POT-Creation-Date: 2002-11-30 00:56-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: lib/xmalloc.c:37 lib/xmalloc.c:51 lib/xmalloc.c:65
+#: lib/xmalloc.c:38 lib/xmalloc.c:52 lib/xmalloc.c:66
 msgid "memory exhausted"
 msgstr ""
 
@@ -48,7 +48,7 @@ msgstr ""
 msgid "Include index for symbols from archive members"
 msgstr ""
 
-#: src/nm.c:67 src/size.c:50
+#: src/nm.c:67 src/size.c:51
 msgid "Output format:"
 msgstr ""
 
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Same as --format=posix"
 msgstr ""
 
-#: src/nm.c:73 src/size.c:54
+#: src/nm.c:73 src/size.c:55
 msgid "Use RADIX for printing symbol values"
 msgstr ""
 
@@ -82,7 +82,7 @@ msgstr ""
 msgid "Print size of defined symbols"
 msgstr ""
 
-#: src/nm.c:77
+#: src/nm.c:77 src/size.c:61
 msgid "Output options:"
 msgstr ""
 
@@ -106,16 +106,16 @@ msgstr ""
 msgid "List symbols from FILEs (a.out by default)."
 msgstr ""
 
-#: src/nm.c:89 src/size.c:68 src/strip.c:65
+#: src/nm.c:89 src/size.c:72 src/strip.c:65
 msgid "[FILE...]"
 msgstr ""
 
-#: src/nm.c:117 src/size.c:93 src/strip.c:88
+#: src/nm.c:117 src/size.c:100 src/strip.c:88
 #, c-format
 msgid "%s: INTERNAL ERROR: %s"
 msgstr ""
 
-#: src/nm.c:233 src/readelf.c:348 src/size.c:183 src/strip.c:161 src/ld.c:786
+#: src/nm.c:233 src/readelf.c:348 src/size.c:202 src/strip.c:161 src/ld.c:786
 #: src/elflint.c:211
 #, c-format
 msgid ""
@@ -124,18 +124,18 @@ msgid ""
 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 msgstr ""
 
-#: src/nm.c:238 src/readelf.c:353 src/size.c:188 src/strip.c:166 src/ld.c:791
+#: src/nm.c:238 src/readelf.c:353 src/size.c:207 src/strip.c:166 src/ld.c:791
 #: src/elflint.c:216
 #, c-format
 msgid "Written by %s.\n"
 msgstr ""
 
-#: src/nm.c:341 src/readelf.c:335 src/size.c:260 src/strip.c:206
+#: src/nm.c:341 src/readelf.c:335 src/size.c:283 src/strip.c:206
 #: src/elflint.c:198
 msgid "Report bugs to <drepper@redhat.com>.\n"
 msgstr ""
 
-#: src/nm.c:378 src/nm.c:390 src/size.c:296
+#: src/nm.c:378 src/nm.c:390 src/size.c:319
 #, c-format
 msgid "while close `%s'"
 msgstr ""
@@ -173,7 +173,7 @@ msgstr ""
 #: src/nm.c:792 src/nm.c:1174 src/readelf.c:661 src/readelf.c:791
 #: src/readelf.c:875 src/readelf.c:1059 src/readelf.c:1279 src/readelf.c:1431
 #: src/readelf.c:1605 src/readelf.c:1862 src/readelf.c:1938 src/readelf.c:2026
-#: src/readelf.c:2306 src/readelf.c:3723 src/size.c:401 src/size.c:475
+#: src/readelf.c:2306 src/readelf.c:3723 src/size.c:424 src/size.c:498
 #: src/strip.c:390
 msgid "cannot get section header string table index"
 msgstr ""
@@ -321,7 +321,7 @@ msgstr ""
 msgid "cannot create EBL handle"
 msgstr ""
 
-#: src/readelf.c:462 src/strip.c:447 src/ldgeneric.c:584 src/ldgeneric.c:975
+#: src/readelf.c:462 src/strip.c:447 src/ldgeneric.c:578 src/ldgeneric.c:969
 #, c-format
 msgid "cannot determine number of sections: %s"
 msgstr ""
@@ -1061,67 +1061,75 @@ msgstr ""
 msgid "  %-13.*s  %9<PRId32>  %s\n"
 msgstr ""
 
-#: src/size.c:51
+#: src/size.c:52
 msgid ""
 "Use the output format FORMAT.  FORMAT can be `bsd' or `sysv'.  The default "
 "is `bsd'"
 msgstr ""
 
-#: src/size.c:52
+#: src/size.c:53
 msgid "Same as `--format=sysv'"
 msgstr ""
 
-#: src/size.c:53
+#: src/size.c:54
 msgid "Same as `--format=bsd'"
 msgstr ""
 
-#: src/size.c:55
+#: src/size.c:56
 msgid "Same as `--radix=10'"
 msgstr ""
 
-#: src/size.c:56
+#: src/size.c:57
 msgid "Same as `--radix=8'"
 msgstr ""
 
-#: src/size.c:57
+#: src/size.c:58
 msgid "Same as `--radix=16'"
 msgstr ""
 
-#: src/size.c:58
+#: src/size.c:59
 msgid "Similar to `--format=sysv' output but in one line"
 msgstr ""
 
-#: src/size.c:59
+#: src/size.c:62
 msgid "Print size and permission flags for loadable segments"
 msgstr ""
 
-#: src/size.c:64
+#: src/size.c:63
+msgid "Display the total sizes (bsd only)"
+msgstr ""
+
+#: src/size.c:68
 msgid "List section sizes of FILEs (a.out by default)."
 msgstr ""
 
-#: src/size.c:232
+#: src/size.c:251
 #, c-format
 msgid "Invalid format: %s"
 msgstr ""
 
-#: src/size.c:243
+#: src/size.c:262
 #, c-format
 msgid "Invalid radix: %s"
 msgstr ""
 
-#: src/size.c:308
+#: src/size.c:331
 #, c-format
 msgid "%s: file format not recognized"
 msgstr ""
 
-#: src/size.c:379
+#: src/size.c:402
 #, c-format
 msgid "while closing `%s'"
 msgstr ""
 
-#: src/size.c:421 src/size.c:554
+#: src/size.c:444 src/size.c:583
 #, c-format
 msgid " (ex %s)"
+msgstr ""
+
+#: src/size.c:608
+msgid "(TOTALS)\n"
 msgstr ""
 
 #: src/strip.c:54
@@ -1188,7 +1196,7 @@ msgstr ""
 msgid "%s: error while creating ELF header: %s"
 msgstr ""
 
-#: src/strip.c:807 src/strip.c:1200
+#: src/strip.c:807 src/strip.c:1201
 #, c-format
 msgid "while writing `%s': %s"
 msgstr ""
@@ -1198,12 +1206,12 @@ msgstr ""
 msgid "while preparing output for `%s'"
 msgstr ""
 
-#: src/strip.c:877 src/strip.c:933
+#: src/strip.c:876 src/strip.c:933
 #, c-format
 msgid "while create section header section: %s"
 msgstr ""
 
-#: src/strip.c:883
+#: src/strip.c:882
 #, c-format
 msgid "cannot allocate section data: %s"
 msgstr ""
@@ -1213,7 +1221,7 @@ msgstr ""
 msgid "%s: error while reading the file: %s"
 msgstr ""
 
-#: src/strip.c:1214 src/strip.c:1221
+#: src/strip.c:1215 src/strip.c:1222
 #, c-format
 msgid "error while finishing `%s': %s"
 msgstr ""
@@ -1493,274 +1501,270 @@ msgstr ""
 msgid "cannot read version script \"%s\""
 msgstr ""
 
-#: src/ldgeneric.c:163 src/ldgeneric.c:4094
+#: src/ldgeneric.c:164 src/ldgeneric.c:4088
 msgid "cannot create string table"
 msgstr ""
 
-#: src/ldgeneric.c:205
-msgid "initialization of libltdl failed"
-msgstr ""
-
-#: src/ldgeneric.c:215
+#: src/ldgeneric.c:209
 #, c-format
 msgid "cannot load ld backend library '%s': %s"
 msgstr ""
 
-#: src/ldgeneric.c:224
+#: src/ldgeneric.c:218
 #, c-format
 msgid "cannot find init function in ld backend library '%s': %s"
 msgstr ""
 
-#: src/ldgeneric.c:259
+#: src/ldgeneric.c:253
 #, c-format
 msgid "%s listed more than once as input"
 msgstr ""
 
-#: src/ldgeneric.c:380
+#: src/ldgeneric.c:374
 #, c-format
 msgid "%s (for -l%s)\n"
 msgstr ""
 
-#: src/ldgeneric.c:381
+#: src/ldgeneric.c:375
 #, c-format
 msgid "%s (for DT_NEEDED %s)\n"
 msgstr ""
 
-#: src/ldgeneric.c:471
+#: src/ldgeneric.c:465
 #, c-format
 msgid "cannot open %s"
 msgstr ""
 
-#: src/ldgeneric.c:493
+#: src/ldgeneric.c:487
 #, c-format
 msgid "Warning: type of `%s' changed from %s in %s to %s in %s"
 msgstr ""
 
-#: src/ldgeneric.c:506
+#: src/ldgeneric.c:500
 #, c-format
 msgid "Warning: size of `%s' changed from %<PRIu64> in %s to %<PRIu64> in %s"
 msgstr ""
 
-#: src/ldgeneric.c:601
+#: src/ldgeneric.c:595
 #, c-format
 msgid "(%s+%#<PRIx64>): multiple definition of %s `%s'\n"
 msgstr ""
 
-#: src/ldgeneric.c:631
+#: src/ldgeneric.c:625
 #, c-format
 msgid "(%s+%#<PRIx64>): first defined here\n"
 msgstr ""
 
-#: src/ldgeneric.c:720
+#: src/ldgeneric.c:714
 #, c-format
 msgid "%s: cannot get section group data: %s"
 msgstr ""
 
-#: src/ldgeneric.c:741
+#: src/ldgeneric.c:735
 #, c-format
 msgid "%s: section '%s' with group flag set does not belong to any group"
 msgstr ""
 
-#: src/ldgeneric.c:785
+#: src/ldgeneric.c:779
 #, c-format
 msgid "%s: section [%2d] '%s' is in more than one section group"
 msgstr ""
 
-#: src/ldgeneric.c:1001 src/ldgeneric.c:1195 src/ldgeneric.c:1204
-#: src/ldgeneric.c:1263 src/ldgeneric.c:1272 src/ldgeneric.c:1522
-#: src/ldgeneric.c:1861
+#: src/ldgeneric.c:995 src/ldgeneric.c:1189 src/ldgeneric.c:1198
+#: src/ldgeneric.c:1257 src/ldgeneric.c:1266 src/ldgeneric.c:1516
+#: src/ldgeneric.c:1855
 #, c-format
 msgid "%s: invalid ELF file (%s:%d)\n"
 msgstr ""
 
-#: src/ldgeneric.c:1095
+#: src/ldgeneric.c:1089
 #, c-format
 msgid "%s: only files of type ET_REL might contain section groups"
 msgstr ""
 
-#: src/ldgeneric.c:1129
+#: src/ldgeneric.c:1123
 #, c-format
 msgid "%s: cannot determine signature of section group [%2d] '%s': %s"
 msgstr ""
 
-#: src/ldgeneric.c:1148
+#: src/ldgeneric.c:1142
 #, c-format
 msgid "%s: section '%s' has unknown type: %d"
 msgstr ""
 
-#: src/ldgeneric.c:1498
+#: src/ldgeneric.c:1492
 #, c-format
 msgid "cannot get descriptor for ELF file (%s:%d): %s\n"
 msgstr ""
 
-#: src/ldgeneric.c:1533
+#: src/ldgeneric.c:1527
 #, c-format
 msgid "cannot open \"%s\""
 msgstr ""
 
-#: src/ldgeneric.c:1675
+#: src/ldgeneric.c:1669
 #, c-format
 msgid "cannot read archive `%s': %s"
 msgstr ""
 
-#: src/ldgeneric.c:1691
+#: src/ldgeneric.c:1685
 #, c-format
 msgid "archive `%s' is too large"
 msgstr ""
 
-#: src/ldgeneric.c:1876
+#: src/ldgeneric.c:1870
 #, c-format
 msgid "file of type %s cannot be linked in\n"
 msgstr ""
 
-#: src/ldgeneric.c:1887
+#: src/ldgeneric.c:1881
 #, c-format
 msgid "%s: cannot get section header string table index: %s\n"
 msgstr ""
 
-#: src/ldgeneric.c:1919
+#: src/ldgeneric.c:1913
 #, c-format
 msgid "cannot use DSO '%s' when generating relocatable object file"
 msgstr ""
 
-#: src/ldgeneric.c:2004
+#: src/ldgeneric.c:1998
 #, c-format
 msgid "input file '%s' ignored"
 msgstr ""
 
-#: src/ldgeneric.c:2188
+#: src/ldgeneric.c:2182
 #, c-format
 msgid "undefined symbol `%s' in %s"
 msgstr ""
 
-#: src/ldgeneric.c:2558
+#: src/ldgeneric.c:2552
 msgid "cannot create output file"
 msgstr ""
 
-#: src/ldgeneric.c:2568
+#: src/ldgeneric.c:2562
 #, c-format
 msgid "cannot create ELF descriptor for output file: %s"
 msgstr ""
 
-#: src/ldgeneric.c:2575
+#: src/ldgeneric.c:2569
 #, c-format
 msgid "could not create ELF header for output file: %s"
 msgstr ""
 
-#: src/ldgeneric.c:2889 src/ldgeneric.c:2962 src/ldgeneric.c:2997
-#: src/ldgeneric.c:3522 src/ldgeneric.c:3571 src/ldgeneric.c:3604
-#: src/ldgeneric.c:3794 src/ldgeneric.c:3833 src/ldgeneric.c:4042
-#: src/ldgeneric.c:4074 src/ldgeneric.c:4484 src/ldgeneric.c:4494
+#: src/ldgeneric.c:2883 src/ldgeneric.c:2956 src/ldgeneric.c:2991
+#: src/ldgeneric.c:3516 src/ldgeneric.c:3565 src/ldgeneric.c:3598
+#: src/ldgeneric.c:3788 src/ldgeneric.c:3827 src/ldgeneric.c:4036
+#: src/ldgeneric.c:4068 src/ldgeneric.c:4478 src/ldgeneric.c:4488
 #, c-format
 msgid "cannot create section for output file: %s"
 msgstr ""
 
-#: src/ldgeneric.c:3114
+#: src/ldgeneric.c:3108
 #, c-format
 msgid "address computation expression contains variable '%s'"
 msgstr ""
 
-#: src/ldgeneric.c:3159
+#: src/ldgeneric.c:3153
 #, c-format
 msgid ""
 "argument '%<PRIuMAX>' of ALIGN in address computation expression is no power "
 "of two"
 msgstr ""
 
-#: src/ldgeneric.c:3334
+#: src/ldgeneric.c:3328
 #, c-format
 msgid "cannot find entry symbol \"%s\": defaulting to %#0*<PRIx64>"
 msgstr ""
 
-#: src/ldgeneric.c:3340
+#: src/ldgeneric.c:3334
 #, c-format
 msgid "no entry symbol specified: defaulting to %#0*<PRIx64>"
 msgstr ""
 
-#: src/ldgeneric.c:3419 src/ldgeneric.c:3440 src/ldgeneric.c:3469
-#: src/ldgeneric.c:5021
+#: src/ldgeneric.c:3413 src/ldgeneric.c:3434 src/ldgeneric.c:3463
+#: src/ldgeneric.c:5015
 #, c-format
 msgid "cannot create symbol table for output file: %s"
 msgstr ""
 
-#: src/ldgeneric.c:4206 src/ldgeneric.c:4733
+#: src/ldgeneric.c:4200 src/ldgeneric.c:4727
 msgid "section index too large in dynamic symbol table"
 msgstr ""
 
-#: src/ldgeneric.c:4622
+#: src/ldgeneric.c:4616
 #, c-format
 msgid "cannot create versioning section: %s"
 msgstr ""
 
-#: src/ldgeneric.c:4699
+#: src/ldgeneric.c:4693
 #, c-format
 msgid "cannot create dynamic symbol table for output file: %s"
 msgstr ""
 
-#: src/ldgeneric.c:4835
+#: src/ldgeneric.c:4829
 #, c-format
 msgid "cannot create hash table section for output file: %s"
 msgstr ""
 
-#: src/ldgeneric.c:4913
+#: src/ldgeneric.c:4907
 #, c-format
 msgid "cannot create versioning data: %s"
 msgstr ""
 
-#: src/ldgeneric.c:5053 src/ldgeneric.c:5066 src/ldgeneric.c:5130
-#: src/ldgeneric.c:5138
+#: src/ldgeneric.c:5047 src/ldgeneric.c:5060 src/ldgeneric.c:5124
+#: src/ldgeneric.c:5132
 #, c-format
 msgid "cannot create section header string section: %s"
 msgstr ""
 
-#: src/ldgeneric.c:5060
+#: src/ldgeneric.c:5054
 msgid "cannot create section header string section"
 msgstr ""
 
-#: src/ldgeneric.c:5214
+#: src/ldgeneric.c:5208
 #, c-format
 msgid "cannot create program header: %s"
 msgstr ""
 
-#: src/ldgeneric.c:5222
+#: src/ldgeneric.c:5216
 #, c-format
 msgid "while determining file layout: %s"
 msgstr ""
 
-#: src/ldgeneric.c:5771
+#: src/ldgeneric.c:5765
 #, c-format
 msgid "cannot get header of 0th section: %s"
 msgstr ""
 
-#: src/ldgeneric.c:5787
+#: src/ldgeneric.c:5781
 #, c-format
 msgid "cannot update ELF header: %s"
 msgstr ""
 
-#: src/ldgeneric.c:5808
+#: src/ldgeneric.c:5802
 msgid "linker backend didn't specify function to relocate section"
 msgstr ""
 
-#: src/ldgeneric.c:5820
+#: src/ldgeneric.c:5814
 #, c-format
 msgid "while writing output file: %s"
 msgstr ""
 
-#: src/ldgeneric.c:5825
+#: src/ldgeneric.c:5819
 #, c-format
 msgid "while finishing output file: %s"
 msgstr ""
 
-#: src/ldgeneric.c:5836
+#: src/ldgeneric.c:5830
 msgid "cannot change access mode of output file"
 msgstr ""
 
-#: src/ldgeneric.c:5845
+#: src/ldgeneric.c:5839
 msgid "cannot rename output file"
 msgstr ""
 
-#: src/ldgeneric.c:5893 src/ldgeneric.c:5904 src/ldgeneric.c:5915
-#: src/ldgeneric.c:5933 src/ldgeneric.c:5946 src/ldgeneric.c:5958
+#: src/ldgeneric.c:5887 src/ldgeneric.c:5898 src/ldgeneric.c:5909
+#: src/ldgeneric.c:5927 src/ldgeneric.c:5940 src/ldgeneric.c:5952
 #, c-format
 msgid "no machine specific '%s' implementation"
 msgstr ""

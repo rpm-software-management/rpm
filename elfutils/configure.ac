@@ -3,20 +3,17 @@ dnl Configure input file for elfutils.
 dnl
 dnl Copyright (C) 1996-2001, 2002 Red Hat, Inc.
 dnl
-dnl This program is free software; you can redistribute it and/or modify
-dnl it under the terms of the GNU General Public License version 2 as
-dnl published by the Free Software Foundation.
+dnl This program is Open Source software; you can redistribute it and/or
+dnl modify it under the terms of the Open Software License version 1.0 as
+dnl published by the Open Source Initiative.
 dnl
-dnl his program is distributed in the hope that it will be useful,
-dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-dnl GNU General Public License for more details.
+dnl You should have received a copy of the Open Software License along
+dnl with this program; if not, you may obtain a copy of the Open Software
+dnl License version 1.0 from http://www.opensource.org/licenses/osl.php or
+dnl by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+dnl 3001 King Ranch Road, Ukiah, CA 95482.
 dnl
-dnl You should have received a copy of the GNU General Public License
-dnl along with this program; if not, write to the Free Software Foundation,
-dnl Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-dnl
-AC_INIT([elfutils],[0.59],[drepper@redhat.com],[elfutils])
+AC_INIT([elfutils],[0.63],[drepper@redhat.com],[elfutils])
 AM_INIT_AUTOMAKE([gnits 1.6.3 dist-bzip2])
 AC_COPYRIGHT([Copyright (C) 1996-2001, 2002 Red Hat, Inc.])
 AC_CONFIG_SRCDIR([libelf/elf_begin.c])
@@ -30,12 +27,7 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AM_GNU_GETTEXT([external])
-AC_LIBLTDL_CONVENIENCE
-AC_SUBST(INCLTDL)
-AC_SUBST(LIBLTDL)
-AC_LIBTOOL_DLOPEN
-AM_PROG_LIBTOOL
-AC_CONFIG_SUBDIRS(libltdl)
+AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_LEX
 
@@ -43,6 +35,9 @@ LOCALEDIR=$datadir
 AC_SUBST(LOCALEDIR)
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR")
 AH_TEMPLATE([LOCALEDIR], [Directory to place translation files in.])
+
+DATADIRNAME=$datadir
+AC_SUBST(DATADIRNAME)
 
 AH_BOTTOM([
 /* Eventually we will allow multi-threaded applications to use the
@@ -164,6 +159,7 @@ AC_CONFIG_FILES([Makefile
 	   libelf/Makefile
 	   libebl/Makefile
 	   libdwarf/Makefile
+	   libdw/Makefile
 	   libcpu/Makefile
 	   libasm/Makefile
 	   libelf-po/Makefile.in
