@@ -13,6 +13,7 @@
 	- added "day" query format which is like date, but doesn't print
 	  any time
 	- added --changelog alias to query a packages changelog entry
+	- added mntctl() support for AIX (I think, I can't test this)
 
 2.4 -> 2.4.1:
 	- take advantage of lchown() if it's available

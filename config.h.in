@@ -87,4 +87,7 @@
    two defined */
 #define HAVE_GETMNTENT 0
 
+/* Define as one if you have mntctl() (only aix?) */
+#define HAVE_MNTCTL 0
+
 #endif

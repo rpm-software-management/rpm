@@ -84,8 +84,8 @@ extern void *myrealloc(void *, size_t);
 # define GETMNTENT_TWO 1
 # define our_mntent struct mnttab
 # define our_mntdir mnt_mountp
-#else
-# error Neither mntent.h nor mnttab.h exists. I cannot build on this system.
+#else if !HAVE_MNTCTL
+# error Neither mntent.h, mnttab.h, or mntctl() exists. I cannot build on this system.
 #endif
 
 #ifndef MOUNTED

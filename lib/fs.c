@@ -1,5 +1,9 @@
 #include "miscfn.h"
 
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +26,65 @@ static int numFilesystems;
 
 static int getFilesystemList(void);
 
+#if HAVE_MNTCTL
+
+/* modeled after sample code from Till Bubeck */
+
+#include <sys/mntctl.h>
+#include <sys/vmount.h>
+
+static int getFilesystemList(void) {
+    int size;
+    void * buf;
+    struct vmount * vm;
+    int num;
+    int fsnameLength;
+    int i;
+
+    num = mntctl(MCTL_QUERY, sizeof(size), (char *) &size);
+    if (num < 0) {
+	rpmError(RPMERR_MTAB, _("mntctl() failed to return fugger size: %s"), 
+		 strerror(errno));
+	return 1;
+    }
+
+    buf = alloca(size);
+    num = mntctl(MCTL_QUERY, size, buf);
+
+    numFilesystems = num;
+
+    filesystems = malloc(sizeof(*filesystems) * numFilesystems);
+    fsnames = malloc(sizeof(*filesystems) * numFilesystems);
+    
+    for (vm = buf, i = 0; i < num; i++) {
+	fsnameLength = vm->vmt_data[VMT_STUB].vmt_size;
+	fsnames[i] = malloc(fsnameLength + 1);
+	strncpy(fsnames[i],(char *)vm + vm->vmt_data[VMT_STUB].vmt_off, 
+		fsname_len);
+
+	filesystems[i].mntPoint = fsnames[i];
+
+	if (stat(fsnames[i], &sb)) {
+	    rpmError(RPMERR_STAT, "failed to stat %s: %s", fsnames[i],
+			strerror(errno));
+
+	    for (i = 0; i < num; i++)
+		free(filesystems[i].mntPoint);
+	    free(filesystems);
+	    free(fsnameS);
+
+	    filesystems = NULL;
+	}
+	
+	filesystems[num].dev = sb.st_dev;
+
+	/* goto the next vmount structure: */
+	vm = (struct vmount *)((char *)vm + vm->vmt_length);
+    }
+
+    return 0;
+}
+#else 
 static int getFilesystemList(void) {
     our_mntent item, * itemptr;
     FILE * mtab;
@@ -83,6 +146,7 @@ static int getFilesystemList(void) {
 
     return 0; 
 }
+#endif
 
 int rpmGetFilesystemList(char *** listptr) {
     if (!fsnames) 
