@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "ftp.h"
 #include "install.h"
 #include "lib/rpmlib.h"
 #include "messages.h"
@@ -12,6 +13,7 @@ static int hashesPrinted = 0;
 
 static void printHash(const unsigned long amount, const unsigned long total);
 static void printPercent(const unsigned long amount, const unsigned long total);
+static int getFtpURL(char * hostAndFile);
 
 static void printHash(const unsigned long amount, const unsigned long total) {
     int hashesNeeded;
@@ -65,11 +67,22 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
     }
 
     message(MESS_DEBUG, "installing %s\n", arg);
-    fd = open(arg, O_RDONLY);
-    if (fd < 0) {
-	rpmdbClose(db);
-	fprintf(stderr, "error: cannot open %s\n", arg);
-	return;
+
+    if (!strncmp(arg, "ftp://", 6)) {
+	if (isVerbose()) {
+	    printf("Retrieving %s\n", arg);
+	}
+	fd = getFtpURL(arg + 6);
+	if (fd < 0) {
+	    fprintf(stderr, "error: cannot ftp %s\n", arg);
+	}
+    } else {
+	fd = open(arg, O_RDONLY);
+	if (fd < 0) {
+	    rpmdbClose(db);
+	    fprintf(stderr, "error: cannot open %s\n", arg);
+	    return;
+	}
     }
 
     if (interfaceFlags & RPMINSTALL_PERCENT) 
@@ -163,4 +176,53 @@ int doSourceInstall(char * prefix, char * arg, char ** specFile) {
     close(fd);
 
     return rc;
+}
+
+static int getFtpURL(char * hostAndFile) {
+    char * buf;
+    char * chptr;
+    int ftpconn;
+    int fd;
+    char * tmp;
+
+    message(MESS_DEBUG, "getting %s via anonymous ftp\n", hostAndFile);
+
+    buf = alloca(strlen(hostAndFile) + 1);
+    strcpy(buf, hostAndFile);
+
+    chptr = buf;
+    while (*chptr && (*chptr != '/')) chptr++;
+    if (!*chptr) return -1;
+
+    *chptr = '\0';
+
+    ftpconn = ftpOpen(buf, NULL, NULL);
+    if (ftpconn < 0) return -1;
+
+    *chptr = '/';
+
+    tmp = tmpnam(NULL);
+    fd = creat(tmp, 0600);
+
+    if (fd < 0) {
+	unlink(tmp);
+	ftpClose(ftpconn);
+	return -1;
+    }
+    
+    if (ftpGetFile(ftpconn, chptr, fd)) {
+	unlink(tmp);
+	close(fd);
+	ftpClose(ftpconn);
+	return -1;
+    }    
+
+    ftpClose(ftpconn);
+
+    close(fd);
+    fd = open(tmp, O_RDONLY);
+
+    unlink(tmp);
+
+    return fd;
 }
