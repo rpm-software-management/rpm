@@ -438,7 +438,7 @@ void rpmSetVerbosity(int level);
 int rpmGetVerbosity(void);
 int rpmIsVerbose(void);
 int rpmIsDebug(void);
-void rpmMessage(int level, char * format, ...);
+void rpmMessage(int level, const char * format, ...);
 
 /** rpmlead.c **/
 
@@ -600,12 +600,17 @@ enum rpmQVSources { RPMQV_PACKAGE = 0, RPMQV_PATH, RPMQV_ALL, RPMQV_RPM,
 extern struct poptOption rpmQVSourcePoptTable[];
 
 struct rpmQVArguments {
-    enum rpmQVSources source;
-    int sourceCount;		/* > 1 is an error */
-    int flags;
-    int verbose;
-    char * queryFormat;
+    enum rpmQVSources qva_source;
+    int 	qva_sourceCount;	/* > 1 is an error */
+    int		qva_flags;
+    int		qva_verbose;
+    const char *qva_queryFormat;
+    const char *qva_prefix;
 };
+typedef	struct rpmQVArguments QVA_t;
+
+typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
+int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage);
 
 #define QUERY_FOR_LIST		(1 << 1)
 #define QUERY_FOR_STATE		(1 << 2)
@@ -616,9 +621,22 @@ struct rpmQVArguments {
 extern char *specedit;
 extern struct poptOption rpmQueryPoptTable[];
 
-int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags, 
-	     const char * arg, const char * queryFormat);
 void rpmDisplayQueryTags(FILE * f);
+int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
+	rpmdb db, QVF_t showPackage);
+
+int showQueryPackage(QVA_t *qva, rpmdb db, Header h);
+int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg);
+
+#define VERIFY_FILES		(1 <<  9)
+#define VERIFY_DEPS		(1 << 10)
+#define VERIFY_SCRIPT		(1 << 11)
+#define VERIFY_MD5		(1 << 12)
+
+extern struct poptOption rpmVerifyPoptTable[];
+
+int showVerifyPackage(QVA_t *qva, rpmdb db, Header h);
+int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 
 #ifdef __cplusplus
 }

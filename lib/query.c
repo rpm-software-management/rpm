@@ -6,12 +6,8 @@
 
 #include "build/rpmbuild.h"
 #include "popt/popt.h"
-#include "../url.h"
+#include "url.h"
 
-static char * permsString(int mode);
-static void printHeader(Header h, int queryFlags, const char * queryFormat);
-static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags, 
-			const char * queryFormat);
 static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
 			  char * owner, char * group, int uid, int gid,
@@ -28,28 +24,28 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 /* ========== Query/Verify source popt args */
 static void rpmQVSourceArgCallback(poptContext con, enum poptCallbackReason reason,
 			     const struct poptOption * opt, const char * arg, 
-			     struct rpmQVArguments* data) {
+			     QVA_t *qva) {
 
     switch (opt->val) {
-      case 'a': data->source |= RPMQV_ALL; data->sourceCount++; break;
-      case 'f': data->source |= RPMQV_PATH; data->sourceCount++; break;
-      case 'g': data->source |= RPMQV_GROUP; data->sourceCount++; break;
-      case 'p': data->source |= RPMQV_RPM; data->sourceCount++; break;
-      case POPT_WHATPROVIDES: data->source |= RPMQV_WHATPROVIDES; 
-			      data->sourceCount++; break;
-      case POPT_WHATREQUIRES: data->source |= RPMQV_WHATREQUIRES; 
-			      data->sourceCount++; break;
-      case POPT_TRIGGEREDBY: data->source |= RPMQV_TRIGGEREDBY;
-			      data->sourceCount++; break;
+      case 'a': qva->qva_source |= RPMQV_ALL; qva->qva_sourceCount++; break;
+      case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
+      case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
+      case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
+      case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
+			      qva->qva_sourceCount++; break;
+      case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
+			      qva->qva_sourceCount++; break;
+      case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
+			      qva->qva_sourceCount++; break;
 
 /* XXX SPECFILE is not verify sources */
       case POPT_SPECFILE:
-	data->source |= RPMQV_SPECFILE;
-	data->sourceCount++;
+	qva->qva_source |= RPMQV_SPECFILE;
+	qva->qva_sourceCount++;
 	break;
       case POPT_QUERYBYNUMBER:
-	data->source |= RPMQV_DBOFFSET; 
-	data->sourceCount++;
+	qva->qva_source |= RPMQV_DBOFFSET; 
+	qva->qva_sourceCount++;
 	break;
     }
 }
@@ -81,26 +77,27 @@ extern char *specedit;
 
 static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
 			     const struct poptOption * opt, const char * arg, 
-			     struct rpmQVArguments * data) {
-
+			     QVA_t *qva) {
     switch (opt->val) {
-      case 'c': data->flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
-      case 'd': data->flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
-      case 'l': data->flags |= QUERY_FOR_LIST; break;
-      case 's': data->flags |= QUERY_FOR_STATE | QUERY_FOR_LIST; break;
-      case POPT_DUMP: data->flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
+      case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
+      case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
+      case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
+      case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST; break;
+      case POPT_DUMP: qva->qva_flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
       case 'v': rpmIncreaseVerbosity();	 break;
 
       case POPT_QUERYFORMAT:
-	if (data->queryFormat) {
-	    int len = strlen(data->queryFormat) + strlen(arg) + 1;
-	    data->queryFormat = realloc(data->queryFormat, len);
-	    strcat(data->queryFormat, arg);
+      {	char *qf = (char *)qva->qva_queryFormat;
+	if (qf) {
+	    int len = strlen(qf) + strlen(arg) + 1;
+	    qf = realloc(qf, len);
+	    strcat(qf, arg);
 	} else {
-	    data->queryFormat = malloc(strlen(arg) + 1);
-	    strcpy(data->queryFormat, arg);
+	    qf = malloc(strlen(arg) + 1);
+	    strcpy(qf, arg);
 	}
-	break;
+	qva->qva_queryFormat = qf;
+      }	break;
     }
 }
 
@@ -145,7 +142,11 @@ static int queryHeader(Header h, const char * chptr) {
     return 0;
 }
 
-static void printHeader(Header h, int queryFlags, const char * queryFormat) {
+int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
+{
+    int queryFlags = qva->qva_flags;
+    const char *queryFormat = qva->qva_queryFormat;
+
     char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
@@ -298,6 +299,7 @@ static void printHeader(Header h, int queryFlags, const char * queryFormat) {
 	    }
 	}
     }
+    return 0;	/* XXX FIXME: need real return code */
 }
 
 static char * permsString(int mode) {
@@ -419,28 +421,6 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 		sizefield, timefield, namefield);
 }
 
-static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags, 
-			const char * queryFormat) {
-    int i;
-    Header h;
-
-    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-	if (recOffset) {
-	    rpmMessage(RPMMESS_DEBUG, _("querying record number %d\n"),
-			recOffset);
-	    
-	    h = rpmdbGetRecord(db, recOffset);
-	    if (h == NULL) {
-		fprintf(stderr, _("error: could not read database record\n"));
-	    } else {
-		printHeader(h, queryFlags, queryFormat);
-		headerFree(h);
-	    }
-	}
-    }
-}
-
 extern	char *	specedit;
 
 static void
@@ -501,33 +481,66 @@ printNewSpecfile(Spec spec)
     }
 }
 
-int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags, 
-	     const char * arg, const char * queryFormat) {
+void rpmDisplayQueryTags(FILE * f) {
+    const struct headerTagTableEntry * t;
+    int i;
+    const struct headerSprintfExtension * ext = rpmHeaderFormats;
+
+    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
+	fprintf(f, "%s\n", t->name + 7);
+    }
+
+    while (ext->name) {
+	if (ext->type == HEADER_EXT_TAG)
+	    fprintf(f, "%s\n", ext->name + 7), ext++;
+	else if (ext->type == HEADER_EXT_MORE)
+	    ext = ext->u.more;
+	else
+	    ext++;
+    }
+}
+
+int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage)
+{
+    Header h;
+    int ec = 0;
+    int i;
+
+    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	int rc;
+	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+	if (recOffset == 0)
+	    continue;
+	rpmMessage(RPMMESS_DEBUG, _("record number %u\n"), recOffset);
+	    
+	h = rpmdbGetRecord(db, recOffset);
+	if (h == NULL) {
+		fprintf(stderr, _("error: could not read database record\n"));
+		ec = 1;
+	} else {
+		if ((rc = showPackage(qva, db, h)) != 0)
+		    ec = rc;
+		headerFree(h);
+	}
+    }
+    return ec;
+}
+
+int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
+	rpmdb db, QVF_t showPackage)
+{
+    dbiIndexSet matches;
     Header h;
     int offset;
     int rc;
     int isSource;
-    rpmdb db;
-    dbiIndexSet matches;
     int recNumber;
     int retcode = 0;
     char *end = NULL;
 
     switch (source) {
-    default:
-	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
-	    fprintf(stderr, _("rpmQuery: rpmdbOpen() failed\n"));
-	    exit(1);
-	}
-	break;
-    case RPMQV_RPM:
-    case RPMQV_SPECFILE:
-	break;
-    }
-
-    switch (source) {
       case RPMQV_RPM:
-      { FD_t fd;
+      {	FD_t fd;
 
 	fd = ufdOpen(arg, O_RDONLY, 0);
 	if (fdFileno(fd) < 0) {
@@ -537,19 +550,20 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 	    break;
 	}
 
-	rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	retcode = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 
 	ufdClose(fd);
 
-	switch (rc) {
+	switch (retcode) {
 	case 0:
 	    if (h == NULL) {
 		fprintf(stderr, _("old format source packages cannot "
 			"be queried\n"));
-	    } else {
-		printHeader(h, queryFlags, queryFormat);
-		headerFree(h);
+		retcode = 1;
+		break;
 	    }
+	    retcode = showPackage(qva, db, h);
+	    headerFree(h);
 	    break;
 	case 1:
 	    fprintf(stderr, _("%s does not appear to be a RPM package\n"), arg);
@@ -562,6 +576,8 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
       } break;
 
       case RPMQV_SPECFILE:
+	if (showPackage != showQueryPackage)
+	    return 1;
       { Spec spec = NULL;
 	Package pkg;
 	char * buildRoot = NULL;
@@ -597,22 +613,23 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 		fprintf(stdout, "====== %s\n", binRpm);
 	    free(binRpm);
 #endif
-	    printHeader(pkg->header, queryFlags, queryFormat);
+	    showPackage(qva, NULL, pkg->header);
 	}
 	freeSpec(spec);
       }	break;
 
       case RPMQV_ALL:
-	offset = rpmdbFirstRecNum(db);
-	while (offset) {
-	    h = rpmdbGetRecord(db, offset);
-	    if (h == NULL) {
-		fprintf(stderr, _("could not read database record!\n"));
-		return 1;
-	    }
-	    printHeader(h, queryFlags, queryFormat);
-	    headerFree(h);
-	    offset = rpmdbNextRecNum(db, offset);
+	for (offset = rpmdbFirstRecNum(db);
+	     offset != 0;
+	     offset = rpmdbNextRecNum(db, offset)) {
+		h = rpmdbGetRecord(db, offset);
+		if (h == NULL) {
+		    fprintf(stderr, _("could not read database record!\n"));
+		    return 1;
+		}
+		if ((rc = showPackage(qva, db, h)) != 0)
+		    retcode = rc;
+		headerFree(h);
 	}
 	break;
 
@@ -621,7 +638,7 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
 	    retcode = 1;
 	} else {
-	    showMatches(db, matches, queryFlags, queryFormat);
+	    retcode = showMatches(qva, db, matches, showPackage);
 	    dbiFreeIndexRecord(matches);
 	}
 	break;
@@ -631,7 +648,7 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 	    fprintf(stderr, _("no package provides %s\n"), arg);
 	    retcode = 1;
 	} else {
-	    showMatches(db, matches, queryFlags, queryFormat);
+	    retcode = showMatches(qva, db, matches, showPackage);
 	    dbiFreeIndexRecord(matches);
 	}
 	break;
@@ -641,7 +658,7 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 	    fprintf(stderr, _("no package triggers %s\n"), arg);
 	    retcode = 1;
 	} else {
-	    showMatches(db, matches, queryFlags, queryFormat);
+	    retcode = showMatches(qva, db, matches, showPackage);
 	    dbiFreeIndexRecord(matches);
 	}
 	break;
@@ -651,7 +668,7 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 	    fprintf(stderr, _("no package requires %s\n"), arg);
 	    retcode = 1;
 	} else {
-	    showMatches(db, matches, queryFlags, queryFormat);
+	    retcode = showMatches(qva, db, matches, showPackage);
 	    dbiFreeIndexRecord(matches);
 	}
 	break;
@@ -671,7 +688,7 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 	    }
 	    retcode = 1;
 	} else {
-	    showMatches(db, matches, queryFlags, queryFormat);
+	    retcode = showMatches(qva, db, matches, showPackage);
 	    dbiFreeIndexRecord(matches);
 	}
 	break;
@@ -682,13 +699,13 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 	    fprintf(stderr, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmMessage(RPMMESS_DEBUG, _("showing package: %d\n"), recNumber);
+	rpmMessage(RPMMESS_DEBUG, _("package record number: %d\n"), recNumber);
 	h = rpmdbGetRecord(db, recNumber);
 	if (h == NULL)  {
 	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
 	    retcode = 1;
 	} else {
-	    printHeader(h, queryFlags, queryFormat);
+	    retcode = showPackage(qva, db, h);
 	    headerFree(h);
 	}
 	break;
@@ -702,39 +719,36 @@ int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags,
 	    retcode = 1;
 	    fprintf(stderr, _("error looking for package %s\n"), arg);
 	} else {
-	    showMatches(db, matches, queryFlags, queryFormat);
+	    retcode = showMatches(qva, db, matches, showPackage);
 	    dbiFreeIndexRecord(matches);
 	}
 	break;
     }
    
-    switch (source) {
-    default:
-	rpmdbClose(db);
-	break;
-    case RPMQV_RPM:
-    case RPMQV_SPECFILE:
-	break;
-    }
-
     return retcode;
 }
 
-void rpmDisplayQueryTags(FILE * f) {
-    const struct headerTagTableEntry * t;
-    int i;
-    const struct headerSprintfExtension * ext = rpmHeaderFormats;
+int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg)
+{
+    rpmdb db = NULL;
+    int rc;
 
-    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	fprintf(f, "%s\n", t->name + 7);
+    switch (source) {
+    case RPMQV_RPM:
+    case RPMQV_SPECFILE:
+	break;
+    default:
+	if (rpmdbOpen(qva->qva_prefix, &db, O_RDONLY, 0644)) {
+	    fprintf(stderr, _("rpmQuery: rpmdbOpen() failed\n"));
+	    return 1;
+	}
+	break;
     }
 
-    while (ext->name) {
-	if (ext->type == HEADER_EXT_TAG)
-	    fprintf(f, "%s\n", ext->name + 7), ext++;
-	else if (ext->type == HEADER_EXT_MORE)
-	    ext = ext->u.more;
-	else
-	    ext++;
-    }
+    rc = rpmQueryVerify(qva, source, arg, db, showQueryPackage);
+
+    if (db)
+	rpmdbClose(db);
+
+    return rc;
 }

@@ -7,7 +7,6 @@
 #include "install.h"
 #include "lib/signature.h"
 #include "popt/popt.h"
-#include "verify.h"
 
 #define GETOPT_REBUILD		1003
 #define GETOPT_RECOMPILE	1004
@@ -503,6 +502,7 @@ static void printHelp(void) {
 
 int main(int argc, char ** argv) {
     enum modes bigMode = MODE_UNKNOWN;
+    QVA_t *qva = &rpmQVArgs;
     enum rpmQVSources QVSource = RPMQV_PACKAGE;
     int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
@@ -615,8 +615,8 @@ int main(int argc, char ** argv) {
 
     poptResetContext(optCon);
 
-    if (rpmQVArgs.queryFormat) free(rpmQVArgs.queryFormat);
-    memset(&rpmQVArgs, 0, sizeof(rpmQVArgs));
+    if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
+    memset(qva, 0, sizeof(*qva));
     if (buildArgs.buildRootOverride) xfree(buildArgs.buildRootOverride);
     if (buildArgs.targets) free(buildArgs.targets);
     memset(&buildArgs, 0, sizeof(buildArgs));
@@ -918,11 +918,11 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_QUERYTAGS;
     }
 
-    if (rpmQVArgs.sourceCount) {
-	if (QVSource != RPMQV_PACKAGE || rpmQVArgs.sourceCount > 1)
+    if (qva->qva_sourceCount) {
+	if (QVSource != RPMQV_PACKAGE || qva->qva_sourceCount > 1)
 	    argerror(_("one type of query/verify may be performed at a "
 			"time"));
-	QVSource = rpmQVArgs.source;
+	QVSource = qva->qva_source;
     }
 
     if (buildArgs.buildRootOverride && bigMode != MODE_BUILD &&
@@ -940,10 +940,10 @@ int main(int argc, char ** argv) {
 	bigMode != MODE_RECOMPILE && bigMode != MODE_TARBUILD) 
 	argerror(_("--timecheck may only be used during package builds"));
     
-    if (bigMode != MODE_QUERY && rpmQVArgs.flags) 
+    if (bigMode != MODE_QUERY && qva->qva_flags) 
 	argerror(_("unexpected query specifiers"));
 
-    if (bigMode != MODE_QUERY && rpmQVArgs.queryFormat) 
+    if (bigMode != MODE_QUERY && qva->qva_queryFormat) 
 	argerror(_("unexpected query specifiers"));
 
     if (bigMode != MODE_QUERY && bigMode != MODE_VERIFY &&
@@ -1379,18 +1379,17 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_QUERY:
+	qva->qva_prefix = rootdir;
 	if (QVSource == RPMQV_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for query of all packages"));
 
-	    ec = rpmQuery(rootdir, RPMQV_ALL, rpmQVArgs.flags, NULL, 
-			 rpmQVArgs.queryFormat);
+	    ec = rpmQuery(qva, RPMQV_ALL, NULL);
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec = rpmQuery(rootdir, QVSource, rpmQVArgs.flags, pkg, 
-			     rpmQVArgs.queryFormat);
+		ec = rpmQuery(qva, QVSource, pkg);
 	}
 	break;
 
@@ -1399,21 +1398,23 @@ int main(int argc, char ** argv) {
 #ifdef	DELETE
 	if (!noFiles) verifyFlags |= VERIFY_FILES;
 #else
-	verifyFlags &= ~rpmQVArgs.flags;
+	verifyFlags &= ~qva->qva_flags;
 #endif
 	if (noDeps)	verifyFlags &= ~VERIFY_DEPS;
 	if (noScripts)	verifyFlags &= ~VERIFY_SCRIPT;
 	if (noMd5)	verifyFlags &= ~VERIFY_MD5;
 
+	qva->qva_prefix = rootdir;
+	qva->qva_flags = verifyFlags;
 	if (QVSource == RPMQV_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for verify of all packages"));
-	    ec = rpmVerify(rootdir, RPMQV_ALL, verifyFlags, NULL);
+	    ec = rpmVerify(qva, RPMQV_ALL, NULL);
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for verify"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec = rpmVerify(rootdir, QVSource, verifyFlags, pkg);
+		ec = rpmVerify(qva, QVSource, pkg);
 	}
 	break;
     }
@@ -1426,7 +1427,7 @@ int main(int argc, char ** argv) {
     }
 
     /* keeps memory leak checkers quiet */
-    if (rpmQVArgs.queryFormat) free(rpmQVArgs.queryFormat);
+    if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
 
     return ec;
 }
