@@ -1,7 +1,7 @@
 TRIGGERS
 ========
 
-Trigerrs provide a well-defined method for packages to interact with one
+Triggers provide a well-defined method for packages to interact with one
 another at package install and uninstall time. They are an extension
 of the normal installation scripts (i.e. %pre) which allows one package
 (the "source" of the trigger package [which I often think of as the 
