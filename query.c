@@ -150,6 +150,11 @@ static const char * handleFormat(Header h, const char * chptr,
 	printf(format, p);
 	break;
 
+      case INT8_TYPE:
+	strcat(format, "d");
+	printf(format, *((int_8 *) p));
+	break;
+
       case INT32_TYPE:
 	if (isDate) {
 	    strcat(format, "s");
