@@ -43,15 +43,15 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 
     *result = 0;
 
-    if (S_ISDIR(modeList[filenum]))
+    if (S_ISDIR(sb.st_mode))
 	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
-    else if (S_ISLNK(modeList[filenum]))
+    else if (S_ISLNK(sb.st_mode))
 	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME);
-    else if (S_ISFIFO(modeList[filenum]))
+    else if (S_ISFIFO(sb.st_mode))
 	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
-    else if (S_ISCHR(modeList[filenum]))
+    else if (S_ISCHR(sb.st_mode))
 	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
-    else if (S_ISBLK(modeList[filenum]))
+    else if (S_ISBLK(sb.st_mode))
 	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
     else 
 	flags &= ~(VERIFY_LINKTO);
