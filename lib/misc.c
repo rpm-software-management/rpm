@@ -471,7 +471,7 @@ char * currentDirectory(void)
     return currDir;
 }
 
-int _noDirTokens = 1;
+int _noDirTokens = 0;
 
 static int dncmp(const void * a, const void * b)
 {
