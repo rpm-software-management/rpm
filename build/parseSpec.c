@@ -452,7 +452,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    break;
 	}
 
-	if (parsePart < 0) {
+	if (parsePart >= PART_LAST) {
 	    freeSpec(spec);
 	    return parsePart;
 	}
