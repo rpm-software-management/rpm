@@ -79,7 +79,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     FILE * f = (FILE *) fdGetFp(fd);
 /*@=voidabstract@*/
     rpmRC rpmrc = RPMRC_OK;
-    int i;
+    int i, j, next, npre;
 
 /*@-boundswrite@*/
     if (f != NULL)
@@ -132,19 +132,31 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 
     rpmMessage(RPMMESS_DEBUG, _("adding %d args from manifest.\n"), ac);
 
-    /* Find 1st existing unprocessed arg. */
-    for (i = 0; i < argc; i++)
-	if (argv && argv[i]) break;
+    /* Count non-NULL args, keeping track of 1st arg after last NULL. */
+    npre = 0;
+    next = 0;
+    if (argv != NULL)
+    for (i = 0; i < argc; i++) {
+	if (argv[i] != NULL)
+	    npre++;
+	else if (i >= next)
+	    next = i + 1;
+    }
 
-    /* Concatenate existing unprocessed args after manifest contents. */
-    if (argv && i < argc) {
-	int nac = ac + (argc - i);
+    /* Copy old arg list, inserting manifest before argv[next]. */
+    if (argv != NULL) {
+	int nac = npre + ac;
 	const char ** nav = xcalloc((nac + 1), sizeof(*nav));
 
+	for (i = 0, j = 0; i < next; i++) {
+	    if (argv[i] != NULL)
+		nav[j++] = argv[i];
+	}
+
 	if (ac)
-	    memcpy(nav, av, ac * sizeof(*nav));
-	if ((argc - i) > 0)
-	    memcpy(nav + ac, argv + i, (argc - i) * sizeof(*nav));
+	    memcpy(nav + j, av, ac * sizeof(*nav));
+	if ((argc - next) > 0)
+	    memcpy(nav + j + ac, argv + next, (argc - next) * sizeof(*nav));
 	nav[nac] = NULL;
 
 	if (argvPtr)
