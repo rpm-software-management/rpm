@@ -1,5 +1,5 @@
 /* Create descriptor from ELF descriptor for processing file.
-   Copyright (C) 2002 Red Hat, Inc.
+   Copyright (C) 2002, 2003 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
    This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
 #include "libdwP.h"
@@ -55,7 +56,7 @@ check_section (Dwarf *result, GElf_Ehdr *ehdr, Elf_Scn *scn, bool inscngrp)
   GElf_Shdr shdr_mem;
   GElf_Shdr *shdr;
   const char *scnname;
-  int cnt;
+  size_t cnt;
 
   /* Get the section header data.  */
   shdr = gelf_getshdr (scn, &shdr_mem);
@@ -83,7 +84,7 @@ check_section (Dwarf *result, GElf_Ehdr *ehdr, Elf_Scn *scn, bool inscngrp)
     {
       /* The section name must be valid.  Otherwise is the ELF file
 	 invalid.  */
-      __libdwarf_seterrno (DWARF_E_INVALID_ELF);
+      __libdw_seterrno (DWARF_E_INVALID_ELF);
       free (result);
       return;
     }
@@ -122,7 +123,7 @@ valid_p (Dwarf *result)
      is correct.  */
   if (unlikely (result->sectiondata[IDX_debug_info] == NULL))
     {
-      __libdwarf_seterrno (DWARF_E_NO_DWARF);
+      __libdw_seterrno (DWARF_E_NO_DWARF);
       result = NULL;
     }
 
@@ -168,7 +169,7 @@ scngrp_read (Dwarf *result, Elf *elf, GElf_Ehdr *ehdr, Dwarf_Cmd cmd,
 	{
 	  /* A section group refers to a non-existing section.  Should
 	     never happen.  */
-	  __libdwarf_seterrno (DWARF_E_INVALID_ELF);
+	  __libdw_seterrno (DWARF_E_INVALID_ELF);
 	  free (result);
 	  return NULL;
 	}
@@ -196,19 +197,22 @@ dwarf_begin_elf (elf, cmd, scngrp)
   if (ehdr == NULL)
     {
       if (elf_kind (elf) != ELF_K_ELF)
-	__libdwarf_seterrno (DWARF_E_NOELF);
+	__libdw_seterrno (DWARF_E_NOELF);
       else
-	__libdwarf_seterrno (DWARF_E_GETEHDR_ERROR);
+	__libdw_seterrno (DWARF_E_GETEHDR_ERROR);
 
       return NULL;
     }
 
 
+  /* Default memory allocation size.  */
+  size_t mem_default_size = sysconf (_SC_PAGESIZE) - 4 * sizeof (void *);
+
   /* Allocate the data structure.  */
-  result = (Dwarf *) calloc (1, sizeof (Dwarf));
+  result = (Dwarf *) calloc (1, sizeof (Dwarf) + mem_default_size);
   if (result == NULL)
     {
-      __libdwarf_seterrno (DWARF_E_NOMEM);
+      __libdw_seterrno (DWARF_E_NOMEM);
       return NULL;
     }
 
@@ -218,6 +222,15 @@ dwarf_begin_elf (elf, cmd, scngrp)
     result->other_byte_order = true;
 
   result->elf = elf;
+
+  /* Initialize the memory handling.  */
+  result->mem_default_size = mem_default_size;
+  result->oom_handler = __libdw_oom;
+  result->mem_tail = (struct libdw_memblock *) (result + 1);
+  result->mem_tail->size = (result->mem_default_size
+			    - offsetof (struct libdw_memblock, mem));
+  result->mem_tail->remaining = result->mem_tail->size;
+  result->mem_tail->next = result->mem_tail->prev = NULL;
 
 
   if (cmd == DWARF_C_READ || cmd == DWARF_C_RDWR)
@@ -234,12 +247,12 @@ dwarf_begin_elf (elf, cmd, scngrp)
     }
   else if (cmd == DWARF_C_WRITE)
     {
-      __libdwarf_seterrno (DWARF_E_UNIMPL);
+      __libdw_seterrno (DWARF_E_UNIMPL);
       free (result);
       return NULL;
     }
 
-  __libdwarf_seterrno (DWARF_E_INVALID_CMD);
+  __libdw_seterrno (DWARF_E_INVALID_CMD);
   free (result);
   return NULL;
 }

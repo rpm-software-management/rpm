@@ -1,7 +1,7 @@
 ## Process this file with automake to create Makefile.in
 ## Configure input file for elfutils.
 ##
-## Copyright (C) 2002 Red Hat, Inc.
+## Copyright (C) 2002, 2003 Red Hat, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License version 2 as
@@ -19,6 +19,7 @@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 AM_CFLAGS = -Wall -Wshadow # -Werror
 INCLUDES = -I. -I$(srcdir) -I$(srcdir)/../libelf -I.. -I$(srcdir)/../lib
+VERSION = 1
 
 LINT = splint
 
@@ -31,8 +32,14 @@ noinst_PROGRAMS = $(noinst_LIBRARIES:_pic.a=.so)
 #euinclude_HEADERS = libdw.h
 
 libdw_a_SOURCES = dwarf_begin.c dwarf_begin_elf.c dwarf_end.c dwarf_get_elf.c \
-		  dwarf_get_pubnames.c \
-		  dwarf_error.c
+		  dwarf_get_pubnames.c dwarf_get_abbrev.c dwarf_tag.c \
+		  dwarf_error.c dwarf_nextcu.c dwarf_diename.c dwarf_offdie.c \
+		  dwarf_attr.c dwarf_formstring.c dwarf_abbrev_hash.c \
+		  dwarf_child.c dwarf_has_children.c dwarf_formaddr.c \
+		  dwarf_formudata.c dwarf_formsdata.c dwarf_lowpc.c \
+		  dwarf_highpc.c dwarf_formref.c dwarf_siblingof.c \
+		  libdw_findcu.c libdw_form.c libdw_alloc.c
+
 
 libdw_pic_a_SOURCES =
 am_libdw_pic_a_OBJECTS = $(libdw_a_SOURCES:.c=.os)
@@ -41,7 +48,7 @@ libdw_so_SOURCES =
 libdw.so: libdw_pic.a $(srcdir)/libdw.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
 	      -Wl,--version-script,$(srcdir)/libdw.map,--no-undefined \
-	      -Wl,--soname,$@.$(VERSION) \
+	      -Wl,--soname,$@.$(VERSION),-z,defs \
 	      ../libelf/libelf.so
 	ln -fs $@ $@.$(VERSION)
 
@@ -66,7 +73,7 @@ uninstall: uninstall-am
 #	rm -f $(DESTDIR)$(libdir)/libdw.so
 #	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(includedir)/elfutils
 
-noinst_HEADERS = libdwP.h memory-access.h \
+noinst_HEADERS = libdwP.h memory-access.h dwarf_abbrev_hash.h \
 	dwarf.h libdw.h
 
 EXTRA_DIST = libdw.map

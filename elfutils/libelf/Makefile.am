@@ -75,7 +75,7 @@ libelf_so_SOURCES =
 libelf.so: libelf_pic.a libelf.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
 	      -Wl,--version-script,$(srcdir)/libelf.map,--no-undefined \
-	      -Wl,--soname,$@.$(VERSION)
+	      -Wl,--soname,$@.$(VERSION),-z-defs
 	ln -fs $@ $@.$(VERSION)
 
 %.os: %.c %.o

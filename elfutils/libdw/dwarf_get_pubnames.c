@@ -1,5 +1,5 @@
 /* Get public symbol information.
-   Copyright (C) 2002 Red Hat, Inc.
+   Copyright (C) 2002, 2003 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
    This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@ get_offsets (Dwarf *dbg)
 	  newmem = (struct pubnames_s *) realloc (mem, allocated * entsize);
 	  if (newmem == NULL)
 	    {
-	      __libdwarf_seterrno (DWARF_E_NOMEM);
+	      __libdw_seterrno (DWARF_E_NOMEM);
 	    err_return:
 	      free (mem);
 	      return -1;
@@ -83,7 +83,7 @@ get_offsets (Dwarf *dbg)
       version = read_2ubyte_unaligned (dbg, readp);
       if (version != 2)
 	{
-	  __libdwarf_seterrno (DWARF_E_INVALID_VERSION);
+	  __libdw_seterrno (DWARF_E_INVALID_VERSION);
 	  goto err_return;
 	}
 
@@ -113,7 +113,7 @@ get_offsets (Dwarf *dbg)
 
   if (mem == NULL)
     {
-      __libdwarf_seterrno (DWARF_E_NO_ENTRY);
+      __libdw_seterrno (DWARF_E_NO_ENTRY);
       return -1;
     }
 

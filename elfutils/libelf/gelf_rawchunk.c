@@ -54,7 +54,8 @@ gelf_rawchunk (Elf *elf, GElf_Off offset, GElf_Word size)
     __libelf_seterrno (ELF_E_NOMEM);
   else
     /* Read the file content.  */
-    if (pread (elf->fildes, result, size, elf->start_offset + offset) != size)
+    if ((size_t) pread (elf->fildes, result, size, elf->start_offset + offset)
+	!= size)
       {
 	/* Something went wrong.  */
 	__libelf_seterrno (ELF_E_READ_ERROR);

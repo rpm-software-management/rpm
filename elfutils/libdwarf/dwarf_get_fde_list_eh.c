@@ -277,8 +277,8 @@ dwarf_get_fde_list_eh (dbg, cie_data, cie_element_count, fde_data,
 	       a direct offset in the section it is a offset from the
 	       location of the FDE'S CIE ID value itself to the CIE entry.  */
 	    if (cie->cie->offset
-		== (cie_id_ptr - cie_id
-		    - (Dwarf_Small *) dbg->sections[IDX_eh_frame].addr))
+		== (size_t) (cie_id_ptr - cie_id
+			     - (Dwarf_Small *) dbg->sections[IDX_eh_frame].addr))
 	      {
 		new_fde->fde->cie = cie->cie;
 		break;
@@ -337,8 +337,8 @@ dwarf_get_fde_list_eh (dbg, cie_data, cie_element_count, fde_data,
 	  do
 	    {
 	      if (cielist->cie->offset
-		  == (fdelist->cie_id_ptr - fdelist->fde->offset
-		      - (Dwarf_Small *) dbg->sections[IDX_eh_frame].addr))
+		  == (size_t) (fdelist->cie_id_ptr - fdelist->fde->offset
+			       - (Dwarf_Small *) dbg->sections[IDX_eh_frame].addr))
 		{
 		  fdelist->fde->cie = cielist->cie;
 		  break;

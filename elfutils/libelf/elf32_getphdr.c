@@ -139,8 +139,9 @@ elfw2(LIBELFBITS,getphdr) (Elf *elf)
 	  elf->state.ELFW(elf,LIBELFBITS).phdr_flags |= ELF_F_MALLOCED;
 
 	  /* Read the header.  */
-	  if (pread (elf->fildes, elf->state.ELFW(elf,LIBELFBITS).phdr, size,
-		     (elf->start_offset + ehdr->e_phoff)) != size)
+	  if ((size_t) pread (elf->fildes,
+			      elf->state.ELFW(elf,LIBELFBITS).phdr, size,
+			      (elf->start_offset + ehdr->e_phoff)) != size)
 	    {
 	      /* Severe problems.  We cannot read the data.  */
 	      __libelf_seterrno (ELF_E_READ_ERROR);

@@ -65,7 +65,7 @@ sort_sections (Elf_Scn **scns, Elf_ScnList *list)
   Elf_Scn **scnp = scns;
   do
     {
-      int cnt;
+      size_t cnt;
 
       for (cnt = 0; cnt < list->cnt; ++cnt)
 	*scnp++ = &list->data[cnt];
@@ -327,7 +327,7 @@ fill (int fd, off_t pos, size_t len, char *fillbuf, size_t *filledp)
       /* This many bytes we want to write in this round.  */
       size_t n = MIN (filled, len);
 
-      if (unlikely (pwrite (fd, fillbuf, n, pos) != n))
+      if (unlikely ((size_t) pwrite (fd, fillbuf, n, pos) != n))
 	{
 	  __libelf_seterrno (ELF_E_WRITE_ERROR);
 	  return 1;
@@ -444,9 +444,9 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 	}
 
       /* Write out the ELF header.  */
-      if (unlikely (pwrite (elf->fildes, out_phdr,
-			    sizeof (ElfW2(LIBELFBITS,Phdr)) * ehdr->e_phnum,
-			    ehdr->e_phoff)
+      if (unlikely ((size_t) pwrite (elf->fildes, out_phdr,
+				     sizeof (ElfW2(LIBELFBITS,Phdr))
+				     * ehdr->e_phnum, ehdr->e_phoff)
 		    != sizeof (ElfW2(LIBELFBITS,Phdr)) * ehdr->e_phnum))
 	{
 	  __libelf_seterrno (ELF_E_WRITE_ERROR);
@@ -550,8 +550,9 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 			(*fctp) (buf, dl->data.d.d_buf, dl->data.d.d_size, 1);
 		      }
 
-		    if (unlikely (pwrite (elf->fildes, buf,
-					  dl->data.d.d_size, last_offset)
+		    if (unlikely ((size_t) pwrite (elf->fildes, buf,
+						   dl->data.d.d_size,
+						   last_offset)
 				  != dl->data.d.d_size))
 		      {
 			if (buf != dl->data.d.d_buf && buf != tmpbuf)
@@ -590,9 +591,9 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 
       /* Write out the section header table.  */
       if (shdr_flags & ELF_F_DIRTY
-	  && unlikely (pwrite (elf->fildes, shdr_data,
-			       sizeof (ElfW2(LIBELFBITS,Shdr)) * shnum,
-			       shdr_offset)
+	  && unlikely ((size_t) pwrite (elf->fildes, shdr_data,
+					sizeof (ElfW2(LIBELFBITS,Shdr))
+					* shnum, shdr_offset)
 		       != sizeof (ElfW2(LIBELFBITS,Shdr)) * shnum))
 	{
 	  __libelf_seterrno (ELF_E_WRITE_ERROR);

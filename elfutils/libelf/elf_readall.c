@@ -76,8 +76,8 @@ __libelf_readall (Elf *elf)
       if (mem != NULL)
 	{
 	  /* Read the file content.  */
-	  if (pread (elf->fildes, mem, elf->maximum_size,
-		     elf->start_offset) != elf->maximum_size)
+	  if ((size_t) pread (elf->fildes, mem, elf->maximum_size,
+			      elf->start_offset) != elf->maximum_size)
 	    {
 	      /* Something went wrong.  */
 	      __libelf_seterrno (ELF_E_READ_ERROR);

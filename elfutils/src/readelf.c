@@ -1045,7 +1045,7 @@ handle_dynamic (Ebl *ebl, GElf_Ehdr *ehdr, Elf_Scn *scn, GElf_Shdr *shdr)
   int class = gelf_getclass (ebl->elf);
   GElf_Shdr glink;
   Elf_Data *data;
-  int cnt;
+  size_t cnt;
   size_t shstrndx;
 
   /* Get the data of the section.  */
@@ -1539,7 +1539,7 @@ print_symtab (Ebl *ebl, GElf_Ehdr *ehdr, int type)
       GElf_Shdr shdr_mem;
       GElf_Shdr *shdr = gelf_getshdr (scn, &shdr_mem);
 
-      if (shdr != NULL && shdr->sh_type == type)
+      if (shdr != NULL && shdr->sh_type == (GElf_Word) type)
 	handle_symtab (ebl, ehdr, scn, shdr);
     }
 }
@@ -2080,7 +2080,7 @@ handle_versym (Ebl *ebl, GElf_Ehdr *ehdr, Elf_Scn *scn, GElf_Shdr *shdr)
 	      if (def == NULL)
 		break;
 
-	      nvername = MAX (nvername, def->vd_ndx & 0x7fff);
+	      nvername = MAX (nvername, (size_t) (def->vd_ndx & 0x7fff));
 
 	      offset += def->vd_next;
 	    }
@@ -2123,7 +2123,8 @@ handle_versym (Ebl *ebl, GElf_Ehdr *ehdr, Elf_Scn *scn, GElf_Shdr *shdr)
 		  if (aux == NULL)
 		    break;
 
-		  nvername = MAX (nvername, aux->vna_other & 0x7fff);
+		  nvername = MAX (nvername,
+				  (size_t) (aux->vna_other & 0x7fff));
 
 		  auxoffset += aux->vna_next;
 		}
@@ -3265,7 +3266,7 @@ print_debug_info_section (Ebl *ebl, GElf_Ehdr *ehdr, Elf_Scn *scn,
   Dwarf_Unsigned nextcu;
   int ret;
   Dwarf_Off cu_offset;
-  int level;
+  size_t level;
 
   printf (gettext ("\
 \nDWARF section '%s' at offset %#" PRIx64 ":\n [Offset]\n"),

@@ -244,7 +244,7 @@ cannot create extended section index table: %s"),
 
 		/* Store the real section index in the extended setion
 		   index table.  */
-		assert (ptr < ctx->nsymbol_tab + 1);
+		assert ((size_t) ptr < ctx->nsymbol_tab + 1);
 		xshndx[ptr] = ndx;
 
 		/* And signal that this happened.  */

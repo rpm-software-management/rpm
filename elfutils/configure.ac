@@ -13,8 +13,8 @@ dnl License version 1.0 from http://www.opensource.org/licenses/osl.php or
 dnl by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
 dnl 3001 King Ranch Road, Ukiah, CA 95482.
 dnl
-AC_INIT([elfutils],[0.76],[drepper@redhat.com],[elfutils])
-AM_INIT_AUTOMAKE([gnits 1.6.3 dist-bzip2])
+AC_INIT([elfutils],[0.78],[drepper@redhat.com],[elfutils])
+AM_INIT_AUTOMAKE([gnits 1.7 dist-bzip2])
 AC_COPYRIGHT([Copyright (C) 1996-2002, 2003 Red Hat, Inc.])
 AC_CONFIG_SRCDIR([src/readelf.c])
 AM_CONFIG_HEADER([config.h])

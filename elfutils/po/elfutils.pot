@@ -781,7 +781,7 @@ msgstr ""
 msgid "  %#06x: Parent %d: %s\n"
 msgstr ""
 
-#: src/readelf.c:2241
+#: src/readelf.c:2242
 #, c-format
 msgid ""
 "\n"
@@ -794,20 +794,20 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/readelf.c:2273
+#: src/readelf.c:2274
 msgid "   0 *local*                     "
 msgstr ""
 
-#: src/readelf.c:2278
+#: src/readelf.c:2279
 msgid "   1 *global*                    "
 msgstr ""
 
-#: src/readelf.c:2334
+#: src/readelf.c:2335
 #, c-format
 msgid "cannot get data for section %d: %s"
 msgstr ""
 
-#: src/readelf.c:2344
+#: src/readelf.c:2345
 #, c-format
 msgid ""
 "\n"
@@ -822,49 +822,49 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/readelf.c:2389
+#: src/readelf.c:2390
 #, c-format
 msgid " Length  Number  % of total  Coverage"
 msgstr ""
 
-#: src/readelf.c:2390
+#: src/readelf.c:2391
 #, c-format
 msgid "      0  %6<PRIu32>      %5.1f%%\n"
 msgstr ""
 
-#: src/readelf.c:2396
+#: src/readelf.c:2397
 #, c-format
 msgid "%7d  %6<PRIu32>      %5.1f%%    %5.1f%%\n"
 msgstr ""
 
-#: src/readelf.c:2410
+#: src/readelf.c:2411
 #, c-format
 msgid ""
 " Average number of tests:   successful lookup: %f\n"
 "                          unsuccessful lookup: %f\n"
 msgstr ""
 
-#: src/readelf.c:2507
+#: src/readelf.c:2508
 #, c-format
 msgid "unknown tag %hx"
 msgstr ""
 
-#: src/readelf.c:2509
+#: src/readelf.c:2510
 #, c-format
 msgid "unknown user tag %hx"
 msgstr ""
 
-#: src/readelf.c:2692
+#: src/readelf.c:2693
 #, c-format
 msgid "unknown attribute %hx"
 msgstr ""
 
-#: src/readelf.c:2695
+#: src/readelf.c:2696
 #, c-format
 msgid "unknown user attribute %hx"
 msgstr ""
 
-#: src/readelf.c:2741
+#: src/readelf.c:2742
 #, c-format
 msgid "unknown form %<PRIx64>"
 msgstr ""
@@ -1128,12 +1128,12 @@ msgstr ""
 msgid "while closing `%s'"
 msgstr ""
 
-#: src/size.c:444 src/size.c:583
+#: src/size.c:442 src/size.c:584
 #, c-format
 msgid " (ex %s)"
 msgstr ""
 
-#: src/size.c:608
+#: src/size.c:609
 msgid "(TOTALS)\n"
 msgstr ""
 
@@ -1776,12 +1776,20 @@ msgstr ""
 msgid "cannot change access mode of output file"
 msgstr ""
 
-#: src/ldgeneric.c:5789
+#: src/ldgeneric.c:5785
+msgid "cannot stat output file"
+msgstr ""
+
+#: src/ldgeneric.c:5791
 msgid "cannot rename output file"
 msgstr ""
 
-#: src/ldgeneric.c:5837 src/ldgeneric.c:5848 src/ldgeneric.c:5859
-#: src/ldgeneric.c:5877 src/ldgeneric.c:5890 src/ldgeneric.c:5902
+#: src/ldgeneric.c:5801
+msgid "WARNING: temporary output overwritten before linking finished"
+msgstr ""
+
+#: src/ldgeneric.c:5854 src/ldgeneric.c:5865 src/ldgeneric.c:5876
+#: src/ldgeneric.c:5894 src/ldgeneric.c:5907 src/ldgeneric.c:5919
 #, c-format
 msgid "no machine specific '%s' implementation"
 msgstr ""
@@ -2013,7 +2021,7 @@ msgstr ""
 
 #: src/elflint.c:706
 #, c-format
-msgid "section [%2d] '%s': symbol %d: unknow symbol binding"
+msgid "section [%2d] '%s': symbol %d: unknown symbol binding"
 msgstr ""
 
 #: src/elflint.c:718

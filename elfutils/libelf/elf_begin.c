@@ -84,7 +84,7 @@ get_shnum (/*@null@*/ void *map_address, unsigned char *e_ident, int fildes,
 
       ehdr.p = alloca (len);
       /* Fill it.  */
-      if (pread (fildes, ehdr.p, len, offset) != len)
+      if ((size_t) pread (fildes, ehdr.p, len, offset) != len)
 	/* Failed reading.  */
 	return (size_t) -1l;
 
@@ -624,8 +624,9 @@ read_long_names (Elf *elf)
 						    len);
       else
 	{
-	  if (pread (elf->fildes, newp, len,
-		     elf->start_offset + offset + sizeof (struct ar_hdr))
+	  if ((size_t) pread (elf->fildes, newp, len,
+			      elf->start_offset + offset
+			      + sizeof (struct ar_hdr))
 	      != len)
 	    {
 	      /* We were not able to read all data.  */

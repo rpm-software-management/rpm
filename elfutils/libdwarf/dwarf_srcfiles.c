@@ -188,6 +188,9 @@ dwarf_srcfiles (die, srcfiles, srcfilecount, error)
   int length;
   int res;
 
+  /* For now we haven't found anything.  */
+  *srcfilecount = 0;
+
   /* The die must be for a compilation unit.  */
   if (die->abbrev->tag != DW_TAG_compile_unit)
     {

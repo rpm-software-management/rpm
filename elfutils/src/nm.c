@@ -156,7 +156,7 @@ static bool print_armap;
 static bool reverse_sort;
 
 /* Type of the section we are printing.  */
-static int symsec_type = SHT_SYMTAB;
+static GElf_Word symsec_type = SHT_SYMTAB;
 
 /* Sorting selection.  */
 static enum
@@ -616,7 +616,7 @@ get_local_names (Ebl *ebl, Dwarf_Debug dbg)
 		    && (dwarf_attr (die, DW_AT_decl_file, &file, &err)
 			== DW_DLV_OK)
 		    && dwarf_formudata (file, &fileidx, &err) == DW_DLV_OK
-		    && fileidx > 0 && fileidx <= nfiles
+		    && fileidx > 0 && fileidx <= (Dwarf_Unsigned) nfiles
 		    && (dwarf_attr (die, DW_AT_decl_line, &line, &err)
 			== DW_DLV_OK)
 		    && dwarf_formudata (line, &lineno, &err) == DW_DLV_OK
@@ -1141,7 +1141,7 @@ show_symbols (Ebl *ebl, GElf_Ehdr *ehdr, Elf_Scn *scn, Elf_Scn *xndxscn,
   size_t nentries;
   size_t cnt;
   GElf_SymX *sym_mem;
-  int longest_name = 4;
+  size_t longest_name = 4;
 
   int sort_by_name (const void *p1, const void *p2)
     {
@@ -1192,7 +1192,7 @@ show_symbols (Ebl *ebl, GElf_Ehdr *ehdr, Elf_Scn *scn, Elf_Scn *xndxscn,
 
   /* Allocate the memory.
 
-     XXX We can here a dirty trick.  Since GElf_Sym == Elf64_Sym we
+     XXX We can use a dirty trick here.  Since GElf_Sym == Elf64_Sym we
      can use the data memory instead of copying again if what we read
      is a 64 bit file.  */
   if (nentries * sizeof (GElf_SymX) < MAX_STACK_ALLOC)

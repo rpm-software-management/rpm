@@ -184,15 +184,15 @@ elf_getarsym (Elf *elf, size_t *ptr)
 	      new_str = (char *) (elf->state.ar.ar_sym + n + 1);
 
 	      /* Now read the data from the file.  */
-	      if (pread (elf->fildes, file_data, n * sizeof (uint32_t),
-			 elf->start_offset
-			 + SARMAG + sizeof (struct ar_hdr)
-			 + sizeof (uint32_t)) != n * sizeof (uint32_t)
-		  || (pread (elf->fildes, new_str,
-			    index_size - n * sizeof (uint32_t),
-			    elf->start_offset
-			    + SARMAG + sizeof (struct ar_hdr)
-			    + (n + 1) * sizeof (uint32_t))
+	      if ((size_t) pread (elf->fildes, file_data,
+				  n * sizeof (uint32_t), elf->start_offset
+				  + SARMAG + sizeof (struct ar_hdr)
+				  + sizeof (uint32_t)) != n * sizeof (uint32_t)
+		  || ((size_t) pread (elf->fildes, new_str,
+				      index_size - n * sizeof (uint32_t),
+				      elf->start_offset
+				      + SARMAG + sizeof (struct ar_hdr)
+				      + (n + 1) * sizeof (uint32_t))
 		      != index_size - n * sizeof (uint32_t)))
 		{
 		  /* We were not able to read the data.  */

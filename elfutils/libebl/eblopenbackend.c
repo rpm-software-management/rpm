@@ -159,7 +159,7 @@ openbackend (elf, emulation, machine)
      GElf_Half machine;
 {
   Ebl *result;
-  int cnt;
+  size_t cnt;
 
   /* First allocate the data structure for the result.  We do this
      here since this assures that the structure is always large

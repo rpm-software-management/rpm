@@ -122,7 +122,7 @@ dwarf_elf_init (elf, access, errhand, errarg, dbg, error)
 	  GElf_Shdr shdr_mem;
 	  GElf_Shdr *shdr;
 	  const char *scnname;
-	  int cnt;
+	  size_t cnt;
 	  Elf_Data *data;
 
 	  /* Get the section header data.  */

@@ -1,7 +1,7 @@
 ## Process this file with automake to create Makefile.in
 ## Configure input file for elfutils.
 ##
-## Copyright (C) 1996-2001, 2002 Red Hat, Inc.
+## Copyright (C) 1996-2002, 2003 Red Hat, Inc.
 ##
 ## This program is Open Source software; you can redistribute it and/or
 ## modify it under the terms of the Open Software License version 1.0 as
@@ -15,6 +15,7 @@
 ##
 DEFS = -DHAVE_CONFIG_H -D_GNU_SOURCE
 AM_CFLAGS = -Wall # -Werror
+AM_LDFLAGS = -Wl,-rpath,\$$ORIGIN/../libasm:\$$ORIGIN/../libdwarf:\$$ORIGIN/../libdw:\$$ORIGIN/../libebl:\$$ORIGIN/../libelf
 INCLUDES = -I$(top_srcdir)/libasm -I$(top_srcdir)/libdwarf \
 	   -I$(top_srcdir)/libdw \
 	   -I$(top_srcdir)/libebl -I$(top_srcdir)/libelf \
@@ -37,7 +38,8 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist \
 	run-show-ciefde.sh run-show-abbrev.sh hash asm-tst1 asm-tst2 \
 	asm-tst3 asm-tst4 asm-tst5 asm-tst6 asm-tst7 asm-tst8 asm-tst9 \
 	msg_tst newscn run-strip-test.sh run-strip-test2.sh \
-	run-get-pubnames2.sh run-ecp-test.sh run-ecp-test2.sh
+	run-ecp-test.sh run-ecp-test2.sh \
+	run-get-pubnames2.sh
 
 EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-firstdie.sh \
 	     run-show-dies.sh run-show-tags.sh run-show-die-info1.sh \
@@ -49,8 +51,6 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-firstdie.sh \
 	     testfile testfile2 testfile3 testfile4 testfile5 \
 	     testfile6.bz2 testfile7.bz2 testfile8.bz2 testfile9.bz2 \
 	     testfile10
-
-TESTS_ENVIRONMENT = LD_LIBRARY_PATH="../libelf:../libebl:../libasm:../libdwarf:../libdw$${LD_LIBRARY_PATH:+:}$$LD_LIBRARY_PATH"
 
 arextract_LDADD = ../libelf/libelf.so
 arsymtest_LDADD = ../libelf/libelf.so

@@ -74,7 +74,7 @@ libdwarf_so_SOURCES =
 libdwarf.so: libdwarf_pic.a libdwarf.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
 	      -Wl,--version-script,$(srcdir)/libdwarf.map,--no-undefined \
-	      -Wl,--soname,$@.$(VERSION) \
+	      -Wl,--soname,$@.$(VERSION),-z,defs \
 	      ../libelf/libelf.so
 	ln -fs $@ $@.$(VERSION)
 

@@ -23,12 +23,14 @@ static int globcnt;
 static int
 callback (Dwarf *dbg, Dwarf_Global *gl, void *arg)
 {
+  int result = DWARF_CB_OK;
+  const char *diename;
+  Dwarf_Die die;
+
   printf (" [%2d] \"%s\", die: %llu, cu: %llu\n",
 	  globcnt++, gl->name, (unsigned long long int) gl->die_offset,
 	  (unsigned long long int) gl->cu_offset);
 
-#if 0
- {
   Dwarf_Die cu_die;
   const char *cuname;
   const char *diename;
@@ -37,28 +39,21 @@ callback (Dwarf *dbg, Dwarf_Global *gl, void *arg)
       || (cuname = dwarf_diename (&cu_die)) == NULL)
     {
       puts ("failed to get CU die");
-      result = 1;
+      result = DWARF_CB_ABORT;
     }
   else
-    {
-      printf ("CU name: \"%s\"\n", cuname);
-      dwarf_dealloc (dbg, cuname, DW_DLA_STRING);
-    }
+    printf ("CU name: \"%s\"\n", cuname);
 
   if (dwarf_offdie (dbg, gl->die_offset, &die) == NULL
       || (diename = dwarf_diename (&die)) == NULL)
     {
       puts ("failed to get object die");
-      result = 1;
+      result = DWARF_CB_ABORT;
     }
   else
-    {
-      printf ("object name: \"%s\"\n", diename);
-      dwarf_dealloc (dbg, diename, DW_DLA_STRING);
-    }
- }
-#endif
-  return DWARF_CB_OK;
+    printf ("object name: \"%s\"\n", diename);
+
+  return result;
 }
 
 

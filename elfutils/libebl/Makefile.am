@@ -58,7 +58,7 @@ libebl_so_SOURCES =
 libebl.so: libebl_pic.a libebl.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
 	      -Wl,--version-script,$(srcdir)/libebl.map,--no-undefined \
-	      -Wl,--soname,$@.$(VERSION) \
+	      -Wl,--soname,$@.$(VERSION),-z,defs \
 	      ../libelf/libelf.so -ldl
 	ln -fs $@ $@.$(VERSION)
 
@@ -70,7 +70,8 @@ am_libebl_i386_pic_a_OBJECTS = $(i386_SRCS:.c=.os)
 libebl_i386_so_SOURCES =
 libebl_i386.so: libebl_i386_pic.a libebl_i386.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      -Wl,--version-script,$(srcdir)/libebl_i386.map,--no-undefined
+	      -Wl,--version-script,$(srcdir)/libebl_i386.map,--no-undefined \
+	      -Wl,-z,defs
 
 
 sh_SRCS = sh_init.c sh_destr.c sh_symbol.c
@@ -80,7 +81,8 @@ am_libebl_sh_pic_a_OBJECTS = $(sh_SRCS:.c=.os)
 libebl_sh_so_SOURCES =
 libebl_sh.so: libebl_sh_pic.a libebl_sh.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      -Wl,--version-script,$(srcdir)/libebl_sh.map,--no-undefined
+	      -Wl,--version-script,$(srcdir)/libebl_sh.map,--no-undefined \
+	      -Wl,-z,defs
 
 
 mips_SRCS = mips_init.c mips_destr.c mips_symbol.c
@@ -90,7 +92,8 @@ am_libebl_mips_pic_a_OBJECTS = $(mips_SRCS:.c=.os)
 libebl_mips_so_SOURCES =
 libebl_mips.so: libebl_mips_pic.a libebl_mips.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      -Wl,--version-script,$(srcdir)/libebl_mips.map,--no-undefined
+	      -Wl,--version-script,$(srcdir)/libebl_mips.map,--no-undefined \
+	      -Wl,-z,defs
 
 
 x86_64_SRCS = x86_64_init.c x86_64_destr.c x86_64_symbol.c
@@ -100,7 +103,8 @@ am_libebl_x86_64_pic_a_OBJECTS = $(x86_64_SRCS:.c=.os)
 libebl_x86_64_so_SOURCES =
 libebl_x86_64.so: libebl_x86_64_pic.a libebl_x86_64.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      -Wl,--version-script,$(srcdir)/libebl_x86_64.map,--no-undefined
+	      -Wl,--version-script,$(srcdir)/libebl_x86_64.map,--no-undefined \
+	      -Wl,-z,defs
 
 
 ia64_SRCS = ia64_init.c ia64_destr.c ia64_symbol.c
@@ -110,7 +114,8 @@ am_libebl_ia64_pic_a_OBJECTS = $(ia64_SRCS:.c=.os)
 libebl_ia64_so_SOURCES =
 libebl_ia64.so: libebl_ia64_pic.a libebl_ia64.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      -Wl,--version-script,$(srcdir)/libebl_ia64.map,--no-undefined
+	      -Wl,--version-script,$(srcdir)/libebl_ia64.map,--no-undefined \
+	      -Wl,-z,defs
 
 
 alpha_SRCS = alpha_init.c alpha_destr.c alpha_symbol.c
@@ -120,7 +125,8 @@ am_libebl_alpha_pic_a_OBJECTS = $(alpha_SRCS:.c=.os)
 libebl_alpha_so_SOURCES =
 libebl_alpha.so: libebl_alpha_pic.a libebl_alpha.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      -Wl,--version-script,$(srcdir)/libebl_alpha.map,--no-undefined
+	      -Wl,--version-script,$(srcdir)/libebl_alpha.map,--no-undefined \
+	      -Wl,-z,defs
 
 
 arm_SRCS = arm_init.c arm_destr.c arm_symbol.c
@@ -130,7 +136,8 @@ am_libebl_arm_pic_a_OBJECTS = $(arm_SRCS:.c=.os)
 libebl_arm_so_SOURCES =
 libebl_arm.so: libebl_arm_pic.a libebl_arm.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      -Wl,--version-script,$(srcdir)/libebl_arm.map,--no-undefined
+	      -Wl,--version-script,$(srcdir)/libebl_arm.map,--no-undefined \
+	      -Wl,-z,defs
 
 
 sparc_SRCS = sparc_init.c sparc_destr.c sparc_symbol.c
@@ -140,7 +147,8 @@ am_libebl_sparc_pic_a_OBJECTS = $(sparc_SRCS:.c=.os)
 libebl_sparc_so_SOURCES =
 libebl_sparc.so: libebl_sparc_pic.a libebl_sparc.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      -Wl,--version-script,$(srcdir)/libebl_sparc.map,--no-undefined
+	      -Wl,--version-script,$(srcdir)/libebl_sparc.map,--no-undefined \
+	      -Wl,-z,defs
 
 
 %.os: %.c %.o

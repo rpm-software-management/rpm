@@ -268,8 +268,8 @@ __libelf_set_rawdata (Elf_Scn *scn)
 	      return 1;
 	    }
 
-	  if (pread (elf->fildes, scn->rawdata.d.d_buf, size,
-		     elf->start_offset + offset) != size)
+	  if ((size_t) pread (elf->fildes, scn->rawdata.d.d_buf, size,
+			      elf->start_offset + offset) != size)
 	    {
 	      /* Cannot read the data.  */
 	      free (scn->rawdata.d.d_buf);

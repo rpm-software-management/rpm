@@ -54,7 +54,7 @@ ebl_section_type_name (ebl, section, buf, len)
 	};
 
       /* Handle standard names.  */
-      if (section < sizeof (knowntypes) / sizeof (knowntypes[0])
+      if ((size_t) section < sizeof (knowntypes) / sizeof (knowntypes[0])
 	  && knowntypes[section] != NULL)
 	res = knowntypes[section];
       /* The symbol versioning/Sun extensions.  */
@@ -80,7 +80,8 @@ ebl_section_type_name (ebl, section, buf, len)
 	  /* Handle processor-specific section names.  */
 	  else if (section >= SHT_LOPROC && section <= SHT_HIPROC)
 	    snprintf (buf, len, "SHT_LOPROC+%x", section - SHT_LOPROC);
-	  else if (section >= SHT_LOUSER && section <= SHT_HIUSER)
+	  else if ((unsigned int) section >= SHT_LOUSER
+		   && (unsigned int) section <= SHT_HIUSER)
 	    snprintf (buf, len, "SHT_LOUSER+%x", section - SHT_LOUSER);
 	  else
 	    snprintf (buf, len, "%s: %d", gettext ("<unknown>"), section);

@@ -141,7 +141,7 @@ main (int argc, char *argv[])
 	       elf_errmsg (-1));
       else
 	{
-	  int prev_error_message_count = error_message_count;
+	  unsigned int prev_error_message_count = error_message_count;
 	  struct stat64 st;
 
 	  if (fstat64 (fd, &st) != 0)
@@ -324,14 +324,14 @@ static const int valid_e_machine[] =
 
 
 /* Number of sections.  */
-static int shnum;
+static unsigned int shnum;
 
 
 static void
 check_elf_header (Ebl *ebl, GElf_Ehdr *ehdr, size_t size)
 {
   char buf[512];
-  int cnt;
+  size_t cnt;
 
   /* Check e_ident field.  */
   if (ehdr->e_ident[EI_MAG0] != ELFMAG0)
@@ -506,7 +506,7 @@ check_scn_group (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
     {
       /* No reference so far.  Search following sections, maybe the
 	 order is wrong.  */
-      int cnt;
+      size_t cnt;
 
       for (cnt = idx + 1; cnt < shnum; ++cnt)
 	{
@@ -515,7 +515,7 @@ check_scn_group (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
 	  GElf_Shdr *shdr;
 	  Elf_Data *data;
 	  Elf32_Word *grpdata;
-	  int inner;
+	  size_t inner;
 
 	  scn = elf_getscn (ebl->elf, cnt);
 	  shdr = gelf_getshdr (scn, &shdr_mem);
@@ -535,7 +535,7 @@ check_scn_group (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
 
 	  grpdata = (Elf32_Word *) data->d_buf;
 	  for (inner = 1; inner < data->d_size / sizeof (Elf32_Word); ++inner)
-	    if (grpdata[inner] == idx)
+	    if (grpdata[inner] == (Elf32_Word) idx)
 	      goto out;
 	}
 
@@ -562,7 +562,7 @@ check_symtab (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
   Elf_Data *data;
   GElf_Shdr strshdr_mem;
   GElf_Shdr *strshdr;
-  int cnt;
+  size_t cnt;
   GElf_Shdr xndxshdr_mem;
   GElf_Shdr *xndxshdr = NULL;
   Elf_Data *xndxdata = NULL;
@@ -592,7 +592,7 @@ check_symtab (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
 
   /* Search for an extended section index table section.  */
   for (cnt = 1; cnt < shnum; ++cnt)
-    if (cnt != idx)
+    if (cnt != (size_t) idx)
       {
 	Elf_Scn *xndxscn = elf_getscn (ebl->elf, cnt);
 	xndxshdr = gelf_getshdr (xndxscn, &xndxshdr_mem);
@@ -603,7 +603,7 @@ check_symtab (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
 	  continue;
 
 	if (xndxshdr->sh_type == SHT_SYMTAB_SHNDX
-	    && xndxshdr->sh_link == idx)
+	    && xndxshdr->sh_link == (GElf_Word) idx)
 	  break;
       }
   if (cnt == shnum)
@@ -704,7 +704,7 @@ section [%2d] '%s': symbol %d: invalid section index"),
 
       if (GELF_ST_BIND (sym->st_info) >= STB_NUM)
 	error (0, 0, gettext ("\
-section [%2d] '%s': symbol %d: unknow symbol binding"),
+section [%2d] '%s': symbol %d: unknown symbol binding"),
 	       idx, section_name (ebl, ehdr, idx), cnt);
 
       if (xndx > 0 && xndx < shnum)
@@ -758,7 +758,7 @@ check_rela (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
   GElf_Shdr *symshdr;
   GElf_Shdr destshdr_mem;
   GElf_Shdr *destshdr = NULL;
-  int cnt;
+  size_t cnt;
 
   scn = elf_getscn (ebl->elf, idx);
   shdr = gelf_getshdr (scn, &shdr_mem);
@@ -844,7 +844,7 @@ check_rel (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
   GElf_Shdr *symshdr;
   GElf_Shdr destshdr_mem;
   GElf_Shdr *destshdr = NULL;
-  int cnt;
+  size_t cnt;
 
   scn = elf_getscn (ebl->elf, idx);
   shdr = gelf_getshdr (scn, &shdr_mem);
@@ -933,7 +933,7 @@ check_dynamic (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
   Elf_Data *data;
   GElf_Shdr strshdr_mem;
   GElf_Shdr *strshdr;
-  int cnt;
+  size_t cnt;
   static const bool dependencies[DT_NUM][DT_NUM] =
     {
       [DT_NEEDED] = { [DT_STRTAB] = true },
@@ -1130,7 +1130,7 @@ check_symtab_shndx (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
   GElf_Shdr symshdr_mem;
   GElf_Shdr *symshdr;
   Elf_Scn *symscn;
-  int cnt;
+  size_t cnt;
   Elf_Data *data;
   Elf_Data *symdata;
 
@@ -1269,7 +1269,7 @@ section [%2d] '%s': hash table section is too small (is %ld, expected %ld)"),
   if (symshdr != NULL)
     {
       size_t symsize = symshdr->sh_size / symshdr->sh_entsize;
-      int cnt;
+      size_t cnt;
 
       if (nchain < symshdr->sh_size / symshdr->sh_entsize)
 	error (0, 0,
@@ -1445,10 +1445,10 @@ static const struct
 {
   const char *name;
   size_t namelen;
-  int type;
+  GElf_Word type;
   enum { unused, exact, atleast } attrflag;
-  int attr;
-  int attr2;
+  GElf_Word attr;
+  GElf_Word attr2;
 } special_sections[] =
   {
     /* See figure 4-14 in the gABI.  */
@@ -1547,7 +1547,7 @@ check_sections (Ebl *ebl, GElf_Ehdr *ehdr)
 {
   GElf_Shdr shdr_mem;
   GElf_Shdr *shdr;
-  int cnt;
+  size_t cnt;
   bool dot_interp_section = false;
 
   /* Allocate array to count references in section groups.  */
