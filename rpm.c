@@ -53,6 +53,124 @@ enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_INITDB, MODE_TARBUILD,
 	     MODE_REBUILDDB, MODE_UNKNOWN };
 
+/* the flags for the various options */
+static int allFiles;
+static int allMatches;
+static int badReloc;
+static int clean;
+static int dump;
+static int excldocs;
+static int force;
+static char * ftpPort;
+static char * ftpProxy;
+static int showHash;
+static int help;
+static int ignoreArch;
+static int ignoreOs;
+static int incldocs;
+static int initdb;
+static int justdb;
+static int noDeps;
+static int noOrder;
+static int noFiles;
+static int noMd5;
+static int noPgp;
+static int noScripts;
+static int oldPackage;
+static int showPercents;
+static char * pipeOutput;
+static char * prefix;
+static int queryTags;
+static int quiet;
+static int replaceFiles;
+static int replacePackages;
+static char * rootdir;
+static int shortCircuit;
+static int signIt;
+static int test;
+static int rpm_version;
+
+/* the structure describing the options we take and the defaults */
+static struct poptOption optionsTable[] = {
+	{ "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
+	{ "all", 'a', 0, 0, 'a' },
+	{ "allfiles", '\0', 0, &allFiles, 0 },
+	{ "allmatches", 'a', 0, &allMatches, 0 },
+	{ "badreloc", '\0', 0, &badReloc, 0 },
+	{ "build", 'b', POPT_ARG_STRING, 0, 'b' },
+	{ "buildarch", '\0', POPT_ARG_STRING, 0, 0 },
+	{ "buildos", '\0', POPT_ARG_STRING, 0, 0 },
+	{ "buildroot", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDROOT },
+	{ "checksig", 'K', 0, 0, 'K' },
+	{ "clean", '\0', 0, &clean, 0 },
+	{ "configfiles", 'c', 0, 0, 'c' },
+	{ "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH },
+	{ "docfiles", 'd', 0, 0, 'd' },
+	{ "dump", '\0', 0, &dump, 0 },
+	{ "erase", 'e', 0, 0, 'e' },
+	{ "excludedocs", '\0', 0, &excldocs, 0},
+	{ "file", 'f', 0, 0, 'f' },
+	{ "force", '\0', 0, &force, 0 },
+	{ "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0},
+	{ "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0},
+	{ "group", 'g', 0, 0, 'g' },
+	{ "hash", 'h', 0, &showHash, 0 },
+	{ "help", '\0', 0, &help, 0 },
+	{  NULL, 'i', 0, 0, 'i' },
+	{ "ignorearch", '\0', 0, &ignoreArch, 0 },
+	{ "ignoreos", '\0', 0, &ignoreOs, 0 },
+	{ "includedocs", '\0', 0, &incldocs, 0},
+	{ "initdb", '\0', 0, &initdb, 0 },
+/* info and install both using 'i' is dumb */
+	{ "install", '\0', 0, 0, GETOPT_INSTALL },
+	{ "justdb", '\0', 0, &justdb, 0 },
+	{ "list", 'l', 0, 0, 'l' },
+	{ "nodeps", '\0', 0, &noDeps, 0 },
+	{ "noorder", '\0', 0, &noOrder, 0 },
+	{ "nofiles", '\0', 0, &noFiles, 0 },
+	{ "nomd5", '\0', 0, &noMd5, 0 },
+	{ "nopgp", '\0', 0, &noPgp, 0 },
+	{ "noscripts", '\0', 0, &noScripts, 0 },
+	{ "oldpackage", '\0', 0, &oldPackage, 0 },
+	{ "package", 'p', 0, 0, 'p' },
+	{ "percent", '\0', 0, &showPercents, 0 },
+	{ "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0 },
+	{ "prefix", '\0', POPT_ARG_STRING, &prefix, 0 },
+	{ "qf", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
+	{ "query", 'q', 0, 0, 'q' },
+	{ "querybynumber", '\0', 0, 0, GETOPT_QUERYBYNUMBER },
+	{ "queryformat", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
+	{ "querytags", '\0', 0, &queryTags, 0 },
+	{ "quiet", '\0', 0, &quiet, 0 },
+	{ "rcfile", '\0', POPT_ARG_STRING, 0, 0 },
+	{ "rebuild", '\0', 0, 0, GETOPT_REBUILD },
+	{ "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB },
+	{ "recompile", '\0', 0, 0, GETOPT_RECOMPILE },
+	{ "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE },
+	{ "replacefiles", '\0', 0, &replaceFiles, 0 },
+	{ "replacepkgs", '\0', 0, &replacePackages, 0 },
+	{ "resign", '\0', 0, 0, GETOPT_RESIGN },
+	{ "root", 'r', POPT_ARG_STRING, &rootdir, 0 },
+	{ "short-circuit", '\0', 0, &shortCircuit, 0 },
+	{ "showrc", '\0', 0, 0, 0 },
+	{ "sign", '\0', 0, &signIt, 0 },
+	{ "state", 's', 0, 0, 's' },
+	{ "tarball", 't', POPT_ARG_STRING, 0, 't' },
+	{ "test", '\0', 0, &test, 0 },
+	{ "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK },
+	{ "upgrade", 'U', 0, 0, 'U' },
+	{ "uninstall", 'u', 0, 0, 'u' },
+	{ "verbose", 'v', 0, 0, 'v' },
+	{ "verify", 'V', 0, 0, 'V' },
+	{  NULL, 'y', 0, 0, 'V' },
+	{ "version", '\0', 0, &rpm_version, 0 },
+	{ "whatrequires", '\0', 0, 0, GETOPT_WHATREQUIRES },
+	{ "whatprovides", '\0', 0, 0, GETOPT_WHATPROVIDES },
+	{ 0, 0, 0, 0, 0 }
+};
+
+
+
 static void argerror(char * desc);
 
 static void argerror(char * desc) {
@@ -382,28 +500,23 @@ int main(int argc, char ** argv) {
     enum querysources querySource = QUERY_PACKAGE;
     enum verifysources verifySource = VERIFY_PACKAGE;
     int arg, len;
-    int queryFor = 0, test = 0, version = 0, help = 0, force = 0;
-    int quiet = 0, replaceFiles = 0, replacePackages = 0, showPercents = 0;
-    int showHash = 0, installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
-    int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
+    int queryFor = 0;
+    int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
+    int buildAmount = 0;
     int shortCircuit = 0, queryTags = 0, excldocs = 0;
-    int incldocs = 0, noScripts = 0, noDeps = 0, allMatches = 0, noOrder = 0;
-    int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
-    int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
+    int showrc = 0;
+    int gotDbpath = 0, building = 0, verifyFlags;
     int noMd5 = 0, allFiles = 0, justdb = 0, rmsource = 0;
     int checksigFlags = 0;
     int timeCheck = 0;
     int addSign = NEW_SIGNATURE;
-    char * rcfile = NULL, * queryFormat = NULL, * prefix = NULL;
+    char * rcfile = NULL, * queryFormat = NULL;
     char buildChar = ' ';
-    char * rootdir = "/";
-    char * pipeOutput = NULL;
     char * specFile;
     char * tce;
     char * passPhrase = "";
     char * buildRootOverride = NULL, * cookie = NULL;
     char * arch = NULL;
-    char * ftpProxy = NULL, * ftpPort = NULL;
     char * os = NULL;
     char * optArg;
     pid_t pipeChild = 0;
@@ -417,85 +530,46 @@ int main(int argc, char ** argv) {
     int status;
     int p[2];
     struct rpmRelocation * relocations = NULL;
-    int numRelocations = 0, badReloc = 0;
-    struct poptOption optionsTable[] = {
-	    { "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
-	    { "all", 'a', 0, 0, 'a' },
-	    { "allfiles", '\0', 0, &allFiles, 0 },
-	    { "allmatches", 'a', 0, &allMatches, 0 },
-	    { "badreloc", '\0', 0, &badReloc, 0 },
-	    { "build", 'b', POPT_ARG_STRING, 0, 'b' },
-	    { "buildarch", '\0', POPT_ARG_STRING, 0, 0 },
-	    { "buildos", '\0', POPT_ARG_STRING, 0, 0 },
-	    { "buildroot", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDROOT },
-	    { "checksig", 'K', 0, 0, 'K' },
-	    { "clean", '\0', 0, &clean, 0 },
-	    { "configfiles", 'c', 0, 0, 'c' },
-	    { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH },
-	    { "docfiles", 'd', 0, 0, 'd' },
-	    { "dump", '\0', 0, &dump, 0 },
-	    { "erase", 'e', 0, 0, 'e' },
-            { "excludedocs", '\0', 0, &excldocs, 0},
-	    { "file", 'f', 0, 0, 'f' },
-	    { "force", '\0', 0, &force, 0 },
-	    { "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0},
-	    { "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0},
-	    { "group", 'g', 0, 0, 'g' },
-	    { "hash", 'h', 0, &showHash, 0 },
-	    { "help", '\0', 0, &help, 0 },
-	    {  NULL, 'i', 0, 0, 'i' },
-	    { "ignorearch", '\0', 0, &ignoreArch, 0 },
-	    { "ignoreos", '\0', 0, &ignoreOs, 0 },
-            { "includedocs", '\0', 0, &incldocs, 0},
-	    { "initdb", '\0', 0, &initdb, 0 },
-	/* info and install both using 'i' is dumb */
-	    { "install", '\0', 0, 0, GETOPT_INSTALL },
-	    { "justdb", '\0', 0, &justdb, 0 },
-	    { "list", 'l', 0, 0, 'l' },
-	    { "nodeps", '\0', 0, &noDeps, 0 },
-	    { "noorder", '\0', 0, &noOrder, 0 },
-	    { "nofiles", '\0', 0, &noFiles, 0 },
-	    { "nomd5", '\0', 0, &noMd5, 0 },
-	    { "nopgp", '\0', 0, &noPgp, 0 },
-	    { "noscripts", '\0', 0, &noScripts, 0 },
-	    { "oldpackage", '\0', 0, &oldPackage, 0 },
-	    { "package", 'p', 0, 0, 'p' },
-	    { "percent", '\0', 0, &showPercents, 0 },
-	    { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0 },
-	    { "prefix", '\0', POPT_ARG_STRING, &prefix, 0 },
-	    { "qf", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
-	    { "query", 'q', 0, 0, 'q' },
-	    { "querybynumber", '\0', 0, 0, GETOPT_QUERYBYNUMBER },
-	    { "queryformat", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
-	    { "querytags", '\0', 0, &queryTags, 0 },
-	    { "quiet", '\0', 0, &quiet, 0 },
-	    { "rcfile", '\0', POPT_ARG_STRING, 0, 0 },
-	    { "rebuild", '\0', 0, 0, GETOPT_REBUILD },
-	    { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB },
-	    { "recompile", '\0', 0, 0, GETOPT_RECOMPILE },
-	    { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE },
-	    { "replacefiles", '\0', 0, &replaceFiles, 0 },
-	    { "replacepkgs", '\0', 0, &replacePackages, 0 },
-	    { "resign", '\0', 0, 0, GETOPT_RESIGN },
-	    { "rmsource", '\0', 0, 0, GETOPT_RMSOURCE },
-	    { "root", 'r', POPT_ARG_STRING, &rootdir, 0 },
-	    { "short-circuit", '\0', 0, &shortCircuit, 0 },
-	    { "showrc", '\0', 0, 0, 0 },
-	    { "sign", '\0', 0, &signIt, 0 },
-	    { "state", 's', 0, 0, 's' },
-	    { "tarball", 't', POPT_ARG_STRING, 0, 't' },
-	    { "test", '\0', 0, &test, 0 },
-	    { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK },
-	    { "upgrade", 'U', 0, 0, 'U' },
-	    { "uninstall", 'u', 0, 0, 'u' },
-	    { "verbose", 'v', 0, 0, 'v' },
-	    { "verify", 'V', 0, 0, 'V' },
-	    {  NULL, 'y', 0, 0, 'V' },
-	    { "version", '\0', 0, &version, 0 },
-	    { "whatrequires", '\0', 0, 0, GETOPT_WHATREQUIRES },
-	    { "whatprovides", '\0', 0, 0, GETOPT_WHATPROVIDES },
-	    { 0, 0, 0, 0, 0 } 
-	} ;
+    int numRelocations = 0;
+	
+	
+	/* set the defaults for the various command line options */
+	allFiles = 0;
+	allMatches = 0;
+	badReloc = 0;
+	clean = 0;
+	dump = 0;
+	excldocs = 0;
+	force = 0;
+	ftpProxy = NULL;
+	ftpPort = NULL;
+	showHash = 0;
+	help = 0;
+	ignoreArch = 0;
+	ignoreOs = 0;
+	incldocs = 0;
+	initdb = 0;
+	justdb = 0;
+	noDeps = 0;
+	noOrder = 0;
+	noFiles = 0;
+	noMd5 = 0;
+	noPgp = 0;
+	noScripts = 0;
+	oldPackage = 0;
+	showPercents = 0;
+	pipeOutput = NULL;
+	prefix = NULL;
+	queryTags = 0;
+	quiet = 0;
+	replaceFiles = 0;
+	replacePackages = 0;
+	rootdir = "/";
+	shortCircuit = 0;
+	signIt = 0;
+	test = 0;
+	rpm_version = 0;
+
 
     /* set up the correct locale */
     setlocale(LC_ALL, "" );
@@ -809,7 +883,7 @@ int main(int argc, char ** argv) {
     if (quiet)
 	rpmSetVerbosity(RPMMESS_QUIET);
 
-    if (version) printVersion();
+    if (rpm_version) printVersion();
     if (help) printHelp();
 
     if (arg < -1) {
@@ -1039,7 +1113,7 @@ int main(int argc, char ** argv) {
 	
     switch (bigMode) {
       case MODE_UNKNOWN:
-	if (!version && !help) printUsage();
+	if (!rpm_version && !help) printUsage();
 	break;
 
       case MODE_REBUILDDB:
@@ -1133,11 +1207,12 @@ int main(int argc, char ** argv) {
 	if (clean)
 	    buildAmount |= RPMBUILD_RMBUILD;
 
-	if (!poptPeekArg(optCon))
+	if (!poptPeekArg(optCon)) {
 	    if (bigMode == MODE_BUILD)
 		argerror(_("no spec files given for build"));
 	    else
 		argerror(_("no tar files given for build"));
+	}
 
 	while ((pkg = poptGetArg(optCon)))
 	    if (build(pkg, buildAmount, passPhrase, buildRootOverride,
