@@ -48,6 +48,8 @@ system.
 Do the installation on the system rooted at \fI<dir>\fP.  Note that
 this means the database will be updated under \fI<dir>\fP and any
 \fIpre\fP or \fIpost\fP scripts are run after a chroot() to \fI<dir>\fP.
+.IP "\fB\-\-noscripts\fP"
+Don't execute the preinstall or postinstall scripts.
 .IP "\fB\-\-excludedocs\fP"
 Don't install any files which are marked as documentation (which includes
 man pages and texinfo documents).
@@ -65,6 +67,8 @@ This is the same as install, except all other version of the package
 are removed from the system.
 
 .SH UNINSTALL OPTIONS
+.IP "\fB\-\-noscripts\fP"
+Don't execute the preuninstall or postuninstall scripts.
 .IP "\fB\-\-test\fP"
 Don't really uninstall anything, just go through the motions. This is
 designed primarily for testing and should normally be used with the
@@ -169,6 +173,9 @@ either \fInormal\fP, \fInot installed\fP, or \fIreplaced\fP.
 List only documentation files (implies \fB\-l\fP).  
 .IP "\fB\-c\fP"
 List only configuration files (implies \fB\-l\fP).  
+.IP "\fB\-\-scripts\fP"
+List the package specific shell scripts that are used as part of the 
+installation and uninstallation processes, if there are any.
 
 .SH VERIFY OPTIONS
 Verifying a package compares information about the installed
