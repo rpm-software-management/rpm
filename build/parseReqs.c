@@ -125,6 +125,14 @@ int parseProvidesObsoletes(Spec spec, Package pkg, char *field, int tag)
 		     spec->line);
 	    return RPMERR_BADSPEC;
 	}
+	if (!(isalnum(prov[0]) || prov[0] == '_')) {
+	    rpmError(RPMERR_BADSPEC,
+		     "line %d: %s: tokens must begin with alpha-numeric: %s",
+		     spec->lineNum,
+		     (tag == RPMTAG_PROVIDES) ? "Provides" : "Obsoletes",
+		     spec->line);
+	    return RPMERR_BADSPEC;
+	}
 	addReqProv(spec, pkg, flags, prov, NULL, 0);
 	line = NULL;
     }
