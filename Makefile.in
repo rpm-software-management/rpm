@@ -132,7 +132,7 @@ archive:
 	@rm -f /tmp/rpm-$(VERSION).tar.gz 
 	@echo " "
 	@echo "The final archive is ./rpm-$(VERSION).tar.gz. You should run"
-	@echo "-n$(VERSION) RCS/*,v on all of the directories btw."
+	@echo "rcs -n$(VERSION): RCS/*,v on all of the directories btw."
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
