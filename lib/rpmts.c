@@ -796,8 +796,6 @@ rpmts rpmtsFree(rpmts ts)
     if (ts->nrefs > 1)
 	return rpmtsUnlink(ts, "tsCreate");
 
-    ts->lua = rpmluaFree(ts->lua);
-
 /*@-nullstate@*/	/* FIX: partial annotations */
     rpmtsEmpty(ts);
 /*@=nullstate@*/
@@ -1510,9 +1508,6 @@ rpmts rpmtsCreate(void)
        NULL by default.
      */
     ts->score = NULL;
-
-    ts->lua = rpmluaNew();
-    rpmluaSetData(ts->lua, "ts", ts);
 
     ts->nrefs = 0;
 

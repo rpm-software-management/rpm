@@ -563,22 +563,22 @@ exit:
 /**
  * Run internal Lua script.
  */
-rpmRC runLuaScript(rpmlua lua, Header h, const char *sln,
+rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 		   int progArgc, const char **progArgv,
 		   const char *script, int arg1, int arg2)
 {
+    const rpmts ts = psm->ts;
     int rootFd = -1;
     const char *n, *v, *r;
     rpmRC rc = RPMRC_OK;
     int i;
     int xx;
-    rpmts ts;
+    rpmlua lua = NULL; /* Global state. */
     rpmluav var;
     
     xx = headerNVR(h, &n, &v, &r);
 
-    ts = rpmluaGetData(lua, "ts");
-    if (ts && !rpmtsChrootDone(ts)) {
+    if (!rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
 	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
 	    chdir("/");
@@ -692,7 +692,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	return rc;
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
-	return runLuaScript(ts->lua, h, sln, progArgc, progArgv,
+	return runLuaScript(psm, h, sln, progArgc, progArgv,
 			    script, arg1, arg2);
     }
 

@@ -44,40 +44,47 @@ typedef /*@abstract@*/ struct rpmluav_s * rpmluav;
 
 /*@only@*/
 rpmlua rpmluaNew(void)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 void *rpmluaFree(/*@only@*/ rpmlua lua)
 	/*@modifies lua @*/;
 
-int rpmluaCheckScript(rpmlua lua, const char *script, const char *name)
+int rpmluaCheckScript(/*@null@*/ rpmlua lua, const char *script,
+		      /*@null@*/ const char *name)
 	/*@modifies lua @*/;
-int rpmluaRunScript(rpmlua lua, const char *script, /*@null@*/ const char *name)
-	/*@modifies lua @*/;
-void rpmluaInteractive(rpmlua lua)
+int rpmluaRunScript(/*@null@*/ rpmlua lua, const char *script,
+		    /*@null@*/ const char *name)
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
+int rpmluaRunScriptFile(/*@null@*/ rpmlua lua, const char *filename)
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
+void rpmluaInteractive(/*@null@*/ rpmlua lua)
 	/*@globals fileSystem @*/
 	/*@modifies lua, fileSystem @*/;
 
-void rpmluaSetData(rpmlua lua, const char *key, const void *data)
+void rpmluaSetData(/*@null@*/ rpmlua lua, const char *key, const void *data)
 	/*@modifies lua @*/;
-void *rpmluaGetData(rpmlua lua, const char *key)
+void *rpmluaGetData(/*@null@*/ rpmlua lua, const char *key)
 	/*@modifies lua @*/;
 
-void rpmluaSetPrintBuffer(rpmlua lua, int flag)
+void rpmluaSetPrintBuffer(/*@null@*/ rpmlua lua, int flag)
 	/*@modifies lua @*/;
 /*@exposed@*/
-const char *rpmluaGetPrintBuffer(rpmlua lua)
+const char *rpmluaGetPrintBuffer(/*@null@*/ rpmlua lua)
 	/*@modifies lua @*/;
 
-void rpmluaSetVar(rpmlua lua, rpmluav var)
+void rpmluaSetVar(/*@null@*/ rpmlua lua, rpmluav var)
 	/*@modifies lua, var @*/;
-void rpmluaGetVar(rpmlua lua, rpmluav var)
+void rpmluaGetVar(/*@null@*/ rpmlua lua, rpmluav var)
 	/*@modifies lua, var @*/;
-void rpmluaDelVar(rpmlua lua, const char *key, ...)
+void rpmluaDelVar(/*@null@*/ rpmlua lua, const char *key, ...)
 	/*@modifies lua @*/;
-int rpmluaVarExists(rpmlua lua, const char *key, ...)
+int rpmluaVarExists(/*@null@*/ rpmlua lua, const char *key, ...)
 	/*@modifies lua @*/;
-void rpmluaPushTable(rpmlua lua, const char *key, ...)
+void rpmluaPushTable(/*@null@*/ rpmlua lua, const char *key, ...)
 	/*@modifies lua @*/;
-void rpmluaPop(rpmlua lua)
+void rpmluaPop(/*@null@*/ rpmlua lua)
 	/*@modifies lua @*/;
 
 /*@only@*/

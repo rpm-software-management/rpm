@@ -284,13 +284,11 @@ int parseScript(Spec spec, int parsePart)
     p = getStringBuf(sb);
 
     if (!strcmp(progArgv[0], "<lua>")) {
-	rpmlua lua = rpmluaNew();
+	rpmlua lua = NULL; /* Global state. */
 	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
-	    rpmluaFree(lua);
 	    rc = RPMERR_BADSPEC;
 	    goto exit;
 	}
-	rpmluaFree(lua);
 	(void) rpmlibNeedsFeature(pkg->header,
 				  "BuiltinLuaScripts", "4.2.2-1");
     } else if (progArgv[0][0] == '<') {

@@ -1366,7 +1366,7 @@ expandMacro(MacroBuf mb)
 	}
 
 	if (STREQ("lua", f, fn)) {
-		rpmlua lua = rpmluaNew();
+		rpmlua lua = NULL; /* Global state. */
 		const char *ls = s+sizeof("{lua:")-1;
 		const char *lse = se-sizeof("}")+1;
 		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
@@ -1385,8 +1385,8 @@ expandMacro(MacroBuf mb)
 		    mb->t += len;
 		    mb->nb -= len;
 		}
+		rpmluaSetPrintBuffer(lua, 0);
 		free(scriptbuf);
-		lua = rpmluaFree(lua);
 		s = se;
 		continue;
 	}
