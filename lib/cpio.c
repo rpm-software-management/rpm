@@ -285,7 +285,7 @@ static int setInfo(struct cpioHeader * hdr)
 }
 
 /** */
-static int checkDirectory(const char * filename)
+static int inline checkDirectory(const char * filename)
 {
     /*@only@*/ static char * lastDir = NULL;	/* XXX memory leak */
     static int lastDirLength = 0;
@@ -572,13 +572,12 @@ int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
 		       const char ** failedFile)
 {
     struct cpioHeader ch, *hdr = &ch;
-    int rc = 0;
     struct cpioFileMapping * map = NULL;
     struct cpioFileMapping needle;
-    int olderr;
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     struct hardLink * links = NULL;
     struct hardLink * li = NULL;
+    int rc = 0;
 
     fdSetCpioPos(cfd, 0);
     if (failedFile)
@@ -586,8 +585,7 @@ int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
 
     memset(hdr, 0, sizeof(*hdr));
     hdr->path = NULL;
-    rc = 0;
-    while (rc == 0) {
+    do {
 	struct stat * st;
 
 	if (hdr->path) {
@@ -684,17 +682,18 @@ int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
 		    rc = setInfo(hdr);
 
 		if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
-		    li->createdPath = li->linksLeft--;
+		    li->createdPath = --li->linksLeft;
 		    rc = createLinks(li, failedFile);
 		}
 	    }
 
 	    if (rc && failedFile && *failedFile == NULL) {
-		*failedFile = xstrdup(hdr->path);
+		int olderrno;
 
-		olderr = errno;
+		*failedFile = xstrdup(hdr->path);
+		olderrno = errno;
 		unlink(hdr->path);
-		errno = olderr;
+		errno = olderrno;
 	    }
 	}
 
@@ -708,7 +707,7 @@ int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
 	    cb(&cbInfo, cbData);
 	}
 
-    }
+    } while (rc == 0);
 
     if (hdr->path) {
 	xfree(hdr->path);
@@ -742,7 +741,7 @@ static int writeFile(FD_t cfd, struct stat * st,
     dev_t num;
     FD_t datafd;
     size_t size, amount = 0;
-    int rc, olderrno;
+    int rc;
 
     if (!(map->mapFlags & CPIO_MAP_PATH))
 	map->archivePath = map->fsPath;
@@ -829,7 +828,7 @@ static int writeFile(FD_t cfd, struct stat * st,
 			(st->st_size > sizeof(buf) ? sizeof(buf) : st->st_size),
 			datafd);
 	    if (amount <= 0) {
-		olderrno = errno;
+		int olderrno = errno;
 		Fclose(datafd);
 		errno = olderrno;
 		return CPIOERR_READ_FAILED;
@@ -837,7 +836,7 @@ static int writeFile(FD_t cfd, struct stat * st,
 	  }
 
 	    if ((rc = safewrite(cfd, b, amount)) != amount) {
-		olderrno = errno;
+		int olderrno = errno;
 		Fclose(datafd);
 		errno = olderrno;
 		return rc;
