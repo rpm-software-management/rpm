@@ -29,6 +29,10 @@ void closeDBIndex(dbIndex * dbi) {
     free(dbi);
 }
 
+void syncDBIndex(dbIndex * dbi) {
+    dbi->db->sync(dbi->db, 0);
+}
+
 int searchDBIndex(dbIndex * dbi, char * str, dbIndexSet * set) {
     DBT key, data;
     int rc;

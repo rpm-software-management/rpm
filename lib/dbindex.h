@@ -22,6 +22,7 @@ typedef struct {
 
 dbIndex * openDBIndex(char * filename, int flags, int perms);
 void closeDBIndex(dbIndex * dbi);
+void syncDBIndex(dbIndex * dbi);
 int searchDBIndex(dbIndex * dbi, char * str, dbIndexSet * set);
    /* -1 error, 0 success, 1 not found */
 int updateDBIndex(dbIndex * dbi, char * str, dbIndexSet * set);
