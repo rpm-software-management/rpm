@@ -58,28 +58,4 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 #define INT64_TYPE 5
 #define STRING_TYPE 6
 
-/* Entries */
-
-#define NAME                     1
-#define VERSION                  2
-#define RELEASE                  3
-#define SHORT_DESCRIPTION        4
-#define LONG_DESCRIPTION         5
-#define COPYRIGHT                6
-#define DISTRIBUTION             7
-#define VENDOR                   8
-#define PACKAGER                 9
-#define BUILD_DATE              10
-#define BUILD_HOST              11
-#define INSTALL_DATE            12
-#define GROUP                   13
-#define SIZE                    14
-#define URL                     15
-#define OS                      16
-#define ARCH                    17
-#define CHANGELOG               18
-#define ICON                    19
-#define SOURCE                  20
-#define PATCH                   21
-
 #endif _header_h
