@@ -38,8 +38,15 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
     *isSource = lead.type == RPMLEAD_SOURCE;
 
     if (*isSource) {
+	message(MESS_DEBUG, "package is a source package major = %d\n", 
+		lead.major);
+
 	if (lead.major == 1) {
+	    message(MESS_DEBUG, "archvie offset is 0x%x\n", 
+			oldLead->archiveOffset);
 	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
+	    message(MESS_DEBUG, "archvie offset is %d\n", 
+			oldLead->archiveOffset);
 	    lseek(fd, oldLead->archiveOffset, SEEK_SET);
 	} else {
 	    if (!readSignature(fd, lead.signature_type, NULL)) {
