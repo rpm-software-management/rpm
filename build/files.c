@@ -958,16 +958,26 @@ static void genCpioListAndHeader(struct FileList *fl,
 
 	/* Make the cpio list */
 	if (! (flp->flags & RPMFILE_GHOST)) {
-	    clp->fsPath = xstrdup(flp->diskURL);
+	    char * t;
+
+	    clp->dirName = t = xmalloc(strlen(flp->diskURL) + 2);
+	    t = stpcpy(t, flp->diskURL);
+	    
+	    /* Make room for the dirName NUL, find start of baseName. */
+	    for (; t > clp->dirName && *t != '/'; t--)
+		t[1] = t[0];
+	    t++;
+	    *t++ = '\0';
+	    clp->baseName = t;
+
   /* XXX legacy requires './' payload prefix to be omitted from rpm packages. */
-	    {	char * t = buf;
-		if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}")) {
-		    t = stpcpy(t, "./");
-		    rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
-		}
-		t = stpcpy(t, (flp->fileURL + skipLen));
-		clp->archivePath = xstrdup(buf);
+	    clp->archivePath = t = xmalloc(strlen(flp->fileURL) - skipLen + 3);
+	    if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}")) {
+		t = stpcpy(t, "./");
+		rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
 	    }
+	    t = stpcpy(t, (flp->fileURL + skipLen));
+
 	    clp->finalMode = flp->fl_mode;
 	    clp->finalUid = flp->fl_uid;
 	    clp->finalGid = flp->fl_gid;
@@ -1966,8 +1976,10 @@ static int generateDepends(Spec spec, Package pkg,
 	    cpioList->mapFlags &= ~CPIO_MULTILIB;
 	}
 
-	writeBytes += strlen(cpioList->fsPath) + 1;
-	appendLineStringBuf(writeBuf, cpioList->fsPath);
+	appendStringBuf(writeBuf, cpioList->dirName);
+	writeBytes += strlen(cpioList->dirName);
+	appendLineStringBuf(writeBuf, cpioList->baseName);
+	writeBytes += strlen(cpioList->baseName) + 1;
     }
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {

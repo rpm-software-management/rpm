@@ -43,31 +43,6 @@
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
 
-typedef struct transactionFileInfo {
-  /* for all packages */
-    enum rpmTransactionType type;
-    enum fileActions * actions;	/*!< file disposition */
-/*@dependent@*/ fingerPrint * fps; /*!< file fingerprints */
-    uint_32 * fflags;		/*!< file flags (from header) */
-    uint_32 * fsizes;		/*!< file sizes (from header) */
-    const char ** bnl;		/*!< base names (from header) */
-    const char ** dnl;		/*!< directory names (from header) */
-    const int * dil;		/*!< directory indices (from header) */
-    const char ** fmd5s;	/*!< file MD5 sums (from header) */
-    uint_16 * fmodes;		/*!< file modes (from header) */
-    Header h;			/*!< package header */
-    int fc;			/*!< no. of files. */
-    int dc;			/*!< no. of directories. */
-    char * fstates;		/*!< file states (from header) */
-  /* these are for TR_ADDED packages */
-    const char ** flinks;	/*!< file links (from header) */
-    struct availablePackage * ap;
-    struct sharedFileInfo * replaced;
-    uint_32 * replacedSizes;
-  /* for TR_REMOVED packages */
-    unsigned int record;
-} TFI_t;
-
 struct diskspaceInfo {
     dev_t dev;			/*!< file system device number. */
     signed long bneeded;	/*!< no. of blocks needed. */
@@ -89,7 +64,48 @@ struct diskspaceInfo {
 #define	XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
 
-static void freeFi(TFI_t *fi)
+static void loadFi(TFI_t fi)
+{
+    int len, i;
+    
+    if (!headerGetEntry(fi->h, RPMTAG_BASENAMES, NULL,
+			     (void **) &fi->bnl, &fi->fc))
+    {
+	fi->dc = 0;
+	fi->fc = 0;
+	fi->dnl = NULL;
+	fi->bnl = NULL;
+	fi->dil = NULL;
+	fi->fmodes = NULL;
+	fi->fflags = NULL;
+	fi->fsizes = NULL;
+	fi->fstates = NULL;
+	return;
+    }
+
+    headerGetEntry(fi->h, RPMTAG_DIRINDEXES, NULL, (void **)&fi->dil, NULL);
+    headerGetEntry(fi->h, RPMTAG_DIRNAMES, NULL, (void **)&fi->dnl, &fi->dc);
+    headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL, (void **)&fi->fmodes, NULL);
+    headerGetEntry(fi->h, RPMTAG_FILEFLAGS, NULL, (void **)&fi->fflags, NULL);
+    headerGetEntry(fi->h, RPMTAG_FILESIZES, NULL, (void **)&fi->fsizes, NULL);
+    headerGetEntry(fi->h, RPMTAG_FILESTATES, NULL, (void **)&fi->fstates, NULL);
+
+    fi->dnlmax = -1;
+    for (i = 0; i < fi->dc; i++) {
+	if ((len = strlen(fi->dnl[i])) > fi->dnlmax)
+	    fi->dnlmax = len;
+    }
+
+    fi->bnlmax = -1;
+    for (i = 0; i < fi->fc; i++) {
+	if ((len = strlen(fi->bnl[i])) > fi->bnlmax)
+	    fi->bnlmax = len;
+    }
+
+    return;
+}
+
+static void freeFi(TFI_t fi)
 {
 	if (fi->h) {
 	    headerFree(fi->h); fi->h = NULL;
@@ -137,9 +153,9 @@ static void freeFi(TFI_t *fi)
 	}
 }
 
-static void freeFl(rpmTransactionSet ts, TFI_t *flList)
+static void freeFl(rpmTransactionSet ts, TFI_t flList)
 {
-    TFI_t *fi;
+    TFI_t fi;
     int oc;
 
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
@@ -190,13 +206,12 @@ static rpmProblemSet psCreate(void)
 }
 
 static void psAppend(rpmProblemSet probs, rpmProblemType type,
-		/*@dependent@*/ const void * key, Header h,
+		const struct availablePackage * alp,
 		const char * dn, const char *bn,
 		Header altH, unsigned long ulong1)
 {
-    const char *n, *v, *r;
-    char *t;
     rpmProblem p;
+    char *t;
 
     if (probs->numProblems == probs->numProblemsAlloced) {
 	if (probs->numProblemsAlloced)
@@ -209,7 +224,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 
     p = probs->probs + probs->numProblems++;
     p->type = type;
-    p->key = key;
+    p->key = alp->key;
     p->ulong1 = ulong1;
     p->ignoreProblem = 0;
 
@@ -221,22 +236,24 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
     } else
 	p->str1 = NULL;
 
-    if (h) {
-	p->h = headerLink(h);
-	headerNVR(h, &n, &v, &r);
+    if (alp) {
+	p->h = headerLink(alp->h);
 	p->pkgNEVR =
-	    t = xmalloc(strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-	t = stpcpy(t, n);
+	    t = xmalloc(strlen(alp->name) +
+			strlen(alp->version) +
+			strlen(alp->release) + sizeof("--"));
+	t = stpcpy(t, alp->name);
 	t = stpcpy(t, "-");
-	t = stpcpy(t, v);
+	t = stpcpy(t, alp->version);
 	t = stpcpy(t, "-");
-	t = stpcpy(t, r);
+	t = stpcpy(t, alp->release);
     } else {
-	p->pkgNEVR = NULL;
 	p->h = NULL;
+	p->pkgNEVR = NULL;
     }
 
     if (altH) {
+	const char *n, *v, *r;
 	headerNVR(altH, &n, &v, &r);
 	p->altNEVR =
 	    t = xmalloc(strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
@@ -438,7 +455,7 @@ static Header relocateFileList(const rpmTransactionSet ts,
 		if (!strcmp(validRelocations[j], relocations[i].oldPath)) break;
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions)
-		psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h,
+		psAppend(probs, RPMPROB_BADRELOCATE, alp,
 			 relocations[i].oldPath, NULL, NULL, 0);
 	} else {
 	    relocations[i].newPath = NULL;
@@ -886,7 +903,7 @@ static int filecmp(short mode1, const char * md51, const char * link1,
     return 0;
 }
 
-static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
+static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount, int reportConflicts,
 				    rpmProblemSet probs,
@@ -945,7 +962,7 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
 	    if (reportConflicts)
-		psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key, fi->ap->h,
+		psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap,
 			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum], h, 0);
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
@@ -983,7 +1000,7 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     return 0;
 }
 
-static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
+static int handleRmvdInstalledFiles(TFI_t fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount)
 {
@@ -1022,7 +1039,7 @@ static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
 /**
  * Update disk space needs on each partition for this package.
  */
-static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
+static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 			   rpmProblemSet probs, struct diskspaceInfo * dsl)
 {
     int i, j;
@@ -1033,7 +1050,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
   
     for (i = 0; i < fi->fc; i++) {
 	int otherPkgNum, otherFileNum;
-	const TFI_t ** recs;
+	const TFI_t * recs;
 	int numRecs;
 
 	if (XFA_SKIPPING(fi->actions[i]))
@@ -1136,8 +1153,8 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 			fi->fmodes[i],
 			fi->fmd5s[i],
 			fi->flinks[i])) {
-		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap->key,
-			fi->ap->h, filespec, NULL, recs[otherPkgNum]->ap->h, 0);
+		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap,
+				filespec, NULL, recs[otherPkgNum]->ap->h, 0);
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
@@ -1218,25 +1235,25 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
     if (filespec) free(filespec);
 }
 
-static int ensureOlder(/*@unused@*/ rpmdb rpmdb, Header new, Header old, rpmProblemSet probs,
-			/*@dependent@*/ const void * key)
+static int ensureOlder(struct availablePackage * alp, Header old,
+		rpmProblemSet probs)
 {
     int result, rc = 0;
 
     if (old == NULL) return 1;
 
-    result = rpmVersionCompare(old, new);
+    result = rpmVersionCompare(old, alp->h);
     if (result <= 0)
 	rc = 0;
     else if (result > 0) {
 	rc = 1;
-	psAppend(probs, RPMPROB_OLDPACKAGE, key, new, NULL, NULL, old, 0);
+	psAppend(probs, RPMPROB_OLDPACKAGE, alp, NULL, NULL, old, 0);
     }
 
     return rc;
 }
 
-static void skipFiles(TFI_t * fi, int noDocs)
+static void skipFiles(TFI_t fi, int noDocs)
 {
     int i;
     char ** netsharedPaths = NULL;
@@ -1334,6 +1351,76 @@ static void skipFiles(TFI_t * fi, int noDocs)
     if (languages) freeSplitString((char **)languages);
 }
 
+static char * ridsub = ".rid/";
+static char * ridsep = ";";
+static mode_t riddmode = 0700;
+static mode_t ridfmode = 0000;
+
+static int dirstashPackage(const rpmTransactionSet ts, const TFI_t fi)
+{
+    unsigned int offset = fi->record;
+    char tsid[20], ofn[BUFSIZ], nfn[BUFSIZ];
+    const char * s, * t;
+    char * se, * te;
+    Header h;
+    int i;
+
+    {	rpmdbMatchIterator mi = NULL;
+
+	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
+				&offset, sizeof(offset));
+
+	h = rpmdbNextIterator(mi);
+	if (h == NULL) {
+	    rpmdbFreeIterator(mi);
+	    return 1;
+	}
+	h = headerLink(h);
+	rpmdbFreeIterator(mi);
+    }
+
+    sprintf(tsid, "%08x", ts->id);
+
+    /* Create rid sub-directories if necessary. */
+    if (strchr(ridsub, '/')) {
+	for (i = 0; i < fi->dc; i++) {
+
+	    t = te = nfn;
+	    *te = '\0';
+	    te = stpcpy(te, fi->dnl[i]);
+	    te = stpcpy(te, ridsub);
+	    if (te[-1] == '/')
+		*(--te) = '\0';
+fprintf(stderr, "*** mkdir(%s,%o)\n", t, riddmode);
+	}
+    }
+
+    /* Rename files about to be removed. */
+    for (i = 0; i < fi->fc; i++) {
+
+	if (S_ISDIR(fi->fmodes[i]))
+	    continue;
+
+	s = se = ofn;
+	*se = '\0';
+	se = stpcpy( stpcpy(se, fi->dnl[fi->dil[i]]), fi->bnl[i]);
+
+	t = te = nfn;
+	*te = '\0';
+	te = stpcpy(te, fi->dnl[fi->dil[i]]);
+	if (ridsub)
+	    te = stpcpy(te, ridsub);
+	te = stpcpy( stpcpy( stpcpy(te, fi->bnl[i]), ridsep), tsid);
+
+	s = strrchr(s, '/') + 1;
+	t = strrchr(t, '/') + 1;
+fprintf(stderr, "*** rename(%s,%s%s)\n", s, (ridsub ? ridsub : ""), t);
+fprintf(stderr, "*** chmod(%s%s,%o)\n", (ridsub ? ridsub : ""), t, ridfmode);
+    }
+
+    return 0;
+}
+
 #define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmRunTransactions(	rpmTransactionSet ts,
@@ -1347,13 +1434,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     Header * hdrs;
     int totalFileCount = 0;
     hashTable ht;
-    TFI_t * flList, * fi;
+    TFI_t flList, fi;
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
     int flEntries;
     int nexti;
     int lastFailed;
-    FD_t fd;
     const char ** filesystems;
     int filesystemCount;
     struct diskspaceInfo * di = NULL;
@@ -1446,19 +1532,17 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	alp++)
     {
 	if (!archOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
-	    psAppend(ts->probs, RPMPROB_BADARCH, alp->key, alp->h,
-			NULL, NULL, NULL, 0);
+	    psAppend(ts->probs, RPMPROB_BADARCH, alp, NULL, NULL, NULL, 0);
 
 	if (!osOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
-	    psAppend(ts->probs, RPMPROB_BADOS, alp->key, alp->h,
-			NULL, NULL, NULL, 0);
+	    psAppend(ts->probs, RPMPROB_BADOS, alp, NULL, NULL, NULL, 0);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    rpmdbMatchIterator mi;
 	    Header oldH;
 	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
-		ensureOlder(ts->rpmdb, alp->h, oldH, ts->probs, alp->key);
+		ensureOlder(alp, oldH, ts->probs);
 	    rpmdbFreeIterator(mi);
 	}
 
@@ -1469,7 +1553,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    rpmdbSetIteratorVersion(mi, alp->version);
 	    rpmdbSetIteratorRelease(mi, alp->release);
 	    while (rpmdbNextIterator(mi) != NULL) {
-		psAppend(ts->probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h,
+		psAppend(ts->probs, RPMPROB_PKG_INSTALLED, alp,
 			NULL, NULL, NULL, 0);
 		break;
 	    }
@@ -1507,7 +1591,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-    for (fi = flList, oc = 0; oc < ts->orderCount; fi++, oc++) {
+    for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
 	const char **preTrans;
 	int preTransCount;
 
@@ -1518,7 +1602,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	switch (ts->order[oc].type) {
 	case TR_ADDED:
 	    i = ts->order[oc].u.addedIndex;
-	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+	    alp = ts->addedPackages.list + i;
 
 	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_BASENAMES, NULL,
 					 NULL, &fi->fc)) {
@@ -1548,35 +1632,32 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		/* ACK! */
 		continue;
 	    }
+	    fi->ap = alp = NULL;
 	    fi->type = TR_REMOVED;
 	    break;
 	}
-	if (!headerGetEntry(fi->h, RPMTAG_BASENAMES, NULL,
-				     (void **) &fi->bnl, &fi->fc)) {
-	    /* This catches removed packages w/ no file lists */
-	    fi->dc = fi->fc = 0;
-	    continue;
-	}
 
-	headerGetEntry(fi->h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, 
-		       NULL);
-	headerGetEntry(fi->h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, 
-		       &fi->dc);
+	loadFi(fi);
+	if (fi->fc == 0)
+	    continue;
 
 	/* actions is initialized earlier for added packages */
 	if (fi->actions == NULL)
 	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
-	headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL,
-				(void **) &fi->fmodes, NULL);
-	headerGetEntry(fi->h, RPMTAG_FILEFLAGS, NULL,
-				(void **) &fi->fflags, NULL);
-	headerGetEntry(fi->h, RPMTAG_FILESIZES, NULL,
-				(void **) &fi->fsizes, NULL);
-	headerGetEntry(fi->h, RPMTAG_FILESTATES, NULL,
-				(void **) &fi->fstates, NULL);
-
 	switch (ts->order[oc].type) {
+	case TR_ADDED:
+	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL,
+				    (const void **) &fi->fmd5s, NULL);
+	    headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL,
+				    (const void **) &fi->flinks, NULL);
+
+	    /* 0 makes for noops */
+	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
+
+	    /* Skip netshared paths, not our i18n files, and excluded docs */
+	    skipFiles(fi, ts->transFlags & RPMTRANS_FLAG_NODOCS);
+	    break;
 	case TR_REMOVED:
 	    headerGetEntry(fi->h, RPMTAG_FILEMD5S, NULL,
 				    (void **) &fi->fmd5s, NULL);
@@ -1598,18 +1679,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 				fi->dil, fi->fc * sizeof(*fi->dil));
 	    headerFree(fi->h);
 	    fi->h = NULL;
-	    break;
-	case TR_ADDED:
-	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL,
-				    (const void **) &fi->fmd5s, NULL);
-	    headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL,
-				    (const void **) &fi->flinks, NULL);
-
-	    /* 0 makes for noops */
-	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
-
-	    /* Skip netshared paths, not our i18n files, and excluded docs */
-	    skipFiles(fi, ts->transFlags & RPMTRANS_FLAG_NODOCS);
 	    break;
 	}
 
@@ -1757,13 +1826,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		    continue;
 
 		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
-		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap->key,
-			fi->ap->h, filesystems[i], NULL, NULL,
+		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap,
+				filesystems[i], NULL, NULL,
 	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
 
 		if (adj_fs_blocks(dip->ineeded) > dip->iavail)
-		    psAppend(ts->probs, RPMPROB_DISKNODES, fi->ap->key,
-			fi->ap->h, filesystems[i], NULL, NULL,
+		    psAppend(ts->probs, RPMPROB_DISKNODES, fi->ap,
+				filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
 	    }
 	    break;
@@ -1786,16 +1855,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
 	if (fi->fc == 0)
 	    continue;
-	free(fi->bnl); fi->bnl = NULL;
-	free(fi->dnl); fi->dnl = NULL;
 	switch (fi->type) {
 	case TR_ADDED:
-	    free(fi->fmd5s); fi->fmd5s = NULL;
-	    free(fi->flinks); fi->flinks = NULL;
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	case TR_REMOVED:
-	    free((void *)fi->dil); fi->dil = NULL;
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	}
@@ -1822,44 +1886,66 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     }
 
     /* ===============================================
+     * Save removed files before upgrading.
+     */
+    if (ts->transFlags & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
+	i = -2;
+	for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+	    switch (ts->order[oc].type) {
+	    case TR_ADDED:
+		i = ts->order[oc].u.addedIndex;
+		break;
+	    case TR_REMOVED:
+		if (ts->order[oc].u.removed.dependsOnIndex != i)
+		    break;
+		if (ts->transFlags & RPMTRANS_FLAG_DIRSTASH)
+		    dirstashPackage(ts, fi);
+		break;
+	    }
+	}
+    }
+
+    /* ===============================================
      * Install and remove packages.
      */
 
-    lastFailed = -2;
+    lastFailed = -2;	/* erased packages have -1 */
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+	int gotfd;
+
+	gotfd = 0;
 	switch (ts->order[oc].type) {
 	case TR_ADDED:
-	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 	    i = ts->order[oc].u.addedIndex;
+	    alp = ts->addedPackages.list + i;
 
-	    if ((fd = alp->fd) == 0) {
-		fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
+	    if (alp->fd == NULL) {
+		alp->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
 			    alp->key, ts->notifyData);
-		if (fd) {
+		if (alp->fd) {
 		    Header h;
 
 		    headerFree(hdrs[i]);
-		    rc = rpmReadPackageHeader(fd, &h, NULL, NULL, NULL);
+		    rc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
 		    if (rc) {
 			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
 				    alp->key, ts->notifyData);
+			alp->fd = NULL;
 			ourrc++;
-			fd = NULL;
 		    } else {
 			hdrs[i] = relocateFileList(ts, alp, h, NULL);
 			headerFree(h);
 		    }
+		    if (alp->fd) gotfd = 1;
 		}
 	    }
 
-	    if (fd) {
+	    if (alp->fd) {
 
 		if (alp->multiLib)
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
-		if (installBinaryPackage(ts, fd, hdrs[i],
-					 alp->key, fi->actions,
-					 fi->fc ? fi->replaced : NULL)) {
+		if (installBinaryPackage(ts, hdrs[i], fi)) {
 		    ourrc++;
 		    lastFailed = i;
 		}
@@ -1870,9 +1956,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	    headerFree(hdrs[i]);
 
-	    if (alp->fd == NULL && fd)
+	    if (gotfd) {
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
 			alp->key, ts->notifyData);
+		alp->fd = NULL;
+	    }
 	    break;
 	case TR_REMOVED:
 	  { unsigned int offset = fi->record;

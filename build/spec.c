@@ -38,10 +38,10 @@ static inline void freeCpioList(/*@only@*/ struct cpioFileMapping *cpioList, int
     struct cpioFileMapping *p = cpioList;
 
     while (cpioCount--) {
-	rpmMessage(RPMMESS_DEBUG, _("archive = %s, fs = %s\n"),
-		   p->archivePath, p->fsPath);
+	rpmMessage(RPMMESS_DEBUG, _("archive = %s, fs = %s%s\n"),
+		   p->archivePath, p->dirName, p->baseName);
 	FREE(p->archivePath);
-	FREE(p->fsPath);
+	FREE(p->dirName);	/* XXX baseName is free'd here as well */
 	p++;
     }
     FREE(cpioList);

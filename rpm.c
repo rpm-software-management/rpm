@@ -52,6 +52,7 @@ enum modes {
 static int allFiles;
 static int allMatches;
 static int badReloc;
+static int dirStash;
 static int excldocs;
 static int force;
 extern int _ftp_debug;
@@ -77,6 +78,7 @@ static char * pipeOutput;
 static char * prefix;
 static int quiet;
 static char * rcfile;
+static int rePackage;
 static int replaceFiles;
 static int replacePackages;
 static char * rootdir;
@@ -106,6 +108,7 @@ static struct poptOption optionsTable[] = {
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
  { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,NULL, NULL},
+ { "dirstash", '\0', POPT_ARG_VAL, &dirStash, 1,	NULL, NULL},
  { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
  { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO, NULL, NULL},
@@ -149,6 +152,7 @@ static struct poptOption optionsTable[] = {
 #endif
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
  { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,	NULL, NULL},
+ { "repackage", '\0', POPT_ARG_VAL, &rePackage, 1,	NULL, NULL},
  { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},
  { "replacepkgs", '\0', 0, &replacePackages, 0,	NULL, NULL},
  { "resign", '\0', 0, 0, GETOPT_RESIGN,		NULL, NULL},
@@ -540,7 +544,9 @@ int main(int argc, const char ** argv)
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t *qva = &rpmQVArgs;
     int arg;
-    int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
+    rpmtransFlags transFlags = RPMTRANS_FLAG_NONE;
+    rpmInstallInterfaceFlags installInterfaceFlags = INSTALL_NONE;
+    rpmEraseInterfaceFlags eraseInterfaceFlags = UNINSTALL_NONE;
     int verifyFlags;
     int checksigFlags = 0;
     rpmResignFlags addSign = RESIGN_NEW_SIGNATURE;
@@ -1079,15 +1085,18 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for uninstall"));
 
-	if (noScripts) uninstallFlags |= RPMTRANS_FLAG_NOSCRIPTS;
-	if (noTriggers) uninstallFlags |= RPMTRANS_FLAG_NOTRIGGERS;
-	if (test) uninstallFlags |= RPMTRANS_FLAG_TEST;
-	if (justdb) uninstallFlags |= RPMTRANS_FLAG_JUSTDB;
-	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
-	if (allMatches) interfaceFlags |= UNINSTALL_ALLMATCHES;
+	if (noScripts) transFlags |= RPMTRANS_FLAG_NOSCRIPTS;
+	if (noTriggers) transFlags |= RPMTRANS_FLAG_NOTRIGGERS;
+	if (test) transFlags |= RPMTRANS_FLAG_TEST;
+	if (justdb) transFlags |= RPMTRANS_FLAG_JUSTDB;
+	if (dirStash) transFlags |= RPMTRANS_FLAG_DIRSTASH;
+	if (rePackage) transFlags |= RPMTRANS_FLAG_REPACKAGE;
+
+	if (noDeps) eraseInterfaceFlags |= UNINSTALL_NODEPS;
+	if (allMatches) eraseInterfaceFlags |= UNINSTALL_ALLMATCHES;
 
 	ec = rpmErase(rootdir, (const char **)poptGetArgs(optCon), 
-			 uninstallFlags, interfaceFlags);
+			 transFlags, eraseInterfaceFlags);
 	break;
 
       case MODE_INSTALL:
@@ -1106,26 +1115,28 @@ int main(int argc, const char ** argv)
 	if (ignoreOs) probFilter |= RPMPROB_FILTER_IGNOREOS;
 	if (ignoreSize) probFilter |= RPMPROB_FILTER_DISKSPACE;
 
-	if (test) installFlags |= RPMTRANS_FLAG_TEST;
+	if (test) transFlags |= RPMTRANS_FLAG_TEST;
 	/* RPMTRANS_FLAG_BUILD_PROBS */
-	if (noScripts) installFlags |= RPMTRANS_FLAG_NOSCRIPTS;
-	if (justdb) installFlags |= RPMTRANS_FLAG_JUSTDB;
-	if (noTriggers) installFlags |= RPMTRANS_FLAG_NOTRIGGERS;
+	if (noScripts) transFlags |= RPMTRANS_FLAG_NOSCRIPTS;
+	if (justdb) transFlags |= RPMTRANS_FLAG_JUSTDB;
+	if (noTriggers) transFlags |= RPMTRANS_FLAG_NOTRIGGERS;
 	if (!incldocs) {
 	    if (excldocs)
-		installFlags |= RPMTRANS_FLAG_NODOCS;
+		transFlags |= RPMTRANS_FLAG_NODOCS;
 	    else if (rpmExpandNumeric("%{_excludedocs}"))
-		installFlags |= RPMTRANS_FLAG_NODOCS;
+		transFlags |= RPMTRANS_FLAG_NODOCS;
 	}
-	if (allFiles) installFlags |= RPMTRANS_FLAG_ALLFILES;
+	if (allFiles) transFlags |= RPMTRANS_FLAG_ALLFILES;
+	if (dirStash) transFlags |= RPMTRANS_FLAG_DIRSTASH;
+	if (rePackage) transFlags |= RPMTRANS_FLAG_REPACKAGE;
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
-	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
-	if (showHash) interfaceFlags |= INSTALL_HASH;
-	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
-	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
-	if (upgrade) interfaceFlags |= INSTALL_UPGRADE;
-	if (freshen) interfaceFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN);
+	if (showPercents) installInterfaceFlags |= INSTALL_PERCENT;
+	if (showHash) installInterfaceFlags |= INSTALL_HASH;
+	if (noDeps) installInterfaceFlags |= INSTALL_NODEPS;
+	if (noOrder) installInterfaceFlags |= INSTALL_NOORDER;
+	if (upgrade) installInterfaceFlags |= INSTALL_UPGRADE;
+	if (freshen) installInterfaceFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN);
 
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for install"));
@@ -1144,7 +1155,8 @@ int main(int argc, const char ** argv)
 	}
 
 	ec += rpmInstall(rootdir, (const char **)poptGetArgs(optCon), 
-			installFlags, interfaceFlags, probFilter, relocations);
+			transFlags, installInterfaceFlags, probFilter,
+			relocations);
 	break;
 
       case MODE_QUERY:

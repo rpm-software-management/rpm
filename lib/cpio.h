@@ -18,8 +18,7 @@
 #include <rpmio_internal.h>
 
 /** \ingroup payload
- * Note:  CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
- * be positive numbers or this setting the high bit stuff is a bad idea.
+ * @note CPIO_CHECK_ERRNO bit is set only if errno is valid.
  */
 #define CPIOERR_CHECK_ERRNO	0x00008000
 
@@ -45,40 +44,41 @@ enum cpioErrorReturns {
 	CPIOERR_READ_FAILED	= (18   | CPIOERR_CHECK_ERRNO),
 	CPIOERR_COPY_FAILED	= (19   | CPIOERR_CHECK_ERRNO),
 	CPIOERR_HDR_SIZE	= (20			),
-	CPIOERR_UNKNOWN_FILETYPE = (21			),
-	CPIOERR_MISSING_HARDLINK = (22			),
+	CPIOERR_UNKNOWN_FILETYPE= (21			),
+	CPIOERR_MISSING_HARDLINK= (22			),
 	CPIOERR_MD5SUM_MISMATCH	= (23			),
 	CPIOERR_INTERNAL	= (24			)
 };
 
 /** \ingroup payload
  */
-enum cpioMapFlags {
+typedef enum cpioMapFlags_e {
     CPIO_MAP_PATH		= (1 << 0),
     CPIO_MAP_MODE		= (1 << 1),
     CPIO_MAP_UID		= (1 << 2),
     CPIO_MAP_GID		= (1 << 3),
     CPIO_FOLLOW_SYMLINKS	= (1 << 4),  /* only for building */
     CPIO_MULTILIB		= (1 << 31) /* internal, only for building */
-};
+} cpioMapFlags;
 
 /** \ingroup payload
  * Defines a single file to be included in a cpio payload.
  */
 struct cpioFileMapping {
 /*@dependent@*/ const char * archivePath; /*!< Path to store in cpio archive. */
-/*@dependent@*/ const char * fsPath;      /*!< Location of payload file. */
-/*@dependent@*/ const char * md5sum;      /*!< File MD5 sum (NULL disables). */
+/*@dependent@*/ const char * dirName;	/*!< Payload file directory. */
+/*@dependent@*/ const char * baseName;	/*!< Payload file base name. */
+/*@dependent@*/ const char * md5sum;	/*!< File MD5 sum (NULL disables). */
     mode_t finalMode;		/*!< Mode of payload file (from header). */
     uid_t finalUid;		/*!< Uid of payload file (from header). */
     gid_t finalGid;		/*!< Gid of payload file (from header). */
-    int mapFlags;
+    cpioMapFlags mapFlags;
 };
 
 /** \ingroup payload
  * The first argument passed in a cpio progress callback.
  *
- * Note: When building the cpio payload, only "file" is filled in.
+ * @note When building the cpio payload, only "file" is filled in.
  */
 struct cpioCallbackInfo {
 /*@dependent@*/ const char * file;	/*!< File name being installed. */
@@ -149,7 +149,7 @@ int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
  * @param		error code
  * @return		formatted error string
  */
-/*@observer@*/ const char *cpioStrerror(int rc)		/*@*/;
+/*@observer@*/ const char *const cpioStrerror(int rc)		/*@*/;
 
 #ifdef __cplusplus
 }

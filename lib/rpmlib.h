@@ -968,15 +968,18 @@ void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
  * Bit(s) to control rpmRunTransaction() operation.
  */
 typedef enum rpmtransFlags_e {
-    RPMTRANS_FLAG_TEST		= (1 << 0),	/*!< from --test */
-    RPMTRANS_FLAG_BUILD_PROBS	= (1 << 1),	/*!< @todo Document. */
-    RPMTRANS_FLAG_NOSCRIPTS	= (1 << 2),	/*!< from --noscripts */
-    RPMTRANS_FLAG_JUSTDB	= (1 << 3),	/*!< from --justdb */
-    RPMTRANS_FLAG_NOTRIGGERS	= (1 << 4),	/*!< from --notriggers */
-    RPMTRANS_FLAG_NODOCS	= (1 << 5),	/*!< from --nodocs */
-    RPMTRANS_FLAG_ALLFILES	= (1 << 6),	/*!< from --allfiles */
-    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 << 7),	/*!< @todo Document. */
-    RPMTRANS_FLAG_MULTILIB	= (1 << 8),	/*!< @todo Document. */
+    RPMTRANS_FLAG_NONE		= 0,
+    RPMTRANS_FLAG_TEST		= (1 <<  0),	/*!< from --test */
+    RPMTRANS_FLAG_BUILD_PROBS	= (1 <<  1),	/*!< @todo Document. */
+    RPMTRANS_FLAG_NOSCRIPTS	= (1 <<  2),	/*!< from --noscripts */
+    RPMTRANS_FLAG_JUSTDB	= (1 <<  3),	/*!< from --justdb */
+    RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
+    RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
+    RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
+    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
+    RPMTRANS_FLAG_MULTILIB	= (1 <<  8),	/*!< @todo Document. */
+    RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
+    RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
 } rpmtransFlags;
 
 /** \ingroup rpmtrans
@@ -1024,15 +1027,15 @@ void rpmShowRpmlibProvides(FILE * fp) /*@modifies *fp @*/;
  */
 typedef enum rpmprobFilterFlags_e {
     RPMPROB_FILTER_NONE		= 0,
-    RPMPROB_FILTER_IGNOREOS	= (1 << 0),
-    RPMPROB_FILTER_IGNOREARCH	= (1 << 1),
-    RPMPROB_FILTER_REPLACEPKG	= (1 << 2),
-    RPMPROB_FILTER_FORCERELOCATE= (1 << 3),
-    RPMPROB_FILTER_REPLACENEWFILES= (1 << 4),
-    RPMPROB_FILTER_REPLACEOLDFILES= (1 << 5),
-    RPMPROB_FILTER_OLDPACKAGE	= (1 << 6),
-    RPMPROB_FILTER_DISKSPACE	= (1 << 7),
-    RPMPROB_FILTER_DISKNODES	= (1 << 8)
+    RPMPROB_FILTER_IGNOREOS	= (1 << 0),	/*!< from --ignoreos */
+    RPMPROB_FILTER_IGNOREARCH	= (1 << 1),	/*!< from --ignorearch */
+    RPMPROB_FILTER_REPLACEPKG	= (1 << 2),	/*!< from --replacepkgs */
+    RPMPROB_FILTER_FORCERELOCATE= (1 << 3),	/*!< from --badreloc */
+    RPMPROB_FILTER_REPLACENEWFILES= (1 << 4),	/*!< from --replacefiles */
+    RPMPROB_FILTER_REPLACEOLDFILES= (1 << 5),	/*!< from --replacefiles */
+    RPMPROB_FILTER_OLDPACKAGE	= (1 << 6),	/*!< from --oldpackage */
+    RPMPROB_FILTER_DISKSPACE	= (1 << 7),	/*!< from --ignoresize */
+    RPMPROB_FILTER_DISKNODES	= (1 << 8)	/*!< from --ignoresize */
 } rpmprobFilterFlags;
 
 /** \ingroup rpmtrans
@@ -1358,13 +1361,14 @@ int rpmVerify(QVA_t *qva, rpmQVSources source, const char *arg);
  * Bit(s) to control rpmInstall() operation.
  */
 typedef enum rpmInstallInterfaceFlags_e {
+    INSTALL_NONE	= 0,
     INSTALL_PERCENT	= (1 << 0),	/*!< from --percent */
     INSTALL_HASH	= (1 << 1),	/*!< from --hash */
     INSTALL_NODEPS	= (1 << 2),	/*!< from --nodeps */
     INSTALL_NOORDER	= (1 << 3),	/*!< from --noorder */
     INSTALL_LABEL	= (1 << 4),	/*!< from --verbose (notify) */
     INSTALL_UPGRADE	= (1 << 5),	/*!< from --upgrade */
-    INSTALL_FRESHEN	= (1 << 6)	/*!< from --freshen */
+    INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
 } rpmInstallInterfaceFlags;
 
 /** \ingroup rpmcli
@@ -1398,8 +1402,9 @@ int rpmInstallSource(const char * prefix, const char * arg,
  * Bit(s) to control rpmErase() operation.
  */
 typedef enum rpmEraseInterfaceFlags_e {
+    UNINSTALL_NONE	= 0,
     UNINSTALL_NODEPS	= (1 << 0),	/*!< from --nodeps */
-    UNINSTALL_ALLMATCHES= (1 << 1)	/*!< from --allmatches */
+    UNINSTALL_ALLMATCHES= (1 << 1),	/*!< from --allmatches */
 } rpmEraseInterfaceFlags;
 
 /** \ingroup rpmcli

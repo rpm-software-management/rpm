@@ -21,10 +21,10 @@ struct tsortInfo {
 /*@dependent@*/ struct availablePackage * tsi_pkg;
     int		tsi_reqx;
     int		tsi_qcnt;
-};
+} ;
 
 /**
- * Info about a single package to be installed/removed.
+ * Info about a single package to be installed.
  */
 struct availablePackage {
     Header h;				/*!< Package header. */
@@ -99,7 +99,7 @@ struct availableList {
     int alloced;			/*!< No. of pkgs allocated for list. */
     int numDirs;			/*!< No. of directories. */
 /*@owned@*/ struct dirInfo * dirs;	/*!< Set of directories. */
-};
+} ;
 
 /**
  * A single package instance to be installed/removed atomically.
@@ -116,7 +116,34 @@ struct transactionElement {
 	    int dependsOnIndex;
 	} removed;
     } u;
-};
+} ;
+
+struct transactionFileInfo_s {
+  /* for all packages */
+    enum rpmTransactionType type;
+    enum fileActions * actions;	/*!< file disposition */
+/*@dependent@*/ struct fingerPrint_s * fps; /*!< file fingerprints */
+    Header h;			/*!< package header */
+    uint_32 * fflags;		/*!< File flags (from header) */
+    uint_32 * fsizes;		/*!< File sizes (from header) */
+    const char ** bnl;		/*!< Base names (from header) */
+    const char ** dnl;		/*!< Directory names (from header) */
+    const int * dil;		/*!< Directory indices (from header) */
+    const char ** fmd5s;	/*!< file MD5 sums (from header) */
+    uint_16 * fmodes;		/*!< file modes (from header) */
+    char * fstates;		/*!< file states (from header) */
+    int fc;			/*!< No. of files. */
+    int dc;			/*!< No. of directories. */
+    int bnlmax;			/*!< Length (in bytes) of longest base name. */
+    int dnlmax;			/*!< Length (in bytes) of longest dir name. */
+  /* these are for TR_ADDED packages */
+    const char ** flinks;	/*!< file links (from header) */
+    struct availablePackage * ap;
+    struct sharedFileInfo * replaced;
+    uint_32 * replacedSizes;
+  /* for TR_REMOVED packages */
+    unsigned int record;
+} ;
 
 /**
  * The set of packages to be installed/removed atomically.
@@ -144,7 +171,7 @@ struct rpmTransactionSet_s {
 /*@null@*/ FD_t scriptFd;	/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
     int id;			/*!< Transaction id. */
-};
+} ;
 
 /**
  * Problems encountered while checking dependencies.
@@ -153,13 +180,13 @@ struct problemsSet {
     struct rpmDependencyConflict * problems;	/*!< Problems encountered. */
     int num;			/*!< No. of problems found. */
     int alloced;		/*!< No. of problems allocated. */
-};
+} ;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* XXX lib/uninstall.c */
+/* XXX lib/scriptlet.c */
 /**
  * Compare package name-version-release from header with dependency, looking
  * for overlap.

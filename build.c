@@ -116,6 +116,8 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
+	/* XXX Using mkstemp is difficult here. */
+	/* XXX FWIW, default %{_specdir} is root.root 0755 */
 	{   char tfn[64];
 	    strcpy(tfn, "rpm-spec.XXXXXX");
 	    tmpSpecFile = rpmGetPath("%{_specdir}/", mktemp(tfn), NULL);

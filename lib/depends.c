@@ -1748,7 +1748,7 @@ rescan:
 	    }
 	    free(tsi);
 	}
-	if (!_printed && loopcheck == qlen) {
+	if (!_printed && loopcheck == qlen && q->tsi.tsi_suc != NULL) {
 	    _printed++;
 	    rpmMessage(RPMMESS_DEBUG,
 		_("========== successors only (presentation order)\n"));

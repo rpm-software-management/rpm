@@ -1,4 +1,7 @@
-4.0 -> 4.1
+4.0.2 -> 4.0.3
+	- cpio mappings carry dirname/basename, not absolute path.
+
+4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
 	- rip out rpm{get,put}text, use getpo.sh and specspo instead.
 	- consistent return for all signature verification.

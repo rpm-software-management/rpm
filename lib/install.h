@@ -56,6 +56,8 @@ enum fileTypes {
     SOCK	= 12	/*!< socket */
 };
 
+/*@abstract@*/ typedef struct transactionFileInfo_s * TFI_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -103,16 +105,11 @@ int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
 /**
  * Install binary package (from transaction set).
  * @param ts		transaction set
- * @param fd		package file handle
  * @param h		package header
- * @param pkgKey	package private data
- * @param actions	array of file dispositions
- * @param sharedList	header instances of packages that share files
+ * @param fi		transaction file info
  * @return		0 on success, 1 on bad magic, 2 on error
  */
-int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
-		const void * pkgKey, enum fileActions * actions,
-		struct sharedFileInfo * sharedList);
+int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi);
 
 /**
  * Erase binary package (from transaction set).

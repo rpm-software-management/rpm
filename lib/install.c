@@ -9,8 +9,8 @@
 #include <rpmurl.h>
 
 #include "cpio.h"
-#include "install.h"
 #include "depends.h"
+#include "install.h"
 #include "misc.h"
 #include "debug.h"
 
@@ -31,16 +31,22 @@ struct callbackInfo {
 /**
  * Keeps track of memory allocated while accessing header tags.
  */
-struct fileMemory {
-/*@owned@*/ const char ** names;
+typedef struct fileMemory_s {
+/*@owned@*/ const char ** dnl;
+/*@owned@*/ const char ** bnl;
 /*@owned@*/ const char ** cpioNames;
 /*@owned@*/ const char ** md5sums;
 /*@owned@*/ struct fileInfo * files;
-};
+} * fileMemory;
 
+/**
+ * Header file info, gathered per-file, rather than per-tag.
+ */
 struct fileInfo {
 /*@dependent@*/ const char * cpioPath;
 /*@dependent@*/ const char * relativePath;	/* relative to root */
+/*@dependent@*/ const char * dn;		/* relative to root */
+/*@dependent@*/ const char * bn;
 /*@dependent@*/ const char * md5sum;
     uid_t uid;
     gid_t gid;
@@ -79,7 +85,7 @@ static int rpmInstallLoadMacros(Header h)
     struct tagMacro *tagm;
     union {
 	const char * ptr;
-	int_32 i32;
+	int_32 * i32p;
     } body;
     char numbuf[32];
     int type;
@@ -89,7 +95,7 @@ static int rpmInstallLoadMacros(Header h)
 	    continue;
 	switch (type) {
 	case RPM_INT32_TYPE:
-	    sprintf(numbuf, "%d", body.i32);
+	    sprintf(numbuf, "%d", *body.i32p);
 	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
 	    break;
 	case RPM_STRING_TYPE:
@@ -104,11 +110,12 @@ static int rpmInstallLoadMacros(Header h)
  * Create memory used to access header.
  * @return		pointer to memory
  */
-static /*@only@*/ struct fileMemory *newFileMemory(void)
+static /*@only@*/ fileMemory newFileMemory(void)
 {
-    struct fileMemory *fileMem = xmalloc(sizeof(*fileMem));
+    fileMemory fileMem = xmalloc(sizeof(*fileMem));
     fileMem->files = NULL;
-    fileMem->names = NULL;
+    fileMem->dnl = NULL;
+    fileMem->bnl = NULL;
     fileMem->cpioNames = NULL;
     fileMem->md5sums = NULL;
     return fileMem;
@@ -118,10 +125,11 @@ static /*@only@*/ struct fileMemory *newFileMemory(void)
  * Destroy memory used to access header.
  * @param fileMem	pointer to memory
  */
-static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
+static void freeFileMemory( /*@only@*/ fileMemory fileMem)
 {
     if (fileMem->files) free(fileMem->files);
-    if (fileMem->names) free(fileMem->names);
+    if (fileMem->dnl) free(fileMem->dnl);
+    if (fileMem->bnl) free(fileMem->bnl);
     if (fileMem->cpioNames) free(fileMem->cpioNames);
     if (fileMem->md5sums) free(fileMem->md5sums);
     free(fileMem);
@@ -130,6 +138,7 @@ static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
 /* files should not be preallocated */
 /**
  * Build file information array.
+ * @param fi		transaction file info (NULL for source package)
  * @param h		header
  * @retval memPtr	address of allocated memory from header access
  * @retval fileCountPtr	address of install file count
@@ -138,14 +147,19 @@ static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
  * @param actions	array of file dispositions
  * @return		0 always
  */
-static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
-	 /*@out@*/ int * fileCountPtr, /*@out@*/ struct fileInfo ** filesPtr,
-	 int stripPrefixLength, enum fileActions * actions)
+static int assembleFileList(TFI_t fi, Header h,
+	/*@out@*/ fileMemory * memPtr,
+	/*@out@*/ int * fileCountPtr,
+	/*@out@*/ struct fileInfo ** filesPtr,
+	int stripPrefixLength)
 {
-    uint_32 * fileFlags;
-    uint_32 * fileSizes;
-    uint_16 * fileModes;
-    struct fileMemory *mem = newFileMemory();
+    enum fileActions * actions;
+    const char ** dnl, ** bnl, ** fmd5s;
+    const int_32 * dil;
+    uint_32 * fflags;
+    uint_32 * fsizes;
+    uint_16 * fmodes;
+    fileMemory mem = newFileMemory();
     struct fileInfo * files;
     struct fileInfo * file;
     int fileCount;
@@ -154,8 +168,6 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
     *memPtr = mem;
 
     if (!headerIsEntry(h, RPMTAG_BASENAMES)) return 0;
-
-    rpmBuildFileList(h, &mem->names, fileCountPtr);
 
     if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
 	buildOrigFileList(h, &mem->cpioNames, fileCountPtr);
@@ -167,28 +179,45 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 
     files = *filesPtr = mem->files = xcalloc(fileCount, sizeof(*mem->files));
 
-    headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &mem->md5sums, NULL);
-    headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
-    headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
-    headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
+    if (fi) {
+	dnl = fi->dnl;
+	dil = fi->dil;
+	bnl = fi->bnl;
+	fmd5s = fi->fmd5s;
+	fflags = fi->fflags;
+	fmodes = fi->fmodes;
+	fsizes = fi->fsizes;
+	actions = fi->actions;
+    } else {
+	headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dnl, NULL);
+	mem->dnl = dnl;
+	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dil, NULL);
+	mem->bnl = bnl;
+	headerGetEntry(h, RPMTAG_BASENAMES, NULL, (void **) &bnl, NULL);
+	if (!headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &fmd5s, NULL))
+	    fmd5s = NULL;
+	mem->md5sums = fmd5s;
+	headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fflags, NULL);
+	headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fmodes, NULL);
+	headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fsizes, NULL);
+	actions = NULL;
+    }
 
     for (i = 0, file = files; i < fileCount; i++, file++) {
 	file->state = RPMFILE_STATE_NORMAL;
-	if (actions)
-	    file->action = actions[i];
-	else
-	    file->action = FA_UNKNOWN;
+	file->action = (actions ? actions[i] : FA_UNKNOWN);
 	file->install = 1;
 
-	file->relativePath = mem->names[i];
+	file->dn = dnl[dil[i]];
+	file->bn = bnl[i];
 	file->cpioPath = mem->cpioNames[i] + stripPrefixLength;
-	file->md5sum = mem->md5sums[i];
-	file->mode = fileModes[i];
-	file->size = fileSizes[i];
-	file->flags = fileFlags[i];
+	file->md5sum = (fmd5s ? fmd5s[i] : NULL);
+	file->mode = fmodes[i];
+	file->size = fsizes[i];
+	file->flags = fflags[i];
 
-	rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
-		    file->relativePath, fileActionString(file->action));
+	rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
+		    file->dn, file->bn, fileActionString(file->action));
     }
 
     return 0;
@@ -570,7 +599,6 @@ static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
     struct callbackInfo info;
     char * rpmio_flags;
     FD_t cfd;
-    int urltype;
     int saveerrno;
 
     if (!files) {
@@ -596,11 +624,9 @@ static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
 	    if (!files[i].install) continue;
 
 	    map[mappedFiles].archivePath = files[i].cpioPath;
-#ifdef DYING
-	    map[mappedFiles].fsPath = files[i].relativePath;
-#else
-	    urltype = urlPath(files[i].relativePath, &map[mappedFiles].fsPath);
-#endif
+	    (void) urlPath(files[i].dn, &map[mappedFiles].dirName);
+	    map[mappedFiles].baseName = files[i].bn;
+
 	    /* XXX Can't do src rpm MD5 sum verification (yet). */
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
 	    map[mappedFiles].md5sum = headerIsEntry(h, RPMTAG_SOURCERPM)
@@ -689,7 +715,7 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
     char * instSpecFile, * correctSpecFile;
     int fileCount = 0;
     uint_32 * archiveSizePtr = NULL;
-    struct fileMemory *fileMem = NULL;
+    fileMemory fileMem = NULL;
     struct fileInfo * files = NULL;
     int i;
     const char * currDir = NULL;
@@ -764,10 +790,9 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 
     if (h != NULL && headerIsEntry(h, RPMTAG_BASENAMES)) {
 	/* we can't remap v1 packages */
-	assembleFileList(h, &fileMem, &fileCount, &files, 0, NULL);
+	assembleFileList(NULL, h, &fileMem, &fileCount, &files, 0);
 
 	for (i = 0; i < fileCount; i++) {
-	    files[i].relativePath = files[i].relativePath;
 	    files[i].uid = currUid;
 	    files[i].gid = currGid;
 	}
@@ -953,13 +978,10 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     return rc;
 }
 
-int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
-			const void * pkgKey, enum fileActions * actions,
-			struct sharedFileInfo * sharedList)
+int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
 {
     rpmtransFlags transFlags = ts->transFlags;
-    int rc;
-    const char * name, * version, * release;
+    struct availablePackage * alp = fi->ap;
     int fileCount = 0;
     int type, count;
     struct fileInfo * files;
@@ -968,27 +990,32 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
     int otherOffset = 0;
     int scriptArg;
     int stripSize = 1;		/* strip at least first / for cpio */
-    struct fileMemory *fileMem = NULL;
+    fileMemory fileMem = NULL;
+    int rc;
+
+#ifdef	DYING
+    const char * name, * version, * release;
+    headerNVR(h, &name, &version, &release);
+#endif
 
     /* XXX this looks broke, as libraries may need /sbin/ldconfig for example */
     if (transFlags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
 	transFlags |= RPMTRANS_FLAG_NOSCRIPTS;
 
-    headerNVR(h, &name, &version, &release);
-
     rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s files test = %d\n"),
-		name, version, release, transFlags & RPMTRANS_FLAG_TEST);
+		alp->name, alp->version, alp->release,
+		transFlags & RPMTRANS_FLAG_TEST);
 
-    if ((scriptArg = rpmdbCountPackages(ts->rpmdb, name)) < 0) {
+    if ((scriptArg = rpmdbCountPackages(ts->rpmdb, alp->name)) < 0) {
 	rc = 2;
 	goto exit;
     }
     scriptArg += 1;
 
     {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, name, 0);
-	rpmdbSetIteratorVersion(mi, version);
-	rpmdbSetIteratorRelease(mi, release);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
+	rpmdbSetIteratorVersion(mi, alp->version);
+	rpmdbSetIteratorRelease(mi, alp->release);
 	while ((oldH = rpmdbNextIterator(mi))) {
 	    otherOffset = rpmdbGetIteratorOffset(mi);
 	    oldH = (transFlags & RPMTRANS_FLAG_MULTILIB)
@@ -1010,8 +1037,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	    stripSize = 1;
 	}
 
-	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize,
-			     actions)) {
+	if (assembleFileList(fi, h, &fileMem, &fileCount, &files, stripSize)) {
 	    rc = 2;
 	    goto exit;
 	}
@@ -1031,10 +1057,10 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 		      transFlags & RPMTRANS_FLAG_NOSCRIPTS);
 
     if (rc) {
-	rc = 2;
 	rpmError(RPMERR_SCRIPT,
 		_("skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"),
-		name, version, release, rc);
+		alp->name, alp->version, alp->release, rc);
+	rc = 2;
 	goto exit;
     }
 
@@ -1059,11 +1085,11 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	    ext = NULL;
 
 	    switch (files[i].action) {
-	      case FA_BACKUP:
+	    case FA_BACKUP:
 		ext = ".rpmorig";
 		break;
 
-	      case FA_ALTNAME:
+	    case FA_ALTNAME:
 		newpath = alloca(strlen(files[i].relativePath) + 20);
 		(void)stpcpy(stpcpy(newpath, files[i].relativePath), ".rpmnew");
 		rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"),
@@ -1071,30 +1097,30 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 		files[i].relativePath = newpath;
 		break;
 
-	      case FA_SAVE:
+	    case FA_SAVE:
 		ext = ".rpmsave";
 		break;
 
-	      case FA_CREATE:
+	    case FA_CREATE:
 		break;
 
-	      case FA_SKIP:
-	      case FA_SKIPMULTILIB:
+	    case FA_SKIP:
+	    case FA_SKIPMULTILIB:
 		files[i].install = 0;
 		break;
 
-	      case FA_SKIPNSTATE:
+	    case FA_SKIPNSTATE:
 		files[i].state = RPMFILE_STATE_NOTINSTALLED;
 		files[i].install = 0;
 		break;
 
-	      case FA_SKIPNETSHARED:
+	    case FA_SKIPNETSHARED:
 		files[i].state = RPMFILE_STATE_NETSHARED;
 		files[i].install = 0;
 		break;
 
-	      case FA_UNKNOWN:
-	      case FA_REMOVE:
+	    case FA_UNKNOWN:
+	    case FA_REMOVE:
 		files[i].install = 0;
 		break;
 	    }
@@ -1122,12 +1148,14 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 
 	    if (ts->notify) {
 		(void)ts->notify(h, RPMCALLBACK_INST_START, 0, 0,
-		    pkgKey, ts->notifyData);
+		    alp->key, ts->notifyData);
 	    }
 
 	    /* the file pointer for fd is pointing at the cpio archive */
-	    if (installArchive(fd, files, fileCount, ts->notify, ts->notifyData, pkgKey,
-			h, NULL, archiveSizePtr ? *archiveSizePtr : 0)) {
+	    if (installArchive(alp->fd, files, fileCount,
+			ts->notify, ts->notifyData, alp->key,
+			h, NULL, archiveSizePtr ? *archiveSizePtr : 0))
+	    {
 		rc = 2;
 		goto exit;
 	    }
@@ -1185,7 +1213,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	    headerModifyEntry(oldH, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 			      &multiLib, 1);
 	}
-	if (mergeFiles(oldH, h, actions)) {
+	if (mergeFiles(oldH, h, fi->actions)) {
 	    rc = 2;
 	    goto exit;
 	}
@@ -1221,8 +1249,8 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	}
     }
 
-    if (sharedList)
-	markReplacedFiles(ts->rpmdb, sharedList);
+    if (fi->fc > 0 && fi->replaced)
+	markReplacedFiles(ts->rpmdb, fi->replaced);
 
     rc = 0;
 
