@@ -30,7 +30,6 @@ typedef struct headerIteratorS *HeaderIterator;
 
 /* read and write a header from a file */
 Header readHeader(int fd);
-Header mmapHeader(int fd, long offset);
 void writeHeader(int fd, Header h);
 unsigned int sizeofHeader(Header h);
 
