@@ -431,9 +431,7 @@ exit 0
 %if %{with_python_subpackage}
 %files python
 %defattr(-,root,root)
-%{__libdir}/python%{with_python_version}/site-packages/poptmodule*
 %{__libdir}/python%{with_python_version}/site-packages/rpm
-%{__libdir}/python%{with_python_version}/site-packages/rpmdb
 %endif
 
 %files devel
