@@ -273,7 +273,9 @@ retry:
     SKIPSPACE(s);
 
     match = -1;
-    if (! strncmp("%ifarch", s, sizeof("%ifarch")-1)) {
+    if (!spec->readStack->reading && !strncmp("%if", s, sizeof("%if")-1)) {
+	match = 0;
+    } else if (! strncmp("%ifarch", s, sizeof("%ifarch")-1)) {
 	const char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 7;
 	match = matchTok(arch, s);
