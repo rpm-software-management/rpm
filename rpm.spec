@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.44
+Release: 0.45
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -254,6 +254,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jun 23 2000 Jeff Johnson <jbj@redhat.com>
+- i486 optflags typo fixed.
+
 * Thu Jun 22 2000 Jeff Johnson <jbj@redhat.com>
 - internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
 - support for separate source/binary compression policy.
