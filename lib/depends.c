@@ -502,8 +502,10 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
     return 0;
 }
 
-static int headerMatchesDepFlags(Header h, char * reqVersion, int reqFlags) {
-    char * name, * version;
+static int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
+    char * name, * version, * release, * chptr;
+    char * reqVersion = reqInfo;
+    char * reqRelease = NULL;
     int type, count;
     int_32 serial;
     char buf[20];
@@ -523,10 +525,26 @@ static int headerMatchesDepFlags(Header h, char * reqVersion, int reqFlags) {
 	}
 	sprintf(buf, "%d", serial);
 	version = buf;
-    } else
+    } else {
 	getEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
+	chptr = strrchr(reqInfo, '-');
+	if (chptr) {
+	    reqVersion = alloca(strlen(reqInfo) + 1);
+	    strcpy(reqVersion, reqInfo);
+	    reqVersion[chptr - reqInfo] = '\0';
+	    reqRelease = reqVersion + (chptr - reqInfo) + 1;
+	    if (*reqRelease) 
+		getEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);
+	    else
+		reqRelease = NULL;
+	}
+    }
 
     sense = vercmp(version, reqVersion);
+    if (!sense && reqRelease) {
+	/* if a release number is given, use it to break ties */
+	sense = vercmp(release, reqRelease);
+    }
 
     if ((reqFlags & REQUIRE_LESS) && sense < 0) {
 	result = 1;
