@@ -236,6 +236,7 @@ rpmDumpMacroTable(MacroContext mc, FILE * fp)
  * @param namelen	no. of byes
  * @return		address of slot in macro table with name (or NULL)
  */
+/*@-mustmod@*/ /* LCL: segfault with modifies nothing annotation */
 /*@dependent@*/ /*@null@*/ static MacroEntry *
 findEntry(MacroContext mc, const char * name, size_t namelen)
 	/*@globals rpmGlobalMacroContext @*/
@@ -265,6 +266,7 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
     /* XXX TODO: find 1st empty slot and return that */
     return ret;
 }
+/*@=mustmod@*/
 
 /* =============================================================== */
 
@@ -1511,6 +1513,7 @@ delMacro(MacroContext mc, const char * n)
     }
 }
 
+/*@-mustmod@*/ /* LCL: mc is modified through mb->mc, mb is abstract */
 int
 rpmDefineMacro(MacroContext mc, const char * macro, int level)
 {
@@ -1521,9 +1524,10 @@ rpmDefineMacro(MacroContext mc, const char * macro, int level)
     /*@-temptrans -assignexpose@*/
     mb->mc = (mc ? mc : rpmGlobalMacroContext);
     /*@=temptrans =assignexpose@*/
-    (void)doDefine(mb, macro, level, 0);
+    (void) doDefine(mb, macro, level, 0);
     return 0;
 }
+/*@=mustmod@*/
 
 void
 rpmLoadMacros(MacroContext mc, int level)
@@ -1547,13 +1551,15 @@ rpmLoadMacros(MacroContext mc, int level)
 }
 
 void
-rpmInitMacros(MacroContext mc, const char *macrofiles)
+rpmInitMacros(/*@unused@*/ MacroContext mc, const char *macrofiles)
 {
     char *m, *mfile, *me;
 
     if (macrofiles == NULL)
 	return;
+#ifdef	DYING
     if (mc == NULL) mc = rpmGlobalMacroContext;
+#endif
 
     for (mfile = m = xstrdup(macrofiles); mfile && *mfile != '\0'; mfile = me) {
 	FD_t fd;
@@ -1602,7 +1608,7 @@ rpmInitMacros(MacroContext mc, const char *macrofiles)
 	    if (c != '%')
 		/*@innercontinue@*/ continue;
 	    n++;	/* skip % */
-	    (void)rpmDefineMacro(NULL, n, RMIL_MACROFILES);
+	    (void) rpmDefineMacro(NULL, n, RMIL_MACROFILES);
 	}
 	(void) Fclose(fd);
     }

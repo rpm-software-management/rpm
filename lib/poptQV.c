@@ -198,8 +198,10 @@ struct poptOption rpmQueryPoptTable[] = {
  */
 struct poptOption rpmVerifyPoptTable[] = {
 #ifdef	DYING
+/*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 	verifyArgCallback, 0, NULL, NULL },
+/*@=type@*/
 #endif	/* DYING */
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },

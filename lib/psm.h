@@ -201,8 +201,7 @@ fileTypes whatis(uint_16 mode)
 Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		struct availablePackage * alp,
 		Header origH, fileAction * actions)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fi, alp, origH, actions, fileSystem @*/;
+	/*@modifies ts, fi, alp, origH, actions @*/;
 
 /**
  * Load data from header into transaction file element info.

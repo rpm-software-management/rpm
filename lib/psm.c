@@ -2519,18 +2519,14 @@ assert(psm->mi == NULL);
 	    xx = chdir(ts->currDir);
 	}
 	break;
-    case PSM_SCRIPT:
-#ifdef DYING
-	rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
-		psm->stepName, tag2sln(psm->scriptTag));
-#endif
+    case PSM_SCRIPT:	/* Run current package scriptlets. */
 	rc = runInstScript(psm);
 	break;
     case PSM_TRIGGERS:
 	/* Run triggers in other package(s) this package sets off. */
 	rc = runTriggers(psm);
 	break;
-    case PSM_IMMED_TRIGGERS:
+    case PSM_IMMED_TRIGGERS:	
 	/* Run triggers in this package other package(s) set off. */
 	rc = runImmedTriggers(psm);
 	break;

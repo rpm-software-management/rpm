@@ -122,23 +122,23 @@ int	rpmDefineMacro	(/*@null@*/ MacroContext mc, const char * macro,
 	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
- * Load macros from context into global context.
+ * Load macros from specific context into global context.
  * @param mc		macro context (NULL does nothing).
  * @param level		macro recursion level (0 is entry API)
  */
 void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
 	/*@globals rpmGlobalMacroContext@*/
-	/*@modifies mc, rpmGlobalMacroContext @*/;
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /**
- * Initialize macro context from set of macrofile(s).
- * @param mc		macro context (NULL uses global context).
+ * Initialize global macro context from set of macrofile(s).
+ * @param mc		(unused)
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
 void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)
 	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem @*/
-	/*@modifies mc, rpmGlobalMacroContext, fileSystem @*/;
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Destroy macro context.

@@ -262,6 +262,7 @@ extern struct pgpValTbl_s pgpCompressionTbl[];
  *
  * Implementations MUST implement SHA-1. Implementations SHOULD
  * implement MD5.
+ * @todo Add SHA256.
  */
 typedef enum pgpHashAlgo_e {
     PGPHASHALGO_MD5		= 1,	/*!< MD5 */

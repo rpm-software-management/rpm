@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-10-18 12:38-0400\n"
+"POT-Creation-Date: 2001-10-18 21:22-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2690,47 +2690,47 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/poptQV.c:209
+#: lib/poptQV.c:211
 msgid "don't verify MD5 digest of files"
 msgstr ""
 
-#: lib/poptQV.c:212
+#: lib/poptQV.c:214
 msgid "don't verify size of files"
 msgstr ""
 
-#: lib/poptQV.c:215
+#: lib/poptQV.c:217
 msgid "don't verify symlink path of files"
 msgstr ""
 
-#: lib/poptQV.c:218
+#: lib/poptQV.c:220
 msgid "don't verify owner of files"
 msgstr ""
 
-#: lib/poptQV.c:221
+#: lib/poptQV.c:223
 msgid "don't verify group of files"
 msgstr ""
 
-#: lib/poptQV.c:224
+#: lib/poptQV.c:226
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:227 lib/poptQV.c:230
+#: lib/poptQV.c:229 lib/poptQV.c:232
 msgid "don't verify mode of files"
 msgstr ""
 
-#: lib/poptQV.c:233
+#: lib/poptQV.c:235
 msgid "don't verify files in package"
 msgstr ""
 
-#: lib/poptQV.c:235
+#: lib/poptQV.c:237
 msgid "don't verify package dependencies"
 msgstr ""
 
-#: lib/poptQV.c:237 lib/poptQV.c:241
+#: lib/poptQV.c:239 lib/poptQV.c:243
 msgid "don't execute %verifyscript (if any)"
 msgstr ""
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:246
 msgid "don't verify header SHA1 digest"
 msgstr ""
 
@@ -2799,36 +2799,36 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:313 lib/transaction.c:478
+#: lib/psm.c:313
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:317 lib/transaction.c:482
+#: lib/psm.c:317
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/psm.c:320 lib/transaction.c:485
+#: lib/psm.c:320
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/psm.c:390 lib/transaction.c:555
+#: lib/psm.c:390
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/psm.c:456 lib/transaction.c:621
+#: lib/psm.c:456
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/psm.c:466 lib/transaction.c:631
+#: lib/psm.c:466
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:545 lib/transaction.c:710
+#: lib/psm.c:545
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
@@ -2903,11 +2903,6 @@ msgstr ""
 #: lib/psm.c:2424
 #, c-format
 msgid "%s failed: %s\n"
-msgstr ""
-
-#: lib/psm.c:2524
-#, c-format
-msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
 #: lib/query.c:119
@@ -3428,13 +3423,13 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:857
+#: lib/transaction.c:308
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:1485
+#: lib/transaction.c:936
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
@@ -3760,87 +3755,87 @@ msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: rpmio/macro.c:353
+#: rpmio/macro.c:355
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:396
+#: rpmio/macro.c:398
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:627
+#: rpmio/macro.c:629
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:654
+#: rpmio/macro.c:656
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:660
+#: rpmio/macro.c:662
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:665
+#: rpmio/macro.c:667
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:671
+#: rpmio/macro.c:673
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:706
+#: rpmio/macro.c:708
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:818
+#: rpmio/macro.c:820
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:936
+#: rpmio/macro.c:938
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:1135
+#: rpmio/macro.c:1137
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1202 rpmio/macro.c:1219
+#: rpmio/macro.c:1204 rpmio/macro.c:1221
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1260
+#: rpmio/macro.c:1262
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1389
+#: rpmio/macro.c:1391
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr ""
 
-#: rpmio/macro.c:1465
+#: rpmio/macro.c:1467
 msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1658 rpmio/macro.c:1664
+#: rpmio/macro.c:1664 rpmio/macro.c:1670
 #, c-format
 msgid "File %s: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1667
+#: rpmio/macro.c:1673
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
