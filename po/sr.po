@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-02-25 15:49-0500\n"
+"POT-Creation-Date: 2000-02-27 18:06-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1884,53 +1884,53 @@ msgstr "Neuspelo èitanje %s: %s."
 msgid "No patch number %d"
 msgstr "(nije broj)"
 
-#: build/parsePrep.c:138
+#: build/parsePrep.c:139
 #, c-format
 msgid "No source number %d"
 msgstr ""
 
-#: build/parsePrep.c:157
+#: build/parsePrep.c:158
 #, fuzzy, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/parsePrep.c:223
+#: build/parsePrep.c:224
 msgid "Error parsing %%setup: %s"
 msgstr ""
 
-#: build/parsePrep.c:238
+#: build/parsePrep.c:239
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr ""
 
-#: build/parsePrep.c:256
+#: build/parsePrep.c:257
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: build/parsePrep.c:383
+#: build/parsePrep.c:384
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: build/parsePrep.c:391
+#: build/parsePrep.c:392
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: build/parsePrep.c:403
+#: build/parsePrep.c:404
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:409
+#: build/parsePrep.c:410
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:416
+#: build/parsePrep.c:417
 msgid "Too many patches!"
 msgstr ""
 
-#: build/parsePrep.c:420
+#: build/parsePrep.c:421
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: build/parsePrep.c:457
+#: build/parsePrep.c:458
 msgid "line %d: second %%prep"
 msgstr ""
 
@@ -3193,67 +3193,67 @@ msgstr "gre¹ka: ne mogu da otvorim %s\n"
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:780
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:783
 #, fuzzy
 msgid "Bad server response"
 msgstr "Lo¹ odgovor FTP servera"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:786
 #, fuzzy
 msgid "Server IO error"
 msgstr "Ulazno/izlazna FTP gre¹ka"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:789
 #, fuzzy
 msgid "Server timeout"
 msgstr "Tajm-aut FTP servera"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:792
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Ne mogu da odredim host adresu FTP servera"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:795
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Ne mogu da odredim ime FTP hosta"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:798
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Ne mogu da se pove¾em sa FTP serverom"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:801
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Ne mogu da uspostavim vezu podataka sa FTP serverom"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:804
 msgid "IO error to local file"
 msgstr "Ulazno/izlazna gre¹ka kod lokalne datoteke"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:807
 msgid "Error setting remote server to passive mode"
 msgstr "Gre¹ka kod stavljanja udaljenog servera u pasivni re¾im"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:810
 msgid "File not found on server"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:813
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:815
+#: lib/rpmio.c:817
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
 
-#: lib/rpmio.c:1348
+#: lib/rpmio.c:1350
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

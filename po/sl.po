@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.10 2000/02/27 18:52:31 jbj Exp $
+# $Id: sl.po,v 1.11 2000/02/27 23:40:38 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-02-25 15:49-0500\n"
+"POT-Creation-Date: 2000-02-27 18:06-0500\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1838,53 +1838,53 @@ msgstr "Okvarjen izvor: %s: %s"
 msgid "No patch number %d"
 msgstr "Krparija ¹t. %d manjka"
 
-#: build/parsePrep.c:138
+#: build/parsePrep.c:139
 #, c-format
 msgid "No source number %d"
 msgstr "Izvorna koda ¹t. %d manjka"
 
-#: build/parsePrep.c:157
+#: build/parsePrep.c:158
 #, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "Ni mo¾no nalo¾iti nosource %s: %s"
 
-#: build/parsePrep.c:223
+#: build/parsePrep.c:224
 msgid "Error parsing %%setup: %s"
 msgstr "Napaka pri razèlembi %%setup: %s"
 
-#: build/parsePrep.c:238
+#: build/parsePrep.c:239
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr "vrstica %d: Okvarjen argument za %%setup %c: %s"
 
-#: build/parsePrep.c:256
+#: build/parsePrep.c:257
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr "vrstica %d: Okvarjena izbira %%setup %s: %s"
 
-#: build/parsePrep.c:383
+#: build/parsePrep.c:384
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr "vrstica %d: Manjkajoè argument za %%patch -b: %s"
 
-#: build/parsePrep.c:391
+#: build/parsePrep.c:392
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr "vrstica %d: Manjkajoè argument za %%patch -z: %s"
 
-#: build/parsePrep.c:403
+#: build/parsePrep.c:404
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr "vrstica %d: Manjkajoè argument za %%patch -p: %s"
 
-#: build/parsePrep.c:409
+#: build/parsePrep.c:410
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr "vrstica %d: Okvarjen argument za %%patch -p: %s"
 
-#: build/parsePrep.c:416
+#: build/parsePrep.c:417
 msgid "Too many patches!"
 msgstr "Preveè krparij!"
 
-#: build/parsePrep.c:420
+#: build/parsePrep.c:421
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "vrstica %d: Okvarjen argument za %%patch: %s"
 
-#: build/parsePrep.c:457
+#: build/parsePrep.c:458
 msgid "line %d: second %%prep"
 msgstr "vrstica %d: drugi %%prep"
 
@@ -3126,59 +3126,59 @@ msgstr "ni mo¾no odpreti %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Name¹èamo %s\n"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:780
 msgid "Success"
 msgstr "Uspe¹no"
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:783
 msgid "Bad server response"
 msgstr "Okvarjen odziv stre¾nika"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:786
 msgid "Server IO error"
 msgstr "V/I napaka na stre¾niku"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:789
 msgid "Server timeout"
 msgstr "Potekel èas na stre¾niku"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:792
 msgid "Unable to lookup server host address"
 msgstr "Naslov stre¾nika ni ugotovljiv"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:795
 msgid "Unable to lookup server host name"
 msgstr "Ime stre¾nika ni ugotovljivo"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:798
 msgid "Failed to connect to server"
 msgstr "Neuspe¹en poskus prikljuèitve na stre¾nik"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:801
 msgid "Failed to establish data connection to server"
 msgstr "Neuspe¹na vzpostavitev podatkovne povezave s stre¾nikom"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:804
 msgid "IO error to local file"
 msgstr "V/I napaka na lokalni datoteki"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:807
 msgid "Error setting remote server to passive mode"
 msgstr "Napaka pri nastavitvi oddaljenega stre¾nika v pasivni naèin"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:810
 msgid "File not found on server"
 msgstr "Datoteke ni mo¾no najti na stre¾niku"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:813
 msgid "Abort in progress"
 msgstr "Prekinitev v teku"
 
-#: lib/rpmio.c:815
+#: lib/rpmio.c:817
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: lib/rpmio.c:1348
+#: lib/rpmio.c:1350
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"

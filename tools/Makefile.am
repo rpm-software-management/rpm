@@ -10,12 +10,14 @@ EXTRA_DIST =	fstrcmp.c message.c str-list.c rpmchecksig.c
 
 EXTRA_PROGRAMS = rpmgettext rpmputtext rpminject
 
+myldflags= -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
 # XXX should libtool generate dependent libs?
 myldadd= $(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/popt/libpopt.la \
 	@INTLLIBS@ @LIBMISC@
 
+LDFLAGS = $(myldflags)
 LDADD = $(myldadd)
 
 noinst_PROGRAMS = \

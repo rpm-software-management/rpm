@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-25 15:49-0500\n"
+"POT-Creation-Date: 2000-02-27 18:06-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -1885,53 +1885,53 @@ msgstr "Nelze èíst %s: %s."
 msgid "No patch number %d"
 msgstr "(není èíslo)"
 
-#: build/parsePrep.c:138
+#: build/parsePrep.c:139
 #, c-format
 msgid "No source number %d"
 msgstr ""
 
-#: build/parsePrep.c:157
+#: build/parsePrep.c:158
 #, fuzzy, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "Nelze èíst %s: %s."
 
-#: build/parsePrep.c:223
+#: build/parsePrep.c:224
 msgid "Error parsing %%setup: %s"
 msgstr ""
 
-#: build/parsePrep.c:238
+#: build/parsePrep.c:239
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr ""
 
-#: build/parsePrep.c:256
+#: build/parsePrep.c:257
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: build/parsePrep.c:383
+#: build/parsePrep.c:384
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: build/parsePrep.c:391
+#: build/parsePrep.c:392
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: build/parsePrep.c:403
+#: build/parsePrep.c:404
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:409
+#: build/parsePrep.c:410
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:416
+#: build/parsePrep.c:417
 msgid "Too many patches!"
 msgstr ""
 
-#: build/parsePrep.c:420
+#: build/parsePrep.c:421
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: build/parsePrep.c:457
+#: build/parsePrep.c:458
 msgid "line %d: second %%prep"
 msgstr ""
 
@@ -3190,67 +3190,67 @@ msgstr "chyba: nelze otevøít %s\n"
 msgid "Installing %s\n"
 msgstr "Probíhá instalace %s\n"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:780
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:783
 #, fuzzy
 msgid "Bad server response"
 msgstr "Chybná odezva serveru FTP"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:786
 #, fuzzy
 msgid "Server IO error"
 msgstr "V/V chyba FTP"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:789
 #, fuzzy
 msgid "Server timeout"
 msgstr "Promlka serveru FTP"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:792
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Nelze vyhledat adresu hostitelského serveru FTP"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:795
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Nelze vyhledat název hostitelského serveru FTP"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:798
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "K serveru FTP se nelze pøipojit"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:801
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Se serverem FTP nelze navázat datové spojení"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:804
 msgid "IO error to local file"
 msgstr "V/V chyba na místní soubor"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:807
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pøi nastavení vzdáleného serveru na pasivní re¾im"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:810
 msgid "File not found on server"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:813
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:815
+#: lib/rpmio.c:817
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neznámá nebo neèekaná chyba FTP"
 
-#: lib/rpmio.c:1348
+#: lib/rpmio.c:1350
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "probíhá pøihla¹ování na %s jako %s, h. %s\n"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-02-25 15:49-0500\n"
+"POT-Creation-Date: 2000-02-27 18:06-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.25 2000/02/27 18:52:30 jbj Exp $
+# $Id: ja.po,v 1.26 2000/02/27 23:40:37 jbj Exp $
 #: rpm.c:199
 #, c-format
 msgid "rpm: %s\n"
@@ -1890,53 +1890,53 @@ msgstr "不正なソース: %s : %s"
 msgid "No patch number %d"
 msgstr "パッチ番号 %d はありません"
 
-#: build/parsePrep.c:138
+#: build/parsePrep.c:139
 #, c-format
 msgid "No source number %d"
 msgstr "ソース番号 %d はありません"
 
-#: build/parsePrep.c:157
+#: build/parsePrep.c:158
 #, fuzzy, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "nosource %s をダウンロードできません: %s"
 
-#: build/parsePrep.c:223
+#: build/parsePrep.c:224
 msgid "Error parsing %%setup: %s"
 msgstr "%%setup の構文解析エラー: %s"
 
-#: build/parsePrep.c:238
+#: build/parsePrep.c:239
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr "%d 行目: %%setup %c への不正な引数: %s"
 
-#: build/parsePrep.c:256
+#: build/parsePrep.c:257
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr "%d 行目: 不正な %%setup オプション %s: %s"
 
-#: build/parsePrep.c:383
+#: build/parsePrep.c:384
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr "%d 行目: %%patch -b には引数が必要です: %s"
 
-#: build/parsePrep.c:391
+#: build/parsePrep.c:392
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr "%d 行目: %%patch -z には引数が必要です: %s"
 
-#: build/parsePrep.c:403
+#: build/parsePrep.c:404
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr "%d 行目: %%patch -p には引数が必要です: %s"
 
-#: build/parsePrep.c:409
+#: build/parsePrep.c:410
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr "%d 行目: 不正な %%patch -p への引数: %s"
 
-#: build/parsePrep.c:416
+#: build/parsePrep.c:417
 msgid "Too many patches!"
 msgstr "パッチが多すぎます"
 
-#: build/parsePrep.c:420
+#: build/parsePrep.c:421
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "%d 行目: %%patch への不正な引数: %s"
 
-#: build/parsePrep.c:457
+#: build/parsePrep.c:458
 msgid "line %d: second %%prep"
 msgstr "%d 行目: 2番目の %%prep"
 
@@ -3213,67 +3213,67 @@ msgstr "%s をオープンできません\n"
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:780
 msgid "Success"
 msgstr "成功"
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:783
 #, fuzzy
 msgid "Bad server response"
 msgstr "サーバから正常な応答がありません"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:786
 #, fuzzy
 msgid "Server IO error"
 msgstr "サーバ IO エラー"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:789
 #, fuzzy
 msgid "Server timeout"
 msgstr "サーバタイムアウト"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:792
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:795
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:798
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "サーバへの接続に失敗しました"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:801
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータコネクションの確立に失敗しました"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:804
 msgid "IO error to local file"
 msgstr "ローカルファイルの IO エラー"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:807
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバのパッシブモード設定エラー"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:810
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:813
 msgid "Abort in progress"
 msgstr "処理中のアボート"
 
-#: lib/rpmio.c:815
+#: lib/rpmio.c:817
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "不明もしくは予期せぬエラー"
 
-#: lib/rpmio.c:1348
+#: lib/rpmio.c:1350
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s へ %s pw %s としてログイン中\n"
