@@ -517,7 +517,7 @@ static int add_file(struct file_entry **festack, const char *name,
 	while (*prefixTest == '/') {
 	    prefixTest++;  /* Skip leading "/" */
 	}
-	while (*prefixPtr && (*prefixTest == *prefixPtr)) {
+	while (*prefixPtr && *prefixTest && (*prefixTest == *prefixPtr)) {
 	    prefixPtr++;
 	    prefixTest++;
 	}
