@@ -507,11 +507,11 @@ int main(int argc, char ** argv) {
     currarg = argv;
     while (*currarg) {
 	if (!strcmp(*currarg, "--rcfile")) {
-	    rcfile = *(currarg + 1);
+	    rcfile = *(++currarg);
 	} else if (!strcmp(*currarg, "--buildarch")) {
-	    arch = *(currarg + 1);
+	    arch = *(++currarg);
 	} else if (!strcmp(*currarg, "--buildos")) {
-	    os = *(currarg + 1);
+	    os = *(++currarg);
 	} else if (!strcmp(*currarg, "--showrc")) {
 	    showrc = 1;
 	    building = 1;
@@ -521,7 +521,8 @@ int main(int argc, char ** argv) {
 		   !strcmp(*currarg, "--recompile")) {
 	    building = 1;
 	}
-	currarg++;
+
+	if (*currarg) currarg++;
     } 
 
     /* reading this early makes it easy to override */
