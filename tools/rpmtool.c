@@ -14,8 +14,9 @@ typedef enum rpmtoolComponentBits_e {
     RPMTOOL_SHEADER	= (1 << 1),
     RPMTOOL_HEADER	= (1 << 2),
     RPMTOOL_DUMP	= (1 << 3),
-    RPMTOOL_PAYLOAD	= (1 << 4),
-    RPMTOOL_UNCOMPRESS	= (1 << 5)
+    RPMTOOL_XML		= (1 << 4),
+    RPMTOOL_PAYLOAD	= (1 << 5),
+    RPMTOOL_UNCOMPRESS	= (1 << 6)
 } rpmtoolComponentBits;
 
 static rpmtoolComponentBits componentBits = RPMTOOL_NONE;
@@ -40,6 +41,8 @@ static struct poptOption optionsTable[] = {
 	N_("extract metadata header"), NULL},
  { "dump", 'D', POPT_BIT_SET,	&componentBits, (RPMTOOL_HEADER|RPMTOOL_DUMP),
 	N_("dump metadata header"), NULL},
+ { "xml", 'X', POPT_BIT_SET,	&componentBits, (RPMTOOL_HEADER|RPMTOOL_XML),
+	N_("dump metadata header in xml"), NULL},
  { "archive", 'A', POPT_BIT_SET,&componentBits, RPMTOOL_PAYLOAD,
 	N_("extract compressed payload"), NULL},
  { "payload", 'P', POPT_BIT_SET,&componentBits, RPMTOOL_PAYLOAD|RPMTOOL_UNCOMPRESS,
@@ -161,9 +164,10 @@ fprintf(stderr, "*** Fopen(%s,r.ufdio)\n", ifn);
 		const char * errstr = "(unkown error)";
 		int ut;
 
-		t = rpmGetPath(opath, NULL);
-		ofn = headerSprintf(h, t, rpmTagTable, rpmHeaderFormats, &errstr);
-		t = _free(t);
+		/* Macro and --queryformat expanded file path. */
+		s = rpmGetPath(opath, NULL);
+		ofn = headerSprintf(h, s, rpmTagTable, rpmHeaderFormats, &errstr);
+		s = _free(s);
 		if (ofn == NULL) {
 		    fprintf(stderr, "%s: headerSprintf(%s): %s\n", __progname,
 				ofn, errstr);
@@ -171,6 +175,7 @@ fprintf(stderr, "*** Fopen(%s,r.ufdio)\n", ifn);
 		    goto bottom;
 		}
 
+		/* Create directories in path. */
 		s = xstrdup(ofn);
 		ut = urlPath(s, (const char **)&t);
 		if (t != NULL)
@@ -206,9 +211,19 @@ fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 
 	if (componentBits & RPMTOOL_HEADER) {
 	    if ((componentBits & RPMTOOL_DUMP)
-	     || (ofmt != NULL && !strcmp(ofmt, "dump")))
+	     || (ofmt != NULL && !strcmp(ofmt, "dump"))) {
 		headerDump(h, stdout, HEADER_DUMP_INLINE, rpmTagTable);
-	    else
+	    } else if ((componentBits & RPMTOOL_XML)
+	     || (ofmt != NULL && !strcmp(ofmt, "xml"))) {
+		const char * errstr = NULL;
+
+		s = "[%{*:xml}\n]";
+		t = headerSprintf(h, s, rpmTagTable, rpmHeaderFormats, &errstr);
+		
+		if (t != NULL)
+		    Fwrite(t, strlen(t), 1, fdo);
+		t = _free(t);
+	    } else
 		headerWrite(fdo, h, HEADER_MAGIC_YES);
 	}
 
