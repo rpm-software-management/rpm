@@ -355,10 +355,11 @@ char * gidToGname(gid_t gid) {
 }
 
 int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
+    const char * tempfn;
     const char * tfn;
+    int temput;
     FD_t fd;
     int ran;
-    struct stat sb, sb2;
 
     if (!prefix) prefix = "";
 
@@ -372,35 +373,24 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 
     do {
 	char tfnbuf[64];
-	const char * tempfn;
 #ifndef	NOTYET
 	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
 	if (tfn)	xfree(tfn);
-	tfn = tempfn = rpmGetPath("%{_tmppath}/", tfnbuf, NULL);
+	tempfn = rpmGenPath(prefix, "%{_tmppath}/", tfnbuf);
 #else
 	strcpy(tfnbuf, "rpm-tmp.XXXXXX");
 	if (tfn)	xfree(tfn);
-	tfn = tempfn = rpmGetPath("%{_tmppath}/", mktemp(tfnbuf), NULL);
+	tempfn = rpmGenPath(prefix, "%{_tmppath}/", mktemp(tfnbuf));
 #endif
 
-	switch (urlIsURL(tempfn)) {
-	case URL_IS_PATH:
-	    tfn +=  sizeof("file://") - 1;
-	    tfn = strchr(tfn, '/');
-	    /*@fallthrough@*/
-	case URL_IS_UNKNOWN:
-	    if (prefix && prefix[strlen(prefix) - 1] == '/')
-		while (*tfn == '/') tfn++;
-	    tfn = rpmGetPath( (prefix ? prefix : ""), tfn, NULL);
-	    xfree(tempfn);
-	    break;
-	case URL_IS_FTP:
+	temput = urlPath(tempfn, &tfn);
+	switch (temput) {
 	case URL_IS_HTTP:
 	case URL_IS_DASH:
+	    goto errxit;
+	    /*@notreached@*/ break;
 	default:
-	    xfree(tempfn);
-	    return 1;
-	    /*@notreached@*/
+	    break;
 	}
 
 /* XXX FIXME: build/build.c Fdopen assertion failure, makeTempFile uses fdio */
@@ -411,38 +401,42 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 #endif
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 
-    if (!Stat(tfn, &sb) && S_ISLNK(sb.st_mode)) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
-	xfree(tfn);
-	return 1;
-    }
-
-    if (sb.st_nlink != 1) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
-	xfree(tfn);
-	return 1;
-    }
-
-#ifndef	NOTYET
-    if (fstat(Fileno(fd), &sb2) == 0)
-#else
-    if (Stat(tfn, &sb2) == 0)
-#endif
-    {
-	if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
+    switch(temput) {
+	struct stat sb, sb2;
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	if (!stat(tfn, &sb) && S_ISLNK(sb.st_mode)) {
 	    rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
-	    xfree(tfn);
-	    return 1;
+	    goto errxit;
 	}
+
+	if (sb.st_nlink != 1) {
+	    rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
+	    goto errxit;
+	}
+
+	if (fstat(Fileno(fd), &sb2) == 0) {
+	    if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
+		rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
+		goto errxit;
+	    }
+	}
+	break;
+    default:
+	break;
     }
 
     if (fnptr)
 	*fnptr = tfn;
     else
-	xfree(tfn);
+	xfree(tempfn);
     *fdptr = fd;
 
     return 0;
+
+errxit:
+    xfree(tempfn);
+    return 1;
 }
 
 char * currentDirectory(void) {

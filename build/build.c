@@ -50,6 +50,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     int pid;
     int status;
     char buf[BUFSIZ];
+    FILE * fp = NULL;
     
     switch (what) {
       case RPMBUILD_PREP:
@@ -93,29 +94,30 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 #else
     xfd = Fdopen(fd, "w.fpio");
 #endif
+    fp = fdGetFp(fd);
     
     strcpy(buf, _preScriptEnvironment);
     expandMacros(spec, spec->macros, buf, sizeof(buf));
     strcat(buf, "\n");
-    fputs(buf, fpio->ffileno(xfd));
+    fputs(buf, fp);
 
-    fprintf(fpio->ffileno(xfd), rpmIsVerbose() ? "set -x\n\n" : "exec > /dev/null\n\n");
+    fprintf(fp, rpmIsVerbose() ? "set -x\n\n" : "exec > /dev/null\n\n");
 
 /* XXX umask 022; cd %{_builddir} */
     strcpy(buf, _preScriptChdir);
     expandMacros(spec, spec->macros, buf, sizeof(buf));
-    fputs(buf, fpio->ffileno(xfd));
+    fputs(buf, fp);
 
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
-	    fprintf(fpio->ffileno(xfd), "cd %s\n", spec->buildSubdir);
+	    fprintf(fp, "cd %s\n", spec->buildSubdir);
     }
     if (what == RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
-	    fprintf(fpio->ffileno(xfd), "rm -rf %s\n", spec->buildSubdir);
+	    fprintf(fp, "rm -rf %s\n", spec->buildSubdir);
     } else
-	fprintf(fpio->ffileno(xfd), "%s", getStringBuf(sb));
-    fprintf(fpio->ffileno(xfd), "\nexit 0\n");
+	fprintf(fp, "%s", getStringBuf(sb));
+    fprintf(fp, "\nexit 0\n");
     
     Fclose(xfd);
 

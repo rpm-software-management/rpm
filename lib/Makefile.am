@@ -25,7 +25,7 @@ mylibs= $(top_builddir)/lib/.libs/librpm.a \
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c dbindex.c depends.c falloc.c \
-	formats.c fprint.c fs.c ftp.c hash.c header.c install.c \
+	formats.c fprint.c fs.c hash.c header.c install.c \
 	lookup.c macro.c md5.c md5sum.c \
 	messages.c misc.c oldheader.c package.c problems.c query.c \
 	rebuilddb.c rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \

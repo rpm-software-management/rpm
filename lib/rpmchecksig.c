@@ -26,7 +26,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 
     /* open a file and set *fdp */
     if (*fdp == NULL && fnp && *fnp) {
-	fd = Fopen(*fnp, ((flags & O_RDONLY) ? "r.ufdio" : "w.ufdio"));
+	fd = Fopen(*fnp, ((flags & O_RDONLY) ? "r.ufdio" : "r+.ufdio"));
 	if (fd == NULL || Ferror(fd)) {
 	    fprintf(stderr, _("%s: open failed: %s\n"), *fnp,
 		Fstrerror(fd));

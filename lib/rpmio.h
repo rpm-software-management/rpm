@@ -70,6 +70,7 @@ int	Fclose	( /*@killref@*/ FD_t fd);
 FD_t	Fdopen	(FD_t fd, const char * fmode);
 FD_t	Fopen	(const char * path, const char * fmode);
 
+int	Fflush	(FD_t fd);
 int	Ferror	(FD_t fd);
 int	Fileno	(FD_t fd);
 
@@ -102,9 +103,6 @@ void	fdSetIo	(FD_t fd, FDIO_t io);
 
 int	fdGetRdTimeoutSecs(FD_t fd);
 
-int	fdGetFtpFileDoneNeeded(FD_t fd);
-void	fdSetFtpFileDoneNeeded(FD_t fd, int ftpFileDoneNeeded);
-
 long int fdGetCpioPos(FD_t fd);
 void	fdSetCpioPos(FD_t fd, long int cpioPos);
 
@@ -129,12 +127,35 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #define	fdOpen		fdio->open
 #endif
 
+int	fdWritable(FD_t fd, int secs);
+int	fdReadable(FD_t fd, int secs);
+
 /*@observer@*/ extern FDIO_t fdio;
 /*@observer@*/ extern FDIO_t fpio;
 
 /*
  * Support for FTP and HTTP I/O.
  */
+#ifndef IPPORT_FTP
+#define IPPORT_FTP	21
+#endif
+#ifndef	IPPORT_HTTP
+#define	IPPORT_HTTP	80
+#endif
+
+#define FTPERR_BAD_SERVER_RESPONSE   -1
+#define FTPERR_SERVER_IO_ERROR       -2
+#define FTPERR_SERVER_TIMEOUT        -3
+#define FTPERR_BAD_HOST_ADDR         -4
+#define FTPERR_BAD_HOSTNAME          -5
+#define FTPERR_FAILED_CONNECT        -6
+#define FTPERR_FILE_IO_ERROR         -7
+#define FTPERR_PASSIVE_ERROR         -8
+#define FTPERR_FAILED_DATA_CONNECT   -9
+#define FTPERR_FILE_NOT_FOUND        -10
+#define FTPERR_NIC_ABORT_IN_PROGRESS -11
+#define FTPERR_UNKNOWN               -100
+
 /*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
 /*@observer@*/ const char * urlStrerror(const char * url);
 
@@ -161,10 +182,6 @@ const char *const ftpStrerror(int errorNumber);
 #define	ufdRename	ufdio->rename
 #define	ufdUnlink	ufdio->unlink
 #endif
-
-int	fdWritable(FD_t fd, int secs);
-int	fdReadable(FD_t fd, int secs);
-int	fdRdline(FD_t fd, /*@out@*/ char * buf, size_t len);
 
 int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 #define	timedRead	ufdio->read

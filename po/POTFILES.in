@@ -32,7 +32,6 @@ lib/falloc.c
 lib/formats.c
 lib/fprint.c
 lib/fs.c
-lib/ftp.c
 lib/hash.c
 lib/header.c
 lib/install.c

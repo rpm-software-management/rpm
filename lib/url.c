@@ -16,6 +16,7 @@
 /*@access urlinfo@*/
 
 #define	URL_IOBUF_SIZE	4096
+int url_iobuf_size = URL_IOBUF_SIZE;
 
 #define	RPMURL_DEBUG_IO		0x40000000
 #define	RPMURL_DEBUG_REFS	0x20000000
@@ -50,8 +51,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->bufAlloced = 0;
     u->buf = NULL;
     u->httpHasRange = 1;
-    u->httpContentLength = 0;
-    u->httpPersist = u->httpVersion = 0;
+    u->httpVersion = 0;
     u->nrefs = 0;
     u->magic = URLMAGIC;
     return XurlLink(u, msg, file, line);
@@ -190,8 +190,6 @@ static void urlFind(urlinfo *uret, int mustAsk)
 		uCache = xmalloc(sizeof(*uCache));
 	}
 	uCache[i] = urlLink(u, "uCache (miss)");
-	u->bufAlloced = URL_IOBUF_SIZE;
-	u->buf = xcalloc(u->bufAlloced, sizeof(char));
 	u = urlFree(u, "urlSplit (urlFind miss)");
     } else {
 	/* XXX Swap original url and path into the cached structure */
@@ -313,9 +311,17 @@ urltype urlIsURL(const char * url) {
 
 int urlPath(const char * url, const char ** pathp)
 {
-    const char *path = url;
-    int urltype = urlIsURL(url);
+    const char *path;
+    int urltype;
 
+    if (url == NULL) {		/* XXX paranoia */
+	if (pathp)
+	    *pathp = xstrdup("/");
+	return URL_IS_UNKNOWN;
+    }
+
+    path = url;
+    urltype = urlIsURL(url);
     switch (urltype) {
     case URL_IS_FTP:
 	path += sizeof("ftp://") - 1;
@@ -364,14 +370,16 @@ int urlSplit(const char * url, urlinfo *uret)
     while (1) {
 	/* Point to end of next item */
 	while (*se && *se != '/') se++;
+#ifdef	DYING
 	if (*se == '\0') {
 	    /* XXX can't find path */
 	    if (myurl) free(myurl);
 	    u = urlFree(u, "urlSplit (error #2)");
 	    return -1;
 	}
+#endif
 	/* Item was service. Save service and go for the rest ...*/
-    	if ((se != s) && se[-1] == ':' && se[0] == '/' && se[1] == '/') {
+    	if (*se && (se != s) && se[-1] == ':' && se[0] == '/' && se[1] == '/') {
 		se[-1] = '\0';
 	    u->service = xstrdup(s);
 	    se += 2;	/* skip over "//" */
@@ -380,7 +388,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	}
 	
 	/* Item was everything-but-path. Save path and continue parse on rest */
-	u->path = xstrdup(se);
+	u->path = xstrdup((*se ? se : "/"));
 	*se = '\0';
 	break;
     }

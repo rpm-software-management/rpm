@@ -3,26 +3,6 @@
 
 #include <assert.h>
 
-#ifndef IPPORT_FTP
-#define IPPORT_FTP	21
-#endif
-#ifndef	IPPORT_HTTP
-#define	IPPORT_HTTP	80
-#endif
-
-#define FTPERR_BAD_SERVER_RESPONSE   -1
-#define FTPERR_SERVER_IO_ERROR       -2
-#define FTPERR_SERVER_TIMEOUT        -3
-#define FTPERR_BAD_HOST_ADDR         -4
-#define FTPERR_BAD_HOSTNAME          -5
-#define FTPERR_FAILED_CONNECT        -6
-#define FTPERR_FILE_IO_ERROR         -7
-#define FTPERR_PASSIVE_ERROR         -8
-#define FTPERR_FAILED_DATA_CONNECT   -9
-#define FTPERR_FILE_NOT_FOUND        -10
-#define FTPERR_NIC_ABORT_IN_PROGRESS -11
-#define FTPERR_UNKNOWN               -100
-
 typedef enum {
     URL_IS_UNKNOWN	= 0,
     URL_IS_DASH		= 1,
@@ -54,8 +34,6 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
     int openError;		/* Type of open failure */
     int httpVersion;
     int httpHasRange;
-    int httpContentLength;
-    int httpPersist;
     int magic;
 } *urlinfo;
 
@@ -63,13 +41,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
 extern "C" {
 #endif
 
-int	ftpCheckResponse(urlinfo u, /*@out@*/ char ** str);
-int	ftpCommand(urlinfo u, ...);
-
-int	httpOpen(urlinfo u, FD_t ctrl, const char * httpcmd);
-int	ftpOpen(urlinfo u);
-int	ftpFileDone(urlinfo u, FD_t data);
-int	ftpFileDesc(urlinfo u, const char * cmd, FD_t data);
+extern int url_iobuf_size;
 
 urlinfo	urlLink(urlinfo u, const char * msg);
 urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line);

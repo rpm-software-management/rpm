@@ -169,7 +169,8 @@ int readLine(Spec spec, int strip)
 retry:
     /* Make sure the current file is open */
     if (ofi->fd == NULL) {
-	if ((ofi->fd = Fopen(ofi->fileName, "r.fpio")) == NULL) {
+	ofi->fd = Fopen(ofi->fileName, "r.fpio");
+	if (ofi->fd == NULL || Ferror(ofi->fd)) {
 	    /* XXX Fstrerror */
 	    rpmError(RPMERR_BADSPEC, _("Unable to open %s: %s\n"),
 		     ofi->fileName, Fstrerror(ofi->fd));
@@ -180,7 +181,7 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	if (!fgets(ofi->readBuf, BUFSIZ, fpio->ffileno(ofi->fd))) {
+	if (!fgets(ofi->readBuf, BUFSIZ, fdGetFp(ofi->fd))) {
 	    /* EOF */
 	    if (spec->readStack->next) {
 		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if"));

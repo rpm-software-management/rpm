@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-15 18:45-0500\n"
+"POT-Creation-Date: 1999-11-18 12:30-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,102 +23,101 @@ msgstr ""
 msgid "failed build dependencies:\n"
 msgstr ""
 
-#. XXX Fstrerror
-#: build.c:65
+#: build.c:64
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr ""
 
-#: build.c:121 build.c:134
+#: build.c:120 build.c:133
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr ""
 
 #. Give up
-#: build.c:142
+#: build.c:141
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: build.c:170
+#: build.c:169
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr ""
 
-#: build.c:208
+#: build.c:207
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr ""
 
-#: build.c:214
+#: build.c:213
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: build.c:271
+#: build.c:270
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:286
+#: build.c:285
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
 
-#: build.c:336
+#: build.c:335
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:343
+#: build.c:342
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:347
+#: build.c:346
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:368
+#: build.c:367
 msgid "override build architecture"
 msgstr ""
 
-#: build.c:370
+#: build.c:369
 msgid "override build operating system"
 msgstr ""
 
-#: build.c:372
+#: build.c:371
 msgid "override build root"
 msgstr ""
 
-#: build.c:374 rpm.c:490
+#: build.c:373 rpm.c:490
 msgid "remove build tree when done"
 msgstr ""
 
-#: build.c:376
+#: build.c:375
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: build.c:378
+#: build.c:377
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:380
+#: build.c:379
 msgid "remove sources when done"
 msgstr ""
 
-#: build.c:382
+#: build.c:381
 msgid "remove specfile when done"
 msgstr ""
 
-#: build.c:384 rpm.c:488
+#: build.c:383 rpm.c:488
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: build.c:386
+#: build.c:385
 msgid "override target platform"
 msgstr ""
 
-#: build.c:388
+#: build.c:387
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -1235,21 +1234,21 @@ msgstr ""
 msgid "cannot re-open payload: %s\n"
 msgstr ""
 
-#: build/build.c:84 build/pack.c:270
+#: build/build.c:85 build/pack.c:270
 msgid "Unable to open temp file"
 msgstr ""
 
-#: build/build.c:127
+#: build/build.c:129
 #, c-format
 msgid "Executing: %s\n"
 msgstr ""
 
-#: build/build.c:147
+#: build/build.c:149
 #, c-format
 msgid "Exec of %s failed (%s)"
 msgstr ""
 
-#: build/build.c:153
+#: build/build.c:155
 #, c-format
 msgid "Bad exit status from %s (%s)"
 msgstr ""
@@ -1417,7 +1416,7 @@ msgstr ""
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1191 build/pack.c:495
+#: build/files.c:1191 build/pack.c:496
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1545,47 +1544,47 @@ msgstr ""
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:444
+#: build/pack.c:445
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: build/pack.c:463
+#: build/pack.c:464
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:470
+#: build/pack.c:471
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:551
+#: build/pack.c:552
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:558
+#: build/pack.c:559
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:565
+#: build/pack.c:566
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:572
+#: build/pack.c:573
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:580
+#: build/pack.c:581
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:596
+#: build/pack.c:597
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -1798,31 +1797,31 @@ msgstr ""
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: build/parsePrep.c:376
+#: build/parsePrep.c:381
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: build/parsePrep.c:384
+#: build/parsePrep.c:389
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: build/parsePrep.c:396
+#: build/parsePrep.c:401
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:402
+#: build/parsePrep.c:407
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:409
+#: build/parsePrep.c:414
 msgid "Too many patches!"
 msgstr ""
 
-#: build/parsePrep.c:413
+#: build/parsePrep.c:418
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: build/parsePrep.c:449
+#: build/parsePrep.c:454
 msgid "line %d: second %%prep"
 msgstr ""
 
@@ -1878,44 +1877,44 @@ msgid "line %d: %s"
 msgstr ""
 
 #. XXX Fstrerror
-#: build/parseSpec.c:174
+#: build/parseSpec.c:175
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:186
+#: build/parseSpec.c:187
 msgid "Unclosed %%if"
 msgstr ""
 
-#: build/parseSpec.c:245
+#: build/parseSpec.c:246
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:253
+#: build/parseSpec.c:254
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: build/parseSpec.c:264
+#: build/parseSpec.c:265
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: build/parseSpec.c:278 build/parseSpec.c:287
+#: build/parseSpec.c:279 build/parseSpec.c:288
 msgid "malformed %%include statement"
 msgstr ""
 
-#: build/parseSpec.c:368
+#: build/parseSpec.c:369
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: build/parseSpec.c:451
+#: build/parseSpec.c:452
 msgid "No buildable architectures"
 msgstr ""
 
-#: build/parseSpec.c:498
+#: build/parseSpec.c:499
 msgid "Package has no %%description: %s"
 msgstr ""
 
@@ -2227,86 +2226,86 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:361
+#: lib/install.c:366
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:362
+#: lib/install.c:367
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:405
+#: lib/install.c:410
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:416
+#: lib/install.c:421
 #, c-format
 msgid "cannot create %s: %s"
 msgstr ""
 
-#: lib/install.c:424 lib/install.c:446
+#: lib/install.c:429 lib/install.c:451
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:428
+#: lib/install.c:433
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:439
+#: lib/install.c:444
 #, c-format
 msgid "cannot create %s"
 msgstr ""
 
-#: lib/install.c:450
+#: lib/install.c:455
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:484 lib/install.c:512
+#: lib/install.c:489 lib/install.c:517
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:534
+#: lib/install.c:539
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:536 lib/install.c:815 lib/uninstall.c:27
+#: lib/install.c:541 lib/install.c:820 lib/uninstall.c:27
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:627
+#: lib/install.c:632
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:684
+#: lib/install.c:689
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:745
+#: lib/install.c:750
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:750
+#: lib/install.c:755
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:775
+#: lib/install.c:780
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:811
+#: lib/install.c:816
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:885
+#: lib/install.c:890
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2413,7 +2412,7 @@ msgstr ""
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: lib/misc.c:415 lib/misc.c:421 lib/misc.c:433
+#: lib/misc.c:409 lib/misc.c:414 lib/misc.c:420
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
@@ -2844,7 +2843,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:155 lib/url.c:449
+#: lib/rpmdb.c:155 lib/url.c:457
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
@@ -3038,59 +3037,59 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:463
+#: lib/rpmio.c:675
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:466
+#: lib/rpmio.c:678
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:469
+#: lib/rpmio.c:681
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:472
+#: lib/rpmio.c:684
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:475
+#: lib/rpmio.c:687
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:478
+#: lib/rpmio.c:690
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:481
+#: lib/rpmio.c:693
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:484
+#: lib/rpmio.c:696
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:487
+#: lib/rpmio.c:699
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:490
+#: lib/rpmio.c:702
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:493
+#: lib/rpmio.c:705
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:496
+#: lib/rpmio.c:708
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:500
+#: lib/rpmio.c:712
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:552
+#: lib/rpmio.c:1243
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3385,7 +3384,7 @@ msgstr ""
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:400
+#: lib/uninstall.c:394
 msgid "execution of script failed"
 msgstr ""
 
@@ -3404,22 +3403,22 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:224
+#: lib/url.c:222
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:249 lib/url.c:275
+#: lib/url.c:247 lib/url.c:273
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:413
+#: lib/url.c:421
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:472
+#: lib/url.c:480
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""

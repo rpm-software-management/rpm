@@ -137,10 +137,10 @@ int packageBinaries(Spec spec)
 		const char *dn;
 		*binDir = '\0';
 		dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
-		if (stat(dn, &st) < 0) {
+		if (Stat(dn, &st) < 0) {
 		    switch(errno) {
 		    case  ENOENT:
-			if (mkdir(dn, 0755) == 0)
+			if (Mkdir(dn, 0755) == 0)
 			    break;
 			/*@fallthrough@*/
 		    default:
@@ -433,6 +433,7 @@ static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmode)
     int rc;
     const char *failedFile = NULL;
 
+    (void) Fflush(fdo);
 #ifndef	DYING
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
 #else

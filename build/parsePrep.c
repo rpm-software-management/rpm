@@ -276,9 +276,14 @@ static int doSetupMacro(Spec spec, char *line)
     poptFreeContext(optCon);
 
     /* cd to the build dir */
-    strcpy(buf, "cd %{_builddir}");
-    expandMacros(spec, spec->macros, buf, sizeof(buf));
-    appendLineStringBuf(spec->prep, buf);
+    {	const char * buildURL = rpmGenPath(spec->rootdir, "%{_builddir}", "");
+	const char *buildDir;
+
+	(void) urlPath(buildURL, &buildDir);
+	sprintf(buf, "cd %s", buildDir);
+	appendLineStringBuf(spec->prep, buf);
+	xfree(buildURL);
+    }
     
     /* delete any old sources */
     if (!leaveDirs) {
