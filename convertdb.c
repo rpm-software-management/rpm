@@ -38,17 +38,14 @@ int convertDB(void) {
     char * preun, * postun;
     int i, j;
     
-    if (oldrpmdbOpen(&olddb)) {
-	error(RPMERR_OLDDBMISSING, "");
+    if (exists("/var/lib/rpm/packages.rpm")) {
+	error(RPMERR_NOCREATEDB, "RPM database already exists");
 	return 0;
     }
 
-    if (exists("/var/lib/rpm/packages.rpm")) {
-#if 0
-	error(RPMERR_NOCREATEDB, "RPM database already exists");
+    if (oldrpmdbOpen(&olddb)) {
+	error(RPMERR_OLDDBMISSING, "");
 	return 0;
-#endif
-	unlink("/var/lib/rpm/packages.rpm");
     }
 
     /* if any of the indexes exist, get rid of them */
