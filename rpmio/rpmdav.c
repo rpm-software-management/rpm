@@ -22,7 +22,6 @@
 #include <neon/ne_request.h>
 #include <neon/ne_socket.h>
 #include <neon/ne_string.h>
-#include <neon/ne_uri.h>
 #include <neon/ne_utils.h>
 
 #include <rpmio_internal.h>
@@ -93,6 +92,7 @@ static int davInit(const char * url, urlinfo * uret)
    if (u->urltype == URL_IS_HTTPS && u->url != NULL && u->sess == NULL) {
 	ne_server_capabilities * capabilities;
 
+	/* HACK: oneshots should be done Somewhere Else Instead. */
 /*@-noeffect@*/
 	ne_debug_init(stderr, 0);		/* XXX oneshot? */
 /*@=noeffect@*/
@@ -125,6 +125,7 @@ static int davConnect(urlinfo u)
     const char * path = NULL;
     int rc;
 
+    /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
     rc = ne_options(u->sess, path, u->capabilities);
     switch (rc) {
@@ -328,35 +329,27 @@ static void fetch_results(void *userdata, const char *uri,
     const char *clength, *modtime, *isexec;
     const char *checkin, *checkout;
     const ne_status *status = NULL;
-    ne_uri u;
+    const char * path = NULL;
 
-if (_dav_debug)
-fprintf(stderr, "Uri: %s\n", uri);
+    (void) urlPath(uri, &path);
+    if (path == NULL)
+	return;
 
     newres = ne_propset_private(set);
-    
-    if (ne_uri_parse(uri, &u))
-	return;
-    
-    if (u.path == NULL) {
-	ne_uri_free(&u);
-	return;
-    }
 
 if (_dav_debug)
-fprintf(stderr, "URI path %s in %s\n", u.path, ctx->uri);
+fprintf(stderr, "==> %s in uri %s\n", path, ctx->uri);
     
-    if (ne_path_compare(ctx->uri, u.path) == 0 && !ctx->include_target) {
+    if (ne_path_compare(ctx->uri, path) == 0 && !ctx->include_target) {
 	/* This is the target URI */
 if (_dav_debug)
-fprintf(stderr, "Skipping target resource.\n");
+fprintf(stderr, "==> %s skipping target resource.\n", path);
 	/* Free the private structure. */
 	free(newres);
-	ne_uri_free(&u);
 	return;
     }
 
-    newres->uri = ne_strdup(u.path);
+    newres->uri = ne_strdup(path);
 
     clength = ne_propset_value(set, &fetch_props[0]);    
     modtime = ne_propset_value(set, &fetch_props[1]);
@@ -413,9 +406,6 @@ fprintf(stderr, "Skipping target resource.\n");
 	newres->is_vcr = 0;
     }
 
-if (_dav_debug)
-fprintf(stderr, "End resource %s\n", newres->uri);
-
     for (current = *ctx->resrock, previous = NULL; current != NULL; 
 	previous = current, current = current->next)
     {
@@ -429,8 +419,6 @@ fprintf(stderr, "End resource %s\n", newres->uri);
 	*ctx->resrock = newres;
     }
     newres->next = current;
-
-    ne_uri_free(&u);
 }
 
 #ifdef	DYING
@@ -624,6 +612,7 @@ static int davNLST(struct fetch_context_s * ctx)
     if (rc || u == NULL)
 	goto exit;
 
+    /* HACK: where should server capabilities be read? */
     rc = davConnect(u);
     if (rc)
 	goto exit;
@@ -702,122 +691,92 @@ static void hexdump(unsigned char * buf, ssize_t len)
     fprintf(stderr, "\n");
 }
 
-int davReq(FD_t data, const char * davCmd, const char * davArg)
+static int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ /*@out@*/ char ** str)
+        /*@globals fileSystem @*/
+        /*@modifies ctrl, *str, fileSystem @*/
 {
-#ifdef	REFERENCE
-    urlinfo u = ctrl->url;
-    const char * host;
-    const char * path;
-    int port;
+    int rc = 0;
+
+    rc = ne_begin_request(ctrl->req);
+    rc = my_result("ne_begin_req(ctrl->req)", rc, NULL);
+
+#ifdef	NOTYET
+if (_ftp_debug)
+fprintf(stderr, "<- %s", resp);
+#endif
+
+    /* HACK: stupid error impedence matching. */
+    switch (rc) {
+    case NE_OK:		rc = 0;				break;
+    case NE_ERROR:	rc = FTPERR_SERVER_IO_ERROR;	break;
+    case NE_LOOKUP:	rc = FTPERR_BAD_HOSTNAME;	break;
+    case NE_AUTH:	rc = FTPERR_FAILED_CONNECT;	break;
+    case NE_PROXYAUTH:	rc = FTPERR_FAILED_CONNECT;	break;
+    case NE_CONNECT:	rc = FTPERR_FAILED_CONNECT;	break;
+    case NE_TIMEOUT:	rc = FTPERR_SERVER_TIMEOUT;	break;
+    case NE_FAILED:	rc = FTPERR_SERVER_IO_ERROR;
+    case NE_RETRY:	/* HACK: davReq handles. */	break;
+    case NE_REDIRECT:	rc = FTPERR_BAD_SERVER_RESPONSE;break;
+    default:		rc = FTPERR_UNKNOWN;		break;
+    }
+
+/*@-observertrans@*/
+    if (rc)
+	fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
+/*@=observertrans@*/
+
+    return rc;
+}
+
+
+int davReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
+{
+    urlinfo u;
     int rc;
-    char * req;
-    size_t len;
-    int retrying = 0;
 
+assert(ctrl != NULL);
+    u = ctrl->url;
     URLSANE(u);
-    assert(ctrl != NULL);
 
+    /* HACK: handle proxy host and port here. */
+#ifdef	REFERENCE
     if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
 	return FTPERR_BAD_HOSTNAME;
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
     path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
+
     /*@-branchstate@*/
     if (path == NULL) path = "";
     /*@=branchstate@*/
+#endif
 
-reopen:
-    /*@-branchstate@*/
-    if (fdFileno(ctrl) >= 0 && (rc = fdWritable(ctrl, 0)) < 1) {
-	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
-    }
-    /*@=branchstate@*/
+    /* HACK: where should server capabilities be read? */
+    rc = davConnect(u);
 
-/*@-usereleased@*/
-    if (fdFileno(ctrl) < 0) {
-	rc = tcpConnect(ctrl, host, port);
-	if (rc < 0)
-	    goto errxit2;
-	ctrl = fdLink(ctrl, "open ctrl (httpReq)");
-    }
+assert(u->sess);
+assert(ctrl->req == NULL);
+    ctrl->req = ne_request_create(u->sess, httpCmd, httpArg);
 
-    len = sizeof("\
-req x HTTP/1.0\r\n\
-User-Agent: rpm/3.0.4\r\n\
-Host: y:z\r\n\
-Accept: text/plain\r\n\
-Transfer-Encoding: chunked\r\n\
-\r\n\
-") + strlen(httpCmd) + strlen(path) + sizeof(VERSION) + strlen(host) + 20;
-
-/*@-boundswrite@*/
-    req = alloca(len);
-    *req = '\0';
-
-  if (!strcmp(httpCmd, "PUT")) {
-    sprintf(req, "\
-%s %s HTTP/1.%d\r\n\
-User-Agent: rpm/%s\r\n\
-Host: %s:%d\r\n\
-Accept: text/plain\r\n\
-Transfer-Encoding: chunked\r\n\
-\r\n\
-",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
-} else {
-    sprintf(req, "\
-%s %s HTTP/1.%d\r\n\
-User-Agent: rpm/%s\r\n\
-Host: %s:%d\r\n\
-Accept: text/plain\r\n\
-\r\n\
-",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
-}
-/*@=boundswrite@*/
-
+#ifdef	NOTYET
 if (_ftp_debug)
 fprintf(stderr, "-> %s", req);
-
-    len = strlen(req);
-    if (fdWrite(ctrl, req, len) != len) {
-	rc = FTPERR_SERVER_IO_ERROR;
-	goto errxit;
-    }
-
-    /*@-branchstate@*/
-    if (!strcmp(httpCmd, "PUT")) {
-	ctrl->wr_chunked = 1;
-    } else {
-
-	rc = httpResp(u, ctrl, NULL);
-
-	if (rc) {
-	    if (!retrying) {	/* not HTTP_OK */
-		retrying = 1;
-		/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
-		goto reopen;
-	    }
-	    goto errxit;
-	}
-    }
-    /*@=branchstate@*/
-
-    ctrl = fdLink(ctrl, "open data (httpReq)");
-    return 0;
-
-errxit:
-    /*@-observertrans@*/
-    fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
-    /*@=observertrans@*/
-errxit2:
-    /*@-branchstate@*/
-    if (fdFileno(ctrl) >= 0)
-	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
-    /*@=branchstate@*/
-    return rc;
-/*@=usereleased@*/
-#else
-    return FTPERR_BAD_SERVER_RESPONSE;
 #endif
+
+    /* HACK: other errors may need retry too. */
+    do {
+	rc = davResp(u, ctrl, NULL);
+    } while (rc == NE_RETRY);
+
+if (_dav_debug)
+fprintf(stderr, "*** davReq(%p,%s,\"%s\") sess %p req %p rc %d\n", ctrl, httpCmd, httpArg, u->sess, ctrl->req, rc);
+
+#ifdef	NOTYET
+    if (rc == 0)
+	ctrl = fdLink(ctrl, "open data (httpReq)");
+#endif
+
+    return rc;
 }
 
 #define TIMEOUT_SECS 60
@@ -827,9 +786,8 @@ static int httpTimeoutSecs = TIMEOUT_SECS;
 FD_t davOpen(const char * url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
 {
-    ne_session * sess;
-    ne_request * req;
     const char * path = NULL;
+    urltype urlType = urlPath(url, &path);
     urlinfo u = NULL;
     FD_t fd = NULL;
     int rc;
@@ -841,13 +799,8 @@ FD_t davOpen(const char * url, /*@unused@*/ int flags,
 if (_dav_debug)
 fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
     rc = davInit(url, &u);
-    if (rc || u == NULL || (sess = u->sess) == NULL)
+    if (rc || u == NULL || u->sess == NULL)
 	goto exit;
-
-    /* HACK: use davReq instead. */
-    rc = davConnect(u);
-    (void) urlPath(url, &path);
-    req = ne_request_create(sess, "GET", path);
 
     if (u->ctrl == NULL)
 	u->ctrl = fdNew("persist ctrl (httpOpen)");
@@ -862,21 +815,13 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
 	fd = fdNew("grab ctrl (httpOpen)");
 
     if (fd) {
-	rc = ne_begin_request(req);
-	rc = my_result("ne_begin_req(req)", rc, NULL);
-	
-	fd->req = req;
 	fdSetIo(fd, ufdio);
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = httpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
 	fd->url = urlLink(u, "url (httpOpen)");
 	fd = fdLink(fd, "grab data (httpOpen)");
-	fd->urlType = URL_IS_HTTP;
-    } else {
-	/* HACK: also needs doing in rpmio.c */
-	ne_request_destroy(req);
-	req = NULL;
+	fd->urlType = urlType;	/* URL_IS_HTTPS */
     }
 
 exit:

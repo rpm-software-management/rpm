@@ -1569,7 +1569,7 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ctrl, fileSystem, internalState @*/
 {
-    urlinfo u = ctrl->url;
+    urlinfo u;
     const char * host;
     const char * path;
     int port;
@@ -1578,8 +1578,9 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
     size_t len;
     int retrying = 0;
 
+assert(ctrl != NULL);
+    u = ctrl->url;
     URLSANE(u);
-    assert(ctrl != NULL);
 
     if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
 	return FTPERR_BAD_HOSTNAME;
