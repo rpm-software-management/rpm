@@ -191,9 +191,7 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
 	    packages[i] = NULL;
 	    break;
 	case 0:
-	    if (isSource && major == 1) {
-		printf("XXX FIXME I can't install v1 source packages!!!\n");
-	    } else if (isSource) {
+	    if (isSource) {
 		sourcePackages[numSourcePackages++] = *filename;
 		fdClose(fd);
 	    } else {
