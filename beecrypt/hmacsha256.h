@@ -46,7 +46,8 @@ extern "C" {
 
 /** \ingroup HMAC_sha256_m
  */
-/*@observer@*/ /*@checkedstrict@*/ extern BEECRYPTAPI const keyedHashFunction hmacsha256;
+/*@observer@*/ /*@checked@*/
+extern BEECRYPTAPI const keyedHashFunction hmacsha256;
 
 /** \ingroup HMAC_sha256_m
  */

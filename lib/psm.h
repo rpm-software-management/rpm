@@ -193,7 +193,9 @@ void freeFi(TFI_t fi)
  * @return		0 on success
  */
 int psmStage(PSM_t psm, pkgStage stage)
-	/*@modifies psm, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

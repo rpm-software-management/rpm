@@ -1,6 +1,7 @@
 /*@-globstate -statictrans -unqualifiedtrans -noparams @*/
 /*@-retvalint -usedef -varuse -nullderef -nullassign @*/
 /*@-readonlytrans -modunconnomods -compdef @*/
+/*@-globs -evalorderuncon @*/
 #ifndef lint
 static char const 
 yyrcsid[] = "$FreeBSD: src/usr.bin/yacc/skeleton.c,v 1.28 2000/01/17 02:04:06 bde Exp $";
@@ -1593,6 +1594,7 @@ yyabort:
 yyaccept:
     return (0);
 }
+/*@=globs =evalorderuncon @*/
 /*@=readonlytrans =modunconnomods =compdef @*/
 /*@=retvalint =usedef =varuse =nullderef =nullassign @*/
 /*@=globstate =statictrans =unqualifiedtrans =noparams @*/

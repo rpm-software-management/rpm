@@ -17,6 +17,7 @@
 /**
  */
 static int checkSpec(Header h)
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
 	/*@modifies h, fileSystem @*/
 {
     const char * rootdir = NULL;
@@ -64,6 +65,7 @@ static int checkSpec(Header h)
 /**
  */
 static int isSpecFile(const char * specfile)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     char buf[256];
@@ -103,7 +105,9 @@ static int isSpecFile(const char * specfile)
  */
 static int buildForTarget(const char * arg, BTA_t ba,
 		const char * passPhrase, char * cookie)
-	/*@modifies fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     int buildAmount = ba->buildAmount;
     const char * buildRootURL = NULL;

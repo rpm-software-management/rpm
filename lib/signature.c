@@ -110,6 +110,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @return 			rpmRC return code
  */
 static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     struct stat st;
@@ -238,6 +239,8 @@ Header rpmFreeSignature(Header h)
 
 static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies *sig, *size, fileSystem @*/
 {
     char * sigfile = alloca(1024);
@@ -336,6 +339,8 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
  */
 static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies *sig, *size, fileSystem @*/
 {
     char * sigfile = alloca(1024);
@@ -450,8 +455,10 @@ int rpmAddSignature(Header h, const char * file, int_32 sigTag,
     return ret;
 }
 
+/*@-globuse@*/
 static rpmVerifySignatureReturn
 verifySizeSignature(const char * datafile, int_32 size, /*@out@*/ char * result)
+	/*@globals fileSystem@*/
 	/*@modifies *result, fileSystem @*/
 {
     struct stat st;
@@ -467,12 +474,15 @@ verifySizeSignature(const char * datafile, int_32 size, /*@out@*/ char * result)
     sprintf(result, "Header+Archive size OK: %d bytes\n", size);
     return RPMSIG_OK;
 }
+/*@=globuse@*/
 
 #define	X(_x)	(unsigned)((_x) & 0xff)
 
+/*@-globuse@*/
 static rpmVerifySignatureReturn
 verifyMD5Signature(const char * datafile, const byte * sig, 
 			      /*@out@*/ char * result, md5func fn)
+	/*@globals fileSystem@*/
 	/*@modifies *result, fileSystem @*/
 {
     byte md5sum[16];
@@ -505,11 +515,14 @@ verifyMD5Signature(const char * datafile, const byte * sig,
 
     return RPMSIG_OK;
 }
+/*@=globuse@*/
 
 static rpmVerifySignatureReturn
 verifyPGPSignature(const char * datafile, const void * sig, int count,
 		/*@unused@*/ const rpmDigest dig, /*@out@*/ char * result)
-	/*@modifies *result, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies *result, fileSystem, internalState @*/
 {
     int pid, status, outpipe[2];
 /*@only@*/ /*@null@*/ const char * sigfile = NULL;
@@ -652,7 +665,9 @@ fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
 static rpmVerifySignatureReturn
 verifyGPGSignature(const char * datafile, const void * sig, int count,
 		/*@unused@*/ const rpmDigest dig, /*@out@*/ char * result)
-	/*@modifies *result, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies *result, fileSystem, internalState @*/
 {
     int pid, status, outpipe[2];
 /*@only@*/ /*@null@*/ const char * sigfile = NULL;
@@ -748,6 +763,8 @@ fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
 }
 
 static int checkPassPhrase(const char * passPhrase, const int sigTag)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     int passPhrasePipe[2];
@@ -760,9 +777,11 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	(void) close(STDIN_FILENO);
 	(void) close(STDOUT_FILENO);
 	(void) close(passPhrasePipe[1]);
+	/*@-internalglobs@*/ /* FIX: shrug */
 	if (! rpmIsVerbose()) {
 	    (void) close(STDERR_FILENO);
 	}
+	/*@=internalglobs@*/
 	if ((fd = open("/dev/null", O_RDONLY)) != STDIN_FILENO) {
 	    (void) dup2(fd, STDIN_FILENO);
 	    (void) close(fd);
@@ -836,6 +855,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
     return 0;
 }
 
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 {
     char *pass;
@@ -881,7 +901,9 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 
     return pass;
 }
+/*@=globs@*/
 
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 rpmVerifySignatureReturn
 rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
 		int count, const rpmDigest dig, char * result)
@@ -909,3 +931,4 @@ rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
     /*@notreached@*/
     return RPMSIG_OK;
 }
+/*@=globs@*/

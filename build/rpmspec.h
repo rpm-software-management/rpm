@@ -180,7 +180,9 @@ extern "C" {
  * Create and initialize Spec structure.
  * @return spec		spec file control structure
  */
-/*@only@*/ Spec newSpec(void)	/*@*/;
+/*@only@*/ Spec newSpec(void)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
  * Destroy Spec structure.
@@ -188,7 +190,8 @@ extern "C" {
  * @return		NULL always
  */
 /*@null@*/ Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
-	/*@modifies spec @*/;
+	/*@globals fileSystem @*/
+	/*@modifies spec, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
@@ -196,7 +199,8 @@ extern "C" {
  */
 /*@-declundef@*/
 extern /*@null@*/ Spec (*freeSpecVec) (Spec spec)	/* XXX FIXME */
-	/*@modifies spec @*/;
+	/*@globals fileSystem @*/
+	/*@modifies spec, fileSystem @*/;
 /*@=declundef@*/
 
 /** \ingroup rpmbuild
@@ -213,6 +217,7 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
  * @param spec		spec file control structure
  */
 int addSource(Spec spec, Package pkg, const char * field, int tag)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
 		pkg->icon @*/;

@@ -12,7 +12,11 @@
 #include "header.h"
 #include "ugid.h"
 
-typedef int (*md5func)(const char * fn, /*@out@*/ unsigned char * digest);
+/**
+ */
+typedef int (*md5func) (const char * fn, /*@out@*/ unsigned char * digest)
+	/*@globals fileSystem@*/
+	/*@modifies *digest, fileSystem @*/;
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,6 +32,7 @@ extern "C" {
  */
 /*@-exportlocal@*/
 int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii)
+	/*@globals fileSystem@*/
 	/*@modifies digest, fileSystem @*/;
 /*@=exportlocal@*/
 
@@ -40,6 +45,7 @@ int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii)
  */
 /*@unused@*/ static inline
 int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
+	/*@globals fileSystem@*/
 	/*@modifies digest, fileSystem @*/
 {
     return domd5(fn, digest, 1);
@@ -54,6 +60,7 @@ int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
  */
 /*@unused@*/ static inline
 int mdbinfile(const char * fn, /*@out@*/ unsigned char * bindigest)
+	/*@globals fileSystem@*/
 	/*@modifies bindigest, fileSystem @*/
 {
     return domd5(fn, bindigest, 0);
@@ -98,6 +105,7 @@ void freeSplitString( /*@only@*/ char ** list)
  * @return		1 if file exists, 0 if not
  */
 int rpmfileexists(const char * urlfn)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
@@ -108,7 +116,8 @@ int rpmfileexists(const char * urlfn)
  * @return		0 on success
  */
 int dosetenv(const char * name, const char * value, int overwrite)
-	/*@modifies fileSystem @*/;
+	/*@globals environ@*/
+	/*@modifies *environ @*/;
 
 /**
  * Like the libc function, but malloc()'s the space needed.
@@ -116,7 +125,8 @@ int dosetenv(const char * name, const char * value, int overwrite)
  * @return		0 on success
  */
 int doputenv(const char * str)
-	/*@modifies fileSystem @*/;
+	/*@globals environ@*/
+	/*@modifies *environ @*/;
 
 /**
  * Return file handle for a temporaray file.
@@ -134,14 +144,15 @@ int doputenv(const char * str)
 int makeTempFile(/*@null@*/ const char * prefix,
 		/*@null@*/ /*@out@*/ const char ** fnptr,
 		/*@out@*/ FD_t * fdptr)
-	/*@modifies *fnptr, *fdptr, fileSystem @*/;
+	/*@globals fileSystem, internalState@*/
+	/*@modifies *fnptr, *fdptr, fileSystem, internalState @*/;
 
 /**
  * Return (malloc'd) current working directory.
  * @return		current working directory (malloc'ed)
  */
 /*@only@*/ char * currentDirectory(void)
-	/*@modifies fileSystem @*/;
+	/*@*/;
 
 /**
  * Convert absolute path tag to (dirname,basename,dirindex) tags.
@@ -171,8 +182,9 @@ int myGlobPatternP (const char *patternURL)	/*@*/;
 /**
  */
 int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
-	/*@out@*/ const char *** argvPtr)
-		/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
+		/*@out@*/ const char *** argvPtr)
+	/*@globals fileSystem@*/
+	/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
 
 /**
  * Retrofit a Provides: name = version-release dependency into legacy

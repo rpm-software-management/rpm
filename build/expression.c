@@ -182,6 +182,7 @@ static const char *prToken(int val)
  * @param state		expression parser state
  */
 static int rdToken(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies state->nextToken @*/
 {
   int token;
@@ -317,12 +318,14 @@ static int rdToken(ParseState state)
 }
 
 static Value doLogical(ParseState state)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken @*/;
 
 /**
  * @param state		expression parser state
  */
 static Value doPrimary(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies state->nextToken @*/
 {
   Value v;
@@ -400,6 +403,7 @@ static Value doPrimary(ParseState state)
  * @param state		expression parser state
  */
 static Value doMultiplyDivide(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies state->nextToken @*/
 {
   Value v1, v2 = NULL;
@@ -450,6 +454,7 @@ static Value doMultiplyDivide(ParseState state)
  * @param state		expression parser state
  */
 static Value doAddSubtract(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies state->nextToken @*/
 {
   Value v1, v2 = NULL;
@@ -509,6 +514,7 @@ static Value doAddSubtract(ParseState state)
  * @param state		expression parser state
  */
 static Value doRelational(ParseState state)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies state->nextToken @*/
 {
   Value v1, v2 = NULL;
@@ -601,7 +607,8 @@ static Value doRelational(ParseState state)
  * @param state		expression parser state
  */
 static Value doLogical(ParseState state)
-	/*@modifies state->nextToken @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 

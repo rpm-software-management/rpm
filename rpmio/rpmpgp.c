@@ -7,11 +7,13 @@
 #include "rpmpgp.h"
 #include "debug.h"
 
+/*@unchecked@*/
 static int _debug = 0;
+/*@unchecked@*/
 static int _print = 0;
+/*@unchecked@*/
 /*@null@*/ static struct pgpSig_s * _dig = NULL;
 
-/*@-readonlytrans@*/
 /* This is the unarmored RPM-GPG-KEY public key. */
 const char * redhatPubKeyDSA = "\
 mQGiBDfqVDgRBADBKr3Bl6PO8BQ0H8sJoD6p9U7Yyl7pjtZqioviPwXP+DCWd4u8\n\
@@ -144,6 +146,7 @@ struct pgpValTbl_s pgpHashTbl[] = {
 };
 
 /*@-exportlocal -exportheadervar@*/
+/*@observer@*/ /*@unchecked@*/
 struct pgpValTbl_s pgpKeyServerPrefsTbl[] = {
     { 0x80,			"No-modify" },
     { -1,			"Unknown key server preference" },
@@ -211,9 +214,9 @@ struct pgpValTbl_s pgpPktTbl[] = {
     { PGPPKT_CONTROL,		"Control (GPG)" },
     { -1,			"Unknown packet tag" },
 };
-/*@=readonlytrans@*/
 
 static void pgpPrtNL(void)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     if (!_print) return;
@@ -221,6 +224,7 @@ static void pgpPrtNL(void)
 }
 
 static void pgpPrtInt(const char *pre, int i)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     if (!_print) return;
@@ -230,6 +234,7 @@ static void pgpPrtInt(const char *pre, int i)
 }
 
 static void pgpPrtStr(const char *pre, const char *s)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     if (!_print) return;
@@ -239,6 +244,7 @@ static void pgpPrtStr(const char *pre, const char *s)
 }
 
 static void pgpPrtHex(const char *pre, const byte *p, unsigned int plen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     if (!_print) return;
@@ -248,6 +254,7 @@ static void pgpPrtHex(const char *pre, const byte *p, unsigned int plen)
 }
 
 void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     if (!_print) return;
@@ -258,7 +265,8 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
 
 static void pgpHexSet(const char * pre, int lbits,
 		/*@out@*/ mp32number * mpn, const byte * p)
-	/*@modifies *mpn @*/
+	/*@globals fileSystem @*/
+	/*@modifies *mpn, fileSystem @*/
 {
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits = (lbits > mbits ? lbits : mbits);
@@ -278,12 +286,14 @@ if (_debug && _print)
 printf("\t %s ", pre), mp32println(mpn->size, mpn->data);
 }
 
-/*@-varuse -readonlytrans @*/
+/*@-varuse =readonlytrans @*/
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpSigRSA[] = {
     " m**d =",
     NULL,
 };
 
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpSigDSA[] = {
     "    r =",
     "    s =",
@@ -561,13 +571,15 @@ int pgpPrtPktSig(pgpPkt pkt, const byte *h, unsigned int hlen)
     return 0;
 }
 
-/*@-varuse -readonlytrans @*/
+/*@-varuse =readonlytrans @*/
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicRSA[] = {
     "    n =",
     "    e =",
     NULL,
 };
 
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretRSA[] = {
     "    d =",
     "    p =",
@@ -576,6 +588,7 @@ static const char * pgpSecretRSA[] = {
     NULL,
 };
 
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicDSA[] = {
     "    p =",
     "    q =",
@@ -584,11 +597,13 @@ static const char * pgpPublicDSA[] = {
     NULL,
 };
 
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretDSA[] = {
     "    x =",
     NULL,
 };
 
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicELGAMAL[] = {
     "    p =",
     "    g =",
@@ -596,6 +611,7 @@ static const char * pgpPublicELGAMAL[] = {
     NULL,
 };
 
+/*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretELGAMAL[] = {
     "    x =",
     NULL,

@@ -17,6 +17,7 @@ extern int _rpmio_debug;
 
 /* =============================================================== */
 static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc;
@@ -32,18 +33,21 @@ static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
 }
 
 static int ftpChdir(const char * path)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     return ftpCmd("CWD", path, NULL);
 }
 
 static int ftpRmdir(const char * path)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     return ftpCmd("RMD", path, NULL);
 }
 
 static int ftpRename(const char * oldpath, const char * newpath)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc;
@@ -53,6 +57,7 @@ static int ftpRename(const char * oldpath, const char * newpath)
 }
 
 static int ftpUnlink(const char * path)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     return ftpCmd("DELE", path, NULL);
@@ -252,14 +257,19 @@ int Unlink(const char * path) {
 /*
  * FIXME: this is broken. It depends on mc not crossing border on month!
  */
+/*@unchecked@*/
 static int current_mday;
+/*@unchecked@*/
 static int current_mon;
+/*@unchecked@*/
 static int current_year;
 
 /* Following stuff (parse_ls_lga) is used by ftpfs and extfs */
 #define MAXCOLS		30
 
+/*@unchecked@*/
 static char *columns [MAXCOLS];	/* Points to the string in column n */
+/*@unchecked@*/
 static int   column_ptr [MAXCOLS]; /* Index from 0 to the starting positions of the columns */
 
 static int
@@ -783,7 +793,15 @@ typedef enum {
 	DO_FTP_ACCESS	= 4,
 	DO_FTP_GLOB	= 5
 } ftpSysCall_t;
+
+/**
+ */
+/*@unchecked@*/
 static size_t ftpBufAlloced = 0;
+
+/**
+ */
+/*@unchecked@*/
 static /*@only@*/ char * ftpBuf = NULL;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
@@ -791,6 +809,7 @@ static /*@only@*/ char * ftpBuf = NULL;
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
 		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
+	/*@globals fileSystem @*/
 	/*@modifies *st, *rlbuf, fileSystem @*/
 {
     FD_t fd;
@@ -975,13 +994,15 @@ exit:
 }
 
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
-	/*@modifies *st @*/
+	/*@globals fileSystem @*/
+	/*@modifies *st, fileSystem @*/
 {
     return ftpNLST(path, DO_FTP_STAT, st, NULL, 0);
 }
 
 static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@modifies *st @*/
+	/*@globals fileSystem @*/
+	/*@modifies *st, fileSystem @*/
 {
     int rc;
     rc = ftpNLST(path, DO_FTP_LSTAT, st, NULL, 0);
@@ -991,7 +1012,8 @@ fprintf(stderr, "*** ftpLstat(%s) rc %d\n", path, rc);
 }
 
 static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@modifies *buf @*/
+	/*@globals fileSystem @*/
+	/*@modifies *buf, fileSystem @*/
 {
     return ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
 }
@@ -999,6 +1021,7 @@ static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 static int ftpGlob(const char * path, int flags,
 		int errfunc(const char * epath, int eerno),
 		/*@out@*/ glob_t * pglob)
+	/*@globals fileSystem @*/
 	/*@modifies *pglob, fileSystem @*/
 {
     int rc;
@@ -1020,8 +1043,10 @@ fprintf(stderr, "*** ftpGlob(%s,0x%x,%p,%p) ftpNLST rc %d\n", path, (unsigned)fl
 static void ftpGlobfree(glob_t * pglob)
 	/*@modifies *pglob @*/
 {
+/*@-modfilesys@*/
 if (_rpmio_debug)
 fprintf(stderr, "*** ftpGlobfree(%p)\n", pglob);
+/*@=modfilesys@*/
     if (pglob->gl_offs == -1) {	/* XXX HACK HACK HACK */
 	free((void *)pglob->gl_pathv);
 	pglob->gl_pathv = NULL;

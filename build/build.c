@@ -10,6 +10,7 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
 static int _build_debug = 0;
 
 /*@access StringBuf @*/
@@ -19,19 +20,22 @@ static int _build_debug = 0;
 /**
  */
 static void doRmSource(Spec spec)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     struct Source *p;
     Package pkg;
+    int rc;
     
 #if 0
-    Unlink(spec->specFile);
+    rc = Unlink(spec->specFile);
 #endif
 
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	    (void) Unlink(fn);
+	    rc = Unlink(fn);
 	    fn = _free(fn);
 	}
     }
@@ -40,7 +44,7 @@ static void doRmSource(Spec spec)
 	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-		(void) Unlink(fn);
+		rc = Unlink(fn);
 		fn = _free(fn);
 	    }
 	}

@@ -66,7 +66,8 @@ typedef struct
 #include "blowfish.h"
 #include "blockmode.h"
 
-/*@observer@*/ static entropySource entropySourceList[] =
+/*@observer@*/ /*@unchecked@*/
+static entropySource entropySourceList[] =
 {
 #if WIN32
 	{ "wavein", entropy_wavein },
@@ -154,7 +155,8 @@ int entropyGatherNext(uint32* data, int size)
 	return -1;
 }
 
-/*@observer@*/ static const randomGenerator* randomGeneratorList[] =
+/*@observer@*/ /*@unchecked@*/
+static const randomGenerator* randomGeneratorList[] =
 {
 	&fips186prng,
 	&mtprng
@@ -198,7 +200,9 @@ const randomGenerator* randomGeneratorDefault()
 	if (selection)
 		return randomGeneratorFind(selection);
 	else
+		/*@-globs -compmempass @*/
 		return &fips186prng;
+		/*@=globs =compmempass @*/
 }
 
 int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerator* rng)
@@ -253,7 +257,8 @@ int randomGeneratorContextNext(randomGeneratorContext* ctxt, uint32* data, int s
 	return ctxt->rng->next(ctxt->param, data, size);
 }
 
-/*@observer@*/ static const hashFunction* hashFunctionList[] =
+/*@observer@*/ /*@unchecked@*/
+static const hashFunction* hashFunctionList[] =
 {
 	&md5,
 	&sha1,
@@ -274,7 +279,9 @@ const hashFunction* hashFunctionDefault()
 	if (selection)
 		return hashFunctionFind(selection);
 	else
+		/*@-globs -compmempass @*/
 		return &sha1;
+		/*@=globs =compmempass @*/
 }
 
 const hashFunction* hashFunctionGet(int index)
@@ -464,7 +471,8 @@ int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number* 
 	/*@=mustfree@*/
 }
 
-/*@observer@*/ static const keyedHashFunction* keyedHashFunctionList[] =
+/*@observer@*/ /*@unchecked@*/
+static const keyedHashFunction* keyedHashFunctionList[] =
 {
 	&hmacmd5,
 	&hmacsha1,
@@ -485,7 +493,9 @@ const keyedHashFunction* keyedHashFunctionDefault()
 	if (selection)
 		return keyedHashFunctionFind(selection);
 	else
+		/*@-globs -compmempass @*/
 		return &hmacsha1;
+		/*@=globs =compmempass @*/
 }
 
 const keyedHashFunction* keyedHashFunctionGet(int index)
@@ -697,7 +707,8 @@ int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp
 }
 
 
-/*@observer@*/ static const blockCipher* blockCipherList[] =
+/*@observer@*/ /*@unchecked@*/
+static const blockCipher* blockCipherList[] =
 {
 	&blowfish
 };
@@ -716,7 +727,9 @@ const blockCipher* blockCipherDefault()
 	if (selection)
 		return blockCipherFind(selection);
 	else
+		/*@-globs -compmempass @*/
 		return &blowfish;
+		/*@=globs =compmempass @*/
 }
 
 const blockCipher* blockCipherGet(int index)

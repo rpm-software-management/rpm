@@ -57,7 +57,8 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
 	   myftwFunc func,
 	   void *fl)
-	/*@*/
+	/*@globals fileSystem@*/
+	/*@modifies fileSystem@*/
 {
   int got;
   struct dirent *entry;

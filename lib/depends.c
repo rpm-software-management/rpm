@@ -3,7 +3,8 @@
  */
 
 /*@-exportheadervar@*/
-/*@unused@*/ static int _depends_debug = 0;
+/*@unchecked@*/ /*@unused@*/
+static int _depends_debug = 0;
 /*@=exportheadervar@*/
 
 #include "system.h"
@@ -25,6 +26,7 @@
 /*@access rpmDependencyConflict@*/
 /*@access availableList@*/
 
+/*@unchecked@*/
 static int _cacheDependsRC = 1;
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
@@ -520,8 +522,11 @@ static void parseEVR(char * evr,
     if (rp) *rp = release;
 }
 
-/*@observer@*/ const char *rpmNAME = PACKAGE;
-/*@observer@*/ const char *rpmEVR = VERSION;
+/*@observer@*/ /*@unchecked@*/
+const char *rpmNAME = PACKAGE;
+/*@observer@*/ /*@unchecked@*/
+const char *rpmEVR = VERSION;
+/*@unchecked@*/
 int rpmFLAGS = RPMSENSE_EQUAL;
 
 int rpmRangesOverlap(const char * AName, const char * AEVR, int AFlags,
@@ -1186,7 +1191,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 		const char * keyType, const char * keyDepend,
 		const char * keyName, const char * keyEVR, int keyFlags,
 		/*@null@*/ /*@out@*/ struct availablePackage *** suggestion)
-	/*@modifies ts, *suggestion @*/
+	/*@globals fileSystem @*/
+	/*@modifies ts, *suggestion, fileSystem @*/
 {
     rpmdbMatchIterator mi;
     Header h;
@@ -1367,7 +1373,8 @@ exit:
  */
 static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		Header h, const char * keyName, uint_32 multiLib)
-	/*@modifies ts, h, psp */
+	/*@globals fileSystem @*/
+	/*@modifies ts, h, psp, fileSystem */
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -1552,7 +1559,8 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
  */
 static int checkPackageSet(rpmTransactionSet ts, problemsSet psp,
 		const char * key, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
-	/*@modifies ts, mi, psp @*/
+	/*@globals fileSystem @*/
+	/*@modifies ts, mi, psp, fileSystem @*/
 {
     Header h;
     int rc = 0;
@@ -1579,7 +1587,8 @@ static int checkPackageSet(rpmTransactionSet ts, problemsSet psp,
  */
 static int checkDependentPackages(rpmTransactionSet ts,
 			problemsSet psp, const char * key)
-	/*@modifies ts, psp @*/
+	/*@globals fileSystem @*/
+	/*@modifies ts, psp, fileSystem @*/
 {
     rpmdbMatchIterator mi;
     mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_REQUIRENAME, key, 0);
@@ -1595,7 +1604,8 @@ static int checkDependentPackages(rpmTransactionSet ts,
  */
 static int checkDependentConflicts(rpmTransactionSet ts,
 		problemsSet psp, const char * key)
-	/*@modifies ts, psp @*/
+	/*@globals fileSystem @*/
+	/*@modifies ts, psp, fileSystem @*/
 {
     int rc = 0;
 
@@ -1615,6 +1625,7 @@ static int checkDependentConflicts(rpmTransactionSet ts,
 #define	DEPENDENCY_WHITEOUT
 
 #if defined(DEPENDENCY_WHITEOUT)
+/*@observer@*/ /*@unchecked@*/
 static struct badDeps_s {
 /*@observer@*/ /*@null@*/ const char * pname;
 /*@observer@*/ /*@null@*/ const char * qname;
@@ -2152,6 +2163,7 @@ rescan:
  * @return              0 on success
  */
 static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
+	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/
 {
     int dbix;

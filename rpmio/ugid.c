@@ -41,7 +41,9 @@ int unameToUid(const char * thisUname, uid_t * uid)
 
 	pwent = getpwnam(thisUname);
 	if (pwent == NULL) {
+	    /*@-internalglobs@*/ /* FIX: shrug */
 	    endpwent();
+	    /*@=internalglobs@*/
 	    pwent = getpwnam(thisUname);
 	    if (pwent == NULL) return -1;
 	}
@@ -83,7 +85,9 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 
 	grent = getgrnam(thisGname);
 	if (grent == NULL) {
+	    /*@-internalglobs@*/ /* FIX: shrug */
 	    endgrent();
+	    /*@=internalglobs@*/
 	    grent = getgrnam(thisGname);
 	    if (grent == NULL) return -1;
 	}

@@ -532,13 +532,16 @@ static void mp32bslide_w(const mp32barrett* b, const uint32 xsize, const uint32*
 	mp32setx(size, slide, xsize, xdata);                                    /* x^1 mod b */
 }
 
-/*@observer@*/ static byte mp32bslide_presq[16] = 
+/*@observer@*/ /*@unchecked@*/
+static byte mp32bslide_presq[16] = 
 { 0, 1, 1, 2, 1, 3, 2, 3, 1, 4, 3, 4, 2, 4, 3, 4 };
 
-/*@observer@*/ static byte mp32bslide_mulg[16] =
+/*@observer@*/ /*@unchecked@*/
+static byte mp32bslide_mulg[16] =
 { 0, 0, 0, 1, 0, 2, 1, 3, 0, 4, 2, 5, 1, 6, 3, 7 };
 
-/*@observer@*/ static byte mp32bslide_postsq[16] =
+/*@observer@*/ /*@unchecked@*/
+static byte mp32bslide_postsq[16] =
 { 0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0 };
 
 /**
@@ -930,14 +933,18 @@ int mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* rc, int t, uint3
 		
 		if (size > SMALL_PRIMES_PRODUCT_MAX)
 		{
+			/*@-globs@*/
 			mp32setx(size, wksp+size, SMALL_PRIMES_PRODUCT_MAX, mp32spprod[SMALL_PRIMES_PRODUCT_MAX-1]);
+			/*@=globs@*/
 			/*@-compdef@*/ /* LCL: wksp+size */
 			mp32gcd_w(size, b->modl, wksp+size, wksp, wksp+2*size);
 			/*@=compdef@*/
 		}
 		else
 		{
+			/*@-globs@*/
 			mp32gcd_w(size, b->modl, mp32spprod[size-1], wksp, wksp+2*size);
+			/*@=globs@*/
 		}
 
 		if (mp32isone(size, wksp))

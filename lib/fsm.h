@@ -220,7 +220,8 @@ int fsmSetup(FSM_t fsm, fileStage goal,
  * @return		0 on success
  */
 int fsmTeardown(FSM_t fsm)
-	/*@modifies fsm @*/;
+	/*@globals fileSystem@*/
+	/*@modifies fsm, fileSystem @*/;
 
 /*@-exportlocal@*/
 /**

@@ -51,6 +51,9 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
 extern "C" {
 #endif
 
+/**
+ */
+/*@unchecked@*/
 extern int url_iobuf_size;
 
 /**
@@ -90,14 +93,16 @@ urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
 /** @todo Remove debugging entry from the ABI. */
 urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg,
 		const char * file, unsigned line)
-	/*@modifies u @*/;
+	/*@globals fileSystem@*/
+	/*@modifies u, fileSystem @*/;
 #define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)
 
 /**
  * Free cached URL control structures.
  */
 void urlFreeCache(void)
-	/*@modifies internalState @*/;
+	/*@globals fileSystem@*/
+	/*@modifies fileSystem @*/;
 
 /**
  * Return type of URL.
@@ -132,6 +137,7 @@ int urlSplit(const char * url, /*@out@*/ urlinfo * u)
  * @return		0 on success, otherwise FTPERR_* code
  */
 int urlGetFile(const char * url, /*@null@*/ const char * dest)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus

@@ -29,6 +29,7 @@
 
 #include "base64.h"
 
+/*@unchecked@*/
 static int _debug = 0;
 
 #if HAVE_STDLIB_H
@@ -46,9 +47,8 @@ static int _debug = 0;
 
 #include <stdio.h>
 
-/*@-readonlytrans@*/
+/*@observer@*/ /*@unchecked@*/
 static const char* to_b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-/*@=readonlytrans@*/
 
 /* encode 64 characters per line */
 #define CHARS_PER_LINE	64
@@ -249,8 +249,10 @@ memchunk* b64dec(const char* string)
 	return rc;
 }
 
+/*@unchecked@*/
 int b64encode_chars_per_line = B64ENCODE_CHARS_PER_LINE;
 
+/*@observer@*/ /*@unchecked@*/
 const char * b64encode_eolstr = B64ENCODE_EOLSTR;
 
 /*@-internalglobs -modfilesys @*/
@@ -337,6 +339,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 }
 /*@=internalglobs =modfilesys @*/
 
+/*@observer@*/ /*@unchecked@*/
 const char * b64decode_whitespace = B64DECODE_WHITESPACE;
 
 /*@-internalglobs -modfilesys @*/

@@ -28,13 +28,21 @@ int url_iobuf_size = URL_IOBUF_SIZE;
 #define	RPMURL_DEBUG_IO		0x40000000
 #define	RPMURL_DEBUG_REFS	0x20000000
 
+/*@unchecked@*/
 int _url_debug = 0;
 #define	URLDBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
 
 #define URLDBGIO(_f, _x)	URLDBG((_f), RPMURL_DEBUG_IO, _x)
 #define URLDBGREFS(_f, _x)	URLDBG((_f), RPMURL_DEBUG_REFS, _x)
 
-/*@only@*/ /*@null@*/ static urlinfo *uCache = NULL;
+/**
+ */
+/*@only@*/ /*@null@*/ /*@unchecked@*/
+static urlinfo *uCache = NULL;
+
+/**
+ */
+/*@unchecked@*/
 static int uCount = 0;
 
 /**
@@ -53,7 +61,9 @@ urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
     URLSANE(u);
     u->nrefs++;
+/*@-modfilesys@*/
 URLDBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
+/*@=modfilesys@*/
     /*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
 }
 
@@ -169,7 +179,10 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
 }
 
 static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
-	/*@modifies *uret @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies *uret, rpmGlobalMacroContext,
+		fileSystem @*/
 {
     urlinfo u;
     int ucx;
@@ -304,6 +317,9 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     return;
 }
 
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
 static struct urlstring {
 /*@observer@*/ /*@null@*/ const char * leadin;
     urltype	ret;
@@ -368,6 +384,7 @@ urltype urlPath(const char * url, const char ** pathp)
  * Split URL into components. The URL can look like
  *	service://user:password@host:port/path
  */
+/*@-modfilesys@*/
 int urlSplit(const char * url, urlinfo *uret)
 {
     urlinfo u;
@@ -454,10 +471,13 @@ int urlSplit(const char * url, urlinfo *uret)
     myurl = _free(myurl);
     if (uret) {
 	*uret = u;
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	urlFind(uret, 0);
+/*@=globs@*/
     }
     return 0;
 }
+/*@=modfilesys@*/
 
 int urlGetFile(const char * url, const char * dest)
 {

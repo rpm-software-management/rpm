@@ -22,10 +22,10 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #if defined(__LCLINT__)
-/*@-superuser -declundef @*/	/* LCL: modifies clause missing */
+/*@-superuser -declundef -incondefs @*/	/* LCL: modifies clause missing */
 extern int chroot (const char *__path)
 	/*@modifies errno, systemState @*/;
-/*@=superuser =declundef @*/
+/*@=superuser =declundef =incondefs @*/
 #endif
 #endif
 
@@ -111,11 +111,11 @@ extern int errno;
 /*@=skipansiheaders@*/
 #undef getopt
 #if defined(__LCLINT__)
-/*@-declundef@*/	/* LCL: modifies clause missing */
+/*@-declundef -incondefs @*/	/* LCL: modifies clause missing */
 extern char * realpath (const char * file_name, /*@out@*/ char * resolved_name)
 	/*@requires maxSet(resolved_name) >=  (PATH_MAX - 1); @*/
 	/*@modifies *resolved_name, errno, fileSystem @*/;
-/*@=declundef@*/
+/*@=declundef =incondefs @*/
 #endif
 #else /* not STDC_HEADERS */
 char *getenv (const char *name);
@@ -165,11 +165,11 @@ char *realpath(const char *path, char resolved_path []);
 #endif /* HAVE_DIRENT_H */
 
 #if defined(__LCLINT__)
-/*@-declundef@*/ /* LCL: missing annotation */
+/*@-declundef -incondefs @*/ /* LCL: missing annotation */
 /*@only@*/ void * alloca (size_t size)
 	/*@ensures MaxSet(result) == (size - 1) @*/
-	/*@modifies internalState @*/;
-/*@=declundef@*/
+	/*@*/;
+/*@=declundef =incondefs @*/
 #endif
 
 #ifdef __GNUC__
@@ -188,7 +188,7 @@ char *alloca ();
 
 #include <ctype.h>
 
-#if HAVE_SYS_MMAN_H
+#if HAVE_SYS_MMAN_H && !defined(__LCLINT__)
 #include <sys/mman.h>
 #endif
 
@@ -227,7 +227,7 @@ char *alloca ();
 #include <malloc.h>
 #endif
 
-/*@-declundef@*/ /* FIX: these are macros */
+/*@-declundef -incondefs @*/ /* FIX: these are macros */
 /**
  */
 /*@mayexit@*/ /*@only@*/ /*@out@*/ void * xmalloc (size_t size)
@@ -252,7 +252,7 @@ char *alloca ();
  */
 /*@mayexit@*/ /*@only@*/ char * xstrdup (const char *str)
 	/*@*/;
-/*@=declundef@*/
+/*@=declundef =incondefs @*/
 
 /**
  */
@@ -262,7 +262,7 @@ char *alloca ();
 #if HAVE_MCHECK_H
 #include <mcheck.h>
 #if defined(__LCLINT__)
-/*@-declundef@*/ /* LCL: missing annotations */
+/*@-declundef -incondefs @*/ /* LCL: missing annotations */
 #if 0
 enum mcheck_status
   {
@@ -275,18 +275,24 @@ enum mcheck_status
 #endif
 
 extern int mcheck (void (*__abortfunc) (enum mcheck_status))
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 extern int mcheck_pedantic (void (*__abortfunc) (enum mcheck_status))
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 extern void mcheck_check_all (void)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 extern enum mcheck_status mprobe (void *__ptr)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 extern void mtrace (void)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 extern void muntrace (void)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
-/*@=declundef@*/
+/*@=declundef =incondefs @*/
 #endif /* defined(__LCLINT__) */
 
 /* Memory allocation via macro defs to get meaningful locations from mtrace() */
@@ -367,7 +373,7 @@ const char *__progname;
 #endif
 
 #if defined(__LCLINT__)
-/*@-declundef@*/ /* LCL: missing annotation */
+/*@-declundef -incondefs @*/ /* LCL: missing annotation */
 #if 0
 typedef /*@concrete@*/ struct
   {
@@ -461,7 +467,7 @@ extern int glob_pattern_p (const char *pattern, int quote)
 
 extern int fnmatch (const char *pattern, const char *string, int flags)
 	/*@*/;
-/*@=declundef@*/
+/*@=declundef =incondefs @*/
 #endif
 
 #if ! HAVE_S_IFSOCK

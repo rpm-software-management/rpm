@@ -808,18 +808,22 @@ int entropy_wincrypt(uint32* data, int size)
 #if HAVE_DEV_AUDIO
 /** \ingroup ES_audio_m
  */
-/*@observer@*/ static const char* name_dev_audio = "/dev/audio";
+/*@observer@*/ /*@unchecked@*/
+static const char* name_dev_audio = "/dev/audio";
 
 /** \ingroup ES_audio_m
  */
+/*@unchecked@*/
 static int dev_audio_fd = -1;
 
 /** \ingroup ES_audio_m
  */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
+/*@unchecked@*/
 static mutex_t dev_audio_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@unchecked@*/
 static pthread_mutex_t dev_audio_lock = PTHREAD_MUTEX_INITIALIZER;
 #  else
 #   error Need locking mechanism
@@ -830,18 +834,22 @@ static pthread_mutex_t dev_audio_lock = PTHREAD_MUTEX_INITIALIZER;
 #if HAVE_DEV_DSP
 /** \ingroup ES_dsp_m
  */
-/*@observer@*/ static const char* name_dev_dsp = "/dev/dsp";
+/*@observer@*/ /*@unchecked@*/
+static const char* name_dev_dsp = "/dev/dsp";
 
 /** \ingroup ES_dsp_m
  */
+/*@unchecked@*/
 static int dev_dsp_fd = -1;
 
 /** \ingroup ES_dsp_m
  */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
+/*@unchecked@*/
 static mutex_t dev_dsp_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@unchecked@*/
 static pthread_mutex_t dev_dsp_lock = PTHREAD_MUTEX_INITIALIZER;
 #  else
 #   error Need locking mechanism
@@ -852,18 +860,22 @@ static pthread_mutex_t dev_dsp_lock = PTHREAD_MUTEX_INITIALIZER;
 #if HAVE_DEV_RANDOM
 /** \ingroup ES_random_m
  */
-/*@observer@*/ static const char* name_dev_random = "/dev/random";
+/*@observer@*/ /*@unchecked@*/
+static const char* name_dev_random = "/dev/random";
 
 /** \ingroup ES_random_m
  */
+/*@unchecked@*/
 static int dev_random_fd = -1;
 
 /** \ingroup ES_random_m
  */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
+/*@unchecked@*/
 static mutex_t dev_random_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@unchecked@*/
 static pthread_mutex_t dev_random_lock = PTHREAD_MUTEX_INITIALIZER;
 #  else
 #   error Need locking mechanism
@@ -874,18 +886,22 @@ static pthread_mutex_t dev_random_lock = PTHREAD_MUTEX_INITIALIZER;
 #if HAVE_DEV_URANDOM
 /** \ingroup ES_urandom_m
  */
-/*@observer@*/ static const char* name_dev_urandom = "/dev/urandom";
+/*@observer@*/ /*@unchecked@*/
+static const char* name_dev_urandom = "/dev/urandom";
 
 /** \ingroup ES_urandom_m
  */
+/*@unchecked@*/
 static int dev_urandom_fd = -1;
 
 /** \ingroup ES_urandom_m
  */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
+/*@unchecked@*/
 static mutex_t dev_urandom_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@unchecked@*/
 static pthread_mutex_t dev_urandom_lock = PTHREAD_MUTEX_INITIALIZER;
 #  else
 #   error Need locking mechanism
@@ -896,18 +912,22 @@ static pthread_mutex_t dev_urandom_lock = PTHREAD_MUTEX_INITIALIZER;
 #if HAVE_DEV_TTY
 /** \ingroup ES_tty_m
  */
-/*@observer@*/ static const char *dev_tty_name = "/dev/tty";
+/*@observer@*/ /*@unchecked@*/
+static const char *dev_tty_name = "/dev/tty";
 
 /** \ingroup ES_tty_m
  */
+/*@unchecked@*/
 static int dev_tty_fd = -1;
 
 /** \ingroup ES_tty_m
  */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
+/*@unchecked@*/
 static mutex_t dev_tty_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@unchecked@*/
 static pthread_mutex_t dev_tty_lock = PTHREAD_MUTEX_INITIALIZER;
 #  else
 #   error Need locking mechanism

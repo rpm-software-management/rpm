@@ -47,6 +47,7 @@ extern "C" {
 
 /** \ingroup HASH_sha1_m
  */
+/*@observer@*/ /*@checked@*/
 extern BEECRYPTAPI const hashFunction sha1;
 
 /** \ingroup HASH_sha1_m

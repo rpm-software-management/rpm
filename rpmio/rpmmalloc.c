@@ -9,6 +9,7 @@
 #define	EXIT_FAILURE	1
 #endif
 
+/*@-modfilesys@*/
 /*@only@*/ void *vmefail(size_t size)
 {
     fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"), (unsigned)size);
@@ -16,6 +17,7 @@
     /*@notreached@*/
     return NULL;
 }
+/*@=modfilesys@*/
 
 #if !(HAVE_MCHECK_H && defined(__GNUC__)) && !defined(__LCLINT__)
 

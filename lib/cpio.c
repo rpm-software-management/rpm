@@ -16,6 +16,7 @@
 /*@access FSM_t @*/
 
 /*@-exportheadervar@*/
+/*@unchecked@*/
 extern int _fsm_debug;
 /*@=exportheadervar@*/
 

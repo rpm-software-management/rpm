@@ -13,6 +13,7 @@ extern "C" {
 /** \ingroup header
  * Header methods for rpm headers.
  */
+/*@observer@*/ /*@unchecked@*/
 extern struct HV_s * hdrVec;
 
 /** \ingroup header

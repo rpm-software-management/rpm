@@ -23,6 +23,14 @@ typedef /*@abstract@*/ struct MacroContext_s {
 } * MacroContext;
 
 /**
+ */
+extern MacroContext rpmGlobalMacroContext;
+
+/**
+ */
+extern MacroContext rpmCLIMacroContext;
+
+/**
  * Markers for sources of macros added throughout rpm.
  */
 #define	RMIL_DEFAULT	-15
@@ -46,6 +54,8 @@ extern "C" {
  */
 void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
 					/*@null@*/ FILE * fp)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
@@ -61,7 +71,9 @@ void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
 int	expandMacros	(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
 				/*@in@*/ /*@out@*/ char * sbuf,
 				size_t sbuflen)
-	/*@modifies *sbuf, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
+	/*@modifies *sbuf, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Add macro to context.
@@ -75,7 +87,8 @@ int	expandMacros	(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
 void	addMacro	(/*@null@*/ MacroContext mc, const char * n,
 				/*@null@*/ const char * o,
 				/*@null@*/ const char * b, int level)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
  * Delete macro from context.
@@ -83,7 +96,8 @@ void	addMacro	(/*@null@*/ MacroContext mc, const char * n,
  * @param n		macro name
  */
 void	delMacro	(/*@null@*/ MacroContext mc, const char * n)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
  * Define macro in context.
@@ -94,7 +108,8 @@ void	delMacro	(/*@null@*/ MacroContext mc, const char * n)
  */
 int	rpmDefineMacro	(/*@null@*/ MacroContext mc, const char * macro,
 				int level)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
  * Load macros from context into global context.
@@ -102,7 +117,8 @@ int	rpmDefineMacro	(/*@null@*/ MacroContext mc, const char * macro,
  * @param level		macro recursion level (0 is entry API)
  */
 void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
  * Initialize macro context from set of macrofile(s).
@@ -110,14 +126,17 @@ void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
 void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)
-	/*@modifies mc, internalState, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
+		fileSystem @*/
+	/*@modifies mc, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Destroy macro context.
  * @param mc		macro context (NULL uses global context).
  */
 void	rpmFreeMacros	(/*@null@*/ MacroContext mc)
-	/*@modifies mc, internalState @*/;
+	/*@globals rpmGlobalMacroContext@*/
+	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 typedef enum rpmCompressedMagic_e {
     COMPRESSED_NOT		= 0,	/*!< not compressed */
@@ -134,6 +153,7 @@ typedef enum rpmCompressedMagic_e {
  */
 int	isCompressed	(const char * file,
 				/*@out@*/ rpmCompressedMagic * compressed)
+	/*@globals fileSystem@*/
 	/*@modifies *compressed, fileSystem @*/;
 
 /**
@@ -142,7 +162,8 @@ int	isCompressed	(const char * file,
  * @return		macro expansion (malloc'ed)
  */
 char *	rpmExpand	(/*@null@*/ const char * arg, ...)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /**
  * Canonicalize file path.
@@ -159,7 +180,8 @@ char *	rpmExpand	(/*@null@*/ const char * arg, ...)
  */
 /*@-redecl@*/
 const char * rpmGetPath	(/*@null@*/ const char * path, ...)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 /*@=redecl@*/
 
 /**
@@ -176,7 +198,8 @@ const char * rpmGetPath	(/*@null@*/ const char * path, ...)
 const char * rpmGenPath	(/*@null@*/ const char * root,
 			/*@null@*/ const char * mdir,
 			/*@null@*/ const char * file)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 /*@=redecl@*/
 
 /**
@@ -187,7 +210,8 @@ const char * rpmGenPath	(/*@null@*/ const char * root,
  * @return		numeric value
  */
 int	rpmExpandNumeric (const char * arg)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 #ifdef __cplusplus
 }

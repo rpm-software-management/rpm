@@ -63,8 +63,10 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 		mp32nsetw(&kp->e, 65535);
 
 		/* generate a random prime p and q */
+		/*@-globs@*/
 		mp32prnd_w(&kp->p, rgc, pqsize, mp32ptrials(pqsize << 5), &kp->e, temp);
 		mp32prnd_w(&kp->q, rgc, pqsize, mp32ptrials(pqsize << 5), &kp->e, temp);
+		/*@-globs@*/
 
 		/* if p <= q, perform a swap to make p larger than q */
 		if (mp32le(pqsize, kp->p.modl, kp->q.modl))
@@ -88,7 +90,9 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 			/* product of p and q doesn't have the required size (one bit short) */
 
+			/*@-globs@*/
 			mp32prnd_w(&r, rgc, pqsize, mp32ptrials(pqsize << 5), &kp->e, temp);
+			/*@=globs@*/
 
 			/*@-usedef@*/ /* r is set */
 			if (mp32le(pqsize, kp->p.modl, r.modl))

@@ -13,18 +13,22 @@
 #include "rpmdb.h"
 
 /*@-redecl -exportheadervar@*/
+/*@unchecked@*/
 extern const char * chroot_prefix;
 /*@=redecl =exportheadervar@*/
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
 #if STATFS_IN_SYS_STATVFS
+/*@-incondefs@*/
 # include <sys/statvfs.h>
 #if defined(__LCLINT__)
 /*@-declundef -exportheader @*/ /* LCL: missing annotation */
 extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
+	/*@globals fileSystem@*/
 	/*@modifies *buf, fileSystem @*/;
 /*@=declundef =exportheader @*/
+/*@=incondefs@*/
 #endif
 #else
 # if STATFS_IN_SYS_VFS
@@ -818,7 +822,8 @@ static fileAction decideFileFate(const char * dirName,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
 			rpmtransFlags transFlags)
-	/*@*/
+	/*@globals fileSystem@*/
+	/*@modifies fileSystem@*/
 {
     char buffer[1024];
     const char * dbAttr, * newAttr;
@@ -933,7 +938,8 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 			            int sharedCount, int reportConflicts,
 				    rpmProblemSet probs,
 				    rpmtransFlags transFlags)
-	/*@modifies fi, db, probs @*/
+	/*@globals fileSystem@*/
+	/*@modifies fi, db, probs, fileSystem @*/
 {
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -1029,7 +1035,8 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount)
-	/*@modifies fi, db @*/
+	/*@globals fileSystem@*/
+	/*@modifies fi, db, fileSystem @*/
 {
     HGE_t hge = fi->hge;
     Header h;
@@ -1069,7 +1076,8 @@ static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
  */
 static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 			   rpmProblemSet probs, struct diskspaceInfo * dsl)
-	/*@modifies fi, probs, dsl @*/
+	/*@globals fileSystem@*/
+	/*@modifies fi, probs, dsl, fileSystem @*/
 {
     int i, j;
     struct diskspaceInfo * ds = NULL;
@@ -1290,6 +1298,7 @@ static int ensureOlder(struct availablePackage * alp, Header old,
 /**
  */
 static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies fi @*/
 {
     int noDocs = (ts->transFlags & RPMTRANS_FLAG_NODOCS);
@@ -1765,7 +1774,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    }
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	    skipFiles(ts, fi);
+/*@=globs@*/
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    fi->ap = NULL;
@@ -2012,8 +2023,10 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE)
 		    (void) psmStage(psm, PSM_PKGSAVE);
+/*@=globs@*/
 		/*@switchbreak@*/ break;
 	    }
 	}
@@ -2077,10 +2090,12 @@ assert(alp == fi->ap);
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
 assert(alp == fi->ap);
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 		if (psmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;
 		    lastFailed = i;
 		}
+/*@=globs@*/
 		fi->h = headerFree(fi->h);
 		if (hsave) {
 		    fi->h = headerLink(hsave);
@@ -2105,8 +2120,10 @@ assert(alp == fi->ap);
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		/*@switchbreak@*/ break;
 
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	    if (psmStage(psm, PSM_PKGERASE))
 		ourrc++;
+/*@=globs@*/
 
 	    /*@switchbreak@*/ break;
 	}

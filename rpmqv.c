@@ -75,33 +75,52 @@ enum modes {
 #define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
 
 /*@-exportheadervar@*/
+/*@unchecked@*/
 extern int _ftp_debug;
+/*@unchecked@*/
 extern int noLibio;
+/*@unchecked@*/
 extern int _rpmio_debug;
+/*@unchecked@*/
 extern int _url_debug;
 
 /*@-varuse@*/
+/*@unchecked@*/
 /*@observer@*/ extern const char * rpmNAME;
 /*@=varuse@*/
+/*@unchecked@*/
 /*@observer@*/ extern const char * rpmEVR;
 /*@-varuse@*/
+/*@unchecked@*/
 extern int rpmFLAGS;
 /*@=varuse@*/
 
+#ifdef	DYING
+/*@unchecked@*/
 extern struct MacroContext_s rpmCLIMacroContext;
+#endif
 /*@=exportheadervar@*/
 
 /* options for all executables */
 
+/*@unchecked@*/
 static int help = 0;
+/*@unchecked@*/
 static int noUsageMsg = 0;
+/*@unchecked@*/
 /*@observer@*/ /*@null@*/ static const char * pipeOutput = NULL;
+/*@unchecked@*/
 static int quiet = 0;
+/*@unchecked@*/
 /*@observer@*/ /*@null@*/ static const char * rcfile = NULL;
+/*@unchecked@*/
 /*@observer@*/ /*@null@*/ static char * rootdir = "/";
+/*@unchecked@*/
 static int showrc = 0;
+/*@unchecked@*/
 static int showVersion = 0;
 
+/*@unchecked@*/
 static struct poptOption rpmAllPoptTable[] = {
  { "version", '\0', 0, &showVersion, 0,
 	N_("print the version of rpm being used"),
@@ -153,6 +172,7 @@ static struct poptOption rpmAllPoptTable[] = {
 };
 
 /* the structure describing the options we take and the defaults */
+/*@unchecked@*/
 static struct poptOption optionsTable[] = {
 
  /* XXX colliding options */
@@ -212,6 +232,7 @@ long _stksize = 64 * 1024L;
 #endif
 
 /*@exits@*/ static void argerror(const char * desc)
+	/*@globals __assert_program_name @*/
 	/*@modifies fileSystem @*/
 {
     fprintf(stderr, _("%s: %s\n"), __progname, desc);
@@ -232,6 +253,7 @@ static void printBanner(void)
 }
 
 static void printUsage(void)
+	/*@globals __assert_program_name @*/
 	/*@modifies fileSystem @*/
 {
     FILE * fp = stdout;
@@ -272,6 +294,11 @@ static void printUsage(void)
 }
 
 int main(int argc, const char ** argv)
+	/*@globals __assert_program_name,
+		rpmGlobalMacroContext, rpmCLIMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies __assert_program_name,
+		fileSystem, internalState@*/
 {
     enum modes bigMode = MODE_UNKNOWN;
 
@@ -310,7 +337,9 @@ int main(int argc, const char ** argv)
     int p[2];
 	
 #if HAVE_MCHECK_H && HAVE_MTRACE
+    /*@-noeffect@*/
     mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=noeffect@*/
 #endif
     setprogname(argv[0]);	/* Retrofit glibc __progname */
 
@@ -550,7 +579,7 @@ int main(int argc, const char ** argv)
 	case GETOPT_DEFINEMACRO:
 	    if (optArg) {
 		(void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
-		(void) rpmDefineMacro(&rpmCLIMacroContext, optArg,RMIL_CMDLINE);
+		(void) rpmDefineMacro(rpmCLIMacroContext, optArg,RMIL_CMDLINE);
 	    }
 	    noUsageMsg = 1;
 	    /*@switchbreak@*/ break;
@@ -1162,7 +1191,7 @@ exit:
 #endif	/* IAM_RPMBT || IAM_RPMK */
     optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
-    rpmFreeMacros(&rpmCLIMacroContext);
+    rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
 
     if (pipeChild) {
@@ -1191,7 +1220,9 @@ exit:
 #endif
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
+    /*@-noeffect@*/
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=noeffect@*/
 #endif
     /*@-globstate@*/
     return ec;

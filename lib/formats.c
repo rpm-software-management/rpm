@@ -187,9 +187,11 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
  * @return		0 on success
  */
 static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
-	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *type, *data, *count, *freeData,
+		fileSystem, internalState @*/
 {
     const char ** list;
 
@@ -247,9 +249,11 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *type, *data, *count, *freeData,
+		fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
@@ -440,11 +444,14 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
 /* I18N look aside diversions */
 
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
 /*@=exportlocal =exportheadervar@*/
-/*@observer@*/ static const char * language = "LANGUAGE";
+/*@observer@*/ /*@unchecked@*/
+static const char * language = "LANGUAGE";
 
-/*@observer@*/ static const char * _macro_i18ndomains =
+/*@observer@*/ /*@unchecked@*/
+static const char * _macro_i18ndomains =
 		"%{?_i18ndomains:%{_i18ndomains}}";
 
 /**
@@ -457,9 +464,10 @@ int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
  * @return		0 on success
  */
 static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
@@ -541,9 +549,10 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
@@ -557,9 +566,10 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
@@ -573,9 +583,10 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int groupTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }

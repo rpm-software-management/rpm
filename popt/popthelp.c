@@ -19,6 +19,8 @@ static void displayArgs(poptContext con,
 		/*@unused@*/ enum poptCallbackReason foo,
 		struct poptOption * key, 
 		/*@unused@*/ const char * arg, /*@unused@*/ void * data)
+	/*@globals fileSystem@*/
+	/*@modifies fileSystem@*/
 {
     if (key->shortName == '?')
 	poptPrintHelp(con, stdout, 0);
@@ -28,12 +30,14 @@ static void displayArgs(poptContext con,
 }
 
 #ifdef	NOTYET
+/*@unchecked@*/
 static int show_option_defaults = 0;
 #endif
 
 /**
  * Empty table marker to enable displaying popt alias/exec options.
  */
+/*@observer@*/ /*@unchecked@*/
 struct poptOption poptAliasOptions[] = {
     POPT_TABLEEND
 };
@@ -42,6 +46,7 @@ struct poptOption poptAliasOptions[] = {
  * Auto help table options.
  */
 /*@-castfcnptr@*/
+/*@observer@*/ /*@unchecked@*/
 struct poptOption poptHelpOptions[] = {
   { NULL, '\0', POPT_ARG_CALLBACK, (void *)&displayArgs, '\0', NULL, NULL },
   { "help", '?', 0, NULL, '?', N_("Show this help message"), NULL },
@@ -176,6 +181,7 @@ singleOptionDefaultValue(int lineLength,
 static void singleOptionHelp(FILE * fp, int maxLeftCol, 
 		const struct poptOption * opt,
 		/*@null@*/ const char * translation_domain)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     int indentLength = maxLeftCol + 5;
@@ -376,6 +382,7 @@ static int maxArgWidth(const struct poptOption * opt,
 static void itemHelp(FILE * fp,
 		/*@null@*/ poptItem items, int nitems, int left,
 		/*@null@*/ const char * translation_domain)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     poptItem item;
@@ -399,6 +406,7 @@ static void itemHelp(FILE * fp,
 static void singleTableHelp(poptContext con, FILE * fp,
 		/*@null@*/ const struct poptOption * table, int left,
 		/*@null@*/ const char * translation_domain)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     const struct poptOption * opt;
@@ -437,6 +445,7 @@ static void singleTableHelp(poptContext con, FILE * fp,
  * @param fp		output file handle
  */
 static int showHelpIntro(poptContext con, FILE * fp)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     int len = 6;
@@ -478,6 +487,7 @@ void poptPrintHelp(poptContext con, FILE * fp, /*@unused@*/ int flags)
 static int singleOptionUsage(FILE * fp, int cursor, 
 		const struct poptOption * opt,
 		/*@null@*/ const char *translation_domain)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     int len = 3;
@@ -524,6 +534,7 @@ static int singleOptionUsage(FILE * fp, int cursor,
  */
 static int itemUsage(FILE * fp, int cursor, poptItem item, int nitems,
 		/*@null@*/ const char * translation_domain)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     int i;
@@ -553,6 +564,7 @@ static int itemUsage(FILE * fp, int cursor, poptItem item, int nitems,
 static int singleTableUsage(poptContext con, FILE * fp,
 		int cursor, const struct poptOption * opt,
 		/*@null@*/ const char * translation_domain)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     /*@-branchstate@*/		/* FIX: W2DO? */
@@ -583,6 +595,7 @@ static int singleTableUsage(poptContext con, FILE * fp,
  */
 static int showShortOptions(const struct poptOption * opt, FILE * fp,
 		/*@null@*/ char * str)
+	/*@globals fileSystem @*/
 	/*@modifies *str, *fp, fileSystem @*/
 {
     char * s = alloca(300);	/* larger then the ascii set */

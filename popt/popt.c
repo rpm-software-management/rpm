@@ -179,7 +179,9 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
 	if (t) con->appName = strcpy(t, name);
     }
 
+    /*@-internalglobs@*/
     invokeCallbacksPRE(con, con->options);
+    /*@=internalglobs@*/
 
     return con;
 }
@@ -661,7 +663,9 @@ int poptGetNextOpt(poptContext con)
 	    cleanOSE(con->os--);
 	}
 	if (!con->os->nextCharArg && con->os->next == con->os->argc) {
+	    /*@-internalglobs@*/
 	    invokeCallbacksPOST(con, con->options);
+	    /*@=internalglobs@*/
 	    if (con->doExec) return execCommand(con);
 	    return -1;
 	}
@@ -901,9 +905,11 @@ int poptGetNextOpt(poptContext con)
 	    }
 	}
 
-	if (cb)
+	if (cb) {
+	    /*@-internalglobs@*/
 	    invokeCallbacksOPTION(con, con->options, opt, cbData, shorty);
-	else if (opt->val && ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL))
+	    /*@=internalglobs@*/
+	} else if (opt->val && ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL))
 	    done = 1;
 
 	if ((con->finalArgvCount + 2) >= (con->finalArgvAlloced)) {

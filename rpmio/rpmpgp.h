@@ -21,7 +21,7 @@
  */
 typedef const struct pgpValTbl_s {
     int val;
-    const char * str;
+/*@observer@*/ const char * str;
 } * pgpValTbl;
  
 /**
@@ -59,7 +59,7 @@ typedef enum pgpPkt_e {
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpPktTbl[];
 
 /**
@@ -131,7 +131,7 @@ typedef enum pgpSigType_e {
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpSigTypeTbl[];
 
 /**
@@ -171,7 +171,7 @@ typedef enum pgpPubkeyAlgo_e {
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpPubkeyTbl[];
 
 /**
@@ -214,7 +214,7 @@ typedef enum pgpSymkeyAlgo_e {
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpSymkeyTbl[];
 
 /**
@@ -240,7 +240,7 @@ typedef enum pgpCompressAlgo_e {
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpCompressionTbl[];
 
 /**
@@ -274,7 +274,7 @@ typedef enum pgpHashAlgo_e {
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpHashTbl[];
 
 /**
@@ -441,7 +441,7 @@ typedef enum pgpSubType_e {
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpSubTypeTbl[];
 
 /**
@@ -841,12 +841,12 @@ typedef struct pgpPktUid_s {
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern const char * redhatPubKeyDSA;
 
 /**
  */
-/*@unused@*/
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern const char * redhatPubKeyRSA;
 
 /**
@@ -1012,62 +1012,74 @@ const char * pgpValStr(pgpValTbl vs, byte val)
 /**
  */
 void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtSubType(const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtPktSigV4(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtPktSig(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtKeyV4(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtKey(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtUserID(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtComment(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtPkt(const byte *p)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 
 /**
  */
 int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s *rpmdig, int printing)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus

@@ -7,7 +7,9 @@ extern "C" {
 
 int build(const char * arg, BTA_t ba, const char * passPhrase,
 		char * cookie, /*@null@*/ const char * rcfile)
-	/*@modifies ba->buildAmount, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ba->buildAmount, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

@@ -80,8 +80,10 @@ DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->
     (void) (*ctx->Update) (ctx->param, data, len);
 }
 
+/*@unchecked@*/
 static int _ie = 0x44332211;
 /*@-redef@*/
+/*@unchecked@*/
 static union _dendian {
 /*@unused@*/ int i;
     char b[4];

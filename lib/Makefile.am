@@ -52,11 +52,13 @@ tagtable.c: rpmlib.h
 	@echo '#include "system.h"' > tagtable.c
 	@echo '#include "rpmlib.h"' >> tagtable.c
 	@echo '' >> tagtable.c
+	@echo '/*@observer@*/ /*@unchecked@*/' >> tagtable.c
 	@echo 'const struct headerTagTableEntry_s rpmTagTable[] = {' >> tagtable.c
 	$(AWK) '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ { if ($$2 == "=") { printf("\t{ \"%s\", %s },\n", $$1, $$3); } else { printf("\t{ \"%s\", %s },\n", $$2, $$3); } }' < $(srcdir)/rpmlib.h >> tagtable.c
 	@echo '	{ NULL, 0 }' >> tagtable.c
 	@echo '};' >> tagtable.c
 	@echo '' >> tagtable.c
+	@echo '/*@unchecked@*/' >> tagtable.c
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) - 1;' >> tagtable.c
 
 getdate.c: getdate.y
@@ -66,12 +68,14 @@ getdate.c: getdate.y
 	 { echo "/*@-globstate -statictrans -unqualifiedtrans -noparams @*/";\
 	   echo "/*@-retvalint -usedef -varuse -nullderef -nullassign @*/";\
 	   echo "/*@-readonlytrans -modunconnomods -compdef @*/";\
+	   echo "/*@-globs -evalorderuncon @*/";\
 	   sed	-e 's,y.tab.c,getdate.c,' y.tab.c \
 		-e 's,^YYSTYPE ,static &,' \
 		-e 's,^short ,static &,' \
 		-e 's,^const short ,static &,' \
 		-e 's,^int yydebug,/*@unused@*/ static &,' \
 		-e 's,^int ,static &,' ;\
+	   echo "/*@=globs =evalorderuncon @*/";\
 	   echo "/*@=readonlytrans =modunconnomods =compdef @*/";\
 	   echo "/*@=retvalint =usedef =varuse =nullderef =nullassign @*/";\
 	   echo "/*@=globstate =statictrans =unqualifiedtrans =noparams @*/";\

@@ -127,7 +127,8 @@ static rpmRC readPackageHeaders(FD_t fd,
 		/*@null@*/ /*@out@*/ struct rpmlead * leadPtr, 
 		/*@null@*/ /*@out@*/ Header * sigs,
 		/*@null@*/ /*@out@*/ Header * hdrPtr)
-	/*@modifies fd, *leadPtr, *sigs, *hdrPtr @*/
+	/*@globals fileSystem@*/
+	/*@modifies fd, *leadPtr, *sigs, *hdrPtr, fileSystem @*/
 {
     Header hdrBlock;
     struct rpmlead leadBlock;

@@ -55,6 +55,7 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
  */
 rpmRC rpmReadPackageInfo(FD_t fd, /*@null@*/ /*@out@*/ Header * sigp,
 		/*@null@*/ /*@out@*/ Header * hdrp)
+	/*@globals fileSystem@*/
 	/*@modifies fd, *sigp, *hdrp, fileSystem @*/;
 
 /**
@@ -70,6 +71,7 @@ rpmRC rpmReadPackageHeader(FD_t fd, /*@null@*/ /*@out@*/ Header * hdrp,
 		/*@null@*/ /*@out@*/ int * isSource,
 		/*@null@*/ /*@out@*/ int * major,
 		/*@null@*/ /*@out@*/ int * minor)
+	/*@globals fileSystem@*/
 	/*@modifies fd, *hdrp, *isSource, *major, *minor, fileSystem @*/;
 
 /** \ingroup header
@@ -160,6 +162,7 @@ int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
  * Automatically generated table of tag name/value pairs.
  */
 /*@-redecl@*/
+/*@unchecked@*/
 extern const struct headerTagTableEntry_s rpmTagTable[];
 /*@=redecl@*/
 
@@ -167,6 +170,7 @@ extern const struct headerTagTableEntry_s rpmTagTable[];
  * Number of entries in rpmTagTable.
  */
 /*@-redecl@*/
+/*@unchecked@*/
 extern const int rpmTagTableSize;
 /*@=redecl@*/
 
@@ -175,6 +179,7 @@ extern const int rpmTagTableSize;
  * @note Chains to headerDefaultFormats[].
  */
 /*@-redecl@*/
+/*@unchecked@*/
 extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 /*@=redecl@*/
 
@@ -505,6 +510,7 @@ typedef	enum rpmsenseFlags_e {
  * @todo Eliminate from API.
  */
 void rpmSetVar(int var, const char * val)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /** \ingroup rpmrc
@@ -513,6 +519,7 @@ void rpmSetVar(int var, const char * val)
  * identified by the token '://', so file paths must not begin with '//'.
  */
 /*@-redecl@*/
+/*@unchecked@*/
 /*@observer@*/ extern const char * macrofiles;
 /*@=redecl@*/
 
@@ -536,6 +543,7 @@ enum rpm_machtable_e {
  */
 int rpmReadConfigFiles(/*@null@*/ const char * file,
 		/*@null@*/ const char * target)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrc
@@ -544,6 +552,7 @@ int rpmReadConfigFiles(/*@null@*/ const char * file,
  * @return		0 on succes
  */
 int rpmReadRC(/*@null@*/ const char * rcfiles)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrc
@@ -588,6 +597,7 @@ int rpmMachineScore(int type, const char * name)
  * @return		0 always
  */
 int rpmShowRC(FILE * fp)
+	/*@globals fileSystem@*/
 	/*@modifies *fp, fileSystem @*/;
 
 /** \ingroup rpmrc
@@ -598,7 +608,8 @@ int rpmShowRC(FILE * fp)
  * @param osTable
  */
 void rpmSetTables(int archTable, int osTable)
-	/*@modifies internalState @*/;
+	/*@globals fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
  * Set current arch/os names.
@@ -611,7 +622,8 @@ void rpmSetTables(int archTable, int osTable)
  * @param os		os name (or NULL)
  */
 void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os)
-	/*@modifies internalState @*/;
+	/*@globals fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
  * Return current arch/os names.
@@ -631,6 +643,7 @@ void rpmGetMachine( /*@null@*/ /*@out@*/ const char **arch,
  * @todo Eliminate from API.
  */
 void rpmFreeRpmrc(void)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /*@}*/
@@ -649,7 +662,9 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 /** \ingroup rpmdb
  * Tags for which rpmdb indices will be built.
  */
+/*@unchecked@*/
 /*@only@*/ /*@null@*/ extern int * dbiTags;
+/*@unchecked@*/
 extern int dbiTagsMax;
 
 /** \ingroup rpmdb
@@ -662,6 +677,7 @@ extern int dbiTagsMax;
  */
 int rpmdbOpen (/*@null@*/ const char * root, /*@null@*/ /*@out@*/ rpmdb * dbp,
 		int mode, int perms)
+	/*@globals fileSystem@*/
 	/*@modifies *dbp, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -671,6 +687,7 @@ int rpmdbOpen (/*@null@*/ const char * root, /*@null@*/ /*@out@*/ rpmdb * dbp,
  * @return		0 on success
  */
 int rpmdbInit(/*@null@*/ const char * root, int perms)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -679,6 +696,7 @@ int rpmdbInit(/*@null@*/ const char * root, int perms)
  * @return		0 on success
  */
 int rpmdbVerify(/*@null@*/ const char * root)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -687,6 +705,7 @@ int rpmdbVerify(/*@null@*/ const char * root)
  * @return		0 on success
  */
 int rpmdbClose (/*@only@*/ /*@null@*/ rpmdb rpmdb)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -695,6 +714,7 @@ int rpmdbClose (/*@only@*/ /*@null@*/ rpmdb rpmdb)
  * @return		0 on success
  */
 int rpmdbSync (/*@null@*/ rpmdb rpmdb)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -703,7 +723,7 @@ int rpmdbSync (/*@null@*/ rpmdb rpmdb)
  * @return		0 on success
  */
 int rpmdbOpenAll (/*@null@*/ rpmdb db)
-	/*@modifies db, fileSystem @*/;
+	/*@modifies db @*/;
 
 /** \ingroup rpmdb
  * Return number of instances of package in rpm database.
@@ -712,7 +732,8 @@ int rpmdbOpenAll (/*@null@*/ rpmdb db)
  * @return		number of instances
  */
 int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
-	/*@modifies db @*/;
+	/*@globals fileSystem@*/
+	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
  */
@@ -725,7 +746,8 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
  */
 /*@null@*/ rpmdbMatchIterator rpmdbFreeIterator(
 		/*@only@*//*@null@*/rpmdbMatchIterator mi)
-	/*@modifies mi @*/;
+	/*@globals fileSystem@*/
+	/*@modifies mi, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Return rpm database used by iterator.
@@ -853,13 +875,15 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @return		NULL on end of iteration.
  */
 /*@null@*/ Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
-	/*@modifies mi @*/;
+	/*@globals fileSystem@*/
+	/*@modifies mi, fileSystem @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@unused@*/
 /*@null@*/ Header XrpmdbNextIterator(rpmdbMatchIterator mi,
 		const char * f, unsigned int l)
-	/*@modifies mi @*/;
+	/*@globals fileSystem@*/
+	/*@modifies mi, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Return database iterator.
@@ -872,6 +896,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
 			/*@kept@*/ /*@null@*/ rpmdb db, int rpmtag,
 			/*@null@*/ const void * key, size_t keylen)
+	/*@globals fileSystem@*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -882,6 +907,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @return		0 on success
  */
 int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h)
+	/*@globals fileSystem@*/
 	/*@modifies db, h, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -892,6 +918,7 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h)
  * @return		0 on success
  */
 int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int offset)
+	/*@globals fileSystem@*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -899,6 +926,7 @@ int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int offset)
  * @param root		path to top of install tree
  */
 int rpmdbRebuild(/*@null@*/ const char * root)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /*@}*/
@@ -948,6 +976,7 @@ typedef /*@abstract@*/ struct rpmProblemSet_s {
 /**
  */
 void printDepFlags(FILE *fp, const char *version, int flags)
+	/*@globals fileSystem@*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
@@ -980,6 +1009,7 @@ typedef /*@abstract@*/ struct rpmDependencyConflict_s {
  */
 void printDepProblems(FILE * fp, const rpmDependencyConflict conflicts,
 			int numConflicts)
+	/*@globals fileSystem@*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
@@ -1000,6 +1030,7 @@ void printDepProblems(FILE * fp, const rpmDependencyConflict conflicts,
  * @param prob		rpm problem
  */
 void rpmProblemPrint(FILE *fp, rpmProblem prob)
+	/*@globals fileSystem@*/
 	/*@modifies prob, *fp, fileSystem @*/;
 
 /**
@@ -1008,6 +1039,7 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
  * @param probs		problem set
  */
 void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)
+	/*@globals fileSystem@*/
 	/*@modifies probs, *fp, fileSystem @*/;
 
 /**
@@ -1120,7 +1152,8 @@ rpmRC rpmInstallSourcePackage(/*@null@*/ const char * rootDir, FD_t fd,
 			/*@null@*/ rpmCallbackFunction notify,
 			/*@null@*/ rpmCallbackData notifyData,
 			/*@null@*/ /*@out@*/ char ** cookie)
-	/*@modifies fd, *specFilePtr, *cookie @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, *specFilePtr, *cookie, fileSystem, internalState @*/;
 
 /**
  * Compare headers to determine which header is "newer".
@@ -1226,7 +1259,8 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, /*@null@*/ FD_t fd,
 		/*@null@*/ /*@owned@*/ const void * key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@modifies fd, h, ts @*/;
+	/*@globals fileSystem@*/
+	/*@modifies fd, h, ts, fileSystem @*/;
 
 /** \ingroup rpmtrans
  * Add package to universe of possible packages to install in transaction set.
@@ -1290,6 +1324,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts,
 int rpmdepCheck(rpmTransactionSet ts,
 		/*@exposed@*/ /*@out@*/ rpmDependencyConflict * conflicts,
 		/*@exposed@*/ /*@out@*/ int * numConflicts)
+	/*@globals fileSystem@*/
 	/*@modifies ts, *conflicts, *numConflicts, fileSystem @*/;
 
 /** \ingroup rpmtrans
@@ -1312,7 +1347,8 @@ int rpmdepCheck(rpmTransactionSet ts,
  * @return		0 if packages are successfully ordered, 1 otherwise
  */
 int rpmdepOrder(rpmTransactionSet ts)
-	/*@modifies ts, fileSystem @*/;
+	/*@globals internalState@*/
+	/*@modifies ts, internalState @*/;
 
 /** \ingroup rpmtrans
  * Destroy dependency conflicts storage.
@@ -1436,6 +1472,7 @@ int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
  * @param fp		output file handle
  */
 void rpmShowRpmlibProvides(FILE * fp)
+	/*@globals fileSystem@*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
@@ -1472,7 +1509,8 @@ int rpmRunTransactions(rpmTransactionSet ts,
 			/*@out@*/ rpmProblemSet * newProbs,
 			rpmtransFlags transFlags,
 			rpmprobFilterFlags ignoreSet)
-	/*@modifies ts, *newProbs, fileSystem @*/;
+	/*@globals fileSystem, internalState@*/
+	/*@modifies ts, *newProbs, fileSystem, internalState @*/;
 
 /*@}*/
 
@@ -1525,6 +1563,7 @@ struct rpmlead {
  * Release storage used by file system usage cache.
  */
 void freeFilesystems(void)
+	/*@globals internalState@*/
 	/*@modifies internalState@*/;
 
 /**
@@ -1535,7 +1574,8 @@ void freeFilesystems(void)
  */
 int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
 		/*@null@*/ /*@out@*/ int * num)
-	/*@modifies *listptr, *num @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *listptr, *num, fileSystem, internalState @*/;
 
 /**
  * Determine per-file system usage for a list of files.
@@ -1549,7 +1589,8 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
 		int numFiles, /*@null@*/ /*@out@*/ uint_32 ** usagesPtr,
 		int flags)
-	/*@modifies *usagesPtr @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *usagesPtr, fileSystem, internalState @*/;
 
 /* ==================================================================== */
 /** \name RPMQV */
@@ -1613,6 +1654,7 @@ typedef enum rpmVerifyAttrs_e {
  */
 int rpmVerifyFile(const char * root, Header h, int filenum,
 		/*@out@*/ rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
+	/*@globals fileSystem@*/
 	/*@modifies h, *result, fileSystem @*/;
 
 /**
@@ -1624,7 +1666,8 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
  * @return		0 on success
  */
 int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
-	/*@modifies h, scriptFd, fileSystem @*/;
+	/*@globals fileSystem, internalState@*/
+	/*@modifies h, scriptFd, fileSystem, internalState @*/;
 
 /*@}*/
 /* ==================================================================== */
@@ -1723,7 +1766,8 @@ typedef enum rpmVerifySignatureReturn_e {
 rpmVerifySignatureReturn rpmVerifySignature(const char *file,
 		int_32 sigTag, const void * sig, int count,
 		const rpmDigest dig, /*@out@*/ char * result)
-	/*@modifies *result, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *result, fileSystem, internalState  @*/;
 
 /** \ingroup signature
  * Destroy signature header from package.

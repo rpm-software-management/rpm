@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+/*@unchecked@*/
 static int _debug = 0;
 
 #include <rpmio_internal.h>
@@ -15,6 +16,7 @@ static int _debug = 0;
 
 /**
  */
+/*@unchecked@*/
 static struct PartRec {
     int part;
     int len;
@@ -115,7 +117,9 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 /**
  */
 static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
-	/*@modifies spec->nextline @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies spec->nextline, fileSystem @*/
 {
     char *last;
     char ch;
@@ -357,6 +361,7 @@ void closeSpec(Spec spec)
 }
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int noLang;		/* XXX FIXME: pass as arg */
 /*@=redecl@*/
 

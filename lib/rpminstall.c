@@ -18,10 +18,14 @@
 /*@access IDTX @*/
 /*@access IDT @*/
 
+/*@unchecked@*/
 static int hashesPrinted = 0;
 
+/*@unchecked@*/
 int packagesTotal = 0;
+/*@unchecked@*/
 static int progressTotal = 0;
+/*@unchecked@*/
 static int progressCurrent = 0;
 
 /**
@@ -695,6 +699,7 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     return rc;
 }
 
+/*@unchecked@*/
 static int reverse = -1;
 
 /**

@@ -20,7 +20,8 @@
 
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
-	/*@modifies *fdp, *fnp, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *fdp, *fnp, fileSystem, internalState @*/
 {
     const char *fn;
     FD_t fd;
@@ -73,7 +74,8 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 
 static int copyFile(FD_t *sfdp, const char **sfnp,
 	FD_t *tfdp, const char **tfnp, rpmDigest dig)
-	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, *dig, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, *dig, fileSystem, internalState @*/
 {
     unsigned char buffer[BUFSIZ];
     ssize_t count;
@@ -183,8 +185,10 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 	}
 
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0)
 	    (void) rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
+/*@=globs@*/
 
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);

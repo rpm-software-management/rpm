@@ -262,8 +262,10 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	  && (fileFlagsList[i] & RPMFILE_GHOST))
 	    continue;
 
+	/*@-internalglobs@*/ /* FIX: shrug */
 	if (!rpmIsVerbose() && prefix)
 	    te = stpcpy(te, prefix);
+	/*@=internalglobs@*/
 
 	if (queryFlags & QUERY_FOR_STATE) {
 	    if (fileStatesList) {
@@ -320,10 +322,14 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	    else
 		sprintf(te, "X");
 	    te += strlen(te);
-	} else if (!rpmIsVerbose()) {
+	} else
+	/*@-internalglobs@*/ /* FIX: shrug */
+	if (!rpmIsVerbose()) {
 	    te = stpcpy(te, dirNames[dirIndexes[i]]);
 	    te = stpcpy(te, baseNames[i]);
-	} else {
+	}
+	/*@=internalglobs@*/
+	else {
 	    char * filespec;
 	    int nlink;
 	    size_t fileSize;

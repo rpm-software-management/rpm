@@ -11,12 +11,18 @@
 
 typedef /*@owned@*/ /*@null@*/ const char * ugstr_t;
 
+/*@unchecked@*/
 static uid_t uids[1024];
+/*@unchecked@*/
 static ugstr_t unames[1024];
+/*@unchecked@*/
 static int uid_used = 0;
 
+/*@unchecked@*/
 static gid_t gids[1024];
+/*@unchecked@*/
 static ugstr_t gnames[1024];
+/*@unchecked@*/
 static int gid_used = 0;
     
 void freeNames(void)
@@ -178,7 +184,9 @@ const char *const buildHost(void)
     if (! gotit) {
         (void) gethostname(hostname, sizeof(hostname));
 	/*@-unrecog -multithreaded @*/
+	/*@-globs@*/	/* FIX: h_errno access */
 	hbn = gethostbyname(hostname);
+	/*@=globs@*/
 	/*@=unrecog =multithreaded @*/
 	if (hbn)
 	    strcpy(hostname, hbn->h_name);

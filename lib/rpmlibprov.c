@@ -7,12 +7,15 @@
 #include <rpmlib.h>
 #include "debug.h"
 
-static struct rpmlibProvides {
+struct rpmlibProvides_s {
 /*@observer@*/ /*@null@*/ const char * featureName;
 /*@observer@*/ /*@null@*/ const char * featureEVR;
     int featureFlags;
 /*@observer@*/ /*@null@*/ const char * featureDescription;
-} rpmlibProvides[] = {
+};
+
+/*@observer@*/ /*@unchecked@*/
+static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(VersionedDependencies)",	"3.0.3-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("PreReq:, Provides:, and Obsoletes: dependencies support versions.") },
@@ -102,5 +105,7 @@ int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
     else
 	versions = _free(versions);
 
+    /*@-compmempass@*/ /* FIX: rpmlibProvides[] reachable */
     return n;
+    /*@=compmempass@*/
 }

@@ -142,6 +142,7 @@ struct _FD_s {
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int _rpmio_debug;
 /*@=redecl@*/
 

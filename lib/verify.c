@@ -295,7 +295,9 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
     psm->stepName = "verify";
     psm->scriptTag = RPMTAG_VERIFYSCRIPT;
     psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     rc = psmStage(psm, PSM_SCRIPT);
+/*@=globs@*/
     freeFi(fi);
     fi = _free(fi);
     ts = rpmtransFree(ts);
@@ -357,7 +359,8 @@ int rpmVerifyDigest(Header h)
  * @return		0 no problems, 1 problems found
  */
 static int verifyHeader(QVA_t qva, Header h)
-	/*@modifies h @*/
+	/*@globals fileSystem@*/
+	/*@modifies h, fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char buf[BUFSIZ];
@@ -395,11 +398,13 @@ static int verifyHeader(QVA_t qva, Header h)
 
 	rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask);
 	if (rc) {
+	    /*@-internalglobs@*/ /* FIX: shrug */
 	    if (!(fileAttrs & RPMFILE_MISSINGOK) || rpmIsVerbose()) {
 		sprintf(te, _("missing    %s"), fileNames[i]);
 		te += strlen(te);
 		ec = rc;
 	    }
+	    /*@=internalglobs@*/
 	} else if (verifyResult) {
 	    const char * size, * md5, * link, * mtime, * mode;
 	    const char * group, * user, * rdev;
@@ -462,7 +467,8 @@ exit:
  * @return		0 no problems, 1 problems found
  */
 static int verifyDependencies(rpmdb rpmdb, Header h)
-	/*@modifies h @*/
+	/*@globals fileSystem@*/
+	/*@modifies h, fileSystem @*/
 {
     rpmTransactionSet ts;
     rpmDependencyConflict conflicts;

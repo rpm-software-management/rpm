@@ -20,6 +20,7 @@
 #define	__USE_DB3	1
 
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 struct _dbiIndex db3dbi;
 /*@=exportlocal =exportheadervar@*/
 
@@ -39,6 +40,7 @@ struct dbOption {
 /*@-compmempass -immediatetrans -exportlocal -exportheadervar@*/
 /** \ingroup db3
  */
+/*@unchecked@*/
 struct dbOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
  { "client",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_CLIENT,
@@ -319,7 +321,8 @@ dbiIndex db3Free(dbiIndex dbi)
 }
 
 /** @todo Set a reasonable "last gasp" default db config. */
-/*@observer@*/ static const char *db3_config_default =
+/*@observer@*/ /*@unchecked@*/
+static const char *db3_config_default =
     "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:mp_size=512Kb:pagesize=512:perms=0644";
 
 dbiIndex db3New(rpmdb rpmdb, int rpmtag)
@@ -496,7 +499,9 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     if ((dbi->dbi_bt_flags | dbi->dbi_h_flags) & DB_DUP)
 	dbi->dbi_permit_dups = 1;
 
+    /*@-globstate@*/ /* FIX: *(rdbOptions->arg) reachable */
     return dbi;
+    /*@=globstate@*/
 }
 
 const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)

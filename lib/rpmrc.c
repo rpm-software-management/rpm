@@ -1,3 +1,4 @@
+/*@-internalglobs -globs@*/
 #include "system.h"
 
 #include <stdarg.h>
@@ -134,7 +135,7 @@ static int optionCompare(const void * a, const void * b)
 }
 
 static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget)
-	/*@modifies *canontarget @*/;
+	/*@modifies *canontarget, fileSystem @*/;
 
 static /*@observer@*/ /*@null@*/ machCacheEntry
 machCacheFindEntry(const machCache cache, const char * key)
@@ -994,7 +995,8 @@ static int is_athlon(void)
 
 static void defaultMachine(/*@out@*/ const char ** arch,
 		/*@out@*/ const char ** os)
-	/*@modifies *arch, *os @*/
+	/*@globals fileSystem@*/
+	/*@modifies *arch, *os, fileSystem @*/
 {
     static struct utsname un;
     static int gotDefaults = 0;
@@ -1660,3 +1662,4 @@ int rpmShowRC(FILE * fp)
 
     return 0;
 }
+/*@=internalglobs =globs@*/

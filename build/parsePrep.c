@@ -12,9 +12,13 @@
 /*@access StringBuf @*/	/* compared with NULL */
 
 /* These have to be global to make up for stupid compilers */
+/*@unchecked@*/
     static int leaveDirs, skipDefaultAction;
+/*@unchecked@*/
     static int createDir, quietly;
+/*@unchecked@*/
 /*@observer@*/ /*@null@*/ static const char * dirName = NULL;
+/*@unchecked@*/
 /*@observer@*/ static struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
@@ -32,7 +36,8 @@
  * @return		0 on success
  */
 static int checkOwners(const char * urlfn)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     struct stat sb;
 
@@ -61,6 +66,8 @@ static int checkOwners(const char * urlfn)
  */
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     const char *fn, *urlfn;
@@ -152,6 +159,8 @@ static int checkOwners(const char * urlfn)
  * @return		expanded %setup macro (NULL on error)
  */
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     const char *fn, *urlfn;
@@ -174,7 +183,9 @@ static int checkOwners(const char * urlfn)
 
     urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
+    /*@-internalglobs@*/ /* FIX: shrug */
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
+    /*@=internalglobs@*/
 
 #ifdef AUTOFETCH_NOT	/* XXX don't expect this code to be enabled */
     /* XXX
@@ -266,6 +277,8 @@ static int checkOwners(const char * urlfn)
  * @return		0 on success
  */
 static int doSetupMacro(Spec spec, char *line)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies spec->buildSubdir, spec->macros, spec->prep,
 		fileSystem @*/
 {
@@ -418,6 +431,8 @@ static int doSetupMacro(Spec spec, char *line)
  * @return		0 on success
  */
 static int doPatchMacro(Spec spec, char *line)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies spec->prep, fileSystem @*/
 {
     char *opt_b;
@@ -439,6 +454,7 @@ static int doPatchMacro(Spec spec, char *line)
 	strcpy(buf, line);
     }
     
+    /*@-internalglobs@*/	/* FIX: strtok has state */
     for (bp = buf; (s = strtok(bp, " \t\n")) != NULL;) {
 	if (bp) {	/* remove 1st token (%patch) */
 	    bp = NULL;
@@ -501,6 +517,7 @@ static int doPatchMacro(Spec spec, char *line)
 	    patch_index++;
 	}
     }
+    /*@=internalglobs@*/
 
     /* All args processed */
 

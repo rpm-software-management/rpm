@@ -75,6 +75,7 @@ extern "C" {
 
 /**
  */
+/*@observer@*/ /*@checked@*/
 extern BEECRYPTAPI const randomGenerator mtprng;
 
 /**

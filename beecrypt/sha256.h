@@ -46,7 +46,8 @@ extern "C" {
 
 /** \ingroup HASH_sha256_m
  */
-/*@observer@*/ /*@checkedstrict@*/ extern BEECRYPTAPI const hashFunction sha256;
+/*@observer@*/ /*@checked@*/
+extern BEECRYPTAPI const hashFunction sha256;
 
 /*@-exportlocal@*/
 /** \ingroup HASH_sha256_m

@@ -15,8 +15,11 @@ struct fsinfo {
     int rdonly;				/*!< is mount point read only? */
 };
 
+/*@unchecked@*/
 /*@only@*/ /*@null@*/ static struct fsinfo * filesystems = NULL;
+/*@unchecked@*/
 /*@only@*/ /*@null@*/ static const char ** fsnames = NULL;
+/*@unchecked@*/
 static int numFilesystems = 0;
 
 void freeFilesystems(void)
@@ -131,7 +134,8 @@ static int getFilesystemList(void)
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
-	/*@*/
+	/*@globals fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState@*/
 {
     int numAlloced = 10;
     struct stat sb;
@@ -258,7 +262,9 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
     usages = xcalloc(numFilesystems, sizeof(usages));
 
+    /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     sourceDir = rpmGetPath("%{_sourcedir}", NULL);
+    /*@=globs@*/
 
     maxLen = strlen(sourceDir);
     for (i = 0; i < numFiles; i++) {

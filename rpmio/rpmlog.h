@@ -184,6 +184,7 @@ void rpmlogPrint(FILE *f)
  */
 /*@unused@*/
 void rpmlogClose (void)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /**
@@ -192,19 +193,21 @@ void rpmlogClose (void)
  */
 /*@unused@*/
 void rpmlogOpen (const char * ident, int option, int facility)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /**
  * Set the log mask level.
  */
 int rpmlogSetMask (int mask)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /**
  * Generate a log message using FMT string and option arguments.
  */
 /*@mayexit@*/ /*@printflike@*/ void rpmlog (int pri, const char *fmt, ...)
-	/*@modifies internalState @*/;
+	/*@*/;
 
 /*@-exportlocal@*/
 /**
@@ -228,6 +231,7 @@ int rpmlogCode(void)	/*@*/;
  * Set rpmlog callback function.
  */
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 /*@=exportlocal@*/
 
@@ -236,6 +240,7 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
  * @deprecated gnorpm needs, use rpmlogSetCallback() instead.
  */
 extern rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
+	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 
 /**

@@ -46,6 +46,7 @@ extern "C" {
 
 /** \ingroup HMAC_sha1_m
  */
+/*@observer@*/ /*@checked@*/
 extern BEECRYPTAPI const keyedHashFunction hmacsha1;
 
 /** \ingroup HMAC_sha1_m

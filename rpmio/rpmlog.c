@@ -21,7 +21,9 @@
 
 /*@access rpmlogRec @*/
 
+/*@unchecked@*/
 static int nrecs = 0;
+/*@unchecked@*/
 static /*@only@*/ /*@null@*/ rpmlogRec recs = NULL;
 
 /**
@@ -56,6 +58,7 @@ const char * rpmlogMessage(void)
     return _("(no error)");
 }
 
+/*@-modfilesys@*/
 void rpmlogPrint(FILE *f)
 {
     int i;
@@ -70,6 +73,7 @@ void rpmlogPrint(FILE *f)
 	    fprintf(f, "    %s", rec->message);
     }
 }
+/*@=modfilesys@*/
 
 void rpmlogClose (void)
 {
@@ -89,7 +93,9 @@ void rpmlogOpen (/*@unused@*/ const char *ident, /*@unused@*/ int option,
 {
 }
 
+/*@unchecked@*/
 static int rpmlogMask = RPMLOG_UPTO( RPMLOG_NOTICE );
+/*@unchecked@*/
 static /*@unused@*/ int rpmlogFacility = RPMLOG_USER;
 
 int rpmlogSetMask (int mask)
@@ -100,6 +106,7 @@ int rpmlogSetMask (int mask)
     return omask;
 }
 
+/*@unchecked@*/
 static /*@null@*/ rpmlogCallback _rpmlogCallback = NULL;
 
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
@@ -110,7 +117,8 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
 }
 
 /*@-readonlytrans@*/	/* FIX: double indirection. */
-/*@observer@*/ static char *rpmlogMsgPrefix[] = {
+/*@observer@*/ /*@unchecked@*/
+static char *rpmlogMsgPrefix[] = {
     N_("fatal error: "),/*!< RPMLOG_EMERG */
     N_("fatal error: "),/*!< RPMLOG_ALERT */
     N_("fatal error: "),/*!< RPMLOG_CRIT */
@@ -130,6 +138,7 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 }
 #endif
 
+/*@-modfilesys@*/
 /*@-compmempass@*/ /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
 /*@-nullstate@*/ /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)
@@ -211,13 +220,16 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	exit(EXIT_FAILURE);
 }
 /*@=compmempass =nullstate@*/
+/*@=modfilesys@*/
 
 void rpmlog (int code, const char *fmt, ...)
 {
     va_list ap;
 
     va_start(ap, fmt);
+    /*@-internalglobs@*/ /* FIX: shrug */
     vrpmlog(code, fmt, ap);
+    /*@=internalglobs@*/
     va_end(ap);
 }
 

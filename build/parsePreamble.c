@@ -13,7 +13,8 @@
 
 /**
  */
-/*@observer@*/ static rpmTag copyTagsDuringParse[] = {
+/*@observer@*/ /*@unchecked@*/
+static rpmTag copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -33,7 +34,8 @@
 
 /**
  */
-/*@observer@*/ static rpmTag requiredTags[] = {
+/*@observer@*/ /*@unchecked@*/
+static rpmTag requiredTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -63,7 +65,8 @@ static void addOrAppendListEntry(Header h, int_32 tag, char * line)
 /**
  */
 static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
-	/*@modifies *name, *flag @*/
+	/*@globals internalState@*/
+	/*@modifies *name, *flag, internalState @*/
 {
     char *tok;
     char linebuf[BUFSIZ];
@@ -109,6 +112,7 @@ typedef struct tokenBits_s {
 
 /**
  */
+/*@observer@*/ /*@unchecked@*/
 static struct tokenBits_s installScriptBits[] = {
     { "interp",		RPMSENSE_INTERP },
     { "prereq",		RPMSENSE_PREREQ },
@@ -123,6 +127,7 @@ static struct tokenBits_s installScriptBits[] = {
 
 /**
  */
+/*@observer@*/ /*@unchecked@*/
 static struct tokenBits_s buildScriptBits[] = {
     { "prep",		RPMSENSE_SCRIPT_PREP },
     { "build",		RPMSENSE_SCRIPT_BUILD },
@@ -300,6 +305,7 @@ static int checkForDuplicates(Header h, const char * NVR)
 
 /**
  */
+/*@observer@*/ /*@unchecked@*/
 static struct optionalTag {
     rpmTag	ot_tag;
 /*@observer@*/ /*@null@*/ const char * ot_mac;
@@ -314,6 +320,7 @@ static struct optionalTag {
 /**
  */
 static void fillOutMainPackage(Header h)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies h @*/
 {
     struct optionalTag *ot;
@@ -331,6 +338,8 @@ static void fillOutMainPackage(Header h)
 /**
  */
 static int readIcon(Header h, const char * file)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies h, fileSystem @*/
 {
     const char *fn = NULL;
@@ -433,11 +442,14 @@ extern int noLang;
  */
 static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 			     const char *lang)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
 	/*@modifies spec->macros, spec->st, spec->buildRootURL,
 		spec->sources, spec->numSources, spec->noSource,
 		spec->buildRestrictions, spec->BANames, spec->BACount,
 		spec->line, spec->gotBuildRootURL,
-		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon @*/
+		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
+		fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -694,6 +706,8 @@ typedef struct PreambleRec_s {
     int multiLang;
 /*@observer@*/ /*@null@*/ const char * token;
 } * PreambleRec;
+
+/*@unchecked@*/
 static struct PreambleRec_s preambleList[] = {
     {RPMTAG_NAME,		0, 0, "name"},
     {RPMTAG_VERSION,		0, 0, "version"},

@@ -11,9 +11,6 @@
 /*@-redecl@*/
 extern int specedit;
 /*@=redecl@*/
-/*@-exportheadervar@*/
-extern struct MacroContext_s rpmGlobalMacroContext;
-/*@=exportheadervar@*/
 
 #define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -451,7 +448,7 @@ Spec newSpec(void)
     spec->force = 0;
     spec->anyarch = 0;
 
-    spec->macros = &rpmGlobalMacroContext;
+    spec->macros = rpmGlobalMacroContext;
     
     return spec;
 }

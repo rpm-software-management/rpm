@@ -64,6 +64,7 @@ typedef /*@only@*/ /*@null@*/
 		const unsigned long total,
 		/*@null@*/ const void * pkgKey,
 		/*@null@*/ rpmCallbackData data)
+	/*@globals internalState@*/
 	/*@modifies internalState@*/;
 
 /**

@@ -33,7 +33,8 @@
 
 /** \ingroup HASH_md5_m
  */
-/*@observer@*/ static uint32 md5hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
+/*@observer@*/ /*@unchecked@*/
+static uint32 md5hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
 
 const hashFunction md5 = { "MD5", sizeof(md5Param), 64, 4 * sizeof(uint32), (hashFunctionReset) md5Reset, (hashFunctionUpdate) md5Update, (hashFunctionDigest) md5Digest };
 

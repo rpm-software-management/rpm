@@ -25,10 +25,12 @@
 /*@access rpmdb @*/		/* compared with NULL */
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int _fsm_debug;
 /*@=redecl@*/
 
 /*@-redecl -declundef -exportheadervar@*/
+/*@unchecked@*/
 extern const char * chroot_prefix;
 /*@=redecl =declundef =exportheadervar@*/
 
@@ -245,6 +247,7 @@ void freeFi(TFI_t fi)
  * Macros to be defined from per-header tag values.
  * @todo Should other macros be added from header when installing a package?
  */
+/*@observer@*/ /*@unchecked@*/
 static struct tagMacro {
 /*@observer@*/ /*@null@*/ const char *	macroname; /*!< Macro name to define. */
     rpmTag	tag;		/*!< Header tag to use for value. */
@@ -263,7 +266,8 @@ static struct tagMacro {
  * @return		0 always
  */
 static int rpmInstallLoadMacros(TFI_t fi, Header h)
-	/*@modifies internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     HGE_t hge = (HGE_t) fi->hge;
     struct tagMacro * tagm;
@@ -490,6 +494,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
  * @return		0 always
  */
 static int markReplacedFiles(PSM_t psm)
+	/*@globals fileSystem@*/
 	/*@modifies psm, fileSystem @*/
 {
     const rpmTransactionSet ts = psm->ts;
@@ -569,6 +574,7 @@ static int markReplacedFiles(PSM_t psm)
  * @return		rpmRC return code
  */
 static rpmRC chkdir (const char * dpath, const char * dname)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     struct stat st;
@@ -652,7 +658,9 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     hfd = (fi->hfd ? fi->hfd : headerFreeData);
     h = headerFree(h);	/* XXX reference held by transaction set */
 
+    /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     (void) rpmInstallLoadMacros(fi, fi->h);
+    /*@=globs@*/
 
     memset(psm, 0, sizeof(*psm));
     psm->ts = ts;
@@ -703,14 +711,18 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 	}
     }
 
+    /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     _sourcedir = rpmGenPath(ts->rootDir, "%{_sourcedir}", "");
+    /*@=globs@*/
     rc = chkdir(_sourcedir, "sourcedir");
     if (rc) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
+    /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     _specdir = rpmGenPath(ts->rootDir, "%{_specdir}", "");
+    /*@=globs@*/
     rc = chkdir(_specdir, "specdir");
     if (rc) {
 	rc = RPMRC_FAIL;
@@ -749,9 +761,11 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     psm->goal = PSM_PKGINSTALL;
 
     /*@-compmempass@*/	/* FIX: psm->fi->dnl should be owned. */
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     rc = psmStage(psm, PSM_PROCESS);
 
     (void) psmStage(psm, PSM_FINI);
+/*@=globs@*/
     /*@=compmempass@*/
 
     if (rc) rc = RPMRC_FAIL;
@@ -776,8 +790,8 @@ exit:
     return rc;
 }
 
-/*@observer@*/ static char * SCRIPT_PATH =
-	"PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
+/*@observer@*/ /*@unchecked@*/
+static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
 /**
  * Return scriptlet name from tag.
@@ -819,7 +833,9 @@ static int runScript(PSM_t psm, Header h,
 		const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
-	/*@modifies psm, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies psm, fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -939,15 +955,17 @@ static int runScript(PSM_t psm, Header h,
 	(void) close(pipes[0]);
 
 	if (ts->scriptFd != NULL) {
-	    if (Fileno(ts->scriptFd) != STDERR_FILENO)
-		(void) dup2(Fileno(ts->scriptFd), STDERR_FILENO);
-	    if (Fileno(out) != STDOUT_FILENO)
-		(void) dup2(Fileno(out), STDOUT_FILENO);
+	    int sfdno = Fileno(ts->scriptFd);
+	    int ofdno = Fileno(out);
+	    if (sfdno != STDERR_FILENO)
+		(void) dup2(sfdno, STDERR_FILENO);
+	    if (ofdno != STDOUT_FILENO)
+		(void) dup2(ofdno, STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (Fileno(out) > STDERR_FILENO && Fileno(out) != Fileno(ts->scriptFd)) {
+	    if (ofdno > STDERR_FILENO && ofdno != sfdno) {
 		(void) Fclose (out);
 	    }
-	    if (Fileno(ts->scriptFd) > STDERR_FILENO) {
+	    if (sfdno > STDERR_FILENO) {
 		(void) Fclose (ts->scriptFd);
 	    }
 	}
@@ -1031,7 +1049,9 @@ static int runScript(PSM_t psm, Header h,
  * @return		rpmRC return code
  */
 static rpmRC runInstScript(PSM_t psm)
-	/*@modifies psm, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies psm, fileSystem, internalState @*/
 {
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
@@ -1075,7 +1095,9 @@ static rpmRC runInstScript(PSM_t psm)
  */
 static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
-	/*@modifies psm, *triggersAlreadyRun, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies psm, *triggersAlreadyRun, fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1186,7 +1208,9 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
  * @return		0 on success, 1 on error
  */
 static int runTriggers(PSM_t psm)
-	/*@modifies psm, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1220,7 +1244,9 @@ static int runTriggers(PSM_t psm)
  * @return		0 on success, 1 on error
  */
 static int runImmedTriggers(PSM_t psm)
-	/*@modifies psm, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;

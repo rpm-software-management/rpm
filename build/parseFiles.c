@@ -12,8 +12,11 @@
 /*@access poptContext @*/	/* compared with NULL */
 
 /* These have to be global scope to make up for *stupid* compilers */
+/*@unchecked@*/
     /*@observer@*/ /*@null@*/ static const char *name = NULL;
+/*@unchecked@*/
     /*@observer@*/ /*@null@*/ static const char *file = NULL;
+/*@unchecked@*/
     static struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
 	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},

@@ -10,6 +10,7 @@
 
 /**
  */
+/*@observer@*/ /*@unchecked@*/
 static struct ReqComp {
 /*@observer@*/ /*@null@*/ const char * token;
     rpmsenseFlags sense;

@@ -2,6 +2,7 @@
  * \file rpmdb/db3.c
  */
 
+/*@unchecked@*/
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "system.h"
@@ -148,6 +149,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile,
 		/*@out@*/ DB_ENV ** dbenvp)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies dbi, *dbenvp, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -614,6 +616,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 
 /*@-moduncon@*/
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies dbi, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -750,6 +753,7 @@ exit:
 /*@=moduncon@*/
 
 static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *dbip, fileSystem @*/
 {
     /*@-nestedextern@*/
@@ -1180,6 +1184,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 /** \ingroup db3
  */
 /*@-exportheadervar@*/
+/*@observer@*/ /*@unchecked@*/
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3copen, db3cclose, db3cdel, db3cget, db3cput,

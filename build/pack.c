@@ -15,6 +15,7 @@
 #include "debug.h"
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int _noDirTokens;
 /*@=redecl@*/
 
@@ -47,6 +48,8 @@ static inline int genSourceRpmName(Spec spec)
  */
 static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		const char * fmodeMacro)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies fdo, csa, fileSystem @*/
 {
     const char * rootDir = "/";
@@ -94,6 +97,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 /**
  */
 static int cpio_copy(FD_t fdo, CSA_t csa)
+	/*@globals fileSystem@*/
 	/*@modifies fdo, csa, fileSystem @*/
 {
     char buf[BUFSIZ];
@@ -119,6 +123,8 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
  */
 static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 		const char * file, /*@only@*/ StringBuf sb)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     char buf[BUFSIZ];
@@ -153,6 +159,8 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 /**
  */
 static int addFileToTag(Spec spec, const char * file, Header h, int tag)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies h, fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -176,6 +184,8 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 /**
  */
 static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies h, fileSystem @*/
 {
     StringBuf sb = newStringBuf();
@@ -194,6 +204,8 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 /**
  */
 static int processScriptFiles(Spec spec, Package pkg)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies pkg->header, fileSystem @*/
 {
     struct TriggerFileEntry *p;
@@ -334,16 +346,19 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     return 0;
 }
 
+/*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
 #define	RPMPKGVERSION_MIN	30004
 #define	RPMPKGVERSION_MAX	40003
+/*@unchecked@*/
 static int rpmpkg_version = -1;
 
 static int rpmLeadVersion(void)
-	/*@*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
     int rpmlead_version;
 
@@ -656,6 +671,7 @@ exit:
     return rc;
 }
 
+/*@unchecked@*/
 static int_32 copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,

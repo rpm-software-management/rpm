@@ -76,7 +76,8 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*open) (rpmdb rpmdb, int rpmtag, /*@out@*/ dbiIndex * dbip)
-	/*@modifies *dbip @*/;
+	/*@globals fileSystem@*/
+	/*@modifies *dbip, fileSystem @*/;
 
 /** \ingroup dbi
  * Close index database, and destroy database handle.
@@ -85,6 +86,7 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*close) (/*@only@*/ dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies dbi, fileSystem @*/;
 
 /** \ingroup dbi
@@ -94,6 +96,7 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*sync) (dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup dbi
@@ -103,7 +106,8 @@ struct _dbiVec {
  * @param flags		(unused)
  */
     int (*copen) (dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
-	/*@modifies dbi, *dbcp @*/;
+	/*@globals fileSystem@*/
+	/*@modifies dbi, *dbcp, fileSystem @*/;
 
 /** \ingroup dbi
  * Close database cursor.
@@ -112,7 +116,8 @@ struct _dbiVec {
  * @param flags		(unused)
  */
     int (*cclose) (dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
-	/*@modifies dbi, *dbcursor @*/;
+	/*@globals fileSystem@*/
+	/*@modifies dbi, *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
  * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
@@ -125,6 +130,7 @@ struct _dbiVec {
  */
     int (*cdel) (dbiIndex dbi, DBC * dbcursor,
 			const void * keyp, size_t keylen, unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
@@ -142,6 +148,7 @@ struct _dbiVec {
 			/*@null@*/ void ** keypp, /*@null@*/ size_t * keylenp,
 			/*@null@*/ void ** datapp, /*@null@*/ size_t * datalenp,
 			unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, *keypp, *keylenp, *datapp, *datalenp,
 		fileSystem @*/;
 
@@ -160,6 +167,7 @@ struct _dbiVec {
 			const void * keyp, size_t keylen,
 			const void * datap, size_t datalen,
 			unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
@@ -173,7 +181,8 @@ struct _dbiVec {
     int (*ccount) (dbiIndex dbi, DBC * dbcursor,
 			/*@out@*/ unsigned int * countp,
 			unsigned int flags)
-	/*@modifies *dbcursor @*/;
+	/*@globals fileSystem@*/
+	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
  * Is database byte swapped?
@@ -181,7 +190,8 @@ struct _dbiVec {
  * @return		0 no
  */
     int (*byteswapped) (dbiIndex dbi)
-	/*@*/;
+	/*@globals fileSystem@*/
+	/*@modifies fileSystem@*/;
 
 /** \ingroup dbi
  * Save statistics in database handle.
@@ -190,7 +200,8 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*stat) (dbiIndex dbi, unsigned int flags)
-	/*@modifies dbi @*/;
+	/*@globals fileSystem@*/
+	/*@modifies dbi, fileSystem @*/;
 
 };
 
@@ -236,6 +247,7 @@ struct _dbiIndex {
 	/* dbenv parameters */
     int			dbi_lorder;
 /*@unused@*/ /*@null@*/ void		(*db_errcall) (const char *db_errpfx, char *buffer)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 /*@unused@*/ /*@shared@*/ FILE *	dbi_errfile;
     const char *	dbi_errpfx;
@@ -258,6 +270,7 @@ struct _dbiIndex {
 #if 0
     int			(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec,
 				DB_LSN *lsnp, int redo, void *info)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 #endif
 	/* dbinfo parameters */
@@ -352,7 +365,8 @@ extern "C" {
  * @param rpmdb		rpm database
  */
 /*@only@*/ /*@null@*/ dbiIndex db3New(/*@keep@*/ rpmdb rpmdb, int rpmtag)
-	/*@*/;
+	/*@global rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup db3
  * Destroy index database handle instance.
@@ -390,7 +404,8 @@ extern "C" {
  * @param dbiflags	DBI_WRITECURSOR or DBI_ITERATOR
  */
 int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int dbiflags)
-	/*@modifies dbi, *dbcp @*/;
+	/*@globals fileSystem@*/
+	/*@modifies dbi, *dbcp, fileSystem @*/;
 
 #define	DBI_WRITECURSOR		(1 << 0)
 #define	DBI_ITERATOR		(1 << 1)
@@ -400,7 +415,8 @@ int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int dbiflags)
  * @param flags		(unused)
  */
 int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
-	/*@modifies dbi, *dbcursor @*/;
+	/*@globals fileSystem@*/
+	/*@modifies dbi, *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
  * Delete (key,data) pair(s) from index database.
@@ -412,6 +428,7 @@ int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
  */
 int dbiDel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 		unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
@@ -429,6 +446,7 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp,
 		/*@null@*/ void ** datapp, 
 		/*@null@*/ size_t * datalenp,
 		unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, **keypp, *keylenp, **datapp, *datalenp,
 		fileSystem @*/;
 
@@ -444,6 +462,7 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp,
  */
 int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 		const void * datap, size_t datalen, unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
@@ -457,6 +476,7 @@ int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 /*@unused@*/
 int dbiCount(dbiIndex dbi, DBC * dbcursor, /*@out@*/ unsigned int * countp,
 		unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
@@ -466,6 +486,7 @@ int dbiCount(dbiIndex dbi, DBC * dbcursor, /*@out@*/ unsigned int * countp,
  * @return		0 on success
  */
 int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies dbi, fileSystem @*/;
 
 /** \ingroup dbi
@@ -475,6 +496,7 @@ int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
  * @return		0 on success
  */
 int dbiClose(/*@only@*/ dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies dbi, fileSystem @*/;
 
 /** \ingroup dbi
@@ -484,6 +506,7 @@ int dbiClose(/*@only@*/ dbiIndex dbi, unsigned int flags)
  * @return		0 on success
  */
 int dbiSync (dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup dbi
@@ -514,7 +537,8 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
  */
 int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint * fpList,
 		/*@out@*/ dbiIndexSet * matchList, int numItems)
-	/*@modifies db, *matchList @*/;
+	/*@globals fileSystem@*/
+	/*@modifies db, *matchList, fileSystem @*/;
 
 /** \ingroup dbi
  * Destroy set of index database items.

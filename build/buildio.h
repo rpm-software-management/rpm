@@ -38,7 +38,10 @@ extern "C" {
 		/*@out@*/ struct rpmlead * lead,
 		/*@out@*/ Header * sigs,
 		CSA_t csa)
-	/*@modifies *specp, *lead, *sigs, csa, csa->cpioFdIn @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *specp, *lead, *sigs, csa, csa->cpioFdIn,
+		fileSystem, internalState @*/;
 
 /**
  * Write rpm package to file.
@@ -60,7 +63,10 @@ int writeRPM(Header * hdrp,
 		CSA_t csa,
 		/*@null@*/ char * passPhrase,
 		/*@out@*/ const char ** cookie)
-	/*@modifies *hdrp, *cookie, csa, csa->cpioArchiveSize @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *hdrp, *cookie, csa, csa->cpioArchiveSize,
+		fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

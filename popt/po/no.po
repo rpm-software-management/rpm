@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-10-13 13:15-0400\n"
+"POT-Creation-Date: 2001-10-14 23:13-0400\n"
 "PO-Revision-Date: 2001-06-27 11:05+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@online.no>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -13,99 +13,99 @@ msgstr ""
 msgid "unknown errno"
 msgstr "ukjent errno"
 
-#: popt.c:892
+#: popt.c:900
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "flaggtype (%d) ikke implementert i popt\n"
 
-#: popt.c:1100
+#: popt.c:1111
 msgid "missing argument"
 msgstr "manglende argument"
 
-#: popt.c:1102
+#: popt.c:1113
 msgid "unknown option"
 msgstr "ukjent flagg"
 
-#: popt.c:1104
+#: popt.c:1115
 msgid "mutually exclusive logical operations requested"
 msgstr "gjensidig eksluderende logiske operasjoner forespurt"
 
-#: popt.c:1106
+#: popt.c:1117
 msgid "opt->arg should not be NULL"
 msgstr "opt->arg må ikke være NULL"
 
-#: popt.c:1108
+#: popt.c:1119
 msgid "aliases nested too deeply"
 msgstr "aliaser med for dype løkker"
 
-#: popt.c:1110
+#: popt.c:1121
 msgid "error in parameter quoting"
 msgstr "feil i parametersitering"
 
-#: popt.c:1112
+#: popt.c:1123
 msgid "invalid numeric value"
 msgstr "ugyldig numerisk verdi"
 
-#: popt.c:1114
+#: popt.c:1125
 msgid "number too large or too small"
 msgstr "tallet er for stort eller lite"
 
-#: popt.c:1116
+#: popt.c:1127
 msgid "memory allocation failed"
 msgstr "minneallokering feilet"
 
-#: popt.c:1120
+#: popt.c:1131
 msgid "unknown error"
 msgstr "ukjent feil"
 
-#: popthelp.c:47
+#: popthelp.c:52
 msgid "Show this help message"
 msgstr "Vis denne hjelpmeldingen"
 
-#: popthelp.c:48
+#: popthelp.c:53
 msgid "Display brief usage message"
 msgstr "Vis kort bruksmelding"
 
-#: popthelp.c:51
+#: popthelp.c:56
 msgid "Display option defaults in message"
 msgstr "Vis forvalgte flagg i melding"
 
-#: popthelp.c:93
+#: popthelp.c:98
 msgid "NONE"
 msgstr "INGEN"
 
-#: popthelp.c:94
+#: popthelp.c:99
 msgid "VAL"
 msgstr "VERDI"
 
-#: popthelp.c:95
+#: popthelp.c:100
 msgid "INT"
 msgstr "HELTALL"
 
-#: popthelp.c:96
+#: popthelp.c:101
 msgid "LONG"
 msgstr "LONG"
 
-#: popthelp.c:97
+#: popthelp.c:102
 msgid "STRING"
 msgstr "STRENG"
 
-#: popthelp.c:98
+#: popthelp.c:103
 msgid "FLOAT"
 msgstr "FLYTTALL"
 
-#: popthelp.c:99
+#: popthelp.c:104
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: popthelp.c:100
+#: popthelp.c:105
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:445
+#: popthelp.c:454
 msgid "Usage:"
 msgstr "Bruk:"
 
-#: popthelp.c:467
+#: popthelp.c:476
 msgid "[OPTION...]"
 msgstr "[FLAGG...]"

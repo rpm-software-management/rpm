@@ -190,10 +190,14 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 	if (temp)
 	{
 		/* first generate q */
+		/*@-globs@*/
 		mp32prnd_w(&dp->q, rgc, qsize, mp32ptrials(qsize << 5), (const mp32number*) 0, temp);
+		/*@=globs@*/
 
 		/* generate p with the appropriate congruences */
+		/*@-globs@*/
 		mp32prndconone_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), &dp->q, (const mp32number*) 0, &dp->r, cofactor, temp);
+		/*@=globs@*/
 
 		/* clear n */
 		mp32bzero(&dp->n);
@@ -222,7 +226,9 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	if (temp)
 	{
 		/* generate p */
+		/*@-globs@*/
 		mp32prndsafe_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), temp);
+		/*@=globs@*/
 
 		/* set q */
 		mp32copy(psize, temp, dp->p.modl);
@@ -314,10 +320,14 @@ int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 	if (temp)
 	{
 		/* generate q */
+		/*@-globs@*/
 		mp32prnd_w(&dp->q, rgc, qsize, mp32ptrials(qsize << 5), (const mp32number*) 0, temp);
+		/*@=globs@*/
 
 		/* generate p with the appropriate congruences */
+		/*@-globs@*/
 		mp32prndconone_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), &dp->q, (const mp32number*) 0, &dp->r, 2, temp);
+		/*@=globs@*/
 
 		/* set n */
 		mp32bsubone(&dp->p, temp);
@@ -343,7 +353,9 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	if (temp)
 	{
 		/* generate safe p */
+		/*@-globs@*/
 		mp32prndsafe_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), temp);
+		/*@=globs@*/
 
 		/* set n */
 		mp32bsubone(&dp->p, temp);

@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+/*@unchecked@*/
 static int _debug = 0;
 #define	INLINE
 
@@ -44,16 +45,21 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access rpmdbMatchIterator@*/
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int _noDirTokens;
 /*@=redecl@*/
+/*@unchecked@*/
 static int _rebuildinprogress = 0;
+/*@unchecked@*/
 static int _db_filter_dups = 0;
 
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
 
+/*@unchecked@*/
 /*@globstate@*/ /*@null@*/ int * dbiTags = NULL;
+/*@unchecked@*/
 int dbiTagsMax = 0;
 
 /**
@@ -78,6 +84,7 @@ static int dbiTagToDbix(int rpmtag)
  * Initialize database (index, tag) tuple from configuration.
  */
 static void dbiTagsInit(void)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies dbiTags, dbiTagsMax @*/
 {
 /*@observer@*/ static const char * const _dbiTagStr_default =
@@ -118,7 +125,9 @@ static void dbiTagsInit(void)
 	rpmtag = tagValue(o);
 	if (rpmtag < 0) {
 
+/*@-modfilesys@*/
 	    fprintf(stderr, _("dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"), o);
+/*@=modfilesys@*/
 	    continue;
 	}
 	if (dbiTagToDbix(rpmtag) >= 0)
@@ -133,6 +142,7 @@ static void dbiTagsInit(void)
 
 /*@-redecl@*/
 #if USE_DB1
+/*@unchecked@*/
 extern struct _dbiVec db1vec;
 #define	DB1vec		&db1vec
 #else
@@ -140,6 +150,7 @@ extern struct _dbiVec db1vec;
 #endif
 
 #if USE_DB2
+/*@unchecked@*/
 extern struct _dbiVec db2vec;
 #define	DB2vec		&db2vec
 #else
@@ -147,6 +158,7 @@ extern struct _dbiVec db2vec;
 #endif
 
 #if USE_DB3
+/*@unchecked@*/
 extern struct _dbiVec db3vec;
 #define	DB3vec		&db3vec
 #else
@@ -155,6 +167,7 @@ extern struct _dbiVec db3vec;
 /*@=redecl@*/
 
 /*@-nullassign@*/
+/*@observer@*/ /*@unchecked@*/
 static struct _dbiVec *mydbvecs[] = {
     DB1vec, DB1vec, DB2vec, DB3vec, NULL
 };
@@ -345,7 +358,9 @@ dbiIndex dbiOpen(rpmdb db, int rpmtag, /*@unused@*/ unsigned int flags)
     if ((dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
 
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
+/*@=globs@*/
     if (_dbapi_rebuild < 1 || _dbapi_rebuild > 3)
 	_dbapi_rebuild = 3;
     _dbapi_wanted = (_rebuildinprogress ? -1 : db->db_api);
@@ -457,6 +472,7 @@ union _dbswap {
  */
 static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
 		const char * keyp, size_t keylen, /*@out@*/ dbiIndexSet * setp)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *setp, fileSystem @*/
 {
     unsigned int gflags = 0;	/* dbiGet() flags */
@@ -544,6 +560,7 @@ static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
 /*@-compmempass -mustmod@*/
 static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen, dbiIndexSet set)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, set, fileSystem @*/
 {
     unsigned int pflags = 0;	/* dbiPut() flags */
@@ -739,7 +756,8 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
  * Disable all signals, returning previous signal mask.
  */
 static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
-	/*@modifies *oldMask, internalState @*/
+	/*@globals fileSystem @*/
+	/*@modifies *oldMask, fileSystem @*/
 {
     sigset_t newMask;
 
@@ -751,7 +769,8 @@ static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
  * Restore signal mask.
  */
 static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
-	/*@modifies internalState @*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     return sigprocmask(SIG_SETMASK, oldMask, NULL);
 }
@@ -766,7 +785,8 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
 #define	_DB_ERRPFX	"rpmdb"
 
 /*@-fullinitblock@*/
-/*@observer@*/ static struct rpmdb_s dbTemplate = {
+/*@observer@*/ /*@unchecked@*/
+static struct rpmdb_s dbTemplate = {
     _DB_ROOT,	_DB_HOME, _DB_FLAGS, _DB_MODE, _DB_PERMS,
     _DB_MAJOR,	_DB_ERRPFX
 };
@@ -834,7 +854,9 @@ static /*@only@*/ /*@null@*/
 rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
-	/*@modifies _db_filter_dups @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
+	/*@modifies _db_filter_dups, fileSystem @*/
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
     const char * epfx = _DB_ERRPFX;
@@ -878,6 +900,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
 		int mode, int perms, int flags)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *dbp, fileSystem @*/
 {
     rpmdb db;
@@ -1015,6 +1038,7 @@ exit:
 }
 
 /* XXX python/rpmmodule.c */
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
@@ -1072,6 +1096,7 @@ int rpmdbVerify(const char * prefix)
     }
     return rc;
 }
+/*@=globs@*/
 
 static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 			/*@out@*/ dbiIndexSet * matches)
@@ -1427,6 +1452,7 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
  * @return 		0 on success
  */
 static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, h, fileSystem @*/
 {
     sigset_t signalMask;
@@ -1705,6 +1731,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
     return pat;
 }
 
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 		rpmMireMode mode, const char * pattern)
 {
@@ -1802,6 +1829,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 
     return rc;
 }
+/*@=globs@*/
 
 /**
  * Return iterator selector match.
@@ -2081,6 +2109,7 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 
 static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi,
 		const void * keyp, size_t keylen, int fpNum)
+	/*@globals fileSystem @*/
 	/*@modifies mi, fileSystem @*/
 {
     dbiIndex dbi = NULL;
@@ -2258,6 +2287,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
  */
 static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen, dbiIndexItem rec)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
     dbiIndexSet set = NULL;
@@ -2462,6 +2492,7 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
  */
 static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor,
 		const char * keyp, size_t keylen, dbiIndexItem rec)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
     dbiIndexSet set = NULL;
@@ -2877,6 +2908,7 @@ char * db1basename (int rpmtag)
 
 static int rpmdbRemoveDatabase(const char * rootdir,
 		const char * dbpath, int _dbapi)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 { 
     int i;
@@ -2939,6 +2971,7 @@ static int rpmdbRemoveDatabase(const char * rootdir,
 static int rpmdbMoveDatabase(const char * rootdir,
 		const char * olddbpath, int _olddbapi,
 		const char * newdbpath, int _newdbapi)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int i;
@@ -3062,6 +3095,7 @@ static int rpmdbMoveDatabase(const char * rootdir,
     return rc;
 }
 
+/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 int rpmdbRebuild(const char * rootdir)
 {
     rpmdb olddb;
@@ -3256,3 +3290,4 @@ exit:
 
     return rc;
 }
+/*@=globs@*/

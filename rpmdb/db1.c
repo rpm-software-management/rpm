@@ -466,6 +466,7 @@ static int db1stat(/*@unused@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 }
 
 static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies dbi, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -508,7 +509,8 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 }
 
 static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag,
-	/*@out@*/ dbiIndex * dbip)
+		/*@out@*/ dbiIndex * dbip)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *dbip, fileSystem @*/
 {
     /*@-nestedextern@*/
@@ -600,6 +602,7 @@ exit:
 /** \ingroup db1
  */
 /*@-exportheadervar@*/
+/*@observer@*/ /*@unchecked@*/
 struct _dbiVec db1vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db1open, db1close, db1sync, db1copen, db1cclose, db1cdel, db1cget, db1cput,

@@ -32,6 +32,7 @@
 #define MAXDOCDIR 1024
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int _noDirTokens;
 /*@=redecl@*/
 
@@ -88,6 +89,7 @@ typedef struct AttrRec_s {
 
 /**
  */
+/*@unchecked@*/
 static int multiLib = 0;	/* MULTILIB */
 
 /**
@@ -177,6 +179,7 @@ static void dupAttrRec(const AttrRec oar, /*@in@*/ /*@out@*/ AttrRec nar)
 /**
  */
 static void dumpAttrRec(const char * msg, AttrRec ar)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/
 {
     if (msg)
@@ -281,6 +284,7 @@ typedef struct VFA {
 /**
  */
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 VFA_t verifyAttrs[] = {
     { "md5",	RPMVERIFY_MD5 },
     { "size",	RPMVERIFY_FILESIZE },
@@ -775,6 +779,7 @@ static int parseForLang(char * buf, FileList fl)
 /**
  */
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *lang @*/
 {
     static int initialized = 0;
@@ -817,7 +822,9 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 
 /**
  */
-static int parseForRegexMultiLib(const char *fileName)	/*@*/
+static int parseForRegexMultiLib(const char *fileName)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -848,6 +855,7 @@ static int parseForRegexMultiLib(const char *fileName)	/*@*/
 /**
  */
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	RPMFILE_DOC },
@@ -874,6 +882,7 @@ VFA_t virtualFileAttributes[] = {
  */
 static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 			  FileList fl, /*@out@*/ const char ** fileName)
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
 		fl->currentFlags,
 		fl->docDirs, fl->docDirCount, fl->isDir,
@@ -1097,7 +1106,10 @@ static void checkHardLinks(FileList fl)
  */
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		TFI_t * cpioList, Header h, int isSrc)
-	/*@modifies h, *cpioList, fl->processingFailed, fl->fileList @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
+	/*@modifies h, *cpioList, fl->processingFailed, fl->fileList,
+		fileSystem @*/
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
     uint_32 multiLibMask = 0;
@@ -1414,9 +1426,12 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
  * @param fl		package file tree walk data
  */
 static int addFile(FileList fl, const char * diskURL, struct stat * statp)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies *statp, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
-		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir @*/
+		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
+		rpmGlobalMacroContext, fileSystem @*/
 {
     const char *fileURL = diskURL;
     struct stat statbuf;
@@ -1625,9 +1640,12 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
  */
 static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
 	/*@modifies fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
-		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir @*/
+		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
+		fileSystem @*/
 {
     int doGlob;
     const char *diskURL = NULL;
@@ -1695,8 +1713,11 @@ exit:
  */
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
 	/*@modifies spec->macros,
-		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header */
+		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
+		fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     struct FileList_s fl;
@@ -2150,7 +2171,8 @@ int processSourceFiles(Spec spec)
 static StringBuf getOutputFrom(char * dir, char * argv[],
 			const char * writePtr, int writeBytesLeft,
 			int failNonZero)
-	/*@*/
+	/*@globals fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState@*/
 {
     int progPID;
     int toProg[2];
@@ -2295,6 +2317,7 @@ typedef struct {
 /**
  */
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 DepMsg_t depMsgs[] = {
   { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
@@ -2339,7 +2362,9 @@ DepMsg_t depMsgs[] = {
 /**
  */
 static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
-	/*@modifies cpioList @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies cpioList, fileSystem, internalState @*/
 {
     TFI_t fi = cpioList;
     StringBuf writeBuf;
@@ -2459,7 +2484,7 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
  */
 static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
 		const char ** versions, int *flags)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     int hasVersions = (versions != NULL);
     int hasFlags = (flags != NULL);
@@ -2500,7 +2525,7 @@ static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
 /**
  */
 static void printDeps(Header h)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -2546,7 +2571,9 @@ static void printDeps(Header h)
 	    (void) hge(h, dm->ftag, NULL, (void **) &flags, NULL);
 	    /*@switchbreak@*/ break;
 	}
+	/*@-noeffect@*/
 	printDepMsg(dm, count, names, versions, flags);
+	/*@=noeffect@*/
     }
     names = hfd(names, dnt);
     versions = hfd(versions, dvt);
@@ -2579,7 +2606,9 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	    (void) generateDepends(spec, pkg, pkg->cpioList, 2);
 	} else
 	    (void) generateDepends(spec, pkg, pkg->cpioList, 0);
+	/*@-noeffect@*/
 	printDeps(pkg->header);
+	/*@=noeffect@*/
     }
 
     return res;

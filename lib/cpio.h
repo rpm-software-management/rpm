@@ -106,6 +106,7 @@ extern "C" {
  * @return		0 on success
  */
 int cpioTrailerWrite(FSM_t fsm)
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/;
 
 /**
@@ -114,6 +115,7 @@ int cpioTrailerWrite(FSM_t fsm)
  * @return		0 on success
  */
 int cpioHeaderWrite(FSM_t fsm, struct stat * st)
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/;
 
 /**
@@ -122,7 +124,8 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
  * @return		0 on success
  */
 int cpioHeaderRead(FSM_t fsm, struct stat * st)
-	/*@modifies fsm, *st @*/;
+	/*@globals fileSystem@*/
+	/*@modifies fsm, *st, fileSystem @*/;
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.

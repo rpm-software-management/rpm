@@ -58,12 +58,14 @@ int  mp32pmilrab_w   (const mp32barrett* p, randomGeneratorContext* rc, int t, /
  */
 BEECRYPTAPI
 void mp32prnd_w      (mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@null@*/ const mp32number* f, /*@out@*/ uint32* wksp)
+	/*@globals mp32spprod @*/
 	/*@modifies p, rc, wksp @*/;
 
 /**
  */
 BEECRYPTAPI
 void mp32prndsafe_w  (mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@out@*/ uint32* wksp)
+	/*@globals mp32spprod @*/
 	/*@modifies p, rc, wksp @*/;
 
 #ifdef	NOTYET
@@ -78,6 +80,7 @@ void mp32prndcon_w   (mp32barrett* p, randomGeneratorContext* rc, uint32, int, c
  */
 BEECRYPTAPI
 void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, /*@null@*/ const mp32number* f, mp32number* r, int cofactor, /*@out@*/ uint32* wksp)
+	/*@globals mp32spprod @*/
 	/*@modifies p, rc, r, wksp @*/;
 
 #ifdef __cplusplus

@@ -17,10 +17,12 @@
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
+/*@unchecked@*/
 int _fsm_debug = 0;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/
+/*@unchecked@*/
 int strict_erasures = 0;
 /*@=exportlocal =exportheadervar@*/
 
@@ -346,7 +348,8 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->links, fsm->ix, fsm->sb, fsm->goal, fsm->nsuffix @*/
 	/*@defines fsm->li @*/
 	/*@releases fsm->path @*/
-	/*@modifies fsm @*/
+	/*@globals fileSystem@*/
+	/*@modifies fsm, fileSystem @*/
 {
     struct stat * st = &fsm->sb;
     int rc = 0;

@@ -49,6 +49,7 @@ extern "C" {
 
 /** \ingroup BC_blowfish_m
  */
+/*@observer@*/ /*@checked@*/
 extern const BEECRYPTAPI blockCipher blowfish;
 
 /** \ingroup BC_blowfish_m

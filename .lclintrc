@@ -1,7 +1,7 @@
 -I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./popt -I/usr/lib/gcc-lib/i386-redhat-linux/2.96/include -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
 
 #+partial
-+forcehints
+#+forcehints
 
 -warnunixlib
 -warnposix
@@ -17,20 +17,15 @@
 # --- not-yet at strict level
 -bitwisesigned		# pita
 -elseifcomplete		# 95 occurences
--evalorderuncon		# 32 occurences
 -exportconst		# 839 occurences
 -exportfcn
 -exporttype
 -exportvar
 -fielduse		# 1 occurence <bits/sigset.h>
 -forblock		# tedious
--globs
--globstate
 -ifblock		# tedious
--incondefs		# <sys/{select,mman}.h> tedium
--internalglobs		# lots of global annotations needed
+-incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
 -matchfields		# <bits/ipc.h> heartburn
--modfilesys		# 153 occurences
 -modnomods		# 927 occurences
 -modobserveruncon	# 192 occurences
 -mods			# 281 occurences, errno will be a pita
@@ -64,7 +59,7 @@
 # --- not-yet at checks level
 -predboolptr		# 773 occurences
 +enumint		# 93 occurences
--allglobs		# 131 occurrences
+#-allglobs		# 131 occurrences
 -ansi-reserved		# goofy
 
 -proto-param-match	# 51 occurences

@@ -34,6 +34,7 @@
 
 /** \ingroup header
  */
+/*@observer@*/ /*@unchecked@*/
 static unsigned char header_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
@@ -41,6 +42,7 @@ static unsigned char header_magic[8] = {
 /** \ingroup header
  * Maximum no. of bytes permitted in a header.
  */
+/*@unchecked@*/
 static size_t headerMaxbytes = (32*1024*1024);
 
 /**
@@ -58,6 +60,7 @@ static size_t headerMaxbytes = (32*1024*1024);
 /** \ingroup header
  * Alignment needs (and sizeof scalars types) for internal rpm data types.
  */
+/*@observer@*/ /*@unchecked@*/
 static int typeSizes[] =  { 
 	0,	/*!< RPM_NULL_TYPE */
 	1,	/*!< RPM_CHAR_TYPE */
@@ -71,6 +74,7 @@ static int typeSizes[] =  {
 	-1	/*!< RPM_I18NSTRING_TYPE */
 };
 
+/*@observer@*/ /*@unchecked@*/
 HV_t hdrVec;	/* forward reference */
 
 /**
@@ -102,9 +106,9 @@ Header headerNew()
 	? xcalloc(h->indexAlloced, sizeof(*h->index))
 	: NULL);
 
-    /*@-globstate@*/
+    /*@-globstate -observertrans @*/
     return h;
-    /*@=globstate@*/
+    /*@=globstate =observertrans @*/
 }
 
 Header headerFree(Header h)
@@ -239,6 +243,7 @@ unsigned int headerSizeof(Header h, enum hMagic magicp)
 
 /**
  * Return length of entry data.
+ * @todo Remove sanity check exit's.
  * @param type		entry data type
  * @param p		entry data
  * @param count		entry item count
@@ -247,7 +252,7 @@ unsigned int headerSizeof(Header h, enum hMagic magicp)
  */
 /*@mayexit@*/
 static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     int length = 0;
 
@@ -258,7 +263,9 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk)
 	    break;
 	}
         /* This should not be allowed */
+	/*@-modfilesys@*/
 	fprintf(stderr, _("dataLength() RPM_STRING_TYPE count must be 1.\n"));
+	/*@=modfilesys@*/
 	exit(EXIT_FAILURE);
 	/*@notreached@*/ break;
 
@@ -293,7 +300,9 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk)
 	    length = typeSizes[type] * count;
 	    break;
 	}
+	/*@-modfilesys@*/
 	fprintf(stderr, _("Data type %d not supported\n"), (int) type);
+	/*@=modfilesys@*/
 	exit(EXIT_FAILURE);
 	/*@notreached@*/ break;
     }
@@ -892,9 +901,9 @@ Header headerLoad(void * uh)
     h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
 
-    /*@-globstate@*/
+    /*@-globstate -observertrans @*/
     return h;
-    /*@=globstate@*/
+    /*@=globstate =observertrans @*/
 
 errxit:
     /*@-usereleased@*/
@@ -2837,6 +2846,8 @@ int headerNextIterator(HeaderIterator hi,
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
 }
+
+/*@observer@*/ /*@unchecked@*/
 static struct HV_s hdrVec1 = {
     headerNew,
     headerFree,
@@ -2871,5 +2882,6 @@ static struct HV_s hdrVec1 = {
 };
 
 /*@-compmempass -redef@*/
+/*@observer@*/ /*@unchecked@*/
 HV_t hdrVec = &hdrVec1;
 /*@=compmempass =redef@*/

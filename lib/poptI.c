@@ -13,6 +13,7 @@
 extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@=redecl@*/
 
+/*@unchecked@*/
 struct rpmInstallArguments_s rpmIArgs;
 
 #define	POPT_RELOCATE		1016
@@ -20,11 +21,12 @@ struct rpmInstallArguments_s rpmIArgs;
 #define	POPT_ROLLBACK		1024
 
 /*@exits@*/ static void argerror(const char * desc)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
+    /*@-modfilesys -globs @*/
     fprintf(stderr, _("%s: %s\n"), __progname, desc);
+    /*@=modfilesys =globs @*/
     exit(EXIT_FAILURE);
-
 }
 
 /**
@@ -83,6 +85,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 /**
  */
 /*@-bitwisesigned -compmempass@*/
+/*@unchecked@*/
 struct poptOption rpmInstallPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	installArgCallback, 0, NULL, NULL },

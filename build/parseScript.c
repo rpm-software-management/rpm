@@ -47,9 +47,13 @@ static int addTriggerIndex(Package pkg, const char *file,
 }
 
 /* these have to be global because of stupid compilers */
+/*@unchecked@*/
     /*@observer@*/ /*@null@*/ static const char *name = NULL;
+/*@unchecked@*/
     /*@observer@*/ /*@null@*/ static const char *prog = NULL;
+/*@unchecked@*/
     /*@observer@*/ /*@null@*/ static const char *file = NULL;
+/*@unchecked@*/
     static struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},

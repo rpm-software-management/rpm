@@ -11,6 +11,7 @@
 #include "build.h"
 #include "debug.h"
 
+/*@unchecked@*/
 struct rpmBuildArguments_s         rpmBTArgs;
 
 #define	POPT_USECATALOG		1000
@@ -44,14 +45,22 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_TS			0x7473
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int _noDirTokens;
+/*@unchecked@*/
 extern int _fsm_debug;
 /*@=redecl@*/
+/*@unchecked@*/
 static int force = 0;
+/*@unchecked@*/
 int noLang = 0;
+/*@unchecked@*/
 static int noBuild = 0;
+/*@unchecked@*/
 static int noDeps = 0;
+/*@unchecked@*/
 static int signIt = 0;
+/*@unchecked@*/
 static int useCatalog = 0;
 
 /**
@@ -119,6 +128,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 /**
  */
 /*@-bitwisesigned -compmempass@*/
+/*@unchecked@*/
 struct poptOption rpmBuildPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	buildArgCallback, 0, NULL, NULL },

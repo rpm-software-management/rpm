@@ -42,7 +42,8 @@ extern "C" {
  * Return new, empty (signature) header instance.
  * @return		signature header
  */
-Header rpmNewSignature(void)	/*@*/;
+Header rpmNewSignature(void)
+	/*@*/;
 
 /** \ingroup signature
  * Read (and verify header+archive size) signature header.
@@ -54,7 +55,8 @@ Header rpmNewSignature(void)	/*@*/;
  */
 rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *headerp,
 		sigType sig_type)
-	/*@modifies fd, *headerp @*/;
+	/*@globals fileSystem@*/
+	/*@modifies fd, *headerp, fileSystem @*/;
 
 /** \ingroup signature
  * Write signature header.
@@ -63,6 +65,7 @@ rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *headerp,
  * @return		0 on success, 1 on error
  */
 int rpmWriteSignature(FD_t fd, Header h)
+	/*@globals fileSystem@*/
 	/*@modifies fd, h, fileSystem @*/;
 
 /** \ingroup signature
@@ -70,7 +73,9 @@ int rpmWriteSignature(FD_t fd, Header h)
  */
 int rpmAddSignature(Header h, const char * file,
 		    int_32 sigTag, /*@null@*/ const char * passPhrase)
-	/*@modifies h @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies h, fileSystem @*/;
 
 /******************************************************************/
 
@@ -83,12 +88,15 @@ int rpmAddSignature(Header h, const char * file,
  * Return type of signature in effect for building.
  */
 int rpmLookupSignatureType(int action)
+	/*@globals rpmGlobalMacroContext,
+		internalState@*/
 	/*@modifies internalState @*/;
 
 /** \ingroup signature
  *  Read a pass phrase from the user.
  */
 /*@null@*/ char * rpmGetPassPhrase(const char *prompt, const int sigTag)
+	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup signature
@@ -97,7 +105,8 @@ int rpmLookupSignatureType(int action)
 /*@-redecl@*/
 /*@null@*/ const char * rpmDetectPGPVersion(
 			/*@null@*/ /*@out@*/ pgpVersion * pgpVer)
-	/*@modifies *pgpVer, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *pgpVer @*/;
 /*@=redecl@*/
 
 #ifdef __cplusplus
