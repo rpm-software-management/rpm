@@ -39,7 +39,7 @@ rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
 tpkgid_SOURCES =	tpkgid.c
 tpkgid_LDFLAGS =	@LDFLAGS_STATIC@
 
-$(PROGRAMS): $(myLDADD)
+$(PROGRAMS): $(LDADD)
 
 gnash.o: gnash.c
 	$(COMPILE) -o $@ -c gnash.c

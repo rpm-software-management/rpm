@@ -15,7 +15,8 @@ rpm \- RPM Package Manager
 
 
 
-\fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fB--nodeps\fR] [\fB--nofiles\fR] [\fB--nomd5\fR] [\fB--noscripts\fR]
+\fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fB--nodeps\fR] [\fB--nofiles\fR]
+    [\fB--nomd5\fR] [\fB--noscripts\fR]
 
 
 
@@ -41,22 +42,6 @@ rpm \- RPM Package Manager
 \fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
     [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
 
-.SS "BUILDING PACKAGES:"
-.PP
-
-
-\fBrpm\fR {\fB-ba|-bb|-bp|-bc|-bi|-bl|-bs\fR} [\fBbuild-options\fR]
-    \fB\fISPECFILE\fB\fR\fI\ ...\fR
-
-
-
-\fBrpm\fR {\fB-ta|-tb|-tp|-tc|-ti|-tl|-ts\fR} [\fBbuild-options\fR]
-    \fB\fITARBALL\fB\fR\fI\ ...\fR
-
-
-
-\fBrpm\fR {\fB--rebuild|--recompile\fR} \fB\fISOURCEPKG\fB\fR\fI ...\fR
-
 .SS "MISCELLANEOUS:"
 .PP
 
@@ -75,7 +60,7 @@ rpm \- RPM Package Manager
 
 \fBrpm\fR {\fB--setperms|--setugids\fR} \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
 
-.SS "SELECT-OPTIONS"
+.SS "select-options"
 .PP
 
 
@@ -84,7 +69,7 @@ rpm \- RPM Package Manager
  [\fB--querybynumber \fINUMBER\fB\fR] [\fB--triggeredby \fIPACKAGE_NAME\fB\fR]
  [\fB--whatprovides \fICAPABILITY\fB\fR] [\fB--whatrequires \fICAPABILITY\fB\fR]
 
-.SS "QUERY-OPTIONS"
+.SS "query-options"
 .PP
 
 
@@ -94,7 +79,7 @@ rpm \- RPM Package Manager
  [\fB-R,--requires\fR] [\fB--scripts\fR] [\fB-s,--state\fR]
  [\fB--triggers,--triggerscripts\fR]
 
-.SS "INSTALL-OPTIONS"
+.SS "install-options"
 .PP
 
 
@@ -107,14 +92,6 @@ rpm \- RPM Package Manager
  [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
  [\fB--repackage\fR] [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
  [\fB--test\fR]
-
-.SS "BUILD-OPTIONS"
-.PP
-
-
-[\fB--buildroot \fIDIRECTORY\fB\fR] [\fB--clean\fR] [\fB--nobuild\fR]
-[\fB--rmsource\fR] [\fB--rmspec\fR] [\fB--short-circuit\fR]
-[\fB--sign\fR] [\fB--target \fIPLATFORM\fB\fR]
 
 .SH "DESCRIPTION"
 .PP
@@ -136,9 +113,6 @@ One of the following basic modes must be selected:
 \fBSignature Check\fR,
 \fBInstall/Upgrade/Freshen\fR,
 \fBUninstall\fR,
-\fBBuild Package\fR,
-\fBBuild Package from Tarball\fR,
-\fBRecompile Package\fR,
 \fBInitialize Database\fR,
 \fBRebuild Database\fR,
 \fBResign\fR,
@@ -366,7 +340,7 @@ already installed, packages.
 Install the packages even if some of them are already installed
 on this system.
 .TP
-\fB--nobuild\fR
+\fB--test\fR
 Do not install the package, simply check for and report
 potential conflicts.
 .SS "QUERY OPTIONS"
@@ -533,7 +507,8 @@ the package.
 The general form of an rpm verify command is 
 .PP
 
-\fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fB--nodeps\fR] [\fB--nofiles\fR] [\fB--nomd5\fR] [\fB--noscripts\fR]
+\fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fB--nodeps\fR] [\fB--nofiles\fR]
+    [\fB--nomd5\fR] [\fB--noscripts\fR]
 
 .PP
 Verifying a package compares information about the installed files in
@@ -671,101 +646,6 @@ is \fI/var/tmp\fR).
 Don't really uninstall anything, just go through the motions.
 Useful in conjunction with the \fB-vv\fR option
 for debugging.
-.SS "BUILD OPTIONS"
-.PP
-The general form of an rpm build command is 
-.PP
-
-\fBrpm\fR {\fB-b\fISTAGE\fB|-t\fISTAGE\fB\fR} [\fBbuild-options\fR] \fB\fIFILE\fB\fR\fI ...\fR
-
-.PP
-The argument used is \fB-b\fR if a spec file is being
-used to build the package and \fB-t\fR if \fBrpm\fR
-should look inside of a (possibly compressed) tar file for
-the spec file to use. After the first argument, the next
-character (\fISTAGE\fR) specifies the stages
-of building and packaging to be done and is one of:
-.TP
-\fB-ba\fR
-Build binary and source packages (after doing the %prep, %build, and
-%install stages).
-.TP
-\fB-bb\fR
-Build a binary package (after doing the %prep, %build, and %install
-stages).
-.TP
-\fB-bp\fR
-Executes the "%prep" stage from the spec file. Normally this
-involves unpacking the sources and applying any patches.
-.TP
-\fB-bc\fR
-Do the "%build" stage from the spec file (after doing the %prep stage).
-This generally involves the equivalent of a "make".
-.TP
-\fB-bi\fR
-Do the "%install" stage from the spec file (after doing the %prep and
-%build stages).  This generally involves the equivalent of a
-"make install".
-.TP
-\fB-bl\fR
-Do a "list check".  The "%files" section from the spec file is
-macro expanded, and checks are made to verify that each file
-exists.
-.TP
-\fB-bs\fR
-Build just the source package.
-.PP
-The following options may also be used:
-.TP
-\fB--buildroot \fIDIRECTORY\fB\fR
-When building a package, override the BuildRoot tag with directory
-\fIDIRECTORY\fR.
-.TP
-\fB--clean\fR
-Remove the build tree after the packages are made.
-.TP
-\fB--nobuild\fR
-Do not execute any build stages. Useful for testing out spec files.
-.TP
-\fB--rmsource\fR
-Remove the sources after the build (may also be
-used standalone, e.g. "\fBrpm\fR \fB--rmsource foo.spec\fR").
-.TP
-\fB--rmspec\fR
-Remove the spec file after the build (may also be
-used standalone, eg. "\fBrpm\fR \fB--rmspec foo.spec\fR").
-.TP
-\fB--short-circuit\fR
-Skip straight to specified stage (i.e., skip all stages leading
-up to the specified stage).  Only valid with \fB-bc\fR
-and \fB-bi\fR.
-.TP
-\fB--sign\fR
-Embed a GPG signature in the package. This signature can be used
-to verify the integrity and the origin of the package.  See the
-section on GPG SIGNATURES for configuration details.
-.TP
-\fB--target \fIPLATFORM\fB\fR
-When building the package, interpret \fIPLATFORM\fR
-as \fBarch-vendor-os\fR and set the macros
-\fB%_target\fR,
-\fB%_target_arch\fR, and
-\fB%_target_os\fR
-accordingly.
-.SS "REBUILD AND RECOMPILE OPTIONS"
-.PP
-There are two other ways to invoke building with rpm:
-.PP
-
-\fBrpm\fR {\fB--rebuild|--recompile\fR} \fB\fISOURCEPKG\fB\fR\fI ...\fR
-
-.PP
-When invoked this way, \fBrpm\fR installs the named source
-package, and does a prep, compile and install.  In addition,
-\fB--rebuild\fR builds a new binary package. When the build
-has completed, the build directory is removed (as in
-\fB--clean\fR) and the the sources and spec file for
-the package are removed.
 .SS "SIGNING A PACKAGE"
 .PP
 
@@ -888,7 +768,48 @@ The TCP \fIPORT\fR number to use for the
 \fBhttp\fR connection on the proxy http server instead
 of the default port. This option may also be specified by configuring
 the macro \fB%_httpport\fR.
+.SH "LEGACY ISSUES"
+.SS "Executing rpmbuild"
+.PP
+The build modes of rpm are now resident in the
+\fI/usr/bin/rpmbuild\fR
+executable. Although legacy compatibility provided by the popt aliases
+below has been adequate, the compatibility is not perfect; hence build
+mode compatibility through popt aliases is being removed from rpm.
+Install the \fBrpmbuild\fR package, and see
+\fBrpmbuild\fR(8) for documentation of all the
+\fBrpm\fR build modes previously documented here in
+\fBrpm\fR(8).
+.PP
+Add the following lines to \fI/etc/popt\fR
+if you wish to continue invoking \fBrpmbuild\fR from
+the \fBrpm\fR command line:
+.PP
+.nf
+rpm     exec --bp               rpmb -bp
+rpm     exec --bc               rpmb -bc
+rpm     exec --bi               rpmb -bi
+rpm     exec --bl               rpmb -bl
+rpm     exec --ba               rpmb -ba
+rpm     exec --bb               rpmb -bb
+rpm     exec --bs               rpmb -bs 
+rpm     exec --tp               rpmb -tp 
+rpm     exec --tc               rpmb -tc 
+rpm     exec --ti               rpmb -ti 
+rpm     exec --tl               rpmb -tl 
+rpm     exec --ta               rpmb -ta
+rpm     exec --tb               rpmb -tb
+rpm     exec --ts               rpmb -ts 
+rpm     exec --rebuild          rpmb --rebuild
+rpm     exec --recompile        rpmb --recompile
+rpm     exec --clean            rpmb --clean
+rpm     exec --rmsource         rpmb --rmsource
+rpm     exec --rmspec           rpmb --rmspec
+rpm     exec --target           rpmb --target
+rpm     exec --short-circuit    rpmb --short-circuit
+.fi
 .SH "FILES"
+.SS "rpmrc Configuration"
 .PP
 .nf
 \fI/usr/lib/rpm/rpmrc\fR
@@ -896,25 +817,37 @@ the macro \fB%_httpport\fR.
 \fI/etc/rpmrc\fR
 \fI~/.rpmrc\fR
 .fi
-
+.SS "Macro Configuration"
+.PP
 .nf
 \fI/usr/lib/rpm/macros\fR
 \fI/usr/lib/rpm/redhat/macros\fR
 \fI/etc/rpm/macros\fR
 \fI~/.rpmmacros\fR
 .fi
-
+.SS "Database"
+.PP
 .nf
-\fI/var/lib/rpm/Conflictname\fR
 \fI/var/lib/rpm/Basenames\fR
+\fI/var/lib/rpm/Conflictname\fR
+\fI/var/lib/rpm/Dirnames\fR
+\fI/var/lib/rpm/Filemd5s\fR
 \fI/var/lib/rpm/Group\fR
+\fI/var/lib/rpm/Installtid\fR
 \fI/var/lib/rpm/Name\fR
 \fI/var/lib/rpm/Packages\fR
 \fI/var/lib/rpm/Providename\fR
+\fI/var/lib/rpm/Provideversion\fR
+\fI/var/lib/rpm/Pubkeys\fR
+\fI/var/lib/rpm/Removed\fR
 \fI/var/lib/rpm/Requirename\fR
+\fI/var/lib/rpm/Requireversion\fR
+\fI/var/lib/rpm/Sha1header\fR
+\fI/var/lib/rpm/Sigmd5\fR
 \fI/var/lib/rpm/Triggername\fR
 .fi
-
+.SS "Temporaray"
+.PP
 \fI/var/tmp/rpm*\fR
 .SH "SEE ALSO"
 

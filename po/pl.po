@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-05 16:20-0400\n"
+"POT-Creation-Date: 2002-06-09 15:27-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2206,7 +2206,7 @@ msgstr "nie mo¿na otworzyæ %s: %s"
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê"
 
-#: lib/query.c:127 lib/rpmts.c:262
+#: lib/query.c:127 lib/rpmts.c:264
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³±d w formacie: %s\n"
@@ -2626,108 +2626,108 @@ msgstr " jest w konflikcie z %s-%s-%s\n"
 msgid "is needed by"
 msgstr " jest wymagany przez %s-%s-%s\n"
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:200
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "brak drugiego ':' przy %s:%d"
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:203
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "brak nazwy architektury przy %s:%d"
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:357
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Niekompletna linia danych przy %s:%d"
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:362
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Zbyt wiele argumentów w linii danych przy %s:%d"
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:370
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "B³êdny numer arch/os: %s (%s:%d)"
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:407
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Niekompletna domy¶lna linia przy %s:%d"
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:412
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Zbyt wiele argumentów w linii domy¶lnej przy %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:580
+#: lib/rpmrc.c:582
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Odczytanie %s nie powiod³o siê: %s."
 
-#: lib/rpmrc.c:618
+#: lib/rpmrc.c:620
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "brak ':' przy %s:%d"
 
-#: lib/rpmrc.c:635 lib/rpmrc.c:709
+#: lib/rpmrc.c:637 lib/rpmrc.c:711
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "brak argumentu dla %s przy %s:%d"
 
-#: lib/rpmrc.c:652 lib/rpmrc.c:674
+#: lib/rpmrc.c:654 lib/rpmrc.c:676
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s: Open nie powiod³o siê\n"
 
-#: lib/rpmrc.c:661
+#: lib/rpmrc.c:663
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nie mo¿na otworzyæ %s przy %s:%d"
 
-#: lib/rpmrc.c:701
+#: lib/rpmrc.c:703
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "brak architektury dla %s przy %s:%d"
 
-#: lib/rpmrc.c:768
+#: lib/rpmrc.c:770
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "b³êdna opcja '%s' przy %s:%d"
 
-#: lib/rpmrc.c:1507
+#: lib/rpmrc.c:1521
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Nieznany system: %s\n"
 
-#: lib/rpmrc.c:1508
+#: lib/rpmrc.c:1522
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Skontaktuj siê, proszê, z rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1733
+#: lib/rpmrc.c:1747
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie mo¿na rozszerzyæ %s"
 
-#: lib/rpmrc.c:1738
+#: lib/rpmrc.c:1752
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1755
+#: lib/rpmrc.c:1769
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s."
 
-#: lib/rpmts.c:131 lib/rpmts.c:173
+#: lib/rpmts.c:133 lib/rpmts.c:175
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:561
+#: lib/rpmts.c:563
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2876,13 +2876,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Blok sygnatury: %d\n"
 
-#: lib/transaction.c:104
+#: lib/transaction.c:105
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pominiêty z powodu flagi missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:893
+#: lib/transaction.c:894
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"

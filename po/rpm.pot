@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-06-05 16:20-0400\n"
+"POT-Creation-Date: 2002-06-09 15:27-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2090,7 +2090,7 @@ msgstr ""
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:127 lib/rpmts.c:262
+#: lib/query.c:127 lib/rpmts.c:264
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2499,108 +2499,108 @@ msgstr ""
 msgid "is needed by"
 msgstr ""
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:200
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:203
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:357
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:362
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:370
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:407
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:412
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:580
+#: lib/rpmrc.c:582
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr ""
 
-#: lib/rpmrc.c:618
+#: lib/rpmrc.c:620
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:635 lib/rpmrc.c:709
+#: lib/rpmrc.c:637 lib/rpmrc.c:711
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:652 lib/rpmrc.c:674
+#: lib/rpmrc.c:654 lib/rpmrc.c:676
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr ""
 
-#: lib/rpmrc.c:661
+#: lib/rpmrc.c:663
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:701
+#: lib/rpmrc.c:703
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:768
+#: lib/rpmrc.c:770
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1507
+#: lib/rpmrc.c:1521
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1508
+#: lib/rpmrc.c:1522
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1733
+#: lib/rpmrc.c:1747
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1738
+#: lib/rpmrc.c:1752
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1755
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
 
-#: lib/rpmts.c:131 lib/rpmts.c:173
+#: lib/rpmts.c:133 lib/rpmts.c:175
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:561
+#: lib/rpmts.c:563
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2739,13 +2739,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:104
+#: lib/transaction.c:105
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:893
+#: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

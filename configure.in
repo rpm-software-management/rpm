@@ -14,7 +14,7 @@ AM_CONFIG_HEADER(config.h)
 dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
-ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr"
+ALL_LINGUAS="cs da de en_RN es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN.GB2312"
 
 echo "
 
@@ -1124,6 +1124,11 @@ LIBRPMRC_FILENAME="${RPMCONFIGDIR}/rpmrc"
 AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME",
 	[Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc)])
 AC_SUBST(LIBRPMRC_FILENAME)
+
+VENDORRPMRC_FILENAME="${RPMCONFIGDIR}/${RPMCANONVENDOR}/rpmrc"
+AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
+       [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
+AC_SUBST(VENDORRPMRC_FILENAME)
 
 LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt-${VERSION}"
 AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",

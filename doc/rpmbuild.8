@@ -27,7 +27,7 @@ rpmbuild \- Build RPM Package(s)
 
 \fBrpmbuild\fR \fB--showrc\fR
 
-.SS "RPMBUILD-OPTIONS"
+.SS "rpmbuild-options"
 .PP
 
 
@@ -212,33 +212,45 @@ options are currently set in
 \fImacros\fR
 configuration file(s).
 .SH "FILES"
+.SS "rpmrc Configuration"
 .PP
-
 .nf
 \fI/usr/lib/rpm/rpmrc\fR
 \fI/usr/lib/rpm/redhat/rpmrc\fR
 \fI/etc/rpmrc\fR
 \fI~/.rpmrc\fR
 .fi
-
+.SS "Macro Configuration"
+.PP
 .nf
 \fI/usr/lib/rpm/macros\fR
 \fI/usr/lib/rpm/redhat/macros\fR
 \fI/etc/rpm/macros\fR
 \fI~/.rpmmacros\fR
 .fi
-
+.SS "Database"
+.PP
 .nf
-\fI/var/lib/rpm/Conflictname\fR
 \fI/var/lib/rpm/Basenames\fR
+\fI/var/lib/rpm/Conflictname\fR
+\fI/var/lib/rpm/Dirnames\fR
+\fI/var/lib/rpm/Filemd5s\fR
 \fI/var/lib/rpm/Group\fR
+\fI/var/lib/rpm/Installtid\fR
 \fI/var/lib/rpm/Name\fR
 \fI/var/lib/rpm/Packages\fR
 \fI/var/lib/rpm/Providename\fR
+\fI/var/lib/rpm/Provideversion\fR
+\fI/var/lib/rpm/Pubkeys\fR
+\fI/var/lib/rpm/Removed\fR
 \fI/var/lib/rpm/Requirename\fR
+\fI/var/lib/rpm/Requireversion\fR
+\fI/var/lib/rpm/Sha1header\fR
+\fI/var/lib/rpm/Sigmd5\fR
 \fI/var/lib/rpm/Triggername\fR
 .fi
-
+.SS "Temporaray"
+.PP
 \fI/var/tmp/rpm*\fR
 .SH "SEE ALSO"
 

@@ -78,6 +78,7 @@ will manipulate RPM packages and databases.
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
 Requires: rpm = %{rpm_version}
+Provides: rpmbuild(VendorConfig) = %{version}
 
 %description build
 The rpm-build package contains the scripts and executable programs
@@ -376,6 +377,8 @@ fi
 %endif
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/noarch*
 
+#%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/@RPMCANONVENDOR@
+
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
 %lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/rpm.mo
@@ -516,6 +519,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Jun  9 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.24
+- add /usr/lib/rpm/redhat/* per-vendor configuration.
+- remove build mode compatibility aliases, documented and gone.
+
 * Wed Jun  5 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.23
 - python: portability fiddles (#54350).
 - check inodes (but not blocks) on FAT file systems (#64256).

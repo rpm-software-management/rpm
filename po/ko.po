@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-06-05 16:20-0400\n"
+"POT-Creation-Date: 2002-06-09 15:27-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2134,7 +2134,7 @@ msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/query.c:127 lib/rpmts.c:262
+#: lib/query.c:127 lib/rpmts.c:264
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
@@ -2557,108 +2557,108 @@ msgstr " %s-%s-%s (와)과 충돌합니다\n"
 msgid "is needed by"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:200
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "%s에 두번째 ':' 이 없음:%d\n"
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:203
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "%s에 아키텍쳐명이 없음:%d\n"
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:357
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "%s의 데이터 항목(line)이 불충분함:%d\n"
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:362
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "%s의 데이터 항목(line)에 인수가 너무 많음:%d\n"
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:370
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "잘못된 아키텍쳐/운영체제 번호: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:407
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "%s의 기본 항목(line)이 불충분함:%d\n"
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:412
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "%s의 기본 항목(line)에 인수가 너무 많음:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:580
+#: lib/rpmrc.c:582
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "%s(을)를 읽는데 실패함: %s.\n"
 
-#: lib/rpmrc.c:618
+#: lib/rpmrc.c:620
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "%2$s에 ':' (0x%1$02x 찾음) 이 없음:%3$d\n"
 
-#: lib/rpmrc.c:635 lib/rpmrc.c:709
+#: lib/rpmrc.c:637 lib/rpmrc.c:711
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%2$s에 %1$s(을)를 위한 인수가 없음:%3$d\n"
 
-#: lib/rpmrc.c:652 lib/rpmrc.c:674
+#: lib/rpmrc.c:654 lib/rpmrc.c:676
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%2$s의 %1$s 확장(expansion)에 실패함:%3$d \"%4$s\"\n"
 
-#: lib/rpmrc.c:661
+#: lib/rpmrc.c:663
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "%2$s의 %1$s(을)를 열 수 없음:%3$d: %4$s\n"
 
-#: lib/rpmrc.c:701
+#: lib/rpmrc.c:703
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%2$s에 %1$s(을)를 위한 아키텍쳐가 없음:%3$d\n"
 
-#: lib/rpmrc.c:768
+#: lib/rpmrc.c:770
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "%2$s에 잘못된 '%1$s' 옵션:%3$d\n"
 
-#: lib/rpmrc.c:1507
+#: lib/rpmrc.c:1521
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "알 수 없는 시스템: %s\n"
 
-#: lib/rpmrc.c:1508
+#: lib/rpmrc.c:1522
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com으로 연락바랍니다\n"
 
-#: lib/rpmrc.c:1733
+#: lib/rpmrc.c:1747
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s(을)를 확장(expand)할 수 없습니다\n"
 
-#: lib/rpmrc.c:1738
+#: lib/rpmrc.c:1752
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s(을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 
-#: lib/rpmrc.c:1755
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
-#: lib/rpmts.c:131 lib/rpmts.c:173
+#: lib/rpmts.c:133 lib/rpmts.c:175
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:561
+#: lib/rpmts.c:563
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2801,13 +2801,13 @@ msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/transaction.c:104
+#: lib/transaction.c:105
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "missingok 플래그로 인해 %s(을)를 생략합니다\n"
 
 #. @innercontinue@
-#: lib/transaction.c:893
+#: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"

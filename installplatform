@@ -28,11 +28,6 @@ RPMRC_GNU="`$RPM --eval '%{_gnu}'`"
 target_platform="`$RPM --eval '%{?_gnu:%undefine _gnu}%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
-rm -f ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
-ln -s ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
-rm -f ${DESTDIR}/${pkglibdir}/noarch-${OS}
-ln -s ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${OS}
-
 case "$arch" in
   i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_ s_i386_athlon_' ;;
   alpha*) SUBSTS='s_alpha_alpha_ s_alpha_alphaev5_ s_alpha_alphaev56_ s_alpha_alphapca56_ s_alpha_alphaev6_ s_alpha_alphaev67_' ;;
@@ -48,7 +43,7 @@ for SUBST in $SUBSTS ; do
   TARGET=`echo $target | sed -e $SUBST`
   LIB=lib
 
-  PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}"
+  PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${OS}"
 
   [ -d $PPD ] || mkdir $PPD
 
@@ -102,17 +97,21 @@ for SUBST in $SUBSTS ; do
   | grep -v '^@' \
   > ${PPD}/macros
 
-  #
-  # Better try to create these too until the smoke clears. Yuck.
-  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || {
-    rm -f ${DESTDIR}/${pkglibdir}/${TARGET}
-    ln -s ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
-  }
-  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || {
-    rm -f ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
-    ln -s ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
-  }
-
 done
+
+{ cd ${DESTDIR}/${pkglibdir}
+  [ -L noarch-${OS} ] && rm -f noarch-${OS} 2>/dev/null
+  mkdir -p noarch-${OS}
+  sed -e "/^%_arch/s,${arch},noarch," ${arch}-${OS}/macros | grep -v '^%optflags' > noarch-${OS}/macros
+  [ -d ${VENDOR} ] || mkdir ${VENDOR}
+  for i in brp-* find-lang.sh find-provides find-requires perl.prov perl.req
+  do
+    sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < $i > ${VENDOR}/$i
+    chmod +x ${VENDOR}/$i
+  done
+#  chmod -x ${VENDOR}/perl.req
+  echo "macrofiles:     /usr/lib/rpm/macros:/usr/lib/rpm/${VENDOR}/macros:/etc/rpm/macros.specspo:/etc/rpm/macros.cdb" > ${VENDOR}/rpmrc
+  sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < ${arch}-${OS}/macros | grep -v '^%(_arch|optflags)' > ${VENDOR}/macros
+}
 
 rm $TEMPRC

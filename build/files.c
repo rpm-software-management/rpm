@@ -899,8 +899,8 @@ VFA_t virtualFileAttributes[] = {
 
 /**
  * Parse simple attributes (e.g. %dir) from file manifest.
- & @param spec
- & @param pkg
+ * @param spec
+ * @param pkg
  * @param buf
  * @param fl		package file tree walk data
  * @retval fileName

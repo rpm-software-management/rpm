@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-05 16:20-0400\n"
+"POT-Creation-Date: 2002-06-09 15:27-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2204,7 +2204,7 @@ msgstr "nepodarilo sa otvori» %s: %s"
 msgid "%s failed: %s\n"
 msgstr "%s zlyhalo"
 
-#: lib/query.c:127 lib/rpmts.c:262
+#: lib/query.c:127 lib/rpmts.c:264
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "chyba formátu: %s\n"
@@ -2622,108 +2622,108 @@ msgstr " koliduje s %s-%s-%s\n"
 msgid "is needed by"
 msgstr " je vy¾adované %s-%s-%s\n"
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:200
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "chýbajúce druhé ':' na %s:%d"
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:203
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "chýba názov architektúry na %s:%d"
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:357
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Neúplný riadok údajov na %s:%d"
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:362
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Priveµa argumentov v riadku údajov na %s:%d"
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:370
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Chybné èíslo arch/os: %s (%s:%d)"
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:407
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Neúplný implicitný riadok na %s:%d"
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:412
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Priveµa argumentov v implicitnom riadku na %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:580
+#: lib/rpmrc.c:582
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Nie je mo¾né preèíta» %s: %s."
 
-#: lib/rpmrc.c:618
+#: lib/rpmrc.c:620
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "chýbajúca ':' na %s:%d"
 
-#: lib/rpmrc.c:635 lib/rpmrc.c:709
+#: lib/rpmrc.c:637 lib/rpmrc.c:711
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "chýbajúci argument pre %s na %s:%d"
 
-#: lib/rpmrc.c:652 lib/rpmrc.c:674
+#: lib/rpmrc.c:654 lib/rpmrc.c:676
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "expanzia %s zlyhala na %s:%d \"%s\""
 
-#: lib/rpmrc.c:661
+#: lib/rpmrc.c:663
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nie je mo¾né otvori» %s na %s:%d"
 
-#: lib/rpmrc.c:701
+#: lib/rpmrc.c:703
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "chýbajúca architektúra pre %s na %s:%d"
 
-#: lib/rpmrc.c:768
+#: lib/rpmrc.c:770
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "chybná voµba '%s' na %s:%d"
 
-#: lib/rpmrc.c:1507
+#: lib/rpmrc.c:1521
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámy systém: %s\n"
 
-#: lib/rpmrc.c:1508
+#: lib/rpmrc.c:1522
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Kontaktujte prosím rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1733
+#: lib/rpmrc.c:1747
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie je mo¾né expandova» %s"
 
-#: lib/rpmrc.c:1738
+#: lib/rpmrc.c:1752
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1755
+#: lib/rpmrc.c:1769
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
 
-#: lib/rpmts.c:131 lib/rpmts.c:173
+#: lib/rpmts.c:133 lib/rpmts.c:175
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:561
+#: lib/rpmts.c:563
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2872,13 +2872,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Doplnenie podpisu: %d\n"
 
-#: lib/transaction.c:104
+#: lib/transaction.c:105
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:893
+#: lib/transaction.c:894
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "vytvára sa adresár %s\n"

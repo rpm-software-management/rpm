@@ -6,6 +6,8 @@
 #include <setjmp.h>
 #endif
 
+#include <ctype.h>	/* XXX for /etc/rpm/platform contents */
+
 #if HAVE_SYS_SYSTEMCFG_H
 #include <sys/systemcfg.h>
 #else
@@ -21,7 +23,7 @@
 /*@access FD_t@*/		/* compared with NULL */
 
 /*@observer@*/ /*@unchecked@*/
-static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
+static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
 
 /*@observer@*/ /*@checked@*/
 const char * macrofiles = MACROFILES;

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-06-05 16:20-0400\n"
+"POT-Creation-Date: 2002-06-09 15:27-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -2146,7 +2146,7 @@ msgstr "%s falhou no ficheiro %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
 
-#: lib/query.c:127 lib/rpmts.c:262
+#: lib/query.c:127 lib/rpmts.c:264
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "formato incorrecto: %s\n"
@@ -2567,108 +2567,108 @@ msgstr " está em conflito com o %s-%s-%s\n"
 msgid "is needed by"
 msgstr " é necessário pelo %s-%s-%s\n"
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:200
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "falta o segundo ':' em %s:%d\n"
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:203
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "falta o nome da arquitectura em %s:%d\n"
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:357
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Linha de dados incompleta em %s:%d\n"
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:362
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Demasiados argumentos na linha de dados em %s:%d\n"
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:370
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Número de arq./SO errado: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:407
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Linha por omissão incompleta em %s:%d\n"
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:412
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Demasiados argumentos na linha por omissão em %s:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:580
+#: lib/rpmrc.c:582
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Não consegui ler o %s: %s.\n"
 
-#: lib/rpmrc.c:618
+#: lib/rpmrc.c:620
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "falta um ':' (encontrado um 0x%02x) em %s:%d\n"
 
-#: lib/rpmrc.c:635 lib/rpmrc.c:709
+#: lib/rpmrc.c:637 lib/rpmrc.c:711
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "faltam argumentos para o %s em %s:%d\n"
 
-#: lib/rpmrc.c:652 lib/rpmrc.c:674
+#: lib/rpmrc.c:654 lib/rpmrc.c:676
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "a expansão do %s falhou em %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:661
+#: lib/rpmrc.c:663
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "não consigo abrir o %s em %s:%d: %s\n"
 
-#: lib/rpmrc.c:701
+#: lib/rpmrc.c:703
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "falta a arquitectura para o %s em %s:%d\n"
 
-#: lib/rpmrc.c:768
+#: lib/rpmrc.c:770
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "má opção '%s' em %s:%d\n"
 
-#: lib/rpmrc.c:1507
+#: lib/rpmrc.c:1521
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Sistema desconhecido: %s\n"
 
-#: lib/rpmrc.c:1508
+#: lib/rpmrc.c:1522
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Por favor contacte o rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1733
+#: lib/rpmrc.c:1747
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Não consigo expandir o %s\n"
 
-#: lib/rpmrc.c:1738
+#: lib/rpmrc.c:1752
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 
-#: lib/rpmrc.c:1755
+#: lib/rpmrc.c:1769
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/rpmts.c:131 lib/rpmts.c:173
+#: lib/rpmts.c:133 lib/rpmts.c:175
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "não consigo abrir a base de dados Packages em %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:561
+#: lib/rpmts.c:563
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2812,13 +2812,13 @@ msgstr "'Digest' MD5 estragado: NÃO SUPORTADO\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Assinatura: tamanho(%d)+pad(%d)\n"
 
-#: lib/transaction.c:104
+#: lib/transaction.c:105
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido à opção missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:893
+#: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "a excluir a directoria %s\n"

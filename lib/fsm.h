@@ -234,8 +234,8 @@ extern "C" {
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param cfd
- * @param archiveSize	pointer to archive size
- * @param failedFile	pointer to first file name that failed.
+ * @retval archiveSize	pointer to archive size
+ * @retval failedFile	pointer to first file name that failed.
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
