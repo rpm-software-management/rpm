@@ -1105,12 +1105,15 @@ fprintf(stderr, "*** PBF fileURL %s\n", fileURL);
 	int i;
 
 	rc = rpmGlob(diskURL, &argc, &argv);
-	if (rc == 0) {
+	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
 		xfree(argv[i]);
 	    }
 	    xfree(argv);
+	} else {
+	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s"), diskURL);
+	    rc = 1;
 	}
     } else {
 	rc = addFile(fl, diskURL, NULL);
