@@ -9,34 +9,6 @@
 #include "misc.h"
 #include "debug.h"
 
-typedef enum rpmtoolIOBits_e {
-    RPMIOBITS_NONE	= 0,
-    RPMIOBITS_LEAD	= (1 <<  0),
-    RPMIOBITS_SHEADER	= (1 <<  1),
-    RPMIOBITS_HEADER	= (1 <<  2),
-    RPMIOBITS_PAYLOAD	= (1 <<  3),
-    RPMIOBITS_FDIO	= (1 <<  4),
-    RPMIOBITS_UFDIO	= (1 <<  5),
-    RPMIOBITS_GZDIO	= (1 <<  6),
-    RPMIOBITS_BZDIO	= (1 <<  7),
-    RPMIOBITS_UNCOMPRESS= (1 <<  8),
-    RPMIOBITS_BINARY	= (1 <<  9),
-    RPMIOBITS_DUMP	= (1 << 10),
-    RPMIOBITS_XML	= (1 << 11)
-} rpmtoolIOBits;
-
-static const char * iav[] = { "-", NULL };
-static const char * ifmt = NULL;
-static const char * ipath = NULL;
-static const char * imode = NULL;
-static rpmtoolIOBits ibits = RPMIOBITS_NONE;
-
-static const char * oav[] = { "-", NULL };
-static const char * ofmt = NULL;
-static const char * opath = NULL;
-static const char * omode = NULL;
-static rpmtoolIOBits obits = RPMIOBITS_NONE;
-
 static int _rpmtool_debug = 0;
 
 typedef struct rpmavi_s * rpmavi;
@@ -73,6 +45,61 @@ static const char * rpmaviNext(rpmavi avi)
 	a = *avi->av++;
     return a;
 }
+
+/*@observer@*/ /*@unchecked@*/
+static const struct headerTagTableEntry_s rpmSTagTbl[] = {
+	{ "RPMTAG_HEADERIMAGE", HEADER_IMAGE, },
+	{ "RPMTAG_HEADERSIGNATURES", HEADER_SIGNATURES, },
+	{ "RPMTAG_HEADERIMMUTABLE", HEADER_IMMUTABLE, },
+	{ "RPMTAG_HEADERREGIONS", HEADER_REGIONS, },
+	{ "RPMTAG_SIGSIZE", 999+1, },
+	{ "RPMTAG_SIGLEMD5_1", 999+2, },
+	{ "RPMTAG_SIGPGP", 999+3, },
+	{ "RPMTAG_SIGLEMD5_2", 999+4, },
+	{ "RPMTAG_SIGMD5", 999+5, },
+	{ "RPMTAG_SIGGPG", 999+6, },
+	{ "RPMTAG_SIGPGP5", 999+7, },
+	{ "RPMTAG_SIGPAYLOADSIZE", 999+8, },
+	{ "RPMTAG_BADSHA1_1", HEADER_SIGBASE+8, },
+	{ "RPMTAG_BADSHA1_2", HEADER_SIGBASE+9, },
+	{ "RPMTAG_PUBKEYS", HEADER_SIGBASE+10, },
+	{ "RPMTAG_DSAHEADER", HEADER_SIGBASE+11, },
+	{ "RPMTAG_RSAHEADER", HEADER_SIGBASE+12, },
+	{ "RPMTAG_SHA1HEADER", HEADER_SIGBASE+13, },
+	{ NULL, 0 }
+};
+
+/*@observer@*/ /*@unchecked@*/
+const struct headerTagTableEntry_s * rpmSTagTable = rpmSTagTbl;
+
+
+typedef enum rpmtoolIOBits_e {
+    RPMIOBITS_NONE	= 0,
+    RPMIOBITS_LEAD	= (1 <<  0),
+    RPMIOBITS_SHEADER	= (1 <<  1),
+    RPMIOBITS_HEADER	= (1 <<  2),
+    RPMIOBITS_PAYLOAD	= (1 <<  3),
+    RPMIOBITS_FDIO	= (1 <<  4),
+    RPMIOBITS_UFDIO	= (1 <<  5),
+    RPMIOBITS_GZDIO	= (1 <<  6),
+    RPMIOBITS_BZDIO	= (1 <<  7),
+    RPMIOBITS_UNCOMPRESS= (1 <<  8),
+    RPMIOBITS_BINARY	= (1 <<  9),
+    RPMIOBITS_DUMP	= (1 << 10),
+    RPMIOBITS_XML	= (1 << 11)
+} rpmtoolIOBits;
+
+static const char * iav[] = { "-", NULL };
+static const char * ifmt = NULL;
+static const char * ipath = NULL;
+static const char * imode = NULL;
+static rpmtoolIOBits ibits = RPMIOBITS_NONE;
+
+static const char * oav[] = { "-", NULL };
+static const char * ofmt = NULL;
+static const char * opath = NULL;
+static const char * omode = NULL;
+static rpmtoolIOBits obits = RPMIOBITS_NONE;
 
 static struct iobits_s {
     const char * name;
@@ -375,8 +402,24 @@ fprintf(stderr, "*** Fopen(%s,%s)\n", (ofn != NULL ? ofn : "-"), omode);
 	if (obits & RPMIOBITS_LEAD)
 	    writeLead(fdo, &lead);
 
-	if (obits & RPMIOBITS_SHEADER)
-	    rpmWriteSignature(fdo, sigh);
+	if (obits & RPMIOBITS_SHEADER) {
+	    if (obits & RPMIOBITS_DUMP) {
+		headerDump(sigh, stdout, HEADER_DUMP_INLINE, rpmSTagTable);
+	    } else if (obits & RPMIOBITS_XML) {
+		const char * errstr = NULL;
+
+		s = "[%{*:xml}\n]";
+		t = headerSprintf(sigh, s, rpmSTagTable, rpmHeaderFormats, &errstr);
+		
+		if (t != NULL) {
+		    if (rpmxpDTD != NULL && *rpmxpDTD != '\0')
+			Fwrite(rpmxpDTD, strlen(rpmxpDTD), 1, fdo);
+		    Fwrite(t, strlen(t), 1, fdo);
+		}
+		t = _free(t);
+	    } else
+		headerWrite(fdo, sigh, HEADER_MAGIC_YES);
+	}
 
 	if (obits & RPMIOBITS_HEADER) {
 	    if (obits & RPMIOBITS_DUMP) {
