@@ -10,7 +10,7 @@
 
 typedef struct SpecRec *Spec;
 
-Spec parseSpec(FILE *f, char *specfile);
+Spec parseSpec(FILE *f, char *specfile, char *prefixOverride);
 void freeSpec(Spec s);
 
 void dumpSpec(Spec s, FILE *f);

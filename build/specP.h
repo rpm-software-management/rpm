@@ -40,6 +40,7 @@ struct SpecRec {
     StringBuf clean;
 
     char *prefix;
+    char *buildprefix;
     
     struct PackageRec *packages;
     /* The first package record is the "main" package and contains
