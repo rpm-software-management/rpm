@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.28 1999/05/04 15:11:23 jbj Exp $
+# $Id: macros.in,v 1.29 1999/05/05 19:01:01 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -213,3 +213,31 @@
   %{-C:_mydir="`pwd`"; %{-M:%{__mkdir} -p %{-C*};} cd %{-C*};} \
   CFLAGS="%{optflags}" %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} %* \
   %{-C:cd ${_mydir}; unset _mydir}
+
+#------------------------------------------------------------------------------
+# Useful perl macros (from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
+#
+# For example, these can be used as (from ImageMagick.spec from PLD site)
+#	[...]
+#	BuildPrereq: perl
+#	[...]
+#	%package perl
+#	Summary: libraries and modules for access to ImageMagick from perl
+#	Group: Development/Languages/Perl
+#	Requires: %{name} = %{version}
+#	%requires_eq    perl
+#	[...]
+#	%install
+#	rm -fr $RPM_BUILD_ROOT
+#	install -d $RPM_BUILD_ROOT/%{perl_sitearch}
+#	[...]
+#	%files perl
+#	%defattr(644,root,root,755)
+#	%{perl_sitearch}/Image
+#	%dir %{perl_sitearch}/auto/Image
+#
+%requires_eq()	%(LC_ALL="C" rpm -q \
+	--queryformat 'Requires:%%{NAME} = %%{VERSION}' %1| \
+	grep -v "is not")
+%perl_sitearch	%(eval "`perl -V:installsitearch`"; echo $installsitearch)
+%perl_archlib	%(eval "`perl -V:installarchlib`"; echo $installarchlib)
