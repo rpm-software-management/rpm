@@ -812,7 +812,7 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 	if (!(p->token && !xstrncasecmp(spec->line, p->token, p->len)))
 	    continue;
 	if (p->obsolete) {
-	    rpmError(RPMERR_BADSPEC, _("Obsolete syntax: %s\n"),
+	    rpmError(RPMERR_BADSPEC, _("Legacy syntax is unsupported: %s\n"),
 			p->token);
 	    p = NULL;
 	}
