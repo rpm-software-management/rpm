@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-06 18:13-0500\n"
+"POT-Creation-Date: 2002-03-06 21:16-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -1607,51 +1607,57 @@ msgstr "%s criado como %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "erro ao criar o ficheiro temporário %s\n"
 
-#: lib/package.c:179 lib/package.c:255
+#: lib/package.c:181 lib/package.c:257
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "a versão 1 dos pacotes não é suportada por esta versão do RPM\n"
 
-#: lib/package.c:200 lib/package.c:263
+#: lib/package.c:202 lib/package.c:265
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "só os pacotes com versão <= 4 são suportados por esta versão do RPM\n"
 
-#: lib/package.c:241 lib/rpmchecksig.c:161 lib/rpmchecksig.c:541
+#: lib/package.c:243 lib/rpmchecksig.c:161 lib/rpmchecksig.c:541
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/package.c:247
+#: lib/package.c:249
 #, fuzzy, c-format
 msgid "%s: bad magic\n"
 msgstr "Código de integridade inválido"
 
-#: lib/package.c:272 lib/rpmchecksig.c:179 lib/rpmchecksig.c:557
+#: lib/package.c:274 lib/rpmchecksig.c:179 lib/rpmchecksig.c:557
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: o rpmReadSignature falhou\n"
 
-#: lib/package.c:276 lib/rpmchecksig.c:183 lib/rpmchecksig.c:562
+#: lib/package.c:278 lib/rpmchecksig.c:183 lib/rpmchecksig.c:562
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
 
-#: lib/package.c:304 lib/rpmchecksig.c:462
+#: lib/package.c:308 lib/rpmchecksig.c:462
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
 #. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:334 lib/rpmchecksig.c:631
+#: lib/package.c:338 lib/rpmchecksig.c:633
+#, fuzzy
+msgid "========== Header RSA signature\n"
+msgstr "========== a realizar o tsort nos pacotes\n"
+
+#. Parse the parameters from the OpenPGP packets that will be needed.
+#: lib/package.c:358 lib/rpmchecksig.c:639
 msgid "========== Header DSA signature\n"
 msgstr ""
 
 #. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:357
+#: lib/package.c:381
 msgid "========== Package DSA/RSA signature\n"
 msgstr ""
 
-#: lib/package.c:366 lib/rpmchecksig.c:110 lib/rpmchecksig.c:491
+#: lib/package.c:390 lib/rpmchecksig.c:110 lib/rpmchecksig.c:491
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
@@ -2431,37 +2437,37 @@ msgstr ":%s: o readLead falhou\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Nenhuma assinatura disponível (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:618
+#: lib/rpmchecksig.c:620
 #, fuzzy
 msgid "========== Package RSA signature\n"
 msgstr "========== a realizar o tsort nos pacotes\n"
 
-#: lib/rpmchecksig.c:637
+#: lib/rpmchecksig.c:645
 #, fuzzy
 msgid "========== Package DSA signature\n"
 msgstr "========== a realizar o tsort nos pacotes\n"
 
-#: lib/rpmchecksig.c:768
+#: lib/rpmchecksig.c:778
 msgid "NOT OK"
 msgstr "NÃO-OK"
 
-#: lib/rpmchecksig.c:769 lib/rpmchecksig.c:783
+#: lib/rpmchecksig.c:779 lib/rpmchecksig.c:793
 msgid " (MISSING KEYS:"
 msgstr " (FALTAM AS CHAVES:"
 
-#: lib/rpmchecksig.c:771 lib/rpmchecksig.c:785
+#: lib/rpmchecksig.c:781 lib/rpmchecksig.c:795
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:772 lib/rpmchecksig.c:786
+#: lib/rpmchecksig.c:782 lib/rpmchecksig.c:796
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CHAVES SUSPEITAS:"
 
-#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
+#: lib/rpmchecksig.c:784 lib/rpmchecksig.c:798
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:782
+#: lib/rpmchecksig.c:792
 msgid "OK"
 msgstr "OK"
 
@@ -2704,8 +2710,8 @@ msgstr "Assinatura (só interna) antiga! Como é que obteve isto!?\n"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Tamanho da assinatura: %d\n"
 
-#: lib/signature.c:306 lib/signature.c:405 lib/signature.c:656
-#: lib/signature.c:688
+#: lib/signature.c:306 lib/signature.c:405 lib/signature.c:675
+#: lib/signature.c:708
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Não consegui executar o %s: %S\n"
@@ -2756,57 +2762,57 @@ msgstr "Obtive %d bytes da assinatura do GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:693 lib/signature.c:747
+#: lib/signature.c:713 lib/signature.c:768
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:727
+#: lib/signature.c:747
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:739
+#: lib/signature.c:760
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:783
+#: lib/signature.c:804
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Tamanho do cabeçalho demasiado grande"
 
-#: lib/signature.c:823
+#: lib/signature.c:844
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:880
+#: lib/signature.c:901
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1042
+#: lib/signature.c:1063
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "ignorar as assinaturas de MD5"
 
-#: lib/signature.c:1135
+#: lib/signature.c:1179
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1136
+#: lib/signature.c:1180
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:1214
+#: lib/signature.c:1271
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1240
+#: lib/signature.c:1298
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1244
+#: lib/signature.c:1302
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "'Pad' ou preenchimento da assinatura: %d\n"

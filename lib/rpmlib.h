@@ -229,6 +229,7 @@ typedef enum rpmTag_e {
     RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+9,
     RPMTAG_PUBKEYS		= RPMTAG_SIG_BASE+10,
     RPMTAG_DSAHEADER		= RPMTAG_SIG_BASE+11,
+    RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,
 
     RPMTAG_NAME  		= 1000,
     RPMTAG_VERSION		= 1001,
@@ -1791,6 +1792,7 @@ enum rpmtagSignature {
 				/*!< uncompressed payload size in bytes. */
     RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< sha1 header digest. */
     RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< DSA header signature. */
+    RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< RSA header signature. */
 };
 
 /**

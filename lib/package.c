@@ -66,6 +66,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	    /*@switchbreak@*/ break;
 	case RPMSIGTAG_SHA1:
 	case RPMSIGTAG_DSA:
+	case RPMSIGTAG_RSA:
 	default:
 	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
 		continue;
@@ -121,6 +122,7 @@ Header headerRegenSigHeader(const Header h)
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SHA1HEADER:
 	case RPMTAG_DSAHEADER:
+	case RPMTAG_RSAHEADER:
 	default:
 	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
 		continue;
@@ -281,6 +283,8 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
     /* Figger the most effective available signature. */
     if (headerIsEntry(sig, RPMSIGTAG_DSA))
 	ts->sigtag = RPMSIGTAG_DSA;
+    if (headerIsEntry(sig, RPMSIGTAG_RSA))
+	ts->sigtag = RPMSIGTAG_RSA;
     else if (!ts->verify_legacy)	/* leave fd ready to install payload */
 	ts->sigtag = (headerIsEntry(sig, RPMSIGTAG_SHA1)) ? RPMSIGTAG_SHA1 : 0;
     else if (headerIsEntry(sig, RPMSIGTAG_GPG)) {
@@ -329,6 +333,26 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
     }
 
     switch (ts->sigtag) {
+    case RPMSIGTAG_RSA:
+	/* Parse the parameters from the OpenPGP packets that will be needed. */
+rpmMessage(RPMMESS_DEBUG, _("========== Header RSA signature\n"));
+	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+	/*@fallthrough@*/
+    {	void * uh = NULL;
+	int_32 uht;
+	int_32 uhc;
+
+	/*@-branchstate@*/
+	if (headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
+	    ts->dig->md5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	    (void) rpmDigestUpdate(ts->dig->md5ctx, header_magic, sizeof(header_magic));
+	    ts->dig->nbytes += sizeof(header_magic);
+	    (void) rpmDigestUpdate(ts->dig->md5ctx, uh, uhc);
+	    ts->dig->nbytes += uhc;
+	    uh = headerFreeData(uh, uht);
+	}
+	/*@=branchstate@*/
+    }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 rpmMessage(RPMMESS_DEBUG, _("========== Header DSA signature\n"));

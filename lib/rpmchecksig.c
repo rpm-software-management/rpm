@@ -567,6 +567,8 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	/* Grab a hint of what needs doing to avoid duplication. */
 	if (headerIsEntry(sig, RPMSIGTAG_DSA))
 	    sigtag = RPMSIGTAG_DSA;
+	else if (headerIsEntry(sig, RPMSIGTAG_RSA))
+	    sigtag = RPMSIGTAG_RSA;
 	else if (headerIsEntry(sig, RPMSIGTAG_GPG))
 	    sigtag = RPMSIGTAG_GPG;
 	else if (headerIsEntry(sig, RPMSIGTAG_PGP))
@@ -625,6 +627,12 @@ rpmMessage(RPMMESS_DEBUG, _("========== Package RSA signature\n"));
 		if (sigtag == RPMSIGTAG_DSA)
 		    continue;
 		/*@switchbreak@*/ break;
+	    case RPMSIGTAG_RSA:
+		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
+		     continue;
+rpmMessage(RPMMESS_DEBUG, _("========== Header RSA signature\n"));
+		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_DSA:
 		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
 		     continue;
@@ -673,6 +681,7 @@ rpmMessage(RPMMESS_DEBUG, _("========== Package DSA signature\n"));
 			b = stpcpy(b, "MD5 ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
+		    case RPMSIGTAG_RSA:
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			switch (res3) {
@@ -741,6 +750,7 @@ rpmMessage(RPMMESS_DEBUG, _("========== Package DSA signature\n"));
 		    case RPMSIGTAG_MD5:
 			b = stpcpy(b, "md5 ");
 			/*@switchbreak@*/ break;
+		    case RPMSIGTAG_RSA:
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			b = stpcpy(b, "pgp ");

@@ -543,6 +543,24 @@ static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 	    goto exit;
 	ret = 0;
 	break;
+    case RPMSIGTAG_RSA:
+	fd = Fopen(file, "r.fdio");
+	if (fd == NULL || Ferror(fd))
+	    goto exit;
+	h = headerRead(fd, HEADER_MAGIC_YES);
+	if (h == NULL)
+	    goto exit;
+	(void) Fclose(fd);	fd = NULL;
+	if (makeTempFile(NULL, &fn, &fd))
+	    goto exit;
+	if (headerWrite(fd, h, HEADER_MAGIC_YES))
+	    goto exit;
+	(void) Fclose(fd);	fd = NULL;
+        if (makePGPSignature(fn, &pkt, &pktlen, passPhrase)
+	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	    goto exit;
+	ret = 0;
+	break;
     }
 
 exit:
@@ -586,6 +604,8 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
 	if (makePGPSignature(file, &pkt, &pktlen, passPhrase)
 	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
+	/* XXX Piggyback a header-only RSA signature as well. */
+	ret = makeHDRSignature(sig, file, RPMSIGTAG_RSA, passPhrase);
 	ret = 0;
 	break;
     case RPMSIGTAG_GPG:
@@ -595,9 +615,8 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
 	/* XXX Piggyback a header-only DSA signature as well. */
 	ret = makeHDRSignature(sig, file, RPMSIGTAG_DSA, passPhrase);
 	break;
+    case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-	ret = makeHDRSignature(sig, file, sigTag, passPhrase);
-	break;
     case RPMSIGTAG_SHA1:
 	ret = makeHDRSignature(sig, file, sigTag, passPhrase);
 	break;
@@ -656,6 +675,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
 	}   /*@notreached@*/ break;
+	case RPMSIGTAG_RSA:
 	case RPMSIGTAG_PGP5:	/* XXX legacy */
 	case RPMSIGTAG_PGP:
 	{   const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
@@ -728,6 +748,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 	    return NULL;
 	}
 	break;
+    case RPMSIGTAG_RSA:
     case RPMSIGTAG_PGP5: 	/* XXX legacy */
     case RPMSIGTAG_PGP:
       { const char *name = rpmExpand("%{?_pgp_name}", NULL);
@@ -1067,13 +1088,26 @@ goto exit;
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+#ifdef	NOTYET
+	if (sigp->sigtype == 4) {
+	    int nb = ts->dig->nbytes + sigp->hashlen;
+	    byte trailer[6];
+	    nb = htonl(nb);
+	    trailer[0] = 0x4;
+	    trailer[1] = 0xff;
+	    memcpy(trailer+2, &nb, sizeof(nb));
+	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+	}
+#endif
 	xx = rpmDigestFinal(ctx, (void **)&ts->dig->md5, &ts->dig->md5len, 1);
 
-	/* XXX compare leading 16 bits of digest for quick check. */
     }
     /*@=type@*/
 
     {	const char * prefix = "3020300c06082a864886f70d020505000410";
+#ifdef	NOTYET
+	byte signhash16[2];
+#endif
 	unsigned int nbits = 1024;
 	unsigned int nb = (nbits + 7) >> 3;
 	const char * hexstr;
@@ -1091,6 +1125,16 @@ goto exit;
 	mp32nzero(&ts->dig->rsahm);	mp32nsethex(&ts->dig->rsahm, hexstr);
 
 	hexstr = _free(hexstr);
+
+	/* XXX compare leading 16 bits of digest for quick check. */
+#ifdef	NOTYET
+	signhash16[0] = (*ts->dig->rsahm.data >> 24) & 0xff;
+	signhash16[1] = (*ts->dig->rsahm.data >> 16) & 0xff;
+	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
+	    res = RPMSIG_BAD;
+	    goto exit;
+	}
+#endif
     }
 
     /* Retrieve the matching public key. */
@@ -1158,6 +1202,9 @@ goto exit;
 
     /*@-type@*/ /* FIX: cast? */
     {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
+#ifdef	NOTYET
+	byte signhash16[2];
+#endif
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
@@ -1178,6 +1225,16 @@ goto exit;
 	/* XXX compare leading 16 bits of digest for quick check. */
 
 	mp32nzero(&ts->dig->hm);	mp32nsethex(&ts->dig->hm, ts->dig->sha1);
+
+	/* XXX compare leading 16 bits of digest for quick check. */
+#ifdef	NOTYET
+	signhash16[0] = (*ts->dig->hm.data >> 24) & 0xff;
+	signhash16[1] = (*ts->dig->hm.data >> 16) & 0xff;
+	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
+	    res = RPMSIG_BAD;
+	    goto exit;
+	}
+#endif
     }
     /*@=type@*/
 
@@ -1225,6 +1282,7 @@ rpmVerifySignature(const rpmTransactionSet ts, char * result)
     case RPMSIGTAG_SHA1:
 	res = verifySHA1Signature(ts, result, ts->dig->hdrsha1ctx);
 	break;
+    case RPMSIGTAG_RSA:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	res = verifyPGPSignature(ts, result, ts->dig->md5ctx);

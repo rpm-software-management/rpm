@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-06 18:13-0500\n"
+"POT-Creation-Date: 2002-03-06 21:16-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1759,56 +1759,62 @@ msgstr "kann Datei %s nicht öffnen: "
 msgid "error creating temporary file %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/package.c:179 lib/package.c:255
+#: lib/package.c:181 lib/package.c:257
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "Nur Pakete mit Hauptnummern <= 3 werden von dieser RPM-Version unterstützt"
 
-#: lib/package.c:200 lib/package.c:263
+#: lib/package.c:202 lib/package.c:265
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "Nur Pakete mit Hauptnummern <= 3 werden von dieser RPM-Version unterstützt"
 
-#: lib/package.c:241 lib/rpmchecksig.c:161 lib/rpmchecksig.c:541
+#: lib/package.c:243 lib/rpmchecksig.c:161 lib/rpmchecksig.c:541
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: »readLead« fehlgeschlagen\n"
 
-#: lib/package.c:247
+#: lib/package.c:249
 #, c-format
 msgid "%s: bad magic\n"
 msgstr ""
 
-#: lib/package.c:272 lib/rpmchecksig.c:179 lib/rpmchecksig.c:557
+#: lib/package.c:274 lib/rpmchecksig.c:179 lib/rpmchecksig.c:557
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: »rpmReadSignature« fehlgeschlagen\n"
 
-#: lib/package.c:276 lib/rpmchecksig.c:183 lib/rpmchecksig.c:562
+#: lib/package.c:278 lib/rpmchecksig.c:183 lib/rpmchecksig.c:562
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Keine Signatur verfügbar\n"
 
-#: lib/package.c:304 lib/rpmchecksig.c:462
+#: lib/package.c:308 lib/rpmchecksig.c:462
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: »readLead« fehlgeschlagen\n"
 
 #. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:334 lib/rpmchecksig.c:631
+#: lib/package.c:338 lib/rpmchecksig.c:633
+#, fuzzy
+msgid "========== Header RSA signature\n"
+msgstr "nicht möglich, die Signatur zu lesen"
+
+#. Parse the parameters from the OpenPGP packets that will be needed.
+#: lib/package.c:358 lib/rpmchecksig.c:639
 #, fuzzy
 msgid "========== Header DSA signature\n"
 msgstr "nicht möglich, die Signatur zu lesen"
 
 #. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:357
+#: lib/package.c:381
 msgid "========== Package DSA/RSA signature\n"
 msgstr ""
 
-#: lib/package.c:366 lib/rpmchecksig.c:110 lib/rpmchecksig.c:491
+#: lib/package.c:390 lib/rpmchecksig.c:110 lib/rpmchecksig.c:491
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: »readLead« fehlgeschlagen\n"
@@ -2633,36 +2639,36 @@ msgstr "%s: »readLead« fehlgeschlagen\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Keine Signatur verfügbar (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:618
+#: lib/rpmchecksig.c:620
 msgid "========== Package RSA signature\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:637
+#: lib/rpmchecksig.c:645
 msgid "========== Package DSA signature\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:768
+#: lib/rpmchecksig.c:778
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:769 lib/rpmchecksig.c:783
+#: lib/rpmchecksig.c:779 lib/rpmchecksig.c:793
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (FEHLENDE SCHLüSSEL)"
 
-#: lib/rpmchecksig.c:771 lib/rpmchecksig.c:785
+#: lib/rpmchecksig.c:781 lib/rpmchecksig.c:795
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:772 lib/rpmchecksig.c:786
+#: lib/rpmchecksig.c:782 lib/rpmchecksig.c:796
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
+#: lib/rpmchecksig.c:784 lib/rpmchecksig.c:798
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:782
+#: lib/rpmchecksig.c:792
 msgid "OK"
 msgstr ""
 
@@ -2913,8 +2919,8 @@ msgstr "Alte Signatur (nur intern)!  Wie bist du daran gekommen!?"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:306 lib/signature.c:405 lib/signature.c:656
-#: lib/signature.c:688
+#: lib/signature.c:306 lib/signature.c:405 lib/signature.c:675
+#: lib/signature.c:708
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Konnte pgp nicht durchführen"
@@ -2970,56 +2976,56 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:693 lib/signature.c:747
+#: lib/signature.c:713 lib/signature.c:768
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:727
+#: lib/signature.c:747
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 
-#: lib/signature.c:739
+#: lib/signature.c:760
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 
-#: lib/signature.c:783
+#: lib/signature.c:804
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:823
+#: lib/signature.c:844
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:880
+#: lib/signature.c:901
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1042
+#: lib/signature.c:1063
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "alle MD5-Signaturen überspringen"
 
-#: lib/signature.c:1135
+#: lib/signature.c:1179
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1136
+#: lib/signature.c:1180
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "%s: Keine Signatur verfügbar\n"
 
-#: lib/signature.c:1214
+#: lib/signature.c:1271
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1240
+#: lib/signature.c:1298
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1244
+#: lib/signature.c:1302
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
