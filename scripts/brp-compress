@@ -7,13 +7,27 @@ fi
 cd $RPM_BUILD_ROOT
 
 # Compress man pages
-COMPRESS=gzip
+COMPRESS="gzip -9"
+COMPRESS_EXT=.gz
 
 for d in ./usr/man/man* ./usr/man/*/man* ./usr/X11R6/man/man* ./usr/lib/perl5/man/man*
 do
     [ -d $d ] || continue
-    for f in `find $d -type f | sed -e 's/[^ ]*\.gz//' -e 's/[^ ]*\.bz2//'`
+    for f in `find $d -type f`
     do
-	$COMPRESS $f
+	case "$f" in
+	*.Z) gunzip $f; b=`echo $f | sed -e 's/\.Z$//'`;;
+	*.gz) gunzip $f; b=`echo $f | sed -e 's/\.gz$//'`;;
+	*.bz2) bunzip2 $f; b=`echo $f | sed -e 's/\.bz2$//'`;;
+	*) b=$f;;
+	esac
+	$COMPRESS $b
+    done
+    for f in `find $d -type l`
+    do
+	l=`ls -l $f | awk '{ print $11 }' | sed -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
+	rm -f $f
+	b=`echo $f | sed -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
+	ln -sf $l$COMPRESS_EXT $b$COMPRESS_EXT
     done
 done
