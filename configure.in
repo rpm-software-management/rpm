@@ -309,10 +309,11 @@ dnl will fail.
 AC_CHECK_LIB(port, writev)
 
 DBLIBOBJS=""
+PTHREAD=""
 dnl Check for Berkeley db3 API.
 AC_CHECK_FUNC(db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],
-  AC_CHECK_LIB(db, db_create, [LIBS="$LIBS -ldb -lpthread"; DBLIBOBJS="$DBLIBOBJS db3.c"],
-    AC_CHECK_LIB(db-3.0, db_create, [LIBS="$LIBS -lpthread"; DBLIBOBJS="$DBLIBOBJS db3.c"],,-lpthread))
+  AC_CHECK_LIB(db, db_create, [LIBS="$LIBS -ldb $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c"],
+    AC_CHECK_LIB(db-3.0, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c"],,$PTHREAD))
 )
 dnl Check for Berkeley db2 API.
 dnl AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],

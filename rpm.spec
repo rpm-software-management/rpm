@@ -112,12 +112,13 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 rm -rf $RPM_BUILD_ROOT
 
 %post
-/bin/rpm --initdb
 %ifos linux
 if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f /usr/lib/rpm/convertrpmrc.sh ] 
 then
 	sh /usr/lib/rpm/convertrpmrc.sh > /dev/null 2>&1
 fi
+%else
+/bin/rpm --initdb
 %endif
 
 %ifos linux
