@@ -524,9 +524,8 @@ fprintf(stderr, "*** PPA BuildRoot %s already set, skipping field %s\n", buildRo
       case RPMTAG_REQUIREFLAGS:
       case RPMTAG_CONFLICTFLAGS:
       case RPMTAG_PREREQ:
-	if ((rc = parseRCPOT(spec, pkg, field, tag, 0))) {
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, 0)))
 	    return rc;
-	}
 	break;
       case RPMTAG_EXCLUDEARCH:
       case RPMTAG_EXCLUSIVEARCH:

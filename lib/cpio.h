@@ -51,6 +51,7 @@
 #define CPIO_MAP_UID		(1 << 2)
 #define CPIO_MAP_GID		(1 << 3)
 #define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
+#define CPIO_MULTILIB		(1 << 31) /* internal, only for building */
 
 /**
  * Defines a single file to be included in a cpio payload.

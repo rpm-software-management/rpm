@@ -1,4 +1,4 @@
-3.0.4 -> 4.0
+3.0.5 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
 	- configure.in fiddles for BSD systems (Patrick Schoo).
 	- API: change dbi to pass by reference, not value.
@@ -67,6 +67,8 @@
 	- API: uncouple fadio from rest of rpmio.
 	- API: externalize legacy fdOpen interface for rpmfind et al.
 	- put version on rpmpopt filename to avoid legacy filename collision.
+	- change optflags for i386.
+	- multilib patch, take 1.
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.
@@ -87,7 +89,6 @@
 	- internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
 	- support for separate source/binary compression policy.
 	- support for bzip payloads.
-
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

@@ -236,6 +236,179 @@ static void trimChangelog(Header h)
 }
 
 /** */
+static int mergeFiles(Header h, Header newH, enum fileActions * actions)
+{
+    int i, j, k, fileCount;
+    int_32 type, count, dirNamesCount, dirCount;
+    void * data, * newdata;
+    int_32 * dirIndexes, * newDirIndexes;
+    uint_32 * fileSizes, fileSize;
+    char ** dirNames, ** newDirNames;
+    static int_32 mergeTags[] = {
+	RPMTAG_FILESIZES,
+	RPMTAG_FILESTATES,
+	RPMTAG_FILEMODES,
+	RPMTAG_FILERDEVS,
+	RPMTAG_FILEMTIMES,
+	RPMTAG_FILEMD5S,
+	RPMTAG_FILELINKTOS,
+	RPMTAG_FILEFLAGS,
+	RPMTAG_FILEUSERNAME,
+	RPMTAG_FILEGROUPNAME,
+	RPMTAG_FILEVERIFYFLAGS,
+	RPMTAG_FILEDEVICES,
+	RPMTAG_FILEINODES,
+	RPMTAG_FILELANGS,
+	RPMTAG_BASENAMES,
+	0,
+    };
+    static int_32 requireTags[] = {
+	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
+	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
+	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS
+    };
+
+    headerGetEntry(h, RPMTAG_SIZE, NULL, (void **) &fileSizes, NULL);
+    fileSize = *fileSizes;
+    headerGetEntry(newH, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, &count);
+    for (i = 0, fileCount = 0; i < count; i++)
+	if (actions[i] != FA_SKIPMULTILIB) {
+	    fileCount++;
+	    fileSize += fileSizes[i];
+	}
+    headerModifyEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &fileSize, 1);
+    for (i = 0; mergeTags[i]; i++)
+        if (headerGetEntryMinMemory(newH, mergeTags[i], &type,
+				    (void **) &data, &count)) {
+	    switch (type) {
+	    case RPM_CHAR_TYPE:
+	    case RPM_INT8_TYPE:
+		newdata = xmalloc(fileCount * sizeof(int_8));
+		for (j = 0, k = 0; j < count; j++)
+		    if (actions[j] != FA_SKIPMULTILIB)
+			((int_8 *) newdata)[k++] = ((int_8 *) data)[j];
+		headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
+				       fileCount);
+		free (newdata);
+		break;
+	    case RPM_INT16_TYPE:
+		newdata = xmalloc(fileCount * sizeof(int_16));
+		for (j = 0, k = 0; j < count; j++)
+		    if (actions[j] != FA_SKIPMULTILIB)
+			((int_16 *) newdata)[k++] = ((int_16 *) data)[j];
+		headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
+				       fileCount);
+		free (newdata);
+		break;
+	    case RPM_INT32_TYPE:
+		newdata = xmalloc(fileCount * sizeof(int_32));
+		for (j = 0, k = 0; j < count; j++)
+		    if (actions[j] != FA_SKIPMULTILIB)
+			((int_32 *) newdata)[k++] = ((int_32 *) data)[j];
+		headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
+				       fileCount);
+		free (newdata);
+		break;
+	    case RPM_STRING_ARRAY_TYPE:
+		newdata = xmalloc(fileCount * sizeof(char *));
+		for (j = 0, k = 0; j < count; j++)
+		    if (actions[j] != FA_SKIPMULTILIB)
+			((char **) newdata)[k++] = ((char **) data)[j];
+		headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
+				       fileCount);
+		free (newdata);
+		free (data);
+		break;
+	    default:
+		fprintf(stderr, _("Data type %d not supported\n"), (int) type);
+		exit(EXIT_FAILURE);
+		/*@notreached@*/
+	    }
+        }
+    headerGetEntry(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes,
+		   &count);
+    headerGetEntryMinMemory(newH, RPMTAG_DIRNAMES, NULL,
+			    (void **) &newDirNames, NULL);
+    headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, (void **) &data,
+			    &dirNamesCount);
+
+    dirNames = xcalloc(dirNamesCount + fileCount, sizeof(char *));
+    for (i = 0; i < dirNamesCount; i++)
+	dirNames[i] = ((char **) data)[i];
+    dirCount = dirNamesCount;
+    newdata = xmalloc(fileCount * sizeof(int_32));
+    for (i = 0, k = 0; i < count; i++)
+	if (actions[i] != FA_SKIPMULTILIB) {
+	    for (j = 0; j < dirCount; j++)
+		if (!strcmp(dirNames[j], newDirNames[newDirIndexes[i]]))
+		    break;
+	    if (j == dirCount)
+		dirNames[dirCount++] = newDirNames[newDirIndexes[i]];
+	    ((int_32 *) newdata)[k++] = j;
+	}
+    headerAddOrAppendEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, newdata,
+			   fileCount);
+    if (dirCount > dirNamesCount)
+	headerAddOrAppendEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+			       dirNames + dirNamesCount,
+			       dirCount - dirNamesCount);
+    if (data) free (data);
+    if (newDirNames) free (newDirNames);
+    free (newdata);
+    free (dirNames);
+
+    for (i = 0; i < 9; i += 3) {
+	char **Names, **EVR, **newNames, **newEVR;
+	uint_32 *Flags, *newFlags;
+	int Count = 0, newCount = 0;
+
+	if (headerGetEntryMinMemory(newH, requireTags[i], NULL,
+				    (void **) &newNames, &newCount)) {
+	    headerGetEntryMinMemory(newH, requireTags[i+1], NULL,
+				    (void **) &newEVR, NULL);
+	    headerGetEntry(newH, requireTags[i+2], NULL, (void **) &newFlags,
+			   NULL);
+	    if (headerGetEntryMinMemory(h, requireTags[i], NULL,
+					(void **) &Names, &Count)) {
+		headerGetEntryMinMemory(h, requireTags[i+1], NULL,
+					(void **) &EVR, NULL);
+		headerGetEntry(h, requireTags[i+2], NULL, (void **) &Flags,
+			       NULL);
+		for (j = 0; j < newCount; j++)
+		    for (k = 0; k < Count; k++)
+			if (!strcmp (newNames[j], Names[k])
+			    && !strcmp (newEVR[j], EVR[k])
+			    && (newFlags[j] & RPMSENSE_SENSEMASK) ==
+			       (Flags[k] & RPMSENSE_SENSEMASK)) {
+			    newNames[j] = NULL;
+			    break;
+			}
+	    }
+	    for (j = 0, k = 0; j < newCount; j++) {
+		if (!newNames[j] || !isDependsMULTILIB(newFlags[j]))
+		    continue;
+		if (j != k) {
+		    newNames[k] = newNames[j];
+		    newEVR[k] = newEVR[j];
+		    newFlags[k] = newFlags[j];
+		}
+		k++;
+	    }
+	    if (k) {
+		headerAddOrAppendEntry(h, requireTags[i],
+				       RPM_STRING_ARRAY_TYPE, newNames, k);
+		headerAddOrAppendEntry(h, requireTags[i+1],
+				       RPM_STRING_ARRAY_TYPE, newEVR, k);
+		headerAddOrAppendEntry(h, requireTags[i+2], RPM_INT32_TYPE,
+				       newFlags, k);
+	    }
+	}
+    }
+    return 0;
+}
+
+/** */
 static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 {
     const struct sharedFileInfo * fileInfo;
@@ -643,6 +816,7 @@ const char *const fileActionString(enum fileActions a)
       case FA_REMOVE: return "remove";
       case FA_SKIPNSTATE: return "skipnstate";
       case FA_SKIPNETSHARED: return "skipnetshared";
+      case FA_SKIPMULTILIB: return "skipmultilib";
     }
     /*@notreached@*/
     return "???";
@@ -707,13 +881,15 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     struct fileInfo * files;
     char * fileStates = NULL;
     int i;
+    Header oldH = NULL;
     int otherOffset = 0;
     int scriptArg;
     int stripSize = 1;		/* strip at least first / for cpio */
     struct fileMemory *fileMem = NULL;
     char * currDir = NULL;
 
-    if (flags & RPMTRANS_FLAG_JUSTDB)
+    /* XXX this looks broke, as libraries may need /sbin/ldconfig for example */
+    if (flags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
 	flags |= RPMTRANS_FLAG_NOSCRIPTS;
 
     headerNVR(h, &name, &version, &release);
@@ -731,8 +907,10 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	rpmdbSetIteratorVersion(mi, version);
 	rpmdbSetIteratorRelease(mi, release);
-	while (rpmdbNextIterator(mi)) {
+	while ((oldH = rpmdbNextIterator(mi))) {
 	    otherOffset = rpmdbGetIteratorOffset(mi);
+	    oldH = (flags & RPMTRANS_FLAG_MULTILIB)
+		? headerCopy(oldH) : NULL;
 	    break;
 	}
 	rpmdbFreeIterator(mi);
@@ -819,6 +997,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		break;
 
 	      case FA_SKIP:
+	      case FA_SKIPMULTILIB:
 		files[i].install = 0;
 		break;
 
@@ -910,6 +1089,21 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     if (otherOffset)
         rpmdbRemove(db, otherOffset);
 
+    if (flags & RPMTRANS_FLAG_MULTILIB) {
+	uint_32 multiLib, * newMultiLib, * p;
+
+	if (headerGetEntry(h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib,
+			   NULL)
+	    && headerGetEntry(oldH, RPMTAG_MULTILIBS, NULL,
+			      (void **) &p, NULL)) {
+	    multiLib = *p;
+	    multiLib |= *newMultiLib;
+	    headerModifyEntry(oldH, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+			      &multiLib, 1);
+	}
+	mergeFiles(oldH, h, actions);
+    }
+
     if (rpmdbAdd(db, h)) {
 	rc = 2;
 	goto exit;
@@ -952,5 +1146,7 @@ exit:
 	freeFileMemory(fileMem);
     if (rc)
 	headerFree(h);
+    if (oldH)
+	headerFree(oldH);
     return rc;
 }

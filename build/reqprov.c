@@ -47,10 +47,10 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	flagtag = RPMTAG_REQUIREFLAGS;
     }
 
-    flag = (flag & RPMSENSE_SENSEMASK) | extra;
-    if (!version) {
+    flag = (flag & (RPMSENSE_SENSEMASK | RPMSENSE_MULTILIB)) | extra;
+
+    if (!version)
 	version = "";
-    }
     
     /* Check for duplicate dependencies. */
     if (headerGetEntry(h, nametag, NULL, (void **) &names, &len)) {
@@ -71,13 +71,19 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	    if (strcmp(names[len], name))
 		continue;
 	    if (flagtag && versions != NULL &&
-			(strcmp(versions[len], version) || flags[len] != flag))
+		(strcmp(versions[len], version) ||
+	((flags[len] | RPMSENSE_MULTILIB) != (flag | RPMSENSE_MULTILIB))))
 		continue;
 	    if (indextag && indexes != NULL && indexes[len] != index)
 		continue;
 
 	    /* This is a duplicate dependency. */
 	    duplicate = 1;
+
+	    if (flagtag && isDependsMULTILIB(flag) &&
+		!isDependsMULTILIB(flags[len]))
+		    flags[len] |= RPMSENSE_MULTILIB;
+
 	    break;
 	}
 	FREE(names);

@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.27 2000/06/23 13:29:55 jbj Exp $
+# $Id: rpmrc.in,v 2.28 2000/07/05 20:39:15 jbj Exp $
 
 #############################################################
 
@@ -7,7 +7,9 @@
 #############################################################
 # Values for RPM_OPT_FLAGS for various platforms
 
-optflags: i386 -O2 -m486 -fno-strength-reduce
+# XXX this is the i386 optflags that rpm has traditionally used in the past.
+#optflags: i386 -O2 -m486 -fno-strength-reduce
+optflags: i386 -O2 -march=i386 -mcpu=i686
 optflags: i486 -O2 -march=i486
 optflags: i586 -O2 -march=i586
 optflags: i686 -O2 -march=i686

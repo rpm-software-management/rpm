@@ -54,9 +54,19 @@ for SUBST in $SUBSTS ; do
   RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
 
   ARCH_INSTALL_POST='%{nil}'
+  MULTILIBNO=
   case "${ARCH}-${OS}" in
     sparc64-linux) ARCH_INSTALL_POST=${pkglibdir}/brp-sparc64-linux; LIB=lib64 ;;
+    sparc-linux) MULTILIBNO=1 ;;
+    sparcv9-linux) MULTILIBNO=1 ;;
+    sparc64-linux) ARCH_INSTALL_POST=${pkglibdir}/brp-sparc64-linux; LIB=lib64; MULTILIBNO=2 ;;
   esac
+
+  if [ "$MULTILIBNO" ]; then
+    MULTILIBSED='-e /^@MULTILIB/d -e s,@MULTILIBNO@,'$MULTILIBNO,
+  else
+    MULTILIBSED='-e /^@MULTILIBSTART@/,/^@MULTILIBEND@/d'
+  fi
 
   cat $PLATFORM | \
     sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
@@ -65,6 +75,7 @@ for SUBST in $SUBSTS ; do
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
 	-e "s,@DEFAULTDOCDIR@,$DEFAULTDOCDIR," \
 	-e 's,\${,%{_,' \
+	$MULTILIBSED \
   > ${PPD}/macros
 
   #

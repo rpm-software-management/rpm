@@ -14,6 +14,7 @@ struct availablePackage {
     /*@dependent@*/ const char * release;
     /*@dependent@*/ int_32 * epoch;
     int providesCount, filesCount;
+    uint_32 multiLib;	/* MULTILIB */
     /*@dependent@*/ const void * key;
     rpmRelocation * relocs;
     /*@null@*/ FD_t fd;
@@ -30,6 +31,7 @@ struct availableIndexEntry {
 
 struct fileIndexEntry {
     int pkgNum;
+    int fileFlags;	/* MULTILIB */
     /*@dependent@*/ const char * baseName;
 } ;
 

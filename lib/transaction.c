@@ -74,7 +74,7 @@ struct diskspaceInfo {
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
 #define	XFA_SKIPPING(_a)	\
-    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED)
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
 
 static void freeFi(TFI_t *fi)
 {
@@ -265,6 +265,7 @@ static Header relocateFileList(struct availablePackage * alp,
     int_32 * dirIndexes;
     int_32 * newDirIndexes;
     int_32 fileCount, dirCount;
+    uint_32 * fFlags = NULL;
     char * skipDirList;
     Header h;
     int relocated = 0, len;
@@ -278,7 +279,7 @@ static Header relocateFileList(struct availablePackage * alp,
 			(void **) &validRelocations, &numValid))
 	numValid = 0;
 
-    if (!rawRelocations && !numValid) {
+    if (!rawRelocations && !numValid && !alp->multiLib) {
 	Header oH =  headerLink(origH);
 	return oH;
     }
@@ -382,6 +383,8 @@ static Header relocateFileList(struct availablePackage * alp,
     headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
     headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, 
 		   &dirCount);
+    headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fFlags, NULL);
+
     skipDirList = xcalloc(sizeof(*skipDirList), dirCount);
 
     newDirIndexes = alloca(sizeof(*newDirIndexes) * fileCount);
@@ -391,6 +394,16 @@ static Header relocateFileList(struct availablePackage * alp,
     /* Now relocate individual files. */
 
     for (i = fileCount - 1; i >= 0; i--) {
+
+	/*
+	 * If only adding libraries of different arch into an already
+	 * installed package, skip all other files.
+	 */
+	if (actions && alp->multiLib && !isFileMULTILIB((fFlags[i]))) {
+	    actions[i] = FA_SKIPMULTILIB;
+	    continue;
+	}
+
 	/* If we're skipping the directory this file is part of, skip this
 	 * file as well.
 	 */
@@ -786,6 +799,9 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 	fileNum = shared->pkgFileNum;
 
 	if (otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
+	    continue;
+
+	if (fi->actions[fileNum] == FA_SKIPMULTILIB)
 	    continue;
 
 	if (filecmp(otherModes[otherFileNum],
@@ -1293,14 +1309,15 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    rpmdbFreeIterator(mi);
 	}
 
-	if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG)) {
+	/* XXX why should multilib not display problems */
+	if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !alp->multiLib) {
 	    rpmdbMatchIterator mi;
 	    mi = rpmdbInitIterator(ts->db, RPMTAG_NAME, alp->name, 0);
 	    rpmdbSetIteratorVersion(mi, alp->version);
 	    rpmdbSetIteratorRelease(mi, alp->release);
 	    while (rpmdbNextIterator(mi) != NULL) {
-		psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL,
-			 NULL, 0);
+		psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h,
+			 NULL, NULL, 0);
 		break;
 	    }
 	    rpmdbFreeIterator(mi);
@@ -1477,7 +1494,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(sizeof(*matches), fi->fc);
-	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
+	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc))
+	    return 1;
 
 	numShared = 0;
 	for (i = 0; i < fi->fc; i++)
@@ -1663,6 +1681,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    }
 
 	    if (fd) {
+
+		if (alp->multiLib)
+		    transFlags |= RPMTRANS_FLAG_MULTILIB;
+
 		if (installBinaryPackage(ts->root, ts->db, fd,
 					 hdrs[i], transFlags, notify,
 					 notifyData, alp->key, fi->actions,

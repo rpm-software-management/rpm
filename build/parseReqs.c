@@ -28,57 +28,58 @@ static struct ReqComp {
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
 
 /** */
-int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
+int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
+	       int index, int tagflags)
 {
     const char *r, *re, *v, *ve;
     char *req, *version;
     Header h;
-    int tagflags, flags;
+    int flags;
 
     switch (tag) {
     case RPMTAG_PROVIDEFLAGS:
-	tagflags = RPMSENSE_PROVIDES;
+	tagflags |= RPMSENSE_PROVIDES;
 	h = pkg->header;
 	break;
     case RPMTAG_OBSOLETES:
-	tagflags = RPMSENSE_OBSOLETES;
+	tagflags |= RPMSENSE_OBSOLETES;
 	h = pkg->header;
 	break;
     case RPMTAG_CONFLICTFLAGS:
-	tagflags = RPMSENSE_CONFLICTS;
+	tagflags |= RPMSENSE_CONFLICTS;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDCONFLICTS:
-	tagflags = RPMSENSE_CONFLICTS;
+	tagflags |= RPMSENSE_CONFLICTS;
 	h = spec->buildRestrictions;
 	break;
     case RPMTAG_PREREQ:
-	tagflags = RPMSENSE_PREREQ;
+	tagflags |= RPMSENSE_PREREQ;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDPREREQ:
-	tagflags = RPMSENSE_PREREQ;
+	tagflags |= RPMSENSE_PREREQ;
 	h = spec->buildRestrictions;
 	break;
     case RPMTAG_TRIGGERIN:
-	tagflags = RPMSENSE_TRIGGERIN;
+	tagflags |= RPMSENSE_TRIGGERIN;
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERPOSTUN:
-	tagflags = RPMSENSE_TRIGGERPOSTUN;
+	tagflags |= RPMSENSE_TRIGGERPOSTUN;
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERUN:
-	tagflags = RPMSENSE_TRIGGERUN;
+	tagflags |= RPMSENSE_TRIGGERUN;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDREQUIRES:
-	tagflags = RPMSENSE_ANY;
+	tagflags |= RPMSENSE_ANY;
 	h = spec->buildRestrictions;
 	break;
     default:
     case RPMTAG_REQUIREFLAGS:
-	tagflags = RPMSENSE_ANY;
+	tagflags |= RPMSENSE_ANY;
 	h = pkg->header;
 	break;
     }

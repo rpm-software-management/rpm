@@ -36,6 +36,7 @@
 #------------------------------------------------------------------------
 #	Expanded at end of %install
 #
+
 %__arch_install_post   @ARCH_INSTALL_POST@
 
 %__os_install_post    \
@@ -58,3 +59,10 @@
 %_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
 %_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
 %_fixperms		%{__chmod} -Rf @FIXPERMS@
+
+@MULTILIBSTART@
+#------------------------------------------------------------------------
+#       Multilibs
+%_multilibno		@MULTILIBNO@
+%_multilibpatt		(/%{_lib}|/usr/%{_lib}(|/gconv)|/usr/local/%{_lib}|/usr/X11R6/%{_lib}|/opt/%{_lib})/[^/]*\\.([oa]|la|so[0-9.]*)$
+@MULTILIBEND@

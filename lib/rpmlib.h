@@ -189,8 +189,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_PAYLOADFORMAT		1124
 #define	RPMTAG_PAYLOADCOMPRESSOR	1125
 #define	RPMTAG_PAYLOADFLAGS		1126
+#define	RPMTAG_MULTILIBS		1127
 
-#define	RPMTAG_FIRSTFREE_TAG		1127 /* internal */
+#define	RPMTAG_FIRSTFREE_TAG		1128 /* internal */
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 #define	RPMFILE_STATE_NORMAL 		0
@@ -208,21 +209,27 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMFILE_GHOST			(1 << 6)
 #define	RPMFILE_LICENSE			(1 << 7)
 #define	RPMFILE_README			(1 << 8)
+#define	RPMFILE_MULTILIB_SHIFT		9
+#define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
+#define	RPMFILE_MULTILIB_MASK		RPMFILE_MULTILIB(7)
 
-#define RPMVERIFY_NONE		0
-#define RPMVERIFY_MD5		(1 << 0)
-#define RPMVERIFY_FILESIZE	(1 << 1)
-#define RPMVERIFY_LINKTO	(1 << 2)
-#define RPMVERIFY_USER		(1 << 3)
-#define RPMVERIFY_GROUP		(1 << 4)
-#define RPMVERIFY_MTIME		(1 << 5)
-#define RPMVERIFY_MODE		(1 << 6)
-#define RPMVERIFY_RDEV		(1 << 7)
-#define RPMVERIFY_READLINKFAIL	(1 << 28)
-#define RPMVERIFY_READFAIL	(1 << 29)
-#define RPMVERIFY_LSTATFAIL	(1 << 30)
+/* XXX Check file flags for multilib marker. */
+#define	isFileMULTILIB(_fflags)		((_fflags) & RPMFILE_MULTILIB_MASK)
 
-#define RPMVERIFY_ALL		~(RPMVERIFY_NONE)
+#define	RPMVERIFY_NONE		0
+#define	RPMVERIFY_MD5		(1 << 0)
+#define	RPMVERIFY_FILESIZE	(1 << 1)
+#define	RPMVERIFY_LINKTO	(1 << 2)
+#define	RPMVERIFY_USER		(1 << 3)
+#define	RPMVERIFY_GROUP		(1 << 4)
+#define	RPMVERIFY_MTIME		(1 << 5)
+#define	RPMVERIFY_MODE		(1 << 6)
+#define	RPMVERIFY_RDEV		(1 << 7)
+#define	RPMVERIFY_READLINKFAIL	(1 << 28)
+#define	RPMVERIFY_READFAIL	(1 << 29)
+#define	RPMVERIFY_LSTATFAIL	(1 << 30)
+
+#define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
 
 #define	RPMSENSE_ANY		0
 #define	RPMSENSE_SERIAL		(1 << 0) /* eliminated, backward compatibilty */
@@ -242,20 +249,24 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMSENSE_TRIGGER	(RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | \
                                   RPMSENSE_TRIGGERPOSTUN)
 
+#define	RPMSENSE_MULTILIB	(1 << 19)
+
+#define	isDependsMULTILIB(_dflags)	((_dflags) & RPMSENSE_MULTILIB)
+
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
 /* #define	RPMVAR_SOURCEDIR		0 -- No longer used */
 /* #define	RPMVAR_BUILDDIR			1 -- No longer used */
-/* #define RPMVAR_DOCDIR			2 -- No longer used */
+/* #define	RPMVAR_DOCDIR			2 -- No longer used */
 #define	RPMVAR_OPTFLAGS			3
 /* #define	RPMVAR_TOPDIR			4 -- No longer used */
 /* #define	RPMVAR_SPECDIR			5 -- No longer used */
 /* #define	RPMVAR_ROOT			6 -- No longer used */
 /* #define	RPMVAR_RPMDIR			7 -- No longer used */
 /* #define	RPMVAR_SRPMDIR			8 -- No longer used */
-/* #define RPMVAR_ARCHSENSITIVE 		9  -- No longer used */
+/* #define	RPMVAR_ARCHSENSITIVE 		9  -- No longer used */
 /* #define	RPMVAR_REQUIREDISTRIBUTION	10 -- No longer used */
-/* #define RPMVAR_REQUIREGROUP			11 -- No longer used */
+/* #define	RPMVAR_REQUIREGROUP			11 -- No longer used */
 /* #define	RPMVAR_REQUIREVENDOR		12 -- No longer used */
 /* #define	RPMVAR_DISTRIBUTION		13 -- No longer used */
 /* #define	RPMVAR_VENDOR			14 -- No longer used */
@@ -590,14 +601,15 @@ int rpmdepOrder(rpmTransactionSet order);
 void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 	int numConflicts);
 
-#define RPMTRANS_FLAG_TEST		(1 << 0)
-#define RPMTRANS_FLAG_BUILD_PROBS	(1 << 1)
+#define	RPMTRANS_FLAG_TEST		(1 << 0)
+#define	RPMTRANS_FLAG_BUILD_PROBS	(1 << 1)
 #define	RPMTRANS_FLAG_NOSCRIPTS		(1 << 2)
 #define	RPMTRANS_FLAG_JUSTDB		(1 << 3)
 #define	RPMTRANS_FLAG_NOTRIGGERS	(1 << 4)
 #define	RPMTRANS_FLAG_NODOCS		(1 << 5)
 #define	RPMTRANS_FLAG_ALLFILES		(1 << 6)
 #define	RPMTRANS_FLAG_KEEPOBSOLETE	(1 << 7)
+#define	RPMTRANS_FLAG_MULTILIB		(1 << 8)
 
 typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
 				RPMPROB_BADOS,
@@ -641,14 +653,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       /*@out@*/ rpmProblemSet * newProbs, int flags,
 			int ignoreSet);
 
-#define RPMPROB_FILTER_IGNOREOS		(1 << 0)
-#define RPMPROB_FILTER_IGNOREARCH	(1 << 1)
-#define RPMPROB_FILTER_REPLACEPKG	(1 << 2)
-#define RPMPROB_FILTER_FORCERELOCATE	(1 << 3)
-#define RPMPROB_FILTER_REPLACENEWFILES	(1 << 4)
-#define RPMPROB_FILTER_REPLACEOLDFILES	(1 << 5)
-#define RPMPROB_FILTER_OLDPACKAGE	(1 << 6)
-#define RPMPROB_FILTER_DISKSPACE	(1 << 7)
+#define	RPMPROB_FILTER_IGNOREOS		(1 << 0)
+#define	RPMPROB_FILTER_IGNOREARCH	(1 << 1)
+#define	RPMPROB_FILTER_REPLACEPKG	(1 << 2)
+#define	RPMPROB_FILTER_FORCERELOCATE	(1 << 3)
+#define	RPMPROB_FILTER_REPLACENEWFILES	(1 << 4)
+#define	RPMPROB_FILTER_REPLACEOLDFILES	(1 << 5)
+#define	RPMPROB_FILTER_OLDPACKAGE	(1 << 6)
+#define	RPMPROB_FILTER_DISKSPACE	(1 << 7)
 
 /** rpmlead.c **/
 
@@ -810,11 +822,11 @@ typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
 int showMatches(QVA_t *qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
 	QVF_t showPackage);
 
-#define QUERY_FOR_LIST		(1 << 1)
-#define QUERY_FOR_STATE		(1 << 2)
-#define QUERY_FOR_DOCS		(1 << 3)
-#define QUERY_FOR_CONFIG	(1 << 4)
-#define QUERY_FOR_DUMPFILES     (1 << 8)
+#define	QUERY_FOR_LIST		(1 << 1)
+#define	QUERY_FOR_STATE		(1 << 2)
+#define	QUERY_FOR_DOCS		(1 << 3)
+#define	QUERY_FOR_CONFIG	(1 << 4)
+#define	QUERY_FOR_DUMPFILES     (1 << 8)
 
 /**
  * @param tag		tag value
@@ -860,10 +872,10 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h);
  */
 int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg);
 
-#define VERIFY_FILES		(1 <<  9)
-#define VERIFY_DEPS		(1 << 10)
-#define VERIFY_SCRIPT		(1 << 11)
-#define VERIFY_MD5		(1 << 12)
+#define	VERIFY_FILES		(1 <<  9)
+#define	VERIFY_DEPS		(1 << 10)
+#define	VERIFY_SCRIPT		(1 << 11)
+#define	VERIFY_MD5		(1 << 12)
 
 extern struct poptOption rpmVerifyPoptTable[];
 
@@ -884,16 +896,16 @@ int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 /* ==================================================================== */
 /* --- install/upgrade/erase modes */
 
-#define INSTALL_PERCENT		(1 << 0)
-#define INSTALL_HASH		(1 << 1)
-#define INSTALL_NODEPS		(1 << 2)
-#define INSTALL_NOORDER		(1 << 3)
-#define INSTALL_LABEL		(1 << 4)  /* set if we're being verbose */
-#define INSTALL_UPGRADE		(1 << 5)
-#define INSTALL_FRESHEN		(1 << 6)
+#define	INSTALL_PERCENT		(1 << 0)
+#define	INSTALL_HASH		(1 << 1)
+#define	INSTALL_NODEPS		(1 << 2)
+#define	INSTALL_NOORDER		(1 << 3)
+#define	INSTALL_LABEL		(1 << 4)  /* set if we're being verbose */
+#define	INSTALL_UPGRADE		(1 << 5)
+#define	INSTALL_FRESHEN		(1 << 6)
 
-#define UNINSTALL_NODEPS	(1 << 0)
-#define UNINSTALL_ALLMATCHES	(1 << 1)
+#define	UNINSTALL_NODEPS	(1 << 0)
+#define	UNINSTALL_ALLMATCHES	(1 << 1)
 
 
 /**
@@ -914,9 +926,9 @@ int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags,
 /* ==================================================================== */
 /* --- checksig/resign */
 
-#define CHECKSIG_PGP (1 << 0)
-#define CHECKSIG_MD5 (1 << 1)
-#define CHECKSIG_GPG (1 << 2)
+#define	CHECKSIG_PGP (1 << 0)
+#define	CHECKSIG_MD5 (1 << 1)
+#define	CHECKSIG_GPG (1 << 2)
 
 /**
  */
@@ -926,8 +938,8 @@ int rpmCheckSig(int flags, const char **argv);
  */
 int rpmReSign(int add, char *passPhrase, const char **argv);
 
-#define ADD_SIGNATURE 1
-#define NEW_SIGNATURE 0
+#define	ADD_SIGNATURE 1
+#define	NEW_SIGNATURE 0
 
 #ifdef __cplusplus
 }

@@ -248,7 +248,7 @@ int parseScript(Spec spec, int parsePart)
 	index = addTriggerIndex(pkg, file, p, prog);
 
 	/* Generate the trigger tags */
-	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index))) {
+	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, 0))) {
 	    freeStringBuf(sb);
 	    FREE(progArgv);
 	    FREE(argv);

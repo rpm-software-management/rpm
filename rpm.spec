@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.45
+Release: 0.46
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -254,6 +254,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jul  5 2000 Jeff Johnson <jbj@redhat.com>
+- change optflags for i386.
+- multilib patch, take 1.
+
 * Fri Jun 23 2000 Jeff Johnson <jbj@redhat.com>
 - i486 optflags typo fixed.
 

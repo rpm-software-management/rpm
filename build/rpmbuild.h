@@ -72,13 +72,25 @@ extern "C" {
 
 /* from build/names.h */
 
+/** */
 void freeNames(void);
+
+/** */
 /*@observer@*/ const char *getUname(uid_t uid);
+
+/** */
 /*@observer@*/ const char *getUnameS(const char *uname);
+
+/** */
 /*@observer@*/ const char *getGname(gid_t gid);
+
+/** */
 /*@observer@*/ const char *getGnameS(const char *gname);
 
+/** */
 /*@observer@*/ const char *const buildHost(void);
+
+/** */
 /*@observer@*/ time_t *const getBuildTime(void);
 
 /* from build/read.h */
@@ -86,72 +98,121 @@ void freeNames(void);
 /* returns 0 - success */
 /*         1 - EOF     */
 /*        <0 - error   */
+/** */
 int readLine(Spec spec, int strip);
 
+/** */
 void closeSpec(Spec spec);
+
+/** */
 void handleComments(char *s);
 
 /* from build/part.h */
 
+/** */
 int isPart(char *line);
 
 /* from build/misc.h */
 
+/** */
 int parseNum(const char *line, /*@out@*/int *res);
 
 /* from build/parse.h */
 
+/** */
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text);
+
+/** */
 int parseChangelog(Spec spec);
+
+/** */
 int parseDescription(Spec spec);
+
+/** */
 int parseFiles(Spec spec);
+
+/** */
 int parsePreamble(Spec spec, int initialPackage);
+
+/** */
 int parsePrep(Spec spec);
-int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index);
+
+/** */
+int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index,
+	       int flags);
+
+/** */
 int parseTrigger(Spec spec, Package pkg, char *field, int tag);
+
+/** */
 int parseScript(Spec spec, int parsePart);
+
+/** */
 int parseBuildInstallClean(Spec spec, int parsePart);
 
 /* from build/expression.h */
 
+/** */
 int parseExpressionBoolean(Spec, char *);
+
+/** */
 char *parseExpressionString(Spec, char *);
 
 /* from build/build.h */
 
+/** */
 int doScript(Spec spec, int what, const char *name, StringBuf sb, int test);
 
 /* from build/package.h */
 
+/** */
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg);
+
+/** */
 /*@only@*/ Package newPackage(Spec spec);
+
+/** */
 void freePackages(Spec spec);
+
+/** */
 void freePackage(/*@only@*/ Package p);
 
 /* from build/reqprov.h */
 
+/** */
 int addReqProv(/*@unused@*/Spec spec, Header h,
 		int flag, const char *name, const char *version, int index);
 
 /* from build/files.h */
 
+/** */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test);
+
+/** */
 void initSourceHeader(Spec spec);
+
+/** */
 int processSourceFiles(Spec spec);
 
 /* global entry points */
 
+/** */
 int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
 		const char *buildRoot, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force);
 
+/** */
 extern int (*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 		const char *buildRoot, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force);	/* XXX FIXME */
 
+/** */
 int buildSpec(Spec spec, int what, int test);
 
+/** */
 int packageBinaries(Spec spec);
+
+/** */
 int packageSources(Spec spec);
 
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-22 21:17-0400\n"
+"POT-Creation-Date: 2000-07-05 16:33-0400\n"
 "PO-Revision-Date: 2000-06-22 23:35+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -237,8 +237,8 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:228 rpmqv.c:322
-msgid ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+#, fuzzy
+msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 msgstr ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <värd>]"
 
@@ -1609,168 +1609,168 @@ msgstr "&& och || stöds inte för strängar"
 msgid "syntax error in expression"
 msgstr "syntaxfel i uttryck"
 
-#: build/files.c:202
+#: build/files.c:204
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fel: %s\n"
 
-#: build/files.c:247 build/files.c:329 build/files.c:492
+#: build/files.c:249 build/files.c:331 build/files.c:494
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr "Saknad \"(\" i %s %s"
 
-#: build/files.c:258 build/files.c:446 build/files.c:503
+#: build/files.c:260 build/files.c:448 build/files.c:505
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "Saknad \")\" i %s(%s"
 
-#: build/files.c:296 build/files.c:471
+#: build/files.c:298 build/files.c:473
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr "Ogiltig %s token: %s"
 
-#: build/files.c:345
+#: build/files.c:347
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr "Annat än blanktecken följer på %s(): %s"
 
-#: build/files.c:383
+#: build/files.c:385
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "Felaktig syntax: %s(%s)"
 
-#: build/files.c:393
+#: build/files.c:395
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "Felaktig rättighetsspecifikation: %s(%s)"
 
-#: build/files.c:405
+#: build/files.c:407
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr "Felaktig specifikation av katalogrättigheter: %s(%s)"
 
-#: build/files.c:529
+#: build/files.c:531
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr "Ovanlig lokallängd: \"%.*s\" i %%langg(%s)"
 
-#: build/files.c:539
+#: build/files.c:541
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr "Duplicerad lokal %.*s i %%lang(%s)"
 
-#: build/files.c:635
+#: build/files.c:666
 msgid "Hit limit for %%docdir"
 msgstr "Slog i gränsen för %%docdir"
 
-#: build/files.c:641
+#: build/files.c:672
 msgid "Only one arg for %%docdir"
 msgstr "Endast ett argument till %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:666
+#: build/files.c:700
 #, c-format
 msgid "Two files on one line: %s"
 msgstr "Två filer på en rad: %s"
 
-#: build/files.c:679
+#: build/files.c:713
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Filnamn måste börja med \"/\": %s"
 
-#: build/files.c:691
+#: build/files.c:725
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Kan inte blanda special %%doc med andra former: %s"
 
-#: build/files.c:777
+#: build/files.c:812
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Filen uppräknad två gånger: %s"
 
-#: build/files.c:870
+#: build/files.c:913
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr "Symbolisk länk pekar på BuildRoot: %s -> %s"
 
-#: build/files.c:948
+#: build/files.c:998
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Filen matchar inte prefixet (%s): %s"
 
-#: build/files.c:958
+#: build/files.c:1008
 #, c-format
 msgid "File not found: %s"
 msgstr "Filen hittades inte: %s"
 
-#: build/files.c:1001
+#: build/files.c:1051
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
 
-#: build/files.c:1015
+#: build/files.c:1065
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1084
+#: build/files.c:1139
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Filen behöver inledande \"/\": %s"
 
-#: build/files.c:1113
+#: build/files.c:1168
 #, c-format
 msgid "File not found by glob: %s"
 msgstr "Ingen file hittades vid matchningen: %s"
 
-#: build/files.c:1160
+#: build/files.c:1221
 msgid "Could not open %%files file %s: %s"
 msgstr "Kunde inte öppna %%files-fil %s: %s"
 
-#: build/files.c:1167 build/pack.c:100
+#: build/files.c:1228 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr "rad: %s"
 
-#: build/files.c:1494
+#: build/files.c:1555
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "Felaktig fil: %s: %s"
 
-#: build/files.c:1506 build/parsePrep.c:34
+#: build/files.c:1567 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Felaktig ägare/grupp: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1561
+#: build/files.c:1622
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Kunde inte köra %s: %s"
 
-#: build/files.c:1566
+#: build/files.c:1627
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Kunde inte grena %s: %s"
 
-#: build/files.c:1648
+#: build/files.c:1709
 #, c-format
 msgid "%s failed"
 msgstr "%s misslyckades"
 
-#: build/files.c:1652
+#: build/files.c:1713
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "kunde inte skriva all data till %s"
 
-#: build/files.c:1742
+#: build/files.c:1809
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Letar upp %s: (använder %s)...\n"
 
-#: build/files.c:1770 build/files.c:1779
+#: build/files.c:1837 build/files.c:1847
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Misslyckades hitta %s:"
 
-#: build/files.c:1886
+#: build/files.c:1957
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"
@@ -2044,32 +2044,32 @@ msgstr "rad %d: Docdir måste börja med \"/\": %s"
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "rad %d: Epoch/Serial-fält måste vara numeriskt: %s"
 
-#: build/parsePreamble.c:542
+#: build/parsePreamble.c:541
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "rad %d: Felaktig BuildArchitecture-format: %s"
 
-#: build/parsePreamble.c:552
+#: build/parsePreamble.c:551
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Internt fel: felaktig tagg %d"
 
-#: build/parsePreamble.c:692
+#: build/parsePreamble.c:691
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Felaktig paketspecifikation: %s"
 
-#: build/parsePreamble.c:698
+#: build/parsePreamble.c:697
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paketet existerar redan: %s"
 
-#: build/parsePreamble.c:725
+#: build/parsePreamble.c:724
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "rad %d: Okänd tagg: %s"
 
-#: build/parsePreamble.c:750
+#: build/parsePreamble.c:749
 msgid "Spec file can't use BuildRoot"
 msgstr "Spec-fil kan inte använda BuildRoot"
 
@@ -2133,23 +2133,23 @@ msgstr "rad %d: Felaktigt argument till %%patch: %s"
 msgid "line %d: second %%prep"
 msgstr "rad %d: andra %%prep"
 
-#: build/parseReqs.c:96
+#: build/parseReqs.c:97
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
 msgstr "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s"
 
-#: build/parseReqs.c:107
+#: build/parseReqs.c:108
 #, c-format
 msgid "line %d: File name not permitted: %s"
 msgstr "rad %d: Filnamn inte tillåtna: %s"
 
-#: build/parseReqs.c:139
+#: build/parseReqs.c:140
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "rad %d: Versionsfilnamn inte tillåtet: %s"
 
-#: build/parseReqs.c:170
+#: build/parseReqs.c:171
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr "rad %d: Version krävs: %s"
@@ -2285,7 +2285,7 @@ msgid " failed - "
 msgstr " misslyckades - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:434
+#: lib/depends.c:467
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2294,84 +2294,84 @@ msgstr ""
 "\"B\"-beroendet beghöver en epok (antar samma som \"A\")\n"
 "        A %s    B %s\n"
 
-#: lib/depends.c:463
+#: lib/depends.c:496
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:786
+#: lib/depends.c:838
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s JA (lade till filer)\n"
 
-#: lib/depends.c:835
+#: lib/depends.c:887
 #, c-format
 msgid "%s: %-45s YES (added package)\n"
 msgstr "%s: %-45s JA (lade till paket)\n"
 
-#: lib/depends.c:839
+#: lib/depends.c:891
 #, c-format
 msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
 msgstr "%s: %-45s JA (lade till paket, BORDE INTE HÄNDA)\n"
 
-#: lib/depends.c:858
+#: lib/depends.c:910
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s JA (lade till tillhandahållande)\n"
 
-#: lib/depends.c:902
+#: lib/depends.c:954
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr "%s: %-45s %-3s (cachad)\n"
 
-#: lib/depends.c:919
+#: lib/depends.c:971
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
-#: lib/depends.c:942
+#: lib/depends.c:994
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:955
+#: lib/depends.c:1007
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db tillhandahållande)\n"
 
-#: lib/depends.c:969
+#: lib/depends.c:1021
 #, c-format
 msgid "%s: %-45s YES (db packages)\n"
 msgstr "%s: %-45s JA (db-paket)\n"
 
-#: lib/depends.c:986
+#: lib/depends.c:1038
 #, c-format
 msgid "%s: %-45s YES (rpmlib version)\n"
 msgstr "%s: %45s JA (rpmlib-version)\n"
 
-#: lib/depends.c:997
+#: lib/depends.c:1049
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1018
+#: lib/depends.c:1070
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1067
+#: lib/depends.c:1124
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "paket %s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1129
+#: lib/depends.c:1191
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1256
+#: lib/depends.c:1318
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "cirkularitet i kedja av förutsättningar: %s"
@@ -2553,7 +2553,7 @@ msgstr "filen %s är på en okänd enhet"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
 
-#: lib/header.c:250 lib/header.c:815
+#: lib/header.c:250 lib/header.c:815 lib/install.c:323
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatyp %d stöds inte\n"
@@ -2624,7 +2624,7 @@ msgstr "| förväntades vid slutet på uttryck"
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
-#: lib/install.c:148 lib/uninstall.c:188
+#: lib/install.c:148 lib/uninstall.c:189
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   fil: %s åtgärd: %s\n"
@@ -2645,86 +2645,86 @@ msgstr "%%instchangelog-värde i makrofil skall vara ett tal, men är inte det"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:384
+#: lib/install.c:557
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "uppackning av arkiv misslyckades%s%s: %s"
 
-#: lib/install.c:385
+#: lib/install.c:558
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/install.c:429
+#: lib/install.c:602
 msgid "installing a source package\n"
 msgstr "installerar källpaket\n"
 
-#: lib/install.c:449
+#: lib/install.c:622
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "kan inte skapa källkatalog %s"
 
-#: lib/install.c:455 lib/install.c:485
+#: lib/install.c:628 lib/install.c:658
 #, c-format
 msgid "cannot write to %s"
 msgstr "kan inte skriva till %s"
 
-#: lib/install.c:459
+#: lib/install.c:632
 #, c-format
 msgid "sources in: %s\n"
 msgstr "källkod i: %s\n"
 
-#: lib/install.c:479
+#: lib/install.c:652
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "kan inte skapa spec-katalog %s"
 
-#: lib/install.c:489
+#: lib/install.c:662
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec-fil i: %s\n"
 
-#: lib/install.c:523 lib/install.c:551
+#: lib/install.c:696 lib/install.c:724
 msgid "source package contains no .spec file"
 msgstr "källpaket innehåller ingen spec-fil"
 
-#: lib/install.c:573
+#: lib/install.c:746
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "byter namn på %s till %s\n"
 
-#: lib/install.c:575 lib/install.c:849 lib/uninstall.c:28
+#: lib/install.c:748 lib/install.c:1028 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "namnbyte från %s till %s misslyckades: %s"
 
-#: lib/install.c:666
+#: lib/install.c:840
 msgid "source package expected, binary found"
 msgstr "källpaket förväntades, fann binärpaket"
 
-#: lib/install.c:721
+#: lib/install.c:897
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s filtest = %d\n"
 
-#: lib/install.c:779
+#: lib/install.c:957
 msgid "stopping install as we're running --test\n"
 msgstr "avbryter installation eftersom vi kör --test\n"
 
-#: lib/install.c:784
+#: lib/install.c:962
 msgid "running preinstall script (if any)\n"
 msgstr "kör (eventuellt) preinstalltionsskript\n"
 
-#: lib/install.c:809
+#: lib/install.c:987
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "varning: %s skapades som %s"
 
-#: lib/install.c:845
+#: lib/install.c:1024
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "varning: %s sparades som %s"
 
-#: lib/install.c:918
+#: lib/install.c:1112
 msgid "running postinstall scripts (if any)\n"
 msgstr "kör (eventuellt) postinstallationsskript\n"
 
@@ -3315,7 +3315,7 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr "fel(%d) när paket räknades"
 
-#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:90
+#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:91
 #, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%s: kan inte läsa huvud vid 0x%x"
@@ -3354,11 +3354,6 @@ msgstr "lägger till \"%s\" till %s-index.\n"
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr "lägger till %d poster till %s-index:\n"
-
-#: lib/rpmdb.c:1965
-#, c-format
-msgid "%6d %s\n"
-msgstr ""
 
 #: lib/rpmdb.c:2316
 #, c-format
@@ -3752,27 +3747,27 @@ msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil"
 
-#: lib/transaction.c:399
+#: lib/transaction.c:412
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr "hoppar över %s%s\n"
 
-#: lib/transaction.c:425 lib/transaction.c:508
+#: lib/transaction.c:438 lib/transaction.c:521
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
 
-#: lib/transaction.c:430
+#: lib/transaction.c:443
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "flyttar %s till %s\n"
 
-#: lib/transaction.c:501
+#: lib/transaction.c:514
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"
 
-#: lib/transaction.c:653
+#: lib/transaction.c:666
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"
@@ -3792,16 +3787,16 @@ msgstr "rmdir av %s misslyckades: %s"
 msgid "removal of %s failed: %s"
 msgstr "borttagning av %s misslyckades: %s"
 
-#: lib/uninstall.c:134
+#: lib/uninstall.c:135
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "tar bort filer test = %d\n"
 
-#: lib/uninstall.c:202
+#: lib/uninstall.c:203
 msgid "running postuninstall script (if any)\n"
 msgstr "kör (eventuellt) postavinstallationsskript\n"
 
-#: lib/uninstall.c:395
+#: lib/uninstall.c:396
 msgid "execution of script failed"
 msgstr "skriptkörning misslyckades"
 

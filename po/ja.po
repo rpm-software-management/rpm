@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-06-22 21:17-0400\n"
+"POT-Creation-Date: 2000-07-05 16:33-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -127,7 +127,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.82 2000/06/23 01:44:36 jbj Exp $
+# $Id: ja.po,v 1.83 2000/07/05 20:39:16 jbj Exp $
 #: rpm.c:178 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -257,8 +257,7 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: rpm.c:228 rpmqv.c:322
-msgid ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 msgstr ""
 
 #: rpm.c:230 rpmqv.c:324
@@ -1694,170 +1693,170 @@ msgstr "&& と || は文字列用にサポートされていません"
 msgid "syntax error in expression"
 msgstr "式中で文法エラー"
 
-#: build/files.c:202
+#: build/files.c:204
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK 失敗: %s\n"
 
-#: build/files.c:247 build/files.c:329 build/files.c:492
+#: build/files.c:249 build/files.c:331 build/files.c:494
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s"
 msgstr "%s %s で '('が見つかりません"
 
-#: build/files.c:258 build/files.c:446 build/files.c:503
+#: build/files.c:260 build/files.c:448 build/files.c:505
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "')' がありません %s(%s "
 
-#: build/files.c:296 build/files.c:471
+#: build/files.c:298 build/files.c:473
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr "無効な %s のトークン: %s"
 
-#: build/files.c:345
+#: build/files.c:347
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr "%s() に続く空白がありません: %s"
 
-#: build/files.c:383
+#: build/files.c:385
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "不正な文法: %s(%s)"
 
-#: build/files.c:393
+#: build/files.c:395
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "不正なモードスペック: %s(%s)"
 
-#: build/files.c:405
+#: build/files.c:407
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr "不正なディレクトリモードスペック: %s(%s)"
 
-#: build/files.c:529
+#: build/files.c:531
 #, fuzzy
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr "異常なロカール長: \"%.*s\"  %%lang(%s)"
 
-#: build/files.c:539
+#: build/files.c:541
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr "複数のロカール %.*s %%lang(%s)"
 
-#: build/files.c:635
+#: build/files.c:666
 msgid "Hit limit for %%docdir"
 msgstr "%%docdir の限界に達しました"
 
-#: build/files.c:641
+#: build/files.c:672
 msgid "Only one arg for %%docdir"
 msgstr "%%docdir の引数は1つのみです"
 
 #. We already got a file -- error
-#: build/files.c:666
+#: build/files.c:700
 #, c-format
 msgid "Two files on one line: %s"
 msgstr "1行に2つのファイル: %s"
 
-#: build/files.c:679
+#: build/files.c:713
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "ファイルは \"/\" から始まらなければなりません: %s"
 
-#: build/files.c:691
+#: build/files.c:725
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s"
 
-#: build/files.c:777
+#: build/files.c:812
 #, c-format
 msgid "File listed twice: %s"
 msgstr "ファイルが2回表記されています: %s"
 
-#: build/files.c:870
+#: build/files.c:913
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:948
+#: build/files.c:998
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:958
+#: build/files.c:1008
 #, c-format
 msgid "File not found: %s"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1001
+#: build/files.c:1051
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:1015
+#: build/files.c:1065
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1084
+#: build/files.c:1139
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1113
+#: build/files.c:1168
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1160
+#: build/files.c:1221
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1167 build/pack.c:100
+#: build/files.c:1228 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1494
+#: build/files.c:1555
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1506 build/parsePrep.c:34
+#: build/files.c:1567 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1561
+#: build/files.c:1622
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1566
+#: build/files.c:1627
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1648
+#: build/files.c:1709
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1652
+#: build/files.c:1713
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1742
+#: build/files.c:1809
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1770 build/files.c:1779
+#: build/files.c:1837 build/files.c:1847
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:1886
+#: build/files.c:1957
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -2131,32 +2130,32 @@ msgstr "%d 行目: Docdir は '/' で始まらなくてはいけません: %s"
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "%d 行目: Epoch/Serial フィールドは番号でなければいけません: %s"
 
-#: build/parsePreamble.c:542
+#: build/parsePreamble.c:541
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "%d 行目: 不正な BuildArchitecture フォーマット: %s"
 
-#: build/parsePreamble.c:552
+#: build/parsePreamble.c:551
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "内部エラー: にせのタグ %d"
 
-#: build/parsePreamble.c:692
+#: build/parsePreamble.c:691
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "不正なパッケージの指定: %s"
 
-#: build/parsePreamble.c:698
+#: build/parsePreamble.c:697
 #, c-format
 msgid "Package already exists: %s"
 msgstr "パッケージはすでに存在しています: %s"
 
-#: build/parsePreamble.c:725
+#: build/parsePreamble.c:724
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "%d 行目: 不明なタグ: %s"
 
-#: build/parsePreamble.c:750
+#: build/parsePreamble.c:749
 msgid "Spec file can't use BuildRoot"
 msgstr "スペックファイルは BuildRoot を使用できません"
 
@@ -2220,24 +2219,24 @@ msgstr "%d 行目: %%patch への不正な引数: %s"
 msgid "line %d: second %%prep"
 msgstr "%d 行目: 2番目の %%prep"
 
-#: build/parseReqs.c:96
+#: build/parseReqs.c:97
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
 msgstr ""
 "%d 行目: 依存性トークンは英数字、'_'、'/' で始まらなければなりません: %s"
 
-#: build/parseReqs.c:107
+#: build/parseReqs.c:108
 #, fuzzy, c-format
 msgid "line %d: File name not permitted: %s"
 msgstr "%d 行目: ファイル名は許可されていません: %s"
 
-#: build/parseReqs.c:139
+#: build/parseReqs.c:140
 #, fuzzy, c-format
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "%d 行目: バージョン付けされたファイル名は許可されていません: %s"
 
-#: build/parseReqs.c:170
+#: build/parseReqs.c:171
 #, fuzzy, c-format
 msgid "line %d: Version required: %s"
 msgstr "%d 行目: バージョンが必要です: %s"
@@ -2378,7 +2377,7 @@ msgid " failed - "
 msgstr "失敗 - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:434
+#: lib/depends.c:467
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2387,84 +2386,84 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします(\"A\"と同じであると仮定して)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:463
+#: lib/depends.c:496
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:786
+#: lib/depends.c:838
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
 
-#: lib/depends.c:835
+#: lib/depends.c:887
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added package)\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
-#: lib/depends.c:839
+#: lib/depends.c:891
 #, c-format
 msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
 msgstr ""
 
-#: lib/depends.c:858
+#: lib/depends.c:910
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s は provide に加えることによって満されます。\n"
 
-#: lib/depends.c:902
+#: lib/depends.c:954
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:919
+#: lib/depends.c:971
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:942
+#: lib/depends.c:994
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:955
+#: lib/depends.c:1007
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:969
+#: lib/depends.c:1021
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db packages)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:986
+#: lib/depends.c:1038
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib version)\n"
 msgstr "%s: %s は rpmlib のバージョンによって満されています。\n"
 
-#: lib/depends.c:997
+#: lib/depends.c:1049
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:1070
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1067
+#: lib/depends.c:1124
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1129
+#: lib/depends.c:1191
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1256
+#: lib/depends.c:1318
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "prerequisite チェーンのループ: %s"
@@ -2646,7 +2645,7 @@ msgstr "ファイル %s は不明なデバイスです"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
-#: lib/header.c:250 lib/header.c:815
+#: lib/header.c:250 lib/header.c:815 lib/install.c:323
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
@@ -2717,7 +2716,7 @@ msgstr "式の終りに | が期待されます"
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
-#: lib/install.c:148 lib/uninstall.c:188
+#: lib/install.c:148 lib/uninstall.c:189
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "ファイル %s: アクション: %s\n"
@@ -2741,87 +2740,87 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:384
+#: lib/install.c:557
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/install.c:385
+#: lib/install.c:558
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/install.c:429
+#: lib/install.c:602
 msgid "installing a source package\n"
 msgstr "ソースパッケージをインストールしています\n"
 
-#: lib/install.c:449
+#: lib/install.c:622
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:455 lib/install.c:485
+#: lib/install.c:628 lib/install.c:658
 #, c-format
 msgid "cannot write to %s"
 msgstr "%s へ書き込めません"
 
-#: lib/install.c:459
+#: lib/install.c:632
 #, c-format
 msgid "sources in: %s\n"
 msgstr "ソースは: %s\n"
 
-#: lib/install.c:479
+#: lib/install.c:652
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:489
+#: lib/install.c:662
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec ファイルは: %s\n"
 
-#: lib/install.c:523 lib/install.c:551
+#: lib/install.c:696 lib/install.c:724
 msgid "source package contains no .spec file"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/install.c:573
+#: lib/install.c:746
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/install.c:575 lib/install.c:849 lib/uninstall.c:28
+#: lib/install.c:748 lib/install.c:1028 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s を %s にする名前の変更に失敗: %s"
 
-#: lib/install.c:666
+#: lib/install.c:840
 msgid "source package expected, binary found"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/install.c:721
+#: lib/install.c:897
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/install.c:779
+#: lib/install.c:957
 msgid "stopping install as we're running --test\n"
 msgstr "--test を実行するようにインストールを中止しています\n"
 
-#: lib/install.c:784
+#: lib/install.c:962
 msgid "running preinstall script (if any)\n"
 msgstr "プリインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/install.c:809
+#: lib/install.c:987
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "警告: %s は %s として作成されます"
 
-#: lib/install.c:845
+#: lib/install.c:1024
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/install.c:918
+#: lib/install.c:1112
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
@@ -3417,7 +3416,7 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:90
+#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:91
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "検索のための %d で ヘッダを読むことができません"
@@ -3455,11 +3454,6 @@ msgstr "%s を %s へ名前を変更します\n"
 #: lib/rpmdb.c:1958
 #, c-format
 msgid "adding %d entries to %s index:\n"
-msgstr ""
-
-#: lib/rpmdb.c:1965
-#, c-format
-msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:2316
@@ -3869,27 +3863,27 @@ msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/transaction.c:399
+#: lib/transaction.c:412
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/transaction.c:425 lib/transaction.c:508
+#: lib/transaction.c:438 lib/transaction.c:521
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:430
+#: lib/transaction.c:443
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/transaction.c:501
+#: lib/transaction.c:514
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
-#: lib/transaction.c:653
+#: lib/transaction.c:666
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
@@ -3909,16 +3903,16 @@ msgstr "%s の rmdir に失敗: %s"
 msgid "removal of %s failed: %s"
 msgstr "%s の削除に失敗: %s"
 
-#: lib/uninstall.c:134
+#: lib/uninstall.c:135
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "ファイル test = %d を削除します\n"
 
-#: lib/uninstall.c:202
+#: lib/uninstall.c:203
 msgid "running postuninstall script (if any)\n"
 msgstr "ポストアンインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/uninstall.c:395
+#: lib/uninstall.c:396
 msgid "execution of script failed"
 msgstr "スクリプトの実行に失敗"
 

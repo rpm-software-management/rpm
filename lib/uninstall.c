@@ -61,6 +61,7 @@ static int removeFile(const char * file, unsigned int flags, short mode,
       case FA_SKIP:
       case FA_SKIPNSTATE:
       case FA_SKIPNETSHARED:
+      case FA_SKIPMULTILIB:
 	break;
     }
  
