@@ -1367,7 +1367,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
 	NULL, ts->notifyData));
 
-    ts->ms_fingerprint += rpmswExit(&ts->op, -1)/1000;
+    ts->ms_fingerprint += rpmswExit(&ts->op, totalFileCount)/1000;
 
     /* ===============================================
      * Free unused memory as soon as possible.

@@ -54,8 +54,7 @@ int rpmVersionCompare(Header first, Header second)
 
     if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &epochOne, NULL))
 	epochOne = NULL;
-    if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (void **) &epochTwo,
-			NULL))
+    if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (void **) &epochTwo, NULL))
 	epochTwo = NULL;
 
     if (epochOne != NULL && epochTwo == NULL)
@@ -1518,6 +1517,8 @@ psm->te->h = headerLink(fi->h);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
+	    if (psm->cfd->stats != NULL)
+		ts->ms_uncompress += psm->cfd->stats->ops[FDSTAT_READ].usecs/1000;
 	    xx = fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1597,6 +1598,8 @@ psm->te->h = headerLink(fi->h);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd,
 			NULL, &psm->failedFile);
+	    if (psm->cfd->stats != NULL)
+		ts->ms_compress += psm->cfd->stats->ops[FDSTAT_WRITE].usecs/1000;
 	    xx = fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */

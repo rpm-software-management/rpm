@@ -71,6 +71,9 @@ extern int _rpmte_debug;
 extern int _rpmts_debug;
 
 /*@unchecked@*/
+extern int _rpmts_stats;
+
+/*@unchecked@*/
 extern int noLibio;
 /*@=exportheadervar@*/
 
@@ -308,6 +311,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "rpmtedebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmte_debug, -1,
 	NULL, NULL},
  { "rpmtsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_debug, -1,
+	NULL, NULL},
+ { "stats", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_stats, -1,
 	NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},

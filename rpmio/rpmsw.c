@@ -27,7 +27,7 @@ static int rpmsw_type = 0;
 /*@unchecked@*/
 static int rpmsw_initialized = 0;
 
-#if 1	/* XXX defined(__i386__) */
+#if 0	/* XXX defined(__i386__) */
 /* Swiped from glibc-2.3.2 sysdeps/i386/i686/hp-timing.h */
 
 #define	HP_TIMING_ZERO(Var)	(Var) = (0)

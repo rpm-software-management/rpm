@@ -13,6 +13,8 @@
 /*@unchecked@*/
 extern int _rpmts_debug;
 /*@unchecked@*/
+extern int _rpmts_stats;
+/*@unchecked@*/
 extern int _fps_debug;
 /*@=exportlocal@*/
 
@@ -194,6 +196,7 @@ struct rpmts_s {
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
 
+    struct rpmop_s create;
     struct rpmop_s op;		/*!< Transaction operation time stamp. */
 
     rpmtime_t ms_check;
@@ -203,6 +206,8 @@ struct rpmts_s {
     rpmtime_t ms_install;
     rpmtime_t ms_erase;
     rpmtime_t ms_scriptlets;
+    rpmtime_t ms_compress;
+    rpmtime_t ms_uncompress;
 
 /*@null@*/
     pgpDig dig;			/*!< Current signature/pubkey parameters. */

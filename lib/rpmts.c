@@ -63,6 +63,9 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@unchecked@*/
 int _rpmts_debug = 0;
 
+/*@unchecked@*/
+int _rpmts_stats = 0;
+
 char * hGetNEVR(Header h, const char ** np)
 {
     const char * n, * v, * r;
@@ -627,6 +630,24 @@ void rpmtsEmpty(rpmts ts)
 /*@=nullstate@*/
 }
 
+static void rpmtsPrintStats(rpmts ts)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    rpmtime_t msecs = rpmswExit(&ts->create, -1)/1000;
+
+    fprintf(stderr, "   total:       %4lu.%03lu sec\n", msecs/1000, msecs%1000);
+    fprintf(stderr, "   check:       %4lu.%03lu sec\n", ts->ms_check/1000, ts->ms_check%1000);
+    fprintf(stderr, "   order:       %4lu.%03lu sec\n", ts->ms_order/1000, ts->ms_order%1000);
+    fprintf(stderr, "   fingerprint: %4lu.%03lu sec\n", ts->ms_fingerprint/1000, ts->ms_fingerprint%1000);
+    fprintf(stderr, "   repackage:   %4lu.%03lu sec\n", ts->ms_repackage/1000, ts->ms_repackage%1000);
+    fprintf(stderr, "   install:     %4lu.%03lu sec\n", ts->ms_install/1000, ts->ms_install%1000);
+    fprintf(stderr, "   erase:       %4lu.%03lu sec\n", ts->ms_erase/1000, ts->ms_erase%1000);
+    fprintf(stderr, "   scriptlets:  %4lu.%03lu sec\n", ts->ms_scriptlets/1000, ts->ms_scriptlets%1000);
+    fprintf(stderr, "   compress:    %4lu.%03lu sec\n", ts->ms_compress/1000, ts->ms_compress%1000);
+    fprintf(stderr, "   uncompress:  %4lu.%03lu sec\n", ts->ms_uncompress/1000, ts->ms_uncompress%1000);
+}
+
 rpmts rpmtsFree(rpmts ts)
 {
     if (ts == NULL)
@@ -668,6 +689,9 @@ rpmts rpmtsFree(rpmts ts)
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
     (void) rpmtsUnlink(ts, "tsCreate");
+
+    if (_rpmts_stats)
+	rpmtsPrintStats(ts);
 
     /*@-refcounttrans -usereleased @*/
     ts = _free(ts);
@@ -1222,6 +1246,7 @@ rpmts rpmtsCreate(void)
     rpmts ts;
 
     ts = xcalloc(1, sizeof(*ts));
+    rpmswEnter(&ts->create, -1);
     ts->goal = TSM_UNKNOWN;
     ts->filesystemCount = 0;
     ts->filesystems = NULL;

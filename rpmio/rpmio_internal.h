@@ -115,7 +115,6 @@ enum FDSTAT_e {
  * Cumulative statistics for a descriptor.
  */
 typedef	/*@abstract@*/ struct {
-    struct rpmsw_s	begin;	/*!< Operation start time. */
     struct rpmop_s	ops[4];	/*!< Cumulative statistics. */
 } * FDSTAT_t;
 
