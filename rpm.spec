@@ -550,3 +550,4 @@ fi
 - depends.c: availablePackage is (almost) opaque.
 - invent some toy transactionElement iterators.
 - create rpmDepSet constructors/destructors.
+- create toy rpmDepSet iterators.

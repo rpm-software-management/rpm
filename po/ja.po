@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-02 00:20-0500\n"
+"POT-Creation-Date: 2001-11-02 15:59-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -862,7 +862,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:603 lib/psm.c:2140
+#: build/pack.c:603 lib/psm.c:2152
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -892,7 +892,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:683 lib/psm.c:2405
+#: build/pack.c:683 lib/psm.c:2417
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1484,7 +1484,7 @@ msgid " failed - "
 msgstr "失敗 - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:183
+#: lib/depends.c:136
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -1493,123 +1493,123 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします(\"A\"と同じであると仮定して)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:212
+#: lib/depends.c:165
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:213 lib/depends.c:857 lib/depends.c:989
+#: lib/depends.c:166 lib/depends.c:794 lib/depends.c:945
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:213 lib/depends.c:857 lib/depends.c:989
+#: lib/depends.c:166 lib/depends.c:794 lib/depends.c:945
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:357
+#: lib/depends.c:314
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/depends.c:590
+#: lib/depends.c:547
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:595
+#: lib/depends.c:552
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/depends.c:600
+#: lib/depends.c:557
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:856
+#: lib/depends.c:792
 #, fuzzy, c-format
-msgid "%s: %-45s %-s (cached)\n"
+msgid "%9s: %-45s %-s (cached)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:885
+#: lib/depends.c:828
 #, fuzzy, c-format
-msgid "%s: %-45s YES (rpmrc provides)\n"
+msgid "%9s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:902
+#: lib/depends.c:845
 #, fuzzy, c-format
-msgid "%s: %-45s YES (rpmlib provides)\n"
+msgid "%9s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:925
-#, c-format
-msgid "%s: %-45s YES (db files)\n"
-msgstr ""
-
-#: lib/depends.c:938
+#: lib/depends.c:868
 #, fuzzy, c-format
-msgid "%s: %-45s YES (db provides)\n"
+msgid "%9s: %-45s YES (db files)\n"
+msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
+
+#: lib/depends.c:881
+#, fuzzy, c-format
+msgid "%9s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:952
+#: lib/depends.c:895
 #, fuzzy, c-format
-msgid "%s: %-45s YES (db package)\n"
+msgid "%9s: %-45s YES (db package)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:968
-#, c-format
-msgid "%s: %-45s NO\n"
-msgstr ""
-
-#: lib/depends.c:989
+#: lib/depends.c:916
 #, fuzzy, c-format
-msgid "%s: (%s, %s) added to Depends cache.\n"
+msgid "%9s: %-45s NO\n"
+msgstr "ファイル %s: %s\n"
+
+#: lib/depends.c:943
+#, fuzzy, c-format
+msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1044
+#: lib/depends.c:995
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1111
+#: lib/depends.c:1059
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1365
+#: lib/depends.c:1312
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1603
+#: lib/depends.c:1556
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1677
+#: lib/depends.c:1629
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1752
+#: lib/depends.c:1704
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1812
+#: lib/depends.c:1765
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1847
+#: lib/depends.c:1800
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1852
+#: lib/depends.c:1805
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1714,7 +1714,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
 #. @-modfilesys@
-#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:949
+#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:951
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
@@ -2287,185 +2287,185 @@ msgstr "パッケージに署名します(現在の署名は捨てられます)"
 msgid "generate signature"
 msgstr "PGP/GPG 署名を生成します"
 
-#: lib/problems.c:202
+#: lib/problems.c:222
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr "は %s-%s-%s に必要とされています\n"
 
-#: lib/problems.c:205
+#: lib/problems.c:225
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " %s-%s-%s と競合します\n"
 
-#: lib/problems.c:245
+#: lib/problems.c:265
 #, fuzzy, c-format
 msgid "package %s is for a different architecture"
 msgstr "パッケージ %s-%s-%s は異なるアーキテクチャ向けです"
 
-#: lib/problems.c:250
+#: lib/problems.c:270
 #, fuzzy, c-format
 msgid "package %s is for a different operating system"
 msgstr "パッケージ %s-%s-%s は異なる OS 向けです"
 
-#: lib/problems.c:255
+#: lib/problems.c:275
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/problems.c:260
+#: lib/problems.c:280
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/problems.c:265
+#: lib/problems.c:285
 #, fuzzy, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "ファイル %s は %s-%s-%s と %s-%s-%s のインストールのファイルと競合しています"
 
-#: lib/problems.c:270
+#: lib/problems.c:290
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "%s-%s-%s のインストールからのファイル %s はパッケージ %s-%s-%s からのファイル"
 "と競合しています"
 
-#: lib/problems.c:275
+#: lib/problems.c:295
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "パッケージ %s-%s-%s (%s-%s-%sよりも新しいもの) はすでにインストールされていま"
 "す"
 
-#: lib/problems.c:280
+#: lib/problems.c:300
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:290
+#: lib/problems.c:310
 #, fuzzy, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:295
+#: lib/problems.c:315
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:302
+#: lib/problems.c:322
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 
-#: lib/psm.c:265
+#: lib/psm.c:267
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:269
+#: lib/psm.c:271
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS は除外されています: %s"
 
-#: lib/psm.c:272
+#: lib/psm.c:274
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/psm.c:342
+#: lib/psm.c:344
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/psm.c:408
+#: lib/psm.c:410
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/psm.c:418
+#: lib/psm.c:420
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/psm.c:497
+#: lib/psm.c:499
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
-#: lib/psm.c:1146
+#: lib/psm.c:1148
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "%s を作成できません: %s\n"
 
-#: lib/psm.c:1152
+#: lib/psm.c:1154
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%s へ書き込めません"
 
-#: lib/psm.c:1192
+#: lib/psm.c:1194
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/psm.c:1315
+#: lib/psm.c:1317
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/psm.c:1425
+#: lib/psm.c:1427
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/psm.c:1593
+#: lib/psm.c:1595
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1600
+#: lib/psm.c:1602
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1945
+#: lib/psm.c:1957
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:2062
+#: lib/psm.c:2074
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2176
+#: lib/psm.c:2188
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
-#: lib/psm.c:2185
+#: lib/psm.c:2197
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
-#: lib/psm.c:2226
+#: lib/psm.c:2238
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:2227
+#: lib/psm.c:2239
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:2413
+#: lib/psm.c:2425
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:2416
+#: lib/psm.c:2428
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -3562,10 +3562,6 @@ msgstr "url ポートは数字でなければなりません\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
-
-#, fuzzy
-#~ msgid "%s: %-45s YES (added files)\n"
-#~ msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
 
 #, fuzzy
 #~ msgid "%s: %-45s YES (added provide)\n"

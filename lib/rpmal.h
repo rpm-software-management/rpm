@@ -241,14 +241,11 @@ availablePackage * alAllFileSatisfiesDepend(const availableList al,
 /**
  * Check added package file lists for package(s) that have a provide.
  * @param al		available list
- * @param keyType	type of dependency
- * @param keyDepend	dependency string representation
  * @param key		dependency
  * @return		available package pointer
  */
 /*@only@*/ /*@null@*/
 availablePackage * alAllSatisfiesDepend(const availableList al,
-		const char * keyType, const char * keyDepend,
 		const rpmDepSet key)
 	/*@*/;
 
@@ -256,14 +253,10 @@ availablePackage * alAllSatisfiesDepend(const availableList al,
  * Check added package file lists for first package that has a provide.
  * @todo Eliminate.
  * @param al		available list
- * @param keyType	type of dependency
- * @param keyDepend	dependency string representation
  * @param key		dependency
  * @return		available package index, -1 on not found
  */
-long alSatisfiesDepend(const availableList al,
-		const char * keyType, const char * keyDepend,
-		const rpmDepSet key)
+long alSatisfiesDepend(const availableList al, const rpmDepSet key)
 	/*@*/;
 
 #ifdef __cplusplus

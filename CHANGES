@@ -38,6 +38,7 @@
 	- depends.c: availablePackage is (almost) opaque.
 	- invent some toy transactionElement iterators.
 	- create rpmDepSet constructors/destructors.
+	- create toy rpmDepSet iterators.
 
 4.0.3 -> 4.0.4:
 

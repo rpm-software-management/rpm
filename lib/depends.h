@@ -12,6 +12,7 @@
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
 typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
+
 typedef /*@abstract@*/ struct teIterator_s *		teIterator;
 
 typedef /*@abstract@*/ struct availableList_s *		availableList;
@@ -99,18 +100,24 @@ struct transactionElement_s {
  * A package dependency set.
  */
 struct rpmDepSet_s {
-    int i;			/*!< Dependency set element index. */
-    rpmTag tagN;		/*!< Type of dependency set. */
+    int i;			/*!< Element index. */
+
+/*@observer@*/
+    const char * Type;		/*!< Tag name. */
+/*@only@*/ /*@null@*/
+    const char * DNEVR;		/*!< Formatted dependency string. */
+
+    rpmTag tagN;		/*!< Header tag. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
 /*@only@*/
-    const char ** N;		/*!< Dependency name(s}. */
+    const char ** N;		/*!< Name. */
 /*@only@*/
-    const char ** EVR;		/*!< Dependency epoch-version-release. */
+    const char ** EVR;		/*!< Epoch-Version-Release. */
 /*@only@*/
-    const int_32 * Flags;	/*!< Dependency flags. */
-    rpmTagType Nt, EVRt, Ft;
-    int Count;			/*!< No. of dependency elements */
+    const int_32 * Flags;	/*!< Flags identifying context/comparison. */
+    rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
+    int Count;			/*!< No. of elements */
 };
 
 /** \ingroup rpmdep
@@ -270,6 +277,10 @@ transactionElement teNextIterator(teIterator tei)
 
 /*@access rpmDepSet @*/
 
+#if 0
+#define	_DS_DEBUG	1
+#endif
+
 /**
  * Destroy a new dependency set.
  * @param ds		dependency set
@@ -282,6 +293,9 @@ rpmDepSet dsFree(/*@only@*/ /*@null@*/ rpmDepSet ds)
     HFD_t hfd = headerFreeData;
     rpmTag tagEVR, tagF;
 
+#ifdef	_DS_DEBUG
+fprintf(stderr, "*** ds %p --\n", ds);
+#endif
     if (ds == NULL)
 	return ds;
 
@@ -313,6 +327,9 @@ rpmDepSet dsFree(/*@only@*/ /*@null@*/ rpmDepSet ds)
 	/*@=evalorder@*/
 	ds->h = headerFree(ds->h, "dsFree");
     }
+
+    ds->DNEVR = _free(ds->DNEVR);
+
     /*@=branchstate@*/
     memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
     ds = _free(ds);
@@ -334,28 +351,37 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpmTag tagEVR, tagF;
     rpmDepSet ds = NULL;
+    const char * Type;
 
     if (tagN == RPMTAG_PROVIDENAME) {
+	Type = "Provides";
 	tagEVR = RPMTAG_PROVIDEVERSION;
 	tagF = RPMTAG_PROVIDEFLAGS;
     } else
     if (tagN == RPMTAG_REQUIRENAME) {
+	Type = "Requires";
 	tagEVR = RPMTAG_REQUIREVERSION;
 	tagF = RPMTAG_REQUIREFLAGS;
     } else
     if (tagN == RPMTAG_CONFLICTNAME) {
+	Type = "Conflicts";
 	tagEVR = RPMTAG_CONFLICTVERSION;
 	tagF = RPMTAG_CONFLICTFLAGS;
     } else
     if (tagN == RPMTAG_OBSOLETENAME) {
+	Type = "Obsoletes";
 	tagEVR = RPMTAG_OBSOLETEVERSION;
 	tagF = RPMTAG_OBSOLETEFLAGS;
     } else {
-	return ds;
+	goto exit;
     }
 
     ds = xcalloc(1, sizeof(*ds));
     ds->i = -1;
+
+    ds->Type = Type;
+    ds->DNEVR = NULL;
+
     ds->tagN = tagN;
     ds->h = (scareMem ? headerLink(h, "dsNew") : NULL);
     if (hge(h, tagN, &ds->Nt, (void **) &ds->N, &ds->Count)) {
@@ -367,9 +393,106 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
                                 ds->Flags, ds->Count* sizeof(*ds->Flags));
     } else
 	ds->h = headerFree(ds->h, "dsNew");
+
+exit:
     /*@-nullret@*/ /* FIX: ds->Flags may be NULL. */
+#ifdef	_DS_DEBUG
+fprintf(stderr, "*** ds %p ++ %s[%d]\n", ds, ds->Type, ds->Count);
+#endif
     return ds;
     /*@=nullret@*/
+}
+
+/**
+ * Return formatted dependency string.
+ * @param depend	type of dependency ("R" == Requires, "C" == Conflcts)
+ * @param key		dependency
+ * @return		formatted dependency (malloc'ed)
+ */
+/*@unused@*/ static inline /*@only@*/
+char * dsDNEVR(const char * depend, const rpmDepSet key)
+	/*@*/
+{
+    char * tbuf, * t;
+    size_t nb;
+
+    nb = 0;
+    if (depend)	nb += strlen(depend) + 1;
+    if (key->N[key->i])	nb += strlen(key->N[key->i]);
+    if (key->Flags[key->i] & RPMSENSE_SENSEMASK) {
+	if (nb)	nb++;
+	if (key->Flags[key->i] & RPMSENSE_LESS)	nb++;
+	if (key->Flags[key->i] & RPMSENSE_GREATER) nb++;
+	if (key->Flags[key->i] & RPMSENSE_EQUAL)	nb++;
+    }
+    if (key->EVR[key->i] && *key->EVR[key->i]) {
+	if (nb)	nb++;
+	nb += strlen(key->EVR[key->i]);
+    }
+
+    t = tbuf = xmalloc(nb + 1);
+    if (depend) {
+	t = stpcpy(t, depend);
+	*t++ = ' ';
+    }
+    if (key->N[key->i])
+	t = stpcpy(t, key->N[key->i]);
+    if (key->Flags[key->i] & RPMSENSE_SENSEMASK) {
+	if (t != tbuf)	*t++ = ' ';
+	if (key->Flags[key->i] & RPMSENSE_LESS)	*t++ = '<';
+	if (key->Flags[key->i] & RPMSENSE_GREATER) *t++ = '>';
+	if (key->Flags[key->i] & RPMSENSE_EQUAL)	*t++ = '=';
+    }
+    if (key->EVR[key->i] && *key->EVR[key->i]) {
+	if (t != tbuf)	*t++ = ' ';
+	t = stpcpy(t, key->EVR[key->i]);
+    }
+    *t = '\0';
+    return tbuf;
+}
+/**
+ * Return next dependency set iterator index.
+ * @param ds		dependency set
+ * @return		dependency set iterator index, -1 on termination
+ */
+/*@unused@*/ static inline
+int dsiNext(/*@null@*/ rpmDepSet ds)
+	/*@modifies ds @*/
+{
+    int i = -1;
+
+    if (ds != NULL && ++ds->i >= 0) {
+	if (ds->i < ds->Count) {
+	    char t[2];
+	    i = ds->i;
+	    ds->DNEVR = _free(ds->DNEVR);
+	    t[0] = ((ds->Type != NULL) ? ds->Type[0] : '\0');
+	    t[1] = '\0';
+	    /*@-nullstate@*/
+	    ds->DNEVR = dsDNEVR(t, ds);
+	    /*@=nullstate@*/
+#ifdef	_DS_DEBUG
+fprintf(stderr, "*** ds %p[%d] %s: %s\n", ds, i, ds->Type, ds->DNEVR);
+#endif
+	}
+    }
+    if (i >= 0) {
+    }
+    return i;
+}
+
+/**
+ * Initialize dependency set iterator.
+ * @param ds		dependency set
+ * @return		dependency set
+ */
+/*@unused@*/ static inline /*@null@*/
+rpmDepSet dsiInit(/*@returned@*/ /*@null@*/ rpmDepSet ds)
+	/*@modifies ds @*/
+{
+    if (ds != NULL)
+	ds->i = -1;
+    return ds;
 }
 
 /**

@@ -10,6 +10,8 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
+#include "depends.h"
+
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
 #include "legacy.h"		/* XXX buildOrigFileList() */
@@ -1680,7 +1682,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies psm, *triggersAlreadyRun, rpmGlobalMacroContext,
+	/*@modifies psm, triggeredH, *triggersAlreadyRun, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
@@ -1691,25 +1693,31 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
     const char ** triggerScripts;
     const char ** triggerProgs;
     int_32 * triggerIndices;
-    rpmTagType tnt, tvt, tft;
     const char * triggerPackageName;
     const char * sourceName;
     rpmRC rc = RPMRC_OK;
     int xx;
     int skip;
 
-    if (!(	hge(triggeredH, RPMTAG_TRIGGERNAME, &tnt, 
+    trigger->Type = "Trigger";
+    trigger->tagN = RPMTAG_TRIGGERNAME;
+    trigger->h = headerLink(triggeredH, "triggeredH");
+    trigger->i = -1;
+
+    if (!(	hge(triggeredH, RPMTAG_TRIGGERNAME, &trigger->Nt, 
 			(void **) &trigger->N, &trigger->Count) &&
-		hge(triggeredH, RPMTAG_TRIGGERFLAGS, &tft,
+		hge(triggeredH, RPMTAG_TRIGGERFLAGS, &trigger->Ft,
 			(void **) &trigger->Flags, NULL) &&
-		hge(triggeredH, RPMTAG_TRIGGERVERSION, &tvt,
+		hge(triggeredH, RPMTAG_TRIGGERVERSION, &trigger->EVRt,
 			(void **) &trigger->EVR, NULL))
 	)
 	return 0;
 
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
 
-    for (trigger->i = 0; trigger->i < trigger->Count; trigger->i++) {
+    trigger = dsiInit(trigger);
+    if (trigger != NULL)
+    while (dsiNext(trigger) >= 0) {
 	rpmTagType tit, tst, tpt;
 
 	if (!(trigger->Flags[trigger->i] & psm->sense)) continue;
@@ -1777,9 +1785,13 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 	break;
     }
 
-    trigger->N = hfd(trigger->N, tnt);
-    trigger->Flags = hfd(trigger->Flags, tft);
-    trigger->EVR = hfd(trigger->EVR, tvt);
+    if (trigger != NULL) {
+	trigger->N = hfd(trigger->N, trigger->Nt);
+	trigger->Flags = hfd(trigger->Flags, trigger->Ft);
+	trigger->EVR = hfd(trigger->EVR, trigger->EVRt);
+	trigger->DNEVR = _free(trigger->DNEVR);
+	trigger->h = headerFree(trigger->h, "triggeredH");
+    }
 
     return rc;
 }

@@ -39,53 +39,6 @@ int _ts_debug = 0;
 static int _te_debug = 0;
 
 /**
- * Return formatted dependency string.
- * @param depend	type of dependency ("R" == Requires, "C" == Conflcts)
- * @param key		dependency
- * @return		formatted dependency (malloc'ed)
- */
-static /*@only@*/ char * printDepend(const char * depend, const rpmDepSet key)
-	/*@*/
-{
-    char * tbuf, * t;
-    size_t nb;
-
-    nb = 0;
-    if (depend)	nb += strlen(depend) + 1;
-    if (key->N[key->i])	nb += strlen(key->N[key->i]);
-    if (key->Flags[key->i] & RPMSENSE_SENSEMASK) {
-	if (nb)	nb++;
-	if (key->Flags[key->i] & RPMSENSE_LESS)	nb++;
-	if (key->Flags[key->i] & RPMSENSE_GREATER) nb++;
-	if (key->Flags[key->i] & RPMSENSE_EQUAL)	nb++;
-    }
-    if (key->EVR[key->i] && *key->EVR[key->i]) {
-	if (nb)	nb++;
-	nb += strlen(key->EVR[key->i]);
-    }
-
-    t = tbuf = xmalloc(nb + 1);
-    if (depend) {
-	t = stpcpy(t, depend);
-	*t++ = ' ';
-    }
-    if (key->N[key->i])
-	t = stpcpy(t, key->N[key->i]);
-    if (key->Flags[key->i] & RPMSENSE_SENSEMASK) {
-	if (t != tbuf)	*t++ = ' ';
-	if (key->Flags[key->i] & RPMSENSE_LESS)	*t++ = '<';
-	if (key->Flags[key->i] & RPMSENSE_GREATER) *t++ = '>';
-	if (key->Flags[key->i] & RPMSENSE_EQUAL)	*t++ = '=';
-    }
-    if (key->EVR[key->i] && *key->EVR[key->i]) {
-	if (t != tbuf)	*t++ = ' ';
-	t = stpcpy(t, key->EVR[key->i]);
-    }
-    *t = '\0';
-    return tbuf;
-}
-
-/**
  * Split EVR into epoch, version, and release components.
  * @param evr		[epoch:]version[-release] string
  * @retval *ep		pointer to epoch
@@ -143,8 +96,8 @@ int rpmFLAGS = RPMSENSE_EQUAL;
 
 int rpmRangesOverlap(const rpmDepSet A, const rpmDepSet B)
 {
-    const char *aDepend = printDepend(NULL, A);
-    const char *bDepend = printDepend(NULL, B);
+    const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
+    const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
     char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
     int result;
@@ -217,14 +170,11 @@ exit:
 }
 
 static int rangeMatchesDepFlags (Header h, const rpmDepSet req)
-	/*@*/
+	/*@modifies h @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    rpmTagType pnt, pvt;
-    rpmDepSet provides = memset(alloca(sizeof(*provides)), 0, sizeof(*provides));
-    int result;
-    int xx;
+    int scareMem = 1;
+    rpmDepSet provides = NULL;
+    int result = 0;
 
     if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
 	return 1;
@@ -234,20 +184,18 @@ static int rangeMatchesDepFlags (Header h, const rpmDepSet req)
      * Rpm prior to 3.0.3 does not have versioned provides.
      * If no provides version info is available, match any requires.
      */
-    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt,
-		(void **) &provides->EVR, &provides->Count))
-	return 1;
+    provides = dsiInit(dsNew(h, RPMTAG_PROVIDENAME, scareMem));
+    if (provides == NULL)
+	goto exit;	/* XXX should never happen */
 
-    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provides->Flags, NULL);
-
-    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides->N, &provides->Count))
-    {
-	provides->EVR = hfd(provides->EVR, pvt);
-	return 0;	/* XXX should never happen */
+    if (provides->EVR == NULL) {
+	result = 1;
+	goto exit;
     }
 
     result = 0;
-    for (provides->i = 0; provides->i < provides->Count; provides->i++) {
+    if (provides != NULL)
+    while (dsiNext(provides) >= 0) {
 
 	/* Filter out provides that came along for the ride. */
 	if (strcmp(provides->N[provides->i], req->N[req->i]))
@@ -260,8 +208,8 @@ static int rangeMatchesDepFlags (Header h, const rpmDepSet req)
 	    break;
     }
 
-    provides->N = hfd(provides->N, pnt);
-    provides->EVR = hfd(provides->EVR, pvt);
+exit:
+    provides = dsFree(provides);
 
     return result;
 }
@@ -275,6 +223,7 @@ int headerMatchesDepFlags(Header h, const rpmDepSet req)
     char * p;
     int_32 pkgFlags = RPMSENSE_EQUAL;
     rpmDepSet pkg = memset(alloca(sizeof(*pkg)), 0, sizeof(*pkg));
+    int rc;
 
     if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))
 	return 1;
@@ -291,17 +240,25 @@ int headerMatchesDepFlags(Header h, const rpmDepSet req)
     }
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
+    /*@-compmempass@*/ /* FIX: move pkg immediate variables from stack */
+    pkg->i = -1;
+    pkg->Type = "Provides";
+    pkg->tagN = RPMTAG_PROVIDENAME;
+    pkg->DNEVR = NULL;
     /*@-immediatetrans@*/
     pkg->N = &name;
     pkg->EVR = &pkgEVR;
     pkg->Flags = &pkgFlags;
     /*@=immediatetrans@*/
     pkg->Count = 1;
-    pkg->i = 0;
+    (void) dsiNext(dsiInit(pkg));
 
-    /*@-compmempass@*/ /* FIX: move pkg immediate variables from stack */
-    return rpmRangesOverlap(pkg, req);
+    rc = rpmRangesOverlap(pkg, req);
+
+    pkg->DNEVR = _free(pkg->DNEVR);
     /*@=compmempass@*/
+
+    return rc;
 }
 
 rpmTransactionSet XrpmtsUnlink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
@@ -690,9 +647,9 @@ assert(apx == ts->numAddedPackages);
 	mi = rpmdbFreeIterator(mi);
     }
 
-    obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+    obsoletes = dsiInit(dsNew(h, RPMTAG_OBSOLETENAME, scareMem));
     if (obsoletes != NULL)
-    for (obsoletes->i = 0; obsoletes->i < obsoletes->Count; obsoletes->i++) {
+    while (dsiNext(obsoletes) >= 0) {
 
 	/* XXX avoid self-obsoleting packages. */
 	if (!strcmp(name, obsoletes->N[obsoletes->i]))
@@ -791,38 +748,15 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 }
 /*@=nullstate@*/
 
-rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
-		int numConflicts)
-{
-    int i;
-
-    if (conflicts)
-    for (i = 0; i < numConflicts; i++) {
-	conflicts[i].byHeader = headerFree(conflicts[i].byHeader, "problem");
-	conflicts[i].byName = _free(conflicts[i].byName);
-	conflicts[i].byVersion = _free(conflicts[i].byVersion);
-	conflicts[i].byRelease = _free(conflicts[i].byRelease);
-	conflicts[i].needsName = _free(conflicts[i].needsName);
-	conflicts[i].needsVersion = _free(conflicts[i].needsVersion);
-	conflicts[i].suggestedPackages = _free(conflicts[i].suggestedPackages);
-    }
-
-    return (conflicts = _free(conflicts));
-}
-
 /**
  * Check key for an unsatisfied dependency.
  * @todo Eliminate rpmrc provides.
  * @param al		available list
- * @param keyType	type of dependency
- * @param keyDepend	dependency string representation
  * @param key		dependency
  * @retval suggestion	possible package(s) to resolve dependency
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
-static int unsatisfiedDepend(rpmTransactionSet ts,
-		const char * keyType, const char * keyDepend,
-		rpmDepSet key,
+static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
 		/*@null@*/ /*@out@*/ availablePackage ** suggestion)
 	/*@globals _cacheDependsRC, fileSystem @*/
 	/*@modifies ts, *suggestion, _cacheDependsRC, fileSystem @*/
@@ -843,23 +777,32 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	    _cacheDependsRC = 0;
 	else {
 	    DBC * dbcursor = NULL;
-	    size_t keylen = strlen(keyDepend);
+	    size_t keylen = (key->DNEVR != NULL ? strlen(key->DNEVR) : 0);
 	    void * datap = NULL;
 	    size_t datalen = 0;
 	    int xx;
 	    xx = dbiCopen(dbi, &dbcursor, 0);
 	    /*@-mods@*/		/* FIX: keyDepends mod undocumented. */
-	    xx = dbiGet(dbi, dbcursor, (void **)&keyDepend, &keylen, &datap, &datalen, 0);
+	    /*@-nullstate@*/	/* FIX: key->NEVR may be NULL */
+	    xx = dbiGet(dbi, dbcursor, (void **)&key->DNEVR, &keylen, &datap, &datalen, 0);
+	    /*@=nullstate@*/
 	    /*@=mods@*/
 	    if (xx == 0 && datap && datalen == 4) {
 		memcpy(&rc, datap, datalen);
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s %-s (cached)\n"),
-			keyType, keyDepend, (rc ? _("NO ") : _("YES")));
+		rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s %-s (cached)\n"),
+			key->Type, (key->DNEVR != NULL ? key->DNEVR : "???"),
+			(rc ? _("NO ") : _("YES")));
 		xx = dbiCclose(dbi, NULL, 0);
 
-		if (suggestion && rc == 1)
+		/*@-mods@*/	/* FIX: sick hack */
+		if (suggestion && rc == 1) {
+		    const char * Type = key->Type;
+		    key->Type = NULL;
 		    *suggestion = alAllSatisfiesDepend(ts->availablePackages,
-				NULL, NULL, key);
+				key);
+		    key->Type = Type;
+		}
+		/*@=mods@*/
 
 		return rc;
 	    }
@@ -882,8 +825,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	while ((start = strstr(rcProvidesString, key->N[key->i]))) {
 	/*@=observertrans =mayaliasunique@*/
 	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmrc provides)\n"),
-			keyType, keyDepend+2);
+		rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s YES (rpmrc provides)\n"),
+			key->Type, (key->DNEVR != NULL ? key->DNEVR+2 : "???"));
 		goto exit;
 	    }
 	    rcProvidesString = start + 1;
@@ -899,14 +842,14 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
      */
     if (!strncmp(key->N[key->i], "rpmlib(", sizeof("rpmlib(")-1)) {
 	if (rpmCheckRpmlibProvides(key)) {
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib provides)\n"),
-			keyType, keyDepend+2);
+	    rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s YES (rpmlib provides)\n"),
+			key->Type, (key->DNEVR != NULL ? key->DNEVR+2 : "???"));
 	    goto exit;
 	}
 	goto unsatisfied;
     }
 
-    if (alSatisfiesDepend(ts->addedPackages, keyType, keyDepend, key) != -1L)
+    if (alSatisfiesDepend(ts->addedPackages, key) != -1L)
     {
 	goto exit;
     }
@@ -922,8 +865,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db files)\n"),
-			keyType, keyDepend+2);
+		rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s YES (db files)\n"),
+			key->Type, (key->DNEVR != NULL ? key->DNEVR+2 : "???"));
 		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
@@ -935,8 +878,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rangeMatchesDepFlags(h, key)) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db provides)\n"),
-			keyType, keyDepend+2);
+		rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s YES (db provides)\n"),
+			key->Type, (key->DNEVR != NULL ? key->DNEVR+2 : "???"));
 		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
@@ -949,8 +892,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rangeMatchesDepFlags(h, key)) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db package)\n"),
-			keyType, keyDepend+2);
+		rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s YES (db package)\n"),
+			key->Type, (key->DNEVR != NULL ? key->DNEVR+2 : "???"));
 		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
@@ -960,12 +903,18 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 
     }
 
-    if (suggestion)
-	*suggestion = alAllSatisfiesDepend(ts->availablePackages, NULL, NULL,
-				key);
+    /*@-mods@*/	/* FIX: sick hack */
+    if (suggestion) {
+	const char * Type = key->Type;
+	key->Type = NULL;
+	*suggestion = alAllSatisfiesDepend(ts->availablePackages, key);
+	key->Type = Type;
+    }
+    /*@=mods@*/
 
 unsatisfied:
-    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s NO\n"), keyType, keyDepend+2);
+    rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s NO\n"),
+			key->Type, (key->DNEVR != NULL ? key->DNEVR+2 : "???"));
     rc = 1;	/* dependency is unsatisfied */
 
 exit:
@@ -978,17 +927,23 @@ exit:
 	if (dbi == NULL) {
 	    _cacheDependsRC = 0;
 	} else {
-	    DBC * dbcursor = NULL;
-	    int xx;
-	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
-	    xx = dbiPut(dbi, dbcursor, keyDepend, strlen(keyDepend), &rc, sizeof(rc), 0);
+	    int xx = 0;
+	    if (key->DNEVR != NULL) {
+		DBC * dbcursor = NULL;
+		xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
+		xx = dbiPut(dbi, dbcursor, key->DNEVR, strlen(key->DNEVR),
+			&rc, sizeof(rc), 0);
+		xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
+	    }
 	    if (xx)
 		_cacheDependsRC = 0;
 #if 0	/* XXX NOISY */
 	    else
-		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %s) added to Depends cache.\n"), keyType, keyDepend, (rc ? _("NO ") : _("YES")));
+		rpmMessage(RPMMESS_DEBUG,
+			_("%9s: (%s, %s) added to Depends cache.\n"),
+			key->Type, (key->DNEVR != NULL ? key->DNEVR : "???"),
+			(rc ? _("NO ") : _("YES")));
 #endif
-	    xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
 	}
     }
     return rc;
@@ -1018,10 +973,9 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 
     xx = headerNVR(h, &name, &version, &release);
 
-    requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
+    requires = dsiInit(dsNew(h, RPMTAG_REQUIRENAME, scareMem));
     if (requires != NULL)
-    for (requires->i = 0; requires->i < requires->Count && !ourrc; requires->i++) {
-	const char * keyDepend;
+    while (!ourrc && dsiNext(requires) >= 0) {
 
 	/* Filter out requires that came along for the ride. */
 	if (keyName && strcmp(keyName, requires->N[requires->i]))
@@ -1032,17 +986,15 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	if (multiLib && !isDependsMULTILIB(requires->Flags[requires->i]))
 	    continue;
 
-	keyDepend = printDepend("R", requires);
-
-	rc = unsatisfiedDepend(ts, " Requires", keyDepend, requires,
-			&suggestion);
+	rc = unsatisfiedDepend(ts, requires, &suggestion);
 
 	switch (rc) {
 	case 0:		/* requirements are satisfied. */
 	    /*@switchbreak@*/ break;
 	case 1:		/* requirements are not satisfied. */
 	    rpmMessage(RPMMESS_DEBUG, _("package %s-%s-%s require not satisfied: %s\n"),
-		    name, version, release, keyDepend+2);
+		    name, version, release,
+		    (requires->DNEVR ? requires->DNEVR+2 : "???"));
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
@@ -1083,14 +1035,12 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	    ourrc = 1;
 	    /*@switchbreak@*/ break;
 	}
-	keyDepend = _free(keyDepend);
     }
     requires = dsFree(requires);
 
-    conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+    conflicts = dsiInit(dsNew(h, RPMTAG_CONFLICTNAME, scareMem));
     if (conflicts != NULL)
-    for (conflicts->i = 0; conflicts->i < conflicts->Count && !ourrc; conflicts->i++) {
-	const char * keyDepend;
+    while (!ourrc && dsiNext(conflicts) >= 0) {
 
 	/* Filter out conflicts that came along for the ride. */
 	if (keyName && strcmp(keyName, conflicts->N[conflicts->i]))
@@ -1101,15 +1051,13 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	if (multiLib && !isDependsMULTILIB(conflicts->Flags[conflicts->i]))
 	    continue;
 
-	keyDepend = printDepend("C", conflicts);
-
-	rc = unsatisfiedDepend(ts, "Conflicts", keyDepend, conflicts, NULL);
+	rc = unsatisfiedDepend(ts, conflicts, NULL);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
 	case 0:		/* conflicts exist. */
 	    rpmMessage(RPMMESS_DEBUG, _("package %s conflicts: %s\n"),
-		    name, keyDepend+2);
+		    name, (conflicts->DNEVR ? conflicts->DNEVR+2 : "???"));
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
@@ -1138,7 +1086,6 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	    ourrc = 1;
 	    /*@switchbreak@*/ break;
 	}
-	keyDepend = _free(keyDepend);
     }
     conflicts = dsFree(conflicts);
 
@@ -1354,7 +1301,7 @@ zapRelation(transactionElement q, transactionElement p,
 	if (requires->Flags == NULL) continue;	/* XXX can't happen */
 
 	requires->i = tsi->tsi_reqx;	/* XXX hack */
-	dp = printDepend( identifyDepend(requires->Flags[requires->i]), requires);
+	dp = dsDNEVR( identifyDepend(requires->Flags[requires->i]), requires);
 
 	/*
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
@@ -1414,7 +1361,13 @@ static inline int addRelation(rpmTransactionSet ts,
     if (!requires->N || !requires->EVR || !requires->Flags)
 	return 0;
 
-    matchNum = alSatisfiesDepend(ts->addedPackages, NULL, NULL, requires);
+    /*@-mods@*/	/* FIX: sick hack */
+    {	const char * Type = requires->Type;
+	requires->Type = NULL;
+	matchNum = alSatisfiesDepend(ts->addedPackages, requires);
+	requires->Type = Type;
+    }
+    /*@=mods@*/
 /*@-modfilesystem -nullpass@*/
 if (_te_debug)
 fprintf(stderr, "addRelation: matchNum %d\n", (int)matchNum);
@@ -1615,11 +1568,6 @@ prtTSI(p->NEVR, &p->tsi);
 	if (requires->Flags == NULL) /* XXX can't happen */
 	    continue;
 
-/*@-modfilesystem -nullpass@*/
-if (_te_debug)
-fprintf(stderr, "\t+++ %p[%d] %s %s-%s-%s requires[%d] %p[%d] Flags %p\n", p, teGetOc(pi), p->NEVR, p->name, p->version, p->release, p->u.addedIndex, requires, requires->Count, requires->Flags);
-/*@=modfilesystem =nullpass@*/
-
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
 
 	/* Avoid narcisstic relations. */
@@ -1628,7 +1576,9 @@ fprintf(stderr, "\t+++ %p[%d] %s %s-%s-%s requires[%d] %p[%d] Flags %p\n", p, te
 	/* T2. Next "q <- p" relation. */
 
 	/* First, do pre-requisites. */
-	for (requires->i = 0; requires->i < requires->Count; requires->i++) {
+	requires = dsiInit(requires);
+	if (requires != NULL)
+	while (dsiNext(requires) >= 0) {
 
 	    /* Skip if not %pre/%post requires or legacy prereq. */
 
@@ -1643,7 +1593,9 @@ fprintf(stderr, "\t+++ %p[%d] %s %s-%s-%s requires[%d] %p[%d] Flags %p\n", p, te
 	}
 
 	/* Then do co-requisites. */
-	for (requires->i = 0; requires->i < requires->Count; requires->i++) {
+	requires = dsiInit(requires);
+	if (requires != NULL)
+	while (dsiNext(requires) >= 0) {
 
 	    /* Skip if %pre/%post requires or legacy prereq. */
 
@@ -1802,6 +1754,7 @@ prtTSI(" p", &p->tsi);
 
 	    /* T13. Print predecessor chain from start of loop. */
 	    while ((p = q) != NULL && (q = p->tsi.tsi_chain) != NULL) {
+		rpmDepSet requires;
 		const char * dp;
 		char buf[4096];
 
@@ -1814,9 +1767,9 @@ prtTSI(" p", &p->tsi);
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
-		dp = zapRelation(q, p,
-			alGetRequires(ts->addedPackages, p->u.addedIndex),
-			1, &nzaps);
+		requires = alGetRequires(ts->addedPackages, p->u.addedIndex);
+		requires = dsiInit(requires);
+		dp = zapRelation(q, p, requires, 1, &nzaps);
 
 		/* Print next member of loop. */
 		buf[0] = '\0';
@@ -2056,7 +2009,9 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    continue;
 
 	rc = 0;
-	for (provides->i = 0; provides->i < provides->Count; provides->i++) {
+	provides = dsiInit(provides);
+	if (provides != NULL)
+	while (dsiNext(provides) >= 0) {
 	    /* Adding: check provides key against conflicts matches. */
 	    if (!checkDependentConflicts(ts, ps, provides->N[provides->i]))
 		/*@innercontinue@*/ continue;
@@ -2093,10 +2048,9 @@ int rpmdepCheck(rpmTransactionSet ts,
 	}
 
 	    rc = 0;
-	    provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
+	    provides = dsiInit(dsNew(h, RPMTAG_PROVIDENAME, scareMem));
 	    if (provides != NULL)
-	    for (provides->i = 0; provides->i < provides->Count; provides->i++)
-	    {
+	    while (dsiNext(provides) >= 0) {
 		/* Erasing: check provides against requiredby matches. */
 		if (!checkDependentPackages(ts, ps, provides->N[provides->i]))
 		    /*@innercontinue@*/ continue;

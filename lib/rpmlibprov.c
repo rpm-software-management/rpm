@@ -63,16 +63,20 @@ int rpmCheckRpmlibProvides(const rpmDepSet key)
     int rc = 0;
     rpmDepSet pro = memset(alloca(sizeof(*pro)), 0, sizeof(*pro));
 
+    pro->Type = "Provides";
+    pro->tagN = RPMTAG_PROVIDENAME;
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
 	if (rlp->featureEVR && rlp->featureFlags) {
 	    /*@-immediatetrans@*/
+	    pro->DNEVR = NULL;
 	    pro->N = (const char **) &rlp->featureName;
 	    pro->EVR = (const char **) &rlp->featureEVR;
 	    pro->Flags = &rlp->featureFlags;
-	    pro->Count = 1;
-	    pro->i = 0;
 	    /*@=immediatetrans@*/
+	    pro->Count = 1;
+	    (void) dsiNext(dsiInit(pro));
 	    rc = rpmRangesOverlap(key, pro);
+	    pro->DNEVR = _free(pro->DNEVR);
 	}
 	if (rc)
 	    break;

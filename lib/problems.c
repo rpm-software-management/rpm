@@ -177,6 +177,26 @@ static int sameProblem(const rpmDependencyConflict ap,
 }
 
 /* XXX FIXME: merge into problems */
+rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
+		int numConflicts)
+{
+    int i;
+
+    if (conflicts)
+    for (i = 0; i < numConflicts; i++) {
+	conflicts[i].byHeader = headerFree(conflicts[i].byHeader, "problem");
+	conflicts[i].byName = _free(conflicts[i].byName);
+	conflicts[i].byVersion = _free(conflicts[i].byVersion);
+	conflicts[i].byRelease = _free(conflicts[i].byRelease);
+	conflicts[i].needsName = _free(conflicts[i].needsName);
+	conflicts[i].needsVersion = _free(conflicts[i].needsVersion);
+	conflicts[i].suggestedPackages = _free(conflicts[i].suggestedPackages);
+    }
+
+    return (conflicts = _free(conflicts));
+}
+
+/* XXX FIXME: merge into problems */
 void printDepProblems(FILE * fp,
 		const rpmDependencyConflict conflicts, int numConflicts)
 {

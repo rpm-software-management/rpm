@@ -663,8 +663,8 @@ void alMakeIndex(availableList al)
 }
 
 availablePackage *
-alAllFileSatisfiesDepend(const availableList al,
-		const char * keyType, const char * fileName)
+alAllFileSatisfiesDepend(const availableList al, const char * keyType,
+		const char * fileName)
 {
     int i, found = 0;
     const char * dirName;
@@ -723,7 +723,7 @@ alAllFileSatisfiesDepend(const availableList al,
 #endif
 
 	    if (keyType)
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added files)\n"),
+		rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s YES (added files)\n"),
 			keyType, fileName);
 
 	    ret = xrealloc(ret, (found+2) * sizeof(*ret));
@@ -751,8 +751,8 @@ exit:
  * @return		available package pointer
  */
 /*@unused@*/ static /*@dependent@*/ /*@null@*/ availablePackage
-alFileSatisfiesDepend(const availableList al,
-		const char * keyType, const char * fileName)
+alFileSatisfiesDepend(const availableList al, const char * keyType,
+		const char * fileName)
 	/*@*/
 {
     availablePackage ret;
@@ -768,9 +768,7 @@ alFileSatisfiesDepend(const availableList al,
 #endif	/* DYING */
 
 availablePackage *
-alAllSatisfiesDepend(const availableList al,
-		const char * keyType, const char * keyDepend,
-		const rpmDepSet key)
+alAllSatisfiesDepend(const availableList al, const rpmDepSet key)
 {
     availableIndexEntry needle =
 		memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
@@ -779,7 +777,7 @@ alAllSatisfiesDepend(const availableList al,
     int rc, found;
 
     if (*key->N[key->i] == '/') {
-	ret = alAllFileSatisfiesDepend(al, keyType, key->N[key->i]);
+	ret = alAllFileSatisfiesDepend(al, key->Type, key->N[key->i]);
 	/* XXX Provides: /path was broken with added packages (#52183). */
 	if (ret != NULL && *ret != NULL)
 	    return ret;
@@ -807,19 +805,12 @@ alAllSatisfiesDepend(const availableList al,
 		indexcmp(match, needle) == 0;
 	 match++)
     {
-	int isave;
-
 	p = match->package;
 	rc = 0;
-	if (p->provides != NULL)
-	    isave = p->provides->i;	/* XXX hack */
 	switch (match->type) {
 	case IET_PROVIDES:
 	    if (p->provides != NULL)
-	    for (p->provides->i = 0;
-		 p->provides->i < p->provides->Count;
-		 p->provides->i++)
-	    {
+	    for (dsiInit(p->provides) != NULL; dsiNext(p->provides) >= 0;) {
 
 		/* Filter out provides that came along for the ride. */
 		if (strcmp(p->provides->N[p->provides->i], key->N[key->i]))
@@ -829,13 +820,13 @@ alAllSatisfiesDepend(const availableList al,
 		if (rc)
 		    /*@innerbreak@*/ break;
 	    }
-	    if (keyType && keyDepend && rc)
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added provide)\n"),
-				keyType, keyDepend+2);
+	    if (key->Type && rc)
+		if (key->DNEVR)
+		    rpmMessage(RPMMESS_DEBUG,
+			_("%9s: %-45s YES (added provide)\n"),
+				key->Type, key->DNEVR+2);
 	    /*@switchbreak@*/ break;
 	}
-	if (p->provides != NULL)
-	    p->provides->i = isave;	/* XXX hack */
 
 	/*@-branchstate@*/
 	if (rc) {
@@ -852,11 +843,9 @@ alAllSatisfiesDepend(const availableList al,
     return ret;
 }
 
-long alSatisfiesDepend(const availableList al,
-		const char * keyType, const char * keyDepend,
-		const rpmDepSet key)
+long alSatisfiesDepend(const availableList al, const rpmDepSet key)
 {
-    availablePackage * tmp = alAllSatisfiesDepend(al, keyType, keyDepend, key);
+    availablePackage * tmp = alAllSatisfiesDepend(al, key);
 
     if (tmp) {
 	availablePackage ret = tmp[0];
