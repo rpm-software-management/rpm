@@ -1,3 +1,8 @@
+4.3.1 -> 4.4:
+	- use package build time as EVR comparison tie breaker.
+
+4.3 -> 4.3.1:
+
 4.2.2 -> 4.3:
 	- upgrade to zlib-1.2.beta7.
 	- fix: short option help missing string terminator.

@@ -43,6 +43,7 @@ struct rpmds_s {
     uint_32 * Color;		/*!< Bit(s) calculated from file color(s). */
 /*@only@*/ /*@null@*/
     int_32 * Refs;		/*!< No. of file refs. */
+    int_32 BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
@@ -215,6 +216,22 @@ int_32 rpmdsFlags(/*@null@*/ const rpmds ds)
  */
 rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
 	/*@*/;
+
+/**
+ * Return dependency build time.
+ * @param ds		dependency set
+ * @return		dependency build time, 0 on invalid
+ */
+time_t rpmdsBT(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
+ * Set dependency build time.
+ * @param ds		dependency set
+ * @return		dependency build time, 0 on invalid
+ */
+time_t rpmdsSetBuildtime(/*@null@*/ const rpmds ds, time_t BT)
+	/*@modifies ds @*/;
 
 /**
  * Return current "Don't promote Epoch:" flag.

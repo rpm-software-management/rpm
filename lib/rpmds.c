@@ -118,6 +118,8 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 {
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
+    rpmTag tagBT = RPMTAG_BUILDTIME;
+    int_32 BTt, * BTp;
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
@@ -175,6 +177,8 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
+	xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
+	ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
 /*@=boundsread@*/
 	ds->Color = xcalloc(Count, sizeof(*ds->Color));
 	ds->Refs = xcalloc(Count, sizeof(*ds->Refs));
@@ -347,6 +351,9 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     ds->h = NULL;
     ds->Type = Type;
     ds->tagN = tagN;
+    {	time_t now = time(NULL);
+	ds->BT = now;
+    }
     ds->Count = 1;
     /*@-assignexpose@*/
 /*@-boundswrite@*/
@@ -450,6 +457,24 @@ rpmTag rpmdsTagN(const rpmds ds)
     if (ds != NULL)
 	tagN = ds->tagN;
     return tagN;
+}
+
+time_t rpmdsBT(const rpmds ds)
+{
+    time_t BT = 0;
+    if (ds != NULL && ds->BT > 0)
+	BT = ds->BT;
+    return BT;
+}
+
+time_t rpmdsSetBT(const rpmds ds, time_t BT)
+{
+    time_t oBT = 0;
+    if (ds != NULL) {
+	oBT = ds->BT;
+	ds->BT = BT;
+    }
+    return oBT;
 }
 
 int rpmdsNoPromote(const rpmds ds)
@@ -879,6 +904,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	sense = rpmvercmp(aV, bV);
 	if (sense == 0 && aR && *aR && bR && *bR) {
 	    sense = rpmvercmp(aR, bR);
+	    if (sense == 0 && A->BT > 0 && B->BT > 0)
+		sense = (A->BT < B->BT ? -1 : (A->BT == B->BT ? 0 : -1));
 	}
     }
 /*@=boundsread@*/

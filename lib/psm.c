@@ -62,7 +62,8 @@ int rpmVersionCompare(Header first, Header second)
 {
     const char * one, * two;
     int_32 * epochOne, * epochTwo;
-    int rc;
+    int_32 * btOne, * btTwo;
+    int rc = 0;
 
     if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &epochOne, NULL))
 	epochOne = NULL;
@@ -70,17 +71,19 @@ int rpmVersionCompare(Header first, Header second)
 	epochTwo = NULL;
 
     if (epochOne != NULL && epochTwo == NULL)
-	return 1;
+	rc = 1;
     else if (epochOne == NULL && epochTwo != NULL)
-	return -1;
+	rc = -1;
     else if (epochOne != NULL && epochTwo != NULL) {
 /*@-boundsread@*/
 	if (*epochOne < *epochTwo)
-	    return -1;
+	    rc = -1;
 	else if (*epochOne > *epochTwo)
-	    return 1;
+	    rc = 1;
 /*@=boundsread@*/
     }
+    if (rc)
+	return rc;
 
     rc = headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
     rc = headerGetEntry(second, RPMTAG_VERSION, NULL, (void **) &two, NULL);
@@ -92,7 +95,22 @@ int rpmVersionCompare(Header first, Header second)
     rc = headerGetEntry(first, RPMTAG_RELEASE, NULL, (void **) &one, NULL);
     rc = headerGetEntry(second, RPMTAG_RELEASE, NULL, (void **) &two, NULL);
 
-    return rpmvercmp(one, two);
+    rc = rpmvercmp(one, two);
+    if (rc)
+	return rc;
+
+    if (!headerGetEntry(first, RPMTAG_BUILDTIME, NULL, (void **) &btOne, NULL))
+	btOne = NULL;
+    if (!headerGetEntry(second, RPMTAG_BUILDTIME, NULL, (void **) &btTwo, NULL))
+	btTwo = NULL;
+
+    if (btOne != NULL && btTwo != NULL && *btOne > 0 && *btTwo > 0) {
+/*@-boundsread@*/
+	rc = (*btOne < *btTwo ? -1 : (*btOne == *btTwo ? 0 : -1));
+/*@=boundsread@*/
+    }
+
+    return rc;
 }
 
 /**
