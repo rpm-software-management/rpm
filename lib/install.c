@@ -240,22 +240,24 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     fileCount = *fileCountPtr;
 
     if (relocations) {
-	nextReloc = relocations;
+	/* go through things backwards so that /usr/local relocations take
+	   precedence over /usr ones */
+	nextReloc = relocations + numRelocations - 1;
 	len = strlen(nextReloc->oldPath);
 	newLen = strlen(nextReloc->newPath);
-	for (i = 0; i < fileCount && nextReloc; i++) {
+	for (i = fileCount - 1; i >= 0 && nextReloc; i--) {
 	    do {
 		rc = strncmp(nextReloc->oldPath, mem->names[i], len);
-		if (rc < 0) {
-		    nextReloc++;
-		    if ((nextReloc - relocations) >= numRelocations) {
-			nextReloc = NULL;
+		if (rc > 0) {
+		    if (nextReloc == relocations) {
+			nextReloc = 0;
 		    } else {
+			nextReloc--;
 			len = strlen(nextReloc->oldPath);
 			newLen = strlen(nextReloc->newPath);
 		    }
 		}
-	    } while (rc < 0 && nextReloc);
+	    } while (rc > 0 && nextReloc);
 
 	    if (!rc) {
 		newName = alloca(newLen + strlen(mem->names[i]));
@@ -617,7 +619,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 		chdir(currDir);
 	    }
 	    if (replacedList) free(replacedList);
-	    return 1;
+	    return 2;
 	}
 
 	freeFileMem = 1;
