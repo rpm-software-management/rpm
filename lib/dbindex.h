@@ -1,6 +1,10 @@
 #ifndef H_DBINDEX
 #define H_DBINDEX
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* this will break if sizeof(int) != 4 */
 
 #include <db.h>
@@ -33,5 +37,9 @@ int dbiRemoveIndexRecord(dbiIndexSet * set, dbiIndexRecord rec);
    /* 0 on success - fails if rec is not found */
 dbiIndexSet dbiCreateIndexRecord(void);
 void dbiFreeIndexRecord(dbiIndexSet set);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

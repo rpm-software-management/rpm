@@ -9,6 +9,10 @@
 #define H_HEADER
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(__alpha__)
 typedef long int int_64;
 typedef int int_32;
@@ -168,5 +172,9 @@ void headerSort(Header h);
    there) */
 
 #define HEADER_I18NTABLE	100
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* H_HEADER */
