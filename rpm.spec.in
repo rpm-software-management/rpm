@@ -499,8 +499,9 @@ exit 0
 
 %changelog
 * Wed Mar  9 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.6
-- permit gpg to be used for RSA/MD5 signatures.
+- permit gpg to be used for RSA signatures.
 - permit RSA key sizes larger than 1024 bits.
+- permit RSA/{sha1,sha256,sha384,sha512} signature verification.
 
 * Sun Feb 20 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.5
 - updated sv.po <goeran@uddrborg.se>.

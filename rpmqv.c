@@ -560,18 +560,22 @@ int main(int argc, const char ** argv)
 	    }
 
             if (poptPeekArg(optCon)) {
-		int sigTag;
-		switch (sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) {
+		int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
+		switch (sigTag) {
 		  case 0:
 		    break;
 		  case RPMSIGTAG_PGP:
+#ifdef	DYING	/* XXX gpg can now be used for RSA signatures. */
 		    if ((sigTag == RPMSIGTAG_PGP || sigTag == RPMSIGTAG_PGP5) &&
 		        !rpmDetectPGPVersion(NULL)) {
 		        fprintf(stderr, _("pgp not found: "));
 			ec = EXIT_FAILURE;
 			goto exit;
 		    }	/*@fallthrough@*/
+#endif
 		  case RPMSIGTAG_GPG:
+		  case RPMSIGTAG_DSA:
+		  case RPMSIGTAG_RSA:
 		    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
 		    if (passPhrase == NULL) {
 			fprintf(stderr, _("Pass phrase check failed\n"));

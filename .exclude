@@ -3,6 +3,7 @@ CVS
 .depend
 .depend-done
 .libs
+aclocal.m4
 apidocs
 autodeps
 autom4te.cache
