@@ -1,4 +1,5 @@
 2.5.3 -> 3.0
+	- build.c: fix incorrect check for successful open
 	- add new fully recursive macro.c
 	- add {init,add,expand}Macro args everywhere (new macro.c compatibility)
 	- create /usr/lib/rpm directory and move rpmrc et al there

@@ -118,7 +118,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
 	return 1;
     }
     
-    if (!(fd = open(specfile, O_RDONLY))) {
+    if ((fd = open(specfile, O_RDONLY)) < 0) {
 	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
 	return 1;
     }
