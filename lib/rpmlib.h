@@ -230,6 +230,8 @@ void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset);
 int rpmdepCheck(rpmDependencies rpmdep, 
 		struct rpmDependencyConflict ** conflicts, int * numConflicts);
 void rpmdepDone(rpmDependencies rpmdep);
+void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
+			 numConflicts);
 
 int mdfile(char *fn, unsigned char *digest);
 
