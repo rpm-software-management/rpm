@@ -191,15 +191,18 @@ static int writeVars(Spec spec, FILE *f)
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);
 
-    fprintf(f, "export RPM_SOURCE_DIR=\"%s\"\n", rpmGetVar(RPMVAR_SOURCEDIR));
-    fprintf(f, "export RPM_BUILD_DIR=\"%s\"\n", rpmGetVar(RPMVAR_BUILDDIR));
-    fprintf(f, "export RPM_DOC_DIR=\"%s\"\n", spec->docDir);
-    fprintf(f, "export RPM_OPT_FLAGS=\"%s\"\n", rpmGetVar(RPMVAR_OPTFLAGS));
-    fprintf(f, "export RPM_ARCH=\"%s\"\n", arch);
-    fprintf(f, "export RPM_OS=\"%s\"\n", os);
+    fprintf(f, "RPM_SOURCE_DIR=\"%s\"\n", rpmGetVar(RPMVAR_SOURCEDIR));
+    fprintf(f, "RPM_BUILD_DIR=\"%s\"\n", rpmGetVar(RPMVAR_BUILDDIR));
+    fprintf(f, "RPM_DOC_DIR=\"%s\"\n", spec->docDir);
+    fprintf(f, "RPM_OPT_FLAGS=\"%s\"\n", rpmGetVar(RPMVAR_OPTFLAGS));
+    fprintf(f, "RPM_ARCH=\"%s\"\n", arch);
+    fprintf(f, "RPM_OS=\"%s\"\n", os);
+    fprintf(f, "export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_DOC_DIR "
+	    "RPM_OPT_FLAGS RPM_ARCH RPM_OS\n");
 
     if (spec->buildRoot) {
-	fprintf(f, "export RPM_BUILD_ROOT=\"%s\"\n", spec->buildRoot);
+	fprintf(f, "RPM_BUILD_ROOT=\"%s\"\n", spec->buildRoot);
+	fprintf(f, "export RPM_BUILD_ROOT\n");
 	/* This could really be checked internally */
 	fprintf(f, "if [ -z \"$RPM_BUILD_ROOT\" -o -z \"`echo $RPM_BUILD_ROOT | sed -e 's#/##g'`\" ]; then\n");
 	fprintf(f, "  echo 'Warning: Spec contains BuildRoot: tag that is either empty or is set to \"/\"'\n");
@@ -209,13 +212,15 @@ static int writeVars(Spec spec, FILE *f)
 
     headerGetEntry(spec->packages->header, RPMTAG_NAME,
 		   NULL, (void **)&s, NULL);
-    fprintf(f, "export RPM_PACKAGE_NAME=\"%s\"\n", s);
+    fprintf(f, "RPM_PACKAGE_NAME=\"%s\"\n", s);
     headerGetEntry(spec->packages->header, RPMTAG_VERSION,
 		   NULL, (void **)&s, NULL);
-    fprintf(f, "export RPM_PACKAGE_VERSION=\"%s\"\n", s);
+    fprintf(f, "RPM_PACKAGE_VERSION=\"%s\"\n", s);
     headerGetEntry(spec->packages->header, RPMTAG_RELEASE,
 		   NULL, (void **)&s, NULL);
-    fprintf(f, "export RPM_PACKAGE_RELEASE=\"%s\"\n", s);
+    fprintf(f, "RPM_PACKAGE_RELEASE=\"%s\"\n", s);
+    fprintf(f, "export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION "
+	    "RPM_PACKAGE_RELEASE\n");
     
     return 0;
 }
