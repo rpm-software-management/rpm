@@ -5,6 +5,8 @@
 	- fixed bugs installing version 1 packages
 	- remove hyphens from uname() result (specifically for HP-UX)
 	- hacks to recognize architecture under parisc
+	- RPM_INSTALL_PREFIX wasn't being set properly (this should be
+	  fixed now)
 
 2.4.4 -> 2.4.5:
 	- call getpwnam()/endpwent() once before a chroot(), forcing name 

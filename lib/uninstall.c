@@ -354,6 +354,7 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
 	installPrefixEnv = alloca(strlen(installPrefix) + 30);
 	strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
 	strcat(installPrefixEnv, installPrefix);
+	strcat(installPrefixEnv, "\n");
     }
 
     rpmMessage(RPMMESS_DEBUG, "running inst helper %s\n", program);
@@ -400,6 +401,8 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
 
 	if (isdebug && !strcmp(program, "/bin/sh")) 
 	    write(fd, "set -xs\n", 8);
+
+	write(fd, installPrefixEnv, strlen(installPrefixEnv));
 
 	write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
 	write(fd, script, strlen(script));
