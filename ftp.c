@@ -19,6 +19,7 @@
 #define BUFFER_SIZE 4096
 
 #include "ftp.h"
+#include "lib/messages.h"
 
 static int ftpCheckResponse(int sock);
 static int ftpCommand(int sock, char * command, ...);
@@ -162,6 +163,8 @@ int ftpOpen(char * host, char * name, char * password) {
     destPort.sin_port = htons(IPPORT_FTP);
     destPort.sin_addr = serverAddress;
 
+    message(MESS_DEBUG, "establishing connection\n");
+
     if (connect(sock, (struct sockaddr *) &destPort, sizeof(destPort))) {
 	close(sock);
 	return -1;
@@ -185,6 +188,8 @@ int ftpOpen(char * host, char * name, char * password) {
 	strcat(password, "@");
     }
 
+    message(MESS_DEBUG, "logging in\n");
+
     if (ftpCommand(sock, "USER", name, NULL)) {
 	close(sock);
 	return -1;
@@ -199,6 +204,8 @@ int ftpOpen(char * host, char * name, char * password) {
 	close(sock);
 	return -1;
     }
+
+    message(MESS_DEBUG, "logged into ftp site\n");
 
     return sock;
 }
@@ -288,12 +295,18 @@ int ftpGetFile(int sock, char * remotename, int dest) {
     sprintf(numbuf, ",%d,%d", dataPort >> 8, dataPort & 0xFF);
     strcat(portbuf, numbuf);
 
+    message(MESS_DEBUG, "sending PORT command\n");
+
     if (ftpCommand(sock, "PORT", portbuf, NULL)) {
 	close(dataSocket);
 	return 1;
     }
 
+    message(MESS_DEBUG, "sending RETR command\n");
+
     if (ftpCommand(sock, "RETR", remotename, NULL)) {
+        message(MESS_DEBUG, "RETR command failed\n");
+
 	close(dataSocket);
 	return 1;
     }
@@ -301,6 +314,8 @@ int ftpGetFile(int sock, char * remotename, int dest) {
     i = sizeof(dataAddress);
     trSocket = accept(dataSocket, (struct sockaddr *) &dataAddress, &i);
     close(dataSocket);
+
+    message(MESS_DEBUG, "data socket open\n");
 
     return ftpReadData(trSocket, dest);
 }
