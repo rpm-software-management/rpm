@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 1999-09-30 12:56-0400\n"
+"POT-Creation-Date: 1999-09-30 13:16-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1443,46 +1443,46 @@ msgstr "Súbory musia zaèína» znakom \"/\": %s"
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Nie je mo¾né mie¹a» ¹peciálne %%doc s inými formami: %s"
 
-#: build/files.c:792
+#: build/files.c:793
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Súbor zadaný dvakrát: %s."
 
-#: build/files.c:952
+#: build/files.c:953
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Súbor nesúhlasí s prefixom (%s): %s."
 
-#: build/files.c:962 build/files.c:1099
+#: build/files.c:963 build/files.c:1100
 #, c-format
 msgid "File not found: %s"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1005
+#: build/files.c:1006
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Chybný vlastník/skupina: %s\n"
 
-#: build/files.c:1019
+#: build/files.c:1020
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1083
+#: build/files.c:1084
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 
-#: build/files.c:1140
+#: build/files.c:1141
 msgid "Could not open %%files file: %s"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: build/files.c:1147 build/pack.c:484
+#: build/files.c:1148 build/pack.c:484
 #, c-format
 msgid "line: %s"
 msgstr "riadok: %s"
 
-#: build/files.c:1469 build/parsePrep.c:29
+#: build/files.c:1470 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Chybný vlastník/skupina: %s"
@@ -1497,27 +1497,27 @@ msgstr "Nie je mo¾né spusti» %s"
 msgid "Couldn't fork %s"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: build/files.c:1605
+#: build/files.c:1607
 #, c-format
 msgid "%s failed"
 msgstr "%s zlyhalo"
 
-#: build/files.c:1609
+#: build/files.c:1611
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: build/files.c:1695
+#: build/files.c:1697
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: build/files.c:1723 build/files.c:1732
+#: build/files.c:1725 build/files.c:1734
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/files.c:1838
+#: build/files.c:1840
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Spracovávajú sa súbory: %s\n"

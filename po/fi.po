@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-09-30 12:56-0400\n"
+"POT-Creation-Date: 1999-09-30 13:16-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1509,47 +1509,47 @@ msgstr "siirtojen pitää alkaa /-merkillä"
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: build/files.c:792
+#: build/files.c:793
 #, fuzzy, c-format
 msgid "File listed twice: %s"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:952
+#: build/files.c:953
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:962 build/files.c:1099
+#: build/files.c:963 build/files.c:1100
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: build/files.c:1005
+#: build/files.c:1006
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1019
+#: build/files.c:1020
 #, fuzzy, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:1083
+#: build/files.c:1084
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1140
+#: build/files.c:1141
 #, fuzzy
 msgid "Could not open %%files file: %s"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/files.c:1147 build/pack.c:484
+#: build/files.c:1148 build/pack.c:484
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1469 build/parsePrep.c:29
+#: build/files.c:1470 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
@@ -1564,27 +1564,27 @@ msgstr "En voinut ajaa pgp:tä"
 msgid "Couldn't fork %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1605
+#: build/files.c:1607
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp epäonnistui"
 
-#: build/files.c:1609
+#: build/files.c:1611
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1695
+#: build/files.c:1697
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1723 build/files.c:1732
+#: build/files.c:1725 build/files.c:1734
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1838
+#: build/files.c:1840
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "en voinut avata %s: %s"

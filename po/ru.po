@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-09-30 12:56-0400\n"
+"POT-Creation-Date: 1999-09-30 13:16-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1439,46 +1439,46 @@ msgstr "Файл должен начинаться с \"/\": %s"
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s"
 
-#: build/files.c:792
+#: build/files.c:793
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Файл указан дважды: %s"
 
-#: build/files.c:952
+#: build/files.c:953
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Файл не отвечает префиксу (%s): %s"
 
-#: build/files.c:962 build/files.c:1099
+#: build/files.c:963 build/files.c:1100
 #, c-format
 msgid "File not found: %s"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1005
+#: build/files.c:1006
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара хозяин/группа: %s\n"
 
-#: build/files.c:1019
+#: build/files.c:1020
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr "Файл %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1083
+#: build/files.c:1084
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:1140
+#: build/files.c:1141
 msgid "Could not open %%files file: %s"
 msgstr "Не могу открыть файл %%files: %s"
 
-#: build/files.c:1147 build/pack.c:484
+#: build/files.c:1148 build/pack.c:484
 #, c-format
 msgid "line: %s"
 msgstr "строка: %s"
 
-#: build/files.c:1469 build/parsePrep.c:29
+#: build/files.c:1470 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Неверная пара хозяин/группа: %s"
@@ -1493,27 +1493,27 @@ msgstr "Не могу исполнить %s"
 msgid "Couldn't fork %s"
 msgstr "Не могу форкнуть %s"
 
-#: build/files.c:1605
+#: build/files.c:1607
 #, c-format
 msgid "%s failed"
 msgstr "%s не удалось"
 
-#: build/files.c:1609
+#: build/files.c:1611
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:1695
+#: build/files.c:1697
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Определяю требования пакета...\n"
 
-#: build/files.c:1723 build/files.c:1732
+#: build/files.c:1725 build/files.c:1734
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Ошибка определения сервисов, предоставляемых пакетом"
 
-#: build/files.c:1838
+#: build/files.c:1840
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Обрабатываю файлы: %s\n"

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 1999-09-30 12:56-0400\n"
+"POT-Creation-Date: 1999-09-30 13:16-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1431,46 +1431,46 @@ msgstr "Plik musi siê zaczynaæ od \"/\": %s"
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Nie mo¿na mieszaæ specjalnej %%doc z innymi formami: %s"
 
-#: build/files.c:792
+#: build/files.c:793
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Plik podany dwukrotnie: %s"
 
-#: build/files.c:952
+#: build/files.c:953
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Plik nie zgadza siê z prefiksem (%s): %s"
 
-#: build/files.c:962 build/files.c:1099
+#: build/files.c:963 build/files.c:1100
 #, c-format
 msgid "File not found: %s"
 msgstr "Nie znaleziono pliku: %s"
 
-#: build/files.c:1005
+#: build/files.c:1006
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:1019
+#: build/files.c:1020
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr "Plik %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1083
+#: build/files.c:1084
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s"
 
-#: build/files.c:1140
+#: build/files.c:1141
 msgid "Could not open %%files file: %s"
 msgstr "Nie mo¿na otworzyæ %%files pliku: %s"
 
-#: build/files.c:1147 build/pack.c:484
+#: build/files.c:1148 build/pack.c:484
 #, c-format
 msgid "line: %s"
 msgstr "linia: %s"
 
-#: build/files.c:1469 build/parsePrep.c:29
+#: build/files.c:1470 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "B³êdny u¿ytkownik/grupa: %s"
@@ -1485,27 +1485,27 @@ msgstr "Nie mo¿na uruchomiæ %s"
 msgid "Couldn't fork %s"
 msgstr "Nie mo¿na wykonaæ fork na %s"
 
-#: build/files.c:1605
+#: build/files.c:1607
 #, c-format
 msgid "%s failed"
 msgstr "%s nie powiod³o siê"
 
-#: build/files.c:1609
+#: build/files.c:1611
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "zapisanie wszystkich danych do %s nie powiod³o siê"
 
-#: build/files.c:1695
+#: build/files.c:1697
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Wyszukiwanie wymaganych zasobów...\n"
 
-#: build/files.c:1723 build/files.c:1732
+#: build/files.c:1725 build/files.c:1734
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Wyszukiwanie nie powiod³o siê"
 
-#: build/files.c:1838
+#: build/files.c:1840
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Przetwarzanie plików: %s\n"

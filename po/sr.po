@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-09-30 12:56-0400\n"
+"POT-Creation-Date: 1999-09-30 13:16-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1470,47 +1470,47 @@ msgstr "preme¹tanja moraju poèeti znakom '/'"
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: build/files.c:792
+#: build/files.c:793
 #, fuzzy, c-format
 msgid "File listed twice: %s"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:952
+#: build/files.c:953
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:962 build/files.c:1099
+#: build/files.c:963 build/files.c:1100
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1005
+#: build/files.c:1006
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1019
+#: build/files.c:1020
 #, fuzzy, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:1083
+#: build/files.c:1084
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1140
+#: build/files.c:1141
 #, fuzzy
 msgid "Could not open %%files file: %s"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/files.c:1147 build/pack.c:484
+#: build/files.c:1148 build/pack.c:484
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1469 build/parsePrep.c:29
+#: build/files.c:1470 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
@@ -1525,27 +1525,27 @@ msgstr "Ne mogu da izvr¹im PGP"
 msgid "Couldn't fork %s"
 msgstr "Ne mogu da proèitam 'sigtarget'"
 
-#: build/files.c:1605
+#: build/files.c:1607
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "PGP omanuo"
 
-#: build/files.c:1609
+#: build/files.c:1611
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:1695
+#: build/files.c:1697
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1723 build/files.c:1732
+#: build/files.c:1725 build/files.c:1734
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:1838
+#: build/files.c:1840
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
