@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.52 2000/04/21 00:21:15 jbj Exp $
+# $Id: macros.in,v 1.53 2000/04/23 20:37:57 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -82,6 +82,7 @@
 %_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
 %_rebuilddbpath		%{_dbpath}
+%_dbpath_rebuild	%{_dbpath}
 %_defaultdocdir		%{_usr}/doc
 #
 %__find_provides	@FINDPROVIDES@
@@ -200,6 +201,10 @@
 #
 #%vendor
 
+#==============================================================================
+# ---- Database configuration macros.
+#	Macros used to configure Berkley db parameters.
+#
 # Choose db interface:
 #	0	linux glibc libdb1 routines.
 #	1	db_185.h interface in db2/db3 libdb.a.
@@ -207,38 +212,56 @@
 #	3	native db3 interface.
 #	-1	db3 -> db2 -> db1 -> db0 (as available).
 # There are two macros so that --rebuilddb can convert old_db_api -> new_db_api.
-%_old_db_api		3
-%_new_db_api		3
+%_dbapi			3
+%_dbapi_rebuild		3
 
-# This is a colon separated list of tokens for DB3 open flags.
-#   recover	DB_RECOVER
-#   recover_fatal DB_RECOVER_FATAL
-#   create	DB_CREATE
-#   lockdown	DB_LOCKDOWN
-#   cdb		DB_INIT_CDB
-#   lock	DB_INIT_LOCK	supported
-#   log		DB_INIT_LOG
-#   mpool	DB_INIT_MPOOL	supported
-#   txn		DB_INIT_TXN
-#   nommap	DB_NOMMAP
-#   private	DB_PRIVATE	supported
-#   shared	DB_SYSTEM_MEM	supported (but check /usr/bin/ipcs output)
-#   thread	DB_THREAD
-#   txn_nosync	DB_TXN_NOSYNC
+# This is a colon separated list of tokens for Berkeley db configuration.
+#
+#   token		Berkeley db flag or value
+# =================================================
+#   recover		DB_RECOVER
+#   recover_fatal	DB_RECOVER_FATAL
+#   create		DB_CREATE
+#   lockdown		DB_LOCKDOWN
+#   cdb			DB_INIT_CDB
+#   lock		DB_INIT_LOCK
+#   log			DB_INIT_LOG
+#   mpool		DB_INIT_MPOOL
+#   txn			DB_INIT_TXN
+#   nommap		DB_NOMMAP
+#   private		DB_PRIVATE
+#   shared		DB_SYSTEM_MEM
+#   thread		DB_THREAD
+#   txn_nosync		DB_TXN_NOSYNC
+#   hash		DB_HASH
 #
 # The (intended) default value for Red Hat Linux is
-#	mpool:shared:lock
+#	hash:mpool:shared:lock
 #
-%_db3_flags		create:mpool:private
+#   teardown	Should the DB3 environment be removed after use (experimental)?
+#   usecursors	Should DB3 cursors be used in get/put/del (experimental)?
+#
+%__dbi_flags		create:mpool
+%__dbi_type		hash
+%__dbi_perms		perms=0644
+%__dbi_major		db%{_dbapi}
+%__dbi_other		teardown:usecursors
+%__dbi_verbose		verbose
+%__dbi_mp_mmapsize	mp_mmapsize=16Mb
+%__dbi_mp_size		mp_size=2Mb
 
-# Should the DB3 environment be removed after use (experimental)?
-%_db3_dbenv_remove	yes
+%_dbi_config	\
+  %{__dbi_flags}\
+  %{__dbi_type}\
+  %{__dbi_perms}\
+  %{__dbi_major}\
+  %{__dbi_other}\
+  %{__dbi_verbose}\
+  %{__dbi_mp_mmapsize}\
+  %{__dbi_mp_size}\
+%{nil}
 
-# Should DB3 cursors be used in get/put/del operations (experimental)?
-%_db3_use_cursors	yes
-
-# Filter duplicate entries in db (needed only to correct early rpm-3.0.4 bug)
-%_filterdbdups		no
+%_dbi_indices	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername
 
 #==============================================================================
 # ---- per-platform macros.

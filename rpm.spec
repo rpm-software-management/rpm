@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.9
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,6 +219,12 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Sun Apr 23 2000 Jeff Johnson <jbj@redhat.com>
+- fix: cpio.c: pre-, not post-, decrement the link count.
+- make db indices as lightweight as possible, with per-dbi config.
+- db1.c will never be needed, eliminate.
+- API: merge rebuilddb.c into rpmdb.c.
+
 * Thu Apr 13 2000 Jeff Johnson <jbj@redhat.com>
 - API: pass *SearchIndex() length of key (0 will use strlen(key)).
 - API: remove rpmdb{First,Next}RecNum routines.

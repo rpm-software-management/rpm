@@ -130,6 +130,12 @@ POPT_ARG_LONG	A long integer is expected	long
 POPT_ARG_VAL	Integer value taken from \f(CWval\fR	int
 .TE
 .sp
+For numeric values, if the \fIargInfo\fR value is bitwise or'd with one of
+\fBPOPT_ARGFLAG_OR\fR, \fBPOPT_ARGFLAG_AND\fR, or \fBPOPT_ARGFLAG_XOR\fR,
+the value is saved by performing an OR, AND, or XOR.
+If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_NOT\fR,
+the value will be negated before saving.
+.sp
 If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_ONEDASH\fR,
 the long argument may be given with a single - instead of two. For example,
 if \fB--longopt\fR is an option with \fBPOPT_ARGFLAG_ONEDASH\fR, is

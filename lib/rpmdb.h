@@ -9,9 +9,6 @@
 
 #include "fprint.h"
 
-typedef void DBI_t;
-typedef enum { DBI_BTREE, DBI_HASH, DBI_RECNO, DBI_QUEUE, DBI_UNKNOWN } DBI_TYPE;
-
 typedef /*@abstract@*/ struct _dbiIndexRecord * dbiIndexRecord;
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
@@ -55,10 +52,9 @@ struct _dbiVec {
 
 /**
  * Return handle for an index database.
- * @param dbi	index database handle
  * @return	0 success 1 fail
  */
-    int (*open) (dbiIndex dbi);
+    int (*open) (rpmdb rpmdb, int rpmtag, dbiIndex * dbip);
 
 /**
  * Close index database.
@@ -147,36 +143,91 @@ struct _dbiVec {
 
 };
 
+/* XXX hack to get prototypes correct */
+#if !defined(DB_VERSION_MAJOR)
+#define	DB_ENV	void
+#define	DBT	void
+#define	DB_LSN	void
+#endif
+
 /**
  * Describes an index database (implemented on Berkeley db[123] API).
  */
 struct _dbiIndex {
-    const char *dbi_basename;		/*<! last component of name */
+    int			dbi_flags;	/*<! */
+    int			dbi_type;	/*<! db index type */
+    int			dbi_mode;	/*<! mode to use on open */
+    int			dbi_perms;	/*<! file permission to use on open */
+    int			dbi_major;	/*<! Berkeley API type */
+
+    int			dbi_tear_down;
+    int			dbi_use_cursors;
+    int			dbi_get_rmw_cursor;
+    int			dbi_no_fsync;
+
+	/* dbenv parameters */
+    int			dbi_lorder;
+    void		(*db_errcall) (const char *db_errpfx, char *buffer);
+    FILE *		dbi_errfile;
+    const char *	dbi_errpfx;
+    int			dbi_verbose;
+    int			dbi_region_init;
+    int			dbi_tas_spins;
+	/* mpool sub-system parameters */
+    int			dbi_mp_mmapsize;	/*<! (10Mb) */
+    int			dbi_mp_size;	/*<! (128Kb) */
+	/* lock sub-system parameters */
+    u_int32_t		dbi_lk_max;
+    u_int32_t		dbi_lk_detect;
+    int			dbi_lk_nmodes;
+    u_int8_t		*dbi_lk_conflicts;
+	/* log sub-system parameters */
+    u_int32_t		dbi_lg_max;
+    u_int32_t		dbi_lg_bsize;
+	/* transaction sub-system parameters */
+    u_int32_t		dbi_tx_max;
+#if 0
+    int			(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec, DB_LSN *lsnp, int redo, void *info);
+#endif
+	/* dbinfo parameters */
+    int			dbi_cachesize;	/*<! */
+    int			dbi_pagesize;	/*<! (fs blksize) */
+    void *		(*dbi_malloc) (size_t nbytes);
+	/* hash access parameters */
+    unsigned int	dbi_h_ffactor;	/*<! */
+    unsigned int	(*dbi_h_hash_fcn) (const void *bytes, u_int32_t length);
+    unsigned int	dbi_h_nelem;	/*<! */
+    unsigned int	dbi_h_flags;	/*<! DB_DUP, DB_DUPSORT */
+    int			(*dbi_h_dup_compare_fcn) (const DBT *, const DBT *);
+	/* btree access parameters */
+    int			dbi_bt_flags;
+    int			dbi_bt_minkey;
+    int			(*dbi_bt_compare_fcn)(const DBT *, const DBT *);
+    int			(*dbi_bt_dup_compare_fcn) (const DBT *, const DBT *);
+    size_t		(*dbi_bt_prefix_fcn) (const DBT *, const DBT *);
+	/* recno access parameters */
+    int			dbi_re_flags;
+    int			dbi_re_delim;
+    u_int32_t		dbi_re_len;
+    int			dbi_re_pad;
+    const char *	dbi_re_source;
+
+    rpmdb	dbi_rpmdb;
     int		dbi_rpmtag;		/*<! rpm tag used for index */
     int		dbi_jlen;		/*<! size of join key */
 
-    DBI_TYPE	dbi_type;		/*<! type of access */
-    int		dbi_mode;		/*<! mode to use on open */
-    int		dbi_perms;		/*<! file permission to use on open */
-    int		dbi_major;		/*<! Berkeley db version major */
-
     unsigned int dbi_lastoffset;	/*<! db0 with falloc.c needs this */
-    rpmdb	dbi_rpmdb;
 
-    const char *dbi_file;		/*<! name of index database */
     void *	dbi_db;			/*<! Berkeley db[123] handle */
     void *	dbi_dbenv;
     void *	dbi_dbinfo;
     void *	dbi_dbjoin;
     void *	dbi_dbcursor;
     void *	dbi_pkgs;
-/*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
-};
 
-/* XXX hack to get dup_compare prototype correct */
-#if !defined(DB_VERSION_MAJOR)
-#define	DBT	void
-#endif
+/*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
+
+};
 
 /**
  * Describes the collection of index databases used by rpm.
@@ -185,30 +236,22 @@ struct rpmdb_s {
     const char *	db_root;	/*<! path prefix */
     const char *	db_home;	/*<! directory path */
     int			db_flags;	/*<! */
-    DBI_TYPE		db_type;	/*<! db index type */
     int			db_mode;	/*<! open mode */
     int			db_perms;	/*<! open permissions */
+
     int			db_major;	/*<! Berkeley API type */
-	/* dbenv parameters */
-    int			db_lorder;
+
+    int			db_remove_env;
+    int			db_filter_dups;
+
+    const char *	db_errpfx;
+
     void		(*db_errcall) (const char *db_errpfx, char *buffer);
     FILE *		db_errfile;
-    const char *	db_errpfx;
-    int			db_verbose;
-    int			db_mp_mmapsize;	/*<! (10Mb) */
-    int			db_mp_size;	/*<! (128Kb) */
-	/* dbinfo parameters */
-    int			db_cachesize;	/*<! */
-    int			db_pagesize;	/*<! (fs blksize) */
     void *		(*db_malloc) (size_t nbytes);
-	/* hash access parameters */
-    unsigned int	db_h_ffactor;	/*<! */
-    unsigned int	(*db_h_hash_fcn) (const void *bytes, u_int32_t length);
-    unsigned int	db_h_nelem;	/*<! */
-    unsigned int	db_h_flags;	/*<! DB_DUP, DB_DUPSORT */
-    int			(*db_h_dup_compare_fcn) (const DBT *, const DBT *);
+
     int			db_ndbi;
-    dbiIndex		_dbi[16];	/*<! >= RPMDBI_MAX */
+    dbiIndex		*_dbi;
 };
 
 /* for RPM's internal use only */
@@ -221,10 +264,15 @@ extern "C" {
 #endif
 
 /**
- * @param dbp		address of rpm database
+ * Return base file name for legacy index databases.
+ * @param	rpmtag rpm tag
+ * @return	base file name
  */
-int openDatabase(const char * prefix, const char * dbpath, /*@out@*/rpmdb *dbp,
-		int mode, int perms, int flags);
+char * db0basename(int rpmtag);
+
+/*@only@*/ /*@null@*/ dbiIndex db3New(rpmdb rpmdb, int rpmtag);
+
+void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
 
 /**
  * @param db		rpm database
@@ -240,14 +288,6 @@ int rpmdbAdd(rpmdb db, Header dbentry);
  * @param db		rpm database
  */
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
-
-/**
- */
-void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath);
-
-/**
- */
-int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath);
 
 /**
  */

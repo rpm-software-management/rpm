@@ -27,10 +27,21 @@ extern "C" {
 					   included tables; arg points
 					   to the domain string */
 #define POPT_ARG_VAL		7	/* arg should take value val */
+
 #define POPT_ARG_MASK		0x0000FFFF
 #define POPT_ARGFLAG_ONEDASH	0x80000000  /* allow -longoption */
 #define POPT_ARGFLAG_DOC_HIDDEN 0x40000000  /* don't show in help/usage */
 #define POPT_ARGFLAG_STRIP	0x20000000  /* strip this arg from argv (only applies to long args) */
+
+#define	POPT_ARGFLAG_OR		0x08000000 /* arg will be or'ed */
+#define	POPT_ARGFLAG_NOR	0x09000000 /* arg will be nor'ed */
+#define	POPT_ARGFLAG_AND	0x04000000 /* arg will be and'ed */
+#define	POPT_ARGFLAG_NAND	0x05000000 /* arg will be nand'ed */
+#define	POPT_ARGFLAG_XOR	0x02000000 /* arg will be xor'ed */
+#define	POPT_ARGFLAG_NOT	0x01000000 /* arg will be negated */
+#define POPT_ARGFLAG_LOGICALOPS \
+        (POPT_ARGFLAG_OR|POPT_ARGFLAG_AND|POPT_ARGFLAG_XOR)
+
 #define POPT_CBFLAG_PRE		0x80000000  /* call the callback before parse */
 #define POPT_CBFLAG_POST	0x40000000  /* call the callback after parse */
 #define POPT_CBFLAG_INC_DATA	0x20000000  /* use data from the include line,
@@ -43,6 +54,7 @@ extern "C" {
 #define POPT_ERROR_ERRNO	-16	/* only from poptParseArgString() */
 #define POPT_ERROR_BADNUMBER	-17
 #define POPT_ERROR_OVERFLOW	-18
+#define	POPT_ERROR_BADOPERATION	-19
 
 /* poptBadOption() flags */
 #define POPT_BADOPTION_NOALIAS  (1 << 0)  /* don't go into an alias */

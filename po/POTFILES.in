@@ -27,6 +27,8 @@ build/reqprov.c
 build/spec.c
 lib/cpio.c
 lib/depends.c
+lib/db0.c
+lib/db3.c
 lib/falloc.c
 lib/formats.c
 lib/fprint.c
@@ -43,7 +45,6 @@ lib/oldheader.c
 lib/package.c
 lib/problems.c
 lib/query.c
-lib/rebuilddb.c
 lib/rpmchecksig.c
 lib/rpmdb.c
 lib/rpmerr.c

@@ -392,6 +392,52 @@ static void poptStripArg(poptContext con, int which)
     PBM_SET(which, con->arg_strip);
 }
 
+static int poptSaveLong(const struct poptOption * opt, long aLong) {
+    if (opt->argInfo & POPT_ARGFLAG_NOT)
+	aLong = ~aLong;
+    switch (opt->argInfo & POPT_ARGFLAG_LOGICALOPS) {
+    case 0:
+	*((long *) opt->arg) = aLong;
+	break;
+    case POPT_ARGFLAG_OR:
+	*((long *) opt->arg) |= aLong;
+	break;
+    case POPT_ARGFLAG_AND:
+	*((long *) opt->arg) &= aLong;
+	break;
+    case POPT_ARGFLAG_XOR:
+	*((long *) opt->arg) ^= aLong;
+	break;
+    default:
+	return POPT_ERROR_BADOPERATION;
+	break;
+    }
+    return 0;
+}
+
+static int poptSaveInt(const struct poptOption * opt, long aLong) {
+    if (opt->argInfo & POPT_ARGFLAG_NOT)
+	aLong = ~aLong;
+    switch (opt->argInfo & POPT_ARGFLAG_LOGICALOPS) {
+    case 0:
+	*((int *) opt->arg) = aLong;
+	break;
+    case POPT_ARGFLAG_OR:
+	*((int *) opt->arg) |= aLong;
+	break;
+    case POPT_ARGFLAG_AND:
+	*((int *) opt->arg) &= aLong;
+	break;
+    case POPT_ARGFLAG_XOR:
+	*((int *) opt->arg) ^= aLong;
+	break;
+    default:
+	return POPT_ERROR_BADOPERATION;
+	break;
+    }
+    return 0;
+}
+
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
 int poptGetNextOpt(poptContext con)
 {
@@ -512,10 +558,13 @@ int poptGetNextOpt(poptContext con)
 	}
 
 	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) {
-	    *((int *)opt->arg) = 1;
+	    if (poptSaveInt(opt, 1L))
+		return POPT_ERROR_BADOPERATION;
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_VAL) {
-	    if (opt->arg)
-		*((int *) opt->arg) = opt->val;
+	    if (opt->arg) {
+		if (poptSaveInt(opt, (long)opt->val))
+		    return POPT_ERROR_BADOPERATION;
+	    }
 	} else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
 	    if (con->os->nextArg) {
 		xfree(con->os->nextArg);
@@ -546,33 +595,35 @@ int poptGetNextOpt(poptContext con)
 	    }
 
 	    if (opt->arg) {
-		long aLong;
-		char *end;
-
 		switch (opt->argInfo & POPT_ARG_MASK) {
-		  case POPT_ARG_STRING:
+		case POPT_ARG_STRING:
 		    /* XXX memory leak, hard to plug */
 		    *((const char **) opt->arg) = xstrdup(con->os->nextArg);
 		    break;
 
-		  case POPT_ARG_INT:
-		  case POPT_ARG_LONG:
+		case POPT_ARG_INT:
+		case POPT_ARG_LONG:
+		{   long aLong;
+		    char *end;
+
 		    aLong = strtol(con->os->nextArg, &end, 0);
 		    if (!(end && *end == '\0'))
 			return POPT_ERROR_BADNUMBER;
 
-		    if (aLong == LONG_MIN || aLong == LONG_MAX)
-			return POPT_ERROR_OVERFLOW;
 		    if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
-			*((long *) opt->arg) = aLong;
+			if (aLong == LONG_MIN || aLong == LONG_MAX)
+			    return POPT_ERROR_OVERFLOW;
+			if (poptSaveLong(opt, aLong))
+			    return POPT_ERROR_BADOPERATION;
 		    } else {
 			if (aLong > INT_MAX || aLong < INT_MIN)
 			    return POPT_ERROR_OVERFLOW;
-			*((int *) opt->arg) = aLong;
+			if (poptSaveInt(opt, aLong))
+			    return POPT_ERROR_BADOPERATION;
 		    }
-		    break;
+		  } break;
 
-		  default:
+		default:
 		    fprintf(stdout, POPT_("option type (%d) not implemented in popt\n"),
 		      opt->argInfo & POPT_ARG_MASK);
 		    exit(EXIT_FAILURE);
@@ -696,18 +747,14 @@ const char * poptBadOption(poptContext con, int flags) {
     return os->argv[os->next - 1];
 }
 
-#define POPT_ERROR_NOARG	-10
-#define POPT_ERROR_BADOPT	-11
-#define POPT_ERROR_OPTSTOODEEP	-13
-#define POPT_ERROR_BADQUOTE	-15	/* only from poptParseArgString() */
-#define POPT_ERROR_ERRNO	-16	/* only from poptParseArgString() */
-
 const char *const poptStrerror(const int error) {
     switch (error) {
       case POPT_ERROR_NOARG:
 	return POPT_("missing argument");
       case POPT_ERROR_BADOPT:
 	return POPT_("unknown option");
+      case POPT_ERROR_BADOPERATION:
+	return POPT_("mutually exclusive logical operations requested");
       case POPT_ERROR_OPTSTOODEEP:
 	return POPT_("aliases nested too deeply");
       case POPT_ERROR_BADQUOTE:

@@ -11,6 +11,8 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #define	_mymemset(_a, _b, _c)
 
 #include <rpmlib.h>
+#include <rpmmacro.h>	/* XXX rpmGenPath */
+#include <rpmurl.h>	/* XXX urlGetPath */
 #include <rpmio.h>
 
 #include "falloc.h"
@@ -20,16 +22,37 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
-static inline DBTYPE dbi_to_dbtype(DBI_TYPE dbitype)
+/* XXX remap DB3 types back into DB0 types */
+static inline DBTYPE db3_to_dbtype(int dbitype)
 {
     switch(dbitype) {
-    case DBI_BTREE:	return DB_BTREE;
-    case DBI_HASH:	return DB_HASH;
-    case DBI_RECNO:	return DB_RECNO;
-    case DBI_QUEUE:	return DB_HASH;		/* XXX W2DO? */
-    case DBI_UNKNOWN:	return DB_HASH;		/* XXX W2DO? */
+    case 1:	return DB_BTREE;
+    case 2:	return DB_HASH;
+    case 3:	return DB_RECNO;
+    case 4:	return DB_HASH;		/* XXX W2DO? */
+    case 5:	return DB_HASH;		/* XXX W2DO? */
     }
     /*@notreached@*/ return DB_HASH;
+}
+
+char * db0basename (int rpmtag) {
+    char * base = NULL;
+    switch (rpmtag) {
+    case 0:			base = "packages.rpm";		break;
+    case RPMTAG_NAME:		base = "nameindex.rpm";		break;
+    case RPMTAG_BASENAMES:	base = "fileindex.rpm";		break;
+    case RPMTAG_GROUP:		base = "groupindex.rpm";	break;
+    case RPMTAG_REQUIRENAME:	base = "requiredbyindex.rpm";	break;
+    case RPMTAG_PROVIDENAME:	base = "providesindex.rpm";	break;
+    case RPMTAG_CONFLICTNAME:	base = "conflictsindex.rpm";	break;
+    case RPMTAG_TRIGGERNAME:	base = "triggerindex.rpm";	break;
+    default:
+      {	const char * tn = tagName(rpmtag);
+	base = alloca( strlen(tn) + sizeof(".idx") + 1 );
+	(void) stpcpy( stpcpy(base, tn), ".idx");
+      }	break;
+    }
+    return xstrdup(base);
 }
 
 static inline /*@observer@*/ /*@null@*/ DB * GetDB(dbiIndex dbi) {
@@ -539,39 +562,14 @@ static int db0close(dbiIndex dbi, unsigned int flags) {
 	if ((pkgs = dbi->dbi_pkgs) != NULL)
 	    Fclose(pkgs);
 	dbi->dbi_pkgs = NULL;
+	db3Free(dbi);
 	return 0;
     }
 
-#if defined(__USE_DB2)
-    DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
-    DB_INFO * dbinfo = (DB_INFO *)dbi->dbi_dbinfo;
-    DBC * dbcursor = (DBC *)dbi->dbi_cursor;
-
-    if (dbcursor) {
-	dbcursor->c_close(dbcursor)
-	dbi->dbi_cursor = NULL;
-    }
-
-    if (db) {
-	rc = db->close(db, 0);
-	dbi->dbi_db = NULL;
-    }
-
-    if (dbinfo) {
-	free(dbinfo);
-	dbi->dbi_dbinfo = NULL;
-    }
-    if (dbenv) {
-	(void) db_appexit(dbenv);
-	free(dbenv);
-	dbi->dbi_dbenv = NULL;
-    }
-#else
     if (db) {
 	rc = db->close(db);
 	dbi->dbi_db = NULL;
     }
-#endif
 
     switch (rc) {
     default:
@@ -586,46 +584,45 @@ static int db0close(dbiIndex dbi, unsigned int flags) {
 	break;
     }
 
+    db3Free(dbi);
     return rc;
 }
 
-static int db0open(dbiIndex dbi)
+static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 {
+    const char * base = NULL;
+    const char * urlfn = NULL;
+    const char * fn = NULL;
+    dbiIndex dbi = NULL;
     int rc = 0;
 
-#if defined(__USE_DB2)
-    char * dbhome = NULL;
-    DB_ENV * dbenv = NULL;
-    DB_INFO * dbinfo = NULL;
-    u_int32_t dbflags;
+    if (dbip)
+	*dbip = NULL;
+    if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
+	return 1;
 
-    dbflags = (	!(dbi->dbi_mode & O_RDWR) ? DB_RDONLY :
-		((dbi->dbi_mode & O_CREAT) ? DB_CREATE : 0));
-
-    rc = db_init(dbhome, dbflags, &dbenv, &dbinfo);
-    dbi->dbi_dbenv = dbenv;
-    dbi->dbi_dbinfo = dbinfo;
-
-    if (rc == 0)
-	rc = db_open(dbi->dbi_file, dbi_to_dbtype(dbi->dbi_type), dbflags,
-			dbi->dbi_perms, dbenv, dbinfo, &dbi->dbi_db);
-    else
+    base = db0basename(rpmtag);
+    urlfn = rpmGenPath(rpmdb->db_root, rpmdb->db_home, base);
+    (void) urlPath(urlfn, &fn);
+    if (!(fn && *fn != '\0')) {
+	rpmError(RPMERR_DBOPEN, _("bad db file %s"), urlfn);
 	rc = 1;
-
-#else
+	goto exit;
+    }
 
     if (dbi->dbi_rpmtag == 0) {
 	struct flock l;
 	FD_t pkgs;
 
 	rpmMessage(RPMMESS_DEBUG, _("opening database mode 0x%x in %s\n"),
-		dbi->dbi_mode, dbi->dbi_file);
+		dbi->dbi_mode, fn);
 
-	pkgs = fadOpen(dbi->dbi_file, dbi->dbi_mode, dbi->dbi_perms);
+	pkgs = fadOpen(fn, dbi->dbi_mode, dbi->dbi_perms);
 	if (Ferror(pkgs)) {
-	    rpmError(RPMERR_DBOPEN, _("failed to open %s: %s\n"), dbi->dbi_file,
+	    rpmError(RPMERR_DBOPEN, _("failed to open %s: %s\n"), urlfn,
 		Fstrerror(pkgs));
-	    return 1;
+	    rc = 1;
+	    goto exit;
 	}
 
 	l.l_whence = 0;
@@ -636,24 +633,37 @@ static int db0open(dbiIndex dbi)
 	if (Fcntl(pkgs, F_SETLK, (void *) &l)) {
 	    rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"),
 		((dbi->dbi_mode & O_RDWR) ? _("exclusive") : _("shared")));
-
-	    return 1;
+	    rc = 1;
+	    goto exit;
 	}
 
 	dbi->dbi_pkgs = pkgs;
     } else {
 	void * dbopeninfo = NULL;
 
-	dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_mode, dbi->dbi_perms,
-		dbi_to_dbtype(dbi->dbi_type), dbopeninfo);
+	dbi->dbi_db = dbopen(fn, dbi->dbi_mode, dbi->dbi_perms,
+		db3_to_dbtype(dbi->dbi_type), dbopeninfo);
     }
-#endif
 
-    if (rc)
-	return rc;
-
+exit:
+    if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
+	rc = 0;
+	*dbip = dbi;
 if (_debug < 0)
-fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbi->dbi_file);
+fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, urlfn);
+    } else {
+	rc = 1;
+	db3Free(dbi);
+    }
+
+    if (base) {
+	xfree(base);
+	base = NULL;
+    }
+    if (urlfn) {
+	xfree(urlfn);
+	urlfn = NULL;
+    }
 
     return rc;
 }

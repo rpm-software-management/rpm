@@ -443,7 +443,7 @@ int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage)
 	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
 	if (recOffset == 0)
 	    continue;
-	rpmMessage(RPMMESS_DEBUG, _("record number %u\n"), recOffset);
+	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
 	    
 	h = rpmdbGetRecord(db, recOffset);
 	if (h == NULL) {
@@ -474,7 +474,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
     Header h;
     int rc;
     int isSource;
-    int recNumber;
     int retcode = 0;
     char *end = NULL;
 
@@ -651,6 +650,9 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
     case RPMQV_DBOFFSET:
     {	int mybase = 10;
 	const char * myarg = arg;
+	int recOffset;
+
+	/* XXX should be in strtoul */
 	if (*myarg == '0') {
 	    myarg++;
 	    mybase = 8;
@@ -659,16 +661,16 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 		mybase = 16;
 	    }
 	}
-	recNumber = strtoul(myarg, &end, mybase);
-	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
+	recOffset = strtoul(myarg, &end, mybase);
+	if ((*end) || (end == arg) || (recOffset == ULONG_MAX)) {
 	    fprintf(stderr, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmMessage(RPMMESS_DEBUG, _("package record number: %d\n"), recNumber);
+	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
 	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(db, 0, &recNumber, sizeof(recNumber));
+	mi = rpmdbInitIterator(db, 0, &recOffset, sizeof(recOffset));
 	if (mi == NULL) {
-	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
+	    fprintf(stderr, _("record %d could not be read\n"), recOffset);
 	    retcode = 1;
 	} else {
 	    retcode = XshowMatches(qva, mi, showPackage);
