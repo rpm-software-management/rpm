@@ -1221,7 +1221,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int flEntries;
     int nexti;
     int lastFailed;
-    const char * currDir;
     FD_t fd;
     const char ** filesystems;
     int filesystemCount;
@@ -1230,6 +1229,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     fingerPrintCache fpc;
 
     /* FIXME: what if the same package is included in ts twice? */
+
+    if (ts->currDir)
+	xfree(ts->currDir);
+    ts->currDir = currentDirectory();
 
     /* Get available space on mounted file systems */
     if (!(ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
@@ -1306,16 +1309,16 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	if (!(ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    rpmdbMatchIterator mi;
 	    Header oldH;
-	    mi = rpmdbInitIterator(ts->db, RPMTAG_NAME, alp->name, 0);
+	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
-		ensureOlder(ts->db, alp->h, oldH, probs, alp->key);
+		ensureOlder(ts->rpmdb, alp->h, oldH, probs, alp->key);
 	    rpmdbFreeIterator(mi);
 	}
 
 	/* XXX multilib should not display "already installed" problems */
 	if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !alp->multiLib) {
 	    rpmdbMatchIterator mi;
-	    mi = rpmdbInitIterator(ts->db, RPMTAG_NAME, alp->name, 0);
+	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
 	    rpmdbSetIteratorVersion(mi, alp->version);
 	    rpmdbSetIteratorRelease(mi, alp->release);
 	    while (rpmdbNextIterator(mi) != NULL) {
@@ -1337,7 +1340,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	Header h;
 	int fileCount;
 
-	mi = rpmdbInitIterator(ts->db, RPMDBI_PACKAGES, NULL, 0);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
 	rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
@@ -1371,8 +1374,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    if (!(transFlags & RPMTRANS_FLAG_TEST) &&
 		headerGetEntry(alp->h, RPMTAG_PRETRANSACTION, NULL,
 			(void **) &preTrans, &preTransCount)) {
+
+		chdir("/");
+		/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
+
 		for (j = 0; j < preTransCount; j++) {
-		    rpmMessage(RPMMESS_DEBUG, _("executing pre-transaction syscall: \"%s\"\n"), preTrans[j]);
+		    rpmMessage(RPMMESS_DEBUG,
+			_("executing pre-transaction syscall: \"%s\"\n"),
+			preTrans[j]);
 		    rc = rpmSyscall(preTrans[j], 0);
 		    if (rc != 0)
 			psAppend(probs, RPMPROB_BADPRETRANS, alp->key, alp->h,
@@ -1380,6 +1389,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		}
 		xfree(preTrans);
 		preTrans = NULL;
+
+		chroot(".");
+		chdir(ts->currDir);
+
 	    }
 
 	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_BASENAMES, NULL,
@@ -1401,7 +1414,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    fi->record = ts->order[oc].u.removed.dboffset;
 	    {	rpmdbMatchIterator mi;
 
-		mi = rpmdbInitIterator(ts->db, RPMDBI_PACKAGES, &fi->record, sizeof(fi->record));
+		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
+			&fi->record, sizeof(fi->record));
 		if ((fi->h = rpmdbNextIterator(mi)) != NULL)
 		    fi->h = headerLink(fi->h);
 		rpmdbFreeIterator(mi);
@@ -1474,19 +1488,11 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
         fi->fps = xmalloc(sizeof(*fi->fps) * fi->fc);
     }
 
-    /* There are too many returns to plug this leak. Use alloca instead. */
-    {  const char *s = currentDirectory();
-       char *t = alloca(strlen(s) + 1);
-       strcpy(t, s);
-       currDir = t;
-       xfree(s);
-    }
-
     /* Open all dtabase indices before installing */
-    rpmdbOpenAll(ts->db);
+    rpmdbOpenAll(ts->rpmdb);
 
     chdir("/");
-    /*@-unrecog@*/ chroot(ts->root); /*@=unrecog@*/
+    /*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
 
     ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
     fpc = fpCacheCreate(totalFileCount);
@@ -1517,7 +1523,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(sizeof(*matches), fi->fc);
-	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc))
+	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fi->fc))
 	    return 1;
 
 	numShared = 0;
@@ -1588,13 +1594,13 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    /* Determine the fate of each file. */
 	    switch (fi->type) {
 	    case TR_ADDED:
-		handleInstInstalledFiles(fi, ts->db, shared, nexti - i,
+		handleInstInstalledFiles(fi, ts->rpmdb, shared, nexti - i,
 		!(beingRemoved || (ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)),
 			 probs, transFlags);
 		break;
 	    case TR_REMOVED:
 		if (!beingRemoved)
-		    handleRmvdInstalledFiles(fi, ts->db, shared, nexti - i);
+		    handleRmvdInstalledFiles(fi, ts->rpmdb, shared, nexti - i);
 		break;
 	    }
 	}
@@ -1626,12 +1632,11 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 6, flEntries, NULL, notifyData));
 
     chroot(".");
-    chdir(currDir);
+    chdir(ts->currDir);
 
     /* ===============================================
      * Free unused memory as soon as possible.
      */
-    htFree(ht);
 
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
 	if (fi->fc == 0)
@@ -1654,6 +1659,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     }
 
     fpCacheFree(fpc);
+    htFree(ht);
 
     /* ===============================================
      * If unfiltered problems exist, free memory and return.
@@ -1708,7 +1714,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		if (alp->multiLib)
 		    transFlags |= RPMTRANS_FLAG_MULTILIB;
 
-		if (installBinaryPackage(ts->root, ts->db, fd,
+		if (installBinaryPackage(ts->rootDir, ts->rpmdb, fd,
 					 hdrs[i], transFlags, notify,
 					 notifyData, alp->key, fi->actions,
 					 fi->fc ? fi->replaced : NULL,
@@ -1730,12 +1736,12 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	case TR_REMOVED:
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		break;
-	    if (removeBinaryPackage(ts->root, ts->db, fi->record,
+	    if (removeBinaryPackage(ts->rootDir, ts->rpmdb, fi->record,
 				    transFlags, fi->actions, ts->scriptFd))
 		ourrc++;
 	    break;
 	}
-	(void) rpmdbSync(ts->db);
+	(void) rpmdbSync(ts->rpmdb);
     }
 
     freeFl(ts, flList);

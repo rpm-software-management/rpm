@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.69 2000/07/09 04:42:14 jbj Exp $
+# $Id: sl.po,v 1.70 2000/07/09 15:17:12 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-09 00:38-0400\n"
+"POT-Creation-Date: 2000-07-09 11:09-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2394,79 +2394,79 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:838
+#: lib/depends.c:844
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s zadovoljen ob dodatnem seznamu datotek.\n"
 
-#: lib/depends.c:887
+#: lib/depends.c:893
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added package)\n"
 msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
 
-#: lib/depends.c:891
+#: lib/depends.c:897
 #, c-format
 msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
 msgstr ""
 
-#: lib/depends.c:910
+#: lib/depends.c:916
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s zadovoljen ob dodatni ponudbi.\n"
 
-#: lib/depends.c:954
+#: lib/depends.c:960
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:971
+#: lib/depends.c:977
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:994
+#: lib/depends.c:1000
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1007
+#: lib/depends.c:1013
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s zadovoljen ob ponudbi db.\n"
 
-#: lib/depends.c:1021
+#: lib/depends.c:1027
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db packages)\n"
 msgstr "%s: %s zadovoljen ob paketih db.\n"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1044
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib version)\n"
 msgstr "%s: %s zadovoljen ob razlièici rpmlib.\n"
 
-#: lib/depends.c:1049
+#: lib/depends.c:1055
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1070
+#: lib/depends.c:1076
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1124
+#: lib/depends.c:1130
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "paket %s zahteva, a ni zadovoljeno: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1191
+#: lib/depends.c:1197
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s v sporu: %s\n"
 
-#: lib/depends.c:1318
+#: lib/depends.c:1324
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "zanka v predpogojevani verigi: %s"
@@ -3859,7 +3859,7 @@ msgstr "prestavljamo imenik %s v %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
-#: lib/transaction.c:1375
+#: lib/transaction.c:1383
 #, c-format
 msgid "executing pre-transaction syscall: \"%s\"\n"
 msgstr ""

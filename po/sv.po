@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-09 00:38-0400\n"
+"POT-Creation-Date: 2000-07-09 11:09-0400\n"
 "PO-Revision-Date: 2000-06-22 23:35+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2304,79 +2304,79 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:838
+#: lib/depends.c:844
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s JA (lade till filer)\n"
 
-#: lib/depends.c:887
+#: lib/depends.c:893
 #, c-format
 msgid "%s: %-45s YES (added package)\n"
 msgstr "%s: %-45s JA (lade till paket)\n"
 
-#: lib/depends.c:891
+#: lib/depends.c:897
 #, c-format
 msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
 msgstr "%s: %-45s JA (lade till paket, BORDE INTE HÄNDA)\n"
 
-#: lib/depends.c:910
+#: lib/depends.c:916
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s JA (lade till tillhandahållande)\n"
 
-#: lib/depends.c:954
+#: lib/depends.c:960
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr "%s: %-45s %-3s (cachad)\n"
 
-#: lib/depends.c:971
+#: lib/depends.c:977
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
-#: lib/depends.c:994
+#: lib/depends.c:1000
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:1007
+#: lib/depends.c:1013
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db tillhandahållande)\n"
 
-#: lib/depends.c:1021
+#: lib/depends.c:1027
 #, c-format
 msgid "%s: %-45s YES (db packages)\n"
 msgstr "%s: %-45s JA (db-paket)\n"
 
-#: lib/depends.c:1038
+#: lib/depends.c:1044
 #, c-format
 msgid "%s: %-45s YES (rpmlib version)\n"
 msgstr "%s: %45s JA (rpmlib-version)\n"
 
-#: lib/depends.c:1049
+#: lib/depends.c:1055
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1070
+#: lib/depends.c:1076
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1124
+#: lib/depends.c:1130
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "paket %s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1191
+#: lib/depends.c:1197
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1318
+#: lib/depends.c:1324
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "cirkularitet i kedja av förutsättningar: %s"
@@ -3787,7 +3787,7 @@ msgstr "flyttar katalogen %s till %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"
 
-#: lib/transaction.c:1375
+#: lib/transaction.c:1383
 #, c-format
 msgid "executing pre-transaction syscall: \"%s\"\n"
 msgstr ""
