@@ -6,7 +6,6 @@ OPTS = -O2
 CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib -Ibuild -I../lib -I../build
 LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
 LIBEFENCE = -lefence
-LOADLIBES = -lbuild -lrpm -lgdbm -ldb -lgz $(LIBEFENCE)
 AR = ar r
 RANLIB = ranlib
 
@@ -18,6 +17,7 @@ RANLIB = ranlib
 SUBDIRS = lib build
 OBJS = query.o install.o 
 PROGS = rpm rpmlead rpmheader rpmarchive 
+LOADLIBES = -lbuild -lrpm -ldb $(LIBEFENCE)
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
