@@ -3,7 +3,8 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = \
-	brp-compress brp-redhat brp-strip brp-strip-comment-note \
+	brp-compress brp-python-bytecompile brp-redhat \
+	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs convertrpmrc.sh cross-build \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
@@ -23,7 +24,8 @@ all:
 
 configdir = ${prefix}/lib/rpm
 config_SCRIPTS = \
-	brp-compress brp-redhat brp-strip brp-strip-comment-note \
+	brp-compress brp-python-bytecompile brp-redhat \
+	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs convertrpmrc.sh cross-build \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \

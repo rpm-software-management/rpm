@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+# If we don't have a python interpreter, avoid changing anything.
+python=${1:-/usr/bin/python}
+if [ ! -x "$python" ]; then
+	exit 0
+fi
+
+# Figure out how deep we need to descend.  We could pick an insanely high
+# number and hope it's enough, but somewhere, somebody's sure to run into it.
+depth=`(find $RPM_BUILD_ROOT -type f -name "*.py" -print0 ; echo /) | \
+       xargs -0 -n 1 dirname | sed 's,[^/],,g' | sort -u | tail -n 1 | wc -c`
+if [ -z "$depth" -o "$depth" -le "1" ]; then
+	exit 0
+fi
+
+# Generate normal (.pyc) byte-compiled files.
+$python    -c 'import compileall; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1)' > /dev/null
+
+# Generate optimized (.pyo) byte-compiled files.
+$python -O -c 'import compileall; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1)' > /dev/null
