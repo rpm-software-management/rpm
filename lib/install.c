@@ -10,7 +10,6 @@
 #include "misc.h"
 #include "rpmdb.h"
 
-
 struct callbackInfo {
     unsigned long archiveSize;
     rpmNotifyFunction notify;
@@ -46,21 +45,10 @@ struct replacedFile {
     int recOffset, fileNumber;
 } ;
 
-enum fileTypes whatis(short mode);
-static int filecmp(short mode1, char * md51, char * link1, 
-	           short mode2, char * md52, char * link2);
-static enum instActions decideFileFate(char * filespec, short dbMode, 
-				char * dbMd5, char * dbLink, short newMode, 
-				char * newMd5, char * newLink, int newFlags,
-				int instFlags, int brokenMd5);
 static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  void * notifydb, Header h,
 			  char ** specFile, int archiveSize);
-static int instHandleSharedFiles(rpmdb db, int ignoreOffset, 
-				 struct fileInfo * files,
-				 int fileCount, int * notErrors,
-				 struct replacedFile ** repListPtr, int flags);
 static int installSources(Header h, char * rootdir, FD_t fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
 			  void * notifyData, char * labelFormat);
@@ -68,10 +56,11 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int ensureOlder(rpmdb db, Header new, int dbOffset);
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
-			     int stripPrefixLength);
+			     int stripPrefixLength, enum instActions * actions);
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount);
 static void freeFileMemory(struct fileMemory fileMem);
 static void trimChangelog(Header h);
+static const char * instActionString(enum instActions a);
 
 /* 0 success */
 /* 1 bad magic */
@@ -123,7 +112,8 @@ static void freeFileMemory(struct fileMemory fileMem) {
 /* files should not be preallocated */
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
-			     int stripPrefixLength) {
+			     int stripPrefixLength, 
+			     enum instActions * actions) {
     uint_32 * fileFlags;
     uint_32 * fileSizes;
     uint_16 * fileModes;
@@ -163,7 +153,10 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 
     for (i = 0, file = files; i < fileCount; i++, file++) {
 	file->state = RPMFILE_STATE_NORMAL;
-	file->action = UNKNOWN;
+	if (actions)
+	    file->action = actions[i];
+	else
+	    file->action = UNKNOWN;
 	file->install = 1;
 
 	file->relativePath = mem->names[i];
@@ -174,6 +167,7 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	file->size = fileSizes[i];
 	file->flags = fileFlags[i];
 
+	/* FIXME: move this logic someplace else */
 	if (fileLangs && languages && *fileLangs[i]) {
 	    for (lang = languages; *lang; lang++)
 		if (!strcmp(*lang, fileLangs[i])) break;
@@ -183,6 +177,9 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 			   file->relativePath);
 	    }
 	}
+
+	rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
+		    file->relativePath, instActionString(file->action));
     }
 
     if (fileLangs) free(fileLangs);
@@ -270,7 +267,7 @@ static void trimChangelog(Header h) {
 int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
 		         rpmRelocation * relocations,
 		         int flags, rpmNotifyFunction notify, 
-			 void * notifyData) {
+			 void * notifyData, enum instActions * actions) {
     int rc;
     char * name, * version, * release;
     int fileCount, type, count;
@@ -347,9 +344,6 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
     }
 
     if (!(flags & RPMINSTALL_JUSTDB) && headerIsEntry(h, RPMTAG_FILENAMES)) {
-	char ** netsharedPaths;
-	char ** nsp;
-
 	/* old format relocateable packages need the entire default
 	   prefix stripped to form the cpio list, while all other packages 
 	   need the leading / stripped */
@@ -360,7 +354,8 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
 	    stripSize = 1;
 	}
 
-	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize)) {
+	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize,
+			     actions)) {
 	    if (rootdir) {
 		chroot(".");
 		chdir(currDir);
@@ -370,72 +365,6 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
 	}
 
 	freeFileMem = 1;
-
-	if ((tmpPath = rpmGetVar(RPMVAR_NETSHAREDPATH)))
-	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
-	else
-	    netsharedPaths = NULL;
-
-	/* check for any config files that already exist. If they do, plan
-	   on making a backup copy. If that's not the right thing to do
-	   instHandleSharedFiles() below will take care of the problem */
-	for (i = 0; i < fileCount; i++) {
-	    /* netsharedPaths are not relative to the current root (though 
-	       they do need to take package relocations into account) */
-	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
-		j = strlen(*nsp);
-		if (!strncmp(files[i].relativePath, *nsp, j) &&
-		    (files[i].relativePath[j] == '\0' ||
-		     files[i].relativePath[j] == '/'))
-		    break;
-	    }
-
-	    if (nsp && *nsp) {
-		rpmMessage(RPMMESS_DEBUG, _("file %s in netshared path\n"), 
-				files[i].relativePath);
-		files[i].action = SKIP;
-		files[i].state = RPMFILE_STATE_NETSHARED;
-	    } else if ((files[i].flags & RPMFILE_DOC) && 
-			(flags & RPMINSTALL_NODOCS)) {
-		files[i].action = SKIP;
-		files[i].state = RPMFILE_STATE_NOTINSTALLED;
-	    } else {
-		files[i].state = RPMFILE_STATE_NORMAL;
-
-		files[i].action = CREATE;
-		if ((files[i].flags & RPMFILE_CONFIG) &&
-		    !S_ISDIR(files[i].mode)) {
-		    if (rpmfileexists(files[i].relativePath)) {
-			if (files[i].flags & RPMFILE_NOREPLACE) {
-			    rpmMessage(RPMMESS_DEBUG, 
-				_("%s exists - creating with alternate name\n"), 
-				files[i].relativePath);
-			    files[i].action = ALTNAME;
-			} else {
-			    rpmMessage(RPMMESS_DEBUG, 
-				_("%s exists - backing up\n"), 
-				files[i].relativePath);
-			    files[i].action = BACKUP;
-			}
-		    }
-		}
-	    }
-	}
-
-	if (netsharedPaths) freeSplitString(netsharedPaths);
-
-	rc = instHandleSharedFiles(db, otherOffset, files, fileCount, 
-				   NULL, &replacedList, flags);
-
-	if (rc) {
-	    if (rootdir) {
-		chroot(".");
-		chdir(currDir);
-	    }
-	    if (replacedList) free(replacedList);
-	    if (freeFileMem) freeFileMemory(fileMem);
-	    return 2;
-	}
     } else {
 	files = NULL;
     }
@@ -738,298 +667,6 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     return 0;
 }
 
-
-static int filecmp(short mode1, char * md51, char * link1, 
-	           short mode2, char * md52, char * link2) {
-    enum fileTypes what1, what2;
-
-    what1 = whatis(mode1);
-    what2 = whatis(mode2);
-
-    if (what1 != what2) return 1;
-
-    if (what1 == LINK)
-	return strcmp(link1, link2);
-    else if (what1 == REG)
-	return strcmp(md51, md52);
-
-    return 0;
-}
-
-static enum instActions decideFileFate(char * filespec, short dbMode, 
-				char * dbMd5, char * dbLink, short newMode, 
-				char * newMd5, char * newLink, int newFlags,
-				int instFlags, int brokenMd5) {
-    char buffer[1024];
-    char * dbAttr, * newAttr;
-    enum fileTypes dbWhat, newWhat, diskWhat;
-    struct stat sb;
-    int i, rc;
-
-    if (lstat(filespec, &sb)) {
-	/* the file doesn't exist on the disk create it unless the new
-	   package has marked it as missingok */
-	if (!(instFlags & RPMINSTALL_ALLFILES) && 
-	      (newFlags & RPMFILE_MISSINGOK)) {
-	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
-			filespec);
-	    return SKIP;
-	} else
-	    return CREATE;
-    }
-
-    diskWhat = whatis(sb.st_mode);
-    dbWhat = whatis(dbMode);
-    newWhat = whatis(newMode);
-
-    /* RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
-       them in older packages as well */
-    if (newWhat == XDIR)
-	return CREATE;
-
-    if (diskWhat != newWhat) {
-	rpmMessage(RPMMESS_DEBUG, 
-	    _("\tfile type on disk is different then package - saving\n"));
-	return SAVE;
-    } else if (newWhat != dbWhat && diskWhat != dbWhat) {
-	rpmMessage(RPMMESS_DEBUG, _("\tfile type in database is different then "
-		   "disk and package file - saving\n"));
-	return SAVE;
-    } else if (dbWhat != newWhat) {
-	rpmMessage(RPMMESS_DEBUG, _("\tfile type changed - replacing\n"));
-	return CREATE;
-    } else if (dbWhat != LINK && dbWhat != REG) {
-	rpmMessage(RPMMESS_DEBUG, 
-		_("\tcan't check file for changes - replacing\n"));
-	return CREATE;
-    }
-
-    if (dbWhat == REG) {
-	if (brokenMd5)
-	    rc = mdfileBroken(filespec, buffer);
-	else
-	    rc = mdfile(filespec, buffer);
-
-	if (rc) {
-	    /* assume the file has been removed, don't freak */
-	    rpmMessage(RPMMESS_DEBUG, _("\tfile not present - creating"));
-	    return CREATE;
-	}
-	dbAttr = dbMd5;
-	newAttr = newMd5;
-    } else /* dbWhat == LINK */ {
-	memset(buffer, 0, sizeof(buffer));
-	i = readlink(filespec, buffer, sizeof(buffer) - 1);
-	if (i == -1) {
-	    /* assume the file has been removed, don't freak */
-	    rpmMessage(RPMMESS_DEBUG, _("\tfile not present - creating"));
-	    return CREATE;
-	}
-	dbAttr = dbLink;
-	newAttr = newLink;
-     }
-
-    /* this order matters - we'd prefer to CREATE the file if at all 
-       possible in case something else (like the timestamp) has changed */
-
-    if (!strcmp(dbAttr, buffer)) {
-	/* this config file has never been modified, so 
-	   just replace it */
-	rpmMessage(RPMMESS_DEBUG, _("\told == current, replacing "
-		"with new version\n"));
-	return CREATE;
-    }
-
-    if (!strcmp(dbAttr, newAttr)) {
-	/* this file is the same in all versions of this package */
-	rpmMessage(RPMMESS_DEBUG, _("\told == new, keeping\n"));
-	return KEEP;
-    }
-
-    /* the config file on the disk has been modified, but
-       the ones in the two packages are different. It would
-       be nice if RPM was smart enough to at least try and
-       merge the difference ala CVS, but... */
-    rpmMessage(RPMMESS_DEBUG, _("\tfiles changed too much - backing up\n"));
-	    
-    return SAVE;
-}
-
-/* return 0: okay, continue install */
-/* return 1: problem, halt install */
-
-static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
-				 struct fileInfo * files,
-				 int fileCount, int * notErrors,
-				 struct replacedFile ** repListPtr, int flags) {
-    struct sharedFile * sharedList;
-    int secNum, mainNum;
-    int sharedCount;
-    int i, type;
-    int * intptr;
-    Header sech = NULL;
-    int secOffset = 0;
-    int secFileCount;
-    char ** secFileMd5List, ** secFileList, ** secFileLinksList;
-    char * secFileStatesList;
-    int_16 * secFileModesList;
-    uint_32 * secFileFlagsList;
-    char * name, * version, * release;
-    int rc = 0;
-    struct replacedFile * replacedList;
-    int numReplacedFiles, numReplacedAlloced;
-    char state;
-    char ** fileList;
-
-    fileList = malloc(sizeof(*fileList) * fileCount);
-    for (i = 0; i < fileCount; i++)
-	fileList[i] = files[i].relativePath;
-
-    if (findSharedFiles(db, 0, fileList, fileCount, &sharedList, 
-			&sharedCount)) {
-	free(fileList);
-	return 1;
-    }
-    free(fileList);
-    
-    numReplacedAlloced = 10;
-    numReplacedFiles = 0;
-    replacedList = malloc(sizeof(*replacedList) * numReplacedAlloced);
-
-    for (i = 0; i < sharedCount; i++) {
-	/* if a file isn't going to be installed it doesn't matter who
-	   it's shared with */
-	if (files[sharedList[i].mainFileNumber].action == SKIP) continue;
-
-	if (secOffset != sharedList[i].secRecOffset) {
-	    if (secOffset) {
-		headerFree(sech);
-		free(secFileMd5List);
-		free(secFileLinksList);
-		free(secFileList);
-	    }
-
-	    secOffset = sharedList[i].secRecOffset;
-	    sech = rpmdbGetRecord(db, secOffset);
-	    if (sech == NULL) {
-		rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for "
-		      "uninstall"), secOffset);
-		rc = 1;
-		break;
-	    }
-
-	    headerGetEntry(sech, RPMTAG_NAME, &type, (void **) &name, 
-		     &secFileCount);
-	    headerGetEntry(sech, RPMTAG_VERSION, &type, (void **) &version, 
-		     &secFileCount);
-	    headerGetEntry(sech, RPMTAG_RELEASE, &type, (void **) &release, 
-		     &secFileCount);
-
-	    rpmMessage(RPMMESS_DEBUG, _("package %s-%s-%s contain shared files\n"), 
-		    name, version, release);
-
-	    if (!headerGetEntry(sech, RPMTAG_FILENAMES, &type, 
-			  (void **) &secFileList, &secFileCount)) {
-		rpmError(RPMERR_DBCORRUPT, _("package %s contains no files"),
-		      name);
-		headerFree(sech);
-		rc = 1;
-		break;
-	    }
-
-	    headerGetEntry(sech, RPMTAG_FILESTATES, &type, 
-		     (void **) &secFileStatesList, &secFileCount);
-	    headerGetEntry(sech, RPMTAG_FILEMD5S, &type, 
-		     (void **) &secFileMd5List, &secFileCount);
-	    headerGetEntry(sech, RPMTAG_FILEFLAGS, &type, 
-		     (void **) &secFileFlagsList, &secFileCount);
-	    headerGetEntry(sech, RPMTAG_FILELINKTOS, &type, 
-		     (void **) &secFileLinksList, &secFileCount);
-	    headerGetEntry(sech, RPMTAG_FILEMODES, &type, 
-		     (void **) &secFileModesList, &secFileCount);
-	}
-
- 	secNum = sharedList[i].secFileNumber;
-	mainNum = sharedList[i].mainFileNumber;
-
-	rpmMessage(RPMMESS_DEBUG, _("file %s is shared\n"), secFileList[secNum]);
-
-	if (notErrors) {
-	    intptr = notErrors;
-	    while (*intptr) {
-		if (*intptr == sharedList[i].secRecOffset) break;
-		intptr++;
-	    }
-	    if (!*intptr) intptr = NULL;
-	} else 
-	    intptr = NULL;
-
-	/* if this instance of the shared file is already recorded as
-	   replaced, just forget about it */
-	state = secFileStatesList[sharedList[i].secFileNumber];
-	if (state == RPMFILE_STATE_REPLACED) {
-	    rpmMessage(RPMMESS_DEBUG, _("\told version already replaced\n"));
-	    continue;
-	} else if (state == RPMFILE_STATE_NOTINSTALLED) {
-	    rpmMessage(RPMMESS_DEBUG, _("\tother version never installed\n"));
-	    continue;
-	}
-
-	if (filecmp(files[mainNum].mode, files[mainNum].md5, 
-		    files[mainNum].link, secFileModesList[secNum],
-		    secFileMd5List[secNum], secFileLinksList[secNum])) {
-	    if (numReplacedFiles == numReplacedAlloced) {
-		numReplacedAlloced += 10;
-		replacedList = realloc(replacedList, 
-				       sizeof(*replacedList) * 
-					   numReplacedAlloced);
-	    }
-	   
-	    replacedList[numReplacedFiles].recOffset = 
-		sharedList[i].secRecOffset;
-	    replacedList[numReplacedFiles].fileNumber = 	
-		sharedList[i].secFileNumber;
-	    numReplacedFiles++;
-
-	    rpmMessage(RPMMESS_DEBUG, _("%s from %s-%s-%s will be replaced\n"), 
-		    files[sharedList[i].mainFileNumber].relativePath,
-		    name, version, release);
-	}
-
-	/* if this is a config file, we need to be carefull here */
-	if (files[sharedList[i].mainFileNumber].flags & RPMFILE_CONFIG ||
-	    secFileFlagsList[sharedList[i].secFileNumber] & RPMFILE_CONFIG) {
-	    files[sharedList[i].mainFileNumber].action = 
-		decideFileFate(files[mainNum].relativePath, 
-			       secFileModesList[secNum],
-			       secFileMd5List[secNum], secFileLinksList[secNum],
-			       files[mainNum].mode, files[mainNum].md5,
-			       files[mainNum].link, 
-			       files[sharedList[i].mainFileNumber].flags,
-			       flags,
-			       !headerIsEntry(sech, RPMTAG_RPMVERSION));
-	}
-    }
-
-    if (secOffset) {
-	headerFree(sech);
-	free(secFileMd5List);
-	free(secFileLinksList);
-	free(secFileList);
-    }
-
-    if (sharedList) free(sharedList);
-   
-    if (!numReplacedFiles) 
-	free(replacedList);
-    else {
-	replacedList[numReplacedFiles].recOffset = 0;  /* mark the end */
-	*repListPtr = replacedList;
-    }
-
-    return rc;
-}
-
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
@@ -1085,7 +722,7 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 
     if (h && headerIsEntry(h, RPMTAG_FILENAMES)) {
 	/* we can't remap v1 packages */
-	assembleFileList(h, &fileMem, &fileCount, &files, 0);
+	assembleFileList(h, &fileMem, &fileCount, &files, 0, NULL);
 
 	for (i = 0; i < fileCount; i++) {
 	    files[i].relativePath = files[i].relativePath;
@@ -1298,24 +935,16 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset) {
     return rc;
 }
 
-enum fileTypes whatis(short mode) {
-    enum fileTypes result;
+static const char * instActionString(enum instActions a) {
+    switch (a) {
+      case UNKNOWN: return "unknown";
+      case CREATE: return "create";
+      case BACKUP: return "backup";
+      case KEEP: return "keep";
+      case SAVE: return "save";
+      case SKIP: return "skip";
+      case ALTNAME: return "altname";
+    }
 
-    if (S_ISDIR(mode))
-	result = XDIR;
-    else if (S_ISCHR(mode))
-	result = CDEV;
-    else if (S_ISBLK(mode))
-	result = BDEV;
-    else if (S_ISLNK(mode))
-	result = LINK;
-    else if (S_ISSOCK(mode))
-	result = SOCK;
-    else if (S_ISFIFO(mode))
-	result = PIPE;
-    else
-	result = REG;
- 
-    return result;
+    return "???";
 }
-

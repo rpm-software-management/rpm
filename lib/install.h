@@ -27,6 +27,6 @@ int runImmedTriggers(char * root, rpmdb db, int sense, Header h,
 int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
 		         rpmRelocation * relocations,
 		         int flags, rpmNotifyFunction notify, 
-			 void * notifyData);
+			 void * notifyData, enum instActions * actions);
 
 #endif	/* H_INSTALL */
