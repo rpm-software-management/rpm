@@ -142,7 +142,8 @@ int doCheckSig(int pgp, char **argv)
     HeaderIterator sigIter;
     int_32 tag, type, count;
     void *ptr;
-    
+
+    res = 0;
     while (*argv) {
 	rpm = *argv++;
 	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
