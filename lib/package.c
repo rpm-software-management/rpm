@@ -10,6 +10,7 @@
 #include "rpmerr.h"
 #include "rpmlead.h"
 #include "rpmlib.h"
+#include "signature.h"
 
 /* 0 = success */
 /* !0 = error */
@@ -39,6 +40,9 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
 	    lseek(fd, oldLead->archiveOffset, SEEK_SET);
 	} else {
+	    if (!readSignature(fd, lead.signature_type, NULL)) {
+	       return 2;
+	    }
 	    *hdr = readHeader(fd);
 	    if (! *hdr) return 2;
 	    freeHeader(*hdr);
@@ -47,6 +51,9 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 	if (lead.major == 1) {
 	    readOldHeader(fd, hdr, isSource);
 	} else if (lead.major == 2) {
+	    if (!readSignature(fd, lead.signature_type, NULL)) {
+	       return 2;
+	    }
 	    *hdr = readHeader(fd);
 	    if (! *hdr) return 2;
 	} else {
