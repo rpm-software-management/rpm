@@ -15,6 +15,14 @@
 # include <alloca.h>
 #endif
 
+#if HAVE_LIMITS_H
+# include <limits.h>
+#endif
+
+#ifndef PATH_MAX
+# define PATH_MAX 255
+#endif
+
 #include "intl.h"
 #include "lib/messages.h"
 #include "miscfn.h"
@@ -351,7 +359,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     char *end = NULL;
     struct urlContext context;
     int isUrl = 0;
-    char path[255];
+    char path[PATH_MAX];
 
     if (source != QUERY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
@@ -464,11 +472,38 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_PATH:
 	if (*arg != '/') {
-	    if (realpath(arg, path) != NULL)
+		/* Using realpath on the arg isn't correct if the arg is a symlink,
+		 * especially if the symlink is a dangling link.  What we should
+		 * instead do is use realpath() on `.' and then append arg to
+		 * it.
+		 */
+	    if (realpath(".", path) != NULL) {
+		if (path[strlen(path)] != '/') {
+			if (strncat(path, "/", PATH_MAX - strlen(path) - 1) == NULL) {
+	    		fprintf(stderr, _("maximum path length exceeded\n"));
+	    		return 1;
+			}
+		}
+		/* now append the original file name to the real path */
+		if (strncat(path, arg, PATH_MAX - strlen(path) - 1) == NULL) {
+	    		fprintf(stderr, _("maximum path length exceeded\n"));
+	    		return 1;
+		}
 		arg = path;
+	    }
 	}
 	if (rpmdbFindByFile(db, arg, &matches)) {
-	    fprintf(stderr, _("file %s is not owned by any package\n"), arg);
+	    int myerrno = 0;
+	    if (access(arg, F_OK) != 0)
+		myerrno = errno;
+	    switch (myerrno) {
+	    default:
+		fprintf(stderr, _("file %s: %s\n"), arg, strerror(myerrno));
+		break;
+	    case 0:
+		fprintf(stderr, _("file %s is not owned by any package\n"), arg);
+		break;
+	    }
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
