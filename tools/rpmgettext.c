@@ -216,19 +216,23 @@ genSrpmFileName(Header h)
 
 }
 
-static char *
+static const char *
 hasLang(const char *onlylang, char **langs, char **s)
 {
-	char *e = *s;
+	const char *e = *s;
 	int i = 0;
 
 	while(langs[i] && strcmp(langs[i], onlylang)) {
 		i++;
 		e += strlen(e) + 1;
 	}
+#if 0
 	if (langs[i] && *e)
 		return e;
 	return NULL;
+#else
+	return onlylang;
+#endif
 }
 
 static int poTags[] = {
@@ -269,7 +273,8 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
     sourcerpm = genSrpmFileName(h);
 
     for (tp = poTags; *tp != 0; tp++) {
-	char **s, *e, *onlymsgstr;
+	const char *onlymsgstr;
+	char **s, *e;
 	int i, type, count, nmsgstrs;
 
 	if (!headerGetRawEntry(h, *tp, &type, (void **)&s, &count))
