@@ -52,7 +52,7 @@ static int createDirectories(char * prefix, char ** fileList, int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int_16 * fileModeList,
-				 char ** fileLinkList,
+				 char ** fileLinkList, uint_32 * fileFlagsList,
 				 int fileCount, enum instActions * instActions, 
 			 	 char ** prootdirootdir, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags);
@@ -283,8 +283,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
 
 	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileModesList,
-				   fileLinkList, fileCount, instActions, 
-				   prefixedFileList, oldVersions, 
+				   fileLinkList, fileFlagsList, fileCount, 
+				   instActions, prefixedFileList, oldVersions, 
 				   &replacedList, flags);
 
 	free(fileMd5s);
@@ -1071,7 +1071,7 @@ enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int_16 * fileModesList,
-				 char ** fileLinkList,
+				 char ** fileLinkList, uint_32 * fileFlagsList,
 				 int fileCount, enum instActions * instActions, 
 			 	 char ** prefixedFileList, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags) {
@@ -1204,7 +1204,8 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	}
 
 	/* if this is a config file, we need to be carefull here */
-	if (secFileFlagsList[sharedList[i].secFileNumber] & RPMFILE_CONFIG) {
+	if (fileFlagsList[sharedList[i].mainFileNumber] & RPMFILE_CONFIG ||
+	    secFileFlagsList[sharedList[i].secFileNumber] & RPMFILE_CONFIG) {
 	    instActions[sharedList[i].mainFileNumber] = 
 		decideFileFate(fileList[mainNum], secFileModesList[secNum],
 			       secFileMd5List[secNum], secFileLinksList[secNum],
