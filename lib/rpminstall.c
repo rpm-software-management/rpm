@@ -288,6 +288,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 
     rpmMessage(RPMMESS_DEBUG, _("retrieved %d packages\n"), numTmpPkgs);
 
+    if (numFailed) goto errxit;
+
     /**
      * Build up the transaction set. As a special case, v1 source packages
      * are installed right here, only because they don't have headers and
@@ -314,6 +316,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	    rpmMessage(RPMMESS_ERROR, 
 			_("%s does not appear to be a RPM package\n"), 
 			*fileURL);
+	    numFailed++;
+	    pkgURL[i] = NULL;
 	    break;
 	default:
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fileURL);
@@ -423,6 +427,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     rpmMessage(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"), 
 		numSRPMS, numRPMS);
 
+    if (numFailed) goto errxit;
+
     if (numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
 	struct rpmDependencyConflict * conflicts;
 	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
@@ -466,7 +472,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	if (probs) rpmProblemSetFree(probs);
     }
 
-    if (numRPMS) rpmtransFree(ts);
+    if (numRPMS && ts) rpmtransFree(ts);
 
     if (numSRPMS && !stopInstall) {
 	for (i = 0; i < numSRPMS; i++) {
@@ -500,6 +506,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     return numFailed;
 
 errxit:
+    if (numRPMS && ts) rpmtransFree(ts);
     if (tmppkgURL) {
 	for (i = 0; i < numTmpPkgs; i++)
 	    free((void *)tmppkgURL[i]);
