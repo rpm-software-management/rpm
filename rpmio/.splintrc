@@ -15,20 +15,6 @@
 +bounds
 -bufferoverflowhigh
 
--assignexpose
--branchstate
--dependenttrans
--evalorder
-+numliteral
--observertrans
--onlytrans
--realcompare
-+relaxtypes
--retvalint
--retvalother
--sizeoftype
--temptrans
-
 
 # --- +partial artifacts
 -declundef

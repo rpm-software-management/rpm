@@ -50,7 +50,7 @@ void *rpmluaFree(/*@only@*/ rpmlua lua)
 
 int rpmluaCheckScript(rpmlua lua, const char *script, const char *name)
 	/*@modifies lua @*/;
-int rpmluaRunScript(rpmlua lua, const char *script, const char *name)
+int rpmluaRunScript(rpmlua lua, const char *script, /*@null@*/ const char *name)
 	/*@modifies lua @*/;
 void rpmluaInteractive(rpmlua lua)
 	/*@globals fileSystem @*/

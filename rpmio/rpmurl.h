@@ -22,6 +22,7 @@ typedef enum urltype_e {
 #define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
+
 /**
  * URL control structure.
  */
@@ -49,7 +50,8 @@ struct urlinfo_s {
     FD_t ctrl;			/*!< control channel */
     FD_t data;			/*!< per-xfer data channel */
     int bufAlloced;		/*!< sizeof I/O buffer */
-/*@owned@*/ char * buf;		/*!< I/O buffer */
+/*@owned@*/
+    char * buf;			/*!< I/O buffer */
     int openError;		/*!< Type of open failure */
     int httpVersion;
     int httpHasRange;
@@ -60,10 +62,10 @@ struct urlinfo_s {
 extern "C" {
 #endif
 
-/*@checked@*/
+/*@unchecked@*/
 extern int _url_count;		/*!< No. of cached URL's. */
 
-/*@checked@*/
+/*@unchecked@*/
 /*@only@*/ /*@null@*/
 extern urlinfo * _url_cache;	/*!< URL cache. */
 

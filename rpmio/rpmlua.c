@@ -1,4 +1,4 @@
-/*@-bounds@*/
+/*@-bounds -realcompare -sizeoftype @*/
 #include "system.h"
 #include <rpmio.h>
 #include <rpmmacro.h>
@@ -57,7 +57,7 @@ rpmlua rpmluaNew()
 
     lua->L = L;
     for (; lib->name; lib++) {
-	lib->func(L);
+	(void) lib->func(L);
 	lua_settop(L, 0);
     }
     lua_pushliteral(L, "LUA_PATH");
@@ -101,8 +101,10 @@ static void *getdata(lua_State *L, const char *key)
     lua_pushstring(L, key);
     lua_concat(L, 2);
     lua_rawget(L, LUA_REGISTRYINDEX);
+/*@-branchstate@*/
     if (lua_islightuserdata(L, -1))
 	ret = lua_touserdata(L, -1);
+/*@=branchstate@*/
     lua_pop(L, 1);
     return ret;
 }
@@ -150,9 +152,9 @@ void rpmluaSetVar(rpmlua lua, rpmluav var)
 {
     lua_State *L = lua->L;
     if (var->listmode && lua->pushsize > 0) {
-	if (var->keyType != RPMLUAV_NUMBER || var->key.num == 0) {
+	if (var->keyType != RPMLUAV_NUMBER || var->key.num == (double)0) {
 	    var->keyType = RPMLUAV_NUMBER;
-	    var->key.num = luaL_getn(L, -1);
+	    var->key.num = (double) luaL_getn(L, -1);
 	}
 	var->key.num++;
     }
@@ -176,7 +178,9 @@ static void popvar(lua_State *L, rpmluavType *type, void *value)
     switch (lua_type(L, -1)) {
     case LUA_TSTRING:
 	*type = RPMLUAV_STRING;
+/*@-observertrans -dependenttrans @*/
 	*((const char **)value) = lua_tostring(L, -1);
+/*@=observertrans =dependenttrans @*/
 	break;
     case LUA_TNUMBER:
 	*type = RPMLUAV_NUMBER;
@@ -203,7 +207,7 @@ void rpmluaGetVar(rpmlua lua, rpmluav var)
 	if (lua->pushsize == 0)
 	    lua_pop(L, 1);
     } else if (lua->pushsize > 0) {
-	pushvar(L, var->keyType, &var->key);
+	(void) pushvar(L, var->keyType, &var->key);
 	if (lua_next(L, -2) != 0)
 	    popvar(L, &var->valueType, &var->value);
     }
@@ -218,7 +222,7 @@ static int findkey(lua_State *L, int oper, const char *key, va_list va)
     char buf[BUFSIZ];
     const char *s, *e;
     int ret = 0;
-    vsnprintf(buf, BUFSIZ, key, va);
+    (void) vsnprintf(buf, BUFSIZ, key, va);
     s = e = buf;
     lua_pushvalue(L, LUA_GLOBALSINDEX);
     for (;;) {
@@ -270,7 +274,7 @@ void rpmluaDelVar(rpmlua lua, const char *key, ...)
 {
     va_list va;
     va_start(va, key);
-    findkey(lua->L, FINDKEY_REMOVE, key, va);
+    (void) findkey(lua->L, FINDKEY_REMOVE, key, va);
     va_end(va);
 }
 
@@ -292,7 +296,7 @@ void rpmluaPushTable(rpmlua lua, const char *key, ...)
 {
     va_list va;
     va_start(va, key);
-    findkey(lua->L, FINDKEY_CREATE, key, va);
+    (void) findkey(lua->L, FINDKEY_CREATE, key, va);
     lua->pushsize++;
     va_end(va);
 }
@@ -325,6 +329,7 @@ void rpmluavSetListMode(rpmluav var, int flag)
 void rpmluavSetKey(rpmluav var, rpmluavType type, const void *value)
 {
     var->keyType = type;
+/*@-assignexpose -branchstate -temptrans @*/
     switch (type) {
 	case RPMLUAV_NUMBER:
 	    var->key.num = *((double *)value);
@@ -335,11 +340,13 @@ void rpmluavSetKey(rpmluav var, rpmluavType type, const void *value)
 	default:
 	    break;
     }
+/*@=assignexpose =branchstate =temptrans @*/
 }
 
 void rpmluavSetValue(rpmluav var, rpmluavType type, const void *value)
 {
     var->valueType = type;
+/*@-assignexpose -branchstate -temptrans @*/
     switch (type) {
 	case RPMLUAV_NUMBER:
 	    var->value.num = *((const double *)value);
@@ -350,11 +357,13 @@ void rpmluavSetValue(rpmluav var, rpmluavType type, const void *value)
 	default:
 	    break;
     }
+/*@=assignexpose =branchstate =temptrans @*/
 }
 
 void rpmluavGetKey(rpmluav var, rpmluavType *type, void **value)
 {
     *type = var->keyType;
+/*@-onlytrans@*/
     switch (var->keyType) {
 	case RPMLUAV_NUMBER:
 	    *((double **)value) = &var->key.num;
@@ -365,11 +374,13 @@ void rpmluavGetKey(rpmluav var, rpmluavType *type, void **value)
 	default:
 	    break;
     }
+/*@=onlytrans@*/
 }
 
 void rpmluavGetValue(rpmluav var, rpmluavType *type, void **value)
 {
     *type = var->valueType;
+/*@-onlytrans@*/
     switch (var->valueType) {
 	case RPMLUAV_NUMBER:
 	    *((double **)value) = &var->value.num;
@@ -380,6 +391,7 @@ void rpmluavGetValue(rpmluav var, rpmluavType *type, void **value)
 	default:
 	    break;
     }
+/*@=onlytrans@*/
 }
 
 void rpmluavSetKeyNum(rpmluav var, double value)
@@ -399,7 +411,7 @@ double rpmluavGetKeyNum(rpmluav var)
     rpmluavGetKey(var, &type, &value);
     if (type == RPMLUAV_NUMBER)
 	return *((double *)value);
-    return 0;
+    return (double) 0;
 }
 
 double rpmluavGetValueNum(rpmluav var)
@@ -409,7 +421,7 @@ double rpmluavGetValueNum(rpmluav var)
     rpmluavGetValue(var, &type, &value);
     if (type == RPMLUAV_NUMBER)
 	return *((double *)value);
-    return 0;
+    return (double) 0;
 }
 
 int rpmluavKeyIsNum(rpmluav var)
@@ -426,8 +438,10 @@ int rpmluaCheckScript(rpmlua lua, const char *script, const char *name)
 {
     lua_State *L = lua->L;
     int ret = 0;
-    if (!name)
+/*@-branchstate@*/
+    if (name == NULL)
 	name = "<lua>";
+/*@=branchstate@*/
     if (luaL_loadbuffer(L, script, strlen(script), name) != 0) {
 	rpmError(RPMERR_SCRIPT,
 		_("invalid syntax in lua scriptlet: %s\n"),
@@ -442,8 +456,10 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name)
 {
     lua_State *L = lua->L;
     int ret = 0;
-    if (!name)
+/*@-branchstate@*/
+    if (name == NULL)
 	name = "<lua>";
+/*@=branchstate@*/
     if (luaL_loadbuffer(L, script, strlen(script), name) != 0) {
 	rpmError(RPMERR_SCRIPT, _("invalid syntax in lua script: %s\n"),
 		 lua_tostring(L, -1));
@@ -465,8 +481,8 @@ static int rpmluaReadline(lua_State *L, const char *prompt)
 {
    static char buffer[1024];
    if (prompt) {
-      fputs(prompt, stdout);
-      fflush(stdout);
+      (void) fputs(prompt, stdout);
+      (void) fflush(stdout);
    }
    if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
       return 0;  /* read fails */
@@ -481,7 +497,7 @@ static void _rpmluaInteractive(lua_State *L)
 	/*@globals fileSystem @*/
 	/*@modifies L, fileSystem @*/
 {
-   fputs("\n", stdout);
+   (void) fputs("\n", stdout);
    printf("RPM Interactive %s Interpreter\n", LUA_VERSION);
    for (;;) {
       int rc = 0;
@@ -489,12 +505,16 @@ static void _rpmluaInteractive(lua_State *L)
       if (rpmluaReadline(L, "> ") == 0)
 	 break;
       if (lua_tostring(L, -1)[0] == '=') {
-	 lua_pushfstring(L, "print(%s)", lua_tostring(L, -1)+1);
+/*@-evalorder@*/
+	 (void) lua_pushfstring(L, "print(%s)", lua_tostring(L, -1)+1);
+/*@=evalorder@*/
 	 lua_remove(L, -2);
       }
       for (;;) {
+/*@-evalorder@*/
 	 rc = luaL_loadbuffer(L, lua_tostring(L, -1),
 			      lua_strlen(L, -1), "<lua>");
+/*@=evalorder@*/
 	 if (rc == LUA_ERRSYNTAX &&
 	     strstr(lua_tostring(L, -1), "near `<eof>'") != NULL) {
 	    if (rpmluaReadline(L, ">> ") == 0)
@@ -513,7 +533,7 @@ static void _rpmluaInteractive(lua_State *L)
       }
       lua_pop(L, 1); /* Remove line */
    }
-   fputs("\n", stdout);
+   (void) fputs("\n", stdout);
 }
 
 void rpmluaInteractive(rpmlua lua)
@@ -538,7 +558,7 @@ static int rpm_define(lua_State *L)
 	/*@modifies L, rpmGlobalMacroContext @*/
 {
     const char *str = luaL_checkstring(L, 1);
-    rpmDefineMacro(NULL, str, 0);
+    (void) rpmDefineMacro(NULL, str, 0);
     return 0;
 }
 
@@ -580,14 +600,14 @@ static int rpm_print (lua_State *L)
 	    lua->printbufused += sl;
 	} else {
 	    if (i > 1)
-		fputs("\t", stdout);
-	    fputs(s, stdout);
+		(void) fputs("\t", stdout);
+	    (void) fputs(s, stdout);
 	}
 	lua_pop(L, 1);  /* pop result */
     }
     lua_pop(L, 1);
     if (!lua->storeprint) {
-	fputs("\n", stdout);
+	(void) fputs("\n", stdout);
     } else {
 	if (lua->printbufused+1 >= lua->printbufsize) {
 	    lua->printbufsize += 512;
@@ -616,4 +636,4 @@ static int luaopen_rpm(lua_State *L)
     luaL_openlib(L, "rpm", rpmlib, 0);
     return 0;
 }
-/*@=bounds@*/
+/*@=bounds =realcompare =sizeoftype @*/

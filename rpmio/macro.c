@@ -60,6 +60,7 @@ extern const unsigned short int **__ctype_b_loc (void) /*@*/;
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access MacroContext@*/
 /*@access MacroEntry@*/
+/*@access rpmlua @*/
 
 static struct MacroContext_s rpmGlobalMacroContext_s;
 /*@-compmempass@*/
@@ -1517,6 +1518,7 @@ expandMacro(MacroBuf mb)
 /*@-boundswrite@*/
 static int poptDupArgv(int argc, const char **argv,
 		int * argcPtr, const char *** argvPtr)
+	/*@modifies *argcPtr, *argvPtr @*/
 {
     size_t nb = (argc + 1) * sizeof(*argv);
     const char ** argv2;
@@ -1559,6 +1561,7 @@ static int poptDupArgv(int argc, const char **argv,
 
 /*@-bounds@*/
 static int poptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
+	/*@modifies *argcPtr, *argvPtr @*/
 {
     const char * src;
     char quote = '\0';
@@ -1625,6 +1628,7 @@ exit:
 }
 /*@=bounds@*/
 /* =============================================================== */
+/*@unchecked@*/
 static int _debug = 0;
 
 int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
@@ -1642,6 +1646,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     if (rc)
 	return rc;
 
+    if (av != NULL)
     for (j = 0; j < ac; j++) {
 	const char * globURL;
 	const char * path;
@@ -1864,6 +1869,7 @@ rpmLoadMacroFile(MacroContext mc, const char * fn)
     max_macro_depth = 16;
     /*@=mods@*/
 
+    buf[0] = '\0';
     while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
 	char c, *n;
 
@@ -1871,7 +1877,7 @@ rpmLoadMacroFile(MacroContext mc, const char * fn)
 	SKIPBLANK(n, c);
 
 	if (c != '%')
-		/*@innercontinue@*/ continue;
+		continue;
 	n++;	/* skip % */
 	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
     }
