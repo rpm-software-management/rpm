@@ -266,6 +266,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Aug 14 2000 Jeff Johnson <jbj@redhat.com>
+- disable rpmlib(VersionedDependencies) by defining _noVersionedDependencies.
+- man page fixes.
+
 * Mon Aug  7 2000 Jeff Johnson <jbj@redhat.com>
 - fix: segfault when globbing on "" (#15593).
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-04 15:48-0400\n"
+"POT-Creation-Date: 2000-08-14 09:19-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1797,58 +1797,58 @@ msgstr ""
 msgid "File not found by glob: %s"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: build/files.c:1231
+#: build/files.c:1230
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "hata: %s dosyasý okunamadý\n"
 
-#: build/files.c:1238 build/pack.c:100
+#: build/files.c:1239 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1565
+#: build/files.c:1566
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "%s açýlamadý: %s"
 
-#: build/files.c:1577 build/parsePrep.c:34
+#: build/files.c:1578 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1632
+#: build/files.c:1633
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "PGP çalýþtýrýlamadý"
 
-#: build/files.c:1637
+#: build/files.c:1638
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Ýmza hedefi 'sigtarget' okunamadý"
 
-#: build/files.c:1719
+#: build/files.c:1720
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "PGP hata verdi"
 
-#: build/files.c:1723
+#: build/files.c:1724
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s yaratýlamýyor\n"
 
-#: build/files.c:1819
+#: build/files.c:1820
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1847 build/files.c:1857
+#: build/files.c:1848 build/files.c:1858
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s yaratýlamýyor\n"
 
-#: build/files.c:1967
+#: build/files.c:1968
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "%s açýlamadý: %s"
@@ -2228,7 +2228,7 @@ msgstr "%s paketi %s altýnda gözükmüyor"
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: build/parseReqs.c:169
+#: build/parseReqs.c:170
 #, fuzzy, c-format
 msgid "line %d: Version required: %s"
 msgstr "%s açýlamadý: %s"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-07 15:28-0400\n"
+"POT-Creation-Date: 2000-08-14 09:19-0400\n"
 "PO-Revision-Date: 2000-08-08 22:37+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1658,57 +1658,57 @@ msgstr "Soubor potøebuje úvodní \"/\": %s"
 msgid "File not found by glob: %s"
 msgstr "Soubor nenalezen: %s"
 
-#: build/files.c:1231
+#: build/files.c:1230
 msgid "Could not open %%files file %s: %s"
 msgstr "Nemohu otevøít %%files soubor %s: %s"
 
-#: build/files.c:1238 build/pack.c:100
+#: build/files.c:1239 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr "øádek: %s"
 
-#: build/files.c:1565
+#: build/files.c:1566
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "©patný soubor: %s: %s"
 
-#: build/files.c:1577 build/parsePrep.c:34
+#: build/files.c:1578 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "©patný vlastník/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1632
+#: build/files.c:1633
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nemohu spustit %s: %s"
 
-#: build/files.c:1637
+#: build/files.c:1638
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nemohu provést fork %s: %s"
 
-#: build/files.c:1719
+#: build/files.c:1720
 #, c-format
 msgid "%s failed"
 msgstr "%s selhalo"
 
-#: build/files.c:1723
+#: build/files.c:1724
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "Nemohu zapsat v¹echna data do %s"
 
-#: build/files.c:1819
+#: build/files.c:1820
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: build/files.c:1847 build/files.c:1857
+#: build/files.c:1848 build/files.c:1858
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Selhalo vyhledání %s:"
 
-#: build/files.c:1967
+#: build/files.c:1968
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Zpracovávám soubory: %s-%s-%s\n"
@@ -2089,7 +2089,7 @@ msgstr "øádek %d: Jméno souboru není dovoleno: %s"
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "øádek %d: Jméno s verzí není dovoleno: %s"
 
-#: build/parseReqs.c:169
+#: build/parseReqs.c:170
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr "øádek %d: Vy¾adována verze: %s"
