@@ -563,3 +563,5 @@ fi
 - fix: big-endian's with sizeof(time_t) != sizeof(int_32) mtime broken.
 - fix: add Korean message catalogs (#54473).
 - add RPHNPLATFORM and PLATFORM tags.
+- linear search on added package provides is dumb.
+- discarding entire signature header when using --addsign is dumb.

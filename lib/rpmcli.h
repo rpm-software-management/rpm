@@ -408,7 +408,7 @@ extern int packagesTotal;
 		const rpmCallbackType what,
 		const unsigned long amount,
 		const unsigned long total,
-		/*@null@*/ const void * pkgKey,
+		/*@null@*/ fnpyKey key,
 		/*@null@*/ void * data)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;

@@ -254,7 +254,7 @@ static int removePackage(rpmTransactionSet ts, int dboffset,
     return 0;
 }
 
-char * hGetNVR(Header h, const char ** np )
+char * hGetNVR(Header h, const char ** np)
 {
     const char * n, * v, * r;
     char * NVR, * t;
@@ -272,7 +272,7 @@ char * hGetNVR(Header h, const char ** np )
 }
 
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
-			const void * key, int upgrade, rpmRelocation * relocs)
+			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
     int scareMem = _DS_SCAREMEM;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -353,7 +353,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
     /* XXX cast assumes that available keys are indices, not pointers */
-    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, h);
+    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, key, h);
     if (pkgKey == RPMAL_NOMATCH) {
 	ec = 1;
 	goto exit;
@@ -504,13 +504,10 @@ exit:
     return ec;
 }
 
-void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
-		/*@unused@*/ const void * key)
+void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
 {
-    alKey pkgKey;
-
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    pkgKey = alAddPackage(ts->availablePackages, RPMAL_NOMATCH, h);
+    (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, key, h);
 }
 
 int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
@@ -553,7 +550,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	    }
 	    /*@-type@*/ /* FIX: cast? */
 	    if (p->fd != NULL)
-	        p->fd = fdFree(p->fd, "alAddPackage (alFree)");
+	        p->fd = fdFree(p->fd, "alAddPackage (rpmtransFree)");
 	    /*@=type@*/
 	}
 	pi = teFreeIterator(pi);
@@ -679,7 +676,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
     }
 
     /* Search added packages for the dependency. */
-    if (alSatisfiesDepend(ts->addedPackages, key) != RPMAL_NOMATCH)
+    if (alSatisfiesDepend(ts->addedPackages, key, NULL) != NULL)
 	goto exit;
 
     /* XXX only the installer does not have the database open here. */
@@ -815,18 +812,16 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	case 0:		/* requirements are satisfied. */
 	    /*@switchbreak@*/ break;
 	case 1:		/* requirements are not satisfied. */
-	{   const alKey * suggestedPkgs;
-
-	    suggestedPkgs = NULL;
+	{   fnpyKey * suggestedKeys = NULL;
 
 	    /*@-branchstate@*/
 	    if (ts->availablePackages != NULL) {
-		suggestedPkgs =
-			alAllSatisfiesDepend(ts->availablePackages, requires);
+		suggestedKeys = alAllSatisfiesDepend(ts->availablePackages,
+				requires, NULL);
 	    }
 	    /*@=branchstate@*/
 
-	    dsProblem(psp, h, requires, suggestedPkgs);
+	    dsProblem(psp, h, requires, suggestedKeys);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -1149,6 +1144,7 @@ static inline int addRelation(rpmTransactionSet ts,
     teIterator qi; transactionElement q;
     tsortInfo tsi;
     const char * Name;
+    fnpyKey key;
     alKey pkgKey;
     int i = 0;
 
@@ -1159,7 +1155,8 @@ static inline int addRelation(rpmTransactionSet ts,
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
 	return 0;
 
-    pkgKey = alSatisfiesDepend(ts->addedPackages, requires);
+    pkgKey = RPMAL_NOMATCH;
+    key = alSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
 
 if (_te_debug)
 fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
@@ -1176,14 +1173,16 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 	    break;
     }
     qi = teFreeIterator(qi);
+    if (q == NULL)
+	return 0;
 
 #if defined(DEPENDENCY_WHITEOUT)
     /* Avoid certain dependency relations. */
-    if (q == NULL || ignoreDep(p, q))
+    if (ignoreDep(p, q))
 	return 0;
 #endif
 
-    i = (q ? q - ts->order : -1);
+    i = q - ts->order;
 
 /*@-nullpass -nullderef@*/
 if (_te_debug)

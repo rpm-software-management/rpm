@@ -18,6 +18,26 @@
 /*@unchecked@*/
 static int _fns_debug = 0;
 
+/*@-shadow@*/	/* XXX copy from depends.c for now. */
+static char * hGetNVR(Header h, /*@out@*/ const char ** np)
+	/*@modifies *np @*/
+{
+    const char * n, * v, * r;
+    char * NVR, * t;
+
+    (void) headerNVR(h, &n, &v, &r);
+    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
+    t = stpcpy(t, n);
+    t = stpcpy(t, "-");
+    t = stpcpy(t, v);
+    t = stpcpy(t, "-");
+    t = stpcpy(t, r);
+    if (np)
+	*np = n;
+    return NVR;
+}
+/*@=shadow@*/
+
 rpmFNSet fnsFree(rpmFNSet fns)
 {
     HFD_t hfd = headerFreeData;
@@ -55,6 +75,9 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpmFNSet fns = NULL;
     const char * Type;
+    const char ** N;
+    rpmTagType Nt;
+    int_32 Count;
     rpmTag tagBN, tagDI, tagF, tagDN;
 
     if (tagN == RPMTAG_BASENAMES) {
@@ -66,15 +89,21 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
     } else
 	goto exit;
 
-    fns = xcalloc(1, sizeof(*fns));
-    fns->i = -1;
-
-    fns->Type = Type;
-
-    fns->tagN = tagN;
-    fns->h = (scareMem ? headerLink(h, "fnsNew") : NULL);
-    if (hge(h, tagBN, &fns->BNt, (void **) &fns->BN, &fns->Count)) {
+    /*@-branchstate@*/
+    if (hge(h, tagBN, &Nt, (void **) &N, &Count)
+     && N != NULL && Count > 0)
+    {
 	int xx;
+
+	fns = xcalloc(1, sizeof(*fns));
+	fns->h = (scareMem ? headerLink(h, "fnsNew") : NULL);
+	fns->i = -1;
+	fns->Type = Type;
+	fns->tagN = tagN;
+	fns->BN = N;
+	fns->BNt = Nt;
+	fns->Count = Count;
+
 	xx = hge(h, tagDN, &fns->DNt, (void **) &fns->DN, &fns->DCount);
 	xx = hge(h, tagDI, &fns->DIt, (void **) &fns->DI, NULL);
 	if (!scareMem && fns->DI != NULL)
@@ -84,17 +113,19 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
 	if (!scareMem && fns->Flags != NULL)
 	    fns->Flags = memcpy(xmalloc(fns->Count * sizeof(*fns->Flags)),
                                 fns->Flags, fns->Count * sizeof(*fns->Flags));
-    } else
-	fns->h = headerFree(fns->h, "fnsNew");
-
-exit:
 
 /*@-modfilesystem@*/
 if (_fns_debug)
 fprintf(stderr, "*** fns %p ++ %s[%d]\n", fns, fns->Type, fns->Count);
 /*@=modfilesystem@*/
 
-    return fns;
+    }
+    /*@-branchstate@*/
+
+exit:
+    /*@-nullret@*/ /* FIX: fns->{DI,Flags} may be NULL. */
+/*@i@*/ return fns;
+    /*@=nullret@*/
 }
 
 /*@access rpmDepSet @*/
@@ -226,7 +257,7 @@ fprintf(stderr, "*** ds %p ++\t%s[%d]\n", ds, ds->Type, ds->Count);
 
 exit:
     /*@-nullret@*/ /* FIX: ds->Flags may be NULL. */
-    return ds;
+/*@i@*/ return ds;
     /*@=nullret@*/
 }
 
@@ -268,6 +299,27 @@ char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
     }
     *t = '\0';
     return tbuf;
+}
+
+int dsiGetCount(rpmDepSet ds)
+{
+    return (ds != NULL ? ds->Count : 0);
+}
+
+int dsiGetIx(rpmDepSet ds)
+{
+    return (ds != NULL ? ds->i : -1);
+}
+
+int dsiSetIx(rpmDepSet ds, int ix)
+{
+    int i = -1;
+
+    if (ds != NULL) {
+	i = ds->i;
+	ds->i = ix;
+    }
+    return i;
 }
 
 const char * dsiGetDNEVR(rpmDepSet ds)
@@ -485,28 +537,30 @@ exit:
 }
 
 void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
-		const alKey * suggestedPkgs)
+		const fnpyKey * suggestedKeys)
 {
     rpmDependencyConflict dcp;
     const char * Name =  dsiGetN(ds);
     const char * DNEVR = dsiGetDNEVR(ds);
     const char * EVR = dsiGetEVR(ds);
+#ifdef	DYING
     int_32 Flags = dsiGetFlags(ds);
     const char * name, * version, * release;
     int xx;
 
     xx = headerNVR(h, &name, &version, &release);
+#else
+    char * byNEVR = hGetNVR(h, NULL);
+#endif
 
     /*@-branchstate@*/
-    if (Name == NULL) Name = "???";
-    if (EVR == NULL) EVR = "???";
-    if (DNEVR == NULL) DNEVR = "?????";
+    if (Name == NULL) Name = "?N?";
+    if (EVR == NULL) EVR = "?EVR?";
+    if (DNEVR == NULL) DNEVR = "? ?N? ?OP? ?EVR?";
     /*@=branchstate@*/
 
-    rpmMessage(RPMMESS_DEBUG, _("package %s-%s-%s has unsatisfied %s: %s\n"),
-	    name, version, release,
-	    ds->Type,
-	    DNEVR+2);
+    rpmMessage(RPMMESS_DEBUG, _("package %s has unsatisfied %s: %s\n"),
+	    byNEVR, ds->Type, DNEVR+2);
 
     if (psp->num == psp->alloced) {
 	psp->alloced += 5;
@@ -517,6 +571,7 @@ void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
     dcp = psp->problems + psp->num;
     psp->num++;
 
+#ifdef	DYING
     dcp->byHeader = headerLink(h, "dsProblem");
     dcp->byName = xstrdup(name);
     dcp->byVersion = xstrdup(version);
@@ -524,15 +579,18 @@ void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
     dcp->needsName = xstrdup(Name);
     dcp->needsVersion = xstrdup(EVR);
     dcp->needsFlags = Flags;
-
     if (ds->tagN == RPMTAG_REQUIRENAME)
 	dcp->sense = RPMDEP_SENSE_REQUIRES;
     else if (ds->tagN == RPMTAG_CONFLICTNAME)
 	dcp->sense = RPMDEP_SENSE_CONFLICTS;
     else
 	dcp->sense = 0;
+#else
+    dcp->byNEVR = byNEVR;
+    dcp->needsNEVR = xstrdup(DNEVR);
+#endif
 
-    dcp->suggestedPkgs = suggestedPkgs;
+    dcp->suggestedKeys = suggestedKeys;
 }
 
 int rangeMatchesDepFlags (Header h, const rpmDepSet req)

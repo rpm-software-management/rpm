@@ -10,7 +10,7 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@access alKey@*/
+/*@access fnpyKey@*/
 /*@access rpmProblem@*/
 /*@access rpmProblemSet@*/
 /*@access rpmDependencyConflict@*/
@@ -43,7 +43,7 @@ void rpmProblemSetFree(rpmProblemSet tsprobs)
 }
 
 void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
-		const char * pkgNEVR, const void * key,
+		const char * pkgNEVR, fnpyKey key,
 		const char * dn, const char * bn,
 		const char * altNEVR, unsigned long ulong1)
 {
@@ -157,6 +157,7 @@ static int sameProblem(const rpmDependencyConflict ap,
 	/*@*/
 {
 
+#ifdef	DYING
     if (ap->sense != bp->sense)
 	return 1;
 
@@ -173,6 +174,12 @@ static int sameProblem(const rpmDependencyConflict ap,
 	return 1;
     if (ap->needsFlags && bp->needsFlags && ap->needsFlags != bp->needsFlags)
 	return 1;
+#else
+    if (ap->byNEVR && bp->byNEVR && strcmp(ap->byNEVR, bp->byNEVR))
+	return 1;
+    if (ap->needsNEVR && bp->needsNEVR && strcmp(ap->needsNEVR, bp->needsNEVR))
+	return 1;
+#endif
 
     return 0;
 }
@@ -181,10 +188,12 @@ static int sameProblem(const rpmDependencyConflict ap,
 rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
 		int numConflicts)
 {
+    rpmDependencyConflict c;
     int i;
 
     if (conflicts)
     for (i = 0; i < numConflicts; i++) {
+#ifdef	DYING
 	conflicts[i].byHeader = headerFree(conflicts[i].byHeader, "problem");
 	conflicts[i].byName = _free(conflicts[i].byName);
 	conflicts[i].byVersion = _free(conflicts[i].byVersion);
@@ -194,6 +203,14 @@ rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
 	/*@-evalorder@*/
 	conflicts[i].suggestedPkgs = _free(conflicts[i].suggestedPkgs);
 	/*@=evalorder@*/
+#else
+	c = conflicts + i;
+	c->byNEVR = _free(c->byNEVR);
+	c->needsNEVR = _free(c->needsNEVR);
+	/*@-evalorder@*/
+	c->suggestedKeys = _free(c->suggestedKeys);
+	/*@=evalorder@*/
+#endif
     }
 
     return (conflicts = _free(conflicts));
@@ -203,6 +220,7 @@ rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
 void printDepProblems(FILE * fp,
 		const rpmDependencyConflict conflicts, int numConflicts)
 {
+    rpmDependencyConflict c;
     int i;
 
     for (i = 0; i < numConflicts; i++) {
@@ -216,6 +234,7 @@ void printDepProblems(FILE * fp,
 	if (j < i)
 	    continue;
 
+#ifdef	DYING
 	fprintf(fp, "\t%s", conflicts[i].needsName);
 	if (conflicts[i].needsFlags)
 	    printDepFlags(fp, conflicts[i].needsVersion, 
@@ -227,6 +246,13 @@ void printDepProblems(FILE * fp,
 	else
 	    fprintf(fp, _(" conflicts with %s-%s-%s\n"), conflicts[i].byName, 
 		    conflicts[i].byVersion, conflicts[i].byRelease);
+#else
+	c = conflicts + i;
+	fprintf(fp, "\t%s %s %s\n", c->needsNEVR+2,
+		((c->needsNEVR[0] == 'C' && c->needsNEVR[1] == ' ')
+			?  _("conflicts with") : _("is needed by")),
+		c->byNEVR);
+#endif
     }
 }
 

@@ -30,6 +30,12 @@ extern int _rpmio_debug;
     return 0;
 }
 
+/* XXX These names/constants have been removed from the rpmlib API. */
+enum {
+   RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
+   RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
+};
+
 #ifdef __LCLINT__
 #undef	PyObject_HEAD
 #define	PyObject_HEAD	int _PyObjectHead
@@ -1217,8 +1223,8 @@ static PyTypeObject rpmdbType = {
  *     requirement or conflict.
  *     The needsFlags is a bitfield that describes the versioned
  *     nature of a requirement or conflict.  The constants
- *     rpm.RPMDEP_SENSE_LESS, rpm.RPMDEP_SENSE_GREATER, and
- *     rpm.RPMDEP_SENSE_EQUAL can be logical ANDed with the needsFlags
+ *     rpm.RPMSENSE_LESS, rpm.RPMSENSE_GREATER, and
+ *     rpm.RPMSENSE_EQUAL can be logical ANDed with the needsFlags
  *     to get versioned dependency information.
  *     suggestedPackage is a tuple if the dependency check was aware
  *     of a package that solves this dependency problem when the
@@ -1350,7 +1356,7 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
-    rpmDependencyConflict conflicts;
+    rpmDependencyConflict conflicts, c;
     int numConflicts;
     PyObject * list, * cf;
     int i;
@@ -1361,8 +1367,9 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
     if (numConflicts) {
 	list = PyList_New(0);
 
-	/* XXX TODO: rpmlib-4.0.3 can return multiple suggested packages. */
+	/* XXX TODO: rpm >= 4.0.3 can return multiple suggested keys. */
 	for (i = 0; i < numConflicts; i++) {
+#ifdef	DYING
 	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName,
 			       conflicts[i].byVersion, conflicts[i].byRelease,
 
@@ -1373,6 +1380,46 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 			       conflicts[i].suggestedPkgs ?
 				   conflicts[i].suggestedPkgs[0] : Py_None,
 			       conflicts[i].sense);
+#else
+	    char * byName, * byVersion, * byRelease;
+	    char * needsName, * needsOP, * needsVersion;
+	    int needsFlags, sense;
+	    fnpyKey key;
+	    
+	    c = conflicts + i;
+
+	    byName = c->byNEVR;
+	    if ((byRelease = strrchr(byName, '-')) != NULL)
+		*byRelease++ = '\0';
+	    if ((byVersion = strrchr(byName, '-')) != NULL)
+		*byVersion++ = '\0';
+
+	    key = c->suggestedKeys[0];
+
+	    needsName = c->needsNEVR;
+	    if (needsName[1] == ' ') {
+		sense = (needsName[0] == 'C')
+			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
+		needsName += 2;
+	    } else
+		sense = RPMDEP_SENSE_REQUIRES;
+	    if ((needsVersion = strrchr(needsName, ' ')) != NULL)
+		*needsVersion++ = '\0';
+
+	    needsFlags = 0;
+	    if ((needsOP = strrchr(needsName, ' ')) != NULL) {
+		for (*needsOP++ = '\0'; *needsOP != '\0'; needsOP++) {
+		    if (*needsOP == '<')	needsFlags |= RPMSENSE_LESS;
+		    else if (*needsOP == '>')	needsFlags |= RPMSENSE_GREATER;
+		    else if (*needsOP == '=')	needsFlags |= RPMSENSE_EQUAL;
+		}
+	    }
+	    
+	    cf = Py_BuildValue("((sss)(ss)iOi)", byName, byVersion, byRelease,
+			       needsName, needsVersion, needsFlags,
+			       (key != NULL ? key : Py_None),
+			       sense);
+#endif
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);
 	}
@@ -2461,7 +2508,6 @@ void initrpm(void) {
     int i;
     const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
     struct headerSprintfExtension_s * ext;
-
     m = Py_InitModule("rpm", rpmModuleMethods);
 
     hdrType.ob_type = &PyType_Type;

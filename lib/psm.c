@@ -549,7 +549,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     return h;
 }
 
-const void * rpmfiGetKey(TFI_t fi)
+fnpyKey rpmfiGetKey(TFI_t fi)
 {
 /*@-compdef -retexpose -usereleased@*/
     return fi->key;

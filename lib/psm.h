@@ -51,7 +51,7 @@ struct transactionFileInfo_s {
 
     uint_32 multiLib;		/* MULTILIB */
 /*@null@*/
-    const void * key;		/*!< Package notify key. */
+    fnpyKey key;		/*!< Package notify key. */
 /*@null@*/ /*@dependent@*/
     rpmRelocation * relocs;	/*!< Package file relocations. */
 /*@null@*/

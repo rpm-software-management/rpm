@@ -31,9 +31,12 @@ typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
 
 /*@access alKey@*/
 /*@access alNum@*/
+/*@access fnpyKey@*/
 
 /*@access rpmFNSet@*/
+#ifdef	DYING
 /*@access rpmDepSet@*/
+#endif
 
 /** \ingroup rpmdep
  * Info about a single package to be installed.
@@ -60,6 +63,8 @@ struct availablePackage_s {
 #ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
 #endif
+
+    fnpyKey key;		/*!< Associated file name/python object */
 
 };
 
@@ -206,7 +211,7 @@ rpmDepSet alGetProvides(const availableList al, alKey pkgKey)
 {
     availablePackage alp = alGetPkg(al, pkgKey);
     /*@-retexpose@*/
-    return (alp != NULL ? alp->provides : 0);
+    return (alp != NULL ? alp->provides : NULL);
     /*@=retexpose@*/
 }
 
@@ -214,7 +219,7 @@ rpmDepSet alGetRequires(const availableList al, alKey pkgKey)
 {
     availablePackage alp = alGetPkg(al, pkgKey);
     /*@-retexpose@*/
-    return (alp != NULL ? alp->requires : 0);
+    return (alp != NULL ? alp->requires : NULL);
     /*@=retexpose@*/
 }
 
@@ -452,7 +457,7 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
     /*@=nullstate@*/
 }
 
-alKey alAddPackage(availableList al, alKey pkgKey, Header h)
+alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h)
 	/*@modifies al, h @*/
 {
     int scareMem = 1;
@@ -487,6 +492,9 @@ alKey alAddPackage(availableList al, alKey pkgKey, Header h)
 #ifdef	DYING
     alp->multiLib = 0;	/* MULTILIB */
 #endif
+    /*@-assignexpose -temptrans @*/
+    alp->key = key;
+    /*@=assignexpose =temptrans @*/
 
     xx = headerNVR(alp->h, &alp->name, &alp->version, &alp->release);
 
@@ -641,8 +649,10 @@ static int indexcmp(const void * one, const void * two)
 
 void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
 {
+    availableIndexEntry aie;
     availableIndex ai = &al->index;
     int i = alKey2Num(al, pkgKey);
+    int ix;
 
     if (provides == NULL || i < 0 || i >= al->size)
 	return;
@@ -666,43 +676,53 @@ void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
 	if ((Name = dsiGetN(provides)) == NULL)
 	    continue;	/* XXX can't happen */
 
+	aie = ai->index + ai->k;
+	ai->k++;
+
 	/*@-assignexpose@*/
 	/*@-temptrans@*/
-	ai->index[ai->k].pkgKey = pkgKey;
+	aie->pkgKey = pkgKey;
 	/*@=temptrans@*/
-	ai->index[ai->k].entry = Name;
+	aie->entry = Name;
 	/*@=assignexpose@*/
-	ai->index[ai->k].entryLen = strlen(Name);
-assert(provides->i < 0x10000);
-	ai->index[ai->k].entryIx = provides->i;
-	ai->index[ai->k].type = IET_PROVIDES;
-	ai->k++;
+	aie->entryLen = strlen(Name);
+	ix = dsiGetIx(provides);
+/* XXX make sure that element index fits in unsigned short */
+assert(ix < 0x10000);
+	aie->entryIx = ix;
+	aie->type = IET_PROVIDES;
     }
 }
 
 void alMakeIndex(availableList al)
 {
     availableIndex ai = &al->index;
+    availablePackage alp;
     int i;
 
     if (ai->size || al->list == NULL) return;
 
-    for (i = 0; i < al->size; i++)
-	if (al->list[i].provides != NULL)
-	    ai->size += al->list[i].provides->Count;
+    for (i = 0; i < al->size; i++) {
+	alp = al->list + i;
+	if (alp->provides != NULL)
+	    ai->size += dsiGetCount(alp->provides);
+    }
 
     if (ai->size) {
 	ai->index = xcalloc(ai->size, sizeof(*ai->index));
 	ai->k = 0;
 
-	for (i = 0; i < al->size; i++)
-	    alAddProvides(al, (alKey)i, al->list[i].provides);
+	for (i = 0; i < al->size; i++) {
+	    alp = al->list + i;
+	    alAddProvides(al, (alKey)i, alp->provides);
+	}
 
 	qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
     }
 }
 
-alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
+fnpyKey *
+alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 {
     int found = 0;
     const char * dirName;
@@ -713,9 +733,11 @@ alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
     fileIndexEntry fieNeedle =
 		memset(alloca(sizeof(*fieNeedle)), 0, sizeof(*fieNeedle));
     fileIndexEntry fie;
-    alKey * ret = NULL;
+    availablePackage alp;
+    fnpyKey * ret = NULL;
     const char * fileName;
 
+    if (keyp) *keyp = RPMAL_NOMATCH;
     if ((fileName = dsiGetN(ds)) == NULL || *fileName != '/')
 	return NULL;
 
@@ -770,9 +792,12 @@ alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
 
 	dsiNotify(ds, _("(added files)"), 0);
 
+	alp = al->list + fie->pkgNum;
 	ret = xrealloc(ret, (found+2) * sizeof(*ret));
 	if (ret)	/* can't happen */
-	    ret[found++] = alNum2Key(al, fie->pkgNum);
+	    ret[found++] = alp->key;
+	if (keyp)
+	    *keyp = alNum2Key(al, fie->pkgNum);
     }
     /*@=branchstate@*/
 
@@ -792,38 +817,39 @@ exit:
  * @param ds		dependency
  * @return		available package pointer
  */
-/*@unused@*/ static /*@dependent@*/ /*@null@*/ alKey
-alFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
+/*@unused@*/ static /*@dependent@*/ /*@null@*/ fnpyKey
+alFileSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 	/*@*/
 {
-    alKey ret = NULL;
-    alKey * tmp = alAllFileSatisfiesDepend(al, ds);
+    fnpyKey * tmp = alAllFileSatisfiesDepend(al, ds, keyp);
 
     if (tmp) {
-	ret = tmp[0];
-	tmp = _free(tmp);
+	fnpyKey ret = tmp[0];
+	free(tmp);
+	return ret;
     }
-    return ret;
+    return NULL;
 }
 #endif	/* DYING */
 
-alKey *
-alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
+fnpyKey *
+alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 {
     availableIndex ai = &al->index;
     availableIndexEntry needle =
 		memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
     availableIndexEntry match;
-    alKey * ret = NULL;
+    fnpyKey * ret = NULL;
     const char * KName;
     availablePackage alp;
     int rc, found;
 
+    if (keyp) *keyp = RPMAL_NOMATCH;
     if ((KName = dsiGetN(ds)) == NULL)
 	return ret;
 
     if (*KName == '/') {
-	ret = alAllFileSatisfiesDepend(al, ds);
+	ret = alAllFileSatisfiesDepend(al, ds, keyp);
 	/* XXX Provides: /path was broken with added packages (#52183). */
 	if (ret != NULL && *ret != NULL)
 	    return ret;
@@ -857,10 +883,8 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	if (alp->provides != NULL)	/* XXX can't happen */
 	switch (match->type) {
 	case IET_PROVIDES:
-	    alp->provides->i = match->entryIx;
-
 	    /* XXX single step on dsiNext to regenerate DNEVR string */
-	    alp->provides->i--;
+	    (void) dsiSetIx(alp->provides, match->entryIx - 1);
 	    if (dsiNext(alp->provides) >= 0)
 		rc = dsCompare(alp->provides, ds);
 
@@ -874,7 +898,9 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	if (rc) {
 	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
-		ret[found++] = ((alKey)(alp - al->list));
+		ret[found++] = alp->key;
+	    if (keyp)
+		*keyp = ((alKey)(alp - al->list));
 	}
 	/*@=branchstate@*/
     }
@@ -885,14 +911,15 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
     return ret;
 }
 
-alKey alSatisfiesDepend(const availableList al, const rpmDepSet ds)
+fnpyKey
+alSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 {
-    alKey * tmp = alAllSatisfiesDepend(al, ds);
+    fnpyKey * tmp = alAllSatisfiesDepend(al, ds, keyp);
 
     if (tmp) {
-	alKey ret = tmp[0];
-	tmp = _free(tmp);
+	fnpyKey ret = tmp[0];
+	free(tmp);
 	return ret;
     }
-    return RPMAL_NOMATCH;
+    return NULL;
 }

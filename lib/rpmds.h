@@ -36,14 +36,14 @@ struct rpmFNSet_s {
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for file name set (or NULL) */
 
-/*@only@*/ /*@null@*/
-    const char ** BN;		/*!< File base name. */
-/*@only@*/ /*@null@*/
+/*@only@*/
+    const char ** BN;		/*!< File base name(s). */
+/*@only@*/
     const int_32 * DI;		/*!< File directory index. */
-/*@only@*/ /*@null@*/
+/*@only@*/
     const uint_32 * Flags;	/*!< File flags. */
-/*@only@*/ /*@null@*/
-    const char ** DN;		/*!< Directory name. */
+/*@only@*/
+    const char ** DN;		/*!< Directory name(s). */
     int_32 DCount;		/*!< No. of directories. */
     rpmTagType BNt, DIt, Ft, DNt;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of files. */
@@ -127,6 +127,31 @@ char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
 	/*@*/;
 
 /**
+ * Return dependency set count.
+ * @param ds		dependency set
+ * @return		current count
+ */
+int dsiGetCount(/*@null@*/ rpmDepSet ds)
+	/*@*/;
+
+/**
+ * Return dependency set index.
+ * @param ds		dependency set
+ * @return		current index
+ */
+int dsiGetIx(/*@null@*/ rpmDepSet ds)
+	/*@*/;
+
+/**
+ * Set dependency set index.
+ * @param ds		dependency set
+ * @param ix		new index
+ * @return		current index
+ */
+int dsiSetIx(/*@null@*/ rpmDepSet ds, int ix)
+	/*@modifies ds @*/;
+
+/**
  * Return current formatted dependency string.
  * @param ds		dependency set
  * @return		current dependency DNEVR, NULL on invalid
@@ -203,7 +228,7 @@ int dsCompare(const rpmDepSet A, const rpmDepSet B)
  * Report a Requires: or Conflicts: dependency problem.
  */
 void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
-		/*@only@*/ /*@null@*/ const alKey * suggestedPkgs)
+		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys)
 	/*@modifies psp, h @*/;
 
 /**

@@ -1009,6 +1009,7 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 /**
  */
 struct rpmDependencyConflict_s {
+#ifdef	DYING
     const char * byName;	/*!< package name */
     const char * byVersion;	/*!< package version */
     const char * byRelease;	/*!< package release */
@@ -1020,12 +1021,19 @@ struct rpmDependencyConflict_s {
     const char * needsName;	/*!< dependency name */
     const char * needsVersion;	/*!< dependency epoch:version-release */
     int needsFlags;		/*!< dependency flags */
+#else
+    char * byNEVR;	/*!< package name-version-release */
+    char * needsNEVR;	/*!< dependency [R|C] name ?? epoch:version-release */
+#endif
 /*@owned@*/ /*@null@*/
-    const alKey * suggestedPkgs; /* terminated by NULL */
+    const fnpyKey * suggestedKeys; /*!< Added package keys, NULL terminated. */
+
+#ifdef	DYING
     enum {
 	RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
 	RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
     } sense;
+#endif
 };
 
 /**
@@ -1087,7 +1095,7 @@ void rpmProblemSetPrint(FILE *fp, rpmProblemSet tsprobs)
  */
 void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
 		/*@only@*/ /*@null@*/ const char * pkgNEVR,
-		/*@exposed@*/ /*@null@*/ const void * key,
+		/*@exposed@*/ /*@null@*/ fnpyKey key,
 		const char * dn, const char * bn,
 		/*@only@*/ /*@null@*/ const char * altNEVR,
 		unsigned long ulong1)
@@ -1421,7 +1429,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
  */
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, /*@null@*/ FD_t fd,
-		/*@null@*/ /*@owned@*/ const void * key, int upgrade,
+		/*@null@*/ /*@owned@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, h, ts, fileSystem, internalState @*/;
@@ -1435,7 +1443,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, /*@null@*/ FD_t fd,
  */
 /*@unused@*/
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
-		/*@null@*/ /*@owned@*/ const void * key)
+		/*@null@*/ /*@owned@*/ fnpyKey key)
 	/*@modifies h, ts @*/;
 
 /** \ingroup rpmtrans
@@ -1483,7 +1491,7 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
  */
 /*@unused@*/
 int rpmtransGetKeys(const rpmTransactionSet ts,
-		/*@null@*/ /*@out@*/ const void *** ep,
+		/*@null@*/ /*@out@*/ fnpyKey ** ep,
 		/*@null@*/ /*@out@*/ int * nep)
 	/*@modifies ep, nep @*/;
 

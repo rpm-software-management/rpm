@@ -13,10 +13,11 @@
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
-/*@access rpmTransactionSet*/
-/*@access TFI_t*/
-/*@access PSM_t*/
-/*@access FD_t*/	/* XXX compared with NULL */
+/*@access rpmDependencyConflict @*/
+/*@access rpmTransactionSet @*/
+/*@access TFI_t @*/
+/*@access PSM_t @*/
+/*@access FD_t @*/	/* XXX compared with NULL */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
@@ -501,26 +502,37 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 
     /*@-branchstate@*/
     if (numConflicts) {
+	rpmDependencyConflict c;
+#ifdef	DYING
 	const char *n, *v, *r;
+#endif
 	char * t, * te;
 	int nb = 512;
+
+#ifdef	DYING
 	(void) headerNVR(h, &n, &v, &r);
+#endif
 
 	/*@-type@*/ /* FIX: rpmDependencyConflict usage */
 	for (i = 0; i < numConflicts; i++) {
-	    nb += strlen(conflicts[i].needsName) + sizeof(", ") - 1;
+	    c = conflicts + i;
+	    nb += strlen(c->needsNEVR+2) + sizeof(", ") - 1;
+#ifdef	DYING
 	    if (conflicts[i].needsFlags)
 		nb += strlen(conflicts[i].needsVersion) + 5;
+#endif
 	}
 	te = t = alloca(nb);
 	*te = '\0';
-	sprintf(te, _("Unsatisfied dependencies for %s-%s-%s: "), n, v, r);
+	sprintf(te, _("Unsatisifed dependencies for %s:"), conflicts[0].byNEVR);
 	te += strlen(te);
 	for (i = 0; i < numConflicts; i++) {
+	    c = conflicts + i;
 	    if (i) te = stpcpy(te, ", ");
-	    te = stpcpy(te, conflicts[i].needsName);
+#ifdef	DYING
+	    te = stpcpy(te, c->needsName);
 	    if (conflicts[i].needsFlags) {
-		int flags = conflicts[i].needsFlags;
+		int flags = c->needsFlags;
 		*te++ = ' ';
 		if (flags & RPMSENSE_LESS)	*te++ = '<';
 		if (flags & RPMSENSE_GREATER)	*te++ = '>';
@@ -528,6 +540,9 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 		*te++ = ' ';
 		te = stpcpy(te, conflicts[i].needsVersion);
 	    }
+#else
+	    te = stpcpy(te, c->needsNEVR+2);
+#endif
 	}
 	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	/*@=type@*/

@@ -74,7 +74,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 			const rpmCallbackType what,
 			const unsigned long amount,
 			const unsigned long total,
-			/*@null@*/ const void * pkgKey,
+			/*@null@*/ fnpyKey key,
 			/*@null@*/ void * data)
 	/*@globals hashesPrinted, progressCurrent, progressTotal,
 		fileSystem @*/
@@ -87,7 +87,9 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
-    const char * filename = pkgKey;
+    /*@-assignexpose -abstract @*/
+    const char * filename = (const char *)key;
+    /*@=assignexpose =abstract @*/
     static FD_t fd = NULL;
 
     switch (what) {
@@ -420,9 +422,11 @@ restart:
 	    }
 
 	    /*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
-	    rc = rpmtransAddPackage(ts, eiu->h, NULL, fileName,
+	    /*@-abstract@*/
+	    rc = rpmtransAddPackage(ts, eiu->h, NULL, (fnpyKey)fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
+	    /*@=abstract@*/
 	    /*@=nullstate@*/
 
 	    /* XXX reference held by transaction set */

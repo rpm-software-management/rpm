@@ -89,7 +89,7 @@ struct transactionElement_s {
     int_32 filesCount;	/* (TR_ADDED) No. files in package. */
 
 /*@kept@*//*@null@*/
-    const void * key;
+    fnpyKey key;
 		/*!< (TR_ADDED) Retrieval key (CLI uses file name, e.g.). */
 /*@owned@*/ /*@null@*/
     rpmRelocation * relocs;

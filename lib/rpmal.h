@@ -126,10 +126,12 @@ void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
  * Add package to available list.
  * @param al		available list
  * @param pkgKey	package key, RPMAL_NOMATCH to force an append
+ * @param key		associated file name/python object
  * @param h		package header
  * @return		available package index
  */
-alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey, Header h)
+alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey,
+		fnpyKey key, Header h)
 	/*@modifies al, h @*/;
 
 /**
@@ -155,36 +157,42 @@ void alMakeIndex(availableList al)
  * Check added package file lists for package(s) that provide a file.
  * @param al		available list
  * @param ds		dependency set
- * @return		available package pointer
+ * @retval keyp		added package key pointer (or NULL)
+ * @return		associated package key(s), NULL if none
  */
 /*@-exportlocal@*/
 /*@only@*/ /*@null@*/
-alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
+fnpyKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds,
+		/*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
-	/*@modifies al, fileSystem @*/;
+	/*@modifies al, *keyp, fileSystem @*/;
 /*@=exportlocal@*/
 
 /**
  * Check added package file lists for package(s) that have a provide.
  * @param al		available list
  * @param ds		dependency set
- * @return		available package keys
+ * @retval keyp		added package key pointer (or NULL)
+ * @return		associated package key(s), NULL if none
  */
 /*@only@*/ /*@null@*/
-alKey * alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
+fnpyKey * alAllSatisfiesDepend(const availableList al, const rpmDepSet ds,
+		/*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
-	/*@modifies al, fileSystem @*/;
+	/*@modifies al, *keyp, fileSystem @*/;
 
 /**
  * Check added package file lists for first package that has a provide.
  * @todo Eliminate.
  * @param al		available list
  * @param ds		dependency set
- * @return		available package index, -1 on not found
+ * @retval keyp		added package key pointer (or NULL)
+ * @return		associated package key, NULL if none
  */
-alKey alSatisfiesDepend(const availableList al, const rpmDepSet ds)
+fnpyKey alSatisfiesDepend(const availableList al, const rpmDepSet ds,
+		/*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
-	/*@modifies al, fileSystem @*/;
+	/*@modifies al, *keyp, fileSystem @*/;
 
 #ifdef __cplusplus
 }

@@ -58,6 +58,7 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access PSM_t@*/
 
 /*@access alKey@*/
+/*@access fnpyKey@*/
 
 /*@access TFI_t@*/
 /*@access teIterator@*/
@@ -110,13 +111,13 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
     /*@=type@*/
 }
 
-int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
+int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
 {
     int rc = 0;
 
     if (nep) *nep = ts->orderCount;
     if (ep) {
-	const void ** e;
+	fnpyKey * e;
 	int oc;
 
 	*ep = e = xmalloc(ts->orderCount * sizeof(*e));
@@ -1041,7 +1042,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 #endif
     {
 	const char * n, * v, * r;
-	const void * key;
+	fnpyKey key;
 	rpmdbMatchIterator mi;
 	Header h;
 
