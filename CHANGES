@@ -7,6 +7,15 @@
 	- Remove Exclusive: Exclude:
 	  Replace with: ExclusiveArch: ExclusiveOs:
 		        ExcludeArch: ExcludeOs:
+	- fixed dependency cheking for packages that are installed
+	  at the same time
+	- fixed version number dependency checking
+	- fixed problem installing v1 source packages (thanks to
+	  Nikita Borisov)
+	- fixed minor spelling/spacing problems (Nikita Borisov)
+	- assume all v1 packages were made for Linux so OS check works
+	- began to implement proxyftp, though it doesn't work yet
+	- fixed spacing when reporting dependency conflicts
 
 2.1.2 -> 2.2:
 	- don't fail, and do report, if -K can't find a PGP key
