@@ -325,8 +325,6 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
     int isdebug = rpmIsDebug();
     int child;
     int status;
-    int ran;
-    struct stat sb;
     char upgradeArg[20];
     char * installPrefix = NULL;
     char * installPrefixEnv = NULL;
@@ -360,39 +358,8 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
     rpmMessage(RPMMESS_DEBUG, "running inst helper %s\n", program);
 
     if (script) {
-	if (prefix) {
-	    fn = alloca(strlen(prefix) + 15);
-	    strcpy(fn, prefix);
-	    strcat(fn, "/");
-	} else {
-	    fn = alloca(15);
-	    *fn = '\0';
-	}
-
-	srandom(time(NULL));
-	strcat(fn, "/tmp/rpm123456");
-	ran = random() % 100000;
-	do {
-	    fn[strlen(fn) - 6] = '\0';
-	    sprintf(upgradeArg, "%06d", ran++);
-	    strcat(fn, upgradeArg);
-	} while (!access(fn, X_OK));
-	
-	rpmMessage(RPMMESS_DEBUG, "script found - running from file %s\n", fn);
-	fd = open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
-
-	if (fd < 0) {
-	    rpmError(RPMERR_SCRIPT, 
-			_("error creating file %s for (un)install script"), fn);
+	if (makeTempFile(prefix, &fn, &fd))
 	    return 1;
-	}
-
-	if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
-	    rpmError(RPMERR_SCRIPT, 
-			_("error creating file %s for (un)install script"), fn);
-	    return 1;
-	}
-
 	write(fd, "#!", 2);
 	write(fd, program, strlen(program));
 
@@ -418,10 +385,6 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
     *argvPtr++ = NULL;
 	
     if (!(child = fork())) {
-	if (installPrefixEnv) {
-	    doputenv(installPrefixEnv);
-	}
-
 	/* make stdin inaccessible */
 	pipe(pipes);
 	close(pipes[1]);
@@ -441,6 +404,7 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
     waitpid(child, &status, 0);
 
     if (script && !isdebug) unlink(fn);
+    free(fn);
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SCRIPT, _("execution of script failed"));

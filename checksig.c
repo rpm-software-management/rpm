@@ -12,13 +12,14 @@
 #include "rpmlead.h"
 #include "signature.h"
 #include "messages.h"
+#include "lib/misc.h"
 
 int doReSign(int add, char *passPhrase, char **argv)
 {
     int fd, ofd, count;
     struct rpmlead lead;
     unsigned short sigtype;
-    char *rpm, sigtarget[1024];
+    char *rpm, *sigtarget;
     char tmprpm[1024];
     unsigned char buffer[8192];
     Header sig;
@@ -51,19 +52,22 @@ int doReSign(int add, char *passPhrase, char **argv)
 	}
 
 	/* Write the rest to a temp file */
-	strcpy(sigtarget, tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsigtarget"));
-	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+	if (makeTempFile(NULL, &sigtarget, &ofd))
+	    exit(1);
+
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
 		perror(_("Couldn't read the header/archive"));
 		close(ofd);
 		unlink(sigtarget);
+		free(sigtarget);
 		exit(1);
 	    }
 	    if (write(ofd, buffer, count) < 0) {
 		perror(_("Couldn't write header/archive to temp file"));
 		close(ofd);
 		unlink(sigtarget);
+		free(sigtarget);
 		exit(1);
 	    }
 	}
@@ -79,6 +83,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	    close(ofd);
 	    unlink(sigtarget);
 	    unlink(tmprpm);
+	    free(sigtarget);
 	    exit(1);
 	}
 
@@ -97,6 +102,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	    close(ofd);
 	    unlink(sigtarget);
 	    unlink(tmprpm);
+	    free(sigtarget);
 	    rpmFreeSignature(sig);
 	    exit(1);
 	}
@@ -111,6 +117,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 		close(fd);
 		unlink(sigtarget);
 		unlink(tmprpm);
+		free(sigtarget);
 		exit(1);
 	    }
 	    if (write(ofd, buffer, count) < 0) {
@@ -119,12 +126,14 @@ int doReSign(int add, char *passPhrase, char **argv)
 		close(fd);
 		unlink(sigtarget);
 		unlink(tmprpm);
+		free(sigtarget);
 		exit(1);
 	    }
 	}
 	close(fd);
 	close(ofd);
 	unlink(sigtarget);
+	free(sigtarget);
 
 	/* Move it in to place */
 	unlink(rpm);
@@ -139,7 +148,7 @@ int doCheckSig(int flags, char **argv)
     int fd, ofd, res, res2, res3, missingKeys;
     struct rpmlead lead;
     char *rpm;
-    char result[1024], sigtarget[1024];
+    char result[1024], * sigtarget;
     unsigned char buffer[8192];
     Header sig;
     HeaderIterator sigIter;
@@ -175,13 +184,14 @@ int doCheckSig(int flags, char **argv)
 	    continue;
 	}
 	/* Write the rest to a temp file */
-	strcpy(sigtarget, tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsigtarget"));
-	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+	if (makeTempFile(NULL, &sigtarget, &ofd))
+	    exit(1);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
 		perror(_("Couldn't read the header/archive"));
 		close(ofd);
 		unlink(sigtarget);
+		free(sigtarget);
 		exit(1);
 	    }
 	    if (write(ofd, buffer, count) < 0) {
@@ -189,6 +199,7 @@ int doCheckSig(int flags, char **argv)
 		perror("");
 		close(ofd);
 		unlink(sigtarget);
+		free(sigtarget);
 		exit(1);
 	    }
 	}
@@ -269,6 +280,7 @@ int doCheckSig(int flags, char **argv)
 	headerFreeIterator(sigIter);
 	res += res2;
 	unlink(sigtarget);
+	free(sigtarget);
 
 	if (res2) {
 	    if (rpmIsVerbose()) {

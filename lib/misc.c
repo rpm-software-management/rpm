@@ -7,14 +7,18 @@
 
 #include <errno.h>
 #include <ctype.h>
+#include <fcntl.h>
 #include <grp.h>
 #include <pwd.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
+#include "intl.h"
 #include "misc.h"
 #include "rpmlib.h"
 #include "messages.h"
@@ -325,4 +329,39 @@ char * gidToGname(gid_t gid) {
 
 	return lastGname;
     }
+}
+
+int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
+    char * fn;
+    int fd;
+    int ran;
+    char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
+    struct stat sb;
+
+    if (!prefix) prefix = "";
+
+    fn = malloc(strlen(prefix) + 25 + strlen(tmpdir));
+
+    srandom(time(NULL));
+    ran = random() % 100000;
+    do {
+	sprintf(fn, "%s%s/rpm-tmp.%d", prefix, tmpdir, ran++);
+    } while (!access(fn, X_OK));
+    
+    fd = open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
+
+    if (fd < 0) {
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
+	return 1;
+    }
+
+    if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
+	return 1;
+    }
+
+    if (fnptr) *fnptr = fn;
+    *fdptr = fd;
+
+    return 0;
 }

@@ -25,4 +25,6 @@ int gnameToGid(char * thisGname, gid_t * gid);
 char * uidToUname(uid_t uid);
 char * gidToGname(gid_t gid);
 
+int makeTempFile(char * prefix, char ** fnptr, int * fdptr);
+
 #endif

@@ -56,6 +56,7 @@ struct Script *openScript(Spec spec, int builddir, char *name)
     struct Script *script = malloc(sizeof(struct Script));
     struct PackageRec *main_package = spec->packages;
     char *s, * arch, * os;
+    int fd;
     int_32 foo;
 
     rpmGetArchInfo(&arch, NULL);
@@ -66,8 +67,9 @@ struct Script *openScript(Spec spec, int builddir, char *name)
 	exit(RPMERR_INTERNAL);
     }
     
-    script->name = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmbuild");
-    script->file = fopen(script->name, "w");
+    if (makeTempFile(NULL, &script->name, &fd))
+	exit(1);
+    script->file = fdopen(fd, "w");
 
     /* Prepare the script */
     fprintf(script->file,

@@ -71,17 +71,16 @@ static int generateRPM(char *name,       /* name-version-release         */
 		   &archiveSize, 1);
 
     /* Write the header */
-    sigtarget = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmbuild");
-    if ((fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
-	fprintf(stderr, "Could not open %s\n", sigtarget);
+    if (makeTempFile(NULL, &sigtarget, &fd))
 	return 1;
-    }
+
     headerWrite(fd, header, HEADER_MAGIC_YES);
     
     /* Write the archive and get the size */
     if (cpio_gzip(fd, stempdir, fileList, &archiveSize, prefix)) {
 	close(fd);
 	unlink(sigtarget);
+	free(sigtarget);
 	return 1;
     }
 
@@ -99,12 +98,14 @@ static int generateRPM(char *name,       /* name-version-release         */
     if ((fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 	fprintf(stderr, "Could not open %s\n", filename);
 	unlink(sigtarget);
+	free(sigtarget);
 	unlink(filename);
 	return 1;
     }
     if (writeMagic(fd, name, type)) {
 	close(fd);
 	unlink(sigtarget);
+	free(sigtarget);
 	unlink(filename);
 	return 1;
     }
@@ -122,6 +123,7 @@ static int generateRPM(char *name,       /* name-version-release         */
     if (rpmWriteSignature(fd, sig)) {
 	close(fd);
 	unlink(sigtarget);
+	free(sigtarget);
 	unlink(filename);
 	rpmFreeSignature(sig);
 	return 1;
@@ -136,6 +138,7 @@ static int generateRPM(char *name,       /* name-version-release         */
 	    close(ifd);
 	    close(fd);
 	    unlink(sigtarget);
+	    free(sigtarget);
 	    unlink(filename);
 	    return 1;
         }
@@ -144,6 +147,7 @@ static int generateRPM(char *name,       /* name-version-release         */
 	    close(ifd);
 	    close(fd);
 	    unlink(sigtarget);
+	    free(sigtarget);
 	    unlink(filename);
 	    return 1;
         }
@@ -151,6 +155,7 @@ static int generateRPM(char *name,       /* name-version-release         */
     close(ifd);
     close(fd);
     unlink(sigtarget);
+    free(sigtarget);
 
     rpmMessage(RPMMESS_VERBOSE, "Wrote: %s\n", filename);
     
