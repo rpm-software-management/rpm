@@ -236,7 +236,7 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
  * @param pe		header physical entry pointer (swapped)
  * @param dataStart	header data
  * @param regionid	region offset
- * @return		no. bytes of data in region
+ * @return		no. bytes of data in region, -1 on error
  */
 static int regionSwab(/*@null@*/ struct indexEntry * entry, int il, int dl,
 		const struct entryInfo * pe, char * dataStart, int regionid)
@@ -251,6 +251,8 @@ static int regionSwab(/*@null@*/ struct indexEntry * entry, int il, int dl,
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
+	if (ie.info.type < RPM_MIN_TYPE || ie.info.type > RPM_MAX_TYPE)
+	    return -1;
 	ie.info.count = ntohl(pe->count);
 	ie.info.offset = ntohl(pe->offset);
 	ie.data = t = dataStart + ie.info.offset;
@@ -314,8 +316,9 @@ assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
  * @retval p		address of data (or NULL)
  * @retval c		address of count (or NULL)
  * @param minMem	string pointers refer to header memory?
+ * @return		1 on success, otherwise error.
  */
-static void copyEntry(const struct indexEntry * entry,
+static int copyEntry(const struct indexEntry * entry,
 	/*@null@*/ /*@out@*/ int_32 * type,
 	/*@null@*/ /*@out@*/ const void ** p,
 	/*@null@*/ /*@out@*/ int_32 * c,
@@ -323,6 +326,7 @@ static void copyEntry(const struct indexEntry * entry,
 		/*@modifies *type, *p, *c @*/
 {
     int_32 count = entry->info.count;
+    int rc = 1;		/* XXX 1 on success. */
 
     if (p)
     switch (entry->info.type) {
@@ -345,7 +349,9 @@ static void copyEntry(const struct indexEntry * entry,
 	    dataStart = (char *) memcpy(pe + ril, dataStart,
 					(entry->rdlen + REGION_TAG_COUNT));
 
-	    (void) regionSwab(NULL, ril, 0, pe, dataStart, 0);
+	    rc = regionSwab(NULL, ril, 0, pe, dataStart, 0);
+	    /* XXX 1 on success. */
+	    rc = (rc < 0) ? 0 : 1;
 	} else {
 	    count = entry->length;
 	    *p = (!minMem
@@ -392,6 +398,7 @@ static void copyEntry(const struct indexEntry * entry,
     }
     if (type) *type = entry->info.type;
     if (c) *c = count;
+    return rc;
 }
 
 /**
@@ -424,7 +431,8 @@ int headerNextIterator(HeaderIterator hi,
 {
     Header h = hi->h;
     int slot = hi->next_index;
-    struct indexEntry * entry = NULL;;
+    struct indexEntry * entry = NULL;
+    int rc;
 
     for (slot = hi->next_index; slot < h->indexUsed; slot++) {
 	entry = h->index + slot;
@@ -439,9 +447,10 @@ int headerNextIterator(HeaderIterator hi,
     if (tag)
 	*tag = entry->info.tag;
 
-    copyEntry(entry, type, p, c, 0);
+    rc = copyEntry(entry, type, p, c, 0);
 
-    return 1;
+    /* XXX 1 on success */
+    return ((rc == 1) ? 1 : 0);
 }
 
 static int indexCmp(const void *avp, const void *bvp)	/*@*/
@@ -548,6 +557,7 @@ Header headerLoad(void *uh)
 	entry->data = pe;
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
+	if (rdlen < 0) goto errxit;
 	entry->rdlen = rdlen;
 assert(rdlen == dl);
 
@@ -581,15 +591,19 @@ assert(rdlen == dl);
 	entry->data = pe;
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	rdlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, entry->info.offset);
+	if (rdlen < 0) goto errxit;
 	entry->rdlen = rdlen;
 
 	if (ril < h->indexUsed) {
 	    struct indexEntry * newEntry = entry + ril;
 	    int ne = (h->indexUsed - ril);
 	    int rid = entry->info.offset+1;
+	    int rc;
 
 	    /* Load dribble entries from region. */
-	    rdlen += regionSwab(newEntry, ne, 0, pe+ril, dataStart, rid);
+	    rc = regionSwab(newEntry, ne, 0, pe+ril, dataStart, rid);
+	    if (rc < 0) goto errxit;
+	    rdlen += rc;
 
 	  { struct indexEntry * firstEntry = newEntry;
 	    int save = h->indexUsed;
@@ -617,6 +631,20 @@ assert(rdlen == dl);
     headerSort(h);
 
     return h;
+
+errxit:
+    /*@-usereleased@*/
+    if (h) {
+	if (h->index) free(h->index);
+	/*@-refcounttrans@*/
+	free(h);
+	/*@=refcounttrans@*/
+	h = NULL;
+    }
+    /*@=usereleased@*/
+    /*@-refcounttrans@*/
+    return h;
+    /*@=refcounttrans@*/
 }
 
 Header headerCopyLoad(void *uh)
@@ -665,10 +693,11 @@ int headerDrips(const Header h)
 }
 #endif
 
-static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
+static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
+		/*@out@*/ int * lengthPtr)
 	/*@modifies h, *lengthPtr @*/
 {
-    int_32 * ei;
+    int_32 * ei = NULL;
     struct entryInfo * pe;
     char * dataStart;
     char * te;
@@ -802,6 +831,7 @@ t = te;
 		rdlen += entry->info.count;
 
 		count = regionSwab(NULL, ril, 0, pe, t, 0);
+		if (count < 0) goto errxit;
 		assert(count == rdlen);
 
 	    } else {
@@ -816,6 +846,7 @@ t = te;
 		te += entry->info.count + drlen;
 
 		count = regionSwab(NULL, ril, 0, pe, t, 0);
+		if (count < 0) goto errxit;
 		assert(count == rdlen+entry->info.count+drlen);
 	    }
 
@@ -888,10 +919,19 @@ t = te;
     h->sorted = 0;
     headerSort(h);
 
-    return (void *)ei;
+    return (void *) ei;
+
+errxit:
+    /*@-usereleased@*/
+    if (ei) {
+	free(ei);
+	ei = NULL;
+    }
+    /*@=usereleased@*/
+    return (void *) ei;
 }
 
-void *headerUnload(Header h)
+void * headerUnload(Header h)
 {
     int length;
     void * uh = doHeaderUnload(h, &length);
@@ -905,12 +945,14 @@ Header headerReload(Header h, int tag)
     /*@-onlytrans@*/
     void * uh = doHeaderUnload(h, &length);
 
+    if (uh == NULL)
+	return NULL;
     headerFree(h);
     /*@=onlytrans@*/
     nh = headerLoad(uh);
     if (nh == NULL) {
 	free(uh);
-	return nh;
+	return NULL;
     }
     if (nh->region_allocated)
 	free(uh);
@@ -931,6 +973,8 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
     if (h == NULL)
 	return 1;
     uh = doHeaderUnload(h, &length);
+    if (uh == NULL)
+	return 1;
     switch (magicp) {
     case HEADER_MAGIC_YES:
 	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
@@ -1179,6 +1223,7 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 * type, const void ** p,
 			int_32 *c)
 {
     struct indexEntry * entry;
+    int rc;
 
     if (p == NULL) return headerIsEntry(h, tag);
 
@@ -1190,9 +1235,10 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 * type, const void ** p,
 	return 0;
     }
 
-    copyEntry(entry, type, p, c, 0);
+    rc = copyEntry(entry, type, p, c, 0);
 
-    return 1;
+    /* XXX 1 on success */
+    return ((rc == 1) ? 1 : 0);
 }
 
 /**
@@ -1344,6 +1390,7 @@ static int intGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 * type,
 		/*@modifies *type, *p, *c @*/
 {
     struct indexEntry * entry;
+    int rc = 0;
 
     /* First find the tag */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
@@ -1363,11 +1410,12 @@ static int intGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 * type,
 	/*@=dependenttrans@*/
 	break;
     default:
-	copyEntry(entry, type, p, c, minMem);
+	rc = copyEntry(entry, type, p, c, minMem);
 	break;
     }
 
-    return 1;
+    /* XXX 1 on success */
+    return ((rc == 1) ? 1 : 0);
 }
 
 int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type, const void **p, 

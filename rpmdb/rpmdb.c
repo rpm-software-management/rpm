@@ -1152,9 +1152,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 	    goto exit;
 	}
 
-	/*@-nullpass@*/
 	(void) headerNVR(h, NULL, &pkgVersion, &pkgRelease);
-	/*@=nullpass@*/
 	    
 	goodRelease = goodVersion = 1;
 
@@ -1253,7 +1251,7 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
     sigset_t signalMask;
     void * uh;
     size_t uhlen;
-    int rc;
+    int rc = EINVAL;	/* XXX W2DO? */
     int xx;
 
     if (_noDirTokens)
@@ -1261,12 +1259,13 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
 
     uhlen = headerSizeof(h, HEADER_MAGIC_NO);
     uh = headerUnload(h);
-    blockSignals(dbi->dbi_rpmdb, &signalMask);
-    rc = dbiPut(dbi, dbcursor, &offset, sizeof(offset), uh, uhlen, 0);
-    xx = dbiSync(dbi, 0);
-    unblockSignals(dbi->dbi_rpmdb, &signalMask);
-    free(uh);
-
+    if (uh) {
+	blockSignals(dbi->dbi_rpmdb, &signalMask);
+	rc = dbiPut(dbi, dbcursor, &offset, sizeof(offset), uh, uhlen, 0);
+	xx = dbiSync(dbi, 0);
+	unblockSignals(dbi->dbi_rpmdb, &signalMask);
+	free(uh);
+    }
     return rc;
 }
 
@@ -1470,24 +1469,32 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 	mi->mi_h = NULL;
     }
 
-    mi->mi_h = (uh ? headerCopyLoad(uh) : NULL);
-    /* XXX db1 with hybrid, simulated db interface on falloc.c needs free. */
-    if (dbi->dbi_api <= 1) uh = _free(uh);
+    /* Is this the end of the iteration? */
+    if (uh == NULL)
+	goto exit;
 
-    if (mi->mi_h && mi->mi_release) {
+    mi->mi_h = headerCopyLoad(uh);
+    /* XXX db1 with hybrid, simulated db interface on falloc.c needs free. */
+    if (dbi->dbi_api == 1) uh = _free(uh);
+
+    /* Did the header load correctly? */
+    if (mi->mi_h == NULL) {
+	rpmError(RPMERR_BADHEADER,
+		_("rpmdb: damaged header instance #%u retrieved, skipping.\n"),
+		mi->mi_offset);
+	goto top;
+    }
+
+    if (mi->mi_release) {
 	const char * release;
-	/*@-nullpass@*/
 	(void) headerNVR(mi->mi_h, NULL, NULL, &release);
-	/*@=nullpass@*/
 	if (mi->mi_release && strcmp(mi->mi_release, release))
 	    goto top;
     }
 
-    if (mi->mi_h && mi->mi_version) {
+    if (mi->mi_version) {
 	const char * version;
-	/*@-nullpass@*/
 	(void) headerNVR(mi->mi_h, NULL, &version, NULL);
-	/*@=nullpass@*/
 	if (mi->mi_version && strcmp(mi->mi_version, version))
 	    goto top;
     }
@@ -1499,9 +1506,7 @@ exit:
 #ifdef	NOTNOW
     if (mi->mi_h) {
 	const char *n, *v, *r;
-	/*@-nullpass@*/
 	headerNVR(mi->mi_h, &n, &v, &r);
-	/*@=nullpass@*/
 	rpmMessage(RPMMESS_DEBUG, "%s-%s-%s at 0x%x, h %p\n", n, v, r,
 		mi->mi_offset, mi->mi_h);
     }

@@ -74,8 +74,11 @@ rpmRC rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
  * @retval rp		address of release pointer (or NULL)
  * @return		0 always
  */
-int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
-	/*@out@*/ const char **rp) /*@modifies *np, *vp, *rp @*/;
+int headerNVR(Header h,
+	/*@null@*/ /*@out@*/ const char ** np,
+	/*@null@*/ /*@out@*/ const char ** vp,
+	/*@null@*/ /*@out@*/ const char ** rp)
+		/*@modifies *np, *vp, *rp @*/;
 
 /** \ingroup header
  * Translate and merge legacy signature tags into header.

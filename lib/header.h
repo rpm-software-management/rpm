@@ -224,7 +224,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  * @param h		header (with pointers)
  * @return		on-disk header (with offsets)
  */
-/*@only@*/ void * headerUnload(Header h)
+/*@only@*/ /*@null@*/ void * headerUnload(Header h)
 	/*@modifies h @*/;
 
 /** \ingroup header
