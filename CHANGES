@@ -53,6 +53,8 @@
 	- make cdb locks "private" for pthreads compatibility w/o NPTL.
 	- add --enable-posixmutexes to use NPTL.
 	- make dependency generation "opt-out" everywhere.
+	- rebuild against glibc with fcntl fixed in libpthread.
+	- re-enable CDB locking, removing "private" from %%__dbi_cdb macro.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
