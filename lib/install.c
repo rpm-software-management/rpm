@@ -53,7 +53,7 @@ static int setFileOwnerships(char * rootdir, char ** fileList,
 			     int_16 * fileModes, 
 			     enum instActions * instActions, int fileCount);
 static int setFileOwner(char * file, char * owner, char * group, int_16 mode);
-static int createDirectories(char * prefix, char ** fileList, int fileCount);
+static int createDirectories(char ** fileList, int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int_16 * fileModeList,
@@ -127,8 +127,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     int installFile = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
-    int prefixLength = strlen(rootdir);
-    char ** prefixedFileList = NULL;
+    int rootLength = strlen(rootdir);
+    char ** rootedFileList = NULL;
+    char ** finalFileList = NULL;
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
@@ -195,7 +196,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     /* You're probably upset because name already points to the name of
        this package, right? Almost... it points to the name in the original
-       header, which could have been trahsed by relocateFileList() */
+       header, which could have been trashed by relocateFileList() */
     headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
@@ -234,6 +235,17 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
  	scriptArg = 1;
     else
 	scriptArg = matches.count + 1;
+
+    /* This canonicalizes the root */
+    if (rootdir && rootdir[rootLength] == '/') {
+	char * newRootdir;
+
+	newRootdir = alloca(rootLength + 2);
+	strcpy(newRootdir, rootdir);
+	newRootdir[rootLength++] = '/';
+	newRootdir[rootLength] = '\0';
+	rootdir = newRootdir;
+    }
 
     if (flags & RPMINSTALL_UPGRADE) {
 	/* 
@@ -276,7 +288,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    netsharedPaths = NULL;
 
 	instActions = alloca(sizeof(enum instActions) * fileCount);
-	prefixedFileList = alloca(sizeof(char *) * fileCount);
+	rootedFileList = alloca(sizeof(char *) * fileCount);
 	fileStatesList = alloca(sizeof(*fileStatesList) * fileCount);
 
 	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
@@ -291,21 +303,22 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	   on making a backup copy. If that's not the right thing to do
 	   instHandleSharedFiles() below will take care of the problem */
 	for (i = 0; i < fileCount; i++) {
-	    if (prefixLength > 1) {
-		prefixedFileList[i] = alloca(strlen(fileList[i]) + 
-				prefixLength + 3);
-		strcpy(prefixedFileList[i], rootdir);
-		strcat(prefixedFileList[i], "/");
-		strcat(prefixedFileList[i], fileList[i]);
+	    if (rootLength > 1) {
+		rootedFileList[i] = alloca(strlen(fileList[i]) + 
+				rootLength + 3);
+		strcpy(rootedFileList[i], rootdir);
+		strcat(rootedFileList[i], fileList[i]);
 	    } else 
-		prefixedFileList[i] = fileList[i];
+		rootedFileList[i] = fileList[i];
 
+	    /* netsharedPaths are not relative to the current root (though 
+	       they do need to take the package prefix into account */
 	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) 
-		if (!strncmp(prefixedFileList[i], *nsp, strlen(*nsp))) break;
+		if (!strncmp(fileList[i], *nsp, strlen(*nsp))) break;
 
 	    if (nsp && *nsp) {
 		rpmMessage(RPMMESS_DEBUG, "file %s in netshared path\n", 
-			prefixedFileList[i]);
+			rootedFileList[i]);
 		instActions[i] = SKIP;
 		fileStatesList[i] = RPMFILE_STATE_NETSHARED;
 	    } else if ((fileFlagsList[i] & RPMFILE_DOC) && 
@@ -318,9 +331,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		instActions[i] = CREATE;
 		if ((fileFlagsList[i] & RPMFILE_CONFIG) &&
 		    !S_ISDIR(fileModesList[i])) {
-		    if (exists(prefixedFileList[i])) {
+		    if (exists(rootedFileList[i])) {
 			rpmMessage(RPMMESS_DEBUG, "%s exists - backing up\n", 
-				    prefixedFileList[i]);
+				    rootedFileList[i]);
 			instActions[i] = BACKUP;
 		    }
 		}
@@ -329,7 +342,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileModesList,
 				   fileLinkList, fileFlagsList, fileCount, 
-				   instActions, prefixedFileList, oldVersions, 
+				   instActions, rootedFileList, oldVersions, 
 				   &replacedList, flags);
 
 	free(fileMd5s);
@@ -357,17 +370,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     }
 
     if (fileList) {
-	if (createDirectories(rootdir, fileList, fileCount)) {
-	    headerFree(h);
-	    free(fileList);
-	    if (replacedList) free(replacedList);
-	    return 2;
-	}
-
 	headerGetEntry(h, RPMTAG_FILESIZES, &type, (void **) &fileSizesList, 
 		 &fileCount);
 
 	files = alloca(sizeof(struct fileToInstall) * fileCount);
+	finalFileList = alloca(sizeof(char *) * fileCount);
 	for (i = 0; i < fileCount; i++) {
 	    switch (instActions[i]) {
 	      case BACKUP:
@@ -397,21 +404,18 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    }
 
 	    if (ext) {
-		newpath = malloc(strlen(prefixedFileList[i]) + 20);
-		strcpy(newpath, prefixedFileList[i]);
+		newpath = alloca(strlen(rootedFileList[i]) + 20);
+		strcpy(newpath, rootedFileList[i]);
 		strcat(newpath, ext);
 		rpmError(RPMMESS_BACKUP, "warning: %s saved as %s", 
-			prefixedFileList[i], newpath);
+			rootedFileList[i], newpath);
 
-		if (rename(prefixedFileList[i], newpath)) {
+		if (rename(rootedFileList[i], newpath)) {
 		    rpmError(RPMERR_RENAME, "rename of %s to %s failed: %s",
-			  prefixedFileList[i], newpath, strerror(errno));
+			  rootedFileList[i], newpath, strerror(errno));
 		    if (replacedList) free(replacedList);
-		    free(newpath);
 		    return 2;
 		}
-
-		free(newpath);
 	    }
 
 	    if (installFile) {
@@ -429,6 +433,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 				fileList[i] + relocationSize);
 		files[archiveFileCount].size = fileSizesList[i];
 
+
+		/* finalFileList lists what files are installed and where
+		   *after* any relocations have been done */
+		finalFileList[archiveFileCount] = rootedFileList[i];
+
 		archiveFileCount++;
 	    }
 	}
@@ -443,6 +452,13 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
 		      &count))
 	    archiveSizePtr = NULL;
+
+	if (createDirectories(finalFileList, archiveFileCount)) {
+	    headerFree(h);
+	    free(fileList);
+	    if (replacedList) free(replacedList);
+	    return 2;
+	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
 	if (installArchive(archivePrefix, fd, files, archiveFileCount, notify, 
@@ -928,12 +944,11 @@ static int setFileOwner(char * file, char * owner, char * group,
 
    This creates directories which are always 0755, despite the current umask */
 
-static int createDirectories(char * prefix, char ** fileList, int fileCount) {
+static int createDirectories(char ** fileList, int fileCount) {
     int i;
     char * lastDirectory;
     char * buffer;
     int bufferLength;
-    int prefixLength = strlen(prefix);
     int neededLength;
     char * chptr;
 
@@ -944,15 +959,13 @@ static int createDirectories(char * prefix, char ** fileList, int fileCount) {
     buffer = malloc(bufferLength);
 
     for (i = 0; i < fileCount; i++) {
-	neededLength = prefixLength + 5 + strlen(fileList[i]);
+	neededLength = strlen(fileList[i]) + 1;
 	if (neededLength > bufferLength) { 
 	    free(buffer);
 	    bufferLength = neededLength * 2;
 	    buffer = malloc(bufferLength);
 	}
-	strcpy(buffer, prefix);
-	strcat(buffer, "/");
-	strcat(buffer, fileList[i]);
+	strcpy(buffer, fileList[i]);
 	
 	for (chptr = buffer + strlen(buffer) - 1; *chptr; chptr--) {
 	    if (*chptr == '/') break;
