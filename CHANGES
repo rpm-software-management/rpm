@@ -1,6 +1,7 @@
 2.3.3 -> 2.3.4:
 	- %changelog processing
-	- fixed broken requires/conflicts
+	- fixed broken requires/conflicts parsing for spec file
+	- vastly improved --rebuilddb's robustness
 
 2.3.2 -> 2.3.3:
 	- Ripped out header internals and redid them. Any compatibility 
