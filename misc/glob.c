@@ -20,9 +20,7 @@
  #pragma alloca
 #endif
 
-#ifdef	HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include "system.h"
 
 /* Enable GNU extensions in glob.h.  */
 #ifndef _GNU_SOURCE
