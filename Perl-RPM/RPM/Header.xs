@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.4 2000/06/05 08:14:32 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.5 2000/06/10 22:32:08 rjray Exp $";
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -1051,3 +1051,22 @@ rpmhdr_is_source(self)
     RETVAL = rpmhdr_is_source(aTHX_ self);
     OUTPUT:
     RETVAL
+
+void
+rpmhdr_NVR(self)
+    RPM::Header self;
+    PROTOTYPE: $
+    PPCODE:
+    {
+        SV** svp;
+        RPM_Header* hdr;
+
+        header_from_object(svp, hdr, self);
+
+        if (hdr->name)
+        {
+            XPUSHs(sv_2mortal(newSVpv((char *)hdr->name, 0)));
+            XPUSHs(sv_2mortal(newSVpv((char *)hdr->version, 0)));
+            XPUSHs(sv_2mortal(newSVpv((char *)hdr->release, 0)));
+        }
+    }

@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.2 2000/06/05 08:11:43 rjray Exp $
+#   $Id: Header.pm,v 1.3 2000/06/10 22:27:30 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -33,7 +33,7 @@ use subs qw(new);
 require RPM;
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -129,6 +129,13 @@ database.
 Given a tag I<TAG>, return the type as a numerical value. The valid types
 can be imported from the B<RPM::Constants> package via the import-tag
 ":rpmtype", and are:
+
+=item NVR
+
+The commonly-needed data triple of (B<name>, B<version>, B<release>) may be
+accessed more directly by means of this method. It returns the three values
+on the stack, with no need to dereference list references, as would be the
+case when fetching the three tags via the usual means.
 
 =over
 

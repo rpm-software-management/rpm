@@ -5,7 +5,7 @@ use RPM::Database;
 
 chomp($rpmstr = qx{rpm -q rpm});
 
-print "1..8\n";
+print "1..11\n";
 
 tie %DB, "RPM::Database" or die "$RPM::err";
 
@@ -59,6 +59,19 @@ print "ok 7\n";
 
 print "not " unless ($hdr->tagtype(q{dirnames}) == RPM_STRING_ARRAY_TYPE);
 print "ok 8\n";
+
+# Test the NVR method
+print "not " unless ($rpmstr eq join('-', $hdr->NVR));
+print "ok 9\n";
+
+# Some tests on empty RPM::Header objects
+$hdr = new RPM::Header;
+
+print "not " unless (defined $hdr and (ref($hdr) eq 'RPM::Header'));
+print "ok 10\n";
+
+print "not " if (scalar($hdr->NVR));
+print "ok 11\n";
 
 exit 0;
 
