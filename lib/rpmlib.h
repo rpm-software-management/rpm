@@ -150,7 +150,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMFILE_STATE_NORMAL 		0
 #define	RPMFILE_STATE_REPLACED 		1
 #define	RPMFILE_STATE_NOTINSTALLED	2
-#define	RPMFILE_STATE_NETSHARED		RPMFILE_STATE_NOTINSTALLED
+#define	RPMFILE_STATE_NETSHARED		3
 
 /* these can be ORed together */
 #define	RPMFILE_CONFIG			(1 << 0)

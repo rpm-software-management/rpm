@@ -55,9 +55,10 @@ static int removeFile(char * file, unsigned int flags, short mode,
       case FA_UNKNOWN:
       case FA_CREATE:
       case FA_SAVE:
+      case FA_ALTNAME:
       case FA_SKIP:
       case FA_SKIPNSTATE:
-      case FA_ALTNAME:
+      case FA_SKIPNETSHARED:
 	break;
     }
  

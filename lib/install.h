@@ -17,7 +17,7 @@ struct sharedFileInfo {
 };
 
 enum fileActions { FA_UNKNOWN = 0, FA_CREATE, FA_BACKUP, FA_SAVE, FA_SKIP, 
-		   FA_ALTNAME, FA_REMOVE, FA_SKIPNSTATE };
+		   FA_ALTNAME, FA_REMOVE, FA_SKIPNSTATE, FA_SKIPNETSHARED };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
 #ifdef __cplusplus

@@ -587,9 +587,10 @@ const char * fileActionString(enum fileActions a)
       case FA_BACKUP: return "backup";
       case FA_SAVE: return "save";
       case FA_SKIP: return "skip";
-      case FA_SKIPNSTATE: return "skipnstate";
       case FA_ALTNAME: return "altname";
       case FA_REMOVE: return "remove";
+      case FA_SKIPNSTATE: return "skipnstate";
+      case FA_SKIPNETSHARED: return "skipnetshared";
     }
 
     return "???";
@@ -793,6 +794,12 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		installFile = 0;
 		ext = NULL;
 		files[i].state = RPMFILE_STATE_NOTINSTALLED;
+		break;
+
+	      case FA_SKIPNETSHARED:
+		installFile = 0;
+		ext = NULL;
+		files[i].state = RPMFILE_STATE_NETSHARED;
 		break;
 
 	      case FA_UNKNOWN:

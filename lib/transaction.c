@@ -67,6 +67,9 @@ struct diskspaceInfo {
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
+#define	XFA_SKIPPING(_a)	\
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED)
+
 static void freeFi(struct fileInfo *fi)
 {
 	if (fi->h) {
@@ -684,7 +687,7 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	struct fileInfo ** recs;
 	int numRecs;
 
-	if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
+	if (XFA_SKIPPING(fi->actions[i]))
 	    continue;
 
 	if (dsl) {
@@ -762,7 +765,7 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		recs[otherPkgNum]->actions[otherFileNum] = FA_SKIP;
 #endif
 	    }
-	    if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
+	    if (XFA_SKIPPING(fi->actions[i]))
 		break;
 	    if (fi->fstates[i] != RPMFILE_STATE_NORMAL)
 		break;
@@ -872,7 +875,7 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
 	char **nsp;
 
 	/* Don't bother with skipped files */
-	if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
+	if (XFA_SKIPPING(fi->actions[i]))
 	    continue;
 
 	/*
@@ -893,7 +896,7 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
 	}
 
 	if (nsp && *nsp) {
-	    fi->actions[i] = FA_SKIPNSTATE;
+	    fi->actions[i] = FA_SKIPNETSHARED;
 	    continue;
 	}
 
@@ -1188,14 +1191,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     for (fi = flList; (fi - flList) < flEntries; fi++) {
 	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
 	for (i = 0; i < fi->fc; i++) {
-	    switch (fi->actions[i]) {
-	    case FA_SKIP:
-	    case FA_SKIPNSTATE:
-		break;
-	    default:
-	        htAddEntry(ht, fi->fps + i, fi);
-		break;
-	    }
+	    if (XFA_SKIPPING(fi->actions[i]))
+		continue;
+	    htAddEntry(ht, fi->fps + i, fi);
 	}
     }
 

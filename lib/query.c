@@ -234,6 +234,8 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
 				    fputs(_("replaced      "), fp); break;
 				  case RPMFILE_STATE_NOTINSTALLED:
 				    fputs(_("not installed "), fp); break;
+				  case RPMFILE_STATE_NETSHARED:
+				    fputs(_("net shared    "), fp); break;
 				  default:
 				    fprintf(fp, _("(unknown %3d) "), 
 					  fileStatesList[i]);
