@@ -563,6 +563,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define	RPMSIGTAG_LEMD5_2		1003
 #define	RPMSIGTAG_MD5		        1004
 #define	RPMSIGTAG_GPG		        1005
+#define	RPMSIGTAG_PGP5		        1006
 
 /**************************************************/
 /*                                                */
@@ -571,10 +572,11 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 /**************************************************/
 
 /* verifySignature() results */
-#define	RPMSIG_OK        0
-#define	RPMSIG_UNKNOWN   1
-#define	RPMSIG_BAD       2
-#define	RPMSIG_NOKEY     3  /* Do not have the key to check this signature */
+#define	RPMSIG_OK		0
+#define	RPMSIG_UNKNOWN		1
+#define	RPMSIG_BAD		2
+#define	RPMSIG_NOKEY		3  /* Do not have the key to check this signature */
+#define	RPMSIG_NOTTRUSTED	4  /* We have the key but it is not trusted */
 
 void rpmFreeSignature(Header h);
 

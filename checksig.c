@@ -152,6 +152,7 @@ int doCheckSig(int flags, const char **argv)
     const char * sigtarget;
     unsigned char buffer[8192];
     unsigned char missingKeys[7164];
+    unsigned char untrustedKeys[7164];
     char *tempKey;
     Header sig;
     HeaderIterator sigIter;
@@ -212,13 +213,15 @@ int doCheckSig(int flags, const char **argv)
 	sigIter = headerInitIterator(sig);
 	res2 = 0;
 	missingKeys[0] = '\0';
+	untrustedKeys[0] = '\0';
 	if (rpmIsVerbose()) {
 	    sprintf(buffer, "%s:\n", rpm);
 	} else {
 	    sprintf(buffer, "%s: ", rpm);
 	}
 	while (headerNextIterator(sigIter, &tag, &type, &ptr, &count)) {
-	    if ((tag == RPMSIGTAG_PGP) && !(flags & CHECKSIG_PGP)) 
+	    if ((tag == RPMSIGTAG_PGP || tag == RPMSIGTAG_PGP5)
+	    	    && !(flags & CHECKSIG_PGP)) 
 		continue;
 	    if ((tag == RPMSIGTAG_GPG) && !(flags & CHECKSIG_GPG))
 		continue;
@@ -246,12 +249,24 @@ int doCheckSig(int flags, const char **argv)
 			res2 = 1;
 			break;
 		      case RPMSIGTAG_PGP:
-			if (res3 == RPMSIG_NOKEY) {
-			    /* Do not consider this a failure */
+		      case RPMSIGTAG_PGP5:
+			if (res3 == RPMSIG_NOKEY || res3 == RPMSIG_NOTTRUSTED) {
+			    /* Do not consider these a failure */
+			    int offset = 7;
 			    strcat(buffer, "(PGP) ");
-			    strcat(missingKeys, " PGP#");
 			    tempKey = strstr(result, "Key ID");
-			    strncat(missingKeys, tempKey+7, 8);
+			    if (!tempKey)
+			    {
+			        tempKey = strstr(result, "keyid:");
+				offset = 9;
+			    }
+			    if (res3 == RPMSIG_NOKEY) {
+				strcat(missingKeys, " PGP#");
+				strncat(missingKeys, tempKey + offset, 8);
+			    } else {
+			        strcat(untrustedKeys, " PGP#");
+				strncat(untrustedKeys, tempKey + offset, 8);
+			    }
 			} else {
 			    strcat(buffer, "PGP ");
 			    res2 = 1;
@@ -288,6 +303,7 @@ int doCheckSig(int flags, const char **argv)
 			strcat(buffer, "md5 ");
 			break;
 		      case RPMSIGTAG_PGP:
+		      case RPMSIGTAG_PGP5:
 			strcat(buffer, "pgp ");
 			break;
 		      case RPMSIGTAG_GPG:
@@ -308,20 +324,28 @@ int doCheckSig(int flags, const char **argv)
 	    if (rpmIsVerbose()) {
 		fprintf(stderr, "%s", (char *)buffer);
 	    } else {
-		fprintf(stderr, "%s%s%s%s%s\n", (char *)buffer, _("NOT OK"),
+		fprintf(stderr, "%s%s%s%s%s%s%s%s\n", (char *)buffer,
+			_("NOT OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			(char *)missingKeys,
-			(missingKeys[0] != '\0') ? _(")") : "");
+			(missingKeys[0] != '\0') ? _(") ") : "",
+			(untrustedKeys[0] != '\0') ? _(" (UNTRUSTED KEYS:") : "",
+			(char *)untrustedKeys,
+			(untrustedKeys[0] != '\0') ? _(")") : "");
 
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
 		fprintf(stdout, "%s", (char *)buffer);
 	    } else {
-		fprintf(stdout, "%s%s%s%s%s\n", (char *)buffer, _("OK"),
+		fprintf(stdout, "%s%s%s%s%s%s%s%s\n", (char *)buffer,
+			_("OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			(char *)missingKeys,
-			(missingKeys[0] != '\0') ? _(")") : "");
+			(missingKeys[0] != '\0') ? _(") ") : "",
+			(untrustedKeys[0] != '\0') ? _(" (UNTRUSTED KEYS:") : "",
+			(char *)untrustedKeys,
+			(untrustedKeys[0] != '\0') ? _(")") : "");
 	    }
 	}
     }

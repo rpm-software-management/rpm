@@ -49,4 +49,7 @@ int rpmLookupSignatureType(void);
 /* Utility to read a pass phrase from the user */
 char *rpmGetPassPhrase(const char *prompt, const int sigTag);
 
+/* Return path to pgp executable of given type, or NULL when not found */
+const char *rpmDetectPGPVersion(int sigType);
+
 #endif	/* H_SIGNATURE */

@@ -1101,21 +1101,43 @@ int main(int argc, char ** argv) {
 
             if (poptPeekArg(optCon)) {
 		switch (sigTag = rpmLookupSignatureType()) {
-		  case RPMSIGTAG_GPG: /* Fall Through */
+		  case 0:
+		    break;
+		  case RPMSIGTAG_GPG:
 		  case RPMSIGTAG_PGP:
-		    if (!(passPhrase = 
+		  case RPMSIGTAG_PGP5:
+		    if (sigTag == RPMSIGTAG_PGP
+		            && !rpmDetectPGPVersion(RPMSIGTAG_PGP)) {
+		        fprintf(stderr, _("pgp not found: "));
+			if (rpmDetectPGPVersion(RPMSIGTAG_PGP5)) {
+			    fprintf(stderr,
+	_("Use `signature: pgp5' instead of `signature: pgp' in spec file.\n"));
+			    exit(EXIT_FAILURE);
+		        }
+			/* Fall through to default: */
+		    }
+		    else if (sigTag == RPMSIGTAG_PGP5
+		    	    && !rpmDetectPGPVersion(RPMSIGTAG_PGP5)) {
+		        fprintf(stderr, _("pgp version 5 not found: "));
+			if (rpmDetectPGPVersion(RPMSIGTAG_PGP)) {
+			    fprintf(stderr,
+	_("Use `signature: pgp' instead of `signature: pgp5' in spec file.\n"));
+			    exit(EXIT_FAILURE);
+		        }
+			/* Fall through to default: */
+		    }
+		    else if (!(passPhrase = 
 			    rpmGetPassPhrase("Enter pass phrase: ", sigTag))) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
 			exit(EXIT_FAILURE);
 		    } else {
 			fprintf(stderr, _("Pass phrase is good.\n"));
 			passPhrase = strdup(passPhrase);
+			break;
 		    }
-		    break;
-		  case 0:
-		    break;
+		    /* Fall through */
 		  default:
-		    fprintf(stderr, "Invalid signature spec in rc file\n");
+		    fprintf(stderr, _("Invalid signature spec in rc file.\n"));
 		    exit(EXIT_FAILURE);
 		}
 	    }

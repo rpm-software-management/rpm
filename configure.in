@@ -199,6 +199,25 @@ if test "$cross_compiling" != "yes"; then
 	    AC_MSG_RESULT($BZIP2BIN)
     fi
 
+    AC_MSG_CHECKING(for pgp location)
+    if test -z "$PGPBIN"; then
+	    oldifs="$IFS"
+	    IFS=:
+	    for n in $MYPATH; do
+		    if test -f $n/pgp; then
+			    PGPBIN="$n/pgp";
+			    break
+		    fi
+	    done
+	    IFS="$oldifs"
+    fi
+
+    if test -z "$PGPBIN"; then
+	    PGPBIN="/usr/bin/pgp"
+    else
+	    AC_MSG_RESULT($PGPBIN)
+    fi
+
     AC_MSG_CHECKING(old version of patch)
     PATCHVERSION=`patch --version 2>&1`
 
@@ -636,6 +655,7 @@ AC_SUBST(LIBS)
 AC_SUBST(RPM)
 AC_SUBST(GZIPBIN)
 AC_SUBST(BZIP2BIN)
+AC_SUBST(PGPBIN)
 AC_SUBST(FIXPERMS)
 AC_SUBST(LIBMISC)
 AC_SUBST(MKDIR_P)

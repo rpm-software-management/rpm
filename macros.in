@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.16 1999/03/20 21:09:50 jbj Exp $
+# $Id: macros.in,v 1.17 1999/03/21 18:43:26 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -54,6 +54,7 @@
 #
 %_gzipbin		@GZIPBIN@
 %_instchangelog		5
+%_pgpbin		@PGPBIN@
 %_rpmdir		%{_topdir}/RPMS
 #
 # XXX Note escaped %% for use in headerSprintf
