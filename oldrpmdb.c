@@ -381,6 +381,28 @@ char * rpmdbGetPackageGroup(struct rpmdb * rpmdb, struct rpmdbLabel label) {
     return g;
 }
 
+/* Returns NULL on error or if no icon exists */
+char * rpmdbGetPackageGif(struct rpmdb * rpmdb, struct rpmdbLabel label,
+			  int * size) {
+    datum key, rec;
+    char * labelstr;
+
+    labelstr = rpmdbLabelToLabelstr(label, 0);
+    
+    key.dptr = labelstr;
+    key.dsize = strlen(labelstr);
+    
+    rec = gdbm_fetch(rpmdb->iconIndex, key);
+    free(labelstr);
+    if (!rec.dptr) {
+	return NULL;
+    }
+
+    *size = rec.dsize;
+
+    return rec.dptr;
+}
+
 /* return 0 on success, 1 on failure */
 int rpmdbGetPackageInfo(struct rpmdb * rpmdb, struct rpmdbLabel label,
 			struct rpmdbPackageInfo * pinfo) {

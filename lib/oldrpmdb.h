@@ -52,6 +52,8 @@ struct rpmdbLabel * rpmdbFindPackagesByLabel(struct rpmdb * rpmdb,
 					     struct rpmdbLabel label);
 
 char * rpmdbGetPackageGroup(struct rpmdb * rpmdb, struct rpmdbLabel label);
+char * rpmdbGetPackageGif(struct rpmdb * rpmdb, struct rpmdbLabel label,
+			  int * size);
 int rpmdbGetPackageInfo(struct rpmdb * rpmdb, struct rpmdbLabel label,
 			struct rpmdbPackageInfo * pinfo);
 void rpmdbFreePackageInfo(struct rpmdbPackageInfo package);
