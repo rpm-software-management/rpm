@@ -11,7 +11,7 @@ use strict;
 
 use Test;
 use strict;
-BEGIN { plan tests => 33 };
+BEGIN { plan tests => 35 };
 use RPM2;
 ok(1); # If we made it this far, we're ok.
 
@@ -117,5 +117,6 @@ ok(RPM2->expand_macro("%rpm2_test_macro") eq "testval $$");
 RPM2->delete_macro("rpm2_test_macro");
 ok(RPM2->expand_macro("%rpm2_test_macro") eq "%rpm2_test_macro");
 
-ok(RPM2->vsf_nosha1 == 65536);
+ok(RPM2->rpm_api_version == 4.1 or RPM2->rpm_api_version == 4.0);
+ok(RPM2->rpm_api_version == 4.0 or RPM2->vsf_nosha1 == 65536);
 

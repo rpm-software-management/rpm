@@ -13,6 +13,10 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#if !defined(RPM2_RPM41) && !defined(RPM2_RPM40)
+#error Must define one of RPM2_RPM41 or RPM2_RPM40; perhaps Makefile.PL could not guess your RPM API version?
+#endif
+
 void
 _populate_header_tags(HV *href)
 {
@@ -45,6 +49,7 @@ BOOT:
 	constants = perl_get_hv("RPM2::constants", TRUE);
 
 	/* not the 'standard' way of doing perl constants, but a lot easier to maintain */
+#ifdef RPM2_RPM41
 	REGISTER_CONSTANT(RPMVSF_DEFAULT);
 	REGISTER_CONSTANT(RPMVSF_NOHDRCHK);
 	REGISTER_CONSTANT(RPMVSF_NEEDPAYLOAD);
@@ -60,7 +65,22 @@ BOOT:
 	REGISTER_CONSTANT(_RPMVSF_NOSIGNATURES);
 	REGISTER_CONSTANT(_RPMVSF_NOHEADER);
 	REGISTER_CONSTANT(_RPMVSF_NOPAYLOAD);
+#endif
     }
+
+double
+rpm_api_version(pkg)
+	char * pkg
+    CODE:
+#if defined(RPM2_RPM41) && ! defined(RPM2_RPM40)
+	RETVAL = (double)4.1;
+#endif
+#if ! defined(RPM2_RPM41) && defined(RPM2_RPM40)
+	RETVAL = (double)4.0;
+#endif
+    OUTPUT:
+	RETVAL
+
 
 void
 add_macro(pkg, name, val)
@@ -276,6 +296,14 @@ _header_compare(h1, h2)
 	RETVAL = rpmVersionCompare(h1, h2);
     OUTPUT:
         RETVAL
+
+int
+_header_is_source(h)
+	Header h
+    CODE:
+	RETVAL = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+    OUTPUT:
+	RETVAL
 
 void
 _header_sprintf(h, format)

@@ -54,7 +54,10 @@ sub open_package {
   my $file = shift;
   my $flags = shift;
 
-  $flags = RPM2->vsf_default unless defined $flags;
+  if (RPM2->rpm_api_version > 4.0 and not defined $flags) {
+    $flags = RPM2->vsf_default;
+  }
+  $flags ||= 0;
 
   open FH, "<$file"
     or die "Can't open $file: $!";
@@ -198,7 +201,7 @@ sub op_spaceship {
 sub is_source_package {
   my $self = shift;
 
-  return $self->tag("sourcepackage");
+  return RPM2::C::Header::_header_is_source($self->{c_header});
 }
 
 sub filename {
