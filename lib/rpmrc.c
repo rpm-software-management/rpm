@@ -18,9 +18,26 @@ struct option {
     int archSpecific;
 };
 
-struct archEquiv {
-    char * arch;
-    char * equiv;
+struct archosCacheEntry {
+    char * name;
+    int count;
+    char ** equivs;
+    int visited;
+};
+
+struct archosCache {
+    struct archosCacheEntry * cache;
+    int size;
+};
+
+struct archosEquivInfo {
+    char * name;
+    int score;
+};
+
+struct archosEquivTable {
+    int count;
+    struct archosEquivInfo * list;
 };
 
 struct defaultEntry {
@@ -33,6 +50,23 @@ struct canonEntry {
     char *short_name;
     short num;
 };
+
+static int findArchOsScore(struct archosEquivTable * table, char * name);
+static struct archosCacheEntry * 
+  archosCacheFindEntry(struct archosCache * cache, char * key);
+static void archosFindEquivs(struct archosCache * cache, 
+			     struct archosEquivTable * table,
+			     char * key);
+static void archosAddEquiv(struct archosEquivTable * table, char * name,
+			   int distance);
+static void archosCacheEntryVisit(struct archosCache * cache, 
+				  struct archosEquivTable * table, 
+				  char * name,
+	  			  int distance);
+static int archosCompatCacheAdd(char * name, char * fn, int linenum,
+				struct archosCache * cache);
+static struct archosEquivInfo * archosEquivSearch(
+		struct archosEquivTable * table, char * name);
 
 /* this *must* be kept in alphabetical order */
 struct option optionTable[] = {
@@ -69,9 +103,6 @@ static int readRpmrc(FILE * fd, char * fn, int readWhat);
 static void setDefaults(void);
 static void setPathDefault(int var, char * s);
 static int optionCompare(const void * a, const void * b);
-static int numArchCompats = 0;
-static struct archEquiv * archCompatTable = NULL;
-static void addArchCompatibility(char * arch, char * equiv);
 
 static void setArchOs(char *arch, char *os, int building);
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
@@ -94,49 +125,123 @@ static struct defaultEntry * osDefaultTable = NULL;
 static struct canonEntry * archCanonTable = NULL;
 static struct canonEntry * osCanonTable = NULL;
 
+static struct archosCache archCache;
+static struct archosCache osCache;
+static struct archosEquivTable archEquivTable;
+static struct archosEquivTable osEquivTable;
+
 static int optionCompare(const void * a, const void * b) {
     return strcasecmp(((struct option *) a)->name,
 		      ((struct option *) b)->name);
 }
 
-/* returns the score for this architecture */
-static int findArchScore(char * arch, char * test) {
+static struct archosEquivInfo * archosEquivSearch(
+		struct archosEquivTable * table, char * name) {
     int i;
-    int score, subscore;
 
-    if (!strcmp(arch, test)) return 1;
+    for (i = 0; i < table->count; i++)
+	if (!strcmp(table->list[i].name, name)) 
+	    return table->list + i;
 
-    score = 1;
-    for (i = 0; i < numArchCompats; i++, score++) {
-	if (!strcmp(archCompatTable[i].arch, arch)) {
-	    score++;
-	    if (!strcmp(archCompatTable[i].equiv, test)) return score;
-	}
-    }
+    return NULL;
+}
 
-    for (i = 0; i < numArchCompats; i++, score++) {
-	if (!strcmp(archCompatTable[i].arch, arch)) {
-	    subscore = findArchScore(archCompatTable[i].equiv, test);
-	    if (subscore) return (score + subscore);
-	}
-    }
+static int findArchOsScore(struct archosEquivTable * table, char * name) {
+    struct archosEquivInfo * info;
 
-    return 0;
+    info = archosEquivSearch(table, name);
+    if (info) 
+	return info - table->list;
+    else
+	return 0;
 }
 
 int rpmArchScore(char * test) {
-     return findArchScore(getArchName(), test);
+    return findArchOsScore(&archEquivTable, test);
 }
 
-static int addArchCompats(char * arg, char * fn, int linenum) {
-    char * chptr, * archs;
+int rpmOsScore(char * test) {
+    return findArchOsScore(&osEquivTable, test);
+}
+
+static struct archosCacheEntry * 
+  archosCacheFindEntry(struct archosCache * cache, char * key) {
+    int i;
+
+    for (i = 0; i < cache->size; i++)
+	if (!strcmp(cache->cache[i].name, key)) return cache->cache + i;
+
+    return NULL;
+}
+
+static void archosFindEquivs(struct archosCache * cache, 
+			     struct archosEquivTable * table,
+			     char * key) {
+    int i;
+
+    for (i = 0; i < cache->size; i++)
+	cache->cache[i].visited = 0;
+
+    table->count = 0;
+
+    /* We have a general graph built using strings instead of pointers.
+       Yuck. We have to start at a point at traverse it, remembering how
+       far away everything is. */
+    archosAddEquiv(table, key, 1);
+    archosCacheEntryVisit(cache, table, key, 2);
+}
+
+static void archosAddEquiv(struct archosEquivTable * table, char * name,
+			   int distance) {
+    struct archosEquivInfo * equiv;
+
+    equiv = archosEquivSearch(table, name);
+    if (!equiv) {
+	if (table->count)
+	    table->list = realloc(table->list, (table->count + 1)
+				    * sizeof(*table->list));
+	else
+	    table->list = malloc(sizeof(*table->list));
+    
+	table->list[table->count].name = strdup(name);
+	table->list[table->count++].score = distance;
+    }
+}
+
+static void archosCacheEntryVisit(struct archosCache * cache, 
+				  struct archosEquivTable * table, 
+				  char * name,
+	  			  int distance) {
+    struct archosCacheEntry * entry;
+    int i;
+
+    entry = archosCacheFindEntry(cache, name);
+    if (!entry || entry->visited) return;
+
+    entry->visited = 1;
+
+    for (i = 0; i < entry->count; i++) {
+	archosAddEquiv(table, entry->equivs[i], distance);
+    }
+
+    for (i = 0; i < entry->count; i++) {
+	archosCacheEntryVisit(cache, table, entry->equivs[i], distance + 1);
+    }
+};
+
+static int archosCompatCacheAdd(char * name, char * fn, int linenum,
+				struct archosCache * cache) {
+    char * chptr, * equivs;
+    int delEntry = 0;
+    int i;
+    struct archosCacheEntry * entry = NULL;
   
-    chptr = arg;
+    chptr = name;
     while (*chptr && *chptr != ':') chptr++;
     if (!*chptr) {
 	error(RPMERR_RPMRC, "missing second ':' at %s:%d\n", fn, linenum);
 	return 1;
-    } else if (chptr == arg) {
+    } else if (chptr == name) {
 	error(RPMERR_RPMRC, "missing architecture name at %s:%d\n", fn, 
 			     linenum);
 	return 1;
@@ -144,37 +249,50 @@ static int addArchCompats(char * arg, char * fn, int linenum) {
 
     while (*chptr == ':' || isspace(*chptr)) chptr--;
     *(++chptr) = '\0';
-    archs = chptr + 1;
-    while (*archs && isspace(*archs)) archs++;
-    if (!*archs) {
-	error(RPMERR_RPMRC, "missing equivalent architecture name at %s:%d\n", 
-				fn, linenum);
-	return 1;
+    equivs = chptr + 1;
+    while (*equivs && isspace(*equivs)) equivs++;
+    if (!*equivs) {
+	delEntry = 1;
     }
-    
-    chptr = strtok(archs, " ");
-    while (chptr) {
-	if (!strlen(chptr)) return 0;
+
+    if (cache->size) {
+	entry = archosCacheFindEntry(cache, name);
+	if (entry) {
+	    for (i = 0; i < entry->count; i++)
+		free(entry->equivs[i]);
+	    if (entry->count) free(entry->equivs);
+	    entry->count = 0;
+	}
+    }
+
+    if (!entry) {
+	cache->cache = realloc(cache->cache, 
+			       (cache->size + 1) * sizeof(*cache->cache));
+	entry = cache->cache + cache->size++;
+	entry->name = strdup(name);
+	entry->count = 0;
+	entry->visited = 0;
+    }
+
+    if (delEntry) return 0;
 	
-	addArchCompatibility(arg, chptr);
+    chptr = strtok(equivs, " ");
+    while (chptr) {
+	if (strlen(chptr)) {		/* does strtok() return "" ever?? */
+	    if (entry->count)
+		entry->equivs = realloc(entry->equivs, sizeof(*entry->equivs) 
+					* (entry->count + 1));
+	    else
+		entry->equivs = malloc(sizeof(*entry->equivs));
+
+	    entry->equivs[entry->count] = strdup(chptr);
+	    entry->count++;
+	}
+
 	chptr = strtok(NULL, " ");
     }
 
     return 0;
-}
-
-static void addArchCompatibility(char * arch, char * equiv) {
-    if (!numArchCompats) {
-	numArchCompats = 1;
-	archCompatTable = malloc(sizeof(*archCompatTable) * numArchCompats);
-    } else {
-	numArchCompats++;
-	archCompatTable = realloc(archCompatTable, 
-				   sizeof(*archCompatTable) * numArchCompats);
-    }
-
-    archCompatTable[numArchCompats - 1].arch = strdup(arch);
-    archCompatTable[numArchCompats - 1].equiv = strdup(equiv);
 }
 
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
@@ -351,7 +469,11 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	/* these are options that don't just get stuffed in a VAR somewhere */
 	if (!strcasecmp(start, "arch_compat")) {
 	    if (readWhat != READ_TABLES) continue;
-	    if (addArchCompats(chptr, fn, linenum))
+	    if (archosCompatCacheAdd(chptr, fn, linenum, &archCache))
+		return 1;
+	} else if (!strcasecmp(start, "os_compat")) {
+	    if (readWhat != READ_TABLES) continue;
+	    if (archosCompatCacheAdd(chptr, fn, linenum, &osCache))
 		return 1;
 	} else if (!strcasecmp(start, "arch_canon")) {
 	    if (readWhat != READ_TABLES) continue;
@@ -504,6 +626,11 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
     setPathDefault(RPMVAR_SOURCEDIR, "SOURCES");    
     setPathDefault(RPMVAR_SPECDIR, "SPECS");
 
+    /* setup arch equivalences */
+    
+    archosFindEquivs(&archCache, &archEquivTable, getArchName());
+    archosFindEquivs(&osCache, &osEquivTable, getOsName());
+
     return 0;
 }
 
@@ -612,11 +739,12 @@ char *getArchName(void)
     return archname;
 }
 
-int showRc(FILE *f)
+int rpmShowRC(FILE *f)
 {
     struct option *opt;
     int count = 0;
     char *s;
+    int i;
 
     fprintf(f, "ARCHITECTURE AND OS:\n");
     fprintf(f, "build arch           : %s\n", getArchName());
@@ -625,8 +753,18 @@ int showRc(FILE *f)
     /* This is a major hack */
     archOsIsInit = 0;
     setArchOs(NULL, NULL, 0);
+    archosFindEquivs(&archCache, &archEquivTable, getArchName());
+    archosFindEquivs(&osCache, &osEquivTable, getOsName());
     fprintf(f, "install arch         : %s\n", getArchName());
     fprintf(f, "install os           : %s\n", getOsName());
+    fprintf(f, "compatible arch list :");
+    for (i = 0; i < archEquivTable.count; i++)
+	fprintf(f," %s", archEquivTable.list[i].name);
+    fprintf(f, "\n");
+    fprintf(f, "compatible os list   :");
+    for (i = 0; i < osEquivTable.count; i++)
+	fprintf(f," %s", osEquivTable.list[i].name);
+    fprintf(f, "\n");
 
     fprintf(f, "RPMRC VALUES:\n");
     opt = optionTable;
