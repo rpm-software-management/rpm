@@ -166,7 +166,8 @@ int packageBinaries(Spec spec)
 int writeRPM(Header header, char *fileName, int type,
 		    CSA_t *csa, char *passPhrase, char **cookie)
 {
-    int fd, ifd, rc, count, arch, os, sigtype;
+    int fd, ifd, rc, count, sigtype;
+    int archnum, osnum;
     char *sigtarget, *name, *version, *release;
     char buf[BUFSIZ];
     Header sig;
@@ -235,22 +236,22 @@ int writeRPM(Header header, char *fileName, int type,
     sprintf(buf, "%s-%s-%s", name, version, release);
 
     if (csa->cpioFdIn < 0) {
-	rpmGetArchInfo(NULL, &arch);
-	rpmGetOsInfo(NULL, &os);
+	rpmGetArchInfo(NULL, &archnum);
+	rpmGetOsInfo(NULL, &osnum);
     } else if (csa->lead != NULL) {	/* XXX FIXME: exorcize lead/arch/os */
-	arch = csa->lead->archnum;
-	os = csa->lead->osnum;
+	archnum = csa->lead->archnum;
+	osnum = csa->lead->osnum;
     } else {
-	arch = -1;
-	os = -1;
+	archnum = -1;
+	osnum = -1;
     }
 
     memset(&lead, 0, sizeof(lead));
     lead.major = RPM_MAJOR_NUMBER;
     lead.minor = 0;
     lead.type = type;
-    lead.archnum = arch;
-    lead.osnum = os;
+    lead.archnum = archnum;
+    lead.osnum = osnum;
     lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
     strncpy(lead.name, buf, sizeof(lead.name));
     if (writeLead(fd, &lead)) {

@@ -124,9 +124,14 @@ static int isMemberInEntry(Header header, char *name, int tag)
     char **names;
     int count;
 
+    /*
+     * XXX The strcasecmp below is necessary so the old (rpm < 2.90) style
+     * XXX os-from-uname (e.g. "Linux") is compatible with the new
+     * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
+     */
     if (headerGetEntry(header, tag, NULL, (void **)&names, &count)) {
 	while (count--) {
-	    if (!strcmp(names[count], name)) {
+	    if (!strcasecmp(names[count], name)) {
 		FREE(names);
 		return 1;
 	    }

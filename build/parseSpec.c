@@ -72,10 +72,15 @@ static int matchTok(char *token, char *line)
 {
     char buf[BUFSIZ], *tok;
 
+    /*
+     * XXX The strcasecmp below is necessary so the old (rpm < 2.90) style
+     * XXX os-from-uname (e.g. "Linux") is compatible with the new
+     * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
+     */
     strcpy(buf, line);
     strtok(buf, " \n\t");
     while ((tok = strtok(NULL, " \n\t"))) {
-	if (! strcmp(tok, token)) {
+	if (! strcasecmp(tok, token)) {
 	    return 1;
 	}
     }
@@ -183,6 +188,7 @@ retry:
 
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);
+
     s = spec->line;
     SKIPSPACE(s);
     match = -1;
@@ -277,7 +283,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 {
     int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
-    char *name, *arch, *os;
+    char *name;
     char *saveArch;
     Package pkg;
     int x, index;
@@ -313,13 +319,6 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     } else {
 	spec->timeCheck = 0;
     }
-
-    /* Add some standard macros */
-    rpmGetArchInfo(&arch, NULL);
-    rpmGetOsInfo(&os, NULL);
-#ifdef	DEAD
-    setStandardMacros(spec, arch, os);
-#endif
 
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
@@ -405,8 +404,22 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     }
 
     /* Check for description in each package and add arch and os */
-    pkg = spec->packages;
-    while (pkg) {
+    { char *arch, *os, *myos = NULL;
+
+      rpmGetArchInfo(&arch, NULL);
+      rpmGetOsInfo(&os, NULL);
+      /*
+       * XXX Capitalizing the 'L' is needed to insure that old
+       * XXX os-from-uname (e.g. "Linux") is compatible with the new
+       * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
+       * XXX A copy of this string is embedded in headers.
+       */
+      if (!strcmp(os, "linux")) {
+	os = myos = strdup(os);
+	*os = 'L';
+      }
+
+      for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	headerGetEntry(pkg->header, RPMTAG_NAME, NULL, (void **) &name, NULL);
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s"), name);
@@ -416,8 +429,8 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 
 	headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
 	headerAddEntry(pkg->header, RPMTAG_ARCH, RPM_STRING_TYPE, arch, 1);
-
-	pkg = pkg->next;
+      }
+      FREE(myos);
     }
 
     closeSpec(spec);
