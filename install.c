@@ -409,7 +409,12 @@ static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
 	    printDepFlags(stderr, conflicts[i].needsVersion, 
 			  conflicts[i].needsFlags);
 	}
-	fprintf(f, " is needed by %s-%s-%s\n", conflicts[i].byName, 
-		conflicts[i].byVersion, conflicts[i].byRelease);
+
+	if (conflicts[i].sense == RPMDEP_SENSE_REQUIRES) 
+	    fprintf(f, " is needed by %s-%s-%s\n", conflicts[i].byName, 
+		    conflicts[i].byVersion, conflicts[i].byRelease);
+	else
+	    fprintf(f, " conflicts with %s-%s-%s\n", conflicts[i].byName, 
+		    conflicts[i].byVersion, conflicts[i].byRelease);
     }
 }
