@@ -305,7 +305,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 		default:
 		    /*@innerbreak@*/ break;
 		}
-		*le++ = '=';
+		*le++ = (opt->longName != NULL ? '=' : ' ');
 		if (negate) *le++ = '~';
 		/*@-formatconst@*/
 		le += sprintf(le, (ops ? "0x%lx" : "%ld"), aLong);
@@ -319,7 +319,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 	    case POPT_ARG_FLOAT:
 	    case POPT_ARG_DOUBLE:
 	    case POPT_ARG_STRING:
-		*le++ = '=';
+		*le++ = (opt->longName != NULL ? '=' : ' ');
 		strcpy(le, argDescrip);		le += strlen(le);
 		break;
 	    default:
