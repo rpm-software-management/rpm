@@ -103,7 +103,9 @@ int rpmdbRebuild(char * rootdir) {
 			"to recover", dbpath, newdbpath);
 	    return 1;
 	}
-	rmdir(newdbpath);
+	if (rmdir(newdbpath))
+	    rpmMessage(RPMERR_RMDIR, "failed to remove %s: %s\n",
+			newdbpath, strerror(errno));
     }
 
 
