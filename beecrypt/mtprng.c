@@ -55,8 +55,8 @@ const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (rando
 static void mtprngReload(mtprngParam* mp)
 	/*@modifies mp @*/
 {
-    register uint32_t* p0 = mp->state;
-    register uint32_t* p2=p0+2, *pM = p0+M, s0, s1;
+    register uint32_t *p0 = mp->state;
+    register uint32_t *p2=p0+2, *pM = p0+M, s0, s1;
     register int j;
 
     for (s0=mp->state[0], s1=mp->state[1], j=N-M+1; --j; s0=s1, s1=*(p2++))
@@ -96,17 +96,17 @@ int mtprngSetup(mtprngParam* mp)
 
 		mp->left = 0;
 
-		return entropyGatherNext((byte*)mp->state, N+1);
+		return entropyGatherNext((byte*)mp->state, sizeof(mp->state));
 	}
 	return -1;
 }
 
-int mtprngSeed(mtprngParam* mp, const uint32_t* data, size_t size)
+int mtprngSeed(mtprngParam* mp, const byte* data, size_t size)
 {
 	if (mp)
 	{
-		size_t	needed = N+1;
-		uint32_t*	dest = mp->state;
+		size_t	needed = sizeof(mp->state);
+		byte*	dest = (byte *) mp->state;
 
 		#ifdef _REENTRANT
 		# if WIN32
@@ -126,11 +126,11 @@ int mtprngSeed(mtprngParam* mp, const uint32_t* data, size_t size)
 		#endif
 		while (size < needed)
 		{
-			mpcopy(size, dest, data);
+			memcpy(dest, data, size);
 			dest += size;
 			needed -= size;
 		}
-		mpcopy(needed, dest, data);
+		memcpy(dest, data, needed);
 		#ifdef _REENTRANT
 		# if WIN32
 		if (!ReleaseMutex(mp->lock))
@@ -152,11 +152,11 @@ int mtprngSeed(mtprngParam* mp, const uint32_t* data, size_t size)
 	return -1;
 }
 
-int mtprngNext(mtprngParam* mp, uint32_t* data, size_t size)
+int mtprngNext(mtprngParam* mp, byte* data, size_t size)
 {
 	if (mp)
 	{
-		register uint32_t tmp;
+		uint32_t tmp;
 
 		#ifdef _REENTRANT
 		# if WIN32
@@ -175,7 +175,7 @@ int mtprngNext(mtprngParam* mp, uint32_t* data, size_t size)
 		# endif
 		#endif
 		/*@-branchstate@*/
-		while (size--)
+		while (size > 0)
 		{
 			if (mp->left == 0)
 				mtprngReload(mp);
@@ -186,7 +186,17 @@ int mtprngNext(mtprngParam* mp, uint32_t* data, size_t size)
 			tmp ^= (tmp << 15) & 0xEFC60000U;
 			tmp ^= (tmp >> 18);
 			mp->left--;
-			*(data++) = tmp;
+
+			if (size >= sizeof(tmp))
+			{
+				memcpy(data, &tmp, sizeof(tmp));
+				size -= sizeof(tmp);
+			}
+			else
+			{
+				memcpy(data, &tmp, size);
+				size = 0;
+			}
 		}
 		/*@=branchstate@*/
 		#ifdef _REENTRANT

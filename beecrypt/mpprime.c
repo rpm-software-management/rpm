@@ -45,7 +45,7 @@
  * but too small to be of cryptographic interest. Hence, use only for candidate primes that are large enough.
  */
 
-#if (MP_WBYTES == 8)
+#if (MP_WBITS == 64)
 
 /**
  */
@@ -217,573 +217,573 @@ static mpw spp_17[] =	/* primes 3 to 787 */
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_18[] =	/* primes 3 to 827 */
-{ 0x005bfd2583ab7a44U, 0x13d4df0f537c686c,
-  0xa8e6b583e491130eU, 0x96dfcc1c05ba298f,
-  0x8701314b45bf6ff4U, 0xecf372ffe78bccdf,
-  0xfc18365a6ae5ca41U, 0x2794281fbcc762f1,
-  0x8ca1eb11fc8efe0bU, 0x6bb5a7a09954e758,
-  0x074256ad443a8e4bU, 0xaa2675154c43d626,
-  0x464119446e683d08U, 0xd4683db5757d1199,
-  0x9513a9cbe3e67e3aU, 0xe501c1c522aa8ba9,
-  0xf955789589161febU, 0xc69941a147aa9685 };
+{ 0x005bfd2583ab7a44U, 0x13d4df0f537c686cU,
+  0xa8e6b583e491130eU, 0x96dfcc1c05ba298fU,
+  0x8701314b45bf6ff4U, 0xecf372ffe78bccdfU,
+  0xfc18365a6ae5ca41U, 0x2794281fbcc762f1U,
+  0x8ca1eb11fc8efe0bU, 0x6bb5a7a09954e758U,
+  0x074256ad443a8e4bU, 0xaa2675154c43d626U,
+  0x464119446e683d08U, 0xd4683db5757d1199U,
+  0x9513a9cbe3e67e3aU, 0xe501c1c522aa8ba9U,
+  0xf955789589161febU, 0xc69941a147aa9685U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_19[] =	/* primes 3 to 877 */
-{ 0x06706918e8355b7f, 0xfd3f024da6b012e2,
-  0xbb7338f30d51a968, 0x0f3d912035ed70e0,
-  0x2d38d422e41812d4, 0xe29d637b318ce6f4,
-  0xea117321ce8b712d, 0xcca9345fd03ccaf5,
-  0x2e75dafcda909cd4, 0xb41a9f8753c8df3d,
-  0x284198bcb759d059, 0x941360572b7ab25f,
-  0x396b9fa37ae0a200, 0xd998ea09167edc30,
-  0xf9d2c45c7e487029, 0x927500983f7fb4e8,
-  0xe85d8e9434a37006, 0x8cebc96060ab2f87,
-  0x81efeb182d0e724b };
+{ 0x06706918e8355b7fU, 0xfd3f024da6b012e2U,
+  0xbb7338f30d51a968U, 0x0f3d912035ed70e0U,
+  0x2d38d422e41812d4U, 0xe29d637b318ce6f4U,
+  0xea117321ce8b712dU, 0xcca9345fd03ccaf5U,
+  0x2e75dafcda909cd4U, 0xb41a9f8753c8df3dU,
+  0x284198bcb759d059U, 0x941360572b7ab25fU,
+  0x396b9fa37ae0a200U, 0xd998ea09167edc30U,
+  0xf9d2c45c7e487029U, 0x927500983f7fb4e8U,
+  0xe85d8e9434a37006U, 0x8cebc96060ab2f87U,
+  0x81efeb182d0e724bU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_20[] =	/* primes 3 to 929 */
-{ 0xa9e9591f7815617e, 0xcabe352fa13445c4,
-  0xf8e319ba63042e1c, 0xb0a017d0e729a699,
-  0x5480da4e5091cab4, 0x12910cf47bb0f24e,
-  0x5e1db41264b9f96a, 0x2b327e901d9d0a39,
-  0x12659a52d3792d52, 0x991bfa964fe7d212,
-  0x60374c24a04de69d, 0xf5d4e46b249cafc7,
-  0x347c6181bd6dc6b8, 0x13a29dc6d4f785ac,
-  0x7806635513530cd5, 0xdb94de4858c157f0,
-  0x30b96bfb6475393b, 0x5f43a549d95c5619,
-  0x7e274850ad1a6d18, 0xb5eaa41dd42fda55 };
+{ 0xa9e9591f7815617eU, 0xcabe352fa13445c4U,
+  0xf8e319ba63042e1cU, 0xb0a017d0e729a699U,
+  0x5480da4e5091cab4U, 0x12910cf47bb0f24eU,
+  0x5e1db41264b9f96aU, 0x2b327e901d9d0a39U,
+  0x12659a52d3792d52U, 0x991bfa964fe7d212U,
+  0x60374c24a04de69dU, 0xf5d4e46b249cafc7U,
+  0x347c6181bd6dc6b8U, 0x13a29dc6d4f785acU,
+  0x7806635513530cd5U, 0xdb94de4858c157f0U,
+  0x30b96bfb6475393bU, 0x5f43a549d95c5619U,
+  0x7e274850ad1a6d18U, 0xb5eaa41dd42fda55U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_21[] =	/* primes 3 to 971 */
-{ 0x06e1d136cb78cac5, 0x4da4bfcb6f2c4a24,
-  0xfcf3796b77719c31, 0xd27915860001f03e,
-  0x4347621bf62577e0, 0x280ebfdb77b4f1e9,
-  0x0f954ecafd198609, 0x68629be91424c37a,
-  0x8f320a34444953d5, 0x2c278d6485238798,
-  0x709d0063e3fa8623, 0xea24bf2a2c5278e7,
-  0x4460d05a0a708bd9, 0xc019d632e39e7300,
-  0x22b9dbb913df73cf, 0xb959dffe348f9623,
-  0xf697a822f4a11320, 0xbd044ecc74878f53,
-  0x0d57d0f076647b0a, 0xb191f543dc08c392,
-  0x3167e5ee56c66847 };
+{ 0x06e1d136cb78cac5U, 0x4da4bfcb6f2c4a24U,
+  0xfcf3796b77719c31U, 0xd27915860001f03eU,
+  0x4347621bf62577e0U, 0x280ebfdb77b4f1e9U,
+  0x0f954ecafd198609U, 0x68629be91424c37aU,
+  0x8f320a34444953d5U, 0x2c278d6485238798U,
+  0x709d0063e3fa8623U, 0xea24bf2a2c5278e7U,
+  0x4460d05a0a708bd9U, 0xc019d632e39e7300U,
+  0x22b9dbb913df73cfU, 0xb959dffe348f9623U,
+  0xf697a822f4a11320U, 0xbd044ecc74878f53U,
+  0x0d57d0f076647b0aU, 0xb191f543dc08c392U,
+  0x3167e5ee56c66847U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_22[] =	/* primes 3 to 1013 */
-{ 0x005ca1a92edd0e81, 0x9619289e1ecfe2d7,
-  0xf3949eaf363a5fe8, 0xf6fee01ccd480490,
-  0x30a1346ab83c4967, 0x8c7d58826caf81ca,
-  0x1d02473bea8ad400, 0xd1ce270a5743c3cd,
-  0x892c3bd93b84525d, 0x8a42071a508fdb8f,
-  0x32952aaa2384cf5d, 0xf23ed81d10ac0031,
-  0xd85d0e95e3c5bb51, 0x71a0e3f12b671f8f,
-  0xb07965cc353a784b, 0x78f719681326c790,
-  0x6e2b7f7b0782848e, 0xeb1aea5bab10b80e,
-  0x5b7138fc36f7989c, 0xe85b07c2d4d59d42,
-  0x1541c765f6c2111d, 0xb82eca06b437f757 };
+{ 0x005ca1a92edd0e81U, 0x9619289e1ecfe2d7U,
+  0xf3949eaf363a5fe8U, 0xf6fee01ccd480490U,
+  0x30a1346ab83c4967U, 0x8c7d58826caf81caU,
+  0x1d02473bea8ad400U, 0xd1ce270a5743c3cdU,
+  0x892c3bd93b84525dU, 0x8a42071a508fdb8fU,
+  0x32952aaa2384cf5dU, 0xf23ed81d10ac0031U,
+  0xd85d0e95e3c5bb51U, 0x71a0e3f12b671f8fU,
+  0xb07965cc353a784bU, 0x78f719681326c790U,
+  0x6e2b7f7b0782848eU, 0xeb1aea5bab10b80eU,
+  0x5b7138fc36f7989cU, 0xe85b07c2d4d59d42U,
+  0x1541c765f6c2111dU, 0xb82eca06b437f757U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_23[] =	/* primes 3 to 1051 */
-{ 0x18e5b310229f618d, 0xe0f54782f57fff33,
-  0x10546ba8efc0a69c, 0xac4b573b749cc43d,
-  0xd3ba4df61fe2800d, 0x733f4eb719a6ea7f,
-  0xa88aebf2d35b26c8, 0x6e89fe0b27e198de,
-  0xe12a14da03cef215, 0xe6651c60be9cf337,
-  0x3620f4aba453eeb9, 0xeb439ba079201376,
-  0x0e3cc7f8722f09a4, 0x685a5556b4efd158,
-  0xb27a6b79b15f161f, 0xecf3fd802767da7a,
-  0x37ceb764bebfcc2b, 0x2d833be00b21bb68,
-  0xeab326b9ebb20cc2, 0xd76273edefa152ad,
-  0x531bccbf17e3c78d, 0x5c43d8f6866ad640,
-  0xfdbbba0fe997b27b };
+{ 0x18e5b310229f618dU, 0xe0f54782f57fff33U,
+  0x10546ba8efc0a69cU, 0xac4b573b749cc43dU,
+  0xd3ba4df61fe2800dU, 0x733f4eb719a6ea7fU,
+  0xa88aebf2d35b26c8U, 0x6e89fe0b27e198deU,
+  0xe12a14da03cef215U, 0xe6651c60be9cf337U,
+  0x3620f4aba453eeb9U, 0xeb439ba079201376U,
+  0x0e3cc7f8722f09a4U, 0x685a5556b4efd158U,
+  0xb27a6b79b15f161fU, 0xecf3fd802767da7aU,
+  0x37ceb764bebfcc2bU, 0x2d833be00b21bb68U,
+  0xeab326b9ebb20cc2U, 0xd76273edefa152adU,
+  0x531bccbf17e3c78dU, 0x5c43d8f6866ad640U,
+  0xfdbbba0fe997b27bU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_24[] =	/* primes 3 to 1093 */
-{ 0x021bf9497091b8c3, 0x68cc7c8e00c1990c,
-  0x6027481b79215ac8, 0xa7517749a2151377,
-  0x9a993d2958fcb49a, 0x7368029268527994,
-  0xc6cc1928add41295, 0x96765f4cc3141a04,
-  0x4eb1d61578881667, 0x57d8618781813062,
-  0x032267987df0d471, 0x9cd38f1b7085fca5,
-  0x334be3a6003a3ce7, 0xe19aba553e80cc5a,
-  0xe4060eff6e180666, 0x1da5eeb7d142d3b2,
-  0xe40739f1443dee3a, 0x198637f03c062845,
-  0xeaff3ff27ea38d93, 0x44d8a90222472df0,
-  0x7dfb5c9c8ada77cd, 0x0d5b94eff021e02e,
-  0x307d08010312d57c, 0xb5d975764697842d };
+{ 0x021bf9497091b8c3U, 0x68cc7c8e00c1990cU,
+  0x6027481b79215ac8U, 0xa7517749a2151377U,
+  0x9a993d2958fcb49aU, 0x7368029268527994U,
+  0xc6cc1928add41295U, 0x96765f4cc3141a04U,
+  0x4eb1d61578881667U, 0x57d8618781813062U,
+  0x032267987df0d471U, 0x9cd38f1b7085fca5U,
+  0x334be3a6003a3ce7U, 0xe19aba553e80cc5aU,
+  0xe4060eff6e180666U, 0x1da5eeb7d142d3b2U,
+  0xe40739f1443dee3aU, 0x198637f03c062845U,
+  0xeaff3ff27ea38d93U, 0x44d8a90222472df0U,
+  0x7dfb5c9c8ada77cdU, 0x0d5b94eff021e02eU,
+  0x307d08010312d57cU, 0xb5d975764697842dU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_25[] =	/* primes 3 to 1151 */
-{ 0xfa1bd62baae1e767, 0x47535af3830fc07d,
-  0xebcf3ef7e5a8e46b, 0x8937c4afe02aef0a,
-  0xce420c7b2c3f2fac, 0xb9dc94e5100a7191,
-  0xb47cf523520f613b, 0xee8e095a7b06d781,
-  0xb6204bde1648e17f, 0x0f1bd4aba00f7e90,
-  0xd8fc2a05f5f1e832, 0x6e88a4a67e73cae1,
-  0xc4a93d89ad6b301b, 0x1f185b130246ab44,
-  0x5cadc384931189b5, 0x566b3ed9dafba4e6,
-  0x59f5446e5a70c8d1, 0x4626b66d0f1ccfbf,
-  0xd4238b6884af7dd3, 0xa91d2063ceb2c2f7,
-  0xf273b1da4cb542ea, 0x62c624cf4fcb0486,
-  0x138b42a3c1d9593c, 0xe1254fb3214d2b08,
-  0x52532bc528bc6467 };
+{ 0xfa1bd62baae1e767U, 0x47535af3830fc07dU,
+  0xebcf3ef7e5a8e46bU, 0x8937c4afe02aef0aU,
+  0xce420c7b2c3f2facU, 0xb9dc94e5100a7191U,
+  0xb47cf523520f613bU, 0xee8e095a7b06d781U,
+  0xb6204bde1648e17fU, 0x0f1bd4aba00f7e90U,
+  0xd8fc2a05f5f1e832U, 0x6e88a4a67e73cae1U,
+  0xc4a93d89ad6b301bU, 0x1f185b130246ab44U,
+  0x5cadc384931189b5U, 0x566b3ed9dafba4e6U,
+  0x59f5446e5a70c8d1U, 0x4626b66d0f1ccfbfU,
+  0xd4238b6884af7dd3U, 0xa91d2063ceb2c2f7U,
+  0xf273b1da4cb542eaU, 0x62c624cf4fcb0486U,
+  0x138b42a3c1d9593cU, 0xe1254fb3214d2b08U,
+  0x52532bc528bc6467U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_26[] =	/* primes 3 to 1193 */
-{ 0x239afcd438799705, 0xab8a0cda4802bc8f,
-  0xb0e87f44a568f618, 0x7c604708dfb79072,
-  0xe24b49cb8b2ac531, 0x005cf2982437b16e,
-  0x027fa01414e3dbf5, 0xbf76681166e276ff,
-  0xcf6768550bc1cd9a, 0x1b387ebaaa8550ae,
-  0xfc10c69c372a0254, 0xb84666ff35044b9a,
-  0xa34fcf7c817b33f3, 0x7088a289a17891a7,
-  0xe66f88e8ec2ba784, 0xb2a09a9102609726,
-  0x17a3dbea8463439d, 0x47972d09b0e63752,
-  0xbac58d339b402dc1, 0xa09915543360cd68,
-  0x4df24e437487571d, 0xfaf68f4fe0a93546,
-  0x66aa84bf84d4448d, 0x2119029166db27bd,
-  0x515599cdcd147810, 0x3acf73e7fe62aed9 };
+{ 0x239afcd438799705U, 0xab8a0cda4802bc8fU,
+  0xb0e87f44a568f618U, 0x7c604708dfb79072U,
+  0xe24b49cb8b2ac531U, 0x005cf2982437b16eU,
+  0x027fa01414e3dbf5U, 0xbf76681166e276ffU,
+  0xcf6768550bc1cd9aU, 0x1b387ebaaa8550aeU,
+  0xfc10c69c372a0254U, 0xb84666ff35044b9aU,
+  0xa34fcf7c817b33f3U, 0x7088a289a17891a7U,
+  0xe66f88e8ec2ba784U, 0xb2a09a9102609726U,
+  0x17a3dbea8463439dU, 0x47972d09b0e63752U,
+  0xbac58d339b402dc1U, 0xa09915543360cd68U,
+  0x4df24e437487571dU, 0xfaf68f4fe0a93546U,
+  0x66aa84bf84d4448dU, 0x2119029166db27bdU,
+  0x515599cdcd147810U, 0x3acf73e7fe62aed9U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_27[] =	/* primes 3 to 1231 */
-{ 0x0654f0d4cdacb307, 0x5419612fae3cf746,
-  0xfbab751fd0887955, 0x28adc68d26f32877,
-  0xeb1b772db48e49f6, 0xcb445987c4966560,
-  0xdff8473702bb0fd4, 0xf8b68b5ce2d496a6,
-  0x0dc7d7e43c3cb0bf, 0x72665c6e4c86a7ce,
-  0xb78c9da40f4d90a8, 0xf5dfe2a4dc559b8a,
-  0xba10a63a0ca25d3a, 0xdec2c4198b688d80,
-  0x71c05d3b694f19de, 0xda32955f77fbb577,
-  0x27eb652140495e56, 0x2f4a13e8b648daf2,
-  0x13d1da75e3f04bb0, 0x43fedcd2b2a0cd30,
-  0xa4339e3a03b7f3a0, 0xe02a31c28394368c,
-  0x7f73bbf32712e69e, 0x7ac58373e5f7c7e7,
-  0x55e0d645628c5475, 0x6217c0bdf119900b,
-  0x05ea71dd714fd2c9 };
+{ 0x0654f0d4cdacb307U, 0x5419612fae3cf746U,
+  0xfbab751fd0887955U, 0x28adc68d26f32877U,
+  0xeb1b772db48e49f6U, 0xcb445987c4966560U,
+  0xdff8473702bb0fd4U, 0xf8b68b5ce2d496a6U,
+  0x0dc7d7e43c3cb0bfU, 0x72665c6e4c86a7ceU,
+  0xb78c9da40f4d90a8U, 0xf5dfe2a4dc559b8aU,
+  0xba10a63a0ca25d3aU, 0xdec2c4198b688d80U,
+  0x71c05d3b694f19deU, 0xda32955f77fbb577U,
+  0x27eb652140495e56U, 0x2f4a13e8b648daf2U,
+  0x13d1da75e3f04bb0U, 0x43fedcd2b2a0cd30U,
+  0xa4339e3a03b7f3a0U, 0xe02a31c28394368cU,
+  0x7f73bbf32712e69eU, 0x7ac58373e5f7c7e7U,
+  0x55e0d645628c5475U, 0x6217c0bdf119900bU,
+  0x05ea71dd714fd2c9U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_28[] =	/* primes 3 to 1283 */
-{ 0x01662c66dab7a4fa, 0xdba4265ac2075912,
-  0x59e9c885e1330cb6, 0xc91bee92f1b334ff,
-  0x384f827cc8057aa7, 0xc3b65fc6de53dcac,
-  0x2db6d7903febbe07, 0xcc4012326b128eb7,
-  0x1afd3136a9e7f786, 0x14648da17b4f50c7,
-  0xbd4129ca746dab21, 0x09583797fc1c2ecd,
-  0x4c0768a81892bd16, 0xdfea8227bcb2b8bf,
-  0x168a1452370b0863, 0xb299d0888434c213,
-  0x2383a6c7b6b4bf20, 0x5addc8da76d2b172,
-  0xb416f5b0b9a38d87, 0x738c1cca3fe33dd2,
-  0xf9b7570e3f663f8b, 0x3416907651b1dd42,
-  0x2192331d9436304a, 0x0303422f4d420389,
-  0x4548a05562ed1c09, 0x1a63309bf1a9df8b,
-  0xf0c59af912a62c22, 0xe1e1f49bb0115c17 };
+{ 0x01662c66dab7a4faU, 0xdba4265ac2075912U,
+  0x59e9c885e1330cb6U, 0xc91bee92f1b334ffU,
+  0x384f827cc8057aa7U, 0xc3b65fc6de53dcacU,
+  0x2db6d7903febbe07U, 0xcc4012326b128eb7U,
+  0x1afd3136a9e7f786U, 0x14648da17b4f50c7U,
+  0xbd4129ca746dab21U, 0x09583797fc1c2ecdU,
+  0x4c0768a81892bd16U, 0xdfea8227bcb2b8bfU,
+  0x168a1452370b0863U, 0xb299d0888434c213U,
+  0x2383a6c7b6b4bf20U, 0x5addc8da76d2b172U,
+  0xb416f5b0b9a38d87U, 0x738c1cca3fe33dd2U,
+  0xf9b7570e3f663f8bU, 0x3416907651b1dd42U,
+  0x2192331d9436304aU, 0x0303422f4d420389U,
+  0x4548a05562ed1c09U, 0x1a63309bf1a9df8bU,
+  0xf0c59af912a62c22U, 0xe1e1f49bb0115c17U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_29[] =	/* primes 3 to 1307 */
-{ 0x005cda0c54b07f4f, 0xff0caca07cc89b95,
-  0x1c021191164be693, 0x6665357ebb2f689c,
-  0x7157ea4f98037ce1, 0x5aca14ca3cf1a386,
-  0xb03e831ee09a8d5c, 0x48d51f5e6646ed8a,
-  0x7ec2b955216587f0, 0x7f3c42ee06ae3844,
-  0x4c776b8c3ef32747, 0x97cd2ac1c7cce7ec,
-  0xe75bb0290f5b5a0e, 0x2c96c4600c678a21,
-  0x0d992d36d441b1fd, 0x682adf0ef289947e,
-  0x6d3de1a2af0ca945, 0x859aa1f2b2bb793d,
-  0x351dbebfe05144ee, 0xfe9c752d75ec602c,
-  0x0e0344ddcfcb642b, 0x6cfc872219d69873,
-  0xb8c4ace3ffd460e9, 0x43d903b45de9d402,
-  0x958a41fb5e008a94, 0xc93610814e5e2811,
-  0xd052c10abfc67bf6, 0x915d44352688091b,
-  0x1eb1c7117c91eae5 };
+{ 0x005cda0c54b07f4fU, 0xff0caca07cc89b95U,
+  0x1c021191164be693U, 0x6665357ebb2f689cU,
+  0x7157ea4f98037ce1U, 0x5aca14ca3cf1a386U,
+  0xb03e831ee09a8d5cU, 0x48d51f5e6646ed8aU,
+  0x7ec2b955216587f0U, 0x7f3c42ee06ae3844U,
+  0x4c776b8c3ef32747U, 0x97cd2ac1c7cce7ecU,
+  0xe75bb0290f5b5a0eU, 0x2c96c4600c678a21U,
+  0x0d992d36d441b1fdU, 0x682adf0ef289947eU,
+  0x6d3de1a2af0ca945U, 0x859aa1f2b2bb793dU,
+  0x351dbebfe05144eeU, 0xfe9c752d75ec602cU,
+  0x0e0344ddcfcb642bU, 0x6cfc872219d69873U,
+  0xb8c4ace3ffd460e9U, 0x43d903b45de9d402U,
+  0x958a41fb5e008a94U, 0xc93610814e5e2811U,
+  0xd052c10abfc67bf6U, 0x915d44352688091bU,
+  0x1eb1c7117c91eae5U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_30[] =	/* primes 3 to 1381 */
-{ 0xa0604bc54c251ade, 0xcf22bf075a150bb1,
-  0x2a67d65a5045c183, 0x172466270d72a8c6,
-  0x3e2dd1c46694a251, 0xf55bca5e7d834c87,
-  0x2a8d10e5ea91ba4d, 0xcce166f16b1be0ef,
-  0xba025bf362f29284, 0xa36db51675c7d25e,
-  0xac7519925560c7a1, 0xc70470938bdf2818,
-  0xed42d04253130bef, 0x0d92e596844e073b,
-  0xdd40bd156f433f09, 0xbdfd3e38769a485c,
-  0xf29380b79c18989c, 0xed0e6ec43bcc7b73,
-  0x087e1fb94e8cf2d3, 0x475c77605c707f6b,
-  0x31f7217c4c628da2, 0xe3263e30a83c1066,
-  0x1378f41533ca7d71, 0x5d4e2b87c0e142ba,
-  0x462e6ffb506e09f9, 0x7850c73e4b3f7a24,
-  0xca98bda05c0c6ac6, 0x666daad014d2ff3f,
-  0x7138fa68ddd5e9f0, 0xe92edcaa62b56483 };
+{ 0xa0604bc54c251adeU, 0xcf22bf075a150bb1U,
+  0x2a67d65a5045c183U, 0x172466270d72a8c6U,
+  0x3e2dd1c46694a251U, 0xf55bca5e7d834c87U,
+  0x2a8d10e5ea91ba4dU, 0xcce166f16b1be0efU,
+  0xba025bf362f29284U, 0xa36db51675c7d25eU,
+  0xac7519925560c7a1U, 0xc70470938bdf2818U,
+  0xed42d04253130befU, 0x0d92e596844e073bU,
+  0xdd40bd156f433f09U, 0xbdfd3e38769a485cU,
+  0xf29380b79c18989cU, 0xed0e6ec43bcc7b73U,
+  0x087e1fb94e8cf2d3U, 0x475c77605c707f6bU,
+  0x31f7217c4c628da2U, 0xe3263e30a83c1066U,
+  0x1378f41533ca7d71U, 0x5d4e2b87c0e142baU,
+  0x462e6ffb506e09f9U, 0x7850c73e4b3f7a24U,
+  0xca98bda05c0c6ac6U, 0x666daad014d2ff3fU,
+  0x7138fa68ddd5e9f0U, 0xe92edcaa62b56483U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_31[] =	/* primes 3 to 1433 */
-{ 0x4742fdaff7e8231a, 0xded6827758493423,
-  0x12b13d2f5925c539, 0x82d876ef7ff69e7f,
-  0x5b4ff04e8454faea, 0x620dc9600c65fd57,
-  0x2aecce4c9656588f, 0x79dfb5dfd7f99148,
-  0x196c24df6d8c704b, 0xd6ffb8d9cedb8ee8,
-  0x448d4352d834cef7, 0xfce9b92907eeca6a,
-  0xcc107008fa118ff7, 0xedcc0b84207c3eef,
-  0xdb5ea3ef89c684d8, 0x89c4187a10775358,
-  0xc429d4d2a76bb2c3, 0x9f406fdc49dcf4b6,
-  0xed773586770e4651, 0xcb63c78354d2a578,
-  0x5f52816b14d29d62, 0x06d952ca4428030e,
-  0x2e793590f75f1d07, 0x79363fa6047f0c64,
-  0xf3ed6a912dbc4437, 0x673d418400d005ca,
-  0x9ca42ff6841c84dd, 0xaaff5fb087f85954,
-  0x177c5dc0fbfbb491, 0xa1e5e03e5715875c,
-  0xa02a0fa41fde7abd };
+{ 0x4742fdaff7e8231aU, 0xded6827758493423U,
+  0x12b13d2f5925c539U, 0x82d876ef7ff69e7fU,
+  0x5b4ff04e8454faeaU, 0x620dc9600c65fd57U,
+  0x2aecce4c9656588fU, 0x79dfb5dfd7f99148U,
+  0x196c24df6d8c704bU, 0xd6ffb8d9cedb8ee8U,
+  0x448d4352d834cef7U, 0xfce9b92907eeca6aU,
+  0xcc107008fa118ff7U, 0xedcc0b84207c3eefU,
+  0xdb5ea3ef89c684d8U, 0x89c4187a10775358U,
+  0xc429d4d2a76bb2c3U, 0x9f406fdc49dcf4b6U,
+  0xed773586770e4651U, 0xcb63c78354d2a578U,
+  0x5f52816b14d29d62U, 0x06d952ca4428030eU,
+  0x2e793590f75f1d07U, 0x79363fa6047f0c64U,
+  0xf3ed6a912dbc4437U, 0x673d418400d005caU,
+  0x9ca42ff6841c84ddU, 0xaaff5fb087f85954U,
+  0x177c5dc0fbfbb491U, 0xa1e5e03e5715875cU,
+  0xa02a0fa41fde7abdU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_32[] =	/* primes 3 to 1471 */
-{ 0x2465a7bd85011e1c, 0x9e0527929fff268c,
-  0x82ef7efa416863ba, 0xa5acdb0971dba0cc,
-  0xac3ee4999345029f, 0x2cf810b99e406aac,
-  0x5fce5dd69d1c717d, 0xaea5d18ab913f456,
-  0x505679bc91c57d46, 0xd9888857862b36e2,
-  0xede2e473c1f0ab35, 0x9da25271affe15ff,
-  0x240e299d0b04f4cd, 0x0e4d7c0e47b1a7ba,
-  0x007de89aae848fd5, 0xbdcd7f9815564eb0,
-  0x60ae14f19cb50c29, 0x1f0bbd8ed1c4c7f8,
-  0xfc5fba5166200193, 0x9b532d92dac844a8,
-  0x431d400c832d039f, 0x5f900b278a75219c,
-  0x2986140c79045d77, 0x59540854c31504dc,
-  0x56f1df5eebe7bee4, 0x47658b917bf696d6,
-  0x927f2e2428fbeb34, 0x0e515cb9835d6387,
-  0x1be8bbe09cf13445, 0x799f2e6778815157,
-  0x1a93b4c1eee55d1b, 0x9072e0b2f5c4607f };
+{ 0x2465a7bd85011e1cU, 0x9e0527929fff268cU,
+  0x82ef7efa416863baU, 0xa5acdb0971dba0ccU,
+  0xac3ee4999345029fU, 0x2cf810b99e406aacU,
+  0x5fce5dd69d1c717dU, 0xaea5d18ab913f456U,
+  0x505679bc91c57d46U, 0xd9888857862b36e2U,
+  0xede2e473c1f0ab35U, 0x9da25271affe15ffU,
+  0x240e299d0b04f4cdU, 0x0e4d7c0e47b1a7baU,
+  0x007de89aae848fd5U, 0xbdcd7f9815564eb0U,
+  0x60ae14f19cb50c29U, 0x1f0bbd8ed1c4c7f8U,
+  0xfc5fba5166200193U, 0x9b532d92dac844a8U,
+  0x431d400c832d039fU, 0x5f900b278a75219cU,
+  0x2986140c79045d77U, 0x59540854c31504dcU,
+  0x56f1df5eebe7bee4U, 0x47658b917bf696d6U,
+  0x927f2e2428fbeb34U, 0x0e515cb9835d6387U,
+  0x1be8bbe09cf13445U, 0x799f2e6778815157U,
+  0x1a93b4c1eee55d1bU, 0x9072e0b2f5c4607fU };
 
-#elif (MP_WBYTES == 4)
+#elif (MP_WBITS == 32)
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_01[] =	/* primes 3 to 29 */
-{ 0xc0cfd797 };
+{ 0xc0cfd797U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_02[] =	/* primes 3 to 53 */
-{ 0xe221f97c, 0x30e94e1d };
+{ 0xe221f97cU, 0x30e94e1dU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_03[] =	/* primes 3 to 73 */
-{ 0x41cd66ac, 0xc237b226, 0x81a18067 };
+{ 0x41cd66acU, 0xc237b226U, 0x81a18067U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_04[] =	/* primes 3 to 101 */
-{ 0x5797d47c, 0x51681549, 0xd734e4fc, 0x4c3eaf7f };
+{ 0x5797d47cU, 0x51681549U, 0xd734e4fcU, 0x4c3eaf7fU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_05[] =	/* primes 3 to 113 */
-{ 0x02c4b8d0, 0xd2e0d937, 0x3935200f, 0xb49be231,
-  0x5ce1a307 };
+{ 0x02c4b8d0U, 0xd2e0d937U, 0x3935200fU, 0xb49be231U,
+  0x5ce1a307U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_06[] =	/* primes 3 to 149 */
-{ 0x1e6d8e2a, 0x0ffceafb, 0xbcbfc14a, 0x4c3bc1e1,
-  0x009c6a22, 0xa0a7adf5 };
+{ 0x1e6d8e2aU, 0x0ffceafbU, 0xbcbfc14aU, 0x4c3bc1e1U,
+  0x009c6a22U, 0xa0a7adf5U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_07[] =	/* primes 3 to 167 */
-{ 0x049265d3, 0x574cefd0, 0x4229bfd6, 0x62a4a46f,
-  0x8611ed02, 0x26c655f0, 0x76ebade3 };
+{ 0x049265d3U, 0x574cefd0U, 0x4229bfd6U, 0x62a4a46fU,
+  0x8611ed02U, 0x26c655f0U, 0x76ebade3U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_08[] =	/* primes 3 to 193 */
-{ 0xdbf05b6f, 0x5654b3c0, 0xf5243551, 0x43958688,
-  0x9f155887, 0x819aed2a, 0xc05b9335, 0x2be98677 };
+{ 0xdbf05b6fU, 0x5654b3c0U, 0xf5243551U, 0x43958688U,
+  0x9f155887U, 0x819aed2aU, 0xc05b9335U, 0x2be98677U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_09[] =	/* primes 3 to 223 */
-{ 0x5e75cec8, 0xb5de5ea1, 0x5da8302a, 0x2f28b4ad,
-  0x2735bdc3, 0x9344c52e, 0x67570925, 0x6feb71ef,
-  0x6811d741 };
+{ 0x5e75cec8U, 0xb5de5ea1U, 0x5da8302aU, 0x2f28b4adU,
+  0x2735bdc3U, 0x9344c52eU, 0x67570925U, 0x6feb71efU,
+  0x6811d741U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_10[] =	/* primes 3 to 239 */
-{ 0x3faa5dad, 0xb695ce58, 0x4a579328, 0xeab20f1f,
-  0xef00fe27, 0xffc36456, 0x0a65723e, 0x27d8884a,
-  0xd59da0a9, 0x92f77529 };
+{ 0x3faa5dadU, 0xb695ce58U, 0x4a579328U, 0xeab20f1fU,
+  0xef00fe27U, 0xffc36456U, 0x0a65723eU, 0x27d8884aU,
+  0xd59da0a9U, 0x92f77529U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_11[] =	/* primes 3 to 263 */
-{ 0x3c9b6e49, 0xb7cf685b, 0xe7f3a239, 0xfb4084cb,
-  0x166885e3, 0x9d4f65b4, 0x0bb0e51c, 0x0a5d36fe,
-  0x98c32069, 0xfd5c441c, 0x6d82f115 };
+{ 0x3c9b6e49U, 0xb7cf685bU, 0xe7f3a239U, 0xfb4084cbU,
+  0x166885e3U, 0x9d4f65b4U, 0x0bb0e51cU, 0x0a5d36feU,
+  0x98c32069U, 0xfd5c441cU, 0x6d82f115U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_12[] =	/* primes 3 to 281 */
-{ 0x501201cc, 0x51a492a5, 0x44d3900a, 0xd4f8b32a,
-  0x203c8584, 0x06a4457c, 0xab0b4f80, 0x5ab18ac6,
-  0xeb9572ac, 0x6e9394fa, 0x522bffb6, 0xf44af2f3 };
+{ 0x501201ccU, 0x51a492a5U, 0x44d3900aU, 0xd4f8b32aU,
+  0x203c8584U, 0x06a4457cU, 0xab0b4f80U, 0x5ab18ac6U,
+  0xeb9572acU, 0x6e9394faU, 0x522bffb6U, 0xf44af2f3U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_13[] =	/* primes 3 to 311 */
-{ 0x9397b5b4, 0x414dc331, 0x04561364, 0x79958cc8,
-  0xfd5ea01f, 0x5d5e9f61, 0xbd0f1cb6, 0x24af7e6a,
-  0x3284dbb2, 0x9857622b, 0x8be980a6, 0x5456a5c1,
-  0xed928009 };
+{ 0x9397b5b4U, 0x414dc331U, 0x04561364U, 0x79958cc8U,
+  0xfd5ea01fU, 0x5d5e9f61U, 0xbd0f1cb6U, 0x24af7e6aU,
+  0x3284dbb2U, 0x9857622bU, 0x8be980a6U, 0x5456a5c1U,
+  0xed928009U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_14[] =	/* primes 3 to 331 */
-{ 0x0120eb4d, 0x70279230, 0x9ed122fc, 0xe0488be4,
-  0x1d0c99f5, 0xd8c039ad, 0x058c90b4, 0x780500fe,
-  0xf39c05cc, 0x09817a27, 0xc3e1776a, 0x246b6af2,
-  0x946a10d6, 0x6eafaedf };
+{ 0x0120eb4dU, 0x70279230U, 0x9ed122fcU, 0xe0488be4U,
+  0x1d0c99f5U, 0xd8c039adU, 0x058c90b4U, 0x780500feU,
+  0xf39c05ccU, 0x09817a27U, 0xc3e1776aU, 0x246b6af2U,
+  0x946a10d6U, 0x6eafaedfU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_15[] =	/* primes 3 to 353 */
-{ 0x03c91dd1, 0x2e893191, 0x94095649, 0x874b41d6,
-  0x05810c06, 0x195d70eb, 0xbd54a862, 0x50c52733,
-  0x06dc6648, 0x1c251ca4, 0xa02c9a04, 0x78c96f0d,
-  0x02f0db0b, 0x39d624ca, 0x0b0441c1 };
+{ 0x03c91dd1U, 0x2e893191U, 0x94095649U, 0x874b41d6U,
+  0x05810c06U, 0x195d70ebU, 0xbd54a862U, 0x50c52733U,
+  0x06dc6648U, 0x1c251ca4U, 0xa02c9a04U, 0x78c96f0dU,
+  0x02f0db0bU, 0x39d624caU, 0x0b0441c1U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_16[] =	/* primes 3 to 379 */
-{ 0x106aa9fb, 0x7646fa6e, 0xb0813c28, 0xc5d5f09f,
-  0x077ec3ba, 0x238bfb99, 0xc1b631a2, 0x03e81187,
-  0x233db117, 0xcbc38405, 0x6ef04659, 0xa4a11de4,
-  0x9f7ecb29, 0xbada8f98, 0x0decece9, 0x2e30c48f };
+{ 0x106aa9fbU, 0x7646fa6eU, 0xb0813c28U, 0xc5d5f09fU,
+  0x077ec3baU, 0x238bfb99U, 0xc1b631a2U, 0x03e81187U,
+  0x233db117U, 0xcbc38405U, 0x6ef04659U, 0xa4a11de4U,
+  0x9f7ecb29U, 0xbada8f98U, 0x0decece9U, 0x2e30c48fU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_17[] =	/* primes 3 to 401 */
-{ 0x5aa88d8c, 0x594bb372, 0xc4bc813f, 0x4a87a266,
-  0x1f984840, 0xdab15692, 0x2c2a177d, 0x95843665,
-  0x6f36d41a, 0x11c35ccc, 0x2904b7e9, 0xc424eb61,
-  0x3b3536a4, 0x0b2745bd, 0xadf1a6c9, 0x7b23e85a,
-  0xdc6695c1 };
+{ 0x5aa88d8cU, 0x594bb372U, 0xc4bc813fU, 0x4a87a266U,
+  0x1f984840U, 0xdab15692U, 0x2c2a177dU, 0x95843665U,
+  0x6f36d41aU, 0x11c35cccU, 0x2904b7e9U, 0xc424eb61U,
+  0x3b3536a4U, 0x0b2745bdU, 0xadf1a6c9U, 0x7b23e85aU,
+  0xdc6695c1U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_18[] =	/* primes 3 to 421 */
-{ 0x0185dbeb, 0x2b8b11d3, 0x7633e9dc, 0x1eec5415,
-  0x65c6ce84, 0x31d227ee, 0x28f0328a, 0x60c90118,
-  0xae031cc5, 0xa781c824, 0xd1f16d25, 0xf4f0cccf,
-  0xf35e9745, 0x79072ec8, 0xcaf1ac8e, 0xefd5566f,
-  0xa15fb94f, 0xe34f5d37 };
+{ 0x0185dbebU, 0x2b8b11d3U, 0x7633e9dcU, 0x1eec5415U,
+  0x65c6ce84U, 0x31d227eeU, 0x28f0328aU, 0x60c90118U,
+  0xae031cc5U, 0xa781c824U, 0xd1f16d25U, 0xf4f0cccfU,
+  0xf35e9745U, 0x79072ec8U, 0xcaf1ac8eU, 0xefd5566fU,
+  0xa15fb94fU, 0xe34f5d37U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_19[] =	/* primes 3 to 443 */
-{ 0x0cde6fd1, 0xcf108066, 0xcc548df9, 0x070e102c,
-  0x2c651b88, 0x5f24f503, 0xaaffe276, 0xfeb57311,
-  0x0c1e4592, 0xa35890d7, 0x678aaeee, 0x9f44800f,
-  0xc43f999d, 0x5d06b89f, 0xcb22e533, 0x5a9287bc,
-  0x6d75a3e9, 0x1e53906d, 0x413163d5 };
+{ 0x0cde6fd1U, 0xcf108066U, 0xcc548df9U, 0x070e102cU,
+  0x2c651b88U, 0x5f24f503U, 0xaaffe276U, 0xfeb57311U,
+  0x0c1e4592U, 0xa35890d7U, 0x678aaeeeU, 0x9f44800fU,
+  0xc43f999dU, 0x5d06b89fU, 0xcb22e533U, 0x5a9287bcU,
+  0x6d75a3e9U, 0x1e53906dU, 0x413163d5U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_20[] =	/* primes 3 to 463 */
-{ 0x833a505c, 0xf9922bee, 0xc80265a6, 0xd50e1cce,
-  0xa22f6fec, 0x2eb84450, 0xcec64a3c, 0x0e10d472,
-  0xdd653b9b, 0x51d81d0e, 0x3a3142ea, 0x49b91e3a,
-  0x5e210232, 0x67bda426, 0x738730cf, 0xb8e6e2ae,
-  0xc08c9d4b, 0xd2420066, 0xdccf95ef, 0x49a560b7 };
+{ 0x833a505cU, 0xf9922beeU, 0xc80265a6U, 0xd50e1cceU,
+  0xa22f6fecU, 0x2eb84450U, 0xcec64a3cU, 0x0e10d472U,
+  0xdd653b9bU, 0x51d81d0eU, 0x3a3142eaU, 0x49b91e3aU,
+  0x5e210232U, 0x67bda426U, 0x738730cfU, 0xb8e6e2aeU,
+  0xc08c9d4bU, 0xd2420066U, 0xdccf95efU, 0x49a560b7U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_21[] =	/* primes 3 to 487 */
-{ 0x035417f1, 0xe321c06c, 0xbe32ffce, 0xae752cc9,
-  0xa9fe11a6, 0x3d94c946, 0x456edd7d, 0x5a060de1,
-  0x84a826a6, 0xf0740c13, 0x48fa1038, 0x911d771d,
-  0xb3773e87, 0x52300c29, 0xc82c3012, 0x131673bb,
-  0x491cbd61, 0x55e565af, 0x4a9f4331, 0x0adbb0d7,
-  0x06e86f6d };
+{ 0x035417f1U, 0xe321c06cU, 0xbe32ffceU, 0xae752cc9U,
+  0xa9fe11a6U, 0x3d94c946U, 0x456edd7dU, 0x5a060de1U,
+  0x84a826a6U, 0xf0740c13U, 0x48fa1038U, 0x911d771dU,
+  0xb3773e87U, 0x52300c29U, 0xc82c3012U, 0x131673bbU,
+  0x491cbd61U, 0x55e565afU, 0x4a9f4331U, 0x0adbb0d7U,
+  0x06e86f6dU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_22[] =	/* primes 3 to 509 */
-{ 0x309d024b, 0xd5380319, 0x2ca33469, 0x0bafb43a,
-  0x0abd5840, 0xfbeb24d1, 0xf49b6330, 0x47902bae,
-  0x581ca4cb, 0xa778fdb1, 0x6dc0a6af, 0xef960687,
-  0x16855d95, 0x93746604, 0x201f1919, 0xb725fcb7,
-  0x8ffd0db8, 0xe8fa61a1, 0x6e1c0970, 0xbeb81adc,
-  0xf49c82df, 0xf960d36f };
+{ 0x309d024bU, 0xd5380319U, 0x2ca33469U, 0x0bafb43aU,
+  0x0abd5840U, 0xfbeb24d1U, 0xf49b6330U, 0x47902baeU,
+  0x581ca4cbU, 0xa778fdb1U, 0x6dc0a6afU, 0xef960687U,
+  0x16855d95U, 0x93746604U, 0x201f1919U, 0xb725fcb7U,
+  0x8ffd0db8U, 0xe8fa61a1U, 0x6e1c0970U, 0xbeb81adcU,
+  0xf49c82dfU, 0xf960d36fU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_23[] =	/* primes 3 to 541 */
-{ 0x01ab244a, 0x33bc047e, 0x804590b4, 0xc3207237,
-  0xea503fa0, 0x7541b251, 0x57cfd03f, 0xf602c9d0,
-  0x3dcd12ba, 0xa4947ae6, 0xc6ee61be, 0xedf6c716,
-  0xfa45377d, 0x5b3c84fa, 0x5fb78b41, 0x395251eb,
-  0xb6a5129c, 0x7699fb5c, 0xccec6d45, 0x56c9b8ea,
-  0xfa05897c, 0xb8c5cf72, 0xb77603d9 };
+{ 0x01ab244aU, 0x33bc047eU, 0x804590b4U, 0xc3207237U,
+  0xea503fa0U, 0x7541b251U, 0x57cfd03fU, 0xf602c9d0U,
+  0x3dcd12baU, 0xa4947ae6U, 0xc6ee61beU, 0xedf6c716U,
+  0xfa45377dU, 0x5b3c84faU, 0x5fb78b41U, 0x395251ebU,
+  0xb6a5129cU, 0x7699fb5cU, 0xccec6d45U, 0x56c9b8eaU,
+  0xfa05897cU, 0xb8c5cf72U, 0xb77603d9U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_24[] =	/* primes 3 to 569 */
-{ 0x25eac89f, 0x8d4da338, 0x337b4985, 0x0d2d1489,
-  0x2663177b, 0x4010af3d, 0xd23eeb0b, 0x228f3832,
-  0xffcee2e5, 0xcbd1acc9, 0x8f47f251, 0x873380ae,
-  0x10f0ffdd, 0x8e602ffa, 0x210f41f6, 0x69a1570a,
-  0x93c158c1, 0xa9a8227f, 0xf81a90c5, 0x630e9c44,
-  0x845c755c, 0x7df35a7d, 0x430c679a, 0x11575655 };
+{ 0x25eac89fU, 0x8d4da338U, 0x337b4985U, 0x0d2d1489U,
+  0x2663177bU, 0x4010af3dU, 0xd23eeb0bU, 0x228f3832U,
+  0xffcee2e5U, 0xcbd1acc9U, 0x8f47f251U, 0x873380aeU,
+  0x10f0ffddU, 0x8e602ffaU, 0x210f41f6U, 0x69a1570aU,
+  0x93c158c1U, 0xa9a8227fU, 0xf81a90c5U, 0x630e9c44U,
+  0x845c755cU, 0x7df35a7dU, 0x430c679aU, 0x11575655U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_25[] =	/* primes 3 to 587 */
-{ 0x01b515a8, 0xdca3d6e4, 0x69090373, 0x84febfe8,
-  0xf32e06cf, 0x9bde8c89, 0x6b3f992f, 0x2ff23508,
-  0xe1c01024, 0x3b8ad0c4, 0xac54e7c7, 0x3f4081d8,
-  0xe495d54d, 0x74ed01e8, 0x9dfcbdde, 0x1fe7e61a,
-  0x839bd902, 0xf43bf273, 0x2441f0ae, 0xb4211c70,
-  0x6b3faafc, 0x0f200b35, 0x7485ce4a, 0x2f08f148,
-  0xcce6887d };
+{ 0x01b515a8U, 0xdca3d6e4U, 0x69090373U, 0x84febfe8U,
+  0xf32e06cfU, 0x9bde8c89U, 0x6b3f992fU, 0x2ff23508U,
+  0xe1c01024U, 0x3b8ad0c4U, 0xac54e7c7U, 0x3f4081d8U,
+  0xe495d54dU, 0x74ed01e8U, 0x9dfcbddeU, 0x1fe7e61aU,
+  0x839bd902U, 0xf43bf273U, 0x2441f0aeU, 0xb4211c70U,
+  0x6b3faafcU, 0x0f200b35U, 0x7485ce4aU, 0x2f08f148U,
+  0xcce6887dU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_26[] =	/* primes 3 to 607 */
-{ 0x3383219d, 0x26454f06, 0xe2789b7f, 0x9c3b940e,
-  0x03be2105, 0x798e3ff7, 0x945bd325, 0x997bc262,
-  0x025598f8, 0x8577748e, 0xc7155ff8, 0x8a1ff4c9,
-  0x2ce95bd8, 0xb015101f, 0x19b73b14, 0x81627f9a,
-  0x6f83da3a, 0x03259fbd, 0x41f92a6e, 0x85ac6efa,
-  0xde195be8, 0x6e66ba89, 0xb0ab042d, 0x3276976c,
-  0x3dbeb3d7, 0x413ea96d };
+{ 0x3383219dU, 0x26454f06U, 0xe2789b7fU, 0x9c3b940eU,
+  0x03be2105U, 0x798e3ff7U, 0x945bd325U, 0x997bc262U,
+  0x025598f8U, 0x8577748eU, 0xc7155ff8U, 0x8a1ff4c9U,
+  0x2ce95bd8U, 0xb015101fU, 0x19b73b14U, 0x81627f9aU,
+  0x6f83da3aU, 0x03259fbdU, 0x41f92a6eU, 0x85ac6efaU,
+  0xde195be8U, 0x6e66ba89U, 0xb0ab042dU, 0x3276976cU,
+  0x3dbeb3d7U, 0x413ea96dU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_27[] =	/* primes 3 to 619 */
-{ 0x02ced4b7, 0xf15179e8, 0x7fcba6da, 0x7b07a6f3,
-  0xf9311218, 0xa7b88985, 0xac74b503, 0xbf745330,
-  0x6d0a23f5, 0x27a1fa9a, 0xc2b85f1a, 0x26152470,
-  0x6ac242f3, 0x518cc497, 0x09a23d74, 0xff28da52,
-  0xe7bbf7f7, 0xa63c1c88, 0x6f684195, 0x65e472ce,
-  0x80751585, 0xc70e20c2, 0x2d15d3fe, 0xc1b40c7f,
-  0x8e25dd07, 0xdb09dd86, 0x791aa9e3 };
+{ 0x02ced4b7U, 0xf15179e8U, 0x7fcba6daU, 0x7b07a6f3U,
+  0xf9311218U, 0xa7b88985U, 0xac74b503U, 0xbf745330U,
+  0x6d0a23f5U, 0x27a1fa9aU, 0xc2b85f1aU, 0x26152470U,
+  0x6ac242f3U, 0x518cc497U, 0x09a23d74U, 0xff28da52U,
+  0xe7bbf7f7U, 0xa63c1c88U, 0x6f684195U, 0x65e472ceU,
+  0x80751585U, 0xc70e20c2U, 0x2d15d3feU, 0xc1b40c7fU,
+  0x8e25dd07U, 0xdb09dd86U, 0x791aa9e3U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_28[] =	/* primes 3 to 647 */
-{ 0x6e026454, 0x60adbd18, 0xcd52ce1a, 0x1beab1c0,
-  0x36e468e9, 0xf350d69b, 0x1d357d08, 0x3a59f778,
-  0xc2cc262b, 0x4a29ce52, 0x509bcf97, 0x349ba2bf,
-  0x22402d71, 0x6b32517e, 0x1941e18a, 0xce76cbd8,
-  0x5809701e, 0x70eaef96, 0x9aac365c, 0x8a9fea5e,
-  0xc74d951d, 0xb361f061, 0xc4d14f00, 0x0d806db4,
-  0xcd939110, 0xc7cab492, 0x2f3ea4c4, 0x852ca469 };
+{ 0x6e026454U, 0x60adbd18U, 0xcd52ce1aU, 0x1beab1c0U,
+  0x36e468e9U, 0xf350d69bU, 0x1d357d08U, 0x3a59f778U,
+  0xc2cc262bU, 0x4a29ce52U, 0x509bcf97U, 0x349ba2bfU,
+  0x22402d71U, 0x6b32517eU, 0x1941e18aU, 0xce76cbd8U,
+  0x5809701eU, 0x70eaef96U, 0x9aac365cU, 0x8a9fea5eU,
+  0xc74d951dU, 0xb361f061U, 0xc4d14f00U, 0x0d806db4U,
+  0xcd939110U, 0xc7cab492U, 0x2f3ea4c4U, 0x852ca469U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_29[] =	/* primes 3 to 661 */
-{ 0x074921f7, 0x6a76cec3, 0xaeb05f74, 0x60b21f16,
-  0x49dece2f, 0x21bb3ed9, 0xe4cb4ebc, 0x05d6f408,
-  0xed3d408a, 0xdee16505, 0xdc657c6d, 0x93877982,
-  0xf2d11ce6, 0xcb5b0bb0, 0x579b3189, 0xb339c2cc,
-  0xcf81d846, 0xa9fbde0c, 0x723afbc7, 0x36655d41,
-  0x0018d768, 0x21779cf3, 0x52642f1b, 0x2d17165d,
-  0xc7001c45, 0x4a84a45d, 0x66007591, 0x27e85693,
-  0x2288d0fb };
+{ 0x074921f7U, 0x6a76cec3U, 0xaeb05f74U, 0x60b21f16U,
+  0x49dece2fU, 0x21bb3ed9U, 0xe4cb4ebcU, 0x05d6f408U,
+  0xed3d408aU, 0xdee16505U, 0xdc657c6dU, 0x93877982U,
+  0xf2d11ce6U, 0xcb5b0bb0U, 0x579b3189U, 0xb339c2ccU,
+  0xcf81d846U, 0xa9fbde0cU, 0x723afbc7U, 0x36655d41U,
+  0x0018d768U, 0x21779cf3U, 0x52642f1bU, 0x2d17165dU,
+  0xc7001c45U, 0x4a84a45dU, 0x66007591U, 0x27e85693U,
+  0x2288d0fbU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_30[] =	/* primes 3 to 683 */
-{ 0x00872313, 0x1f66758a, 0x414bbebb, 0x2f8670bf,
-  0x01dc959d, 0x74468901, 0x57c57f40, 0xe210c9c2,
-  0x74f54469, 0x7c71cc1d, 0xe2be67a2, 0x03d8d56f,
-  0x6c363fca, 0x0a78676a, 0x2b977789, 0x6ea2db50,
-  0xdb31b737, 0x51992f73, 0x0def293e, 0xbc028877,
-  0xdf95ac1b, 0x4d0c0128, 0x9a0b05e0, 0x0e6c0bc8,
-  0xe61b766e, 0xc0943254, 0x1cd70f0f, 0xd5a0ce6b,
-  0x8ab998fb, 0x8ab36e0d };
+{ 0x00872313U, 0x1f66758aU, 0x414bbebbU, 0x2f8670bfU,
+  0x01dc959dU, 0x74468901U, 0x57c57f40U, 0xe210c9c2U,
+  0x74f54469U, 0x7c71cc1dU, 0xe2be67a2U, 0x03d8d56fU,
+  0x6c363fcaU, 0x0a78676aU, 0x2b977789U, 0x6ea2db50U,
+  0xdb31b737U, 0x51992f73U, 0x0def293eU, 0xbc028877U,
+  0xdf95ac1bU, 0x4d0c0128U, 0x9a0b05e0U, 0x0e6c0bc8U,
+  0xe61b766eU, 0xc0943254U, 0x1cd70f0fU, 0xd5a0ce6bU,
+  0x8ab998fbU, 0x8ab36e0dU };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_31[] =	/* primes 3 to 719 */
-{ 0x1e595df4, 0x3064a8c9, 0xd61ae17b, 0xde1938f0,
-  0x22ee6357, 0x35f4cadd, 0x3d39f473, 0xafed7df5,
-  0x92ae0fd3, 0xfe910508, 0x9ad9e939, 0x988b0227,
-  0x60dec749, 0xae7ee54f, 0xeb0572ac, 0x0aed266d,
-  0x92daafd8, 0x6135f7a3, 0xe4e8bf05, 0x0124c928,
-  0xb0d719d5, 0x2181aec8, 0x0f79820f, 0xcb158642,
-  0x20969ec0, 0x1a480d31, 0x331b3252, 0x01b36fab,
-  0x3d5b415b, 0x1a4567e7, 0x3baf6389 };
+{ 0x1e595df4U, 0x3064a8c9U, 0xd61ae17bU, 0xde1938f0U,
+  0x22ee6357U, 0x35f4caddU, 0x3d39f473U, 0xafed7df5U,
+  0x92ae0fd3U, 0xfe910508U, 0x9ad9e939U, 0x988b0227U,
+  0x60dec749U, 0xae7ee54fU, 0xeb0572acU, 0x0aed266dU,
+  0x92daafd8U, 0x6135f7a3U, 0xe4e8bf05U, 0x0124c928U,
+  0xb0d719d5U, 0x2181aec8U, 0x0f79820fU, 0xcb158642U,
+  0x20969ec0U, 0x1a480d31U, 0x331b3252U, 0x01b36fabU,
+  0x3d5b415bU, 0x1a4567e7U, 0x3baf6389U };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
 static mpw spp_32[] =	/* primes 3 to 739 */
-{ 0x02c85ff8, 0x70f24be8, 0x0f62b1ba, 0x6c20bd72,
-  0xb837efdf, 0x121206d8, 0x7db56b7d, 0x69fa4c02,
-  0x1c107c3c, 0xa206fe8f, 0xa7080ef5, 0x76effc82,
-  0xf9b10f57, 0x50656b77, 0x94b16afd, 0x70996e91,
-  0xaef6e0ad, 0x15e91b07, 0x1ac9b24d, 0x98b233ad,
-  0x86ee0555, 0x18e58e56, 0x638ef18b, 0xac5c74cb,
-  0x35bbb6e5, 0xdae2783d, 0xd1c0ce7d, 0xec4fc70e,
-  0x5186d411, 0xdf36368f, 0x061aa360, 0x11f30179 };
+{ 0x02c85ff8U, 0x70f24be8U, 0x0f62b1baU, 0x6c20bd72U,
+  0xb837efdfU, 0x121206d8U, 0x7db56b7dU, 0x69fa4c02U,
+  0x1c107c3cU, 0xa206fe8fU, 0xa7080ef5U, 0x76effc82U,
+  0xf9b10f57U, 0x50656b77U, 0x94b16afdU, 0x70996e91U,
+  0xaef6e0adU, 0x15e91b07U, 0x1ac9b24dU, 0x98b233adU,
+  0x86ee0555U, 0x18e58e56U, 0x638ef18bU, 0xac5c74cbU,
+  0x35bbb6e5U, 0xdae2783dU, 0xd1c0ce7dU, 0xec4fc70eU,
+  0x5186d411U, 0xdf36368fU, 0x061aa360U, 0x11f30179U };
 
 #else
 # error
@@ -1056,12 +1056,12 @@ int mppmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, mpw* wksp
 }
 
 /**
- * needs workspace of (7*size+2) words
+ * needs workspace of (8*size+2) words
  */
 void mpprnd_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpnumber* f, mpw* wksp)
 {
 	/*
-	 * Generate a prime into p with (size*32) bits
+	 * Generate a prime into p with the requested number of bits
 	 *
 	 * Conditions: size(f) <= size(p)
 	 *
@@ -1108,7 +1108,7 @@ void mpprnd_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, cons
 }
 
 /**
- * needs workspace of (7*size+2) words
+ * needs workspace of (8*size+2) words
  */
 void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpbarrett* q, const mpnumber* f, mpnumber* r, int cofactor, mpw* wksp)
 {

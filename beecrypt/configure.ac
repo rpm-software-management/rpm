@@ -123,6 +123,9 @@ AC_ARG_WITH(arch,[  --with-arch             optimize for specific architecture (
   powerpc*)
     bc_target_arch=powerpc
     ;;
+  s390x)
+    bc_target_arch=s390x
+    ;;
   sparc*)
     bc_target_arch=sparc
     ;;

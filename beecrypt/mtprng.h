@@ -28,19 +28,6 @@
 
 #include "beecrypt.h"
 
-#if WIN32
-# include <windows.h>
-# include <winbase.h>
-#else
-# if HAVE_THREAD_H && HAVE_SYNCH_H
-#  include <synch.h>
-# elif HAVE_PTHREAD_H
-#  include <pthread.h>
-# else
-#  error need locking mechanism
-# endif
-#endif
-
 #define N	624
 #define M	397
 #define K	0x9908B0DFU
@@ -89,7 +76,7 @@ int mtprngSetup  (mtprngParam* mp)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngSeed   (mtprngParam* mp, const uint32_t* data, size_t size)
+int mtprngSeed   (mtprngParam* mp, const byte* data, size_t size)
 	/*@modifies mp @*/;
 /*@=exportlocal@*/
 
@@ -97,7 +84,7 @@ int mtprngSeed   (mtprngParam* mp, const uint32_t* data, size_t size)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngNext   (mtprngParam* mp, uint32_t* data, size_t size)
+int mtprngNext   (mtprngParam* mp, byte* data, size_t size)
 	/*@modifies mp, data @*/;
 /*@=exportlocal@*/
 

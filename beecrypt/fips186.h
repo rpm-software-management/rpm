@@ -45,9 +45,9 @@
 
 #include "sha1.h"
 
-#if (MP_WBYTES == 8)
+#if (MP_WBITS == 64)
 # define FIPS186_STATE_SIZE	8
-#elif (MP_WBYTES == 4)
+#elif (MP_WBITS == 32)
 # define FIPS186_STATE_SIZE	16
 #else
 # error

@@ -67,11 +67,11 @@ static entropySource entropySourceList[] =
 # if HAVE_DEV_RANDOM
 	{ "random", entropy_dev_random },
 # endif
-# if HAVE_DEV_AUDIO
-	{ "audio", entropy_dev_audio },
-# endif
 # if HAVE_DEV_DSP
 	{ "dsp", entropy_dev_dsp },
+# endif
+# if HAVE_DEV_AUDIO
+	{ "audio", entropy_dev_audio },
 # endif
 # if HAVE_DEV_TTY
 	{ "tty", entropy_dev_tty },
@@ -111,11 +111,17 @@ const entropySource* entropySourceDefault()
 	const char* selection = getenv("BEECRYPT_ENTROPY");
 
 	if (selection)
+	{
 		return entropySourceFind(selection);
+	}
 	else if (ENTROPYSOURCES)
+	{
 		return entropySourceList+0;
+	}
 	else
+	{
 		return (const entropySource*) 0;
+	}
 }
 
 int entropyGatherNext(byte* data, size_t size)
@@ -773,7 +779,7 @@ const blockCipher* blockCipherDefault()
 		return blockCipherFind(selection);
 	else
 		/*@-globs -compmempass @*/
-		return &blowfish;
+		return &aes;
 		/*@=globs =compmempass @*/
 }
 
