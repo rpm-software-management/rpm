@@ -10,12 +10,12 @@
 #include "rpmlib.h"
 #include "verify.h"
 
-static void verifyHeader(char * prefix, Header h);
+static void verifyHeader(char * prefix, Header h, int verifyFlags);
 static void verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 			  int verifyFlags);
 static void verifyDependencies(rpmdb db, Header h);
 
-static void verifyHeader(char * prefix, Header h) {
+static void verifyHeader(char * prefix, Header h, int verifyFlags) {
     char ** fileList;
     int count, type;
     int verifyResult;
@@ -23,12 +23,16 @@ static void verifyHeader(char * prefix, Header h) {
     char * size, * md5, * link, * mtime, * mode;
     char * group, * user, * rdev;
     int_32 * fileFlagsList;
+    int omitMask = 0;
 
-    headerGetEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, &count);
+    if (!(verifyFlags & VERIFY_MD5)) omitMask = RPMVERIFY_MD5;
 
-    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count)) {
+    headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL);
+
+    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+			&count)) {
 	for (i = 0; i < count; i++) {
-	    if (rpmVerifyFile(prefix, h, i, &verifyResult))
+	    if (rpmVerifyFile(prefix, h, i, &verifyResult, omitMask))
 		printf("missing    %s\n", fileList[i]);
 	    else {
 		size = md5 = link = mtime = mode = ".";
@@ -100,7 +104,7 @@ static void verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
     if (verifyFlags & VERIFY_DEPS)
 	verifyDependencies(db, h);
     if (verifyFlags & VERIFY_FILES)
-	verifyHeader(root, h);
+	verifyHeader(root, h, verifyFlags);
     if (verifyFlags & VERIFY_SCRIPT) {
 	rpmVerifyScript(root, h, 1);
     }
