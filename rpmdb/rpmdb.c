@@ -3300,7 +3300,8 @@ static struct skipDir_s {
     _skip("/usr/share/i18n"),
     _skip("/usr/share/doc"),
     _skip("/usr/lib/locale"),
-    _skip("/usr/src/debug"),
+    _skip("/usr/src"),
+    _skip("/lib/modules"),
     { 0, NULL }
 };
 
