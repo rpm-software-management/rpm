@@ -44,6 +44,7 @@ static int initdb;
 static int justdb;
 static int noDeps;
 static int noFiles;
+static int noGpg;
 static int noMd5;
 static int noOrder;
 static int noPgp;
@@ -96,6 +97,7 @@ static struct poptOption optionsTable[] = {
  { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "nofiles", '\0', 0, &noFiles, 0,		NULL, NULL},
+ { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
  { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
  { "nopgp", '\0', 0, &noPgp, 0,			NULL, NULL},
@@ -208,7 +210,7 @@ static void printUsage(void) {
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"));
-    puts(_("       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"));
+    puts(_("       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"));
     puts(_("                           package1 ... packageN"));
     puts(_("       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"));
     puts(_("       rpm {--querytags}"));
@@ -430,7 +432,7 @@ static void printHelp(void) {
     printHelpLine(  "      --rmsource          ",
 		  _("remove sources and spec file when done"));
     printHelpLine(  "      --sign              ",
-		  _("generate PGP signature"));
+		  _("generate PGP/GPG signature"));
     printHelpLine(_("      --buildroot <dir>   "),
 		  _("use <dir> as the build root"));
     printHelpLine(_("      --target=<platform>+"),
@@ -455,6 +457,8 @@ static void printHelp(void) {
 		  _("verify package signature"));
     printHelpLine(  "      --nopgp             ",
 		  _("skip any PGP signatures"));
+    printHelpLine(  "      --nogpg             ",
+		  _("skip any GPG signatures"));
     printHelpLine(  "      --nomd5             ",
 		  _("skip any MD5 signatures"));
     printHelpLine(  "    --querytags           ",
@@ -495,6 +499,7 @@ int main(int argc, char ** argv) {
     int p[2];
     rpmRelocation * relocations = NULL;
     int numRelocations = 0;
+    int sigTag;
     int upgrade = 0;
     int probFilter = 0;
 	
@@ -515,6 +520,7 @@ int main(int argc, char ** argv) {
     justdb = 0;
     noDeps = 0;
     noFiles = 0;
+    noGpg = 0;
     noMd5 = 0;
     noOrder = 0;
     noPgp = 0;
@@ -1026,8 +1032,11 @@ int main(int argc, char ** argv) {
     if (noPgp && bigMode != MODE_CHECKSIG)
 	argerror(_("--nopgp may only be used during signature checking"));
 
+    if (noGpg && bigMode != MODE_CHECKSIG)
+	argerror(_("--nogpg may only be used during signature checking"));
+
     if (noMd5 && bigMode != MODE_CHECKSIG && bigMode != MODE_VERIFY)
-	argerror(_("--nopgp may only be used during signature checking and "
+	argerror(_("--nomd5 may only be used during signature checking and "
 		   "package verification"));
 
     if (ftpProxy) {
@@ -1058,10 +1067,11 @@ int main(int argc, char ** argv) {
 	    if (errors) return errors;
 
             if (poptPeekArg(optCon)) {
-		switch (rpmLookupSignatureType()) {
+		switch (sigTag = rpmLookupSignatureType()) {
+		  case RPMSIGTAG_GPG: /* Fall Through */
 		  case RPMSIGTAG_PGP:
 		    if (!(passPhrase = 
-				rpmGetPassPhrase("Enter pass phrase: "))) {
+			    rpmGetPassPhrase("Enter pass phrase: ", sigTag))) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
 			exit(EXIT_FAILURE);
 		    } else {
@@ -1125,6 +1135,7 @@ int main(int argc, char ** argv) {
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signature check"));
 	if (!noPgp) checksigFlags |= CHECKSIG_PGP;
+	if (!noGpg) checksigFlags |= CHECKSIG_GPG;
 	if (!noMd5) checksigFlags |= CHECKSIG_MD5;
 	exit(doCheckSig(checksigFlags, poptGetArgs(optCon)));
 

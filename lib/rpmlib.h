@@ -242,14 +242,16 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMVAR_BZIP2BIN			41
 #define	RPMVAR_LANGPATT			42
 #define	RPMVAR_INCLUDE			43
-/* #define RPMVAR_ARCH			44 -- No longer used */
-/* #define RPMVAR_OS			45 -- No longer used */
-/* #define RPMVAR_BUILDPLATFORM		46 -- No longer used */
-/* #define RPMVAR_BUILDARCH		47 -- No longer used */
-/* #define RPMVAR_BUILDOS		48 -- No longer used */
+/* #define RPMVAR_ARCH			44 -- reserved */
+/* #define RPMVAR_OS			45 -- reserved */
+/* #define RPMVAR_BUILDPLATFORM		46 -- reserved */
+/* #define RPMVAR_BUILDARCH		47 -- reserved */
+/* #define RPMVAR_BUILDOS		48 -- reserved */
 #define	RPMVAR_MACROFILES		49
+#define	RPMVAR_GPG_PATH			51
+#define	RPMVAR_GPG_NAME			52
 
-#define	RPMVAR_NUM			50     /* number of RPMVAR entries */
+#define	RPMVAR_NUM			52     /* number of RPMVAR entries */
 
 #define	xfree(_p)	free((void *)_p)
 const char *rpmGetPath(const char *path, ...);
@@ -546,6 +548,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define	RPMSIGTAG_PGP          	        1002
 #define	RPMSIGTAG_LEMD5_2		1003
 #define	RPMSIGTAG_MD5		        1004
+#define	RPMSIGTAG_GPG		        1005
 
 /**************************************************/
 /*                                                */

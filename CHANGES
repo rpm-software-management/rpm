@@ -1,4 +1,5 @@
 2.5.x -> 2.90
+	- support for GPG (Toshio Kuratomi <badger@prtr-13.ucsc.edu>)
 	- file lookup finally sane wrt symbolic links :-)
 	- fileindex format changed -- rebuilddb is necessary for rpm 2.90!!
 	- --rebuilddb doesn't open old index files

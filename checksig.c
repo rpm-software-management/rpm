@@ -215,7 +215,9 @@ int doCheckSig(int flags, char **argv)
 	while (headerNextIterator(sigIter, &tag, &type, &ptr, &count)) {
 	    if ((tag == RPMSIGTAG_PGP) && !(flags & CHECKSIG_PGP)) 
 		continue;
-	    else if ((tag == RPMSIGTAG_MD5 || 
+	    if ((tag == RPMSIGTAG_GPG) && !(flags & CHECKSIG_GPG))
+		continue;
+	    if ((tag == RPMSIGTAG_MD5 || 
 		      tag == RPMSIGTAG_LEMD5_2 ||
 		      tag == RPMSIGTAG_LEMD5_1) 
 		      && !(flags & CHECKSIG_MD5)) 
@@ -240,11 +242,21 @@ int doCheckSig(int flags, char **argv)
 			break;
 		      case RPMSIGTAG_PGP:
 			if (res3 == RPMSIG_NOKEY) {
-			    /* Do not consedier this a failure */
+			    /* Do not consider this a failure */
 			    strcat(buffer, "(PGP) ");
 			    missingKeys = 1;
 			} else {
 			    strcat(buffer, "PGP ");
+			    res2 = 1;
+			}
+			break;
+		      case RPMSIGTAG_GPG:
+			if (res3 == RPMSIG_NOKEY) {
+			    /* Do not consider this a failure */
+			    strcat(buffer, "(GPG) ");
+			    missingKeys = 1;
+			} else {
+			    strcat(buffer, "GPG ");
 			    res2 = 1;
 			}
 			break;
@@ -268,6 +280,9 @@ int doCheckSig(int flags, char **argv)
 			break;
 		      case RPMSIGTAG_PGP:
 			strcat(buffer, "pgp ");
+			break;
+		      case RPMSIGTAG_GPG:
+			strcat(buffer, "gpg ");
 			break;
 		      default:
 			strcat(buffer, "??? ");

@@ -105,6 +105,8 @@ static struct rpmOption optionTable[] = {
     { "fixperms",		RPMVAR_FIXPERMS,		0, 1,	1, 2 },
     { "ftpport",		RPMVAR_FTPPORT,			0, 0,	1, 0 },
     { "ftpproxy",		RPMVAR_FTPPROXY,		0, 0,	1, 0 },
+    { "gpg_name",               RPMVAR_GPG_NAME,                0, 0,	1, 0 },
+    { "gpg_path",               RPMVAR_GPG_PATH,                0, 0,	1, 0 },
     { "gzipbin",		RPMVAR_GZIPBIN,			0, 1,	1, 2 },
     { "include",		RPMVAR_INCLUDE,			0, 1,	1, 2 },
     { "instchangelog",		RPMVAR_INSTCHANGELOG,		0, 0,	0, 0 },

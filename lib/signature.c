@@ -24,13 +24,17 @@ typedef int (*md5func)(const char * fn, unsigned char * digest);
 
 static int makePGPSignature(const char *file, void **sig, int_32 *size,
 			    const char *passPhrase);
+static int makeGPGSignature(const char *file, void **sig, int_32 *size,
+			    const char *passPhrase);
 static int checkSize(FD_t fd, int size, int sigsize);
 static int verifySizeSignature(const char *datafile, int_32 size, char *result);
 static int verifyMD5Signature(const char *datafile, unsigned char *sig,
 			      char *result, md5func fn);
 static int verifyPGPSignature(const char *datafile, void *sig,
 			      int count, char *result);
-static int checkPassPhrase(const char *passPhrase);
+static int verifyGPGSignature(const char *datafile, void *sig,
+			      int count, char *result);
+static int checkPassPhrase(const char *passPhrase, const int sigType);
 
 int rpmLookupSignatureType(void)
 {
@@ -40,13 +44,14 @@ int rpmLookupSignatureType(void)
 	return 0;
     }
 
-    if (!strcasecmp(name, "none")) {
+    if (!strcasecmp(name, "none"))
 	return 0;
-    } else if (!strcasecmp(name, "pgp")) {
+    else if (!strcasecmp(name, "pgp"))
 	return RPMSIGTAG_PGP;
-    } else {
+    else if (!strcasecmp(name, "gpg"))
+	return RPMSIGTAG_GPG;
+    else
 	return -1;
-    }
 }
 
 /* rpmReadSignature() emulates the new style signatures if it finds an */
@@ -172,6 +177,10 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
 	makePGPSignature(file, &sig, &size, passPhrase);
 	headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
+      case RPMSIGTAG_GPG:
+	makeGPGSignature(file, &sig, &size, passPhrase);
+	headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
+	break;
     }
 
     return 0;
@@ -249,6 +258,82 @@ static int makePGPSignature(const char *file, void **sig, int_32 *size,
     return 0;
 }
 
+/* This is an adaptation of the makePGPSignature function to use GPG instead
+ * of PGP to create signatures.  I think I've made all the changes necessary,
+ * but this could be a good place to start looking if errors in GPG signature
+ * creation crop up.
+ */
+static int makeGPGSignature(const char *file, void **sig, int_32 *size,
+			    const char *passPhrase)
+{
+    char name[1024];
+    char sigfile[1024];
+    int pid, status;
+    int inpipe[2];
+    FILE *fpipe;
+    struct stat statbuf;
+
+    sprintf(name, "%s", rpmGetVar(RPMVAR_GPG_NAME));
+
+    sprintf(sigfile, "%s.sig", file);
+
+    pipe(inpipe);
+    
+    if (!(pid = fork())) {
+	close(STDIN_FILENO);
+	dup2(inpipe[0], 3);
+	close(inpipe[1]);
+	if (rpmGetVar(RPMVAR_GPG_PATH)) {
+	    dosetenv("GNUPGHOME", rpmGetVar(RPMVAR_GPG_PATH), 1);
+	}
+	execlp("gpg", "gpg",
+	       "--batch", "--no-verbose", "--no-armor", "--passphrase-fd", "3",
+	       "-u", name, "-sbo", sigfile, file,
+	       NULL);
+	rpmError(RPMERR_EXEC, _("Couldn't exec gpg"));
+	_exit(RPMERR_EXEC);
+    }
+
+    fpipe = fdopen(inpipe[1], "w");
+    close(inpipe[0]);
+    fprintf(fpipe, "%s\n", passPhrase);
+    fclose(fpipe);
+
+    (void)waitpid(pid, &status, 0);
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	rpmError(RPMERR_SIGGEN, _("gpg failed"));
+	return 1;
+    }
+
+    if (stat(sigfile, &statbuf)) {
+	/* GPG failed to write signature */
+	unlink(sigfile);  /* Just in case */
+	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature"));
+	return 1;
+    }
+
+    *size = statbuf.st_size;
+    rpmMessage(RPMMESS_DEBUG, _("GPG sig size: %d\n"), *size);
+    *sig = malloc(*size);
+    
+    {	FD_t fd;
+	int rc;
+	fd = fdOpen(sigfile, O_RDONLY, 0);
+	rc = timedRead(fd, *sig, *size);
+	unlink(sigfile);
+	fdClose(fd);
+	if (rc != *size) {
+	    free(*sig);
+	    rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
+	    return 1;
+	}
+    }
+
+    rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of GPG sig\n"), *size);
+    
+    return 0;
+}
+
 static int checkSize(FD_t fd, int size, int sigsize)
 {
     int headerArchiveSize;
@@ -292,6 +377,9 @@ int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 	break;
       case RPMSIGTAG_PGP:
 	return verifyPGPSignature(file, sig, count, result);
+	break;
+      case RPMSIGTAG_GPG:
+	return verifyGPGSignature(file, sig, count, result);
 	break;
       default:
 	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
@@ -410,14 +498,89 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     return res;
 }
 
-char *rpmGetPassPhrase(const char *prompt)
+static int verifyGPGSignature(const char *datafile, void *sig,
+			      int count, char *result)
+{
+    int pid, status, outpipe[2];
+    int sfd;
+    char *sigfile;
+    unsigned char buf[8192];
+    FILE *file;
+    int res = RPMSIG_OK;
+  
+    /* Write out the signature */
+    sigfile = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsig");
+    sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    write(sfd, sig, count);
+    close(sfd);
+
+    /* Now run GPG */
+    pipe(outpipe);
+
+    if (!(pid = fork())) {
+    /* gpg version 0.9 sends its output to stderr. */
+    close(2);
+	close(outpipe[0]);
+    dup2(outpipe[1], 2);
+	if (rpmGetVar(RPMVAR_GPG_PATH)) {
+	    dosetenv("GNUPGHOME", rpmGetVar(RPMVAR_GPG_PATH), 1);
+	}
+	execlp("gpg", "gpg",
+	       "--batch", "--no-verbose", 
+	       "--verify", sigfile, datafile,
+	       NULL);
+	fprintf(stderr, _("exec failed!\n"));
+	rpmError(RPMERR_EXEC, 
+		 _("Could not run gpg.  Use --nogpg to skip GPG checks."));
+	_exit(RPMERR_EXEC);
+    }
+
+    close(outpipe[1]);
+    file = fdopen(outpipe[0], "r");
+    result[0] = '\0';
+    while (fgets(buf, 1024, file)) {
+        strcat(result, buf);
+	    if (!strncmp("gpg: Can't check signature: Public key not found", buf, 48)) {
+	        res = RPMSIG_NOKEY;
+	    }
+    }
+    fclose(file);
+  
+    (void)waitpid(pid, &status, 0);
+    unlink(sigfile);
+    if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
+	res = RPMSIG_BAD;
+    }
+    
+    return res;
+}
+
+char *rpmGetPassPhrase(const char *prompt, const int sigTag)
 {
     char *pass;
 
-    if (! rpmGetVar(RPMVAR_PGP_NAME)) {
-	rpmError(RPMERR_SIGGEN,
-	         _("You must set \"pgp_name:\" in your rpmrc file"));
-	return NULL;
+    switch (sigTag) {
+      case RPMSIGTAG_GPG:
+        if (! rpmGetVar(RPMVAR_GPG_NAME)) {
+            rpmError(RPMERR_SIGGEN,
+                     _("You must set \"gpg_name:\" in your rpmrc file"));
+            return NULL;
+        }
+        break;
+      case RPMSIGTAG_PGP: 
+        if (! rpmGetVar(RPMVAR_PGP_NAME)) {
+	        rpmError(RPMERR_SIGGEN,
+                     _("You must set \"pgp_name:\" in your rpmrc file"));
+	    return NULL;
+        }
+        break;
+      default:
+        /* Currently the calling function (rpm.c:main) is checking this and
+         * doing a better job.  This section should never be accessed.
+         */
+        rpmError(RPMERR_SIGGEN,
+                 _("Invalid signature spec in rc file"));
+        return NULL;
     }
 
     if (prompt) {
@@ -426,22 +589,20 @@ char *rpmGetPassPhrase(const char *prompt)
         pass = getpass("");
     }
 
-    if (checkPassPhrase(pass)) {
+    if (checkPassPhrase(pass, sigTag)) {
 	return NULL;
     }
 
     return pass;
 }
 
-static int checkPassPhrase(const char *passPhrase)
+static int checkPassPhrase(const char *passPhrase, const int sigType)
 {
     char name[1024];
     int passPhrasePipe[2];
     FILE *fpipe;
     int pid, status;
     int fd;
-
-    sprintf(name, "+myname=\"%s\"", rpmGetVar(RPMVAR_PGP_NAME));
 
     pipe(passPhrasePipe);
     if (!(pid = fork())) {
@@ -457,16 +618,39 @@ static int checkPassPhrase(const char *passPhrase)
 	    dup2(fd, STDOUT_FILENO);
 	}
 	dup2(passPhrasePipe[0], 3);
-	dosetenv("PGPPASSFD", "3", 1);
-	if (rpmGetVar(RPMVAR_PGP_PATH)) {
-	    dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
-	}
-	execlp("pgp", "pgp",
-	       "+batchmode=on", "+verbose=0",
-	       name, "-sf",
-	       NULL);
-	rpmError(RPMERR_EXEC, _("Couldn't exec pgp"));
-	_exit(RPMERR_EXEC);
+
+     switch (sigType) {
+      case RPMSIGTAG_GPG:
+        sprintf(name, "%s", rpmGetVar(RPMVAR_GPG_NAME));
+	    if (rpmGetVar(RPMVAR_GPG_PATH)) {
+	        dosetenv("GNUPGHOME", rpmGetVar(RPMVAR_GPG_PATH), 1);
+    	}
+	    execlp("gpg", "gpg",
+	           "--batch", "--no-verbose", "--passphrase-fd", "3",
+	           "-u", name, "-so", "-",
+	           NULL);
+	    rpmError(RPMERR_EXEC, _("Couldn't exec gpg"));
+	    _exit(RPMERR_EXEC);
+        break;
+      case RPMSIGTAG_PGP:
+        sprintf(name, "+myname=\"%s\"", rpmGetVar(RPMVAR_PGP_NAME));
+    	dosetenv("PGPPASSFD", "3", 1);
+	    if (rpmGetVar(RPMVAR_PGP_PATH)) {
+	        dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
+    	}
+	    execlp("pgp", "pgp",
+	           "+batchmode=on", "+verbose=0",
+	           name, "-sf",
+	           NULL);
+	    rpmError(RPMERR_EXEC, _("Couldn't exec pgp"));
+	    _exit(RPMERR_EXEC);
+        break;
+      default:
+        /* This case should have been screened out long ago. */
+        rpmError(RPMERR_SIGGEN,
+                 _("Invalid signature spec in rc file"));
+        _exit(RPMERR_SIGGEN);
+     }
     }
 
     fpipe = fdopen(passPhrasePipe[1], "w");

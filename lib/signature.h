@@ -47,6 +47,6 @@ int rpmAddSignature(Header header, const char *file,
 int rpmLookupSignatureType(void);
 
 /* Utility to read a pass phrase from the user */
-char *rpmGetPassPhrase(const char *prompt);
+char *rpmGetPassPhrase(const char *prompt, const int sigTag);
 
 #endif	/* H_SIGNATURE */
