@@ -259,8 +259,8 @@ int main(int argc, char ** argv) {
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
-    int noPgp = 0, dump = 0, initdb = 0, buildMode = 0, ignoreArch = 0;
-    int gotDbpath = 0;
+    int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
+    int gotDbpath = 0, building = 0;
     int addSign = NEW_SIGNATURE;
     char * rcfile = NULL, * queryFormat = NULL, * prefix = NULL;
     char buildChar = ' ';
@@ -276,8 +276,9 @@ int main(int argc, char ** argv) {
     struct option optionsTable[] = {
 	    { "addsign", 0, 0, GETOPT_ADDSIGN },
 	    { "all", 0, 0, 'a' },
-	    { "arch", 1, 0, 0 },
 	    { "build", 1, 0, 'b' },
+	    { "buildarch", 1, 0, 0 },
+	    { "buildos", 1, 0, 0 },
 	    { "buildroot", 1, 0, GETOPT_BUILDROOT },
 	    { "checksig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
@@ -302,7 +303,6 @@ int main(int argc, char ** argv) {
 	    { "nopgp", 0, &noPgp, 0 },
 	    { "noscripts", 0, &noScripts, 0 },
 	    { "oldpackage", 0, &oldPackage, 0 },
-	    { "os", 1, 0, 0 },
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
 	    { "prefix", 1, 0, GETOPT_PREFIX },
@@ -322,6 +322,7 @@ int main(int argc, char ** argv) {
 	    { "root", 1, 0, 'r' },
 	    { "scripts", 0, &queryScripts, 0 },
 	    { "short-circuit", 0, &shortCircuit, 0 },
+	    { "showrc", 0, 0, 0 },
 	    { "sign", 0, &signIt, 0 },
 	    { "state", 0, 0, 's' },
 	    { "stdin-files", 0, 0, 'F' },
@@ -353,20 +354,29 @@ int main(int argc, char ** argv) {
     while (*currarg) {
 	if (!strcmp(*currarg, "--rcfile")) {
 	    rcfile = *(currarg + 1);
-	} else if (!strcmp(*currarg, "--arch")) {
+	} else if (!strcmp(*currarg, "--buildarch")) {
 	    arch = *(currarg + 1);
-	} else if (!strcmp(*currarg, "--os")) {
+	} else if (!strcmp(*currarg, "--buildos")) {
 	    os = *(currarg + 1);
-	} else if (!strncmp(*currarg, "-b", 2) || 
+	} else if (!strcmp(*currarg, "--showrc")) {
+	    showrc = 1;
+	    building = 1;
+	} else if (!strncmp(*currarg, "-b", 2) ||
+		   !strcmp(*currarg, "--build") ||
 		   !strcmp(*currarg, "--rebuild") ||
-		   !strcmp(*currarg, "--recompile"))
-	    buildMode = 1;
+		   !strcmp(*currarg, "--recompile")) {
+	    building = 1;
+	}
 	currarg++;
     } 
 
     /* reading this early makes it easy to override */
-    if (rpmReadConfigFiles(rcfile, arch, os, buildMode))  
+    if (rpmReadConfigFiles(rcfile, arch, os, building))  
 	exit(1);
+    if (showrc) {
+	showRc(stdout);
+	exit(0);
+    }
 
     while (1) {
 	long_index = 0;
