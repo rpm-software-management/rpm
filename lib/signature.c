@@ -7,7 +7,9 @@
  * size key you like).  We also honor PGPPATH finally.
  */
 
-#ifdef HAVE_ASM_BYTEORDER_H
+#include "config.h"
+
+#if HAVE_ASM_BYTEORDER_H
 #include <asm/byteorder.h>
 #endif
 
@@ -20,6 +22,7 @@
 #include <string.h>
 
 #include "md5.h"
+#include "misc.h"
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"
