@@ -4,6 +4,7 @@
 	- add BuildConflicts: and BuildRequires: in spec file and src rpm.
 	- fix: bigendian's with longlong file sizes (e.g. IRIX) dinna work.
 	- move printDep* routines into rpmlib for gnorpm et al.
+	- updated ru translation (Sergey Kubushin).
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).
