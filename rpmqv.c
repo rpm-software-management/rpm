@@ -1045,8 +1045,7 @@ ia->transFlags |= RPMTRANS_FLAG_NOMD5;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	    ec += rpmRollback(ts, ia, NULL);
 	} else {
-	    ec += rpmErase(ts, (const char **)poptGetArgs(optCon), 
-			 ia->transFlags, ia->eraseInterfaceFlags);
+	    ec += rpmErase(ts, ia, (const char **) poptGetArgs(optCon));
 	}
 	break;
 
@@ -1087,12 +1086,10 @@ ia->transFlags |= RPMTRANS_FLAG_NOMD5;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 /*@i@*/	    ec += rpmRollback(ts, ia, NULL);
 	} else {
-	    /*@-compdef@*/ /* FIX: ia->relocations[0].newPath undefined */
-	    ec += rpmInstall(ts, (const char **)poptGetArgs(optCon), 
-			ia->transFlags, ia->installInterfaceFlags,
-			ia->probFilter, ia->relocations);
+	    /*@-compmempass@*/ /* FIX: ia->relocations[0].newPath undefined */
+	    ec += rpmInstall(ts, ia, (const char **)poptGetArgs(optCon));
+	    /*@=compmempass@*/
 	}
-	/*@=compdef@*/
 	break;
 
 #endif	/* IAM_RPMEIU */

@@ -59,7 +59,6 @@ if (_ds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesystem@*/
 
-
     if (ds->tagN == RPMTAG_PROVIDENAME) {
 	tagEVR = RPMTAG_PROVIDEVERSION;
 	tagF = RPMTAG_PROVIDEFLAGS;

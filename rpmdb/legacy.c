@@ -36,7 +36,8 @@ int domd5(const char * fn, unsigned char * digest, int asAscii)
 	    xx = close(fdno);
 	    return 1;
 	}
-        (void) madvise(mapped, st->st_size, MADV_SEQUENTIAL);
+
+        xx = madvise(mapped, st->st_size, MADV_SEQUENTIAL);
 
 	ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
 	xx = rpmDigestUpdate(ctx, mapped, st->st_size);

@@ -424,27 +424,6 @@ extern int packagesTotal;
 	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
- * Install/upgrade/freshen binary rpm package.
- * @param ts		transaction set
- * @param fileArgv	array of package file names (NULL terminated)
- * @param transFlags	bits to control rpmRunTransactions()
- * @param interfaceFlags bits to control rpmInstall()
- * @param probFilter 	bits to filter problem types
- * @param relocations	package file relocations
- * @return		0 on success
- */
-int rpmInstall(rpmTransactionSet ts,
-		/*@null@*/ const char ** fileArgv,
-		rpmtransFlags transFlags, 
-		rpmInstallInterfaceFlags interfaceFlags,
-		rpmprobFilterFlags probFilter,
-		/*@null@*/ rpmRelocation * relocations)
-	/*@globals packagesTotal, rpmGlobalMacroContext,
-		fileSystem, internalState@*/
-	/*@modifies ts, *relocations, packagesTotal, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
-/** \ingroup rpmcli
  * Install source rpm package.
  * @param ts		transaction set
  * @param arg		source rpm file name
@@ -461,22 +440,6 @@ int rpmInstallSource(rpmTransactionSet ts, const char * arg,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
- * Erase binary rpm package.
- * @param ts		transaction set
- * @param argv		array of package file names (NULL terminated)
- * @param transFlags	bits to control rpmRunTransactions()
- * @param interfaceFlags bits to control rpmInstall()
- * @return		0 on success
- */
-int rpmErase(rpmTransactionSet ts, /*@null@*/ const char ** argv,
-		rpmtransFlags transFlags, 
-		rpmEraseInterfaceFlags interfaceFlags)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
-/** \ingroup rpmcli
  * Describe database command line requests.
  */
 struct rpmInstallArguments_s {
@@ -484,17 +447,45 @@ struct rpmInstallArguments_s {
     rpmprobFilterFlags probFilter;
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;
-/*@only@*/ /*@null@*/
+/*@owned@*/ /*@null@*/
     rpmRelocation * relocations;
     int numRelocations;
     int noDeps;
     int incldocs;
+    rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
 /*@null@*/
     const char * prefix;
 /*@observer@*/ /*@null@*/
     const char * rootdir;
     uint_32 rbtid;		/*!< from --rollback */
 };
+
+/** \ingroup rpmcli
+ * Install/upgrade/freshen binary rpm package.
+ * @param ts		transaction set
+ * @param ia		mode flags and parameters
+ * @param fileArgv	array of package file names (NULL terminated)
+ * @return		0 on success
+ */
+int rpmInstall(rpmTransactionSet ts, struct rpmInstallArguments_s * ia,
+		/*@null@*/ const char ** fileArgv)
+	/*@globals packagesTotal, rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies ts, ia, packagesTotal, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
+ * Erase binary rpm package.
+ * @param ts		transaction set
+ * @param argv		array of package file names (NULL terminated)
+ * @param transFlags	bits to control rpmRunTransactions()
+ * @param interfaceFlags bits to control rpmInstall()
+ * @return		0 on success
+ */
+int rpmErase(rpmTransactionSet ts, const struct rpmInstallArguments_s * ia,
+		/*@null@*/ const char ** argv)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * A rollback transaction id element.
@@ -586,10 +577,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
  */
 int rpmRollback(rpmTransactionSet ts, struct rpmInstallArguments_s * ia,
 		/*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  */

@@ -187,30 +187,37 @@ struct rpmEIU {
     FD_t fd;
     int numFailed;
     int numPkgs;
-/*@only@*/ str_t * pkgURL;
-/*@dependent@*/ /*@null@*/ str_t * fnp;
-/*@only@*/ char * pkgState;
+/*@only@*/
+    str_t * pkgURL;
+/*@dependent@*/ /*@null@*/
+    str_t * fnp;
+/*@only@*/
+    char * pkgState;
     int prevx;
     int pkgx;
     int numRPMS;
     int numSRPMS;
-/*@only@*/ /*@null@*/ str_t * sourceURL;
+/*@only@*/ /*@null@*/
+    str_t * sourceURL;
     int isSource;
     int argc;
-/*@only@*/ /*@null@*/ str_t * argv;
-/*@temp@*/ rpmRelocation * relocations;
+/*@only@*/ /*@null@*/
+    str_t * argv;
+/*@dependent@*/
+    rpmRelocation * relocations;
     rpmRC rpmrc;
 };
 
 /** @todo Generalize --freshen policies. */
-int rpmInstall(rpmTransactionSet ts, const char ** fileArgv,
-		rpmtransFlags transFlags,
-		rpmInstallInterfaceFlags interfaceFlags,
-		rpmprobFilterFlags probFilter,
-		rpmRelocation * relocations)
+int rpmInstall(rpmTransactionSet ts,
+		struct rpmInstallArguments_s * ia,
+		const char ** fileArgv)
 {
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
-    int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+    rpmInstallInterfaceFlags interfaceFlags;
+    rpmprobFilterFlags probFilter;
+    rpmRelocation * relocations;
+    int notifyFlags;
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
@@ -222,10 +229,18 @@ int rpmInstall(rpmTransactionSet ts, const char ** fileArgv,
     if (fileArgv == NULL) goto exit;
     /*@-branchstate@*/
 
-    ts->transFlags = transFlags;
-    ts->dbmode = (transFlags & RPMTRANS_FLAG_TEST)
+    ts->transFlags = ia->transFlags;
+    interfaceFlags = ia->installInterfaceFlags;
+    probFilter = ia->probFilter;
+    relocations = ia->relocations;
+
+    ts->nodigests = (ia->qva_flags & VERIFY_DIGEST);
+    ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
+
+    ts->dbmode = (ts->transFlags & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_CREAT);
     ts->notify = rpmShowProgress;
+    notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
     ts->notifyData = (void *) ((long)notifyFlags);
 
     if ((eiu->relocations = relocations) != NULL) {
@@ -545,7 +560,7 @@ restart:
 
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	rc = rpmRunTransactions(ts, ts->notify, ts->notifyData,
-		 	NULL, &probs, transFlags, probFilter);
+		 	NULL, &probs, ts->transFlags, probFilter);
 	/*@=nullstate@*/
 
 	if (rc < 0) {
@@ -572,7 +587,7 @@ restart:
 		continue;
 	    }
 
-	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
+	    if (!(ts->transFlags & RPMTRANS_FLAG_TEST)) {
 #if !defined(__LCLINT__) /* LCL: segfault */
 		eiu->rpmrc = rpmInstallSourcePackage(ts, eiu->fd, NULL,
 			ts->notify, ts->notifyData, NULL);
@@ -600,11 +615,10 @@ exit:
     return eiu->numFailed;
 }
 
-int rpmErase(rpmTransactionSet ts, const char ** argv,
-		rpmtransFlags transFlags,
-		rpmEraseInterfaceFlags interfaceFlags)
+int rpmErase(rpmTransactionSet ts,
+		const struct rpmInstallArguments_s * ia,
+		const char ** argv)
 {
-
     int count;
     const char ** arg;
     int numFailed = 0;
@@ -613,12 +627,18 @@ int rpmErase(rpmTransactionSet ts, const char ** argv,
     int stopUninstall = 0;
     int numPackages = 0;
     rpmProblemSet probs;
+    rpmEraseInterfaceFlags interfaceFlags;
 
     if (argv == NULL) return 0;
 
-    ts->transFlags = transFlags;
+    ts->transFlags = ia->transFlags;
+    interfaceFlags = ia->eraseInterfaceFlags;
+
+    ts->nodigests = (ia->qva_flags & VERIFY_DIGEST);
+    ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
+
     /* XXX W2DO? O_EXCL??? */
-    ts->dbmode = (transFlags & RPMTRANS_FLAG_TEST)
+    ts->dbmode = (ts->transFlags & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_EXCL);
 
     (void) rpmtsOpenDB(ts, ts->dbmode);
@@ -668,9 +688,9 @@ int rpmErase(rpmTransactionSet ts, const char ** argv,
     }
 
     if (!stopUninstall) {
-	transFlags |= RPMTRANS_FLAG_REVERSE;
+	ts->transFlags |= RPMTRANS_FLAG_REVERSE;
 	numFailed += rpmRunTransactions(ts, NULL, NULL, NULL, &probs,
-					transFlags, 0);
+					ts->transFlags, 0);
     }
 
     return numFailed;

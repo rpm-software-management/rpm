@@ -182,6 +182,11 @@ struct poptOption rpmInstallPoptTable[] = {
 	RPMTRANS_FLAG_NOPOSTUN,
 	N_("do not execute %%postun scriptlet (if any)"), NULL },
 
+ { "nodigest", '\0', POPT_BIT_SET, &rpmIArgs.qva_flags, VERIFY_DIGEST,
+        N_("don't verify digest(s)"), NULL },
+ { "nosignature", '\0', POPT_BIT_SET, &rpmIArgs.qva_flags, VERIFY_SIGNATURE,
+        N_("don't verify signature(s)"), NULL },
+
  { "notriggers", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
 	_noTransTriggers,
 	N_("do not execute any scriptlet(s) triggered by this package"), NULL},
