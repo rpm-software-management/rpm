@@ -7,6 +7,9 @@ check-recursive: ./usr/ ./bin ./var
 
 ./usr ./bin ./var: ../rpm
 	make -C .. DESTDIR=`pwd` install
+	cp rpmrc macros ./$(pkglibdir)
+	ln -s @GZIPBIN@ ./@GZIPBIN@
+	ln -s @BZIP2BIN@ ./@BZIP2BIN@
 
 clean-local:
 	rm -rf ./usr ./bin ./var

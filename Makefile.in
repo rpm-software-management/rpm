@@ -693,9 +693,17 @@ rpm.o:	rpm.c
 include ./Makefile.inc
 
 install-data-local:
-	@$(mkinstalldirs) $(DESTDIR)/var/tmp $(DESTDIR)/var/lib/rpm
+	@$(mkinstalldirs) $(DESTDIR)/var/lib/rpm
 	@rm -f $(DESTDIR)/$(libdir)/rpmrc && ln -s rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
 	@rm -f $(DESTDIR)/$(libdir)/rpmpopt && ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
+	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
+	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
+	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/`uname -m`
+	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SOURCES
+	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS
+	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS
+	@$(mkinstalldirs) $(DESTDIR)/var/lib/rpm
+	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
 # FIXME: these should be generated in configure.in
 find-requires: find-requires.sh

@@ -119,8 +119,8 @@ EXTRA_DIST =
 SUBDIRS = hello-test
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
-CONFIG_CLEAN_FILES =  rpmrc
-DIST_COMMON =  Makefile.am Makefile.in rpmrc.in
+CONFIG_CLEAN_FILES =  rpmrc macros
+DIST_COMMON =  Makefile.am Makefile.in macros.in rpmrc.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -138,6 +138,8 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 rpmrc: $(top_builddir)/config.status rpmrc.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
+macros: $(top_builddir)/config.status macros.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= ./config.status
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -302,6 +304,9 @@ check-recursive: ./usr/ ./bin ./var
 
 ./usr ./bin ./var: ../rpm
 	make -C .. DESTDIR=`pwd` install
+	cp rpmrc macros ./$(pkglibdir)
+	ln -s @GZIPBIN@ ./@GZIPBIN@
+	ln -s @BZIP2BIN@ ./@BZIP2BIN@
 
 clean-local:
 	rm -rf ./usr ./bin ./var

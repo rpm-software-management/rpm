@@ -1,0 +1,9 @@
+#!/bin/sh
+
+DBG=echo
+
+rpm=${rpm:=rpm}
+destdir="`pwd`"
+destdir="`dirname $destdir`"
+
+${DBGX} $rpm --initdb

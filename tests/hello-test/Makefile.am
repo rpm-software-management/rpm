@@ -2,8 +2,8 @@
 
 all:
 
-noinst_SCRIPTS = test0
+noinst_SCRIPTS = initdb showrc test0
 
-TESTS_ENVIRONMENT = rpm="${top_builddir}/rpm --rcfile ${top_builddir}/tests/rpmrc"
+TESTS_ENVIRONMENT = rpm="${top_builddir}/rpm --rcfile ${top_builddir}/tests/$(pkglibdir)/rpmrc"
 
-TESTS = test0
+TESTS = initdb showrc test0
