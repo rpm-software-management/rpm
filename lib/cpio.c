@@ -12,7 +12,7 @@
 
 struct hardLink {
     struct hardLink * next;
-    char ** files;		/* there are nlink of these, used by install */
+    const char ** files;	/* nlink of these, used by install */
     int * fileMaps;		/* used by build */
     dev_t dev;
     ino_t inode;
@@ -50,10 +50,11 @@ struct cpioHeader {
     time_t mtime;
     long size;
     dev_t dev, rdev;
-    char * path;
+    /*@owned@*/char * path;
 };
 
-static inline off_t saferead(CFD_t *cfd, void * vbuf, size_t amount) {
+static inline off_t saferead(CFD_t *cfd, /*@out@*/void * vbuf, size_t amount)
+{
     off_t rc = 0;
     char * buf = vbuf;
 
@@ -93,14 +94,16 @@ static inline off_t saferead(CFD_t *cfd, void * vbuf, size_t amount) {
     return rc;
 }
 
-static inline off_t ourread(CFD_t * cfd, void * buf, size_t size) {
+static inline off_t ourread(CFD_t * cfd, /*@out@*/void * buf, size_t size)
+{
     off_t i = saferead(cfd, buf, size);
     if (i > 0)
 	cfd->cpioPos += i;
     return i;
 }
 
-static inline void padinfd(CFD_t * cfd, int modulo) {
+static inline void padinfd(CFD_t * cfd, int modulo)
+{
     int buf[10];
     int amount;
     
@@ -108,9 +111,10 @@ static inline void padinfd(CFD_t * cfd, int modulo) {
     (void)ourread(cfd, buf, amount);
 }
 
-static inline off_t safewrite(CFD_t *cfd, void * vbuf, size_t amount) {
+static inline off_t safewrite(CFD_t *cfd, const void * vbuf, size_t amount)
+{
     off_t rc = 0;
-    char * buf = vbuf;
+    const char * buf = vbuf;
 
     while (amount > 0) {
 	size_t nb;
@@ -149,7 +153,8 @@ static inline off_t safewrite(CFD_t *cfd, void * vbuf, size_t amount) {
     return rc; 
 }
 
-static inline int padoutfd(CFD_t * cfd, size_t * where, int modulo) {
+static inline int padoutfd(CFD_t * cfd, size_t * where, int modulo)
+{
     static int buf[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     int amount;
     
@@ -161,7 +166,8 @@ static inline int padoutfd(CFD_t * cfd, size_t * where, int modulo) {
     return 0;
 }
 
-static int strntoul(const char * str, char ** endptr, int base, int num) {
+static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
+{
     char * buf, * end;
     unsigned long ret;
 
@@ -185,7 +191,8 @@ static int strntoul(const char * str, char ** endptr, int base, int num) {
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	memcpy(phys, space, 8);
 
-static int getNextHeader(CFD_t * cfd, struct cpioHeader * chPtr) {
+static int getNextHeader(CFD_t * cfd, struct cpioHeader * chPtr)
+{
     struct cpioCrcPhysicalHeader physHeader;
     int nameSize;
     char * end;
@@ -223,6 +230,7 @@ static int getNextHeader(CFD_t * cfd, struct cpioHeader * chPtr) {
     chPtr->path = malloc(nameSize + 1);
     if (ourread(cfd, chPtr->path, nameSize) != nameSize) {
 	free(chPtr->path);
+	chPtr->path = NULL;
 	return CPIOERR_BAD_HEADER;
     }
 
@@ -233,7 +241,8 @@ static int getNextHeader(CFD_t * cfd, struct cpioHeader * chPtr) {
     return 0;
 }
 
-int cpioFileMapCmp(const void * a, const void * b) {
+int cpioFileMapCmp(const void * a, const void * b)
+{
     const struct cpioFileMapping * first = a;
     const struct cpioFileMapping * second = b;
 
@@ -241,7 +250,8 @@ int cpioFileMapCmp(const void * a, const void * b) {
 }
 
 /* This could trash files in the path! I'm not sure that's a good thing */
-static int createDirectory(char * path, mode_t perms) {
+static int createDirectory(char * path, mode_t perms)
+{
     struct stat sb;
 
     if (!lstat(path, &sb)) {
@@ -276,7 +286,8 @@ static int createDirectory(char * path, mode_t perms) {
     return 0;
 }
 
-static int setInfo(struct cpioHeader * hdr) {
+static int setInfo(struct cpioHeader * hdr)
+{
     int rc = 0;
     struct utimbuf stamp;
 
@@ -300,7 +311,8 @@ static int setInfo(struct cpioHeader * hdr) {
     return rc;
 }
 
-static int checkDirectory(char * filename) {
+static int checkDirectory(char * filename)
+{
     static char * lastDir = NULL;
     static int lastDirLength = 0;
     static int lastDirAlloced = 0;
@@ -345,7 +357,8 @@ static int checkDirectory(char * filename) {
 }
 
 static int expandRegular(CFD_t * cfd, struct cpioHeader * hdr,
-			 cpioCallback cb, void * cbData) {
+			 cpioCallback cb, void * cbData)
+{
     FD_t out;
     char buf[8192];
     int bytesRead;
@@ -407,7 +420,8 @@ static int expandRegular(CFD_t * cfd, struct cpioHeader * hdr,
     return rc;
 }
 
-static int expandSymlink(CFD_t * cfd, struct cpioHeader * hdr) {
+static int expandSymlink(CFD_t * cfd, struct cpioHeader * hdr)
+{
     char buf[2048], buf2[2048];
     struct stat sb;
     int len;
@@ -439,7 +453,8 @@ static int expandSymlink(CFD_t * cfd, struct cpioHeader * hdr) {
     return 0;
 }
 
-static int expandFifo(CFD_t * cfd, struct cpioHeader * hdr) {
+static int expandFifo(/*@unused@*/CFD_t * cfd, struct cpioHeader * hdr)
+{
     struct stat sb;
 
     if (!lstat(hdr->path, &sb)) {
@@ -455,7 +470,8 @@ static int expandFifo(CFD_t * cfd, struct cpioHeader * hdr) {
     return 0; 
 }
 
-static int expandDevice(CFD_t * cfd, struct cpioHeader * hdr) {
+static int expandDevice(/*@unused@*/CFD_t * cfd, struct cpioHeader * hdr)
+{
     struct stat sb;
 
     if (!lstat(hdr->path, &sb)) {
@@ -472,16 +488,20 @@ static int expandDevice(CFD_t * cfd, struct cpioHeader * hdr) {
     return 0;
 }
 
-static void freeLink(struct hardLink * li) {
+static void freeLink(/*@only@*/struct hardLink * li)
+{
     int i;
 
     for (i = 0; i < li->nlink; i++) {
-	if (li->files[i]) free(li->files[i]);
+	if (li->files[i] == NULL) continue;
+	free((void *)li->files[i]);
+	li->files[i] = NULL;
     }
     free(li->files);
 }
 
-static int createLinks(struct hardLink * li, char ** failedFile) {
+static int createLinks(struct hardLink * li, /*@out@*/const char ** failedFile)
+{
     int i;
     struct stat sb;
 
@@ -491,17 +511,19 @@ static int createLinks(struct hardLink * li, char ** failedFile) {
 
 	if (!lstat(li->files[i], &sb)) {
 	    if (unlink(li->files[i])) {
-		*failedFile = strdup(li->files[i]);
+		if (failedFile)
+		    *failedFile = strdup(li->files[i]);
 		return CPIOERR_UNLINK_FAILED;
 	    }
 	}
 
 	if (link(li->files[li->createdPath], li->files[i])) {
-	    *failedFile = strdup(li->files[i]);
+	    if (failedFile)
+		*failedFile = strdup(li->files[i]);
 	    return CPIOERR_LINK_FAILED;
 	}
 
-	free(li->files[i]);
+	free((void *)li->files[i]);
 	li->files[i] = NULL;
 	li->linksLeft--;
     }
@@ -509,7 +531,8 @@ static int createLinks(struct hardLink * li, char ** failedFile) {
     return 0;
 }
 
-static int eatBytes(CFD_t * cfd, int amount) {
+static int eatBytes(CFD_t * cfd, int amount)
+{
     char buf[4096];
     int bite;
    
@@ -525,7 +548,8 @@ static int eatBytes(CFD_t * cfd, int amount) {
 
 int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings, 
 		       int numMappings, cpioCallback cb, void * cbData,
-		       char ** failedFile) {
+		       const char ** failedFile)
+{
     struct cpioHeader ch;
     int rc = 0;
     int linkNum = 0;
@@ -538,7 +562,8 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
     struct hardLink * li = NULL;
 
     cfd->cpioPos = 0;
-    *failedFile = NULL;
+    if (failedFile)
+	*failedFile = NULL;
 
     ch.path = NULL;
     do {
@@ -587,7 +612,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		    if (li->inode == ch.inode && li->dev == ch.dev) break;
 		}
 
-		if (!li) {
+		if (li == NULL) {
 		    li = malloc(sizeof(*li));
 		    li->inode = ch.inode;
 		    li->dev = ch.dev;
@@ -649,7 +674,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		}
 	    }
 
-	    if (rc && !*failedFile) {
+	    if (rc && failedFile && *failedFile == NULL) {
 		*failedFile = strdup(ch.path);
 
 		olderr = errno;
@@ -702,7 +727,8 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 }
 
 static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map, 
-		     size_t * sizeptr, int writeData) {
+		     /*@out@*/size_t * sizep, int writeData)
+{
     struct cpioCrcPhysicalHeader hdr;
     char buf[8192], symbuf[2048];
     dev_t num;
@@ -826,7 +852,8 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
     if ((rc = padoutfd(cfd, &size, 4)))
 	return rc;
 
-    *sizeptr = size;
+    if (sizep)
+	*sizep = size;
 
     return 0;
 }
@@ -834,23 +861,24 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
 static int writeLinkedFile(CFD_t *cfd, struct hardLink * hlink, 
 			   struct cpioFileMapping * mappings,
 			   cpioCallback cb, void * cbData,
-			   size_t * sizeptr,
-			   char ** failedFile) {
+			   /*@out@*/size_t * sizep,
+			   /*@out@*/const char ** failedFile)
+{
     int i, rc;
-    size_t size;
+    size_t size, total;
     struct cpioCallbackInfo cbinfo;
 
-    *sizeptr = 0;
+    total = 0;
 
     for (i = hlink->nlink - 1; i > hlink->linksLeft; i--) {
 	if ((rc = writeFile(cfd, hlink->sb, mappings + hlink->fileMaps[i], 
 			    &size, 0))) {
-	    if (failedFile) *failedFile = 
-		    mappings[hlink->fileMaps[i]].fsPath;
+	    if (failedFile)
+		*failedFile = strdup(mappings[hlink->fileMaps[i]].fsPath);
 	    return rc;
 	}
 
-	*sizeptr += size;
+	total += size;
 
 	if (cb) {
 	    cbinfo.file = mappings[i].archivePath;
@@ -861,12 +889,16 @@ static int writeLinkedFile(CFD_t *cfd, struct hardLink * hlink,
     if ((rc = writeFile(cfd, hlink->sb, 
 			mappings + hlink->fileMaps[hlink->linksLeft], 
 			&size, 1))) {
+	if (sizep)
+	    *sizep = total;
 	if (failedFile) 
-	    *failedFile = mappings[hlink->fileMaps[hlink->linksLeft]].fsPath;
+	    *failedFile = strdup(mappings[hlink->fileMaps[hlink->linksLeft]].fsPath);
 	return rc;
     }
+    total += size;
 
-    *sizeptr += size;
+    if (sizep)
+	*sizep = total;
 
     if (cb) {
 	cbinfo.file = mappings[i].archivePath;
@@ -878,7 +910,8 @@ static int writeLinkedFile(CFD_t *cfd, struct hardLink * hlink,
 
 int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings, 
 		     int numMappings, cpioCallback cb, void * cbData,
-		     unsigned int * archiveSize, char ** failedFile) {
+		     unsigned int * archiveSize, const char ** failedFile)
+{
     size_t size, totalsize = 0;
     int rc;
     int i;
@@ -899,7 +932,8 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 	    rc = lstat(mappings[i].fsPath, &sb);
 
 	if (rc) {
-	    if (failedFile) *failedFile = mappings[i].fsPath;
+	    if (failedFile)
+		*failedFile = strdup(mappings[i].fsPath);
 	    return CPIOERR_STAT_FAILED;
 	}
 
@@ -939,7 +973,8 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 	    }
 	} else {
 	    if ((rc = writeFile(cfd, sb, mappings + i, &size, 1))) {
-		if (failedFile) *failedFile = mappings[i].fsPath;
+		if (failedFile)
+		    *failedFile = strdup(mappings[i].fsPath);
 		return rc;
 	    }
 
@@ -996,7 +1031,7 @@ const char * cpioStrerror(int rc)
     switch (rc) {
     default:
 	s = msg + strlen(msg);
-	sprintf(s, _("(error 0x%x)"), rc);
+	sprintf(s, _("(error 0x%x)"), (unsigned)rc);
 	s = NULL;
 	break;
     case CPIOERR_BAD_MAGIC:	s = _("Bad magic");		break;
