@@ -87,7 +87,7 @@ int convertDB(void) {
 		 package.distribution, 1);
 	headerAddEntry(dbentry, RPMTAG_VENDOR, RPM_STRING_TYPE, package.vendor, 1);
 	headerAddEntry(dbentry, RPMTAG_SIZE, RPM_INT32_TYPE, &package.size, 1);
-	headerAddEntry(dbentry, RPMTAG_COPYRIGHT, RPM_STRING_TYPE, package.copyright, 1);
+	headerAddEntry(dbentry, RPMTAG_LICENSE, RPM_STRING_TYPE, package.copyright, 1);
 	headerAddEntry(dbentry, RPMTAG_GROUP, RPM_STRING_TYPE, group, 1);
 
 	if (preun) {

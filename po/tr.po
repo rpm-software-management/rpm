@@ -1016,7 +1016,7 @@ msgstr "%s'%s için parola"
 
 #: /home/ewt/redhat/rpm/url.c:143
 msgid "error: ftpport must be a number\n"
-msgstr "hata: ftpport bir sayý olmalý"
+msgstr "hata: ftpport bir sayý olmalý\n"
 
 #: /home/ewt/redhat/rpm/url.c:201
 msgid "failed to create %s\n"

@@ -171,7 +171,7 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
 	     spec.distribution, 1);
     headerAddEntry(dbentry, RPMTAG_VENDOR, RPM_STRING_TYPE, spec.vendor, 1);
     headerAddEntry(dbentry, RPMTAG_SIZE, RPM_INT32_TYPE, &oldheader.size, 1);
-    headerAddEntry(dbentry, RPMTAG_COPYRIGHT, RPM_STRING_TYPE, spec.copyright, 1); 
+    headerAddEntry(dbentry, RPMTAG_LICENSE, RPM_STRING_TYPE, spec.copyright, 1); 
 
     if (oldheader.group)
 	headerAddEntry(dbentry, RPMTAG_GROUP, RPM_STRING_TYPE, oldheader.group, 1);

@@ -7,7 +7,7 @@
 static int copyTagsDuringParse[] = {
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
-    RPMTAG_COPYRIGHT,
+    RPMTAG_LICENSE,
     RPMTAG_PACKAGER,
     RPMTAG_DISTRIBUTION,
     RPMTAG_VENDOR,
@@ -25,7 +25,7 @@ static int requiredTags[] = {
     RPMTAG_RELEASE,
     RPMTAG_SUMMARY,
     RPMTAG_GROUP,
-    RPMTAG_COPYRIGHT,
+    RPMTAG_LICENSE,
 /* You really ought to have these, but many people don't: */
 /*    RPMTAG_PACKAGER,                                    */
 /*    RPMTAG_DISTRIBUTION,                                */
@@ -367,7 +367,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
       case RPMTAG_SUMMARY:
       case RPMTAG_DISTRIBUTION:
       case RPMTAG_VENDOR:
-      case RPMTAG_COPYRIGHT:
+      case RPMTAG_LICENSE:
       case RPMTAG_PACKAGER:
 	if (! *lang) {
 	    headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
@@ -517,45 +517,45 @@ static struct PreambleRec {
     int multiLang;
     char *token;
 } preambleList[] = {
-    {RPMTAG_NAME,          0, 0, "name"},
-    {RPMTAG_VERSION,       0, 0, "version"},
-    {RPMTAG_RELEASE,       0, 0, "release"},
-    {RPMTAG_SERIAL,        0, 0, "serial"},
-/*    {RPMTAG_DESCRIPTION,   0, "description"}, */
-    {RPMTAG_SUMMARY,       0, 1, "summary"},
-    {RPMTAG_COPYRIGHT,     0, 0, "copyright"},
-    {RPMTAG_COPYRIGHT,     0, 0, "license"},
-    {RPMTAG_DISTRIBUTION,  0, 0, "distribution"},
-    {RPMTAG_VENDOR,        0, 0, "vendor"},
-    {RPMTAG_GROUP,         0, 1, "group"},
-    {RPMTAG_PACKAGER,      0, 0, "packager"},
-    {RPMTAG_URL,           0, 0, "url"},
-/*    {RPMTAG_ROOT,          0, "root"}, */
-    {RPMTAG_SOURCE,        0, 0, "source"},
-    {RPMTAG_PATCH,         0, 0, "patch"},
-    {RPMTAG_NOSOURCE,      0, 0, "nosource"},
-    {RPMTAG_NOPATCH,       0, 0, "nopatch"},
-    {RPMTAG_EXCLUDEARCH,   0, 0, "excludearch"},
-    {RPMTAG_EXCLUSIVEARCH, 0, 0, "exclusivearch"},
-    {RPMTAG_EXCLUDEOS,     0, 0, "excludeos"},
-    {RPMTAG_EXCLUSIVEOS,   0, 0, "exclusiveos"},
-/*    {RPMTAG_EXCLUDE,       0, "exclude"}, */
-/*    {RPMTAG_EXCLUSIVE,     0, "exclusive"}, */
-    {RPMTAG_ICON,          0, 0, "icon"},
-    {RPMTAG_PROVIDES,      0, 0, "provides"},
-    {RPMTAG_REQUIREFLAGS,  0, 0, "requires"},
-    {RPMTAG_PREREQ,        0, 0, "prereq"},
-    {RPMTAG_CONFLICTFLAGS, 0, 0, "conflicts"},
-    {RPMTAG_OBSOLETES,     0, 0, "obsoletes"},
-    {RPMTAG_PREFIXES,      0, 0, "prefixes"},
-    {RPMTAG_PREFIXES,      0, 0, "prefix"},
-    {RPMTAG_BUILDROOT,     0, 0, "buildroot"},
-    {RPMTAG_BUILDARCHS,    0, 0, "buildarchitectures"},
-    {RPMTAG_BUILDARCHS,    0, 0, "buildarch"},
-    {RPMTAG_AUTOREQPROV,   0, 0, "autoreqprov"},
-    {RPMTAG_AUTOREQ,       0, 0, "autoreq"},
-    {RPMTAG_AUTOPROV,      0, 0, "autoprov"},
-    {RPMTAG_DOCDIR,        0, 0, "docdir"},
+    {RPMTAG_NAME,		0, 0, "name"},
+    {RPMTAG_VERSION,		0, 0, "version"},
+    {RPMTAG_RELEASE,		0, 0, "release"},
+    {RPMTAG_SERIAL,		0, 0, "serial"},
+/*    {RPMTAG_DESCRIPTION,	0, 0, "description"}, */
+    {RPMTAG_SUMMARY,		0, 1, "summary"},
+    {RPMTAG_LICENSE,		0, 0, "copyright"},
+    {RPMTAG_LICENSE,		0, 0, "license"},
+    {RPMTAG_DISTRIBUTION,	0, 0, "distribution"},
+    {RPMTAG_VENDOR,		0, 0, "vendor"},
+    {RPMTAG_GROUP,		0, 1, "group"},
+    {RPMTAG_PACKAGER,		0, 0, "packager"},
+    {RPMTAG_URL,		0, 0, "url"},
+/*    {RPMTAG_ROOT,		0, 0, "root"}, */
+    {RPMTAG_SOURCE,		0, 0, "source"},
+    {RPMTAG_PATCH,		0, 0, "patch"},
+    {RPMTAG_NOSOURCE,		0, 0, "nosource"},
+    {RPMTAG_NOPATCH,		0, 0, "nopatch"},
+    {RPMTAG_EXCLUDEARCH,	0, 0, "excludearch"},
+    {RPMTAG_EXCLUSIVEARCH,	0, 0, "exclusivearch"},
+    {RPMTAG_EXCLUDEOS,		0, 0, "excludeos"},
+    {RPMTAG_EXCLUSIVEOS,	0, 0, "exclusiveos"},
+/*    {RPMTAG_EXCLUDE,		0, 0, "exclude"}, */
+/*    {RPMTAG_EXCLUSIVE,	0, 0, "exclusive"}, */
+    {RPMTAG_ICON,		0, 0, "icon"},
+    {RPMTAG_PROVIDES,		0, 0, "provides"},
+    {RPMTAG_REQUIREFLAGS,	0, 0, "requires"},
+    {RPMTAG_PREREQ,		0, 0, "prereq"},
+    {RPMTAG_CONFLICTFLAGS,	0, 0, "conflicts"},
+    {RPMTAG_OBSOLETES,		0, 0, "obsoletes"},
+    {RPMTAG_PREFIXES,		0, 0, "prefixes"},
+    {RPMTAG_PREFIXES,		0, 0, "prefix"},
+    {RPMTAG_BUILDROOT,		0, 0, "buildroot"},
+    {RPMTAG_BUILDARCHS,		0, 0, "buildarchitectures"},
+    {RPMTAG_BUILDARCHS,		0, 0, "buildarch"},
+    {RPMTAG_AUTOREQPROV,	0, 0, "autoreqprov"},
+    {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
+    {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
+    {RPMTAG_DOCDIR,		0, 0, "docdir"},
     {0, 0, 0, 0}
 };
 
