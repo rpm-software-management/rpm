@@ -454,7 +454,7 @@ int ugFindUpgradePackages(struct pkgSet *psp, char *installRoot)
 
     /*logDebugMessage(("ugFindUpgradePackages() ..."));*/
 
-    rpmReadConfigFiles(NULL, NULL);
+/*      rpmReadConfigFiles(NULL, NULL); */
 
     rpmSetVerbosity(RPMMESS_FATALERROR);
     old = rpmErrorSetCallback(emptyErrorCallback);
