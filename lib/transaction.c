@@ -1298,8 +1298,17 @@ static void skipFiles(struct fileInfo * fi, int noDocs) {
 	}
 
 	if (fileLangs && languages && *fileLangs[i]) {
-	    for (lang = languages; *lang; lang++)
-		if (!strcmp(*lang, fileLangs[i])) break;
+	    for (lang = languages; *lang; lang++) {
+		const char *l, *le;
+		for (l = fileLangs[i]; *l; l = le) {
+		    for (le = l; *le && *le != '|'; le++)
+			;
+		    if ((le-l) > 1 && !strncmp(*lang, l, (le-l)))
+			goto lingo;
+		    if (*le == '|') le++;	/* skip over | */
+		}
+	    }
+	lingo:
 	    if (!*lang) {
 		fi->actions[i] = FA_SKIPNSTATE;
 		continue;

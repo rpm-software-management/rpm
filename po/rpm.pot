@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-05-17 12:38-0400\n"
+"POT-Creation-Date: 1999-05-17 14:36-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1593,172 +1593,168 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr ""
 
-#: ../build/files.c:222
+#: ../build/files.c:221
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: ../build/files.c:267 ../build/files.c:279 ../build/files.c:348
-#: ../build/files.c:360 ../build/files.c:391
+#: ../build/files.c:266 ../build/files.c:278 ../build/files.c:347
+#: ../build/files.c:359 ../build/files.c:390
 #, c-format
 msgid "Bad %s() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:309
+#: ../build/files.c:308
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: ../build/files.c:371
+#: ../build/files.c:370
 msgid "No files after %%defattr(): %s"
 msgstr ""
 
-#: ../build/files.c:401
+#: ../build/files.c:400
 #, c-format
 msgid "Bad %s() mode spec: %s"
 msgstr ""
 
-#: ../build/files.c:413
+#: ../build/files.c:412
 #, c-format
 msgid "Bad %s() dirmode spec: %s"
 msgstr ""
 
-#: ../build/files.c:464
+#: ../build/files.c:463
 msgid "Bad %%config() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:482
+#: ../build/files.c:481
 msgid "Invalid %%config token: %s"
 msgstr ""
 
-#: ../build/files.c:505 ../build/files.c:517 ../build/files.c:530
+#: ../build/files.c:502 ../build/files.c:511 ../build/files.c:536
 msgid "Bad %%lang() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:536
-msgid "%%lang() entries are 2 characters: %s"
+#: ../build/files.c:545
+msgid "Duplicate locale in %%lang(): %s"
 msgstr ""
 
-#: ../build/files.c:542
-msgid "Only one entry in %%lang(): %s"
-msgstr ""
-
-#: ../build/files.c:626
+#: ../build/files.c:634
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: ../build/files.c:632
+#: ../build/files.c:640
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: ../build/files.c:657
+#: ../build/files.c:665
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: ../build/files.c:670
+#: ../build/files.c:678
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:682
+#: ../build/files.c:690
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: ../build/files.c:770
+#: ../build/files.c:778
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:926
+#: ../build/files.c:931
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:936 ../build/files.c:1069
+#: ../build/files.c:941 ../build/files.c:1078
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:979
+#: ../build/files.c:984
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:993
+#: ../build/files.c:998
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr ""
 
-#: ../build/files.c:1053
+#: ../build/files.c:1062
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1110
+#: ../build/files.c:1119
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1117 ../build/pack.c:433
+#: ../build/files.c:1126 ../build/pack.c:433
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1438 ../build/parsePrep.c:31
+#: ../build/files.c:1446 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1492
+#: ../build/files.c:1500
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1496
+#: ../build/files.c:1504
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1546
+#: ../build/files.c:1554
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1550
+#: ../build/files.c:1558
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1584
+#: ../build/files.c:1592
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1591
+#: ../build/files.c:1599
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1610
+#: ../build/files.c:1618
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1617
+#: ../build/files.c:1625
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1651
+#: ../build/files.c:1659
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1666
+#: ../build/files.c:1674
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1678
+#: ../build/files.c:1686
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1702
+#: ../build/files.c:1710
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""

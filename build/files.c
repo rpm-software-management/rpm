@@ -32,8 +32,7 @@ typedef struct {
     const char *gname;
     int		flags;
     int		verifyFlags;
-    int		nlangs;
-    void **	langs;	/* XXX usually (but not always) char ** */
+    const char *langs;	/* XXX locales separated with | */
 } FileListRec;
 
 typedef struct {
@@ -491,12 +490,10 @@ static int parseForConfig(char *buf, struct FileList *fl)
 
 static int parseForLang(char *buf, struct FileList *fl)
 {
-    char *p, *start, *end;
+    char *p, *pe, *start;
     char ourbuf[1024];
 
-    if (!(p = start = strstr(buf, "%lang"))) {
-	return 0;
-    }
+  while ((p = start = strstr(buf, "%lang")) != NULL) {
 
     p += 5;
     SKIPSPACE(p);
@@ -506,48 +503,59 @@ static int parseForLang(char *buf, struct FileList *fl)
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
-    p++;
 
-    end = p;
-    while (*end && *end != ')') {
-	end++;
-    }
-
-    if (! *end) {
+    p++;	/* skip ( */
+    for (pe = p; *pe && *pe != ')'; pe++)
+	;
+    if (*pe == '\0') {
 	rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
 
-    strncpy(ourbuf, p, end-p);
-    ourbuf[end-p] = '\0';
-    while (start <= end) {
+    /* Excise the next %lang construct */
+    strncpy(ourbuf, p, pe-p);
+    ourbuf[pe-p] = '\0';
+    while (start <= pe)
 	*start++ = ' ';
-    }
 
-    p = strtok(ourbuf, ", \n\t");
-    if (!p) {
-	rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
-	fl->processingFailed = 1;
-	return RPMERR_BADSPEC;
-    }
-#if 0
-    if (strlen(p) != 2) {
-	rpmError(RPMERR_BADSPEC, _("%%lang() entries are 2 characters: %s"), buf);
-	fl->processingFailed = 1;
-	return RPMERR_BADSPEC;
-    }
-#endif
-    if (strtok(NULL, ", \n\t")) {
-	rpmError(RPMERR_BADSPEC, _("Only one entry in %%lang(): %s"), buf);
-	fl->processingFailed = 1;
-	return RPMERR_BADSPEC;
-    }
+    /* Parse multiple arguments from %lang */
+    for (p = ourbuf; *p; p = pe) {
+	char *newp;
+	size_t np;
+	int i;
 
-    fl->currentLangs = (const char **) ((fl->currentLangs == NULL)
-	? malloc(sizeof(*fl->currentLangs))
-	: realloc(fl->currentLangs, (fl->nLangs+1)*sizeof(*fl->currentLangs)) );
-    fl->currentLangs[fl->nLangs++] = strdup(p);
+	SKIPSPACE(p);
+	for (pe = p; *pe && !(isspace(*pe) || *pe == ','); pe++)
+	    ;
+
+	np = pe - p;
+	
+	/* Sanity check on locale lengths */
+	if (np < 2 || np >= 16) {
+	    rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
+	    fl->processingFailed = 1;
+	    return RPMERR_BADSPEC;
+	}
+
+	/* Check for duplicate locales */
+	for (i = 0; i < fl->nLangs; i++) {
+	    if (strncmp(fl->currentLangs[i], p, np))
+		continue;
+	    rpmError(RPMERR_BADSPEC, _("Duplicate locale in %%lang(): %s"),buf);
+	    fl->processingFailed = 1;
+	    return RPMERR_BADSPEC;
+	}
+
+	/* Add new locale */
+	fl->currentLangs = (const char **) ((fl->currentLangs == NULL)
+	  ? malloc(sizeof(*fl->currentLangs))
+	  : realloc(fl->currentLangs,(fl->nLangs+1)*sizeof(*fl->currentLangs)));
+	newp = malloc( np+1 );
+	strncpy(newp, p, np+1);
+	fl->currentLangs[fl->nLangs++] = newp;
+    }
+  }
     
     return 0;
 }
@@ -826,7 +834,7 @@ static void genCpioListAndHeader(struct FileList *fl,
 			       &(flp->fl_ino), 1);
 
 	headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
-			       &(flp->langs), (flp->nlangs ? flp->nlangs : 1));
+			       &(flp->langs),  1);
 	
 	/* We used to add these, but they should not be needed */
 	/* headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
@@ -871,11 +879,8 @@ static void genCpioListAndHeader(struct FileList *fl,
 static void freeFileList(FileListRec *fileList, int count)
 {
     while (count--) {
-	int i;
 	FREE(fileList[count].diskName);
 	FREE(fileList[count].fileName);
-	for (i = 0; i < fileList[count].nlangs; i++)
-	    FREE(fileList[count].langs[i]);
 	FREE(fileList[count].langs);
     }
     FREE(fileList);
@@ -1013,21 +1018,25 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 	flp->gname = fileGname;
 
 	if (fl->currentLangs && fl->nLangs > 0) {
-	    char **cLangs = malloc(fl->nLangs * sizeof(*cLangs));
+	    char *ncl;
+	    size_t nl = 0;
 	    int i;
 	    
 	    for (i = 0; i < fl->nLangs; i++)
-		cLangs[i] = strdup(fl->currentLangs[i]);
-	    flp->langs = (void **)cLangs;
-	    flp->nlangs = fl->nLangs;
+		nl += strlen(fl->currentLangs[i]) + 1;
+
+	    flp->langs = ncl = malloc(nl);
+	    for (i = 0; i < fl->nLangs; i++) {
+	        const char *ocl;
+		if (i)	*ncl++ = '|';
+		for (ocl = fl->currentLangs[i]; *ocl; ocl++)
+			*ncl++ = *ocl;
+		*ncl = '\0';
+	    }
 	} else if (! parseForRegexLang(fileName, &lang)) {
-	    /* XXX not an array! */
-	    flp->langs = (void **)strdup(lang);
-	    flp->nlangs = 1;
+	    flp->langs = strdup(lang);
 	} else {
-	    /* XXX not an array! */
-	    flp->langs = (void **)strdup("");
-	    flp->nlangs = 0;
+	    flp->langs = strdup("");
 	}
 
 	flp->flags = fl->currentFlags;
@@ -1429,8 +1438,7 @@ int processSourceFiles(Spec spec)
 
 	flp->uname = getUname(flp->fl_uid);
 	flp->gname = getGname(flp->fl_gid);
-	flp->langs = (void **)strdup("");
-	flp->nlangs = 0;
+	flp->langs = strdup("");
 	
 	fl.totalFileSize += flp->fl_size;
 	
