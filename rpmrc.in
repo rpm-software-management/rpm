@@ -1,7 +1,7 @@
 #/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
 # \verbatim
 #
-# $Id: rpmrc.in,v 2.61 2004/03/28 02:41:32 arekm Exp $
+# $Id: rpmrc.in,v 2.62 2004/03/28 20:10:54 arekm Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -173,8 +173,8 @@ buildarchtranslate: osfmach3_i486: i386
 buildarchtranslate: osfmach3_i386: i386
 
 buildarchtranslate: athlon: i386
-buildarchtranslate: pentium4: pentium4
-buildarchtranslate: pentium3: pentium3
+buildarchtranslate: pentium4: i386
+buildarchtranslate: pentium3: i386
 buildarchtranslate: i686: i386
 buildarchtranslate: i586: i386
 buildarchtranslate: i486: i386
