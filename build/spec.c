@@ -391,6 +391,9 @@ static int read_line(FILE *f, char *line)
 	    read_level->reading =
 	        read_level->next->reading && ! read_level->reading;
 	} else if (! strncmp("%endif", line, 6)) {
+	    if (! read_level) {
+		return RPMERR_UNMATCHEDIF;
+	    }
 	    rl = read_level;
 	    read_level = rl->next;
 	    free(rl);
