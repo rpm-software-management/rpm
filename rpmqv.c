@@ -196,7 +196,7 @@ static struct poptOption rpmDatabasePoptTable[] = {
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
 	N_("generate headers compatible with (legacy) rpm[23] packaging"),
 	NULL},
- { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,
+ { "dirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 0,
 	N_("generate headers compatible with rpm4 packaging"), NULL},
 
    POPT_TABLEEND
@@ -214,9 +214,9 @@ static struct poptOption rpmSignPoptTable[] = {
  { "checksig", 'K', 0, 0, 'K',
 	N_("verify package signature"), NULL },
  { "nogpg", '\0', 0, &noGpg, 0,
-	N_("skip any PGP signatures"), NULL },
- { "nopgp", '\0', 0, &noPgp, 0,
 	N_("skip any GPG signatures"), NULL },
+ { "nopgp", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noPgp, 0,
+	N_("skip any PGP signatures"), NULL },
  { "nomd5", '\0', 0, &noMd5, 0,
 	N_("do not verify file md5 checksums"), NULL },
 
@@ -240,14 +240,15 @@ static struct poptOption rpmInstallPoptTable[] = {
 	N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
 	NULL},
 
- { "apply", '\0', _POPT_SET_BIT, &transFlags,
+ { "apply", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
 	(_noTransScripts|_noTransTriggers|
 		RPMTRANS_FLAG_APPLYONLY|RPMTRANS_FLAG_PKGCOMMIT),
 	N_("do not execute package scriptlet(s)"), NULL },
 
  { "badreloc", '\0', _POPT_SET_BIT, &probFilter, RPMPROB_FILTER_FORCERELOCATE,
 	N_("relocate files in non-relocateable package"), NULL},
- { "dirstash", '\0', _POPT_SET_BIT, &transFlags, RPMTRANS_FLAG_DIRSTASH,
+ { "dirstash", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+		RPMTRANS_FLAG_DIRSTASH,
 	N_("save erased package files by renaming into sub-directory"), NULL},
  { "erase", 'e', 0, 0, 'e',
 	N_("erase (uninstall) package"), N_("<package>+") },
@@ -863,12 +864,12 @@ int main(int argc, const char ** argv)
 
 	switch (arg) {
 	    
-	  case 'v':
+	case 'v':
 	    rpmIncreaseVerbosity();
 	    break;
 
 #if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
-	  case 'i':
+	case 'i':
 #ifdef	IAM_RPMQV
 	    if (bigMode == MODE_QUERY) {
 		/*@-nullassign -readonlytrans@*/
@@ -892,33 +893,33 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMEIU
 	
-	  case 'e':
+	case 'e':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_UNINSTALL;
 	    break;
 	
-	  case GETOPT_INSTALL:
+	case GETOPT_INSTALL:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_INSTALL;
 	    break;
 
 #ifdef	DYING	/* XXX handled by popt */
-	  case 'U':
+	case 'U':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_INSTALL;
 	    break;
 
-	  case 'F':
+	case 'F':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_INSTALL;
 	    break;
 #endif
 
-	  case GETOPT_EXCLUDEPATH:
+	case GETOPT_EXCLUDEPATH:
 	    if (optArg == NULL || *optArg != '/') 
 		argerror(_("exclude paths must begin with a /"));
 
@@ -930,7 +931,7 @@ int main(int argc, const char ** argv)
 	    /*@=observertrans =dependenttrans@*/
 	    break;
 
-	  case GETOPT_RELOCATE:
+	case GETOPT_RELOCATE:
 	  { char * newPath = NULL;
 	    if (optArg == NULL || *optArg != '/') 
 		argerror(_("relocations must begin with a /"));
@@ -949,12 +950,12 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMDB
-	  case GETOPT_REBUILDDB:
+	case GETOPT_REBUILDDB:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILDDB)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_REBUILDDB;
 	    break;
-	  case GETOPT_VERIFYDB:
+	case GETOPT_VERIFYDB:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_VERIFYDB)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_VERIFYDB;
@@ -962,13 +963,13 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMK
-	  case 'K':
+	case 'K':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_CHECKSIG)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_CHECKSIG;
 	    break;
 
-	  case GETOPT_RESIGN:
+	case GETOPT_RESIGN:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RESIGN;
@@ -976,7 +977,7 @@ int main(int argc, const char ** argv)
 	    signIt = 1;
 	    break;
 
-	  case GETOPT_ADDSIGN:
+	case GETOPT_ADDSIGN:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RESIGN;
@@ -985,7 +986,7 @@ int main(int argc, const char ** argv)
 	    break;
 #endif	/* IAM_RPMK */
 
-	  case GETOPT_DEFINEMACRO:
+	case GETOPT_DEFINEMACRO:
 	    if (optArg) {
 		(void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
 		(void) rpmDefineMacro(&rpmCLIMacroContext, optArg,RMIL_CMDLINE);
@@ -993,7 +994,7 @@ int main(int argc, const char ** argv)
 	    noUsageMsg = 1;
 	    break;
 
-	  case GETOPT_EVALMACRO:
+	case GETOPT_EVALMACRO:
 	    if (optArg) {
 		const char *val = rpmExpand(optArg, NULL);
 		fprintf(stdout, "%s\n", val);
@@ -1003,14 +1004,14 @@ int main(int argc, const char ** argv)
 	    break;
 
 #if defined(GETOPT_RCFILE)
-	  case GETOPT_RCFILE:
+	case GETOPT_RCFILE:
 	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
 	    fprintf(stderr, _("Use \"--macros <file:...>\" instead.\n"));
 	    exit(EXIT_FAILURE);
 	    /*@notreached@*/ break;
 #endif
 
-	  default:
+	default:
 	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
 	    exit(EXIT_FAILURE);
 	}
@@ -1299,36 +1300,21 @@ int main(int argc, const char ** argv)
 	
     switch (bigMode) {
 #ifdef	IAM_RPMDB
-      case MODE_INITDB:
+    case MODE_INITDB:
 	(void) rpmdbInit(rootdir, 0644);
 	break;
 
-      case MODE_REBUILDDB:
+    case MODE_REBUILDDB:
 	ec = rpmdbRebuild(rootdir);
 	break;
-      case MODE_VERIFYDB:
+    case MODE_VERIFYDB:
 	ec = rpmdbVerify(rootdir);
 	break;
-#if !defined(__LCLINT__)
-      case MODE_QUERY:
-      case MODE_VERIFY:
-      case MODE_QUERYTAGS:
-      case MODE_INSTALL:
-      case MODE_UNINSTALL:
-      case MODE_BUILD:
-      case MODE_REBUILD:
-      case MODE_RECOMPILE:
-      case MODE_TARBUILD:
-      case MODE_CHECKSIG:
-      case MODE_RESIGN:
-	if (!showVersion && !help && !noUsageMsg) printUsage();
-	break;
-#endif
 #endif	/* IAM_RPMDB */
 
 #ifdef	IAM_RPMBT
-      case MODE_REBUILD:
-      case MODE_RECOMPILE:
+    case MODE_REBUILD:
+    case MODE_RECOMPILE:
       { const char * pkg;
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
@@ -1372,31 +1358,31 @@ int main(int argc, const char ** argv)
 	    rpmIncreaseVerbosity();
        
 	switch (ba->buildChar) {
-	  case 'a':
+	case 'a':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	    /*@fallthrough@*/
-	  case 'b':
+	case 'b':
 	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    ba->buildAmount |= RPMBUILD_CLEAN;
 	    /*@fallthrough@*/
-	  case 'i':
+	case 'i':
 	    ba->buildAmount |= RPMBUILD_INSTALL;
 	    if ((ba->buildChar == 'i') && ba->shortCircuit)
 		break;
 	    /*@fallthrough@*/
-	  case 'c':
+	case 'c':
 	    ba->buildAmount |= RPMBUILD_BUILD;
 	    if ((ba->buildChar == 'c') && ba->shortCircuit)
 		break;
 	    /*@fallthrough@*/
-	  case 'p':
+	case 'p':
 	    ba->buildAmount |= RPMBUILD_PREP;
 	    break;
 	    
-	  case 'l':
+	case 'l':
 	    ba->buildAmount |= RPMBUILD_FILECHECK;
 	    break;
-	  case 's':
+	case 's':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	    break;
 	}
@@ -1417,25 +1403,10 @@ int main(int argc, const char ** argv)
 	    (void) rpmReadConfigFiles(rcfile, NULL);
 	}
       }	break;
-
-#if !defined(__LCLINT__)
-      case MODE_QUERY:
-      case MODE_VERIFY:
-      case MODE_QUERYTAGS:
-      case MODE_INSTALL:
-      case MODE_UNINSTALL:
-      case MODE_CHECKSIG:
-      case MODE_RESIGN:
-      case MODE_INITDB:
-      case MODE_REBUILDDB:
-      case MODE_VERIFYDB:
-	if (!showVersion && !help && !noUsageMsg) printUsage();
-	break;
-#endif
 #endif	/* IAM_RPMBT */
 
 #ifdef	IAM_RPMEIU
-      case MODE_UNINSTALL:
+    case MODE_UNINSTALL:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for uninstall"));
 
@@ -1445,7 +1416,7 @@ int main(int argc, const char ** argv)
 			 transFlags, eraseInterfaceFlags);
 	break;
 
-      case MODE_INSTALL:
+    case MODE_INSTALL:
 	if (force) {
 	    probFilter |= RPMPROB_FILTER_REPLACEPKG | 
 			  RPMPROB_FILTER_REPLACEOLDFILES |
@@ -1485,26 +1456,10 @@ int main(int argc, const char ** argv)
 			transFlags, installInterfaceFlags, probFilter,
 			relocations);
 	break;
-#if !defined(__LCLINT__)
-      case MODE_QUERY:
-      case MODE_VERIFY:
-      case MODE_QUERYTAGS:
-      case MODE_BUILD:
-      case MODE_REBUILD:
-      case MODE_RECOMPILE:
-      case MODE_TARBUILD:
-      case MODE_CHECKSIG:
-      case MODE_RESIGN:
-      case MODE_INITDB:
-      case MODE_REBUILDDB:
-      case MODE_VERIFYDB:
-	if (!showVersion && !help && !noUsageMsg) printUsage();
-	break;
-#endif
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
-      case MODE_QUERY:
+    case MODE_QUERY:
       { const char * pkg;
 
 	qva->qva_prefix = rootdir;
@@ -1521,7 +1476,7 @@ int main(int argc, const char ** argv)
 	}
       }	break;
 
-      case MODE_VERIFY:
+    case MODE_VERIFY:
       { const char * pkg;
 	int verifyFlags;
 
@@ -1542,32 +1497,16 @@ int main(int argc, const char ** argv)
 	}
       }	break;
 
-      case MODE_QUERYTAGS:
+    case MODE_QUERYTAGS:
 	if (argc != 2)
 	    argerror(_("unexpected arguments to --querytags "));
 
 	rpmDisplayQueryTags(stdout);
 	break;
-
-#if !defined(__LCLINT__)
-      case MODE_INSTALL:
-      case MODE_UNINSTALL:
-      case MODE_BUILD:
-      case MODE_REBUILD:
-      case MODE_RECOMPILE:
-      case MODE_TARBUILD:
-      case MODE_CHECKSIG:
-      case MODE_RESIGN:
-      case MODE_INITDB:
-      case MODE_REBUILDDB:
-      case MODE_VERIFYDB:
-	if (!showVersion && !help && !noUsageMsg) printUsage();
-	break;
-#endif
 #endif	/* IAM_RPMQV */
 
 #ifdef IAM_RPMK
-      case MODE_CHECKSIG:
+    case MODE_CHECKSIG:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signature check"));
 	if (!noPgp) checksigFlags |= CHECKSIG_PGP;
@@ -1578,35 +1517,42 @@ int main(int argc, const char ** argv)
 	if (ec > 255) ec = 255;
 	break;
 
-      case MODE_RESIGN:
+    case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signing"));
 	ec = rpmReSign(addSign, passPhrase, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	break;
-#if !defined(__LCLINT__)
-      case MODE_QUERY:
-      case MODE_VERIFY:
-      case MODE_QUERYTAGS:
-      case MODE_INSTALL:
-      case MODE_UNINSTALL:
-      case MODE_BUILD:
-      case MODE_REBUILD:
-      case MODE_RECOMPILE:
-      case MODE_TARBUILD:
-      case MODE_INITDB:
-      case MODE_REBUILDDB:
-      case MODE_VERIFYDB:
-	if (!showVersion && !help && !noUsageMsg) printUsage();
-	break;
-#endif
 #endif	/* IAM_RPMK */
 	
-      case MODE_UNKNOWN:
+#if !defined(IAM_RPMQV)
+    case MODE_QUERY:
+    case MODE_VERIFY:
+    case MODE_QUERYTAGS:
+#endif
+#if !defined(IAM_RPMK)
+    case MODE_CHECKSIG:
+    case MODE_RESIGN:
+#endif
+#if !defined(IAM_RPMDB)
+    case MODE_INITDB:
+    case MODE_REBUILDDB:
+    case MODE_VERIFYDB:
+#endif
+#if !defined(IAM_RPMBT)
+    case MODE_BUILD:
+    case MODE_REBUILD:
+    case MODE_RECOMPILE:
+    case MODE_TARBUILD:
+#endif
+#if !defined(IAM_RPMEIU)
+    case MODE_INSTALL:
+    case MODE_UNINSTALL:
+#endif
+    case MODE_UNKNOWN:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
-
     }
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)

@@ -53,12 +53,18 @@ rpmpopt-$(VERSION): rpmpopt
 noinst_HEADERS = \
 	acconfig.h	build.h		debug.h		system.h
 
+#rpm_SOURCES =
+#rpm_LDFLAGS =                @LDFLAGS_STATIC@ $(myLDFLAGS)
+#rpm_LDADD =          rpm.o $(myLDADD)
+#rpm.o:       rpmqv.c
+#	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
+
 rpm_SOURCES =		rpm.c
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpm_LDADD =		$(myLDADD)
 
 rpmb_SOURCES =		build.c
-rpmb_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
+rpmb_LDFLAGS =		$(myLDFLAGS)
 rpmb_LDADD =		rpmb.o $(myLDADD)
 rpmb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c rpmqv.c

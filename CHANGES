@@ -80,6 +80,7 @@
 	- always use db cursors.
 	- permit duplicates for btree indices.
 	- document build modes in rpmbuild.8, rpmbuild is born.
+	- default to dbenv with mpool, --rebuilddb with nofsync is much faster.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

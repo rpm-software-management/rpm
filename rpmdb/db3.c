@@ -72,72 +72,6 @@ struct dbiBStats_s {
 };
 /*@=fielduse@*/
 
-#if DB_VERSION_MAJOR == 3
-#define	__USE_DB3	1
-
-#if defined(__USE_DB2) || defined(__USE_DB3)
-#if defined(__USE_DB2)
-static /*@observer@*/ const char * db_strerror(int error)
-{
-    if (error == 0)
-	return ("Successful return: 0");
-    if (error > 0)
-	return (strerror(error));
-
-    switch (error) {
-    case DB_INCOMPLETE:
-	return ("DB_INCOMPLETE: Cache flush was unable to complete");
-    case DB_KEYEMPTY:
-	return ("DB_KEYEMPTY: Non-existent key/data pair");
-    case DB_KEYEXIST:
-	return ("DB_KEYEXIST: Key/data pair already exists");
-    case DB_LOCK_DEADLOCK:
-	return ("DB_LOCK_DEADLOCK: Locker killed to resolve a deadlock");
-    case DB_LOCK_NOTGRANTED:
-	return ("DB_LOCK_NOTGRANTED: Lock not granted");
-    case DB_NOTFOUND:
-	return ("DB_NOTFOUND: No matching key/data pair found");
-#if defined(__USE_DB3)
-    case DB_OLD_VERSION:
-	return ("DB_OLDVERSION: Database requires a version upgrade");
-    case DB_RUNRECOVERY:
-	return ("DB_RUNRECOVERY: Fatal error, run database recovery");
-#else	/* __USE_DB3 */
-    case DB_LOCK_NOTHELD:
-	return ("DB_LOCK_NOTHELD:");
-    case DB_REGISTERED:
-	return ("DB_REGISTERED:");
-#endif	/* __USE_DB3 */
-    default:
-      {
-	/*
-	 * !!!
-	 * Room for a 64-bit number + slop.  This buffer is only used
-	 * if we're given an unknown error, which should never happen.
-	 * Note, however, we're no longer thread-safe if it does.
-	 */
-	static char ebuf[40];
-
-	(void)snprintf(ebuf, sizeof(ebuf), "Unknown error: %d", error);
-	return(ebuf);
-      }
-    }
-    /*@notreached@*/
-}
-
-static int db_env_create(DB_ENV **dbenvp, int foo)
-{
-    DB_ENV *dbenv;
-
-    if (dbenvp == NULL)
-	return 1;
-    dbenv = xcalloc(1, sizeof(*dbenv));
-
-    *dbenvp = dbenv;
-    return 0;
-}
-#endif	/* __USE_DB2 */
-
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 	/*@modifies fileSystem @*/
 {
@@ -164,8 +98,6 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV * dbenv = dbi->dbi_dbenv;
-
-#if defined(__USE_DB3)
     int rc;
 
     if (dbenv == NULL) {
@@ -197,12 +129,6 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 			dbhome, dbfile);
 
     }
-	
-#else	/* __USE_DB3 */
-    rc = db_appexit(dbenv);
-    rc = cvtdberr(dbi, "db_appexit", rc, _debug);
-    dbenv = _free(dbenv);
-#endif	/* __USE_DB3 */
     dbi->dbi_dbenv = NULL;
     return rc;
 }
@@ -258,7 +184,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (rc)
 	goto errxit;
 
-#if defined(__USE_DB3)
     if (dbenv == NULL)
 	return 1;
 
@@ -313,16 +238,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
     }
   }
-#else	/* __USE_DB3 */
-    dbenv->db_errcall = rpmdb->db_errcall;
-    dbenv->db_errfile = rpmdb->db_errfile;
-    dbenv->db_errpfx = rpmdb->db_errpfx;
-    dbenv->db_verbose = dbi->dbi_verbose;
-    dbenv->mp_mmapsize = dbi->dbi_mp_mmapsize;	/* XXX default is 10 Mb */
-    dbenv->mp_size = dbi->dbi_mp_size;		/* XXX default is 128 Kb */
-#endif	/* __USE_DB3 */
 
-#if defined(__USE_DB3)
 #if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0
     rc = dbenv->open(dbenv, dbhome, eflags, dbi->dbi_perms);
 #else
@@ -331,40 +247,25 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
-#else	/* __USE_DB3 */
-    rc = db_appinit(dbhome, NULL, dbenv, eflags);
-    rc = cvtdberr(dbi, "db_appinit", rc, _debug);
-    if (rc)
-	goto errxit;
-#endif	/* __USE_DB3 */
 
     *dbenvp = dbenv;
 
     return 0;
 
 errxit:
-
-#if defined(__USE_DB3)
     if (dbenv) {
 	int xx;
 	xx = dbenv->close(dbenv, 0);
 	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
     }
-#else	/* __USE_DB3 */
-    dbenv = _free(dbenv);
-#endif	/* __USE_DB3 */
     return rc;
 }
-
-#endif	/* __USE_DB2 || __USE_DB3 */
 
 static int db3sync(dbiIndex dbi, unsigned int flags)
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     int rc = 0;
-
-#if defined(__USE_DB2) || defined(__USE_DB3)
     int _printit;
 
     if (db != NULL)
@@ -372,10 +273,6 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     /* XXX DB_INCOMPLETE is returned occaisionally with multiple access. */
     _printit = (rc == DB_INCOMPLETE ? 0 : _debug);
     rc = cvtdberr(dbi, "db->sync", rc, _printit);
-#else	/* __USE_DB2 || __USE_DB3 */
-    rc = db->sync(db, flags);
-#endif	/* __USE_DB2 || __USE_DB3 */
-
     return rc;
 }
 
@@ -458,7 +355,6 @@ static inline int db3c_open(dbiIndex dbi, /*@null@*/ /*@out@*/ DBC ** dbcp,
     int rc;
 
     if (db == NULL) return -2;
-#if defined(__USE_DB3)
     if ((dbiflags & DBI_WRITECURSOR) &&
 	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
     {
@@ -467,9 +363,6 @@ static inline int db3c_open(dbiIndex dbi, /*@null@*/ /*@out@*/ DBC ** dbcp,
 	flags = 0;
     if (dbcp) *dbcp = NULL;
     rc = db->cursor(db, txnid, dbcp, flags);
-#else	/* __USE_DB3 */
-    rc = db->cursor(db, txnid, dbcp);
-#endif	/* __USE_DB3 */
     rc = cvtdberr(dbi, "db3c_open", rc, _debug);
 
     return rc;
@@ -663,10 +556,8 @@ static int db3byteswapped(dbiIndex dbi)	/*@*/
     DB * db = dbi->dbi_db;
     int rc = 0;
 
-#if defined(__USE_DB3)
     if (db != NULL)
 	rc = db->get_byteswapped(db);
-#endif	/* __USE_DB3 */
 
     return rc;
 }
@@ -812,7 +703,6 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     int rc = 0;
     int xx;
 
-#if defined(__USE_DB2) || defined(__USE_DB3)
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
     DB_TXN * txnid = NULL;
@@ -954,7 +844,6 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		prDbiOpenFlags(oflags, 0), dbi->dbi_mode);
 
     if (rc == 0) {
-#if defined(__USE_DB3)
 	static int _lockdbfd = 0;
 
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
@@ -1170,49 +1059,10 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		}
 	    }
 	}
-#else	/* __USE_DB3 */
-      {	DB_INFO * dbinfo = xcalloc(1, sizeof(*dbinfo));
-	dbinfo->db_cachesize = dbi->dbi_cachesize;
-	dbinfo->db_lorder = dbi->dbi_lorder;
-	dbinfo->db_pagesize = dbi->dbi_pagesize;
-	dbinfo->db_malloc = rpmdb->db_malloc;
-	if (oflags & DB_CREATE) {
-	    switch(dbi->dbi_type) {
-	    default:
-	    case DB_HASH:
-		dbinfo->h_ffactor = dbi->dbi_h_ffactor;
-		dbinfo->h_hash = dbi->dbi_h_hash_fcn;
-		dbinfo->h_nelem = dbi->dbi_h_nelem;
-		dbinfo->flags = dbi->dbi_h_flags;
-		break;
-	    }
-	}
-	dbi->dbi_dbinfo = dbinfo;
-	rc = db_open(dbfile, dbi->dbi_type, oflags,
-			dbi->dbi_perms, dbenv, dbinfo, &db);
-	/* XXX return rc == errno without printing */
-	_printit = (rc > 0 ? 0 : _debug);
-	xx = cvtdberr(dbi, "db->open", rc, _printit);
-      }
-#endif	/* __USE_DB3 */
     }
 
     dbi->dbi_db = db;
     dbi->dbi_dbenv = dbenv;
-
-#else	/* __USE_DB2 || __USE_DB3 */
-    void * dbopeninfo = NULL;
-
-    if (dbip)
-	*dbip = NULL;
-    if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
-	return 1;
-
-    dbi->dbi_db = dbopen(dbfile, dbi->dbi_mode, dbi->dbi_perms,
-		dbi->dbi_type, dbopeninfo);
-    /* XXX return rc == errno without printing */
-    if (dbi->dbi_db == NULL) rc = errno;
-#endif	/* __USE_DB2 || __USE_DB3 */
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;
@@ -1238,5 +1088,3 @@ struct _dbiVec db3vec = {
     db3ccount, db3byteswapped, db3stat
 };
 /*@=exportheadervar@*/
-
-#endif	/* DB_VERSION_MAJOR == 3 */
