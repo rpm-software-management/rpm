@@ -1,3 +1,10 @@
+1.1 -> 1.2
+	- added popt.3 man page (Robert Lynch)
+	- don't use mmap anymore (its lack of portability isn't worth the
+	  trouble)
+	- added test script
+	- added support for exec
+
 1.0 -> 1.1
 	- moved to autoconf (Fred Fish)
 	- added STRERROR replacement (Norbert Warmuth)
