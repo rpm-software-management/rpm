@@ -30,7 +30,6 @@
 %__strip                 %(which strip)
 %__tar                   %(which tar)
 
-
 #==============================================================================
 # ---- rpmrc macros.
 #	Macros that are initialized as a side effect of rpmrc parsing.
@@ -38,10 +37,8 @@
 #	explicit values found in /usr/lib/rpm/rpmrc or /etc/rpmrc.
 #
 %_buildarch		Unknown
-%_buildarch_lc		unknown
 %_builddir		%{_topdir}/BUILD
 %_buildos		Linux
-%_buildos_lc		linux
 %_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
 %_defaultdocdir		%{_prefix}/doc

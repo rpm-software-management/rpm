@@ -604,7 +604,7 @@ int main(int argc, char ** argv) {
     } 
 
     /* reading this early makes it easy to override */
-    if (rpmReadConfigFiles(rcfile, arch, os, building,NULL))  
+    if (rpmReadConfigFiles(rcfile, arch, os, building, NULL))  
 	exit(1);
     if (showrc) {
 	rpmShowRC(stdout);

@@ -452,24 +452,6 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
       RMIL_RPMRC);
 */
 
-/*
-Okay, I'm _not_ going to set these for now, since I think that buildarch
-and buildos should be set dynamically.  Gone are the days of having a
-build arch and os... they're all now just a platform.   I'm keeping it
-here until there's a discussion on the rpm mailing list.
-
-   - AdV
-*/
-
-
-#if 0 
-addMacro(&globalMacroContext, "_buildarch_lc", NULL, "mipseb", RMIL_RPMRC);
-	rpmGetOsInfo(&canonos, NULL);
-addMacro(&globalMacroContext, "_buildos", NULL, canonos, RMIL_RPMRC);
-addMacro(&globalMacroContext, "_buildos_lc", NULL, buf, RMIL_RPMRC);
-
-#endif
-
     if (rpmReadRC(file)) return -1;
 
     rpmRebuildPlatformVars(&buildplatform, &canonarch, &canonos);
@@ -483,8 +465,6 @@ buildarch = (char *) getMacroBody(&globalMacroContext, "buildarch");
 buildos = (char *) getMacroBody(&globalMacroContext, "buildos");
 
 rpmSetMachine(buildarch,buildos);
-
-    
 
     return 0;
 }

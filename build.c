@@ -147,15 +147,15 @@ int build(char *arg, int buildAmount, char *passPhrase,
     char * platform;
     int rc;
 
-    /* parse up the build operators */
-
-    printf("building these platforms: %s\n", buildplatforms);
-
     if (buildplatforms == NULL) {
 	rc =  buildplatform(arg, buildAmount, passPhrase, buildRoot,
 		fromTarball, test, cookie);
 	return rc;
     }
+
+    /* parse up the build operators */
+
+    printf("building these platforms: %s\n", buildplatforms);
 
     while((platform = strsep(&buildplatforms,",")) != NULL) {
 	printf("building %s\n", platform);
