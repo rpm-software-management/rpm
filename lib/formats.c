@@ -19,11 +19,14 @@ static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
 		      int * freeData);
 static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
 		      int * freeData);
+static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
+		      int * freeData);
 static char * permsString(int mode);
 
 const struct headerSprintfExtension rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms", { permsFormat } },
@@ -176,6 +179,24 @@ static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
     *freeData = 0;
 
     return 0; 
+}
+
+static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
+		      int * freeData) {
+    char ** array;
+
+    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, type, data, count)) {
+	*freeData = 0;
+	return 0;
+    } else if (headerGetEntry(h, RPMTAG_INSTPREFIXES, type, (void **) &array, 
+			      count)) {
+	*((char **) data) = strdup(array[0]);
+	*freeData = 1;
+	free(array);
+	return 0;
+    } 
+
+    return 1;
 }
 
 static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
