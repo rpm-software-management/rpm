@@ -337,12 +337,18 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 	    close(fd);
 	    switch (rc) {
 		case 0:
-		    printHeader(h, queryFlags);
-		    freeHeader(h);
+		    if (!h) {
+			fprintf(stderr, "old format source packages cannot be "
+						"queried\n");
+		    } else {
+			printHeader(h, queryFlags);
+			freeHeader(h);
+		    }
 		    break;
 		case 1:
 		    fprintf(stderr, "%s is not an RPM\n", arg);
 	    }
+
 	}
 		
 	break;
