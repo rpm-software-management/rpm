@@ -4,6 +4,8 @@
 	  trouble)
 	- added test script
 	- added support for exec
+	- removed support for *_POPT_ALIASES env variable -- it was a bad
+	  idea
 
 1.0 -> 1.1
 	- moved to autoconf (Fred Fish)
