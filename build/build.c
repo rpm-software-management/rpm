@@ -676,6 +676,10 @@ int doBuild(Spec s, int flags, char *passPhrase)
 
     strcpy(build_subdir, ".");
 
+    if (s->buildArch) {
+	rpmSetMachine(s->buildArch, NULL);
+    }
+
     /* We always need to parse the %prep section */
     if (execPrep(s, (flags & RPMBUILD_PREP), test)) {
 	return 1;

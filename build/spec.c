@@ -68,6 +68,9 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
 			     int cur_part, char *triggerArgs,
 			     char *scriptProg);
 
+Spec parseSpecAux(FILE *f, char *specfile, char *buildRootOverride,
+		  char ***buildArchs);
+
 /**********************************************************************/
 /*                                                                    */
 /* Source and patch structure creation/deletion/lookup                */
@@ -403,6 +406,8 @@ static struct PackageRec *new_packagerec(void)
 
 void free_packagerec(struct PackageRec *p)
 {
+    if (! p ) return;
+    
     headerFree(p->header);
     freeStringBuf(p->filelist);
     freeStringBuf(p->doc);
@@ -425,6 +430,7 @@ void freeSpec(Spec s)
     FREE(s->noSource);
     FREE(s->noPatch);
     FREE(s->buildroot);
+    FREE(s->buildArch);
     freeSources(s);
     freeStringBuf(s->prep);
     freeStringBuf(s->build);
@@ -860,6 +866,7 @@ struct preamble_line {
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
     {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
     {RPMTAG_BUILDROOT,     0, "buildroot"},
+    {RPMTAG_BUILDARCHS,    0, "buildarchitectures"},
     {RPMTAG_AUTOREQPROV,   0, "autoreqprov"},
     {0, 0, 0}
 };
@@ -1053,7 +1060,67 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
 /*                                                                    */
 /**********************************************************************/
 
-Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
+Spec *parseSpec(FILE *f, char *specfile, char *buildRootOverride)
+{
+    Spec *res;
+    Spec s;
+    char **archs = NULL;
+    char **arch;
+    int i;
+    
+    s = parseSpecAux(f, specfile, buildRootOverride, &archs);
+
+    if (s) {
+	/* No BuildArchitectures field */
+	res = (Spec *) malloc(2 * sizeof(Spec));
+	res[0] = s;
+	res[1] = NULL;
+	return res;
+    }
+
+    if (! archs) {
+	/* Error */
+	return NULL;
+    }
+
+    /* We have a BuildArchitectures field */
+    i = 0;
+    while (archs[i]) {
+	i++;
+    }
+    res = (Spec *) malloc(i * sizeof(Spec));
+
+    i = 0;
+    arch = archs;
+    while (*arch) {
+	if (rpmMachineScore(RPM_MACHTABLE_BUILDARCH, *arch)) {
+	    rewind(f);
+	    rpmSetMachine(*arch, NULL);
+	    res[i] = parseSpecAux(f, specfile, buildRootOverride, NULL);
+	    if (! res[i]) {
+		/* Error */
+		freeSplitString(archs);
+		while (i) {
+		    i--;
+		    freeSpec(res[i]);
+		}
+		free(res);
+		return NULL;
+	    }
+	    res[i]->buildArch = strdup(*arch);
+	    i++;
+	}
+	arch++;
+    }
+    res[i] = NULL;
+
+    freeSplitString(archs);
+    
+    return res;
+}
+
+Spec parseSpecAux(FILE *f, char *specfile, char *buildRootOverride,
+		  char ***buildArchs)
 {
     char buf[LINE_BUF_SIZE]; /* read buffer          */
     char buf2[LINE_BUF_SIZE];
@@ -1092,6 +1159,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     spec->numNoPatch = 0;
     spec->buildroot = NULL;
     spec->autoReqProv = 1;
+    spec->buildArch = NULL;
 
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
@@ -1384,6 +1452,14 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		  case RPMTAG_URL:
 		    headerAddEntry(cur_package->header, tag, RPM_STRING_TYPE, s, 1);
 		    break;
+		  case RPMTAG_BUILDARCHS:
+		    if (buildArchs) {
+			*buildArchs = splitString(s, strlen(s), ' ');
+			freeSpec(spec);
+			freeStringBuf(sb);
+			return NULL;
+		    }
+		    break;
 		  case RPMTAG_BUILDROOT:
 		    gotBuildroot = 1;
 		    spec->buildroot = strdup(s);
@@ -1527,6 +1603,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 			  scriptProg)) {
 	return NULL;
     }
+
+    freeStringBuf(sb);
     
     if (gotRoot && gotBuildroot) {
 	freeSpec(spec);

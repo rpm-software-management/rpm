@@ -364,7 +364,7 @@ static void printHelp(void) {
 static int build(char *arg, int buildAmount, char *passPhrase,
 	         char *buildRootOverride, int fromTarball) {
     FILE *f;
-    Spec s;
+    Spec *s, *specArray;
     char * specfile;
     int res = 0;
     struct stat statbuf;
@@ -372,6 +372,7 @@ static int build(char *arg, int buildAmount, char *passPhrase,
     char * tmpSpecFile;
     char * cmd;
     char buf[1024];
+    int flags;
 
     if (fromTarball) {
 	specDir = rpmGetVar(RPMVAR_SPECDIR);
@@ -409,8 +410,8 @@ static int build(char *arg, int buildAmount, char *passPhrase,
 	sprintf(specfile, "%s/%s", specDir, cmd);
 	
 	if (rename(tmpSpecFile, specfile)) {
-	    fprintf(stderr, "Failed to rename %s to %s: %s\n", tmpSpecFile,
-			specfile, strerror(errno));
+	    fprintf(stderr, _("Failed to rename %s to %s: %s\n"),
+		    tmpSpecFile, specfile, strerror(errno));
 	    unlink(tmpSpecFile);
 	    return 1;
 	}
@@ -443,7 +444,8 @@ static int build(char *arg, int buildAmount, char *passPhrase,
 
     stat(specfile, &statbuf);
     if (! S_ISREG(statbuf.st_mode)) {
-	rpmError(RPMERR_BADSPEC, "File is not a regular file: %s\n", specfile);
+	rpmError(RPMERR_BADSPEC, _("File is not a regular file: %s\n"),
+		 specfile);
 	return 1;
     }
     
@@ -451,22 +453,10 @@ static int build(char *arg, int buildAmount, char *passPhrase,
 	fprintf(stderr, _("unable to open: %s\n"), specfile);
 	return 1;
     }
-    s = parseSpec(f, specfile, buildRootOverride);
+    
+    s = specArray = parseSpec(f, specfile, buildRootOverride);
     fclose(f);
-    if (s) {
-	if (verifySpec(s)) {
-	    fprintf(stderr, "\n%cSpec file check failed!!\n", 7);
-	    fprintf(stderr,
-		    "Tell rpm-list@redhat.com if this is incorrect.\n\n");
-	    res = 1;
-	} else {
-	    if (doBuild(s, buildAmount, passPhrase)) {
-		fprintf(stderr, _("Build failed.\n"));
-		res = 1;
-	    }
-	}
-        freeSpec(s);
-    } else {
+    if (! specArray) {
 	/* Spec parse failed -- could be Exclude: Exclusive: */
 	res = 1;
 	if (rpmErrorCode() == RPMERR_BADARCH) {
@@ -474,6 +464,34 @@ static int build(char *arg, int buildAmount, char *passPhrase,
 	} else {
 	    fprintf(stderr, _("Build failed.\n"));
 	}
+    } else {
+	while (*s && !res) {
+	    if (verifySpec(*s)) {
+		fprintf(stderr, _("\n%cSpec file check failed!!\n"), 7);
+		fprintf(stderr,
+			_("Tell rpm-list@redhat.com if this is incorrect.\n\n"));
+		res = 1;
+	    } else {
+		flags = buildAmount;
+		/* Don't build source package or remove sources */
+		/* unless this is the last package being built. */
+		if (*(s+1)) {
+		    flags = flags & ~RPMBUILD_SOURCE;
+		    flags = flags & ~RPMBUILD_RMSOURCE;
+		}
+		if (doBuild(*s, flags, passPhrase)) {
+		    fprintf(stderr, _("Build failed.\n"));
+		    res = 1;
+		}
+	    }
+	    s++;
+	}
+
+	s = specArray;
+	while (*s) {
+	    freeSpec(*s++);
+	}
+	free(specArray);
     }
 
     if (fromTarball) unlink(specfile);

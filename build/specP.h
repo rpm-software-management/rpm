@@ -58,6 +58,7 @@ struct SpecRec {
     StringBuf clean;
 
     char *buildroot;
+    char *buildArch;
     
     struct PackageRec *packages;
     /* The first package record is the "main" package and contains
