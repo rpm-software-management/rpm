@@ -18,6 +18,8 @@
 	- add ".arch" suffix to erase colored packages with identical NEVR.
 	- update ja man pages (#92261).
 	- brp-python-bytecompile to automagically bytecode compile python.
+	- don't attempt to remove dbenv on --rebuilddb.
+	- autorelocate ix86 package file paths on ia64.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.
