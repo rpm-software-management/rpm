@@ -22,6 +22,7 @@
 #include "rpmlib.h"
 
 enum instActions { CREATE, BACKUP, KEEP, SAVE };
+enum fileTypes { DIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
 struct fileToInstall {
     char * fileName;
@@ -32,6 +33,12 @@ struct replacedFile {
     int recOffset, fileNumber;
 } ;
 
+enum fileTypes whatis(short mode);
+int filecmp(short mode1, char * md51, char * link1, 
+	      short mode2, char * md52, char * link2);
+enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
+				char * dbLink, short newMode, char * newMd5,
+				char * newLink);
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify,
 			  char ** installArchive);
@@ -45,9 +52,10 @@ static int setFileOwner(char * prefix, char * file, char * owner,
 static int createDirectories(char * prefix, char ** fileList, int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
-			         char ** fileMd5List, int fileCount, 
-				 enum instActions * instActions, 
-			 	 char ** prefixedFileList, int * oldVersion,
+			         char ** fileMd5List, int_16 * fileModeList,
+				 char ** fileLinkList,
+				 int fileCount, enum instActions * instActions, 
+			 	 char ** prefixedFileList, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags);
 static int fileCompare(const void * one, const void * two);
 static int installSources(char * prefix, int fd, char ** specFilePtr);
@@ -83,9 +91,10 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     Header h;
     int fileCount, type;
     char ** fileList;
-    char ** fileOwners, ** fileGroups, ** fileMd5s;
+    char ** fileOwners, ** fileGroups, ** fileMd5s, ** fileLinkList;
     uint_32 * fileFlagsList;
     uint_32 * fileSizesList;
+    int_16 * fileModesList;
     int_32 installTime;
     char * fileStatesList;
     struct fileToInstall * files;
@@ -195,6 +204,10 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
 	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
 		 &fileCount);
+	getEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
+		 &fileCount);
+	getEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &fileLinkList, 
+		 &fileCount);
 
 	/* check for any config files that already exist. If they do, plan
 	   on making a backup copy. If that's not the right thing to do
@@ -212,18 +225,20 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	    instActions[i] = CREATE;
 	    if (fileFlagsList[i] & RPMFILE_CONFIG) {
 		if (exists(prefixedFileList[i])) {
-		    message(MESS_DEBUG, "%s exists - backing up", 
+		    message(MESS_DEBUG, "%s exists - backing up\n", 
 				prefixedFileList[i]);
 		    instActions[i] = BACKUP;
 		}
 	    }
 	}
 
-	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileCount, 
-				   instActions, prefixedFileList, 
-				   oldVersions, &replacedList, flags);
+	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileModesList,
+				   fileLinkList, fileCount, instActions, 
+				   prefixedFileList, oldVersions, 
+				   &replacedList, flags);
 
 	free(fileMd5s);
+	free(fileLinkList);
 	if (rc) {
 	    if (replacedList) free(replacedList);
 	    free(fileList);
@@ -795,26 +810,121 @@ static int mkdirIfNone(char * directory, mode_t perms) {
     return errno;
 }
 
+int filecmp(short mode1, char * md51, char * link1, 
+	      short mode2, char * md52, char * link2) {
+    enum fileTypes what1, what2;
+
+    what1 = whatis(mode1);
+    what2 = whatis(mode2);
+
+    if (what1 != what2) return 1;
+
+    if (what1 == LINK)
+	return strcmp(link1, link2);
+    else if (what1 == REG)
+	return strcmp(md51, md52);
+
+    return 0;
+}
+
+enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
+				char * dbLink, short newMode, char * newMd5,
+				char * newLink) {
+    char buffer[1024];
+    char * dbAttr, * newAttr;
+    enum fileTypes dbWhat, newWhat, diskWhat;
+    struct stat sb;
+    int i;
+
+    if (lstat(filespec, &sb)) {
+	/* the file doesn't exist on the disk - might as well make it */
+	return CREATE;
+    }
+
+    diskWhat = whatis(sb.st_mode);
+    dbWhat = whatis(dbMode);
+    newWhat = whatis(newMode);
+
+    if (diskWhat != newWhat) {
+	message(MESS_DEBUG, "	file type on disk is different then package - "
+			"saving\n");
+	return SAVE;
+    } else if (newWhat != dbWhat && diskWhat != dbWhat) {
+	message(MESS_DEBUG, "	file type in database is different then disk"
+			" and package file - saving\n");
+	return SAVE;
+    } else if (dbWhat != newWhat) {
+	message(MESS_DEBUG, "	file type changed - replacing\n");
+	return CREATE;
+    } else if (dbWhat != LINK && dbWhat != REG) {
+	message(MESS_DEBUG, "	can't check file for changes - replacing\n");
+	return CREATE;
+    }
+
+    if (dbWhat == REG) {
+	if (mdfile(filespec, buffer)) {
+	    /* assume the file has been removed, don't freak */
+	    message(MESS_DEBUG, "	file not present - creating");
+	    return CREATE;
+	}
+	dbAttr = dbMd5;
+	newAttr = newMd5;
+    } else /* dbWhat == LINK */ {
+	i = readlink(filespec, buffer, sizeof(buffer) - 1);
+	if (i == -1) {
+	    /* assume the file has been removed, don't freak */
+	    message(MESS_DEBUG, "	file not present - creating");
+	    return CREATE;
+	}
+	dbAttr = dbLink;
+	newAttr = newLink;
+     }
+
+    if (!strcmp(dbAttr, newAttr)) {
+	/* this file is the same in all versions of this package */
+	message(MESS_DEBUG, "	old == new, keeping\n");
+	return KEEP;
+    }
+
+    if (!strcmp(dbAttr, buffer)) {
+	/* this config file has never been modified, so 
+	   just replace it */
+	message(MESS_DEBUG, "	old == current, replacing "
+		"with new version\n");
+	return CREATE;
+    }
+
+    /* the config file on the disk has been modified, but
+       the ones in the two packages are different. It would
+       be nice if RPM was smart enough to at least try and
+       merge the difference ala CVS, but... */
+    message(MESS_DEBUG, "	files changed too much - backing up\n");
+	    
+    return SAVE;
+}
+
 /* return 0: okay, continue install */
 /* return 1: problem, halt install */
 
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
-			         char ** fileMd5List, int fileCount, 
-			         enum instActions * instActions, 
+			         char ** fileMd5List, int_16 * fileModesList,
+				 char ** fileLinkList,
+				 int fileCount, enum instActions * instActions, 
 			 	 char ** prefixedFileList, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags) {
     struct sharedFile * sharedList;
+    int secNum, mainNum;
     int sharedCount;
     int i, type;
     int * intptr;
     Header sech = NULL;
     int secOffset = 0;
     int secFileCount;
-    char ** secFileMd5List, ** secFileList;
+    char ** secFileMd5List, ** secFileList, ** secFileLinksList;
     char * secFileStatesList;
+    int_16 * secFileModesList;
     uint_32 * secFileFlagsList;
     char * name, * version, * release;
-    char currentMd5[33];
     int rc = 0;
     struct replacedFile * replacedList;
     int numReplacedFiles, numReplacedAlloced;
@@ -835,6 +945,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	    if (secOffset) {
 		freeHeader(sech);
 		free(secFileMd5List);
+		free(secFileLinksList);
 		free(secFileList);
 	    }
 
@@ -872,44 +983,21 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 		     (void **) &secFileMd5List, &secFileCount);
 	    getEntry(sech, RPMTAG_FILEFLAGS, &type, 
 		     (void **) &secFileFlagsList, &secFileCount);
+	    getEntry(sech, RPMTAG_FILELINKTOS, &type, 
+		     (void **) &secFileLinksList, &secFileCount);
+	    getEntry(sech, RPMTAG_FILEMODES, &type, 
+		     (void **) &secFileModesList, &secFileCount);
 	}
 
-	message(MESS_DEBUG, "file %s is shared\n", 
-		secFileList[sharedList[i].secFileNumber]);
+ 	secNum = sharedList[i].secFileNumber;
+	mainNum = sharedList[i].mainFileNumber;
 
-	if (!strcmp(secFileMd5List[sharedList[i].secFileNumber],
-		    fileMd5List[sharedList[i].mainFileNumber])) {
-	    message(MESS_DEBUG, "shared file and new file are identical\n");
-	    continue;
-	}
+	message(MESS_DEBUG, "file %s is shared\n", secFileList[secNum]);
 
 	intptr = notErrors;
 	while (*intptr) {
 	    if (*intptr == sharedList[i].secRecOffset) break;
 	    intptr++;
-	}
-
-	if (!(flags & INSTALL_REPLACEFILES) && !(*intptr)) {
-	    error(RPMERR_PKGINSTALLED, "%s conflicts with file from %s-%s-%s",
-		  fileList[sharedList[i].mainFileNumber],
-		  name, version, release);
-	    rc = 1;
-	} else {
-	    if (numReplacedFiles == numReplacedAlloced) {
-		numReplacedAlloced += 10;
-		replacedList = realloc(replacedList, sizeof(*replacedList) * 
-					numReplacedAlloced);
-	    }
-	   
-	    replacedList[numReplacedFiles].recOffset = 
-		sharedList[i].secRecOffset;
-	    replacedList[numReplacedFiles].fileNumber = 	
-		sharedList[i].secFileNumber;
-	    numReplacedFiles++;
-
-	    message(MESS_DEBUG, "%s from %s-%s-%s will be replaced\n", 
-		    fileList[sharedList[i].mainFileNumber],
-		    name, version, release);
 	}
 
 	/* if this instance of the shared file is already recorded as
@@ -920,54 +1008,48 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	    continue;
 	}
 
-	/* All of this md5 stuff is nice, but it needs to know about
-	   symlink comparisons as well :-( */
+	if (filecmp(fileModesList[mainNum], fileMd5List[mainNum], 
+		    fileLinkList[mainNum], secFileModesList[secNum],
+		    secFileMd5List[secNum], secFileLinksList[secNum])) {
+	    if (!(flags & INSTALL_REPLACEFILES) && !(*intptr)) {
+		error(RPMERR_PKGINSTALLED, "%s conflicts with file from "
+		      "%s-%s-%s", fileList[sharedList[i].mainFileNumber],
+		      name, version, release);
+		rc = 1;
+	    } else {
+		if (numReplacedFiles == numReplacedAlloced) {
+		    numReplacedAlloced += 10;
+		    replacedList = realloc(replacedList, 
+					   sizeof(*replacedList) * 
+					       numReplacedAlloced);
+		}
+	       
+		replacedList[numReplacedFiles].recOffset = 
+		    sharedList[i].secRecOffset;
+		replacedList[numReplacedFiles].fileNumber = 	
+		    sharedList[i].secFileNumber;
+		numReplacedFiles++;
+
+		message(MESS_DEBUG, "%s from %s-%s-%s will be replaced\n", 
+			fileList[sharedList[i].mainFileNumber],
+			name, version, release);
+	    }
+	}
 
 	/* if this is a config file, we need to be carefull here */
 	if (secFileFlagsList[sharedList[i].secFileNumber] & RPMFILE_CONFIG) {
-	    if (!strcmp(fileMd5List[sharedList[i].mainFileNumber], 
-		        secFileMd5List[sharedList[i].secFileNumber])) {
-
-		/* the file is the same in both the old package and the
-		   new one, save the one that is currently installed */
-
-		message(MESS_DEBUG, "	old == new, keeping installed "
-			"version\n");
-		instActions[sharedList[i].mainFileNumber] = KEEP;
-	    } else {
-		if (mdfile(prefixedFileList[sharedList[i].mainFileNumber], 
-				currentMd5)) {
-		    /* assume the file has been removed, don't freak */
-		    message(MESS_DEBUG, "	file not present - creating");
-		    instActions[sharedList[i].mainFileNumber] = CREATE;
-		} else if (!strcmp(secFileMd5List[sharedList[i].secFileNumber],
-			           currentMd5)) {
-		    /* this config file has never been modified, so 
-		       just replace it */
-		    message(MESS_DEBUG, "	old == current, replacing "
-			    "with new version\n");
-		    instActions[sharedList[i].mainFileNumber] = CREATE;
-		} else {
-		    /* the config file on the disk has been modified, but
-		       the ones in the two packages are different. It would
-		       be nice if RPM was smart enough to at least try and
-		       merge the difference ala CVS, but... */
-		    message(MESS_DEBUG, "	files changed to much - "
-			    "backing up");
-		    
-		    message(MESS_WARNING, "%s will be saved as %s.rpmsave\n",
-			prefixedFileList[sharedList[i].mainFileNumber], 
-			prefixedFileList[sharedList[i].mainFileNumber]);
-
-		    instActions[sharedList[i].mainFileNumber] = SAVE;
-		}
-	    }
+	    instActions[sharedList[i].mainFileNumber] = 
+		decideFileFate(fileList[mainNum], secFileModesList[secNum],
+			       secFileMd5List[secNum], secFileLinksList[secNum],
+			       fileModesList[mainNum], fileMd5List[mainNum],
+			       fileLinkList[mainNum]);
 	}
     }
 
     if (secOffset) {
 	freeHeader(sech);
 	free(secFileMd5List);
+	free(secFileLinksList);
 	free(secFileList);
     }
 
@@ -1126,4 +1208,25 @@ static int ensureOlder(rpmdb db, char * name, char * newVersion,
     freeHeader(h);
 
     return rc;
+}
+
+enum fileTypes whatis(short mode) {
+    enum fileTypes result;
+
+    if (S_ISDIR(mode))
+	result = DIR;
+    else if (S_ISCHR(mode))
+	result = CDEV;
+    else if (S_ISBLK(mode))
+	result = BDEV;
+    else if (S_ISLNK(mode))
+	result = LINK;
+    else if (S_ISSOCK(mode))
+	result = SOCK;
+    else if (S_ISFIFO(mode))
+	result = PIPE;
+    else
+	result = REG;
+ 
+    return result;
 }
