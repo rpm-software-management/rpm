@@ -18,7 +18,7 @@ mv Makefile Makefile.orig
 cat Makefile.orig | sed -e '/^install[:-]/c\
 .PHONY: listobjs\
 listobjs:\
-	@echo $(OBJS) $(C_OBJS) \
+\	@echo $(OBJS) $(C_OBJS) \
 \
 distdir install check:\
 \
