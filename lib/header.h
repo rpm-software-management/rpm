@@ -58,5 +58,6 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 #define INT32_TYPE 4
 #define INT64_TYPE 5
 #define STRING_TYPE 6
+#define BIN_TYPE 7
 
 #endif _header_h

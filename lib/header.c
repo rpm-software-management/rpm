@@ -203,6 +203,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 	switch (ntohl(p->type)) {
 	    case NULL_TYPE:   	type = "NULL_TYPE"; 	break;
 	    case CHAR_TYPE:   	type = "CHAR_TYPE"; 	break;
+	    case BIN_TYPE:   	type = "BIN_TYPE"; 	break;
 	    case INT8_TYPE:   	type = "INT8_TYPE"; 	break;
 	    case INT16_TYPE:  	type = "INT16_TYPE"; 	break;
 	    case INT32_TYPE:  	type = "INT32_TYPE"; 	break;
@@ -287,6 +288,8 @@ void dumpHeader(Header h, FILE * f, int flags)
 		    dp += sizeof(int_8);
 		}
 		break;
+	    case BIN_TYPE:
+		break;
 	    case CHAR_TYPE:
 		while (c--) {
 		    ch = (char) *((char *) dp);
@@ -350,6 +353,7 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     case INT32_TYPE:
     case INT16_TYPE:
     case INT8_TYPE:
+    case BIN_TYPE:
     case CHAR_TYPE:
 	*p = h->data + ntohl(index->offset);
 	break;
@@ -449,6 +453,7 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     case INT8_TYPE:
 	length = sizeof(int_8) * c;
 	break;
+    case BIN_TYPE:
     case CHAR_TYPE:
 	length = sizeof(char) * c;
 	break;
@@ -499,6 +504,7 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	}
 	break;
       case INT8_TYPE:
+      case BIN_TYPE:
       case CHAR_TYPE:
 	memcpy(ptr, p, length);
 	break;
