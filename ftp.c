@@ -227,7 +227,7 @@ int ftpReadData(int sock, int out) {
 	rc = select(sock + 1, &readSet, &emptySet, &emptySet, &timeout);
 	if (rc == 0) {
 	    close(sock);
-	    return 0;
+	    return 1;
 	}
 	if (rc < 0) {
 	    close(sock);
