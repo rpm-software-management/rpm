@@ -236,7 +236,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     char ** obsoletes;
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-    if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
+    if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
 	return 1;
 
     /* FIXME: handling upgrades like this is *almost* okay. It doesn't
