@@ -18,15 +18,29 @@ struct hashTable_s {
     hashEqualityType eq;
 };
 
-static struct hashBucket * findEntry(hashTable ht, const void * key);
+static struct hashBucket * findEntry(hashTable ht, const void * key)
+{
+    unsigned int hash;
+    struct hashBucket * b;
 
-int hashEqualityString(const void * key1, const void * key2) {
+    hash = ht->fn(key) % ht->numBuckets;
+    b = ht->buckets[hash]; 
+
+    while (b && b->key && !ht->eq(b->key, key)) 
+	b = b->next;
+
+    return b;
+}
+
+int hashEqualityString(const void * key1, const void * key2)
+{
     char *k1 = (char *)key1;
     char *k2 = (char *)key2;
     return strcmp(k1, k2);
 }
 
-unsigned int hashFunctionString(const void * string) {
+unsigned int hashFunctionString(const void * string)
+{
     char xorValue = 0;
     char sum = 0;
     short len;
@@ -43,7 +57,8 @@ unsigned int hashFunctionString(const void * string) {
 }
 
 hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
-		   hashEqualityType eq) {
+		   hashEqualityType eq)
+{
     hashTable ht;
 
     ht = malloc(sizeof(*ht));
@@ -56,7 +71,8 @@ hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
     return ht;
 }
 
-void htAddEntry(hashTable ht, const void * key, void * data) {
+void htAddEntry(hashTable ht, const void * key, void * data)
+{
     unsigned int hash;
     struct hashBucket * b, * ob;
 
@@ -84,7 +100,8 @@ void htAddEntry(hashTable ht, const void * key, void * data) {
     b->data[b->dataCount++] = data;
 }
 
-void htFree(hashTable ht) {
+void htFree(hashTable ht)
+{
     int i;
     struct hashBucket * b, * n;
 
@@ -103,27 +120,16 @@ void htFree(hashTable ht) {
     free(ht);
 }
 
-static struct hashBucket * findEntry(hashTable ht, const void * key) {
-    unsigned int hash;
-    struct hashBucket * b;
-
-    hash = ht->fn(key) % ht->numBuckets;
-    b = ht->buckets[hash]; 
-
-    while (b && b->key && !ht->eq(b->key, key)) 
-	b = b->next;
-
-    return b;
-}
-
-int htHasEntry(hashTable ht, const void * key) {
+int htHasEntry(hashTable ht, const void * key)
+{
     struct hashBucket * b;
 
     if (!(b = findEntry(ht, key))) return 0; else return 1;
 }
 
 int htGetEntry(hashTable ht, const void * key, void *** data, 
-	       int * dataCount, void ** tableKey) {
+	       int * dataCount, void ** tableKey)
+{
     struct hashBucket * b;
 
     if (!(b = findEntry(ht, key))) return 1;
