@@ -5,6 +5,12 @@
 #define RPMSIG_PGP262_1024  1
 #define RPMSIG_BAD          2  /* Returned for unknown types */
 
+/* verifySignature() results */
+#define RPMSIG_SIGOK        0
+#define RPMSIG_NOSIG        1
+#define RPMSIG_BADSIG       2
+#define RPMSIG_UNKNOWNSIG   3
+
 /* Read a sig_type signature from fd, alloc and return sig. */
 int readSignature(int fd, short sig_type, void **sig);
 
@@ -20,3 +26,4 @@ unsigned short sigLookupType(void);
 
 /* Utility to read a pass phrase from the user */
 char *getPassPhrase(char *prompt);
+
