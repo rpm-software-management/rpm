@@ -764,6 +764,10 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	currDir = realloc(currDir, currDirLen);
     }
 
+    if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL,
+			    (void *) &archiveSizePtr, NULL))
+	archiveSizePtr = NULL;
+
     chdir(realSourceDir);
     if (installArchive(fd, fileCount > 0 ? files : NULL,
 			  fileCount, notify, notifyData, NULL, h,
