@@ -165,6 +165,10 @@
 	- document more popt aliases for --help usage.
 	- remove --tarbuild from man page(s), use -t[abpcils] instead (#48666).
 	- fix: scope multi-mode options like --nodeps correctly (#48825).
+	- isolate cdb access configuration (experimental, use at your own risk).
+	- fix: hard fail on locked dbopen if CDB locking not in use.
+	- fix: dbconfig with mp_mmapsize=16Mb/mp_size=1Mb for
+	  "everything ENOSPC" failure check.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -1050,13 +1050,15 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 		    rc = fcntl(fdno, F_SETLK, (void *) &l);
 		    if (rc) {
-			rpmError(
-			    (!dbi->dbi_use_dbenv ? RPMERR_FLOCK : RPMWARN_FLOCK),
+			/* Warning only if using CDB locking. */
+			rc = ((dbi->dbi_use_dbenv &&
+				(dbi->dbi_eflags & DB_INIT_CDB))
+			    ? 0 : 1);
+			rpmError( (rc ? RPMERR_FLOCK : RPMWARN_FLOCK),
 				_("cannot get %s lock on %s/%s\n"),
 				((dbi->dbi_mode & (O_RDWR|O_WRONLY))
 					? _("exclusive") : _("shared")),
 				dbhome, (dbfile ? dbfile : ""));
-			rc = (!dbi->dbi_use_dbenv ? 1 : 0);
 		    } else if (dbfile) {
 			rpmMessage(RPMMESS_DEBUG,
 				_("locked   db index       %s/%s\n"),

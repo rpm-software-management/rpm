@@ -487,8 +487,8 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     if (!dbi->dbi_use_dbenv) {		/* db3 dbenv is always used now. */
 	dbi->dbi_use_dbenv = 1;
 	dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
-	dbi->dbi_mp_mmapsize = 8 * 1024 * 1024;
-	dbi->dbi_mp_size = 512 * 1024;
+	dbi->dbi_mp_mmapsize = 16 * 1024 * 1024;
+	dbi->dbi_mp_size = 1 * 1024 * 1024;
 	dbi->dbi_tear_down = 1;
     }
 

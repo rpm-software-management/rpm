@@ -869,19 +869,30 @@ static int openDatabase(/*@null@*/ const char * prefix,
     int minimal = flags & RPMDB_FLAG_MINIMAL;
 
     if (!_initialized || dbiTagsMax == 0) {
-	char * filename;
-	int i;
 
-	i = sizeof("//__db.000");
-	if (prefix) i += strlen(prefix);
-	if (dbpath) i += strlen(dbpath);
-	filename = alloca(i);
-	for (i = 0; i < 16; i++) {
-	    sprintf(filename, "%s/%s/__db.%03d",
-		(prefix ? prefix : ""), (dbpath ? dbpath : ""),  i);
-	    (void) rpmCleanPath(filename);
-	    (void) unlink(filename);
+#if 0
+	static int _enable_cdb = -1;
+
+	/* XXX hack in suoport for CDB, otherwise nuke the state. */
+	if (_enable_cdb < 0)
+	    _enable_cdb = rpmExpandNumeric("%{?__dbi_cdb:1}");
+
+	if (!_enable_cdb) {
+	    char * filename;
+	    int i;
+
+	    i = sizeof("//__db.000");
+	    if (prefix) i += strlen(prefix);
+	    if (dbpath) i += strlen(dbpath);
+	    filename = alloca(i);
+	    for (i = 0; i < 16; i++) {
+		sprintf(filename, "%s/%s/__db.%03d",
+			(prefix ? prefix : ""), (dbpath ? dbpath : ""),  i);
+		(void) rpmCleanPath(filename);
+		(void) unlink(filename);
+	    }
 	}
+#endif
 	dbiTagsInit();
 	_initialized++;
     }
