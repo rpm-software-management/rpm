@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-20 19:57-0400\n"
+"POT-Creation-Date: 2000-04-20 20:21-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2676,64 +2676,64 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/rebuilddb.c:36 lib/rpmdb.c:500
+#: lib/rebuilddb.c:35 lib/rpmdb.c:500
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rebuilddb.c:61
+#: lib/rebuilddb.c:60
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rebuilddb.c:65
+#: lib/rebuilddb.c:64
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rebuilddb.c:71
+#: lib/rebuilddb.c:70
 #, c-format
 msgid "creating directory: %s\n"
 msgstr ""
 
-#: lib/rebuilddb.c:73
+#: lib/rebuilddb.c:72
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rebuilddb.c:80
+#: lib/rebuilddb.c:79
 #, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr ""
 
-#: lib/rebuilddb.c:89
+#: lib/rebuilddb.c:88
 #, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr ""
 
-#: lib/rebuilddb.c:111
+#: lib/rebuilddb.c:110
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rebuilddb.c:143
+#: lib/rebuilddb.c:142
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rebuilddb.c:159
+#: lib/rebuilddb.c:158
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:167
+#: lib/rebuilddb.c:166
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:168
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:175
+#: lib/rebuilddb.c:174
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -2845,7 +2845,7 @@ msgstr ""
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
-"    db1 to db2 on-disk format.\n"
+"    db1 to db3 on-disk format.\n"
 "\n"
 msgstr ""
 

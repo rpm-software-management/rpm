@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-04-19 18:07-0400\n"
+msgstr "POT-Creation-Date: 2000-04-20 20:21-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:425
 #, c-format
@@ -2914,65 +2914,65 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "mostre a lista de arquivos do pacote"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:491
+#: lib/rebuilddb.c:35 lib/rpmdb.c:500
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rebuilddb.c:59
+#: lib/rebuilddb.c:60
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: lib/rebuilddb.c:63
+#: lib/rebuilddb.c:64
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rebuilddb.c:69
+#: lib/rebuilddb.c:70
 #, c-format
 msgid "creating directory: %s\n"
 msgstr ""
 
-#: lib/rebuilddb.c:71
+#: lib/rebuilddb.c:72
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rebuilddb.c:82
+#: lib/rebuilddb.c:79
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: lib/rebuilddb.c:91
+#: lib/rebuilddb.c:88
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: lib/rebuilddb.c:113
+#: lib/rebuilddb.c:110
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rebuilddb.c:145
+#: lib/rebuilddb.c:142
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rebuilddb.c:161
+#: lib/rebuilddb.c:158
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:166
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:171
+#: lib/rebuilddb.c:168
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
 # , c-format
-#: lib/rebuilddb.c:177
+#: lib/rebuilddb.c:174
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Não consegui abrir: %s\n"
@@ -3065,42 +3065,42 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:115
+#: lib/rpmdb.c:118
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: lib/rpmdb.c:136
+#: lib/rpmdb.c:139
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: lib/rpmdb.c:141
+#: lib/rpmdb.c:144
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
 
 # , c-format
-#: lib/rpmdb.c:299
+#: lib/rpmdb.c:302
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmdb.c:340
+#: lib/rpmdb.c:343
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
-"    db1 to db2 on-disk format.\n"
+"    db1 to db3 on-disk format.\n"
 "\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmdb.c:356
+#: lib/rpmdb.c:359
 #, fuzzy, c-format
 msgid "cannot open file %s: %s"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmdb.c:560
+#: lib/rpmdb.c:569
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -3108,71 +3108,71 @@ msgstr ""
 
 # , c-format
 #. error
-#: lib/rpmdb.c:744
+#: lib/rpmdb.c:753
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmdb.c:1076
+#: lib/rpmdb.c:1085
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/rpmdb.c:1084
+#: lib/rpmdb.c:1093
 #, fuzzy, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/rpmdb.c:1110
+#: lib/rpmdb.c:1119
 #, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:1143
+#: lib/rpmdb.c:1152
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1150
+#: lib/rpmdb.c:1159
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1158
+#: lib/rpmdb.c:1167
 #, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1162
+#: lib/rpmdb.c:1171
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1305
+#: lib/rpmdb.c:1314
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:1352
+#: lib/rpmdb.c:1361
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1365
+#: lib/rpmdb.c:1374
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1372
+#: lib/rpmdb.c:1381
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1376
+#: lib/rpmdb.c:1385
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1691
+#: lib/rpmdb.c:1700
 #, c-format
 msgid "cannot read header at %d for lookup"
 msgstr ""
