@@ -14,12 +14,14 @@
 #include "rpmlib.h"
 #include "query.h"
 
+static char * permsString(int mode);
 static void printHeader(Header h, int queryFlags, char * queryFormat);
-static const char * queryHeader(Header h, const char * incomingFormat, 
-				int arrayNum);
+static int queryPartial(Header h, char ** chptrptr, int * cntptr, 
+			int arrayNum);
+static int queryHeader(Header h, char * chptr);
+static int queryArray(Header h, char ** chptrptr);
 static void escapedChar(char ch);
-static const char * handleFormat(Header h, const char * chptr, 
-				 const int arrayNum);
+static char * handleFormat(Header h, char * chptr, int * count, int arrayNum);
 static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags, 
 			char * queryFormat);
 static int findMatches(rpmdb db, char * name, char * version, char * release,
@@ -39,23 +41,82 @@ static char * defaultQueryFormat =
 	    "Size        : %{SIZE}\n"
 	    "Description : %{DESCRIPTION}\n";
 
-static const char * queryHeader(Header h, const char * chptr, int arrayNum) {
+static int queryHeader(Header h, char * chptr) {
+    int count = 0;
+
+    return queryPartial(h, &chptr, &count, -1);
+}
+
+static int queryArray(Header h, char ** chptrptr) {
+    int count = 0;
+    int arrayNum;
+    char * start = NULL;
+
+    /* first one */
+    start = *chptrptr;
+    if (queryPartial(h, chptrptr, &count, 0)) return 1;
+
+    arrayNum = 1;
+    while (arrayNum < count) {
+	*chptrptr = start;
+	if (queryPartial(h, chptrptr, &count, arrayNum++)) return 1;
+    }
+
+    return 0;
+}
+
+static int queryPartial(Header h, char ** chptrptr, int * cntptr, 
+			int arrayNum) {
+    char * chptr = *chptrptr;
+    int count;
+    int emptyItem = 0;
+
     while (chptr && *chptr) {
 	switch (*chptr) {
 	  case '\\':
 	    chptr++;
-	    if (!*chptr) return NULL;
+	    if (!*chptr) return 1;
 	    escapedChar(*chptr++);
 	    break;
 
 	  case '%':
 	    chptr++;
-	    if (!*chptr) return NULL;
+	    if (!*chptr) return 1;
 	    if (*chptr == '%') {
 		putchar('%');
 		chptr++;
 	    }
-	    chptr = handleFormat(h, chptr, 0);
+	    count = *cntptr;
+	    chptr = handleFormat(h, chptr, &count, arrayNum);
+	    if (!count) {
+		count = 0;	
+		emptyItem = 1;
+	    } else if (count != -1 && !*cntptr && !emptyItem){ 
+		*cntptr = count;
+	    } else if (count != -1 && *cntptr && count != *cntptr) {
+		printf("(parallel array size mismatch)");
+		return 1;
+	    }
+	    break;
+
+	  case ']':
+	    if (arrayNum == -1) {
+		printf("(unexpected ']')");
+		return 1;
+	    }
+	    *chptrptr = chptr + 1;
+	    return 0;
+
+	  case '[':
+	    if (arrayNum != -1) {
+		printf("(unexpected ']')");
+		return 1;
+	    }
+	    *chptrptr = chptr + 1;
+	    if (queryArray(h, chptrptr)) {
+		return 1;
+	    }
+	    chptr = *chptrptr;
 	    break;
 
 	  default:
@@ -63,24 +124,27 @@ static const char * queryHeader(Header h, const char * chptr, int arrayNum) {
 	}
     }
 
-    return chptr;
+    *chptrptr = chptr;
+
+    return 0;
 }
 
-static const char * handleFormat(Header h, const char * chptr, 
-				 const int arrayNum) {
+static char * handleFormat(Header h, char * chptr, int * cntptr,
+				 int arrayNum) {
     const char * f = chptr;
     const char * tagptr;
-    char format[20];
+    char * end;
+    char how[20], format[20];
     int i, tagLength;
     char tag[100];
     const struct rpmTagTableEntry * t;
     void * p;
-    char ** strarray;
-    int type, count;
-    int isDate = 0;
+    int type;
+    int notArray = 0;
     time_t dateint;
     struct tm * tstruct;
     char datestr[100];
+    int count;
 
     strcpy(format, "%");
     while (*chptr && *chptr != '{') chptr++;
@@ -92,18 +156,37 @@ static const char * handleFormat(Header h, const char * chptr,
     strncat(format, f, chptr - f);
 
     tagptr = ++chptr;
-    while (*chptr && *chptr != '}') chptr++;
+    while (*chptr && *chptr != '}' && *chptr != ':' ) chptr++;
     if (tagptr == chptr || !*chptr) {
 	fprintf(stderr, "bad query format - %s\n", f);
 	return NULL;
     }
 
+    if (*chptr == ':') {
+	end = chptr + 1;
+	while (*end && *end != '}') end++;
+
+	if (*end != '}') {
+	    fprintf(stderr, "bad query format - %s\n", f);
+	    return NULL;
+	}
+	if ((end - chptr + 1) > sizeof(how)) {
+	    fprintf(stderr, "bad query format - %s\n", f);
+	    return NULL;
+	}
+	strncpy(how, chptr + 1, end - chptr - 1);
+	how[end - chptr - 1] = '\0';
+    } else {
+	strcpy(how, "");
+	end = chptr;
+    }
+
     switch (*tagptr) {
-	case '-':	isDate = 1, tagptr++;	break;
+	case '=':	notArray = 1, tagptr++;	break;
     }
 
     tagLength = chptr - tagptr;
-    chptr++;
+    chptr = end + 1;
 
     if (tagLength > (sizeof(tag) - 20)) {
 	fprintf(stderr, "query tag too long\n");
@@ -116,7 +199,7 @@ static const char * handleFormat(Header h, const char * chptr,
     strncat(tag, tagptr, tagLength);
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	if (!strcmp(tag, t->name)) break;
+	if (!strcasecmp(tag, t->name)) break;
     }
 
     if (i == rpmTagTableSize) {
@@ -128,21 +211,26 @@ static const char * handleFormat(Header h, const char * chptr,
 	p = "(none)";
 	count = 1;
 	type = STRING_TYPE;
-    } else if (count > 1 && (type != STRING_ARRAY_TYPE)) {
+    } else if (notArray) {
+	*cntptr = -1;
+    } else if (count > 1 && (arrayNum == -1)) {
 	p = "(array)";
 	count = 1;
 	type = STRING_TYPE;
-    }
+    } else if ((count - 1) < arrayNum && arrayNum != -1) {
+	p = "(past array end)";
+	count = 1;
+	type = STRING_TYPE;
+    } else if (arrayNum != -1)
+	*cntptr = count;
+
+    if (arrayNum == -1) arrayNum = 0;
 
     switch (type) {
       case STRING_ARRAY_TYPE:
-	strcat(format, "s ");
-
-	/* now use this format for each string, with a space in between */
-	strarray = p;
-	while (count--) {
-	    printf(format, *strarray++);
-	}
+	strcat(format, "s");
+	printf(format, ((char **) p)[arrayNum]);
+	free(p);
 	break;
 
       case STRING_TYPE:
@@ -152,20 +240,33 @@ static const char * handleFormat(Header h, const char * chptr,
 
       case INT8_TYPE:
 	strcat(format, "d");
-	printf(format, *((int_8 *) p));
+	printf(format, *(((int_8 *) p) + arrayNum));
+	break;
+
+      case INT16_TYPE:
+	if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
+	    strcat(format, "s");
+	    printf(format, permsString(*(((int_16 *) p) + arrayNum)));
+	} else {
+	    strcat(format, "d");
+	    printf(format, *(((int_16 *) p) + arrayNum));
+	}
 	break;
 
       case INT32_TYPE:
-	if (isDate) {
+	if (!strcmp(how, "date")) {
 	    strcat(format, "s");
 	    /* this is important if sizeof(int_32) ! sizeof(time_t) */
-	    dateint = *((int_32 *) p);
+	    dateint = *(((int_32 *) p) + arrayNum);
 	    tstruct = localtime(&dateint);
 	    strftime(datestr, sizeof(datestr) - 1, "%c", tstruct);
 	    printf(format, datestr);
+	} else if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
+	    strcat(format, "s");
+	    printf(format, permsString(*(((int_32 *) p) + arrayNum)));
 	} else {
 	    strcat(format, "d");
-	    printf(format, *((int_32 *) p));
+	    printf(format, *(((int_32 *) p) + arrayNum));
 	}
 	break;
 
@@ -218,7 +319,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 		queryFormat = defaultQueryFormat;
 	    } 
 
-	    queryHeader(h, queryFormat, -1);
+	    queryHeader(h, queryFormat);
 	}
 
 	if (queryFlags & QUERY_FOR_PROVIDES) {
@@ -373,30 +474,11 @@ static void printScript(Header h, char * label, int tag) {
     }
 }
 
-static void printFileInfo(char * name, unsigned int size, unsigned short mode,
-			  unsigned int mtime, unsigned short rdev,
-			  char * owner, char * group, int uid, int gid,
-			  char * linkto) {
-    char perms[11];
-    char sizefield[15];
-    char ownerfield[9], groupfield[9];
-    char timefield[100] = "";
-    time_t themtime;
-    time_t currenttime;
-    static int thisYear = 0;
-    static int thisMonth = 0;
-    struct tm * tstruct;
-    char * namefield = name;
+static char * permsString(int mode) {
+    static char perms[11];
 
     strcpy(perms, "-----------");
    
-    if (!thisYear) {
-	currenttime = time(NULL);
-	tstruct = localtime(&currenttime);
-	thisYear = tstruct->tm_year;
-	thisMonth = tstruct->tm_mon;
-    }
-
     if (mode & S_ISVTX) perms[9] = 't';
 
     if (mode & S_IRUSR) perms[1] = 'r';
@@ -425,6 +507,48 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 	    perms[6] = 'S'; 
     }
 
+    if (S_ISDIR(mode)) 
+	perms[0] = 'd';
+    else if (S_ISLNK(mode)) {
+	perms[0] = 'l';
+    }
+    else if (S_ISFIFO(mode)) 
+	perms[0] = 'p';
+    else if (S_ISSOCK(mode)) 
+	perms[0] = 'l';
+    else if (S_ISCHR(mode)) {
+	perms[0] = 'c';
+    } else if (S_ISBLK(mode)) {
+	perms[0] = 'b';
+    }
+
+    return perms;
+}
+
+static void printFileInfo(char * name, unsigned int size, unsigned short mode,
+			  unsigned int mtime, unsigned short rdev,
+			  char * owner, char * group, int uid, int gid,
+			  char * linkto) {
+    char sizefield[15];
+    char ownerfield[9], groupfield[9];
+    char timefield[100] = "";
+    time_t themtime;
+    time_t currenttime;
+    static int thisYear = 0;
+    static int thisMonth = 0;
+    struct tm * tstruct;
+    char * namefield = name;
+    char * perms;
+
+    perms = permsString(mode);
+
+    if (!thisYear) {
+	currenttime = time(NULL);
+	tstruct = localtime(&currenttime);
+	thisYear = tstruct->tm_year;
+	thisMonth = tstruct->tm_mon;
+    }
+
     if (owner) 
 	strncpy(ownerfield, owner, 8);
     else
@@ -440,18 +564,10 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 
     /* this knows too much about dev_t */
 
-    if (S_ISDIR(mode)) 
-	perms[0] = 'd';
-    else if (S_ISLNK(mode)) {
-	perms[0] = 'l';
+    if (S_ISLNK(mode)) {
 	namefield = alloca(strlen(name) + strlen(linkto) + 10);
 	sprintf(namefield, "%s -> %s", name, linkto);
-    }
-    else if (S_ISFIFO(mode)) 
-	perms[0] = 'p';
-    else if (S_ISSOCK(mode)) 
-	perms[0] = 'l';
-    else if (S_ISCHR(mode)) {
+    } else if (S_ISCHR(mode)) {
 	perms[0] = 'c';
 	sprintf(sizefield, "%3d, %3d", rdev >> 8, rdev & 0xFF);
     } else if (S_ISBLK(mode)) {
