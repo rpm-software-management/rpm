@@ -191,7 +191,6 @@ fi
 dnl Checks for library functions.
 AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), MISCOBJS="$MISCOBJS inet_aton.o")
 AC_CHECK_FUNC(realpath, [], MISCOBJS="$MISCOBJS realpath.o")
-AC_CHECK_FUNC(getopt_long, [], MISCOBJS="$MISCOBJS getopt.o getopt1.o")
 
 if test -n "$MISCOBJS"; then
 	LIBMISC=-lmisc
