@@ -348,9 +348,11 @@ static /*@only@*/ const char * expandNextArg(poptContext con, const char * s)
     te = t = malloc(tn);;
     while ((c = *s++) != '\0') {
 	switch (c) {
+#if 0	/* XXX can't do this */
 	case '\\':	/* escape */
 	    c = *s++;
 	    break;
+#endif
 	case '!':
 	    if (!(s[0] == '#' && s[1] == ':' && s[2] == '+'))
 		break;
