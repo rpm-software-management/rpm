@@ -22,6 +22,7 @@
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
+#include "cpio.h"
 #include "fprint.h"
 #include "legacy.h"	/* XXX domd5 */
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
@@ -1353,6 +1354,10 @@ rpmMessage(RPMMESS_DEBUG, _("repackage about-to-be-erased packages\n"));
 		    /*@switchbreak@*/ break;
 		psm->te = p;
 		psm->fi = rpmfiLink(fi, "tsRepackage");
+	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
+		psm->fi->mapflags |= CPIO_MAP_ABSOLUTE;
+		psm->fi->mapflags |= CPIO_MAP_ADDDOT;
+		psm->fi->mapflags |= CPIO_ALL_HARDLINKS;
 		xx = psmStage(psm, PSM_PKGSAVE);
 		(void) rpmfiUnlink(fi, "tsRepackage");
 		psm->fi = NULL;

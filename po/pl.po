@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-24 20:06-0400\n"
+"POT-Creation-Date: 2002-07-25 18:54-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -68,15 +68,15 @@ msgstr "Budowanie dla platform: %s\n"
 msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
 
-#: rpm2cpio.c:47
+#: rpm2cpio.c:54
 msgid "argument is not an RPM package\n"
 msgstr "argument nie jest pakietem RPM\n"
 
-#: rpm2cpio.c:53
+#: rpm2cpio.c:60
 msgid "error reading header from package\n"
 msgstr "b³±d odczytu nag³ówka z pakietu\n"
 
-#: rpm2cpio.c:75
+#: rpm2cpio.c:82
 #, fuzzy, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s\n"
@@ -854,7 +854,7 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s\n"
 
-#: build/pack.c:629 lib/psm.c:1394
+#: build/pack.c:629 lib/psm.c:1398
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s"
@@ -884,7 +884,7 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s"
 
-#: build/pack.c:710 lib/psm.c:1684
+#: build/pack.c:710 lib/psm.c:1696
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -1648,46 +1648,46 @@ msgstr "nie mo¿na zapisaæ do %s"
 msgid "error creating temporary file %s\n"
 msgstr "b³±d w tworzeniu pliku tymczasowego %s"
 
-#: lib/package.c:437 lib/package.c:477 lib/package.c:696 lib/package.c:720
-#: lib/package.c:750 lib/rpmchecksig.c:767
+#: lib/package.c:440 lib/package.c:480 lib/package.c:699 lib/package.c:723
+#: lib/package.c:753 lib/rpmchecksig.c:767
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:579 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
+#: lib/package.c:582 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/package.c:594
+#: lib/package.c:597
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "tylko pakiety z numerem g³ównym <= 3 s± obs³ugiwane przez t± wersjê RPM'a"
 
-#: lib/package.c:602
+#: lib/package.c:605
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "tylko pakiety z numerem g³ównym <= 3 s± obs³ugiwane przez t± wersjê RPM'a"
 
-#: lib/package.c:611 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
+#: lib/package.c:614 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature nie powiod³o siê\n"
 
-#: lib/package.c:615 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
+#: lib/package.c:618 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Sygnatura nie jest dostêpna\n"
 
-#: lib/package.c:662 lib/rpmchecksig.c:586
+#: lib/package.c:665 lib/rpmchecksig.c:586
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/package.c:762 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
+#: lib/package.c:765 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
@@ -2209,31 +2209,36 @@ msgstr "pakiet: %s-%s-%s test plików = %d\n"
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1445
+#: lib/psm.c:1411
+#, fuzzy
+msgid "Unable to reload signature header\n"
+msgstr "Nie mo¿na odczytaæ ikony: %s"
+
+#: lib/psm.c:1457
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root"
 
-#: lib/psm.c:1454
+#: lib/psm.c:1466
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - u¿yto grupy root"
 
-#: lib/psm.c:1496
+#: lib/psm.c:1508
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozpakowanie archiwum nie powiod³o siê %s%s: %s"
 
-#: lib/psm.c:1497
+#: lib/psm.c:1509
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:1692
+#: lib/psm.c:1704
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
 
-#: lib/psm.c:1695
+#: lib/psm.c:1707
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê"
@@ -2879,133 +2884,133 @@ msgstr "Stara sygnatura PGP\n"
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Stara (tylko wewnêtrzna) sygnatura! Sk±d Ty to wzi±³e¶!?"
 
-#: lib/signature.c:248
+#: lib/signature.c:249
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Rozmiar sygnatury: %d\n"
 
 #. @=boundsread@
-#: lib/signature.c:339 lib/signature.c:452 lib/signature.c:731
-#: lib/signature.c:770
+#: lib/signature.c:340 lib/signature.c:453 lib/signature.c:732
+#: lib/signature.c:771
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Nie mo¿na uruchomiæ %s"
 
-#: lib/signature.c:355
+#: lib/signature.c:356
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp nie powiod³o siê"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:362
+#: lib/signature.c:363
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "zapisanie sygnatury przez pgp nie powiod³o siê"
 
-#: lib/signature.c:368
+#: lib/signature.c:369
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "rozmiar sygnatury PGP: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:386 lib/signature.c:500
+#: lib/signature.c:387 lib/signature.c:501
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "nie mo¿na odczytaæ sygnatury"
 
-#: lib/signature.c:391
+#: lib/signature.c:392
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Mam %d bajtów sygnatury PGP\n"
 
-#: lib/signature.c:469
+#: lib/signature.c:470
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg nie powiod³o siê"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:476
+#: lib/signature.c:477
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "zapisanie sygnatury przez gpg nie powiod³o siê"
 
-#: lib/signature.c:482
+#: lib/signature.c:483
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "rozmiar sygnatury GPG: %d\n"
 
-#: lib/signature.c:505
+#: lib/signature.c:506
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Mam %d bajtów sygnatury GPG\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:775 lib/signature.c:830
+#: lib/signature.c:776 lib/signature.c:831
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "B³êdny %%_signature spec w pliku makra.\n"
 
-#: lib/signature.c:807
+#: lib/signature.c:808
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musisz ustawiæ \"%%_gpg_name\" w pliku swego makra"
 
-#: lib/signature.c:822
+#: lib/signature.c:823
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musisz ustawiæ \"%%_pgp_name\" w pliku swego makra"
 
-#: lib/signature.c:871
+#: lib/signature.c:872
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Rozmiar nag³ówka jest zbyt du¿y"
 
-#: lib/signature.c:912
+#: lib/signature.c:913
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:968
+#: lib/signature.c:969
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "nie sprawdzaj plików pakietu"
 
-#: lib/signature.c:1043
+#: lib/signature.c:1044
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "pomiñ wszelkie sygnatury MD5"
 
-#: lib/signature.c:1160
+#: lib/signature.c:1161
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1161
+#: lib/signature.c:1162
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Brak sygnatury\n"
 
-#: lib/signature.c:1240
+#: lib/signature.c:1241
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1267
+#: lib/signature.c:1268
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1271
+#: lib/signature.c:1272
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Blok sygnatury: %d\n"
 
-#: lib/transaction.c:105
+#: lib/transaction.c:106
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pominiêty z powodu flagi missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:909
+#: lib/transaction.c:910
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
@@ -3018,7 +3023,7 @@ msgstr "tworzenie katalogu: %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1019
+#: lib/transaction.c:1020
 #, c-format
 msgid "sanity checking %d elments\n"
 msgstr ""
@@ -3031,7 +3036,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1100
+#: lib/transaction.c:1101
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3039,14 +3044,14 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1177
+#: lib/transaction.c:1178
 msgid "computing file dispositions\n"
 msgstr ""
 
 #. ===============================================
 #. * Save removed files before erasing.
 #.
-#: lib/transaction.c:1343
+#: lib/transaction.c:1344
 #, fuzzy
 msgid "repackage about-to-be-erased packages\n"
 msgstr "ten pakiet jest pakietem w wersji jeden!\n"
@@ -3054,7 +3059,7 @@ msgstr "ten pakiet jest pakietem w wersji jeden!\n"
 #. ===============================================
 #. * Install and remove packages.
 #.
-#: lib/transaction.c:1369
+#: lib/transaction.c:1374
 #, c-format
 msgid "install/erase %d elements\n"
 msgstr ""

@@ -1267,8 +1267,8 @@ psm->te->h = headerLink(fi->h);
 			headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
 
 		bfmt = _free(bfmt);
-		psm->pkgURL = rpmGenPath("%{?_repackage_root:%{_repackage_root}}",
-					 "%{?_repackage_dir:%{_repackage_dir}}",
+		psm->pkgURL = rpmGenPath("%{?_repackage_root}",
+					 "%{?_repackage_dir}",
 					pkgbn);
 		pkgbn = _free(pkgbn);
 		(void) urlPath(psm->pkgURL, &psm->pkgfn);
@@ -1326,6 +1326,8 @@ psm->te->h = headerLink(fi->h);
 		rc = psmStage(psm, PSM_SCRIPT);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
+	    int noArchiveSize = 0;
+
 	    /* Regenerate original header. */
 	    {	void * uh = NULL;
 		int_32 uht, uhc;
@@ -1352,6 +1354,8 @@ psm->te->h = headerLink(fi->h);
 		        headerNextIterator(hi, &tag, &type, &ptr, &count);
 		        ptr = headerFreeData((void *)ptr, type))
 		    {
+			if (tag == RPMTAG_ARCHIVESIZE)
+			    noArchiveSize = 1;
 		        if (ptr) (void) headerAddEntry(psm->oh, tag, type, ptr, count);
 		    }
 		    hi = headerFreeIterator(hi);
@@ -1399,9 +1403,17 @@ psm->te->h = headerLink(fi->h);
 	    }
 
 	    /* Write the signature section into the package. */
-	    {	Header sig = headerRegenSigHeader(fi->h);
-		rc = rpmWriteSignature(psm->fd, sig);
-		sig = rpmFreeSignature(sig);
+	    /* XXX rpm-4.1 and later has archive size in signature header. */
+	    {	Header sigh = headerRegenSigHeader(fi->h, noArchiveSize);
+		/* Reallocate the signature into one contiguous region. */
+		sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
+		if (sigh == NULL) {
+		    rpmError(RPMERR_NOSPACE, _("Unable to reload signature header\n"));
+		    rc = RPMRC_FAIL;
+		    break;
+		}
+		rc = rpmWriteSignature(psm->fd, sigh);
+		sigh = rpmFreeSignature(sigh);
 		if (rc) break;
 	    }
 

@@ -146,7 +146,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
     hi = headerFreeIterator(hi);
 }
 
-Header headerRegenSigHeader(const Header h)
+Header headerRegenSigHeader(const Header h, int noArchiveSize)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
     Header sig = rpmNewSignature();
@@ -183,6 +183,9 @@ Header headerRegenSigHeader(const Header h)
 	    stag = RPMSIGTAG_PGP5;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_ARCHIVESIZE:
+	    /* XXX rpm-4.1 and later has archive size in signature header. */
+	    if (noArchiveSize)
+		continue;
 	    stag = RPMSIGTAG_PAYLOADSIZE;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SHA1HEADER:

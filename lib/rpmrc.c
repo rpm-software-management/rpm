@@ -1033,7 +1033,7 @@ static int is_athlon(void)
  	for (i=0; i<4; i++)
  		vendor[8+i] = (unsigned char) (ecx >>(8*i));
  		
- 	if (strcmp(vendor, "AuthenticAMD") != 0)  
+ 	if (strncmp(vendor, "AuthenticAMD", 12) != 0)  
  		return 0;
 
 	return 1;

@@ -146,12 +146,12 @@ static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
 	break;
     }
 
-    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
+    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_DEBUG),
 	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
 		(int)sizeof(struct rpmlead)+siglen+pad+datalen,
 		(int)sizeof(struct rpmlead), siglen, pad, datalen);
     /*@=sizeoftype@*/
-    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
+    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_DEBUG),
 	_("  Actual size: %12d\n"), (int)st.st_size);
 
     return rc;
@@ -218,7 +218,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     }
 
 /*@-boundswrite@*/
-    if (headerp && rc == RPMRC_OK)
+    /* XXX return the signature header no matter what. */
+    if (headerp)
 	*headerp = headerLink(h);
 /*@=boundswrite@*/
 
