@@ -273,7 +273,7 @@ sub new_iterator {
   my $tag = shift;
   my $key = shift;
 
-  my $self = bless { }, $class;
+  my $self = bless { db => $db }, $class;
   $self->{c_iter} = RPM2::C::DB::_init_iterator($db->{c_db},
 						$RPM2::header_tag_map{$tag},
 						$key || "",
@@ -301,6 +301,14 @@ sub expand_iter {
   }
 
   return @ret;
+}
+
+# make sure c_iter is destroyed before {db} so that we always free an
+# iterator before we free the db it came from
+
+sub DESTROY {
+  my $self = shift;
+  delete $self->{c_iter};
 }
 
 # Preloaded methods go here.
