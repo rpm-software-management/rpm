@@ -7,7 +7,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "config.h"
 #include "misc.h"
+#include "miscfn.h"
 #include "oldheader.h"
 #include "rpmlib.h"
 #include "tread.h"

@@ -10,6 +10,7 @@
 # include <alloca.h>
 #endif
 
+#include "miscfn.h"
 #include "install.h"
 #include "intl.h"
 #include "lib/rpmlib.h"
