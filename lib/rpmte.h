@@ -97,7 +97,7 @@ struct rpmte_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 
-    uint_32 color;		/*!< Bit(s) from package dependencies */
+    uint_32 color;		/*!< Color bit(s) from package dependencies */
 
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */

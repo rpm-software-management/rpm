@@ -1278,9 +1278,9 @@ if (rc == 0)
 
 	    prevoff = offset;
 	    i++;
-	    offset = dbiIndexRecordOffset(allMatches, i);
-	} while (i < allMatches->count && 
-		(i == 0 || offset == prevoff));
+	    if (i < allMatches->count)
+		offset = dbiIndexRecordOffset(allMatches, i);
+	} while (i < allMatches->count && offset == prevoff);
 
 	baseNames = hfd(baseNames, bnt);
 	dirNames = hfd(dirNames, dnt);

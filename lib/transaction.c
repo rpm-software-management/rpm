@@ -1076,13 +1076,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 	    mi = rpmdbFreeIterator(mi);
 	}
 
-#ifdef	DYING
-	/* XXX multilib should not display "already installed" problems */
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG) && !rpmteColor(p))
-#else
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG) && !tscolor)
-#endif
-	{
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_DEFAULT,
 				rpmteE(p));

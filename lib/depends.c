@@ -228,6 +228,17 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    goto exit;
     }
 
+    {	rpmdbMatchIterator mi;
+	Header oh;
+
+	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
+	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	    if (rpmVersionCompare(h, oh))
+		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+	}
+	mi = rpmdbFreeIterator(mi);
+    }
+
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
     if (obsoletes != NULL)

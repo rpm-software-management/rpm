@@ -769,6 +769,23 @@ Spec rpmtsSetSpec(rpmts ts, /*@null@*/ Spec spec)
 rpmte rpmtsRelocateElement(rpmts ts)
 	/*@*/;
 
+/**
+ * Retrieve color bits of transaction set.
+ * @param ts		transaction set
+ * @return		color bits
+ */
+uint_32 rpmtsColor(rpmts ts)
+	/*@*/;
+
+/**
+ * Set color bits of transaction set.
+ * @param ts		transaction set
+ * @param color		new color bits
+ * @return		previous color bits
+ */
+uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
+	/*@modifies ts @*/;
+
 /** \ingroup rpmts
  * Set current relocate transaction element.
  * @param ts		transaction set

@@ -501,6 +501,7 @@ assert (ix < Count);
 	(void) rpmdsSetRefs(ds, val);
     }
 }
+
 int rpmtsiOc(rpmtsi tsi)
 {
     return tsi->ocsave;

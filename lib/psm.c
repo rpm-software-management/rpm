@@ -1407,9 +1407,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
-#ifdef	DYING
-    HME_t hme = fi->hme;
-#endif
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     rpmRC rc = psm->rc;
     int saveerrno;
@@ -1451,7 +1448,7 @@ assert(psm->mi == NULL);
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
-		    psm->oh = NULL;
+		psm->oh = NULL;
 		/*@loopbreak@*/ break;
 	    }
 	    psm->mi = rpmdbFreeIterator(psm->mi);
