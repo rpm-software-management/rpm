@@ -6,7 +6,7 @@
 
 #include <netinet/in.h>
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "rpmlead.h"
 

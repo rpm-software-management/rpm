@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "depends.h"
 #include "misc.h"
@@ -16,8 +16,10 @@ void printDepFlags(FILE * fp, const char * version, int flags) {
 	fprintf(fp, ">");
     if (flags & RPMSENSE_EQUAL)
 	fprintf(fp, "=");
+#if defined(RPMSENSE_SERIAL)
     if (flags & RPMSENSE_SERIAL)
 	fprintf(fp, "S");
+#endif	/* RPMSENSE_SERIAL */
 
     if (flags)
 	fprintf(fp, " %s", version);

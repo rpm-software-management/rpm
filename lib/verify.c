@@ -1,13 +1,13 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "md5.h"
 #include "misc.h"
 #include "install.h"
 
 #include "build/rpmbuild.h"
-#include "rpmurl.h"
+#include <rpmurl.h>
 
 static int _ie = 0x44332211;
 static union _endian { int i; char b[4]; } *_endian = (union _endian *)&_ie;

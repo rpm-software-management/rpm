@@ -13,8 +13,8 @@
 #include <asm/byteorder.h>
 #endif
 
-#include "rpmlib.h"
-#include "rpmmacro.h"	/* XXX for rpmGetPath */
+#include <rpmlib.h>
+#include <rpmmacro.h>	/* XXX for rpmGetPath */
 
 #include "md5.h"
 #include "misc.h"

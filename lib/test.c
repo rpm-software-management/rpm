@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 void main(int argc, char **argv)
 {

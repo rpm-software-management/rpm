@@ -26,10 +26,10 @@ typedef	int FD_t;
 #define	fdRead		read
 #define	fdClose		close
 #else
-#include "rpmlib.h"
+#include <rpmlib.h>
 #endif
 
-#include "rpmmacro.h"
+#include <rpmmacro.h>
 
 struct MacroContext globalMacroContext;
 

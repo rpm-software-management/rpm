@@ -11,8 +11,8 @@
 
 #include <netinet/in.h>
 
-#include "rpmio.h"
-#include "header.h"
+#include <rpmio.h>
+#include <header.h>
 
 #define INDEX_MALLOC_SIZE 8
 

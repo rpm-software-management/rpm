@@ -35,8 +35,10 @@ rpm alias --conflicts	--qf \
   "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]"
 
 rpm alias --obsoletes	--qf '[%{OBSOLETES}\n]'
-rpm alias --prereq	--qf '[%{PREREQ}\n]'
 rpm alias --provides	--qf '[%{PROVIDES}\n]'
+
+# XXX prereq output is part of requires for query
+#rpm alias --prereq	--qf '[%{PREREQ}\n]'
 
 rpm alias --requires	--qf \
   "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"

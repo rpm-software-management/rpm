@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "depends.h"
 #include "install.h"

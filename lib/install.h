@@ -1,8 +1,7 @@
 #ifndef H_INSTALL
 #define H_INSTALL
 
-#include "header.h"
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 struct sharedFile {
     int mainFileNumber;
@@ -21,6 +20,10 @@ enum fileActions { FA_UNKNOWN = 0, FA_CREATE, FA_BACKUP, FA_SAVE, FA_SKIP,
 		   FA_ALTNAME, FA_REMOVE, FA_SKIPNSTATE };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int removeBinaryPackage(char * root, rpmdb db, unsigned int offset, int flags,
 			enum fileActions * actions, FD_t scriptFd);
 int runInstScript(const char * prefix, Header h, int scriptTag, int progTag,
@@ -38,5 +41,9 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 			 enum fileActions * actions,
 			 struct sharedFileInfo * sharedList, FD_t scriptFd);
 const char * fileActionString(enum fileActions a);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* H_INSTALL */

@@ -3,7 +3,7 @@
 
 #include <gdbm.h>
 
-#include "oldheader.h"
+#include <oldheader.h>
 
 typedef enum
   {
@@ -54,6 +54,10 @@ struct oldrpmdbPackageInfo
 
 #define RPMDB_READER 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int oldrpmdbOpen (struct oldrpmdb *oldrpmdb);
 void oldrpmdbClose (struct oldrpmdb *oldrpmdb);
 struct oldrpmdbLabel *oldrpmdbGetAllLabels (struct oldrpmdb *oldrpmdb);
@@ -84,5 +88,9 @@ char *oldrpmdbLabelToLabelstr (struct oldrpmdbLabel label, int withFileNum);
 int oldrpmdbLabelCmp (struct oldrpmdbLabel *one, struct oldrpmdbLabel *two);
 
 void oldrpmdbSetPrefix (char *new);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _H_OLDRPMDB */

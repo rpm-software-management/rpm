@@ -4,7 +4,7 @@
 
 #include "build/rpmbuild.h"
 
-#include "rpmurl.h"
+#include <rpmurl.h>
 
 static struct urlstring {
     const char *leadin;

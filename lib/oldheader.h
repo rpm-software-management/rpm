@@ -18,12 +18,6 @@ struct oldrpmFileInfo {
     int isdoc;
 } ;
 
-void oldrpmfileFromSpecLine(char * str, struct oldrpmFileInfo * fi);
-void oldrpmfileFromInfoLine(char * path, char * state, char * str,
-			struct oldrpmFileInfo * fi);
-void oldrpmfileFree(struct oldrpmFileInfo * fi);
-char * oldrpmfileToInfoStr(struct oldrpmFileInfo * fi);
-
 struct oldrpmHeader {
     unsigned short type, cpu;
     unsigned int size;
@@ -51,10 +45,24 @@ struct oldrpmHeaderSpec {
     struct oldrpmFileInfo * files;
 } ;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void oldrpmfileFromSpecLine(char * str, struct oldrpmFileInfo * fi);
+void oldrpmfileFromInfoLine(char * path, char * state, char * str,
+			struct oldrpmFileInfo * fi);
+void oldrpmfileFree(struct oldrpmFileInfo * fi);
+char * oldrpmfileToInfoStr(struct oldrpmFileInfo * fi);
+
 char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header);
 char * oldhdrReadFromFile(char * filename, struct oldrpmHeader * header);
 char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * spec);
 void   oldhdrFree(struct oldrpmHeader * header);
 void   oldhdrSpecFree(struct oldrpmHeaderSpec * spec);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* H_OLDHEADER */

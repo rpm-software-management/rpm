@@ -4,12 +4,12 @@
 #include <signal.h>
 #include <sys/signal.h>
 
-#include "rpmlib.h"
+#include <rpmlib.h>
+#include <rpmmacro.h>	/* XXX for rpmGetPath */
 
 #include "falloc.h"
 #include "fprint.h"
 #include "misc.h"
-#include "rpmmacro.h"	/* XXX for rpmGetPath */
 #include "rpmdb.h"
 
 /* XXX the signal handling in here is not thread safe */

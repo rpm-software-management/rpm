@@ -1,7 +1,7 @@
 #include "system.h"
 
-#include "rpmlib.h"
-#include "rpmmacro.h"
+#include <rpmlib.h>
+#include <rpmmacro.h>
 
 struct fsinfo {
     char * mntPoint;

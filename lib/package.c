@@ -2,7 +2,7 @@
 
 #include <netinet/in.h>
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "misc.h"
 #include "oldheader.h"

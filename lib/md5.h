@@ -14,6 +14,15 @@ struct MD5Context {
 	int doByteReverse;
 };
 
+/*
+ * This is needed to make RSAREF happy on some MS-DOS compilers.
+ */
+typedef /*@abstract@*/ struct MD5Context MD5_CTX;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void rpmMD5Init(struct MD5Context *context, int brokenEndian);
 void rpmMD5Update(struct MD5Context *context, unsigned char const *buf,
 	       unsigned len);
@@ -28,9 +37,8 @@ int mdbinfile(const char *fn, unsigned char *bindigest);
 int mdfileBroken(const char *fn, unsigned char *digest);
 int mdbinfileBroken(const char *fn, unsigned char *bindigest);
 
-/*
- * This is needed to make RSAREF happy on some MS-DOS compilers.
- */
-typedef /*@abstract@*/ struct MD5Context MD5_CTX;
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* MD5_H */

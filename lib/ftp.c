@@ -29,8 +29,8 @@ extern int h_errno;
 #include <arpa/inet.h>
 #include <arpa/telnet.h>
 
-#include "rpmlib.h"
-#include "rpmio.h"
+#include <rpmlib.h>
+#include <rpmio.h>
 
 #if !defined(HAVE_INET_ATON)
 int inet_aton(const char *cp, struct in_addr *inp);
@@ -43,7 +43,7 @@ int inet_aton(const char *cp, struct in_addr *inp);
 #include "dns.h"
 #endif
 
-#include "rpmurl.h"
+#include <rpmurl.h>
 
 #ifdef __MINT__
 # ifndef EAGAIN

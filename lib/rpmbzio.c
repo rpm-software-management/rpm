@@ -1,8 +1,7 @@
 #include "system.h"
 
-#include "rpmlib.h"
-
-#include "rpmio.h"
+#include <rpmlib.h>
+#include <rpmio.h>
 
 /* =============================================================== */
 /* Support for BZIP2 library.

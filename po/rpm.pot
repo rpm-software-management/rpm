@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-10 16:50-0400\n"
+"POT-Creation-Date: 1999-07-13 17:29-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1992,28 +1992,28 @@ msgstr ""
 msgid "line %d: second %%prep"
 msgstr ""
 
-#: ../build/parseReqs.c:96
+#: ../build/parseReqs.c:102
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
 msgstr ""
 
-#: ../build/parseReqs.c:107
+#: ../build/parseReqs.c:113
 #, c-format
 msgid "line %d: File name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:139
+#: ../build/parseReqs.c:145
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:150
+#: ../build/parseReqs.c:156
 #, c-format
 msgid "line %d: Version not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:170
+#: ../build/parseReqs.c:176
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr ""
@@ -2187,11 +2187,11 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:869
+#: ../lib/depends.c:871
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:921
+#: ../lib/depends.c:923
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2593,58 +2593,58 @@ msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
 
-#: ../lib/problems.c:39
+#: ../lib/problems.c:41
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../lib/problems.c:42
+#: ../lib/problems.c:44
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: ../lib/problems.c:68
+#: ../lib/problems.c:70
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr ""
 
-#: ../lib/problems.c:73
+#: ../lib/problems.c:75
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr ""
 
-#: ../lib/problems.c:78
+#: ../lib/problems.c:80
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr ""
 
-#: ../lib/problems.c:83
+#: ../lib/problems.c:85
 #, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:88
+#: ../lib/problems.c:90
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:94
+#: ../lib/problems.c:96
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:100
+#: ../lib/problems.c:102
 #, c-format
 msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
 msgstr ""
 
-#: ../lib/problems.c:106
+#: ../lib/problems.c:108
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%c on the %s filesystem"
 msgstr ""
 
-#: ../lib/problems.c:118
+#: ../lib/problems.c:120
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""

@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "depends.h"
 #include "misc.h"
@@ -805,9 +805,11 @@ int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags) {
     /* Get package information from header */
     headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epochval, &count);
     if (epochval == NULL) {
+#if defined(RPMSENSE_SERIAL)
 	/* XXX old behavior looks fishy */
 	if (reqFlags & RPMSENSE_SERIAL)
 	    return 0;
+#endif	/* RPMSENSE_SERIAL */
 	epoch = "0";
     } else {
 	sprintf(buf, "%d", *epochval);

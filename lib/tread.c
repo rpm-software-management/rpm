@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmio.h"
+#include <rpmio.h>
 
 int timedRead(FD_t fd, void * bufptr, int length) {
     int bytesRead;

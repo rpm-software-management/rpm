@@ -14,7 +14,7 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
 	lookup.h md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
-	rpmdb.h rpmlead.h signature.h tread.h
+	rpmdb.h rpmlead.h signature.h
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \

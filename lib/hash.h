@@ -3,6 +3,10 @@
 
 typedef struct hashTable_s * hashTable;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef unsigned int (*hashFunctionType)(const void * string);
 typedef int (*hashEqualityType)(const void * key1, const void * key2);
 
@@ -20,5 +24,9 @@ int htGetEntry(hashTable ht, const void * key, void *** data, int * dataCount,
 	       void ** tableKey);
 /* returns 1 if the item is present, 0 otherwise */
 int htHasEntry(hashTable ht, const void * key);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

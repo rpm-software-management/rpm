@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 int dbiIndexSetCount(dbiIndexSet set) {
     return set.count;

@@ -1,12 +1,12 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "cpio.h"
 #include "install.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include "rpmmacro.h"
+#include <rpmmacro.h>
 
 struct callbackInfo {
     unsigned long archiveSize;

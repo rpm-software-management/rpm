@@ -1,7 +1,6 @@
 #include "system.h"
 
-#include "rpmlib.h"
-
+#include <rpmlib.h>
 #include "fprint.h"
 
 struct lookupCache {

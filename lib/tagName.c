@@ -1,5 +1,6 @@
 #include "system.h"
-#include "rpmlib.h"
+
+#include <rpmlib.h>
 
 const char *tagName(int tag)
 {

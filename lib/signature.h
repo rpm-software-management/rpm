@@ -3,7 +3,11 @@
 
 /* signature.h - generate and verify signatures */
 
-#include "header.h"
+#include <header.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**************************************************/
 /*                                                */
@@ -56,5 +60,9 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag);
 
 /* Return path to pgp executable of given type, or NULL when not found */
 const char *rpmDetectPGPVersion(int sigType);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* H_SIGNATURE */

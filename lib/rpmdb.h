@@ -1,18 +1,17 @@
 #ifndef H_RPMDB
 #define H_RPMDB
 
-#include "rpmlib.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include <rpmlib.h>
 #include "fprint.h"
 
 /* for RPM's internal use only */
 
 #define RPMDB_FLAG_JUSTCHECK	(1 << 0)
 #define RPMDB_FLAG_MINIMAL	(1 << 1)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mode,
 		 int perms, int flags);

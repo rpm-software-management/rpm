@@ -1,9 +1,7 @@
 #ifndef H_DEPENDS
 #define H_DEPENDS
 
-#include "header.h"
-
-int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags);
+#include <header.h>
 
 struct availablePackage {
     Header h;
@@ -63,5 +61,14 @@ struct problemsSet {
     int alloced;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* H_DEPENDS */

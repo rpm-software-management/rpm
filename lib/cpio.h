@@ -4,7 +4,7 @@
 #include <zlib.h>
 #include <sys/types.h>
 
-#include "rpmio.h"
+#include <rpmio.h>
 
 /* Note the CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
    be positive numbers or this setting the high bit stuff is a bad idea. */

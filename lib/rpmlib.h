@@ -5,10 +5,10 @@
 
 /* and it shouldn't need these :-( */
 
-#include "rpmio.h"
-#include "dbindex.h"
-#include "header.h"
-#include "popt.h"	/* XXX you now need to install the popt package */
+#include <rpmio.h>
+#include <dbindex.h>
+#include <header.h>
+#include <popt.h>
 
 #ifdef __cplusplus
 extern "C" {
