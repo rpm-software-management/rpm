@@ -133,6 +133,25 @@ static char *doUntar(Spec spec, int c, int quietly)
 
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
 
+#ifdef AUTOFETCH_NOT	/* XXX don't expect this code to be enabled */
+    /* XXX
+     * XXX If nosource file doesn't exist, try to fetch from url.
+     * XXX TODO: add a "--fetch" enabler.
+     */
+    if (sp->flags & RPMTAG_NOSOURCE && autofetchnosource) {
+	struct stat st;
+	int rc;
+	if (lstat(fn, &st) != 0 && errno == ENOENT &&
+	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
+	    if ((rc = urlGetFile(sp->fullSource, fn)) != 0) {
+		rpmError(RPMERR_BADFILENAME, _("Couldn't download nosource %s: %s"),
+		    sp->fullSource, ftpStrerror(rc));
+		return NULL;
+	    }
+	}
+    }
+#endif
+
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(fn, &compressed) || checkOwners(fn))) {
 	xfree(fn);
