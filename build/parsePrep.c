@@ -51,7 +51,7 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
     char file[BUFSIZ];
     char args[BUFSIZ];
     struct Source *sp;
-    int compressed;
+    int compressed = 0;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
@@ -82,12 +82,10 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
 	strcat(args, " -E");
     }
 
-    if (isCompressed(file, &compressed)) {
+    /* XXX On non-build parse's, file cannot be stat'd or read */
+    if (!spec->force && (isCompressed(file, &compressed) || checkOwners(file)))
 	return NULL;
-    }
-    if (checkOwners(file)) {
-	return NULL;
-    }
+
     if (compressed) {
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"
@@ -115,7 +113,7 @@ static char *doUntar(Spec spec, int c, int quietly)
     char file[BUFSIZ];
     char *taropts;
     struct Source *sp;
-    int compressed;
+    int compressed = 0;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISSOURCE) && (sp->num == c)) {
@@ -133,12 +131,10 @@ static char *doUntar(Spec spec, int c, int quietly)
 
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
 
-    if (isCompressed(file, &compressed)) {
+    /* XXX On non-build parse's, file cannot be stat'd or read */
+    if (!spec->force && (isCompressed(file, &compressed) || checkOwners(file)))
 	return NULL;
-    }
-    if (checkOwners(file)) {
-	return NULL;
-    }
+
     if (compressed) {
 	sprintf(buf,
 		"%s -dc %s | tar %s -\n"
@@ -402,7 +398,7 @@ static int doPatchMacro(Spec spec, char *line)
     return 0;
 }
 
-int parsePrep(Spec spec, int force)
+int parsePrep(Spec spec)
 {
     int nextPart, res, rc;
     StringBuf buf;
@@ -449,7 +445,7 @@ int parsePrep(Spec spec, int force)
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
-	if (res && !force) {
+	if (res && !spec->force) {
 	    freeSplitString(saveLines);
 	    freeStringBuf(buf);
 	    return res;

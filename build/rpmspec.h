@@ -67,6 +67,9 @@ struct SpecStruct {
     int buildArchitectureCount;
     int inBuildArchitectures;
 
+    int force;
+    int anyarch;
+
     int gotBuildRoot;
     char *buildRoot;
     char *buildSubdir;

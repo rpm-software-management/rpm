@@ -612,7 +612,7 @@ static int findPreambleTag(Spec spec, int *tag, char **macro, char *lang)
     return 0;
 }
 
-int parsePreamble(Spec spec, int initialPackage, int anyarch)
+int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;
     int tag, rc;
@@ -691,8 +691,8 @@ int parsePreamble(Spec spec, int initialPackage, int anyarch)
 	return RPMERR_BADSPEC;
     }
 
-    /* XXX Skip valid arch check if only doing -bs processing */
-    if (!anyarch && checkForValidArchitectures(spec)) {
+    /* XXX Skip valid arch check if not building binary package */
+    if (!spec->anyarch && checkForValidArchitectures(spec)) {
 	    return RPMERR_BADSPEC;
     }
 

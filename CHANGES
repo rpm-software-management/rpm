@@ -32,6 +32,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
+	- permit "rpm -q --specfile ... file.spec" queries.
 	- strncasecmp on spec file separators (KDE has %Description).
 	- remove redundant md5 computation on uninstall.
 	- permit --rmsource --force even if sources/patches are missing.

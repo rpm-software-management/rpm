@@ -521,7 +521,7 @@ int rpmGetFilesystemUsage(char ** filelist, int_32 * fssizes, int numFiles,
 
 enum rpmQuerySources { QUERY_PACKAGE = 0, QUERY_PATH, QUERY_ALL, QUERY_RPM, 
 		       QUERY_GROUP, QUERY_WHATPROVIDES, QUERY_WHATREQUIRES,
-		       QUERY_DBOFFSET, QUERY_TRIGGEREDBY };
+		       QUERY_DBOFFSET, QUERY_TRIGGEREDBY, QUERY_SPECFILE };
 
 #define QUERY_FOR_LIST		(1 << 1)
 #define QUERY_FOR_STATE		(1 << 2)

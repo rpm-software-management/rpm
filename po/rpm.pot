@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-11-19 13:03-0500\n"
+"POT-Creation-Date: 1998-11-19 19:30-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -251,7 +251,7 @@ msgstr ""
 msgid "counting packages to uninstall\n"
 msgstr ""
 
-#: ../install.c:322 ../lib/query.c:601 ../verify.c:254
+#: ../install.c:322 ../lib/query.c:644 ../verify.c:254
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -1320,15 +1320,15 @@ msgstr ""
 msgid "verifying record number %u\n"
 msgstr ""
 
-#: ../lib/query.c:404 ../verify.c:139
+#: ../lib/query.c:409 ../verify.c:139
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../lib/query.c:490 ../verify.c:178
+#: ../lib/query.c:533 ../verify.c:178
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:441 ../lib/query.c:450 ../verify.c:197 ../verify.c:206
+#: ../lib/query.c:452 ../lib/query.c:461 ../verify.c:197 ../verify.c:206
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -1338,17 +1338,17 @@ msgstr ""
 msgid "%s is not an RPM\n"
 msgstr ""
 
-#: ../lib/query.c:501 ../verify.c:229
+#: ../lib/query.c:544 ../verify.c:229
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:570 ../verify.c:243
+#: ../lib/query.c:613 ../verify.c:243
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:604 ../verify.c:256
+#: ../lib/query.c:647 ../verify.c:256
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
@@ -1922,48 +1922,48 @@ msgstr ""
 msgid "No patch number %d"
 msgstr ""
 
-#: ../build/parsePrep.c:126
+#: ../build/parsePrep.c:124
 #, c-format
 msgid "No source number %d"
 msgstr ""
 
-#: ../build/parsePrep.c:179
+#: ../build/parsePrep.c:175
 msgid "Error parsing %%setup: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:194
+#: ../build/parsePrep.c:190
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:215
+#: ../build/parsePrep.c:211
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:339
+#: ../build/parsePrep.c:335
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:347
+#: ../build/parsePrep.c:343
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:359
+#: ../build/parsePrep.c:355
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:365
+#: ../build/parsePrep.c:361
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:372
+#: ../build/parsePrep.c:368
 msgid "Too many patches!"
 msgstr ""
 
-#: ../build/parsePrep.c:376
+#: ../build/parsePrep.c:372
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:412
+#: ../build/parsePrep.c:408
 msgid "line %d: second %%prep"
 msgstr ""
 
@@ -2045,16 +2045,16 @@ msgstr ""
 msgid "malformed %%include statement"
 msgstr ""
 
-#: ../build/parseSpec.c:313
+#: ../build/parseSpec.c:316
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:396
+#: ../build/parseSpec.c:399
 msgid "No buildable architectures"
 msgstr ""
 
-#: ../build/parseSpec.c:424
+#: ../build/parseSpec.c:427
 msgid "Package has no %%description: %s"
 msgstr ""
 
@@ -2339,7 +2339,7 @@ msgstr ""
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:810 ../lib/install.c:1521 ../lib/uninstall.c:594
+#: ../lib/install.c:810 ../lib/install.c:1521 ../lib/uninstall.c:597
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -2615,98 +2615,107 @@ msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
 
-#: ../lib/query.c:108
+#: ../lib/query.c:113
 #, c-format
 msgid "error in format: %s\n"
 msgstr ""
 
-#: ../lib/query.c:145
+#: ../lib/query.c:150
 msgid "(contains no files)"
 msgstr ""
 
-#: ../lib/query.c:198
+#: ../lib/query.c:203
 msgid "normal        "
 msgstr ""
 
-#: ../lib/query.c:200
+#: ../lib/query.c:205
 msgid "replaced      "
 msgstr ""
 
-#: ../lib/query.c:202
+#: ../lib/query.c:207
 msgid "net shared    "
 msgstr ""
 
-#: ../lib/query.c:204
+#: ../lib/query.c:209
 msgid "not installed "
 msgstr ""
 
-#: ../lib/query.c:206
+#: ../lib/query.c:211
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: ../lib/query.c:210
+#: ../lib/query.c:215
 msgid "(no state)    "
 msgstr ""
 
-#: ../lib/query.c:226 ../lib/query.c:256
+#: ../lib/query.c:231 ../lib/query.c:261
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../lib/query.c:399
+#: ../lib/query.c:404
 #, c-format
 msgid "querying record number %d\n"
 msgstr ""
 
-#: ../lib/query.c:466
+#: ../lib/query.c:435
+msgid "rpmQuery: rpmdbOpen() failed\n"
+msgstr ""
+
+#: ../lib/query.c:477
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: ../lib/query.c:475
+#: ../lib/query.c:486
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../lib/query.c:479
+#: ../lib/query.c:490
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: ../lib/query.c:511
+#: ../lib/query.c:509
+#, c-format
+msgid "query of specfile %s failed, can't parse\n"
+msgstr ""
+
+#: ../lib/query.c:554
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: ../lib/query.c:521
+#: ../lib/query.c:564
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: ../lib/query.c:531
+#: ../lib/query.c:574
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: ../lib/query.c:549 ../lib/query.c:555
+#: ../lib/query.c:592 ../lib/query.c:598
 msgid "maximum path length exceeded\n"
 msgstr ""
 
-#: ../lib/query.c:567
+#: ../lib/query.c:610
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: ../lib/query.c:583
+#: ../lib/query.c:626
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: ../lib/query.c:586
+#: ../lib/query.c:629
 #, c-format
 msgid "showing package: %d\n"
 msgstr ""
 
-#: ../lib/query.c:589
+#: ../lib/query.c:632
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
@@ -2867,92 +2876,92 @@ msgstr ""
 msgid "read failed: %s (%d)"
 msgstr ""
 
-#: ../lib/rpmrc.c:216
+#: ../lib/rpmrc.c:218
 #, c-format
 msgid "missing second ':' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:219
+#: ../lib/rpmrc.c:221
 #, c-format
 msgid "missing architecture name at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:364
+#: ../lib/rpmrc.c:366
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:368
+#: ../lib/rpmrc.c:370
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:375
+#: ../lib/rpmrc.c:377
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr ""
 
-#: ../lib/rpmrc.c:408
+#: ../lib/rpmrc.c:410
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:413
+#: ../lib/rpmrc.c:415
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:547 ../lib/rpmrc.c:563
+#: ../lib/rpmrc.c:549 ../lib/rpmrc.c:565
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:610
+#: ../lib/rpmrc.c:612
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:641
+#: ../lib/rpmrc.c:643
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:657 ../lib/rpmrc.c:752
+#: ../lib/rpmrc.c:659 ../lib/rpmrc.c:754
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:687
+#: ../lib/rpmrc.c:689
 #, c-format
 msgid "no macroname for setenv %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:718
+#: ../lib/rpmrc.c:720
 #, c-format
 msgid "expansion failed at %s:d \"%s\""
 msgstr ""
 
-#: ../lib/rpmrc.c:724
+#: ../lib/rpmrc.c:726
 #, c-format
 msgid "cannot open %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:742
+#: ../lib/rpmrc.c:744
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:809
+#: ../lib/rpmrc.c:811
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:1174
+#: ../lib/rpmrc.c:1176
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: ../lib/rpmrc.c:1175
+#: ../lib/rpmrc.c:1177
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3088,59 +3097,59 @@ msgstr ""
 msgid "removing database entry\n"
 msgstr ""
 
-#: ../lib/uninstall.c:508
+#: ../lib/uninstall.c:511
 msgid "execution of script failed"
 msgstr ""
 
-#: ../lib/uninstall.c:553
+#: ../lib/uninstall.c:556
 #, c-format
 msgid "%s has already been replaced\n"
 msgstr ""
 
 #. if it's a config file, we may not want to remove it
-#: ../lib/uninstall.c:560
+#: ../lib/uninstall.c:563
 #, c-format
 msgid "finding md5sum of %s\n"
 msgstr ""
 
-#: ../lib/uninstall.c:569
+#: ../lib/uninstall.c:572
 msgid "    failed - assuming file removed\n"
 msgstr ""
 
-#: ../lib/uninstall.c:572
+#: ../lib/uninstall.c:575
 msgid "    file changed - will save\n"
 msgstr ""
 
-#: ../lib/uninstall.c:576
+#: ../lib/uninstall.c:579
 msgid "    file unchanged - will remove\n"
 msgstr ""
 
-#: ../lib/uninstall.c:584
+#: ../lib/uninstall.c:587
 #, c-format
 msgid "keeping %s\n"
 msgstr ""
 
-#: ../lib/uninstall.c:588
+#: ../lib/uninstall.c:591
 #, c-format
 msgid "saving %s as %s.rpmsave\n"
 msgstr ""
 
-#: ../lib/uninstall.c:602
+#: ../lib/uninstall.c:605
 #, c-format
 msgid "%s - removing\n"
 msgstr ""
 
-#: ../lib/uninstall.c:608
+#: ../lib/uninstall.c:611
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr ""
 
-#: ../lib/uninstall.c:611
+#: ../lib/uninstall.c:614
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr ""
 
-#: ../lib/uninstall.c:621
+#: ../lib/uninstall.c:624
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr ""

@@ -101,8 +101,8 @@ char *cleanFileName(char *name);
 int parseChangelog(Spec spec);
 int parseDescription(Spec spec);
 int parseFiles(Spec spec);
-int parsePreamble(Spec spec, int initialPackage, int anyarch);
-int parsePrep(Spec spec, int force);
+int parsePreamble(Spec spec, int initialPackage);
+int parsePrep(Spec spec);
 int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 			   int tag, int index);
 int parseProvidesObsoletes(Spec spec, Package pkg, char *field, int tag);
