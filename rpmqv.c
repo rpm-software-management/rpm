@@ -71,7 +71,7 @@ enum modes {
 #define	MODES_FOR_DBPATH	(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
 #define	MODES_FOR_NODEPS	(MODES_BT | MODES_IE | MODE_VERIFY)
 #define	MODES_FOR_TEST		(MODES_BT | MODES_IE)
-#define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
+#define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB | MODES_K)
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
@@ -1139,7 +1139,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	if (!poptPeekArg(optCon))
 	    argerror(_("no arguments given"));
 	ka->passPhrase = passPhrase;
-	ec = rpmcliSign(ka, (const char **)poptGetArgs(optCon));
+	ec = rpmcliSign(ts, ka, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
     	break;

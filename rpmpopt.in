@@ -254,6 +254,14 @@ rpmk	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmk	alias --httpport	--define '_httpport !#:+'
 rpmk	alias --httpproxy	--define '_httpproxy !#:+'
 #==============================================================================
+rpmsign	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
+rpmsign	alias --ftpport		--define '_ftpport !#:+'
+rpmsign	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmsign	alias --httpport	--define '_httpport !#:+'
+rpmsign	alias --httpproxy	--define '_httpproxy !#:+'
+#==============================================================================
 rpmq	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use <dir> as the directory for the database" \
 	--POPTargs=$"<dir>"
@@ -324,6 +332,78 @@ rpmq	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VE
 	--POPTdesc=$"list package(s) by install time, most recent first"
 
 rpmq	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
+	--POPTdesc=$"list all files from each package"
+#==============================================================================
+rpmquery	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
+rpmquery	alias --ftpport		--define '_ftpport !#:+'
+rpmquery	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmquery	alias --httpport	--define '_httpport !#:+'
+rpmquery	alias --httpproxy	--define '_httpproxy !#:+'
+
+rpmquery	alias --scripts --qf '\
+%|PREIN?{preinstall scriptlet\
+%|PREINPROG?{ (through %{PREINPROG})}|:\n%{PREIN}\n}:\
+{%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
+\
+%|POSTIN?{postinstall scriptlet\
+%|POSTINPROG?{ (through %{POSTINPROG})}|:\n%{POSTIN}\n}:\
+{%|POSTINPROG?{postinstall program: %{POSTINPROG}\n}|}|\
+\
+%|PREUN?{preuninstall scriptlet\
+%|PREUNPROG?{ (through %{PREUNPROG})}|:\n%{PREUN}\n}:\
+{%|PREUNPROG?{preuninstall program: %{PREUNPROG}\n}|}|\
+\
+%|POSTUN?{postuninstall scriptlet\
+%|POSTUNPROG?{ (through %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
+{%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
+\
+%|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
+' \
+	--POPTdesc=$"list install/erase scriptlets from package(s)"
+
+rpmquery	alias --conflicts	--qf \
+  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
+	--POPTdesc=$"list capabilities this package conflicts with"
+rpmquery	alias --obsoletes	--qf \
+  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
+	--POPTdesc=$"list other packages removed by installing this package"
+rpmquery	alias --provides	--qf \
+  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
+	--POPTdesc=$"list capabilities that this package provides"
+
+rpmquery	alias --requires	--qf \
+  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
+	--POPTdesc=$"list capabilities required by package(s)"
+rpmquery	alias -R --requires
+
+rpmquery	alias --info --qf 'Name        : %-27{NAME}  Relocations: %|PREFIXES?{[%{PREFIXES} ]}:{(not relocateable)}|\n\
+Version     : %-27{VERSION}       Vendor: %{VENDOR}\n\
+Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}\n\
+Install date: %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)         }|      Build Host: %{BUILDHOST}\n\
+Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n\
+Size        : %-27{SIZE}%|LICENSE?{      License: %{LICENSE}}|\n\
+%|PACKAGER?{Packager    : %{PACKAGER}\n}|\
+%|URL?{URL         : %{URL}\n}|\
+Summary     : %{SUMMARY}\n\
+Description :\n%{DESCRIPTION}\n' \
+	--POPTdesc=$"list descriptive information from package(s)"
+
+rpmquery	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]' \
+	--POPTdesc=$"list change logs for this package"
+
+rpmquery	alias --triggerscripts --qf '\
+[trigger%{TRIGGERTYPE} script (through %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
+%{TRIGGERSCRIPTS}\n]'
+rpmquery	alias --triggers --triggerscripts \
+	--POPTdesc=$"list trigger scriptlets from package(s)"
+
+rpmquery	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
+	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' " \
+	--POPTdesc=$"list package(s) by install time, most recent first"
+
+rpmquery	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
 #==============================================================================
 rpmu	alias --dbpath		--define '_dbpath !#:+' \

@@ -580,6 +580,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
 /** \ingroup rpmcli
  * Rollback transactions, erasing new, reinstalling old, package(s).
  * @param ts		transaction set
+ * @param ia		mode flags and parameters
+ * @param argv		array of arguments (NULL terminated)
  * @return		0 on success
  */
 int rpmRollback(rpmTransactionSet ts, struct rpmInstallArguments_s * ia,
@@ -649,14 +651,15 @@ extern struct poptOption rpmSignPoptTable[];
 
 /** \ingroup rpmcli
  * Create/Modify/Check elements from signature header.
+ * @param ts		transaction set
  * @param qva		mode flags and parameters
- * @param argv		array of package file names (NULL terminated)
+ * @param argv		array of arguments (NULL terminated)
  * @return		0 on success
  */
-int rpmcliSign(QVA_t qva, /*@null@*/ const char ** argv)
+int rpmcliSign(rpmTransactionSet ts, QVA_t qva, /*@null@*/ const char ** argv)
 	/*@globals RPMVERSION, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies qva, rpmGlobalMacroContext,
+	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /*@}*/

@@ -16,8 +16,8 @@
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
-/*@access rpmTransactionSet @*/	/* ts->rpmdb, ts->id */
-/*@access Header @*/		/* XXX compared with NULL */
+/*@access rpmTransactionSet @*/	/* ts->rpmdb, ts->id, ts->dig et al */
+/*?access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX stealing digests */
 /*@access pgpDig @*/
 
@@ -302,6 +302,7 @@ exit:
 
 /** \ingroup rpmcli
  * Import public key(s).
+ * @todo Implicit --update policy for gpg-pubkey headers.
  * @param ts		transaction set
  * @param qva		mode flags and parameters
  * @param argv		array of pubkey file names (NULL terminated)
@@ -832,9 +833,8 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
     return res;
 }
 
-int rpmcliSign(QVA_t qva, const char ** argv)
+int rpmcliSign(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 {
-    rpmTransactionSet ts;
     const char * arg;
     int dbmode = (qva->qva_mode != RPMSIGN_IMPORT_PUBKEY)
 		? O_RDONLY : (O_RDWR | O_CREAT);
@@ -843,7 +843,6 @@ int rpmcliSign(QVA_t qva, const char ** argv)
 
     if (argv == NULL) return res;
 
-    ts = rpmtransCreateSet(NULL, NULL);
     xx = rpmtsOpenDB(ts, dbmode);
     if (xx != 0)
 	return -1;
@@ -874,9 +873,6 @@ int rpmcliSign(QVA_t qva, const char ** argv)
 
 	if (fd != NULL) xx = Fclose(fd);
     }
-
-    ts->dig = pgpFreeDig(ts->dig);	/* XXX just in case */
-    ts = rpmtransFree(ts);
 
     return res;
 }

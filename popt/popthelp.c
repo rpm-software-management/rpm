@@ -247,6 +247,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 	    case POPT_ARG_NONE:
 		break;
 	    case POPT_ARG_VAL:
+#ifdef	NOTNOW	/* XXX pug ugly nerdy output */
 	    {	long aLong = opt->val;
 		int ops = (opt->argInfo & POPT_ARGFLAG_LOGICALOPS);
 		int negate = (opt->argInfo & POPT_ARGFLAG_NOT);
@@ -274,7 +275,9 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 		le += sprintf(le, (ops ? "0x%lx" : "%ld"), aLong);
 		/*@=formatconst@*/
 		*le++ = ']';
-	    }	break;
+	    }
+#endif
+		break;
 	    case POPT_ARG_INT:
 	    case POPT_ARG_LONG:
 	    case POPT_ARG_FLOAT:

@@ -2391,16 +2391,19 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
     int rc = 255;
 
     if (PyArg_ParseTuple(args, "si", &filename, &flags)) {
-	const char *av[2];
-	QVA_t ka = alloca(sizeof(*ka));
-	memset(ka, 0, sizeof(*ka));
+	rpmTransactionSet ts;
+	const char * av[2];
+	QVA_t ka = memset(alloca(sizeof(*ka)), 0, sizeof(*ka));
+
 	av[0] = filename;
 	av[1] = NULL;
 	ka->qva_mode = 'K';
 	ka->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
 	ka->sign = 0;
 	ka->passPhrase = NULL;
-	rc = rpmcliSign(ka, av);
+	ts = rpmtransCreateSet(NULL, NULL);
+	rc = rpmcliSign(ts, ka, av);
+	rpmtransFree(ts);
     }
     return Py_BuildValue("i", rc);
 }

@@ -121,9 +121,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query the package(s) triggered by the package"), "PACKAGE" },
  { "verify", 'V', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
 	N_("rpm verify mode"), NULL },
-/**@todo Eliminate -y option. */
- { NULL, 'y',  POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
-	N_("rpm verify mode (legacy)"), NULL },
  { "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
  { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
@@ -278,10 +275,10 @@ struct poptOption rpmVerifyPoptTable[] = {
         N_("don't verify signature(s)"), NULL },
 
 /** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
- { "nogpg", '\0', POPT_BIT_SET,
+ { "nogpg", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify GPG V3 DSA signature(s)"), NULL },
- { "nopgp", '\0', POPT_BIT_SET,
+ { "nopgp", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify PGP V3 RSA/MD5 signature(s)"), NULL },
 
@@ -298,13 +295,13 @@ struct poptOption rpmSignPoptTable[] = {
 	rpmQVSourceArgCallback, 0, NULL, NULL },
 /*@=type@*/
  { "addsign", '\0', 0, NULL, 'A',
-	N_("sign a package, preserving digests"), NULL },
+	N_("sign a packagei (identical to --resign)"), NULL },
  { "checksig", 'K', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'K',
 	N_("verify package signature(s)"), NULL },
  { "import", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'I',
 	N_("import an armored public key"), NULL },
  { "resign", '\0', 0, NULL, 'R',
-	N_("sign a package, recomputing digests"), NULL },
+	N_("sign a packagei (identical to --addsign)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
 	N_("generate signature"), NULL },
 
