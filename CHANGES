@@ -4,6 +4,8 @@
 	- changed popt format, breaking all popt alises :-(
 	- added ability to alias character arguments to popt 
 	- moved --requires, --info to /usr/lib/rpmpopt
+	- RPM is more forgiving of blank user names (dumb)
+	- popt searches for aliases in the correct order now
 
 2.3.4 -> 2.3.5:
 	- %{#TAG} in query format prints the array length
