@@ -10,8 +10,7 @@
 #define PyObject_HEAD   int _PyObjectHead;
 #endif
 
-#include <rpmlib.h>
-#include <rpmmacro.h>
+#include <rpmcli.h>
 
 #include "header-py.h"
 #include "rpmdb-py.h"
@@ -222,6 +221,7 @@ fprintf(stderr, "*** rpmts_AddInstall(%p) ts %p\n", s, s->ts);
 }
 
 /** \ingroup python
+ * @todo Permit finer control (i.e. not just --allmatches) of deleted elments.
  */
 static PyObject *
 rpmts_AddErase(rpmtsObject * s, PyObject * args)
@@ -247,9 +247,8 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
         Header h;
         while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-	    if (recOffset) {
+	    if (recOffset)
 	        rpmtsAddEraseElement(s->ts, h, recOffset);
-	    }
 	}
     }
     rpmdbFreeIterator(mi);
@@ -277,7 +276,10 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, "|i:Check", &allSuggestions)) return NULL;
 
+    Py_BEGIN_ALLOW_THREADS
     xx = rpmtsCheck(s->ts);
+    Py_END_ALLOW_THREADS
+
     ps = rpmtsProblems(s->ts);
     if (ps) {
 	list = PyList_New(0);
@@ -362,7 +364,9 @@ fprintf(stderr, "*** rpmts_Order(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":Order")) return NULL;
 
+    Py_BEGIN_ALLOW_THREADS
     xx = rpmtsOrder(s->ts);
+    Py_END_ALLOW_THREADS
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -381,6 +385,126 @@ fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
     if (!PyArg_ParseTuple(args, ":Clean")) return NULL;
 
     rpmtsClean(s->ts);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_IDTXload(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    PyObject * result = NULL;
+    rpmTag tag = RPMTAG_INSTALLTID;
+    IDTX idtx;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, ":IDTXload")) return NULL;
+
+    Py_BEGIN_ALLOW_THREADS
+    idtx = IDTXload(s->ts, tag);
+    Py_END_ALLOW_THREADS
+
+    if (idtx == NULL || idtx->nidt <= 0) {
+	result = Py_None;
+    } else {
+	PyObject * tuple;
+	IDT idt;
+	int i;
+
+	result = PyTuple_New(idtx->nidt);
+	for (i = 0; i < idtx->nidt; i++) {
+	    idt = idtx->idt + i;
+	    tuple = Py_BuildValue("(iO)", idt->val.u32, hdr_Wrap(idt->h));
+	    PyTuple_SET_ITEM(result,  i, tuple);
+	}
+    }
+
+    idtx = IDTXfree(idtx);
+
+    return result;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_IDTXglob(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    PyObject * result = NULL;
+    rpmTag tag = RPMTAG_REMOVETID;
+    const char * globstr;
+    IDTX idtx;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, ":IDTXglob")) return NULL;
+
+    globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
+    Py_BEGIN_ALLOW_THREADS
+    idtx = IDTXglob(s->ts, globstr, tag);
+    Py_END_ALLOW_THREADS
+    globstr = _free(globstr);
+
+    if (idtx->nidt <= 0) {
+	result = Py_None;
+    } else {
+	PyObject * tuple;
+	IDT idt;
+	int i;
+
+	result = PyTuple_New(idtx->nidt);
+	for (i = 0; i < idtx->nidt; i++) {
+	    idt = idtx->idt + i;
+	    tuple = Py_BuildValue("(iO)", idt->val.u32, hdr_Wrap(idt->h));
+	    PyTuple_SET_ITEM(result,  i, tuple);
+	}
+    }
+
+    idtx = IDTXfree(idtx);
+
+    return result;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_Rollback(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    struct rpmInstallArguments_s * ia = alloca(sizeof(*ia));
+    rpmtransFlags transFlags;
+    const char ** av = NULL;
+    uint_32 rbtid;
+    int rc;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, "u:Rollback", &rbtid)) return NULL;
+
+    memset(ia, 0, sizeof(*ia));
+    ia->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE|VERIFY_HDRCHK);
+    ia->transFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL);
+    ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+    ia->installInterfaceFlags = (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL);
+    ia->rbtid = rbtid;
+    ia->relocations = NULL;
+    ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+
+    transFlags = rpmtsSetFlags(s->ts, ia->transFlags);
+    Py_BEGIN_ALLOW_THREADS
+    rc = rpmRollback(s->ts, ia, av);
+    Py_END_ALLOW_THREADS
+    transFlags = rpmtsSetFlags(s->ts, transFlags);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -464,7 +588,9 @@ fprintf(stderr, "*** rpmts_RebuildDB(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":RebuildDB")) return NULL;
 
+    Py_BEGIN_ALLOW_THREADS
     xx = rpmtsRebuildDB(s->ts);
+    Py_END_ALLOW_THREADS
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -484,7 +610,9 @@ fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":VerifyDB")) return NULL;
 
+    Py_BEGIN_ALLOW_THREADS
     xx = rpmtsVerifyDB(s->ts);
+    Py_END_ALLOW_THREADS
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -679,7 +807,10 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Run(%p) ts %p flags %x ignore %x\n", s, s->ts, s->ts->transFlags, ignoreSet);
 
+    Py_BEGIN_ALLOW_THREADS
     rc = rpmtsRun(s->ts, NULL, ignoreSet);
+    Py_END_ALLOW_THREADS
+
     ps = rpmtsProblems(s->ts);
 
     if (cbInfo.pythonError) {
@@ -846,6 +977,12 @@ static struct PyMethodDef rpmts_methods[] = {
  {"run",	(PyCFunction) rpmts_Run,	METH_VARARGS,
 	NULL },
  {"clean",	(PyCFunction) rpmts_Clean,	METH_VARARGS,
+	NULL },
+ {"IDTXload",	(PyCFunction) rpmts_IDTXload,	METH_VARARGS,
+	NULL },
+ {"IDTXglob",	(PyCFunction) rpmts_IDTXglob,	METH_VARARGS,
+	NULL },
+ {"rollback",	(PyCFunction) rpmts_Rollback,	METH_VARARGS,
 	NULL },
  {"openDB",	(PyCFunction) rpmts_OpenDB,	METH_VARARGS,
 "ts.openDB() -> None\n\

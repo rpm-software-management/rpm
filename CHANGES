@@ -214,6 +214,7 @@
 	- provide repackage progress callbacks, compression is slow.
 	- fix: don't repackage %%ghost files.
 	- add --predefine to define macros before reading macro configuration.
+	- python: bare bones rollback bindings.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
