@@ -9,6 +9,8 @@
 #define RPMLEAD_MAGIC2 0xee
 #define RPMLEAD_MAGIC3 0xdb
 
+/* The lead needs to be 8 byte aligned */
+
 #define RPMLEAD_SIZE 96
 
 struct rpmlead {

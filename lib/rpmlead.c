@@ -8,6 +8,8 @@
 #include "rpmerr.h"
 #include "rpmlead.h"
 
+/* The lead needs to be 8 byte aligned */
+
 int writeLead(int fd, struct rpmlead *lead)
 {
     struct rpmlead l;
