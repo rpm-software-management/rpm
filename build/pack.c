@@ -171,7 +171,6 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 {
     char **f, *s;
     int count;
-    FILE *inpipeF;
     int cpioPID;
     int inpipe[2];
     int outpipe[2];
@@ -181,6 +180,9 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
     int cpioDead;
     int bytes;
     unsigned char buf[8192];
+    StringBuf writeBuff;
+    char *writePtr;
+    int writeBytesLeft, bytesWritten;
 
     *archiveSize = 0;
     
@@ -226,29 +228,49 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
     close(inpipe[0]);
     close(outpipe[1]);
     fcntl(outpipe[0], F_SETFL, O_NONBLOCK);
+    fcntl(inpipe[1], F_SETFL, O_NONBLOCK);
 
     /* XXX - Unfortunately, this only does default (level 6) comrpession */
     zFile = gzdopen(fd, "w");
 
-    inpipeF = fdopen(inpipe[1], "w");
     if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
 	/* count may already be 0, but this is safer */
 	count = 0;
     }
     
+    writeBuff = newStringBuf();
+    writeBytesLeft = 0;
+    while (count--) {
+        s = *f++;
+        if (!tempdir) {
+	    s++;
+	}
+        writeBytesLeft += strlen(s) + 1;
+        appendLineStringBuf(writeBuff, s);
+    }
+    writePtr = getStringBuf(writeBuff);
+   
     cpioDead = 0;
     do {
 	if (waitpid(cpioPID, &status, WNOHANG)) {
 	    cpioDead = 1;
 	}
 
-	/* Write a file to the cpio process */
-	if (count) {
-	    s = *f++;
-	    fprintf(inpipeF, "%s\n", (tempdir) ? s : (s+1));
-	    count--;
+	/* Write some stuff to the cpio process */
+        if (writeBytesLeft) {
+	    if ((bytesWritten =
+		  write(inpipe[1], writePtr,
+		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
+	        if (errno != EAGAIN) {
+		    perror("Damn!");
+	            exit(1);
+		}
+	        bytesWritten = 0;
+	    }
+	    writeBytesLeft -= bytesWritten;
+	    writePtr += bytesWritten;
 	} else {
-	    fclose(inpipeF);
+	    close(inpipe[1]);
 	}
 	
 	/* Read any data from cpio, write it to the output fd */
@@ -261,7 +283,6 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 
     } while (!cpioDead);
 
-    close(inpipe[1]);
     close(outpipe[0]);
     gzclose(zFile);
     
@@ -272,6 +293,7 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 	return 1;
     }
 
+    freeStringBuf(writeBuff);
     return 0;
 }
 
@@ -760,7 +782,12 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	    fileGnameList[c] = fest->gname;
 	    *size += fest->statbuf.st_size;
 	    if (S_ISREG(fest->statbuf.st_mode)) {
-		mdfile(fest->file, buf);
+		if (getVar(RPMVAR_ROOT)) {
+		    sprintf(buf, "%s%s", getVar(RPMVAR_ROOT), fest->file);
+		} else {
+		    strcpy(buf, fest->file);
+		}
+		mdfile(buf, buf);
 		fileMD5List[c] = strdup(buf);
 		message(MESS_DEBUG, "md5(%s) = %s\n", fest->file, buf);
 	    } else {
@@ -789,7 +816,7 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 		} else {
 		    strcpy(buf, fest->file);
 		}
-		buf[readlink(buf, buf, 1024)] = '\0';
+	        buf[readlink(buf, buf, 1024)] = '\0';
 		fileLinktoList[c] = strdup(buf);
 	    } else {
 		/* This is stupid */
@@ -954,6 +981,8 @@ int packageBinaries(Spec s, char *passPhrase)
 	strcat(name, "-");
 	strcat(name, packageRelease);
 
+        message(MESS_VERBOSE, "Binary Packaging: %s\n", name);
+       
 	/**** Generate the Header ****/
 	
 	/* Here's the plan: copy the package's header,  */
@@ -1139,6 +1168,8 @@ int packageSource(Spec s, char *passPhrase)
     /**** Make the RPM ****/
 
     sprintf(fullname, "%s-%s-%s", s->name, version, release);
+    message(MESS_VERBOSE, "Source Packaging: %s\n", fullname);
+   
     generateRPM(fullname, RPMLEAD_SOURCE, outHeader, tempdir, passPhrase);
     
     /**** Now clean up ****/
