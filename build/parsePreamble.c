@@ -33,9 +33,10 @@ static int requiredTags[] = {
     RPMTAG_SUMMARY,
     RPMTAG_GROUP,
     RPMTAG_COPYRIGHT,
-    RPMTAG_PACKAGER,
-    RPMTAG_DISTRIBUTION,
-    RPMTAG_VENDOR,
+/* You really ought to have these, but many people don't: */
+/*    RPMTAG_PACKAGER,                                    */
+/*    RPMTAG_DISTRIBUTION,                                */
+/*    RPMTAG_VENDOR,                                      */
     0
 };
 
