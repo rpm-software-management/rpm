@@ -42,6 +42,10 @@
 	- support arch as string
 	- added --ignorearch option
 	- Prefix: in spec file to specify default installation prefix
+	- rpmrc and command line may be used to override the path
+	  used for the rpm database
+	- relocatable packages get installed properly
+	- added support for --prefix 
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
