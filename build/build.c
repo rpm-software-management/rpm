@@ -14,30 +14,24 @@ static void doRmSource(Spec spec)
     
     unlink(spec->specFile);
 
-    p = spec->sources;
-    while (p) {
+    for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    strcpy(buf, "%{_sourcedir}/");
 	    expandMacros(spec, spec->macros, buf, sizeof(buf));
 	    strcat(buf, p->source);
 	    unlink(buf);
 	}
-	p = p->next;
     }
 
-    pkg = spec->packages;
-    while (pkg) {
-	p = pkg->icon;
-	while (p) {
+    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		strcpy(buf, "%{_sourcedir}/");
 		expandMacros(spec, spec->macros, buf, sizeof(buf));
 		strcat(buf, p->source);
 		unlink(buf);
 	    }
-	    p = p->next;
 	}
-	pkg = pkg->next;
     }
 }
 

@@ -105,7 +105,7 @@ int parseChangelog(Spec spec);
 int parseDescription(Spec spec);
 int parseFiles(Spec spec);
 int parsePreamble(Spec spec, int initialPackage, int anyarch);
-int parsePrep(Spec spec);
+int parsePrep(Spec spec, int force);
 int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 			   int tag, int index);
 int parseProvidesObsoletes(Spec spec, Package pkg, char *field, int tag);
@@ -142,7 +142,8 @@ int processSourceFiles(Spec spec);
 /* global entry points */
 
 int parseSpec(Spec *specp, char *specFile, char *buildRoot,
-		int inBuildArch, char *passPhrase, char *cookie, int anyarch);
+		int inBuildArch, char *passPhrase, char *cookie, int anyarch,
+		int force);
 int buildSpec(Spec spec, int what, int test);
 
 int packageBinaries(Spec spec);

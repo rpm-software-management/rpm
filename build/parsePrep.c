@@ -348,7 +348,7 @@ static int doPatchMacro(Spec spec, char *line)
 		s = s + 2;
 	    } else {
 		s = strtok(NULL, " \t\n");
-		if (! s) {
+		if (s == NULL) {
 		    rpmError(RPMERR_BADSPEC,
 			     _("line %d: Need arg to %%patch -p: %s"),
 			     spec->lineNum, spec->line);
@@ -379,26 +379,24 @@ static int doPatchMacro(Spec spec, char *line)
 
     if (! opt_P) {
 	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E);
-	if (! s) {
+	if (s == NULL) {
 	    return RPMERR_BADSPEC;
 	}
 	appendLineStringBuf(spec->prep, s);
     }
 
-    x = 0;
-    while (x < patch_index) {
+    for (x = 0; x < patch_index; x++) {
 	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E);
-	if (! s) {
+	if (s == NULL) {
 	    return RPMERR_BADSPEC;
 	}
 	appendLineStringBuf(spec->prep, s);
-	x++;
     }
     
     return 0;
 }
 
-int parsePrep(Spec spec)
+int parsePrep(Spec spec, int force)
 {
     int nextPart, res, rc;
     StringBuf buf;
@@ -445,7 +443,7 @@ int parsePrep(Spec spec)
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
-	if (res) {
+	if (res && !force) {
 	    freeSplitString(saveLines);
 	    freeStringBuf(buf);
 	    return res;

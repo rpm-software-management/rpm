@@ -278,7 +278,7 @@ int noLang = 0;		/* XXX FIXME: pass as arg */
 
 int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	      int inBuildArch, char *passPhrase, char *cookie,
-	      int anyarch)
+	      int anyarch, int force)
 {
     int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -330,7 +330,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	    initialPackage = 0;
 	    break;
 	  case PART_PREP:
-	    parsePart = parsePrep(spec);
+	    parsePart = parsePrep(spec, force);
 	    break;
 	  case PART_BUILD:
 	  case PART_INSTALL:
@@ -379,7 +379,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 		    rpmSetMachine(spec->buildArchitectures[x], NULL);
 		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
 				  specFile, buildRoot, 1,
-				  passPhrase, cookie, anyarch)) {
+				  passPhrase, cookie, anyarch, force)) {
 			spec->buildArchitectureCount = index;
 			freeSpec(spec);
 			return RPMERR_BADSPEC;

@@ -2,11 +2,15 @@
 #include "build/rpmbuild.h"
 #include "build.h"
 
+#ifdef DYING
 int buildplatform(char *arg, int buildAmount, char *passPhrase,
-	         char *buildRoot, int fromTarball, int test, char *cookie);
+	          char *buildRoot, int fromTarball, int test, char *cookie,
+		  force);
+#endif
 
 int buildplatform(char *arg, int buildAmount, char *passPhrase,
-	         char *buildRoot, int fromTarball, int test, char *cookie)
+	          char *buildRoot, int fromTarball, int test, char *cookie,
+		  int force)
 {
 
     FILE *f;
@@ -131,7 +135,7 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
     if (parseSpec(&spec, specfile, buildRoot, 0, passPhrase, cookie,
-	_anyarch(buildAmount))) {
+	_anyarch(buildAmount), force)) {
 	    return 1;
     }
 #undef	_anyarch
@@ -149,16 +153,16 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
 }
 
 int build(char *arg, int buildAmount, char *passPhrase,
-	         char *buildRoot, int fromTarball, int test, char *cookie,
-                 char * rcfile, char * arch, char * os, 
-                 char *buildplatforms)
+	  char *buildRoot, int fromTarball, int test, char *cookie,
+          char * rcfile, char * arch, char * os, 
+          char *buildplatforms, int force)
 {
     char *platform, *t;
     int rc;
 
     if (buildplatforms == NULL) {
 	rc =  buildplatform(arg, buildAmount, passPhrase, buildRoot,
-		fromTarball, test, cookie);
+		fromTarball, test, cookie, force);
 	return rc;
     }
 
@@ -174,7 +178,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
 	rpmSetVar(RPMVAR_BUILDPLATFORM,platform);
 	rpmReadConfigFiles(rcfile, arch, os, 1, platform);
 	rc = buildplatform(arg, buildAmount, passPhrase, buildRoot,
-	    fromTarball, test, cookie);
+	    fromTarball, test, cookie, force);
 	if (rc)
 	    return rc;
     }

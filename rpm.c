@@ -487,7 +487,7 @@ int main(int argc, char ** argv) {
     enum modes bigMode = MODE_UNKNOWN;
     enum rpmQuerySources querySource = QUERY_PACKAGE;
     enum verifysources verifySource = VERIFY_PACKAGE;
-    int arg, len;
+    int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0;
     int gotDbpath = 0, building = 0, verifyFlags;
@@ -923,8 +923,10 @@ int main(int argc, char ** argv) {
 	querySource != QUERY_PACKAGE) 
 	argerror(_("unexpected query source"));
 
-    if (bigMode != MODE_INSTALL && force)
-	argerror(_("only installation and upgrading may be forced"));
+    if (!(bigMode == MODE_INSTALL ||
+         (bigMode == MODE_BUILD && rmsource)) && force)
+	argerror(_("only installation, upgrading and rmsource may be forced"));
+
 
     if (bigMode != MODE_INSTALL && badReloc)
 	argerror(_("files may only be relocated during package installation"));
@@ -1156,7 +1158,7 @@ int main(int argc, char ** argv) {
 		exit(1);
 
 	    if (build(specFile, buildAmount, passPhrase, buildRootOverride,
-			0, test, cookie, rcfile, arch, os, buildplatforms)) {
+			0, test, cookie, rcfile, arch, os, buildplatforms, force)) {
 		exit(1);
 	    }
 	    free(cookie);
@@ -1212,7 +1214,7 @@ int main(int argc, char ** argv) {
 	while ((pkg = poptGetArg(optCon)))
 	    if (build(pkg, buildAmount, passPhrase, buildRootOverride,
 			bigMode == MODE_TARBUILD, test, NULL,
-                        rcfile, arch, os, buildplatforms)) {
+                        rcfile, arch, os, buildplatforms, force)) {
 		exit(1);
 	    }
 	break;
