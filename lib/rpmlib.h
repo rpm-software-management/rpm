@@ -8,6 +8,7 @@
 /* it shouldn't need these :-( */
 #include "dbindex.h"
 #include "header.h"
+#include "messages.h"
 
 /* these tags are for both the database and packages */
 /* none of these can be 0 !!                         */
@@ -61,6 +62,11 @@
 #define RPMFILE_CONFIG			1
 #define RPMFILE_DOC			2
 
+#define INSTALL_REPLACEPKG	1
+#define INSTALL_REPLACEFILE	2
+#define INSTALL_TEST		4
+#define INSTALL_UPGRADE		8
+
 typedef struct rpmdb * rpmdb;
 
 int rpmdbOpen (char * prefix, rpmdb * dbp, int mode, int perms);
@@ -74,9 +80,11 @@ unsigned int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
     /* 0 at end */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
-int rpmdbFindByFile(rpmdb db, char * filespec, 
-		    dbIndexSet * matches);
+int rpmdbFindByFile(rpmdb db, char * filespec, dbIndexSet * matches);
+int rpmdbFindByGroup(rpmdb db, char * group, dbIndexSet * matches);
+int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches);
 
-
+int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
+int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 
 #endif
