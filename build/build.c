@@ -128,7 +128,9 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	execl(buildShell, buildShell, "-e", scriptName, scriptName, NULL);
 	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s)"),
 		 scriptName, name);
+#if 0   /* XXX don't erase the failing script */
 	unlink(scriptName);
+#endif
 	FREE(scriptName);
 	return RPMERR_SCRIPT;
     }
