@@ -272,7 +272,7 @@ int rpmShowRC(FILE *f);
 void rpmSetTables(int archTable, int osTable);  /* only used by build code */
 /* if either are NULL, they are set to the default value (munged uname())
    pushed through a translation table (if appropriate) */
-void rpmSetMachine(char * arch, char * os);
+void rpmSetMachine(const char * arch, const char * os);
 void rpmGetMachine(/*@out@*/char **arch, /*@out@*/char **os);
 
 /** **/

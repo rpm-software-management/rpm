@@ -153,7 +153,7 @@ static void rpmSetVarArch(int var, char * val, char * arch);
 static struct canonEntry *lookupInCanonTable(char *name,
 					   struct canonEntry *table,
 					   int tableLen);
-static char *lookupInDefaultTable(char *name,
+static const char *lookupInDefaultTable(const char *name,
 				  struct defaultEntry *table,
 				  int tableLen);
 static void setDefaults(void);
@@ -434,7 +434,7 @@ static struct canonEntry *lookupInCanonTable(char *name,
     return NULL;
 }
 
-static char *lookupInDefaultTable(char *name, struct defaultEntry *table,
+static const char *lookupInDefaultTable(const char *name, struct defaultEntry *table,
 				  int tableLen) {
     while (tableLen) {
 	tableLen--;
@@ -638,53 +638,6 @@ static int doReadRC(FD_t fd, const char * filename) {
 	    }
 
 	    switch (option->var) {
-/*
- * XXX This can *easily* be achieved by just 
- *	1) Create a file someplace.
- *	2) Put whatever macros you want in it.
- *	3) Add the file name to MACROFILE in Makefile.inc.in --
- *	the compile parameter is actually a ':' separated list.
- * I'll change the name to MACROFILES :-)
- *
- *	Alternatively, I'd rather just slurp the entire rpmrc file
- *	and run it through expandMacros() before parsing here -- all %define
- *	lines will work just fine without adding more syntax here.
- */
-#if defined(RPMVAR_SETENV)
-	    case RPMVAR_SETENV:
-	      {
- 		char * macroname, *envname;
-
-		/* The format is "setenv: macroname envname value" */
-
-		/* Skip to the end of the first word, which is the
-		macro name. */
-
-		while (isspace(*start) && *start) start++;
-		if (! *start) {
-		  rpmError(RPMERR_RPMRC, _("no macroname for setenv %s:%d"),
-		      	filename, linenum);
-		  return 1;
-		}
-		macroname = start;
-		while (!isspace(*start) && (*start)) start++;
-		*start = '\0';
-
-		start++;
-		while (isspace(*start) && *start) start++;
-
-		/* Skip to the end of the second word, which is the
-		environment name. */
-		envname = start;
-		while (!isspace(*start) && (*start)) start++;
-		*start = '\0';
-
-		start++;
-
-		addMacro(&globalMacroContext, start, NULL, macroname, RMIL_RPMRC);
-		setenv(envname,start,1);
-	      } break;
-#endif	/* defined(RPMVAR_SETENV) */
 
 	    case RPMVAR_INCLUDE:
 	      {	FD_t fdinc;
@@ -1060,27 +1013,20 @@ void rpmSetTables(int archTable, int osTable) {
 }
 
 int rpmMachineScore(int type, char * name) {
-    struct machEquivInfo * info;
-
-    info = machEquivSearch(&tables[type].equiv, name);
-    if (info)
-	return info->score;
-    else
-	return 0;
+    struct machEquivInfo * info = machEquivSearch(&tables[type].equiv, name);
+    return (info != NULL ? info->score : 0);
 }
 
 void rpmGetMachine(char **arch, char **os)
 {
-    if (arch) {
+    if (arch)
 	*arch = current[ARCH];
-    }
 
-    if (os) {
+    if (os)
 	*os = current[OS];
-    }
 }
 
-void rpmSetMachine(char * arch, char * os) {
+void rpmSetMachine(const char * arch, const char * os) {
     char * host_cpu, * host_os;
 
     defaultMachine(&host_cpu, &host_os);
@@ -1166,7 +1112,7 @@ void rpmGetOsInfo(char ** name, int * num) {
 void rpmRebuildTargetVars(const char ** canontarget)
 {
 
-    char * ct = NULL, * ca = NULL, * co = NULL;
+    char * ca = NULL, * co = NULL;
     const char * target = NULL;
     int x;
 
@@ -1185,8 +1131,7 @@ void rpmRebuildTargetVars(const char ** canontarget)
     if ((target = getMacroBody(&globalMacroContext, "_target")) != NULL)
 	target = strdup(target);
 
-      /* Rebuild the compat table to recalculate the
-         current target arch.  */
+    /* Rebuild the compat table to recalculate the current target arch.  */
 
     rpmSetMachine(NULL, NULL);
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
@@ -1203,11 +1148,10 @@ void rpmRebuildTargetVars(const char ** canontarget)
     for (x = 0; co[x]; x++)
 	co[x] = tolower(co[x]);
 
-    if (target) {
-	ct = target;
-    } else {
-	ct = malloc(strlen(co)+strlen(ca)+2);
+    if (target == NULL) {
+	char *ct = malloc(strlen(co)+strlen(ca)+2);
 	sprintf(ct, "%s-%s", ca, co);
+	target = ct;
     }
 
 /*
@@ -1220,14 +1164,14 @@ void rpmRebuildTargetVars(const char ** canontarget)
  * within per-platform MacroContexts (but I'm not quite ready for that yet).
  */
     delMacro(&globalMacroContext, "_target");
-    addMacro(&globalMacroContext, "_target", NULL, ct, RMIL_RPMRC);
+    addMacro(&globalMacroContext, "_target", NULL, target, RMIL_RPMRC);
     delMacro(&globalMacroContext, "_target_cpu");
     addMacro(&globalMacroContext, "_target_cpu", NULL, ca, RMIL_RPMRC);
     delMacro(&globalMacroContext, "_target_os");
     addMacro(&globalMacroContext, "_target_os", NULL, co, RMIL_RPMRC);
 
     if (canontarget)
-	*canontarget = ct;
+	*canontarget = target;
 }
 
 int rpmShowRC(FILE *f)
