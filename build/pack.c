@@ -115,9 +115,6 @@ int packageBinaries(Spec spec)
 	    return rc;
 	}
 	
-	generateAutoReqProv(spec, pkg, pkg->cpioList, pkg->cpioCount);
-	printReqs(spec, pkg);
-	
 	if (spec->cookie) {
 	    headerAddEntry(pkg->header, RPMTAG_COOKIE,
 			   RPM_STRING_TYPE, spec->cookie, 1);

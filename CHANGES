@@ -1,3 +1,8 @@
+2.4.108 -> 2.4.109:
+        - remove icons with --rmsource
+        - do dependecy generation on -bl
+        - check files on all packages on -bl
+
 2.4.107 -> 2.4.108:
         - make --clean work with no %setup
 	- fixed FSSIZES problem introduced in 2.4.107

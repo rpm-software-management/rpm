@@ -238,6 +238,7 @@ static int writeVars(Spec spec, FILE *f)
 static void doRmSource(Spec spec)
 {
     struct Source *p;
+    Package pkg;
     char buf[BUFSIZ];
     
     unlink(spec->specFile);
@@ -249,5 +250,18 @@ static void doRmSource(Spec spec)
 	    unlink(buf);
 	}
 	p = p->next;
+    }
+
+    pkg = spec->packages;
+    while (pkg) {
+	p = pkg->icon;
+	while (p) {
+	    if (! (p->flags & RPMBUILD_ISNO)) {
+		sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+		unlink(buf);
+	    }
+	    p = p->next;
+	}
+	pkg = pkg->next;
     }
 }

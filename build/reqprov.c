@@ -212,7 +212,9 @@ void printReqs(Spec spec, Package pkg)
 	    }
 	    x++;
 	}
-	rpmMessage(RPMMESS_NORMAL, "\n");
+	if (startedPreReq) {
+	    rpmMessage(RPMMESS_NORMAL, "\n");
+	}
 	x = 0;
 	while (x < count) {
 	    if (! (flags[x] & RPMSENSE_PREREQ)) {

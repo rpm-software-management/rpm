@@ -258,23 +258,31 @@ int processSourceFiles(Spec spec)
 int processBinaryFiles(Spec spec, int installSpecialDoc)
 {
     Package pkg;
-    int rc;
+    int res, rc;
+    char *name;
     
     pkg = spec->packages;
+    res = 0;
     while (pkg) {
 	if (!pkg->fileList) {
 	    pkg = pkg->next;
 	    continue;
 	}
 
+	headerGetEntry(pkg->header, RPMTAG_NAME, NULL, (void **)&name, NULL);
+	rpmMessage(RPMMESS_NORMAL, "Processing files: %s\n", name);
+		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc))) {
-	    return rc;
+	    res = rc;
 	}
 
+	generateAutoReqProv(spec, pkg, pkg->cpioList, pkg->cpioCount);
+	printReqs(spec, pkg);
+	
 	pkg = pkg->next;
     }
 
-    return 0;
+    return rc;
 }
 
 static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
