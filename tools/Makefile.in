@@ -18,6 +18,8 @@ clean:
 depend:
 	$(CPP) $(CFLAGS) -M *.c > .depend
 
+$(PROGS): ../lib/librpm.a
+
 ifeq (.depend,$(wildcard .depend))
 include .depend
 endif
