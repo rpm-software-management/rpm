@@ -1,4 +1,10 @@
-2.4.11 -> 2.5:
+2.4.99 -> 2.5:
+	- fixed handling of --rebuild and --recompile
+	- fixed rpmlibbuild.a typo in Makefile
+	- fixed handling of '\' in spec files (a specific case of a more
+	  general bug)
+
+2.4.11 -> 2.4.99:
 	- added many more i18n strings
         - merged in large rewrite of build code, which includes the following
 	  changes:
