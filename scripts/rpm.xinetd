@@ -1,0 +1,16 @@
+# This is entirely speculative at the moment, caveat emptor.
+service rpmdb
+{
+	disable			= yes
+	type			= RPC
+	rpc_number		= 351457
+	rpc_version		= 1-1
+	protocol		= tcp
+	socket_type		= stream
+	wait			= no
+	user			= rpm
+	group			= rpm
+	instances		= 1
+	server			= /usr/bin/berkeley_db_svc
+	server_args		= -h /var/lib/rpm
+}

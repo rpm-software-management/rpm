@@ -1,0 +1,5 @@
+/var/log/rpmpkgs {
+    weekly
+    notifempty
+    missingok
+}
