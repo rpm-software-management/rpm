@@ -72,8 +72,8 @@ static int getFilesystemList(void) {
 
     numFilesystems = num;
 
-    filesystems = malloc(sizeof(*filesystems) * numFilesystems + 1);
-    fsnames = malloc(sizeof(char *) * numFilesystems + 1);
+    filesystems = malloc(sizeof(*filesystems) * (numFilesystems + 1));
+    fsnames = malloc(sizeof(char *) * (numFilesystems + 1));
     
     for (vm = buf, i = 0; i < num; i++) {
 	fsnameLength = vm->vmt_data[VMT_STUB].vmt_size;
