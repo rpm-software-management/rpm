@@ -1,8 +1,10 @@
 #ifndef H_CHECKSIG
 #define H_CHECKSIG
 
-int doCheckSig(int pgp, char **argv);
+#define CHECKSIG_PGP (1 << 0)
+#define CHECKSIG_MD5 (1 << 1)
 
+int doCheckSig(int flags, char **argv);
 int doReSign(int add, char *passPhrase, char **argv);
 
 #define ADD_SIGNATURE 1

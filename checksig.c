@@ -133,7 +133,7 @@ int doReSign(int add, char *passPhrase, char **argv)
     return 0;
 }
 
-int doCheckSig(int pgp, char **argv)
+int doCheckSig(int flags, char **argv)
 {
     int fd, ofd, res, res2, res3, missingKeys;
     struct rpmlead lead;
@@ -203,10 +203,15 @@ int doCheckSig(int pgp, char **argv)
 	    sprintf(buffer, "%s: ", rpm);
 	}
 	while (headerNextIterator(sigIter, &tag, &type, &ptr, &count)) {
-	    if ((tag == RPMSIGTAG_PGP) && !pgp) {
+	    if ((tag == RPMSIGTAG_PGP) && !(flags & CHECKSIG_PGP)) 
 		continue;
-	    }
-	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, result))) {
+	    else if ((tag == RPMSIGTAG_MD5 || 
+		      tag == RPMSIGTAG_LITTLEENDIANMD5) 
+		      && !(flags & CHECKSIG_MD5)) 
+		continue;
+
+	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, 
+					   result))) {
 		if (rpmIsVerbose()) {
 		    strcat(buffer, result);
 		    res2 = 1;
