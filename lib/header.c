@@ -15,8 +15,6 @@
 #include <netinet/in.h>
 
 #include "header.h"
-#include "rpmlib.h"		/* necessary only for dumpHeader() */
-#include "messages.h"
 #include "tread.h"
 
 #define INDEX_MALLOC_SIZE 8
@@ -393,10 +391,11 @@ void *headerUnload(Header h) {
 /*                                                                  */
 /********************************************************************/
 
-void headerDump(Header h, FILE * f, int flags)
-{
+void headerDump(Header h, FILE *f, int flags, 
+		const struct headerTagTableEntry * tags) {
     int i, c, ct;
     struct indexEntry *p;
+    const struct headerTagTableEntry * tage;
     char *dp;
     char ch;
     char *type, *tag;
@@ -422,14 +421,13 @@ void headerDump(Header h, FILE * f, int flags)
 	    default:		    	type = "(unknown)";	break;
 	}
 
-	tag = "(unknown)";
-	c = 0;
-	while (c < rpmTagTableSize) {
-	    if (rpmTagTable[c].val == p->info.tag) {
-		tag = rpmTagTable[c].name + 7;
-	    }
-	    c++;
-	}
+	tage = tags;
+	while (tage->name && tage->val != p->info.tag) tage++;
+
+	if (!tage->name)
+	    tag = "(unknown)";
+	else
+	    tag = tage->name;
 
 	fprintf(f, "Entry      : %.3d (%d)%-14s %-18s 0x%.8x %.8d\n", i,
 		p->info.tag, tag, type, (uint_32) p->info.offset, (uint_32) 

@@ -32,6 +32,11 @@ typedef unsigned short uint_16;
 typedef struct headerToken *Header;
 typedef struct headerIteratorS *HeaderIterator;
 
+struct headerTagTableEntry {
+    char * name;
+    int val;
+};
+
 /* read and write a header from a file */
 Header headerRead(int fd, int magicp);
 void headerWrite(int fd, Header h, int magicp);
@@ -48,7 +53,8 @@ Header headerNew(void);
 void headerFree(Header h);
 
 /* dump a header to a file, in human readable format */
-void headerDump(Header h, FILE *f, int flags);
+void headerDump(Header h, FILE *f, int flags, 
+		const struct headerTagTableEntry * tags);
 
 #define HEADER_DUMP_INLINE   1
 
@@ -99,4 +105,4 @@ Header headerCopy(Header h);
 
 #define HEADER_I18NTABLE	100
 
-#endif H_HEAER
+#endif H_HEADER
