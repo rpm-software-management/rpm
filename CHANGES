@@ -2,6 +2,11 @@
 	- restore working directory after installing a package w/ a chroot
 	- dump the package stack when a dependency loop is encountered
 	- when a user/group lookup fails, end*ent() and retry 
+	- fixed broken --scripts argument (it was --s2)
+	- only display the packager and url in -qi output if they have defined
+	  values
+	- print "(not installed)" as the install time for -p queries rather
+	  then "not a number"
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
