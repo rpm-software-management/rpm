@@ -340,15 +340,17 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     }
 /*@=branchstate@*/
 
-/*@-branchstate@*/
     if (s == NULL) {
+/*@-branchstate@*/
+	if (anint != 0) {
 	int tlen = 32;
 	t = memset(alloca(tlen+1), 0, tlen+1);
 	xx = snprintf(t, tlen, "%lu", anint);
 	s = t;
-	xtag = "integer";
     }
 /*@=branchstate@*/
+	xtag = "integer";
+    }
 
     nb = xmlstrlen(s);
     if (nb == 0) {
