@@ -101,7 +101,7 @@ static struct poptOption optionsTable[] = {
 #endif	/* IAM_RPMEIU */
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
-	N_("Common options for all rpm modes:"),
+	N_("Common options for all rpm modes and executables:"),
 	NULL },
 
    POPT_AUTOALIAS
@@ -409,7 +409,7 @@ int main(int argc, const char ** argv)
 
 #if defined(IAM_RPMEIU)
     if (!( bigMode == MODE_INSTALL ) &&
-(ia->probFilter & (RPMPROB_FILTER_REPLACEPKG | RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES | RPMPROB_FILTER_OLDPACKAGE)))
+(ia->probFilter & (RPMPROB_FILTER_REPLACEPKG | RPMPROB_FILTER_OLDPACKAGE)))
 	argerror(_("only installation, upgrading, rmsource and rmspec may be forced"));
     if (bigMode != MODE_INSTALL && (ia->probFilter & RPMPROB_FILTER_FORCERELOCATE))
 	argerror(_("files may only be relocated during package installation"));
@@ -432,11 +432,6 @@ int main(int argc, const char ** argv)
 
     if (bigMode != MODE_INSTALL && (ia->installInterfaceFlags & INSTALL_PERCENT))
 	argerror(_("--percent may only be specified during package "
-			"installation"));
-
-    if (bigMode != MODE_INSTALL &&
- (ia->probFilter & (RPMPROB_FILTER_REPLACEOLDFILES|RPMPROB_FILTER_REPLACENEWFILES)))
-	argerror(_("--replacefiles may only be specified during package "
 			"installation"));
 
     if (bigMode != MODE_INSTALL && (ia->probFilter & RPMPROB_FILTER_REPLACEPKG))

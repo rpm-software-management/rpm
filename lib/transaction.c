@@ -188,22 +188,23 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    continue;
 
 	if (rpmfiCompare(otherFi, fi)) {
+	    int rConflicts;
 
+	    rConflicts = reportConflicts;
 	    /* Resolve file conflicts to prefer Elf64 (if not forced). */
-	    if (tscolor != 0 && FColor != 0 && FColor != oFColor
-	     && reportConflicts)
+	    if (tscolor != 0 && FColor != 0 && FColor != oFColor)
 	    {
 		if (oFColor & 0x2) {
 		    fi->actions[fileNum] = FA_SKIP;
-		    reportConflicts = 0;
+		    rConflicts = 0;
 		} else
 		if (FColor & 0x2) {
 		    fi->actions[fileNum] = FA_CREATE;
-		    reportConflicts = 0;
+		    rConflicts = 0;
 		}
 	    }
 
-	    if (reportConflicts) {
+	    if (rConflicts) {
 		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
 			rpmteNEVR(p), rpmteKey(p),
 			rpmfiDN(fi), rpmfiBN(fi),
@@ -559,33 +560,35 @@ static void handleOverlappedFiles(const rpmts ts,
 assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
 	    if (rpmfiCompare(otherFi, fi)) {
+		int rConflicts;
 
+		rConflicts = reportConflicts;
 		/* Resolve file conflicts to prefer Elf64 (if not forced) ... */
-		if (tscolor != 0 && reportConflicts) {
+		if (tscolor != 0) {
 		    if (FColor & 0x2) {
 			/* ... last Elf64 file is installed ... */
 			if (!XFA_SKIPPING(fi->actions[i]))
 			    otherFi->actions[otherFileNum] = FA_SKIP;
 			fi->actions[i] = FA_CREATE;
-			reportConflicts = 0;
+			rConflicts = 0;
 		    } else
 		    if (oFColor & 0x2) {
 			/* ... first Elf64 file is installed ... */
 			if (XFA_SKIPPING(fi->actions[i]))
 			    otherFi->actions[otherFileNum] = FA_CREATE;
 			fi->actions[i] = FA_SKIP;
-			reportConflicts = 0;
+			rConflicts = 0;
 		    } else
 		    if (FColor == 0 && oFColor == 0) {
 			/* ... otherwise, do both, last in wins. */
 			otherFi->actions[otherFileNum] = FA_CREATE;
 			fi->actions[i] = FA_CREATE;
-			reportConflicts = 0;
+			rConflicts = 0;
 		    }
 		    done = 1;
 		}
 
-		if (reportConflicts) {
+		if (rConflicts) {
 		    rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
 			rpmteNEVR(p), rpmteKey(p),
 			fn, NULL,

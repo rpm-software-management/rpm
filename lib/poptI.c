@@ -14,7 +14,21 @@ extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@=redecl@*/
 
 /*@unchecked@*/
-struct rpmInstallArguments_s rpmIArgs;
+struct rpmInstallArguments_s rpmIArgs = {
+    0,			/* transFlags */
+			/* probFilter */
+    (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
+    0,			/* installInterfaceFlags */
+    0,			/* eraseInterfaceFlags */
+    0,			/* qva_flags */
+    0,			/* rbtid */
+    0,			/* numRelocations */
+    0,			/* noDeps */
+    0,			/* incldocs */
+    NULL,		/* relocations */
+    NULL,		/* prefix */
+    NULL		/* rootdir */
+};
 
 #define	POPT_RELOCATE		-1021
 #define	POPT_EXCLUDEPATH	-1022
@@ -191,6 +205,9 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("skip files with leading component <path> "),
 	N_("<path>") },
 
+ { "fileconflicts", '\0', POPT_BIT_CLR, &rpmIArgs.probFilter,
+	(RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
+	N_("detect file conflicts between packages"), NULL},
  { "force", '\0', 0, NULL, RPMCLI_POPT_FORCE,
 	N_("short hand for --replacepkgs --replacefiles"), NULL},
 
@@ -297,7 +314,7 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("save erased package files by repackaging"), NULL},
  { "replacefiles", '\0', POPT_BIT_SET, &rpmIArgs.probFilter,
 	(RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
-	N_("install even if the package replaces installed files"), NULL},
+	N_("ignore file conflicts between packages"), NULL},
  { "replacepkgs", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_REPLACEPKG,
 	N_("reinstall if the package is already present"), NULL},
