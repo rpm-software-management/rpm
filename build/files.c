@@ -1352,6 +1352,7 @@ void initSourceHeader(Spec spec)
 	  case RPMTAG_DESCRIPTION:
 	  case RPMTAG_PACKAGER:
 	  case RPMTAG_DISTRIBUTION:
+	  case RPMTAG_DISTURL:
 	  case RPMTAG_VENDOR:
 	  case RPMTAG_LICENSE:
 	  case RPMTAG_GROUP:

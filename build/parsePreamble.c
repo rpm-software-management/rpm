@@ -16,6 +16,7 @@ static int_32 copyTagsDuringParse[] = {
     RPMTAG_LICENSE,
     RPMTAG_PACKAGER,
     RPMTAG_DISTRIBUTION,
+    RPMTAG_DISTURL,
     RPMTAG_VENDOR,
     RPMTAG_ICON,
     RPMTAG_URL,
@@ -33,11 +34,6 @@ static int requiredTags[] = {
     RPMTAG_SUMMARY,
     RPMTAG_GROUP,
     RPMTAG_LICENSE,
-#if 0	/* XXX You really ought to have these, but many people don't: */
-    RPMTAG_PACKAGER,
-    RPMTAG_DISTRIBUTION,
-    RPMTAG_VENDOR,
-#endif
     0
 };
 
@@ -215,6 +211,7 @@ static struct optionalTag {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
+    { RPMTAG_DISTURL,		"%{disturl}" },
     { -1, NULL }
 };
 
@@ -581,6 +578,7 @@ static struct PreambleRec {
     {RPMTAG_LICENSE,		0, 0, "copyright"},
     {RPMTAG_LICENSE,		0, 0, "license"},
     {RPMTAG_DISTRIBUTION,	0, 0, "distribution"},
+    {RPMTAG_DISTURL,		0, 0, "disturl"},
     {RPMTAG_VENDOR,		0, 0, "vendor"},
     {RPMTAG_GROUP,		0, 1, "group"},
     {RPMTAG_PACKAGER,		0, 0, "packager"},

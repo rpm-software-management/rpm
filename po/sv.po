@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.123 $
+# $Revision: 1.124 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-20 11:41-0400\n"
+"POT-Creation-Date: 2000-06-20 14:36-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1829,48 +1829,48 @@ msgstr "Kunde inte öppna %%files-fil %s: %s"
 msgid "line: %s"
 msgstr "rad: %s"
 
-#: build/files.c:1493
+#: build/files.c:1494
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "fil %s: %s\n"
 
-#: build/files.c:1505 build/parsePrep.c:34
+#: build/files.c:1506 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Felaktig ägare/grupp: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1560
+#: build/files.c:1561
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Kunde inte köra %s: %s"
 
-#: build/files.c:1565
+#: build/files.c:1566
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Kunde inte grena %s: %s"
 
-#: build/files.c:1647
+#: build/files.c:1648
 #, c-format
 msgid "%s failed"
 msgstr "%s misslyckades"
 
-#: build/files.c:1651
+#: build/files.c:1652
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "kunde inte skriva all data till %s"
 
-#: build/files.c:1741
+#: build/files.c:1742
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Letar upp %s: (använder %s)...\n"
 
-#: build/files.c:1769 build/files.c:1778
+#: build/files.c:1770 build/files.c:1779
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Misslyckades hitta %s:"
 
-#: build/files.c:1885
+#: build/files.c:1886
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"
@@ -1992,12 +1992,12 @@ msgstr "Kan inte skriva paket %s: %s"
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:523
+#: build/pack.c:529
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:540
+#: build/pack.c:546
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
@@ -2063,113 +2063,113 @@ msgstr "rad %d: Fel i parsning av %%files: %s"
 msgid "line %d: Second %%files list"
 msgstr "rad %d: Andra %%files-lista"
 
-#: build/parsePreamble.c:148
+#: build/parsePreamble.c:144
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Arkitekturen är utesluten: %s"
 
-#: build/parsePreamble.c:153
+#: build/parsePreamble.c:149
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Arkitekturen är inte medtagen: %s"
 
-#: build/parsePreamble.c:158
+#: build/parsePreamble.c:154
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS är uteslutet: %s"
 
-#: build/parsePreamble.c:163
+#: build/parsePreamble.c:159
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS är inte medtaget: %s"
 
-#: build/parsePreamble.c:177
+#: build/parsePreamble.c:173
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "%s-fält måste finnas med i paketet: %s"
 
-#: build/parsePreamble.c:202
+#: build/parsePreamble.c:198
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Dubbla %s-poster i paketet: %s"
 
-#: build/parsePreamble.c:249
+#: build/parsePreamble.c:246
 #, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Kan inte öppna ikon %s: %s"
 
-#: build/parsePreamble.c:267
+#: build/parsePreamble.c:264
 #, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Kan inte läsa ikon %s: %s"
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:277
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Okänd ikontyp: %s"
 
-#: build/parsePreamble.c:343
+#: build/parsePreamble.c:340
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "rad %d: Felaktig tagg: %s"
 
 #. Empty field
-#: build/parsePreamble.c:351
+#: build/parsePreamble.c:348
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "rad %d: Tom tagg: %s"
 
-#: build/parsePreamble.c:374 build/parsePreamble.c:381
+#: build/parsePreamble.c:371 build/parsePreamble.c:378
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s"
 
-#: build/parsePreamble.c:445 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:374
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot kan inte vara \"/\": %s"
 
-#: build/parsePreamble.c:458
+#: build/parsePreamble.c:455
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "rad %d: Prefix får inte sluta med \"/\": %s"
 
-#: build/parsePreamble.c:470
+#: build/parsePreamble.c:467
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "rad %d: Docdir måste börja med \"/\": %s"
 
-#: build/parsePreamble.c:482
+#: build/parsePreamble.c:479
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "rad %d: Epoch/Serial-fält måste vara numeriskt: %s"
 
-#: build/parsePreamble.c:545
+#: build/parsePreamble.c:542
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "rad %d: Felaktig BuildArchitecture-format: %s"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:552
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Internt fel: felaktig tagg %d"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:692
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Felaktig paketspecifikation: %s"
 
-#: build/parsePreamble.c:700
+#: build/parsePreamble.c:698
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paketet existerar redan: %s"
 
-#: build/parsePreamble.c:727
+#: build/parsePreamble.c:725
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "rad %d: Okänd tagg: %s"
 
-#: build/parsePreamble.c:752
+#: build/parsePreamble.c:750
 msgid "Spec file can't use BuildRoot"
 msgstr "Spec-fil kan inte använda BuildRoot"
 

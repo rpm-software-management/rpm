@@ -508,6 +508,12 @@ int packageBinaries(Spec spec)
 
 	providePackageNVR(pkg->header);
 
+    {	const char * optflags = rpmExpand("%{optflags}", NULL);
+	headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,
+			optflags, 1);
+	xfree(optflags);
+    }
+
 	genSourceRpmName(spec);
 	headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
 		       spec->sourceRpmName, 1);

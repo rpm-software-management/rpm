@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.63 2000/06/20 15:54:49 jbj Exp $
+# $Id: sl.po,v 1.64 2000/06/20 21:45:52 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-20 11:41-0400\n"
+"POT-Creation-Date: 2000-06-20 14:36-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1843,48 +1843,48 @@ msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 msgid "line: %s"
 msgstr "vrstica: %s"
 
-#: build/files.c:1493
+#: build/files.c:1494
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "Okvarjena datoteka: %s: %s"
 
-#: build/files.c:1505 build/parsePrep.c:34
+#: build/files.c:1506 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Okvarjen lastnik/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1560
+#: build/files.c:1561
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Ni mo¾no izvesti %s: %s"
 
-#: build/files.c:1565
+#: build/files.c:1566
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Vejitev %s ni mo¾na: %s"
 
-#: build/files.c:1647
+#: build/files.c:1648
 #, c-format
 msgid "%s failed"
 msgstr "%s neuspe¹en"
 
-#: build/files.c:1651
+#: build/files.c:1652
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "pisanje podatkov na %s neuspe¹no"
 
-#: build/files.c:1741
+#: build/files.c:1742
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "I¹èemo  %s: (z uporabo %s)...\n"
 
-#: build/files.c:1769 build/files.c:1778
+#: build/files.c:1770 build/files.c:1779
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:1885
+#: build/files.c:1886
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdelujemo datoteke: %s-%s-%s\n"
@@ -2006,12 +2006,12 @@ msgstr "Ni mo¾no zapisati paketa %s: %s"
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
 
-#: build/pack.c:523
+#: build/pack.c:529
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Neuspe¹no ustvarjanje izhodne datoteke za paket %s: %s\n"
 
-#: build/pack.c:540
+#: build/pack.c:546
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ni mo¾no ustvariti %s: %s\n"
@@ -2077,113 +2077,113 @@ msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%Files: %s"
 msgid "line %d: Second %%files list"
 msgstr "vrstica %d: Drugi seznam %%Files"
 
-#: build/parsePreamble.c:148
+#: build/parsePreamble.c:144
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Arhitektura je izkljuèena: %s"
 
-#: build/parsePreamble.c:153
+#: build/parsePreamble.c:149
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Arhitektura ni vkljuèena: %s"
 
-#: build/parsePreamble.c:158
+#: build/parsePreamble.c:154
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS je izkljuèen: %s"
 
-#: build/parsePreamble.c:163
+#: build/parsePreamble.c:159
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS ni vkljuèen: %s"
 
-#: build/parsePreamble.c:177
+#: build/parsePreamble.c:173
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "polje %s mora obstojati v paketu: %s"
 
-#: build/parsePreamble.c:202
+#: build/parsePreamble.c:198
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Podvojeni vnosi %s v paketu: %s"
 
-#: build/parsePreamble.c:249
+#: build/parsePreamble.c:246
 #, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Ikone %s ni mo¾no odpreti: %s"
 
-#: build/parsePreamble.c:267
+#: build/parsePreamble.c:264
 #, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:277
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Neznan tip ikone: %s"
 
-#: build/parsePreamble.c:343
+#: build/parsePreamble.c:340
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "vrstica %d: Deformirana znaèka: %s"
 
 #. Empty field
-#: build/parsePreamble.c:351
+#: build/parsePreamble.c:348
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "vrstica %d: Prazna znaèka: %s"
 
-#: build/parsePreamble.c:374 build/parsePreamble.c:381
+#: build/parsePreamble.c:371 build/parsePreamble.c:378
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:445 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:374
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot ne more biti \"/\": %s"
 
-#: build/parsePreamble.c:458
+#: build/parsePreamble.c:455
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "vrstica %d: Predpone se ne smejo konèati z /: %s"
 
-#: build/parsePreamble.c:470
+#: build/parsePreamble.c:467
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "vrstica %d: Docdir se mora zaèeti z \"/\": %s"
 
-#: build/parsePreamble.c:482
+#: build/parsePreamble.c:479
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "vrstica %d: polje Epoch/Serial mora biti ¹tevilo: %s"
 
-#: build/parsePreamble.c:545
+#: build/parsePreamble.c:542
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "vrstica %d: okvarjena oblika BuildArchitecture: %s"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:552
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Interna napaka: Neprava znaèka %d"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:692
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Okvarjeno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:700
+#: build/parsePreamble.c:698
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paket ¾e obstaja: %s"
 
-#: build/parsePreamble.c:727
+#: build/parsePreamble.c:725
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "vrstica %d: Neznana znaèka: %s"
 
-#: build/parsePreamble.c:752
+#: build/parsePreamble.c:750
 msgid "Spec file can't use BuildRoot"
 msgstr "Datoteka spec ne more uporabiti BuildRoot"
 

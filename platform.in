@@ -37,11 +37,18 @@
 #	Expanded at end of %install
 #
 %__arch_install_post   @ARCH_INSTALL_POST@
-%__os_install_post     %{___build_post}
+
+%__os_install_post    \
+    @prefix@/lib/rpm/brp-compress \
+    @prefix@/lib/rpm/brp-strip \
+    @prefix@/lib/rpm/brp-strip-comment-note \
+%{nil}
+
 %__spec_install_post\
      %{__arch_install_post}\
      %{__os_install_post}\
 %{nil}
+
 #------------------------------------------------------------------------
 #	Expanded at end of %prep
 #

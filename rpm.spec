@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.41
+Release: 0.42
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -261,6 +261,9 @@ fi
 - API: externalize legacy fdOpen interface for rpmfind et al in librpmio.
 - update brp-* scripts from rpm-4.0, enable in per-platform config.
 - alpha: add -mieee to default optflags.
+- add RPMTAG_OPTFLAGS, configured optflags when package was built.
+- add RPMTAG_DISTURL for rpmfind-like tools (content unknown yet).
+- teach brp-compress about /usr/info and /usr/share/info as well.
 
 * Mon Jun 19 2000 Jeff Johnson <jbj@redhat.com>
 - fix: open all db indices before performing chroot.

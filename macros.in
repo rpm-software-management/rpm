@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.63 2000/06/06 20:06:09 jbj Exp $
+# $Id: macros.in,v 1.64 2000/06/20 21:45:50 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -81,7 +81,6 @@
 %_buildshell		/bin/sh
 %_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
-%_rebuilddbpath		%{_dbpath}
 %_dbpath_rebuild	%{_dbpath}
 %_defaultdocdir		%{_usr}/doc
 #
@@ -129,10 +128,20 @@
 #
 #%buildsubdir
 
-#	Configurable distribution information, same as Distribution: in a
+#	Configurable distribution information, same as Distribution: tag in a
 #	specfile.
 #
 #%distribution
+
+#	Configurable distribution URL, same as DistURL: tag in a specfile.
+#	The URL will be used to supply reliable information to tools like
+#	rpmfind.
+#
+# Note: You should not configure with disturl (or build packages with
+# the DistURL: tag) unless you are willing to supply content in a
+# yet-to-be-determined format at the URL specified.
+#
+#%disturl
 
 #	Boolean (i.e. 1 == "yes", 0 == "no") that controls whether files
 #	marked as %doc should be installed.

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-06-20 11:41-0400\n"
+"POT-Creation-Date: 2000-06-20 14:36-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -127,7 +127,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.78 2000/06/20 15:54:49 jbj Exp $
+# $Id: ja.po,v 1.79 2000/06/20 21:45:51 jbj Exp $
 #: rpm.c:177 rpmqv.c:256
 #, c-format
 msgid "rpm: %s\n"
@@ -1840,48 +1840,48 @@ msgstr "%%files をオープンできません: %s"
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1493
+#: build/files.c:1494
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1505 build/parsePrep.c:34
+#: build/files.c:1506 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1560
+#: build/files.c:1561
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1565
+#: build/files.c:1566
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1647
+#: build/files.c:1648
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1651
+#: build/files.c:1652
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1741
+#: build/files.c:1742
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1769 build/files.c:1778
+#: build/files.c:1770 build/files.c:1779
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:1885
+#: build/files.c:1886
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -2003,12 +2003,12 @@ msgstr "パッケージの書き込みに失敗しました: %s"
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:523
+#: build/pack.c:529
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:540
+#: build/pack.c:546
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -2074,113 +2074,113 @@ msgstr "%d 行目: %%files の解析エラー: %s"
 msgid "line %d: Second %%files list"
 msgstr "%d 行目: 2番目の %%files リスト"
 
-#: build/parsePreamble.c:148
+#: build/parsePreamble.c:144
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "アーキテクチャは除外されています: %s"
 
-#: build/parsePreamble.c:153
+#: build/parsePreamble.c:149
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "アーキテクチャは含まれていません: %s"
 
-#: build/parsePreamble.c:158
+#: build/parsePreamble.c:154
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS は除外されています: %s"
 
-#: build/parsePreamble.c:163
+#: build/parsePreamble.c:159
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS は含まれていません: %s"
 
-#: build/parsePreamble.c:177
+#: build/parsePreamble.c:173
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "%s フィールドはパッケージ中に必要です: %s"
 
-#: build/parsePreamble.c:202
+#: build/parsePreamble.c:198
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "パッケージ中の二重の %s エントリ: %s"
 
-#: build/parsePreamble.c:249
+#: build/parsePreamble.c:246
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/parsePreamble.c:267
+#: build/parsePreamble.c:264
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/parsePreamble.c:280
+#: build/parsePreamble.c:277
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "不明なアイコンタイプ: %s"
 
-#: build/parsePreamble.c:343
+#: build/parsePreamble.c:340
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "%d 行目: 不完全な形のタグ: %s"
 
 #. Empty field
-#: build/parsePreamble.c:351
+#: build/parsePreamble.c:348
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "%d 行目: 空のタグ: %s"
 
-#: build/parsePreamble.c:374 build/parsePreamble.c:381
+#: build/parsePreamble.c:371 build/parsePreamble.c:378
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:445 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:374
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
 
-#: build/parsePreamble.c:458
+#: build/parsePreamble.c:455
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "%d 行目: Prefixes は \"/\" で終わってはいけません: %s"
 
-#: build/parsePreamble.c:470
+#: build/parsePreamble.c:467
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "%d 行目: Docdir は '/' で始まらなくてはいけません: %s"
 
-#: build/parsePreamble.c:482
+#: build/parsePreamble.c:479
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "%d 行目: Epoch/Serial フィールドは番号でなければいけません: %s"
 
-#: build/parsePreamble.c:545
+#: build/parsePreamble.c:542
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "%d 行目: 不正な BuildArchitecture フォーマット: %s"
 
-#: build/parsePreamble.c:555
+#: build/parsePreamble.c:552
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "内部エラー: にせのタグ %d"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:692
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "不正なパッケージの指定: %s"
 
-#: build/parsePreamble.c:700
+#: build/parsePreamble.c:698
 #, c-format
 msgid "Package already exists: %s"
 msgstr "パッケージはすでに存在しています: %s"
 
-#: build/parsePreamble.c:727
+#: build/parsePreamble.c:725
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "%d 行目: 不明なタグ: %s"
 
-#: build/parsePreamble.c:752
+#: build/parsePreamble.c:750
 msgid "Spec file can't use BuildRoot"
 msgstr "スペックファイルは BuildRoot を使用できません"
 
