@@ -35,4 +35,8 @@ char *realpath(char *path, char resolved_path[]);
 #include <strings.h>
 #endif
 
+#if ! HAVE_REALPATH
+char *realpath(const char *path, char resolved_path []);
+#endif
+
 #endif
