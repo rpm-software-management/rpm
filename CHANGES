@@ -7,6 +7,9 @@
 	- stopped building oldrpmdb.c as part of rpmlib
 	- added Makefile rule for building rpmconvert (which is almost
 	  never needed) -- this isolated gdbm dependence to this target
+	- fixed checking of popt stack overflow
+	- --requires shouldn't imply -q
+	- fixed error message issued when a groupname does not exist
 
 2.3.6 -> 2.3.7:
 	- fixed nasty memory link in -Va
