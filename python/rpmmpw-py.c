@@ -365,35 +365,41 @@ static void myndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize,
 /*@=boundswrite@*/
 
 static char *
-mpstr(char * t, size_t nt, size_t zsize, mpw* zdata, size_t zbase)
+mpstr(char * t, size_t nt, size_t size, mpw* data, mpw base)
 {
-    size_t size = zsize + 1;
-    mpw* wksp = alloca((size+1) * sizeof(*wksp));
-    mpw* adata = alloca(size * sizeof(*adata));
-    mpw* bdata = alloca(size * sizeof(*bdata));
     static char bchars[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+    size_t asize = size + 1;
+    mpw* adata = alloca(asize * sizeof(*adata));
+    size_t anorm;
+    mpw* zdata = alloca((asize+1) * sizeof(*zdata));
+    mpw* wksp = alloca((1+1) * sizeof(*wksp));
     size_t result;
 
 if (_mpw_debug < -1)
-fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, zdata, zsize, zbase), mpfprintln(stderr, zsize, zdata);
+fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, data, size, base), mpfprintln(stderr, size, data);
 
-    mpsetx(size, bdata, zsize, zdata);
+    mpsetx(asize, adata, size, data);
 
     t[nt] = '\0';
     while (nt--) {
-	mpsetx(size, adata, size, bdata);
-if (_mpw_debug < -1)
-fprintf(stderr, "***       a: %p[%d]\t", adata, size), mpfprintln(stderr, size, adata);
-	mpnmod(bdata, size, adata, 1, &zbase, wksp);
-if (_mpw_debug < -1)
-fprintf(stderr, "***    nmod: %p[%d]\t", bdata, size), mpfprintln(stderr, size, bdata);
-	result = bdata[size-1];
+
+	mpndivmod(zdata, asize, adata, 1, &base, wksp);
+
+if (_mpw_debug < 0) {
+fprintf(stderr, "    a %p[%d]:\t", adata, asize), mpfprintln(stderr, asize, adata);
+fprintf(stderr, "    z %p[%d]:\t", zdata, asize+1), mpfprintln(stderr, asize+1, zdata);
+}
+	result = zdata[asize];
 	t[nt] = bchars[result];
-	mpndivmod(bdata, size, adata, 1, &zbase, wksp);
-if (_mpw_debug < -1)
-fprintf(stderr, "*** ndivmod: %p[%d]\t", bdata, size), mpfprintln(stderr, size, bdata);
-	if (mpz(size, bdata))
+
+	if (mpz(asize, zdata))
 	    break;
+
+	anorm = asize - mpsize(asize, zdata);
+	if (anorm < asize)
+	    asize -= anorm;
+	mpsetx(asize+1, adata, asize, zdata+anorm);
+	asize++;
     }
     /* XXX Fill leading zeroes (if any). */
     while (nt--)
