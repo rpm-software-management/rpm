@@ -216,7 +216,11 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum,
     } 
 
     if (flags & RPMVERIFY_MODE) {
-	if (modeList[filenum] != sb.st_mode)
+	/*
+	 * Platforms (like AIX) where sizeof(unsigned short) != sizeof(mode_t)
+	 * need the (unsigned short) cast here. 
+	 */
+	if (modeList[filenum] != (unsigned short)sb.st_mode)
 	    *result |= RPMVERIFY_MODE;
     }
 
