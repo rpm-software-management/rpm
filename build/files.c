@@ -163,7 +163,6 @@ int process_filelist(Header header, struct PackageRec *pr,
 		    rpmError(RPMERR_BADSPEC,
 			  "Two files on one line: %s", filename);
 		    processFileListFailed = 1;
-		    fp++; continue;
 		}
 		if (*s != '/') {
 		    if (isdoc) {
@@ -173,7 +172,6 @@ int process_filelist(Header header, struct PackageRec *pr,
 			rpmError(RPMERR_BADSPEC,
 			      "File must begin with \"/\": %s", s);
 			processFileListFailed = 1;
-			fp++; continue;
 		    }
 		} else {
 		    filename = s;
