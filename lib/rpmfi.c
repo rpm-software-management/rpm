@@ -1593,7 +1593,7 @@ void rpmfiBuildFSContexts(Header h,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
-	av[ac] = NULL;
+	av[ac] = "";
 	if (fcnb[ac] > 0) {
 	    av[ac] = t;
 	    t += fcnb[ac];
