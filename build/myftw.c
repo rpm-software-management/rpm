@@ -31,6 +31,18 @@ Cambridge, MA 02139, USA.  */
 #define NAMLEN(a) strlen((a)->d_name)
 #endif
 
+#ifndef PATH_MAX
+#ifdef _POSIX_VERSION
+#define PATH_MAX _POSIX_PATH_MAX
+#else
+#ifdef MAXPATHLEN
+#define PATH_MAX MAXPATHLEN
+#else
+#define PATH_MAX 1024
+#endif
+#endif
+#endif
+
 #include "myftw.h"
 
 /* Traverse one level of a directory tree.  */
