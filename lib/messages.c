@@ -42,25 +42,37 @@ void rpmMessage(int level, const char * format, ...) {
 	    break;
 	    
 	  case RPMMESS_DEBUG:
-	    fprintf(stdout, "D: ");
+	    if (*format != '+')
+	        fprintf(stdout, "D: ");
+	    else
+		format++;
 	    vfprintf(stdout, format, args);
 	    fflush(stdout);
 	    break;
 
 	  case RPMMESS_WARNING:
-	    fprintf(stderr, _("warning: "));
+	    if (*format != '+')
+		fprintf(stderr, _("warning: "));
+	    else
+		format++;
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
 	    break;
 
 	  case RPMMESS_ERROR:
-	    fprintf(stderr, _("error: "));
+	    if (*format != '+')
+		fprintf(stderr, _("error: "));
+	    else
+		format++;
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
 	    break;
 
 	  case RPMMESS_FATALERROR:
-	    fprintf(stderr, _("fatal error: "));
+	    if (*format != '+')
+		fprintf(stderr, _("fatal error: "));
+	    else
+		format++;
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
 	    exit(EXIT_FAILURE);

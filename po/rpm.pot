@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-23 18:29-0400\n"
+"POT-Creation-Date: 1999-09-24 10:26-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1972,33 +1972,78 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:450
+#: ../lib/depends.c:365
+#, c-format
+msgid "  %s    A %s\tB %s\n"
+msgstr ""
+
+#: ../lib/depends.c:457
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:721
+#: ../lib/depends.c:691
 #, c-format
-msgid "dependencies: looking for %s\n"
+msgid "%s: %s satisfied by added package.\n"
+msgstr ""
+
+#: ../lib/depends.c:708
+#, c-format
+msgid "%s: %s satisfied by added provide.\n"
+msgstr ""
+
+#: ../lib/depends.c:713
+#, c-format
+msgid "%s: %s satisfied by added file list.\n"
+msgstr ""
+
+#: ../lib/depends.c:743
+#, c-format
+msgid "%s: %s satisfied by rpmrc provides.\n"
+msgstr ""
+
+#: ../lib/depends.c:771
+#, c-format
+msgid "%s: %s satisfied by db file lists.\n"
+msgstr ""
+
+#: ../lib/depends.c:793
+#, c-format
+msgid "%s: %s satisfied by db provides.\n"
+msgstr ""
+
+#: ../lib/depends.c:815
+#, c-format
+msgid "%s: %s satisfied by db packages.\n"
+msgstr ""
+
+#: ../lib/depends.c:828
+#, c-format
+msgid "%s: %s satisfied by rpmlib version.\n"
+msgstr ""
+
+#: ../lib/depends.c:838
+#, c-format
+msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: ../lib/depends.c:860
+#: ../lib/depends.c:889
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: ../lib/depends.c:922
+#: ../lib/depends.c:951
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:977 ../lib/depends.c:1281
+#: ../lib/depends.c:1006 ../lib/depends.c:1310
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:1072
+#: ../lib/depends.c:1101
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2361,19 +2406,19 @@ msgstr ""
 msgid "File %s is smaller than %d bytes"
 msgstr ""
 
-#: ../lib/messages.c:51
+#: ../lib/messages.c:55
 msgid "warning: "
 msgstr ""
 
-#: ../lib/messages.c:57
+#: ../lib/messages.c:64
 msgid "error: "
 msgstr ""
 
-#: ../lib/messages.c:63
+#: ../lib/messages.c:73
 msgid "fatal error: "
 msgstr ""
 
-#: ../lib/messages.c:70
+#: ../lib/messages.c:82
 msgid "internal error (rpm bug?): "
 msgstr ""
 

@@ -299,6 +299,8 @@ static int rpmFlags = RPMSENSE_EQUAL;
 static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
 	const char *BName, const char *BEVR, int BFlags)
 {
+    const char *aDepend = printDepend(AName, AEVR, AFlags);
+    const char *bDepend = printDepend(BName, BEVR, BFlags);
     char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
     int result;
@@ -332,10 +334,11 @@ static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
     sense = 0;
     if (aE && *aE && bE && *bE)
 	sense = rpmvercmp(aE, bE);
-    else if (aE && *aE)
-	sense = 1;
-    else if (bE && *bE)
+    else if (aE && *aE && atol(aE) > 0)
+	sense = 0; /* XXX legacy epoch-less requires/conflicts compatibility */
+    else if (bE && *bE && atol(bE) > 0)
 	sense = -1;
+
     if (sense == 0) {
 	sense = rpmvercmp(aV, bV);
 	if (sense == 0 && aR && *aR && bR && *bR) {
@@ -359,6 +362,10 @@ static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
     }
 
 exit:
+    rpmMessage(RPMMESS_DEBUG, _("  %s    A %s\tB %s\n"),
+	(result ? "YES" : "NO "), aDepend, bDepend);
+    if (aDepend) xfree(aDepend);
+    if (bDepend) xfree(bDepend);
     return result;
 }
 
@@ -657,7 +664,8 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 }
 
 static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(struct availableList * al,
-		 const char * keyName, const char * keyEVR, int keyFlags)
+	const char *keyType, const char *keyDepend,
+	const char * keyName, const char * keyEVR, int keyFlags)
 {
     struct availableIndexEntry needle, * match;
     struct availablePackage *p;
@@ -680,6 +688,8 @@ static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(struct availabl
 	pEVR = buildEVR(p->epoch, p->version, p->release);
 	rc = rangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
 	free(pEVR);
+	if (keyType && keyDepend && rc)
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added package.\n"), keyType, keyDepend);
     }	break;
     case IET_PROVIDES:
 	for (i = 0; i < p->providesCount; i++) {
@@ -695,9 +705,13 @@ static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(struct availabl
 			keyName, keyEVR, keyFlags);
 	    if (rc) break;
 	}
+	if (keyType && keyDepend && rc)
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added provide.\n"), keyType, keyDepend);
     	break;
     case IET_FILE:
 	rc = 1;
+	if (keyType && keyDepend && rc)
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added file list.\n"), keyType, keyDepend);
 	break;
     }
 
@@ -709,16 +723,14 @@ static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(struct availabl
 
 /* 2 == error */
 /* 1 == dependency not satisfied */
-static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * keyName,
-			     const char * keyEVR, int keyFlags,
-			     /*@out@*/struct availablePackage ** suggestion)
+static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char *keyType,
+	const char * keyName, const char * keyEVR, int keyFlags,
+	/*@out@*/struct availablePackage ** suggestion)
 {
     const char *keyDepend = printDepend(keyName, keyEVR, keyFlags);
     dbiIndexSet matches;
     int rc = 0;	/* assume dependency is satisfied */
     int i;
-
-    rpmMessage(RPMMESS_DEBUG, _("dependencies: looking for %s\n"), keyDepend);
 
     if (suggestion) *suggestion = NULL;
 
@@ -728,15 +740,18 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * keyName,
 	(rcProvidesString = rpmGetVar(RPMVAR_PROVIDES))) {
 	i = strlen(keyName);
 	while ((start = strstr(rcProvidesString, keyName))) {
-	    if (isspace(start[i]) || start[i] == '\0' || start[i] == ',')
+	    if (isspace(start[i]) || start[i] == '\0' || start[i] == ',') {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by rpmrc provides.\n"), keyType, keyDepend);
 		goto exit;
+	    }
 	    rcProvidesString = start + 1;
 	}
     }
   }
 
-    if (alSatisfiesDepend(&rpmdep->addedPackages, keyName, keyEVR, keyFlags))
+    if (alSatisfiesDepend(&rpmdep->addedPackages, keyType, keyDepend, keyName, keyEVR, keyFlags)) {
 	goto exit;
+    }
 
     if (rpmdep->db != NULL) {
 	if (*keyName == '/') {
@@ -753,7 +768,10 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * keyName,
 		}
 
 		dbiFreeIndexRecord(matches);
-		if (i < dbiIndexSetCount(matches)) goto exit;
+		if (i < dbiIndexSetCount(matches)) {
+		    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db file lists.\n"), keyType, keyDepend);
+		    goto exit;
+		}
 	    }
 	}
 
@@ -772,7 +790,10 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * keyName,
 	    }
 
 	    dbiFreeIndexRecord(matches);
-	    if (i < dbiIndexSetCount(matches)) goto exit;
+	    if (i < dbiIndexSetCount(matches)) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db provides.\n"), keyType, keyDepend);
+		goto exit;
+	    }
 	}
 
 	if (!rpmdbFindPackage(rpmdep->db, keyName, &matches)) {
@@ -791,7 +812,10 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * keyName,
 	    }
 
 	    dbiFreeIndexRecord(matches);
-	    if (i < dbiIndexSetCount(matches)) goto exit;
+	    if (i < dbiIndexSetCount(matches)) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db packages.\n"), keyType, keyDepend);
+		goto exit;
+	    }
 	}
 
 	/*
@@ -799,14 +823,20 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * keyName,
 	 * version. Provide implicit rpm version in last ditch effort to
 	 * satisfy an rpm dependency.
 	 */
-	if (rangesOverlap(keyName, keyEVR, keyFlags, rpmName, rpmEVR, rpmFlags))
-	    goto exit;
+	if (!strcmp(keyName, rpmName)) {
+	    i = rangesOverlap(keyName, keyEVR, keyFlags, rpmName, rpmEVR, rpmFlags);
+	    if (i) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by rpmlib version.\n"), keyType, keyDepend);
+		goto exit;
+	    }
+	}
     }
 
     if (suggestion)
-	*suggestion = alSatisfiesDepend(&rpmdep->availablePackages, keyName,
-					keyEVR, keyFlags);
+	*suggestion = alSatisfiesDepend(&rpmdep->availablePackages, NULL, NULL,
+				keyName, keyEVR, keyFlags);
 
+    rpmMessage(RPMMESS_DEBUG, _("%s: %s unsatisfied.\n"), keyType, keyDepend);
     rc = 1;	/* dependency is unsatisfied */
 
 exit:
@@ -850,7 +880,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	keyDepend = printDepend(requires[i], requiresEVR[i], requireFlags[i]);
 
-	rc = unsatisfiedDepend(rpmdep, requires[i], requiresEVR[i],
+	rc = unsatisfiedDepend(rpmdep, " requires", requires[i], requiresEVR[i],
 			       requireFlags[i], &suggestion);
 
 	switch (rc) {
@@ -913,7 +943,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	keyDepend = printDepend(conflicts[i], conflictsEVR[i], conflictFlags[i]);
 
-	rc = unsatisfiedDepend(rpmdep, conflicts[i], conflictsEVR[i],
+	rc = unsatisfiedDepend(rpmdep, "conflicts", conflicts[i], conflictsEVR[i],
 			       conflictFlags[i], NULL);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
@@ -1087,7 +1117,7 @@ static int addOrderedPack(rpmTransactionSet rpmdep,
 	for (i = 0; rc == 0 && i < requiresCount; i++) {
 	    if (!(satisfyDepends || (requireFlags[i] & RPMSENSE_PREREQ)))
 		continue;
-	    match = alSatisfiesDepend(&rpmdep->addedPackages,
+	    match = alSatisfiesDepend(&rpmdep->addedPackages, NULL, NULL,
 			  requires[i], requiresEVR[i], requireFlags[i]);
 	    /* broken dependencies don't concern us */
 	    if (!match) continue;
