@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-15 11:53-0400\n"
+"POT-Creation-Date: 2000-07-15 14:15-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2698,86 +2698,86 @@ msgstr "значение %%instchangelog в макрофайле должно быть числом, а оно нет..."
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:571
+#: lib/install.c:577
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "распаковка архива не удалась%s%s: %s"
 
-#: lib/install.c:572
+#: lib/install.c:578
 msgid " on file "
 msgstr " на файле "
 
-#: lib/install.c:616
+#: lib/install.c:622
 msgid "installing a source package\n"
 msgstr "устанавливаю исходный пакет\n"
 
-#: lib/install.c:636
+#: lib/install.c:642
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "не могу создать %s"
 
-#: lib/install.c:642 lib/install.c:672
+#: lib/install.c:648 lib/install.c:678
 #, c-format
 msgid "cannot write to %s"
 msgstr "не могу писать в %s"
 
-#: lib/install.c:646
+#: lib/install.c:652
 #, c-format
 msgid "sources in: %s\n"
 msgstr "исходники в: %s\n"
 
-#: lib/install.c:666
+#: lib/install.c:672
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "не могу создать %s"
 
-#: lib/install.c:676
+#: lib/install.c:682
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "файл spec в: %s\n"
 
-#: lib/install.c:710 lib/install.c:738
+#: lib/install.c:716 lib/install.c:744
 msgid "source package contains no .spec file"
 msgstr "исходный пакет не содержит файла .spec"
 
-#: lib/install.c:760
+#: lib/install.c:766
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/install.c:762 lib/install.c:1035 lib/uninstall.c:28
+#: lib/install.c:768 lib/install.c:1041 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "ошибка переименования %s в %s: %s"
 
-#: lib/install.c:854
+#: lib/install.c:860
 msgid "source package expected, binary found"
 msgstr "ожидался исходный пакет, найден бинарный"
 
-#: lib/install.c:904
+#: lib/install.c:910
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/install.c:964
+#: lib/install.c:970
 msgid "stopping install as we're running --test\n"
 msgstr "останавливаю установку, т.к. мы исполняем --test\n"
 
-#: lib/install.c:969
+#: lib/install.c:975
 msgid "running preinstall script (if any)\n"
 msgstr "исполняю скрипт preinstall (если есть)\n"
 
-#: lib/install.c:994
+#: lib/install.c:1000
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "предупреждение: %s создан как %s"
 
-#: lib/install.c:1031
+#: lib/install.c:1037
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "предупреждение: %s сохранен как %s"
 
-#: lib/install.c:1119
+#: lib/install.c:1125
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "исполняю скрипт postinstall (если есть)\n"

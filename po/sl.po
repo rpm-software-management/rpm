@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.80 2000/07/15 16:00:16 jbj Exp $
+# $Id: sl.po,v 1.81 2000/07/15 18:22:26 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-15 11:53-0400\n"
+"POT-Creation-Date: 2000-07-15 14:15-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2690,86 +2690,86 @@ msgstr "vrednost %%instchangelog v makrodatoteki bi morala biti ¹tevilo, pa ni"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:571
+#: lib/install.c:577
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "razpakiranje arhiva neuspe¹no%s%s: %s"
 
-#: lib/install.c:572
+#: lib/install.c:578
 msgid " on file "
 msgstr " pri datoteki "
 
-#: lib/install.c:616
+#: lib/install.c:622
 msgid "installing a source package\n"
 msgstr "name¹èanje izvornega paketa\n"
 
-#: lib/install.c:636
+#: lib/install.c:642
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "ni mo¾no ustvariti izvornega imenika %s"
 
-#: lib/install.c:642 lib/install.c:672
+#: lib/install.c:648 lib/install.c:678
 #, c-format
 msgid "cannot write to %s"
 msgstr "ni mo¾no pisanje na %s"
 
-#: lib/install.c:646
+#: lib/install.c:652
 #, c-format
 msgid "sources in: %s\n"
 msgstr "izvori v: %s\n"
 
-#: lib/install.c:666
+#: lib/install.c:672
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "ni mo¾no ustvariti imenika z doloèili spec %s"
 
-#: lib/install.c:676
+#: lib/install.c:682
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "datoteka spec v: %s\n"
 
-#: lib/install.c:710 lib/install.c:738
+#: lib/install.c:716 lib/install.c:744
 msgid "source package contains no .spec file"
 msgstr "izvorni paket ne vsebuje datoteke .spec"
 
-#: lib/install.c:760
+#: lib/install.c:766
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/install.c:762 lib/install.c:1035 lib/uninstall.c:28
+#: lib/install.c:768 lib/install.c:1041 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "preimenovanje %s v %s neuspe¹no: %s"
 
-#: lib/install.c:854
+#: lib/install.c:860
 msgid "source package expected, binary found"
 msgstr "prièakovan izvorni paket, najden binarni"
 
-#: lib/install.c:904
+#: lib/install.c:910
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/install.c:964
+#: lib/install.c:970
 msgid "stopping install as we're running --test\n"
 msgstr "ustavljamo namestitev ker teèemo kot --test\n"
 
-#: lib/install.c:969
+#: lib/install.c:975
 msgid "running preinstall script (if any)\n"
 msgstr "poganjamo prednamestitvene skripte (èe obstajajo)\n"
 
-#: lib/install.c:994
+#: lib/install.c:1000
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/install.c:1031
+#: lib/install.c:1037
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/install.c:1119
+#: lib/install.c:1125
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjamo ponamestitvene skripte (èe obstajajo)\n"
 
