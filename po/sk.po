@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-05-02 04:23-0400\n"
+"POT-Creation-Date: 2000-05-02 04:48-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2969,7 +2969,7 @@ msgstr "chyba pri zápise záznamu %s do %s"
 msgid "error removing record %s from %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: lib/rpmdb.c:619 lib/rpmdb.c:2080
+#: lib/rpmdb.c:619 lib/rpmdb.c:2078
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
@@ -3047,60 +3047,60 @@ msgstr ""
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2105
+#: lib/rpmdb.c:2103
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rpmdb.c:2109
+#: lib/rpmdb.c:2107
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rpmdb.c:2115
+#: lib/rpmdb.c:2113
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2117
+#: lib/rpmdb.c:2115
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rpmdb.c:2123
+#: lib/rpmdb.c:2121
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rpmdb.c:2133
+#: lib/rpmdb.c:2131
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rpmdb.c:2157
+#: lib/rpmdb.c:2155
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rpmdb.c:2189
+#: lib/rpmdb.c:2187
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rpmdb.c:2207
+#: lib/rpmdb.c:2205
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rpmdb.c:2215
+#: lib/rpmdb.c:2213
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rpmdb.c:2217
+#: lib/rpmdb.c:2215
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2221
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"

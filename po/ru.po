@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-05-02 04:23-0400\n"
+"POT-Creation-Date: 2000-05-02 04:48-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2965,7 +2965,7 @@ msgstr "ошибка сохранения записи %s в %s"
 msgid "error removing record %s from %s"
 msgstr "ошибка удаления записи %s из %s"
 
-#: lib/rpmdb.c:619 lib/rpmdb.c:2080
+#: lib/rpmdb.c:619 lib/rpmdb.c:2078
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
@@ -3043,60 +3043,60 @@ msgstr ""
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2105
+#: lib/rpmdb.c:2103
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраиваю базу в корневом каталоге %s\n"
 
-#: lib/rpmdb.c:2109
+#: lib/rpmdb.c:2107
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rpmdb.c:2115
+#: lib/rpmdb.c:2113
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/rpmdb.c:2117
+#: lib/rpmdb.c:2115
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rpmdb.c:2123
+#: lib/rpmdb.c:2121
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открываю старую базу\n"
 
-#: lib/rpmdb.c:2133
+#: lib/rpmdb.c:2131
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открываю новую базу\n"
 
-#: lib/rpmdb.c:2157
+#: lib/rpmdb.c:2155
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rpmdb.c:2189
+#: lib/rpmdb.c:2187
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "не могу добавить запись (первоначально в %d)"
 
-#: lib/rpmdb.c:2207
+#: lib/rpmdb.c:2205
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "перестроение базы не удалось, старая база остается на месте\n"
 
-#: lib/rpmdb.c:2215
+#: lib/rpmdb.c:2213
 msgid "failed to replace old database with new database!\n"
 msgstr "замена старой базы на новую не удалась!\n"
 
-#: lib/rpmdb.c:2217
+#: lib/rpmdb.c:2215
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "для восстановления заменяет файлы в %s файлами из %s"
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2221
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "удаление каталога %s не удалось: %s\n"

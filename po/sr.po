@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-05-02 04:23-0400\n"
+"POT-Creation-Date: 2000-05-02 04:48-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -3017,7 +3017,7 @@ msgstr "gre¹ka zapisivanja sloga %s u %s"
 msgid "error removing record %s from %s"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:619 lib/rpmdb.c:2080
+#: lib/rpmdb.c:619 lib/rpmdb.c:2078
 msgid "no dbpath has been set"
 msgstr "dbpath nije odreðen"
 
@@ -3093,60 +3093,60 @@ msgstr ""
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2105
+#: lib/rpmdb.c:2103
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2109
+#: lib/rpmdb.c:2107
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: lib/rpmdb.c:2115
+#: lib/rpmdb.c:2113
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:2117
+#: lib/rpmdb.c:2115
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:2123
+#: lib/rpmdb.c:2121
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2133
+#: lib/rpmdb.c:2131
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2157
+#: lib/rpmdb.c:2155
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "slog broj %d u bazi podataka je neispravan -- preskaèem ga"
 
-#: lib/rpmdb.c:2189
+#: lib/rpmdb.c:2187
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "ne mogu da dodam slog originalno na %d"
 
-#: lib/rpmdb.c:2207
+#: lib/rpmdb.c:2205
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2215
+#: lib/rpmdb.c:2213
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2217
+#: lib/rpmdb.c:2215
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2221
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"

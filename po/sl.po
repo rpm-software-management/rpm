@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.37 2000/05/02 08:30:33 jbj Exp $
+# $Id: sl.po,v 1.38 2000/05/02 08:54:03 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-05-02 04:23-0400\n"
+"POT-Creation-Date: 2000-05-02 04:48-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2954,7 +2954,7 @@ msgstr "napaka pri pisanju zapisa %s v %s"
 msgid "error removing record %s from %s"
 msgstr "napaka pri brisanju zapisa %s iz %s"
 
-#: lib/rpmdb.c:619 lib/rpmdb.c:2080
+#: lib/rpmdb.c:619 lib/rpmdb.c:2078
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
@@ -3030,61 +3030,61 @@ msgstr ""
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2105
+#: lib/rpmdb.c:2103
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
-#: lib/rpmdb.c:2109
+#: lib/rpmdb.c:2107
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "zaèasna podatkovna zbirka %s ¾e obstaja"
 
-#: lib/rpmdb.c:2115
+#: lib/rpmdb.c:2113
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "ustvarjamo imenik: %s\n"
 
-#: lib/rpmdb.c:2117
+#: lib/rpmdb.c:2115
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "napaka pri ustvarjanju imenika %s: %s"
 
-#: lib/rpmdb.c:2123
+#: lib/rpmdb.c:2121
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "odpiramo staro podatkovno zbirko\n"
 
-#: lib/rpmdb.c:2133
+#: lib/rpmdb.c:2131
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "odpiramo novo podatkovno zbirko\n"
 
-#: lib/rpmdb.c:2157
+#: lib/rpmdb.c:2155
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "zapis ¹t. %d v zbirki je okvarjen -- preskakujemo."
 
-#: lib/rpmdb.c:2189
+#: lib/rpmdb.c:2187
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: lib/rpmdb.c:2207
+#: lib/rpmdb.c:2205
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke neuspe¹na; stara ostaja na istem mestu\n"
 
-#: lib/rpmdb.c:2215
+#: lib/rpmdb.c:2213
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo neuspe¹na!\n"
 
-#: lib/rpmdb.c:2217
+#: lib/rpmdb.c:2215
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "posku¹amo povrniti z nadomestitvijo datotek v %s z datotekami iz %s"
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2221
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
