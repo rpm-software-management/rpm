@@ -77,6 +77,7 @@ struct Script *openScript(Spec spec, int builddir)
     fprintf(script->file, "RPM_PACKAGE_VERSION=\"%s\"\n", s);
     getEntry(main_package->header, RPMTAG_RELEASE, &foo, (void **)&s, &foo);
     fprintf(script->file, "RPM_PACKAGE_RELEASE=\"%s\"\n", s);
+    fprintf(script->file, "RPM_PACKAGE_NAME=\"%s\"\n", spec->name);
 
     fprintf(script->file, "\ncd %s\n\n", getVar(RPMVAR_BUILDDIR));
     if (builddir) {
@@ -556,7 +557,12 @@ int execBuild(Spec s)
 
 int execInstall(Spec s)
 {
-    return execPart(s, getStringBuf(s->install), "%install", 1);
+    int res;
+
+    if ((res = execPart(s, getStringBuf(s->install), "%install", 1))) {
+	return res;
+    }
+    return execPart(s, getStringBuf(s->doc), "special doc", 1);
 }
 
 int execClean(Spec s)
