@@ -275,6 +275,7 @@ PyTypeObject rpmdb_Type = {
 };
 /*@=fullinitblock@*/
 
+#ifdef  _LEGACY_BINDINGS_TOO
 rpmdb dbFromDb(rpmdbObject * db)
 {
     return db->db;
@@ -322,5 +323,6 @@ PyObject * rebuildDB (/*@unused@*/ PyObject * self, PyObject * args)
 
     return Py_BuildValue("i", rpmdbRebuild(rootDir, NULL, NULL));
 }
+#endif
 
 /*@}*/

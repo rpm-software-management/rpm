@@ -15,10 +15,10 @@
 /**
  * Display arguments.
  * @param con		context
- * @param foo
+ * @param foo		(unused)
  * @param key		option(s)
- * @param arg
- * @param data
+ * @param arg		(unused)
+ * @param data		(unused)
  */
 static void displayArgs(poptContext con,
 		/*@unused@*/ enum poptCallbackReason foo,
@@ -526,6 +526,7 @@ static int singleOptionUsage(FILE * fp, int cursor,
     const char * item = shortStr;
     const char * argDescrip = getArgDescrip(opt, translation_domain);
 
+fprintf(stderr, "*** singleOptionUsage(%p,%d,%p,%p)\n", fp, cursor, opt, translation_domain);
     if (opt->shortName!= '\0' ) {
 	if (!(opt->argInfo & POPT_ARG_MASK)) 
 	    return cursor;	/* we did these already */
@@ -602,6 +603,7 @@ static int singleTableUsage(poptContext con, FILE * fp,
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
+fprintf(stderr, "*** singleTableUsage(%p,%p,%d,%p,%p)\n", con, fp, cursor, opt, translation_domain);
     /*@-branchstate@*/		/* FIX: W2DO? */
     if (opt != NULL)
     for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {

@@ -17,21 +17,26 @@ extern PyTypeObject PyDictIter_Type;
 
 #include <rpmcli.h>
 
-#include "header-py.h"
-#include "rpmal-py.h"
-#include "rpmdb-py.h"
-#include "rpmds-py.h"
-#include "rpmfd-py.h"
-#include "rpmfi-py.h"
-#include "rpmmi-py.h"
 #include "rpmrc-py.h"
-#include "rpmte-py.h"
-#include "rpmts-py.h"
+
+#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
+#include "header-py.h"	/* XXX debug only */
+#include "rpmal-py.h"	/* XXX debug only */
+#include "rpmdb-py.h"	/* XXX debug only */
+#include "rpmds-py.h"	/* XXX debug only */
+#include "rpmfd-py.h"	/* XXX debug only */
+#include "rpmfi-py.h"	/* XXX debug only */
+#include "rpmmi-py.h"	/* XXX debug only */
+#include "rpmte-py.h"	/* XXX debug only */
+#include "rpmts-py.h"	/* XXX debug only */
+#endif
 
 #include "debug.h"
 
+#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
 /*@unchecked@*/
 static int _rc_debug = 0;
+#endif
 
 /** \ingroup python
  * \class Rpmrc
@@ -45,6 +50,38 @@ static int _rc_debug = 0;
 
 /**
  */
+PyObject * rpmrc_AddMacro(/*@unused@*/ PyObject * self, PyObject * args)
+{
+    char * name, * val;
+
+    if (!PyArg_ParseTuple(args, "ss:AddMacro", &name, &val))
+	return NULL;
+
+    addMacro(NULL, name, NULL, val, -1);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/**
+ */
+PyObject * rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args)
+{
+    char * name;
+
+    if (!PyArg_ParseTuple(args, "s:DelMacro", &name))
+	return NULL;
+
+    delMacro(NULL, name);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
+/**
+ */
+
 static const char * lbl(void * s)
 	/*@*/
 {
@@ -83,36 +120,6 @@ static const char * lbl(void * s)
     if (o->ob_type == &rpmts_Type)	return "rpmts";
 
     return "Unknown";
-}
-
-/**
- */
-PyObject * rpmrc_AddMacro(/*@unused@*/ PyObject * self, PyObject * args)
-{
-    char * name, * val;
-
-    if (!PyArg_ParseTuple(args, "ss:AddMacro", &name, &val))
-	return NULL;
-
-    addMacro(NULL, name, NULL, val, -1);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/**
- */
-PyObject * rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args)
-{
-    char * name;
-
-    if (!PyArg_ParseTuple(args, "s:DelMacro", &name))
-	return NULL;
-
-    delMacro(NULL, name);
-
-    Py_INCREF(Py_None);
-    return Py_None;
 }
 
 /**
@@ -391,6 +398,7 @@ if (_rc_debug)
 fprintf(stderr, "*** rpmrc_new(%p[%s],%p,%p) ret %p[%s]\n", subtype, lbl(subtype), args, kwds, ns, lbl(ns));
     return ns;
 }
+#endif
 
 /**
  */
@@ -401,12 +409,14 @@ static struct PyMethodDef rpmrc_methods[] = {
 	NULL },
     { "delMacro",	(PyCFunction) rpmrc_DelMacro, METH_VARARGS,
 	NULL },
+#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
     { "getstate",	(PyCFunction) rpmrc_getstate, METH_VARARGS,
 	"getstate() -> state"},
     { "setstate",	(PyCFunction) rpmrc_setstate, METH_VARARGS,
 	"setstate(state)"},
     { "next",		(PyCFunction) rpmrc_next,     METH_VARARGS,
 	"next() -- get the next value, or raise StopIteration"},
+#endif
     {NULL,		NULL}		/* sentinel */
 };
 /*@=fullinitblock@*/
@@ -414,6 +424,7 @@ static struct PyMethodDef rpmrc_methods[] = {
 /** \ingroup python
  */
 /*@-fullinitblock@*/
+#if Py_TPFLAGS_HAVE_ITER
 PyTypeObject rpmrc_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -437,7 +448,6 @@ PyTypeObject rpmrc_Type = {
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE,	/* tp_flags */
 	rpmrc_doc,			/* tp_doc */
-#if Py_TPFLAGS_HAVE_ITER
 	rpmrc_traverse,			/* tp_traverse */
 	rpmrc_clear,			/* tp_clear */
 	rpmrc_richcompare,		/* tp_richcompare */
@@ -457,13 +467,40 @@ PyTypeObject rpmrc_Type = {
 	rpmrc_new,			/* tp_new */
 	rpmrc_free,			/* tp_free */
 	0,				/* tp_is_gc */
-#endif
 };
+#else
+PyTypeObject rpmrc_Type = {
+	PyObject_HEAD_INIT(&PyType_Type)
+	0,				/* ob_size */
+	"rpm.rc",			/* tp_name */
+	sizeof(rpmrcObject),		/* tp_size */
+	0,				/* tp_itemsize */
+	0,			 	/* tp_dealloc */
+	0,				/* tp_print */
+	0,			 	/* tp_getattr */
+	0,				/* tp_setattr */
+	0,				/* tp_compare */
+	0,				/* tp_repr */
+	0,				/* tp_as_number */
+	0,				/* tp_as_sequence */
+	0,				/* tp_as_mapping */
+	0,				/* tp_hash */
+	0,				/* tp_call */
+	0,				/* tp_str */
+	0,				/* tp_getattro */
+	0,				/* tp_setattro */
+	0,				/* tp_as_buffer */
+	0,				/* tp_flags */
+	0				/* tp_doc */
+};
+#endif
 /*@=fullinitblock@*/
 
+#if Py_TPFLAGS_HAVE_ITER
 PyObject * rpmrc_Create(/*@unused@*/ PyObject * self, PyObject *args, PyObject *kwds)
 {
     return rpmrc_new(&rpmrc_Type, args, kwds);
 }
+#endif
 
 /*@}*/

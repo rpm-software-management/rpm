@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.55
+Release: 0.56
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -514,6 +514,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jul 25 2002 Jeff Johnson <jbj@redhat.com>
+- python: remove the old initdb/rebuilddb methods, use ts.fooDB().
+- python: 1st crack at backport to 1.5.2.
+
 * Wed Jul 24 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.55
 - imbue %ghost with missingok attribute with --verify (#68933).
 - fix: segfault if given a text file as 2nd arg to -Uvh (#69508).

@@ -495,7 +495,6 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
     }
     uh = PyString_AsString(blob);
     uc = PyString_Size(blob);
-fprintf(stderr, "*** uh %p uc %d\n", uh, uc);
 
     rpmrc = headerCheck(s->ts, uh, uc, &msg);
 
@@ -668,6 +667,7 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p flags %x ignore %x\n", s, s->ts, s->ts-
     return list;
 }
 
+#if Py_TPFLAGS_HAVE_ITER
 static PyObject *
 rpmts_iter(rpmtsObject * s)
 	/*@modifies s @*/
@@ -675,13 +675,10 @@ rpmts_iter(rpmtsObject * s)
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_iter(%p) ts %p\n", s, s->ts);
 
-#ifdef	DYING
-    s->tsi = rpmtsiInit(s->ts);
-    s->tsiFilter = 0;
-#endif
     Py_INCREF(s);
     return (PyObject *)s;
 }
+#endif
 
 /**
  * @todo Add TR_ADDED filter to iterator.

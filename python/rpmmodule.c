@@ -178,6 +178,7 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args)
     return result;
 }
 
+#ifdef	_LEGACY_BINDINGS_TOO
 /**
  */
 static PyObject * rpmInitDB(PyObject * self, PyObject * args)
@@ -202,6 +203,7 @@ static PyObject * rpmInitDB(PyObject * self, PyObject * args)
     Py_INCREF(Py_None);
     return(Py_None);
 }
+#endif
 
 /**
  */
@@ -323,8 +325,10 @@ static PyMethodDef rpmModuleMethods[] = {
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
 - Create a transaction set.\n" },
 
+#if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     { "newrc", (PyCFunction) rpmrc_Create, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+#endif
     { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS,
 	NULL },
     { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS,
@@ -340,12 +344,14 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS,
 	NULL },
+#ifdef  _LEGACY_BINDINGS_TOO
     { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS,
 	NULL },
     { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS,
 	NULL },
     { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS,
 	NULL },
+#endif
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS,
 	NULL },
     { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS,
@@ -386,6 +392,7 @@ void initrpm(void)
     struct headerSprintfExtension_s * ext;
     PyObject * m;
 
+#if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
     if (PyType_Ready(&rpmal_Type) < 0) return;
     if (PyType_Ready(&rpmdb_Type) < 0) return;
@@ -399,6 +406,7 @@ void initrpm(void)
 
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
+#endif
 
     m = Py_InitModule3("rpm", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
@@ -418,6 +426,7 @@ void initrpm(void)
 	PyDict_SetItemString(d, "error", pyrpmError);
 #endif
 
+#if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
 
@@ -447,6 +456,17 @@ void initrpm(void)
 
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
+#else
+    hdr_Type.ob_type = &PyType_Type;
+    rpmal_Type.ob_type = &PyType_Type;
+    rpmdb_Type.ob_type = &PyType_Type;
+    rpmds_Type.ob_type = &PyType_Type;
+    rpmfd_Type.ob_type = &PyType_Type;
+    rpmfi_Type.ob_type = &PyType_Type;
+    rpmmi_Type.ob_type = &PyType_Type;
+    rpmte_Type.ob_type = &PyType_Type;
+    rpmts_Type.ob_type = &PyType_Type;
+#endif
 
     dict = PyDict_New();
 

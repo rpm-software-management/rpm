@@ -12,8 +12,12 @@ typedef struct rpmrcObject_s rpmrcObject;
 /** \ingroup python
  */
 struct rpmrcObject_s {
+#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
     PyDictObject dict;
     int state;
+#else
+    PyObject_HEAD
+#endif
 } ;
 
 /*@unchecked@*/
@@ -26,7 +30,9 @@ PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
 
+#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
 PyObject * rpmrc_Create(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
+#endif
 
 #endif

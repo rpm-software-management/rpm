@@ -24,6 +24,7 @@ struct rpmdbObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmdb_Type;
 
+#ifdef  _LEGACY_BINDINGS_TOO
 rpmdb dbFromDb(rpmdbObject * db)
 	/*@*/;
 
@@ -32,5 +33,6 @@ rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args)
 PyObject * rebuildDB (PyObject * self, PyObject * args)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
+#endif
 
 #endif
