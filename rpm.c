@@ -20,6 +20,7 @@
 #define GETOPT_SHOWRC		1018
 #define GETOPT_EXCLUDEPATH	1019
 #define	GETOPT_DEFINEMACRO	1020
+#define	GETOPT_EVALMACRO	1021
 
 char * version = VERSION;
 
@@ -47,15 +48,13 @@ static int incldocs;
 static int initdb;
 static int justdb;
 static int noDeps;
-#ifdef	DELETE
-static int noFiles;
-#endif
 static int noGpg;
 static int noMd5;
 static int noOrder;
 static int noPgp;
 static int noScripts;
 static int noTriggers;
+static int noUsageMsg;
 static int oldPackage;
 static int showPercents;
 static char * pipeOutput;
@@ -86,8 +85,9 @@ static struct poptOption optionsTable[] = {
  { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
  { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
- { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,	NULL, NULL},
+ { "define", '\0', POPT_ARG_STRING, &noUsageMsg, GETOPT_DEFINEMACRO,NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
+ { "eval", '\0', POPT_ARG_STRING, &noUsageMsg, GETOPT_EVALMACRO, NULL, NULL},
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
@@ -107,9 +107,6 @@ static struct poptOption optionsTable[] = {
  { "install", '\0', 0, 0, GETOPT_INSTALL,	NULL, NULL},
  { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
-#ifdef	DELETE
- { "nofiles", '\0', 0, &noFiles, 0,		NULL, NULL},
-#endif
  { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
  { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
@@ -553,15 +550,13 @@ int main(int argc, char ** argv)
     initdb = 0;
     justdb = 0;
     noDeps = 0;
-#ifdef	DELETE
-    noFiles = 0;
-#endif
     noGpg = 0;
     noMd5 = 0;
     noOrder = 0;
     noPgp = 0;
     noScripts = 0;
     noTriggers = 0;
+    noUsageMsg = 0;
     oldPackage = 0;
     showPercents = 0;
     pipeOutput = NULL;
@@ -757,62 +752,17 @@ int main(int argc, char ** argv)
 	    QVSource = RPMQV_ALL;
 	    break;
 
-#ifdef DYING	/* XXX WTFO? the above QVSources *must* be here */
-	  case GETOPT_WHATREQUIRES:
-	    if (QVSource != RPMQV_PACKAGE && 
-		QVSource != RPMQV_WHATREQUIRES)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_WHATREQUIRES;
-	    break;
-
-	  case GETOPT_WHATPROVIDES:
-	    if (QVSource != RPMQV_PACKAGE && 
-		QVSource != RPMQV_WHATPROVIDES)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_WHATPROVIDES;
-	    break;
-
-	  case GETOPT_TRIGGEREDBY:
-	    if (QVSource != RPMQV_PACKAGE && 
-		QVSource != RPMQV_TRIGGEREDBY)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_TRIGGEREDBY;
-	    break;
-#endif	/* DYING */
-
 	  case GETOPT_REBUILD:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_REBUILD;
 	    break;
 
-#if XXX
-	  case GETOPT_RMSOURCE:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD &&
-		bigMode != MODE_TARBUILD)
-		argerror(_("only one major mode may be specified"));
-	    rmsource = 1;
-	    break;
-#endif
-
 	  case GETOPT_RECOMPILE:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RECOMPILE;
 	    break;
-
-#if XXX
-	  case GETOPT_BUILDROOT:
-	    if (bigMode != MODE_UNKNOWN &&
-		bigMode != MODE_BUILD && bigMode != MODE_REBUILD &&
-		bigMode != MODE_TARBUILD)
-		argerror(_("only one major mode may be specified"));
-	    buildRootOverride = optArg;
-	    break;
-#endif
 
 	  case GETOPT_RESIGN:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
@@ -840,6 +790,12 @@ int main(int argc, char ** argv)
 	  case GETOPT_DEFINEMACRO:
 	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
 	    break;
+
+	  case GETOPT_EVALMACRO:
+	  { const char *val = rpmExpand(optArg, NULL);
+	    fprintf(stdout, "%s\n", val);
+	    xfree(val);
+	  } break;
 
 	  case GETOPT_TIMECHECK:
 	    tce = NULL;
@@ -1040,12 +996,6 @@ int main(int argc, char ** argv)
 	argerror(_("--nodeps may only be specified during package "
 		   "building, installation, erasure, and verification"));
 
-#ifdef	DELETE
-    if (bigMode != MODE_VERIFY && noFiles)
-	argerror(_("--nofiles may only be specified during package "
-		   "verification"));
-#endif
-
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
 	bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && test )
 	argerror(_("--test may only be specified during package installation, "
@@ -1059,23 +1009,6 @@ int main(int argc, char ** argv)
 
     if (rootdir && rootdir[0] != '/')
 	argerror(_("arguments to --root (-r) must begin with a /"));
-
-#if XXX
-    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && clean)
-	argerror(_("--clean may only be used with -b and -t"));
-
-    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && rmsource)
-	argerror(_("--rmsource may only be used with -b and -t"));
-
-    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && buildArgs.shortCircuit) 
-	argerror(_("--short-circuit may only be used during package building"));
-
-    if (buildArgs.shortCircuit && (buildArgs.buildChar != 'c') && (buildArgs.buildChar != 'i')
-		     && (buildArgs.buildChar != 's')) {
-	argerror(_("--short-circuit may only be used with -bc, -bi, -bs, -tc "
-			"-ti, or -ts"));
-    }
-#endif
 
     if (oldPackage && !upgrade)
 	argerror(_("--oldpackage may only be used during upgrades"));
@@ -1204,7 +1137,7 @@ int main(int argc, char ** argv)
 	
     switch (bigMode) {
       case MODE_UNKNOWN:
-	if (!rpm_version && !help) printUsage();
+	if (!rpm_version && !help && !noUsageMsg) printUsage();
 	break;
 
       case MODE_REBUILDDB:
@@ -1405,11 +1338,7 @@ int main(int argc, char ** argv)
 
       case MODE_VERIFY:
 	verifyFlags = (VERIFY_FILES|VERIFY_DEPS|VERIFY_SCRIPT|VERIFY_MD5);
-#ifdef	DELETE
-	if (!noFiles) verifyFlags |= VERIFY_FILES;
-#else
 	verifyFlags &= ~qva->qva_flags;
-#endif
 	if (noDeps)	verifyFlags &= ~VERIFY_DEPS;
 	if (noScripts)	verifyFlags &= ~VERIFY_SCRIPT;
 	if (noMd5)	verifyFlags &= ~VERIFY_MD5;
