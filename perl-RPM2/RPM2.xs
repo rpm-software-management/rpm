@@ -300,7 +300,7 @@ _read_package_info(fp, vsflags)
 	    PUSHs(h_sv);
 	}
 	else {
-	    croak("error reading package");
+	    croak("error reading package (%d)", rc);
 	}
 #ifdef RPM2_RPM41
 	ts = rpmtsFree(ts);
@@ -512,6 +512,16 @@ _header_sprintf(h, format)
 	PUSHs(sv_2mortal(newSVpv((char *)s, 0)));
 	s = _free(s);
 
+void
+_unload(h)
+	Header h
+    PREINIT:
+	char *buf;
+	unsigned int size;
+    PPCODE:
+	size = headerSizeof(h, 0);
+	buf = headerUnload(h);
+	PUSHs(sv_2mortal(newSVpv(buf, size)));
 
 MODULE = RPM2		PACKAGE = RPM2::C::Transaction
 

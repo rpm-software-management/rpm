@@ -8,7 +8,7 @@ use File::Basename qw/basename dirname/;
 use File::Spec ();
 
 use vars qw/$VERSION/;
-$VERSION = '0.66';
+$VERSION = '0.67';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
@@ -333,6 +333,12 @@ sub changelog {
   }
 
   return @{$self->{changelog}};
+}
+
+sub raw_header {
+  my $self = shift;
+
+  return RPM2::C::Header::_unload($self->{c_header});
 }
 
 package RPM2::PackageIterator;
@@ -710,6 +716,11 @@ If epoch is undefined for this package, it and the leading colon are omitted.
 =item $hdr->files()
 
 TODO.
+
+=item $hdr->raw_header()
+
+Return the binary representation of the header (ie, the rpm file
+itself without the actual content of the files in the cpio archive).
 
 =item $hdr->changelog()
 

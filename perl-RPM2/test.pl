@@ -11,7 +11,7 @@ use strict;
 
 use Test;
 use strict;
-BEGIN { plan tests => 63 };
+BEGIN { plan tests => 64 };
 use RPM2;
 ok(1); # If we made it this far, we're ok.
 
@@ -193,3 +193,7 @@ ok($t->close_db());
 my @headers = RPM2->open_hdlist("hdlist-test.hdr");
 ok(scalar @headers, 3, 'found three headers in hdlist-test.hdr');
 ok(grep { $_->tag('name') eq 'mod_perl' } @headers);
+
+# ensure the raw header from hdlist-test.hdr's first entry is correct
+my $binary_header = $headers[0]->raw_header;
+ok(length($binary_header) == 6560);
