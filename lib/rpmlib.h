@@ -476,7 +476,12 @@ struct oldrpmlead {		/* for version 1 packages */
 
 typedef void (*rpmErrorCallBackType)(void);
 
+#if defined(__GNUC__)
 void rpmError(int code, char * format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
+#else
+void rpmError(int code, char * format, ...);
+#endif
+
 int rpmErrorCode(void);
 char *rpmErrorCodeString(void);
 char *rpmErrorString(void);

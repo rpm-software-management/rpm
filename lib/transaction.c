@@ -13,7 +13,7 @@
 #include "rpmdb.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
-/* DU 4.0 fiddles */
+/* portability fiddles */
 #if STATFS_IN_SYS_VFS
 # include <sys/vfs.h>
 #else
@@ -1178,6 +1178,7 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		break;
 
 	      default:
+		break;
 	    }
 
 	    ds->needed -= BLOCK_ROUND(fixupSize, ds->block);

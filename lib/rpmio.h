@@ -13,7 +13,7 @@ typedef	/*@abstract@*/ struct _FD {
     void *	fd_url;
 } *FD_t;
 
-#endif H_RPMIO
+#endif /* H_RPMIO */
 
 #ifndef H_RPMIO_F
 #define H_RPMIO_F

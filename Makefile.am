@@ -7,6 +7,8 @@ EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL RPM-PGP-KEY \
 	docs/[a-z]* gendiff $(man_MANS) po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt rpm.spec rpm.8ru rpm2cpio.8ru
 
+EXTRA_PROGRAMS = rpmconvert
+
 SUBDIRS = popt build lib po intl misc tools scripts tests .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
@@ -22,7 +24,8 @@ rpmbin_PROGRAMS = rpm
 
 bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
-noinst_PROGRAMS =	rpmconvert
+
+noinst_PROGRAMS =	@BUILD_RPM_CONVERT@
 
 man_MANS = rpm.8 rpm2cpio.8	# rpm.8ru rpm2cpio.8ru
 
