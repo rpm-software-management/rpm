@@ -4,5 +4,5 @@
 
 void error(int code, ...)
 {
-    fprintf(stderr, "error, error, error\n");
+    fprintf(stderr, "error, error, error %d\n", code);
 }
