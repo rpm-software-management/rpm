@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-12-20 13:33-0500\n"
+"POT-Creation-Date: 2002-12-20 20:03-0500\n"
 "PO-Revision-Date: 2002-08-19 22:26+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2322,11 +2322,11 @@ msgstr "post %u kunde inte läsas\n"
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
 
-#: lib/rpmal.c:694
+#: lib/rpmal.c:695
 msgid "(added files)"
 msgstr "(lade till filer)"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:774
 msgid "(added provide)"
 msgstr "(lade till tillhandahållande)"
 

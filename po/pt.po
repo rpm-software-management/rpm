@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-12-20 13:33-0500\n"
+"POT-Creation-Date: 2002-12-20 20:03-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -2368,12 +2368,12 @@ msgstr "o registo %u não pôde ser lido\n"
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
 
-#: lib/rpmal.c:694
+#: lib/rpmal.c:695
 #, fuzzy
 msgid "(added files)"
 msgstr "ficheiro db inválido %s\n"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:774
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"

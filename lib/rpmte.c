@@ -33,6 +33,12 @@ void rpmteCleanDS(rpmte te)
 }
 
 /**
+ * Destroy transaction element data.
+ * @param ts		transaction set
+ * @param p		transaction element
+ * @param h		header
+ * @param key		(TR_ADDED) package retrieval key (e.g. file name)
+ * @param relocs	(TR_ADDED) package file relocations
  */
 static void delTE(rpmte p)
 	/*@globals fileSystem @*/
@@ -74,6 +80,12 @@ static void delTE(rpmte p)
 }
 
 /**
+ * Initialize transaction element data from header.
+ * @param ts		transaction set
+ * @param p		transaction element
+ * @param h		header
+ * @param key		(TR_ADDED) package retrieval key (e.g. file name)
+ * @param relocs	(TR_ADDED) package file relocations
  */
 /*@-bounds@*/
 static void addTE(rpmts ts, rpmte p, Header h,

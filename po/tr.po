@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-20 13:33-0500\n"
+"POT-Creation-Date: 2002-12-20 20:03-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2385,12 +2385,12 @@ msgstr "%u. kayýt okunamadý\n"
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu deðil\n"
 
-#: lib/rpmal.c:694
+#: lib/rpmal.c:695
 #, fuzzy
 msgid "(added files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:774
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s EVET (önlem eklendi)\n"

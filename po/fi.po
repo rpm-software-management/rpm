@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-20 13:33-0500\n"
+"POT-Creation-Date: 2002-12-20 20:03-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2425,12 +2425,12 @@ msgstr "tietuetta %d ei voitu lukea\n"
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/rpmal.c:694
+#: lib/rpmal.c:695
 #, fuzzy
 msgid "(added files)"
 msgstr "en voinut avata %s: %s"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:774
 msgid "(added provide)"
 msgstr ""
 

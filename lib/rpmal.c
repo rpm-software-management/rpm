@@ -627,6 +627,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     const char * fileName;
 
     if (keyp) *keyp = RPMAL_NOMATCH;
+
     if (al == NULL || (fileName = rpmdsN(ds)) == NULL || *fileName != '/')
 	return NULL;
 
@@ -696,9 +697,10 @@ fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"
 	alp = al->list + fie->pkgNum;
 	ret = xrealloc(ret, (found+2) * sizeof(*ret));
 	if (ret)	/* can't happen */
-	    ret[found++] = alp->key;
+	    ret[found] = alp->key;
 	if (keyp)
 	    *keyp = alNum2Key(al, fie->pkgNum);
+	found++;
     }
     /*@=branchstate@*/
 
@@ -727,10 +729,11 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	return ret;
 
     if (*KName == '/') {
+	/* First, look for files "contained" in package ... */
 	ret = rpmalAllFileSatisfiesDepend(al, ds, keyp);
-	/* XXX Provides: /path was broken with added packages (#52183). */
 	if (ret != NULL && *ret != NULL)
 	    return ret;
+	/* ... then, look for files "provided" by package. */
     }
 
     ai = &al->index;
@@ -777,9 +780,10 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	if (rc) {
 	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
-		ret[found++] = alp->key;
+		ret[found] = alp->key;
 	    if (keyp)
 		*keyp = ((alKey)(alp - al->list));
+	    found++;
 	}
 	/*@=branchstate@*/
     }

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-12-20 13:33-0500\n"
+"POT-Creation-Date: 2002-12-20 20:03-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2356,12 +2356,12 @@ msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
 
-#: lib/rpmal.c:694
+#: lib/rpmal.c:695
 #, fuzzy
 msgid "(added files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:774
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
