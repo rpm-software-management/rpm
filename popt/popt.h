@@ -171,6 +171,12 @@ extern struct poptOption poptAliasOptions[];
 /*@unchecked@*/ /*@observer@*/
 extern struct poptOption poptHelpOptions[];
 /*@=exportvar@*/
+
+/*@-exportvar@*/
+/*@unchecked@*/ /*@observer@*/
+extern struct poptOption * poptHelpOptionsI18N;
+/*@=exportvar@*/
+
 #define POPT_AUTOHELP { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptHelpOptions, \
 			0, "Help options:", NULL },
 
