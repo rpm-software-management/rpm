@@ -1116,7 +1116,7 @@ expandMacro(MacroBuf *mb)
 		if (g && g < ge) {		/* Expand X in %{?f:X} */
 			rc = expandT(mb, g, gn);
 		} else
-		if (me->body && *me->body) {	/* Expand %{?f}/%{?f*} */
+		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
 			rc = expandT(mb, me->body, strlen(me->body));
 		}
 		s = se;
