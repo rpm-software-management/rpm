@@ -336,8 +336,8 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 
     /* From A B C entry */
     /* Add  B B C entry */
-    t[1].name = strdup(t->name);
-    t[1].short_name = strdup(t->name);
+    t[1].name = strdup(t->short_name);
+    t[1].short_name = strdup(t->short_name);
     t[1].num = t->num;
 
     return 0;
