@@ -66,3 +66,23 @@ fingerPrint fpLookup(char * fullName, int scareMemory) {
     return fp;
 }
 
+unsigned int fpHashFunction(const void * key) {
+    const fingerPrint * fp = key;
+    unsigned int hash = 0;
+    char ch;
+    char * chptr;
+
+    ch = 0;
+    chptr = fp->basename;
+    while (*chptr) ch ^= *chptr++;
+
+    hash |= ch << 24;
+    hash |= (((fp->dev >> 8) ^ fp->dev) & 0xFF) << 16;
+    hash |= fp->ino & 0xFFFF;
+    
+    return hash;
+}
+
+int fpEqual(const void * key1, const void * key2) {
+    return FP_EQUAL(*((const fingerPrint *) key1), *((fingerPrint *) key2));
+}
