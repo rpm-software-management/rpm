@@ -7,7 +7,7 @@
 #endif
 
 #if defined(sun) && !defined(__svr4__)
-#define SYSNDIR
+#define SYSDIR
 #endif
 
 /* Copyright (C) 1991, 1992, 1993, 1994 Free Software Foundation, Inc.

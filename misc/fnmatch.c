@@ -16,8 +16,9 @@ not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
 #include <errno.h>
-#include "miscfn.h"
 #include <ctype.h>
+
+#include "miscfn.h"
 
 
 /* Comment out all this code if we are using the GNU C Library, and are not

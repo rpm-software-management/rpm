@@ -1,6 +1,10 @@
+#include "config.h"
+
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+
+#include "miscfn.h"
 #include "stringbuf.h"
 
 #define BUF_CHUNK 1024
