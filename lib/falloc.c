@@ -79,8 +79,9 @@ faFile faOpen(const char * path, int flags, int perms)
     if (flags & O_WRONLY)
 	return NULL;
 
-    fa = fdOpen(path, flags, perms);
+    fa = ufdOpen(path, flags, perms);
     if (fdFileno(faFileno(fa)) < 0)
+	/* XXX Fstrerror */
 	return NULL;
 
     fa->readOnly = (flags & O_RDWR) ? 0 : 1;

@@ -1152,8 +1152,7 @@ int main(int argc, const char ** argv)
 	ec = rpmCheckSig(checksigFlags, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
-	exit(ec);
-	/*@notreached@*/ break;
+	break;
 
       case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
@@ -1161,8 +1160,7 @@ int main(int argc, const char ** argv)
 	ec = rpmReSign(addSign, passPhrase, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
-	exit(ec);
-	/*@notreached@*/ break;
+	break;
 	
       case MODE_REBUILD:
       case MODE_RECOMPILE:
@@ -1182,12 +1180,13 @@ int main(int argc, const char ** argv)
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
-	    if (rpmInstallSource("/", pkg, &specFile, &cookie))
-		exit(EXIT_FAILURE);
+	    ec = rpmInstallSource("", pkg, &specFile, &cookie);
+	    if (ec)
+		break;
 
-	    if (build(specFile, &buildArgs, passPhrase, 0, cookie, rcfile, force, noDeps)) {
-		exit(EXIT_FAILURE);
-	    }
+	    ec = build(specFile, &buildArgs, passPhrase, 0, cookie, rcfile, force, noDeps);
+	    if (ec)
+		break;
 	    free(cookie);
 	    xfree(specFile);
 	}
@@ -1236,11 +1235,14 @@ int main(int argc, const char ** argv)
 		argerror(_("no tar files given for build"));
 	}
 
-	while ((pkg = poptGetArg(optCon)))
-	    if (build(pkg, &buildArgs, passPhrase, bigMode == MODE_TARBUILD,
-			NULL, rcfile, force, noDeps)) {
-		exit(EXIT_FAILURE);
-	    }
+	while ((pkg = poptGetArg(optCon))) {
+	    ec = build(pkg, &buildArgs, passPhrase, bigMode == MODE_TARBUILD,
+			NULL, rcfile, force, noDeps);
+	    if (ec)
+		break;
+	    freeMacros(NULL);       /* XXX macros from CLI are destroyed too */
+	    rpmReadConfigFiles(rcfile, NULL);
+	}
 	break;
 
       case MODE_UNINSTALL:
@@ -1325,7 +1327,7 @@ int main(int argc, const char ** argv)
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec = rpmQuery(qva, QVSource, pkg);
+		ec += rpmQuery(qva, QVSource, pkg);
 	}
 	break;
 
@@ -1346,7 +1348,7 @@ int main(int argc, const char ** argv)
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for verify"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec = rpmVerify(qva, QVSource, pkg);
+		ec += rpmVerify(qva, QVSource, pkg);
 	}
 	break;
     }

@@ -1,6 +1,8 @@
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
+#include <rpmurl.h>
+
 #include "build.h"
 #include "install.h"
 
@@ -57,7 +59,8 @@ static int isSpecFile(const char *specfile)
     int count;
     int checking;
 
-    if (fdFileno((fd = fdOpen(specfile, O_RDONLY, 0))) < 0) {
+    if (fdFileno((fd = ufdOpen(specfile, O_RDONLY, 0))) < 0) {
+	/* XXX Fstrerror */
 	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
 	return 0;
     }
@@ -156,7 +159,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	s = cmd + strlen(cmd) - 1;
 	*s = '\0';
 
-	s = alloca(strlen(specDir) + strlen(cmd) + 5);
+	specfile = s = alloca(strlen(specDir) + strlen(cmd) + 5);
 	sprintf(s, "%s/%s", specDir, cmd);
 	res = rename(tmpSpecFile, s);
 	xfree(specDir);
@@ -184,28 +187,36 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	*cmd = '\0';
 
 	addMacro(NULL, "_sourcedir", NULL, buf, RMIL_TARBALL);
-	specfile = s;
-    } else if (arg[0] == '/') {
-	specfile = arg;
     } else {
-	char *s = alloca(BUFSIZ);
-	(void)getcwd(s, BUFSIZ);
-	strcat(s, "/");
-	strcat(s, arg);
-	specfile = s;
+	specfile = arg;
     }
 
-    stat(specfile, &statbuf);
-    if (! S_ISREG(statbuf.st_mode)) {
-	fprintf(stderr, _("File is not a regular file: %s\n"), specfile);
-	return 1;
-    }
+    switch (urlIsURL(specfile)) {
+    case URL_IS_UNKNOWN:
+	if (arg[0] == '/') {
+	    specfile = arg;
+	} else {
+	    char *s = alloca(BUFSIZ);
+	    (void)getcwd(s, BUFSIZ);
+	    strcat(s, "/");
+	    strcat(s, arg);
+	    specfile = s;
+	}
+	stat(specfile, &statbuf);
+	if (! S_ISREG(statbuf.st_mode)) {
+	    fprintf(stderr, _("File is not a regular file: %s\n"), specfile);
+	    return 1;
+	}
 
-    /* Try to verify that the file is actually a specfile */
-    if (!isSpecFile(specfile)) {
-	fprintf(stderr, _("File %s does not appear to be a specfile.\n"),
+	/* Try to verify that the file is actually a specfile */
+	if (!isSpecFile(specfile)) {
+	    fprintf(stderr, _("File %s does not appear to be a specfile.\n"),
 		specfile);
-	return 1;
+	    return 1;
+	}
+	break;
+    default:
+	break;
     }
     
     /* Parse the spec file */
@@ -243,19 +254,22 @@ int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
 	  int nodeps)
 {
     char *t, *te;
-    int rc;
+    int rc = 0;
     char *targets = ba->targets;
+#define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
+    int cleanFlags = ba->buildAmount & buildCleanMask;
 
     if (targets == NULL) {
 	rc =  buildForTarget(arg, ba, passPhrase, fromTarball, cookie,
 		force, nodeps);
-	return rc;
+	goto exit;
     }
 
     /* parse up the build operators */
 
     printf(_("Building target platforms: %s\n"), targets);
 
+    ba->buildAmount &= ~buildCleanMask;
     for (t = targets; *t != '\0'; t = te) {
 	char *target;
 	if ((te = strchr(t, ',')) == NULL)
@@ -263,18 +277,27 @@ int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
 	target = alloca(te-t+1);
 	strncpy(target, t, (te-t));
 	target[te-t] = '\0';
+	if (*te)
+	    te++;
+	else	/* XXX Perform clean-up after last target build. */
+	    ba->buildAmount |= cleanFlags;
+
 	printf(_("Building for target %s\n"), target);
 
+	/* Read in configuration for target. */
+	freeMacros(NULL);	/* XXX macros from CLI are destroyed too */
 	rpmReadConfigFiles(rcfile, target);
 	rc = buildForTarget(arg, ba, passPhrase, fromTarball, cookie,
 		force, nodeps);
 	if (rc)
-	    return rc;
-
-	freeMacros(NULL);
+	    break;
     }
 
-    return 0;
+exit:
+    /* Restore original configuration. */
+    freeMacros(NULL);	/* XXX macros from CLI are destroyed too */
+    rpmReadConfigFiles(rcfile, NULL);
+    return rc;
 }
 
 #define	POPT_USECATALOG		1000
@@ -325,7 +348,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	/*@notreached@*/ break;
     case POPT_TARGETPLATFORM:
 	if (rba->targets) {
-	    int len = strlen(rba->targets) + strlen(arg) + 2;
+	    int len = strlen(rba->targets) + 1 + strlen(arg) + 1;
 	    rba->targets = xrealloc(rba->targets, len);
 	    strcat(rba->targets, ",");
 	} else {

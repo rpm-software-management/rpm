@@ -17,7 +17,7 @@ int parseNum(const char *line, int *res)
 
 const char *cleanFileName(const char *name)
 {
-    static char res[BUFSIZ];
+    static char res[BUFSIZ];	/* XXX yuk */
     char *copyTo, copied;
     const char *copyFrom;
 

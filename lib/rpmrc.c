@@ -1191,7 +1191,7 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
     if (co == NULL) {
 	const char *o;
 	defaultMachine(NULL, &o);
-	co = (o) ? xstrdup(co) : NULL;
+	co = (o) ? xstrdup(o) : NULL;
     }
     for (x = 0; co[x]; x++)
 	co[x] = tolower(co[x]);

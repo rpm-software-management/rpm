@@ -450,7 +450,7 @@ static void freeLink( /*@only@*/ struct hardLink * li)
 
     for (i = 0; i < li->nlink; i++) {
 	if (li->files[i] == NULL) continue;
-	/*@-unqualifiedtrans@*/ free(li->files[i]) /*@=unqualifiedtrans@*/ ;
+	/*@-unqualifiedtrans@*/ free((void *)li->files[i]) /*@=unqualifiedtrans@*/ ;
 	li->files[i] = NULL;
     }
     free(li->files);
@@ -479,7 +479,7 @@ static int createLinks(struct hardLink * li, /*@out@*/const char ** failedFile)
 	    return CPIOERR_LINK_FAILED;
 	}
 
-	/*@-unqualifiedtrans@*/ free(li->files[i]) /*@=unqualifiedtrans@*/ ;
+	/*@-unqualifiedtrans@*/ free((void *)li->files[i]) /*@=unqualifiedtrans@*/ ;
 	li->files[i] = NULL;
 	li->linksLeft--;
     }

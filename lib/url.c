@@ -15,17 +15,6 @@
 
 /*@access FD_t@*/
 
-static struct urlstring {
-    const char *leadin;
-    urltype	ret;
-} urlstrings[] = {
-    { "file://",	URL_IS_PATH },
-    { "ftp://",		URL_IS_FTP },
-    { "http://",	URL_IS_HTTP },
-    { "-",		URL_IS_DASH },
-    { NULL,		URL_IS_UNKNOWN }
-};
-
 void freeUrlinfo(urlinfo *u)
 {
     if (u->ftpControl >= 0)
@@ -304,123 +293,6 @@ int urlSplit(const char * url, urlinfo **uret)
     return 0;
 }
 
-static int urlConnect(const char * url, /*@out@*/urlinfo ** uret)
-{
-    urlinfo *u;
-
-    if (urlSplit(url, &u) < 0)
-	return -1;
-
-    if (!strcmp(u->service, "ftp") && u->ftpControl < 0) {
-
-	u->ftpGetFileDoneNeeded = 0;	/* XXX PARANOIA */
-	rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"),
-		u->host,
-		u->user ? u->user : "ftp",
-		u->password ? u->password : "(username)");
-
-	u->ftpControl = ftpOpen(u);
-
- 	if (u->ftpControl < 0) {	/* XXX save ftpOpen error */
-	    u->openError = u->ftpControl;
-	    return u->ftpControl;
-	}
-
-    }
-
-    if (uret != NULL)
-	*uret = u;
-
-    return 0;
-}
-
-urltype urlIsURL(const char * url)
-{
-    struct urlstring *us;
-
-    for (us = urlstrings; us->leadin != NULL; us++) {
-	if (strncmp(url, us->leadin, strlen(us->leadin)))
-	    continue;
-	return us->ret;
-    }
-
-    return URL_IS_UNKNOWN;
-}
-
-#ifdef	NOTYET
-int urlAbort(FD_t fd)
-{
-    if (fd != NULL && fd->fd_url) {
-	urlinfo *u = (urlinfo *)fd->fd_url;
-	if (u->ftpControl >= 0)
-	    ftpAbort(fd);
-    }
-}
-#endif
-
-int ufdClose(FD_t fd)
-{
-    if (fd != NULL && fd->fd_url) {
-	urlinfo *u = (urlinfo *)fd->fd_url;
-	/* Close the ftp control channel (not strictly necessary, but ... */
-	if (u->ftpControl >= 0) {
-	    ftpAbort(fd);
-	    fd = NULL;	/* XXX ftpAbort does fdClose(fd) */
-	    close(u->ftpControl);
-	    u->ftpControl = -1;
-	}
-    }
-    return Fclose(fd);
-}
-
-FD_t ufdOpen(const char *url, int flags, mode_t mode)
-{
-    FD_t fd = NULL;
-    urlinfo *u;
-
-    switch (urlIsURL(url)) {
-    case URL_IS_FTP:
-	if (urlConnect(url, &u) < 0)
-	    break;
-	if ((fd = fdNew(&fdio)) == NULL)
-	    break;
-	fd->fd_url = u;
-	if ((u->openError = ftpGetFileDesc(fd)) < 0) {
-	    u->ftpControl = -1;
-	    fd = NULL;	/* XXX fd already closed */
-	}
-	break;
-    case URL_IS_HTTP:
-	if (urlSplit(url, &u))
-	    break;
-	if ((fd = fdNew(&fdio)) == NULL)
-	    break;
-	fd->fd_url = u;
-	fd->fd_fd = httpOpen(u);
-	if (fd->fd_fd < 0)		/* XXX Save httpOpen error */
-	    u->openError = fd->fd_fd;
-	break;
-    case URL_IS_PATH:
-	if (urlSplit(url, &u))
-	    break;
-	fd = fdOpen(u->path, flags, mode);
-	break;
-    case URL_IS_DASH:
-	fd = fdDup(STDIN_FILENO);
-	break;
-    case URL_IS_UNKNOWN:
-    default:
-	fd = fdOpen(url, flags, mode);
-	break;
-    }
-
-    if (fd == NULL || fdFileno(fd) < 0) {
-	ufdClose(fd);
-	return NULL;
-    }
-    return fd;
-}
-
 int urlGetFile(const char * url, const char * dest) {
     int rc;
     FD_t sfd = NULL;
@@ -475,22 +347,4 @@ int urlGetFile(const char * url, const char * dest) {
     Fclose(tfd);
 
     return rc;
-}
-
-const char *urlStrerror(const char *url)
-{
-    const char *retstr;
-    urlinfo *u;
-    switch (urlIsURL(url)) {
-/* XXX This only works for httpOpen/ftpOpen/ftpGetFileDesc failures */
-    case URL_IS_FTP:
-    case URL_IS_HTTP:
-	retstr = !urlSplit(url, &u)
-		? ftpStrerror(u->openError) : "Malformed URL";
-	break;
-    default:
-	retstr = strerror(errno);
-	break;
-    }
-    return retstr;
 }

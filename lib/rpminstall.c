@@ -454,9 +454,11 @@ int rpmInstallSource(const char * rootdir, const char * arg, const char ** specF
     FD_t fd;
     int rc;
 
-    fd = fdOpen(arg, O_RDONLY, 0);
+    fd = ufdOpen(arg, O_RDONLY, 0);
     if (fdFileno(fd) < 0) {
+	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s\n"), arg);
+	Fclose(fd);
 	return 1;
     }
 

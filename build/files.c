@@ -5,12 +5,14 @@
 #include <regex.h>
 #include <signal.h>	/* getOutputFrom() */
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
+#include <rpmmacro.h>
+#include <rpmurl.h>
+
 #include "buildio.h"
 
 #include "myftw.h"
 #include "md5.h"
-#include "rpmmacro.h"
 
 #define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -1493,13 +1495,27 @@ int processSourceFiles(Spec spec)
 	    flp->flags |= RPMFILE_GHOST;
 	    s++;
 	}
+
+	switch (urlIsURL(s)) {
+	case URL_IS_DASH:	/* stdin */
+	case URL_IS_FTP:	/* ftp://... */
+	case URL_IS_HTTP:	/* http://... */
+	    continue;		/* XXX just skip for now */
+	case URL_IS_PATH:	/* file://... */
+	    s += sizeof("file://") - 1;
+	    s = strchr(s, '/');
+	    /*@fallthrough@*/
+	case URL_IS_UNKNOWN:	/* plain file path */
+	    break;
+	}
+
 	flp->diskName = xstrdup(s);
 	fn = strrchr(s, '/');
-	if (fn) {
+	if (fn)
 	    fn++;
-	} else {
+	else
 	    fn = s;
-	}
+
 	flp->fileName = xstrdup(fn);
 	flp->verifyFlags = RPMVERIFY_ALL;
 

@@ -67,10 +67,6 @@ int 	urlSplit(const char *url, /*@out@*/ urlinfo **u);
 /*@only@*/ urlinfo	*newUrlinfo(void);
 void	freeUrlinfo( /*@only@*/ urlinfo *u);
 
-/*@only@*/ FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
-int	ufdClose( /*@only@*/ FD_t fd);
-/*@observer@*/ const char *urlStrerror(const char *url);
-
 int	urlGetFile(const char * url, const char * dest);
 void    urlInvalidateCache(const char * url);
 

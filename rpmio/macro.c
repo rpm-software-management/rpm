@@ -1458,6 +1458,13 @@ rpmGetPath(const char *path, ...)
     }
     va_end(ap);
     expandMacros(NULL, NULL, buf, sizeof(buf));
+
+    for (s = p = buf; *s; s++, p++) {
+	while (s[0] == '/' && s[1] == '/') s++;
+	*p = *s;
+    }
+    *p = '\0';
+
     return xstrdup(buf);
 }
 

@@ -169,7 +169,8 @@ int readLine(Spec spec, int strip)
 retry:
     /* Make sure the current file is open */
     if (ofi->file == NULL) {
-	if (!(ofi->file = fopen(ofi->fileName, "r"))) {
+	if (!(ofi->file = Fopen(ofi->fileName, "r"))) {
+	    /* XXX Fstrerror */
 	    rpmError(RPMERR_BADSPEC, _("Unable to open: %s\n"),
 		     ofi->fileName);
 	    return RPMERR_BADSPEC;

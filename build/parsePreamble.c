@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
 
 static int_32 copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
@@ -245,6 +245,8 @@ static int readIcon(Header h, const char *file)
     icon = xmalloc(statbuf.st_size);
     *icon = '\0';
     fd = fdOpen(fn, O_RDONLY, 0);
+    /* XXX Fstrerror */
+    /* XXX fdFileno check */
     nb = Fread(icon, statbuf.st_size, 1, fd);
     Fclose(fd);
     if (nb != statbuf.st_size) {

@@ -26,6 +26,7 @@ size_t	Fread	(/*@out@*/ void *buf, size_t size, size_t nmemb, FD_t fd);
 size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
 int	Fseek	(FD_t fd, long int offset, int whence);
 int	Fclose	( /*@only@*/ FD_t fd);
+FILE *	Fopen	(const char *path, const char *fmode);
 
 #endif /* H_RPMIO */
 
@@ -85,6 +86,10 @@ extern int bzdFlush(FD_t fd);
 extern cookie_io_functions_t bzdio;
 
 #endif	/* HAVE_BZLIB_H */
+
+/*@only@*/ FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
+int	ufdClose( /*@only@*/ FD_t fd);
+/*@observer@*/ const char *urlStrerror(const char *url);
 
 #ifdef __cplusplus
 }
