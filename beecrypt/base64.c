@@ -114,27 +114,39 @@ char* b64enc(const memchunk* chunk)
 
 #include <stdio.h>
 
-/*@unused@*/ int b64encode_chars_per_line = B64ENCODE_CHARS_PER_LINE;
+int b64encode_chars_per_line = B64ENCODE_CHARS_PER_LINE;
 
-/*@unused@*/ const char * b64encode_eolstr = B64ENCODE_EOLSTR;
+const char * b64encode_eolstr = B64ENCODE_EOLSTR;
 
 /*@-internalglobs -modfilesys @*/
 char * b64encode (const void * data, int ns)
 {
     static char b64enc[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const char *e;
     const unsigned char *s = data;
     unsigned char *t, *te;
     int nt;
+    int lc;
     unsigned c;
 
     if (s == NULL)	return NULL;
-    if (*s == '\0')	return strdup("");
+    if (*s == '\0')	return calloc(1, sizeof(*t));
 
     if (ns == 0) ns = strlen(s);
     nt = ((ns + 2) / 3) * 4;
+
+    /* Add additional bytes necessary for eol string(s). */
+    if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
+	if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
+	    ++lc;
+	nt += lc * strlen(b64encode_eolstr);
+    }
+
     t = te = malloc(nt + 1);
 
+    lc = 0;
     if (te)
     while (ns) {
 
@@ -146,24 +158,44 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 (unsigned)((s[1] & 0xf) << 2) | (s[2] >> 6),
 (unsigned)(s[2]& 0x3f));
 	c = *s++;
-	*te++ = b64enc[ (c >> 2) ];
-	*te++ = b64enc[ ((c & 0x3) << 4) | (*s >> 4) ];
+	*te++ = b64enc[ (c >> 2) ], lc++;
+	*te++ = b64enc[ ((c & 0x3) << 4) | (*s >> 4) ], lc++;
 	if (--ns == 0) {
 	    *te++ = '=';
 	    *te++ = '=';
 	    continue;
 	}
 	c = *s++;
-	*te++ = b64enc[ ((c & 0xf) << 2) | (*s >> 6) ];
+	*te++ = b64enc[ ((c & 0xf) << 2) | (*s >> 6) ], lc++;
 	if (--ns == 0) {
 	    *te++ = '=';
 	    continue;
 	}
-	*te++ = b64enc[ (int)(*s & 0x3f) ];
+	*te++ = b64enc[ (int)(*s & 0x3f) ], lc++;
+
+	/* Append eol string if desired. */
+	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	    if (lc >= b64encode_chars_per_line) {
+		for (e = b64encode_eolstr; *e; e++)
+		    *te++ = *e;
+		lc = 0;
+	    }
+	}
 	s++;
 	--ns;
     }
-    if (te) *te = '\0';
+
+    if (te) {
+	/* Append eol string if desired. */
+	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	    if (lc != 0) {
+		for (e = b64encode_eolstr; *e; e++)
+		    *te++ = *e;
+	    }
+	}
+	*te = '\0';
+    }
+
     /*@-mustfree@*/
     return t;
     /*@=mustfree@*/
@@ -301,51 +333,79 @@ memchunk* b64dec(const char* string)
 }
 #else
 
-/*@unused@*/ const char * b64decode_whitespace = B64DECODE_WHITESPACE;
+const char * b64decode_whitespace = B64DECODE_WHITESPACE;
 
 /*@-internalglobs -modfilesys @*/
 int b64decode (const char * s, void ** datap, int *lenp)
 {
-    static char b64dec[255];
-    unsigned char *t, *te;
+    unsigned char b64dec[255];
+    const unsigned char *t;
+    unsigned char *te;
     int ns, nt;
     unsigned a, b, c, d;
 
     if (s == NULL)	return 1;
-    ns = strlen(s);
-    if (ns & 0x3)	return 2;
 
-    if (b64dec[0] == '\0') {
-	memset(b64dec, 0x80, sizeof(b64dec));
-	for (c = 'A'; c <= 'Z'; c++)
-	    b64dec[ c ] = 0 + (c - 'A');
-	for (c = 'a'; c <= 'z'; c++)
-	    b64dec[ c ] = 26 + (c - 'a');
-	for (c = '0'; c <= '9'; c++)
-	    b64dec[ c ] = 52 + (c - '0');
-	b64dec[(unsigned)'+'] = 62;
-	b64dec[(unsigned)'/'] = 63;
-	b64dec[(unsigned)'='] = 0;
+    /* Setup character lookup tables. */
+    memset(b64dec, 0x80, sizeof(b64dec));
+    for (c = 'A'; c <= 'Z'; c++)
+	b64dec[ c ] = 0 + (c - 'A');
+    for (c = 'a'; c <= 'z'; c++)
+	b64dec[ c ] = 26 + (c - 'a');
+    for (c = '0'; c <= '9'; c++)
+	b64dec[ c ] = 52 + (c - '0');
+    b64dec[(unsigned)'+'] = 62;
+    b64dec[(unsigned)'/'] = 63;
+    b64dec[(unsigned)'='] = 0;
+
+    /* Mark whitespace characters. */
+    if (b64decode_whitespace) {
+	const char *e;
+	for (e = b64decode_whitespace; *e; e++) {
+	    if (b64dec[ (unsigned)*e ] == 0x80)
+	        b64dec[ (unsigned)*e ] = 0x81;
+	}
     }
     
+    /* Validate input buffer */
+    ns = 0;
+    for (t = s; *t; t++) {
+	switch (b64dec[ (unsigned)*t ]) {
+	case 0x80:	/* invalid chararcter */
+	    return 3;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case 0x81:	/* white space */
+	    /*@switchbreak@*/ break;
+	default:
+	    ns++;
+	    /*@switchbreak@*/ break;
+	}
+    }
+    
+    if (ns & 0x3)	return 2;
+
     nt = (ns / 4) * 3;
     t = te = malloc(nt + 1);
 
     while (ns > 0) {
-	if ((a = b64dec[ (unsigned)*s++ ]) == 0x80)
-	    break;
-	if ((b = b64dec[ (unsigned)*s++ ]) == 0x80)
-	    break;
-	if ((c = b64dec[ (unsigned)*s++ ]) == 0x80)
-	    break;
-	if ((d = b64dec[ (unsigned)*s++ ]) == 0x80)
-	    break;
+
+	/* Get next 4 characters, ignoring whitespace. */
+	while ((a = b64dec[ (unsigned)*s++ ]) == 0x81)
+	    {};
+	while ((b = b64dec[ (unsigned)*s++ ]) == 0x81)
+	    {};
+	while ((c = b64dec[ (unsigned)*s++ ]) == 0x81)
+	    {};
+	while ((d = b64dec[ (unsigned)*s++ ]) == 0x81)
+	    {};
+
 if (_debug)
 fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
 (unsigned)ns, a, b, c, d,
 (((a << 2) | (b >> 4)) & 0xff),
 (((b << 4) | (c >> 2)) & 0xff),
 (((c << 6) | d) & 0xff));
+
 	ns -= 4;
 	*te++ = (a << 2) | (b >> 4);
 	if (s[-2] == '=') break;
@@ -354,17 +414,17 @@ fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
 	*te++ = (c << 6) | d;
     }
 
-    if (ns > 0) {
-	if (t) free(t);
+    if (ns != 0) {		/* XXX can't happen, just in case */
+	if (t) free((void *)t);
 	return 3;
     }
     if (lenp)
 	*lenp = (te - t);
 
     if (datap)
-	*datap = t;
+	*datap = (void *)t;
     else
-	if (t) free(t);
+	if (t) free((void *)t);
     else
 	{};
 

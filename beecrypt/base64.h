@@ -33,21 +33,27 @@
 /**
  * Decode white space character set (default).
  */
-/*@observer@*/
+/*@-exportlocal@*/
+/*@observer@*/ /*@null@*/
 extern const char * b64decode_whitespace;
+/*@=exportlocal@*/
 #define B64DECODE_WHITESPACE	" \f\n\r\t\v"
 
 /**
  * Encode 72 characters per line (default).
  */
+/*@-exportlocal@*/
 extern int b64encode_chars_per_line;
+/*@=exportlocal@*/
 #define B64ENCODE_CHARS_PER_LINE	72
 
 /**
  * Encode end-of-line string (default).
  */
-/*@observer@*/
+/*@-exportlocal@*/
+/*@observer@*/ /*@null@*/
 extern const char * b64encode_eolstr;
+/*@=exportlocal@*/
 #define B64ENCODE_EOLSTR	"\n"
 
 #ifdef __cplusplus
@@ -84,7 +90,7 @@ memchunk* b64dec(const char* string)
  * @param s		base64 string
  * @retval datap	address of (malloc'd) binary data
  * @retval lenp		address of no. bytes of binary data
- * @return		0 on success
+ * @return		0 on success, 1: s == NULL, 2: bad length, 3: bad char
  */
 BEEDLLAPI /*@unused@*/
 int b64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ int *lenp)
