@@ -37,6 +37,7 @@ struct rpmdbPackageInfo {
     char * vendor;
     char * buildHost;
     char * preamble;
+    char * copyright;
     unsigned int fileCount;
     struct rpmFileInfo * files;
 } ;
