@@ -68,18 +68,18 @@ typedef int fdio_close_function_t (void *cookie);
 
 /** \ingroup rpmio
  */
-typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
+typedef /*@only@*/ /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
 		const char * msg, const char * file, unsigned line);
 
 /** \ingroup rpmio
  */
-typedef /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd,
+typedef /*@only@*/ /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd,
 		const char * msg, const char * file, unsigned line);
 
 
 /** \ingroup rpmio
  */
-typedef /*@null@*/ FD_t fdio_new_function_t (const char * msg,
+typedef /*@only@*/ /*@null@*/ FD_t fdio_new_function_t (const char * msg,
 		const char * file, unsigned line);
 
 

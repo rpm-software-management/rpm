@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-10-28 12:51-0400\n"
+"POT-Creation-Date: 2000-10-31 10:04-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:25 lib/rpminstall.c:463
+#: build.c:25 lib/rpminstall.c:532
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
@@ -3192,7 +3192,7 @@ msgstr "otvorenie %s zlyhalo\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "nie je mo¾né pýta» sa zdrojových balíkov v starom formáte\n"
 
-#: lib/query.c:530 lib/rpminstall.c:245
+#: lib/query.c:530 lib/rpminstall.c:311
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s zrejme nie je RPM balík\n"
@@ -3257,7 +3257,7 @@ msgstr "po¾aduje sa záznam èíslo %d\n"
 msgid "record %d could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:708 lib/rpminstall.c:476
+#: lib/query.c:708 lib/rpminstall.c:545
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
@@ -3538,104 +3538,113 @@ msgstr "vytvára sa adresár %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
 
-#: lib/rpminstall.c:139
+#: lib/rpminstall.c:141
+msgid "Preparing..."
+msgstr ""
+
+#: lib/rpminstall.c:144
+#, fuzzy
+msgid "Preparing packages for installation..."
+msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
+
+#: lib/rpminstall.c:205
 msgid "counting packages to install\n"
 msgstr "poèítajú sa balíky pre in¹taláciu\n"
 
-#: lib/rpminstall.c:143
+#: lib/rpminstall.c:209
 #, c-format
 msgid "found %d packages\n"
 msgstr "nájdených %d balíkov\n"
 
-#: lib/rpminstall.c:148
+#: lib/rpminstall.c:214
 msgid "looking for packages to download\n"
 msgstr "hµadajú sa balíky, ktoré treba prenies»\n"
 
-#: lib/rpminstall.c:163
+#: lib/rpminstall.c:229
 #, fuzzy, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "%s vynechané - prenos zlyhal - %s\n"
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:244
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prená¹a sa %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:188
+#: lib/rpminstall.c:254
 #, c-format
 msgid " ... as %s\n"
 msgstr "... ako %s\n"
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:258
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s vynechané - prenos zlyhal - %s\n"
 
-#: lib/rpminstall.c:219
+#: lib/rpminstall.c:285
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "prenieslo sa %d balíkov\n"
 
-#: lib/rpminstall.c:231 lib/rpminstall.c:400
+#: lib/rpminstall.c:297 lib/rpminstall.c:469
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s: %s"
 
-#: lib/rpminstall.c:249 lib/rpminstall.c:541
+#: lib/rpminstall.c:315 lib/rpminstall.c:610
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
 
-#: lib/rpminstall.c:264
+#: lib/rpminstall.c:330
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpminstall.c:284
+#: lib/rpminstall.c:350
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpminstall.c:329
+#: lib/rpminstall.c:395
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: lib/rpminstall.c:334
+#: lib/rpminstall.c:400
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:351
+#: lib/rpminstall.c:417
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: lib/rpminstall.c:362
+#: lib/rpminstall.c:428
 msgid "failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
 
-#: lib/rpminstall.c:380
+#: lib/rpminstall.c:449
 msgid "installing binary packages\n"
 msgstr "in¹talujú sa binárne balíky\n"
 
-#: lib/rpminstall.c:479
+#: lib/rpminstall.c:548
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:571
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstránenie týchto balíkov by poru¹ilo závislosti:\n"
 
-#: lib/rpminstall.c:530
+#: lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpminstall.c:536
+#: lib/rpminstall.c:605
 #, c-format
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
@@ -3960,141 +3969,141 @@ msgstr "chýbajúce    %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: rpmio/rpmio.c:539
+#: rpmio/rpmio.c:538
 msgid "Success"
 msgstr "Úspech"
 
-#: rpmio/rpmio.c:542
+#: rpmio/rpmio.c:541
 msgid "Bad server response"
 msgstr "Chybná odpoveï servera"
 
-#: rpmio/rpmio.c:545
+#: rpmio/rpmio.c:544
 msgid "Server IO error"
 msgstr "Chyba vstupu/výstupu servera"
 
-#: rpmio/rpmio.c:548
+#: rpmio/rpmio.c:547
 msgid "Server timeout"
 msgstr "Prekroèenie èasového limitu servera"
 
-#: rpmio/rpmio.c:551
+#: rpmio/rpmio.c:550
 msgid "Unable to lookup server host address"
 msgstr "Nie je mo¾né vyhµada» adresu servera"
 
-#: rpmio/rpmio.c:554
+#: rpmio/rpmio.c:553
 msgid "Unable to lookup server host name"
 msgstr "Nie je mo¾né vyhµada» názov servera"
 
-#: rpmio/rpmio.c:557
+#: rpmio/rpmio.c:556
 msgid "Failed to connect to server"
 msgstr "Pripojenie k serveru zlyhalo"
 
-#: rpmio/rpmio.c:560
+#: rpmio/rpmio.c:559
 msgid "Failed to establish data connection to server"
 msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
 
-#: rpmio/rpmio.c:563
+#: rpmio/rpmio.c:562
 msgid "IO error to local file"
 msgstr "Chyba vstupu/výstupu lokálneho súboru"
 
-#: rpmio/rpmio.c:566
+#: rpmio/rpmio.c:565
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:568
 msgid "File not found on server"
 msgstr "Súbor sa na serveri nenachádza"
 
-#: rpmio/rpmio.c:572
+#: rpmio/rpmio.c:571
 msgid "Abort in progress"
 msgstr "Zru¹enie prebieha"
 
-#: rpmio/rpmio.c:576
+#: rpmio/rpmio.c:575
 msgid "Unknown or unexpected error"
 msgstr "Neznáma alebo neoèakávaná chyba"
 
-#: rpmio/rpmio.c:1171
+#: rpmio/rpmio.c:1170
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prihlasuje sa na %s ako %s, heslo %s\n"
 
-#: rpmio/macro.c:183
+#: rpmio/macro.c:189
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktívnych %d prázdnych %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:297
+#: rpmio/macro.c:303
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(prázdne)"
 
-#: rpmio/macro.c:338
+#: rpmio/macro.c:344
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(prázdne)\n"
 
-#: rpmio/macro.c:551
+#: rpmio/macro.c:557
 msgid "Macro %%%s has unterminated body"
 msgstr "Makro %%%s obsahuje neukonèené telo"
 
-#: rpmio/macro.c:577
+#: rpmio/macro.c:583
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr "Makro %%%s obsahuje chybný názov (%%define)"
 
-#: rpmio/macro.c:583
+#: rpmio/macro.c:589
 msgid "Macro %%%s has unterminated opts"
 msgstr "Makro %%%s obsahuje neukonèené voµby"
 
-#: rpmio/macro.c:588
+#: rpmio/macro.c:594
 msgid "Macro %%%s has empty body"
 msgstr "Makro %%%s obsahuje prázdne telo"
 
-#: rpmio/macro.c:593
+#: rpmio/macro.c:599
 msgid "Macro %%%s failed to expand"
 msgstr "Makro %%%s sa nepodarilo expandova»"
 
-#: rpmio/macro.c:624
+#: rpmio/macro.c:630
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr "Makro %%%s obsahuje chybný názov (%%undefine)"
 
-#: rpmio/macro.c:717
+#: rpmio/macro.c:723
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) nebolo pou¾ité pod úrovòou %d "
 
-#: rpmio/macro.c:809
+#: rpmio/macro.c:816
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Neznáma voµba %c v %s(%s)"
 
-#: rpmio/macro.c:985
+#: rpmio/macro.c:992
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Håbka rekurzie (%d) väè¹ia ako maximálna (%d)"
 
-#: rpmio/macro.c:1051 rpmio/macro.c:1067
+#: rpmio/macro.c:1058 rpmio/macro.c:1074
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Neukonèené %c: %s"
 
-#: rpmio/macro.c:1107
+#: rpmio/macro.c:1114
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: rpmio/macro.c:1233
+#: rpmio/macro.c:1240
 msgid "Macro %%%.*s not found, skipping"
 msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 
-#: rpmio/macro.c:1304
+#: rpmio/macro.c:1311
 msgid "Target buffer overflow"
 msgstr "Preplnenie cieµovej vyrovnávacej pamäti"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1483 rpmio/macro.c:1489
+#: rpmio/macro.c:1491 rpmio/macro.c:1497
 #, c-format
 msgid "File %s: %s"
 msgstr "Súbor %s: %s"
 
-#: rpmio/macro.c:1492
+#: rpmio/macro.c:1500
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Súbor %s je men¹í ako %d bajtov"
@@ -4105,17 +4114,17 @@ msgid "(no error)"
 msgstr "(chyba 0x%x)"
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:83 rpmio/rpmlog.c:84 rpmio/rpmlog.c:85
+#: rpmio/rpmlog.c:84 rpmio/rpmlog.c:85 rpmio/rpmlog.c:86
 msgid "fatal error: "
 msgstr "fatálna chyba: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:86
+#: rpmio/rpmlog.c:87
 msgid "error: "
 msgstr "chyba: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:87
+#: rpmio/rpmlog.c:88
 msgid "warning: "
 msgstr "varovanie: "
 
@@ -4124,42 +4133,42 @@ msgstr "varovanie: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:92
+#: rpmio/url.c:95
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:109
+#: rpmio/url.c:114
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:136
+#: rpmio/url.c:142
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:222
+#: rpmio/url.c:228
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Heslo pre %s@%s: "
 
-#: rpmio/url.c:248 rpmio/url.c:274
+#: rpmio/url.c:252 rpmio/url.c:278
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "chyba: %sport musí by» èíslo\n"
 
-#: rpmio/url.c:410
+#: rpmio/url.c:416
 msgid "url port must be a number\n"
 msgstr "url port musí by» èíslo\n"
 
-#: rpmio/url.c:450
+#: rpmio/url.c:456
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
 #. XXX Fstrerror
-#: rpmio/url.c:467
+#: rpmio/url.c:473
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"

@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-10-28 12:51-0400\n"
+"POT-Creation-Date: 2000-10-31 10:04-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
 "Xgettext-Options: --default-domain=rpm --add-comments --keyword=_ "
 "--keyword=N_\n"
 
-#: build.c:25 lib/rpminstall.c:463
+#: build.c:25 lib/rpminstall.c:532
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
@@ -3200,7 +3200,7 @@ msgstr "neuspelo otvaranje %s: %s\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "Upit se ne mo¾e izvesti nad izvorni paketima u starom formatu\n"
 
-#: lib/query.c:530 lib/rpminstall.c:245
+#: lib/query.c:530 lib/rpminstall.c:311
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s ne lièi na RPM paket\n"
@@ -3265,7 +3265,7 @@ msgstr "pogre¹an broj paketa: %s\n"
 msgid "record %d could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:708 lib/rpminstall.c:476
+#: lib/query.c:708 lib/rpminstall.c:545
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -3544,107 +3544,116 @@ msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpminstall.c:139
+#: lib/rpminstall.c:141
+msgid "Preparing..."
+msgstr ""
+
+#: lib/rpminstall.c:144
+#, fuzzy
+msgid "Preparing packages for installation..."
+msgstr "nedostaje paket za instalaciju"
+
+#: lib/rpminstall.c:205
 #, fuzzy
 msgid "counting packages to install\n"
 msgstr "nedostaje paket za instalaciju"
 
-#: lib/rpminstall.c:143
+#: lib/rpminstall.c:209
 #, fuzzy, c-format
 msgid "found %d packages\n"
 msgstr "upit nad svim paketima"
 
-#: lib/rpminstall.c:148
+#: lib/rpminstall.c:214
 #, fuzzy
 msgid "looking for packages to download\n"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: lib/rpminstall.c:163
+#: lib/rpminstall.c:229
 #, fuzzy, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:244
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Pribavljam %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:188
+#: lib/rpminstall.c:254
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:258
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 
-#: lib/rpminstall.c:219
+#: lib/rpminstall.c:285
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:231 lib/rpminstall.c:400
+#: lib/rpminstall.c:297 lib/rpminstall.c:469
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpminstall.c:249 lib/rpminstall.c:541
+#: lib/rpminstall.c:315 lib/rpminstall.c:610
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
 
-#: lib/rpminstall.c:264
+#: lib/rpminstall.c:330
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/rpminstall.c:284
+#: lib/rpminstall.c:350
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/rpminstall.c:329
+#: lib/rpminstall.c:395
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpminstall.c:334
+#: lib/rpminstall.c:400
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:351
+#: lib/rpminstall.c:417
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/rpminstall.c:362
+#: lib/rpminstall.c:428
 msgid "failed dependencies:\n"
 msgstr "lo¹e meðuzavisnosti:\n"
 
-#: lib/rpminstall.c:380
+#: lib/rpminstall.c:449
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "instaliraj paket"
 
-#: lib/rpminstall.c:479
+#: lib/rpminstall.c:548
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:571
 msgid "removing these packages would break dependencies:\n"
 msgstr "uklanjanje oviha paketa æe naru¹iti zavisnosti:\n"
 
-#: lib/rpminstall.c:530
+#: lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpminstall.c:536
+#: lib/rpminstall.c:605
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
@@ -3975,150 +3984,150 @@ msgstr "nedostaje { posle %"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
 
-#: rpmio/rpmio.c:539
+#: rpmio/rpmio.c:538
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:542
+#: rpmio/rpmio.c:541
 #, fuzzy
 msgid "Bad server response"
 msgstr "Lo¹ odgovor FTP servera"
 
-#: rpmio/rpmio.c:545
+#: rpmio/rpmio.c:544
 #, fuzzy
 msgid "Server IO error"
 msgstr "Ulazno/izlazna FTP gre¹ka"
 
-#: rpmio/rpmio.c:548
+#: rpmio/rpmio.c:547
 #, fuzzy
 msgid "Server timeout"
 msgstr "Tajm-aut FTP servera"
 
-#: rpmio/rpmio.c:551
+#: rpmio/rpmio.c:550
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Ne mogu da odredim host adresu FTP servera"
 
-#: rpmio/rpmio.c:554
+#: rpmio/rpmio.c:553
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Ne mogu da odredim ime FTP hosta"
 
-#: rpmio/rpmio.c:557
+#: rpmio/rpmio.c:556
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Ne mogu da se pove¾em sa FTP serverom"
 
-#: rpmio/rpmio.c:560
+#: rpmio/rpmio.c:559
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Ne mogu da uspostavim vezu podataka sa FTP serverom"
 
-#: rpmio/rpmio.c:563
+#: rpmio/rpmio.c:562
 msgid "IO error to local file"
 msgstr "Ulazno/izlazna gre¹ka kod lokalne datoteke"
 
-#: rpmio/rpmio.c:566
+#: rpmio/rpmio.c:565
 msgid "Error setting remote server to passive mode"
 msgstr "Gre¹ka kod stavljanja udaljenog servera u pasivni re¾im"
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:568
 msgid "File not found on server"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: rpmio/rpmio.c:572
+#: rpmio/rpmio.c:571
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:576
+#: rpmio/rpmio.c:575
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
 
-#: rpmio/rpmio.c:1171
+#: rpmio/rpmio.c:1170
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/macro.c:183
+#: rpmio/macro.c:189
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: rpmio/macro.c:297
+#: rpmio/macro.c:303
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:338
+#: rpmio/macro.c:344
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:551
+#: rpmio/macro.c:557
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: rpmio/macro.c:577
+#: rpmio/macro.c:583
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: rpmio/macro.c:583
+#: rpmio/macro.c:589
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: rpmio/macro.c:588
+#: rpmio/macro.c:594
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: rpmio/macro.c:593
+#: rpmio/macro.c:599
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: rpmio/macro.c:624
+#: rpmio/macro.c:630
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: rpmio/macro.c:717
+#: rpmio/macro.c:723
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: rpmio/macro.c:809
+#: rpmio/macro.c:816
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: rpmio/macro.c:985
+#: rpmio/macro.c:992
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: rpmio/macro.c:1051 rpmio/macro.c:1067
+#: rpmio/macro.c:1058 rpmio/macro.c:1074
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: rpmio/macro.c:1107
+#: rpmio/macro.c:1114
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: rpmio/macro.c:1233
+#: rpmio/macro.c:1240
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
 msgstr "paket %s nije naðen u %s"
 
-#: rpmio/macro.c:1304
+#: rpmio/macro.c:1311
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1483 rpmio/macro.c:1489
+#: rpmio/macro.c:1491 rpmio/macro.c:1497
 #, fuzzy, c-format
 msgid "File %s: %s"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: rpmio/macro.c:1492
+#: rpmio/macro.c:1500
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -4129,17 +4138,17 @@ msgid "(no error)"
 msgstr "gre¹ka: "
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:83 rpmio/rpmlog.c:84 rpmio/rpmlog.c:85
+#: rpmio/rpmlog.c:84 rpmio/rpmlog.c:85 rpmio/rpmlog.c:86
 msgid "fatal error: "
 msgstr "fatalna gre¹ka: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:86
+#: rpmio/rpmlog.c:87
 msgid "error: "
 msgstr "gre¹ka: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:87
+#: rpmio/rpmlog.c:88
 msgid "warning: "
 msgstr "upozorenje: "
 
@@ -4148,43 +4157,43 @@ msgstr "upozorenje: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:92
+#: rpmio/url.c:95
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:109
+#: rpmio/url.c:114
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:136
+#: rpmio/url.c:142
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:222
+#: rpmio/url.c:228
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Lozinka za %s@%s: "
 
-#: rpmio/url.c:248 rpmio/url.c:274
+#: rpmio/url.c:252 rpmio/url.c:278
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "gre¹ka: FTP port mora biti broj\n"
 
-#: rpmio/url.c:410
+#: rpmio/url.c:416
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "gre¹ka: FTP port mora biti broj\n"
 
-#: rpmio/url.c:450
+#: rpmio/url.c:456
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
 #. XXX Fstrerror
-#: rpmio/url.c:467
+#: rpmio/url.c:473
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspelo kreiranje %s\n"

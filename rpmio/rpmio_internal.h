@@ -41,23 +41,51 @@ enum FDSTAT_e {
 /** \ingroup rpmio
  * Cumulative statistics for a descriptor.
  */
-typedef	struct {
+typedef	/*@abstract@*/ struct {
 	struct timeval	create;	/*!< Structure creation time. */
 	struct timeval	begin;	/*!< Operation start time. */
 	OPSTAT_t	ops[4];	/*!< Cumulative statistics. */
-} FDSTAT_t;
+} * FDSTAT_t;
 
 /** \ingroup rpmio
+ * Bit(s) to control digest operation.
  */
-typedef struct {
-    void * private;
-    void * (*Init) (int flags);
-    void (*Update) (void * private, const void * data, size_t len);
-    void (*Final) (/*@only@*/ void * private, /*@out@*/ void ** datap, /*@out@*/ size_t *lenp, int asAscii);
-    void (*Transform) (void * private);
-} FDHASH_t;
+typedef enum rpmDigestFlags_e {
+    RPMDIGEST_MD5	= (1 <<  0),	/*!< MD5 digest. */
+    RPMDIGEST_SHA1	= (1 <<  1),	/*!< SHA1 digest. */
+    RPMDIGEST_NATIVE	= (1 << 16),	/*!< Should bytes be reversed? */
+} rpmDigestFlags;
 
-/*@observer@*/ extern FDHASH_t rpmio_md5hash;
+typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
+
+/** \ingroup rpmio
+ * Initialize digest.
+ * Set bit count to 0 and buffer to mysterious initialization constants.
+ * @param flags		bit(s) to control digest operation
+ * @return		digest private data
+ */
+DIGEST_CTX rpmDigestInit(rpmDigestFlags flags);
+
+/** \ingroup rpmio
+ * Update context to with next plain text buffer.
+ * @param private	private data
+ * @param data		next data buffer
+ * @param len		no. bytes of data
+ */
+void rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len);
+
+/** \ingroup rpmio
+ * Return digest and destroy context.
+ * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * 1 0* (64-bit count of bits processed, MSB-first)
+ *
+ * @param private	private data
+ * @retval datap	address of returned digest
+ * @retval lenp		address of digest length
+ * @param asAscii	return digest as ascii string?
+ */
+void rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
+	/*@out@*/ size_t *lenp, int asAscii);
 
 /** \ingroup rpmio
  * The FD_t File Handle data structure.
@@ -83,8 +111,8 @@ struct _FD_s {
 	int		syserrno;	/* last system errno encountered */
 /*@observer@*/ const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
-	FDSTAT_t	*stats;		/* I/O statistics */
-/*@owned@*/ FDHASH_t	*hash;		/* Hash vectors */
+	FDSTAT_t	stats;		/* I/O statistics */
+/*@owned@*/ DIGEST_CTX	digest;		/* Digest private data */
 
 	int		ftpFileDoneNeeded; /* ufdio: (FTP) */
 	unsigned int	firstFree;	/* fadio: */
@@ -136,7 +164,9 @@ int ufdClose( /*@only@*/ void * cookie);
  */
 /*@unused@*/ static inline /*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd) {
     FDSANE(fd);
+    /*@+voidabstract@*/
     return ((FILE *)fd->fps[fd->nfps].fp);
+    /*@=voidabstract@*/
 }
 
 /** \ingroup rpmio
@@ -148,7 +178,7 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdSetFp(FD_t fd, void * fp) {
+/*@unused@*/ static inline void fdSetFp(FD_t fd, /*@kept@*/ void * fp) {
     FDSANE(fd);
     fd->fps[fd->nfps].fp = fp;
 }
@@ -315,25 +345,37 @@ int ufdClose( /*@only@*/ void * cookie);
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline void fdInitMD5(FD_t fd) {
-    fd->hash = xcalloc(1, sizeof(*fd->hash));
-    /*@-globstate@*/
-    *fd->hash = rpmio_md5hash;	/* structure assignment */
-    fd->hash->private = (*fd->hash->Init) (0);
-    /*@=globstate@*/
+    fd->digest = rpmDigestInit(RPMDIGEST_MD5);
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline void fdInitSHA1(FD_t fd) {
+    fd->digest = rpmDigestInit(RPMDIGEST_SHA1);
 }
 
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline void fdFiniMD5(FD_t fd, void **datap, size_t *lenp, int asAscii) {
-    if (fd->hash == NULL) {
+    if (fd->digest == NULL) {
 	*datap = NULL;
 	*lenp = 0;
 	return;
     }
-    (*fd->hash->Final) (fd->hash->private, datap, lenp, asAscii);
-    fd->hash->private = NULL;
-    free(fd->hash);
-    fd->hash = NULL;
+    rpmDigestFinal(fd->digest, datap, lenp, asAscii);
+    fd->digest = NULL;
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline void fdFiniSHA1(FD_t fd, void **datap, size_t *lenp, int asAscii) {
+    if (fd->digest == NULL) {
+	*datap = NULL;
+	*lenp = 0;
+	return;
+    }
+    rpmDigestFinal(fd->digest, datap, lenp, asAscii);
+    fd->digest = NULL;
 }
 
 /*@-shadow@*/

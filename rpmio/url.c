@@ -17,6 +17,7 @@
 #include <rpmmessages.h>
 #include <rpmio_internal.h>
 
+
 #ifndef	IPPORT_FTP
 #define	IPPORT_FTP	21
 #endif
@@ -24,6 +25,7 @@
 #define	IPPORT_HTTP	80
 #endif
 
+/*@access FD_t@*/		/* XXX compared with NULL */
 /*@access urlinfo@*/
 
 #define	URL_IOBUF_SIZE	4096
@@ -74,7 +76,7 @@ urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
     URLSANE(u);
 URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
-	return u;
+	/*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
@@ -88,9 +90,11 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 #endif
 
 	u->ctrl = fdio->_fdderef(u->ctrl, "persist ctrl (urlFree)", file, line);
+	/*@-usereleased@*/
 	if (u->ctrl)
 	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
 			u, u->ctrl, u->host, u->service);
+	/*@=usereleased@*/
     }
     if (u->data) {
 #ifndef	NOTYET
@@ -105,9 +109,11 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 #endif
 
 	u->data = fdio->_fdderef(u->data, "persist data (urlFree)", file, line);
+	/*@-usereleased@*/
 	if (u->data)
 	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
 			u, u->data, u->host, u->service);
+	/*@=usereleased@*/
     }
     if (u->buf) {
 	free(u->buf);
@@ -230,9 +236,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	    if (proxy && *proxy != '%') {
 		const char *uu = (u->user ? u->user : "anonymous");
 		char *nu = xmalloc(strlen(uu) + sizeof("@") + strlen(u->host));
-		strcpy(nu, uu);
-		strcat(nu, "@");
-		strcat(nu, u->host);
+		(void) stpcpy( stpcpy( stpcpy(nu, uu), "@"), u->host);
 		u->proxyu = nu;
 		u->proxyh = xstrdup(proxy);
 	    }
@@ -338,7 +342,9 @@ urltype urlPath(const char * url, const char ** pathp)
 	break;
     }
     if (pathp)
+	/*@-observertrans@*/
 	*pathp = path;
+	/*@=observertrans@*/
     return urltype;
 }
 

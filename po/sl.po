@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.103 2000/10/28 17:16:29 jbj Exp $
+# $Id: sl.po,v 1.104 2000/10/31 16:18:41 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-10-28 12:51-0400\n"
+"POT-Creation-Date: 2000-10-31 10:04-0500\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:25 lib/rpminstall.c:463
+#: build.c:25 lib/rpminstall.c:532
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "datoteke %s/packages.rpm ni mo¾no odpreti\n"
@@ -3179,7 +3179,7 @@ msgstr "odpiranje %s neuspe¹no: %s\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:530 lib/rpminstall.c:245
+#: lib/query.c:530 lib/rpminstall.c:311
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s najverjetneje ni paket RPM\n"
@@ -3244,7 +3244,7 @@ msgstr "¹tevilka zapisa paketa: %d\n"
 msgid "record %d could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:708 lib/rpminstall.c:476
+#: lib/query.c:708 lib/rpminstall.c:545
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -3523,104 +3523,113 @@ msgstr "ustvarjamo imenik: %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
 
-#: lib/rpminstall.c:139
+#: lib/rpminstall.c:141
+msgid "Preparing..."
+msgstr ""
+
+#: lib/rpminstall.c:144
+#, fuzzy
+msgid "Preparing packages for installation..."
+msgstr "paketi za namestitev niso navedeni"
+
+#: lib/rpminstall.c:205
 msgid "counting packages to install\n"
 msgstr "¹tetje paketov za namestitev\n"
 
-#: lib/rpminstall.c:143
+#: lib/rpminstall.c:209
 #, c-format
 msgid "found %d packages\n"
 msgstr "najdeno %d paketov\n"
 
-#: lib/rpminstall.c:148
+#: lib/rpminstall.c:214
 msgid "looking for packages to download\n"
 msgstr "iskanje paketov za prenos po omre¾ju\n"
 
-#: lib/rpminstall.c:163
+#: lib/rpminstall.c:229
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "preskakujemo %s - rpmGlob neuspe¹en(%d)\n"
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:244
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prena¹amo %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:188
+#: lib/rpminstall.c:254
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... kot %s\n"
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:258
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "preskakujemo %s - prenos neuspe¹en - %s\n"
 
-#: lib/rpminstall.c:219
+#: lib/rpminstall.c:285
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "prenesli smo %d paketov\n"
 
-#: lib/rpminstall.c:231 lib/rpminstall.c:400
+#: lib/rpminstall.c:297 lib/rpminstall.c:469
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:249 lib/rpminstall.c:541
+#: lib/rpminstall.c:315 lib/rpminstall.c:610
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
-#: lib/rpminstall.c:264
+#: lib/rpminstall.c:330
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "paketa ni mo¾no odpreti: %s\n"
 
-#: lib/rpminstall.c:284
+#: lib/rpminstall.c:350
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paketa %s ni mo¾no prestaviti\n"
 
-#: lib/rpminstall.c:329
+#: lib/rpminstall.c:395
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "napaka pri branju iz datoteke %s\n"
 
-#: lib/rpminstall.c:334
+#: lib/rpminstall.c:400
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:351
+#: lib/rpminstall.c:417
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "najdeno %d izvornih in %d binarnih paketov\n"
 
-#: lib/rpminstall.c:362
+#: lib/rpminstall.c:428
 msgid "failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpminstall.c:380
+#: lib/rpminstall.c:449
 msgid "installing binary packages\n"
 msgstr "name¹èamo binarne pakete\n"
 
-#: lib/rpminstall.c:479
+#: lib/rpminstall.c:548
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veèterne pakete\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:571
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranitev teh paketov bi podrla soodvisnosti:\n"
 
-#: lib/rpminstall.c:530
+#: lib/rpminstall.c:599
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:536
+#: lib/rpminstall.c:605
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èamo %s\n"
@@ -3940,141 +3949,141 @@ msgstr "manjka     %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: rpmio/rpmio.c:539
+#: rpmio/rpmio.c:538
 msgid "Success"
 msgstr "Uspe¹no"
 
-#: rpmio/rpmio.c:542
+#: rpmio/rpmio.c:541
 msgid "Bad server response"
 msgstr "Okvarjen odziv stre¾nika"
 
-#: rpmio/rpmio.c:545
+#: rpmio/rpmio.c:544
 msgid "Server IO error"
 msgstr "V/I napaka na stre¾niku"
 
-#: rpmio/rpmio.c:548
+#: rpmio/rpmio.c:547
 msgid "Server timeout"
 msgstr "Potekel èas na stre¾niku"
 
-#: rpmio/rpmio.c:551
+#: rpmio/rpmio.c:550
 msgid "Unable to lookup server host address"
 msgstr "Naslov stre¾nika ni ugotovljiv"
 
-#: rpmio/rpmio.c:554
+#: rpmio/rpmio.c:553
 msgid "Unable to lookup server host name"
 msgstr "Ime stre¾nika ni ugotovljivo"
 
-#: rpmio/rpmio.c:557
+#: rpmio/rpmio.c:556
 msgid "Failed to connect to server"
 msgstr "Neuspe¹en poskus prikljuèitve na stre¾nik"
 
-#: rpmio/rpmio.c:560
+#: rpmio/rpmio.c:559
 msgid "Failed to establish data connection to server"
 msgstr "Neuspe¹na vzpostavitev podatkovne povezave s stre¾nikom"
 
-#: rpmio/rpmio.c:563
+#: rpmio/rpmio.c:562
 msgid "IO error to local file"
 msgstr "V/I napaka na lokalni datoteki"
 
-#: rpmio/rpmio.c:566
+#: rpmio/rpmio.c:565
 msgid "Error setting remote server to passive mode"
 msgstr "Napaka pri nastavitvi oddaljenega stre¾nika v pasivni naèin"
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:568
 msgid "File not found on server"
 msgstr "Datoteke ni mo¾no najti na stre¾niku"
 
-#: rpmio/rpmio.c:572
+#: rpmio/rpmio.c:571
 msgid "Abort in progress"
 msgstr "Prekinitev v teku"
 
-#: rpmio/rpmio.c:576
+#: rpmio/rpmio.c:575
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: rpmio/rpmio.c:1171
+#: rpmio/rpmio.c:1170
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"
 
-#: rpmio/macro.c:183
+#: rpmio/macro.c:189
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktivni %d prazni %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:297
+#: rpmio/macro.c:303
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(prazni)"
 
-#: rpmio/macro.c:338
+#: rpmio/macro.c:344
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(prazni)\n"
 
-#: rpmio/macro.c:551
+#: rpmio/macro.c:557
 msgid "Macro %%%s has unterminated body"
 msgstr "Makro %%%s vsebuje nezakljuèeno telo"
 
-#: rpmio/macro.c:577
+#: rpmio/macro.c:583
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr "Makro %%%s vsebuje nedovoljeno ime (%%define)"
 
-#: rpmio/macro.c:583
+#: rpmio/macro.c:589
 msgid "Macro %%%s has unterminated opts"
 msgstr "Makro %%%s vsebuje nezakljuèene izbire"
 
-#: rpmio/macro.c:588
+#: rpmio/macro.c:594
 msgid "Macro %%%s has empty body"
 msgstr "Makro %%%s vsebuje prazno telo"
 
-#: rpmio/macro.c:593
+#: rpmio/macro.c:599
 msgid "Macro %%%s failed to expand"
 msgstr "Makro %%%s se ne raz¹iri"
 
-#: rpmio/macro.c:624
+#: rpmio/macro.c:630
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr "Makro %%%s vsebuje nedovoljeno ime (%%undefine)"
 
-#: rpmio/macro.c:717
+#: rpmio/macro.c:723
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) ni bil uporabljen pod ravnijo %d"
 
-#: rpmio/macro.c:809
+#: rpmio/macro.c:816
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Neznana izbira %c v %s(%s)"
 
-#: rpmio/macro.c:985
+#: rpmio/macro.c:992
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Globina rekurzije (%d) veèja od maksimalne (%d)"
 
-#: rpmio/macro.c:1051 rpmio/macro.c:1067
+#: rpmio/macro.c:1058 rpmio/macro.c:1074
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Nezakljuèeni %c: %s"
 
-#: rpmio/macro.c:1107
+#: rpmio/macro.c:1114
 msgid "A %% is followed by an unparseable macro"
 msgstr "Oznaki %% sledi nerazèlenljiv makro"
 
-#: rpmio/macro.c:1233
+#: rpmio/macro.c:1240
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Makro %%%.*s ni najden, preskoèimo"
 
-#: rpmio/macro.c:1304
+#: rpmio/macro.c:1311
 msgid "Target buffer overflow"
 msgstr "Ciljni medpomnilnik prekoraèen"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1483 rpmio/macro.c:1489
+#: rpmio/macro.c:1491 rpmio/macro.c:1497
 #, c-format
 msgid "File %s: %s"
 msgstr "Datoteka %s: %s"
 
-#: rpmio/macro.c:1492
+#: rpmio/macro.c:1500
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"
@@ -4085,17 +4094,17 @@ msgid "(no error)"
 msgstr "(napaka 0x%x)"
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:83 rpmio/rpmlog.c:84 rpmio/rpmlog.c:85
+#: rpmio/rpmlog.c:84 rpmio/rpmlog.c:85 rpmio/rpmlog.c:86
 msgid "fatal error: "
 msgstr "usodna napaka: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:86
+#: rpmio/rpmlog.c:87
 msgid "error: "
 msgstr "napaka: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:87
+#: rpmio/rpmlog.c:88
 msgid "warning: "
 msgstr "opozorilo: "
 
@@ -4104,42 +4113,42 @@ msgstr "opozorilo: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:92
+#: rpmio/url.c:95
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "opozorilo: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:109
+#: rpmio/url.c:114
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "opozorilo: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:136
+#: rpmio/url.c:142
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "opozorilo: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:222
+#: rpmio/url.c:228
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Geslo za %s@%s: "
 
-#: rpmio/url.c:248 rpmio/url.c:274
+#: rpmio/url.c:252 rpmio/url.c:278
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "napaka: vrata %s morajo biti ¹tevilka\n"
 
-#: rpmio/url.c:410
+#: rpmio/url.c:416
 msgid "url port must be a number\n"
 msgstr "vrata URL morajo biti ¹tevilka\n"
 
-#: rpmio/url.c:450
+#: rpmio/url.c:456
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:467
+#: rpmio/url.c:473
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"

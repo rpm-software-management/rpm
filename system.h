@@ -207,9 +207,9 @@ char *alloca ();
 
 /*@only@*/ void * xmalloc (size_t size);
 /*@only@*/ void * xcalloc (size_t nmemb, size_t size);
-/*@only@*/ void * xrealloc (void *ptr, size_t size);
+/*@only@*/ void * xrealloc (/*@only@*/ void *ptr, size_t size);
 /*@only@*/ char * xstrdup (const char *str);
-void *vmefail(size_t size);
+/*@only@*/ void *vmefail(size_t size);
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>

@@ -11,10 +11,10 @@ static int _debug = 0;
 
 int B64decode (const char * s, void ** datap, size_t *lenp)
 {
-    static char * b64dec = NULL;
+    static /*@only@*/ char * b64dec = NULL;
     unsigned char *t, *te;
     size_t ns, nt;
-    int a, b, c, d;
+    unsigned a, b, c, d;
 
     if (s == NULL)	return 1;
     ns = strlen(s);
@@ -29,22 +29,22 @@ int B64decode (const char * s, void ** datap, size_t *lenp)
 	    b64dec[ c ] = 26 + (c - 'a');
 	for (c = '0'; c <= '9'; c++)
 	    b64dec[ c ] = 52 + (c - '0');
-	b64dec['+'] = 62;
-	b64dec['/'] = 63;
-	b64dec['='] = 0;
+	b64dec[(unsigned)'+'] = 62;
+	b64dec[(unsigned)'/'] = 63;
+	b64dec[(unsigned)'='] = 0;
     }
     
     nt = (ns / 4) * 3;
     t = te = xmalloc(nt + 1);
 
     while (ns > 0) {
-	if ((a = b64dec[ *s++ ]) == 0x80)
+	if ((a = b64dec[ (unsigned)*s++ ]) == 0x80)
 	    break;
-	if ((b = b64dec[ *s++ ]) == 0x80)
+	if ((b = b64dec[ (unsigned)*s++ ]) == 0x80)
 	    break;
-	if ((c = b64dec[ *s++ ]) == 0x80)
+	if ((c = b64dec[ (unsigned)*s++ ]) == 0x80)
 	    break;
-	if ((d = b64dec[ *s++ ]) == 0x80)
+	if ((d = b64dec[ (unsigned)*s++ ]) == 0x80)
 	    break;
 if (_debug)
 fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
@@ -94,11 +94,11 @@ char * B64encode (const void * str, size_t ns)
 
 if (_debug)
 fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
-(unsigned)ns, s[0], s[1], s[2],
-(s[0] >> 2),
-((s[0] & 0x3) << 4) | (s[1] >> 4),
-((s[1] & 0xf) << 2) | (s[2] >> 6),
-(s[2]& 0x3f));
+(unsigned)ns, (unsigned)s[0], (unsigned)s[1], (unsigned)s[2],
+(unsigned)(s[0] >> 2),
+(unsigned)((s[0] & 0x3) << 4) | (s[1] >> 4),
+(unsigned)((s[1] & 0xf) << 2) | (s[2] >> 6),
+(unsigned)(s[2]& 0x3f));
 	c = *s++;
 	*te++ = b64enc[ (c >> 2) ];
 	*te++ = b64enc[ ((c & 0x3) << 4) | (*s >> 4) ];
@@ -113,7 +113,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 	    *te++ = '=';
 	    continue;
 	}
-	*te++ = b64enc[ (*s & 0x3f) ];
+	*te++ = b64enc[ (int)(*s & 0x3f) ];
 	s++;
 	--ns;
     }

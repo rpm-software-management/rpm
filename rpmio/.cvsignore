@@ -5,5 +5,6 @@ Makefile.in
 .libs
 *.la
 *.lo
-trpmio
+tdigest
 tkey
+trpmio

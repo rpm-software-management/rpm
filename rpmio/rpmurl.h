@@ -100,7 +100,8 @@ urltype	urlIsURL(const char * url)	/*@*/;
  * @retval pathp	pointer to path component of url
  * @return		type of url
  */
-urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)	/*@*/;
+urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)
+	/*@modifies *pathp@*/;
 
 /**
  * Parse URL string into a control structure.

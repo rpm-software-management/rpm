@@ -11,7 +11,7 @@
 /*@access rpmlogRec @*/
 
 static int nrecs = 0;
-static rpmlogRec recs = NULL;
+static /*@only@*/ /*@null@*/ rpmlogRec recs = NULL;
 
 int rpmlogGetNrecs(void)
 {
@@ -55,12 +55,13 @@ void rpmlogClose (void)
     nrecs = 0;
 }
 
-void rpmlogOpen (const char *ident, int option, int facility)
+void rpmlogOpen (/*@unused@*/ const char *ident, /*@unused@*/ int option,
+		/*@unused@*/ int facility)
 {
 }
 
 static int rpmlogMask = RPMLOG_UPTO( RPMLOG_NOTICE );
-static int rpmlogFacility = RPMLOG_USER;
+static /*@unused@*/ int rpmlogFacility = RPMLOG_USER;
 
 int rpmlogSetMask (int mask)
 {
@@ -70,7 +71,7 @@ int rpmlogSetMask (int mask)
     return omask;
 }
 
-static rpmlogCallback _rpmlogCallback = NULL;
+static /*@null@*/ rpmlogCallback _rpmlogCallback = NULL;
 
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
 {
@@ -90,11 +91,11 @@ static char *rpmlogMsgPrefix[] = {
     "D: ",		/*!< RPMLOG_DEBUG */
 };
 
-static void vrpmlog (int code, const char *fmt, va_list ap)
+static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 {
     int pri = RPMLOG_PRI(code);
     int mask = RPMLOG_MASK(pri);
-    int fac = RPMLOG_FAC(code);
+    /*@unused@*/ int fac = RPMLOG_FAC(code);
     char msgbuf[BUFSIZ], *msg;
     FILE * msgout = stderr;
     rpmlogRec rec;
@@ -102,7 +103,7 @@ static void vrpmlog (int code, const char *fmt, va_list ap)
     if ((mask & rpmlogMask) == 0)
 	return;
 
-    vsnprintf(msgbuf, sizeof(msgbuf), fmt, ap);
+    /*@-unrecog@*/ vsnprintf(msgbuf, sizeof(msgbuf), fmt, ap); /*@=unrecog@*/
     msgbuf[sizeof(msgbuf) - 1] = '\0';
     msg = msgbuf;
 

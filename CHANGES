@@ -22,6 +22,7 @@
 	- hide libio lossage in prototype, not API.
 	- add brp-strip-shared script <rodrigob@conectiva.com.br>.
 	- better item/task progress bars <rodrigob@conectiva.com.br>.
+	- add support for SHA1 as well as MD5 message digests.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

@@ -8,6 +8,9 @@
 #include <popt.h>
 #include "ugid.h"
 
+/*@access FD_t@*/
+/*@access urlinfo@*/
+
 extern int _rpmio_debug;
 
 /* =============================================================== */
@@ -537,7 +540,7 @@ static int vfs_parse_filedate(int idx, time_t *t)
 }
 
 static int
-vfs_parse_ls_lga (char *p, struct stat *s, char **filename, char **linkname)
+vfs_parse_ls_lga (char *p, struct stat *st, char **filename, char **linkname)
 {
     int idx, idx2, num_cols;
     int i;
@@ -553,22 +556,22 @@ vfs_parse_ls_lga (char *p, struct stat *s, char **filename, char **linkname)
     if ((i = vfs_parse_filetype(*(p++))) == -1)
         goto error;
 
-    s->st_mode = i;
+    st->st_mode = i;
     if (*p == ' ')	/* Notwell 4 */
         p++;
     if (*p == '['){
 	if (strlen (p) <= 8 || p [8] != ']')
 	    goto error;
 	/* Should parse here the Notwell permissions :) */
-	if (S_ISDIR (s->st_mode))
-	    s->st_mode |= (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IXUSR | S_IXGRP | S_IXOTH);
+	if (S_ISDIR (st->st_mode))
+	    st->st_mode |= (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IXUSR | S_IXGRP | S_IXOTH);
 	else
-	    s->st_mode |= (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR);
+	    st->st_mode |= (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR);
 	p += 9;
     } else {
 	if ((i = vfs_parse_filemode(p)) == -1)
 	    goto error;
-        s->st_mode |= i;
+        st->st_mode |= i;
 	p += 9;
 
         /* This is for an extra ACL attribute (HP-UX) */
@@ -580,45 +583,45 @@ vfs_parse_ls_lga (char *p, struct stat *s, char **filename, char **linkname)
     p_copy = g_strdup(p);
     num_cols = vfs_split_text (p);
 
-    s->st_nlink = atol (columns [0]);
-    if (s->st_nlink < 0)
+    st->st_nlink = atol (columns [0]);
+    if (st->st_nlink < 0)
         goto error;
 
     if (!is_num (1))
 #ifdef	HACK
-	s->st_uid = finduid (columns [1]);
+	st->st_uid = finduid (columns [1]);
 #else
-	unameToUid (columns [1], &s->st_uid);
+	unameToUid (columns [1], &st->st_uid);
 #endif
     else
-        s->st_uid = (uid_t) atol (columns [1]);
+        st->st_uid = (uid_t) atol (columns [1]);
 
     /* Mhm, the ls -lg did not produce a group field */
     for (idx = 3; idx <= 5; idx++) 
         if (is_month(columns [idx], NULL) || is_week(columns [idx], NULL) || is_dos_date(columns[idx]))
             break;
 
-    if (idx == 6 || (idx == 5 && !S_ISCHR (s->st_mode) && !S_ISBLK (s->st_mode)))
+    if (idx == 6 || (idx == 5 && !S_ISCHR (st->st_mode) && !S_ISBLK (st->st_mode)))
 	goto error;
 
     /* We don't have gid */	
-    if (idx == 3 || (idx == 4 && (S_ISCHR(s->st_mode) || S_ISBLK (s->st_mode))))
+    if (idx == 3 || (idx == 4 && (S_ISCHR(st->st_mode) || S_ISBLK (st->st_mode))))
         idx2 = 2;
     else { 
 	/* We have gid field */
 	if (is_num (2))
-	    s->st_gid = (gid_t) atol (columns [2]);
+	    st->st_gid = (gid_t) atol (columns [2]);
 	else
 #ifdef	HACK
-	    s->st_gid = findgid (columns [2]);
+	    st->st_gid = findgid (columns [2]);
 #else
-	    gnameToGid (columns [1], &s->st_gid);
+	    gnameToGid (columns [1], &st->st_gid);
 #endif
 	idx2 = 3;
     }
 
     /* This is device */
-    if (S_ISCHR (s->st_mode) || S_ISBLK (s->st_mode)){
+    if (S_ISCHR (st->st_mode) || S_ISBLK (st->st_mode)){
 	int maj, min;
 	
 	if (!is_num (idx2) || sscanf(columns [idx2], " %d,", &maj) != 1)
@@ -628,33 +631,33 @@ vfs_parse_ls_lga (char *p, struct stat *s, char **filename, char **linkname)
 	    goto error;
 	
 #ifdef HAVE_ST_RDEV
-	s->st_rdev = ((maj & 0xff) << 8) | (min & 0xffff00ff);
+	st->st_rdev = ((maj & 0xff) << 8) | (min & 0xffff00ff);
 #endif
-	s->st_size = 0;
+	st->st_size = 0;
 	
     } else {
 	/* Common file size */
 	if (!is_num (idx2))
 	    goto error;
 	
-	s->st_size = (size_t) atol (columns [idx2]);
+	st->st_size = (size_t) atol (columns [idx2]);
 #ifdef HAVE_ST_RDEV
-	s->st_rdev = 0;
+	st->st_rdev = 0;
 #endif
     }
 
-    idx = vfs_parse_filedate(idx, &s->st_mtime);
+    idx = vfs_parse_filedate(idx, &st->st_mtime);
     if (!idx)
         goto error;
     /* Use resulting time value */
-    s->st_atime = s->st_ctime = s->st_mtime;
-    s->st_dev = 0;
-    s->st_ino = 0;
+    st->st_atime = st->st_ctime = st->st_mtime;
+    st->st_dev = 0;
+    st->st_ino = 0;
 #ifdef HAVE_ST_BLKSIZE
-    s->st_blksize = 512;
+    st->st_blksize = 512;
 #endif
 #ifdef HAVE_ST_BLOCKS
-    s->st_blocks = (s->st_size + 511) / 512;
+    st->st_blocks = (st->st_size + 511) / 512;
 #endif
 
     for (i = idx + 1, idx2 = 0; i < num_cols; i++ ) 
@@ -663,31 +666,31 @@ vfs_parse_ls_lga (char *p, struct stat *s, char **filename, char **linkname)
 	    break;
 	}
     
-    if (((S_ISLNK (s->st_mode) || 
-        (num_cols == idx + 3 && s->st_nlink > 1))) /* Maybe a hardlink? (in extfs) */
+    if (((S_ISLNK (st->st_mode) || 
+        (num_cols == idx + 3 && st->st_nlink > 1))) /* Maybe a hardlink? (in extfs) */
         && idx2){
-	int p;
-	char *s;
+	int tlen;
+	char *t;
 	    
 	if (filename){
 #ifdef HACK
-	    s = g_strndup (p_copy + column_ptr [idx], column_ptr [idx2] - column_ptr [idx] - 1);
+	    t = g_strndup (p_copy + column_ptr [idx], column_ptr [idx2] - column_ptr [idx] - 1);
 #else
 	    int nb = column_ptr [idx2] - column_ptr [idx] - 1;
-	    s = xmalloc(nb+1);
-	    strncpy(s, p_copy + column_ptr [idx], nb);
+	    t = xmalloc(nb+1);
+	    strncpy(t, p_copy + column_ptr [idx], nb);
 #endif
-	    *filename = s;
+	    *filename = t;
 	}
 	if (linkname){
-	    s = g_strdup (p_copy + column_ptr [idx2+1]);
-	    p = strlen (s);
-	    if (s [p-1] == '\r' || s [p-1] == '\n')
-		s [p-1] = 0;
-	    if (s [p-2] == '\r' || s [p-2] == '\n')
-		s [p-2] = 0;
+	    t = g_strdup (p_copy + column_ptr [idx2+1]);
+	    tlen = strlen (t);
+	    if (t [tlen-1] == '\r' || t [tlen-1] == '\n')
+		t [tlen-1] = 0;
+	    if (t [tlen-2] == '\r' || t [tlen-2] == '\n')
+		t [tlen-2] = 0;
 		
-	    *linkname = s;
+	    *linkname = t;
 	}
     } else {
 	/* Extract the filename from the string copy, not from the columns
@@ -697,18 +700,18 @@ vfs_parse_ls_lga (char *p, struct stat *s, char **filename, char **linkname)
 	    /* 
 	    *filename = g_strdup (columns [idx++]);
 	    */
-	    int p;
-	    char *s;
+	    int tlen;
+	    char *t;
 	    
-	    s = g_strdup (p_copy + column_ptr [idx++]);
-	    p = strlen (s);
+	    t = g_strdup (p_copy + column_ptr [idx++]);
+	    tlen = strlen (t);
 	    /* g_strchomp(); */
-	    if (s [p-1] == '\r' || s [p-1] == '\n')
-	        s [p-1] = 0;
-	    if (s [p-2] == '\r' || s [p-2] == '\n')
-		s [p-2] = 0;
+	    if (t [tlen-1] == '\r' || t [tlen-1] == '\n')
+	        t [tlen-1] = 0;
+	    if (t [tlen-2] == '\r' || t [tlen-2] == '\n')
+		t [tlen-2] = 0;
 	    
-	    *filename = s;
+	    *filename = t;
 	}
 	if (linkname)
 	    *linkname = NULL;
@@ -741,7 +744,7 @@ typedef enum {
 	DO_FTP_GLOB	= 5
 } ftpSysCall_t;
 static size_t ftpBufAlloced = 0;
-static char * ftpBuf = NULL;
+static /*@only@*/ char * ftpBuf = NULL;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
@@ -943,7 +946,7 @@ static int ftpGlob(const char * path, int flags,
 	return -2;
     rc = ftpNLST(path, DO_FTP_GLOB, NULL, NULL, 0);
 if (_rpmio_debug)
-fprintf(stderr, "*** ftpGlob(%s,0x%x,%p,%p) ftpNLST rc %d\n", path, flags, errfunc, pglob, rc);
+fprintf(stderr, "*** ftpGlob(%s,0x%x,%p,%p) ftpNLST rc %d\n", path, (unsigned)flags, errfunc, pglob, rc);
     if (rc)
 	return rc;
     rc = poptParseArgvString(ftpBuf, &pglob->gl_pathc, (const char ***)&pglob->gl_pathv);
@@ -1057,7 +1060,7 @@ int Glob(const char *path, int flags,
     int ut = urlPath(path, &lpath);
 
 if (_rpmio_debug)
-fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", path, flags, errfunc, pglob);
+fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", path, (unsigned)flags, errfunc, pglob);
     switch (ut) {
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
 	return ftpGlob(path, flags, errfunc, pglob);

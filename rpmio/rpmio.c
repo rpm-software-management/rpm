@@ -139,9 +139,11 @@ static /*@observer@*/ const char * fdbg(FD_t fd)
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
 #endif
 	} else if (fps->io == fpio) {
+	    /*@+voidabstract@*/
 	    sprintf(be, "%s %p(%d) fdno %d",
 		(fps->fdno < 0 ? "LIBIO" : "FP"),
 		fps->fp, fileno(((FILE *)fps->fp)), fps->fdno);
+	    /*@=voidabstract@*/
 	} else {
 	    sprintf(be, "??? io %p fp %p fdno %d ???",
 		fps->io, fps->fp, fps->fdno);
@@ -189,7 +191,7 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, fd, fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
-static inline int fdSeekNot(void * cookie,  /*@unused@*/ _libio_pos_t pos,  /*@unused@*/ int whence) {
+static inline /*@unused@*/ int fdSeekNot(void * cookie,  /*@unused@*/ _libio_pos_t pos,  /*@unused@*/ int whence) {
     FD_t fd = c2f(cookie);
     FDSANE(fd);		/* XXX keep gcc quiet */
     return -2;
@@ -239,10 +241,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	if (--fd->nrefs > 0)
 	    /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 	if (fd->stats) free(fd->stats);
-	if (fd->hash) {
-	    if (fd->hash->private) free(fd->hash->private);
-	    free(fd->hash);
-	}
+	if (fd->digest) free(fd->digest);
 	/*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
     }
     return NULL;
@@ -270,8 +269,8 @@ static inline /*@null@*/ FD_t XfdNew(const char *msg, const char *file, unsigned
     fd->wr_chunked = 0;
     fd->syserrno = 0;
     fd->errcookie = NULL;
-    fd->stats = calloc(1, sizeof(FDSTAT_t));
-    fd->hash = NULL;
+    fd->stats = xcalloc(1, sizeof(*fd->stats));
+    fd->digest = NULL;
     gettimeofday(&fd->stats->create, NULL);
     fd->stats->begin = fd->stats->create;	/* structure assignment */
 
@@ -293,7 +292,7 @@ ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+    if (fd->digest) rpmDigestUpdate(fd->digest, buf, count);
 
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -307,7 +306,7 @@ ssize_t fdWrite(void * cookie, const char * buf, size_t count) {
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+    if (fd->digest) rpmDigestUpdate(fd->digest, buf, count);
 
     if (fd->wr_chunked) {
 	char chunksize[20];
@@ -1591,9 +1590,12 @@ int ufdClose( /*@only@*/ void * cookie)
 	if (u->urltype == URL_IS_FTP) {
 
 	    /* XXX if not using libio, lose the fp from fpio */
-	    {   FILE * fp = fdGetFILE(fd);
+	    {   FILE * fp;
+		/*@+voidabstract@*/
+		fp = fdGetFILE(fd);
 		if (noLibio && fp)
 		    fdSetFp(fd, NULL);
+		/*@=voidabstract@*/
 	    }
 
 	    /*
@@ -1662,9 +1664,12 @@ fprintf(stderr, "-> \r\n");
 	     */
 
 	    /* XXX if not using libio, lose the fp from fpio */
-	    {   FILE * fp = fdGetFILE(fd);
+	    {   FILE * fp;
+		/*@+voidabstract@*/
+		fp = fdGetFILE(fd);
 		if (noLibio && fp)
 		    fdSetFp(fd, NULL);
+		/*@=voidabstract@*/
 	    }
 
 	    if (fd->persist && u->httpVersion &&
@@ -1920,7 +1925,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+	if (fd->digest) rpmDigestUpdate(fd->digest, buf, count);
     }
     return rc;
 }
@@ -1932,7 +1937,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count) {
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+    if (fd->digest) rpmDigestUpdate(fd->digest, buf, count);
 
     gzfile = gzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -2105,7 +2110,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
 	fd->errcookie = bzerror(bzfile, &zerror);
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+	if (fd->digest) rpmDigestUpdate(fd->digest, buf, count);
     }
     return rc;
 }
@@ -2117,7 +2122,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count) {
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+    if (fd->digest) rpmDigestUpdate(fd->digest, buf, count);
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -2131,7 +2136,8 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count) {
     return rc;
 }
 
-static inline int bzdSeek(void * cookie, _libio_pos_t pos, int whence) {
+static inline int bzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
+			/*@unused@*/ int whence) {
     FD_t fd = c2f(cookie);
 
     BZDONLY(fd);
@@ -2223,7 +2229,9 @@ size_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
 DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, fd, fdbg(fd)));
 
     if (fdGetIo(fd) == fpio) {
+	/*@+voidabstract@*/
 	rc = fread(buf, size, nmemb, fdGetFILE(fd));
+	/*@=voidabstract@*/
 	return rc;
     }
 
@@ -2241,7 +2249,9 @@ size_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd) {
 DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, fd, fdbg(fd)));
 
     if (fdGetIo(fd) == fpio) {
+	/*@+voidabstract@*/
 	rc = fwrite(buf, size, nmemb, fdGetFILE(fd));
+	/*@=voidabstract@*/
 	return rc;
     }
 
@@ -2268,7 +2278,9 @@ DBGIO(fd, (stderr, "==> Fseek(%p,%ld,%d) %s\n", fd, (long)offset, whence, fdbg(f
     if (fdGetIo(fd) == fpio) {
 	FILE *fp;
 
+	/*@+voidabstract@*/
 	fp = fdGetFILE(fd);
+	/*@=voidabstract@*/
 	rc = fseek(fp, offset, whence);
 	return rc;
     }
@@ -2290,9 +2302,13 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", fd, fdbg(fd)));
 	FDSTACK_t * fps = &fd->fps[fd->nfps];
 	
 	if (fps->io == fpio) {
-	    FILE *fp = fdGetFILE(fd);
-	    int fpno = fileno(fp);
+	    FILE *fp;
+	    int fpno;
 
+	    /*@+voidabstract@*/
+	    fp = fdGetFILE(fd);
+	    /*@=voidabstract@*/
+	    fpno = fileno(fp);
 	/* XXX persistent HTTP/1.1 returns the previously opened fp */
 	    if (fd->nfps > 0 && fpno == -1 &&
 		fd->fps[fd->nfps-1].io == ufdio &&
@@ -2573,7 +2589,9 @@ int Fflush(FD_t fd)
 {
     if (fd == NULL) return -1;
     if (fdGetIo(fd) == fpio)
+	/*@+voidabstract@*/
 	return fflush(fdGetFILE(fd));
+	/*@=voidabstract@*/
     if (fdGetIo(fd) == gzdio)
 	return gzdFlush(fdGetFp(fd));
 #if HAVE_BZLIB_H
@@ -2592,7 +2610,9 @@ int Ferror(FD_t fd) {
 	int ec;
 	
 	if (fps->io == fpio) {
+	    /*@+voidabstract@*/
 	    ec = ferror(fdGetFILE(fd));
+	    /*@=voidabstract@*/
 	} else if (fps->io == gzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 #if HAVE_BZLIB_H

@@ -11,7 +11,7 @@ noinst_HEADERS = base64.h rpmio_internal.h ugid.h
 
 lib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c \
-	base64.c md5.c \
+	base64.c digest.c \
 	ugid.c rpmmalloc.c rpmlog.c
 
 # XXX Add internal libtool dependence
@@ -30,3 +30,6 @@ trpmio: librpmio.la trpmio.o
 
 tkey: librpmio.la tkey.o
 	$(LINK) -o $@ tkey.o librpmio.la $(top_builddir)/popt/libpopt.la
+
+tdigest: librpmio.la tdigest.o
+	$(LINK) -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la
