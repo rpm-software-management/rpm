@@ -29,6 +29,7 @@ macros
 missing
 platform
 rpm
+rpm.spec
 rpmdb
 rpm[a-z]
 rpm2cpio

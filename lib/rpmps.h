@@ -146,13 +146,14 @@ void rpmpsPrint(/*@null@*/ FILE *fp, /*@null@*/ rpmps ps)
 	/*@modifies *fp, ps, fileSystem @*/;
 
 /**
- * Append a problem to set.
+ * Append a problem to current set of problems.
  * @param ps		problem set
  * @param type		type of problem
  * @param pkgNEVR	package name
  * @param key		filename or python object address
  * @param dn		directory name
  * @param bn		file base name
+ * @param altNEVR	related (e.g. through a dependency) package name
  * @param ulong1	generic pointer/long attribute
  */
 void rpmpsAppend(/*@null@*/ rpmps ps, rpmProblemType type,

@@ -37,8 +37,8 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg,
 		/*@unused@*/ const void * data)
-	/*@globals rpmIArgs */
-	/*@modifies rpmIArgs */
+	/*@globals rpmIArgs @*/
+	/*@modifies rpmIArgs @*/
 {
     struct rpmInstallArguments_s * ia = &rpmIArgs;
 

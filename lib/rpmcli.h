@@ -21,6 +21,33 @@ extern int _noDirTokens;
 extern "C" {
 #endif
 
+/** \ingroup rpmcli
+ * Popt option table for options shared by all modes and executables.
+ */
+/*@unchecked@*/
+extern struct poptOption		rpmcliAllPoptTable[];
+
+/**
+ * Initialize most everything needed by an rpm CLI executable context.
+ * @param argc			no. of args
+ * @param argv			arg array
+ * @param optionsTable		popt option table
+ * @return			popt context (or NULL)
+ */
+/*@null@*/
+poptContext
+rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
+	/*@*/;
+
+/**
+ * Destroy most everything needed by an rpm CLI executable context.
+ * @param optCon		popt context
+ * @return			NULL always
+ */
+poptContext
+rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
+	/*@modifies optCon @*/;
+
 /* ==================================================================== */
 /** \name RPMBT */
 /*@{*/

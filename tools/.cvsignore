@@ -7,9 +7,10 @@ dump
 dumpdb
 javadeps
 rpmarchive
+rpmcache
 rpmheader
+rpmgraph
 rpminject
 rpmlead
 rpmsort
 rpmsignature
-tpkgid

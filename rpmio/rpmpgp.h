@@ -1136,7 +1136,6 @@ char * pgpHexStr(const byte *p, unsigned int plen)
  * Return hex formatted representation of a multiprecision integer.
  * @todo Remove static buffer. 
  * @param p		bytes
- * @param plen		no. of bytes
  * @return		hex formatted string
  */
 /*@unused@*/ static inline /*@observer@*/
@@ -1313,7 +1312,7 @@ struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 /**
  * Is buffer at beginning of an OpenPGP packet?
  * @param p		buffer
- * @param		1 if an OpenPGP packet, 0 otherwise
+ * @return		1 if an OpenPGP packet, 0 otherwise
  */
 /*@unused@*/ static inline
 int pgpIsPkt(const byte * p)

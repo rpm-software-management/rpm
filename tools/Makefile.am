@@ -13,9 +13,9 @@ INCLUDES = -I. \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpminject.c tpkgid.c
+EXTRA_DIST =	rpminject.c rpmsort.c
 
-EXTRA_PROGRAMS = rpminject tpkgid
+EXTRA_PROGRAMS = rpminject rpmsort
 
 LDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -27,24 +27,23 @@ LDADD = \
 	@INTLLIBS@
 
 noinst_PROGRAMS = \
-	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature rpmsort
+	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = javadeps
+pkgbin_PROGRAMS = javadeps rpmcache
+
+bin_PROGRAMS =	rpmgraph
 
 javadeps_SOURCES =	javadeps.c
+
+rpmcache_SOURCES =	rpmcache.c
+
+rpmgraph_SOURCES =	rpmgraph.c
 
 rpmsort_SOURCES =	rpmsort.c
 rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
 
-tpkgid_SOURCES =	tpkgid.c
-tpkgid_LDFLAGS =	@LDFLAGS_STATIC@
+rpminject_SOURCES =	rpminject.c
+rpminject_LDFLAGS =	@LDFLAGS_STATIC@
 
 $(PROGRAMS): $(LDADD)
-
-gnash.o: gnash.c
-	$(COMPILE) -o $@ -c gnash.c
-
-gnash: gnash.o
-	$(LINK) -all-static -o $@ gnash.o $(LDADD)
-

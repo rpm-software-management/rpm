@@ -443,6 +443,7 @@ INPUT                  = \
 	@top_srcdir@/lib/misc.c \
 	@top_srcdir@/lib/misc.h \
 	@top_srcdir@/lib/package.c \
+	@top_srcdir@/lib/poptALL.c \
 	@top_srcdir@/lib/poptI.c \
 	@top_srcdir@/lib/poptQV.c \
 	@top_srcdir@/lib/psm.c \
@@ -553,6 +554,8 @@ INPUT                  = \
 	@top_srcdir@/tools/dumpdb.c \
 	@top_srcdir@/tools/javadeps.c \
 	@top_srcdir@/tools/rpmarchive.c \
+	@top_srcdir@/tools/rpmcache.c \
+	@top_srcdir@/tools/rpmgraph.c \
 	@top_srcdir@/tools/rpmheader.c \
 	@top_srcdir@/tools/rpminject.c \
 	@top_srcdir@/tools/rpmlead.c \

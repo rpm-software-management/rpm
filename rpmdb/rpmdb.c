@@ -1546,6 +1546,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 
 	nb = strlen(pattern) + sizeof("^$");
 
+	/* Find no. of bytes needed for pattern. */
 	/* periods are escaped, splats become '.*' */
 	c = '\0';
 	brackets = 0;
@@ -1572,7 +1573,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 
 	if (pattern[0] != '^') *t++ = '^';
 
-	/* periods are escaped, splats become '.*' */
+	/* Copy pattern, escaping periods, prefixing splats with period. */
 	c = '\0';
 	brackets = 0;
 	for (s = pattern; *s != '\0'; s++, t++) {

@@ -142,6 +142,43 @@ Header headerRegenSigHeader(const Header h)
 }
 
 /*@unchecked@*/
+static int nkeyids = 0;
+/*@unchecked@*/
+static int * keyids = NULL;
+
+/**
+ * Remember current key id.
+ * @param ts		transaction set
+ * @return		0 if new keyid, otherwise 1
+ */
+static int rpmtsStashKeyid(rpmts ts)
+	/*@globals keyids, nkeyids @*/
+	/*@modifies keyids, nkeyids @*/
+{
+    struct pgpDigParams_s * sigp = NULL;
+    unsigned int keyid;
+    int i;
+
+    if (ts->sig == NULL || ts->dig == NULL)
+	return 0;
+
+    sigp = &ts->dig->signature;
+    keyid = pgpGrab(sigp->signid+4, 4);
+
+    if (keyids != NULL && keyid > 0)
+    for (i = 0; i < nkeyids; i++) {
+	if (keyid == keyids[i])
+	    return 1;
+    }
+
+    keyids = xrealloc(keyids, (nkeyids + 1) * sizeof(*keyids));
+    keyids[nkeyids] = keyid;
+    nkeyids++;
+
+    return 0;
+}
+
+/*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
@@ -389,9 +426,14 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 	rpmMessage(RPMMESS_DEBUG, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
 	break;
-    case RPMSIG_UNKNOWN:	/* Signature is unknown. */
     case RPMSIG_NOKEY:		/* Key is unavailable. */
     case RPMSIG_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
+	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
+	if (!rpmtsStashKeyid(ts))
+	    rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
+	rc = RPMRC_OK;
+	break;
+    case RPMSIG_UNKNOWN:	/* Signature is unknown. */
 	rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
 	break;

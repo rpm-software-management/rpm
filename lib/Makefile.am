@@ -32,7 +32,7 @@ lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	manifest.c misc.c package.c \
-	poptI.c poptQV.c psm.c query.c \
+	poptALL.c poptI.c poptQV.c psm.c query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpminstall.c \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \

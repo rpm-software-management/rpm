@@ -1,25 +1,25 @@
+/**
+ * \file tools/rpmcache.c
+ */
+
 #include "system.h"
 #include <fnmatch.h>
 #include <fts.h>
 
-#include <rpmlib.h>
-#include <rpmmacro.h>
-#include <rpmurl.h>
-#include <rpmpgp.h>
+#include <rpmcli.h>
 
+#ifdef	DYING
+#include <rpmpgp.h>
+#endif
+
+#include "rpmps.h"
 #include "rpmds.h"
 #include "rpmts.h"
-#include "misc.h"	/* XXX myGlobPatternP */
 
+#include "misc.h"	/* XXX myGlobPatternP */
 #include "debug.h"
 
 static int _debug = 0;
-/*@unchecked@*/
-extern int _ftp_debug;
-/*@unchecked@*/
-extern int _rpmio_debug;
-
-static int verify_legacy = 0;
 
 static char ** ftsSet;
 static int ftsOpts = 0;
@@ -275,15 +275,20 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmts ts)
 		fts->fts_name);
 #endif
 	if (fts->fts_level >= 0) {
+	    /* Ignore source packages. */
 	    if (!strcmp(fts->fts_parent->fts_name, "SRPMS")) {
 		xx = Fts_set(ftsp, fts->fts_parent, FTS_SKIP);
 		break;
 	    }
 	}
+
+	/* Ignore all but *.rpm files. */
 	s = fts->fts_name + fts->fts_namelen + 1 - sizeof(".rpm");
 	if (strcmp(s, ".rpm"))
 	    break;
+
 	xx = ftsStashLatest(fts, ts);
+
 	break;
     case FTS_NS:	/* stat(2) failed */
     case FTS_DNR:	/* unreadable directory */
@@ -312,7 +317,12 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmts ts)
     return 0;
 }
 
-static void initGlobs(const char ** argv)
+/**
+ * Initialize fts and glob structures.
+ * @param ts		transaction set
+ * @param argv		package names to match
+ */
+static void initGlobs(/*@unused@*/ rpmts ts, const char ** argv)
 {
     char buf[BUFSIZ];
     int i;
@@ -381,10 +391,15 @@ static void initGlobs(const char ** argv)
     }
 }
 
-static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,		&_debug, -1,		NULL, NULL },
+static int vsflags = _RPMTS_VSF_VERIFY_LEGACY;
 
- { "verifylegacy", '\0', POPT_ARG_VAL,	&verify_legacy, -1,	NULL, NULL },
+static struct poptOption optionsTable[] = {
+ { "nolegacy", '\0', POPT_BIT_CLR,      &vsflags, _RPMTS_VSF_VERIFY_LEGACY,
+	N_("don't verify header+payload signature"), NULL },
+ { "nodigest", '\0', POPT_BIT_SET,      &vsflags, _RPMTS_VSF_NODIGESTS,
+	N_("don't verify package digest"), NULL },
+ { "nosignature", '\0', POPT_BIT_SET,   &vsflags, _RPMTS_VSF_NOSIGNATURES,
+	N_("don't verify package signature"), NULL },
 
  { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, FTS_COMFOLLOW,
 	N_("follow command line symlinks"), NULL },
@@ -403,71 +418,46 @@ static struct poptOption optionsTable[] = {
  { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
 	N_("return whiteout information"), NULL },
 
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
- { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
-  POPT_AUTOHELP
-  POPT_TABLEEND
+    POPT_AUTOALIAS
+    POPT_AUTOHELP
+    POPT_TABLEEND
 };
 
 int
-main(int argc, const char *argv[])
+main(int argc, char *const argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
-    const char * rootDir = "";
     rpmts ts = NULL;
+    poptContext optCon;
     FTS * ftsp;
     FTSENT * fts;
-    const char ** av;
-    int rc;
     int ec = 1;
     int xx;
 
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-	switch (rc) {
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-	default:
-            /*@switchbreak@*/ break;
-	}
-    }
-
-    rpmReadConfigFiles(NULL, NULL);
-
-    if (_debug) {
-	rpmIncreaseVerbosity();
-	rpmIncreaseVerbosity();
-    }
+    optCon = rpmcliInit(argc, argv, optionsTable);
+    if (optCon == NULL)
+        exit(EXIT_FAILURE);
 
     ts = rpmtsCreate();
-    (void) rpmtsSetRootDir(rootDir);
-    (void) rpmtsOpenDB(ts, O_RDONLY);
-    if (verify_legacy) {
-	ts->dig = pgpNewDig();
-	ts->verify_legacy = 1;
-    }
+    (void) rpmtsSetVerifySigFlags(ts, vsflags);
 
-    av = poptGetArgs(optCon);
-    
-    initGlobs(av);
+    initGlobs(ts, poptGetArgs(optCon));
 
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
+    /* Walk file tree, filter paths, save matched items. */
     ftsp = Fts_open(ftsSet, ftsOpts, NULL);
-    while((fts = Fts_read(ftsp)) != NULL)
+    while((fts = Fts_read(ftsp)) != NULL) {
 	xx = ftsPrint(ftsp, fts, ts);
+    }
     xx = Fts_close(ftsp);
 
     ftsPrintPaths(stdout);
     freeItems();
 
     ts = rpmtsFree(ts);
+
+    optCon = rpmcliFini(optCon);
 
     return ec;
 }

@@ -151,6 +151,10 @@
 	- disambiguate added/installed dependency failures (#50388).
 	- rescusitate remote ftp globs (#67678).
 	- open rpmdb early RDONLY, reopen later RDWR, avoid signed srpm noise.
+	- turn off annoying gpg secmem warning.
+	- warn only once for each NOKEY/UNTRUSTED key id.
+	- factor common options into table, add rpmcliInit() and rpmcliFini().
+	- add preliminary rpmgraph(8) and rpmcache(8) executables to rpm-devel.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

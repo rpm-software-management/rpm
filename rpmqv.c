@@ -34,7 +34,6 @@
 
 #include "debug.h"
 
-#define GETOPT_DBPATH		1010
 #define GETOPT_SHOWRC		1018
 #define	GETOPT_DEFINEMACRO	1020
 #define	GETOPT_EVALMACRO	1021
@@ -94,13 +93,16 @@ static int help = 0;
 /*@unchecked@*/
 static int noUsageMsg = 0;
 /*@unchecked@*/
-/*@observer@*/ /*@null@*/ static const char * pipeOutput = NULL;
+/*@observer@*/ /*@null@*/
+static const char * pipeOutput = NULL;
 /*@unchecked@*/
 static int quiet = 0;
 /*@unchecked@*/
-/*@observer@*/ /*@null@*/ static const char * rcfile = NULL;
+/*@observer@*/ /*@null@*/
+static const char * rcfile = NULL;
 /*@unchecked@*/
-/*@observer@*/ /*@null@*/ static char * rootdir = "/";
+/*@observer@*/ /*@null@*/
+static char * rootdir = "/";
 /*@unchecked@*/
 static int showrc = 0;
 /*@unchecked@*/
@@ -116,17 +118,13 @@ static struct poptOption rpmAllPoptTable[] = {
  { "verbose", 'v', 0, 0, 'v',
 	N_("provide more detailed output"), NULL},
  { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,
-	N_("define macro <name> with value <body>"),
-	N_("'<name> <body>'") },
+	N_("define MACRO with value EXPR"), N_("'MACRO EXPR'") },
  { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO,
-	N_("print macro expansion of <expr>+"),
-	N_("<expr>+") },
+	N_("print macro expansion of EXPR"), N_("'EXPR'") },
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &pipeOutput, 0,
-	N_("send stdout to <cmd>"),
-	N_("<cmd>") },
+	N_("send stdout to <cmd>"), N_("<cmd>") },
  { "root", 'r', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &rootdir, 0,
-	N_("use <dir> as the top level directory"),
-	N_("<dir>") },
+	N_("use <dir> as the top level directory"), N_("<dir>") },
  { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
 	N_("read <file:...> instead of default macro file(s)"),
 	N_("<file:...>") },

@@ -230,7 +230,7 @@ int rpmInstall(rpmts ts,
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
-    int vsflags;
+    int vsflags = _RPMTS_VSF_VERIFY_LEGACY;
     int ac = 0;
     int rc;
     int xx;
@@ -244,15 +244,11 @@ int rpmInstall(rpmts ts,
 
     ts->goal = TSM_INSTALL;
 
-    vsflags = 0;
     if (ia->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMTS_VSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)
 	vsflags |= _RPMTS_VSF_NOSIGNATURES;
-    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
-
-    /* Open database RDONLY initiallly, reopen RDWR in rpmtsRun(). */
-    ts->dbmode = O_RDONLY;
+    xx = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
 
     {	int notifyFlags;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -653,12 +649,6 @@ int rpmErase(rpmts ts,
 #endif
 
     ts->goal = TSM_ERASE;
-
-    /* XXX W2DO? O_EXCL??? */
-    ts->dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
-		? O_RDONLY : (O_RDWR|O_EXCL);
-
-    (void) rpmtsOpenDB(ts, ts->dbmode);
 
     for (arg = argv; *arg; arg++) {
 	rpmdbMatchIterator mi;
