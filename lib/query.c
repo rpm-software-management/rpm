@@ -11,11 +11,17 @@
 /*@=incondefs@*/
 #endif
 
+#include "rpmio_internal.h"
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
 #include "depends.h"
 #include "manifest.h"
+
+#include "rpmlead.h"
+#include "legacy.h"
+#include "signature.h"	/* XXX rpmReadSignature */
+
 #include "debug.h"
 
 /*@access rpmTransactionSet@*/		/* XXX ts->rpmdb */
@@ -550,6 +556,160 @@ int showMatches(QVA_t qva, rpmTransactionSet ts)
     return ec;
 }
 
+/**
+ */
+static int xxxReadPackageHeader(rpmTransactionSet ts, FD_t fd,
+		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fd, *hdrp, fileSystem, internalState @*/
+
+{
+    byte buf[8*BUFSIZ];
+    ssize_t count;
+    struct rpmlead lead, *l = &lead;
+    Header sig;
+    Header h = NULL;
+    int hmagic;
+    rpmRC rpmrc;
+    int rc = 1;	/* assume failure */
+    int xx;
+    int i;
+
+    memset(l, 0, sizeof(*l));
+    if (readLead(fd, l)
+     || l->magic[0] != RPMLEAD_MAGIC0 || l->magic[1] != RPMLEAD_MAGIC1
+     || l->magic[2] != RPMLEAD_MAGIC2 || l->magic[3] != RPMLEAD_MAGIC3) {
+	rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), fn);
+	goto exit;
+    }
+
+    switch (l->major) {
+    case 1:
+	rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), fn);
+	goto exit;
+	/*@notreached@*/ /*@switchbreak@*/ break;
+    default:
+	/*@switchbreak@*/ break;
+    }
+
+    rpmrc = rpmReadSignature(fd, &sig, l->signature_type);
+    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
+	rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), fn);
+	goto exit;
+    }
+    if (sig == NULL) {
+	rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
+	goto exit;
+    }
+
+    if (headerIsEntry(sig, RPMSIGTAG_GPG))
+	ts->sigtag = RPMSIGTAG_GPG;
+    else if (headerIsEntry(sig, RPMSIGTAG_PGP))
+	ts->sigtag = RPMSIGTAG_PGP;
+    else if (headerIsEntry(sig, RPMSIGTAG_MD5))
+	ts->sigtag = RPMSIGTAG_MD5;
+    else
+	ts->sigtag = 0;
+
+    /*@-type@*/ /* FIX: cast? */
+    if (ts->sigtag == RPMSIGTAG_GPG)
+	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+    else
+	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+    /*@=type@*/
+
+    hmagic = ((l->major >= 3) ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
+    h = headerRead(fd, hmagic);
+    if (h == NULL) {
+	rpmError(RPMERR_FREAD, _("%s: headerRead failed\n"), fn);
+	goto exit;
+    }
+
+    if (ts->sigtag == 0) {
+	rc = 0;
+	goto exit;
+    }
+
+    ts->dig = pgpNewDig();
+    ts->dig->nbytes = headerSizeof(h, hmagic);
+
+    /* Read the compressed payload. */
+    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	ts->dig->nbytes += count;
+
+    if (count < 0) {
+	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
+	goto exit;
+    }
+    ts->dig->nbytes += count;
+
+    (void) headerGetEntry(sig, ts->sigtag, &ts->sigtype,
+		(void **) &ts->sig, &ts->siglen);
+
+    xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+
+    /*@-type@*/ /* FIX: cast? */
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	if (fddig->hashalgo == PGPHASHALGO_MD5) {
+	    /*@-branchstate@*/
+	    if (ts->dig->md5ctx != NULL)
+		(void) rpmDigestFinal(ts->dig->md5ctx, NULL, NULL, 0);
+	    /*@=branchstate@*/
+	    ts->dig->md5ctx = fddig->hashctx;
+	    fddig->hashctx = NULL;
+	    continue;
+	}
+	if (fddig->hashalgo == PGPHASHALGO_SHA1) {
+	    /*@-branchstate@*/
+	    if (ts->dig->sha1ctx != NULL)
+		(void) rpmDigestFinal(ts->dig->sha1ctx, NULL, NULL, 0);
+	    /*@=branchstate@*/
+	    ts->dig->sha1ctx = fddig->hashctx;
+	    fddig->hashctx = NULL;
+	    continue;
+	}
+    }
+    /*@=type@*/
+
+/** @todo Implement disable/enable/warn/error/anal policy. */
+
+    buf[0] = '\0';
+    switch (rpmVerifySignature(ts, buf)) {
+    case RPMSIG_OK:		/*!< Signature is OK. */
+	rpmMessage(RPMMESS_VERBOSE, "%s: %s", fn, buf);
+	rc = 0;
+	break;
+    case RPMSIG_UNKNOWN:	/*!< Signature is unknown. */
+    case RPMSIG_NOKEY:		/*!< Key is unavailable. */
+    case RPMSIG_NOTTRUSTED:	/*!< Signature is OK, but key is not trusted. */
+	rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
+	rc = 0;
+	break;
+    default:
+    case RPMSIG_BAD:		/*!< Signature does not verify. */
+	rpmMessage(RPMMESS_ERROR, "%s: %s", fn, buf);
+	rc = 0;
+	break;
+    }
+
+exit:
+    if (rc == 0 && hdrp != NULL) {
+	legacyRetrofit(h, l);
+	headerMergeLegacySigs(h, sig);
+	*hdrp = headerLink(h);
+    }
+    h = headerFree(h);
+    if (ts->sig != NULL)
+	ts->sig = headerFreeData(ts->sig, ts->sigtype);
+    if (ts->dig != NULL)
+	ts->dig = pgpFreeDig(ts->dig);
+    sig = rpmFreeSignature(sig);
+    return rc;
+}
+
 /*@-redecl@*/
 /**
  * @todo Eliminate linkage loop into librpmbuild.a
@@ -578,7 +738,6 @@ int rpmQueryVerify(QVA_t qva, rpmTransactionSet ts, const char * arg)
     case RPMQV_RPM:
     {	int ac = 0;
 	const char * fileURL = NULL;
-	int isSource;
 	rpmRC rpmrc;
 	int i;
 
@@ -603,9 +762,12 @@ restart:
 		/*@loopbreak@*/ break;
 	    }
 
-	    /*@-mustmod@*/	/* LCL: segfault. */
-	    rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	    /*@-mustmod@*/	/* LCL: something fishy here, was segfault */
+    	    rc = xxxReadPackageHeader(ts, fd, fileURL, &h);
 	    /*@=mustmod@*/
+	    rpmrc = (rc == 0 ? RPMRC_OK : RPMRC_BADMAGIC);
+	    /* XXX rpmrc tests below need work */
+
 	    (void) Fclose(fd);
 
 	    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADMAGIC)) {
@@ -624,6 +786,7 @@ restart:
 	    if (rpmrc == RPMRC_OK) {
 		res = qva->qva_showPackage(qva, ts, h);
 		h = headerFree(h);
+		rpmtransClean(ts);
 		continue;
 	    }
 

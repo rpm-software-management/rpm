@@ -673,7 +673,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
 	/* 0 makes for noops */
 	fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-	if (fi->h != NULL && ts != NULL)
+	if (ts != NULL && fi->ap != NULL)
 	{   Header foo = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
 	    foo = headerFree(foo);
 	}

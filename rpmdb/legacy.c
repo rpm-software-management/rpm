@@ -5,8 +5,11 @@
 #include "system.h"
 #include "rpmio_internal.h"
 #include <rpmlib.h>
+#include "misc.h"
 #include "legacy.h"
 #include "debug.h"
+
+#define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 int domd5(const char * fn, unsigned char * digest, int asAscii)
 {
@@ -316,5 +319,55 @@ exit:
 		&pFlags, 1);
 	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 		&pEVR, 1);
+    }
+}
+
+void legacyRetrofit(Header h, const struct rpmlead * lead)
+{
+    const char * prefix;
+
+    /*
+     * We don't use these entries (and rpm >= 2 never has) and they are
+     * pretty misleading. Let's just get rid of them so they don't confuse
+     * anyone.
+     */
+    if (headerIsEntry(h, RPMTAG_FILEUSERNAME))
+	(void) headerRemoveEntry(h, RPMTAG_FILEUIDS);
+    if (headerIsEntry(h, RPMTAG_FILEGROUPNAME))
+	(void) headerRemoveEntry(h, RPMTAG_FILEGIDS);
+
+    /*
+     * We switched the way we do relocateable packages. We fix some of
+     * it up here, though the install code still has to be a bit 
+     * careful. This fixup makes queries give the new values though,
+     * which is quite handy.
+     */
+    /*@=branchstate@*/
+    if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &prefix, NULL))
+    {
+	const char * nprefix = stripTrailingChar(alloca_strdup(prefix), '/');
+	(void) headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
+		&nprefix, 1); 
+    }
+    /*@=branchstate@*/
+
+    /*
+     * The file list was moved to a more compressed format which not
+     * only saves memory (nice), but gives fingerprinting a nice, fat
+     * speed boost (very nice). Go ahead and convert old headers to
+     * the new style (this is a noop for new headers).
+     */
+    if (lead->major < 4)
+	compressFilelist(h);
+
+    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
+    if (lead->type == RPMLEAD_SOURCE) {
+	int_32 one = 1;
+	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
+	    (void) headerAddEntry(h, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
+				&one, 1);
+    } else if (lead->major < 4) {
+	/* Retrofit "Provide: name = EVR" for binary packages. */
+	providePackageNVR(h);
     }
 }

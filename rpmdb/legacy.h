@@ -90,6 +90,13 @@ void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr,
 void providePackageNVR(Header h)
 	/*@modifies h @*/;
 
+/**
+ * Do all necessary retorfits for a package header.
+ * @param h		header
+ */
+void legacyRetrofit(Header h, const struct rpmlead * lead)
+	/*@modifies h@*/;
+
 #ifdef __cplusplus
 }
 #endif

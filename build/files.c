@@ -13,7 +13,6 @@
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
-#include <rpmmacro.h>
 
 #include "buildio.h"
 

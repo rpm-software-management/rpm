@@ -11,7 +11,8 @@
 #include "debug.h"
 
 /*@unchecked@*/
-struct rpmQVArguments_s rpmQVArgs;
+struct rpmQVKArguments_s rpmQVKArgs;
+
 /*@unchecked@*/
 int specedit = 0;
 
@@ -23,20 +24,24 @@ int specedit = 0;
 #define POPT_DUMP		1005
 #define POPT_SPECFILE		1006
 
-/* ========== Query/Verify source popt args */
+/* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, /*@unused@*/ const char * arg, 
 		/*@unused@*/ const void * data)
-	/*@globals rpmQVArgs @*/
-	/*@modifies rpmQVArgs @*/
+	/*@globals rpmQVKArgs @*/
+	/*@modifies rpmQVKArgs @*/
 {
-    QVA_t qva = &rpmQVArgs;
+    QVA_t qva = &rpmQVKArgs;
 
     switch (opt->val) {
-    case 'q':
-    case 'Q':
-    case 'V':
+    case 'q':	/* from --query, -q */
+    case 'Q':	/* from --querytags */
+    case 'V':	/* from --verify, -V */
+    case 'A':	/* from --addsign */
+    case 'I':	/* from --import */
+    case 'K':	/* from --checksig, -K */
+    case 'R':	/* from --resign */
 	if (qva->qva_mode == ' ') {
 	    qva->qva_mode = opt->val;
 	    qva->qva_char = ' ';
@@ -76,6 +81,8 @@ struct poptOption rpmQVSourcePoptTable[] = {
 /*@=type@*/
  { "all", 'a', 0, 0, 'a',
 	N_("query/verify all packages"), NULL },
+ { "checksig", 'K', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'K',
+	N_("rpm checksig mode"), NULL },
  { "file", 'f', 0, 0, 'f',
 	N_("query/verify package(s) owning file"), "FILE" },
  { "group", 'g', 0, 0, 'g',
@@ -94,6 +101,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query the package(s) triggered by the package"), "PACKAGE" },
  { "verify", 'V', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
 	N_("rpm verify mode"), NULL },
+/**@todo Eliminate -y option. */
  { NULL, 'y',  POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
 	N_("rpm verify mode (legacy)"), NULL },
  { "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
@@ -109,10 +117,10 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 		/*@unused@*/enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg, 
 		/*@unused@*/ const void * data)
-	/*@globals rpmQVArgs @*/
-	/*@modifies rpmQVArgs @*/
+	/*@globals rpmQVKArgs @*/
+	/*@modifies rpmQVKArgs @*/
 {
-    QVA_t qva = &rpmQVArgs;
+    QVA_t qva = &rpmQVKArgs;
 
     switch (opt->val) {
     case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
@@ -169,14 +177,14 @@ struct poptOption rpmQueryPoptTable[] = {
 
  /* Duplicate file attr flags from packages into command line options. */
  { "noghost", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_fflags, RPMFILE_GHOST,
+	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
         N_("skip %%ghost files"), NULL },
 #ifdef	NOTEVER		/* XXX there's hardly a need for these */
  { "nolicense", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_fflags, RPMFILE_LICENSE,
+	&rpmQVKArgs.qva_fflags, RPMFILE_LICENSE,
         N_("skip %%license files"), NULL },
  { "noreadme", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_fflags, RPMFILE_README,
+	&rpmQVKArgs.qva_fflags, RPMFILE_README,
         N_("skip %%readme files"), NULL },
 #endif
 
@@ -207,43 +215,92 @@ struct poptOption rpmVerifyPoptTable[] = {
 	NULL, NULL },
 
  /* Duplicate file verify flags from packages into command line options. */
- { "nomd5", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_MD5,
+/** @todo Add --nomd5 alias to rpmpopt, eliminate. */
+ { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
 	N_("don't verify MD5 digest of files"), NULL },
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_SIZE,
+	&rpmQVKArgs.qva_flags, VERIFY_SIZE,
         N_("don't verify size of files"), NULL },
  { "nolinkto", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_LINKTO,
+	&rpmQVKArgs.qva_flags, VERIFY_LINKTO,
         N_("don't verify symlink path of files"), NULL },
  { "nouser", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_USER,
+	&rpmQVKArgs.qva_flags, VERIFY_USER,
         N_("don't verify owner of files"), NULL },
  { "nogroup", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_GROUP,
+	&rpmQVKArgs.qva_flags, VERIFY_GROUP,
         N_("don't verify group of files"), NULL },
  { "nomtime", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_MTIME,
+	&rpmQVKArgs.qva_flags, VERIFY_MTIME,
         N_("don't verify modification time of files"), NULL },
  { "nomode", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_MODE,
+	&rpmQVKArgs.qva_flags, VERIFY_MODE,
         N_("don't verify mode of files"), NULL },
  { "nordev", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_RDEV,
+	&rpmQVKArgs.qva_flags, VERIFY_RDEV,
         N_("don't verify mode of files"), NULL },
 
- { "nofiles", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_FILES,
+ { "nofiles", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FILES,
 	N_("don't verify files in package"), NULL},
- { "nodeps", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_DEPS,
+ { "nodeps", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DEPS,
 	N_("don't verify package dependencies"), NULL },
- { "noscript", '\0', POPT_BIT_SET,&rpmQVArgs.qva_flags, VERIFY_SCRIPT,
-        N_("don't execute %verifyscript (if any)"), NULL },
+ { "noscript", '\0', POPT_BIT_SET,&rpmQVKArgs.qva_flags, VERIFY_SCRIPT,
+        N_("don't execute verify script(s)"), NULL },
  /* XXX legacy had a trailing s on --noscript */
  { "noscripts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_SCRIPT,
-        N_("don't execute %verifyscript (if any)"), NULL },
+	&rpmQVKArgs.qva_flags, VERIFY_SCRIPT,
+        N_("don't execute verify script(s)"), NULL },
  { "nodigest", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVArgs.qva_flags, VERIFY_DIGEST,
-        N_("don't verify header SHA1 digest"), NULL },
+	&rpmQVKArgs.qva_flags, VERIFY_DIGEST,
+        N_("don't verify digest(s)"), NULL },
+ { "nosignature", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
+        N_("don't verify signature(s)"), NULL },
+
+/** @todo Add --nomd5 alias to rpmpopt, eliminate. */
+ { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
+	N_("don't verify MD5 digest of files"), NULL },
+/** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
+ { "nogpg", '\0', POPT_BIT_SET,
+	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
+        N_("don't verify GPG V3 DSA signature(s)"), NULL },
+ { "nopgp", '\0', POPT_BIT_SET,
+	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
+        N_("don't verify PGP V3 RSA/MD5 signature(s)"), NULL },
 
     POPT_TABLEEND
+};
+
+/**
+ * Signature mode options.
+ */
+/*@unchecked@*/
+struct poptOption rpmSignPoptTable[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
+	rpmQVSourceArgCallback, 0, NULL, NULL },
+/*@=type@*/
+ { "addsign", '\0', 0, NULL, 'A',
+	N_("sign a package, preserving other existing signatures"), NULL },
+ { "checksig", 'K', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'K',
+	N_("verify package signature(s)"), NULL },
+ { "import", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'I',
+	N_("import an armored public key"), NULL },
+ { "resign", '\0', 0, NULL, 'R',
+	N_("sign a package, discarding all current signatures"), NULL },
+ { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
+	N_("generate signature"), NULL },
+
+/** @todo Add --nomd5 alias to rpmpopt, eliminate. */
+ { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
+	N_("don't verify MD5 digest of files"), NULL },
+/** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
+ { "nogpg", '\0', POPT_BIT_SET,
+	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
+        N_("don't verify GPG V3 DSA signature(s)"), NULL },
+ { "nopgp", '\0', POPT_BIT_SET,
+	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
+        N_("don't verify PGP V3 RSA/MD5 signature(s)"), NULL },
+
+   POPT_TABLEEND
 };

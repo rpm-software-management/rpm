@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-23 23:52-0400\n"
+"POT-Creation-Date: 2001-10-24 21:17-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -207,135 +207,135 @@ msgstr "Dette program kan frit distribueres under betingelserne i GNU GPL"
 msgid "Usage: %s {--help}\n"
 msgstr "Brug: %s {--help}\n"
 
-#: rpmqv.c:600
+#: rpmqv.c:603
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "Tilvalget --rcfile er fjernet.\n"
 
-#: rpmqv.c:601
+#: rpmqv.c:604
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Brug \"--macros <fil:...>\" i stedet..\n"
 
-#: rpmqv.c:607
+#: rpmqv.c:610
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Intern fejl i parameterfortolkningen (%d) :-(\n"
 
-#: rpmqv.c:648 rpmqv.c:654 rpmqv.c:660 rpmqv.c:698
+#: rpmqv.c:651 rpmqv.c:657 rpmqv.c:663 rpmqv.c:701
 msgid "only one major mode may be specified"
 msgstr "kun ét hovedtilvalg kan angives"
 
-#: rpmqv.c:677
+#: rpmqv.c:680
 msgid "one type of query/verify may be performed at a time"
 msgstr "kun én af forespørgsel/verificér kan udføres ad gangen"
 
-#: rpmqv.c:681
+#: rpmqv.c:684
 msgid "unexpected query flags"
 msgstr "uventet forespørgselsflag"
 
-#: rpmqv.c:684
+#: rpmqv.c:687
 msgid "unexpected query format"
 msgstr "uventet forespørgselsformat"
 
-#: rpmqv.c:687
+#: rpmqv.c:690
 msgid "unexpected query source"
 msgstr "uventet forespørgselskilde"
 
-#: rpmqv.c:728
+#: rpmqv.c:731
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath angivet ved en operation, der ikke benytter en database"
 
-#: rpmqv.c:734
+#: rpmqv.c:737
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "kun installation, opgradering, rmsource og rmspec kan tvinges igennem"
 
-#: rpmqv.c:736
+#: rpmqv.c:739
 msgid "files may only be relocated during package installation"
 msgstr "filer kan kun omrokeres under installation"
 
-#: rpmqv.c:739
+#: rpmqv.c:742
 msgid "only one of --prefix or --relocate may be used"
 msgstr "kun én af --prefix eller --relocate kan bruges"
 
-#: rpmqv.c:742
+#: rpmqv.c:745
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate og --excludepath kan kun bruges, når nye pakker installeres"
 
-#: rpmqv.c:745
+#: rpmqv.c:748
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan kun bruges, når nye pakker installeres"
 
-#: rpmqv.c:748
+#: rpmqv.c:751
 msgid "arguments to --prefix must begin with a /"
 msgstr "parametre til --prefix skal starte med et /"
 
-#: rpmqv.c:751
+#: rpmqv.c:754
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan kun angives ved installation"
 
-#: rpmqv.c:755
+#: rpmqv.c:758
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan kun angives ved installation"
 
-#: rpmqv.c:760
+#: rpmqv.c:763
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles kan kun angives ved installation"
 
-#: rpmqv.c:764
+#: rpmqv.c:767
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan kun angives ved installation"
 
-#: rpmqv.c:768
+#: rpmqv.c:771
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs kan kun angives ved installation"
 
-#: rpmqv.c:772
+#: rpmqv.c:775
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs kan kun angives ved installation"
 
-#: rpmqv.c:776
+#: rpmqv.c:779
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "kun én af --excludedocs og --includedocs kan angives"
 
-#: rpmqv.c:780
+#: rpmqv.c:783
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch kan kun angives ved installation"
 
-#: rpmqv.c:784
+#: rpmqv.c:787
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos kan kun angives ved installation"
 
-#: rpmqv.c:789
+#: rpmqv.c:792
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize kan kun angives ved installation"
 
-#: rpmqv.c:793
+#: rpmqv.c:796
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches kan kun angives ved installation"
 
-#: rpmqv.c:797
+#: rpmqv.c:800
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles kan kun angives ved installation"
 
-#: rpmqv.c:802
+#: rpmqv.c:805
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb kan kun angives ved installation og sletning"
 
-#: rpmqv.c:807
+#: rpmqv.c:810
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb kan kun angives ved installation og sletning"
 
-#: rpmqv.c:812
+#: rpmqv.c:815
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--notriggers kan kun angives ved installation og sletning af pakker"
 
-#: rpmqv.c:816
+#: rpmqv.c:819
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -343,13 +343,13 @@ msgstr ""
 "--nodeps kan kun angives ved opbygning, genopbygning, genoversættelse, "
 "installation, sletning og verifikation"
 
-#: rpmqv.c:821
+#: rpmqv.c:824
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test kan kun angives ved installation, sletning og opbygning"
 
-#: rpmqv.c:826
+#: rpmqv.c:829
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -357,81 +357,81 @@ msgstr ""
 "--root (-r) kan kun angives ved installation, sletning, forespørgsel og "
 "genopbygning af databasen"
 
-#: rpmqv.c:838
+#: rpmqv.c:841
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parameteren til --root (-r) skal starte med et /"
 
-#: rpmqv.c:862
+#: rpmqv.c:865
 msgid "no files to sign\n"
 msgstr "ingen filer at underskrive\n"
 
-#: rpmqv.c:867
+#: rpmqv.c:870
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "kan ikke tilgå filen %s\n"
 
-#: rpmqv.c:886
+#: rpmqv.c:889
 msgid "pgp not found: "
 msgstr "pgp ikke fundet: "
 
-#: rpmqv.c:891
+#: rpmqv.c:894
 msgid "Enter pass phrase: "
 msgstr "Indtast adgangskode: "
 
-#: rpmqv.c:893
+#: rpmqv.c:896
 msgid "Pass phrase check failed\n"
 msgstr "Adgangskode ikke godkendt\n"
 
-#: rpmqv.c:897
+#: rpmqv.c:900
 msgid "Pass phrase is good.\n"
 msgstr "Adgangskode godkendt.\n"
 
-#: rpmqv.c:902
+#: rpmqv.c:905
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Ugyldig angivelse af %%_signature i makrofil.\n"
 
-#: rpmqv.c:909
+#: rpmqv.c:912
 msgid "--sign may only be used during package building"
 msgstr "--sign kan kun bruges ved pakkeopbygning"
 
-#: rpmqv.c:926
+#: rpmqv.c:929
 msgid "exec failed\n"
 msgstr "eksekvering mislykkedes\n"
 
-#: rpmqv.c:956
+#: rpmqv.c:959
 msgid "no packages files given for rebuild"
 msgstr "ingen pakkefiler angivet til genopbygning"
 
-#: rpmqv.c:1023
+#: rpmqv.c:1026
 msgid "no spec files given for build"
 msgstr "ingen spec-fil angivet til opbygning"
 
-#: rpmqv.c:1025
+#: rpmqv.c:1028
 msgid "no tar files given for build"
 msgstr "ingen tar-arkiver angivet til opbygning"
 
-#: rpmqv.c:1044
+#: rpmqv.c:1047
 msgid "no packages given for uninstall"
 msgstr "ingen pakker angivet ved afinstallation"
 
-#: rpmqv.c:1055
+#: rpmqv.c:1058
 msgid "no packages given for install"
 msgstr "ingen pakker angivet ved installation"
 
-#: rpmqv.c:1103
+#: rpmqv.c:1106
 msgid "no arguments given for query"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: rpmqv.c:1117
+#: rpmqv.c:1120
 msgid "no arguments given for verify"
 msgstr "ingen parametre angivet ved verifikation"
 
-#: rpmqv.c:1125
+#: rpmqv.c:1128
 msgid "unexpected arguments to --querytags "
 msgstr "uventede parametre til --querytags "
 
-#: rpmqv.c:1135
+#: rpmqv.c:1144
 #, fuzzy
 msgid "no arguments given"
 msgstr "ingen parametre angivet ved forespørgsel"
@@ -514,181 +514,181 @@ msgstr "&& og || understøttes ikke for strenge\n"
 msgid "syntax error in expression\n"
 msgstr "syntaksfejl i udtryk\n"
 
-#: build/files.c:270
+#: build/files.c:269
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fejl: %s\n"
 
-#: build/files.c:329 build/files.c:521 build/files.c:704
+#: build/files.c:328 build/files.c:520 build/files.c:703
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:340 build/files.c:646 build/files.c:715
+#: build/files.c:339 build/files.c:645 build/files.c:714
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Manglende ')' i %s %s\n"
 
-#: build/files.c:378 build/files.c:671
+#: build/files.c:377 build/files.c:670
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ugyldigt %s-symbol: %s\n"
 
-#: build/files.c:484
+#: build/files.c:483
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:537
+#: build/files.c:536
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Ikke-mellemrum efterfølger %s(): %s\n"
 
-#: build/files.c:575
+#: build/files.c:574
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Ugyldig syntaks: %s(%s)\n"
 
-#: build/files.c:585
+#: build/files.c:584
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Ugyldig tilstandsangivelse: %s(%s)\n"
 
-#: build/files.c:597
+#: build/files.c:596
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Ugyldig dirmode-spec: %s(%s)\n"
 
-#: build/files.c:742
+#: build/files.c:741
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Anormal locale-længde: \"%.*s\" i %%lang(%s)\n"
 
 #. @innercontinue@
-#: build/files.c:753
+#: build/files.c:752
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Dobbelt locale %.*s i %%lang(%s)\n"
 
-#: build/files.c:904
+#: build/files.c:903
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Træfningsgrænse for %%docdir\n"
 
-#: build/files.c:910
+#: build/files.c:909
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Kun et parameter for %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:938
+#: build/files.c:937
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "To filer på én linie: %s\n"
 
-#: build/files.c:953
+#: build/files.c:952
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Fil skal begynde med \"/\": %s\n"
 
-#: build/files.c:966
+#: build/files.c:965
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan ikke blande special-%%doc med andre former: %s\n"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1143
+#: build/files.c:1142
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fil angivet to gange: %s\n"
 
-#: build/files.c:1278
+#: build/files.c:1277
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1484
+#: build/files.c:1483
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1508
+#: build/files.c:1507
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1551 build/files.c:2163 build/parsePrep.c:50
+#: build/files.c:1550 build/files.c:2162 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:1563
+#: build/files.c:1562
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1667
+#: build/files.c:1666
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1690
+#: build/files.c:1689
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:1705
+#: build/files.c:1704
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1767
+#: build/files.c:1766
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1778 build/pack.c:145
+#: build/files.c:1777 build/pack.c:145
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2151
+#: build/files.c:2150
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2225
+#: build/files.c:2224
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunne ikke udføre %s: %s\n"
 
-#: build/files.c:2230
+#: build/files.c:2229
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
 
-#: build/files.c:2314
+#: build/files.c:2313
 #, c-format
 msgid "%s failed\n"
 msgstr "%s mislykkedes\n"
 
-#: build/files.c:2318
+#: build/files.c:2317
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/files.c:2454
+#: build/files.c:2453
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Finder %s: (benytter %s)...\n"
 
-#: build/files.c:2480 build/files.c:2494
+#: build/files.c:2479 build/files.c:2493
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Kunne ikke finde %s:\n"
 
-#: build/files.c:2615
+#: build/files.c:2614
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -1228,6 +1228,159 @@ msgstr "Ingen arkitekturer, der kan opbygges\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Pakke har ingen %%description: %s\n"
 
+#: build/poptBT.c:116
+#, c-format
+msgid "buildroot already specified, ignoring %s\n"
+msgstr ""
+"buildroot allerede angivet, ignorerer %s\n"
+"\n"
+
+#: build/poptBT.c:146
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <specfile>"
+msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <spec-fil>"
+
+#: build/poptBT.c:147 build/poptBT.c:150 build/poptBT.c:153 build/poptBT.c:156
+#: build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
+msgid "<specfile>"
+msgstr "<spec-fil>"
+
+#: build/poptBT.c:149
+msgid "build through %build (%prep, then compile) from <specfile>"
+msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <spec-fil>"
+
+#: build/poptBT.c:152
+msgid "build through %install (%prep, %build, then install) from <specfile>"
+msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <spec-fil>"
+
+#: build/poptBT.c:155
+#, c-format
+msgid "verify %files section from <specfile>"
+msgstr "verificér afsnittet %files ud fra <spec-fil>"
+
+#: build/poptBT.c:158
+msgid "build source and binary packages from <specfile>"
+msgstr "opbyg kilde- og binærpakke ud fra <spec-fil>"
+
+#: build/poptBT.c:161
+msgid "build binary package only from <specfile>"
+msgstr "opbyg kun binærpakke ud fra <spec-fil>"
+
+#: build/poptBT.c:164
+msgid "build source package only from <specfile>"
+msgstr "opbyg kun kildepakke ud fra <spec-fil>"
+
+#: build/poptBT.c:168
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <tarball>"
+msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <tararkiv>"
+
+#: build/poptBT.c:169 build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178
+#: build/poptBT.c:181 build/poptBT.c:184 build/poptBT.c:187
+msgid "<tarball>"
+msgstr "<tararkiv>"
+
+#: build/poptBT.c:171
+msgid "build through %build (%prep, then compile) from <tarball>"
+msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <tararkiv>"
+
+#: build/poptBT.c:174
+msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <tararkiv>"
+
+#: build/poptBT.c:177
+#, c-format
+msgid "verify %files section from <tarball>"
+msgstr "verificér afsnittet %files fra <tararkiv>"
+
+#: build/poptBT.c:180
+msgid "build source and binary packages from <tarball>"
+msgstr "opbyg kilde- og binærpakker ud fra <tararkiv>"
+
+#: build/poptBT.c:183
+msgid "build binary package only from <tarball>"
+msgstr "opbyg kun binærpakke ud fra <tararkiv>"
+
+#: build/poptBT.c:186
+msgid "build source package only from <tarball>"
+msgstr "opbyg kun kildepakke ud fra <tararkiv>"
+
+#: build/poptBT.c:190
+msgid "build binary package from <source package>"
+msgstr "opbyg binærpakke ud fra <kildepakke>"
+
+#: build/poptBT.c:191 build/poptBT.c:194
+msgid "<source package>"
+msgstr "<kildepakke>"
+
+#: build/poptBT.c:193
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"opbyg gennem %install (%prep, %build, så installér) ud fra <kildepakke>"
+
+#: build/poptBT.c:197
+msgid "override build root"
+msgstr "gennemtving opbygningsrod"
+
+#: build/poptBT.c:199
+msgid "remove build tree when done"
+msgstr "fjern bygge-træ ved afslutning"
+
+#: build/poptBT.c:201 rpmdb/poptDB.c:29
+msgid "generate headers compatible with rpm4 packaging"
+msgstr "generér hoveder, der er kompatible med rpm4-indpakningsversionen"
+
+#: build/poptBT.c:203
+msgid "ignore ExcludeArch: directives from spec file"
+msgstr "ignorér 'ExcludeArch':-angivelser fra spec-fil"
+
+#: build/poptBT.c:205
+msgid "debug file state machine"
+msgstr ""
+
+#: build/poptBT.c:207
+msgid "do not execute any stages of the build"
+msgstr "udfør ingen stadier af opbygningen"
+
+#: build/poptBT.c:209
+#, fuzzy
+msgid "do not verify build dependencies"
+msgstr "undlad at tjekke pakkers afhængighedskrav"
+
+#: build/poptBT.c:211
+msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
+msgstr ""
+"generér pakkehoved(er), der er kompatible med (gamle) rpm[23]-indpakninger"
+
+#: build/poptBT.c:214
+msgid "do not accept i18N msgstr's from specfile"
+msgstr "acceptér ikke i18N msgstr'er fra spec-fil"
+
+#: build/poptBT.c:216
+msgid "remove sources when done"
+msgstr "fjern kilder ved afslutning"
+
+#: build/poptBT.c:218
+msgid "remove specfile when done"
+msgstr "fjern spec-fil ved afslutning"
+
+#: build/poptBT.c:220
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "spring direkte til angivet stadium (kun for c,i)"
+
+#: build/poptBT.c:222
+msgid "generate PGP/GPG signature"
+msgstr "generér PGP/GPG-signatur"
+
+#: build/poptBT.c:224
+msgid "override target platform"
+msgstr "gennemtving målplatform"
+
+#: build/poptBT.c:226
+msgid "lookup i18N strings in specfile catalog"
+msgstr "slå i18N-strenge op i spec-fil katalog"
+
 #: build/spec.c:227
 #, c-format
 msgid "line %d: Bad number: %s\n"
@@ -1300,61 +1453,61 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:585 lib/depends.c:1252 lib/depends.c:1385
+#: lib/depends.c:585 lib/depends.c:1248 lib/depends.c:1381
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:585 lib/depends.c:1252 lib/depends.c:1385
+#: lib/depends.c:585 lib/depends.c:1248 lib/depends.c:1381
 #, fuzzy
 msgid "NO "
 msgstr "IKKE O.K."
 
-#: lib/depends.c:1046
+#: lib/depends.c:1042
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s JA (tilføjede filer)\n"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1153
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s JA (tilføjede 'provide')\n"
 
-#: lib/depends.c:1251
+#: lib/depends.c:1247
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (husket)\n"
 
-#: lib/depends.c:1280
+#: lib/depends.c:1276
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:1297
+#: lib/depends.c:1293
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:1321
+#: lib/depends.c:1317
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:1334
+#: lib/depends.c:1330
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db tilfører)\n"
 
-#: lib/depends.c:1348
+#: lib/depends.c:1344
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s JA (db-pakke)\n"
 
-#: lib/depends.c:1364
+#: lib/depends.c:1360
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1385
+#: lib/depends.c:1381
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tilføjet til afhængigheds-buffer.\n"
@@ -1362,42 +1515,42 @@ msgstr "%s: (%s, %s) tilføjet til afhængigheds-buffer.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1458
+#: lib/depends.c:1454
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1537
+#: lib/depends.c:1533
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "pakke %s skaber konflikt: %s\n"
 
-#: lib/depends.c:1790
+#: lib/depends.c:1786
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1940
+#: lib/depends.c:1936
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2000
+#: lib/depends.c:1996
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2050
+#: lib/depends.c:2046
 msgid "========== successors only (presentation order)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:2103
+#: lib/depends.c:2099
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:2133
+#: lib/depends.c:2129
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
@@ -1585,168 +1738,15 @@ msgstr "(ukendt type)"
 msgid "error creating temporary file %s\n"
 msgstr "fejl ved oprettelse af midlertidig fil %s\n"
 
-#: lib/package.c:163
+#: lib/package.c:161
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "indpakningsversion 1 understøttes ikke af denne udgave af RPM\n"
 
-#: lib/package.c:229
+#: lib/package.c:184
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "kun indpakninger med hovedversion <= 4 understøttes af denne udgave af RPM\n"
-
-#: lib/poptBT.c:116
-#, c-format
-msgid "buildroot already specified, ignoring %s\n"
-msgstr ""
-"buildroot allerede angivet, ignorerer %s\n"
-"\n"
-
-#: lib/poptBT.c:146
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <spec-fil>"
-
-#: lib/poptBT.c:147 lib/poptBT.c:150 lib/poptBT.c:153 lib/poptBT.c:156
-#: lib/poptBT.c:159 lib/poptBT.c:162 lib/poptBT.c:165
-msgid "<specfile>"
-msgstr "<spec-fil>"
-
-#: lib/poptBT.c:149
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <spec-fil>"
-
-#: lib/poptBT.c:152
-msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <spec-fil>"
-
-#: lib/poptBT.c:155
-#, c-format
-msgid "verify %files section from <specfile>"
-msgstr "verificér afsnittet %files ud fra <spec-fil>"
-
-#: lib/poptBT.c:158
-msgid "build source and binary packages from <specfile>"
-msgstr "opbyg kilde- og binærpakke ud fra <spec-fil>"
-
-#: lib/poptBT.c:161
-msgid "build binary package only from <specfile>"
-msgstr "opbyg kun binærpakke ud fra <spec-fil>"
-
-#: lib/poptBT.c:164
-msgid "build source package only from <specfile>"
-msgstr "opbyg kun kildepakke ud fra <spec-fil>"
-
-#: lib/poptBT.c:168
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <tararkiv>"
-
-#: lib/poptBT.c:169 lib/poptBT.c:172 lib/poptBT.c:175 lib/poptBT.c:178
-#: lib/poptBT.c:181 lib/poptBT.c:184 lib/poptBT.c:187
-msgid "<tarball>"
-msgstr "<tararkiv>"
-
-#: lib/poptBT.c:171
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <tararkiv>"
-
-#: lib/poptBT.c:174
-msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <tararkiv>"
-
-#: lib/poptBT.c:177
-#, c-format
-msgid "verify %files section from <tarball>"
-msgstr "verificér afsnittet %files fra <tararkiv>"
-
-#: lib/poptBT.c:180
-msgid "build source and binary packages from <tarball>"
-msgstr "opbyg kilde- og binærpakker ud fra <tararkiv>"
-
-#: lib/poptBT.c:183
-msgid "build binary package only from <tarball>"
-msgstr "opbyg kun binærpakke ud fra <tararkiv>"
-
-#: lib/poptBT.c:186
-msgid "build source package only from <tarball>"
-msgstr "opbyg kun kildepakke ud fra <tararkiv>"
-
-#: lib/poptBT.c:190
-msgid "build binary package from <source package>"
-msgstr "opbyg binærpakke ud fra <kildepakke>"
-
-#: lib/poptBT.c:191 lib/poptBT.c:194
-msgid "<source package>"
-msgstr "<kildepakke>"
-
-#: lib/poptBT.c:193
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"opbyg gennem %install (%prep, %build, så installér) ud fra <kildepakke>"
-
-#: lib/poptBT.c:197
-msgid "override build root"
-msgstr "gennemtving opbygningsrod"
-
-#: lib/poptBT.c:199
-msgid "remove build tree when done"
-msgstr "fjern bygge-træ ved afslutning"
-
-#: lib/poptBT.c:201 rpmdb/poptDB.c:29
-msgid "generate headers compatible with rpm4 packaging"
-msgstr "generér hoveder, der er kompatible med rpm4-indpakningsversionen"
-
-#: lib/poptBT.c:203
-msgid "ignore ExcludeArch: directives from spec file"
-msgstr "ignorér 'ExcludeArch':-angivelser fra spec-fil"
-
-#: lib/poptBT.c:205
-msgid "debug file state machine"
-msgstr ""
-
-#: lib/poptBT.c:207
-msgid "do not execute any stages of the build"
-msgstr "udfør ingen stadier af opbygningen"
-
-#: lib/poptBT.c:209
-#, fuzzy
-msgid "do not verify build dependencies"
-msgstr "undlad at tjekke pakkers afhængighedskrav"
-
-#: lib/poptBT.c:211
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
-"generér pakkehoved(er), der er kompatible med (gamle) rpm[23]-indpakninger"
-
-#: lib/poptBT.c:214
-msgid "do not accept i18N msgstr's from specfile"
-msgstr "acceptér ikke i18N msgstr'er fra spec-fil"
-
-#: lib/poptBT.c:216
-msgid "remove sources when done"
-msgstr "fjern kilder ved afslutning"
-
-#: lib/poptBT.c:218
-msgid "remove specfile when done"
-msgstr "fjern spec-fil ved afslutning"
-
-#: lib/poptBT.c:220
-msgid "skip straight to specified stage (only for c,i)"
-msgstr "spring direkte til angivet stadium (kun for c,i)"
-
-#: lib/poptBT.c:222
-msgid "generate PGP/GPG signature"
-msgstr "generér PGP/GPG-signatur"
-
-#: lib/poptBT.c:224
-msgid "override target platform"
-msgstr "gennemtving målplatform"
-
-#: lib/poptBT.c:226
-msgid "lookup i18N strings in specfile catalog"
-msgstr "slå i18N-strenge op i spec-fil katalog"
 
 #: lib/poptI.c:47
 msgid "exclude paths must begin with a /"
@@ -1966,186 +1966,201 @@ msgstr "installér ikke, men fortæl om det ville lykkes eller ej"
 msgid "upgrade package(s)"
 msgstr "opgradér pakke"
 
-#: lib/poptK.c:26
-msgid "add a signature to a package"
-msgstr "tilføj signatur til pakke"
-
-#: lib/poptK.c:28 lib/poptK.c:31
-msgid "verify package signature"
-msgstr "verificér pakkesignatur"
-
-#: lib/poptK.c:33
-msgid "sign a package (discard current signature)"
-msgstr "underskriv en pakke (slet nuværende signatur)"
-
-#: lib/poptK.c:35
-#, fuzzy
-msgid "generate signature"
-msgstr "generér PGP/GPG-signatur"
-
-#: lib/poptK.c:37
-msgid "skip any GPG signatures"
-msgstr "overspring eventuelle GPG-signaturer"
-
-#: lib/poptK.c:40
-msgid "skip any PGP signatures"
-msgstr "overspring eventuelle PGP-signaturer"
-
-#: lib/poptK.c:42
-msgid "do not verify file md5 checksums"
-msgstr "tjek ikke filers md5-checksummer"
-
-#: lib/poptQV.c:78
+#: lib/poptQV.c:83
 msgid "query/verify all packages"
 msgstr "forespørg/verificér alle pakker"
 
-#: lib/poptQV.c:80
+#: lib/poptQV.c:85
+#, fuzzy
+msgid "rpm checksig mode"
+msgstr "rpm verifikationstilstand"
+
+#: lib/poptQV.c:87
 msgid "query/verify package(s) owning file"
 msgstr "forespørg/verificér pakke(r), der ejer filen"
 
-#: lib/poptQV.c:82
+#: lib/poptQV.c:89
 msgid "query/verify package(s) in group"
 msgstr "forespørg/verificér pakke(r) i gruppen"
 
-#: lib/poptQV.c:84
+#: lib/poptQV.c:91
 msgid "query/verify a package file (i.e. a binary *.rpm file)"
 msgstr "forespørg/verificér en pakkefil (dvs. en binær *.rpm-fil)"
 
-#: lib/poptQV.c:86
+#: lib/poptQV.c:93
 msgid "rpm query mode"
 msgstr "rpm forespørgselstilstand"
 
-#: lib/poptQV.c:90
+#: lib/poptQV.c:97
 msgid "display known query tags"
 msgstr "vis kendte forespørgselsmærker"
 
-#: lib/poptQV.c:92
+#: lib/poptQV.c:99
 msgid "query a spec file"
 msgstr "forespørg en spec-fil"
 
-#: lib/poptQV.c:92
+#: lib/poptQV.c:99
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:94
+#: lib/poptQV.c:101
 msgid "query the package(s) triggered by the package"
 msgstr "forespørg pakke(r), der udløses af pakken"
 
-#: lib/poptQV.c:96
+#: lib/poptQV.c:103
 msgid "rpm verify mode"
 msgstr "rpm verifikationstilstand"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:106
 msgid "rpm verify mode (legacy)"
 msgstr "gammel rpm verifikationstilstand"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:108
 msgid "query/verify the package(s) which require a dependency"
 msgstr "forespørg/verificér pakke(r), der stiller et krav"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:110
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "forespørg/verificér pakke(r), der tilfredsstiller et krav"
 
-#: lib/poptQV.c:162
+#: lib/poptQV.c:170
 msgid "list all configuration files"
 msgstr "vis alle konfigurationsfiler"
 
-#: lib/poptQV.c:164
+#: lib/poptQV.c:172
 msgid "list all documentation files"
 msgstr "vis alle dokumentationsfiler"
 
-#: lib/poptQV.c:166
+#: lib/poptQV.c:174
 msgid "dump basic file information"
 msgstr "vis grundlæggende filinformation"
 
-#: lib/poptQV.c:168
+#: lib/poptQV.c:176
 msgid "list files in package"
 msgstr "vis liste over filerne i pakken"
 
-#: lib/poptQV.c:173
+#: lib/poptQV.c:181
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:177
+#: lib/poptQV.c:185
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:180
+#: lib/poptQV.c:188
 #, fuzzy, c-format
 msgid "skip %%readme files"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/poptQV.c:186
+#: lib/poptQV.c:194
 msgid "use the following query format"
 msgstr "brug følgende forespørgselsformat"
 
-#: lib/poptQV.c:188
+#: lib/poptQV.c:196
 msgid "substitute i18n sections into spec file"
 msgstr "erstat i18n-sektioner i spec-fil"
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:198
 msgid "display the states of the listed files"
 msgstr "vis filernes status"
 
-#: lib/poptQV.c:192
+#: lib/poptQV.c:200
 msgid "display a verbose file listing"
 msgstr "giv en detaljeret filliste"
 
-#: lib/poptQV.c:211
+#: lib/poptQV.c:220 lib/poptQV.c:262 lib/poptQV.c:296
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:223
 #, fuzzy
 msgid "don't verify size of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:217
+#: lib/poptQV.c:226
 #, fuzzy
 msgid "don't verify symlink path of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:220
+#: lib/poptQV.c:229
 #, fuzzy
 msgid "don't verify owner of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:223
+#: lib/poptQV.c:232
 #, fuzzy
 msgid "don't verify group of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:235
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:229 lib/poptQV.c:232
+#: lib/poptQV.c:238 lib/poptQV.c:241
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:235
+#: lib/poptQV.c:244
 msgid "don't verify files in package"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:237
+#: lib/poptQV.c:246
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: lib/poptQV.c:239 lib/poptQV.c:243
+#: lib/poptQV.c:248 lib/poptQV.c:252
 #, fuzzy
-msgid "don't execute %verifyscript (if any)"
+msgid "don't execute verify script(s)"
 msgstr "udfør ikke eventuelt %verifyscript"
 
-#: lib/poptQV.c:246
+#: lib/poptQV.c:255
 #, fuzzy
-msgid "don't verify header SHA1 digest"
+msgid "don't verify digest(s)"
 msgstr "verificér ikke filerne i pakke"
+
+#: lib/poptQV.c:258
+#, fuzzy
+msgid "don't verify signature(s)"
+msgstr "verificér ikke filerne i pakke"
+
+#: lib/poptQV.c:266 lib/poptQV.c:300
+#, fuzzy
+msgid "don't verify GPG V3 DSA signature(s)"
+msgstr "verificér ikke filerne i pakke"
+
+#: lib/poptQV.c:269 lib/poptQV.c:303
+#, fuzzy
+msgid "don't verify PGP V3 RSA/MD5 signature(s)"
+msgstr "verificér ikke filerne i pakke"
+
+#: lib/poptQV.c:284
+#, fuzzy
+msgid "sign a package, preserving other existing signatures"
+msgstr "underskriv en pakke (slet nuværende signatur)"
+
+#: lib/poptQV.c:286
+#, fuzzy
+msgid "verify package signature(s)"
+msgstr "verificér pakkesignatur"
+
+#: lib/poptQV.c:288
+msgid "import an armored public key"
+msgstr ""
+
+#: lib/poptQV.c:290
+#, fuzzy
+msgid "sign a package, discarding all current signatures"
+msgstr "underskriv en pakke (slet nuværende signatur)"
+
+#: lib/poptQV.c:292
+#, fuzzy
+msgid "generate signature"
+msgstr "generér PGP/GPG-signatur"
 
 #: lib/problems.c:83
 #, c-format
@@ -2321,124 +2336,154 @@ msgstr "kunne ikke åbne %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: lib/query.c:122
+#: lib/query.c:128
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ugyldigt format: %s\n"
 
-#: lib/query.c:219
+#: lib/query.c:225
 msgid "(contains no files)"
 msgstr "(indeholder ingen filer)"
 
-#: lib/query.c:280
+#: lib/query.c:286
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:283
+#: lib/query.c:289
 msgid "replaced      "
 msgstr "erstattet     "
 
-#: lib/query.c:286
+#: lib/query.c:292
 msgid "not installed "
 msgstr "ej installeret"
 
-#: lib/query.c:289
+#: lib/query.c:295
 msgid "net shared    "
 msgstr "ej delt       "
 
-#: lib/query.c:292
+#: lib/query.c:298
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(ukendt %3d)  "
 
-#: lib/query.c:297
+#: lib/query.c:303
 msgid "(no state)    "
 msgstr "(ingen status)"
 
-#: lib/query.c:316 lib/query.c:372
+#: lib/query.c:322 lib/query.c:378
 msgid "package has neither file owner or id lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:461
+#: lib/query.c:467
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kunne ikke forespørge %s: %s\n"
 
-#: lib/query.c:599 lib/query.c:633 lib/rpminstall.c:323 lib/rpminstall.c:467
-#: lib/rpminstall.c:847
+#: lib/query.c:582 lib/rpmchecksig.c:159 lib/rpmchecksig.c:492
+#, c-format
+msgid "%s: readLead failed\n"
+msgstr "%s: readLead mislykkedes\n"
+
+#: lib/query.c:588 lib/rpmchecksig.c:498
+#, c-format
+msgid "%s: No signature available (v1.0 RPM)\n"
+msgstr "%s: Ingen tilgængelig signatur (v1.0 RPM)\n"
+
+#: lib/query.c:597 lib/rpmchecksig.c:177 lib/rpmchecksig.c:508
+#, c-format
+msgid "%s: rpmReadSignature failed\n"
+msgstr "%s: rpmReadSignature mislykkedes\n"
+
+#: lib/query.c:601 lib/rpmchecksig.c:181 lib/rpmchecksig.c:513
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Ingen tilgængelig signatur\n"
+
+#: lib/query.c:624
+#, fuzzy, c-format
+msgid "%s: headerRead failed\n"
+msgstr "%s: readLead mislykkedes\n"
+
+#: lib/query.c:641 lib/rpmchecksig.c:110 lib/rpmchecksig.c:287
+#, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: Fread mislykkedes: %s\n"
+
+#: lib/query.c:758 lib/query.c:796 lib/rpminstall.c:324 lib/rpminstall.c:468
+#: lib/rpminstall.c:848
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/query.c:612
+#: lib/query.c:774
 #, c-format
 msgid "query of %s failed\n"
 msgstr "forespørgsel af %s mislykkedes\n"
 
-#: lib/query.c:618
+#: lib/query.c:780
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:643 lib/rpminstall.c:480
+#: lib/query.c:806 lib/rpminstall.c:481
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
 
-#: lib/query.c:687
+#: lib/query.c:850
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "forespørgsel af spec-fil %s mislykkedes, kunne ikke tolkes\n"
 
-#: lib/query.c:711
+#: lib/query.c:874
 msgid "no packages\n"
 msgstr "ingen pakker\n"
 
-#: lib/query.c:731
+#: lib/query.c:894
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s indeholder ingen pakker\n"
 
-#: lib/query.c:741
+#: lib/query.c:904
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:751
+#: lib/query.c:914
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#: lib/query.c:762
+#: lib/query.c:925
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/query.c:799
+#: lib/query.c:962
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:803
+#: lib/query.c:966
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tilhører ingen pakke\n"
 
-#: lib/query.c:830
+#: lib/query.c:993
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/query.c:833
+#: lib/query.c:996
 #, c-format
 msgid "package record number: %u\n"
 msgstr "pakkens post-nummer: %u\n"
 
-#: lib/query.c:838
+#: lib/query.c:1001
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:849 lib/rpminstall.c:633
+#: lib/query.c:1012 lib/rpminstall.c:634
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -2457,16 +2502,6 @@ msgstr "makeTempFile mislykkedes\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:110 lib/rpmchecksig.c:291
-#, c-format
-msgid "%s: Fread failed: %s\n"
-msgstr "%s: Fread mislykkedes: %s\n"
-
-#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:534
-#, c-format
-msgid "%s: readLead failed\n"
-msgstr "%s: readLead mislykkedes\n"
-
 #: lib/rpmchecksig.c:164
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
@@ -2476,16 +2511,6 @@ msgstr "%s: Kan ikke underskrive v1.0 RPM\n"
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Kan ikke genunderskrive v2.0 RPM\n"
-
-#: lib/rpmchecksig.c:177 lib/rpmchecksig.c:550
-#, c-format
-msgid "%s: rpmReadSignature failed\n"
-msgstr "%s: rpmReadSignature mislykkedes\n"
-
-#: lib/rpmchecksig.c:181 lib/rpmchecksig.c:555
-#, c-format
-msgid "%s: No signature available\n"
-msgstr "%s: Ingen tilgængelig signatur\n"
 
 #: lib/rpmchecksig.c:214
 #, c-format
@@ -2497,123 +2522,118 @@ msgstr "%s: writeLead mislykkedes: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:540
-#, c-format
-msgid "%s: No signature available (v1.0 RPM)\n"
-msgstr "%s: Ingen tilgængelig signatur (v1.0 RPM)\n"
-
-#: lib/rpmchecksig.c:768
+#: lib/rpmchecksig.c:731
 msgid "NOT OK"
 msgstr "IKKE O.K."
 
-#: lib/rpmchecksig.c:769 lib/rpmchecksig.c:783
+#: lib/rpmchecksig.c:732 lib/rpmchecksig.c:746
 msgid " (MISSING KEYS:"
 msgstr " (MANGLENDE NØGLER:    "
 
-#: lib/rpmchecksig.c:771 lib/rpmchecksig.c:785
+#: lib/rpmchecksig.c:734 lib/rpmchecksig.c:748
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:772 lib/rpmchecksig.c:786
+#: lib/rpmchecksig.c:735 lib/rpmchecksig.c:749
 msgid " (UNTRUSTED KEYS:"
 msgstr " (IKKE-BETROEDE NØGLER:"
 
-#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
+#: lib/rpmchecksig.c:737 lib/rpmchecksig.c:751
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:782
+#: lib/rpmchecksig.c:745
 msgid "OK"
 msgstr "O.K."
 
-#: lib/rpminstall.c:152
+#: lib/rpminstall.c:153
 msgid "Preparing..."
 msgstr "Forbereder..."
 
-#: lib/rpminstall.c:154
+#: lib/rpminstall.c:155
 msgid "Preparing packages for installation..."
 msgstr "Forbereder pakker til installation..."
 
-#: lib/rpminstall.c:273
+#: lib/rpminstall.c:274
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Modtager %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:283
+#: lib/rpminstall.c:284
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:287
+#: lib/rpminstall.c:288
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "overspringer %s - overførsel mislykkedes - %s\n"
 
-#: lib/rpminstall.c:369
+#: lib/rpminstall.c:370
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
-#: lib/rpminstall.c:392
+#: lib/rpminstall.c:393
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakke %s kan ikke omrokeres\n"
 
-#: lib/rpminstall.c:441
+#: lib/rpminstall.c:442
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fejl ved læsning fra filen %s\n"
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:448
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s kræver en nyere version af RPM\n"
 
-#: lib/rpminstall.c:459 lib/rpminstall.c:704
+#: lib/rpminstall.c:460 lib/rpminstall.c:705
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
-#: lib/rpminstall.c:495
+#: lib/rpminstall.c:496
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "fandt %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:511
+#: lib/rpminstall.c:512
 msgid "failed dependencies:\n"
 msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
 
-#: lib/rpminstall.c:532
+#: lib/rpminstall.c:533
 msgid "installing binary packages\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:554
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kunne ikke åbne fil %s: %s\n"
 
-#: lib/rpminstall.c:620
+#: lib/rpminstall.c:621
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kunne ikke åbne %s/packages.rpm\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:637
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" angiver flere pakker\n"
 
-#: lib/rpminstall.c:660
+#: lib/rpminstall.c:661
 msgid "removing these packages would break dependencies:\n"
 msgstr "fjernelse af disse pakker ville bryde afhængighederne:\n"
 
-#: lib/rpminstall.c:690
+#: lib/rpminstall.c:691
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/rpminstall.c:696
+#: lib/rpminstall.c:697
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"
@@ -2833,6 +2853,38 @@ msgstr "Du skal angive \"%%_gpg_name\" i din makrofil\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du skal angive \"%%_pgp_name\" i din makrofil\n"
 
+#: lib/signature.c:626
+#, fuzzy
+msgid "Header+Payload size: "
+msgstr "Hovedstørrelse er for stor"
+
+#: lib/signature.c:655
+msgid "MD5 digest: "
+msgstr ""
+
+#: lib/signature.c:695
+#, fuzzy
+msgid "V3 RSA/MD5 signature: "
+msgstr "overspring eventuelle MD5-signaturer"
+
+#: lib/signature.c:785
+#, fuzzy
+msgid "V3 DSA signature: "
+msgstr "Ingen signatur\n"
+
+#: lib/signature.c:849
+msgid "Verify signature: BAD PARAMETERS\n"
+msgstr ""
+
+#: lib/signature.c:869
+msgid "Broken MD5 digest: UNSUPPORTED\n"
+msgstr ""
+
+#: lib/signature.c:873
+#, fuzzy, c-format
+msgid "Signature: UNKNOWN (%d)\n"
+msgstr "Signaturfyld : %d\n"
+
 #: lib/transaction.c:309
 #, c-format
 msgid "%s skipped due to missingok flag\n"
@@ -2856,17 +2908,17 @@ msgstr ""
 "pakken har hverken en liste over gruppenavne eller id (det burde ikke kunne "
 "ske)\n"
 
-#: lib/verify.c:411
+#: lib/verify.c:414
 #, c-format
 msgid "missing    %s"
 msgstr "manglende  %s"
 
-#: lib/verify.c:508
+#: lib/verify.c:511
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
 
-#: lib/verify.c:553
+#: lib/verify.c:556
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3387,6 +3439,24 @@ msgstr "url-port skal være et tal\n"
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
 
+#~ msgid "add a signature to a package"
+#~ msgstr "tilføj signatur til pakke"
+
+#~ msgid "verify package signature"
+#~ msgstr "verificér pakkesignatur"
+
+#~ msgid "sign a package (discard current signature)"
+#~ msgstr "underskriv en pakke (slet nuværende signatur)"
+
+#~ msgid "skip any GPG signatures"
+#~ msgstr "overspring eventuelle GPG-signaturer"
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "overspring eventuelle PGP-signaturer"
+
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "tjek ikke filers md5-checksummer"
+
 #~ msgid "extra arguments given for query of all packages"
 #~ msgstr "ekstra parametre angivet ved forespørgsel på alle pakker"
 
@@ -3869,9 +3939,6 @@ msgstr "kunne ikke oprette %s: %s\n"
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <pakke>+           "
 
-#~ msgid "skip any MD5 signatures"
-#~ msgstr "overspring eventuelle MD5-signaturer"
-
 #~ msgid "make sure a valid database exists"
 #~ msgstr "tjek at der eksisterer en gyldig database"
 
@@ -4238,9 +4305,6 @@ msgstr "kunne ikke oprette %s: %s\n"
 #~ msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 #~ msgstr ""
 #~ "overspringer installation af %s-%s-%s, %%pre-småskript fejlede rc %d\n"
-
-#~ msgid "Signature pad : %d\n"
-#~ msgstr "Signaturfyld : %d\n"
 
 #~ msgid "removal of %s failed: %s\n"
 #~ msgstr "fjernelse af %s mislykkedes: %s\n"

@@ -2289,14 +2289,15 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
 
     if (PyArg_ParseTuple(args, "si", &filename, &flags)) {
 	const char *av[2];
-	struct rpmSignArguments_s ka;
+	QVA_t ka = alloca(sizeof(*ka));
+	memset(ka, 0, sizeof(*ka));
 	av[0] = filename;
 	av[1] = NULL;
-	ka.addSign = RPMSIGN_CHK_SIGNATURE;
-	ka.checksigFlags = flags;
-	ka.sign = 0;
-	ka.passPhrase = NULL;
-	rc = rpmcliSign(&ka, av);
+	ka->qva_mode = 'K';
+	ka->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
+	ka->sign = 0;
+	ka->passPhrase = NULL;
+	rc = rpmcliSign(ka, av);
     }
     return Py_BuildValue("i", rc);
 }
@@ -2589,9 +2590,14 @@ void initrpm(void) {
     REGISTER_ENUM(RPMPROB_DISKNODES);
     REGISTER_ENUM(RPMPROB_BADPRETRANS);
 
-    REGISTER_ENUM(CHECKSIG_PGP);
-    REGISTER_ENUM(CHECKSIG_GPG);
-    REGISTER_ENUM(CHECKSIG_MD5);
+#ifdef	DEAD
+    REGISTER_ENUM(CHECKSIG_PGP);	/* XXX use VERIFY_SIGNATURE */
+    REGISTER_ENUM(CHECKSIG_GPG);	/* XXX use VERIFY_SIGNATURE */
+    REGISTER_ENUM(CHECKSIG_MD5);	/* XXX use VERIFY_DIGEST */
+#else
+    REGISTER_ENUM(VERIFY_DIGEST);
+    REGISTER_ENUM(VERIFY_SIGNATURE);
+#endif
 }
 
 /*@}*/

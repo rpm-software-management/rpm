@@ -89,7 +89,7 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    unsigned char buffer[BUFSIZ];
+    unsigned char buf[BUFSIZ];
     ssize_t count;
     int rc = 1;
 
@@ -98,9 +98,9 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	goto exit;
 
-    while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0)
+    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
     {
-	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) != count) {
+	if (Fwrite(buf, sizeof(buf[0]), count, *tfdp) != count) {
 	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
 	    goto exit;
@@ -122,12 +122,12 @@ exit:
 /** \ingroup rpmcli
  * Create/modify elements in signature header.
  * @param ts		transaction set
- * @param ka		mode flags and parameters
+ * @param qva		mode flags and parameters
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
 static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
-		struct rpmSignArguments_s * ka, const char ** argv)
+		QVA_t qva, const char ** argv)
         /*@globals rpmGlobalMacroContext,
                 fileSystem, internalState @*/
         /*@modifies rpmGlobalMacroContext,
@@ -189,16 +189,16 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
 
-	/* Generate the new signatures */
-	if (ka->addSign != RPMSIGN_ADD_SIGNATURE) {
+	/* Toss the current signatures and recompute if not --addsign. */
+	if (qva->qva_mode != RPMSIGN_ADD_SIGNATURE) {
 	    sig = rpmFreeSignature(sig);
 	    sig = rpmNewSignature();
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, ka->passPhrase);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, ka->passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
 	}
 
 	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0)
-	    (void) rpmAddSignature(sig, sigtarget, sigtype, ka->passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, sigtype, qva->passPhrase);
 
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
@@ -263,18 +263,14 @@ exit:
 /**
  */
 static int readFile(FD_t *sfdp, const char **sfnp, pgpDig dig)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies *sfdp, *sfnp, *dig, rpmGlobalMacroContext,
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *sfdp, *dig,
 		fileSystem, internalState @*/
 {
-    byte buffer[4*BUFSIZ];
+    byte buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
-    int i, xx;
-
-    if (manageFile(sfdp, sfnp, O_RDONLY, 0))
-	goto exit;
+    int i;
 
     /*@-type@*/ /* FIX: cast? */
     fdInitDigest(*sfdp, PGPHASHALGO_MD5, 0);
@@ -282,7 +278,7 @@ static int readFile(FD_t *sfdp, const char **sfnp, pgpDig dig)
     /*@=type@*/
     dig->nbytes = 0;
 
-    while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0)
+    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
     {
 	dig->nbytes += count;
     }
@@ -322,19 +318,18 @@ static int readFile(FD_t *sfdp, const char **sfnp, pgpDig dig)
     rc = 0;
 
 exit:
-    if (*sfdp)	xx = manageFile(sfdp, NULL, 0, rc);
     return rc;
 }
 
 /** \ingroup rpmcli
  * Import public key(s).
  * @param ts		transaction set
- * @param ka            mode flags and parameters
- * @param argv          array of pubkey file names (NULL terminated)
- * @return              0 on success
+ * @param qva		mode flags and parameters
+ * @param argv		array of pubkey file names (NULL terminated)
+ * @return		0 on success
  */
 static int rpmImportPubkey(rpmTransactionSet ts,
-		/*@unused@*/ struct rpmSignArguments_s * ka,
+		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -476,16 +471,13 @@ bottom:
     return res;
 }
 
-int rpmcliSign(struct rpmSignArguments_s * ka, const char ** argv)
+int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
+		const char * fn)
 {
-    const char * rootDir = "/";
-    rpmdb db = NULL;
-    rpmTransactionSet ts;
-    FD_t fd = NULL;
     int res2, res3;
     struct rpmlead lead, *l = &lead;
     char result[1024];
-    char buffer[8192], * b;
+    char buf[8192], * b;
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
     Header sig;
@@ -494,50 +486,16 @@ int rpmcliSign(struct rpmSignArguments_s * ka, const char ** argv)
     int xx;
     rpmRC rc;
 
-    if (argv == NULL) return res;
-
-    db = NULL;
-    xx = rpmdbOpen(rootDir, &db,
-	((ka->addSign == RPMSIGN_IMPORT_PUBKEY) ? O_RDWR : O_RDONLY), 0644);
-    if (xx != 0)
-	return -1;
-    ts = rpmtransCreateSet(db, rootDir);
-
-    switch (ka->addSign) {
-    case RPMSIGN_CHK_SIGNATURE:
-	break;
-    case RPMSIGN_IMPORT_PUBKEY:
-	return rpmImportPubkey(ts, ka, argv);
-	/*@notreached@*/ break;
-    case RPMSIGN_NEW_SIGNATURE:
-    case RPMSIGN_ADD_SIGNATURE:
-	return rpmReSign(ts, ka, argv);
-	/*@notreached@*/ break;
-    case RPMSIGN_NONE:
-    default:
-	return -1;
-	/*@notreached@*/ break;
-    }
-
-    /*@-branchstate@*/
-    while ((ts->fn = *argv++) != NULL) {
-
-	/*@-modobserver@*/ /* FIX: double indirection */
-	if (manageFile(&fd, &ts->fn, O_RDONLY, 0)) {
-	    res++;
-	    goto bottom;
-	}
-	/*@=modobserver@*/
-
+    {
 	memset(l, 0, sizeof(*l));
 	if (readLead(fd, l)) {
-	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), ts->fn);
+	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), fn);
 	    res++;
 	    goto bottom;
 	}
 	switch (l->major) {
 	case 1:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), ts->fn);
+	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), fn);
 	    res++;
 	    goto bottom;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
@@ -547,12 +505,12 @@ int rpmcliSign(struct rpmSignArguments_s * ka, const char ** argv)
 
 	rc = rpmReadSignature(fd, &sig, l->signature_type);
 	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), ts->fn);
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), fn);
 	    res++;
 	    goto bottom;
 	}
 	if (sig == NULL) {
-	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), ts->fn);
+	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
 	    res++;
 	    goto bottom;
 	}
@@ -560,18 +518,18 @@ int rpmcliSign(struct rpmSignArguments_s * ka, const char ** argv)
 	ts->dig = pgpNewDig();
 
 	/* Read the file, generating digest(s) on the fly. */
-	/*@-modobserver@*/ /* FIX: double indirection */
-	if (readFile(&fd, &ts->fn, ts->dig)) {
+	/*@-mods@*/ /* FIX: double indirection */
+	if (readFile(&fd, &fn, ts->dig)) {
 	    res++;
 	    goto bottom;
 	}
-	/*@=modobserver@*/
+	/*@=mods@*/
 
 	res2 = 0;
-	b = buffer;		*b = '\0';
+	b = buf;		*b = '\0';
 	m = missingKeys;	*m = '\0';
 	u = untrustedKeys;	*u = '\0';
-	sprintf(b, "%s:%c", ts->fn, (rpmIsVerbose() ? '\n' : ' ') );
+	sprintf(b, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 	b += strlen(b);
 
 	for (hi = headerInitIterator(sig);
@@ -579,15 +537,17 @@ int rpmcliSign(struct rpmSignArguments_s * ka, const char ** argv)
 	    ts->sig = headerFreeData(ts->sig, ts->sigtype))
 	{
 	    if (ts->sig == NULL) /* XXX can't happen */
-		/*@innercontinue@*/ continue;
+		continue;
 	    switch (ts->sigtag) {
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
-		if (!(ka->checksigFlags & CHECKSIG_PGP)) 
-		     /*@innercontinue@*/ continue;
+		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
+		     continue;
 if (rpmIsDebug())
 fprintf(stderr, "========================= Package RSA Signature\n");
 		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+
+#ifdef	DYING
 
 		/* XXX sanity check on ts->sigtag and signature agreement. */
 
@@ -623,14 +583,16 @@ fprintf(stderr, "========================= Package RSA Signature\n");
 
 		hexstr = _free(hexstr);
 	    }
+#endif
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
-		if (!(ka->checksigFlags & CHECKSIG_GPG)) 
-		     /*@innercontinue@*/ continue;
+		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
+		     continue;
 if (rpmIsDebug())
 fprintf(stderr, "========================= Package DSA Signature\n");
 		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
 
+#ifdef	DYING
 		/* XXX sanity check on ts->sigtag and signature agreement. */
 
     /*@-type@*/ /* FIX: cast? */
@@ -644,19 +606,20 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 	    }
 	    /*@=nullpass@*/
     /*@=type@*/
+#endif
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
 	    case RPMSIGTAG_MD5:
-		if (!(ka->checksigFlags & CHECKSIG_MD5)) 
-		     /*@innercontinue@*/ continue;
+		if (!(qva->qva_flags & VERIFY_DIGEST)) 
+		     continue;
 		/*@switchbreak@*/ break;
 	    default:
-		/*@innercontinue@*/ continue;
+		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 	    if (ts->sig == NULL) /* XXX can't happen */
-		/*@innercontinue@*/ continue;
+		continue;
 
 	    res3 = rpmVerifySignature(ts, result);
 	    if (res3) {
@@ -762,9 +725,9 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
-		rpmError(RPMERR_SIGVFY, "%s", buffer);
+		rpmError(RPMERR_SIGVFY, "%s", buf);
 	    } else {
-		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buffer,
+		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buf,
 			_("NOT OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
@@ -776,9 +739,9 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
-		rpmError(RPMERR_SIGVFY, "%s", buffer);
+		rpmError(RPMERR_SIGVFY, "%s", buf);
 	    } else {
-		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buffer,
+		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buf,
 			_("OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
@@ -790,10 +753,56 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 	}
 
     bottom:
-	if (fd)		xx = manageFile(&fd, NULL, 0, 0);
 	ts->dig = pgpFreeDig(ts->dig);
     }
-    /*@=branchstate@*/
+
+    return res;
+}
+
+int rpmcliSign(QVA_t qva, const char ** argv)
+{
+    const char * rootDir = "/";
+    rpmdb db = NULL;
+    rpmTransactionSet ts;
+    const char * arg;
+    int res = 0;
+    int xx;
+
+    if (argv == NULL) return res;
+
+    db = NULL;
+    xx = rpmdbOpen(rootDir, &db,
+	((qva->qva_mode == RPMSIGN_IMPORT_PUBKEY) ? O_RDWR : O_RDONLY), 0644);
+    if (xx != 0)
+	return -1;
+    ts = rpmtransCreateSet(db, rootDir);
+
+    switch (qva->qva_mode) {
+    case RPMSIGN_CHK_SIGNATURE:
+	break;
+    case RPMSIGN_IMPORT_PUBKEY:
+	return rpmImportPubkey(ts, qva, argv);
+	/*@notreached@*/ break;
+    case RPMSIGN_NEW_SIGNATURE:
+    case RPMSIGN_ADD_SIGNATURE:
+	return rpmReSign(ts, qva, argv);
+	/*@notreached@*/ break;
+    case RPMSIGN_NONE:
+    default:
+	return -1;
+	/*@notreached@*/ break;
+    }
+
+    while ((arg = *argv++) != NULL) {
+	FD_t fd;
+
+	if ((fd = Fopen(arg, "r.ufdio")) == NULL
+	 || Ferror(fd)
+	 || rpmVerifySignatures(qva, ts, fd, arg))
+	    res++;
+
+	if (fd != NULL) xx = Fclose(fd);
+    }
 
     ts->dig = pgpFreeDig(ts->dig);	/* XXX just in case */
     ts = rpmtransFree(ts);

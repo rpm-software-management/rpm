@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-23 23:52-0400\n"
+"POT-Creation-Date: 2001-10-24 21:17-0400\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -209,128 +209,128 @@ msgstr "Эту программу можно свободно распространять на условиях GNU GPL"
 msgid "Usage: %s {--help}\n"
 msgstr "Использование: %s {--help}\n"
 
-#: rpmqv.c:600
+#: rpmqv.c:603
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "вариант --rcfile больше не используется.\n"
 
-#: rpmqv.c:601
+#: rpmqv.c:604
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Вместо этого используйте \"--macros <файл:...>\".\n"
 
-#: rpmqv.c:607
+#: rpmqv.c:610
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Внутренняя ошибка при обработке аргументов (%d) :-(\n"
 
-#: rpmqv.c:648 rpmqv.c:654 rpmqv.c:660 rpmqv.c:698
+#: rpmqv.c:651 rpmqv.c:657 rpmqv.c:663 rpmqv.c:701
 msgid "only one major mode may be specified"
 msgstr "может быть указан только один из основных режимов"
 
-#: rpmqv.c:677
+#: rpmqv.c:680
 msgid "one type of query/verify may be performed at a time"
 msgstr "за один раз может быть исполнен только один тип проверки или запроса"
 
-#: rpmqv.c:681
+#: rpmqv.c:684
 msgid "unexpected query flags"
 msgstr "неожиданные флаги запроса"
 
-#: rpmqv.c:684
+#: rpmqv.c:687
 msgid "unexpected query format"
 msgstr "неожиданный формат запроса"
 
-#: rpmqv.c:687
+#: rpmqv.c:690
 msgid "unexpected query source"
 msgstr "неожиданный источник запроса"
 
-#: rpmqv.c:728
+#: rpmqv.c:731
 msgid "--dbpath given for operation that does not use a database"
 msgstr "параметр --dbpath задан для операции, не использующей базу данных"
 
-#: rpmqv.c:734
+#: rpmqv.c:737
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "принудительными могут быть только установка, обновление, удаление исходников "
 "и файла спецификации"
 
-#: rpmqv.c:736
+#: rpmqv.c:739
 msgid "files may only be relocated during package installation"
 msgstr "файлы могут быть перемещены только при установке пакета"
 
-#: rpmqv.c:739
+#: rpmqv.c:742
 msgid "only one of --prefix or --relocate may be used"
 msgstr ""
 "может быть использован только один из вариантов --prefix или --relocate"
 
-#: rpmqv.c:742
+#: rpmqv.c:745
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "варианты --relocate и --excludepath можно использовать только при установке "
 "новых пакетов"
 
-#: rpmqv.c:745
+#: rpmqv.c:748
 msgid "--prefix may only be used when installing new packages"
 msgstr "вариант --prefix можно использовать только при установке новых пакетов"
 
-#: rpmqv.c:748
+#: rpmqv.c:751
 msgid "arguments to --prefix must begin with a /"
 msgstr "аргументы для --prefix должны начинаться с /"
 
-#: rpmqv.c:751
+#: rpmqv.c:754
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) может быть указан только при установке пакета"
 
-#: rpmqv.c:755
+#: rpmqv.c:758
 msgid "--percent may only be specified during package installation"
 msgstr "--percent может быть указан только при установке пакета"
 
-#: rpmqv.c:760
+#: rpmqv.c:763
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles может быть указан только при установке пакета"
 
-#: rpmqv.c:764
+#: rpmqv.c:767
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs может быть указан только при установке пакета"
 
-#: rpmqv.c:768
+#: rpmqv.c:771
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs может быть указан только при установке пакета"
 
-#: rpmqv.c:772
+#: rpmqv.c:775
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs может быть указан только при установке пакета"
 
-#: rpmqv.c:776
+#: rpmqv.c:779
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "может быть использован только один из параметров --excludedocs или --"
 "includedocs"
 
-#: rpmqv.c:780
+#: rpmqv.c:783
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch может быть указан только при установке пакета"
 
-#: rpmqv.c:784
+#: rpmqv.c:787
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos может быть указан только при установке пакета"
 
-#: rpmqv.c:789
+#: rpmqv.c:792
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize может быть указан только при установке пакета"
 
-#: rpmqv.c:793
+#: rpmqv.c:796
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches может быть указан только при удалении пакета"
 
-#: rpmqv.c:797
+#: rpmqv.c:800
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles может быть указан только при установке пакета"
 
-#: rpmqv.c:802
+#: rpmqv.c:805
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb может быть указан только при установке или удалении пакета"
 
-#: rpmqv.c:807
+#: rpmqv.c:810
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -338,7 +338,7 @@ msgstr ""
 "параметры запрета сценариев могут быть указаны только при установке или "
 "удалении пакета"
 
-#: rpmqv.c:812
+#: rpmqv.c:815
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -346,7 +346,7 @@ msgstr ""
 "параметры запрета триггеров могут быть указан только при установке или "
 "удалении пакета(ов)"
 
-#: rpmqv.c:816
+#: rpmqv.c:819
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -354,14 +354,14 @@ msgstr ""
 "--nodeps может быть указан только при сборке, установке, удалении и проверки "
 "пакетов"
 
-#: rpmqv.c:821
+#: rpmqv.c:824
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test может быть указан только при установке, удалении и сборке пакета"
 
-#: rpmqv.c:826
+#: rpmqv.c:829
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -369,81 +369,81 @@ msgstr ""
 "--root (-r) может быть указана только при установке, удалении, запросах "
 "пакета и перестроении базы данных"
 
-#: rpmqv.c:838
+#: rpmqv.c:841
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументы для --root (-r) должны начинаться с /"
 
-#: rpmqv.c:862
+#: rpmqv.c:865
 msgid "no files to sign\n"
 msgstr "нет файлов для подписи\n"
 
-#: rpmqv.c:867
+#: rpmqv.c:870
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "нет доступа к файлу %s\n"
 
-#: rpmqv.c:886
+#: rpmqv.c:889
 msgid "pgp not found: "
 msgstr "pgp не найден: "
 
-#: rpmqv.c:891
+#: rpmqv.c:894
 msgid "Enter pass phrase: "
 msgstr "Введите ключевую фразу: "
 
-#: rpmqv.c:893
+#: rpmqv.c:896
 msgid "Pass phrase check failed\n"
 msgstr "Неверная ключевая фраза\n"
 
-#: rpmqv.c:897
+#: rpmqv.c:900
 msgid "Pass phrase is good.\n"
 msgstr "Ключевая фраза принята.\n"
 
-#: rpmqv.c:902
+#: rpmqv.c:905
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Неверная спецификация %%_signature в макрофайле.\n"
 
-#: rpmqv.c:909
+#: rpmqv.c:912
 msgid "--sign may only be used during package building"
 msgstr "--sign может быть использован только при сборке пакетов"
 
-#: rpmqv.c:926
+#: rpmqv.c:929
 msgid "exec failed\n"
 msgstr "запуск не удался\n"
 
-#: rpmqv.c:956
+#: rpmqv.c:959
 msgid "no packages files given for rebuild"
 msgstr "не заданы пакеты для пересборки"
 
-#: rpmqv.c:1023
+#: rpmqv.c:1026
 msgid "no spec files given for build"
 msgstr "не задан файл спецификации для сборки пакета"
 
-#: rpmqv.c:1025
+#: rpmqv.c:1028
 msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
-#: rpmqv.c:1044
+#: rpmqv.c:1047
 msgid "no packages given for uninstall"
 msgstr "не заданы пакеты для удаления"
 
-#: rpmqv.c:1055
+#: rpmqv.c:1058
 msgid "no packages given for install"
 msgstr "не заданы пакеты для установки"
 
-#: rpmqv.c:1103
+#: rpmqv.c:1106
 msgid "no arguments given for query"
 msgstr "не заданы аргументы запроса"
 
-#: rpmqv.c:1117
+#: rpmqv.c:1120
 msgid "no arguments given for verify"
 msgstr "не заданы аргументы для верификации"
 
-#: rpmqv.c:1125
+#: rpmqv.c:1128
 msgid "unexpected arguments to --querytags "
 msgstr "неожиданные аргументы для --querytags "
 
-#: rpmqv.c:1135
+#: rpmqv.c:1144
 #, fuzzy
 msgid "no arguments given"
 msgstr "не заданы аргументы запроса"
@@ -526,181 +526,181 @@ msgstr "&& и || не поддерживаются для строк\n"
 msgid "syntax error in expression\n"
 msgstr "синтаксическая ошибка в выражении\n"
 
-#: build/files.c:270
+#: build/files.c:269
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "Ошибка TIMECHECK: %s\n"
 
-#: build/files.c:329 build/files.c:521 build/files.c:704
+#: build/files.c:328 build/files.c:520 build/files.c:703
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Отсутствует '(' в %s %s\n"
 
-#: build/files.c:340 build/files.c:646 build/files.c:715
+#: build/files.c:339 build/files.c:645 build/files.c:714
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "отсутствует ')' в %s(%s\n"
 
-#: build/files.c:378 build/files.c:671
+#: build/files.c:377 build/files.c:670
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Неверный токен %s: %s\n"
 
-#: build/files.c:484
+#: build/files.c:483
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Отсутствует %s в %s %s\n"
 
-#: build/files.c:537
+#: build/files.c:536
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Не пробел следует после %s(): %s\n"
 
-#: build/files.c:575
+#: build/files.c:574
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Неверный синтаксис: %s(%s)\n"
 
-#: build/files.c:585
+#: build/files.c:584
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Неверные права: %s(%s)\n"
 
-#: build/files.c:597
+#: build/files.c:596
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Неверные права на каталог %s(%s)\n"
 
-#: build/files.c:742
+#: build/files.c:741
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Необычная длина locale: \"%.*s\" в %%lang(%s)\n"
 
 #. @innercontinue@
-#: build/files.c:753
+#: build/files.c:752
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Дубликат locale %.*s в %%lang(%s)\n"
 
-#: build/files.c:904
+#: build/files.c:903
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Лимит для %%docdir превышен\n"
 
-#: build/files.c:910
+#: build/files.c:909
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Только один аргумент для %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:938
+#: build/files.c:937
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Два файла в одной строке: %s\n"
 
-#: build/files.c:953
+#: build/files.c:952
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:966
+#: build/files.c:965
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s\n"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1143
+#: build/files.c:1142
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s\n"
 
-#: build/files.c:1278
+#: build/files.c:1277
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1484
+#: build/files.c:1483
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s\n"
 
-#: build/files.c:1508
+#: build/files.c:1507
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1551 build/files.c:2163 build/parsePrep.c:50
+#: build/files.c:1550 build/files.c:2162 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
-#: build/files.c:1563
+#: build/files.c:1562
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Файл %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1667
+#: build/files.c:1666
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:1690
+#: build/files.c:1689
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob не разрешаются: %s\n"
 
-#: build/files.c:1705
+#: build/files.c:1704
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1767
+#: build/files.c:1766
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files %s: %s\n"
 
-#: build/files.c:1778 build/pack.c:145
+#: build/files.c:1777 build/pack.c:145
 #, c-format
 msgid "line: %s\n"
 msgstr "строка: %s\n"
 
-#: build/files.c:2151
+#: build/files.c:2150
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2225
+#: build/files.c:2224
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Невозможно вылнить %s: %s\n"
 
-#: build/files.c:2230
+#: build/files.c:2229
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Сбой ветвления %s: %s\n"
 
-#: build/files.c:2314
+#: build/files.c:2313
 #, c-format
 msgid "%s failed\n"
 msgstr "%s не удалось\n"
 
-#: build/files.c:2318
+#: build/files.c:2317
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "запись всех данных в %s не удалась\n"
 
-#: build/files.c:2454
+#: build/files.c:2453
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Поиск %s (используя %s): ...\n"
 
-#: build/files.c:2480 build/files.c:2494
+#: build/files.c:2479 build/files.c:2493
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:\n"
 
-#: build/files.c:2615
+#: build/files.c:2614
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
@@ -1231,6 +1231,165 @@ msgstr "Не найдены совместимые архитектуры для сборки.\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Пакет не имеет %%description: %s\n"
 
+#: build/poptBT.c:116
+#, c-format
+msgid "buildroot already specified, ignoring %s\n"
+msgstr "buildroot уже указан, %s игнорируется\n"
+
+#: build/poptBT.c:146
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <specfile>"
+msgstr ""
+"выполнить по стадию %prep (развернуть исходники и наложить заплаты) из <файл "
+"спецификации>"
+
+#: build/poptBT.c:147 build/poptBT.c:150 build/poptBT.c:153 build/poptBT.c:156
+#: build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
+msgid "<specfile>"
+msgstr "<файл спецификации>"
+
+#: build/poptBT.c:149
+msgid "build through %build (%prep, then compile) from <specfile>"
+msgstr ""
+"выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
+
+#: build/poptBT.c:152
+msgid "build through %install (%prep, %build, then install) from <specfile>"
+msgstr ""
+"выполнить по стадию %install (%prep, %build, затем установка) из <файл "
+"спецификации>"
+
+#: build/poptBT.c:155
+#, c-format
+msgid "verify %files section from <specfile>"
+msgstr "проверить раздел %files из <файл спецификации>"
+
+#: build/poptBT.c:158
+msgid "build source and binary packages from <specfile>"
+msgstr "собрать исходный и двоичный пакеты по <файл спецификации>"
+
+#: build/poptBT.c:161
+msgid "build binary package only from <specfile>"
+msgstr "собрать двоичный пакет по <файл спецификации>"
+
+#: build/poptBT.c:164
+msgid "build source package only from <specfile>"
+msgstr "собрать исходный пакет по <файлу спецификации>"
+
+#: build/poptBT.c:168
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <tarball>"
+msgstr ""
+"выполнить по стадию %prep (развернуть исходники и наложить заплаты) из "
+"<архив tar>"
+
+#: build/poptBT.c:169 build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178
+#: build/poptBT.c:181 build/poptBT.c:184 build/poptBT.c:187
+msgid "<tarball>"
+msgstr "<архив tar>"
+
+#: build/poptBT.c:171
+msgid "build through %build (%prep, then compile) from <tarball>"
+msgstr "выполнить по стадию %build (%prep, затем компиляция) из <архив tar>"
+
+#: build/poptBT.c:174
+msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgstr ""
+"выполнить по стадию %install (%prep, %build, затем установка) из <архив tar>"
+
+#: build/poptBT.c:177
+#, c-format
+msgid "verify %files section from <tarball>"
+msgstr "проверить секцию %files из <архив tar>"
+
+#: build/poptBT.c:180
+msgid "build source and binary packages from <tarball>"
+msgstr "собрать исходный и двоичный пакеты из <архив tar>"
+
+#: build/poptBT.c:183
+msgid "build binary package only from <tarball>"
+msgstr "собрать двоичный пакет из <архив tar>"
+
+#: build/poptBT.c:186
+msgid "build source package only from <tarball>"
+msgstr "собрать исходный пакет из <архив tar>"
+
+#: build/poptBT.c:190
+msgid "build binary package from <source package>"
+msgstr "собрать двоичный пакет из <исходный пакет>"
+
+#: build/poptBT.c:191 build/poptBT.c:194
+msgid "<source package>"
+msgstr "<исходный пакет>"
+
+#: build/poptBT.c:193
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"выполнить по стадию %install (%prep, %build, затем установка)  из <исходный "
+"пакет>"
+
+#: build/poptBT.c:197
+msgid "override build root"
+msgstr "переопределить build root"
+
+#: build/poptBT.c:199
+msgid "remove build tree when done"
+msgstr "после завершения удалить дерево исходников"
+
+#: build/poptBT.c:201 rpmdb/poptDB.c:29
+msgid "generate headers compatible with rpm4 packaging"
+msgstr "создать заголовки, совместимые с пакетами rpm4"
+
+#: build/poptBT.c:203
+msgid "ignore ExcludeArch: directives from spec file"
+msgstr "игнорировать ExcludeArch: в файле конфигурации"
+
+#: build/poptBT.c:205
+msgid "debug file state machine"
+msgstr "отладка машины состояния файлов"
+
+#: build/poptBT.c:207
+msgid "do not execute any stages of the build"
+msgstr "не выполнять никаких этапов сборки"
+
+#: build/poptBT.c:209
+msgid "do not verify build dependencies"
+msgstr "не проверять зависимости пакета перед сборкой"
+
+#: build/poptBT.c:211
+msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
+msgstr ""
+"создать заголовок(ки) пакета, совместимые с (устаревшими)  форматами rpm[23]"
+
+#: build/poptBT.c:214
+msgid "do not accept i18N msgstr's from specfile"
+msgstr "игнорировать строки i18N из файла спецификации"
+
+#: build/poptBT.c:216
+msgid "remove sources when done"
+msgstr "после завершения удалить исходники"
+
+#: build/poptBT.c:218
+msgid "remove specfile when done"
+msgstr "после завершения удалить файл спецификации"
+
+#: build/poptBT.c:220
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "перейти непосредственно к указанному этапу (только для c,i)"
+
+#: build/poptBT.c:222
+msgid "generate PGP/GPG signature"
+msgstr "генерировать PGP/GPG-подпись"
+
+#: build/poptBT.c:224
+msgid "override target platform"
+msgstr "переопределить целевую платформу"
+
+#: build/poptBT.c:226
+msgid "lookup i18N strings in specfile catalog"
+msgstr "искать строки I18N в каталоге файла спецификации"
+
 #: build/spec.c:227
 #, c-format
 msgid "line %d: Bad number: %s\n"
@@ -1302,60 +1461,60 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:585 lib/depends.c:1252 lib/depends.c:1385
+#: lib/depends.c:585 lib/depends.c:1248 lib/depends.c:1381
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:585 lib/depends.c:1252 lib/depends.c:1385
+#: lib/depends.c:585 lib/depends.c:1248 lib/depends.c:1381
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/depends.c:1046
+#: lib/depends.c:1042
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:1157
+#: lib/depends.c:1153
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:1251
+#: lib/depends.c:1247
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cached)\n"
 
-#: lib/depends.c:1280
+#: lib/depends.c:1276
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:1297
+#: lib/depends.c:1293
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:1321
+#: lib/depends.c:1317
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1334
+#: lib/depends.c:1330
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:1348
+#: lib/depends.c:1344
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db package)\n"
 
-#: lib/depends.c:1364
+#: lib/depends.c:1360
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1385
+#: lib/depends.c:1381
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
@@ -1363,44 +1522,44 @@ msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1458
+#: lib/depends.c:1454
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1537
+#: lib/depends.c:1533
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1790
+#: lib/depends.c:1786
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1940
+#: lib/depends.c:1936
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2000
+#: lib/depends.c:1996
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:2050
+#: lib/depends.c:2046
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:2103
+#: lib/depends.c:2099
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:2133
+#: lib/depends.c:2129
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
@@ -1589,173 +1748,14 @@ msgstr "(неизвестный тип)"
 msgid "error creating temporary file %s\n"
 msgstr "ошибка создания временного файла %s\n"
 
-#: lib/package.c:163
+#: lib/package.c:161
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "пакеты версии 1 не поддерживаются этой версией RPM\n"
 
-#: lib/package.c:229
+#: lib/package.c:184
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
-
-#: lib/poptBT.c:116
-#, c-format
-msgid "buildroot already specified, ignoring %s\n"
-msgstr "buildroot уже указан, %s игнорируется\n"
-
-#: lib/poptBT.c:146
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr ""
-"выполнить по стадию %prep (развернуть исходники и наложить заплаты) из <файл "
-"спецификации>"
-
-#: lib/poptBT.c:147 lib/poptBT.c:150 lib/poptBT.c:153 lib/poptBT.c:156
-#: lib/poptBT.c:159 lib/poptBT.c:162 lib/poptBT.c:165
-msgid "<specfile>"
-msgstr "<файл спецификации>"
-
-#: lib/poptBT.c:149
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr ""
-"выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
-
-#: lib/poptBT.c:152
-msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr ""
-"выполнить по стадию %install (%prep, %build, затем установка) из <файл "
-"спецификации>"
-
-#: lib/poptBT.c:155
-#, c-format
-msgid "verify %files section from <specfile>"
-msgstr "проверить раздел %files из <файл спецификации>"
-
-#: lib/poptBT.c:158
-msgid "build source and binary packages from <specfile>"
-msgstr "собрать исходный и двоичный пакеты по <файл спецификации>"
-
-#: lib/poptBT.c:161
-msgid "build binary package only from <specfile>"
-msgstr "собрать двоичный пакет по <файл спецификации>"
-
-#: lib/poptBT.c:164
-msgid "build source package only from <specfile>"
-msgstr "собрать исходный пакет по <файлу спецификации>"
-
-#: lib/poptBT.c:168
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr ""
-"выполнить по стадию %prep (развернуть исходники и наложить заплаты) из "
-"<архив tar>"
-
-#: lib/poptBT.c:169 lib/poptBT.c:172 lib/poptBT.c:175 lib/poptBT.c:178
-#: lib/poptBT.c:181 lib/poptBT.c:184 lib/poptBT.c:187
-msgid "<tarball>"
-msgstr "<архив tar>"
-
-#: lib/poptBT.c:171
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "выполнить по стадию %build (%prep, затем компиляция) из <архив tar>"
-
-#: lib/poptBT.c:174
-msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr ""
-"выполнить по стадию %install (%prep, %build, затем установка) из <архив tar>"
-
-#: lib/poptBT.c:177
-#, c-format
-msgid "verify %files section from <tarball>"
-msgstr "проверить секцию %files из <архив tar>"
-
-#: lib/poptBT.c:180
-msgid "build source and binary packages from <tarball>"
-msgstr "собрать исходный и двоичный пакеты из <архив tar>"
-
-#: lib/poptBT.c:183
-msgid "build binary package only from <tarball>"
-msgstr "собрать двоичный пакет из <архив tar>"
-
-#: lib/poptBT.c:186
-msgid "build source package only from <tarball>"
-msgstr "собрать исходный пакет из <архив tar>"
-
-#: lib/poptBT.c:190
-msgid "build binary package from <source package>"
-msgstr "собрать двоичный пакет из <исходный пакет>"
-
-#: lib/poptBT.c:191 lib/poptBT.c:194
-msgid "<source package>"
-msgstr "<исходный пакет>"
-
-#: lib/poptBT.c:193
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"выполнить по стадию %install (%prep, %build, затем установка)  из <исходный "
-"пакет>"
-
-#: lib/poptBT.c:197
-msgid "override build root"
-msgstr "переопределить build root"
-
-#: lib/poptBT.c:199
-msgid "remove build tree when done"
-msgstr "после завершения удалить дерево исходников"
-
-#: lib/poptBT.c:201 rpmdb/poptDB.c:29
-msgid "generate headers compatible with rpm4 packaging"
-msgstr "создать заголовки, совместимые с пакетами rpm4"
-
-#: lib/poptBT.c:203
-msgid "ignore ExcludeArch: directives from spec file"
-msgstr "игнорировать ExcludeArch: в файле конфигурации"
-
-#: lib/poptBT.c:205
-msgid "debug file state machine"
-msgstr "отладка машины состояния файлов"
-
-#: lib/poptBT.c:207
-msgid "do not execute any stages of the build"
-msgstr "не выполнять никаких этапов сборки"
-
-#: lib/poptBT.c:209
-msgid "do not verify build dependencies"
-msgstr "не проверять зависимости пакета перед сборкой"
-
-#: lib/poptBT.c:211
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
-"создать заголовок(ки) пакета, совместимые с (устаревшими)  форматами rpm[23]"
-
-#: lib/poptBT.c:214
-msgid "do not accept i18N msgstr's from specfile"
-msgstr "игнорировать строки i18N из файла спецификации"
-
-#: lib/poptBT.c:216
-msgid "remove sources when done"
-msgstr "после завершения удалить исходники"
-
-#: lib/poptBT.c:218
-msgid "remove specfile when done"
-msgstr "после завершения удалить файл спецификации"
-
-#: lib/poptBT.c:220
-msgid "skip straight to specified stage (only for c,i)"
-msgstr "перейти непосредственно к указанному этапу (только для c,i)"
-
-#: lib/poptBT.c:222
-msgid "generate PGP/GPG signature"
-msgstr "генерировать PGP/GPG-подпись"
-
-#: lib/poptBT.c:224
-msgid "override target platform"
-msgstr "переопределить целевую платформу"
-
-#: lib/poptBT.c:226
-msgid "lookup i18N strings in specfile catalog"
-msgstr "искать строки I18N в каталоге файла спецификации"
 
 #: lib/poptI.c:47
 msgid "exclude paths must begin with a /"
@@ -1969,176 +1969,193 @@ msgstr "не устанавливать, а только сообщить, удастся ли установка"
 msgid "upgrade package(s)"
 msgstr "обновить пакет(ы)"
 
-#: lib/poptK.c:26
-msgid "add a signature to a package"
-msgstr "добавить подпись к пакету"
-
-#: lib/poptK.c:28 lib/poptK.c:31
-msgid "verify package signature"
-msgstr "проверить подпись в пакете"
-
-#: lib/poptK.c:33
-msgid "sign a package (discard current signature)"
-msgstr "подписать пакет (удалив текущую подпись)"
-
-#: lib/poptK.c:35
-msgid "generate signature"
-msgstr "генерировать подпись"
-
-#: lib/poptK.c:37
-msgid "skip any GPG signatures"
-msgstr "пропустить все GPG-подписи"
-
-#: lib/poptK.c:40
-msgid "skip any PGP signatures"
-msgstr "пропустить все PGP-подписи"
-
-#: lib/poptK.c:42
-msgid "do not verify file md5 checksums"
-msgstr "не проверять контрольные md5-суммы файлов"
-
-#: lib/poptQV.c:78
+#: lib/poptQV.c:83
 msgid "query/verify all packages"
 msgstr "запросить/проверить все пакеты"
 
-#: lib/poptQV.c:80
+#: lib/poptQV.c:85
+#, fuzzy
+msgid "rpm checksig mode"
+msgstr "режим проверки rpm"
+
+#: lib/poptQV.c:87
 msgid "query/verify package(s) owning file"
 msgstr "запросить/проверить пакет, которому принадлежит файл"
 
-#: lib/poptQV.c:82
+#: lib/poptQV.c:89
 msgid "query/verify package(s) in group"
 msgstr "запросить/проверить пакеты в группе"
 
-#: lib/poptQV.c:84
+#: lib/poptQV.c:91
 msgid "query/verify a package file (i.e. a binary *.rpm file)"
 msgstr "запросить/проверить файл пакета (т.е. *.rpm файл двоичного пакета)"
 
-#: lib/poptQV.c:86
+#: lib/poptQV.c:93
 msgid "rpm query mode"
 msgstr "режим запроса rpm"
 
-#: lib/poptQV.c:90
+#: lib/poptQV.c:97
 msgid "display known query tags"
 msgstr "отобразить известные ключи запроса"
 
-#: lib/poptQV.c:92
+#: lib/poptQV.c:99
 msgid "query a spec file"
 msgstr "запросить файл спецификации"
 
-#: lib/poptQV.c:92
+#: lib/poptQV.c:99
 msgid "<spec>"
 msgstr "<файл спецификации>"
 
-#: lib/poptQV.c:94
+#: lib/poptQV.c:101
 msgid "query the package(s) triggered by the package"
 msgstr "запросить пакеты с триггер-сценариями на пакет"
 
-#: lib/poptQV.c:96
+#: lib/poptQV.c:103
 msgid "rpm verify mode"
 msgstr "режим проверки rpm"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:106
 msgid "rpm verify mode (legacy)"
 msgstr "режим проверки rpm (старый)"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:108
 msgid "query/verify the package(s) which require a dependency"
 msgstr "найти/проверить пакеты, требующие сервис"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:110
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "найти/проверить пакеты, предоставляющие сервис"
 
-#: lib/poptQV.c:162
+#: lib/poptQV.c:170
 msgid "list all configuration files"
 msgstr "показать все файлы конфигурации"
 
-#: lib/poptQV.c:164
+#: lib/poptQV.c:172
 msgid "list all documentation files"
 msgstr "показать все файлы документации"
 
-#: lib/poptQV.c:166
+#: lib/poptQV.c:174
 msgid "dump basic file information"
 msgstr "показать основную информацию о файле"
 
-#: lib/poptQV.c:168
+#: lib/poptQV.c:176
 msgid "list files in package"
 msgstr "показать список файлов пакета"
 
-#: lib/poptQV.c:173
+#: lib/poptQV.c:181
 #, c-format
 msgid "skip %%ghost files"
 msgstr "пропустить файлы %%ghost"
 
-#: lib/poptQV.c:177
+#: lib/poptQV.c:185
 #, c-format
 msgid "skip %%license files"
 msgstr "пропустить файлы %%license"
 
-#: lib/poptQV.c:180
+#: lib/poptQV.c:188
 #, c-format
 msgid "skip %%readme files"
 msgstr "пропустить файлы %%readme"
 
-#: lib/poptQV.c:186
+#: lib/poptQV.c:194
 msgid "use the following query format"
 msgstr "используйте следующий формат запроса"
 
-#: lib/poptQV.c:188
+#: lib/poptQV.c:196
 msgid "substitute i18n sections into spec file"
 msgstr "заменить секции i18n в файле спецификации"
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:198
 msgid "display the states of the listed files"
 msgstr "показать состояние перечисленных файлов"
 
-#: lib/poptQV.c:192
+#: lib/poptQV.c:200
 msgid "display a verbose file listing"
 msgstr "показать детальный список файлов"
 
-#: lib/poptQV.c:211
+#: lib/poptQV.c:220 lib/poptQV.c:262 lib/poptQV.c:296
 msgid "don't verify MD5 digest of files"
 msgstr "не проверять файлы на контрольную сумму MD5"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:223
 msgid "don't verify size of files"
 msgstr "не проверять размер файлов"
 
-#: lib/poptQV.c:217
+#: lib/poptQV.c:226
 msgid "don't verify symlink path of files"
 msgstr "не проверять путь символических ссылок"
 
-#: lib/poptQV.c:220
+#: lib/poptQV.c:229
 msgid "don't verify owner of files"
 msgstr "не проверять хозяина файлов"
 
-#: lib/poptQV.c:223
+#: lib/poptQV.c:232
 msgid "don't verify group of files"
 msgstr "не проверять группу файлов"
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:235
 msgid "don't verify modification time of files"
 msgstr "не проверять время модификации файлов"
 
-#: lib/poptQV.c:229 lib/poptQV.c:232
+#: lib/poptQV.c:238 lib/poptQV.c:241
 msgid "don't verify mode of files"
 msgstr "не проверять права доступа файлов пакета"
 
-#: lib/poptQV.c:235
+#: lib/poptQV.c:244
 msgid "don't verify files in package"
 msgstr "не проверять файлы пакета"
 
-#: lib/poptQV.c:237
+#: lib/poptQV.c:246
 msgid "don't verify package dependencies"
 msgstr "не проверять зависимости пакета"
 
-#: lib/poptQV.c:239 lib/poptQV.c:243
-msgid "don't execute %verifyscript (if any)"
+#: lib/poptQV.c:248 lib/poptQV.c:252
+#, fuzzy
+msgid "don't execute verify script(s)"
 msgstr "не исполнять %verifyscript (если есть)"
 
-#: lib/poptQV.c:246
-msgid "don't verify header SHA1 digest"
+#: lib/poptQV.c:255
+#, fuzzy
+msgid "don't verify digest(s)"
+msgstr "не проверять файлы на контрольную сумму MD5"
+
+#: lib/poptQV.c:258
+#, fuzzy
+msgid "don't verify signature(s)"
+msgstr "не проверять путь символических ссылок"
+
+#: lib/poptQV.c:266 lib/poptQV.c:300
+#, fuzzy
+msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "не проверять контрольную сумму SHA1 заголовка пакета"
+
+#: lib/poptQV.c:269 lib/poptQV.c:303
+#, fuzzy
+msgid "don't verify PGP V3 RSA/MD5 signature(s)"
+msgstr "не проверять файлы на контрольную сумму MD5"
+
+#: lib/poptQV.c:284
+#, fuzzy
+msgid "sign a package, preserving other existing signatures"
+msgstr "подписать пакет (удалив текущую подпись)"
+
+#: lib/poptQV.c:286
+#, fuzzy
+msgid "verify package signature(s)"
+msgstr "проверить подпись в пакете"
+
+#: lib/poptQV.c:288
+msgid "import an armored public key"
+msgstr ""
+
+#: lib/poptQV.c:290
+#, fuzzy
+msgid "sign a package, discarding all current signatures"
+msgstr "подписать пакет (удалив текущую подпись)"
+
+#: lib/poptQV.c:292
+msgid "generate signature"
+msgstr "генерировать подпись"
 
 #: lib/problems.c:83
 #, c-format
@@ -2311,124 +2328,154 @@ msgstr "%s ошибка на файле %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: lib/query.c:122
+#: lib/query.c:128
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ошибка в формате: %s\n"
 
-#: lib/query.c:219
+#: lib/query.c:225
 msgid "(contains no files)"
 msgstr "(не содержит файлов)"
 
-#: lib/query.c:280
+#: lib/query.c:286
 msgid "normal        "
 msgstr "нормальный    "
 
-#: lib/query.c:283
+#: lib/query.c:289
 msgid "replaced      "
 msgstr "замененный    "
 
-#: lib/query.c:286
+#: lib/query.c:292
 msgid "not installed "
 msgstr "не установлен "
 
-#: lib/query.c:289
+#: lib/query.c:295
 msgid "net shared    "
 msgstr "сетевой       "
 
-#: lib/query.c:292
+#: lib/query.c:298
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(неизв. %3d)  "
 
-#: lib/query.c:297
+#: lib/query.c:303
 msgid "(no state)    "
 msgstr "(сост. нет)   "
 
-#: lib/query.c:316 lib/query.c:372
+#: lib/query.c:322 lib/query.c:378
 msgid "package has neither file owner or id lists\n"
 msgstr "пакет не содержит списков ни хозяев файлов, ни их ID\n"
 
-#: lib/query.c:461
+#: lib/query.c:467
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
-#: lib/query.c:599 lib/query.c:633 lib/rpminstall.c:323 lib/rpminstall.c:467
-#: lib/rpminstall.c:847
+#: lib/query.c:582 lib/rpmchecksig.c:159 lib/rpmchecksig.c:492
+#, c-format
+msgid "%s: readLead failed\n"
+msgstr "%s: ошибка readLead\n"
+
+#: lib/query.c:588 lib/rpmchecksig.c:498
+#, c-format
+msgid "%s: No signature available (v1.0 RPM)\n"
+msgstr "%s: Подписи нет (RPM v1.0)\n"
+
+#: lib/query.c:597 lib/rpmchecksig.c:177 lib/rpmchecksig.c:508
+#, c-format
+msgid "%s: rpmReadSignature failed\n"
+msgstr "%s: ошибка rpmReadSignature\n"
+
+#: lib/query.c:601 lib/rpmchecksig.c:181 lib/rpmchecksig.c:513
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Подпись недоступна\n"
+
+#: lib/query.c:624
+#, fuzzy, c-format
+msgid "%s: headerRead failed\n"
+msgstr "%s: ошибка readLead\n"
+
+#: lib/query.c:641 lib/rpmchecksig.c:110 lib/rpmchecksig.c:287
+#, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: ошибка Fread: %s\n"
+
+#: lib/query.c:758 lib/query.c:796 lib/rpminstall.c:324 lib/rpminstall.c:468
+#: lib/rpminstall.c:848
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/query.c:612
+#: lib/query.c:774
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:618
+#: lib/query.c:780
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
-#: lib/query.c:643 lib/rpminstall.c:480
+#: lib/query.c:806 lib/rpminstall.c:481
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: ошибка чтения списка файлов: %s\n"
 
-#: lib/query.c:687
+#: lib/query.c:850
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос файла спецификации %s не удался, невозможно разобрать файл\n"
 
-#: lib/query.c:711
+#: lib/query.c:874
 msgid "no packages\n"
 msgstr "нет пакетов\n"
 
-#: lib/query.c:731
+#: lib/query.c:894
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:741
+#: lib/query.c:904
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:751
+#: lib/query.c:914
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:762
+#: lib/query.c:925
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:799
+#: lib/query.c:962
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:803
+#: lib/query.c:966
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:830
+#: lib/query.c:993
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:833
+#: lib/query.c:996
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер записи пакета: %u\n"
 
-#: lib/query.c:838
+#: lib/query.c:1001
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:849 lib/rpminstall.c:633
+#: lib/query.c:1012 lib/rpminstall.c:634
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -2447,16 +2494,6 @@ msgstr "ошибка makeTempFile\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: ошибка Fwrite: %s\n"
 
-#: lib/rpmchecksig.c:110 lib/rpmchecksig.c:291
-#, c-format
-msgid "%s: Fread failed: %s\n"
-msgstr "%s: ошибка Fread: %s\n"
-
-#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:534
-#, c-format
-msgid "%s: readLead failed\n"
-msgstr "%s: ошибка readLead\n"
-
 #: lib/rpmchecksig.c:164
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
@@ -2466,16 +2503,6 @@ msgstr "%s: Не могу подписать RPM v1.0\n"
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Не могу переподписать RPM v2.0\n"
-
-#: lib/rpmchecksig.c:177 lib/rpmchecksig.c:550
-#, c-format
-msgid "%s: rpmReadSignature failed\n"
-msgstr "%s: ошибка rpmReadSignature\n"
-
-#: lib/rpmchecksig.c:181 lib/rpmchecksig.c:555
-#, c-format
-msgid "%s: No signature available\n"
-msgstr "%s: Подпись недоступна\n"
 
 #: lib/rpmchecksig.c:214
 #, c-format
@@ -2487,123 +2514,118 @@ msgstr "%s: ошибка writeLead: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
-#: lib/rpmchecksig.c:540
-#, c-format
-msgid "%s: No signature available (v1.0 RPM)\n"
-msgstr "%s: Подписи нет (RPM v1.0)\n"
-
-#: lib/rpmchecksig.c:768
+#: lib/rpmchecksig.c:731
 msgid "NOT OK"
 msgstr "НЕ OК"
 
-#: lib/rpmchecksig.c:769 lib/rpmchecksig.c:783
+#: lib/rpmchecksig.c:732 lib/rpmchecksig.c:746
 msgid " (MISSING KEYS:"
 msgstr " (ОТСУТСТВУЮТ КЛЮЧИ:"
 
-#: lib/rpmchecksig.c:771 lib/rpmchecksig.c:785
+#: lib/rpmchecksig.c:734 lib/rpmchecksig.c:748
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:772 lib/rpmchecksig.c:786
+#: lib/rpmchecksig.c:735 lib/rpmchecksig.c:749
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
+#: lib/rpmchecksig.c:737 lib/rpmchecksig.c:751
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:782
+#: lib/rpmchecksig.c:745
 msgid "OK"
 msgstr "OК"
 
-#: lib/rpminstall.c:152
+#: lib/rpminstall.c:153
 msgid "Preparing..."
 msgstr "Подготовка..."
 
-#: lib/rpminstall.c:154
+#: lib/rpminstall.c:155
 msgid "Preparing packages for installation..."
 msgstr "Подготовка пакетов для установки..."
 
-#: lib/rpminstall.c:273
+#: lib/rpminstall.c:274
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Загружается %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:283
+#: lib/rpminstall.c:284
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... как %s\n"
 
-#: lib/rpminstall.c:287
+#: lib/rpminstall.c:288
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s пропускается - ошибка передачи - %s\n"
 
-#: lib/rpminstall.c:369
+#: lib/rpminstall.c:370
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
-#: lib/rpminstall.c:392
+#: lib/rpminstall.c:393
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "пакет %s - не перемещаемый\n"
 
-#: lib/rpminstall.c:441
+#: lib/rpminstall.c:442
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ошибка чтения из файла %s\n"
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:448
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "для файла %s необходима более новая версия RPM\n"
 
-#: lib/rpminstall.c:459 lib/rpminstall.c:704
+#: lib/rpminstall.c:460 lib/rpminstall.c:705
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
 
-#: lib/rpminstall.c:495
+#: lib/rpminstall.c:496
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:511
+#: lib/rpminstall.c:512
 msgid "failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
 
-#: lib/rpminstall.c:532
+#: lib/rpminstall.c:533
 msgid "installing binary packages\n"
 msgstr "устанавливаю бинарные пакеты\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:554
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "невозможно открыть файл %s: %s\n"
 
-#: lib/rpminstall.c:620
+#: lib/rpminstall.c:621
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "ошибка открытия %s/packages.rpm\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:637
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:660
+#: lib/rpminstall.c:661
 msgid "removing these packages would break dependencies:\n"
 msgstr "удаление этих пакетов нарушит зависимости:\n"
 
-#: lib/rpminstall.c:690
+#: lib/rpminstall.c:691
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:696
+#: lib/rpminstall.c:697
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
@@ -2822,6 +2844,38 @@ msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле\n"
 
+#: lib/signature.c:626
+#, fuzzy
+msgid "Header+Payload size: "
+msgstr "Заголовок слишком велик"
+
+#: lib/signature.c:655
+msgid "MD5 digest: "
+msgstr ""
+
+#: lib/signature.c:695
+#, fuzzy
+msgid "V3 RSA/MD5 signature: "
+msgstr "пропустить все MD5-подписи"
+
+#: lib/signature.c:785
+#, fuzzy
+msgid "V3 DSA signature: "
+msgstr "Подписи нет\n"
+
+#: lib/signature.c:849
+msgid "Verify signature: BAD PARAMETERS\n"
+msgstr ""
+
+#: lib/signature.c:869
+msgid "Broken MD5 digest: UNSUPPORTED\n"
+msgstr ""
+
+#: lib/signature.c:873
+#, fuzzy, c-format
+msgid "Signature: UNKNOWN (%d)\n"
+msgstr "Подпись: размер(%d)+заполнение(%d)\n"
+
 #: lib/transaction.c:309
 #, c-format
 msgid "%s skipped due to missingok flag\n"
@@ -2845,17 +2899,17 @@ msgstr ""
 "в пакете нет ни имен групп, ни списка их идентификаторов (такого не должно "
 "быть)\n"
 
-#: lib/verify.c:411
+#: lib/verify.c:414
 #, c-format
 msgid "missing    %s"
 msgstr "отсутствует %s"
 
-#: lib/verify.c:508
+#: lib/verify.c:511
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: lib/verify.c:553
+#: lib/verify.c:556
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"
@@ -3374,6 +3428,24 @@ msgstr "url порт должен быть числом\n"
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
 
+#~ msgid "add a signature to a package"
+#~ msgstr "добавить подпись к пакету"
+
+#~ msgid "verify package signature"
+#~ msgstr "проверить подпись в пакете"
+
+#~ msgid "sign a package (discard current signature)"
+#~ msgstr "подписать пакет (удалив текущую подпись)"
+
+#~ msgid "skip any GPG signatures"
+#~ msgstr "пропустить все GPG-подписи"
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "пропустить все PGP-подписи"
+
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "не проверять контрольные md5-суммы файлов"
+
 #~ msgid "extra arguments given for query of all packages"
 #~ msgstr "в запросе ко всем пакетам заданы лишние аргументы"
 
@@ -3861,9 +3933,6 @@ msgstr "невозможно создать %s: %s\n"
 
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <пакет>+           "
-
-#~ msgid "skip any MD5 signatures"
-#~ msgstr "пропустить все MD5-подписи"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "убедиться, что существует правильная база данных"

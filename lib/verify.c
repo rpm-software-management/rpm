@@ -290,10 +290,8 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     int rc;
 
     /*@-type@*/ /* FIX: cast? */
-    if (scriptFd != NULL) {
-	/* XXX look for FD leaks! */
+    if (scriptFd != NULL)
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
-    }
     /*@=type@*/
     fi->magic = TFIMAGIC;
     loadFi(ts, fi, h, 1);
@@ -308,6 +306,11 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     rc = psmStage(psm, PSM_SCRIPT);
     freeFi(fi);
     fi = _free(fi);
+
+    if (scriptFd != NULL) {
+	ts->scriptFd = fdFree(ts->scriptFd, "rpmVerifyScript");
+	ts->scriptFd = NULL;
+    }
 
     rpmtransClean(ts);
 
@@ -327,7 +330,7 @@ int rpmVerifyDigest(Header h)
 
     /* Retrieve header digest. */
     if (!hge(h, RPMTAG_SHA1HEADER, &hdt, (void **) &hdigest, NULL)
-    &&	!hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
+     &&!hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
     {
 	    return 0;
     }

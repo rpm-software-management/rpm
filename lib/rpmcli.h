@@ -67,6 +67,47 @@ extern struct poptOption		rpmBuildPoptTable[];
 /*@{*/
 
 /** \ingroup rpmcli
+ * Query/Verify argument qualifiers.
+ * @todo Reassign to tag values.
+ */
+typedef enum rpmQVSources_e {
+    RPMQV_PACKAGE = 0,	/*!< ... from package name db search. */
+    RPMQV_PATH,		/*!< ... from file path db search. */
+    RPMQV_ALL,		/*!< ... from each installed package. */
+    RPMQV_RPM, 		/*!< ... from reading binary rpm package. */
+    RPMQV_GROUP,	/*!< ... from group db search. */
+    RPMQV_WHATPROVIDES,	/*!< ... from provides db search. */
+    RPMQV_WHATREQUIRES,	/*!< ... from requires db search. */
+    RPMQV_TRIGGEREDBY,	/*!< ... from trigger db search. */
+    RPMQV_DBOFFSET,	/*!< ... from database header instance. */
+    RPMQV_SPECFILE	/*!< ... from spec file parse (query only). */
+} rpmQVSources;
+
+/** \ingroup rpmcli
+ * Bit(s) for rpmVerifyFile() attributes and result.
+ */
+typedef enum rpmVerifyAttrs_e {
+    RPMVERIFY_NONE	= 0,		/*!< */
+    RPMVERIFY_MD5	= (1 << 0),	/*!< from %verify(md5) */
+    RPMVERIFY_FILESIZE	= (1 << 1),	/*!< from %verify(size) */
+    RPMVERIFY_LINKTO	= (1 << 2),	/*!< from %verify(link) */
+    RPMVERIFY_USER	= (1 << 3),	/*!< from %verify(user) */
+    RPMVERIFY_GROUP	= (1 << 4),	/*!< from %verify(group) */
+    RPMVERIFY_MTIME	= (1 << 5),	/*!< from %verify(mtime) */
+    RPMVERIFY_MODE	= (1 << 6),	/*!< from %verify(mode) */
+    RPMVERIFY_RDEV	= (1 << 7),	/*!< from %verify(rdev) */
+	/* bits 8-15 unused, reserved for rpmVerifyAttrs */
+	/* bits 16-20 used in rpmVerifyFlags */
+	/* bits 21-22 unused */
+	/* bits 23-27 used in rpmQueryFlags */
+    RPMVERIFY_READLINKFAIL= (1 << 28),	/*!< */
+    RPMVERIFY_READFAIL	= (1 << 29),	/*!< */
+    RPMVERIFY_LSTATFAIL	= (1 << 30)	/*!< */
+	/* bit 31 unused */
+} rpmVerifyAttrs;
+#define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
+
+/** \ingroup rpmcli
  * Bit(s) to control rpmQuery() operation, stored in qva_flags.
  * @todo Merge rpmQueryFlags, rpmVerifyFlags, and rpmVerifyAttrs?.
  */
@@ -86,8 +127,9 @@ typedef enum rpmQueryFlags_e {
     QUERY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
     QUERY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
     QUERY_DIGEST	= (1 << 19),	/*!< verify: from --nodigest */
+    QUERY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
 /*@=enummemuse@*/
-	/* bits 20-22 unused */
+	/* bits 21-22 unused */
     QUERY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
     QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
@@ -116,7 +158,8 @@ typedef enum rpmVerifyFlags_e {
     VERIFY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
     VERIFY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
     VERIFY_DIGEST	= (1 << 19),	/*!< verify: from --nodigest */
-	/* bits 20-22 unused */
+    VERIFY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
+	/* bits 21-22 unused */
 /*@-enummemuse@*/
     VERIFY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     VERIFY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
@@ -131,17 +174,81 @@ typedef enum rpmVerifyFlags_e {
   ( VERIFY_MD5 | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
     VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV )
 #define	VERIFY_ALL	\
-  ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST )
+  ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
+    VERIFY_SIGNATURE )
 
 /** \ingroup rpmcli
+ */
+typedef struct rpmQVKArguments_s * QVA_t;
+
+/** \ingroup rpmcli
+ * Function to display iterator matches.
+ *
  * @param qva		parsed query/verify options
  * @param ts		transaction set
- * @param db		rpm database
  * @param h		header to use for query/verify
  */
 typedef	int (*QVF_t) (QVA_t qva, rpmTransactionSet ts, Header h)
 	/*@globals fileSystem@*/
 	/*@modifies qva, ts, fileSystem @*/;
+
+/** \ingroup rpmcli
+ * Describe query/verify/signature command line operation.
+ */
+struct rpmQVKArguments_s {
+    rpmQVSources qva_source;	/*!< Identify CLI arg type. */
+    int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
+    rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
+    rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
+/*@only@*/ /*@null@*/
+    rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
+/*@null@*/
+    QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
+/*@unused@*/ int qva_verbose;	/*!< (unused) */
+/*@only@*/ /*@null@*/
+    const char * qva_queryFormat;/*!< Format for headerSprintf(). */
+    int sign;			/*!< Is a passphrase needed? */
+/*@observer@*/
+    const char * passPhrase;	/*!< Pass phrase. */
+/*@observer@*/ /*@null@*/
+    const char * qva_prefix;	/*!< Path to top of install tree. */
+    char	qva_mode;
+		/*!<
+		- 'q'	from --query, -q
+		- 'Q'	from --querytags
+		- 'V'	from --verify, -V
+		- 'A'	from --addsign
+		- 'I'	from --import
+		- 'K'	from --checksig, -K
+		- 'R'	from --resign
+		*/
+    char	qva_char;	/*!< (unused) always ' ' */
+};
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct rpmQVKArguments_s rpmQVKArgs;
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct poptOption rpmQVSourcePoptTable[];
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern int specedit;
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct poptOption rpmQueryPoptTable[];
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct poptOption rpmVerifyPoptTable[];
 
 /** \ingroup rpmcli
  * Display query/verify information for each header in iterator.
@@ -209,6 +316,21 @@ int rpmcliQuery(QVA_t qva, /*@null@*/ const char ** argv)
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
+ * Verify file attributes (including MD5 sum).
+ * @todo gnorpm and python bindings prevent this from being static.
+ * @param root		path to top of install tree
+ * @param h		header
+ * @param filenum	index of file in header file info arrays
+ * @retval result	address of bit(s) returned to indicate failure
+ * @param omitMask	bit(s) to disable verify checks
+ * @return		0 on success (or not installed), 1 on error
+ */
+int rpmVerifyFile(const char * root, Header h, int filenum,
+		/*@out@*/ rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
+	/*@globals fileSystem @*/
+	/*@modifies h, *result, fileSystem @*/;
+
+/** \ingroup rpmcli
  * Display results of package verify.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
@@ -231,6 +353,20 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 int rpmVerifyDigest(Header h)
 	/*@modifies nothing @*/;
 
+/**
+ * Check package and header signatures.
+ * @param qva		parsed query/verify options
+ * @param ts		transaction set
+ * @param fd		package file handle
+ * @param fn		package file name
+ * @return		0 on success, 1 on failure
+ */
+int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
+		const char * fn)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies qva, ts, fd,
+		fileSystem, internalState @*/;
+
 /** \ingroup rpmcli
  * Verify package install.
  * @todo hack: RPMQV_ALL can pass char ** arglist = NULL, not char * arg. Union?
@@ -243,52 +379,6 @@ int rpmcliVerify(QVA_t qva, /*@null@*/ const char ** argv)
 		fileSystem, internalState @*/
 	/*@modifies qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
-
-/** \ingroup rpmcli
- * Describe query/verify command line request.
- */
-struct rpmQVArguments_s {
-    rpmQVSources qva_source;	/*!< Identify CLI arg type. */
-    int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
-    rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
-    rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
-/*@only@*/ /*@null@*/
-    rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
-/*@null@*/
-    QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
-/*@unused@*/ int qva_verbose;	/*!< (unused) */
-/*@only@*/ /*@null@*/
-    const char * qva_queryFormat;/*!< Format for headerSprintf(). */
-/*@observer@*/ /*@null@*/
-    const char * qva_prefix;	/*!< Path to top of install tree. */
-    char	qva_mode;	/*!< 'q' is query, 'v' is verify mode. */
-    char	qva_char;	/*!< (unused) always ' ' */
-};
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct rpmQVArguments_s rpmQVArgs;
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct poptOption rpmQVSourcePoptTable[];
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern int specedit;
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct poptOption rpmQueryPoptTable[];
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct poptOption rpmVerifyPoptTable[];
 
 /*@}*/
 /* ==================================================================== */
@@ -450,17 +540,17 @@ typedef /*@abstract@*/ struct IDTindex_s {
 
 /**
  * Load tag (instance,value) pairs from rpm databse, and return sorted id index.
- * @param db		rpm database
+ * @param ts		transaction set
  * @param tag		rpm tag
  * @return 		id index
  */
-/*@only@*/ /*@null@*/ IDTX IDTXload(rpmdb db, rpmTag tag)
+/*@only@*/ /*@null@*/ IDTX IDTXload(rpmTransactionSet ts, rpmTag tag)
 	/*@globals fileSystem@*/
-	/*@modifies db, fileSystem @*/;
+	/*@modifies ts, fileSystem @*/;
 
 /**
  * Load tag (instance,value) pairs from packages, and return sorted id index.
- * @param db		glob expression
+ * @param globstr	glob expression
  * @param tag		rpm tag
  * @return 		id index
  */
@@ -521,44 +611,17 @@ extern struct poptOption rpmDatabasePoptTable[];
 /*@{*/
 
 /** \ingroup rpmcli
- * Bit(s) to control rpmCheckSig() operation.
- */
-typedef enum rpmCheckSigFlags_e {
-/*@-enummemuse@*/
-    CHECKSIG_NONE	= 0,	/*!< Don't check any signatures. */
-/*@=enummemuse@*/
-    CHECKSIG_PGP	= (1 << 0),	/*!< if not --nopgp */
-    CHECKSIG_MD5	= (1 << 1),	/*!< if not --nomd5 */
-    CHECKSIG_GPG	= (1 << 2)	/*!< if not --nogpg */
-} rpmCheckSigFlags;
-#define	CHECKSIG_ALL	(CHECKSIG_PGP|CHECKSIG_MD5|CHECKSIG_GPG)
-
-/** \ingroup rpmcli
  * Bit(s) to control rpmReSign() operation.
  */
+/*@-typeuse@*/
 typedef enum rpmSignFlags_e {
     RPMSIGN_NONE		= 0,
-    RPMSIGN_CHK_SIGNATURE	= 1,	/*!< from --checksig */
-    RPMSIGN_NEW_SIGNATURE	= 2,	/*!< from --resign */
-    RPMSIGN_ADD_SIGNATURE	= 3,	/*!< from --addsign */
-    RPMSIGN_IMPORT_PUBKEY	= 4,	/*!< from --import */
+    RPMSIGN_CHK_SIGNATURE	= 'K',	/*!< from --checksig */
+    RPMSIGN_NEW_SIGNATURE	= 'R',	/*!< from --resign */
+    RPMSIGN_ADD_SIGNATURE	= 'A',	/*!< from --addsign */
+    RPMSIGN_IMPORT_PUBKEY	= 'I',	/*!< from --import */
 } rpmSignFlags;
-
-/** \ingroup rpmcli
- * Describe signature command line request.
- */
-struct rpmSignArguments_s {
-    rpmSignFlags addSign;	/*!< from --checksig/--resign/--addsign */
-    rpmCheckSigFlags checksigFlags;	/*!< bits to control --checksig */
-    int sign;			/*!< Is a passphrase needed? */
-/*@observer@*/
-    const char * passPhrase;	/*!< Pass phrase. */
-};
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct rpmSignArguments_s rpmKArgs;
+/*@=typeuse@*/
 
 /** \ingroup rpmcli
  */
@@ -567,14 +630,14 @@ extern struct poptOption rpmSignPoptTable[];
 
 /** \ingroup rpmcli
  * Create/Modify/Check elements from signature header.
- * @param ka		mode flags and parameters
+ * @param qva		mode flags and parameters
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmcliSign(struct rpmSignArguments_s * ka, /*@null@*/ const char ** argv)
+int rpmcliSign(QVA_t qva, /*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext,
+	/*@modifies qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /*@}*/

@@ -720,7 +720,6 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->orderCount = 0;
     ts->order = xcalloc(ts->orderAlloced, sizeof(*ts->order));
 
-    ts->fn = NULL;
     ts->sig = NULL;
     ts->dig = NULL;
 
@@ -910,11 +909,21 @@ int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
     return removePackage(ts, dboffset, -1);
 }
 
-/*@-nullstate@*/ /* FIX: ts->di, ts->removedPackes, ts->order, modre NULL */
 void rpmtransClean(rpmTransactionSet ts)
 {
     if (ts) {
 	HFD_t hfd = headerFreeData;
+	if (ts->sig != NULL)
+	    ts->sig = hfd(ts->sig, ts->sigtype);
+	if (ts->dig != NULL)
+	    ts->dig = pgpFreeDig(ts->dig);
+    }
+}
+
+rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
+{
+    if (ts) {
+
 	alFree(&ts->addedPackages);
 	alFree(&ts->availablePackages);
 	ts->di = _free(ts->di);
@@ -929,19 +938,6 @@ void rpmtransClean(rpmTransactionSet ts)
 	/*@=type@*/
 	ts->rootDir = _free(ts->rootDir);
 	ts->currDir = _free(ts->currDir);
-
-	ts->fn = NULL;
-	if (ts->sig != NULL)
-	    ts->sig = hfd(ts->sig, ts->sigtype);
-	if (ts->dig != NULL)
-	    ts->dig = pgpFreeDig(ts->dig);
-    }
-}
-
-
-rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
-{
-    if (ts) {
 
 	rpmtransClean(ts);
 

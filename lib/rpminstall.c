@@ -6,11 +6,12 @@
 
 #include <rpmcli.h>
 
+#include "depends.h"		/* XXX ts->rpmdb */
 #include "manifest.h"
 #include "misc.h"	/* XXX for rpmGlob() */
 #include "debug.h"
 
-/*@access rpmTransactionSet @*/	/* XXX compared with NULL */
+/*@access rpmTransactionSet @*/	/* XXX compared with NULL, ts->rpmdb */
 /*@access rpmProblemSet @*/	/* XXX compared with NULL */
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access rpmdb @*/		/* XXX compared with NULL */
@@ -776,7 +777,7 @@ IDTX IDTXsort(IDTX idtx)
     return idtx;
 }
 
-IDTX IDTXload(rpmdb db, rpmTag tag)
+IDTX IDTXload(rpmTransactionSet ts, rpmTag tag)
 {
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
@@ -784,7 +785,7 @@ IDTX IDTXload(rpmdb db, rpmTag tag)
     Header h;
 
     /*@-branchstate@*/
-    mi = rpmdbInitIterator(db, tag, NULL, 0);
+    mi = rpmdbInitIterator(ts->rpmdb, tag, NULL, 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmTagType type = RPM_NULL_TYPE;
 	int_32 count = 0;
@@ -905,7 +906,7 @@ int rpmRollback(/*@unused@*/ struct rpmInstallArguments_s * ia,
 
     ts = rpmtransCreateSet(db, ia->rootdir);
 
-    itids = IDTXload(db, RPMTAG_INSTALLTID);
+    itids = IDTXload(ts, RPMTAG_INSTALLTID);
     rtids = IDTXglob(globstr, RPMTAG_REMOVETID);
 
     globstr = _free(globstr);

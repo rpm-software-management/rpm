@@ -36,7 +36,7 @@ librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	header.c header_internal.c \
 	manifest.c misc.c package.c \
-	problems.c poptBT.c poptI.c poptK.c poptQV.c psm.c query.c \
+	problems.c poptI.c poptQV.c psm.c query.c \
 	rpmchecksig.c rpminstall.c rpmlead.c rpmlibprov.c rpmrc.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c

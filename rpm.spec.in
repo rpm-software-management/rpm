@@ -532,3 +532,4 @@ fi
 - generate an rpm header on the fly for imported pubkeys.
 - wire transactions through rpmcli signature modes.
 - wire transactions through rpmcli query/verify modes.
+- legacy signatures always checked on -qp and -Vp.

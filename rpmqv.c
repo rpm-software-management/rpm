@@ -304,7 +304,7 @@ int main(int argc, const char ** argv)
     enum modes bigMode = MODE_UNKNOWN;
 
 #ifdef	IAM_RPMQV
-    QVA_t qva = &rpmQVArgs;
+    QVA_t qva = &rpmQVKArgs;
 #endif
 
 #ifdef	IAM_RPMBT
@@ -320,7 +320,7 @@ int main(int argc, const char ** argv)
 #endif
 
 #if defined(IAM_RPMK)
-   struct rpmSignArguments_s * ka = &rpmKArgs;
+   QVA_t ka = &rpmQVKArgs;
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
@@ -454,9 +454,12 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMK
+    ka->qva_queryFormat = _free(ka->qva_queryFormat);
     memset(ka, 0, sizeof(*ka));
-    ka->addSign = RPMSIGN_NONE;
-    ka->checksigFlags = CHECKSIG_ALL;
+    ka->qva_source = RPMQV_PACKAGE;
+    ka->qva_fflags = RPMFILE_ALL;
+    ka->qva_mode = ' ';
+    ka->qva_char = ' ';
 #endif
 
 #ifdef	IAM_RPMEIU
@@ -487,7 +490,7 @@ int main(int argc, const char ** argv)
 #endif
 #ifdef	IAM_RPMK
 	    if (bigMode & MODES_K)
-		ka->checksigFlags &= ~CHECKSIG_MD5;
+		ka->qva_flags |= VERIFY_MD5;
 	    else
 #endif
 		/*@-ifempty@*/ ;
@@ -705,7 +708,7 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMK
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_K)) {
-	switch (ka->addSign) {
+	switch (ka->qva_mode) {
 	case RPMSIGN_NONE:
 	    ka->sign = 0;
 	    break;
@@ -1109,9 +1112,9 @@ int main(int argc, const char ** argv)
     case MODE_VERIFY:
     {	rpmVerifyFlags verifyFlags = VERIFY_ALL;
 
-	qva->qva_prefix = rootdir;
 	verifyFlags &= ~qva->qva_flags;
 	qva->qva_flags = (rpmQueryFlags) verifyFlags;
+	qva->qva_prefix = rootdir;
 
 	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
 	    argerror(_("no arguments given for verify"));
@@ -1130,6 +1133,12 @@ int main(int argc, const char ** argv)
 
 #ifdef IAM_RPMK
     case MODE_CHECKSIG:
+    {	rpmVerifyFlags verifyFlags =
+		(VERIFY_MD5|VERIFY_DIGEST|VERIFY_SIGNATURE);
+
+	verifyFlags &= ~ka->qva_flags;
+	ka->qva_flags = (rpmQueryFlags) verifyFlags;
+    }   /*@fallthrough@*/
     case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no arguments given"));
@@ -1137,7 +1146,7 @@ int main(int argc, const char ** argv)
 	ec = rpmcliSign(ka, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
-	break;
+    	break;
 #endif	/* IAM_RPMK */
 	
 #if !defined(IAM_RPMQV)

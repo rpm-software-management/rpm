@@ -10,8 +10,6 @@
  */
 typedef struct SpecStruct *Spec;
 
-#include "rpmmacro.h"
-
 /** \ingroup rpmbuild
  */
 struct TriggerFileEntry {

@@ -1603,72 +1603,6 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
 		fileSystem, internalState @*/;
 
 /* ==================================================================== */
-/** \name RPMQV */
-/*@{*/
-
-/** \ingroup rpmcli
- */
-typedef struct rpmQVArguments_s * QVA_t;
-
-/** \ingroup rpmcli
- * The command line argument will be used to retrieve header(s) ...
- * @todo Move to rpmcli.h
- */
-typedef enum rpmQVSources_e {
-    RPMQV_PACKAGE = 0,	/*!< ... from package name db search. */
-    RPMQV_PATH,		/*!< ... from file path db search. */
-    RPMQV_ALL,		/*!< ... from each installed package. */
-    RPMQV_RPM, 		/*!< ... from reading binary rpm package. */
-    RPMQV_GROUP,	/*!< ... from group db search. */
-    RPMQV_WHATPROVIDES,	/*!< ... from provides db search. */
-    RPMQV_WHATREQUIRES,	/*!< ... from requires db search. */
-    RPMQV_TRIGGEREDBY,	/*!< ... from trigger db search. */
-    RPMQV_DBOFFSET,	/*!< ... from database header instance. */
-    RPMQV_SPECFILE	/*!< ... from spec file parse (query only). */
-} rpmQVSources;
-
-/** \ingroup rpmcli
- * Bit(s) for rpmVerifyFile() attributes and result.
- * @todo Move to rpmcli.h.
- */
-typedef enum rpmVerifyAttrs_e {
-    RPMVERIFY_NONE	= 0,		/*!< */
-    RPMVERIFY_MD5	= (1 << 0),	/*!< from %verify(md5) */
-    RPMVERIFY_FILESIZE	= (1 << 1),	/*!< from %verify(size) */
-    RPMVERIFY_LINKTO	= (1 << 2),	/*!< from %verify(link) */
-    RPMVERIFY_USER	= (1 << 3),	/*!< from %verify(user) */
-    RPMVERIFY_GROUP	= (1 << 4),	/*!< from %verify(group) */
-    RPMVERIFY_MTIME	= (1 << 5),	/*!< from %verify(mtime) */
-    RPMVERIFY_MODE	= (1 << 6),	/*!< from %verify(mode) */
-    RPMVERIFY_RDEV	= (1 << 7),	/*!< from %verify(rdev) */
-	/* bits 8-15 unused, reserved for rpmVerifyAttrs */
-	/* bits 16-19 used in rpmVerifyFlags */
-	/* bits 20-22 unused */
-	/* bits 23-27 used in rpmQueryFlags */
-    RPMVERIFY_READLINKFAIL= (1 << 28),	/*!< */
-    RPMVERIFY_READFAIL	= (1 << 29),	/*!< */
-    RPMVERIFY_LSTATFAIL	= (1 << 30)	/*!< */
-	/* bit 31 unused */
-} rpmVerifyAttrs;
-#define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
-
-/** \ingroup rpmcli
- * Verify file attributes (including MD5 sum).
- * @todo gnorpm and python bindings prevent this from being static.
- * @param root		path to top of install tree
- * @param h		header
- * @param filenum	index of file in header file info arrays
- * @retval result	address of bit(s) returned to indicate failure
- * @param omitMask	bit(s) to disable verify checks
- * @return		0 on success (or not installed), 1 on error
- */
-int rpmVerifyFile(const char * root, Header h, int filenum,
-		/*@out@*/ rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
-	/*@globals fileSystem @*/
-	/*@modifies h, *result, fileSystem @*/;
-
-/*@}*/
-/* ==================================================================== */
 /** \name RPMEIU */
 /*@{*/
 /* --- install/upgrade/erase modes */
@@ -1744,7 +1678,7 @@ typedef enum rpmVerifySignatureReturn_e {
  */
 rpmVerifySignatureReturn rpmVerifySignature(const rpmTransactionSet ts,
 		/*@out@*/ char * result)
-	/*@modifies *result @*/;
+	/*@modifies ts, *result @*/;
 
 /** \ingroup signature
  * Destroy signature header from package.

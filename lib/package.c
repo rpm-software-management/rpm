@@ -137,7 +137,6 @@ static rpmRC readPackageHeaders(FD_t fd,
     struct rpmlead leadBlock;
     Header * hdr = NULL;
     struct rpmlead * lead;
-    char * defaultPrefix;
     struct stat sb;
     rpmRC rc;
 
@@ -153,9 +152,8 @@ static rpmRC readPackageHeaders(FD_t fd,
 	return RPMRC_FAIL;
 
     if (lead->magic[0] != RPMLEAD_MAGIC0 || lead->magic[1] != RPMLEAD_MAGIC1 ||
-	lead->magic[2] != RPMLEAD_MAGIC2 || lead->magic[3] != RPMLEAD_MAGIC3) {
+	lead->magic[2] != RPMLEAD_MAGIC2 || lead->magic[3] != RPMLEAD_MAGIC3)
 	return RPMRC_BADMAGIC;
-    }
 
     switch (lead->major) {
     case 1:
@@ -178,53 +176,10 @@ static rpmRC readPackageHeaders(FD_t fd,
 	}
 
 	/*
-	 * We don't use these entries (and rpm >= 2 never has) and they are
-	 * pretty misleading. Let's just get rid of them so they don't confuse
-	 * anyone.
+	 * Convert legacy headers on the fly ...
 	 */
-	if (headerIsEntry(*hdr, RPMTAG_FILEUSERNAME))
-	    (void) headerRemoveEntry(*hdr, RPMTAG_FILEUIDS);
-	if (headerIsEntry(*hdr, RPMTAG_FILEGROUPNAME))
-	    (void) headerRemoveEntry(*hdr, RPMTAG_FILEGIDS);
-
-	/*
-	 * We switched the way we do relocateable packages. We fix some of
-	 * it up here, though the install code still has to be a bit 
-	 * careful. This fixup makes queries give the new values though,
-	 * which is quite handy.
-	 */
-	/*@-branchstate@*/
-	if (headerGetEntry(*hdr, RPMTAG_DEFAULTPREFIX, NULL,
-			   (void **) &defaultPrefix, NULL))
-	{
-	    defaultPrefix =
-		stripTrailingChar(alloca_strdup(defaultPrefix), '/');
-	    (void) headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
-			   &defaultPrefix, 1); 
-	}
-	/*@=branchstate@*/
-
-	/*
-	 * The file list was moved to a more compressed format which not
-	 * only saves memory (nice), but gives fingerprinting a nice, fat
-	 * speed boost (very nice). Go ahead and convert old headers to
-	 * the new style (this is a noop for new headers).
-	 */
-	if (lead->major < 4)
-	    compressFilelist(*hdr);
-
-    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-        if (lead->type == RPMLEAD_SOURCE) {
-	    int_32 one = 1;
-	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
-	    	(void)headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
-				&one, 1);
-	} else if (lead->major < 4) {
-	    /* Retrofit "Provide: name = EVR" for binary packages. */
-	    providePackageNVR(*hdr);
-	}
+	legacyRetrofit(*hdr, lead);
 	break;
-
     default:
 	rpmError(RPMERR_NEWPACKAGE, _("only packaging with major numbers <= 4 "
 		"is supported by this version of RPM\n"));
