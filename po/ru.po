@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-05-06 19:31-0400\n"
+"POT-Creation-Date: 2000-05-10 11:32-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2182,11 +2182,11 @@ msgstr "не могу открыть %s: %s"
 msgid "cannot get %s lock on database"
 msgstr "не могу получить %s доступ к базе данных"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "exclusive"
 msgstr "исключительный"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "shared"
 msgstr "разделяемый"
 
@@ -2255,17 +2255,17 @@ msgstr ""
 msgid "closed  db index       %s/%s\n"
 msgstr "удаляю индекс файлов для %s\n"
 
-#: lib/db3.c:975
+#: lib/db3.c:974
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "открываю базу в режиме 0x%x в %s\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1079
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "не могу получить %s доступ к базе данных"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1086
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "удаляю индекс файлов для %s\n"

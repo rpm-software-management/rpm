@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.15
+Release: 0.16
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -136,7 +136,7 @@ fi
 
 %files
 %defattr(-,root,root)
-%doc RPM-PGP-KEY CHANGES GROUPS doc/manual/*
+%doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/*
 /bin/rpm
 %dir /etc/rpm
 /usr/bin/rpm2cpio
@@ -236,6 +236,14 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Wed May 10 2000 Jeff Johnson <jbj@redhat.com>
+- include RPM-GPG-KEY in file manifest.
+- simplify --last popt alias, date like -qi (bjerrick@easystreet.com).
+- fix: alloca'd memory used outside of scope (alpha segfault).
+
+* Mon May  8 2000 Jeff Johnson <jbj@redhat.com>
+- FreeBSD fixes (bero@redhat.com).
+
 * Sat May  6 2000 Jeff Johnson <jbj@redhat.com>
 - finish db1 and db3 cleanup.
 

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-05-06 19:31-0400\n"
+"POT-Creation-Date: 2000-05-10 11:32-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2254,11 +2254,11 @@ msgstr "en voinut avata %s: %s"
 msgid "cannot get %s lock on database"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "shared"
 msgstr "jaettua"
 
@@ -2327,17 +2327,17 @@ msgstr ""
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:975
+#: lib/db3.c:974
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1079
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1086
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""

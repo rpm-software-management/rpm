@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.39 2000/05/07 00:53:15 jbj Exp $
+# $Id: sl.po,v 1.40 2000/05/10 15:36:30 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-05-06 19:31-0400\n"
+"POT-Creation-Date: 2000-05-10 11:32-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2168,11 +2168,11 @@ msgstr "neuspe¹no odpiranje %s: %s\n"
 msgid "cannot get %s lock on database"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "shared"
 msgstr "deljeno"
 
@@ -2241,17 +2241,17 @@ msgstr ""
 msgid "closed  db index       %s/%s\n"
 msgstr "odstranjujemo seznam datotek za %s\n"
 
-#: lib/db3.c:975
+#: lib/db3.c:974
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiramo datoteko z naèinom 0x%x v %s\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1079
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1086
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "odstranjujemo seznam datotek za %s\n"

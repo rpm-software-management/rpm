@@ -63,8 +63,8 @@ rpm alias --triggerscripts --qf '\
 %{TRIGGERSCRIPTS}\n]'
 rpm alias --triggers --triggerscripts
 
-rpm alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)}|\n' \
-	--pipe "sort -r -n | sed 's,^..........,,' | awk '{printf(\"%-35s %-3s %-3s %2s %-8s %-4s\n\", $1, $2, $3, $4, $5, $6)}' "
+rpm alias --last --qf ''%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
+	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-35s %-s\n\", $1, substr($0,length($1)+2))}' "
 
 rpm alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]'
 rpm exec --freshen freshen.sh

@@ -915,7 +915,6 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     const char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
-    const char * dbpath;
     extern struct _dbiVec db3vec;
     dbiIndex dbi = NULL;
     int rc = 0;
@@ -1031,6 +1030,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    dbi->dbi_dbinfo = NULL;
 
 	    {	const char * dbfullpath;
+		const char * dbpath;
 		char * t;
 		int nb;
 
@@ -1043,10 +1043,11 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		    t = stpcpy( stpcpy( t, "/"), dbfile);
 		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
 			? dbfullpath : dbfile;
+
+		rc = db->open(db, dbpath, dbsubfile,
+		    dbi->dbi_type, oflags, dbi->dbi_perms);
 	    }
 
-	    rc = db->open(db, dbpath, dbsubfile,
-		    dbi->dbi_type, oflags, dbi->dbi_perms);
 	    /* XXX return rc == errno without printing */
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);

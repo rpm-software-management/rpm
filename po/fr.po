@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-05-06 19:31-0400\n"
+msgstr "POT-Creation-Date: 2000-05-10 11:32-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:422
 #, c-format
@@ -2255,11 +2255,11 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "cannot get %s lock on database"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "exclusive"
 msgstr ""
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "shared"
 msgstr ""
 
@@ -2328,17 +2328,17 @@ msgstr ""
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:975
+#: lib/db3.c:974
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1079
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1086
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""

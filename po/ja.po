@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-05-06 19:31-0400\n"
+"POT-Creation-Date: 2000-05-10 11:32-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.54 2000/05/07 00:53:12 jbj Exp $
+# $Id: ja.po,v 1.55 2000/05/10 15:36:30 jbj Exp $
 #: rpm.c:200
 #, c-format
 msgid "rpm: %s\n"
@@ -2224,11 +2224,11 @@ msgstr "%s のオープンに失敗: %s"
 msgid "cannot get %s lock on database"
 msgstr "データベースの %s をロックできません"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "exclusive"
 msgstr "除外"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "shared"
 msgstr "共有"
 
@@ -2297,17 +2297,17 @@ msgstr ""
 msgid "closed  db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: lib/db3.c:975
+#: lib/db3.c:974
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1079
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1086
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"

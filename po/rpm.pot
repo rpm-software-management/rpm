@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-05-06 19:31-0400\n"
+"POT-Creation-Date: 2000-05-10 11:32-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2106,11 +2106,11 @@ msgstr ""
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "exclusive"
 msgstr ""
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "shared"
 msgstr ""
 
@@ -2179,17 +2179,17 @@ msgstr ""
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:975
+#: lib/db3.c:974
 #, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: lib/db3.c:1078
+#: lib/db3.c:1079
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:1085
+#: lib/db3.c:1086
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""

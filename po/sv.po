@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.99 $
+# $Revision: 1.100 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-05-06 19:31-0400\n"
+"POT-Creation-Date: 2000-05-10 11:32-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2157,11 +2157,11 @@ msgstr "kunde inte öppna %s: %s\n"
 msgid "cannot get %s lock on database"
 msgstr "kan inte få %s lås på databas"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "shared"
 msgstr "delat"
 
@@ -2230,17 +2230,17 @@ msgstr ""
 msgid "closed  db index       %s/%s\n"
 msgstr "tar bort filindex för %s\n"
 
-#: lib/db3.c:975
+#: lib/db3.c:974
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar databas med rättighet 0x%x i %s\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1079
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på databas"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1086
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "tar bort filindex för %s\n"

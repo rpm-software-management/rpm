@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-05-06 19:31-0400\n"
+"POT-Creation-Date: 2000-05-10 11:32-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -2216,11 +2216,11 @@ msgstr "nelze otevøít %s: %s"
 msgid "cannot get %s lock on database"
 msgstr "nelze získat %s zámek k databázi"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "exclusive"
 msgstr "výhradní"
 
-#: lib/db1.c:451 lib/db3.c:1080
+#: lib/db1.c:451 lib/db3.c:1081
 msgid "shared"
 msgstr "sdílený"
 
@@ -2289,17 +2289,17 @@ msgstr "otevírá se databáze v %s\n"
 msgid "closed  db index       %s/%s\n"
 msgstr "odstraòuje se rejstøík souborù pro %s\n"
 
-#: lib/db3.c:975
+#: lib/db3.c:974
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "probíhá otevírání databázového re¾imu: 0%o\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1079
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nelze získat %s zámek k databázi"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1086
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "odstraòuje se rejstøík souborù pro %s\n"
