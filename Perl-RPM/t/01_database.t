@@ -56,12 +56,12 @@ print "ok 7\n";
 print "not " unless (@matches == 1);
 print "ok 8\n";
 
-print "not " unless ($matches[0]->{name}->[0] eq 'rpm');
+print "not " unless ($matches[0]->{name} eq 'rpm');
 print "ok 9\n";
 
 # There may be more than one package that depends on rpm
 @matches = $rpm->find_by_required_by('rpm');
-for (@matches) { $_ = $_->{name}->[0] }
+for (@matches) { $_ = $_->{name} }
 # As long as we see this one (it has to be present to build this package)
 print "not " unless (grep 'rpm-devel', @matches);
 print "ok 10\n";
