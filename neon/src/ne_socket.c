@@ -950,8 +950,8 @@ void ne_addr_destroy(ne_sock_addr *addr)
 
 /* Connect socket 'fd' to address 'addr' on given 'port': */
 static int raw_connect(int fd, const ne_inet_addr *addr, unsigned int port)
-	/*@globals errno @*/
-	/*@modifies errno @*/
+	/*@globals errno, internalState @*/
+	/*@modifies errno, internalState @*/
 {
 #ifdef USE_GETADDRINFO
 #ifdef AF_INET6

@@ -109,7 +109,7 @@ static int post_send(ne_request *req, void *private, const ne_status *status)
     return NE_REDIRECT;
 }
 
-static void free_redirect(void *cookie)
+static void free_redirect(/*@only@*/ void *cookie)
 	/*@modifies cookie @*/
 {
     struct redirect *red = cookie;

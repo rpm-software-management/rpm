@@ -44,7 +44,9 @@ struct ne_lock {
     int depth; /* the depth of the lock (NE_DEPTH_*). */
     enum ne_lock_type type;
     enum ne_lock_scope scope;
+/*@null@*/
     char *token; /* the lock token: uniquely identifies this lock. */
+/*@null@*/
     char *owner; /* string describing the owner of the lock. */
     long timeout; /* timeout in seconds. (or NE_TIMEOUT_*) */
 };
@@ -127,7 +129,8 @@ struct ne_lock *ne_lockstore_next(ne_lock_store *store)
  * path. */
 struct ne_lock *ne_lockstore_findbyuri(ne_lock_store *store, 
 				       const ne_uri *uri)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /* Issue a LOCK request for the given lock.  Requires that the uri,
  * depth, type, scope, and timeout members of 'lock' are filled in.
@@ -135,15 +138,18 @@ struct ne_lock *ne_lockstore_findbyuri(ne_lock_store *store,
  * free()d by this function.  On successful return, lock->token will
  * contain the lock token. */
 int ne_lock(ne_session *sess, struct ne_lock *lock)
-	/*@modifies sess, lock @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, lock, internalState @*/;
 
 /* Issue an UNLOCK request for the given lock */
 int ne_unlock(ne_session *sess, const struct ne_lock *lock)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /* Refresh a lock. Updates lock->timeout appropriately. */
 int ne_lock_refresh(ne_session *sess, struct ne_lock *lock)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 /* Callback for lock discovery.  If 'lock' is NULL, something went
  * wrong performing lockdiscovery for the resource, look at 'status'
@@ -159,7 +165,8 @@ typedef void (*ne_lock_result)(void *userdata, const struct ne_lock *lock,
  * the results (possibly >1 times).  */
 int ne_lock_discover(ne_session *sess, const char *path,
 		     ne_lock_result result, void *userdata)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 
 /* The ne_lock_using_* functions should be used before dispatching a

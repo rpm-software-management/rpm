@@ -31,12 +31,14 @@ BEGIN_NEON_DECLS
 /* Perform a GET request on resource at 'path', writing the entity
  * body which is returned to 'fd'. */
 int ne_get(ne_session *sess, const char *path, int fd)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /* Perform a PUT request on resource at 'path', reading the entity
  * body to submit from 'fd'. */
 int ne_put(ne_session *sess, const char *path, int fd)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 #define NE_DEPTH_ZERO (0)
 #define NE_DEPTH_ONE (1)
@@ -56,19 +58,24 @@ int ne_put(ne_session *sess, const char *path, int fd)
  * are to be copied.  */
 int ne_copy(ne_session *sess, int overwrite, int depth,
 	    const char *src, const char *dest)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 /* Move resource from 'src' to dest 'path'. */
 int ne_move(ne_session *sess, int overwrite,
 	    const char *src, const char *dest)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 /* Delete resource at 'path'. */
 int ne_delete(ne_session *sess, const char *path)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
+
 /* Create a collection at 'path', which MUST have a trailing slash. */
 int ne_mkcol(ne_session *sess, const char *path)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 /* Adds a Depth: header to a request */
 void ne_add_depth_header(ne_request *req, int depth)
@@ -77,10 +84,12 @@ void ne_add_depth_header(ne_request *req, int depth)
 /* Retrieve modification time of resource at location 'path', place in
  * *modtime.  (uses HEAD) */
 int ne_getmodtime(ne_session *sess, const char *path, time_t *modtime)
-	/*@modifies *modtime @*/;
+	/*@globals internalState @*/
+	/*@modifies *modtime, internalState @*/;
 
 typedef struct {
     const char *type, *subtype;
+/*@observer@*/
     const char *charset;
     char *value;
 } ne_content_type;
@@ -102,7 +111,8 @@ typedef struct {
  * to determine proxy server capabilities if using a proxy server. */
 int ne_options(ne_session *sess, const char *path,
 	       ne_server_capabilities *caps)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /* Defines a range of bytes, starting at 'start' and ending
  * at 'end'.  'total' is the number of bytes in the range.
@@ -127,11 +137,13 @@ typedef struct {
  *      ne_get_range(sess, path, &range, myfile); */
 int ne_get_range(ne_session *sess, const char *path, 
 		 ne_content_range *range, int fd)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 /* Post using buffer as request-body: stream response into f */
 int ne_post(ne_session *sess, const char *path, int fd, const char *buffer)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 END_NEON_DECLS
 

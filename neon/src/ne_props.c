@@ -123,7 +123,8 @@ ne_request *ne_propfind_get_request(ne_propfind_handler *handler)
 
 static int propfind(ne_propfind_handler *handler, 
 		    ne_props_result results, void *userdata)
-	/*@modifies handler @*/
+	/*@globals internalState @*/
+	/*@modifies handler, internalState @*/
 {
     int ret;
     ne_request *req = handler->request;
@@ -544,7 +545,7 @@ static void free_propset(/*@only@*/ ne_prop_result_set *set)
     ne_free(set);
 }
 
-static void end_response(void *userdata, void *resource,
+static void end_response(void *userdata, /*@only@*/ void *resource,
 			 const ne_status *status,
 			 const char *description)
 	/*@modifies resource @*/

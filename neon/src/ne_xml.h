@@ -146,7 +146,10 @@ const char *ne_xml_doc_encoding(const ne_xml_parser *p)
 
 /* A utility interface for mapping {nspace, name} onto an integer. */
 struct ne_xml_idmap {
-    const char *nspace, *name;
+/*@observer@*/
+    const char *nspace;
+/*@observer@*/
+    const char *name;
     int id;
 };
 

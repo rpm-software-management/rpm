@@ -87,7 +87,7 @@ const ne_inet_addr *ne_addr_next(ne_sock_addr *addr)
 
 /* If name resolution fails, copies the error string into 'buffer',
  * which is of size 'bufsiz'.  'buffer' is returned. */
-char *ne_addr_error(const ne_sock_addr *addr, char *buffer, size_t bufsiz)
+char *ne_addr_error(const ne_sock_addr *addr, /*@returned@*/ char *buffer, size_t bufsiz)
 	/*@modifies buffer @*/;
 
 /* Destroys an address object created by ne_addr_resolve. */
@@ -133,7 +133,8 @@ ne_socket *ne_sock_create(void)
  * Returns non-zero if a connection could not be established. */
 int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr, 
                     unsigned int port)
-	/*@modifies sock @*/;
+	/*@globals internalState @*/
+	/*@modifies sock, internalState @*/;
 
 /* ne_sock_read reads up to 'count' bytes into 'buffer'.
  * Returns:
@@ -192,7 +193,8 @@ int ne_sock_fd(const ne_socket *sock)
 /* Close the socket, and destroy the socket object. Returns non-zero
  * on error. */
 int ne_sock_close(/*@only@*/ ne_socket *sock)
-	/*@modifies sock @*/;
+	/*@globals internalState @*/
+	/*@modifies sock, internalState @*/;
 
 /* Return current error string for socket. */
 const char *ne_sock_error(const ne_socket *sock)

@@ -51,6 +51,7 @@
 /* A list of lock objects. */
 struct lock_list {
     struct ne_lock *lock;
+/*@relnull@*/
     struct lock_list *next, *prev;
 };
 

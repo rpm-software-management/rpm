@@ -200,7 +200,8 @@ struct ne_request_s {
 };
 
 static int open_connection(ne_request *req)
-	/*@modifies req @*/;
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/;
 
 /* The iterative step used to produce the hash value.  This is DJB's
  * magic "*33" hash function.  Ralf Engelschall has done some amazing
@@ -233,7 +234,8 @@ static inline unsigned int hash_and_lower(char *name)
  * whilst doing 'doing'.  'code', if non-zero, is the socket error
  * code, NE_SOCK_*, or if zero, is ignored. */
 static int aborted(ne_request *req, const char *doing, ssize_t code)
-	/*@modifies req @*/
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/
 {
     ne_session *sess = req->session;
     int ret = NE_ERROR;
@@ -290,6 +292,7 @@ void ne_handle_numeric_header(void *userdata, const char *value)
     *location = atoi(value);
 }
 
+/*@null@*/
 static void *get_private(const struct hook *hk, const char *id)
 	/*@*/
 {
@@ -780,7 +783,8 @@ void ne_request_destroy(ne_request *req)
  * set.  */
 static int read_response_block(ne_request *req, struct ne_response *resp, 
 			       char *buffer, size_t *buflen) 
-	/*@modifies req, resp, buffer, *buflen @*/
+	/*@globals internalState @*/
+	/*@modifies req, resp, buffer, *buflen, internalState @*/
 {
     ne_socket *const sock = req->session->socket;
     size_t willread;
@@ -979,7 +983,8 @@ static inline void strip_eol(char *buf, ssize_t *len)
 /* Read and parse response status-line into 'status'.  'retry' is non-zero
  * if an NE_RETRY should be returned if an EOF is received. */
 static int read_status_line(ne_request *req, ne_status *status, int retry)
-	/*@modifies req, status @*/
+	/*@globals internalState @*/
+	/*@modifies req, status, internalState @*/
 {
     char *buffer = req->respbuf;
     ssize_t ret;
@@ -1004,7 +1009,8 @@ static int read_status_line(ne_request *req, ne_status *status, int retry)
 
 /* Discard a set of message headers. */
 static int discard_headers(ne_request *req)
-	/*@modifies req @*/
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/
 {
     do {
 	SOCK_ERR(req, ne_sock_readline(req->session->socket, req->respbuf, 
@@ -1024,7 +1030,8 @@ static int discard_headers(ne_request *req)
  * closed already.
  */
 static int send_request(ne_request *req, const ne_buffer *request)
-	/*@modifies req @*/
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/
 {
     ne_session *sess = req->session;
     ssize_t ret = NE_OK;
@@ -1086,7 +1093,8 @@ static int send_request(ne_request *req, const ne_buffer *request)
  *   NE_ERROR: Error (session error is set).
  */
 static int read_message_header(ne_request *req, char *buf, size_t buflen)
-	/*@modifies req, buf @*/
+	/*@globals internalState @*/
+	/*@modifies req, buf, internalState @*/
 {
     ssize_t n;
     ne_socket *sock = req->session->socket;
@@ -1148,7 +1156,8 @@ static int read_message_header(ne_request *req, char *buf, size_t buflen)
 
 /* Read response headers.  Returns NE_* code, sets session error. */
 static int read_response_headers(ne_request *req) 
-	/*@modifies req @*/
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/
 {
     char hdr[8192]; /* max header length */
     int ret, count = 0;
@@ -1428,7 +1437,8 @@ static const ne_inet_addr *resolve_next(ne_session *sess,
  * succeeded, that address will be used first for the next attempt to
  * connect. */
 static int do_connect(ne_request *req, struct host_info *host, const char *err)
-	/*@modifies req, host @*/
+	/*@globals internalState @*/
+	/*@modifies req, host, internalState @*/
 {
     ne_session *const sess = req->session;
     int ret;

@@ -441,7 +441,8 @@ void ne_add_depth_header(ne_request *req, int depth)
 
 static int copy_or_move(ne_session *sess, int is_move, int overwrite,
 			int depth, const char *src, const char *dest) 
-	/*@modifies sess @*/
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/
 {
     ne_request *req = ne_request_create( sess, is_move?"MOVE":"COPY", src );
 

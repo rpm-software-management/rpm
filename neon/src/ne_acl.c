@@ -44,6 +44,7 @@
 #include "ne_xml.h" /* for NE_XML_MEDIA_TYPE */
 
 static ne_buffer *acl_body(ne_acl_entry *right, int count)
+	/*@*/
 {
     ne_buffer *body = ne_buffer_create();
     int m;

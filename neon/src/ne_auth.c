@@ -120,8 +120,18 @@ struct auth_challenge {
 
 /*@unchecked@*/
 static const struct auth_class {
-    const char *id, *req_hdr, *resp_hdr, *resp_info_hdr, *fail_msg;
-    int status_code, fail_code;
+/*@observer@*/
+    const char *id;
+/*@observer@*/
+    const char *req_hdr;
+/*@observer@*/
+    const char *resp_hdr;
+/*@observer@*/
+    const char *resp_info_hdr;
+/*@observer@*/
+    const char *fail_msg;
+    int status_code;
+    int fail_code;
 } ah_server_class = {
     HOOK_SERVER_ID,
     "Authorization", "WWW-Authenticate", "Authentication-Info",
@@ -163,9 +173,11 @@ typedef struct {
     char *basic; 
 #ifdef HAVE_GSSAPI
     /* for the GSSAPI/Negotiate scheme: */
+/*@relnull@*/
     char *gssapi_token;
     gss_ctx_id_t gssctx;
     gss_name_t gssname;
+/*@relnull@*/
     gss_OID gssmech;
 #endif
     /* These all used for Digest auth */
@@ -1293,7 +1305,7 @@ static void ah_destroy(ne_request *req, void *session)
     }
 }
 
-static void free_auth(void *cookie)
+static void free_auth(/*@only@*/ void *cookie)
 	/*@modifies cookie @*/
 {
     auth_session *sess = cookie;

@@ -54,7 +54,10 @@ BEGIN_NEON_DECLS
 
 /* The name of a WebDAV property. 'nspace' may be NULL. */
 typedef struct {
-    const char *nspace, *name;
+/*@observer@*/
+    const char *nspace;
+/*@observer@*/
+    const char *name;
 } ne_propname;
 
 typedef struct ne_prop_result_set_s ne_prop_result_set;
@@ -133,7 +136,8 @@ typedef void (*ne_props_result)(void *userdata, const char *href,
 int ne_simple_propfind(ne_session *sess, const char *path, int depth,
 			const ne_propname *props,
 			ne_props_result results, void *userdata)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /* The properties of a resource can be manipulated using ne_proppatch.
  * A single proppatch request may include any number of individual
@@ -161,7 +165,8 @@ typedef struct {
  * NE_*. */
 int ne_proppatch(ne_session *sess, const char *path,
 		 const ne_proppatch_operation *ops)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 /* Retrieve property names for the resources at 'path'.  'results'
  * callback is called for each resource.  Use 'ne_propset_iterate' on
@@ -169,7 +174,8 @@ int ne_proppatch(ne_session *sess, const char *path,
  * */
 int ne_propnames(ne_session *sess, const char *path, int depth,
 		 ne_props_result results, void *userdata)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /* The complex, you-do-all-the-work, property fetch interface:
  */
@@ -242,7 +248,8 @@ void ne_propfind_set_private(ne_propfind_handler *handler,
  * Returns NE_*. */
 int ne_propfind_allprop(ne_propfind_handler *handler, 
 			ne_props_result result, void *userdata)
-	/*@modifies handler @*/;
+	/*@globals internalState @*/
+	/*@modifies handler, internalState @*/;
 
 /* Fetch all properties with names listed in array 'names', which is
  * terminated by a property with a NULL name field.  For each resource
@@ -253,7 +260,8 @@ int ne_propfind_allprop(ne_propfind_handler *handler,
 int ne_propfind_named(ne_propfind_handler *handler, 
 		      const ne_propname *names,
 		      ne_props_result result, void *userdata)
-	/*@modifies handler @*/;
+	/*@globals internalState @*/
+	/*@modifies handler, internalState @*/;
 
 /* Destroy a propfind handler after use. */
 void ne_propfind_destroy(/*@only@*/ ne_propfind_handler *handler)

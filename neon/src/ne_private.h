@@ -30,8 +30,10 @@
 #include "ne_ssl.h"
 
 struct host_info {
+/*@relnull@*/
     char *hostname;
     unsigned int port;
+/*@relnull@*/
     ne_sock_addr *address; /* if non-NULL, result of resolving 'hostname'. */
     /* current network address obtained from 'address' being used. */
     const ne_inet_addr *current;

@@ -104,8 +104,9 @@ void *ne_207_get_current_response(ne_207_parser *p)
  *  NE_OK: for a 2xx response or a 207 response which contained
  *            only 2xx-class propstats.
  * The request object is destroyed in both cases. */
-int ne_simple_request(ne_session *sess, ne_request *req)
-	/*@modifies sess, req @*/;
+int ne_simple_request(ne_session *sess, /*@only@*/ ne_request *req)
+	/*@globals internalState @*/
+	/*@modifies sess, req, internalState @*/;
 
 END_NEON_DECLS
 

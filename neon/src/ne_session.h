@@ -44,12 +44,14 @@ ne_session *ne_session_create(const char *scheme,
 
 /* Finish an HTTP session */
 void ne_session_destroy(/*@only@*/ ne_session *sess)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 /* Prematurely force the connection to be closed for the given
  * session. */
 void ne_close_connection(ne_session *sess)
-	/*@modifies sess @*/;
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/;
 
 /* Set the proxy server to be used for the session. */
 void ne_session_proxy(ne_session *sess,
@@ -79,6 +81,7 @@ void ne_set_progress(ne_session *sess,
  * call to ne_session_get_private with the same ID. */
 void ne_set_session_private(ne_session *sess, const char *id, void *priv)
 	/*@modifies sess @*/;
+/*@relnull@*/
 void *ne_get_session_private(ne_session *sess, const char *id)
 	/*@*/;
 

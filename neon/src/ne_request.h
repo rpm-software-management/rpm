@@ -211,7 +211,8 @@ void ne_print_request_header(ne_request *req, const char *name,
  *                  return a meaningful error string
  */
 int ne_request_dispatch(ne_request *req)
-	/*@modifies req @*/;
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/;
 
 /* Returns a pointer to the response status information for the given
  * request; pointer is valid until request object is destroyed. */
@@ -239,9 +240,11 @@ void ne_request_destroy(/*@only@*/ ne_request *req)
  * ne_end_request returns NE_RETRY, you must restart the loop from (1)
  * above. */
 int ne_begin_request(ne_request *req)
-	/*@modifies req @*/;
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/;
 int ne_end_request(ne_request *req)
-	/*@modifies req @*/;
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/;
 
 /* Read a block of the response.  buffer must be at least 128 bytes.
  * 'buflen' must be length of buffer.
@@ -252,7 +255,8 @@ int ne_end_request(ne_request *req)
  *  >0 - number of bytes read into buffer.
  */
 ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen)
-	/*@modifies req, buffer @*/;
+	/*@globals internalState @*/
+	/*@modifies req, buffer, internalState @*/;
 
 /* Include the HTTP/1.1 header "Expect: 100-continue" in request 'req'
  * if 'flag' is non-zero.  Warning: 100-continue support is not
@@ -316,6 +320,7 @@ void ne_hook_destroy_session(ne_session *sess,
  * call to ne_request_get_private with the same ID. */
 void ne_set_request_private(ne_request *req, const char *id, void *priv)
 	/*@modifies req @*/;
+/*@relnull@*/
 void *ne_get_request_private(ne_request *req, const char *id)
 	/*@*/;
 

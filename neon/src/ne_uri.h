@@ -87,7 +87,7 @@ int ne_uri_cmp(const ne_uri *u1, const ne_uri *u2)
 	/*@*/;
 
 /* Free URI object. */
-void ne_uri_free(/*@only@*/ ne_uri *parsed)
+void ne_uri_free(ne_uri *parsed)
 	/*@modifies parsed @*/;
 
 END_NEON_DECLS

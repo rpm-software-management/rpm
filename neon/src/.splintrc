@@ -14,57 +14,52 @@
 # --- in progress
 #+bounds
 
--branchstate
--boolops
--bufferoverflowhigh
--compdef
--compdestroy
--compmempass
--declundef
--enummemuse
--evalorder
--exportlocal
--fcnuse
--fielduse
--fixedformalarray
--fullinitblock
--globstate
--infloops
--infloopsuncon
--initallelements
--internalglobs
--mayaliasunique
--modfilesys
+-branchstate		# 25
+-boolops		# 34
+-bufferoverflowhigh	# 2
+-compdef		# 92
+-compdestroy		# 100
+-compmempass		# 26
+-declundef		# 56
+-enummemuse		# 3
+-evalorder		# 2
+-exportlocal		# 18
+-fcnuse			# 109
+-fielduse		# 11
+-fixedformalarray	# 5
+-fullinitblock		# 7
+-infloops		# 1
+-infloopsuncon		# 1
+-initallelements	# 3
+-mayaliasunique		# 4
+-modfilesys		# 12
 -modnomods		# 1
 -moduncon		# 119
--multithreaded
--noeffect
+-multithreaded		# 1
+-noeffect		# 152
 -noeffectuncon		# 30
 -nullpass		# 17
--nullret
--nullstate
--paramuse
--predboolptr
--protoparammatch
-+ptrnegate
--redef
--retalias
--retvalint
--retvalother
--sizeoftype
--staticinittrans
--type
--typeuse
--unrecog
--usereleased
+-nullstate		# 6
+-paramuse		# 79
+-predboolptr		# 70
+-protoparammatch	# 126
+-redef			# 1
+-retalias		# 27
+-retvalint		# 12
+-retvalother		# 36
+-sizeoftype		# 10
+-type			# 47
+-typeuse		# 4
+-unrecog		# 5
+-usereleased		# 40
 
--immediatetrans
--kepttrans
--observertrans
--readonlytrans
--statictrans
--temptrans
--unqualifiedtrans
+-immediatetrans		# 5
+-kepttrans		# 5
+-observertrans		# 5
+-readonlytrans		# 1
+-statictrans		# 1
+-temptrans		# 46
+-unqualifiedtrans	# 12
 
 -casebreak
 -loopswitchbreak
@@ -78,26 +73,26 @@
 -exportvar
 
 # --- not-yet at strict level
--bitwisesigned		# 86
--elseifcomplete		# 2
--forblock		# 6
--ifblock		# 231
--incondefs		# 64
--namechecks		# tedious ANSI compliance checks
--ptrarith		# tedious
+-bitwisesigned
+-elseifcomplete
+-forblock
+-ifblock
+-incondefs
+-namechecks
+-ptrarith
 
--mustdefine		# 25
--shiftimplementation	# 148 ctype.h
+-mustdefine
+-shiftimplementation
 
--strictops		# 37
--whileblock		# 16
+-strictops
+-whileblock
 
 # --- not-yet at checks level
--mustfree		# 26
--usedef			# 31
+-mustfree
+-usedef	
 
 # --- not-yet at standard level
-+boolint		# 38
-+charint		# 147
-+ignorequals		# 49
-+matchanyintegral	# 77
++boolint
++charint
++ignorequals
++matchanyintegral

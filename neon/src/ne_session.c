@@ -46,7 +46,7 @@
 #include "ne_private.h"
 
 /* Destroy a a list of hooks. */
-static void destroy_hooks(struct hook *hooks)
+static void destroy_hooks(/*@only@*/ struct hook *hooks)
 	/*@modifies hooks @*/
 {
     struct hook *nexthk;
