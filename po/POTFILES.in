@@ -3,7 +3,6 @@
 # Package source files
 
 build.c
-oldrpmdb.c
 rpm.c
 rpm2cpio.c
 rpmqv.c
