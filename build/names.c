@@ -22,8 +22,6 @@ static gid_t gids[1024];
 static char *gnames[1024];
 static int gid_used = 0;
     
-static time_t buildtime;
-
 /*
  * getUname() takes a uid, gets the username, and creates an entry in the
  * table to hold a string containing the user name.
@@ -162,14 +160,15 @@ char *getGnameS(char *gname)
     return gnames[x];
 }
 
-void markBuildTime(void)
-{
-    buildtime = time(NULL);
-}
-
 time_t *getBuildTime(void)
 {
-    return &buildtime;
+    static time_t buildTime = 0;
+
+    if (! buildTime) {
+	buildTime = time(NULL);
+    }
+
+    return &buildTime;
 }
 
 char *buildHost(void)

@@ -1,11 +1,13 @@
 #ifndef _REQPROV_H_
 #define _REQPROV_H_
 
-#include "specP.h"
+#include "spec.h"
+#include "package.h"
+#include "lib/cpio.h"
 
-int addReqProv(struct PackageRec *p, int flags,
-	       char *name, char *version);
-int generateAutoReqProv(Header header, struct PackageRec *p);
-int processReqProv(Header h, struct PackageRec *p);
+int addReqProv(Spec spec, Package pkg, int flag, char *name, char *version);
+int generateAutoReqProv(Spec spec, Package pkg,
+			struct cpioFileMapping *cpioList, int cpioCount);
+void printReqs(Spec spec, Package pkg);
 
-#endif _REQPROV_H_
+#endif

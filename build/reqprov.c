@@ -1,413 +1,211 @@
 /* reqprov.c -- require/provide handling */
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <ctype.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <errno.h>
+#include <malloc.h>
 
-#include "specP.h"
+#include "spec.h"
 #include "reqprov.h"
 #include "messages.h"
 #include "rpmlib.h"
 #include "misc.h"
+#include "lib/misc.h"
 
-static StringBuf getOutputFrom(char *dir, char *argv[],
-			       char *writePtr, int writeBytesLeft,
-			       int failNonZero);
-
-/*************************************************************/
-/*                                                           */
-/* Adding entries to the package reqprov list                */
-/* Handle duplicate entries                                  */
-/*                                                           */
-/*************************************************************/
-
-int addReqProv(struct PackageRec *p, int flags,
-	       char *name, char *version)
+int addReqProv(Spec spec, Package pkg, int flag, char *name, char *version)
 {
-    struct ReqProv *rd;
-    int same;
-
-    /* Frist see if the same entry is already there */
-    rd = p->reqprov;
-    while (rd) {
-	if (rd->flags == flags) {
-	    if (rd->version == version) {
-		same = 1;
-	    } else if (!rd->version || !version) {
-		same = 0;
-	    } else if (!strcmp(rd->version, version)) {
-		same = 1;
-	    } else {
-		same = 0;
-	    }
-
-	    if (same && !strcmp(rd->name, name)) {
-		/* They are exacty the same */
-		break;
-	    }
-	}
-	rd = rd->next;
+    char **names;
+    char **versions = NULL;
+    int *flags = NULL;
+    int nametag = 0;
+    int versiontag = 0;
+    int flagtag = 0;
+    int len;
+    int extra = 0;
+    
+    if (flag & RPMSENSE_PROVIDES) {
+	nametag = RPMTAG_PROVIDES;
+    } else if (flag & RPMSENSE_OBSOLETES) {
+	nametag = RPMTAG_OBSOLETES;
+    } else if (flag & RPMSENSE_CONFLICTS) {
+	nametag = RPMTAG_CONFLICTNAME;
+	versiontag = RPMTAG_CONFLICTVERSION;
+	flagtag = RPMTAG_CONFLICTFLAGS;
+    } else if (flag & RPMSENSE_PREREQ) {
+	nametag = RPMTAG_REQUIRENAME;
+	versiontag = RPMTAG_REQUIREVERSION;
+	flagtag = RPMTAG_REQUIREFLAGS;
+	extra = RPMSENSE_PREREQ;
+    } else {	
+	nametag = RPMTAG_REQUIRENAME;
+	versiontag = RPMTAG_REQUIREVERSION;
+	flagtag = RPMTAG_REQUIREFLAGS;
     }
-    if (rd) {
-	/* already there */
-	rpmMessage(RPMMESS_DEBUG, "Already Got: %s\n", name);
-	return 0;
+
+    flag = (flag & RPMSENSE_SENSEMASK) | extra;
+    if (!version) {
+	version = "";
     }
     
-    rd = (struct ReqProv *)malloc(sizeof(*rd));
-    rd->flags = flags;
-    rd->name = strdup(name);
-    rd->version = version ? strdup(version) : NULL;
-    rd->next = p->reqprov;
-    p->reqprov = rd;
+    if (headerGetEntry(pkg->header, nametag, NULL, (void *) &names, &len)) {
+	if (flagtag) {
+	    headerGetEntry(pkg->header, versiontag, NULL,
+			   (void *) &versions, NULL);
+	    headerGetEntry(pkg->header, flagtag, NULL, (void *) &flags, NULL);
+	}
+	while (len) {
+	    len--;
+	    if (!strcmp(names[len], name)) {
+		if (!flagtag ||
+		    (!strcmp(versions[len], version) && flags[len] == flag)) {
+		    /* The same */
+		    FREE(names);
+		    FREE(versions);
+		    return 0;
+		}
+	    }
+	}
+	FREE(names);
+	FREE(versions);
+    }
 
-    if (flags & RPMSENSE_PROVIDES) {
-	rpmMessage(RPMMESS_DEBUG, "Adding provide: %s\n", name);
-	p->numProv++;
-    } else if (flags & RPMSENSE_CONFLICTS) {
-	rpmMessage(RPMMESS_DEBUG, "Adding conflict: %s\n", name);
-	p->numConflict++;
-    } else if (flags & RPMSENSE_PREREQ) {
-	rpmMessage(RPMMESS_DEBUG, "Adding prereq: %s\n", name);
-	p->numPreReq++;
-    } else if (flags & RPMSENSE_OBSOLETES) {
-	rpmMessage(RPMMESS_DEBUG, "Adding obsoletes: %s\n", name);
-	p->numObsoletes++;
-    } else {	
-	rpmMessage(RPMMESS_DEBUG, "Adding require: %s\n", name);
-	p->numReq++;
+    headerAddOrAppendEntry(pkg->header, nametag,
+			   RPM_STRING_ARRAY_TYPE, &name, 1);
+    if (flagtag) {
+	headerAddOrAppendEntry(pkg->header, versiontag,
+			       RPM_STRING_ARRAY_TYPE, &version, 1);
+	headerAddOrAppendEntry(pkg->header, flagtag,
+			       RPM_INT32_TYPE, &flag, 1);
     }
 
     return 0;
 }
 
-/*************************************************************/
-/*                                                           */
-/* Add require/provides for the files in the header          */
-/*  (adds to the package structure)                          */
-/*                                                           */
-/*************************************************************/
-
-static StringBuf getOutputFrom(char *dir, char *argv[],
-			       char *writePtr, int writeBytesLeft,
-			       int failNonZero)
+int generateAutoReqProv(Spec spec, Package pkg,
+			struct cpioFileMapping *cpioList, int cpioCount)
 {
-    int progPID;
-    int progDead;
-    int toProg[2];
-    int fromProg[2];
-    int status;
-    void *oldhandler;
-    int bytesWritten;
-    StringBuf readBuff;
-    int bytes;
-    unsigned char buf[8193];
-
-    oldhandler = signal(SIGPIPE, SIG_IGN);
-
-    pipe(toProg);
-    pipe(fromProg);
-    
-    if (!(progPID = fork())) {
-	close(toProg[1]);
-	close(fromProg[0]);
-	
-	dup2(toProg[0], 0);   /* Make stdin the in pipe */
-	dup2(fromProg[1], 1); /* Make stdout the out pipe */
-
-	close(toProg[0]);
-	close(fromProg[1]);
-
-	chdir(dir);
-	
-	execvp(argv[0], argv);
-	rpmError(RPMERR_EXEC, "Couldn't exec %s", argv[0]);
-	_exit(RPMERR_EXEC);
-    }
-    if (progPID < 0) {
-	rpmError(RPMERR_FORK, "Couldn't fork %s", argv[0]);
-	return NULL;
-    }
-
-    close(toProg[0]);
-    close(fromProg[1]);
-
-    /* Do not block reading or writing from/to prog. */
-    fcntl(fromProg[0], F_SETFL, O_NONBLOCK);
-    fcntl(toProg[1], F_SETFL, O_NONBLOCK);
-    
-    readBuff = newStringBuf();
-
-    progDead = 0;
-    do {
-	if (waitpid(progPID, &status, WNOHANG)) {
-	    progDead = 1;
-	}
-
-	/* Write some stuff to the process if possible */
-        if (writeBytesLeft) {
-	    if ((bytesWritten =
-		  write(toProg[1], writePtr,
-		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
-	        if (errno != EAGAIN) {
-		    perror("getOutputFrom()");
-	            exit(1);
-		}
-	        bytesWritten = 0;
-	    }
-	    writeBytesLeft -= bytesWritten;
-	    writePtr += bytesWritten;
-	} else {
-	    close(toProg[1]);
-	}
-	
-	/* Read any data from prog */
-	bytes = read(fromProg[0], buf, sizeof(buf)-1);
-	while (bytes > 0) {
-	    buf[bytes] = '\0';
-	    appendStringBuf(readBuff, buf);
-	    bytes = read(fromProg[0], buf, sizeof(buf)-1);
-	}
-
-	/* terminate when prog dies */
-    } while (!progDead);
-
-    close(toProg[1]);
-    close(fromProg[0]);
-    signal(SIGPIPE, oldhandler);
-
-    if (writeBytesLeft) {
-	rpmError(RPMERR_EXEC, "failed to write all data to %s", argv[0]);
-	return NULL;
-    }
-    waitpid(progPID, &status, 0);
-    if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	rpmError(RPMERR_EXEC, "%s failed", argv[0]);
-	return NULL;
-    }
-
-    return readBuff;
-}
-
-int generateAutoReqProv(Header header, struct PackageRec *p)
-{
-    char **f, **fsave, *s;
-    int count;
-    int_16 *modes;
-
-    StringBuf writeBuff;
-    StringBuf readBuff;
-    char *writePtr;
+    StringBuf writeBuf;
     int writeBytes;
-    char dir[1024];
-    char *argv[8];
+    StringBuf readBuf;
+    char *argv[2];
+    char **f, **fsave;
 
-    rpmMessage(RPMMESS_VERBOSE, "Finding dependencies...\n");
-
-    /*** Get root directory ***/
-    
-    if (rpmGetVar(RPMVAR_ROOT)) {
-	strcpy(dir, rpmGetVar(RPMVAR_ROOT));
-    } else {
-	strcpy(dir, "/");
-    }
-
-    /*** Generate File List ***/
-    
-    if (!headerGetEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
+    if (!cpioCount) {
 	return 0;
     }
-    if (!count) {
-	return 0;
-    }
-    fsave = f;
-    headerGetEntry(header, RPMTAG_FILEMODES, NULL, (void **) &modes, NULL);
 
-    writeBuff = newStringBuf();
+    writeBuf = newStringBuf();
     writeBytes = 0;
-    while (count--) {
-        s = *f++;
-	/* We skip the leading "/" (already normalized) */
-	writeBytes += strlen(s);
-	appendLineStringBuf(writeBuff, s + 1);
+    while (cpioCount--) {
+	writeBytes += strlen(cpioList->fsPath) + 1;
+	appendLineStringBuf(writeBuf, cpioList->fsPath);
+	cpioList++;
     }
-    if (fsave) {
-	free(fsave);
-    }
-    writePtr = getStringBuf(writeBuff);
 
     /*** Do Provides ***/
+
+    rpmMessage(RPMMESS_NORMAL, "Finding provides...\n");
     
     argv[0] = "find-provides";
     argv[1] = NULL;
-    readBuff = getOutputFrom(dir, argv, writePtr, writeBytes, 1);
-    if (!readBuff) {
+    readBuf = getOutputFrom(NULL, argv,
+			     getStringBuf(writeBuf), writeBytes, 1);
+    if (!readBuf) {
 	rpmError(RPMERR_EXEC, "Failed to find provides");
-	exit(1);
+	freeStringBuf(writeBuf);
+	return RPMERR_EXEC;
     }
     
-    s = getStringBuf(readBuff);
-    f = fsave = splitString(s, strlen(s), '\n');
-    freeStringBuf(readBuff);
+    f = fsave = splitString(getStringBuf(readBuf),
+			    strlen(getStringBuf(readBuf)), '\n');
+    freeStringBuf(readBuf);
     while (*f) {
 	if (**f) {
-	    addReqProv(p, RPMSENSE_PROVIDES, *f, NULL);
+	    addReqProv(spec, pkg, RPMSENSE_PROVIDES, *f, NULL);
 	}
 	f++;
     }
-    free(fsave);
+    FREE(fsave);
 
     /*** Do Requires ***/
     
+    rpmMessage(RPMMESS_NORMAL, "Finding requires...\n");
+
     argv[0] = "find-requires";
     argv[1] = NULL;
-    readBuff = getOutputFrom(dir, argv, writePtr, writeBytes, 0);
-    if (!readBuff) {
+    readBuf = getOutputFrom(NULL, argv,
+			     getStringBuf(writeBuf), writeBytes, 0);
+    if (!readBuf) {
 	rpmError(RPMERR_EXEC, "Failed to find requires");
-	exit(1);
+	freeStringBuf(writeBuf);
+	return RPMERR_EXEC;
     }
 
-    s = getStringBuf(readBuff);
-    f = fsave = splitString(s, strlen(s), '\n');
-    freeStringBuf(readBuff);
+    f = fsave = splitString(getStringBuf(readBuf),
+			    strlen(getStringBuf(readBuf)), '\n');
+    freeStringBuf(readBuf);
     while (*f) {
 	if (**f) {
-	    addReqProv(p, RPMSENSE_ANY, *f, NULL);
+	    addReqProv(spec, pkg, RPMSENSE_ANY, *f, NULL);
 	}
 	f++;
     }
-    free(fsave);
+    FREE(fsave);
 
     /*** Clean Up ***/
 
-    freeStringBuf(writeBuff);
+    freeStringBuf(writeBuf);
 
     return 0;
 }
 
-/*************************************************************/
-/*                                                           */
-/* Generate and add header entry from package record         */
-/*                                                           */
-/*************************************************************/
-
-int processReqProv(Header h, struct PackageRec *p)
+void printReqs(Spec spec, Package pkg)
 {
-    struct ReqProv *rd;
-    char **nameArray, **namePtr;
-    char **versionArray, **versionPtr;
-    int_32 *flagArray, *flagPtr;
-    int x;
+    int startedPreReq = 0;
+    int startedReq = 0;
 
-    if (p->numProv) {
-	rd = p->reqprov;
-	nameArray = namePtr = malloc(p->numProv * sizeof(*nameArray));
-	rpmMessage(RPMMESS_VERBOSE, "Provides (%d):", p->numProv);
-	while (rd) {
-	    if (rd->flags & RPMSENSE_PROVIDES) {
-		rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
-		*namePtr++ = rd->name;
-	    }
-	    rd = rd->next;
+    char **names;
+    int x, count;
+    int *flags;
+
+    if (headerGetEntry(pkg->header, RPMTAG_PROVIDES,
+		       NULL, (void **) &names, &count)) {
+	rpmMessage(RPMMESS_NORMAL, "Provides:");
+	x = 0;
+	while (x < count) {
+	    rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
+	    x++;
 	}
-	rpmMessage(RPMMESS_VERBOSE, "\n");
-
-	headerAddEntry(h, RPMTAG_PROVIDES, RPM_STRING_ARRAY_TYPE, nameArray, p->numProv);
-	free(nameArray);
+	rpmMessage(RPMMESS_NORMAL, "\n");
+	FREE(names);
     }
 
-    if (p->numObsoletes) {
-	rd = p->reqprov;
-	nameArray = namePtr = malloc(p->numObsoletes * sizeof(*nameArray));
-	rpmMessage(RPMMESS_VERBOSE, "Obsoletes (%d):", p->numObsoletes);
-	while (rd) {
-	    if (rd->flags & RPMSENSE_OBSOLETES) {
-		rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
-		*namePtr++ = rd->name;
-	    }
-	    rd = rd->next;
-	}
-	rpmMessage(RPMMESS_VERBOSE, "\n");
-
-	headerAddEntry(h, RPMTAG_OBSOLETES, RPM_STRING_ARRAY_TYPE, nameArray, p->numObsoletes);
-	free(nameArray);
-    }
-
-    if (p->numConflict) {
-	rd = p->reqprov;
-	nameArray = namePtr = malloc(p->numConflict * sizeof(*nameArray));
-	versionArray = versionPtr =
-	    malloc(p->numConflict * sizeof(*versionArray));
-	flagArray = flagPtr = malloc(p->numConflict * sizeof(*flagArray));
-	rpmMessage(RPMMESS_VERBOSE, "Conflicts (%d):", p->numConflict);
-	while (rd) {
-	    if (rd->flags & RPMSENSE_CONFLICTS) {
-		rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
-		*namePtr++ = rd->name;
-		*versionPtr++ = rd->version ? rd->version : "";
-		*flagPtr++ = rd->flags & RPMSENSE_SENSEMASK;
-	    }
-	    rd = rd->next;
-	}
-	rpmMessage(RPMMESS_VERBOSE, "\n");
-
-	headerAddEntry(h, RPMTAG_CONFLICTNAME, RPM_STRING_ARRAY_TYPE,
-		 nameArray, p->numConflict);
-	headerAddEntry(h, RPMTAG_CONFLICTVERSION, RPM_STRING_ARRAY_TYPE,
-		 versionArray, p->numConflict);
-	headerAddEntry(h, RPMTAG_CONFLICTFLAGS, RPM_INT32_TYPE,
-		 flagArray, p->numConflict);
-
-	free(nameArray);
-	free(versionArray);
-	free(flagArray);
-    }
-
-    x = p->numReq + p->numPreReq;
-    if (x) {
-	rd = p->reqprov;
-	nameArray = namePtr = malloc(x * sizeof(*nameArray));
-	versionArray = versionPtr = malloc(x * sizeof(*versionArray));
-	flagArray = flagPtr = malloc(x * sizeof(*flagArray));
-	rpmMessage(RPMMESS_VERBOSE, "[Pre]Requires (%d):", x);
-	while (rd) {
-	    if (! ((rd->flags & RPMSENSE_PROVIDES) ||
-		   (rd->flags & RPMSENSE_OBSOLETES) ||
-		   (rd->flags & RPMSENSE_CONFLICTS))) {
-		if (rd->flags & RPMSENSE_PREREQ) {
-		    rpmMessage(RPMMESS_VERBOSE, " [%s]", rd->name);
-		} else {
-		    rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
+    if (headerGetEntry(pkg->header, RPMTAG_REQUIRENAME,
+		       NULL, (void **) &names, &count)) {
+	headerGetEntry(pkg->header, RPMTAG_REQUIREFLAGS,
+		       NULL, (void **) &flags, NULL);
+	x = 0;
+	while (x < count) {
+	    if (flags[x] & RPMSENSE_PREREQ) {
+		if (! startedPreReq) {
+		    rpmMessage(RPMMESS_NORMAL, "Prereqs:");
+		    startedPreReq = 1;
 		}
-		*namePtr++ = rd->name;
-		*versionPtr++ = rd->version ? rd->version : "";
-		*flagPtr++ = (rd->flags & RPMSENSE_SENSEMASK) |
-		    (rd->flags & RPMSENSE_PREREQ);
+		rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
 	    }
-	    rd = rd->next;
+	    x++;
 	}
-	rpmMessage(RPMMESS_VERBOSE, "\n");
-
-	headerAddEntry(h, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
-		 nameArray, x);
-	headerAddEntry(h, RPMTAG_REQUIREVERSION, RPM_STRING_ARRAY_TYPE,
-		 versionArray, x);
-	headerAddEntry(h, RPMTAG_REQUIREFLAGS, RPM_INT32_TYPE,
-		 flagArray, x);
-
-	free(nameArray);
-	free(versionArray);
-	free(flagArray);
+	rpmMessage(RPMMESS_NORMAL, "\n");
+	x = 0;
+	while (x < count) {
+	    if (! (flags[x] & RPMSENSE_PREREQ)) {
+		if (! startedReq) {
+		    rpmMessage(RPMMESS_NORMAL, "Requires:");
+		    startedReq = 1;
+		}
+		rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
+	    }
+	    x++;
+	}
+	rpmMessage(RPMMESS_NORMAL, "\n");
+	FREE(names);
     }
 
-    return 0;
 }

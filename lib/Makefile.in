@@ -34,6 +34,12 @@ all: $(TARGET)
 
 allprogs: $(LIBRPM) $(PROGS)
 
+misc.o:
+	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" -o $@ -c $<
+
+rpmrc.o:
+	$(CC) $(CFLAGS) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -o $@ -c $<
+
 $(PROGS): $(LIBRPM)
 
 $(LIBRPM): $(LIBRPM)($(LIBOBJECTS) $(TAGTABLE))

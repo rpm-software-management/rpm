@@ -1,14 +1,8 @@
-#ifndef _FILES_H_
-#define _FILES_H_
-
 #include "spec.h"
-#include "specP.h"
-#include "stringbuf.h"
+#include "package.h"
+#include "lib/cpio.h"
 
-int finish_filelists(Spec spec);
 
-int process_filelist(Header header, struct PackageRec *pr, StringBuf sb,
-		     int *size, char *name, char *version,
-		     char *release, int type, char *prefix, char *specFile);
-
-#endif _FILES_H_
+int processBinaryFiles(Spec spec, int installSpecialDoc);
+int processSourceFiles(Spec spec);
+void freeCpioList(struct cpioFileMapping *cpioList, int cpioCount);

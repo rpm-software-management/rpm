@@ -1,25 +1,16 @@
-#ifndef _BUILD_H_
-#define _BUILD_H_
-
 #include "spec.h"
 
-int doBuild(Spec s, int flags, char *passPhrase);
-int execPrep(Spec s, int really_exec, int test);
-int execBuild(Spec s, int test);
-int execInstall(Spec s, int test);
-int execClean(Spec s);
-int verifyList(Spec s);
+#define RPMBUILD_PREP             (1 << 0)
+#define RPMBUILD_BUILD            (1 << 1)
+#define RPMBUILD_INSTALL          (1 << 2)
+#define RPMBUILD_CLEAN            (1 << 3)
+#define RPMBUILD_FILECHECK        (1 << 4)
+#define RPMBUILD_PACKAGESOURCE    (1 << 5)
+#define RPMBUILD_PACKAGEBINARY    (1 << 6)
+#define RPMBUILD_RMSOURCE         (1 << 7)
+#define RPMBUILD_RMBUILD          (1 << 8)
+#define RPMBUILD_STRINGBUF        (1 << 9) /* only for doScript() */
 
-extern char build_subdir[1024];
+int buildSpec(Spec spec, int what, int test);
 
-#define RPMBUILD_PREP        1
-#define RPMBUILD_BUILD      (1 << 1)
-#define RPMBUILD_INSTALL    (1 << 2)
-#define RPMBUILD_BINARY     (1 << 3)
-#define RPMBUILD_SOURCE     (1 << 4)
-#define RPMBUILD_SWEEP      (1 << 5)
-#define RPMBUILD_LIST       (1 << 6)
-#define RPMBUILD_RMSOURCE   (1 << 7)
-#define RPMBUILD_TEST       (1 << 8)
-
-#endif _BUILD_H_
+int doScript(Spec spec, int what, char *name, StringBuf sb, int test);

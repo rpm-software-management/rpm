@@ -1,10 +1,16 @@
 srcdir = @srcdir@
 VPATH = $(srcdir)
 
-LIBOBJECTS = spec.o vspec.o build.o files.o names.o pack.o myftw.o \
-		reqprov.o trigger.o macro.o
-LIBBUILD = libbuild.a
-LOADLIBES = -lrpm $(LIBEFENCE)
+LIBOBJECTS = \
+misc.o              parsePreamble.o     part.o \
+package.o           parseDescription.o  parsePrep.o         read.o \
+parseFiles.o        parseReqs.o         reqprov.o \
+parseChangelog.o    parseSpec.o         spec.o \
+parseScript.o       parseBuildInstallClean.o  build.o \
+files.o myftw.o names.o pack.o macro.o
+
+LIBBUILD = librpmbuild.a
+LOADLIBES = -lrpm -lz ../popt/libpopt.a $(LIBEFENCE)
 
 # -----------------------------------------------------------------------
 
@@ -25,6 +31,9 @@ $(LIBBUILD): $(LIBOBJECTS)
 	$(RANLIB) $@
 
 $(PROGS): $(LIBOBJECTS)
+
+pack.o:
+	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" -o $@ -c $<
 
 clean:
 	rm -f *.a *.o *~ $(PROGS)

@@ -1,22 +1,50 @@
 /* handle triggers */
 
-#include "config.h"
-#include "miscfn.h"
-
 #include <stdlib.h>
 #include <string.h>
 
-#include "trigger.h"
-#include "header.h"
-#include "spec.h"
-#include "specP.h"
-#include "messages.h"
-#include "rpmlib.h"
-#include "stringbuf.h"
-#include "misc.h"
+/* %trigger is a strange combination of %pre and Requires: behavior */
+/* We can handle it by handing the args before "--" to parseScript, */
+/* which in the case of triggers should return an index.  We then   */
+/* can pass the remaining arguments to parseReqProv, along with the */
+/* index we just obtained.  In theory, then, all script arguments   */
+/* and behavior is in parseScript, and the require behavior is in   */
+/* parseReqProv, with just a little glue used here.                 */
 
-#define FREE(x) { if (x) free(x); }
-#define CHUNK 8
+int parseTrigger(Spec spec, int parsePart)
+{
+    int nextPart;
+    char **lineArgv, **triggerArgv;
+    int lineArgc, triggerArgc;
+    int rc, dash;
+
+    if ((rc = poptParseArgvString(spec->line, &lineArgc, &lineArgv))) {
+	rpmError(RPMERR_BADSPEC, "line %d: Error parsing trigger options: %s",
+		 spec->lineNum, partname, poptStrerror(rc));
+	return RPMERR_BADSPEC;
+    }
+    triggerArgv = lineArgv;
+    triggerArgc = lineArgc;
+
+    dash = 0;
+    while (dash <= lineArgc) {
+	if (!strcmp(lineArgv[dash], "--")) {
+	    lineArgv[dash] = NULL;
+	    if ((rc = parseScriptArgs(spec, dash, lineArgv,
+				      &prog, &name, &flag))) {
+		free(lineArgv);
+		return rc;
+	    }
+	    triggerArgv = &(lineArgv[dash + 1]);
+	    triggerArgc = lineArgc - dash - 1;
+	    break;
+	}
+	dash++;
+    }
+
+    if ((rc = parseReqArgs(spec, triggerArgc, triggerArgv,
+
+}
 
 int addTrigger(struct PackageRec *package,
 	       int sense, char *script, char *args)

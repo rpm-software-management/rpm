@@ -1,0 +1,44 @@
+> Most of my spec files have empty Distribution: and Vendor: tag because I
+> really don't care.  Now, empty tags are frowned upon.  So, I try to comment
+> out the lines and get a funny error message:
+> 
+> 	Distribution field must be present in package: solaris2.6
+> 	Vendor field must be present in package: solaris2.6
+> 
+> This happens to be my value of 'Build Os' which gets into the error message!
+
+posix %attr
+
+Add Shell: rpmrc entry
+
+some /foo/*/*.foo entries don't get matches
+
+detect multiple summary/description entries
+
+verify langs
+
+=====================================================================
+i18n strings
+
+triggers
+
+custom find-requires, find-provides
+
+messages (normal, verbose, debug)
+
+deprecate require_distribution, require_icon, require_vendor
+deprecate RPMVAR_ROOT, and the RPMVAR_REQUIRE* stuff above
+
+=======================================================================
+* i18n
+
+headerGetRawEntry() -> i18n string
+headerAddI18nString(Header, tag, string, lang)
+
+Summary(...):
+%description -l ...
+
+%lang(...) <file>
+
+"intl.h"
+_("...")

@@ -11,7 +11,6 @@ char *getGname(gid_t gid);
 char *getGnameS(char *gname);
 
 char *buildHost(void);
-void markBuildTime(void);
 time_t *getBuildTime(void);
 
 #endif _NAMES_H_

@@ -1,5 +1,36 @@
 2.4.11 -> 2.5:
 	- added many more i18n strings
+        - merged in large rewrite of build code, which includes the following
+	  changes:
+	    - all scripts can now take -p <prog>
+	    - all scripts can now take -p "<prog> <arg>..."
+	    - more strict about %package placement and use of main package 
+	      preamble
+	    - %attr(mode, user, group [, dirmode])
+	    - %defattr()
+	    - %defverify()
+	    - Root: is depricated.  Use BuildRoot: instead
+	    - "nosrc" sources arn't deleted when sources are removed
+	    - New tag DocDir: <dir> to set alternate doc dir (default is 
+              /usr/doc)
+	    - %doc should work as expected with buildroot, prefix, DocDir:
+	    - all file processing is done before any packaging
+	    - should work with modern patch programs (later than 2.1)
+	    - %patch -z <arg> same as %patch -b <arg>
+	    - %define only defines a macro if it starts a line
+	    - script prog entries are now arrays (ie with arguments)
+	    - standard macros: tag names, buildarch, buildos, buildarch_lc, 
+              buildos_lc, PATCHn, SOURCEn, PATCHURLn, SOURCEURLn, sourcedir, 
+              builddir, optflags
+	    - deprecate require_distribution, require_icon, require_vendor
+	    - add RPMTAG_FILEDEVICES and RPMTAG_FILEINODES to header
+	    - export variables in scripts
+	    - fixed tag:field bug
+	    - %lang() in %files
+	    - %description -l <lang>
+	    - Summary(<lang>):
+	    - fixed read_line() termination usage
+	- Makefile changes to shorten compiler lines
 
 2.4.11 -> 2.4.12:
 	- intialize reserved portion of lead when writing packages

@@ -56,9 +56,8 @@ Cambridge, MA 02139, USA.  */
 static int
 myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
-	   int (*func) (const char *file,
-			struct stat *status,
-			int flag))
+	   int (*func) (void *fl, char *name, struct stat *statp),
+	   void *fl)
 {
   int got;
   struct dirent *entry;
@@ -127,13 +126,13 @@ myftw_dir (DIR **dirs, int level, int descriptors,
       else
 	flag = MYFTW_F;
 
-      retval = (*func) (dir, &s, flag);
+      retval = (*func) (fl, dir, &s);
 
       if (flag == MYFTW_D)
 	{
 	  if (retval == 0)
 	    retval = myftw_dir (dirs, newlev, descriptors, dir,
-				d_namlen + len, func);
+				d_namlen + len, func, fl);
 	  if (dirs[newlev] != NULL)
 	    {
 	      int save;
@@ -175,10 +174,9 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 
 
 int myftw (const char *dir,
-	   int (*func) (const char *file,
-			struct stat *status,
-			int flag),
-	   int descriptors)
+	   int descriptors,
+	   int (*func) (void *fl, char *name, struct stat *statp),
+	   void *fl)
 {
   DIR **dirs;
   size_t len;
@@ -223,12 +221,12 @@ int myftw (const char *dir,
   len = strlen (dir);
   memcpy ((void *) buf, (void *) dir, len + 1);
 
-  retval = (*func) (buf, &s, flag);
+  retval = (*func) (fl, buf, &s);
 
   if (flag == MYFTW_D)
     {
       if (retval == 0)
-	retval = myftw_dir (dirs, 0, descriptors, buf, len, func);
+	retval = myftw_dir (dirs, 0, descriptors, buf, len, func, fl);
       if (dirs[0] != NULL)
 	{
 	  int save;

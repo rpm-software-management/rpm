@@ -23,7 +23,7 @@
 #include "rpmlib.h"
 #include "messages.h"
 
-char * RPMVERSION = VERSION;
+char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
 
 char ** splitString(char * str, int length, char sep) {
     char * s, * source, * dest;
