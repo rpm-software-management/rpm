@@ -755,7 +755,7 @@ static void addListEntry(Header h, int_32 tag, char *line)
 
     argvs = argv = malloc(strlen(line) * sizeof(char *));
     argc = 0;
-    while (s = strtok(line, " \t")) {
+    while ((s = strtok(line, " \t"))) {
 	*argv = s;
 	argc++;
 	argv++;
