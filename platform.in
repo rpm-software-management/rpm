@@ -3,7 +3,7 @@
 #==============================================================================
 # ---- per-platform macros.
 #
-%_arch			@RPMRC_ARCH@
+%_arch			@RPMCANONARCH@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_gnu			@RPMRC_GNU@
