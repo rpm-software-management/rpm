@@ -141,40 +141,45 @@ int main(int argc, char ** argv) {
     int force = 0;
     int replaceFiles = 0;
     int replacePackages = 0;
-    int installFlags;
+    int showPercents = 0;
+    int showHash = 0;
+    int installFlags = 0;
+    int interfaceFlags = 0;
     char * prefix = "/";
     struct option options[] = {
-	    { "query", 0, 0, 'q' },
-	    { "stdin-query", 0, 0, 'Q' },
-	    { "file", 0, 0, 'f' },
-	    { "group", 0, 0, 'g' },
-	    { "stdin-group", 0, 0, 'G' },
-	    { "stdin-files", 0, 0, 'F' },
-	    { "package", 0, 0, 'p' },
-	    { "stdin-packages", 0, 0, 'P' },
-	    { "root", 1, 0, 'r' },
 	    { "all", 0, 0, 'a' },
-	    { "info", 0, 0, 'i' },
-	    { "list", 0, 0, 'l' },
-	    { "state", 0, 0, 's' },
-	    { "install", 0, 0, 'i' },
-	    { "uninstall", 0, 0, 'u' },
-	    { "verbose", 0, 0, 'v' },
+	    { "configfiles", 0, 0, 'c' },
+	    { "docfiles", 0, 0, 'd' },
+	    { "file", 0, 0, 'f' },
 	    { "force", 0, &force, 0 },
+	    { "group", 0, 0, 'g' },
+	    { "hash", 0, &showHash, 'h' },
+	    { "help", 0, &help, 0 },
+	    { "info", 0, 0, 'i' },
+	    { "install", 0, 0, 'i' },
+	    { "list", 0, 0, 'l' },
+	    { "package", 0, 0, 'p' },
+	    { "percent", 0, &showPercents, 0 },
+	    { "query", 0, 0, 'q' },
+	    { "quiet", 0, 0, 0 },
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
-	    { "quiet", 0, 0, 0 },
+	    { "root", 1, 0, 'r' },
+	    { "state", 0, 0, 's' },
+	    { "stdin-files", 0, 0, 'F' },
+	    { "stdin-group", 0, 0, 'G' },
+	    { "stdin-packages", 0, 0, 'P' },
+	    { "stdin-query", 0, 0, 'Q' },
 	    { "test", 0, &test, 0 },
+	    { "uninstall", 0, 0, 'u' },
+	    { "verbose", 0, 0, 'v' },
 	    { "version", 0, &version, 0 },
-	    { "help", 0, &help, 0 },
-	    { "docfiles", 0, 0, 'd' },
-	    { "configfiles", 0, 0, 'c' },
 	    { 0, 0, 0, 0 } 
 	} ;
 
 
     while (1) {
-	arg = getopt_long(argc, argv, "QqpvPfFilsagGducr:", options, 
+	arg = getopt_long(argc, argv, "QqhpvPfFilsagGducr:", options, 
 			  &long_index);
 	if (arg == -1) break;
 
@@ -277,6 +282,10 @@ int main(int argc, char ** argv) {
 	    querySource = QUERY_ALL;
 	    break;
 
+	  case 'h':
+	    showHash = 1;
+	    break;
+
 	  case 'r':
 	    prefix = optarg;
 	    break;
@@ -301,6 +310,12 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_INSTALL && force)
 	argerror("only installation may be forced");
 
+    if (bigMode != MODE_INSTALL && showHash)
+	argerror("--hash (-h) may only be specified during package installation");
+
+    if (bigMode != MODE_INSTALL && showPercents)
+	argerror("--percent may only be specified during package installation");
+
     if (bigMode != MODE_INSTALL && replaceFiles)
 	argerror("--replacefiles may only be specified during package installation");
 
@@ -318,14 +333,16 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_INSTALL:
-	installFlags = 0;
-
 	if (force) installFlags |= (INSTALL_REPLACEPKG | INSTALL_REPLACEFILES);
 	if (replaceFiles) installFlags |= INSTALL_REPLACEFILES;
 	if (replacePackages) installFlags |= INSTALL_REPLACEPKG;
+	if (test) installFlags |= INSTALL_TEST;
+
+	if (showPercents) interfaceFlags |= RPMINSTALL_PERCENT;
+	if (showHash) interfaceFlags |= RPMINSTALL_HASH;
 
 	while (optind < argc) 
-	    doInstall(prefix, argv[optind++], test, installFlags);
+	    doInstall(prefix, argv[optind++], installFlags, interfaceFlags);
 	break;
 
       case MODE_QUERY:
