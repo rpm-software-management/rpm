@@ -670,34 +670,36 @@ static int find_preamble_line(char *line, char **s)
 }
 
 /* None of these can be 0 !! */
-#define PREAMBLE_PART  1
-#define PREP_PART      2
-#define BUILD_PART     3
-#define INSTALL_PART   4
-#define CLEAN_PART     5
-#define PREIN_PART     6
-#define POSTIN_PART    7
-#define PREUN_PART     8
-#define POSTUN_PART    9
-#define FILES_PART     10
-#define CHANGELOG_PART 11
+#define PREAMBLE_PART     1
+#define PREP_PART         2
+#define BUILD_PART        3
+#define INSTALL_PART      4
+#define CLEAN_PART        5
+#define PREIN_PART        6
+#define POSTIN_PART       7
+#define PREUN_PART        8
+#define POSTUN_PART       9
+#define FILES_PART       10
+#define CHANGELOG_PART   11
+#define DESCRIPTION_PART 12
 
 static struct part_rec {
     int part;
     int len;
     char *s;
 } part_list[] = {
-    {PREAMBLE_PART,  0, "%package"},
-    {PREP_PART,      0, "%prep"},
-    {BUILD_PART,     0, "%build"},
-    {INSTALL_PART,   0, "%install"},
-    {CLEAN_PART,     0, "%clean"},
-    {PREUN_PART,     0, "%preun"},
-    {POSTUN_PART,    0, "%postun"},
-    {PREIN_PART,     0, "%pre"},
-    {POSTIN_PART,    0, "%post"},
-    {FILES_PART,     0, "%files"},
-    {CHANGELOG_PART, 0, "%changelog"},
+    {PREAMBLE_PART,    0, "%package"},
+    {PREP_PART,        0, "%prep"},
+    {BUILD_PART,       0, "%build"},
+    {INSTALL_PART,     0, "%install"},
+    {CLEAN_PART,       0, "%clean"},
+    {PREUN_PART,       0, "%preun"},
+    {POSTUN_PART,      0, "%postun"},
+    {PREIN_PART,       0, "%pre"},
+    {POSTIN_PART,      0, "%post"},
+    {FILES_PART,       0, "%files"},
+    {CHANGELOG_PART,   0, "%changelog"},
+    {DESCRIPTION_PART, 0, "%description"},
     {0, 0, 0}
 };
 
@@ -818,7 +820,11 @@ Spec parseSpec(FILE *f, char *specfile)
 		t1 = RPMTAG_POSTUN;
 		break;
 	      case CHANGELOG_PART:
-		t1 = RPMTAG_CHANGELOG;
+		/* %changelog is a little special.  It goes in the   */
+		/* "main" package no matter where it appears, and it */
+		/* ends up in all the packages.                      */
+		addEntry(spec->packages->header, RPMTAG_CHANGELOG, STRING_TYPE,
+			 getStringBuf(sb), 1);
 		break;
 	    }
 	    if (t1) {
