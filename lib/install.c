@@ -13,10 +13,11 @@
 
 struct callbackInfo {
     unsigned long archiveSize;
-    rpmNotifyFunction notify;
+    rpmCallbackFunction notify;
     char ** specFilePtr;
     Header h;
     void * notifyData;
+    const void * pkgKey;
 };
 
 struct fileMemory {
@@ -43,11 +44,11 @@ struct fileInfo {
 } ;
 
 static int installArchive(FD_t fd, struct fileInfo * files,
-			  int fileCount, rpmNotifyFunction notify, 
-			  void * notifydb, Header h,
+			  int fileCount, rpmCallbackFunction notify, 
+			  void * notifydb, const void * pkgKey, Header h,
 			  char ** specFile, int archiveSize);
 static int installSources(Header h, const char * rootdir, FD_t fd, 
-			  const char ** specFilePtr, rpmNotifyFunction notify,
+			  const char ** specFilePtr, rpmCallbackFunction notify,
 			  void * notifyData);
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
@@ -61,7 +62,7 @@ static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList);
 /* 1 bad magic */
 /* 2 error */
 int rpmInstallSourcePackage(const char * rootdir, FD_t fd, 
-			    const char ** specFile, rpmNotifyFunction notify, 
+			    const char ** specFile, rpmCallbackFunction notify, 
 			    void * notifyData, char ** cookie) {
     int rc, isSource;
     Header h;
@@ -258,8 +259,9 @@ static void trimChangelog(Header h) {
 /* 1 bad magic */
 /* 2 error */
 int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
-		         int flags, rpmNotifyFunction notify, 
-			 void * notifyData, enum fileActions * actions,
+		         int flags, rpmCallbackFunction notify, 
+			 void * notifyData, const void * pkgKey, 
+			 enum fileActions * actions, 
 			 struct sharedFileInfo * sharedList) {
     int rc;
     char * name, * version, * release;
@@ -437,11 +439,11 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	    archiveSizePtr = NULL;
 
 	if (notify) {
-	    notify(h, RPMNOTIFY_INST_START, 0, 0, notifyData);
+	    notify(h, RPMCALLBACK_INST_START, 0, 0, pkgKey, notifyData);
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(fd, files, fileCount, notify, notifyData, h,
+	if (installArchive(fd, files, fileCount, notify, notifyData, pkgKey, h,
 			   NULL, archiveSizePtr ? *archiveSizePtr : 0)) {
 	    headerFree(h);
 	    if (freeFileMem) freeFileMemory(fileMem);
@@ -530,9 +532,10 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data) {
     char * chptr;
 
     if (ourInfo->notify)
-	ourInfo->notify(ourInfo->h, RPMNOTIFY_INST_PROGRESS,
+	ourInfo->notify(ourInfo->h, RPMCALLBACK_INST_PROGRESS,
 			cpioInfo->bytesProcessed, 
-			ourInfo->archiveSize, ourInfo->notifyData);
+			ourInfo->archiveSize, ourInfo->pkgKey, 
+			ourInfo->notifyData);
 
     if (ourInfo->specFilePtr) {
 	chptr = cpioInfo->file + strlen(cpioInfo->file) - 5;
@@ -543,8 +546,8 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data) {
 
 /* NULL files means install all files */
 static int installArchive(FD_t fd, struct fileInfo * files,
-			  int fileCount, rpmNotifyFunction notify, 
-			  void * notifyData, Header h,
+			  int fileCount, rpmCallbackFunction notify, 
+			  void * notifyData, const void * pkgKey, Header h,
 			  char ** specFile, int archiveSize) {
     int rc, i;
     struct cpioFileMapping * map = NULL;
@@ -565,6 +568,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     info.notifyData = notifyData;
     info.specFilePtr = specFile;
     info.h = h;
+    info.pkgKey = pkgKey;
 
     if (specFile) *specFile = NULL;
 
@@ -587,7 +591,8 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     }
 
     if (notify)
-	notify(h, RPMNOTIFY_INST_PROGRESS, 0, archiveSize, notifyData);
+	notify(h, RPMCALLBACK_INST_PROGRESS, 0, archiveSize, pkgKey, 
+	       notifyData);
 
   { CFD_t cfdbuf, *cfd = &cfdbuf;
     cfd->cpioIoType = cpioIoTypeGzFd;
@@ -608,10 +613,10 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     }
 
     if (notify && archiveSize)
-	notify(h, RPMNOTIFY_INST_PROGRESS, archiveSize, archiveSize, 
-	       notifyData);
+	notify(h, RPMCALLBACK_INST_PROGRESS, archiveSize, archiveSize, 
+	       pkgKey, notifyData);
     else if (notify) {
-	notify(h, RPMNOTIFY_INST_PROGRESS, 100, 100, notifyData);
+	notify(h, RPMCALLBACK_INST_PROGRESS, 100, 100, pkgKey, notifyData);
     }
 
     return 0;
@@ -621,7 +626,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 /* 1 bad magic */
 /* 2 error */
 static int installSources(Header h, const char * rootdir, FD_t fd, 
-			  const char ** specFilePtr, rpmNotifyFunction notify,
+			  const char ** specFilePtr, rpmCallbackFunction notify,
 			  void * notifyData) {
     char * specFile;
     int specFileIndex = -1;
@@ -699,7 +704,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     }
 
     if (notify) {
-	notify(h, RPMNOTIFY_INST_START, 0, 0, notifyData);
+	notify(h, RPMCALLBACK_INST_START, 0, 0, NULL, notifyData);
     }
 
     currDirLen = 50;
@@ -711,7 +716,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 
     chdir(realSourceDir);
     if (installArchive(fd, fileCount > 0 ? files : NULL,
-			  fileCount, notify, notifyData, h,
+			  fileCount, notify, notifyData, NULL, h,
 			  specFileIndex >=0 ? NULL : &specFile, 
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
 	if (fileCount > 0) freeFileMemory(fileMem);

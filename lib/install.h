@@ -31,8 +31,9 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		     int countCorrection);
 int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
-		         int flags, rpmNotifyFunction notify, 
-			 void * notifyData, enum fileActions * actions,
+		         int flags, rpmCallbackFunction notify, 
+			 void * notifyData, const void * pkgKey, 
+			 enum fileActions * actions,
 			 struct sharedFileInfo * sharedList);
 const char * fileActionString(enum fileActions a);
 

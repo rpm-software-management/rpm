@@ -61,7 +61,7 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 
 /* Return -1 on error, > 0 if newProbs is set, 0 if everything
    happened */
-int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
+int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
 		       rpmProblemSet * newProbs, int flags) {
     int i, j, numPackages;
@@ -84,6 +84,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     int last;
     int beingRemoved;
     char * currDir, * chptr;
+    FD_t fd;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -275,7 +276,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	numPackages++;
     }
 
-    if (probs->numProblems && (!okProbs || psTrim(okProbs, probs))) {
+    if ((flags & RPMTRANS_FLAG_BUILD_PROBS) || 
+           (probs->numProblems && (!okProbs || psTrim(okProbs, probs)))) {
 	*newProbs = probs;
 	for (i = 0; i < al->size; i++)
 	    headerFree(hdrs[i]);
@@ -292,17 +294,34 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
     numPackages = 0;
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++, fi++) {
-	fi = flList + numPackages;
-	if (installBinaryPackage(ts->root, ts->db, al->list[pkgNum].fd, 
-			  	 hdrs[pkgNum], instFlags, notify, notifyData, 
-				 fi->actions, fi->replaced))
+	if (al->list[pkgNum].fd) {
+	    fd = al->list[pkgNum].fd;
+	} else {
+	    fd = notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0, 
+			al->list[pkgNum].key, notifyData);
+	}
+
+	if (fd) {
+	    fi = flList + numPackages;
+	    if (installBinaryPackage(ts->root, ts->db, fd, hdrs[pkgNum], 
+				     instFlags, notify, notifyData, 
+			             al->list[pkgNum].key, fi->actions, 
+			             fi->replaced))
+		ourrc++;
+	} else {
 	    ourrc++;
+	}
+
 	headerFree(hdrs[pkgNum]);
 
 	if (alp->h == flList[numPackages].h) {
 	    free(fi->actions);
 	    numPackages++;
 	}
+
+	if (!al->list[pkgNum].fd && fd)
+	    notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, 
+			al->list[pkgNum].key, notifyData);
     }
 
     fi = flList + numPackages;

@@ -9,10 +9,10 @@
 static void printHash(const unsigned long amount, const unsigned long total);
 static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
 			     int numConflicts);
-static void showProgress(const Header h, const rpmNotifyType what, 
-			 const unsigned long amount, 
-			 const unsigned long total,
-			 void * data);
+static void * showProgress(const Header h, const rpmCallbackType what, 
+			   const unsigned long amount, 
+			   const unsigned long total,
+			   const void * pkgKey, void * data);
 
 static int hashesPrinted = 0;
 
@@ -34,29 +34,33 @@ static void printHash(const unsigned long amount, const unsigned long total) {
     }
 }
 
-static void showProgress(const Header h, const rpmNotifyType what, 
-			 const unsigned long amount, 
-			 const unsigned long total,
-			 void * data) {
+static void * showProgress(const Header h, const rpmCallbackType what, 
+			   const unsigned long amount, 
+			   const unsigned long total,
+			   const void * pkgKey, void * data) {
     char * s;
     int flags = (int) data;
+    void * rc = NULL;
 
     switch (what) {
-      case RPMNOTIFY_INST_START:
+      case RPMCALLBACK_INST_START:
 	hashesPrinted = 0;
 	if (flags & INSTALL_LABEL) {
-	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
-			      rpmTagTable, rpmHeaderFormats, NULL);
-	    if (flags & INSTALL_HASH) 
+	    if (flags & INSTALL_HASH) {
+		s = headerSprintf(h, "%{NAME}",
+				  rpmTagTable, rpmHeaderFormats, NULL);
 		printf("%-28s", s);
-	    else
+	    } else {
+		s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
+				  rpmTagTable, rpmHeaderFormats, NULL);
 		printf("%s\n", s);
+	    }
 	    fflush(stdout);
 	    free(s);
 	}
 	break;
 
-      case RPMNOTIFY_INST_PROGRESS:
+      case RPMCALLBACK_INST_PROGRESS:
 	if (flags & INSTALL_PERCENT) {
 	    fprintf(stdout, "%%%% %f\n", (total
 				? ((float) ((((float) amount) / total) * 100))
@@ -65,7 +69,13 @@ static void showProgress(const Header h, const rpmNotifyType what,
 	    printHash(amount, total);
 	}
 	break;
+
+      case RPMCALLBACK_INST_OPEN_FILE:	/* shouldn't happen */
+      case RPMCALLBACK_INST_CLOSE_FILE:	/* shouldn't happen */
+	abort();
     }
+
+    return rc;
 }	
 
 int doInstall(const char * rootdir, const char ** argv, int installFlags, 
@@ -88,7 +98,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     int numConflicts;
     int stopInstall = 0;
     size_t nb;
-    int notifyFlags = interfaceFlags | (rpmIsVerbose ? INSTALL_LABEL : 0 );
+    int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
     int transFlags = 0;
     rpmProblemSet probs, finalProbs;
     int dbIsOpen = 0;
@@ -268,6 +278,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     }
 
     if (numBinaryPackages) rpmtransFree(rpmdep);
+
 
     if (numSourcePackages && !stopInstall) {
 	for (i = 0; i < numSourcePackages; i++) {

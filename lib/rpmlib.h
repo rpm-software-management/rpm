@@ -283,12 +283,15 @@ void rpmGetMachine(/*@out@*/char **arch, /*@out@*/char **os);
 
 typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
 
-typedef enum rpmNotifyType_e 
-	{ RPMNOTIFY_INST_PROGRESS, RPMNOTIFY_INST_START } rpmNotifyType;
-typedef void (*rpmNotifyFunction)(const Header h, const rpmNotifyType what, 
-				  const unsigned long amount, 
-				  const unsigned long total,
-				  void * data);
+typedef enum rpmCallbackType_e 
+	{ RPMCALLBACK_INST_PROGRESS, RPMCALLBACK_INST_START,
+	  RPMCALLBACK_INST_OPEN_FILE, RPMCALLBACK_INST_CLOSE_FILE 
+	} rpmCallbackType;
+typedef void * (*rpmCallbackFunction)(const Header h, 
+				      const rpmCallbackType what, 
+				      const unsigned long amount, 
+				      const unsigned long total,
+				      const void * pkgKey, void * data);
 
 int rpmdbOpen (const char * root, rpmdb * dbp, int mode, int perms);
     /* 0 on error */
@@ -320,7 +323,7 @@ typedef struct rpmRelocation_s {
 } rpmRelocation;
 
 int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
-			    rpmNotifyFunction notify, void * notifyData,
+			    rpmCallbackFunction notify, void * notifyData,
 			    char ** cookie);
 int rpmVersionCompare(Header first, Header second);
 int rpmdbRebuild(const char * root);
@@ -368,7 +371,8 @@ int rpmdepOrder(rpmTransactionSet order, void *** keysListPtr);
 void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 			 numConflicts);
 
-#define RPMTRANS_FLAG_TEST	(1 << 0)
+#define RPMTRANS_FLAG_TEST		(1 << 0)
+#define RPMTRANS_FLAG_BUILD_PROBS	(1 << 1)
 
 typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
 				RPMPROB_BADOS,
@@ -397,7 +401,7 @@ typedef struct rpmProblemSet_s {
 char * rpmProblemString(rpmProblem prob);
 void rpmProblemSetFree(rpmProblemSet probs);
 void rpmProblemSetFilter(rpmProblemSet ps, int flags);
-int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
+int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
 		       rpmProblemSet * newProbs, int flags);
 
