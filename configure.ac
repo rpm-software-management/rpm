@@ -869,7 +869,7 @@ WITH_SELINUX_LIB=
 withval=yes
 AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ])
 if test $withval != no ; then
-  AC_DEFINE(SELINUX, 1, [Build with selinux support?])
+  AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
   WITH_SELINUX_LIB="-lselinux"
 fi
 AC_SUBST(WITH_SELINUX_LIB)
