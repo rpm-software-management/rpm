@@ -927,9 +927,8 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 
 	    /* FIXME: is this right??? it locks us into the config
 	       file handling choice we already made, which may very
-	       well be exactly right. */
-	    fi->actions[i] = recs[otherPkgNum]->actions[otherFileNum];
-	    recs[otherPkgNum]->actions[otherFileNum] = SKIP;
+	       well be exactly right. What about noreplace files?? */
+	    fi->actions[i] = CREATE;
 	} else if (fi->type == REMOVED && otherPkgNum >= 0) {
 	    fi->actions[i] = SKIP;
 	} else if (fi->type == REMOVED) {
