@@ -1353,7 +1353,7 @@ static void dumpPackage(struct PackageRec *p, FILE *f)
     fprintf(f, "%s", getStringBuf(p->filelist));
     fprintf(f, "FILES =^\n");
     fprintf(f, "HEADER =v\n");
-    headerDump(p->header, f, 1);
+    headerDump(p->header, f, 1, rpmTagTable);
     fprintf(f, "HEADER =^\n");
 
 }
