@@ -18,10 +18,10 @@
 #include "header_internal.h"
 #include "debug.h"
 
+/*@access FD_t@*/		/* XXX ufdio->read arg1 is void ptr */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access entryInfo @*/		/* XXX rpmReadSignature */
 /*@access indexEntry @*/	/* XXX rpmReadSignature */
-/*@access FD_t@*/		/* XXX compared with NULL */
 /*@access DIGEST_CTX@*/		/* XXX compared with NULL */
 /*@access pgpDig@*/
 /*@access pgpDigParams@*/
@@ -724,7 +724,7 @@ exit:
     }
     SHA1 = _free(SHA1);
     h = headerFree(h);
-    if (fd) (void) Fclose(fd);
+    if (fd != NULL) (void) Fclose(fd);
     return ret;
 }
 

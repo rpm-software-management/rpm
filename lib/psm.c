@@ -40,12 +40,7 @@
 /*@unchecked@*/
 int _psm_debug = _PSM_DEBUG;
 
-/*@access Header @*/		/* compared with NULL */
-/*@access rpmdbMatchIterator @*//* compared with NULL */
-/*@access FD_t @*/		/* compared with NULL */
-/*@access rpmdb @*/		/* compared with NULL */
-
-/*@access FSM_t @*/		/* compared with NULL */
+/*@access FD_t @*/		/* XXX void ptr args */
 /*@access rpmpsm @*/
 
 /*@access rpmfi @*/
@@ -253,9 +248,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     int i;
 
     memset(psm, 0, sizeof(*psm));
-    /*@-assignexpose -usereleased @*/
     psm->ts = rpmtsLink(ts, "InstallSourcePackage");
-    /*@=assignexpose =usereleased @*/
 
     rc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
     switch (rc) {
@@ -280,7 +273,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
+    (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     h = headerFree(h);
@@ -302,8 +295,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
 /*@i@*/ (void) rpmInstallLoadMacros(fi, fi->h);
 
+    psm->fi = rpmfiLink(fi, NULL);
     /*@-assignexpose -usereleased @*/
-    psm->fi = fi;
     psm->te = fi->te;
     /*@=assignexpose =usereleased @*/
 
@@ -377,9 +370,12 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 /*@i@*/	fi->dnl = hfd(fi->dnl, -1);
 
 	fi->dc = 2;
-	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl) + fi->fc * sizeof(*fi->dil) +
-			speclen + sourcelen);
+	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl)
+			+ fi->fc * sizeof(*fi->dil)
+			+ speclen + sourcelen);
+	/*@-dependenttrans@*/
 	fi->dil = (int *)(fi->dnl + fi->dc);
+	/*@=dependenttrans@*/
 	memset(fi->dil, 0, fi->fc * sizeof(*fi->dil));
 	fi->dil[i] = 1;
 	/*@-dependenttrans@*/
@@ -416,21 +412,21 @@ exit:
     _specdir = _free(_specdir);
     _sourcedir = _free(_sourcedir);
 
-    if (h) h = headerFree(h);
+    psm->fi = rpmfiFree(psm->fi);
+    psm->te = NULL;
+
+    if (h != NULL) h = headerFree(h);
 
     /*@-branchstate@*/
-    if (fi) {
+    if (fi != NULL) {
 	fi->te->h = headerFree(fi->te->h);
-	if (fi->te->fd)
+	if (fi->te->fd != NULL)
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
 	fi->te = NULL;
 	fi = rpmfiFree(fi);
     }
     /*@=branchstate@*/
-
-    psm->fi = NULL;
-    psm->te = NULL;
 
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
@@ -1676,7 +1672,7 @@ psm->te->h = headerLink(fi->h);
 	    }
 
 	    /* Add remove transaction id to header. */
-	    if (psm->oh)
+	    if (psm->oh != NULL)
 	    {	int_32 tid = rpmtsGetTid(ts);
 		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
 			RPM_INT32_TYPE, &tid, 1);
@@ -1933,7 +1929,7 @@ psm->te->h = headerLink(fi->h);
 	/* Restore root directory if changed. */
 	xx = rpmpsmStage(psm, PSM_CHROOT_OUT);
 
-	if (psm->fd) {
+	if (psm->fd != NULL) {
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    xx = Fclose(psm->fd);
 	    psm->fd = NULL;
@@ -1967,13 +1963,15 @@ psm->te->h = headerLink(fi->h);
 	    /*@=nullstate@*/
 	}
 
+/*@-branchstate@*/
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
-if (psm->te)
-if (psm->te->h)
+if (psm->te != NULL)
+if (psm->te->h != NULL)
 psm->te->h = headerFree(psm->te->h);
-	    if (fi->h)
+	    if (fi->h != NULL)
 		fi->h = headerFree(fi->h);
  	}
+/*@=branchstate@*/
 	psm->oh = headerFree(psm->oh);
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
@@ -2096,11 +2094,11 @@ assert(psm->mi == NULL);
 				&fi->record, sizeof(fi->record));
 
 	fi->h = rpmdbNextIterator(psm->mi);
-	if (fi->h)
+	if (fi->h != NULL)
 	    fi->h = headerLink(fi->h);
 
 	psm->mi = rpmdbFreeIterator(psm->mi);
-	rc = (fi->h ? RPMRC_OK : RPMRC_FAIL);
+	rc = (fi->h != NULL ? RPMRC_OK : RPMRC_FAIL);
 	break;
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;

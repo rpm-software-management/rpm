@@ -17,10 +17,6 @@
 #include "debug.h"
 
 /*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
-/*@access rpmps @*/	/* XXX compared with NULL */
-/*@access Header @*/		/* XXX compared with NULL */
-/*@access rpmdb @*/		/* XXX compared with NULL */
-/*@access FD_t @*/		/* XXX compared with NULL */
 /*@access IDTX @*/
 /*@access IDT @*/
 
@@ -103,15 +99,15 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	/*@modifies rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
 		fileSystem @*/
 {
-    /*@-castexpose@*/
+/*@-abstract -castexpose @*/
     Header h = (Header) arg;
-    /*@=castexpose@*/
+/*@=abstract =castexpose @*/
     char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
-    /*@-assignexpose -abstract @*/
+/*@-abstract -assignexpose @*/
     const char * filename = (const char *)key;
-    /*@=assignexpose =abstract @*/
+/*@=abstract =assignexpose @*/
     static FD_t fd = NULL;
     int xx;
 
@@ -126,21 +122,23 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
 			Fstrerror(fd));
-	    if (fd) {
+	    if (fd != NULL) {
 		xx = Fclose(fd);
 		fd = NULL;
 	    }
 	} else
 	    fd = fdLink(fd, "persist (showProgress)");
 	/*@=type@*/
-	return fd;
+/*@+voidabstract@*/
+	return (void *)fd;
+/*@=voidabstract@*/
 	/*@notreached@*/ break;
 
     case RPMCALLBACK_INST_CLOSE_FILE:
 	/*@-type@*/ /* FIX: still necessary? */
 	fd = fdFree(fd, "persist (showProgress)");
 	/*@=type@*/
-	if (fd) {
+	if (fd != NULL) {
 	    xx = Fclose(fd);
 	    fd = NULL;
 	}
@@ -463,7 +461,7 @@ if (fileURL[0] == '=') {
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
 			Fstrerror(eiu->fd));
-	    if (eiu->fd) {
+	    if (eiu->fd != NULL) {
 		xx = Fclose(eiu->fd);
 		eiu->fd = NULL;
 	    }
@@ -594,7 +592,7 @@ maybe_manifest:
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
 			Fstrerror(eiu->fd));
-	    if (eiu->fd) {
+	    if (eiu->fd != NULL) {
 		xx = Fclose(eiu->fd);
 		eiu->fd = NULL;
 	    }
@@ -697,7 +695,7 @@ maybe_manifest:
 	    if (eiu->fd == NULL || Ferror(eiu->fd)) {
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
 			   eiu->sourceURL[i], Fstrerror(eiu->fd));
-		if (eiu->fd) {
+		if (eiu->fd != NULL) {
 		    xx = Fclose(eiu->fd);
 		    eiu->fd = NULL;
 		}
@@ -842,7 +840,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
     fd = Fopen(arg, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
-	if (fd) (void) Fclose(fd);
+	if (fd != NULL) (void) Fclose(fd);
 	return 1;
     }
 
@@ -968,7 +966,6 @@ rpmMessage(RPMMESS_DEBUG, "IDTXload(%p, %d)\n", ts, tag);
 	    idt = idtx->idt + idtx->nidt;
 	    /*@=nullderef@*/
 	    idt->h = headerLink(h);
-rpmMessage(RPMMESS_DEBUG, "\tidt %p h %p\n", idt, idt->h);
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
 	    idt->val.u32 = *tidp;
@@ -994,10 +991,8 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
     int xx;
     int i;
 
-rpmMessage(RPMMESS_DEBUG, "IDTXglob(%p, %s, %d)\n", ts, globstr, tag);
     av = NULL;	ac = 0;
     xx = rpmGlob(globstr, &ac, &av);
-rpmMessage(RPMMESS_DEBUG, "\txx %d ac %d av %p\n", xx, ac, av);
 
     if (xx == 0)
     for (i = 0; i < ac; i++) {
@@ -1005,12 +1000,11 @@ rpmMessage(RPMMESS_DEBUG, "\txx %d ac %d av %p\n", xx, ac, av);
 	int_32 count;
 	int isSource;
 
-rpmMessage(RPMMESS_DEBUG, "\tav[%d] %s\n", i, av[i]);
 	fd = Fopen(av[i], "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
             rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), av[i],
                         Fstrerror(fd));
-	    if (fd) (void) Fclose(fd);
+	    if (fd != NULL) (void) Fclose(fd);
 	    continue;
 	}
 
@@ -1055,8 +1049,6 @@ bottom:
     for (i = 0; i < ac; i++)
 	av[i] = _free(av[i]);
     av = _free(av);	ac = 0;
-
-rpmMessage(RPMMESS_DEBUG, "IDTXglob: returns %p\n", idtx);
 
     return idtx;
 }
@@ -1109,7 +1101,6 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	ip = NULL;
 	niids = 0;
     }
-rpmMessage(RPMMESS_DEBUG, "*** was installed, now remove %p[%d]\n", ip, niids);
 
     {	const char * globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
 	if (globstr == NULL || *globstr == '%') {
@@ -1128,7 +1119,6 @@ rpmMessage(RPMMESS_DEBUG, "*** was installed, now remove %p[%d]\n", ip, niids);
 	}
 	globstr = _free(globstr);
     }
-rpmMessage(RPMMESS_DEBUG, "*** was removed, now install %p[%d]\n", rp, nrids);
 
     {	int notifyFlags, xx;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );

@@ -22,10 +22,6 @@
 
 #include "debug.h"
 
-/*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
-/*@access Header@*/			/* XXX compared with NULL */
-/*@access FD_t@*/			/* XXX compared with NULL */
-
 /**
  */
 static void printFileInfo(char * te, const char * name,
@@ -446,7 +442,7 @@ restart:
 	    if (fd == NULL || Ferror(fd)) {
 		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
 			Fstrerror(fd));
-		if (fd) (void) Fclose(fd);
+		if (fd != NULL) (void) Fclose(fd);
 		res = 1;
 		/*@loopbreak@*/ break;
 	    }
@@ -493,7 +489,7 @@ restart:
 	    if (fd == NULL || Ferror(fd)) {
 		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
 			Fstrerror(fd));
-		if (fd) (void) Fclose(fd);
+		if (fd != NULL) (void) Fclose(fd);
 		res = 1;
 		/*@loopbreak@*/ break;
 	    }

@@ -23,7 +23,6 @@
 
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
-/*@access rpmts @*/
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access entryInfo @*/		/* XXX headerCheck */
 /*@access indexEntry @*/	/* XXX headerCheck */

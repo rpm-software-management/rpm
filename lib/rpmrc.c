@@ -1,5 +1,4 @@
 /*@-bounds@*/
-/*@-mods@*/
 #include "system.h"
 
 #include <stdarg.h>
@@ -20,8 +19,6 @@
 
 #include "misc.h"
 #include "debug.h"
-
-/*@access FD_t@*/		/* compared with NULL */
 
 /*@observer@*/ /*@unchecked@*/
 static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
@@ -145,23 +142,22 @@ static int defaultsInitialized = 0;
 
 /* prototypes */
 static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies fd, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies fd, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 static void rpmSetVarArch(int var, const char * val,
 		/*@null@*/ const char * arch)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
+	/*@globals values, internalState @*/
+	/*@modifies values, internalState @*/;
 
 static void rebuildCompatTables(int type, const char * name)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
 
 static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies *canontarget, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies *canontarget, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 static int optionCompare(const void * a, const void * b)
 	/*@*/
@@ -454,9 +450,8 @@ const char * lookupInDefaultTable(const char * name,
 
 static void setVarDefault(int var, const char * macroname, const char * val,
 		/*@null@*/ const char * body)
-	/*@globals rpmGlobalMacroContext,
-		internalState @*/
-	/*@modifies internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     if (var >= 0) {	/* XXX Dying ... */
 	if (rpmGetVar(var)) return;
@@ -468,9 +463,8 @@ static void setVarDefault(int var, const char * macroname, const char * val,
 }
 
 static void setPathDefault(int var, const char * macroname, const char * subdir)
-	/*@globals rpmGlobalMacroContext,
-		internalState @*/
-	/*@modifies internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 
     if (var >= 0) {	/* XXX Dying ... */
@@ -520,9 +514,8 @@ export RPM_BUILD_ROOT\n}\
 ";
 
 static void setDefaults(void)
-	/*@globals rpmGlobalMacroContext,
-		internalState @*/
-	/*@modifies internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
@@ -559,9 +552,8 @@ static void setDefaults(void)
 
 /*@-usedef@*/	/*@ FIX: se usage inconsistent, W2DO? */
 static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies fd, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies fd, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *s;
     char *se, *next;
@@ -1373,6 +1365,8 @@ static void freeRpmVar(/*@only@*/ struct rpmvarValue * orig)
 }
 
 void rpmSetVar(int var, const char * val)
+	/*@globals values @*/
+	/*@modifies values @*/
 {
     /*@-immediatetrans@*/
     freeRpmVar(&values[var]);
@@ -1381,7 +1375,6 @@ void rpmSetVar(int var, const char * val)
 }
 
 static void rpmSetVarArch(int var, const char * val, const char * arch)
-	/*@*/
 {
     struct rpmvarValue * next = values + var;
 
@@ -1417,6 +1410,8 @@ static void rpmSetVarArch(int var, const char * val, const char * arch)
 }
 
 void rpmSetTables(int archTable, int osTable)
+	/*@globals currTables @*/
+	/*@modifies currTables @*/
 {
     const char * arch, * os;
 
@@ -1449,6 +1444,8 @@ void rpmGetMachine(const char ** arch, const char ** os)
 }
 
 void rpmSetMachine(const char * arch, const char * os)
+	/*@globals current @*/
+	/*@modifies current @*/
 {
     const char * host_cpu, * host_os;
 
@@ -1642,6 +1639,10 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 }
 
 void rpmFreeRpmrc(void)
+	/*@globals current, tables, values, defaultsInitialized,
+		platpat, nplatpat @*/
+	/*@modifies current, tables, values, defaultsInitialized,
+		platpat, nplatpat @*/
 {
     int i, j, k;
 
@@ -1721,9 +1722,9 @@ void rpmFreeRpmrc(void)
  * @return		0 on succes
  */
 static int rpmReadRC(/*@null@*/ const char * rcfiles)
-	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext,
+	/*@globals defaultsInitialized, rpmGlobalMacroContext,
+		rpmCLIMacroContext, fileSystem, internalState @*/
+	/*@modifies defaultsInitialized, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     char *myrcfiles, *r, *re;
@@ -1894,5 +1895,4 @@ int rpmShowRC(FILE * fp)
 
     return 0;
 }
-/*@=mods@*/
 /*@=bounds@*/

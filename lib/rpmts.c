@@ -52,12 +52,10 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 
 /*@access rpmdb @*/		/* XXX db->db_chrootDone, NULL */
 
-/*@access FD_t @*/		/* XXX compared with NULL */
 /*@access rpmps @*/
 /*@access rpmDiskSpaceInfo @*/
 /*@access rpmte @*/
 /*@access rpmtsi @*/
-/*@access rpmts @*/
 /*@access fnpyKey @*/
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
@@ -463,7 +461,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), str,
 			Fstrerror(fd));
-            if (fd) {
+            if (fd != NULL) {
                 xx = Fclose(fd);
                 fd = NULL;
             }
@@ -777,9 +775,11 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsSetScriptFd");
 	    ts->scriptFd = NULL;
 	}
+/*@+voidabstract@*/
 	if (scriptFd != NULL)
-	    ts->scriptFd = fdLink(scriptFd, "rpmtsSetScriptFd");
+	    ts->scriptFd = fdLink((void *)scriptFd, "rpmtsSetScriptFd");
     }
+/*@=voidabstract@*/
 }
 
 int rpmtsChrootDone(rpmts ts)

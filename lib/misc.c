@@ -18,9 +18,6 @@ const char * RPMVERSION = VERSION;
 #include "misc.h"
 #include "debug.h"
 
-/*@access Header@*/		/* XXX compared with NULL */
-/*@access FD_t@*/		/* XXX compared with NULL */
-
 rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 {
     struct stat st;
@@ -220,7 +217,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 errxit:
     tempfn = _free(tempfn);
     /*@-usereleased@*/
-    if (fd) (void) Fclose(fd);
+    if (fd != NULL) (void) Fclose(fd);
     /*@=usereleased@*/
     return 1;
 }

@@ -297,8 +297,8 @@ int fsmMapAttrs(FSM_t fsm)
  * @return		0 on success
  */
 int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

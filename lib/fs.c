@@ -1,4 +1,3 @@
-/*@-mods@*/
 /**
  * \file lib/fs.c
  */
@@ -24,6 +23,8 @@ struct fsinfo {
 static int numFilesystems = 0;
 
 void freeFilesystems(void)
+	/*@globals filesystems, fsnames, numFilesystems @*/
+	/*@modifies filesystems, fsnames, numFilesystems @*/
 {
     int i;
 
@@ -133,8 +134,10 @@ static int getFilesystemList(void)
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies fileSystem, internalState@*/
+	/*@globals filesystems, fsnames, numFilesystems,
+		fileSystem, internalState @*/
+	/*@modifies filesystems, fsnames, numFilesystems,
+		fileSystem, internalState @*/
 {
     int numAlloced = 10;
     struct stat sb;
@@ -353,4 +356,3 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
     return 0;
 }
 /*@=usereleased =onlytrans@*/
-/*@=mods@*/

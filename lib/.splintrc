@@ -8,6 +8,7 @@
 
 +unixlib
 
++access-slovak
 -unrecogcomments	# XXX ignore doxygen markings
 
 +strict			# lclint level

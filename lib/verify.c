@@ -13,13 +13,11 @@
 
 #include "legacy.h"	/* XXX domd5(), uidToUname(), gnameToGid */
 #include "ugid.h"
-#include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
 /*@access rpmps @*/
 /*@access rpmProblem @*/
 /*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
-/*@access FD_t @*/	/* XXX compared with NULL */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
@@ -452,7 +450,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    FD_t fdo = fdDup(STDOUT_FILENO);
 	    if ((rc = rpmVerifyScript(qva, ts, fi, fdo)) != 0)
 		ec = rc;
-	    if (fdo)
+	    if (fdo != NULL)
 		rc = Fclose(fdo);
 	}
 

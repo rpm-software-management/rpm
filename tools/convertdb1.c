@@ -1,5 +1,10 @@
+#if defined(HAVE_CONFIG_H)
+#include "system.h"
+#else
 #include <sys/types.h>
 #include <fcntl.h>
+#include <string.h>
+#endif
 
 #include <rpmlib.h>
 #include <rpmdb.h>
@@ -213,9 +218,7 @@ exit:
 static rpmdb db;
 
 int
-main(argc, argv)
-int argc;
-char **argv;
+main(int argc, char ** argv)
 {
   FD_t fd;
   int offset;

@@ -19,13 +19,11 @@
 
 #include "debug.h"
 
-/*@access FD_t @*/
+/*@access FD_t @*/	/* XXX void ptr args */
 /*@access FSMI_t @*/
 /*@access FSM_t @*/
 
 /*@access rpmfi @*/
-/*@access rpmte @*/
-/*@access rpmts @*/
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
@@ -390,8 +388,8 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->links, fsm->ix, fsm->sb, fsm->goal, fsm->nsuffix @*/
 	/*@defines fsm->li @*/
 	/*@releases fsm->path @*/
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fsm, fileSystem, internalState @*/
 {
     struct stat * st = &fsm->sb;
     int rc = 0;
@@ -523,10 +521,8 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     int rc, ec = 0;
 
     fsm->goal = goal;
-    if (cfd) {
-	/*@-type@*/ /* FIX: cast? */
+    if (cfd != NULL) {
 	fsm->cfd = fdLink(cfd, "persist (fsm)");
-	/*@=type@*/
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
@@ -579,10 +575,8 @@ int fsmTeardown(FSM_t fsm)
 	rc = fsmStage(fsm, FSM_DESTROY);
 
     fsm->iter = mapFreeIterator(fsm->iter);
-    if (fsm->cfd) {
-	/*@-type@*/ /* FIX: cast? */
+    if (fsm->cfd != NULL) {
 	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
-	/*@=type@*/
 	fsm->cfd = NULL;
     }
     fsm->failedFile = NULL;
@@ -748,8 +742,8 @@ int fsmMapAttrs(FSM_t fsm)
  */
 static int expandRegular(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->sb @*/
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     const struct stat * st = &fsm->sb;
     int left = st->st_size;
@@ -815,8 +809,8 @@ exit:
  */
 static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	/*@uses fsm->path, fsm->opath, fsm->sb, fsm->osb, fsm->cfd @*/
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     const char * opath = fsm->opath;
@@ -939,7 +933,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
     rc = 0;
 
 exit:
-    if (fsm->rfd)
+    if (fsm->rfd != NULL)
 	(void) fsmStage(fsm, FSM_RCLOSE);
     /*@-dependenttrans@*/
     fsm->opath = opath;
@@ -955,8 +949,8 @@ exit:
  */
 static int writeLinkedFile(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->nsuffix, fsm->ix, fsm->li, fsm->failedFile @*/
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
@@ -1003,8 +997,8 @@ static int writeLinkedFile(/*@special@*/ FSM_t fsm)
 /*@-boundsread@*/
 static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->opath, fsm->nsuffix, fsm->ix, fsm->li @*/
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     const char * opath = fsm->opath;
@@ -1068,8 +1062,8 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->nsuffix, fsm->ix, fsm->sb,
 		fsm->li, fsm->links @*/
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
@@ -1114,8 +1108,8 @@ static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
  */
 static int fsmRmdirs(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->dnlx, fsm->ldn, fsm->rdbuf, fsm->iter @*/
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     void * dnli = dnlInitIterator(fsm, 1);
@@ -1171,8 +1165,8 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->sb, fsm->osb, fsm->rdbuf, fsm->iter,
 		fsm->ldn, fsm->ldnlen, fsm->ldnalloc @*/
 	/*@defines fsm->dnlx, fsm->ldn @*/
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
@@ -1284,6 +1278,8 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
  * @return		0 on success
  */
 static int fsmStat(FSM_t fsm)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/
 {
     int saveerrno = errno;
     int rc = 0;
@@ -1507,9 +1503,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->ix = -1;
 	fsm->links = NULL;
 	fsm->li = NULL;
-	/*@-mods@*/
 	errno = 0;	/* XXX get rid of EBADF */
-	/*@=mods@*/
 
 	/* Detect and create directories not explicitly in package. */
 	if (fsm->goal == FSM_PKGINSTALL) {
@@ -1577,9 +1571,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
 	    if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
-		/*@-mods@*/
 		errno = saveerrno;
-		/*@=mods@*/
 		rc = 0;
 		fsm->exists = 0;
 	    } else if (rc == 0) {
@@ -1771,9 +1763,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (fsm->dnlx)
 		(void) fsmStage(fsm, FSM_RMDIRS);
 #endif
-	    /*@-mods@*/
 	    errno = saveerrno;
-	    /*@=mods@*/
 	}
 /*@-boundswrite@*/
 	if (fsm->failedFile && *fsm->failedFile == NULL)
@@ -1973,18 +1963,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmStage(fsm, FSM_STAT);
 		if (rc == CPIOERR_STAT_FAILED && errno == ENOENT) rc = 0;
 		if (rc) break;
-		/*@-mods@*/
 		errno = saveerrno;
-		/*@=mods@*/
 		if (S_ISDIR(ost->st_mode))	return 0;
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
 	    if (S_ISLNK(ost->st_mode)) {
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
 		rc = fsmStage(fsm, FSM_READLINK);
-		/*@-mods@*/
 		errno = saveerrno;
-		/*@=mods@*/
 		if (rc) break;
 		if (!strcmp(fsm->opath, fsm->rdbuf))	return 0;
 	    }
@@ -2224,11 +2210,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_ROPEN:
 	fsm->rfd = Fopen(fsm->path, "r.ufdio");
 	if (fsm->rfd == NULL || Ferror(fsm->rfd)) {
-	    if (fsm->rfd)	(void) fsmStage(fsm, FSM_RCLOSE);
+	    if (fsm->rfd != NULL)	(void) fsmStage(fsm, FSM_RCLOSE);
 	    fsm->rfd = NULL;
 	    rc = CPIOERR_OPEN_FAILED;
 	    break;
 	}
+/*@=voidabstract@*/
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
 		fsm->path, fsm->rfd, fsm->rdbuf);
@@ -2244,20 +2231,18 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = CPIOERR_READ_FAILED;
 	break;
     case FSM_RCLOSE:
-	if (fsm->rfd) {
+	if (fsm->rfd != NULL) {
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
 	    (void) Fclose(fsm->rfd);
-	    /*@-mods@*/
 	    errno = saveerrno;
-	    /*@=mods@*/
 	}
 	fsm->rfd = NULL;
 	break;
     case FSM_WOPEN:
 	fsm->wfd = Fopen(fsm->path, "w.ufdio");
 	if (fsm->wfd == NULL || Ferror(fsm->wfd)) {
-	    if (fsm->wfd)	(void) fsmStage(fsm, FSM_WCLOSE);
+	    if (fsm->wfd != NULL)	(void) fsmStage(fsm, FSM_WCLOSE);
 	    fsm->wfd = NULL;
 	    rc = CPIOERR_OPEN_FAILED;
 	}
@@ -2274,13 +2259,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = CPIOERR_WRITE_FAILED;
 	break;
     case FSM_WCLOSE:
-	if (fsm->wfd) {
+	if (fsm->wfd != NULL) {
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
 	    (void) Fclose(fsm->wfd);
-	    /*@-mods@*/
 	    errno = saveerrno;
-	    /*@=mods@*/
 	}
 	fsm->wfd = NULL;
 	break;

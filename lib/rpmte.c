@@ -21,7 +21,6 @@ int _rpmte_debug = 0;
 
 /*@access alKey @*/
 /*@access rpmtsi @*/
-/*@access rpmts @*/
 
 void rpmteCleanDS(rpmte te)
 {
@@ -54,10 +53,8 @@ static void delTE(rpmte p)
 
     p->fi = rpmfiFree(p->fi);
 
-    /*@-noeffectuncon@*/
     if (p->fd != NULL)
         p->fd = fdFree(p->fd, "delTE");
-    /*@=noeffectuncon@*/
 
     p->os = _free(p->os);
     p->arch = _free(p->arch);

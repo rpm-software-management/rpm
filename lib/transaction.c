@@ -30,11 +30,9 @@
 
 #include "debug.h"
 
-/*@access FD_t @*/		/* XXX compared with NULL */
-/*@access Header @*/		/* XXX compared with NULL */
+/*@access Header @*/		/* XXX ts->notify arg1 is void ptr */
 /*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
 /*@access dbiIndexSet @*/
-/*@access rpmdb @*/
 
 /*@access rpmpsm @*/
 
