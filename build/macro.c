@@ -60,7 +60,7 @@ int expandMacros(char *buf)
 	    if (parseMacro(copyFrom+1, &name, &rest)) {
 		return 1;
 	    }
-	    if (!strcasecmp(name, "define")) {
+	    if (!strcmp(name, "define")) {
 		if (handleDefine(rest)) {
 		    return 1;
 		}
