@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Database.pm,v 1.17 2001/04/27 09:05:21 rjray Exp $
+#   $Id: Database.pm,v 1.18 2002/05/10 07:38:58 rjray Exp $
 #
 #   Description:    The RPM::Database class provides access to the RPM database
 #                   as a tied hash, whose keys are taken as the names of
@@ -35,16 +35,18 @@ use subs qw(new import);
 require RPM;
 require RPM::Header;
 
-$VERSION = do { my @r=(q$Revision: 1.17 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = do { my @r=(q$Revision: 1.18 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
 sub new
 {
     my $class = shift;
+    my $opts = shift;
     my %hash = ();
 
-    tie %hash, $class;
+    # The presence of $opts when empty is hard on the XS TIEHASH method
+    $opts ? tie(%hash, $class, $opts) : tie(%hash, $class);
 }
 
 ###############################################################################
@@ -158,6 +160,18 @@ hash reference, it can be used to call these methods via:
     (tied %hash)->method_name(...)
 
 =over
+
+=item new
+
+Creates a tied hash using a lexically-scoped hash table, then returns a
+reference to it (the return value of the C<tie> operation). This reference
+prevents the hash table from going out of scope. If a hash-reference of
+options is passed to this constructor, they are passed along to the tie of the
+hash. If a single scalar argument is passed, it is assumed to be an alternate
+database root to be used in opening the RPM database. The hash-reference
+currently only supports a single key, C<root>, which serves the same
+purpose. The hash-reference approach leaves open the possibilty of future
+options being added.
 
 =item init
 
