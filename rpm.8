@@ -1,5 +1,5 @@
 .\" rpm - Red Hat Package Manager
-.TH rpm 8 "29 March 1996" "Red Hat Software" "Red Hat Linux"
+.TH rpm 8 "15 July 1996" "Red Hat Software" "Red Hat Linux"
 .SH NAME
 rpm \- Red Hat Package Manager
 .SH SYNOPSIS
@@ -11,20 +11,52 @@ software packages.  A \fIpackage\fP consists of an archive of files,
 and package information, including name, version, and description.
 
 There are six basic modes of operation, and each takes a different
-set of options.  They are \fIbuild\fP, \fIinstall\fP, \fIquery\fP,
-\fIverify\fP, \fIsignature check\fP, and \fIuninstall\fP.
+set of options.  They are \fIBuild\fP, \fIInstall\fP, \fIQuery\fP,
+\fIVerify\fP, \fISignature check\fP, and \fIUninstall\fP.
 
-.I "\fBrpm \-i [install\-options] <package_file>+\fP"
+Build mode:
 .br
-.I "\fBrpm \-q [query\-options]\fP"
+.I "\fB    rpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
 .br
-.I "\fBrpm \-V|\-y|\-\-verify [verify\-options]\fP"
+Install mode:
 .br
-.I "\fBrpm \-\-checksig <package_file>+\fP"
+.I "\fB    rpm \-i [install\-options] <package_file>+\fP"
 .br
-.I "\fBrpm \-e <package_name>+\fP"
+Query mode:
 .br
-.I "\fBrpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
+.I "\fB    rpm \-q [query\-options]\fP"
+.br
+Verify mode:
+.br
+.I "\fB    rpm \-V|\-y|\-\-verify [verify\-options]\fP"
+.br
+Signature Check mode:
+.br
+.I "\fB    rpm \-\-checksig <package_file>+\fP"
+.br
+Uninstall mode:
+.br
+.I "\fB    rpm \-e <package_name>+\fP"
+
+.SH GENERAL OPTIONS
+These options can be used in all the different modes.
+.IP "\fB\-vv\fP"
+Print lots of ugly debugging information.
+.IP "\fB\-\-keep\-temps\fP"
+Do not remove temporary files (/tmp/rpm\-*).  Primarily only useful
+for debugging rpm.
+.IP "\fB\-\-quiet\fP"
+Print as little as possible \- normally only error messages will be
+displayed.
+.IP "\fB\-\-help\fP"
+Print a longer usage message then normal.
+.IP "\fB\-\-version\fP"
+Print a single line containing the version number of rpm being used.
+.IP "\fB\-\-rcfile <file>\fP"
+Use \fB<file>\fP instead of \fB/etc/rpmrc\fP and \fB$HOME/.rpmrc\fP.
+.IP "\fB\-\-root <dir>\fP"
+Use the directory given as top level directory for all operations.
+
 
 .SH INSTALL OPTIONS
 .IP "\fB\-\-force\fP"
@@ -251,22 +283,6 @@ the package are removed.
 This option generates and inserts new signatures for the listed packages.
 Any existing signatures are removed.
 
-
-.SH GENERAL OPTIONS
-These options can be used in all the different modes.
-.IP "\fB\-vv\fP"
-Print lots of ugly debugging information.
-.IP "\fB\-\-quiet\fP"
-Print as little as possible \- normally only error messages will be
-displayed.
-.IP "\fB\-\-help\fP"
-Print a longer usage message then normal.
-.IP "\fB\-\-version\fP"
-Print a single line containing the version number of rpm being used.
-.IP "\fB\-\-rcfile <file>\fP"
-Use \fB<file>\fP instead of \fB/etc/rpmrc\fP and \fB$HOME/.rpmrc\fP.
-.IP "\fB\-\-root <dir>\fP"
-Use the directory given as top level directory for all operations.
 
 .SH PGP SIGNATURES
 
