@@ -58,6 +58,93 @@ static int isDoc(char *filename);
 
 static int processFileListFailed;
 
+static void parseForDocFiles(struct PackageRec *package, char *line)
+{
+    if (! (line = strstr(line, "%doc"))) {
+	return;
+    }
+
+    line += 4;
+    if ((*line != ' ') && (*line != '\t')) {
+	return;
+    }
+    line += strspn(line, " \t\n");
+    if ((! *line) || (*line == '/')) {
+	return;
+    }
+    
+    appendLineStringBuf(package->doc, "mkdir -p $DOCDIR");
+    appendStringBuf(package->doc, "cp -pr ");
+    appendStringBuf(package->doc, line);
+    appendLineStringBuf(package->doc, " $DOCDIR");
+}
+
+int finish_filelists(Spec spec)
+{
+    char buf[1024];
+    FILE *file;
+    struct PackageRec *pr = spec->packages;
+    char *s, **files, **line;
+    char *version, *release, *packageVersion, *packageRelease, *docs, *name;
+
+    headerGetEntry(spec->packages->header, RPMTAG_VERSION, NULL,
+	     (void *) &version, NULL);
+    headerGetEntry(spec->packages->header, RPMTAG_RELEASE, NULL,
+	     (void *) &release, NULL);
+    
+    while (pr) {
+	if (pr->fileFile) {
+	    sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
+		    build_subdir, pr->fileFile);
+	    rpmMessage(RPMMESS_DEBUG, "Reading file names from: %s\n", buf);
+	    if ((file = fopen(buf, "r")) == NULL) {
+		rpmError(RPMERR_BADSPEC, "unable to open filelist: %s\n", buf);
+		return(RPMERR_BADSPEC);
+	    }
+	    while (fgets(buf, sizeof(buf), file)) {
+		expandMacros(buf);
+		appendStringBuf(pr->filelist, buf);
+	    }
+	    fclose(file);
+	}
+
+	/* parse for %doc wierdness */
+	s = getStringBuf(pr->filelist);
+	files = splitString(s, strlen(s), '\n');
+	line = files;
+	while (*line) {
+	    parseForDocFiles(pr, *line);
+	    line++;
+	}
+	freeSplitString(files);
+
+	/* Handle subpackage version/release overrides */
+        if (!headerGetEntry(pr->header, RPMTAG_VERSION, NULL,
+		      (void *) &packageVersion, NULL)) {
+            packageVersion = version;
+	}
+        if (!headerGetEntry(pr->header, RPMTAG_RELEASE, NULL,
+		      (void *) &packageRelease, NULL)) {
+            packageRelease = release;
+	}
+
+	/* Generate the doc script */
+	appendStringBuf(spec->doc, "DOCDIR=$RPM_ROOT_DIR/$RPM_DOC_DIR/");
+	headerGetEntry(pr->header, RPMTAG_NAME, NULL, (void *) &name, NULL);
+	sprintf(buf, "%s-%s-%s", name, packageVersion, packageRelease);
+	appendLineStringBuf(spec->doc, buf);
+	docs = getStringBuf(pr->doc);
+	if (*docs) {
+	    appendLineStringBuf(spec->doc, "rm -rf $DOCDIR");
+	    appendLineStringBuf(spec->doc, docs);
+	}
+
+	pr = pr->next;
+    }
+
+    return 0;
+}
+
 int process_filelist(Header header, struct PackageRec *pr,
 		     StringBuf sb, int *size, char *name,
 		     char *version, char *release, int type,
@@ -78,7 +165,6 @@ int process_filelist(Header header, struct PackageRec *pr,
     glob_t glob_result;
     int special_doc;
     int passed_special_doc = 0;
-    FILE *file;
     int tc;
     char *tcs;
     int currentTime;
@@ -89,21 +175,6 @@ int process_filelist(Header header, struct PackageRec *pr,
 
     resetDocdir();
 
-    if (type == RPMLEAD_BINARY && pr->fileFile) {
-	sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
-		build_subdir, pr->fileFile);
-	rpmMessage(RPMMESS_DEBUG, "Reading file names from: %s\n", buf);
-	if ((file = fopen(buf, "r")) == NULL) {
-	    rpmError(RPMERR_BADSPEC, "unable to open filelist: %s\n", buf);
-	    return(RPMERR_BADSPEC);
-	}
-	while (fgets(buf, sizeof(buf), file)) {
-	    expandMacros(buf);
-	    appendStringBuf(sb, buf);
-	}
-	fclose(file);
-    }
-    
     str = getStringBuf(sb);
     files = splitString(str, strlen(str), '\n');
     fp = files;
