@@ -86,8 +86,13 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	    char * t = alloca(nb);
 	    filespec = t;
 	    *t = '\0';
-	    t = stpcpy(t, root);
-	    *t++ = '/';
+	    if (root && !(root[0] == '/' && root[1] == '\0')) {
+		t = stpcpy(t, root);
+		while (t > filespec && t[-1] == '/') {
+		    --t;
+		    *t = '\0';
+		}
+	    }
 	    t = stpcpy(t, dirNames[dirIndexes[filenum]]);
 	    t = stpcpy(t, baseNames[filenum]);
 	}
@@ -153,10 +158,9 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     /*
      * Content checks of %ghost files are meaningless.
      */
-    if (fileAttrs & RPMFILE_GHOST) {
+    if (fileAttrs & RPMFILE_GHOST)
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
-			RPMVERIFY_LINKTO | RPMVERIFY_MODE);
-    }
+			RPMVERIFY_LINKTO);
 
     /*
      * Don't verify any features in omitMask.
@@ -210,11 +214,24 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     } 
 
     if (flags & RPMVERIFY_MODE) {
+	unsigned short metamode = modeList[filenum];
+	unsigned short filemode;
+
 	/*
 	 * Platforms (like AIX) where sizeof(unsigned short) != sizeof(mode_t)
 	 * need the (unsigned short) cast here. 
 	 */
-	if (modeList[filenum] != (unsigned short)sb.st_mode)
+	filemode = (unsigned short)sb.st_mode;
+
+	/*
+	 * Comparing the type of %ghost files is meaningless, but perms are OK.
+	 */
+	if (fileAttrs & RPMFILE_GHOST) {
+	    metamode &= ~0xf000;
+	    filemode &= ~0xf000;
+	}
+
+	if (metamode != filemode)
 	    *result |= RPMVERIFY_MODE;
     }
 
