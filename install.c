@@ -115,11 +115,16 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
     int dbIsOpen = 0;
     const char ** sourcePackages;
+    rpmRelocation * defaultReloc;
 
     if (transFlags & RPMTRANS_FLAG_TEST) 
 	mode = O_RDONLY;
     else
 	mode = O_RDWR | O_CREAT;
+
+    for (defaultReloc = relocations; defaultReloc && defaultReloc->oldPath;
+	 defaultReloc++);
+    if (defaultReloc && !defaultReloc->newPath) defaultReloc = NULL;
 
     rpmMessage(RPMMESS_DEBUG, _("counting packages to install\n"));
     for (filename = argv, numPackages = 0; *filename; filename++, numPackages++)
@@ -223,9 +228,32 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
 		    dbIsOpen = 1;
 		}
 
+		if (defaultReloc) {
+		    char ** paths;
+		    char * name;
+		    int c;
+
+		    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
+				       (void **) &paths, &c) && (c == 1)) {
+			defaultReloc->oldPath = paths[0];
+			free(paths);
+		    } else {
+			headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name,
+				       NULL);
+			rpmMessage(RPMMESS_ERROR, 
+			       _("package %s is not relocateable\n"), name);
+
+			return numPackages;
+		    }
+		}
+
 		rpmtransAddPackage(rpmdep, h, NULL, *filename,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
+
+		if (defaultReloc)
+		    defaultReloc->oldPath = NULL;
+
 		fdClose(fd);
 		numBinaryPackages++;
 	    }

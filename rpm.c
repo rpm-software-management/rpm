@@ -830,8 +830,11 @@ int main(int argc, char ** argv) {
 	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
 	    break;
 
-	  case GETOPT_PREFIX:	/* XXX FIXME */
-	    argerror(_("--prefix is broke, use --relocate /oldpath=/newpath instead"));
+	  case GETOPT_PREFIX:
+	    relocations = realloc(relocations, 
+				  sizeof(*relocations) * (numRelocations + 1));
+	    relocations[numRelocations].oldPath = NULL;
+	    relocations[numRelocations++].newPath = optArg;
 	    break;
 
 	  case GETOPT_TIMECHECK:

@@ -631,15 +631,21 @@ static Header relocateFileList(struct availablePackage * alp,
     Header h;
     int relocated = 0;
 
-    if (!rawRelocations) return headerLink(origH);
-    h = headerCopy(origH);
-
-    if (!headerGetEntry(h, RPMTAG_PREFIXES, NULL,
+    if (!headerGetEntry(origH, RPMTAG_PREFIXES, NULL,
 			(void **) &validRelocations, &numValid))
 	numValid = 0;
 
-    for (i = 0; rawRelocations[i].newPath || rawRelocations[i].oldPath; i++) ;
-    numRelocations = i;
+    if (!rawRelocations && !numValid) return headerLink(origH);
+
+    h = headerCopy(origH);
+
+    if (rawRelocations) {
+	for (i = 0; rawRelocations[i].newPath || rawRelocations[i].oldPath; 
+		i++) ;
+	numRelocations = i;
+    } else {
+	numRelocations = 0;
+    }
     relocations = alloca(sizeof(*relocations) * numRelocations);
 
     /* FIXME? this code assumes the validRelocations array won't
