@@ -214,6 +214,7 @@ int doCheckSig(int pgp, char **argv)
 			res2 = 1;
 			break;
 		      case SIGTAG_MD5:
+		      case SIGTAG_LITTLEENDIANMD5:
 			strcat(buffer, "MD5 ");
 			res2 = 1;
 			break;
@@ -241,6 +242,7 @@ int doCheckSig(int pgp, char **argv)
 			strcat(buffer, "size ");
 			break;
 		      case SIGTAG_MD5:
+		      case SIGTAG_LITTLEENDIANMD5:
 			strcat(buffer, "md5 ");
 			break;
 		      case SIGTAG_PGP:
