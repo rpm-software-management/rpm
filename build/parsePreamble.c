@@ -310,7 +310,7 @@ stashSt(Spec spec, Header h, int tag, const char *lang)
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
 	    char *n;
-	    if (headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &n, NULL)) {
+	    if (headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &n, NULL)) {
 		char buf[1024];
 		sprintf(buf, "%s(%s)", n, tagName(tag));
 		t->t_msgid = strdup(buf);
@@ -689,7 +689,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
 	    headerGetEntry(spec->packages->header, RPMTAG_NAME,
-			   NULL, (void *) &mainName, NULL);
+			   NULL, (void **) &mainName, NULL);
 	    sprintf(fullName, "%s-%s", mainName, name);
 	} else {
 	    strcpy(fullName, name);

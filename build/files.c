@@ -682,9 +682,9 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	    {	const char *ddir, *name, *version;
 
 		headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
-			(void *) &name, NULL);
+			(void **) &name, NULL);
 		headerGetEntry(pkg->header, RPMTAG_VERSION, NULL,
-			(void *) &version, NULL);
+			(void **) &version, NULL);
 
 		ddir = rpmGetPath("%{_docdir}/", name, "-", version, NULL);
 		strcpy(buf, ddir);
@@ -1109,7 +1109,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.buildRoot = rpmGetPath(spec->buildRoot, NULL);
 
     if (headerGetEntry(pkg->header, RPMTAG_DEFAULTPREFIX,
-		       NULL, (void *)&fl.prefix, NULL)) {
+		       NULL, (void **)&fl.prefix, NULL)) {
 	fl.prefix = strdup(fl.prefix);
     } else {
 	fl.prefix = NULL;

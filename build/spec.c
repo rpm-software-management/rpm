@@ -64,7 +64,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     /* Construct package name */
     if (flag == PART_SUBNAME) {
 	headerGetEntry(spec->packages->header, RPMTAG_NAME,
-		       NULL, (void *) &n, NULL);
+		       NULL, (void **) &n, NULL);
 	sprintf(buf, "%s-%s", n, name);
 	fullName = buf;
     } else {
@@ -72,7 +72,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     }
 
     for (p = spec->packages; p != NULL; p = p->next) {
-	headerGetEntry(p->header, RPMTAG_NAME, NULL, (void *) &n, NULL);
+	headerGetEntry(p->header, RPMTAG_NAME, NULL, (void **) &n, NULL);
 	if (n && (! strcmp(fullName, n))) {
 	    break;
 	}

@@ -285,7 +285,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 
 	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL, 
-					 (void *) NULL, &fi->fc)) {
+					 NULL, &fi->fc)) {
 		fi->h = headerLink(alp->h);
 		hdrs[i] = headerLink(fi->h);
 		continue;
@@ -308,7 +308,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	}
 
 	if (!headerGetEntry(fi->h, RPMTAG_FILENAMES, NULL, 
-				     (void *) &fi->fl, &fi->fc)) {
+				     (void **) &fi->fl, &fi->fc)) {
 	    /* This catches removed packages w/ no file lists */
 	    fi->fc = 0;
 	    continue;
@@ -319,19 +319,19 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    fi->actions = calloc(sizeof(*fi->actions), fi->fc);
 
 	headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL, 
-				(void *) &fi->fmodes, NULL);
+				(void **) &fi->fmodes, NULL);
 	headerGetEntry(fi->h, RPMTAG_FILEFLAGS, NULL, 
-				(void *) &fi->fflags, NULL);
+				(void **) &fi->fflags, NULL);
 	headerGetEntry(fi->h, RPMTAG_FILESIZES, NULL, 
-				(void *) &fi->fsizes, NULL);
+				(void **) &fi->fsizes, NULL);
 	headerGetEntry(fi->h, RPMTAG_FILESTATES, NULL, 
-				(void *) &fi->fstates, NULL);
+				(void **) &fi->fstates, NULL);
 
 	if (ts->order[oc].type == TR_REMOVED) {
 	    headerGetEntry(fi->h, RPMTAG_FILEMD5S, NULL, 
-				    (void *) &fi->fmd5s, NULL);
+				    (void **) &fi->fmd5s, NULL);
 	    headerGetEntry(fi->h, RPMTAG_FILELINKTOS, NULL, 
-				    (void *) &fi->flinks, NULL);
+				    (void **) &fi->flinks, NULL);
 	    fi->fsizes = memcpy(malloc(fi->fc * sizeof(*fi->fsizes)),
 				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
 	    fi->fflags = memcpy(malloc(fi->fc * sizeof(*fi->fflags)),
@@ -346,9 +346,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    /* ADDED package */
 
 	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL, 
-				    (void *) &fi->fmd5s, NULL);
+				    (void **) &fi->fmd5s, NULL);
 	    headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL, 
-				    (void *) &fi->flinks, NULL);
+				    (void **) &fi->flinks, NULL);
 
 	    /* 0 makes for noops */
 	    fi->replacedSizes = calloc(fi->fc, sizeof(*fi->replacedSizes));

@@ -48,15 +48,15 @@ int addReqProv(Spec spec, Header h,
 	version = "";
     }
     
-    if (headerGetEntry(h, nametag, NULL, (void *) &names, &len)) {
+    if (headerGetEntry(h, nametag, NULL, (void **) &names, &len)) {
 	if (flagtag) {
 	    headerGetEntry(h, versiontag, NULL,
-			   (void *) &versions, NULL);
-	    headerGetEntry(h, flagtag, NULL, (void *) &flags, NULL);
+			   (void **) &versions, NULL);
+	    headerGetEntry(h, flagtag, NULL, (void **) &flags, NULL);
 	}
 	if (indextag) {
 	    headerGetEntry(h, indextag, NULL,
-			   (void *) &indexes, NULL);
+			   (void **) &indexes, NULL);
 	}
 	while (len) {
 	    len--;

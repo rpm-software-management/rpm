@@ -258,7 +258,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	return 1;
 
     /* Make sure we've implemented all of the capabilities we need */
-    if (headerGetEntry(h, RPMTAG_CAPABILITY, NULL, &caps, &count)) {
+    if (headerGetEntry(h, RPMTAG_CAPABILITY, NULL, (void **)&caps, &count)) {
 	if (count != 1 || *caps) {
 	    return 2;
 	}
@@ -281,7 +281,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 
     if (!upgrade || rpmdep->db == NULL) return 0;
 
-    headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &name, &count);
+    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, &count);
 
     if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
 	Header h2;
@@ -300,7 +300,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	dbiFreeIndexRecord(matches);
     }
 
-    if (headerGetEntry(h, RPMTAG_OBSOLETES, NULL, (void *) &obsoletes, 
+    if (headerGetEntry(h, RPMTAG_OBSOLETES, NULL, (void **) &obsoletes, 
 			&count)) {
 	for (j = 0; j < count; j++) {
 	    if (!rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))  {
@@ -770,20 +770,20 @@ int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags) {
     int result = 0;
     int sense;
 
-    headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
+    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
 
     if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqInfo || !strlen(reqInfo)) {
 	return 1;
     }
 
     if (reqFlags & RPMSENSE_SERIAL) {
-	if (!headerGetEntry(h, RPMTAG_EPOCH, &type, (void *) &epoch, &count)) {
+	if (!headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epoch, &count)) {
 	    return 0;
 	}
 	sprintf(buf, "%d", *epoch);
 	version = buf;
     } else {
-	headerGetEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
+	headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
 	chptr = strrchr(reqInfo, '-');
 	if (chptr) {
 	    char *rv = alloca(strlen(reqInfo) + 1);
@@ -792,7 +792,7 @@ int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags) {
 	    reqVersion = rv;
 	    reqRelease = reqVersion + (chptr - reqInfo) + 1;
 	    if (*reqRelease) 
-		headerGetEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);
+		headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
 	    else
 		reqRelease = NULL;
 	}

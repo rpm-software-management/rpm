@@ -1,7 +1,5 @@
 #include "system.h"
 
-#include <signal.h>
-
 #include "rpmbuild.h"
 #include "buildio.h"
 

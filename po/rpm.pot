@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-14 06:46-0400\n"
+"POT-Creation-Date: 1999-04-14 08:28-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Couldn't write header/archive to temp file"
 msgstr ""
 
-#: ../build/pack.c:349 ../checksig.c:91
+#: ../build/pack.c:347 ../checksig.c:91
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
@@ -1550,7 +1550,7 @@ msgstr ""
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../build/build.c:81 ../build/pack.c:267
+#: ../build/build.c:81 ../build/pack.c:265
 msgid "Unable to open temp file"
 msgstr ""
 
@@ -1721,7 +1721,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1097 ../build/pack.c:452
+#: ../build/files.c:1097 ../build/pack.c:450
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1797,96 +1797,96 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: ../build/pack.c:153
+#: ../build/pack.c:151
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:186
+#: ../build/pack.c:184
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:196
+#: ../build/pack.c:194
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:216
+#: ../build/pack.c:214
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: ../build/pack.c:222
+#: ../build/pack.c:220
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: ../build/pack.c:278
+#: ../build/pack.c:276
 msgid "Bad CSA data"
 msgstr ""
 
-#: ../build/pack.c:301
+#: ../build/pack.c:299
 #, c-format
 msgid "Could not open %s\n"
 msgstr ""
 
-#: ../build/pack.c:333 ../build/pack.c:376
+#: ../build/pack.c:331 ../build/pack.c:374
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: ../build/pack.c:366
+#: ../build/pack.c:364
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr ""
 
-#: ../build/pack.c:391
+#: ../build/pack.c:389
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: ../build/pack.c:406
+#: ../build/pack.c:404
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:422
+#: ../build/pack.c:420
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:429
+#: ../build/pack.c:427
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:508
+#: ../build/pack.c:506
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:515
+#: ../build/pack.c:513
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:522
+#: ../build/pack.c:520
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:529
+#: ../build/pack.c:527
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:537
+#: ../build/pack.c:535
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:553
+#: ../build/pack.c:551
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2441,101 +2441,101 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: ../lib/install.c:95
+#: ../lib/install.c:93
 msgid "source package expected, binary found"
 msgstr ""
 
-#: ../lib/install.c:171 ../lib/uninstall.c:111
+#: ../lib/install.c:169 ../lib/uninstall.c:111
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: ../lib/install.c:188
+#: ../lib/install.c:186
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:196
+#: ../lib/install.c:194
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:223
+#: ../lib/install.c:221
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
-#: ../lib/install.c:291
+#: ../lib/install.c:289
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: ../lib/install.c:354
+#: ../lib/install.c:352
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:359
+#: ../lib/install.c:357
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:389
+#: ../lib/install.c:387
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:425
+#: ../lib/install.c:423
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:429 ../lib/install.c:792 ../lib/uninstall.c:337
+#: ../lib/install.c:427 ../lib/install.c:790 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:509
+#: ../lib/install.c:507
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:615
+#: ../lib/install.c:613
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:616
+#: ../lib/install.c:614
 msgid " on file "
 msgstr ""
 
-#: ../lib/install.c:656
+#: ../lib/install.c:654
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:667 ../lib/install.c:689
+#: ../lib/install.c:665 ../lib/install.c:687
 #, c-format
 msgid "cannot create %s"
 msgstr ""
 
-#: ../lib/install.c:674 ../lib/install.c:696
+#: ../lib/install.c:672 ../lib/install.c:694
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:678
+#: ../lib/install.c:676
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:700
+#: ../lib/install.c:698
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:733 ../lib/install.c:769
+#: ../lib/install.c:731 ../lib/install.c:767
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:790
+#: ../lib/install.c:788
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""

@@ -1,7 +1,5 @@
 #include "system.h"
 
-#include <signal.h>
-
 #include "rpmlib.h"
 
 #include "cpio.h"
@@ -103,7 +101,7 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
 
     if (cookie) {
 	*cookie = NULL;
-	if (h && headerGetEntry(h, RPMTAG_COOKIE, NULL, (void *) cookie,
+	if (h && headerGetEntry(h, RPMTAG_COOKIE, NULL, (void **) cookie,
 				NULL)) {
 	    *cookie = strdup(*cookie);
 	}
@@ -324,7 +322,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	/* old format relocateable packages need the entire default
 	   prefix stripped to form the cpio list, while all other packages 
 	   need the leading / stripped */
-	if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (void *)
+	if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (void **)
 				  &defaultPrefix, NULL)) {
 	    stripSize = strlen(defaultPrefix) + 1;
 	} else {
@@ -445,7 +443,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	}
 
 	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, 
-				(void *) &archiveSizePtr, &count))
+				(void **) &archiveSizePtr, &count))
 	    archiveSizePtr = NULL;
 
 	if (notify) {
@@ -749,7 +747,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     }
 
     if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL,
-			    (void *) &archiveSizePtr, NULL))
+			    (void **) &archiveSizePtr, NULL))
 	archiveSizePtr = NULL;
 
     chdir(realSourceDir);

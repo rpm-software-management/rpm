@@ -172,7 +172,7 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	argc = progArgc;
     }
 
-    if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void *) &prefixes,
+    if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) &prefixes,
 		       &numPrefixes)) {
 	freePrefixes = 1;
     } else if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, 

@@ -448,7 +448,7 @@ printNewSpecfile(Spec spec)
 	if (t->t_msgid == NULL) {
 	    char *n;
 	    headerGetEntry(spec->packages->header, RPMTAG_NAME, NULL,
-		(void *) &n, NULL);
+		(void **) &n, NULL);
 	    sprintf(buf, "%s(%s)", n, tagName(t->t_tag));
 	    t->t_msgid = strdup(buf);
 	}
