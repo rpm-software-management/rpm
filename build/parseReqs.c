@@ -104,20 +104,6 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	    return RPMERR_BADSPEC;
 	}
 
-	/* Don't permit file names as args for certain tags */
-	switch (tagN) {
-	case RPMTAG_CONFLICTFLAGS:
-	case RPMTAG_BUILDCONFLICTS:
-	    if (r[0] == '/') {
-		rpmError(RPMERR_BADSPEC,_("line %d: File name not permitted: %s\n"),
-			 spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
-	    }
-	    /*@switchbreak@*/ break;
-	default:
-	    /*@switchbreak@*/ break;
-	}
-
 	re = r;
 	SKIPNONWHITE(re);
 	N = xmalloc((re-r) + 1);
