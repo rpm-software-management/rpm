@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
+#include <signal.h>
+#include <sys/signal.h>
 #include <unistd.h>
 
 #include "dbindex.h"
@@ -11,15 +13,21 @@
 #include "rpmerr.h"
 #include "rpmlib.h"
 
+/* XXX the signal handling in here is not thread safe */
+
 struct rpmdb {
     faFile pkgs;
     dbIndex * nameIndex, * fileIndex, * groupIndex;
 };
 
-void removeIndexEntry(dbIndex * dbi, char * name, dbIndexRecord rec,
-		     int tolerant, char * idxName);
-int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
-		  unsigned int fileNumber);
+static void removeIndexEntry(dbIndex * dbi, char * name, dbIndexRecord rec,
+		             int tolerant, char * idxName);
+static int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
+		         unsigned int fileNumber);
+static void blockSignals(void);
+static void unblockSignals(void);
+
+static sigset_t signalMask;
 
 int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     char * filename;
@@ -122,8 +130,8 @@ int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches) {
     return searchDBIndex(db->nameIndex, name, matches);
 }
 
-void removeIndexEntry(dbIndex * dbi, char * key, dbIndexRecord rec,
-		     int tolerant, char * idxName) {
+static void removeIndexEntry(dbIndex * dbi, char * key, dbIndexRecord rec,
+		             int tolerant, char * idxName) {
     int rc;
     dbIndexSet matches;
     
@@ -166,6 +174,8 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	return 1;
     }
 
+    blockSignals();
+
     if (!getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count)) {
 	error(RPMERR_DBCORRUPT, "package has no name");
     } else {
@@ -194,11 +204,17 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 
     faFree(db->pkgs, offset);
 
+    syncDBIndex(db->nameIndex);
+    syncDBIndex(db->groupIndex);
+    syncDBIndex(db->fileIndex);
+
+    unblockSignals();
+
     return 0;
 }
 
-int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
-		  unsigned int fileNumber) {
+static int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
+		         unsigned int fileNumber) {
     dbIndexSet set;
     dbIndexRecord irec;   
     int rc;
@@ -226,6 +242,7 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     char * name, * group;
     int count;
     int type;
+    int rc = 0;
 
     getEntry(dbentry, RPMTAG_NAME, &type, (void **) &name, &count);
     getEntry(dbentry, RPMTAG_GROUP, &type, (void **) &group, &count);
@@ -234,10 +251,13 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	 &count)) {
 	count = 0;
     } 
-   
+
+    blockSignals();
+
     dboffset = faAlloc(db->pkgs, sizeofHeader(dbentry));
     if (!dboffset) {
 	error(RPMERR_DBCORRUPT, "cannot allocate space for database");
+	unblockSignals();
 	return 1;
     }
     lseek(db->pkgs->fd, dboffset, SEEK_SET);
@@ -246,18 +266,24 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 
     /* Now update the appropriate indexes */
     if (addIndexEntry(db->nameIndex, name, dboffset, 0))
-	return 1;
+	rc = 1;
     if (addIndexEntry(db->groupIndex, group, dboffset, 0))
-	return 1;
+	rc = 1;
 
     for (i = 0; i < count; i++) {
 	if (addIndexEntry(db->fileIndex, fileList[i], dboffset, i))
-	    return 1;
+	    rc = 1;
     }
+
+    syncDBIndex(db->nameIndex);
+    syncDBIndex(db->groupIndex);
+    syncDBIndex(db->fileIndex);
+
+    unblockSignals();
 
     if (count) free(fileList);
 
-    return 0;
+    return rc;
 }
 
 int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
@@ -278,10 +304,25 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
 	if (rpmdbAdd(db, newHeader)) 
 	    return 1;
     } else {
+	blockSignals();
+
 	lseek(db->pkgs->fd, offset, SEEK_SET);
 
 	writeHeader(db->pkgs->fd, newHeader);
+
+	unblockSignals();
     }
 
     return 0;
+}
+
+static void blockSignals(void) {
+    sigset_t newMask;
+
+    sigfillset(&newMask);		/* block all signals */
+    sigprocmask(SIG_BLOCK, &newMask, &signalMask);
+}
+
+static void unblockSignals(void) {
+    sigprocmask(SIG_SETMASK, &signalMask, NULL);
 }
