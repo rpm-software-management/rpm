@@ -16,23 +16,37 @@
 int _rpmsx_debug = 0;
 
 /**
- */
-static int rpmsxpCompare(const void* A, const void* B)
-	/*@*/
-{
-    rpmsxp sxpA = (rpmsxp) A;
-    rpmsxp sxpB = (rpmsxp) B;
-    return (sxpB->hasMetaChars - sxpA->hasMetaChars);
-}
-
-/**
- * Sort the specifications with most general first.
+ * Stable sort for policy specifications, patterns before paths.
  * @param sx		security context patterns
  */
 static void rpmsxSort(rpmsx sx)
 	/*@modifies sx @*/
 {
-    qsort(sx->sxp, sx->Count, sizeof(*sx->sxp), rpmsxpCompare);
+    rpmsxp sxp;
+    int i, j;
+
+    /* Stable sort for policy regex's and paths. */
+    sxp = xmalloc(sizeof(*sxp) * sx->Count);
+
+    /* Regex patterns first ... */
+    j = 0;
+    for (i = 0; i < sx->Count; i++) {
+	if (!sx->sxp[i].hasMetaChars)
+	    continue;
+	memcpy(sxp + j, sx->sxp + i, sizeof(*sxp));
+	j++;
+    }
+
+    /* ... then file paths. */
+    for (i = 0; i < sx->Count; i++) {
+	if (sx->sxp[i].hasMetaChars)
+	    continue;
+	memcpy(sxp + j, sx->sxp + i, sizeof(*sxp));
+	j++;
+    }
+
+    sx->sxp = _free(sx->sxp);
+    sx->sxp = sxp;
 }
 
 /* Determine if the regular expression specification has any meta characters. */
@@ -308,6 +322,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
     int pass;
     int regerr;
     int nerr = 0;
+    
 #define	inc_err()	nerr++
 
 /*@-branchstate@*/
@@ -467,7 +482,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
 /*@=branchstate@*/
     (void) fclose(fp);
 
-    /* Sort the specifications with most general first */
+   /* Stable sort for policy specifications, patterns before paths. */
     rpmsxSort(sx);
 
     /* Verify no exact duplicates */
