@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-26 10:58-0500\n"
+"POT-Creation-Date: 2005-02-02 13:45-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -1615,67 +1615,67 @@ msgstr ""
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:539 lib/package.c:581 lib/package.c:916 lib/package.c:943
-#: lib/package.c:976 lib/rpmchecksig.c:835
+#: lib/package.c:538 lib/package.c:579 lib/package.c:913 lib/package.c:939
+#: lib/package.c:971
 #, c-format
-msgid "only V3 signatures can be verified, skipping V%u signature\n"
+msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:668
+#: lib/package.c:666
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:672
+#: lib/package.c:670
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:680
+#: lib/package.c:678
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:689
+#: lib/package.c:687
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:703
+#: lib/package.c:701
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:716
+#: lib/package.c:714
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:785
+#: lib/package.c:783
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:794
+#: lib/package.c:792
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:806 lib/rpmchecksig.c:229 lib/rpmchecksig.c:750
+#: lib/package.c:804 lib/rpmchecksig.c:229 lib/rpmchecksig.c:750
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s rmdir %s brást: %s\n"
 
-#: lib/package.c:813 lib/rpmchecksig.c:236 lib/rpmchecksig.c:758
+#: lib/package.c:811 lib/rpmchecksig.c:236 lib/rpmchecksig.c:758
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:880
+#: lib/package.c:878
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: Fseek brást: %s\n"
 
-#: lib/package.c:991 lib/rpmchecksig.c:116 lib/rpmchecksig.c:673
+#: lib/package.c:986 lib/rpmchecksig.c:116 lib/rpmchecksig.c:673
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
@@ -2571,27 +2571,32 @@ msgstr "%s: gat ekki lesið manifest: %s\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:1001
+#: lib/rpmchecksig.c:834
+#, c-format
+msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
+msgstr ""
+
+#: lib/rpmchecksig.c:1000
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1002 lib/rpmchecksig.c:1016
+#: lib/rpmchecksig.c:1001 lib/rpmchecksig.c:1015
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1004 lib/rpmchecksig.c:1018
+#: lib/rpmchecksig.c:1003 lib/rpmchecksig.c:1017
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1005 lib/rpmchecksig.c:1019
+#: lib/rpmchecksig.c:1004 lib/rpmchecksig.c:1018
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1007 lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1006 lib/rpmchecksig.c:1020
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1015
+#: lib/rpmchecksig.c:1014
 msgid "OK"
 msgstr ""
 
@@ -3300,21 +3305,25 @@ msgstr ""
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1292
+#: lib/signature.c:1293
+msgid "V4 DSA signature: "
+msgstr ""
+
+#: lib/signature.c:1295
 msgid "V3 DSA signature: "
 msgstr ""
 
-#: lib/signature.c:1376
+#: lib/signature.c:1377
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1403
+#: lib/signature.c:1404
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1407
+#: lib/signature.c:1408
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
@@ -3698,171 +3707,171 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:288
+#: rpmdb/rpmdb.c:305
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "get ekki opnað %s index með db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:308
+#: rpmdb/rpmdb.c:325
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "get ekki opnað %s index\n"
 
-#: rpmdb/rpmdb.c:946
+#: rpmdb/rpmdb.c:969
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1224 rpmdb/rpmdb.c:1353 rpmdb/rpmdb.c:1404 rpmdb/rpmdb.c:2364
-#: rpmdb/rpmdb.c:2484 rpmdb/rpmdb.c:3259
+#: rpmdb/rpmdb.c:1247 rpmdb/rpmdb.c:1378 rpmdb/rpmdb.c:1434 rpmdb/rpmdb.c:2396
+#: rpmdb/rpmdb.c:2525 rpmdb/rpmdb.c:3300
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1598
+#: rpmdb/rpmdb.c:1628
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1608
+#: rpmdb/rpmdb.c:1638
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2252
+#: rpmdb/rpmdb.c:2282
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2284
+#: rpmdb/rpmdb.c:2314
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2588
+#: rpmdb/rpmdb.c:2629
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2654
+#: rpmdb/rpmdb.c:2695
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2769
+#: rpmdb/rpmdb.c:2810
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2773
+#: rpmdb/rpmdb.c:2814
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2801
+#: rpmdb/rpmdb.c:2842
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2822
+#: rpmdb/rpmdb.c:2863
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2832
+#: rpmdb/rpmdb.c:2873
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2997
+#: rpmdb/rpmdb.c:3038
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3062
+#: rpmdb/rpmdb.c:3103
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3234
+#: rpmdb/rpmdb.c:3275
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3238
+#: rpmdb/rpmdb.c:3279
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3278
+#: rpmdb/rpmdb.c:3319
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3682
+#: rpmdb/rpmdb.c:3728
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3720
+#: rpmdb/rpmdb.c:3767
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3752
+#: rpmdb/rpmdb.c:3799
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3756
+#: rpmdb/rpmdb.c:3803
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3762
+#: rpmdb/rpmdb.c:3809
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3764
+#: rpmdb/rpmdb.c:3811
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3771
+#: rpmdb/rpmdb.c:3820
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3784
+#: rpmdb/rpmdb.c:3831
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3812
+#: rpmdb/rpmdb.c:3862
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3852
+#: rpmdb/rpmdb.c:3902
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3866
+#: rpmdb/rpmdb.c:3916
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3874
+#: rpmdb/rpmdb.c:3924
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3876
+#: rpmdb/rpmdb.c:3926
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3886
+#: rpmdb/rpmdb.c:3936
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3888
+#: rpmdb/rpmdb.c:3938
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

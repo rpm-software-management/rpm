@@ -829,10 +829,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		xx = pgpPrtPkts(sig, siglen, dig,
 			(_print_pkts & rpmIsDebug()));
 
-		/* XXX only V3 signatures for now. */
-		if (sigp->version != 3) {
+		if (sigp->version != 3 && sigp->version != 4) {
 		    rpmError(RPMERR_SIGVFY,
-		_("only V3 signatures can be verified, skipping V%u signature\n"),
+		_("only V3 or V4 signatures can be verified, skipping V%u signature\n"),
 			sigp->version);
 		    continue;
 		}

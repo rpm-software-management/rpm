@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.12
+Release: 0.16
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -494,6 +494,14 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Feb  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.16
+- fix: length of gpg V4 hash seed was incorrect (#146896).
+- add support for V4 rfc-2440 signatures.
+
+* Mon Jan 31 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.14
+- add sqlite internal (build still expects external sqlite3-3.0.8).
+- sqlite: revert to original narrow scoping of cOpen/cClose.
+
 * Fri Jan 28 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.12
 - python: force dbMatch() h# key to be 32 bit integer (#146477).
 

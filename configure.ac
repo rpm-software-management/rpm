@@ -520,12 +520,18 @@ dnl ------------------ with    internal db
 AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
 WITH_DB_SUBDIR=db3
 WITH_INTERNAL_DB=1
-DBLIBSRCS="db3.c"
+AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
+WITH_SQLITE3=1
+WITH_SQLITE3_INCLUDE=
+WITH_SQLITE3_LIB=-lsqlite3
+DBLIBSRCS="db3.c sqlite.c"
 
 AC_SUBST(WITH_DB_SUBDIR)
 AC_SUBST(WITH_INTERNAL_DB)
+AC_SUBST(WITH_SQLITE3)
+AC_SUBST(WITH_SQLITE3_INCLUDE)
+AC_SUBST(WITH_SQLITE3_LIB)
 
-DBLIBSRCS="$DBLIBSRCS"
 DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
 
 AC_SUBST(DBLIBSRCS)
@@ -1280,7 +1286,7 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt zlib file db3)
+AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
 
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile

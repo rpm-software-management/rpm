@@ -12,10 +12,11 @@ INCLUDES = -I. \
 	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
 	-I$(top_srcdir)/misc \
+	@WITH_SQLITE3_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
-EXTRA_DIST = db3.c
+EXTRA_DIST = db3.c sqlite.c db_emu.h
 
 EXTRA_PROGRAMS = tjfn
 
@@ -53,12 +54,13 @@ librpmdb_la_SOURCES = \
 librpmdb_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
+	@WITH_SQLITE3_LIB@ \
 	@WITH_LIBELF_LIB@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
 
 # XXX make sure that db.h symlink is generated
-dbconfig.c db3.c: db.h
+dbconfig.c $(DBLIBSRCS): db.h
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '/*@-bounds@*/' > $@
@@ -177,7 +179,7 @@ clean-local:
 BUILT_SOURCES = tagtbl.c
 
 rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-lclint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
+	-splint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:
@@ -185,7 +187,7 @@ sources:
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES)
+	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
 
 tdbi: librpmdb.la tdbi.o
 	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)

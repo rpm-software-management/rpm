@@ -14,6 +14,10 @@
 	- blueprint rpm-4_4 and HEAD to minimize diff spew.
 	- add missing #if defined(ENABLE_NLS) (#146184).
 	- python: force dbMatch() h# key to be 32 bit integer (#146477).
+	- add sqlite internal (build still expects external sqlite3-3.0.8).
+	- sqlite: revert to original narrow scoping of cOpen/cClose.
+	- fix: length of gpg V4 hash seed was incorrect (#146896).
+	- add support for V4 rfc-2440 signatures.
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).

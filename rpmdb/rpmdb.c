@@ -233,17 +233,32 @@ static void dbiTagsInit(void)
 #define	DB1vec		NULL
 #define	DB2vec		NULL
 
+#ifdef HAVE_DB3_DB_H
 /*@-exportheadervar -declundef @*/
-/*@unchecked@*/
+/*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec db3vec;
 /*@=exportheadervar =declundef @*/
 #define	DB3vec		&db3vec
 /*@=redecl@*/
+#else
+#define DB3vec		NULL
+#endif
+
+#ifdef HAVE_SQLITE3_H
+/*@-exportheadervar -declundef @*/
+/*@observer@*/ /*@unchecked@*/
+extern struct _dbiVec sqlitevec;
+/*@=exportheadervar =declundef @*/
+#define	SQLITEvec	&sqlitevec
+/*@=redecl@*/
+#else
+#define SQLITEvec	NULL
+#endif
 
 /*@-nullassign@*/
 /*@observer@*/ /*@unchecked@*/
 static struct _dbiVec *mydbvecs[] = {
-    DB1vec, DB1vec, DB2vec, DB3vec, NULL
+    DB1vec, DB1vec, DB2vec, DB3vec, SQLITEvec, NULL
 };
 /*@=nullassign@*/
 
@@ -268,14 +283,16 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 /*@=compdef@*/
 
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
-    if (_dbapi_rebuild < 1 || _dbapi_rebuild > 3)
-	_dbapi_rebuild = 3;
-    _dbapi_wanted = (_rebuildinprogress ? -1 : db->db_api);
+    if (_dbapi_rebuild < 1 || _dbapi_rebuild > 4)
+	_dbapi_rebuild = 4;
+/*    _dbapi_wanted = (_rebuildinprogress ? -1 : db->db_api); */
+    _dbapi_wanted = (_rebuildinprogress ? _dbapi_rebuild : db->db_api);
 
     switch (_dbapi_wanted) {
     default:
 	_dbapi = _dbapi_wanted;
-	if (_dbapi < 0 || _dbapi >= 4 || mydbvecs[_dbapi] == NULL) {
+	if (_dbapi < 0 || _dbapi >= 5 || mydbvecs[_dbapi] == NULL) {
+            rpmMessage(RPMMESS_DEBUG, "dbiOpen: _dbiapi failed\n");
 	    return NULL;
 	}
 	errno = 0;
@@ -292,7 +309,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 	}
 	break;
     case -1:
-	_dbapi = 4;
+	_dbapi = 5;
 	while (_dbapi-- > 1) {
 	    if (mydbvecs[_dbapi] == NULL)
 		continue;
@@ -315,6 +332,8 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
     	break;
     }
 
+/* We don't ever _REQUIRE_ conversion... */
+#ifdef	SQLITE_HACK
     /* Require conversion. */
     if (rc && _dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
 	rc = (_rebuildinprogress ? 0 : 1);
@@ -332,6 +351,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 	rc = (_rebuildinprogress ? 0 : 1);
 	goto exit;
     }
+#endif
 
 exit:
     if (dbi != NULL && rc == 0) {
@@ -347,8 +367,11 @@ exit:
 	    db->db_bits = PBM_ALLOC(db->db_nbits);
 	}
 /*@=sizeoftype@*/
-    } else
+    }
+#ifdef HAVE_DB3_DB_H
+      else
 	dbi = db3Free(dbi);
+#endif
 
 /*@-compdef -nullstate@*/ /* FIX: db->_dbi may be NULL */
     return dbi;
@@ -983,7 +1006,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
     }
 
     /* Insure that _dbapi has one of -1, 1, 2, or 3 */
-    if (_dbapi < -1 || _dbapi > 3)
+    if (_dbapi < -1 || _dbapi > 4)
 	_dbapi = -1;
     if (_dbapi == 0)
 	_dbapi = 1;
@@ -1332,8 +1355,10 @@ key->size = strlen(name);
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+#ifndef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
+#endif
 
     if (rc == 0) {		/* success */
 	dbiIndexSet matches;
@@ -1354,6 +1379,11 @@ key->size = strlen(name);
 		rc, key->data, tagName(dbi->dbi_rpmtag));
 	rc = -1;
     }
+
+#ifdef	SQLITE_HACK
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+#endif
 
     return rc;
 }
@@ -2355,14 +2385,20 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+#ifndef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
+#endif
 
     if (rc) {			/* error/not found */
 	if (rc != DB_NOTFOUND)
 	    rpmError(RPMERR_DBGETINDEX,
 		_("error(%d) getting \"%s\" records from %s index\n"),
 		rc, key->data, tagName(dbi->dbi_rpmtag));
+#ifdef	SQLITE_HACK
+	xx = dbiCclose(dbi, dbcursor, 0);
+	dbcursor = NULL;
+#endif
 	return rc;
     }
 
@@ -2370,6 +2406,11 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
     (void) dbt2set(dbi, data, &set);
     for (i = 0; i < set->count; i++)
 	set->recs[i].fpNum = fpNum;
+
+#ifdef	SQLITE_HACK
+    xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
+#endif
 
 /*@-branchstate@*/
     if (mi->mi_set == NULL) {
@@ -3534,6 +3575,8 @@ static int rpmdbRemoveDatabase(const char * prefix,
     filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
 
     switch (_dbapi) {
+    case 4:
+	/*@fallthrough@*/
     case 3:
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
@@ -3569,7 +3612,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
-		const char * newdbpath, int _newdbapi)
+		const char * newdbpath, /*@unused@*/ int _newdbapi)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -3605,6 +3648,8 @@ static int rpmdbMoveDatabase(const char * prefix,
     nfilename = alloca(strlen(prefix) + strlen(newdbpath) + 40);
 
     switch (_olddbapi) {
+    case 4:
+        /* Fall through */
     case 3:
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
@@ -3654,12 +3699,12 @@ static int rpmdbMoveDatabase(const char * prefix,
 	for (i = 0; i < 16; i++) {
 	    sprintf(ofilename, "%s/%s/__db.%03d", prefix, olddbpath, i);
 	    (void)rpmCleanPath(ofilename);
-	    if (!rpmioFileExists(ofilename))
-		continue;
-	    xx = unlink(ofilename);
+	    if (rpmioFileExists(ofilename))
+		xx = unlink(ofilename);
 	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
 	    (void)rpmCleanPath(nfilename);
-	    xx = unlink(nfilename);
+	    if (rpmioFileExists(nfilename))
+		xx = unlink(nfilename);
 	}
 	break;
     case 2:
@@ -3667,6 +3712,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     case 0:
 	break;
     }
+#ifdef	SQLITE_HACK
     if (rc || _olddbapi == _newdbapi)
 	return rc;
 
@@ -3681,6 +3727,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    rpmMessage(RPMMESS_DEBUG,
 		_("removing %s after successful db3 rebuild.\n"), mdb1);
     }
+#endif
     return rc;
 }
 
@@ -3768,9 +3815,10 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     removedir = 1;
 
+    _rebuildinprogress = 0;
+
     rpmMessage(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
 		_dbapi);
-    _rebuildinprogress = 1;
 /*@-boundswrite@*/
     if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
@@ -3779,8 +3827,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
 /*@=boundswrite@*/
     _dbapi = olddb->db_api;
-    _rebuildinprogress = 0;
-
+    _rebuildinprogress = 1;
     rpmMessage(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
@@ -3790,6 +3837,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     }
 /*@=boundswrite@*/
+
+    _rebuildinprogress = 0;
+
     _dbapi_rebuild = newdb->db_api;
     
     {	Header h = NULL;

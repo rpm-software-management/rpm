@@ -399,7 +399,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_SIG_CREATE_TIME:
 /*@-mods -mayaliasunique @*/
 	    if (_digp && !(_digp->saved & PGPDIG_SAVED_TIME) &&
-		sigtype == PGPSIGTYPE_POSITIVE_CERT)
+		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
 	    {
 		_digp->saved |= PGPDIG_SAVED_TIME;
 		memcpy(_digp->time, p+1, sizeof(_digp->time));
@@ -419,7 +419,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 /*@-mods -mayaliasunique @*/
 	    if (_digp && !(_digp->saved & PGPDIG_SAVED_ID) &&
-		sigtype == PGPSIGTYPE_POSITIVE_CERT)
+		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
 	    {
 		_digp->saved |= PGPDIG_SAVED_ID;
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));

@@ -1289,7 +1289,10 @@ verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
     *t = '\0';
     if (dig != NULL && dig->hdrsha1ctx == sha1ctx)
 	t = stpcpy(t, _("Header "));
-    t = stpcpy(t, _("V3 DSA signature: "));
+    if (sigp->version == 4) 
+	t = stpcpy(t, _("V4 DSA signature: "));
+    else
+	t = stpcpy(t, _("V3 DSA signature: "));
 
     if (sha1ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
 	res = RPMRC_NOKEY;
@@ -1312,17 +1315,15 @@ verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
-#ifdef	NOTYET	/* XXX not for binary/text document signatures. */
-	if (sigp->sigtype == 4) {
-	    int nb = dig->nbytes + sigp->hashlen;
+	if (sigp->version == 4) {
+	    int nb = sigp->hashlen;
 	    byte trailer[6];
 	    nb = htonl(nb);
-	    trailer[0] = 0x4;
+	    trailer[0] = sigp->version;
 	    trailer[1] = 0xff;
 	    memcpy(trailer+2, &nb, sizeof(nb));
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
-#endif
 	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
