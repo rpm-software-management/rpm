@@ -54,6 +54,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.6 -> 2.5.7:
+	- resurrect osf1 as canonical os name (Time Mooney).
 	- make '-' character illegal (again) in version/release.
 	- use portable #!/bin/sh (Tim Mooney).
 	- don't erase failing build script (Tim Mooney).

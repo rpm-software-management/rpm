@@ -83,6 +83,8 @@ os_canon:      AmigaOS: AmigaOS 5
 os_canon:          AIX: AIX     5
 os_canon:        HP-UX: hpux10  6
 os_canon:         OSF1: osf1    7
+os_canon:       osf4.0: osf1    7
+os_canon:       osf3.2: osf1    7
 os_canon:      FreeBSD: FreeBSD 8
 os_canon:       SCO_SV: SCO_SV3.2v5.0.2  9
 os_canon:	IRIX64: Irix64  10
