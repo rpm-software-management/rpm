@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-23 17:20-0500\n"
+"POT-Creation-Date: 2000-02-23 17:41-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2100,7 +2100,7 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
+#: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
 #: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
 msgid "(not a number)"
 msgstr ""

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-02-22 20:44-0500\n"
+"POT-Creation-Date: 2000-02-23 17:41-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.22 2000/02/23 17:34:41 jbj Exp $
+# $Id: ja.po,v 1.23 2000/02/23 22:43:27 jbj Exp $
 #: rpm.c:197
 #, c-format
 msgid "rpm: %s\n"
@@ -2222,7 +2222,7 @@ msgstr ""
 "http://www.rpm.org もしくは rpm-list@redhat.com メーリングリストから\n"
 "詳細な情報が取得できます。\n"
 
-#: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
+#: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
 #: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
 msgid "(not a number)"
 msgstr "(数字ではありません)"
@@ -2636,212 +2636,218 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 
-#: lib/query.c:138
+#: lib/query.c:140
 #, c-format
 msgid "error in format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
 
-#: lib/query.c:181
+#: lib/query.c:183
 msgid "(contains no files)"
 msgstr "ファイルを含んでいません"
 
-#: lib/query.c:238
+#: lib/query.c:240
 msgid "normal        "
 msgstr "通常"
 
-#: lib/query.c:240
+#: lib/query.c:242
 msgid "replaced      "
 msgstr "置き換えられています"
 
-#: lib/query.c:242
+#: lib/query.c:244
 msgid "not installed "
 msgstr "インストールされていません"
 
-#: lib/query.c:244
+#: lib/query.c:246
 msgid "net shared    "
 msgstr "ネット共有"
 
-#: lib/query.c:246
+#: lib/query.c:248
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(未知の %3d)"
 
-#: lib/query.c:250
+#: lib/query.c:252
 msgid "(no state)    "
 msgstr "(何の状態もありません)"
 
-#: lib/query.c:267 lib/query.c:308
+#: lib/query.c:269 lib/query.c:310
 msgid "package has neither file owner or id lists"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:428
+#: lib/query.c:354
+#, fuzzy, c-format
+msgid "can't query %s: %s\n"
+msgstr "%s を削除(unlink)できません: %s\n"
+
+#: lib/query.c:432
 #, fuzzy, c-format
 msgid "record number %u\n"
 msgstr "レコード番号 %u\n"
 
-#: lib/query.c:432
+#: lib/query.c:436
 msgid "error: could not read database record\n"
 msgstr "エラー: データベースレコードを読むことができませんでした\n"
 
 #. XXX Fstrerror
-#: lib/query.c:478
+#: lib/query.c:481
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:496
+#: lib/query.c:499
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:505 lib/rpminstall.c:231
+#: lib/query.c:508 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s は RPM パッケージではありません\n"
 
-#: lib/query.c:509
+#: lib/query.c:512
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:542
+#: lib/query.c:545
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:567
+#: lib/query.c:570
 msgid "could not read database record!\n"
 msgstr "データベースレコードを読むことができませんでした!\n"
 
-#: lib/query.c:578
+#: lib/query.c:581
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:588
+#: lib/query.c:591
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:598
+#: lib/query.c:601
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:609
+#: lib/query.c:612
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:625
+#: lib/query.c:628
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:628
+#: lib/query.c:631
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:641
+#: lib/query.c:644
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:644
+#: lib/query.c:647
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:647
+#: lib/query.c:650
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:659 lib/rpminstall.c:435
+#: lib/query.c:662 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
 
-#: lib/query.c:662
+#: lib/query.c:665
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: lib/query.c:684
+#: lib/query.c:687
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() に失敗しました\n"
 
-#: lib/query.c:743
+#: lib/query.c:746
 #, fuzzy
 msgid "query package owning file"
 msgstr "ファイルを所有しているパッケージを問い合わせます"
 
-#: lib/query.c:745
+#: lib/query.c:748
 #, fuzzy
 msgid "query packages in group"
 msgstr "グループ中のパッケージについて問い合わせます\n"
 
-#: lib/query.c:747
+#: lib/query.c:750
 #, fuzzy
 msgid "query a package file"
 msgstr "パッケージファイルについて問い合わせます"
 
-#: lib/query.c:751
+#: lib/query.c:754
 #, fuzzy
 msgid "query a spec file"
 msgstr "スペックファイルを問い合わせます"
 
-#: lib/query.c:753
+#: lib/query.c:756
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "パッケージによってトリガーされるパッケージを問い合わせます"
 
-#: lib/query.c:755
+#: lib/query.c:758
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr ""
 "機能を必要とするパッケージについて\n"
 "問い合わせます"
 
-#: lib/query.c:757
+#: lib/query.c:760
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "機能を提供するパッケージについて問い合わせます"
 
-#: lib/query.c:796
+#: lib/query.c:799
 #, fuzzy
 msgid "list all configuration files"
 msgstr "全ての設定ファイルを列挙します"
 
-#: lib/query.c:798
+#: lib/query.c:801
 #, fuzzy
 msgid "list all documentation files"
 msgstr "全てのドキュメントファイルを列挙します"
 
-#: lib/query.c:800
+#: lib/query.c:803
 #, fuzzy
 msgid "dump basic file information"
 msgstr "基本的なファイル情報をダンプします"
 
-#: lib/query.c:802
+#: lib/query.c:805
 #, fuzzy
 msgid "list files in package"
 msgstr "パッケージ中のファイルを列挙します\n"
 
-#: lib/query.c:806
+#: lib/query.c:809
 msgid "use the following query format"
 msgstr "以下の問い合わせフォーマットを使用します"
 
-#: lib/query.c:808
-msgid "substitute i18n sections from the following catalogue"
+#: lib/query.c:811
+#, fuzzy
+msgid "substitute i18n sections into spec file"
 msgstr "以下のカタログから i18n セクションを置き換えます"
 
-#: lib/query.c:811
+#: lib/query.c:813
 msgid "display the states of the listed files"
 msgstr "列挙したファイルの状態を表示します"
 
-#: lib/query.c:813
+#: lib/query.c:815
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "ファイルリストを冗長に表示します"

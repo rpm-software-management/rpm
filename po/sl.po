@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.7 2000/02/23 17:34:42 jbj Exp $
+# $Id: sl.po,v 1.8 2000/02/23 22:43:27 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-02-22 20:44-0500\n"
+"POT-Creation-Date: 2000-02-23 17:41-0500\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2165,7 +2165,7 @@ msgstr ""
 "Èe \"rpm --rebuilddb\" ne re¹i problema, so dodatne informacije na voljo\n"
 "na strani http://www.rpm.org ali po dopisni listi rpm-list@redhat.com.\n"
 
-#: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
+#: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
 #: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
@@ -2566,198 +2566,204 @@ msgstr "namestitev paketa %s-%s-%s zahteva %ld%cb na datoteènem sistemu %s"
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "neznana napaka %d ob rokovanju s paketom %s-%s-%s"
 
-#: lib/query.c:138
+#: lib/query.c:140
 #, c-format
 msgid "error in format: %s\n"
 msgstr "napaka v obliki: %s\n"
 
-#: lib/query.c:181
+#: lib/query.c:183
 msgid "(contains no files)"
 msgstr "(ne vsebuje datotek)"
 
-#: lib/query.c:238
+#: lib/query.c:240
 msgid "normal        "
 msgstr "normalno      "
 
-#: lib/query.c:240
+#: lib/query.c:242
 msgid "replaced      "
 msgstr "nadome¹èeno   "
 
-#: lib/query.c:242
+#: lib/query.c:244
 msgid "not installed "
 msgstr "ni name¹èeno  "
 
-#: lib/query.c:244
+#: lib/query.c:246
 msgid "net shared    "
 msgstr "omre¾ni       "
 
-#: lib/query.c:246
+#: lib/query.c:248
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(neznano %3d) "
 
-#: lib/query.c:250
+#: lib/query.c:252
 msgid "(no state)    "
 msgstr "(brez stanja) "
 
-#: lib/query.c:267 lib/query.c:308
+#: lib/query.c:269 lib/query.c:310
 msgid "package has neither file owner or id lists"
 msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 
-#: lib/query.c:428
+#: lib/query.c:354
+#, fuzzy, c-format
+msgid "can't query %s: %s\n"
+msgstr "ni mo¾no zbrisati %s: %s\n"
+
+#: lib/query.c:432
 #, c-format
 msgid "record number %u\n"
 msgstr "zapis ¹tevilka %u\n"
 
-#: lib/query.c:432
+#: lib/query.c:436
 msgid "error: could not read database record\n"
 msgstr "napaka: zapisa podatkove zbirke ni mo¾no prebrati\n"
 
 #. XXX Fstrerror
-#: lib/query.c:478
+#: lib/query.c:481
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s neuspe¹no: %s\n"
 
-#: lib/query.c:496
+#: lib/query.c:499
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:505 lib/rpminstall.c:231
+#: lib/query.c:508 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s najverjetneje ni paket RPM\n"
 
-#: lib/query.c:509
+#: lib/query.c:512
 #, c-format
 msgid "query of %s failed\n"
 msgstr "poizvedba po %s neuspe¹na\n"
 
-#: lib/query.c:542
+#: lib/query.c:545
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "poizvedba po datoteki spec %s neuspe¹na, razèlemba ni mo¾na\n"
 
-#: lib/query.c:567
+#: lib/query.c:570
 msgid "could not read database record!\n"
 msgstr "zapisa podatkovne zbirke ni mo¾no prebrati!\n"
 
-#: lib/query.c:578
+#: lib/query.c:581
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s ne vsebuje nobenega paketa\n"
 
-#: lib/query.c:588
+#: lib/query.c:591
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/query.c:598
+#: lib/query.c:601
 #, c-format
 msgid "no package requires %s\n"
 msgstr "noben paket ne potrebuje %s\n"
 
-#: lib/query.c:609
+#: lib/query.c:612
 #, c-format
 msgid "no package provides %s\n"
 msgstr "noben paket ne nudi %s\n"
 
-#: lib/query.c:625
+#: lib/query.c:628
 #, c-format
 msgid "file %s: %s\n"
 msgstr "datoteka %s: %s\n"
 
-#: lib/query.c:628
+#: lib/query.c:631
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ni del nobenega paketa\n"
 
-#: lib/query.c:641
+#: lib/query.c:644
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/query.c:644
+#: lib/query.c:647
 #, c-format
 msgid "package record number: %d\n"
 msgstr "¹tevilka zapisa paketa: %d\n"
 
-#: lib/query.c:647
+#: lib/query.c:650
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:659 lib/rpminstall.c:435
+#: lib/query.c:662 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
 
-#: lib/query.c:662
+#: lib/query.c:665
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "napaka pri iskanju paketa %s\n"
 
-#: lib/query.c:684
+#: lib/query.c:687
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() neuspe¹en\n"
 
-#: lib/query.c:743
+#: lib/query.c:746
 msgid "query package owning file"
 msgstr "poizvedba po paketu, ki vsebuje datoteko"
 
-#: lib/query.c:745
+#: lib/query.c:748
 msgid "query packages in group"
 msgstr "poizvedba po paketu v skupini"
 
-#: lib/query.c:747
+#: lib/query.c:750
 msgid "query a package file"
 msgstr "poizvedba po paketu"
 
-#: lib/query.c:751
+#: lib/query.c:754
 msgid "query a spec file"
 msgstr "poizvedba po datoteki spec"
 
-#: lib/query.c:753
+#: lib/query.c:756
 msgid "query the pacakges triggered by the package"
 msgstr "poizvedba po paketih, ki jih spro¾i paket"
 
-#: lib/query.c:755
+#: lib/query.c:758
 msgid "query the packages which require a capability"
 msgstr "poizvedba po paketih, ki zahtevajo zmo¾nost"
 
-#: lib/query.c:757
+#: lib/query.c:760
 msgid "query the packages which provide a capability"
 msgstr "poizvedba po paketih, ki nudijo zmo¾nost"
 
-#: lib/query.c:796
+#: lib/query.c:799
 msgid "list all configuration files"
 msgstr "seznam vseh nastavitvenih datotek"
 
-#: lib/query.c:798
+#: lib/query.c:801
 msgid "list all documentation files"
 msgstr "seznam vseh dokumentacijskih datotek"
 
-#: lib/query.c:800
+#: lib/query.c:803
 msgid "dump basic file information"
 msgstr "iznos osnovnih podatkov o datoteki"
 
-#: lib/query.c:802
+#: lib/query.c:805
 msgid "list files in package"
 msgstr "seznam datotek v paketu"
 
-#: lib/query.c:806
+#: lib/query.c:809
 msgid "use the following query format"
 msgstr "uporabi naslednjo obliko poizvedbe"
 
-#: lib/query.c:808
-msgid "substitute i18n sections from the following catalogue"
+#: lib/query.c:811
+#, fuzzy
+msgid "substitute i18n sections into spec file"
 msgstr "zamenjamo razdelje I18N z naslednjim katalogom"
 
-#: lib/query.c:811
+#: lib/query.c:813
 msgid "display the states of the listed files"
 msgstr "izpis stanja seznama datotek"
 
-#: lib/query.c:813
+#: lib/query.c:815
 msgid "display a verbose file listing"
 msgstr "izpis ob¹irnega seznama datotek"
 

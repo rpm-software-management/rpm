@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-02-22 20:44-0500\n"
+"POT-Creation-Date: 2000-02-23 17:41-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2168,7 +2168,7 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
+#: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
 #: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
@@ -2572,198 +2572,204 @@ msgstr "instalacja pakietu %s-%s-%s wymaga %ld%c w systemie plików %s"
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s-%s-%s"
 
-#: lib/query.c:138
+#: lib/query.c:140
 #, c-format
 msgid "error in format: %s\n"
 msgstr "b³±d w formacie: %s\n"
 
-#: lib/query.c:181
+#: lib/query.c:183
 msgid "(contains no files)"
 msgstr "(nie zawiera plików)"
 
-#: lib/query.c:238
+#: lib/query.c:240
 msgid "normal        "
 msgstr "normalny      "
 
-#: lib/query.c:240
+#: lib/query.c:242
 msgid "replaced      "
 msgstr "zast±piony    "
 
-#: lib/query.c:242
+#: lib/query.c:244
 msgid "not installed "
 msgstr "niezainstalowany"
 
-#: lib/query.c:244
+#: lib/query.c:246
 msgid "net shared    "
 msgstr "udostêpniony w sieci"
 
-#: lib/query.c:246
+#: lib/query.c:248
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(nieznany %3d)"
 
-#: lib/query.c:250
+#: lib/query.c:252
 msgid "(no state)    "
 msgstr "(brak statusu)"
 
-#: lib/query.c:267 lib/query.c:308
+#: lib/query.c:269 lib/query.c:310
 msgid "package has neither file owner or id lists"
 msgstr "pakiet nie ma ani w³a¶ciciela pliku ani list id"
 
-#: lib/query.c:428
+#: lib/query.c:354
+#, fuzzy, c-format
+msgid "can't query %s: %s\n"
+msgstr "nie mo¿na odwi±zaæ %s: %s\n"
+
+#: lib/query.c:432
 #, c-format
 msgid "record number %u\n"
 msgstr "rekord numer %u\n"
 
-#: lib/query.c:432
+#: lib/query.c:436
 msgid "error: could not read database record\n"
 msgstr "b³±d: nie mo¿na odczytaæ rekordu bazy\n"
 
 #. XXX Fstrerror
-#: lib/query.c:478
+#: lib/query.c:481
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê\n"
 
-#: lib/query.c:496
+#: lib/query.c:499
 msgid "old format source packages cannot be queried\n"
 msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
-#: lib/query.c:505 lib/rpminstall.c:231
+#: lib/query.c:508 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s nie wygl±da na pakiet RPM\n"
 
-#: lib/query.c:509
+#: lib/query.c:512
 #, c-format
 msgid "query of %s failed\n"
 msgstr "odpytywanie %s nie powiod³o siê\n"
 
-#: lib/query.c:542
+#: lib/query.c:545
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "odpytywanie pliku spec %s nie powiod³o siê, nie mo¿na interpretowaæ\n"
 
-#: lib/query.c:567
+#: lib/query.c:570
 msgid "could not read database record!\n"
 msgstr "nie mo¿na odczytaæ rekordu bazy!\n"
 
-#: lib/query.c:578
+#: lib/query.c:581
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:588
+#: lib/query.c:591
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:598
+#: lib/query.c:601
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:609
+#: lib/query.c:612
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:625
+#: lib/query.c:628
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:628
+#: lib/query.c:631
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:641
+#: lib/query.c:644
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:644
+#: lib/query.c:647
 #, c-format
 msgid "package record number: %d\n"
 msgstr "numer rekordu pakietu: %d\n"
 
-#: lib/query.c:647
+#: lib/query.c:650
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:659 lib/rpminstall.c:435
+#: lib/query.c:662 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
 
-#: lib/query.c:662
+#: lib/query.c:665
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: lib/query.c:684
+#: lib/query.c:687
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() nie powiod³o siê\n"
 
-#: lib/query.c:743
+#: lib/query.c:746
 msgid "query package owning file"
 msgstr "sprawdzanie do jakiego pakietu nale¿y plik"
 
-#: lib/query.c:745
+#: lib/query.c:748
 msgid "query packages in group"
 msgstr "odpytywanie pakietów w grupie"
 
-#: lib/query.c:747
+#: lib/query.c:750
 msgid "query a package file"
 msgstr "odpytywanie pakietu"
 
-#: lib/query.c:751
+#: lib/query.c:754
 msgid "query a spec file"
 msgstr "odpytywanie pliku spec"
 
-#: lib/query.c:753
+#: lib/query.c:756
 msgid "query the pacakges triggered by the package"
 msgstr "odpytywanie pakietów zahaczanych przez pakiet"
 
-#: lib/query.c:755
+#: lib/query.c:758
 msgid "query the packages which require a capability"
 msgstr "odpytywanie pakietów wymagaj±cych zasobu"
 
-#: lib/query.c:757
+#: lib/query.c:760
 msgid "query the packages which provide a capability"
 msgstr "odpytywanie pakietów udostêpniaj±cych zasób"
 
-#: lib/query.c:796
+#: lib/query.c:799
 msgid "list all configuration files"
 msgstr "wy¶wietl wszystkie pliki konfiguracyjne"
 
-#: lib/query.c:798
+#: lib/query.c:801
 msgid "list all documentation files"
 msgstr "wy¶wietl wszystkie pliki dokumentacji"
 
-#: lib/query.c:800
+#: lib/query.c:803
 msgid "dump basic file information"
 msgstr "podaj postawowe informacje o pliku"
 
-#: lib/query.c:802
+#: lib/query.c:805
 msgid "list files in package"
 msgstr "wy¶wietl pliki zawarte w pakiecie"
 
-#: lib/query.c:806
+#: lib/query.c:809
 msgid "use the following query format"
 msgstr "u¿yj nastêpuj±cego formatu zapytania"
 
-#: lib/query.c:808
-msgid "substitute i18n sections from the following catalogue"
-msgstr ""
-
 #: lib/query.c:811
+#, fuzzy
+msgid "substitute i18n sections into spec file"
+msgstr "pakiet ¼ród³owy nie zawiera pliku .spec"
+
+#: lib/query.c:813
 msgid "display the states of the listed files"
 msgstr "wy¶wietl status pokazywanych plików"
 
-#: lib/query.c:813
+#: lib/query.c:815
 msgid "display a verbose file listing"
 msgstr "wy¶wietl wiêcej informacji o plikach z listy"
 

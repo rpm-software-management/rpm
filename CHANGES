@@ -58,6 +58,7 @@
 	- macro expansion (and absolute path) in %files -f arg (#9508,#9091).
 	- permit cli setting of build root policies.
 	- fix: filter excluded paths before adding install prefixes (#8709).
+	- add i18n lookaside to PO catalogue(s) for i18n strings.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

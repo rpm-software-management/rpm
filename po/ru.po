@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-02-22 20:44-0500\n"
+"POT-Creation-Date: 2000-02-23 17:41-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2175,7 +2175,7 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
+#: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
 #: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
 msgid "(not a number)"
 msgstr "(не число)"
@@ -2576,198 +2576,204 @@ msgstr "для установки пакета %s-%s-%s нужно %ld%c на файловой системе %s"
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s-%s-%s"
 
-#: lib/query.c:138
+#: lib/query.c:140
 #, c-format
 msgid "error in format: %s\n"
 msgstr "ошибка в формате: %s\n"
 
-#: lib/query.c:181
+#: lib/query.c:183
 msgid "(contains no files)"
 msgstr "(не содержит файлов)"
 
-#: lib/query.c:238
+#: lib/query.c:240
 msgid "normal        "
 msgstr "нормальный    "
 
-#: lib/query.c:240
+#: lib/query.c:242
 msgid "replaced      "
 msgstr "замененный    "
 
-#: lib/query.c:242
+#: lib/query.c:244
 msgid "not installed "
 msgstr "не установлен "
 
-#: lib/query.c:244
+#: lib/query.c:246
 msgid "net shared    "
 msgstr "сетевой       "
 
-#: lib/query.c:246
+#: lib/query.c:248
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(неизв. %3d)  "
 
-#: lib/query.c:250
+#: lib/query.c:252
 msgid "(no state)    "
 msgstr "(сост. нет)   "
 
-#: lib/query.c:267 lib/query.c:308
+#: lib/query.c:269 lib/query.c:310
 msgid "package has neither file owner or id lists"
 msgstr "пакет не содержит списков ни хозяев файлов, ни их ID"
 
-#: lib/query.c:428
+#: lib/query.c:354
+#, fuzzy, c-format
+msgid "can't query %s: %s\n"
+msgstr "не могу удалить %s: %s\n"
+
+#: lib/query.c:432
 #, c-format
 msgid "record number %u\n"
 msgstr "запись номер %u\n"
 
-#: lib/query.c:432
+#: lib/query.c:436
 msgid "error: could not read database record\n"
 msgstr "ошибка: не могу прочесть запись базы данных\n"
 
 #. XXX Fstrerror
-#: lib/query.c:478
+#: lib/query.c:481
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "открытие %s не удалось\n"
 
-#: lib/query.c:496
+#: lib/query.c:499
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к SRPM в старом формате не поддерживаются\n"
 
-#: lib/query.c:505 lib/rpminstall.c:231
+#: lib/query.c:508 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s не похож на пакет RPM...\n"
 
-#: lib/query.c:509
+#: lib/query.c:512
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:542
+#: lib/query.c:545
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос spec-файла %s не удался, не могу разобрать файл\n"
 
-#: lib/query.c:567
+#: lib/query.c:570
 msgid "could not read database record!\n"
 msgstr "не могу прочесть запись базы данных!\n"
 
-#: lib/query.c:578
+#: lib/query.c:581
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:588
+#: lib/query.c:591
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:598
+#: lib/query.c:601
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:609
+#: lib/query.c:612
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:625
+#: lib/query.c:628
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:628
+#: lib/query.c:631
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:641
+#: lib/query.c:644
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:644
+#: lib/query.c:647
 #, c-format
 msgid "package record number: %d\n"
 msgstr "запись пакета номер %d\n"
 
-#: lib/query.c:647
+#: lib/query.c:650
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:659 lib/rpminstall.c:435
+#: lib/query.c:662 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: lib/query.c:662
+#: lib/query.c:665
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "ошибка при поиске пакета %s\n"
 
-#: lib/query.c:684
+#: lib/query.c:687
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: неудача rpmdbOpen()\n"
 
-#: lib/query.c:743
+#: lib/query.c:746
 msgid "query package owning file"
 msgstr "найти пакет, которому принадлежит файл"
 
-#: lib/query.c:745
+#: lib/query.c:748
 msgid "query packages in group"
 msgstr "запрос пакетов в группе"
 
-#: lib/query.c:747
+#: lib/query.c:750
 msgid "query a package file"
 msgstr "запросить файл пакета"
 
-#: lib/query.c:751
+#: lib/query.c:754
 msgid "query a spec file"
 msgstr "запросить spec-файл"
 
-#: lib/query.c:753
+#: lib/query.c:756
 msgid "query the pacakges triggered by the package"
 msgstr "запросить пакеты с триггер-скриптами на пакет"
 
-#: lib/query.c:755
+#: lib/query.c:758
 msgid "query the packages which require a capability"
 msgstr "найти пакеты, требующие сервиса"
 
-#: lib/query.c:757
+#: lib/query.c:760
 msgid "query the packages which provide a capability"
 msgstr "найти пакеты, предоставляющие сервис"
 
-#: lib/query.c:796
+#: lib/query.c:799
 msgid "list all configuration files"
 msgstr "показать все конфигурационные файлы"
 
-#: lib/query.c:798
+#: lib/query.c:801
 msgid "list all documentation files"
 msgstr "показать все файлы документации"
 
-#: lib/query.c:800
+#: lib/query.c:803
 msgid "dump basic file information"
 msgstr "вывести базовую информацию о файле"
 
-#: lib/query.c:802
+#: lib/query.c:805
 msgid "list files in package"
 msgstr "показать файлы пакета"
 
-#: lib/query.c:806
+#: lib/query.c:809
 msgid "use the following query format"
 msgstr "исп. следующий формат запроса"
 
-#: lib/query.c:808
-msgid "substitute i18n sections from the following catalogue"
+#: lib/query.c:811
+#, fuzzy
+msgid "substitute i18n sections into spec file"
 msgstr "подставить секции i18n из следующего каталога"
 
-#: lib/query.c:811
+#: lib/query.c:813
 msgid "display the states of the listed files"
 msgstr "показать состояние показанных файлов"
 
-#: lib/query.c:813
+#: lib/query.c:815
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
