@@ -3,7 +3,6 @@
 #+partial
 +forcehints
 
-#-warnunixlib
 -warnposix
 
 +unixlib
@@ -30,7 +29,7 @@
 
 -ptrarith		# 212
 
--mustdefine		# 54
+-mustdefine		# 64
 -strictops		# 23
 
 -impcheckedstrictglobs
@@ -43,12 +42,10 @@
 -sys-dir-errors		# 1296
 
 # --- not-yet at checks level
--predboolptr		# 98
+-predboolptr		# 88
 -ansi-reserved		# goofy
 
 # --- not-yet at standard level
--boolops		# 53
--predboolint		# 238
-+boolint
-+charint
-+matchanyintegral
++boolint		# 329
++charint		# 3
++matchanyintegral	# 573

@@ -75,7 +75,7 @@ void mpninit(mpnumber* n, size_t size, const mpw* data)
 	}
 	n->data = (mpw*) malloc(size * sizeof(*n->data));
 
-	if (n->data && data)
+	if (n->data != (mpw*) 0 && data != (mpw*) 0)
 		mpcopy(size, n->data, data);
 }
 
@@ -112,7 +112,7 @@ void mpnset(mpnumber* n, size_t size, const mpw* data)
 		else
 			n->data = (mpw*) malloc(size * sizeof(*n->data));
 
-		if (n->data && data)
+		if (n->data != (mpw*) 0 && data != (mpw*) 0)
 		{
 			n->size = size;
 			/*@-nullpass@*/ /* data is notnull */
