@@ -44,7 +44,6 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
-AC_CHECK_TOOL(RANLIB, ranlib, :)
 AC_CHECK_TOOL(AR, ar, :)
 
 if test "$cross_compiling" = "no"; then
@@ -180,11 +179,11 @@ fi
 AC_C_BIGENDIAN
 
 dnl look for libc features
-NEEDS_HERRNO=yes
+PROVIDES_ERRNO=no
 AC_MSG_CHECKING(checking if <netdb.h> defines h_errno...)
-AC_TRY_LINK(netdb.h,printf("%d",h_errno),NEEDS_ERRNO=no)
-AC_MSG_RESULT($NEEDS_HERRNO)
-if test $NEEDS_HERRNO = yes; then
+AC_TRY_LINK([#include <netdb.h>],printf("%d",h_errno),PROVIDES_ERRNO=yes)
+AC_MSG_RESULT($PROVIDES_ERRNO)
+if test $PROVIDES_ERRNO = yes; then
 	AC_DEFINE(HAVE_HERRNO)
 fi
 
