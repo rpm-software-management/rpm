@@ -578,15 +578,19 @@ restart:
 	    res = 0;
 	    switch (rpmrc) {
 	    default:
+#ifdef	DYING
 		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
+#endif
 		res = 1;
 		/*@switchbreak@*/ break;
 	    case RPMRC_NOTTRUSTED:
 	    case RPMRC_NOKEY:
 	    case RPMRC_OK:
 		if (h == NULL) {
+#ifdef	DYING
 		    rpmError(RPMERR_QUERY,
 			_("old format source packages cannot be queried\n"));
+#endif
 		    res = 1;
 		    /*@switchbreak@*/ break;
 		}
@@ -617,7 +621,8 @@ restart:
 	    /* Read list of packages from manifest. */
 	    res = rpmReadPackageManifest(fd, &ac, &av);
 	    if (res != RPMRC_OK) {
-		rpmError(RPMERR_MANIFEST, _("%s: not an rpm package (or package manifest): %s\n"),
+		rpmError(RPMERR_MANIFEST,
+			_("%s: not an rpm package (or package manifest): %s\n"),
 			fileURL, Fstrerror(fd));
 		res = 1;
 	    }

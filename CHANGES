@@ -290,6 +290,7 @@
 	- fix: parse pgp packets more carefully.
 	- fix: parse header data more carefully.
 	- fix: register SIGCHLD handler before forking (#73134).
+	- better diagnostics on failed header parsing.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

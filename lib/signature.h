@@ -43,10 +43,11 @@ Header rpmNewSignature(void)
  * @param fd		file handle
  * @retval sighp	address of (signature) header (or NULL)
  * @param sig_type	type of signature header to read (from lead)
+ * @retval msg		failure msg
  * @return		rpmRC return code
  */
 rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
-		sigType sig_type)
+		sigType sig_type, const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *sighp, fileSystem @*/;
 

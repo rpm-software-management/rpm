@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     }
 
     readLead(fdi, &lead);
-    rpmReadSignature(fdi, NULL, lead.signature_type);
+    rpmReadSignature(fdi, NULL, lead.signature_type, NULL);
     hd = headerRead(fdi, (lead.major >= 3) ?
 		    HEADER_MAGIC_YES : HEADER_MAGIC_NO);
     fdo = Fopen("-", "w.ufdio");

@@ -182,6 +182,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sigh = NULL;
+    const char * msg;
     void * uh = NULL;
     int_32 uht, uhc;
     int res = EXIT_FAILURE;
@@ -222,10 +223,13 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    /*@switchbreak@*/ break;
 	}
 
-	rc = rpmReadSignature(fd, &sigh, l->signature_type);
+	msg = NULL;
+	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), rpm,
+			(msg && *msg ? msg : "\n"));
+	    msg = _free(msg);
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case RPMRC_OK:
@@ -235,6 +239,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    }
 	    /*@switchbreak@*/ break;
 	}
+	msg = _free(msg);
 
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
@@ -682,6 +687,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int_32 siglen;
     Header sigh = NULL;
     HeaderIterator hi;
+    const char * msg;
     int res = 0;
     int xx;
     rpmRC rc;
@@ -708,10 +714,13 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    /*@switchbreak@*/ break;
 	}
 
-	rc = rpmReadSignature(fd, &sigh, l->signature_type);
+	msg = NULL;
+	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), fn);
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
+			(msg && *msg ? msg : "\n"));
+	    msg = _free(msg);
 	    res++;
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
@@ -723,6 +732,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    }
 	    /*@switchbreak@*/ break;
 	}
+	msg = _free(msg);
 
 	/* Grab a hint of what needs doing to avoid duplication. */
 	sigtag = 0;

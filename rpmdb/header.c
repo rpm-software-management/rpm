@@ -43,6 +43,52 @@ static unsigned char header_magic[8] = {
 };
 
 /** \ingroup header
+ * Alignment needed for header data types.
+ */
+/*@observer@*/ /*@unchecked@*/
+static int typeAlign[16] =  {
+    1,	/*!< RPM_NULL_TYPE */
+    1,	/*!< RPM_CHAR_TYPE */
+    1,	/*!< RPM_INT8_TYPE */
+    2,	/*!< RPM_INT16_TYPE */
+    4,	/*!< RPM_INT32_TYPE */
+    8,	/*!< RPM_INT64_TYPE */
+    1,	/*!< RPM_STRING_TYPE */
+    1,	/*!< RPM_BIN_TYPE */
+    1,	/*!< RPM_STRING_ARRAY_TYPE */
+    1,	/*!< RPM_I18NSTRING_TYPE */
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+/** \ingroup header
+ * Size of header data types.
+ */
+/*@observer@*/ /*@unchecked@*/
+static int typeSizes[16] =  { 
+    0,	/*!< RPM_NULL_TYPE */
+    1,	/*!< RPM_CHAR_TYPE */
+    1,	/*!< RPM_INT8_TYPE */
+    2,	/*!< RPM_INT16_TYPE */
+    4,	/*!< RPM_INT32_TYPE */
+    -1,	/*!< RPM_INT64_TYPE */
+    -1,	/*!< RPM_STRING_TYPE */
+    1,	/*!< RPM_BIN_TYPE */
+    -1,	/*!< RPM_STRING_ARRAY_TYPE */
+    -1,	/*!< RPM_I18NSTRING_TYPE */
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+/** \ingroup header
  * Maximum no. of bytes permitted in a header.
  */
 /*@unchecked@*/
@@ -55,27 +101,25 @@ static size_t headerMaxbytes = (32*1024*1024);
 #define hdrchkTags(_ntags)	((_ntags) & 0xffff0000)
 
 /**
- * Sanity check on data size and/or offset.
+ * Sanity check on type values.
+ */
+#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
+
+/**
+ * Sanity check on data size and/or offset and/or count.
  * This check imposes a limit of 16Mb, more than enough.
  */ 
 #define hdrchkData(_nbytes)	((_nbytes) & 0xff000000)
 
-/** \ingroup header
- * Alignment needs (and sizeof scalars types) for internal rpm data types.
+/**
+ * Sanity check on alignment for data type.
  */
-/*@observer@*/ /*@unchecked@*/
-static int typeSizes[] =  { 
-	0,	/*!< RPM_NULL_TYPE */
-	1,	/*!< RPM_CHAR_TYPE */
-	1,	/*!< RPM_INT8_TYPE */
-	2,	/*!< RPM_INT16_TYPE */
-	4,	/*!< RPM_INT32_TYPE */
-	-1,	/*!< RPM_INT64_TYPE */
-	-1,	/*!< RPM_STRING_TYPE */
-	1,	/*!< RPM_BIN_TYPE */
-	-1,	/*!< RPM_STRING_ARRAY_TYPE */
-	-1	/*!< RPM_I18NSTRING_TYPE */
-};
+#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
+
+/**
+ * Sanity check on range of data offset.
+ */
+#define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
 
 /*@observer@*/ /*@unchecked@*/
 HV_t hdrVec;	/* forward reference */
@@ -447,10 +491,17 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
-	if (ie.info.type < RPM_MIN_TYPE || ie.info.type > RPM_MAX_TYPE)
-	    return -1;
 	ie.info.count = ntohl(pe->count);
 	ie.info.offset = ntohl(pe->offset);
+
+	if (hdrchkType(ie.info.type))
+	    return -1;
+	if (hdrchkData(ie.info.count))
+	    return -1;
+	if (hdrchkData(ie.info.offset))
+	    return -1;
+	if (hdrchkAlign(ie.info.type, ie.info.offset))
+	    return -1;
 
 	ie.data = t = dataStart + ie.info.offset;
 	if (dataEnd && t >= dataEnd)
@@ -1015,10 +1066,10 @@ Header headerLoad(/*@kept@*/ void * uh)
 	h->flags &= ~HEADERFLAG_LEGACY;
 
 	entry->info.type = htonl(pe->type);
-	if (entry->info.type < RPM_MIN_TYPE || entry->info.type > RPM_MAX_TYPE)
-	    goto errxit;
 	entry->info.count = htonl(pe->count);
 
+	if (hdrchkType(entry->info.type))
+	    goto errxit;
 	if (hdrchkTags(entry->info.count))
 	    goto errxit;
 
@@ -1817,6 +1868,11 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
 
     /* Count must always be >= 1 for headerAddEntry. */
     if (c <= 0)
+	return 0;
+
+    if (hdrchkType(type))
+	return 0;
+    if (hdrchkData(c))
 	return 0;
 
     length = 0;
@@ -3419,6 +3475,7 @@ int headerNextIterator(HeaderIterator hi,
     hi->next_index = slot;
     if (entry == NULL || slot >= h->indexUsed)
 	return 0;
+
     /*@-noeffect@*/	/* LCL: no clue */
     hi->next_index++;
     /*@=noeffect@*/

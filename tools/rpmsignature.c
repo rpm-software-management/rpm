@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
     if (readLead(fdi, &lead) != RPMRC_OK)
 	exit(1);
-    if (rpmReadSignature(fdi, &sig, lead.signature_type) !=  RPMRC_OK) {
+    if (rpmReadSignature(fdi, &sig, lead.signature_type, NULL) !=  RPMRC_OK) {
 	fdo = Fopen("-", "w.ufdio");
 	rpmWriteSignature(fdo, sig);
     }
