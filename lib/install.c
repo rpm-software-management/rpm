@@ -238,8 +238,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     if (rc == -1) return 2;
     if (rc) {
  	scriptArg = 1;
-	hasOthers = 1;
     } else {
+	hasOthers = 1;
 	scriptArg = matches.count + 1;
     }
 
