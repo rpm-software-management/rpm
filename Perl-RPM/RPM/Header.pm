@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.6 2000/06/22 08:42:00 rjray Exp $
+#   $Id: Header.pm,v 1.7 2000/08/01 07:59:47 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -35,7 +35,7 @@ use RPM::Error;
 use RPM::Constants ':rpmerr';
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.6 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.7 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -47,6 +47,47 @@ sub new
     tie %hash, $class, @_;
     return (tied %hash);
 }
+
+###############################################################################
+#
+#   Sub Name:       filenames
+#
+#   Description:    Glue together the contents of BASENAMES, DIRNAMES and
+#                   DIRINDEXES to create a single list of fully-qualified
+#                   filenames
+#
+#   Arguments:      NAME      IN/OUT  TYPE      DESCRIPTION
+#                   $self     in      ref       Object of this class
+#
+#   Globals:        None.
+#
+#   Environment:    None.
+#
+#   Returns:        Success:    listref
+#                   Failure:    undef
+#
+###############################################################################
+sub filenames
+{
+    my $self = shift;
+
+    # Each of these three fetches will have already triggered rpm_error, were
+    # there any problems.
+    my $base = $self->{BASENAMES}  || return undef;
+    my $dirs = $self->{DIRNAMES}   || return undef;
+    my $idxs = $self->{DIRINDEXES} || return undef;
+
+    unless (@$base == @$idxs)
+    {
+        rpm_error(RPMERR_INTERNAL,
+                  "Mis-matched elements lists for BASENAMES and DIRINDEXES");
+        return undef;
+    }
+
+    # The value from DIRNAMES already has the trailing separator
+    [ map { "$dirs->[$idxs->[$_]]$base->[$_]" } (0 .. $#$base) ];
+}
+
 
 __END__
 
@@ -114,6 +155,15 @@ hash reference, it can be used to call these methods via:
     (tied %hash)->method_name(...)
 
 =over
+
+=item filenames
+
+The B<RPM> system attempts to save space by splitting up the file paths into
+the leafs (stored by the tag C<BASENAMES>), the directories (stored under
+C<DIRNAMES>) and indexes into the list of directories (stored under
+C<DIRINDEXES>). As a convenience, this method re-assembles the list of
+filenames and returns it as a list reference. If an error occurs, C<undef>
+will be returned after C<rpm_error> has been called.
 
 =item is_source
 
