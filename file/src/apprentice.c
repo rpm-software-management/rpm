@@ -998,7 +998,9 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	return 0;
 
 errxit:
+/*@-usereleased@*/
 	free(dbname);
+/*@=usereleased@*/
 	if (fd != -1)
 		(void)close(fd);
 /*@-branchstate@*/
