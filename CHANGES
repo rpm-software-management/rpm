@@ -25,6 +25,8 @@
 	- fix: don't remove file until last occurence in transaction (#4291).
 	- resuscitate net shared paths (#4330).
 	- fix: macro table cannot contain NULL pointers (#4263).
+	- fix: last char in rpmrc w/o terminating newline lost (#4361).
+	- prepare for handling \r in macro exapnsions.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

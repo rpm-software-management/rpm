@@ -4,6 +4,8 @@
 #include <stdarg.h>
 
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
+#define	iseol(_c)	((_c) == '\n' || (_c) == '\r')
+
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
 #define	FREE(_x)	{ if (_x) free((void *)_x); (_x) = NULL; }
 
@@ -45,7 +47,6 @@ typedef struct MacroBuf {
 } MacroBuf;
 
 #define SAVECHAR(_mb, _c) { *(_mb)->t = (_c), (_mb)->t++, (_mb)->nb--; }
-#define	DELECHAR(_mb, _c) { if ((_mb)->t[-1] == (_c)) *((_mb)->t--) = '\0', (_mb)->nb++; }
 
 static int expandMacro(MacroBuf *mb);
 
@@ -183,25 +184,30 @@ rdcl(char *buf, size_t size, FILE *fp, int escapes)
 {
 	char *q = buf;
 	size_t nb = 0;
+	size_t nread = 0;
 
+	*q = '\0';
 	do {
-		*q = '\0';			/* next char in buf */
-		nb = 0;
 		if (fgets(q, size, fp) == NULL)	/* read next line */
 			break;
 		nb = strlen(q);
-		q += nb - 1;			/* last char in buf */
-		*q-- = '\0';			/* trim newline */
-		if (nb < 2 || *q != '\\')	/* continue? */
-			break;
-		if (escapes)			/* copy escape too */
-			q++;
-		else
+		nread += nb;
+		for (q += nb - 1; nb > 0 && iseol(*q); q--)
 			nb--;
-		*q++ = '\n';			/* next char in buf */
+		if (!(nb > 0 && *q == '\\')) {	/* continue? */
+			*(++q) = '\0';		/* trim trailing \r, \n */
+			break;
+		}
+		if (escapes) {			/* copy escape too */
+			q++;
+			nb++;
+		}
 		size -= nb;
+		if (*q == '\r')			/* XXX avoid \r madness */
+			*q = '\n';
+		*(++q) = '\0';			/* next char in buf */
 	} while (size > 0);
-	return (nb > 0 ? buf : NULL);
+	return (nread > 0 ? buf : NULL);
 }
 
 /* Return text between pl and matching pr */
@@ -241,9 +247,9 @@ printMacro(MacroBuf *mb, const char *s, const char *se)
 	if (s[-1] == '{')
 		s--;
 
-	/* If not end-of-string, print only to newline or end-of-string ... */
-	if (*(senl = se) != '\0' && (senl = strchr(senl, '\n')) == NULL)
-		senl = se + strlen(se);
+	/* Print only to first end-of-line (or end-of-string). */
+	for (senl = se; *senl && !iseol(*senl); senl++)
+		;
 
 	/* Limit trailing non-trace output */
 	choplen = 61 - (2 * mb->depth);
@@ -273,11 +279,13 @@ printExpansion(MacroBuf *mb, const char *t, const char *te)
 	}
 
 	/* Shorten output which contains newlines */
-	while (te > t && te[-1] == '\n')
+	while (te > t && iseol(te[-1]))
 		te--;
 	ellipsis = "";
 	if (mb->depth > 0) {
 		const char *tenl;
+
+		/* Skip to last line of expansion */
 		while ((tenl = strchr(t, '\n')) && tenl < te)
 			t = ++tenl;
 
@@ -300,7 +308,7 @@ printExpansion(MacroBuf *mb, const char *t, const char *te)
 		(_s)++;
 
 #define	SKIPNONBLANK(_s, _c)	\
-	while (((_c) = *(_s)) && !(isblank(_c) || c == '\n')) \
+	while (((_c) = *(_s)) && !(isblank(_c) || iseol(_c))) \
 		(_s)++;
 
 #define	COPYNAME(_ne, _s, _c)	\
@@ -317,7 +325,7 @@ printExpansion(MacroBuf *mb, const char *t, const char *te)
     }
 
 #define	COPYBODY(_be, _s, _c)	\
-    {	while(((_c) = *(_s)) && (_c) != '\n') { \
+    {	while(((_c) = *(_s)) && !iseol(_c)) { \
 		if ((_c) == '\\') \
 			(_s)++;	\
 		*(_be)++ = *(_s)++; \
@@ -410,7 +418,11 @@ doShellEscape(MacroBuf *mb, const char *cmd, size_t clen)
 		SAVECHAR(mb, c);
 	pclose(shf);
 
-	DELECHAR(mb, '\n');	/* XXX delete trailing newline (if any) */
+	/* XXX delete trailing \r \n */
+	while (iseol(mb->t[-1])) {
+		*(mb->t--) = '\0';
+		mb->nb++;
+	}
 	return 0;
 }
 
@@ -455,13 +467,13 @@ doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
 		COPYBODY(be, s, c);
 
 		/* Trim trailing blanks/newlines */
-		while (--be >= b && (c = *be) && (isblank(c) || c == '\n'))
+		while (--be >= b && (c = *be) && (isblank(c) || iseol(c)))
 			;
 		*(++be) = '\0';	/* one too far */
 	}
 
 	/* Move scan over body */
-	if (*s == '\n')
+	while (iseol(*s))
 		s++;
 	se = s;
 
@@ -502,7 +514,7 @@ doUndefine(MacroContext *mc, const char *se)
 	COPYNAME(ne, s, c);
 
 	/* Move scan over body */
-	if (*s == '\n')
+	while (iseol(*s))
 		s++;
 	se = s;
 
@@ -1026,7 +1038,7 @@ expandMacro(MacroBuf *mb)
 
 	if (STREQ("dump", f, fn)) {
 		dumpMacroTable(mb->mc, NULL);
-		if (*se == '\n')
+		while (iseol(*se))
 			se++;
 		s = se;
 		continue;

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-16 12:06-0400\n"
+"POT-Creation-Date: 1999-08-16 14:44-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2278,83 +2278,83 @@ msgstr ""
 msgid "cannot read header at %d for lookup"
 msgstr ""
 
-#: ../lib/macro.c:146
+#: ../lib/macro.c:148
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: ../lib/macro.c:235
+#: ../lib/macro.c:243
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: ../lib/macro.c:270
+#: ../lib/macro.c:278
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: ../lib/macro.c:443
+#: ../lib/macro.c:457
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: ../lib/macro.c:469
+#: ../lib/macro.c:483
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: ../lib/macro.c:475
+#: ../lib/macro.c:489
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: ../lib/macro.c:480
+#: ../lib/macro.c:494
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: ../lib/macro.c:485
+#: ../lib/macro.c:499
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: ../lib/macro.c:510
+#: ../lib/macro.c:524
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: ../lib/macro.c:586
+#: ../lib/macro.c:601
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: ../lib/macro.c:683
+#: ../lib/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: ../lib/macro.c:858
+#: ../lib/macro.c:870
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: ../lib/macro.c:924 ../lib/macro.c:940
+#: ../lib/macro.c:936 ../lib/macro.c:952
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: ../lib/macro.c:980
+#: ../lib/macro.c:992
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: ../lib/macro.c:1103
+#: ../lib/macro.c:1115
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: ../lib/macro.c:1184
+#: ../lib/macro.c:1196
 msgid "Target buffer overflow"
 msgstr ""
 
-#: ../lib/macro.c:1331 ../lib/macro.c:1339
+#: ../lib/macro.c:1343 ../lib/macro.c:1351
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: ../lib/macro.c:1342
+#: ../lib/macro.c:1354
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
