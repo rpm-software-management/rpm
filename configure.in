@@ -436,6 +436,9 @@ AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
 
+dnl popt w float/double needs.
+AC_CHECK_HEADERS(float.h)
+
 dnl whether or not we should try to build rpmgettext/rpmputtext.
 if test X"$USE_NLS" = Xyes; then
     BUILD_RPMNLSTOOLS="rpmgettext rpmputtext"

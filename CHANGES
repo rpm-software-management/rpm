@@ -84,6 +84,8 @@
 	- rpmmodule.c(handleDbResult): return empty list when nothing matches.
 	- (non-linux): move stubs.c to rpmio (#21132).
 	- (python): bind initdb (#20988).
+	- (popt): fix float/double handling (#19701).
+	- (popt): non-linux needs <float.h> (#22732).
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

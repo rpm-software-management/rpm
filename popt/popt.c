@@ -10,6 +10,9 @@
 
 #include "system.h"
 
+#if HAVE_FLOAT_H
+#include <float.h>
+#endif
 #include <math.h>
 
 #include "findme.h"
@@ -716,7 +719,7 @@ int poptGetNextOpt(poptContext con)
 
 		case POPT_ARG_FLOAT:
 		case POPT_ARG_DOUBLE:
-		{   long aDouble;
+		{   double aDouble;
 		    char *end;
 
 		    aDouble = strtod(con->os->nextArg, &end);

@@ -48,7 +48,7 @@ else
 fi
 AC_SUBST(TARGET)
 
-AC_CHECK_HEADERS(alloca.h libintl.h mcheck.h unistd.h)
+AC_CHECK_HEADERS(alloca.h float.h libintl.h mcheck.h unistd.h)
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then
 	if test "$build" = "mips-sni-sysv4" ; then
