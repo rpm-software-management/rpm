@@ -157,7 +157,7 @@ restart:
 	}
 
 	if (rc == 0) {
-	    rc = rpmtransAddPackage(ts, h, NULL, fileName, 0, NULL);
+	    rc = rpmtransAddPackage(ts, h, (fnpyKey)fileName, 0, NULL);
 	    headerFree(h, "do_tsort"); 
 	    continue;
 	}

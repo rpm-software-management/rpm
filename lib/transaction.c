@@ -98,8 +98,10 @@ static /*@null@*/ void * freeFl(rpmTransactionSet ts,
 	int oc;
 
 	/*@-usereleased -onlytrans @*/ /* FIX: fi needs to be only */
+	/*@-branchstate@*/
 	for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++)
-	    freeFi(fi);
+	    (void) fiFree(fi, 0);
+	/*@=branchstate@*/
 	flList = _free(flList);
 	/*@=usereleased =onlytrans @*/
     }
@@ -1100,11 +1102,19 @@ int keep_header = 0;
 	case TR_ADDED:
 	    fi->record = 0;
 
+#ifdef	DYING
 /*@i@*/	    fi->h = headerLink(p->h, "xfer to fi->h");
 	    p->h = headerFree(p->h, "xfer to fi->h");
 
 	    /* XXX header arg unused. */
 	    loadFi(ts, fi, fi->h, keep_header);
+#else
+	    /* XXX header arg unused. */
+	    /*@-nullpass@*/
+	    (void) fiNew(ts, fi, p->h, RPMTAG_BASENAMES, keep_header);
+	    /*@=nullpass@*/
+	    p->h = NULL;
+#endif
 
 	    if (fi->fc == 0)
 		continue;
@@ -1115,6 +1125,7 @@ int keep_header = 0;
 	case TR_REMOVED:
 	    fi->record = p->u.removed.dboffset;
 	    /* Retrieve erased package header from the database. */
+#ifdef	DYING
 	    {	rpmdbMatchIterator mi;
 
 		mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
@@ -1129,6 +1140,22 @@ int keep_header = 0;
 	    }
 	    /* XXX header arg unused. */
 	    loadFi(ts, fi, fi->h, 0);
+#else
+	    {	rpmdbMatchIterator mi;
+
+		mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
+				&fi->record, sizeof(fi->record));
+		if ((p->h = rpmdbNextIterator(mi)) != NULL)
+		    p->h = headerLink(p->h,  "TR_REMOVED loadFi");
+		mi = rpmdbFreeIterator(mi);
+	    }
+	    if (p->h == NULL) {
+		/* ACK! */
+		continue;
+	    }
+	    (void) fiNew(ts, fi, p->h, RPMTAG_BASENAMES, 0);
+	    p->h = NULL;
+#endif
 	    /*@switchbreak@*/ break;
 	}
 	/*@=branchstate@*/
@@ -1258,6 +1285,7 @@ int keep_header = 0;
 
 	    /* Is this file from a package being removed? */
 	    beingRemoved = 0;
+	    if (ts->removedPackages != NULL)
 	    for (j = 0; j < ts->numRemovedPackages; j++) {
 		if (ts->removedPackages[j] != shared->otherPkg)
 		    /*@innercontinue@*/ continue;
@@ -1416,17 +1444,20 @@ int keep_header = 0;
 	    pkgKey = p->u.addedKey;
 
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s\n", p->NEVR);
+#ifdef	DYING
 	    h = (fi->h ? headerLink(fi->h, "TR_ADDED install") : NULL);
 	    /*@-branchstate@*/
-	    if (p->fd == NULL) {
+	    if (p->fd == NULL)
+#else
+	    h = NULL;
+#endif
+	    {
 		/*@-noeffectuncon @*/ /* FIX: ??? */
 		p->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
 				p->key, ts->notifyData);
 		/*@=noeffectuncon @*/
 		if (p->fd != NULL) {
 		    rpmRC rpmrc;
-
-		    h = headerFree(h, "TR_ADDED install");
 
 		    /*@-mustmod@*/	/* LCL: segfault */
 		    rpmrc = rpmReadPackageFile(ts, p->fd,
@@ -1441,39 +1472,42 @@ int keep_header = 0;
 			/*@=noeffectuncon @*/
 			p->fd = NULL;
 			ourrc++;
-		    } else if (fi->h != NULL) {
+		    }
+#ifdef	DYING
+		    else {
 			Header foo = relocateFileList(ts, fi, h, NULL);
 			h = headerFree(h, "TR_ADDED read free");
 			h = headerLink(foo, "TR_ADDED relocate xfer");
 			foo = headerFree(foo, "TR_ADDED relocate");
 		    }
+#endif
 		    if (p->fd != NULL) gotfd = 1;
 		}
 	    }
 	    /*@=branchstate@*/
 
+	    /*@-branchstate@*/
 	    if (p->fd != NULL) {
-		Header hsave = NULL;
-
-		if (fi->h) {
-		    hsave = headerLink(fi->h, "TR_ADDED fi->h hsave");
-		    fi->h = headerFree(fi->h, "TR_ADDED fi->h free");
-		    fi->h = headerLink(h, "TR_ADDED fi->h link");
-		} else {
+#ifdef	DYING
+		fi->h = headerLink(h, "TR_ADDED fi->h link");
+#endif
+		{
 char * fstates = fi->fstates;
 fileAction * actions = fi->actions;
 
 fi->fstates = NULL;
 fi->actions = NULL;
-		    freeFi(fi);
+		    (void) fiFree(fi, 0);
+/*@-usereleased@*/
 fi->magic = TFIMAGIC;
 fi->te = p;
 fi->record = 0;
-		    loadFi(ts, fi, h, 1);
+		    (void) fiNew(ts, fi, h, RPMTAG_BASENAMES, 1);
 fi->fstates = _free(fi->fstates);
 fi->fstates = fstates;
 fi->actions = _free(fi->actions);
 fi->actions = actions;
+/*@=usereleased@*/
 
 		}
 		if (p->multiLib)
@@ -1483,15 +1517,14 @@ fi->actions = actions;
 		    ourrc++;
 		    lastKey = pkgKey;
 		}
+#ifdef	DYING
 		fi->h = headerFree(fi->h, "TR_ADDED fi->h free");
-		if (hsave) {
-		    fi->h = headerLink(hsave, "TR_ADDED fi->h restore");
-		    hsave = headerFree(hsave, "TR_ADDED hsave free");
-		}
+#endif
 	    } else {
 		ourrc++;
 		lastKey = pkgKey;
 	    }
+	    /*@=branchstate@*/
 
 	    h = headerFree(h, "TR_ADDED h free");
 
@@ -1502,8 +1535,7 @@ fi->actions = actions;
 		/*@=noeffectuncon @*/
 		p->fd = NULL;
 	    }
-fi->h = headerFree(fi->h, "TR_ADDED fini");
-	    freeFi(fi);
+	    (void) fiFree(fi, 0);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", p->NEVR);
@@ -1512,12 +1544,11 @@ fi->h = headerFree(fi->h, "TR_ADDED fini");
 		if (psmStage(psm, PSM_PKGERASE))
 		    ourrc++;
 	    }
-fi->h = headerFree(fi->h, "TR_REMOVED fini");
-	    freeFi(fi);
+	    (void) fiFree(fi, 0);
 	    /*@switchbreak@*/ break;
 	}
 	xx = rpmdbSync(ts->rpmdb);
-	(void) rpmfiUnlink(fi, "tsInstall");
+	(void) rpmfiUnlink(psm->fi, "tsInstall");
 	psm->fi = NULL;
 	psm->te = NULL;
     }

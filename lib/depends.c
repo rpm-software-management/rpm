@@ -158,9 +158,9 @@ static void delTE(transactionElement p)
     p->requires = dsFree(p->requires);
     p->conflicts = dsFree(p->conflicts);
     p->obsoletes = dsFree(p->obsoletes);
-    p->fns = fnsFree(p->fns);
+    p->fns = fiFree(p->fns, 1);
 
-    /*@-type@*/ /* FIX: cast? */
+    /*@-type@*/ /* FIX: cast? Fclose? */
     if (p->fd != NULL)
         p->fd = fdFree(p->fd, "alAddPackage (delTE)");
     /*@=type@*/
@@ -179,11 +179,13 @@ static void delTE(transactionElement p)
     /*@=nullstate@*/
 }
 
-static void addTE(transactionElement p, Header h,
+static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
+#ifdef	DYING
 		/*@null@*/ FD_t fd,
+#endif
 		/*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@modifies p, h @*/
+	/*@modifies ts, p, h @*/
 {
     int scareMem = _DS_SCAREMEM;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -217,7 +219,7 @@ static void addTE(transactionElement p, Header h,
 
     p->this = dsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
+    p->fns = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
     p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
     p->conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
     p->obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
@@ -226,9 +228,13 @@ static void addTE(transactionElement p, Header h,
     p->key = key;
     /*@=assignexpose =temptrans @*/
 
+#ifdef	DYING
     /*@-type@*/ /* FIX: cast? */
     p->fd = (fd != NULL ? fdLink(fd, "addTE") : NULL);
     /*@=type@*/
+#else
+    p->fd = NULL;
+#endif
 
     if (relocs != NULL) {
 	rpmRelocation * r;
@@ -371,7 +377,8 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
 
     memset(p, 0, sizeof(*p));
 
-    addTE(p, h, NULL, NULL, NULL);
+    /* XXX FIXME: what should a TR_REMOVED key be ??? */
+    addTE(ts, p, h, NULL, NULL);
 
     p->type = TR_REMOVED;
     p->u.removed.dboffset = dboffset;
@@ -382,7 +389,7 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
     return 0;
 }
 
-int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
+int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -436,7 +443,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     p = ts->order + oc;
     memset(p, 0, sizeof(*p));
     
-    addTE(p, h, fd, key, relocs);
+    addTE(ts, p, h, key, relocs);
 
     p->type = TR_ADDED;
     pkgKey = alAddPackage(ts->addedPackages, pkgKey, p->key,
@@ -564,12 +571,12 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
 {
     int scareMem = _DS_SCAREMEM;
     rpmDepSet provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    rpmFNSet fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
+    rpmFNSet fns = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
 
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
     (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, key,
 		provides, fns);
-    fns = fnsFree(fns);
+    fns = fiFree(fns, 1);
     provides = dsFree(provides);
 }
 

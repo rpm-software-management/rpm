@@ -10,11 +10,6 @@
 #include "depends.h"
 #include "rpmds.h"
 
-/*@unchecked@*/
-/*@-exportlocal@*/
-extern int _fi_debug;
-/*@=exportlocal@*/
-
 /**
  */
 #define	PSM_VERBOSE	0x8000
@@ -105,17 +100,6 @@ struct psm_s {
 extern "C" {
 #endif
 
-#ifdef	DYING
-/**
- * Return (malloc'd) transaction element name-version-release string.
- * @param fi		transaction element file info
- * @return		name-version-release string
- */
-/*@only@*/ /*@null@*/
-char * fiGetNEVR(/*@null@*/const TFI_t fi)
-	/*@*/;
-#endif
-
 /**
  * Return file type from mode_t.
  * @param mode		file mode bits (from header)
@@ -136,24 +120,6 @@ fileTypes whatis(uint_16 mode)
 Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		Header origH, fileAction * actions)
 	/*@modifies ts, fi, origH, actions @*/;
-
-/**
- * Load data from header into transaction file element info.
- * @param ts		transaction set
- * @param fi		transaction element file info
- * @param h		header
- * @param keep_header	use header memory?
- */
-void loadFi(/*@null@*/ const rpmTransactionSet ts, TFI_t fi,
-		Header h, int keep_header)
-	/*@modifies ts, fi, h @*/;
-
-/**
- * Destroy transaction element file info.
- * @param fi		transaction element file info
- */
-void freeFi(TFI_t fi)
-	/*@modifies fi @*/;
 
 /**
  * Retrieve key from transaction element file info

@@ -153,9 +153,10 @@ struct rpmTransactionSet_s {
     int dbmode;			/*!< Database open mode. */
 /*@refcounted@*/ /*@null@*/
     rpmdb rpmdb;		/*!< Database handle. */
-/*@only@*/ hashTable ht;	/*!< Fingerprint hash table. */
-
 /*@only@*/
+    hashTable ht;		/*!< Fingerprint hash table. */
+
+/*@only@*/ /*@null@*/
     int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;	/*!< No. removed package instances. */
     int allocedRemovedPackages;	/*!< Size of removed packages array. */

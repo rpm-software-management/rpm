@@ -1311,7 +1311,7 @@ static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args) {
     if (how && !strcmp(how, "a"))
 	rpmtransAvailablePackage(s->ts, h->h, key);
     else
-	rpmtransAddPackage(s->ts, h->h, NULL, key, isUpgrade, NULL);
+	rpmtransAddPackage(s->ts, h->h, key, isUpgrade, NULL);
 
     /* This should increment the usage count for me */
     if (key) {

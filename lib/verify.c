@@ -285,7 +285,9 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	/*@modifies ts, h, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    TFI_t fi = xcalloc(1, sizeof(*fi));
+#ifdef	DYING
+    TFI_t fi;
+#endif
     PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
     int rc;
 
@@ -296,20 +298,32 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
 	/*@=type@*/
     }
+#ifdef	DYING
     fi->magic = TFIMAGIC;
+    fi = xcalloc(1, sizeof(*fi));
     loadFi(ts, fi, h, 1);
-    memset(psm, 0, sizeof(*psm));
     /*@-assignexpose@*/
     psm->fi = fi;
     /*@=assignexpose@*/
-    psm->stepName = "verify";
-    psm->scriptTag = RPMTAG_VERIFYSCRIPT;
-    psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
-    rc = psmStage(psm, PSM_SCRIPT);
-    freeFi(fi);
+#else
+    /*@-type@*/
+    psm->fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, 1);
+    /*@=type@*/
+#endif
+    if (psm->fi != NULL) {	/* XXX can't happen */
+	psm->stepName = "verify";
+	psm->scriptTag = RPMTAG_VERIFYSCRIPT;
+	psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
+	rc = psmStage(psm, PSM_SCRIPT);
+    }
+    /*@-type@*/
+    psm->fi = fiFree(psm->fi, 1);
+    /*@=type@*/
+#ifdef	DYING
     /*@-refcounttrans@*/ /* FIX: fi needs to be only */
     fi = _free(fi);
     /*@=refcounttrans@*/
+#endif
 
     if (scriptFd != NULL) {
 	/*@-type@*/ /* FIX: ??? */
@@ -496,7 +510,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     int i;
 
     rpmtransClean(ts);
-    (void) rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
+    (void) rpmtransAddPackage(ts, h, NULL, 0, NULL);
 
     (void) rpmdepCheck(ts, &conflicts, &numConflicts);
 

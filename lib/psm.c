@@ -20,7 +20,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _fi_debug = 0;
+static int _fi_debug = 0;
 
 /*@access Header@*/		/* compared with NULL */
 /*@access rpmdbMatchIterator@*/ /* compared with NULL */
@@ -559,198 +559,6 @@ fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
 }
 
-void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
-{
-    HGE_t hge;
-    HFD_t hfd;
-    uint_32 * uip;
-    int len;
-    int rc;
-    int i;
-    
-    if (fi->fsm == NULL)
-	fi->fsm = newFSM();
-
-    /* XXX avoid gcc noise on pointer (4th arg) cast(s) */
-    hge = (keep_header && fi->te->type == TR_ADDED)
-	? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry;
-    fi->hge = hge;
-    fi->hae = (HAE_t) headerAddEntry;
-    fi->hme = (HME_t) headerModifyEntry;
-    fi->hre = (HRE_t) headerRemoveEntry;
-    fi->hfd = hfd = headerFreeData;
-
-    /*@-branchstate@*/
-    if (h && fi->h == NULL)	fi->h = headerLink(h, "loadFi");
-    /*@=branchstate@*/
-
-    /* 0 means unknown */
-    rc = hge(fi->h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
-    fi->archiveSize = (rc ? *uip : 0);
-
-    if (!hge(fi->h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
-	fi->dc = 0;
-	fi->fc = 0;
-	return;
-    }
-
-    rc = hge(fi->h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
-
-    rc = hge(fi->h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
-    rc = hge(fi->h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
-    rc = hge(fi->h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
-    rc = hge(fi->h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
-
-    /* XXX initialized to NULL for TR_ADDED? */
-    rc = hge(fi->h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
-
-    fi->action = FA_UNKNOWN;
-    fi->flags = 0;
-
-    /* actions is initialized earlier for added packages */
-    if (fi->actions == NULL)
-	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-
-    fi->keep_header = keep_header;
-    switch (fi->te->type) {
-    case TR_ADDED:
-	fi->mapflags =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-	rc = hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
-	rc = hge(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
-
-	rc = hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-
-	rc = hge(fi->h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
-	rc = hge(fi->h, RPMTAG_FILERDEVS, NULL, (void **) &fi->frdevs, NULL);
-
-	/* 0 makes for noops */
-	fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
-
-	if (ts != NULL && fi->h != NULL)
-	{   Header foo = relocateFileList(ts, fi, fi->h, fi->actions);
-	    foo = headerFree(foo, "loadFi TR_ADDED relocate");
-	}
-
-    if (!fi->keep_header) {
-	fi->fmtimes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmtimes)),
-				fi->fmtimes, fi->fc * sizeof(*fi->fmtimes));
-	fi->frdevs = memcpy(xmalloc(fi->fc * sizeof(*fi->frdevs)),
-				fi->frdevs, fi->fc * sizeof(*fi->frdevs));
-
-	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
-				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
-	fi->fflags = memcpy(xmalloc(fi->fc * sizeof(*fi->fflags)),
-				fi->fflags, fi->fc * sizeof(*fi->fflags));
-	fi->fmodes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmodes)),
-				fi->fmodes, fi->fc * sizeof(*fi->fmodes));
-	/* XXX there's a tedious segfault here for some version(s) of rpm */
-	if (fi->fstates)
-	    fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
-				fi->fstates, fi->fc * sizeof(*fi->fstates));
-	else
-	    fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
-	fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
-				fi->dil, fi->fc * sizeof(*fi->dil));
-	fi->h = headerFree(fi->h, "loadFi TR_ADDED");
-    }
-
-	break;
-    case TR_REMOVED:
-	fi->mapflags = 
-		CPIO_MAP_ABSOLUTE | CPIO_MAP_ADDDOT | CPIO_ALL_HARDLINKS |
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-	rc = hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-	rc = hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
-	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
-				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
-	fi->fflags = memcpy(xmalloc(fi->fc * sizeof(*fi->fflags)),
-				fi->fflags, fi->fc * sizeof(*fi->fflags));
-	fi->fmodes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmodes)),
-				fi->fmodes, fi->fc * sizeof(*fi->fmodes));
-	/* XXX there's a tedious segfault here for some version(s) of rpm */
-	if (fi->fstates)
-	    fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
-				fi->fstates, fi->fc * sizeof(*fi->fstates));
-	else
-	    fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
-	fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
-				fi->dil, fi->fc * sizeof(*fi->dil));
-	fi->h = headerFree(fi->h, "loadFi TR_REMOVED");
-	break;
-    }
-
-    fi->dnlmax = -1;
-    for (i = 0; i < fi->dc; i++) {
-	if ((len = strlen(fi->dnl[i])) > fi->dnlmax)
-	    fi->dnlmax = len;
-    }
-
-    fi->bnlmax = -1;
-    for (i = 0; i < fi->fc; i++) {
-	if ((len = strlen(fi->bnl[i])) > fi->bnlmax)
-	    fi->bnlmax = len;
-    }
-
-    fi->dperms = 0755;
-    fi->fperms = 0644;
-
-    return;
-}
-
-void freeFi(TFI_t fi)
-{
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-
-    switch (fi->te->type) {
-    case TR_ADDED:
-	if (!fi->keep_header) {
-	    fi->fmtimes = hfd(fi->fmtimes, -1);
-	    fi->frdevs = hfd(fi->frdevs, -1);
-	    fi->fsizes = hfd(fi->fsizes, -1);
-	    fi->fflags = hfd(fi->fflags, -1);
-	    fi->fmodes = hfd(fi->fmodes, -1);
-	    fi->fstates = hfd(fi->fstates, -1);
-	    fi->dil = hfd(fi->dil, -1);
-	}
-	break;
-    case TR_REMOVED:
-	fi->fsizes = hfd(fi->fsizes, -1);
-	fi->fflags = hfd(fi->fflags, -1);
-	fi->fmodes = hfd(fi->fmodes, -1);
-	fi->fstates = hfd(fi->fstates, -1);
-	fi->dil = hfd(fi->dil, -1);
-	break;
-    }
-
-    fi->fsm = freeFSM(fi->fsm);
-
-    fi->apath = _free(fi->apath);
-    fi->fuids = _free(fi->fuids);
-    fi->fgids = _free(fi->fgids);
-    fi->fmapflags = _free(fi->fmapflags);
-
-    fi->bnl = hfd(fi->bnl, -1);
-    fi->dnl = hfd(fi->dnl, -1);
-    fi->obnl = hfd(fi->obnl, -1);
-    fi->odnl = hfd(fi->odnl, -1);
-    fi->flinks = hfd(fi->flinks, -1);
-    fi->fmd5s = hfd(fi->fmd5s, -1);
-    fi->fuser = hfd(fi->fuser, -1);
-    fi->fgroup = hfd(fi->fgroup, -1);
-    fi->flangs = hfd(fi->flangs, -1);
-
-    fi->actions = _free(fi->actions);
-    fi->replacedSizes = _free(fi->replacedSizes);
-    fi->replaced = _free(fi->replaced);
-
-    fi->h = headerFree(fi->h, "freeFi");
-
-    /*@-nullstate@*/ /* FIX: fi->{name,version,release,actions,...,h} NULL */
-    return;
-    /*@=nullstate@*/
-}
-
 /*@observer@*/ const char *const fiTypeString(TFI_t fi)
 {
     switch(fi->te->type) {
@@ -1134,7 +942,8 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData,
 		const char ** cookie)
 {
-    TFI_t fi = xcalloc(sizeof(*fi), 1);
+    int scareMem = 1;
+    TFI_t fi = NULL;
     const char * _sourcedir = NULL;
     const char * _specdir = NULL;
     const char * specFile = NULL;
@@ -1167,29 +976,35 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 	goto exit;
     }
 
-    /* XXX don't bother with fd, linked directly into fi below. */
-    (void) rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
+    (void) rpmtransAddPackage(ts, h, NULL, 0, NULL);
 
-    fi->te = ts->order;
-
+#ifdef DYING
+    fi = xcalloc(1, sizeof(*fi));
     fi->h = headerLink(h, "InstallSourcePackage");
-
-/*@i@*/ fi->te->fd = fd;
-
     /* XXX header arg unused. */
     loadFi(ts, fi, fi->h, 1);
-    hge = fi->hge;
-    hfd = (fi->hfd ? fi->hfd : headerFreeData);
+#else
+    fi = fiNew(ts, fi, h, RPMTAG_BASENAMES, scareMem);
+#endif
     h = headerFree(h, "InstallSourcePackage");
+    if (fi == NULL) {	/* XXX can't happen */
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
 
-    (void) rpmInstallLoadMacros(fi, fi->h);
+    fi->te = ts->order;
+/*@i@*/ fi->te->fd = fd;
+    hge = fi->hge;
+    hfd = fi->hfd;
+
+/*@i@*/ (void) rpmInstallLoadMacros(fi, fi->h);
 
     memset(psm, 0, sizeof(*psm));
-    /*@-assignexpose@*/
+    /*@-assignexpose -usereleased @*/
     psm->ts = rpmtsLink(ts, "InstallSourcePackage");
     psm->fi = fi;
     psm->te = fi->te;
-    /*@=assignexpose@*/
+    /*@=assignexpose =usereleased @*/
 
     if (cookie) {
 	*cookie = NULL;
@@ -1198,7 +1013,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     }
 
     /* XXX FIXME: can't do endian neutral MD5 verification yet. */
-    fi->fmd5s = hfd(fi->fmd5s, -1);
+/*@i@*/ fi->fmd5s = hfd(fi->fmd5s, -1);
 
     /* XXX FIXME: don't do per-file mapping, force global flags. */
     fi->fmapflags = _free(fi->fmapflags);
@@ -1259,7 +1074,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 	int sourcelen = strlen(_sourcedir) + 2;
 	char * t;
 
-	fi->dnl = hfd(fi->dnl, -1);
+/*@i@*/	fi->dnl = hfd(fi->dnl, -1);
 
 	fi->dc = 2;
 	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl) + fi->fc * sizeof(*fi->dil) +
@@ -1303,12 +1118,16 @@ exit:
 
     if (h) h = headerFree(h, "InstallSourcePackage exit");
 
+    /*@-branchstate@*/
     if (fi) {
-	freeFi(fi);
+	fi = fiFree(fi, 1);
+#ifdef	DYING
 	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
 	fi = _free(fi);
 	/*@=refcounttrans@*/
+#endif
     }
+    /*@=branchstate@*/
 
     psm->fi = NULL;
     psm->te = NULL;

@@ -1337,13 +1337,14 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     }
 
   { TFI_t fi = xcalloc(1, sizeof(*fi));
+    int scareMem = 1;
     char * a, * d;
 
     /* XXX FIXME drill rpmTransactionSet ts all the way down here */
 /*@i@*/ fi->te = xcalloc(1, sizeof(*fi->te));
 /*@i@*/ fi->te->type = TR_ADDED;
 
-    loadFi(NULL, fi, h, 1);
+    fi = fiNew(NULL, fi, h, RPMTAG_BASENAMES, scareMem);
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
 

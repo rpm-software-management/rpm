@@ -1415,19 +1415,20 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
  * used, otherwise fd is only needed (and only opened) for actual package 
  * installation.
  *
+ * @warning The fd argument has been eliminated, and is assumed always NULL.
+ *
  * @param ts		transaction set
  * @param h		package header
- * @param fd		package file handle
  * @param key		package private data
  * @param upgrade	is package being upgraded?
  * @param relocs	package file relocations
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
  */
-int rpmtransAddPackage(rpmTransactionSet ts, Header h, /*@null@*/ FD_t fd,
+int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 		/*@null@*/ /*@owned@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, h, ts, fileSystem, internalState @*/;
+	/*@modifies ts, h, fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
  * Add package to universe of possible packages to install in transaction set.

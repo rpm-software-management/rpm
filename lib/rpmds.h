@@ -30,7 +30,7 @@ struct rpmFNSet_s {
 
     rpmTag tagN;		/*!< Header tag. */
 /*@refcounted@*/ /*@null@*/
-    Header h;			/*!< Header for file name set (or NULL) */
+    Header h;			/*!< Header for file set (or NULL) */
 
 /*@only@*/ /*?null?*/
     const char ** bnl;		/*!< Base name(s) (from header) */
@@ -188,24 +188,28 @@ rpmFNSet XrpmfnsLink (/*@null@*/ rpmFNSet fns, /*@null@*/ const char * msg,
 #define	rpmfnsLink(_fns, _msg)	XrpmfnsLink(_fns, _msg, __FILE__, __LINE__)
 
 /**
- * Destroy a file name set.
- * @param ds		file name set
+ * Destroy a file set.
+ * @param fi		file set
+ * @param freefimem	free fi memory too?
  * @return		NULL always
  */
 /*@null@*/
-rpmFNSet fnsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns)
-	/*@modifies fns@*/;
+rpmFNSet fiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fi, int freefimem)
+	/*@modifies fi@*/;
 
 /**
- * Create and load a file name set.
+ * Create and load a file set.
+ * @param ts		transaction set
+ * @param fi		file set (NULL if creating)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
  * @param scareMem	Use pointers to refcounted header memory?
- * @return		new file name set
+ * @return		new file set
  */
 /*@null@*/
-rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
-	/*@modifies h @*/;
+rpmFNSet fiNew(rpmTransactionSet ts, /*@null@*/ rpmFNSet fi,
+		Header h, rpmTag tagN, int scareMem)
+	/*@modifies ts, fi, h @*/;
 
 /**
  * Unreference a dependency set instance.

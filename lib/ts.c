@@ -185,7 +185,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		n, v, r);
 #ifdef NOTYET
-	xx = rpmtransAddPackage(ts, h, NULL, fts->fts_path, 1, NULL);
+	xx = rpmtransAddPackage(ts, h, fts->fts_path, 1, NULL);
 #endif
 
 	break;

@@ -222,7 +222,7 @@ availableList alFree(availableList al)
     if ((alp = al->list) != NULL)
     for (i = 0; i < al->size; i++, alp++) {
 	alp->provides = dsFree(alp->provides);
-	alp->fns = fnsFree(alp->fns);
+	alp->fns = fiFree(alp->fns, 1);
     }
 
     if ((die = al->dirs) != NULL)
@@ -358,7 +358,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
     }
 
     alp->provides = dsFree(alp->provides);
-    alp->fns = fnsFree(alp->fns);
+    alp->fns = fiFree(alp->fns, 1);
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
     /*@-nullstate@*/ /* FIX: al->list->h may be NULL */

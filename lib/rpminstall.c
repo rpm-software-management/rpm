@@ -423,7 +423,7 @@ restart:
 
 	    /*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	    /*@-abstract@*/
-	    rc = rpmtransAddPackage(ts, eiu->h, NULL, (fnpyKey)fileName,
+	    rc = rpmtransAddPackage(ts, eiu->h, (fnpyKey)fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
 	    /*@=abstract@*/

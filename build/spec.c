@@ -162,10 +162,12 @@ Package freePackage(Package pkg)
     if (pkg->cpioList) {
 	TFI_t fi = pkg->cpioList;
 	pkg->cpioList = NULL;
-	freeFi(fi);
+	fi = fiFree(fi, 1);
+#ifdef	DYING
 	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
 	fi = _free(fi);
 	/*@=refcounttrans@*/
+#endif
     }
 
     pkg->specialDoc = freeStringBuf(pkg->specialDoc);
@@ -510,10 +512,12 @@ Spec freeSpec(Spec spec)
     if (spec->sourceCpioList) {
 	TFI_t fi = spec->sourceCpioList;
 	spec->sourceCpioList = NULL;
-	freeFi(fi);
+	fi = fiFree(fi, 1);
+#ifdef	DYING
 	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
 	fi = _free(fi);
 	/*@=refcounttrans@*/
+#endif
     }
     
     spec->buildRestrictions = headerFree(spec->buildRestrictions, "spec->>buildRestrictions");
