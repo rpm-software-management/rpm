@@ -785,6 +785,45 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c)
     return 1;
 }
 
+static int headerMatchLocale(const char *td, const char *l, const char *le)
+{
+    const char *fe;
+
+    /*
+     * The range [l,le) contains the next locale to match:
+     *    ll[_CC][.EEEEE][@dddd]
+     * where
+     *    ll	ISO language code (in lowercase).
+     *    CC	(optional) ISO coutnry code (in uppercase).
+     *    EEEEE	(optional) encoding (not really standardized).
+     *    dddd	(optional) dialect.
+     */
+
+    /* First try a complete match. */
+    if (!strncmp(td, l, (le - l)))
+	return 1;
+
+    /* Next, try stripping optional dialect and matching.  */
+    for (fe = l; fe < le && *fe != '@'; fe++)
+	;
+    if (fe < le && !strncmp(td, l, (fe - l)))
+	return 1;
+
+    /* Next, try stripping optional codeset and matching.  */
+    for (fe = l; fe < le && *fe != '.'; fe++)
+	;
+    if (fe < le && !strncmp(td, l, (fe - l)))
+	return 1;
+
+    /* Finally, try stripping optional country code and matching. */
+    for (fe = l; fe < le && *fe != '_'; fe++)
+	;
+    if (fe < le && !strncmp(td, l, (fe - l)))
+	return 1;
+
+    return 0;
+}
+
 static char *headerFindI18NString(Header h, struct indexEntry *entry)
 {
     const char *lang, *l, *le;
@@ -798,9 +837,9 @@ static char *headerFindI18NString(Header h, struct indexEntry *entry)
 	return entry->data;
 
     for (l = lang; *l; l = le) {
-	const char *td, *fe;
+	const char *td;
 	char *ed;
-	int count;
+	int langNum;
 
 	while (*l && *l == ':')			/* skip leading colons */
 	    l++;
@@ -809,45 +848,67 @@ static char *headerFindI18NString(Header h, struct indexEntry *entry)
 	for (le = l; *le && *le != ':'; le++)	/* find end of this locale */
 	    ;
 
-	/*
-	 * The range [l,le) now contains the next locale to match:
-	 *    ll[_CC][.EEEEE][@dddd]
-	 * where
-	 *    ll	ISO language code (in lowercase).
-	 *    CC	(optional) ISO coutnry code (in uppercase).
-	 *    EEEEE	(optional) encoding (not really standardized).
-	 *    dddd	(optional) dialect.
-	 */
-
 	/* For each entry in the header ... */
-	for (count = entry->info.count, td = table->data, ed = entry->data;
-	     count-- > 0; td += strlen(td) + 1, ed += strlen(ed) + 1) {
+	for (langNum = 0, td = table->data, ed = entry->data;
+	     langNum < entry->info.count;
+	     langNum++, td += strlen(td) + 1, ed += strlen(ed) + 1) {
 
-	    /* First try a complete match. */
-	    if (!strncmp(td, l, (le - l)))
-		return ed;
+		if (headerMatchLocale(td, l, le))
+		    return ed;
 
-	    /* Next, try stripping optional dialect and matching.  */
-	    for (fe = l; fe < le && *fe != '@'; fe++)
-		;
-	    if (fe < le && !strncmp(td, l, (fe - l)))
-		return ed;
-
-	    /* Next, try stripping optional codeset and matching.  */
-	    for (fe = l; fe < le && *fe != '.'; fe++)
-		;
-	    if (fe < le && !strncmp(td, l, (fe - l)))
-		return ed;
-
-	    /* Finally, try stripping optional country code and matching. */
-	    for (fe = l; fe < le && *fe != '_'; fe++)
-		;
-	    if (fe < le && !strncmp(td, l, (fe - l)))
-		return ed;
 	}
     }
 
     return entry->data;
+}
+
+void headerSetLangPath(Header h, const char * lang)
+{
+    const char *l, *le;
+    struct indexEntry * table;
+
+    if (lang == NULL ||
+      (table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL) {
+	h->langNum = -1;
+	return;
+    }
+
+    for (l = lang; *l; l = le) {
+	const char *td;
+	int langNum;
+
+	while (*l && *l == ':')			/* skip leading colons */
+	    l++;
+	if (*l == '\0')
+	    break;
+	for (le = l; *le && *le != ':'; le++)	/* find end of this locale */
+	    ;
+
+	for (langNum = 0, td = table->data;
+	     langNum < table->info.count;
+	     langNum++, td += strlen(td) + 1) {
+
+		if (headerMatchLocale(td, l, le)) {
+		    h->langNum = langNum;
+		    return;
+		}
+
+	}
+    }
+
+    h->langNum = -1;
+}
+
+void headerResetLang(Header h)
+{
+    const char * str;
+
+    if ((str = getenv("LANGUAGE"))) {
+	headerSetLangPath(h, str);
+	return;
+    }
+   
+    headerSetLangPath(h, getenv("LANG"));
 }
 
 static int intGetEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c,
@@ -2120,58 +2181,6 @@ const struct headerSprintfExtension headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
-
-void headerSetLangPath(Header h, char * lang) {
-    char * buf, * chptr, * start, * next;
-    struct indexEntry * table;
-    int langNum;
-
-    table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
-
-    if (!lang || !table) {
-	h->langNum = -1;
-	return;
-    }
-
-    buf = alloca(strlen(lang) + 1);
-    strcpy(buf, lang);
-
-    start = buf;
-    while (start) {
-	chptr = strchr(start, ':');
-	if (chptr) *chptr = '\0';
-	
-	next = table->data;
-	for (langNum = 0; langNum < table->info.count; langNum++) {
-	    if (!strcmp(next, start)) break;
-	    next += strlen(next) + 1;
-	}
-	
-	if (langNum < table->info.count) {
-	    h->langNum = langNum;
-	    break;
-	}
-	
-	if (chptr)
-	    start = chptr + 1;
-	else
-	    start = NULL;
-    }
-
-    if (!start)
-	h->langNum = -1;
-}
-
-void headerResetLang(Header h) {
-    char * str;
-
-    if ((str = getenv("LANGUAGE"))) {
-	headerSetLangPath(h, str);
-	return;
-    }
-   
-    headerSetLangPath(h, getenv("LANG"));
-}
 
 void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy)
 {

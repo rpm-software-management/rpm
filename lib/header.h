@@ -159,7 +159,7 @@ void headerFreeIterator(/*@only@*/ HeaderIterator iter);
 void headerResetLang(Header h);
 /* sets the language path for the header; this doesn't need to be done if
    the LANGUAGE or LANG enivronment variable are correct */
-void headerSetLangPath(Header h, char * lang);
+void headerSetLangPath(Header h, const char * lang);
 
 Header headerCopy(Header h);
 void headerSort(Header h);
