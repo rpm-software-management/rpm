@@ -69,7 +69,7 @@ static struct packageFieldsRec subpackageFields[] = {
     { RPMTAG_DESCRIPTION,     0, MUST },
     { RPMTAG_GROUP,           0, MUST },
     { RPMTAG_NAME,            0, 0 },
-    { RPMTAG_COPYRIGHT,       0, 0 },
+/*    { RPMTAG_COPYRIGHT,       0, 0 }, */
     { RPMTAG_PACKAGER,        0, 0 },
     { RPMTAG_BUILDROOT,       0, 0 },
     { 0, 0, 0 },
