@@ -82,6 +82,7 @@ extern const int rpmTagTableSize;
 #define RPMTAG_CONFLICTFLAGS            1053
 #define RPMTAG_CONFLICTNAME             1054
 #define RPMTAG_CONFLICTVERSION          1055
+#define RPMTAG_DEFAULTPREFIX            1056
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
