@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.1 2000/05/27 03:54:15 rjray Exp $
+#   $Id: Header.pm,v 1.2 2000/06/05 08:11:43 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -33,7 +33,7 @@ use subs qw(new);
 require RPM;
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -112,6 +112,11 @@ hash reference, it can be used to call these methods via:
     (tied %hash)->method_name(...)
 
 =over
+
+=item is_source
+
+Returns true (1) or false (0), depending on whether the package the header
+object is derived from is a source RPM.
 
 =item size
 
