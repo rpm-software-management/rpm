@@ -369,7 +369,13 @@ int rpmtsOrder(rpmts ts)
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
- * Process all package elements in a transaction set.
+ * Process all package elements in a transaction set.  Before calling
+ * rpmtsRun be sure to have:
+ *
+ *    - setup the rpm root dir via rpmtsRoot().
+ *    - setup the rpm notify callback via rpmtsSetNotifyCallback().
+ *    - setup the rpm transaction flags via rpmtsSetFlags().
+ *    - setup the rpm verify signature flags via rpmtsSetVSFlags().
  *
  * @param ts		transaction set
  * @param okProbs	previously known problems (or NULL)
