@@ -118,13 +118,13 @@ fi
 dnl Checks for libraries.
 
 AC_CHECK_FUNC(strcasecmp, [], [
-    AC_CHECK_LIB(ucb, strcasecmp, [LIBS="-lucb $LIBS" USEUCB=y])
+    AC_CHECK_LIB(ucb, strcasecmp, [LIBS="$LIBS -lucb" USEUCB=y])
 ])
 
 AC_CHECK_FUNC(random, [], [
     AC_CHECK_LIB(random, random, [LIBS="$LIBS -lm"], [
 	if test -z "$USEUCB"; then
-	    AC_CHECK_LIB(ucb, random, [LIBS="-lucb $LIBS" USEUCB=y])
+	    AC_CHECK_LIB(ucb, random, [LIBS="$LIBS -lucb" USEUCB=y])
 	fi
     ])
 ])
@@ -165,10 +165,10 @@ else
 fi
 
 AC_CHECK_FUNC(getdomainname, [], [
-    AC_CHECK_LIB(nsl, getdomainname, [LIBS="-lnsl $LIBS"])
+    AC_CHECK_LIB(nsl, getdomainname, [LIBS="$LIBS -lnsl"])
 ])
 AC_CHECK_FUNC(socket, [], [
-    AC_CHECK_LIB(socket, socket, [LIBS="-lsocket $LIBS"])
+    AC_CHECK_LIB(socket, socket, [LIBS="$LIBS -lsocket"])
 ])
 
 AC_CHECK_FUNC(dbopen, [],
@@ -191,7 +191,7 @@ esac
 ZLIB=
 for zlib in z gz ; do
    AC_CHECK_LIB(${zlib}, gzread, 
-	[LIBS="-l${zlib} $LIBS"; break], 
+	[LIBS="$LIBS -l${zlib}"; break], 
 	[if test ${zlib} = gz; then 
 	    AC_MSG_WARN([sorry this package needs libz.a or libgz.a (from the zlib package)]) 
 	 fi]
@@ -264,7 +264,7 @@ AC_CHECK_FUNC(realpath, AC_DEFINE(HAVE_REALPATH), MISCOBJS="$MISCOBJS realpath.o
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL),[
     AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R), [
-      AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="-lc_r $LIBS"; 
+      AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="$LIBS -lc_r"; 
 					AC_DEFINE(HAVE_GETMNTINFO_R)],
                  MISCOBJS="$MISCOBJS getmntent.o")])])])
 AC_CHECK_FUNC(strerror, [], MISCOBJS="$MISCOBJS strerror.o")
