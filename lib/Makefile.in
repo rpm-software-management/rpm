@@ -2,7 +2,7 @@ LIBS = -lgdbm -ldb
 
 LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o falloc.o \
 	     convertdb.o oldrpmfile.o var.o md5.o md5sum.o dbindex.o \
-	     rpmdb.o
+	     rpmdb.o stringbuf.o
 LIBRPM = librpm.a
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
