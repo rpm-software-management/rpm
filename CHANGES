@@ -3,6 +3,7 @@
 	- automagically detect and emit "python(abi) = 2.4" dependencies.
 	- popt 1.10.1 to preserve newer.
 	- use package color as Obsoletes: color.
+	- upgrade to db-4.3.27.
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).

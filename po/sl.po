@@ -1,13 +1,13 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.389.2.5 2004/12/05 19:10:57 jbj Exp $
+# $Id: sl.po,v 1.389.2.6 2005/01/02 19:40:54 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-05 14:08-0500\n"
+"POT-Creation-Date: 2004-12-07 10:41-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1426,77 +1426,77 @@ msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
 #. @-nullptrarith@
-#: lib/depends.c:360
+#: lib/depends.c:364
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:452
+#: lib/depends.c:456
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:479
+#: lib/depends.c:483
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:496
+#: lib/depends.c:500
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:525
+#: lib/depends.c:529
 #, fuzzy
 msgid "(db files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:538
+#: lib/depends.c:542
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:551
+#: lib/depends.c:555
 #, fuzzy
 msgid "(db package)"
 msgstr "ni paketov\n"
 
-#: lib/depends.c:910
+#: lib/depends.c:914
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1032
+#: lib/depends.c:1036
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1269
+#: lib/depends.c:1273
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1363
+#: lib/depends.c:1367
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1452
+#: lib/depends.c:1456
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1525
+#: lib/depends.c:1529
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1560
+#: lib/depends.c:1564
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1565
+#: lib/depends.c:1569
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2742,31 +2742,31 @@ msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
-#: lib/rpmfi.c:801
+#: lib/rpmfi.c:803
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:805
+#: lib/rpmfi.c:807
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je izkljuèen: %s"
 
-#: lib/rpmfi.c:808
+#: lib/rpmfi.c:810
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/rpmfi.c:942
+#: lib/rpmfi.c:944
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/rpmfi.c:952
+#: lib/rpmfi.c:954
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/rpmfi.c:1044
+#: lib/rpmfi.c:1046
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "premiokanje imenika %s v %s\n"
@@ -2785,7 +2785,7 @@ msgstr "neznana znaèka"
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:625 lib/rpminstall.c:655 lib/rpminstall.c:830
-#: lib/rpminstall.c:1265 lib/transaction.c:1019 tools/rpmgraph.c:195
+#: lib/rpminstall.c:1265 lib/transaction.c:1021 tools/rpmgraph.c:195
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
@@ -2907,18 +2907,18 @@ msgstr "ni mo¾no odpreti %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpminstall.c:1259 lib/transaction.c:1012
+#: lib/rpminstall.c:1259 lib/transaction.c:1014
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1290 lib/transaction.c:1063
+#: lib/rpminstall.c:1290 lib/transaction.c:1065
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1297 lib/transaction.c:1069
+#: lib/rpminstall.c:1297 lib/transaction.c:1071
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "Prena¹anje %s\n"
@@ -3450,38 +3450,38 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Dol¾. polnila : %d\n"
 
 #. @innercontinue@
-#: lib/transaction.c:923
+#: lib/transaction.c:925
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "izkljuèevanje imenika %s\n"
 
-#: lib/transaction.c:1010
+#: lib/transaction.c:1012
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1030
+#: lib/transaction.c:1032
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1120
+#: lib/transaction.c:1122
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1145
+#: lib/transaction.c:1147
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1149
+#: lib/transaction.c:1151
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1153
+#: lib/transaction.c:1155
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1166
+#: lib/transaction.c:1168
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "paket ne vsebuje skupine\n"
@@ -3493,38 +3493,38 @@ msgstr "paket ne vsebuje skupine\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1187
+#: lib/transaction.c:1189
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1189
+#: lib/transaction.c:1191
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1212
+#: lib/transaction.c:1214
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/transaction.c:1256
+#: lib/transaction.c:1258
 msgid "Adding install element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1265
+#: lib/transaction.c:1267
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1278
+#: lib/transaction.c:1280
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1288
+#: lib/transaction.c:1290
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "ni paketov\n"
 
-#: lib/transaction.c:1290 lib/transaction.c:1301
+#: lib/transaction.c:1292 lib/transaction.c:1303
 #, c-format
 msgid "\tAdded from install element %s.\n"
 msgstr ""
@@ -3532,46 +3532,46 @@ msgstr ""
 #. Add the header as an erase element, we did not
 #. * have a repackaged package
 #.
-#: lib/transaction.c:1299
+#: lib/transaction.c:1301
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1308
+#: lib/transaction.c:1310
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1315
+#: lib/transaction.c:1317
 msgid "Add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1323
+#: lib/transaction.c:1325
 msgid "\tFound existing upgrade element.\n"
 msgstr ""
 
-#: lib/transaction.c:1324
+#: lib/transaction.c:1326
 #, c-format
 msgid "\tNot adding erase element for %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1341
+#: lib/transaction.c:1343
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "ni paketov\n"
 
-#: lib/transaction.c:1343
+#: lib/transaction.c:1345
 #, c-format
 msgid "\tAdded from erase element %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1348
+#: lib/transaction.c:1350
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1354
+#: lib/transaction.c:1356
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1360
+#: lib/transaction.c:1362
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "napaka pri branju glave paketa\n"
@@ -3584,12 +3584,12 @@ msgstr "napaka pri branju glave paketa\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1483
+#: lib/transaction.c:1485
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1569
+#: lib/transaction.c:1571
 #, fuzzy
 msgid "running pre-transaction scripts\n"
 msgstr "poganjanje prednamestitvenih skript (èe obstajajo)\n"
@@ -3602,7 +3602,7 @@ msgstr "poganjanje prednamestitvenih skript (èe obstajajo)\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1639
+#: lib/transaction.c:1641
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3610,31 +3610,31 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1720
+#: lib/transaction.c:1722
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:1899
+#: lib/transaction.c:1901
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2053
+#: lib/transaction.c:2055
 msgid "Add failed.  Could not read package header.\n"
 msgstr ""
 
-#: lib/transaction.c:2117
+#: lib/transaction.c:2119
 msgid "Add failed in rpmpsmStage().\n"
 msgstr ""
 
-#: lib/transaction.c:2161
+#: lib/transaction.c:2163
 msgid "Add failed.  Could not get file list.\n"
 msgstr ""
 
-#: lib/transaction.c:2210
+#: lib/transaction.c:2212
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr ""
 
-#: lib/transaction.c:2268
+#: lib/transaction.c:2270
 #, fuzzy
 msgid "running post-transaction scripts\n"
 msgstr "poganjanje poodnamestitvenih skriptov (èe obstajajo)\n"
