@@ -140,6 +140,8 @@ static int addSource(Spec spec, char *line)
     sprintf(expansion, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
     sprintf(name, "%s%d", (p->ispatch) ? "PATCH" : "SOURCE", p->num);
     addMacro(name, expansion);
+    sprintf(name, "%sURL%d", (p->ispatch) ? "PATCH" : "SOURCE", p->num);
+    addMacro(name, p->fullSource);
     
     if (p->ispatch) {
 	rpmMessage(RPMMESS_DEBUG, "Patch(%d) = %s\n", p->num, p->fullSource);
