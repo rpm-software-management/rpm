@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-12-06 10:20-0500\n"
+"POT-Creation-Date: 2001-12-08 12:20-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -532,181 +532,181 @@ msgstr "&& a || nie sú podporované pre re»azce"
 msgid "syntax error in expression\n"
 msgstr "chyba syntaxe vo výraze"
 
-#: build/files.c:269
+#: build/files.c:271
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "chyba PREKROÈENIA ÈASU: %s\n"
 
-#: build/files.c:328 build/files.c:520 build/files.c:703
+#: build/files.c:330 build/files.c:522 build/files.c:705
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "chýbajúce    %s\n"
 
-#: build/files.c:339 build/files.c:645 build/files.c:714
+#: build/files.c:341 build/files.c:647 build/files.c:716
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "chýbajúca ':' na %s:%d"
 
-#: build/files.c:377 build/files.c:670
+#: build/files.c:379 build/files.c:672
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Chybný %s prvok: %s"
 
-#: build/files.c:483
+#: build/files.c:485
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "chýbajúce    %s\n"
 
-#: build/files.c:536
+#: build/files.c:538
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:574
+#: build/files.c:576
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Chybná %s() syntax: %s"
 
-#: build/files.c:584
+#: build/files.c:586
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Chybná ¹pecifikácia práv %s(): %s"
 
-#: build/files.c:596
+#: build/files.c:598
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Chybná ¹pecifikácia práv adresára %s(): %s"
 
-#: build/files.c:741
+#: build/files.c:743
 #, fuzzy, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Iba jeden záznam v %%lang(): %s"
 
 #. @innercontinue@
-#: build/files.c:752
+#: build/files.c:754
 #, fuzzy, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Iba jeden záznam v %%lang(): %s"
 
-#: build/files.c:903
+#: build/files.c:905
 #, fuzzy, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Dosiahnutý limit pre %%docdir"
 
-#: build/files.c:909
+#: build/files.c:911
 #, fuzzy, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Iba jeden argument pre %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:937
+#: build/files.c:939
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dva súbory na riadku: %s"
 
-#: build/files.c:952
+#: build/files.c:954
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Súbory musia zaèína» znakom \"/\": %s"
 
-#: build/files.c:965
+#: build/files.c:967
 #, fuzzy, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nie je mo¾né mie¹a» ¹peciálne %%doc s inými formami: %s"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1142
+#: build/files.c:1144
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Súbor zadaný dvakrát: %s."
 
-#: build/files.c:1289
+#: build/files.c:1291
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1504
+#: build/files.c:1506
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Súbor nesúhlasí s prefixom (%s): %s."
 
-#: build/files.c:1528
+#: build/files.c:1530
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1571 build/files.c:2183 build/parsePrep.c:50
+#: build/files.c:1573 build/files.c:2185 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Chybný vlastník/skupina: %s\n"
 
-#: build/files.c:1583
+#: build/files.c:1585
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1687
+#: build/files.c:1689
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 
-#: build/files.c:1710
+#: build/files.c:1712
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "riadok %d: V %s sú vy¾adované verzie: %s"
 
-#: build/files.c:1725
+#: build/files.c:1727
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1787
+#: build/files.c:1789
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: build/files.c:1798 build/pack.c:146
+#: build/files.c:1800 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "riadok: %s"
 
-#: build/files.c:2171
+#: build/files.c:2173
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "súbor %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2245
+#: build/files.c:2247
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: build/files.c:2250
+#: build/files.c:2252
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: build/files.c:2334
+#: build/files.c:2336
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s zlyhalo"
 
-#: build/files.c:2338
+#: build/files.c:2340
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: build/files.c:2474
+#: build/files.c:2476
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: build/files.c:2500 build/files.c:2514
+#: build/files.c:2502 build/files.c:2516
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/files.c:2635
+#: build/files.c:2637
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
@@ -850,7 +850,7 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: build/pack.c:603 lib/psm.c:1426
+#: build/pack.c:603 lib/psm.c:1424
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
@@ -880,7 +880,7 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:683 lib/psm.c:1700
+#: build/pack.c:683 lib/psm.c:1698
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
@@ -1552,7 +1552,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
+#: rpmdb/header.c:2965 rpmdb/header.c:2986 rpmdb/header.c:3008
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
@@ -2225,51 +2225,51 @@ msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 msgid "%s: running %s scriptlet\n"
 msgstr "vykonávajú sa poin¹talaèné skripty (ak existujú)\n"
 
-#: lib/psm.c:883
+#: lib/psm.c:881
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "vykonanie skriptu zlyhalo"
 
-#: lib/psm.c:890
+#: lib/psm.c:888
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "vykonanie skriptu zlyhalo"
 
-#: lib/psm.c:1232
+#: lib/psm.c:1230
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "balík: %s-%s-%s test súborov = %d\n"
 
-#: lib/psm.c:1351
+#: lib/psm.c:1349
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1468
+#: lib/psm.c:1466
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "pou¾ívateµ %s neexistuje - pou¾ije sa root"
 
-#: lib/psm.c:1477
+#: lib/psm.c:1475
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s neexistuje - pou¾ije sa root"
 
-#: lib/psm.c:1519
+#: lib/psm.c:1517
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozbalenie archívu zlyhalo%s%s: %s"
 
-#: lib/psm.c:1520
+#: lib/psm.c:1518
 msgid " on file "
 msgstr " pre súbor "
 
-#: lib/psm.c:1708
+#: lib/psm.c:1706
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/psm.c:1711
+#: lib/psm.c:1709
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s zlyhalo"
@@ -3007,77 +3007,77 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2220
+#: rpmdb/header.c:2222
 #, c-format
 msgid "missing { after %"
 msgstr "chýbajúce { po %"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2250
+#: rpmdb/header.c:2252
 msgid "missing } after %{"
 msgstr "chýbajúce } po %{"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2264
+#: rpmdb/header.c:2266
 msgid "empty tag format"
 msgstr "prázdny tag formát"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2278
+#: rpmdb/header.c:2280
 msgid "empty tag name"
 msgstr "prázdne meno tagu"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2295
+#: rpmdb/header.c:2297
 msgid "unknown tag"
 msgstr "neznámy tag"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2322
+#: rpmdb/header.c:2324
 msgid "] expected at end of array"
 msgstr "] oèakávané na konci poµa"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2340
+#: rpmdb/header.c:2342
 msgid "unexpected ]"
 msgstr "neoèakávané ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2344
+#: rpmdb/header.c:2346
 msgid "unexpected }"
 msgstr "neoèakávané }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2410
+#: rpmdb/header.c:2412
 msgid "? expected in expression"
 msgstr "? oèakávané vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2419
+#: rpmdb/header.c:2421
 msgid "{ expected after ? in expression"
 msgstr "{ oèakávané po ? vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2432 rpmdb/header.c:2474
+#: rpmdb/header.c:2434 rpmdb/header.c:2476
 msgid "} expected in expression"
 msgstr "} oèakávané vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2442
+#: rpmdb/header.c:2444
 msgid ": expected following ? subexpression"
 msgstr ": oèakávané po ? podvýraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2459
+#: rpmdb/header.c:2461
 msgid "{ expected after : in expression"
 msgstr "{ oèakávané po : vo výraze"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2484
+#: rpmdb/header.c:2486
 msgid "| expected at end of expression"
 msgstr "| oèakávené na konci výrazu"
 
-#: rpmdb/header.c:2707
+#: rpmdb/header.c:2709
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 

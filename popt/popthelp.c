@@ -123,7 +123,7 @@ singleOptionDefaultValue(int lineLength,
     char * le = malloc(4*lineLength + 1);
     char * l = le;
 
-    if (l == NULL) return NULL;	/* XXX can't happen */
+    if (le == NULL) return NULL;	/* XXX can't happen */
     *le = '\0';
     *le++ = '(';
     strcpy(le, defstr);	le += strlen(le);

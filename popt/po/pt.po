@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-10-17 12:38-0400\n"
+"POT-Creation-Date: 2001-12-08 11:01-0500\n"
 "PO-Revision-Date: 2001-01-21 19:31+00:00\n"
 "Last-Translator: Pedro Morais <morais@kde.org>\n"
 "Language-Team: pt <morais@kde.org>\n"

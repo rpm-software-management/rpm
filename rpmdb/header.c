@@ -1958,10 +1958,12 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 	/* Copy values into new storage */
 	memcpy(t, b, bn);
 	t += bn;
+/*@-mayaliasunique@*/
 	memcpy(t, string, sn);
 	t += sn;
 	memcpy(t, e, en);
 	t += en;
+/*@=mayaliasunique@*/
 
 	/* Replace I18N string array */
 	entry->length -= strlen(be) + 1;

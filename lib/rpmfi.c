@@ -864,7 +864,8 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
 
     xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-    fi->md5s = t = xmalloc(fi->fc * 16);
+    t = xmalloc(fi->fc * 16);
+    fi->md5s = t;
     for (i = 0; i < fi->fc; i++) {
 	const char * fmd5;
 	int j;
@@ -895,7 +896,9 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     if (fi->te != NULL && fi->te->type == TR_ADDED) {
 	Header foo;
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
+	/*@-compdef@*/ /* FIX: fi-md5s undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
+	/*@=compdef@*/
 	fi->h = headerFree(fi->h, "fiNew fi->h");
 	fi->h = headerLink(foo, "fiNew fi->h = foo");
 	foo = headerFree(foo, "fiNew foo");

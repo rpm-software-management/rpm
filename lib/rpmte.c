@@ -377,8 +377,10 @@ teIterator XteFreeIterator(/*@only@*//*@null@*/ teIterator tei,
 {
     if (tei)
 	tei->ts = rpmtsUnlink(tei->ts, "tsIterator");
+/*@-modfilesys@*/
 if (_te_debug)
 fprintf(stderr, "*** tei %p -- %s:%d\n", tei, fn, ln);
+/*@=modfilesys@*/
     return _free(tei);
 }
 
@@ -392,8 +394,10 @@ teIterator XteInitIterator(rpmTransactionSet ts,
     tei->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
     tei->oc = (tei->reverse ? (ts->orderCount - 1) : 0);
     tei->ocsave = tei->oc;
+/*@-modfilesys@*/
 if (_te_debug)
 fprintf(stderr, "*** tei %p ++ %s:%d\n", tei, fn, ln);
+/*@=modfilesys@*/
     return tei;
 }
 

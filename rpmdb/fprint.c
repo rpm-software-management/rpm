@@ -131,6 +131,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    char * dn = xmalloc(nb);
 	    struct fprintCacheEntry_s * newEntry = (void *)dn;
 
+	    /*@-usereleased@*/	/* LCL: contiguous malloc confusion */
 	    dn += sizeof(*newEntry);
 	    strcpy(dn, (*buf != '\0' ? buf : "/"));
 	    newEntry->ino = sb.st_ino;
@@ -139,9 +140,10 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    newEntry->dirName = dn;
 	    fp.entry = newEntry;
 
-	    /*@-kepttrans@*/
+	    /*@-kepttrans -dependenttrans @*/
 	    htAddEntry(cache->ht, dn, fp.entry);
-	    /*@@kepttrans@*/
+	    /*@=kepttrans =dependenttrans @*/
+	    /*@=usereleased@*/
 	}
 
         if (fp.entry) {

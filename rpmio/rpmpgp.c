@@ -368,11 +368,11 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 		pgpPrtVal(" ", pgpKeyServerPrefsTbl, p[i]);
 	    /*@switchbreak@*/ break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
-/*@-mods@*/
+/*@-mods -mayaliasunique @*/
 	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY) {
 		memcpy(_digp->time, p+1, sizeof(_digp->time));
 	    }
-/*@=mods@*/
+/*@=mods =mayaliasunique @*/
 	    /*@fallthrough@*/
 	case PGPSUBTYPE_SIG_EXPIRE_TIME:
 	case PGPSUBTYPE_KEY_EXPIRE_TIME:
@@ -385,11 +385,11 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 	    /*@switchbreak@*/ break;
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
-/*@-mods@*/
+/*@-mods -mayaliasunique @*/
 	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY) {
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
 	    }
-/*@=mods@*/
+/*@=mods =mayaliasunique @*/
 	    /*@fallthrough@*/
 	case PGPSUBTYPE_EXPORTABLE_CERT:
 	case PGPSUBTYPE_TRUST_SIG:

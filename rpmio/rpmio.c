@@ -2310,7 +2310,9 @@ static int gzdClose( /*@only@*/ void * cookie)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_CLOSE);
+    /*@-dependenttrans@*/
     rc = gzclose(gzfile);
+    /*@=dependenttrans@*/
 
     /* XXX TODO: preserve fd if errors */
 
@@ -2319,7 +2321,9 @@ static int gzdClose( /*@only@*/ void * cookie)
 DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", cookie, rc, fdbg(fd)));
 /*@=modfilesys@*/
 	if (rc < 0) {
+	    /*@-usereleased@*/
 	    fd->errcookie = gzerror(gzfile, &rc);
+	    /*@=usereleased@*/
 	    if (rc == Z_ERRNO) {
 		fd->syserrno = errno;
 		fd->errcookie = strerror(fd->syserrno);

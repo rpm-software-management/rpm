@@ -209,7 +209,7 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 /**
  */
 static char *strtokWithQuotes(char *s, char *delim)
-	/*@*/
+	/*@modifies *s @*/
 {
     static char *olds = NULL;
     char *token;
@@ -244,7 +244,9 @@ static char *strtokWithQuotes(char *s, char *delim)
 	olds = s+1;
     }
 
+    /*@-retalias -temptrans @*/
     return token;
+    /*@=retalias =temptrans @*/
 }
 
 /**

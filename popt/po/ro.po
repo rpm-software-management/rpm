@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-10-17 12:38-0400\n"
+"POT-Creation-Date: 2001-12-08 11:01-0500\n"
 "PO-Revision-Date: 2000-06-14 23:23+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"

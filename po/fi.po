@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-12-06 10:20-0500\n"
+"POT-Creation-Date: 2001-12-08 12:20-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -518,181 +518,181 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
-#: build/files.c:269
+#: build/files.c:271
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:328 build/files.c:520 build/files.c:703
+#: build/files.c:330 build/files.c:522 build/files.c:705
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: build/files.c:339 build/files.c:645 build/files.c:714
+#: build/files.c:341 build/files.c:647 build/files.c:716
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "puuttuva ':', %s:%d"
 
-#: build/files.c:377 build/files.c:670
+#: build/files.c:379 build/files.c:672
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/files.c:483
+#: build/files.c:485
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: build/files.c:536
+#: build/files.c:538
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:574
+#: build/files.c:576
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:584
+#: build/files.c:586
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:596
+#: build/files.c:598
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:741
+#: build/files.c:743
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
 #. @innercontinue@
-#: build/files.c:752
+#: build/files.c:754
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:903
+#: build/files.c:905
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:909
+#: build/files.c:911
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:937
+#: build/files.c:939
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:952
+#: build/files.c:954
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "siirtojen pitää alkaa /-merkillä"
 
-#: build/files.c:965
+#: build/files.c:967
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1142
+#: build/files.c:1144
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:1289
+#: build/files.c:1291
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1504
+#: build/files.c:1506
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:1528
+#: build/files.c:1530
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: build/files.c:1571 build/files.c:2183 build/parsePrep.c:50
+#: build/files.c:1573 build/files.c:2185 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1583
+#: build/files.c:1585
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:1687
+#: build/files.c:1689
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "siirtojen pitää alkaa /-merkillä"
 
-#: build/files.c:1710
+#: build/files.c:1712
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: build/files.c:1725
+#: build/files.c:1727
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: build/files.c:1787
+#: build/files.c:1789
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/files.c:1798 build/pack.c:146
+#: build/files.c:1800 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:2171
+#: build/files.c:2173
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2245
+#: build/files.c:2247
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:2250
+#: build/files.c:2252
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:2334
+#: build/files.c:2336
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "pgp epäonnistui"
 
-#: build/files.c:2338
+#: build/files.c:2340
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:2474
+#: build/files.c:2476
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2500 build/files.c:2514
+#: build/files.c:2502 build/files.c:2516
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:2635
+#: build/files.c:2637
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"
@@ -835,7 +835,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus epäonnistui\n"
 
-#: build/pack.c:603 lib/psm.c:1426
+#: build/pack.c:603 lib/psm.c:1424
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
@@ -865,7 +865,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:683 lib/psm.c:1700
+#: build/pack.c:683 lib/psm.c:1698
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1538,7 +1538,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
+#: rpmdb/header.c:2965 rpmdb/header.c:2986 rpmdb/header.c:3008
 msgid "(not a number)"
 msgstr "(ei ole luku)"
 
@@ -2210,51 +2210,51 @@ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 msgid "%s: running %s scriptlet\n"
 msgstr "älä suorita mitään vaiheita"
 
-#: lib/psm.c:883
+#: lib/psm.c:881
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "skriptin ajo epäonnistui"
 
-#: lib/psm.c:890
+#: lib/psm.c:888
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "skriptin ajo epäonnistui"
 
-#: lib/psm.c:1232
+#: lib/psm.c:1230
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "paketti %s-%s-%s  sisältää jaettuja tiedostoja\n"
 
-#: lib/psm.c:1351
+#: lib/psm.c:1349
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1468
+#: lib/psm.c:1466
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1477
+#: lib/psm.c:1475
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "ryhmässä %s ei ole paketteja\n"
 
-#: lib/psm.c:1519
+#: lib/psm.c:1517
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/psm.c:1520
+#: lib/psm.c:1518
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1708
+#: lib/psm.c:1706
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/psm.c:1711
+#: lib/psm.c:1709
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp epäonnistui"
@@ -2989,79 +2989,79 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2220
+#: rpmdb/header.c:2222
 #, c-format
 msgid "missing { after %"
 msgstr "puuttuva '{' '%':n jälkeen"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2250
+#: rpmdb/header.c:2252
 msgid "missing } after %{"
 msgstr "puuttuva '{' '%{':n jälkeen"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2264
+#: rpmdb/header.c:2266
 msgid "empty tag format"
 msgstr "tyhjä nimiön formaatti"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2278
+#: rpmdb/header.c:2280
 msgid "empty tag name"
 msgstr "tyhjä nimiön nimi"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2295
+#: rpmdb/header.c:2297
 msgid "unknown tag"
 msgstr "tuntematon nimiö"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2322
+#: rpmdb/header.c:2324
 msgid "] expected at end of array"
 msgstr "']' puuttuu taulukkomäärittelyn lopusta"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2340
+#: rpmdb/header.c:2342
 msgid "unexpected ]"
 msgstr "odottamaton ']'"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2344
+#: rpmdb/header.c:2346
 msgid "unexpected }"
 msgstr "odottamaton '}'"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2410
+#: rpmdb/header.c:2412
 msgid "? expected in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2419
+#: rpmdb/header.c:2421
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "odotin '{' '?'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2432 rpmdb/header.c:2474
+#: rpmdb/header.c:2434 rpmdb/header.c:2476
 msgid "} expected in expression"
 msgstr "odotin '}'-merkkiä ilmauksessa"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2442
+#: rpmdb/header.c:2444
 msgid ": expected following ? subexpression"
 msgstr "odotin ':' '?'-merkin jälkeen ali-ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2459
+#: rpmdb/header.c:2461
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "odotin '{' ':'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2484
+#: rpmdb/header.c:2486
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 
-#: rpmdb/header.c:2707
+#: rpmdb/header.c:2709
 msgid "(unknown type)"
 msgstr "(tuntematon tyyppi)"
 

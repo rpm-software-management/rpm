@@ -32,10 +32,12 @@ int poptDupArgv(int argc, const char **argv,
     argv2 = (void *) dst;
     dst += (argc + 1) * sizeof(*argv);
 
+    /*@-branchstate@*/
     for (i = 0; i < argc; i++) {
 	argv2[i] = dst;
 	dst += strlen(strcpy(dst, argv[i])) + 1;
     }
+    /*@=branchstate@*/
     argv2[argc] = NULL;
 
     if (argvPtr) {

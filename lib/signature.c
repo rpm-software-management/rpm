@@ -207,7 +207,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 
 int rpmWriteSignature(FD_t fd, Header h)
 {
-    static byte buf[8] = "\000\000\000\000\000\000\000\000";
+    static byte buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
     int sigSize, pad;
     int rc;
 

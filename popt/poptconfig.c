@@ -44,10 +44,12 @@ static void configLine(poptContext con, char * line)
     while (*line != '\0' && isspace(*line)) line++;
     if (*line == '\0') return;
 
+    /*@-temptrans@*/ /* FIX: line alias is saved */
     if (opt[0] == '-' && opt[1] == '-')
 	item->option.longName = opt + 2;
     else if (opt[0] == '-' && opt[2] == '\0')
 	item->option.shortName = opt[1];
+    /*@=temptrans@*/
 
     if (poptParseArgvString(line, &item->argc, &item->argv)) return;
 
@@ -77,7 +79,6 @@ static void configLine(poptContext con, char * line)
 	item->argv[j] = NULL;
 	item->argc = j;
     }
-    
     /*@=modobserver@*/
 	
     if (!strcmp(entryType, "alias"))

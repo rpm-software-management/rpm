@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-12-06 10:20-0500\n"
+"POT-Creation-Date: 2001-12-08 12:20-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -544,181 +544,181 @@ msgstr "&& と || は文字列用にサポートされていません"
 msgid "syntax error in expression\n"
 msgstr "式中で文法エラー"
 
-#: build/files.c:269
+#: build/files.c:271
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK 失敗: %s\n"
 
-#: build/files.c:328 build/files.c:520 build/files.c:703
+#: build/files.c:330 build/files.c:522 build/files.c:705
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "%s %s で '('が見つかりません"
 
-#: build/files.c:339 build/files.c:645 build/files.c:714
+#: build/files.c:341 build/files.c:647 build/files.c:716
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "')' がありません %s(%s "
 
-#: build/files.c:377 build/files.c:670
+#: build/files.c:379 build/files.c:672
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "無効な %s のトークン: %s"
 
-#: build/files.c:483
+#: build/files.c:485
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "%s %s で '('が見つかりません"
 
-#: build/files.c:536
+#: build/files.c:538
 #, fuzzy, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "%s() に続く空白がありません: %s"
 
-#: build/files.c:574
+#: build/files.c:576
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "不正な文法: %s(%s)"
 
-#: build/files.c:584
+#: build/files.c:586
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "不正なモードスペック: %s(%s)"
 
-#: build/files.c:596
+#: build/files.c:598
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "不正なディレクトリモードスペック: %s(%s)"
 
-#: build/files.c:741
+#: build/files.c:743
 #, fuzzy, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "異常なロカール長: \"%.*s\"  %%lang(%s)"
 
 #. @innercontinue@
-#: build/files.c:752
+#: build/files.c:754
 #, fuzzy, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "複数のロカール %.*s %%lang(%s)"
 
-#: build/files.c:903
+#: build/files.c:905
 #, fuzzy, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "%%docdir の限界に達しました"
 
-#: build/files.c:909
+#: build/files.c:911
 #, fuzzy, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir の引数は1つのみです"
 
 #. We already got a file -- error
-#: build/files.c:937
+#: build/files.c:939
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "1行に2つのファイル: %s"
 
-#: build/files.c:952
+#: build/files.c:954
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "ファイルは \"/\" から始まらなければなりません: %s"
 
-#: build/files.c:965
+#: build/files.c:967
 #, fuzzy, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1142
+#: build/files.c:1144
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s"
 
-#: build/files.c:1289
+#: build/files.c:1291
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1504
+#: build/files.c:1506
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:1528
+#: build/files.c:1530
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1571 build/files.c:2183 build/parsePrep.c:50
+#: build/files.c:1573 build/files.c:2185 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:1583
+#: build/files.c:1585
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1687
+#: build/files.c:1689
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1710
+#: build/files.c:1712
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "%d 行目: バージョンは許可されていません: %s"
 
-#: build/files.c:1725
+#: build/files.c:1727
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1787
+#: build/files.c:1789
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1798 build/pack.c:146
+#: build/files.c:1800 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "行目: %s"
 
-#: build/files.c:2171
+#: build/files.c:2173
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2245
+#: build/files.c:2247
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:2250
+#: build/files.c:2252
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:2334
+#: build/files.c:2336
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s 失敗"
 
-#: build/files.c:2338
+#: build/files.c:2340
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:2474
+#: build/files.c:2476
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:2500 build/files.c:2514
+#: build/files.c:2502 build/files.c:2516
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:2635
+#: build/files.c:2637
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -862,7 +862,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:603 lib/psm.c:1426
+#: build/pack.c:603 lib/psm.c:1424
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -892,7 +892,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:683 lib/psm.c:1700
+#: build/pack.c:683 lib/psm.c:1698
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1570,7 +1570,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
+#: rpmdb/header.c:2965 rpmdb/header.c:2986 rpmdb/header.c:3008
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -2270,52 +2270,52 @@ msgstr "ソースパッケージは .spec ファイルを含んでいません"
 msgid "%s: running %s scriptlet\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/psm.c:883
+#: lib/psm.c:881
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:890
+#: lib/psm.c:888
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1232
+#: lib/psm.c:1230
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:1351
+#: lib/psm.c:1349
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1468
+#: lib/psm.c:1466
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1477
+#: lib/psm.c:1475
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1519
+#: lib/psm.c:1517
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:1520
+#: lib/psm.c:1518
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:1708
+#: lib/psm.c:1706
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:1711
+#: lib/psm.c:1709
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -3062,77 +3062,77 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2220
+#: rpmdb/header.c:2222
 #, c-format
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2250
+#: rpmdb/header.c:2252
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2264
+#: rpmdb/header.c:2266
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2278
+#: rpmdb/header.c:2280
 msgid "empty tag name"
 msgstr "空のタグ名"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2295
+#: rpmdb/header.c:2297
 msgid "unknown tag"
 msgstr "不明なタグ"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2322
+#: rpmdb/header.c:2324
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2340
+#: rpmdb/header.c:2342
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2344
+#: rpmdb/header.c:2346
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2410
+#: rpmdb/header.c:2412
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2419
+#: rpmdb/header.c:2421
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2432 rpmdb/header.c:2474
+#: rpmdb/header.c:2434 rpmdb/header.c:2476
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2442
+#: rpmdb/header.c:2444
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2459
+#: rpmdb/header.c:2461
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2484
+#: rpmdb/header.c:2486
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
-#: rpmdb/header.c:2707
+#: rpmdb/header.c:2709
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 

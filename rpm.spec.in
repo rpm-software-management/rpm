@@ -593,3 +593,5 @@ fi
 - protect brp-compress against /bin/ls output ambiguity (#56656,#56336).
 - 3 madvise calls and a 16Mb mmapped buffer == ~5% install speedup. Wow.
 - use db-4.0.14 final internally.
+- 1st crack at making zlib rsync friendly.
+- lclint-3.0.0.19 fiddles.

@@ -801,6 +801,7 @@ static int runScript(PSM_t psm, Header h,
     }
     if (out == NULL) return 1;	/* XXX can't happen */
     
+    /*@-branchstate@*/
     if (!(child = fork())) {
 	const char * rootDir;
 	int pipes[2];
@@ -812,7 +813,6 @@ static int runScript(PSM_t psm, Header h,
 	xx = dup2(pipes[0], STDIN_FILENO);
 	xx = close(pipes[0]);
 
-	/*@-branchstate@*/
 	if (ts->scriptFd != NULL) {
 	    int sfdno = Fileno(ts->scriptFd);
 	    int ofdno = Fileno(out);
@@ -828,9 +828,7 @@ static int runScript(PSM_t psm, Header h,
 		xx = Fclose (ts->scriptFd);
 	    }
 	}
-	/*@=branchstate@*/
 
-	/*@-branchstate@*/
 	{   const char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
 	    const char *path = SCRIPT_PATH;
 
@@ -842,7 +840,6 @@ static int runScript(PSM_t psm, Header h,
 	    ipath = _free(ipath);
 	    /*@=modobserver@*/
 	}
-	/*@=branchstate@*/
 
 	for (i = 0; i < numPrefixes; i++) {
 	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
@@ -877,6 +874,7 @@ static int runScript(PSM_t psm, Header h,
  	_exit(-1);
 	/*@notreached@*/
     }
+    /*@=branchstate@*/
 
     if (waitpid(child, &status, 0) < 0) {
 	rpmError(RPMERR_SCRIPT,

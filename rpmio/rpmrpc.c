@@ -590,7 +590,7 @@ static int
 vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 		/*@out@*/ const char ** filename,
 		/*@out@*/ const char ** linkname)
-	/*@modifies *st, *filename, *linkname @*/
+	/*@modifies *p, *st, *filename, *linkname @*/
 {
     int idx, idx2, num_cols;
     int i;
