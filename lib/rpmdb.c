@@ -11,6 +11,7 @@
 #include "falloc.h"
 #include "header.h"
 #include "misc.h"
+#include "rpmdb.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
 
@@ -37,41 +38,47 @@ static int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
 		         unsigned int fileNumber);
 static void blockSignals(void);
 static void unblockSignals(void);
-static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
-	           int justcheck);
 
 static sigset_t signalMask;
 
 int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
-    return doopen(prefix, rpmdbp, mode, perms, 0);
-}
-
-int rpmdbInit (char * prefix, int perms) {
-    rpmdb db;
-
-    return doopen(prefix, &db, O_CREAT | O_RDWR, perms, 1);
-}
-
-static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms, 
-	       int justcheck) {
-    char * filename;
-    struct rpmdb db;
     char * dbpath;
-    int i;
 
     dbpath = getVar(RPMVAR_DBPATH);
     if (!dbpath) {
 	message(MESS_DEBUG, "no dbpath has been set");
 	return 1;
-    } else  {
-	i = strlen(dbpath);
-	if (dbpath[i - 1] != '/') {
-	    filename = alloca(i);
-	    strcpy(filename, dbpath);
-	    filename[i] = '/';
-	    filename[i + 1] = '\0';
-	    dbpath = filename;
-	}
+    }
+
+    return openDatabase(prefix, dbpath, rpmdbp, mode, perms, 0);
+}
+
+int rpmdbInit (char * prefix, int perms) {
+    rpmdb db;
+    char * dbpath;
+
+    dbpath = getVar(RPMVAR_DBPATH);
+    if (!dbpath) {
+	message(MESS_DEBUG, "no dbpath has been set");
+	return 1;
+    }
+
+    return openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 1);
+}
+
+int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode, 
+		 int perms, int justcheck) {
+    char * filename;
+    struct rpmdb db;
+    int i;
+
+    i = strlen(dbpath);
+    if (dbpath[i - 1] != '/') {
+	filename = alloca(i + 2);
+	strcpy(filename, dbpath);
+	filename[i] = '/';
+	filename[i + 1] = '\0';
+	dbpath = filename;
     }
     
     filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
@@ -486,4 +493,91 @@ static void blockSignals(void) {
 
 static void unblockSignals(void) {
     sigprocmask(SIG_SETMASK, &signalMask, NULL);
+}
+
+void rpmdbRemoveDatabase(char * rootdir, char * dbpath) { 
+    int i;
+    char * filename;
+
+    i = strlen(dbpath);
+    if (dbpath[i - 1] != '/') {
+	filename = alloca(i);
+	strcpy(filename, dbpath);
+	filename[i] = '/';
+	filename[i + 1] = '\0';
+	dbpath = filename;
+    }
+    
+    filename = alloca(strlen(rootdir) + strlen(dbpath) + 40);
+
+    sprintf(filename, "%s/%s/packages.rpm", rootdir, dbpath);
+    unlink(filename);
+
+    sprintf(filename, "%s/%s/nameindex.rpm", rootdir, dbpath);
+    unlink(filename);
+
+    sprintf(filename, "%s/%s/fileindex.rpm", rootdir, dbpath);
+    unlink(filename);
+
+    sprintf(filename, "%s/%s/groupindex.rpm", rootdir, dbpath);
+    unlink(filename);
+
+    sprintf(filename, "%s/%s/requiredby.rpm", rootdir, dbpath);
+    unlink(filename);
+
+    sprintf(filename, "%s/%s/providesindex.rpm", rootdir, dbpath);
+    unlink(filename);
+}
+
+int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath) {
+    int i;
+    char * ofilename, * nfilename;
+    int rc = 0;
+ 
+    i = strlen(olddbpath);
+    if (olddbpath[i - 1] != '/') {
+	ofilename = alloca(i + 2);
+	strcpy(ofilename, olddbpath);
+	ofilename[i] = '/';
+	ofilename[i + 1] = '\0';
+	olddbpath = ofilename;
+    }
+    
+    i = strlen(newdbpath);
+    if (newdbpath[i - 1] != '/') {
+	nfilename = alloca(i + 2);
+	strcpy(nfilename, newdbpath);
+	nfilename[i] = '/';
+	nfilename[i + 1] = '\0';
+	newdbpath = nfilename;
+    }
+    
+    ofilename = alloca(strlen(rootdir) + strlen(olddbpath) + 40);
+    nfilename = alloca(strlen(rootdir) + strlen(newdbpath) + 40);
+
+    sprintf(ofilename, "%s/%s/packages.rpm", rootdir, olddbpath);
+    sprintf(nfilename, "%s/%s/packages.rpm", rootdir, newdbpath);
+    if (rename(ofilename, nfilename)) rc = 1;
+
+    sprintf(ofilename, "%s/%s/nameindex.rpm", rootdir, olddbpath);
+    sprintf(nfilename, "%s/%s/nameindex.rpm", rootdir, newdbpath);
+    if (rename(ofilename, nfilename)) rc = 1;
+
+    sprintf(ofilename, "%s/%s/fileindex.rpm", rootdir, olddbpath);
+    sprintf(nfilename, "%s/%s/fileindex.rpm", rootdir, newdbpath);
+    if (rename(ofilename, nfilename)) rc = 1;
+
+    sprintf(ofilename, "%s/%s/groupindex.rpm", rootdir, olddbpath);
+    sprintf(nfilename, "%s/%s/groupindex.rpm", rootdir, newdbpath);
+    if (rename(ofilename, nfilename)) rc = 1;
+
+    sprintf(ofilename, "%s/%s/requiredby.rpm", rootdir, olddbpath);
+    sprintf(nfilename, "%s/%s/requiredby.rpm", rootdir, newdbpath);
+    if (rename(ofilename, nfilename)) rc = 1;
+
+    sprintf(ofilename, "%s/%s/providesindex.rpm", rootdir, olddbpath);
+    sprintf(nfilename, "%s/%s/providesindex.rpm", rootdir, newdbpath);
+    if (rename(ofilename, nfilename)) rc = 1;
+
+    return rc;
 }
