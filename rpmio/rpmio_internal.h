@@ -418,7 +418,14 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
     if (rc == -1)
 	fd->syserrno = errno;
     else if (rc > 0 && fd->bytesRemain > 0)
+	switch (opx) {
+	case FDSTAT_READ:
+	case FDSTAT_WRITE:
 	fd->bytesRemain -= rc;
+	    break;
+	default:
+	    break;
+	}
     if (fd->stats != NULL)
 	(void) rpmswExit(fdstat_op(fd, opx), rc);
 }
