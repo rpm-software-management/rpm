@@ -72,6 +72,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir /usr/src/redhat/SOURCES
 %dir /usr/src/redhat/SRPMS
 %dir /usr/src/redhat/RPMS
+/usr/src/redhat/RPMS/*
 /usr/share/locale/*/LC_MESSAGES/rpm.mo
 
 %files devel
