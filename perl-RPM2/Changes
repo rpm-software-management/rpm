@@ -1,3 +1,6 @@
+0.66  2004-04-14 cturner
+	* add changelog support and doc updates from Ville Skytta <ville.skytta@iki.fi>
+
 0.65  2003-12-08 cturner
 	* add RPM2->open_hdlist to read hdlists created by anaconda's genhdlist
 	* fix some typemap entries to allow compilation on older gcc's onces again
