@@ -221,6 +221,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     uint_32 * archiveSizePtr;
     struct fileMemory fileMem;
     int freeFileMem = 0;
+    char * currDir = NULL, * tmpptr;
+    int currDirLen;
 
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
@@ -360,6 +362,18 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	dbiFreeIndexRecord(matches);
 
     if (rootdir) {
+	currDirLen = 50;
+	currDir = malloc(currDirLen);
+	while (!getcwd(currDir, currDirLen)) {
+	    currDirLen += 50;
+	    currDir = realloc(currDir, currDirLen);
+	}
+
+	tmpptr = currDir;
+	currDir = alloca(strlen(tmpptr) + 1);
+	strcpy(currDir, tmpptr);
+	free(tmpptr);
+
 	chdir("/");
 	chroot(rootdir);
     }
@@ -429,6 +443,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	if (rc) {
 	    if (rootdir) {
 		chroot(".");
+		chdir(currDir);
 	    }
 	    if (replacedList) free(replacedList);
 	    if (freeFileMem) freeFileMemory(fileMem);
@@ -441,6 +456,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     if (flags & RPMINSTALL_TEST) {
 	if (rootdir) {
 	    chroot(".");
+	    chdir(currDir);
 	}
 
 	rpmMessage(RPMMESS_DEBUG, "stopping install as we're running --test\n");
@@ -457,6 +473,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	if (rootdir) {
 	    chroot(".");
+	    chdir(currDir);
 	}
 
 	return 2;
@@ -522,6 +539,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 		    if (rootdir) {
 			chroot(".");
+			chdir(currDir);
 		    }
 
 		    return 2;
@@ -559,6 +577,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	    if (rootdir) {
 		chroot(".");
+		chdir(currDir);
 	    }
 
 	    return 2;
@@ -582,6 +601,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     if (rootdir) {
 	chroot(".");
+	chdir(currDir);
     }
 
     if (replacedList) {
