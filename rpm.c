@@ -3,7 +3,6 @@
 #include "build/rpmbuild.h"
 
 #include "build.h"
-#include "checksig.h"
 #include "install.h"
 #include "lib/signature.h"
 #include "popt/popt.h"
@@ -1161,7 +1160,7 @@ int main(int argc, char ** argv)
 	if (!noPgp) checksigFlags |= CHECKSIG_PGP;
 	if (!noGpg) checksigFlags |= CHECKSIG_GPG;
 	if (!noMd5) checksigFlags |= CHECKSIG_MD5;
-	ec = doCheckSig(checksigFlags, poptGetArgs(optCon));
+	ec = rpmCheckSig(checksigFlags, poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	exit(ec);
@@ -1170,7 +1169,7 @@ int main(int argc, char ** argv)
       case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signing"));
-	ec = doReSign(addSign, passPhrase, poptGetArgs(optCon));
+	ec = rpmReSign(addSign, passPhrase, poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	exit(ec);

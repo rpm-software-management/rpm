@@ -40,9 +40,9 @@ pkglib_SCRIPTS = find-provides find-requires mkinstalldirs \
 	config.guess config.sub
 
 noinst_HEADERS = \
-	acconfig.h	build.h		checksig.h	system.h
+	acconfig.h	build.h		system.h
 
-rpm_SOURCES =		build.c checksig.c rpm.c
+rpm_SOURCES =		build.c rpm.c
 rpm_LDADD =		$(mylibs) @LIBMISC@
 
 $(PROGRAMS): 		$(mylibs) @LIBMISC@

@@ -2,13 +2,15 @@
 
 #include "system.h"
 
+#ifdef	DYING
 #include "build/rpmbuild.h"
+#endif
+#include <rpmlib.h>
 
-#include "checksig.h"
 #include "rpmlead.h"
 #include "signature.h"
 
-int doReSign(int add, char *passPhrase, const char **argv)
+int rpmReSign(int add, char *passPhrase, const char **argv)
 {
     FD_t fd, ofd;
     int count;
@@ -142,7 +144,7 @@ int doReSign(int add, char *passPhrase, const char **argv)
     return 0;
 }
 
-int doCheckSig(int flags, const char **argv)
+int rpmCheckSig(int flags, const char **argv)
 {
     FD_t fd, ofd;
     int res, res2, res3;
