@@ -1,0 +1,11 @@
+ELFUTILS_1.0 {
+  global:
+    ia64_backend_name;
+    ia64_destr;
+    ia64_init;
+    ia64_reloc_type_check;
+    ia64_reloc_type_name;
+
+  local:
+    *;
+};

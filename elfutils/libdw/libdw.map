@@ -1,0 +1,12 @@
+ELFUTILS_1.0 {
+  global:
+    dwarf_begin;
+    dwarf_begin_elf;
+    dwarf_end;
+    dwarf_get_elf;
+    dwarf_getscn_info;
+    dwarf_nextcu;
+
+  local:
+    *;
+};

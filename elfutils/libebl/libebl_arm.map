@@ -1,0 +1,11 @@
+ELFUTILS_1.0 {
+  global:
+    arm_backend_name;
+    arm_destr;
+    arm_init;
+    arm_reloc_type_check;
+    arm_reloc_type_name;
+
+  local:
+    *;
+};

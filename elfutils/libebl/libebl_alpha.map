@@ -1,0 +1,11 @@
+ELFUTILS_1.0 {
+  global:
+    alpha_backend_name;
+    alpha_destr;
+    alpha_init;
+    alpha_reloc_type_check;
+    alpha_reloc_type_name;
+
+  local:
+    *;
+};
