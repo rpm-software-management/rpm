@@ -279,8 +279,8 @@ static struct macroEntry *findEntry(char *name)
 
 static int compareMacros(const void *ap, const void *bp)
 {
-    return strcasecmp(((struct macroEntry *)ap)->name,
-		      ((struct macroEntry *)bp)->name);
+    return strcmp(((struct macroEntry *)ap)->name,
+		  ((struct macroEntry *)bp)->name);
 }
 
 static void expandMacroTable()
