@@ -49,6 +49,9 @@
 	  variable
 	- added dependency checking for version numbers
 	- added correct dependency checking for upgrades
+	- added :depflags query format flag
+	- changes --provides, --requires, and --scripts queries to use
+	  queryFormats
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
