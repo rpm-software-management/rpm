@@ -1,3 +1,5 @@
+#ifndef H_SIGNATURE
+
 /* signature.h - generate and verify signatures */
 
 #include "header.h"
@@ -76,3 +78,5 @@ int sigLookupType(void);
 
 /* Utility to read a pass phrase from the user */
 char *getPassPhrase(char *prompt);
+
+#endif
