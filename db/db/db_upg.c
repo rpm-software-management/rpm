@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: db_upg.c,v 11.20 2000/12/12 17:35:30 bostic Exp $";
+static const char revid[] = "$Id: db_upg.c,v 11.33 2003/06/06 14:55:40 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -18,11 +18,11 @@ static const char revid[] = "$Id: db_upg.c,v 11.20 2000/12/12 17:35:30 bostic Ex
 #endif
 
 #include "db_int.h"
-#include "db_page.h"
-#include "db_swap.h"
-#include "btree.h"
-#include "hash.h"
-#include "qam.h"
+#include "dbinc/db_page.h"
+#include "dbinc/db_swap.h"
+#include "dbinc/btree.h"
+#include "dbinc/hash.h"
+#include "dbinc/qam.h"
 
 static int (* const func_31_list[P_PAGETYPE_MAX])
     __P((DB *, char *, u_int32_t, DB_FH *, PAGE *, int *)) = {
@@ -36,10 +36,42 @@ static int (* const func_31_list[P_PAGETYPE_MAX])
 	NULL,			/* P_OVERFLOW */
 	__ham_31_hashmeta,	/* P_HASHMETA */
 	__bam_31_btreemeta,	/* P_BTREEMETA */
+	NULL,			/* P_QAMMETA */
+	NULL,			/* P_QAMDATA */
+	NULL,			/* P_LDUP */
 };
 
 static int __db_page_pass __P((DB *, char *, u_int32_t, int (* const [])
 	       (DB *, char *, u_int32_t, DB_FH *, PAGE *, int *), DB_FH *));
+
+/*
+ * __db_upgrade_pp --
+ *	DB->upgrade pre/post processing.
+ *
+ * PUBLIC: int __db_upgrade_pp __P((DB *, const char *, u_int32_t));
+ */
+int
+__db_upgrade_pp(dbp, fname, flags)
+	DB *dbp;
+	const char *fname;
+	u_int32_t flags;
+{
+	DB_ENV *dbenv;
+	int ret;
+
+	dbenv = dbp->dbenv;
+
+	PANIC_CHECK(dbp->dbenv);
+
+	/*
+	 * !!!
+	 * The actual argument checking is simple, do it inline.
+	 */
+	if ((ret = __db_fchk(dbenv, "DB->upgrade", flags, DB_DUPSORT)) != 0)
+		return (ret);
+
+	return (__db_upgrade(dbp, fname, flags));
+}
 
 /*
  * __db_upgrade --
@@ -54,25 +86,22 @@ __db_upgrade(dbp, fname, flags)
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
-	DB_FH fh;
+	DB_FH *fhp;
 	size_t n;
 	int ret, t_ret;
 	u_int8_t mbuf[256];
 	char *real_name;
 
 	dbenv = dbp->dbenv;
-
-	/* Validate arguments. */
-	if ((ret = __db_fchk(dbenv, "DB->upgrade", flags, DB_DUPSORT)) != 0)
-		return (ret);
+	fhp = NULL;
 
 	/* Get the real backing file name. */
 	if ((ret = __db_appname(dbenv,
-	    DB_APP_DATA, NULL, fname, 0, NULL, &real_name)) != 0)
+	    DB_APP_DATA, fname, 0, NULL, &real_name)) != 0)
 		return (ret);
 
 	/* Open the file. */
-	if ((ret = __os_open(dbenv, real_name, 0, 0, &fh)) != 0) {
+	if ((ret = __os_open(dbenv, real_name, 0, 0, &fhp)) != 0) {
 		__db_err(dbenv, "%s: %s", real_name, db_strerror(ret));
 		return (ret);
 	}
@@ -85,7 +114,7 @@ __db_upgrade(dbp, fname, flags)
 	 * Read the metadata page.  We read 256 bytes, which is larger than
 	 * any access method's metadata page and smaller than any disk sector.
 	 */
-	if ((ret = __os_read(dbenv, &fh, mbuf, sizeof(mbuf), &n)) != 0)
+	if ((ret = __os_read(dbenv, fhp, mbuf, sizeof(mbuf), &n)) != 0)
 		goto err;
 
 	switch (((DBMETA *)mbuf)->magic) {
@@ -100,9 +129,9 @@ __db_upgrade(dbp, fname, flags)
 			    __bam_30_btreemeta(dbp, real_name, mbuf)) != 0)
 				goto err;
 			if ((ret = __os_seek(dbenv,
-			    &fh, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
+			    fhp, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
 				goto err;
-			if ((ret = __os_write(dbenv, &fh, mbuf, 256, &n)) != 0)
+			if ((ret = __os_write(dbenv, fhp, mbuf, 256, &n)) != 0)
 				goto err;
 			/* FALLTHROUGH */
 		case 7:
@@ -113,10 +142,11 @@ __db_upgrade(dbp, fname, flags)
 			memcpy(&dbp->pgsize, mbuf + 20, sizeof(u_int32_t));
 
 			if ((ret = __db_page_pass(
-			    dbp, real_name, flags, func_31_list, &fh)) != 0)
+			    dbp, real_name, flags, func_31_list, fhp)) != 0)
 				goto err;
 			/* FALLTHROUGH */
 		case 8:
+		case 9:
 			break;
 		default:
 			__db_err(dbenv, "%s: unsupported btree version: %lu",
@@ -137,9 +167,9 @@ __db_upgrade(dbp, fname, flags)
 			    __ham_30_hashmeta(dbp, real_name, mbuf)) != 0)
 				goto err;
 			if ((ret = __os_seek(dbenv,
-			    &fh, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
+			    fhp, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
 				goto err;
-			if ((ret = __os_write(dbenv, &fh, mbuf, 256, &n)) != 0)
+			if ((ret = __os_write(dbenv, fhp, mbuf, 256, &n)) != 0)
 				goto err;
 
 			/*
@@ -158,7 +188,7 @@ __db_upgrade(dbp, fname, flags)
 			 * the database to the end of the current doubling.
 			 */
 			if ((ret =
-			    __ham_30_sizefix(dbp, &fh, real_name, mbuf)) != 0)
+			    __ham_30_sizefix(dbp, fhp, real_name, mbuf)) != 0)
 				goto err;
 			/* FALLTHROUGH */
 		case 6:
@@ -169,10 +199,11 @@ __db_upgrade(dbp, fname, flags)
 			memcpy(&dbp->pgsize, mbuf + 20, sizeof(u_int32_t));
 
 			if ((ret = __db_page_pass(
-			    dbp, real_name, flags, func_31_list, &fh)) != 0)
+			    dbp, real_name, flags, func_31_list, fhp)) != 0)
 				goto err;
 			/* FALLTHROUGH */
 		case 7:
+		case 8:
 			break;
 		default:
 			__db_err(dbenv, "%s: unsupported hash version: %lu",
@@ -196,12 +227,13 @@ __db_upgrade(dbp, fname, flags)
 			if ((ret = __qam_32_qammeta(dbp, real_name, mbuf)) != 0)
 				return (ret);
 			if ((ret = __os_seek(dbenv,
-			    &fh, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
+			    fhp, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
 				goto err;
-			if ((ret = __os_write(dbenv, &fh, mbuf, 256, &n)) != 0)
+			if ((ret = __os_write(dbenv, fhp, mbuf, 256, &n)) != 0)
 				goto err;
 			/* FALLTHROUGH */
 		case 3:
+		case 4:
 			break;
 		default:
 			__db_err(dbenv, "%s: unsupported queue version: %lu",
@@ -229,11 +261,12 @@ __db_upgrade(dbp, fname, flags)
 		goto err;
 	}
 
-	ret = __os_fsync(dbenv, &fh);
+	ret = __os_fsync(dbenv, fhp);
 
-err:	if ((t_ret = __os_closehandle(&fh)) != 0 && ret == 0)
+err:	if (fhp != NULL &&
+	    (t_ret = __os_closehandle(dbenv, fhp)) != 0 && ret == 0)
 		ret = t_ret;
-	__os_freestr(real_name);
+	__os_free(dbenv, real_name);
 
 	/* We're done. */
 	if (dbp->db_feedback != NULL)
@@ -268,13 +301,14 @@ __db_page_pass(dbp, real_name, flags, fl, fhp)
 		return (ret);
 
 	/* Allocate memory for a single page. */
-	if ((ret = __os_malloc(dbenv, dbp->pgsize, NULL, &page)) != 0)
+	if ((ret = __os_malloc(dbenv, dbp->pgsize, &page)) != 0)
 		return (ret);
 
 	/* Walk the file, calling the underlying conversion functions. */
 	for (i = 0; i < pgno_last; ++i) {
 		if (dbp->db_feedback != NULL)
-			dbp->db_feedback(dbp, DB_UPGRADE, (i * 100)/pgno_last);
+			dbp->db_feedback(
+			    dbp, DB_UPGRADE, (int)((i * 100)/pgno_last));
 		if ((ret = __os_seek(dbenv,
 		    fhp, dbp->pgsize, i, 0, 0, DB_OS_SEEK_SET)) != 0)
 			break;
@@ -294,7 +328,7 @@ __db_page_pass(dbp, real_name, flags, fl, fhp)
 		}
 	}
 
-	__os_free(page, dbp->pgsize);
+	__os_free(dbp->dbenv, page);
 	return (ret);
 }
 

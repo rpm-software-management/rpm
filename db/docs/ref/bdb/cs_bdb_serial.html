@@ -1,0 +1,40 @@
+<!--$Id: cs_bdb_serial.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Serialized Object Storage</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API</dl></h3></td>
+<td align=right><a href="../bdb/cs_bdb_collection.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Serialized Object Storage</h3>
+<h3>Storage of Serialized Objects</h3>
+<p>Serialization of an object graph includes class information as well as
+instance information.  If more than one instance of the same class is
+serialized as separate serialization operations then the class
+information exists more than once.  To eliminate this inefficiency the
+<a href="../../java/com/sleepycat/bdb/StoredClassCatalog.html">StoredClassCatalog</a>
+ class will
+store the class format for all database records of format
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialFormat.html">SerialFormat</a>
+.  The
+StoredClassCatalog must be opened within the environment before the
+SerialFormat instances.  Remember that if your databases will be running
+within transactions you must open them within a transaction.  Refer to
+the <code>shipment</code> sample code for examples (the class
+<code>SampleDatabase</code> in
+<code>examples_java/src/com/sleepycat/examples/bdb/shipment/basic/SampleDatabase.java</code>
+is a good place to start understanding how to setup this type of
+environment).</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb/cs_bdb_collection.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!--$Id: remove.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Serializable Entity - Removing the redundant value classes</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Serializable Entity</dl></h3></td>
+<td align=right><a href="../bdb_sentity/binding.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tut/summary.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Serializable Entity - Removing the redundant value classes</h3>
+<p>The <b>PartValue</b>, <b>SupplierValue</b> and
+<b>ShipmentValue</b> classes have been removed in this example, and the
+<b>Part</b>, <b>Supplier</b> and <b>Shipment</b> entity classes are
+used in their place.</p>
+<hr size=1 noshade>
+<p>The serial formats are created with the entity classes.</p>
+<blockquote><pre>
+public class SampleDatabase
+{
+    ...
+    public SampleDatabase(String homeDirectory, boolean runRecovery)
+        throws DbException, FileNotFoundException
+    {
+        ...
+        partKeyFormat = new TupleFormat();
+        partValueFormat = new SerialFormat(javaCatalog, <b>Part</b>.class);
+        supplierKeyFormat = new TupleFormat();
+        supplierValueFormat = new SerialFormat(javaCatalog, <b>Supplier</b>.class);
+        shipmentKeyFormat = new TupleFormat();
+        shipmentValueFormat = new SerialFormat(javaCatalog, <b>Shipment</b>.class);
+        cityKeyFormat = new TupleFormat();
+        ...
+    }
+}
+</pre></blockquote>
+<hr size=1 noshade>
+<p>The index key extractor uses the entity class as well.</p>
+<blockquote><pre>
+public class SampleDatabase
+{
+    ...
+    private static class SupplierByCityExtractor
+        extends TupleSerialKeyExtractor
+    {
+        private SupplierByCityExtractor(TupleFormat primaryKeyFormat,
+                                        SerialFormat valueFormat,
+                                        TupleFormat indexKeyFormat)
+        {
+            super(primaryKeyFormat, valueFormat, indexKeyFormat);
+        }
+<p>
+        public void extractIndexKey(TupleInput primaryKeyInput,
+                                    Object valueInput,
+                                    TupleOutput indexKeyOutput)
+            throws IOException
+        {
+            <b>Supplier</b> supplierValue = (<b>Supplier</b>) valueInput;
+            indexKeyOutput.writeString(supplierValue.getCity());
+        }
+<p>
+        public void clearIndexKey(Object valueInputOutput)
+            throws IOException
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+<p>
+}
+</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_sentity/binding.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tut/summary.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

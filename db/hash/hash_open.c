@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -43,7 +43,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: hash_open.c,v 11.173 2002/08/06 05:34:44 bostic Exp ";
+static const char revid[] = "$Id: hash_open.c,v 11.185 2003/07/17 01:39:17 margo Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -60,6 +60,7 @@ static const char revid[] = "Id: hash_open.c,v 11.173 2002/08/06 05:34:44 bostic
 #include "dbinc/log.h"
 #include "dbinc/db_shash.h"
 #include "dbinc/lock.h"
+#include "dbinc/mp.h"
 #include "dbinc/db_swap.h"
 #include "dbinc/btree.h"
 #include "dbinc/fop.h"
@@ -85,16 +86,11 @@ __ham_open(dbp, txn, name, base_pgno, flags)
 	DB_MPOOLFILE *mpf;
 	HASH_CURSOR *hcp;
 	HASH *hashp;
-	int need_sync, ret, t_ret;
+	int ret, t_ret;
 
-	COMPQUIET(name, NULL);
-	dbc = NULL;
 	dbenv = dbp->dbenv;
+	dbc = NULL;
 	mpf = dbp->mpf;
-	need_sync = 0;
-
-	/* Initialize the remaining fields/methods of the DB. */
-	dbp->stat = __ham_stat;
 
 	/*
 	 * Get a cursor.  If DB_CREATE is specified, we may be creating
@@ -102,7 +98,7 @@ __ham_open(dbp, txn, name, base_pgno, flags)
 	 * In STD_LOCKING mode, we'll synchronize using the meta page
 	 * lock instead.
 	 */
-	if ((ret = dbp->cursor(dbp,
+	if ((ret = __db_cursor(dbp,
 	    txn, &dbc, LF_ISSET(DB_CREATE) && CDB_LOCKING(dbenv) ?
 	    DB_WRITECURSOR : 0)) != 0)
 		return (ret);
@@ -134,20 +130,27 @@ __ham_open(dbp, txn, name, base_pgno, flags)
 		if (F_ISSET(&hcp->hdr->dbmeta, DB_HASH_SUBDB))
 			F_SET(dbp, DB_AM_SUBDB);
 
-		/* We must initialize last_pgno, it could be stale. */
+		/*
+		 * We must initialize last_pgno, it could be stale.
+		 * We update this without holding the meta page write
+		 * locked.  This is ok since two threads in the code
+		 * must be setting it to the same value.  SR #7159.
+		 */
 		if (!F_ISSET(dbp, DB_AM_RDONLY) &&
 		    dbp->meta_pgno == PGNO_BASE_MD) {
-			if ((ret = __ham_dirty_meta(dbc)) != 0)
-				goto err2;
-			mpf->last_pgno(mpf, &hcp->hdr->dbmeta.last_pgno);
+			__memp_last_pgno(mpf, &hcp->hdr->dbmeta.last_pgno);
+			F_SET(hcp, H_DIRTY);
 		}
-	} else if (!IS_RECOVERING(dbenv) && !F_ISSET(dbp, DB_AM_RECOVER))
-		DB_ASSERT(0);
+	} else if (!IS_RECOVERING(dbenv) && !F_ISSET(dbp, DB_AM_RECOVER)) {
+		__db_err(dbp->dbenv,
+		    "%s: Invalid hash meta page %d", name, base_pgno);
+		ret = EINVAL;
+	}
 
 err2:	/* Release the meta data page */
 	if ((t_ret = __ham_release_meta(dbc)) != 0 && ret == 0)
 		ret = t_ret;
-err1:	if ((t_ret  = dbc->c_close(dbc)) != 0 && ret == 0)
+err1:	if ((t_ret  = __db_c_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -342,8 +345,8 @@ __ham_init_meta(dbp, meta, pgno, lsnp)
  * This code appears more complex than it is because of the two cases (named
  * and unnamed).  The way to read the code is that for each page being created,
  * there are three parts: 1) a "get page" chunk (which either uses malloc'd
- * memory or calls mpf->get), 2) the initialization, and 3) the "put page"
- * chunk which either does a fop write or an mpf->put.
+ * memory or calls __memp_fget), 2) the initialization, and 3) the "put page"
+ * chunk which either does a fop write or an __memp_fput.
  *
  * PUBLIC: int __ham_new_file __P((DB *, DB_TXN *, DB_FH *, const char *));
  */
@@ -374,7 +377,7 @@ __ham_new_file(dbp, txn, fhp, name)
 	/* Build meta-data page. */
 	if (name == NULL) {
 		lpgno = PGNO_BASE_MD;
-		ret = mpf->get(mpf, &lpgno, DB_MPOOL_CREATE, &meta);
+		ret = __memp_fget(mpf, &lpgno, DB_MPOOL_CREATE, &meta);
 	} else {
 		pginfo.db_pagesize = dbp->pgsize;
 		pginfo.type = dbp->type;
@@ -388,17 +391,18 @@ __ham_new_file(dbp, txn, fhp, name)
 	if (ret != 0)
 		return (ret);
 
-	INIT_LSN(lsn);
+	LSN_NOT_LOGGED(lsn);
 	lpgno = __ham_init_meta(dbp, meta, PGNO_BASE_MD, &lsn);
 	meta->dbmeta.last_pgno = lpgno;
 
 	if (name == NULL)
-		ret = mpf->put(mpf, meta, DB_MPOOL_DIRTY);
+		ret = __memp_fput(mpf, meta, DB_MPOOL_DIRTY);
 	else {
 		if ((ret = __db_pgout(dbenv, PGNO_BASE_MD, meta, &pdbt)) != 0)
 			goto err;
 		ret = __fop_write(dbenv, txn, name,
-		    DB_APP_DATA, fhp, 0, buf, dbp->pgsize, 1);
+		    DB_APP_DATA, fhp, dbp->pgsize, 0, 0, buf, dbp->pgsize, 1,
+		    F_ISSET(dbp, DB_AM_NOT_DURABLE) ? DB_LOG_NOT_DURABLE : 0);
 	}
 	if (ret != 0)
 		goto err;
@@ -406,7 +410,8 @@ __ham_new_file(dbp, txn, fhp, name)
 
 	/* Now allocate the final hash bucket. */
 	if (name == NULL) {
-		if ((ret = mpf->get(mpf, &lpgno, DB_MPOOL_CREATE, &page)) != 0)
+		if ((ret =
+		    __memp_fget(mpf, &lpgno, DB_MPOOL_CREATE, &page)) != 0)
 			goto err;
 	} else {
 #ifdef DIAGNOSTIC
@@ -416,15 +421,16 @@ __ham_new_file(dbp, txn, fhp, name)
 	}
 
 	P_INIT(page, dbp->pgsize, lpgno, PGNO_INVALID, PGNO_INVALID, 0, P_HASH);
-	INIT_LSN(page->lsn);
+	LSN_NOT_LOGGED(page->lsn);
 
 	if (name == NULL)
-		ret = mpf->put(mpf, page, DB_MPOOL_DIRTY);
+		ret = __memp_fput(mpf, page, DB_MPOOL_DIRTY);
 	else {
 		if ((ret = __db_pgout(dbenv, lpgno, buf, &pdbt)) != 0)
 			goto err;
-		ret = __fop_write(dbenv, txn, name,
-		    DB_APP_DATA, fhp, lpgno * dbp->pgsize, buf, dbp->pgsize, 1);
+		ret = __fop_write(dbenv, txn, name, DB_APP_DATA,
+		    fhp, dbp->pgsize, lpgno, 0, buf, dbp->pgsize, 1,
+		    F_ISSET(dbp, DB_AM_NOT_DURABLE) ? DB_LOG_NOT_DURABLE : 0);
 	}
 	if (ret != 0)
 		goto err;
@@ -434,9 +440,9 @@ err:	if (name != NULL)
 		__os_free(dbenv, buf);
 	else {
 		if (meta != NULL)
-			(void)mpf->put(mpf, meta, 0);
+			(void)__memp_fput(mpf, meta, 0);
 		if (page != NULL)
-			(void)mpf->put(mpf, page, 0);
+			(void)__memp_fput(mpf, page, 0);
 	}
 	return (ret);
 }
@@ -471,7 +477,7 @@ __ham_new_subdb(mdbp, dbp, txn)
 	LOCK_INIT(metalock);
 	LOCK_INIT(mmlock);
 
-	if ((ret = mdbp->cursor(mdbp, txn,
+	if ((ret = __db_cursor(mdbp, txn,
 	    &dbc, CDB_LOCKING(dbenv) ?  DB_WRITECURSOR : 0)) != 0)
 		return (ret);
 
@@ -479,7 +485,8 @@ __ham_new_subdb(mdbp, dbp, txn)
 	if ((ret = __db_lget(dbc,
 	    0, dbp->meta_pgno, DB_LOCK_WRITE, 0, &metalock)) != 0)
 		goto err;
-	if ((ret = mpf->get(mpf, &dbp->meta_pgno, DB_MPOOL_CREATE, &meta)) != 0)
+	if ((ret =
+	    __memp_fget(mpf, &dbp->meta_pgno, DB_MPOOL_CREATE, &meta)) != 0)
 		goto err;
 
 	/* Initialize the new meta-data page. */
@@ -495,7 +502,7 @@ __ham_new_subdb(mdbp, dbp, txn)
 	mpgno = PGNO_BASE_MD;
 	if ((ret = __db_lget(dbc, 0, mpgno, DB_LOCK_WRITE, 0, &mmlock)) != 0)
 		goto err;
-	if ((ret = mpf->get(mpf, &mpgno, 0, &mmeta)) != 0)
+	if ((ret = __memp_fget(mpf, &mpgno, 0, &mmeta)) != 0)
 		goto err;
 
 	/*
@@ -519,41 +526,42 @@ __ham_new_subdb(mdbp, dbp, txn)
 			goto err;
 
 	/* Release the new meta-data page. */
-	if ((ret = mpf->put(mpf, meta, DB_MPOOL_DIRTY)) != 0)
+	if ((ret = __memp_fput(mpf, meta, DB_MPOOL_DIRTY)) != 0)
 		goto err;
 	meta = NULL;
 
-	mmeta->last_pgno +=lpgno;
-	lpgno = mmeta->last_pgno;
+	lpgno += mmeta->last_pgno;
 
 	/* Now allocate the final hash bucket. */
-	if ((ret = mpf->get(mpf, &lpgno, DB_MPOOL_CREATE, &h)) != 0)
+	if ((ret = __memp_fget(mpf, &lpgno, DB_MPOOL_CREATE, &h)) != 0)
 		goto err;
+
+	mmeta->last_pgno = lpgno;
 	P_INIT(h, dbp->pgsize, lpgno, PGNO_INVALID, PGNO_INVALID, 0, P_HASH);
 	LSN(h) = LSN(mmeta);
-	if ((ret = mpf->put(mpf, h, DB_MPOOL_DIRTY)) != 0)
+	if ((ret = __memp_fput(mpf, h, DB_MPOOL_DIRTY)) != 0)
 		goto err;
 
 	/* Now put the master-metadata page back. */
-	if ((ret = mpf->put(mpf, mmeta, DB_MPOOL_DIRTY)) != 0)
+	if ((ret = __memp_fput(mpf, mmeta, DB_MPOOL_DIRTY)) != 0)
 		goto err;
 	mmeta = NULL;
 
 err:
 	if (mmeta != NULL)
-		if ((t_ret = mpf->put(mpf, mmeta, 0)) != 0 && ret == 0)
+		if ((t_ret = __memp_fput(mpf, mmeta, 0)) != 0 && ret == 0)
 			ret = t_ret;
 	if (LOCK_ISSET(mmlock))
 		if ((t_ret = __LPUT(dbc, mmlock)) != 0 && ret == 0)
 			ret = t_ret;
 	if (meta != NULL)
-		if ((t_ret = mpf->put(mpf, meta, 0)) != 0 && ret == 0)
+		if ((t_ret = __memp_fput(mpf, meta, 0)) != 0 && ret == 0)
 			ret = t_ret;
 	if (LOCK_ISSET(metalock))
 		if ((t_ret = __LPUT(dbc, metalock)) != 0 && ret == 0)
 			ret = t_ret;
 	if (dbc != NULL)
-		if ((t_ret = dbc->c_close(dbc)) != 0 && ret == 0)
+		if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
 			ret = t_ret;
 	return (ret);
 }

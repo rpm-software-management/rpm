@@ -1,0 +1,51 @@
+<!--$Id: lockng.so,v 1.5 2003/09/09 19:04:14 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.2: DB_LOCK_NOTGRANTED</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.2/verify.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.2/repinit.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.2: DB_LOCK_NOTGRANTED</h3>
+<p>In previous releases, configuring lock or transaction timeout values or
+calling the <a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a> method with the <a href="../../api_c/txn_begin.html#DB_TXN_NOWAIT">DB_TXN_NOWAIT</a> flag
+caused database operation methods to return <a href="../../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a>,
+or throw a <a href="../../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.  This
+required applications to unnecessarily handle multiple errors or
+exception types.</p>
+<p>In the Berkeley DB 4.2 release, with one exception, database operations will
+no longer return <a href="../../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or throw a
+<a href="../../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.  Instead, database
+operations will return <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> or throw a
+<a href="../../api_cxx/deadlock_class.html">DbDeadlockException</a> exception.  This change should require
+no application changes, as applications must already be dealing with the
+possible <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> error return or
+<a href="../../api_cxx/deadlock_class.html">DbDeadlockException</a> exception from database operations.</p>
+<p>The one exception to this rule is the <a href="../../api_c/db_get.html">DB-&gt;get</a> method using the
+<a href="../../api_c/db_get.html#DB_CONSUME_WAIT">DB_CONSUME_WAIT</a> flag to consume records from a Queue.  If lock
+or transaction timeouts are set, this method and flag combination may
+return <a href="../../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or throw a
+<a href="../../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.</p>
+<p>Applications wanting to distinguish between true deadlocks and timeouts
+can configure database operation methods to return
+<a href="../../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or throw a
+<a href="../../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception using the
+<a href="../../api_c/env_set_flags.html#DB_TIME_NOTGRANTED">DB_TIME_NOTGRANTED</a> flag.</p>
+<p>The <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a> and  <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> methods will continue to return
+<a href="../../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a>, or throw a
+<a href="../../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception as they have previously
+done.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.2/verify.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.2/repinit.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

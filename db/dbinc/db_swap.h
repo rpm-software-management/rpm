@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -32,7 +32,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Id: db_swap.h,v 11.8 2002/01/11 15:52:26 bostic Exp 
+ * $Id: db_swap.h,v 11.9 2003/01/08 04:31:32 bostic Exp $
  */
 
 #ifndef _DB_SWAP_H_

@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_ARCHIVE {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_archive.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_archive.o
 	NAME		db_archive
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

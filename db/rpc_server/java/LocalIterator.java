@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: LocalIterator.java,v 1.2 2002/08/09 01:56:09 bostic Exp 
+ * $Id: LocalIterator.java,v 1.3 2003/01/08 05:45:38 bostic Exp $
  */
 
 package com.sleepycat.db.rpcserver;

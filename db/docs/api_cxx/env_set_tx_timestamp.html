@@ -1,20 +1,22 @@
-<!--$Id: env_set_tx_timestamp.so,v 10.6 2000/12/21 18:33:42 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_tx_timestamp.so,v 10.26 2003/11/08 19:17:33 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::set_tx_timestamp</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DbEnv::set_tx_timestamp</h1>
+<h3>DbEnv::set_tx_timestamp</h3>
 </td>
-<td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -23,44 +25,74 @@
 <p>
 int
 DbEnv::set_tx_timestamp(time_t *timestamp);
+<p>
+int
+DbEnv::get_tx_timestamp(time_t *timestampp);
 </pre></h3>
-<h1>Description</h1>
-<p>Recover to the time specified by <b>timestamp</b> rather than to the most
-current possible date.
-The <b>timestamp</b> argument should be the number of seconds since 0
-hours, 0 minutes, 0 seconds, January 1, 1970, Coordinated Universal Time,
-i.e., the Epoch.
+<hr size=1 noshade>
+<h3>Description: DbEnv::set_tx_timestamp</h3>
+<a name="3"><!--meow--></a>
+<p>Recover to the time specified by <b>timestamp</b> rather than to the
+most current possible date.</p>
 <p>Once a database environment has been upgraded to a new version of Berkeley DB
-involving a log format change (see <a href="../ref/upgrade/process.html">Upgrading Berkeley DB installations</a>, it is no longer possible to recover
-to a specific time before that upgrade.
-<p>The DbEnv::set_tx_timestamp interface may only be used to configure Berkeley DB before
-the <a href="../api_cxx/env_open.html">DbEnv::open</a> interface is called.
-<p>The DbEnv::set_tx_timestamp method either returns a non-zero error value or throws an exception that
-encapsulates a non-zero error value on failure, and returns 0 on success.
-<h1>Errors</h1>
+involving a log format change (see <a href="../ref/upgrade/process.html">Upgrading Berkeley DB installations</a>), it is no longer possible to recover
+to a specific time before that upgrade.</p>
+<p>The DbEnv::set_tx_timestamp method configures operations performed using the specified
+<a href="../api_cxx/env_class.html">DbEnv</a> handle, not all operations performed on the underlying
+database environment.</p>
+<p>The DbEnv::set_tx_timestamp method may not be called after the <a href="../api_cxx/env_open.html">DbEnv::open</a> method is
+called.
+</p>
+<p>The DbEnv::set_tx_timestamp method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>It is not possible to recover to the specified time using the
-log files currently present in the environment.
+<p><dt><b>timestamp</b><dd>
+The <b>timestamp</b> parameter references the memory location where the
+recovery timestamp is located.
+<p>The <b>timestamp</b> parameter should be the number of seconds since 0
+hours, 0 minutes, 0 seconds, January 1, 1970, Coordinated Universal
+Time; that is, the Epoch.</p>
 </dl>
-<h3>Classes</h3>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/txn_class.html">DbTxn</a>
-<h1>See Also</h1>
-<a href="../api_cxx/env_set_tx_max.html">DbEnv::set_tx_max</a>,
-<a href="../api_cxx/env_set_tx_recover.html">DbEnv::set_tx_recover</a>,
-<a href="../api_cxx/env_set_tx_timestamp.html">DbEnv::set_tx_timestamp</a>,
-<a href="../api_cxx/txn_abort.html">DbTxn::abort</a>,
-<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>,
-<a href="../api_cxx/txn_checkpoint.html">DbEnv::txn_checkpoint</a>,
-<a href="../api_cxx/txn_commit.html">DbTxn::commit</a>,
-<a href="../api_cxx/txn_id.html">DbTxn::id</a>,
-<a href="../api_cxx/txn_prepare.html">DbTxn::prepare</a>
-and
-<a href="../api_cxx/txn_stat.html">DbEnv::txn_stat</a>.
+<h3>Errors</h3>
+<p>The DbEnv::set_tx_timestamp method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>If it is not possible to recover to the specified time using the log files
+currently present in the environment; or if an
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbEnv::get_tx_timestamp</h3>
+<p>The DbEnv::get_tx_timestamp method returns the recovery timestamp.</p>
+<p>The DbEnv::get_tx_timestamp method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::get_tx_timestamp method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>timestampp</b><dd>
+The DbEnv::get_tx_timestamp method returns  the
+recovery timestamp in <b>timestampp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/txn_class.html">DbTxn</a>
+<h3>See Also</h3>
+<a href="../api_cxx/txn_list.html">Transaction Subsystem and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

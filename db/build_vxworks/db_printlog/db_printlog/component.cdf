@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_PRINTLOG {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_printlog.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_printlog.o
 	NAME		db_printlog
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

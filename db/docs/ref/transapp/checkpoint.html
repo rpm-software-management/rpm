@@ -1,45 +1,45 @@
-<!--$Id: checkpoint.so,v 10.13 2000/08/16 17:50:40 margo Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: checkpoint.so,v 10.20 2002/06/24 14:51:04 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Checkpoints</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
-<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Transaction Protected Applications</dl></h3></td>
-<td width="1%"><a href="../../ref/transapp/deadlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/archival.html"><img src="../../images/next.gif" alt="Next"></a>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
+<td align=right><a href="../transapp/deadlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/archival.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Checkpoints</h1>
+<h3 align=center>Checkpoints</h3>
 <p>The second component of the infrastructure is performing checkpoints of
 the log files.  As transactions commit, change records are written into
 the log files, but the actual changes to the database are not
 necessarily written to disk.  When a checkpoint is performed, the
 changes to the database that are part of committed transactions are
-written into the backing database file.
+written into the backing database file.</p>
 <p>Performing checkpoints is necessary for two reasons.  First, you can
-only remove the Berkeley DB log files from your system after a checkpoint.
+remove the Berkeley DB log files from your system only after a checkpoint.
 Second, the frequency of your checkpoints is inversely proportional to
 the amount of time it takes to run database recovery after a system or
-application failure.
+application failure.</p>
 <p>Once the database pages are written, log files can be archived and removed
 from the system because they will never be needed for anything other than
 catastrophic failure.  In addition, recovery after system or application
-failure only has to redo or undo changes since the last checkpoint, since
-changes before the checkpoint have all been flushed to the filesystem.
+failure has to redo or undo changes only since the last checkpoint since
+changes before the checkpoint have all been flushed to the filesystem.</p>
 <p>Berkeley DB provides a separate utility, <a href="../../utility/db_checkpoint.html">db_checkpoint</a>, which can be
 used to perform checkpoints.  Alternatively, applications can write
-their own checkpoint utility using the underlying <a href="../../api_c/txn_checkpoint.html">txn_checkpoint</a>
+their own checkpoint utility using the underlying <a href="../../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a>
 function.  The following code fragment checkpoints the database
-environment every 60 seconds:
-<p><blockquote><pre>int
+environment every 60 seconds:</p>
+<blockquote><pre>int
 main(int argc, char *argv)
 {
-	extern char *optarg;
 	extern int optind;
 	DB *db_cats, *db_color, *db_fruit;
 	DB_ENV *dbenv;
@@ -75,7 +75,7 @@ main(int argc, char *argv)
 <p>
 	/*
 	 * Open database:
-	 *	Key is a name; Data is: company name, address, cat breeds.
+	 *	Key is a name; Data is: company name, cat breeds.
 	 */
 	db_open(dbenv, &db_cats, "cats", 1);
 <p>
@@ -87,7 +87,6 @@ main(int argc, char *argv)
 	add_cat(dbenv, db_cats,
 		"Amy Adams",
 		"Sleepycat Software",
-		"394 E. Riding Dr., Carlisle, MA 01741, USA",
 		"abyssinian",
 		"bengal",
 		"chartreaux",
@@ -107,21 +106,18 @@ checkpoint_thread(void *arg)
 <p>
 	/* Checkpoint once a minute. */
 	for (;; sleep(60))
-		switch (ret = txn_checkpoint(dbenv, 0, 0, 0)) {
-		case 0:
-		case DB_INCOMPLETE:
-			break;
-		default:
+		if ((ret = dbenv-&gt;txn_checkpoint(dbenv, 0, 0, 0)) != 0) {
 			dbenv-&gt;err(dbenv, ret, "checkpoint thread");
 			exit (1);
 		}
 <p>
 	/* NOTREACHED */
 }</b></pre></blockquote>
-<p>As checkpoints can be quite expensive, choosing how often to perform a
-checkpoint is a common tuning parameter for Berkeley DB applications.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/transapp/deadlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/archival.html"><img src="../../images/next.gif" alt="Next"></a>
+<p>Because checkpoints can be quite expensive, choosing how often to
+perform a checkpoint is a common tuning parameter for Berkeley DB
+applications.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/deadlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/archival.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

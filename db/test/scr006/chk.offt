@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.offt,v 1.9 2001/10/26 13:40:15 bostic Exp 
+# $Id: chk.offt,v 1.10 2003/01/08 20:22:13 bostic Exp $
 #
 # Make sure that no off_t's have snuck into the release.
 
@@ -20,7 +20,7 @@ sed -e "/#undef off_t/d" \
     -e "/mp_fopen.c:.*where an off_t is 32-bits/d" \
     -e "/mutex\/tm.c:/d" \
     -e "/os_map.c:.*(off_t)0))/d" \
-    -e "/os_rw.c:.*(off_t)db_iop->pgno/d" \
+    -e "/os_rw.c:/d" \
     -e "/os_seek.c:.*off_t offset;/d" \
     -e "/os_seek.c:.*offset = /d" \
     -e "/test_perf\/perf_misc.c:/d" \

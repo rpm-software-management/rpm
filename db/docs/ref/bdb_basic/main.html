@@ -1,0 +1,185 @@
+<!--$Id: main.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Implementing the main program</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Basic</dl></h3></td>
+<td align=right><a href="../bdb_basic/views.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/transact.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Implementing the main program</h3>
+<p>The main program opens the database, stores and retrieves objects within
+a transaction, and closes the database.  This section describes the main
+program shell, and the next section describes how to run transactions for
+storing and retrieving objects.</p>
+<hr size=1 noshade>
+<p>The <b>Sample</b> class contains the main program.  The skeleton for
+the <b>Sample</b> class follows.</p>
+<blockquote><pre><b>import com.sleepycat.db.DbException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+<p>
+public class Sample
+{
+    private SampleDatabase db;
+    private SampleViews views;
+<p>
+    public static void main(String args)
+    {
+    }
+<p>
+    private Sample(String homeDir, boolean runRecovery)
+        throws DbException, FileNotFoundException
+    {
+    }
+<p>
+    private void close()
+        throws DbException, IOException
+    {
+    }
+<p>
+    private void run()
+        throws Exception
+    {
+    }
+}
+</b></pre></blockquote>
+<p>The main program uses the <b>SampleDatabase</b> and
+<b>SampleViews</b> classes that were described in the preceding sections.
+The <b>main</b> method will create an instance of the <b>Sample</b> class,
+and call its <b>run</b> and <b>close</b> methods.</p>
+<hr size=1 noshade>
+<p>The following statements parse the program's command line arguments.</p>
+<blockquote><pre>
+    public static void main(String[] args)
+    {
+<b>        System.out.println("\nRunning sample: " + Sample.class);
+        boolean runRecovery = true;
+        String homeDir = "./tmp";
+        for (int i = 0; i &lt; args.length; i += 1)
+        {
+            String arg = args[i];
+            if (args[i].equals("-h") && i &lt; args.length - 1)
+            {
+                i += 1;
+                homeDir = args[i];
+            }
+            else if (args[i].equals("-multiprocess"))
+            {
+                runRecovery = false;
+            }
+            else
+            {
+                System.err.println("Usage:\n java " + Sample.class.getName() +
+                                  "\n  [-h &lt;home-directory&gt;] [-multiprocess]");
+                System.exit(2);
+            }
+        }
+</b>    }
+</pre></blockquote>
+<p>The usage command is:</p>
+<blockquote><pre><b>java com.sleepycat.examples.bdb.shipment.basic.Sample
+     [-h &lt;home-directory&gt; ] [-multiprocess]
+</b></pre></blockquote>
+<p>The <b>-h</b> command is used to set the <b>homeDir</b> variable,
+which will later be passed to the <b>SampleDatabase</b> constructor.
+Normally all Berkeley DB programs should provide a way to configure their database
+environment home directory.</p>
+<p>The default for the home directory is <b>./tmp</b> -- the tmp
+subdirectory of the current directory where the sample is run. The home
+directory must exist before running the sample.  To re-create the sample
+database from scratch, delete all files in the home directory before running
+the sample.</p>
+<p>The home directory was described previously in the <a href="env.html">Opening
+and closing the database environment</a> section.</p>
+<p>Also described in that section was the <b>runRecovery</b> parameter of
+the <b>SampleDatabase</b> constructor.  The <b>-multiprocess</b> command
+is used here to set the <b>runRecovery</b> value.  If the processing model
+is single-process, then Berkeley DB recovery is always run when the environment is
+opened.  If a multiprocess model is needed, a monitor process should be used
+to handle recovery.</p>
+<p>Of course, the command line arguments shown are only examples and a
+real-life application may use different techniques for configuring these
+options.</p>
+<hr size=1 noshade>
+<p>The following statements create an instance of the <b>Sample</b> class
+and call its <b>run</b> and <b>close</b> methods.</p>
+<blockquote><pre>
+    public static void main(String args)
+    {
+        ...
+<b>        Sample sample = null;
+        try
+        {
+            sample = new Sample(homeDir, runRecovery);
+            sample.run();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if (sample != null)
+            {
+                try
+                {
+                    sample.close();
+                }
+                catch (Exception e)
+                {
+                    System.err.println("Exception during database close:");
+                    e.printStackTrace();
+                }
+            }
+        }
+</b>    }
+</pre></blockquote>
+<p>The <b>Sample</b> constructor will open the database and the
+<b>run</b> method will run transactions for storing and retrieving objects.
+If either of these throws an exception, then the program was unable to run and
+should normally terminate.  (Transaction retries are handled at a lower level
+and will be described later.) The first <b>catch</b> statement handles such
+exceptions.</p>
+<p>The <b>finally</b> statement is used to call the <b>close</b>
+method since an attempt should always be made to close the database cleanly.
+If an exception is thrown during close and a prior exception occurred above,
+then the exception during close is likely a side effect of the prior
+exception.</p>
+<hr size=1 noshade>
+<p>The <b>Sample</b> constructor creates the <b>SampleDatabase</b> and
+<b>SampleViews</b> objects.</p>
+<blockquote><pre>
+    private Sample(String homeDir, boolean runRecovery)
+        throws DbException, FileNotFoundException
+    {
+<b>        db = new SampleDatabase(homeDir, runRecovery);
+        views = new SampleViews(db);
+</b>    }
+</pre></blockquote>
+<p>Recall that creating the <b>SampleDatabase</b> object will open the
+environment and all database stores.</p>
+<hr size=1 noshade>
+<p>To close the database the <b>Sample.close</b> method simply calls
+<b>SampleDatabase.close</b>.</p>
+<blockquote><pre>
+    private void close()
+        throws DbException, IOException
+    {
+<b>        db.close();
+</b>    }
+</pre></blockquote>
+<p>The <b>run</b> method is described in the next section.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_basic/views.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/transact.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

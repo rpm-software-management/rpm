@@ -1,27 +1,31 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999, 2000
+# Copyright (c) 1999-2003
 #	Sleepycat Software.  All rights reserved.
 #
-#	$Id: test066.tcl,v 11.7 2000/08/25 14:21:58 sue Exp $
+# $Id: test066.tcl,v 11.14 2003/01/08 05:54:01 bostic Exp $
 #
-# DB Test 66: Make sure a cursor put to DB_CURRENT acts as an overwrite in
-# a database with duplicates
+# TEST	test066
+# TEST	Test of cursor overwrites of DB_CURRENT w/ duplicates.
+# TEST
+# TEST	Make sure a cursor put to DB_CURRENT acts as an overwrite in a
+# TEST	database with duplicates.
 proc test066 { method args } {
 	set omethod [convert_method $method]
 	set args [convert_args $method $args]
 
-	set tnum 66
+	set tnum "066"
 
 	if { [is_record_based $method] || [is_rbtree $method] } {
-	    puts "Test0$tnum: Skipping for method $method."
+	    puts "Test$tnum: Skipping for method $method."
 	    return
 	}
 
-	puts "Test0$tnum: Test of cursor put to DB_CURRENT with duplicates."
+	puts "Test$tnum: Test of cursor put to DB_CURRENT with duplicates."
 
 	source ./include.tcl
 
+	set txnenv 0
 	set eindex [lsearch -exact $args "-env"]
 	#
 	# If we are using an env, then testfile should just be the db name.
@@ -33,9 +37,15 @@ proc test066 { method args } {
 		set testfile test066.db
 		incr eindex
 		set env [lindex $args $eindex]
+		set txnenv [is_txnenv $env]
+		if { $txnenv == 1 } {
+			append args " -auto_commit "
+		}
+		set testdir [get_home $env]
 	}
 	cleanup $testdir $env
 
+	set txn ""
 	set key "test"
 	set data "olddata"
 
@@ -43,10 +53,23 @@ proc test066 { method args } {
 	    $testfile]
 	error_check_good db_open [is_valid_db $db] TRUE
 
-	set ret [eval {$db put} $key [chop_data $method $data]]
+	if { $txnenv == 1 } {
+		set t [$env txn]
+		error_check_good txn [is_valid_txn $t $env] TRUE
+		set txn "-txn $t"
+	}
+	set ret [eval {$db put} $txn {$key [chop_data $method $data]}]
 	error_check_good db_put $ret 0
+	if { $txnenv == 1 } {
+		error_check_good txn [$t commit] 0
+	}
 
-	set dbc [$db cursor]
+	if { $txnenv == 1 } {
+		set t [$env txn]
+		error_check_good txn [is_valid_txn $t $env] TRUE
+		set txn "-txn $t"
+	}
+	set dbc [eval {$db cursor} $txn]
 	error_check_good db_cursor [is_valid_cursor $dbc $db] TRUE
 
 	set ret [$dbc get -first]
@@ -67,7 +90,10 @@ proc test066 { method args } {
 	error_check_good db_get_next $ret ""
 
 	error_check_good dbc_close [$dbc close] 0
+	if { $txnenv == 1 } {
+		error_check_good txn [$t commit] 0
+	}
 	error_check_good db_close [$db close] 0
 
-	puts "\tTest0$tnum: Test completed successfully."
+	puts "\tTest$tnum: Test completed successfully."
 }

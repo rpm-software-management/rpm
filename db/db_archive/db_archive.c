@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,29 +9,25 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2000\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "$Id: db_archive.c,v 11.18 2001/01/18 18:36:56 bostic Exp $";
+    "$Id: db_archive.c,v 11.42 2003/08/13 19:57:04 ubell Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #endif
 
 #include "db_int.h"
-#include "common_ext.h"
 
-int	 main __P((int, char *[]));
-void	 usage __P((void));
-void	 version_check __P((void));
-
-DB_ENV	*dbenv;
-const char
-	*progname = "db_archive";			/* Program name. */
+int main __P((int, char *[]));
+int usage __P((void));
+int version_check __P((const char *));
 
 int
 main(argc, argv)
@@ -40,19 +36,27 @@ main(argc, argv)
 {
 	extern char *optarg;
 	extern int optind;
+	const char *progname = "db_archive";
+	DB_ENV	*dbenv;
 	u_int32_t flags;
-	int ch, e_close, exitval, ret, verbose;
-	char **file, *home, **list;
+	int ch, exitval, ret, verbose;
+	char **file, *home, **list, *passwd;
 
-	version_check();
+	if ((ret = version_check(progname)) != 0)
+		return (ret);
 
+	dbenv = NULL;
 	flags = 0;
-	e_close = exitval = verbose = 0;
-	home = NULL;
-	while ((ch = getopt(argc, argv, "ah:lsVv")) != EOF)
+	exitval = verbose = 0;
+	home = passwd = NULL;
+	file = list = NULL;
+	while ((ch = getopt(argc, argv, "adh:lP:sVv")) != EOF)
 		switch (ch) {
 		case 'a':
 			LF_SET(DB_ARCH_ABS);
+			break;
+		case 'd':
+			LF_SET(DB_ARCH_REMOVE);
 			break;
 		case 'h':
 			home = optarg;
@@ -60,24 +64,33 @@ main(argc, argv)
 		case 'l':
 			LF_SET(DB_ARCH_LOG);
 			break;
+		case 'P':
+			passwd = strdup(optarg);
+			memset(optarg, 0, strlen(optarg));
+			if (passwd == NULL) {
+				fprintf(stderr, "%s: strdup: %s\n",
+				    progname, strerror(errno));
+				return (EXIT_FAILURE);
+			}
+			break;
 		case 's':
 			LF_SET(DB_ARCH_DATA);
 			break;
 		case 'V':
 			printf("%s\n", db_version(NULL, NULL, NULL));
-			exit(0);
+			return (EXIT_SUCCESS);
 		case 'v':
 			verbose = 1;
 			break;
 		case '?':
 		default:
-			usage();
+			return (usage());
 		}
 	argc -= optind;
 	argv += optind;
 
 	if (argc != 0)
-		usage();
+		return (usage());
 
 	/* Handle possible interruptions. */
 	__db_util_siginit();
@@ -91,7 +104,6 @@ main(argc, argv)
 		    "%s: db_env_create: %s\n", progname, db_strerror(ret));
 		goto shutdown;
 	}
-	e_close = 1;
 
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
@@ -99,6 +111,11 @@ main(argc, argv)
 	if (verbose)
 		(void)dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT, 1);
 
+	if (passwd != NULL && (ret = dbenv->set_encrypt(dbenv,
+	    passwd, DB_ENCRYPT_AES)) != 0) {
+		dbenv->err(dbenv, ret, "set_passwd");
+		goto shutdown;
+	}
 	/*
 	 * If attaching to a pre-existing environment fails, create a
 	 * private one and try again.
@@ -112,8 +129,8 @@ main(argc, argv)
 	}
 
 	/* Get the list of names. */
-	if ((ret = log_archive(dbenv, &list, flags, NULL)) != 0) {
-		dbenv->err(dbenv, ret, "log_archive");
+	if ((ret = dbenv->log_archive(dbenv, &list, flags)) != 0) {
+		dbenv->err(dbenv, ret, "DB_ENV->log_archive");
 		goto shutdown;
 	}
 
@@ -121,44 +138,49 @@ main(argc, argv)
 	if (list != NULL) {
 		for (file = list; *file != NULL; ++file)
 			printf("%s\n", *file);
-		__os_free(list, 0);
+		free(list);
 	}
 
 	if (0) {
 shutdown:	exitval = 1;
 	}
-	if (e_close && (ret = dbenv->close(dbenv, 0)) != 0) {
+	if (dbenv != NULL && (ret = dbenv->close(dbenv, 0)) != 0) {
 		exitval = 1;
 		fprintf(stderr,
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
 	}
 
+	if (passwd != NULL)
+		free(passwd);
+
 	/* Resend any caught signal. */
 	__db_util_sigresend();
 
-	return (exitval);
+	return (exitval == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-void
+int
 usage()
 {
-	(void)fprintf(stderr, "usage: db_archive [-alsVv] [-h home]\n");
-	exit (1);
+	(void)fprintf(stderr,
+	    "usage: db_archive [-adlsVv] [-h home] [-P password]\n");
+	return (EXIT_FAILURE);
 }
 
-void
-version_check()
+int
+version_check(progname)
+	const char *progname;
 {
 	int v_major, v_minor, v_patch;
 
 	/* Make sure we're loaded with the right version of the DB library. */
 	(void)db_version(&v_major, &v_minor, &v_patch);
-	if (v_major != DB_VERSION_MAJOR ||
-	    v_minor != DB_VERSION_MINOR || v_patch != DB_VERSION_PATCH) {
+	if (v_major != DB_VERSION_MAJOR || v_minor != DB_VERSION_MINOR) {
 		fprintf(stderr,
-	"%s: version %d.%d.%d doesn't match library version %d.%d.%d\n",
+	"%s: version %d.%d doesn't match library version %d.%d\n",
 		    progname, DB_VERSION_MAJOR, DB_VERSION_MINOR,
-		    DB_VERSION_PATCH, v_major, v_minor, v_patch);
-		exit (1);
+		    v_major, v_minor);
+		return (EXIT_FAILURE);
 	}
+	return (0);
 }

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: FreeList.java,v 1.3 2002/08/09 01:56:09 bostic Exp 
+ * $Id: FreeList.java,v 1.5 2003/01/08 05:45:34 bostic Exp $
  */
 
 package com.sleepycat.db.rpcserver;
@@ -31,8 +31,8 @@ class FreeList
 		if (free_head == null) {
 			pos = items.size();
 			items.addElement(obj);
-			if (pos % 1000 == 0)
-				DbServer.err.println(this + " grew to size " + pos);
+			if (pos + 1 % 1000 == 0)
+				DbServer.err.println(this + " grew to size " + (pos + 1));
 		} else {
 			pos = free_head.getIndex();
 			free_head = (FreeIndex)items.elementAt(pos);

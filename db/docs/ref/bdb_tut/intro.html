@@ -1,0 +1,108 @@
+<!--$Id: intro.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Introduction to the Java API tutorial</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial</dl></h3></td>
+<td align=right><a href="../am_misc/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Introduction to the Java API tutorial</h3>
+<p>The Java API is a Java persistence framework based on the standard Java
+collections API.  This tutorial illustrates the use of the Java API with a
+shipment database, a familiar example from classic database texts.</p>
+<p>The examples illustrate the following concepts of the Java API:</p>
+<p><ul type=disc>
+<li>Record <i>bindings</i> and <i>formats</i>
+<li>The database <i>environment</i>
+<li>Database <i>stores</i> that contain key/value records
+<li>Database <i>indices</i> that contain secondary keys and foreign
+keys
+<li>Java <i>collections</i> for accessing stores and indices
+<li><i>Transactions</i> used to commit or undo database changes
+</ul>
+<p>The examples build on each other, but at the same time the source code
+for each example stands alone.</p>
+<p><ul type=disc>
+<li><a href="../bdb_basic/intro.html">Basic</a> -
+The shipment program
+<li><a href="../bdb_index/intro.html">Index</a> -
+Indices and foreign keys
+<li><a href="../bdb_entity/intro.html">Entity</a> -
+Combining the key and value in a single object
+<li><a href="../bdb_tuple/intro.html">Tuple</a> -
+Compact ordered keys
+<li><a href="../bdb_sentity/intro.html">Serializable Entity</a> -
+One serializable class for entities and values
+</ul>
+<p>The shipment database consists of three database stores: the part store,
+the supplier store, and the shipment store.  Each store contains a number of
+records, and each record consists of a key and a value.</p>
+<table border=1>
+<tr><th>Store</th><th>Key</th><th>Value</th></tr>
+<tr><td>Part</td><td>Part Number</td><td>Name, Color, Weight, City</td></tr>
+<tr><td>Supplier</td><td>Supplier Number</td><td>Name, Status, City</td></tr>
+<tr><td>Shipment</td><td>Part Number, Supplier Number</td><td>Quantity</td></tr>
+</table>
+<p>In the example programs, Java classes containing the fields above are
+defined for the key and value of each store: <b>PartKey</b>,
+<b>PartValue</b>, <b>SupplierKey</b>, <b>SupplierValue</b>,
+<b>ShipmentKey</b> and <b>ShipmentValue</b>.  In addition, because the
+Part's Weight field is itself composed of two fields -- the weight value and
+the unit of measure -- it is represented by a separate <b>Weight</b> class.
+These classes will be defined in the first example program.</p>
+<p>In general the Java API uses formats and bindings to describe how Java
+objects are stored.  A format defines the stored data syntax, and a binding
+defines the mapping between a Java object and the stored data.  The example
+programs show how to create different types of formats and bindings, and
+explains the characteristics of each type.</p>
+<p>The following tables contain the record values that are used in all the
+example programs in the tutorial.</p>
+<h3>Part Records</h3>
+<table border=1>
+<tr><th>Number</th><th>Name</th><th>Color</th><th>Weight</th><th>City</th></tr>
+<tr><td>P1</td><td>Nut</td><td>Red</td><td>12.0 grams</td><td>London</td></tr>
+<tr><td>P2</td><td>Bolt</td><td>Green</td><td>17.0 grams</td><td>Paris</td></tr>
+<tr><td>P3</td><td>Screw</td><td>Blue</td><td>17.0 grams</td><td>Rome</td></tr>
+<tr><td>P4</td><td>Screw</td><td>Red</td><td>14.0 grams</td><td>London</td></tr>
+<tr><td>P5</td><td>Cam</td><td>Blue</td><td>12.0 grams</td><td>Paris</td></tr>
+<tr><td>P6</td><td>Cog</td><td>Red</td><td>19.0 grams</td><td>London</td></tr>
+</table>
+<h3>Supplier Records</h3>
+<table border=1>
+<tr><th>Number</th><th>Name</th><th>Status</th><th>City</th></tr>
+<tr><td>S1</td><td>Smith</td><td>20</td><td>London</td></tr>
+<tr><td>S2</td><td>Jones</td><td>10</td><td>Paris</td></tr>
+<tr><td>S3</td><td>Blake</td><td>30</td><td>Paris</td></tr>
+<tr><td>S4</td><td>Clark</td><td>20</td><td>London</td></tr>
+<tr><td>S5</td><td>Adams</td><td>30</td><td>Athens</td></tr>
+</table>
+<h3>Shipment Records</h3>
+<table border=1>
+<tr><th>Part Number</th><th>Supplier Number</th><th>Quantity</th></tr>
+<tr><td>P1</td><td>S1</td><td>300</td></tr>
+<tr><td>P1</td><td>S2</td><td>300</td></tr>
+<tr><td>P2</td><td>S1</td><td>200</td></tr>
+<tr><td>P2</td><td>S2</td><td>400</td></tr>
+<tr><td>P2</td><td>S3</td><td>200</td></tr>
+<tr><td>P2</td><td>S4</td><td>200</td></tr>
+<tr><td>P3</td><td>S1</td><td>400</td></tr>
+<tr><td>P4</td><td>S1</td><td>200</td></tr>
+<tr><td>P4</td><td>S4</td><td>300</td></tr>
+<tr><td>P5</td><td>S1</td><td>100</td></tr>
+<tr><td>P5</td><td>S4</td><td>400</td></tr>
+<tr><td>P6</td><td>S1</td><td>100</td></tr>
+</table>
+<table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: txn006.tcl,v 1.5 2002/08/01 19:59:19 sue Exp 
+# $Id: txn006.tcl,v 1.6 2003/01/08 05:54:14 bostic Exp $
 #
 #
 #TEST	txn006

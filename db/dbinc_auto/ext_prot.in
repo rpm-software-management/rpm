@@ -31,11 +31,6 @@ int db_env_set_func_unlink __P((int (*)(const char *)));
 int db_env_set_func_unmap __P((int (*)(void *, size_t)));
 int db_env_set_func_write __P((ssize_t (*)(int, const void *, size_t)));
 int db_env_set_func_yield __P((int (*)(void)));
-int txn_abort __P((DB_TXN *));
-int txn_begin __P((DB_ENV *, DB_TXN *, DB_TXN **, u_int32_t));
-int txn_commit __P((DB_TXN *, u_int32_t));
-int db_env_xa_attach __P((int *, void *, DB_ENV **, DB_TXN **));
-int db_env_set_thread_func __P((int (*)(void **), int (*)(void *, void *), int (*)(void *), size_t));
 #if DB_DBM_HSEARCH != 0
 int	 __db_ndbm_clearerr __P((DBM *));
 void	 __db_ndbm_close __P((DBM *));

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: cxx_int.h,v 11.20 2002/01/11 15:52:23 bostic Exp 
+ * $Id: cxx_int.h,v 11.22 2003/03/11 15:39:41 merrells Exp $
  */
 
 #ifndef _CXX_INT_H_
@@ -66,11 +66,11 @@ WRAPPED_CLASS(DbTxn, DbTxnImp, DB_TXN*)
 // the tristate values given above.  If UNKNOWN is specified,
 // the behavior is taken from the last initialized DbEnv.
 //
-#define	DB_ERROR(caller, ecode, policy) \
-    DbEnv::runtime_error(caller, ecode, policy)
+#define	DB_ERROR(env, caller, ecode, policy) \
+    DbEnv::runtime_error(env, caller, ecode, policy)
 
-#define	DB_ERROR_DBT(caller, dbt, policy) \
-    DbEnv::runtime_error_dbt(caller, dbt, policy)
+#define	DB_ERROR_DBT(env, caller, dbt, policy) \
+    DbEnv::runtime_error_dbt(env, caller, dbt, policy)
 
 #define	DB_OVERFLOWED_DBT(dbt) \
 	(F_ISSET(dbt, DB_DBT_USERMEM) && dbt->size > dbt->ulen)

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.def,v 1.9 2002/03/27 04:32:57 bostic Exp 
+# $Id: chk.def,v 1.9 2002/03/27 04:32:57 bostic Exp $
 #
 # Check to make sure we haven't forgotten to add any interfaces
 # to the Win32 libdb.def file.

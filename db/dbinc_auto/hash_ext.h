@@ -105,9 +105,10 @@ int __ham_groupalloc_recover __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *))
 int __ham_curadj_recover __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
 int __ham_chgpg_recover __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
 int __ham_reclaim __P((DB *, DB_TXN *txn));
-int __ham_truncate __P((DB *, DB_TXN *txn, u_int32_t *));
-int __ham_stat __P((DB *, void *, u_int32_t));
+int __ham_truncate __P((DBC *, u_int32_t *));
+int __ham_stat __P((DBC *, void *, u_int32_t));
 int __ham_traverse __P((DBC *, db_lockmode_t, int (*)(DB *, PAGE *, void *, int *), void *, int));
+int __db_no_hash_am __P((DB_ENV *));
 int __ham_30_hashmeta __P((DB *, char *, u_int8_t *));
 int __ham_30_sizefix __P((DB *, DB_FH *, char *, u_int8_t *));
 int __ham_31_hashmeta __P((DB *, char *, u_int32_t, DB_FH *, PAGE *, int *));

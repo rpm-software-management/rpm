@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: DbServer.java,v 1.5 2002/08/09 01:56:09 bostic Exp 
+ * $Id: DbServer.java,v 1.2 2003/12/15 21:44:37 jbj Exp $
  */
 
 package com.sleepycat.db.rpcserver;
@@ -44,14 +44,14 @@ public class DbServer extends DbDispatcher
 		long newnow = System.currentTimeMillis();
 		// DbServer.err.println("Dispatching RPC call " + procedure + " after delay of " + (newnow - now));
 		now = newnow;
-		// DbServer.err.flush();
-		super.dispatchOncRpcCall(call, program, version, procedure);
-
 		try {
-			doTimeouts();
+			super.dispatchOncRpcCall(call, program, version, procedure);
 		} catch(Throwable t) {
-			System.err.println("Caught " + t + " during doTimeouts()");
-			t.printStackTrace(System.err);
+			System.err.println("Caught " + t + " while dispatching RPC call " + procedure);
+			t.printStackTrace(DbServer.err);
+		} finally {
+			doTimeouts();
+			DbServer.err.flush();
 		}
 	}
 
@@ -92,53 +92,66 @@ public class DbServer extends DbDispatcher
 		return id;
 	}
 
-	void delEnv(RpcDbEnv rdbenv)
+	void delEnv(RpcDbEnv rdbenv, boolean dispose)
 	{
+		env_list.del(rdbenv);
+
 		// cursors and transactions will already have been cleaned up
 		for(LocalIterator i = db_list.iterator(); i.hasNext(); ) {
 			RpcDb rdb = (RpcDb)i.next();
 			if (rdb != null && rdb.rdbenv == rdbenv)
-				delDb(rdb);
+				delDb(rdb, true);
 		}
 
-		env_list.del(rdbenv);
-		rdbenv.dispose();
+		if (dispose)
+			rdbenv.dispose();
 	}
 
-	void delDb(RpcDb rdb)
+	void delDb(RpcDb rdb, boolean dispose)
 	{
 		db_list.del(rdb);
-		rdb.dispose();
 
 		for(LocalIterator i = cursor_list.iterator(); i.hasNext(); ) {
 			RpcDbc rdbc = (RpcDbc)i.next();
-			if (rdbc != null && rdbc.timer == rdb)
+			if (rdbc != null && rdbc.timer == rdb) {
 				i.remove();
+				rdbc.dispose();
+			}
 		}
+
+		if (dispose)
+			rdb.dispose();
 	}
 
-	void delTxn(RpcDbTxn rtxn)
+	void delTxn(RpcDbTxn rtxn, boolean dispose)
 	{
 		txn_list.del(rtxn);
-		rtxn.dispose();
 
 		for(LocalIterator i = cursor_list.iterator(); i.hasNext(); ) {
 			RpcDbc rdbc = (RpcDbc)i.next();
-			if (rdbc != null && rdbc.timer == rtxn)
+			if (rdbc != null && rdbc.timer == rtxn) {
 				i.remove();
+				rdbc.dispose();
+			}
 		}
 
 		for(LocalIterator i = txn_list.iterator(); i.hasNext(); ) {
 			RpcDbTxn rtxn_child = (RpcDbTxn)i.next();
-			if (rtxn_child != null && rtxn_child.timer == rtxn)
+			if (rtxn_child != null && rtxn_child.timer == rtxn) {
 				i.remove();
+				rtxn_child.dispose();
+			}
 		}
+
+		if (dispose)
+			rtxn.dispose();
 	}
 
-	void delCursor(RpcDbc rdbc)
+	void delCursor(RpcDbc rdbc, boolean dispose)
 	{
 		cursor_list.del(rdbc);
-		rdbc.dispose();
+		if (dispose)
+			rdbc.dispose();
 	}
 
 	RpcDbEnv getEnv(int envid)
@@ -192,7 +205,7 @@ public class DbServer extends DbDispatcher
 			// DbServer.err.println("Examining " + rdbc + ", time left = " + (end_time - now));
 			if (end_time < now) {
 				DbServer.err.println("Cleaning up " + rdbc);
-				delCursor(rdbc);
+				delCursor(rdbc, true);
 			} else if (end_time < hint)
 				hint = end_time;
 		}
@@ -206,7 +219,7 @@ public class DbServer extends DbDispatcher
 			// DbServer.err.println("Examining " + rtxn + ", time left = " + (end_time - now));
 			if (end_time < now) {
 				DbServer.err.println("Cleaning up " + rtxn);
-				delTxn(rtxn);
+				delTxn(rtxn, true);
 			} else if (end_time < hint)
 				hint = end_time;
 		}
@@ -220,7 +233,7 @@ public class DbServer extends DbDispatcher
 			// DbServer.err.println("Examining " + rdbenv + ", time left = " + (end_time - now));
 			if (end_time < now) {
 				DbServer.err.println("Cleaning up " + rdbenv);
-				delEnv(rdbenv);
+				delEnv(rdbenv, true);
 			}
 		}
 
@@ -232,6 +245,7 @@ public class DbServer extends DbDispatcher
 	}
 
 	// Some constants that aren't available elsewhere
+	static final int EINVAL = 22;
 	static final int DB_SERVER_FLAGMASK = Db.DB_LOCKDOWN |
 	    Db.DB_PRIVATE | Db.DB_RECOVER | Db.DB_RECOVER_FATAL |
 	    Db.DB_SYSTEM_MEM | Db.DB_USE_ENVIRON |
@@ -243,6 +257,22 @@ public class DbServer extends DbDispatcher
 	    Db.DB_NOMMAP | Db.DB_RDONLY;
 	static final int DB_SERVER_DBNOSHARE = Db.DB_EXCL | Db.DB_TRUNCATE;
 
+	static Vector homes = new Vector();
+
+	static void add_home(String home) {
+		File f = new File(home);
+		try { home = f.getCanonicalPath(); } catch(IOException e) {}
+		homes.addElement(home);
+	}
+
+	static boolean check_home(String home) {
+		if (home == null)
+			return false;
+		File f = new File(home);
+		try { home = f.getCanonicalPath(); } catch(IOException e) {}
+		return homes.contains(home);
+	}
+
 	public static void main(String[] args)
 	{
 		System.out.println("Starting DbServer...");
@@ -252,7 +282,7 @@ public class DbServer extends DbDispatcher
 
 			switch (args[i].charAt(1)) {
 			case 'h':
-				++i; // add_home(args[++i]);
+				add_home(args[++i]);
 				break;
 			case 'I':
 				idleto = Long.parseLong(args[++i]) * 1000L;
@@ -279,6 +309,7 @@ public class DbServer extends DbDispatcher
 
 		try {
 			DbServer.err = new PrintWriter(new FileOutputStream("JavaRPCServer.trace", true));
+			// DbServer.err = new PrintWriter(System.err);
 			DbServer server = new DbServer();
 			server.run();
 		} catch (Throwable e) {

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.cxxtests,v 1.5 2002/07/05 22:17:59 dda Exp 
+# $Id: chk.cxxtests,v 1.7 2003/11/21 02:36:36 bostic Exp $
 #
 # Check to make sure that regression tests for C++ run.
 
@@ -17,7 +17,7 @@ cd ..
 	echo 'FAIL: chk.cxxtests must be run from a local build directory.'
 	exit 1
 }
-[ -d ../docs_src ] || {
+[ -d ../env ] || {
 	echo 'FAIL: chk.cxxtests must be run from a local build directory.'
 	exit 1
 }

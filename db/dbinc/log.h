@@ -1,15 +1,60 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: log.h,v 11.60 2002/08/06 06:37:08 bostic Exp 
+ * $Id: log.h,v 11.68 2003/11/20 18:32:19 bostic Exp $
  */
 
 #ifndef _LOG_H_
 #define	_LOG_H_
 
+/*******************************************************
+ * DBREG:
+ *	The DB file register code keeps track of open files.  It's stored
+ *	in the log subsystem's shared region, and so appears in the log.h
+ *	header file, but is logically separate.
+ *******************************************************/
+/*
+ * The per-process table that maps log file-id's to DB structures.
+ */
+typedef	struct __db_entry {
+	DB	*dbp;			/* Open dbp for this file id. */
+	int	deleted;		/* File was not found during open. */
+} DB_ENTRY;
+
+/*
+ * FNAME --
+ *	File name and id.
+ */
+struct __fname {
+	SH_TAILQ_ENTRY q;		/* File name queue. */
+
+	int32_t   id;			/* Logging file id. */
+	DBTYPE	  s_type;		/* Saved DB type. */
+
+	roff_t	  name_off;		/* Name offset. */
+	db_pgno_t meta_pgno;		/* Page number of the meta page. */
+	u_int8_t  ufid[DB_FILE_ID_LEN];	/* Unique file id. */
+
+	u_int32_t create_txnid;		/*
+					 * Txn ID of the DB create, stored so
+					 * we can log it at register time.
+					 */
+	int	  is_durable;		/* Is this file durable or not. */
+};
+
+/* File open/close register log record opcodes. */
+#define	DBREG_CHKPNT	1		/* Checkpoint: file name/id dump. */
+#define	DBREG_CLOSE	2		/* File close. */
+#define	DBREG_OPEN	3		/* File open. */
+#define	DBREG_RCLOSE	4		/* File close after recovery. */
+
+/*******************************************************
+ * LOG:
+ *	The log subsystem information.
+ *******************************************************/
 struct __db_log;	typedef struct __db_log DB_LOG;
 struct __hdr;		typedef struct __hdr HDR;
 struct __log;		typedef struct __log LOG;
@@ -22,14 +67,6 @@ struct __log_persist;	typedef struct __log_persist LOGP;
 #define	LG_MAX_DEFAULT		(10 * MEGABYTE)	/* 10 MB. */
 #define	LG_BSIZE_DEFAULT	(32 * 1024)	/* 32 KB. */
 #define	LG_BASE_REGION_SIZE	(60 * 1024)	/* 60 KB. */
-
-/*
- * The per-process table that maps log file-id's to DB structures.
- */
-typedef	struct __db_entry {
-	DB	*dbp;			/* Open dbp for this file id. */
-	int	deleted;		/* File was not found during open. */
-} DB_ENTRY;
 
 /*
  * DB_LOG
@@ -52,12 +89,10 @@ struct __db_log {
 
 /*
  * These fields are always accessed while the region lock is held, so they do
- * not have to be protected by the thread lock as well, OR, they are only used
- * when threads are not being used, i.e. most cursor operations are disallowed
- * on threaded logs.
+ * not have to be protected by the thread lock as well.
  */
 	u_int32_t lfname;		/* Log file "name". */
-	DB_FH	  lfh;			/* Log file handle. */
+	DB_FH	 *lfhp;			/* Log file handle. */
 
 	u_int8_t *bufp;			/* Region buffer. */
 
@@ -67,8 +102,7 @@ struct __db_log {
 
 #define	DBLOG_RECOVER		0x01	/* We are in recovery. */
 #define	DBLOG_FORCE_OPEN	0x02	/* Force the DB open even if it appears
-					 * to be deleted.
-					 */
+					 * to be deleted. */
 	u_int32_t flags;
 };
 
@@ -156,17 +190,30 @@ struct __log {
 	DB_LOG_STAT stat;		/* Log statistics. */
 
 	/*
+	 * !!! - NOTE that the next 6 fields, waiting_lsn, verify_lsn,
+	 * max_wait_lsn, wait_recs, rcvd_recs, and ready_lsn are NOT
+	 * protected by the log region lock.  They are protected by
+	 * db_rep->db_mutexp. If you need access to both, you must
+	 * acquire the db_mutexp before acquiring the log region lock.
+	 *
 	 * The waiting_lsn is used by the replication system.  It is the
 	 * first LSN that we are holding without putting in the log, because
 	 * we received one or more log records out of order.  Associated with
 	 * the waiting_lsn is the number of log records that we still have to
 	 * receive before we decide that we should request it again.
+	 *
+	 * The max_wait_lsn is used to control retransmission in the face
+	 * of dropped messages.  If we are requesting all records from the
+	 * current gap (i.e., chunk of the log that we are missing), then
+	 * the max_wait_lsn contains the first LSN that we are known to have
+	 * in the __db.rep.db.  If we requested only a single record, then
+	 * the max_wait_lsn has the LSN of that record we requested.
 	 */
 	DB_LSN	  waiting_lsn;		/* First log record after a gap. */
 	DB_LSN	  verify_lsn;		/* LSN we are waiting to verify. */
+	DB_LSN	  max_wait_lsn;		/* Maximum LSN requested. */
 	u_int32_t wait_recs;		/* Records to wait before requesting. */
 	u_int32_t rcvd_recs;		/* Records received while waiting. */
-
 	/*
 	 * The ready_lsn is also used by the replication system.  It is the
 	 * next LSN we expect to receive.  It's normally equal to "lsn",
@@ -218,40 +265,13 @@ struct __db_commit {
 	u_int32_t	flags;
 };
 
-/*
- * FNAME --
- *	File name and id.
- */
-struct __fname {
-	SH_TAILQ_ENTRY q;		/* File name queue. */
-
-	int32_t id;			/* Logging file id. */
-	DBTYPE	  s_type;		/* Saved DB type. */
-
-	roff_t	  name_off;		/* Name offset. */
-	db_pgno_t meta_pgno;		/* Page number of the meta page. */
-	u_int8_t  ufid[DB_FILE_ID_LEN];	/* Unique file id. */
-
-	u_int32_t create_txnid;		/*
-					 * Txn ID of the DB create, stored so
-					 * we can log it at register time.
-					 */
-};
-
-/* File open/close register log record opcodes. */
-#define	LOG_CHECKPOINT	1		/* Checkpoint: file name/id dump. */
-#define	LOG_CLOSE	2		/* File close. */
-#define	LOG_OPEN	3		/* File open. */
-#define	LOG_RCLOSE	4		/* File close after recovery. */
-
 #define	CHECK_LSN(redo, cmp, lsn, prev)					\
-	DB_ASSERT(!DB_REDO(redo) ||					\
-	    (cmp) >= 0 || IS_NOT_LOGGED_LSN(*lsn));			\
 	if (DB_REDO(redo) && (cmp) < 0 && !IS_NOT_LOGGED_LSN(*(lsn))) {	\
 		__db_err(dbenv,						\
 	"Log sequence error: page LSN %lu %lu; previous LSN %lu %lu",	\
 		    (u_long)(lsn)->file, (u_long)(lsn)->offset,		\
 		    (u_long)(prev)->file, (u_long)(prev)->offset);	\
+		ret = EINVAL;						\
 		goto out;						\
 	}
 

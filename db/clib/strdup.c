@@ -34,7 +34,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: strdup.c,v 1.5 2002/05/01 18:40:05 bostic Exp ";
+static const char revid[] = "$Id: strdup.c,v 1.5 2002/05/01 18:40:05 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES

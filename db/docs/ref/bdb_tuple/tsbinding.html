@@ -1,0 +1,158 @@
+<!--$Id: tsbinding.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Tuple - Creating tuple-serial entity bindings</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Tuple</dl></h3></td>
+<td align=right><a href="../bdb_tuple/tbinding.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/sorted.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Tuple - Creating tuple-serial entity bindings</h3>
+<p>In the prior example serial keys and serial values were used, and the
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialSerialBinding.html">SerialSerialBinding</a>
+ base class was
+used for entity bindings.  In this example, tuple keys and serial values are
+used and therefore the 
+<a href="../../java/com/sleepycat/bdb/bind/serial/TupleSerialBinding.html">TupleSerialBinding</a>
+ base class is used for entity bindings.</p>
+<p>As with any entity binding, a key and value is converted to an entity in
+the 
+<a href="../../java/com/sleepycat/bdb/bind/serial/TupleSerialBinding.html#dataToObject">TupleSerialBinding.dataToObject</a>
+method, and from an entity to a key and value in the
+<a href="../../java/com/sleepycat/bdb/bind/serial/TupleSerialBinding.html#objectToKey">TupleSerialBinding.objectToKey</a>
+ and
+<a href="../../java/com/sleepycat/bdb/bind/serial/TupleSerialBinding.html#objectToValue">TupleSerialBinding.objectToValue</a>
+methods.  But since keys are stored as tuples, not as serialized objects, key
+fields are read and written using the 
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleInput.html">TupleInput</a>
+ and 
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleOutput.html">TupleOutput</a>
+parameters.</p>
+<hr size=1 noshade>
+<p>The <b>SampleViews</b> class contains the modified entity binding
+classes that were defined in the prior example: <b>PartBinding</b>,
+<b>SupplierBinding</b> and <b>ShipmentBinding</b>.</p>
+<blockquote><pre>
+<b>
+import com.sleepycat.bdb.bind.serial.TupleSerialBinding;
+import com.sleepycat.bdb.bind.tuple.TupleFormat;
+import com.sleepycat.bdb.bind.tuple.TupleInput;
+import com.sleepycat.bdb.bind.tuple.TupleOutput;
+...
+</b>public class SampleViews
+{
+    ...
+    private static class PartBinding extends <b>TupleSerialBinding</b>
+    {
+        private PartBinding(<b>TupleFormat</b> keyFormat,
+                            SerialFormat valueFormat)
+        {
+            super(keyFormat, valueFormat);
+        }
+<p>
+        public Object dataToObject(<b>TupleInput</b> keyInput, Object valueInput)
+            throws IOException
+        {
+<b>            String number = keyInput.readString();
+</b>            PartValue value = (PartValue) valueInput;
+            return new Part(<b>number</b>, value.getName(), value.getColor(),
+                            value.getWeight(), value.getCity());
+        }
+<p>
+        public void objectToKey(Object object, <b>TupleOutput</b> output)
+            throws IOException
+        {
+            Part part = (Part) object;
+<b>            output.writeString(part.getNumber());
+</b>        }
+<p>
+        public Object objectToValue(Object object)
+            throws IOException
+        {
+            Part part = (Part) object;
+            return new PartValue(part.getName(), part.getColor(),
+                                 part.getWeight(), part.getCity());
+        }
+    }
+<p>
+    private static class SupplierBinding extends <b>TupleSerialBinding</b>
+    {
+        private SupplierBinding(<b>TupleFormat</b> keyFormat,
+                                SerialFormat valueFormat)
+        {
+            super(keyFormat, valueFormat);
+        }
+<p>
+        public Object dataToObject(<b>TupleInput</b> keyInput, Object valueInput)
+            throws IOException
+        {
+<b>            String number = keyInput.readString();
+</b>            SupplierValue value = (SupplierValue) valueInput;
+            return new Supplier(<b>number</b>, value.getName(),
+                                value.getStatus(), value.getCity());
+        }
+<p>
+        public void objectToKey(Object object, <b>TupleOutput</b> output)
+            throws IOException
+        {
+            Supplier supplier = (Supplier) object;
+<b>            output.writeString(supplier.getNumber());
+</b>        }
+<p>
+        public Object objectToValue(Object object)
+            throws IOException
+        {
+            Supplier supplier = (Supplier) object;
+            return new SupplierValue(supplier.getName(), supplier.getStatus(),
+                                     supplier.getCity());
+        }
+    }
+<p>
+    private static class ShipmentBinding extends <b>TupleSerialBinding</b>
+    {
+        private ShipmentBinding(<b>TupleFormat</b> keyFormat,
+                                SerialFormat valueFormat)
+        {
+            super(keyFormat, valueFormat);
+        }
+<p>
+        public Object dataToObject(<b>TupleInput</b> keyInput, Object valueInput)
+            throws IOException
+        {
+<b>            String partNumber = keyInput.readString();
+            String supplierNumber = keyInput.readString();
+</b>            ShipmentValue value = (ShipmentValue) valueInput;
+            return new Shipment(<b>partNumber</b>, <b>supplierNumber</b>,
+                                value.getQuantity());
+        }
+<p>
+        public void objectToKey(Object object, <b>TupleOutput</b> output)
+            throws IOException
+        {
+            Shipment shipment = (Shipment) object;
+<b>            output.writeString(shipment.getPartNumber());
+            output.writeString(shipment.getSupplierNumber());
+</b>        }
+<p>
+        public Object objectToValue(Object object)
+            throws IOException
+        {
+            Shipment shipment = (Shipment) object;
+            return new ShipmentValue(shipment.getQuantity());
+        }
+    }
+}
+</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_tuple/tbinding.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/sorted.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

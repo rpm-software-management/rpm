@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestSimpleAccess.java,v 1.5 2002/08/16 19:35:55 dda Exp 
+ * $Id: TestSimpleAccess.java,v 1.6 2003/01/08 05:54:29 bostic Exp $
  */
 
 /*

@@ -1,56 +1,120 @@
-<!--$Id: intro.so,v 10.25 2000/03/18 21:43:12 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.32 2003/04/15 16:48:42 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Introduction</title>
+<title>Berkeley DB Reference Guide: Database environment introduction</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Environment</dl></h3></td>
-<td width="1%"><a href="../../ref/arch/utilities.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/env/create.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../arch/utilities.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/create.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Introduction</h1>
+<h3 align=center>Database environment introduction</h3>
 <p>A Berkeley DB environment is an encapsulation of one or more databases, log
-files and shared information about the database environment such as shared
-memory buffer cache pages.
+files and region files.  Region files are the shared memory areas that
+contain information about the database environment such as memory pool
+cache pages.  Only databases are byte-order independent and only
+database files can be moved between machines of different byte orders.
+Log files can be moved between machines of the same byte order.  Region
+files are usually unique to a specific machine and potentially to a
+specific operating system release.</p>
 <p>The simplest way to administer a Berkeley DB application environment is to
 create a single <b>home</b> directory that stores the files for the
 applications that will share the environment.  The environment home
 directory must be created before any Berkeley DB applications are run.  Berkeley DB
 itself never creates the environment home directory.  The environment can
-then be identified by the name of that directory.
-<p>An environment may be shared by any number of applications as well as by
-any number of threads within the applications.  It is possible for an
+then be identified by the name of that directory.</p>
+<p>An environment may be shared by any number of processes, as well as by
+any number of threads within those processes.  It is possible for an
 environment to include resources from other directories on the system,
-and applications often choose to distribute resources to other directories
-or disks for performance or other reasons.  However, by default, the
-databases, shared regions (the locking, logging, memory pool, and
-transaction shared memory areas) and log files will be stored in a single
-directory hierarchy.
+and applications often choose to distribute resources to other
+directories or disks for performance or other reasons.  However, by
+default, the databases, shared regions (the locking, logging, memory
+pool, and transaction shared memory areas) and log files will be stored
+in a single directory hierarchy.</p>
 <p>It is important to realize that all applications sharing a database
-environment implicitly trust each other.  They have access to each other's
-data as it resides in the shared regions and they will share resources
-such as buffer space and locks.  At the same time, any applications using
-the same databases <b>must</b> share an environment if consistency is
-to be maintained between them.
-<p>The Berkeley DB environment is created and described by the <a href="../../api_c/env_create.html">db_env_create</a>
-and <a href="../../api_c/env_open.html">DBENV-&gt;open</a> interfaces.  In situations where customization is
-desired, such as storing log files on a separate disk drive, applications
-must describe the customization by either creating an environment
-configuration file in the environment home directory or by arguments
-passed to the <a href="../../api_c/env_open.html">DBENV-&gt;open</a> interface.  See the documentation on that
-function for details on this procedure.
-<p>Once an environment has been created, database files specified using
-relative pathnames will be named relative to the home directory.  Using
-pathnames relative to the home directory allows the entire environment
-to be easily moved to facilitate restoring and recovering a database in
-a different directory or on a different system.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/arch/utilities.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/env/create.html"><img src="../../images/next.gif" alt="Next"></a>
+environment implicitly trust each other.  They have access to each
+other's data as it resides in the shared regions, and they will share
+resources such as buffer space and locks.  At the same time, any
+applications using the same databases <b>must</b> share an environment
+if consistency is to be maintained between them.</p>
+<!--$Id: m4.methods,v 10.2 2003/10/18 19:15:47 bostic Exp $-->
+<table border=1 align=center>
+<tr><th>Database Environments and Related Methods</th><th>Description</th></tr>
+<tr><td><a href="../../api_c/env_class.html">db_env_create</a></td><td>Create an environment handle</td></tr>
+<tr><td><a href="../../api_c/env_close.html">DB_ENV-&gt;close</a></td><td>Close an environment</td></tr>
+<tr><td><a href="../../api_c/env_dbremove.html">DB_ENV-&gt;dbremove</a></td><td>Remove a database</td></tr>
+<tr><td><a href="../../api_c/env_dbrename.html">DB_ENV-&gt;dbrename</a></td><td>Rename a database</td></tr>
+<tr><td><a href="../../api_c/env_err.html">DB_ENV-&gt;err</a></td><td>Error message with error string</td></tr>
+<tr><td><a href="../../api_c/env_err.html">DB_ENV-&gt;errx</a></td><td>Error message</td></tr>
+<tr><td><a href="../../api_c/lock_detect.html">DB_ENV-&gt;lock_detect</a></td><td>Perform deadlock detection</td></tr>
+<tr><td><a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a></td><td>Acquire a lock</td></tr>
+<tr><td><a href="../../api_c/lock_id.html">DB_ENV-&gt;lock_id</a></td><td>Acquire a locker ID</td></tr>
+<tr><td><a href="../../api_c/lock_id_free.html">DB_ENV-&gt;lock_id_free</a></td><td>Release a locker ID</td></tr>
+<tr><td><a href="../../api_c/lock_put.html">DB_ENV-&gt;lock_put</a></td><td>Release a lock</td></tr>
+<tr><td><a href="../../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a></td><td>Return lock subsystem statistics</td></tr>
+<tr><td><a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a></td><td>Acquire/release locks</td></tr>
+<tr><td><a href="../../api_c/log_archive.html">DB_ENV-&gt;log_archive</a></td><td>List log and database files</td></tr>
+<tr><td><a href="../../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a></td><td>Create a log cursor handle</td></tr>
+<tr><td><a href="../../api_c/log_file.html">DB_ENV-&gt;log_file</a></td><td>Map Log Sequence Numbers to log files</td></tr>
+<tr><td><a href="../../api_c/log_flush.html">DB_ENV-&gt;log_flush</a></td><td>Flush log records</td></tr>
+<tr><td><a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a></td><td>Write a log record</td></tr>
+<tr><td><a href="../../api_c/log_stat.html">DB_ENV-&gt;log_stat</a></td><td>Return log subsystem statistics</td></tr>
+<tr><td><a href="../../api_c/memp_fcreate.html">DB_ENV-&gt;memp_fcreate</a></td><td>Open a file in a memory pool</td></tr>
+<tr><td><a href="../../api_c/memp_register.html">DB_ENV-&gt;memp_register</a></td><td>Register input/output functions for a file in a memory pool</td></tr>
+<tr><td><a href="../../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a></td><td>Return memory pool statistics</td></tr>
+<tr><td><a href="../../api_c/memp_sync.html">DB_ENV-&gt;memp_sync</a></td><td>Flush pages from a memory pool</td></tr>
+<tr><td><a href="../../api_c/memp_trickle.html">DB_ENV-&gt;memp_trickle</a></td><td>Trickle flush pages from a memory pool</td></tr>
+<tr><td><a href="../../api_c/env_open.html">DB_ENV-&gt;open</a></td><td>Open an environment</td></tr>
+<tr><td><a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a></td><td>Remove an environment</td></tr>
+<tr><td><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a></td><td>Hold a replication election</td></tr>
+<tr><td><a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a></td><td>Process a replication message</td></tr>
+<tr><td><a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a></td><td>Configure an environment for replication</td></tr>
+<tr><td><a href="../../api_c/rep_stat.html">DB_ENV-&gt;rep_stat</a></td><td>Replication statistics</td></tr>
+<tr><td><a href="../../api_c/env_set_alloc.html">DB_ENV-&gt;set_alloc</a></td><td>Set local space allocation functions</td></tr>
+<tr><td><a href="../../api_c/env_set_app_dispatch.html">DB_ENV-&gt;set_app_dispatch</a></td><td>Configure application recovery</td></tr>
+<tr><td><a href="../../api_c/env_set_cachesize.html">DB_ENV-&gt;set_cachesize</a></td><td>Set the environment cache size</td></tr>
+<tr><td><a href="../../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a></td><td>Set the environment data directory</td></tr>
+<tr><td><a href="../../api_c/env_set_encrypt.html">DB_ENV-&gt;set_encrypt</a></td><td>Set the environment cryptographic key</td></tr>
+<tr><td><a href="../../api_c/env_set_errcall.html">DB_ENV-&gt;set_errcall</a></td><td>Set error message callback</td></tr>
+<tr><td><a href="../../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a></td><td>Set error message FILE</td></tr>
+<tr><td><a href="../../api_c/env_set_errpfx.html">DB_ENV-&gt;set_errpfx</a></td><td>Set error message prefix</td></tr>
+<tr><td><a href="../../api_c/env_set_feedback.html">DB_ENV-&gt;set_feedback</a></td><td>Set feedback callback</td></tr>
+<tr><td><a href="../../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a></td><td>Environment configuration</td></tr>
+<tr><td><a href="../../api_c/env_set_lg_bsize.html">DB_ENV-&gt;set_lg_bsize</a></td><td>Set log buffer size</td></tr>
+<tr><td><a href="../../api_c/env_set_lg_dir.html">DB_ENV-&gt;set_lg_dir</a></td><td>Set the environment logging directory</td></tr>
+<tr><td><a href="../../api_c/env_set_lg_max.html">DB_ENV-&gt;set_lg_max</a></td><td>Set log file size</td></tr>
+<tr><td><a href="../../api_c/env_set_lg_regionmax.html">DB_ENV-&gt;set_lg_regionmax</a></td><td>Set logging region size</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_conflicts.html">DB_ENV-&gt;set_lk_conflicts</a></td><td>Set lock conflicts matrix</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_detect.html">DB_ENV-&gt;set_lk_detect</a></td><td>Set automatic deadlock detection</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_max_lockers.html">DB_ENV-&gt;set_lk_max_lockers</a></td><td>Set maximum number of lockers</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_max_locks.html">DB_ENV-&gt;set_lk_max_locks</a></td><td>Set maximum number of locks</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_max_objects.html">DB_ENV-&gt;set_lk_max_objects</a></td><td>Set maximum number of lock objects</td></tr>
+<tr><td><a href="../../api_c/env_set_mp_mmapsize.html">DB_ENV-&gt;set_mp_mmapsize</a></td><td>Set maximum mapped-in database file size</td></tr>
+<tr><td><a href="../../api_c/env_set_paniccall.html">DB_ENV-&gt;set_paniccall</a></td><td>Set panic callback</td></tr>
+<tr><td><a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a></td><td>Limit data sent in response to a single message</td></tr>
+<tr><td><a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a></td><td>Configure replication transport</td></tr>
+<tr><td><a href="../../api_c/env_set_rpc_server.html">DB_ENV-&gt;set_rpc_server</a></td><td>Establish an RPC server connection</td></tr>
+<tr><td><a href="../../api_c/env_set_shm_key.html">DB_ENV-&gt;set_shm_key</a></td><td>Set system memory shared segment ID</td></tr>
+<tr><td><a href="../../api_c/env_set_tas_spins.html">DB_ENV-&gt;set_tas_spins</a></td><td>Set the number of test-and-set spins</td></tr>
+<tr><td><a href="../../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a></td><td>Set lock and transaction timeout</td></tr>
+<tr><td><a href="../../api_c/env_set_tmp_dir.html">DB_ENV-&gt;set_tmp_dir</a></td><td>Set the environment temporary file directory</td></tr>
+<tr><td><a href="../../api_c/env_set_tx_max.html">DB_ENV-&gt;set_tx_max</a></td><td>Set maximum number of transactions</td></tr>
+<tr><td><a href="../../api_c/env_set_tx_timestamp.html">DB_ENV-&gt;set_tx_timestamp</a></td><td>Set recovery timestamp</td></tr>
+<tr><td><a href="../../api_c/env_set_verbose.html">DB_ENV-&gt;set_verbose</a></td><td>Set verbose messages</td></tr>
+<tr><td><a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a></td><td>Begin a transaction</td></tr>
+<tr><td><a href="../../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a></td><td>Checkpoint the transaction subsystem</td></tr>
+<tr><td><a href="../../api_c/txn_recover.html">DB_ENV-&gt;txn_recover</a></td><td>Distributed transaction recovery</td></tr>
+<tr><td><a href="../../api_c/txn_stat.html">DB_ENV-&gt;txn_stat</a></td><td>Return transaction subsystem statistics</td></tr>
+</table>
+<table width="100%"><tr><td><br></td><td align=right><a href="../arch/utilities.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/create.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,67 +1,68 @@
-<!--$Id: solaris.so,v 11.14 2000/09/13 17:22:20 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: solaris.so,v 11.25 2003/03/24 13:46:23 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Solaris</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
-<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for UNIX systems</dl></h3></td>
-<td width="1%"><a href="../../ref/build_unix/sco.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_unix/sunos.html"><img src="../../images/next.gif" alt="Next"></a>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for UNIX/POSIX systems</dl></h3></td>
+<td align=right><a href="../build_unix/sco.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/sunos.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Solaris</h1>
-<p><ol>
-<p><li><b>I can't compile and run multi-threaded applications.</b>
+<h3 align=center>Solaris</h3>
+<ol>
+<p><li><b>I can't compile and run multithreaded applications.</b>
 <p>Special compile-time flags and additional libraries are required when
 compiling threaded applications on Solaris.  If you are compiling a
 threaded application, you must compile with the D_REENTRANT flag and link
-with the libpthread.a or libthread.a libraries:
-<p><blockquote><pre>cc -mt ...
+with the libpthread.a or libthread.a libraries:</p>
+<blockquote><pre>cc -mt ...
 cc -D_REENTRANT ... -lthread
 cc -D_REENTRANT ... -lpthread</pre></blockquote>
-<p>The Berkeley DB library will automatically build with the correct options.
+<p>The Berkeley DB library will automatically build with the correct options.</p>
 <hr size=1 noshade>
 <p><li><b>I've installed gcc on my Solaris system, but configuration
 fails because the compiler doesn't work.</b>
 <p>On some versions of Solaris, there is a cc executable in the user's path,
-but all it does is display an error message and fail:
-<p><blockquote><pre>% which cc
+but all it does is display an error message and fail:</p>
+<blockquote><pre>% which cc
 /usr/ucb/cc
 % cc
 /usr/ucb/cc: language optional software package not installed</pre></blockquote>
-<p>As Berkeley DB always uses the native compiler in preference to gcc, this is a
-fatal error.  If the error message you're seeing is:
-<p><blockquote><pre>checking whether the C compiler (cc -O ) works... no
+<p>Because Berkeley DB always uses the native compiler in preference to gcc, this
+is a fatal error.  If the error message you are seeing is the following,
+then this may be the problem:</p>
+<blockquote><pre>checking whether the C compiler (cc -O) works... no
 configure: error: installation or configuration problem: C compiler cannot create executables.</pre></blockquote>
-<p>then this may be the problem you're seeing.  The simplest workaround is
-to set your CC environment variable to the system compiler, e.g.:
-<p><blockquote><pre>env CC=gcc ../dist/configure</pre></blockquote>
-<p>and reconfigure.
+<p>The simplest workaround is to set your CC environment variable to the
+system compiler and reconfigure; for example:</p>
+<blockquote><pre>env CC=gcc ../dist/configure</pre></blockquote>
 <p>If you are using the --configure-cxx option, you may also want to specify
-a C++ compiler, e.g.:
-<p><blockquote><pre>env CC=gcc CCC=g++ ../dist/configure</pre></blockquote>
+a C++ compiler, for example the following:</p>
+<blockquote><pre>env CC=gcc CCC=g++ ../dist/configure</pre></blockquote>
 <hr size=1 noshade>
-<p><li><b>I get the error
+<p><li><b>I see the error
 "libc internal error: _rmutex_unlock: rmutex not held", followed by a core
-dump, when running threaded or JAVA programs.</b>
-<p>This is a known bug in Solaris 2.5 and it is fixed by Sun patch 103187-25.
+dump when running threaded or JAVA programs.</b>
+<p>This is a known bug in Solaris 2.5 and it is fixed by Sun patch 103187-25.</p>
 <hr size=1 noshade>
-<p><li><b>I get error reports of non-existent files, corrupted metadata
+<p><li><b>I see error reports of nonexistent files, corrupted metadata
 pages and core dumps.</b>
-<p>Solaris 7 contains a bug in the threading libraries (-lpthread, -lthread)
-which causes the wrong version of the pwrite routine to be linked into
-the application if the thread library is linked in after the the C
-library.  The result will be that the pwrite function is called rather
-than the pwrite64.  To work around the problem, use an explicit link order
-when creating your application.
+<p>Solaris 7 contains a bug in the threading libraries (-lpthread,
+-lthread), which causes the wrong version of the pwrite routine to be
+linked into the application if the thread library is linked in after
+the C library.  The result will be that the pwrite function is called
+rather than the pwrite64.  To work around the problem, use an explicit
+link order when creating your application.</p>
 <p>Sun Microsystems is tracking this problem with Bug Id's 4291109 and 4267207,
-and patch 106980-09 to Solaris 7 fixes the problem.
-<p><blockquote><pre>Bug Id: 4291109
+and patch 106980-09 to Solaris 7 fixes the problem:</p>
+<blockquote><pre>Bug Id: 4291109
 Duplicate of: 4267207
 Category: library
 Subcategory: libthread
@@ -73,18 +74,43 @@ libthread that gets "wired into" libc via _libc_threads_interface().
 The table in libthread is wrong in both Solaris 7 and on28_35 for the
 TI_PWRITE64 row (see near the end).</pre></blockquote>
 <hr size=1 noshade>
-<p><li><b>During configuration I see a message that large file support has
-been turned off.</b>
-<p>The Solaris 8 system include files redefine "open" when big-file support (the
-HAVE_FILE_OFFSET_BITS and _FILE_OFFSET_BITS #defines) is enabled.  This
-causes problems when compiling for C++, where "open" is a legal
-identifier, used in the Berkeley DB C++ API.  For this reason, we automatically
-turn off big-file support when Berkeley DB is configured with a C++ API.  This
-should not be a problem for applications unless there is a need to create
-databases larger than 2GB.
+<p><li><b>I see corrupted databases when doing hot backups or creating
+a hot failover archive.</b>
+<p>The Solaris cp utility is implemented using the mmap system call, and
+so writes are not blocked when it reads database pages.  See
+<a href="../../ref/transapp/reclimit.html">Berkeley DB recoverability</a> for more
+information.</p>
+<hr size=1 noshade>
+<p><li><b>Performance is slow and the application is doing a lot of I/O
+to the disk on which the database environment's files are stored.</b>
+<p>By default, Solaris periodically flushes dirty blocks from memory-mapped
+files to the backing filesystem.  This includes the Berkeley DB database
+environment's shared memory regions and can affect Berkeley DB performance.
+Workarounds include creating the shared regions in system shared memory
+(<a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a>) or application private memory
+(<a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a>), or, configuring Solaris to not flush memory-mapped
+pages.  For more information, see the
+<a href="http://docs.sun.com/db/doc/806-4015/6jd4gh8en?a=view">Solaris Tunable Parameters Reference Manual: fsflush and Related Tunables</a>.
+</p>
+<hr size=1 noshade>
+<p><li><b>I see errors about "open64" when building Berkeley DB applications.</b>
+<p>System include files (most commonly fcntl.h) in some releases of AIX,
+HP-UX and Solaris redefine "open" when large-file support is enabled
+for applications.  This causes problems when compiling applications
+because "open" is a method in the Berkeley DB APIs.  To work around this
+problem:
+<ol>
+<p><li>Avoid including the problematical system include files in source code
+files which also include Berkeley DB include files and call into the Berkeley DB
+API.
+<li>Before building Berkeley DB, modify the generated include file db.h to itself
+include the problematical system include files.
+<li>Turn off Berkeley DB large-file support by specifying the
+<a href="../../ref/build_unix/conf.html#--disable-largefile">--disable-largefile</a> configuration option and rebuilding.
+</ol></p>
 </ol>
-<table><tr><td><br></td><td width="1%"><a href="../../ref/build_unix/sco.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_unix/sunos.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/sco.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/sunos.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

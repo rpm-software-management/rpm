@@ -1,21 +1,21 @@
-<!--Id: get_bulk.so,v 10.3 2002/06/24 14:50:33 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: get_bulk.so,v 10.5 2003/11/20 22:29:23 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Retrieving records in bulk</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Access Methods</dl></h3></td>
-<td align=right><a href="../../ref/am_misc/align.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am_misc/partial.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../am_misc/align.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/partial.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Retrieving records in bulk</h1>
+<h3 align=center>Retrieving records in bulk</h3>
 <p>When retrieving large numbers of records from the database, the number
 of method calls can often dominate performance.  Berkeley DB offers bulk get
 interfaces which can significantly increase performance for some
@@ -28,29 +28,32 @@ the Berkeley DB C++ and Java APIs, the actions are similar, although there
 are API-specific methods to set the <a href="../../api_c/dbt_class.html">DBT</a> values.  Then, the
 <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> or <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flags are specified to
 the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> methods, which cause multiple records
-to be returned in the specified buffer.
+to be returned in the specified buffer.</p>
 <p>The difference between <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> and <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
 is as follows: <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> returns multiple data items for a
 single key.  For example, the <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> flag would be used to
 retrieve all of the duplicate data items for a single key in a single
 call.  The <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flag is used to retrieve multiple
 key/data pairs, where each returned key may or may not have duplicate
-data items.
+data items.</p>
 <p>Once the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method has returned, the
 application will walk through the buffer handling the returned records.
 This is implemented for the C and C++ APIs using four macros:
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_INIT">DB_MULTIPLE_INIT</a>, <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a>,
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_KEY_NEXT">DB_MULTIPLE_KEY_NEXT</a>, and <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a>.  For
 the Java API, this is implemented as three iterator classes:
-<a href="../../api_java/dbt_bulk_class.html">DbMultipleDataIterator</a>,
-<a href="../../api_java/dbt_bulk_class.html">DbMultipleKeyDataIterator</a>, and
-<a href="../../api_java/dbt_bulk_class.html">DbMultipleRecnoDataIterator</a>.
+<a href="../../java/com/sleepycat/db/DbMultipleDataIterator.html">DbMultipleDataIterator</a>
+,
+<a href="../../java/com/sleepycat/db/DbMultipleKeyDataIterator.html">DbMultipleKeyDataIterator</a>
+, and
+<a href="../../java/com/sleepycat/db/DbMultipleRecnoDataIterator.html">DbMultipleRecnoDataIterator</a>
+.</p>
 <p>The <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_INIT">DB_MULTIPLE_INIT</a> macro is always called first.  It
 initializes a local application variable and the <b>data</b>
 <a href="../../api_c/dbt_class.html">DBT</a> for stepping through the set of returned records.  Then,
 the application calls one of the remaining three macros:
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a>, <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_KEY_NEXT">DB_MULTIPLE_KEY_NEXT</a>, and
-<a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a>.
+<a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a>.</p>
 <p>If the <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> flag was specified to the <a href="../../api_c/db_get.html">DB-&gt;get</a> or
 <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method, the application will always call the
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a> macro.  If the <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flag
@@ -64,10 +67,10 @@ database, the application will always call the
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_KEY_NEXT">DB_MULTIPLE_KEY_NEXT</a>, and <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a> macros
 are called repeatedly, until the end of the returned records is reached.
 The end of the returned records is detected by the application's local
-pointer variable being set to NULL.
+pointer variable being set to NULL.</p>
 <p>The following is an example of a routine that displays the contents of
-a Btree database using the bulk return interfaces.
-<p><blockquote><pre>int
+a Btree database using the bulk return interfaces.</p>
+<blockquote><pre>int
 rec_display(dbp)
 	DB *dbp;
 {
@@ -129,8 +132,8 @@ rec_display(dbp)
 <p>
 	return (ret);
 }</pre></blockquote>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/am_misc/align.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am_misc/partial.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/align.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/partial.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

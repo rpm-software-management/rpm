@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,9 +9,9 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2002\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "Id: db_dump.c,v 11.80 2002/08/08 03:50:34 bostic Exp ";
+    "$Id: db_dump.c,v 11.88 2003/08/13 19:57:06 ubell Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -61,16 +61,17 @@ db_dump_main(argc, argv)
 	DB_ENV	*dbenv;
 	DB *dbp;
 	u_int32_t cache;
-	int ch, d_close;
-	int e_close, exitval, keyflag, lflag, nflag, pflag, private;
+	int ch;
+	int exitval, keyflag, lflag, nflag, pflag, private;
 	int ret, Rflag, rflag, resize, subs;
 	char *dopt, *home, *passwd, *subname;
 
 	if ((ret = db_dump_version_check(progname)) != 0)
 		return (ret);
 
+	dbenv = NULL;
 	dbp = NULL;
-	d_close = e_close = exitval = lflag = nflag = pflag = rflag = Rflag = 0;
+	exitval = lflag = nflag = pflag = rflag = Rflag = 0;
 	keyflag = 0;
 	cache = MEGABYTE;
 	private = 0;
@@ -174,7 +175,6 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 		    "%s: db_env_create: %s\n", progname, db_strerror(ret));
 		goto err;
 	}
-	e_close = 1;
 
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
@@ -203,19 +203,20 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 		dbenv->err(dbenv, ret, "db_create");
 		goto err;
 	}
-	d_close = 1;
 
 	/*
 	 * If we're salvaging, don't do an open;  it might not be safe.
 	 * Dispatch now into the salvager.
 	 */
 	if (rflag) {
-		if ((ret = dbp->verify(dbp, argv[0], NULL, stdout,
+		/* The verify method is a destructor. */
+		ret = dbp->verify(dbp, argv[0], NULL, stdout,
 		    DB_SALVAGE |
 		    (Rflag ? DB_AGGRESSIVE : 0) |
-		    (pflag ? DB_PRINTABLE : 0))) != 0)
+		    (pflag ? DB_PRINTABLE : 0));
+		dbp = NULL;
+		if (ret != 0)
 			goto err;
-		exitval = 0;
 		goto done;
 	}
 
@@ -229,10 +230,10 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 			goto err;
 		if (resize) {
 			(void)dbp->close(dbp, 0);
-			d_close = 0;
+			dbp = NULL;
 
 			(void)dbenv->close(dbenv, 0);
-			e_close = 0;
+			dbenv = NULL;
 			goto retry;
 		}
 	}
@@ -261,7 +262,7 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 				goto err;
 		} else
 			if (__db_prheader(dbp, NULL, pflag, keyflag, stdout,
-			    __db_verify_callback, NULL, 0) ||
+			    __db_pr_callback, NULL, 0) ||
 			    db_dump_dump(dbp, pflag, keyflag))
 				goto err;
 	}
@@ -269,15 +270,18 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 	if (0) {
 err:		exitval = 1;
 	}
-done:	if (d_close && (ret = dbp->close(dbp, 0)) != 0) {
+done:	if (dbp != NULL && (ret = dbp->close(dbp, 0)) != 0) {
 		exitval = 1;
 		dbenv->err(dbenv, ret, "close");
 	}
-	if (e_close && (ret = dbenv->close(dbenv, 0)) != 0) {
+	if (dbenv != NULL && (ret = dbenv->close(dbenv, 0)) != 0) {
 		exitval = 1;
 		fprintf(stderr,
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
 	}
+
+	if (passwd != NULL)
+		free(passwd);
 
 	/* Resend any caught signal. */
 	__db_util_sigresend();
@@ -376,6 +380,7 @@ db_dump_is_sub(dbp, yesno)
 		break;
 	case DB_QUEUE:
 		break;
+	case DB_UNKNOWN:
 	default:
 		dbp->errx(dbp, "unknown database type");
 		return (1);
@@ -432,7 +437,7 @@ db_dump_dump_sub(dbenv, parent_dbp, parent_name, pflag, keyflag)
 			    "DB->open: %s:%s", parent_name, subdb);
 		if (ret == 0 &&
 		    (__db_prheader(dbp, subdb, pflag, keyflag, stdout,
-		    __db_verify_callback, NULL, 0) ||
+		    __db_pr_callback, NULL, 0) ||
 		    db_dump_dump(dbp, pflag, keyflag)))
 			ret = 1;
 		(void)dbp->close(dbp, 0);
@@ -441,12 +446,12 @@ db_dump_dump_sub(dbenv, parent_dbp, parent_name, pflag, keyflag)
 			return (1);
 	}
 	if (ret != DB_NOTFOUND) {
-		dbp->err(dbp, ret, "DBcursor->get");
+		parent_dbp->err(parent_dbp, ret, "DBcursor->get");
 		return (1);
 	}
 
 	if ((ret = dbcp->c_close(dbcp)) != 0) {
-		dbp->err(dbp, ret, "DBcursor->close");
+		parent_dbp->err(parent_dbp, ret, "DBcursor->close");
 		return (1);
 	}
 
@@ -478,7 +483,7 @@ db_dump_show_subs(dbp)
 	memset(&data, 0, sizeof(data));
 	while ((ret = dbcp->c_get(dbcp, &key, &data, DB_NEXT)) == 0) {
 		if ((ret = __db_prdbt(&key, 1, NULL, stdout,
-		    __db_verify_callback, 0, NULL)) != 0) {
+		    __db_pr_callback, 0, NULL)) != 0) {
 			dbp->errx(dbp, NULL);
 			return (1);
 		}
@@ -555,10 +560,10 @@ retry:
 				break;
 
 			if ((keyflag && (ret = __db_prdbt(&keyret,
-			    pflag, " ", stdout, __db_verify_callback,
+			    pflag, " ", stdout, __db_pr_callback,
 			    is_recno, NULL)) != 0) || (ret =
 			    __db_prdbt(&dataret, pflag, " ", stdout,
-				__db_verify_callback, 0, NULL)) != 0) {
+				__db_pr_callback, 0, NULL)) != 0) {
 				dbp->errx(dbp, NULL);
 				failed = 1;
 				goto err;
@@ -566,6 +571,7 @@ retry:
 		}
 	}
 	if (ret == ENOMEM) {
+		data.size = ALIGN(data.size, 1024);
 		data.data = realloc(data.data, data.size);
 		if (data.data == NULL) {
 			dbp->err(dbp, ENOMEM, "bulk get buffer");
@@ -589,7 +595,7 @@ err:	if (data.data != NULL)
 		failed = 1;
 	}
 
-	(void)__db_prfooter(stdout, __db_verify_callback);
+	(void)__db_prfooter(stdout, __db_pr_callback);
 	return (failed);
 }
 
@@ -614,12 +620,11 @@ db_dump_version_check(progname)
 
 	/* Make sure we're loaded with the right version of the DB library. */
 	(void)db_version(&v_major, &v_minor, &v_patch);
-	if (v_major != DB_VERSION_MAJOR ||
-	    v_minor != DB_VERSION_MINOR || v_patch != DB_VERSION_PATCH) {
+	if (v_major != DB_VERSION_MAJOR || v_minor != DB_VERSION_MINOR) {
 		fprintf(stderr,
-	"%s: version %d.%d.%d doesn't match library version %d.%d.%d\n",
+	"%s: version %d.%d doesn't match library version %d.%d\n",
 		    progname, DB_VERSION_MAJOR, DB_VERSION_MINOR,
-		    DB_VERSION_PATCH, v_major, v_minor, v_patch);
+		    v_major, v_minor);
 		return (EXIT_FAILURE);
 	}
 	return (0);

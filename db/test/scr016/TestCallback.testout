@@ -1,0 +1,13 @@
+got data: data
+get using bad key: DB_NOTFOUND: No matching key/data pair found
+before compare
+CALLBACK: error(null, "DB->set_bt_compare: method not permitted after handle's open method")
+got expected exception: java.lang.IllegalArgumentException: Invalid argument
+after compare
+CALLBACK: error(null, "PANIC_SET")
+before panic
+CALLBACK: error(null, "PANIC: fatal region error detected; run recovery")
+CALLBACK: panic(DbEnv, com.sleepycat.db.DbRunRecoveryException: DB_RUNRECOVERY: Fatal error, run database recovery: DB_RUNRECOVERY: Fatal error, run database recovery)
+got expected exception: com.sleepycat.db.DbRunRecoveryException: DB_RUNRECOVERY: Fatal error, run database recovery: DB_RUNRECOVERY: Fatal error, run database recovery
+after panic
+finished test

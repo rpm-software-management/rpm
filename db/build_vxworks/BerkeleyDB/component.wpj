@@ -644,6 +644,18 @@ db_overflow.o
 CC
 <END>
 
+<BEGIN> BUILD_PENTIUM2gnu.debug_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_infoTags
+toolMacro objects
+<END>
+
+<BEGIN> BUILD_PENTIUM2gnu.debug_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_objects
+db_ovfl_vrfy.o
+<END>
+
+<BEGIN> BUILD_PENTIUM2gnu.debug_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_toolMacro
+CC
+<END>
+
 <BEGIN> BUILD_PENTIUM2gnu.debug_FILE_$(PRJ_DIR)/../../db/db_pr.c_infoTags
 toolMacro objects
 <END>
@@ -2883,6 +2895,18 @@ db_overflow.o
 <END>
 
 <BEGIN> BUILD_PENTIUM2gnu.release_FILE_$(PRJ_DIR)/../../db/db_overflow.c_toolMacro
+CC
+<END>
+
+<BEGIN> BUILD_PENTIUM2gnu.release_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_infoTags
+toolMacro objects
+<END>
+
+<BEGIN> BUILD_PENTIUM2gnu.release_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_objects
+db_ovfl_vrfy.o
+<END>
+
+<BEGIN> BUILD_PENTIUM2gnu.release_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_toolMacro
 CC
 <END>
 
@@ -5126,6 +5150,18 @@ db_overflow.o
 CC
 <END>
 
+<BEGIN> BUILD_PENTIUMgnu.debug_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_infoTags
+toolMacro objects
+<END>
+
+<BEGIN> BUILD_PENTIUMgnu.debug_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_objects
+db_ovfl_vrfy.o
+<END>
+
+<BEGIN> BUILD_PENTIUMgnu.debug_FILE_$(PRJ_DIR)/../../db/db_ovfl_vrfy.c_toolMacro
+CC
+<END>
+
 <BEGIN> BUILD_PENTIUMgnu.debug_FILE_$(PRJ_DIR)/../../db/db_pr.c_infoTags
 toolMacro objects
 <END>
@@ -6616,14 +6652,14 @@ CC
 
 <BEGIN> BUILD_PENTIUMgnu.debug_FILE_$(PRJ_DIR)/compConfig.c_infoTags
 toolMacro objects
-<END>   
+<END>
 
 <BEGIN> BUILD_PENTIUMgnu.debug_FILE_$(PRJ_DIR)/compConfig.c_objects
 compConfig.o
-<END>   
+<END>
 
 <BEGIN> BUILD_PENTIUMgnu.debug_FILE_$(PRJ_DIR)/compConfig.c_toolMacro
-CC   
+CC
 <END>
 
 <BEGIN> BUILD_PENTIUMgnu.debug_MACRO_AR
@@ -6801,6 +6837,7 @@ $(PRJ_DIR)/../../btree/bt_compare.c \
 	$(PRJ_DIR)/../../db/db_method.c \
 	$(PRJ_DIR)/../../db/db_open.c \
 	$(PRJ_DIR)/../../db/db_overflow.c \
+	$(PRJ_DIR)/../../db/db_ovfl_vrfy.c \
 	$(PRJ_DIR)/../../db/db_pr.c \
 	$(PRJ_DIR)/../../db/db_rec.c \
 	$(PRJ_DIR)/../../db/db_reclaim.c \

@@ -1,21 +1,22 @@
-<!--Id: txn_set_timeout.so,v 10.8 2002/08/29 03:26:14 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: txn_set_timeout.so,v 10.18 2003/11/08 19:17:52 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_TXN-&gt;set_timeout</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DB_TXN-&gt;set_timeout</h1>
+<h3>DB_TXN-&gt;set_timeout</h3>
 </td>
 <td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -25,16 +26,10 @@
 u_int32_t
 DB_TXN-&gt;set_timeout(DB_TXN *tid, db_timeout_t timeout, u_int32_t flags);
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: DB_TXN-&gt;set_timeout</h3>
 <p>The DB_TXN-&gt;set_timeout method sets timeout values for locks or
-transactions for the specified transaction.  The timeout value is
-currently specified as an unsigned 32-bit number of microseconds,
-limiting the maximum timeout to roughly 71 minutes.
-<p>The <b>flags</b> value must be set to one of the following values:
-<p><dl compact>
-<p><dt><a name="DB_SET_LOCK_TIMEOUT">DB_SET_LOCK_TIMEOUT</a><dd>Set the timeout value for locks in this transaction.
-<p><dt><a name="DB_SET_TXN_TIMEOUT">DB_SET_TXN_TIMEOUT</a><dd>Set the timeout value for this transaction.
-</dl>
+transactions for the specified transaction.</p>
 <p>Timeouts are checked whenever a thread of control blocks on a lock or
 when deadlock detection is performed.  (In the case of
 DB_SET_LOCK_TIMEOUT, the lock is one requested explicitly
@@ -44,32 +39,47 @@ transaction.  In either case, it may be a lock requested by the database
 access methods underlying the application.)  As timeouts are only
 checked when the lock request first blocks or when deadlock detection
 is performed, the accuracy of the timeout depends on how often deadlock
-detection is performed.
+detection is performed.</p>
 <p>Timeout values may be specified for the database environment as a whole.
-See <a href="../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a> and for more information.
+See <a href="../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a> and for more information.</p>
 <p>The DB_TXN-&gt;set_timeout method configures operations performed on the underlying
 transaction, not only operations performed using the specified
-<a href="../api_c/txn_class.html">DB_TXN</a> handle.
-<p>The DB_TXN-&gt;set_timeout interface may be called at any time during the life of
-the application.
-<p>The DB_TXN-&gt;set_timeout method returns a non-zero error value on failure and 0 on success.
-<h1>Errors</h1>
-<p>The DB_TXN-&gt;set_timeout method may fail and return a non-zero error for the following conditions:
+<a href="../api_c/txn_class.html">DB_TXN</a> handle.</p>
+<p>The DB_TXN-&gt;set_timeout method may be called at any time during the life of the
+application.</p>
+<p>The DB_TXN-&gt;set_timeout method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p><dt><b>flags</b><dd>
+The <b>flags</b> parameter must be set to one of the following values:
+<p><dl compact>
+<p><dt><a name="DB_SET_LOCK_TIMEOUT">DB_SET_LOCK_TIMEOUT</a><dd>Set the timeout value for locks in this transaction.
+<p><dt><a name="DB_SET_TXN_TIMEOUT">DB_SET_TXN_TIMEOUT</a><dd>Set the timeout value for this transaction.
 </dl>
-<p>The DB_TXN-&gt;set_timeout method may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_TXN-&gt;set_timeout method may fail and
-return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
-in which case all subsequent Berkeley DB calls will fail in the same way.
-<h1>Class</h1>
+<p><dt><b>timeout</b><dd>
+The <b>timeout</b> parameter is specified as an unsigned 32-bit number
+of microseconds, limiting the maximum timeout to roughly 71 minutes.  A
+value of 0 disables timeouts for the transaction.
+</dl>
+<h3>Errors</h3>
+<p>The DB_TXN-&gt;set_timeout method
+may fail and return one of the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
 <a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/txn_class.html">DB_TXN</a>
-<h1>See Also</h1>
+<h3>See Also</h3>
 <a href="../api_c/txn_list.html">Transaction Subsystem and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

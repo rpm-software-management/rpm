@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2002
+ * Copyright (c) 1998-2003
  *	Sleepycat Software.  All rights reserved.
  *
  *	@(#)db_join.h	11.1 (Sleepycat) 7/25/99

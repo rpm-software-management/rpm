@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: os_fid.c,v 11.7 2000/10/26 14:18:08 bostic Exp $";
+static const char revid[] = "$Id: os_fid.c,v 11.17 2003/02/16 15:54:32 bostic Exp $";
 #endif /* not lint */
 
 #include "db_int.h"
@@ -39,10 +39,11 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 	 * but perhaps not on other platforms, and perhaps not over a network.
 	 * Can't think of a better solution right now.
 	 */
-	DB_FH fh;
-	HANDLE handle;
+	DB_FH *fhp;
 	BY_HANDLE_FILE_INFORMATION fi;
 	BOOL retval = FALSE;
+
+	DB_ASSERT(fname != NULL);
 
 	/* Clear the buffer. */
 	memset(fidp, 0, DB_FILE_ID_LEN);
@@ -62,7 +63,7 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 	 * interesting properties in base 2.
 	 */
 	if (fid_serial == SERIAL_INIT)
-		fid_serial = (u_int32_t)getpid();
+		__os_id(&fid_serial);
 	else
 		fid_serial += 100000;
 
@@ -70,19 +71,15 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 	 * First we open the file, because we're not given a handle to it.
 	 * If we can't open it, we're in trouble.
 	 */
-	if ((ret = __os_open(dbenv, fname, DB_OSO_RDONLY, _S_IREAD, &fh)) != 0)
+	if ((ret = __os_open(dbenv, fname, DB_OSO_RDONLY, _S_IREAD, &fhp)) != 0)
 		return (ret);
 
 	/* File open, get its info */
-	handle = (HANDLE)_get_osfhandle(fh.fd);
-	if (handle == INVALID_HANDLE_VALUE)
+	if ((retval = GetFileInformationByHandle(fhp->handle, &fi)) == FALSE)
 		ret = __os_win32_errno();
-	else
-		if ((retval = GetFileInformationByHandle(handle, &fi)) == FALSE)
-			ret = __os_win32_errno();
-	__os_closehandle(&fh);
+	(void)__os_closehandle(dbenv, fhp);
 
-	if (handle == INVALID_HANDLE_VALUE || retval == FALSE)
+	if (retval == FALSE)
 		return (ret);
 
 	/*
@@ -113,6 +110,7 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 	tmp = (u_int32_t)fi.nFileIndexHigh;
 	for (p = (u_int8_t *)&tmp, i = sizeof(u_int32_t); i > 0; --i)
 		*fidp++ = *p++;
+
 	if (unique_okay) {
 		/*
 		 * Use the system time to try to get a unique value

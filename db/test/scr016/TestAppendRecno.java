@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestAppendRecno.java,v 1.4 2002/08/16 19:35:53 dda Exp 
+ * $Id: TestAppendRecno.java,v 1.5 2003/01/08 05:54:21 bostic Exp $
  */
 
 package com.sleepycat.test;

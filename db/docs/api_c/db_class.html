@@ -1,21 +1,22 @@
-<!--Id: db_class.so,v 10.36 2002/08/29 03:24:30 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: db_class.so,v 10.47 2003/11/08 19:17:16 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DB</title>
+<title>Berkeley DB: db_create</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DB</h1>
+<h3>db_create</h3>
 </td>
 <td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -23,28 +24,78 @@
 #include &lt;db.h&gt;
 <p>
 typedef struct __db DB;
+<p>
+int
+db_create(DB **dbp, DB_ENV *dbenv, u_int32_t flags);
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: db_create</h3>
 <p>The DB handle is the handle for a Berkeley DB database, which may or
-may not be part of a database environment.  DB handles are
-free-threaded if the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag is specified to the
-<a href="../api_c/db_open.html">DB-&gt;open</a> method when the database is opened or if the database
-environment in which the database is opened is free-threaded.  The
-handle should not be closed while any other handle that refers to the
-database is in use; for example, database handles must not be closed
+may not be part of a database environment.</p>
+<p>DB handles are free-threaded if the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag is
+specified to the <a href="../api_c/db_open.html">DB-&gt;open</a> method when the database is opened or if the
+database environment in which the database is opened is free-threaded.
+The handle should not be closed while any other handle that refers to
+the database is in use; for example, database handles must not be closed
 while cursor handles into the database remain open, or transactions that
 include operations on the database have not yet been committed or
 aborted.  Once the <a href="../api_c/db_close.html">DB-&gt;close</a>, <a href="../api_c/db_remove.html">DB-&gt;remove</a>, or
 <a href="../api_c/db_rename.html">DB-&gt;rename</a> methods are called, the handle may not be accessed again,
-regardless of the function's return.
-<h1>Class</h1>
+regardless of the method's return.</p>
+<p>The db_create method creates a DB structure that is the
+handle for a Berkeley DB database.  Calling the <a href="../api_c/db_close.html">DB-&gt;close</a>,
+<a href="../api_c/db_remove.html">DB-&gt;remove</a> or <a href="../api_c/db_rename.html">DB-&gt;rename</a> methods will discard the returned
+handle.</p>
+<p>The DB handle contains a special field, "app_private", which is
+declared as type "void *".  This field is provided for the use of the
+application program.  It is initialized to NULL and is not further used
+by Berkeley DB in any way.</p>
+<p>The db_create method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>dbp</b><dd>
+The <b>dbp</b> parameter references the memory into which the returned
+structure pointer is stored.
+<p><dt><b>dbenv</b><dd>
+If the <b>dbenv</b> parameter is NULL, the database is standalone; that
+is, it is not part of any Berkeley DB environment.
+<p>If the <b>dbenv</b> parameter is not NULL, the database is created
+within the specified Berkeley DB environment.  The database access methods
+automatically make calls to the other subsystems in Berkeley DB, based on the
+enclosing environment.  For example, if the environment has been
+configured to use locking, the access methods will automatically acquire
+the correct locks when reading and writing pages of the database.</p>
+<p><dt><b>flags</b><dd>
+The <b>flags</b> parameter must be set to 0 or
+the following value:
+<p><dl compact>
+<p><dt><a name="DB_XA_CREATE">DB_XA_CREATE</a><dd>Instead of creating a standalone database, create a database intended
+to be accessed via applications running under an X/Open conformant
+Transaction Manager.  The database will be opened in the environment
+specified by the OPENINFO parameter of the GROUPS section of the
+ubbconfig file.  See the <a href="../ref/xa/xa_intro.html">XA
+Introduction</a> section in the Berkeley DB Reference Guide for more information.
+</dl>
+</dl>
+<h3>Errors</h3>
+<p>The db_create method
+may fail and return one of the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
 DB
-<h1>See Also</h1>
+<h3>See Also</h3>
 <a href="../api_c/db_list.html">Databases and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

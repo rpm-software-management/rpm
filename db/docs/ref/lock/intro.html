@@ -1,89 +1,107 @@
-<!--$Id: intro.so,v 10.16 2000/03/18 21:43:14 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.26 2003/10/18 19:16:02 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Berkeley DB and locking</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Locking Subsystem</dl></h3></td>
-<td width="1%"><a href="../../ref/program/runtime.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/lock/page.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../program/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Berkeley DB and locking</h1>
-<p>The lock subsystem provides interprocess and intraprocess concurrency
-control mechanisms.  While the locking system is used extensively by the
-Berkeley DB access methods and transaction system, it may also be used as a
-stand-alone subsystem to provide concurrency control to any set of
-designated resources.
-<p>The lock subsystem is created, initialized, and opened by calls to
-<a href="../../api_c/env_open.html">DBENV-&gt;open</a> with the <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a> or <a href="../../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a>
-flags specified.
-<p>The <a href="../../api_c/lock_detect.html">lock_detect</a> function provides the programmatic interface to
-the Berkeley DB deadlock detector.  Whenever two threads of control issue lock
-requests that are not carefully ordered or that require upgrading locks
-(obtaining write locks on objects that are already read-locked), the
-possibility for deadlock arises.  A deadlock occurs when two or more
-threads of control are blocked, waiting for actions that another one of
-these blocked threads must take.  For example, assume that threads one
-and two have each obtained read locks on object A.  Now suppose that both
-threads wish to obtain write locks on object A.  Neither thread can be
-granted its writelock (because of the other thread's readlock).  Both
-threads block and will never unblock because the event for which they are
-waiting can never happen.
-<p>The deadlock detector examines all the locks held in the environment and
-identifies situations where no thread can make forward progress.  It then
-selects one of the participants in the deadlock (according to the argument
-that was specified to <a href="../../api_c/env_set_lk_detect.html">DBENV-&gt;set_lk_detect</a>) and forces it to return
-the value DB_LOCK_DEADLOCK, which indicates that a deadlock occurred.
-The thread receiving such an error should abort its current transaction,
-or simply release all its locks if it is not running in a transaction,
-and retry the operation.
-<p>The <a href="../../api_c/lock_vec.html">lock_vec</a> interface is used to acquire and release locks.
-<p>Two additional interfaces, <a href="../../api_c/lock_get.html">lock_get</a> and <a href="../../api_c/lock_put.html">lock_put</a>, are
-provided.  These interfaces are simpler front-ends to the <a href="../../api_c/lock_vec.html">lock_vec</a>
-functionality, where <a href="../../api_c/lock_get.html">lock_get</a> acquires a lock, and
-<a href="../../api_c/lock_put.html">lock_put</a> releases a lock that was acquired using <a href="../../api_c/lock_get.html">lock_get</a>
-or <a href="../../api_c/lock_vec.html">lock_vec</a>.
-<p>It is up to the application to specify lockers and objects appropriately.
-When used with the Berkeley DB access methods, these lockers and objects are
-handled completely internally, but an application using the lock manager
+<h3 align=center>Berkeley DB and locking</h3>
+<p>The locking subsystem provides interprocess and intraprocess concurrency
+control mechanisms.  Although the lock system is used extensively by
+the Berkeley DB access methods and transaction system, it may also be used as
+a standalone subsystem to provide concurrency control to any set of
+designated resources.</p>
+<p>The Lock subsystem is created, initialized, and opened by calls to
+<a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> with the <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a> or <a href="../../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a>
+flags specified.</p>
+<p>The <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> method is used to acquire and release locks.  The
+<a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> method performs any number of lock operations atomically.  It
+also provides the capability to release all locks held by a particular
+locker and release all the locks on a particular object.  (Performing
+multiple lock operations atomically is useful in performing Btree
+traversals -- you want to acquire a lock on a child page and once
+acquired, immediately release the lock on its parent.  This is
+traditionally referred to as <i>lock-coupling</i>).  Two additional
+methods, <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a> and <a href="../../api_c/lock_put.html">DB_ENV-&gt;lock_put</a>, are provided.  These
+methods are simpler front-ends to the <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> functionality,
+where <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a> acquires a lock, and <a href="../../api_c/lock_put.html">DB_ENV-&gt;lock_put</a> releases a
+lock that was acquired using <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a> or <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a>.  All
+locks explicitly requested by an application should be released via
+calls to <a href="../../api_c/lock_put.html">DB_ENV-&gt;lock_put</a> or <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a>.  Using <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a>
+instead of separate calls to <a href="../../api_c/lock_put.html">DB_ENV-&gt;lock_put</a> and <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a> also
+reduces the synchronization overhead between multiple threads or
+processes.  The three methods are fully compatible, and may be used
+interchangeably.</p>
+<p>Applications must specify lockers and lock objects appropriately.  When
+used with the Berkeley DB access methods, lockers and objects are handled
+completely internally, but an application using the lock manager
 directly must either use the same conventions as the access methods or
-define its own convention to which it adheres.  If the application is
-using the access methods with locking at the same time that it is calling
-the lock manager directly, the application must follow a convention that
-is compatible with the access methods' use of the locking subsystem.  See
-<a href="../../ref/lock/am_conv.html">Access method locking conventions</a>
-for more information.
-<p>The <a href="../../api_c/lock_id.html">lock_id</a> function returns a unique ID which may safely be used
-as the locker parameter to the <a href="../../api_c/lock_vec.html">lock_vec</a> interface.  The access
-methods use <a href="../../api_c/lock_id.html">lock_id</a> to generate unique lockers for the cursors
-associated with a database.
-<p>The <a href="../../api_c/lock_vec.html">lock_vec</a> function performs any number of lock operations
-atomically.  It also provides the ability to release all locks held by a
-particular locker and release all the locks on a particular object.
-Performing multiple lock operations atomically is useful in performing
-Btree traversals where you want to acquire a lock on a child page and once
-acquired, immediately release the lock on its parent (this is
-traditionally referred to as "lock-coupling").  Using <a href="../../api_c/lock_vec.html">lock_vec</a>
-instead of separate calls to <a href="../../api_c/lock_put.html">lock_put</a> and <a href="../../api_c/lock_get.html">lock_get</a> reduces
-the synchronization overhead between multiple threads or processes.
-<p>The three interfaces, <a href="../../api_c/lock_get.html">lock_get</a>, <a href="../../api_c/lock_put.html">lock_put</a> and <a href="../../api_c/lock_vec.html">lock_vec</a>,
-are fully compatible, and may be used interchangeably.
-<p>All locks explicitly requested by an application should be released via
-calls to <a href="../../api_c/lock_put.html">lock_put</a> or <a href="../../api_c/lock_vec.html">lock_vec</a>.
-<p>The <a href="../../api_c/lock_stat.html">lock_stat</a> function returns information about the status of
+define its own convention to which it adheres.  If an application is
+using the access methods with locking at the same time that it is
+calling the lock manager directly, the application must follow a
+convention that is compatible with the access methods' use of the
+locking subsystem.  See <a href="../../ref/lock/am_conv.html">Access
+method locking conventions</a> for more information.</p>
+<p>The <a href="../../api_c/lock_id.html">DB_ENV-&gt;lock_id</a> function returns a unique ID that may safely be used
+as the locker parameter to the <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> method.  The access methods
+use <a href="../../api_c/lock_id.html">DB_ENV-&gt;lock_id</a> to generate unique lockers for the cursors
+associated with a database.</p>
+<p>The <a href="../../api_c/lock_detect.html">DB_ENV-&gt;lock_detect</a> function provides the programmatic interface to
+the Berkeley DB deadlock detector.  Whenever two threads of control issue lock
+requests concurrently, the possibility for deadlock arises.  A deadlock
+occurs when two or more threads of control are blocked, waiting for
+actions that another one of the blocked threads must take.  For example,
+assume that threads A and B have each obtained read locks on object X.
+Now suppose that both threads want to obtain write locks on object X.
+Neither thread can be granted its write lock (because of the other
+thread's read lock).  Both threads block and will never unblock because
+the event for which they are waiting can never happen.</p>
+<p>The deadlock detector examines all the locks held in the environment,
+and identifies situations where no thread can make forward progress.
+It then selects one of the participants in the deadlock (according to
+the argument that was specified to <a href="../../api_c/env_set_lk_detect.html">DB_ENV-&gt;set_lk_detect</a>), and
+forces it to return the value <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>, which indicates
+that a deadlock occurred.  The thread receiving such an error must
+release all of its locks and undo any incomplete modifications to the
+locked resource.  Locks are typically released, and modifications
+undone, by closing any cursors involved in the operation and aborting
+any transaction enclosing the operation.  The operation may optionally
+be retried.</p>
+<p>The <a href="../../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a> function returns information about the status of
 the lock subsystem.  It is the programmatic interface used by the
-<a href="../../utility/db_stat.html">db_stat</a> utility.
-<p>The locking subsystem is closed by the call to <a href="../../api_c/env_close.html">DBENV-&gt;close</a>.
+<a href="../../utility/db_stat.html">db_stat</a> utility.</p>
+<p>The locking subsystem is closed by the call to <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a>.</p>
 <p>Finally, the entire locking subsystem may be discarded using the
-<a href="../../api_c/env_remove.html">DBENV-&gt;remove</a> interface.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/program/runtime.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/lock/page.html"><img src="../../images/next.gif" alt="Next"></a>
+<a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method.</p>
+<!--$Id: m4.methods,v 1.1 2002/08/30 20:00:52 bostic Exp $-->
+<table border=1 align=center>
+<tr><th>Locking Subsystem and Related Methods</th><th>Description</th></tr>
+<tr><td><a href="../../api_c/env_set_lk_conflicts.html">DB_ENV-&gt;set_lk_conflicts</a></td><td>Set lock conflicts matrix</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_detect.html">DB_ENV-&gt;set_lk_detect</a></td><td>Set automatic deadlock detection</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_max_lockers.html">DB_ENV-&gt;set_lk_max_lockers</a></td><td>Set maximum number of lockers</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_max_locks.html">DB_ENV-&gt;set_lk_max_locks</a></td><td>Set maximum number of locks</td></tr>
+<tr><td><a href="../../api_c/env_set_lk_max_objects.html">DB_ENV-&gt;set_lk_max_objects</a></td><td>Set maximum number of lock objects</td></tr>
+<tr><td><a href="../../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a></td><td>Set lock and transaction timeout</td></tr>
+<tr><td><a href="../../api_c/lock_detect.html">DB_ENV-&gt;lock_detect</a></td><td>Perform deadlock detection</td></tr>
+<tr><td><a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a></td><td>Acquire a lock</td></tr>
+<tr><td><a href="../../api_c/lock_id.html">DB_ENV-&gt;lock_id</a></td><td>Acquire a locker ID</td></tr>
+<tr><td><a href="../../api_c/lock_id_free.html">DB_ENV-&gt;lock_id_free</a></td><td>Release a locker ID</td></tr>
+<tr><td><a href="../../api_c/lock_put.html">DB_ENV-&gt;lock_put</a></td><td>Release a lock</td></tr>
+<tr><td><a href="../../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a></td><td>Return lock subsystem statistics</td></tr>
+<tr><td><a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a></td><td>Acquire/release locks</td></tr>
+</table>
+<table width="100%"><tr><td><br></td><td align=right><a href="../program/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

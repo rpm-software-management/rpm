@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,9 +9,9 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2002\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "Id: db_checkpoint.c,v 11.46 2002/08/08 03:50:31 bostic Exp ";
+    "$Id: db_checkpoint.c,v 11.51 2003/09/04 18:57:00 bostic Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -69,7 +69,7 @@ db_checkpoint_main(argc, argv)
 	time_t now;
 	long argval;
 	u_int32_t flags, kbytes, minutes, seconds;
-	int ch, e_close, exitval, once, ret, verbose;
+	int ch, exitval, once, ret, verbose;
 	char *home, *logfile, *passwd;
 
 	if ((ret = db_checkpoint_version_check(progname)) != 0)
@@ -82,8 +82,9 @@ db_checkpoint_main(argc, argv)
 	 */
 #define	MAX_UINT32_T	2147483647
 
+	dbenv = NULL;
 	kbytes = minutes = 0;
-	e_close = exitval = once = verbose = 0;
+	exitval = once = verbose = 0;
 	flags = 0;
 	home = logfile = passwd = NULL;
 	__db_getopt_reset = 1;
@@ -159,7 +160,6 @@ db_checkpoint_main(argc, argv)
 		    "%s: db_env_create: %s\n", progname, db_strerror(ret));
 		goto shutdown;
 	}
-	e_close = 1;
 
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
@@ -217,11 +217,14 @@ shutdown:	exitval = 1;
 		remove(logfile);
 
 	/* Clean up the environment. */
-	if (e_close && (ret = dbenv->close(dbenv, 0)) != 0) {
+	if (dbenv != NULL && (ret = dbenv->close(dbenv, 0)) != 0) {
 		exitval = 1;
 		fprintf(stderr,
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
 	}
+
+	if (passwd != NULL)
+		free(passwd);
 
 	/* Resend any caught signal. */
 	__db_util_sigresend();
@@ -246,12 +249,11 @@ db_checkpoint_version_check(progname)
 
 	/* Make sure we're loaded with the right version of the DB library. */
 	(void)db_version(&v_major, &v_minor, &v_patch);
-	if (v_major != DB_VERSION_MAJOR ||
-	    v_minor != DB_VERSION_MINOR || v_patch != DB_VERSION_PATCH) {
+	if (v_major != DB_VERSION_MAJOR || v_minor != DB_VERSION_MINOR) {
 		fprintf(stderr,
-	"%s: version %d.%d.%d doesn't match library version %d.%d.%d\n",
+	"%s: version %d.%d doesn't match library version %d.%d\n",
 		    progname, DB_VERSION_MAJOR, DB_VERSION_MINOR,
-		    DB_VERSION_PATCH, v_major, v_minor, v_patch);
+		    v_major, v_minor);
 		return (EXIT_FAILURE);
 	}
 	return (0);

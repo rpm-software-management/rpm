@@ -1,28 +1,29 @@
-<!--$Id: delete.so,v 10.14 2000/03/18 21:43:08 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: delete.so,v 10.16 2003/10/18 19:15:52 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Deleting records</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Access Methods</dl></h3></td>
-<td width="1%"><a href="../../ref/am/put.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am/sync.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../am/put.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/stat.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Deleting records</h1>
-<p>The <a href="../../api_c/db_del.html">DB-&gt;del</a> function is the standard interface for deleting records from
-the database.  In general, <a href="../../api_c/db_del.html">DB-&gt;del</a> takes a key and deletes the
-data item associated with it from the database.
+<h3 align=center>Deleting records</h3>
+<p>The <a href="../../api_c/db_del.html">DB-&gt;del</a> method deletes records from the database.  In general,
+<a href="../../api_c/db_del.html">DB-&gt;del</a> takes a key and deletes the data item associated with
+it from the database.</p>
 <p>If the database has been configured to support duplicate records, the
-<a href="../../api_c/db_del.html">DB-&gt;del</a> function will remove all of the duplicate records.  To remove
-individual duplicate records, you must use a Berkeley DB cursor interface.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/am/put.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am/sync.html"><img src="../../images/next.gif" alt="Next"></a>
+<a href="../../api_c/db_del.html">DB-&gt;del</a> method will remove all of the duplicate records.  To remove
+individual duplicate records, you must use a Berkeley DB cursor interface.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../am/put.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/stat.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

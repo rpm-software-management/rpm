@@ -1,53 +1,52 @@
-<!--$Id: put.so,v 1.3 2000/08/16 17:50:40 margo Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: put.so,v 1.16 2003/11/05 19:05:10 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Recoverability and deadlock avoidance</title>
+<title>Berkeley DB Reference Guide: Recoverability and deadlock handling</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<table><tr valign=top>
-<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Transaction Protected Applications</dl></h3></td>
-<td width="1%"><a href="../../ref/transapp/data_open.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/inc.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
+<td align=right><a href="../transapp/data_open.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/atomicity.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Recoverability and deadlock avoidance</h1>
+<h3 align=center>Recoverability and deadlock handling</h3>
 <p>The first reason listed for using transactions was recoverability.  Any
 logical change to a database may require multiple changes to underlying
 data structures.  For example, modifying a record in a Btree may require
-leaf and internal pages to split, and so a single <a href="../../api_c/db_put.html">DB-&gt;put</a> method
+leaf and internal pages to split, so a single <a href="../../api_c/db_put.html">DB-&gt;put</a> method
 call can potentially require that multiple physical database pages be
 written.  If only some of those pages are written and then the system
 or application fails, the database is left inconsistent and cannot be
-used until it has been recovered, that is, until the partially completed
-changes have been undone.
-<p>Write-ahead-logging is the term that describes the underlying
+used until it has been recovered; that is, until the partially completed
+changes have been undone.</p>
+<p><i>Write-ahead-logging</i> is the term that describes the underlying
 implementation that Berkeley DB uses to ensure recoverability.  What it means
 is that before any change is made to a database, information about the
 change is written to a database log.  During recovery, the log is read,
 and databases are checked to ensure that changes described in the log
 for committed transactions appear in the database.  Changes that appear
 in the database but are related to aborted or unfinished transactions
-in the log are undone from the database.
+in the log are undone from the database.</p>
 <p>For recoverability after application or system failure, operations that
 modify the database must be protected by transactions.  More
 specifically, operations are not recoverable unless a transaction is
 begun and each operation is associated with the transaction via the
 Berkeley DB interfaces, and then the transaction successfully committed.  This
-is true even if logging is turned on in the database environment.
+is true even if logging is turned on in the database environment.</p>
 <p>Here is an example function that updates a record in a database in a
 transactionally protected manner.  The function takes a key and data
-items as arguments, and then attempts to store them into the database.
-<p><blockquote><pre>int
+items as arguments and then attempts to store them into the database.</p>
+<blockquote><pre>int
 main(int argc, char *argv)
 {
-	extern char *optarg;
 	extern int optind;
 	DB *db_cats, *db_color, *db_fruit;
 	DB_ENV *dbenv;
-	pthread_t ptid;
 	int ch;
 <p>
 	while ((ch = getopt(argc, argv, "")) != EOF)
@@ -70,7 +69,7 @@ main(int argc, char *argv)
 <p>
 	/*
 	 * Open database:
-	 *	Key is a name; Data is: company name, address, cat breeds.
+	 *	Key is a name; Data is: company name, cat breeds.
 	 */
 	db_open(dbenv, &db_cats, "cats", 1);
 <p>
@@ -79,12 +78,12 @@ main(int argc, char *argv)
 	return (0);
 }
 <p>
-<b>void
+<b>int
 add_fruit(DB_ENV *dbenv, DB *db, char *fruit, char *name)
 {
 	DBT key, data;
 	DB_TXN *tid;
-	int ret;
+	int fail, ret, t_ret;
 <p>
 	/* Initialization. */
 	memset(&key, 0, sizeof(key));
@@ -94,10 +93,10 @@ add_fruit(DB_ENV *dbenv, DB *db, char *fruit, char *name)
 	data.data = name;
 	data.size = strlen(name);
 <p>
-	for (;;) {
+	for (fail = 0;;) {
 		/* Begin the transaction. */
-		if ((ret = txn_begin(dbenv, NULL, &tid, 0)) != 0) {
-			dbenv-&gt;err(dbenv, ret, "txn_begin");
+		if ((ret = dbenv-&gt;txn_begin(dbenv, NULL, &tid, 0)) != 0) {
+			dbenv-&gt;err(dbenv, ret, "DB_ENV-&gt;txn_begin");
 			exit (1);
 		}
 <p>
@@ -105,47 +104,100 @@ add_fruit(DB_ENV *dbenv, DB *db, char *fruit, char *name)
 		switch (ret = db-&gt;put(db, tid, &key, &data, 0)) {
 		case 0:
 			/* Success: commit the change. */
-			if ((ret = txn_commit(tid, 0)) != 0) {
-				dbenv-&gt;err(dbenv, ret, "txn_commit");
+			if ((ret = tid-&gt;commit(tid, 0)) != 0) {
+				dbenv-&gt;err(dbenv, ret, "DB_TXN-&gt;commit");
 				exit (1);
 			}
-			return;
+			return (0);
 		case DB_LOCK_DEADLOCK:
-			/* Deadlock: retry the operation. */
-			if ((ret = txn_abort(tid)) != 0) {
-				dbenv-&gt;err(dbenv, ret, "txn_abort");
+		default:
+			/* Retry the operation. */
+			if ((t_ret = tid-&gt;abort(tid)) != 0) {
+				dbenv-&gt;err(dbenv, t_ret, "DB_TXN-&gt;abort");
 				exit (1);
 			}
+			if (fail++ == MAXIMUM_RETRY)
+				return (ret);
 			break;
-		default:
-			/* Error: run recovery. */
-			dbenv-&gt;err(dbenv, ret, "dbc-&gt;put: %s/%s", fruit, name);
-			exit (1);
 		}
 	}
 }</b></pre></blockquote>
-<p>The second reason listed for using transactions was deadlock avoidance.
-There is a new error return in this function that you may not have seen
+<p>Berkeley DB also uses transactions to recover from deadlock.  Database
+operations (that is, any call to a function underlying the handles
+returned by <a href="../../api_c/db_open.html">DB-&gt;open</a> and <a href="../../api_c/db_cursor.html">DB-&gt;cursor</a>) are usually
+performed on behalf of a unique locker.  Transactions can be used to
+perform multiple calls on behalf of the same locker within a single
+thread of control.  For example, consider the case in which a cursor
+scan locates a record and then accesses some other item in the database,
+based on that record.  If these operations are done using the handle's
+default locker IDs, they may conflict.  If the locks are obtained on
+behalf of a transaction, using the transaction's locker ID instead of
+the handle's locker ID, the operations will not conflict.</p>
+<p>There is a new error return in this function that you may not have seen
 before.  In transactional (not Concurrent Data Store) applications
-supporting both readers and writers or just multiple writers, Berkeley DB
+supporting both readers and writers, or just multiple writers, Berkeley DB
 functions have an additional possible error return:
-<a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>.  This return means that our thread of control
-deadlocked with another thread of control, and our thread was selected
-to discard all of its Berkeley DB resources in order to resolve the problem.
-In the sample code, any time the <a href="../../api_c/db_put.html">DB-&gt;put</a> function returns
-<a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>, the transaction is aborted (by calling
-<a href="../../api_c/txn_abort.html">txn_abort</a>, which releases the transaction's Berkeley DB resources and
-undoes any partial changes to the databases), and then the transaction
-is retried from the beginning.
+<a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>.  This means two threads of control deadlocked,
+and the thread receiving the <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> error return has
+been selected to discard its locks in order to resolve the problem.
+When an application receives a <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> return, the
+correct action is to close any cursors involved in the operation and
+abort any enclosing transaction.  In the sample code, any time the
+<a href="../../api_c/db_put.html">DB-&gt;put</a> method returns <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>, <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a> is
+called (which releases the transaction's Berkeley DB resources and undoes any
+partial changes to the databases), and then the transaction is retried
+from the beginning.</p>
 <p>There is no requirement that the transaction be attempted again, but
 that is a common course of action for applications.  Applications may
-want to set an upper boundary on the number of times an operation will
-be retried, as some operations on some data sets may simply be unable
-to succeed.  For example, updating all of the pages on a large web site
+want to set an upper bound on the number of times an operation will be
+retried because some operations on some data sets may simply be unable
+to succeed.  For example, updating all of the pages on a large Web site
 during prime business hours may simply be impossible because of the high
-access rate to the database.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/transapp/data_open.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/inc.html"><img src="../../images/next.gif" alt="Next"></a>
+access rate to the database.</p>
+<p>The <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a> method is called in error cases other than deadlock.
+Any time an error occurs, such that a transactionally protected set of
+operations cannot complete successfully, the transaction must be
+aborted.  While deadlock is by far the most common of these errors,
+there are other possibilities; for example, running out of disk space
+for the filesystem.  In Berkeley DB transactional applications, there are
+three classes of error returns: "expected" errors, "unexpected but
+recoverable" errors, and a single "unrecoverable" error.  Expected
+errors are errors like <a href="../../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a>, which indicates that a
+searched-for key item is not present in the database.  Applications may
+want to explicitly test for and handle this error, or, in the case where
+the absence of a key implies the enclosing transaction should fail,
+simply call <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a>.  Unexpected but recoverable errors are
+errors like <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>, which indicates that an operation
+has been selected to resolve a deadlock, or a system error such as EIO,
+which likely indicates that the filesystem has no available disk space.
+Applications must immediately call <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a> when these returns
+occur, as it is not possible to proceed otherwise.  The only
+unrecoverable error is <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, which indicates that the
+system must stop and recovery must be run.</p>
+<p>It is possible to simplify the above code in the case of a transaction
+comprised entirely of a single database put or delete operation.  The
+<a href="../../api_c/db_put.html">DB-&gt;put</a> and <a href="../../api_c/db_del.html">DB-&gt;del</a> method (and other) calls support the
+<a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag that allows applications to implicitly wrap
+the operation in a transaction.  For example, with the
+<a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag, the above code could be more simply written
+as:</p>
+<blockquote><pre><b>	for (fail = 0; fail++ &lt;= MAXIMUM_RETRY && (ret =
+	    db-&gt;put(db, NULL, &key, &data, DB_AUTO_COMMIT)) == DB_LOCK_DEADLOCK;)
+		;
+	return (ret == 0 ? 0 : 1);</b></pre></blockquote>
+<p>Programmers should not attempt to enumerate all possible error returns
+in their software.  Instead, they should explicitly handle expected
+returns and default to aborting the transaction for the rest.  It is
+entirely the choice of the programmer whether to check for
+<a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> explicitly or not -- attempting new Berkeley DB
+operations after <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> is returned does not worsen the
+situation.  Alternatively, using the <a href="../../api_c/env_set_paniccall.html">DB_ENV-&gt;set_paniccall</a> method to
+handle an unrecoverable error and simply doing some number of
+abort-and-retry cycles for any unexpected Berkeley DB or system error in the
+mainline code often results in the simplest and cleanest application
+code.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/data_open.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/atomicity.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

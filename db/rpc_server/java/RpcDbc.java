@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: RpcDbc.java,v 1.3 2002/08/09 01:56:10 bostic Exp 
+ * $Id: RpcDbc.java,v 1.9 2003/10/29 16:02:57 mjc Exp $
  */
 
 package com.sleepycat.db.rpcserver;
@@ -64,9 +64,9 @@ public class RpcDbc extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		} finally {
-			server.delCursor(this);
+			server.delCursor(this, false);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class RpcDbc extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -86,10 +86,10 @@ public class RpcDbc extends Timer
 		__dbc_del_msg args, __dbc_del_reply reply)
 	{
 		try {
-			reply.status = dbc.del(args.flags);
+			reply.status = dbc.delete(args.flags);
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -106,7 +106,7 @@ public class RpcDbc extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -115,42 +115,42 @@ public class RpcDbc extends Timer
 	{
 		try {
 			Dbt key = new Dbt(args.keydata);
-			key.set_dlen(args.keydlen);
-			key.set_ulen(args.keyulen);
-			key.set_doff(args.keydoff);
-			key.set_flags(Db.DB_DBT_MALLOC |
+			key.setPartialLength(args.keydlen);
+			key.setUserBufferLength(args.keyulen);
+			key.setPartialOffset(args.keydoff);
+			key.setFlags(Db.DB_DBT_MALLOC |
 			    (args.keyflags & Db.DB_DBT_PARTIAL));
 
 			Dbt data = new Dbt(args.datadata);
-			data.set_dlen(args.datadlen);
-			data.set_ulen(args.dataulen);
-			data.set_doff(args.datadoff);
+			data.setPartialLength(args.datadlen);
+			data.setUserBufferLength(args.dataulen);
+			data.setPartialOffset(args.datadoff);
 			if ((args.flags & Db.DB_MULTIPLE) != 0 ||
 			    (args.flags & Db.DB_MULTIPLE_KEY) != 0) {
-				if (data.get_data().length == 0)
-					data.set_data(new byte[data.get_ulen()]);
-				data.set_flags(Db.DB_DBT_USERMEM |
+				if (data.getData().length == 0)
+					data.setData(new byte[data.getUserBufferLength()]);
+				data.setFlags(Db.DB_DBT_USERMEM |
 				    (args.dataflags & Db.DB_DBT_PARTIAL));
 			} else
-				data.set_flags(Db.DB_DBT_MALLOC |
+				data.setFlags(Db.DB_DBT_MALLOC |
 				    (args.dataflags & Db.DB_DBT_PARTIAL));
 
 			reply.status = dbc.get(key, data, args.flags);
 
-			if (key.get_data() == args.keydata) {
-				reply.keydata = new byte[key.get_size()];
-				System.arraycopy(key.get_data(), 0, reply.keydata, 0, key.get_size());
+			if (key.getData() == args.keydata) {
+				reply.keydata = new byte[key.getSize()];
+				System.arraycopy(key.getData(), 0, reply.keydata, 0, key.getSize());
 			} else
-				reply.keydata = key.get_data();
+				reply.keydata = key.getData();
 
-			if (data.get_data() == args.datadata) {
-				reply.datadata = new byte[data.get_size()];
-				System.arraycopy(data.get_data(), 0, reply.datadata, 0, data.get_size());
+			if (data.getData() == args.datadata) {
+				reply.datadata = new byte[data.getSize()];
+				System.arraycopy(data.getData(), 0, reply.datadata, 0, data.getSize());
 			} else
-				reply.datadata = data.get_data();
+				reply.datadata = data.getData();
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 			reply.keydata = reply.datadata = empty;
 		}
 	}
@@ -160,48 +160,48 @@ public class RpcDbc extends Timer
 	{
 		try {
 			Dbt skey = new Dbt(args.skeydata);
-			skey.set_dlen(args.skeydlen);
-			skey.set_doff(args.skeydoff);
-			skey.set_ulen(args.skeyulen);
-			skey.set_flags(Db.DB_DBT_MALLOC |
+			skey.setPartialLength(args.skeydlen);
+			skey.setPartialOffset(args.skeydoff);
+			skey.setUserBufferLength(args.skeyulen);
+			skey.setFlags(Db.DB_DBT_MALLOC |
 			    (args.skeyflags & Db.DB_DBT_PARTIAL));
 
 			Dbt pkey = new Dbt(args.pkeydata);
-			pkey.set_dlen(args.pkeydlen);
-			pkey.set_doff(args.pkeydoff);
-			pkey.set_ulen(args.pkeyulen);
-			pkey.set_flags(Db.DB_DBT_MALLOC |
+			pkey.setPartialLength(args.pkeydlen);
+			pkey.setPartialOffset(args.pkeydoff);
+			pkey.setUserBufferLength(args.pkeyulen);
+			pkey.setFlags(Db.DB_DBT_MALLOC |
 			    (args.pkeyflags & Db.DB_DBT_PARTIAL));
 
 			Dbt data = new Dbt(args.datadata);
-			data.set_dlen(args.datadlen);
-			data.set_doff(args.datadoff);
-			data.set_ulen(args.dataulen);
-			data.set_flags(Db.DB_DBT_MALLOC |
+			data.setPartialLength(args.datadlen);
+			data.setPartialOffset(args.datadoff);
+			data.setUserBufferLength(args.dataulen);
+			data.setFlags(Db.DB_DBT_MALLOC |
 			    (args.dataflags & Db.DB_DBT_PARTIAL));
 
-			reply.status = dbc.pget(skey, pkey, data, args.flags);
+			reply.status = dbc.get(skey, pkey, data, args.flags);
 
-			if (skey.get_data() == args.skeydata) {
-				reply.skeydata = new byte[skey.get_size()];
-				System.arraycopy(skey.get_data(), 0, reply.skeydata, 0, skey.get_size());
+			if (skey.getData() == args.skeydata) {
+				reply.skeydata = new byte[skey.getSize()];
+				System.arraycopy(skey.getData(), 0, reply.skeydata, 0, skey.getSize());
 			} else
-				reply.skeydata = skey.get_data();
+				reply.skeydata = skey.getData();
 
-			if (pkey.get_data() == args.pkeydata) {
-				reply.pkeydata = new byte[pkey.get_size()];
-				System.arraycopy(pkey.get_data(), 0, reply.pkeydata, 0, pkey.get_size());
+			if (pkey.getData() == args.pkeydata) {
+				reply.pkeydata = new byte[pkey.getSize()];
+				System.arraycopy(pkey.getData(), 0, reply.pkeydata, 0, pkey.getSize());
 			} else
-				reply.pkeydata = pkey.get_data();
+				reply.pkeydata = pkey.getData();
 
-			if (data.get_data() == args.datadata) {
-				reply.datadata = new byte[data.get_size()];
-				System.arraycopy(data.get_data(), 0, reply.datadata, 0, data.get_size());
+			if (data.getData() == args.datadata) {
+				reply.datadata = new byte[data.getSize()];
+				System.arraycopy(data.getData(), 0, reply.datadata, 0, data.getSize());
 			} else
-				reply.datadata = data.get_data();
+				reply.datadata = data.getData();
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -210,28 +210,31 @@ public class RpcDbc extends Timer
 	{
 		try {
 			Dbt key = new Dbt(args.keydata);
-			key.set_dlen(args.keydlen);
-			key.set_ulen(args.keyulen);
-			key.set_doff(args.keydoff);
-			key.set_flags(args.keyflags & Db.DB_DBT_PARTIAL);
+			key.setPartialLength(args.keydlen);
+			key.setUserBufferLength(args.keyulen);
+			key.setPartialOffset(args.keydoff);
+			key.setFlags(args.keyflags & Db.DB_DBT_PARTIAL);
 
 			Dbt data = new Dbt(args.datadata);
-			data.set_dlen(args.datadlen);
-			data.set_ulen(args.dataulen);
-			data.set_doff(args.datadoff);
-			data.set_flags(args.dataflags);
+			data.setPartialLength(args.datadlen);
+			data.setUserBufferLength(args.dataulen);
+			data.setPartialOffset(args.datadoff);
+			data.setFlags(args.dataflags & Db.DB_DBT_PARTIAL);
 
 			reply.status = dbc.put(key, data, args.flags);
 
 			if (reply.status == 0 &&
 			    (args.flags == Db.DB_AFTER || args.flags == Db.DB_BEFORE) &&
-			    rdb.db.get_type() == Db.DB_RECNO)
-				reply.keydata = key.get_data();
+			    rdb.db.getDbType() == Db.DB_RECNO)
+				reply.keydata = key.getData();
 			else
 				reply.keydata = empty;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+			reply.keydata = empty;
+		} catch(IllegalArgumentException e) {
+			reply.status = DbServer.EINVAL;
 			reply.keydata = empty;
 		}
 	}

@@ -2,10 +2,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: db_int.in,v 11.106 2002/09/10 02:48:08 bostic Exp 
+ * $Id: db_int.in,v 11.126 2003/09/10 17:27:14 sue Exp $
  */
 
 #ifndef _DB_INTERNAL_H_
@@ -16,7 +16,7 @@
  * here because it's OK if db_int.h includes queue structure declarations.
  *******************************************************/
 #ifndef NO_SYSTEM_INCLUDES
-#if defined(__STDC__) || defined(__cplusplus)
+#if defined(STDC_HEADERS) || defined(__cplusplus)
 #include <stdarg.h>
 #else
 #include <varargs.h>
@@ -64,6 +64,9 @@ extern "C" {
  * 8K on the grounds that most OS's use less than 8K for a VM page size.
  */
 #define	DB_DEF_IOSIZE	(8 * 1024)
+
+/* Number of times to reties I/O operations that return EINTR or EBUSY. */
+#define	DB_RETRY	100
 
 /*
  * Aligning items to particular sizes or in pages or memory.
@@ -150,67 +153,57 @@ typedef struct __fn {
 #undef	DB_LINE
 #define	DB_LINE "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 
-/* Unused, or not-used-yet variable.  "Shut that bloody compiler up!" */
-#define	COMPQUIET(n, v)	(n) = (v)
-
 /*******************************************************
  * API return values
  *******************************************************/
- /*
-  * Return values that are OK for each different call.  Most calls have
-  * a standard 'return of 0 is only OK value', but some, like db->get
-  * have DB_NOTFOUND as a return value, but it really isn't an error.
-  */
+/*
+ * Return values that are OK for each different call.  Most calls have a
+ * standard 'return of 0 is only OK value', but some, like db->get have
+ * DB_NOTFOUND as a return value, but it really isn't an error.
+ */
 #define	DB_RETOK_STD(ret)	((ret) == 0)
 #define	DB_RETOK_DBCDEL(ret)	((ret) == 0 || (ret) == DB_KEYEMPTY || \
 				    (ret) == DB_NOTFOUND)
-#define	DB_RETOK_DBCGET(ret)	DB_RETOK_DBGET(ret)
+#define	DB_RETOK_DBCGET(ret)	((ret) == 0 || (ret) == DB_KEYEMPTY || \
+				    (ret) == DB_NOTFOUND)
 #define	DB_RETOK_DBCPUT(ret)	((ret) == 0 || (ret) == DB_KEYEXIST || \
 				    (ret) == DB_NOTFOUND)
-#define	DB_RETOK_DBDEL(ret)	((ret) == 0 || (ret) == DB_NOTFOUND)
-#define	DB_RETOK_DBGET(ret)	((ret) == 0 || (ret) == DB_KEYEMPTY || \
-				    (ret) == DB_NOTFOUND)
+#define	DB_RETOK_DBDEL(ret)	DB_RETOK_DBCDEL(ret)
+#define	DB_RETOK_DBGET(ret)	DB_RETOK_DBCGET(ret)
 #define	DB_RETOK_DBPUT(ret)	((ret) == 0 || (ret) == DB_KEYEXIST)
 #define	DB_RETOK_LGGET(ret)	((ret) == 0 || (ret) == DB_NOTFOUND)
 #define	DB_RETOK_MPGET(ret)	((ret) == 0 || (ret) == DB_PAGE_NOTFOUND)
-#define	DB_RETOK_REPPMSG(ret)	((ret) == 0 || (ret) == DB_REP_NEWMASTER || \
-				    (ret) == DB_REP_NEWSITE)
+#define	DB_RETOK_REPPMSG(ret)	((ret) == 0 || \
+				    (ret) == DB_REP_ISPERM || \
+				    (ret) == DB_REP_NEWMASTER || \
+				    (ret) == DB_REP_NEWSITE || \
+				    (ret) == DB_REP_NOTPERM)
+
+/* Find a reasonable operation-not-supported error. */
+#ifdef	EOPNOTSUPP
+#define	DB_OPNOTSUP	EOPNOTSUPP
+#else
+#ifdef	ENOTSUP
+#define	DB_OPNOTSUP	ENOTSUP
+#else
+#define	DB_OPNOTSUP	EINVAL
+#endif
+#endif
 
 /*******************************************************
  * Files.
  *******************************************************/
- /*
-  * We use 1024 as the maximum path length.  It's too hard to figure out what
-  * the real path length is, as it was traditionally stored in <sys/param.h>,
-  * and that file isn't always available.
-  */
+/*
+ * We use 1024 as the maximum path length.  It's too hard to figure out what
+ * the real path length is, as it was traditionally stored in <sys/param.h>,
+ * and that file isn't always available.
+ */
 #undef	MAXPATHLEN
 #define	MAXPATHLEN	1024
 
 #define	PATH_DOT	"."	/* Current working directory. */
-#define	PATH_SEPARATOR	"/\\"	/* Path separator character(s). */
-
-/*
- * Flags understood by __os_open.
- */
-#define	DB_OSO_CREATE	0x0001		/* POSIX: O_CREAT */
-#define	DB_OSO_DIRECT	0x0002		/* Don't buffer the file in the OS. */
-#define	DB_OSO_EXCL	0x0004		/* POSIX: O_EXCL */
-#define	DB_OSO_LOG	0x0008		/* Opening a log file. */
-#define	DB_OSO_RDONLY	0x0010		/* POSIX: O_RDONLY */
-#define	DB_OSO_REGION	0x0020		/* Opening a region file. */
-#define	DB_OSO_SEQ	0x0040		/* Expected sequential access. */
-#define	DB_OSO_TEMP	0x0080		/* Remove after last close. */
-#define	DB_OSO_TRUNC	0x0100		/* POSIX: O_TRUNC */
-
-/*
- * Seek options understood by __os_seek.
- */
-typedef enum {
-	DB_OS_SEEK_CUR,			/* POSIX: SEEK_CUR */
-	DB_OS_SEEK_END,			/* POSIX: SEEK_END */
-	DB_OS_SEEK_SET			/* POSIX: SEEK_SET */
-} DB_OS_SEEK;
+				/* Path separator character(s). */
+#define	PATH_SEPARATOR	"/\\"
 
 /*******************************************************
  * Environment.
@@ -229,6 +222,7 @@ typedef enum {
  * LOCKING_ON	Locking has been configured.
  * LOGGING_ON	Logging has been configured.
  * MPOOL_ON	Memory pool has been configured.
+ * REP_ON	Replication has been configured.
  * RPC_ON	RPC has been configured.
  * TXN_ON	Transactions have been configured.
  */
@@ -237,6 +231,7 @@ typedef enum {
 #define	LOCKING_ON(dbenv)	((dbenv)->lk_handle != NULL)
 #define	LOGGING_ON(dbenv)	((dbenv)->lg_handle != NULL)
 #define	MPOOL_ON(dbenv)		((dbenv)->mp_handle != NULL)
+#define	REP_ON(dbenv)		((dbenv)->rep_handle != NULL)
 #define	RPC_ON(dbenv)		((dbenv)->cl_handle != NULL)
 #define	TXN_ON(dbenv)		((dbenv)->tx_handle != NULL)
 
@@ -405,30 +400,6 @@ typedef struct __dbpginfo {
 #define	IS_NOT_LOGGED_LSN(LSN) \
 	((LSN).file == 0 && (LSN).offset == 1)
 
-/*
- * Test if the environment is currently logging changes.  If we're in
- * recovery or we're a replication client, we don't need to log changes
- * because they're already in the log, even though we have a fully functional
- * log system.
- */
-#define	DBENV_LOGGING(dbenv)						\
-	(LOGGING_ON(dbenv) && !F_ISSET((dbenv), DB_ENV_REP_CLIENT) &&	\
-	    (!IS_RECOVERING(dbenv)))
-
-/*
- * Test if we need to log a change.  Note that the DBC_RECOVER flag is set
- * when we're in abort, as well as during recovery;  thus DBC_LOGGING may be
- * false for a particular dbc even when DBENV_LOGGING is true.
- *
- * We explicitly use LOGGING_ON/DB_ENV_REP_CLIENT here because we don't
- * want to have to pull in the log headers, which IS_RECOVERING (and thus
- * DBENV_LOGGING) rely on, and because DBC_RECOVER should be set anytime
- * IS_RECOVERING would be true.
- */
-#define	DBC_LOGGING(dbc)						\
-	(LOGGING_ON((dbc)->dbp->dbenv) && !F_ISSET((dbc), DBC_RECOVER) && \
-	 !F_ISSET((dbc)->dbp->dbenv, DB_ENV_REP_CLIENT))
-
 /*******************************************************
  * Txn.
  *******************************************************/
@@ -468,7 +439,46 @@ struct __vrfy_pageinfo; typedef struct __vrfy_pageinfo VRFY_PAGEINFO;
 #include "dbinc_auto/mutex_ext.h"	/* XXX: Include after region.h. */
 #include "dbinc_auto/env_ext.h"
 #include "dbinc/os.h"
+#include "dbinc/rep.h"
 #include "dbinc_auto/clib_ext.h"
 #include "dbinc_auto/common_ext.h"
+
+/*******************************************************
+ * Remaining Log.
+ * These need to be defined after the general includes
+ * because they need rep.h from above.
+ *******************************************************/
+/*
+ * Test if the environment is currently logging changes.  If we're in recovery
+ * or we're a replication client, we don't need to log changes because they're
+ * already in the log, even though we have a fully functional log system.
+ */
+#define	DBENV_LOGGING(dbenv)						\
+	(LOGGING_ON(dbenv) && !IS_REP_CLIENT(dbenv) &&			\
+	    (!IS_RECOVERING(dbenv)))
+
+/*
+ * Test if we need to log a change.  By default, we don't log operations without
+ * associated transactions, unless DIAGNOSTIC, DEBUG_ROP or DEBUG_WOP are on.
+ * This is because we want to get log records for read/write operations, and, if
+ * we trying to debug something, more information is always better.
+ *
+ * The DBC_RECOVER flag is set when we're in abort, as well as during recovery;
+ * thus DBC_LOGGING may be false for a particular dbc even when DBENV_LOGGING
+ * is true.
+ *
+ * We explicitly use LOGGING_ON/IS_REP_CLIENT here because we don't want to pull
+ * in the log headers, which IS_RECOVERING (and thus DBENV_LOGGING) rely on, and
+ * because DBC_RECOVER should be set anytime IS_RECOVERING would be true.
+ */
+#if defined(DIAGNOSTIC) || defined(DEBUG_ROP)  || defined(DEBUG_WOP)
+#define	DBC_LOGGING(dbc)						\
+	(LOGGING_ON((dbc)->dbp->dbenv) &&				\
+	    !F_ISSET((dbc), DBC_RECOVER) && !IS_REP_CLIENT((dbc)->dbp->dbenv))
+#else
+#define	DBC_LOGGING(dbc)						\
+	((dbc)->txn != NULL && LOGGING_ON((dbc)->dbp->dbenv) &&		\
+	    !F_ISSET((dbc), DBC_RECOVER) && !IS_REP_CLIENT((dbc)->dbp->dbenv))
+#endif
 
 #endif /* !_DB_INTERNAL_H_ */

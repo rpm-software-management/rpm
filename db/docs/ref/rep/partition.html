@@ -1,22 +1,22 @@
-<!--Id: partition.so,v 1.1 2001/10/25 20:05:34 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: partition.so,v 1.1 2001/10/25 20:05:34 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Network partitions</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../../ref/rep/trans.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/trans.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Network partitions</h1>
+<h3 align=center>Network partitions</h3>
 <p>The Berkeley DB replication implementation can be affected by network
-partitioning problems.
+partitioning problems.</p>
 <p>For example, consider a replication group with N members.  The network
 partitions with the master on one side and more than N/2 of the sites
 on the other side.  The sites on the side with the master will continue
@@ -26,7 +26,7 @@ realizing they no longer have a master, will hold an election.  The
 election will succeed as there are more than N/2 of the total sites
 participating, and there will then be two masters for the replication
 group.  Since both masters are potentially accepting write queries, the
-databases could diverge in incompatible ways.
+databases could diverge in incompatible ways.</p>
 <p>If multiple masters are ever found to exist in a replication group, a
 master detecting the problem will return <a href="../../api_c/rep_message.html#DB_REP_DUPMASTER">DB_REP_DUPMASTER</a>.  If
 the application sees this return, it should reconfigure itself as a
@@ -34,7 +34,7 @@ client (by calling <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>
 (by calling <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>).  The site that wins the election may be
 one of the two previous masters, or it may be another site entirely.
 Regardless, the winning system will bring all of the other systems into
-conformance.
+conformance.</p>
 <p>As another example, consider a replication group with a master
 environment and two clients A and B, where client A may upgrade to
 master status and client B cannot.  Then, assume client A is partitioned
@@ -44,19 +44,19 @@ not come back on-line.  Subsequently, the network partition is restored,
 and clients A and B hold an election.  As client B cannot win the
 election, client A will win by default, and in order to get back into
 sync with client B, possibly committed transactions on client B will be
-unrolled until the two sites can once again move forward together.
+unrolled until the two sites can once again move forward together.</p>
 <p>In both of these examples, there is a phase where a newly elected master
 brings the members of a replication group into conformance with itself
 so that it can start sending new information to them.  This can result
 in the loss of information as previously committed transactions are
-unrolled.
+unrolled.</p>
 <p>In architectures where network partitions are an issue, applications
 may want to implement a heart-beat protocol to minimize the consequences
 of a bad network partition.  As long as a master is able to contact at
 least half of the sites in the replication group, it is impossible for
 there to be two masters.  If the master can no longer contact a
 sufficient number of systems, it should reconfigure itself as a client,
-and hold an election.
+and hold an election.</p>
 <p>There is another tool applications can use to minimize the damage in
 the case of a network partition.  By specifying a <b>nsites</b>
 argument to <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> that is larger than the actual number of
@@ -66,7 +66,7 @@ a large percentage of the sites in the system.  For example, if there
 are 20 database environments in the replication group, and an argument
 of 30 is specified to the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method, then a system will have
 to be able to talk to at least 16 of the sites to declare itself the
-master.
+master.</p>
 <p>Specifying a <b>nsites</b> argument to <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> that is
 smaller than the actual number of database environments in the
 replication group has its uses as well.  For example, consider a
@@ -77,14 +77,14 @@ the master.  A reasonable alternative would be to specify a
 argument of 1 to the other.  That way, one of the systems could win
 elections even when partitioned, while the other one could not.  This
 would allow at one of the systems to continue accepting write queries
-after the partition.
+after the partition.</p>
 <p>These scenarios stress the importance of good network infrastructure in
 Berkeley DB replicated environments.  When replicating database environments
 over sufficiently lossy networking, the best solution may well be to
 pick a single master, and only hold elections when human intervention
-has determined the selected master is unable to recover at all.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/trans.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+has determined the selected master is unable to recover at all.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/trans.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

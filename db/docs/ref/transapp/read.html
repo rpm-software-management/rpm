@@ -1,40 +1,56 @@
-<!--$Id: read.so,v 1.1 2000/07/25 17:56:36 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: read.so,v 1.7 2002/05/17 15:48:42 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Repeatable reads</title>
+<title>Berkeley DB Reference Guide: Degrees of isolation</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<table><tr valign=top>
-<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Transaction Protected Applications</dl></h3></td>
-<td width="1%"><a href="../../ref/transapp/inc.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/cursor.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
+<td align=right><a href="../transapp/inc.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/cursor.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Repeatable reads</h1>
-<p>The fourth reason listed for using transactions was repeatable reads.
-Generally, most applications do not need to place reads inside a
-transaction for performance reasons.  The problem is that a
-transactionally protected cursor, reading each key/data pair in a
-database, will acquire a read lock on most of the pages in the database
-and so will gradually block all write operations on the databases until
-the transaction commits or aborts.  Note, however, if there are update
-transactions present in the application, the reading transactions must
-still use locking, and should be prepared to repeat any operation
-(possibly closing and reopening a cursor) which fails with a return
-value of <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>.
-<p>The exceptions to this rule are when the application is doing a
-read-modify-write operation and so requires atomicity, and when an
-application requires the ability to repeatedly access a data item
-knowing that it will not have changed.  A repeatable read simply means
-that, for the life of the transaction, every time a request is made by
-any thread of control to read a data item, it will be unchanged from
-its previous value, that is, that the value will not change until the
-transaction commits or aborts.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/transapp/inc.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/cursor.html"><img src="../../images/next.gif" alt="Next"></a>
+<h3 align=center>Degrees of isolation</h3>
+<a name="2"><!--meow--></a>
+<p>Transactions can be isolated from each other to different degrees.
+<i>Repeatable reads</i> provide the most isolation, and mean that,
+for the life of the transaction, every time a thread of control reads
+a data item, it will be unchanged from its previous value (assuming, of
+course, the thread of control does not itself modify the item).  Berkeley DB
+enforces repeatable reads whenever database reads are wrapped in
+transactions.</p>
+<p>Most applications do not need to enclose reads in transactions, and when
+possible, transactionally protected reads should be avoided as they can
+cause performance problems.  For example, a transactionally protected
+cursor sequentially reading each key/data pair in a database, will
+acquire a read lock on most of the pages in the database and so will
+gradually block all write operations on the databases until the
+transaction commits or aborts.  Note, however, that if there are update
+transactions present in the application, the read operations must still
+use locking, and must be prepared to repeat any operation (possibly
+closing and reopening a cursor) that fails with a return value of
+<a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>.  Applications that need repeatable reads are
+ones that require the ability to repeatedly access a data item knowing
+that it will not have changed (for example, an operation modifying a
+data item based on its existing value).</p>
+<a name="3"><!--meow--></a>
+<a name="4"><!--meow--></a>
+<p>Berkeley DB optionally supports reading uncommitted data; that is, read
+operations may request data which has been modified but not yet
+committed by another transaction.  This is done by first specifying the
+<a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag when opening the underlying database, and
+then specifying the <a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag when beginning a
+transaction, opening a cursor, or performing a read operation.  The
+advantage of using <a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> is that read operations will
+not block when another transaction holds a write lock on the requested
+data; the disadvantage is that read operations may return data that will
+disappear should the transaction holding the write lock abort.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/inc.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/cursor.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

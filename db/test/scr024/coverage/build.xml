@@ -1,0 +1,111 @@
+<!-- $Id: build.xml,v 1.14 2003/10/17 03:06:34 mhayes Exp $ -->
+<project name="clover" default="test" basedir=".">
+
+  <property name="db" location="../../.."/>
+  <property name="src" location="${db}/java/src"/>
+  <property name="test.src" location="${db}/test/scr024/src"/>
+  <property name="examples.src" location="${db}/examples_java/src"/>
+  <property name="clover.initstring" location="reports/clover.db"/>
+  <property name="clover.excludes" value="**/test/** com/sleepycat/examples/** com/sleepycat/db/**"/>
+  <property name="build.compiler"
+            value="org.apache.tools.ant.taskdefs.CloverCompilerAdapter"/>
+
+  <target name="all" depends="clean,test,report"/>
+
+  <target name="clean">
+    <delete dir="classes"/>
+    <delete dir="tmp"/>
+    <delete dir="reports"/>
+  </target>
+
+  <target name="init">
+    <mkdir dir="classes"/>
+    <mkdir dir="tmp"/>
+    <mkdir dir="reports"/>
+  </target>
+
+  <path id="clover.classpath">
+    <pathelement location="clover.jar"/>
+    <pathelement location="velocity.jar"/>
+  </path>
+
+  <path id="classpath">
+    <pathelement location="classes"/>
+    <path refid="clover.classpath"/>
+  </path>
+
+  <target name="build" depends="init">
+    <javac destdir="classes" debug="on" srcdir="${src}">
+      <src path="${test.src}"/>
+      <src path="${examples.src}"/>
+      <exclude name="com/sleepycat/**/release/**"/>
+      <exclude name="com/sleepycat/db/xa/**"/> <!-- PENDING(gburd): test XA -->
+    </javac>
+    <copy todir="classes">
+      <fileset dir="${test.src}">
+         <include name="**/testdata/**"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="test" depends="build">
+    <junit fork="yes" dir="." printsummary="on" haltonfailure="on"
+           showoutput="on">
+      <formatter type="xml"/>
+      <classpath>
+        <path refid="classpath"/>
+      </classpath>
+      <!--
+      <test name="com.sleepycat.bdb.util.test.Suite" todir="reports"/>
+      <test name="com.sleepycat.bdb.test.CollectionTest" todir="reports"/>
+      -->
+      <test name="com.sleepycat.bdb.test.Suite" todir="reports"/>
+    </junit>
+  </target>
+
+  <target name="examples" depends="build">
+    <antcall target="one_shipment_example">
+      <param name="param_name" value="basic"/>
+    </antcall>
+    <antcall target="one_shipment_example">
+      <param name="param_name" value="index"/>
+    </antcall>
+    <antcall target="one_shipment_example">
+      <param name="param_name" value="entity"/>
+    </antcall>
+    <antcall target="one_shipment_example">
+      <param name="param_name" value="tuple"/>
+    </antcall>
+    <antcall target="one_shipment_example">
+      <param name="param_name" value="sentity"/>
+    </antcall>
+    <antcall target="one_shipment_example">
+      <param name="param_name" value="marshal"/>
+    </antcall>
+    <antcall target="one_shipment_example">
+      <param name="param_name" value="factory"/>
+    </antcall>
+    <echo message=""/>
+    <echo message="=== HelloDatabaseWorld ==="/>
+    <java dir="." fork="yes" classpathref="classpath"
+         classname="com.sleepycat.examples.bdb.helloworld.HelloDatabaseWorld"/>
+  </target>
+
+  <target name="one_shipment_example">
+    <echo message="=== ${param_name} ==="/>
+    <delete dir="tmp"/>
+    <mkdir dir="tmp"/>
+    <java dir="." fork="yes" classpathref="classpath"
+         classname="com.sleepycat.examples.bdb.shipment.${param_name}.Sample"/>
+  </target>
+
+  <target name="report">
+    <java classname="com.cortexeb.tools.clover.reporters.html.HtmlReporter"
+          fork="true">
+       <arg line="--outputdir reports --showSrc --initstring ${clover.initstring} --title 'Berkeley DB Java BDB API'"/>
+       <classpath refid="clover.classpath"/>
+    </java>
+  </target>
+
+</project>
+

@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_UPGRADE {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_upgrade.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_upgrade.o
 	NAME		db_upgrade
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: lock.h,v 11.42 2002/05/18 01:34:13 bostic Exp 
+ * $Id: lock.h,v 11.47 2003/04/16 18:23:27 ubell Exp $
  */
 
 #ifndef	_DB_LOCK_H_
@@ -33,7 +33,8 @@
  * for the NUMWRITES option to deadlock detection.
  */
 #define	IS_WRITELOCK(m) \
-	((m) == DB_LOCK_WRITE || (m) == DB_LOCK_IWRITE || (m) == DB_LOCK_IWR)
+	((m) == DB_LOCK_WRITE || (m) == DB_LOCK_WWRITE || \
+	    (m) == DB_LOCK_IWRITE || (m) == DB_LOCK_IWR)
 
 /*
  * Lock timers.
@@ -45,8 +46,13 @@ typedef struct {
 
 #define	LOCK_TIME_ISVALID(time)		((time)->tv_sec != 0)
 #define	LOCK_SET_TIME_INVALID(time)	((time)->tv_sec = 0)
+#define	LOCK_TIME_ISMAX(time)		((time)->tv_sec == UINT32_T_MAX)
+#define	LOCK_SET_TIME_MAX(time)		((time)->tv_sec = UINT32_T_MAX)
 #define	LOCK_TIME_EQUAL(t1, t2)						\
 	((t1)->tv_sec == (t2)->tv_sec && (t1)->tv_usec == (t2)->tv_usec)
+#define	LOCK_TIME_GREATER(t1, t2)					\
+	((t1)->tv_sec > (t2)->tv_sec ||					\
+	((t1)->tv_sec == (t2)->tv_sec && (t1)->tv_usec > (t2)->tv_usec))
 
 /*
  * DB_LOCKREGION --
@@ -55,6 +61,7 @@ typedef struct {
 typedef struct __db_lockregion {
 	u_int32_t	need_dd;	/* flag for deadlock detector */
 	u_int32_t	detect;		/* run dd on every conflict */
+	db_timeval_t	next_timeout;	/* next time to expire a lock */
 					/* free lock header */
 	SH_TAILQ_HEAD(__flock) free_locks;
 					/* free obj header */
@@ -101,8 +108,8 @@ typedef struct __db_lockobj {
 	SH_DBT	lockobj;		/* Identifies object locked. */
 	SH_TAILQ_ENTRY links;		/* Links for free list or hash list. */
 	SH_TAILQ_ENTRY dd_links;	/* Links for dd list. */
-	SH_TAILQ_HEAD(__wait) waiters;	/* List of waiting locks. */
-	SH_TAILQ_HEAD(__hold) holders;	/* List of held locks. */
+	SH_TAILQ_HEAD(__waitl) waiters;	/* List of waiting locks. */
+	SH_TAILQ_HEAD(__holdl) holders;	/* List of held locks. */
 					/* Declare room in the object to hold
 					 * typical DB lock structures so that
 					 * we do not have to allocate them from
@@ -180,8 +187,6 @@ struct __db_lock {
  * Flag values for __lock_put_internal:
  * DB_LOCK_DOALL:     Unlock all references in this lock (instead of only 1).
  * DB_LOCK_FREE:      Free the lock (used in checklocker).
- * DB_LOCK_IGNOREDEL: Remove from the locker hash table even if already
-		      deleted (used in checklocker).
  * DB_LOCK_NOPROMOTE: Don't bother running promotion when releasing locks
  *		      (used by __lock_put_internal).
  * DB_LOCK_UNLINK:    Remove from the locker links (used in checklocker).
@@ -190,10 +195,9 @@ struct __db_lock {
  */
 #define	DB_LOCK_DOALL		0x010000
 #define	DB_LOCK_FREE		0x020000
-#define	DB_LOCK_IGNOREDEL	0x040000
-#define	DB_LOCK_NOPROMOTE	0x080000
-#define	DB_LOCK_UNLINK		0x100000
-#define	DB_LOCK_NOWAITERS	0x200000
+#define	DB_LOCK_NOPROMOTE	0x040000
+#define	DB_LOCK_UNLINK		0x080000
+#define	DB_LOCK_NOWAITERS	0x100000
 
 /*
  * Macros to get/release different types of mutexes.

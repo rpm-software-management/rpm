@@ -24,6 +24,7 @@ t/db-3.1.t
 t/db-3.2.t
 t/db-3.3.t
 t/destroy.t
+t/encrypt.t
 t/env.t
 t/examples.t
 t/examples.t.T
@@ -54,3 +55,4 @@ patches/5.005_02
 patches/5.005_03
 patches/5.6.0
 scan
+META.yml                                 Module meta-data (added by MakeMaker)

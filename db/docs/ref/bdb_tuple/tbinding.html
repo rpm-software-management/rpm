@@ -1,0 +1,174 @@
+<!--$Id: tbinding.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Tuple - Creating tuple key bindings</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Tuple</dl></h3></td>
+<td align=right><a href="../bdb_tuple/extract.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/tsbinding.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Tuple - Creating tuple key bindings</h3>
+<p>Serial bindings were used in prior examples as key bindings, and keys
+were stored as serialized objects.  In this example, a tuple binding is used
+for each key since keys will be stored as tuples.  Because keys are no
+longer stored as serialized objects, the <b>PartKey</b>,
+<b>SupplierKey</b> and <b>ShipmentKey</b> classes no longer implement the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/io/Serializable.html">Serializable</a>
+ interface (this was the only change to
+these classes and is not shown below).</p>
+<hr size=1 noshade>
+<p>For the Part key, Supplier key, and Shipment key, the
+<b>SampleViews</b> class was changed in this example to create a custom
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleBinding.html">TupleBinding</a>
+ instead of a
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialBinding.html">SerialBinding</a>
+.  The custom
+tuple key binding classes are defined further below.</p>
+<blockquote><pre>
+<b>import com.sleepycat.bdb.bind.tuple.TupleBinding;
+...
+</b>public class SampleViews
+{
+    ...
+    public SampleViews(SampleDatabase db)
+    {
+        DataBinding partKeyBinding =
+<b>            new PartKeyBinding(db.getPartKeyFormat());
+</b>        EntityBinding partValueBinding =
+            new PartBinding(db.getPartKeyFormat(), db.getPartValueFormat());
+        DataBinding supplierKeyBinding =
+<b>            new SupplierKeyBinding(db.getSupplierKeyFormat());
+</b>        EntityBinding supplierValueBinding =
+            new SupplierBinding(db.getSupplierKeyFormat(),
+                                db.getSupplierValueFormat());
+        DataBinding shipmentKeyBinding =
+<b>            new ShipmentKeyBinding(db.getShipmentKeyFormat());
+</b>        EntityBinding shipmentValueBinding =
+            new ShipmentBinding(db.getShipmentKeyFormat(),
+                                db.getShipmentValueFormat());
+        DataBinding cityKeyBinding =
+<b>            TupleBinding.getPrimitiveBinding(String.class,
+                                             db.getCityKeyFormat());
+        ...
+</b>    }
+}
+</pre></blockquote>
+<p>For the City key, however, a custom binding class is not needed because
+the key class is a primitive Java type, 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/String.html">String</a>
+.
+For any primitive Java type, a tuple binding may be created using the
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleBinding.html#getPrimitiveBinding">TupleBinding.getPrimitiveBinding</a>
+static method.</p>
+<hr size=1 noshade>
+<p>The custom key binding classes, <b>PartKeyBinding</b>,
+<b>SupplierKeyBinding</b> and <b>ShipmentKeyBinding</b>, are defined by
+extending the 
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleBinding.html">TupleBinding</a>
+ class.
+The 
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleBinding.html">TupleBinding</a>
+ abstract class
+implements the 
+<a href="../../java/com/sleepycat/bdb/bind/DataBinding.html">DataBinding</a>
+ interface, and
+is used for one-to-one bindings between tuples and objects.  Each binding
+class implements two methods for converting between tuples and objects.  Tuple
+fields are read using the 
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleInput.html">TupleInput</a>
+parameter and written using the 
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleOutput.html">TupleOutput</a>
+ parameter.</p>
+<blockquote><pre>
+<b>
+import com.sleepycat.bdb.bind.tuple.TupleBinding;
+import com.sleepycat.bdb.bind.tuple.TupleFormat;
+import com.sleepycat.bdb.bind.tuple.TupleInput;
+import com.sleepycat.bdb.bind.tuple.TupleOutput;
+...
+</b>public class SampleViews
+{
+    ...
+<b>
+    private static class PartKeyBinding extends TupleBinding
+    {
+        private PartKeyBinding(TupleFormat format)
+        {
+            super(format);
+        }
+<p>
+        public Object dataToObject(TupleInput input)
+            throws IOException
+        {
+            String number = input.readString();
+            return new PartKey(number);
+        }
+<p>
+        public void objectToData(Object object, TupleOutput output)
+            throws IOException
+        {
+            PartKey key = (PartKey) object;
+            output.writeString(key.getNumber());
+        }
+    }
+    ...
+    private static class SupplierKeyBinding extends TupleBinding
+    {
+        private SupplierKeyBinding(TupleFormat format)
+        {
+            super(format);
+        }
+<p>
+        public Object dataToObject(TupleInput input)
+            throws IOException
+        {
+            String number = input.readString();
+            return new SupplierKey(number);
+        }
+<p>
+        public void objectToData(Object object, TupleOutput output)
+            throws IOException
+        {
+            SupplierKey key = (SupplierKey) object;
+            output.writeString(key.getNumber());
+        }
+    }
+    ...
+    private static class ShipmentKeyBinding extends TupleBinding
+    {
+        private ShipmentKeyBinding(TupleFormat format)
+        {
+            super(format);
+        }
+<p>
+        public Object dataToObject(TupleInput input)
+            throws IOException
+        {
+            String partNumber = input.readString();
+            String supplierNumber = input.readString();
+            return new ShipmentKey(partNumber, supplierNumber);
+        }
+<p>
+        public void objectToData(Object object, TupleOutput output)
+            throws IOException
+        {
+            ShipmentKey key = (ShipmentKey) object;
+            output.writeString(key.getPartNumber());
+            output.writeString(key.getSupplierNumber());
+        }
+    }
+</b>}
+</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_tuple/extract.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/tsbinding.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -14,20 +14,22 @@ BEGIN {
 use BerkeleyDB; 
 use t::util ;
 
-print "1..47\n";
+print "1..50\n";
 
 my $Dfile = "dbhash.tmp";
 
 umask(0);
+
+my $version_major  = 0;
 
 {
     # db version stuff
     my ($major, $minor, $patch) = (0, 0, 0) ;
 
     ok 1, my $VER = BerkeleyDB::DB_VERSION_STRING ;
-    ok 2, my $ver = BerkeleyDB::db_version($major, $minor, $patch) ;
+    ok 2, my $ver = BerkeleyDB::db_version($version_major, $minor, $patch) ;
     ok 3, $VER eq $ver ;
-    ok 4, $major > 1 ;
+    ok 4, $version_major > 1 ;
     ok 5, defined $minor ;
     ok 6, defined $patch ;
 }
@@ -43,7 +45,8 @@ umask(0);
 
     eval ' $env = new BerkeleyDB::Env (-Config => {"fred" => " "} ) ; ' ;
     ok 9, !$env ;
-    ok 10, $BerkeleyDB::Error =~ /^illegal name-value pair/ ;
+    ok 10, $BerkeleyDB::Error =~ /^(illegal name-value pair|Invalid argument)/ ;
+    #print " $BerkeleyDB::Error\n";
 }
 
 {
@@ -152,7 +155,6 @@ umask(0);
 
 {
     # -ErrPrefix
-    use IO ;
     my $home = "./fred" ;
     ok 32, my $lexD = new LexDir($home) ;
     my $errfile = "./errfile" ;
@@ -210,6 +212,22 @@ umask(0);
 
     ok 47, $env->db_appexit() == 0 ;
 
+}
+
+{
+    # attempt to open a new environment without DB_CREATE
+    # should fail with Berkeley DB 3.x or better.
+
+    my $home = "./fred" ;
+    ok 48, my $lexD = new LexDir($home) ;
+    chdir "./fred" ;
+    my $env = new BerkeleyDB::Env -Home => $home, -Flags => DB_CREATE ;
+    ok 49, $version_major == 2 ? $env : ! $env ;
+    ok 50, $version_major == 2 ? 1 
+                               : $BerkeleyDB::Error =~ /No such file or directory/ ;
+    #print " $BerkeleyDB::Error\n";
+    chdir ".." ;
+    undef $env ;
 }
 
 # test -Verbose

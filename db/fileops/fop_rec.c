@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: fop_rec.c,v 1.18 2002/08/14 20:27:01 bostic Exp ";
+static const char revid[] = "$Id: fop_rec.c,v 1.27 2003/10/07 20:23:28 ubell Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -19,8 +19,10 @@ static const char revid[] = "Id: fop_rec.c,v 1.18 2002/08/14 20:27:01 bostic Exp
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
+#include "dbinc/db_shash.h"
 #include "dbinc/fop.h"
 #include "dbinc/db_am.h"
+#include "dbinc/mp.h"
 #include "dbinc/txn.h"
 
 /*
@@ -38,7 +40,7 @@ __fop_create_recover(dbenv, dbtp, lsnp, op, info)
 	db_recops op;
 	void *info;
 {
-	DB_FH fh;
+	DB_FH *fhp;
 	__fop_create_args *argp;
 	char *real_name;
 	int ret;
@@ -54,10 +56,13 @@ __fop_create_recover(dbenv, dbtp, lsnp, op, info)
 
 	if (DB_UNDO(op))
 		(void)__os_unlink(dbenv, real_name);
-	else if (DB_REDO(op))
+	else if (DB_REDO(op)) {
 		if ((ret = __os_open(dbenv, real_name,
-		    DB_OSO_CREATE | DB_OSO_EXCL, argp->mode, &fh)) == 0)
-			__os_closehandle(dbenv, &fh);
+		    DB_OSO_CREATE | DB_OSO_EXCL, argp->mode, &fhp)) == 0)
+			(void)__os_closehandle(dbenv, fhp);
+		else 
+			goto out;
+	}
 
 	*lsnp = argp->prev_lsn;
 
@@ -95,9 +100,10 @@ __fop_remove_recover(dbenv, dbtp, lsnp, op, info)
 	    (const char *)argp->name.data, 0, NULL, &real_name)) != 0)
 		goto out;
 
-	if (DB_REDO(op) && (ret = dbenv->memp_nameop(dbenv,
-	    (u_int8_t *)argp->fid.data, NULL, real_name, NULL)) != 0)
-		goto out;
+	/* Its ok if the file is not there. */
+	if (DB_REDO(op))
+		(void)__memp_nameop(dbenv,
+		    (u_int8_t *)argp->fid.data, NULL, real_name, NULL);
 
 	*lsnp = argp->prev_lsn;
 out:	if (real_name != NULL)
@@ -127,14 +133,17 @@ __fop_write_recover(dbenv, dbtp, lsnp, op, info)
 	REC_PRINT(__fop_write_print);
 	REC_NOOP_INTRO(__fop_write_read);
 
+	ret = 0;
 	if (DB_UNDO(op))
 		DB_ASSERT(argp->flag != 0);
 	else if (DB_REDO(op))
 		ret = __fop_write(dbenv,
-		    argp->txnid, argp->name.data, argp->appname, NULL,
-		    argp->offset, argp->page.data, argp->page.size, argp->flag);
+		    argp->txnid, argp->name.data, argp->appname,
+		    NULL, argp->pgsize, argp->pageno, argp->offset,
+		    argp->page.data, argp->page.size, argp->flag, 0);
 
-	*lsnp = argp->prev_lsn;
+	if (ret == 0)
+		*lsnp = argp->prev_lsn;
 	REC_NOOP_CLOSE;
 }
 
@@ -154,6 +163,7 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 	void *info;
 {
 	__fop_rename_args *argp;
+	DB_FH *fhp;
 	DBMETA *meta;
 	char *real_new, *real_old, *src;
 	int ret;
@@ -162,6 +172,7 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 	real_new = NULL;
 	real_old = NULL;
 	ret = 0;
+	fhp = NULL;
 	meta = (DBMETA *)&mbuf[0];
 
 	COMPQUIET(info, NULL);
@@ -189,20 +200,24 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 		 * way, shape or form, incorrect, so that we should not restore
 		 * it.
 		 */
-		if (__fop_read_meta(
-		    dbenv, src, mbuf, DBMETASIZE, NULL, 1, NULL, 0) != 0)
+		if (__os_open(dbenv, src, 0, 0, &fhp) != 0)
+			goto done;
+		if (__fop_read_meta(dbenv,
+		    src, mbuf, DBMETASIZE, fhp, 1, NULL) != 0)
 			goto done;
 		if (__db_chk_meta(dbenv, NULL, meta, 1) != 0)
 			goto done;
 		if (memcmp(argp->fileid.data, meta->uid, DB_FILE_ID_LEN) != 0)
 			goto done;
+		(void)__os_closehandle(dbenv, fhp);
+		fhp = NULL;
 	}
 
 	if (DB_UNDO(op))
-		(void)dbenv->memp_nameop(dbenv, fileid,
+		(void)__memp_nameop(dbenv, fileid,
 		    (const char *)argp->oldname.data, real_new, real_old);
 	if (DB_REDO(op))
-		(void)dbenv->memp_nameop(dbenv, fileid,
+		(void)__memp_nameop(dbenv, fileid,
 		    (const char *)argp->newname.data, real_old, real_new);
 
 done:	*lsnp = argp->prev_lsn;
@@ -210,6 +225,8 @@ out:	if (real_new != NULL)
 		__os_free(dbenv, real_new);
 	if (real_old != NULL)
 		__os_free(dbenv, real_old);
+	if (fhp != NULL)
+		(void)__os_closehandle(dbenv, fhp);
 
 	REC_NOOP_CLOSE;
 }
@@ -235,14 +252,16 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 {
 	__fop_file_remove_args *argp;
 	DBMETA *meta;
+	DB_FH *fhp;
 	char *real_name;
 	int is_real, is_tmp, ret;
 	size_t len;
 	u_int8_t mbuf[DBMETASIZE];
 	u_int32_t cstat;
 
-	real_name = NULL;
+	fhp = NULL;
 	is_real = is_tmp = 0;
+	real_name = NULL;
 	meta = (DBMETA *)&mbuf[0];
 	REC_PRINT(__fop_file_remove_print);
 	REC_NOOP_INTRO(__fop_file_remove_read);
@@ -260,8 +279,10 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 		goto out;
 
 	/* Verify that we are manipulating the correct file.  */
-	if ((ret = __fop_read_meta(dbenv,
-	    real_name, mbuf, DBMETASIZE, NULL, 1, &len, 0)) != 0) {
+	len = 0;
+	if (__os_open(dbenv, real_name, 0, 0, &fhp) != 0 ||
+	    (ret = __fop_read_meta(dbenv, real_name,
+	    mbuf, DBMETASIZE, fhp, 1, &len)) != 0) {
 		/*
 		 * If len is non-zero, then the file exists and has something
 		 * in it, but that something isn't a full meta-data page, so
@@ -290,20 +311,26 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 			/* File exists and is the one that we were removing. */
 			cstat = TXN_COMMIT;
 	}
+	if (fhp != NULL) {
+		(void)__os_closehandle(dbenv, fhp);
+		fhp = NULL;
+	}
 
 	if (DB_UNDO(op)) {
 		/* On the backward pass, we leave a note for the child txn. */
 		if ((ret = __db_txnlist_update(dbenv,
-		    info, argp->child, cstat, NULL)) == DB_NOTFOUND)
+		    info, argp->child, cstat, NULL)) == TXN_NOTFOUND)
 			ret = __db_txnlist_add(dbenv,
 			    info, argp->child, cstat, NULL);
+		if (ret != 0)
+			goto out;
 	} else if (DB_REDO(op)) {
 		/*
 		 * On the forward pass, check if someone recreated the
 		 * file while we weren't looking.
 		 */
 		if (cstat == TXN_COMMIT)
-			(void)dbenv->memp_nameop(dbenv,
+			(void)__memp_nameop(dbenv,
 			    is_real ? argp->real_fid.data : argp->tmp_fid.data,
 			    NULL, real_name, NULL);
 	}
@@ -313,5 +340,7 @@ done:	*lsnp = argp->prev_lsn;
 
 out:	if (real_name != NULL)
 		__os_free(dbenv, real_name);
+	if (fhp != NULL)
+		(void)__os_closehandle(dbenv, fhp);
 	REC_NOOP_CLOSE;
 }

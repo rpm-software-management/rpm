@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,9 +9,9 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2002\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "Id: db_verify.c,v 1.38 2002/08/08 03:51:38 bostic Exp ";
+    "$Id: db_verify.c,v 1.45 2003/08/13 19:57:09 ubell Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -54,16 +54,17 @@ db_verify_main(argc, argv)
 	DB *dbp, *dbp1;
 	DB_ENV *dbenv;
 	u_int32_t cache;
-	int ch, d_close, e_close, exitval, nflag, oflag, private;
-	int quiet, resize, ret, t_ret;
+	int ch, exitval, nflag, oflag, private;
+	int quiet, resize, ret;
 	char *home, *passwd;
 
 	if ((ret = db_verify_version_check(progname)) != 0)
 		return (ret);
 
 	dbenv = NULL;
+	dbp = NULL;
 	cache = MEGABYTE;
-	d_close = e_close = exitval = nflag = oflag = quiet = 0;
+	exitval = nflag = oflag = quiet = 0;
 	home = passwd = NULL;
 	__db_getopt_reset = 1;
 	while ((ch = getopt(argc, argv, "h:NoP:qV")) != EOF)
@@ -114,7 +115,6 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 		    "%s: db_env_create: %s\n", progname, db_strerror(ret));
 		goto shutdown;
 	}
-	e_close = 1;
 
 	if (!quiet) {
 		dbenv->set_errfile(dbenv, stderr);
@@ -162,7 +162,6 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 			dbenv->err(dbenv, ret, "%s: db_create", progname);
 			goto shutdown;
 		}
-		d_close = 1;
 
 		/*
 		 * We create a 2nd dbp to this database to get its pagesize
@@ -196,38 +195,40 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 
 			if (resize) {
 				(void)dbp->close(dbp, 0);
-				d_close = 0;
+				dbp = NULL;
 
 				(void)dbenv->close(dbenv, 0);
-				e_close = 0;
+				dbenv = NULL;
 				goto retry;
 			}
 		}
-		if ((ret = dbp->verify(dbp,
-		    argv[0], NULL, NULL, oflag ? DB_NOORDERCHK : 0)) != 0)
-			dbp->err(dbp, ret, "DB->verify: %s", argv[0]);
-		if ((t_ret = dbp->close(dbp, 0)) != 0 && ret == 0) {
-			dbenv->err(dbenv, ret, "DB->close: %s", argv[0]);
-			ret = t_ret;
-		}
-		d_close = 0;
-		if (ret != 0)
+
+		/* The verify method is a destructor. */
+		ret = dbp->verify(dbp,
+		    argv[0], NULL, NULL, oflag ? DB_NOORDERCHK : 0);
+		dbp = NULL;
+		if (ret != 0) {
+			dbenv->err(dbenv, ret, "DB->verify: %s", argv[0]);
 			goto shutdown;
+		}
 	}
 
 	if (0) {
 shutdown:	exitval = 1;
 	}
 
-	if (d_close && (ret = dbp->close(dbp, 0)) != 0) {
+	if (dbp != NULL && (ret = dbp->close(dbp, 0)) != 0) {
 		exitval = 1;
 		dbenv->err(dbenv, ret, "close");
 	}
-	if (e_close && (ret = dbenv->close(dbenv, 0)) != 0) {
+	if (dbenv != NULL && (ret = dbenv->close(dbenv, 0)) != 0) {
 		exitval = 1;
 		fprintf(stderr,
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
 	}
+
+	if (passwd != NULL)
+		free(passwd);
 
 	/* Resend any caught signal. */
 	__db_util_sigresend();
@@ -251,12 +252,11 @@ db_verify_version_check(progname)
 
 	/* Make sure we're loaded with the right version of the DB library. */
 	(void)db_version(&v_major, &v_minor, &v_patch);
-	if (v_major != DB_VERSION_MAJOR ||
-	    v_minor != DB_VERSION_MINOR || v_patch != DB_VERSION_PATCH) {
+	if (v_major != DB_VERSION_MAJOR || v_minor != DB_VERSION_MINOR) {
 		fprintf(stderr,
-	"%s: version %d.%d.%d doesn't match library version %d.%d.%d\n",
+	"%s: version %d.%d doesn't match library version %d.%d\n",
 		    progname, DB_VERSION_MAJOR, DB_VERSION_MINOR,
-		    DB_VERSION_PATCH, v_major, v_minor, v_patch);
+		    v_major, v_minor);
 		return (EXIT_FAILURE);
 	}
 	return (0);

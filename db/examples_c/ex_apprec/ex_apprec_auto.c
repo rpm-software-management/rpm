@@ -22,10 +22,10 @@ ex_apprec_mkdir_log(dbenv, txnid, ret_lsnp, flags,
 {
 	DBT logrec;
 	DB_LSN *lsnp, null_lsn;
-	u_int32_t zero;
-	u_int32_t npad, rectype, txn_num;
-	int ret;
+	u_int32_t zero, rectype, txn_num;
+	u_int npad;
 	u_int8_t *bp;
+	int ret;
 
 	rectype = DB_ex_apprec_mkdir;
 	npad = 0;
@@ -44,7 +44,6 @@ ex_apprec_mkdir_log(dbenv, txnid, ret_lsnp, flags,
 	    + sizeof(u_int32_t) + (dirname == NULL ? 0 : dirname->size);
 	if ((logrec.data = malloc(logrec.size)) == NULL)
 		return (ENOMEM);
-
 	if (npad > 0)
 		memset((u_int8_t *)logrec.data + logrec.size - npad, 0, npad);
 
@@ -70,16 +69,17 @@ ex_apprec_mkdir_log(dbenv, txnid, ret_lsnp, flags,
 		bp += dirname->size;
 	}
 
-	ret = dbenv->log_put(dbenv,
-	   ret_lsnp, (DBT *)&logrec, flags);
-	if (txnid != NULL && ret == 0)
+	ret = dbenv->log_put(dbenv, ret_lsnp, (DBT *)&logrec, flags);
+	if (ret == 0 && txnid != NULL)
 		txnid->last_lsn = *ret_lsnp;
+
 #ifdef LOG_DIAGNOSTIC
 	if (ret != 0)
 		(void)ex_apprec_mkdir_print(dbenv,
 		    (DBT *)&logrec, ret_lsnp, NULL, NULL);
 #endif
 	free(logrec.data);
+
 	return (ret);
 }
 
@@ -106,9 +106,10 @@ ex_apprec_mkdir_print(dbenv, dbtp, lsnp, notused2, notused3)
 	if ((ret = ex_apprec_mkdir_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]ex_apprec_mkdir: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
+	    "[%lu][%lu]ex_apprec_mkdir%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
 	    (u_long)lsnp->file,
 	    (u_long)lsnp->offset,
+	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
 	    (u_long)argp->txnid->txnid,
 	    (u_long)argp->prev_lsn.file,
@@ -121,6 +122,7 @@ ex_apprec_mkdir_print(dbenv, dbtp, lsnp, notused2, notused3)
 	(void)printf("\n");
 	(void)printf("\n");
 	free(argp);
+
 	return (0);
 }
 
@@ -141,7 +143,6 @@ ex_apprec_mkdir_read(dbenv, recbuf, argpp)
 	dbenv = NULL;
 	if ((argp = malloc(sizeof(ex_apprec_mkdir_args) + sizeof(DB_TXN))) == NULL)
 		return (ENOMEM);
-
 	argp->txnid = (DB_TXN *)&argp[1];
 
 	bp = recbuf;

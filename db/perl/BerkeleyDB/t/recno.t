@@ -578,7 +578,7 @@ umask(0) ;
 
    require Exporter ;
    use BerkeleyDB;
-   @ISA=qw(BerkeleyDB::Recno);
+   @ISA=qw(BerkeleyDB BerkeleyDB::Recno);
    @EXPORT = @BerkeleyDB::EXPORT ;
 
    sub db_put { 

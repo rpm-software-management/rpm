@@ -1,109 +1,141 @@
-<!--$Id: common.so,v 10.13 2000/12/05 18:04:26 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: common.so,v 10.25 2003/05/24 22:18:00 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Common errors</title>
+<title>Berkeley DB Reference Guide: Troubleshooting common Berkeley DB problems</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Debugging Applications</dl></h3></td>
-<td width="1%"><a href="../../ref/debug/printlog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_unix/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../debug/printlog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Common errors</h1>
-<p>This page outlines some of the most common problems that people encounter
-and some suggested courses of action.
-<p><dl compact>
-<p><dt><b>Symptom:</b><dd>Core dumps or garbage returns from random Berkeley DB operations.
-<p><dt>Possible Cause:<dd>Failure to zero out DBT structure before issuing request.
-<p><dt>Fix:<dd>Before using a <a href="../../api_c/dbt.html">DBT</a>, you must initialize all its elements
-to 0 and then set the ones you are using explicitly.
-<p><dt><b>Symptom:</b><dd>Random crashes and/or database corruption.
-<p><dt>Possible Cause:<dd>Running multiple threads, but did not specify <a href="../../api_c/env_open.html#DB_THREAD">DB_THREAD</a>
-to <a href="../../api_c/db_open.html">DB-&gt;open</a> or <a href="../../api_c/env_open.html">DBENV-&gt;open</a>.
-<p><dt>Fix:<dd>Any time you are sharing a handle across multiple threads, you must
-specify <a href="../../api_c/env_open.html#DB_THREAD">DB_THREAD</a> when you open that handle.
-<p><dt><b>Symptom:</b><dd><a href="../../api_c/env_open.html">DBENV-&gt;open</a> returns EINVAL.
-<p><dt>Possible Cause:<dd>The environment home directory is a remote mounted filesystem.
-<p><dt>Fix:<dd>Use a locally mounted filesystem instead.
-<p><dt><b>Symptom:</b><dd><a href="../../api_c/db_get.html">DB-&gt;get</a> calls are returning EINVAL.
-<p><dt>Possible Cause:<dd>The application is running with threads, but did not specify the
-<a href="../../api_c/dbt.html#DB_DBT_MALLOC">DB_DBT_MALLOC</a>, <a href="../../api_c/dbt.html#DB_DBT_REALLOC">DB_DBT_REALLOC</a> or <a href="../../api_c/dbt.html#DB_DBT_USERMEM">DB_DBT_USERMEM</a>
-flags in the <a href="../../api_c/dbt.html">DBT</a> structures used in the call.
-<p><dt>Fix:<dd>When running with threaded handles (i.e., specifying <a href="../../api_c/env_open.html#DB_THREAD">DB_THREAD</a>
-to <a href="../../api_c/env_open.html">DBENV-&gt;open</a> or <a href="../../api_c/db_open.html">DB-&gt;open</a>), you must specify one of those
-flags for all <a href="../../api_c/dbt.html">DBT</a> structures in which Berkeley DB is returning data.
-<p><dt><b>Symptom:</b><dd>Running multiple threads or processes, and the database appears to be
-getting corrupted.
-<p><dt>Possible Cause:<dd>Locking is not enabled.
-<p><dt>Fix:<dd>Make sure that you are acquiring locks in your access methods.  You
-must specify <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a> to your <a href="../../api_c/env_open.html">DBENV-&gt;open</a> call and then
-pass that environment to <a href="../../api_c/db_open.html">DB-&gt;open</a>.
-<p><dt><b>Symptom:</b><dd>Locks are accumulating or threads and/or processes are
-deadlocking even though there is no concurrent access to the database.
-<p><dt>Possible Cause:<dd>Failure to close a cursor.
-<p><dt>Fix:<dd>Cursors retain locks between calls.  Everywhere the application uses
-a cursor, the cursor should be explicitly closed as soon as possible after
-it is used.
-<p><dt><b>Symptom:</b><dd>The system locks up.
-<p><dt>Possible Cause:<dd>Application not checking for <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>.
-<p><dt>Fix:<dd>Unless you are using the Concurrent Data Store product, whenever you
-have multiple threads and/or processes and at least one of them is
-writing, you have the potential for deadlock.  As a result, you must
-test for the <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> return on every Berkeley DB call.  In
-general, updates should take place in a transaction or you might leave
-the database in an inconsistent state.  Reads may take place outside
-the context of a transaction under common conditions.
-<p>Whenever you get a <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> return, you should:
-<p><ol>
-<p><li>If you are running in a transaction, abort the transaction, first closing
-any cursors opened in the transaction.
-<p><li>If you are not running in a transaction, simply close the cursor that got
-the <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> (if it was a cursor operation) and retry.
-</ol>
-<p>See <a href="../../ref/transapp/put.html">Recoverability and deadlock
-avoidance</a> for further information.
-<p><dt><b>Symptom:</b><dd>An inordinately high number of deadlocks.
-<p><dt>Possible Cause:<dd>Read-Modify-Write pattern without using the RMW flag.
-<p><dt>Fix:<dd>If you frequently read a piece of data, modify it and then write
+<h3 align=center>Troubleshooting common Berkeley DB problems</h3>
+<p>The following are some common problems that applications encounter.
+For the answers to more Frequently Asked Questions, see the
+Berkeley DB Reference Guide FAQ sections, typically located at the end
+of each chapter.</p>
+<ol>
+<p><li><b>A Berkeley DB method is returning "argument invalid" (EINVAL) or other general
+error value, or throwing a general exception, and the cause is not
+obvious.  Or, a Berkeley DB method is returning an out-of-memory (ENOMEM)
+error and there is plenty of disk and heap space available.</b>
+<p>The application is calling the Berkeley DB API incorrectly or configuring the
+database environment with insufficient resources.</p>
+<p>The Berkeley DB library optionally outputs a verbose error message whenever
+it is about to return a general-purpose error, or throw a non-specific
+exception.  Whenever it is not clear why an application call into Berkeley DB
+is failing, the first step is always to turn on verbose error messages,
+which will almost always explain the problem.  See the
+<a href="../../ref/debug/runtime.html">Run-time error information</a>
+section of the Reference Guide for more information.</p>
+<hr size=1 noshade>
+<p><li><b>Multiple databases are being created in a single physical file and there
+is random database corruption.</b>
+<p>The databases do not share an underlying database cache.  Databases that
+share a single physical file must almost always share an underlying
+database cache as well.  See the <a href="../../ref/am/opensub.html">Opening multiple databases in a single file</a> section of the Reference
+Guide for more information.</p>
+<hr size=1 noshade>
+<p><li><b>There are random failures when creating a database environment, often
+associated with creating or initializing the shared memory regions that
+back the database environment.</b>
+<p>The filesystem in which the database environment is being created is an
+NFS or other remote filesystem.  Database environments should not be
+created in NFS filesystems.  See the <a href="../../ref/env/remote.html">Remote filesystem</a> section of the Reference Guide for more
+information.</p>
+<hr size=1 noshade>
+<p><li><b>There are core dumps or garbage returns from random Berkeley DB operations.</b>
+<p>The application is failing to zero out <a href="../../api_c/dbt_class.html">DBT</a> objects before
+calling Berkeley DB.  Before using a <a href="../../api_c/dbt_class.html">DBT</a>, you must initialize all its
+elements to 0 and then set the ones you are using explicitly.</p>
+<p>Another reason for this symptom is the application may be using Berkeley DB
+handles in a free-threaded manner, without specifying the
+<a href="../../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag to the <a href="../../api_c/db_open.html">DB-&gt;open</a> or <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> methods.
+Any time you are sharing a handle across multiple threads, you must
+specify <a href="../../api_c/env_open.html#DB_THREAD">DB_THREAD</a> when you open that handle.</p>
+<p>Another reason for this symptom is the application is concurrently
+accessing the database, but not acquiring locks.  The Berkeley DB Data Store product does
+no locking at all; the application must do its own serialization of
+access to the database to avoid corruption.  The Berkeley DB Concurrent Data Store and Berkeley DB Transactional Data Store
+products do lock the database, but still require that locking be
+configured.</p>
+<hr size=1 noshade>
+<p><li><b>A transactional database environment locks up, and no threads of
+control are making progress.</b>
+<p>The most common cause of this failure is a thread of control exiting
+unexpectedly, while holding a Berkeley DB mutex or a read/write logical
+database lock.  If a thread of control exits holding a data structure
+mutex, other threads of control will likely lock up fairly quickly,
+queued behind the mutex.  If a thread of control exits holding a logical
+database lock, other threads of control may lock up over a long period
+of time, as they will not be blocked until they attempt to acquire the
+specific page for which a lock is not available.  See the
+<a href="../../ref/lock/deaddbg.html">Deadlock debugging</a> section of the
+Reference Guide for more information on debugging deadlocks.</p>
+<p>Whenever a thread of control exits Berkeley DB holding a mutex or logical
+lock, all threads of control must exit the database environment, and
+database recovery must be performed.  See the
+<a href="../../ref/transapp/app.html">Application structure</a> section of
+the Reference Guide for more information.</p>
+<p>Finally, the Berkeley DB API is not re-entrant, and it is usually unsafe for
+signal handlers to call the Berkeley DB API.  See the
+<a href="../../ref/program/appsignals.html">Signal handling</a> section of
+the Reference Guide for more information.</p>
+<hr size=1 noshade>
+<p><li><b>Locks are accumulating, or threads and/or processes are deadlocking in
+a transactional environment, even though there is no concurrent access
+to the database.</b>
+<p>The application may have failed to close a cursor.  Cursors retain locks
+between calls.  Everywhere the application uses a cursor, the cursor
+should be explicitly closed as soon as possible after it is used.</p>
+<p>Another reason for this symptom is the application is not checking for
+<a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> errors (or <a href="../../api_cxx/deadlock_class.html">DbDeadlockException</a>
+exceptions).  Unless you are using the Berkeley DB Concurrent Data Store product, whenever there
+are multiple threads and/or processes concurrently accessing a database
+and at least one of them is writing the database, there is potential for
+deadlock.</p>
+<p>If deadlock can occur, applications must test for deadlock failures and
+abort the enclosing transaction, or locks will be left.  See the
+<a href="../../ref/transapp/put.html">Recoverability and deadlock
+handling</a> section of the Reference Guide for more information.</p>
+<hr size=1 noshade>
+<p><li><b>A transactional database environment cannot be recovered or normal
+database operations fail with messages that "LSN" values are past
+the end of the log.</b>
+<p>The application may have removed all of its log files without also
+dumping and reloading all of its databases.  Log files should never be
+removed unless explicitly authorized by the <a href="../../utility/db_archive.html">db_archive</a> utility
+or the <a href="../../api_c/log_archive.html">DB_ENV-&gt;log_archive</a> method.  Note that those interfaces will never
+authorize removal of all existing log files.</p>
+<p>Another reason for this symptom is the application may have created a
+database file in one transactional environment and then moved it into
+another transactional environment.  While it is possible to create
+databases in non-transactional environments (for example, when doing
+bulk database loads) and then move them into transactional environments,
+once a database has been used in a transactional environment, it cannot
+be moved to another environment without first being dumped and
+reloaded.</p>
+<hr size=1 noshade>
+<p><li><b>A transactional application is seeing an inordinately high number of
+deadlocks.</b>
+<p>The application may be acquiring database objects in inconsistent
+orders; having threads of control always acquire objects in the
+same order will reduce the frequency of deadlocks.</p>
+<p>If you frequently read a piece of data, modify it and then write
 it, you may be inadvertently causing a large number of deadlocks.  Try
-specifying the <a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a> flag on your get calls.
+specifying the <a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a> flag on your get calls.</p>
 <p>Or, if the application is doing a large number of updates in a small
 database, turning off Btree splits may help (see <a href="../../api_c/db_set_flags.html#DB_REVSPLITOFF">DB_REVSPLITOFF</a>
-for more information.)
-<p><dt><b>Symptom:</b><dd>I run recovery and it exits cleanly, but my database changes are missing.
-<p><dt>Possible Cause:<dd>Failure to enable logging and transactions in the database environment,
-failure to specify DB_ENV handle when creating DB handle,
-transaction handle not passed to Berkeley DB interface, failure to commit
-transaction.
-<p><dt>Fix:<dd>Make sure that the environment and database handles are properly
-created, and that the application passes the transaction handle returned
-by <a href="../../api_c/txn_begin.html">txn_begin</a> to the appropriate Berkeley DB interfaces, and that each
-transaction is eventually committed.
-<p><dt><b>Symptom:</b><dd>Recovery fails.
-<p><dt>Possible Cause:<dd>A database was updated in a transactional environment both with and
-without transactional handles.
-<p><dt>Fix:<dd>If any database write operation is done using a transaction handle,
-every write operation must be done in the context of a transaction.
-<p><dt><b>Symptom:</b><dd>A database environment locks up, sometimes gradually.
-<p><dt>Possible Cause:<dd>A thread of control exited unexpectedly, holding Berkeley DB resources.
-<p><dt>Fix:<dd>Whenever a thread of control exits holding Berkeley DB resources, all threads
-of control must exit the database environment, and recovery must be run.
-<p><dt><b>Symptom:</b><dd>A database environment locks up, sometimes gradually.
-<p><dt>Possible Cause:<dd>Cursors are not being closed before transaction abort.
-<p><dt>Fix:<dd>Before an application aborts a transaction, any cursors opened within
-the context of that transaction must be closed.
-<p><dt><b>Symptom:</b><dd>Transaction abort or recovery fail, or database corruption occurs.
-<p><dt>Possible Cause:<dd>Log files were removed before it was safe.
-<p><dt>Fix:<dd>Do not remove any log files from a database environment until Berkeley DB
-declares it safe.
-</dl>
-<table><tr><td><br></td><td width="1%"><a href="../../ref/debug/printlog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_unix/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+for more information.)</p>
+</ol>
+<table width="100%"><tr><td><br></td><td align=right><a href="../debug/printlog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

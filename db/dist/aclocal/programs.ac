@@ -1,4 +1,4 @@
-# Id: programs.ac,v 11.20 2001/09/24 02:09:25 bostic Exp 
+# $Id: programs.ac,v 11.20 2001/09/24 02:09:25 bostic Exp $
 
 # Check for programs used in building/installation.
 AC_DEFUN(AM_PROGRAMS_SET, [

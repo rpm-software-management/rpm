@@ -1,0 +1,189 @@
+<!--$Id: class.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Serializable Entity - Using transient fields in an entity class</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Serializable Entity</dl></h3></td>
+<td align=right><a href="../bdb_sentity/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_sentity/binding.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Serializable Entity - Using transient fields in an entity class</h3>
+<p>The entity classes in this example are redefined such that they can be
+used both as serializable value classes and as entity classes.  Compared to the
+prior example there are three changes to the <b>Part</b>, <b>Supplier</b>
+and <b>Shipment</b> entity classes:</p>
+<p><ul type=disc>
+<li>Each class now implements the <b>Serializable</b> interface.
+<li>The key fields in each class are declared as <b>transient</b>.
+<li>A package-private <b>setKey</b> method is added to each class
+for initializing the transient key fields.  This method will be called from
+the entity bindings.
+</ul>
+<hr size=1 noshade>
+<blockquote><pre>
+<b>import java.io.Serializable;
+...
+</b>public class Part <b>implements Serializable</b>
+{
+    private <b>transient</b> String number;
+    private String name;
+    private String color;
+    private Weight weight;
+    private String city;
+<p>
+    public Part(String number, String name, String color, Weight weight,
+                String city)
+    {
+        this.number = number;
+        this.name = name;
+        this.color = color;
+        this.weight = weight;
+        this.city = city;
+    }
+<p>
+<b>    final void setKey(String number)
+    {
+        this.number = number;
+    }
+</b>
+<p>
+    public final String getNumber()
+    {
+        return number;
+    }
+<p>
+    public final String getName()
+    {
+        return name;
+    }
+<p>
+    public final String getColor()
+    {
+        return color;
+    }
+<p>
+    public final Weight getWeight()
+    {
+        return weight;
+    }
+<p>
+    public final String getCity()
+    {
+        return city;
+    }
+<p>
+    public String toString()
+    {
+        return "Part: number=" + number +
+               " name=" + name +
+               " color=" + color +
+               " weight=" + weight +
+               " city=" + city + '';
+    }
+}
+...
+public class Supplier <b>implements Serializable</b>
+{
+    private <b>transient</b> String number;
+    private String name;
+    private int status;
+    private String city;
+<p>
+    public Supplier(String number, String name, int status, String city)
+    {
+        this.number = number;
+        this.name = name;
+        this.status = status;
+        this.city = city;
+    }
+<p>
+<b>    void setKey(String number)
+    {
+        this.number = number;
+    }
+</b>
+<p>
+    public final String getNumber()
+    {
+        return number;
+    }
+<p>
+    public final String getName()
+    {
+        return name;
+    }
+<p>
+    public final int getStatus()
+    {
+        return status;
+    }
+<p>
+    public final String getCity()
+    {
+        return city;
+    }
+<p>
+    public String toString()
+    {
+        return "Supplier: number=" + number +
+               " name=" + name +
+               " status=" + status +
+               " city=" + city + '';
+    }
+}
+...
+public class Shipment <b>implements Serializable</b>
+{
+    private <b>transient</b> String partNumber;
+    private <b>transient</b> String supplierNumber;
+    private int quantity;
+<p>
+    public Shipment(String partNumber, String supplierNumber, int quantity)
+    {
+        this.partNumber = partNumber;
+        this.supplierNumber = supplierNumber;
+        this.quantity = quantity;
+    }
+<p>
+<b>    void setKey(String partNumber, String supplierNumber)
+    {
+        this.partNumber = partNumber;
+        this.supplierNumber = supplierNumber;
+    }
+</b><p>
+    public final String getPartNumber()
+    {
+        return partNumber;
+    }
+<p>
+    public final String getSupplierNumber()
+    {
+        return supplierNumber;
+    }
+<p>
+    public final int getQuantity()
+    {
+        return quantity;
+    }
+<p>
+    public String toString()
+    {
+        return "Shipment: part=" + partNumber +
+                " supplier=" + supplierNumber +
+                " quantity=" + quantity + '';
+    }
+}
+</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_sentity/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_sentity/binding.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

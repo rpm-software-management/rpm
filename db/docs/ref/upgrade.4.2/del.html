@@ -1,0 +1,37 @@
+<!--$Id: del.so,v 1.9 2003/11/20 22:31:20 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.2: DB-&gt;del</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.2/client.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.2/priority.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.2: DB-&gt;del</h3>
+<p>In previous releases, the C++ <a href="../../api_cxx/db_del.html">Db::del</a> and Java
+<a href="../../java/com/sleepycat/db/Db.html#delete">Db.delete</a>
+ methods threw exceptions
+encapsulating the
+<a href="../../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> error in some cases when called on Queue and Recno
+databases.  Unfortunately, this was undocumented behavior.</p>
+<p>For consistency with the other Berkeley DB methods that handle
+<a href="../../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a>, this is no longer the case.  Applications calling
+the <a href="../../api_cxx/db_del.html">Db::del</a> or 
+<a href="../../java/com/sleepycat/db/Db.html#delete">Db.delete</a>
+methods on Queue or Recno
+databases, and handling the <a href="../../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> exception specially,
+should be modified to check for a return value of <a href="../../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a>
+instead.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.2/client.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.2/priority.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

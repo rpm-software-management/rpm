@@ -1,4 +1,4 @@
-# Id: README,v 1.2 2001/05/31 23:09:10 dda Exp 
+# $Id: README,v 1.2 2001/05/31 23:09:10 dda Exp $
 
 Use the scripts testall or testone to run all, or just one of the Java
 tests.  You must be in this directory to run them.  For example,

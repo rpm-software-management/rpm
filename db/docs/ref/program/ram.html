@@ -1,0 +1,53 @@
+<!--$Id: ram.so,v 10.1 2002/09/26 01:38:32 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: RAM-only configurations</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Programmer Notes</dl></h3></td>
+<td align=right><a href="../program/namespace.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/cache.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>RAM-only configurations</h3>
+<p>Berkeley DB supports RAM-only configurations, however, Berkeley DB does not
+guarantee writes will never be attempted to disk.</p>
+<p>You can configure RAM-only databases by not specifying a physical file
+name to the <a href="../../api_c/db_open.html">DB-&gt;open</a> method.  Databases created in this way will never
+be written to disk unless Berkeley DB runs out of cache space.  Running out
+of cache space happens when the application attempts to create a new
+database page and there is no spare room in the cache, nor is there a
+clean page which can simply be evicted from the cache, and a dirty page
+must be written from the cache to disk to make room to create the new
+page.  When Berkeley DB runs out of cache space, it will attempt to create a
+temporary backing file to make new room in the cache, which is not what
+you want.</p>
+<p>You can create RAM-only database environments (in which you can work
+with both RAM-only and disk-backed databases) in two different types of
+memory: in heap memory or in system shared memory.  To create the
+database environment in heap memory, specify the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag
+to the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method.  Database environments created in heap
+memory are only accessible to the threads of a single process, however.
+To create the database environment in system shared memory, specify the
+<a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag to the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method.  Database
+environments created in system memory are accessible to multiple
+processes.  However, database environments created in system shared
+memory do create a small (roughly 8 byte) file in the file system read
+by the processes to identify the system shared memory segments to use.</p>
+<p>Finally, if your database environment is intended to be transactionally
+protected or recoverable after application or system failure (that is,
+if you configure either the locking or transaction subsystems in the
+database environment), both the databases and database environment log
+files must be written to disk.  There is currently no way in the Berkeley DB
+database environment to support transactions without writing log files
+to disk.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../program/namespace.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/cache.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -1,8 +1,9 @@
+# See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002
+# Copyright (c) 2002-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: rep004.tcl,v 1.5 2002/08/08 18:13:12 sue Exp 
+# $Id: rep004.tcl,v 1.2 2003/12/15 21:44:40 jbj Exp $
 #
 # TEST rep004
 # TEST Test of DB_REP_LOGSONLY.
@@ -11,17 +12,17 @@
 # TEST client.  Shut down, then run catastrophic recovery in the logs-only
 # TEST client and check that the database is present and populated.
 
-proc rep004 { method { nitems 10 } { tnum "04" } args } {
+proc rep004 { method { nitems 10 } { tnum "004" } args } {
 	source ./include.tcl
 	global testdir
 
 	env_cleanup $testdir
-	set dbname rep0$tnum.db
+	set dbname rep$tnum.db
 
 	set omethod [convert_method $method]
 	set oargs [convert_args $method $args]
 
-	puts "Rep0$tnum: Test of logs-only replication clients"
+	puts "Rep$tnum: Test of logs-only replication clients"
 
 	replsetup $testdir/MSGQUEUEDIR
 	set masterdir $testdir/MASTERDIR
@@ -48,7 +49,7 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 
-	puts "\tRep0$tnum.a: Populate database."
+	puts "\tRep$tnum.a: Populate database."
 
 	set db [eval {berkdb open -create -mode 0644 -auto_commit} \
 	    -env $masterenv $oargs $omethod $dbname]
@@ -71,7 +72,7 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 		error_check_good txn($count) [is_valid_txn $txn $masterenv] TRUE
 
 		set ret [eval \
-		    {$db put} -txn $txn {$key [chop_data $method $data]}] 
+		    {$db put} -txn $txn {$key [chop_data $method $data]}]
 		error_check_good put($count) $ret 0
 
 		error_check_good commit($count) [$txn commit] 0
@@ -79,8 +80,7 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 		incr count
 	}
 
-	puts "\tRep0$tnum.b: Sync up clients."
-	set donenow 0
+	puts "\tRep$tnum.b: Sync up clients."
 	while { 1 } {
 		set nproced 0
 
@@ -94,7 +94,7 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 	}
 
 
-	puts "\tRep0$tnum.c: Get master and logs-only client ahead."
+	puts "\tRep$tnum.c: Get master and logs-only client ahead."
 	set newcount 0
 	while { [gets $did str] != -1 && $newcount < $nitems } {
 		if { [is_record_based $method] == 1 } {
@@ -111,7 +111,7 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 		error_check_good txn($count) [is_valid_txn $txn $masterenv] TRUE
 
 		set ret [eval \
-		    {$db put} -txn $txn {$key [chop_data $method $data]}] 
+		    {$db put} -txn $txn {$key [chop_data $method $data]}]
 		error_check_good put($count) $ret 0
 
 		error_check_good commit($count) [$txn commit] 0
@@ -122,8 +122,7 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 
 	error_check_good db_close [$db close] 0
 
-	puts "\tRep0$tnum.d: Sync up logs-only client only, then fail over."
-	set donenow 0
+	puts "\tRep$tnum.d: Sync up logs-only client only, then fail over."
 	while { 1 } {
 		set nproced 0
 
@@ -138,10 +137,9 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 
 	# "Crash" the master, and fail over to the upgradeable client.
 	error_check_good masterenv_close [$masterenv close] 0
-	replclear 3	
+	replclear 3
 
 	error_check_good upgrade_client [$clientenv rep_start -master] 0
-	set donenow 0
 	while { 1 } {
 		set nproced 0
 
@@ -155,10 +153,10 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 
 	error_check_good loenv_close [$loenv close] 0
 
-	puts "\tRep0$tnum.e: Run catastrophic recovery on logs-only client."
+	puts "\tRep$tnum.e: Run catastrophic recovery on logs-only client."
 	set loenv [berkdb_env -create -home $logsonlydir -txn -recover_fatal]
 
-	puts "\tRep0$tnum.f: Verify logs-only client contents."
+	puts "\tRep$tnum.f: Verify logs-only client contents."
 	set lodb [eval {berkdb open} -env $loenv $oargs $omethod $dbname]
 	set loc [$lodb cursor]
 
@@ -176,7 +174,7 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 	# Reset new master cursor.
 	error_check_good cc_close [$cc close] 0
 	set cc [$cdb cursor]
-	
+
 	for { set lodbt [$loc get -first] } \
 	    { [llength $lodbt] > 0 } { set lodbt [$loc get -next] } {
 		set cdbt [$cc get -next]
@@ -191,7 +189,7 @@ proc rep004 { method { nitems 10 } { tnum "04" } args } {
 	error_check_good cc_close [$cc close] 0
 	error_check_good cdb_close [$cdb close] 0
 	error_check_good clientenv_close [$clientenv close] 0
-	
+
 	close $did
 
 	replclose $testdir/MSGQUEUEDIR

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: RpcDb.java,v 1.8 2002/08/09 01:56:09 bostic Exp 
+ * $Id: RpcDb.java,v 1.16 2003/10/29 16:02:56 mjc Exp $
  */
 
 package com.sleepycat.db.rpcserver;
@@ -58,7 +58,9 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		} catch(IllegalArgumentException e) {
+			reply.status = DbServer.EINVAL;
 		}
 	}
 
@@ -71,14 +73,16 @@ public class RpcDb extends Timer
 		}
 
 		try {
+			server.delDb(this, false);
 			db.close(args.flags);
-			db = null;
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		} catch(IllegalArgumentException e) {
+			reply.status = DbServer.EINVAL;
 		} finally {
-			server.delDb(this);
+			db = null;
 		}
 	}
 
@@ -91,7 +95,7 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -108,7 +112,7 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -119,16 +123,16 @@ public class RpcDb extends Timer
 			RpcDbTxn rtxn = server.getTxn(args.txnpcl_id);
 			DbTxn txn = (rtxn != null) ? rtxn.txn : null;
 			Dbt key = new Dbt(args.keydata);
-			key.set_dlen(args.keydlen);
-			key.set_doff(args.keydoff);
-			key.set_ulen(args.keyulen);
-			key.set_flags(args.keyflags);
+			key.setPartialLength(args.keydlen);
+			key.setPartialOffset(args.keydoff);
+			key.setUserBufferLength(args.keyulen);
+			key.setFlags(args.keyflags);
 
-			db.del(txn, key, args.flags);
+			db.delete(txn, key, args.flags);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -139,43 +143,43 @@ public class RpcDb extends Timer
 			RpcDbTxn rtxn = server.getTxn(args.txnpcl_id);
 			DbTxn txn = (rtxn != null) ? rtxn.txn : null;
 			Dbt key = new Dbt(args.keydata);
-			key.set_dlen(args.keydlen);
-			key.set_doff(args.keydoff);
-			key.set_ulen(args.keyulen);
-			key.set_flags(Db.DB_DBT_MALLOC |
+			key.setPartialLength(args.keydlen);
+			key.setPartialOffset(args.keydoff);
+			key.setUserBufferLength(args.keyulen);
+			key.setFlags(Db.DB_DBT_MALLOC |
 				    (args.keyflags & Db.DB_DBT_PARTIAL));
 
 			Dbt data = new Dbt(args.datadata);
-			data.set_dlen(args.datadlen);
-			data.set_doff(args.datadoff);
-			data.set_ulen(args.dataulen);
+			data.setPartialLength(args.datadlen);
+			data.setPartialOffset(args.datadoff);
+			data.setUserBufferLength(args.dataulen);
 			if ((args.flags & Db.DB_MULTIPLE) != 0) {
-				if (data.get_data().length == 0)
-					data.set_data(new byte[data.get_ulen()]);
-				data.set_flags(Db.DB_DBT_USERMEM |
+				if (data.getData().length == 0)
+					data.setData(new byte[data.getUserBufferLength()]);
+				data.setFlags(Db.DB_DBT_USERMEM |
 				    (args.dataflags & Db.DB_DBT_PARTIAL));
 			} else
-				data.set_flags(Db.DB_DBT_MALLOC |
+				data.setFlags(Db.DB_DBT_MALLOC |
 				    (args.dataflags & Db.DB_DBT_PARTIAL));
 
 			reply.status = db.get(txn, key, data, args.flags);
 
-			if (key.get_data() == args.keydata ||
-			    key.get_data().length != key.get_size()) {
-				reply.keydata = new byte[key.get_size()];
-				System.arraycopy(key.get_data(), 0, reply.keydata, 0, key.get_size());
+			if (key.getData() == args.keydata ||
+			    key.getData().length != key.getSize()) {
+				reply.keydata = new byte[key.getSize()];
+				System.arraycopy(key.getData(), 0, reply.keydata, 0, key.getSize());
 			} else
-				reply.keydata = key.get_data();
+				reply.keydata = key.getData();
 
-			if (data.get_data() == args.datadata ||
-			    data.get_data().length != data.get_size()) {
-				reply.datadata = new byte[data.get_size()];
-				System.arraycopy(data.get_data(), 0, reply.datadata, 0, data.get_size());
+			if (data.getData() == args.datadata ||
+			    data.getData().length != data.getSize()) {
+				reply.datadata = new byte[data.getSize()];
+				System.arraycopy(data.getData(), 0, reply.datadata, 0, data.getSize());
 			} else
-				reply.datadata = data.get_data();
+				reply.datadata = data.getData();
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 			reply.keydata = reply.datadata = empty;
 		}
 	}
@@ -221,7 +225,7 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -232,21 +236,21 @@ public class RpcDb extends Timer
 			RpcDbTxn rtxn = server.getTxn(args.txnpcl_id);
 			DbTxn txn = (rtxn != null) ? rtxn.txn : null;
 			Dbt key = new Dbt(args.keydata);
-			key.set_dlen(args.keydlen);
-			key.set_doff(args.keydoff);
-			key.set_ulen(args.keyulen);
-			key.set_flags(args.keyflags);
+			key.setPartialLength(args.keydlen);
+			key.setPartialOffset(args.keydoff);
+			key.setUserBufferLength(args.keyulen);
+			key.setFlags(args.keyflags);
 
 			DbKeyRange range = new DbKeyRange();
 
-			db.key_range(txn, key, range, args.flags);
+			db.keyRange(txn, key, range, args.flags);
 			reply.status = 0;
 			reply.less = range.less;
 			reply.equal = range.equal;
 			reply.greater = range.greater;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -274,16 +278,41 @@ public class RpcDb extends Timer
 		if (matchFound) {
 			++rdb.refcount;
 			reply.dbcl_id = ((FreeList.FreeListIterator)i).current;
-			reply.type = rdb.db.get_type();
+			reply.type = rdb.db.getDbType();
 			reply.dbflags = rdb.db.get_flags_raw();
 			// FIXME: not possible to work out byteorder from Java?
-			reply.lorder = rdb.db.get_byteswapped() ? 4321 : 1234;
+			reply.lorder = rdb.db.isByteSwapped() ? 4321 : 1234;
 			reply.status = 0;
 
 			DbServer.err.println("Sharing Db: " + reply.dbcl_id);
 		}
 
 		return matchFound;
+	}
+
+	public  void get_name(DbDispatcher server,
+		__db_get_name_msg args, __db_get_name_reply reply)
+	{
+		try {
+			reply.filename = db.getFileName();
+			reply.dbname = db.getDatabaseName();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_open_flags(DbDispatcher server,
+		__db_get_open_flags_msg args, __db_get_open_flags_reply reply)
+	{
+		try {
+			reply.flags = db.getOpenFlags();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
+		}
 	}
 
 	public  void open(DbDispatcher server,
@@ -296,23 +325,21 @@ public class RpcDb extends Timer
 			openflags = args.flags & DbServer.DB_SERVER_DBFLAGS;
 
 			if (findSharedDb(server, reply)) {
-				db.close(0);
-				db = null;
-				server.delDb(this);
+				server.delDb(this, true);
 			} else {
 				DbServer.err.println("Calling db.open(" + null + ", " + dbname + ", " + subdbname + ", " + args.type + ", " + Integer.toHexString(args.flags) + ", " + args.mode + ")");
 				db.open(null, dbname, subdbname, args.type, args.flags, args.mode);
 
 				reply.dbcl_id = args.dbpcl_id;
-				reply.type = this.type = db.get_type();
+				reply.type = this.type = db.getDbType();
 				reply.dbflags = db.get_flags_raw();
 				// FIXME: not possible to work out byteorder from Java?
-				reply.lorder = db.get_byteswapped() ? 4321 : 1234;
+				reply.lorder = db.isByteSwapped() ? 4321 : 1234;
 				reply.status = 0;
 			}
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		} catch(FileNotFoundException e) {
 			e.printStackTrace(DbServer.err);
 			reply.status = Db.DB_NOTFOUND;
@@ -328,53 +355,53 @@ public class RpcDb extends Timer
 			RpcDbTxn rtxn = server.getTxn(args.txnpcl_id);
 			DbTxn txn = (rtxn != null) ? rtxn.txn : null;
 			Dbt skey = new Dbt(args.skeydata);
-			skey.set_dlen(args.skeydlen);
-			skey.set_doff(args.skeydoff);
-			skey.set_ulen(args.skeyulen);
-			skey.set_flags(Db.DB_DBT_MALLOC |
+			skey.setPartialLength(args.skeydlen);
+			skey.setPartialOffset(args.skeydoff);
+			skey.setUserBufferLength(args.skeyulen);
+			skey.setFlags(Db.DB_DBT_MALLOC |
 			    (args.skeyflags & Db.DB_DBT_PARTIAL));
 
 			Dbt pkey = new Dbt(args.pkeydata);
-			pkey.set_dlen(args.pkeydlen);
-			pkey.set_doff(args.pkeydoff);
-			pkey.set_ulen(args.pkeyulen);
-			pkey.set_flags(Db.DB_DBT_MALLOC |
+			pkey.setPartialLength(args.pkeydlen);
+			pkey.setPartialOffset(args.pkeydoff);
+			pkey.setUserBufferLength(args.pkeyulen);
+			pkey.setFlags(Db.DB_DBT_MALLOC |
 			    (args.pkeyflags & Db.DB_DBT_PARTIAL));
 
 			Dbt data = new Dbt(args.datadata);
-			data.set_dlen(args.datadlen);
-			data.set_doff(args.datadoff);
-			data.set_ulen(args.dataulen);
-			data.set_flags(Db.DB_DBT_MALLOC |
+			data.setPartialLength(args.datadlen);
+			data.setPartialOffset(args.datadoff);
+			data.setUserBufferLength(args.dataulen);
+			data.setFlags(Db.DB_DBT_MALLOC |
 			    (args.dataflags & Db.DB_DBT_PARTIAL));
 
-			db.pget(txn, skey, pkey, data, args.flags);
+			db.get(txn, skey, pkey, data, args.flags);
 
-			if (skey.get_data() == args.skeydata ||
-			    skey.get_data().length != skey.get_size()) {
-				reply.skeydata = new byte[skey.get_size()];
-				System.arraycopy(skey.get_data(), 0, reply.skeydata, 0, skey.get_size());
+			if (skey.getData() == args.skeydata ||
+			    skey.getData().length != skey.getSize()) {
+				reply.skeydata = new byte[skey.getSize()];
+				System.arraycopy(skey.getData(), 0, reply.skeydata, 0, skey.getSize());
 			} else
-				reply.skeydata = skey.get_data();
+				reply.skeydata = skey.getData();
 
-			if (pkey.get_data() == args.pkeydata ||
-			    pkey.get_data().length != pkey.get_size()) {
-				reply.pkeydata = new byte[pkey.get_size()];
-				System.arraycopy(pkey.get_data(), 0, reply.pkeydata, 0, pkey.get_size());
+			if (pkey.getData() == args.pkeydata ||
+			    pkey.getData().length != pkey.getSize()) {
+				reply.pkeydata = new byte[pkey.getSize()];
+				System.arraycopy(pkey.getData(), 0, reply.pkeydata, 0, pkey.getSize());
 			} else
-				reply.pkeydata = pkey.get_data();
+				reply.pkeydata = pkey.getData();
 
-			if (data.get_data() == args.datadata ||
-			    data.get_data().length != data.get_size()) {
-				reply.datadata = new byte[data.get_size()];
-				System.arraycopy(data.get_data(), 0, reply.datadata, 0, data.get_size());
+			if (data.getData() == args.datadata ||
+			    data.getData().length != data.getSize()) {
+				reply.datadata = new byte[data.getSize()];
+				System.arraycopy(data.getData(), 0, reply.datadata, 0, data.getSize());
 			} else
-				reply.datadata = data.get_data();
+				reply.datadata = data.getData();
 
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 			reply.skeydata = reply.pkeydata = reply.datadata = empty;
 		}
 	}
@@ -387,17 +414,17 @@ public class RpcDb extends Timer
 			DbTxn txn = (rtxn != null) ? rtxn.txn : null;
 
 			Dbt key = new Dbt(args.keydata);
-			key.set_dlen(args.keydlen);
-			key.set_doff(args.keydoff);
-			key.set_ulen(args.keyulen);
-			key.set_flags(Db.DB_DBT_MALLOC |
+			key.setPartialLength(args.keydlen);
+			key.setPartialOffset(args.keydoff);
+			key.setUserBufferLength(args.keyulen);
+			key.setFlags(Db.DB_DBT_MALLOC |
 			    (args.keyflags & Db.DB_DBT_PARTIAL));
 
 			Dbt data = new Dbt(args.datadata);
-			data.set_dlen(args.datadlen);
-			data.set_doff(args.datadoff);
-			data.set_ulen(args.dataulen);
-			data.set_flags(args.dataflags);
+			data.setPartialLength(args.datadlen);
+			data.setPartialOffset(args.datadoff);
+			data.setUserBufferLength(args.dataulen);
+			data.setFlags(args.dataflags & Db.DB_DBT_PARTIAL);
 
 			reply.status = db.put(txn, key, data, args.flags);
 
@@ -406,19 +433,21 @@ public class RpcDb extends Timer
 			 * Otherwise just status.
 			 */
 			if ((args.flags & Db.DB_APPEND) != 0) {
-				if (key.get_data() == args.keydata ||
-				    key.get_data().length != key.get_size()) {
-					reply.keydata = new byte[key.get_size()];
-					System.arraycopy(key.get_data(), 0, reply.keydata, 0, key.get_size());
+				if (key.getData() == args.keydata ||
+				    key.getData().length != key.getSize()) {
+					reply.keydata = new byte[key.getSize()];
+					System.arraycopy(key.getData(), 0, reply.keydata, 0, key.getSize());
 				} else
-					reply.keydata = key.get_data();
+					reply.keydata = key.getData();
 			} else
 				reply.keydata = empty;
 		} catch(DbException e) {
 			reply.keydata = empty;
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 			DbServer.err.println("Exception, setting status to " + reply.status);
 			e.printStackTrace(DbServer.err);
+		} catch(IllegalArgumentException e) {
+			reply.status = DbServer.EINVAL;
 		}
 	}
 
@@ -433,12 +462,12 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		} catch(FileNotFoundException e) {
 			e.printStackTrace(DbServer.err);
 			reply.status = Db.DB_NOTFOUND;
 		} finally {
-			server.delDb(this);
+			server.delDb(this, false);
 		}
 	}
 
@@ -454,12 +483,12 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		} catch(FileNotFoundException e) {
 			e.printStackTrace(DbServer.err);
 			reply.status = Db.DB_NOTFOUND;
 		} finally {
-			server.delDb(this);
+			server.delDb(this, false);
 		}
 	}
 
@@ -471,7 +500,19 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_bt_minkey(DbDispatcher server,
+		__db_get_bt_minkey_msg args, __db_get_bt_minkey_reply reply)
+	{
+		try {
+			reply.minkey = db.getBtreeMinKey();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -479,11 +520,23 @@ public class RpcDb extends Timer
 		__db_bt_minkey_msg args, __db_bt_minkey_reply reply)
 	{
 		try {
-			db.set_bt_minkey(args.minkey);
+			db.setBtreeMinKey(args.minkey);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_encrypt_flags(DbDispatcher server,
+		__db_get_encrypt_flags_msg args, __db_get_encrypt_flags_reply reply)
+	{
+		try {
+			reply.flags = db.getEncryptFlags();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -491,11 +544,23 @@ public class RpcDb extends Timer
 		__db_encrypt_msg args, __db_encrypt_reply reply)
 	{
 		try {
-			db.set_encrypt(args.passwd, args.flags);
+			db.setEncrypted(args.passwd, args.flags);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_flags(DbDispatcher server,
+		__db_get_flags_msg args, __db_get_flags_reply reply)
+	{
+		try {
+			reply.flags = db.getFlags();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -504,12 +569,24 @@ public class RpcDb extends Timer
 	{
 		try {
 			// DbServer.err.println("Calling db.setflags(" + Integer.toHexString(args.flags) + ")");
-			db.set_flags(args.flags);
+			db.setFlags(args.flags);
 			setflags |= args.flags;
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_h_ffactor(DbDispatcher server,
+		__db_get_h_ffactor_msg args, __db_get_h_ffactor_reply reply)
+	{
+		try {
+			reply.ffactor = db.getHashFillFactor();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -517,11 +594,23 @@ public class RpcDb extends Timer
 		__db_h_ffactor_msg args, __db_h_ffactor_reply reply)
 	{
 		try {
-			db.set_h_ffactor(args.ffactor);
+			db.setHashFillFactor(args.ffactor);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_h_nelem(DbDispatcher server,
+		__db_get_h_nelem_msg args, __db_get_h_nelem_reply reply)
+	{
+		try {
+			reply.nelem = db.getHashNumElements();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -529,11 +618,23 @@ public class RpcDb extends Timer
 		__db_h_nelem_msg args, __db_h_nelem_reply reply)
 	{
 		try {
-			db.set_h_nelem(args.nelem);
+			db.setHashNumElements(args.nelem);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_lorder(DbDispatcher server,
+		__db_get_lorder_msg args, __db_get_lorder_reply reply)
+	{
+		try {
+			reply.lorder = db.getByteOrder();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -541,11 +642,23 @@ public class RpcDb extends Timer
 		__db_lorder_msg args, __db_lorder_reply reply)
 	{
 		try {
-			db.set_lorder(args.lorder);
+			db.setByteOrder(args.lorder);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_pagesize(DbDispatcher server,
+		__db_get_pagesize_msg args, __db_get_pagesize_reply reply)
+	{
+		try {
+			reply.pagesize = db.getPageSize();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -553,11 +666,23 @@ public class RpcDb extends Timer
 		__db_pagesize_msg args, __db_pagesize_reply reply)
 	{
 		try {
-			db.set_pagesize(args.pagesize);
+			db.setPageSize(args.pagesize);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_q_extentsize(DbDispatcher server,
+		__db_get_extentsize_msg args, __db_get_extentsize_reply reply)
+	{
+		try {
+			reply.extentsize = db.getQueueExtentSize();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -565,11 +690,23 @@ public class RpcDb extends Timer
 		__db_extentsize_msg args, __db_extentsize_reply reply)
 	{
 		try {
-			db.set_q_extentsize(args.extentsize);
+			db.setQueueExtentSize(args.extentsize);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_re_delim(DbDispatcher server,
+		__db_get_re_delim_msg args, __db_get_re_delim_reply reply)
+	{
+		try {
+			reply.delim = db.getRecordDelimiter();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -577,11 +714,23 @@ public class RpcDb extends Timer
 		__db_re_delim_msg args, __db_re_delim_reply reply)
 	{
 		try {
-			db.set_re_delim(args.delim);
+			db.setRecordDelimiter(args.delim);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_re_len(DbDispatcher server,
+		__db_get_re_len_msg args, __db_get_re_len_reply reply)
+	{
+		try {
+			reply.len = db.getRecordLength();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -589,11 +738,23 @@ public class RpcDb extends Timer
 		__db_re_len_msg args, __db_re_len_reply reply)
 	{
 		try {
-			db.set_re_len(args.len);
+			db.setRecordLength(args.len);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
+		}
+	}
+
+	public  void get_re_pad(DbDispatcher server,
+		__db_get_re_pad_msg args, __db_get_re_pad_reply reply)
+	{
+		try {
+			reply.pad = db.getRecordPad();
+			reply.status = 0;
+		} catch(DbException e) {
+			e.printStackTrace(DbServer.err);
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -601,11 +762,11 @@ public class RpcDb extends Timer
 		__db_re_pad_msg args, __db_re_pad_reply reply)
 	{
 		try {
-			db.set_re_pad(args.pad);
+			db.setRecordPad(args.pad);
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -661,7 +822,7 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 			reply.stats = new int[0];
 		}
 	}
@@ -674,7 +835,7 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 
@@ -688,7 +849,7 @@ public class RpcDb extends Timer
 			reply.status = 0;
 		} catch(DbException e) {
 			e.printStackTrace(DbServer.err);
-			reply.status = e.get_errno();
+			reply.status = e.getErrno();
 		}
 	}
 }

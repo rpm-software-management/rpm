@@ -1,23 +1,30 @@
-/*-
- * See the file LICENSE for redistribution information.
+/*
+ *  -
+ *  See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997, 1998, 1999, 2000
- *	Sleepycat Software.  All rights reserved.
+ *  Copyright (c) 1997-2003
+ *  Sleepycat Software.  All rights reserved.
  *
- *	$Id: DbKeyRange.java,v 1.1 2000/04/12 15:07:02 dda Exp $
+ *  $Id: DbKeyRange.java,v 1.12 2003/10/20 20:12:36 mjc Exp $
  */
-
 package com.sleepycat.db;
 
 /**
- *
- * @author Donald D. Anderson
  */
-public class DbKeyRange
-{
-    public double less;
+public class DbKeyRange {
+    /**
+     *  A value between 0 and 1, the proportion of keys equal to the
+     *  specified key.
+     */
     public double equal;
+    /**
+     *  A value between 0 and 1, the proportion of keys greater than
+     *  the specified key.
+     */
     public double greater;
+    /**
+     *  A value between 0 and 1, the proportion of keys less than the
+     *  specified key.
+     */
+    public double less;
 }
-
-// end of DbKeyRange.java

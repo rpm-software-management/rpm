@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.vx_code,v 1.6 2002/03/27 20:20:25 bostic Exp 
+# $Id: chk.vx_code,v 1.6 2002/03/27 20:20:25 bostic Exp $
 #
 # Check to make sure the auto-generated utility code in the VxWorks build
 # directory compiles.

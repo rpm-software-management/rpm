@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,9 +9,9 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2002\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "Id: db_archive.c,v 11.36 2002/03/28 20:13:34 bostic Exp ";
+    "$Id: db_archive.c,v 11.42 2003/08/13 19:57:04 ubell Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -53,20 +53,25 @@ db_archive_main(argc, argv)
 	const char *progname = "db_archive";
 	DB_ENV	*dbenv;
 	u_int32_t flags;
-	int ch, e_close, exitval, ret, verbose;
+	int ch, exitval, ret, verbose;
 	char **file, *home, **list, *passwd;
 
 	if ((ret = db_archive_version_check(progname)) != 0)
 		return (ret);
 
+	dbenv = NULL;
 	flags = 0;
-	e_close = exitval = verbose = 0;
+	exitval = verbose = 0;
 	home = passwd = NULL;
+	file = list = NULL;
 	__db_getopt_reset = 1;
-	while ((ch = getopt(argc, argv, "ah:lP:sVv")) != EOF)
+	while ((ch = getopt(argc, argv, "adh:lP:sVv")) != EOF)
 		switch (ch) {
 		case 'a':
 			LF_SET(DB_ARCH_ABS);
+			break;
+		case 'd':
+			LF_SET(DB_ARCH_REMOVE);
 			break;
 		case 'h':
 			home = optarg;
@@ -114,7 +119,6 @@ db_archive_main(argc, argv)
 		    "%s: db_env_create: %s\n", progname, db_strerror(ret));
 		goto shutdown;
 	}
-	e_close = 1;
 
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
@@ -155,11 +159,14 @@ db_archive_main(argc, argv)
 	if (0) {
 shutdown:	exitval = 1;
 	}
-	if (e_close && (ret = dbenv->close(dbenv, 0)) != 0) {
+	if (dbenv != NULL && (ret = dbenv->close(dbenv, 0)) != 0) {
 		exitval = 1;
 		fprintf(stderr,
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
 	}
+
+	if (passwd != NULL)
+		free(passwd);
 
 	/* Resend any caught signal. */
 	__db_util_sigresend();
@@ -171,7 +178,7 @@ int
 db_archive_usage()
 {
 	(void)fprintf(stderr,
-	    "usage: db_archive [-alsVv] [-h home] [-P password]\n");
+	    "usage: db_archive [-adlsVv] [-h home] [-P password]\n");
 	return (EXIT_FAILURE);
 }
 
@@ -183,12 +190,11 @@ db_archive_version_check(progname)
 
 	/* Make sure we're loaded with the right version of the DB library. */
 	(void)db_version(&v_major, &v_minor, &v_patch);
-	if (v_major != DB_VERSION_MAJOR ||
-	    v_minor != DB_VERSION_MINOR || v_patch != DB_VERSION_PATCH) {
+	if (v_major != DB_VERSION_MAJOR || v_minor != DB_VERSION_MINOR) {
 		fprintf(stderr,
-	"%s: version %d.%d.%d doesn't match library version %d.%d.%d\n",
+	"%s: version %d.%d doesn't match library version %d.%d\n",
 		    progname, DB_VERSION_MAJOR, DB_VERSION_MINOR,
-		    DB_VERSION_PATCH, v_major, v_minor, v_patch);
+		    v_major, v_minor);
 		return (EXIT_FAILURE);
 	}
 	return (0);

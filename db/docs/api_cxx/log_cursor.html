@@ -1,21 +1,22 @@
-<!--Id: log_cursor.so,v 10.5 2002/08/24 15:13:43 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: log_cursor.so,v 10.11 2003/10/31 17:24:58 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::log_cursor</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DbEnv::log_cursor</h1>
+<h3>DbEnv::log_cursor</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -25,31 +26,41 @@
 int
 DbEnv::log_cursor(DbLogc **cursorp, u_int32_t flags);
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: DbEnv::log_cursor</h3>
+<p>The DbEnv::log_cursor method returns a created log cursor.</p>
 <p>The DbEnv::log_cursor method
-creates a log cursor and copies a pointer to it into the memory to which
-<b>cursorp</b> refers.
-<p>The <b>flags</b> parameter is currently unused, and must be set to 0.
-<p>The DbEnv::log_cursor method either returns a non-zero error value or throws an exception that
-encapsulates a non-zero error value on failure, and returns 0 on success.
-<h1>Errors</h1>
-<p>The DbEnv::log_cursor method may fail and throw an exception or return a non-zero error for the following conditions:
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p><dt><b>cursorp</b><dd>
+The <b>cursorp</b> parameter references memory into which
+a pointer to the created log cursor is copied.
+<p><dt><b>flags</b><dd>
+The <b>flags</b> parameter is currently unused, and must be set to 0.
 </dl>
-<p>The DbEnv::log_cursor method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
-If a catastrophic error has occurred, the DbEnv::log_cursor method may fail and
-either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw a
-<a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
-in which case all subsequent Berkeley DB calls will fail in the same way.
-<h1>Class</h1>
+<h3>Errors</h3>
+<p>The DbEnv::log_cursor method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
 <a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/logc_class.html">DbLogc</a>, <a href="../api_cxx/lsn_class.html">DbLsn</a>
-<h1>See Also</h1>
+<h3>See Also</h3>
 <a href="../api_cxx/log_list.html">Logging Subsystem and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

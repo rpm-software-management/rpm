@@ -115,4 +115,40 @@ typedef struct ___db_cksum_args {
 	DB_LSN prev_lsn;
 } __db_cksum_args;
 
+#define	DB___db_pg_freedata	52
+typedef struct ___db_pg_freedata_args {
+	u_int32_t type;
+	DB_TXN *txnid;
+	DB_LSN prev_lsn;
+	int32_t	fileid;
+	db_pgno_t	pgno;
+	DB_LSN	meta_lsn;
+	db_pgno_t	meta_pgno;
+	DBT	header;
+	db_pgno_t	next;
+	DBT	data;
+} __db_pg_freedata_args;
+
+#define	DB___db_pg_prepare	53
+typedef struct ___db_pg_prepare_args {
+	u_int32_t type;
+	DB_TXN *txnid;
+	DB_LSN prev_lsn;
+	int32_t	fileid;
+	db_pgno_t	pgno;
+} __db_pg_prepare_args;
+
+#define	DB___db_pg_new	54
+typedef struct ___db_pg_new_args {
+	u_int32_t type;
+	DB_TXN *txnid;
+	DB_LSN prev_lsn;
+	int32_t	fileid;
+	db_pgno_t	pgno;
+	DB_LSN	meta_lsn;
+	db_pgno_t	meta_pgno;
+	DBT	header;
+	db_pgno_t	next;
+} __db_pg_new_args;
+
 #endif

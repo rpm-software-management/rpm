@@ -52,7 +52,7 @@ WriteMakefile(
         'dist'          => {COMPRESS=>'gzip', SUFFIX=>'gz'},    
 	($] >= 5.005
 	    ? (ABSTRACT_FROM	=> 'BerkeleyDB.pod',
-	       AUTHOR  	=> 'Paul Marquess <Paul.Marquess@btinternet.com>')
+	       AUTHOR  	=> 'Paul Marquess <pmqs@cpan.org>')
 	    : ()
 	),
 	);
@@ -115,7 +115,9 @@ sub ParseCONFIG
 
     $INC_DIR =  $ENV{'BERKELEYDB_INCLUDE'} || $Info{'INCLUDE'} ;
     $LIB_DIR =  $ENV{'BERKELEYDB_LIB'} || $Info{'LIB'} ;
-    $DB_NAME = $Info{'DBNAME'} if defined $Info{'DBNAME'} ;
+    $DB_NAME = $ENV{BERKELEYDB_NAME} || $Info{'DBNAME'} ;
+    #$DB_NAME =  $ENV{} || $Info{'DBNAME'} if defined $Info{'DBNAME'} ;
+
     print "Looks Good.\n" ;
 
 }

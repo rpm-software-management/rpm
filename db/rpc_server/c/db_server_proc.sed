@@ -1,3 +1,15 @@
+/^\/\* BEGIN __env_get_cachesize_proc/,/^\/\* END __env_get_cachesize_proc/c\
+/* BEGIN __env_get_cachesize_proc */\
+/*\
+\ * PUBLIC: void __env_get_cachesize_proc __P((long,\
+\ * PUBLIC:      __env_get_cachesize_reply *));\
+\ */\
+void\
+__env_get_cachesize_proc(dbenvcl_id,\
+\	\	replyp)\
+\	long dbenvcl_id;\
+\	__env_get_cachesize_reply *replyp;\
+/* END __env_get_cachesize_proc */
 /^\/\* BEGIN __env_cachesize_proc/,/^\/\* END __env_cachesize_proc/c\
 /* BEGIN __env_cachesize_proc */\
 /*\
@@ -67,6 +79,17 @@ __env_dbrename_proc(dbenvcl_id, txnpcl_id, name,\
 \	u_int32_t flags;\
 \	__env_dbrename_reply *replyp;\
 /* END __env_dbrename_proc */
+/^\/\* BEGIN __env_get_encrypt_flags_proc/,/^\/\* END __env_get_encrypt_flags_proc/c\
+/* BEGIN __env_get_encrypt_flags_proc */\
+/*\
+\ * PUBLIC: void __env_get_encrypt_flags_proc __P((long,\
+\ * PUBLIC:      __env_get_encrypt_flags_reply *));\
+\ */\
+void\
+__env_get_encrypt_flags_proc(dbenvcl_id, replyp)\
+\	long dbenvcl_id;\
+\	__env_get_encrypt_flags_reply *replyp;\
+/* END __env_get_encrypt_flags_proc */
 /^\/\* BEGIN __env_encrypt_proc/,/^\/\* END __env_encrypt_proc/c\
 /* BEGIN __env_encrypt_proc */\
 /*\
@@ -80,6 +103,16 @@ __env_encrypt_proc(dbenvcl_id, passwd, flags, replyp)\
 \	u_int32_t flags;\
 \	__env_encrypt_reply *replyp;\
 /* END __env_encrypt_proc */
+/^\/\* BEGIN __env_get_flags_proc/,/^\/\* END __env_get_flags_proc/c\
+/* BEGIN __env_get_flags_proc */\
+/*\
+\ * PUBLIC: void __env_get_flags_proc __P((long, __env_get_flags_reply *));\
+\ */\
+void\
+__env_get_flags_proc(dbenvcl_id, replyp)\
+\	long dbenvcl_id;\
+\	__env_get_flags_reply *replyp;\
+/* END __env_get_flags_proc */
 /^\/\* BEGIN __env_flags_proc/,/^\/\* END __env_flags_proc/c\
 /* BEGIN __env_flags_proc */\
 /*\
@@ -93,6 +126,27 @@ __env_flags_proc(dbenvcl_id, flags, onoff, replyp)\
 \	u_int32_t onoff;\
 \	__env_flags_reply *replyp;\
 /* END __env_flags_proc */
+/^\/\* BEGIN __env_get_home_proc/,/^\/\* END __env_get_home_proc/c\
+/* BEGIN __env_get_home_proc */\
+/*\
+\ * PUBLIC: void __env_get_home_proc __P((long, __env_get_home_reply *));\
+\ */\
+void\
+__env_get_home_proc(dbenvcl_id, replyp)\
+\	long dbenvcl_id;\
+\	__env_get_home_reply *replyp;\
+/* END __env_get_home_proc */
+/^\/\* BEGIN __env_get_open_flags_proc/,/^\/\* END __env_get_open_flags_proc/c\
+/* BEGIN __env_get_open_flags_proc */\
+/*\
+\ * PUBLIC: void __env_get_open_flags_proc __P((long,\
+\ * PUBLIC:      __env_get_open_flags_reply *));\
+\ */\
+void\
+__env_get_open_flags_proc(dbenvcl_id, replyp)\
+\	long dbenvcl_id;\
+\	__env_get_open_flags_reply *replyp;\
+/* END __env_get_open_flags_proc */
 /^\/\* BEGIN __env_open_proc/,/^\/\* END __env_open_proc/c\
 /* BEGIN __env_open_proc */\
 /*\
@@ -223,6 +277,17 @@ __db_bt_maxkey_proc(dbpcl_id, maxkey, replyp)\
 \	u_int32_t maxkey;\
 \	__db_bt_maxkey_reply *replyp;\
 /* END __db_bt_maxkey_proc */
+/^\/\* BEGIN __db_get_bt_minkey_proc/,/^\/\* END __db_get_bt_minkey_proc/c\
+/* BEGIN __db_get_bt_minkey_proc */\
+/*\
+\ * PUBLIC: void __db_get_bt_minkey_proc __P((long,\
+\ * PUBLIC:      __db_get_bt_minkey_reply *));\
+\ */\
+void\
+__db_get_bt_minkey_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_bt_minkey_reply *replyp;\
+/* END __db_get_bt_minkey_proc */
 /^\/\* BEGIN __db_bt_minkey_proc/,/^\/\* END __db_bt_minkey_proc/c\
 /* BEGIN __db_bt_minkey_proc */\
 /*\
@@ -278,6 +343,17 @@ __db_del_proc(dbpcl_id, txnpcl_id, keydlen,\
 \	u_int32_t flags;\
 \	__db_del_reply *replyp;\
 /* END __db_del_proc */
+/^\/\* BEGIN __db_get_encrypt_flags_proc/,/^\/\* END __db_get_encrypt_flags_proc/c\
+/* BEGIN __db_get_encrypt_flags_proc */\
+/*\
+\ * PUBLIC: void __db_get_encrypt_flags_proc __P((long,\
+\ * PUBLIC:      __db_get_encrypt_flags_reply *));\
+\ */\
+void\
+__db_get_encrypt_flags_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_encrypt_flags_reply *replyp;\
+/* END __db_get_encrypt_flags_proc */
 /^\/\* BEGIN __db_encrypt_proc/,/^\/\* END __db_encrypt_proc/c\
 /* BEGIN __db_encrypt_proc */\
 /*\
@@ -291,6 +367,17 @@ __db_encrypt_proc(dbpcl_id, passwd, flags, replyp)\
 \	u_int32_t flags;\
 \	__db_encrypt_reply *replyp;\
 /* END __db_encrypt_proc */
+/^\/\* BEGIN __db_get_extentsize_proc/,/^\/\* END __db_get_extentsize_proc/c\
+/* BEGIN __db_get_extentsize_proc */\
+/*\
+\ * PUBLIC: void __db_get_extentsize_proc __P((long,\
+\ * PUBLIC:      __db_get_extentsize_reply *));\
+\ */\
+void\
+__db_get_extentsize_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_extentsize_reply *replyp;\
+/* END __db_get_extentsize_proc */
 /^\/\* BEGIN __db_extentsize_proc/,/^\/\* END __db_extentsize_proc/c\
 /* BEGIN __db_extentsize_proc */\
 /*\
@@ -303,6 +390,16 @@ __db_extentsize_proc(dbpcl_id, extentsize, replyp)\
 \	u_int32_t extentsize;\
 \	__db_extentsize_reply *replyp;\
 /* END __db_extentsize_proc */
+/^\/\* BEGIN __db_get_flags_proc/,/^\/\* END __db_get_flags_proc/c\
+/* BEGIN __db_get_flags_proc */\
+/*\
+\ * PUBLIC: void __db_get_flags_proc __P((long, __db_get_flags_reply *));\
+\ */\
+void\
+__db_get_flags_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_flags_reply *replyp;\
+/* END __db_get_flags_proc */
 /^\/\* BEGIN __db_flags_proc/,/^\/\* END __db_flags_proc/c\
 /* BEGIN __db_flags_proc */\
 /*\
@@ -344,6 +441,38 @@ __db_get_proc(dbpcl_id, txnpcl_id, keydlen,\
 \	__db_get_reply *replyp;\
 \	int * freep;\
 /* END __db_get_proc */
+/^\/\* BEGIN __db_get_name_proc/,/^\/\* END __db_get_name_proc/c\
+/* BEGIN __db_get_name_proc */\
+/*\
+\ * PUBLIC: void __db_get_name_proc __P((long, __db_get_name_reply *));\
+\ */\
+void\
+__db_get_name_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_name_reply *replyp;\
+/* END __db_get_name_proc */
+/^\/\* BEGIN __db_get_open_flags_proc/,/^\/\* END __db_get_open_flags_proc/c\
+/* BEGIN __db_get_open_flags_proc */\
+/*\
+\ * PUBLIC: void __db_get_open_flags_proc __P((long,\
+\ * PUBLIC:      __db_get_open_flags_reply *));\
+\ */\
+void\
+__db_get_open_flags_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_open_flags_reply *replyp;\
+/* END __db_get_open_flags_proc */
+/^\/\* BEGIN __db_get_h_ffactor_proc/,/^\/\* END __db_get_h_ffactor_proc/c\
+/* BEGIN __db_get_h_ffactor_proc */\
+/*\
+\ * PUBLIC: void __db_get_h_ffactor_proc __P((long,\
+\ * PUBLIC:      __db_get_h_ffactor_reply *));\
+\ */\
+void\
+__db_get_h_ffactor_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_h_ffactor_reply *replyp;\
+/* END __db_get_h_ffactor_proc */
 /^\/\* BEGIN __db_h_ffactor_proc/,/^\/\* END __db_h_ffactor_proc/c\
 /* BEGIN __db_h_ffactor_proc */\
 /*\
@@ -356,6 +485,16 @@ __db_h_ffactor_proc(dbpcl_id, ffactor, replyp)\
 \	u_int32_t ffactor;\
 \	__db_h_ffactor_reply *replyp;\
 /* END __db_h_ffactor_proc */
+/^\/\* BEGIN __db_get_h_nelem_proc/,/^\/\* END __db_get_h_nelem_proc/c\
+/* BEGIN __db_get_h_nelem_proc */\
+/*\
+\ * PUBLIC: void __db_get_h_nelem_proc __P((long, __db_get_h_nelem_reply *));\
+\ */\
+void\
+__db_get_h_nelem_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_h_nelem_reply *replyp;\
+/* END __db_get_h_nelem_proc */
 /^\/\* BEGIN __db_h_nelem_proc/,/^\/\* END __db_h_nelem_proc/c\
 /* BEGIN __db_h_nelem_proc */\
 /*\
@@ -389,6 +528,16 @@ __db_key_range_proc(dbpcl_id, txnpcl_id, keydlen,\
 \	u_int32_t flags;\
 \	__db_key_range_reply *replyp;\
 /* END __db_key_range_proc */
+/^\/\* BEGIN __db_get_lorder_proc/,/^\/\* END __db_get_lorder_proc/c\
+/* BEGIN __db_get_lorder_proc */\
+/*\
+\ * PUBLIC: void __db_get_lorder_proc __P((long, __db_get_lorder_reply *));\
+\ */\
+void\
+__db_get_lorder_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_lorder_reply *replyp;\
+/* END __db_get_lorder_proc */
 /^\/\* BEGIN __db_lorder_proc/,/^\/\* END __db_lorder_proc/c\
 /* BEGIN __db_lorder_proc */\
 /*\
@@ -418,6 +567,16 @@ __db_open_proc(dbpcl_id, txnpcl_id, name,\
 \	u_int32_t mode;\
 \	__db_open_reply *replyp;\
 /* END __db_open_proc */
+/^\/\* BEGIN __db_get_pagesize_proc/,/^\/\* END __db_get_pagesize_proc/c\
+/* BEGIN __db_get_pagesize_proc */\
+/*\
+\ * PUBLIC: void __db_get_pagesize_proc __P((long, __db_get_pagesize_reply *));\
+\ */\
+void\
+__db_get_pagesize_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_pagesize_reply *replyp;\
+/* END __db_get_pagesize_proc */
 /^\/\* BEGIN __db_pagesize_proc/,/^\/\* END __db_pagesize_proc/c\
 /* BEGIN __db_pagesize_proc */\
 /*\
@@ -499,6 +658,16 @@ __db_put_proc(dbpcl_id, txnpcl_id, keydlen,\
 \	__db_put_reply *replyp;\
 \	int * freep;\
 /* END __db_put_proc */
+/^\/\* BEGIN __db_get_re_delim_proc/,/^\/\* END __db_get_re_delim_proc/c\
+/* BEGIN __db_get_re_delim_proc */\
+/*\
+\ * PUBLIC: void __db_get_re_delim_proc __P((long, __db_get_re_delim_reply *));\
+\ */\
+void\
+__db_get_re_delim_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_re_delim_reply *replyp;\
+/* END __db_get_re_delim_proc */
 /^\/\* BEGIN __db_re_delim_proc/,/^\/\* END __db_re_delim_proc/c\
 /* BEGIN __db_re_delim_proc */\
 /*\
@@ -511,6 +680,16 @@ __db_re_delim_proc(dbpcl_id, delim, replyp)\
 \	u_int32_t delim;\
 \	__db_re_delim_reply *replyp;\
 /* END __db_re_delim_proc */
+/^\/\* BEGIN __db_get_re_len_proc/,/^\/\* END __db_get_re_len_proc/c\
+/* BEGIN __db_get_re_len_proc */\
+/*\
+\ * PUBLIC: void __db_get_re_len_proc __P((long, __db_get_re_len_reply *));\
+\ */\
+void\
+__db_get_re_len_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_re_len_reply *replyp;\
+/* END __db_get_re_len_proc */
 /^\/\* BEGIN __db_re_len_proc/,/^\/\* END __db_re_len_proc/c\
 /* BEGIN __db_re_len_proc */\
 /*\
@@ -533,6 +712,16 @@ __db_re_pad_proc(dbpcl_id, pad, replyp)\
 \	u_int32_t pad;\
 \	__db_re_pad_reply *replyp;\
 /* END __db_re_pad_proc */
+/^\/\* BEGIN __db_get_re_pad_proc/,/^\/\* END __db_get_re_pad_proc/c\
+/* BEGIN __db_get_re_pad_proc */\
+/*\
+\ * PUBLIC: void __db_get_re_pad_proc __P((long, __db_get_re_pad_reply *));\
+\ */\
+void\
+__db_get_re_pad_proc(dbpcl_id, replyp)\
+\	long dbpcl_id;\
+\	__db_get_re_pad_reply *replyp;\
+/* END __db_get_re_pad_proc */
 /^\/\* BEGIN __db_remove_proc/,/^\/\* END __db_remove_proc/c\
 /* BEGIN __db_remove_proc */\
 /*\

@@ -1,24 +1,24 @@
-<!--Id: auto.so,v 10.3 2002/03/15 16:19:10 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: auto.so,v 10.3 2002/03/15 16:19:10 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Automatically generated functions</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Application Specific Logging and Recovery</dl></h3></td>
-<td align=right><a href="../../ref/apprec/def.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/apprec/config.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../apprec/def.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Automatically generated functions</h1>
+<h3 align=center>Automatically generated functions</h3>
 <p>The XXX.src file is processed using the gen_rec.awk script included in
 the dist directory of the Berkeley DB distribution.  This is an awk script
-that is executed from with the following command line:
-<p><blockquote><pre>awk -f gen_rec.awk \
+that is executed from with the following command line:</p>
+<blockquote><pre>awk -f gen_rec.awk \
 	-v source_file=<i>C_FILE</i> \
 	-v header_file=<i>H_FILE</i> \
 	-v template_file=<i>TMP_FILE</i> &lt; XXX.src</pre></blockquote>
@@ -26,13 +26,13 @@ that is executed from with the following command line:
 automatically generated C code, <i>H_FILE</i> is the name of the
 file into which to place the automatically generated data structures
 and declarations, and <i>TMP_FILE</i> is the name of the file into
-which to place a template for the recovery routines.
+which to place a template for the recovery routines.</p>
 <p>Because the gen_rec.awk script uses sources files located relative to
 the Berkeley DB dist directory, it must be run from the dist directory.  For
 example, in building the Berkeley DB logging and recovery routines for
 ex_apprec, the following script is used to rebuild the automatically
-generated files:
-<p><blockquote><pre>E=../examples_c/ex_apprec
+generated files:</p>
+<blockquote><pre>E=../examples_c/ex_apprec
 <p>
 cd ../../dist
 awk -f gen_rec.awk \
@@ -41,8 +41,8 @@ awk -f gen_rec.awk \
     -v template_file=$E/ex_apprec_template &lt; $E/ex_apprec.src</pre></blockquote>
 <p>For each log record description found in the XXX.src file, the following
 structure declarations and #defines will be created in the file
-<i>header_file</i>:
-<p><blockquote><pre>#define DB_PREFIX_RECORD_TYPE        /* Integer ID number */
+<i>header_file</i>:</p>
+<blockquote><pre>#define DB_PREFIX_RECORD_TYPE        /* Integer ID number */
 <p>
 typedef struct _PREFIX_RECORD_TYPE_args {
     /*
@@ -67,8 +67,8 @@ typedef struct _PREFIX_RECORD_TYPE_args {
      * the entries in the record statement.
      */
 };</pre></blockquote>
-<p>Thus, the auto-generated ex_apprec_mkdir_args structure looks as follows:
-<p><blockquote><pre>typedef struct _ex_apprec_mkdir_args {
+<p>Thus, the auto-generated ex_apprec_mkdir_args structure looks as follows:</p>
+<blockquote><pre>typedef struct _ex_apprec_mkdir_args {
 	u_int32_t type;
 	DB_TXN *txnid;
 	DB_LSN prev_lsn;
@@ -85,12 +85,12 @@ template assumes that the record is manipulating the internals of a
 Berkeley DB database and sets up database handles, page structures, and such
 for convenience.  Many application-specific log records will not need
 these, and may simply delete much of the template.  See
-ex_apprec_template and ex_apprec_rec.c for an example.)
+ex_apprec_template and ex_apprec_rec.c for an example.)</p>
 <p>The template file should be copied to a source file in the application
 (but not the automatically generated source_file, as that will get
 overwritten each time gen_rec.awk is run) and fully developed there.
-The recovery function takes the following parameters:
-<p><blockquote><p><dl compact>
+The recovery function takes the following parameters:</p>
+<blockquote><p><dl compact>
 <p><dt>dbenv<dd>The environment in which recovery is running.
 <p><dt>rec<dd>The record being recovered.
 <p><dt>lsn<dd>The log sequence number of the record being recovered.  The
@@ -110,11 +110,11 @@ ignore this field.
 </dl></blockquote>
 <p>In addition to the header_file and template_file, a source_file is
 created, containing a log, read, recovery, and print function for each
-record type.
+record type.</p>
 <p>The log function marshalls the parameters into a buffer, and calls
 <a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a> on that buffer returning 0 on success and non-zero on
-failure.  The log function takes the following parameters:
-<p><blockquote><p><dl compact>
+failure.  The log function takes the following parameters:</p>
+<blockquote><p><dl compact>
 <p><dt>dbenv<dd>The environment in which recovery is running.
 <p><dt>txnid<dd>The transaction identifier for the transaction handle returned by
 <a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>.
@@ -129,8 +129,8 @@ in the XXX.src file, in order.
 structure of the appropriate type.  It returns 0 on success and non-zero
 on error.  After the fields of the structure have been used, the pointer
 returned from the read function should be freed.  The read function
-takes the following parameters:
-<p><blockquote><p><dl compact>
+takes the following parameters:</p>
+<blockquote><p><dl compact>
 <p><dt>dbenv<dd>The environment in which recovery is running.
 <p><dt>recbuf<dd>A buffer.
 <p><dt>argp<dd>A pointer to a structure of the appropriate type.
@@ -140,8 +140,8 @@ function takes the same parameters as the recovery function described
 previously.  Although some of the parameters are unused by the print
 function, taking the same parameters  allows a single dispatch loop to
 dispatch to a variety of functions.  The print function takes the
-following parameters:
-<p><blockquote><p><dl compact>
+following parameters:</p>
+<blockquote><p><dl compact>
 <p><dt>dbenv<dd>The environment in which recovery is running.
 <p><dt>rec<dd>The record being recovered.
 <p><dt>lsn<dd>The log sequence number of the record being recovered.
@@ -151,9 +151,9 @@ following parameters:
 <p>Finally, the source file will contain a function (named XXX_init_print,
 where XXX is replaced by the prefix) which should be added to the
 initialization part of the standalone <a href="../../utility/db_printlog.html">db_printlog</a> utility code
-so that utility can be used to display application-specific log records.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/apprec/def.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/apprec/config.html"><img src="../../images/next.gif" alt="Next"></a>
+so that utility can be used to display application-specific log records.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../apprec/def.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

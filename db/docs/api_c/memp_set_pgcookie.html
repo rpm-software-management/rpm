@@ -1,21 +1,22 @@
-<!--Id: memp_set_pgcookie.so,v 10.6 2002/08/24 18:23:33 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: memp_set_pgcookie.so,v 10.14 2003/11/08 19:17:41 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_MPOOLFILE-&gt;set_pgcookie</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DB_MPOOLFILE-&gt;set_pgcookie</h1>
+<h3>DB_MPOOLFILE-&gt;set_pgcookie</h3>
 </td>
 <td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -24,34 +25,60 @@
 <p>
 int
 DB_MPOOLFILE-&gt;set_pgcookie(DB_MPOOLFILE *mpf, DBT *pgcookie);
+<p>
+int
+DB_MPOOLFILE-&gt;get_pgcookie(DB_MPOOLFILE *mpf, DBT *dbt);
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: DB_MPOOLFILE-&gt;set_pgcookie</h3>
+<a name="3"><!--meow--></a>
 <p>The DB_MPOOLFILE-&gt;set_pgcookie method specifies a byte string that is provided
 to the functions registered to do input or output processing of the
 file's pages as they are read from or written to, the backing filesystem
 store.  (See the <a href="../api_c/memp_register.html">DB_ENV-&gt;memp_register</a> documentation for more
-information.)
+information.)</p>
 <p>The DB_MPOOLFILE-&gt;set_pgcookie method configures a file in the memory pool, not only
-operations performed using the specified <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle.
-<p>The DB_MPOOLFILE-&gt;set_pgcookie interface may not be called after the <a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a>
-interface is called.
+operations performed using the specified <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle.</p>
+<p>The DB_MPOOLFILE-&gt;set_pgcookie method may not be called after the <a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a> method is
+called.
 If the file is already open in the memory pool when
 <a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a> is called, the information specified to DB_MPOOLFILE-&gt;set_pgcookie
-will replace the existing information.
-<p>The DB_MPOOLFILE-&gt;set_pgcookie method returns a non-zero error value on failure and 0 on success.
-<h1>Errors</h1>
-<p>The DB_MPOOLFILE-&gt;set_pgcookie method may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_MPOOLFILE-&gt;set_pgcookie method may fail and
-return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
-in which case all subsequent Berkeley DB calls will fail in the same way.
-<h1>Class</h1>
+will replace the existing information.</p>
+<p>The DB_MPOOLFILE-&gt;set_pgcookie method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>pgcookie</b><dd>
+The <b>pgcookie</b> parameter is a byte string provided to the
+functions registered to do input or output processing of the file's
+pages.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_MPOOLFILE-&gt;get_pgcookie</h3>
+<p>The DB_MPOOLFILE-&gt;get_pgcookie method returns the byte string.</p>
+<p>The DB_MPOOLFILE-&gt;get_pgcookie method may be called at any time during the life of the
+application.</p>
+<p>The DB_MPOOLFILE-&gt;get_pgcookie method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>dbt</b><dd>
+The DB_MPOOLFILE-&gt;get_pgcookie method returns a reference to the
+byte string in <b>dbt</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
 <a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a>
-<h1>See Also</h1>
+<h3>See Also</h3>
 <a href="../api_c/memp_list.html">Memory Pools and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,8 +1,8 @@
 /*-
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: bench_001.c,v 1.13 2002/08/15 02:45:39 bostic Exp 
+ * $Id: bench_001.c,v 1.15 2003/01/08 04:43:48 bostic Exp $
  */
 
 /*
@@ -39,6 +39,9 @@
 
 #define	DATABASE	"bench_001.db"
 
+DB_ENV *db_init(char *, char *, int, int);
+int	fill(DB_ENV *, DB *, int, int, int, int);
+int	get(DB *,int, int, int, int, int, int *);
 int	main(int, char *[]);
 void	usage(void);
 

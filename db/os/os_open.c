@@ -1,18 +1,22 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: os_open.c,v 11.21 2001/01/11 18:19:53 bostic Exp $";
+static const char revid[] = "$Id: os_open.c,v 11.48 2003/09/10 00:27:29 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
+
+#ifdef HAVE_SYS_FCNTL_H
+#include <sys/fcntl.h>
+#endif
 
 #include <fcntl.h>
 #include <string.h>
@@ -21,26 +25,79 @@ static const char revid[] = "$Id: os_open.c,v 11.21 2001/01/11 18:19:53 bostic E
 #include "db_int.h"
 
 #ifdef HAVE_QNX
-static int __os_region_open __P((DB_ENV *, const char *, int, int, DB_FH *));
+static int __os_region_open __P((DB_ENV *, const char *, int, int, DB_FH **));
 #endif
+
+/*
+ * __os_have_direct --
+ *	Check to see if we support direct I/O.
+ *
+ * PUBLIC: int __os_have_direct __P((void));
+ */
+int
+__os_have_direct()
+{
+	int ret;
+
+	ret = 0;
+
+#ifdef HAVE_O_DIRECT
+	ret = 1;
+#endif
+#if defined(HAVE_DIRECTIO) && defined(DIRECTIO_ON)
+	ret = 1;
+#endif
+	return (ret);
+}
 
 /*
  * __os_open --
  *	Open a file.
  *
- * PUBLIC: int __os_open __P((DB_ENV *, const char *, u_int32_t, int, DB_FH *));
+ * PUBLIC: int __os_open
+ * PUBLIC:     __P((DB_ENV *, const char *, u_int32_t, int, DB_FH **));
  */
 int
-__os_open(dbenv, name, flags, mode, fhp)
+__os_open(dbenv, name, flags, mode, fhpp)
 	DB_ENV *dbenv;
 	const char *name;
 	u_int32_t flags;
 	int mode;
-	DB_FH *fhp;
+	DB_FH **fhpp;
 {
+	return (__os_open_extend(dbenv, name, 0, 0, flags, mode, fhpp));
+}
+
+/*
+ * __os_open_extend --
+ *	Open a file descriptor (including page size and log size information).
+ *
+ * PUBLIC: int __os_open_extend __P((DB_ENV *,
+ * PUBLIC:     const char *, u_int32_t, u_int32_t, u_int32_t, int, DB_FH **));
+ */
+int
+__os_open_extend(dbenv, name, log_size, page_size, flags, mode, fhpp)
+	DB_ENV *dbenv;
+	const char *name;
+	u_int32_t log_size, page_size, flags;
+	int mode;
+	DB_FH **fhpp;
+{
+	DB_FH *fhp;
 	int oflags, ret;
 
+	COMPQUIET(log_size, 0);
+	COMPQUIET(page_size, 0);
+
+	*fhpp = NULL;
 	oflags = 0;
+
+#define	OKFLAGS								\
+	(DB_OSO_CREATE | DB_OSO_DIRECT | DB_OSO_EXCL | DB_OSO_LOG |	\
+	 DB_OSO_RDONLY | DB_OSO_REGION | DB_OSO_SEQ | DB_OSO_TEMP |	\
+	 DB_OSO_TRUNC)
+	if ((ret = __db_fchk(dbenv, "__os_open", flags, OKFLAGS)) != 0)
+		return (ret);
 
 #if defined(O_BINARY)
 	/*
@@ -84,13 +141,28 @@ __os_open(dbenv, name, flags, mode, fhp)
 	if (LF_ISSET(DB_OSO_TRUNC))
 		oflags |= O_TRUNC;
 
+#ifdef HAVE_O_DIRECT
+	if (LF_ISSET(DB_OSO_DIRECT))
+		oflags |= O_DIRECT;
+#endif
+
 #ifdef HAVE_QNX
 	if (LF_ISSET(DB_OSO_REGION))
-		return (__os_region_open(dbenv, name, oflags, mode, fhp));
+		return (__os_qnx_region_open(dbenv, name, oflags, mode, fhpp));
 #endif
 	/* Open the file. */
-	if ((ret = __os_openhandle(dbenv, name, oflags, mode, fhp)) != 0)
+	if ((ret = __os_openhandle(dbenv, name, oflags, mode, &fhp)) != 0)
 		return (ret);
+
+#if defined(HAVE_DIRECTIO) && defined(DIRECTIO_ON)
+	/*
+	 * The Solaris C library includes directio, but you have to set special
+	 * compile flags to #define DIRECTIO_ON.  Require both in order to call
+	 * directio.
+	 */
+	if (LF_ISSET(DB_OSO_DIRECT))
+		(void)directio(fhp->fd, DIRECTIO_ON);
+#endif
 
 	/*
 	 * Delete any temporary file.
@@ -102,52 +174,75 @@ __os_open(dbenv, name, flags, mode, fhp)
 	 * reasonable way to avoid the race (playing signal games isn't worth
 	 * the portability nightmare), so we just live with it.
 	 */
-	if (LF_ISSET(DB_OSO_TEMP))
+	if (LF_ISSET(DB_OSO_TEMP)) {
+#if defined(HAVE_UNLINK_WITH_OPEN_FAILURE) || defined(CONFIG_TEST)
+		if ((ret = __os_strdup(dbenv, name, &fhp->name)) != 0) {
+			(void)__os_closehandle(dbenv, fhp);
+			(void)__os_unlink(dbenv, name);
+			return (ret);
+		}
+		F_SET(fhp, DB_FH_UNLINK);
+#else
 		(void)__os_unlink(dbenv, name);
+#endif
+	}
 
+	*fhpp = fhp;
 	return (0);
 }
 
 #ifdef HAVE_QNX
 /*
- * __os_region_open --
+ * __os_qnx_region_open --
  *	Open a shared memory region file using POSIX shm_open.
  */
 static int
-__os_region_open(dbenv, name, oflags, mode, fhp)
+__os_qnx_region_open(dbenv, name, oflags, mode, fhpp)
 	DB_ENV *dbenv;
 	const char *name;
 	int oflags;
 	int mode;
-	DB_FH *fhp;
+	DB_FH **fhpp;
 {
+	DB_FH *fhp;
 	int ret;
 	char *newname;
 
+	if ((ret = __os_calloc(dbenv, 1, sizeof(DB_FH), fhpp)) != 0)
+		return (ret);
+	fhp = *fhpp;
+
 	if ((ret = __os_shmname(dbenv, name, &newname)) != 0)
 		goto err;
-	memset(fhp, 0, sizeof(*fhp));
-	fhp->fd = shm_open(newname, oflags, mode);
-	if (fhp->fd == -1)
-		ret = __os_get_errno();
-	else {
-#ifdef HAVE_FCNTL_F_SETFD
-		/* Deny file descriptor acces to any child process. */
-		if (fcntl(fhp->fd, F_SETFD, 1) == -1) {
-			ret = __os_get_errno();
-			__db_err(dbenv, "fcntl(F_SETFD): %s", strerror(ret));
-			__os_closehandle(fhp);
-		} else
-#endif
-		F_SET(fhp, DB_FH_VALID);
-	}
+
 	/*
 	 * Once we have created the object, we don't need the name
 	 * anymore.  Other callers of this will convert themselves.
 	 */
-err:
-	if (newname != NULL)
-		__os_free(newname, 0);
+	fhp->fd = shm_open(newname, oflags, mode);
+	__os_free(dbenv, newname);
+
+	if (fhp->fd == -1) {
+		ret = __os_get_errno();
+		goto err;
+	}
+
+	F_SET(fhp, DB_FH_OPENED);
+
+#ifdef HAVE_FCNTL_F_SETFD
+	/* Deny file descriptor acces to any child process. */
+	if (fcntl(fhp->fd, F_SETFD, 1) == -1) {
+		ret = __os_get_errno();
+		__db_err(dbenv, "fcntl(F_SETFD): %s", strerror(ret));
+		goto err;
+	}
+#endif
+
+err:	if (ret != 0) {
+		(void)__os_closehandle(dbenv, fhp);
+		*fhpp = NULL;
+	}
+
 	return (ret);
 }
 
@@ -155,7 +250,9 @@ err:
  * __os_shmname --
  *	Translate a pathname into a shm_open memory object name.
  *
+ * PUBLIC: #ifdef HAVE_QNX
  * PUBLIC: int __os_shmname __P((DB_ENV *, const char *, char **));
+ * PUBLIC: #endif
  */
 int
 __os_shmname(dbenv, name, newnamep)
@@ -206,7 +303,7 @@ __os_shmname(dbenv, name, newnamep)
 		 * If we have a path component, copy and return it.
 		 */
 		ret = __os_strdup(dbenv, p, newnamep);
-		__os_free(tmpname, 0);
+		__os_free(dbenv, tmpname);
 		return (ret);
 	}
 
@@ -215,11 +312,11 @@ __os_shmname(dbenv, name, newnamep)
 	 * Add a leading slash, and copy the remainder.
 	 */
 	size = strlen(tmpname) + 2;
-	if ((ret = __os_malloc(dbenv, size, NULL, &p)) != 0)
+	if ((ret = __os_malloc(dbenv, size, &p)) != 0)
 		return (ret);
 	p[0] = '/';
 	memcpy(&p[1], tmpname, size-1);
-	__os_free(tmpname, 0);
+	__os_free(dbenv, tmpname);
 	*newnamep = p;
 	return (0);
 }

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998, 1999, 2000
+ * Copyright (c) 1998-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: xa.c,v 11.10 2000/12/14 07:39:14 ubell Exp $";
+static const char revid[] = "$Id: xa.c,v 11.29 2003/04/24 16:55:09 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -19,11 +19,7 @@ static const char revid[] = "$Id: xa.c,v 11.10 2000/12/14 07:39:14 ubell Exp $";
 #endif
 
 #include "db_int.h"
-#include "db_page.h"
-#include "log.h"
-#include "txn.h"
-#include "db_am.h"
-#include "db_dispatch.h"
+#include "dbinc/txn.h"
 
 static int  __db_xa_close __P((char *, int, long));
 static int  __db_xa_commit __P((XID *, int, long));
@@ -35,8 +31,7 @@ static int  __db_xa_prepare __P((XID *, int, long));
 static int  __db_xa_recover __P((XID *, long, int, long));
 static int  __db_xa_rollback __P((XID *, int, long));
 static int  __db_xa_start __P((XID *, int, long));
-static void __xa_txn_end __P((DB_ENV *));
-static void __xa_txn_init __P((DB_ENV *, TXN_DETAIL *, size_t));
+static void __xa_put_txn __P((DB_ENV *, DB_TXN *));
 
 /*
  * Possible flag values:
@@ -63,6 +58,129 @@ const struct xa_switch_t db_xa_switch = {
 	 __db_xa_forget,	/* xa_forget_entry */
 	 __db_xa_complete	/* xa_complete_entry */
 };
+
+/*
+ * If you want your XA server to be multi-threaded, then you must
+ * edit this file and change:
+ *	#undef  XA_MULTI_THREAD
+ * to:
+ *	#define XA_MULTI_THREAD 1
+ *
+ * You must then modify the FILL ME IN; section below to assign a
+ * 32-bit unsigned, unique thread ID to the variable tid.  If no
+ * such thread ID is available, e.g., you're using pthreads on a POSIX
+ * 1003.1 system where a pthread_t is declared as a structure, you
+ * will probably want to change the tid field of the DB_TXN structure
+ * to be the correct type in which to define a thread ID on the system,
+ * and then modify both the FILL ME IN section and then subsequent
+ * comparison of the thread IDs in the XA transaction list, as the
+ * current simple equality tests may not work.
+ */
+
+#undef XA_MULTI_THREAD
+
+/*
+ * __xa_get_txn --
+ *	Return a pointer to the current transaction structure for the
+ * designated environment.  If do_init is non-zero and we don't find a
+ * structure for the current thread, then create a new structure for it.
+ *
+ * PUBLIC: int __xa_get_txn __P((DB_ENV *, DB_TXN **, int));
+ */
+int
+__xa_get_txn(env, txnp, do_init)
+	DB_ENV *env;
+	DB_TXN **txnp;
+	int do_init;
+{
+	int ret;
+#ifdef XA_MULTI_THREAD
+	DB_TXN *t;
+	u_int32_t tid;
+	DB_TXNMGR *mgr;
+#else
+	COMPQUIET(do_init, 0);
+#endif
+	ret = 0;
+
+#ifdef XA_MULTI_THREAD
+	/* Specify Thread-ID retrieval here. */
+	tid  = FILL ME IN
+	*txnp = NULL;
+	mgr = (DB_TXNMGR *)env->tx_handle;
+
+	/*
+	 * We need to protect the xa_txn linked list, but the
+	 * environment does not have a mutex.  Since we are in
+	 * an XA transaction environment, we know that there is
+	 * a transaction structure, so use its mutex.
+	 */
+	DB_ASSERT(env->tx_handle != NULL);
+	MUTEX_THREAD_LOCK(mgr->mutexp);
+	for (t = TAILQ_FIRST(&env->xa_txn);
+	    t != NULL;
+	    t = TAILQ_NEXT(t, xalinks))
+		/*
+		 * FILL ME IN; if tids are not a 32-bit integral type;
+		 * put a comparison here that will work.
+		 */
+		if (t->tid == tid) {
+			*txnp = t;
+			break;
+		}
+	MUTEX_THREAD_UNLOCK(mgr-&gt;mutexp);
+
+	if (*txnp == NULL) {
+		if (!do_init)
+			ret = EINVAL;
+		else if ((ret =
+		    __os_malloc(env, sizeof(DB_TXN), NULL, txnp)) == 0) {
+			(*txnp)->tid = tid;
+			MUTEX_THREAD_LOCK(mgr->mutexp);
+			TAILQ_INSERT_HEAD(&env->xa_txn, *txnp, xalinks);
+			MUTEX_THREAD_UNLOCK(mgr->mutexp);
+		}
+	}
+#else
+	*txnp = TAILQ_FIRST(&env->xa_txn);
+	if (*txnp == NULL &&
+	    (ret = __os_calloc(env, 1, sizeof(DB_TXN), txnp)) == 0) {
+		(*txnp)->txnid = TXN_INVALID;
+		TAILQ_INSERT_HEAD(&env->xa_txn, *txnp, xalinks);
+	}
+#endif
+
+	return (ret);
+}
+
+static void
+__xa_put_txn(env, txnp)
+	DB_ENV *env;
+	DB_TXN *txnp;
+{
+#ifdef XA_MULTI_THREAD
+	DB_TXNMGR *mgr;
+	mgr = (DB_TXNMGR *)env->tx_handle;
+
+	MUTEX_THREAD_LOCK(mgr->mutexp);
+	TAILQ_REMOVE(&env->xa_txn, txnp, xalinks);
+	MUTEX_THREAD_UNLOCK(mgr->mutexp);
+	__os_free(env, txnp);
+#else
+	COMPQUIET(env, NULL);
+	txnp->txnid = TXN_INVALID;
+#endif
+}
+
+#ifdef XA_MULTI_THREAD
+#define	XA_FLAGS \
+	DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | \
+	DB_INIT_TXN | DB_THREAD
+#else
+#define	XA_FLAGS \
+	DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | \
+	DB_INIT_TXN
+#endif
 
 /*
  * __db_xa_open --
@@ -98,8 +216,6 @@ __db_xa_open(xa_info, rmid, flags)
 		return (XAER_RMERR);
 
 	/* Open a new environment. */
-#define	XA_FLAGS \
-	DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | DB_INIT_TXN
 	if (db_env_create(&env, 0) != 0)
 		return (XAER_RMERR);
 	if (env->open(env, xa_info, XA_FLAGS, 0) != 0)
@@ -110,9 +226,7 @@ __db_xa_open(xa_info, rmid, flags)
 		goto err;
 
 	/* Allocate space for the current transaction. */
-	if (__os_calloc(env, 1, sizeof(DB_TXN), &env->xa_txn) != 0)
-		goto err;
-	env->xa_txn->txnid = TXN_INVALID;
+	TAILQ_INIT(&env->xa_txn);
 
 	return (XA_OK);
 
@@ -136,6 +250,7 @@ __db_xa_close(xa_info, rmid, flags)
 	long flags;
 {
 	DB_ENV *env;
+	DB_TXN *t;
 	int ret, t_ret;
 
 	COMPQUIET(xa_info, NULL);
@@ -150,15 +265,17 @@ __db_xa_close(xa_info, rmid, flags)
 		return (XA_OK);
 
 	/* Check if there are any pending transactions. */
-	if (env->xa_txn != NULL && env->xa_txn->txnid != TXN_INVALID)
+	if ((t = TAILQ_FIRST(&env->xa_txn)) != NULL && t->txnid != TXN_INVALID)
 		return (XAER_PROTO);
 
 	/* Destroy the mapping. */
 	ret = __db_unmap_rmid(rmid);
 
 	/* Discard space held for the current transaction. */
-	if (env->xa_txn != NULL)
-		__os_free(env->xa_txn, sizeof(DB_TXN));
+	while ((t = TAILQ_FIRST(&env->xa_txn)) != NULL) {
+		TAILQ_REMOVE(&env->xa_txn, t, xalinks);
+		__os_free(env, t);
+	}
 
 	/* Close the environment. */
 	if ((t_ret = env->close(env, 0)) != 0 && ret == 0)
@@ -178,6 +295,7 @@ __db_xa_start(xid, rmid, flags)
 	long flags;
 {
 	DB_ENV *env;
+	DB_TXN *txnp;
 	TXN_DETAIL *td;
 	size_t off;
 	int is_known;
@@ -220,15 +338,18 @@ __db_xa_start(xid, rmid, flags)
 			return (XA_RBOTHER);
 
 		/* Now, fill in the global transaction structure. */
-		__xa_txn_init(env, td, off);
+		if (__xa_get_txn(env, &txnp, 1) != 0)
+			return (XAER_RMERR);
+		__txn_continue(env, txnp, td, off);
 		td->xa_status = TXN_XA_STARTED;
 	} else {
-		if (__txn_xa_begin(env, env->xa_txn) != 0)
+		if (__xa_get_txn(env, &txnp, 1) != 0)
 			return (XAER_RMERR);
-		(void)__db_map_xid(env, xid, env->xa_txn->off);
+		if (__txn_xa_begin(env, txnp))
+			return (XAER_RMERR);
+		(void)__db_map_xid(env, xid, txnp->off);
 		td = (TXN_DETAIL *)
-		    R_ADDR(&((DB_TXNMGR *)env->tx_handle)->reginfo,
-		    env->xa_txn->off);
+		    R_ADDR(&((DB_TXNMGR *)env->tx_handle)->reginfo, txnp->off);
 		td->xa_status = TXN_XA_STARTED;
 	}
 	return (XA_OK);
@@ -258,7 +379,9 @@ __db_xa_end(xid, rmid, flags)
 	if (__db_xid_to_txn(env, xid, &off) != 0)
 		return (XAER_NOTA);
 
-	txn = env->xa_txn;
+	if (__xa_get_txn(env, &txn, 0) != 0)
+		return (XAER_RMERR);
+
 	if (off != txn->off)
 		return (XAER_PROTO);
 
@@ -284,7 +407,7 @@ __db_xa_end(xid, rmid, flags)
 	else
 		td->xa_status = TXN_XA_ENDED;
 
-	txn->txnid = TXN_INVALID;
+	__xa_put_txn(env, txn);
 	return (XA_OK);
 }
 
@@ -299,6 +422,7 @@ __db_xa_prepare(xid, rmid, flags)
 	long flags;
 {
 	DB_ENV *env;
+	DB_TXN *txnp;
 	TXN_DETAIL *td;
 	size_t off;
 
@@ -318,7 +442,6 @@ __db_xa_prepare(xid, rmid, flags)
 
 	if (__db_xid_to_txn(env, xid, &off) != 0)
 		return (XAER_NOTA);
-
 	td = (TXN_DETAIL *)R_ADDR(&((DB_TXNMGR *)env->tx_handle)->reginfo, off);
 	if (td->xa_status == TXN_XA_DEADLOCKED)
 		return (XA_RBDEADLOCK);
@@ -327,15 +450,17 @@ __db_xa_prepare(xid, rmid, flags)
 		return (XAER_PROTO);
 
 	/* Now, fill in the global transaction structure. */
-	__xa_txn_init(env, td, off);
+	if (__xa_get_txn(env, &txnp, 0) != 0)
+		return (XAER_PROTO);
+	__txn_continue(env, txnp, td, off);
 
-	if (txn_prepare(env->xa_txn) != 0)
+	if (txnp->prepare(txnp, (u_int8_t *)xid->data) != 0)
 		return (XAER_RMERR);
 
 	td->xa_status = TXN_XA_PREPARED;
 
 	/* No fatal value that would require an XAER_RMFAIL. */
-	__xa_txn_end(env);
+	__xa_put_txn(env, txnp);
 	return (XA_OK);
 }
 
@@ -350,6 +475,7 @@ __db_xa_commit(xid, rmid, flags)
 	long flags;
 {
 	DB_ENV *env;
+	DB_TXN *txnp;
 	TXN_DETAIL *td;
 	size_t off;
 
@@ -385,13 +511,15 @@ __db_xa_commit(xid, rmid, flags)
 		return (XAER_PROTO);
 
 	/* Now, fill in the global transaction structure. */
-	__xa_txn_init(env, td, off);
+	if (__xa_get_txn(env, &txnp, 0) != 0)
+		return (XAER_RMERR);
+	__txn_continue(env, txnp, td, off);
 
-	if (txn_commit(env->xa_txn, 0) != 0)
+	if (txnp->commit(txnp, 0) != 0)
 		return (XAER_RMERR);
 
 	/* No fatal value that would require an XAER_RMFAIL. */
-	__xa_txn_end(env);
+	__xa_put_txn(env, txnp);
 	return (XA_OK);
 }
 
@@ -409,118 +537,26 @@ __db_xa_recover(xids, count, rmid, flags)
 	long count, flags;
 	int rmid;
 {
-	__txn_xa_regop_args *argp;
-	DBT data;
 	DB_ENV *env;
-	DB_LOG *log;
-	XID *xidp;
-	int err, ret;
-	u_int32_t rectype, txnid;
-
-	ret = 0;
-	xidp = xids;
+	u_int32_t newflags;
+	long rval;
 
 	/* If the environment is closed, then we're done. */
 	if (__db_rmid_to_env(rmid, &env) != 0)
 		return (XAER_PROTO);
 
-	/*
-	 * If we are starting a scan, then we need to figure out where
-	 * to begin.  If we are not starting a scan, we'll start from
-	 * wherever the log cursor is.  Since XA apps cannot be threaded,
-	 * we don't have to worry about someone else having moved it.
-	 */
-	log = env->lg_handle;
-	if (LF_ISSET(TMSTARTRSCAN)) {
-		if ((err = __log_findckp(env, &log->xa_first)) == DB_NOTFOUND) {
-			/*
-			 * If there were no log files, then we have no
-			 * transactions to return, so we simply return 0.
-			 */
-			return (0);
-		}
-		if ((err = __db_txnlist_init(env, &log->xa_info)) != 0)
-			return (XAER_RMERR);
-	} else {
-		/*
-		 * If we are not starting a scan, the log cursor had
-		 * better be set.
-		 */
-		if (IS_ZERO_LSN(log->xa_lsn))
-			return (XAER_PROTO);
-	}
+	if (LF_ISSET(TMSTARTRSCAN))
+		newflags = DB_FIRST;
+	else if (LF_ISSET(TMENDRSCAN))
+		newflags = DB_LAST;
+	else
+		newflags = DB_NEXT;
 
-	/*
-	 * At this point log->xa_first contains the point in the log
-	 * to which we need to roll back.  If we are starting a scan,
-	 * we'll start at the last record; if we're continuing a scan,
-	 * we'll have to start at log->xa_lsn.
-	 */
-
-	memset(&data, 0, sizeof(data));
-	for (err = log_get(env, &log->xa_lsn, &data,
-	    LF_ISSET(TMSTARTRSCAN) ? DB_LAST : DB_SET);
-	    err == 0 && log_compare(&log->xa_lsn, &log->xa_first) > 0;
-	    err = log_get(env, &log->xa_lsn, &data, DB_PREV)) {
-		memcpy(&rectype, data.data, sizeof(rectype));
-
-		/*
-		 * The only record type we care about is an DB_txn_xa_regop.
-		 * If it's a commit, we have to add it to a txnlist.  If it's
-		 * a prepare, and we don't have a commit, then we return it.
-		 * We are redoing some of what's in the xa_regop_recovery
-		 * code, but we have to do it here so we can get at the xid
-		 * in the record.
-		 */
-		if (rectype != DB_txn_xa_regop && rectype != DB_txn_regop)
-			continue;
-
-		memcpy(&txnid, (u_int8_t *)data.data + sizeof(rectype),
-		    sizeof(txnid));
-		err = __db_txnlist_find(log->xa_info, txnid);
-		switch (rectype) {
-		case DB_txn_regop:
-			if (err == DB_NOTFOUND)
-				__db_txnlist_add(env, log->xa_info, txnid, 0);
-			err = 0;
-			break;
-		case DB_txn_xa_regop:
-			/*
-			 * This transaction is committed, so we needn't read
-			 * the record and do anything.
-			 */
-			if (err == 0)
-				break;
-			if ((err =
-			    __txn_xa_regop_read(env, data.data, &argp)) != 0) {
-				ret = XAER_RMERR;
-				goto out;
-			}
-
-			xidp->formatID = argp->formatID;
-			xidp->gtrid_length = argp->gtrid;
-			xidp->bqual_length = argp->bqual;
-			memcpy(xidp->data, argp->xid.data, argp->xid.size);
-			ret++;
-			xidp++;
-			__os_free(argp, sizeof(*argp));
-			if (ret == count)
-				goto done;
-			break;
-		}
-	}
-
-	if (err != 0 && err != DB_NOTFOUND)
-		goto out;
-
-done:	if (LF_ISSET(TMENDRSCAN)) {
-		ZERO_LSN(log->xa_lsn);
-		ZERO_LSN(log->xa_first);
-
-out:		__db_txnlist_end(env, log->xa_info);
-		log->xa_info = NULL;
-	}
-	return (ret);
+	rval = 0;
+	if (__txn_get_prepared(env, xids, NULL, count, &rval, newflags) != 0)
+		return (XAER_RMERR);
+	else
+		return (rval);
 }
 
 /*
@@ -534,6 +570,7 @@ __db_xa_rollback(xid, rmid, flags)
 	long flags;
 {
 	DB_ENV *env;
+	DB_TXN *txnp;
 	TXN_DETAIL *td;
 	size_t off;
 
@@ -555,17 +592,20 @@ __db_xa_rollback(xid, rmid, flags)
 	if (td->xa_status == TXN_XA_ABORTED)
 		return (XA_RBOTHER);
 
-	if (td->xa_status != TXN_XA_ENDED && td->xa_status != TXN_XA_SUSPENDED
-	    && td->xa_status != TXN_XA_PREPARED)
+	if (td->xa_status != TXN_XA_ENDED &&
+	    td->xa_status != TXN_XA_SUSPENDED &&
+	    td->xa_status != TXN_XA_PREPARED)
 		return (XAER_PROTO);
 
 	/* Now, fill in the global transaction structure. */
-	__xa_txn_init(env, td, off);
-	if (txn_abort(env->xa_txn) != 0)
+	if (__xa_get_txn(env, &txnp, 0) != 0)
+		return (XAER_RMERR);
+	__txn_continue(env, txnp, td, off);
+	if (txnp->abort(txnp) != 0)
 		return (XAER_RMERR);
 
 	/* No fatal value that would require an XAER_RMFAIL. */
-	__xa_txn_end(env);
+	__xa_put_txn(env, txnp);
 	return (XA_OK);
 }
 
@@ -621,41 +661,4 @@ __db_xa_complete(handle, retval, rmid, flags)
 	COMPQUIET(flags, 0);
 
 	return (XAER_INVAL);
-}
-
-/*
- * __xa_txn_init --
- *	Fill in the fields of the local transaction structure given
- *	the detail transaction structure.
- */
-static void
-__xa_txn_init(env, td, off)
-	DB_ENV *env;
-	TXN_DETAIL *td;
-	size_t off;
-{
-	DB_TXN *txn;
-
-	txn = env->xa_txn;
-	txn->mgrp = env->tx_handle;
-	txn->parent = NULL;
-	txn->last_lsn = td->last_lsn;
-	txn->txnid = td->txnid;
-	txn->off = off;
-	txn->flags = 0;
-}
-
-/*
- * __xa_txn_end --
- *	Invalidate a transaction structure that was generated by xa_txn_init.
- */
-static void
-__xa_txn_end(env)
-	DB_ENV *env;
-{
-	DB_TXN *txn;
-
-	txn = env->xa_txn;
-	if (txn != NULL)
-		txn->txnid = TXN_INVALID;
 }

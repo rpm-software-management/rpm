@@ -1,0 +1,436 @@
+<!--$Id: cs_bdb_collection.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Using Stored Collections</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API</dl></h3></td>
+<td align=right><a href="../bdb/cs_bdb.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb/cs_bdb_serial.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Using Stored Collections</h3>
+<p align=center><img src="collection_fig_1.gif" alt="collection_fig_1">
+<h3>The implementation of stored collections and related
+transactional access methods.</h3>
+<p>When a stored collection is created it is based on either a
+<a href="../../java/com/sleepycat/bdb/DataStore.html">DataStore</a>
+ or a
+<a href="../../java/com/sleepycat/bdb/DataIndex.html">DataIndex</a>
+.  When a data store is used,
+the primary key of the data store is used as the collection key.  When a
+data index is used, the index key is used as the collection key.  Indexed
+collections can be used for reading elements and removing elements but not
+for adding or updating elements.</p>
+<h3>Stored Collection and Access Methods</h3>
+<p>The access method of the data store or index restricts the use of
+the stored collection in certain respects. Most of these restrictions have to
+do with 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html">List</a>
+ interfaces; for
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html">Map</a>
+ interfaces, most all access modes are fully
+supported since the Berkeley DB model is map-like.</p>
+<p><ul type=disc>
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html">SortedSet</a>
+ and 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html">SortedMap</a>
+interfaces may only be used if keys are ordered.  This means ordered keys are
+required for creating a
+<a href="../../java/com/sleepycat/bdb/collection/StoredSortedEntrySet.html">StoredSortedEntrySet</a>
+,
+<a href="../../java/com/sleepycat/bdb/collection/StoredSortedKeySet.html">StoredSortedKeySet</a>
+,
+<a href="../../java/com/sleepycat/bdb/collection/StoredSortedMap.html">StoredSortedMap</a>
+, or
+<a href="../../java/com/sleepycat/bdb/collection/StoredSortedValueSet.html">StoredSortedValueSet</a>
+.
+<li>All iterators for stored collections implement the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html">ListIterator</a>
+ interface as well as the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Iterator.html">Iterator</a>
+ interface.
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#hasPrevious()">ListIterator.hasPrevious()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#previous()">ListIterator.previous()</a>
+ work for all access
+methods.  However, the following 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html">ListIterator</a>
+method behavior is dependent on the access method.
+  <p><ul type=disc>
+  <li>  
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#nextIndex()">ListIterator.nextIndex()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#previousIndex()">ListIterator.previousIndex()</a>
+ only work when
+  record number keys are used, and throw
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a>
+ otherwise.
+  <li>  
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()">ListIterator.add()</a>
+ inserts before the
+  current position and renumbers following keys if the RECNO-RENUMBER
+  access method is used.
+  <li>  For all access methods other than RECNO-RENUMBER:
+    <p><ul type=disc>
+    <li>    
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()">ListIterator.add()</a>
+ throws
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a>
+ if duplicates
+    are not allowed.
+    <li>    
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()">ListIterator.add()</a>
+ inserts a duplicate
+    before the current position if duplicates are unsorted.
+    <li>    
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()">ListIterator.add()</a>
+ inserts a duplicate in
+    sorted order if duplicates are sorted.
+    </ul>
+  <li>  
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#set()">ListIterator.set()</a>
+ throws
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a>
+ if duplicates are
+  sorted, since updating with sorted duplicates would change the iterator
+  position.
+  </ul>
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html#setValue()">Map.Entry.setValue()</a>
+ throws
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a>
+ if duplicates are
+sorted.
+<li>Only the access methods that use a record number key may be used with a
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html">List</a>
+ view.
+<li>To create a stored List that supports the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#add()">List.add()</a>
+ method, only the RECNO-RENUMBER
+access method may be used.
+<li>For List access methods that do not support
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#add()">List.add()</a>
+ (RECNO, QUEUE, and BTREE-RECNUM):
+<p><ul type=disc>
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#add()">List.add()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()">ListIterator.add()</a>
+ always throw
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a>
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#remove()">List.remove()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#remove()">ListIterator.remove()</a>
+ do not cause list
+indices to be renumbered.  However, iterators will skip the removed
+values.
+</ul>
+<p>For these access methods, stored Lists are most useful as read-only
+collections where indices are not required to be sequential.</p>
+<li>When the access method allows duplicate keys the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html">Collection</a>
+ interfaces are modified in several
+ways as described in the next section.
+</ul>
+<h3>Differences between Stored Collections and Standard Java
+Collections</h3>
+<p>Stored collections have the following differences with the standard
+Java collection interfaces.  Some of these are interface contract
+violations.</p>
+<p>The Java collections interface does not support duplicate keys
+(multi-maps or multi-sets).  When the access method allows duplicate keys,
+the collection interfaces are defined as follows.</p>
+<p><ul type=disc>
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#entrySet()">Map.entrySet()</a>
+ may contain multiple
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html">Map.Entry</a>
+ objects with the same key.
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#keySet()">Map.keySet()</a>
+ always contains unique keys, it
+does not contain duplicates.
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#values()">Map.values()</a>
+ contains all values including
+the values associated with duplicate keys.
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put()">Map.put()</a>
+ appends a duplicate if the key
+already exists rather than replacing the existing value, and always
+returns null.
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#remove()">Map.remove()</a>
+ removes all duplicates for
+the specified key.
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#get()">Map.get()</a>
+ returns the first duplicate for
+the specified key.
+<li>
+<a href="../../java/com/sleepycat/bdb/collection/StoredMap.html#duplicates(Object)">StoredMap.duplicates(Object)</a>
+is an additional method for returning the values for a given key as a
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html">Collection</a>
+.
+</ul>
+<p>Other differences are:</p>
+<p><ul type=disc>
+<li>All iterators for stored collections must be explicitly closed with
+<a href="../../java/com/sleepycat/bdb/collection/StoredIterator.html#close()">StoredIterator.close()</a>
+.
+The static method
+<a href="../../java/com/sleepycat/bdb/collection/StoredIterator.html#close(java.util.Iterator)">StoredIterator.close(java.util.Iterator)</a>
+allows calling close for all iterators without harm to iterators that are
+not from stored collections, and also avoids casting.  If a stored iterator
+is not closed, unpredictable behavior including process death may result.
+<li>Collection.size() and Map.size() always throws
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a>
+.  This is because
+the number of records in a database cannot be determined reliably or
+cheaply.
+<li>Because the size() method cannot be used, the bulk operation methods of
+standard Java collections cannot be passed stored collections as
+parameters, since the implementations rely on size().  However, the bulk
+operation methods of stored collections can be passed standard Java
+collections as parameters.
+<p>
+<code>storedCollection.addAll(standardCollection);</code> is allowed while
+<code>standardCollection.addAll(storedCollection);</code> is <b>not</b>
+allowed.
+<p>This restriction applies to the standard collection constructors that
+take a Collection parameter (copy constructors), the Map.putAll()
+method, and the following Collection methods: addAll(), containsAll(),
+removeAll() and retainAll().</p>
+<li>The ListIterator.nextIndex() method returns Integer.MAX_VALUE for stored
+lists when positioned at the end of the list, rather than returning the list
+size as specified by the ListIterator interface.  Again, this is because the
+database size is not available.
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Comparator.html">Comparator</a>
+ objects cannot be used and the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html#comparator()">SortedMap.comparator()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html#comparator()">SortedSet.comparator()</a>
+ methods always
+return null.  Comparators are not supported in Java API because of the impact
+on performance -- with a stored collection, keys and values would have to
+be converted from byte arrays to objects each time two data items are
+compared.
+<li>The natural ordering of a stored collection is data byte order, whether the
+data classes implement the 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/Comparable.html">Comparable</a>
+ interface or
+not.  The 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/Comparable.html">Comparable</a>
+ interface is not supported for
+the same reason that the 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Comparator.html">Comparator</a>
+ interface is
+not supported.
+<li>The 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/Object.html#equals()">Object.equals()</a>
+ method is not used to
+determine whether a key or value is contained in a collection, to locate
+a value by key, etc.  Instead the byte array representation of the keys
+and values are used.  However, the equals() method <b>is</b> called
+for each key and value when comparing two collections for equality.  It
+is the responsibility of the application to make sure that the equals()
+method returns true if and only if the byte array representations of the
+two objects are equal.  Normally this occurs naturally since the byte array
+representation is derived from the object's fields.
+</ul>
+<h3>Other Stored Collection Characteristics</h3>
+<p>The following characteristics of stored collections are extensions
+of the definitions in the 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/package-summary.html">java.util</a>
+ package.  These
+differences do not violate the Java collections interface contract.</p>
+<p><ul type=disc>
+<li>All stored collections are thread safe (can be used by multiple threads
+concurrently) except for iterators, whenever the Berkeley DB Concurrent Data
+Store or Transactional Data Store environment is used.  Locking is handled
+by the Berkeley DB environment.  To access a collection from multiple threads,
+creation of synchronized collections using the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collections.html">Collections</a>
+ class is not necessary except when
+using the Data Store environment.  Iterators, however, should always be
+used only by a single thread.
+<li>All stored collections may be read-only if desired by passing false for the
+writeAllowed parameter of their constructor.  Creation of immutable collections
+using the 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collections.html">Collections</a>
+ class is not necessary.
+<li>A stored collection is partially read-only if an index is used.
+Specifically, values may not be added or updated.  The following methods will
+throw 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a>
+ when an index
+is used: 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put()">Map.put()</a>
+,
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html#add()">Collection.add()</a>
+,
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#set()">List.set()</a>
+,
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#set()">ListIterator.set()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html#setValue()">Map.Entry.setValue()</a>
+.  However, removing values
+via an index is allowed.
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html#entrySet()">SortedMap.entrySet()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html#keySet()">SortedMap.keySet()</a>
+ return a
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html">SortedSet</a>
+, not just a
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html">Set</a>
+ as specified in Java collections interface.
+This allows using the 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html">SortedSet</a>
+ methods on the
+returned collection.
+<li>
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html#values()">SortedMap.values()</a>
+ returns a
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html">SortedSet</a>
+, not just a
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html">Collection</a>
+, whenever the keys of the map can be
+derived from the values using an entity binding.  Note that the sorted set
+returned is not really a set if duplicates are allowed, since it is
+technically a collection; however, the 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html">SortedSet</a>
+methods (for example, subSet()), can still be used.
+<li>For 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html">SortedSet</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html">SortedMap</a>
+ views, additional subSet() and subMap()
+methods are provided that allow control over whether keys are treated as
+inclusive or exclusive values in the key range.
+<li>Keys and values are stored by value, not by reference.  This is because
+objects that are added to collections are converted to byte arrays (by
+bindings) and stored in the database.  When they are retrieved from the
+collection they are read from the database and converted from byte arrays to
+objects.  Therefore, the object reference added to a collection will not be
+the same as the reference later retrieved from the collection.
+<li>A runtime exception,
+<a href="../../java/com/sleepycat/bdb/util/RuntimeExceptionWrapper.html">RuntimeExceptionWrapper</a>
+, is thrown
+whenever database exceptions occur which are not runtime exceptions.  The
+<a href="../../java/com/sleepycat/bdb/util/RuntimeExceptionWrapper.html#getCause()">RuntimeExceptionWrapper.getCause()</a>
+method can be called to get the underlying exception.
+<li>All iterators for stored collections implement the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html">ListIterator</a>
+ interface as well as the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Iterator.html">Iterator</a>
+ interface.  This is to allow use of the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#hasPrevious()">ListIterator.hasPrevious()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#previous()">ListIterator.previous()</a>
+ methods, which work
+for all collections since Berkeley DB provides bidirectional cursors.
+<li>All stored collections have a
+<a href="../../java/com/sleepycat/bdb/collection/StoredCollection.html#iterator(boolean)">StoredCollection.iterator(boolean)</a>
+method that allows creating a read-only iterator for a writable collection.
+For the standard 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html#iterator()">Collection.iterator()</a>
+ method,
+the iterator is read-only only when the collection is read-only.  Read-only
+iterators are important for using the Berkeley DB Concurrent Data Store
+environment, since only one write cursors may be open at one time.
+<li>Iterator stability for stored collections is greater than the iterator
+stability defined by the Java collections interfaces.  Stored iterator
+stability is the same as the cursor stability defined by Berkeley DB.
+<li>When an entity binding is used, updating (setting) a value is not allowed
+if the key in the entity is not equal to the original key.  For example,
+calling 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put()">Map.put()</a>
+ is not allowed when the
+key parameter is not equal to the key of the entity parameter.
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put()">Map.put()</a>
+,
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#set()">List.set()</a>
+,
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#set()">ListIterator.set()</a>
+, and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html#setValue()">Map.Entry.setValue()</a>
+ will throw
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/IllegalArgumentException.html">IllegalArgumentException</a>
+ in this situation.
+<li>Adding and removing items from stored lists is not allowed for sublists.
+This is simply an unimplemented feature and may be changed in the future.
+Currently for sublists the following methods throw
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a>
+:
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#add()">List.add()</a>
+,
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#remove()">List.remove()</a>
+,
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()">ListIterator.add()</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#remove()">ListIterator.remove()</a>
+.
+<li>Two extension methods allow adding a new record with an automatically assigned
+key:
+<a href="../../java/com/sleepycat/bdb/collection/StoredList.html#append(java.lang.Object)">StoredList.append(java.lang.Object)</a>
+ and
+<a href="../../java/com/sleepycat/bdb/collection/StoredMap.html#append(java.lang.Object)">StoredMap.append(java.lang.Object)</a>
+.
+Record number assignment by the database itself is supported for QUEUE, RECNO
+and RECNO-RENUMBER databases.  An application-defined
+<a href="../../java/com/sleepycat/bdb/PrimaryKeyAssigner.html">PrimaryKeyAssigner</a>
+ may also be used.
+</ul>
+<h3>Why Java Collections for Berkeley DB?</h3>
+<p>The Java collections interface was chosen as the best Java API for
+Berkeley DB given these requirements:</p>
+<ol>
+<p><li>provide the Java developer with an API that is as familiar and easy to use
+as possible
+<p><li>provide access to all, or a large majority, of the features of the
+underlying Berkeley DB storage system
+<p><li>compared to the Berkeley DB API, provide a higher-level API that is
+oriented toward Java developers
+<p><li>for ease of use, support object-to-data bindings, per-thread transactions,
+and some traditional database features such as foreign keys
+<p><li>provide a thin layer that can be thoroughly tested and which does not
+significantly impact the reliability and performance of Berkeley DB
+</ol>
+<p>Admittedly there are several things about the Java Collections API
+that don't quite fit with Berkeley DB or with any transactional database, and
+therefore there are some new rules for applying the Java Collections API.
+In addition, the Java API data store, index and foreign key APIs are outside
+the scope of the Java Collections API and are therefore somewhat disjoint.
+However, these disadvantages are considered to be smaller than the
+disadvantages of the alternatives:</p>
+<p><ul type=disc>
+<li>A new API not based on the Java Collections API could have been designed
+that maps well to Berkeley DB but is higher-level.  However, this would require
+designing an entirely new model.  The exceptions for using the Java Collections
+API are considered easier to learn than a whole new model.  A new model would
+also require a long design stabilization period before being as complete and
+understandable as either the Java Collections API or the Berkeley DB API.
+<li>The ODMG API or another object persistence API could have been implemented
+on top of Berkeley DB.  However, an object persistence implementation would add
+much code and require a long stabilization period.  And while it may work well
+for applications that require object persistence, it would probably never
+perform well enough for many other applications.
+</ul>
+<p>In fact both of these alternatives were started and then abandoned
+for the reasons given.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb/cs_bdb.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb/cs_bdb_serial.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

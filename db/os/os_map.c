@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_map.c,v 11.44 2002/07/12 18:56:51 bostic Exp ";
+static const char revid[] = "$Id: os_map.c,v 11.51 2003/07/01 19:47:15 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -136,8 +136,10 @@ __os_r_sysattach(dbenv, infop, rp)
 
 #ifdef HAVE_MMAP
 	{
-	DB_FH fh;
+	DB_FH *fhp;
 	int ret;
+
+	fhp = NULL;
 
 	/*
 	 * Try to open/create the shared region file.  We DO NOT need to ensure
@@ -148,7 +150,7 @@ __os_r_sysattach(dbenv, infop, rp)
 	if ((ret = __os_open(dbenv, infop->name,
 	    DB_OSO_REGION | DB_OSO_DIRECT |
 	    (F_ISSET(infop, REGION_CREATE_OK) ? DB_OSO_CREATE : 0),
-	    infop->mode, &fh)) != 0)
+	    infop->mode, &fhp)) != 0)
 		__db_err(dbenv, "%s: %s", infop->name, db_strerror(ret));
 
 	/*
@@ -160,15 +162,15 @@ __os_r_sysattach(dbenv, infop, rp)
 	 */
 	if (ret == 0 && F_ISSET(infop, REGION_CREATE))
 		ret = __db_fileinit(dbenv,
-		    &fh, rp->size, F_ISSET(dbenv, DB_ENV_REGION_INIT) ? 1 : 0);
+		    fhp, rp->size, F_ISSET(dbenv, DB_ENV_REGION_INIT) ? 1 : 0);
 
 	/* Map the file in. */
 	if (ret == 0)
 		ret = __os_map(dbenv,
-		    infop->name, &fh, rp->size, 1, 0, &infop->addr);
+		    infop->name, fhp, rp->size, 1, 0, &infop->addr);
 
-	if (F_ISSET(&fh, DB_FH_VALID))
-		(void)__os_closehandle(dbenv, &fh);
+	if (fhp != NULL)
+		(void)__os_closehandle(dbenv, fhp);
 
 	return (ret);
 	}
@@ -177,7 +179,7 @@ __os_r_sysattach(dbenv, infop, rp)
 	COMPQUIET(rp, NULL);
 	__db_err(dbenv,
 	    "architecture lacks mmap(2), shared environments not possible");
-	return (__db_eopnotsup(dbenv));
+	return (DB_OPNOTSUP);
 #endif
 }
 
@@ -218,7 +220,7 @@ __os_r_sysdetach(dbenv, infop, destroy)
 		if (destroy && shmctl(segid, IPC_RMID,
 		    NULL) != 0 && (ret = __os_get_errno()) != EINVAL) {
 			__db_err(dbenv,
-	    "shmctl: id %ld: unable to delete system shared memory region: %s",
+	    "shmctl: id %d: unable to delete system shared memory region: %s",
 			    segid, strerror(ret));
 			return (ret);
 		}
@@ -306,12 +308,15 @@ __os_unmapfile(dbenv, addr, len)
 	COMPQUIET(dbenv, NULL);
 #endif
 	{
-		int ret;
+		int err, ret, retries;
 
-		while ((ret = munmap(addr, len)) != 0 &&
-		    __os_get_errno() == EINTR)
-			;
-		return (ret ? __os_get_errno() : 0);
+		err = retries = 0;
+		do {
+			ret = munmap(addr, len);
+		} while (ret != 0 &&
+		    ((err = __os_get_errno()) == EINTR || err == EBUSY) &&
+		    ++retries < DB_RETRY);
+		return (ret ? err : 0);
 	}
 #else
 	COMPQUIET(dbenv, NULL);
@@ -341,6 +346,9 @@ __os_map(dbenv, path, fhp, len, is_region, is_rdonly, addrp)
 	if (DB_GLOBAL(j_map) != NULL)
 		return (DB_GLOBAL(j_map)
 		    (path, len, is_region, is_rdonly, addrp));
+
+	/* Check for illegal usage. */
+	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 	/*
 	 * If it's read-only, it's private, and if it's not, it's shared.
@@ -438,6 +446,6 @@ __db_nosystemmem(dbenv)
 {
 	__db_err(dbenv,
 	    "architecture doesn't support environments in system memory");
-	return (__db_eopnotsup(dbenv));
+	return (DB_OPNOTSUP);
 }
 #endif

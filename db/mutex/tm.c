@@ -15,39 +15,70 @@
 #include <string.h>
 #include <unistd.h>
 
+#if defined(MUTEX_THREAD_TEST)
+#include <pthread.h>
+#endif
+
 #include "db_int.h"
 
-void exec_one();
-void file_init();
-void map_file();
-void mutex_destroy();
-void mutex_init();
-void mutex_stats();
-void run_one();
-void unmap_file();
+#ifndef	HAVE_QNX
+#define	shm_open	open
+#define	shm_unlink	remove
+#endif
 
-int	 align;					/* Mutex alignment in file. */
+void  exec_proc(u_long, char *, char *);
+void  map_file(u_int8_t **, u_int8_t **, u_int8_t **, int *);
+void  tm_file_init(void);
+void  run_locker(u_long);
+void *run_lthread(void *);
+void  run_wakeup(u_long);
+void *run_wthread(void *);
+void  tm_mutex_destroy(void);
+void  tm_mutex_init(void);
+void  tm_mutex_stats(void);
+void  unmap_file(u_int8_t *, int);
+int   usage(void);
+
+#define	MT_FILE		"mutex.file"
+#define	MT_FILE_QUIT	"mutex.file.quit"
+
 DB_ENV	 dbenv;					/* Fake out DB. */
-char	*file = "mutex.file";			/* Backing file. */
 size_t	 len;					/* Backing file size. */
+int	 align;					/* Mutex alignment in file. */
+
 int	 maxlocks = 20;				/* -l: Backing locks. */
 int	 nlocks = 10000;			/* -n: Locks per processes. */
 int	 nprocs = 20;				/* -p: Processes. */
-int	 child;					/* -s: Slave. */
+int	 nthreads = 1;				/* -t: Threads. */
 int	 verbose;				/* -v: Verbosity. */
+
+typedef struct {
+	DB_MUTEX mutex;				/* Mutex. */
+	u_long	 id;				/* Holder's ID. */
+#define	MUTEX_WAKEME	0x01			/* Request to awake. */
+	u_int	 flags;
+} TM;
 
 int
 main(argc, argv)
 	int argc;
 	char *argv[];
 {
+	enum {LOCKER, WAKEUP, PARENT} rtype;
 	extern int optind;
 	extern char *optarg;
 	pid_t pid;
-	int ch, i, status;
+	u_long id;
+	int ch, fd, eval, i, status;
+	char *p, *tmpath;
 
-	while ((ch = getopt(argc, argv, "l:n:p:sv")) != EOF)
-		switch(ch) {
+	__os_spin(&dbenv);		/* Fake out DB. */
+
+	rtype = PARENT;
+	id = 0;
+	tmpath = argv[0];
+	while ((ch = getopt(argc, argv, "l:n:p:T:t:v")) != EOF)
+		switch (ch) {
 		case 'l':
 			maxlocks = atoi(optarg);
 			break;
@@ -57,284 +88,706 @@ main(argc, argv)
 		case 'p':
 			nprocs = atoi(optarg);
 			break;
-		case 's':
-			child = 1;
+		case 't':
+			if ((nthreads = atoi(optarg)) == 0)
+				nthreads = 1;
+#if !defined(MUTEX_THREAD_TEST)
+			if (nthreads != 1) {
+				(void)fprintf(stderr,
+    "tm: thread support not available or not compiled for this platform.\n");
+				return (EXIT_FAILURE);
+			}
+#endif
+			break;
+		case 'T':
+			if (!memcmp(optarg, "locker", sizeof("locker") - 1))
+				rtype = LOCKER;
+			else if (
+			    !memcmp(optarg, "wakeup", sizeof("wakeup") - 1))
+				rtype = WAKEUP;
+			else
+				return (usage());
+			if ((p = strchr(optarg, '=')) == NULL)
+				return (usage());
+			id = atoi(p + 1);
 			break;
 		case 'v':
 			verbose = 1;
 			break;
 		case '?':
 		default:
-			(void)fprintf(stderr,
-			    "usage: %s [-l maxlocks] [-n locks] [-p procs]\n",
-			    argv[0]);
-			exit(1);
+			return (usage());
 		}
 	argc -= optind;
 	argv += optind;
 
 	/*
-	 * Needed to figure out the file layout.
+	 * The file layout:
+	 *	TM[1]			per-thread mutex array lock
+	 *	TM[nthreads]		per-thread mutex array
+	 *	TM[maxlocks]		per-lock mutex array
 	 */
-	align = ALIGN(sizeof(MUTEX) * 2, MUTEX_ALIGN);
-	len = align * maxlocks + sizeof(u_int32_t) * maxlocks;
+	align = ALIGN(sizeof(TM), MUTEX_ALIGN);
+	len = align * (1 + nthreads * nprocs + maxlocks);
 
-	/*
-	 * Hack DBENV to work.
-	 */
-	dbenv.db_mutexlocks = 1;
-
-	if (child) {
-		run_one();
-		exit(0);
+	switch (rtype) {
+	case PARENT:
+		break;
+	case LOCKER:
+		run_locker(id);
+		return (EXIT_SUCCESS);
+	case WAKEUP:
+		run_wakeup(id);
+		return (EXIT_SUCCESS);
 	}
 
-	file_init();
-	mutex_init();
+	printf(
+    "tm: %d processes, %d threads/process, %d lock requests from %d locks\n",
+	    nprocs, nthreads, nlocks, maxlocks);
+	printf(
+    "tm: mutex alignment %lu, structure alignment %d, backing file %lu bytes\n",
+	    (u_long)MUTEX_ALIGN, align, (u_long)len);
 
-	printf("Run: %d processes (%d requests from %d locks):",
-	    nprocs, nlocks, maxlocks);
-	for (i = 0; i < nprocs; ++i)
-		switch (pid = fork()) {
+	tm_file_init();			/* Initialize backing file. */
+	tm_mutex_init();		/* Initialize file's mutexes. */
+
+	for (i = 0; i < nprocs; ++i) {
+		switch (fork()) {
 		case -1:
 			perror("fork");
-			exit(1);
+			return (EXIT_FAILURE);
 		case 0:
-			exec_one();
+			exec_proc(id, tmpath, "locker");
 			break;
 		default:
-			printf(" %lu", (u_long)pid);
 			break;
 		}
-	printf("\n");
+		id += nthreads;
+	}
 
-	while ((pid = wait(&status)) != (pid_t)-1)
-		printf("%d: exited %d\n", pid, WEXITSTATUS(status));
-	fflush(stdout);
+	(void)remove(MT_FILE_QUIT);
 
-	printf("Statistics...\n");
-	mutex_stats();
+	switch (fork()) {
+	case -1:
+		perror("fork");
+		return (EXIT_FAILURE);
+	case 0:
+		exec_proc(id, tmpath, "wakeup");
+		break;
+	default:
+		break;
+	}
+	++id;
 
-	mutex_destroy();
+	/* Wait for locking threads. */
+	for (i = 0, eval = EXIT_SUCCESS; i < nprocs; ++i)
+		if ((pid = wait(&status)) != (pid_t)-1) {
+			fprintf(stderr,
+		    "%lu: exited %d\n", (u_long)pid, WEXITSTATUS(status));
+			if (WEXITSTATUS(status) != 0)
+				eval = EXIT_FAILURE;
+		}
 
-	exit(0);
+	/* Signal wakeup thread to exit. */
+	if ((fd = open(MT_FILE_QUIT, O_WRONLY | O_CREAT, 0664)) == -1) {
+		fprintf(stderr, "tm: %s\n", strerror(errno));
+		status = EXIT_FAILURE;
+	}
+	(void)close(fd);
+
+	/* Wait for wakeup thread. */
+	if ((pid = wait(&status)) != (pid_t)-1) {
+		fprintf(stderr,
+	    "%lu: exited %d\n", (u_long)pid, WEXITSTATUS(status));
+		if (WEXITSTATUS(status) != 0)
+			eval = EXIT_FAILURE;
+	}
+
+	(void)remove(MT_FILE_QUIT);
+
+	tm_mutex_stats();			/* Display run statistics. */
+	tm_mutex_destroy();			/* Destroy region. */
+
+	printf("tm: exit status: %s\n",
+	    eval == EXIT_SUCCESS ? "success" : "failed!");
+	return (eval);
 }
 
 void
-exec_one()
+exec_proc(id, tmpath, typearg)
+	u_long id;
+	char *tmpath, *typearg;
 {
-	char *argv[10], **ap, b_l[10], b_n[10];
+	char *argv[10], **ap, b_l[10], b_n[10], b_p[10], b_t[10], b_T[10];
 
 	ap = &argv[0];
 	*ap++ = "tm";
 	sprintf(b_l, "-l%d", maxlocks);
 	*ap++ = b_l;
 	sprintf(b_n, "-n%d", nlocks);
+	*ap++ = b_p;
+	sprintf(b_p, "-p%d", nprocs);
 	*ap++ = b_n;
-	*ap++ = "-s";
+	sprintf(b_t, "-t%d", nthreads);
+	*ap++ = b_t;
+	sprintf(b_T, "-T%s=%lu", typearg, id);
+	*ap++ = b_T;
 	if (verbose)
 		*ap++ = "-v";
-	*ap = NULL;
-	execv("./tm", argv);
 
-	fprintf(stderr, "./tm: %s\n", strerror(errno));
-	exit(1);
+	*ap = NULL;
+	execvp(tmpath, argv);
+
+	fprintf(stderr, "%s: %s\n", tmpath, strerror(errno));
+	exit(EXIT_FAILURE);
 }
 
 void
-run_one()
+run_locker(id)
+	u_long id;
 {
-	MUTEX *maddr, *mp;
-	pid_t pid, *pidlist;
-	int fd, i, lock, remap;
-	char buf[128];
+#if defined(MUTEX_THREAD_TEST)
+	pthread_t *kidsp;
+	int i;
+	void *retp;
+#endif
+	int status;
 
-	__os_sleep(&dbenv, 3, 0);		/* Let everyone catch up. */
+	(void)__os_sleep(&dbenv, 3, 0);		/* Let everyone catch up. */
 
-	pid = getpid();
-	srand((u_int)time(NULL) / pid);
+	srand((u_int)time(NULL) % getpid());	/* Initialize random numbers. */
 
-	for (maddr = NULL;;) {
-		if (maddr == NULL) {
-			map_file(&maddr, &fd);
-			pidlist =
-			    (pid_t *)((u_int8_t *)maddr + align * maxlocks);
-			remap = (rand() % 100) + 35;
+#if defined(MUTEX_THREAD_TEST)
+	/*
+	 * Spawn off threads.  We have nthreads all locking and going to
+	 * sleep, and one other thread cycling through and waking them up.
+	 */
+	if ((kidsp =
+	    (pthread_t *)calloc(sizeof(pthread_t), nthreads)) == NULL) {
+		fprintf(stderr, "tm: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+	for (i = 0; i < nthreads; i++)
+		if ((errno = pthread_create(
+		    &kidsp[i], NULL, run_lthread, (void *)(id + i))) != 0) {
+			fprintf(stderr, "tm: failed spawning thread: %s\n",
+			    strerror(errno));
+			exit(EXIT_FAILURE);
+		}
 
+	/* Wait for the threads to exit. */
+	status = EXIT_SUCCESS;
+	for (i = 0; i < nthreads; i++) {
+		pthread_join(kidsp[i], &retp);
+		if (retp != NULL) {
+			fprintf(stderr, "tm: thread exited with error\n");
+			status = EXIT_FAILURE;
+		}
+	}
+	free(kidsp);
+#else
+	status = (int)run_lthread((void *)id);
+#endif
+	exit(status);
+}
+
+void *
+run_lthread(arg)
+	void *arg;
+{
+	TM *gp, *mp, *tp;
+	u_long id, tid;
+	int fd, i, lock, nl, remap;
+	u_int8_t *gm_addr, *lm_addr, *tm_addr;
+
+	id = (int)arg;
+#if defined(MUTEX_THREAD_TEST)
+	tid = (u_long)pthread_self();
+#else
+	tid = 0;
+#endif
+	printf("Locker: ID %03lu (PID: %lu; TID: %lx)\n",
+	    id, (u_long)getpid(), tid);
+
+	nl = nlocks;
+	for (gm_addr = NULL, gp = tp = NULL, remap = 0;;) {
+		/* Map in the file as necessary. */
+		if (gm_addr == NULL) {
+			map_file(&gm_addr, &tm_addr, &lm_addr, &fd);
+			gp = (TM *)gm_addr;
+			tp = (TM *)(tm_addr + id * align);
 			if (verbose)
-				printf("%lu: map @ %lx\n",
-				    (u_long)pid, (u_long)maddr);
+				printf(
+				    "%03lu: map threads @ %#lx; locks @ %#lx\n",
+				    id, (u_long)tm_addr, (u_long)lm_addr);
+			remap = (rand() % 100) + 35;
 		}
 
+		/* Select and acquire a data lock. */
 		lock = rand() % maxlocks;
-		if (verbose) {
-			(void)sprintf(buf,
-			    "%lu %lu:\n", (u_long)pid, (u_long)lock);
-			write(1, buf, strlen(buf));
+		mp = (TM *)(lm_addr + lock * align);
+		if (verbose)
+			printf("%03lu: lock %d @ %#lx\n",
+			    id, lock, (u_long)&mp->mutex);
+
+		if (__db_mutex_lock(&dbenv, &mp->mutex)) {
+			fprintf(stderr, "%03lu: never got lock %d: %s\n",
+			    id, lock, strerror(errno));
+			return ((void *)EXIT_FAILURE);
 		}
-		mp = (MUTEX *)((u_int8_t *)maddr + lock * align);
-		if (__db_mutex_lock(&dbenv, mp, fd)) {
-			fprintf(stderr, "%lu: never got lock\n", (u_long)pid);
-			exit(1);
-		}
-		if (pidlist[lock] != 0) {
+		if (mp->id != 0) {
 			fprintf(stderr,
-			    "RACE! (%lu granted lock %d held by %lu)\n",
-			    (u_long)pid, lock, (u_long)pidlist[lock]);
-			exit(1);
+			    "RACE! (%03lu granted lock %d held by %03lu)\n",
+			    id, lock, mp->id);
+			return ((void *)EXIT_FAILURE);
 		}
-		pidlist[lock] = pid;
+		mp->id = id;
+
+		/*
+		 * Pretend to do some work, periodically checking to see if
+		 * we still hold the mutex.
+		 */
 		for (i = 0; i < 3; ++i) {
-			__os_sleep(&dbenv, 0, rand() % 50);
-			if (pidlist[lock] != pid) {
+			(void)__os_sleep(&dbenv, 0, rand() % 3);
+			if (mp->id != id) {
 				fprintf(stderr,
-				    "RACE! (%lu stole lock %d from %lu)\n",
-				    (u_long)pidlist[lock], lock, (u_long)pid);
-				exit(1);
+				    "RACE! (%03lu stole lock %d from %03lu)\n",
+				    mp->id, lock, id);
+				return ((void *)EXIT_FAILURE);
 			}
 		}
-		pidlist[lock] = 0;
-		if (__db_mutex_unlock(&dbenv, mp)) {
-			fprintf(stderr, "%d: wakeup failed\n", pid);
-			exit(1);
+
+		/*
+		 * Test self-blocking and unlocking by other threads/processes:
+		 *
+		 *	acquire the global lock
+		 *	set our wakeup flag
+		 *	release the global lock
+		 *	acquire our per-thread lock
+		 *
+		 * The wakeup thread will wake us up.
+		 */
+		if (__db_mutex_lock(&dbenv, &gp->mutex)) {
+			fprintf(stderr,
+			    "%03lu: global lock: %s\n", id, strerror(errno));
+			return ((void *)EXIT_FAILURE);
+		}
+		if (tp->id != 0 && tp->id != id) {
+			fprintf(stderr,
+		    "%03lu: per-thread mutex isn't mine, owned by %03lu\n",
+			    id, tp->id);
+			return ((void *)EXIT_FAILURE);
+		}
+		tp->id = id;
+		if (verbose)
+			printf("%03lu: self-blocking\n", id);
+		if (F_ISSET(tp, MUTEX_WAKEME)) {
+			fprintf(stderr,
+			    "%03lu: wakeup flag incorrectly set\n", id);
+			return ((void *)EXIT_FAILURE);
+		}
+		F_SET(tp, MUTEX_WAKEME);
+		if (__db_mutex_unlock(&dbenv, &gp->mutex)) {
+			fprintf(stderr,
+			    "%03lu: global unlock: %s\n", id, strerror(errno));
+			return ((void *)EXIT_FAILURE);
+		}
+		if (__db_mutex_lock(&dbenv, &tp->mutex)) {
+			fprintf(stderr, "%03lu: per-thread lock: %s\n",
+			    id, strerror(errno));
+			return ((void *)EXIT_FAILURE);
+		}
+		/* Time passes... */
+		if (F_ISSET(tp, MUTEX_WAKEME)) {
+			fprintf(stderr, "%03lu: wakeup flag not cleared\n", id);
+			return ((void *)EXIT_FAILURE);
 		}
 
-		if (--remap == 0 || --nlocks == 0) {
-			unmap_file(maddr, fd);
-			maddr = NULL;
+		if (verbose)
+			printf("%03lu: release %d @ %#lx\n",
+			    id, lock, (u_long)&mp->mutex);
+
+		/* Release the data lock. */
+		mp->id = 0;
+		if (__db_mutex_unlock(&dbenv, &mp->mutex)) {
+			fprintf(stderr,
+			    "%03lu: lock release: %s\n", id, strerror(errno));
+			return ((void *)EXIT_FAILURE);
+		}
+
+		if (--nl % 100 == 0)
+			fprintf(stderr, "%03lu: %d\n", id, nl);
+
+		if (nl == 0 || --remap == 0) {
 			if (verbose)
-				printf("%lu: unmap\n", (u_long)pid);
+				printf("%03lu: re-mapping\n", id);
+			unmap_file(gm_addr, fd);
+			gm_addr = NULL;
 
-			__os_sleep(&dbenv, rand() % 3, 0);
-
-			if (nlocks == 0)
+			if (nl == 0)
 				break;
-		}
 
-		if (nlocks % 100 == 0)
-			write(1, ".", 1);
+			(void)__os_sleep(&dbenv, 0, rand() % 500);
+		}
 	}
 
-	exit(0);
+	return (NULL);
 }
 
 void
-file_init()
+run_wakeup(id)
+	u_long id;
+{
+#if defined(MUTEX_THREAD_TEST)
+	pthread_t wakep;
+	int status;
+	void *retp;
+#endif
+	(void)__os_sleep(&dbenv, 3, 0);		/* Let everyone catch up. */
+
+	srand((u_int)time(NULL) % getpid());	/* Initialize random numbers. */
+
+#if defined(MUTEX_THREAD_TEST)
+	/*
+	 * Spawn off wakeup thread.
+	 */
+	if ((errno = pthread_create(
+	    &wakep, NULL, run_wthread, (void *)id)) != 0) {
+		fprintf(stderr, "tm: failed spawning wakeup thread: %s\n",
+		    strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	/*
+	 * run_locker will create a file when the wakeup thread is no
+	 * longer needed.
+	 */
+	status = 0;
+	pthread_join(wakep, &retp);
+	if (retp != NULL) {
+		fprintf(stderr, "tm: wakeup thread exited with error\n");
+		status = EXIT_FAILURE;
+	}
+
+	exit(status);
+#else
+	exit((int)run_wthread((void *)id));
+#endif
+}
+
+/*
+ * run_wthread --
+ *	Thread to wake up other threads that are sleeping.
+ */
+void *
+run_wthread(arg)
+	void *arg;
+{
+	struct stat sb;
+	TM *gp, *tp;
+	u_long id, tid;
+	int fd, check_id;
+	u_int8_t *gm_addr, *tm_addr;
+
+	id = (int)arg;
+#if defined(MUTEX_THREAD_TEST)
+	tid = (u_long)pthread_self();
+#else
+	tid = 0;
+#endif
+	printf("Wakeup: ID %03lu (PID: %lu; TID: %lx)\n",
+	    id, (u_long)getpid(), tid);
+
+	arg = NULL;
+	map_file(&gm_addr, &tm_addr, NULL, &fd);
+	if (verbose)
+		printf("%03lu: map threads @ %#lx\n", id, (u_long)tm_addr);
+	gp = (TM *)gm_addr;
+
+	/* Loop, waking up sleepers and periodically sleeping ourselves. */
+	for (check_id = 0;; ++check_id) {
+		/* Check to see if the locking threads have finished. */
+		if (stat(MT_FILE_QUIT, &sb) == 0)
+			break;
+
+		/* Check for ID wraparound. */
+		if (check_id == nthreads * nprocs)
+			check_id = 0;
+
+		/* Check for a thread that needs a wakeup. */
+		tp = (TM *)(tm_addr + check_id * align);
+		if (!F_ISSET(tp, MUTEX_WAKEME))
+			continue;
+
+		if (verbose)
+			printf("%03lu: wakeup thread %03lu @ %#lx\n",
+			    id, tp->id, (u_long)&tp->mutex);
+
+		/* Acquire the global lock. */
+		if (__db_mutex_lock(&dbenv, &gp->mutex)) {
+			fprintf(stderr,
+			    "wakeup: global lock: %s\n", strerror(errno));
+			return ((void *)EXIT_FAILURE);
+		}
+
+		F_CLR(tp, MUTEX_WAKEME);
+		if (__db_mutex_unlock(&dbenv, &tp->mutex)) {
+			fprintf(stderr,
+			    "wakeup: unlock: %s\n", strerror(errno));
+			return ((void *)EXIT_FAILURE);
+		}
+
+		if (__db_mutex_unlock(&dbenv, &gp->mutex)) {
+			fprintf(stderr,
+			    "wakeup: global unlock: %s\n", strerror(errno));
+			return ((void *)EXIT_FAILURE);
+		}
+
+		(void)__os_sleep(&dbenv, 0, rand() % 3);
+	}
+	return (NULL);
+}
+
+/*
+ * tm_file_init --
+ *	Initialize the backing file.
+ */
+void
+tm_file_init()
 {
 	int fd;
 
-	printf("Initialize the backing file...\n");
+	/* Initialize the backing file. */
+	if (verbose)
+		printf("Create the backing file.\n");
 
-	/*
-	 * Initialize the backing file.
-	 *
-	 * Find out how much space we need to correctly align maxlocks locks
-	 * plus maxlocks check words and create the file.
-	 */
-	(void)unlink(file);
-	if ((fd = open(file, O_CREAT | O_RDWR | O_TRUNC,
+	(void)shm_unlink(MT_FILE);
+
+	if ((fd = shm_open(
+	    MT_FILE, O_CREAT | O_RDWR | O_TRUNC,
 	    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)) == -1) {
-		(void)fprintf(stderr, "%s: %s\n", file, strerror(errno));
-		exit(1);
+		(void)fprintf(stderr,
+		    "%s: open: %s\n", MT_FILE, strerror(errno));
+		exit(EXIT_FAILURE);
 	}
+
 	if (lseek(fd, (off_t)len, SEEK_SET) != len || write(fd, &fd, 1) != 1) {
 		(void)fprintf(stderr,
-		    "%s: seek/write: %s\n", file, strerror(errno));
-		exit(1);
+		    "%s: seek/write: %s\n", MT_FILE, strerror(errno));
+		exit(EXIT_FAILURE);
 	}
 	(void)close(fd);
 }
 
+/*
+ * tm_mutex_init --
+ *	Initialize the mutexes.
+ */
 void
-mutex_init()
+tm_mutex_init()
 {
-	MUTEX *maddr, *mp;
+	TM *mp;
 	int fd, i;
+	u_int8_t *gm_addr, *lm_addr, *tm_addr;
 
-	printf("Initialize the mutexes...\n");
-	map_file(&maddr, &fd);
-	for (i = 0, mp = maddr;
-	    i < maxlocks; ++i, mp = (MUTEX *)((u_int8_t *)mp + align))
-		if (__db_mutex_init(&dbenv, mp, 0, 0)) {
-			fprintf(stderr, "__db_mutex_init (%d): %s\n",
-			    i + 1, strerror(errno));
-			exit(1);
+	map_file(&gm_addr, &tm_addr, &lm_addr, &fd);
+	if (verbose)
+		printf("init: map threads @ %#lx; locks @ %#lx\n",
+		    (u_long)tm_addr, (u_long)lm_addr);
+
+	if (verbose)
+		printf("Initialize the global mutex:\n");
+	mp = (TM *)gm_addr;
+	if (__db_mutex_init_int(&dbenv, &mp->mutex, 0, 0)) {
+		fprintf(stderr,
+		    "__db_mutex_init (global): %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+	if (verbose)
+		printf("\t@ %#lx\n", (u_long)&mp->mutex);
+
+	if (verbose)
+		printf(
+		    "Initialize %d per-thread mutexes:\n", nthreads * nprocs);
+	for (i = 0; i < nthreads * nprocs; ++i) {
+		mp = (TM *)(tm_addr + i * align);
+		if (__db_mutex_init_int(
+		    &dbenv, &mp->mutex, 0, MUTEX_SELF_BLOCK)) {
+			fprintf(stderr, "__db_mutex_init (per-thread %d): %s\n",
+			    i, strerror(errno));
+			exit(EXIT_FAILURE);
 		}
-	unmap_file(maddr, fd);
-}
-
-void
-mutex_destroy()
-{
-	MUTEX *maddr, *mp;
-	int fd, i;
-
-	map_file(&maddr, &fd);
-	for (i = 0, mp = maddr;
-	    i < maxlocks; ++i, mp = (MUTEX *)((u_int8_t *)mp + align))
-		if (__db_mutex_destroy(mp)) {
-			fprintf(stderr, "__db_mutex_destroy (%d): %s\n",
-			    i + 1, strerror(errno));
-			exit(1);
+		if (__db_mutex_lock(&dbenv, &mp->mutex)) {
+			fprintf(stderr, "__db_mutex_lock (per-thread %d): %s\n",
+			    i, strerror(errno));
+			exit(EXIT_FAILURE);
 		}
-	unmap_file(maddr, fd);
+		if (verbose)
+			printf("\t@ %#lx\n", (u_long)&mp->mutex);
+	}
+
+	if (verbose)
+		printf("Initialize %d per-lock mutexes:\n", maxlocks);
+	for (i = 0; i < maxlocks; ++i) {
+		mp = (TM *)(lm_addr + i * align);
+		if (__db_mutex_init_int(&dbenv, &mp->mutex, 0, 0)) {
+			fprintf(stderr, "__db_mutex_init (per-lock: %d): %s\n",
+			    i, strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+		if (verbose)
+			printf("\t@ %#lx\n", (u_long)&mp->mutex);
+	}
+
+	unmap_file(gm_addr, fd);
 }
 
+/*
+ * tm_mutex_destroy --
+ *	Destroy the mutexes.
+ */
 void
-mutex_stats()
+tm_mutex_destroy()
 {
-	MUTEX *maddr, *mp;
+	TM *gp, *mp;
 	int fd, i;
+	u_int8_t *gm_addr, *lm_addr, *tm_addr;
 
-	map_file(&maddr, &fd);
-	for (i = 0, mp = maddr;
-	    i < maxlocks; ++i, mp = (MUTEX *)((u_int8_t *)mp + align))
-		printf("mutex %2d: wait: %2lu; no wait %2lu\n", i,
-		    (u_long)mp->mutex_set_wait, (u_long)mp->mutex_set_nowait);
-	unmap_file(maddr, fd);
+	map_file(&gm_addr, &tm_addr, &lm_addr, &fd);
+
+	if (verbose)
+		printf("Destroy the global mutex.\n");
+	gp = (TM *)gm_addr;
+	if (__db_mutex_destroy(&gp->mutex)) {
+		fprintf(stderr,
+		    "__db_mutex_destroy (global): %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	if (verbose)
+		printf("Destroy the per-thread mutexes.\n");
+	for (i = 0; i < nthreads * nprocs; ++i) {
+		mp = (TM *)(tm_addr + i * align);
+		if (__db_mutex_destroy(&mp->mutex)) {
+			fprintf(stderr,
+			    "__db_mutex_destroy (per-thread %d): %s\n",
+			    i, strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	if (verbose)
+		printf("Destroy the per-lock mutexes.\n");
+	for (i = 0; i < maxlocks; ++i) {
+		mp = (TM *)(tm_addr + i * align);
+		if (__db_mutex_destroy(&mp->mutex)) {
+			fprintf(stderr,
+			    "__db_mutex_destroy (per-lock: %d): %s\n",
+			    i, strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	unmap_file(gm_addr, fd);
+
+	(void)shm_unlink(MT_FILE);
 }
 
+/*
+ * tm_mutex_stats --
+ *	Display mutex statistics.
+ */
 void
-map_file(maddrp, fdp)
-	MUTEX **maddrp;
+tm_mutex_stats()
+{
+	TM *mp;
+	int fd, i;
+	u_int8_t *gm_addr, *lm_addr;
+
+	map_file(&gm_addr, NULL, &lm_addr, &fd);
+
+	printf("Per-lock mutex statistics.\n");
+	for (i = 0; i < maxlocks; ++i) {
+		mp = (TM *)(lm_addr + i * align);
+		printf("mutex %2d: wait: %lu; no wait %lu\n", i,
+		    (u_long)mp->mutex.mutex_set_wait,
+		    (u_long)mp->mutex.mutex_set_nowait);
+	}
+
+	unmap_file(gm_addr, fd);
+}
+
+/*
+ * map_file --
+ *	Map in the backing file.
+ */
+void
+map_file(gm_addrp, tm_addrp, lm_addrp, fdp)
+	u_int8_t **gm_addrp, **tm_addrp, **lm_addrp;
 	int *fdp;
 {
-	MUTEX *maddr;
+	void *addr;
 	int fd;
 
 #ifndef MAP_FAILED
-#define	MAP_FAILED	(MUTEX *)-1
+#define	MAP_FAILED	(void *)-1
 #endif
 #ifndef MAP_FILE
 #define	MAP_FILE	0
 #endif
-	if ((fd = open(file, O_RDWR, 0)) == -1) {
-		fprintf(stderr, "%s: open %s\n", file, strerror(errno));
-		exit(1);
+	if ((fd = shm_open(MT_FILE, O_RDWR, 0)) == -1) {
+		fprintf(stderr, "%s: open %s\n", MT_FILE, strerror(errno));
+		exit(EXIT_FAILURE);
 	}
 
-	maddr = (MUTEX *)mmap(NULL, len,
+	addr = mmap(NULL, len,
 	    PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, fd, (off_t)0);
-	if (maddr == MAP_FAILED) {
-		fprintf(stderr, "%s: mmap: %s\n", file, strerror(errno));
-		exit(1);
+	if (addr == MAP_FAILED) {
+		fprintf(stderr, "%s: mmap: %s\n", MT_FILE, strerror(errno));
+		exit(EXIT_FAILURE);
 	}
 
-	*maddrp = maddr;
-	*fdp = fd;
+	if (gm_addrp != NULL)
+		*gm_addrp = (u_int8_t *)addr;
+	addr = (u_int8_t *)addr + align;
+	if (tm_addrp != NULL)
+		*tm_addrp = (u_int8_t *)addr;
+	addr = (u_int8_t *)addr + align * (nthreads * nprocs);
+	if (lm_addrp != NULL)
+		*lm_addrp = (u_int8_t *)addr;
+
+	if (fdp != NULL)
+		*fdp = fd;
 }
 
+/*
+ * unmap_file --
+ *	Discard backing file map.
+ */
 void
-unmap_file(maddr, fd)
-	MUTEX *maddr;
+unmap_file(addr, fd)
+	u_int8_t *addr;
 	int fd;
 {
-	if (munmap(maddr, len) != 0) {
+	if (munmap(addr, len) != 0) {
 		fprintf(stderr, "munmap: %s\n", strerror(errno));
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if (close(fd) != 0) {
 		fprintf(stderr, "close: %s\n", strerror(errno));
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
+}
+
+/*
+ * usage --
+ *
+ */
+int
+usage()
+{
+	(void)fprintf(stderr, "%s\n\t%s\n",
+	    "usage: tm [-v] [-l maxlocks]",
+	    "[-n locks] [-p procs] [-T locker=ID|wakeup=ID] [-t threads]");
+	return (EXIT_FAILURE);
 }

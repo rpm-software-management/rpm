@@ -1,0 +1,172 @@
+<!--$Id: dbt_bulk_class.so,v 1.14 2003/11/20 03:37:41 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: Bulk Retrieval API</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h3>Bulk Retrieval API</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+class DbMultipleDataIterator
+{
+public:
+	DbMultipleDataIterator(const Dbt &dbt);
+<p>
+	bool next(Dbt &data);
+};
+<p>
+class DbMultipleKeyDataIterator
+{
+public:
+	DbMultipleKeyDataIterator(const Dbt &dbt);
+<p>
+	bool next(Dbt &key, Dbt &data);
+};
+<p>
+class DbMultipleRecnoDataIterator
+{
+public:
+	DbMultipleRecnoDataIterator(const Dbt &dbt);
+<p>
+	bool next(db_recno_t &key, Dbt &data);
+};
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: Bulk Retrieval API</h3>
+<p>If either of the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> or <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flags
+were specified to the <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> method, the data
+<a href="../api_cxx/dbt_class.html">Dbt</a> returned by those interfaces will refer to a buffer that
+is filled with data.  Access to that data is through the following
+classes.</p>
+<p>All instances of the bulk retrieval classes may be used only once, and
+to traverse the bulk retrieval buffer in the forward direction only.
+However, they are nondestructive, so multiple iterators can be
+instantiated and used on the same returned data <a href="../api_cxx/dbt_class.html">Dbt</a>.</p>
+<hr size=1 noshade>
+<h3>Description: DbMultipleIterator</h3>
+<p>The <a href="../api_cxx/dbt_bulk_class.html">DbMultipleIterator</a> is a shared package-private base class
+for the three types of bulk-return Iterator; it should never be
+instantiated directly, but it handles the functionality shared by its
+subclasses.</p>
+<hr size=1 noshade>
+<h3>Description: DbMultipleDataIterator</h3>
+<p>The DbMultipleDataIterator class is used to iterate through data
+returned using the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> flag from a database belonging
+to any access method.</p>
+<p>The constructor takes the data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a>
+flag.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>dbt</b><dd>
+The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a>
+flag.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbMultipleDataIterator.next</h3>
+<p>The DbMultipleDataIterator.next method takes a <a href="../api_cxx/dbt_class.html">Dbt</a> that will be
+filled in with a reference to a buffer, a size, and an offset that
+together yield the next data item in the original bulk retrieval buffer.</p>
+<p>The DbMultipleDataIterator.next method returns false if no more data are
+available, and true otherwise.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>data</b><dd>
+The <b>data</b> parameter is a <a href="../api_cxx/dbt_class.html">Dbt</a> that will be filled in with
+a reference to a buffer, a size, and an offset that together yield the
+next data item in the original bulk retrieval buffer.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbMultipleKeyDataIterator</h3>
+<p>The DbMultipleKeyDataIterator class is used to iterate through
+data returned using the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flag from a database
+belonging to the Btree or Hash access methods.</p>
+<p>The constructor takes the data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
+flag.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>dbt</b><dd>
+The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
+flag.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbMultipleKeyDataIterator.next</h3>
+<p>The DbMultipleKeyDataIterator.next method takes two <a href="../api_cxx/dbt_class.html">Dbt</a>s, one
+for a key and one for a data item, that will each be filled in with a
+reference to a buffer, a size, and an offset that together yield the
+next key and data item in the original bulk retrieval buffer.  The
+DbMultipleKeyDataIterator.next method returns false if no more data are
+available, and true otherwise.</p>
+<p>The DbMultipleKeyDataIterator.next method returns false if no more data
+are available, and true otherwise.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>key</b><dd>
+The <b>key</b> parameter will be filled in with a reference to a buffer,
+a size, and an offset that yields the next key item in the original bulk
+retrieval buffer.
+<p><dt><b>data</b><dd>
+The <b>data</b> parameter will be filled in with a reference to a buffer,
+a size, and an offset that yields the next data item in the original bulk
+retrieval buffer.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbMultipleRecnoDataIterator</h3>
+<p>This class is used to iterate through data returned using the
+<a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flag from a database belonging to the Recno or
+Queue access methods.</p>
+<p>The constructor takes the data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
+flag.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>dbt</b><dd>
+The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
+flag.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbMultipleRecnoDataIterator.next</h3>
+The DbMultipleRecnoDataIterator.next method takes a <b>db_recno_t</b>
+for the key and a <a href="../api_cxx/dbt_class.html">Dbt</a> for a data item, which will be filled in
+with a pointer to a buffer and a size.  Together they yield the next key
+and data item in the original bulk retrieval buffer.
+<p>The DbMultipleRecnoDataIterator.next method returns false if no more
+data are available, and true otherwise.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>key</b><dd>
+The <b>key</b> parameter will be filled in with a reference to a
+buffer, a size, and an offset that yields the next key item in the
+original bulk retrieval buffer.
+<p><dt><b>data</b><dd>
+The <b>data</b> parameter will be filled in with a reference to a
+buffer, a size, and an offset that yields the next data item in the
+original bulk retrieval buffer.
+</dl>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

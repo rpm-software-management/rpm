@@ -1,20 +1,22 @@
-<!--$Id: lock_class.so,v 10.13 1999/12/20 08:52:33 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: lock_class.so,v 10.20 2003/09/25 15:27:27 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbLock</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DbLock</h1>
+<h3>DbLock</h3>
 </td>
-<td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -29,33 +31,20 @@ public:
 	~DbLock();
 };
 </pre></h3>
-<h1>Description</h1>
-<p>The <a href="../api_cxx/dbenv_class.html">DbEnv</a> lock methods and the DbLock class are used
-to provide general-purpose locking.  While designed to work with the
-other Db classes, they are also useful for more general locking
-purposes.  Locks can be shared between processes.
-<p>In most cases, when multiple threads or processes are using locking, the
-deadlock detector, <a href="../utility/db_deadlock.html">db_deadlock</a> should be run.
-<h3>Classes</h3>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/lock_class.html">DbLock</a>
-<h1>See Also</h1>
-<a href="../api_cxx/env_set_lk_conflicts.html">DbEnv::set_lk_conflicts</a>,
-<a href="../api_cxx/env_set_lk_detect.html">DbEnv::set_lk_detect</a>,
-<a href="../api_cxx/env_set_lk_max_locks.html">DbEnv::set_lk_max_locks</a>,
-<a href="../api_cxx/env_set_lk_max_lockers.html">DbEnv::set_lk_max_lockers</a>,
-<a href="../api_cxx/env_set_lk_max_objects.html">DbEnv::set_lk_max_objects</a>,
-<a href="../api_cxx/env_set_lk_max.html">DbEnv::set_lk_max</a>,
-<a href="../api_cxx/lock_detect.html">DbEnv::lock_detect</a>,
-<a href="../api_cxx/lock_get.html">DbEnv::lock_get</a>,
-<a href="../api_cxx/lock_id.html">DbEnv::lock_id</a>,
-<a href="../api_cxx/lock_put.html">DbLock::put</a>,
-<a href="../api_cxx/lock_stat.html">DbEnv::lock_stat</a>
-and
-<a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a>.
+<hr size=1 noshade>
+<h3>Description: DbLock</h3>
+<p>The locking interfaces for the Berkeley DB database environment are methods
+of the <a href="../api_cxx/env_class.html">DbEnv</a> handle.  The DbLock object is the handle
+for a single lock, and has no methods of its own.</p>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>, DbLock
+<h3>See Also</h3>
+<a href="../api_cxx/lock_list.html">Locking Subsystem and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,31 +1,34 @@
-<!--$Id: open.so,v 10.27 2000/12/14 21:42:18 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: open.so,v 10.32 2003/10/18 19:16:09 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Opening a database</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<table><tr valign=top>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Simple Tutorial</dl></h3></td>
-<td width="1%"><a href="../../ref/simple_tut/errors.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/simple_tut/put.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../simple_tut/errors.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../simple_tut/put.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Opening a database</h1>
-<p>Opening a database is done in two steps: first, a DB handle is
-created using the Berkeley DB <a href="../../api_c/db_create.html">db_create</a> interface, and then the
-actual database is opened using the <a href="../../api_c/db_open.html">DB-&gt;open</a> function.
-<p>The <a href="../../api_c/db_create.html">db_create</a> interface takes three arguments:
+<h3 align=center>Opening a database</h3>
+<p>Opening a database is done in two steps: first, a <a href="../../api_c/db_class.html">DB</a> handle is
+created using the Berkeley DB <a href="../../api_c/db_class.html">db_create</a> function, and then the
+actual database is opened using the <a href="../../api_c/db_open.html">DB-&gt;open</a> function.</p>
+<p>The <a href="../../api_c/db_class.html">db_create</a> function takes three arguments:</p>
 <p><dl compact>
 <p><dt>dbp<dd>A location to store a reference to the created structure.
 <p><dt>environment<dd>A location to specify an enclosing Berkeley DB environment, not used in our
 example.
 <p><dt>flags<dd>A placeholder for flags, not used in our example.
 </dl>
-<p>The <a href="../../api_c/db_open.html">DB-&gt;open</a> interface takes five arguments:
+<p>The <a href="../../api_c/db_open.html">DB-&gt;open</a> function takes several arguments:</p>
 <p><dl compact>
+<p><dt>txnid<dd>A transaction in which to enclose the open operation, not used in this
+example.
 <p><dt>file<dd>The name of the database file to be opened.
 <p><dt>database<dd>The optional database name, not used in this example.
 <p><dt>type<dd>The type of database to open.  This value will be one of the four access
@@ -43,9 +46,10 @@ system call, and specifies file read, write and execute permissions.
 Of course, only the read and write permissions are relevant to Berkeley DB.
 </dl>
 <p>Here's what the code to create the handle and then call <a href="../../api_c/db_open.html">DB-&gt;open</a>
-looks like:
-<p><blockquote><pre><b>#include &lt;sys/types.h&gt;
+looks like:</p>
+<blockquote><pre><b>#include &lt;sys/types.h&gt;
 #include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
 #include &lt;db.h&gt;
 <p>
 #define	DATABASE "access.db"
@@ -60,31 +64,31 @@ main()
 		fprintf(stderr, "db_create: %s\n", db_strerror(ret));
 		exit (1);
 	}
-	if ((ret = dbp-&gt;open(
-	    dbp, DATABASE, NULL, DB_BTREE, DB_CREATE, 0664)) != 0) {
+	if ((ret = dbp-&gt;open(dbp,
+	    NULL, DATABASE, NULL, DB_BTREE, DB_CREATE, 0664)) != 0) {
 		dbp-&gt;err(dbp, ret, "%s", DATABASE);
 		goto err;
 	}</b>
 </pre></blockquote>
-<p>If the call to <a href="../../api_c/db_create.html">db_create</a> is successful, the variable <b>dbp</b>
+<p>If the call to <a href="../../api_c/db_class.html">db_create</a> is successful, the variable <b>dbp</b>
 will contain a database handle that will be used to configure and access
-an underlying database.
+an underlying database.</p>
 <p>As you see, the program opens a database named <b>access.db</b>.  The
 underlying database is a Btree.  Because the <a href="../../api_c/env_open.html#DB_CREATE">DB_CREATE</a> flag was
 specified, the file will be created if it does not already exist.  The
-mode of any created files will be 0664 (i.e., readable and writeable by
-the owner and the group, and readable by everyone else).
+mode of any created files will be 0664 (that is, readable and writable by
+the owner and the group, and readable by everyone else).</p>
 <p>One additional function call is used in this code sample, <a href="../../api_c/db_err.html">DB-&gt;err</a>.
-This method works like the ANSI C printf interface.  The second argument
+This method works like the ANSI C printf function.  The second argument
 is the error return from a Berkeley DB function, and the rest of the arguments
 are a printf-style format string and argument list.  The error message
 associated with the error return will be appended to a message constructed
 from the format string and other arguments.  In the above code, if the
 <a href="../../api_c/db_open.html">DB-&gt;open</a> call were to fail, the message it would display would be
-something like
-<p><blockquote><pre>access.db: Operation not permitted</pre></blockquote>
-<table><tr><td><br></td><td width="1%"><a href="../../ref/simple_tut/errors.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/simple_tut/put.html"><img src="../../images/next.gif" alt="Next"></a>
+something like</p>
+<blockquote><pre>access.db: Operation not permitted</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../simple_tut/errors.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../simple_tut/put.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_dbt.cpp,v 11.53 2002/03/27 04:31:14 bostic Exp ";
+static const char revid[] = "$Id: cxx_dbt.cpp,v 11.54 2003/01/08 04:10:27 bostic Exp $";
 #endif /* not lint */
 
 #include <errno.h>

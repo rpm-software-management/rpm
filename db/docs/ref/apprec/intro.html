@@ -1,31 +1,31 @@
-<!--Id: intro.so,v 10.47 2002/04/04 03:56:29 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.47 2002/04/04 03:56:29 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Introduction</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Application Specific Logging and Recovery</dl></h3></td>
-<td align=right><a href="../../ref/xa/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/apprec/def.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../xa/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/def.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Introduction</h1>
+<h3 align=center>Introduction</h3>
 <p>It is possible to use the Locking, Logging and Transaction subsystems
 of Berkeley DB to provide transaction semantics on objects other than those
 described by the Berkeley DB access methods.  In these cases, the application
-will need application-specific logging and recovery functions.
+will need application-specific logging and recovery functions.</p>
 <p>For example, consider an application that provides transaction semantics
 on data stored in plain text files accessed using the POSIX read and
 write system calls.  The read and write operations for which transaction
 protection is desired will be bracketed by calls to the standard Berkeley DB
 transactional interfaces, <a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a> and <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a>, and
 the transaction's locker ID will be used to acquire relevant read and
-write locks.
+write locks.</p>
 <p>Before data is accessed, the application must make a call to the lock
 manager, <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a>, for a lock of the appropriate type (for
 example, read) on the object being locked.  The object might be a page
@@ -36,26 +36,26 @@ object by making an appropriate call to the lock manager,
 <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a>.  Then, the application should make a call to the log
 manager, <a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a>, to record enough information to redo the
 operation in case of failure after commit and to undo the operation in
-case of abort.
+case of abort.</p>
 <p>When designing applications that will use the log subsystem, it is
 important to remember that the application is responsible for providing
 any necessary structure to the log record.  For example, the application
 must understand what part of the log record is an operation code, what
 part identifies the file being modified, what part is redo information,
-and what part is undo information.
+and what part is undo information.</p>
 <p>After the log message is written, the application may issue the write
 system call.  After all requests are issued, the application may call
 <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a>.  When <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a> returns, the caller is
-guaranteed that all necessary log writes have been written to disk.
+guaranteed that all necessary log writes have been written to disk.</p>
 <p>At any time before issuing a <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a>,
 the application may call <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a>, which will
 result in restoration of the database to a consistent pretransaction
 state.  (The application may specify its own recovery function for this
-purpose using the <a href="../../api_c/env_set_app_dispatch.html">DB_ENV-&gt;set_app_dispatch</a> function.  The recovery
+purpose using the <a href="../../api_c/env_set_app_dispatch.html">DB_ENV-&gt;set_app_dispatch</a> method.  The recovery
 function must be able to either reapply or undo the update depending on
-the context, for each different type of log record.)
+the context, for each different type of log record.)</p>
 <p>If the application crashes, the recovery process uses the log to restore
-the database to a consistent state.
+the database to a consistent state.</p>
 <p>Berkeley DB includes tools to assist in the development of application-specific
 logging and recovery.  Specifically, given a description of information
 to be logged in a family of log records, these tools will automatically
@@ -67,11 +67,11 @@ map into the arguments written to the log), log-printing functions
 templates for recovery functions (functions that review log records
 during transaction abort or recovery).  The tools and generated code
 are C-language and POSIX-system based, but the generated code should be
-usable on any system, not just POSIX systems.
+usable on any system, not just POSIX systems.</p>
 <p>A sample application that does application-specific recovery is included
-in the Berkeley DB distribution, in the directory <b>examples_c/ex_apprec</b>.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/xa/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/apprec/def.html"><img src="../../images/next.gif" alt="Next"></a>
+in the Berkeley DB distribution, in the directory <b>examples_c/ex_apprec</b>.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../xa/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/def.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

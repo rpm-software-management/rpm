@@ -1,30 +1,90 @@
-<!--$Id: open.so,v 10.14 2000/03/18 21:43:12 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: open.so,v 10.19 2003/10/18 19:16:01 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Opening databases within the environment</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<table><tr valign=top>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Environment</dl></h3></td>
-<td width="1%"><a href="../../ref/env/remote.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/env/error.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../env/create.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/error.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Opening databases within the environment</h1>
+<h3 align=center>Opening databases within the environment</h3>
 <p>Once the environment has been created, database handles may be created
 and then opened within the environment.  This is done by calling the
-<a href="../../api_c/db_create.html">db_create</a> interface and specifying the appropriate environment
-as an argument.
-<p>File naming, database operations and error handling will all be done as
-specified for the environment, e.g., if the <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a> or
-<a href="../../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a> flags were specified when the environment was created
-or joined, database operations will automatically perform all necessary
-locking operations for the application.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/env/remote.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/env/error.html"><img src="../../images/next.gif" alt="Next"></a>
+<a href="../../api_c/db_class.html">db_create</a> function and specifying the appropriate environment
+as an argument.</p>
+<p>File naming, database operations, and error handling will all be done as
+specified for the environment.  For example, if the <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a>
+or <a href="../../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a> flags were specified when the environment was
+created or joined, database operations will automatically perform all
+necessary locking operations for the application.</p>
+<p>The following is a simple example of opening two databases within a
+database environment:</p>
+<blockquote><pre>	DB_ENV *dbenv;
+	DB *dbp1, *dbp2;
+	int ret;
+<p>
+	dbenv = NULL;
+	dbp1 = dbp2 = NULL;
+<p>
+	/*
+	 * Create an environment and initialize it for additional error
+	 * reporting.
+	 */
+	if ((ret = db_env_create(&dbenv, 0)) != 0) {
+		fprintf(errfp, "%s: %s\n", progname, db_strerror(ret));
+		return (ret);
+	}
+<p>
+	dbenv-&gt;set_errfile(dbenv, errfp);
+	dbenv-&gt;set_errpfx(dbenv, progname);
+<p>
+	/* Open an environment with just a memory pool. */
+	if ((ret =
+	    dbenv-&gt;open(dbenv, home, DB_CREATE | DB_INIT_MPOOL, 0)) != 0) {
+		dbenv-&gt;err(dbenv, ret, "environment open: %s", home);
+		goto err;
+	}
+<p>
+	/* Open database #1. */
+	if ((ret = db_create(&dbp1, dbenv, 0)) != 0) {
+		dbenv-&gt;err(dbenv, ret, "database create");
+		goto err;
+	}
+	if ((ret = dbp1-&gt;open(dbp1,
+	    NULL, DATABASE1, NULL, DB_BTREE, DB_CREATE, 0664)) != 0) {
+		dbenv-&gt;err(dbenv, ret, "DB-&gt;open: %s", DATABASE1);
+		goto err;
+	}
+<p>
+	/* Open database #2. */
+	if ((ret = db_create(&dbp2, dbenv, 0)) != 0) {
+		dbenv-&gt;err(dbenv, ret, "database create");
+		goto err;
+	}
+	if ((ret = dbp2-&gt;open(dbp2,
+	    NULL, DATABASE2, NULL, DB_HASH, DB_CREATE, 0664)) != 0) {
+		dbenv-&gt;err(dbenv, ret, "DB-&gt;open: %s", DATABASE2);
+		goto err;
+	}
+<p>
+	return (0);
+<p>
+err:	if (dbp2 != NULL)
+		(void)dbp2-&gt;close(dbp2, 0);
+	if (dbp1 != NULL)
+		(void)dbp2-&gt;close(dbp1, 0);
+	(void)dbenv-&gt;close(dbenv, 0);
+	return (1);
+}</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../env/create.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/error.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

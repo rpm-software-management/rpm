@@ -1,21 +1,22 @@
-<!--Id: dbc_class.so,v 10.16 2002/08/24 18:22:33 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: dbc_class.so,v 10.18 2003/05/09 20:14:04 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DBC</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DBC</h1>
+<h3>DBC</h3>
 </td>
 <td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -24,18 +25,20 @@
 <p>
 typedef struct __dbc DBC;
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: DBC</h3>
 <p>The DBC object is the handle for a cursor into a Berkeley DB database.
-The handle is not free-threaded, and cursors may not span threads; nor
-may cursors be used by more than a single thread.  If the cursor is to
-be used to perform operations on behalf of a transaction, the cursor
-must be opened and closed within the context of that single transaction.
-Once <a href="../api_c/dbc_close.html">DBcursor-&gt;c_close</a> has been called, the handle may not be accessed
-again, regardless of the method's return.
+The handle is not free-threaded.  Cursor handles may be used by multiple
+threads, but only serially, that is, the application must serialize
+access to the DBC handle.</p>
+<p>If the cursor is to be used to perform operations on behalf of a
+transaction, the cursor must be opened and closed within the context of
+that single transaction.  Once <a href="../api_c/dbc_close.html">DBcursor-&gt;c_close</a> has been called, the
+handle may not be accessed again, regardless of the method's return.</p>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_rw.c,v 11.28 2002/08/06 04:56:19 bostic Exp ";
+static const char revid[] = "$Id: os_rw.c,v 11.33 2003/02/16 15:55:06 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -28,20 +28,20 @@ static int __os_physwrite __P((DB_ENV *, DB_FH *, void *, size_t, size_t *));
 /*
  * __os_io --
  *	Do an I/O.
- *
- * PUBLIC: int __os_io __P((DB_ENV *, DB_IO *, int, size_t *));
  */
 int
-__os_io(dbenv, db_iop, op, niop)
+__os_io(dbenv, op, fhp, pgno, pagesize, buf, niop)
 	DB_ENV *dbenv;
-	DB_IO *db_iop;
 	int op;
-	size_t *niop;
+	DB_FH *fhp;
+	db_pgno_t pgno;
+	size_t pagesize, *niop;
+	u_int8_t *buf;
 {
 	int ret;
 
 	if (__os_is_winnt()) {
-		ULONG64 off = (ULONG64)db_iop->pagesize * db_iop->pgno;
+		ULONG64 off = (ULONG64)pagesize * pgno;
 		OVERLAPPED over;
 		DWORD nbytes;
 		over.Offset = (DWORD)(off & 0xffffffff);
@@ -52,8 +52,8 @@ __os_io(dbenv, db_iop, op, niop)
 		case DB_IO_READ:
 			if (DB_GLOBAL(j_read) != NULL)
 				goto slow;
-			if (!ReadFile(db_iop->fhp->handle,
-			    db_iop->buf, (DWORD)db_iop->bytes, &nbytes, &over))
+			if (!ReadFile(fhp->handle,
+			    buf, (DWORD)pagesize, &nbytes, &over))
 				goto slow;
 			break;
 		case DB_IO_WRITE:
@@ -63,35 +63,33 @@ __os_io(dbenv, db_iop, op, niop)
 			if (__os_fs_notzero())
 				goto slow;
 #endif
-			if (!WriteFile(db_iop->fhp->handle,
-			    db_iop->buf, (DWORD)db_iop->bytes, &nbytes, &over))
+			if (!WriteFile(fhp->handle,
+			    buf, (DWORD)pagesize, &nbytes, &over))
 				goto slow;
 			break;
 		}
-		if (nbytes == db_iop->bytes) {
+		if (nbytes == pagesize) {
 			*niop = (size_t)nbytes;
 			return (0);
 		}
 	}
 
-slow:	MUTEX_THREAD_LOCK(dbenv, db_iop->mutexp);
+slow:	MUTEX_THREAD_LOCK(dbenv, fhp->mutexp);
 
-	if ((ret = __os_seek(dbenv, db_iop->fhp,
-	    db_iop->pagesize, db_iop->pgno, 0, 0, DB_OS_SEEK_SET)) != 0)
+	if ((ret = __os_seek(dbenv, fhp,
+	    pagesize, pgno, 0, 0, DB_OS_SEEK_SET)) != 0)
 		goto err;
 
 	switch (op) {
 	case DB_IO_READ:
-		ret = __os_read(dbenv,
-		    db_iop->fhp, db_iop->buf, db_iop->bytes, niop);
+		ret = __os_read(dbenv, fhp, buf, pagesize, niop);
 		break;
 	case DB_IO_WRITE:
-		ret = __os_write(dbenv,
-		    db_iop->fhp, db_iop->buf, db_iop->bytes, niop);
+		ret = __os_write(dbenv, fhp, buf, pagesize, niop);
 		break;
 	}
 
-err:	MUTEX_THREAD_UNLOCK(dbenv, db_iop->mutexp);
+err:	MUTEX_THREAD_UNLOCK(dbenv, fhp->mutexp);
 
 	return (ret);
 }
@@ -99,8 +97,6 @@ err:	MUTEX_THREAD_UNLOCK(dbenv, db_iop->mutexp);
 /*
  * __os_read --
  *	Read from a file handle.
- *
- * PUBLIC: int __os_read __P((DB_ENV *, DB_FH *, void *, size_t, size_t *));
  */
 int
 __os_read(dbenv, fhp, addr, len, nrp)
@@ -110,27 +106,32 @@ __os_read(dbenv, fhp, addr, len, nrp)
 	size_t len;
 	size_t *nrp;
 {
-	size_t offset;
-	DWORD nr;
-	int ret;
+	size_t offset, nr;
+	DWORD count;
+	int ret, retries;
 	BOOL success;
 	u_int8_t *taddr;
 
+	retries = 0;
 	for (taddr = addr,
 	    offset = 0; offset < len; taddr += nr, offset += nr) {
 retry:		if (DB_GLOBAL(j_read) != NULL) {
-			nr = (DWORD)DB_GLOBAL(j_read)(fhp->fd,
+			nr = DB_GLOBAL(j_read)(fhp->fd,
 			    taddr, len - offset);
 			success = (nr >= 0);
 		} else {
 			success = ReadFile(fhp->handle,
-			    taddr, (DWORD)(len - offset), &nr, NULL);
+			    taddr, (DWORD)(len - offset), &count, NULL);
 			if (!success)
 				__os_set_errno(__os_win32_errno());
+			else
+				nr = (size_t)count;
 		}
 
 		if (!success) {
-			if ((ret = __os_get_errno()) == EINTR)
+			ret = __os_get_errno();
+			if ((ret == EINTR || ret == EBUSY) &&
+			    ++retries < DB_RETRY)
 				goto retry;
 			__db_err(dbenv, "read: 0x%lx, %lu: %s",
 			    P_TO_ULONG(taddr),
@@ -147,8 +148,6 @@ retry:		if (DB_GLOBAL(j_read) != NULL) {
 /*
  * __os_write --
  *	Write to a file handle.
- *
- * PUBLIC: int __os_write __P((DB_ENV *, DB_FH *, void *, size_t, size_t *));
  */
 int
 __os_write(dbenv, fhp, addr, len, nwp)
@@ -180,27 +179,32 @@ __os_physwrite(dbenv, fhp, addr, len, nwp)
 	size_t len;
 	size_t *nwp;
 {
-	size_t offset;
-	DWORD nw;
-	int ret;
+	size_t offset, nw;
+	DWORD count;
+	int ret, retries;
 	BOOL success;
 	u_int8_t *taddr;
 
+	retries = 0;
 	for (taddr = addr,
 	    offset = 0; offset < len; taddr += nw, offset += nw) {
 retry:		if (DB_GLOBAL(j_write) != NULL) {
-			nw = (DWORD)DB_GLOBAL(j_write)(fhp->fd,
+			nw = DB_GLOBAL(j_write)(fhp->fd,
 			    taddr, len - offset);
 			success = (nw >= 0);
 		} else {
 			success = WriteFile(fhp->handle,
-			    taddr, (DWORD)(len - offset), &nw, NULL);
+			    taddr, (DWORD)(len - offset), &count, NULL);
 			if (!success)
 				__os_set_errno(__os_win32_errno());
+			else
+				nw = (size_t)count;
 		}
 
 		if (!success) {
-			if ((ret = __os_get_errno()) == EINTR)
+			ret = __os_get_errno();
+			if ((ret == EINTR || ret == EBUSY) &&
+			    ++retries < DB_RETRY)
 				goto retry;
 			__db_err(dbenv, "write: 0x%x, %lu: %s", taddr,
 			    (u_long)len-offset, strerror(ret));

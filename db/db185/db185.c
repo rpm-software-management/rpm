@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,9 +9,9 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2000\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "$Id: db185.c,v 11.15 2001/01/23 21:27:03 bostic Exp $";
+    "$Id: db185.c,v 11.33 2003/05/05 19:54:58 bostic Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -19,7 +19,6 @@ static const char revid[] =
 
 #include <fcntl.h>
 #include <string.h>
-#include <unistd.h>
 #endif
 
 #include "db_int.h"
@@ -32,12 +31,20 @@ static int	db185_fd __P((const DB185 *));
 static int	db185_get __P((const DB185 *, const DBT185 *, DBT185 *, u_int));
 static u_int32_t
 		db185_hash __P((DB *, const void *, u_int32_t));
-static void	db185_openstderr __P((DB_FH *));
 static size_t	db185_prefix __P((DB *, const DBT *, const DBT *));
 static int	db185_put __P((const DB185 *, DBT185 *, const DBT185 *, u_int));
 static int	db185_seq __P((const DB185 *, DBT185 *, DBT185 *, u_int));
 static int	db185_sync __P((const DB185 *, u_int));
 
+/*
+ * EXTERN: #ifdef _DB185_INT_H_
+ * EXTERN: DB185 *__db185_open
+ * EXTERN:     __P((const char *, int, int, DBTYPE, const void *));
+ * EXTERN: #else
+ * EXTERN: DB *__db185_open
+ * EXTERN:     __P((const char *, int, int, DBTYPE, const void *));
+ * EXTERN: #endif
+ */
 DB185 *
 __db185_open(file, oflags, mode, type, openinfo)
 	const char *file;
@@ -50,8 +57,7 @@ __db185_open(file, oflags, mode, type, openinfo)
 	const RECNOINFO *ri;
 	DB *dbp;
 	DB185 *db185p;
-	DB_FH fh;
-	size_t nw;
+	DB_FH *fhp;
 	int ret;
 
 	dbp = NULL;
@@ -152,8 +158,8 @@ __db185_open(file, oflags, mode, type, openinfo)
 		if (file != NULL) {
 			if (oflags & O_CREAT && __os_exists(file, NULL) != 0)
 				if (__os_openhandle(NULL, file,
-				    oflags, mode, &fh) == 0)
-					(void)__os_closehandle(&fh);
+				    oflags, mode, &fhp) == 0)
+					(void)__os_closehandle(NULL, fhp);
 			(void)dbp->set_re_source(dbp, file);
 
 			if (O_RDONLY)
@@ -167,11 +173,10 @@ __db185_open(file, oflags, mode, type, openinfo)
 			 * !!!
 			 * We can't support the bfname field.
 			 */
-#define	BFMSG	"DB: DB 1.85's recno bfname field is not supported.\n"
+#define	BFMSG \
+	"Berkeley DB: DB 1.85's recno bfname field is not supported.\n"
 			if (ri->bfname != NULL) {
-				db185_openstderr(&fh);
-				(void)__os_write(NULL, &fh,
-				    BFMSG, sizeof(BFMSG) - 1, &nw);
+				dbp->errx(dbp, "%s", BFMSG);
 				goto einval;
 			}
 
@@ -220,15 +225,12 @@ __db185_open(file, oflags, mode, type, openinfo)
 	 * to the underlying DB structure, and vice-versa.  This has to be
 	 * done BEFORE the DB::open method call because the hash callback
 	 * is exercised as part of hash database initialiation.
-	 *
-	 * XXX
-	 * Overload the cj_internal field for this purpose.
 	 */
 	db185p->dbp = dbp;
-	dbp->cj_internal = db185p;
+	dbp->api_internal = db185p;
 
 	/* Open the database. */
-	if ((ret = dbp->open(dbp,
+	if ((ret = dbp->open(dbp, NULL,
 	    file, NULL, type, __db_oflags(oflags), mode)) != 0)
 		goto err;
 
@@ -241,7 +243,7 @@ __db185_open(file, oflags, mode, type, openinfo)
 einval:	ret = EINVAL;
 
 err:	if (db185p != NULL)
-		__os_free(db185p, sizeof(DB185));
+		__os_free(NULL, db185p);
 	if (dbp != NULL)
 		(void)dbp->close(dbp, 0);
 
@@ -260,7 +262,7 @@ db185_close(db185p)
 
 	ret = dbp->close(dbp, 0);
 
-	__os_free(db185p, sizeof(DB185));
+	__os_free(NULL, db185p);
 
 	if (ret == 0)
 		return (0);
@@ -299,10 +301,10 @@ db185_del(db185p, key185, flags)
 		return (1);
 	}
 
+	if (0) {
+einval:		ret = EINVAL;
+	}
 	__os_set_errno(ret);
-	return (-1);
-
-einval:	__os_set_errno(EINVAL);
 	return (-1);
 }
 
@@ -354,10 +356,10 @@ db185_get(db185p, key185, data185, flags)
 		return (1);
 	}
 
+	if (0) {
+einval:		ret = EINVAL;
+	}
 	__os_set_errno(ret);
-	return (-1);
-
-einval:	__os_set_errno(EINVAL);
 	return (-1);
 }
 
@@ -371,7 +373,7 @@ db185_put(db185p, key185, data185, flags)
 	DB *dbp;
 	DBC *dbcp_put;
 	DBT key, data;
-	int ret;
+	int ret, t_ret;
 
 	dbp = db185p->dbp;
 
@@ -394,23 +396,18 @@ db185_put(db185p, key185, data185, flags)
 		if (dbp->type != DB_RECNO)
 			goto einval;
 
-		if ((ret = dbp->cursor(dbp, NULL, &dbcp_put, 0)) != 0) {
-			__os_set_errno(ret);
-			return (-1);
-		}
+		if ((ret = dbp->cursor(dbp, NULL, &dbcp_put, 0)) != 0)
+			break;
 		if ((ret =
-		    dbcp_put->c_get(dbcp_put, &key, &data, DB_SET)) != 0) {
-			(void)dbcp_put->c_close(dbcp_put);
-			__os_set_errno(ret);
-			return (-1);
+		    dbcp_put->c_get(dbcp_put, &key, &data, DB_SET)) == 0) {
+			memset(&data, 0, sizeof(data));
+			data.data = data185->data;
+			data.size = data185->size;
+			ret = dbcp_put->c_put(dbcp_put, &key, &data,
+			    flags == R_IAFTER ? DB_AFTER : DB_BEFORE);
 		}
-		memset(&data, 0, sizeof(data));
-		data.data = data185->data;
-		data.size = data185->size;
-		ret = dbcp_put->c_put(dbcp_put,
-		    &key, &data, flags == R_IAFTER ? DB_AFTER : DB_BEFORE);
-		(void)dbcp_put->c_close(dbcp_put);
-		__os_set_errno(ret);
+		if ((t_ret = dbcp_put->c_close(dbcp_put)) != 0 && ret == 0)
+			ret = t_ret;
 		break;
 	case R_NOOVERWRITE:
 		ret = dbp->put(dbp, NULL, &key, &data, DB_NOOVERWRITE);
@@ -436,10 +433,11 @@ db185_put(db185p, key185, data185, flags)
 	case DB_KEYEXIST:
 		return (1);
 	}
-	__os_set_errno(ret);
-	return (-1);
 
-einval:	__os_set_errno(EINVAL);
+	if (0) {
+einval:		ret = EINVAL;
+	}
+	__os_set_errno(ret);
 	return (-1);
 }
 
@@ -496,10 +494,10 @@ db185_seq(db185p, key185, data185, flags)
 		return (1);
 	}
 
+	if (0) {
+einval:		ret = EINVAL;
+	}
 	__os_set_errno(ret);
-	return (-1);
-
-einval:	__os_set_errno(EINVAL);
 	return (-1);
 }
 
@@ -509,8 +507,6 @@ db185_sync(db185p, flags)
 	u_int flags;
 {
 	DB *dbp;
-	DB_FH fh;
-	size_t nw;
 	int ret;
 
 	dbp = db185p->dbp;
@@ -523,10 +519,10 @@ db185_sync(db185p, flags)
 		 * !!!
 		 * We can't support the R_RECNOSYNC flag.
 		 */
-#define	RSMSG	"DB: DB 1.85's R_RECNOSYNC sync flag is not supported.\n"
-		db185_openstderr(&fh);
-		(void)__os_write(NULL, &fh, RSMSG, sizeof(RSMSG) - 1, &nw);
-		goto einval;
+#define	RSMSG \
+	"Berkeley DB: DB 1.85's R_RECNOSYNC sync flag is not supported.\n"
+		dbp->errx(dbp, "%s", RSMSG);
+		/* FALLTHROUGH */
 	default:
 		goto einval;
 	}
@@ -534,25 +530,11 @@ db185_sync(db185p, flags)
 	if ((ret = dbp->sync(dbp, 0)) == 0)
 		return (0);
 
+	if (0) {
+einval:		ret = EINVAL;
+	}
 	__os_set_errno(ret);
 	return (-1);
-
-einval:	__os_set_errno(EINVAL);
-	return (-1);
-}
-
-static void
-db185_openstderr(fhp)
-	DB_FH *fhp;
-{
-	/* Dummy up the results of an __os_openhandle() on stderr. */
-	memset(fhp, 0, sizeof(*fhp));
-	F_SET(fhp, DB_FH_VALID);
-
-#ifndef STDERR_FILENO
-#define	STDERR_FILENO	2
-#endif
-	fhp->fd = STDERR_FILENO;
 }
 
 /*
@@ -564,7 +546,7 @@ db185_compare(dbp, a, b)
 	DB *dbp;
 	const DBT *a, *b;
 {
-	return (((DB185 *)dbp->cj_internal)->compare(a, b));
+	return (((DB185 *)dbp->api_internal)->compare(a, b));
 }
 
 /*
@@ -576,7 +558,7 @@ db185_prefix(dbp, a, b)
 	DB *dbp;
 	const DBT *a, *b;
 {
-	return (((DB185 *)dbp->cj_internal)->prefix(a, b));
+	return (((DB185 *)dbp->api_internal)->prefix(a, b));
 }
 
 /*
@@ -589,5 +571,5 @@ db185_hash(dbp, key, len)
 	const void *key;
 	u_int32_t len;
 {
-	return (((DB185 *)dbp->cj_internal)->hash(key, (size_t)len));
+	return (((DB185 *)dbp->api_internal)->hash(key, (size_t)len));
 }

@@ -1,16 +1,16 @@
 /*
  * writetest --
  *
- * Id: writetest.cs,v 10.3 1999/11/19 17:21:06 bostic Exp 
+ * $Id: writetest.cs,v 10.7 2003/02/27 19:08:37 bostic Exp $
  */
 #include <sys/types.h>
+#include <sys/time.h>
 
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
 void usage __P((void));
@@ -21,7 +21,8 @@ main(argc, argv)
 	char *argv[];
 {
 	struct timeval start_time, end_time;
-	long usecs;
+	double usecs;
+	long val;
 	int bytes, ch, cnt, fd, ops;
 	char *fname, buf[100 * 1024];
 
@@ -61,7 +62,7 @@ main(argc, argv)
 
 	memset(buf, 0, bytes);
 
-	printf("running: %d ops\n", ops);
+	printf("Running: %d ops\n", ops);
 
 	(void)gettimeofday(&start_time, NULL);
 	for (cnt = 0; cnt < ops; ++cnt) {
@@ -80,12 +81,29 @@ main(argc, argv)
 	}
 	(void)gettimeofday(&end_time, NULL);
 
-	usecs = (end_time.tv_sec - start_time.tv_sec) * 1000000 +
-	    end_time.tv_usec - start_time.tv_usec;
-	printf("Elapsed time: %ld.%06ld seconds\n",
-	    usecs / 1000000, usecs % 1000000);
-	printf("%d ops: %7.2f ops per second\n",
-	    ops, (float)1000000 * ops/usecs);
+	/*
+	 * Guarantee end_time fields are greater than or equal to start_time
+	 * fields.
+	 */
+	if (end_time.tv_sec > start_time.tv_sec) {
+		--end_time.tv_sec;
+		end_time.tv_usec += 1000000;
+	}
+
+	/* Display elapsed time. */
+	val = end_time.tv_sec - start_time.tv_sec;
+	printf("Elapsed time: %ld:", val / (60 * 60));
+	val %= 60 * 60;
+	printf("%ld:", val / 60);
+	val %= 60;
+	printf("%ld.%ld\n", val, end_time.tv_usec - start_time.tv_usec);
+
+	/* Display operations per second. */
+	usecs =
+	    (end_time.tv_sec - start_time.tv_sec) * 1000000 +
+	    (end_time.tv_usec - start_time.tv_usec);
+	printf("%d operations: %7.2f operations per second\n",
+	    ops, (ops / usecs) * 1000000);
 
 	(void)unlink(fname);
 	exit (0);

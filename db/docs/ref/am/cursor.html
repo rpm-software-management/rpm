@@ -1,41 +1,51 @@
-<!--$Id: cursor.so,v 10.15 2000/12/18 21:05:13 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: cursor.so,v 10.21 2003/10/18 19:15:52 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Database cursors</title>
+<title>Berkeley DB Reference Guide: Cursor operations</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Access Methods</dl></h3></td>
-<td width="1%"><a href="../../ref/am/close.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am/curget.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../am/second.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/curget.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Database cursors</h1>
-<p>A database cursor is a reference to a single key/data pair in the
-database.  It supports traversal of the database and is the only way to
-access individual duplicate data items.  Cursors are used for operating
-on collections of records, for iterating over a database, and for saving
+<h3 align=center>Cursor operations</h3>
+<p>A database cursor refers to a single key/data pair in the database.  It
+supports traversal of the database and is the only way to access
+individual duplicate data items.  Cursors are used for operating on
+collections of records, for iterating over a database, and for saving
 handles to individual records, so that they can be modified after they
-have been read.
-<p>The <a href="../../api_c/db_cursor.html">DB-&gt;cursor</a> function is the standard interface for opening a cursor
-into a database.  Upon return the cursor is uninitialized, positioning
-occurs as part of the first cursor operation.
-<p>Once a database cursor has been opened, there are a set of access method
-operations that can be performed.  Each of these operations is performed
-using a method referenced from the returned cursor handle.
-<p><dl compact>
-<dt><a href="../../api_c/dbc_close.html">DBcursor-&gt;c_close</a><dd>Close the cursor
-<dt><a href="../../api_c/dbc_del.html">DBcursor-&gt;c_del</a><dd>Delete a record
-<dt><a href="../../api_c/dbc_dup.html">DBcursor-&gt;c_dup</a><dd>Duplicate a cursor
-<dt><a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a><dd>Retrieve a record
-<dt><a href="../../api_c/dbc_put.html">DBcursor-&gt;c_put</a><dd>Store a record
-</dl>
-<table><tr><td><br></td><td width="1%"><a href="../../ref/am/close.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am/curget.html"><img src="../../images/next.gif" alt="Next"></a>
+have been read.</p>
+<p>The <a href="../../api_c/db_cursor.html">DB-&gt;cursor</a> method opens a cursor into a database.  Upon return the
+cursor is uninitialized, cursor positioning occurs as part of the first
+cursor operation.</p>
+<p>Once a database cursor has been opened, records may be retrieved
+(<a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a>), stored (<a href="../../api_c/dbc_put.html">DBcursor-&gt;c_put</a>), and deleted
+(<a href="../../api_c/dbc_del.html">DBcursor-&gt;c_del</a>).</p>
+<p>Additional operations supported by the cursor handle include duplication
+(<a href="../../api_c/dbc_dup.html">DBcursor-&gt;c_dup</a>), equality join (<a href="../../api_c/db_join.html">DB-&gt;join</a>), and a count of
+duplicate data items (<a href="../../api_c/dbc_count.html">DBcursor-&gt;c_count</a>).  Cursors are eventually closed
+using <a href="../../api_c/dbc_close.html">DBcursor-&gt;c_close</a>.</p>
+<!--$Id: m4.methods,v 1.1 2002/08/30 20:00:49 bostic Exp $-->
+<table border=1 align=center>
+<tr><th>Database Cursors and Related Methods</th><th>Description</th></tr>
+<tr><td><a href="../../api_c/db_cursor.html">DB-&gt;cursor</a></td><td>Create a cursor handle</td></tr>
+<tr><td><a href="../../api_c/dbc_close.html">DBcursor-&gt;c_close</a></td><td>Close a cursor</td></tr>
+<tr><td><a href="../../api_c/dbc_count.html">DBcursor-&gt;c_count</a></td><td>Return count of duplicates</td></tr>
+<tr><td><a href="../../api_c/dbc_del.html">DBcursor-&gt;c_del</a></td><td>Delete by cursor</td></tr>
+<tr><td><a href="../../api_c/dbc_dup.html">DBcursor-&gt;c_dup</a></td><td>Duplicate a cursor</td></tr>
+<tr><td><a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a></td><td>Retrieve by cursor</td></tr>
+<tr><td><a href="../../api_c/dbc_get.html">DBcursor-&gt;c_pget</a></td><td>Retrieve by cursor</td></tr>
+<tr><td><a href="../../api_c/dbc_put.html">DBcursor-&gt;c_put</a></td><td>Store by cursor</td></tr>
+</table>
+<table width="100%"><tr><td><br></td><td align=right><a href="../am/second.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/curget.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

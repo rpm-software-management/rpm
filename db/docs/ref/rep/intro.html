@@ -1,21 +1,21 @@
-<!--Id: intro.so,v 1.6 2002/08/30 20:02:24 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 1.8 2003/04/16 20:28:05 margo Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Introduction</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../../ref/transapp/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/id.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../transapp/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/id.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Introduction</h1>
+<h3 align=center>Introduction</h3>
 <p>Berkeley DB includes support for building highly available applications based
 on replication.  Berkeley DB replication groups consist of some number of
 independently configured database environments.  There is a single
@@ -25,22 +25,25 @@ and writes; client environments support only database reads.  If the
 master environment fails, applications may upgrade a client to be the
 new master.  The database environments might be on separate computers,
 on separate hardware partitions in a non-uniform memory access (NUMA)
-system, or on separate disks in a single server.  As always with Berkeley DB
+system, or on separate disks in a single server.  The only constraint
+is that all the participants in a replication group all be on machines
+of the same endianness.  (We expect this constraint to be removed
+in a future release.)  As always with Berkeley DB
 environments, any number of concurrent processes or threads may access
 a database environment.  In the case of a master environment, any number
 of threads of control may read and write the environment, and in the
 case of a client environment, any number of threads of control may read
-the environment.
+the environment.</p>
 <p>Applications may be written to provide various degrees of consistency
 between the master and clients.  The system can be run synchronously
 such that replicas are guaranteed to be up-to-date with all committed
 transactions, but doing so may incur a significant performance penalty.
 Higher performance solutions sacrifice total consistency, allowing the
-clients to be out of date for an application-controlled amount of time.
+clients to be out of date for an application-controlled amount of time.</p>
 <p>While Berkeley DB includes the database infrastructure necessary to construct
 highly available database environments, applications must still provide
-some critical components:
-<p><ol>
+some critical components:</p>
+<ol>
 <p><li>The application is responsible for providing the communication
 infrastructure.  Applications may use whatever wire protocol is
 appropriate for their application (for example, RPC, TCP/IP, UDP, VI or
@@ -56,8 +59,14 @@ For example, the application may choose to encrypt data, use a secure
 socket layer, or do nothing at all.  The level of security is left to
 the sole discretion of the application.
 </ol>
-<!--Id: m4.methods,v 1.1 2002/08/30 20:02:36 bostic Exp -->
-<p><table border=1 align=center>
+<p>Finally, the Berkeley DB replication implementation has one other additional
+feature to increase application reliability.  Replication in Berkeley DB is
+implemented to perform database updates using a different code path than
+the standard ones.  This means operations that manage to crash the
+replication master due to a software bug will not necessarily also crash
+replication clients.</p>
+<!--$Id: m4.methods,v 1.1 2002/08/30 20:02:36 bostic Exp $-->
+<table border=1 align=center>
 <tr><th>Replication and Related Methods</th><th>Description</th></tr>
 <tr><td><a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a></td><td>Configure replication transport</td></tr>
 <tr><td><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a></td><td>Hold a replication election</td></tr>
@@ -66,8 +75,8 @@ the sole discretion of the application.
 <tr><td><a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a></td><td>Configure an environment for replication</td></tr>
 <tr><td><a href="../../api_c/rep_stat.html">DB_ENV-&gt;rep_stat</a></td><td>Replication statistics</td></tr>
 </table>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/id.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/id.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,4 +1,4 @@
-# Id: mutex.ac,v 11.38 2002/07/25 20:07:52 sue Exp 
+# $Id: mutex.ac,v 11.42 2003/06/16 14:54:39 bostic Exp $
 
 # POSIX pthreads tests: inter-process safe and intra-process only.
 #
@@ -91,7 +91,6 @@ AC_DEFUN(AM_DEFINE_MUTEXES, [
 # other ports.
 AH_TEMPLATE(HAVE_MUTEX_VMS, [Define to 1 to use VMS mutexes.])
 AH_TEMPLATE(HAVE_MUTEX_VXWORKS, [Define to 1 to use VxWorks mutexes.])
-AH_TEMPLATE(HAVE_MUTEX_WIN32, [Define to 1 to use Windows mutexes.])
 
 AC_CACHE_CHECK([for mutexes], db_cv_mutex, [
 db_cv_mutex=no
@@ -135,6 +134,11 @@ if test "$db_cv_uimutexes" = yes; then
 	*)
 		db_cv_mutex="ui_only";;
 	esac
+fi
+
+# User-specified Win32 mutexes (MinGW build)
+if test "$db_cv_mingw" = "yes"; then
+	db_cv_mutex=win32/gcc
 fi
 
 # LWP threads: _lwp_XXX
@@ -327,7 +331,27 @@ AC_TRY_LINK([
 ], [db_cv_mutex="AIX/_check_lock"])
 fi
 
-# Alpha/gcc: OSF/1
+# _spin_lock_try/_spin_unlock: Apple/Darwin
+if test "$db_cv_mutex" = no; then
+AC_TRY_LINK(,[
+	int x;
+	_spin_lock_try(&x);
+	_spin_unlock(&x);
+], [db_cv_mutex="Darwin/_spin_lock_try"])
+fi
+
+# Tru64/cc
+if test "$db_cv_mutex" = no; then
+AC_TRY_COMPILE(,[
+#if defined(__alpha) && defined(__DECC)
+	exit(0);
+#else
+	FAIL TO COMPILE/LINK
+#endif
+], [db_cv_mutex="Tru64/cc-assembly"])
+fi
+
+# Alpha/gcc
 if test "$db_cv_mutex" = no; then
 AC_TRY_COMPILE(,[
 #if defined(__alpha) && defined(__GNUC__)
@@ -361,16 +385,6 @@ AC_TRY_COMPILE(,[
 fi
 
 # PPC/gcc:
-# Test for Apple first, it requires slightly different assembly.
-if test "$db_cv_mutex" = no; then
-AC_TRY_COMPILE(,[
-#if (defined(__powerpc__) || defined(__ppc__)) && defined(__GNUC__) && defined(__APPLE__)
-	exit(0);
-#else
-	FAIL TO COMPILE/LINK
-#endif
-], [db_cv_mutex="PPC_APPLE/gcc-assembly"])
-fi
 if test "$db_cv_mutex" = no; then
 AC_TRY_COMPILE(,[
 #if (defined(__powerpc__) || defined(__ppc__)) && defined(__GNUC__)
@@ -378,7 +392,7 @@ AC_TRY_COMPILE(,[
 #else
 	FAIL TO COMPILE/LINK
 #endif
-], [db_cv_mutex="PPC_GENERIC/gcc-assembly"])
+], [db_cv_mutex="PPC/gcc-assembly"])
 fi
 
 # Sparc/gcc: SunOS, Solaris
@@ -412,6 +426,17 @@ AC_TRY_COMPILE(,[
 	FAIL TO COMPILE/LINK
 #endif
 ], [db_cv_mutex="x86/gcc-assembly"])
+fi
+
+# S390/cc: IBM OS/390 Unix
+if test "$db_cv_mutex" = no; then
+AC_TRY_COMPILE(,[
+#if defined(__MVS__) && defined(__IBMC__)
+	exit(0);
+#else
+	FAIL TO COMPILE/LINK
+#endif
+], [db_cv_mutex="S390/cc-assembly"])
 fi
 
 # S390/gcc: Linux
@@ -462,6 +487,10 @@ AIX/_check_lock)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_AIX_CHECK_LOCK)
 			AH_TEMPLATE(HAVE_MUTEX_AIX_CHECK_LOCK,
 			    [Define to 1 to use the AIX _check_lock mutexes.]);;
+Darwin/_spin_lock_try)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
+			AC_DEFINE(HAVE_MUTEX_DARWIN_SPIN_LOCK_TRY)
+			AH_TEMPLATE(HAVE_MUTEX_DARWIN_SPIN_LOCK_TRY,
+			    [Define to 1 to use the Apple/Darwin _spin_lock_try mutexes.]);;
 ALPHA/gcc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_ALPHA_GCC_ASSEMBLY)
 			AH_TEMPLATE(HAVE_MUTEX_ALPHA_GCC_ASSEMBLY,
@@ -507,20 +536,20 @@ POSIX/pthreads/library/private)
 			AC_DEFINE(HAVE_MUTEX_THREAD_ONLY)
 			AH_TEMPLATE(HAVE_MUTEX_THREAD_ONLY,
 			    [Define to 1 to configure mutexes intra-process only.]);;
-PPC_GENERIC/gcc-assembly)
+PPC/gcc-assembly)
 			ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
-			AC_DEFINE(HAVE_MUTEX_PPC_GENERIC_GCC_ASSEMBLY)
-			AH_TEMPLATE(HAVE_MUTEX_PPC_GENERIC_GCC_ASSEMBLY,
-			    [Define to 1 to use the GCC compiler and generic PowerPC assembly language.]);;
-PPC_APPLE/gcc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
-			AC_DEFINE(HAVE_MUTEX_PPC_APPLE_GCC_ASSEMBLY)
-			AH_TEMPLATE(HAVE_MUTEX_PPC_APPLE_GCC_ASSEMBLY,
-			    [Define to 1 to use the GCC compiler and Apple PowerPC assembly language.]);;
+			AC_DEFINE(HAVE_MUTEX_PPC_GCC_ASSEMBLY)
+			AH_TEMPLATE(HAVE_MUTEX_PPC_GCC_ASSEMBLY,
+			    [Define to 1 to use the GCC compiler and PowerPC assembly language mutexes.]);;
 ReliantUNIX/initspin)	LIBS="$LIBS -lmproc"
 			ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_RELIANTUNIX_INITSPIN)
 			AH_TEMPLATE(HAVE_MUTEX_RELIANTUNIX_INITSPIN,
 			    [Define to 1 to use Reliant UNIX initspin mutexes.]);;
+S390/cc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
+			AC_DEFINE(HAVE_MUTEX_S390_CC_ASSEMBLY)
+			AH_TEMPLATE(HAVE_MUTEX_S390_CC_ASSEMBLY,
+			    [Define to 1 to use the IBM C compiler and S/390 assembly language mutexes.]);;
 S390/gcc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_S390_GCC_ASSEMBLY)
 			AH_TEMPLATE(HAVE_MUTEX_S390_GCC_ASSEMBLY,
@@ -545,6 +574,11 @@ Sparc/gcc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_SPARC_GCC_ASSEMBLY)
 			AH_TEMPLATE(HAVE_MUTEX_SPARC_GCC_ASSEMBLY,
 			    [Define to 1 to use the GCC compiler and Sparc assembly language mutexes.]);;
+Tru64/cc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
+			AC_DEFINE(HAVE_MUTEX_TRU64_CC_ASSEMBLY)
+			AH_TEMPLATE(HAVE_MUTEX_TRU64_CC_ASSEMBLY,
+			    [Define to 1 to use the CC compiler and Tru64 assembly language mutexes.]);;
+
 UI/threads)		ADDITIONAL_OBJS="mut_pthread${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_UI_THREADS)
 			AH_TEMPLATE(HAVE_MUTEX_UI_THREADS,
@@ -562,10 +596,16 @@ UNIX/sema_init)		ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_SEMA_INIT)
 			AH_TEMPLATE(HAVE_MUTEX_SEMA_INIT,
 			    [Define to 1 to use the obsolete POSIX 1003.1 sema_XXX mutexes.]);;
-UTS/cc-assembly)	ADDITIONAL_OBJS="$ADDITIONAL_OBJS uts4.cc${o}"
+UTS/cc-assembly)	ADDITIONAL_OBJS="uts4.cc${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_UTS_CC_ASSEMBLY)
 			AH_TEMPLATE(HAVE_MUTEX_UTS_CC_ASSEMBLY,
 			    [Define to 1 to use the UTS compiler and assembly language mutexes.]);;
+win32)			ADDITIONAL_OBJS="mut_win32${o} $ADDITIONAL_OBJS"
+			AC_DEFINE(HAVE_MUTEX_WIN32)
+			AH_TEMPLATE(HAVE_MUTEX_WIN32, [Define to 1 to use the MSVC compiler and Windows mutexes.]);;
+win32/gcc)		ADDITIONAL_OBJS="mut_win32${o} $ADDITIONAL_OBJS"
+			AC_DEFINE(HAVE_MUTEX_WIN32_GCC)
+			AH_TEMPLATE(HAVE_MUTEX_WIN32_GCC, [Define to 1 to use the GCC compiler and Windows mutexes.]);;
 x86/gcc-assembly)	ADDITIONAL_OBJS="mut_tas${o} $ADDITIONAL_OBJS"
 			AC_DEFINE(HAVE_MUTEX_X86_GCC_ASSEMBLY)
 			AH_TEMPLATE(HAVE_MUTEX_X86_GCC_ASSEMBLY,

@@ -1,16 +1,23 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1998, 1999, 2000
+# Copyright (c) 1998-2003
 #	Sleepycat Software.  All rights reserved.
 #
-#	$Id: test034.tcl,v 11.4 2000/02/14 03:00:19 bostic Exp $
+# $Id: test034.tcl,v 11.11 2003/01/27 18:15:01 sandstro Exp $
 #
-# DB Test 34 {access method}
-# DB_GET_BOTH functionality with off-page duplicates.
+# TEST	test034
+# TEST	test032 with off-page duplicates
+# TEST	DB_GET_BOTH, DB_GET_BOTH_RANGE functionality with off-page duplicates.
 proc test034 { method {nentries 10000} args} {
+	set pgindex [lsearch -exact $args "-pagesize"]
+	if { $pgindex != -1 } {
+		puts "Test034: Skipping for specific pagesizes"
+		return
+	}
 	# Test with off-page duplicates
-	eval {test032 $method $nentries 20 34 -pagesize 512} $args
+	eval {test032 $method $nentries 20 "034" -pagesize 512} $args
 
 	# Test with multiple pages of off-page duplicates
-	eval {test032 $method [expr $nentries / 10] 100 34 -pagesize 512} $args
+	eval {test032 $method [expr $nentries / 10] 100 "034" -pagesize 512} \
+	    $args
 }

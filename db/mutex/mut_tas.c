@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: mut_tas.c,v 11.18 2000/11/30 00:58:41 ubell Exp $";
+static const char revid[] = "$Id: mut_tas.c,v 11.40 2003/05/06 14:25:33 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -16,7 +16,6 @@ static const char revid[] = "$Id: mut_tas.c,v 11.18 2000/11/30 00:58:41 ubell Ex
 
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #endif
 
 /*
@@ -25,32 +24,33 @@ static const char revid[] = "$Id: mut_tas.c,v 11.18 2000/11/30 00:58:41 ubell Ex
 #define	LOAD_ACTUAL_MUTEX_CODE
 #include "db_int.h"
 
-#ifdef DIAGNOSTIC
-#undef	MSG1
-#define	MSG1		"mutex_lock: ERROR: lock currently in use: pid: %lu.\n"
-#undef	MSG2
-#define	MSG2		"mutex_unlock: ERROR: lock already unlocked\n"
-#ifndef	STDERR_FILENO
-#define	STDERR_FILENO	2
-#endif
-#endif
-
 /*
  * __db_tas_mutex_init --
- *	Initialize a MUTEX.
+ *	Initialize a DB_MUTEX.
  *
- * PUBLIC: int __db_tas_mutex_init __P((DB_ENV *, MUTEX *, u_int32_t));
+ * PUBLIC: int __db_tas_mutex_init __P((DB_ENV *, DB_MUTEX *, u_int32_t));
  */
 int
 __db_tas_mutex_init(dbenv, mutexp, flags)
 	DB_ENV *dbenv;
-	MUTEX *mutexp;
+	DB_MUTEX *mutexp;
 	u_int32_t flags;
 {
+	u_int32_t save;
+
 	/* Check alignment. */
 	DB_ASSERT(((db_alignp_t)mutexp & (MUTEX_ALIGN - 1)) == 0);
 
+	/*
+	 * The only setting/checking of the MUTEX_MPOOL flag is in the mutex
+	 * mutex allocation code (__db_mutex_alloc/free).  Preserve only that
+	 * flag.  This is safe because even if this flag was never explicitly
+	 * set, but happened to be set in memory, it will never be checked or
+	 * acted upon.
+	 */
+	save = F_ISSET(mutexp, MUTEX_MPOOL);
 	memset(mutexp, 0, sizeof(*mutexp));
+	F_SET(mutexp, save);
 
 	/*
 	 * If this is a thread lock or the process has told us that there are
@@ -65,15 +65,16 @@ __db_tas_mutex_init(dbenv, mutexp, flags)
 			F_SET(mutexp, MUTEX_IGNORE);
 			return (0);
 		}
-		F_SET(mutexp, MUTEX_THREAD);
 	}
+
+	if (LF_ISSET(MUTEX_LOGICAL_LOCK))
+		F_SET(mutexp, MUTEX_LOGICAL_LOCK);
 
 	/* Initialize the lock. */
 	if (MUTEX_INIT(&mutexp->tas))
 		return (__os_get_errno());
 
-	mutexp->spins = __os_spin();
-#ifdef MUTEX_SYSTEM_RESOURCES
+#ifdef HAVE_MUTEX_SYSTEM_RESOURCES
 	mutexp->reg_off = INVALID_ROFF;
 #endif
 	F_SET(mutexp, MUTEX_INITED);
@@ -85,28 +86,46 @@ __db_tas_mutex_init(dbenv, mutexp, flags)
  * __db_tas_mutex_lock
  *	Lock on a mutex, logically blocking if necessary.
  *
- * PUBLIC: int __db_tas_mutex_lock __P((DB_ENV *, MUTEX *));
+ * PUBLIC: int __db_tas_mutex_lock __P((DB_ENV *, DB_MUTEX *));
  */
 int
 __db_tas_mutex_lock(dbenv, mutexp)
 	DB_ENV *dbenv;
-	MUTEX *mutexp;
+	DB_MUTEX *mutexp;
 {
-	u_long ms;
-	int nspins;
+	u_int32_t nspins;
+	u_long ms, max_ms;
 
-	if (!dbenv->db_mutexlocks || F_ISSET(mutexp, MUTEX_IGNORE))
+	if (F_ISSET(dbenv, DB_ENV_NOLOCKING) || F_ISSET(mutexp, MUTEX_IGNORE))
 		return (0);
 
+	/*
+	 * Wait 1ms initially, up to 10ms for mutexes backing logical database
+	 * locks, and up to 25 ms for mutual exclusion data structure mutexes.
+	 * SR: #7675
+	 */
 	ms = 1;
+	max_ms = F_ISSET(mutexp, MUTEX_LOGICAL_LOCK) ? 10 : 25;
 
 loop:	/* Attempt to acquire the resource for N spins. */
-	for (nspins = mutexp->spins; nspins > 0; --nspins) {
+	for (nspins = dbenv->tas_spins; nspins > 0; --nspins) {
 #ifdef HAVE_MUTEX_HPPA_MSEM_INIT
 relock:
 #endif
-		if (!MUTEX_SET(&mutexp->tas))
+#ifdef HAVE_MUTEX_S390_CC_ASSEMBLY
+		tsl_t zero = 0;
+#endif
+		if (!MUTEX_SET(&mutexp->tas)) {
+			/*
+			 * Some systems (notably those with newer Intel CPUs)
+			 * need a small pause here. [#6975]
+			 */
+#ifdef MUTEX_PAUSE
+			MUTEX_PAUSE
+#endif
 			continue;
+		}
+
 #ifdef HAVE_MUTEX_HPPA_MSEM_INIT
 		/*
 		 * HP semaphores are unlocked automatically when a holding
@@ -119,7 +138,7 @@ relock:
 		 * happened to initialize or use one of them.)
 		 */
 		if (mutexp->locked != 0) {
-			mutexp->locked = (u_int32_t)getpid();
+			__os_id(&mutexp->locked);
 			goto relock;
 		}
 		/*
@@ -129,15 +148,13 @@ relock:
 		 */
 #endif
 #ifdef DIAGNOSTIC
-		if (mutexp->locked != 0) {
-			char msgbuf[128];
-			(void)snprintf(msgbuf,
-			    sizeof(msgbuf), MSG1, (u_long)mutexp->locked);
-			(void)write(STDERR_FILENO, msgbuf, strlen(msgbuf));
-		}
+		if (mutexp->locked != 0)
+			__db_err(dbenv,
+		"__db_tas_mutex_lock: ERROR: lock currently in use: ID: %lu",
+			    (u_long)mutexp->locked);
 #endif
 #if defined(DIAGNOSTIC) || defined(HAVE_MUTEX_HPPA_MSEM_INIT)
-		mutexp->locked = (u_int32_t)getpid();
+		__os_id(&mutexp->locked);
 #endif
 		if (ms == 1)
 			++mutexp->mutex_set_nowait;
@@ -146,10 +163,12 @@ relock:
 		return (0);
 	}
 
-	/* Yield the processor; wait 1ms initially, up to 1 second. */
+	/*
+	 * Yield the processor.
+	 */
 	__os_yield(NULL, ms * USEC_PER_MS);
-	if ((ms <<= 1) > MS_PER_SEC)
-		ms = MS_PER_SEC;
+	if ((ms <<= 1) > max_ms)
+		ms = max_ms;
 
 	goto loop;
 }
@@ -158,19 +177,20 @@ relock:
  * __db_tas_mutex_unlock --
  *	Release a lock.
  *
- * PUBLIC: int __db_tas_mutex_unlock __P((DB_ENV *, MUTEX *));
+ * PUBLIC: int __db_tas_mutex_unlock __P((DB_ENV *, DB_MUTEX *));
  */
 int
 __db_tas_mutex_unlock(dbenv, mutexp)
 	DB_ENV *dbenv;
-	MUTEX *mutexp;
+	DB_MUTEX *mutexp;
 {
-	if (!dbenv->db_mutexlocks || F_ISSET(mutexp, MUTEX_IGNORE))
+	if (F_ISSET(dbenv, DB_ENV_NOLOCKING) || F_ISSET(mutexp, MUTEX_IGNORE))
 		return (0);
 
 #ifdef DIAGNOSTIC
 	if (!mutexp->locked)
-		(void)write(STDERR_FILENO, MSG2, sizeof(MSG2) - 1);
+		__db_err(dbenv,
+		    "__db_tas_mutex_unlock: ERROR: lock already unlocked");
 #endif
 #if defined(DIAGNOSTIC) || defined(HAVE_MUTEX_HPPA_MSEM_INIT)
 	mutexp->locked = 0;
@@ -183,13 +203,13 @@ __db_tas_mutex_unlock(dbenv, mutexp)
 
 /*
  * __db_tas_mutex_destroy --
- *	Destroy a MUTEX.
+ *	Destroy a DB_MUTEX.
  *
- * PUBLIC: int __db_tas_mutex_destroy __P((MUTEX *));
+ * PUBLIC: int __db_tas_mutex_destroy __P((DB_MUTEX *));
  */
 int
 __db_tas_mutex_destroy(mutexp)
-	MUTEX *mutexp;
+	DB_MUTEX *mutexp;
 {
 	if (F_ISSET(mutexp, MUTEX_IGNORE))
 		return (0);

@@ -1,22 +1,21 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: os_map.c,v 11.22 2000/10/26 14:18:08 bostic Exp $";
+static const char revid[] = "$Id: os_map.c,v 11.43 2003/02/17 16:05:45 bostic Exp $";
 #endif /* not lint */
 
 #include "db_int.h"
-#include "os_jump.h"
 
 static int __os_map
   __P((DB_ENV *, char *, REGINFO *, DB_FH *, size_t, int, int, int, void **));
-static int __os_unique_name __P((char *, int, char *));
+static int __os_unique_name __P((char *, HANDLE, char *, size_t));
 
 /*
  * __os_r_sysattach --
@@ -28,7 +27,7 @@ __os_r_sysattach(dbenv, infop, rp)
 	REGINFO *infop;
 	REGION *rp;
 {
-	DB_FH fh;
+	DB_FH *fhp;
 	int is_system, ret;
 
 	/*
@@ -37,8 +36,9 @@ __os_r_sysattach(dbenv, infop, rp)
 	 * properly ordered, our caller has already taken care of that.
 	 */
 	if ((ret = __os_open(dbenv, infop->name,
+	    DB_OSO_DIRECT |
 	    F_ISSET(infop, REGION_CREATE_OK) ? DB_OSO_CREATE: 0,
-	    infop->mode, &fh)) != 0) {
+	    infop->mode, &fhp)) != 0) {
 		__db_err(dbenv, "%s: %s", infop->name, db_strerror(ret));
 		return (ret);
 	}
@@ -58,12 +58,12 @@ __os_r_sysattach(dbenv, infop, rp)
 	 * calling code writes out the REGENV_REF structure to the primary
 	 * environment file.
 	 */
-	ret = __os_map(dbenv, infop->name, infop, &fh, rp->size,
+	ret = __os_map(dbenv, infop->name, infop, fhp, rp->size,
 	   1, is_system, 0, &infop->addr);
 	if (ret == 0 && is_system == 1)
 		rp->segid = 1;
 
-	(void)__os_closehandle(&fh);
+	(void)__os_closehandle(dbenv, fhp);
 
 	return (ret);
 }
@@ -81,18 +81,20 @@ __os_r_sysdetach(dbenv, infop, destroy)
 	int ret, t_ret;
 
 	if (infop->wnt_handle != NULL) {
-		(void)CloseHandle(*((HANDLE*)(infop->wnt_handle)));
-		__os_free(infop->wnt_handle, sizeof(HANDLE));
+		(void)CloseHandle(infop->wnt_handle);
+		infop->wnt_handle = NULL;
 	}
 
-	__os_set_errno(0);
 	ret = !UnmapViewOfFile(infop->addr) ? __os_win32_errno() : 0;
 	if (ret != 0)
 		__db_err(dbenv, "UnmapViewOfFile: %s", strerror(ret));
 
-	if (F_ISSET(dbenv, DB_ENV_SYSTEM_MEM) && destroy &&
-	    (t_ret = __os_unlink(dbenv, infop->name)) != 0 && ret == 0)
-		ret = t_ret;
+	if (!F_ISSET(dbenv, DB_ENV_SYSTEM_MEM) && destroy) {
+		if (F_ISSET(dbenv, DB_ENV_OVERWRITE))
+			(void)__db_overwrite(dbenv, infop->name);
+		if ((t_ret = __os_unlink(dbenv, infop->name)) != 0 && ret == 0)
+			ret = t_ret;
+	}
 
 	return (ret);
 }
@@ -111,8 +113,8 @@ __os_mapfile(dbenv, path, fhp, len, is_rdonly, addr)
 	void **addr;
 {
 	/* If the user replaced the map call, call through their interface. */
-	if (__db_jump.j_map != NULL)
-		return (__db_jump.j_map(path, len, 0, is_rdonly, addr));
+	if (DB_GLOBAL(j_map) != NULL)
+		return (DB_GLOBAL(j_map)(path, len, 0, is_rdonly, addr));
 
 	return (__os_map(dbenv, path, NULL, fhp, len, 0, 0, is_rdonly, addr));
 }
@@ -128,10 +130,9 @@ __os_unmapfile(dbenv, addr, len)
 	size_t len;
 {
 	/* If the user replaced the map call, call through their interface. */
-	if (__db_jump.j_unmap != NULL)
-		return (__db_jump.j_unmap(addr, len));
+	if (DB_GLOBAL(j_unmap) != NULL)
+		return (DB_GLOBAL(j_unmap)(addr, len));
 
-	__os_set_errno(0);
 	return (!UnmapViewOfFile(addr) ? __os_win32_errno() : 0);
 }
 
@@ -151,23 +152,55 @@ __os_unmapfile(dbenv, addr, len)
  *		foo.bar  ==  Foo.Bar	(FAT file system)
  *		foo.bar  !=  Foo.Bar	(NTFS)
  *
- *	The best solution is to use the identifying number in the file
+ *	The best solution is to use the file index, found in the file
  *	information structure (similar to UNIX inode #).
+ *
+ *	When a file is deleted, its file index may be reused,
+ *	but if the unique name has not gone from its namespace,
+ *	we may get a conflict.  So to ensure some tie in to the
+ *	original pathname, we also use the creation time and the
+ *	file basename.  This is not a perfect system, but it
+ *	should work for all but anamolous test cases.
+ *
  */
 static int
-__os_unique_name(orig_path, fd, result_path)
+__os_unique_name(orig_path, hfile, result_path, result_path_len)
 	char *orig_path, *result_path;
-	int fd;
+	HANDLE hfile;
+	size_t result_path_len;
 {
 	BY_HANDLE_FILE_INFORMATION fileinfo;
+	char *basename, *p;
 
-	__os_set_errno(0);
-	if (!GetFileInformationByHandle(
-	    (HANDLE)_get_osfhandle(fd), &fileinfo))
+	/*
+	 * In Windows, pathname components are delimited by '/' or '\', and
+	 * if neither is present, we need to strip off leading drive letter
+	 * (e.g. c:foo.txt).
+	 */
+	basename = strrchr(orig_path, '/');
+	p = strrchr(orig_path, '\\');
+	if (basename == NULL || (p != NULL && p > basename))
+		basename = p;
+	if (basename == NULL)
+		basename = strrchr(orig_path, ':');
+
+	if (basename == NULL)
+		basename = orig_path;
+	else
+		basename++;
+
+	if (!GetFileInformationByHandle(hfile, &fileinfo))
 		return (__os_win32_errno());
-	(void)sprintf(result_path, "%ld.%ld.%ld",
+
+	(void)snprintf(result_path, result_path_len,
+	    "__db_shmem.%8.8lx.%8.8lx.%8.8lx.%8.8lx.%8.8lx.%s",
 	    fileinfo.dwVolumeSerialNumber,
-	    fileinfo.nFileIndexHigh, fileinfo.nFileIndexLow);
+	    fileinfo.nFileIndexHigh,
+	    fileinfo.nFileIndexLow,
+	    fileinfo.ftCreationTime.dwHighDateTime,
+	    fileinfo.ftCreationTime.dwHighDateTime,
+	    basename);
+
 	return (0);
 }
 
@@ -186,11 +219,9 @@ __os_map(dbenv, path, infop, fhp, len, is_region, is_system, is_rdonly, addr)
 	void **addr;
 {
 	HANDLE hMemory;
-	REGENV *renv;
-	int ret;
-	void *pMemory;
+	int ret, use_pagefile;
 	char shmem_name[MAXPATHLEN];
-	int use_pagefile;
+	void *pMemory;
 
 	ret = 0;
 	if (infop != NULL)
@@ -202,66 +233,59 @@ __os_map(dbenv, path, infop, fhp, len, is_region, is_system, is_rdonly, addr)
 	 * If creating a region in system space, get a matching name in the
 	 * paging file namespace.
 	 */
-	if (use_pagefile) {
-		(void)strcpy(shmem_name, "__db_shmem.");
-		if ((ret = __os_unique_name(path, fhp->fd,
-		    &shmem_name[strlen(shmem_name)])) != 0)
-			return (ret);
-	}
+	if (use_pagefile && (ret = __os_unique_name(
+	    path, fhp->handle, shmem_name, sizeof(shmem_name))) != 0)
+		return (ret);
 
 	/*
 	 * XXX
 	 * DB: We have not implemented copy-on-write here.
 	 *
-	 * XXX
-	 * DB: This code will fail if the library is ever compiled on a 64-bit
-	 * machine.
+	 * If this is an region in system memory, we try to open it using the
+	 * OpenFileMapping() first, and only call CreateFileMapping() if we're
+	 * really creating the section.  There are two reasons:
 	 *
-	 * XXX
-	 * If this is an region in system memory, let's try opening using the
-	 * OpenFileMapping() first.  Why, oh why are we doing this?
+	 * 1) We only create the mapping if we have newly created the region.
+	 *    This avoids a long-running problem caused by Windows reference
+	 *    counting, where regions that are closed by all processes are
+	 *    deleted.  It turns out that just checking for a zeroed region
+	 *    is not good enough. See [#4882] and [#7127] for the details.
 	 *
-	 * Well, we might be asking the OS for a handle to a pre-existing
-	 * memory section, or we might be the first to get here and want the
-	 * section created. CreateFileMapping() sounds like it will do both
-	 * jobs. But, not so. It seems to mess up making the commit charge to
-	 * the process. It thinks, incorrectly, that when we want to join a
-	 * previously existing section, that it should make a commit charge
-	 * for the whole section.  In fact, there is no new committed memory
-	 * whatever.  The call can fail if there is insufficient memory free
-	 * to handle the erroneous commit charge.  So, we find that the bogus
-	 * commit is not made if we call OpenFileMapping().  So we do that
-	 * first, and only call CreateFileMapping() if we're really creating
-	 * the section.
+	 * 2) CreateFileMapping seems to mess up making the commit charge to
+	 *    the process. It thinks, incorrectly, that when we want to join a
+	 *    previously existing section, that it should make a commit charge
+	 *    for the whole section.  In fact, there is no new committed memory
+	 *    whatever.  The call can fail if there is insufficient memory free
+	 *    to handle the erroneous commit charge.  So, we find that the
+	 *    bogus commit is not made if we call OpenFileMapping.
 	 */
 	hMemory = NULL;
-	__os_set_errno(0);
-	if (use_pagefile)
+	if (use_pagefile) {
 		hMemory = OpenFileMapping(
 		    is_rdonly ? FILE_MAP_READ : FILE_MAP_ALL_ACCESS,
-		    0,
-		    shmem_name);
+		    0, shmem_name);
 
-	if (hMemory == NULL)
-		hMemory = CreateFileMapping(
-		    use_pagefile ?
-		    (HANDLE)0xFFFFFFFF : (HANDLE)_get_osfhandle(fhp->fd),
-		    0,
+		if (hMemory == NULL && F_ISSET(infop, REGION_CREATE_OK))
+			hMemory = CreateFileMapping((HANDLE)-1, 0,
+			    is_rdonly ? PAGE_READONLY : PAGE_READWRITE,
+			    0, (DWORD)len, shmem_name);
+	} else
+		hMemory = CreateFileMapping(fhp->handle, 0,
 		    is_rdonly ? PAGE_READONLY : PAGE_READWRITE,
-		    0, len,
-		    use_pagefile ? shmem_name : NULL);
+		    0, (DWORD)len, NULL);
+
 	if (hMemory == NULL) {
-		__db_err(dbenv,
-		    "OpenFileMapping: %s", strerror(__os_win32_errno()));
-		return (__os_win32_errno());
+		ret = __os_win32_errno();
+		__db_err(dbenv, "OpenFileMapping: %s", strerror(ret));
+		return (__db_panic(dbenv, ret));
 	}
 
 	pMemory = MapViewOfFile(hMemory,
 	    (is_rdonly ? FILE_MAP_READ : FILE_MAP_ALL_ACCESS), 0, 0, len);
 	if (pMemory == NULL) {
-		__db_err(dbenv,
-		    "MapViewOfFile: %s", strerror(__os_win32_errno()));
-		return (__os_win32_errno());
+		ret = __os_win32_errno();
+		__db_err(dbenv, "MapViewOfFile: %s", strerror(ret));
+		return (__db_panic(dbenv, ret));
 	}
 
 	/*
@@ -275,35 +299,12 @@ __os_map(dbenv, path, infop, fhp, len, is_region, is_system, is_rdonly, addr)
 	 * different identity. The two processes then have distinct isolated
 	 * mapped sections, not at all what was wanted. Not closing the handle
 	 * here fixes this problem.  We carry the handle around in the region
-	 * structure so we can close it when unmap is called.  Ignore malloc
-	 * errors, it just means we leak the memory.
+	 * structure so we can close it when unmap is called.
 	 */
-	if (use_pagefile && infop != NULL) {
-		if (__os_malloc(NULL,
-		    sizeof(HANDLE), NULL, &infop->wnt_handle) == 0)
-			memcpy(infop->wnt_handle, &hMemory, sizeof(HANDLE));
-	} else
+	if (use_pagefile && infop != NULL)
+		infop->wnt_handle = hMemory;
+	else
 		CloseHandle(hMemory);
-
-	if (is_region) {
-		/*
-		 * XXX
-		 * Windows/95 zeroes anonymous memory regions at last close.
-		 * This means that the backing file can exist and reference
-		 * the region, but the region itself is no longer initialized.
-		 * If the caller is capable of creating the region, update
-		 * the REGINFO structure so that they do so.
-		 */
-		renv = (REGENV *)pMemory;
-		if (renv->magic == 0)
-			if (F_ISSET(infop, REGION_CREATE_OK))
-				F_SET(infop, REGION_CREATE);
-			else {
-				(void)UnmapViewOfFile(pMemory);
-				pMemory = NULL;
-				ret = EAGAIN;
-			}
-	}
 
 	*addr = pMemory;
 	return (ret);

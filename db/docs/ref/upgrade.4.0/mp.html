@@ -1,23 +1,23 @@
-<!--Id: mp.so,v 1.2 2001/09/27 02:25:52 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: mp.so,v 1.3 2003/10/18 19:16:19 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Release 4.0: memp_XXX</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
-<td align=right><a href="../../ref/upgrade.4.0/log.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.0/txn.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../upgrade.4.0/log.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.0/txn.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Release 4.0: memp_XXX</h1>
+<h3 align=center>Release 4.0: memp_XXX</h3>
 <p>The C API for the Berkeley DB Memory Pool subsystem was reworked in the 4.0
-release as follows:
-<p><table border=1 align=center>
+release as follows:</p>
+<table border=1 align=center>
 <tr><th>Historic functional interface</th><th>Berkeley DB 4.X method</th></tr>
 <tr><td>memp_register</td><td><a href="../../api_c/memp_register.html">DB_ENV-&gt;memp_register</a></td></tr>
 <tr><td>memp_stat</td><td><a href="../../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a></td></tr>
@@ -36,31 +36,31 @@ release as follows:
 <tr><td>memp_fsync</td><td><a href="../../api_c/memp_fsync.html">DB_MPOOLFILE-&gt;sync</a></td></tr>
 </table>
 <p>Applications calling any of the memp_register, memp_stat, memp_sync or
-memp_trickle interfaces should update those calls to use the enclosing
+memp_trickle functions should update those calls to use the enclosing
 <a href="../../api_c/env_class.html">DB_ENV</a> handle's method (easily done as the first argument to the
-existing call is the correct <a href="../../api_c/env_class.html">DB_ENV</a> handle).
+existing call is the correct <a href="../../api_c/env_class.html">DB_ENV</a> handle).</p>
 <p>In addition, the <a href="../../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a> call has been changed in the 4.0
 release to take a flags argument.  To leave their historic behavior
 unchanged, applications should add a final argument of 0 to any calls
-made to <a href="../../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a>.
-<p>Applications calling the memp_fopen interface should update those calls
+made to <a href="../../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a>.</p>
+<p>Applications calling the memp_fopen function should update those calls
 as follows: First, acquire a <a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle using the
 <a href="../../api_c/memp_fcreate.html">DB_ENV-&gt;memp_fcreate</a> method.  Second, if the DB_MPOOL_FINFO structure
-reference passed to the memp_fopen interface was non-NULL, call the
+reference passed to the memp_fopen function was non-NULL, call the
 <a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a> method corresponding to each initialized field in
 the DB_MPOOL_FINFO structure.  Third, call the <a href="../../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a> method
 method to open the underlying file.  If the <a href="../../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a> method call
 fails, then <a href="../../api_c/memp_fclose.html">DB_MPOOLFILE-&gt;close</a> method must be called to destroy the allocated
-handle.
+handle.</p>
 <p>Applications calling the memp_fopen, memp_fclose, memp_fput, memp_fset,
-or memp_fsync interfaces should update those calls to use the enclosing
+or memp_fsync functions should update those calls to use the enclosing
 <a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle's method.  Again, this is easily done as the
 first argument to the existing call is the correct <a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a>
-handle.  With one exception, the calling conventions of the old a new
+handle.  With one exception, the calling conventions of the old and new
 interfaces are identical; the one exception is the <a href="../../api_c/memp_fclose.html">DB_MPOOLFILE-&gt;close</a> method,
-which requires an additional flag parameter that should be set to 0.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/upgrade.4.0/log.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.0/txn.html"><img src="../../images/next.gif" alt="Next"></a>
+which requires an additional flag parameter that should be set to 0.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.0/log.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.0/txn.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

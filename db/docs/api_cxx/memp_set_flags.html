@@ -1,0 +1,88 @@
+<!--$Id: memp_set_flags.so,v 1.13 2003/11/08 19:17:40 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbMpoolFile::set_flags</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbMpoolFile::set_flags</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbMpoolFile::set_flags(u_int32_t flags, bool onoff);
+<p>
+int
+DbMpoolFile::get_flags(u_int32_t *flagsp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbMpoolFile::set_flags</h3>
+<a name="3"><!--meow--></a>
+<p>Configure a file in the cache.</p>
+<p>To set the flags for a particular database, call the
+DbMpoolFile::set_flags method using the <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> handle stored in
+the <b>mpf</b> field of the <a href="../api_cxx/db_class.html">Db</a> handle.</p>
+<p>The DbMpoolFile::set_flags method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>flags</b><dd>
+The <b>flags</b> parameter must be set by bitwise inclusively <b>OR</b>'ing together one or more
+of the following values:
+<p><dl compact>
+<p><dt><a name="DB_MPOOL_NOFILE">DB_MPOOL_NOFILE</a><dd>If set, no backing temporary file will be opened for in-memory
+databases, even if they expand to fill the entire cache.  Attempts to
+create new file pages after the cache has been filled will fail.
+<p>The DB_MPOOL_NOFILE flag may be used to configure Berkeley DB at any time during
+the life of the application.</p>
+</dl>
+<p><dt><b>onoff</b><dd>
+If <b>onoff</b> is
+false,
+the specified flags are cleared;  otherwise they are set.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbMpoolFile::get_flags</h3>
+<p>The DbMpoolFile::get_flags method returns the flags.</p>
+<p>The DbMpoolFile::get_flags method may be called at any time during the life of the
+application.</p>
+<p>The DbMpoolFile::get_flags method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>flagsp</b><dd>
+The DbMpoolFile::get_flags method returns  the
+flags in <b>flagsp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a>
+<h3>See Also</h3>
+<a href="../api_cxx/memp_list.html">Memory Pools and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

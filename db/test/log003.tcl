@@ -1,15 +1,16 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: log003.tcl,v 11.28 2002/04/29 20:07:54 sue Exp 
+# $Id: log003.tcl,v 11.30 2003/04/18 14:39:10 sandstro Exp $
 #
-
 # TEST	log003
 # TEST	Verify that log_flush is flushing records correctly.
 proc log003 { } {
 	source ./include.tcl
+	global rand_init
+	error_check_good set_random_seed [berkdb srand $rand_init] 0
 
 	puts "Log003: Verify log_flush behavior"
 

@@ -1,37 +1,38 @@
-<!--$Id: errorret.so,v 10.34 2000/12/31 19:26:21 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: errorret.so,v 10.46 2003/09/23 18:25:43 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Error returns to applications</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Programmer Notes</dl></h3></td>
-<td width="1%"><a href="../../ref/program/appsignals.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/program/environ.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../program/appsignals.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/environ.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Error returns to applications</h1>
-<p>Except for the historic <a href="../../api_c/dbm.html">dbm</a>, <a href="../../api_c/dbm.html">ndbm</a> and <a href="../../api_c/hsearch.html">hsearch</a>
+<h3 align=center>Error returns to applications</h3>
+<p>Except for the historic <a href="../../api_c/dbm.html">dbm</a>, <a href="../../api_c/dbm.html">ndbm</a>, and <a href="../../api_c/hsearch.html">hsearch</a>
 interfaces, Berkeley DB does not use the global variable <b>errno</b> to
 return error values.  The return values for all Berkeley DB functions are
-grouped into three categories:
+grouped into the following three categories:</p>
 <p><dl compact>
 <p><dt>0<dd>A return value of 0 indicates that the operation was successful.
 <p><dt>&gt; 0<dd>A return value that is greater than 0 indicates that there was a system
 error.  The <b>errno</b> value returned by the system is returned by
-the function, e.g., when a Berkeley DB function is unable to allocate memory,
-the return value from the function will be ENOMEM.
+the function; for example, when a Berkeley DB function is unable to allocate
+memory, the return value from the function will be ENOMEM.
 <p><dt>&lt; 0<dd>A return value that is less than 0 indicates a condition that was not
 a system failure, but was not an unqualified success, either.  For
 example, a routine to retrieve a key/data pair from the database may
 return DB_NOTFOUND when the key/data pair does not appear in
-the database, as opposed to the value of 0, which would be returned if
+the database; as opposed to the value of 0, which would be returned if
 the key/data pair were found in the database.
-<p>        <a name="3"><!--meow--></a>    
+<p><a name="3"><!--meow--></a>
 All values returned by Berkeley DB functions are less than 0 in order to avoid
 conflict with possible values of <b>errno</b>.  Specifically, Berkeley DB
 reserves all values from -30,800 to -30,999 to itself as possible error
@@ -39,70 +40,74 @@ values.  There are a few Berkeley DB interfaces where it is possible for an
 application function to be called by a Berkeley DB function and subsequently
 fail with an application-specific return.  Such failure returns will be
 passed back to the function that originally called a Berkeley DB interface.
-To avoid ambiguity as to the cause of the error, error values separate
-from the Berkeley DB error name space should be used.
+To avoid ambiguity about the cause of the error, error values separate
+from the Berkeley DB error name space should be used.</p>
 </dl>
-While possible error returns are specified by each individual function's
-manual page, there are a few error returns that deserve special mention:
+<p>Although possible error returns are specified by each individual function's
+manual page, there are a few error returns that deserve general mention:</p>
 <h3><a name="DB_NOTFOUND">DB_NOTFOUND</a> and <a name="DB_KEYEMPTY">DB_KEYEMPTY</a></h3>
-<p>There are two special return values that are similar in meaning, and that
+<p>There are two special return values that are similar in meaning and that
 are returned in similar situations, and therefore might be confused:
-DB_NOTFOUND and DB_KEYEMPTY.
+DB_NOTFOUND and DB_KEYEMPTY.</p>
 <p>The DB_NOTFOUND error return indicates that the requested key/data
-pair did not exist in the database or that start- or end-of-file has been
-reached.
-<p>The DB_KEYEMPTY error return indicates that the requested key/data
-pair logically exists but was never explicitly created by the application
-(the Recno and Queue access methods will automatically create key/data
-pairs under some circumstances; see <a href="../../api_c/db_open.html">DB-&gt;open</a> for more
-information), or that the requested key/data pair was deleted and never
-re-created.  In addition, the Queue access method will return
-DB_KEYEMPTY for records which were created as part of a
-transaction which was later aborted, and never re-created.
+pair did not exist in the database or that start-of- or end-of-file has
+been reached by a cursor.</p>
+<p>The DB_KEYEMPTY error return indicates that the requested
+key/data pair logically exists but was never explicitly created by the
+application (the Recno and Queue access methods will automatically
+create key/data pairs under some circumstances; see <a href="../../api_c/db_open.html">DB-&gt;open</a>
+for more information), or that the requested key/data pair was deleted
+and never re-created.  In addition, the Queue access method will return
+DB_KEYEMPTY for records that were created as part of a
+transaction that was later aborted and never re-created.</p>
+<h3><a name="DB_KEYEXIST">DB_KEYEXIST</a></h3>
+<p>The DB_KEYEXIST error return indicates the <a href="../../api_c/db_put.html#DB_NOOVERWRITE">DB_NOOVERWRITE</a>
+option was specified to the <a href="../../api_c/db_put.html">DB-&gt;put</a> method and the key already exists
+in the database.</p>
+<a name="4"><!--meow--></a>
 <h3><a name="DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a></h3>
 <p>When multiple threads of control are modifying the database, there is
 normally the potential for deadlock. In Berkeley DB, deadlock is signified by
 an error return from the Berkeley DB function of the value
 DB_LOCK_DEADLOCK.  Whenever a Berkeley DB function returns
-DB_LOCK_DEADLOCK, the enclosing transaction should be aborted.
+DB_LOCK_DEADLOCK, the enclosing transaction should be aborted.</p>
 <p>Any Berkeley DB function that attempts to acquire locks can potentially return
 DB_LOCK_DEADLOCK.  Practically speaking, the safest way to deal
-with applications that can deadlock is to handle an
-DB_LOCK_DEADLOCK return from any Berkeley DB access method call.
+with applications that can deadlock is to handle a
+DB_LOCK_DEADLOCK return from any Berkeley DB access method call.</p>
 <h3><a name="DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a></h3>
-<p>When multiple threads of control are modifying the database, there is
-normally the potential for deadlock.  In order to avoid deadlock,
-applications may specify, on a per-transaction basis, that if a lock is
-unavailable, the Berkeley DB operation should return immediately instead of
-waiting on the lock.  The error return in this case will be
-DB_LOCK_NOTGRANTED.  Whenever a Berkeley DB function returns
-DB_LOCK_NOTGRANTED, the enclosing transaction should be aborted.
+<p>If a lock is requested from the <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a> or <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> methods
+with the <a href="../../api_c/lock_vec.html#DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a> flag specified, the method will return
+DB_LOCK_NOTGRANTED if the lock is not immediately available.</p>
+<p>If the <a href="../../api_c/env_set_flags.html#DB_TIME_NOTGRANTED">DB_TIME_NOTGRANTED</a> flag is specified to the
+<a href="../../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method, database calls timing out based on lock or
+transaction timeout values will return DB_LOCK_NOTGRANTED
+instead of DB_LOCK_DEADLOCK.</p>
 <h3><a name="DB_RUNRECOVERY">DB_RUNRECOVERY</a></h3>
 <p>There exists a class of errors that Berkeley DB considers fatal to an entire
 Berkeley DB environment.  An example of this type of error is a corrupted
-database, or a log write failure because the disk is out of free space.
-The only way to recover from these failures is to have all threads of
-control exit the Berkeley DB environment, run recovery of the environment, and
-re-enter Berkeley DB. (It is not strictly necessary that the processes exit,
-although that is the only way to recover system resources, such as file
-descriptors and memory, allocated by Berkeley DB.)
+database page.  The only way to recover from these failures is to have
+all threads of control exit the Berkeley DB environment, run recovery of the
+environment, and re-enter Berkeley DB. (It is not strictly necessary that the
+processes exit, although that is the only way to recover system
+resources, such as file descriptors and memory, allocated by Berkeley DB.)</p>
 <p>When this type of error is encountered, the error value
 DB_RUNRECOVERY is returned. This error can be returned by any
 Berkeley DB interface.  Once DB_RUNRECOVERY is returned by any
 interface, it will be returned from all subsequent Berkeley DB calls made by
-any threads or processes participating in the environment.
+any threads of control participating in the environment.</p>
 <p>Optionally, applications may also specify a fatal-error callback function
-using the <a href="../../api_c/env_set_paniccall.html">DBENV-&gt;set_paniccall</a> function.  This callback function will be
-called with two arguments: a reference to the DB_ENV structure associated
-with the environment, and the <b>errno</b> value associated with the
-underlying error that caused the problem.
+using the <a href="../../api_c/env_set_paniccall.html">DB_ENV-&gt;set_paniccall</a> method.  This callback function will be
+called with two arguments: a reference to the <a href="../../api_c/env_class.html">DB_ENV</a> structure
+associated with the environment and the <b>errno</b> value
+associated with the underlying error that caused the problem.</p>
 <p>Applications can handle such fatal errors in one of two ways: by checking
 for DB_RUNRECOVERY as part of their normal Berkeley DB error return
-checking, similarly to DB_LOCK_DEADLOCK or any other error, or,
-in applications that have no cleanup processing of their own, by simply
-exiting the application when the callback function is called.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/program/appsignals.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/program/environ.html"><img src="../../images/next.gif" alt="Next"></a>
+checking, similarly to DB_LOCK_DEADLOCK or any other error, or
+by simply exiting the application when the callback function is called
+in applications that have no cleanup processing of their own.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../program/appsignals.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/environ.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

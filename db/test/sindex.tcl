@@ -1,18 +1,18 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001
+# Copyright (c) 2001-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: sindex.tcl,v 1.1 2001/04/07 03:18:30 krinsky Exp 
+# $Id: sindex.tcl,v 1.9 2003/01/08 05:53:30 bostic Exp $
 #
 # Secondary index test driver and maintenance routines.
-# 
-# Breaking from the usual convention, we put the driver function 
+#
+# Breaking from the usual convention, we put the driver function
 # for the secondary index tests here, in its own file.  The reason
-# for this is that it's something which compartmentalizes nicely, 
+# for this is that it's something which compartmentalizes nicely,
 # has little in common with other driver functions, and
-# is likely to be run on its own from time to time.  
-# 
+# is likely to be run on its own from time to time.
+#
 # The secondary index tests themselves live in si0*.tcl.
 
 # Standard number of secondary indices to create if a single-element
@@ -21,7 +21,7 @@ global nsecondaries
 set nsecondaries 2
 
 # Run the secondary index tests.
-proc sindex { {verbose 1} args } {
+proc sindex { {verbose 0} args } {
 	global verbose_check_secondaries
 	set verbose_check_secondaries $verbose
 
@@ -31,8 +31,7 @@ proc sindex { {verbose 1} args } {
 	# 10K-word list for each key/data pair.)
 	foreach n { 200 5000 } {
 		foreach pm { btree hash recno frecno queue queueext } {
-			# XXX: ddhash currently does not work due to #3726
-			foreach sm { dbtree dhash ddbtree btree hash } {
+			foreach sm { dbtree dhash ddbtree ddhash btree hash } {
 				sindex001 [list $pm $sm $sm] $n
 				sindex002 [list $pm $sm $sm] $n
 				# Skip tests 3 & 4 for large lists;
@@ -41,19 +40,33 @@ proc sindex { {verbose 1} args } {
 					sindex003 [list $pm $sm $sm] $n
 					sindex004 [list $pm $sm $sm] $n
 				}
+
+				sindex006 [list $pm $sm $sm] $n
 			}
 		}
 	}
+
+	# Run secondary index join test.  (There's no point in running
+	# this with both lengths, the primary is unhappy for now with fixed-
+	# length records (XXX), and we need unsorted dups in the secondaries.)
+	foreach pm { btree hash recno } {
+		foreach sm { btree hash } {
+			sindex005 [list $pm $sm $sm] 1000
+		}
+		sindex005 [list $pm btree hash] 1000
+		sindex005 [list $pm hash btree] 1000
+	}
+
 
 	# Run test with 50 secondaries.
 	foreach pm { btree hash } {
 		set methlist [list $pm]
 		for { set i 0 } { $i < 50 } { incr i } {
-			# XXX this should incorporate hash after #3726 
-			if { $i % 2 == 0 } { 
+			# XXX this should incorporate hash after #3726
+			if { $i % 2 == 0 } {
 				lappend methlist "dbtree"
-			} else { 
-				lappend methlist "ddbtree" 
+			} else {
+				lappend methlist "ddbtree"
 			}
 		}
 		sindex001 $methlist 500
@@ -63,8 +76,7 @@ proc sindex { {verbose 1} args } {
 	}
 }
 
-
-# The callback function we use for each given secondary in most tests 
+# The callback function we use for each given secondary in most tests
 # is a simple function of its place in the list of secondaries (0-based)
 # and the access method (since recnos may need different callbacks).
 #
@@ -158,7 +170,7 @@ proc check_secondaries { pdb sdbs nentries keyarr dataarr {pref "Check"} } {
 # Given a primary database handle and a list of secondary handles, walk
 # through the primary and make sure all the secondaries are correct,
 # then walk through the secondaries and make sure the primary is correct.
-# 
+#
 # This is slightly less rigorous than the normal check_secondaries--we
 # use it whenever we don't have up-to-date "keys" and "data" arrays.
 proc cursor_check_secondaries { pdb sdbs nentries { pref "Check" } } {
@@ -211,7 +223,7 @@ proc cursor_check_secondaries { pdb sdbs nentries { pref "Check" } } {
 		}
 		error_check_good secondary($j)_has_nentries $i $nentries
 
-		# To exercise pget -last/pget -prev, we do it backwards too. 
+		# To exercise pget -last/pget -prev, we do it backwards too.
 		set i 0
 		for { set dbt [$sdbc pget -last] } { [llength $dbt] > 0 } \
 		    { set dbt [$sdbc pget -prev] } {
@@ -230,7 +242,7 @@ proc cursor_check_secondaries { pdb sdbs nentries { pref "Check" } } {
 
 # The secondary index tests take a list of the access methods that
 # each array ought to use.  Convert at one blow into a list of converted
-# argses and omethods for each method in the list. 
+# argses and omethods for each method in the list.
 proc convert_argses { methods largs } {
 	set ret {}
 	foreach m $methods {

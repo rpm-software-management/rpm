@@ -127,6 +127,7 @@ umask(0) ;
     my ($k, $v) ;
     ok 33, my $db = new BerkeleyDB::Btree -Filename => $Dfile, 
 				     -Flags    => DB_CREATE ;
+print "[$db] [$!] $BerkeleyDB::Error\n" ;				     
 
     # create some data
     my %data =  (
@@ -783,7 +784,7 @@ umask(0) ;
 
    require Exporter ;
    use BerkeleyDB;
-   @ISA=qw(BerkeleyDB::Btree);
+   @ISA=qw(BerkeleyDB BerkeleyDB::Btree );
    @EXPORT = @BerkeleyDB::EXPORT ;
 
    sub db_put { 

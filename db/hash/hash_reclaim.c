@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: hash_reclaim.c,v 11.4 2000/11/30 00:58:37 ubell Exp $";
+static const char revid[] = "$Id: hash_reclaim.c,v 11.15 2003/06/30 17:20:13 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -18,10 +18,8 @@ static const char revid[] = "$Id: hash_reclaim.c,v 11.4 2000/11/30 00:58:37 ubel
 #endif
 
 #include "db_int.h"
-#include "db_page.h"
-#include "db_shash.h"
-#include "hash.h"
-#include "lock.h"
+#include "dbinc/db_page.h"
+#include "dbinc/hash.h"
 
 /*
  * __ham_reclaim --
@@ -45,17 +43,17 @@ __ham_reclaim(dbp, txn)
 	int ret;
 
 	/* Open up a cursor that we'll use for traversing. */
-	if ((ret = dbp->cursor(dbp, txn, &dbc, 0)) != 0)
+	if ((ret = __db_cursor(dbp, txn, &dbc, 0)) != 0)
 		return (ret);
 	hcp = (HASH_CURSOR *)dbc->internal;
 
 	if ((ret = __ham_get_meta(dbc)) != 0)
 		goto err;
 
-	if ((ret = __ham_traverse(dbp,
-	    dbc, DB_LOCK_WRITE, __db_reclaim_callback, dbc)) != 0)
+	if ((ret = __ham_traverse(dbc,
+	    DB_LOCK_WRITE, __db_reclaim_callback, dbc, 1)) != 0)
 		goto err;
-	if ((ret = dbc->c_close(dbc)) != 0)
+	if ((ret = __db_c_close(dbc)) != 0)
 		goto err;
 	if ((ret = __ham_release_meta(dbc)) != 0)
 		goto err;
@@ -63,6 +61,37 @@ __ham_reclaim(dbp, txn)
 
 err:	if (hcp->hdr != NULL)
 		(void)__ham_release_meta(dbc);
-	(void)dbc->c_close(dbc);
+	(void)__db_c_close(dbc);
+	return (ret);
+}
+
+/*
+ * __ham_truncate --
+ *	Reclaim the pages from a subdatabase and return them to the
+ * parent free list.
+ *
+ * PUBLIC: int __ham_truncate __P((DBC *, u_int32_t *));
+ */
+int
+__ham_truncate(dbc, countp)
+	DBC *dbc;
+	u_int32_t *countp;
+{
+	db_trunc_param trunc;
+	int ret, t_ret;
+
+	if ((ret = __ham_get_meta(dbc)) != 0)
+		return (ret);
+
+	trunc.count = 0;
+	trunc.dbc = dbc;
+
+	ret = __ham_traverse(dbc,
+	    DB_LOCK_WRITE, __db_truncate_callback, &trunc, 1);
+
+	if ((t_ret = __ham_release_meta(dbc)) != 0 && ret == 0)
+		ret = t_ret;
+
+	*countp = trunc.count;
 	return (ret);
 }

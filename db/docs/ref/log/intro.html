@@ -1,58 +1,69 @@
-<!--$Id: intro.so,v 10.16 2001/01/18 20:31:37 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.24 2003/10/18 19:16:03 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Berkeley DB and logging</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Logging Subsystem</dl></h3></td>
-<td width="1%"><a href="../../ref/lock/nondb.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/log/config.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../lock/nondb.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../log/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Berkeley DB and logging</h1>
-<p>The logging subsystem is the logging facility used by Berkeley DB.  It is
-largely Berkeley DB specific, although it is potentially useful outside of
+<h3 align=center>Berkeley DB and logging</h3>
+<p>The Logging subsystem is the logging facility used by Berkeley DB.  It is
+largely Berkeley DB-specific, although it is potentially useful outside of
 the Berkeley DB package for applications wanting write-ahead logging support.
 Applications wanting to use the log for purposes other than logging file
 modifications based on a set of open file descriptors will almost
 certainly need to make source code modifications to the Berkeley DB code
-base.
+base.</p>
 <p>A log can be shared by any number of threads of control.  The
-<a href="../../api_c/env_open.html">DBENV-&gt;open</a> interface is used to open a log.  When the log is no
-longer in use, it should be closed, using the <a href="../../api_c/env_close.html">DBENV-&gt;close</a>
-interface.
+<a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method is used to open a log.  When the log is no longer
+in use, it should be closed using the <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a> method.</p>
 <p>Individual log entries are identified by log sequence numbers.  Log
-sequence numbers are stored in an opaque object, a <a href="../../api_c/db_lsn.html">DB_LSN</a>.
-<p>The <a href="../../api_c/log_put.html">log_put</a> interface is used to append new log records to the
-log.  Optionally, the <a href="../../api_c/log_put.html#DB_CHECKPOINT">DB_CHECKPOINT</a> flag can be used to output
-a checkpoint log record (indicating that the log is consistent to that
-point and recoverable after a system or application failure), as well
-as open-file information.  The <a href="../../api_c/log_get.html">log_get</a> interface is used to
-retrieve log records from the log.
-<p>There are additional interfaces for integrating the log subsystem with a
-transaction processing system:
+sequence numbers are stored in an opaque object, a <a href="../../api_c/lsn_class.html">DB_LSN</a>.</p>
+<p>The <a href="../../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a> method is used to allocate a log cursor.  Log cursors
+have two methods: <a href="../../api_c/logc_get.html">DB_LOGC-&gt;get</a> method to retrieve log records from the
+log, and <a href="../../api_c/logc_close.html">DB_LOGC-&gt;close</a> method to destroy the cursor.</p>
+<p>There are additional methods for integrating the log subsystem with a
+transaction processing system:</p>
 <p><dl compact>
-<p><dt><a href="../../api_c/log_register.html">log_register</a> and <a href="../../api_c/log_unregister.html">log_unregister</a><dd>These interfaces associate files with identification numbers.  These
-identification numbers are logged so that transactional recovery
-correctly associates log records with the appropriate files.
-<p><dt><a href="../../api_c/log_flush.html">log_flush</a><dd>Flushes the log up to a particular log sequence number.
+<p><dt><a href="../../api_c/log_flush.html">DB_ENV-&gt;log_flush</a><dd>Flushes the log up to a particular log sequence number.
 <p><dt><a href="../../api_c/log_compare.html">log_compare</a><dd>Allows applications to compare any two log sequence numbers.
-<p><dt><a href="../../api_c/log_file.html">log_file</a>   <dd>Maps a log sequence number to the specific log file which contains it.
-<p><dt><a href="../../api_c/log_archive.html">log_archive</a><dd>Returns various sets of log file names.  These interfaces are used for
-database administration, e.g., to determine if log files may safely be
-removed from the system.
-<p><dt><a href="../../api_c/log_stat.html">log_stat</a>   <dd>The display <a href="../../utility/db_stat.html">db_stat</a> utility uses the <a href="../../api_c/log_stat.html">log_stat</a> interface
-to display statistics about the log.
-<p><dt><a href="../../api_c/env_remove.html">DBENV-&gt;remove</a><dd>The log meta-information (but not the log files themselves) may be
-removed using the <a href="../../api_c/env_remove.html">DBENV-&gt;remove</a> interface.
+<p><dt><a href="../../api_c/log_file.html">DB_ENV-&gt;log_file</a>   <dd>Maps a log sequence number to the specific log file that contains it.
+<p><dt><a href="../../api_c/log_archive.html">DB_ENV-&gt;log_archive</a><dd>Returns various sets of log filenames.  These methods are used for
+database administration; for example, to determine if log files may
+safely be removed from the system.
+<p><dt><a href="../../api_c/log_stat.html">DB_ENV-&gt;log_stat</a>   <dd>The display <a href="../../utility/db_stat.html">db_stat</a> utility uses the <a href="../../api_c/log_stat.html">DB_ENV-&gt;log_stat</a> method to
+display statistics about the log.
+<p><dt><a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a><dd>The log meta-information (but not the log files themselves) may be
+removed using the <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method.
 </dl>
-<table><tr><td><br></td><td width="1%"><a href="../../ref/lock/nondb.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/log/config.html"><img src="../../images/next.gif" alt="Next"></a>
+<!--$Id: m4.methods,v 1.1 2002/08/30 20:01:00 bostic Exp $-->
+<table border=1 align=center>
+<tr><th>Logging Subsystem and Related Methods</th><th>Description</th></tr>
+<tr><td><a href="../../api_c/log_archive.html">DB_ENV-&gt;log_archive</a></td><td>List log and database files</td></tr>
+<tr><td><a href="../../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a></td><td>Create a log cursor handle</td></tr>
+<tr><td><a href="../../api_c/log_file.html">DB_ENV-&gt;log_file</a></td><td>Map Log Sequence Numbers to log files</td></tr>
+<tr><td><a href="../../api_c/log_flush.html">DB_ENV-&gt;log_flush</a></td><td>Flush log records</td></tr>
+<tr><td><a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a></td><td>Write a log record</td></tr>
+<tr><td><a href="../../api_c/env_set_lg_bsize.html">DB_ENV-&gt;set_lg_bsize</a></td><td>Set log buffer size</td></tr>
+<tr><td><a href="../../api_c/env_set_lg_dir.html">DB_ENV-&gt;set_lg_dir</a></td><td>Set the environment logging directory</td></tr>
+<tr><td><a href="../../api_c/env_set_lg_max.html">DB_ENV-&gt;set_lg_max</a></td><td>Set log file size</td></tr>
+<tr><td><a href="../../api_c/env_set_lg_regionmax.html">DB_ENV-&gt;set_lg_regionmax</a></td><td>Set logging region size</td></tr>
+<tr><td><a href="../../api_c/log_compare.html">log_compare</a></td><td>Compare two Log Sequence Numbers</td></tr>
+<tr><td><a href="../../api_c/log_stat.html">DB_ENV-&gt;log_stat</a></td><td>Return log subsystem statistics</td></tr>
+<tr><td><a href="../../api_c/logc_close.html">DB_LOGC-&gt;close</a></td><td>Close a log cursor</td></tr>
+<tr><td><a href="../../api_c/logc_get.html">DB_LOGC-&gt;get</a></td><td>Retrieve a log record</td></tr>
+</table>
+<table width="100%"><tr><td><br></td><td align=right><a href="../lock/nondb.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../log/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

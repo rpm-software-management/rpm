@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_DUMP {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_dump.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_dump.o
 	NAME		db_dump
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

@@ -1,23 +1,34 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  */
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_region.c,v 1.29 2002/08/06 04:50:36 bostic Exp ";
+static const char revid[] = "$Id: rep_region.c,v 1.42 2003/09/04 18:06:49 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
+#if TIME_WITH_SYS_TIME
+#include <sys/time.h>
+#include <time.h>
+#else
+#if HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else
+#include <time.h>
+#endif
 #endif
 
 #include <string.h>
+#endif
 
 #include "db_int.h"
-#include "dbinc/rep.h"
+#include "dbinc/db_page.h"
 #include "dbinc/log.h"
+#include "dbinc/db_am.h"
 
 /*
  * __rep_region_init --
@@ -49,6 +60,7 @@ __rep_region_init(dbenv)
 			goto err;
 		memset(rep, 0, sizeof(*rep));
 		rep->tally_off = INVALID_ROFF;
+		rep->v2tally_off = INVALID_ROFF;
 		renv->rep_off = R_OFFSET(infop, rep);
 
 		if ((ret = __db_mutex_setup(dbenv, infop, &rep->mutex,
@@ -81,6 +93,7 @@ __rep_region_init(dbenv)
 		rep->eid = DB_EID_INVALID;
 		rep->master_id = DB_EID_INVALID;
 		rep->gen = 0;
+		rep->egen = rep->gen + 1;
 
 		/*
 		 * Set default values for the min and max log records that we
@@ -88,11 +101,13 @@ __rep_region_init(dbenv)
 		 */
 		rep->request_gap = DB_REP_REQUEST_GAP;
 		rep->max_gap = DB_REP_MAX_GAP;
+		F_SET(rep, REP_F_NOARCHIVE);
+		(void)time(&rep->timestamp);
 	} else
 		rep = R_ADDR(infop, renv->rep_off);
 	MUTEX_UNLOCK(dbenv, &renv->mutex);
 
-	db_rep->mutexp = &rep->mutex;
+	db_rep->rep_mutexp = &rep->mutex;
 	db_rep->db_mutexp = R_ADDR(infop, rep->db_mutex_off);
 	db_rep->region = rep;
 
@@ -116,16 +131,31 @@ __rep_region_destroy(dbenv)
 	int ret, t_ret;
 
 	ret = t_ret = 0;
-	db_rep = (DB_REP *)dbenv->rep_handle;
+	db_rep = dbenv->rep_handle;
 
 	if (db_rep != NULL) {
-		if (db_rep->mutexp != NULL)
-			ret = __db_mutex_destroy(db_rep->mutexp);
+		if (db_rep->rep_mutexp != NULL)
+			ret = __db_mutex_destroy(db_rep->rep_mutexp);
 		if (db_rep->db_mutexp != NULL)
 			t_ret = __db_mutex_destroy(db_rep->db_mutexp);
 	}
 
 	return (ret == 0 ? t_ret : ret);
+}
+
+/*
+ * __rep_dbenv_refresh --
+ *	Replication-specific refresh of the DB_ENV structure.
+ *
+ * PUBLIC: void __rep_dbenv_refresh __P((DB_ENV *));
+ */
+void
+__rep_dbenv_refresh(dbenv)
+	DB_ENV *dbenv;
+{
+	if (REP_ON(dbenv))
+		((DB_REP *)dbenv->rep_handle)->region = NULL;
+	return;
 }
 
 /*
@@ -138,13 +168,10 @@ int
 __rep_dbenv_close(dbenv)
 	DB_ENV *dbenv;
 {
-	DB_REP *db_rep;
-
-	db_rep = (DB_REP *)dbenv->rep_handle;
-
-	if (db_rep != NULL) {
-		__os_free(dbenv, db_rep);
+	if (REP_ON(dbenv)) {
+		__os_free(dbenv, dbenv->rep_handle);
 		dbenv->rep_handle = NULL;
+		dbenv->rep_send = NULL;
 	}
 
 	return (0);
@@ -170,12 +197,13 @@ __rep_preclose(dbenv, do_closefiles)
 	ret = t_ret = 0;
 
 	/* If replication is not initialized, we have nothing to do. */
-	if ((db_rep = (DB_REP *)dbenv->rep_handle) == NULL)
+	if (!REP_ON(dbenv))
 		return (0);
 
+	db_rep = dbenv->rep_handle;
 	if ((dbp = db_rep->rep_db) != NULL) {
 		MUTEX_LOCK(dbenv, db_rep->db_mutexp);
-		ret = dbp->close(dbp, 0);
+		ret = __db_close(dbp, NULL, DB_NOSYNC);
 		db_rep->rep_db = NULL;
 		MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
 	}

@@ -1,21 +1,22 @@
-<!--Id: logc_class.so,v 1.5 2002/08/24 18:22:51 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: logc_class.so,v 1.7 2003/09/25 15:27:34 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbLogc</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DbLogc</h1>
+<h3>DbLogc</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -24,20 +25,22 @@
 <p>
 class DbLogc { ... };
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: DbLogc</h3>
 <p>The DbLogc object is the handle for a cursor into the log files,
 supporting sequential access to the records stored in log files.  The
 handle is not free-threaded.  Once the <a href="../api_cxx/logc_close.html">DbLogc::close</a> method is called,
 the handle may not be accessed again, regardless of that method's
-return.
-<h1>Class</h1>
+return.</p>
+<hr size=1 noshade>
+<h3>Class</h3>
 <a href="../api_cxx/env_class.html">DbEnv</a>, DbLogc, <a href="../api_cxx/lsn_class.html">DbLsn</a>
-<h1>See Also</h1>
+<h3>See Also</h3>
 <a href="../api_cxx/log_list.html">Logging Subsystem and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

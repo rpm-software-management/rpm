@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,9 +9,9 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2002\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "Id: db_upgrade.c,v 1.31 2002/03/28 20:13:47 bostic Exp ";
+    "$Id: db_upgrade.c,v 1.35 2003/08/13 19:57:09 ubell Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -54,7 +54,7 @@ db_upgrade_main(argc, argv)
 	DB *dbp;
 	DB_ENV *dbenv;
 	u_int32_t flags;
-	int ch, e_close, exitval, nflag, ret, t_ret;
+	int ch, exitval, nflag, ret, t_ret;
 	char *home, *passwd;
 
 	if ((ret = db_upgrade_version_check(progname)) != 0)
@@ -62,7 +62,7 @@ db_upgrade_main(argc, argv)
 
 	dbenv = NULL;
 	flags = nflag = 0;
-	e_close = exitval = 0;
+	exitval = 0;
 	home = passwd = NULL;
 	__db_getopt_reset = 1;
 	while ((ch = getopt(argc, argv, "h:NP:sV")) != EOF)
@@ -110,7 +110,6 @@ db_upgrade_main(argc, argv)
 		    progname, db_strerror(ret));
 		goto shutdown;
 	}
-	e_close = 1;
 
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
@@ -165,11 +164,14 @@ db_upgrade_main(argc, argv)
 	if (0) {
 shutdown:	exitval = 1;
 	}
-	if (e_close && (ret = dbenv->close(dbenv, 0)) != 0) {
+	if (dbenv != NULL && (ret = dbenv->close(dbenv, 0)) != 0) {
 		exitval = 1;
 		fprintf(stderr,
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
 	}
+
+	if (passwd != NULL)
+		free(passwd);
 
 	/* Resend any caught signal. */
 	__db_util_sigresend();
@@ -193,12 +195,11 @@ db_upgrade_version_check(progname)
 
 	/* Make sure we're loaded with the right version of the DB library. */
 	(void)db_version(&v_major, &v_minor, &v_patch);
-	if (v_major != DB_VERSION_MAJOR ||
-	    v_minor != DB_VERSION_MINOR || v_patch != DB_VERSION_PATCH) {
+	if (v_major != DB_VERSION_MAJOR || v_minor != DB_VERSION_MINOR) {
 		fprintf(stderr,
-	"%s: version %d.%d.%d doesn't match library version %d.%d.%d\n",
+	"%s: version %d.%d doesn't match library version %d.%d\n",
 		    progname, DB_VERSION_MAJOR, DB_VERSION_MINOR,
-		    DB_VERSION_PATCH, v_major, v_minor, v_patch);
+		    v_major, v_minor);
 		return (EXIT_FAILURE);
 	}
 	return (0);

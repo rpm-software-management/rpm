@@ -1,16 +1,23 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001
+# Copyright (c) 2001-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: si004.tcl,v 1.1 2001/04/07 03:18:30 krinsky Exp 
+# $Id: si004.tcl,v 1.9 2003/01/08 05:53:27 bostic Exp $
 #
-# Sindex004: Basic cursor-based secondary index put/delete test, with
-#	secondaries created mid-test.
-
-proc sindex004 { methods {nentries 200} {tnum 4} args } {
+# TEST	si004
+# TEST	si002 with secondaries created and closed mid-test
+# TEST	Basic cursor-based secondary index put/delete test, with
+# TEST	secondaries created mid-test.
+proc si004 { methods {nentries 200} {tnum "004"} args } {
 	source ./include.tcl
 	global dict nsecondaries
+
+	# There's no reason to run this test on large lists.
+	if { $nentries > 1000 } {
+		puts "Skipping si004 for large lists (over 1000 items)."
+		return
+	}
 
 	# Primary method/args.
 	set pmethod [lindex $methods 0]
@@ -25,20 +32,20 @@ proc sindex004 { methods {nentries 200} {tnum 4} args } {
 		for { set i 0 } { $i < $nsecondaries } { incr i } {
 			lappend methods $pmethod
 		}
-	} 
+	}
 
 	set argses [convert_argses $methods $args]
 	set omethods [convert_methods $methods]
 
-	puts "Sindex00$tnum ($pmethod/$methods) $nentries equal key/data pairs"
+	puts "Si$tnum ($pmethod/$methods) $nentries equal key/data pairs"
 	env_cleanup $testdir
 
-	set pname "primary00$tnum.db"
-	set snamebase "secondary00$tnum"
+	set pname "primary$tnum.db"
+	set snamebase "secondary$tnum"
 
 	# Open an environment
 	# XXX if one is not supplied!
-	set env [berkdb env -create -home $testdir]
+	set env [berkdb_env -create -home $testdir]
 	error_check_good env_open [is_valid_env $env] TRUE
 
 	# Open the primary.
@@ -46,7 +53,7 @@ proc sindex004 { methods {nentries 200} {tnum 4} args } {
 	error_check_good primary_open [is_valid_db $pdb] TRUE
 
 	puts -nonewline \
-	    "\tSindex00$tnum.a: Cursor put (-keyfirst/-keylast) loop ... "
+	    "\tSi$tnum.a: Cursor put (-keyfirst/-keylast) loop ... "
 	set did [open $dict]
 	set pdbc [$pdb cursor]
 	error_check_good pdb_cursor [is_valid_cursor $pdbc $pdb] TRUE
@@ -61,7 +68,7 @@ proc sindex004 { methods {nentries 200} {tnum 4} args } {
 		set ns($key) $n
 		set keys($n) $key
 		set data($n) [pad_data $pmethod $datum]
-		
+
 		if { $n % 2 == 0 } {
 			set pflag " -keyfirst "
 		} else {
@@ -76,20 +83,20 @@ proc sindex004 { methods {nentries 200} {tnum 4} args } {
 	error_check_good pdbc_close [$pdbc close] 0
 
 	# Open and associate the secondaries
-	set sdbs {} 
+	set sdbs {}
 	puts "\n\t\topening secondaries."
 	for { set i 0 } { $i < [llength $omethods] } { incr i } {
 		set sdb [eval {berkdb_open -create -env} $env \
 		    [lindex $omethods $i] [lindex $argses $i] $snamebase.$i.db]
 		error_check_good second_open($i) [is_valid_db $sdb] TRUE
-		
+
 		error_check_good db_associate($i) \
 		    [$pdb associate -create [callback_n $i] $sdb] 0
 		lappend sdbs $sdb
 	}
-	check_secondaries $pdb $sdbs $nentries keys data "Sindex00$tnum.a"
+	check_secondaries $pdb $sdbs $nentries keys data "Si$tnum.a"
 
-	puts "\tSindex00$tnum.b: Cursor put overwrite (-current) loop"
+	puts "\tSi$tnum.b: Cursor put overwrite (-current) loop"
 	set pdbc [$pdb cursor]
 	error_check_good pdb_cursor [is_valid_cursor $pdbc $pdb] TRUE
 	for { set dbt [$pdbc get -first] } { [llength $dbt] > 0 } \
@@ -102,9 +109,9 @@ proc sindex004 { methods {nentries 200} {tnum 4} args } {
 		set data($ns($key)) [pad_data $pmethod $newd]
 	}
 	error_check_good pdbc_close [$pdbc close] 0
-	check_secondaries $pdb $sdbs $nentries keys data "Sindex00$tnum.b"
-	
-	puts -nonewline "\tSindex00$tnum.c:\
+	check_secondaries $pdb $sdbs $nentries keys data "Si$tnum.b"
+
+	puts -nonewline "\tSi$tnum.c:\
 	    Secondary c_pget/primary put overwrite loop ... "
 	# We walk the first secondary, then put-overwrite each primary key/data
 	# pair we find.  This doubles as a DBC->c_pget test.
@@ -135,18 +142,18 @@ proc sindex004 { methods {nentries 200} {tnum 4} args } {
 	# Close the secondaries again.
 	puts "\n\t\tclosing secondaries."
 	for { set sdb [lindex $sdbs end] } { [string length $sdb] > 0 } \
-	    { set sdb [lindex $sdbs end] } {	
+	    { set sdb [lindex $sdbs end] } {
 		error_check_good second_close($sdb) [$sdb close] 0
 		set sdbs [lrange $sdbs 0 end-1]
 		check_secondaries \
-		    $pdb $sdbs $nentries keys data "Sindex00$tnum.b"
+		    $pdb $sdbs $nentries keys data "Si$tnum.c"
 	}
 
 	# Delete the second half of the entries through the primary.
-	# We do the second half so we can just pass keys(0..n/2)
+	# We do the second half so we can just pass keys(0 ... n/2)
 	# to check_secondaries.
 	set half [expr $nentries / 2]
-	puts -nonewline "\tSindex00$tnum.d:\
+	puts -nonewline "\tSi$tnum.d:\
 	    Primary cursor delete loop: deleting $half entries ... "
 	set pdbc [$pdb cursor]
 	error_check_good pdb_cursor [is_valid_cursor $pdbc $pdb] TRUE
@@ -155,35 +162,35 @@ proc sindex004 { methods {nentries 200} {tnum 4} args } {
 		error_check_good pdbc_del [$pdbc del] 0
 		set dbt [$pdbc get -next]
 	}
-	error_check_good pdbc_close [$pdbc close] 0	
+	error_check_good pdbc_close [$pdbc close] 0
 
-	set sdbs {} 
+	set sdbs {}
 	puts "\n\t\topening secondaries."
 	for { set i 0 } { $i < [llength $omethods] } { incr i } {
 		set sdb [eval {berkdb_open -create -env} $env \
 		    [lindex $omethods $i] [lindex $argses $i] \
 		    $snamebase.r2.$i.db]
 		error_check_good second_open($i) [is_valid_db $sdb] TRUE
-		
+
 		error_check_good db_associate($i) \
 		    [$pdb associate -create [callback_n $i] $sdb] 0
 		lappend sdbs $sdb
 	}
-	cursor_check_secondaries $pdb $sdbs $half "Sindex00$tnum.d"
-  
+	cursor_check_secondaries $pdb $sdbs $half "Si$tnum.d"
+
 	# Delete half of what's left, through the first secondary.
 	set quar [expr $half / 2]
-	puts "\tSindex00$tnum.e:\
+	puts "\tSi$tnum.e:\
 	    Secondary cursor delete loop: deleting $quar entries"
 	set sdb [lindex $sdbs 0]
 	set sdbc [$sdb cursor]
 	set dbt [$sdbc get -first]
-	for { set i 0 } { [llength $dbt] > 0 && $i < $quar } { incr i } { 
+	for { set i 0 } { [llength $dbt] > 0 && $i < $quar } { incr i } {
 		error_check_good sdbc_del [$sdbc del] 0
 		set dbt [$sdbc get -next]
 	}
 	error_check_good sdbc_close [$sdbc close] 0
-	cursor_check_secondaries $pdb $sdbs $quar "Sindex00$tnum.e"
+	cursor_check_secondaries $pdb $sdbs $quar "Si$tnum.e"
 
 	foreach sdb $sdbs {
 		error_check_good secondary_close [$sdb close] 0

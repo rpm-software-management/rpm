@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2002
+ * Copyright (c) 1998-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: region.h,v 11.33 2002/08/06 06:11:22 bostic Exp 
+ * $Id: region.h,v 11.38 2003/07/14 13:44:59 bostic Exp $
  */
 
 #ifndef _DB_REGION_H_
@@ -99,11 +99,10 @@
 extern "C" {
 #endif
 
-#define	DB_REGION_FMT	"__db.%03d"	/* Region file name format. */
-#define	DB_REGION_NAME_NUM	5	/* First digit offset in file names. */
-#define	DB_REGION_NAME_LENGTH	8	/* Length of file names. */
-
-#define	DB_REGION_ENV	"__db.001"	/* Primary environment name. */
+#define	DB_REGION_PREFIX	"__db"		/* DB file name prefix. */
+#define	DB_REGION_FMT		"__db.%03d"	/* Region file name format. */
+#define	DB_REGION_ENV		"__db.001"	/* Primary environment name. */
+#define	DB_REGION_NAME_LENGTH	8		/* Length of file names. */
 
 #define	INVALID_REGION_ID	0	/* Out-of-band region ID. */
 #define	REGION_ID_ENV		1	/* Primary environment ID. */
@@ -149,11 +148,6 @@ typedef struct __db_reg_env {
 	 * Note, the magic and panic fields are NOT protected by any mutex,
 	 * and for this reason cannot be anything more complicated than a
 	 * zero/non-zero value.
-	 *
-	 * !!!
-	 * The valid region magic number must appear at the same byte offset
-	 * in both the environment and each shared region, as Windows/95 uses
-	 * it to determine if the memory has been zeroed since it was last used.
 	 */
 	u_int32_t  magic;		/* Valid region magic number. */
 
@@ -189,14 +183,6 @@ typedef struct __db_region {
 	 */
 	DB_MUTEX   mutex;		/* Region mutex. */
 
-	/*
-	 * !!!
-	 * The valid region magic number must appear at the same byte offset
-	 * in both the environment and each shared region, as Windows/95 uses
-	 * it to determine if the memory has been zeroed since it was last used.
-	 */
-	u_int32_t  magic;
-
 	SH_LIST_ENTRY q;		/* Linked list of REGIONs. */
 
 	reg_type   type;		/* Region type. */
@@ -225,7 +211,9 @@ struct __db_reginfo_t {		/* __db_r_attach IN parameters. */
 	void	   *addr;		/* Region allocation address. */
 	void	   *primary;		/* Primary data structure address. */
 
-	void	   *wnt_handle;		/* Win/NT HANDLE. */
+#ifdef DB_WIN32
+	HANDLE	wnt_handle;		/* Win/NT HANDLE. */
+#endif
 
 #define	REGION_CREATE		0x01	/* Caller created region. */
 #define	REGION_CREATE_OK	0x02	/* Caller willing to create region. */
@@ -283,7 +271,9 @@ typedef struct __db_regmaint_t {
 		return (__db_panic_msg(dbenv));
 
 #define	PANIC_SET(dbenv, onoff)						\
-	((REGENV *)((REGINFO *)(dbenv)->reginfo)->primary)->envpanic = (onoff);
+	if ((dbenv)->reginfo != NULL)					\
+		((REGENV *)((REGINFO *)					\
+		    (dbenv)->reginfo)->primary)->envpanic = (onoff);
 
 /*
  * All regions are created on 8K boundaries out of sheer paranoia, so we

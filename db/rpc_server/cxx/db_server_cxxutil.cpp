@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2002
+ * Copyright (c) 2000-2003
  *      Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: db_server_cxxutil.cpp,v 1.8 2002/05/23 07:49:34 mjc Exp ";
+static const char revid[] = "$Id: db_server_cxxutil.cpp,v 1.11 2003/04/23 20:44:47 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -640,8 +640,11 @@ add_home(char *home)
 	 * to assure hp->name points to the last component.
 	 */
 	hp->name = __db_rpath(home);
-	*(hp->name) = '\0';
-	hp->name++;
+	if (hp->name != NULL) {
+		*(hp->name) = '\0';
+		hp->name++;
+	} else
+		hp->name = home;
 	while (*(hp->name) == '\0') {
 		hp->name = __db_rpath(home);
 		*(hp->name) = '\0';
@@ -686,9 +689,12 @@ add_passwd(char *passwd)
 }
 
 extern "C" home_entry *
-get_home(char *name)
+get_fullhome(char *name)
 {
 	home_entry *hp;
+
+	if (name == NULL)
+		return (NULL);
 
 	for (hp = LIST_FIRST(&__dbsrv_home); hp != NULL;
 	    hp = LIST_NEXT(hp, entries))

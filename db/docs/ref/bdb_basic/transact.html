@@ -1,0 +1,150 @@
+<!--$Id: transact.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Using transactions</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Basic</dl></h3></td>
+<td align=right><a href="../bdb_basic/main.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/write.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Using transactions</h3>
+<p><a href="../transapp/intro.html">Berkeley DB Transactional Data Store
+applications</a> have standard transactional characteristics: recoverability,
+atomicity and integrity.  The Java API provides these transactional capabilities
+using a <i>transaction-per-thread</i> model.  Once a transaction is begun,
+it is implicitly associated with the current thread until it is committed or
+aborted.  This model is used for the following reasons.</p>
+<p><ul type=disc>
+<li>The transaction-per-thread model is commonly used in other Java APIs
+such as J2EE.
+<li>Since the Java collections API is used for data access, there is no
+way to pass a transaction object on each call to methods such as
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put">Map.put</a>
+.
+</ul>
+<p>The Java API provides two transaction APIs.  The lower-level API is the
+<a href="../../java/com/sleepycat/bdb/CurrentTransaction.html">CurrentTransaction</a>
+ class.  It provides a way
+to get the transaction for the current thread, and to begin, commit and abort
+transactions.  It also provides access to the Berkeley DB core API
+<a href="../../java/com/sleepycat/db/DbTxn.html">DbTxn</a>
+ object.  With
+<a href="../../java/com/sleepycat/bdb/CurrentTransaction.html">CurrentTransaction</a>
+, just as in the core API,
+the application is responsible for beginning, committing and aborting
+transactions, and for handling deadlock exceptions and retrying operations.
+This API may be needed for some applications, but it is not used in the
+example.</p>
+<p>The example uses the higher-level 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html">TransactionRunner</a>
+ and 
+<a href="../../java/com/sleepycat/bdb/TransactionWorker.html">TransactionWorker</a>
+APIs, which are build on top of 
+<a href="../../java/com/sleepycat/bdb/CurrentTransaction.html">CurrentTransaction</a>
+.  
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+automatically begins a transaction and then calls the
+<a href="../../java/com/sleepycat/bdb/TransactionWorker.html#doWork">TransactionWorker.doWork</a>
+ method, which is
+implemented by the application.</p>
+<p>The 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+ method
+automatically detects deadlock exceptions and performs retries by repeatedly
+calling the 
+<a href="../../java/com/sleepycat/bdb/TransactionWorker.html#doWork">TransactionWorker.doWork</a>
+ method
+until the operation succeeds or the maximum retry count is reached.  If
+the maximum retry count is reached or if another exception (other than
+<a href="../../java/com/sleepycat/db/DbDeadlockException.html">DbDeadlockException</a>
+) is thrown by
+<a href="../../java/com/sleepycat/bdb/TransactionWorker.html#doWork">TransactionWorker.doWork</a>
+, then the
+transaction will be automatically aborted.  Otherwise, the transaction
+will be automatically committed.</p>
+<p>Using this high-level API, if 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+ throws an exception, the application can assume that
+the operation failed and the transaction was aborted; otherwise, when an
+exception is not thrown, the application can assume the operation succeeded and
+the transaction was committed.</p>
+<hr size=1 noshade>
+<p>The <b>Sample.run</b> method creates a
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html">TransactionRunner</a>
+ object and calls its
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+ method.</p>
+<blockquote><pre>
+<b>import com.sleepycat.bdb.TransactionRunner;
+import com.sleepycat.bdb.TransactionWorker;
+</b>...
+public class Sample
+{
+    private SampleDatabase db;
+    ...
+<b>    private void run()
+        throws Exception
+    {
+        TransactionRunner runner = new TransactionRunner(db.getEnvironment());
+        runner.run(new PopulateDatabase());
+        runner.run(new PrintDatabase());
+    }
+<p>
+    private class PopulateDatabase implements TransactionWorker
+    {
+        public void doWork()
+            throws Exception
+        {
+        }
+    }
+<p>
+    private class PrintDatabase implements TransactionWorker
+    {
+        public void doWork()
+            throws Exception
+        {
+        }
+    }
+</b>}
+</pre></blockquote>
+<p>The <b>run</b> method is called by <b>main</b> and was outlined in
+the previous section.  It first creates a 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html">TransactionRunner</a>
+, passing the database environment to its constructor.</p>
+<p>It then calls 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+to execute two transactions, passing instances of the application-defined
+<b>PopulateDatabase</b> and <b>PrintDatabase</b> inner classes.  These
+classes implement the 
+<a href="../../java/com/sleepycat/bdb/TransactionWorker.html#doWork">TransactionWorker.doWork</a>
+ method and will be fully described in the next two sections.</p>
+<p>For each call to 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+, a separate transaction will be performed.  The use of two transactions in
+the example -- one for populating the database and another for printing its
+contents -- is arbitrary.  A real-life application should be designed to create
+transactions for each group of operations that should have recoverability,
+atomicity and integrity, while also taking into account the impact of
+transactions on performance.</p>
+<p>The advantage of using 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html">TransactionRunner</a>
+ is that deadlock retries and transaction begin, commit and
+abort are handled automatically.  However, a 
+<a href="../../java/com/sleepycat/bdb/TransactionWorker.html">TransactionWorker</a>
+ class must be implemented for each type of transaction.  If
+desired, anonymous inner classes can be used to implement the
+<a href="../../java/com/sleepycat/bdb/TransactionWorker.html">TransactionWorker</a>
+ interface.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_basic/main.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/write.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

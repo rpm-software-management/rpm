@@ -1,22 +1,23 @@
-<!--Id: db_set_error_stream.so,v 10.2 2002/08/18 21:15:54 bostic Exp -->
-<!--Id: env_set_error_stream.so,v 10.19 2002/08/18 21:16:27 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: db_set_error_stream.so,v 10.2 2002/08/18 21:15:54 bostic Exp $-->
+<!--$Id: env_set_error_stream.so,v 10.26 2003/11/08 19:17:29 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::set_error_stream</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>Db::set_error_stream</h1>
+<h3>Db::set_error_stream</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -25,40 +26,48 @@
 <p>
 void Db::set_error_stream(class ostream*);
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: Db::set_error_stream</h3>
 <p>When an error occurs in the Berkeley DB library, an exception is thrown or an
-<b>errno</b> value is returned by the method.  In some cases,
+<b>errno</b> value is returned by the interface.  In some cases,
 however, the <b>errno</b> value may be insufficient to completely
 describe the cause of the error, especially during initial application
-debugging.
+debugging.</p>
 <p>The <a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a> and Db::set_error_stream methods
 are used to enhance the mechanism for reporting error messages to the
 application by setting the C++ ostream used for displaying additional
 Berkeley DB error messages.  In some cases, when an error occurs, Berkeley DB will
-output an additional error message to the specified stream.
+output an additional error message to the specified stream.</p>
 <p>The error message will consist of the prefix string and a colon
 ("<b>:</b>") (if a prefix string was previously specified using
 <a href="../api_cxx/env_set_errpfx.html">DbEnv::set_errpfx</a>), an error string, and a trailing
-&lt;newline&gt; character.
+&lt;newline&gt; character.</p>
 <p>Alternatively, you can use the <a href="../api_cxx/env_set_errfile.html">DbEnv::set_errfile</a> method to display
 the additional information via a C library FILE *, or the
 <a href="../api_cxx/env_set_errcall.html">DbEnv::set_errcall</a> method to capture the additional error information in
 a way that does not use either output streams or C library FILE *'s.  You
-should not mix these approaches.
+should not mix these approaches.</p>
 <p>This error-logging enhancement does not slow performance or significantly
 increase application size, and may be run during normal operation as well
-as during application debugging.
+as during application debugging.</p>
 <p>For <a href="../api_cxx/db_class.html">Db</a> handles opened inside of Berkeley DB environments, calling the
 Db::set_error_stream method affects the entire environment and is equivalent to calling
-the <a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a> method.
-<h1>Class</h1>
+the <a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a> method.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>stream</b><dd>
+The <b>stream</b> parameter is the application-specified output stream to
+be used for additional error information.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
 <a href="../api_cxx/db_class.html">Db</a>
-<h1>See Also</h1>
+<h3>See Also</h3>
 <a href="../api_cxx/db_list.html">Databases and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

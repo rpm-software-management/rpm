@@ -1,31 +1,31 @@
-<!--Id: ex_rq.so,v 1.4 2002/06/24 14:50:48 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: ex_rq.so,v 1.4 2002/06/24 14:50:48 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Ex_repquote: putting it all together</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../../ref/rep/ex_comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/xa/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/ex_comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../xa/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Ex_repquote: putting it all together</h1>
+<h3 align=center>Ex_repquote: putting it all together</h3>
 <p>A replicated application must initialize a replicated environment, set
 up its communication infrastructure, and then make sure that incoming
-messages are received and processed.
+messages are received and processed.</p>
 <p>To initialize replication, ex_repquote creates a Berkeley DB environment and
 calls <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> to establish a send function.  The following
 code fragment (from the env_init function, found in
 <b>ex_repquote/ex_rq_main.c</b>) demonstrates this.  Prior to calling
 this function, the application has called machtab_init to initialize
 its environment ID to port mapping structure and passed this structure
-into env_init.
-<pre><p><blockquote>if ((ret = db_env_create(&dbenv, 0)) != 0) {
+into env_init.</p>
+<pre><blockquote>if ((ret = db_env_create(&dbenv, 0)) != 0) {
 	fprintf(stderr, "%s: env create failed: %s\n",
 	    progname, db_strerror(ret));
 	return (ret);
@@ -49,12 +49,12 @@ ex_repquote creates a user-level thread to listen on its socket, plus
 a thread to loop and handle messages on each socket, in addition to the
 threads needed to manage the user interface, update the database on the
 master, and read from the database on the client (in other words, in
-addition to the normal functionality of any database application).
+addition to the normal functionality of any database application).</p>
 <p>Once the initial threads have all been started and the communications
 infrastructure is initialized, the application signals that it is ready
 for replication and joins a replication group by calling
-<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>:
-<pre><p><blockquote>if (whoami == MASTER) {
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>:</p>
+<pre><blockquote>if (whoami == MASTER) {
 	if ((ret = dbenv-&gt;rep_start(dbenv, NULL, DB_REP_MASTER)) != 0) {
 		/* Complain and exit on error. */
 	}
@@ -79,7 +79,7 @@ without knowing the location of all its members;  the new client will
 be contacted by the members it does not know about, who will receive
 the new client's contact information that was specified in "myaddr."
 See <a href="../../ref/rep/newsite.html">Connecting to a new site</a> for more
-information.
+information.</p>
 <p>The final piece of a replicated application is the code that loops,
 receives, and processes messages from a given remote environment.
 ex_repquote runs one of these loops in a parallel thread for each socket
@@ -89,8 +89,8 @@ either look up the correct environment ID for each or encapsulate the
 ID in the communications protocol.  The details may thus vary from
 application to application, but in ex_repquote the message-handling loop
 is as follows (code fragment from the hm_loop function, found in
-<b>ex_repquote/ex_rq_util.c</b>):
-<pre><p><blockquote>DB_ENV *dbenv;
+<b>ex_repquote/ex_rq_util.c</b>):</p>
+<pre><blockquote>DB_ENV *dbenv;
 DBT rec, control;	/* Structures encapsulating a received message. */
 elect_args *ea;		/* Parameters to the elect thread. */
 machtab_t *tab;		/* The environment ID to fd mapping table. */
@@ -160,7 +160,7 @@ for (ret = 0; ret == 0;) {
 <p>
 	tmpid = eid;
 	switch(r = dbenv-&gt;rep_process_message(dbenv,
-	    &control, &rec, &tmpid)) {
+	    &control, &rec, &tmpid, NULL)) {
 	case DB_REP_NEWSITE:
 		/*
 		 * Check if we got sent connect information and if we
@@ -229,8 +229,8 @@ for (ret = 0; ret == 0;) {
 		break;
 	}
 }</blockquote></pre>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/ex_comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/xa/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/ex_comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../xa/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

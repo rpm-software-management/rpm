@@ -1,21 +1,20 @@
 /*
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002
+ * Copyright (c) 2002-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: mut_win32.c,v 1.8 2002/09/10 02:37:25 bostic Exp ";
+static const char revid[] = "$Id: mut_win32.c,v 1.15 2003/05/05 19:55:03 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 
 #include <string.h>
-#include <unistd.h>
 #endif
 
 /*
@@ -51,7 +50,7 @@ __db_win32_mutex_init(dbenv, mutexp, flags)
 	u_int32_t save;
 
 	/*
-	 * The only setting/checking of the MUTEX_MPOOL flags is in the mutex
+	 * The only setting/checking of the MUTEX_MPOOL flag is in the mutex
 	 * mutex allocation code (__db_mutex_alloc/free).  Preserve only that
 	 * flag.  This is safe because even if this flag was never explicitly
 	 * set, but happened to be set in memory, it will never be checked or
@@ -74,9 +73,7 @@ __db_win32_mutex_init(dbenv, mutexp, flags)
 	}
 
 	mutexp->id = ((getpid() & 0xffff) << 16) ^ P_TO_UINT32(mutexp);
-	mutexp->spins = __os_spin(dbenv);
 	F_SET(mutexp, MUTEX_INITED);
-
 	return (0);
 }
 
@@ -92,7 +89,8 @@ __db_win32_mutex_lock(dbenv, mutexp)
 	DB_MUTEX *mutexp;
 {
 	HANDLE event;
-	int ret, ms, nspins;
+	u_int32_t nspins;
+	int ret, ms;
 #ifdef MUTEX_DIAG
 	LARGE_INTEGER now;
 #endif
@@ -105,9 +103,17 @@ __db_win32_mutex_lock(dbenv, mutexp)
 	ret = 0;
 
 loop:	/* Attempt to acquire the resource for N spins. */
-	for (nspins = mutexp->spins; nspins > 0; --nspins) {
-		if (!MUTEX_SET(&mutexp->tas))
+	for (nspins = dbenv->tas_spins; nspins > 0; --nspins) {
+		if (!MUTEX_SET(&mutexp->tas)) {
+			/*
+			 * Some systems (notably those with newer Intel CPUs)
+			 * need a small pause here. [#6975]
+			 */
+#ifdef MUTEX_PAUSE
+			MUTEX_PAUSE
+#endif
 			continue;
+		}
 
 #ifdef DIAGNOSTIC
 		if (mutexp->locked)
@@ -189,7 +195,7 @@ __db_win32_mutex_unlock(dbenv, mutexp)
 	MUTEX_UNSET(&mutexp->tas);
 
 	ret = 0;
-	
+
 	if (mutexp->nwaiters > 0) {
 		GET_HANDLE(mutexp, event);
 

@@ -1,34 +1,35 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_net.c,v 1.37 2002/08/06 05:39:04 bostic Exp 
+ * $Id: ex_rq_net.c,v 1.46 2003/09/05 00:05:34 bostic Exp $
  */
 
 #include <sys/types.h>
-
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/wait.h>
-
 #include <assert.h>
 #include <errno.h>
-#include <netdb.h>
-#include <pthread.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include <db.h>
-#include <dbinc/queue.h>		/* !!!: for the LIST_XXX macros. */
-
 #include "ex_repquote.h"
+#ifndef _SYS_QUEUE_H
+/*
+ * Some *BSD Unix variants include the Queue macros in their libraries and
+ * these might already have been included.  In that case, it would be bad
+ * to include them again.
+ */
+#include <dbinc/queue.h>		/* !!!: for the LIST_XXX macros. */
+#endif
+
 
 int machtab_add __P((machtab_t *, int, u_int32_t, int, int *));
+#ifdef DIAGNOSTIC
+void machtab_print __P((machtab_t *));
+#endif
 ssize_t readn __P((int, void *, size_t));
 
 /*
@@ -67,7 +68,7 @@ ssize_t readn __P((int, void *, size_t));
 struct __machtab {
 	LIST_HEAD(__machlist, __member) machlist;
 	int nextid;
-	pthread_mutex_t mtmutex;
+	mutex_t mtmutex;
 	u_int32_t timeout_time;
 	int current;
 	int max;
@@ -116,8 +117,7 @@ machtab_init(machtabp, pri, nsites)
 	machtab->priority = pri;
 	machtab->nsites = nsites;
 
-	ret = pthread_mutex_init(&machtab->mtmutex, NULL);
-
+	ret = mutex_init(&machtab->mtmutex, NULL);
 	*machtabp = machtab;
 
 	return (ret);
@@ -138,6 +138,7 @@ machtab_add(machtab, fd, hostaddr, port, idp)
 	int ret;
 	member_t *m, *member;
 
+	ret = 0;
 	if ((member = malloc(sizeof(member_t))) == NULL)
 		return (ENOMEM);
 
@@ -145,7 +146,7 @@ machtab_add(machtab, fd, hostaddr, port, idp)
 	member->hostaddr = hostaddr;
 	member->port = port;
 
-	if ((ret = pthread_mutex_lock(&machtab->mtmutex)) != 0)
+	if ((ret = mutex_lock(&machtab->mtmutex)) != 0)
 		return (ret);
 
 	for (m = LIST_FIRST(&machtab->machlist);
@@ -159,7 +160,7 @@ machtab_add(machtab, fd, hostaddr, port, idp)
 	} else
 		member->eid = m->eid;
 
-	ret = pthread_mutex_unlock(&machtab->mtmutex);
+	ret = mutex_unlock(&machtab->mtmutex);
 
 	if (idp != NULL)
 		*idp = member->eid;
@@ -171,6 +172,10 @@ machtab_add(machtab, fd, hostaddr, port, idp)
 		free(member);
 		ret = EEXIST;
 	}
+#ifdef DIAGNOSTIC
+	printf("Exiting machtab_add\n");
+	machtab_print(machtab);
+#endif
 	return (ret);
 }
 
@@ -188,7 +193,7 @@ machtab_getinfo(machtab, eid, hostp, portp)
 	int ret;
 	member_t *member;
 
-	if ((ret = pthread_mutex_lock(&machtab->mtmutex)) != 0)
+	if ((ret = mutex_lock(&machtab->mtmutex)) != 0)
 		return (ret);
 
 	for (member = LIST_FIRST(&machtab->machlist);
@@ -200,7 +205,7 @@ machtab_getinfo(machtab, eid, hostp, portp)
 			break;
 		}
 
-	if ((ret = pthread_mutex_unlock(&machtab->mtmutex)) != 0)
+	if ((ret = mutex_unlock(&machtab->mtmutex)) != 0)
 		return (ret);
 
 	return (member != NULL ? 0 : EINVAL);
@@ -222,7 +227,7 @@ machtab_rem(machtab, eid, lock)
 	member_t *member;
 
 	ret = 0;
-	if (lock && (ret = pthread_mutex_lock(&machtab->mtmutex)) != 0)
+	if (lock && (ret = mutex_lock(&machtab->mtmutex)) != 0)
 		return (ret);
 
 	for (found = 0, member = LIST_FIRST(&machtab->machlist);
@@ -231,7 +236,7 @@ machtab_rem(machtab, eid, lock)
 		if (member->eid == eid) {
 			found = 1;
 			LIST_REMOVE(member, links);
-			(void)close(member->fd);
+			(void)closesocket(member->fd);
 			free(member);
 			machtab->current--;
 			break;
@@ -241,8 +246,12 @@ machtab_rem(machtab, eid, lock)
 		machtab->nextid = 2;
 
 	if (lock)
-		ret = pthread_mutex_unlock(&machtab->mtmutex);
+		ret = mutex_unlock(&machtab->mtmutex);
 
+#ifdef DIAGNOSTIC
+	printf("Exiting machtab_rem\n");
+	machtab_print(machtab);
+#endif
 	return (ret);
 }
 
@@ -260,6 +269,26 @@ machtab_parm(machtab, nump, prip, timeoutp)
 	*timeoutp = machtab->timeout_time;
 }
 
+#ifdef DIAGNOSTIC
+void
+machtab_print(machtab)
+	machtab_t *machtab;
+{
+	member_t *m;
+
+	(void)mutex_lock(&machtab->mtmutex);
+
+	for (m = LIST_FIRST(&machtab->machlist);
+	    m != NULL; m = LIST_NEXT(m, links)) {
+
+	    printf("IP: %lx Port: %6d EID: %2d FD: %3d\n",
+	        (long)m->hostaddr, m->port, m->eid, m->fd);
+	}
+
+	(void)mutex_unlock(&machtab->mtmutex);
+
+}
+#endif
 /*
  * listen_socket_init --
  *	Initialize a socket for listening on the specified port.  Returns
@@ -271,7 +300,7 @@ listen_socket_init(progname, port)
 	const char *progname;
 	int port;
 {
-	int s;
+	int s, sockopt;
 	struct protoent *proto;
 	struct sockaddr_in si;
 
@@ -284,7 +313,15 @@ listen_socket_init(progname, port)
 	memset(&si, 0, sizeof(si));
 	si.sin_family = AF_INET;
 	si.sin_addr.s_addr = htonl(INADDR_ANY);
-	si.sin_port = htons(port);
+	si.sin_port = htons((unsigned short)port);
+
+	/*
+	 * When using this example for testing, it's common to kill and restart
+	 * regularly.  On some systems, this causes bind to fail with "address
+	 * in use" errors unless this option is set.
+	 */
+	sockopt = 1;
+	setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof (sockopt));
 
 	if (bind(s, (struct sockaddr *)&si, sizeof(si)) != 0)
 		goto err;
@@ -294,8 +331,8 @@ listen_socket_init(progname, port)
 
 	return (s);
 
-err:	fprintf(stderr, "%s: %s", progname, strerror(errno));
-	close (s);
+err:	fprintf(stderr, "%s: %s", progname, strerror(net_errno));
+	closesocket(s);
 	return (-1);
 }
 
@@ -312,7 +349,8 @@ listen_socket_accept(machtab, progname, s, eidp)
 {
 	struct sockaddr_in si;
 	int si_len;
-	int host, ns, port, ret;
+	int host, ns, ret;
+	u_int16_t port;
 
 	COMPQUIET(progname, NULL);
 
@@ -320,17 +358,26 @@ wait:	memset(&si, 0, sizeof(si));
 	si_len = sizeof(si);
 	ns = accept(s, (struct sockaddr *)&si, &si_len);
 	host = ntohl(si.sin_addr.s_addr);
-	port = ntohs(si.sin_port);
+
+	/*
+	 * Sites send their listening port when connections are first
+	 * established, as it will be different from the outgoing port
+	 * for this connection.
+	 */
+	if (readn(ns, &port, 2) != 2)
+		goto err;
+	port = ntohs(port);
+
 	ret = machtab_add(machtab, ns, host, port, eidp);
 	if (ret == EEXIST) {
-		close(ns);
+		closesocket(ns);
 		goto wait;
 	} else if (ret != 0)
 		goto err;
-
+printf("Connected to host %x port %d, eid = %d\n", host, port, *eidp);
 	return (ns);
 
-err:	close(ns);
+err:	closesocket(ns);
 	return (-1);
 }
 
@@ -358,7 +405,7 @@ get_accepted_socket(progname, port)
 	memset(&si, 0, sizeof(si));
 	si.sin_family = AF_INET;
 	si.sin_addr.s_addr = htonl(INADDR_ANY);
-	si.sin_port = htons(port);
+	si.sin_port = htons((unsigned short)port);
 
 	if (bind(s, (struct sockaddr *)&si, sizeof(si)) != 0)
 		goto err;
@@ -372,8 +419,8 @@ get_accepted_socket(progname, port)
 
 	return (ns);
 
-err:	fprintf(stderr, "%s: %s", progname, strerror(errno));
-	close (s);
+err:	fprintf(stderr, "%s: %s", progname, strerror(net_errno));
+	closesocket(s);
 	return (-1);
 }
 
@@ -396,6 +443,7 @@ get_connected_socket(machtab, progname, remotehost, port, is_open, eidp)
 	struct protoent *proto;
 	struct sockaddr_in si;
 	u_int32_t addr;
+	u_int16_t nport;
 
 	*is_open = 0;
 
@@ -404,7 +452,7 @@ get_connected_socket(machtab, progname, remotehost, port, is_open, eidp)
 
 	if ((hp = gethostbyname(remotehost)) == NULL) {
 		fprintf(stderr, "%s: host not found: %s\n", progname,
-		    strerror(errno));
+		    strerror(net_errno));
 		return (-1);
 	}
 
@@ -416,21 +464,29 @@ get_connected_socket(machtab, progname, remotehost, port, is_open, eidp)
 	ret = machtab_add(machtab, s, addr, port, eidp);
 	if (ret == EEXIST) {
 		*is_open = 1;
-		close(s);
+		closesocket(s);
 		return (0);
 	} else if (ret != 0) {
-		close (s);
+		closesocket(s);
 		return (-1);
 	}
 
 	si.sin_family = AF_INET;
-	si.sin_port = htons(port);
+	si.sin_port = htons((unsigned short)port);
 	if (connect(s, (struct sockaddr *)&si, sizeof(si)) < 0) {
 		fprintf(stderr, "%s: connection failed: %s",
-		    progname, strerror(errno));
+		    progname, strerror(net_errno));
 		(void)machtab_rem(machtab, *eidp, 1);
 		return (-1);
 	}
+
+	/*
+	 * The first thing we send on the socket is our (listening) port
+	 * so the site we are connecting to can register us correctly in
+	 * its machtab.
+	 */
+	nport = htons(myport);
+	writesocket(s, &nport, 2);
 
 	return (s);
 }
@@ -521,12 +577,12 @@ readn(fd, vptr, n)
 	ptr = vptr;
 	nleft = n;
 	while (nleft > 0) {
-		if ( (nread = read(fd, ptr, nleft)) < 0) {
+		if ((nread = readsocket(fd, ptr, nleft)) < 0) {
 			/*
 			 * Call read() again on interrupted system call;
 			 * on other errors, bail.
 			 */
-			if (errno == EINTR)
+			if (net_errno == EINTR)
 				nread = 0;
 			else
 				return (-1);
@@ -545,9 +601,10 @@ readn(fd, vptr, n)
  * The f_send function for DB_ENV->set_rep_transport.
  */
 int
-quote_send(dbenv, control, rec, eid, flags)
+quote_send(dbenv, control, rec, lsnp, eid, flags)
 	DB_ENV *dbenv;
 	const DBT *control, *rec;
+	const DB_LSN *lsnp;
 	int eid;
 	u_int32_t flags;
 {
@@ -555,6 +612,7 @@ quote_send(dbenv, control, rec, eid, flags)
 	machtab_t *machtab;
 	member_t *m;
 
+	COMPQUIET(lsnp, NULL);
 	machtab = (machtab_t *)dbenv->app_private;
 
 	if (eid == DB_EID_BROADCAST) {
@@ -569,7 +627,7 @@ quote_send(dbenv, control, rec, eid, flags)
 		return (0);
 	}
 
-	if ((ret = pthread_mutex_lock(&machtab->mtmutex)) != 0)
+	if ((ret = mutex_lock(&machtab->mtmutex)) != 0)
 		return (ret);
 
 	fd = 0;
@@ -589,8 +647,7 @@ quote_send(dbenv, control, rec, eid, flags)
 
 	ret = quote_send_one(rec, control, fd, flags);
 
-	if ((t_ret = (pthread_mutex_unlock(&machtab->mtmutex))) != 0 &&
-	    ret == 0)
+	if ((t_ret = mutex_unlock(&machtab->mtmutex)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -611,7 +668,7 @@ quote_send_broadcast(machtab, rec, control, flags)
 	int ret, sent;
 	member_t *m, *next;
 
-	if ((ret = pthread_mutex_lock(&machtab->mtmutex)) != 0)
+	if ((ret = mutex_lock(&machtab->mtmutex)) != 0)
 		return (0);
 
 	sent = 0;
@@ -623,7 +680,7 @@ quote_send_broadcast(machtab, rec, control, flags)
 			sent++;
 	}
 
-	if (pthread_mutex_unlock(&machtab->mtmutex) != 0)
+	if (mutex_unlock(&machtab->mtmutex) != 0)
 		return (-1);
 
 	return (sent);
@@ -656,12 +713,12 @@ quote_send_one(rec, control, fd, flags)
 	 * The protocol is simply: write rec->size, write rec->data,
 	 * write control->size, write control->data.
 	 */
-	nw = write(fd, &rec->size, 4);
+	nw = writesocket(fd, (const char *)&rec->size, 4);
 	if (nw != 4)
 		return (DB_REP_UNAVAIL);
 
 	if (rec->size > 0) {
-		nw = write(fd, rec->data, rec->size);
+		nw = writesocket(fd, rec->data, rec->size);
 		if (nw < 0)
 			return (DB_REP_UNAVAIL);
 		if (nw != (ssize_t)rec->size) {
@@ -669,7 +726,7 @@ quote_send_one(rec, control, fd, flags)
 			wp = (u_int8_t *)rec->data + nw;
 			bytes_left = rec->size - nw;
 			for (retry = 0; bytes_left > 0 && retry < 3; retry++) {
-				nw = write(fd, wp, bytes_left);
+				nw = writesocket(fd, wp, bytes_left);
 				if (nw < 0)
 					return (DB_REP_UNAVAIL);
 				bytes_left -= nw;
@@ -680,11 +737,11 @@ quote_send_one(rec, control, fd, flags)
 		}
 	}
 
-	nw = write(fd, &control->size, 4);
+	nw = writesocket(fd, (const char *)&control->size, 4);
 	if (nw != 4)
 		return (DB_REP_UNAVAIL);
 	if (control->size > 0) {
-		nw = write(fd, control->data, control->size);
+		nw = writesocket(fd, control->data, control->size);
 		if (nw != (ssize_t)control->size)
 			return (DB_REP_UNAVAIL);
 	}

@@ -1,20 +1,20 @@
-<!--Id: atomicity.so,v 10.3 2002/05/17 15:48:41 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: atomicity.so,v 10.3 2002/05/17 15:48:41 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Atomicity</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
-<td align=right><a href="../../ref/transapp/put.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/inc.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../transapp/put.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/inc.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Atomicity</h1>
+<h3 align=center>Atomicity</h3>
 <p>The second reason listed for using transactions was <i>atomicity</i>.
 Atomicity means that multiple operations can be grouped into a single
 logical entity, that is, other threads of control accessing the database
@@ -22,7 +22,7 @@ will either see all of the changes or none of the changes.  Atomicity
 is important for applications wanting to update two related databases
 (for example, a primary database and secondary index)  in a single
 logical action.  Or, for an application wanting to update multiple
-records in one database in a single logical action.
+records in one database in a single logical action.</p>
 <p>Any number of operations on any number of databases can be included in
 a single transaction to ensure the atomicity of the operations.  There
 is, however, a trade-off between the number of operations included in
@@ -38,7 +38,7 @@ can increase overall throughput.  (There is one exception to this: the
 transactions to exhibit the ACI (atomicity, consistency and isolation)
 properties, but not D (durability); avoiding the write and/or
 synchronous disk I/O on transaction commit greatly increases transaction
-throughput for some applications.)
+throughput for some applications.)</p>
 <p>When applications do create complex transactions, they often avoid
 having more than one complex transaction at a time because simple
 operations like a single <a href="../../api_c/db_put.html">DB-&gt;put</a> are unlikely to deadlock with
@@ -50,14 +50,14 @@ of those sets may be encapsulated in a nested transaction.  Because
 nested transactions may be individually aborted and retried without
 causing the entire transaction to be aborted, this allows complex
 transactions to proceed even in the face of heavy contention, repeatedly
-trying the suboperations until they succeed.
+trying the suboperations until they succeed.</p>
 <p>It is also helpful to order operations within a transaction; that is,
 access the databases and items within the databases in the same order,
 to the extent possible, in all transactions.  Accessing databases and
 items in different orders greatly increases the likelihood of operations
-being blocked and failing due to deadlocks.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/put.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/inc.html"><img src="../../images/next.gif" alt="Next"></a>
+being blocked and failing due to deadlocks.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/put.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/inc.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,21 +1,22 @@
-<!--Id: runrec_class.so,v 10.12 2002/07/29 00:43:14 mjc Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: runrec_class.so,v 10.17 2003/10/24 14:50:29 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbRunRecoveryException</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DbRunRecoveryException</h1>
+<h3>DbRunRecoveryException</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -24,26 +25,20 @@
 <p>
 class DbRunRecoveryException : public DbException { ... };
 </pre></h3>
-<h1>Description</h1>
-<p>This manual page describes the DbRunRecoveryException class and
-how it is used by the various Db* classes.
+<hr size=1 noshade>
+<h3>Description: DbRunRecoveryException</h3>
+<p>This information describes the DbRunRecoveryException class and
+how it is used by the various Berkeley DB classes.</p>
 <p>Errors can occur in the Berkeley DB library where the only solution is to shut
 down the application and run recovery (for example, if Berkeley DB is unable
 to allocate heap memory).  When a fatal error occurs in Berkeley DB, methods
 will throw a DbRunRecoveryException, at which point all
 subsequent database calls will also fail in the same way.  When this
-occurs, recovery should be performed.
-<h1>Class</h1>
-<a href="../api_cxx/except_class.html">DbException</a>
-<h1>See Also</h1>
-<a href="../api_cxx/get_errno.html">DbException::get_errno</a>,
-<a href="../api_cxx/what.html">DbException::what</a>
-and
-<a href="../api_cxx/mem_class.html">DbMemoryException</a>
+occurs, recovery should be performed.</p>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

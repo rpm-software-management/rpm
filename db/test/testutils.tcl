@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996, 1997, 1998, 1999, 2000
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-#	$Id: testutils.tcl,v 11.86 2001/01/18 23:21:14 krinsky Exp $
+# $Id: testutils.tcl,v 11.182 2003/09/30 17:32:26 sandstro Exp $
 #
 # Test system utilities
 #
@@ -12,14 +12,25 @@
 proc timestamp {{opt ""}} {
 	global __timestamp_start
 
+	set now [clock seconds]
+
+	# -c	accurate to the click, instead of the second.
+	# -r	seconds since the Epoch
+	# -t	current time in the format expected by db_recover -t.
+	# -w	wallclock time
+	# else	wallclock plus elapsed time.
 	if {[string compare $opt "-r"] == 0} {
-		clock seconds
+		return $now
 	} elseif {[string compare $opt "-t"] == 0} {
-		# -t gives us the current time in the format expected by
-		# db_recover -t.
-		return [clock format [clock seconds] -format "%y%m%d%H%M.%S"]
+		return [clock format $now -format "%y%m%d%H%M.%S"]
+	} elseif {[string compare $opt "-w"] == 0} {
+		return [clock format $now -format "%c"]
 	} else {
-		set now [clock seconds]
+		if {[string compare $opt "-c"] == 0} {
+			set printclicks 1
+		} else {
+			set printclicks 0
+		}
 
 		if {[catch {set start $__timestamp_start}] != 0} {
 			set __timestamp_start $now
@@ -30,7 +41,13 @@ proc timestamp {{opt ""}} {
 		set the_time [clock format $now -format ""]
 		set __timestamp_start $now
 
-		format "%02d:%02d:%02d (%02d:%02d:%02d)" \
+		if { $printclicks == 1 } {
+			set pc_print [format ".%08u" [__fix_num [clock clicks]]]
+		} else {
+			set pc_print ""
+		}
+
+		format "%02d:%02d:%02d$pc_print (%02d:%02d:%02d)" \
 		    [__fix_num [clock format $now -format "%H"]] \
 		    [__fix_num [clock format $now -format "%M"]] \
 		    [__fix_num [clock format $now -format "%S"]] \
@@ -115,32 +132,68 @@ proc get_file_as_key { db txn flags file} {
 
 # open file and call dump_file to dumpkeys to tempfile
 proc open_and_dump_file {
-    dbname dbenv txn outfile checkfunc dump_func beg cont} {
+    dbname env outfile checkfunc dump_func beg cont } {
+	global encrypt
+	global passwd
 	source ./include.tcl
-	if { $dbenv == "NULL" } {
-		set db [berkdb open -rdonly -unknown $dbname]
-		error_check_good dbopen [is_valid_db $db] TRUE
-	} else {
-		set db [berkdb open -env $dbenv -rdonly -unknown $dbname]
-		error_check_good dbopen [is_valid_db $db] TRUE
+
+	set encarg ""
+	if { $encrypt > 0 && $env == "NULL" } {
+		set encarg "-encryptany $passwd"
 	}
+	set envarg ""
+	set txn ""
+	set txnenv 0
+	if { $env != "NULL" } {
+		append envarg " -env $env "
+		set txnenv [is_txnenv $env]
+		if { $txnenv == 1 } {
+			append envarg " -auto_commit "
+			set t [$env txn]
+			error_check_good txn [is_valid_txn $t $env] TRUE
+			set txn "-txn $t"
+		}
+	}
+	set db [eval {berkdb open} $envarg -rdonly -unknown $encarg $dbname]
+	error_check_good dbopen [is_valid_db $db] TRUE
 	$dump_func $db $txn $outfile $checkfunc $beg $cont
+	if { $txnenv == 1 } {
+		error_check_good txn [$t commit] 0
+	}
 	error_check_good db_close [$db close] 0
 }
 
 # open file and call dump_file to dumpkeys to tempfile
 proc open_and_dump_subfile {
-    dbname dbenv txn outfile checkfunc dump_func beg cont subdb} {
+    dbname env outfile checkfunc dump_func beg cont subdb} {
+	global encrypt
+	global passwd
 	source ./include.tcl
 
-	if { $dbenv == "NULL" } {
-		set db [berkdb open -rdonly -unknown $dbname $subdb]
-		error_check_good dbopen [is_valid_db $db] TRUE
-	} else {
-		set db [berkdb open -env $dbenv -rdonly -unknown $dbname $subdb]
-		error_check_good dbopen [is_valid_db $db] TRUE
+	set encarg ""
+	if { $encrypt > 0 && $env == "NULL" } {
+		set encarg "-encryptany $passwd"
 	}
+	set envarg ""
+	set txn ""
+	set txnenv 0
+	if { $env != "NULL" } {
+		append envarg "-env $env"
+		set txnenv [is_txnenv $env]
+		if { $txnenv == 1 } {
+			append envarg " -auto_commit "
+			set t [$env txn]
+			error_check_good txn [is_valid_txn $t $env] TRUE
+			set txn "-txn $t"
+		}
+	}
+	set db [eval {berkdb open -rdonly -unknown} \
+	    $envarg $encarg {$dbname $subdb}]
+	error_check_good dbopen [is_valid_db $db] TRUE
 	$dump_func $db $txn $outfile $checkfunc $beg $cont
+	if { $txnenv == 1 } {
+		error_check_good txn [$t commit] 0
+	}
 	error_check_good db_close [$db close] 0
 }
 
@@ -155,12 +208,18 @@ proc dump_file { db txn outfile checkfunc } {
 proc dump_file_direction { db txn outfile checkfunc start continue } {
 	source ./include.tcl
 
-	set outf [open $outfile w]
 	# Now we will get each key from the DB and dump to outfile
 	set c [eval {$db cursor} $txn]
 	error_check_good db_cursor [is_valid_cursor $c $db] TRUE
-	for {set d [$c get $start] } { [llength $d] != 0 } {
-	    set d [$c get $continue] } {
+	dump_file_walk $c $outfile $checkfunc $start $continue
+	error_check_good curs_close [$c close] 0
+}
+
+proc dump_file_walk { c outfile checkfunc start continue {flag ""} } {
+	set outf [open $outfile w]
+	for {set d [eval {$c get} $flag $start] } \
+	    { [llength $d] != 0 } \
+	    {set d [eval {$c get} $flag $continue] } {
 		set kd [lindex $d 0]
 		set k [lindex $kd 0]
 		set d2 [lindex $kd 1]
@@ -170,7 +229,6 @@ proc dump_file_direction { db txn outfile checkfunc start continue } {
 		# puts $outf "$k $d2"
 	}
 	close $outf
-	error_check_good curs_close [$c close] 0
 }
 
 proc dump_binkey_file { db txn outfile checkfunc } {
@@ -285,19 +343,30 @@ proc error_check_good { func result desired {txn 0} } {
 }
 
 # Locks have the prefix of their manager.
-proc is_substr { l mgr } {
-	if { [string first $mgr $l]  == -1 } {
+proc is_substr { str sub } {
+	if { [string first $sub $str]  == -1 } {
 		return 0
 	} else {
 		return 1
 	}
 }
 
+proc is_serial { str } {
+	global serial_tests
+
+	foreach test $serial_tests {
+		if { [is_substr $str $test]  == 1 } {
+			return 1
+		}
+	}
+	return 0
+}
+
 proc release_list { l } {
 
 	# Now release all the locks
 	foreach el $l {
-		set ret [$el put]
+		catch { $el put } ret
 		error_check_good lock_put $ret 0
 	}
 }
@@ -365,6 +434,54 @@ proc dup_check { db txn tmpfile dlist {extra 0}} {
 					error_check_good dupget.id1 $id $extra
 				}
 			}
+		}
+		if { $done != 1 } {
+			puts $outf $key
+		}
+	}
+	close $outf
+	error_check_good curs_close [$c close] 0
+}
+
+# Check if each key appears exactly [llength dlist] times in the file with
+# the duplicate tags matching those that appear in dlist.
+proc dup_file_check { db txn tmpfile dlist } {
+	source ./include.tcl
+
+	set outf [open $tmpfile w]
+	# Now we will get each key from the DB and dump to outfile
+	set c [eval {$db cursor} $txn]
+	set lastkey ""
+	set done 0
+	while { $done != 1} {
+		foreach did $dlist {
+			set rec [$c get "-next"]
+			if { [string length $rec] == 0 } {
+				set done 1
+				break
+			}
+			set key [lindex [lindex $rec 0] 0]
+			if { [string compare $key $lastkey] != 0 } {
+				#
+				# If we changed files read in new contents.
+				#
+				set fid [open $key r]
+				fconfigure $fid -translation binary
+				set filecont [read $fid]
+				close $fid
+			}
+			set fulldata [lindex [lindex $rec 0] 1]
+			set id [id_of $fulldata]
+			set d [data_of $fulldata]
+			if { [string compare $key $lastkey] != 0 && \
+			    $id != [lindex $dlist 0] } {
+				set e [lindex $dlist 0]
+				error "FAIL: \tKey \
+				    $key, expected dup id $e, got $id"
+			}
+			error_check_good dupget.data $d $filecont
+			error_check_good dupget.id $id $did
+			set lastkey $key
 		}
 		if { $done != 1 } {
 			puts $outf $key
@@ -513,7 +630,7 @@ proc sentinel_init { } {
 
 	set filelist {}
 	set ret [catch {glob $testdir/begin.*} result]
-	if { $ret == 0 } { 
+	if { $ret == 0 } {
 		set filelist $result
 	}
 
@@ -527,16 +644,33 @@ proc sentinel_init { } {
 	}
 }
 
-proc watch_procs { {delay 30} {max 3600} } {
+proc watch_procs { pidlist {delay 30} {max 3600} {quiet 0} } {
 	source ./include.tcl
 
 	set elapsed 0
+
+	# Don't start watching the processes until a sentinel
+	# file has been created for each one.
+	foreach pid $pidlist {
+		while { [file exists $testdir/begin.$pid] == 0 } {
+			tclsleep $delay
+			incr elapsed $delay
+			# If pids haven't been created in one-tenth
+			# of the time allowed for the whole test,
+			# there's a problem.  Report an error and fail.
+			if { $elapsed > [expr {$max / 10}] } {
+				puts "FAIL: begin.pid not created"
+				break
+			}
+		}
+	}
+
 	while { 1 } {
 
 		tclsleep $delay
 		incr elapsed $delay
 
-		# Find the list of processes withoutstanding sentinel
+		# Find the list of processes with outstanding sentinel
 		# files (i.e. a begin.pid and no end.pid).
 		set beginlist {}
 		set endlist {}
@@ -586,18 +720,14 @@ proc watch_procs { {delay 30} {max 3600} } {
 		if { $elapsed > $max } {
 			# We have exceeded the limit; kill processes
 			# and report an error
-			set rlist {}
 			foreach i $l {
-				set r [catch { exec $KILL $i } result]
-				if { $r == 0 } {
-					lappend rlist $i
-				}
+				tclkill $i
 			}
-			error_check_good "Processes still running" \
-			    [llength $rlist] 0
 		}
 	}
-	puts "All processes have exited."
+	if { $quiet == 0 } {
+		puts "All processes have exited."
+	}
 }
 
 # These routines are all used from within the dbscript.tcl tester.
@@ -935,7 +1065,7 @@ proc filecheck { file txn } {
 		unset check_array
 	}
 
-	open_and_dump_file $file NULL $txn $file.dump dbcheck dump_full_file \
+	open_and_dump_file $file NULL $file.dump dbcheck dump_full_file \
 	    "-first" "-next"
 
 	# Check that everything we checked had all its data
@@ -964,71 +1094,64 @@ proc filecheck { file txn } {
 	}
 }
 
-proc esetup { dir } {
-	source ./include.tcl
-
-	set ret [berkdb envremove -home $dir]
-
-	fileremove -f $dir/file0 $dir/file1 $dir/file2 $dir/file3
-	set mp [memp $dir 0644 -create -cachesize { 0 10240 }]
-	set lp [lock_open "" -create 0644]
-	error_check_good memp_close [$mp close] 0
-	error_check_good lock_close [$lp close] 0
-}
-
-proc cleanup { dir env } {
+proc cleanup { dir env { quiet 0 } } {
 	global gen_upgrade
-	global upgrade_dir
-	global upgrade_be
-	global upgrade_method
-	global upgrade_name
+	global is_qnx_test
+	global old_encrypt
+	global passwd
 	source ./include.tcl
 
 	if { $gen_upgrade == 1 } {
-		set vers [berkdb version]
-		set maj [lindex $vers 0]
-		set min [lindex $vers 1]
-
-		if { $upgrade_be == 1 } {
-			set version_dir "$maj.${min}be"
-		} else {
-			set version_dir "$maj.${min}le"
-		}
-
-		set dest $upgrade_dir/$version_dir/$upgrade_method/$upgrade_name
-
-		catch {exec mkdir -p $dest}
-		catch {exec sh -c "mv $dir/*.db $dest"}
-		catch {exec sh -c "mv $dir/__dbq.* $dest"}
+		save_upgrade_files $dir
 	}
 
 #	check_handles
 	set remfiles {}
 	set ret [catch { glob $dir/* } result]
 	if { $ret == 0 } {
-		foreach file $result {
+		foreach fileorig $result {
 			#
 			# We:
 			# - Ignore any env-related files, which are
 			# those that have __db.* or log.* if we are
-			# running in an env.
+			# running in an env.  Also ignore files whose
+			# names start with REPDIR_;  these are replication
+			# subdirectories.
 			# - Call 'dbremove' on any databases.
 			# Remove any remaining temp files.
 			#
-			switch -glob -- $file {
+			switch -glob -- $fileorig {
+			*/DIR_* -
 			*/__db.* -
 			*/log.*	{
 				if { $env != "NULL" } {
 					continue
 				} else {
-					lappend remfiles $file
+					if { $is_qnx_test } {
+						catch {berkdb envremove -force \
+						    -home $dir} r
+					}
+					lappend remfiles $fileorig
 				}
 				}
 			*.db	{
 				set envargs ""
+				set encarg ""
+				#
+				# If in an env, it should be open crypto
+				# or not already.
+				#
 				if { $env != "NULL"} {
-					set file [file tail $file]
+					set file [file tail $fileorig]
 					set envargs " -env $env "
+					if { [is_txnenv $env] } {
+						append envargs " -auto_commit "
+					}
+				} else {
+					if { $old_encrypt != 0 } {
+						set encarg "-encryptany $passwd"
+					}
+					set file $fileorig
 				}
 
 				# If a database is left in a corrupt
@@ -1038,15 +1161,39 @@ proc cleanup { dir env } {
 				# just forcibly remove the file with a warning
 				# message.
 				set ret [catch \
-				    {eval {berkdb dbremove} $envargs $file} res]
+				    {eval {berkdb dbremove} $envargs $encarg \
+				    $file} res]
+				# If dbremove failed and we're not in an env,
+				# note that we don't have 100% certainty
+				# about whether the previous run used
+				# encryption.  Try to remove with crypto if
+				# we tried without, and vice versa.
 				if { $ret != 0 } {
-					puts \
+					if { $env == "NULL" && \
+					    $old_encrypt == 0} {
+						set ret [catch \
+				    		    {eval {berkdb dbremove} \
+						    -encryptany $passwd \
+				    		    $file} res]
+					}
+					if { $env == "NULL" && \
+					    $old_encrypt == 1 } {
+						set ret [catch \
+						    {eval {berkdb dbremove} \
+						    $file} res]
+					}
+					if { $ret != 0 } {
+						if { $quiet == 0 } {
+							puts \
 				    "FAIL: dbremove in cleanup failed: $res"
-					lappend remfiles $file
+						}
+						set file $fileorig
+						lappend remfiles $file
+					}
 				}
 				}
 			default	{
-				lappend remfiles $file
+				lappend remfiles $fileorig
 				}
 			}
 		}
@@ -1058,6 +1205,11 @@ proc cleanup { dir env } {
 
 proc log_cleanup { dir } {
 	source ./include.tcl
+	global gen_upgrade_log
+
+	if { $gen_upgrade_log == 1 } {
+		save_upgrade_files $dir
+	}
 
 	set files [glob -nocomplain $dir/log.*]
 	if { [llength $files] != 0} {
@@ -1068,9 +1220,15 @@ proc log_cleanup { dir } {
 }
 
 proc env_cleanup { dir } {
+	global old_encrypt
+	global passwd
 	source ./include.tcl
 
-	set stat [catch {berkdb envremove -home $dir} ret]
+	set encarg ""
+	if { $old_encrypt != 0 } {
+		set encarg "-encryptany $passwd"
+	}
+	set stat [catch {eval {berkdb envremove -home} $dir $encarg} ret]
 	#
 	# If something failed and we are left with a region entry
 	# in /dev/shmem that is zero-length, the envremove will
@@ -1089,6 +1247,51 @@ proc env_cleanup { dir } {
 	}
 	log_cleanup $dir
 	cleanup $dir NULL
+}
+
+# Start an RPC server.  Don't return to caller until the 
+# server is up.  Wait up to $maxwait seconds.
+proc rpc_server_start { { encrypted 0 } { maxwait 30 } { args "" } } {
+	source ./include.tcl
+	global rpc_svc
+	global passwd
+
+	set encargs ""
+	if { $encrypted == 1 } {
+		set encargs " -P $passwd "
+	}
+
+	if { [string compare $rpc_server "localhost"] == 0 } {
+		set dpid [eval {exec $util_path/$rpc_svc \
+		    -h $rpc_testdir} $args $encargs &]
+	} else {
+		set dpid [eval {exec rsh $rpc_server \
+		    $rpc_path/$rpc_svc -h $rpc_testdir $args} &]
+	}
+
+	# Wait a couple of seconds before we start looking for 
+	# the server.
+	tclsleep 2
+	set home [file tail $rpc_testdir]
+	if { $encrypted == 1 } {
+		set encargs " -encryptaes $passwd "
+	}
+	for { set i 0 } { $i < $maxwait } { incr i } {
+		if {[catch {set env [eval berkdb_env -create \
+		    -home $home -server $rpc_server $encargs]} res]} {
+			# If we have an error, sleep for a second.
+			tclsleep 1
+		} else {
+			# Server is up, clean up and return to caller
+			error_check_good env_close [$env close] 0
+			break
+		}
+		if { $i >= $maxwait } {
+			puts "FAIL: RPC server\
+			    not started after $maxwait seconds"
+		}
+	}
+	return $dpid
 }
 
 proc remote_cleanup { server dir localdir } {
@@ -1136,32 +1339,89 @@ proc help { cmd } {
 # Notice that we catch the return from CP and do not do anything with it.
 # This is because Solaris CP seems to exit non-zero on occasion, but
 # everything else seems to run just fine.
+#
+# We split it into two functions so that the preparation and command
+# could be executed in a different process than the recovery.
+#
+proc op_codeparse { encodedop op } {
+	set op1 ""
+	set op2 ""
+	switch $encodedop {
+	"abort" {
+		set op1 $encodedop
+		set op2 ""
+	}
+	"commit" {
+		set op1 $encodedop
+		set op2 ""
+	}
+	"prepare-abort" {
+		set op1 "prepare"
+		set op2 "abort"
+	}
+	"prepare-commit" {
+		set op1 "prepare"
+		set op2 "commit"
+	}
+	"prepare-discard" {
+		set op1 "prepare"
+		set op2 "discard"
+	}
+	}
+
+	if { $op == "op" } {
+		return $op1
+	} else {
+		return $op2
+	}
+}
+
 proc op_recover { encodedop dir env_cmd dbfile cmd msg } {
+	source ./include.tcl
+
+	set op [op_codeparse $encodedop "op"]
+	set op2 [op_codeparse $encodedop "sub"]
+	puts "\t$msg $encodedop"
+	set gidf ""
+	if { $op == "prepare" } {
+		sentinel_init
+
+		# Fork off a child to run the cmd
+		# We append the gid, so start here making sure
+		# we don't have old gid's around.
+		set outfile $testdir/childlog
+		fileremove -f $testdir/gidfile
+		set gidf $testdir/gidfile
+		set pidlist {}
+		# puts "$tclsh_path $test_path/recdscript.tcl $testdir/recdout \
+		#    $op $dir $env_cmd $dbfile $gidf $cmd"
+		set p [exec $tclsh_path $test_path/wrap.tcl recdscript.tcl \
+		    $testdir/recdout $op $dir $env_cmd $dbfile $gidf $cmd &]
+		lappend pidlist $p
+		watch_procs $pidlist 5
+		set f1 [open $testdir/recdout r]
+		set r [read $f1]
+		puts -nonewline $r
+		close $f1
+		fileremove -f $testdir/recdout
+	} else {
+		op_recover_prep $op $dir $env_cmd $dbfile $gidf $cmd
+	}
+	op_recover_rec $op $op2 $dir $env_cmd $dbfile $gidf
+}
+
+proc op_recover_prep { op dir env_cmd dbfile gidf cmd } {
 	global log_log_record_types
 	global recd_debug
 	global recd_id
 	global recd_op
 	source ./include.tcl
 
-	#puts "op_recover: $encodedop $dir $env_cmd $dbfile $cmd $msg"
+	#puts "op_recover: $op $dir $env $dbfile $cmd"
 
 	set init_file $dir/t1
 	set afterop_file $dir/t2
 	set final_file $dir/t3
-
-	set op ""
-	set op2 ""
-	if { $encodedop == "prepare-abort" } {
-		set op "prepare"
-		set op2 "abort"
-	} elseif { $encodedop == "prepare-commit" } {
-		set op "prepare"
-		set op2 "commit"
-	} else {
-		set op $encodedop
-	}
-
-	puts "\t$msg $encodedop"
 
 	# Keep track of the log types we've seen
 	if { $log_log_record_types == 1} {
@@ -1172,13 +1432,15 @@ proc op_recover { encodedop dir env_cmd dbfile cmd msg } {
 	catch { file copy -force $dir/$dbfile $dir/$dbfile.init } res
 	copy_extent_file $dir $dbfile init
 
+	convert_encrypt $env_cmd
 	set env [eval $env_cmd]
-	set db [berkdb open -env $env $dbfile]
+	error_check_good envopen [is_valid_env $env] TRUE
+
+	set db [berkdb open -auto_commit -env $env $dbfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
 	# Dump out file contents for initial case
-	set tflags ""
-	open_and_dump_file $dbfile $env $tflags $init_file nop \
+	open_and_dump_file $dbfile $env $init_file nop \
 	    dump_file_direction "-first" "-next"
 
 	set t [$env txn]
@@ -1233,43 +1495,38 @@ proc op_recover { encodedop dir env_cmd dbfile cmd msg } {
 	set record_exec_cmd_ret 0
 	set lenient_exec_cmd_ret 0
 
-	# Sync the file so that we can capture a snapshot to test
-	# recovery.
+	# Sync the file so that we can capture a snapshot to test recovery.
 	error_check_good sync:$db [$db sync] 0
 
 	catch { file copy -force $dir/$dbfile $dir/$dbfile.afterop } res
 	copy_extent_file $dir $dbfile afterop
+	open_and_dump_file $dir/$dbfile.afterop NULL \
+		$afterop_file nop dump_file_direction "-first" "-next"
 
-	#set tflags "-txn $t"
-	open_and_dump_file $dir/$dbfile.afterop NULL $tflags \
-		$afterop_file nop dump_file_direction \
-		"-first" "-next"
 	#puts "\t\t\tExecuting txn_$op:$t"
-	error_check_good txn_$op:$t [$t $op] 0
-	if { $op2 != "" } {
-		#puts "\t\t\tExecuting txn_$op2:$t"
-		error_check_good txn_$op2:$t [$t $op2] 0
+	if { $op == "prepare" } {
+		set gid [make_gid global:$t]
+		set gfd [open $gidf w+]
+		puts $gfd $gid
+		close $gfd
+		error_check_good txn_$op:$t [$t $op $gid] 0
+	} else {
+		error_check_good txn_$op:$t [$t $op] 0
 	}
 
-	switch $encodedop {
+	switch $op {
 		"commit" { puts "\t\tCommand executed and committed." }
 		"abort" { puts "\t\tCommand executed and aborted." }
 		"prepare" { puts "\t\tCommand executed and prepared." }
-		"prepare-commit" {
-			puts "\t\tCommand executed, prepared, and committed."
-		}
-		"prepare-abort" {
-			puts "\t\tCommand executed, prepared, and aborted."
-		}
 	}
 
-	# Dump out file and save a copy.
+	# Sync the file so that we can capture a snapshot to test recovery.
 	error_check_good sync:$db [$db sync] 0
-	open_and_dump_file $dir/$dbfile NULL $tflags $final_file nop \
-	    dump_file_direction "-first" "-next"
 
 	catch { file copy -force $dir/$dbfile $dir/$dbfile.final } res
 	copy_extent_file $dir $dbfile final
+	open_and_dump_file $dir/$dbfile.final NULL \
+	    $final_file nop dump_file_direction "-first" "-next"
 
 	# If this is an abort or prepare-abort, it should match the
 	#   original file.
@@ -1281,56 +1538,121 @@ proc op_recover { encodedop dir env_cmd dbfile cmd msg } {
 	#   Thus we just skip this in the prepare-only case;  what
 	#   we care about are the results of a prepare followed by a
 	#   recovery, which we test later.
-	if { $op == "commit" || $op2 == "commit" } {
+	if { $op == "commit" } {
 		filesort $afterop_file $afterop_file.sort
 		filesort $final_file $final_file.sort
 		error_check_good \
 		    diff(post-$op,pre-commit):diff($afterop_file,$final_file) \
 		    [filecmp $afterop_file.sort $final_file.sort] 0
-	} elseif { $op == "abort" || $op2 == "abort" } {
+	} elseif { $op == "abort" } {
 		filesort $init_file $init_file.sort
 		filesort $final_file $final_file.sort
 		error_check_good \
 		    diff(initial,post-$op):diff($init_file,$final_file) \
 		    [filecmp $init_file.sort $final_file.sort] 0
 	} else {
-		# Make sure this really is a prepare-only
-		error_check_good assert:prepare-only $encodedop "prepare"
+		# Make sure this really is one of the prepare tests
+		error_check_good assert:prepare-test $op "prepare"
 	}
 
 	# Running recovery on this database should not do anything.
 	# Flush all data to disk, close the environment and save the
 	# file.
-	error_check_good close:$db [$db close] 0
+	# XXX DO NOT CLOSE FILE ON PREPARE -- if you are prepared,
+	# you really have an active transaction and you're not allowed
+	# to close files that are being acted upon by in-process
+	# transactions.
+	if { $op != "prepare" } {
+		error_check_good close:$db [$db close] 0
+	}
 
-	# If all we've done is a prepare, then there's still a
-	# transaction active, and an env close will return DB_RUNRECOVERY
-	if { $encodedop == "prepare" } {
-		catch {$env close} ret
-		error_check_good env_close \
-			[is_substr $ret DB_RUNRECOVERY] 1
-	} else {
-		reset_env $env
+	#
+	# If we are running 'prepare' don't close the env with an
+	# active transaction.  Leave it alone so the close won't
+	# quietly abort it on us.
+	if { [is_substr $op "prepare"] != 1 } {
+		error_check_good envclose [$env close] 0
+	}
+	return
+}
+
+proc op_recover_rec { op op2 dir env_cmd dbfile gidf} {
+	global log_log_record_types
+	global recd_debug
+	global recd_id
+	global recd_op
+	global encrypt
+	global passwd
+	source ./include.tcl
+
+	#puts "op_recover_rec: $op $op2 $dir $env_cmd $dbfile $gidf"
+
+	set init_file $dir/t1
+	set afterop_file $dir/t2
+	set final_file $dir/t3
+
+	# Keep track of the log types we've seen
+	if { $log_log_record_types == 1} {
+		logtrack_read $dir
 	}
 
 	berkdb debug_check
-	puts -nonewline "\t\tRunning recovery ... "
+	puts -nonewline "\t\top_recover_rec: Running recovery ... "
 	flush stdout
 
-	set stat [catch {exec $util_path/db_recover -h $dir -c} result]
+	set recargs "-h $dir -c "
+	if { $encrypt > 0 } {
+		append recargs " -P $passwd "
+	}
+	set stat [catch {eval exec $util_path/db_recover -e $recargs} result]
 	if { $stat == 1 } {
 		error "FAIL: Recovery error: $result."
 	}
 	puts -nonewline "complete ... "
 
-	error_check_good db_verify [verify_dir $testdir "\t\t" 0 1] 0
-
-	puts "verified"
-
-	berkdb debug_check
+	#
+	# We cannot run db_recover here because that will open an env, run
+	# recovery, then close it, which will abort the outstanding txns.
+	# We want to do it ourselves.
+	#
 	set env [eval $env_cmd]
 	error_check_good dbenv [is_valid_widget $env env] TRUE
-	open_and_dump_file $dir/$dbfile NULL $tflags $final_file nop \
+
+	error_check_good db_verify [verify_dir $testdir "\t\t" 0 1] 0
+	puts "verified"
+
+	# If we left a txn as prepared, but not aborted or committed,
+	# we need to do a txn_recover.  Make sure we have the same
+	# number of txns we want.
+	if { $op == "prepare"} {
+		set txns [$env txn_recover]
+		error_check_bad txnrecover [llength $txns] 0
+		set gfd [open $gidf r]
+		set origgid [read -nonewline $gfd]
+		close $gfd
+		set txnlist [lindex $txns 0]
+		set t [lindex $txnlist 0]
+		set gid [lindex $txnlist 1]
+		error_check_good gidcompare $gid $origgid
+		puts "\t\t\tExecuting txn_$op2:$t"
+		error_check_good txn_$op2:$t [$t $op2] 0
+		#
+		# If we are testing discard, we do need to resolve
+		# the txn, so get the list again and now abort it.
+		#
+		if { $op2 == "discard" } {
+			set txns [$env txn_recover]
+			error_check_bad txnrecover [llength $txns] 0
+			set txnlist [lindex $txns 0]
+			set t [lindex $txnlist 0]
+			set gid [lindex $txnlist 1]
+			error_check_good gidcompare $gid $origgid
+			puts "\t\t\tExecuting txn_abort:$t"
+			error_check_good disc_txn_abort:$t [$t abort] 0
+		}
+	}
+
+	open_and_dump_file $dir/$dbfile NULL $final_file nop \
 	    dump_file_direction "-first" "-next"
 	if { $op == "commit" || $op2 == "commit" } {
 		filesort $afterop_file $afterop_file.sort
@@ -1358,11 +1680,10 @@ proc op_recover { encodedop dir env_cmd dbfile cmd msg } {
 	}
 
 	berkdb debug_check
-	puts -nonewline \
-	    "\t\tRunning recovery on pre-op database ... "
+	puts -nonewline "\t\tRunning recovery on pre-op database ... "
 	flush stdout
 
-	set stat [catch {exec $util_path/db_recover -h $dir -c} result]
+	set stat [catch {eval exec $util_path/db_recover $recargs} result]
 	if { $stat == 1 } {
 		error "FAIL: Recovery error: $result."
 	}
@@ -1374,7 +1695,7 @@ proc op_recover { encodedop dir env_cmd dbfile cmd msg } {
 
 	set env [eval $env_cmd]
 
-	open_and_dump_file $dir/$dbfile NULL $tflags $final_file nop \
+	open_and_dump_file $dir/$dbfile NULL $final_file nop \
 	    dump_file_direction "-first" "-next"
 	if { $op == "commit" || $op2 == "commit" } {
 		filesort $final_file $final_file.sort
@@ -1458,6 +1779,54 @@ proc reset_env { env } {
 	error_check_good env_close [$env close] 0
 }
 
+proc minlocks { myenv locker_id obj_id num } {
+	return [countlocks $myenv $locker_id $obj_id $num ]
+}
+
+proc maxlocks { myenv locker_id obj_id num } {
+	return [countlocks $myenv $locker_id $obj_id $num ]
+}
+
+proc minwrites { myenv locker_id obj_id num } {
+	return [countlocks $myenv $locker_id $obj_id $num ]
+}
+
+proc countlocks { myenv locker_id obj_id num } {
+	set locklist ""
+	for { set i 0} {$i < [expr $obj_id * 4]} { incr i } {
+		set r [catch {$myenv lock_get read $locker_id \
+		    [expr $obj_id * 1000 + $i]} l ]
+		if { $r != 0 } {
+			puts $l
+			return ERROR
+		} else {
+			error_check_good lockget:$obj_id [is_substr $l $myenv] 1
+			lappend locklist $l
+		}
+	}
+
+	# Now acquire a write lock
+	if { $obj_id != 1 } {
+		set r [catch {$myenv lock_get write $locker_id \
+		    [expr $obj_id * 1000 + 10]} l ]
+		if { $r != 0 } {
+			puts $l
+			return ERROR
+		} else {
+			error_check_good lockget:$obj_id [is_substr $l $myenv] 1
+			lappend locklist $l
+		}
+	}
+
+	set ret [ring $myenv $locker_id $obj_id $num]
+
+	foreach l $locklist {
+		error_check_good lockput:$l [$l put] 0
+	}
+
+	return $ret
+}
+
 # This routine will let us obtain a ring of deadlocks.
 # Each locker will get a lock on obj_id, then sleep, and
 # then try to lock (obj_id + 1) % num.
@@ -1469,7 +1838,7 @@ proc ring { myenv locker_id obj_id num } {
 	source ./include.tcl
 
 	if {[catch {$myenv lock_get write $locker_id $obj_id} lock1] != 0} {
-		puts $errorInfo
+		puts $lock1
 		return ERROR
 	} else {
 		error_check_good lockget:$obj_id [is_substr $lock1 $myenv] 1
@@ -1482,7 +1851,12 @@ proc ring { myenv locker_id obj_id num } {
 		if {[string match "*DEADLOCK*" $lock2] == 1} {
 			set ret DEADLOCK
 		} else {
-			set ret ERROR
+			if {[string match "*NOTGRANTED*" $lock2] == 1} {
+				set ret DEADLOCK
+			} else {
+				puts $lock2
+				set ret ERROR
+			}
 		}
 	} else {
 		error_check_good lockget:$obj_id [is_substr $lock2 $myenv] 1
@@ -1511,7 +1885,7 @@ proc clump { myenv locker_id obj_id num } {
 
 	set obj_id 10
 	if {[catch {$myenv lock_get read $locker_id $obj_id} lock1] != 0} {
-		puts $errorInfo
+		puts $lock1
 		return ERROR
 	} else {
 		error_check_good lockget:$obj_id \
@@ -1524,7 +1898,12 @@ proc clump { myenv locker_id obj_id num } {
 		if {[string match "*DEADLOCK*" $lock2] == 1} {
 			set ret DEADLOCK
 		} else {
-			set ret ERROR
+			if {[string match "*NOTGRANTED*" $lock2] == 1} {
+				set ret DEADLOCK
+			} else {
+				puts $lock2
+				set ret ERROR
+			}
 		}
 	} else {
 		error_check_good \
@@ -1540,20 +1919,52 @@ proc clump { myenv locker_id obj_id num } {
 		error_check_good lockput:$lock2 [$lock2 put] 0
 	}
 	return $ret
- }
+}
 
-proc dead_check { t procs dead clean other } {
+proc dead_check { t procs timeout dead clean other } {
 	error_check_good $t:$procs:other $other 0
 	switch $t {
 		ring {
+			# With timeouts the number of deadlocks is unpredictable:
+			# test for at least one deadlock.
+			if { $timeout != 0 && $dead > 1 } {
+				set clean [ expr $clean + $dead - 1]
+				set dead 1
+			}
 			error_check_good $t:$procs:deadlocks $dead 1
 			error_check_good $t:$procs:success $clean \
 			    [expr $procs - 1]
 		}
 		clump {
+			# With timeouts the number of deadlocks is unpredictable:
+			# test for no more than one successful lock.
+			if { $timeout != 0 && $dead == $procs } {
+				set clean 1
+				set dead [expr $procs - 1]
+			}
 			error_check_good $t:$procs:deadlocks $dead \
 			    [expr $procs - 1]
 			error_check_good $t:$procs:success $clean 1
+		}
+		oldyoung {
+			error_check_good $t:$procs:deadlocks $dead 1
+			error_check_good $t:$procs:success $clean \
+			    [expr $procs - 1]
+		}
+		minlocks {
+			error_check_good $t:$procs:deadlocks $dead 1
+			error_check_good $t:$procs:success $clean \
+			    [expr $procs - 1]
+		}
+		maxlocks {
+			error_check_good $t:$procs:deadlocks $dead 1
+			error_check_good $t:$procs:success $clean \
+			    [expr $procs - 1]
+		}
+		minwrites {
+			error_check_good $t:$procs:deadlocks $dead 1
+			error_check_good $t:$procs:success $clean \
+			    [expr $procs - 1]
 		}
 		default {
 			error "Test $t not implemented"
@@ -1604,6 +2015,9 @@ proc reverse { s } {
 	return $res
 }
 
+#
+# This is a internal only proc.  All tests should use 'is_valid_db' etc.
+#
 proc is_valid_widget { w expected } {
 	# First N characters must match "expected"
 	set l [string length $expected]
@@ -1640,6 +2054,10 @@ proc is_valid_lock { lock env } {
 	return [is_valid_widget $lock $env.lock]
 }
 
+proc is_valid_logc { logc env } {
+	return [is_valid_widget $logc $env.logc]
+}
+
 proc is_valid_mpool { mpool env } {
 	return [is_valid_widget $mpool $env.mp]
 }
@@ -1656,11 +2074,20 @@ proc is_valid_mutex { m env } {
 	return [is_valid_widget $m $env.mutex]
 }
 
+proc is_valid_lock {l env} {
+	return [is_valid_widget $l $env.lock]
+}
+
+proc is_valid_locker {l } {
+	return [is_valid_widget $l ""]
+}
+
 proc send_cmd { fd cmd {sleep 2}} {
 	source ./include.tcl
 
-	puts $fd "set v \[$cmd\]"
-	puts $fd "puts \$v"
+	puts $fd "if \[catch {set v \[$cmd\] ; puts \$v} ret\] { \
+		puts \"FAIL: \$ret\" \
+	}"
 	puts $fd "flush stdout"
 	flush $fd
 	berkdb debug_check
@@ -1747,6 +2174,13 @@ proc make_fixed_length {method data {pad 0}} {
 	return $data
 }
 
+proc make_gid {data} {
+	while { [string length $data] < 128 } {
+		set data [format ${data}0]
+	}
+	return $data
+}
+
 # shift data for partial
 # pad with fixed pad (which is NULL)
 proc partial_shift { data offset direction} {
@@ -1785,7 +2219,9 @@ proc convert_method { method } {
 	switch -- $method {
 		-btree -
 		-dbtree -
+		dbtree -
 		-ddbtree -
+		ddbtree -
 		-rbtree -
 		BTREE -
 		DB_BTREE -
@@ -1799,9 +2235,12 @@ proc convert_method { method } {
 		rbtree { return "-btree" }
 
 		-dhash -
+		-ddhash -
 		-hash -
 		DB_HASH -
 		HASH -
+		dhash -
+		ddhash -
 		db_hash -
 		h -
 		hash { return "-hash" }
@@ -1819,7 +2258,7 @@ proc convert_method { method } {
 		qe -
 		qamext -
 		-queueext -
-		queueextent - 
+		queueextent -
 		queueext { return "-queue" }
 
 		-frecno -
@@ -1845,6 +2284,32 @@ proc convert_method { method } {
 	}
 }
 
+proc split_encargs { largs encargsp } {
+	global encrypt
+	upvar $encargsp e
+	set eindex [lsearch $largs "-encrypta*"]
+	if { $eindex == -1 } {
+		set e ""
+		set newl $largs
+	} else {
+		set eend [expr $eindex + 1]
+		set e [lrange $largs $eindex $eend]
+		set newl [lreplace $largs $eindex $eend "-encrypt"]
+	}
+	return $newl
+}
+
+proc convert_encrypt { largs } {
+	global encrypt
+	global old_encrypt
+
+	set old_encrypt $encrypt
+	set encrypt 0
+	if { [lsearch $largs "-encrypt*"] != -1 } {
+		set encrypt 1
+	}
+}
+
 # If recno-with-renumbering or btree-with-renumbering is specified, then
 # fix the arguments to specify the DB_RENUMBER/DB_RECNUM option for the
 # -flags argument.
@@ -1856,13 +2321,15 @@ proc convert_args { method {largs ""} } {
 	source ./include.tcl
 
 	if { [string first - $largs] == -1 &&\
-	    [string compare $largs ""] != 0 } {
+	    [string compare $largs ""] != 0 &&\
+	    [string compare $largs {{}}] != 0 } {
 		set errstring "args must contain a hyphen; does this test\
 		    have no numeric args?"
-		puts "FAIL:[timestamp] $errstring"
+		puts "FAIL:[timestamp] $errstring (largs was $largs)"
 		return -code return
 	}
 
+	convert_encrypt $largs
 	if { $gen_upgrade == 1 && $upgrade_be == 1 } {
 		append largs " -lorder 4321 "
 	} elseif { $gen_upgrade == 1 && $upgrade_be != 1 } {
@@ -1880,6 +2347,9 @@ proc convert_args { method {largs ""} } {
 		append largs " -dupsort "
 	} elseif { [is_dhash $method] == 1 } {
 		append largs " -dup "
+	} elseif { [is_ddhash $method] == 1 } {
+		append largs " -dup "
+		append largs " -dupsort "
 	} elseif { [is_queueext $method] == 1 } {
 		append largs " -extent 2 "
 	}
@@ -1900,7 +2370,7 @@ proc is_btree { method } {
 }
 
 proc is_dbtree { method } {
-	set names { -dbtree }
+	set names { -dbtree dbtree }
 	if { [lsearch $names $method] >= 0 } {
 		return 1
 	} else {
@@ -1909,7 +2379,7 @@ proc is_dbtree { method } {
 }
 
 proc is_ddbtree { method } {
-	set names { -ddbtree }
+	set names { -ddbtree ddbtree }
 	if { [lsearch $names $method] >= 0 } {
 		return 1
 	} else {
@@ -1963,7 +2433,16 @@ proc is_hash { method } {
 }
 
 proc is_dhash { method } {
-	set names { -dhash }
+	set names { -dhash dhash }
+	if { [lsearch $names $method] >= 0 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc is_ddhash { method } {
+	set names { -ddhash ddhash }
 	if { [lsearch $names $method] >= 0 } {
 		return 1
 	} else {
@@ -2082,6 +2561,7 @@ proc fileremove { args } {
 }
 
 proc findfail { args } {
+	set errstring {}
 	foreach a $args {
 		if { [file exists $a] == 0 } {
 			continue
@@ -2089,13 +2569,12 @@ proc findfail { args } {
 		set f [open $a r]
 		while { [gets $f line] >= 0 } {
 			if { [string first FAIL $line] == 0 } {
-				close $f
-				return 1
+				lappend errstring $a:$line
 			}
 		}
 		close $f
 	}
-	return 0
+	return $errstring
 }
 
 # Sleep for s seconds.
@@ -2105,6 +2584,16 @@ proc tclsleep { s } {
 	# chances;  sleep extra-long so that when tclsleep 1 returns,
 	# it's guaranteed to be a new second.
 	after [expr $s * 1000 + 56]
+}
+
+# Kill a process.
+proc tclkill { id } {
+	source ./include.tcl
+
+	while { [ catch {exec $KILL -0 $id} ] == 0 } {
+		catch {exec $KILL -9 $id}
+		tclsleep 5
+	}
 }
 
 # Compare two files, a la diff.  Returns 1 if non-identical, 0 if identical.
@@ -2133,20 +2622,50 @@ proc filecmp { file_a file_b } {
 	return 0
 }
 
+# Give two SORTED files, one of which is a complete superset of the other,
+# extract out the unique portions of the superset and put them in
+# the given outfile.
+proc fileextract { superset subset outfile } {
+	set sup [open $superset r]
+	set sub [open $subset r]
+	set outf [open $outfile w]
+
+	# The gets can't be in the while condition because we'll
+	# get short-circuit evaluated.
+	set nrp [gets $sup pline]
+	set nrb [gets $sub bline]
+	while { $nrp >= 0 } {
+		if { $nrp != $nrb || [string compare $pline $bline] != 0} {
+			puts $outf $pline
+		} else {
+			set nrb [gets $sub bline]
+		}
+		set nrp [gets $sup pline]
+	}
+
+	close $sup
+	close $sub
+	close $outf
+	return 0
+}
+
 # Verify all .db files in the specified directory.
-proc verify_dir { \
-    {directory "./TESTDIR"} { pref "" } { noredo 0 } { quiet 0 } } {
+proc verify_dir { {directory $testdir} \
+    { pref "" } { noredo 0 } { quiet 0 } { nodump 0 } { cachesize 0 } } {
+	global encrypt
+	global passwd
+
 	# If we're doing database verification between tests, we don't
 	# want to do verification twice without an intervening cleanup--some
 	# test was skipped.  Always verify by default (noredo == 0) so
 	# that explicit calls to verify_dir during tests don't require
 	# cleanup commands.
-	if { $noredo == 1 } { 
+	if { $noredo == 1 } {
 		if { [file exists $directory/NOREVERIFY] == 1 } {
-			if { $quiet == 0 } { 
+			if { $quiet == 0 } {
 				puts "Skipping verification."
 			}
-			return
+			return 0
 		}
 		set f [open $directory/NOREVERIFY w]
 		close $f
@@ -2154,29 +2673,174 @@ proc verify_dir { \
 
 	if { [catch {glob $directory/*.db} dbs] != 0 } {
 		# No files matched
-		return
+		return 0
 	}
-	if { [file exists /dev/stderr] == 1 } {
-		set errfilearg "-errfile /dev/stderr "
-	} else {
-		set errfilearg ""
-	}
+	set errfilearg "-errfile /dev/stderr "
 	set errpfxarg {-errpfx "FAIL: verify" }
 	set errarg $errfilearg$errpfxarg
 	set ret 0
+
+	# Open an env, so that we have a large enough cache.  Pick
+	# a fairly generous default if we haven't specified something else.
+
+	if { $cachesize == 0 } {
+		set cachesize [expr 1024 * 1024]
+	}
+	set encarg ""
+	if { $encrypt != 0 } {
+		set encarg "-encryptaes $passwd"
+	}
+
+	set env [eval {berkdb_env -create -private} $encarg \
+	    {-cachesize [list 0 $cachesize 0]}]
+	set earg " -env $env $errarg "
+
 	foreach db $dbs {
-		if { [catch {eval {berkdb dbverify} $errarg $db} res] != 0 } {
+		if { [catch {eval {berkdb dbverify} $earg $db} res] != 0 } {
 			puts $res
 			puts "FAIL:[timestamp] Verification of $db failed."
 			set ret 1
+			continue
 		} else {
 			error_check_good verify:$db $res 0
-			if { $quiet == 0 } { 
+			if { $quiet == 0 } {
 				puts "${pref}Verification of $db succeeded."
 			}
 		}
+
+		# Skip the dump if it's dangerous to do it.
+		if { $nodump == 0 } {
+			if { [catch {eval dumploadtest $db} res] != 0 } {
+				puts $res
+				puts "FAIL:[timestamp] Dump/load of $db failed."
+				set ret 1
+				continue
+			} else {
+				error_check_good dumpload:$db $res 0
+				if { $quiet == 0 } {
+					puts \
+					    "${pref}Dump/load of $db succeeded."
+				}
+			}
+		}
 	}
+
+	error_check_good vrfyenv_close [$env close] 0
+
 	return $ret
+}
+
+# Is the database handle in $db a master database containing subdbs?
+proc check_for_subdbs { db } {
+	set stat [$db stat]
+	for { set i 0 } { [string length [lindex $stat $i]] > 0 } { incr i } {
+		set elem [lindex $stat $i]
+		if { [string compare [lindex $elem 0] Flags] == 0 } {
+			# This is the list of flags;  look for
+			# "subdatabases".
+			if { [is_substr [lindex $elem 1] subdatabases] } {
+				return 1
+			}
+		}
+	}
+	return 0
+}
+
+proc db_compare { olddb newdb olddbname newdbname } {
+	# Walk through olddb and newdb and make sure their contents
+	# are identical.
+	set oc [$olddb cursor]
+	set nc [$newdb cursor]
+	error_check_good orig_cursor($olddbname) \
+	    [is_valid_cursor $oc $olddb] TRUE
+	error_check_good new_cursor($olddbname) \
+	    [is_valid_cursor $nc $newdb] TRUE
+
+	for { set odbt [$oc get -first] } { [llength $odbt] > 0 } \
+	    { set odbt [$oc get -next] } {
+		set ndbt [$nc get -get_both \
+		    [lindex [lindex $odbt 0] 0] [lindex [lindex $odbt 0] 1]]
+		error_check_good db_compare($olddbname/$newdbname) $ndbt $odbt
+	}
+
+	for { set ndbt [$nc get -first] } { [llength $ndbt] > 0 } \
+	    { set ndbt [$nc get -next] } {
+		set odbt [$oc get -get_both \
+		    [lindex [lindex $ndbt 0] 0] [lindex [lindex $ndbt 0] 1]]
+		error_check_good db_compare_back($olddbname) $odbt $ndbt
+	}
+
+	error_check_good orig_cursor_close($olddbname) [$oc close] 0
+	error_check_good new_cursor_close($olddbname) [$nc close] 0
+
+	return 0
+}
+
+proc dumploadtest { db } {
+	global util_path
+	global encrypt
+	global passwd
+
+	set newdbname $db-dumpload.db
+
+	set dbarg ""
+	set utilflag ""
+	if { $encrypt != 0 } {
+		set dbarg "-encryptany $passwd"
+		set utilflag "-P $passwd"
+	}
+
+	# Dump/load the whole file, including all subdbs.
+	set rval [catch {eval {exec $util_path/db_dump} $utilflag -k \
+	    $db | $util_path/db_load $utilflag $newdbname} res]
+	error_check_good db_dump/db_load($db:$res) $rval 0
+
+	# If the old file was empty, there's no new file and we're done.
+	if { [file exists $newdbname] == 0 } {
+		return 0
+	}
+
+	# Open original database.
+	set olddb [eval {berkdb_open -rdonly} $dbarg $db]
+	error_check_good olddb($db) [is_valid_db $olddb] TRUE
+
+	if { [check_for_subdbs $olddb] } {
+		# If $db has subdatabases, compare each one separately.
+		set oc [$olddb cursor]
+		error_check_good orig_cursor($db) \
+    		    [is_valid_cursor $oc $olddb] TRUE
+
+		for { set dbt [$oc get -first] } \
+		    { [llength $dbt] > 0 } \
+		    { set dbt [$oc get -next] } {
+			set subdb [lindex [lindex $dbt 0] 0]
+
+			set oldsubdb \
+			    [eval {berkdb_open -rdonly} $dbarg {$db $subdb}]
+			error_check_good olddb($db) [is_valid_db $oldsubdb] TRUE
+
+			# Open the new database.
+			set newdb \
+			    [eval {berkdb_open -rdonly} $dbarg {$newdbname $subdb}]
+			error_check_good newdb($db) [is_valid_db $newdb] TRUE
+
+			db_compare $oldsubdb $newdb $db $newdbname
+			error_check_good new_db_close($db) [$newdb close] 0
+			error_check_good old_subdb_close($oldsubdb) [$oldsubdb close] 0
+		}
+
+		error_check_good oldcclose [$oc close] 0
+	} else {
+		# Open the new database.
+		set newdb [eval {berkdb_open -rdonly} $dbarg $newdbname]
+		error_check_good newdb($db) [is_valid_db $newdb] TRUE
+
+		db_compare $olddb $newdb $db $newdbname
+		error_check_good new_db_close($db) [$newdb close] 0
+	}
+
+	error_check_good orig_db_close($db) [$olddb close] 0
+	eval berkdb dbremove $dbarg $newdbname
 }
 
 # Generate randomly ordered, guaranteed-unique four-character strings that can
@@ -2285,10 +2949,16 @@ proc extractflags { args } {
 # Wrapper for berkdb open, used throughout the test suite so that we can
 # set an errfile/errpfx as appropriate.
 proc berkdb_open { args } {
+	global is_envmethod
+
+	if { [info exists is_envmethod] == 0 } {
+		set is_envmethod 0
+	}
+
 	set errargs {}
-	if { [file exists /dev/stderr] == 1 } {
+	if { $is_envmethod == 0 } {
 		append errargs " -errfile /dev/stderr "
-		append errargs " -errpfx \\F\\A\\I\\L "
+		append errargs " -errpfx \\F\\A\\I\\L"
 	}
 
 	eval {berkdb open} $errargs $args
@@ -2297,6 +2967,29 @@ proc berkdb_open { args } {
 # Version without errpfx/errfile, used when we're expecting a failure.
 proc berkdb_open_noerr { args } {
 	eval {berkdb open} $args
+}
+
+# Wrapper for berkdb env, used throughout the test suite so that we can
+# set an errfile/errpfx as appropriate.
+proc berkdb_env { args } {
+	global is_envmethod
+
+	if { [info exists is_envmethod] == 0 } {
+		set is_envmethod 0
+	}
+
+	set errargs {}
+	if { $is_envmethod == 0 } {
+		append errargs " -errfile /dev/stderr "
+		append errargs " -errpfx \\F\\A\\I\\L"
+	}
+
+	eval {berkdb env} $errargs $args
+}
+
+# Version without errpfx/errfile, used when we're expecting a failure.
+proc berkdb_env_noerr { args } {
+	eval {berkdb env} $args
 }
 
 proc check_handles { {outf stdout} } {
@@ -2314,8 +3007,16 @@ proc open_handles { } {
 }
 
 proc move_file_extent { dir dbfile tag op } {
-	set files [get_extfiles $dir $dbfile $tag]
-	foreach extfile $files {
+	set curfiles [get_extfiles $dir $dbfile ""]
+	set tagfiles [get_extfiles $dir $dbfile $tag]
+	#
+	# We want to copy or rename only those that have been saved,
+	# so delete all the current extent files so that we don't
+	# end up with extra ones we didn't restore from our saved ones.
+	foreach extfile $curfiles {
+		file delete -force $extfile
+	}
+	foreach extfile $tagfiles {
 		set i [string last "." $extfile]
 		incr i
 		set extnum [string range $extfile $i end]
@@ -2377,4 +3078,145 @@ proc get_pagesize { stat } {
 		}
 	}
 	return -1
+}
+
+# Get a globbed list of source files and executables to use as large
+# data items in overflow page tests.
+proc get_file_list { {small 0} } {
+	global is_windows_test
+	global is_qnx_test
+	global src_root
+
+	if { $is_qnx_test } {
+		set small 1
+	}
+	if { $small && $is_windows_test } {
+		return [glob $src_root/*/*.c */env*.obj]
+	} elseif { $small } {
+		return [glob $src_root/*/*.c ./env*.o]
+	} elseif { $is_windows_test } {
+		return \
+		    [glob $src_root/*/*.c */*.obj */libdb??.dll */libdb??d.dll]
+	} else {
+		return [glob $src_root/*/*.c ./*.o ./.libs/libdb-?.?.s?]
+	}
+}
+
+proc is_cdbenv { env } {
+	set sys [$env attributes]
+	if { [lsearch $sys -cdb] != -1 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc is_lockenv { env } {
+	set sys [$env attributes]
+	if { [lsearch $sys -lock] != -1 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc is_logenv { env } {
+	set sys [$env attributes]
+	if { [lsearch $sys -log] != -1 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc is_mpoolenv { env } {
+	set sys [$env attributes]
+	if { [lsearch $sys -mpool] != -1 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc is_repenv { env } {
+	set sys [$env attributes]
+	if { [lsearch $sys -rep] != -1 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc is_rpcenv { env } {
+	set sys [$env attributes]
+	if { [lsearch $sys -rpc] != -1 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc is_secenv { env } {
+	set sys [$env attributes]
+	if { [lsearch $sys -crypto] != -1 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc is_txnenv { env } {
+	set sys [$env attributes]
+	if { [lsearch $sys -txn] != -1 } {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+proc get_home { env } {
+	set sys [$env attributes]
+	set h [lsearch $sys -home]
+	if { $h == -1 } {
+		return NULL
+	}
+	incr h
+	return [lindex $sys $h]
+}
+
+proc reduce_dups { nent ndp } {
+	upvar $nent nentries
+	upvar $ndp ndups
+
+	# If we are using a txnenv, assume it is using
+	# the default maximum number of locks, cut back
+	# so that we don't run out of locks.  Reduce
+	# by 25% until we fit.
+	#
+	while { [expr $nentries * $ndups] > 5000 } {
+		set nentries [expr ($nentries / 4) * 3]
+		set ndups [expr ($ndups / 4) * 3]
+	}
+}
+
+proc getstats { statlist field } {
+	foreach pair $statlist {
+		set txt [lindex $pair 0]
+		if { [string equal $txt $field] == 1 } {
+			return [lindex $pair 1]
+		}
+	}
+	return -1
+}
+
+proc big_endian { } {
+	global tcl_platform
+	set e $tcl_platform(byteOrder)
+	if { [string compare $e littleEndian] == 0 } {
+		return 0
+	} elseif { [string compare $e bigEndian] == 0 } {
+		return 1
+	} else {
+		error "FAIL: Unknown endianness $e"
+	}
 }

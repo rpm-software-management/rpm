@@ -1,0 +1,16 @@
+
+This directory contains a set of tests written in Java run by JUnit.  To be
+able to run them you must first set the following environment variables.
+
+example sh:
+JUNIT_JAR="$HOME/tools/junit3.8.1/junit.jar"
+export JUNIT_JAR
+XMLAPI_JAR="$HOME/tools/ant/lib/xml-apis.jar"
+export XMLAPI_JAR
+XMLIMPL_JAR="$HOME/tools/ant/lib/xercesImpl.jar"
+export XMLIMPL_JAR
+
+example csh:
+setenv JUNIT_JAR $HOME/tools/junit3.8.1/junit.jar
+setenv XMLAPI_JAR $HOME/tools/ant/lib/xml-apis.jar
+setenv XMLIMPL_JAR $HOME/tools/ant/lib/xercesImpl.jar

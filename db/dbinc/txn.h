@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: txn.h,v 11.42 2002/08/06 06:11:22 bostic Exp 
+ * $Id: txn.h,v 11.48 2003/07/08 20:14:20 ubell Exp $
  */
 
 #ifndef	_TXN_H_
@@ -14,12 +14,14 @@
 
 /* Operation parameters to the delayed commit processing code. */
 typedef enum {
+	TXN_CLOSE,		/* Close a DB handle whose close had failed. */
 	TXN_REMOVE,		/* Remove a file. */
 	TXN_TRADE,		/* Trade lockers. */
 	TXN_TRADED		/* Already traded; downgrade lock. */
 } TXN_EVENT_T;
 
 struct __db_txnregion;	typedef struct __db_txnregion DB_TXNREGION;
+struct __txn_logrec;	typedef struct __txn_logrec DB_TXNLOGREC;
 
 /*
  * !!!
@@ -46,9 +48,8 @@ typedef struct __txn_detail {
 #define	TXN_PREPARED		3
 #define	TXN_COMMITTED		4
 	u_int32_t status;		/* status of the transaction */
-#define	TXN_COLLECTED		0x1
-#define	TXN_RESTORED		0x2
-#define	TXN_DEFER_DEALLOC	0x4
+#define	TXN_DTL_COLLECTED	0x1
+#define	TXN_DTL_RESTORED	0x2
 	u_int32_t flags;		/* collected during txn_recover */
 
 	SH_TAILQ_ENTRY	links;		/* free/active list */
@@ -105,10 +106,10 @@ struct __db_txnregion {
 	u_int32_t	maxtxns;	/* maximum number of active TXNs */
 	u_int32_t	last_txnid;	/* last transaction id given out */
 	u_int32_t	cur_maxid;	/* current max unused id. */
+
 	DB_LSN		last_ckp;	/* lsn of the last checkpoint */
 	time_t		time_ckp;	/* time of last checkpoint */
-	u_int32_t	logtype;	/* type of logging */
-	u_int32_t	locktype;	/* lock type */
+
 	DB_TXN_STAT	stat;		/* Statistics for txns. */
 
 #define	TXN_IN_RECOVERY	 0x01		/* environment is being recovered */
@@ -123,11 +124,20 @@ struct __db_txnregion {
 };
 
 /*
+ * DB_TXNLOGREC --
+ *	An in-memory, linked-list copy of a log record.
+ */
+struct __txn_logrec {
+	STAILQ_ENTRY(__txn_logrec) links;/* Linked list. */
+
+	u_int8_t data[1];		/* Log record. */
+};
+
+/*
  * Log record types.  Note that these are *not* alphabetical.  This is
  * intentional so that we don't change the meaning of values between
  * software upgrades. EXPECTED, UNEXPECTED, IGNORE, NOTFOUND and OK
- * are used in the
- * txnlist functions.
+ * are used in the txnlist functions.
  */
 #define	TXN_OK		0
 #define	TXN_COMMIT	1

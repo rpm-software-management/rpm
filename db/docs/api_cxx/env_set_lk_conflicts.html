@@ -1,20 +1,22 @@
-<!--$Id: env_set_lk_conflicts.so,v 10.22 2000/12/08 20:43:15 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_lk_conflicts.so,v 10.41 2003/11/08 19:17:30 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::set_lk_conflicts</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DbEnv::set_lk_conflicts</h1>
+<h3>DbEnv::set_lk_conflicts</h3>
 </td>
-<td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -23,49 +25,84 @@
 <p>
 int
 DbEnv::set_lk_conflicts(u_int8_t *conflicts, int nmodes);
+<p>
+int
+DbEnv::get_lk_conflicts(const u_int8_t **lk_conflictsp, int *lk_modesp);
 </pre></h3>
-<h1>Description</h1>
-<p>Set the locking conflicts matrix.
-The <b>conflicts</b> argument
+<hr size=1 noshade>
+<h3>Description: DbEnv::set_lk_conflicts</h3>
+<a name="3"><!--meow--></a>
+<p>Set the locking conflicts matrix.</p>
+<p>If DbEnv::set_lk_conflicts is never called, a standard conflicts
+array is used; see <a href="../ref/lock/stdmode.html">Standard Lock
+Modes</a> for more information.</p>
+<p>The DbEnv::set_lk_conflicts method configures a database environment, not only operations
+performed using the specified <a href="../api_cxx/env_class.html">DbEnv</a> handle.</p>
+<p>The DbEnv::set_lk_conflicts method may not be called after the <a href="../api_cxx/env_open.html">DbEnv::open</a> method is
+called.
+If the database environment already exists when
+<a href="../api_cxx/env_open.html">DbEnv::open</a> is called, the information specified to DbEnv::set_lk_conflicts
+will be ignored.
+</p>
+<p>The DbEnv::set_lk_conflicts method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>conflicts</b><dd>
+The <b>conflicts</b> parameter is the new locking conflicts matrix.
+The <b>conflicts</b> parameter
 is an <b>nmodes</b> by <b>nmodes</b> array.
-A non-0 value for the array element:
-<p><blockquote><pre>conflicts[requested_mode][held_mode]</pre></blockquote>
-<p>indicates that requested_mode and held_mode conflict.  The
-<i>not-granted</i> mode must be represented by 0.
-<p>If no <b>conflicts</b> value is specified, the conflicts array
-<b>db_rw_conflicts</b> is used; see <a href="../ref/lock/stdmode.html">Standard Lock Modes</a> for a description of that array.
-<p>The DbEnv::set_lk_conflicts interface may only be used to configure Berkeley DB before
-the <a href="../api_cxx/env_open.html">DbEnv::open</a> interface is called.
-<p>The DbEnv::set_lk_conflicts method either returns a non-zero error value or throws an exception that
-encapsulates a non-zero error value on failure, and returns 0 on success.
-<h1>Errors</h1>
-<p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>Called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called.
+A non-0 value for the array element indicates that requested_mode and
+held_mode conflict:
+<blockquote><pre>conflicts[requested_mode][held_mode]</pre></blockquote>
+<p>The <i>not-granted</i> mode must be represented by 0.</p>
+<p><dt><b>nmodes</b><dd>
+The <b>nmodes</b> parameter is the size of the lock conflicts matrix.
 </dl>
+<h3>Errors</h3>
+<p>The DbEnv::set_lk_conflicts method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
 <p><dl compact>
-<p><dt>ENOMEM<dd>No memory was available to copy the conflicts array.
+<p><dt>EINVAL<dd>If the method was called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called; or if an
+invalid flag value or parameter was specified.
 </dl>
-<h3>Classes</h3>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/lock_class.html">DbLock</a>
-<h1>See Also</h1>
-<a href="../api_cxx/env_set_lk_conflicts.html">DbEnv::set_lk_conflicts</a>,
-<a href="../api_cxx/env_set_lk_detect.html">DbEnv::set_lk_detect</a>,
-<a href="../api_cxx/env_set_lk_max_locks.html">DbEnv::set_lk_max_locks</a>,
-<a href="../api_cxx/env_set_lk_max_lockers.html">DbEnv::set_lk_max_lockers</a>,
-<a href="../api_cxx/env_set_lk_max_objects.html">DbEnv::set_lk_max_objects</a>,
-<a href="../api_cxx/env_set_lk_max.html">DbEnv::set_lk_max</a>,
-<a href="../api_cxx/lock_detect.html">DbEnv::lock_detect</a>,
-<a href="../api_cxx/lock_get.html">DbEnv::lock_get</a>,
-<a href="../api_cxx/lock_id.html">DbEnv::lock_id</a>,
-<a href="../api_cxx/lock_put.html">DbLock::put</a>,
-<a href="../api_cxx/lock_stat.html">DbEnv::lock_stat</a>
-and
-<a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a>.
+<p>If the conflicts array could not be copied, the DbEnv::set_lk_conflicts method will fail and
+either return ENOMEM or
+throw a <a href="../api_cxx/memp_class.html">DbMemoryException</a> exception.</p>
+<hr size=1 noshade>
+<h3>Description: dbenv_get_lk_conflicts</h3>
+<p>The DbEnv::get_lk_conflicts method returns the current conflicts array.</p>
+<p>The DbEnv::get_lk_conflicts method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::get_lk_conflicts method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>lk_conflictsp</b><dd>
+The <b>lk_conflictsp</b> parameter references memory into which
+a pointer to the current conflicts array is copied.
+<p><dt><b>lk_modesp</b><dd>
+The <b>lk_modesp</b> parameter references memory into which
+ the size of the current conflicts array is copied.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/lock_class.html">DbLock</a>
+<h3>See Also</h3>
+<a href="../api_cxx/lock_list.html">Locking Subsystem and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_logc.cpp,v 11.8 2002/07/03 21:03:53 bostic Exp ";
+static const char revid[] = "$Id: cxx_logc.cpp,v 11.11 2003/03/27 20:05:04 merrells Exp $";
 #endif /* not lint */
 
 #include <errno.h>
@@ -37,11 +37,12 @@ int DbLogc::close(u_int32_t _flags)
 {
 	DB_LOGC *logc = this;
 	int ret;
+	DbEnv *dbenv2 = DbEnv::get_DbEnv(logc->dbenv);
 
 	ret = logc->close(logc, _flags);
 
 	if (!DB_RETOK_STD(ret))
-		DB_ERROR("DbLogc::close", ret, ON_ERROR_UNKNOWN);
+		DB_ERROR(dbenv2, "DbLogc::close", ret, ON_ERROR_UNKNOWN);
 
 	return (ret);
 }
@@ -56,9 +57,11 @@ int DbLogc::get(DbLsn *lsn, Dbt *data, u_int32_t _flags)
 
 	if (!DB_RETOK_LGGET(ret)) {
 		if (ret == ENOMEM && DB_OVERFLOWED_DBT(data))
-			DB_ERROR_DBT("DbLogc::get", data, ON_ERROR_UNKNOWN);
+			DB_ERROR_DBT(DbEnv::get_DbEnv(logc->dbenv),
+				"DbLogc::get", data, ON_ERROR_UNKNOWN);
 		else
-			DB_ERROR("DbLogc::get", ret, ON_ERROR_UNKNOWN);
+			DB_ERROR(DbEnv::get_DbEnv(logc->dbenv),
+				"DbLogc::get", ret, ON_ERROR_UNKNOWN);
 	}
 
 	return (ret);

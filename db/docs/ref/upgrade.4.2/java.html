@@ -1,0 +1,100 @@
+<!--$Id: java.so,v 1.18 2003/11/20 22:31:21 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.2: Java</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.2/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.2/queue.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.2: Java</h3>
+<p>There are a number of major changes to the Java support in Berkeley DB in this
+release.  Despite that we have tried to make this a bridge release, a
+release where we don't require you to change anything.  We've done this
+using the standard approach to deprecation in Java.  If you do not
+compile with deprecation warnings on, your existing sources should work
+with this new release with only minor changes despite the large number
+of changes.  Expect that in a future release we will remove all the
+deprecated API and only support the new API names.</p>
+<p>This is a list of areas where we have broken compatibility with the
+4.1 release.  In most cases it is a name change in an interface class.
+</p>
+<p><ul type=disc>
+<li><b>DbAppDispatch.app_dispatch(DbEnv,Dbt,DbLsn,int)</b><p>is now:
+<b>DbAppDispatch.appDispatch(DbEnv,Dbt,DbLsn,int)</b></p>
+<li><b>DbAppendRecno.db_append_recno(Db,Dbt,int)</b><p>is now:
+<b>DbAppendRecno.dbAppendRecno(Db,Dbt,int)</b></p>
+<li><b>DbBtreeCompare.bt_compare(Db,Dbt,Dbt)</b><p>is now:
+<b>DbBtreeCompare.compare(Db,Dbt,Dbt)</b></p>
+<li><b>DbBtreeCompare.dup_compare(Db,Dbt,Dbt)</b><p>is now:
+<b>DbBtreeCompare.compareDuplicates(Db,Dbt,Dbt)</b></p>
+<li><b>DbBtreePrefix.bt_prefix(Db,Dbt,Dbt)</b><p>is now:
+<b>DbBtreePrefix.prefix(Db,Dbt,Dbt)</b></p>
+<li><b>DbSecondaryKeyCreate.secondary_key_create(Db,Dbt,Dbt,Dbt)</b><p>is now:
+<b>DbSecondaryKeyCreate.secondaryKeyCreate(Db,Dbt,Dbt,Dbt)</b></p>
+</ul>
+<p>The 4.2 release of Berkeley DB requires at minimum a J2SE 1.3.1 certified Java
+virtual machine and associated classes to properly build and execute.
+To determine what version virtual machine you are running, enter:</p>
+<blockquote><pre>java -version</pre></blockquote>
+<p>at a command line and look for the version number.  If you need to
+deploy to a version 1.1 or 1.0 Java environment, it may be possible to
+do so by not including the classes in the com.sleepycat.bdb package
+in the Java build process (however, that workaround has not been
+tested by Sleepycat Software).</p>
+<p>A few inconsistent methods have been cleaned up (for example,
+<a href="../../java/com/sleepycat/db/Db.html#close">Db.close</a>
+ now returns void; previously,
+it returned an int
+which was always zero).  The synchronized attributed has been toggled
+on some methods -- this is an attempt to prevent multithreaded
+applications from calling close or similar methods concurrently from
+multiple threads.</p>
+<p>The Berkeley DB API has up until now been consistent across all language APIs.
+Although consistency has is benefits, it made our Java API look strange to
+Java programmers.  Many methods have been renamed in this release of the
+Java API to conform with Java naming conventions.  Sometimes this renaming
+was simply "camel casing", sometimes it required rewording.  The mapping
+file for these name changes is in <b>dist/camel.pm</b>.  The Perl script
+we use to convert code to the new names is called
+<b>dist/camelize.pl</b>, and may help with updating Java applications
+written for earlier versions of Berkeley DB.</p>
+<p>Berkeley DB has a number of places where as a C library it uses function pointers
+to move into custom code for the purpose of notification of some event.  In
+Java the best parallel is the registration of some class which implements
+an interface.  In this version of Berkeley DB we have made an effort to make those
+interfaces more uniform and predictable.  Specifically, DbEnvFeedback is now
+DbEnvFeedbackHandler, DbErrcall is DbErrorHandler and DbFeedback is
+DbFeedbackHandler.  In every case we have kept the older interfaces and the
+older registration methods so as to allow for backward compatibility in this
+release.  Expect them to be removed in future releases.
+</p>
+<p>As you upgrade to this release of Berkeley DB you will notice that we have added
+an entirely new layer inside the package com.sleepycat.bdb.  This was
+formerly the Greybird project by Mark Hayes.  Sleepycat and Mark worked
+together to incorporate his work.  We have done this in hopes of reducing
+the learning curve when using Berkeley DB in a Java project.  When you upgrade
+you should consider switching to this layer as over time the historical
+classes and the new bdb package classes will be more and more integrated
+providing a simple yet powerful interface from Java into the Berkeley DB library.</p>
+<p>Berkeley DB's Java API is now generated with <a href="http://www.swig.org">SWIG</a>.
+The new Java API is significantly faster for many operations.</p>
+<p>Some internal methods and constructors that were previously public have
+been hidden or removed.</p>
+<p>Packages found under com.sleepycat are considered different APIs into
+the Berkeley DB system.  These include the core db api (com.sleepycat.db), the
+collections style access layer (com.sleepycat.bdb) and the now relocated XA
+system (com.sleepycat.xa).</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.2/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.2/queue.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

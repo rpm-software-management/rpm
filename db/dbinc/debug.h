@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2002
+ * Copyright (c) 1998-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: debug.h,v 11.31 2002/08/06 06:37:08 bostic Exp 
+ * $Id: debug.h,v 11.38 2003/09/04 19:01:14 bostic Exp $
  */
 
 #ifndef _DB_DEBUG_H_
@@ -12,6 +12,13 @@
 
 #if defined(__cplusplus)
 extern "C" {
+#endif
+
+/*
+ * Turn on additional error checking in gcc 3.X.
+ */
+#if !defined(__GNUC__) || __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5)
+#define	__attribute__(s)
 #endif
 
 /*
@@ -23,12 +30,24 @@ extern "C" {
 
 /*
  * DB assertions.
+ *
+ * Use __STDC__ rather than STDC_HEADERS, the #e construct is ANSI C specific.
  */
-#if defined(DIAGNOSTIC) && defined(__STDC__)
+#if defined(__STDC__) && defined(DIAGNOSTIC)
 #define	DB_ASSERT(e)	((e) ? (void)0 : __db_assert(#e, __FILE__, __LINE__))
 #else
 #define	DB_ASSERT(e)
 #endif
+
+/*
+ * "Shut that bloody compiler up!"
+ *
+ * Unused, or not-used-yet variable.  We need to write and then read the
+ * variable, some compilers are too bloody clever by half.
+ */
+#define	COMPQUIET(n, v)							\
+	(n) = (v);							\
+	(n) = (n)
 
 /*
  * Purify and other run-time tools complain about uninitialized reads/writes
@@ -47,7 +66,7 @@ extern "C" {
  * variadic argument list (and then rescanned), by functions other than the
  * original routine that took the variadic list of arguments.
  */
-#if defined(__STDC__) || defined(__cplusplus)
+#if defined(STDC_HEADERS) || defined(__cplusplus)
 #define	DB_REAL_ERR(env, error, error_set, stderr_default, fmt) {	\
 	va_list ap;							\
 									\
@@ -171,7 +190,7 @@ do {									\
 		/* Copy the file. */					\
 		if (F_ISSET((dbp),					\
 		    DB_AM_OPEN_CALLED) && (dbp)->mpf != NULL)		\
-			(void)(dbp)->sync((dbp), 0);			\
+			(void)__db_sync(dbp);				\
 		if ((__ret =						\
 		    __db_testcopy((dbp)->dbenv, (dbp), (name))) != 0)	\
 			(ret) = __db_panic((dbp)->dbenv, __ret);	\

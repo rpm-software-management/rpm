@@ -1,20 +1,20 @@
-<!--Id: newsite.so,v 1.2 2001/10/25 14:58:49 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: newsite.so,v 1.2 2001/10/25 14:58:49 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Connecting to a new site</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../../ref/rep/comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/init.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/init.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Connecting to a new site</h1>
+<h3 align=center>Connecting to a new site</h3>
 <p>Connecting to a new site in the replication group happens whenever the
 <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>.  The application
 should assign the new site a local environment ID number, and all future
@@ -23,7 +23,7 @@ environment ID number.  It is possible, of course, for the application
 to be aware of a new site before the return of <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> (for
 example, applications using connection-oriented protocols are likely to
 detect new sites immediately, while applications using broadcast
-protocols may not).
+protocols may not).</p>
 <p>Regardless, in applications supporting the dynamic addition of database
 environments to replication groups, environments joining an existing
 replication group may need to provide contact information.  (For
@@ -36,9 +36,9 @@ the group using the <b>rec</b> parameter returned by <a href="../../api_c/rep_me
 If no additional information was provided for Berkeley DB to forward to the
 existing members of the group, the <b>data</b> field of the <b>rec</b>
 parameter passed to the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method will be NULL after
-<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/init.html"><img src="../../images/next.gif" alt="Next"></a>
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/init.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -17,7 +17,7 @@ use t::util ;
 BEGIN
 {
     if ($BerkeleyDB::db_version < 3) {
-        print "1..0 # Skipped - this needs Berkeley DB 3.x or better\n" ;
+        print "1..0 # Skip: this needs Berkeley DB 3.x or better\n" ;
         exit 0 ;
     }
 }        
@@ -52,14 +52,17 @@ umask(0);
 				     -Flags    => DB_CREATE ;
 
     # create some data
-    my %data =  (
-		"red"	=> 2,
+    my @data =  (
 		"green"	=> "house",
+		"red"	=> 2,
 		"blue"	=> "sea",
 		) ;
 
     my $ret = 0 ;
-    while (($k, $v) = each %data) {
+    while (@data)
+    {
+    	my $k = shift @data ;
+	my $v = shift @data ;
         $ret += $db->db_put($k, $v) ;
     }
     ok 5, $ret == 0 ;
@@ -77,7 +80,7 @@ umask(0);
     ok 9, $dup_cursor ;
 
     # move original cursor off green/house
-    $cursor->c_get($k, $v, DB_NEXT) ;
+    my $s = $cursor->c_get($k, $v, DB_NEXT) ;
     ok 10, $k ne "green" ;
     ok 11, $v ne "house" ;
 

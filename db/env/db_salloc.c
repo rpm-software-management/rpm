@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: db_salloc.c,v 11.16 2002/08/24 20:27:25 bostic Exp ";
+static const char revid[] = "$Id: db_salloc.c,v 11.17 2003/01/08 04:42:01 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -60,7 +60,7 @@ __db_shalloc_init(area, size)
 
 /*
  * __db_shalloc_size --
- *	Return size of the shared region, including alignment.
+ *	Return the space needed for an allocation, including alignment.
  *
  * PUBLIC: int __db_shalloc_size __P((size_t, size_t));
  */

@@ -1,20 +1,22 @@
-<!--$Id: dbc_class.so,v 10.12 1999/12/20 08:52:33 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: dbc_class.so,v 10.18 2003/05/09 20:14:04 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Dbc</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>Dbc</h1>
+<h3>Dbc</h3>
 </td>
-<td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -23,27 +25,20 @@
 <p>
 class Dbc { ... };
 </pre></h3>
-<h1>Description</h1>
-<p>This manual page describes the specific details of the Dbc class,
-which provides cursor support for the access methods in Db.
-<p>The Dbc functions are the library interface supporting sequential
-access to the records stored by the access methods of the Berkeley DB library.
-Cursors are created by calling the <a href="../api_cxx/db_cursor.html">Db::cursor</a> method which returns a
-pointer to a Dbc object.
-<h3>Class</h3>
-<a href="../api_cxx/dbc_class.html">Dbc</a>
-<h1>See Also</h1>
-<a href="../api_cxx/dbc_close.html">Dbc::close</a>,
-<a href="../api_cxx/dbc_count.html">Dbc::count</a>,
-<a href="../api_cxx/dbc_del.html">Dbc::del</a>,
-<a href="../api_cxx/dbc_dup.html">Dbc::dup</a>,
-<a href="../api_cxx/dbc_get.html">Dbc::get</a>
-and
-<a href="../api_cxx/dbc_put.html">Dbc::put</a>.
+<hr size=1 noshade>
+<h3>Description: Dbc</h3>
+<p>The Dbc object is the handle for a cursor into a Berkeley DB database.
+The handle is not free-threaded.  Cursor handles may be used by multiple
+threads, but only serially, that is, the application must serialize
+access to the Dbc handle.</p>
+<p>If the cursor is to be used to perform operations on behalf of a
+transaction, the cursor must be opened and closed within the context of
+that single transaction.  Once <a href="../api_cxx/dbc_close.html">Dbc::close</a> has been called, the
+handle may not be accessed again, regardless of the method's return.</p>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

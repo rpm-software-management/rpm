@@ -118,6 +118,7 @@ umask(0) ;
     undef $env ;
 }
 
+
 {
     # override default hash
     my $lex = new LexFile $Dfile ;
@@ -664,7 +665,7 @@ umask(0) ;
 
    require Exporter ;
    use BerkeleyDB;
-   @ISA=qw(BerkeleyDB::Hash);
+   @ISA=qw(BerkeleyDB BerkeleyDB::Hash);
    @EXPORT = @BerkeleyDB::EXPORT ;
 
    sub db_put { 

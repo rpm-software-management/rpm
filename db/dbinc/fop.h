@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: fop.h,v 11.3 2002/03/27 04:34:54 bostic Exp 
+ * $Id: fop.h,v 11.4 2003/01/08 04:31:47 bostic Exp $
  */
 
 #ifndef	_FOP_H_

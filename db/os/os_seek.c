@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_seek.c,v 11.18 2002/07/12 18:56:52 bostic Exp ";
+static const char revid[] = "$Id: os_seek.c,v 11.23 2003/02/16 15:54:06 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -39,7 +39,10 @@ __os_seek(dbenv, fhp, pgsize, pageno, relative, isrewind, db_whence)
 	DB_OS_SEEK db_whence;
 {
 	off_t offset;
-	int ret, whence;
+	int ret, retries, whence;
+
+	/* Check for illegal usage. */
+	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 	switch (db_whence) {
 	case DB_OS_SEEK_CUR:
@@ -62,10 +65,12 @@ __os_seek(dbenv, fhp, pgsize, pageno, relative, isrewind, db_whence)
 		offset = (off_t)pgsize * pageno + relative;
 		if (isrewind)
 			offset = -offset;
+		retries = 0;
 		do {
 			ret = lseek(fhp->fd, offset, whence) == -1 ?
 			    __os_get_errno() : 0;
-		} while (ret == EINTR);
+		} while ((ret == EINTR || ret == EBUSY) &&
+		    ++retries < DB_RETRY);
 	}
 
 	if (ret == 0) {

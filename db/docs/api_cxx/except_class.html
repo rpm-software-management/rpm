@@ -1,20 +1,22 @@
-<!--$Id: except_class.so,v 10.15 1999/12/20 08:52:33 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: except_class.so,v 10.35 2003/11/08 19:17:24 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbException</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DbException</h1>
+<h3>DbException</h3>
 </td>
-<td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -22,43 +24,45 @@
 #include &lt;db_cxx.h&gt;
 <p>
 class DbException {
-	DbException(int err);
-	DbException(const char *description);
-	DbException(const char *prefix, int err);
-	DbException(const char *prefix1, const char *prefix2, int err);
+public:
+	int get_errno() const;
+	virtual const char *what() const;
+	DbEnv *get_env() const;
 };
 </pre></h3>
-<h1>Description</h1>
-<p>This manual page describes the DbException class and how it is used
-by the various Berkeley DB classes.
-<p>Most methods in the Berkeley DB classes return an int but also throw an
+<hr size=1 noshade>
+<h3>Description: DbException</h3>
+<a name="3"><!--meow--></a>
+<a name="4"><!--meow--></a>
+<a name="5"><!--meow--></a>
+<p>This information describes the DbException class and how it is
+used by the various Berkeley DB classes.</p>
+<p>Most methods in the Berkeley DB classes return an int, but also throw an
 exception.  This allows for two different error behaviors.  By default,
 the Berkeley DB C++ API is configured to throw an exception whenever a serious
 error occurs.  This generally allows for cleaner logic for transaction
-processing, as a try block can surround a single transaction.
+processing because a try block can surround a single transaction.
 Alternatively, Berkeley DB can be configured to not throw exceptions, and
 instead have the individual function return an error code, by setting
-the constructor flags for the Db and <a href="../api_cxx/dbenv_class.html">DbEnv</a> objects.
-<p>A DbException object contains an informational string and an errno.
-The errno can be obtained by using <a href="../api_cxx/get_errno.html">DbException::get_errno</a>.
-The informational string can be obtained by using <a href="../api_cxx/what.html">DbException::what</a>.
+the <a href="../api_cxx/env_class.html#DB_CXX_NO_EXCEPTIONS">DB_CXX_NO_EXCEPTIONS</a> for the <a href="../api_cxx/db_class.html">Db</a> and <a href="../api_cxx/env_class.html">DbEnv</a>
+constructors.</p>
+<p>A DbException object contains an informational string, an errno,
+and a reference to the environment from which the exception was
+thrown.  The errno can be obtained by using DbException::get_errno.
+The informational string can be obtained by using DbException::what.
+And, the environment can be obtained using DbException::get_env.</p>
 <p>We expect in the future that this class will inherit from the standard
 class exception, but certain language implementation bugs currently
-prevent this on some platforms.
+prevent this on some platforms.</p>
 <p>Some methods may return non-zero values without issuing an exception.
 This occurs in situations that are not normally considered an error, but
-when some informational status is returned.  For example, <a href="../api_cxx/db_get.html">Db::get</a>
-returns DB_NOTFOUND when a requested key does not appear in the database.
-<h3>Class</h3>
-<a href="../api_cxx/except_class.html">DbException</a>
-<h1>See Also</h1>
-<a href="../api_cxx/get_errno.html">DbException::get_errno</a>
-and
-<a href="../api_cxx/what.html">DbException::what</a>.
+when some informational status is returned.  For example,
+<a href="../api_cxx/db_get.html">Db::get</a> returns <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> when a requested key does
+not appear in the database.</p>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

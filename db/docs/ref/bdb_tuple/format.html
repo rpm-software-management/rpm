@@ -1,0 +1,101 @@
+<!--$Id: format.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Tuple - Using the tuple format</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Tuple</dl></h3></td>
+<td align=right><a href="../bdb_tuple/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/extract.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Tuple - Using the tuple format</h3>
+<p>Tuples are sequences of primitive Java values that can be written to, and
+read from, the raw data bytes of a stored record.  The primitive values are
+written or read one at a time in sequence, using the Java API
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleInput.html">TupleInput</a>
+ and
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleOutput.html">TupleOutput</a>
+ classes.  These classes
+are very similar to the standard Java 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/io/DataInput.html">DataInput</a>
+ and
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/io/DataOutput.html">DataOutput</a>
+ interfaces.  The primary difference is the
+binary format of the data, which is designed for sorting in the case of
+tuples.</p>
+<p>For example, to read and write a tuple containing two string values, the
+following code snippets could be used.</p>
+<blockquote><pre><b>import com.sleepycat.bdb.bind.tuple.TupleInput;
+import com.sleepycat.bdb.bind.tuple.TupleOutput;
+...
+TupleInput input;
+TupleOutput output;
+...
+String partNumber = input.readString();
+String supplierNumber = input.readString();
+...
+output.writeString(partNumber);
+output.writeString(supplierNumber);
+</b></pre></blockquote>
+<p>Since a tuple is defined as an ordered sequence, reading and writing
+order must match.  If the wrong data type is read (an integer instead of
+string, for example), an exception may be thrown or at minimum invalid data
+will be read.</p>
+<p>When the tuple format is used, bindings and key extractors must read and
+write tuples using the tuple API as shown above.  This will be illustrated in
+the next two sections.</p>
+<hr size=1 noshade>
+<p>First, the tuple format objects must be created as shown below in the
+modified <b>SampleDatabase</b> class.</p>
+<blockquote><pre>
+<b>import com.sleepycat.bdb.bind.serial.TupleSerialKeyExtractor;
+import com.sleepycat.bdb.bind.tuple.TupleFormat;
+import com.sleepycat.bdb.bind.tuple.TupleInput;
+import com.sleepycat.bdb.bind.tuple.TupleOutput;
+...
+</b>public class SampleDatabase
+{
+<b>    ...
+    private TupleFormat partKeyFormat;
+</b>    private SerialFormat partValueFormat;
+<b>    private TupleFormat supplierKeyFormat;
+</b>    private SerialFormat supplierValueFormat;
+<b>    private TupleFormat shipmentKeyFormat;
+</b>    private SerialFormat shipmentValueFormat;
+<b>    private TupleFormat cityKeyFormat;
+    ...
+</b>    public SampleDatabase(String homeDirectory, boolean runRecovery)
+        throws DbException, FileNotFoundException
+    {
+<b>        ...
+        partKeyFormat = new TupleFormat();
+</b>        partValueFormat = new SerialFormat(javaCatalog, PartValue.class);
+<b>        supplierKeyFormat = new TupleFormat();
+</b>        supplierValueFormat = new SerialFormat(javaCatalog, SupplierValue.class);
+<b>        shipmentKeyFormat = new TupleFormat();
+</b>        shipmentValueFormat = new SerialFormat(javaCatalog, ShipmentValue.class);
+<b>        cityKeyFormat = new TupleFormat();
+        ...
+</b>    }
+}
+</pre></blockquote>
+<p>For each key, a 
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleFormat.html">TupleFormat</a>
+object is used instead of the 
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialFormat.html">SerialFormat</a>
+ used in the prior examples.  The
+<a href="../../java/com/sleepycat/bdb/bind/tuple/TupleFormat.html">TupleFormat</a>
+ constructor has no
+parameters.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_tuple/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/extract.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

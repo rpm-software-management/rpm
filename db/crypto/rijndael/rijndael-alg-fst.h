@@ -1,5 +1,5 @@
 /*
- * Id: rijndael-alg-fst.h,v 1.2 2002/01/08 18:53:37 sue Exp 
+ * $Id: rijndael-alg-fst.h,v 1.2 2002/01/08 18:53:37 sue Exp $
  */
 /**
  * rijndael-alg-fst.h

@@ -1,0 +1,108 @@
+<!--$Id: except.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Handling exceptions</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Basic</dl></h3></td>
+<td align=right><a href="../bdb_basic/read.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_index/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Handling exceptions</h3>
+<p>Exception handling was illustrated in the previous sections <a href="main.html">Implementing the main program</a> and <a href="transact.html">Using transactions</a>.  This
+section examines exception handling in a Java API application in more detail.</p>
+<p>There are two exceptions that must be treated specially:
+<a href="../../java/com/sleepycat/db/DbRunRecoveryException.html">DbRunRecoveryException</a>
+ and
+<a href="../../java/com/sleepycat/db/DbDeadlockException.html">DbDeadlockException</a>
+.</p>
+<p>
+<a href="../../java/com/sleepycat/db/DbRunRecoveryException.html">DbRunRecoveryException</a>
+ is thrown
+when the only solution is to shut down the application and run recovery.  All
+applications must catch this exception and follow the recovery procedure.</p>
+<p>When 
+<a href="../../java/com/sleepycat/db/DbDeadlockException.html">DbDeadlockException</a>
+ is thrown, the
+application should normally retry the operation.  If a deadlock continues to
+occur for some maximum number of retries, the application should give up and
+try again later or take other corrective actions.  The Java API provides two APIs
+for transaction execution.</p>
+<p><ul type=disc>
+<li>When using the 
+<a href="../../java/com/sleepycat/bdb/CurrentTransaction.html">CurrentTransaction</a>
+class directly, the application must catch 
+<a href="../../java/com/sleepycat/db/DbDeadlockException.html">DbDeadlockException</a>
+ and follow the procedure described previously.
+<li>When using the 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html">TransactionRunner</a>
+class, retries are performed automatically and the application need only handle
+the case where the maximum number of retries has been reached.  In that case,
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+ will throw
+<a href="../../java/com/sleepycat/db/DbDeadlockException.html">DbDeadlockException</a>
+.
+</ul>
+<p>When using the 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html">TransactionRunner</a>
+ class
+there are two other considerations.</p>
+<p><ul type=disc>
+<li>First, if the application-defined 
+<a href="../../java/com/sleepycat/bdb/TransactionWorker.html#doWork">TransactionWorker.doWork</a>
+ method throws an exception the transaction will
+automatically be aborted, and otherwise the transaction will automatically be
+committed.  Applications should design their transaction processing with this
+in mind.
+<li>Second, please be aware that 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+ unwraps exceptions in order to discover whether a
+nested exception is a 
+<a href="../../java/com/sleepycat/db/DbDeadlockException.html">DbDeadlockException</a>
+.
+This is particularly important since all Berkeley DB exceptions that occur while
+calling a stored collection method are wrapped with a
+<a href="../../java/com/sleepycat/bdb/util/RuntimeExceptionWrapper.html">RuntimeExceptionWrapper</a>
+.  This wrapping is
+necessary because Berkeley DB exceptions are checked exceptions, and the Java
+collections API does not allow such exceptions to be thrown.
+</ul>
+<p>When calling 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html#run">TransactionRunner.run</a>
+,
+the unwrapped (nested) exception will be unwrapped and thrown automatically.
+If you are not using 
+<a href="../../java/com/sleepycat/bdb/TransactionRunner.html">TransactionRunner</a>
+ or
+if you are handling exceptions directly for some other reason, use the
+<a href="../../java/com/sleepycat/bdb/util/ExceptionUnwrapper.html#unwrap">ExceptionUnwrapper.unwrap</a>
+ method to get
+the nested exception.  For example, this can be used to discover that an
+exception is a 
+<a href="../../java/com/sleepycat/db/DbRunRecoveryException.html">DbRunRecoveryException</a>
+ as
+shown below.</p>
+<blockquote><pre><b>
+import com.sleepycat.bdb.util.ExceptionUnwrapper;
+...
+    catch (Exception e)
+    {
+        e = ExceptionUnwrapper.unwrap(e);
+        if (e instanceof DbRunRecoveryException)
+        {
+            // follow recovery procedure
+        }
+    }
+</b></pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_basic/read.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_index/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

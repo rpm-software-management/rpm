@@ -1,22 +1,23 @@
-<!--Id: tune.so,v 10.6 2001/03/10 19:59:24 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--$Id: tune.so,v 10.8 2003/04/14 17:55:39 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Access method tuning</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>        <a name="3"><!--meow--></a>    
+<a name="2"><!--meow--></a><a name="3"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Access Methods</dl></h3></td>
-<td align=right><a href="../../ref/am_misc/diskspace.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am_misc/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../am_misc/diskspace.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Access method tuning</h1>
+<h3 align=center>Access method tuning</h3>
 <p>There are a few different issues to consider when tuning the performance
-of Berkeley DB access method applications.
+of Berkeley DB access method applications.</p>
 <p><dl compact>
 <p><dt>access method<dd>An application's choice of a database access method can significantly
 affect performance.  Applications using fixed-length records and integer
@@ -56,8 +57,10 @@ this reason, dirtying pages in the Berkeley DB cache may cause intense
 filesystem activity, typically when the filesystem sync thread or
 process is run.  In some cases, this can dramatically affect application
 throughput.  The workaround to this problem is to create the shared
-regions in system shared memory (<a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a>) or in
-application private memory (<a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a>).
+regions in system shared memory (<a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a>) or application
+private memory (<a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a>), or, in cases where this behavior
+is configurable, to turn off the operating system's flushing of
+memory-mapped pages.
 <p><dt>large key/data items<dd>Storing large key/data items in a database can alter the performance
 characteristics of Btree, Hash and Recno databases.  The first parameter
 to consider is the database page size.  When a key/data item is too
@@ -68,17 +71,52 @@ be too large).  Accessing these overflow pages requires at least one
 additional page reference over a normal access, so it is usually better
 to increase the page size than to create a database with a large number
 of overflow pages.  Use the <a href="../../utility/db_stat.html">db_stat</a> utility (or the statistics
-returned by the <a href="../../api_c/db_stat.html">DB-&gt;stat</a> function) to review the number of overflow
+returned by the <a href="../../api_c/db_stat.html">DB-&gt;stat</a> method) to review the number of overflow
 pages in the database.
 <p>The second issue is using large key/data items instead of duplicate data
 items.  While this can offer performance gains to some applications
 (because it is possible to retrieve several data items in a single get
 call), once the key/data items are large enough to be pushed off-page,
 they will slow the application down.  Using duplicate data items is
-usually the better choice in the long run.
+usually the better choice in the long run.</p>
 </dl>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/am_misc/diskspace.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am_misc/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+<p>A common question when tuning Berkeley DB applications is scalability.  For
+example, people will ask why, when adding additional threads or
+processes to an application, the overall database throughput decreases,
+even when all of the operations are read-only queries.</p>
+<p>First, while read-only operations are logically concurrent, they still
+have to acquire mutexes on internal Berkeley DB data structures.  For example,
+when searching a linked list and looking for a database page, the linked
+list has to be locked against other threads of control attempting to add
+or remove pages from the linked list.  The more threads of control you
+add, the more contention there will be for those shared data structure
+resources.</p>
+<p>Second, once contention starts happening, applications will also start
+to see threads of control convoy behind locks (especially on
+architectures supporting only test-and-set spin mutexes, rather than
+blocking mutexes).  On test-and-set architectures, threads of control
+waiting for locks must attempt to acquire the mutex, sleep, check the
+mutex again, and so on.  Each failed check of the mutex and subsequent
+sleep wastes CPU and decreases the overall throughput of the system.</p>
+<p>Third, every time a thread acquires a shared mutex, it has to shoot down
+other references to that memory in every other CPU on the system.  Many
+modern snoopy cache architectures have slow shoot down characteristics.</p>
+<p>Fourth, schedulers don't care what application-specific mutexes a thread
+of control might hold when de-schedule a thread.  If a thread of control
+is descheduled while holding a shared data structure mutex, other threads
+of control will be blocked until the scheduler decides to run the blocking
+thread of control again.  The more threads of control that are running,
+the smaller their quanta of CPU time, and the more likely they will be
+descheduled while holding a Berkeley DB mutex.</p>
+<p>The results of adding new threads of control to an application, on the
+application's throughput, is application and hardware specific and
+almost entirely dependent on the application's data access pattern and
+hardware.  In general, using operating systems that support blocking
+mutexes will often make a tremendous difference, and limiting threads
+of control to to some small multiple of the number of CPUs is usually
+the right choice to make.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/diskspace.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -29,6 +29,8 @@ typedef struct ___fop_write_args {
 	DB_LSN prev_lsn;
 	DBT	name;
 	u_int32_t	appname;
+	u_int32_t	pgsize;
+	db_pgno_t	pageno;
 	u_int32_t	offset;
 	DBT	page;
 	u_int32_t	flag;

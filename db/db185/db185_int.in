@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2001
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -36,11 +36,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Id: db185_int.in,v 11.9 2001/04/10 20:43:54 bostic Exp 
+ * $Id: db185_int.in,v 11.13 2003/01/08 04:15:06 bostic Exp $
  */
 
-#ifndef _DB_185_H_
-#define	_DB_185_H_
+#ifndef _DB185_INT_H_
+#define	_DB185_INT_H_
 
 /* Routine flags. */
 #define	R_CURSOR	1		/* del, put, seq */
@@ -126,4 +126,4 @@ typedef struct {
 	u_char	bval;		/* delimiting byte (variable-length records */
 	char	*bfname;	/* btree file name */
 } RECNOINFO;
-
+#endif /* !_DB185_INT_H_ */

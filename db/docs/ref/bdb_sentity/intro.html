@@ -1,0 +1,63 @@
+<!--$Id: intro.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Serializable Entity - One serializable class for entities and values</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Serializable Entity</dl></h3></td>
+<td align=right><a href="../bdb_tuple/sorted.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_sentity/class.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Serializable Entity - One serializable class for entities and values</h3>
+<p>In the prior examples that used entities (Entity and Tuple) you may have
+noticed the redundancy between the serializable value classes and the entity
+classes.  An entity class by definition contains all properties of the value
+class as well as all properties of the key class.</p>
+<p>When using serializable values it is possible to remove this redundancy
+by changing the entity class in two ways:</p>
+<p><ul type=disc>
+<li>Make the entity class serializable, so it can be used in place of
+the value class.
+<li>Make the key fields transient, so they are not redundantly stored in
+the record.
+</ul>
+<p>The modified entity class can then serve double-duty:  It can be
+serialized and stored as the record value, and it can be used as the entity
+class as usual along with the Java collections API.  The <b>PartValue</b>,
+<b>SupplierValue</b> and <b>ShipmentValue</b> classes can then be
+removed.</p>
+<p>The example program illustrates:</p>
+<p><ul type=disc>
+<li><a href="class.html">Using transient fields in an entity class</a>
+<li><a href="binding.html">Using transient fields in an entity binding</a>
+<li><a href="remove.html">Removing the redundant value classes</a>
+</ul>
+<p>Transient fields are defined in Java as fields that are not stored in
+the serialized form of an object.  Therefore, when an object is deserialized
+the transient fields must be explicitly initialized.  Since the entity binding
+is responsible for creating entity objects, it is the natural place to
+initialize the transient key fields.</p>
+<p>Note that it is not strictly necessary to make the key fields of a
+serializable entity class transient.  If this is not done, the key will simply
+be stored redundantly in the record's value.  This extra storage may or may not
+be acceptable to an application.  But since we are using tuple keys and an
+entity binding class must be implemented anyway to extract the key from the
+entity, it is sensible to use transient key fields to reduce the record size.
+Of course there may be a reason that transient fields are not desired; for
+example, if an application wants to serialize the entity objects for other
+purposes, then using transient fields should be avoided.</p>
+<p>The complete source
+of the final version of the example program is included in the Berkeley DB
+distribution.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_tuple/sorted.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_sentity/class.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

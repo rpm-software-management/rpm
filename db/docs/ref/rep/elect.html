@@ -1,38 +1,53 @@
-<!--Id: elect.so,v 1.7 2002/09/11 19:25:03 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: elect.so,v 1.16 2003/06/18 01:44:58 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Elections</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../../ref/rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Elections</h1>
-<p>Berkeley DB never initiates elections, that is the responsibility of the
-application.  It is not dangerous to hold an election, as the Berkeley DB
-election process ensures there is never more than a single master
-environment.  Clients should initiate an election whenever they lose
-contact with the master environment, whenever they see a return of
+<h3 align=center>Elections</h3>
+<p>It is the responsibility of the application to initiate elections.  It
+is never dangerous to hold an election, as the Berkeley DB election process
+ensures there is never more than a single master database environment.
+Clients should initiate an election whenever they lose contact with the
+master environment, whenever they see a return of
 <a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a> from the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method, or when, for
 whatever reason, they do not know who the master is.  It is not
 necessary for applications to immediately hold elections when they
-start, as any existing master will be quickly discovered after calling
+start, as any existing master will be discovered after calling
 <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.  If no master has been found after a short wait
-period, then the application should call for an election.
-<p>For a client to become the master, the client must win an election.  To
-win an election, the replication group must currently have no master,
-the client must have the highest priority of the database environments
-participating in the election, and at least (N / 2 + 1) of the members
-of the replication group must participate in the election.  In the case
-of multiple database environments with equal priorities, the environment
-with the most recent log records will win.
+period, then the application should call for an election.</p>
+<p>For a client to win an election, the replication group must currently
+have no master, and the client must have the most recent log records.
+In the case of clients having equivalent log records, the priority of
+the database environments participating in the election will determine
+the winner.  At least ((N/2) + 1) of the members of the replication
+group must participate in the election for a winner to be declared.</p>
+<p>If an application's policy for what site should win an election can be
+parameterized in terms the database environment's information (that is,
+the number of sites, available log records and a relative priority are
+all that matter), then Berkeley DB can handle all elections transparently.
+However, there are cases where the application has more complete
+knowledge and needs to affect the outcome of elections.  For example,
+applications may choose to handle master selection, explicitly
+designating master and client sites.  Applications in these cases may
+never need to call for an election.  Alternatively, applications may
+choose to use <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>'s arguments to force the correct outcome
+to an election.  That is, if an application has three sites, A, B, and
+C, and after a failure of C determines that A must become the winner,
+the application can guarantee an election's outcome by specifying
+priorities appropriately after an election:</p>
+<blockquote><pre>on A: priority 100, nsites 2
+on B: priority 0, nsites 2</pre></blockquote>
 <p>It is dangerous to configure more than one master environment using the
 <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method, and applications should be careful not to do so.
 Applications should only configure themselves as the master environment
@@ -41,19 +56,20 @@ An application can only know it has won an election if the
 <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method returns success and the local database environment's
 ID as the new master environment ID, or if the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method
 returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a> and the local database environment's
-ID as the new master environment ID.
+ID as the new master environment ID.</p>
 <p>To add a database environment to the replication group with the intent
 of it becoming the master, first add it as a client.  Since it may be
 out-of-date with respect to the current master, allow it to update
 itself from the current master.  Then, shut the current master down.
 Presumably, the added client will win the subsequent election.  If the
 client does not win the election, it is likely that it was not given
-sufficient time to update itself with respect to the current master.
+sufficient time to update itself with respect to the current master.</p>
 <p>If a client is unable to find a master or win an election, it means that
 the network has been partitioned and there are not enough environments
-participating in the election for one of the participants to win.  In
-this case, the application should repeatedly call <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> and
-<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, alternating between attempting to discover an
+participating in the election for one of the participants to win (or,
+there were only two sites in the replication group and one crashed).
+In this case, the application should repeatedly call <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>
+and <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, alternating between attempting to discover an
 existing master, and holding an election to declare a new one.  In
 desperate circumstances, an application could simply declare itself the
 master by calling <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>, or by reducing the number of
@@ -62,7 +78,9 @@ Neither of these solutions is recommended: in the case of a network
 partition, either of these choices can result in there being two masters
 in one replication group, and the databases in the environment might
 irretrievably diverge as they are modified in different ways by the
-masters.
+masters.  In the case of a two-system replication group, the application
+may want to require access to a remote network site, or some other
+external tie-breaker to allow a system to declare itself master.</p>
 <p>It is possible for a less-preferred database environment to win an
 election if a number of systems crash at the same time.  Because an
 election winner is declared as soon as enough environments participate
@@ -73,25 +91,23 @@ the same time (for example, a set of replicated servers in a single
 machine room), applications should bring the database environments on
 line as clients initially (which will allow them to process read queries
 immediately), and then hold an election after sufficient time has passed
-for the slower booting machines to catch up.
+for the slower booting machines to catch up.</p>
 <p>If, for any reason, a less-preferred database environment becomes the
-master, it is possible to switch masters in a replicated environment,
-although it is not a simple operation.  For example, the preferred
-master crashes, and one of the replication group clients becomes the
-group master.  In order to restore the preferred master to master
-status, take the following steps:
-<p><ol>
+master, it is possible to switch masters in a replicated environment.
+For example, the preferred master crashes, and one of the replication
+group clients becomes the group master.  In order to restore the
+preferred master to master status, take the following steps:</p>
+<ol>
 <p><li>The preferred master should reboot and re-join the replication group
 as a client.
 <li>Once the preferred master has caught up with the replication group, the
-application on the current master should complete all active
-transactions, close all open database handles, and reconfigure itself
-as a client using the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method.
+application on the current master should complete all active transactions
+and reconfigure itself as a client using the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method.
 <li>Then, the current or preferred master should call for an election using
 the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

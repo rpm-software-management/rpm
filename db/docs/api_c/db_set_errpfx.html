@@ -1,20 +1,23 @@
-<!--$Id: db_set_errpfx.so,v 10.6 1999/12/20 08:52:28 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: db_set_errpfx.so,v 10.10 2002/08/18 21:15:55 bostic Exp $-->
+<!--$Id: env_set_errpfx.so,v 10.30 2003/11/08 19:17:29 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;set_errpfx</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DB-&gt;set_errpfx</h1>
+<h3>DB-&gt;set_errpfx</h3>
 </td>
-<td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -23,40 +26,54 @@
 <p>
 void
 DB-&gt;set_errpfx(DB *db, const char *errpfx);
+<p>
+void DB-&gt;get_errpfx(DB *db, const char **errpfxp);
 </pre></h3>
-<h1>Description</h1>
-<p>Set the prefix string that appears before error messages issued by Berkeley DB.
-<p>The DB-&gt;set_errpfx function does not copy the memory referenced by the
-<b>errpfx</b> argument, rather, it maintains a reference to it.  This
-allows applications to modify the error message prefix at any time,
-without repeatedly calling DB-&gt;set_errpfx, but means that the
-memory must be maintained until the handle is closed.
-<p>For DB handles opened inside of Berkeley DB environments, calling the
-DB-&gt;set_errpfx function affects the entire environment and is equivalent to calling
-the <a href="../api_c/env_set_errpfx.html">DBENV-&gt;set_errpfx</a> function.
-<p>The DB-&gt;set_errpfx interface may be used to configure Berkeley DB at any time
-during the life of the application.
-<h1>See Also</h1>
-<a href="../api_c/env_close.html">DBENV-&gt;close</a>,
-<a href="../api_c/env_create.html">db_env_create</a>,
-<a href="../api_c/env_open.html">DBENV-&gt;open</a>,
-<a href="../api_c/env_remove.html">DBENV-&gt;remove</a>,
-<a href="../api_c/db_err.html">DBENV-&gt;err</a>,
-<a href="../api_c/env_strerror.html">db_strerror</a>,
-<a href="../api_c/env_version.html">db_version</a>,
-<a href="../api_c/env_set_cachesize.html">DBENV-&gt;set_cachesize</a>,
-<a href="../api_c/env_set_errcall.html">DBENV-&gt;set_errcall</a>,
-<a href="../api_c/env_set_errfile.html">DBENV-&gt;set_errfile</a>,
-<a href="../api_c/env_set_errpfx.html">DBENV-&gt;set_errpfx</a>,
-<a href="../api_c/env_set_flags.html">DBENV-&gt;set_flags</a>,
-<a href="../api_c/env_set_mutexlocks.html">DBENV-&gt;set_mutexlocks</a>,
-<a href="../api_c/env_set_paniccall.html">DBENV-&gt;set_paniccall</a>,
-and
-<a href="../api_c/env_set_verbose.html">DBENV-&gt;set_verbose</a>.
+<hr size=1 noshade>
+<h3>Description: DB-&gt;set_errpfx</h3>
+<a name="3"><!--meow--></a>
+<p>Set the prefix string that appears before error messages issued by Berkeley DB.</p>
+<p>The DB-&gt;set_errpfx and <a href="../api_c/env_set_errpfx.html">DB_ENV-&gt;set_errpfx</a> methods do not copy
+the memory to which the <b>errpfx</b> parameter refers; rather, they
+maintain a reference to it.  Although this allows applications to modify
+the error message prefix at any time (without repeatedly calling the
+interfaces), it means the memory must be maintained until the handle is
+closed.</p>
+<p>For <a href="../api_c/db_class.html">DB</a> handles opened inside of Berkeley DB environments, calling the
+DB-&gt;set_errpfx method affects the entire environment and is equivalent to calling
+the <a href="../api_c/env_set_errpfx.html">DB_ENV-&gt;set_errpfx</a> method.</p>
+<p>The DB-&gt;set_errpfx method may be called at any time during the life of the
+application.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>errpfx</b><dd>
+The <b>errpfx</b> parameter is the application-specified error prefix
+for additional error messages.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB-&gt;get_errpfx</h3>
+<p>The DB-&gt;get_errpfx method returns the error prefix.</p>
+<p>The DB-&gt;get_errpfx method may be called at any time during the life of the
+application.</p>
+<p>The DB-&gt;get_errpfx method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>errpfxp</b><dd>
+The DB-&gt;get_errpfx method returns a reference to the
+error prefix in <b>errpfxp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/db_class.html">DB</a>
+<h3>See Also</h3>
+<a href="../api_c/db_list.html">Databases and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

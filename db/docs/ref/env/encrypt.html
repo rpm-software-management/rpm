@@ -1,39 +1,28 @@
-<!--Id: encrypt.so,v 11.5 2002/04/18 19:23:24 sue Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: encrypt.so,v 11.11 2003/09/15 18:32:55 sue Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Encryption</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Environment</dl></h3></td>
-<td align=right><a href="../../ref/env/security.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/env/remote.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../env/security.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/remote.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Encryption</h1>
-<p>Berkeley DB releases optionally include strong cryptography support.  To
-determine if you have a Berkeley DB release that includes cryptography, check
-for a top-level directory named <b>crypto</b> in the distribution.
-Only releases including cryptography support will have a directory by
-that name.  <b>Note that export/import and/or use of cryptography
-software, or even communicating technical details about cryptography
-software, is illegal in some parts of the world.  You are strongly
-advised to pay close attention to any export/import and/or use laws
-which apply to you when you import release of Berkeley DB including
-cryptography to your country or re-distribute source code from it in
-any way.</b>
-<p>Berkeley DB supports encryption using the Rijndael/AES (also known as the
-Advanced Encryption Standard and Federal Information Processing Standard
-(FIPS) 197) algorithm for encryption or decryption.  The algorithm is
-configured to use a 128-bit key.  Berkeley DB uses a 16-byte initialization
-vector generated using the Mersenne Twister.  All encrypted information
-is additionally checksummed using the SHA1 Secure Hash Algorithm, using
-a 160-bit message digest.
+<h3 align=center>Encryption</h3>
+<p>Berkeley DB optionally supports encryption using the Rijndael/AES (also known
+as the Advanced Encryption Standard and Federal Information Processing
+Standard (FIPS) 197) algorithm for encryption or decryption.  The
+algorithm is configured to use a 128-bit key.  Berkeley DB uses a 16-byte
+initialization vector generated using the Mersenne Twister.  All
+encrypted information is additionally checksummed using the SHA1 Secure
+Hash Algorithm, using a 160-bit message digest.</p>
 <p>The encryption support provided with Berkeley DB is intended to protect
 applications from an attacker obtaining physical access to the media on
 which a Berkeley DB database is stored, or an attacker compromising a system
@@ -41,20 +30,22 @@ on which Berkeley DB is running but who is unable to read system or process
 memory on that system.
 <b>The encryption support provided with Berkeley DB will not protect applications
 from attackers able to read system memory on the system where Berkeley DB is
-running.</b>
+running.</b></p>
 <p>Encryption is not the default for created databases, even in database
 environments configured for encryption.  In addition to configuring for
 encryption by calling the <a href="../../api_c/env_set_encrypt.html">DB_ENV-&gt;set_encrypt</a> or
-<a href="../../api_c/db_set_encrypt.html">DB-&gt;set_encrypt</a> functions, applications must specify the
+<a href="../../api_c/db_set_encrypt.html">DB-&gt;set_encrypt</a> methods, applications must specify the
 <a href="../../api_c/db_set_flags.html#DB_ENCRYPT">DB_ENCRYPT</a> flag before creating the database in order for the
 database to be encrypted.  Further, databases cannot be converted to an
 encrypted format after they have been created without dumping and
-re-creating them.
+re-creating them.  Finally, encrypted databases cannot be read
+on systems with a different endianness than the system that created
+the encrypted database.</p>
 <p>Each encrypted database environment (including all its encrypted
 databases) is encrypted using a single password and a single algorithm.
 Applications wanting to provide a finer granularity of database access
 must either use multiple database environments or implement additional
-access controls outside of Berkeley DB.
+access controls outside of Berkeley DB.</p>
 <p>The only encrypted parts of a database environment are its databases
 and its log files. Specifically, the <a href="../../ref/env/region.html">Shared memory regions</a> supporting the database environment are not
 encrypted.  For this reason, it may be possible for an attacker to read
@@ -62,7 +53,7 @@ some or all of an encrypted database by reading the on-disk files that
 back these shared memory regions.  To prevent such attacks, applications
 may want to use in-memory filesystem support (on systems that support
 it), or the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> or <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flags to the
-<a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> function, to place the shared memory regions in memory that
+<a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method, to place the shared memory regions in memory that
 is never written to a disk.  As some systems page system memory to a
 backing disk, it is important to consider the specific operating system
 running on the machine as well.  Finally, when backing database
@@ -71,19 +62,19 @@ to overwrite the shared regions before removing them by specifying the
 <a href="../../api_c/env_set_flags.html#DB_OVERWRITE">DB_OVERWRITE</a> flag.  This option is only effective in the
 presence of fixed-block filesystems, journaling or logging filesystems
 will require operating system support and probably modification of the
-Berkeley DB sources.
+Berkeley DB sources.</p>
 <p>While all user data is encrypted, parts of the databases and log files
 in an encrypted environment are maintained in an unencrypted state.
 Specifically, log record headers are not encrypted, only the actual log
 records.  Additionally, database internal page header fields are not
 encrypted.  These page header fields includes information such as the
-page's <a href="../../api_c/db_lsn.html">DB_LSN</a>, number, and position in the database's sort
-order.
+page's <a href="../../api_c/lsn_class.html">DB_LSN</a>, number, and position in the database's sort
+order.</p>
 <p>Log records distributed by replication master to replicated clients are
 transmitted to the clients in unencrypted form.  If encryption is
 desired in a replicated application, the use of a secure transport
-is strongly suggested.
-<p>Sleepycat Software gratefully acknowledges:
+is strongly suggested.</p>
+<p>Sleepycat Software gratefully acknowledges:</p>
 <p><ul type=disc>
 <li>Vincent Rijmen, Antoon Bosselaers and Paulo Barreto for writing the
 Rijndael/AES code used in Berkeley DB.
@@ -94,8 +85,8 @@ code used in Berkeley DB.
 <li>Adam Stubblefield for integrating the Rijndael/AES, SHA1 checksum and
 Mersenne Twister code into Berkeley DB.
 </ul>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/env/security.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/env/remote.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../env/security.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/remote.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2002
+ * Copyright (c) 1998-2003
  *	Sleepycat Software.  All rights reserved.
  *
  * This code is derived from software contributed to Sleepycat Software by
@@ -11,7 +11,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_vx_map.c,v 1.21 2002/03/06 19:36:58 margo Exp ";
+static const char revid[] = "$Id: os_vx_map.c,v 1.22 2003/01/08 05:32:38 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES

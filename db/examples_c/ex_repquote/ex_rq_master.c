@@ -1,21 +1,17 @@
 /*-
- * #include <pthread.h>
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_master.c,v 1.22 2002/08/06 05:39:03 bostic Exp 
+ * $Id: ex_rq_master.c,v 1.26 2003/07/04 17:45:06 margo Exp $
  */
 
 #include <sys/types.h>
-
 #include <errno.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include <db.h>
 
@@ -30,24 +26,29 @@ domaster(dbenv, progname)
 	DB_ENV *dbenv;
 	const char *progname;
 {
-	int ret, t_ret;
-	pthread_t interface_thr;
+	int ret;
+	thread interface_thr;
+#ifndef _WIN32
+	int t_ret;
 	pthread_attr_t attr;
-
-	COMPQUIET(progname, NULL);
 
 	/* Spawn off a thread to handle the basic master interface. */
 	if ((ret = pthread_attr_init(&attr)) != 0 &&
 	    (ret = pthread_attr_setdetachstate(&attr,
 	    PTHREAD_CREATE_DETACHED)) != 0)
 		goto err;
+#endif
 
-	if ((ret = pthread_create(&interface_thr,
+	if ((ret = thread_create(&interface_thr,
 	    &attr, master_loop, (void *)dbenv)) != 0)
 		goto err;
 
-err:	if ((t_ret = pthread_attr_destroy(&attr)) != 0 && ret == 0)
+err:
+#ifndef _WIN32
+	if ((t_ret = pthread_attr_destroy(&attr)) != 0 && ret == 0)
 		ret = t_ret;
+#endif
+	COMPQUIET(progname, NULL);
 
 	return (ret);
 }
@@ -82,6 +83,9 @@ master_loop(dbenvv)
 #endif
 		if ((ret = db_create(&dbp, dbenv, 0)) != 0)
 			return ((void *)ret);
+		/* Set page size small so we can easily do page allocation. */
+		if ((ret = dbp->set_pagesize(dbp, 512)) != 0)
+			goto err;
 
 		if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0)
 			goto err;

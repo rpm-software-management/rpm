@@ -1,4 +1,4 @@
-# Id: README,v 1.1 2001/05/31 23:09:11 dda Exp 
+# $Id: README,v 1.1 2001/05/31 23:09:11 dda Exp $
 
 Use the scripts testall or testone to run all, or just one of the C++
 tests.  You must be in this directory to run them.  For example,

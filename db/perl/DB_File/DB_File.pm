@@ -1,10 +1,10 @@
 # DB_File.pm -- Perl 5 interface to Berkeley DB 
 #
-# written by Paul Marquess (Paul.Marquess@btinternet.com)
-# last modified 1st September 2002
-# version 1.805
+# written by Paul Marquess (pmqs@cpan.org)
+# last modified 22nd October 2002
+# version 1.807
 #
-#     Copyright (c) 1995-2002 Paul Marquess. All rights reserved.
+#     Copyright (c) 1995-2003 Paul Marquess. All rights reserved.
 #     This program is free software; you can redistribute it and/or
 #     modify it under the same terms as Perl itself.
 
@@ -165,7 +165,7 @@ our ($db_version, $use_XSLoader, $splice_end_array);
 use Carp;
 
 
-$VERSION = "1.805" ;
+$VERSION = "1.807" ;
 
 {
     local $SIG{__WARN__} = sub {$splice_end_array = "@_";};
@@ -966,7 +966,7 @@ Duplicate keys are entirely defined by the comparison function.
 In the case-insensitive example above, the keys: 'KEY' and 'key'
 would be considered duplicates, and assigning to the second one
 would overwrite the first. If duplicates are allowed for (with the
-R_DUPS flag discussed below), only a single copy of duplicate keys
+R_DUP flag discussed below), only a single copy of duplicate keys
 is stored in the database --- so (again with example above) assigning
 three values to the keys: 'KEY', 'Key', and 'key' would leave just
 the first key: 'KEY' in the database with three values. For some
@@ -1362,7 +1362,7 @@ still have bval default to C<"\n"> for variable length records, and
 space for fixed length records.
 
 Also note that the bval option only allows you to specify a single byte
-as a delimeter.
+as a delimiter.
 
 =head2 A Simple Example
 
@@ -1454,7 +1454,7 @@ Returns the number of elements in the array.
 
 =item B<$X-E<gt>splice(offset, length, elements);>
 
-Returns a splice of the the array.
+Returns a splice of the array.
 
 =back
 
@@ -2252,7 +2252,7 @@ compile properly on IRIX 5.3.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1995-2002 Paul Marquess. All rights reserved. This program
+Copyright (c) 1995-2003 Paul Marquess. All rights reserved. This program
 is free software; you can redistribute it and/or modify it under the
 same terms as Perl itself.
 
@@ -2284,7 +2284,7 @@ L<dbmfilter>
 =head1 AUTHOR
 
 The DB_File interface was written by Paul Marquess
-E<lt>Paul.Marquess@btinternet.comE<gt>.
+E<lt>pmqs@cpan.org<gt>.
 Questions about the DB system itself may be addressed to
 E<lt>db@sleepycat.com<gt>.
 

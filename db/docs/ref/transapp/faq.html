@@ -1,22 +1,22 @@
-<!--Id: faq.so,v 10.6 2002/09/09 14:52:40 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 10.6 2002/09/09 14:52:40 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Transaction FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
-<td align=right><a href="../../ref/transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Transaction FAQ</h1>
-<p><ol>
+<h3 align=center>Transaction FAQ</h3>
+<ol>
 <p><li><b>What should a transactional program do when an error occurs?</b>
 <p>Any time an error occurs, such that a transactionally protected set of
 operations cannot complete successfully, the transaction must be
@@ -36,7 +36,7 @@ which likely indicates that the filesystem has no available disk space.
 Applications must immediately call <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a> when these returns
 occur, as it is not possible to proceed otherwise.  The only
 unrecoverable error is <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, which indicates that the
-system must stop and recovery must be run.
+system must stop and recovery must be run.</p>
 <p><li><b>How can hot backups work?  Can't you get an inconsistent picture
 of the database when you copy it?</b>
 <p>First, Berkeley DB is based on the technique of "write-ahead logging", which
@@ -47,7 +47,7 @@ storage (that is, disk) before the database page where the change was
 made is written to stable storage.  Because of this guarantee, we know
 that any change made to a database will appear either in just a log
 file, or both the database and a log file, but never in just the
-database.
+database.</p>
 <p>Second, you can always create a consistent and correct database based
 on the log files and the databases from a database environment.  So,
 during a hot backup, we first make a copy of the databases and then a
@@ -66,7 +66,7 @@ write-ahead logging guarantees, we know that any page written to the
 database will first be referenced in the log.  If we copy the database
 first, then we can also know that any inconsistency in the database will
 be described in the log files, and so we know that we can fix everything
-up during recovery.
+up during recovery.</p>
 <p><li><b>How can I move a database from one transactional environment
 into another?</b>
 <p>Because database pages contain references to log records, databases
@@ -74,7 +74,7 @@ cannot be simply moved into different database environments.  To move
 a database into a different environment, dump and reload the database
 before moving it.  If the database is too large to dump and reload, the
 database may be prepared in place by setting the first eight bytes of
-each database page in the file to 0.
+each database page in the file to 0.</p>
 <p><li><b>I'm seeing the error "log_flush: LSN past current end-of-log",
 what does that mean?</b>
 <p>The most common cause of this error is that a system administrator has
@@ -86,10 +86,10 @@ to dump and reload, the database may be repaired in place by setting
 the first eight bytes of each database page in the file to 0, but if
 you do that, you must verify your databases before using them again.
 (It is possible for the databases to be corrupted when this happens,
-and the longer the application runs, the worse it can get.)
+and the longer the application runs, the worse it can get.)</p>
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

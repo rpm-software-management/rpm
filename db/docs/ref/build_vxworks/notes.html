@@ -1,56 +1,69 @@
-<!--$Id: notes.so,v 1.6 2000/08/09 15:45:52 sue Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: notes.so,v 1.18 2003/06/02 20:33:18 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: VxWorks notes</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for VxWorks systems</dl></h3></td>
-<td width="1%"><a href="../../ref/build_vxworks/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_vxworks/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../build_vxworks/introae.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>VxWorks notes</h1>
-<p>Berkeley DB currently disallows the DB_TRUNC flag to <a href="../../api_c/db_open.html">DB-&gt;open</a>.
-The operations this flag represent are not fully supported under
-VxWorks 5.4.
-<p>The memory on VxWorks is always resident and fully shared among all tasks
-running on the target.  For this reason, the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag
-is implied for any application that does not specify the
-<a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag.  Additionally, applications must use a
-segment ID to ensure different applications do not overwrite each other's
-database environments.
-See the <a href="../../api_c/env_set_shm_key.html">DBENV-&gt;set_shm_key</a> function for more information.
-Also, the <a href="../../api_c/env_open.html#DB_LOCKDOWN">DB_LOCKDOWN</a> flag has no effect.
-<p>The <a href="../../api_c/db_sync.html">DB-&gt;sync</a> function is implemented using an ioctl call into the
-file system driver with the FIOSYNC command.  Most, but not all, file
-system drivers support this call.  Berkeley DB requires the use of a file system
-supporting FIOSYNC.
-<h3>Building and Running the Example Programs</h3>
-<p>Each example program can be downloaded and run by calling the function
-equivalent to the example's name.  You may have to edit the pathname to
-the environments and database names in the examples' sources.  The
-examples included are:
-<p><table border=1 align=center>
-<tr><th>Name</th><th>Description</th></tr>
-<tr>    <td align=left>ex_access</td>    <td align=left>Simple access method example.</td>    </tr>
-<tr>    <td align=left>ex_btrec</td>    <td align=left>Example using Btree and record numbers.</td>    </tr>
-<tr>    <td align=left>ex_dbclient</td>    <td align=left>Example running an RPC client.  Takes a hostname as an argument, e.g.,
-<i>ex_dbclient "myhost"</i>.</td>    </tr>
-<tr>    <td align=left>ex_env</td>    <td align=left>Example using an environment.</td>    </tr>
-<tr>    <td align=left>ex_mpool</td>    <td align=left>Example using mpools.</td>    </tr>
-<tr>    <td align=left>ex_tpcb</td>    <td align=left>Example using transactions.  This example requires two invocations both
-taking an integer identifier as an argument.  This identifier allows for
-multiple sets of databases to be used within the same environment.  The
-first is to initialize the databases, e.g., <i>ex_tpcb_init 1</i>.  The
-second is to run the program on those databases, e.g., <i>ex_tpcb 1</i>.</td>    </tr>
-</table>
-<table><tr><td><br></td><td width="1%"><a href="../../ref/build_vxworks/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_vxworks/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+<h3 align=center>VxWorks notes</h3>
+<p>Berkeley DB currently disallows the DB_TRUNC flag to <a href="../../api_c/db_open.html">DB-&gt;open</a>.  The
+operations that this flag represents are not fully supported under
+VxWorks.</p>
+<p>The <a href="../../api_c/db_sync.html">DB-&gt;sync</a> function is implemented using an ioctl call into
+the file system driver with the FIOSYNC command.  Most, but not all file
+system drivers support this call.  Berkeley DB requires the use of a file
+system supporting FIOSYNC.</p>
+<h3>Building and Running the Demo Program</h3>
+<p>The demo program should be built in a manner very similar to
+building Berkeley DB.  If you want different or additional BSP
+build specifications you should add them by following the
+directions indicated in <a href="../../ref/build_vxworks/intro.html">Building
+with Tornado 2.0 or Tornado 2.2</a> or
+<a href="../../ref/build_vxworks/introae.html">Building with Tornado 3.1</a>.</p>
+<p>The demo program can be downloaded and run by calling the entry function
+<b>dbdemo</b> with the pathname of a database to use.  The demo
+program will ask for some input keys.  It creates a database and adds
+those keys into the database, using the reverse of the key as the data
+value.  When complete you can either enter EOF (control-D) or
+<b>quit</b> and the demo program will display all of the key/data
+items in the database.</p>
+<h3>Building and Running the Utility Programs</h3>
+<p>The Berkeley DB  <a href="../../utility/index.html">utility programs</a>
+can be downloaded and run by calling the
+function equivalent to the utility's name.  The utility functions take
+a string containing all the supported arguments.  The program will then
+decompose that string into a traditional argc/argv used internally.
+For example, to execute <a href="../../utility/db_stat.html">db_stat</a> on a database within an
+environment you would execute the following from the windsh prompt.
+Obviously you would change the pathname and database name to reflect
+your system.</p>
+<blockquote><pre>-&gt; db_stat "-h /tmp/myenvhome -d mydatabase.db"</pre></blockquote>
+<h3>Notes for VxWorks 5.4/5.5</h3>
+<p>The memory on VxWorks is always resident and fully shared among all
+tasks running on the target.  For this reason, the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a>
+flag is implied for any application that does not specify the
+<a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag.  Additionally, applications must use a segment
+ID to ensure that different applications do not overwrite each other's
+database environments.  See the <a href="../../api_c/env_set_shm_key.html">DB_ENV-&gt;set_shm_key</a> method for more
+information.  Also, the <a href="../../api_c/env_open.html#DB_LOCKDOWN">DB_LOCKDOWN</a> flag has no effect.</p>
+<h3>Notes for VxWorks AE 1.1</h3>
+<p>All tasks wanting to access a particular environment must run in the
+same application domain.  The memory regions used by the environment are
+only accessible to the application domain.  If more than one application
+domain attempts to access an environment simultaneously, the results are
+undefined but will likely lead to corruption.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_vxworks/introae.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: hmac.h,v 1.3 2002/08/06 06:37:08 bostic Exp 
+ * $Id: hmac.h,v 1.4 2003/01/08 04:32:02 bostic Exp $
  */
 
 #ifndef	_DB_HMAC_H_

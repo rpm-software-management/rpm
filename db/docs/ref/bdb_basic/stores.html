@@ -1,0 +1,251 @@
+<!--$Id: stores.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Opening and closing the database stores</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Basic</dl></h3></td>
+<td align=right><a href="../bdb_basic/catalog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/views.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Opening and closing the database stores</h3>
+<p>This section describes how to open and close the Part, Supplier and
+Shipment stores.  A Java API <i>store</i> is a collection of records, each of
+which has a key and a value.  The keys and values are assigned a
+<i>format</i>, which defines the syntax of the stored data.  Two examples
+of formats are Java serialization format and tuple format.  In a given store,
+all keys have the same format and all values have the same format.</p>
+<p>Two central classes in the Berkeley DB and Java API are introduced here:
+<a href="../../java/com/sleepycat/db/Db.html">Db</a>
+ and 
+<a href="../../java/com/sleepycat/bdb/DataStore.html">DataStore</a>
+.  Both are needed to create a store in the Java API.  The differences
+between the two classes are:</p>
+<p><ul type=disc>
+<li>The Db class is part of the com.sleepycat.db
+package, while the DataStore class is part of the
+com.sleepycat.bdb package.
+<li>A DataStore object is a wrapper around the Db object, and adds
+functionality to it.  For every DataStore object there is a single Db object
+underlying it.
+<li>Keys and values in a Db are always treated as byte arrays, while
+keys and values in a DataStore have a defined format.
+<li>A Db is used to represent a primary store or a secondary index,
+while a DataStore always represents a primary store.  Secondary indices are
+introduced in the Index program tutorial.
+</ul>
+<hr size=1 noshade>
+<p>The <b>SampleDatabase</b> class is extended to open and close the
+three stores.  The following additional imports and class members are needed.</p>
+<blockquote><pre>
+<b>import com.sleepycat.bdb.bind.serial.SerialFormat;
+import com.sleepycat.bdb.DataStore;
+</b>...
+public class SampleDatabase
+{
+    ...
+<b>    private static final String SUPPLIER_STORE = "supplier_store";
+    private static final String PART_STORE = "part_store";
+    private static final String SHIPMENT_STORE = "shipment_store";
+</b>    ...
+<b>    private DataStore supplierStore;
+    private DataStore partStore;
+    private DataStore shipmentStore;
+    private SerialFormat partKeyFormat;
+    private SerialFormat partValueFormat;
+    private SerialFormat supplierKeyFormat;
+    private SerialFormat supplierValueFormat;
+    private SerialFormat shipmentKeyFormat;
+    private SerialFormat shipmentValueFormat;
+</b>    ...
+}
+</pre></blockquote>
+<p>For each store there is a filename constant and a DataStore
+object.  A 
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialFormat.html">SerialFormat</a>
+object represents the Java serialization format for the key and value
+of each store.</p>
+<hr size=1 noshade>
+<p>The following statements create the format objects.</p>
+<blockquote><pre>
+    public SampleDatabase(String homeDirectory, boolean runRecovery)
+        throws DbException, FileNotFoundException
+    {
+        ...
+<b>        partKeyFormat = new SerialFormat(javaCatalog, PartKey.class);
+        partValueFormat = new SerialFormat(javaCatalog, PartValue.class);
+        supplierKeyFormat = new SerialFormat(javaCatalog, SupplierKey.class);
+        supplierValueFormat = new SerialFormat(javaCatalog, SupplierValue.class);
+        shipmentKeyFormat = new SerialFormat(javaCatalog, ShipmentKey.class);
+        shipmentValueFormat = new SerialFormat(javaCatalog, ShipmentValue.class);
+</b>    }
+</pre></blockquote>
+<p>The first parameter of the 
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialFormat.html">SerialFormat</a>
+ constructor is the class catalog, and is used to store the class
+descriptions of the serialized objects.</p>
+<p>The second parameter is the base class for the serialized objects and is
+used for type checking of the stored objects.  If <b>null</b> or
+<b>Object.class</b> is specified, then any Java class is allowed.
+Otherwise, all objects stored in that format must be instances of the specified
+class or derived from the specified class.  In the example, specific classes
+are used to enable strong type checking.</p>
+<hr size=1 noshade>
+<p>The following statements open the three stores using the Db and DataStore
+classes.  The files are created if they don't already exist. For each store, a
+<a href="../../java/com/sleepycat/db/Db.html">Db</a>
+ object is created, its
+<a href="../../java/com/sleepycat/db/Db.html#open">Db.open</a>
+ method is called, and then a
+<a href="../../java/com/sleepycat/bdb/DataStore.html">DataStore</a>
+ object is created.</p>
+<blockquote><pre>
+    public SampleDatabase(String homeDirectory, boolean runRecovery)
+        throws DbException, FileNotFoundException
+    {
+        ...
+        int flags = Db.DB_CREATE | Db.DB_AUTO_COMMIT;
+        ...
+<b>        Db partDb = new Db(env, 0);
+        partDb.open(null, PART_STORE, null, Db.DB_BTREE, flags, 0);
+        partStore = new DataStore(partDb, partKeyFormat, partValueFormat, null);
+<p>
+        Db supplierDb = new Db(env, 0);
+        supplierDb.open(null, SUPPLIER_STORE, null, Db.DB_BTREE, flags, 0);
+        supplierStore = new DataStore(supplierDb, supplierKeyFormat, supplierValueFormat, null);
+<p>
+        Db shipmentDb = new Db(env, 0);
+        shipmentDb.open(null, SHIPMENT_STORE, null, Db.DB_BTREE, flags, 0);
+        shipmentStore = new DataStore(shipmentDb, shipmentKeyFormat, shipmentValueFormat, null);
+</b>    }
+</pre></blockquote>
+<p>The first parameter of the 
+<a href="../../java/com/sleepycat/db/Db.html">Db</a>
+constructor is the environment in which the store will operate.  The second
+parameter contains flags and is not used in the example.</p>
+<p>The first parameter of the 
+<a href="../../java/com/sleepycat/db/Db.html#open">Db.open</a>
+method is a transaction object.  It is null in the example because the
+<a href="../../java/com/sleepycat/db/Db.html#DB_AUTO_COMMIT">Db.DB_AUTO_COMMIT</a>
+ flag is used to create the
+store within an implicit transaction.</p>
+<p>NOTE: An important point to remember is that either the
+<a href="../../java/com/sleepycat/db/Db.html#DB_AUTO_COMMIT">Db.DB_AUTO_COMMIT</a>
+ flag or the transaction
+parameter must be specified in order to open a transactional store.</p>
+<p>The second and third String parameters specify the filename and
+database (sub-file) name of the store.  The database (sub-file) name is
+optional, and is null in the example.</p>
+<p>The fourth parameter is the store's type, and determines which of the
+database <a href="../am_conf/intro.html">Access Methods</a> is used.  In general, the
+store's type determines the characteristics of its keys.  The
+<a href="../../java/com/sleepycat/db/Db.html#DB_BTREE">Db.DB_BTREE</a>
+ type provides ordered keys and
+optimal performance for most applications.  The
+<a href="../../java/com/sleepycat/db/Db.html#DB_HASH">Db.DB_HASH</a>
+ type can provide better
+performance for very large database, but does not provide ordered keys.
+Although DB_BTREE is used here, the ordering of keys is not meaningful because
+the key values are serialized Java objects.  In a later example the tuple
+format will be used to provide a meaningful key ordering.  Other types are
+<a href="../../java/com/sleepycat/db/Db.html#DB_QUEUE">Db.DB_QUEUE</a>
+ and
+<a href="../../java/com/sleepycat/db/Db.html#DB_RECNO">Db.DB_RECNO</a>
+.  A store's type cannot be
+changed once the store has been created.</p>
+<p>The fifth parameter contains flags and is initialized with
+<a href="../../java/com/sleepycat/db/Db.html#DB_CREATE">Db.DB_CREATE</a>
+ to create the file if it
+doesn't exist and with 
+<a href="../../java/com/sleepycat/db/Db.html#DB_AUTO_COMMIT">Db.DB_AUTO_COMMIT</a>
+(described previously).</p>
+<p>The last parameter is the UNIX file creation mode.  Zero is specified in
+the example to use a reasonable default.</p>
+<p>Finally, the 
+<a href="../../java/com/sleepycat/bdb/DataStore.html">DataStore</a>
+ object is
+created from the Db object, a key format, and a value format.  The last
+parameter of the DataStore constructor is a primary key assigner, and is not
+used in the example.</p>
+<hr size=1 noshade>
+<p>The following statements close the three stores.</p>
+<blockquote><pre>
+    public void close()
+        throws DbException, IOException
+    {
+<b>        partStore.close();
+        supplierStore.close();
+        shipmentStore.close();
+</b>        javaCatalog.close();
+        env.close(0);
+    }
+</pre></blockquote>
+<p>All stores, including the catalog store, must be closed before closing
+the environment.</p>
+<hr size=1 noshade>
+<p>The following getter methods return the formats and stores for use by
+other classes in the example program.  The formats are used for creating
+bindings, and the stores are used for creating Java collections.</p>
+<blockquote><pre>
+public class SampleDatabase
+{
+    ...
+<b>    public final SerialFormat getPartKeyFormat()
+    {
+        return partKeyFormat;
+    }
+<p>
+    public final SerialFormat getPartValueFormat()
+    {
+        return partValueFormat;
+    }
+<p>
+    public final SerialFormat getSupplierKeyFormat()
+    {
+        return supplierKeyFormat;
+    }
+<p>
+    public final SerialFormat getSupplierValueFormat()
+    {
+        return supplierValueFormat;
+    }
+<p>
+    public final SerialFormat getShipmentKeyFormat()
+    {
+        return shipmentKeyFormat;
+    }
+<p>
+    public final SerialFormat getShipmentValueFormat()
+    {
+        return shipmentValueFormat;
+    }
+<p>
+    public final DataStore getPartStore()
+    {
+        return partStore;
+    }
+<p>
+    public final DataStore getSupplierStore()
+    {
+        return supplierStore;
+    }
+<p>
+    public final DataStore getShipmentStore()
+    {
+        return shipmentStore;
+    }
+</b>    ...
+}
+</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_basic/catalog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/views.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /*
- * Id: rijndael-api-fst.h,v 1.4 2002/03/27 04:31:12 bostic Exp 
+ * $Id: rijndael-api-fst.h,v 1.5 2003/03/17 19:42:18 bostic Exp $
  */
 /**
  * rijndael-api-fst.h
@@ -72,11 +72,9 @@
 
 /*  Typedefs  */
 
-typedef unsigned char   BYTE;
-
 /*  The structure for key information */
 typedef struct {
-    BYTE  direction;                /* Key used for encrypting or decrypting? */
+    u_int8_t  direction;            /* Key used for encrypting or decrypting? */
     int   keyLen;                   /* Length of the key  */
     char  keyMaterial[MAX_KEY_SIZE+1];  /* Raw key data in ASCII, e.g., user input or KAT values */
 	int   Nr;                       /* key-length-dependent number of rounds */
@@ -86,8 +84,8 @@ typedef struct {
 
 /*  The structure for cipher information */
 typedef struct {                    /* changed order of the components */
-    BYTE  mode;                     /* MODE_ECB, MODE_CBC, or MODE_CFB1 */
-    BYTE  IV[MAX_IV_SIZE];          /* A possible Initialization Vector for ciphering */
+    u_int8_t  mode;                 /* MODE_ECB, MODE_CBC, or MODE_CFB1 */
+    u_int8_t  IV[MAX_IV_SIZE];      /* A possible Initialization Vector for ciphering */
 } cipherInstance;
 
 #endif /* __RIJNDAEL_API_FST_H */

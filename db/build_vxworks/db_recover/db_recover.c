@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,9 +9,9 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2002\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "Id: db_recover.c,v 11.33 2002/03/28 20:13:42 bostic Exp ";
+    "$Id: db_recover.c,v 11.39 2003/09/04 18:06:46 bostic Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -34,7 +34,6 @@ static const char revid[] =
 #endif
 
 #include "db_int.h"
-#include "dbinc/txn.h"
 
 int db_recover_main __P((int, char *[]));
 int db_recover_read_timestamp __P((const char *, char *, time_t *));
@@ -64,8 +63,7 @@ db_recover_main(argc, argv)
 	extern int optind, __db_getopt_reset;
 	const char *progname = "db_recover";
 	DB_ENV	*dbenv;
-	DB_TXNREGION *region;
-	time_t now, timestamp;
+	time_t timestamp;
 	u_int32_t flags;
 	int ch, exitval, fatal_recover, ret, retain_env, verbose;
 	char *home, *passwd;
@@ -170,16 +168,6 @@ db_recover_main(argc, argv)
 		goto shutdown;
 	}
 
-	if (verbose) {
-		(void)time(&now);
-		region = ((DB_TXNMGR *)dbenv->tx_handle)->reginfo.primary;
-		dbenv->errx(dbenv, "Recovery complete at %.24s", ctime(&now));
-		dbenv->errx(dbenv, "%s %lx %s [%lu][%lu]",
-		    "Maximum transaction id", (u_long)region->last_txnid,
-		    "Recovery checkpoint", (u_long)region->last_ckp.file,
-		    (u_long)region->last_ckp.offset);
-	}
-
 	if (0) {
 shutdown:	exitval = 1;
 	}
@@ -190,6 +178,8 @@ shutdown:	exitval = 1;
 		fprintf(stderr,
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
 	}
+	if (passwd != NULL)
+		free(passwd);
 
 	/* Resend any caught signal. */
 	__db_util_sigresend();
@@ -258,7 +248,7 @@ db_recover_read_timestamp(progname, arg, timep)
 	}
 
 	yearset = 0;
-	switch(strlen(arg)) {
+	switch (strlen(arg)) {
 	case 12:			/* CCYYMMDDhhmm */
 		t->tm_year = ATOI2(arg);
 		t->tm_year *= 100;
@@ -316,12 +306,11 @@ db_recover_version_check(progname)
 
 	/* Make sure we're loaded with the right version of the DB library. */
 	(void)db_version(&v_major, &v_minor, &v_patch);
-	if (v_major != DB_VERSION_MAJOR ||
-	    v_minor != DB_VERSION_MINOR || v_patch != DB_VERSION_PATCH) {
+	if (v_major != DB_VERSION_MAJOR || v_minor != DB_VERSION_MINOR) {
 		fprintf(stderr,
-	"%s: version %d.%d.%d doesn't match library version %d.%d.%d\n",
+	"%s: version %d.%d doesn't match library version %d.%d\n",
 		    progname, DB_VERSION_MAJOR, DB_VERSION_MINOR,
-		    DB_VERSION_PATCH, v_major, v_minor, v_patch);
+		    v_major, v_minor);
 		return (EXIT_FAILURE);
 	}
 	return (0);

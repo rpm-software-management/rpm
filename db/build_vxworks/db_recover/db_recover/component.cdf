@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_RECOVER {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_recover.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_recover.o
 	NAME		db_recover
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

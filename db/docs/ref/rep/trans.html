@@ -1,20 +1,20 @@
-<!--Id: trans.so,v 1.6 2002/05/11 18:00:23 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: trans.so,v 1.14 2003/10/18 19:16:06 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Transactional guarantees</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../../ref/rep/logonly.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/partition.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/logonly.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/partition.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Transactional guarantees</h1>
+<h3 align=center>Transactional guarantees</h3>
 <p>It is important to consider replication in the context of the overall
 database environment's transactional guarantees.  To briefly review,
 transactional guarantees in a non-replicated application are based on
@@ -23,82 +23,218 @@ drive.  If the application or system then fails, the Berkeley DB logging
 information is reviewed during recovery, and the databases are updated
 so that all changes made as part of committed transactions appear, and
 all changes made as part of uncommitted transactions do not appear.  In
-this case, no information will have been lost.
-<p>If a database environment does not require that the log be flushed to
+this case, no information will have been lost.</p>
+<p>If a database environment does not require the log be flushed to
 stable storage on transaction commit (using the <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a>
 flag to increase performance at the cost of sacrificing transactional
 durability), Berkeley DB recovery will only be able to restore the system to
 the state of the last commit found on stable storage.  In this case,
 information may have been lost (for example, the changes made by some
-committed transactions may not appear in the databases after recovery).
+committed transactions may not appear in the databases after recovery).</p>
 <p>Further, if there is database or log file loss or corruption (for
 example, if a disk drive fails), then catastrophic recovery is
 necessary, and Berkeley DB recovery will only be able to restore the system
 to the state of the last archived log file.  In this case, information
-may also have been lost.
+may also have been lost.</p>
 <p>Replicating the database environment extends this model, by adding a
 new component to "stable storage": the client's replicated information.
 If a database environment is replicated, there is no lost information
 in the case of database or log file loss, because the replicated system
 can be configured to contain a complete set of databases and log records
 up to the point of failure.  A database environment that loses a disk
-drive can have the drive replaced, and it can rejoin the replication
-group as a client.
+drive can have the drive replaced, and it can then rejoin the
+replication group.</p>
 <p>Because of this new component of stable storage, specifying
 <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> in a replicated environment no longer sacrifices
 durability, as long as one or more clients have acknowledged receipt of
 the messages sent by the master.  Since network connections are often
-faster than local disk writes, replication becomes a way for
-applications to significantly improve their performance as well as their
-reliability.
-<p>The return status from the <b>send</b> interface specified to the
-<a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method must be set by the application to ensure the
-transactional guarantees the application wants to provide.  The effect
-of the <b>send</b> interface returning failure is to flush the local
-database environment's log as necessary to ensure that any information
-critical to database integrity is not lost.  Because this flush is an
-expensive operation in terms of database performance, applications will
-want to avoid returning an error from the <b>send</b> interface, if at
-all possible:
-<p>First, there is no reason for the <b>send</b> interface to ever return
-failure unless the <a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag is specified.  Messages
-without that flag do not make visible changes to databases, and
-therefore the application's <b>send</b> interface can return success
-to Berkeley DB for such messages as soon as the message has been sent or even
-just copied to local memory.
-<p>Further, unless the master's database environment has been configured
-to not synchronously flush the log on transaction commit, there is no
-reason for the <b>send</b> interface to ever return failure, as any
-information critical to database integrity has already been flushed to
-the local log before <b>send</b> was called.  Again, the <b>send</b>
-interface should return success to Berkeley DB as soon as possible.  However,
-in this case, in order to avoid potential loss of information after the
-master database environment fails, the master database environment
-should be recovered before holding an election, as only the master
-database environment is guaranteed to have the most up-to-date logs.
-<p>To sum up, the only reason for the <b>send</b> interface to return
+faster than local synchronous disk writes, replication becomes a way
+for applications to significantly improve their performance as well as
+their reliability.</p>
+<p>The return status from the application's <b>send</b> function must be
+set by the application to ensure the transactional guarantees the
+application wants to provide.  Whenever the <b>send</b> function
+returns failure, the local database environment's log is flushed as
+necessary to ensure that any information critical to database integrity
+is not lost.  Because this flush is an expensive operation in terms of
+database performance, applications should avoid returning an error from
+the <b>send</b> function, if at all possible.</p>
+<p>The only interesting message type for replication transactional
+guarantees is when the application's <b>send</b> function was called
+with the <a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag specified.  There is no reason
+for the <b>send</b> function to ever return failure unless the
+<a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag was specified -- messages without the
+<a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag do not make visible changes to databases,
+and the <b>send</b> function can return success to Berkeley DB as soon as
+the message has been sent to the client(s) or even just copied to local
+application memory in preparation for being sent.</p>
+<p>When a client receives a <a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> message, the client
+will flush its log to stable storage before returning (unless the client
+environment has been configured with the <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> option).
+If the client is unable to flush a complete transactional record to disk
+for any reason (for example, there is a missing log record before the
+flagged message), the call to the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method on the client
+will return <a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a> and return the LSN of this record
+to the application in the <b>ret_lsnp</b> parameter.
+The application's client or master
+message handling loops should take proper action to ensure the correct
+transactional guarantees in this case.  When missing records arrive
+and allow subsequent processing of previously stored permanent
+records, the call to the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method on the client will
+return <a href="../../api_c/rep_message.html#DB_REP_ISPERM">DB_REP_ISPERM</a> and return the largest LSN of the
+permanent records that were flushed to disk.  Client applications
+can use these LSNs to know definitively if any particular LSN is
+permanently stored or not.</p>
+<p>An application relying on a client's ability to become a master and
+guarantee that no data has been lost will need to write the <b>send</b>
+function to return an error whenever it cannot guarantee the site that
+will win the next election has the record.  Applications not requiring
+this level of transactional guarantees need not have the <b>send</b>
+function return failure (unless the master's database environment has
+been configured with <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a>), as any information critical
+to database integrity has already been flushed to the local log before
+<b>send</b> was called.</p>
+<p>To sum up, the only reason for the <b>send</b> function to return
 failure is when the master database environment has been configured to
-not synchronously flush the log on transaction commit, the
+not synchronously flush the log on transaction commit (that is,
+<a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> was configured on the master), the
 <a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag is specified for the message, and the
-<b>send</b> interface was unable to determine that some number of
+<b>send</b> function was unable to determine that some number of
 clients have received the current message (and all messages preceding
-the current message).  How many clients should receive the message
-before the <b>send</b> interface can return success is an application
+the current message).  How many clients need to receive the message
+before the <b>send</b> function can return success is an application
 choice (and may not depend as much on a specific number of clients
-reporting success as one or more geographically distributed clients).
+reporting success as one or more geographically distributed clients).</p>
+<p>If, however, the application does require on-disk durability on the master,
+the master should be configured to synchronously flush the log on commit.
+If clients are not configured to synchronously flush the log,
+that is, if a client is running with <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> configured,
+then it is up to the application to reconfigure that client
+appropriately when it becomes a master.  That is, the
+application must explicitly call <a href="../../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> to
+disable asynchronous log flushing as part of re-configuring
+the client as the new master.</p>
 <p>Of course, it is important to ensure that the replicated master and
 client environments are truly independent of each other.  For example,
 it does not help matters that a client has acknowledged receipt of a
 message if both master and clients are on the same power supply, as the
-failure of the power supply will still potentially lose information.
-<p>Finally, the Berkeley DB replication implementation has one other additional
-feature to increase application reliability.  Replication in Berkeley DB is
-implemented to perform database updates using a different code path than
-the standard ones.  This means operations which manage to crash the
-replication master due to a software bug will not necessarily also crash
-replication clients.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/logonly.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/partition.html"><img src="../../images/next.gif" alt="Next"></a>
+failure of the power supply will still potentially lose information.</p>
+<p>Configuring your replication-based application to achieve the proper
+mix of performance and transactional guarantees can be complex.  In
+brief, there are a few controls an application can set to configure the
+guarantees it makes: specification of <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> for the
+master environment, specification of <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> for the
+client environment, the priorities of different sites participating in
+an election, and the behavior of the application's <b>send</b>
+function.</p>
+<p>First, it is rarely useful to write and synchronously flush the log when
+a transaction commits on a replication client.  It may be useful where
+systems share resources and multiple systems commonly fail at the same
+time.  By default, all Berkeley DB database environments, whether master or
+client, synchronously flush the log on transaction commit or prepare.
+Generally, replication masters and clients turn log flush off for
+transaction commit using the <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> flag.</p>
+<p>Consider two systems connected by a network interface.  One acts as the
+master, the other as a read-only client.  The client takes over as
+master if the master crashes and the master rejoins the replication
+group after such a failure.  Both master and client are configured to
+not synchronously flush the log on transaction commit (that is,
+<a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> was configured on both systems).  The
+application's <b>send</b> function never returns failure to the Berkeley DB
+library, simply forwarding messages to the client (perhaps over a
+broadcast mechanism), and always returning success.  On the client, any
+<a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a> returns from the client's <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method
+are ignored, as well.  This system configuration has excellent
+performance, but may lose data in some failure modes.</p>
+<p>If both the master and the client crash at once, it is possible to lose
+committed transactions, that is, transactional durability is not being
+maintained.  Reliability can be increased by providing separate power
+supplies for the systems and placing them in separate physical locations.</p>
+<p>If the connection between the two machines fails (or just some number
+of messages are lost), and subsequently the master crashes, it is
+possible to lose committed transactions.  Again, because transactional
+durability is not being maintained.  Reliability can be improved in a
+couple of ways:</p>
+<ol>
+<p><li>Use a reliable network protocol (for example, TCP/IP instead of UDP).
+<p><li>Increase the number of clients and network paths to make it less likely
+that a message will be lost.  In this case, it is important to also make
+sure a client that did receive the message wins any subsequent election.
+If a client that did not receive the message wins a subsequent election,
+data can still be lost.
+</ol>
+<p>Further, systems may want to guarantee message delivery to the client(s)
+(for example, to prevent a network connection from simply discarding
+messages).  Some systems may want to ensure clients never return
+out-of-date information, that is, once a transaction commit returns
+success on the master, no client will return old information to a
+read-only query. Some of the following changes may be used to address
+these issues:</p>
+<ol>
+<p><li>Write the application's <b>send</b> function to not return to Berkeley DB
+until one or more clients have acknowledged receipt of the message.
+The number of clients chosen will be dependent on the application: you
+will want to consider likely network partitions (ensure that a client
+at each physical site receives the message) and geographical diversity
+(ensure that a client on each coast receives the message).
+<p><li>Write the client's message processing loop to not acknowledge receipt
+of the message until a call to the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method has returned
+success.  Messages resulting in a return of <a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a> from
+the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method mean the message could not be flushed to the
+client's disk.  If the client does not acknowledge receipt of such
+messages to the master until a subsequent call to the
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method returns <a href="../../api_c/rep_message.html#DB_REP_ISPERM">DB_REP_ISPERM</a> and the LSN
+returned is at least as large as this message's LSN, then the master's
+<b>send</b> function will not return success to the Berkeley DB library.
+This means the thread committing the transaction on the master will not
+be allowed to proceed based on the transaction having committed until
+the selected set of clients have received the message and consider it
+complete.
+<p>Alternatively, the client's message processing loop could acknowledge
+the message to the master, but with an error code indicating that the
+application's <b>send</b> function should not return to the Berkeley DB
+library until a subsequent acknowledgement from the same client
+indicates success.</p>
+<p>The application send callback function invoked by Berkeley DB contains
+an LSN of the record being sent (if appropriate for that record).
+When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method returns indicators that a permanent
+record has been written then it also returns the maximum LSN of the
+permanent record written.</p>
+</ol>
+<p>There is one final pair of failure scenarios to consider.  First, it is
+not possible to abort transactions after the application's <b>send</b>
+function has been called, as the master may have already written the
+commit log records to disk, and so abort is no longer an option.
+Second, a related problem is that even though the master will attempt
+to flush the local log if the <b>send</b> function returns failure,
+that flush may fail (for example, when the local disk is full).  Again,
+the transaction cannot be aborted as one or more clients may have
+committed the transaction even if <b>send</b> returns failure.  Rare
+applications may not be able to tolerate these unlikely failure modes.
+In that case the application may want to:</p>
+<ol>
+<p><li>Configure the master to do always local synchronous commits (turning
+off the <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> configuration).  This will decrease
+performance significantly, of course (one of the reasons to use
+replication is to avoid local disk writes.)  In this configuration,
+failure to write the local log will cause the transaction to abort in
+all cases.
+<p><li>Do not return from the application's <b>send</b> function under any
+conditions, until the selected set of clients has acknowledged the
+message.  Until the <b>send</b> function returns to the Berkeley DB library,
+the thread committing the transaction on the master will wait, and so
+no application will be able to act on the knowledge that the transaction
+has committed.
+</ol>
+<p>The final alternative for applications concerned about these types of
+failure is to use distributed transactions as an alternative means of
+replication, guaranteeing full consistency at the cost of implementing
+a Global Transaction Manager and performing two-phase commit across
+multiple Berkeley DB database environments.  More information on this topic
+can be found in the <a href="../../ref/xa/intro.html">Distributed
+Transactions</a> chapter.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/logonly.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/partition.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

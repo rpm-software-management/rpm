@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2001
+ * Copyright (c) 1999-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: tcl_util.c,v 11.35 2002/08/06 06:21:42 bostic Exp ";
+static const char revid[] = "$Id: tcl_util.c,v 11.38 2003/04/23 18:54:40 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -40,7 +40,7 @@ bdb_RandCommand(interp, objc, objv)
 	int objc;			/* How many arguments? */
 	Tcl_Obj *CONST objv[];		/* The argument objects */
 {
-	static char *rcmds[] = {
+	static const char *rcmds[] = {
 		"rand",	"random_int",	"srand",
 		NULL
 	};
@@ -235,8 +235,7 @@ posixout:
 
 	if (md != NULL) {
 		if (md->reginfo.addr != NULL)
-			(void)__db_r_detach(md->env,
-			    &md->reginfo, F_ISSET(&md->reginfo, REGION_CREATE));
+			(void)__db_r_detach(md->env, &md->reginfo, 0);
 		__os_free(md->env, md);
 	}
 	return (result);
@@ -253,7 +252,7 @@ mutex_Cmd(clientData, interp, objc, objv)
 	int objc;			/* How many arguments? */
 	Tcl_Obj *CONST objv[];		/* The argument objects */
 {
-	static char *mxcmds[] = {
+	static const char *mxcmds[] = {
 		"close",
 		"get",
 		"getval",

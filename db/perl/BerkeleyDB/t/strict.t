@@ -113,6 +113,8 @@ umask(0);
     eval { $db->db_close() ; } ;
     ok 24, $@ =~ /BerkeleyDB Aborting: attempted to close a database while a transaction was still open at/ ;
     #print "[$@]\n" ;
+    $txn->txn_abort();
+    $db->db_close();
 }
 
 {
@@ -147,6 +149,7 @@ umask(0);
     my $lex = new LexFile $Dfile ;
     my %hash ;
     my $status ;
+    my $home = 'fred1';
 
     ok 33, my $lexD = new LexDir($home);
     ok 34, my $env = new BerkeleyDB::Env -Home => $home,

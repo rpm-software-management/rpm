@@ -1,21 +1,21 @@
-<!--Id: faq.so,v 1.6 2002/05/09 20:38:15 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 1.8 2003/05/17 19:07:59 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Replication FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../../ref/rep/partition.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/ex.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/partition.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/ex.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Replication FAQ</h1>
-<p><ol>
+<h3 align=center>Replication FAQ</h3>
+<ol>
 <p><li><b>Does Berkeley DB provide support for forwarding write queries from
 clients to masters?</b>
 <p>No, it does not.  The Berkeley DB RPC server code could be modified to support
@@ -23,11 +23,16 @@ this functionality, but in general this protocol is left entirely to
 the application.  Note, there is no reason not to use the communications
 channels the application establishes for replication support to forward
 database update messages to the master, Berkeley DB does not require that
-those channels be used exclusively for replication messages.
+those channels be used exclusively for replication messages.</p>
 <p><li><b>Can I use replication to partition my environment across
 multiple sites?</b>
 <p>No, this is not possible.  All replicated databases must be equally
-shared by all environments in the replication group.
+shared by all environments in the replication group.</p>
+<p><li><b>I'm running with replication but I don't see my databases
+on the client.</b>
+<p>This problem may be the result of the application using absolute path
+names for its databases, and the pathnames are not valid on the client
+system.</p>
 <p><li><b>How can I distinguish Berkeley DB messages from application messages?</b>
 <p>There is no way to distinguish Berkeley DB messages from application-specific
 messages, nor does Berkeley DB offer any way to wrap application messages
@@ -38,7 +43,7 @@ The one exception to this rule is connection information for new sites;
 Berkeley DB offers a simple method for sites joining replication groups to
 send connection information to the other database environments in the
 group (see <a href="../../ref/rep/newsite.html">Connecting to a new site</a>
-for more information).
+for more information).</p>
 <p><li><b>How should I build my <b>send</b> function?</b>
 <p>This depends on the specifics of the application.  One common way is to
 write the <b>rec</b> and <b>control</b> arguments' sizes and data to
@@ -49,7 +54,7 @@ message, with header information specifying the intended recipient(s)
 for the message.  This will likely require a global numbering scheme,
 however, as the Berkeley DB library has to be able to send specific log
 records to clients apart from the general broadcast of new log records
-intended for all members of a replication group.
+intended for all members of a replication group.</p>
 <p><li><b>Does every one of my threads of control on the master have to
 set up its own connection to every client?  And, does every one of my
 threads of control on the client have to set up its own connection to
@@ -59,7 +64,7 @@ thread of control which modifies a database in the master environment
 must be prepared to send a message to the client environments, and any
 thread of control which delivers a message to a client environment must
 be prepared to send a message to the master.  There are many ways in
-which these requirements can be satisfied.
+which these requirements can be satisfied.</p>
 <p>The simplest case is probably a single, multithreaded process running
 on the master and clients.  The process running on the master would
 require a single write connection to each client and a single read
@@ -67,7 +72,7 @@ connection from each client.  A process running on each client would
 require a single read connection from the master and a single write
 connection to the master.  Threads running in these processes on the
 master and clients would use the same network connections to pass
-messages back and forth.
+messages back and forth.</p>
 <p>A common complication is when there are multiple processes running on
 the master and clients.  A straight-forward solution is to increase the
 numbers of connections on the master -- each process running on the
@@ -81,7 +86,7 @@ still only requires a single thread of control that receives master
 messages and forwards them into the database, and which also takes
 database messages and forwards them back to the master.  This model
 requires the networking infrastructure support many-to-one
-writers-to-readers, of course.
+writers-to-readers, of course.</p>
 <p>If the number of network connections is a problem in the multiprocess
 model, and inter-process communication on the system is inexpensive
 enough, an alternative is have a single process which communicates
@@ -90,16 +95,16 @@ between the master the each client, and whenever a process'
 communications process which is responsible for forwarding the message
 to the appropriate client.  Alternatively, a broadcast mechanism will
 simplify the entire networking infrastructure, as processes will likely
-no longer have to maintain their own specific network connections.
+no longer have to maintain their own specific network connections.</p>
 <p><li><b>Can I use replication to replicate just the database
 environment's log files?</b>
 <p>Yes.  If the <a href="../../api_c/rep_start.html#DB_REP_LOGSONLY">DB_REP_LOGSONLY</a> flag is specified to
 <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>, the client site acts as a repository for logfiles
 (see <a href="../../ref/rep/logonly.html">Log file only clients</a> for more
-information).
+information).</p>
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/partition.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/ex.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/partition.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/ex.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

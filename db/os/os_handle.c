@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998, 1999, 2000
+ * Copyright (c) 1998-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: os_handle.c,v 11.19 2000/11/30 00:58:42 ubell Exp $";
+static const char revid[] = "$Id: os_handle.c,v 11.32 2003/02/16 15:54:03 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -20,60 +20,68 @@ static const char revid[] = "$Id: os_handle.c,v 11.19 2000/11/30 00:58:42 ubell 
 #endif
 
 #include "db_int.h"
-#include "os_jump.h"
 
 /*
  * __os_openhandle --
  *	Open a file, using POSIX 1003.1 open flags.
  *
- * PUBLIC: int __os_openhandle __P((DB_ENV *, const char *, int, int, DB_FH *));
+ * PUBLIC: int __os_openhandle
+ * PUBLIC:     __P((DB_ENV *, const char *, int, int, DB_FH **));
  */
 int
-__os_openhandle(dbenv, name, flags, mode, fhp)
+__os_openhandle(dbenv, name, flags, mode, fhpp)
 	DB_ENV *dbenv;
 	const char *name;
 	int flags, mode;
-	DB_FH *fhp;
+	DB_FH **fhpp;
 {
-	int ret, nrepeat;
+	DB_FH *fhp;
+	int ret, nrepeat, retries;
 #ifdef HAVE_VXWORKS
 	int newflags;
 #endif
 
-	memset(fhp, 0, sizeof(*fhp));
+	if ((ret = __os_calloc(dbenv, 1, sizeof(DB_FH), fhpp)) != 0)
+		return (ret);
+	fhp = *fhpp;
 
 	/* If the application specified an interface, use it. */
-	if (__db_jump.j_open != NULL) {
-		if ((fhp->fd = __db_jump.j_open(name, flags, mode)) == -1)
-			return (__os_get_errno());
-		F_SET(fhp, DB_FH_VALID);
+	if (DB_GLOBAL(j_open) != NULL) {
+		if ((fhp->fd = DB_GLOBAL(j_open)(name, flags, mode)) == -1) {
+			ret = __os_get_errno();
+			goto err;
+		}
+		F_SET(fhp, DB_FH_OPENED);
 		return (0);
 	}
 
-	for (ret = 0, nrepeat = 1; nrepeat < 4; ++nrepeat) {
+	retries = 0;
+	for (nrepeat = 1; nrepeat < 4; ++nrepeat) {
+		ret = 0;
 #ifdef	HAVE_VXWORKS
 		/*
 		 * VxWorks does not support O_CREAT on open, you have to use
 		 * creat() instead.  (It does not support O_EXCL or O_TRUNC
 		 * either, even though they are defined "for future support".)
-		 * If O_EXCL is specified, single thread and try to open the
-		 * file.  If successful, return EEXIST.  Otherwise, call creat
-		 * and then end single threading.
+		 * We really want the POSIX behavior that if O_CREAT is set,
+		 * we open if it exists, or create it if it doesn't exist.
+		 * If O_CREAT is specified, single thread and try to open the
+		 * file.  If successful, and O_EXCL return EEXIST.  If
+		 * unsuccessful call creat and then end single threading.
 		 */
 		if (LF_ISSET(O_CREAT)) {
 			DB_BEGIN_SINGLE_THREAD;
 			newflags = flags & ~(O_CREAT | O_EXCL);
-			if (LF_ISSET(O_EXCL)) {
-				if ((fhp->fd =
-				    open(name, newflags, mode)) != -1) {
+			if ((fhp->fd = open(name, newflags, mode)) != -1) {
+				if (LF_ISSET(O_EXCL)) {
 					/*
-					 * If we get here, we want O_EXCL
-					 * create, and it exists.  Close and
+					 * If we get here, want O_EXCL create,
+					 * and the file exists.  Close and
 					 * return EEXISTS.
 					 */
-					(void)close(fhp->fd);
 					DB_END_SINGLE_THREAD;
-					return (EEXIST);
+					ret = EEXIST;
+					goto err;
 				}
 				/*
 				 * XXX
@@ -84,8 +92,8 @@ __os_openhandle(dbenv, name, flags, mode, fhp)
 				 * verify we truly got the equivalent of
 				 * ENOENT.
 				 */
-			}
-			fhp->fd = creat(name, newflags);
+			} else
+				fhp->fd = creat(name, newflags);
 			DB_END_SINGLE_THREAD;
 		} else
 
@@ -105,32 +113,48 @@ __os_openhandle(dbenv, name, flags, mode, fhp)
 #else
 		fhp->fd = open(name, flags, mode);
 #endif
+		if (fhp->fd != -1) {
+			F_SET(fhp, DB_FH_OPENED);
 
-		if (fhp->fd == -1) {
+#if defined(HAVE_FCNTL_F_SETFD)
+			/* Deny file descriptor access to any child process. */
+			if (fcntl(fhp->fd, F_SETFD, 1) == -1) {
+				ret = __os_get_errno();
+				__db_err(dbenv,
+				    "fcntl(F_SETFD): %s", strerror(ret));
+				goto err;
+			}
+#endif
+			break;
+		}
+
+		switch (ret = __os_get_errno()) {
+		case EMFILE:
+		case ENFILE:
+		case ENOSPC:
 			/*
 			 * If it's a "temporary" error, we retry up to 3 times,
 			 * waiting up to 12 seconds.  While it's not a problem
 			 * if we can't open a database, an inability to open a
 			 * log file is cause for serious dismay.
 			 */
-			ret = __os_get_errno();
-			if (ret == ENFILE || ret == EMFILE || ret == ENOSPC) {
-				(void)__os_sleep(dbenv, nrepeat * 2, 0);
-				continue;
-			}
-		} else {
-#if defined(HAVE_FCNTL_F_SETFD)
-			/* Deny file descriptor access to any child process. */
-			if (fcntl(fhp->fd, F_SETFD, 1) == -1) {
-				ret = __os_get_errno();
-				__db_err(dbenv, "fcntl(F_SETFD): %s",
-				    strerror(ret));
-				(void)__os_closehandle(fhp);
-			} else
-#endif
-				F_SET(fhp, DB_FH_VALID);
+			(void)__os_sleep(dbenv, nrepeat * 2, 0);
+			break;
+		case EBUSY:
+		case EINTR:
+			/*
+			 * If it was an EINTR or EBUSY, retry immediately,
+			 * DB_RETRY times.
+			 */
+			if (++retries < DB_RETRY)
+				--nrepeat;
+			break;
 		}
-		break;
+	}
+
+err:	if (ret != 0) {
+		(void)__os_closehandle(dbenv, fhp);
+		*fhpp = NULL;
 	}
 
 	return (ret);
@@ -140,26 +164,41 @@ __os_openhandle(dbenv, name, flags, mode, fhp)
  * __os_closehandle --
  *	Close a file.
  *
- * PUBLIC: int __os_closehandle __P((DB_FH *));
+ * PUBLIC: int __os_closehandle __P((DB_ENV *, DB_FH *));
  */
 int
-__os_closehandle(fhp)
+__os_closehandle(dbenv, fhp)
+	DB_ENV *dbenv;
 	DB_FH *fhp;
 {
-	int ret;
+	int ret, retries;
 
-	/* Don't close file descriptors that were never opened. */
-	DB_ASSERT(F_ISSET(fhp, DB_FH_VALID) && fhp->fd != -1);
-
-	ret = __db_jump.j_close != NULL ?
-	    __db_jump.j_close(fhp->fd) : close(fhp->fd);
+	ret = 0;
 
 	/*
-	 * Smash the POSIX file descriptor -- it's never tested, but we want
-	 * to catch any mistakes.
+	 * If we have a valid handle, close it and unlink any temporary
+	 * file.
 	 */
-	fhp->fd = -1;
-	F_CLR(fhp, DB_FH_VALID);
+	if (F_ISSET(fhp, DB_FH_OPENED)) {
+		retries = 0;
+		do {
+			ret = DB_GLOBAL(j_close) != NULL ?
+			    DB_GLOBAL(j_close)(fhp->fd) : close(fhp->fd);
+		} while (ret != 0 &&
+		    ((ret = __os_get_errno()) == EINTR || ret == EBUSY) &&
+		    ++retries < DB_RETRY);
 
-	return (ret == 0 ? 0 : __os_get_errno());
+		if (ret != 0)
+			__db_err(dbenv, "close: %s", strerror(ret));
+
+		/* Unlink the file if we haven't already done so. */
+		if (F_ISSET(fhp, DB_FH_UNLINK)) {
+			(void)__os_unlink(dbenv, fhp->name);
+			(void)__os_free(dbenv, fhp->name);
+		}
+	}
+
+	__os_free(dbenv, fhp);
+
+	return (ret);
 }

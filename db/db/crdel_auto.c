@@ -5,201 +5,125 @@
 #include <sys/types.h>
 
 #include <ctype.h>
-#include <errno.h>
 #include <string.h>
 #endif
 
 #include "db_int.h"
-#include "db_page.h"
-#include "db_dispatch.h"
-#include "db_am.h"
-#include "txn.h"
+#include "dbinc/crypto.h"
+#include "dbinc/db_page.h"
+#include "dbinc/db_dispatch.h"
+#include "dbinc/db_am.h"
+#include "dbinc/log.h"
+#include "dbinc/txn.h"
 
+/*
+ * PUBLIC: int __crdel_metasub_log __P((DB *, DB_TXN *, DB_LSN *,
+ * PUBLIC:     u_int32_t, db_pgno_t, const DBT *, DB_LSN *));
+ */
 int
-__crdel_fileopen_log(dbenv, txnid, ret_lsnp, flags,
-	name, mode)
-	DB_ENV *dbenv;
+__crdel_metasub_log(dbp, txnid, ret_lsnp, flags, pgno, page, lsn)
+	DB *dbp;
 	DB_TXN *txnid;
 	DB_LSN *ret_lsnp;
 	u_int32_t flags;
-	const DBT *name;
-	u_int32_t mode;
-{
-	DBT logrec;
-	DB_LSN *lsnp, null_lsn;
-	u_int32_t zero;
-	u_int32_t rectype, txn_num;
-	int ret;
-	u_int8_t *bp;
-
-	rectype = DB_crdel_fileopen;
-	if (txnid != NULL &&
-	    TAILQ_FIRST(&txnid->kids) != NULL &&
-	    (ret = __txn_activekids(dbenv, rectype, txnid)) != 0)
-		return (ret);
-	txn_num = txnid == NULL ? 0 : txnid->txnid;
-	if (txnid == NULL) {
-		ZERO_LSN(null_lsn);
-		lsnp = &null_lsn;
-	} else
-		lsnp = &txnid->last_lsn;
-	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
-	    + sizeof(u_int32_t) + (name == NULL ? 0 : name->size)
-	    + sizeof(mode);
-	if ((ret = __os_malloc(dbenv, logrec.size, NULL, &logrec.data)) != 0)
-		return (ret);
-
-	bp = logrec.data;
-	memcpy(bp, &rectype, sizeof(rectype));
-	bp += sizeof(rectype);
-	memcpy(bp, &txn_num, sizeof(txn_num));
-	bp += sizeof(txn_num);
-	memcpy(bp, lsnp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	if (name == NULL) {
-		zero = 0;
-		memcpy(bp, &zero, sizeof(u_int32_t));
-		bp += sizeof(u_int32_t);
-	} else {
-		memcpy(bp, &name->size, sizeof(name->size));
-		bp += sizeof(name->size);
-		memcpy(bp, name->data, name->size);
-		bp += name->size;
-	}
-	memcpy(bp, &mode, sizeof(mode));
-	bp += sizeof(mode);
-	DB_ASSERT((u_int32_t)(bp - (u_int8_t *)logrec.data) == logrec.size);
-	ret = log_put(dbenv, ret_lsnp, (DBT *)&logrec, flags);
-	if (txnid != NULL)
-		txnid->last_lsn = *ret_lsnp;
-	__os_free(logrec.data, logrec.size);
-	return (ret);
-}
-
-int
-__crdel_fileopen_print(dbenv, dbtp, lsnp, notused2, notused3)
-	DB_ENV *dbenv;
-	DBT *dbtp;
-	DB_LSN *lsnp;
-	db_recops notused2;
-	void *notused3;
-{
-	__crdel_fileopen_args *argp;
-	u_int32_t i;
-	u_int ch;
-	int ret;
-
-	i = 0;
-	ch = 0;
-	notused2 = DB_TXN_ABORT;
-	notused3 = NULL;
-
-	if ((ret = __crdel_fileopen_read(dbenv, dbtp->data, &argp)) != 0)
-		return (ret);
-	printf("[%lu][%lu]crdel_fileopen: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
-	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
-	printf("\tname: ");
-	for (i = 0; i < argp->name.size; i++) {
-		ch = ((u_int8_t *)argp->name.data)[i];
-		if (isprint(ch) || ch == 0xa)
-			putchar(ch);
-		else
-			printf("%#x ", ch);
-	}
-	printf("\n");
-	printf("\tmode: %o\n", argp->mode);
-	printf("\n");
-	__os_free(argp, 0);
-	return (0);
-}
-
-int
-__crdel_fileopen_read(dbenv, recbuf, argpp)
-	DB_ENV *dbenv;
-	void *recbuf;
-	__crdel_fileopen_args **argpp;
-{
-	__crdel_fileopen_args *argp;
-	u_int8_t *bp;
-	int ret;
-
-	ret = __os_malloc(dbenv, sizeof(__crdel_fileopen_args) +
-	    sizeof(DB_TXN), NULL, &argp);
-	if (ret != 0)
-		return (ret);
-	argp->txnid = (DB_TXN *)&argp[1];
-	bp = recbuf;
-	memcpy(&argp->type, bp, sizeof(argp->type));
-	bp += sizeof(argp->type);
-	memcpy(&argp->txnid->txnid,  bp, sizeof(argp->txnid->txnid));
-	bp += sizeof(argp->txnid->txnid);
-	memcpy(&argp->prev_lsn, bp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	memset(&argp->name, 0, sizeof(argp->name));
-	memcpy(&argp->name.size, bp, sizeof(u_int32_t));
-	bp += sizeof(u_int32_t);
-	argp->name.data = bp;
-	bp += argp->name.size;
-	memcpy(&argp->mode, bp, sizeof(argp->mode));
-	bp += sizeof(argp->mode);
-	*argpp = argp;
-	return (0);
-}
-
-int
-__crdel_metasub_log(dbenv, txnid, ret_lsnp, flags,
-	fileid, pgno, page, lsn)
-	DB_ENV *dbenv;
-	DB_TXN *txnid;
-	DB_LSN *ret_lsnp;
-	u_int32_t flags;
-	int32_t fileid;
 	db_pgno_t pgno;
 	const DBT *page;
 	DB_LSN * lsn;
 {
 	DBT logrec;
+	DB_ENV *dbenv;
+	DB_TXNLOGREC *lr;
 	DB_LSN *lsnp, null_lsn;
-	u_int32_t zero;
-	u_int32_t rectype, txn_num;
-	int ret;
+	u_int32_t zero, uinttmp, rectype, txn_num;
+	u_int npad;
 	u_int8_t *bp;
+	int is_durable, ret;
 
-	rectype = DB_crdel_metasub;
-	if (txnid != NULL &&
-	    TAILQ_FIRST(&txnid->kids) != NULL &&
-	    (ret = __txn_activekids(dbenv, rectype, txnid)) != 0)
-		return (ret);
-	txn_num = txnid == NULL ? 0 : txnid->txnid;
+	dbenv = dbp->dbenv;
+	rectype = DB___crdel_metasub;
+	npad = 0;
+
+	is_durable = 1;
+	if (LF_ISSET(DB_LOG_NOT_DURABLE) ||
+	    F_ISSET(dbenv, DB_ENV_TXN_NOT_DURABLE) ||
+	    F_ISSET(dbp, DB_AM_NOT_DURABLE)) {
+		if (F_ISSET(dbenv, DB_ENV_TXN_NOT_DURABLE) && txnid == NULL)
+			return (0);
+		is_durable = 0;
+	}
 	if (txnid == NULL) {
-		ZERO_LSN(null_lsn);
+		txn_num = 0;
+		null_lsn.file = 0;
+		null_lsn.offset = 0;
 		lsnp = &null_lsn;
-	} else
+	} else {
+		if (TAILQ_FIRST(&txnid->kids) != NULL &&
+		    (ret = __txn_activekids(dbenv, rectype, txnid)) != 0)
+			return (ret);
+		txn_num = txnid->txnid;
 		lsnp = &txnid->last_lsn;
+	}
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
-	    + sizeof(fileid)
-	    + sizeof(pgno)
+	    + sizeof(u_int32_t)
+	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t) + (page == NULL ? 0 : page->size)
 	    + sizeof(*lsn);
-	if ((ret = __os_malloc(dbenv, logrec.size, NULL, &logrec.data)) != 0)
-		return (ret);
+	if (CRYPTO_ON(dbenv)) {
+		npad =
+		    ((DB_CIPHER *)dbenv->crypto_handle)->adj_size(logrec.size);
+		logrec.size += npad;
+	}
+
+	if (!is_durable && txnid != NULL) {
+		if ((ret = __os_malloc(dbenv,
+		    logrec.size + sizeof(DB_TXNLOGREC), &lr)) != 0)
+			return (ret);
+#ifdef DIAGNOSTIC
+		goto do_malloc;
+#else
+		logrec.data = &lr->data;
+#endif
+	} else {
+#ifdef DIAGNOSTIC
+do_malloc:
+#endif
+		if ((ret =
+		    __os_malloc(dbenv, logrec.size, &logrec.data)) != 0) {
+#ifdef DIAGNOSTIC
+			if (!is_durable && txnid != NULL)
+				(void)__os_free(dbenv, lr);
+#endif
+			return (ret);
+		}
+	}
+	if (npad > 0)
+		memset((u_int8_t *)logrec.data + logrec.size - npad, 0, npad);
 
 	bp = logrec.data;
+
 	memcpy(bp, &rectype, sizeof(rectype));
 	bp += sizeof(rectype);
+
 	memcpy(bp, &txn_num, sizeof(txn_num));
 	bp += sizeof(txn_num);
+
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-	memcpy(bp, &fileid, sizeof(fileid));
-	bp += sizeof(fileid);
-	memcpy(bp, &pgno, sizeof(pgno));
-	bp += sizeof(pgno);
+
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
+	uinttmp = (u_int32_t)dbp->log_filename->id;
+	memcpy(bp, &uinttmp, sizeof(uinttmp));
+	bp += sizeof(uinttmp);
+
+	uinttmp = (u_int32_t)pgno;
+	memcpy(bp, &uinttmp, sizeof(uinttmp));
+	bp += sizeof(uinttmp);
+
 	if (page == NULL) {
 		zero = 0;
 		memcpy(bp, &zero, sizeof(u_int32_t));
@@ -210,19 +134,98 @@ __crdel_metasub_log(dbenv, txnid, ret_lsnp, flags,
 		memcpy(bp, page->data, page->size);
 		bp += page->size;
 	}
+
 	if (lsn != NULL)
 		memcpy(bp, lsn, sizeof(*lsn));
 	else
 		memset(bp, 0, sizeof(*lsn));
 	bp += sizeof(*lsn);
-	DB_ASSERT((u_int32_t)(bp - (u_int8_t *)logrec.data) == logrec.size);
-	ret = log_put(dbenv, ret_lsnp, (DBT *)&logrec, flags);
-	if (txnid != NULL)
-		txnid->last_lsn = *ret_lsnp;
-	__os_free(logrec.data, logrec.size);
+
+	DB_ASSERT((u_int32_t)(bp - (u_int8_t *)logrec.data) <= logrec.size);
+
+#ifdef DIAGNOSTIC
+	if (!is_durable && txnid != NULL) {
+		 /*
+		 * We set the debug bit if we are going
+		 * to log non-durable transactions so
+		 * they will be ignored by recovery.
+		 */
+		memcpy(lr->data, logrec.data, logrec.size);
+		rectype |= DB_debug_FLAG;
+		memcpy(logrec.data, &rectype, sizeof(rectype));
+	}
+#endif
+
+	if (!is_durable && txnid != NULL) {
+		ret = 0;
+		STAILQ_INSERT_HEAD(&txnid->logs, lr, links);
+#ifdef DIAGNOSTIC
+		goto do_put;
+#endif
+	} else{
+#ifdef DIAGNOSTIC
+do_put:
+#endif
+		ret = __log_put(dbenv,
+		    ret_lsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
+		if (ret == 0 && txnid != NULL)
+			txnid->last_lsn = *ret_lsnp;
+	}
+
+	if (!is_durable)
+		LSN_NOT_LOGGED(*ret_lsnp);
+#ifdef LOG_DIAGNOSTIC
+	if (ret != 0)
+		(void)__crdel_metasub_print(dbenv,
+		    (DBT *)&logrec, ret_lsnp, NULL, NULL);
+#endif
+#ifndef DIAGNOSTIC
+	if (is_durable || txnid == NULL)
+#endif
+		__os_free(dbenv, logrec.data);
+
 	return (ret);
 }
 
+#ifdef HAVE_REPLICATION
+/*
+ * PUBLIC: int __crdel_metasub_getpgnos __P((DB_ENV *, DBT *,
+ * PUBLIC:     DB_LSN *, db_recops, void *));
+ */
+int
+__crdel_metasub_getpgnos(dbenv, rec, lsnp, notused1, summary)
+	DB_ENV *dbenv;
+	DBT *rec;
+	DB_LSN *lsnp;
+	db_recops notused1;
+	void *summary;
+{
+	TXN_RECS *t;
+	int ret;
+	COMPQUIET(rec, NULL);
+	COMPQUIET(notused1, DB_TXN_ABORT);
+
+	t = (TXN_RECS *)summary;
+
+	if ((ret = __rep_check_alloc(dbenv, t, 1)) != 0)
+		return (ret);
+
+	t->array[t->npages].flags = LSN_PAGE_NOLOCK;
+	t->array[t->npages].lsn = *lsnp;
+	t->array[t->npages].fid = DB_LOGFILEID_INVALID;
+	memset(&t->array[t->npages].pgdesc, 0,
+	    sizeof(t->array[t->npages].pgdesc));
+
+	t->npages++;
+
+	return (0);
+}
+#endif /* HAVE_REPLICATION */
+
+/*
+ * PUBLIC: int __crdel_metasub_print __P((DB_ENV *, DBT *, DB_LSN *,
+ * PUBLIC:     db_recops, void *));
+ */
 int
 __crdel_metasub_print(dbenv, dbtp, lsnp, notused2, notused3)
 	DB_ENV *dbenv;
@@ -233,41 +236,43 @@ __crdel_metasub_print(dbenv, dbtp, lsnp, notused2, notused3)
 {
 	__crdel_metasub_args *argp;
 	u_int32_t i;
-	u_int ch;
+	int ch;
 	int ret;
 
-	i = 0;
-	ch = 0;
 	notused2 = DB_TXN_ABORT;
 	notused3 = NULL;
 
 	if ((ret = __crdel_metasub_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
-	printf("[%lu][%lu]crdel_metasub: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
+	(void)printf(
+	    "[%lu][%lu]__crdel_metasub%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
 	    (u_long)lsnp->file,
 	    (u_long)lsnp->offset,
+	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
 	    (u_long)argp->txnid->txnid,
 	    (u_long)argp->prev_lsn.file,
 	    (u_long)argp->prev_lsn.offset);
-	printf("\tfileid: %ld\n", (long)argp->fileid);
-	printf("\tpgno: %d\n", argp->pgno);
-	printf("\tpage: ");
+	(void)printf("\tfileid: %ld\n", (long)argp->fileid);
+	(void)printf("\tpgno: %lu\n", (u_long)argp->pgno);
+	(void)printf("\tpage: ");
 	for (i = 0; i < argp->page.size; i++) {
 		ch = ((u_int8_t *)argp->page.data)[i];
-		if (isprint(ch) || ch == 0xa)
-			putchar(ch);
-		else
-			printf("%#x ", ch);
+		printf(isprint(ch) || ch == 0x0a ? "%c" : "%#x ", ch);
 	}
-	printf("\n");
-	printf("\tlsn: [%lu][%lu]\n",
+	(void)printf("\n");
+	(void)printf("\tlsn: [%lu][%lu]\n",
 	    (u_long)argp->lsn.file, (u_long)argp->lsn.offset);
-	printf("\n");
-	__os_free(argp, 0);
+	(void)printf("\n");
+	__os_free(dbenv, argp);
+
 	return (0);
 }
 
+/*
+ * PUBLIC: int __crdel_metasub_read __P((DB_ENV *, void *,
+ * PUBLIC:     __crdel_metasub_args **));
+ */
 int
 __crdel_metasub_read(dbenv, recbuf, argpp)
 	DB_ENV *dbenv;
@@ -275,626 +280,99 @@ __crdel_metasub_read(dbenv, recbuf, argpp)
 	__crdel_metasub_args **argpp;
 {
 	__crdel_metasub_args *argp;
+	u_int32_t uinttmp;
 	u_int8_t *bp;
 	int ret;
 
-	ret = __os_malloc(dbenv, sizeof(__crdel_metasub_args) +
-	    sizeof(DB_TXN), NULL, &argp);
-	if (ret != 0)
+	if ((ret = __os_malloc(dbenv,
+	    sizeof(__crdel_metasub_args) + sizeof(DB_TXN), &argp)) != 0)
 		return (ret);
 	argp->txnid = (DB_TXN *)&argp[1];
+
 	bp = recbuf;
 	memcpy(&argp->type, bp, sizeof(argp->type));
 	bp += sizeof(argp->type);
+
 	memcpy(&argp->txnid->txnid,  bp, sizeof(argp->txnid->txnid));
 	bp += sizeof(argp->txnid->txnid);
+
 	memcpy(&argp->prev_lsn, bp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-	memcpy(&argp->fileid, bp, sizeof(argp->fileid));
-	bp += sizeof(argp->fileid);
-	memcpy(&argp->pgno, bp, sizeof(argp->pgno));
-	bp += sizeof(argp->pgno);
+
+	memcpy(&uinttmp, bp, sizeof(uinttmp));
+	argp->fileid = (int32_t)uinttmp;
+	bp += sizeof(uinttmp);
+
+	memcpy(&uinttmp, bp, sizeof(uinttmp));
+	argp->pgno = (db_pgno_t)uinttmp;
+	bp += sizeof(uinttmp);
+
 	memset(&argp->page, 0, sizeof(argp->page));
 	memcpy(&argp->page.size, bp, sizeof(u_int32_t));
 	bp += sizeof(u_int32_t);
 	argp->page.data = bp;
 	bp += argp->page.size;
+
 	memcpy(&argp->lsn, bp,  sizeof(argp->lsn));
 	bp += sizeof(argp->lsn);
+
 	*argpp = argp;
 	return (0);
 }
 
+/*
+ * PUBLIC: int __crdel_init_print __P((DB_ENV *, int (***)(DB_ENV *,
+ * PUBLIC:     DBT *, DB_LSN *, db_recops, void *), size_t *));
+ */
 int
-__crdel_metapage_log(dbenv, txnid, ret_lsnp, flags,
-	fileid, name, pgno, page)
+__crdel_init_print(dbenv, dtabp, dtabsizep)
 	DB_ENV *dbenv;
-	DB_TXN *txnid;
-	DB_LSN *ret_lsnp;
-	u_int32_t flags;
-	int32_t fileid;
-	const DBT *name;
-	db_pgno_t pgno;
-	const DBT *page;
-{
-	DBT logrec;
-	DB_LSN *lsnp, null_lsn;
-	u_int32_t zero;
-	u_int32_t rectype, txn_num;
-	int ret;
-	u_int8_t *bp;
-
-	rectype = DB_crdel_metapage;
-	if (txnid != NULL &&
-	    TAILQ_FIRST(&txnid->kids) != NULL &&
-	    (ret = __txn_activekids(dbenv, rectype, txnid)) != 0)
-		return (ret);
-	txn_num = txnid == NULL ? 0 : txnid->txnid;
-	if (txnid == NULL) {
-		ZERO_LSN(null_lsn);
-		lsnp = &null_lsn;
-	} else
-		lsnp = &txnid->last_lsn;
-	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
-	    + sizeof(fileid)
-	    + sizeof(u_int32_t) + (name == NULL ? 0 : name->size)
-	    + sizeof(pgno)
-	    + sizeof(u_int32_t) + (page == NULL ? 0 : page->size);
-	if ((ret = __os_malloc(dbenv, logrec.size, NULL, &logrec.data)) != 0)
-		return (ret);
-
-	bp = logrec.data;
-	memcpy(bp, &rectype, sizeof(rectype));
-	bp += sizeof(rectype);
-	memcpy(bp, &txn_num, sizeof(txn_num));
-	bp += sizeof(txn_num);
-	memcpy(bp, lsnp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	memcpy(bp, &fileid, sizeof(fileid));
-	bp += sizeof(fileid);
-	if (name == NULL) {
-		zero = 0;
-		memcpy(bp, &zero, sizeof(u_int32_t));
-		bp += sizeof(u_int32_t);
-	} else {
-		memcpy(bp, &name->size, sizeof(name->size));
-		bp += sizeof(name->size);
-		memcpy(bp, name->data, name->size);
-		bp += name->size;
-	}
-	memcpy(bp, &pgno, sizeof(pgno));
-	bp += sizeof(pgno);
-	if (page == NULL) {
-		zero = 0;
-		memcpy(bp, &zero, sizeof(u_int32_t));
-		bp += sizeof(u_int32_t);
-	} else {
-		memcpy(bp, &page->size, sizeof(page->size));
-		bp += sizeof(page->size);
-		memcpy(bp, page->data, page->size);
-		bp += page->size;
-	}
-	DB_ASSERT((u_int32_t)(bp - (u_int8_t *)logrec.data) == logrec.size);
-	ret = log_put(dbenv, ret_lsnp, (DBT *)&logrec, flags);
-	if (txnid != NULL)
-		txnid->last_lsn = *ret_lsnp;
-	__os_free(logrec.data, logrec.size);
-	return (ret);
-}
-
-int
-__crdel_metapage_print(dbenv, dbtp, lsnp, notused2, notused3)
-	DB_ENV *dbenv;
-	DBT *dbtp;
-	DB_LSN *lsnp;
-	db_recops notused2;
-	void *notused3;
-{
-	__crdel_metapage_args *argp;
-	u_int32_t i;
-	u_int ch;
-	int ret;
-
-	i = 0;
-	ch = 0;
-	notused2 = DB_TXN_ABORT;
-	notused3 = NULL;
-
-	if ((ret = __crdel_metapage_read(dbenv, dbtp->data, &argp)) != 0)
-		return (ret);
-	printf("[%lu][%lu]crdel_metapage: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
-	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
-	printf("\tfileid: %ld\n", (long)argp->fileid);
-	printf("\tname: ");
-	for (i = 0; i < argp->name.size; i++) {
-		ch = ((u_int8_t *)argp->name.data)[i];
-		if (isprint(ch) || ch == 0xa)
-			putchar(ch);
-		else
-			printf("%#x ", ch);
-	}
-	printf("\n");
-	printf("\tpgno: %d\n", argp->pgno);
-	printf("\tpage: ");
-	for (i = 0; i < argp->page.size; i++) {
-		ch = ((u_int8_t *)argp->page.data)[i];
-		if (isprint(ch) || ch == 0xa)
-			putchar(ch);
-		else
-			printf("%#x ", ch);
-	}
-	printf("\n");
-	printf("\n");
-	__os_free(argp, 0);
-	return (0);
-}
-
-int
-__crdel_metapage_read(dbenv, recbuf, argpp)
-	DB_ENV *dbenv;
-	void *recbuf;
-	__crdel_metapage_args **argpp;
-{
-	__crdel_metapage_args *argp;
-	u_int8_t *bp;
-	int ret;
-
-	ret = __os_malloc(dbenv, sizeof(__crdel_metapage_args) +
-	    sizeof(DB_TXN), NULL, &argp);
-	if (ret != 0)
-		return (ret);
-	argp->txnid = (DB_TXN *)&argp[1];
-	bp = recbuf;
-	memcpy(&argp->type, bp, sizeof(argp->type));
-	bp += sizeof(argp->type);
-	memcpy(&argp->txnid->txnid,  bp, sizeof(argp->txnid->txnid));
-	bp += sizeof(argp->txnid->txnid);
-	memcpy(&argp->prev_lsn, bp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	memcpy(&argp->fileid, bp, sizeof(argp->fileid));
-	bp += sizeof(argp->fileid);
-	memset(&argp->name, 0, sizeof(argp->name));
-	memcpy(&argp->name.size, bp, sizeof(u_int32_t));
-	bp += sizeof(u_int32_t);
-	argp->name.data = bp;
-	bp += argp->name.size;
-	memcpy(&argp->pgno, bp, sizeof(argp->pgno));
-	bp += sizeof(argp->pgno);
-	memset(&argp->page, 0, sizeof(argp->page));
-	memcpy(&argp->page.size, bp, sizeof(u_int32_t));
-	bp += sizeof(u_int32_t);
-	argp->page.data = bp;
-	bp += argp->page.size;
-	*argpp = argp;
-	return (0);
-}
-
-int
-__crdel_old_delete_print(dbenv, dbtp, lsnp, notused2, notused3)
-	DB_ENV *dbenv;
-	DBT *dbtp;
-	DB_LSN *lsnp;
-	db_recops notused2;
-	void *notused3;
-{
-	__crdel_old_delete_args *argp;
-	u_int32_t i;
-	u_int ch;
-	int ret;
-
-	i = 0;
-	ch = 0;
-	notused2 = DB_TXN_ABORT;
-	notused3 = NULL;
-
-	if ((ret = __crdel_old_delete_read(dbenv, dbtp->data, &argp)) != 0)
-		return (ret);
-	printf("[%lu][%lu]crdel_old_delete: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
-	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
-	printf("\tname: ");
-	for (i = 0; i < argp->name.size; i++) {
-		ch = ((u_int8_t *)argp->name.data)[i];
-		if (isprint(ch) || ch == 0xa)
-			putchar(ch);
-		else
-			printf("%#x ", ch);
-	}
-	printf("\n");
-	printf("\n");
-	__os_free(argp, 0);
-	return (0);
-}
-
-int
-__crdel_old_delete_read(dbenv, recbuf, argpp)
-	DB_ENV *dbenv;
-	void *recbuf;
-	__crdel_old_delete_args **argpp;
-{
-	__crdel_old_delete_args *argp;
-	u_int8_t *bp;
-	int ret;
-
-	ret = __os_malloc(dbenv, sizeof(__crdel_old_delete_args) +
-	    sizeof(DB_TXN), NULL, &argp);
-	if (ret != 0)
-		return (ret);
-	argp->txnid = (DB_TXN *)&argp[1];
-	bp = recbuf;
-	memcpy(&argp->type, bp, sizeof(argp->type));
-	bp += sizeof(argp->type);
-	memcpy(&argp->txnid->txnid,  bp, sizeof(argp->txnid->txnid));
-	bp += sizeof(argp->txnid->txnid);
-	memcpy(&argp->prev_lsn, bp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	memset(&argp->name, 0, sizeof(argp->name));
-	memcpy(&argp->name.size, bp, sizeof(u_int32_t));
-	bp += sizeof(u_int32_t);
-	argp->name.data = bp;
-	bp += argp->name.size;
-	*argpp = argp;
-	return (0);
-}
-
-int
-__crdel_rename_log(dbenv, txnid, ret_lsnp, flags,
-	fileid, name, newname)
-	DB_ENV *dbenv;
-	DB_TXN *txnid;
-	DB_LSN *ret_lsnp;
-	u_int32_t flags;
-	int32_t fileid;
-	const DBT *name;
-	const DBT *newname;
-{
-	DBT logrec;
-	DB_LSN *lsnp, null_lsn;
-	u_int32_t zero;
-	u_int32_t rectype, txn_num;
-	int ret;
-	u_int8_t *bp;
-
-	rectype = DB_crdel_rename;
-	if (txnid != NULL &&
-	    TAILQ_FIRST(&txnid->kids) != NULL &&
-	    (ret = __txn_activekids(dbenv, rectype, txnid)) != 0)
-		return (ret);
-	txn_num = txnid == NULL ? 0 : txnid->txnid;
-	if (txnid == NULL) {
-		ZERO_LSN(null_lsn);
-		lsnp = &null_lsn;
-	} else
-		lsnp = &txnid->last_lsn;
-	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
-	    + sizeof(fileid)
-	    + sizeof(u_int32_t) + (name == NULL ? 0 : name->size)
-	    + sizeof(u_int32_t) + (newname == NULL ? 0 : newname->size);
-	if ((ret = __os_malloc(dbenv, logrec.size, NULL, &logrec.data)) != 0)
-		return (ret);
-
-	bp = logrec.data;
-	memcpy(bp, &rectype, sizeof(rectype));
-	bp += sizeof(rectype);
-	memcpy(bp, &txn_num, sizeof(txn_num));
-	bp += sizeof(txn_num);
-	memcpy(bp, lsnp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	memcpy(bp, &fileid, sizeof(fileid));
-	bp += sizeof(fileid);
-	if (name == NULL) {
-		zero = 0;
-		memcpy(bp, &zero, sizeof(u_int32_t));
-		bp += sizeof(u_int32_t);
-	} else {
-		memcpy(bp, &name->size, sizeof(name->size));
-		bp += sizeof(name->size);
-		memcpy(bp, name->data, name->size);
-		bp += name->size;
-	}
-	if (newname == NULL) {
-		zero = 0;
-		memcpy(bp, &zero, sizeof(u_int32_t));
-		bp += sizeof(u_int32_t);
-	} else {
-		memcpy(bp, &newname->size, sizeof(newname->size));
-		bp += sizeof(newname->size);
-		memcpy(bp, newname->data, newname->size);
-		bp += newname->size;
-	}
-	DB_ASSERT((u_int32_t)(bp - (u_int8_t *)logrec.data) == logrec.size);
-	ret = log_put(dbenv, ret_lsnp, (DBT *)&logrec, flags);
-	if (txnid != NULL)
-		txnid->last_lsn = *ret_lsnp;
-	__os_free(logrec.data, logrec.size);
-	return (ret);
-}
-
-int
-__crdel_rename_print(dbenv, dbtp, lsnp, notused2, notused3)
-	DB_ENV *dbenv;
-	DBT *dbtp;
-	DB_LSN *lsnp;
-	db_recops notused2;
-	void *notused3;
-{
-	__crdel_rename_args *argp;
-	u_int32_t i;
-	u_int ch;
-	int ret;
-
-	i = 0;
-	ch = 0;
-	notused2 = DB_TXN_ABORT;
-	notused3 = NULL;
-
-	if ((ret = __crdel_rename_read(dbenv, dbtp->data, &argp)) != 0)
-		return (ret);
-	printf("[%lu][%lu]crdel_rename: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
-	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
-	printf("\tfileid: %ld\n", (long)argp->fileid);
-	printf("\tname: ");
-	for (i = 0; i < argp->name.size; i++) {
-		ch = ((u_int8_t *)argp->name.data)[i];
-		if (isprint(ch) || ch == 0xa)
-			putchar(ch);
-		else
-			printf("%#x ", ch);
-	}
-	printf("\n");
-	printf("\tnewname: ");
-	for (i = 0; i < argp->newname.size; i++) {
-		ch = ((u_int8_t *)argp->newname.data)[i];
-		if (isprint(ch) || ch == 0xa)
-			putchar(ch);
-		else
-			printf("%#x ", ch);
-	}
-	printf("\n");
-	printf("\n");
-	__os_free(argp, 0);
-	return (0);
-}
-
-int
-__crdel_rename_read(dbenv, recbuf, argpp)
-	DB_ENV *dbenv;
-	void *recbuf;
-	__crdel_rename_args **argpp;
-{
-	__crdel_rename_args *argp;
-	u_int8_t *bp;
-	int ret;
-
-	ret = __os_malloc(dbenv, sizeof(__crdel_rename_args) +
-	    sizeof(DB_TXN), NULL, &argp);
-	if (ret != 0)
-		return (ret);
-	argp->txnid = (DB_TXN *)&argp[1];
-	bp = recbuf;
-	memcpy(&argp->type, bp, sizeof(argp->type));
-	bp += sizeof(argp->type);
-	memcpy(&argp->txnid->txnid,  bp, sizeof(argp->txnid->txnid));
-	bp += sizeof(argp->txnid->txnid);
-	memcpy(&argp->prev_lsn, bp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	memcpy(&argp->fileid, bp, sizeof(argp->fileid));
-	bp += sizeof(argp->fileid);
-	memset(&argp->name, 0, sizeof(argp->name));
-	memcpy(&argp->name.size, bp, sizeof(u_int32_t));
-	bp += sizeof(u_int32_t);
-	argp->name.data = bp;
-	bp += argp->name.size;
-	memset(&argp->newname, 0, sizeof(argp->newname));
-	memcpy(&argp->newname.size, bp, sizeof(u_int32_t));
-	bp += sizeof(u_int32_t);
-	argp->newname.data = bp;
-	bp += argp->newname.size;
-	*argpp = argp;
-	return (0);
-}
-
-int
-__crdel_delete_log(dbenv, txnid, ret_lsnp, flags,
-	fileid, name)
-	DB_ENV *dbenv;
-	DB_TXN *txnid;
-	DB_LSN *ret_lsnp;
-	u_int32_t flags;
-	int32_t fileid;
-	const DBT *name;
-{
-	DBT logrec;
-	DB_LSN *lsnp, null_lsn;
-	u_int32_t zero;
-	u_int32_t rectype, txn_num;
-	int ret;
-	u_int8_t *bp;
-
-	rectype = DB_crdel_delete;
-	if (txnid != NULL &&
-	    TAILQ_FIRST(&txnid->kids) != NULL &&
-	    (ret = __txn_activekids(dbenv, rectype, txnid)) != 0)
-		return (ret);
-	txn_num = txnid == NULL ? 0 : txnid->txnid;
-	if (txnid == NULL) {
-		ZERO_LSN(null_lsn);
-		lsnp = &null_lsn;
-	} else
-		lsnp = &txnid->last_lsn;
-	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
-	    + sizeof(fileid)
-	    + sizeof(u_int32_t) + (name == NULL ? 0 : name->size);
-	if ((ret = __os_malloc(dbenv, logrec.size, NULL, &logrec.data)) != 0)
-		return (ret);
-
-	bp = logrec.data;
-	memcpy(bp, &rectype, sizeof(rectype));
-	bp += sizeof(rectype);
-	memcpy(bp, &txn_num, sizeof(txn_num));
-	bp += sizeof(txn_num);
-	memcpy(bp, lsnp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	memcpy(bp, &fileid, sizeof(fileid));
-	bp += sizeof(fileid);
-	if (name == NULL) {
-		zero = 0;
-		memcpy(bp, &zero, sizeof(u_int32_t));
-		bp += sizeof(u_int32_t);
-	} else {
-		memcpy(bp, &name->size, sizeof(name->size));
-		bp += sizeof(name->size);
-		memcpy(bp, name->data, name->size);
-		bp += name->size;
-	}
-	DB_ASSERT((u_int32_t)(bp - (u_int8_t *)logrec.data) == logrec.size);
-	ret = log_put(dbenv, ret_lsnp, (DBT *)&logrec, flags);
-	if (txnid != NULL)
-		txnid->last_lsn = *ret_lsnp;
-	__os_free(logrec.data, logrec.size);
-	return (ret);
-}
-
-int
-__crdel_delete_print(dbenv, dbtp, lsnp, notused2, notused3)
-	DB_ENV *dbenv;
-	DBT *dbtp;
-	DB_LSN *lsnp;
-	db_recops notused2;
-	void *notused3;
-{
-	__crdel_delete_args *argp;
-	u_int32_t i;
-	u_int ch;
-	int ret;
-
-	i = 0;
-	ch = 0;
-	notused2 = DB_TXN_ABORT;
-	notused3 = NULL;
-
-	if ((ret = __crdel_delete_read(dbenv, dbtp->data, &argp)) != 0)
-		return (ret);
-	printf("[%lu][%lu]crdel_delete: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
-	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
-	printf("\tfileid: %ld\n", (long)argp->fileid);
-	printf("\tname: ");
-	for (i = 0; i < argp->name.size; i++) {
-		ch = ((u_int8_t *)argp->name.data)[i];
-		if (isprint(ch) || ch == 0xa)
-			putchar(ch);
-		else
-			printf("%#x ", ch);
-	}
-	printf("\n");
-	printf("\n");
-	__os_free(argp, 0);
-	return (0);
-}
-
-int
-__crdel_delete_read(dbenv, recbuf, argpp)
-	DB_ENV *dbenv;
-	void *recbuf;
-	__crdel_delete_args **argpp;
-{
-	__crdel_delete_args *argp;
-	u_int8_t *bp;
-	int ret;
-
-	ret = __os_malloc(dbenv, sizeof(__crdel_delete_args) +
-	    sizeof(DB_TXN), NULL, &argp);
-	if (ret != 0)
-		return (ret);
-	argp->txnid = (DB_TXN *)&argp[1];
-	bp = recbuf;
-	memcpy(&argp->type, bp, sizeof(argp->type));
-	bp += sizeof(argp->type);
-	memcpy(&argp->txnid->txnid,  bp, sizeof(argp->txnid->txnid));
-	bp += sizeof(argp->txnid->txnid);
-	memcpy(&argp->prev_lsn, bp, sizeof(DB_LSN));
-	bp += sizeof(DB_LSN);
-	memcpy(&argp->fileid, bp, sizeof(argp->fileid));
-	bp += sizeof(argp->fileid);
-	memset(&argp->name, 0, sizeof(argp->name));
-	memcpy(&argp->name.size, bp, sizeof(u_int32_t));
-	bp += sizeof(u_int32_t);
-	argp->name.data = bp;
-	bp += argp->name.size;
-	*argpp = argp;
-	return (0);
-}
-
-int
-__crdel_init_print(dbenv)
-	DB_ENV *dbenv;
+	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+	size_t *dtabsizep;
 {
 	int ret;
 
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_fileopen_print, DB_crdel_fileopen)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_metasub_print, DB_crdel_metasub)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_metapage_print, DB_crdel_metapage)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_old_delete_print, DB_crdel_old_delete)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_rename_print, DB_crdel_rename)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_delete_print, DB_crdel_delete)) != 0)
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __crdel_metasub_print, DB___crdel_metasub)) != 0)
 		return (ret);
 	return (0);
 }
 
+#ifdef HAVE_REPLICATION
+/*
+ * PUBLIC: int __crdel_init_getpgnos __P((DB_ENV *,
+ * PUBLIC:     int (***)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *),
+ * PUBLIC:     size_t *));
+ */
 int
-__crdel_init_recover(dbenv)
+__crdel_init_getpgnos(dbenv, dtabp, dtabsizep)
 	DB_ENV *dbenv;
+	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+	size_t *dtabsizep;
 {
 	int ret;
 
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_fileopen_recover, DB_crdel_fileopen)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_metasub_recover, DB_crdel_metasub)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_metapage_recover, DB_crdel_metapage)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __deprecated_recover, DB_crdel_old_delete)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_rename_recover, DB_crdel_rename)) != 0)
-		return (ret);
-	if ((ret = __db_add_recovery(dbenv,
-	    __crdel_delete_recover, DB_crdel_delete)) != 0)
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __crdel_metasub_getpgnos, DB___crdel_metasub)) != 0)
 		return (ret);
 	return (0);
 }
+#endif /* HAVE_REPLICATION */
 
+/*
+ * PUBLIC: int __crdel_init_recover __P((DB_ENV *, int (***)(DB_ENV *,
+ * PUBLIC:     DBT *, DB_LSN *, db_recops, void *), size_t *));
+ */
+int
+__crdel_init_recover(dbenv, dtabp, dtabsizep)
+	DB_ENV *dbenv;
+	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+	size_t *dtabsizep;
+{
+	int ret;
+
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __crdel_metasub_recover, DB___crdel_metasub)) != 0)
+		return (ret);
+	return (0);
+}

@@ -1,27 +1,28 @@
 <!--$Id: dbenv_cxx.so,v 11.10 2000/12/01 17:59:32 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Release 3.0: the DbEnv class for C++ and Java</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<table><tr valign=top>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
-<td width="1%"><a href="../../ref/upgrade.3.0/value_set.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.3.0/db_cxx.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../upgrade.3.0/value_set.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.3.0/db_cxx.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Release 3.0: the DbEnv class for C++ and Java</h1>
+<h3 align=center>Release 3.0: the DbEnv class for C++ and Java</h3>
 <p>The DbEnv::appinit() method and two constructors for the DbEnv class are
 gone.  There is now a single way to create and initialize the environment.
 The way to create an environment is to use the new DbEnv constructor with
 one argument.  After this call, the DbEnv can be configured with various
 set_XXX methods.  Finally, a call to DbEnv::open is made to initialize
-the environment.
-<p>Here's a C++ example creating a Berkeley DB environment using the 2.X interface
-<p><blockquote><pre>int dberr;
+the environment.</p>
+<p>Here's a C++ example creating a Berkeley DB environment using the 2.X interface</p>
+<blockquote><pre>int dberr;
 DbEnv *dbenv = new DbEnv();
 <p>
 dbenv-&gt;set_error_stream(&cerr);
@@ -32,8 +33,8 @@ if ((dberr = dbenv-&gt;appinit("/database/home",
     cerr &lt;&lt; "failure: " &lt;&lt; strerror(dberr);
     exit (1);
 }</pre></blockquote>
-<p>In the Berkeley DB 3.0 release, this code would be written as:
-<p><blockquote><pre>int dberr;
+<p>In the Berkeley DB 3.0 release, this code would be written as:</p>
+<blockquote><pre>int dberr;
 DbEnv *dbenv = new DbEnv(0);
 <p>
 dbenv-&gt;set_error_stream(&cerr);
@@ -44,8 +45,8 @@ if ((dberr = dbenv-&gt;open("/database/home",
     cerr &lt;&lt; "failure: " &lt;&lt; dbenv-&gt;strerror(dberr);
     exit (1);
 }</pre></blockquote>
-<p>Here's a Java example creating a Berkeley DB environment using the 2.X interface:
-<p><blockquote><pre>int dberr;
+<p>Here's a Java example creating a Berkeley DB environment using the 2.X interface:</p>
+<blockquote><pre>int dberr;
 DbEnv dbenv = new DbEnv();
 <p>
 dbenv.set_error_stream(System.err);
@@ -53,8 +54,8 @@ dbenv.set_errpfx("myprog");
 <p>
 dbenv.appinit("/database/home",
     null, Db.DB_CREATE | Db.DB_INIT_LOCK | Db.DB_INIT_MPOOL);</pre></blockquote>
-<p>In the Berkeley DB 3.0 release, this code would be written as:
-<p><blockquote><pre>int dberr;
+<p>In the Berkeley DB 3.0 release, this code would be written as:</p>
+<blockquote><pre>int dberr;
 DbEnv dbenv = new DbEnv(0);
 <p>
 dbenv.set_error_stream(System.err);
@@ -64,9 +65,9 @@ dbenv.open("/database/home",
     null, Db.DB_CREATE | Db.DB_INIT_LOCK | Db.DB_INIT_MPOOL, 0);</pre></blockquote>
 <p>In the Berkeley DB 2.X release, DbEnv had accessors to obtain "managers" of type
 DbTxnMgr, DbMpool, DbLog, DbTxnMgr.  If you used any of these managers,
-all their methods are now found directly in the DbEnv class.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/upgrade.3.0/value_set.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.3.0/db_cxx.html"><img src="../../images/next.gif" alt="Next"></a>
+all their methods are now found directly in the DbEnv class.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.3.0/value_set.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.3.0/db_cxx.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

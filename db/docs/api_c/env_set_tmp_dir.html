@@ -1,20 +1,22 @@
-<!--$Id: env_set_tmp_dir.so,v 10.3 2000/05/20 16:29:12 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_tmp_dir.so,v 10.22 2003/11/08 19:17:32 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DBENV-&gt;set_tmp_dir</title>
+<title>Berkeley DB: DB_ENV-&gt;set_tmp_dir</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DBENV-&gt;set_tmp_dir</h1>
+<h3>DB_ENV-&gt;set_tmp_dir</h3>
 </td>
-<td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -22,17 +24,23 @@
 #include &lt;db.h&gt;
 <p>
 int
-DBENV-&gt;set_tmp_dir(DB_ENV *dbenv, const char *dir);
+DB_ENV-&gt;set_tmp_dir(DB_ENV *dbenv, const char *dir);
+<p>
+int
+DB_ENV-&gt;get_tmp_dir(DB_ENV *dbenv, const char **dirp);
 </pre></h3>
-<h1>Description</h1>
-<p>The path of a directory to be used as the location of temporary files.
-The files created to back in-memory access method databases will be
-created relative to this path.  These temporary files can be quite large,
-depending on the size of the database.
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_tmp_dir</h3>
+<a name="3"><!--meow--></a>
+<a name="4"><!--meow--></a>
+<p>Specify the path of a directory to be used as the location of temporary
+files.  The files created to back in-memory access method databases will
+be created relative to this path.  These temporary files can be quite
+large, depending on the size of the database.</p>
 <p>If no directories are specified, the following alternatives are checked
 in the specified order.  The first existing directory path is used for
-all temporary files.
-<p><ol>
+all temporary files.</p>
+<ol>
 <p><li>The value of the environment variable <b>TMPDIR</b>.
 <li>The value of the environment variable <b>TEMP</b>.
 <li>The value of the environment variable <b>TMP</b>.
@@ -47,43 +55,65 @@ all temporary files.
 </ol>
 <p>Note: environment variables are only checked if one of the
 <a href="../api_c/env_open.html#DB_USE_ENVIRON">DB_USE_ENVIRON</a> or <a href="../api_c/env_open.html#DB_USE_ENVIRON_ROOT">DB_USE_ENVIRON_ROOT</a> flags were
-specified.
-<p>Note: the GetTempPath interface is only checked on Win/32 platforms.
-<p>The DBENV-&gt;set_tmp_dir interface may only be used to configure Berkeley DB before
-the <a href="../api_c/env_open.html">DBENV-&gt;open</a> interface is called.
-<p>The DBENV-&gt;set_tmp_dir function returns a non-zero error value on failure and 0 on success.
+specified.</p>
+<p>Note: the GetTempPath interface is only checked on Win/32 platforms.</p>
 <p>The database environment's temporary file directory may also be set using the environment's
 <b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
 single line with the string "set_tmp_dir", one or more whitespace characters,
-and the directory name.  Because the <b>DB_CONFIG</b> file is read when the database
+and the directory name.
+Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
-before that time.
-<h1>Errors</h1>
+before that time.</p>
+<p>The DB_ENV-&gt;set_tmp_dir method configures operations performed using the specified
+<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.</p>
+<p>The DB_ENV-&gt;set_tmp_dir method may not be called after the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is
+called.
+If the database environment already exists when
+<a href="../api_c/env_open.html">DB_ENV-&gt;open</a> is called, the information specified to DB_ENV-&gt;set_tmp_dir
+must be consistent with the existing environment or corruption can
+occur.</p>
+<p>The DB_ENV-&gt;set_tmp_dir method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>Called after <a href="../api_c/env_open.html">DBENV-&gt;open</a> was called.
+<p><dt><b>dir</b><dd>
+The <b>dir</b> parameter is the directory to be used to store temporary
+files.
 </dl>
-<h1>See Also</h1>
-<a href="../api_c/env_close.html">DBENV-&gt;close</a>,
-<a href="../api_c/env_create.html">db_env_create</a>,
-<a href="../api_c/env_open.html">DBENV-&gt;open</a>,
-<a href="../api_c/env_remove.html">DBENV-&gt;remove</a>,
-<a href="../api_c/db_err.html">DBENV-&gt;err</a>,
-<a href="../api_c/env_strerror.html">db_strerror</a>,
-<a href="../api_c/env_version.html">db_version</a>,
-<a href="../api_c/env_set_cachesize.html">DBENV-&gt;set_cachesize</a>,
-<a href="../api_c/env_set_errcall.html">DBENV-&gt;set_errcall</a>,
-<a href="../api_c/env_set_errfile.html">DBENV-&gt;set_errfile</a>,
-<a href="../api_c/env_set_errpfx.html">DBENV-&gt;set_errpfx</a>,
-<a href="../api_c/env_set_flags.html">DBENV-&gt;set_flags</a>,
-<a href="../api_c/env_set_mutexlocks.html">DBENV-&gt;set_mutexlocks</a>,
-<a href="../api_c/env_set_paniccall.html">DBENV-&gt;set_paniccall</a>,
-and
-<a href="../api_c/env_set_verbose.html">DBENV-&gt;set_verbose</a>.
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;set_tmp_dir method
+may fail and return one of the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;get_tmp_dir</h3>
+<p>The DB_ENV-&gt;get_tmp_dir method returns the database environment temporary file directory.</p>
+<p>The DB_ENV-&gt;get_tmp_dir method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;get_tmp_dir method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>dirp</b><dd>
+The DB_ENV-&gt;get_tmp_dir method returns a reference to the
+database environment temporary file directory in <b>dirp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

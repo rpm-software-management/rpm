@@ -1,31 +1,43 @@
-<!--Id: faq.so,v 10.2 2002/05/17 02:47:36 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 10.3 2002/12/10 23:41:42 mjc Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Programmer notes FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Programmer Notes</dl></h3></td>
-<td align=right><a href="../../ref/program/runtime.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/lock/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../program/runtime.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Programmer notes FAQ</h1>
-<p><ol>
+<h3 align=center>Programmer notes FAQ</h3>
+<ol>
 <a name="2"><!--meow--></a>
 <p><li><b>What priorities should threads/tasks executing Berkeley DB functions
 be given?</b>
 <p>Tasks executing Berkeley DB functions should have the same, or roughly
 equivalent, system priorities.  For example, it can be dangerous to give
 tasks of control performing checkpoints a lower priority than tasks of
-control doing database lookups, and starvation can sometimes result.
+control doing database lookups, and starvation can sometimes result.</p>
+<p><li><b>Why isn't the C++ API exception safe?</b>
+<p>The Berkeley DB C++ API is a thin wrapper around the C API that maps most
+return values to exceptions, and gives the C++ handles the same
+lifecycles as their C counterparts.  One consequence is that if an
+exception occurs while a cursor or transaction handle is open, the
+application must explicitly close the cursor or abort the transaction.</p>
+<p>Applications can be simplified and bugs avoided by creating wrapper
+classes around <a href="../../api_c/dbc_class.html">DBC</a> and <a href="../../api_c/txn_class.html">DB_TXN</a> that call the appropriate
+cleanup method in the wrapper's destructor.  By creating an instance
+of the wrappers on the stack, C++ scoping rules will ensure that the
+destructor is called before exception handling unrolls the block that
+contains the wrapper object.</p>
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/program/runtime.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/lock/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../program/runtime.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,4 +1,4 @@
-# $Id: dbname.awk,v 1.2 2000/08/03 15:06:39 ubell Exp $
+# $Id: dbname.awk,v 1.7 2003/11/21 20:00:03 ubell Exp $
 #
 # Take a comma-separated list of database names and spit out all the
 # log records that affect those databases.
@@ -14,9 +14,10 @@ NR == 1 {
 	filenames[nfiles] = DBNAME 0;
 	files[nfiles] = -1
 	myfile = -1;
+	nreg = 0;
 }
 
-/^\[.*log_register/ {
+/^\[.*dbreg_register/ {
 	register = 1;
 }
 /opcode:/ {
@@ -29,12 +30,12 @@ NR == 1 {
 }
 /name:/ {
 	if (register >= 2) {
+		myfile = -2;
 		for (i = 0; i <= nfiles; i++) {
 			if ($2 == filenames[i]) {
 				if (register == 2) {
 					printme = 0;
-					myfile = -1;
-					files[i] = -1;
+					myfile = -2;
 				} else {
 					myfile = i;
 				}
@@ -45,20 +46,19 @@ NR == 1 {
 	register = 0;
 }
 /fileid:/{
-	if (myfile != -1) {
-		files[myfile] = $2;
+	if (myfile == -2)
+		files[$2] = 0;
+	else if (myfile != -1) {
+		files[$2] = 1;
+		if ($2 > nreg)
+			nreg = $2;
 		printme = 1;
 		register = 0;
 		myfile = -1;
-	} else
-		for (i = 0; i <= nfiles; i++)
-			if ($2 == files[i]) {
-				printme = 1
-				break;
-			}
+	} else if ($2 <= nreg && files[$2] == 1) {
+		printme = 1
+	}
 }
-
-		
 
 /^\[/{
 	if (printme == 1) {
@@ -69,6 +69,8 @@ NR == 1 {
 
 	rec = $0
 }
+
+TXN == 1 && /txn_regop/ {printme = 1}
 /^	/{
 	rec = sprintf("%s\n%s", rec, $0);
 }

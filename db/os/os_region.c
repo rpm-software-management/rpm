@@ -1,23 +1,23 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: os_region.c,v 11.9 2000/11/30 00:58:42 ubell Exp $";
+static const char revid[] = "$Id: os_region.c,v 11.17 2003/07/13 17:45:23 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 
+#include <string.h>
 #endif
 
 #include "db_int.h"
-#include "os_jump.h"
 
 /*
  * __os_r_attach --
@@ -70,7 +70,7 @@ __os_r_attach(dbenv, infop, rp)
 		}
 #endif
 		if ((ret =
-		    __os_malloc(dbenv, rp->size, NULL, &infop->addr)) != 0)
+		    __os_malloc(dbenv, rp->size, &infop->addr)) != 0)
 			return (ret);
 #if defined(UMRW) && !defined(DIAGNOSTIC)
 		memset(infop->addr, CLEAR_BYTE, rp->size);
@@ -79,8 +79,8 @@ __os_r_attach(dbenv, infop, rp)
 	}
 
 	/* If the user replaced the map call, call through their interface. */
-	if (__db_jump.j_map != NULL)
-		return (__db_jump.j_map(infop->name,
+	if (DB_GLOBAL(j_map) != NULL)
+		return (DB_GLOBAL(j_map)(infop->name,
 		    rp->size, 1, 0, &infop->addr));
 
 	return (__os_r_sysattach(dbenv, infop, rp));
@@ -104,13 +104,13 @@ __os_r_detach(dbenv, infop, destroy)
 
 	/* If a region is private, free the memory. */
 	if (F_ISSET(dbenv, DB_ENV_PRIVATE)) {
-		__os_free(infop->addr, rp->size);
+		__os_free(dbenv, infop->addr);
 		return (0);
 	}
 
 	/* If the user replaced the map call, call through their interface. */
-	if (__db_jump.j_unmap != NULL)
-		return (__db_jump.j_unmap(infop->addr, rp->size));
+	if (DB_GLOBAL(j_unmap) != NULL)
+		return (DB_GLOBAL(j_unmap)(infop->addr, rp->size));
 
 	return (__os_r_sysdetach(dbenv, infop, destroy));
 }

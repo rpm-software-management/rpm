@@ -1,301 +1,825 @@
-__APIREL__/api_c/db_create.html#2     @db_create
-__APIREL__/api_c/db_create.html#DB_XA_CREATE db_create@DB_XA_CREATE
-__APIREL__/api_c/db_err.html#2     @DBENV-__GT__err
-__APIREL__/api_c/db_lsn.html#2     @DB_LSN
-__APIREL__/api_c/db_set_errfile.html#2     @DB-__GT__set_errfile
-__APIREL__/api_c/db_set_malloc.html#2     @DB-__GT__set_malloc
-__APIREL__/api_c/db_set_paniccall.html#2     @DB-__GT__set_paniccall
-__APIREL__/api_c/db_set_realloc.html#2     @DB-__GT__set_realloc
-__APIREL__/api_c/dbm.html#2     @dbm/ndbm
-__APIREL__/api_c/dbt.html#2     @key/data pairs
-__APIREL__/api_c/dbt.html#data DBT@data
-__APIREL__/api_c/dbt.html#size DBT@size
-__APIREL__/api_c/dbt.html#ulen DBT@ulen
-__APIREL__/api_c/dbt.html#dlen DBT@dlen
-__APIREL__/api_c/dbt.html#doff DBT@doff
-__APIREL__/api_c/dbt.html#DB_DBT_MALLOC DBT@DB_DBT_MALLOC
-__APIREL__/api_c/dbt.html#DB_DBT_REALLOC DBT@DB_DBT_REALLOC
-__APIREL__/api_c/dbt.html#DB_DBT_USERMEM DBT@DB_DBT_USERMEM
-__APIREL__/api_c/dbt.html#DB_DBT_PARTIAL DBT@DB_DBT_PARTIAL
-__APIREL__/api_c/dbt.html#3     retrieved key/data @permanence
-__APIREL__/api_c/dbt.html#4     retrieved @key/data permanence
-__APIREL__/api_c/dbt.html#5     data @alignment
-__APIREL__/api_c/dbt.html#6     logical @record number format
-__APIREL__/api_c/env_create.html#2     @db_env_create
-__APIREL__/api_c/env_create.html#DB_CLIENT db_env_create@DB_CLIENT
-__APIREL__/api_c/env_set_errfile.html#2     @DBENV-__GT__set_errfile
-__APIREL__/api_c/env_set_paniccall.html#2     @DBENV-__GT__set_paniccall
-__APIREL__/api_c/hsearch.html#2     @hsearch
-__APIREL__/api_c/set_func_close.html#2     @db_env_set_func_close
-__APIREL__/api_c/set_func_dirfree.html#2     @db_env_set_func_dirfree
-__APIREL__/api_c/set_func_dirlist.html#2     @db_env_set_func_dirlist
-__APIREL__/api_c/set_func_exists.html#2     @db_env_set_func_exists
-__APIREL__/api_c/set_func_free.html#2     @db_env_set_func_free
-__APIREL__/api_c/set_func_fsync.html#2     @db_env_set_func_fsync
-__APIREL__/api_c/set_func_ioinfo.html#2     @db_env_set_func_ioinfo
-__APIREL__/api_c/set_func_malloc.html#2     @db_env_set_func_malloc
-__APIREL__/api_c/set_func_map.html#2     @db_env_set_func_map
-__APIREL__/api_c/set_func_open.html#2     @db_env_set_func_open
-__APIREL__/api_c/set_func_read.html#2     @db_env_set_func_read
-__APIREL__/api_c/set_func_realloc.html#2     @db_env_set_func_realloc
-__APIREL__/api_c/set_func_rename.html#2     @db_env_set_func_rename
-__APIREL__/api_c/set_func_seek.html#2     @db_env_set_func_seek
-__APIREL__/api_c/set_func_sleep.html#2     @db_env_set_func_sleep
-__APIREL__/api_c/set_func_unlink.html#2     @db_env_set_func_unlink
-__APIREL__/api_c/set_func_unmap.html#2     @db_env_set_func_unmap
-__APIREL__/api_c/set_func_write.html#2     @db_env_set_func_write
-__APIREL__/api_c/set_func_yield.html#2     @db_env_set_func_yield
-__APIREL__/api_c/db_close.html#2     @DB-__GT__close
-__APIREL__/api_c/db_close.html#DB_NOSYNC DB-__GT__close@DB_NOSYNC
-__APIREL__/api_c/db_close.html#3     DB-__GT__close @DB_INCOMPLETE
-__APIREL__/api_c/db_cursor.html#2     @DB-__GT__cursor
-__APIREL__/api_c/db_cursor.html#DB_WRITECURSOR DB-__GT__cursor@DB_WRITECURSOR
-__APIREL__/api_c/db_del.html#2     @DB-__GT__del
-__APIREL__/api_c/db_fd.html#2     @DB-__GT__fd
-__APIREL__/api_c/db_get.html#2     @DB-__GT__get
-__APIREL__/api_c/db_get.html#DB_CONSUME DB-__GT__get@DB_CONSUME
-__APIREL__/api_c/db_get.html#DB_CONSUME_WAIT DB-__GT__get@DB_CONSUME_WAIT
-__APIREL__/api_c/db_get.html#DB_GET_BOTH DB-__GT__get@DB_GET_BOTH
-__APIREL__/api_c/db_get.html#DB_SET_RECNO DB-__GT__get@DB_SET_RECNO
-__APIREL__/api_c/db_get.html#DB_RMW DB-__GT__get@DB_RMW
-__APIREL__/api_c/db_get_byteswapped.html#2     @DB-__GT__get_byteswapped
-__APIREL__/api_c/db_get_type.html#2     @DB-__GT__get_type
-__APIREL__/api_c/db_join.html#2     @DB-__GT__join
-__APIREL__/api_c/db_join.html#DB_JOIN_NOSORT DB-__GT__join@DB_JOIN_NOSORT
-__APIREL__/api_c/db_join.html#DB_JOIN_ITEM DB-__GT__join@DB_JOIN_ITEM
-__APIREL__/api_c/db_join.html#DB_RMW DB-__GT__join@DB_RMW
-__APIREL__/api_c/db_key_range.html#2     @DB-__GT__key_range
-__APIREL__/api_c/db_open.html#2     @DB-__GT__open
-__APIREL__/api_c/db_open.html#DB_CREATE DB-__GT__open@DB_CREATE
-__APIREL__/api_c/db_open.html#DB_EXCL DB-__GT__open@DB_EXCL
-__APIREL__/api_c/db_open.html#DB_NOMMAP DB-__GT__open@DB_NOMMAP
-__APIREL__/api_c/db_open.html#DB_RDONLY DB-__GT__open@DB_RDONLY
-__APIREL__/api_c/db_open.html#DB_THREAD DB-__GT__open@DB_THREAD
-__APIREL__/api_c/db_open.html#DB_TRUNCATE DB-__GT__open@DB_TRUNCATE
-__APIREL__/api_c/db_open.html#DB_OLD_VERSION DB-__GT__open@DB_OLD_VERSION
-__APIREL__/api_c/db_put.html#2     @DB-__GT__put
-__APIREL__/api_c/db_put.html#DB_APPEND DB-__GT__put@DB_APPEND
-__APIREL__/api_c/db_put.html#DB_NODUPDATA DB-__GT__put@DB_NODUPDATA
-__APIREL__/api_c/db_put.html#DB_NOOVERWRITE DB-__GT__put@DB_NOOVERWRITE
-__APIREL__/api_c/db_remove.html#2     @DB-__GT__remove
-__APIREL__/api_c/db_rename.html#2     @DB-__GT__rename
-__APIREL__/api_c/db_set_append_recno.html#2     @DB-__GT__set_append_recno
-__APIREL__/api_c/db_set_bt_compare.html#2     @DB-__GT__set_bt_compare
-__APIREL__/api_c/db_set_bt_minkey.html#2     @DB-__GT__set_bt_minkey
-__APIREL__/api_c/db_set_bt_prefix.html#2     @DB-__GT__set_bt_prefix
-__APIREL__/api_c/db_set_cachesize.html#2     @DB-__GT__set_cachesize
-__APIREL__/api_c/db_set_dup_compare.html#2     @DB-__GT__set_dup_compare
-__APIREL__/api_c/db_set_errcall.html#2     @DB-__GT__set_errcall
-__APIREL__/api_c/db_set_errpfx.html#2     @DB-__GT__set_errpfx
-__APIREL__/api_c/db_set_feedback.html#2     @DB-__GT__set_feedback
-__APIREL__/api_c/db_set_feedback.html#DB_UPGRADE DB-__GT__set_feedback@DB_UPGRADE
-__APIREL__/api_c/db_set_feedback.html#DB_VERIFY DB-__GT__set_feedback@DB_VERIFY
-__APIREL__/api_c/db_set_flags.html#2     @DB-__GT__set_flags
-__APIREL__/api_c/db_set_flags.html#DB_DUP DB-__GT__set_flags@DB_DUP
-__APIREL__/api_c/db_set_flags.html#DB_DUPSORT DB-__GT__set_flags@DB_DUPSORT
-__APIREL__/api_c/db_set_flags.html#DB_RECNUM DB-__GT__set_flags@DB_RECNUM
-__APIREL__/api_c/db_set_flags.html#DB_REVSPLITOFF DB-__GT__set_flags@DB_REVSPLITOFF
-__APIREL__/api_c/db_set_flags.html#DB_DUP DB-__GT__set_flags@DB_DUP
-__APIREL__/api_c/db_set_flags.html#DB_DUPSORT DB-__GT__set_flags@DB_DUPSORT
-__APIREL__/api_c/db_set_flags.html#DB_RENUMBER DB-__GT__set_flags@DB_RENUMBER
-__APIREL__/api_c/db_set_flags.html#DB_SNAPSHOT DB-__GT__set_flags@DB_SNAPSHOT
-__APIREL__/api_c/db_set_h_ffactor.html#2     @DB-__GT__set_h_ffactor
-__APIREL__/api_c/db_set_h_hash.html#2     @DB-__GT__set_h_hash
-__APIREL__/api_c/db_set_h_nelem.html#2     @DB-__GT__set_h_nelem
-__APIREL__/api_c/db_set_lorder.html#2     @DB-__GT__set_lorder
-__APIREL__/api_c/db_set_pagesize.html#2     @DB-__GT__set_pagesize
-__APIREL__/api_c/db_set_q_extentsize.html#2     @DB-__GT__set_q_extentsize
-__APIREL__/api_c/db_set_re_delim.html#2     @DB-__GT__set_re_delim
-__APIREL__/api_c/db_set_re_len.html#2     @DB-__GT__set_re_len
-__APIREL__/api_c/db_set_re_pad.html#2     @DB-__GT__set_re_pad
-__APIREL__/api_c/db_set_re_source.html#2     @DB-__GT__set_re_source
-__APIREL__/api_c/db_stat.html#2     @DB-__GT__stat
-__APIREL__/api_c/db_stat.html#DB_CACHED_COUNTS DB-__GT__stat@DB_CACHED_COUNTS
-__APIREL__/api_c/db_stat.html#DB_RECORDCOUNT DB-__GT__stat@DB_RECORDCOUNT
-__APIREL__/api_c/db_sync.html#2     @DB-__GT__sync
-__APIREL__/api_c/db_upgrade.html#2     @DB-__GT__upgrade
-__APIREL__/api_c/db_upgrade.html#DB_DUPSORT DB-__GT__upgrade@DB_DUPSORT
-__APIREL__/api_c/db_upgrade.html#DB_OLD_VERSION DB-__GT__upgrade@DB_OLD_VERSION
-__APIREL__/api_c/db_verify.html#2     @DB-__GT__verify
-__APIREL__/api_c/db_verify.html#DB_SALVAGE DB-__GT__verify@DB_SALVAGE
-__APIREL__/api_c/db_verify.html#DB_AGGRESSIVE DB-__GT__verify@DB_AGGRESSIVE
-__APIREL__/api_c/db_verify.html#DB_NOORDERCHK DB-__GT__verify@DB_NOORDERCHK
-__APIREL__/api_c/db_verify.html#DB_ORDERCHKONLY DB-__GT__verify@DB_ORDERCHKONLY
-__APIREL__/api_c/dbc_close.html#2     @DBcursor-__GT__c_close
-__APIREL__/api_c/dbc_count.html#2     @DBcursor-__GT__c_count
-__APIREL__/api_c/dbc_del.html#2     @DBcursor-__GT__c_del
-__APIREL__/api_c/dbc_dup.html#2     @DBcursor-__GT__c_dup
-__APIREL__/api_c/dbc_dup.html#DB_POSITION DBcursor-__GT__c_dup@DB_POSITION
-__APIREL__/api_c/dbc_get.html#2     @DBcursor-__GT__c_get
-__APIREL__/api_c/dbc_get.html#DB_CURRENT DBcursor-__GT__c_get@DB_CURRENT
-__APIREL__/api_c/dbc_get.html#DB_FIRST DBcursor-__GT__c_get@DB_FIRST
-__APIREL__/api_c/dbc_get.html#DB_LAST DBcursor-__GT__c_get@DB_LAST
-__APIREL__/api_c/dbc_get.html#DB_GET_BOTH DBcursor-__GT__c_get@DB_GET_BOTH
-__APIREL__/api_c/dbc_get.html#DB_GET_RECNO DBcursor-__GT__c_get@DB_GET_RECNO
-__APIREL__/api_c/dbc_get.html#DB_JOIN_ITEM DBcursor-__GT__c_get@DB_JOIN_ITEM
-__APIREL__/api_c/dbc_get.html#DB_NEXT DBcursor-__GT__c_get@DB_NEXT
-__APIREL__/api_c/dbc_get.html#DB_PREV DBcursor-__GT__c_get@DB_PREV
-__APIREL__/api_c/dbc_get.html#DB_NEXT_DUP DBcursor-__GT__c_get@DB_NEXT_DUP
-__APIREL__/api_c/dbc_get.html#DB_NEXT_NODUP DBcursor-__GT__c_get@DB_NEXT_NODUP
-__APIREL__/api_c/dbc_get.html#DB_PREV_NODUP DBcursor-__GT__c_get@DB_PREV_NODUP
-__APIREL__/api_c/dbc_get.html#DB_SET DBcursor-__GT__c_get@DB_SET
-__APIREL__/api_c/dbc_get.html#DB_SET_RANGE DBcursor-__GT__c_get@DB_SET_RANGE
-__APIREL__/api_c/dbc_get.html#DB_SET_RECNO DBcursor-__GT__c_get@DB_SET_RECNO
-__APIREL__/api_c/dbc_get.html#DB_RMW DBcursor-__GT__c_get@DB_RMW
-__APIREL__/api_c/dbc_put.html#2     @DBcursor-__GT__c_put
-__APIREL__/api_c/dbc_put.html#DB_AFTER DBcursor-__GT__c_put@DB_AFTER
-__APIREL__/api_c/dbc_put.html#DB_BEFORE DBcursor-__GT__c_put@DB_BEFORE
-__APIREL__/api_c/dbc_put.html#DB_CURRENT DBcursor-__GT__c_put@DB_CURRENT
-__APIREL__/api_c/dbc_put.html#DB_KEYFIRST DBcursor-__GT__c_put@DB_KEYFIRST
-__APIREL__/api_c/dbc_put.html#DB_KEYLAST DBcursor-__GT__c_put@DB_KEYLAST
-__APIREL__/api_c/dbc_put.html#DB_NODUPDATA DBcursor-__GT__c_put@DB_NODUPDATA
-__APIREL__/api_c/env_close.html#2     @DBENV-__GT__close
-__APIREL__/api_c/env_open.html#2     @DBENV-__GT__open
-__APIREL__/api_c/env_open.html#DB_JOINENV DBENV-__GT__open@DB_JOINENV
-__APIREL__/api_c/env_open.html#DB_INIT_CDB DBENV-__GT__open@DB_INIT_CDB
-__APIREL__/api_c/env_open.html#DB_INIT_LOCK DBENV-__GT__open@DB_INIT_LOCK
-__APIREL__/api_c/env_open.html#DB_INIT_LOG DBENV-__GT__open@DB_INIT_LOG
-__APIREL__/api_c/env_open.html#DB_INIT_MPOOL DBENV-__GT__open@DB_INIT_MPOOL
-__APIREL__/api_c/env_open.html#DB_INIT_TXN DBENV-__GT__open@DB_INIT_TXN
-__APIREL__/api_c/env_open.html#DB_RECOVER DBENV-__GT__open@DB_RECOVER
-__APIREL__/api_c/env_open.html#DB_RECOVER_FATAL DBENV-__GT__open@DB_RECOVER_FATAL
-__APIREL__/api_c/env_open.html#DB_USE_ENVIRON DBENV-__GT__open@DB_USE_ENVIRON
-__APIREL__/api_c/env_open.html#DB_USE_ENVIRON_ROOT DBENV-__GT__open@DB_USE_ENVIRON_ROOT
-__APIREL__/api_c/env_open.html#DB_CREATE DBENV-__GT__open@DB_CREATE
-__APIREL__/api_c/env_open.html#DB_LOCKDOWN DBENV-__GT__open@DB_LOCKDOWN
-__APIREL__/api_c/env_open.html#DB_PRIVATE DBENV-__GT__open@DB_PRIVATE
-__APIREL__/api_c/env_open.html#DB_SYSTEM_MEM DBENV-__GT__open@DB_SYSTEM_MEM
-__APIREL__/api_c/env_open.html#DB_THREAD DBENV-__GT__open@DB_THREAD
-__APIREL__/api_c/env_remove.html#2     @DBENV-__GT__remove
-__APIREL__/api_c/env_remove.html#DB_FORCE DBENV-__GT__remove@DB_FORCE
-__APIREL__/api_c/env_remove.html#DB_USE_ENVIRON DBENV-__GT__remove@DB_USE_ENVIRON
-__APIREL__/api_c/env_remove.html#DB_USE_ENVIRON_ROOT DBENV-__GT__remove@DB_USE_ENVIRON_ROOT
-__APIREL__/api_c/env_set_cachesize.html#2     @DBENV-__GT__set_cachesize
-__APIREL__/api_c/env_set_data_dir.html#2     @DBENV-__GT__set_data_dir
-__APIREL__/api_c/env_set_errcall.html#2     @DBENV-__GT__set_errcall
-__APIREL__/api_c/env_set_errpfx.html#2     @DBENV-__GT__set_errpfx
-__APIREL__/api_c/env_set_feedback.html#2     @DBENV-__GT__set_feedback
-__APIREL__/api_c/env_set_feedback.html#DB_RECOVER DBENV-__GT__set_feedback@DB_RECOVER
-__APIREL__/api_c/env_set_flags.html#2     @DBENV-__GT__set_flags
-__APIREL__/api_c/env_set_flags.html#DB_CDB_ALLDB DBENV-__GT__set_flags@DB_CDB_ALLDB
-__APIREL__/api_c/env_set_flags.html#DB_NOMMAP DBENV-__GT__set_flags@DB_NOMMAP
-__APIREL__/api_c/env_set_flags.html#DB_TXN_NOSYNC DBENV-__GT__set_flags@DB_TXN_NOSYNC
-__APIREL__/api_c/env_set_lg_bsize.html#2     @DBENV-__GT__set_lg_bsize
-__APIREL__/api_c/env_set_lg_dir.html#2     @DBENV-__GT__set_lg_dir
-__APIREL__/api_c/env_set_lg_max.html#2     @DBENV-__GT__set_lg_max
-__APIREL__/api_c/env_set_lk_conflicts.html#2     @DBENV-__GT__set_lk_conflicts
-__APIREL__/api_c/env_set_lk_detect.html#2     @DBENV-__GT__set_lk_detect
-__APIREL__/api_c/env_set_lk_detect.html#DB_LOCK_DEFAULT DBENV-__GT__set_lk_detect@DB_LOCK_DEFAULT
-__APIREL__/api_c/env_set_lk_detect.html#DB_LOCK_OLDEST DBENV-__GT__set_lk_detect@DB_LOCK_OLDEST
-__APIREL__/api_c/env_set_lk_detect.html#DB_LOCK_RANDOM DBENV-__GT__set_lk_detect@DB_LOCK_RANDOM
-__APIREL__/api_c/env_set_lk_detect.html#DB_LOCK_YOUNGEST DBENV-__GT__set_lk_detect@DB_LOCK_YOUNGEST
-__APIREL__/api_c/env_set_lk_max.html#2     @DBENV-__GT__set_lk_max
-__APIREL__/api_c/env_set_lk_max_locks.html#2     @DBENV-__GT__set_lk_max_locks
-__APIREL__/api_c/env_set_lk_max_lockers.html#2     @DBENV-__GT__set_lk_max_lockers
-__APIREL__/api_c/env_set_lk_max_objects.html#2     @DBENV-__GT__set_lk_max_objects
-__APIREL__/api_c/env_set_mp_mmapsize.html#2     @DBENV-__GT__set_mp_mmapsize
-__APIREL__/api_c/env_set_mutexlocks.html#2     @DBENV-__GT__set_mutexlocks
-__APIREL__/api_c/env_set_pageyield.html#2     @db_env_set_pageyield
-__APIREL__/api_c/env_set_panicstate.html#2     @db_env_set_panicstate
-__APIREL__/api_c/env_set_rec_init.html#2     @DBENV-__GT__set_recovery_init
-__APIREL__/api_c/env_set_region_init.html#2     @db_env_set_region_init
-__APIREL__/api_c/env_set_server.html#2     @DBENV-__GT__set_server
-__APIREL__/api_c/env_set_server.html#DB_NOSERVER DBENV-__GT__set_server@DB_NOSERVER
-__APIREL__/api_c/env_set_server.html#DB_NOSERVER_ID DBENV-__GT__set_server@DB_NOSERVER_ID
-__APIREL__/api_c/env_set_shm_key.html#2     @DBENV-__GT__set_shm_key
-__APIREL__/api_c/env_set_tas_spins.html#2     @db_env_set_tas_spins
-__APIREL__/api_c/env_set_tmp_dir.html#2     @DBENV-__GT__set_tmp_dir
-__APIREL__/api_c/env_set_tx_max.html#2     @DBENV-__GT__set_tx_max
-__APIREL__/api_c/env_set_tx_recover.html#2     @DBENV-__GT__set_tx_recover
-__APIREL__/api_c/env_set_tx_recover.html#DB_TXN_BACKWARD_ROLL DBENV-__GT__set_tx_recover@DB_TXN_BACKWARD_ROLL
-__APIREL__/api_c/env_set_tx_recover.html#DB_TXN_FORWARD_ROLL DBENV-__GT__set_tx_recover@DB_TXN_FORWARD_ROLL
-__APIREL__/api_c/env_set_tx_recover.html#DB_TXN_ABORT DBENV-__GT__set_tx_recover@DB_TXN_ABORT
-__APIREL__/api_c/env_set_tx_timestamp.html#2     @DBENV-__GT__set_tx_timestamp
-__APIREL__/api_c/env_set_verbose.html#2     @DBENV-__GT__set_verbose
-__APIREL__/api_c/env_set_verbose.html#DB_VERB_CHKPOINT DBENV-__GT__set_verbose@DB_VERB_CHKPOINT
-__APIREL__/api_c/env_set_verbose.html#DB_VERB_DEADLOCK DBENV-__GT__set_verbose@DB_VERB_DEADLOCK
-__APIREL__/api_c/env_set_verbose.html#DB_VERB_RECOVERY DBENV-__GT__set_verbose@DB_VERB_RECOVERY
-__APIREL__/api_c/env_set_verbose.html#DB_VERB_WAITSFOR DBENV-__GT__set_verbose@DB_VERB_WAITSFOR
-__APIREL__/api_c/env_strerror.html#2     @db_strerror
-__APIREL__/api_c/env_version.html#2     @db_version
-__APIREL__/api_c/lock_detect.html#2     @lock_detect
-__APIREL__/api_c/lock_detect.html#DB_LOCK_CONFLICT lock_detect@DB_LOCK_CONFLICT
-__APIREL__/api_c/lock_get.html#2     @lock_get
-__APIREL__/api_c/lock_get.html#DB_LOCK_NOWAIT lock_get@DB_LOCK_NOWAIT
-__APIREL__/api_c/lock_get.html#DB_LOCK_NOTGRANTED lock_get@DB_LOCK_NOTGRANTED
-__APIREL__/api_c/lock_id.html#2     @lock_id
-__APIREL__/api_c/lock_put.html#2     @lock_put
-__APIREL__/api_c/lock_stat.html#2     @lock_stat
-__APIREL__/api_c/lock_vec.html#2     @lock_vec
-__APIREL__/api_c/lock_vec.html#DB_LOCK_NOWAIT lock_vec@DB_LOCK_NOWAIT
-__APIREL__/api_c/lock_vec.html#op lock_vec@op
-__APIREL__/api_c/lock_vec.html#DB_LOCK_GET lock_vec@DB_LOCK_GET
-__APIREL__/api_c/lock_vec.html#DB_LOCK_PUT lock_vec@DB_LOCK_PUT
-__APIREL__/api_c/lock_vec.html#DB_LOCK_PUT_ALL lock_vec@DB_LOCK_PUT_ALL
-__APIREL__/api_c/lock_vec.html#DB_LOCK_PUT_OBJ lock_vec@DB_LOCK_PUT_OBJ
-__APIREL__/api_c/lock_vec.html#obj lock_vec@obj
-__APIREL__/api_c/lock_vec.html#mode lock_vec@mode
-__APIREL__/api_c/lock_vec.html#lock lock_vec@lock
-__APIREL__/api_c/lock_vec.html#DB_LOCK_NOTGRANTED lock_vec@DB_LOCK_NOTGRANTED
-__APIREL__/api_c/log_archive.html#2     @log_archive
-__APIREL__/api_c/log_archive.html#DB_ARCH_ABS log_archive@DB_ARCH_ABS
-__APIREL__/api_c/log_archive.html#DB_ARCH_DATA log_archive@DB_ARCH_DATA
-__APIREL__/api_c/log_archive.html#DB_ARCH_LOG log_archive@DB_ARCH_LOG
-__APIREL__/api_c/log_compare.html#2     @log_compare
-__APIREL__/api_c/log_file.html#2     @log_file
-__APIREL__/api_c/log_flush.html#2     @log_flush
-__APIREL__/api_c/log_get.html#2     @log_get
-__APIREL__/api_c/log_get.html#DB_CHECKPOINT log_get@DB_CHECKPOINT
-__APIREL__/api_c/log_get.html#DB_FIRST log_get@DB_FIRST
-__APIREL__/api_c/log_get.html#DB_LAST log_get@DB_LAST
-__APIREL__/api_c/log_get.html#DB_NEXT log_get@DB_NEXT
-__APIREL__/api_c/log_get.html#DB_PREV log_get@DB_PREV
-__APIREL__/api_c/log_get.html#DB_CURRENT log_get@DB_CURRENT
-__APIREL__/api_c/log_get.html#DB_SET log_get@DB_SET
-__APIREL__/api_c/log_put.html#2     @log_put
-__APIREL__/api_c/log_put.html#DB_CHECKPOINT log_put@DB_CHECKPOINT
-__APIREL__/api_c/log_put.html#DB_CURLSN log_put@DB_CURLSN
-__APIREL__/api_c/log_put.html#DB_FLUSH log_put@DB_FLUSH
-__APIREL__/api_c/log_register.html#2     @log_register
-__APIREL__/api_c/log_stat.html#2     @log_stat
-__APIREL__/api_c/log_unregister.html#2     @log_unregister
-__APIREL__/api_c/memp_fclose.html#2     @memp_fclose
-__APIREL__/api_c/memp_fget.html#2     @memp_fget
-__APIREL__/api_c/memp_fget.html#DB_MPOOL_CREATE memp_fget@DB_MPOOL_CREATE
-__APIREL__/api_c/memp_fget.html#DB_MPOOL_LAST memp_fget@DB_MPOOL_LAST
-__APIREL__/api_c/memp_fget.html#DB_MPOOL_NEW memp_fget@DB_MPOOL_NEW
-__APIREL__/api_c/memp_fopen.html#2     @memp_fopen
-__APIREL__/api_c/memp_fopen.html#DB_CREATE memp_fopen@DB_CREATE
-__APIREL__/api_c/memp_fopen.html#DB_NOMMAP memp_fopen@DB_NOMMAP
-__APIREL__/api_c/memp_fopen.html#DB_RDONLY memp_fopen@DB_RDONLY
-__APIREL__/api_c/memp_fopen.html#ftype memp_fopen@ftype
-__APIREL__/api_c/memp_fopen.html#pgcookie memp_fopen@pgcookie
-__APIREL__/api_c/memp_fopen.html#fileid memp_fopen@fileid
-__APIREL__/api_c/memp_fopen.html#lsn_offset memp_fopen@lsn_offset
-__APIREL__/api_c/memp_fopen.html#clear_len memp_fopen@clear_len
-__APIREL__/api_c/memp_fput.html#2     @memp_fput
-__APIREL__/api_c/memp_fput.html#DB_MPOOL_CLEAN memp_fput@DB_MPOOL_CLEAN
-__APIREL__/api_c/memp_fput.html#DB_MPOOL_DIRTY memp_fput@DB_MPOOL_DIRTY
-__APIREL__/api_c/memp_fput.html#DB_MPOOL_DISCARD memp_fput@DB_MPOOL_DISCARD
-__APIREL__/api_c/memp_fset.html#2     @memp_fset
-__APIREL__/api_c/memp_fset.html#DB_MPOOL_CLEAN memp_fset@DB_MPOOL_CLEAN
-__APIREL__/api_c/memp_fset.html#DB_MPOOL_DIRTY memp_fset@DB_MPOOL_DIRTY
-__APIREL__/api_c/memp_fset.html#DB_MPOOL_DISCARD memp_fset@DB_MPOOL_DISCARD
-__APIREL__/api_c/memp_fsync.html#2     @memp_fsync
-__APIREL__/api_c/memp_register.html#2     @memp_register
-__APIREL__/api_c/memp_stat.html#2     @memp_stat
-__APIREL__/api_c/memp_sync.html#2     @memp_sync
-__APIREL__/api_c/memp_trickle.html#2     @memp_trickle
-__APIREL__/api_c/txn_abort.html#2     @txn_abort
-__APIREL__/api_c/txn_begin.html#2     @txn_begin
-__APIREL__/api_c/txn_begin.html#DB_TXN_NOSYNC txn_begin@DB_TXN_NOSYNC
-__APIREL__/api_c/txn_begin.html#DB_TXN_NOWAIT txn_begin@DB_TXN_NOWAIT
-__APIREL__/api_c/txn_begin.html#DB_TXN_SYNC txn_begin@DB_TXN_SYNC
-__APIREL__/api_c/txn_checkpoint.html#2     @txn_checkpoint
-__APIREL__/api_c/txn_checkpoint.html#DB_FORCE txn_checkpoint@DB_FORCE
-__APIREL__/api_c/txn_commit.html#2     @txn_commit
-__APIREL__/api_c/txn_commit.html#DB_TXN_NOSYNC txn_commit@DB_TXN_NOSYNC
-__APIREL__/api_c/txn_commit.html#DB_TXN_SYNC txn_commit@DB_TXN_SYNC
-__APIREL__/api_c/txn_id.html#2     @txn_id
-__APIREL__/api_c/txn_prepare.html#2     @txn_prepare
-__APIREL__/api_c/txn_stat.html#2     @txn_stat
+__APIREL__/api_c/db_associate.html__OCT__2 @DB-__GT__associate
+__APIREL__/api_c/db_associate.html__OCT__3 @DB_DBT_APPMALLOC
+__APIREL__/api_c/db_associate.html__OCT__4 @DB_DONOTINDEX
+__APIREL__/api_c/db_associate.html__OCT__DB_CREATE DB-__GT__associate@DB_CREATE
+__APIREL__/api_c/db_associate.html__OCT__DB_AUTO_COMMIT DB-__GT__associate@DB_AUTO_COMMIT
+__APIREL__/api_c/db_class.html__OCT__2 @db_create
+__APIREL__/api_c/db_class.html__OCT__DB_XA_CREATE db_create@DB_XA_CREATE
+__APIREL__/api_c/db_close.html__OCT__2 @DB-__GT__close
+__APIREL__/api_c/db_close.html__OCT__DB_NOSYNC DB-__GT__close@DB_NOSYNC
+__APIREL__/api_c/db_cursor.html__OCT__2 @DB-__GT__cursor
+__APIREL__/api_c/db_cursor.html__OCT__DB_DIRTY_READ DB-__GT__cursor@DB_DIRTY_READ
+__APIREL__/api_c/db_cursor.html__OCT__DB_WRITECURSOR DB-__GT__cursor@DB_WRITECURSOR
+__APIREL__/api_c/db_del.html__OCT__2 @DB-__GT__del
+__APIREL__/api_c/db_del.html__OCT__DB_AUTO_COMMIT DB-__GT__del@DB_AUTO_COMMIT
+__APIREL__/api_c/db_err.html__OCT__2 @DB-__GT__err
+__APIREL__/api_c/db_err.html__OCT__3 @DB-__GT__errx
+__APIREL__/api_c/db_get.html__OCT__2 @DB-__GT__get
+__APIREL__/api_c/db_get.html__OCT__3 @DB-__GT__pget
+__APIREL__/api_c/db_get.html__OCT__DB_CONSUME DB-__GT__get@DB_CONSUME
+__APIREL__/api_c/db_get.html__OCT__DB_CONSUME_WAIT DB-__GT__get@DB_CONSUME_WAIT
+__APIREL__/api_c/db_get.html__OCT__DB_GET_BOTH DB-__GT__get@DB_GET_BOTH
+__APIREL__/api_c/db_get.html__OCT__DB_SET_RECNO DB-__GT__get@DB_SET_RECNO
+__APIREL__/api_c/db_get.html__OCT__DB_AUTO_COMMIT DB-__GT__get@DB_AUTO_COMMIT
+__APIREL__/api_c/db_get.html__OCT__DB_DIRTY_READ DB-__GT__get@DB_DIRTY_READ
+__APIREL__/api_c/db_get.html__OCT__DB_MULTIPLE DB-__GT__get@DB_MULTIPLE
+__APIREL__/api_c/db_get.html__OCT__DB_RMW DB-__GT__get@DB_RMW
+__APIREL__/api_c/db_get_byteswapped.html__OCT__2 @DB-__GT__get_byteswapped
+__APIREL__/api_c/db_get_mpf.html__OCT__2 @DB-__GT__mpf
+__APIREL__/api_c/db_get_type.html__OCT__2 @DB-__GT__get_type
+__APIREL__/api_c/db_getenv.html__OCT__2 @DB-__GT__get_env
+__APIREL__/api_c/db_join.html__OCT__2 @DB-__GT__join
+__APIREL__/api_c/db_join.html__OCT__DB_JOIN_ITEM DB-__GT__join@DB_JOIN_ITEM
+__APIREL__/api_c/db_join.html__OCT__DB_DIRTY_READ DB-__GT__join@DB_DIRTY_READ
+__APIREL__/api_c/db_join.html__OCT__DB_RMW DB-__GT__join@DB_RMW
+__APIREL__/api_c/db_join.html__OCT__DB_JOIN_NOSORT DB-__GT__join@DB_JOIN_NOSORT
+__APIREL__/api_c/db_key_range.html__OCT__2 @DB-__GT__key_range
+__APIREL__/api_c/db_open.html__OCT__2 @DB-__GT__open
+__APIREL__/api_c/db_open.html__OCT__3 @DB-__GT__get_file
+__APIREL__/api_c/db_open.html__OCT__4 @DB-__GT__get_database
+__APIREL__/api_c/db_open.html__OCT__5 @DB-__GT__get_open_flags
+__APIREL__/api_c/db_open.html__OCT__6 @DB-__GT__get_transactional
+__APIREL__/api_c/db_open.html__OCT__DB_AUTO_COMMIT DB-__GT__open@DB_AUTO_COMMIT
+__APIREL__/api_c/db_open.html__OCT__DB_CREATE DB-__GT__open@DB_CREATE
+__APIREL__/api_c/db_open.html__OCT__DB_DIRTY_READ DB-__GT__open@DB_DIRTY_READ
+__APIREL__/api_c/db_open.html__OCT__DB_EXCL DB-__GT__open@DB_EXCL
+__APIREL__/api_c/db_open.html__OCT__DB_NOMMAP DB-__GT__open@DB_NOMMAP
+__APIREL__/api_c/db_open.html__OCT__DB_RDONLY DB-__GT__open@DB_RDONLY
+__APIREL__/api_c/db_open.html__OCT__DB_THREAD DB-__GT__open@DB_THREAD
+__APIREL__/api_c/db_open.html__OCT__DB_TRUNCATE DB-__GT__open@DB_TRUNCATE
+__APIREL__/api_c/db_open.html__OCT__DB_BTREE DB-__GT__open@DB_BTREE
+__APIREL__/api_c/db_open.html__OCT__DB_HASH DB-__GT__open@DB_HASH
+__APIREL__/api_c/db_open.html__OCT__DB_QUEUE DB-__GT__open@DB_QUEUE
+__APIREL__/api_c/db_open.html__OCT__DB_RECNO DB-__GT__open@DB_RECNO
+__APIREL__/api_c/db_open.html__OCT__DB_UNKNOWN DB-__GT__open@DB_UNKNOWN
+__APIREL__/api_c/db_put.html__OCT__2 @DB-__GT__put
+__APIREL__/api_c/db_put.html__OCT__DB_APPEND DB-__GT__put@DB_APPEND
+__APIREL__/api_c/db_put.html__OCT__DB_NODUPDATA DB-__GT__put@DB_NODUPDATA
+__APIREL__/api_c/db_put.html__OCT__DB_NOOVERWRITE DB-__GT__put@DB_NOOVERWRITE
+__APIREL__/api_c/db_put.html__OCT__DB_AUTO_COMMIT DB-__GT__put@DB_AUTO_COMMIT
+__APIREL__/api_c/db_remove.html__OCT__2 @DB-__GT__remove
+__APIREL__/api_c/db_rename.html__OCT__2 @DB-__GT__rename
+__APIREL__/api_c/db_set_append_recno.html__OCT__2 @DB-__GT__set_append_recno
+__APIREL__/api_c/db_set_bt_compare.html__OCT__2 @DB-__GT__set_bt_compare
+__APIREL__/api_c/db_set_bt_minkey.html__OCT__2 @DB-__GT__set_bt_minkey
+__APIREL__/api_c/db_set_bt_minkey.html__OCT__3 @DB-__GT__get_bt_minkey
+__APIREL__/api_c/db_set_bt_prefix.html__OCT__2 @DB-__GT__set_bt_prefix
+__APIREL__/api_c/db_set_cachesize.html__OCT__2 @DB-__GT__set_cachesize
+__APIREL__/api_c/db_set_cachesize.html__OCT__3 @DB-__GT__get_cachesize
+__APIREL__/api_c/db_set_dup_compare.html__OCT__2 @DB-__GT__set_dup_compare
+__APIREL__/api_c/db_set_encrypt.html__OCT__2 @DB-__GT__set_encrypt
+__APIREL__/api_c/db_set_encrypt.html__OCT__3 @DB-__GT__get_encrypt_flags
+__APIREL__/api_c/db_set_encrypt.html__OCT__DB_ENCRYPT_AES DB-__GT__set_encrypt@DB_ENCRYPT_AES
+__APIREL__/api_c/db_set_errcall.html__OCT__2 @DB-__GT__set_errcall
+__APIREL__/api_c/db_set_errpfx.html__OCT__2 @DB-__GT__set_errpfx
+__APIREL__/api_c/db_set_errpfx.html__OCT__3 @DB-__GT__get_errpfx
+__APIREL__/api_c/db_set_feedback.html__OCT__2 @DB-__GT__set_feedback
+__APIREL__/api_c/db_set_feedback.html__OCT__DB_UPGRADE DB-__GT__set_feedback@DB_UPGRADE
+__APIREL__/api_c/db_set_feedback.html__OCT__DB_VERIFY DB-__GT__set_feedback@DB_VERIFY
+__APIREL__/api_c/db_set_flags.html__OCT__2 @DB-__GT__set_flags
+__APIREL__/api_c/db_set_flags.html__OCT__3 @DB-__GT__get_flags
+__APIREL__/api_c/db_set_flags.html__OCT__4 database page @checksum
+__APIREL__/api_c/db_set_flags.html__OCT__DB_CHKSUM DB-__GT__set_flags@DB_CHKSUM
+__APIREL__/api_c/db_set_flags.html__OCT__5 database @encryption
+__APIREL__/api_c/db_set_flags.html__OCT__DB_ENCRYPT DB-__GT__set_flags@DB_ENCRYPT
+__APIREL__/api_c/db_set_flags.html__OCT__6 turn off database @durability
+__APIREL__/api_c/db_set_flags.html__OCT__DB_TXN_NOT_DURABLE DB-__GT__set_flags@DB_TXN_NOT_DURABLE
+__APIREL__/api_c/db_set_flags.html__OCT__7 @duplicate data items
+__APIREL__/api_c/db_set_flags.html__OCT__DB_DUP DB-__GT__set_flags@DB_DUP
+__APIREL__/api_c/db_set_flags.html__OCT__8 sorted @duplicate data items
+__APIREL__/api_c/db_set_flags.html__OCT__DB_DUPSORT DB-__GT__set_flags@DB_DUPSORT
+__APIREL__/api_c/db_set_flags.html__OCT__9 accessing Btree records by @record number
+__APIREL__/api_c/db_set_flags.html__OCT__DB_RECNUM DB-__GT__set_flags@DB_RECNUM
+__APIREL__/api_c/db_set_flags.html__OCT__10 turn off @reverse splits in Btree databases
+__APIREL__/api_c/db_set_flags.html__OCT__11 turn off reverse @splits in Btree databases
+__APIREL__/api_c/db_set_flags.html__OCT__DB_REVSPLITOFF DB-__GT__set_flags@DB_REVSPLITOFF
+__APIREL__/api_c/db_set_flags.html__OCT__DB_DUP DB-__GT__set_flags@DB_DUP
+__APIREL__/api_c/db_set_flags.html__OCT__DB_DUPSORT DB-__GT__set_flags@DB_DUPSORT
+__APIREL__/api_c/db_set_flags.html__OCT__12 @renumbering records in Recno databases
+__APIREL__/api_c/db_set_flags.html__OCT__DB_RENUMBER DB-__GT__set_flags@DB_RENUMBER
+__APIREL__/api_c/db_set_flags.html__OCT__13 pre-loading @text files into Recno databases
+__APIREL__/api_c/db_set_flags.html__OCT__DB_SNAPSHOT DB-__GT__set_flags@DB_SNAPSHOT
+__APIREL__/api_c/db_set_h_ffactor.html__OCT__2 @DB-__GT__set_h_ffactor
+__APIREL__/api_c/db_set_h_ffactor.html__OCT__3 @DB-__GT__get_h_ffactor
+__APIREL__/api_c/db_set_h_hash.html__OCT__2 @DB-__GT__set_h_hash
+__APIREL__/api_c/db_set_h_nelem.html__OCT__2 @DB-__GT__set_h_nelem
+__APIREL__/api_c/db_set_h_nelem.html__OCT__3 @DB-__GT__get_h_nelem
+__APIREL__/api_c/db_set_lorder.html__OCT__2 @DB-__GT__set_lorder
+__APIREL__/api_c/db_set_lorder.html__OCT__3 @DB-__GT__get_lorder
+__APIREL__/api_c/db_set_pagesize.html__OCT__2 @DB-__GT__set_pagesize
+__APIREL__/api_c/db_set_pagesize.html__OCT__3 @DB-__GT__get_pagesize
+__APIREL__/api_c/db_set_paniccall.html__OCT__2 @DB-__GT__set_paniccall
+__APIREL__/api_c/db_set_q_extentsize.html__OCT__2 @DB-__GT__set_q_extentsize
+__APIREL__/api_c/db_set_q_extentsize.html__OCT__3 @DB-__GT__get_q_extentsize
+__APIREL__/api_c/db_set_re_delim.html__OCT__2 @DB-__GT__set_re_delim
+__APIREL__/api_c/db_set_re_delim.html__OCT__3 @DB-__GT__get_re_delim
+__APIREL__/api_c/db_set_re_len.html__OCT__2 @DB-__GT__set_re_len
+__APIREL__/api_c/db_set_re_len.html__OCT__3 @DB-__GT__get_re_len
+__APIREL__/api_c/db_set_re_pad.html__OCT__2 @DB-__GT__set_re_pad
+__APIREL__/api_c/db_set_re_pad.html__OCT__3 @DB-__GT__get_re_pad
+__APIREL__/api_c/db_set_re_source.html__OCT__2 @DB-__GT__set_re_source
+__APIREL__/api_c/db_set_re_source.html__OCT__3 @DB-__GT__get_re_source
+__APIREL__/api_c/db_stat.html__OCT__2 @DB-__GT__stat
+__APIREL__/api_c/db_stat.html__OCT__DB_FAST_STAT DB-__GT__stat@DB_FAST_STAT
+__APIREL__/api_c/db_sync.html__OCT__2 @DB-__GT__sync
+__APIREL__/api_c/db_truncate.html__OCT__2 @DB-__GT__truncate
+__APIREL__/api_c/db_truncate.html__OCT__DB_AUTO_COMMIT DB-__GT__truncate@DB_AUTO_COMMIT
+__APIREL__/api_c/db_upgrade.html__OCT__2 @DB-__GT__upgrade
+__APIREL__/api_c/db_upgrade.html__OCT__DB_DUPSORT DB-__GT__upgrade@DB_DUPSORT
+__APIREL__/api_c/db_upgrade.html__OCT__DB_OLD_VERSION DB-__GT__upgrade@DB_OLD_VERSION
+__APIREL__/api_c/db_verify.html__OCT__2 @DB-__GT__verify
+__APIREL__/api_c/db_verify.html__OCT__3 @DB_VERIFY_BAD
+__APIREL__/api_c/db_verify.html__OCT__DB_SALVAGE DB-__GT__verify@DB_SALVAGE
+__APIREL__/api_c/db_verify.html__OCT__DB_AGGRESSIVE DB-__GT__verify@DB_AGGRESSIVE
+__APIREL__/api_c/db_verify.html__OCT__DB_PRINTABLE DB-__GT__verify@DB_PRINTABLE
+__APIREL__/api_c/db_verify.html__OCT__DB_NOORDERCHK DB-__GT__verify@DB_NOORDERCHK
+__APIREL__/api_c/db_verify.html__OCT__DB_ORDERCHKONLY DB-__GT__verify@DB_ORDERCHKONLY
+__APIREL__/api_c/dbt_class.html__OCT__2 @DBT
+__APIREL__/api_c/dbt_class.html__OCT__3 @key/data pairs
+__APIREL__/api_c/dbt_class.html__OCT__data DBT@data
+__APIREL__/api_c/dbt_class.html__OCT__size DBT@size
+__APIREL__/api_c/dbt_class.html__OCT__ulen DBT@ulen
+__APIREL__/api_c/dbt_class.html__OCT__dlen DBT@dlen
+__APIREL__/api_c/dbt_class.html__OCT__doff DBT@doff
+__APIREL__/api_c/dbt_class.html__OCT__DB_DBT_MALLOC DBT@DB_DBT_MALLOC
+__APIREL__/api_c/dbt_class.html__OCT__DB_DBT_REALLOC DBT@DB_DBT_REALLOC
+__APIREL__/api_c/dbt_class.html__OCT__DB_DBT_USERMEM DBT@DB_DBT_USERMEM
+__APIREL__/api_c/dbt_class.html__OCT__DB_DBT_PARTIAL DBT@DB_DBT_PARTIAL
+__APIREL__/api_c/db_fd.html__OCT__2 @DB-__GT__fd
+__APIREL__/api_c/db_set_alloc.html__OCT__2 @DB-__GT__set_alloc
+__APIREL__/api_c/db_set_errfile.html__OCT__2 @DB-__GT__set_errfile
+__APIREL__/api_c/db_set_errfile.html__OCT__3 @DB-__GT__get_errfile
+__APIREL__/api_c/dbt_bulk.html__OCT__2 @DBT
+__APIREL__/api_c/dbt_bulk.html__OCT__3 @bulk retrieval
+__APIREL__/api_c/dbt_bulk.html__OCT__DB_MULTIPLE_INIT DBT@DB_MULTIPLE_INIT
+__APIREL__/api_c/dbt_bulk.html__OCT__DB_MULTIPLE_NEXT DBT@DB_MULTIPLE_NEXT
+__APIREL__/api_c/dbt_bulk.html__OCT__DB_MULTIPLE_KEY_NEXT DBT@DB_MULTIPLE_KEY_NEXT
+__APIREL__/api_c/dbt_bulk.html__OCT__DB_MULTIPLE_RECNO_NEXT DBT@DB_MULTIPLE_RECNO_NEXT
+__APIREL__/api_c/dbc_class.html__OCT__2 @DBC
+__APIREL__/api_c/dbc_close.html__OCT__2 @DBcursor-__GT__c_close
+__APIREL__/api_c/dbc_count.html__OCT__2 @DBcursor-__GT__c_count
+__APIREL__/api_c/dbc_del.html__OCT__2 @DBcursor-__GT__c_del
+__APIREL__/api_c/dbc_dup.html__OCT__2 @DBcursor-__GT__c_dup
+__APIREL__/api_c/dbc_dup.html__OCT__DB_POSITION DBcursor-__GT__c_dup@DB_POSITION
+__APIREL__/api_c/dbc_get.html__OCT__2 @DBcursor-__GT__c_get
+__APIREL__/api_c/dbc_get.html__OCT__3 @DBcursor-__GT__c_pget
+__APIREL__/api_c/dbc_get.html__OCT__DB_CURRENT DBcursor-__GT__c_get@DB_CURRENT
+__APIREL__/api_c/dbc_get.html__OCT__DB_FIRST DBcursor-__GT__c_get@DB_FIRST
+__APIREL__/api_c/dbc_get.html__OCT__DB_GET_BOTH DBcursor-__GT__c_get@DB_GET_BOTH
+__APIREL__/api_c/dbc_get.html__OCT__DB_GET_BOTH_RANGE DBcursor-__GT__c_get@DB_GET_BOTH_RANGE
+__APIREL__/api_c/dbc_get.html__OCT__DB_GET_RECNO DBcursor-__GT__c_get@DB_GET_RECNO
+__APIREL__/api_c/dbc_get.html__OCT__DB_JOIN_ITEM DBcursor-__GT__c_get@DB_JOIN_ITEM
+__APIREL__/api_c/dbc_get.html__OCT__DB_LAST DBcursor-__GT__c_get@DB_LAST
+__APIREL__/api_c/dbc_get.html__OCT__DB_NEXT DBcursor-__GT__c_get@DB_NEXT
+__APIREL__/api_c/dbc_get.html__OCT__DB_NEXT_DUP DBcursor-__GT__c_get@DB_NEXT_DUP
+__APIREL__/api_c/dbc_get.html__OCT__DB_NEXT_NODUP DBcursor-__GT__c_get@DB_NEXT_NODUP
+__APIREL__/api_c/dbc_get.html__OCT__DB_PREV DBcursor-__GT__c_get@DB_PREV
+__APIREL__/api_c/dbc_get.html__OCT__DB_PREV_NODUP DBcursor-__GT__c_get@DB_PREV_NODUP
+__APIREL__/api_c/dbc_get.html__OCT__DB_SET DBcursor-__GT__c_get@DB_SET
+__APIREL__/api_c/dbc_get.html__OCT__DB_SET_RANGE DBcursor-__GT__c_get@DB_SET_RANGE
+__APIREL__/api_c/dbc_get.html__OCT__DB_SET_RECNO DBcursor-__GT__c_get@DB_SET_RECNO
+__APIREL__/api_c/dbc_get.html__OCT__DB_DIRTY_READ DBcursor-__GT__c_get@DB_DIRTY_READ
+__APIREL__/api_c/dbc_get.html__OCT__DB_MULTIPLE DBcursor-__GT__c_get@DB_MULTIPLE
+__APIREL__/api_c/dbc_get.html__OCT__DB_MULTIPLE_KEY DBcursor-__GT__c_get@DB_MULTIPLE_KEY
+__APIREL__/api_c/dbc_get.html__OCT__DB_RMW DBcursor-__GT__c_get@DB_RMW
+__APIREL__/api_c/dbc_put.html__OCT__2 @DBcursor-__GT__c_put
+__APIREL__/api_c/dbc_put.html__OCT__DB_AFTER DBcursor-__GT__c_put@DB_AFTER
+__APIREL__/api_c/dbc_put.html__OCT__DB_BEFORE DBcursor-__GT__c_put@DB_BEFORE
+__APIREL__/api_c/dbc_put.html__OCT__DB_CURRENT DBcursor-__GT__c_put@DB_CURRENT
+__APIREL__/api_c/dbc_put.html__OCT__DB_KEYFIRST DBcursor-__GT__c_put@DB_KEYFIRST
+__APIREL__/api_c/dbc_put.html__OCT__DB_KEYLAST DBcursor-__GT__c_put@DB_KEYLAST
+__APIREL__/api_c/dbc_put.html__OCT__DB_NODUPDATA DBcursor-__GT__c_put@DB_NODUPDATA
+__APIREL__/api_c/env_class.html__OCT__2 @db_env_create
+__APIREL__/api_c/env_class.html__OCT__DB_RPCCLIENT db_env_create@DB_RPCCLIENT
+__APIREL__/api_c/env_close.html__OCT__2 @DB_ENV-__GT__close
+__APIREL__/api_c/env_dbremove.html__OCT__2 @DB_ENV-__GT__dbremove
+__APIREL__/api_c/env_dbremove.html__OCT__DB_AUTO_COMMIT DB_ENV-__GT__dbremove@DB_AUTO_COMMIT
+__APIREL__/api_c/env_dbrename.html__OCT__2 @DB_ENV-__GT__dbrename
+__APIREL__/api_c/env_dbrename.html__OCT__DB_AUTO_COMMIT DB_ENV-__GT__dbrename@DB_AUTO_COMMIT
+__APIREL__/api_c/env_err.html__OCT__2 @DB_ENV-__GT__err
+__APIREL__/api_c/env_err.html__OCT__3 @DB_ENV-__GT__errx
+__APIREL__/api_c/env_open.html__OCT__2 @DB_ENV-__GT__open
+__APIREL__/api_c/env_open.html__OCT__3 @DB_ENV-__GT__get_home
+__APIREL__/api_c/env_open.html__OCT__4 @DB_ENV-__GT__get_open_flags
+__APIREL__/api_c/env_open.html__OCT__DB_JOINENV DB_ENV-__GT__open@DB_JOINENV
+__APIREL__/api_c/env_open.html__OCT__DB_INIT_CDB DB_ENV-__GT__open@DB_INIT_CDB
+__APIREL__/api_c/env_open.html__OCT__DB_INIT_LOCK DB_ENV-__GT__open@DB_INIT_LOCK
+__APIREL__/api_c/env_open.html__OCT__DB_INIT_LOG DB_ENV-__GT__open@DB_INIT_LOG
+__APIREL__/api_c/env_open.html__OCT__DB_INIT_MPOOL DB_ENV-__GT__open@DB_INIT_MPOOL
+__APIREL__/api_c/env_open.html__OCT__DB_INIT_REP DB_ENV-__GT__open@DB_INIT_REP
+__APIREL__/api_c/env_open.html__OCT__DB_INIT_TXN DB_ENV-__GT__open@DB_INIT_TXN
+__APIREL__/api_c/env_open.html__OCT__DB_RECOVER DB_ENV-__GT__open@DB_RECOVER
+__APIREL__/api_c/env_open.html__OCT__DB_RECOVER_FATAL DB_ENV-__GT__open@DB_RECOVER_FATAL
+__APIREL__/api_c/env_open.html__OCT__5 use @environment constants in naming
+__APIREL__/api_c/env_open.html__OCT__DB_USE_ENVIRON DB_ENV-__GT__open@DB_USE_ENVIRON
+__APIREL__/api_c/env_open.html__OCT__DB_USE_ENVIRON_ROOT DB_ENV-__GT__open@DB_USE_ENVIRON_ROOT
+__APIREL__/api_c/env_open.html__OCT__DB_CREATE DB_ENV-__GT__open@DB_CREATE
+__APIREL__/api_c/env_open.html__OCT__DB_LOCKDOWN DB_ENV-__GT__open@DB_LOCKDOWN
+__APIREL__/api_c/env_open.html__OCT__DB_PRIVATE DB_ENV-__GT__open@DB_PRIVATE
+__APIREL__/api_c/env_open.html__OCT__DB_SYSTEM_MEM DB_ENV-__GT__open@DB_SYSTEM_MEM
+__APIREL__/api_c/env_open.html__OCT__DB_THREAD DB_ENV-__GT__open@DB_THREAD
+__APIREL__/api_c/env_remove.html__OCT__2 @DB_ENV-__GT__remove
+__APIREL__/api_c/env_remove.html__OCT__DB_FORCE DB_ENV-__GT__remove@DB_FORCE
+__APIREL__/api_c/env_remove.html__OCT__3 use @environment constants in naming
+__APIREL__/api_c/env_remove.html__OCT__DB_USE_ENVIRON DB_ENV-__GT__remove@DB_USE_ENVIRON
+__APIREL__/api_c/env_remove.html__OCT__DB_USE_ENVIRON_ROOT DB_ENV-__GT__remove@DB_USE_ENVIRON_ROOT
+__APIREL__/api_c/env_set_app_dispatch.html__OCT__2 @DB_ENV-__GT__set_app_dispatch
+__APIREL__/api_c/env_set_app_dispatch.html__OCT__DB_TXN_BACKWARD_ROLL DB_ENV-__GT__set_app_dispatch@DB_TXN_BACKWARD_ROLL
+__APIREL__/api_c/env_set_app_dispatch.html__OCT__DB_TXN_FORWARD_ROLL DB_ENV-__GT__set_app_dispatch@DB_TXN_FORWARD_ROLL
+__APIREL__/api_c/env_set_app_dispatch.html__OCT__DB_TXN_ABORT DB_ENV-__GT__set_app_dispatch@DB_TXN_ABORT
+__APIREL__/api_c/env_set_app_dispatch.html__OCT__DB_TXN_APPLY DB_ENV-__GT__set_app_dispatch@DB_TXN_APPLY
+__APIREL__/api_c/env_set_app_dispatch.html__OCT__DB_TXN_PRINT DB_ENV-__GT__set_app_dispatch@DB_TXN_PRINT
+__APIREL__/api_c/env_set_cachesize.html__OCT__2 @DB_ENV-__GT__set_cachesize
+__APIREL__/api_c/env_set_cachesize.html__OCT__3 @DB_ENV-__GT__get_cachesize
+__APIREL__/api_c/env_set_cachesize.html__OCT__4 @DbEnv::get_cachesize_nocache
+__APIREL__/api_c/env_set_data_dir.html__OCT__2 @DB_ENV-__GT__set_data_dir
+__APIREL__/api_c/env_set_data_dir.html__OCT__3 @DB_ENV-__GT__get_data_dirs
+__APIREL__/api_c/env_set_encrypt.html__OCT__2 @DB_ENV-__GT__set_encrypt
+__APIREL__/api_c/env_set_encrypt.html__OCT__3 @DB_ENV-__GT__get_encrypt_flags
+__APIREL__/api_c/env_set_encrypt.html__OCT__DB_ENCRYPT_AES DB_ENV-__GT__set_encrypt@DB_ENCRYPT_AES
+__APIREL__/api_c/env_set_errcall.html__OCT__2 @DB_ENV-__GT__set_errcall
+__APIREL__/api_c/env_set_errpfx.html__OCT__2 @DB_ENV-__GT__set_errpfx
+__APIREL__/api_c/env_set_errpfx.html__OCT__3 @DB_ENV-__GT__get_errpfx
+__APIREL__/api_c/env_set_feedback.html__OCT__2 @DB_ENV-__GT__set_feedback
+__APIREL__/api_c/env_set_feedback.html__OCT__DB_RECOVER DB_ENV-__GT__set_feedback@DB_RECOVER
+__APIREL__/api_c/env_set_flags.html__OCT__2 @DB_ENV-__GT__set_flags
+__APIREL__/api_c/env_set_flags.html__OCT__3 @DB_ENV-__GT__get_flags
+__APIREL__/api_c/env_set_flags.html__OCT__DB_AUTO_COMMIT DB_ENV-__GT__set_flags@DB_AUTO_COMMIT
+__APIREL__/api_c/env_set_flags.html__OCT__4 configure @locking for Berkeley DB Concurrent Data Store
+__APIREL__/api_c/env_set_flags.html__OCT__DB_CDB_ALLDB DB_ENV-__GT__set_flags@DB_CDB_ALLDB
+__APIREL__/api_c/env_set_flags.html__OCT__5 turn off system @buffering for database files
+__APIREL__/api_c/env_set_flags.html__OCT__DB_DIRECT_DB DB_ENV-__GT__set_flags@DB_DIRECT_DB
+__APIREL__/api_c/env_set_flags.html__OCT__6 turn off system @buffering for log files
+__APIREL__/api_c/env_set_flags.html__OCT__DB_DIRECT_LOG DB_ENV-__GT__set_flags@DB_DIRECT_LOG
+__APIREL__/api_c/env_set_flags.html__OCT__7 automatic @log file removal
+__APIREL__/api_c/env_set_flags.html__OCT__DB_LOG_AUTOREMOVE DB_ENV-__GT__set_flags@DB_LOG_AUTOREMOVE
+__APIREL__/api_c/env_set_flags.html__OCT__8 ignore @locking
+__APIREL__/api_c/env_set_flags.html__OCT__DB_NOLOCKING DB_ENV-__GT__set_flags@DB_NOLOCKING
+__APIREL__/api_c/env_set_flags.html__OCT__9 turn off database file @memory mapping
+__APIREL__/api_c/env_set_flags.html__OCT__DB_NOMMAP DB_ENV-__GT__set_flags@DB_NOMMAP
+__APIREL__/api_c/env_set_flags.html__OCT__10 ignore database environment @panic
+__APIREL__/api_c/env_set_flags.html__OCT__DB_NOPANIC DB_ENV-__GT__set_flags@DB_NOPANIC
+__APIREL__/api_c/env_set_flags.html__OCT__DB_OVERWRITE DB_ENV-__GT__set_flags@DB_OVERWRITE
+__APIREL__/api_c/env_set_flags.html__OCT__11 turn off access to a database @environment
+__APIREL__/api_c/env_set_flags.html__OCT__DB_PANIC_ENVIRONMENT DB_ENV-__GT__set_flags@DB_PANIC_ENVIRONMENT
+__APIREL__/api_c/env_set_flags.html__OCT__12 fault database @environment in during open
+__APIREL__/api_c/env_set_flags.html__OCT__DB_REGION_INIT DB_ENV-__GT__set_flags@DB_REGION_INIT
+__APIREL__/api_c/env_set_flags.html__OCT__DB_TIME_NOTGRANTED DB_ENV-__GT__set_flags@DB_TIME_NOTGRANTED
+__APIREL__/api_c/env_set_flags.html__OCT__13 turn off synchronous @transaction commit
+__APIREL__/api_c/env_set_flags.html__OCT__DB_TXN_NOSYNC DB_ENV-__GT__set_flags@DB_TXN_NOSYNC
+__APIREL__/api_c/env_set_flags.html__OCT__14 turn off @durability in the database environment
+__APIREL__/api_c/env_set_flags.html__OCT__DB_TXN_NOT_DURABLE DB_ENV-__GT__set_flags@DB_TXN_NOT_DURABLE
+__APIREL__/api_c/env_set_flags.html__OCT__15 turn off synchronous @transaction commit
+__APIREL__/api_c/env_set_flags.html__OCT__DB_TXN_WRITE_NOSYNC DB_ENV-__GT__set_flags@DB_TXN_WRITE_NOSYNC
+__APIREL__/api_c/env_set_flags.html__OCT__16 configure for @stress testing
+__APIREL__/api_c/env_set_flags.html__OCT__DB_YIELDCPU DB_ENV-__GT__set_flags@DB_YIELDCPU
+__APIREL__/api_c/env_set_paniccall.html__OCT__2 @DB_ENV-__GT__set_paniccall
+__APIREL__/api_c/env_set_rpc_server.html__OCT__2 @DB_ENV-__GT__set_rpc_server
+__APIREL__/api_c/env_set_rpc_server.html__OCT__DB_NOSERVER DB_ENV-__GT__set_rpc_server@DB_NOSERVER
+__APIREL__/api_c/env_set_rpc_server.html__OCT__DB_NOSERVER_ID DB_ENV-__GT__set_rpc_server@DB_NOSERVER_ID
+__APIREL__/api_c/env_set_rpc_server.html__OCT__DB_NOSERVER_HOME DB_ENV-__GT__set_rpc_server@DB_NOSERVER_HOME
+__APIREL__/api_c/env_set_rpc_server.html__OCT__3 @DB_NOSERVER
+__APIREL__/api_c/env_set_rpc_server.html__OCT__4 @DB_NOSERVER_ID
+__APIREL__/api_c/env_set_shm_key.html__OCT__2 @DB_ENV-__GT__set_shm_key
+__APIREL__/api_c/env_set_shm_key.html__OCT__3 @DB_ENV-__GT__get_shm_key
+__APIREL__/api_c/env_set_tas_spins.html__OCT__2 @DB_ENV-__GT__set_tas_spins
+__APIREL__/api_c/env_set_tas_spins.html__OCT__3 @DB_ENV-__GT__get_tas_spins
+__APIREL__/api_c/env_set_timeout.html__OCT__2 @DB_ENV-__GT__set_timeout
+__APIREL__/api_c/env_set_timeout.html__OCT__3 @DB_ENV-__GT__get_timeout
+__APIREL__/api_c/env_set_timeout.html__OCT__DB_SET_LOCK_TIMEOUT DB_ENV-__GT__set_timeout@DB_SET_LOCK_TIMEOUT
+__APIREL__/api_c/env_set_timeout.html__OCT__DB_SET_TXN_TIMEOUT DB_ENV-__GT__set_timeout@DB_SET_TXN_TIMEOUT
+__APIREL__/api_c/env_set_timeout.html__OCT__DB_SET_LOCK_TIMEOUT DB_ENV-__GT__set_timeout@DB_SET_LOCK_TIMEOUT
+__APIREL__/api_c/env_set_timeout.html__OCT__DB_SET_TXN_TIMEOUT DB_ENV-__GT__set_timeout@DB_SET_TXN_TIMEOUT
+__APIREL__/api_c/env_set_tmp_dir.html__OCT__2 @DB_ENV-__GT__set_tmp_dir
+__APIREL__/api_c/env_set_tmp_dir.html__OCT__3 @temporary files
+__APIREL__/api_c/env_set_tmp_dir.html__OCT__4 @DB_ENV-__GT__get_tmp_dir
+__APIREL__/api_c/env_set_verbose.html__OCT__2 @DB_ENV-__GT__set_verbose
+__APIREL__/api_c/env_set_verbose.html__OCT__3 @DB_ENV-__GT__get_verbose
+__APIREL__/api_c/env_set_verbose.html__OCT__DB_VERB_CHKPOINT DB_ENV-__GT__set_verbose@DB_VERB_CHKPOINT
+__APIREL__/api_c/env_set_verbose.html__OCT__DB_VERB_DEADLOCK DB_ENV-__GT__set_verbose@DB_VERB_DEADLOCK
+__APIREL__/api_c/env_set_verbose.html__OCT__DB_VERB_RECOVERY DB_ENV-__GT__set_verbose@DB_VERB_RECOVERY
+__APIREL__/api_c/env_set_verbose.html__OCT__DB_VERB_REPLICATION DB_ENV-__GT__set_verbose@DB_VERB_REPLICATION
+__APIREL__/api_c/env_set_verbose.html__OCT__DB_VERB_WAITSFOR DB_ENV-__GT__set_verbose@DB_VERB_WAITSFOR
+__APIREL__/api_c/env_strerror.html__OCT__2 @db_strerror
+__APIREL__/api_c/env_version.html__OCT__2 @db_version
+__APIREL__/api_c/env_version.html__OCT__3 @db_version
+__APIREL__/api_c/env_set_alloc.html__OCT__2 @DB_ENV-__GT__set_alloc
+__APIREL__/api_c/env_set_errfile.html__OCT__2 @DB_ENV-__GT__set_errfile
+__APIREL__/api_c/env_set_errfile.html__OCT__3 @DB_ENV-__GT__get_errfile
+__APIREL__/api_c/dbm.html__OCT__2 @dbm/ndbm
+__APIREL__/api_c/hsearch.html__OCT__2 @hsearch
+__APIREL__/api_c/hsearch.html__OCT__3 @hcreate
+__APIREL__/api_c/env_set_lk_conflicts.html__OCT__2 @DB_ENV-__GT__set_lk_conflicts
+__APIREL__/api_c/env_set_lk_conflicts.html__OCT__3 @DB_ENV-__GT__get_lk_conflicts
+__APIREL__/api_c/env_set_lk_detect.html__OCT__2 @DB_ENV-__GT__set_lk_detect
+__APIREL__/api_c/env_set_lk_detect.html__OCT__3 @DB_ENV-__GT__get_lk_detect
+__APIREL__/api_c/env_set_lk_detect.html__OCT__DB_LOCK_DEFAULT DB_ENV-__GT__set_lk_detect@DB_LOCK_DEFAULT
+__APIREL__/api_c/env_set_lk_detect.html__OCT__DB_LOCK_EXPIRE DB_ENV-__GT__set_lk_detect@DB_LOCK_EXPIRE
+__APIREL__/api_c/env_set_lk_detect.html__OCT__DB_LOCK_MAXLOCKS DB_ENV-__GT__set_lk_detect@DB_LOCK_MAXLOCKS
+__APIREL__/api_c/env_set_lk_detect.html__OCT__DB_LOCK_MINLOCKS DB_ENV-__GT__set_lk_detect@DB_LOCK_MINLOCKS
+__APIREL__/api_c/env_set_lk_detect.html__OCT__DB_LOCK_MINWRITE DB_ENV-__GT__set_lk_detect@DB_LOCK_MINWRITE
+__APIREL__/api_c/env_set_lk_detect.html__OCT__DB_LOCK_OLDEST DB_ENV-__GT__set_lk_detect@DB_LOCK_OLDEST
+__APIREL__/api_c/env_set_lk_detect.html__OCT__DB_LOCK_RANDOM DB_ENV-__GT__set_lk_detect@DB_LOCK_RANDOM
+__APIREL__/api_c/env_set_lk_detect.html__OCT__DB_LOCK_YOUNGEST DB_ENV-__GT__set_lk_detect@DB_LOCK_YOUNGEST
+__APIREL__/api_c/env_set_lk_max_lockers.html__OCT__2 @DB_ENV-__GT__set_lk_max_lockers
+__APIREL__/api_c/env_set_lk_max_lockers.html__OCT__3 @DB_ENV-__GT__get_lk_max_lockers
+__APIREL__/api_c/env_set_lk_max_locks.html__OCT__2 @DB_ENV-__GT__set_lk_max_locks
+__APIREL__/api_c/env_set_lk_max_locks.html__OCT__3 @DB_ENV-__GT__get_lk_max_locks
+__APIREL__/api_c/env_set_lk_max_objects.html__OCT__2 @DB_ENV-__GT__set_lk_max_objects
+__APIREL__/api_c/env_set_lk_max_objects.html__OCT__3 @DB_ENV-__GT__get_lk_max_objects
+__APIREL__/api_c/lock_class.html__OCT__2 @DB_LOCK
+__APIREL__/api_c/lock_detect.html__OCT__2 @DB_ENV-__GT__lock_detect
+__APIREL__/api_c/lock_detect.html__OCT__DB_LOCK_DEFAULT DB_ENV-__GT__lock_detect@DB_LOCK_DEFAULT
+__APIREL__/api_c/lock_detect.html__OCT__DB_LOCK_EXPIRE DB_ENV-__GT__lock_detect@DB_LOCK_EXPIRE
+__APIREL__/api_c/lock_detect.html__OCT__DB_LOCK_MAXLOCKS DB_ENV-__GT__lock_detect@DB_LOCK_MAXLOCKS
+__APIREL__/api_c/lock_detect.html__OCT__DB_LOCK_MINLOCKS DB_ENV-__GT__lock_detect@DB_LOCK_MINLOCKS
+__APIREL__/api_c/lock_detect.html__OCT__DB_LOCK_MINWRITE DB_ENV-__GT__lock_detect@DB_LOCK_MINWRITE
+__APIREL__/api_c/lock_detect.html__OCT__DB_LOCK_OLDEST DB_ENV-__GT__lock_detect@DB_LOCK_OLDEST
+__APIREL__/api_c/lock_detect.html__OCT__DB_LOCK_RANDOM DB_ENV-__GT__lock_detect@DB_LOCK_RANDOM
+__APIREL__/api_c/lock_detect.html__OCT__DB_LOCK_YOUNGEST DB_ENV-__GT__lock_detect@DB_LOCK_YOUNGEST
+__APIREL__/api_c/lock_get.html__OCT__2 @DB_ENV-__GT__lock_get
+__APIREL__/api_c/lock_get.html__OCT__DB_LOCK_NOWAIT DB_ENV-__GT__lock_get@DB_LOCK_NOWAIT
+__APIREL__/api_c/lock_id.html__OCT__2 @DB_ENV-__GT__lock_id
+__APIREL__/api_c/lock_id_free.html__OCT__2 @DB_ENV-__GT__lock_id_free
+__APIREL__/api_c/lock_put.html__OCT__2 @DB_ENV-__GT__lock_put
+__APIREL__/api_c/lock_stat.html__OCT__2 @DB_ENV-__GT__lock_stat
+__APIREL__/api_c/lock_stat.html__OCT__DB_STAT_CLEAR DB_ENV-__GT__lock_stat@DB_STAT_CLEAR
+__APIREL__/api_c/lock_vec.html__OCT__2 @DB_ENV-__GT__lock_vec
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_NOWAIT DB_ENV-__GT__lock_vec@DB_LOCK_NOWAIT
+__APIREL__/api_c/lock_vec.html__OCT__op DB_ENV-__GT__lock_vec@op
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_GET DB_ENV-__GT__lock_vec@DB_LOCK_GET
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_GET_TIMEOUT DB_ENV-__GT__lock_vec@DB_LOCK_GET_TIMEOUT
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_PUT DB_ENV-__GT__lock_vec@DB_LOCK_PUT
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_PUT_ALL DB_ENV-__GT__lock_vec@DB_LOCK_PUT_ALL
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_PUT_OBJ DB_ENV-__GT__lock_vec@DB_LOCK_PUT_OBJ
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_TIMEOUT DB_ENV-__GT__lock_vec@DB_LOCK_TIMEOUT
+__APIREL__/api_c/lock_vec.html__OCT__lock DB_ENV-__GT__lock_vec@lock
+__APIREL__/api_c/lock_vec.html__OCT__mode DB_ENV-__GT__lock_vec@mode
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_READ DB_ENV-__GT__lock_vec@DB_LOCK_READ
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_WRITE DB_ENV-__GT__lock_vec@DB_LOCK_WRITE
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_IWRITE DB_ENV-__GT__lock_vec@DB_LOCK_IWRITE
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_IREAD DB_ENV-__GT__lock_vec@DB_LOCK_IREAD
+__APIREL__/api_c/lock_vec.html__OCT__DB_LOCK_IWR DB_ENV-__GT__lock_vec@DB_LOCK_IWR
+__APIREL__/api_c/lock_vec.html__OCT__obj DB_ENV-__GT__lock_vec@obj
+__APIREL__/api_c/env_set_lg_bsize.html__OCT__2 @DB_ENV-__GT__set_lg_bsize
+__APIREL__/api_c/env_set_lg_bsize.html__OCT__3 @DB_ENV-__GT__get_lg_bsize
+__APIREL__/api_c/env_set_lg_dir.html__OCT__2 @DB_ENV-__GT__set_lg_dir
+__APIREL__/api_c/env_set_lg_dir.html__OCT__3 @DB_ENV-__GT__get_lg_dir
+__APIREL__/api_c/env_set_lg_max.html__OCT__2 @DB_ENV-__GT__set_lg_max
+__APIREL__/api_c/env_set_lg_max.html__OCT__3 @DB_ENV-__GT__get_lg_max
+__APIREL__/api_c/env_set_lg_regionmax.html__OCT__2 @DB_ENV-__GT__set_lg_regionmax
+__APIREL__/api_c/env_set_lg_regionmax.html__OCT__3 @DB_ENV-__GT__get_lg_regionmax
+__APIREL__/api_c/log_archive.html__OCT__2 @DB_ENV-__GT__log_archive
+__APIREL__/api_c/log_archive.html__OCT__DB_ARCH_ABS DB_ENV-__GT__log_archive@DB_ARCH_ABS
+__APIREL__/api_c/log_archive.html__OCT__DB_ARCH_DATA DB_ENV-__GT__log_archive@DB_ARCH_DATA
+__APIREL__/api_c/log_archive.html__OCT__DB_ARCH_LOG DB_ENV-__GT__log_archive@DB_ARCH_LOG
+__APIREL__/api_c/log_archive.html__OCT__DB_ARCH_REMOVE DB_ENV-__GT__log_archive@DB_ARCH_REMOVE
+__APIREL__/api_c/log_compare.html__OCT__2 @log_compare
+__APIREL__/api_c/log_cursor.html__OCT__2 @DB_ENV-__GT__log_cursor
+__APIREL__/api_c/log_file.html__OCT__2 @DB_ENV-__GT__log_file
+__APIREL__/api_c/log_flush.html__OCT__2 @DB_ENV-__GT__log_flush
+__APIREL__/api_c/log_put.html__OCT__2 @DB_ENV-__GT__log_put
+__APIREL__/api_c/log_put.html__OCT__DB_FLUSH DB_ENV-__GT__log_put@DB_FLUSH
+__APIREL__/api_c/log_stat.html__OCT__2 @DB_ENV-__GT__log_stat
+__APIREL__/api_c/log_stat.html__OCT__DB_STAT_CLEAR DB_ENV-__GT__log_stat@DB_STAT_CLEAR
+__APIREL__/api_c/logc_class.html__OCT__2 @DB_LOGC
+__APIREL__/api_c/logc_close.html__OCT__2 @DB_LOGC-__GT__close
+__APIREL__/api_c/logc_get.html__OCT__2 @DB_LOGC-__GT__get
+__APIREL__/api_c/logc_get.html__OCT__DB_CURRENT DB_LOGC-__GT__get@DB_CURRENT
+__APIREL__/api_c/logc_get.html__OCT__DB_FIRST DB_LOGC-__GT__get@DB_FIRST
+__APIREL__/api_c/logc_get.html__OCT__DB_LAST DB_LOGC-__GT__get@DB_LAST
+__APIREL__/api_c/logc_get.html__OCT__DB_NEXT DB_LOGC-__GT__get@DB_NEXT
+__APIREL__/api_c/logc_get.html__OCT__DB_PREV DB_LOGC-__GT__get@DB_PREV
+__APIREL__/api_c/logc_get.html__OCT__DB_SET DB_LOGC-__GT__get@DB_SET
+__APIREL__/api_c/lsn_class.html__OCT__2 @DB_LSN
+__APIREL__/api_c/env_set_mp_mmapsize.html__OCT__2 @DB_ENV-__GT__set_mp_mmapsize
+__APIREL__/api_c/env_set_mp_mmapsize.html__OCT__3 @DB_ENV-__GT__get_mp_mmapsize
+__APIREL__/api_c/memp_set_flags.html__OCT__2 @DB_MPOOLFILE-__GT__set_flags
+__APIREL__/api_c/memp_set_flags.html__OCT__3 @DB_MPOOLFILE-__GT__get_flags
+__APIREL__/api_c/memp_set_flags.html__OCT__DB_MPOOL_NOFILE DB_MPOOLFILE-__GT__set_flags@DB_MPOOL_NOFILE
+__APIREL__/api_c/memp_set_maxsize.html__OCT__2 @DB_MPOOLFILE-__GT__set_maxsize
+__APIREL__/api_c/memp_set_maxsize.html__OCT__3 @DB_MPOOLFILE-__GT__get_maxsize
+__APIREL__/api_c/memp_set_priority.html__OCT__2 @DB_MPOOLFILE-__GT__set_priority
+__APIREL__/api_c/memp_set_priority.html__OCT__3 @DB_MPOOLFILE-__GT__get_priority
+__APIREL__/api_c/memp_set_priority.html__OCT__DB_PRIORITY_VERY_LOW DB_MPOOLFILE-__GT__set_priority@DB_PRIORITY_VERY_LOW
+__APIREL__/api_c/memp_set_priority.html__OCT__DB_PRIORITY_LOW DB_MPOOLFILE-__GT__set_priority@DB_PRIORITY_LOW
+__APIREL__/api_c/memp_set_priority.html__OCT__DB_PRIORITY_DEFAULT DB_MPOOLFILE-__GT__set_priority@DB_PRIORITY_DEFAULT
+__APIREL__/api_c/memp_set_priority.html__OCT__DB_PRIORITY_HIGH DB_MPOOLFILE-__GT__set_priority@DB_PRIORITY_HIGH
+__APIREL__/api_c/memp_set_priority.html__OCT__DB_PRIORITY_VERY_HIGH DB_MPOOLFILE-__GT__set_priority@DB_PRIORITY_VERY_HIGH
+__APIREL__/api_c/memp_stat.html__OCT__2 @DB_ENV-__GT__memp_stat
+__APIREL__/api_c/memp_stat.html__OCT__DB_STAT_CLEAR DB_ENV-__GT__memp_stat@DB_STAT_CLEAR
+__APIREL__/api_c/memp_sync.html__OCT__2 @DB_ENV-__GT__memp_sync
+__APIREL__/api_c/memp_trickle.html__OCT__2 @DB_ENV-__GT__memp_trickle
+__APIREL__/api_c/mempfile_class.html__OCT__2 @DB_MPOOLFILE
+__APIREL__/api_c/memp_fclose.html__OCT__2 @DB_MPOOLFILE-__GT__close
+__APIREL__/api_c/memp_fcreate.html__OCT__2 @DB_ENV-__GT__memp_fcreate
+__APIREL__/api_c/memp_fget.html__OCT__2 @DB_MPOOLFILE-__GT__get
+__APIREL__/api_c/memp_fget.html__OCT__3 @DB_PAGE_NOTFOUND
+__APIREL__/api_c/memp_fget.html__OCT__DB_MPOOL_CREATE DB_MPOOLFILE-__GT__get@DB_MPOOL_CREATE
+__APIREL__/api_c/memp_fget.html__OCT__DB_MPOOL_LAST DB_MPOOLFILE-__GT__get@DB_MPOOL_LAST
+__APIREL__/api_c/memp_fget.html__OCT__DB_MPOOL_NEW DB_MPOOLFILE-__GT__get@DB_MPOOL_NEW
+__APIREL__/api_c/memp_fopen.html__OCT__2 @DB_MPOOLFILE-__GT__open
+__APIREL__/api_c/memp_fopen.html__OCT__DB_CREATE DB_MPOOLFILE-__GT__open@DB_CREATE
+__APIREL__/api_c/memp_fopen.html__OCT__3 turn off system @buffering
+__APIREL__/api_c/memp_fopen.html__OCT__DB_DIRECT DB_MPOOLFILE-__GT__open@DB_DIRECT
+__APIREL__/api_c/memp_fopen.html__OCT__DB_NOMMAP DB_MPOOLFILE-__GT__open@DB_NOMMAP
+__APIREL__/api_c/memp_fopen.html__OCT__DB_ODDFILESIZE DB_MPOOLFILE-__GT__open@DB_ODDFILESIZE
+__APIREL__/api_c/memp_fopen.html__OCT__DB_RDONLY DB_MPOOLFILE-__GT__open@DB_RDONLY
+__APIREL__/api_c/memp_fput.html__OCT__2 @DB_MPOOLFILE-__GT__put
+__APIREL__/api_c/memp_fput.html__OCT__DB_MPOOL_CLEAN DB_MPOOLFILE-__GT__put@DB_MPOOL_CLEAN
+__APIREL__/api_c/memp_fput.html__OCT__DB_MPOOL_DIRTY DB_MPOOLFILE-__GT__put@DB_MPOOL_DIRTY
+__APIREL__/api_c/memp_fput.html__OCT__DB_MPOOL_DISCARD DB_MPOOLFILE-__GT__put@DB_MPOOL_DISCARD
+__APIREL__/api_c/memp_fset.html__OCT__2 @DB_MPOOLFILE-__GT__set
+__APIREL__/api_c/memp_fset.html__OCT__DB_MPOOL_CLEAN DB_MPOOLFILE-__GT__set@DB_MPOOL_CLEAN
+__APIREL__/api_c/memp_fset.html__OCT__DB_MPOOL_DIRTY DB_MPOOLFILE-__GT__set@DB_MPOOL_DIRTY
+__APIREL__/api_c/memp_fset.html__OCT__DB_MPOOL_DISCARD DB_MPOOLFILE-__GT__set@DB_MPOOL_DISCARD
+__APIREL__/api_c/memp_fsync.html__OCT__2 @DB_MPOOLFILE-__GT__sync
+__APIREL__/api_c/memp_register.html__OCT__2 @DB_ENV-__GT__memp_register
+__APIREL__/api_c/memp_set_clear_len.html__OCT__2 @DB_MPOOLFILE-__GT__set_clear_len
+__APIREL__/api_c/memp_set_clear_len.html__OCT__3 @DB_MPOOLFILE-__GT__get_clear_len
+__APIREL__/api_c/memp_set_fileid.html__OCT__2 @DB_MPOOLFILE-__GT__set_fileid
+__APIREL__/api_c/memp_set_fileid.html__OCT__3 @DB_MPOOLFILE-__GT__get_fileid
+__APIREL__/api_c/memp_set_ftype.html__OCT__2 @DB_MPOOLFILE-__GT__set_ftype
+__APIREL__/api_c/memp_set_ftype.html__OCT__3 @DB_MPOOLFILE-__GT__get_ftype
+__APIREL__/api_c/memp_set_lsn_offset.html__OCT__2 @DB_MPOOLFILE-__GT__set_lsn_offset
+__APIREL__/api_c/memp_set_lsn_offset.html__OCT__3 @DB_MPOOLFILE-__GT__get_lsn_offset
+__APIREL__/api_c/memp_set_pgcookie.html__OCT__2 @DB_MPOOLFILE-__GT__set_pgcookie
+__APIREL__/api_c/memp_set_pgcookie.html__OCT__3 @DB_MPOOLFILE-__GT__get_pgcookie
+__APIREL__/api_c/rep_elect.html__OCT__2 @DB_ENV-__GT__rep_elect
+__APIREL__/api_c/rep_elect.html__OCT__3 @DB_REP_UNAVAIL
+__APIREL__/api_c/rep_limit.html__OCT__2 @DB_ENV-__GT__set_rep_limit
+__APIREL__/api_c/rep_limit.html__OCT__3 @DB_ENV-__GT__get_rep_limit
+__APIREL__/api_c/rep_message.html__OCT__2 @DB_ENV-__GT__rep_process_message
+__APIREL__/api_c/rep_message.html__OCT__DB_REP_DUPMASTER DB_ENV-__GT__rep_process_message@DB_REP_DUPMASTER
+__APIREL__/api_c/rep_message.html__OCT__DB_REP_HOLDELECTION DB_ENV-__GT__rep_process_message@DB_REP_HOLDELECTION
+__APIREL__/api_c/rep_message.html__OCT__DB_REP_ISPERM DB_ENV-__GT__rep_process_message@DB_REP_ISPERM
+__APIREL__/api_c/rep_message.html__OCT__DB_REP_NEWMASTER DB_ENV-__GT__rep_process_message@DB_REP_NEWMASTER
+__APIREL__/api_c/rep_message.html__OCT__DB_REP_NEWSITE DB_ENV-__GT__rep_process_message@DB_REP_NEWSITE
+__APIREL__/api_c/rep_message.html__OCT__DB_REP_NOTPERM DB_ENV-__GT__rep_process_message@DB_REP_NOTPERM
+__APIREL__/api_c/rep_message.html__OCT__DB_REP_OUTDATED DB_ENV-__GT__rep_process_message@DB_REP_OUTDATED
+__APIREL__/api_c/rep_start.html__OCT__2 @DB_ENV-__GT__rep_start
+__APIREL__/api_c/rep_start.html__OCT__DB_REP_CLIENT DB_ENV-__GT__rep_start@DB_REP_CLIENT
+__APIREL__/api_c/rep_start.html__OCT__DB_REP_LOGSONLY DB_ENV-__GT__rep_start@DB_REP_LOGSONLY
+__APIREL__/api_c/rep_start.html__OCT__DB_REP_MASTER DB_ENV-__GT__rep_start@DB_REP_MASTER
+__APIREL__/api_c/rep_stat.html__OCT__2 @DB_ENV-__GT__rep_stat
+__APIREL__/api_c/rep_stat.html__OCT__DB_STAT_CLEAR DB_ENV-__GT__rep_stat@DB_STAT_CLEAR
+__APIREL__/api_c/rep_transport.html__OCT__2 @DB_ENV-__GT__set_rep_transport
+__APIREL__/api_c/rep_transport.html__OCT__3 @DB_EID_BROADCAST
+__APIREL__/api_c/rep_transport.html__OCT__DB_REP_NOBUFFER DB_ENV-__GT__set_rep_transport@DB_REP_NOBUFFER
+__APIREL__/api_c/rep_transport.html__OCT__DB_REP_PERMANENT DB_ENV-__GT__set_rep_transport@DB_REP_PERMANENT
+__APIREL__/api_c/set_func_close.html__OCT__2 @db_env_set_func_close
+__APIREL__/api_c/set_func_dirfree.html__OCT__2 @db_env_set_func_dirfree
+__APIREL__/api_c/set_func_dirlist.html__OCT__2 @db_env_set_func_dirlist
+__APIREL__/api_c/set_func_exists.html__OCT__2 @db_env_set_func_exists
+__APIREL__/api_c/set_func_free.html__OCT__2 @db_env_set_func_free
+__APIREL__/api_c/set_func_fsync.html__OCT__2 @db_env_set_func_fsync
+__APIREL__/api_c/set_func_ioinfo.html__OCT__2 @db_env_set_func_ioinfo
+__APIREL__/api_c/set_func_malloc.html__OCT__2 @db_env_set_func_malloc
+__APIREL__/api_c/set_func_map.html__OCT__2 @db_env_set_func_map
+__APIREL__/api_c/set_func_open.html__OCT__2 @db_env_set_func_open
+__APIREL__/api_c/set_func_read.html__OCT__2 @db_env_set_func_read
+__APIREL__/api_c/set_func_realloc.html__OCT__2 @db_env_set_func_realloc
+__APIREL__/api_c/set_func_rename.html__OCT__2 @db_env_set_func_rename
+__APIREL__/api_c/set_func_seek.html__OCT__2 @db_env_set_func_seek
+__APIREL__/api_c/set_func_sleep.html__OCT__2 @db_env_set_func_sleep
+__APIREL__/api_c/set_func_unlink.html__OCT__2 @db_env_set_func_unlink
+__APIREL__/api_c/set_func_unmap.html__OCT__2 @db_env_set_func_unmap
+__APIREL__/api_c/set_func_write.html__OCT__2 @db_env_set_func_write
+__APIREL__/api_c/set_func_yield.html__OCT__2 @db_env_set_func_yield
+__APIREL__/api_c/env_set_tx_max.html__OCT__2 @DB_ENV-__GT__set_tx_max
+__APIREL__/api_c/env_set_tx_max.html__OCT__3 @DB_ENV-__GT__get_tx_max
+__APIREL__/api_c/env_set_tx_timestamp.html__OCT__2 @DB_ENV-__GT__set_tx_timestamp
+__APIREL__/api_c/env_set_tx_timestamp.html__OCT__3 @DB_ENV-__GT__get_tx_timestamp
+__APIREL__/api_c/txn_abort.html__OCT__2 @DB_TXN-__GT__abort
+__APIREL__/api_c/txn_begin.html__OCT__2 @DB_ENV-__GT__txn_begin
+__APIREL__/api_c/txn_begin.html__OCT__DB_DIRTY_READ DB_ENV-__GT__txn_begin@DB_DIRTY_READ
+__APIREL__/api_c/txn_begin.html__OCT__DB_TXN_NOSYNC DB_ENV-__GT__txn_begin@DB_TXN_NOSYNC
+__APIREL__/api_c/txn_begin.html__OCT__DB_TXN_NOWAIT DB_ENV-__GT__txn_begin@DB_TXN_NOWAIT
+__APIREL__/api_c/txn_begin.html__OCT__DB_TXN_SYNC DB_ENV-__GT__txn_begin@DB_TXN_SYNC
+__APIREL__/api_c/txn_checkpoint.html__OCT__2 @DB_ENV-__GT__txn_checkpoint
+__APIREL__/api_c/txn_checkpoint.html__OCT__DB_FORCE DB_ENV-__GT__txn_checkpoint@DB_FORCE
+__APIREL__/api_c/txn_class.html__OCT__2 @DB_TXN
+__APIREL__/api_c/txn_commit.html__OCT__2 @DB_TXN-__GT__commit
+__APIREL__/api_c/txn_commit.html__OCT__DB_TXN_NOSYNC DB_TXN-__GT__commit@DB_TXN_NOSYNC
+__APIREL__/api_c/txn_commit.html__OCT__DB_TXN_SYNC DB_TXN-__GT__commit@DB_TXN_SYNC
+__APIREL__/api_c/txn_discard.html__OCT__2 @DB_TXN-__GT__discard
+__APIREL__/api_c/txn_id.html__OCT__2 @DB_TXN-__GT__id
+__APIREL__/api_c/txn_prepare.html__OCT__2 @DB_TXN-__GT__prepare
+__APIREL__/api_c/txn_prepare.html__OCT__3 @DB_XIDDATASIZE
+__APIREL__/api_c/txn_recover.html__OCT__2 @DB_ENV-__GT__txn_recover
+__APIREL__/api_c/txn_recover.html__OCT__DB_FIRST DB_ENV-__GT__txn_recover@DB_FIRST
+__APIREL__/api_c/txn_recover.html__OCT__DB_NEXT DB_ENV-__GT__txn_recover@DB_NEXT
+__APIREL__/api_c/txn_set_timeout.html__OCT__2 @DB_TXN-__GT__set_timeout
+__APIREL__/api_c/txn_set_timeout.html__OCT__DB_SET_LOCK_TIMEOUT DB_TXN-__GT__set_timeout@DB_SET_LOCK_TIMEOUT
+__APIREL__/api_c/txn_set_timeout.html__OCT__DB_SET_TXN_TIMEOUT DB_TXN-__GT__set_timeout@DB_SET_TXN_TIMEOUT
+__APIREL__/api_c/txn_stat.html__OCT__2 @DB_ENV-__GT__txn_stat
+__APIREL__/api_c/txn_stat.html__OCT__DB_STAT_CLEAR DB_ENV-__GT__txn_stat@DB_STAT_CLEAR
+__APIREL__/ref/am/close.html__OCT__2 @closing a database
+__APIREL__/ref/am/count.html__OCT__2 @counting data items for a key
+__APIREL__/ref/am/curclose.html__OCT__2 @closing a cursor
+__APIREL__/ref/am/curclose.html__OCT__3 closing a @cursor
+__APIREL__/ref/am/curdel.html__OCT__2 @deleting records with a cursor
+__APIREL__/ref/am/curdel.html__OCT__3 deleting records with a @cursor
+__APIREL__/ref/am/curdup.html__OCT__2 @duplicating a cursor
+__APIREL__/ref/am/curdup.html__OCT__3 duplicating a @cursor
+__APIREL__/ref/am/curget.html__OCT__2 @retrieving records with a cursor
+__APIREL__/ref/am/curget.html__OCT__3 retrieving records with a @cursor
+__APIREL__/ref/am/curput.html__OCT__2 @storing records with a cursor
+__APIREL__/ref/am/curput.html__OCT__3 storing records with a @cursor
+__APIREL__/ref/am/cursor.html__OCT__2 database @cursors
+__APIREL__/ref/am/delete.html__OCT__2 @deleting records
+__APIREL__/ref/am/get.html__OCT__2 @retrieving records
+__APIREL__/ref/am/join.html__OCT__2 @equality join
+__APIREL__/ref/am/join.html__OCT__3 equality @join
+__APIREL__/ref/am/join.html__OCT__4 @natural join
+__APIREL__/ref/am/open.html__OCT__2 @opening a database
+__APIREL__/ref/am/put.html__OCT__2 @storing records
+__APIREL__/ref/am/second.html__OCT__2 @secondary indices
+__APIREL__/ref/am/second.html__OCT__3 secondary @indices
+__APIREL__/ref/am/stat.html__OCT__2 database @statistics
+__APIREL__/ref/am/sync.html__OCT__2 flushing the database @cache
+__APIREL__/ref/am/truncate.html__OCT__2 @truncating a database
+__APIREL__/ref/am/truncate.html__OCT__3 @emptying a database
+__APIREL__/ref/am/upgrade.html__OCT__2 @upgrading databases
+__APIREL__/ref/am/verify.html__OCT__2 database @verification
+__APIREL__/ref/am/verify.html__OCT__3 database @salvage
+__APIREL__/ref/am/verify.html__OCT__4 salvaging @corrupted databases
+__APIREL__/ref/am_conf/bt_compare.html__OCT__2 specifying a Btree @comparison function
+__APIREL__/ref/am_conf/bt_recnum.html__OCT__2 retrieving Btree records by logical record @number
+__APIREL__/ref/am_conf/bt_recnum.html__OCT__3 retrieving Btree records by @logical record @number
+__APIREL__/ref/am_conf/byteorder.html__OCT__2 selecting a @byte order
+__APIREL__/ref/am_conf/cachesize.html__OCT__2 selecting a @cache size
+__APIREL__/ref/am_conf/dup.html__OCT__2 @duplicate data items
+__APIREL__/ref/am_conf/extentsize.html__OCT__2 selecting a Queue @extent size
+__APIREL__/ref/am_conf/h_ffactor.html__OCT__2 page @fill factor
+__APIREL__/ref/am_conf/h_hash.html__OCT__2 specifying a database @hash
+__APIREL__/ref/am_conf/h_nelem.html__OCT__2 @hash table size
+__APIREL__/ref/am_conf/intro.html__OCT__2 introduction to the @access methods
+__APIREL__/ref/am_conf/logrec.html__OCT__2 logical @record numbers
+__APIREL__/ref/am_conf/pagesize.html__OCT__2 selecting a @page size
+__APIREL__/ref/am_conf/re_source.html__OCT__2 @text backing files
+__APIREL__/ref/am_conf/recno.html__OCT__2 managing @record-based databases
+__APIREL__/ref/am_conf/renumber.html__OCT__2 logically renumbering @records
+__APIREL__/ref/am_conf/select.html__OCT__2 selecting an @access method
+__APIREL__/ref/am_misc/align.html__OCT__2 data @alignment
+__APIREL__/ref/am_misc/dbsizes.html__OCT__2 database @limits
+__APIREL__/ref/am_misc/diskspace.html__OCT__2 @disk space requirements
+__APIREL__/ref/am_misc/error.html__OCT__2 @error handling
+__APIREL__/ref/am_misc/faq.html__OCT__2 @access method FAQ
+__APIREL__/ref/am_misc/faq.html__OCT__3 database @compaction
+__APIREL__/ref/am_misc/faq.html__OCT__4 returning pages to the @filesystem
+__APIREL__/ref/am_misc/faq.html__OCT__5 @double buffering
+__APIREL__/ref/am_misc/get_bulk.html__OCT__2 @retrieving records in bulk
+__APIREL__/ref/am_misc/partial.html__OCT__2 @partial record storage and retrieval
+__APIREL__/ref/am_misc/perm.html__OCT__2 retrieved key/data @permanence
+__APIREL__/ref/am_misc/perm.html__OCT__3 retrieved @key/data permanence
+__APIREL__/ref/am_misc/stability.html__OCT__2 @cursor stability
+__APIREL__/ref/am_misc/stability.html__OCT__3 cursor @stability
+__APIREL__/ref/am_misc/stability.html__OCT__4 @degrees of isolation
+__APIREL__/ref/am_misc/stability.html__OCT__5 degrees of @isolation
+__APIREL__/ref/am_misc/tune.html__OCT__2 @access method tuning
+__APIREL__/ref/am_misc/tune.html__OCT__3 access method @tuning
+__APIREL__/ref/arch/apis.html__OCT__2 programmatic @APIs
+__APIREL__/ref/arch/utilities.html__OCT__2 @utilities
+__APIREL__/ref/build_unix/aix.html__OCT__2 @AIX
+__APIREL__/ref/build_unix/conf.html__OCT__2 @configuring Berkeley DB for UNIX systems
+__APIREL__/ref/build_unix/conf.html__OCT__3 configuring Berkeley DB for @UNIX systems
+__APIREL__/ref/build_unix/conf.html__OCT__4 configuring without large @file support
+__APIREL__/ref/build_unix/conf.html__OCT__--disable-largefile Configuring Berkeley DB@--disable-largefile
+__APIREL__/ref/build_unix/conf.html__OCT__5 disabling @shared libraries
+__APIREL__/ref/build_unix/conf.html__OCT__6 disabling @static libraries
+__APIREL__/ref/build_unix/conf.html__OCT__--disable-shared Configuring Berkeley DB@--disable-shared
+__APIREL__/ref/build_unix/conf.html__OCT__--disable-static Configuring Berkeley DB@--disable-static
+__APIREL__/ref/build_unix/conf.html__OCT__7 configuring Berkeley DB @1.85 API compatibility
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-compat185 Configuring Berkeley DB@--enable-compat185
+__APIREL__/ref/build_unix/conf.html__OCT__8 configuring the @C++ API
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-cxx Configuring Berkeley DB@--enable-cxx
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-debug Configuring Berkeley DB@--enable-debug
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-debug_rop Configuring Berkeley DB@--enable-debug_rop
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-debug_wop Configuring Berkeley DB@--enable-debug_wop
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-diagnostic Configuring Berkeley DB@--enable-diagnostic
+__APIREL__/ref/build_unix/conf.html__OCT__9 building a utility to dump Berkeley DB @1.85 databases
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-dump185 Configuring Berkeley DB@--enable-dump185
+__APIREL__/ref/build_unix/conf.html__OCT__10 configuring the @Java API
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-java Configuring Berkeley DB@--enable-java
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-posixmutexes Configuring Berkeley DB@--enable-posixmutexes
+__APIREL__/ref/build_unix/conf.html__OCT__11 configuring a @RPC client/server
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-rpc Configuring Berkeley DB@--enable-rpc
+__APIREL__/ref/build_unix/conf.html__OCT__12 configuring a small memory @footprint library
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-smallbuild Configuring Berkeley DB@--enable-smallbuild
+__APIREL__/ref/build_unix/conf.html__OCT__13 configuring the @Tcl API
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-tcl Configuring Berkeley DB@--enable-tcl
+__APIREL__/ref/build_unix/conf.html__OCT__14 configuring the @test suite
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-test Configuring Berkeley DB@--enable-test
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-uimutexes Configuring Berkeley DB@--enable-uimutexes
+__APIREL__/ref/build_unix/conf.html__OCT__--enable-umrw Configuring Berkeley DB@--enable-umrw
+__APIREL__/ref/build_unix/conf.html__OCT__--with-mutex=MUTEX Configuring Berkeley DB@--with-mutex=MUTEX
+__APIREL__/ref/build_unix/conf.html__OCT__--with-mutexalign=ALIGNMENT Configuring Berkeley DB@--with-mutexalign=ALIGNMENT
+__APIREL__/ref/build_unix/conf.html__OCT__--with-rpm=ARCHIVE Configuring Berkeley DB@--with-rpm=ARCHIVE
+__APIREL__/ref/build_unix/conf.html__OCT__--with-tcl=DIR Configuring Berkeley DB@--with-tcl=DIR
+__APIREL__/ref/build_unix/conf.html__OCT__--with-uniquename=NAME Configuring Berkeley DB@--with-uniquename=NAME
+__APIREL__/ref/build_unix/flags.html__OCT__2 changing @compile or load options
+__APIREL__/ref/build_unix/flags.html__OCT__3 changing compile or @load options
+__APIREL__/ref/build_unix/freebsd.html__OCT__2 @FreeBSD
+__APIREL__/ref/build_unix/hpux.html__OCT__2 @HP-UX
+__APIREL__/ref/build_unix/install.html__OCT__2 @installing Berkeley DB for UNIX systems
+__APIREL__/ref/build_unix/intro.html__OCT__2 @building for UNIX
+__APIREL__/ref/build_unix/intro.html__OCT__3 @building for QNX
+__APIREL__/ref/build_unix/intro.html__OCT__4 building for @UNIX
+__APIREL__/ref/build_unix/intro.html__OCT__5 building for @QNX
+__APIREL__/ref/build_unix/irix.html__OCT__2 @IRIX
+__APIREL__/ref/build_unix/linux.html__OCT__2 @Linux
+__APIREL__/ref/build_unix/macosx.html__OCT__2 @Mac OS X
+__APIREL__/ref/build_unix/notes.html__OCT__2 @building for UNIX FAQ
+__APIREL__/ref/build_unix/notes.html__OCT__3 building for @UNIX FAQ
+__APIREL__/ref/build_unix/osf1.html__OCT__2 @OSF/1
+__APIREL__/ref/build_unix/qnx.html__OCT__2 @QNX
+__APIREL__/ref/build_unix/sco.html__OCT__2 @SCO
+__APIREL__/ref/build_unix/shlib.html__OCT__2 @shared libraries
+__APIREL__/ref/build_unix/small.html__OCT__--disable-cryptography Building a small memory footprint library@--disable-cryptography
+__APIREL__/ref/build_unix/small.html__OCT__--disable-hash Building a small memory footprint library@--disable-hash
+__APIREL__/ref/build_unix/small.html__OCT__--disable-queue Building a small memory footprint library@--disable-queue
+__APIREL__/ref/build_unix/small.html__OCT__--disable-replication Building a small memory footprint library@--disable-replication
+__APIREL__/ref/build_unix/small.html__OCT__--disable-verify Building a small memory footprint library@--disable-verify
+__APIREL__/ref/build_unix/small.html__OCT__--enable-smallbuild Building a small memory footprint library@--enable-smallbuild
+__APIREL__/ref/build_unix/solaris.html__OCT__2 @Solaris
+__APIREL__/ref/build_unix/sunos.html__OCT__2 @SunOS
+__APIREL__/ref/build_unix/test.html__OCT__2 running the @test suite under UNIX
+__APIREL__/ref/build_unix/ultrix.html__OCT__2 @Ultrix
+__APIREL__/ref/build_vxworks/faq.html__OCT__2 @building for VxWorks FAQ
+__APIREL__/ref/build_vxworks/faq.html__OCT__3 building for @VxWorks FAQ
+__APIREL__/ref/build_vxworks/intro.html__OCT__2 @building for VxWorks
+__APIREL__/ref/build_vxworks/introae.html__OCT__2 @building for VxWorks AE
+__APIREL__/ref/build_vxworks/notes.html__OCT__2 @VxWorks notes
+__APIREL__/ref/build_win/faq.html__OCT__2 @building for Windows FAQ
+__APIREL__/ref/build_win/faq.html__OCT__3 building for @Windows FAQ
+__APIREL__/ref/build_win/faq.html__OCT__4 configuring for @MinGW
+__APIREL__/ref/build_win/intro.html__OCT__2 @building for Win32
+__APIREL__/ref/build_win/notes.html__OCT__2 @Windows notes
+__APIREL__/ref/build_win/test.html__OCT__2 running the @test suite under Windows
+__APIREL__/ref/build_win/test.html__OCT__3 running the test suite under @Windows
+__APIREL__/ref/cam/intro.html__OCT__2 @Concurrent Data Store
+__APIREL__/ref/debug/intro.html__OCT__2 introduction to @debugging
+__APIREL__/ref/debug/common.html__OCT__2 @debugging applications
+__APIREL__/ref/distrib/layout.html__OCT__2 @source code layout
+__APIREL__/ref/dumpload/text.html__OCT__2 loading @text into databases
+__APIREL__/ref/dumpload/utility.html__OCT__2 dumping/loading @text to/from databases
+__APIREL__/ref/env/create.html__OCT__2 database @environment
+__APIREL__/ref/env/db_config.html__OCT__2 @DB_CONFIG
+__APIREL__/ref/env/db_config.html__OCT__3 database environment @configuration
+__APIREL__/ref/env/encrypt.html__OCT__2 @encryption
+__APIREL__/ref/env/faq.html__OCT__2 database @environment FAQ
+__APIREL__/ref/env/intro.html__OCT__2 introduction to database @environments
+__APIREL__/ref/env/naming.html__OCT__2 file @naming
+__APIREL__/ref/env/naming.html__OCT__db_home File naming@db_home
+__APIREL__/ref/env/naming.html__OCT__DB_HOME File naming@DB_HOME
+__APIREL__/ref/env/region.html__OCT__2 @__db.001
+__APIREL__/ref/env/remote.html__OCT__2 remote @filesystems
+__APIREL__/ref/env/remote.html__OCT__3 @NFS problems
+__APIREL__/ref/env/security.html__OCT__2 @security
+__APIREL__/ref/intro/products.html__OCT__2 Sleepycat Software's Berkeley DB @products
+__APIREL__/ref/install/file.html__OCT__2 @/etc/magic
+__APIREL__/ref/install/file.html__OCT__3 @file utility
+__APIREL__/ref/install/rpm.html__OCT__2 @RPM
+__APIREL__/ref/java/compat.html__OCT__2 @Java compatibility
+__APIREL__/ref/java/conf.html__OCT__2 @Java configuration
+__APIREL__/ref/java/faq.html__OCT__2 Java @FAQ
+__APIREL__/ref/java/faq.html__OCT__3 @Java FAQ
+__APIREL__/ref/bdb/overview.html__OCT__2 @BDB
+__APIREL__/ref/bdb/cs_bdb_bind.html__OCT__2 @BDB
+__APIREL__/ref/bdb/cs_bdb_collection.html__OCT__2 @BDB
+__APIREL__/ref/bdb/faq.html__OCT__2 Java API @FAQ
+__APIREL__/ref/bdb/faq.html__OCT__3 @Java API FAQ
+__APIREL__/ref/bdb_basic/catalog.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/env.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/except.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/intro.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/keyvalue.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/main.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/read.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/stores.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/transact.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/views.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_basic/write.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_entity/bindings.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_entity/classes.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_entity/intro.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_entity/read.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_entity/views.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_index/foreign.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_index/intro.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_index/read.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_index/second.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_index/views.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_sentity/binding.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_sentity/class.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_sentity/intro.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_sentity/remove.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_tuple/extract.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_tuple/format.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_tuple/intro.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_tuple/sorted.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_tuple/tbinding.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_tuple/tsbinding.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_tut/intro.html__OCT__2 @tutorial
+__APIREL__/ref/bdb_tut/summary.html__OCT__2 @tutorial
+__APIREL__/ref/lock/am_conv.html__OCT__2 Berkeley DB Transactional Data Store @locking conventions
+__APIREL__/ref/lock/cam_conv.html__OCT__2 Berkeley DB Concurrent Data Store @locking conventions
+__APIREL__/ref/lock/config.html__OCT__2 @locking configuration
+__APIREL__/ref/lock/dead.html__OCT__2 @deadlocks
+__APIREL__/ref/lock/intro.html__OCT__2 introduction to the @locking subsystem
+__APIREL__/ref/lock/max.html__OCT__2 sizing the @locking subsystem
+__APIREL__/ref/lock/nondb.html__OCT__2 @locking and non-Berkeley DB applications
+__APIREL__/ref/lock/notxn.html__OCT__2 @locking without transactions
+__APIREL__/ref/lock/page.html__OCT__2 page-level @locking
+__APIREL__/ref/lock/page.html__OCT__3 @locking granularity
+__APIREL__/ref/lock/stdmode.html__OCT__2 standard @lock modes
+__APIREL__/ref/lock/timeout.html__OCT__2 lock @timeouts
+__APIREL__/ref/lock/timeout.html__OCT__3 transaction @timeouts
+__APIREL__/ref/lock/twopl.html__OCT__2 two-phase @locking
+__APIREL__/ref/log/config.html__OCT__2 @logging configuration
+__APIREL__/ref/log/intro.html__OCT__2 introduction to the @logging subsystem
+__APIREL__/ref/log/limits.html__OCT__2 @log file limits
+__APIREL__/ref/mp/intro.html__OCT__2 introduction to the @memory pool subsystem
+__APIREL__/ref/mp/intro.html__OCT__3 introduction to the memory @cache subsystem
+__APIREL__/ref/mp/intro.html__OCT__4 introduction to the @buffer pool subsystem
+__APIREL__/ref/mp/config.html__OCT__2 @memory pool configuration
+__APIREL__/ref/perl/intro.html__OCT__2 @Perl
+__APIREL__/ref/program/appsignals.html__OCT__2 @signal handling
+__APIREL__/ref/program/compatible.html__OCT__2 @interface compatibility
+__APIREL__/ref/program/environ.html__OCT__2 @environment variables
+__APIREL__/ref/program/errorret.html__OCT__2 @error returns
+__APIREL__/ref/program/errorret.html__OCT__3 @error name space
+__APIREL__/ref/program/errorret.html__OCT__DB_NOTFOUND Error returns to applications@DB_NOTFOUND
+__APIREL__/ref/program/errorret.html__OCT__DB_KEYEMPTY Error returns to applications@DB_KEYEMPTY
+__APIREL__/ref/program/errorret.html__OCT__DB_KEYEXIST Error returns to applications@DB_KEYEXIST
+__APIREL__/ref/program/errorret.html__OCT__4 @DB_LOCK_DEADLOCK
+__APIREL__/ref/program/errorret.html__OCT__DB_LOCK_DEADLOCK Error returns to applications@DB_LOCK_DEADLOCK
+__APIREL__/ref/program/errorret.html__OCT__DB_LOCK_NOTGRANTED Error returns to applications@DB_LOCK_NOTGRANTED
+__APIREL__/ref/program/errorret.html__OCT__DB_RUNRECOVERY Error returns to applications@DB_RUNRECOVERY
+__APIREL__/ref/program/faq.html__OCT__2 task/thread @priority
+__APIREL__/ref/program/mt.html__OCT__2 building @threaded applications
+__APIREL__/ref/program/namespace.html__OCT__2 Berkeley DB library @name spaces
+__APIREL__/ref/program/scope.html__OCT__2 Berkeley DB handle @scope
+__APIREL__/ref/program/scope.html__OCT__3 Berkeley DB @free-threaded handles
+__APIREL__/ref/rep/intro.html__OCT__2 introduction to @replication
+__APIREL__/ref/rpc/client.html__OCT__2 @RPC client
+__APIREL__/ref/rpc/faq.html__OCT__2 @RPC FAQ
+__APIREL__/ref/rpc/intro.html__OCT__2 introduction to @rpc client/server
+__APIREL__/ref/rpc/server.html__OCT__2 @RPC server
+__APIREL__/ref/simple_tut/intro.html__OCT__2 simple @tutorial
+__APIREL__/ref/tcl/intro.html__OCT__2 loading Berkeley DB with @Tcl
+__APIREL__/ref/tcl/faq.html__OCT__2 Tcl @FAQ
+__APIREL__/ref/tcl/faq.html__OCT__3 @Tcl FAQ
+__APIREL__/ref/tcl/program.html__OCT__2 @Tcl API programming notes
+__APIREL__/ref/tcl/using.html__OCT__2 using Berkeley DB with @Tcl
+__APIREL__/ref/test/run.html__OCT__2 running the @test suite
+__APIREL__/ref/transapp/admin.html__OCT__2 administering @transaction protected applications
+__APIREL__/ref/transapp/archival.html__OCT__2 archival in @transaction protected applications
+__APIREL__/ref/transapp/archival.html__OCT__3 @catastrophic recovery
+__APIREL__/ref/transapp/archival.html__OCT__4 hot @backup
+__APIREL__/ref/transapp/checkpoint.html__OCT__2 checkpoints in @transaction protected applications
+__APIREL__/ref/transapp/deadlock.html__OCT__2 deadlock detection in @transaction protected applications
+__APIREL__/ref/transapp/faq.html__OCT__2 @transaction FAQ
+__APIREL__/ref/transapp/filesys.html__OCT__2 recovery and @filesystem operations
+__APIREL__/ref/transapp/hotfail.html__OCT__2 hot @failover
+__APIREL__/ref/transapp/intro.html__OCT__2 @Transactional Data Store
+__APIREL__/ref/transapp/logfile.html__OCT__2 @log file removal
+__APIREL__/ref/transapp/nested.html__OCT__2 nested @transactions
+__APIREL__/ref/transapp/read.html__OCT__2 @repeatable read
+__APIREL__/ref/transapp/read.html__OCT__3 dirty @reads
+__APIREL__/ref/transapp/read.html__OCT__4 @dirty reads
+__APIREL__/ref/transapp/reclimit.html__OCT__2 Berkeley DB @recoverability
+__APIREL__/ref/transapp/recovery.html__OCT__2 recovery in @transaction protected applications
+__APIREL__/ref/transapp/throughput.html__OCT__2 @transaction throughput
+__APIREL__/ref/transapp/tune.html__OCT__2 @transaction tuning
+__APIREL__/ref/transapp/tune.html__OCT__3 transaction @tuning
+__APIREL__/ref/txn/config.html__OCT__2 @transaction configuration
+__APIREL__/ref/txn/intro.html__OCT__2 introduction to the @transaction subsystem
+__APIREL__/ref/txn/limits.html__OCT__2 @transaction limits
+__APIREL__/ref/upgrade.2.0/intro.html__OCT__2 Upgrading to release @2.0
+__APIREL__/ref/upgrade.3.0/intro.html__OCT__2 Upgrading to release @3.0
+__APIREL__/ref/upgrade.3.1/intro.html__OCT__2 Upgrading to release @3.1
+__APIREL__/ref/upgrade.3.2/intro.html__OCT__2 Upgrading to release @3.2
+__APIREL__/ref/upgrade.3.3/intro.html__OCT__2 Upgrading to release @3.3
+__APIREL__/ref/upgrade.4.0/intro.html__OCT__2 Upgrading to release @4.0
+__APIREL__/ref/upgrade.4.1/intro.html__OCT__2 Upgrading to release @4.1
+__APIREL__/ref/upgrade.4.2/cksum.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/client.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/del.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/intro.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/java.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/lockng.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/nosync.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/priority.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/queue.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/repinit.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/upgrade.4.2/verify.html__OCT__2 Upgrading to release @4.2
+__APIREL__/ref/xa/build.html__OCT__2 @Transaction Manager
+__APIREL__/ref/xa/intro.html__OCT__2 @Distributed Transactions
+__APIREL__/ref/xa/intro.html__OCT__3 @Resource Manager
+__APIREL__/ref/xa/faq.html__OCT__2 XA @FAQ
+__APIREL__/ref/xa/faq.html__OCT__3 @XA FAQ
+__APIREL__/ref/xa/xa_config.html__OCT__2 configuring Berkeley DB with the @Tuxedo System
+__APIREL__/ref/xa/xa_intro.html__OCT__2 @XA Resource Manager
+__APIREL__/ref/xa/xa_intro.html__OCT__3 XA @Resource Manager

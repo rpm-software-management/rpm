@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: os.h,v 11.14 2002/03/27 04:34:55 bostic Exp 
+ * $Id: os.h,v 11.18 2003/03/11 14:59:29 bostic Exp $
  */
 
 #ifndef _DB_OS_H_
@@ -14,27 +14,27 @@
 extern "C" {
 #endif
 
-/* DB filehandle. */
-struct __fh_t {
-#if defined(DB_WIN32)
-	HANDLE	  handle;		/* Windows/32 file handle. */
-#endif
-	int	  fd;			/* POSIX file descriptor. */
-	char	*name;			/* File name. */
+/*
+ * Flags understood by __os_open.
+ */
+#define	DB_OSO_CREATE	0x0001		/* POSIX: O_CREAT */
+#define	DB_OSO_DIRECT	0x0002		/* Don't buffer the file in the OS. */
+#define	DB_OSO_EXCL	0x0004		/* POSIX: O_EXCL */
+#define	DB_OSO_LOG	0x0008		/* Opening a log file. */
+#define	DB_OSO_RDONLY	0x0010		/* POSIX: O_RDONLY */
+#define	DB_OSO_REGION	0x0020		/* Opening a region file. */
+#define	DB_OSO_SEQ	0x0040		/* Expected sequential access. */
+#define	DB_OSO_TEMP	0x0080		/* Remove after last close. */
+#define	DB_OSO_TRUNC	0x0100		/* POSIX: O_TRUNC */
 
-	u_int32_t pagesize;		/* Underlying page size. */
-
-	u_int32_t log_size;		/* XXX: Log file size. */
-
-	u_int32_t pgno;			/* Last seek. */
-	u_int32_t pgsize;
-	u_int32_t offset;
-
-#define	DB_FH_NOSYNC	0x01		/* Handle doesn't need to be sync'd. */
-#define	DB_FH_UNLINK	0x02		/* Unlink on close */
-#define	DB_FH_VALID	0x04		/* Handle is valid. */
-	u_int8_t flags;
-};
+/*
+ * Seek options understood by __os_seek.
+ */
+typedef enum {
+	DB_OS_SEEK_CUR,			/* POSIX: SEEK_CUR */
+	DB_OS_SEEK_END,			/* POSIX: SEEK_END */
+	DB_OS_SEEK_SET			/* POSIX: SEEK_SET */
+} DB_OS_SEEK;
 
 /*
  * We group certain seek/write calls into a single function so that we
@@ -42,14 +42,38 @@ struct __fh_t {
  */
 #define	DB_IO_READ	1
 #define	DB_IO_WRITE	2
-typedef struct __io_t {
-	DB_FH	  *fhp;			/* I/O file handle. */
+
+/* DB filehandle. */
+struct __fh_t {
+	/*
+	 * The file-handle mutex is only used to protect the handle/fd
+	 * across seek and read/write pairs, it does not protect the
+	 * the reference count, or any other fields in the structure.
+	 */
 	DB_MUTEX  *mutexp;		/* Mutex to lock. */
-	size_t	   pagesize;		/* Page size. */
-	db_pgno_t  pgno;		/* Page number. */
-	u_int8_t  *buf;			/* Buffer. */
-	size_t	   bytes;		/* Bytes read/written. */
-} DB_IO;
+
+	int	  ref;			/* Reference count. */
+
+#if defined(DB_WIN32)
+	HANDLE	  handle;		/* Windows/32 file handle. */
+#endif
+	int	  fd;			/* POSIX file descriptor. */
+
+	char	*name;			/* File name (ref DB_FH_UNLINK) */
+
+	/*
+	 * Last seek statistics, used for zero-filling on filesystems
+	 * that don't support it directly.
+	 */
+	u_int32_t pgno;
+	u_int32_t pgsize;
+	u_int32_t offset;
+
+#define	DB_FH_NOSYNC	0x01		/* Handle doesn't need to be sync'd. */
+#define	DB_FH_OPENED	0x02		/* Handle is valid. */
+#define	DB_FH_UNLINK	0x04		/* Unlink on close */
+	u_int8_t flags;
+};
 
 #if defined(__cplusplus)
 }

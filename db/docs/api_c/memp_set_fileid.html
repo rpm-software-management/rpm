@@ -1,21 +1,22 @@
-<!--Id: memp_set_fileid.so,v 10.6 2002/08/24 18:23:32 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: memp_set_fileid.so,v 10.11 2003/11/08 19:17:40 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_MPOOLFILE-&gt;set_fileid</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DB_MPOOLFILE-&gt;set_fileid</h1>
+<h3>DB_MPOOLFILE-&gt;set_fileid</h3>
 </td>
 <td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -24,52 +25,72 @@
 <p>
 int
 DB_MPOOLFILE-&gt;set_fileid(DB_MPOOLFILE *mpf, u_int8_t *fileid);
+<p>
+int
+DB_MPOOLFILE-&gt;get_fileid(DB_MPOOLFILE *mpf, u_int8_t *fileid);
 </pre></h3>
-<h1>Description</h1>
-<p>The shared memory buffer pool functions must be able to uniquely
+<hr size=1 noshade>
+<h3>Description: DB_MPOOLFILE-&gt;set_fileid</h3>
+<a name="3"><!--meow--></a>
+<p>The DB_MPOOLFILE-&gt;set_fileid method specifies a unique identifier for the file.
+(The shared memory buffer pool functions must be able to uniquely
 identify files in order that multiple processes wanting to share a file
-will correctly identify it in the pool.  The DB_MPOOLFILE-&gt;set_fileid method
-specifies a unique identifier for the file.  Unique file identifiers
-must be a DB_FILE_ID_LEN length array of bytes.
+will correctly identify it in the pool.)</p>
 <p>On most UNIX/POSIX systems, the <b>fileid</b> field will not need to
 be set, and the memory pool functions will use the file's device and
 inode numbers for this purpose.  On Windows systems, the memory pool
 functions use the values returned by GetFileInformationByHandle() by
 default -- these values are known to be constant between processes and
 over reboot in the case of NTFS (in which they are the NTFS MFT
-indices).
+indices).</p>
 <p>On other filesystems (for example, FAT or NFS), these default values
 are not necessarily unique between processes or across system reboots.
 <b>Applications wanting to maintain a shared memory buffer pool
 between processes or across system reboots, in which the pool contains
 pages from files stored on such filesystems, must specify a unique file
 identifier using the DB_MPOOLFILE-&gt;set_fileid method, and each process opening
-the file must provide the same unique identifier.</b>
+the file must provide the same unique identifier.</b></p>
 <p>This call should not be necessary for most applications.  Specifically,
 it is not necessary if the memory pool is not shared between processes
 and is reinstantiated after each system reboot, if the application is
 using the Berkeley DB access methods instead of calling the pool functions
 explicitly, or if the files in the memory pool are stored on filesystems
 in which the default values as described previously are invariant
-between process and across system reboots.
+between process and across system reboots.</p>
 <p>The DB_MPOOLFILE-&gt;set_fileid method configures a file in the memory pool, not only
-operations performed using the specified <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle.
-<p>The DB_MPOOLFILE-&gt;set_fileid interface may not be called after the <a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a>
-interface is called.
-<p>The DB_MPOOLFILE-&gt;set_fileid method returns a non-zero error value on failure and 0 on success.
-<h1>Errors</h1>
-<p>The DB_MPOOLFILE-&gt;set_fileid method may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_MPOOLFILE-&gt;set_fileid method may fail and
-return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
-in which case all subsequent Berkeley DB calls will fail in the same way.
-<h1>Class</h1>
+operations performed using the specified <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle.</p>
+<p>The DB_MPOOLFILE-&gt;set_fileid method may not be called after the <a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a> method is
+called.
+</p>
+<p>The DB_MPOOLFILE-&gt;set_fileid method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>fileid</b><dd>
+The <b>fileid</b> parameter is the unique identifier for the file.
+Unique file identifiers must be a DB_FILE_ID_LEN length array of bytes.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_MPOOLFILE-&gt;get_fileid</h3>
+<p>The DB_MPOOLFILE-&gt;get_fileid method copies the file's identifier into the
+memory location referenced by <b>fileid</b>.</p>
+<p>The <a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;get_data_dirs</a> method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<p>The <a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;get_data_dirs</a> method may be called at any time during the life of the
+application.</p>
+<hr size=1 noshade>
+<h3>Class</h3>
 <a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a>
-<h1>See Also</h1>
+<h3>See Also</h3>
 <a href="../api_c/memp_list.html">Memory Pools and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,44 @@
+<!--$Id: faq.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Java API FAQ</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a><a name="3"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API</dl></h3></td>
+<td align=right><a href="../bdb/cs_bdb_serial.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../java/conf.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Java API FAQ</h3>
+<ol>
+<p><li><b>How does the Java API relate to the J2EE standard?  Does it
+implement any part of that standard?  Does it implement any other
+Java standard?</b>
+<p>The Java API does not currently implement any part of the J2EE standard.
+That said, it does implement the implicit standard for Java
+<a href="http://java.sun.com/j2se/1.3/docs/guide/collections/">Java Collections</a>.  The concept of a transaction exists in several
+Java packages (J2EE, XA, JINI to name a few).  Support for these APIs
+will be added based on demand in future versions of Berkeley DB.</p>
+<p><li><b>Will Java API function properly when using Java version 1.4?</b>
+<p>The minimum required version is J2SE 1.3.  Sun claims, and it has been
+our experience, that for the most part 1.4.1 is backwards compatible with
+1.3.1.  It is highly likely it will, we recommend that you run the
+supplied test suites against the specific Java VM on the specific platform
+on which you plan to ship your product to ensure compatibility.</p>
+<p><li><b>On what platforms is Java API supported?</b>
+<p>All platforms supported by Berkeley DB that have a J2SE 1.3.1 compliant JVM.</p>
+<p><li><b>Can I use Java API from within a EJB, a Servlet or a JSP page?</b>
+<p>Yes.  The Java API can be used from within all the popular J2EE application
+servers in many different ways.</p>
+</ol>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb/cs_bdb_serial.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../java/conf.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

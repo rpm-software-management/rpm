@@ -1,31 +1,52 @@
-<!--$Id: faq.so,v 1.2 2001/01/09 20:55:54 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 1.9 2003/11/27 18:25:59 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Frequently Asked Questions</title>
+<title>Berkeley DB Reference Guide: Java FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>        <a name="3"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a><a name="3"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API</dl></h3></td>
-<td width="1%"><a href="../../ref/java/program.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/perl/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../java/program.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../arch/bigpic.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Frequently Asked Questions</h1>
-<p><ol>
+<h3 align=center>Java FAQ</h3>
+<ol>
 <p><li><b>During one of the first calls to the Berkeley DB Java API, a
 DbException is thrown with a "Bad file number" or "Bad file descriptor"
 message.</b>
 <p>There are known large-file support bugs under JNI in various releases
 of the JDK.  Please upgrade to the latest release of the JDK, and, if
-that does not help, disable big file support using the --disable-bigfile
-configuration option.
+that does not solve the problem, disable big file support using the
+--disable-largefile configuration option.</p>
+<p><li><b>How can I use native methods from a debug build of the
+Java library?</b>
+<p>The Berkeley DB Java code checks a system property for the library name
+before defaulting to the released library. On Windows, run as
+follows (note the 'd' at the end):</p>
+<blockquote><pre>% java -Dsleepycat.db.libname=libdb_java-VERSIONd</pre></blockquote>
+<p>On UNIX, try:</p>
+<blockquote><pre>% java -Dsleepycat.db.libname=db_java_g-VERSION</pre></blockquote>
+<p><li><b>How should I incorporate db.jar and the db native library
+into a Tomcat or other J2EE application servers?</b>
+<p>Tomcat and other J2EE application servers have the ability to
+rebuild and reload code automatically.  When using Tomcat this
+is the case when "reloadable" is set to "true".  If your WAR
+file includes the db.jar it too will be reloaded each time
+your code is reloaded.  This causes exceptions as the native
+library can't be loaded more than once and there is no way to
+unload native code.  The solution is to place the db.jar in
+$TOMCAT_HOME/common/lib and let Tomcat load that library once
+at start time rather than putting it into the WAR that
+gets reloaded over and over.</p>
 </ol>
-<table><tr><td><br></td><td width="1%"><a href="../../ref/java/program.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/perl/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../java/program.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../arch/bigpic.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,87 @@
+<!--$Id: catalog.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Opening and closing the class catalog</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Basic</dl></h3></td>
+<td align=right><a href="../bdb_basic/env.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/stores.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Opening and closing the class catalog</h3>
+<p>This section describes how to open and close the Java class catalog. The
+class catalog is a specialized database store that contains the Java class
+descriptions of the serialized objects that are stored in the database.  The
+class descriptions are stored in the catalog rather than storing them
+redundantly in each database record. A single class catalog per environment
+must be opened whenever serialized objects will be stored in the database.</p>
+<hr size=1 noshade>
+<p>The <b>SampleDatabase</b> class is extended to open and close the
+class catalog.  The following additional imports and class members are
+needed.</p>
+<blockquote><pre>
+<b>import com.sleepycat.bdb.StoredClassCatalog;
+</b>...
+public class SampleDatabase
+{
+<b>    private static final String CLASS_CATALOG = "java_class_catalog";
+</b>    ...
+<b>    private StoredClassCatalog javaCatalog;
+</b>    ...
+}
+</pre></blockquote>
+<p>While the class catalog is a database store, it contains metadata for
+other stores and is therefore treated specially by the Java API.  The
+<a href="../../java/com/sleepycat/bdb/StoredClassCatalog.html">StoredClassCatalog</a>
+ class encapsulates the
+catalog store and implements this special behavior.</p>
+<hr size=1 noshade>
+<p>The following statements open the class catalog by creating a
+StoredClassCatalog object.  The catalog file is created if it doesn't already
+exist.</p>
+<blockquote><pre>
+    public SampleDatabase(String homeDirectory, boolean runRecovery)
+        throws DbException, FileNotFoundException
+    {
+        ...
+<b>        int flags = Db.DB_CREATE | Db.DB_AUTO_COMMIT;
+        javaCatalog = new StoredClassCatalog(env, CLASS_CATALOG, null, flags);
+</b>    }
+</pre></blockquote>
+<p>The environment parameter is specified when opening any store, since a
+store always operates within a single environment.</p>
+<p>The two String parameters are also used when opening any store. They
+specify the filename and database (sub-file) name, of the store.  The database
+(sub-file) name is optional, and is null in the example.</p>
+<p>The <b>flags</b> variable is initialized with
+<a href="../../java/com/sleepycat/db/Db.html#DB_CREATE">Db.DB_CREATE</a>
+ to create the file if it
+doesn't exist and with 
+<a href="../../java/com/sleepycat/db/Db.html#DB_AUTO_COMMIT">Db.DB_AUTO_COMMIT</a>
+ to
+create the store within an implicit transaction.  These flags are used for
+opening all stores in the example.</p>
+<hr size=1 noshade>
+<p>The following statement closes the class catalog.</p>
+<blockquote><pre>
+    public void close()
+        throws DbException, IOException
+    {
+<b>        javaCatalog.close();
+</b>        env.close(0);
+    }
+</pre></blockquote>
+<p>The catalog store, and all other stores, must be closed before closing
+the environment.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_basic/env.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_basic/stores.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -1,20 +1,16 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000
+# Copyright (c) 2000-2003
 #	Sleepycat Software.  All rights reserved.
 #
-#	$Id: test090.tcl,v 11.4 2000/12/11 17:24:56 sue Exp $
+# $Id: test090.tcl,v 11.14 2003/08/28 19:59:15 sandstro Exp $
 #
-# DB Test 90 {access method}
-# Check for functionality near the end of the queue.
-#
-#
-proc test090 { method {nentries 1000} {txn -txn} {tnum "90"} args} {
+# TEST	test090
+# TEST	Test for functionality near the end of the queue using test001.
+proc test090 { method {nentries 10000} {tnum "090"} args} {
 	if { [is_queueext $method ] == 0 } {
-		puts "Skipping test0$tnum for $method."
+		puts "Skipping test$tnum for $method."
 		return;
 	}
-	eval {test001 $method $nentries 4294967000 $tnum} $args
-	eval {test025 $method $nentries 4294967000 $tnum} $args
-	eval {test070 $method 4 2 $nentries WAIT 4294967000 $txn $tnum} $args
+	eval {test001 $method $nentries 4294967000 0 $tnum} $args
 }

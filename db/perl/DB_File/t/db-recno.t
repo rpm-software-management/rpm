@@ -104,7 +104,7 @@ sub bad_one
 	print STDERR <<EOM ;
 #
 # Some older versions of Berkeley DB version 1 will fail db-recno
-# tests 61, 63 and 65.
+# tests 61, 63, 64 and 65.
 EOM
         if ($^O eq 'darwin'
 	    && $Config{db_version_major} == 1
@@ -112,7 +112,7 @@ EOM
 	    && $Config{db_version_patch} == 0) {
 	    print STDERR <<EOM ;
 #
-# For example Mac OS X 10.1.4 (or earlier) has such an old
+# For example Mac OS X 10.2 (or earlier) has such an old
 # version of Berkeley DB.
 EOM
 	}
@@ -1346,6 +1346,8 @@ sub test_splice {
     return('list is different when re-read from disk: '
 	   . Dumper(\@array) . ' vs ' . Dumper(\@h))
       if list_diff(\@array, \@h);
+
+    unlink $tmp;
 
     return undef; # success
 }

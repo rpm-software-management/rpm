@@ -1,0 +1,45 @@
+<!--$Id: small.so,v 10.1 2003/03/24 10:35:24 mjc Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Building a small memory footprint library on Windows</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for Windows systems</dl></h3></td>
+<td align=right><a href="../build_win/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/test.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Building a small memory footprint library on Windows</h3>
+<p>For applications that don't require all of the functionality of the full
+Berkeley DB library, an option is provided to build a static library with
+certain functionality disabled.  In particular, cryptography, hash and
+queue access methods, replication and verification are all turned off.
+This can reduce the memory footprint of Berkeley DB significantly.</p>
+<p>In general on Win32 systems, you will want to evaluate the size of the
+final application, not the library build.  The Microsoft LIB file format
+(like UNIX archives) includes copies of all of the object files and
+additional information.  The linker rearranges symbols and strips out
+the overhead, and the resulting application is much smaller than the
+library.   There is also a Visual C++ optimization to "Minimize size"
+that will reduce the library size by a few percent.</p>
+<p>A Visual C++ project file called <b>db_small.dsp</b>  is provided for
+this small memory configuration, but is not included in the workspace
+by default.  To build, open Visual Studio and go to the <i>File</i>
+menu.  Choose <i>Open Workspace</i>, change <i>Files of Type</i>
+to <i>Projects (.dsp)</i> and open <i>db_small.dsp</i>.</p>
+<p>The project supports two configurations - <i>Release Static</i> and
+<i>Debug Static</i>.  During a build (F7), libraries are created
+in <b>Release_small</b> or <b>Debug_small</b>, respectively.</p>
+<p>For assistance in further reducing the size of the Berkeley DB library, or in
+building small memory footprint libraries on other systems, please contact
+Sleepycat Software support.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_win/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/test.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -1,7 +1,6 @@
-#!/bin/sh -
-#	Id: buildrel,v 1.39 2002/09/06 14:30:31 bostic Exp 
+# $Id: buildrel,v 1.57 2003/11/28 19:21:02 bostic Exp $
 #
-# Build the distribution archives.
+# Build the distribution package.
 #
 # A set of commands intended to be cut and pasted into a csh window.
 
@@ -10,23 +9,40 @@ setenv D `pwd`
 
 # Update the release number.
 cd $D/dist
+cvs -q update RELEASE
 vi RELEASE
-setenv VERSION \
-`sh -c '. RELEASE; echo $DB_VERSION_MAJOR.$DB_VERSION_MINOR.$DB_VERSION_PATCH'`
+setenv VERSION `sh -c '. RELEASE; echo $DB_VERSION'`
 echo "Version: $VERSION"
 
-# Make sure the source tree is up-to-date, generate new support files, and
-# commit anything that's changed.
+# Make sure the source tree is up-to-date
 cd $D && cvs -q update
+
+# Build the documentation.
+cd db.docs && cvs -q update
+cd db.docs && sh build ../db.rel clean && sh build ../db.rel |& sed '/.html$/d'
+cd db.docs && sh build ../db.rel javadoc
+
+# Generate new support files, commit anything that's changed.
 cd $D/dist && sh s_all
 cd $D && cvs -q commit
 
 # Copy a development tree into a release tree.
 setenv R /var/tmp/db-$VERSION
 rm -rf $R && mkdir -p $R
-cd $D && tar cf - \
-`cvs -q status | sed -n -e "/Repository/s;.*/CVSROOT/db/;;" -e "s/,v//p"` | \
-(cd $R && tar xpf -)
+cd $D && cvs -q status | \
+    grep "Repository revision" | \
+    sed -e 's;.*CVSROOT/db/;;' \
+        -e 's;.*CVSROOT/;;' \
+	-e 's;,v$;;' | pax -rw $R/
+
+# Copy the already-built documentation into place
+rm -rf $R/docs && cp -r $D/docs $R/docs
+
+# Remove source directories we don't distribute.
+cd $R && rm -rf docs_src docs/api_java
+cd $R && rm -rf test/TODO test/upgrade test_perf test_purify
+cd $R && rm -rf test_server test_thread test_vxworks test_xa
+cd $R && rm -rf java/src/com/sleepycat/xa
 
 # Fix symbolic links and permissions.
 cd $R/dist && sh s_perm
@@ -39,32 +55,24 @@ cd $R/build_run && ~bostic/bin/dbconf && make >& mklog
 # Smoke test.
 cd $R/build_run && ./ex_access
 
-# Build the documentation.
-cd $R/docs_src && sh build clean
-cd $R/docs_src && sh build |& sed '/.html$/d'
-
 # Check the install
 cd $R/build_run && make prefix=`pwd`/BDB install
 
-# Clean up the tree.
-cd $R && rm -rf build_run docs_src
-cd $R && rm -rf test/TODO test/upgrade test_perf test_purify
-cd $R && rm -rf test_server test_thread test_vxworks test_xa
+# Build a small-footprint version.
+cd $R && rm -rf build_run && mkdir build_run
+cd $R/build_run && ../dist/configure --enable-smallbuild && make >& mklog
+
+# Remove the build directory
+cd $R && rm -rf build_run
 
 # ACQUIRE ROOT PRIVILEGES
 cd $R && find . -type d | xargs chmod 775
 cd $R && find . -type f | xargs chmod 444
 cd $R && chmod 664 build_win32/*.dsp
 cd $R/dist && sh s_perm
-chown -R 100.100 $R
+chown -R 100 $R
+chgrp -R 100 $R
 # DISCARD ROOT PRIVILEGES
-
-# Compare this release with the last one.
-set LR=3.1.X
-cd $R/.. && gzcat /a/releases/db-${LR}.tar.gz | tar xf -
-cd $R/../db-${LR} && find . | sort > /tmp/__OLD
-cd $R && find . | sort > /tmp/__NEW
-diff -c /tmp/__OLD /tmp/__NEW
 
 # Create the crypto tar archive release.
 setenv T "$R/../db-$VERSION.tar.gz"
@@ -83,7 +91,8 @@ cd $RNC && find . -type d | xargs chmod 775
 cd $RNC && find . -type f | xargs chmod 444
 cd $RNC && chmod 664 build_win32/*.dsp
 cd $RNC/dist && sh s_perm
-chown -R 100.100 $RNC
+chown -R 100 $RNC
+chgrp -R 100 $RNC
 # DISCARD ROOT PRIVILEGES
 
 # Create the non-crypto tar archive release.
@@ -91,11 +100,11 @@ setenv T "$R/../db-$VERSION.NC.tar.gz"
 cd $RNC/.. && tar cf - db-$VERSION.NC | gzip --best > $T
 chmod 444 $T
 
-# Remove symbolic links to tags files.  They're large and we don't want
-# to store real symbolic links in the zip archive for portability reasons.
+# Remove tags files.  They're large and we don't want to store symbolic links
+# in the zip archive for portability reasons.
 # ACQUIRE ROOT PRIVILEGES
-cd $R && rm -f `find . -type l -name 'tags'`
-cd $RNC && rm -f `find . -type l -name 'tags'`
+cd $R && rm -f `find . -name 'tags'`
+cd $RNC && rm -f `find . -name 'tags'`
 # DISCARD ROOT PRIVILEGES
 
 # Create the crypto zip archive release.

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_dbc.cpp,v 11.55 2002/07/03 21:03:52 bostic Exp ";
+static const char revid[] = "$Id: cxx_dbc.cpp,v 11.58 2003/04/24 15:36:27 bostic Exp $";
 #endif /* not lint */
 
 #include <errno.h>
@@ -39,7 +39,8 @@ int Dbc::_name _argspec							\
 									\
 	ret = dbc->c_##_name _arglist;					\
 	if (!_retok(ret))						\
-		DB_ERROR("Dbc::" # _name, ret, ON_ERROR_UNKNOWN);	\
+		DB_ERROR(DbEnv::get_DbEnv(dbc->dbp->dbenv), \
+			"Dbc::" # _name, ret, ON_ERROR_UNKNOWN); \
 	return (ret);							\
 }
 
@@ -67,7 +68,8 @@ int Dbc::dup(Dbc** cursorp, u_int32_t _flags)
 		// The following cast implies that Dbc can be no larger than DBC
 		*cursorp = (Dbc*)new_cursor;
 	else
-		DB_ERROR("Dbc::dup", ret, ON_ERROR_UNKNOWN);
+		DB_ERROR(DbEnv::get_DbEnv(dbc->dbp->dbenv),
+			"Dbc::dup", ret, ON_ERROR_UNKNOWN);
 
 	return (ret);
 }
@@ -81,11 +83,14 @@ int Dbc::get(Dbt* key, Dbt *data, u_int32_t _flags)
 
 	if (!DB_RETOK_DBCGET(ret)) {
 		if (ret == ENOMEM && DB_OVERFLOWED_DBT(key))
-			DB_ERROR_DBT("Dbc::get", key, ON_ERROR_UNKNOWN);
+			DB_ERROR_DBT(DbEnv::get_DbEnv(dbc->dbp->dbenv),
+				"Dbc::get", key, ON_ERROR_UNKNOWN);
 		else if (ret == ENOMEM && DB_OVERFLOWED_DBT(data))
-			DB_ERROR_DBT("Dbc::get", data, ON_ERROR_UNKNOWN);
+			DB_ERROR_DBT(DbEnv::get_DbEnv(dbc->dbp->dbenv),
+				"Dbc::get", data, ON_ERROR_UNKNOWN);
 		else
-			DB_ERROR("Dbc::get", ret, ON_ERROR_UNKNOWN);
+			DB_ERROR(DbEnv::get_DbEnv(dbc->dbp->dbenv),
+				"Dbc::get", ret, ON_ERROR_UNKNOWN);
 	}
 
 	return (ret);
@@ -101,11 +106,14 @@ int Dbc::pget(Dbt* key, Dbt *pkey, Dbt *data, u_int32_t _flags)
 	/* Logic is the same as for Dbc::get - reusing macro. */
 	if (!DB_RETOK_DBCGET(ret)) {
 		if (ret == ENOMEM && DB_OVERFLOWED_DBT(key))
-			DB_ERROR_DBT("Dbc::pget", key, ON_ERROR_UNKNOWN);
+			DB_ERROR_DBT(DbEnv::get_DbEnv(dbc->dbp->dbenv),
+				"Dbc::pget", key, ON_ERROR_UNKNOWN);
 		else if (ret == ENOMEM && DB_OVERFLOWED_DBT(data))
-			DB_ERROR_DBT("Dbc::pget", data, ON_ERROR_UNKNOWN);
+			DB_ERROR_DBT(DbEnv::get_DbEnv(dbc->dbp->dbenv),
+				"Dbc::pget", data, ON_ERROR_UNKNOWN);
 		else
-			DB_ERROR("Dbc::pget", ret, ON_ERROR_UNKNOWN);
+			DB_ERROR(DbEnv::get_DbEnv(dbc->dbp->dbenv),
+				"Dbc::pget", ret, ON_ERROR_UNKNOWN);
 	}
 
 	return (ret);

@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DBDEMO {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		dbdemo.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		dbdemo.o
 	NAME		dbdemo
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

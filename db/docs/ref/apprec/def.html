@@ -1,40 +1,40 @@
-<!--Id: def.so,v 10.3 2002/03/06 20:49:57 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: def.so,v 10.3 2002/03/06 20:49:57 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Defining application-specific log records</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Application Specific Logging and Recovery</dl></h3></td>
-<td align=right><a href="../../ref/apprec/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/apprec/auto.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../apprec/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/auto.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Defining application-specific log records</h1>
+<h3 align=center>Defining application-specific log records</h3>
 <p>By convention, log records are described in files named <b>XXX.src</b>,
 where "XXX" is typically a descriptive name for a subsystem or other
 logical group of logging functions.  These files contain interface
 definition language descriptions for each type of log record that is
-used by the subsystem.
+used by the subsystem.</p>
 <p>All blank lines and lines beginning with a hash ("#") character in
-the XXX.src files are ignored.
+the XXX.src files are ignored.</p>
 <p>The first non-comment line in the file should begin with the keyword
 PREFIX, followed by a string that will be prepended to every generated
 function name.  Frequently, the PREFIX is either identical or similar
 to the name of the <b>XXX.src</b> file.  For example, the Berkeley DB
 application-specific recovery example uses the file
-<b>ex_apprec.src</b>, which begins with the following PREFIX line:
-<p><blockquote><pre>PREFIX ex_apprec</pre></blockquote>
+<b>ex_apprec.src</b>, which begins with the following PREFIX line:</p>
+<blockquote><pre>PREFIX ex_apprec</pre></blockquote>
 <p>Following the PREFIX line are the include files required by the
 automatically generated functions.  The include files should be listed
 in order, prefixed by the keyword INCLUDE.  For example, the Berkeley DB
 application-specific recovery example lists the following include
-files:
-<p><blockquote><pre>INCLUDE #include &lt;ctype.h&gt;
+files:</p>
+<blockquote><pre>INCLUDE #include &lt;ctype.h&gt;
 INCLUDE #include &lt;errno.h&gt;
 INCLUDE #include &lt;stdlib.h&gt;
 INCLUDE #include &lt;string.h&gt;
@@ -43,13 +43,13 @@ INCLUDE #include &lt;db.h&gt;
 INCLUDE
 INCLUDE #include "ex_apprec.h"</pre></blockquote>
 <p>The rest of the XXX.src file consists of log record descriptions.  Each
-log record description begins with the line:
-<p><blockquote><pre>BEGIN <i>RECORD_NAME</i> <i>RECORD_NUMBER</i></pre></blockquote>
-<p>and ends with the line:
-<p><blockquote><pre>END</pre></blockquote>
+log record description begins with the line:</p>
+<blockquote><pre>BEGIN <i>RECORD_NAME</i> <i>RECORD_NUMBER</i></pre></blockquote>
+<p>and ends with the line:</p>
+<blockquote><pre>END</pre></blockquote>
 <p>The <i>RECORD_NAME</i> variable should be replaced with a record
 name for this log record.  The <i>RECORD_NUMBER</i> variable should
-be replaced with a record number.
+be replaced with a record number.</p>
 <p>The combination of PREFIX name and <i>RECORD_NAME</i>, and the
 <i>RECORD_NUMBER</i> must be unique for the application, that is,
 values for application-specific and Berkeley DB log records may not overlap.
@@ -59,18 +59,18 @@ the record numbers or log record format or should be handled as
 described in the <a href="../../ref/upgrade/process.html">Upgrading Berkeley DB
 installations</a> section on log format changes.  The record number space
 below 10,000 is reserved for Berkeley DB itself; applications should choose
-record number values equal to or greater than 10,000.
+record number values equal to or greater than 10,000.</p>
 <p>Between the BEGIN and END keywords there should be one line for each
 data item logged as part of this log record.  The format of these lines
-is as follows:
-<p><blockquote><pre>ARG | DBT | POINTER	<i>variable_name</i>	<i>variable_type</i>	<i>printf_format</i></pre></blockquote>
+is as follows:</p>
+<blockquote><pre>ARG | DBT | POINTER	<i>variable_name</i>	<i>variable_type</i>	<i>printf_format</i></pre></blockquote>
 <p>The keyword ARG indicates that the argument is a simple parameter of
-the type specified. For example, a file ID might be logged as:
-<p><blockquote><pre>ARG	fileID	int	d</pre></blockquote>
+the type specified. For example, a file ID might be logged as:</p>
+<blockquote><pre>ARG	fileID	int	d</pre></blockquote>
 <p>The keyword DBT indicates that the argument is a Berkeley DB DBT structure,
 containing a length and pointer to a byte string.  The keyword POINTER
 indicates that the argument is a pointer to the data type specified (of
-course the data type, not the pointer, is what is logged).
+course the data type, not the pointer, is what is logged).</p>
 <p>The <i>variable_name</i> is the field name within the structure that
 will be used to refer to this item.  The <i>variable_type</i> is
 the C-language type of the variable, and the printf format is the
@@ -78,19 +78,19 @@ C-language format string, without the leading percent ("%") character,
 that should be used to display the contents of the field (for example,
 "s" for string, "d" for signed integral type, "u" for unsigned integral
 type, "ld" for signed long integral type, "lu" for long unsigned
-integral type, and so on).
+integral type, and so on).</p>
 <p>For example, ex_apprec.src defines a single log record type, used to
-log a directory name that has been stored in a DBT:
-<p><blockquote><pre>BEGIN	mkdir		10000
+log a directory name that has been stored in a DBT:</p>
+<blockquote><pre>BEGIN	mkdir		10000
 DBT	dirname		DBT		s
 END</pre></blockquote>
 <p>As the name suggests, this example of an application-defined log record
 will be used to log the creation of a directory.  There are many more
 examples of XXX.src files in the Berkeley DB distribution.  For example, the
 file btree/btree.src contains the definitions for the log records
-supported by the Berkeley DB Btree access method.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/apprec/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/apprec/auto.html"><img src="../../images/next.gif" alt="Next"></a>
+supported by the Berkeley DB Btree access method.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../apprec/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/auto.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

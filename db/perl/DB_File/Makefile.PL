@@ -214,7 +214,7 @@ sub ParseCONFIG
 
     $INC_DIR = $ENV{'DB_FILE_INCLUDE'} || $Info{'INCLUDE'} ;
     $LIB_DIR = $ENV{'DB_FILE_LIB'} || $Info{'LIB'} ;
-    $DB_NAME = $Info{'DBNAME'} if defined $Info{'DBNAME'} ;
+    $DB_NAME = $ENV{'DB_FILE_NAME'} || $Info{'DBNAME'} ;
     $COMPAT185 = "-DCOMPAT185 -DDB_LIBRARY_COMPATIBILITY_API" 
         if (defined $ENV{'DB_FILE_COMPAT185'} && 
 		$ENV{'DB_FILE_COMPAT185'} =~ /^\s*(on|true|1)\s*$/i) ||

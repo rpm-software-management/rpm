@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_rename.c,v 1.12 2002/07/12 18:56:55 bostic Exp ";
+static const char revid[] = "$Id: os_rename.c,v 1.15 2003/09/09 15:44:36 mjc Exp $";
 #endif /* not lint */
 
 #include "db_int.h"
@@ -44,9 +44,10 @@ __os_rename(dbenv, oldname, newname, flags)
 		} else {
 			/*
 			 * There is no MoveFileEx for Win9x/Me, so we have to
-			 * do the best we can.  Note that MoveFile returns 1
-			 * if the names refer to the same file, so we don't
-			 * need to check that here.
+			 * do the best we can.  Note that the MoveFile call
+			 * above would have succeeded if oldname and newname
+			 * refer to the same file, so we don't need to check
+			 * that here.
 			 */
 			(void)DeleteFile(newname);
 			if (!MoveFile(oldname, newname))

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_rw.c,v 11.24 2002/07/12 18:56:52 bostic Exp ";
+static const char revid[] = "$Id: os_rw.c,v 11.30 2003/05/23 21:19:05 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -30,27 +30,29 @@ static int __os_physwrite __P((DB_ENV *, DB_FH *, void *, size_t, size_t *));
  * __os_io --
  *	Do an I/O.
  *
- * PUBLIC: int __os_io __P((DB_ENV *, DB_IO *, int, size_t *));
+ * PUBLIC: int __os_io __P((DB_ENV *,
+ * PUBLIC:     int, DB_FH *, db_pgno_t, size_t, u_int8_t *, size_t *));
  */
 int
-__os_io(dbenv, db_iop, op, niop)
+__os_io(dbenv, op, fhp, pgno, pagesize, buf, niop)
 	DB_ENV *dbenv;
-	DB_IO *db_iop;
 	int op;
-	size_t *niop;
+	DB_FH *fhp;
+	db_pgno_t pgno;
+	size_t pagesize, *niop;
+	u_int8_t *buf;
 {
 	int ret;
 
 	/* Check for illegal usage. */
-	DB_ASSERT(F_ISSET(db_iop->fhp, DB_FH_VALID) && db_iop->fhp->fd != -1);
+	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 #if defined(HAVE_PREAD) && defined(HAVE_PWRITE)
 	switch (op) {
 	case DB_IO_READ:
 		if (DB_GLOBAL(j_read) != NULL)
 			goto slow;
-		*niop = pread(db_iop->fhp->fd, db_iop->buf,
-		    db_iop->bytes, (off_t)db_iop->pgno * db_iop->pagesize);
+		*niop = pread(fhp->fd, buf, pagesize, (off_t)pgno * pagesize);
 		break;
 	case DB_IO_WRITE:
 		if (DB_GLOBAL(j_write) != NULL)
@@ -59,31 +61,28 @@ __os_io(dbenv, db_iop, op, niop)
 		if (__os_fs_notzero())
 			goto slow;
 #endif
-		*niop = pwrite(db_iop->fhp->fd, db_iop->buf,
-		    db_iop->bytes, (off_t)db_iop->pgno * db_iop->pagesize);
+		*niop = pwrite(fhp->fd, buf, pagesize, (off_t)pgno * pagesize);
 		break;
 	}
-	if (*niop == (size_t)db_iop->bytes)
+	if (*niop == (size_t)pagesize)
 		return (0);
 slow:
 #endif
-	MUTEX_THREAD_LOCK(dbenv, db_iop->mutexp);
+	MUTEX_THREAD_LOCK(dbenv, fhp->mutexp);
 
-	if ((ret = __os_seek(dbenv, db_iop->fhp,
-	    db_iop->pagesize, db_iop->pgno, 0, 0, DB_OS_SEEK_SET)) != 0)
+	if ((ret = __os_seek(dbenv, fhp,
+	    pagesize, pgno, 0, 0, DB_OS_SEEK_SET)) != 0)
 		goto err;
 	switch (op) {
 	case DB_IO_READ:
-		ret = __os_read(dbenv,
-		    db_iop->fhp, db_iop->buf, db_iop->bytes, niop);
+		ret = __os_read(dbenv, fhp, buf, pagesize, niop);
 		break;
 	case DB_IO_WRITE:
-		ret = __os_write(dbenv,
-		    db_iop->fhp, db_iop->buf, db_iop->bytes, niop);
+		ret = __os_write(dbenv, fhp, buf, pagesize, niop);
 		break;
 	}
 
-err:	MUTEX_THREAD_UNLOCK(dbenv, db_iop->mutexp);
+err:	MUTEX_THREAD_UNLOCK(dbenv, fhp->mutexp);
 
 	return (ret);
 
@@ -105,21 +104,24 @@ __os_read(dbenv, fhp, addr, len, nrp)
 {
 	size_t offset;
 	ssize_t nr;
-	int ret;
+	int ret, retries;
 	u_int8_t *taddr;
 
 	/* Check for illegal usage. */
-	DB_ASSERT(F_ISSET(fhp, DB_FH_VALID) && fhp->fd != -1);
+	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
+	retries = 0;
 	for (taddr = addr,
 	    offset = 0; offset < len; taddr += nr, offset += nr) {
 retry:		if ((nr = DB_GLOBAL(j_read) != NULL ?
 		    DB_GLOBAL(j_read)(fhp->fd, taddr, len - offset) :
 		    read(fhp->fd, taddr, len - offset)) < 0) {
-			if ((ret = __os_get_errno()) == EINTR)
+			ret = __os_get_errno();
+			if ((ret == EINTR || ret == EBUSY) &&
+			    ++retries < DB_RETRY)
 				goto retry;
-			__db_err(dbenv, "read: 0x%x, %lu: %s", taddr,
-			    (u_long)len-offset, strerror(ret));
+			__db_err(dbenv, "read: 0x%x, %lu: %s",
+			    (u_int)taddr, (u_long)len-offset, strerror(ret));
 			return (ret);
 		}
 		if (nr == 0)
@@ -144,7 +146,7 @@ __os_write(dbenv, fhp, addr, len, nwp)
 	size_t *nwp;
 {
 	/* Check for illegal usage. */
-	DB_ASSERT(F_ISSET(fhp, DB_FH_VALID) && fhp->fd != -1);
+	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 #ifdef HAVE_FILESYSTEM_NOTZERO
 	/* Zero-fill as necessary. */
@@ -171,7 +173,7 @@ __os_physwrite(dbenv, fhp, addr, len, nwp)
 {
 	size_t offset;
 	ssize_t nw;
-	int ret;
+	int ret, retries;
 	u_int8_t *taddr;
 
 #if defined(HAVE_FILESYSTEM_NOTZERO) && defined(DIAGNOSTIC)
@@ -185,15 +187,18 @@ __os_physwrite(dbenv, fhp, addr, len, nwp)
 	}
 #endif
 
+	retries = 0;
 	for (taddr = addr,
 	    offset = 0; offset < len; taddr += nw, offset += nw)
 retry:		if ((nw = DB_GLOBAL(j_write) != NULL ?
 		    DB_GLOBAL(j_write)(fhp->fd, taddr, len - offset) :
 		    write(fhp->fd, taddr, len - offset)) < 0) {
-			if ((ret = __os_get_errno()) == EINTR)
+			ret = __os_get_errno();
+			if ((ret == EINTR || ret == EBUSY) &&
+			    ++retries < DB_RETRY)
 				goto retry;
-			__db_err(dbenv, "write: 0x%x, %lu: %s", taddr,
-			    (u_long)len-offset, strerror(ret));
+			__db_err(dbenv, "write: 0x%x, %lu: %s",
+			    (u_int)taddr, (u_long)len-offset, strerror(ret));
 			return (ret);
 		}
 	*nwp = len;

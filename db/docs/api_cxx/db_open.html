@@ -1,20 +1,22 @@
-<!--$Id: db_open.so,v 10.61 2000/10/25 15:24:44 dda Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: db_open.so,v 10.101 2003/12/02 13:38:39 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::open</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>Db::open</h1>
+<h3>Db::open</h3>
 </td>
-<td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -22,164 +24,238 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-Db::open(const char *file,
+Db::open(DbTxn *txnid, const char *file,
     const char *database, DBTYPE type, u_int32_t flags, int mode);
+<p>
+int
+Db::get_dbname(const char **filenamep, const char **dbnamep);
+<p>
+int
+Db::get_open_flags(u_int32_t *flagsp);
+<p>
+int
+Db::get_transactional()
 </pre></h3>
-<h1>Description</h1>
-<p>The currently supported Berkeley DB file formats (or <i>access methods</i>)
-are Btree, Hash, Queue and Recno.  The Btree format is a representation
-of a sorted, balanced tree structure.  The Hash format is an extensible,
-dynamic hashing scheme.  The Queue format supports fast access to
-fixed-length records accessed by sequentially or logical record number.
-The Recno format supports fixed- or variable-length records, accessed
-sequentially or by logical record number, and optionally retrieved from
-a flat text file.
+<hr size=1 noshade>
+<h3>Description: Db::open</h3>
+<a name="3"><!--meow--></a>
+<a name="4"><!--meow--></a>
+<a name="5"><!--meow--></a>
+<a name="6"><!--meow--></a>
+<p>The Db::open method opens the database represented by the <b>file</b>
+and <b>database</b> parameters for both reading and writing.</p>
+<p>The currently supported Berkeley DB file formats (or <i>access
+methods</i>) are Btree, Hash, Queue, and Recno.  The Btree format is a
+representation of a sorted, balanced tree structure.  The Hash format
+is an extensible, dynamic hashing scheme.  The Queue format supports
+fast access to fixed-length records accessed sequentially or by logical
+record number.  The Recno format supports fixed- or variable-length
+records, accessed sequentially or by logical record number, and
+optionally backed by a flat text file.</p>
 <p>Storage and retrieval for the Berkeley DB access methods are based on key/data
-pairs, see <a href="../api_cxx/dbt_class.html">Dbt</a> for more information.
-<p>The Db::open interface opens the database represented by the
-<b>file</b> and <b>database</b> arguments for both reading and writing.
-The <b>file</b> argument is used as the name of a physical file on disk
-that will be used to back the database.  The <b>database</b> argument is
-optional and allows applications to have multiple logical databases in a
-single physical file.  While no <b>database</b> argument needs to be
-specified, it is an error to attempt to open a second database in a
-<b>file</b> that was not initially created using a <b>database</b> name.
-In-memory databases never intended to be preserved on disk may
-be created by setting both the <b>file</b> and <b>database</b> arguments
+pairs; see <a href="../api_cxx/dbt_class.html">Dbt</a> for more information.</p>
+<p>Calling Db::open is a relatively expensive operation, and
+maintaining a set of open databases will normally be preferable to
+repeatedly opening and closing the database for each new query.</p>
+<p>The Db::open method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+If Db::open fails, the <a href="../api_cxx/db_close.html">Db::close</a> method should be called to
+discard the <a href="../api_cxx/db_class.html">Db</a> handle.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>database</b><dd>
+The <b>database</b> parameter is optional, and allows applications to
+have multiple databases in a single file.  Although no <b>database</b>
+parameter needs to be specified, it is an error to attempt to open a
+second database in a <b>file</b> that was not initially created using
+a <b>database</b> name.  Further, the <b>database</b> parameter is not
+supported by the Queue format.  Finally, when opening multiple databases
+in the same physical file, it is important to consider locking and
+memory cache issues; see <a href="../ref/am/opensub.html">Opening
+multiple databases in a single file</a> for more information.
+<p>In-memory databases never intended to be preserved on disk may be
+created by setting both the <b>file</b> and <b>database</b> parameters
 to NULL.  Note that in-memory databases can only ever be shared by
 sharing the single database handle that created them, in circumstances
-where doing so is safe.
-<p>The <b>type</b> argument is of type DBTYPE
-and must be set to one of DB_BTREE, DB_HASH,
-DB_QUEUE, DB_RECNO or DB_UNKNOWN, except
-that databases of type DB_QUEUE are restricted to one per
-<b>file</b>.  If <b>type</b> is DB_UNKNOWN, the database must
-already exist and Db::open will automatically determine its type.
-The <a href="../api_cxx/db_get_type.html">Db::get_type</a> method may be used to determine the underlying type of
-databases opened using DB_UNKNOWN.
-<p>The <b>flags</b> and <b>mode</b> arguments specify how files will be opened
-and/or created if they do not already exist.
-<p>The <b>flags</b> value must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one or more
-of the following values.
+where doing so is safe.</p>
+<p><dt><b>file</b><dd>
+The <b>file</b> parameter is used as the name of an underlying file that
+will be used to back the database.
+<p>In-memory databases never intended to be preserved on disk may be
+created by setting both the <b>file</b> and <b>database</b> parameters
+to NULL.  Note that in-memory databases can only ever be shared by
+sharing the single database handle that created them, in circumstances
+where doing so is safe.</p>
+<p><dt><b>flags</b><dd>
+The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <p><dl compact>
-<p><dt><a name="DB_CREATE">DB_CREATE</a><dd>Create any underlying files, as necessary.  If the files do not already
-exist and the DB_CREATE flag is not specified, the call will fail.
-<p><dt><a name="DB_EXCL">DB_EXCL</a><dd>Return an error if the file already exists.  Underlying filesystem
-primitives are used to implement this flag.  For this reason it is only
-applicable to the physical file and cannot be used to test if a database
-in a file already exists.
-<p>The DB_EXCL flag is only meaningful when specified with the
-DB_CREATE flag.
-<p><dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Do not map this database into process memory (see the description of the
+<p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::open call within a transaction.  If the call
+succeeds, the open operation will be recoverable.  If the call fails,
+no database will have been created.
+<p><dt><a name="DB_CREATE">DB_CREATE</a><dd>Create the database.  If the database does not already exist and the
+DB_CREATE flag is not specified, the Db::open will
+fail.
+<p><dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Support dirty reads; that is, read operations on the database may
+request the return of modified but not yet committed data.  This flag
+must be specified on all <a href="../api_cxx/db_class.html">Db</a> handles used to perform dirty reads
+or database updates, otherwise requests for dirty reads may not be
+honored and the read may block.
+<p><dt><a name="DB_EXCL">DB_EXCL</a><dd>Return an error if the database already exists.  The DB_EXCL
+flag is only meaningful when specified with the DB_CREATE
+flag.
+<p><dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Do not map this database into process memory (see the
 <a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a> method for further information).
 <p><dt><a name="DB_RDONLY">DB_RDONLY</a><dd>Open the database for reading only.  Any attempt to modify items in the
-database will fail regardless of the actual permissions of any underlying
-files.
+database will fail, regardless of the actual permissions of any
+underlying files.
 <p><dt><a name="DB_THREAD">DB_THREAD</a><dd>Cause the <a href="../api_cxx/db_class.html">Db</a> handle returned by Db::open to be
-<i>free-threaded</i>, that is, useable by multiple threads within a
+<i>free-threaded</i>; that is, usable by multiple threads within a
 single address space.
-<p><dt><a name="DB_TRUNCATE">DB_TRUNCATE</a><dd>Physically truncate the underlying file, discarding all previous databases
-it might have held.  Underlying filesystem primitives are used to
-implement this flag.  For this reason it is only applicable to the
-physical file and cannot be used to discard databases within a file.
-<p>The DB_TRUNCATE flag cannot be transaction protected, and it is
-an error to specify it in a transaction protected environment.
+<p><dt><a name="DB_TRUNCATE">DB_TRUNCATE</a><dd>Physically truncate the underlying file, discarding all previous
+databases it might have held.  Underlying filesystem primitives are used
+to implement this flag.  For this reason, it is applicable only to the
+file and cannot be used to discard databases within a file.
+<p>The DB_TRUNCATE flag cannot be lock or transaction-protected,
+and it is an error to specify it in a locking or transaction-protected
+environment.</p>
 </dl>
-<p>On UNIX systems, or in IEEE/ANSI Std 1003.1 (POSIX) environments, all files created by the access methods
-are created with mode <b>mode</b> (as described in <b>chmod</b>(2)) and
-modified by the process' umask value at the time of creation (see
-<b>umask</b>(2)).  The group ownership of created files is based on
-the system and directory defaults, and is not further specified by Berkeley DB.
-If <b>mode</b> is 0, files are created readable and writeable by both
-owner and group.  On Windows systems, the mode argument is ignored.
-<p>Calling Db::open is a reasonably expensive operation, and
-maintaining a set of open databases will normally be preferable to
-repeatedly open and closing the database for each new query.
-<p>The Db::open method either returns a non-zero error value or throws an exception that
-encapsulates a non-zero error value on failure, and returns 0 on success.
-<h1>Environment Variables</h1>
-<p><dl compact>
-<p><dt>DB_HOME<dd>If the <b>dbenv</b> argument to <a href="../api_c/db_create.html">db_create</a> was initialized using
-<a href="../api_cxx/env_open.html">DbEnv::open</a> the environment variable <b>DB_HOME</b> may be used
-as the path of the database environment home.  Specifically, Db::open
-is affected by the configuration value DB_DATA_DIR.
+<p><dt><b>mode</b><dd>
+On UNIX systems or in IEEE/ANSI Std 1003.1 (POSIX) environments, all files created by
+the database open are created with mode <b>mode</b> (as described in <b>chmod</b>(2)) and modified by the process' umask value at the time of creation
+(see <b>umask</b>(2)).  If <b>mode</b> is 0, the database open will use a default
+mode of readable and writable by both owner and group.  On Windows
+systems, the mode parameter is ignored. The group ownership of created
+files is based on the system and directory defaults, and is not further
+specified by Berkeley DB.
+<p><dt><b>txnid</b><dd>
+If the operation is to be transaction-protected,
+(other than by specifying the DB_AUTO_COMMIT flag),
+the <b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  Note that transactionally protected operations on a <a href="../api_cxx/db_class.html">Db</a> handle
+requires the <a href="../api_cxx/db_class.html">Db</a> handle itself be transactionally protected
+during its open.
+<p><dt><b>type</b><dd>
+The <b>type</b> parameter
+is of type DBTYPE, and
+must be set to one of <a name="DB_BTREE">DB_BTREE</a>,
+<a name="DB_HASH">DB_HASH</a>, <a name="DB_QUEUE">DB_QUEUE</a>,
+<a name="DB_RECNO">DB_RECNO</a>, or <a name="DB_UNKNOWN">DB_UNKNOWN</a>.  If
+<b>type</b> is DB_UNKNOWN, the database must already exist
+and Db::open will automatically determine its type.  The
+<a href="../api_cxx/db_get_type.html">Db::get_type</a> method may be used to determine the underlying type of
+databases opened using DB_UNKNOWN.
 </dl>
+<h3>Environment Variables</h3>
+<p>If the database was opened within a database environment, the
+environment variable <b>DB_HOME</b> may be used as the path of the
+database environment home.</p>
+<p>Db::open is affected by any database directory specified using
+the <a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a> method, or by setting the "set_data_dir" string
+in the environment's <b>DB_CONFIG</b> file.</p>
 <p><dl compact>
-<p><dt>TMPDIR<dd>If the <b>file</b> and <b>dbenv</b> arguments to Db::open are
+<p><dt>TMPDIR<dd>If the <b>file</b> and <b>dbenv</b> parameters to Db::open are
 NULL, the environment variable <b>TMPDIR</b> may be used as a
-directory in which to create a temporary backing file.
+directory in which to create temporary backing files
 </dl>
-<h1>Errors</h1>
-<p>The Db::open method may fail and throw an exception or return a non-zero error for the following conditions:
+<h3>Errors</h3>
 <p><dl compact>
-<p><dt><a name="DB_OLD_VERSION">DB_OLD_VERSION</a><dd>The database cannot be opened without being first upgraded.
-<p><dt>EEXIST<dd>DB_CREATE and DB_EXCL were specified and the file exists.
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified (e.g., unknown database
-type, page size, hash function, pad byte, byte order) or a flag value
-or parameter that is incompatible with the specified database.
-<p>
-The <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a> flag was specified and spinlocks are not
-implemented for this architecture.
-<p>The <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a> flag was specified to Db::open, but was not
-specified to the <a href="../api_cxx/env_open.html">DbEnv::open</a> call for the environment in which the
-<a href="../api_cxx/db_class.html">Db</a> handle was created.
-<p>A <b>re_source</b> file was specified with either the <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a>
-flag or the provided database environment supports transaction
-processing.
-<p><dt>ENOENT<dd>A non-existent <b>re_source</b> file was specified.
+<p><dt>ENOENT<dd>The file or directory does not exist.
 </dl>
-<p>The Db::open method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
-If a catastrophic error has occurred, the Db::open method may fail and either
-return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw an exception encapsulating
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+<p>The Db::open method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>DB_OLD_VERSION<dd>The database cannot be opened without being first upgraded.
+</dl>
+<p><dl compact>
+<p><dt>EEXIST<dd>DB_CREATE and DB_EXCL were specified and the database exists.
+</dl>
+<p><dl compact>
+<p><dt>EINVAL<dd>If an unknown database type, page size, hash function, pad byte, byte
+order, or a flag value or parameter that is incompatible with the
+specified database was specified;
+the <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a> flag was specified and fast mutexes are not
+available for this architecture;
+the <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a> flag was specified to Db::open, but was
+not specified to the <a href="../api_cxx/env_open.html">DbEnv::open</a> call for the environment in
+which the <a href="../api_cxx/db_class.html">Db</a> handle was created;
+a backing flat text file was specified with either the <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a>
+flag or the provided database environment supports transaction
+processing; or if an
+invalid flag value or parameter was specified.
+</dl>
+<p><dl compact>
+<p><dt>ENOENT<dd>A nonexistent <b>re_source</b> file was specified.
+</dl>
+<p><dl compact>
+<p><dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+unrolled a committed transaction.
+</dl>
+<p>If a transactional database environment operation was selected to
+resolve a deadlock, the Db::open method will fail and
+either return <a href="../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> or
+throw a <a href="../api_cxx/deadlock_class.html">DbDeadlockException</a> exception.</p>
+<p>If a Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
+to grant a lock in the allowed time, the Db::open method will fail and
+either return <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or
+throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.</p>
+<hr size=1 noshade>
+<h3>Description: Db::get_database</h3>
+<p>The Db::get_database method returns the current filename and database
+name.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>filenamep</b><dd>
+The <b>filenamep</b> parameter references memory into which
+a pointer to the current filename is copied.
+<p><dt><b>dbnamep</b><dd>
+The <b>dbnamep</b> parameter references memory into which
+a pointer to the current database name is copied.
+</dl>
+<p>The Db::get_database method may be called at any time during the life of the
+application.</p>
+<p>The Db::get_database method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<hr size=1 noshade>
+<h3>Description: Db::get_open_flags</h3>
+<p>The Db::get_open_flags method returns the current open method flags.</p>
+<p>The Db::get_open_flags method may not be called before the Db::open method has been
+called.</p>
+<p>The Db::get_open_flags method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>flagsp</b><dd>
+The Db::get_open_flags method returns  the
+current open method flags in <b>flagsp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Description: Db::get_transactional</h3>
+<p>The Db::get_transactional method returns non-zero if the <a href="../api_cxx/db_class.html">Db</a>
+handle has been opened in a transactional mode.</p>
+<p>The Db::get_transactional method may be called at any time during the life of the
+application.</p>
+<hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_cxx/db_class.html">Db</a>
-<h1>See Also</h1>
-<a href="../api_cxx/db_close.html">Db::close</a>,
-<a href="../api_cxx/db_cursor.html">Db::cursor</a>,
-<a href="../api_cxx/db_del.html">Db::del</a>,
-<a href="../api_cxx/db_err.html">Db::err</a>,
-<a href="../api_cxx/db_fd.html">Db::fd</a>,
-<a href="../api_cxx/db_get.html">Db::get</a>,
-<a href="../api_cxx/db_get_byteswapped.html">Db::get_byteswapped</a>,
-<a href="../api_cxx/db_get_type.html">Db::get_type</a>,
-<a href="../api_cxx/db_join.html">Db::join</a>,
-<a href="../api_cxx/db_key_range.html">Db::key_range</a>,
-<a href="../api_cxx/db_open.html">Db::open</a>,
-<a href="../api_cxx/db_put.html">Db::put</a>,
-<a href="../api_cxx/db_remove.html">Db::remove</a>,
-<a href="../api_cxx/db_set_bt_compare.html">Db::set_bt_compare</a>,
-<a href="../api_cxx/db_set_bt_minkey.html">Db::set_bt_minkey</a>,
-<a href="../api_cxx/db_set_bt_prefix.html">Db::set_bt_prefix</a>,
-<a href="../api_cxx/db_set_cachesize.html">Db::set_cachesize</a>,
-<a href="../api_cxx/db_set_dup_compare.html">Db::set_dup_compare</a>,
-<a href="../api_cxx/db_set_errcall.html">Db::set_errcall</a>,
-<a href="../api_cxx/db_set_errfile.html">Db::set_errfile</a>,
-<a href="../api_cxx/db_set_errpfx.html">Db::set_errpfx</a>,
-<a href="../api_cxx/db_set_flags.html">Db::set_flags</a>,
-<a href="../api_cxx/db_set_h_ffactor.html">Db::set_h_ffactor</a>,
-<a href="../api_cxx/db_set_h_hash.html">Db::set_h_hash</a>,
-<a href="../api_cxx/db_set_h_nelem.html">Db::set_h_nelem</a>,
-<a href="../api_cxx/db_set_lorder.html">Db::set_lorder</a>,
-<a href="../api_cxx/db_set_malloc.html">Db::set_malloc</a>,
-<a href="../api_cxx/db_set_pagesize.html">Db::set_pagesize</a>,
-<a href="../api_cxx/db_set_paniccall.html">Db::set_paniccall</a>,
-<a href="../api_cxx/db_set_q_extentsize.html">Db::set_q_extentsize</a>,
-<a href="../api_cxx/db_set_realloc.html">Db::set_realloc</a>,
-<a href="../api_cxx/db_set_re_delim.html">Db::set_re_delim</a>,
-<a href="../api_cxx/db_set_re_len.html">Db::set_re_len</a>,
-<a href="../api_cxx/db_set_re_pad.html">Db::set_re_pad</a>,
-<a href="../api_cxx/db_set_re_source.html">Db::set_re_source</a>,
-<a href="../api_cxx/db_stat.html">Db::stat</a>,
-<a href="../api_cxx/db_sync.html">Db::sync</a>,
-<a href="../api_cxx/db_upgrade.html">Db::upgrade</a>
-and
-<a href="../api_cxx/db_verify.html">Db::verify</a>.
+<h3>See Also</h3>
+<a href="../api_cxx/db_list.html">Databases and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

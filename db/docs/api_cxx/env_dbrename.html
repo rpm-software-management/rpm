@@ -1,21 +1,22 @@
-<!--Id: env_dbrename.so,v 10.17 2002/08/02 18:41:14 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: env_dbrename.so,v 10.31 2003/11/08 19:17:27 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::dbrename</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DbEnv::dbrename</h1>
+<h3>DbEnv::dbrename</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -26,111 +27,88 @@ int
 DbEnv::dbrename(DbTxn *txnid, const char *file,
     const char *database, const char *newname, u_int32_t flags);
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: DbEnv::dbrename</h3>
 <p>The DbEnv::dbrename method renames the database specified by the
-<b>file</b> and <b>database</b> arguments to <b>newname</b>.  If no
+<b>file</b> and <b>database</b> parameters to <b>newname</b>.  If no
 <b>database</b> is specified, the underlying file represented by
-<b>file</b> is renamed, incidentally renaming all databases that it
-contained.
+<b>file</b> is renamed, incidentally renaming all of the databases it
+contained.</p>
 <p>Applications should not rename databases that are currently in use.  If
 an underlying file is being renamed and logging is currently enabled in
 the database environment, no database in the file may be open when the
 DbEnv::dbrename method is called.  In particular, some architectures do
 not permit renaming files with open handles.  On these architectures,
 attempts to rename databases that are currently in use by any thread of
-control in the system will fail.
-<p>If the operation is to be transaction-protected, the <b>txnid</b>
-parameter is a transaction handle returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>;
-otherwise, NULL.
-<p>The <b>flags</b> value must be set to 0 or
+control in the system will fail.</p>
+<p>The DbEnv::dbrename method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>database</b><dd>
+The <b>database</b> parameter is the database to be removed.
+<p><dt><b>file</b><dd>
+The <b>file</b> parameter is the physical file which contains the
+database(s) to be removed.
+<p><dt><b>flags</b><dd>
+The <b>flags</b> parameter must be set to 0 or
 the following value:
 <p><dl compact>
 <p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DbEnv::dbrename call within a transaction.  If the call succeeds,
 changes made by the operation will be recoverable.  If the call fails,
 the operation will have made no changes.
 </dl>
-<p>The DbEnv::dbrename method either returns a non-zero error value or throws an exception that
-encapsulates a non-zero error value on failure, and returns 0 on success.
-<h1>Environment Variables</h1>
-<p><dl compact>
-<p><dt>DB_HOME<dd>The 
+<p><dt><b>newname</b><dd>
+The <b>newname</b> parameter is the new name of the database or file.
+<p><dt><b>txnid</b><dd>
+If the operation is to be transaction-protected,
+the <b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
+</dl>
+<h3>Environment Variables</h3>
+<p>The 
 environment variable <b>DB_HOME</b> may be used as the path of the
-database environment home.
-<p>DbEnv::dbrename is affected by any database directory specified using the
-<a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a> method, or by setting the "set_data_dir" string
-in the environment's <b>DB_CONFIG</b> file.
-</dl>
-<h1>Errors</h1>
-<p>The DbEnv::dbrename method may fail and throw an exception or return a non-zero error for the following conditions:
+database environment home.</p>
+<p>DbEnv::dbrename is affected by any database directory specified using
+the <a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a> method, or by setting the "set_data_dir" string
+in the environment's <b>DB_CONFIG</b> file.</p>
+<h3>Errors</h3>
+<p>The DbEnv::dbrename method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>A database in the file is currently open.
-<p>Called before <a href="../api_cxx/env_open.html">DbEnv::open</a> was called.
+<p><dt>DB_FILEOPEN<dd>An attempt was made to rename the underlying file and a database in the
+file was currently open.
 </dl>
-<p>If the file or directory does not exist, the DbEnv::dbrename method will
-fail and
-and either return ENOENT or
-throw a FileNotFoundException exception.
-<p>The DbEnv::dbrename method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
-If a catastrophic error has occurred, the DbEnv::dbrename method may fail and
-either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw a
-<a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
-in which case all subsequent Berkeley DB calls will fail in the same way.
-<h1>Class</h1>
-<a href="../api_cxx/db_class.html">Db</a>
-<h1>See Also</h1>
-<a href="../api_cxx/db_set_alloc.html">Db::set_alloc</a>,
-<a href="../api_cxx/db_associate.html">Db::associate</a>,
-<a href="../api_cxx/db_close.html">Db::close</a>,
-<a href="../api_cxx/db_cursor.html">Db::cursor</a>,
-<a href="../api_cxx/db_del.html">Db::del</a>,
-<a href="../api_cxx/db_err.html">Db::err</a>,
-<a href="../api_cxx/db_err.html">Db::errx</a>,
-<a href="../api_cxx/db_fd.html">Db::fd</a>,
-<a href="../api_cxx/db_get.html">Db::get</a>,
-<a href="../api_cxx/db_get_byteswapped.html">Db::get_byteswapped</a>,
-<a href="../api_cxx/db_get_type.html">Db::get_type</a>,
-<a href="../api_cxx/db_join.html">Db::join</a>,
-<a href="../api_cxx/db_key_range.html">Db::key_range</a>,
-<a href="../api_cxx/db_open.html">Db::open</a>,
-<a href="../api_cxx/db_get.html">Db::pget</a>,
-<a href="../api_cxx/db_put.html">Db::put</a>,
-<a href="../api_cxx/db_remove.html">Db::remove</a>,
-<a href="../api_cxx/db_rename.html">Db::rename</a>,
-<a href="../api_cxx/db_set_append_recno.html">Db::set_append_recno</a>,
-<a href="../api_cxx/db_set_bt_compare.html">Db::set_bt_compare</a>,
-<a href="../api_cxx/db_set_bt_minkey.html">Db::set_bt_minkey</a>,
-<a href="../api_cxx/db_set_bt_prefix.html">Db::set_bt_prefix</a>,
-<a href="../api_cxx/db_set_cache_priority.html">Db::set_cache_priority</a>,
-<a href="../api_cxx/db_set_cachesize.html">Db::set_cachesize</a>,
-<a href="../api_cxx/db_set_dup_compare.html">Db::set_dup_compare</a>,
-<a href="../api_cxx/db_set_encrypt.html">Db::set_encrypt</a>,
-<a href="../api_cxx/db_set_errcall.html">Db::set_errcall</a>,
-<a href="../api_cxx/db_set_errfile.html">Db::set_errfile</a>,
-<a href="../api_cxx/db_set_errpfx.html">Db::set_errpfx</a>,
-<a href="../api_cxx/db_set_feedback.html">Db::set_feedback</a>,
-<a href="../api_cxx/db_set_flags.html">Db::set_flags</a>,
-<a href="../api_cxx/db_set_h_ffactor.html">Db::set_h_ffactor</a>,
-<a href="../api_cxx/db_set_h_hash.html">Db::set_h_hash</a>,
-<a href="../api_cxx/db_set_h_nelem.html">Db::set_h_nelem</a>,
-<a href="../api_cxx/db_set_lorder.html">Db::set_lorder</a>,
-<a href="../api_cxx/db_set_pagesize.html">Db::set_pagesize</a>,
-<a href="../api_cxx/db_set_paniccall.html">Db::set_paniccall</a>,
-<a href="../api_cxx/db_set_q_extentsize.html">Db::set_q_extentsize</a>,
-<a href="../api_cxx/db_set_re_delim.html">Db::set_re_delim</a>,
-<a href="../api_cxx/db_set_re_len.html">Db::set_re_len</a>,
-<a href="../api_cxx/db_set_re_pad.html">Db::set_re_pad</a>,
-<a href="../api_cxx/db_set_re_source.html">Db::set_re_source</a>,
-<a href="../api_cxx/db_stat.html">Db::stat</a>,
-<a href="../api_cxx/db_sync.html">Db::sync</a>,
-<a href="../api_cxx/db_truncate.html">Db::truncate</a>,
-<a href="../api_cxx/db_upgrade.html">Db::upgrade</a>
-and
-<a href="../api_cxx/db_verify.html">Db::verify</a>.
+<p><dl compact>
+<p><dt>EINVAL<dd>If DbEnv::dbrename called before <a href="../api_cxx/env_open.html">DbEnv::open</a> was called; or if an
+invalid flag value or parameter was specified.
+</dl>
+<p><dl compact>
+<p><dt>ENOENT<dd>The file or directory does not exist.
+</dl>
+<p>If a transactional database environment operation was selected to
+resolve a deadlock, the DbEnv::dbrename method will fail and
+either return <a href="../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> or
+throw a <a href="../api_cxx/deadlock_class.html">DbDeadlockException</a> exception.</p>
+<p>If a Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
+to grant a lock in the allowed time, the DbEnv::dbrename method will fail and
+either return <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or
+throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.</p>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/env_list.html">Database Environments and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

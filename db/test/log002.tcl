@@ -1,17 +1,18 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: log002.tcl,v 11.28 2002/04/29 20:07:54 sue Exp 
+# $Id: log002.tcl,v 11.30 2003/04/18 14:39:10 sandstro Exp $
 #
-
 # TEST	log002
 # TEST	Tests multiple logs
 # TEST		Log truncation
 # TEST		LSN comparison and file functionality.
 proc log002 { } {
 	source ./include.tcl
+	global rand_init
+	error_check_good set_random_seed [berkdb srand $rand_init] 0
 
 	puts "Log002: Multiple log test w/trunc, file, compare functionality"
 

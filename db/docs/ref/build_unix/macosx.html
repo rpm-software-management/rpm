@@ -1,42 +1,35 @@
-<!--Id: macosx.so,v 11.7 2002/09/05 15:59:10 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: macosx.so,v 11.10 2003/03/24 13:46:23 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Mac OS X</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
-<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for UNIX systems</dl></h3></td>
-<td align=right><a href="../../ref/build_unix/linux.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for UNIX/POSIX systems</dl></h3></td>
+<td align=right><a href="../build_unix/linux.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Mac OS X</h1>
-<p><ol>
+<h3 align=center>Mac OS X</h3>
+<ol>
 <p><li><b>I cannot use the Java API on Mac OS X.</b>
 <p>The Berkeley DB configuration and build procedure is unable to dynamically
 load some libraries on Mac OS X.  This restriction is expected to be
-removed in future Berkeley DB releases.
+removed in future Berkeley DB releases.</p>
 <p>There is a workaround for Java.  Mac OS X normally requires Java
 loadable libraries to end with a .jnilib extension.  Libtool, used by
 our build procedure, does not support this extension.  To work around
 this, you must add a -D option to your Java command line to specify the
-complete pathname of the installed library:
-<p><blockquote><pre>% java -Dsleepycat.db.libfile=/full/path/to/libdb_java-VERSION.so</pre></blockquote>
-<p><li><b>I cannot run the test suite on Mac OS X.</b>
-<p>The Mac OS X 10.1 and 10.2 Developer Tools installer will optionally
-install one additional package called simply, "BSD SDK".  That package
-contains the additional parts of the TCL distribution required to
-configure, compile and run the Berkeley DB test suite.  The Berkeley DB configuration
-step will need the flag "--with-tcl=/System/Library/Tcl/8.3" added to
-the arguments in order to locate the now installed TCL distribution.
+complete pathname of the installed library:</p>
+<blockquote><pre>% java -Dsleepycat.db.libfile=/full/path/to/libdb_java-VERSION.so</pre></blockquote>
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/build_unix/linux.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/linux.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

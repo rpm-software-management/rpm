@@ -1,28 +1,29 @@
-<!--$Id: disk.so,v 1.4 2000/12/21 18:37:09 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: disk.so,v 1.5 2001/03/28 13:55:10 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Release 3.2: upgrade requirements</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<table><tr valign=top>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
-<td width="1%"><a href="../../ref/upgrade.3.2/db_dump.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/test/run.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../upgrade.3.2/db_dump.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.3.3/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Release 3.2: upgrade requirements</h1>
+<h3 align=center>Release 3.2: upgrade requirements</h3>
 <p>Log file formats and the Queue Access Method database formats changed
 in the Berkeley DB 3.2 release.  (The on-disk Queue format changed from
 version 2 to version 3.)  Until the underlying databases are upgraded,
-the <a href="../../api_c/db_open.html">DB-&gt;open</a> function will return a <a href="../../api_c/db_open.html#DB_OLD_VERSION">DB_OLD_VERSION</a> error.
+the <a href="../../api_c/db_open.html">DB-&gt;open</a> method will return a <a href="../../api_c/db_open.html#DB_OLD_VERSION">DB_OLD_VERSION</a> error.</p>
 <p>For further information on upgrading Berkeley DB installations, see
 <a href="../../ref/upgrade/process.html">Upgrading Berkeley DB
-installations</a>.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/upgrade.3.2/db_dump.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/test/run.html"><img src="../../images/next.gif" alt="Next"></a>
+installations</a>.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.3.2/db_dump.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.3.3/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,20 +1,22 @@
-<!--$Id: dbc_close.so,v 10.20 2000/03/01 21:41:29 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: dbc_close.so,v 10.31 2003/10/31 17:24:42 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DBcursor-&gt;c_close</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DBcursor-&gt;c_close</h1>
+<h3>DBcursor-&gt;c_close</h3>
 </td>
-<td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -22,43 +24,44 @@
 #include &lt;db.h&gt;
 <p>
 int
-DBcursor-&gt;c_close(DBC *cursor);
+DBcursor-&gt;c_close(DBC *DBcursor);
 </pre></h3>
-<h1>Description</h1>
-<p>The DBcursor-&gt;c_close function discards the cursor.
-<p>It is possible for the DBcursor-&gt;c_close function to return
+<hr size=1 noshade>
+<h3>Description: DBcursor-&gt;c_close</h3>
+<p>The DBcursor-&gt;c_close method discards the cursor.</p>
+<p>It is possible for the DBcursor-&gt;c_close method to return
 <a href="../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>, signaling that any enclosing transaction should
 be aborted.  If the application is already intending to abort the
 transaction, this error should be ignored, and the application should
-proceed.
-<p>Once DBcursor-&gt;c_close has been called, regardless of its return, the
-cursor handle may not be used again.
-<p>The DBcursor-&gt;c_close function returns a non-zero error value on failure and 0 on success.
-<h1>Errors</h1>
-<p>The DBcursor-&gt;c_close function may fail and return a non-zero error for the following conditions:
+proceed.</p>
+<p>After DBcursor-&gt;c_close has been called, regardless of its return, the
+cursor handle may not be used again.</p>
+<p>The DBcursor-&gt;c_close method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Errors</h3>
+<p>The DBcursor-&gt;c_close method
+may fail and return one of the following non-zero errors:</p>
 <p><dl compact>
-<p><dt>DB_LOCK_DEADLOCK<dd>The operation was selected to resolve a deadlock.
+<p><dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
+a deadlock.
+<p><dt>DB_LOCK_NOTGRANTED<dd>A Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
+to grant a lock in the allowed time.
 </dl>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>The cursor was previously closed.
+<p><dt>EINVAL<dd>If the cursor is already closed; or if an
+invalid flag value or parameter was specified.
 </dl>
-<p>The DBcursor-&gt;c_close function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DBcursor-&gt;c_close function may fail and return
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
-<h1>See Also</h1>
-<a href="../api_c/dbc_close.html">DBcursor-&gt;c_close</a>,
-<a href="../api_c/dbc_count.html">DBcursor-&gt;c_count</a>,
-<a href="../api_c/dbc_del.html">DBcursor-&gt;c_del</a>,
-<a href="../api_c/dbc_dup.html">DBcursor-&gt;c_dup</a>,
-<a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a>
-and
-<a href="../api_c/dbc_put.html">DBcursor-&gt;c_put</a>.
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/dbc_class.html">DBC</a>
+<h3>See Also</h3>
+<a href="../api_c/dbc_list.html">Database Cursors and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: bt_curadj.c,v 11.20 2001/01/17 16:15:49 bostic Exp $";
+static const char revid[] = "$Id: bt_curadj.c,v 11.34 2003/07/09 02:32:24 margo Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -16,9 +16,8 @@ static const char revid[] = "$Id: bt_curadj.c,v 11.20 2001/01/17 16:15:49 bostic
 #endif
 
 #include "db_int.h"
-#include "db_page.h"
-#include "btree.h"
-#include "txn.h"
+#include "dbinc/db_page.h"
+#include "dbinc/btree.h"
 
 static int __bam_opd_cursor __P((DB *, DBC *, db_pgno_t, u_int32_t, u_int32_t));
 
@@ -99,6 +98,19 @@ __bam_ca_delete(dbp, pgno, indx, delete)
 		    dbc != NULL; dbc = TAILQ_NEXT(dbc, links)) {
 			cp = (BTREE_CURSOR *)dbc->internal;
 			if (cp->pgno == pgno && cp->indx == indx) {
+				/*
+				 * [#8032] This assert is checking
+				 * for possible race conditions where we
+				 * hold a cursor position without a lock.
+				 * Unfortunately, there are paths in the
+				 * Btree code that do not satisfy these
+				 * conditions. None of them are known to
+				 * be a problem, but this assert should
+				 * be re-activated when the Btree stack
+				 * code is re-written.
+				DB_ASSERT(!STD_LOCKING(dbc) ||
+				    cp->lock_mode != DB_LOCK_NG);
+				 */
 				if (delete)
 					F_SET(cp, C_DELETED);
 				else
@@ -193,7 +205,10 @@ __bam_ca_di(my_dbc, pgno, indx, adjust)
 			if (cp->pgno == pgno && cp->indx >= indx) {
 				/* Cursor indices should never be negative. */
 				DB_ASSERT(cp->indx != 0 || adjust > 0);
-
+				/* [#8032]
+				DB_ASSERT(!STD_LOCKING(dbc) ||
+				    cp->lock_mode != DB_LOCK_NG);
+				*/
 				cp->indx += adjust;
 				if (my_txn != NULL && dbc->txn != my_txn)
 					found = 1;
@@ -203,10 +218,9 @@ __bam_ca_di(my_dbc, pgno, indx, adjust)
 	}
 	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
 
-	if (found != 0 && DB_LOGGING(my_dbc)) {
-		if ((ret = __bam_curadj_log(dbenv,
-		    my_dbc->txn, &lsn, 0, dbp->log_fileid,
-		    DB_CA_DI, pgno, 0, 0, adjust, indx, 0)) != 0)
+	if (found != 0 && DBC_LOGGING(my_dbc)) {
+		if ((ret = __bam_curadj_log(dbp, my_dbc->txn,
+		    &lsn, 0, DB_CA_DI, pgno, 0, 0, adjust, indx, 0)) != 0)
 			return (ret);
 	}
 
@@ -234,8 +248,13 @@ __bam_opd_cursor(dbp, dbc, first, tpgno, ti)
 	 * Allocate a new cursor and create the stack.  If duplicates
 	 * are sorted, we've just created an off-page duplicate Btree.
 	 * If duplicates aren't sorted, we've just created a Recno tree.
+	 *
+	 * Note that in order to get here at all, there shouldn't be
+	 * an old off-page dup cursor--to augment the checking db_c_newopd
+	 * will do, assert this.
 	 */
-	if ((ret = __db_c_newopd(dbc, tpgno, &dbc_nopd)) != 0)
+	DB_ASSERT(orig_cp->opd == NULL);
+	if ((ret = __db_c_newopd(dbc, tpgno, orig_cp->opd, &dbc_nopd)) != 0)
 		return (ret);
 
 	cp = (BTREE_CURSOR *)dbc_nopd->internal;
@@ -316,22 +335,25 @@ loop:		MUTEX_THREAD_LOCK(dbenv, dbp->mutexp);
 				continue;
 
 			MUTEX_THREAD_UNLOCK(dbenv, dbp->mutexp);
+			/* [#8032]
+			DB_ASSERT(!STD_LOCKING(dbc) ||
+			    orig_cp->lock_mode != DB_LOCK_NG);
+			*/
 			if ((ret = __bam_opd_cursor(dbp,
 			    dbc, first, tpgno, ti)) !=0)
 				return (ret);
 			if (my_txn != NULL && dbc->txn != my_txn)
 				found = 1;
-			/* We released the MUTEX to get a cursor, start over. */
+			/* We released the mutex to get a cursor, start over. */
 			goto loop;
 		}
 		MUTEX_THREAD_UNLOCK(dbenv, dbp->mutexp);
 	}
 	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
 
-	if (found != 0 && DB_LOGGING(my_dbc)) {
-		if ((ret = __bam_curadj_log(dbenv,
-		    my_dbc->txn, &lsn, 0, dbp->log_fileid,
-		    DB_CA_DUP, fpgno, tpgno, 0, first, fi, ti)) != 0)
+	if (found != 0 && DBC_LOGGING(my_dbc)) {
+		if ((ret = __bam_curadj_log(dbp, my_dbc->txn,
+		    &lsn, 0, DB_CA_DUP, fpgno, tpgno, 0, first, fi, ti)) != 0)
 			return (ret);
 	}
 	return (0);
@@ -372,18 +394,26 @@ loop:		MUTEX_THREAD_LOCK(dbenv, dbp->mutexp);
 		    dbc != NULL; dbc = TAILQ_NEXT(dbc, links)) {
 			orig_cp = (BTREE_CURSOR *)dbc->internal;
 
+			/*
+			 * A note on the orig_cp->opd != NULL requirement here:
+			 * it's possible that there's a cursor that refers to
+			 * the same duplicate set, but which has no opd cursor,
+			 * because it refers to a different item and we took
+			 * care of it while processing a previous record.
+			 */
 			if (orig_cp->pgno != fpgno ||
 			    orig_cp->indx != first ||
+			    orig_cp->opd == NULL ||
 			    ((BTREE_CURSOR *)orig_cp->opd->internal)->indx
 			    != ti)
 				continue;
 			MUTEX_THREAD_UNLOCK(dbenv, dbp->mutexp);
-			if ((ret = orig_cp->opd->c_close(orig_cp->opd)) != 0)
+			if ((ret = __db_c_close(orig_cp->opd)) != 0)
 				return (ret);
 			orig_cp->opd = NULL;
 			orig_cp->indx = fi;
 			/*
-			 * We released the MUTEX to free a cursor,
+			 * We released the mutex to free a cursor,
 			 * start over.
 			 */
 			goto loop;
@@ -432,6 +462,10 @@ __bam_ca_rsplit(my_dbc, fpgno, tpgno)
 				continue;
 			if (dbc->internal->pgno == fpgno) {
 				dbc->internal->pgno = tpgno;
+				/* [#8032]
+				DB_ASSERT(!STD_LOCKING(dbc) ||
+				    dbc->internal->lock_mode != DB_LOCK_NG);
+				*/
 				if (my_txn != NULL && dbc->txn != my_txn)
 					found = 1;
 			}
@@ -440,10 +474,9 @@ __bam_ca_rsplit(my_dbc, fpgno, tpgno)
 	}
 	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
 
-	if (found != 0 && DB_LOGGING(my_dbc)) {
-		if ((ret = __bam_curadj_log(dbenv,
-		    my_dbc->txn, &lsn, 0, dbp->log_fileid,
-		    DB_CA_RSPLIT, fpgno, tpgno, 0, 0, 0, 0)) != 0)
+	if (found != 0 && DBC_LOGGING(my_dbc)) {
+		if ((ret = __bam_curadj_log(dbp, my_dbc->txn,
+		    &lsn, 0, DB_CA_RSPLIT, fpgno, tpgno, 0, 0, 0, 0)) != 0)
 			return (ret);
 	}
 	return (0);
@@ -497,6 +530,10 @@ __bam_ca_split(my_dbc, ppgno, lpgno, rpgno, split_indx, cleft)
 				continue;
 			cp = dbc->internal;
 			if (cp->pgno == ppgno) {
+				/* [#8032]
+				DB_ASSERT(!STD_LOCKING(dbc) ||
+				    cp->lock_mode != DB_LOCK_NG);
+				*/
 				if (my_txn != NULL && dbc->txn != my_txn)
 					found = 1;
 				if (cp->indx < split_indx) {
@@ -512,9 +549,9 @@ __bam_ca_split(my_dbc, ppgno, lpgno, rpgno, split_indx, cleft)
 	}
 	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
 
-	if (found != 0 && DB_LOGGING(my_dbc)) {
-		if ((ret = __bam_curadj_log(dbenv, my_dbc->txn,
-		    &lsn, 0, dbp->log_fileid, DB_CA_SPLIT, ppgno, rpgno,
+	if (found != 0 && DBC_LOGGING(my_dbc)) {
+		if ((ret = __bam_curadj_log(dbp,
+		    my_dbc->txn, &lsn, 0, DB_CA_SPLIT, ppgno, rpgno,
 		    cleft ? lpgno : PGNO_INVALID, 0, split_indx, 0)) != 0)
 			return (ret);
 	}

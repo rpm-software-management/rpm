@@ -1,20 +1,22 @@
-<!--$Id: env_set_lk_max_locks.so,v 10.1 2000/12/21 19:11:27 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_lk_max_locks.so,v 10.19 2003/11/08 19:17:31 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::set_lk_max_locks</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DbEnv::set_lk_max_locks</h1>
+<h3>DbEnv::set_lk_max_locks</h3>
 </td>
-<td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -23,48 +25,80 @@
 <p>
 int
 DbEnv::set_lk_max_locks(u_int32_t max);
+<p>
+int
+DbEnv::get_lk_max_locks(u_int32_t *lk_maxp);
 </pre></h3>
-<h1>Description</h1>
-<p>Set the maximum number of locks supported by the Berkeley DB lock subsystem.
+<hr size=1 noshade>
+<h3>Description: DbEnv::set_lk_max_locks</h3>
+<a name="3"><!--meow--></a>
+<p>Set the maximum number of locks supported by the Berkeley DB environment.
 This value is used by <a href="../api_cxx/env_open.html">DbEnv::open</a> to estimate how much space to
-allocate for various lock-table data structures.  For specific
-information on configuring the size of the lock subsystem, see
-<a href="../ref/lock/max.html">Configuring locking: sizing the system</a>.
-<p>The DbEnv::set_lk_max_locks interface may only be used to configure Berkeley DB before
-the <a href="../api_cxx/env_open.html">DbEnv::open</a> interface is called.
-<p>The DbEnv::set_lk_max_locks method either returns a non-zero error value or throws an exception that
-encapsulates a non-zero error value on failure, and returns 0 on success.
+allocate for various lock-table data structures.  The default value is
+1000 locks. For specific information on configuring the size of the lock
+subsystem, see <a href="../ref/lock/max.html">Configuring locking:
+sizing the system</a>.</p>
 <p>The database environment's maximum number of locks may also be set using the environment's
 <b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
 single line with the string "set_lk_max_locks", one or more whitespace characters,
-and the number of locks.  Because the <b>DB_CONFIG</b> file is read when the database
+and the number of locks.
+Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
-before that time.
-<h1>Errors</h1>
+before that time.</p>
+<p>The DbEnv::set_lk_max_locks method configures a database environment, not only operations
+performed using the specified <a href="../api_cxx/env_class.html">DbEnv</a> handle.</p>
+<p>The DbEnv::set_lk_max_locks method may not be called after the <a href="../api_cxx/env_open.html">DbEnv::open</a> method is
+called.
+If the database environment already exists when
+<a href="../api_cxx/env_open.html">DbEnv::open</a> is called, the information specified to DbEnv::set_lk_max_locks
+will be ignored.
+</p>
+<p>The DbEnv::set_lk_max_locks method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>Called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called.
+<p><dt><b>max</b><dd>
+The <b>max</b> parameter is the maximum number of locks supported by
+the Berkeley DB environment.
 </dl>
-<h3>Classes</h3>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/lock_class.html">DbLock</a>
-<h1>See Also</h1>
-<a href="../api_cxx/env_set_lk_conflicts.html">DbEnv::set_lk_conflicts</a>,
-<a href="../api_cxx/env_set_lk_detect.html">DbEnv::set_lk_detect</a>,
-<a href="../api_cxx/env_set_lk_max_locks.html">DbEnv::set_lk_max_locks</a>,
-<a href="../api_cxx/env_set_lk_max_lockers.html">DbEnv::set_lk_max_lockers</a>,
-<a href="../api_cxx/env_set_lk_max_objects.html">DbEnv::set_lk_max_objects</a>,
-<a href="../api_cxx/env_set_lk_max.html">DbEnv::set_lk_max</a>,
-<a href="../api_cxx/lock_detect.html">DbEnv::lock_detect</a>,
-<a href="../api_cxx/lock_get.html">DbEnv::lock_get</a>,
-<a href="../api_cxx/lock_id.html">DbEnv::lock_id</a>,
-<a href="../api_cxx/lock_put.html">DbLock::put</a>,
-<a href="../api_cxx/lock_stat.html">DbEnv::lock_stat</a>
-and
-<a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a>.
+<h3>Errors</h3>
+<p>The DbEnv::set_lk_max_locks method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>If the method was called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called; or if an
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbEnv::set_lk_max_locks</h3>
+<p>The DbEnv::set_lk_max_locks method returns the maximum number of locks.</p>
+<p>The DbEnv::set_lk_max_locks method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::set_lk_max_locks method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>lk_maxp</b><dd>
+The DbEnv::set_lk_max_locks method returns  the
+maximum number of locks in <b>lk_maxp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/lock_class.html">DbLock</a>
+<h3>See Also</h3>
+<a href="../api_cxx/lock_list.html">Locking Subsystem and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,59 @@
+<!--$Id: small.so,v 10.4 2003/05/09 17:49:05 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Building a small memory footprint library</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for UNIX/POSIX systems</dl></h3></td>
+<td align=right><a href="../build_unix/conf.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/flags.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Building a small memory footprint library</h3>
+<p>There are a set of configuration options to assist you in building a
+small memory footprint library.  These configuration options turn off
+specific functionality in the Berkeley DB library, reducing the code size.
+These configuration options include:</p>
+<p><dl compact>
+<p><dt><a name="--disable-cryptography">--disable-cryptography</a><dd>To build Berkeley DB without support for cryptography, enter
+--disable-cryptography as an argument to configure.
+<p><dt><a name="--disable-hash">--disable-hash</a><dd>To build Berkeley DB without support for the Hash access method, enter
+--disable-hash as an argument to configure.
+<p><dt><a name="--disable-queue">--disable-queue</a><dd>To build Berkeley DB without support for the Queue access method, enter
+--disable-queue as an argument to configure.
+<p><dt><a name="--disable-replication">--disable-replication</a><dd>To build Berkeley DB without support for the database environment replication,
+enter --disable-replication as an argument to configure.
+<p><dt><a name="--disable-verify">--disable-verify</a><dd>To build Berkeley DB without support for database verification, enter
+--disable-verify as an argument to configure.
+<p><dt><a name="--enable-smallbuild">--enable-smallbuild</a><dd>Equivalent to individually specifying --disable-cryptography,
+--disable-hash, --disable-queue, --disable-replication, and
+--disable-verify
+</dl>
+<p>The following configuration options will increase the size of the Berkeley DB
+library dramatically and are only useful when debugging applications:</p>
+<p><dl compact>
+<p><dt><a href="../../ref/build_unix/conf.html#--enable-debug">--enable-debug</a><dd>Build Berkeley DB with symbols for debugging.
+<p><dt><a href="../../ref/build_unix/conf.html#--enable-debug_rop">--enable-debug_rop</a><dd>Build Berkeley DB with read-operation logging.
+<p><dt><a href="../../ref/build_unix/conf.html#--enable-debug_wop">--enable-debug_wop</a><dd>Build Berkeley DB with write-operation logging.
+<p><dt><a href="../../ref/build_unix/conf.html#--enable-diagnostic">--enable-diagnostic</a><dd>Build Berkeley DB with run-time debugging checks.
+</dl>
+<p>In addition, static libraries are usually smaller than shared libraries.
+By default Berkeley DB will build both shared and static libraries.  To build
+only a static library, configure Berkeley DB with the
+<a href="../../ref/build_unix/conf.html">--disable-shared</a> option.</p>
+<p>While the size of the Berkeley DB library will vary depending on your
+compiler, system, and configuration options, the minimum size is
+expected to be around 350KB, and the maximum size to be around 600KB.</p>
+<p>For assistance in further reducing the size of the Berkeley DB library, or in
+building small memory footprint libraries on other systems, please contact
+Sleepycat Software support.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/conf.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/flags.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

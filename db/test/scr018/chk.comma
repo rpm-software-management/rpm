@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.comma,v 1.1 2001/11/03 18:43:49 bostic Exp 
+# $Id: chk.comma,v 1.1 2001/11/03 18:43:49 bostic Exp $
 #
 # Look for trailing commas in declarations.  Some compilers can't handle:
 #	enum {

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.str,v 1.5 2001/10/12 17:55:36 bostic Exp 
+# $Id: chk.str,v 1.6 2003/01/08 21:04:53 bostic Exp $
 #
 # Check spelling in quoted strings.
 
@@ -19,7 +19,7 @@ sed -e '/^#include/d' \
     -e 's/^[^"]*//' \
     -e 's/%s/ /g' \
     -e 's/[^"]*$//' \
-    -e 's/\\[nt]/ /g' $d/*/*.c $d/*/*.cpp |
+    -e 's/\\[nt]/ /g' `find $d -name '*.c' -o -name '*.cpp' -o -name '*.java'` |
 spell | sort | comm -23 /dev/stdin spell.ok > $t1
 
 test -s $t1 && {

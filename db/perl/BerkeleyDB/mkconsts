@@ -678,6 +678,43 @@ use constant IGNORE => 'ignore' ;
 	DB_TXN_GETPGNOS            => '4.1.17',
 	DB_TXN_PRINT               => '4.1.17',
 
+
+	#########
+	# 4.2.41
+	#########
+
+	DB_AM_NOT_DURABLE          => IGNORE,
+	DB_AM_REPLICATION          => IGNORE,
+	DB_ARCH_REMOVE             => DEFINE,
+	DB_CHKSUM                  => DEFINE,
+	DB_ENV_LOG_AUTOREMOVE      => DEFINE,
+	DB_ENV_TIME_NOTGRANTED     => DEFINE,
+	DB_ENV_TXN_NOT_DURABLE     => DEFINE,
+	DB_FILEOPEN                => DEFINE,
+	DB_INIT_REP                => DEFINE,
+	DB_LOG_AUTOREMOVE          => DEFINE,
+	DB_LOG_CHKPNT              => DEFINE,
+	DB_LOG_COMMIT              => DEFINE,
+	DB_LOG_NOCOPY              => DEFINE,
+	DB_LOG_NOT_DURABLE         => DEFINE,
+	DB_LOG_PERM                => DEFINE,
+	DB_LOG_WRNOSYNC            => DEFINE,
+	DB_MPOOL_NOFILE            => DEFINE,
+	DB_MPOOL_UNLINK            => DEFINE,
+	DB_NO_AUTO_COMMIT          => DEFINE,
+	DB_REP_CREATE              => DEFINE,
+	DB_REP_HANDLE_DEAD         => DEFINE,
+	DB_REP_ISPERM              => DEFINE,
+	DB_REP_NOBUFFER            => DEFINE,
+	DB_REP_NOTPERM             => DEFINE,
+	DB_RPCCLIENT               => DEFINE,
+	DB_TIME_NOTGRANTED         => DEFINE,
+	DB_TXN_NOT_DURABLE         => DEFINE,
+	DB_debug_FLAG              => DEFINE,
+	DB_user_BEGIN              => DEFINE,
+	MP_FILEID_SET              => IGNORE,
+	TXN_RESTORED               => IGNORE,
+
 	) ;
 
 sub enum_Macro

@@ -1,50 +1,63 @@
-<!--$Id: db_rename.so,v 11.1 2000/04/24 17:31:12 sue Exp $-->
-<!--$Id: m4.tcl,v 11.17 2000/04/24 17:31:11 sue Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: db_rename.so,v 11.7 2002/09/26 17:34:02 bostic Exp $-->
+<!--$Id: m4.tcl,v 11.26 2003/09/02 14:38:50 sue Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: berkdb dbrename</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1><b>berkdb dbrename</b></h1>
+<h3><b>berkdb dbrename</b></h3>
 </td>
-<td width="1%">
-<a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>berkdb rename
+	[-encrypt]
+	[-encryptaes passwd]
+	[-encryptany passwd]
 	[-env env]
 	[--]
 	file
 	[database
 	newname]
 </pre></h3>
-<h1>Description</h1>
+<h3>Description(berkdb dbrename)</h3>
 <p>Renames the Berkeley DB database specified by the database name <b>file</b> and
 [database] name arguments to the new name given.
 If no <b>database</b> is specified,
-the physical file represented by <b>file</b> is renamed.
+the physical file represented by <b>file</b> is renamed.</p>
 <p>No reference count of database use is maintained by Berkeley DB.  Applications
-should not rename databases that are currently in use.
-<p>The options are as follows:
+should not rename databases that are currently in use.</p>
+<p>The options are as follows:</p>
 <p><dl compact>
+<p><dt>-encrypt<dd>Specify the database in an environment is encrypted with the
+same password that is being used in the environment.
+<p><dt>-encryptaes passwd<dd>Specify the database is encrypted with the given password
+using the Rijndael/AES (also known as the Advanced Encryption Standard
+and Federal Information Processing Standard (FIPS) 197) algorithm.
+<p><dt>-encryptany passwd<dd>Specify the already existing database is encrypted
+with the given password.  This option is used if the database is
+known to be encrypted, but the specific algorithm used is not known.
 <p><dt>-env env<dd>If a <b>-env</b> argument is given, the database in the specified Berkeley DB
 environment is renamed.
 <p><dt>--<dd>Mark the end of the command arguments.
 </dl>
 <p>The <b>berkdb dbrename</b> command returns 0 on success, and in the case of error, a Tcl error
-is thrown.
+is thrown.</p>
 </tt>
-<table><tr><td><br></td><td width="1%">
+<table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

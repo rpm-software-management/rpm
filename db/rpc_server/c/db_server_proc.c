@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2002
+ * Copyright (c) 2000-2003
  *      Sleepycat Software.  All rights reserved.
  */
 
@@ -9,7 +9,7 @@
 
 #ifdef HAVE_RPC
 #ifndef lint
-static const char revid[] = "Id: db_server_proc.c,v 1.92 2002/07/29 15:21:20 sue Exp ";
+static const char revid[] = "$Id: db_server_proc.c,v 1.96 2003/04/24 16:25:08 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -24,6 +24,28 @@ static const char revid[] = "Id: db_server_proc.c,v 1.92 2002/07/29 15:21:20 sue
 #include "db_int.h"
 #include "dbinc/db_server_int.h"
 #include "dbinc_auto/rpc_server_ext.h"
+
+/* BEGIN __env_get_cachesize_proc */
+/*
+ * PUBLIC: void __env_get_cachesize_proc __P((long,
+ * PUBLIC:      __env_get_cachesize_reply *));
+ */
+void
+__env_get_cachesize_proc(dbenvcl_id,
+		replyp)
+	long dbenvcl_id;
+	__env_get_cachesize_reply *replyp;
+/* END __env_get_cachesize_proc */
+{
+	DB_ENV *dbenv;
+	ct_entry *dbenv_ctp;
+
+	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
+	dbenv = (DB_ENV *)dbenv_ctp->ct_anyp;
+
+	replyp->status = dbenv->get_cachesize(dbenv, &replyp->gbytes,
+	    &replyp->bytes, &replyp->ncache);
+}
 
 /* BEGIN __env_cachesize_proc */
 /*
@@ -178,6 +200,26 @@ __env_dbrename_proc(dbenvcl_id, txnpcl_id, name,
 	return;
 }
 
+/* BEGIN __env_get_encrypt_flags_proc */
+/*
+ * PUBLIC: void __env_get_encrypt_flags_proc __P((long,
+ * PUBLIC:      __env_get_encrypt_flags_reply *));
+ */
+void
+__env_get_encrypt_flags_proc(dbenvcl_id, replyp)
+	long dbenvcl_id;
+	__env_get_encrypt_flags_reply *replyp;
+/* END __env_get_encrypt_flags_proc */
+{
+	DB_ENV *dbenv;
+	ct_entry *dbenv_ctp;
+
+	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
+	dbenv = (DB_ENV *)dbenv_ctp->ct_anyp;
+
+	replyp->status = dbenv->get_encrypt_flags(dbenv, &replyp->flags);
+}
+
 /* BEGIN __env_encrypt_proc */
 /*
  * PUBLIC: void __env_encrypt_proc __P((long, char *, u_int32_t,
@@ -202,6 +244,25 @@ __env_encrypt_proc(dbenvcl_id, passwd, flags, replyp)
 
 	replyp->status = ret;
 	return;
+}
+
+/* BEGIN __env_get_flags_proc */
+/*
+ * PUBLIC: void __env_get_flags_proc __P((long, __env_get_flags_reply *));
+ */
+void
+__env_get_flags_proc(dbenvcl_id, replyp)
+	long dbenvcl_id;
+	__env_get_flags_reply *replyp;
+/* END __env_get_flags_proc */
+{
+	DB_ENV *dbenv;
+	ct_entry *dbenv_ctp;
+
+	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
+	dbenv = (DB_ENV *)dbenv_ctp->ct_anyp;
+
+	replyp->status = dbenv->get_flags(dbenv, &replyp->flags);
 }
 
 /* BEGIN __env_flags_proc */
@@ -233,6 +294,47 @@ __env_flags_proc(dbenvcl_id, flags, onoff, replyp)
 	replyp->status = ret;
 	return;
 }
+
+/* BEGIN __env_get_home_proc */
+/*
+ * PUBLIC: void __env_get_home_proc __P((long, __env_get_home_reply *));
+ */
+void
+__env_get_home_proc(dbenvcl_id, replyp)
+	long dbenvcl_id;
+	__env_get_home_reply *replyp;
+/* END __env_get_home_proc */
+{
+	DB_ENV *dbenv;
+	ct_entry *dbenv_ctp;
+
+	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
+	dbenv = (DB_ENV *)dbenv_ctp->ct_anyp;
+
+	replyp->status = dbenv->get_home(dbenv,
+	    (const char **)&replyp->home);
+}
+
+/* BEGIN __env_get_open_flags_proc */
+/*
+ * PUBLIC: void __env_get_open_flags_proc __P((long,
+ * PUBLIC:      __env_get_open_flags_reply *));
+ */
+void
+__env_get_open_flags_proc(dbenvcl_id, replyp)
+	long dbenvcl_id;
+	__env_get_open_flags_reply *replyp;
+/* END __env_get_open_flags_proc */
+{
+	DB_ENV *dbenv;
+	ct_entry *dbenv_ctp;
+
+	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
+	dbenv = (DB_ENV *)dbenv_ctp->ct_anyp;
+
+	replyp->status = dbenv->get_open_flags(dbenv, &replyp->flags);
+}
+
 /* BEGIN __env_open_proc */
 /*
  * PUBLIC: void __env_open_proc __P((long, char *, u_int32_t, u_int32_t,
@@ -256,7 +358,7 @@ __env_open_proc(dbenvcl_id, home, flags,
 
 	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
 	dbenv = (DB_ENV *)dbenv_ctp->ct_anyp;
-	fullhome = get_home(home);
+	fullhome = get_fullhome(home);
 	if (fullhome == NULL) {
 		ret = DB_NOSERVER_HOME;
 		goto out;
@@ -323,7 +425,7 @@ __env_remove_proc(dbenvcl_id, home, flags, replyp)
 	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
 	dbenv = (DB_ENV *)dbenv_ctp->ct_anyp;
 
-	fullhome = get_home(home);
+	fullhome = get_fullhome(home);
 	if (fullhome == NULL) {
 		replyp->status = DB_NOSERVER_HOME;
 		return;
@@ -655,7 +757,6 @@ __db_associate_proc(dbpcl_id, txnpcl_id, sdbpcl_id,
 	} else
 		txnp = NULL;
 
-
 	/*
 	 * We do not support DB_CREATE for associate.   Users
 	 * can only access secondary indices on a read-only basis,
@@ -668,6 +769,26 @@ __db_associate_proc(dbpcl_id, txnpcl_id, sdbpcl_id,
 
 	replyp->status = ret;
 	return;
+}
+
+/* BEGIN __db_get_bt_minkey_proc */
+/*
+ * PUBLIC: void __db_get_bt_minkey_proc __P((long,
+ * PUBLIC:      __db_get_bt_minkey_reply *));
+ */
+void
+__db_get_bt_minkey_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_bt_minkey_reply *replyp;
+/* END __db_get_bt_minkey_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_bt_minkey(dbp, &replyp->minkey);
 }
 
 /* BEGIN __db_bt_minkey_proc */
@@ -803,6 +924,26 @@ __db_del_proc(dbpcl_id, txnpcl_id, keydlen,
 	return;
 }
 
+/* BEGIN __db_get_encrypt_flags_proc */
+/*
+ * PUBLIC: void __db_get_encrypt_flags_proc __P((long,
+ * PUBLIC:      __db_get_encrypt_flags_reply *));
+ */
+void
+__db_get_encrypt_flags_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_encrypt_flags_reply *replyp;
+/* END __db_get_encrypt_flags_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_encrypt_flags(dbp, &replyp->flags);
+}
+
 /* BEGIN __db_encrypt_proc */
 /*
  * PUBLIC: void __db_encrypt_proc __P((long, char *, u_int32_t,
@@ -828,6 +969,26 @@ __db_encrypt_proc(dbpcl_id, passwd, flags, replyp)
 	return;
 }
 
+/* BEGIN __db_get_extentsize_proc */
+/*
+ * PUBLIC: void __db_get_extentsize_proc __P((long,
+ * PUBLIC:      __db_get_extentsize_reply *));
+ */
+void
+__db_get_extentsize_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_extentsize_reply *replyp;
+/* END __db_get_extentsize_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_q_extentsize(dbp, &replyp->extentsize);
+}
+
 /* BEGIN __db_extentsize_proc */
 /*
  * PUBLIC: void __db_extentsize_proc __P((long, u_int32_t,
@@ -851,6 +1012,25 @@ __db_extentsize_proc(dbpcl_id, extentsize, replyp)
 
 	replyp->status = ret;
 	return;
+}
+
+/* BEGIN __db_get_flags_proc */
+/*
+ * PUBLIC: void __db_get_flags_proc __P((long, __db_get_flags_reply *));
+ */
+void
+__db_get_flags_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_flags_reply *replyp;
+/* END __db_get_flags_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_flags(dbp, &replyp->flags);
 }
 
 /* BEGIN __db_flags_proc */
@@ -1028,6 +1208,26 @@ err:		replyp->keydata.keydata_val = NULL;
 	return;
 }
 
+/* BEGIN __db_get_h_ffactor_proc */
+/*
+ * PUBLIC: void __db_get_h_ffactor_proc __P((long,
+ * PUBLIC:      __db_get_h_ffactor_reply *));
+ */
+void
+__db_get_h_ffactor_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_h_ffactor_reply *replyp;
+/* END __db_get_h_ffactor_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_h_ffactor(dbp, &replyp->ffactor);
+}
+
 /* BEGIN __db_h_ffactor_proc */
 /*
  * PUBLIC: void __db_h_ffactor_proc __P((long, u_int32_t,
@@ -1051,6 +1251,25 @@ __db_h_ffactor_proc(dbpcl_id, ffactor, replyp)
 
 	replyp->status = ret;
 	return;
+}
+
+/* BEGIN __db_get_h_nelem_proc */
+/*
+ * PUBLIC: void __db_get_h_nelem_proc __P((long, __db_get_h_nelem_reply *));
+ */
+void
+__db_get_h_nelem_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_h_nelem_reply *replyp;
+/* END __db_get_h_nelem_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_h_nelem(dbp, &replyp->nelem);
 }
 
 /* BEGIN __db_h_nelem_proc */
@@ -1132,6 +1351,25 @@ __db_key_range_proc(dbpcl_id, txnpcl_id, keydlen,
 	return;
 }
 
+/* BEGIN __db_get_lorder_proc */
+/*
+ * PUBLIC: void __db_get_lorder_proc __P((long, __db_get_lorder_reply *));
+ */
+void
+__db_get_lorder_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_lorder_reply *replyp;
+/* END __db_get_lorder_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_lorder(dbp, &replyp->lorder);
+}
+
 /* BEGIN __db_lorder_proc */
 /*
  * PUBLIC: void __db_lorder_proc __P((long, u_int32_t, __db_lorder_reply *));
@@ -1154,6 +1392,46 @@ __db_lorder_proc(dbpcl_id, lorder, replyp)
 
 	replyp->status = ret;
 	return;
+}
+
+/* BEGIN __db_get_name_proc */
+/*
+ * PUBLIC: void __db_get_name_proc __P((long, __db_get_name_reply *));
+ */
+void
+__db_get_name_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_name_reply *replyp;
+/* END __db_get_name_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_dbname(dbp,
+	    (const char **)&replyp->filename, (const char **)&replyp->dbname);
+}
+
+/* BEGIN __db_get_open_flags_proc */
+/*
+ * PUBLIC: void __db_get_open_flags_proc __P((long,
+ * PUBLIC:      __db_get_open_flags_reply *));
+ */
+void
+__db_get_open_flags_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_open_flags_reply *replyp;
+/* END __db_get_open_flags_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_open_flags(dbp, &replyp->flags);
 }
 
 /* BEGIN __db_open_proc */
@@ -1244,6 +1522,25 @@ __db_open_proc(dbpcl_id, txnpcl_id, name,
 out:
 	replyp->status = ret;
 	return;
+}
+
+/* BEGIN __db_get_pagesize_proc */
+/*
+ * PUBLIC: void __db_get_pagesize_proc __P((long, __db_get_pagesize_reply *));
+ */
+void
+__db_get_pagesize_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_pagesize_reply *replyp;
+/* END __db_get_pagesize_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_pagesize(dbp, &replyp->pagesize);
 }
 
 /* BEGIN __db_pagesize_proc */
@@ -1573,6 +1870,25 @@ err:		replyp->keydata.keydata_val = NULL;
 	return;
 }
 
+/* BEGIN __db_get_re_delim_proc */
+/*
+ * PUBLIC: void __db_get_re_delim_proc __P((long, __db_get_re_delim_reply *));
+ */
+void
+__db_get_re_delim_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_re_delim_reply *replyp;
+/* END __db_get_re_delim_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_re_delim(dbp, &replyp->delim);
+}
+
 /* BEGIN __db_re_delim_proc */
 /*
  * PUBLIC: void __db_re_delim_proc __P((long, u_int32_t,
@@ -1598,6 +1914,25 @@ __db_re_delim_proc(dbpcl_id, delim, replyp)
 	return;
 }
 
+/* BEGIN __db_get_re_len_proc */
+/*
+ * PUBLIC: void __db_get_re_len_proc __P((long, __db_get_re_len_reply *));
+ */
+void
+__db_get_re_len_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_re_len_reply *replyp;
+/* END __db_get_re_len_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_re_len(dbp, &replyp->len);
+}
+
 /* BEGIN __db_re_len_proc */
 /*
  * PUBLIC: void __db_re_len_proc __P((long, u_int32_t, __db_re_len_reply *));
@@ -1620,6 +1955,25 @@ __db_re_len_proc(dbpcl_id, len, replyp)
 
 	replyp->status = ret;
 	return;
+}
+
+/* BEGIN __db_get_re_pad_proc */
+/*
+ * PUBLIC: void __db_get_re_pad_proc __P((long, __db_get_re_pad_reply *));
+ */
+void
+__db_get_re_pad_proc(dbpcl_id, replyp)
+	long dbpcl_id;
+	__db_get_re_pad_reply *replyp;
+/* END __db_get_re_pad_proc */
+{
+	DB *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	replyp->status = dbp->get_re_pad(dbp, &replyp->pad);
 }
 
 /* BEGIN __db_re_pad_proc */

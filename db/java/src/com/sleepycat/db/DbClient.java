@@ -1,21 +1,17 @@
-/*-
- * See the file LICENSE for redistribution information.
+/*
+ *  -
+ *  See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2001
- *	Sleepycat Software.  All rights reserved.
+ *  Copyright (c) 2000-2003
+ *  Sleepycat Software.  All rights reserved.
  *
- * Id: DbClient.java,v 11.1 2001/05/01 02:35:52 dda Exp 
+ *  $Id: DbClient.java,v 11.14 2003/11/28 18:35:41 bostic Exp $
  */
-
 package com.sleepycat.db;
 
-/*
- * This interface is used by DbEnv.set_rpc_server().
- * It is a placeholder for a future capability.
- * 
+/**
+ *  The DbClient object is used to encapsulate a reference to an RPC
+ *  client.</p>
  */
-public interface DbClient
-{
+public interface DbClient {
 }
-
-// end of DbClient.java

@@ -1,22 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_client.c,v 1.29 2002/01/23 15:33:19 bostic Exp 
+ * $Id: ex_rq_client.c,v 1.37 2003/09/05 00:05:34 bostic Exp $
  */
 
 #include <sys/types.h>
-#include <sys/wait.h>
-
 #include <errno.h>
-#include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include <db.h>
 
@@ -34,6 +30,7 @@ typedef struct {
 typedef struct {
 	DB_ENV *dbenv;
 	machtab_t *machtab;
+	const char *progname;
 } checkloop_args;
 
 int
@@ -44,7 +41,7 @@ doclient(dbenv, progname, machtab)
 {
 	checkloop_args cargs;
 	disploop_args dargs;
-	pthread_t check_thr, disp_thr;
+	thread check_thr, disp_thr;
 	void *cstatus, *dstatus;
 	int rval, s;
 
@@ -52,23 +49,23 @@ doclient(dbenv, progname, machtab)
 	s = -1;
 
 	memset(&dargs, 0, sizeof(dargs));
-	dstatus = (void *)EXIT_FAILURE;
 
 	dargs.progname = progname;
 	dargs.dbenv = dbenv;
-	if (pthread_create(&disp_thr, NULL, display_loop, (void *)&dargs)) {
-		dbenv->err(dbenv, errno, "display_loop pthread_create failed");
+	if (thread_create(&disp_thr, NULL, display_loop, (void *)&dargs)) {
+		dbenv->err(dbenv, errno, "display_loop thread creation failed");
 		goto err;
 	}
 
 	cargs.dbenv = dbenv;
 	cargs.machtab = machtab;
-	if (pthread_create(&check_thr, NULL, check_loop, (void *)&cargs)) {
+	cargs.progname = progname;
+	if (thread_create(&check_thr, NULL, check_loop, (void *)&cargs)) {
 		dbenv->err(dbenv, errno, "check_thread pthread_create failed");
 		goto err;
 	}
-	if (pthread_join(disp_thr, &dstatus) ||
-	    pthread_join(check_thr, &cstatus)) {
+	if (thread_join(disp_thr, &dstatus) ||
+	    thread_join(check_thr, &cstatus)) {
 		dbenv->err(dbenv, errno, "pthread_join failed");
 		goto err;
 	}
@@ -92,6 +89,7 @@ check_loop(args)
 {
 	DB_ENV *dbenv;
 	DBT dbt;
+	const char *progname;
 	checkloop_args *cargs;
 	int count, n, pri;
 	machtab_t *machtab;
@@ -100,6 +98,7 @@ check_loop(args)
 	cargs = (checkloop_args *)args;
 	dbenv = cargs->dbenv;
 	machtab = cargs->machtab;
+	progname = cargs->progname;
 
 #define	IDLE_INTERVAL	1
 
@@ -118,12 +117,18 @@ check_loop(args)
 			count = 1;
 		} else {
 			machtab_parm(machtab, &n, &pri, &timeout);
-			(void)dbenv->rep_elect(dbenv,
-			    n, pri, timeout, &master_eid);
+		 	if (dbenv->rep_elect(dbenv,
+			    n, pri, timeout, &master_eid) == 0)
+				break;
 			count = 0;
 		}
 		sleep(IDLE_INTERVAL);
 	}
+
+	/* Check if I won the election. */
+	if (master_eid == SELF_EID &&
+	    dbenv->rep_start(dbenv, NULL, DB_REP_MASTER) == 0)
+		(void)domaster(dbenv, progname);
 
 	return ((void *)EXIT_SUCCESS);
 }
@@ -137,7 +142,7 @@ display_loop(args)
 	DBC *dbc;
 	const char *progname;
 	disploop_args *dargs;
-	int ret, rval;
+	int ret, rval, t_ret;
 
 	dargs = (disploop_args *)args;
 	progname = dargs->progname;
@@ -145,8 +150,9 @@ display_loop(args)
 
 	dbc = NULL;
 	dbp = NULL;
+	ret = 0;
 
-	for (;;) {
+retry:	for (;;) {
 		/* If we become master, shut this loop off. */
 		if (master_eid == SELF_EID)
 			break;
@@ -176,36 +182,54 @@ display_loop(args)
 			}
 		}
 
-		if ((ret = dbp->cursor(dbp, NULL, &dbc, 0)) != 0) {
+		if ((ret = dbp->cursor(dbp, NULL, &dbc, 0)) != 0)
 			dbenv->err(dbenv, ret, "DB->cursor");
-			goto err;
+		else {
+			if ((ret = print_stocks(dbc)) != 0)
+				dbenv->err(dbenv, ret,
+				    "database traversal failed");
+
+			if ((t_ret = dbc->c_close(dbc)) != 0) {
+				dbenv->err(dbenv, ret, "DBC->c_close");
+
+				if (ret == 0)
+					ret = t_ret;
+			}
 		}
 
-		if ((ret = print_stocks(dbc)) != 0) {
-			dbenv->err(dbenv, ret, "database traversal failed");
+		if (ret == DB_REP_HANDLE_DEAD) {
+			dbp = NULL;
+			continue;
+		} else if (ret != 0)
 			goto err;
-		}
-
-		if ((ret = dbc->c_close(dbc)) != 0) {
-			dbenv->err(dbenv, ret, "DB->close");
-			goto err;
-		}
 
 		dbc = NULL;
 
 		sleep(SLEEPTIME);
 	}
 
-	rval = EXIT_SUCCESS;
-
-	if (0) {
-err:		rval = EXIT_FAILURE;
+err:	rval = EXIT_SUCCESS;
+	switch (ret) {
+		case DB_LOCK_DEADLOCK:
+			if (dbc != NULL) {
+				(void)dbc->c_close(dbc);
+				dbc = NULL;
+			}
+			ret = 0;
+			goto retry;
+		case DB_REP_HANDLE_DEAD:
+			if (dbp != NULL) {
+				(void)dbp->close(dbp, DB_NOSYNC);
+				dbp = NULL;
+			}
+			ret = 0;
+			goto retry;
+		default:
+			break;
 	}
 
-	if (dbc != NULL && (ret = dbc->c_close(dbc)) != 0) {
-		dbenv->err(dbenv, ret, "DB->close");
+	if (ret != 0)
 		rval = EXIT_FAILURE;
-	}
 
 	if (dbp != NULL && (ret = dbp->close(dbp, 0)) != 0) {
 		dbenv->err(dbenv, ret, "DB->close");

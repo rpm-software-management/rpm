@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: test097.tcl,v 11.7 2002/08/08 15:38:13 bostic Exp 
+# $Id: test097.tcl,v 11.10 2003/01/08 05:54:11 bostic Exp $
 #
 # TEST	test097
 # TEST	Open up a large set of database files simultaneously.
@@ -17,18 +17,15 @@ proc test097 { method {ndbs 500} {nentries 400} args } {
 	global pad_datastr
 	source ./include.tcl
 
-	set args [convert_args $method $args]
+	set largs [convert_args $method $args]
 	set encargs ""
-	set args [split_encargs $args encargs]
-
-	puts -nonewline "Test097: $method ($args) "
-	puts "$nentries entries in at most $ndbs simultaneous databases"
+	set largs [split_encargs $largs encargs]
 
 	# Open an environment, with a 1MB cache.
-	set eindex [lsearch -exact $args "-env"]
+	set eindex [lsearch -exact $largs "-env"]
 	if { $eindex != -1 } {
 		incr eindex
-		set env [lindex $args $eindex]
+		set env [lindex $largs $eindex]
 		puts "Test097: $method: skipping for env $env"
 		return
 	}
@@ -38,12 +35,30 @@ proc test097 { method {ndbs 500} {nentries 400} args } {
 	error_check_good dbenv [is_valid_env $env] TRUE
 
 	# Create the database and open the dictionary
-	set testfile test097.db
+	set basename test097
 	set t1 $testdir/t1
 	set t2 $testdir/t2
 	set t3 $testdir/t3
+	#
+	# When running with HAVE_MUTEX_SYSTEM_RESOURCES,
+	# we can run out of mutex lock slots due to the nature of this test.
+	# So, for this test, increase the number of pages per extent
+	# to consume fewer resources.
+	#
+	if { [is_queueext $method] } {
+		set numdb [expr $ndbs / 4]
+		set eindex [lsearch -exact $largs "-extent"]
+		error_check_bad extent $eindex -1
+		incr eindex
+		set extval [lindex $largs $eindex]
+		set extval [expr $extval * 4]
+		set largs [lreplace $largs $eindex $eindex $extval]
+	}
+	puts -nonewline "Test097: $method ($largs) "
+	puts "$nentries entries in at most $ndbs simultaneous databases"
+
 	puts "\tTest097.a: Simultaneous open"
-	set numdb [test097_open tdb $ndbs $method $env $testfile $args]
+	set numdb [test097_open tdb $ndbs $method $env $basename $largs]
 	if { $numdb == 0 } {
 		puts "\tTest097: Insufficient resources available -- skipping."
 		error_check_good envclose [$env close] 0
@@ -116,7 +131,7 @@ proc test097.check { key data } {
 	error_check_good "data mismatch for key $key" $data $pad_datastr
 }
 
-proc test097_open { tdb ndbs method env testfile largs } {
+proc test097_open { tdb ndbs method env basename largs } {
 	global errorCode
 	upvar $tdb db
 
@@ -129,7 +144,7 @@ proc test097_open { tdb ndbs method env testfile largs } {
 	for { set i 1 } {$i <= $numdb } { incr i } {
 		set stat [catch {eval {berkdb_open -env $env \
 		     -pagesize 512 -create -mode 0644} \
-		     $largs {$omethod $testfile.$i}} db($i)]
+		     $largs {$omethod $basename.$i.db}} db($i)]
 		#
 		# Check if we've reached our limit
 		#

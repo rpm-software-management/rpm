@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: recd017.tcl,v 11.3 2002/04/29 15:15:30 sandstro Exp 
+# $Id: recd017.tcl,v 11.6 2003/01/08 05:52:09 bostic Exp $
 #
 # TEST	recd017
 # TEST  Test recovery and security.  This is basically a watered
@@ -13,7 +13,14 @@ proc recd017 { method {select 0} args} {
 	global fixed_len
 	global encrypt
 	global passwd
+	global has_crypto
 	source ./include.tcl
+
+	# Skip test if release does not support encryption.
+	if { $has_crypto == 0 } {
+		puts "Skipping recd017 for non-crypto release."
+		return
+	}
 
 	set orig_fixed_len $fixed_len
 	set opts [convert_args $method $args]
@@ -69,6 +76,7 @@ proc recd017 { method {select 0} args} {
 	# Create the databases and close the environment.
 	# cannot specify db truncate in txn protected env!!!
 	set opts [convert_args $method ""]
+	convert_encrypt $env_cmd
 	set omethod [convert_method $method]
 	set oflags "-create $omethod -mode 0644 \
 	    -env $dbenv -encrypt $opts $testfile"

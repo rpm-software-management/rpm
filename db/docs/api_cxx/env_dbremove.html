@@ -1,21 +1,22 @@
-<!--Id: env_dbremove.so,v 10.31 2002/08/02 18:41:14 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: env_dbremove.so,v 10.44 2003/11/08 19:17:26 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::dbremove</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DbEnv::dbremove</h1>
+<h3>DbEnv::dbremove</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -26,101 +27,84 @@ int
 DbEnv::dbremove(DbTxn *txnid,
     const char *file, const char *database, u_int32_t flags);
 </pre></h3>
-<h1>Description</h1>
+<hr size=1 noshade>
+<h3>Description: DbEnv::dbremove</h3>
 <p>The DbEnv::dbremove method removes the database specified by the
-<b>file</b> and <b>database</b> arguments.  If no <b>database</b> is
+<b>file</b> and <b>database</b> parameters.  If no <b>database</b> is
 specified, the underlying file represented by <b>file</b> is removed,
-incidentally removing all databases that it contained.
+incidentally removing all of the databases it contained.</p>
 <p>Applications should never remove databases with open <a href="../api_cxx/db_class.html">Db</a> handles,
 or in the case of removing a file, when any database in the file has an
 open handle.  For example, some architectures do not permit the removal
 of files with open system handles.  On these architectures, attempts to
 remove databases currently in use by any thread of control in the system
-will fail.
-<p>If the operation is to be transaction-protected, the <b>txnid</b>
-parameter is a transaction handle returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>;
-otherwise, NULL.
-<p>The <b>flags</b> value must be set to 0 or
+will fail.</p>
+<p>The DbEnv::dbremove method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>database</b><dd>
+The <b>database</b> parameter is the database to be removed.
+<p><dt><b>file</b><dd>
+The <b>file</b> parameter is the physical file which contains the
+database(s) to be removed.
+<p><dt><b>flags</b><dd>
+The <b>flags</b> parameter must be set to 0 or
 the following value:
 <p><dl compact>
 <p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DbEnv::dbremove call within a transaction.  If the call succeeds,
 changes made by the operation will be recoverable.  If the call fails,
 the operation will have made no changes.
 </dl>
-<p>The DbEnv::dbremove method either returns a non-zero error value or throws an exception that
-encapsulates a non-zero error value on failure, and returns 0 on success.
-<h1>Environment Variables</h1>
-<p><dl compact>
-<p><dt>DB_HOME<dd>The 
+<p><dt><b>txnid</b><dd>
+If the operation is to be transaction-protected,
+the <b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
+</dl>
+<h3>Environment Variables</h3>
+<p>The 
 environment variable <b>DB_HOME</b> may be used as the path of the
-database environment home.
-<p>DbEnv::dbremove is affected by any database directory specified using the
-<a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a> method, or by setting the "set_data_dir" string
-in the environment's <b>DB_CONFIG</b> file.
-</dl>
-<h1>Errors</h1>
-<p>The DbEnv::dbremove method may fail and throw an exception or return a non-zero error for the following conditions:
+database environment home.</p>
+<p>DbEnv::dbremove is affected by any database directory specified using
+the <a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a> method, or by setting the "set_data_dir" string
+in the environment's <b>DB_CONFIG</b> file.</p>
+<h3>Errors</h3>
+<p>The DbEnv::dbremove method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>A database in the file is currently open.
-<p>Called before <a href="../api_cxx/env_open.html">DbEnv::open</a> was called.
+<p><dt>DB_FILEOPEN<dd>An attempt was made to remove the underlying file and a database in the
+file was currently open.
 </dl>
-<p>If the file or directory does not exist, the DbEnv::dbremove method will
-fail and
-and either return ENOENT or
-throw a FileNotFoundException exception.
-<p>The DbEnv::dbremove method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
-If a catastrophic error has occurred, the DbEnv::dbremove method may fail and
-either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw a
-<a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
-in which case all subsequent Berkeley DB calls will fail in the same way.
-<h1>Class</h1>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>
-<h1>See Also</h1>
-<a href="../api_cxx/env_close.html">DbEnv::close</a>,
-<a href="../api_cxx/env_dbremove.html">DbEnv::dbremove</a>,
-<a href="../api_cxx/env_dbrename.html">DbEnv::dbrename</a>,
-<a href="../api_cxx/env_err.html">DbEnv::err</a>,
-<a href="../api_cxx/env_err.html">DbEnv::errx</a>,
-<a href="../api_cxx/env_open.html">DbEnv::open</a>,
-<a href="../api_cxx/env_remove.html">DbEnv::remove</a>,
-<a href="../api_cxx/env_set_alloc.html">DbEnv::set_alloc</a>,
-<a href="../api_cxx/env_set_app_dispatch.html">DbEnv::set_app_dispatch</a>,
-<a href="../api_cxx/env_set_cachesize.html">DbEnv::set_cachesize</a>,
-<a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a>,
-<a href="../api_cxx/env_set_encrypt.html">DbEnv::set_encrypt</a>,
-<a href="../api_cxx/env_set_errcall.html">DbEnv::set_errcall</a>,
-<a href="../api_cxx/env_set_errfile.html">DbEnv::set_errfile</a>,
-<a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a>,
-<a href="../api_cxx/env_set_errpfx.html">DbEnv::set_errpfx</a>,
-<a href="../api_cxx/env_set_feedback.html">DbEnv::set_feedback</a>,
-<a href="../api_cxx/env_set_flags.html">DbEnv::set_flags</a>,
-<a href="../api_cxx/env_set_lg_bsize.html">DbEnv::set_lg_bsize</a>,
-<a href="../api_cxx/env_set_lg_dir.html">DbEnv::set_lg_dir</a>,
-<a href="../api_cxx/env_set_lg_max.html">DbEnv::set_lg_max</a>,
-<a href="../api_cxx/env_set_lg_regionmax.html">DbEnv::set_lg_regionmax</a>,
-<a href="../api_cxx/env_set_lk_conflicts.html">DbEnv::set_lk_conflicts</a>,
-<a href="../api_cxx/env_set_lk_detect.html">DbEnv::set_lk_detect</a>,
-<a href="../api_cxx/env_set_lk_max_lockers.html">DbEnv::set_lk_max_lockers</a>,
-<a href="../api_cxx/env_set_lk_max_locks.html">DbEnv::set_lk_max_locks</a>,
-<a href="../api_cxx/env_set_lk_max_objects.html">DbEnv::set_lk_max_objects</a>,
-<a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a>,
-<a href="../api_cxx/env_set_paniccall.html">DbEnv::set_paniccall</a>,
-<a href="../api_cxx/env_set_rpc_server.html">DbEnv::set_rpc_server</a>,
-<a href="../api_cxx/env_set_shm_key.html">DbEnv::set_shm_key</a>,
-<a href="../api_cxx/env_set_tas_spins.html">DbEnv::set_tas_spins</a>,
-<a href="../api_cxx/env_set_timeout.html">DbEnv::set_timeout</a>,
-<a href="../api_cxx/env_set_tmp_dir.html">DbEnv::set_tmp_dir</a>,
-<a href="../api_cxx/env_set_tx_max.html">DbEnv::set_tx_max</a>,
-<a href="../api_cxx/env_set_tx_timestamp.html">DbEnv::set_tx_timestamp</a>,
-<a href="../api_cxx/env_set_verbose.html">DbEnv::set_verbose</a>,
-<a href="../api_cxx/env_strerror.html">DbEnv::strerror</a>
-and
-<a href="../api_cxx/env_version.html">DbEnv::version</a>.
+<p><dl compact>
+<p><dt>EINVAL<dd>If DbEnv::dbremove called before <a href="../api_cxx/env_open.html">DbEnv::open</a> was called; or if an
+invalid flag value or parameter was specified.
+</dl>
+<p><dl compact>
+<p><dt>ENOENT<dd>The file or directory does not exist.
+</dl>
+<p>If a transactional database environment operation was selected to
+resolve a deadlock, the DbEnv::dbremove method will fail and
+either return <a href="../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> or
+throw a <a href="../api_cxx/deadlock_class.html">DbDeadlockException</a> exception.</p>
+<p>If a Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
+to grant a lock in the allowed time, the DbEnv::dbremove method will fail and
+either return <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or
+throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.</p>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/env_list.html">Database Environments and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

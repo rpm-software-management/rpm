@@ -1,21 +1,22 @@
-<!--Id: rep_message.so,v 1.11 2002/08/29 03:26:00 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: rep_message.so,v 1.27 2003/11/08 19:17:48 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::rep_process_message</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
-<h1>DbEnv::rep_process_message</h1>
+<h3>DbEnv::rep_process_message</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -23,66 +24,111 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-DbEnv::rep_process_message(Dbt *control, Dbt *rec, int *envid)
+DbEnv::rep_process_message(Dbt *control, Dbt *rec, int *envid, DbLsn *ret_lsnp)
 </pre></h3>
-<h1>Description</h1>
-<p>The DbEnv::rep_process_message method processes an incoming replication
-message sent by a member of the replication group to the local database
-environment.
-<p>The <b>rec</b> and <b>control</b> parameters should reference a copy
-of the parameters specified by Berkeley DB for the <b>rec</b> and
-<b>control</b> parameters on the sending environment.
-<p>The <b>envid</b> parameter should contain the local identifier that
-corresponds to the environment that sent the message to be processed
-(see <a href="../ref/rep/id.html">Replication environment IDs</a> for more
-information).
+<hr size=1 noshade>
+<h3>Description: DbEnv::rep_process_message</h3>
+<p>The DbEnv::rep_process_message method processes an incoming replication message sent
+by a member of the replication group to the local database environment.</p>
 <p>For implementation reasons, all incoming replication messages must be
 processed using the same <a href="../api_cxx/env_class.html">DbEnv</a> handle.  It is not required that
 a single thread of control process all messages, only that all threads
-of control processing messages use the same handle.
+of control processing messages use the same handle.</p>
+<p>The DbEnv::rep_process_message method has additional return values:</p>
+<p><dl compact>
+<p><dt><a name="DB_REP_DUPMASTER">DB_REP_DUPMASTER</a><dd>
 <p>
-If a new master has been elected, the DbEnv::rep_process_message method will return DB_REP_NEWMASTER.
+The DbEnv::rep_process_message method
+will either return DB_REP_DUPMASTER or
+throw an exception that encapsulates DB_REP_DUPMASTER if the replication group has more than one master.
+The application should reconfigure itself as a client by calling the
+<a href="../api_cxx/rep_start.html">DbEnv::rep_start</a> method, and then call for an election by calling
+<a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a>.
+</p>
+<p><dt><a name="DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a><dd>
+<p>
+The DbEnv::rep_process_message method
+will either return DB_REP_HOLDELECTION or
+throw an exception that encapsulates DB_REP_HOLDELECTION if an election is needed.
+The application should call for an election by calling <a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a>.
+</p>
+<p><dt><a name="DB_REP_ISPERM">DB_REP_ISPERM</a><dd>
+<p>
+The DbEnv::rep_process_message method will return DB_REP_ISPERM if processing this message results in the processing of records
+that are permanent.
+The maximum LSN of the permanent records stored is returned.
+</p>
+<p><dt><a name="DB_REP_NEWMASTER">DB_REP_NEWMASTER</a><dd>
+<p>
+The DbEnv::rep_process_message method will return DB_REP_NEWMASTER if a new master has been elected.
 The <b>envid</b> parameter contains the environment ID of the new
 master.  If the recipient of this error return has been made master, it
 is the application's responsibility to begin acting as the master
 environment.
+</p>
+<p><dt><a name="DB_REP_NEWSITE">DB_REP_NEWSITE</a><dd>
 <p>
-If the system received contact information from a new environment, the DbEnv::rep_process_message method will return DB_REP_NEWSITE.
+The DbEnv::rep_process_message method will return DB_REP_NEWSITE if the system received contact information from a new environment.
 The <b>rec</b> parameter contains the opaque data specified in the
 <b>cdata</b> parameter to the <a href="../api_cxx/rep_start.html">DbEnv::rep_start</a>.  The application
 should take whatever action is needed to establish a communication
 channel with this new environment.
+</p>
+<p><dt><a name="DB_REP_NOTPERM">DB_REP_NOTPERM</a><dd>
 <p>
-If the replication group has more than one master, the DbEnv::rep_process_message method either returns DB_REP_DUPMASTER or throws an exception that encapsulates DB_REP_DUPMASTER.
-The application should reconfigure itself as a client by calling the
-<a href="../api_cxx/rep_start.html">DbEnv::rep_start</a> method, and then call for an election by calling
-<a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a>.
+The DbEnv::rep_process_message method will return DB_REP_NOTPERM if a message carrying a <a href="../api_cxx/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag was processed
+successfully, but was not written to disk.
+The LSN of this record is returned.
+The application should take whatever action is deemed necessary to
+retain its recoverability characteristics.
+</p>
+<p><dt><a name="DB_REP_OUTDATED">DB_REP_OUTDATED</a><dd>
 <p>
-If an election is needed, the DbEnv::rep_process_message method either returns DB_REP_HOLDELECTION or throws an exception that encapsulates DB_REP_HOLDELECTION.
-The application should call for an election by
-calling <a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a>.
-<p>
-If the current environment's logs are too far out of date with respect
-to the master to be automatically synchronized, the DbEnv::rep_process_message method either returns DB_REP_OUTDATED or throws an exception that encapsulates DB_REP_OUTDATED. The
-application should copy over a hot backup of the environment, run
+The DbEnv::rep_process_message method
+will either return DB_REP_OUTDATED or
+throw an exception that encapsulates DB_REP_OUTDATED if the current environment's logs are too far out of date with respect
+to the master to be automatically synchronized.
+The application should copy over a hot backup of the environment, run
 recovery, and restart the client.
-<p>
-Otherwise, the DbEnv::rep_process_message method either returns a non-zero error value or throws an exception that
-encapsulates a non-zero error value on failure, and returns 0 on success.
-<h1>Errors</h1>
-<p>The DbEnv::rep_process_message method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
-If a catastrophic error has occurred, the DbEnv::rep_process_message method may fail and
-either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw a
-<a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
-in which case all subsequent Berkeley DB calls will fail in the same way.
-<h1>Class</h1>
+</p>
+</dl>
+<p>Unless otherwise specified, the DbEnv::rep_process_message method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>control</b><dd>
+The <b>control</b> parameter should reference a copy of the
+<b>control</b> parameter specified by Berkeley DB on the sending
+environment.
+<p><dt><b>envid</b><dd>
+The <b>envid</b> parameter should contain the local identifier that
+corresponds to the environment that sent the message to be processed
+(see <a href="../ref/rep/id.html">Replication environment IDs</a> for more
+information).
+<p><dt><b>rec</b><dd>
+The <b>rec</b> parameter should reference a copy of the <b>rec</b>
+parameter specified by Berkeley DB on the sending environment.
+<p><dt><b>ret_lsn</b><dd>
+If DbEnv::rep_process_message method returns DB_REP_NOTPERM then the
+<b>ret_lsnp</b> parameter will
+contain the log sequence number of this permanent log message that could
+not be written to disk.  If DbEnv::rep_process_message method returns
+DB_REP_ISPERM then the <b>ret_lsnp</b> parameter will contain largest log sequence number of the
+permanent records that are now written to disk as a result of processing
+this message.  In all other cases the value of <b>ret_lsnp</b> is undefined.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
 <a href="../api_cxx/env_class.html">DbEnv</a>
-<h1>See Also</h1>
+<h3>See Also</h3>
 <a href="../api_cxx/rep_list.html">Replication and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2002
+ * Copyright (c) 2000-2003
  *      Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: db_server_util.c,v 1.59 2002/03/27 04:32:50 bostic Exp ";
+static const char revid[] = "$Id: db_server_util.c,v 1.65 2003/04/24 18:54:13 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -56,7 +56,7 @@ static long __dbsrv_idleto = DB_SERVER_IDLETIMEOUT;
 static char *logfile = NULL;
 static char *prog;
 
-static void usage __P((char *));
+static void usage __P((void));
 static void version_check __P((void));
 
 int __dbsrv_verbose = 0;
@@ -141,7 +141,7 @@ main(argc, argv)
 			__dbsrv_verbose = 1;
 			break;
 		default:
-			usage(prog);
+			usage();
 		}
 	/*
 	 * Check default timeout against maximum timeout
@@ -155,7 +155,7 @@ main(argc, argv)
 	 */
 	if (__dbsrv_defto > __dbsrv_idleto)
 		fprintf(stderr,
-		    "%s: WARNING: Idle timeout %ld is less than resource timeout %ld\n",
+	    "%s: WARNING: Idle timeout %ld is less than resource timeout %ld\n",
 		    prog, __dbsrv_idleto, __dbsrv_defto);
 
 	LIST_INIT(&__dbsrv_head);
@@ -185,13 +185,14 @@ main(argc, argv)
 		printf("%s:  Ready to receive requests\n", prog);
 	__dbsrv_main();
 
-	/* NOTREACHED */
 	abort();
+
+	/* NOTREACHED */
+	return (0);
 }
 
 static void
-usage(prog)
-	char *prog;
+usage()
 {
 	fprintf(stderr, "usage: %s %s\n\t%s\n", prog,
 	    "[-Vv] [-h home] [-P passwd]",
@@ -504,7 +505,8 @@ __dbsrv_sharedb(db_ctp, name, subdb, type, flags)
 }
 
 /*
- * PUBLIC: ct_entry *__dbsrv_shareenv __P((ct_entry *, home_entry *, u_int32_t));
+ * PUBLIC: ct_entry *__dbsrv_shareenv
+ * PUBLIC:     __P((ct_entry *, home_entry *, u_int32_t));
  */
 ct_entry *
 __dbsrv_shareenv(env_ctp, home, flags)
@@ -696,8 +698,11 @@ add_home(home)
 	 * to assure hp->name points to the last component.
 	 */
 	hp->name = __db_rpath(home);
-	*(hp->name) = '\0';
-	hp->name++;
+	if (hp->name != NULL) {
+		*(hp->name) = '\0';
+		hp->name++;
+	} else
+		hp->name = home;
 	while (*(hp->name) == '\0') {
 		hp->name = __db_rpath(home);
 		*(hp->name) = '\0';
@@ -745,14 +750,16 @@ add_passwd(passwd)
 }
 
 /*
- * PUBLIC: home_entry *get_home __P((char *));
+ * PUBLIC: home_entry *get_fullhome __P((char *));
  */
 home_entry *
-get_home(name)
+get_fullhome(name)
 	char *name;
 {
 	home_entry *hp;
 
+	if (name == NULL)
+		return (NULL);
 	for (hp = LIST_FIRST(&__dbsrv_home); hp != NULL;
 	    hp = LIST_NEXT(hp, entries))
 		if (strcmp(name, hp->name) == 0)

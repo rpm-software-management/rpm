@@ -1,0 +1,74 @@
+#!/bin/sh -
+#	$Id: s_java_const,v 1.25 2003/09/04 23:59:03 bostic Exp $
+#
+# Build the Java files.
+
+msgjava="/* DO NOT EDIT: automatically built by dist/s_java_const. */"
+
+. RELEASE
+
+t=/tmp/__java
+trap 'rm -f $t; exit 0' 0 1 2 3 13 15
+
+# Build {debug,release}/DbConstants.java.
+for build in debug release ; do
+  isdebug=`echo $build | sed 's/debug/true/;s/release/false/'`
+  (echo "$msgjava" &&
+   echo &&
+   echo 'package com.sleepycat.db;' &&
+   echo &&
+   echo 'class DbConstants' &&
+   echo '{' &&
+   for i in `egrep '^DB_.*J$' pubdef.in | awk '{print $1}'`; do \
+  	egrep -w "^#define[	 ]$i|^[	 ][	 ]*$i" ../dbinc/db.in; \
+   done |
+   sed -e "s/@DB_VERSION_MAJOR@/$DB_VERSION_MAJOR/" \
+       -e "s/@DB_VERSION_MINOR@/$DB_VERSION_MINOR/" \
+       -e "s/@DB_VERSION_PATCH@/$DB_VERSION_PATCH/" \
+       -e 's/^#define[	 ][	 ]*//' \
+       -e 's/[()=,]/ /g' \
+       -e 's/\/\*/ /' | \
+   awk '{ print "    static final int " $1 " = " $2 ";" }' &&
+   echo &&
+   echo "	static final boolean DB_DEBUG = ${isdebug};"
+   echo '}' &&
+   echo &&
+   echo '// end of DbConstants.java') > $t
+
+  f=../java/src/com/sleepycat/db/$build/DbConstants.java
+  cmp $t $f > /dev/null 2>&1 ||
+      (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+done
+
+# Build Db.java.
+f=../java/src/com/sleepycat/db/Db.java
+sed '/BEGIN-JAVA-SPECIAL-CONSTANTS/q' < $f > $t
+(echo "    $msgjava" &&
+ for i in `egrep '^DB_.*C$' pubdef.in | awk '{print $1}'`; do \
+	egrep -w "^#define[	 ]$i|^[	 ][	 ]*$i" ../dbinc/db.in; \
+ done |
+ sed -e 's/^#define[	 ][	 ]*//' \
+     -e 's/[()=,]/ /g' |
+ awk '{ print "    public static final int " $1 " = " $2 ";" }') >> $t
+(for i in `egrep '^DB_.*J$' pubdef.in | awk '{print $1}'`; do \
+	egrep -w "^#define[	 ]$i|^[	 ][	 ]*$i" ../dbinc/db.in; \
+ done |
+ sed -e 's/^#define[	 ][	 ]*//' \
+     -e 's/[()=,]/ /g' |
+ awk '{ print "    public static final int " $1 ";" }') >> $t
+sed -n \
+    '/END-JAVA-SPECIAL-CONSTANTS/,/BEGIN-JAVA-CONSTANT-INITIALIZATION/p' \
+    < $f >> $t
+(echo "        $msgjava" &&
+ for i in `egrep '^DB_.*J$' pubdef.in | awk '{print $1}'`; do \
+	egrep -w "^#define[	 ]$i|^[	 ][	 ]*$i" ../dbinc/db.in; \
+ done |
+ sed -e 's/^#define[	 ][	 ]*//' \
+     -e 's/[()=,]/ /g' \
+     -e 's/\/\*/ /' | \
+ awk '{ print "        " $1 " = DbConstants." $1 ";" }') >> $t
+sed -n '/END-JAVA-CONSTANT-INITIALIZATION/,$p' < $f >> $t
+
+f=../java/src/com/sleepycat/db/Db.java
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)

@@ -1,20 +1,22 @@
-<!--$Id: env_set_lk_max_objects.so,v 1.2 2000/12/08 22:03:00 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_lk_max_objects.so,v 1.20 2003/11/08 19:17:31 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DBENV-&gt;set_lk_max_objects</title>
+<title>Berkeley DB: DB_ENV-&gt;set_lk_max_objects</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DBENV-&gt;set_lk_max_objects</h1>
+<h3>DB_ENV-&gt;set_lk_max_objects</h3>
 </td>
-<td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -22,47 +24,75 @@
 #include &lt;db.h&gt;
 <p>
 int
-DBENV-&gt;set_lk_max_objects(DB_ENV *dbenv, u_int32_t max);
+DB_ENV-&gt;set_lk_max_objects(DB_ENV *dbenv, u_int32_t max);
+<p>
+int
+DB_ENV-&gt;get_lk_max_objects(DB_ENV *dbenv, u_int32_t *lk_maxp);
 </pre></h3>
-<h1>Description</h1>
-<p>Set the maximum number of simultaneously locked objects supported by
-the Berkeley DB lock subsystem.  This value is used by <a href="../api_c/env_open.html">DBENV-&gt;open</a> to
-estimate how much space to allocate for various lock-table data
-structures.  For specific information on configuring the size of the
-lock subsystem, see
-<a href="../ref/lock/max.html">Configuring locking: sizing the system</a>.
-<p>The DBENV-&gt;set_lk_max_objects interface may only be used to configure Berkeley DB before
-the <a href="../api_c/env_open.html">DBENV-&gt;open</a> interface is called.
-<p>The DBENV-&gt;set_lk_max_objects function returns a non-zero error value on failure and 0 on success.
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_lk_max_objects</h3>
+<a name="3"><!--meow--></a>
+<p>Set the maximum number of locked objects supported by the Berkeley DB
+environment.  This value is used by <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> to estimate how
+much space to allocate for various lock-table data structures.  The
+default value is 1000 objects.  For specific information on configuring
+the size of the lock subsystem, see <a href="../ref/lock/max.html">Configuring locking: sizing the system</a>.</p>
 <p>The database environment's maximum number of objects may also be set using the environment's
 <b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
 single line with the string "set_lk_max_objects", one or more whitespace characters,
-and the number of objects.  Because the <b>DB_CONFIG</b> file is read when the database
+and the number of objects.
+Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
-before that time.
-<h1>Errors</h1>
+before that time.</p>
+<p>The DB_ENV-&gt;set_lk_max_objects method configures a database environment, not only operations
+performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
+<p>The DB_ENV-&gt;set_lk_max_objects method may not be called after the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is
+called.
+If the database environment already exists when
+<a href="../api_c/env_open.html">DB_ENV-&gt;open</a> is called, the information specified to DB_ENV-&gt;set_lk_max_objects
+will be ignored.
+</p>
+<p>The DB_ENV-&gt;set_lk_max_objects method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>Called after <a href="../api_c/env_open.html">DBENV-&gt;open</a> was called.
+<p><dt><b>max</b><dd>
+The <b>max</b> parameter is the maximum number of locked objects
+supported by the Berkeley DB environment.
 </dl>
-<h1>See Also</h1>
-<a href="../api_c/env_set_lk_conflicts.html">DBENV-&gt;set_lk_conflicts</a>,
-<a href="../api_c/env_set_lk_detect.html">DBENV-&gt;set_lk_detect</a>,
-<a href="../api_c/env_set_lk_max_locks.html">DBENV-&gt;set_lk_max_locks</a>,
-<a href="../api_c/env_set_lk_max_lockers.html">DBENV-&gt;set_lk_max_lockers</a>,
-<a href="../api_c/env_set_lk_max_objects.html">DBENV-&gt;set_lk_max_objects</a>,
-<a href="../api_c/env_set_lk_max.html">DBENV-&gt;set_lk_max</a>,
-<a href="../api_c/lock_detect.html">lock_detect</a>,
-<a href="../api_c/lock_get.html">lock_get</a>,
-<a href="../api_c/lock_id.html">lock_id</a>,
-<a href="../api_c/lock_put.html">lock_put</a>,
-<a href="../api_c/lock_stat.html">lock_stat</a>
-and
-<a href="../api_c/lock_vec.html">lock_vec</a>.
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;set_lk_max_objects method
+may fail and return one of the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;get_lk_max_objects</h3>
+<p>The DB_ENV-&gt;get_lk_max_objects method returns the maximum number of locked objects.</p>
+<p>The DB_ENV-&gt;get_lk_max_objects method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;get_lk_max_objects method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>lk_maxp</b><dd>
+The DB_ENV-&gt;get_lk_max_objects method returns  the
+maximum number of locked objects in <b>lk_maxp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/lock_class.html">DB_LOCK</a>
+<h3>See Also</h3>
+<a href="../api_c/lock_list.html">Locking Subsystem and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

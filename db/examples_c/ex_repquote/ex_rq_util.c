@@ -1,28 +1,27 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_util.c,v 1.20 2002/08/06 05:39:04 bostic Exp 
+ * $Id: ex_rq_util.c,v 1.34 2003/07/14 21:30:24 mjc Exp $
  */
 
 #include <sys/types.h>
-
 #include <errno.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include <db.h>
 
 #include "ex_repquote.h"
 
-static int connect_site __P((DB_ENV *, machtab_t *, const char *,
-   repsite_t *, int *, int *));
-void * elect_thread __P((void *));
+static int	 connect_site __P((DB_ENV *,
+		    machtab_t *, const char *, repsite_t *, int *, int *,
+		    thread *));
+static void	*elect_thread __P((void *));
+static void	*hm_loop __P((void *));
 
 typedef struct {
 	DB_ENV *dbenv;
@@ -43,24 +42,28 @@ typedef struct {
  * master to accept messages from a client as well as by clients
  * to communicate with other clients.
  */
-void *
+static void *
 hm_loop(args)
 	void *args;
 {
 	DB_ENV *dbenv;
+	DB_LSN permlsn;
 	DBT rec, control;
 	const char *c, *home, *progname;
-	int fd, eid, n, newm;
+	int fd, eid, n, nsites, newm, nsites_allocd;
 	int open, pri, r, ret, t_ret, tmpid;
 	elect_args *ea;
 	hm_loop_args *ha;
 	machtab_t *tab;
-	pthread_t elect_thr;
+	thread elect_thr, *site_thrs, *tmp;
 	repsite_t self;
 	u_int32_t timeout;
 	void *status;
 
 	ea = NULL;
+	site_thrs = NULL;
+	nsites_allocd = 0;
+	nsites = 0;
 
 	ha = (hm_loop_args *)args;
 	dbenv = ha->dbenv;
@@ -80,7 +83,7 @@ hm_loop(args)
 			 * Close this connection; if it's the master call
 			 * for an election.
 			 */
-			close(fd);
+			closesocket(fd);
 			if ((ret = machtab_rem(tab, eid, 1)) != 0)
 				break;
 
@@ -116,8 +119,8 @@ hm_loop(args)
 		}
 
 		tmpid = eid;
-		switch(r = dbenv->rep_process_message(dbenv,
-		    &control, &rec, &tmpid)) {
+		switch (r = dbenv->rep_process_message(dbenv,
+		    &control, &rec, &tmpid, &permlsn)) {
 		case DB_REP_NEWSITE:
 			/*
 			 * Check if we got sent connect information and if we
@@ -148,8 +151,18 @@ hm_loop(args)
 			 * should be up if we got a message from it (even
 			 * indirectly).
 			 */
-			if ((ret = connect_site(dbenv,
-			    tab, progname, &self, &open, &eid)) != 0)
+			if (nsites == nsites_allocd) {
+				/* Need to allocate more space. */
+				if ((tmp = realloc(site_thrs,
+				    (10 + nsites) * sizeof(thread))) == NULL) {
+					ret = errno;
+					goto out;
+				}
+				site_thrs = tmp;
+				nsites_allocd += 10;
+			}
+			if ((ret = connect_site(dbenv, tab, progname,
+			    &self, &open, &tmpid, &site_thrs[nsites++])) != 0)
 				goto out;
 			break;
 		case DB_REP_HOLDELECTION:
@@ -157,7 +170,7 @@ hm_loop(args)
 				break;
 			/* Make sure that previous election has finished. */
 			if (ea != NULL) {
-				(void)pthread_join(elect_thr, &status);
+				(void)thread_join(elect_thr, &status);
 				ea = NULL;
 			}
 			if ((ea = calloc(sizeof(elect_args), 1)) == NULL) {
@@ -166,7 +179,7 @@ hm_loop(args)
 			}
 			ea->dbenv = dbenv;
 			ea->machtab = tab;
-			ret = pthread_create(&elect_thr,
+			ret = thread_create(&elect_thr,
 			    NULL, elect_thread, (void *)ea);
 			break;
 		case DB_REP_NEWMASTER:
@@ -179,6 +192,8 @@ hm_loop(args)
 				ret = domaster(dbenv, progname);
 			}
 			break;
+		case DB_REP_ISPERM:
+			/* FALLTHROUGH */
 		case 0:
 			break;
 		default:
@@ -192,7 +207,11 @@ out:	if ((t_ret = machtab_rem(tab, eid, 1)) != 0 && ret == 0)
 
 	/* Don't close the environment before any children exit. */
 	if (ea != NULL)
-		(void)pthread_join(elect_thr, &status);
+		(void)thread_join(elect_thr, &status);
+
+	if (site_thrs != NULL)
+		while (--nsites >= 0)
+			(void)thread_join(site_thrs[nsites], &status);
 
 	return ((void *)ret);
 }
@@ -208,13 +227,12 @@ connect_thread(args)
 {
 	DB_ENV *dbenv;
 	const char *home, *progname;
-	int fd, i, eid, ns, port, ret;
 	hm_loop_args *ha;
 	connect_args *cargs;
 	machtab_t *machtab;
-#define	MAX_THREADS 25
-	pthread_t hm_thrs[MAX_THREADS];
-	pthread_attr_t attr;
+	thread hm_thrs[MAX_THREADS];
+	void *status;
+	int fd, i, eid, ns, port, ret;
 
 	ha = NULL;
 	cargs = (connect_args *)args;
@@ -223,13 +241,6 @@ connect_thread(args)
 	progname = cargs->progname;
 	machtab = cargs->machtab;
 	port = cargs->port;
-
-	if ((ret = pthread_attr_init(&attr)) != 0)
-		return ((void *)EXIT_FAILURE);
-
-	if ((ret =
-	    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED)) != 0)
-		goto err;
 
 	/*
 	 * Loop forever, accepting connections from new machines,
@@ -246,15 +257,17 @@ connect_thread(args)
 			ret = errno;
 			goto err;
 		}
-		if ((ha = calloc(sizeof(hm_loop_args), 1)) == NULL)
+		if ((ha = calloc(sizeof(hm_loop_args), 1)) == NULL) {
+			ret = errno;
 			goto err;
+		}
 		ha->progname = progname;
 		ha->home = home;
 		ha->fd = ns;
 		ha->eid = eid;
 		ha->tab = machtab;
 		ha->dbenv = dbenv;
-		if ((ret = pthread_create(&hm_thrs[i++], &attr,
+		if ((ret = thread_create(&hm_thrs[i++], NULL,
 		    hm_loop, (void *)ha)) != 0)
 			goto err;
 		ha = NULL;
@@ -264,8 +277,11 @@ connect_thread(args)
 	dbenv->errx(dbenv, "Too many threads");
 	ret = ENOMEM;
 
-err:	pthread_attr_destroy(&attr);
-	return (ret == 0 ? (void *)EXIT_SUCCESS : (void *)EXIT_FAILURE);
+	/* Do not return until all threads have exited. */
+	while (--i >= 0)
+		(void)thread_join(hm_thrs[i], &status);
+
+err:	return (ret == 0 ? (void *)EXIT_SUCCESS : (void *)EXIT_FAILURE);
 }
 
 /*
@@ -282,6 +298,7 @@ connect_all(args)
 	hm_loop_args *ha;
 	int failed, i, eid, nsites, open, ret, *success;
 	machtab_t *machtab;
+	thread *hm_thr;
 	repsite_t *sites;
 
 	ha = NULL;
@@ -294,9 +311,17 @@ connect_all(args)
 	sites = aa->sites;
 
 	ret = 0;
+	hm_thr = NULL;
+	success = NULL;
 
 	/* Some implementations of calloc are sad about alloc'ing 0 things. */
 	if ((success = calloc(nsites > 0 ? nsites : 1, sizeof(int))) == NULL) {
+		dbenv->err(dbenv, errno, "connect_all");
+		ret = 1;
+		goto err;
+	}
+
+	if (nsites > 0 && (hm_thr = calloc(nsites, sizeof(int))) == NULL) {
 		dbenv->err(dbenv, errno, "connect_all");
 		ret = 1;
 		goto err;
@@ -308,7 +333,7 @@ connect_all(args)
 				continue;
 
 			ret = connect_site(dbenv, machtab,
-			    progname, &sites[i], &open, &eid);
+			    progname, &sites[i], &open, &eid, &hm_thr[i]);
 
 			/*
 			 * If we couldn't make the connection, this isn't
@@ -332,22 +357,24 @@ connect_all(args)
 		sleep(1);
 	}
 
-err:	free(success);
+err:	if (success != NULL)
+		free(success);
+	if (hm_thr != NULL)
+		free(hm_thr);
 	return (ret ? (void *)EXIT_FAILURE : (void *)EXIT_SUCCESS);
 }
 
 int
-connect_site(dbenv, machtab, progname, site, is_open, eidp)
+connect_site(dbenv, machtab, progname, site, is_open, eidp, hm_thrp)
 	DB_ENV *dbenv;
 	machtab_t *machtab;
 	const char *progname;
 	repsite_t *site;
-	int *is_open;
-	int *eidp;
+	int *is_open, *eidp;
+	thread *hm_thrp;
 {
 	int ret, s;
 	hm_loop_args *ha;
-	pthread_t hm_thr;
 
 	if ((s = get_connected_socket(machtab, progname,
 	    site->host, site->port, is_open, eidp)) < 0)
@@ -367,7 +394,7 @@ connect_site(dbenv, machtab, progname, site, is_open, eidp)
 	ha->tab = machtab;
 	ha->dbenv = dbenv;
 
-	if ((ret = pthread_create(&hm_thr, NULL,
+	if ((ret = thread_create(hm_thrp, NULL,
 	    hm_loop, (void *)ha)) != 0) {
 		dbenv->err(dbenv, ret, "connect site");
 		goto err1;

@@ -1,15 +1,16 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: log001.tcl,v 11.29 2002/04/30 20:27:56 sue Exp 
+# $Id: log001.tcl,v 11.31 2003/01/08 05:50:11 bostic Exp $
 #
 
 # TEST	log001
 # TEST	Read/write log records.
 proc log001 { } {
 	global passwd
+	global has_crypto
 	global rand_init
 
 	berkdb srand $rand_init
@@ -17,10 +18,16 @@ proc log001 { } {
 	set max [expr 1024 * 128]
 	log001_body $max $iter 1
 	log001_body $max $iter 0
-	log001_body $max $iter 1 "-encryptaes $passwd"
-	log001_body $max $iter 0 "-encryptaes $passwd"
 	log001_body $max [expr $iter * 15] 1
 	log001_body $max [expr $iter * 15] 0
+
+	# Skip remainder of test if release does not support encryption.
+	if { $has_crypto == 0 } {
+		return
+	}
+
+	log001_body $max $iter 1 "-encryptaes $passwd"
+	log001_body $max $iter 0 "-encryptaes $passwd"
 	log001_body $max [expr $iter * 15] 1 "-encryptaes $passwd"
 	log001_body $max [expr $iter * 15] 0 "-encryptaes $passwd"
 }

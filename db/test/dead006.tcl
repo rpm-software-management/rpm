@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: dead006.tcl,v 1.4 2002/01/11 15:53:21 bostic Exp 
+# $Id: dead006.tcl,v 1.5 2003/01/08 05:49:39 bostic Exp $
 #
 # TEST	dead006
 # TEST	use timeouts rather than the normal dd algorithm.

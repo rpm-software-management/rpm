@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2002
+# Copyright (c) 2001-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: reputils.tcl,v 11.34 2002/08/12 17:54:18 sandstro Exp 
+# $Id: reputils.tcl,v 11.58 2003/10/31 20:15:43 sandstro Exp $
 #
 # Replication testing utilities
 
@@ -33,7 +33,10 @@ global queueenv
 # messages.
 global queuedbs
 global machids
-
+global perm_sent_list
+set perm_sent_list {}
+global perm_rec_list
+set perm_rec_list {}
 global elect_timeout
 set elect_timeout 50000000
 set drop 0
@@ -41,8 +44,7 @@ set drop 0
 # Create the directory structure for replication testing.
 # Open the master and client environments; store these in the global repenv
 # Return the master's environment: "-env masterenv"
-#
-proc repl_envsetup { envargs largs tnum {nclients 1} {droppct 0} { oob 0 } } {
+proc repl_envsetup { envargs largs test {nclients 1} {droppct 0} { oob 0 } } {
 	source ./include.tcl
 	global clientdir
 	global drop drop_msg
@@ -75,9 +77,10 @@ proc repl_envsetup { envargs largs tnum {nclients 1} {droppct 0} { oob 0 } } {
 	# but big enough so that the tests that use binary files
 	# as keys/data can run.
 	#
-	set lmax [expr 3 * 1024 * 1024]
-	set masterenv [eval {berkdb_env -create -log_max $lmax} $envargs \
-	    {-home $masterdir -txn -rep_master -rep_transport \
+	set logmax [expr 3 * 1024 * 1024]
+	set masterenv [eval {berkdb_env -create -log_max $logmax} $envargs \
+	    -lock_max 10000 \
+	    {-home $masterdir -txn nosync -rep_master -rep_transport \
 	    [list 1 replsend]}]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 	set repenv(master) $masterenv
@@ -86,9 +89,9 @@ proc repl_envsetup { envargs largs tnum {nclients 1} {droppct 0} { oob 0 } } {
 	for { set i 0 } { $i < $nclients } { incr i } {
 		set envid [expr $i + 2]
 		repladd $envid
-		set clientenv [eval {berkdb_env -create} $envargs -txn \
+                set clientenv [eval {berkdb_env -create} $envargs -txn nosync \
 		    {-cachesize { 0 10000000 0 }} -lock_max 10000 \
-		    {-home $clientdir($i) -rep_client -rep_transport \
+		    { -home $clientdir($i) -rep_client -rep_transport \
 		    [list $envid replsend]}]
 		error_check_good client_env [is_valid_env $clientenv] TRUE
 		set repenv($i) $clientenv
@@ -97,7 +100,7 @@ proc repl_envsetup { envargs largs tnum {nclients 1} {droppct 0} { oob 0 } } {
 	append largs " -env $masterenv "
 
 	# Process startup messages
-	repl_envprocq $tnum $nclients $oob
+	repl_envprocq $test $nclients $oob
 
 	return $largs
 }
@@ -109,8 +112,7 @@ proc repl_envsetup { envargs largs tnum {nclients 1} {droppct 0} { oob 0 } } {
 # with out-of-order delivery.  The replprocess procedure actually does
 # the real work of processing the queue -- this routine simply iterates
 # over the various queues and does the initial setup.
-
-proc repl_envprocq { tnum { nclients 1 } { oob 0 }} {
+proc repl_envprocq { test { nclients 1 } { oob 0 }} {
 	global repenv
 	global drop
 
@@ -122,9 +124,8 @@ proc repl_envprocq { tnum { nclients 1 } { oob 0 }} {
 	}
 	error_check_good i_nclients $nclients $i
 
-	set name [format "Repl%03d" $tnum]
 	berkdb debug_check
-	puts -nonewline "\t$name: Processing master/$i client queues"
+	puts -nonewline "\t$test: Processing master/$i client queues"
 	set rand_skip 0
 	if { $oob } {
 		puts " out-of-order"
@@ -182,7 +183,7 @@ proc repl_envprocq { tnum { nclients 1 } { oob 0 }} {
 				set do_check 0
 				$masterenv rep_flush
 				berkdb debug_check
-				puts "\t$name: Flushing Master"
+				puts "\t$test: Flushing Master"
 			} else {
 				break
 			}
@@ -200,8 +201,7 @@ proc repl_envprocq { tnum { nclients 1 } { oob 0 }} {
 
 # Verify that the directories in the master are exactly replicated in
 # each of the client environments.
-
-proc repl_envver0 { tnum method { nclients 1 } } {
+proc repl_envver0 { test method { nclients 1 } } {
 	global clientdir
 	global masterdir
 	global repenv
@@ -212,7 +212,6 @@ proc repl_envver0 { tnum method { nclients 1 } } {
 	set t2 $masterdir/t2
 	set t3 $masterdir/t3
 	set omethod [convert_method $method]
-	set name [format "Repl%03d" $tnum]
 
 	#
 	# We are interested in the keys of whatever databases are present
@@ -237,8 +236,7 @@ proc repl_envver0 { tnum method { nclients 1 } } {
 			file rename -force $t3 $t2
 		}
 		for { set i 0 } { $i < $nclients } { incr i } {
-			puts "\t$name: Verifying client $i database \
-			    $testfile contents."
+	puts "\t$test: Verifying client $i database $testfile contents."
 			open_and_dump_file $testfile $repenv($i) \
 			    $t1 repl_noop dump_file_direction "-first" "-next"
 
@@ -254,14 +252,12 @@ proc repl_envver0 { tnum method { nclients 1 } } {
 
 # Remove all the elements from the master and verify that these
 # deletions properly propagated to the clients.
-
-proc repl_verdel { tnum method { nclients 1 } } {
+proc repl_verdel { test method { nclients 1 } } {
 	global clientdir
 	global masterdir
 	global repenv
 
 	# Delete all items in the master.
-	set name [format "Repl%03d" $tnum]
 	set cwd [pwd]
 	cd $masterdir
 	set stat [catch {glob test*.db} dbs]
@@ -270,7 +266,7 @@ proc repl_verdel { tnum method { nclients 1 } } {
 		return
 	}
 	foreach testfile $dbs {
-		puts "\t$name: Deleting all items from the master."
+		puts "\t$test: Deleting all items from the master."
 		set txn [$repenv(master) txn]
 		error_check_good txn_begin [is_valid_txn $txn \
 		    $repenv(master)] TRUE
@@ -287,11 +283,11 @@ proc repl_verdel { tnum method { nclients 1 } } {
 		error_check_good txn_commit [$txn commit] 0
 		error_check_good db_close [$db close] 0
 
-		repl_envprocq $tnum $nclients
+		repl_envprocq $test $nclients
 
 		# Check clients.
 		for { set i 0 } { $i < $nclients } { incr i } {
-			puts "\t$name: Verifying emptiness of client database $i."
+			puts "\t$test: Verifying client database $i is empty."
 
 			set db [berkdb_open -env $repenv($i) $testfile]
 			error_check_good reopen_client($i) \
@@ -316,7 +312,7 @@ proc repl_noop { k d } {
 }
 
 # Close all the master and client environments in a replication test directory.
-proc repl_envclose { tnum envargs } {
+proc repl_envclose { test envargs } {
 	source ./include.tcl
 	global clientdir
 	global encrypt
@@ -333,9 +329,8 @@ proc repl_envclose { tnum envargs } {
 	# process messages in order to flush all the clients.
 	set drop 0
 	set do_check 0
-	set name [format "Repl%03d" $tnum]
 	berkdb debug_check
-	puts "\t$name: Checkpointing master."
+	puts "\t$test: Checkpointing master."
 	error_check_good masterenv_ckp [$repenv(master) txn_checkpoint] 0
 
 	# Count clients.
@@ -344,13 +339,13 @@ proc repl_envclose { tnum envargs } {
 			break
 		}
 	}
-	repl_envprocq $tnum $ncli
+	repl_envprocq $test $ncli
 
 	error_check_good masterenv_close [$repenv(master) close] 0
-	verify_dir $masterdir "\t$name: " 0 0 1
+	verify_dir $masterdir "\t$test: " 0 0 1
 	for { set i 0 } { $i < $ncli } { incr i } {
 		error_check_good client($i)_close [$repenv($i) close] 0
-		verify_dir $clientdir($i) "\t$name: " 0 0 1
+		verify_dir $clientdir($i) "\t$test: " 0 0 1
 	}
 	replclose $testdir/MSGQUEUEDIR
 
@@ -374,7 +369,7 @@ proc replsetup { queuedir } {
 
 	file mkdir $queuedir
 	set queueenv \
-	    [berkdb_env -create -txn -lock_max 20000 -home $queuedir]
+	    [berkdb_env -create -txn nosync -lock_max 20000 -home $queuedir]
 	error_check_good queueenv [is_valid_env $queueenv] TRUE
 
 	if { [info exists queuedbs] } {
@@ -386,9 +381,15 @@ proc replsetup { queuedir } {
 }
 
 # Send function for replication.
-proc replsend { control rec fromid toid } {
+proc replsend { control rec fromid toid flags lsn } {
 	global queuedbs queueenv machids
 	global drop drop_msg
+	global perm_sent_list
+
+	if { $flags == "perm" } {
+#		puts "replsend sent perm message, LSN $lsn"
+		lappend perm_sent_list $lsn
+	}
 
 	#
 	# If we are testing with dropped messages, then we drop every
@@ -466,10 +467,12 @@ proc repladd { machid } {
 # We traverse the entire queue, but since we skip some messages, we
 # may end up leaving things in the queue, which should get picked up
 # on a later run.
-
-proc replprocessqueue { dbenv machid { skip_interval 0 } \
-    { hold_electp NONE } { newmasterp NONE } } {
+proc replprocessqueue { dbenv machid { skip_interval 0 } { hold_electp NONE } \
+    { newmasterp NONE } { dupmasterp NONE } { errp NONE } } {
 	global queuedbs queueenv errorCode
+	global perm_response
+	set perm_response ""
+	global perm_rec_list
 
 	# hold_electp is a call-by-reference variable which lets our caller
 	# know we need to hold an election.
@@ -484,6 +487,20 @@ proc replprocessqueue { dbenv machid { skip_interval 0 } \
 		upvar $newmasterp newmaster
 	}
 	set newmaster 0
+
+	# dupmasterp is a call-by-reference variable which lets our caller
+	# know we have a duplicate master.
+	if { [string compare $dupmasterp NONE] != 0 } {
+		upvar $dupmasterp dupmaster
+	}
+	set dupmaster 0
+
+	# errp is a call-by-reference variable which lets our caller
+	# know we have gotten an error (that they expect).
+	if { [string compare $errp NONE] != 0 } {
+		upvar $errp errorp
+	}
+	set errorp 0
 
 	set nproced 0
 
@@ -534,9 +551,19 @@ proc replprocessqueue { dbenv machid { skip_interval 0 } \
 		set dbc [$queuedbs($machid) cursor -txn $txn]
 		set dbt [$dbc get -set $recno]
 
+		# Save all ISPERM and NOTPERM responses so we can compare their
+		# LSNs to the LSN in the log.  The variable perm_response holds
+		# the response. 
+		#
+		if { [is_substr $res ISPERM] || [is_substr $res NOTPERM] } {
+			set perm_response $res
+			set lsn [lindex $perm_response 1]
+			lappend perm_rec_list $lsn 
+		}
+
 		if { $ret != 0 } {
-			if { [is_substr $res DB_REP_HOLDELECTION] } {
-				set hold_elect 1
+			if { [string compare $errp NONE] != 0 } {
+				set errorp $res
 			} else {
 				error "FAIL:[timestamp]\
 				    rep_process_message returned $res"
@@ -547,18 +574,40 @@ proc replprocessqueue { dbenv machid { skip_interval 0 } \
 
 		$dbc del
 
-		if { $ret == 0 && $res != 0 } {
-			if { [is_substr $res DB_REP_NEWSITE] } {
-				# NEWSITE;  do nothing.
-			} else {
-				set newmaster $res
+		if { $ret == 0 } {
+			set rettype [lindex $res 0]
+			set retval [lindex $res 1]
+			#
+			# Do nothing for 0 and NEWSITE
+			#
+			if { [is_substr $rettype HOLDELECTION] } {
+				set hold_elect 1
+			}
+			if { [is_substr $rettype DUPMASTER] } {
+				set dupmaster 1
+			}
+			if { [is_substr $rettype NOTPERM] || \
+			    [is_substr $rettype ISPERM] } {
+				set lsnfile [lindex $retval 0]
+				set lsnoff [lindex $retval 1]
+			}
+			if { [is_substr $rettype NEWMASTER] } {
+				set newmaster $retval
 				# Break as soon as we get a NEWMASTER message;
 				# our caller needs to handle it.
 				break
 			}
 		}
 
+		if { $errorp == 1 } {
+			# Break also on an error, caller wants to handle it.
+			break
+		}
 		if { $hold_elect == 1 } {
+			# Break also on a HOLDELECTION, for the same reason.
+			break
+		}
+		if { $dupmaster == 1 } {
 			# Break also on a HOLDELECTION, for the same reason.
 			break
 		}
@@ -609,38 +658,88 @@ global elections_in_progress
 set elect_serial 0
 
 # Start an election in a sub-process.
-proc start_election { qdir envstring nsites pri timeout {err "none"}} {
+proc start_election { pfx qdir envstring nsites pri timeout {err "none"}} {
 	source ./include.tcl
 	global elect_serial elect_timeout elections_in_progress machids
 
-	incr elect_serial
+	set filelist {}
+	set ret [catch {glob $testdir/ELECTION*.$elect_serial} result]
+	if { $ret == 0 } {
+		set filelist [concat $filelist $result]
+	}
+	foreach f $filelist {
+		fileremove -f $f
+	}
+
+	set oid [open $testdir/ELECTION_SOURCE.$elect_serial w]
+
+	puts $oid "source $test_path/test.tcl"
+	puts $oid "replsetup $qdir"
+	foreach i $machids { puts $oid "repladd $i" }
+	puts $oid "set env_cmd \{$envstring\}"
+	puts $oid "set dbenv \[eval \$env_cmd -errfile \
+	    $testdir/ELECTION_ERRFILE.$elect_serial -errpfx $pfx \]"
+#	puts $oid "set dbenv \[eval \$env_cmd -errfile \
+#	    /dev/stdout -errpfx $pfx \]"
+	puts $oid "\$dbenv test abort $err"
+	puts $oid "set res \[catch \{\$dbenv rep_elect $nsites $pri \
+	    $elect_timeout\} ret\]"
+	puts $oid "set r \[open \$testdir/ELECTION_RESULT.$elect_serial w\]"
+	puts $oid "if \{\$res == 0 \} \{"
+	puts $oid "puts \$r \"NEWMASTER \$ret\""
+	puts $oid "\} else \{"
+	puts $oid "puts \$r \"ERROR \$ret\""
+	puts $oid "\}"
+	if { $err != "none" } {
+		puts $oid "\$dbenv test abort none"
+		puts $oid "set res \[catch \{\$dbenv rep_elect $nsites $pri \
+		    $elect_timeout\} ret\]"
+		puts $oid "if \{\$res == 0 \} \{"
+		puts $oid "puts \$r \"NEWMASTER \$ret\""
+		puts $oid "\} else \{"
+		puts $oid "puts \$r \"ERROR \$ret\""
+		puts $oid "\}"
+	}
+	puts $oid "close \$r"
+	close $oid
 
 	set t [open "|$tclsh_path >& $testdir/ELECTION_OUTPUT.$elect_serial" w]
-
-	puts $t "source $test_path/test.tcl"
-	puts $t "replsetup $qdir"
-	foreach i $machids { puts $t "repladd $i" }
-	puts $t "set env_cmd \{$envstring\}"
-	puts $t "set dbenv \[eval \$env_cmd -errfile \
-	    $testdir/ELECTION_ERRFILE.$elect_serial -errpfx FAIL: \]"
-# puts "Start election err $err, env $envstring"
-	puts $t "\$dbenv test abort $err"
-	puts $t "set res \[catch \{\$dbenv rep_elect $nsites $pri \
-	    $elect_timeout\} ret\]"
-	if { $err != "none" } {
-		puts $t "\$dbenv test abort none"
-		puts $t "set res \[catch \{\$dbenv rep_elect $nsites $pri \
-		    $elect_timeout\} ret\]"
-	}
+#	set t [open "|$tclsh_path" w]
+	puts $t "source ./include.tcl"
+	puts $t "source $testdir/ELECTION_SOURCE.$elect_serial"
 	flush $t
 
 	set elections_in_progress($elect_serial) $t
 	return $elect_serial
 }
 
+proc check_election { id newmasterp } {
+	source ./include.tcl
+
+	if { $id == "INVALID" } {
+		return 0
+	}
+	upvar $newmasterp newmaster
+	set newmaster 0
+	set res [catch {open $testdir/ELECTION_RESULT.$id} nmid]
+	if { $res != 0 } {
+		return 0
+	}
+	while { [gets $nmid val] != -1 } {
+#		puts "result $id: $val"
+		set str [lindex $val 0]
+		if { [is_substr $str NEWMASTER] } {
+			set newmaster [lindex $val 1]
+		}
+	}
+	close $nmid
+	return 1
+}
+
 proc close_election { i } {
 	global elections_in_progress
 	set t $elections_in_progress($i)
+	puts $t "replclose \$testdir/MSGQUEUEDIR"
 	puts $t "\$dbenv close"
 	close $t
 	unset elections_in_progress($i)
@@ -656,4 +755,76 @@ proc cleanup_elections { } {
 	}
 
 	set elect_serial 0
+}
+
+#
+# This is essentially a copy of test001, but it only does the put/get
+# loop AND it takes an already-opened db handle.
+#
+proc rep_test { method env db {nentries 10000} {start 0} {skip 1} } {
+	source ./include.tcl
+
+	#
+	# If we are using an env, then testfile should just be the db name.
+	# Otherwise it is the test directory and the name.
+	# If we are not using an external env, then test setting
+	# the database cache size and using multiple caches.
+	puts "\t\tRep_test: $method $nentries key/data pairs starting at $start"
+	set did [open $dict]
+
+	# The "start" variable determines the record number to start
+	# with, if we're using record numbers.  The "skip" variable
+	# determines whether to start with the first entry in the
+	# dict file (if skip = 0) or skip over "start" entries (skip = 1).
+	# Skip is set to 1 to get different key/data pairs for
+	# different iterations of replication tests.  Skip must be set
+	# to 0 if we're running a test that uses 10000 iterations,
+	# otherwise we run out of data to read in.
+
+	if { $skip == 1 } {
+		for { set count 0 } { $count < $start } { incr count } {
+			gets $did str
+		}
+	}
+	set pflags ""
+	set gflags ""
+	set txn ""
+
+	if { [is_record_based $method] == 1 } {
+		append gflags " -recno"
+	}
+	puts "\t\tRep_test.a: put/get loop"
+	# Here is the loop where we put and get each key/data pair
+	set count 0
+	while { [gets $did str] != -1 && $count < $nentries } {
+		if { [is_record_based $method] == 1 } {
+			global kvals
+
+			set key [expr $count + 1 + $start]
+			if { 0xffffffff > 0 && $key > 0xffffffff } {
+				set key [expr $key - 0x100000000]
+			}
+			if { $key == 0 || $key - 0xffffffff == 1 } {
+				incr key
+				incr count
+			}
+			set kvals($key) [pad_data $method $str]
+		} else {
+			set key $str
+			set str [reverse $str]
+		}
+		set t [$env txn]
+		error_check_good txn [is_valid_txn $t $env] TRUE
+		set txn "-txn $t"
+		set ret [eval \
+		    {$db put} $txn $pflags {$key [chop_data $method $str]}]
+		error_check_good put $ret 0
+		error_check_good txn [$t commit] 0
+		if { $count % 5 == 0 } {
+			error_check_good txn_checkpoint($count) \
+			    [$env txn_checkpoint] 0
+		}
+		incr count
+	}
+	close $did
 }

@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  *
  * Some parts of this code originally written by Adam Stubblefield,
@@ -11,7 +11,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: hmac.c,v 1.24 2002/08/06 06:11:30 bostic Exp ";
+static const char revid[] = "$Id: hmac.c,v 1.26 2003/01/08 05:04:43 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -107,7 +107,7 @@ __db_chksum(data, data_len, mac_key, store)
 	memset(store, 0, sumlen);
 	if (mac_key == NULL) {
 		/* Just a hash, no MAC */
-		hash4 = __ham_func4(NULL, data, data_len);
+		hash4 = __ham_func4(NULL, data, (u_int32_t)data_len);
 		memcpy(store, &hash4, sumlen);
 	} else {
 		memset(tmp, 0, DB_MAC_KEY);
@@ -196,7 +196,7 @@ __db_check_chksum(dbenv, db_cipher, chksum, data, data_len, is_hmac)
 	memset(chksum, 0, sum_len);
 	if (mac_key == NULL) {
 		/* Just a hash, no MAC */
-		hash4 = __ham_func4(NULL, data, data_len);
+		hash4 = __ham_func4(NULL, data, (u_int32_t)data_len);
 		ret = memcmp((u_int32_t *)old, &hash4, sum_len) ? -1 : 0;
 	} else {
 		__db_hmac(mac_key, data, data_len, new);

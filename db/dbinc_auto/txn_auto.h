@@ -9,6 +9,7 @@ typedef struct ___txn_regop_args {
 	DB_LSN prev_lsn;
 	u_int32_t	opcode;
 	int32_t	timestamp;
+	DBT	locks;
 } __txn_regop_args;
 
 #define	DB___txn_ckp	11
@@ -19,6 +20,7 @@ typedef struct ___txn_ckp_args {
 	DB_LSN	ckp_lsn;
 	DB_LSN	last_ckp;
 	int32_t	timestamp;
+	u_int32_t	rep_gen;
 } __txn_ckp_args;
 
 #define	DB___txn_child	12
@@ -41,6 +43,7 @@ typedef struct ___txn_xa_regop_args {
 	u_int32_t	gtrid;
 	u_int32_t	bqual;
 	DB_LSN	begin_lsn;
+	DBT	locks;
 } __txn_xa_regop_args;
 
 #define	DB___txn_recycle	14

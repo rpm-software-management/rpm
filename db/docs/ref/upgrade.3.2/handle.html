@@ -1,27 +1,31 @@
-<!--$Id: handle.so,v 1.2 2000/11/17 19:56:16 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: handle.so,v 1.5 2003/11/20 22:31:18 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Release 3.2: Java and C++ object re-use</title>
+<title>Berkeley DB Reference Guide: Release 3.2: Java and C++ object reuse</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<table><tr valign=top>
+<table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
-<td width="1%"><a href="../../ref/upgrade.3.2/mutexlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.3.2/notfound.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../upgrade.3.2/mutexlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.3.2/notfound.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Release 3.2: Java and C++ object re-use</h1>
-<p>In previous releases of Berkeley DB, Java <a href="../../api_java/dbenv_class.html">DbEnv</a> and <a href="../../api_java/db_class.html">Db</a>
-objects, and C++ <a href="../../api_cxx/dbenv_class.html">DbEnv</a> and <a href="../../api_cxx/db_class.html">Db</a> objects could be
-re-used after they were closed, by calling open on them again.  This is
+<h3 align=center>Release 3.2: Java and C++ object reuse</h3>
+<p>In previous releases of Berkeley DB, Java
+<a href="../../java/com/sleepycat/db/DbEnv.html">DbEnv</a>
+ and
+<a href="../../java/com/sleepycat/db/Db.html">Db</a>
+objects, and C++ <a href="../../api_cxx/env_class.html">DbEnv</a> and <a href="../../api_cxx/db_class.html">Db</a> objects could be
+reused after they were closed, by calling open on them again.  This is
 no longer permitted, and these objects no longer allow any operations
-after a close.  Applications re-using these objects should be modified
-to create new objects instead.
-<table><tr><td><br></td><td width="1%"><a href="../../ref/upgrade.3.2/mutexlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../ref/toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.3.2/notfound.html"><img src="../../images/next.gif" alt="Next"></a>
+after a close.  Applications reusing these objects should be modified
+to create new objects instead.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.3.2/mutexlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.3.2/notfound.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

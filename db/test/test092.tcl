@@ -1,18 +1,18 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2001
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: test092.tcl,v 11.2 2001/05/04 19:14:05 sue Exp 
+# $Id: test092.tcl,v 11.14 2003/01/08 05:54:09 bostic Exp $
 #
-# DB Test 92 {access method}
-#
-# Test DB_DIRTY_READ
-# We set up a database with nentries in it.  We then open the database
-# read-only twice.  One with dirty read and one without.  We open the
-# database for writing and update some entries in it.  Then read those
-# new entries via db->get (clean and dirty), and via cursors (clean and
-# dirty). 
+# TEST	test092
+# TEST	Test of DB_DIRTY_READ [#3395]
+# TEST
+# TEST	We set up a database with nentries in it.  We then open the
+# TEST	database read-only twice.  One with dirty read and one without.
+# TEST	We open the database for writing and update some entries in it.
+# TEST	Then read those new entries via db->get (clean and dirty), and
+# TEST	via cursors (clean and dirty).
 proc test092 { method {nentries 1000} args } {
 	source ./include.tcl
 	#
@@ -25,6 +25,8 @@ proc test092 { method {nentries 1000} args } {
 		return
 	}
 	set args [convert_args $method $args]
+	set encargs ""
+	set args [split_encargs $args encargs]
 	set omethod [convert_method $method]
 
 	puts "Test092: Dirty Read Test $method $nentries"
@@ -38,11 +40,13 @@ proc test092 { method {nentries 1000} args } {
 	env_cleanup $testdir
 
 	set lmax [expr $nentries * 2]
-	set env [berkdb env -create -lock_max_locks $lmax -txn -home $testdir]
+	set lomax [expr $nentries * 2]
+	set env [eval {berkdb_env -create -txn} $encargs -home $testdir \
+	    -lock_max_locks $lmax -lock_max_objects $lomax]
 	error_check_good dbenv [is_valid_env $env] TRUE
 
 	set db [eval {berkdb_open -env $env -create \
-	    -mode 0644 $omethod} {$testfile}]
+	    -mode 0644 $omethod} $args {$testfile}]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
 	# Here is the loop where we put each key/data pair.
@@ -84,34 +88,33 @@ proc test092 { method {nentries 1000} args } {
 
 	set tdr [$env txn -dirty]
 	error_check_good txnbegin:dr [is_valid_txn $tdr $env] TRUE
-
-	set dbtxn [eval {berkdb_open -env $env -dirty \
+	set dbtxn [eval {berkdb_open -auto_commit -env $env -dirty \
 	    -mode 0644 $omethod} {$testfile}]
 	error_check_good dbopen:dbtxn [is_valid_db $dbtxn] TRUE
 
-	set dbcl [eval {berkdb_open -env $env \
+	set dbcl [eval {berkdb_open -auto_commit -env $env \
 	    -rdonly -mode 0644 $omethod} {$testfile}]
 	error_check_good dbopen:dbcl [is_valid_db $dbcl] TRUE
 
-	set dbdr [eval {berkdb_open -env $env -dirty \
+	set dbdr [eval {berkdb_open -auto_commit -env $env -dirty \
 	    -rdonly -mode 0644 $omethod} {$testfile}]
 	error_check_good dbopen:dbdr [is_valid_db $dbdr] TRUE
 
 	set dbccl [$dbcl cursor -txn $tdr]
 	error_check_good dbcurs:dbcl [is_valid_cursor $dbccl $dbcl] TRUE
-	
+
 	set dbcdr0 [$dbdr cursor]
 	error_check_good dbcurs:dbdr0 [is_valid_cursor $dbcdr0 $dbdr] TRUE
-	
+
 	set dbcdr1 [$dbdr cursor -dirty]
 	error_check_good dbcurs:dbdr1 [is_valid_cursor $dbcdr1 $dbdr] TRUE
-	
+
 	#
 	# Now that we have all of our handles, change all the data in there
 	# to be the key and data the same, but data is capitalized.
 	puts "\tTest092.c: put/get data within a txn"
 	set gflags ""
-        if { [is_record_based $method] == 1 } {
+	if { [is_record_based $method] == 1 } {
 		set checkfunc test092dr_recno.check
 		append gflags " -recno"
 	} else {
@@ -172,20 +175,20 @@ proc test092 { method {nentries 1000} args } {
 
 	#
 	# Now abort the modifying transaction and rerun the data checks.
-	# 
+	#
 	puts "\tTest092.g: Aborting the write-txn"
 	error_check_good txnabort [$t abort] 0
 
 	set dbccl [$dbcl cursor -txn $tdr]
 	error_check_good dbcurs:dbcl [is_valid_cursor $dbccl $dbcl] TRUE
-	
+
 	set dbcdr0 [$dbdr cursor]
 	error_check_good dbcurs:dbdr0 [is_valid_cursor $dbcdr0 $dbdr] TRUE
-	
+
 	set dbcdr1 [$dbdr cursor -dirty]
 	error_check_good dbcurs:dbdr1 [is_valid_cursor $dbcdr1 $dbdr] TRUE
-	
-        if { [is_record_based $method] == 1 } {
+
+	if { [is_record_based $method] == 1 } {
 		set checkfunc test092cl_recno.check
 	} else {
 		set checkfunc test092cl.check
@@ -214,7 +217,7 @@ proc test092 { method {nentries 1000} args } {
 # Clean checks mean keys and data are identical.
 # Dirty checks mean data are uppercase versions of keys.
 proc test092cl.check { key data } {
-        error_check_good "key/data mismatch" $key $data
+	error_check_good "key/data mismatch" $key $data
 }
 
 proc test092cl_recno.check { key data } {
@@ -225,7 +228,7 @@ proc test092cl_recno.check { key data } {
 }
 
 proc test092dr.check { key data } {
-        error_check_good "key/data mismatch" $key [string tolower $data]
+	error_check_good "key/data mismatch" $key [string tolower $data]
 }
 
 proc test092dr_recno.check { key data } {
@@ -233,6 +236,6 @@ proc test092dr_recno.check { key data } {
 
 	error_check_good key"$key"_exists [info exists kvals($key)] 1
 	error_check_good "key/data mismatch, key $key" $data \
-	    [string touppper $kvals($key)]
+	    [string toupper $kvals($key)]
 }
 

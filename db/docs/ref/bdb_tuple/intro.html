@@ -1,0 +1,59 @@
+<!--$Id: intro.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Tuple - Compact ordered keys</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Tuple</dl></h3></td>
+<td align=right><a href="../bdb_entity/read.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/format.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Tuple - Compact ordered keys</h3>
+<p>Java API <i>tuples</i> are sequences of primitive Java data types,
+for example, integers and strings.  The <i>tuple format</i> is a
+binary format for tuples that can be used to store keys and/or values.</p>
+<p>Tuples are useful as keys because they have a meaningful sort order,
+while serialized objects do not.  This is because the binary data for a tuple
+is written in such a way that its raw byte ordering provides a useful sort
+order.  For example, strings in tuples are written with a null terminator
+rather than with a leading length.</p>
+<p>Tuples are useful as keys <i>or</i> values when reducing the record
+size to a minimum is important.  A tuple is significantly smaller than an
+equivalent serialized object.  However, unlike serialized objects, tuples
+cannot contain complex data types and are not easily extended except by adding
+fields at the end of the tuple.</p>
+<p>Whenever a tuple format is used, except when the key or value class is a
+Java primitive class, a <i>tuple binding</i> class must be implemented to
+map between the Java object and the tuple fields.  Because of this extra
+requirement, and because tuples are not easily extended, a useful technique
+shown in this example is to use tuples for keys and serialized objects for
+values.  This provides compact ordered keys but still allows arbitrary Java
+objects as values, and avoids implementing a tuple binding for each value
+class.</p>
+<p>The example program illustrates:</p>
+<p><ul type=disc>
+<li><a href="format.html">Using the tuple format</a>
+<li><a href="extract.html">Using tuples with key extractors</a>
+<li><a href="tbinding.html">Creating tuple key bindings</a>
+<li><a href="tsbinding.html">Creating tuple-serial entity bindings</a>
+<li><a href="sorted.html">Using sorted collections</a>
+</ul>
+<p>Compare this example to the prior Entity example and you'll see that the
+<b>Sample</b> class has not changed. When changing a database format, while
+new bindings are needed to map key and value objects to the new format, the
+application using the objects often does not need to be modified.</p>
+<p>The complete source
+of the final version of the example program is included in the Berkeley DB
+distribution.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_entity/read.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/format.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

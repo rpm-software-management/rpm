@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_DEADLOCK {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_deadlock.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_deadlock.o
 	NAME		db_deadlock
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

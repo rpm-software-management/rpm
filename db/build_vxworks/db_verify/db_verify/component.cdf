@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_VERIFY {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_verify.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_verify.o
 	NAME		db_verify
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

@@ -1,0 +1,77 @@
+<!--$Id: intro.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Entity - Combining the key and value in a single object</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Entity</dl></h3></td>
+<td align=right><a href="../bdb_index/read.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_entity/classes.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Entity - Combining the key and value in a single object</h3>
+<p>In the prior examples, the keys and values of each store were
+represented using separate classes.  For example, a <b>PartKey</b>
+and a <b>PartValue</b> class were used.  Many times it is desirable
+to have a single class representing both the key and the value, for
+example, a <b>Part</b> class.</p>
+<p>Such a combined key and value class is called an <i>entity class</i>
+and is used along with an <i>entity binding</i>.  Entity bindings combine a
+key and a value into an entity when reading a record from a collection, and
+split an entity into a key and a value when writing a record to a
+collection.  Entity bindings are used in place of value bindings, and entity
+objects are used with collections in place of value objects.</p>
+<p>The example program illustrates:</p>
+<p><ul type=disc>
+<li><a href="classes.html">Defining entity classes</a>
+<li><a href="bindings.html">Creating entity bindings</a>
+<li><a href="views.html">Creating collections with entity bindings</a>
+<li><a href="read.html">Using entities with collections</a>
+</ul>
+<p>Some reasons for using entities are:</p>
+<p><ul type=disc>
+<li>When the key is a property of an entity object representing the
+record as a whole, the object's identity and concept are often clearer than
+with key and value objects that are disjoint.
+<li>A single entity object per record is often more convenient to use
+than two objects.
+</ul>
+<p>Of course, instead of using an entity binding, you could simply create
+the entity yourself after reading the key and value from a collection, and
+split the entity into a key and value yourself before writing it to a
+collection.  But this would detract from the convenience of the using the
+Java collections API.  It is convenient to obtain a <b>Part</b> object
+directly from 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#get">Map.get</a>
+ and to add a <b>Part</b>
+object using 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html#add">Set.add</a>
+.  Collections having entity
+bindings can be used naturally without combining and splitting objects each
+time a collection method is called; however, an entity binding class must be
+defined by the application.</p>
+<p>In addition to showing how to use entity bindings, this example
+illustrates a key feature of all bindings:  Bindings are independent of
+database storage parameters and formats.  Compare this example to the prior
+Index example and you'll see that the <b>Sample</b> and
+<b>SampleViews</b> classes have been changed to use entity bindings, but the
+<b>SampleDatabase</b> class was not changed at all.  In fact, the Entity
+program and the Index program can be used interchangeably to access the same
+physical database files.  This demonstrates that bindings are only a "view"
+onto the physical stored data.  Note that formats are managed by the
+<b>SampleDatabase</b> class because they define the physical syntax of the
+stored data.</p>
+<p>The complete source
+of the final version of the example program is included in the Berkeley DB
+distribution.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_index/read.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_entity/classes.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

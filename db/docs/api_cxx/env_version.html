@@ -1,20 +1,22 @@
-<!--$Id: env_version.so,v 10.13 1999/12/20 08:52:30 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: env_version.so,v 10.24 2003/11/08 19:17:33 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::version</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DbEnv::version</h1>
+<h3>DbEnv::version</h3>
 </td>
-<td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -24,36 +26,32 @@
 static char *
 DbEnv::version(int *major, int *minor, int *patch);
 </pre></h3>
-<h1>Description</h1>
-<p>The DbEnv::version method returns a pointer to a string containing Berkeley DB
-version information.  If <b>major</b> is non-NULL, the major version
-of the Berkeley DB release is stored in the memory it references.  If
-<b>minor</b> is non-NULL, the minor version of the Berkeley DB release is
-stored in the memory it references.  If <b>patch</b> is non-NULL, the
-patch version of the Berkeley DB release is stored in the memory it references.
+<hr size=1 noshade>
+<h3>Description: DbEnv::version</h3>
+<a name="3"><!--meow--></a>
+<p>The DbEnv::version method returns a pointer to a string, suitable for
+display, containing Berkeley DB version information.</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>major</b><dd>
+If <b>major</b> is non-NULL, the major
+version of the Berkeley DB release is copied to the memory to which it refers.
+<p><dt><b>minor</b><dd>
+If <b>minor</b> is non-NULL, the minor version of the Berkeley DB release
+is copied to the memory to which it refers.
+<p><dt><b>patch</b><dd>
+If <b>patch</b> is non-NULL, the patch version of the Berkeley DB release
+is copied to the memory to which it refers.
+</dl>
+<hr size=1 noshade>
 <h3>Class</h3>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>
-<h1>See Also</h1>
-<a href="../api_cxx/env_close.html">DbEnv::close</a>,
-<a href="../api_cxx/env_open.html">DbEnv::open</a>,
-<a href="../api_cxx/env_remove.html">DbEnv::remove</a>,
-<a href="../api_cxx/db_err.html">DbEnv::err</a>,
-<a href="../api_cxx/env_strerror.html">DbEnv::strerror</a>,
-<a href="../api_cxx/env_version.html">DbEnv::version</a>,
-<a href="../api_cxx/env_set_cachesize.html">DbEnv::set_cachesize</a>,
-<a href="../api_cxx/env_set_errcall.html">DbEnv::set_errcall</a>,
-<a href="../api_cxx/env_set_errfile.html">DbEnv::set_errfile</a>,
-<a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a>,
-<a href="../api_cxx/env_set_errpfx.html">DbEnv::set_errpfx</a>,
-<a href="../api_cxx/env_set_flags.html">DbEnv::set_flags</a>,
-<a href="../api_cxx/env_set_mutexlocks.html">DbEnv::set_mutexlocks</a>,
-<a href="../api_cxx/env_set_paniccall.html">DbEnv::set_paniccall</a>,
-and
-<a href="../api_cxx/env_set_verbose.html">DbEnv::set_verbose</a>.
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/env_list.html">Database Environments and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_cxx/cxx_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

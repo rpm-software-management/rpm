@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: Timer.java,v 1.1 2002/01/03 02:59:39 mjc Exp 
+ * $Id: Timer.java,v 1.2 2003/01/08 05:45:53 bostic Exp $
  */
 
 package com.sleepycat.db.rpcserver;

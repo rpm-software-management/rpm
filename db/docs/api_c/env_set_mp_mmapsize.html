@@ -1,20 +1,22 @@
-<!--$Id: env_set_mp_mmapsize.so,v 10.18 2000/05/20 16:29:12 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_mp_mmapsize.so,v 10.36 2003/11/08 19:17:31 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DBENV-&gt;set_mp_mmapsize</title>
+<title>Berkeley DB: DB_ENV-&gt;set_mp_mmapsize</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DBENV-&gt;set_mp_mmapsize</h1>
+<h3>DB_ENV-&gt;set_mp_mmapsize</h3>
 </td>
-<td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -22,50 +24,78 @@
 #include &lt;db.h&gt;
 <p>
 int
-DBENV-&gt;set_mp_mmapsize(DB_ENV *dbenv, size_t mp_mmapsize);
+DB_ENV-&gt;set_mp_mmapsize(DB_ENV *dbenv, size_t mp_mmapsize);
+<p>
+int
+DB_ENV-&gt;get_mp_mmapsize(DB_ENV *dbenv, size_t *mp_mmapsizep);
 </pre></h3>
-<h1>Description</h1>
-<p>Files that are opened read-only in the pool (and that satisfy a few other
-criteria) are, by default, mapped into the process address space instead
-of being copied into the local cache.  This can result in better-than-usual
-performance, as available virtual memory is normally much larger than the
-local cache, and page faults are faster than page copying on many systems.
-However, in the presence of limited virtual memory it can cause resource
-starvation, and in the presence of large databases, it can result in immense
-process sizes.
-<p>Set the maximum file size, in bytes, for a file to be mapped into the
-process address space.  If no value is specified, it defaults to 10MB.
-<p>The DBENV-&gt;set_mp_mmapsize interface may only be used to configure Berkeley DB before
-the <a href="../api_c/env_open.html">DBENV-&gt;open</a> interface is called.
-<p>The DBENV-&gt;set_mp_mmapsize function returns a non-zero error value on failure and 0 on success.
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_mp_mmapsize</h3>
+<a name="3"><!--meow--></a>
+<p>Files that are opened read-only in the pool (and that satisfy a few
+other criteria) are, by default, mapped into the process address space
+instead of being copied into the local cache.  This can result in
+better-than-usual performance because available virtual memory is
+normally much larger than the local cache, and page faults are faster
+than page copying on many systems.  However, it can cause resource
+starvation in the presence of limited virtual memory, and it can result
+in immense process sizes in the presence of large databases.</p>
+<p>The DB_ENV-&gt;get_mp_mmapsize method sets the maximum file size, in bytes,
+for a file to be mapped into the process address space.  If no value is
+specified, it defaults to 10MB.</p>
 <p>The database environment's maximum mapped file size may also be set using the environment's
 <b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
 single line with the string "set_mp_mmapsize", one or more whitespace characters,
-and the size in bytes.  Because the <b>DB_CONFIG</b> file is read when the database
+and the size in bytes.
+Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
-before that time.
-<h1>Errors</h1>
+before that time.</p>
+<p>The DB_ENV-&gt;set_mp_mmapsize method configures operations performed using the specified
+<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.</p>
+<p>The DB_ENV-&gt;set_mp_mmapsize method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;set_mp_mmapsize method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>Called after <a href="../api_c/env_open.html">DBENV-&gt;open</a> was called.
+<p><dt><b>mp_mmapsize</b><dd>
+The <b>mp_mmapsize</b> parameter is the maximum file size, in bytes,
+for a file to be mapped into the process address space.
 </dl>
-<h1>See Also</h1>
-<a href="../api_c/env_set_mp_mmapsize.html">DBENV-&gt;set_mp_mmapsize</a>,
-<a href="../api_c/memp_fclose.html">memp_fclose</a>,
-<a href="../api_c/memp_fget.html">memp_fget</a>,
-<a href="../api_c/memp_fopen.html">memp_fopen</a>,
-<a href="../api_c/memp_fput.html">memp_fput</a>,
-<a href="../api_c/memp_fset.html">memp_fset</a>,
-<a href="../api_c/memp_fsync.html">memp_fsync</a>,
-<a href="../api_c/memp_register.html">memp_register</a>,
-<a href="../api_c/memp_stat.html">memp_stat</a>,
-<a href="../api_c/memp_sync.html">memp_sync</a>
-and
-<a href="../api_c/memp_trickle.html">memp_trickle</a>.
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;set_mp_mmapsize method
+may fail and return one of the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;get_mp_mmapsize</h3>
+<p>The DB_ENV-&gt;get_mp_mmapsize method returns the maximum file map size.</p>
+<p>The DB_ENV-&gt;get_mp_mmapsize method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;get_mp_mmapsize method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>mp_mmapsizep</b><dd>
+The DB_ENV-&gt;get_mp_mmapsize method returns  the
+maximum file map size in <b>mp_mmapsizep</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a>
+<h3>See Also</h3>
+<a href="../api_c/memp_list.html">Memory Pools and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

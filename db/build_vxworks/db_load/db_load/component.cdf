@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_LOAD {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_load.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_load.o
 	NAME		db_load
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

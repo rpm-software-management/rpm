@@ -1,0 +1,45 @@
+#!/bin/sh -
+#       $Id: s_java_swig,v 11.6 2003/05/19 01:14:37 bostic Exp $
+#
+# Run SWIG to generate the Java APIs
+
+SWIG=swig
+SWIG_DIR=../libdb_java
+SWIG_FILE=$SWIG_DIR/db.i
+
+die() {
+	echo "$@" >&2
+	exit 1
+}
+
+[ -f $SWIG_FILE ] || die "Must be run from the dist directory"
+
+for api in java ; do
+	echo "Building $api API"
+
+	swig_args=""
+	case $api in
+	java)
+		swig_args="-nodefault -package com.sleepycat.db $args"
+		;;
+	esac
+
+	$SWIG -Wall -$api $swig_args -I$SWIG_DIR \
+	    -o ../libdb_$api/db_${api}_wrap.c $SWIG_FILE || exit $?
+done
+
+# Fixups for Java
+JAVA_SRCTOP=../java/src
+JAVA_PKGDIR=com/sleepycat/db
+JAVA_SRCDIR=$JAVA_SRCTOP/$JAVA_PKGDIR
+
+# SWIG 1.3.18 puts the Java files in the same directory as the native code.
+cd $SWIG_DIR
+[ -f Db.java ] || exit 1
+
+for f in *.java ; do
+	rm -f $JAVA_SRCDIR/$f
+	sed -f $SWIG_DIR/java-post.sed < $f > $JAVA_SRCDIR/$f || exit $?
+	rm -f $f
+done
+cd ../dist

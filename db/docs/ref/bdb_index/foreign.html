@@ -1,0 +1,259 @@
+<!--$Id: foreign.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Opening foreign key indices</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Index</dl></h3></td>
+<td align=right><a href="../bdb_index/second.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_index/views.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Opening foreign key indices</h3>
+<p>This section builds on the prior section describing secondary key
+indices to show how to open foreign key indices.  A <i>foreign key
+index</i> is a secondary key index that also provides integrity constraints.  When
+the primary key of a record in one store is embedded in the value of a record
+in another store, integrity constraints ensure that the record in the first
+store exists, i.e, that there are no "dangling pointers".  In this example the
+Shipment's PartNumber and SupplierNumber fields will be used as foreign keys.</p>
+<p>When a foreign key index is defined, an "on delete" parameter is
+specified.  This parameter determines what action is taken by the Java API when
+the record is deleted to which a foreign key refers.  For example, consider
+what happens to a Shipment record when a Part or Supplier record that is
+referred to by that Shipment is deleted.  There are three possibilities.</p>
+<p><ul type=disc>
+<li>
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html#ON_DELETE_ABORT">ForeignKeyIndex.ON_DELETE_ABORT</a>
+specifies that the transaction should be aborted by throwing an exception.  The
+effect is that deleting a Part or Supplier that is referred to by one or more
+Shipments will not be possible.  The Java API will automatically throw an
+<a href="../../java/com/sleepycat/bdb/IntegrityConstraintException.html">IntegrityConstraintException</a>
+, which will
+cause the transaction to be aborted during exception processing.  This option
+may only be specified when transactions are used.
+<li>
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html#ON_DELETE_CLEAR">ForeignKeyIndex.ON_DELETE_CLEAR</a>
+specifies that the Part or Supplier Number field in the Shipment record should
+be cleared, or set to a null or empty value.  The effect is that the deleted
+Part or Supplier will no longer be referenced by any Shipment record.  This
+option applies when the foreign key field is optional, i.e, when the
+applications allows it to be set to a null or empty value.  When using this
+option, the application must implement the
+<a href="../../java/com/sleepycat/bdb/bind/KeyExtractor.html#clearIndexKey">KeyExtractor.clearIndexKey</a>
+ method
+such that after it is called the
+<a href="../../java/com/sleepycat/bdb/bind/KeyExtractor.html#extractIndexKey">KeyExtractor.extractIndexKey</a>
+ method
+will return null.
+<li>
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html#ON_DELETE_CASCADE">ForeignKeyIndex.ON_DELETE_CASCADE</a>
+ specifies that the Shipment record should be deleted also.
+The effect is that deleting a Part or Supplier will delete all Shipments for
+that Part or Supplier.    This option applies when the deleted record
+is considered the "parent" or "owner" of the record containing the
+foreign key, and is used in this example.  Since deleting the Shipment
+record could cause other deletions if other records contain the foreign
+key of the Shipment, and so on, the term "cascade" is used to describe
+the effect.
+</ul>
+<hr size=1 noshade>
+<p>The <b>SampleDatabase</b> class is extended to open the
+Shipment-by-Part and Shipment-by-Supplier secondary key indices.  The following
+additional imports and class members are needed.</p>
+<blockquote><pre>
+<b>import com.sleepycat.bdb.bind.KeyExtractor;
+import com.sleepycat.bdb.bind.serial.SerialSerialKeyExtractor;
+import com.sleepycat.bdb.ForeignKeyIndex;
+</b>...
+public class SampleDatabase
+{
+    ...
+<b>    private static final String SHIPMENT_PART_INDEX = "shipment_part_index";
+    private static final String SHIPMENT_SUPPLIER_INDEX = "shipment_supplier_index";
+    ...
+    private ForeignKeyIndex shipmentByPartIndex;
+    private ForeignKeyIndex shipmentBySupplierIndex;
+    ...
+</b>    public SampleDatabase(String homeDirectory, boolean runRecovery)
+        throws DbException, FileNotFoundException
+    {
+        ...
+        int flags = Db.DB_CREATE | Db.DB_AUTO_COMMIT;
+        ...
+<b>        KeyExtractor partExtractor = new ShipmentByPartExtractor(
+                                                    shipmentKeyFormat,
+                                                    shipmentValueFormat,
+                                                    partKeyFormat);
+        Db partIndexDb = new Db(env, 0);
+        partIndexDb.setFlags(Db.DB_DUPSORT);
+        partIndexDb.open(null, SHIPMENT_PART_INDEX, null,
+                         Db.DB_BTREE, flags, 0);
+<p>
+        shipmentByPartIndex = new ForeignKeyIndex(shipmentStore, partIndexDb,
+                                        partExtractor, partStore,
+                                        ForeignKeyIndex.ON_DELETE_CASCADE);
+<p>
+        KeyExtractor supplierExtractor = new ShipmentBySupplierExtractor(
+                                                    shipmentKeyFormat,
+                                                    shipmentValueFormat,
+                                                    supplierKeyFormat);
+        Db supplierIndexDb = new Db(env, 0);
+        supplierIndexDb.setFlags(Db.DB_DUPSORT);
+        supplierIndexDb.open(null, SHIPMENT_SUPPLIER_INDEX, null,
+                             Db.DB_BTREE, flags, 0);
+<p>
+        shipmentBySupplierIndex = new ForeignKeyIndex(shipmentStore,
+                                        supplierIndexDb,
+                                        supplierExtractor, supplierStore,
+                                        ForeignKeyIndex.ON_DELETE_CASCADE);
+</b>    }
+}
+</pre></blockquote>
+<p>Opening a foreign key index requires creating a
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialFormat.html">SerialFormat</a>
+, a
+<a href="../../java/com/sleepycat/bdb/bind/KeyExtractor.html">KeyExtractor</a>
+, a
+<a href="../../java/com/sleepycat/db/Db.html">Db</a>
+ and a 
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html">ForeignKeyIndex</a>
+.  In the example two 
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html">ForeignKeyIndex</a>
+ objects are created, <b>shipmentByPartIndex</b> and
+<b>shipmentBySupplierIndex</b>.</p>
+<p>If you compare these statements for opening foreign key indices to the
+statements used in the previous section for opening a secondary index,
+you'll notice that the only significant differences are the parameters of the
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html">ForeignKeyIndex</a>
+ constructor, as compared to
+the 
+<a href="../../java/com/sleepycat/bdb/DataIndex.html">DataIndex</a>
+ constructor.  The first three
+parameters are the same.  The last two 
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html">ForeignKeyIndex</a>
+ parameters are used for enforcing integrity constraints.  The
+fourth parameter is the foreign store that contains the records to which the
+foreign keys refer.  The fifth and last parameter is the "on delete" action.</p>
+<hr size=1 noshade>
+<p>The application-defined <b>ShipmentByPartExtractor</b> and
+<b>ShipmentBySupplierExtractor</b> classes are shown below.  They were used
+above to create the <b>partExtractor</b> and <b>supplierExtractor</b>
+objects.</p>
+<blockquote><pre>
+public class SampleDatabase
+{
+<b>    private static class ShipmentByPartExtractor
+        extends SerialSerialKeyExtractor
+    {
+        private ShipmentByPartExtractor(SerialFormat primaryKeyFormat,
+                                        SerialFormat valueFormat,
+                                        SerialFormat indexKeyFormat)
+        {
+            super(primaryKeyFormat, valueFormat, indexKeyFormat);
+        }
+<p>
+        public Object extractIndexKey(Object primaryKeyInput,
+                                      Object valueInput)
+            throws IOException
+        {
+            ShipmentKey shipmentKey = (ShipmentKey) primaryKeyInput;
+            return new PartKey(shipmentKey.getPartNumber());
+        }
+<p>
+        public Object clearIndexKey(Object valueInputOutput)
+            throws IOException
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+<p>
+    private static class ShipmentBySupplierExtractor
+        extends SerialSerialKeyExtractor
+    {
+        private ShipmentBySupplierExtractor(SerialFormat primaryKeyFormat,
+                                            SerialFormat valueFormat,
+                                            SerialFormat indexKeyFormat)
+        {
+            super(primaryKeyFormat, valueFormat, indexKeyFormat);
+        }
+<p>
+        public Object extractIndexKey(Object primaryKeyInput,
+                                      Object valueInput)
+            throws IOException
+        {
+            ShipmentKey shipmentKey = (ShipmentKey) primaryKeyInput;
+            return new SupplierKey(shipmentKey.getSupplierNumber());
+        }
+<p>
+        public Object clearIndexKey(Object valueInputOutput)
+            throws IOException
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+</b>}
+</pre></blockquote>
+<p>The key extractor classes above are almost identical to the one defined
+in the previous section for use with a secondary index.  The index key fields
+are different, of course, but the interesting difference is that the index keys
+are extracted from the key, not the value, of the Shipment record.  This
+illustrates that an index key may be derived from the store record key, value,
+or both.</p>
+<p>Note that the 
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialSerialKeyExtractor.html#clearIndexKey">SerialSerialKeyExtractor.clearIndexKey</a>
+ methods above always throw an
+exception, just like in the key extractor class in the previous section.  This
+is because 
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html#ON_DELETE_CLEAR">ForeignKeyIndex.ON_DELETE_CLEAR</a>
+was not used when creating the 
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html">ForeignKeyIndex</a>
+ objects.  If it were used, these methods would need to set the
+part number and supplier number to null in the Shipment key.  But record keys
+cannot be changed!  And in fact, the Shipment key is not passed to the
+<a href="../../java/com/sleepycat/bdb/bind/serial/SerialSerialKeyExtractor.html#clearIndexKey">SerialSerialKeyExtractor.clearIndexKey</a>
+ method, only the Shipment value is passed.  Therefore, if a
+foreign index key is derived from the store record key,
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html#ON_DELETE_CLEAR">ForeignKeyIndex.ON_DELETE_CLEAR</a>
+ may not be
+used.</p>
+<hr size=1 noshade>
+<p>The following getter methods return the index objects for use by other
+classes in the example program.  The index objects are used to create Java
+collections for accessing records via their foreign keys.</p>
+<blockquote><pre>
+public class SampleDatabase
+{
+    ...
+<b>    public final ForeignKeyIndex getShipmentByPartIndex()
+    {
+        return shipmentByPartIndex;
+    }
+<p>
+    public final ForeignKeyIndex getShipmentBySupplierIndex()
+    {
+        return shipmentBySupplierIndex;
+    }
+</b>}
+</pre></blockquote>
+<hr size=1 noshade>
+<p>
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html">ForeignKeyIndex</a>
+ objects, just like
+<a href="../../java/com/sleepycat/bdb/DataIndex.html">DataIndex</a>
+ objects, are closed automatically
+when their associated 
+<a href="../../java/com/sleepycat/bdb/DataStore.html">DataStore</a>
+ is closed.
+There is no way to close an index explicitly without closing the store.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_index/second.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_index/views.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

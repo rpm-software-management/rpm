@@ -1,0 +1,197 @@
+<!--$Id: sorted.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Tuple - Using sorted collections</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Tuple</dl></h3></td>
+<td align=right><a href="../bdb_tuple/tsbinding.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_sentity/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Tuple - Using sorted collections</h3>
+<p>In general, no changes to the prior example are necessary to use
+collections having tuple keys.  Iteration of elements in a stored collection
+will be ordered by the sort order of the tuples.  In addition to using the
+tuple format, the 
+<a href="../../java/com/sleepycat/db/Db.html#DB_BTREE">Db.DB_BTREE</a>
+ access method
+must be used when creating the database.  
+<a href="../../java/com/sleepycat/db/Db.html#DB_BTREE">Db.DB_BTREE</a>
+is used for the databases in all examples.  The
+<a href="../../java/com/sleepycat/db/Db.html#DB_HASH">Db.DB_HASH</a>
+ access method does not support
+sorted keys.</p>
+<p>Although not shown in the example, all methods of the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html">SortedMap</a>
+ and 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html">SortedSet</a>
+interfaces may be used with sorted collections.  For example, submaps and
+subsets may be created.</p>
+<hr size=1 noshade>
+<p>To create a sorted collection, the
+<a href="../../java/com/sleepycat/bdb/collection/StoredSortedMap.html">StoredSortedMap</a>
+ class is
+used instead of 
+<a href="../../java/com/sleepycat/bdb/collection/StoredMap.html">StoredMap</a>
+.</p>
+<blockquote><pre>
+<b>import com.sleepycat.bdb.collection.StoredSortedMap;
+...
+</b>public class SampleViews
+{
+    private <b>StoredSortedMap</b> partMap;
+    private <b>StoredSortedMap</b> supplierMap;
+    private <b>StoredSortedMap</b> shipmentMap;
+    private <b>StoredSortedMap</b> shipmentByPartMap;
+    private <b>StoredSortedMap</b> shipmentBySupplierMap;
+    private <b>StoredSortedMap</b> supplierByCityMap;
+    ...
+    public SampleViews(SampleDatabase db)
+    {
+        ...
+        partMap =
+            new <b>StoredSortedMap</b>(db.getPartStore(),
+                          partKeyBinding, partValueBinding, true);
+        supplierMap =
+            new <b>StoredSortedMap</b>(db.getSupplierStore(),
+                          supplierKeyBinding, supplierValueBinding, true);
+        shipmentMap =
+            new <b>StoredSortedMap</b>(db.getShipmentStore(),
+                          shipmentKeyBinding, shipmentValueBinding, true);
+        shipmentByPartMap =
+            new <b>StoredSortedMap</b>(db.getShipmentByPartIndex(),
+                          partKeyBinding, shipmentValueBinding, true);
+        shipmentBySupplierMap =
+            new <b>StoredSortedMap</b>(db.getShipmentBySupplierIndex(),
+                          supplierKeyBinding, shipmentValueBinding, true);
+        supplierByCityMap =
+            new <b>StoredSortedMap</b>(db.getSupplierByCityIndex(),
+                          cityKeyBinding, supplierValueBinding, true);
+    }
+}
+</pre></blockquote>
+<hr size=1 noshade>
+<p>The getter methods of <b>SampleViews</b> also return
+<a href="../../java/com/sleepycat/bdb/collection/StoredSortedMap.html">StoredSortedMap</a>
+and, as a convenience,
+<a href="../../java/com/sleepycat/bdb/collection/StoredSortedValueSet.html">StoredSortedValueSet</a>
+.</p>
+<blockquote><pre>
+<b>import com.sleepycat.bdb.collection.StoredSortedMap;
+import com.sleepycat.bdb.collection.StoredSortedValueSet;
+...
+</b>public class SampleViews
+{
+    ...
+    public <b>StoredSortedMap</b> getPartMap()
+    {
+        return partMap;
+    }
+<p>
+    public <b>StoredSortedMap</b> getSupplierMap()
+    {
+        return supplierMap;
+    }
+<p>
+    public <b>StoredSortedMap</b> getShipmentMap()
+    {
+        return shipmentMap;
+    }
+<p>
+    public <b>StoredSortedValueSet</b> getPartSet()
+    {
+        return (<b>StoredSortedValueSet</b>) partMap.values();
+    }
+<p>
+    public <b>StoredSortedValueSet</b> getSupplierSet()
+    {
+        return (<b>StoredSortedValueSet</b>) supplierMap.values();
+    }
+<p>
+    public <b>StoredSortedValueSet</b> getShipmentSet()
+    {
+        return (<b>StoredSortedValueSet</b>) shipmentMap.values();
+    }
+<p>
+    public <b>StoredSortedMap</b> getShipmentByPartMap()
+    {
+        return shipmentByPartMap;
+    }
+<p>
+    public <b>StoredSortedMap</b> getShipmentBySupplierMap()
+    {
+        return shipmentBySupplierMap;
+    }
+<p>
+    public final <b>StoredSortedMap</b> getSupplierByCityMap()
+    {
+        return supplierByCityMap;
+    }
+    ...
+}
+</pre></blockquote>
+<hr size=1 noshade>
+<p>The output of the example program shows that records are sorted by key
+value.</p>
+<blockquote><pre>
+Adding Suppliers
+Adding Parts
+Adding Shipments
+<p>
+--- Parts ---
+Part: number=P1 name=Nut color=Red weight=[12.0 grams] city=London
+Part: number=P2 name=Bolt color=Green weight=[17.0 grams] city=Paris
+Part: number=P3 name=Screw color=Blue weight=[17.0 grams] city=Rome
+Part: number=P4 name=Screw color=Red weight=[14.0 grams] city=London
+Part: number=P5 name=Cam color=Blue weight=[12.0 grams] city=Paris
+Part: number=P6 name=Cog color=Red weight=[19.0 grams] city=London
+<p>
+--- Suppliers ---
+Supplier: number=S1 name=Smith status=20 city=London
+Supplier: number=S2 name=Jones status=10 city=Paris
+Supplier: number=S3 name=Blake status=30 city=Paris
+Supplier: number=S4 name=Clark status=20 city=London
+Supplier: number=S5 name=Adams status=30 city=Athens
+<p>
+--- Suppliers for City Paris ---
+Supplier: number=S2 name=Jones status=10 city=Paris
+Supplier: number=S3 name=Blake status=30 city=Paris
+<p>
+--- Shipments ---
+Shipment: part=P1 supplier=S1 quantity=300
+Shipment: part=P1 supplier=S2 quantity=300
+Shipment: part=P2 supplier=S1 quantity=200
+Shipment: part=P2 supplier=S2 quantity=400
+Shipment: part=P2 supplier=S3 quantity=200
+Shipment: part=P2 supplier=S4 quantity=200
+Shipment: part=P3 supplier=S1 quantity=400
+Shipment: part=P4 supplier=S1 quantity=200
+Shipment: part=P4 supplier=S4 quantity=300
+Shipment: part=P5 supplier=S1 quantity=100
+Shipment: part=P5 supplier=S4 quantity=400
+Shipment: part=P6 supplier=S1 quantity=100
+<p>
+--- Shipments for Part P1 ---
+Shipment: part=P1 supplier=S1 quantity=300
+Shipment: part=P1 supplier=S2 quantity=300
+<p>
+--- Shipments for Supplier S1 ---
+Shipment: part=P1 supplier=S1 quantity=300
+Shipment: part=P2 supplier=S1 quantity=200
+Shipment: part=P3 supplier=S1 quantity=400
+Shipment: part=P4 supplier=S1 quantity=200
+Shipment: part=P5 supplier=S1 quantity=100
+Shipment: part=P6 supplier=S1 quantity=100
+</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_tuple/tsbinding.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_sentity/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

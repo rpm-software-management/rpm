@@ -1,27 +1,27 @@
-<!--Id: struct.so,v 10.5 2002/06/21 03:04:29 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: struct.so,v 10.8 2002/12/22 20:42:09 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Storing C/C++ structures/objects</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Access Methods</dl></h3></td>
-<td align=right><a href="../../ref/am_misc/partial.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am_misc/error.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../am_misc/partial.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/perm.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Storing C/C++ structures/objects</h1>
+<h3 align=center>Storing C/C++ structures/objects</h3>
 <p>Berkeley DB can store any kind of data, that is, it is entirely 8-bit clean.
 How you use this depends, to some extent, on the application language
 you are using.  In the C/C++ languages, there are a couple of different
-ways to store structures and objects.
+ways to store structures and objects.</p>
 <p>First, you can do some form of run-length encoding and copy your
-structure into another piece of memory before storing it:
-<p><blockquote><pre>struct {
+structure into another piece of memory before storing it:</p>
+<blockquote><pre>struct {
 	char *data1;
 	u_int32_t data2;
 	...
@@ -42,8 +42,8 @@ p += sizeof(info.data2);
 the byte array.  If you want more examples, see the Berkeley DB logging
 routines (for example, btree/btree_auto.c:__bam_split_log()).  This
 technique is generally known as "marshalling".  If you use this
-technique, you must then un-marshall the data when you read it back:
-<p><blockquote><pre>struct {
+technique, you must then un-marshall the data when you read it back:</p>
+<blockquote><pre>struct {
 	char *data1;
 	u_int32_t data2;
 	...
@@ -54,35 +54,35 @@ u_int8_t *p;
 p = &data_buffer[0];
 memcpy(&len, p, sizeof(len));
 p += sizeof(len);
-info.data = malloc(len);
+info.data1 = malloc(len);
 memcpy(info.data1, p, len);
 p += len;
 memcpy(&info.data2, p, sizeof(info.data2));
 p += sizeof(info.data2);
 ...</pre></blockquote>
-<p>and so on.
+<p>and so on.</p>
 <p>The second way to solve this problem only works if you have just one
 variable length field in the structure.  In that case, you can declare
-the structure as follows:
-<p><blockquote><pre>struct {
+the structure as follows:</p>
+<blockquote><pre>struct {
 	int a, b, c;
 	u_int8_t buf[1];
 } info;</pre></blockquote>
 <p>Then, let's say you have a string you want to store in this structure.
-When you allocate the structure, you allocate it as:
-<p><blockquote><pre>malloc(sizeof(struct info) + strlen(string));</pre></blockquote>
+When you allocate the structure, you allocate it as:</p>
+<blockquote><pre>malloc(sizeof(struct info) + strlen(string));</pre></blockquote>
 <p>Since the allocated memory is contiguous, you can the initialize the
-structure as:
-<p><blockquote><pre>info.a = 1;
+structure as:</p>
+<blockquote><pre>info.a = 1;
 info.b = 2;
 info.c = 3;
-memcpy(&info.buf[0], string, strlen(string));</pre></blockquote>
-<p>and give it to Berkeley DB to store, with a length of:
-<p><blockquote><pre>sizeof(struct info) + strlen(string);</pre></blockquote>
+memcpy(&info.buf[0], string, strlen(string) + 1);</pre></blockquote>
+<p>and give it to Berkeley DB to store, with a length of:</p>
+<blockquote><pre>sizeof(struct info) + strlen(string);</pre></blockquote>
 <p>In this case, the structure can be copied out of the database and used
-without any additional work.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/am_misc/partial.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/am_misc/error.html"><img src="../../images/next.gif" alt="Next"></a>
+without any additional work.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/partial.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/perm.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

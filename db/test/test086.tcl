@@ -1,25 +1,30 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999, 2000
+# Copyright (c) 1999-2003
 #	Sleepycat Software.  All rights reserved.
 #
-#	$Id: test086.tcl,v 11.2 2000/08/25 14:21:58 sue Exp $
-
-# Test086: Cursor stability across btree splits w/ subtransaction abort [#2373].
+# $Id: test086.tcl,v 11.11 2003/03/27 16:34:48 sandstro Exp $
+#
+# TEST	test086
+# TEST	Test of cursor stability across btree splits/rsplits with
+# TEST	subtransaction aborts (a variant of test048).  [#2373]
 proc test086 { method args } {
 	global errorCode
 	source ./include.tcl
 
-	set tstn 086
+	set tnum 086
+	set args [convert_args $method $args]
+	set encargs ""
+	set args [split_encargs $args encargs]
 
 	if { [is_btree $method] != 1 } {
-		puts "Test$tstn skipping for method $method."
+		puts "Test$tnum skipping for method $method."
 		return
 	}
 
 	set method "-btree"
 
-	puts "\tTest$tstn: Test of cursor stability across aborted\
+	puts "\tTest$tnum: Test of cursor stability across aborted\
 	    btree splits."
 
 	set key "key"
@@ -32,26 +37,26 @@ proc test086 { method args } {
 	# If we are using an env, then this test won't work.
 	if { $eindex == -1 } {
 		# But we will be using our own env...
-		set testfile test0$tstn.db
+		set testfile test$tnum.db
 	} else {
-		puts "\tTest$tstn: Environment provided;  skipping test."
+		puts "\tTest$tnum: Environment provided;  skipping test."
 		return
 	}
 	set t1 $testdir/t1
 	env_cleanup $testdir
 
-	set env [berkdb env -create -home $testdir -txn]
+	set env [eval {berkdb_env -create -home $testdir -txn} $encargs]
 	error_check_good berkdb_env [is_valid_env $env] TRUE
 
-	puts "\tTest$tstn.a: Create $method database."
-	set oflags "-create -env $env -mode 0644 $args $method"
+	puts "\tTest$tnum.a: Create $method database."
+	set oflags "-auto_commit -create -env $env -mode 0644 $args $method"
 	set db [eval {berkdb_open} $oflags $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
 	set nkeys 5
 	# Fill page w/ small key/data pairs, keep at leaf
 	#
-	puts "\tTest$tstn.b: Fill page with $nkeys small key/data pairs."
+	puts "\tTest$tnum.b: Fill page with $nkeys small key/data pairs."
 	set txn [$env txn]
 	error_check_good txn [is_valid_txn $txn $env] TRUE
 	for { set i 0 } { $i < $nkeys } { incr i } {
@@ -61,7 +66,7 @@ proc test086 { method args } {
 	error_check_good commit [$txn commit] 0
 
 	# get db ordering, set cursors
-	puts "\tTest$tstn.c: Set cursors on each of $nkeys pairs."
+	puts "\tTest$tnum.c: Set cursors on each of $nkeys pairs."
 	set txn [$env txn]
 	error_check_good txn [is_valid_txn $txn $env] TRUE
 	for {set i 0; set ret [$db get -txn $txn key000$i]} {\
@@ -82,7 +87,7 @@ proc test086 { method args } {
 
 	# if mkeys is above 1000, need to adjust below for lexical order
 	set mkeys 1000
-	puts "\tTest$tstn.d: Add $mkeys pairs to force split."
+	puts "\tTest$tnum.d: Add $mkeys pairs to force split."
 	for {set i $nkeys} { $i < $mkeys } { incr i } {
 		if { $i >= 100 } {
 			set ret [$db put -txn $ctxn key0$i $data$i]
@@ -94,11 +99,10 @@ proc test086 { method args } {
 		error_check_good dbput:more $ret 0
 	}
 
-	puts "\tTest$tstn.e: Abort."
+	puts "\tTest$tnum.e: Abort."
 	error_check_good ctxn_abort [$ctxn abort] 0
 
-
-	puts "\tTest$tstn.f: Check and see that cursors maintained reference."
+	puts "\tTest$tnum.f: Check and see that cursors maintained reference."
 	for {set i 0} { $i < $nkeys } {incr i} {
 		set ret [$dbc_set($i) get -current]
 		error_check_bad dbc$i:get:current [llength $ret] 0
@@ -107,9 +111,9 @@ proc test086 { method args } {
 		error_check_good dbc$i:get(match) $ret $ret2
 	}
 
-	# Put (and this time keep) the keys that caused the split.  
+	# Put (and this time keep) the keys that caused the split.
 	# We'll delete them to test reverse splits.
-	puts "\tTest$tstn.g: Put back added keys."
+	puts "\tTest$tnum.g: Put back added keys."
 	for {set i $nkeys} { $i < $mkeys } { incr i } {
 		if { $i >= 100 } {
 			set ret [$db put -txn $txn key0$i $data$i]
@@ -121,7 +125,7 @@ proc test086 { method args } {
 		error_check_good dbput:more $ret 0
 	}
 
-	puts "\tTest$tstn.h: Delete added keys to force reverse split."
+	puts "\tTest$tnum.h: Delete added keys to force reverse split."
 	set ctxn [$env txn -parent $txn]
 	error_check_good ctxn [is_valid_txn $txn $env] TRUE
 	for {set i $nkeys} { $i < $mkeys } { incr i } {
@@ -136,10 +140,10 @@ proc test086 { method args } {
 		}
 	}
 
-	puts "\tTest$tstn.i: Abort."
+	puts "\tTest$tnum.i: Abort."
 	error_check_good ctxn_abort [$ctxn abort] 0
 
-	puts "\tTest$tstn.j: Verify cursor reference."
+	puts "\tTest$tnum.j: Verify cursor reference."
 	for {set i 0} { $i < $nkeys } {incr i} {
 		set ret [$dbc_set($i) get -current]
 		error_check_bad dbc$i:get:current [llength $ret] 0
@@ -148,7 +152,7 @@ proc test086 { method args } {
 		error_check_good dbc$i:get(match) $ret $ret2
 	}
 
-	puts "\tTest$tstn.j: Cleanup."
+	puts "\tTest$tnum.j: Cleanup."
 	# close cursors
 	for {set i 0} { $i < $nkeys } {incr i} {
 		error_check_good dbc_close:$i [$dbc_set($i) close] 0
@@ -158,5 +162,5 @@ proc test086 { method args } {
 	error_check_good dbclose [$db close] 0
 	error_check_good envclose [$env close] 0
 
-	puts "\tTest$tstn complete."
+	puts "\tTest$tnum complete."
 }

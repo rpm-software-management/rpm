@@ -9,8 +9,8 @@
 /* Component information */
 
 Component INCLUDE_DB_CHECKPOINT {
-	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS 
-	MODULES		db_checkpoint.o 
+	ENTRY_POINTS	ALL_GLOBAL_SYMBOLS
+	MODULES		db_checkpoint.o
 	NAME		db_checkpoint
 	PREF_DOMAIN	ANY
 	_INIT_ORDER	usrComponentsInit

@@ -1,9 +1,10 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999, 2000
+# Copyright (c) 1999-2003
 #	Sleepycat Software.  All rights reserved.
 #
-#	$Id: update.tcl,v 11.9 2000/10/27 13:23:56 sue Exp $
+# $Id: update.tcl,v 11.12 2003/01/08 05:54:16 bostic Exp $
+
 source ./include.tcl
 global update_dir
 set update_dir "$test_path/update_test"

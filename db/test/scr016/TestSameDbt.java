@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2002
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestSameDbt.java,v 1.4 2002/01/23 14:29:51 bostic Exp 
+ * $Id: TestSameDbt.java,v 1.5 2003/01/08 05:54:28 bostic Exp $
  */
 
 /*

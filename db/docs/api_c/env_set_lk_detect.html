@@ -1,20 +1,22 @@
-<!--$Id: env_set_lk_detect.so,v 10.19 2000/12/08 20:43:15 bostic Exp $-->
-<!--Copyright 1997, 1998, 1999, 2000 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_lk_detect.so,v 10.44 2003/11/08 19:17:31 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DBENV-&gt;set_lk_detect</title>
+<title>Berkeley DB: DB_ENV-&gt;set_lk_detect</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
-<table><tr valign=top>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
 <td>
-<h1>DBENV-&gt;set_lk_detect</h1>
+<h3>DB_ENV-&gt;set_lk_detect</h3>
 </td>
-<td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <hr size=1 noshade>
 <tt>
@@ -22,51 +24,93 @@
 #include &lt;db.h&gt;
 <p>
 int
-DBENV-&gt;set_lk_detect(DB_ENV *dbenv, u_int32_t detect);
+DB_ENV-&gt;set_lk_detect(DB_ENV *dbenv, u_int32_t detect);
+<p>
+int
+DB_ENV-&gt;get_lk_detect(DB_ENV *dbenv, u_int32_t *lk_detectp);
 </pre></h3>
-<h1>Description</h1>
-<p>Set if the deadlock detector is to be run whenever a lock conflict occurs,
-and specify which transaction should be aborted in the case of a deadlock.
-The specified value must be one of the following list:
-<p><dl compact>
-<p><dt><a name="DB_LOCK_DEFAULT">DB_LOCK_DEFAULT</a><dd>Use the default policy as specified by <a href="../utility/db_deadlock.html">db_deadlock</a>.
-<dt><a name="DB_LOCK_OLDEST">DB_LOCK_OLDEST</a><dd>Abort the oldest transaction.
-<dt><a name="DB_LOCK_RANDOM">DB_LOCK_RANDOM</a><dd>Abort a random transaction involved in the deadlock.
-<dt><a name="DB_LOCK_YOUNGEST">DB_LOCK_YOUNGEST</a><dd>Abort the youngest transaction.
-</dl>
-<p>The DBENV-&gt;set_lk_detect interface may only be used to configure Berkeley DB before
-the <a href="../api_c/env_open.html">DBENV-&gt;open</a> interface is called.
-<p>The DBENV-&gt;set_lk_detect function returns a non-zero error value on failure and 0 on success.
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_lk_detect</h3>
+<a name="3"><!--meow--></a>
+<p>Set if the deadlock detector is to be run whenever a lock conflict
+occurs, and specify what lock request(s) should be rejected.  As
+transactions acquire locks on behalf of a single locker ID, rejecting a
+lock request associated with a transaction normally requires the
+transaction be aborted.</p>
 <p>The database environment's deadlock detector configuration may also be set using the environment's
 <b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
 single line with the string "set_lk_detect", one or more whitespace characters,
-and the interface <b>detect</b> argument as a string, for example,
-"set_lk_detect DB_LOCK_OLDEST".  Because the <b>DB_CONFIG</b> file is read when the database
+and the method <b>detect</b> parameter as a string; for example,
+"set_lk_detect DB_LOCK_OLDEST".
+Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
-before that time.
-<h1>Errors</h1>
+before that time.</p>
+<p>The DB_ENV-&gt;set_lk_detect method configures a database environment, not only operations
+performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
+<p>The DB_ENV-&gt;set_lk_detect method may not be called after the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is
+called.
+If the database environment already exists when
+<a href="../api_c/env_open.html">DB_ENV-&gt;open</a> is called, the information specified to DB_ENV-&gt;set_lk_detect
+must be consistent with the existing environment or an error will be
+returned.
+</p>
+<p>The DB_ENV-&gt;set_lk_detect method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
 <p><dl compact>
-<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>Called after <a href="../api_c/env_open.html">DBENV-&gt;open</a> was called.
+<p><dt><b>detect</b><dd>
+The <b>detect</b> parameter configures the deadlock detector.  The
+specified value must be one of the following list:
+<p><dl compact>
+<p><dt><a name="DB_LOCK_DEFAULT">DB_LOCK_DEFAULT</a><dd>Use whatever lock policy was specified when the database environment
+was created.  If no lock policy has yet been specified, set the lock
+policy to DB_LOCK_RANDOM.
+<dt><a name="DB_LOCK_EXPIRE">DB_LOCK_EXPIRE</a><dd>Reject lock requests which have timed out.  No other deadlock detection
+is performed.
+<dt><a name="DB_LOCK_MAXLOCKS">DB_LOCK_MAXLOCKS</a><dd>Reject the lock request for the locker ID with the greatest number of
+locks.
+<dt><a name="DB_LOCK_MINLOCKS">DB_LOCK_MINLOCKS</a><dd>Reject the lock request for the locker ID with the fewest number of
+locks.
+<dt><a name="DB_LOCK_MINWRITE">DB_LOCK_MINWRITE</a><dd>Reject the lock request for the locker ID with the fewest number of
+write locks.
+<dt><a name="DB_LOCK_OLDEST">DB_LOCK_OLDEST</a><dd>Reject the lock request for the oldest locker ID.
+<dt><a name="DB_LOCK_RANDOM">DB_LOCK_RANDOM</a><dd>Reject the lock request for a random locker ID.
+<dt><a name="DB_LOCK_YOUNGEST">DB_LOCK_YOUNGEST</a><dd>Reject the lock request for the youngest locker ID.
 </dl>
-<h1>See Also</h1>
-<a href="../api_c/env_set_lk_conflicts.html">DBENV-&gt;set_lk_conflicts</a>,
-<a href="../api_c/env_set_lk_detect.html">DBENV-&gt;set_lk_detect</a>,
-<a href="../api_c/env_set_lk_max_locks.html">DBENV-&gt;set_lk_max_locks</a>,
-<a href="../api_c/env_set_lk_max_lockers.html">DBENV-&gt;set_lk_max_lockers</a>,
-<a href="../api_c/env_set_lk_max_objects.html">DBENV-&gt;set_lk_max_objects</a>,
-<a href="../api_c/env_set_lk_max.html">DBENV-&gt;set_lk_max</a>,
-<a href="../api_c/lock_detect.html">lock_detect</a>,
-<a href="../api_c/lock_get.html">lock_get</a>,
-<a href="../api_c/lock_id.html">lock_id</a>,
-<a href="../api_c/lock_put.html">lock_put</a>,
-<a href="../api_c/lock_stat.html">lock_stat</a>
-and
-<a href="../api_c/lock_vec.html">lock_vec</a>.
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;set_lk_detect method
+may fail and return one of the following non-zero errors:</p>
+<p><dl compact>
+<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;get_lk_detect</h3>
+<p>The DB_ENV-&gt;get_lk_detect method returns the deadlock detector configuration.</p>
+<p>The DB_ENV-&gt;get_lk_detect method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;get_lk_detect method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<p><dl compact>
+<p><dt><b>lk_detectp</b><dd>
+The DB_ENV-&gt;get_lk_detect method returns  the
+deadlock detector configuration in <b>lk_detectp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/lock_class.html">DB_LOCK</a>
+<h3>See Also</h3>
+<a href="../api_c/lock_list.html">Locking Subsystem and Related Methods</a>
 </tt>
-<table><tr><td><br></td><td width="1%">
-<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

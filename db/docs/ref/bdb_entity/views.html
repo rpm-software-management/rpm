@@ -1,0 +1,104 @@
+<!--$Id: views.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Creating collections with entity bindings</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Entity</dl></h3></td>
+<td align=right><a href="../bdb_entity/bindings.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_entity/read.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Creating collections with entity bindings</h3>
+<p>Stored map objects are created in this example in the same way as in
+prior examples, but using entity bindings in place of value bindings.  All
+value objects passed and returned to the Java collections API are then actually
+entity objects (<b>Part</b>, <b>Supplier</b> and <b>Shipment</b>).
+The application no longer deals directly with plain value objects
+(<b>PartValue</b>, <b>SupplierValue</b> and <b>ShipmentValue</b>).</p>
+<hr size=1 noshade>
+<p>Since the <b>partValueBinding</b>, <b>supplierValueBinding</b> and
+<b>shipmentValueBinding</b> were defined as entity bindings in the prior
+section, there are no source code changes necessary for creating the stored map
+objects.</p>
+<blockquote><pre>
+public class SampleViews
+{
+    ...
+    public SampleViews(SampleDatabase db)
+    {
+        ...
+        partMap =
+            new StoredMap(db.getPartStore(),
+                          partKeyBinding, partValueBinding, true);
+        supplierMap =
+            new StoredMap(db.getSupplierStore(),
+                          supplierKeyBinding, supplierValueBinding, true);
+        shipmentMap =
+            new StoredMap(db.getShipmentStore(),
+                          shipmentKeyBinding, shipmentValueBinding, true);
+    }
+</pre></blockquote>
+<p>Specifying an 
+<a href="../../java/com/sleepycat/bdb/bind/EntityBinding.html">EntityBinding</a>
+will select a different 
+<a href="../../java/com/sleepycat/bdb/collection/StoredMap.html">StoredMap</a>
+constructor, but the syntax is the same.  In general, an entity binding may be
+used anywhere that a value binding is used.</p>
+<hr size=1 noshade>
+<p>The following getter methods are defined for use by other classes in the
+example program.  Instead of returning the map's entry set
+(
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#entrySet">Map.entrySet</a>
+), the map's value set
+(
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#values">Map.values</a>
+) is returned.  The entry set was
+convenient in prior examples because it allowed enumerating all key/value pairs
+in the collection.  Since an entity contains the key and the value, enumerating
+the value set can now be used more conveniently for the same purpose.</p>
+<blockquote><pre>
+public class SampleViews
+{
+    ...
+<b>    public StoredValueSet getPartSet()
+    {
+        return (StoredValueSet) partMap.values();
+    }
+<p>
+    public StoredValueSet getSupplierSet()
+    {
+        return (StoredValueSet) supplierMap.values();
+    }
+<p>
+    public StoredValueSet getShipmentSet()
+    {
+        return (StoredValueSet) shipmentMap.values();
+    }
+</b>    ...
+}
+</pre></blockquote>
+<p>Notice that the collection returned by the
+<a href="../../java/com/sleepycat/bdb/collection/StoredMap.html#values">StoredMap.values</a>
+ method is
+actually a 
+<a href="../../java/com/sleepycat/bdb/collection/StoredValueSet.html">StoredValueSet</a>
+ and not
+just a 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html">Collection</a>
+ as defined by the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#values">Map.values</a>
+ interface.  As long as duplicate keys
+are not allowed, this collection will behave as a true set and will disallow
+the addition of duplicates, etc.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_entity/bindings.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_entity/read.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

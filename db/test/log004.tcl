@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: log004.tcl,v 11.28 2002/04/29 20:07:54 sue Exp 
+# $Id: log004.tcl,v 11.29 2003/01/08 05:50:23 bostic Exp $
 #
 
 # TEST	log004

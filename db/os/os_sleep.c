@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: os_sleep.c,v 11.7 2000/04/07 14:26:36 bostic Exp $";
+static const char revid[] = "$Id: os_sleep.c,v 11.18 2003/05/14 17:01:23 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -21,6 +21,7 @@ static const char revid[] = "$Id: os_sleep.c,v 11.7 2000/04/07 14:26:36 bostic E
 #ifdef HAVE_VXWORKS
 #include <sys/times.h>
 #include <time.h>
+#include <selectLib.h>
 #else
 #if TIME_WITH_SYS_TIME
 #include <sys/time.h>
@@ -39,7 +40,6 @@ static const char revid[] = "$Id: os_sleep.c,v 11.7 2000/04/07 14:26:36 bostic E
 #endif
 
 #include "db_int.h"
-#include "os_jump.h"
 
 /*
  * __os_sleep --
@@ -59,16 +59,31 @@ __os_sleep(dbenv, secs, usecs)
 	for (; usecs >= 1000000; usecs -= 1000000)
 		++secs;
 
-	if (__db_jump.j_sleep != NULL)
-		return (__db_jump.j_sleep(secs, usecs));
+	if (DB_GLOBAL(j_sleep) != NULL)
+		return (DB_GLOBAL(j_sleep)(secs, usecs));
 
 	/*
 	 * It's important that we yield the processor here so that other
 	 * processes or threads are permitted to run.
+	 *
+	 * Sheer raving paranoia -- don't select for 0 time.
 	 */
 	t.tv_sec = secs;
-	t.tv_usec = usecs;
-	ret =  select(0, NULL, NULL, NULL, &t) == -1 ? __os_get_errno() : 0;
+	if (secs == 0 && usecs == 0)
+		t.tv_usec = 1;
+	else
+		t.tv_usec = usecs;
+
+	/*
+	 * We don't catch interrupts and restart the system call here, unlike
+	 * other Berkeley DB system calls.  This may be a user attempting to
+	 * interrupt a sleeping DB utility (for example, db_checkpoint), and
+	 * we want the utility to see the signal and quit.  This assumes it's
+	 * always OK for DB to sleep for less time than originally scheduled.
+	 */
+	if ((ret = select(0, NULL, NULL, NULL, &t)) != 0)
+		if ((ret = __os_get_errno()) == EINTR)
+			ret = 0;
 
 	if (ret != 0)
 		__db_err(dbenv, "select: %s", strerror(ret));

@@ -1,30 +1,28 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2002
+ * Copyright (c) 2001-2003
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_main.c,v 1.23 2002/08/06 05:39:03 bostic Exp 
+ * $Id: ex_rq_main.c,v 1.32 2003/07/29 02:26:18 margo Exp $
  */
 
 #include <sys/types.h>
-#include <pthread.h>
-
 #include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include <db.h>
 
 #include "ex_repquote.h"
 
 /*
- * Process globals (we could put these in the machtab I suppose.
+ * Process globals (we could put these in the machtab I suppose).
  */
 int master_eid;
 char *myaddr;
+unsigned short myport;
 
 static int env_init __P((const char *, const char *, DB_ENV **, machtab_t *,
     u_int32_t));
@@ -36,20 +34,23 @@ main(argc, argv)
 	char *argv[];
 {
 	extern char *optarg;
-	extern int optind;
 	DB_ENV *dbenv;
 	DBT local;
 	enum { MASTER, CLIENT, UNKNOWN } whoami;
 	all_args aa;
 	connect_args ca;
 	machtab_t *machtab;
-	pthread_t all_thr, conn_thr;
-	repsite_t site, *sitep, self, *selfp;
+	thread all_thr, conn_thr;
+	void *astatus, *cstatus;
+#ifdef _WIN32
+	WSADATA wsaData;
+#else
 	struct sigaction sigact;
-	int maxsites, nsites, ret, priority, totalsites;
+#endif
+	repsite_t site, *sitep, self, *selfp;
+	int maxsites, nsites, ret, priority, totalsites, verbose;
 	char *c, ch;
 	const char *home, *progname;
-	void *astatus, *cstatus;
 
 	master_eid = DB_EID_INVALID;
 
@@ -57,12 +58,12 @@ main(argc, argv)
 	whoami = UNKNOWN;
 	machtab = NULL;
 	selfp = sitep = NULL;
-	maxsites = nsites = ret = totalsites = 0;
+	maxsites = nsites = ret = totalsites = verbose = 0;
 	priority = 100;
 	home = "TESTDIR";
 	progname = "ex_repquote";
 
-	while ((ch = getopt(argc, argv, "Ch:Mm:n:o:p:")) != EOF)
+	while ((ch = getopt(argc, argv, "Ch:Mm:n:o:p:v")) != EOF)
 		switch (ch) {
 		case 'M':
 			whoami = MASTER;
@@ -86,7 +87,7 @@ main(argc, argv)
 				fprintf(stderr, "Bad host specification.\n");
 				goto err;
 			}
-			self.port = atoi(c);
+			myport = self.port = (unsigned short)atoi(c);
 			selfp = &self;
 			break;
 		case 'n':
@@ -114,6 +115,9 @@ main(argc, argv)
 		case 'p':
 			priority = atoi(optarg);
 			break;
+		case 'v':
+			verbose = 1;
+			break;
 		case '?':
 		default:
 			usage(progname);
@@ -131,6 +135,14 @@ main(argc, argv)
 	if (home == NULL)
 		usage(progname);
 
+#ifdef _WIN32
+	/* Initialize the Windows sockets DLL. */
+	if ((ret = WSAStartup(MAKEWORD(2, 2), &wsaData)) != 0) {
+		fprintf(stderr,
+		    "Unable to initialize Windows sockets: %d\n", ret);
+		goto err;
+	}
+#else
 	/*
 	 * Turn off SIGPIPE so that we don't kill processes when they
 	 * happen to lose a connection at the wrong time.
@@ -142,6 +154,7 @@ main(argc, argv)
 		    "Unable to turn off SIGPIPE: %s\n", strerror(ret));
 		goto err;
 	}
+#endif
 
 	/*
 	 * We are hardcoding priorities here that all clients have the
@@ -153,11 +166,14 @@ main(argc, argv)
 		goto err;
 
 	/*
-	 * We can know open our environment, although we're not ready to
+	 * We can now open our environment, although we're not ready to
 	 * begin replicating.  However, we want to have a dbenv around
 	 * so that we can send it into any of our message handlers.
 	 */
 	if ((ret = env_init(progname, home, &dbenv, machtab, DB_RECOVER)) != 0)
+		goto err;
+	if (verbose &&
+	    (ret = dbenv->set_verbose(dbenv, DB_VERB_REPLICATION, 1)) != 0)
 		goto err;
 
 	/*
@@ -171,7 +187,7 @@ main(argc, argv)
 	ca.progname = progname;
 	ca.machtab = machtab;
 	ca.port = selfp->port;
-	if ((ret = pthread_create(&conn_thr, NULL, connect_thread, &ca)) != 0)
+	if ((ret = thread_create(&conn_thr, NULL, connect_thread, &ca)) != 0)
 		goto err;
 
 	aa.dbenv = dbenv;
@@ -180,7 +196,7 @@ main(argc, argv)
 	aa.machtab = machtab;
 	aa.sites = sitep;
 	aa.nsites = nsites;
-	if ((ret = pthread_create(&all_thr, NULL, connect_all, &aa)) != 0)
+	if ((ret = thread_create(&all_thr, NULL, connect_all, &aa)) != 0)
 		goto err;
 
 	/*
@@ -205,7 +221,7 @@ main(argc, argv)
 			dbenv->err(dbenv, ret, "dbenv->rep_start failed");
 			goto err;
 		}
-		/* Sleep to give ourselves a minute to find a master. */
+		/* Sleep to give ourselves time to find a master. */
 		sleep(5);
 		if ((ret = doclient(dbenv, progname, machtab)) != 0) {
 			dbenv->err(dbenv, ret, "Client failed");
@@ -215,8 +231,8 @@ main(argc, argv)
 	}
 
 	/* Wait on the connection threads. */
-	if (pthread_join(all_thr, &astatus) || pthread_join(conn_thr, &cstatus))
-		ret = errno;
+	if (thread_join(all_thr, &astatus) || thread_join(conn_thr, &cstatus))
+		ret = -1;
 	if (ret == 0 &&
 	    ((int)astatus != EXIT_SUCCESS || (int)cstatus != EXIT_SUCCESS))
 		ret = -1;
@@ -225,6 +241,10 @@ err:	if (machtab != NULL)
 		free(machtab);
 	if (dbenv != NULL)
 		(void)dbenv->close(dbenv, 0);
+#ifdef _WIN32
+	/* Shut down the Windows sockets DLL. */
+	(void)WSACleanup();
+#endif
 	return (ret);
 }
 
@@ -286,14 +306,13 @@ env_init(progname, home, dbenvp, machtab, flags)
 	}
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, prefix);
-	/* (void)dbenv->set_verbose(dbenv, DB_VERB_REPLICATION, 1); */
 	(void)dbenv->set_cachesize(dbenv, 0, CACHESIZE, 0);
 	/* (void)dbenv->set_flags(dbenv, DB_TXN_NOSYNC, 1); */
 
 	dbenv->app_private = machtab;
 	(void)dbenv->set_rep_transport(dbenv, SELF_EID, quote_send);
 
-	flags |= DB_CREATE | DB_THREAD |
+	flags |= DB_CREATE | DB_THREAD | DB_INIT_REP |
 	    DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | DB_INIT_TXN;
 
 	ret = dbenv->open(dbenv, home, flags, 0);

@@ -1,20 +1,20 @@
-<!--Id: ex_comm.so,v 1.6 2002/06/24 14:50:48 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: ex_comm.so,v 1.6 2002/06/24 14:50:48 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Ex_repquote: a TCP/IP based communication infrastructure</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../../ref/rep/ex.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/ex_rq.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/ex.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/ex_rq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Ex_repquote: a TCP/IP based communication infrastructure</h1>
+<h3 align=center>Ex_repquote: a TCP/IP based communication infrastructure</h3>
 <p>All Berkeley DB replication applications must implement a communication
 infrastructure.  The communication infrastructure consists of three
 parts: a way to map environment IDs to particular sites, the functions
@@ -23,7 +23,7 @@ supports the particular communication infrastructure used (for example,
 individual threads per communicating site, a shared message handler for
 all sites, a hybrid solution).  The communication infrastructure is
 implemented in the file <b>ex_repquote/ex_rq_net.c</b>, and each part
-of that infrastructure is described as follows.
+of that infrastructure is described as follows.</p>
 <p>Ex_repquote maintains a table of environment ID to TCP/IP port mappings.
 This table is stored in the app_private field of the <a href="../../api_c/env_class.html">DB_ENV</a>
 object so it can be accessed by any function that has the database
@@ -31,8 +31,8 @@ environment handle.  The table is represented by a machtab_t structure
 which contains a reference to a linked list of member_t's, both of which
 are defined in <b>ex_repquote/ex_rq_net.c</b>.  Each member_t contains
 the host and port identification, the environment ID, and a file
-descriptor.  The table is maintained by the following interfaces:
-<p><blockquote><pre>int machtab_add(machtab_t *machtab, int fd, u_int32_t hostaddr, int port, int *eidp);
+descriptor.  The table is maintained by the following interfaces:</p>
+<blockquote><pre>int machtab_add(machtab_t *machtab, int fd, u_int32_t hostaddr, int port, int *eidp);
 int machtab_init(machtab_t **machtabp, int priority, int nsites);
 int machtab_getinfo(machtab_t *machtab, int eid, u_int32_t *hostp, int *portp);
 void machtab_parm(machtab_t *machtab, int *nump, int *priorityp, u_int32_t *timeoutp);
@@ -48,26 +48,27 @@ when given the special environment ID <a href="../../api_c/rep_transport.html#DB
 function can send messages to all the machines in the group.  Third,
 upon receipt of an incoming message, the receive function can correctly
 identify the sender and pass the appropriate environment ID to the
-<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.</p>
 <p>Mapping a particular environment ID to a specific port is accomplished
 by looping through the linked list until the desired environment ID is
 found.  Broadcast communication is implemented by looping through the
 linked list and sending to each member found.  Since each port
 communicates with only a single other environment, receipt of a message
-on a particular port precisely identifies the sender.
+on a particular port precisely identifies the sender.</p>
 <p>The example provided is merely one way to satisfy these requirements,
 and there are alternative implementations as well.  For instance,
 instead of associating separate socket connections with each remote
 environment, an application might instead label each message with a
 sender identifier; instead of looping through a table and sending a
 copy of a message to each member of the replication group, the
-application could send a single message using a broadcast protocol.
+application could send a single message using a broadcast protocol.</p>
 <p>In ex_repquote's case, the send function (slightly simplified) is as
-follows:
-<pre><p><blockquote>int
-quote_send(dbenv, control, rec, eid, flags)
+follows:</p>
+<pre><blockquote>int
+quote_send(dbenv, control, rec, lsn, eid, flags)
 	DB_ENV *dbenv;
 	const DBT *control, *rec;
+	const DB_LSN *lsn;
 	int eid;
 	u_int32_t flags;
 {
@@ -139,7 +140,7 @@ quote_send_broadcast(machtab, rec, control, flags)
 <p>The quote_send_one function has been omitted as it simply writes the
 data requested over the file descriptor that it is passed.  It contains
 nothing specific to Berkeley DB or this communication infrastructure.  The
-complete code can be found in <b>ex_repquote/ex_rq_net.c</b>.
+complete code can be found in <b>ex_repquote/ex_rq_net.c</b>.</p>
 <p>The quote_send function is passed as the callback to <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>;
 Berkeley DB automatically sends messages as needed for replication.  The
 receive function is a mirror to the quote_send_one function.  It is not
@@ -149,7 +150,7 @@ the sample application, all messages transmitted are Berkeley DB messages that
 get handled by <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>, however, this is not always going
 to be the case.  The application may want to pass its own messages
 across the same channels, distinguish between its own messages and those
-of Berkeley DB, and then pass only the Berkeley DB ones to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>.
+of Berkeley DB, and then pass only the Berkeley DB ones to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>.</p>
 <p>The final component of the communication infrastructure is the process
 model used to communicate with all the sites in the replication group.
 Each site creates a thread of control that listens on its designated
@@ -158,8 +159,8 @@ then creates a new channel for each site that contacts it.  In addition,
 each site explicitly connects to the sites specified in the
 <b>-o</b> command line argument.  This is a fairly standard TCP/IP
 process architecture and is implemented by the following functions (all
-in <b>ex_repquote/ex_rq_net.c</b>).
-<p><blockquote><pre>int get_connected_socket(machtab_t *machtab, char *progname, char *remotehost,
+in <b>ex_repquote/ex_rq_net.c</b>).</p>
+<blockquote><pre>int get_connected_socket(machtab_t *machtab, char *progname, char *remotehost,
 int port, int *is_open, int *eidp): Connect to the specified host/port, add the
 site to the machtab, and return a file descriptor for communication with this
 site.
@@ -170,8 +171,8 @@ listening on a particular part.
 int listen_socket_accept(machtab_t *machtab, char *progname, int socket,
 int *eidp): Accept a connection on a socket and add it to the machtab.
 int listen_socket_connect</pre></blockquote>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/ex.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/ex_rq.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/ex.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/ex_rq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2001
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  *
  * Some parts of this code originally written by Adam Stubblefield
@@ -11,7 +11,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: crypto.c,v 1.18 2002/08/06 06:11:14 bostic Exp ";
+static const char revid[] = "$Id: crypto.c,v 1.23 2003/06/30 17:19:41 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -25,8 +25,6 @@ static const char revid[] = "Id: crypto.c,v 1.18 2002/08/06 06:11:14 bostic Exp 
 /*
  * __crypto_region_init --
  *	Initialize crypto.
- *
- * PUBLIC: int __crypto_region_init __P((DB_ENV *));
  */
 int
 __crypto_region_init(dbenv)
@@ -199,15 +197,13 @@ __crypto_algsetup(dbenv, db_cipher, alg, do_init)
  * __crypto_decrypt_meta --
  *	Perform decryption on a metapage if needed.
  *
- * PUBLIC:  int __crypto_decrypt_meta __P((DB_ENV *, DB *,
- * PUBLIC:     u_int8_t *, size_t, int));
+ * PUBLIC:  int __crypto_decrypt_meta __P((DB_ENV *, DB *, u_int8_t *, int));
  */
 int
-__crypto_decrypt_meta(dbenv, dbp, mbuf, len, do_metachk)
+__crypto_decrypt_meta(dbenv, dbp, mbuf, do_metachk)
 	DB_ENV *dbenv;
 	DB *dbp;
 	u_int8_t *mbuf;
-	size_t len;
 	int do_metachk;
 {
 	DB_CIPHER *db_cipher;
@@ -217,7 +213,6 @@ __crypto_decrypt_meta(dbenv, dbp, mbuf, len, do_metachk)
 	int ret;
 	u_int8_t *iv;
 
-	DB_ASSERT(len >= DBMETASIZE);
 	/*
 	 * If we weren't given a dbp, we just want to decrypt the page
 	 * on behalf of some internal subsystem, not on behalf of a user
@@ -337,4 +332,32 @@ alg_retry:
 		return (EINVAL);
 	}
 	return (ret);
+}
+
+/*
+ * __crypto_set_passwd --
+ *	Get the password from the shared region; and set it in a new
+ * environment handle.  Use this to duplicate environment handles.
+ *
+ * PUBLIC: int __crypto_set_passwd __P((DB_ENV *, DB_ENV *));
+ */
+int
+__crypto_set_passwd(dbenv_src, dbenv_dest)
+	DB_ENV *dbenv_src, *dbenv_dest;
+{
+	CIPHER *cipher;
+	REGENV *renv;
+	REGINFO *infop;
+	char *sh_passwd;
+	int ret;
+
+	ret = 0;
+	infop = dbenv_src->reginfo;
+	renv = infop->primary;
+
+	DB_ASSERT(CRYPTO_ON(dbenv_src));
+
+	cipher = R_ADDR(infop, renv->cipher_off);
+	sh_passwd = R_ADDR(infop, cipher->passwd);
+	return (__dbenv_set_encrypt(dbenv_dest, sh_passwd, DB_ENCRYPT_AES));
 }

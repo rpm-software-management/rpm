@@ -1,48 +1,93 @@
-<!--Id: faq.so,v 10.6 2001/05/04 14:38:42 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 10.22 2003/09/03 18:34:32 gburd Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Access method FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>    
+<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Access Methods</dl></h3></td>
-<td align=right><a href="../../ref/am_misc/tune.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/arch/bigpic.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../am_misc/tune.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tut/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Access method FAQ</h1>
-<p><ol>
+<h3 align=center>Access method FAQ</h3>
+<ol>
+<p><li><b>Is a Berkeley DB database the same as a "table"?</b>
+<p>Yes; "tables" are databases, "rows" are key/data pairs, and "columns"
+are application-encapsulated fields within a data item (to which Berkeley DB
+does not directly provide access).</p>
+<p><li><b>I'm getting an error return in my application, but I can't
+figure out what the library is complaining about.</b>
+<p>See <a href="../../api_c/env_set_errcall.html">DB_ENV-&gt;set_errcall</a>, <a href="../../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a> and
+<a href="../../api_c/db_set_errfile.html">DB-&gt;set_errfile</a> for ways to get additional information about
+error returns from Berkeley DB.</p>
+<p><li><b>Are Berkeley DB databases portable between architectures?</b>
+<p>Yes.  See <a href="../../ref/am_conf/byteorder.html">Selecting a byte
+order</a> for more information.</p>
 <p><li><b>I'm seeing database corruption when creating multiple databases
 in a single physical file.</b>
-<p>This problem is usually the result of DB handles not sharing an
-underlying database environment.  See <a href="../../ref/am/opensub.html">Opening multiple databases in a single file</a> for more information.
-        <a name="3"><!--meow--></a>        <a name="4"><!--meow--></a>    
+<p>This problem is usually the result of <a href="../../api_c/db_class.html">DB</a> handles not sharing an
+underlying database environment.  See <a href="../../ref/am/opensub.html">Opening multiple databases in a single file</a> for more information.</p>
+<a name="3"><!--meow--></a><a name="4"><!--meow--></a>
 <p><li><b>Is there any way to compact databases, or return unused
 database pages to the filesystem?</b>
 <p>When Berkeley DB database pages are emptied, they are made available for other
 uses, that is, new pages will not be allocated from the underlying
-filesystems as long as there are unused pages available.  However, you
-cannot return those pages to the filesystem without dumping and
-reloading the database.
-        <a name="5"><!--meow--></a>    
+filesystem as long as there are unused pages available.  However, the
+pages cannot be returned to the filesystem without dumping the database,
+removing the physical file, and reloading the database.  The one
+exception to this rule is Queue access method extent files.  Queue
+extent files are removed when they are emptied, and their pages returned
+to the underlying filesystem.</p>
+<p><li><b>I'm using integers as keys for a Btree database, and even
+though the key/data pairs are entered in sorted order, the page-fill
+factor is low.</b>
+<p>This is usually the result of using integer keys on little-endian
+architectures such as the x86.  Berkeley DB sorts keys as byte strings, and
+little-endian integers don't sort well when viewed as byte strings.
+For example, take the numbers 254 through 257.  Their byte patterns on
+a little-endian system are:</p>
+<blockquote><pre>254	fe 0 0 0
+255	ff 0 0 0
+256	 0 1 0 0
+257	 1 1 0 0</pre></blockquote>
+<p>If you treat them as strings, then they sort badly:</p>
+<blockquote><pre>256
+257
+254
+255</pre></blockquote>
+<p>On a big-endian system, their byte patterns are:</p>
+<blockquote><pre>254	0 0 0 fe
+255	0 0 0 ff
+256	0 0 1 1
+257	0 0 1 1</pre></blockquote>
+<p>and so, if you treat them as strings they sort nicely.  Which means, if
+you use steadily increasing integers as keys on a big-endian system
+Berkeley DB behaves well and you get compact trees, but on a little-endian
+system Berkeley DB produces much less compact trees.  To avoid this problem,
+you may want to convert the keys to flat text or big-endian
+representations, or provide your own
+<a href="../../ref/am_conf/bt_compare.html">Btree comparison function.</a></p>
+<a name="5"><!--meow--></a>
 <p><li><b>Is there any way to avoid double buffering in the Berkeley DB system?</b>
-<p>While you cannot avoid double buffering entirely, there are three
-different tuning knobs you can work with to address this issue:
+<p>While you cannot avoid double buffering entirely, there are a few things
+you can do to address this issue:</p>
 <p>First, the Berkeley DB cache size can be explicitly set.  Rather than allocate
 additional space in the Berkeley DB cache to cover unexpectedly heavy load or
 large table sizes, double buffering may suggest you size the cache to
 function well under normal conditions, and then depend on the file
 buffer cache to cover abnormal conditions.  Obviously, this is a
 trade-off, as Berkeley DB may not then perform as well as usual under abnormal
-conditions.
+conditions.</p>
 <p>Second, depending on the underlying operating system you're using, you
 may be able to alter the amount of physical memory devoted to the file
 buffer cache.  Running as the system super-user makes a difference for
-some UNIX or UNIX-like operating systems as well.
+some UNIX or UNIX-like operating systems as well.</p>
 <p>Third, changing the size of the Berkeley DB environment regions can change
 the amount of space the operating system makes available for the file
 buffer cache, and it's often worth considering exactly how the operating
@@ -50,10 +95,37 @@ system is dividing up its available memory.  Further, moving the Berkeley DB
 database environment regions from filesystem backed memory into system
 memory (or heap memory), can often make additional system memory
 available for the file buffer cache, especially on systems without a
-unified buffer cache and VM system.
+unified buffer cache and VM system.</p>
+<p>Finally, for operating systems that allow buffering to be turned off,
+specifying the <a href="../../api_c/env_set_flags.html#DB_DIRECT_DB">DB_DIRECT_DB</a> and <a href="../../api_c/env_set_flags.html#DB_DIRECT_LOG">DB_DIRECT_LOG</a> flags
+will attempt to do so.</p>
+<p><li><b>I'm seeing database corruption when I run out of disk space.</b>
+<p>Berkeley DB can continue to run when when out-of-disk-space errors occur, but
+it requires the application to be transaction protected.  Applications
+which do not enclose update operations in transactions cannot recover
+from out-of-disk-space errors, and the result of running out of disk
+space may be database corruption.</p>
+<p><li><b>How can I associate application information with a <a href="../../api_c/db_class.html">DB</a>
+or <a href="../../api_c/env_class.html">DB_ENV</a> handle?</b>
+<p>In the C API, the <a href="../../api_c/db_class.html">DB</a> and <a href="../../api_c/env_class.html">DB_ENV</a> structures each contain
+an "app_private" field intended to be used to reference
+application-specific information.  See the <a href="../../api_c/db_class.html">db_create</a> and
+<a href="../../api_c/env_class.html">db_env_create</a> documentation for more information.</p>
+<p>In the C++ or Java APIs, the easiest way to associate
+application-specific data with a handle is to subclass the <a href="../../api_cxx/db_class.html">Db</a>
+or <a href="../../api_cxx/env_class.html">DbEnv</a>, for example subclassing <a href="../../api_cxx/db_class.html">Db</a> to get MyDb.
+Objects of type MyDb will still have the Berkeley DB API methods available on
+them, and you can put any extra data or methods you want into the MyDb
+class.  If you are using "callback" APIs that take <a href="../../api_cxx/db_class.html">Db</a> or
+<a href="../../api_cxx/env_class.html">DbEnv</a> arguments (for example, <a href="../../api_cxx/db_set_bt_compare.html">Db::set_bt_compare</a>)
+these will always be called with the <a href="../../api_cxx/db_class.html">Db</a> or <a href="../../api_cxx/env_class.html">DbEnv</a>
+objects you create.  So if you always use MyDb objects, you will be able
+to take the first argument to the callback function and cast it to a
+MyDb (in C++, cast it to (MyDb*)).  That will allow you to access your
+data members or methods.</p>
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/am_misc/tune.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/arch/bigpic.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/tune.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tut/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

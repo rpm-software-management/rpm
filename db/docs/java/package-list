@@ -1,0 +1,8 @@
+com.sleepycat.bdb
+com.sleepycat.bdb.bind
+com.sleepycat.bdb.bind.serial
+com.sleepycat.bdb.bind.tuple
+com.sleepycat.bdb.collection
+com.sleepycat.bdb.factory
+com.sleepycat.bdb.util
+com.sleepycat.db

@@ -1,26 +1,27 @@
-<!--Id: tune.so,v 11.8 2001/04/04 22:32:29 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--$Id: tune.so,v 11.19 2003/10/18 19:16:10 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Transaction tuning</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-        <a name="2"><!--meow--></a>        <a name="3"><!--meow--></a>    
+<a name="2"><!--meow--></a><a name="3"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
-<td align=right><a href="../../ref/transapp/reclimit.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/throughput.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../transapp/reclimit.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/throughput.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Transaction tuning</h1>
+<h3 align=center>Transaction tuning</h3>
 <p>There are a few different issues to consider when tuning the performance
 of Berkeley DB transactional applications.  First, you should review
 <a href="../../ref/am_misc/tune.html">Access method tuning</a>, as the
 tuning issues for access method applications are applicable to
 transactional applications as well.  The following are additional tuning
-issues for Berkeley DB transactional applications:
+issues for Berkeley DB transactional applications:</p>
 <p><dl compact>
 <p><dt>access method<dd>Highly concurrent applications should use the Queue access method, where
 possible, as it provides finer-granularity of locking than the other
@@ -46,6 +47,9 @@ operations outside of transactions can often significantly increase
 application throughput.  In addition, limiting the lifetime of
 non-transactional cursors will reduce the length of times locks are
 held, thereby improving concurrency.
+<p><dt><a href="../../api_c/env_set_flags.html#DB_DIRECT_DB">DB_DIRECT_DB</a>, <a href="../../api_c/env_set_flags.html#DB_DIRECT_LOG">DB_DIRECT_LOG</a><dd>Consider using the <a href="../../api_c/env_set_flags.html#DB_DIRECT_DB">DB_DIRECT_DB</a> and <a href="../../api_c/env_set_flags.html#DB_DIRECT_LOG">DB_DIRECT_LOG</a> flags.
+On some systems, avoiding caching in the operating system can improve
+write throughput and allow the creation of larger Berkeley DB caches.
 <p><dt><a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Consider using the <a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag for transactions, cursors
 or individual read operations.  This flag allows read operations to
 potentially return data which has been modified but not yet committed,
@@ -56,13 +60,20 @@ when reading data items that will subsequently be modified.  Although
 this flag may increase contention (because write locks are held longer
 than they would otherwise be), it may decrease the number of deadlocks
 that occur.
-<p><dt><a href="../../api_c/env_open.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>By default, transactional commit in Berkeley DB implies durability, that is,
-all committed operations will be present in the database after
-recovery from any application or system failure.  For applications not
-requiring that level of certainty, specifying the <a href="../../api_c/env_open.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a>
-flag will often provide a significant performance improvement. In this
-case, the database will still be fully recoverable, but some number of
-committed transactions might be lost after system failure.
+<p><dt><a href="../../api_c/env_set_flags.html#DB_TXN_WRITE_NOSYNC">DB_TXN_WRITE_NOSYNC</a>, <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>By default, transactional commit in Berkeley DB implies durability, that is,
+all committed operations will be present in the database after recovery
+from any application or system failure.  For applications not requiring
+that level of certainty, specifying the <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> flag will
+often provide a significant performance improvement. In this case, the
+database will still be fully recoverable, but some number of committed
+transactions might be lost after application or system failure.
+<p><dt>access databases in order<dd>When modifying multiple databases in a single transaction, always access
+physical files and databases within physical files, in the same order
+where possible.  In addition, avoid returning to a physical file or
+database, that is, avoid accessing a database, moving on to another
+database and then returning to the first database.  This can
+significantly reduce the chance of deadlock between threads of
+control.
 <p><dt>large key/data items<dd>Transactional protections in Berkeley DB are guaranteed by before and after
 physical image logging.  This means applications modifying large
 key/data items also write large log records, and, in the case of the
@@ -70,23 +81,55 @@ default transaction commit, threads of control must wait until those
 log records have been flushed to disk.  Applications supporting
 concurrent access should try and keep key/data items small wherever
 possible.
+<p><dt>mutex selection<dd>During configuration, Berkeley DB selects a mutex implementation for the
+architecture. Berkeley DB normally prefers blocking-mutex implementations over
+non-blocking ones.  For example, Berkeley DB will select POSIX pthread mutex
+interfaces rather than assembly-code test-and-set spin mutexes because
+pthread mutexes are usually more efficient and less likely to waste CPU
+cycles spinning without getting any work accomplished.
+<p>For some applications and systems (generally highly concurrent
+applications on large multiprocessor systems), Berkeley DB makes the wrong
+choice.  In some cases, better performance can be achieved by
+configuring with the
+<a href="../../ref/build_unix/conf.html#--with-mutex">--with-mutex</a>
+argument and selecting a different mutex implementation than the one
+selected by Berkeley DB.  When a test-and-set spin mutex implementation is
+selected, it is often useful to tune the number of spins made before
+yielding the processor and sleeping.  For more information, see the
+<a href="../../api_c/env_set_tas_spins.html">DB_ENV-&gt;set_tas_spins</a> method.</p>
+<p>Finally, Berkeley DB may put multiple mutexes on individual cache lines.  When
+tuning Berkeley DB for large multiprocessor systems, it may be useful to tune
+mutex alignment using the
+<a href="../../ref/build_unix/conf.html#--with-mutexalign">--with-mutexalign</a>
+configuration argument.</p>
+<p><dt><a href="../../ref/build_unix/conf.html#--enable-posixmutexes">--enable-posixmutexes</a><dd>By default, the Berkeley DB library will only select the POSIX pthread mutex
+implementation if it supports mutexes shared between multiple processes.
+If your application does not share its database environment between
+processes and your system's POSIX mutex support was not selected because
+it did not support inter-process mutexes, you may be able to increase
+performance and transactional throughput by configuring with the
+<a href="../../ref/build_unix/conf.html#--enable-posixmutexes">--enable-posixmutexes</a> argument.
 <p><dt>log buffer size<dd>Berkeley DB internally maintains a buffer of log writes.   The buffer is
 written to disk at transaction commit, by default, or, whenever it
 is filled.  If it is consistently being filled before transaction
 commit, it will be written multiple times per transaction, costing
 application performance.  In these cases, increasing the size of the
 log buffer can increase application throughput.
+<p><dt>log file location<dd>If the database environment's log files are on the same disk as the
+databases, the disk arms will have to seek back-and-forth between the
+two.  Placing the log files and the databases on different disk arms
+can often increase application throughput.
 <p><dt>trickle write<dd>In some applications, the cache is sufficiently active and dirty that
 readers frequently need to write a dirty page in order to have space in
 which to read a new page from the backing database file.  You can use
 the <a href="../../utility/db_stat.html">db_stat</a> utility (or the statistics returned by the
-<a href="../../api_c/memp_stat.html">memp_stat</a> function) to see how often this is happening in your
+<a href="../../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a> method) to see how often this is happening in your
 application's cache.  In this case, using a separate thread of control
-and the <a href="../../api_c/memp_trickle.html">memp_trickle</a> interface to trickle-write pages can often
-increase the overall throughput of the application.
+and the <a href="../../api_c/memp_trickle.html">DB_ENV-&gt;memp_trickle</a> method to trickle-write pages can often increase
+the overall throughput of the application.
 </dl>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/reclimit.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/throughput.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/reclimit.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/throughput.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

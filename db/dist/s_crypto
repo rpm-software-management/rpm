@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	Id: s_crypto,v 11.2 2002/03/26 23:07:52 bostic Exp 
+#	$Id: s_crypto,v 11.8 2003/11/24 22:41:26 bostic Exp $
 
 # Remove crypto from the DB source tree.
 
@@ -15,31 +15,45 @@ if ! test -d $d/crypto; then
 fi
 
 # Remove the crypto.
-rm -rf $d/crypto			# Remove the crypto.
+rm -rf $d/crypto
+
+# Update the release splash page.
+f=$d/docs/index.html
+chmod 664 $f
+(echo '/DOES/' &&
+ echo 's/DOES/DOES NOT/' &&
+ echo 'w' &&
+ echo 'q') | ed $f
 
 # Win/32.
+f=win_config.in
+chmod 664 $f
 (echo '/#define.HAVE_CRYPTO/' &&
  echo 'c' &&
  echo '/* #undef HAVE_CRYPTO */'
  echo '.' &&
  echo 'w' &&
- echo 'q') | ed $d/build_win32/db_config.h
+ echo 'q') | ed $f
 
-(echo '1,$s/^\(^crypto[^	]*	*\)\(.*\)/\1skip/' &&
+f=srcfiles.in
+chmod 664 $f
+(echo 'g/^crypto\//d' &&
+ echo '/crypto_stub\.c/' &&
+ echo 's/small/dynamic small static vx/' &&
  echo 'w' &&
- echo 'q') | ed ./srcfiles.in
+ echo 'q') | ed $f
 
  sh ./s_win32
  sh ./s_win32_dsp
 
 # VxWorks
+f=vx_config.in
+chmod 664 $f
 (echo '/#define.HAVE_CRYPTO/' &&
  echo 'c' &&
  echo '/* #undef HAVE_CRYPTO */'
  echo '.' &&
  echo 'w' &&
- echo 'q') | ed $d/build_vxworks/db_config.h
+ echo 'q') | ed $f
 
- cp vx_2.0/filelist $t
- sed '/^crypto/d' < $t > vx_2.0/filelist
  sh ./s_vxworks

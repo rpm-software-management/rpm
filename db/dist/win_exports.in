@@ -1,4 +1,4 @@
-# Id: win_exports.in,v 1.25 2002/08/29 14:22:21 margo Exp 
+# $Id: win_exports.in,v 1.28 2003/06/30 21:50:10 mjc Exp $
 
 # Standard interfaces.
 	db_create
@@ -7,9 +7,6 @@
 	db_version
 	db_xa_switch
 	log_compare
-	txn_abort
-	txn_begin
-	txn_commit
 
 # Library configuration interfaces.
 	db_env_set_func_close
@@ -71,6 +68,7 @@
 	__ham_func5
 	__ham_test
 	__lock_dump_region
+	__lock_id_set
 	__memp_dump_region
 	__os_calloc
 	__os_closehandle
@@ -84,6 +82,7 @@
 	__os_strdup
 	__os_umalloc
 	__os_write
+	__txn_id_set
 
 #These are needed for linking tools or java.
 	__bam_init_print
@@ -104,6 +103,7 @@
 	__db_overwrite
 	__db_pgin
 	__db_pgout
+	__db_pr_callback
 	__db_prdbt
 	__db_prfooter
 	__db_prheader
@@ -113,7 +113,6 @@
 	__db_util_logset
 	__db_util_siginit
 	__db_util_sigresend
-	__db_verify_callback
 	__db_verify_internal
 	__dbreg_init_print
 	__fop_init_print

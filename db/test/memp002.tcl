@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: memp002.tcl,v 11.46 2002/04/30 17:26:06 sue Exp 
+# $Id: memp002.tcl,v 11.48 2003/01/08 05:50:32 bostic Exp $
 #
 
 # TEST	memp002
@@ -56,7 +56,7 @@ proc memp002_body { flags } {
 		lappend pidlist $p
 	}
 	puts "Memp002: $procs independent processes now running"
-	watch_procs
+	watch_procs $pidlist
 
 	reset_env $e
 }

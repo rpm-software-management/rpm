@@ -8,10 +8,40 @@
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <rpc/rpc.h>
+
+#include <strings.h>
 #endif
 
 #include "db_int.h"
 #include "dbinc_auto/db_server.h"
+
+bool_t
+xdr___env_get_cachesize_msg(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_cachesize_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbenvcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___env_get_cachesize_reply(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_cachesize_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->gbytes))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->bytes))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->ncache))
+		return (FALSE);
+	return (TRUE);
+}
 
 bool_t
 xdr___env_cachesize_msg(xdrs, objp)
@@ -152,6 +182,30 @@ xdr___env_dbrename_reply(xdrs, objp)
 }
 
 bool_t
+xdr___env_get_encrypt_flags_msg(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_encrypt_flags_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbenvcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___env_get_encrypt_flags_reply(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_encrypt_flags_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->flags))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
 xdr___env_encrypt_msg(xdrs, objp)
 	register XDR *xdrs;
 	__env_encrypt_msg *objp;
@@ -178,6 +232,30 @@ xdr___env_encrypt_reply(xdrs, objp)
 }
 
 bool_t
+xdr___env_get_flags_msg(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_flags_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbenvcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___env_get_flags_reply(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_flags_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->flags))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
 xdr___env_flags_msg(xdrs, objp)
 	register XDR *xdrs;
 	__env_flags_msg *objp;
@@ -199,6 +277,54 @@ xdr___env_flags_reply(xdrs, objp)
 {
 
 	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___env_get_home_msg(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_home_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbenvcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___env_get_home_reply(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_home_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_string(xdrs, &objp->home, ~0))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___env_get_open_flags_msg(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_open_flags_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbenvcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___env_get_open_flags_reply(xdrs, objp)
+	register XDR *xdrs;
+	__env_get_open_flags_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->flags))
 		return (FALSE);
 	return (TRUE);
 }
@@ -467,6 +593,30 @@ xdr___db_bt_maxkey_reply(xdrs, objp)
 }
 
 bool_t
+xdr___db_get_bt_minkey_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_bt_minkey_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_bt_minkey_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_bt_minkey_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->minkey))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
 xdr___db_bt_minkey_msg(xdrs, objp)
 	register XDR *xdrs;
 	__db_bt_minkey_msg *objp;
@@ -577,6 +727,30 @@ xdr___db_del_reply(xdrs, objp)
 }
 
 bool_t
+xdr___db_get_encrypt_flags_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_encrypt_flags_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_encrypt_flags_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_encrypt_flags_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->flags))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
 xdr___db_encrypt_msg(xdrs, objp)
 	register XDR *xdrs;
 	__db_encrypt_msg *objp;
@@ -603,6 +777,30 @@ xdr___db_encrypt_reply(xdrs, objp)
 }
 
 bool_t
+xdr___db_get_extentsize_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_extentsize_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_extentsize_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_extentsize_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->extentsize))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
 xdr___db_extentsize_msg(xdrs, objp)
 	register XDR *xdrs;
 	__db_extentsize_msg *objp;
@@ -622,6 +820,30 @@ xdr___db_extentsize_reply(xdrs, objp)
 {
 
 	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_flags_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_flags_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_flags_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_flags_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->flags))
 		return (FALSE);
 	return (TRUE);
 }
@@ -701,6 +923,80 @@ xdr___db_get_reply(xdrs, objp)
 }
 
 bool_t
+xdr___db_get_name_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_name_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_name_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_name_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_string(xdrs, &objp->filename, ~0))
+		return (FALSE);
+	if (!xdr_string(xdrs, &objp->dbname, ~0))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_open_flags_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_open_flags_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_open_flags_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_open_flags_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->flags))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_h_ffactor_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_h_ffactor_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_h_ffactor_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_h_ffactor_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->ffactor))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
 xdr___db_h_ffactor_msg(xdrs, objp)
 	register XDR *xdrs;
 	__db_h_ffactor_msg *objp;
@@ -720,6 +1016,30 @@ xdr___db_h_ffactor_reply(xdrs, objp)
 {
 
 	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_h_nelem_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_h_nelem_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_h_nelem_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_h_nelem_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->nelem))
 		return (FALSE);
 	return (TRUE);
 }
@@ -791,6 +1111,30 @@ xdr___db_key_range_reply(xdrs, objp)
 }
 
 bool_t
+xdr___db_get_lorder_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_lorder_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_lorder_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_lorder_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->lorder))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
 xdr___db_lorder_msg(xdrs, objp)
 	register XDR *xdrs;
 	__db_lorder_msg *objp;
@@ -852,6 +1196,30 @@ xdr___db_open_reply(xdrs, objp)
 	if (!xdr_u_int(xdrs, &objp->dbflags))
 		return (FALSE);
 	if (!xdr_u_int(xdrs, &objp->lorder))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_pagesize_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_pagesize_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_pagesize_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_pagesize_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->pagesize))
 		return (FALSE);
 	return (TRUE);
 }
@@ -991,6 +1359,30 @@ xdr___db_put_reply(xdrs, objp)
 }
 
 bool_t
+xdr___db_get_re_delim_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_re_delim_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_re_delim_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_re_delim_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->delim))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
 xdr___db_re_delim_msg(xdrs, objp)
 	register XDR *xdrs;
 	__db_re_delim_msg *objp;
@@ -1010,6 +1402,30 @@ xdr___db_re_delim_reply(xdrs, objp)
 {
 
 	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_re_len_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_re_len_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_re_len_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_re_len_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->len))
 		return (FALSE);
 	return (TRUE);
 }
@@ -1058,6 +1474,30 @@ xdr___db_re_pad_reply(xdrs, objp)
 {
 
 	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_re_pad_msg(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_re_pad_msg *objp;
+{
+
+	if (!xdr_u_int(xdrs, &objp->dbpcl_id))
+		return (FALSE);
+	return (TRUE);
+}
+
+bool_t
+xdr___db_get_re_pad_reply(xdrs, objp)
+	register XDR *xdrs;
+	__db_get_re_pad_reply *objp;
+{
+
+	if (!xdr_int(xdrs, &objp->status))
+		return (FALSE);
+	if (!xdr_u_int(xdrs, &objp->pad))
 		return (FALSE);
 	return (TRUE);
 }

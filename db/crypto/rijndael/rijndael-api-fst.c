@@ -115,16 +115,16 @@ __db_cipherInit(cipher, mode, IV)
 /*
  * __db_blockEncrypt --
  *
- * PUBLIC: int __db_blockEncrypt __P((cipherInstance *, keyInstance *, BYTE *,
- * PUBLIC:    size_t, BYTE *));
+ * PUBLIC: int __db_blockEncrypt __P((cipherInstance *, keyInstance *, u_int8_t *,
+ * PUBLIC:    size_t, u_int8_t *));
  */
 int
 __db_blockEncrypt(cipher, key, input, inputLen, outBuffer)
 	cipherInstance *cipher;
 	keyInstance *key;
-	BYTE *input;
+	u_int8_t *input;
 	size_t inputLen;
-	BYTE *outBuffer;
+	u_int8_t *outBuffer;
 {
 	int i, k, t, numBlocks;
 	u8 block[16], *iv;
@@ -171,7 +171,7 @@ __db_blockEncrypt(cipher, key, input, inputLen, outBuffer)
 			memcpy(outBuffer, input, 16);
             for (k = 0; k < 128; k++) {
 				__db_rijndaelEncrypt(key->ek, key->Nr, iv, block);
-                outBuffer[k >> 3] ^= (block[0] & 0x80U) >> (k & 7);
+                outBuffer[k >> 3] ^= (block[0] & (u_int)0x80) >> (k & 7);
                 for (t = 0; t < 15; t++) {
                 	iv[t] = (iv[t] << 1) | (iv[t + 1] >> 7);
                 }
@@ -201,16 +201,16 @@ __db_blockEncrypt(cipher, key, input, inputLen, outBuffer)
 /*
  * __db_padEncrypt --
  *
- * PUBLIC: int __db_padEncrypt __P((cipherInstance *, keyInstance *, BYTE *,
- * PUBLIC:    int, BYTE *));
+ * PUBLIC: int __db_padEncrypt __P((cipherInstance *, keyInstance *, u_int8_t *,
+ * PUBLIC:    int, u_int8_t *));
  */
 int
 __db_padEncrypt(cipher, key, input, inputOctets, outBuffer)
 	cipherInstance *cipher;
 	keyInstance *key;
-	BYTE *input;
+	u_int8_t *input;
 	int inputOctets;
-	BYTE *outBuffer;
+	u_int8_t *outBuffer;
 {
 	int i, numBlocks, padLen;
 	u8 block[16], *iv;
@@ -260,7 +260,7 @@ __db_padEncrypt(cipher, key, input, inputOctets, outBuffer)
 			block[i] = input[i] ^ iv[i];
 		}
 		for (i = 16 - padLen; i < 16; i++) {
-			block[i] = (BYTE)padLen ^ iv[i];
+			block[i] = (u_int8_t)padLen ^ iv[i];
 		}
 		__db_rijndaelEncrypt(key->rk, key->Nr, block, outBuffer);
 		break;
@@ -275,16 +275,16 @@ __db_padEncrypt(cipher, key, input, inputOctets, outBuffer)
 /*
  * __db_blockDecrypt --
  *
- * PUBLIC: int __db_blockDecrypt __P((cipherInstance *, keyInstance *, BYTE *,
- * PUBLIC:    size_t, BYTE *));
+ * PUBLIC: int __db_blockDecrypt __P((cipherInstance *, keyInstance *, u_int8_t *,
+ * PUBLIC:    size_t, u_int8_t *));
  */
 int
 __db_blockDecrypt(cipher, key, input, inputLen, outBuffer)
 	cipherInstance *cipher;
 	keyInstance *key;
-	BYTE *input;
+	u_int8_t *input;
 	size_t inputLen;
-	BYTE *outBuffer;
+	u_int8_t *outBuffer;
 {
 	int i, k, t, numBlocks;
 	u8 block[16], *iv;
@@ -335,7 +335,7 @@ __db_blockDecrypt(cipher, key, input, inputLen, outBuffer)
                 	iv[t] = (iv[t] << 1) | (iv[t + 1] >> 7);
                 }
                	iv[15] = (iv[15] << 1) | ((input[k >> 3] >> (7 - (k & 7))) & 1);
-                outBuffer[k >> 3] ^= (block[0] & 0x80U) >> (k & 7);
+                outBuffer[k >> 3] ^= (block[0] & (u_int)0x80) >> (k & 7);
             }
             outBuffer += 16;
             input += 16;
@@ -352,16 +352,16 @@ __db_blockDecrypt(cipher, key, input, inputLen, outBuffer)
 /*
  * __db_padDecrypt --
  *
- * PUBLIC: int __db_padDecrypt __P((cipherInstance *, keyInstance *, BYTE *,
- * PUBLIC:    int, BYTE *));
+ * PUBLIC: int __db_padDecrypt __P((cipherInstance *, keyInstance *, u_int8_t *,
+ * PUBLIC:    int, u_int8_t *));
  */
 int
 __db_padDecrypt(cipher, key, input, inputOctets, outBuffer)
 	cipherInstance *cipher;
 	keyInstance *key;
-	BYTE *input;
+	u_int8_t *input;
 	int inputOctets;
-	BYTE *outBuffer;
+	u_int8_t *outBuffer;
 {
 	int i, numBlocks, padLen;
 	u8 block[16];
@@ -457,15 +457,15 @@ __db_padDecrypt(cipher, key, input, inputOctets, outBuffer)
  * __db_cipherUpdateRounds --
  *
  * PUBLIC: int __db_cipherUpdateRounds __P((cipherInstance *, keyInstance *,
- * PUBLIC:    BYTE *, int, BYTE *, int));
+ * PUBLIC:    u_int8_t *, int, u_int8_t *, int));
  */
 int
 __db_cipherUpdateRounds(cipher, key, input, inputLen, outBuffer, rounds)
 	cipherInstance *cipher;
 	keyInstance *key;
-	BYTE *input;
+	u_int8_t *input;
 	size_t inputLen;
-	BYTE *outBuffer;
+	u_int8_t *outBuffer;
 	int rounds;
 {
 	u8 block[16];

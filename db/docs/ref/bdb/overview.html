@@ -1,0 +1,185 @@
+<!--$Id: overview.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Overview of the Java API</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API</dl></h3></td>
+<td align=right><a href="../bdb_tut/summary.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb/cs_bdb_bind.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Overview of the Java API</h3>
+<p>The Java API is a Java framework that extends the well known
+<a href="http://java.sun.com/j2se/1.3/docs/guide/collections/">Java Collections</a> design pattern such that collections can now be
+stored, updated and queried in a transactional manner.  The Java API is
+a layer on top of Berkeley DB.</p>
+<p>Together the Java API and Berkeley DB provide an embedded data management
+solution with all the benefits of a full transactional storage and the
+simplicity of a well known Java API.  Java programmers who need fast,
+scalable, transactional data management for their projects can quickly
+adopt and deploy the Java API with confidence.</p>
+<p>This framework was first known as
+<a href="http://greybird-db.sourceforge.net/">Greybird DB</a> written
+by Mark Hayes.  Sleepycat Software has collaborated with Mark to
+permanently incorporate his excellent work into our distribution and
+support it as an ongoing part of Berkeley DB.  The repository of source code
+that remains at Sourceforge at version 0.9.0 is considered the last
+version before incorporation and will remain intact but will not be
+updated to reflect changes made as part of Berkeley DB.</p>
+<h3>What does The Java API add to Berkeley DB?</h3>
+<p>Berkeley DB has always provided a Java API which can be roughly
+described as a map and cursor interface, where the keys and values
+are represented as byte arrays.  This API is a Java (JNI) interface to
+the C API and it closely modeled the Berkeley DB C API's interface.  The Java API
+is a layer on top of that thin JNI mapping of the C API to Berkeley DB that adds
+significant new functionality in several ways.</p>
+<p><ul type=disc>
+<li>An implementation of the Java Collections interfaces (Map, Set, List and
+Iterator) is provided.
+<li>Transactions are supported using the conventional Java
+transaction-per-thread model, where the current transaction is implicitly
+associated with the current thread.
+<li>Transaction runner utilities are provided that automatically perform
+transaction retry and exception handling.
+<li>Keys and values are represented as Java objects rather than byte arrays.
+Bindings are used to map between Java objects and the stored byte
+arrays.
+<li>The tuple data format is provided as the simplest data representation,
+and is useful for keys as well as simple compact values.
+<li>The serial data format is provided for storing arbitrary Java objects
+without writing custom binding code.  Java serialization is extended to
+store the class descriptions separately, making the data records much
+more compact than with standard Java serialization.
+<li>Custom data formats and bindings can be easily added.  XML data format
+and XML bindings could easily be created using this feature.
+<li>In addition to secondary indices, foreign key indices are provided with
+integrity constraints.
+<li>The Java API API insulates the application from minor differences in the
+use of the Berkeley DB Data Store, Concurrent Data Store and Transactional Data
+Store products.  This allows for development with one and deployment with
+another without significant changes to code.
+</ul>
+<p>Note that the Java API does not support caching of programming
+language objects nor keep track of their stored status.  This is in
+contrast to "persistent object" approaches such as those defined by
+<a href="http://www.odmg.org/">ODMG</a> and JDO
+(<a href="http://www.jcp.org/en/jsr/detail?id=12">JSR 12</a>).
+Such approaches have benefits but also require sophisticated object
+caching.  For simplicity the Java API treats data objects by value, not
+by reference, and does not perform object caching of any kind.  Since
+the Java API is a thin layer, its reliability and performance
+characteristics are roughly equivalent to those of Berkeley DB, and database
+tuning is accomplished in the same way as for any Berkeley DB database.</p>
+<h3>Choices to make</h3>
+<p>There are several important choices to make when developing an
+application using Java API.</p>
+<ol>
+<p><li>Choose the Berkeley DB Environment
+<p>Depending on your application's concurrency and transactional
+requirements you may choose one of the three Berkeley DB Environments:
+Data Store, Concurrent Data Store, or Transactional Data Store.  For
+details on creating and configuring the environment see
+<a href="../../java/com/sleepycat/db/DbEnv.html">DbEnv</a>
+.</p>
+<p><li>Choose the Berkeley DB Access Method
+<p>For each Berkeley DB datastore, or data store as it is called within
+the Java API, you may choose from any of the four Berkeley DB access methods --
+BTREE, HASH, RECNO or QUEUE (
+<a href="../../java/com/sleepycat/db/Db.html#DB_BTREE">Db.DB_BTREE</a>
+,
+<a href="../../java/com/sleepycat/db/Db.html#DB_HASH">Db.DB_HASH</a>
+,
+<a href="../../java/com/sleepycat/db/Db.html#DB_RECNO">Db.DB_RECNO</a>
+ or
+<a href="../../java/com/sleepycat/db/Db.html#DB_QUEUE">Db.DB_QUEUE</a>
+) -- and a number of other
+database options.
+Your choice depends on several factors such as whether you need ordered
+keys, unique keys, record number access, etc.  For more information on
+access methods see the 
+<a href="cs_bdb.html">com.sleepycat.bdb</a>
+ package
+description.</p>
+<p><li>Choose the Data Format for Keys and Values
+<p>For each database you may choose a data format for the keys and
+values.  For example, the tuple data format is useful for keys because it
+has a deterministic sort order.  The serial format is useful for values
+if you want to store arbitrary Java objects.  In some cases a custom data
+format may be appropriate.  For details on choosing a data format see the
+<a href="cs_bdb_bind.html">com.sleepycat.bdb.bind</a>
+ package description.</p>
+<p><li>Choose the Binding for Keys and Values
+<p>With the serial data format you do not have to create a binding for
+each Java class that is stored since Java serialization is used.  But for
+other formats a binding must be defined that translates between stored
+byte arrays and Java objects.  For details see the
+<a href="cs_bdb_bind.html">com.sleepycat.bdb.bind</a>
+ package description.</p>
+<p><li>Choose Secondary Indices and Foreign Key Indices
+<p>Any data store that has unique keys may have any number of indices.
+An index has keys that are derived from data values in the primary data
+store.  This allows lookup and iteration of objects in the data store by
+its index keys.  A foreign key index is a special type of index where
+the index keys are also the primary keys of another data store.  For each
+index you must define how the index keys are derived from the data values
+using a 
+<a href="../../java/com/sleepycat/bdb/bind/KeyExtractor.html">KeyExtractor</a>
+.  For details see
+the 
+<a href="../../java/com/sleepycat/bdb/DataIndex.html">DataIndex</a>
+,
+<a href="../../java/com/sleepycat/bdb/ForeignKeyIndex.html">ForeignKeyIndex</a>
+ and
+<a href="../../java/com/sleepycat/bdb/bind/KeyExtractor.html">KeyExtractor</a>
+ classes.</p>
+<p><li>Choose the Collection Interface for each Data Store
+<p>The standard Java Collection interfaces are used for accessing data
+stores and data indices.  The Map and Set interfaces may be used for any
+type of data store, while the List interface may only be used for data
+stores with record number access.  The Iterator interface is used through
+the Map, Set and List interfaces.  For more information on collection
+interfaces see the 
+<a href="cs_bdb_collection.html">com.sleepycat.bdb.collection</a>
+ package.</p>
+</ol>
+<h3>Things to keep in mind</h3>
+<p>A single 
+<a href="../../java/com/sleepycat/bdb/DataStore.html">DataStore</a>
+ object should
+be created for each database, and all data stores in an application should
+normally be used with a single 
+<a href="../../java/com/sleepycat/db/DbEnv.html">DbEnv</a>
+object.</p>
+<p>However, any number of bindings and collections may be created for
+the same data store.  This allows multiple views of the same stored data.
+For example, a data store may be viewed as a Map of keys to values, a Set
+of keys, a Collection of values, or a List of values. String values, for
+example, may be used with the built-in binding to the String class, or
+with a custom binding to another class that represents the string values
+differently.</p>
+<p>It is sometimes desirable to use a Java class that encapsulates both a
+data key and a data value.  For example, a Part object might contain both
+the part number (key) and the part name (value).  Using the Java API this type
+of object is called an "entity".  An entity binding is used to translate
+between the Java object and the stored data key and value.  Entity bindings
+may be used with all Collection types.</p>
+<p>Please be aware the Java API collection classes provided do not conform
+completely to the interface contracts defined in the
+<code>java.util</code> package.  For example, all iterators must be
+explicitly closed and the <code>size()</code> method is not available.
+The differences between Java API collections and standard Java collections
+are documented in the
+<a href="cs_bdb_collection.html">com.sleepycat.bdb.collection</a>
+ package description.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_tut/summary.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb/cs_bdb_bind.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

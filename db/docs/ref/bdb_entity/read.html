@@ -1,0 +1,193 @@
+<!--$Id: read.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Using entities with collections</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial - Entity</dl></h3></td>
+<td align=right><a href="../bdb_entity/views.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Using entities with collections</h3>
+<p>In this example entity objects, rather than key and value objects, are
+used for adding and enumerating the records in a collection.  Because fewer
+classes and objects are involved, adding and enumerating is done more
+conveniently and more simply than in the prior examples.</p>
+<p>For adding and iterating entities, the collection of entities returned by
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#values">Map.values</a>
+ is used.  In general, when using an
+entity binding, all Java collection methods that are passed or returned a value
+object will be passed or returned an entity object instead.</p>
+<hr size=1 noshade>
+<p>The <b>Sample</b> class has been changed in this example to add
+objects using the 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html#add">Set.add</a>
+ method rather than the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put">Map.put</a>
+ method that was used in the prior examples.
+Entity objects are constructed and passed to 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html#add">Set.add</a>
+.</p>
+<blockquote><pre>
+public class Sample
+{
+    ...
+    private void addSuppliers()
+    {
+<b>        Set suppliers = views.getSupplierSet();
+        if (suppliers.isEmpty())
+        {
+            System.out.println("Adding Suppliers");
+            suppliers.add(new Supplier("S1", "Smith", 20, "London"));
+            suppliers.add(new Supplier("S2", "Jones", 10, "Paris"));
+            suppliers.add(new Supplier("S3", "Blake", 30, "Paris"));
+            suppliers.add(new Supplier("S4", "Clark", 20, "London"));
+            suppliers.add(new Supplier("S5", "Adams", 30, "Athens"));
+        }
+</b>    }
+<p>
+    private void addParts()
+    {
+<b>        Set parts = views.getPartSet();
+        if (parts.isEmpty())
+        {
+            System.out.println("Adding Parts");
+            parts.add(new Part("P1", "Nut", "Red",
+                      new Weight(12.0, Weight.GRAMS), "London"));
+            parts.add(new Part("P2", "Bolt", "Green",
+                      new Weight(17.0, Weight.GRAMS), "Paris"));
+            parts.add(new Part("P3", "Screw", "Blue",
+                      new Weight(17.0, Weight.GRAMS), "Rome"));
+            parts.add(new Part("P4", "Screw", "Red",
+                      new Weight(14.0, Weight.GRAMS), "London"));
+            parts.add(new Part("P5", "Cam", "Blue",
+                      new Weight(12.0, Weight.GRAMS), "Paris"));
+            parts.add(new Part("P6", "Cog", "Red",
+                      new Weight(19.0, Weight.GRAMS), "London"));
+        }
+</b>    }
+<p>
+    private void addShipments()
+    {
+<b>        Set shipments = views.getShipmentSet();
+        if (shipments.isEmpty())
+        {
+            System.out.println("Adding Shipments");
+            shipments.add(new Shipment("P1", "S1", 300));
+            shipments.add(new Shipment("P2", "S1", 200));
+            shipments.add(new Shipment("P3", "S1", 400));
+            shipments.add(new Shipment("P4", "S1", 200));
+            shipments.add(new Shipment("P5", "S1", 100));
+            shipments.add(new Shipment("P6", "S1", 100));
+            shipments.add(new Shipment("P1", "S2", 300));
+            shipments.add(new Shipment("P2", "S2", 400));
+            shipments.add(new Shipment("P2", "S3", 200));
+            shipments.add(new Shipment("P2", "S4", 200));
+            shipments.add(new Shipment("P4", "S4", 300));
+            shipments.add(new Shipment("P5", "S4", 400));
+        }
+</b>    }
+</pre></blockquote>
+<hr size=1 noshade>
+<p>Instead of printing the key/value pairs by iterating over the
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#entrySet">Map.entrySet</a>
+ as done in the prior example, this
+example iterates over the entities in the 
+<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#values">Map.values</a>
+ collection.</p>
+<blockquote><pre>
+import com.sleepycat.bdb.collection.StoredIterator;
+import java.util.Iterator;
+import java.util.Set;
+...
+public class Sample
+{
+    ...
+    private class PrintDatabase implements TransactionWorker
+    {
+        public void doWork()
+            throws Exception
+        {
+<b>            printValues("Parts",
+                         views.getPartSet().iterator());
+            printValues("Suppliers",
+                         views.getSupplierSet().iterator());
+</b>            printValues("Suppliers for City Paris",
+                         views.getSupplierByCityMap().duplicates(
+                                            "Paris").iterator());
+<b>            printValues("Shipments",
+                         views.getShipmentSet().iterator());
+</b>            printValues("Shipments for Part P1",
+                         views.getShipmentByPartMap().duplicates(
+                                            new PartKey("P1")).iterator());
+            printValues("Shipments for Supplier S1",
+                         views.getShipmentBySupplierMap().duplicates(
+                                            new SupplierKey("S1")).iterator());
+        }
+    }
+}
+</pre></blockquote>
+<hr size=1 noshade>
+<p>The output of the example program is shown below.</p>
+<blockquote><pre>
+Adding Suppliers
+Adding Parts
+Adding Shipments
+<p>
+--- Parts ---
+Part: number=P1 name=Nut color=Red weight=[12.0 grams] city=London
+Part: number=P2 name=Bolt color=Green weight=[17.0 grams] city=Paris
+Part: number=P3 name=Screw color=Blue weight=[17.0 grams] city=Rome
+Part: number=P4 name=Screw color=Red weight=[14.0 grams] city=London
+Part: number=P5 name=Cam color=Blue weight=[12.0 grams] city=Paris
+Part: number=P6 name=Cog color=Red weight=[19.0 grams] city=London
+<p>
+--- Suppliers ---
+Supplier: number=S1 name=Smith status=20 city=London
+Supplier: number=S2 name=Jones status=10 city=Paris
+Supplier: number=S3 name=Blake status=30 city=Paris
+Supplier: number=S4 name=Clark status=20 city=London
+Supplier: number=S5 name=Adams status=30 city=Athens
+<p>
+--- Suppliers for City Paris ---
+Supplier: number=S2 name=Jones status=10 city=Paris
+Supplier: number=S3 name=Blake status=30 city=Paris
+<p>
+--- Shipments ---
+Shipment: part=P1 supplier=S1 quantity=300
+Shipment: part=P1 supplier=S2 quantity=300
+Shipment: part=P2 supplier=S1 quantity=200
+Shipment: part=P2 supplier=S2 quantity=400
+Shipment: part=P2 supplier=S3 quantity=200
+Shipment: part=P2 supplier=S4 quantity=200
+Shipment: part=P3 supplier=S1 quantity=400
+Shipment: part=P4 supplier=S1 quantity=200
+Shipment: part=P4 supplier=S4 quantity=300
+Shipment: part=P5 supplier=S1 quantity=100
+Shipment: part=P5 supplier=S4 quantity=400
+Shipment: part=P6 supplier=S1 quantity=100
+<p>
+--- Shipments for Part P1 ---
+Shipment: part=P1 supplier=S1 quantity=300
+Shipment: part=P1 supplier=S2 quantity=300
+<p>
+--- Shipments for Supplier S1 ---
+Shipment: part=P1 supplier=S1 quantity=300
+Shipment: part=P2 supplier=S1 quantity=200
+Shipment: part=P3 supplier=S1 quantity=400
+Shipment: part=P4 supplier=S1 quantity=200
+Shipment: part=P5 supplier=S1 quantity=100
+Shipment: part=P6 supplier=S1 quantity=100
+</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_entity/views.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb_tuple/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

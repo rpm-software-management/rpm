@@ -1,0 +1,62 @@
+<!--$Id: summary.html,v 1.1 2003/12/15 21:43:45 jbj Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Summary and next steps</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Java API Tutorial</dl></h3></td>
+<td align=right><a href="../bdb_sentity/remove.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb/overview.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Summary and next steps</h3>
+<p>In summary, the Java API tutorial has demonstrated how to create different
+types of formats and bindings, as well as how to use the basic facilities of
+the Java API: the database environment, stores, indices, collections, and
+transactions.  The final approach illustrated by the last example program,
+Serializable Entity, uses tuple keys and serial entity values.  Hopefully it is
+clear that any type of object-to-data binding may be implemented by an
+application and used along with standard Java collections.</p>
+<p>The following table summarizes the differences between the examples in
+the tutorial.</p>
+<table border=1>
+<tr><th>Example</th><th>Key</th><th>Value</th><th>Entity</th><th>Comments</th></tr>
+<tr><td><a href="../bdb_basic/intro.html">Basic</a></td><td>Serial</td><td>Serial</td><td>No</td><td>The shipment program</td></tr>
+<tr><td><a href="../bdb_index/intro.html">Index</a></td><td>Serial</td><td>Serial</td><td>No</td><td>Indices and foreign keys</td></tr>
+<tr><td><a href="../bdb_entity/intro.html">Entity</a></td><td>Serial</td><td>Serial</td><td>Yes</td><td>Combining the key and value in a single object</td></tr>
+<tr><td><a href="../bdb_tuple/intro.html">Tuple</a></td><td>Tuple</td><td>Serial</td><td>Yes</td><td>Compact ordered keys</td></tr>
+<tr><td><a href="../bdb_sentity/intro.html">Serializable Entity</a></td><td>Tuple</td><td>Serial</td><td>Yes</td><td>One serializable class for entities and values</td></tr>
+</table>
+<h3>Next Steps</h3>
+<p>There are two directions to go from here.  The first direction is toward
+a deeper understanding of the Java API and the underlying Berkeley DB capabilities.
+The next section, <a href="../bdb/overview.html">Overview of the Java API</a>, along
+with the other material in the Reference Guide, will take you there.</p>
+<p>The second direction is toward understanding how other types of bindings
+might be implemented.  The bindings shown in this tutorial are all
+<i>external bindings</i>, meaning that the data classes themselves contain
+none of the binding implementation.  It is also possible to implement
+<i>internal bindings</i>, where the data classes implement the binding.</p>
+<p>Internal bindings are called <i>marshalled bindings</i> in the
+Java API, and in this model each data class implements a marshalling interface.
+A single external binding class that understands the marshalling interface is
+used to call the internal bindings of each data object, and therefore the
+overall model and API is unchanged.  To learn about marshalled bindings, see
+the
+<a href="../../../examples_java/src/com/sleepycat/examples/bdb/shipment/marshal">Marshal</a> and
+<a href="../../../examples_java/src/com/sleepycat/examples/bdb/shipment/factory">Factory</a> example programs.
+These examples continue building on the example programs used in the tutorial.
+The Marshal program is the next program following the Serializable Entity
+program, and the Factory program follows the Marshal program.  The source code
+comments in these examples explain their differences.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../bdb_sentity/remove.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../bdb/overview.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

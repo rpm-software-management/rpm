@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	Id: testall,v 1.4 2001/09/13 14:49:37 dda Exp 
+#	$Id: testall,v 1.4 2001/09/13 14:49:37 dda Exp $
 #
 # Run all the Java regression tests
 

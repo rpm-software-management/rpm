@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2002
+ * Copyright (c) 1996-2003
  *	Sleepycat Software.  All rights reserved.
  */
 
@@ -9,9 +9,9 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2002\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
 static const char revid[] =
-    "Id: db_deadlock.c,v 11.38 2002/08/08 03:50:32 bostic Exp ";
+    "$Id: db_deadlock.c,v 11.41 2003/06/17 14:36:44 bostic Exp $";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -66,17 +66,18 @@ db_deadlock_main(argc, argv)
 	DB_ENV  *dbenv;
 	u_int32_t atype;
 	time_t now;
-	long secs, usecs;
-	int ch, e_close, exitval, ret, verbose;
+	u_long secs, usecs;
+	int ch, exitval, ret, verbose;
 	char *home, *logfile, *str;
 
 	if ((ret = db_deadlock_version_check(progname)) != 0)
 		return (ret);
 
+	dbenv = NULL;
 	atype = DB_LOCK_DEFAULT;
 	home = logfile = NULL;
 	secs = usecs = 0;
-	e_close = exitval = verbose = 0;
+	exitval = verbose = 0;
 	__db_getopt_reset = 1;
 	while ((ch = getopt(argc, argv, "a:h:L:t:Vvw")) != EOF)
 		switch (ch) {
@@ -116,11 +117,11 @@ db_deadlock_main(argc, argv)
 		case 't':
 			if ((str = strchr(optarg, '.')) != NULL) {
 				*str++ = '\0';
-				if (*str != '\0' && __db_getlong(
+				if (*str != '\0' && __db_getulong(
 				    NULL, progname, str, 0, LONG_MAX, &usecs))
 					return (EXIT_FAILURE);
 			}
-			if (*optarg != '\0' && __db_getlong(
+			if (*optarg != '\0' && __db_getulong(
 			    NULL, progname, optarg, 0, LONG_MAX, &secs))
 				return (EXIT_FAILURE);
 			if (secs == 0 && usecs == 0)
@@ -165,7 +166,6 @@ db_deadlock_main(argc, argv)
 		    "%s: db_env_create: %s\n", progname, db_strerror(ret));
 		goto shutdown;
 	}
-	e_close = 1;
 
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
@@ -205,10 +205,10 @@ shutdown:	exitval = 1;
 
 	/* Clean up the logfile. */
 	if (logfile != NULL)
-		remove(logfile);
+		(void)remove(logfile);
 
 	/* Clean up the environment. */
-	if (e_close && (ret = dbenv->close(dbenv, 0)) != 0) {
+	if (dbenv != NULL && (ret = dbenv->close(dbenv, 0)) != 0) {
 		exitval = 1;
 		fprintf(stderr,
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
@@ -237,12 +237,11 @@ db_deadlock_version_check(progname)
 
 	/* Make sure we're loaded with the right version of the DB library. */
 	(void)db_version(&v_major, &v_minor, &v_patch);
-	if (v_major != DB_VERSION_MAJOR ||
-	    v_minor != DB_VERSION_MINOR || v_patch != DB_VERSION_PATCH) {
+	if (v_major != DB_VERSION_MAJOR || v_minor != DB_VERSION_MINOR) {
 		fprintf(stderr,
-	"%s: version %d.%d.%d doesn't match library version %d.%d.%d\n",
+	"%s: version %d.%d doesn't match library version %d.%d\n",
 		    progname, DB_VERSION_MAJOR, DB_VERSION_MINOR,
-		    DB_VERSION_PATCH, v_major, v_minor, v_patch);
+		    v_major, v_minor);
 		return (EXIT_FAILURE);
 	}
 	return (0);

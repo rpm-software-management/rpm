@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2002
+# Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: mutex003.tcl,v 11.23 2002/04/30 19:37:37 sue Exp 
+# $Id: mutex003.tcl,v 11.25 2003/01/08 05:50:50 bostic Exp $
 #
 
 # TEST	mutex003
@@ -32,7 +32,7 @@ proc mutex003 { } {
 
 	# Now spawn off processes
 	puts "\tMutex003.b: Create $procs processes"
-	set proclist {}
+	set pidlist {}
 	for { set i 0 } {$i < $procs} {incr i} {
 		puts "$tclsh_path\
 		    $test_path/mutexscript.tcl $testdir\
@@ -40,10 +40,10 @@ proc mutex003 { } {
 		set p [exec $tclsh_path $test_path/wrap.tcl \
 		    mutexscript.tcl $testdir/$i.mutexout $testdir\
 		    $iter $nmutex $wait $mdegree &]
-		lappend proclist $p
+		lappend pidlist $p
 	}
 	puts "\tMutex003.c: $procs independent processes now running"
-	watch_procs
+	watch_procs $pidlist
 	error_check_good env_close [$env close] 0
 	# Remove output files
 	for { set i 0 } {$i < $procs} {incr i} {

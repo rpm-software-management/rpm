@@ -1,40 +1,40 @@
-<!--Id: hotfail.so,v 10.2 2001/07/28 01:45:07 bostic Exp -->
-<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--$Id: hotfail.so,v 10.3 2003/11/23 02:06:56 bostic Exp $-->
+<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Hot failover</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
-<td align=right><a href="../../ref/transapp/recovery.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/filesys.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../transapp/recovery.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/filesys.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h1 align=center>Hot failover</h1>
+<h3 align=center>Hot failover</h3>
 <p>For some applications, it may be useful to periodically snapshot the
 database environment for use as a hot failover should the primary system
 fail.  The following steps can be taken to keep a backup environment in
 close synchrony with an active environment.  The active environment is
 entirely unaffected by these procedures, and both read and write
-operations are allowed during all steps described here.
-<p><ol>
+operations are allowed during all steps described here.</p>
+<ol>
 <p><li>Run <a href="../../utility/db_archive.html">db_archive</a> <b>-s</b> in the active environment to
 identify all of the active environment's database files, and copy them
 to the backup directory.
 <p>If the database files are stored in a separate directory from the other
-Berkeley DB files, it may be simpler to copy the directory itself instead of
-the individual files (see <a href="../../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> for additional
-information).  <b>Note: if any of the database files did not have
-an open <a href="../../api_c/db_class.html">DB</a> handle during the lifetime of the current log files,
-<a href="../../utility/db_archive.html">db_archive</a> will not list them in its output!</b>  This is another
-reason it may be simpler to use a separate database file directory and
-copy the entire directory instead of archiving only the files listed by
-<a href="../../utility/db_archive.html">db_archive</a>.
+Berkeley DB files, it will be simpler (and much faster!) to copy the directory
+itself instead of the individual files (see <a href="../../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a>
+for additional information).  <b>Note: if any of the database
+files did not have an open <a href="../../api_c/db_class.html">DB</a> handle during the lifetime of the
+current log files, <a href="../../utility/db_archive.html">db_archive</a> will not list them in its
+output!</b>  This is another reason it may be simpler to use a separate
+database file directory and copy the entire directory instead of
+archiving only the files listed by <a href="../../utility/db_archive.html">db_archive</a>.</p>
 <p><li>Remove all existing log files from the backup directory.
 <p><li>Run <a href="../../utility/db_archive.html">db_archive</a> <b>-l</b> in the active environment to
 identify all of the active environment's log files, and copy them to
@@ -45,7 +45,7 @@ catastrophically recover the copied environment.
 <p>Steps 2, 3 and 4 may be repeated as often as you like.  If Step 1 (the
 initial copy of the database files) is repeated, then Steps 2, 3 and 4
 <b>must</b> be performed at least once in order to ensure a consistent
-database environment snapshot.
+database environment snapshot.</p>
 <p>These procedures must be integrated with your other archival procedures,
 of course.  If you are periodically removing log files from your active
 environment, you must be sure to copy them to the backup directory
@@ -56,8 +56,8 @@ simple way to ensure this never happens is to archive the log files in
 Step 2 as you remove them from the backup directory, and move inactive
 log files from your active environment into your backup directory
 (rather than copying them), in Step 3.  The following steps describe
-this procedure in more detail:
-<p><ol>
+this procedure in more detail:</p>
+<ol>
 <p><li>Run <a href="../../utility/db_archive.html">db_archive</a> <b>-s</b> in the active environment to
 identify all of the active environment's database files, and copy them
 to the backup directory.
@@ -75,9 +75,9 @@ catastrophically recover the copied environment.
 <p>As before, steps 2, 3, 4 and 5 may be repeated as often as you like.
 If Step 1 (the initial copy of the database files) is repeated, then
 Steps 2 through 5 <b>must</b> be performed at least once in order to
-ensure a consistent database environment snapshot.
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/recovery.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/transapp/filesys.html"><img src="../../images/next.gif" alt="Next"></a>
+ensure a consistent database environment snapshot.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/recovery.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/filesys.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>
