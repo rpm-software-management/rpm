@@ -165,6 +165,11 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 	    message(MESS_DEBUG, "     file was never installed\n");
 	    break;
     
+	  case RPMFILE_STATE_NETSHARED:
+	    message(MESS_DEBUG, "     file is netshared (so don't touch it)\n");
+	    fileActions[sharedList[i].mainFileNumber] = KEEP;
+	    break;
+    
 	  case RPMFILE_STATE_NORMAL:
 	    if (!strcmp(fileMd5List[sharedList[i].mainFileNumber],
 			secFileMd5List[sharedList[i].secFileNumber])) {
@@ -251,7 +256,8 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
 	fileActions = alloca(sizeof(*fileActions) * fileCount);
 	for (i = 0; i < fileCount; i++) 
-	    if (fileStatesList[i] == RPMFILE_STATE_NOTINSTALLED) 
+	    if (fileStatesList[i] == RPMFILE_STATE_NOTINSTALLED ||
+		fileStatesList[i] == RPMFILE_STATE_NETSHARED) 
 		fileActions[i] = KEEP;
 	    else
 		fileActions[i] = REMOVE;
