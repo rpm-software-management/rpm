@@ -74,12 +74,9 @@ struct _sql_dbcursor_s;	typedef struct _sql_dbcursor_s *SCP_t;
 struct _sql_db_s {
     sqlite3 * db;		/* Database pointer */
     int transaction;		/* Do we have a transaction open? */
-    SCP_t head_cursor;		/* List of open cursors */
-    int count;
 };
 
 struct _sql_dbcursor_s {
-    DBC * name;			/* Which DBC am I emulating? */
 
 /*@only@*/ /*@relnull@*/
     char * cmd;			/* SQL command string */
@@ -102,7 +99,6 @@ struct _sql_dbcursor_s {
 
     SQL_MEM * memory;
     int count;
-    struct _sql_dbcursor_s * next;
 };
 
 struct _sql_mem_s {
@@ -315,42 +311,17 @@ static void * allocTempBuffer(DBC * dbcursor, size_t len)
 	/*@*/
 {
     DB * db = dbcursor->dbp;
-    SQL_DB * sqldb;
-    SCP_t scp;
+    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    SCP_t scp = (SCP_t)dbcursor->internal;
     SQL_MEM * item;
 
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-    scp = sqldb->head_cursor;
-
-    /* Find our version of the db3 cursor */
-    while ( scp != NULL && scp->name != dbcursor ) {
-      scp = scp->next;
-    }
-
-    assert(scp != NULL);
+assert(scp != NULL);
 
     item = xmalloc(sizeof(*item));
     item->mem_ptr = xmalloc(len);
 
-#if 0
-    /* Only keep two pointers per cursor */
-    if ( scp->memory ) {
-      if ( scp->memory->next ) {
-	scp->memory->next->mem_ptr = _free(scp->memory->next->mem_ptr);
-
-	scp->memory->next = _free(scp->memory->next);
-
-	scp->count--;
-      }
-    }
-#endif
-
     item->next = scp->memory;
-
     scp->memory = item;
-    scp->count++;
 
     return item->mem_ptr;
 }
@@ -472,17 +443,12 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 {
     DB * db = dbi->dbi_db;
 /*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    SCP_t scp = sqldb->head_cursor;
+    SCP_t scp = (SCP_t)dbcursor->internal;
     SCP_t prev = NULL;
     int rc = 0;
 
 assert(sqldb->db != NULL);
 
-    /* Find our version of the db3 cursor */
-    while ( scp != NULL && scp->name != dbcursor ) {
-	prev = scp;
-	scp = scp->next;
-    }
 if (_debug)
 fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
 
@@ -500,20 +466,7 @@ fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
 	    curr_mem = next_mem;
 	    loc_count++;
 	}
-
-	if ( scp->count != loc_count)
-	    rpmMessage(RPMMESS_DEBUG, "Alloced %ld -- free %ld\n", 
-		scp->count, loc_count);
     }
-
-    /* Remove from the list */
-    if (prev == NULL) {
-	sqldb->head_cursor = scp->next;
-    } else {
-	prev->next = scp->next;
-    }
-
-    sqldb->count--;
 
 /*@-kepttrans@*/
     scp = scpFree(scp);
@@ -549,20 +502,13 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 
     if (db && db->app_private && ((SQL_DB *)db->app_private)->db) {
 	sqldb = (SQL_DB *)db->app_private;
-	assert(sqldb != NULL && sqldb->db != NULL);
+assert(sqldb != NULL && sqldb->db != NULL);
 
 	/* Commit, don't open a new one */
 	rc = sql_commitTransaction(dbi, 1);
 
 	/* close all cursors */
-/*@-infloops@*/
-	while ( sqldb->head_cursor ) {
-	    (void) sql_cclose(dbi, sqldb->head_cursor->name, 0);
-	}
-/*@=infloops@*/
-
-	if (sqldb->count)
-	    rpmMessage(RPMMESS_DEBUG, "cursors %ld\n", sqldb->count);
+	/* HACK: unlear whether sqlite cursors need to be chained and closed. */
 
 	(void) sqlite3_close(sqldb->db);
 
@@ -716,7 +662,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 	(void) sqlite3_busy_handler(sqldb->db, &sql_busy_handler, dbi);
 
     sqldb->transaction = 0;	/* Initialize no current transactions */
-    sqldb->head_cursor = NULL; 	/* no current cursors */
 
     db->app_private = sqldb;
     dbi->dbi_db = db;
@@ -808,11 +753,8 @@ assert(sqldb->db != NULL);
     scp = scpNew();
 if (_debug)
 fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), scp);
-    scp->name = dbcursor;
-    scp->next = sqldb->head_cursor;
-    sqldb->head_cursor = scp;
 
-    sqldb->count++;
+    dbcursor->internal = (DBC_INTERNAL *)scp;
 
     /* If we're going to write, start a transaction (lock the DB) */
     if (flags == DB_WRITECURSOR) {
@@ -1090,28 +1032,15 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     DB * db = dbi->dbi_db;
 /*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     SCP_t scp;
-    int copen_done = 0;   
     int rc = 0;
 
 assert(sqldb->db != NULL);
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
-/* XXX modern rpm always uses copen/cclose. */
-assert(dbcursor != NULL);
-    if ( dbcursor == NULL ) {
-	rc = sql_copen ( dbi, NULL, &dbcursor, 0 );
-	copen_done = 1;
-    }
-
     /* Find our version of the db3 cursor */
-    scp = sqldb->head_cursor;
-/* XXX no need to chain cursors with copen/cclose. */
-assert(scp != NULL && scp->name == dbcursor);
-    while ( scp != NULL && scp->name != dbcursor ) {
-	scp = scp->next;
-    }
-
+assert(dbcursor != NULL);
+    scp = (SCP_t)dbcursor->internal;
 assert(scp != NULL);
 if (noisy)
 fprintf(stderr, "\tcget(%s) scp %p\n", dbi->dbi_subfile, scp);
@@ -1258,9 +1187,6 @@ exit:
 if (_debug)
 fprintf(stderr, "\tcget(%s) not found\n", dbi->dbi_subfile);
     }
-
-    if (copen_done)
-	/*@-temptrans@*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=temptrans@*/
 
     return rc;
 }
@@ -1488,14 +1414,12 @@ static int sql_ccount (dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 	/*@modifies *dbcursor, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *)db->app_private;
 
     /* unused */
     rpmMessage(RPMMESS_ERROR, "sql_cpget() not implemented\n");
 
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
+assert(sqldb->db != NULL);
 
     return EINVAL;
 }
