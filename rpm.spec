@@ -71,6 +71,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /usr/src/redhat/SRPMS
 /usr/src/redhat/RPMS
 /usr/share/locale/sv/LC_MESSAGES/rpm.mo
+/usr/share/locale/de/LC_MESSAGES/rpm.mo
+/usr/share/locale/pt-br/LC_MESSAGES/rpm.mo
 
 %files devel
 /usr/include/rpm
