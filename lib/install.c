@@ -9,6 +9,7 @@
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"
+#include "rpmmacro.h"
 
 struct callbackInfo {
     unsigned long archiveSize;
@@ -274,7 +275,7 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
     struct fileInfo * files;
     int_32 installTime;
     char * fileStates;
-    int i, j;
+    int i;
     int installFile = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
@@ -675,7 +676,6 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 			  void * notifyData,
 			  char * labelFormat) {
     char * specFile;
-    char * sourceDir, * specDir;
     int specFileIndex = -1;
     char * realSourceDir, * realSpecDir;
     char * instSpecFile, * correctSpecFile;
@@ -694,18 +694,21 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 
     rpmMessage(RPMMESS_DEBUG, _("installing a source package\n"));
 
-    sourceDir = rpmGetVar(RPMVAR_SOURCEDIR);
-    specDir = rpmGetVar(RPMVAR_SPECDIR);
+    {	char buf[BUFSIZ];
+	strcpy(buf, rootdir);
+	strcat(buf, "/%{_sourcedir}");
+	expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+	realSourceDir = alloca(strlen(buf)+1);
+	strcpy(realSourceDir, buf);
+    }
 
-    realSourceDir = alloca(strlen(rootdir) + strlen(sourceDir) + 2);
-    strcpy(realSourceDir, rootdir);
-    strcat(realSourceDir, "/");
-    strcat(realSourceDir, sourceDir);
-
-    realSpecDir = alloca(strlen(rootdir) + strlen(specDir) + 2);
-    strcpy(realSpecDir, rootdir);
-    strcat(realSpecDir, "/");
-    strcat(realSpecDir, specDir);
+    {	char buf[BUFSIZ];
+	strcpy(buf, rootdir);
+	strcat(buf, "/%{_specdir}");
+	expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+	realSpecDir = alloca(strlen(buf)+1);
+	strcpy(realSpecDir, buf);
+    }
 
     if (access(realSourceDir, W_OK)) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSourceDir);
