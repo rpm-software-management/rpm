@@ -15,6 +15,7 @@
 	- detect (and remove) dbenv files while upgrading to db-4.2.52.
 	- ensure that librpmdb links against just built, not system, librpmio.
 	- fix: dangling pointer brain fart (#107835).
+	- fix: ds.Single() method needs malloc'd elements (#109919).
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.
