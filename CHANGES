@@ -1,5 +1,6 @@
 2.3.3 -> 2.3.4:
 	- %changelog processing
+	- fixed broken requires/conflicts
 
 2.3.2 -> 2.3.3:
 	- Ripped out header internals and redid them. Any compatibility 
