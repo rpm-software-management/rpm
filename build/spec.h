@@ -6,9 +6,9 @@
 #ifndef _spec_h
 #define _spec_h
 
-typedef struct spec *Spec;
+typedef struct SpecRec *Spec;
 
-Spec parse_spec(FILE *f);
-void free_spec(Spec s);
+Spec parseSpec(FILE *f);
+void freeSpec(Spec s);
 
 #endif _spec_h
