@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-03 17:51-0500\n"
+"POT-Creation-Date: 2005-02-10 04:01-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3742,7 +3742,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1641
+#: lib/transaction.c:1645
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3750,31 +3750,31 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1722
+#: lib/transaction.c:1726
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:1901
+#: lib/transaction.c:1905
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2055
+#: lib/transaction.c:2059
 msgid "Add failed.  Could not read package header.\n"
 msgstr ""
 
-#: lib/transaction.c:2119
+#: lib/transaction.c:2123
 msgid "Add failed in rpmpsmStage().\n"
 msgstr ""
 
-#: lib/transaction.c:2163
+#: lib/transaction.c:2167
 msgid "Add failed.  Could not get file list.\n"
 msgstr ""
 
-#: lib/transaction.c:2212
+#: lib/transaction.c:2216
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr ""
 
-#: lib/transaction.c:2270
+#: lib/transaction.c:2276
 msgid "running post-transaction scripts\n"
 msgstr ""
 

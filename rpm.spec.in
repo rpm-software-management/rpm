@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.18
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://jbj.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -71,6 +71,9 @@ This package contains the RPM shared libraries.
 Summary:  Development files for manipulating RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{rpm_version}-%{release}
+Requires: beecrypt >= 4.1.2
+Requires: neon-devel
+Requires: sqlite3-devel
 
 %description devel
 This package contains the RPM C library and header files. These
@@ -150,6 +153,8 @@ export CPPFLAGS=-I%{__prefix}/include
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
 %endif
+
+make -C zlib || :
 
 make %{?_smp_mflags}
 
@@ -495,6 +500,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Thu Feb 10 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.20
+- perform callbacks as always (#147537).
+
 * Wed Feb  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.16
 - fix: length of gpg V4 hash seed was incorrect (#146896).
 - add support for V4 rfc-2440 signatures.
