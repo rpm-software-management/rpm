@@ -34,6 +34,8 @@
 
 #include <features.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 
 /* The fts interface is incompatible with the LFS interface which
    transparently uses the 64-bit file access functions.  */
@@ -43,89 +45,127 @@
 
 
 typedef struct {
-	struct _ftsent *fts_cur;	/* current node */
-	struct _ftsent *fts_child;	/* linked list of children */
-	struct _ftsent **fts_array;	/* sort array */
-	dev_t fts_dev;			/* starting device # */
-	char *fts_path;			/* path for this descent */
-	int fts_rfd;			/* fd for root */
-	int fts_pathlen;		/* sizeof(path) */
-	int fts_nitems;			/* elements in the sort array */
-	int (*fts_compar) (const void *, const void *); /* compare fn */
+/*@owned@*/
+	struct _ftsent *fts_cur;	/*!< current node */
+/*@owned@*/ /*@null@*/
+	struct _ftsent *fts_child;	/*!< linked list of children */
+/*@owned@*/ /*@null@*/
+	struct _ftsent **fts_array;	/*!< sort array */
+	dev_t fts_dev;			/*!< starting device # */
+/*@owned@*/
+	char *fts_path;			/*!< path for this descent */
+	int fts_rfd;			/*!< fd for root */
+	int fts_pathlen;		/*!< sizeof(path) */
+	int fts_nitems;			/*!< elements in the sort array */
+	int (*fts_compar) (const void *, const void *)
+		/*@*/;			/*!< compare fn */
 
-#define	FTS_COMFOLLOW	0x0001		/* follow command line symlinks */
-#define	FTS_LOGICAL	0x0002		/* logical walk */
-#define	FTS_NOCHDIR	0x0004		/* don't change directories */
-#define	FTS_NOSTAT	0x0008		/* don't get stat info */
-#define	FTS_PHYSICAL	0x0010		/* physical walk */
-#define	FTS_SEEDOT	0x0020		/* return dot and dot-dot */
-#define	FTS_XDEV	0x0040		/* don't cross devices */
-#define FTS_WHITEOUT	0x0080		/* return whiteout information */
-#define	FTS_OPTIONMASK	0x00ff		/* valid user option mask */
+	DIR * (*fts_opendir) (const char * path)
+		/*@globals fileSystem @*/
+		/*@modifies fileSystem @*/;
+	struct dirent * (*fts_readdir) (DIR * dir)
+		/*@globals fileSystem @*/
+		/*@modifies *dir, fileSystem @*/;
+	int (*fts_closedir) (/*@only@*/ DIR * dir)
+		/*@globals fileSystem @*/
+		/*@modifies *dir, fileSystem @*/;
+	int (*fts_stat) (const char * path, /*@out@*/ struct stat * st)
+		/*@globals fileSystem @*/
+		/*@modifies *st, fileSystem @*/;
+	int (*fts_lstat) (const char * path, /*@out@*/ struct stat * st)
+		/*@globals fileSystem @*/
+		/*@modifies *st, fileSystem @*/;
 
-#define	FTS_NAMEONLY	0x0100		/* (private) child names only */
-#define	FTS_STOP	0x0200		/* (private) unrecoverable error */
-	int fts_options;		/* fts_open options, global flags */
+#define	FTS_COMFOLLOW	0x0001		/*!< follow command line symlinks */
+#define	FTS_LOGICAL	0x0002		/*!< logical walk */
+#define	FTS_NOCHDIR	0x0004		/*!< don't change directories */
+#define	FTS_NOSTAT	0x0008		/*!< don't get stat info */
+#define	FTS_PHYSICAL	0x0010		/*!< physical walk */
+#define	FTS_SEEDOT	0x0020		/*!< return dot and dot-dot */
+#define	FTS_XDEV	0x0040		/*!< don't cross devices */
+#define FTS_WHITEOUT	0x0080		/*!< return whiteout information */
+#define	FTS_OPTIONMASK	0x00ff		/*!< valid user option mask */
+
+#define	FTS_NAMEONLY	0x0100		/*!< (private) child names only */
+#define	FTS_STOP	0x0200		/*!< (private) unrecoverable error */
+	int fts_options;		/*!< fts_open options, global flags */
 } FTS;
 
 typedef struct _ftsent {
-	struct _ftsent *fts_cycle;	/* cycle node */
-	struct _ftsent *fts_parent;	/* parent directory */
-	struct _ftsent *fts_link;	/* next file in directory */
-	long fts_number;	        /* local numeric value */
-	void *fts_pointer;	        /* local address value */
-	char *fts_accpath;		/* access path */
-	char *fts_path;			/* root path */
-	int fts_errno;			/* errno for this node */
-	int fts_symfd;			/* fd for symlink */
-	u_short fts_pathlen;		/* strlen(fts_path) */
-	u_short fts_namelen;		/* strlen(fts_name) */
+/*@dependent@*/
+	struct _ftsent *fts_cycle;	/*!< cycle node */
+/*@dependent@*/
+	struct _ftsent *fts_parent;	/*!< parent directory */
+/*@dependent@*/
+	struct _ftsent *fts_link;	/*!< next file in directory */
+	long fts_number;	        /*!< local numeric value */
+	void *fts_pointer;	        /*!< local address value */
+/*@dependent@*/
+	char *fts_accpath;		/*!< access path */
+/*@dependent@*/
+	char *fts_path;			/*!< root path */
+	int fts_errno;			/*!< errno for this node */
+	int fts_symfd;			/*!< fd for symlink */
+	u_short fts_pathlen;		/*!< strlen(fts_path) */
+	u_short fts_namelen;		/*!< strlen(fts_name) */
 
-	ino_t fts_ino;			/* inode */
-	dev_t fts_dev;			/* device */
-	nlink_t fts_nlink;		/* link count */
+	ino_t fts_ino;			/*!< inode */
+	dev_t fts_dev;			/*!< device */
+	nlink_t fts_nlink;		/*!< link count */
 
 #define	FTS_ROOTPARENTLEVEL	-1
 #define	FTS_ROOTLEVEL		 0
-	short fts_level;		/* depth (-1 to N) */
+	short fts_level;		/*!< depth (-1 to N) */
 
-#define	FTS_D		 1		/* preorder directory */
-#define	FTS_DC		 2		/* directory that causes cycles */
-#define	FTS_DEFAULT	 3		/* none of the above */
-#define	FTS_DNR		 4		/* unreadable directory */
-#define	FTS_DOT		 5		/* dot or dot-dot */
-#define	FTS_DP		 6		/* postorder directory */
-#define	FTS_ERR		 7		/* error; errno is set */
-#define	FTS_F		 8		/* regular file */
-#define	FTS_INIT	 9		/* initialized only */
-#define	FTS_NS		10		/* stat(2) failed */
-#define	FTS_NSOK	11		/* no stat(2) requested */
-#define	FTS_SL		12		/* symbolic link */
-#define	FTS_SLNONE	13		/* symbolic link without target */
-#define FTS_W		14		/* whiteout object */
-	u_short fts_info;		/* user flags for FTSENT structure */
+#define	FTS_D		 1		/*!< preorder directory */
+#define	FTS_DC		 2		/*!< directory that causes cycles */
+#define	FTS_DEFAULT	 3		/*!< none of the above */
+#define	FTS_DNR		 4		/*!< unreadable directory */
+#define	FTS_DOT		 5		/*!< dot or dot-dot */
+#define	FTS_DP		 6		/*!< postorder directory */
+#define	FTS_ERR		 7		/*!< error; errno is set */
+#define	FTS_F		 8		/*!< regular file */
+#define	FTS_INIT	 9		/*!< initialized only */
+#define	FTS_NS		10		/*!< stat(2) failed */
+#define	FTS_NSOK	11		/*!< no stat(2) requested */
+#define	FTS_SL		12		/*!< symbolic link */
+#define	FTS_SLNONE	13		/*!< symbolic link without target */
+#define FTS_W		14		/*!< whiteout object */
+	u_short fts_info;		/*!< user flags for FTSENT structure */
 
-#define	FTS_DONTCHDIR	 0x01		/* don't chdir .. to the parent */
-#define	FTS_SYMFOLLOW	 0x02		/* followed a symlink to get here */
-	u_short fts_flags;		/* private flags for FTSENT structure */
+#define	FTS_DONTCHDIR	 0x01		/*!< don't chdir .. to the parent */
+#define	FTS_SYMFOLLOW	 0x02		/*!< followed a symlink to get here */
+	u_short fts_flags;		/*!< private flags for FTSENT structure */
 
-#define	FTS_AGAIN	 1		/* read node again */
-#define	FTS_FOLLOW	 2		/* follow symbolic link */
-#define	FTS_NOINSTR	 3		/* no instructions */
-#define	FTS_SKIP	 4		/* discard node */
-	u_short fts_instr;		/* fts_set() instructions */
+#define	FTS_AGAIN	 1		/*!< read node again */
+#define	FTS_FOLLOW	 2		/*!< follow symbolic link */
+#define	FTS_NOINSTR	 3		/*!< no instructions */
+#define	FTS_SKIP	 4		/*!< discard node */
+	u_short fts_instr;		/*!< fts_set() instructions */
 
-	struct stat *fts_statp;		/* stat(2) information */
-	char fts_name[1];		/* file name */
+/*@dependent@*/
+	struct stat *fts_statp;		/*!< stat(2) information */
+	char fts_name[1];		/*!< file name */
 } FTSENT;
 
 __BEGIN_DECLS
-FTSENT	*Fts_children (FTS *, int) __THROW;
-int	 Fts_close (FTS *) __THROW;
-FTS	*Fts_open (char * const *, int,
-		   int (*)(const FTSENT **, const FTSENT **)) __THROW;
-FTSENT	*Fts_read (FTS *) __THROW;
-int	 Fts_set (FTS *, FTSENT *, int) __THROW;
+/*@dependent@*/
+FTSENT	*Fts_children (FTS * sp, int instr) __THROW
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *sp, fileSystem, internalState @*/;
+int	 Fts_close (/*@only@*/ FTS * sp) __THROW
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *sp, fileSystem, internalState @*/;
+/*@only@*/
+FTS	*Fts_open (char * const * argv, int options,
+		   int (*compar) (const FTSENT **, const FTSENT **)) __THROW
+	/*@*/;
+/*@null@*/
+FTSENT	*Fts_read (FTS * sp) __THROW
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *sp, fileSystem, internalState @*/;
+int	 Fts_set (FTS * sp, FTSENT * p, int instr) __THROW
+	/*@modifies *p @*/;
 __END_DECLS
 
 #endif /* fts.h */
