@@ -58,34 +58,35 @@ void initializeCharacterTables(void)
 		hexdigit, hexvalue, tokenchar, upper, whitespace @*/
 {
     int i;
-    for (i=0;i<256;i++) upper[i] = i;
+
+    for (i=0; i<256; i++) upper[i] = i;
     for (i='a'; i<='z'; i++) upper[i] = i - 'a' + 'A';
     for (i=0;   i<=255; i++)
 	alpha[i] = decdigit[i] = whitespace[i] = base64digit[i] = FALSE;
     whitespace[' ']  = whitespace['\n'] = whitespace['\t'] = TRUE;
     whitespace['\v'] = whitespace['\r'] = whitespace['\f'] = TRUE;
-    for (i='0';i<='9';i++) {
+    for (i='0'; i<='9'; i++) {
 	base64digit[i] = hexdigit[i] = decdigit[i] = TRUE;
 	decvalue[i] = hexvalue[i] = i-'0';
 	base64value[i] = (i-'0')+52;
     }
-    for (i='a';i<='f';i++) {
-	hexdigit[i] = hexdigit[upper[i]] = TRUE;
-	hexvalue[i] = hexvalue[upper[i]] = i-'a'+10;
+    for (i='a'; i<='f'; i++) {
+	hexdigit[i] = hexdigit[(int)upper[i]] = TRUE;
+	hexvalue[i] = hexvalue[(int)upper[i]] = i-'a'+10;
     }
-    for (i='a';i<='z';i++) {
-	base64digit[i] = base64digit[upper[i]] = TRUE;
-	alpha[i] = alpha[upper[i]] = TRUE;
+    for (i='a'; i<='z'; i++) {
+	base64digit[i] = base64digit[(int)upper[i]] = TRUE;
+	alpha[i] = alpha[(int)upper[i]] = TRUE;
 	base64value[i] = i-'a'+26;
-	base64value[upper[i]] = i-'a';
+	base64value[(int)upper[i]] = i-'a';
     }
     base64digit['+'] = base64digit['/'] = TRUE;
     base64value['+'] = 62;
     base64value['/'] = 63;
     base64value['='] = 0;
-    for (i=0;i<255;i++) tokenchar[i] = FALSE;
-    for (i='a';i<='z';i++) tokenchar[i] = tokenchar[upper[i]] = TRUE;
-    for (i='0';i<='9';i++) tokenchar[i] = TRUE;
+    for (i=0; i<255; i++) tokenchar[i] = FALSE;
+    for (i='a'; i<='z'; i++) tokenchar[i] = tokenchar[(int)upper[i]] = TRUE;
+    for (i='0'; i<='9'; i++) tokenchar[i] = TRUE;
     tokenchar['-'] = TRUE;
     tokenchar['.'] = TRUE;
     tokenchar['/'] = TRUE;
@@ -350,7 +351,7 @@ void scanVerbatimString(sexpInputStream is, sexpSimpleString ss, long int length
     skipChar(is,':');
     if (length == -1L) /* no length was specified */
 	ErrorMessage(ERROR,"Verbatim string had no declared length.");
-    for (i=0;i<length;i++) {
+    for (i=0; i<length; i++) {
 	appendCharToSimpleString(is->nextChar, ss);
 	is->getChar(is);
     }
@@ -391,7 +392,7 @@ void scanQuotedString(sexpInputStream is, sexpSimpleString ss, long int length)
 		int val = 0;
 		int j;
 
-		for (j=0;j<3;j++) {
+		for (j=0; j<3; j++) {
 		    if (c >= '0' && c <= '7') {
 			val = ((val << 3) | (c - '0'));
 			if (j<2) { is->getChar(is); c = is->nextChar; }
@@ -410,7 +411,7 @@ void scanQuotedString(sexpInputStream is, sexpSimpleString ss, long int length)
 
 		is->getChar(is);
 		c = is->nextChar;
-		for (j=0;j<2;j++) {
+		for (j=0; j<2; j++) {
 		    if (isHexDigit(c)) {
 			val = ((val << 4) | hexvalue[c]);
 			if (j<1) { is->getChar(is); c = is->nextChar; }

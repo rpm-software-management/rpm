@@ -134,7 +134,7 @@ void newLine(sexpOutputStream os, int mode)
     }
     if (mode == ADVANCED) {
 	int i;
-	for (i=0;i<os->indent&&(4*i)<os->maxcolumn;i++)
+	for (i=0; i<os->indent && (4*i)<os->maxcolumn; i++)
 	    os->putChar(os, ' ');
     }
 }
@@ -307,7 +307,7 @@ int canPrintAsToken(sexpOutputStream os, sexpSimpleString ss)
     if (isDecDigit((int)*c)) return FALSE;
     if (os->maxcolumn > 0 && os->column + len >= os->maxcolumn)
 	return FALSE;
-    for (i=0;i<len;i++)
+    for (i=0; i<len; i++)
 	if (!isTokenChar((int)(*c++))) return FALSE;
     return TRUE;
 }
@@ -324,7 +324,7 @@ void advancedPrintTokenSimpleString(sexpOutputStream os, sexpSimpleString ss)
 
     if (os->maxcolumn>0 && os->column > (os->maxcolumn - len))
 	os->newLine(os, ADVANCED);
-    for (i=0;i<len;i++)
+    for (i=0; i<len; i++)
 	os->putChar(os, (int)(*c++));
 }
 
@@ -355,7 +355,7 @@ void advancedPrintVerbatimSimpleString(sexpOutputStream os, sexpSimpleString ss)
 	os->newLine(os, ADVANCED);
     printDecimal(os,len);
     os->putChar(os,':');
-    for (i=0;i<len;i++) os->putChar(os, (int)*c++);
+    for (i=0; i<len; i++) os->putChar(os, (int)*c++);
 }
 
 /* advancedLengthSimpleStringVerbatim(ss)
@@ -384,7 +384,7 @@ void advancedPrintBase64SimpleString(sexpOutputStream os, sexpSimpleString ss)
 	ErrorMessage(ERROR, "Can't print NULL string base 64");
     varPutChar(os,'|');
     changeOutputByteSize(os, 6, ADVANCED);
-    for (i=0;i<len;i++)
+    for (i=0; i<len; i++)
 	varPutChar(os, (int)(*c++));
     flushOutput(os);
     changeOutputByteSize(os, 8, ADVANCED);
@@ -406,7 +406,7 @@ void advancedPrintHexSimpleString(sexpOutputStream os, sexpSimpleString ss)
 	ErrorMessage(ERROR, "Can't print NULL string hexadecimal");
     os->putChar(os, '#');
     changeOutputByteSize(os, 4, ADVANCED);
-    for (i=0;i<len;i++)
+    for (i=0; i<len; i++)
 	varPutChar(os, (int)(*c++));
     flushOutput(os);
     changeOutputByteSize(os, 8, ADVANCED);
