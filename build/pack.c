@@ -9,6 +9,7 @@
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/signal.h>
 #include <string.h>
 #include <fcntl.h>
 #include <time.h>
@@ -18,6 +19,7 @@
 #include <grp.h>
 #include <netdb.h>
 #include <glob.h>
+#include <zlib.h>
 
 #include "header.h"
 #include "specP.h"
@@ -44,7 +46,7 @@ struct file_entry {
     struct file_entry *next;
 };
 
-static int cpio_gzip(Header header, int fd, char *tempdir);
+static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize);
 static int writeMagic(int fd, char *name, unsigned short type,
 		      unsigned short sigtype);
 static int add_file(struct file_entry **festack, const char *name,
@@ -79,9 +81,9 @@ int generateRPM(char *name,       /* name-version-release         */
     unsigned short sigtype;
     char *archName;
     char filename[1024];
-    char *sigtarget;
-    int fd, ifd, count;
-    char buffer[8192];
+    char *sigtarget, *archiveTemp;
+    int fd, ifd, count, archiveSize;
+    unsigned char buffer[8192];
 
     /* Figure out the signature type */
     if ((sigtype = sigLookupType()) == RPMSIG_BAD) {
@@ -98,14 +100,28 @@ int generateRPM(char *name,       /* name-version-release         */
 		archName, name, archName);
     }
 
-    /* First we have to write the header and archive */
-    sigtarget = tempnam("/usr/tmp", "rpmbuild");
-    fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    writeHeader(fd, header);
-    if (cpio_gzip(header, fd, stempdir)) {
+    /* Write the archive to a temp file so we can get the size */
+    archiveTemp = tempnam("/usr/tmp", "rpmbuild");
+    fd = open(archiveTemp, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    if (cpio_gzip(header, fd, stempdir, &archiveSize)) {
 	return 1;
     }
     close(fd);
+
+    /* Add the archive size to the Header */
+    addEntry(header, RPMTAG_ARCHIVESIZE, INT32_TYPE, &archiveSize, 1);
+    
+    /* Now write the header and append the archive */
+    sigtarget = tempnam("/usr/tmp", "rpmbuild");
+    fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    writeHeader(fd, header);
+    ifd = open(archiveTemp, O_RDONLY, 0644);
+    while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
+	write(fd, buffer, count);
+    }
+    close(ifd);
+    close(fd);
+    unlink(archiveTemp);
 
     /* Now write the lead */
     fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
@@ -120,7 +136,7 @@ int generateRPM(char *name,       /* name-version-release         */
 
     /* Append the header and archive */
     ifd = open(sigtarget, O_RDONLY);
-    while ((count = read(ifd, buffer, 8192)) > 0) {
+    while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
 	write(fd, buffer, count);
     }
     close(ifd);
@@ -149,19 +165,28 @@ static int writeMagic(int fd, char *name,
     return 0;
 }
 
-static int cpio_gzip(Header header, int fd, char *tempdir)
+static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 {
     char **f, *s;
     int count;
     FILE *inpipeF;
-    int cpioPID, gzipPID;
+    int cpioPID;
     int inpipe[2];
     int outpipe[2];
     int status;
+    gzFile zFile;
+    void *oldhandler;
+    int cpioDead;
+    int bytes;
+    unsigned char buf[8192];
 
+    *archiveSize = 0;
+    
     pipe(inpipe);
     pipe(outpipe);
     
+    oldhandler = signal(SIGPIPE, SIG_IGN);
+
     if (!(cpioPID = fork())) {
 	close(0);
 	close(1);
@@ -196,50 +221,52 @@ static int cpio_gzip(Header header, int fd, char *tempdir)
 	return RPMERR_FORK;
     }
 
-    if (!(gzipPID = fork())) {
-	close(0);
-	close(1);
-	close(inpipe[1]);
-	close(inpipe[0]);
-	close(outpipe[1]);
-
-	dup2(outpipe[0], 0); /* Make stdin the out pipe */
-	dup2(fd, 1);         /* Make stdout the passed-in file descriptor */
-	close(fd);
-
-	execlp("gzip", "gzip", "-c9fn", NULL);
-	error(RPMERR_EXEC, "Couldn't exec gzip");
-	exit(RPMERR_EXEC);
-    }
-    if (gzipPID < 0) {
-	error(RPMERR_FORK, "Couldn't fork");
-	return RPMERR_FORK;
-    }
-
     close(inpipe[0]);
     close(outpipe[1]);
-    close(outpipe[0]);
+    fcntl(outpipe[0], F_SETFL, O_NONBLOCK);
 
-    if (getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
-	inpipeF = fdopen(inpipe[1], "w");
-	while (count--) {
-	    s = *f++;
-	    /* For binary package, strip the leading "/" for cpio */
-	    fprintf(inpipeF, "%s\n", (tempdir) ? s : (s+1));
-	}
-	fclose(inpipeF);
-    } else {
-	close(inpipe[1]);
+    /* XXX - Unfortunately, this only does default (level 6) comrpession */
+    zFile = gzdopen(fd, "w");
+
+    inpipeF = fdopen(inpipe[1], "w");
+    if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
+	/* count may already be 0, but this is safer */
+	count = 0;
     }
+    
+    cpioDead = 0;
+    do {
+	if (waitpid(cpioPID, &status, WNOHANG)) {
+	    cpioDead = 1;
+	}
 
+	/* Write a file to the cpio process */
+	if (count) {
+	    s = *f++;
+	    fprintf(inpipeF, "%s\n", (tempdir) ? s : (s+1));
+	    count--;
+	} else {
+	    fclose(inpipeF);
+	}
+	
+	/* Read any data from cpio, write it to the output fd */
+	bytes = read(outpipe[0], buf, sizeof(buf));
+	while (bytes > 0) {
+	    *archiveSize += bytes;
+	    gzwrite(zFile, buf, bytes);
+	    bytes = read(outpipe[0], buf, sizeof(buf));
+	}
+
+    } while (!cpioDead);
+
+    close(inpipe[1]);
+    close(outpipe[0]);
+    gzclose(zFile);
+    
+    signal(SIGPIPE, oldhandler);
     waitpid(cpioPID, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	error(RPMERR_CPIO, "cpio failed");
-	return 1;
-    }
-    waitpid(gzipPID, &status, 0);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	error(RPMERR_GZIP, "gzip failed");
 	return 1;
     }
 
