@@ -9,31 +9,65 @@
 #include <header.h>
 #include <rpmhash.h>
 
-typedef /*@abstract@*/ struct availableList_s *		availableList;
-typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
+typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
 typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
+
+typedef /*@abstract@*/ struct availableList_s *		availableList;
+typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
 
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _ts_debug;
 /*@=exportlocal@*/
 
+/** \ingroup rpmdep
+ * Dependncy ordering information.
+ */
+/*@-fielduse@*/	/* LCL: confused by union? */
+struct tsortInfo_s {
+    union {
+	int	count;
+	/*@kept@*/ /*@null@*/ transactionElement suc;
+    } tsi_u;
+#define	tsi_count	tsi_u.count
+#define	tsi_suc		tsi_u.suc
+/*@owned@*/ /*@null@*/
+    struct tsortInfo_s * tsi_next;
+/*@null@*/
+    transactionElement tsi_chain;
+    int		tsi_reqx;
+    int		tsi_qcnt;
+};
+/*@=fielduse@*/
+
+/**
+ */
 struct orderListIndex_s {
     int alIndex;
     int orIndex;
 };
 
-
 /** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.
  */
-/*@-fielduse@*/	/* LCL: confused by union? */
 struct transactionElement_s {
+/*@only@*/ /*@null@*/
+    char * NEVR;
+/*@owned@*/ /*@null@*/
+    char * name;
+/*@dependent@*/ /*@null@*/
+    char * version;
+/*@dependent@*/ /*@null@*/
+    char * release;
+    int npreds;				/*!< No. of predecessors. */
+    int depth;				/*!< Max. depth in dependency tree. */
+    struct tsortInfo_s tsi;
     enum rpmTransactionType {
 	TR_ADDED,	/*!< Package will be installed. */
 	TR_REMOVED	/*!< Package will be removed. */
     } type;		/*!< Package disposition (installed/removed). */
+/*@-fielduse@*/	/* LCL: confused by union? */
     union { 
 /*@unused@*/ int addedIndex;
 /*@unused@*/ struct {
@@ -41,8 +75,8 @@ struct transactionElement_s {
 	    int dependsOnIndex;
 	} removed;
     } u;
-} ;
 /*@=fielduse@*/
+};
 
 /**
  * A package dependency set.

@@ -6,30 +6,6 @@
  * Structures used for managing added/available package lists.
  */
 
-/**
- */
-typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
-
-/** \ingroup rpmdep
- * Dependncy ordering information.
- */
-/*@-fielduse@*/	/* LCL: confused by union? */
-struct tsortInfo_s {
-    union {
-	int	count;
-	/*@kept@*/ /*@null@*/ availablePackage suc;
-    } tsi_u;
-#define	tsi_count	tsi_u.count
-#define	tsi_suc		tsi_u.suc
-/*@owned@*/ /*@null@*/
-    struct tsortInfo_s * tsi_next;
-/*@kept@*/ /*@null@*/
-    availablePackage tsi_pkg;
-    int		tsi_reqx;
-    int		tsi_qcnt;
-};
-/*@=fielduse@*/
-
 /** \ingroup rpmdep
  * Info about a single package to be installed.
  */
@@ -43,9 +19,6 @@ struct availablePackage_s {
 /*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
 /*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
     int filesCount;			/*!< No. of files in header. */
-    int npreds;				/*!< No. of predecessors. */
-    int depth;				/*!< Max. depth in dependency tree. */
-    struct tsortInfo_s tsi;		/*!< Dependency tsort data. */
     uint_32 multiLib;	/* MULTILIB */
 /*@kept@*//*@null@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
 /*@null@*/ rpmRelocation * relocs;
@@ -108,15 +81,6 @@ rpmDepSet alGetProvides(/*@null@*/ const availableList al, int pkgNum)
  * @return		available package requires
  */
 rpmDepSet alGetRequires(/*@null@*/ const availableList al, int pkgNum)
-	/*@*/;
-
-/**
- * Return available package tsort info.
- * @param al		available list
- * @param pkgNum	available package index
- * @return		available package tsort info
- */
-tsortInfo alGetTSI(/*@null@*/ const availableList al, int pkgNum)
 	/*@*/;
 
 /**
@@ -279,10 +243,9 @@ availablePackage * alAllSatisfiesDepend(const availableList al,
  * @param keyType	type of dependency
  * @param keyDepend	dependency string representation
  * @param key		dependency
- * @return		available package pointer
+ * @return		available package index, -1 on not found
  */
-/*@only@*/ /*@null@*/
-availablePackage alSatisfiesDepend(const availableList al,
+long alSatisfiesDepend(const availableList al,
 		const char * keyType, const char * keyDepend,
 		const rpmDepSet key)
 	/*@*/;

@@ -26,6 +26,7 @@ typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
 /*@access availableList@*/
 
 /*@access availablePackage@*/
+/*@access tsortInfo@*/
 
 /*@access rpmDepSet@*/
 
@@ -152,14 +153,6 @@ rpmDepSet alGetRequires(const availableList al, int pkgNum)
     /*@=immediatetrans =retexpose@*/
 }
 
-tsortInfo alGetTSI(const availableList al, int pkgNum)
-{
-    availablePackage alp = alGetPkg(al, pkgNum);
-    /*@-immediatetrans -retexpose@*/
-    return (alp != NULL ? &alp->tsi : 0);
-    /*@=immediatetrans =retexpose@*/
-}
-
 Header alGetHeader(availableList al, int pkgNum, int unlink)
 {
     availablePackage alp = alGetPkg(al, pkgNum);
@@ -278,14 +271,6 @@ availableList alFree(availableList al)
 
     if ((p = al->list) != NULL)
     for (i = 0; i < al->size; i++, p++) {
-
-	{   tsortInfo tsi;
-	    while ((tsi = p->tsi.tsi_next) != NULL) {
-		p->tsi.tsi_next = tsi->tsi_next;
-		tsi->tsi_next = NULL;
-		tsi = _free(tsi);
-	    }
-	}
 
 	p->provides.N = hfd(p->provides.N, -1);
 	p->provides.EVR = hfd(p->provides.EVR, -1);
@@ -463,8 +448,6 @@ alAddPackage(availableList al, int pkgNum,
     p = al->list + pkgNum;
 
     p->h = headerLink(h);	/* XXX reference held by transaction set */
-    p->depth = p->npreds = 0;
-    memset(&p->tsi, 0, sizeof(p->tsi));
     p->multiLib = 0;	/* MULTILIB */
 
     xx = headerNVR(p->h, &p->name, &p->version, &p->release);
@@ -877,17 +860,16 @@ alAllSatisfiesDepend(const availableList al,
     return ret;
 }
 
-availablePackage alSatisfiesDepend(const availableList al,
+long alSatisfiesDepend(const availableList al,
 		const char * keyType, const char * keyDepend,
 		const rpmDepSet key)
 {
-    availablePackage ret;
     availablePackage * tmp = alAllSatisfiesDepend(al, keyType, keyDepend, key);
 
     if (tmp) {
-	ret = tmp[0];
+	availablePackage ret = tmp[0];
 	tmp = _free(tmp);
-	return ret;
+	return (ret - al->list);
     }
-    return NULL;
+    return -1;
 }

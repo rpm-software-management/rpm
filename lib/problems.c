@@ -7,7 +7,6 @@
 #include <rpmlib.h>
 
 #include "depends.h"
-#include "rpmal.h"
 #include "misc.h"
 #include "debug.h"
 
@@ -64,15 +63,14 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
     memset(p, 0, sizeof(*p));
 
     p->type = type;
-
     p->key = key;
-
     p->ulong1 = ulong1;
     p->ignoreProblem = 0;
-    p->str1 = NULL;
-    p->pkgNEVR = NULL;
-    p->altNEVR = NULL;
 
+    p->pkgNEVR = pkgNEVR;	/* XXX FIXME: xstrdup */
+    p->altNEVR = altNEVR;	/* XXX FIXME: xstrdup */
+
+    p->str1 = NULL;
     if (dn != NULL || bn != NULL) {
 	t = xcalloc(1,	(dn != NULL ? strlen(dn) : 0) +
 			(bn != NULL ? strlen(bn) : 0) + 1);
@@ -80,10 +78,6 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
 	if (dn != NULL) t = stpcpy(t, dn);
 	if (bn != NULL) t = stpcpy(t, bn);
     }
-
-    p->pkgNEVR = pkgNEVR;
-    p->altNEVR = altNEVR;
-
 }
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
