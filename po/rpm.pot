@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-05-07 14:21-0400\n"
+"POT-Creation-Date: 1999-05-07 15:39-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1194,7 +1194,7 @@ msgstr ""
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 
-#: ../rpm.c:727 ../rpm.c:733 ../rpm.c:740 ../rpm.c:747 ../rpm.c:755
+#: ../rpm.c:726 ../rpm.c:732 ../rpm.c:739 ../rpm.c:746 ../rpm.c:755
 #: ../rpm.c:763 ../rpm.c:771 ../rpm.c:923
 msgid "one type of query/verify may be performed at a time"
 msgstr ""

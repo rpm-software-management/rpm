@@ -721,7 +721,6 @@ int main(int argc, char ** argv) {
 	    upgrade = 1;
 	    break;
 
-#ifdef DYING
 	  case 'p':
 	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_RPM)
 		argerror(_("one type of query/verify may be performed at a " "time"));
@@ -749,6 +748,7 @@ int main(int argc, char ** argv) {
 	    QVSource = RPMQV_ALL;
 	    break;
 
+#ifdef DYING	/* XXX WTFO? the above QVSources *must* be here */
 	  case GETOPT_WHATREQUIRES:
 	    if (QVSource != RPMQV_PACKAGE && 
 		QVSource != RPMQV_WHATREQUIRES)
