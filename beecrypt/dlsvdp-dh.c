@@ -1,9 +1,3 @@
-/** \ingroup DL_m DH_m
- * \file dlsvdp-dh.c
- *
- * Discrete Logarithm Secret Value Derivation Primite - Diffie Hellman, code.
- */
-
 /*
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
@@ -21,6 +15,16 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file dlsvdp-dh.c
+ * \brief Diffie-Hellman algorithm.
+ *
+ * The IEEE P.1363 designation is:
+ * Discrete Logarithm Secret Value Derivation Primitive, Diffie-Hellman style.
+ *
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup DL_m DL_dh_m
  */
 
 #include "system.h"

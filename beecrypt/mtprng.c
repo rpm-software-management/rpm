@@ -101,11 +101,11 @@ int mtprngSetup(mtprngParam* mp)
 	return -1;
 }
 
-int mtprngSeed(mtprngParam* mp, const uint32_t* data, int size)
+int mtprngSeed(mtprngParam* mp, const uint32_t* data, size_t size)
 {
 	if (mp)
 	{
-		int	needed = N+1;
+		size_t	needed = N+1;
 		uint32_t*	dest = mp->state;
 
 		#ifdef _REENTRANT
@@ -152,7 +152,7 @@ int mtprngSeed(mtprngParam* mp, const uint32_t* data, int size)
 	return -1;
 }
 
-int mtprngNext(mtprngParam* mp, uint32_t* data, int size)
+int mtprngNext(mtprngParam* mp, uint32_t* data, size_t size)
 {
 	if (mp)
 	{

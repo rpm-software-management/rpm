@@ -180,12 +180,12 @@ int md5Update(md5Param* p, const byte* data, size_t size)
 	mpw add[1];
 	mpsetw(1, add, size);
 	mplshift(1, add, 3);
-	mpadd(1, p->length, add);
+	(void) mpadd(1, p->length, add);
 	#elif (MP_WBITS == 32)
 	mpw add[2];
 	mpsetw(2, add, size);
 	mplshift(2, add, 3);
-	mpadd(2, p->length, add);
+	(void) mpadd(2, p->length, add);
 	#else
 	# error
 	#endif

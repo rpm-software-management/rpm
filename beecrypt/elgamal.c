@@ -1,10 +1,36 @@
-/** \ingroup ELGAMAL_m
- * \file elgamal.c
+/*
+ * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
- * ElGamal signature scheme, code
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This code implements two of the six variants described:
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*!\file elgamal.c
+ * \brief ElGamal algorithm.
+ *
+ * For more information on this algorithm, see:
+ *  "Handbook of Applied Cryptography"
+ *  11.5.2 "The ElGamal signature scheme", p. 454-459
+ *
+ * Two of the signature variants in Note 11.70 are described.
+ *
+ * \todo Explore the possibility of using simultaneous multiple exponentiation,
+ *       as described in HAC, 14.87 (iii).
+ *
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup DL_m DL_elgamal_m
  * - ElGamal Signature variant 1: (i.e. the standard version)
  *  - Signing equation:
  *   - r = g^k mod p and
@@ -28,30 +54,6 @@
  *   - v2 = y^r * r^h(m) mod p
  *  - Simultaneous multiple exponentiation verification:
  *   - y^r * r^h(m) * g^(p-1-s) mod p = 1 (one of the exponents is significantly smaller, i.e. h(m))
- *
- * For more information on this algorithm, see:
- *  "Handbook of Applied Cryptography"
- *  11.5.2 "The ElGamal signature scheme", p. 454-459
- */
-
-/*
- * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "system.h"
@@ -217,3 +219,6 @@ int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
 	}
 	return 0;
 }
+
+/*!\}
+ */

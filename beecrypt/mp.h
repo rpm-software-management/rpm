@@ -300,7 +300,7 @@ void mpsetx(size_t xsize, /*@out@*/ mpw* xdata, size_t ysize, const mpw* ydata)
 /**
  */
 BEECRYPTAPI
-int mpaddw(size_t xsize, mpw* xdata, mpw y)
+int mpaddw(size_t size, mpw* xdata, mpw y)
 	/*@modifies xdata @*/;
 
 /**
@@ -318,7 +318,7 @@ int mpaddx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
 /**
  */
 BEECRYPTAPI
-int mpsubw(size_t xsize, mpw* xdata, mpw y)
+int mpsubw(size_t size, mpw* xdata, mpw y)
 	/*@modifies xdata @*/;
 
 /**
@@ -373,7 +373,7 @@ size_t mpbitcnt(size_t size, const mpw* data)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI /*@unused@*/
-size_t mplszcnt(size_t xsize, const mpw* xdata)
+size_t mplszcnt(size_t size, const mpw* data)
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -418,20 +418,20 @@ void mpsdivtwo(size_t size, mpw* data)
 /**
  */
 BEECRYPTAPI
-mpw mpsetmul   (size_t size, /*@out@*/ mpw* result, const mpw* xdata, mpw y)
+mpw mpsetmul   (size_t size, /*@out@*/ mpw* result, const mpw* data, mpw y)
 	/*@modifies result @*/;
 
 /**
  */
 BEECRYPTAPI
-mpw mpaddmul   (size_t size, /*@out@*/ mpw* result, const mpw* xdata, mpw y)
+mpw mpaddmul   (size_t size, /*@out@*/ mpw* result, const mpw* data, mpw y)
 	/*@modifies result @*/;
 
 /**
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-mpw mpaddsqrtrc(size_t size, /*@out@*/ mpw* result, const mpw* xdata)
+mpw mpaddsqrtrc(size_t size, /*@out@*/ mpw* result, const mpw* data)
 	/*@modifies result @*/;
 /*@=exportlocal@*/
 
@@ -444,7 +444,7 @@ void mpmul(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysize, 
 /**
  */
 BEECRYPTAPI
-void mpsqr(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata)
+void mpsqr(/*@out@*/ mpw* result, size_t size, const mpw* data)
 	/*@modifies result @*/;
 
 /**
@@ -462,32 +462,32 @@ mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 /**
  */
 BEECRYPTAPI /*@unused@*/
-mpw mpnmodw(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, mpw y, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
+mpw mpnmodw(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, mpw y, /*@out@*/ mpw* workspace)
+	/*@modifies result, workspace @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpnmod(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
+void mpnmod(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* workspace)
+	/*@modifies result, workspace @*/;
 
 /**
  */
 BEECRYPTAPI
-void mpndivmod(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
+void mpndivmod(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* workspace)
+	/*@modifies result, workspace @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpprint(/*@null@*/ FILE * fp, size_t xsize, /*@null@*/ const mpw* xdata)
+void mpprint(/*@null@*/ FILE * fp, size_t size, /*@null@*/ const mpw* data)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpprintln(/*@null@*/ FILE * fp, size_t xsize, /*@null@*/ const mpw* xdata)
+void mpprintln(/*@null@*/ FILE * fp, size_t size, /*@null@*/ const mpw* data)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 

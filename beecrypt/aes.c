@@ -762,7 +762,7 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 		ap->fdback[2] = 0;
 		ap->fdback[3] = 0;
 
-		ap->nr = 6 + ((uint32_t)keybits >> 5);
+		ap->nr = 6 + (keybits >> 5);
 
 		rk = ap->k;
 
@@ -846,8 +846,6 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 				rk += 8;
 			}
 		}
-		else
-			{};
 
 		if (op == DECRYPT)
 		{
@@ -1182,6 +1180,5 @@ uint32_t* aesFeedback(aesParam* ap)
 {
 	return ap->fdback;
 }
-
 /*!\}
  */

@@ -1,6 +1,4 @@
 /*
- * <conformance statement for IEEE P1363 needed here>
- *
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
  *
  * This library is free software; you can redistribute it and/or

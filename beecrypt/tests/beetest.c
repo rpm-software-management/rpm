@@ -27,7 +27,7 @@
 #include "blockmode.h"
 #include "aes.h"
 #include "blowfish.h"
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 #include "dhaes.h"
 #include "dlkp.h"
 #include "dsa.h"
@@ -37,7 +37,7 @@
 #include "rsa.h"
 #include "sha1.h"
 #include "sha256.h"
-#include "mp32.h"
+#include "mp.h"
 
 #if HAVE_STDLIB_H
 # include <stdlib.h>
@@ -54,14 +54,21 @@
 
 #include <stdio.h>
 
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_q = "c773218c737ec8ee993b4f2ded30f48edace915f";
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_g = "626d027839ea0a13413163a55b4cb500299d5522956cefcb3bff10f399ce2c2e71cb9de5fa24babf58e5b79521925c9cc42e9f6f464b088cc572af53e6d78802";
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_x = "2070b3223dba372fde1c0ffc7b2e3b498b260614";
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859bfd6c5675da9d212d3a36ef1672ef660b8c7c255cc0ec74858fba33f44c06699630a76b030ee333";
+/*@unchecked@*/ /*@observer@*/
 static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80290";
 
-int testVectorInvMod(const dlkp_p* keypair)
+static int testVectorInvMod(const dlkp_p* keypair)
+	/*@*/
 {
 	randomGeneratorContext rngc;
 
@@ -69,41 +76,43 @@ int testVectorInvMod(const dlkp_p* keypair)
 	{
 		register int rc;
 
-		register uint32  size = keypair->param.p.size;
-		register uint32* temp = (uint32*) malloc((8*size+6) * sizeof(uint32));
+		register size_t  size = keypair->param.p.size;
+		register mpw* temp = (mpw*) malloc((8*size+6) * sizeof(*temp));
 
-		mp32brndinv_w(&keypair->param.n, &rngc, temp, temp+size, temp+2*size);
+		mpbrndinv_w(&keypair->param.n, &rngc, temp, temp+size, temp+2*size);
 
-		mp32bmulmod_w(&keypair->param.n, size, temp, size, temp+size, temp, temp+2*size);
+		mpbmulmod_w(&keypair->param.n, size, temp, size, temp+size, temp, temp+2*size);
 
-		rc = mp32isone(size, temp);
+		rc = mpisone(size, temp);
 
 		free(temp);
 
-		randomGeneratorContextFree(&rngc);
+		(void) randomGeneratorContextFree(&rngc);
 
 		return rc;
 	}
 	return -1;
 }
 
-int testVectorExpMod(const dlkp_p* keypair)
+static int testVectorExpMod(const dlkp_p* keypair)
+	/*@*/
 {
 	int rc;
-	mp32number y;
+	mpnumber y;
 	
-	mp32nzero(&y);
+	mpnzero(&y);
 	
-	mp32bnpowmod(&keypair->param.p, &keypair->param.g, &keypair->x, &y);
+	mpbnpowmod(&keypair->param.p, &keypair->param.g, &keypair->x, &y);
 
-	rc = mp32eqx(y.size, y.data, keypair->y.size, keypair->y.data);
+	rc = mpeqx(y.size, y.data, keypair->y.size, keypair->y.data);
 
-	mp32nfree(&y);
+	mpnfree(&y);
 
 	return rc;
 }
 
-int testVectorElGamalV1(const dlkp_p* keypair)
+static int testVectorElGamalV1(const dlkp_p* keypair)
+	/*@*/
 {
 	int rc = 0;
 
@@ -111,30 +120,31 @@ int testVectorElGamalV1(const dlkp_p* keypair)
 
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	{
-		mp32number digest, r, s;
+		mpnumber digest, r, s;
 
-		mp32nzero(&digest);
-		mp32nzero(&r);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&r);
+		mpnzero(&s);
 
-		mp32nsize(&digest, 5);
+		mpnsize(&digest, 5);
 
-		rngc.rng->next(rngc.param, digest.data, digest.size);
+		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
 
-		elgv1sign(&keypair->param.p, &keypair->param.n, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
+		(void) elgv1sign(&keypair->param.p, &keypair->param.n, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
 
 		rc = elgv1vrfy(&keypair->param.p, &keypair->param.n, &keypair->param.g, &digest, &keypair->y, &r, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&r);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&r);
+		mpnfree(&s);
 
-		randomGeneratorContextFree(&rngc);
+		(void) randomGeneratorContextFree(&rngc);
 	}
 	return rc;
 }
 
-int testVectorElGamalV3(const dlkp_p* keypair)
+static int testVectorElGamalV3(const dlkp_p* keypair)
+	/*@*/
 {
 	int rc = 0;
 
@@ -142,30 +152,31 @@ int testVectorElGamalV3(const dlkp_p* keypair)
 
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	{
-		mp32number digest, r, s;
+		mpnumber digest, r, s;
 
-		mp32nzero(&digest);
-		mp32nzero(&r);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&r);
+		mpnzero(&s);
 
-		mp32nsize(&digest, 5);
+		mpnsize(&digest, 5);
 
-		rngc.rng->next(rngc.param, digest.data, digest.size);
+		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
 
-		elgv3sign(&keypair->param.p, &keypair->param.n, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
+		(void) elgv3sign(&keypair->param.p, &keypair->param.n, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
 
 		rc = elgv3vrfy(&keypair->param.p, &keypair->param.n, &keypair->param.g, &digest, &keypair->y, &r, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&r);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&r);
+		mpnfree(&s);
 
-		randomGeneratorContextFree(&rngc);
+		(void) randomGeneratorContextFree(&rngc);
 	}
 	return rc;
 }
 
-uint32 keyValue[] = 
+/*@unchecked@*/ /*@observer@*/
+static uint32_t keyValue[] = 
 {
 	0x00010203,
 	0x04050607,
@@ -185,14 +196,17 @@ uint32 keyValue[] =
 	0x3c3d3e3f
 };
 	
-void testBlockInit(uint8* block, int length)
+static void testBlockInit(uint8_t* block, int length)
+	/*@modifies block @*/
 {
 	register int i;
 	for (i = 1; i <= length; i++)
-		*(block++) = (uint8) i;
+		*(block++) = (uint8_t) i;
 }
 
-void testBlockCiphers()
+static void testBlockCiphers(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	int i, k;
 
@@ -204,12 +218,12 @@ void testBlockCiphers()
 
 		if (tmp)
 		{
-			uint32 blockwords = tmp->blocksize >> 2;
+			size_t blockwords = tmp->blocksize >> 2;
 
-			uint32* src_block = (uint32*) malloc(2 * blockwords * sizeof(uint32));
-			uint32* enc_block = (uint32*) malloc(2 * blockwords * sizeof(uint32));
-			uint32* dec_block = (uint32*) malloc(2 * blockwords * sizeof(uint32));
-			uint32* spd_block = (uint32*) malloc(1024 * 1024 * blockwords * sizeof(uint32));
+			mpw* src_block = (mpw*) malloc(2 * blockwords * sizeof(*src_block));
+			mpw* enc_block = (mpw*) malloc(2 * blockwords * sizeof(*enc_block));
+			mpw* dec_block = (mpw*) malloc(2 * blockwords * sizeof(*dec_block));
+			mpw* spd_block = (mpw*) malloc(1024 * 1024 * blockwords * sizeof(*spd_block));
 
 			void* encrypt_param = (void*) malloc(tmp->paramsize);
 			void* decrypt_param = (void*) malloc(tmp->paramsize);
@@ -222,26 +236,26 @@ void testBlockCiphers()
 				if (tmp->setup(encrypt_param, keyValue, k, ENCRYPT) < 0)
 				{
 					printf("failed\n");
-					continue;
+					/*@innercontinue@*/ continue;
 				}
 				printf("ok\n");
 				printf("    setup decrypt (%d bits key): ", k);
 				if (tmp->setup(decrypt_param, keyValue, k, DECRYPT) < 0)
 				{
 					printf("failed\n");
-					continue;
+					/*@innercontinue@*/ continue;
 				}
 				printf("ok\n");
 				printf("    encrypt/decrypt test block: ");
-				testBlockInit((uint8*) src_block, tmp->blocksize >> 2);
+				testBlockInit((uint8_t*) src_block, tmp->blocksize >> 2);
 
-				blockEncrypt(tmp, encrypt_param, CBC, 2, enc_block, src_block);
-				blockDecrypt(tmp, decrypt_param, CBC, 2, dec_block, enc_block);
+				(void) blockEncryptCBC(tmp, encrypt_param, 2, enc_block, src_block);
+				(void) blockDecryptCBC(tmp, decrypt_param, 2, dec_block, enc_block);
 
 				if (memcmp(dec_block, src_block, tmp->blocksize >> 2))
 				{
 					printf("failed\n");
-					continue;
+					/*@innercontinue@*/ continue;
 				}
 				printf("ok\n");
 				printf("    speed measurement:\n");
@@ -254,7 +268,7 @@ void testBlockCiphers()
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					blockEncrypt(tmp, encrypt_param, ECB, 1024 * 1024, spd_block, spd_block);
+					(void) blockEncryptECB(tmp, encrypt_param, 1024 * 1024, spd_block, spd_block);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -263,7 +277,7 @@ void testBlockCiphers()
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					blockDecrypt(tmp, decrypt_param, ECB, 1024 * 1024, spd_block, spd_block);
+					(void) blockDecryptECB(tmp, decrypt_param, 1024 * 1024, spd_block, spd_block);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -272,7 +286,7 @@ void testBlockCiphers()
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					blockEncrypt(tmp, encrypt_param, CBC, 1024 * 1024, spd_block, spd_block);
+					(void) blockEncryptCBC(tmp, encrypt_param, 1024 * 1024, spd_block, spd_block);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -281,7 +295,7 @@ void testBlockCiphers()
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					blockDecrypt(tmp, decrypt_param, CBC, 1024 * 1024, spd_block, spd_block);
+					(void) blockDecrypt(tmp, decrypt_param, CBC, 1024 * 1024, spd_block, spd_block);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -299,11 +313,13 @@ void testBlockCiphers()
 	}
 }
 
-void testHashFunctions()
+static void testHashFunctions(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	int i, j;
 
-	uint8* data = (uint8*) malloc(32 * 1024 * 1024);
+	uint8_t* data = (uint8_t*) malloc(32 * 1024 * 1024);
 
 	if (data)
 	{
@@ -321,9 +337,9 @@ void testHashFunctions()
 				double ttime;
 				clock_t tstart, tstop;
 				#endif
-				mp32number digest;
+				mpnumber digest;
 
-				mp32nzero(&digest);
+				mpnzero(&digest);
 
 				printf("  %s:\n", tmp->name);
 
@@ -335,8 +351,8 @@ void testHashFunctions()
 						tstart = clock();
 						#endif
 
-						hashFunctionContextUpdate(&hfc, data, 32 * 1024 * 1024);
-						hashFunctionContextDigest(&hfc, &digest);
+						(void) hashFunctionContextUpdate(&hfc, data, 32 * 1024 * 1024);
+						(void) hashFunctionContextDigest(&hfc, &digest);
 
 						#if HAVE_TIME_H
 						tstop = clock();
@@ -345,36 +361,41 @@ void testHashFunctions()
 						#endif
 					}
 
-					hashFunctionContextFree(&hfc);
+					(void) hashFunctionContextFree(&hfc);
 				}
 
-				mp32nfree(&digest);
+				mpnfree(&digest);
 			}
 		}
 	}
 }
 
-void testExpMods()
+static void testExpMods(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
+	/*@unchecked@*/ /*@observer@*/
 	static const char* p_512 = "ffcf0a0767f18f9b659d92b9550351430737c3633dc6ae7d52445d937d8336e07a7ccdb119e9ab3e011a8f938151230e91187f84ac05c3220f335193fc5e351b";
 
+	/*@unchecked@*/ /*@observer@*/
 	static const char* p_768 = "f9c3dc0b8e199094e3e69386e01de863908348196d6ad2557065e6ba36d10412579f394d1114c954ee647c84551d52f214e1e1682a75e7074b91085cfaf20b2888aa056bf760948a0b678bc253633eccfca86556ddb90f000ef93041b0d53171";
 
+	/*@unchecked@*/ /*@observer@*/
 	static const char* p_1024 = "c615c47a56b47d869010256171ab164525f2ef4b887a4e0cdfc87043a9dd8894f2a18fa56729448e700f4b7420470b61257d11ecefa9ff518dc9fed5537ec6a9665ba73c948674320ff61b29c4cfa61e5baf47dfc1b80939e1bffb51787cc3252c4d1190a7f13d1b0f8d4aa986571ce5d4de5ecede1405e9bc0b5bf040a46d99";
 
 	randomGeneratorContext rngc;
 
-	mp32barrett p;
-	mp32number tmp;
-	mp32number g;
-	mp32number x;
-	mp32number y;
+	mpbarrett p;
+	mpnumber tmp;
+	mpnumber g;
+	mpnumber x;
+	mpnumber y;
 
-	mp32bzero(&p);
-	mp32nzero(&g);
-	mp32nzero(&x);
-	mp32nzero(&y);
-	mp32nzero(&tmp);
+	mpbzero(&p);
+	mpnzero(&g);
+	mpnzero(&x);
+	mpnzero(&y);
+	mpnzero(&tmp);
 
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	{
@@ -386,94 +407,96 @@ void testExpMods()
 		
 		printf("Timing modular exponentiations:\n");
 		printf("  (512 bits ^ 512 bits) mod 512 bits:");
-		mp32nsethex(&tmp, p_512);
-		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
-		mp32bnrnd(&p, &rngc, &g);
-		mp32bnrnd(&p, &rngc, &x);
+		mpnsethex(&tmp, p_512);
+		mpbset(&p, tmp.size, tmp.data);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
+		mpbnrnd(&p, &rngc, &g);
+		mpbnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
-			mp32bnpowmod(&p, &g, &x, &y);
+			mpbnpowmod(&p, &g, &x, &y);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("    100x in %.3f seconds\n", ttime);
 		#endif
 		printf("  (768 bits ^ 768 bits) mod 768 bits:");
-		mp32nsethex(&tmp, p_768);
-		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
-		mp32bnrnd(&p, &rngc, &g);
-		mp32bnrnd(&p, &rngc, &x);
+		mpnsethex(&tmp, p_768);
+		mpbset(&p, tmp.size, tmp.data);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
+		mpbnrnd(&p, &rngc, &g);
+		mpbnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
-			mp32bnpowmod(&p, &g, &x, &y);
+			mpbnpowmod(&p, &g, &x, &y);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("    100x in %.3f seconds\n", ttime);
 		#endif
 		printf("  (1024 bits ^ 1024 bits) mod 1024 bits:");
-		mp32nsethex(&tmp, p_1024);
-		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
-		mp32bnrnd(&p, &rngc, &g);
-		mp32bnrnd(&p, &rngc, &x);
+		mpnsethex(&tmp, p_1024);
+		mpbset(&p, tmp.size, tmp.data);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
+		mpbnrnd(&p, &rngc, &g);
+		mpbnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
-			mp32bnpowmod(&p, &g, &x, &y);
+			mpbnpowmod(&p, &g, &x, &y);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf(" 100x in %.3f seconds\n", ttime);
 		#endif
 		/* now run a test with x having 160 bits */
-		mp32nsize(&x, 5);
-		rngc.rng->next(rngc.param, x.data, x.size);
+		mpnsize(&x, 5);
+		(void) rngc.rng->next(rngc.param, x.data, x.size);
 		printf("  (1024 bits ^ 160 bits) mod 1024 bits:");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
-			mp32bnpowmod(&p, &g, &x, &y);
+			mpbnpowmod(&p, &g, &x, &y);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("  100x in %.3f seconds\n", ttime);
 		#endif
-		mp32bfree(&p);
-		mp32nfree(&g);
-		mp32nfree(&x);
-		mp32nfree(&y);
-		mp32nfree(&tmp);
+		mpbfree(&p);
+		mpnfree(&g);
+		mpnfree(&x);
+		mpnfree(&y);
+		mpnfree(&tmp);
 
-		randomGeneratorContextFree(&rngc);
+		(void) randomGeneratorContextFree(&rngc);
 	}
 	else
 		printf("random generator setup problem\n");
 }
 
-void testRSA()
+static void testRSA(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	randomGeneratorContext rngc;
-	mp32number hm, s;
+	mpnumber hm, s;
 	rsakp kp;
 
-	mp32nzero(&hm);
-	mp32nzero(&s);
+	mpnzero(&hm);
+	mpnzero(&s);
 
 	printf("Timing RSA:\n");
 
-	rsakpInit(&kp);
+	(void) rsakpInit(&kp);
 
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	{
@@ -489,15 +512,15 @@ void testRSA()
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
-		rsakpMake(&kp, &rngc, (1024 >> 5));
+		(void) rsakpMake(&kp, &rngc, (1024 >> 5));
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("    done in %.3f seconds\n", ttime);
 		#endif
 
-		mp32nsize(&hm, 4);
-		rngc.rng->next(rngc.param, hm.data, hm.size);
+		mpnsize(&hm, 4);
+		(void) rngc.rng->next(rngc.param, hm.data, hm.size);
 
 		printf("  RSA sign:");
 		#if HAVE_TIME_H
@@ -505,7 +528,7 @@ void testRSA()
 		#endif
 		for (i = 0; i < 100; i++)
 		{
-			rsapricrt(&kp, &hm, &s);
+			(void) rsapricrt(&kp, &hm, &s);
 		}
 		#if HAVE_TIME_H
 		tstop = clock();
@@ -519,7 +542,7 @@ void testRSA()
 		#endif
 		for (i = 0; i < 1000; i++)
 		{
-			rsavrfy((rsapk*) &kp, &hm, &s);
+			(void) rsavrfy((rsapk*) &kp, &hm, &s);
 		}
 		#if HAVE_TIME_H
 		tstop = clock();
@@ -527,24 +550,26 @@ void testRSA()
 		printf(" 1000x in %.3f seconds\n", ttime);
 		#endif
 
-		rsakpFree(&kp);
-		randomGeneratorContextFree(&rngc);
+		(void) rsakpFree(&kp);
+		(void) randomGeneratorContextFree(&rngc);
 	}
 }
 
-void testDLAlgorithms()
+static void testDLAlgorithms(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	randomGeneratorContext rngc;
-	mp32number hm, r, s;
+	mpnumber hm, r, s;
 	dldp_p dp;
 	dlkp_p kp;
 
-	mp32nzero(&hm);
-	mp32nzero(&r);
-	mp32nzero(&s);
+	mpnzero(&hm);
+	mpnzero(&r);
+	mpnzero(&s);
 
-	dldp_pInit(&dp);
-	dlkp_pInit(&kp);
+	(void) dldp_pInit(&dp);
+	(void) dlkp_pInit(&kp);
 
 	printf("Timing Discrete Logarithm algorithms:\n");
 
@@ -560,27 +585,27 @@ void testDLAlgorithms()
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
-		dldp_pgoqMake(&dp, &rngc, 1024 >> 5, 160 >> 5, 1);
+		(void) dldp_pgoqMake(&dp, &rngc, 1024 >> 5, 160 >> 5, 1);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("    done in %.3f seconds\n", ttime);
 		#endif
 
-		dlkp_pInit(&kp);
+		(void) dlkp_pInit(&kp);
 		printf("  generating keypair\n");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
-		dlkp_pPair(&kp, &rngc, &dp);
+		(void) dlkp_pPair(&kp, &rngc, &dp);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("    done in %.3f seconds\n", ttime);
 		#endif
 
-		mp32nsize(&hm, 5);
-		rngc.rng->next(rngc.param, hm.data, hm.size);
+		mpnsize(&hm, 5);
+		(void) rngc.rng->next(rngc.param, hm.data, hm.size);
 		
 		printf("  DSA sign:");
 		#if HAVE_TIME_H
@@ -588,7 +613,7 @@ void testDLAlgorithms()
 		#endif
 		for (i = 0; i < 100; i++)
 		{
-			dsasign(&kp.param.p, &kp.param.q, &kp.param.g, &rngc, &hm, &kp.x, &r, &s);
+			(void) dsasign(&kp.param.p, &kp.param.q, &kp.param.g, &rngc, &hm, &kp.x, &r, &s);
 		}
         #if HAVE_TIME_H
         tstop = clock();
@@ -602,33 +627,35 @@ void testDLAlgorithms()
 		#endif
 		for (i = 0; i < 100; i++)
 		{
-			dsavrfy(&kp.param.p, &kp.param.q, &kp.param.g, &hm, &kp.y, &r, &s);
+			(void) dsavrfy(&kp.param.p, &kp.param.q, &kp.param.g, &hm, &kp.y, &r, &s);
 		}
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf(" 100x in %.3f seconds\n", ttime);
 		#endif
-		dlkp_pFree(&kp);
-		dldp_pFree(&dp);
+		(void) dlkp_pFree(&kp);
+		(void) dldp_pFree(&dp);
 
 		printf("  generating P (1024 bits) Q (768 bits) G with order (P-1)\n");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
-		dldp_pgonMake(&dp, &rngc, 1024 >> 5, 768 >> 5);
+		(void) dldp_pgonMake(&dp, &rngc, 1024 >> 5, 768 >> 5);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("    done in %.3f seconds\n", ttime);
 		#endif
-		dldp_pFree(&dp);
+		(void) dldp_pFree(&dp);
 
-		randomGeneratorContextFree(&rngc);
+		(void) randomGeneratorContextFree(&rngc);
 	}
 }
 
-int main()
+int main(/*@unused@*/ int argc, /*@unused@*/ char *argv[])
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	int i, j;
 

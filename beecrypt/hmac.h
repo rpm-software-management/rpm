@@ -39,19 +39,19 @@ extern "C" {
  */
 BEECRYPTAPI
 int hmacSetup (byte* kxi, byte* kxo, const hashFunction* hash, hashFunctionParam* param, const byte* key, size_t keybits)
-	/*@modifies kxi, kxo */;
+	/*@modifies kxi, kxo, param */;
 
 /**
  */
 BEECRYPTAPI
 int hmacReset (const byte* kxi, const hashFunction* hash, hashFunctionParam* param)
-	/*@modifies hp */;
+	/*@modifies param */;
 
 /**
  */
 BEECRYPTAPI
 int hmacUpdate(const hashFunction* hash, hashFunctionParam* param, const byte* data, size_t size)
-	/*@modifies hp */;
+	/*@modifies param */;
 
 /**
  */

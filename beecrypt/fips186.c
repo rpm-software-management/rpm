@@ -112,7 +112,7 @@ int fips186Seed(fips186Param* fp, const byte* data, size_t size)
 
 			/* convert to multi-precision integer, and add to the state */
 			if (os2ip(seed, FIPS186_STATE_SIZE, data, size) == 0)
-				mpadd(FIPS186_STATE_SIZE, fp->state, seed);
+				(void) mpadd(FIPS186_STATE_SIZE, fp->state, seed);
 		}
 		#ifdef _REENTRANT
 		# if WIN32
@@ -169,12 +169,12 @@ int fips186Next(fips186Param* fp, byte* data, size_t size)
 				memcpy(fp->param.data, fp->state, MP_WORDS_TO_BYTES(FIPS186_STATE_SIZE));
 				/* process the data */
 				sha1Process(&fp->param);
-				encodeInts(fp->param.h, fp->digest, 5);
+				(void) encodeInts(fp->param.h, fp->digest, 5);
 				if (os2ip(dig, FIPS186_STATE_SIZE, fp->digest, 20) == 0)
 				{
 					/* set state to state + digest + 1 mod 2^512 */
-					mpadd (FIPS186_STATE_SIZE, fp->state, dig);
-					mpaddw(FIPS186_STATE_SIZE, fp->state, 1);
+					(void) mpadd (FIPS186_STATE_SIZE, fp->state, dig);
+					(void) mpaddw(FIPS186_STATE_SIZE, fp->state, 1);
 				}
 				/* else shouldn't occur */
 				/* we now have 5 words of pseudo-random data */

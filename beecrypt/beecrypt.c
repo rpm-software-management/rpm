@@ -426,12 +426,12 @@ int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
 		if (mpmsbset(n->size, n->data))
 		{
 			tmp[0] = 0;
-			i2osp(tmp+1, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
+			(void) i2osp(tmp+1, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
 			rc = ctxt->algo->update(ctxt->param, tmp, MP_WORDS_TO_BYTES(n->size) + 1);
 		}
 		else
 		{
-			i2osp(tmp, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
+			(void) i2osp(tmp, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
 			rc = ctxt->algo->update(ctxt->param, tmp, MP_WORDS_TO_BYTES(n->size));
 		}
 		free(tmp);
@@ -918,7 +918,9 @@ int blockCipherContextFree(blockCipherContext* ctxt)
 	/*@=nullstate@*/
 }
 
+static /*@unused@*/
 int blockCipherContextECB(blockCipherContext* ctxt, void* dst, const void* src, int nblocks)
+	/*@modifies ctxt->param, dst @*/
 {
 	switch (ctxt->op)
 	{
@@ -930,10 +932,13 @@ int blockCipherContextECB(blockCipherContext* ctxt, void* dst, const void* src, 
 	case DECRYPT:
 		return blockDecryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
 	}
+	/*@notreached@*/
 	return -1;
 }
 
+static /*@unused@*/
 int blockCipherContextCBC(blockCipherContext* ctxt, void* dst, const void* src, int nblocks)
+	/*@modifies ctxt->param, dst @*/
 {
 	switch (ctxt->op)
 	{
@@ -945,6 +950,7 @@ int blockCipherContextCBC(blockCipherContext* ctxt, void* dst, const void* src, 
 	case DECRYPT:
 		return blockDecryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
 	}
+	/*@notreached@*/
 	return -1;
 }
 

@@ -1,7 +1,24 @@
-/** \ingroup DH_m
- * \file dhaes.c
+/*
+ * Copyright (c) 2000, 2001, 2002 Virtual Unlimited, B.V.
  *
- * DHAES, code.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*!\file dhaes.c
+ * \brief DHAES encryption scheme.
  *
  * This code implements the encryption scheme from the paper:
  *
@@ -27,25 +44,6 @@
  *	- DHAES(SHA-256, Blowfish, HMAC-SHA-256)
  */
 
-/*
- * Copyright (c) 2000, 2001, 2002 Virtual Unlimited, B.V.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
-
 #include "system.h"
 #include "dhaes.h"
 #include "dlsvdp-dh.h"
@@ -55,9 +53,9 @@
 
 int dhaes_pUsable(const dhaes_pParameters* params)
 {
-	int keybits = (params->hash->digestsize << 3); /* digestsize in bytes times 8 bits */
-	int cipherkeybits = params->cipherkeybits;
-	int mackeybits = params->mackeybits;
+	size_t keybits = (params->hash->digestsize << 3); /* digestsize in bytes times 8 bits */
+	size_t cipherkeybits = params->cipherkeybits;
+	size_t mackeybits = params->mackeybits;
 
 	/* test if keybits is a multiple of 32 */
 	if ((keybits & 31) != 0)
@@ -70,7 +68,7 @@ int dhaes_pUsable(const dhaes_pParameters* params)
 	if (mackeybits == 0)
 	{
 		if (cipherkeybits == 0)
-			cipherkeybits = mackeybits = (((uint32_t)keybits) >> 1);
+			cipherkeybits = mackeybits = (keybits >> 1);
 		else
 			mackeybits = keybits - cipherkeybits;
 	}
@@ -229,7 +227,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 	if (ctxt->hash.algo->digestsize > 0)
 	{
 		byte* mackey = digest;
-		byte* cipherkey = digest + (((uint32_t)(ctxt->mackeybits + 7)) >> 3);
+		byte* cipherkey = digest + ((ctxt->mackeybits + 7) >> 3);
 
 		if ((rc = keyedHashFunctionContextSetup(&ctxt->mac, mackey, ctxt->mackeybits)))
 			goto setup_end;

@@ -112,9 +112,9 @@ int aesDecrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
 /** \ingroup BC_aes_m
  */
 /*@-exportlocal@*/
-BEECRYPTAPI
+BEECRYPTAPI /*@observer@*/
 uint32_t* aesFeedback(aesParam* ap)
-	/*@modifies ap @*/;
+	/*@*/;
 /*@=exportlocal@*/
 
 #ifdef __cplusplus

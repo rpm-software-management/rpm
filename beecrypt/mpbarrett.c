@@ -111,8 +111,6 @@ void mpbcopy(mpbarrett* b, const mpbarrett* copy)
 		b->modl = (mpw*) 0;
 		b->mu = (mpw*) 0;
 	}
-	else
-		{};
 }
 /*@=nullstate =compdef @*/
 
@@ -175,7 +173,7 @@ void mpbsethex(mpbarrett* b, const char* hex)
 		b->size = size;
 		b->mu = b->modl+size;
 
-		hs2ip(b->modl, size, hex, len);
+		(void) hs2ip(b->modl, size, hex, len);
 
 		/*@-nullpass@*/		/* temp may be NULL */
 		mpbmu_w(b, temp);
@@ -394,7 +392,7 @@ void mpbsubmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysiz
 	/* xsize and ysize must be less than or equal to b->size */
 	register size_t  size = b->size;
 	register mpw* temp = wksp + size*2+2;
-	
+
 	mpsetx(2*size, temp, xsize, xdata);
 	if (mpsubx(2*size, temp, ysize, ydata)) /* if there's carry, i.e. the result would be negative, add the modulus */
 		(void) mpaddx(2*size, temp, size, b->modl);
@@ -457,7 +455,7 @@ void mpbsqrmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result
  * and finally do the number of squarings in column three.
  *
  * This table can be used for K=2,3,4 and can be extended
- *  
+ *
  *
 \verbatim
 	   0 : - | -       | -
@@ -495,7 +493,7 @@ static void mpbslide_w(const mpbarrett* b, size_t xsize, const mpw* xdata, /*@ou
 }
 
 /*@observer@*/ /*@unchecked@*/
-static byte mpbslide_presq[16] = 
+static byte mpbslide_presq[16] =
 { 0, 1, 1, 2, 1, 3, 2, 3, 1, 4, 3, 4, 2, 4, 3, 4 };
 
 /*@observer@*/ /*@unchecked@*/
@@ -520,7 +518,7 @@ void mpbpowmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t psiz
 	 */
 
 	/* K == 4 for the first try */
-	
+
 	size_t size = b->size;
 	mpw temp = 0;
 
@@ -570,7 +568,7 @@ void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mp
 	/* if temp is still zero, then we're trying to raise x to power zero, and result stays one */
 	if (temp)
 	{
-		short l = 0, n = 0, count = MP_WBITS;
+		unsigned short l = 0, n = 0, count = MP_WBITS;
 
 		/* first skip bits until we reach a one */
 		while (count != 0)
@@ -589,15 +587,13 @@ void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mp
 
 				n <<= 1;
 				n += bit;
-				
+
 				if (n != 0)
 				{
 					if (l != 0)
 						l++;
 					else if (bit != 0)
 						l = 1;
-					else
-						{};
 
 					if (l == 4)
 					{
@@ -607,7 +603,7 @@ void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mp
 							mpbsqrmod_w(b, size, result, result, wksp);
 
 						mpbmulmod_w(b, size, result, size, slide+mpbslide_mulg[n]*size, result, wksp);
-						
+
 						s = mpbslide_postsq[n];
 
 						while (s--)
@@ -642,7 +638,7 @@ void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mp
 			while (s--)
 				mpbsqrmod_w(b, size, result, result, wksp);
 		}
-	}	
+	}
 }
 
 /**
@@ -692,7 +688,7 @@ void mpbtwopowmod_w(const mpbarrett* b, size_t psize, const mpw* pdata, mpw* res
 			{
 				/* always square */
 				mpbsqrmod_w(b, size, result, result, wksp);
-				
+
 				/* multiply by two if bit is 1 */
 				if (temp & MP_MSBMASK)
 				{
@@ -1102,14 +1098,14 @@ int mpbpprime_w(const mpbarrett* b, randomGeneratorContext* r, int t, mpw* wksp)
 	{
 		/*
 		 * Small prime factor test:
-		 * 
+		 *
 		 * Tables in mpspprod contain multi-precision integers with products of small primes
 		 * If the greatest common divisor of this product and the candidate is not one, then
 		 * the candidate has small prime factors, or is a small prime. Neither is acceptable when
 		 * we are looking for large probable primes =)
 		 *
 		 */
-		
+
 		if (size > SMALL_PRIMES_PRODUCT_MAX)
 		{
 			/*@-globs@*/

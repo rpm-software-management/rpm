@@ -42,9 +42,8 @@
 
 int hmacSetup(byte* kxi, byte* kxo, const hashFunction* hash, hashFunctionParam* param, const byte* key, size_t keybits)
 {
-	register int i, rc;
-
-	size_t keybytes = (((uint32_t)keybits     ) >> 3);
+	register int i;
+	size_t keybytes = keybits >> 3;
 
 	/* if the key is too large, hash it first */
 	if (keybytes > hash->blocksize)
@@ -93,7 +92,6 @@ int hmacReset(const byte* kxi, const hashFunction* hash, hashFunctionParam* para
 		return -1;
 	if (hash->update(param, kxi, hash->blocksize))
 		return -1;
-
 	return 0;
 }
 

@@ -89,7 +89,7 @@ int mtprngSetup  (mtprngParam* mp)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngSeed   (mtprngParam* mp, const uint32_t* data, int size)
+int mtprngSeed   (mtprngParam* mp, const uint32_t* data, size_t size)
 	/*@modifies mp @*/;
 /*@=exportlocal@*/
 
@@ -97,7 +97,7 @@ int mtprngSeed   (mtprngParam* mp, const uint32_t* data, int size)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngNext   (mtprngParam* mp, uint32_t* data, int size)
+int mtprngNext   (mtprngParam* mp, uint32_t* data, size_t size)
 	/*@modifies mp, data @*/;
 /*@=exportlocal@*/
 

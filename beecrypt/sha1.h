@@ -1,9 +1,3 @@
-/** \ingroup HASH_sha1_m HASH_m
- * \file sha1.h
- *
- * SHA-1 hash function, header.
- */
-
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2002 Virtual Unlimited B.V.
  *
@@ -21,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file sha1.h
+ * \brief SHA-1 hash function, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HASH_m HASH_sha1_m
  */
 
 #ifndef _SHA1_H

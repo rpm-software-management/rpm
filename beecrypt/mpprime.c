@@ -1159,8 +1159,6 @@ void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t
 			{
 				mpsetlsb(s.size, s.modl);
 			}
-			else
-				{};
 
 			if (cofactor == 2)
 			{

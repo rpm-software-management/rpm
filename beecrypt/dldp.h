@@ -123,7 +123,7 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
+int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t bits)
 	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
 
 /**

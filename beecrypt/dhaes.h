@@ -37,8 +37,8 @@ typedef struct
 	const hashFunction*		hash;
 	const blockCipher*		cipher;
 	const keyedHashFunction*	mac;
-	int				cipherkeybits;
-	int				mackeybits;
+	size_t				cipherkeybits;
+	size_t				mackeybits;
 } dhaes_pParameters;
 
 /**
@@ -51,8 +51,8 @@ typedef struct
 	hashFunctionContext		hash;
 	blockCipherContext		cipher;
 	keyedHashFunctionContext	mac;
-	int				cipherkeybits;
-	int				mackeybits;
+	size_t				cipherkeybits;
+	size_t				mackeybits;
 } dhaes_pContext;
 
 #ifdef __cplusplus

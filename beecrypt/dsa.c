@@ -1,28 +1,5 @@
-/** \ingroup DSA_m
- * \file dsa.c
- *
- * Digital Signature Algorithm signature scheme, code.
- *
- * DSA Signature:
- *  - Signing equation:
- *   - r = (g^k mod p) mod q and
- *   - s = (inv(k) * (h(m) + x*r)) mod q
- *  - Verifying equation:
- *   - check 0 < r < q and 0 < s < q
- *   - w = inv(s) mod q
- *   - u1 = (h(m)*w) mod q
- *   - u2 = (r*w) mod q
- *   - v = ((g^u1 * y^u2) mod p) mod q
- *   - check v == r
- *
- * For more information on this algorithm, see:
- *  NIST FIPS 186-1
- */
-
 /*
  * Copyright (c) 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,6 +18,29 @@
  *
  */
  
+/*!\file dsa.c
+ * \brief Digital Signature Algorithm, as specified by NIST FIPS 186.
+ *
+ * FIPS 186 specifies the DSA algorithm as having a large prime \f$p\f$,
+ * a cofactor \f$q\f$ and a generator \f$g\f$ of a subgroup of
+ * \f$\mathds{Z}^{*}_p\f$ with order \f$q\f$. The private and public key
+ * values are \f$x\f$ and \f$y\f$ respectively.
+ *
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup DL_m DL_dsa_m
+ *
+ *  - Signing equation:
+ *   - r = (g^k mod p) mod q and
+ *   - s = (inv(k) * (h(m) + x*r)) mod q
+ *  - Verifying equation:
+ *   - check 0 < r < q and 0 < s < q
+ *   - w = inv(s) mod q
+ *   - u1 = (h(m)*w) mod q
+ *   - u2 = (r*w) mod q
+ *   - v = ((g^u1 * y^u2) mod p) mod q
+ *   - check v == r
+ */
+
 #include "system.h"
 #include "dsa.h"
 #include "dldp.h"
@@ -63,6 +63,7 @@ int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGen
 	ptemp = (mpw*) malloc((5*psize+2) * sizeof(*ptemp));
 	if (ptemp == (mpw*) 0)
 		return rc;
+
 	qtemp = (mpw*) malloc((14*qsize+11) * sizeof(*qtemp));
 	if (qtemp == (mpw*) 0)
 	{

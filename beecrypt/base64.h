@@ -17,7 +17,7 @@
  *
  */
 
-/*!\file base64.h      
+/*!\file base64.h
  * \brief Base64 encoding and decoding, headers.
  * \author Bob Deblier <bob@virtualunlimited.com>
  */

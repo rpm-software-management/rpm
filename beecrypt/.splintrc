@@ -3,7 +3,7 @@
 #+partial
 +forcehints
 
--warnunixlib
+#-warnunixlib
 -warnposix
 
 +unixlib
@@ -15,6 +15,18 @@
 # --- in progress
 #+bounds
 -bufferoverflowhigh
+-aliasunique
+-mayaliasunique
+-elseifcomplete
+-exportheader
+-exportheadervar
+-exportlocal
+-fcnuse
+-typeuse
+-varuse
+-compdef
+-noeffectuncon
+-whileempty
 
 # --- not-yet at strict level
 -exportconst		# 4

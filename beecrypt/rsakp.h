@@ -50,7 +50,7 @@ extern "C" {
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
+int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 	/*@modifies kp, rgc @*/;
 
 /**

@@ -46,7 +46,7 @@ extern "C" {
  * @retval		0 on success, -1 on failure
  */ 
  int rsapub(const rsapk* pk, const mpnumber* m, mpnumber* c)
-	/*@*/;
+	/*@modifies c */;
 
 /**
  * The raw RSA private key operation.
@@ -63,7 +63,7 @@ extern "C" {
  */
 BEECRYPTAPI /*@unused@*/
 int rsapri   (const rsakp* kp, const mpnumber* c, mpnumber* m)
-	/*@modifies c */;
+	/*@modifies m */;
 
 /**
  * The raw RSA private key operation, with Chinese Remainder Theorem.
@@ -81,7 +81,7 @@ int rsapri   (const rsakp* kp, const mpnumber* c, mpnumber* m)
  */
 BEECRYPTAPI /*@unused@*/
 int rsapricrt(const rsakp* kp, const mpnumber* c, mpnumber* m)
-	/*@modifies c */;
+	/*@modifies m */;
 
 /**
  * Verify if ciphertext \e c was encrypted from cleartext \e m

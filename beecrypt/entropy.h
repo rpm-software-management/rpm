@@ -21,7 +21,7 @@
  * \brief Entropy sources, headers.
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup ES_m ES_audio_m ES_dsp_m ES_random_m ES_urandom_m ES_tty_m
- */    
+ */
 
 #ifndef _ENTROPY_H
 #define _ENTROPY_H

@@ -1,9 +1,3 @@
-/** \ingroup DSA_m
- * \file dsa.h
- *
- * Digital Signature Algorithm signature scheme, header.
- */
-
 /*
  * Copyright (c) 2001, 2002 Virtual Unlimited B.V.
  *
@@ -23,6 +17,11 @@
  *
  */
 
+/*!\file dsa.h
+ * \brief Digital Signature Algorithm, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup DL_m DL_dsa_m
+ */
 #ifndef _DSA_H
 #define _DSA_H
 

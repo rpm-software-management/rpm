@@ -89,7 +89,7 @@ void mpbsubone(const mpbarrett* b, mpw* result)
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpbneg(const mpbarrett* b, const mpw* xdata, mpw* result)
+void mpbneg(const mpbarrett* b, const mpw* data, mpw* result)
 	/*@modifies result @*/;
 
 /**
@@ -121,7 +121,7 @@ void mpbrndinv_w(const mpbarrett* b, randomGeneratorContext* rc, /*@out@*/ mpw* 
 /**
  */
 BEECRYPTAPI
-void mpbmod_w(const mpbarrett* b, const mpw* xdata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
+void mpbmod_w(const mpbarrett* b, const mpw* data, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
@@ -192,7 +192,7 @@ void mpbsm3powmod(const mpbarrett* b, const mpw*, const mpw*, const mpw*, const 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int  mpbpprime_w(const mpbarrett* b, randomGeneratorContext* rc, int t, /*@out@*/ mpw* wksp)
+int  mpbpprime_w(const mpbarrett* b, randomGeneratorContext* r, int t, /*@out@*/ mpw* wksp)
 	/*@modifies wksp @*/;
 
 /**

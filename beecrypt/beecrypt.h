@@ -438,13 +438,19 @@ int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
 /** \ingroup HASH_m
  */
 BEECRYPTAPI
-int hashFunctionContextDigest(hashFunctionContext* ctxt, byte* dig)
-	/*@modifies ctxt, *dig */;
+int hashFunctionContextDigest(hashFunctionContext* ctxt, byte* digest)
+	/*@modifies ctxt, *digest */;
+
+/** \ingroup HASH_m
+ */
+BEECRYPTAPI
+int hashFunctionContextDigestMP(hashFunctionContext* ctxt, mpnumber* d)
+	/*@modifies ctxt, *d */;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI /*@unused@*/
-int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* match)
+int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* d)
 	/*@modifies ctxt */;
 
 #ifdef __cplusplus
@@ -641,13 +647,17 @@ int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnum
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI
-int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, byte* d)
-	/*@modifies ctxt, *d @*/;
+int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, byte* digest)
+	/*@modifies ctxt, *digest @*/;
+
+BEECRYPTAPI
+int keyedHashFunctionContextDigestMP(keyedHashFunctionContext* ctxt, const mpnumber* d)
+	/*@modifies ctxt, d @*/;
 
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI
-int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mpnumber* match)
+int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mpnumber* d)
 	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
@@ -836,7 +846,7 @@ extern "C" {
  */
 BEECRYPTAPI
 int blockCipherContextInit(blockCipherContext* ctxt, /*@observer@*/ /*@dependent@*/ const blockCipher* ciph)
-	/*@modifies ctxt->algo, ctxt->param @*/;
+	/*@modifies ctxt->algo, ctxt->param, ctxt->op @*/;
 
 /** \ingroup BC_m
  */

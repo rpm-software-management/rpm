@@ -1,9 +1,3 @@
-/** \ingroup ELGAMAL_m
- * \file elgamal.h
- *
- * ElGamal signature scheme, header.
- */
-
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
  *
@@ -21,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file elgamal.h
+ * \brief ElGamal algorithm, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup DL_m DL_elgamal_m
  */
 
 #ifndef _ELGAMAL_H

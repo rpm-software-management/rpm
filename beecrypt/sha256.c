@@ -29,6 +29,10 @@
 #include "endianness.h"
 #include "debug.h"
 
+/*!\addtogroup HASH_sha256_m
+ * \{
+ */
+
 /**
  */
 /*@observer@*/ /*@unchecked@*/
@@ -90,13 +94,17 @@ void sha256Process(register sha256Param* p)
 	#else
 	w = p->data;
 	t = 16;
-	while (t--)
-		*(w++) = swapu32(*w);
+	while (t--) {
+		temp = swapu32(*w);
+		*(w++) = temp;
+	}
 	#endif
 
 	t = 48;
-	while (t--)
-		*(w++) = sig1(w[-2]) + w[-7] + sig0(w[-15]) + w[-16];
+	while (t--) {
+		temp = sig1(w[-2]) + w[-7] + sig0(w[-15]) + w[-16];
+		*(w++) = temp;
+	}
 
 	w = p->data;
 
@@ -187,12 +195,12 @@ int sha256Update(register sha256Param* p, const byte* data, size_t size)
 	mpw add[1];
 	mpsetw(1, add, size);
 	mplshift(1, add, 3);
-	mpadd(1, p->length, add);
+	(void) mpadd(1, p->length, add);
 	#elif (MP_WBITS == 32)
 	mpw add[2];
 	mpsetw(2, add, size);
 	mplshift(2, add, 3);
-	mpadd(2, p->length, add);
+	(void) mpadd(2, p->length, add);
 	#else
 	# error
 	#endif
@@ -304,3 +312,6 @@ int sha256Digest(register sha256Param* p, byte* data)
 	(void) sha256Reset(p);
 	return 0;
 }
+
+/*!\}
+ */

@@ -85,7 +85,7 @@ int blowfishDecrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEECRYPTAPI
+BEECRYPTAPI /*@observer@*/
 uint32_t* blowfishFeedback(blowfishParam* bp)
 	/*@*/;
 /*@=exportlocal@*/

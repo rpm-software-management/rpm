@@ -497,7 +497,9 @@ int mpaddx(register size_t xsize, register mpw* xdata, register size_t ysize, re
 	if (xsize > ysize)
 	{
 		register size_t diff = xsize - ysize;
+/*@-evalorder@*/
 		return mpaddw(diff, xdata, (mpw) mpadd(ysize, xdata+diff, ydata));
+/*@=evalorder@*/
 	}
 	else
 	{
@@ -558,7 +560,9 @@ int mpsubx(register size_t xsize, register mpw* xdata, register size_t ysize, re
 	if (xsize > ysize)
 	{
 		register size_t diff = xsize - ysize;
+/*@-evalorder@*/
 		return mpsubw(diff, xdata, (mpw) mpsub(ysize, xdata+diff, ydata));
+/*@=evalorder@*/
 	}
 	else
 	{
@@ -802,6 +806,7 @@ mpw mpaddsqrtrc(register size_t size, register mpw* result, register const mpw* 
 #ifndef ASM_MPSQR
 void mpsqr(register mpw* result, register size_t size, register const mpw* data)
 {
+	register mpw rc;
 	register size_t n = size-1;
 
 	/*@-mods@*/
@@ -810,9 +815,13 @@ void mpsqr(register mpw* result, register size_t size, register const mpw* data)
 
 	if (n)
 	{
-		*(--result) = mpsetmul(n, result, data, data[n]);
+		rc = mpsetmul(n, result, data, data[n]);
+		*(--result) = rc;
 		while (--n)
-			*(--result) = mpaddmul(n, result, data, data[n]);
+		{
+			rc = mpaddmul(n, result, data, data[n]);
+			*(--result) = rc;
+		}
 	}
 
 	*(--result) = 0;
@@ -972,13 +981,13 @@ void mplshift(register size_t size, register mpw* data, size_t count)
 
 	if (words < size)
 	{
-		register short lbits = (short) (count & (MP_WBITS-1));
+		register unsigned short lbits = (unsigned short) (count & (MP_WBITS-1));
 
 		/* first do the shifting, then do the moving */
 		if (lbits != 0)
 		{
 			register mpw temp, carry = 0;
-			register short rbits = MP_WBITS - lbits;
+			register unsigned short rbits = MP_WBITS - lbits;
 			register size_t i = size;
 
 			while (i > words)
@@ -1006,13 +1015,13 @@ void mprshift(register size_t size, register mpw* data, size_t count)
 
 	if (words < size)
 	{
-		register short rbits = (short) (count & (MP_WBITS-1));
+		register unsigned short rbits = (unsigned short) (count & (MP_WBITS-1));
 
 		/* first do the shifting, then do the moving */
 		if (rbits != 0)
 		{
 			register mpw temp, carry = 0;
-			register short lbits = MP_WBITS - rbits;
+			register unsigned short lbits = MP_WBITS - rbits;
 			register size_t i = 0;
 
 			while (i < size-words)
@@ -1039,7 +1048,7 @@ size_t mprshiftlsz(register size_t size, register mpw* data)
 {
 	register mpw* slide = data+size-1;
 	register size_t  zwords = 0; /* counter for 'all zero bit' words */
-	register short   lbits, rbits = 0; /* counter for 'least significant zero' bits */
+	register unsigned short lbits, rbits = 0; /* counter for 'least significant zero' bits */
 	register mpw  temp, carry = 0;
 
 	data = slide;
@@ -1194,20 +1203,22 @@ mpw mpnmodw(mpw* result, size_t xsize, const mpw* xdata, mpw y, mpw* workspace)
 			*rdata -= y;
 	*/
 	if (mpge(1, rdata, &y))
-		mpsub(1, rdata, &y);
+		(void) mpsub(1, rdata, &y);
 
 	while (qsize--)
 	{
 		q = mppndiv(rdata[0], rdata[1], y);
 
+/*@-evalorder@*/
 		*workspace = mpsetmul(1, workspace+1, &y, q);
+/*@=evalorder@*/
 
 		while (mplt(2, rdata, workspace))
 		{
-			mpsubx(2, workspace, 1, &y);
+			(void) mpsubx(2, workspace, 1, &y);
 			/* q--; */
 		}
-		mpsub(2, rdata, workspace);
+		(void) mpsub(2, rdata, workspace);
 		rdata++;
 	}
 
@@ -1226,20 +1237,22 @@ void mpnmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw
 
 	mpcopy(xsize, rdata, xdata);
 	if (mpge(ysize, rdata, ydata))
-		mpsub(ysize, rdata, ydata);
+		(void) mpsub(ysize, rdata, ydata);
 
 	while (qsize--)
 	{
 		q = mppndiv(rdata[0], rdata[1], msw);
 
+/*@-evalorder@*/
 		*workspace = mpsetmul(ysize, workspace+1, ydata, q);
+/*@=evalorder@*/
 
 		while (mplt(ysize+1, rdata, workspace))
 		{
-			mpsubx(ysize+1, workspace, ysize, ydata);
+			(void) mpsubx(ysize+1, workspace, ysize, ydata);
 			q--;
 		}
-		mpsub(ysize+1, rdata, workspace);
+		(void) mpsub(ysize+1, rdata, workspace);
 		rdata++;
 	}
 }
@@ -1258,7 +1271,7 @@ void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const 
 	mpcopy(xsize, result+1, xdata);
 	if (mpge(ysize, result+1, ydata))
 	{
-		mpsub(ysize, result+1, ydata);
+		(void) mpsub(ysize, result+1, ydata);
 		*(result++) = 1;
 	}
 	else
@@ -1268,14 +1281,16 @@ void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const 
 	{
 		q = mppndiv(result[0], result[1], msw);
 
+/*@-evalorder@*/
 		*workspace = mpsetmul(ysize, workspace+1, ydata, q);
+/*@=evalorder@*/
 
 		while (mplt(ysize+1, result, workspace))
 		{
-			mpsubx(ysize+1, workspace, ysize, ydata);
+			(void) mpsubx(ysize+1, workspace, ysize, ydata);
 			q--;
 		}
-		mpsub(ysize+1, result, workspace);
+		(void) mpsub(ysize+1, result, workspace);
 		*(result++) = q;
 	}
 }
@@ -1291,7 +1306,7 @@ void mpprint(register FILE * fp, register size_t size, register const mpw* data)
 	while (size--)
 	{
 		#if (MP_WBITS == 32)
-		fprintf(fp, "%08x", *(data++));
+		fprintf(fp, "%08x", (unsigned) *(data++));
 		#elif (MP_WBITS == 64)
 		# if WIN32
 		fprintf(fp, "%016I64x", *(data++));
@@ -1305,7 +1320,7 @@ void mpprint(register FILE * fp, register size_t size, register const mpw* data)
 		#endif
 	}
 	fprintf(fp, "\n");
-	fflush(fp);
+	(void) fflush(fp);
 }
 #endif
 
@@ -1319,7 +1334,7 @@ void mpprintln(register FILE * fp, register size_t size, register const mpw* dat
 	while (size--)
 	{
 		#if (MP_WBITS == 32)
-		fprintf(fp, "%08x", *(data++));
+		fprintf(fp, "%08x", (unsigned) *(data++));
 		#elif (MP_WBITS == 64)
 		# if WIN32
 		fprintf(fp, "%016I64x", *(data++));
@@ -1333,7 +1348,7 @@ void mpprintln(register FILE * fp, register size_t size, register const mpw* dat
 		#endif
 	}
 	fprintf(fp, "\n");
-	fflush(fp);
+	(void) fflush(fp);
 }
 #endif
 
@@ -1358,7 +1373,7 @@ int i2osp(byte *osdata, size_t ossize, const mpw* idata, size_t isize)
 				mpw w = *(idata++);
 				byte shift = MP_WBITS;
 
-				while (shift)
+				while (shift != 0)
 				{
 					shift -= 8;
 					*(osdata++) = (byte)(w >> shift);
@@ -1374,7 +1389,7 @@ int i2osp(byte *osdata, size_t ossize, const mpw* idata, size_t isize)
 	return -1;
 }
 
-int os2ip(mpw* idata, size_t isize, const byte* osdata, size_t ossize)
+int os2ip(mpw* idata, size_t isize, const byte* osdata, /*@unused@*/ size_t ossize)
 {
 	size_t required = MP_BYTES_TO_WORDS(isize + MP_WBYTES - 1);
 

@@ -62,8 +62,6 @@ void mpnsize(mpnumber* n, size_t size)
 		n->data = (mpw*) 0;
 		n->size = 0;
 	}
-	else
-		{};
 }
 /*@=compdef @*/
 
@@ -130,8 +128,6 @@ void mpnset(mpnumber* n, size_t size, const mpw* data)
 		n->data = (mpw*) 0;
 		n->size = 0;
 	}
-	else
-		{};
 }
 
 void mpnsetw(mpnumber* n, mpw val)
@@ -174,7 +170,7 @@ void mpnsethex(mpnumber* n, const char* hex)
 	{
 		n->size = size;
 
-		hs2ip(n->data, size, hex, len);
+		(void) hs2ip(n->data, size, hex, len);
 	}
 	else {
 		n->size = 0;

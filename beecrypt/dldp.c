@@ -29,6 +29,10 @@
 #include "mpprime.h"
 #include "debug.h"
 
+/*!\addtogroup DL_m
+ * \{
+ */
+
 /**
  */
 static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ mpw* wksp)
@@ -88,7 +92,7 @@ int dldp_pEqual(const dldp_p* a, const dldp_p* b)
 static int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
 	/*@*/
 {
-	register size_t  size = dp->p.size;
+	register size_t size = dp->p.size;
 	register mpw* temp = (mpw*) malloc((8*size+2) * sizeof(*temp));
 
 	if (temp)
@@ -173,7 +177,6 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 	/*
 	 * Generate parameters as described by IEEE P1363, A.16.1
 	 */
-
 	register size_t psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
 	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
 
@@ -201,6 +204,7 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 
 		return 0;
 	}
+
 	return -1;
 }
 
@@ -438,7 +442,7 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, mpw* wksp)
 
 int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 {
-	register size_t  psize = dp->p.size;
+	register size_t psize = dp->p.size;
 	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
@@ -456,3 +460,6 @@ int dldp_pgonValidate(const dldp_p* dp, randomGeneratorContext* rgc)
 {
 	return dldp_pValidate((const dldp_p*) dp, rgc);
 }
+
+/*!\}
+ */
