@@ -18,6 +18,6 @@ CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
 	-DVERSION=\"$(VERSION)\" 
 LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L$(topdir)/lib \
 		-L$(topdir)/build -L$(topdir)/misc
-VERSION = 2.4.10
+VERSION = 2.4.11
 CC = @CC@
 
