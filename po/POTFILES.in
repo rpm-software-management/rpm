@@ -45,6 +45,7 @@ lib/rpmds.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmrc.c
+lib/rpmte.c
 lib/rpmvercmp.c
 lib/signature.c
 lib/stringbuf.c

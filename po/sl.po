@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.206 2001/11/16 19:27:09 jbj Exp $
+# $Id: sl.po,v 1.207 2001/11/16 20:26:27 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-16 14:15-0500\n"
+"POT-Creation-Date: 2001-11-16 15:03-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1465,89 +1465,89 @@ msgstr ""
 msgid " failed - "
 msgstr " neuspe¹no - "
 
-#: lib/depends.c:106
+#: lib/depends.c:103
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
-#: lib/depends.c:421
+#: lib/depends.c:418
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:709
+#: lib/depends.c:706
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:734
+#: lib/depends.c:731
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:750
+#: lib/depends.c:747
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:771
+#: lib/depends.c:768
 #, fuzzy
 msgid "(db files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:783
+#: lib/depends.c:780
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:796
+#: lib/depends.c:793
 #, fuzzy
 msgid "(db package)"
 msgstr "ni paketov\n"
 
-#: lib/depends.c:835
+#: lib/depends.c:832
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) dodano v predpomnilnik Depends.\n"
 
-#: lib/depends.c:837 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:834 lib/rpmds.c:407 lib/rpmds.c:566
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
 
-#: lib/depends.c:837 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:834 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1178
+#: lib/depends.c:1175
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1423
+#: lib/depends.c:1420
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1499
+#: lib/depends.c:1496
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1576
+#: lib/depends.c:1573
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1636
+#: lib/depends.c:1633
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1673
+#: lib/depends.c:1670
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1678
+#: lib/depends.c:1675
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""

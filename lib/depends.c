@@ -39,9 +39,6 @@ struct orderListIndex_s {
 int _cacheDependsRC = 1;
 
 /*@unchecked@*/
-int _te_debug = 0;
-
-/*@unchecked@*/
 int _ts_debug = 0;
 
 /*@observer@*/ /*@unchecked@*/
@@ -1499,7 +1496,7 @@ fprintf(stderr, "\t+++ %p[%d] %s npreds %d\n", p, teiGetOc(pi), teGetNEVR(p), p-
     rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, depth)\n"));
 
 rescan:
-    if (pi) pi = teFreeIterator(pi);
+    if (pi != NULL) pi = teFreeIterator(pi);
     q = r = NULL;
     qlen = 0;
     pi = teInitIterator(ts);
