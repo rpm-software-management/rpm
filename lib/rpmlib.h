@@ -239,8 +239,11 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMVAR_ARCH                     44
 #define RPMVAR_OS                       45
 #define RPMVAR_BUILDPLATFORM            46
+#define RPMVAR_BUILDARCH                47
+#define RPMVAR_BUILDOS                  48
+#define RPMVAR_SETENV                   49
 
-#define RPMVAR_NUM			47     /* number of RPMVAR entries */
+#define RPMVAR_NUM			50     /* number of RPMVAR entries */
 
 char * rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
@@ -256,7 +259,8 @@ void rpmSetVar(int var, char *val);
 
 /* rpmReadConfigFiles() is for backwards compatibility only! It won't
    work if building is true! */
-int rpmReadConfigFiles(char * file, char * arch, char * os, int building);
+int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
+    char * buildplatform);
 int rpmReadRC(char * file);
 void rpmGetArchInfo(char ** name, int * num);
 void rpmGetOsInfo(char ** name, int * num);

@@ -83,9 +83,13 @@ static struct tableType tables[RPM_MACHTABLE_COUNT] = {
 };
 
 /* this *must* be kept in alphabetical order */
+/* The order of the flags is archSpecific, required, macroize, localize */
+
 static struct rpmOption optionTable[] = {
     { "arch",			RPMVAR_ARCH,			0, 1,	1, 2 },
-    { "builddir",		RPMVAR_BUILDDIR,		0, 0,	1, 1 },
+    { "builddir",		RPMVAR_BUILDDIR,		0, 0,	1, 2 },
+    { "buildarch",		RPMVAR_BUILDARCH,           	0, 1,	1, 0 },
+    { "buildos",		RPMVAR_BUILDOS,           	0, 1,	1, 0 },
     { "buildplatform",		RPMVAR_BUILDPLATFORM,           0, 1,	1, 2 },
     { "buildroot",              RPMVAR_BUILDROOT,               0, 0,	1, 0 },
     { "buildshell",             RPMVAR_BUILDSHELL,              0, 0,	1, 0 },
@@ -116,7 +120,8 @@ static struct rpmOption optionTable[] = {
 /*    { "root",			RPMVAR_ROOT,			0, 0,	1, 0 }, */
     { "rpmdir",			RPMVAR_RPMDIR,			0, 0,	1, 1 },
     { "rpmfilename",		RPMVAR_RPMFILENAME,		0, 1,	1, 2 },
-    { "signature",		RPMVAR_SIGTYPE,			0, 0,	1, 0 },
+    { "setenv",			RPMVAR_SETENV,			0, 1,	0, 0 },
+    { "signature",		RPMVAR_SIGTYPE,			0, 0,	0, 0 },
     { "sourcedir",		RPMVAR_SOURCEDIR,		0, 0,	1, 1 },
     { "specdir",		RPMVAR_SPECDIR,			0, 0,	1, 1 },
     { "srcrpmdir",		RPMVAR_SRPMDIR,			0, 0,	1, 1 },
@@ -176,6 +181,8 @@ static int optionCompare(const void * a, const void * b) {
 		      ((struct rpmOption *) b)->name);
 }
 
+static void rpmRebuildPlatformVars(char ** buildplatform, char **canonarch,
+                             char **canonos);
 
 
 static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
@@ -425,37 +432,58 @@ static char *lookupInDefaultTable(char *name, struct defaultEntry *table,
     return name;
 }
 
-int rpmReadConfigFiles(char * file, char * arch, char * os, int building) {
+int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
+    char * buildplatform)
+{
+
+    char * canonarch, * canonos;
+    char * buildarch, * buildos;
+    MacroEntry ** ME;
 
     rpmSetMachine(arch, os);
+    if (!buildplatform) 
+       rpmRebuildPlatformVars(&buildplatform, &canonarch, &canonos);
+    else 
+       addMacro(&globalMacroContext, "_buildplatform_preset", NULL,
+          buildplatform, RMIL_RPMRC);
+
+/*
+    addMacro(&globalMacroContext, "buildplatform", NULL, buildplatform,
+      RMIL_RPMRC);
+*/
+
+/*
+Okay, I'm _not_ going to set these for now, since I think that buildarch
+and buildos should be set dynamically.  Gone are the days of having a
+build arch and os... they're all now just a platform.   I'm keeping it
+here until there's a discussion on the rpm mailing list.
+
+   - AdV
+*/
+
+
+#if 0 
+addMacro(&globalMacroContext, "_buildarch_lc", NULL, "mipseb", RMIL_RPMRC);
+	rpmGetOsInfo(&canonos, NULL);
+addMacro(&globalMacroContext, "_buildos", NULL, canonos, RMIL_RPMRC);
+addMacro(&globalMacroContext, "_buildos_lc", NULL, buf, RMIL_RPMRC);
+
+#endif
 
     if (rpmReadRC(file)) return -1;
 
-    if (building)
-	rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
+    rpmRebuildPlatformVars(&buildplatform, &canonarch, &canonos);
 
-    /* XXX WTFO?: Presumably, this is *the* place to set arch/os ??? */
-    rpmSetMachine(arch, os);
-  {	char *canonarch, *canonos;
-	char buf[BUFSIZ];
-	int x;
-	rpmGetArchInfo(&canonarch, NULL);
-	addMacro(&globalMacroContext, "_buildarch", NULL, canonarch, RMIL_RPMRC);
+    /* This is where we finally set the arch and os absolutely */
+/*    rpmSetMachine(canonarch, canonos); */
 
-	/* XXX is this necessary? */
-	for (x = 0; canonarch[x]; x++)
-		buf[x] = tolower(canonarch[x]);
-	addMacro(&globalMacroContext, "_buildarch_lc", NULL, buf, RMIL_RPMRC);
 
-	rpmGetOsInfo(&canonos, NULL);
-	addMacro(&globalMacroContext, "_buildos", NULL, canonos, RMIL_RPMRC);
+buildarch = (char *) getMacroBody(&globalMacroContext, "buildarch");
+buildos = (char *) getMacroBody(&globalMacroContext, "buildos");
 
-	/* XXX is this necessary? */
-	for (x = 0; canonos[x]; x++)
-		buf[x] = tolower(canonos[x]);
-	addMacro(&globalMacroContext, "_buildos_lc", NULL, buf, RMIL_RPMRC);
+rpmSetMachine(buildarch,buildos);
 
-  }
+    
 
     return 0;
 }
@@ -488,20 +516,12 @@ static void setPathDefault(int var, char *macroname, char *subdir) {
 }
 
 static void setDefaults(void) {
-    char * arch, * os;
-
-    initMacros(&globalMacroContext, MACROFILE);
 
     rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
     rpmSetVar(RPMVAR_SIGTYPE, "none");
     rpmSetVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
     rpmSetVar(RPMVAR_TOPDIR, "/usr/src/redhat");
     rpmSetVar(RPMVAR_BUILDSHELL, "/bin/sh");
-    defaultMachine(&arch, &os);
-    rpmSetVar(RPMVAR_ARCH,arch);
-    rpmSetVar(RPMVAR_OS,os);
-
-
 }
 
 int rpmReadRC(char * file) {
@@ -520,7 +540,7 @@ int rpmReadRC(char * file) {
     if (fd >= 0) {
 	rc = doReadRC(fd, LIBRPMRC_FILENAME);
 	close(fd);
-	if (rc) return rc;
+ 	if (rc) return rc;
     } else {
 	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
 		 LIBRPMRC_FILENAME, strerror(errno));
@@ -635,8 +655,44 @@ static int doReadRC(int fd, char * filename) {
 	    }
 
 	    switch (option->var) {
+	    case RPMVAR_SETENV:
+	      {
+ 		char * macroname, *envname;
+
+		/* The format is "setenv: macroname envname value" */
+
+		/* Skip to the end of the first word, which is the
+		macro name. */
+
+		while (isspace(*start) && *start) start++;
+		if (! *start) {
+		  rpmError(RPMERR_RPMRC, _("no macroname for setenv %s:%d"),
+		      	filename, linenum);
+		  return 1;
+		}
+		macroname = start;
+		while (!isspace(*start) && (*start)) start++;
+		*start = '\0';
+
+		start++;
+		while (isspace(*start) && *start) start++;
+
+		/* Skip to the end of the second word, which is the
+		environment name. */
+		envname = start;
+		while (!isspace(*start) && (*start)) start++;
+		*start = '\0';
+
+		start++;
+
+		addMacro(&globalMacroContext, start, NULL, macroname, RMIL_RPMRC);
+		setenv(envname,start,1);
+	      } break;
+
 	    case RPMVAR_INCLUDE:
 	      {	int fdinc;
+
+		rpmRebuildPlatformVars(NULL,NULL,NULL);
 
 		strcpy(buf, start);
 		if (expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
@@ -1026,6 +1082,68 @@ void rpmGetArchInfo(char ** name, int * num) {
 
 void rpmGetOsInfo(char ** name, int * num) {
     getMachineInfo(OS, name, num);
+}
+
+void rpmRebuildPlatformVars(char ** buildplatform, char **canonarch,
+                             char **canonos) {
+
+/* If buildplatform == NULL, don't return anything  */
+
+
+    char * b = NULL, * ca = NULL, * co = NULL;
+    char * presetbuildplatform = NULL;
+    int x;
+/*
+*/
+    presetbuildplatform= (char *) getMacroBody(&globalMacroContext,
+              "_buildplatform_preset");
+
+      /* Rebuild the compat table to recalculate the
+         current buildarch.  */
+
+      rpmSetMachine(NULL, NULL);
+      rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
+      rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
+
+      rpmGetArchInfo(&ca,NULL);
+      rpmGetOsInfo(&co,NULL);
+
+      if (!ca) defaultMachine(&ca,NULL);
+      if (!co) defaultMachine(NULL,&co);
+
+      for (x = 0; ca[x]; x++)
+              ca[x] = tolower(ca[x]);
+      for (x = 0; co[x]; x++)
+              co[x] = tolower(co[x]);
+
+      b = malloc(strlen(co)+strlen(ca)+2);
+      sprintf(b,"%s-%s",ca,co);
+
+      delMacro(&globalMacroContext, "buildplatform");
+
+    if (!presetbuildplatform) {
+      addMacro(&globalMacroContext, "buildplatform", NULL, b,
+        RMIL_RPMRC);
+    } else {
+      addMacro(&globalMacroContext, "buildplatform", NULL,
+        presetbuildplatform, RMIL_RPMRC);
+    }
+      delMacro(&globalMacroContext, "arch");
+      addMacro(&globalMacroContext, "arch", NULL, ca, 
+          RMIL_RPMRC);
+      delMacro(&globalMacroContext, "os");
+      addMacro(&globalMacroContext, "os", NULL, co, 
+          RMIL_RPMRC);
+
+    if (buildplatform) {
+      if (presetbuildplatform) 
+         *buildplatform = presetbuildplatform;
+      else
+         *buildplatform = b;
+    }
+    if (canonarch) *canonarch = ca;
+    if (canonos) *canonos = co;
+
 }
 
 int rpmShowRC(FILE *f)
