@@ -1,3 +1,8 @@
+2.4.11 -> 2.4.12:
+	- intialize reserved portion of lead when writing packages
+	- fixed error messages displayed when opening the database
+	  fails during package installation and removal
+
 2.4.10 -> 2.4.11:
 	- HAVE_SYS_SOCKET_H was mistakingly MACHINE_SYS_SOCKET_H in
 	  config.h.in
