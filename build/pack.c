@@ -39,14 +39,14 @@ struct file_entry {
 
 static int cpio_gzip(Header header, int fd);
 static int writeMagic(Spec s, struct PackageRec *pr,
-		      int fd, char *name, unsigned char type);
+		      int fd, char *name, unsigned short type);
 static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir);
 static int process_filelist(Header header, StringBuf sb);
 static int add_file_aux(char *file, struct stat *sb, int flag);
 
 static int writeMagic(Spec s, struct PackageRec *pr,
-		      int fd, char *name, unsigned char type)
+		      int fd, char *name, unsigned short type)
 {
     struct rpmlead lead;
 
@@ -57,9 +57,10 @@ static int writeMagic(Spec s, struct PackageRec *pr,
 
     lead.major = 2;
     lead.minor = 0;
-    lead.type = htons(RPMLEAD_BINARY);
+    lead.type = htons(type);
     lead.archnum = htons(getArchNum());
     lead.osnum = htons(getOsNum());
+    lead.signature_type = htons(RPMLEAD_SIGNONE);
     strncpy(lead.name, name, sizeof(lead.name));
 
     write(fd, &lead, sizeof(lead));
@@ -462,7 +463,7 @@ int packageBinaries(Spec s)
 	
 	sprintf(filename, "%s.%s.rpm", name, getArchName());
 	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-	if (writeMagic(s, pr, fd, name, BINARY_HEADER)) {
+	if (writeMagic(s, pr, fd, name, RPMLEAD_BINARY)) {
 	    return 1;
 	}
 
