@@ -184,7 +184,7 @@ int dosetenv(const char *name, const char *value, int overwrite) {
     if (!overwrite && getenv(name)) return 0;
 
     i = strlen(name) + strlen(value) + 2;
-    a = malloc(i);
+    a = xmalloc(i);
     if (!a) return 1;
     
     strcpy(a, name);
@@ -463,7 +463,7 @@ void compressFilelist(Header h) {
 }
 
 /* this is pretty straight-forward. The only thing that even resembles a trick
-   is getting all of this into a single malloc'd block */
+   is getting all of this into a single xmalloc'd block */
 void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
     int * dirList;
     char ** dirs;
@@ -489,7 +489,7 @@ void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
 	size += strlen(tails[i]) + strlen(dirs[dirList[i]]) + 1;
     }
 
-    fileList = malloc(size);
+    fileList = xmalloc(size);
     data = ((char *) fileList) + (sizeof(*fileList) * count);
 
     for (i = 0; i < count; i++) {

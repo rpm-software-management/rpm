@@ -212,7 +212,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	    if (dirMatch) {
 		dirMapping[dirNum] = dirMatch - al->dirs;
 	    } else {
-		al->dirs[al->numDirs].dirName = strdup(dirList[dirNum]);
+		al->dirs[al->numDirs].dirName = xstrdup(dirList[dirNum]);
 		al->dirs[al->numDirs].files = NULL;
 		al->dirs[al->numDirs].numFiles = 0;
 		al->dirs[al->numDirs].dirNum = al->numDirs;
@@ -734,7 +734,7 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 static struct availablePackage * alFileSatisfiesDepend(
 	struct availableList * al, const char * keyType, const char *fileName) {
     int i;
-    char * file = strdup(fileName);
+    char * file = xstrdup(fileName);
     char * chptr = strrchr(file, '/');
     char * base;
     struct dirInfo dirNeedle;

@@ -46,7 +46,7 @@ void freeUrlinfo(urlinfo *u)
 urlinfo *newUrlinfo(void)
 {
     urlinfo *u;
-    if ((u = malloc(sizeof(*u))) == NULL)
+    if ((u = xmalloc(sizeof(*u))) == NULL)
 	return NULL;
     memset(u, 0, sizeof(*u));
     u->proxyp = -1;

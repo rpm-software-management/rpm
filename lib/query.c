@@ -285,7 +285,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 			} else {
 			    char * filespec;
 
-			    filespec = malloc(strlen(dirList[dirIndexList[i]])
+			    filespec = xmalloc(strlen(dirList[dirIndexList[i]])
 					      + strlen(baseNameList[i]) + 1);
 			    strcpy(filespec, dirList[dirIndexList[i]]);
 			    strcat(filespec, baseNameList[i]);

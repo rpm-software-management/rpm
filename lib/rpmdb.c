@@ -394,7 +394,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 
 	do {
 	    num = allMatches.recs[i].fileNumber;
-	    otherFile = malloc(strlen(dirNames[dirIndexes[num]]) + 
+	    otherFile = xmalloc(strlen(dirNames[dirIndexes[num]]) + 
 			      strlen(baseNames[num]) + 1);
 	    strcpy(otherFile, dirNames[dirIndexes[num]]);
 	    strcat(otherFile, baseNames[num]);
