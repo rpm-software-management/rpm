@@ -304,6 +304,7 @@ static int urlConnect(const char * url, urlinfo ** uret)
 
     if (!strcmp(u->service, "ftp") && u->ftpControl < 0) {
 
+	u->ftpGetFileDoneNeeded = 0;	/* XXX PARANOIA */
 	rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"),
 		u->host,
 		u->user ? u->user : "ftp",
@@ -355,6 +356,7 @@ int ufdClose(FD_t fd)
 	/* Close the ftp control channel (not strictly necessary, but ... */
 	if (u->ftpControl >= 0) {
 	    ftpAbort(fd);
+	    fd = NULL;	/* XXX ftpAbort does fdClose(fd) */
 	    close(u->ftpControl);
 	    u->ftpControl = -1;
 	}

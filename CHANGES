@@ -1,6 +1,7 @@
 2.92 -> 2.93
 	- eliminate old rpmrc configuration syntax.
 	- pgp5 support (Carlo Wood <carlo@runaway.xs4all.nl>)
+	- fix: segfault from double close on ftpGetFileDesc ftpAbort path.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.

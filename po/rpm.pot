@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-03-21 14:06-0500\n"
+"POT-Creation-Date: 1999-03-22 11:02-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -212,55 +212,55 @@ msgstr ""
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
-#: ../ftp.c:640
+#: ../ftp.c:642
 msgid "Success"
 msgstr ""
 
-#: ../ftp.c:643
+#: ../ftp.c:645
 msgid "Bad server response"
 msgstr ""
 
-#: ../ftp.c:646
+#: ../ftp.c:648
 msgid "Server IO error"
 msgstr ""
 
-#: ../ftp.c:649
+#: ../ftp.c:651
 msgid "Server timeout"
 msgstr ""
 
-#: ../ftp.c:652
+#: ../ftp.c:654
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: ../ftp.c:655
+#: ../ftp.c:657
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: ../ftp.c:658
+#: ../ftp.c:660
 msgid "Failed to connect to server"
 msgstr ""
 
-#: ../ftp.c:661
+#: ../ftp.c:663
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: ../ftp.c:664
+#: ../ftp.c:666
 msgid "IO error to local file"
 msgstr ""
 
-#: ../ftp.c:667
+#: ../ftp.c:669
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: ../ftp.c:670
+#: ../ftp.c:672
 msgid "File not found on server"
 msgstr ""
 
-#: ../ftp.c:673
+#: ../ftp.c:675
 msgid "Abort in progress"
 msgstr ""
 
-#: ../ftp.c:677
+#: ../ftp.c:679
 msgid "Unknown or unexpected error"
 msgstr ""
 
@@ -1464,17 +1464,18 @@ msgstr ""
 msgid "url port must be a number\n"
 msgstr ""
 
-#: ../url.c:307
+#. XXX PARANOIA
+#: ../url.c:308
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:168 ../url.c:418
+#: ../lib/rpmdb.c:168 ../url.c:420
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: ../url.c:433
+#: ../url.c:435
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""

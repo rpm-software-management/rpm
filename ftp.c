@@ -500,9 +500,11 @@ fprintf(stderr, "-> ABOR\n");
 }
 
 static int ftpGetFileDone(urlinfo *u) {
-    if (u->ftpGetFileDoneNeeded && ftpCheckResponse(u, NULL))
-	return FTPERR_BAD_SERVER_RESPONSE;
-    u->ftpGetFileDoneNeeded = 0;
+    if (u->ftpGetFileDoneNeeded) {
+	u->ftpGetFileDoneNeeded = 0;
+	if (ftpCheckResponse(u, NULL))
+	    return FTPERR_BAD_SERVER_RESPONSE;
+    }
     return 0;
 }
 
