@@ -1,10 +1,13 @@
 LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o falloc.o \
 	     var.o md5.o md5sum.o dbindex.o rpmrc.o \
 	     rpmdb.o stringbuf.o rpmlead.o package.o uninstall.o \
-	     oldheader.o install.o signature.o verify.o
+	     oldheader.o install.o signature.o verify.o 
+SOURCES = $(subst .o,.c,$(LIBOBJECTS)) 
+TAGTABLE = tagtable.o
 LIBRPM = librpm.a
 LOADLIBES = -lrpm -lgdbm -ldb $(LIBEFENCE)
 PROGS = 
+AR = ar
 
 # -----------------------------------------------------------------------
 
@@ -20,9 +23,17 @@ allprogs: $(LIBRPM) $(PROGS)
 
 $(PROGS): $(LIBRPM)
 
-$(LIBRPM): $(LIBOBJECTS) 
-	$(AR) $@ $(LIBOBJECTS)
+$(LIBRPM): $(LIBRPM)($(LIBOBJECTS) $(TAGTABLE))
 	$(RANLIB) $@
+
+tagtable.c: rpmlib.h Makefile
+	echo '#include "rpmlib.h"' > tagtable.c
+	echo '' >> tagtable.c
+	echo 'const struct rpmTagTableEntry rpmTagTable[] = {' >> tagtable.c
+	perl -ne '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && do { printf("\t{ \"$$1\", $$2 },\n"); }' < rpmlib.h >> tagtable.c
+	echo '};' >> tagtable.c
+	echo '' >> tagtable.c
+	echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct rpmTagTableEntry);' >> tagtable.c
 
 install:
 	install -m 755 -o 0 -g 0 -d $(INCDIR)
@@ -41,7 +52,7 @@ squeaky: clean
 	rm -f depend
 
 depend:
-	$(CPP) $(CFLAGS) -M *.c > .depend
+	$(CPP) $(CFLAGS) -M $(SOURCES) > .depend
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
