@@ -1618,21 +1618,14 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
 {
     struct indexEntry *entry;
 
-    if (c <= 0) {
-#ifdef	DYING
-	fprintf(stderr, _("Bad count for headerAddEntry(): %d\n"), (int) c);
-	exit(EXIT_FAILURE);
-#else
+    /* Count must always be >= 1 for headerAddEntry. */
+    if (c <= 0)
 	return 0;
-#endif
-	/*@notreached@*/
-    }
 
     /* Allocate more index space if necessary */
     if (h->indexUsed == h->indexAlloced) {
 	h->indexAlloced += INDEX_MALLOC_SIZE;
-	h->index = xrealloc(h->index,
-			h->indexAlloced * sizeof(struct indexEntry));
+	h->index = xrealloc(h->index, h->indexAlloced * sizeof(*h->index));
     }
 
     /* Fill in the index */

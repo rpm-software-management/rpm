@@ -808,11 +808,6 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  */
 /*@null@*/ Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi @*/;
-#define	rpmdbNextIterator(_a) \
-	XrpmdbNextIterator(_a, __FILE__, __LINE__)
-/*@null@*/ Header XrpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi,
-				const char * f, unsigned int l)
-	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Return database iterator.
@@ -1521,17 +1516,22 @@ typedef enum rpmQVSources_e {
  */
 typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_NONE	= 0,		/*!< */
-    RPMVERIFY_MD5	= (1 << 0),	/*!< */
-    RPMVERIFY_FILESIZE	= (1 << 1),	/*!< */
-    RPMVERIFY_LINKTO	= (1 << 2),	/*!< */
-    RPMVERIFY_USER	= (1 << 3),	/*!< */
-    RPMVERIFY_GROUP	= (1 << 4),	/*!< */
-    RPMVERIFY_MTIME	= (1 << 5),	/*!< */
-    RPMVERIFY_MODE	= (1 << 6),	/*!< */
-    RPMVERIFY_RDEV	= (1 << 7),	/*!< */
+    RPMVERIFY_MD5	= (1 << 0),	/*!< from %verify(md5) */
+    RPMVERIFY_FILESIZE	= (1 << 1),	/*!< from %verify(size) */
+    RPMVERIFY_LINKTO	= (1 << 2),	/*!< from %verify(link) */
+    RPMVERIFY_USER	= (1 << 3),	/*!< from %verify(user) */
+    RPMVERIFY_GROUP	= (1 << 4),	/*!< from %verify(group) */
+    RPMVERIFY_MTIME	= (1 << 5),	/*!< from %verify(mtime) */
+    RPMVERIFY_MODE	= (1 << 6),	/*!< from %verify(mode) */
+    RPMVERIFY_RDEV	= (1 << 7),	/*!< from %verify(rdev) */
+	/* bits 8-15 unused, reserved for rpmVerifyAttrs */
+	/* bits 16-19 used in rpmVerifyFlags */
+	/* bits 20-22 unused */
+	/* bits 23-27 used in rpmQueryFlags */
     RPMVERIFY_READLINKFAIL= (1 << 28),	/*!< */
     RPMVERIFY_READFAIL	= (1 << 29),	/*!< */
     RPMVERIFY_LSTATFAIL	= (1 << 30)	/*!< */
+	/* bit 31 unused */
 } rpmVerifyAttrs;
 #define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
 
@@ -1602,6 +1602,7 @@ typedef enum rpmEraseInterfaceFlags_e {
 /** \ingroup signature
  * Tags found in signature header from package.
  */
+/*@-enummemuse@*/
 enum rpmtagSignature {
     RPMSIGTAG_SIZE	= 1000,	/*!< Size in bytes. */
 /* the md5 sum was broken *twice* on big endian machines */
@@ -1612,7 +1613,6 @@ enum rpmtagSignature {
     RPMSIGTAG_GPG	= 1005, /*!< GnuPG signature. */
     RPMSIGTAG_PGP5	= 1006,	/*!< PGP5 signature @deprecated legacy. */
 
-/*@-enummemuse@*/
 /* Signature tags by Public Key Algorithm (RFC 2440) */
 /* N.B.: These tags are tenative, the values may change */
     RPMTAG_PK_BASE	= 512,		/*!< @todo Implement. */
@@ -1633,8 +1633,8 @@ enum rpmtagSignature {
     RPMTAG_HASH_MD2	= RPMTAG_HASH_BASE+5,	/*!< (unused) */
     RPMTAG_HASH_TIGER192= RPMTAG_HASH_BASE+6,	/*!< (unused) */
     RPMTAG_HASH_HAVAL_5_160= RPMTAG_HASH_BASE+7	/*!< (unused) */
-/*@=enummemuse@*/
 };
+/*@=enummemuse@*/
 
 /**
  *  Return codes from verifySignature().

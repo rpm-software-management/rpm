@@ -2,7 +2,6 @@
 
 #include <rpmcli.h>
 #include <rpmbuild.h>
-#include <rpmurl.h>
 
 #include "build.h"
 #include "signature.h"

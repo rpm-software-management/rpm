@@ -6,7 +6,6 @@
 
 #include <rpmcli.h>
 #include <rpmbuild.h>
-#include <rpmurl.h>
 
 #include "build.h"
 #include "debug.h"

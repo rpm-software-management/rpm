@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include <rpmcli.h>
-#include <rpmurl.h>
 
 #include "psm.h"
 #include "md5.h"
@@ -27,57 +26,6 @@ static union _vendian {
 #define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
-
-#ifdef	DYING
-#define	POPT_NODEPS	1000
-#define	POPT_NOFILES	1001
-#define	POPT_NOMD5	1002
-#define	POPT_NOSCRIPTS	1003
-
-/* ========== Verify specific popt args */
-static void verifyArgCallback(/*@unused@*/poptContext con,
-		/*@unused@*/enum poptCallbackReason reason,
-		const struct poptOption * opt, /*@unused@*/const char * arg,
-		/*@unused@*/ const void * data)
-	/*@*/
-{
-    QVA_t qva = &rpmQVArgs;
-    switch (opt->val) {
-    case POPT_NODEPS: qva->qva_flags |= VERIFY_DEPS; break;
-    case POPT_NOFILES: qva->qva_flags |= VERIFY_FILES; break;
-    case POPT_NOMD5: qva->qva_flags |= VERIFY_MD5; break;
-    case POPT_NOSCRIPTS: qva->qva_flags |= VERIFY_SCRIPT; break;
-    }
-}
-
-static int noDeps = 0;
-static int noFiles = 0;
-static int noMd5 = 0;
-static int noScripts = 0;
-#endif	/* DYING */
-
-/**
- * Verify mode options.
- */
-struct poptOption rpmVerifyPoptTable[] = {
-#ifdef	DYING
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-	verifyArgCallback, 0, NULL, NULL },
-#endif	/* DYING */
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
-	NULL, NULL },
- { "nodeps", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_DEPS,
-	N_("do not verify package dependencies"), NULL },
- { "nofiles", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_FILES,
-	N_("don't verify files in package"), NULL},
- { "nomd5", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_MD5,
-	N_("do not verify file md5 checksums"), NULL },
- { "noscripts", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_SCRIPT,
-        N_("do not execute %verifyscript (if any)"), NULL },
- { "nodigest", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_DIGEST,
-        N_("do not execute %verifyscript (if any)"), NULL },
-    POPT_TABLEEND
-};
 
 int rpmVerifyFile(const char * root, Header h, int filenum,
 		rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
@@ -167,7 +115,12 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	}
     }
 
-    if (filespec == NULL || Lstat(filespec, &sb) != 0) {
+    if (filespec == NULL) {
+	*result |= RPMVERIFY_LSTATFAIL;
+	return 1;
+    }
+
+    if (Lstat(filespec, &sb) != 0) {
 	*result |= RPMVERIFY_LSTATFAIL;
 	return 1;
     }
@@ -202,7 +155,7 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
      */
     if (fileAttrs & RPMFILE_GHOST) {
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
-			RPMVERIFY_LINKTO);
+			RPMVERIFY_LINKTO | RPMVERIFY_MODE);
     }
 
     /*
@@ -403,7 +356,7 @@ static int verifyDigest(Header h)
 
 	if (digest) {		/* XXX can't happen */
 	    const char *n, *v, *r;
-	    headerNVR(h, &n, &v, &r);
+	    (void) headerNVR(h, &n, &v, &r);
 	    if (strcmp(hdigest, digest)) {
 		rpmMessage(RPMMESS_NORMAL,
 		   _("%s-%s-%s: immutable header region digest check failed\n"),
@@ -436,8 +389,7 @@ static int verifyHeader(QVA_t qva, Header h)
     int count;
     int_32 * fileFlags = NULL;
     rpmVerifyAttrs verifyResult = 0;
-    rpmVerifyAttrs omitMask = !(qva->qva_flags & VERIFY_MD5)
-			? RPMVERIFY_MD5 : RPMVERIFY_NONE;
+    rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int ec = 0;		/* assume no problems */
     int i;
 

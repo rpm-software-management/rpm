@@ -16,7 +16,6 @@
 #include "Python.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 #include "misc.h"
-#include "rpmmacro.h"
 #include "rpmio_internal.h"
 #include "upgrade.h"
 

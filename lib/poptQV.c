@@ -7,13 +7,12 @@
 
 #include <rpmcli.h>
 #include <rpmbuild.h>
-#include <rpmurl.h>
+
 #include "debug.h"
 
 struct rpmQVArguments_s rpmQVArgs;
 int specedit = 0;
 
-/* ======================================================================== */
 #define POPT_QUERYFORMAT	1000
 #define POPT_WHATREQUIRES	1001
 #define POPT_WHATPROVIDES	1002
@@ -24,9 +23,10 @@ int specedit = 0;
 
 /* ========== Query/Verify source popt args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
-	/*@unused@*/ enum poptCallbackReason reason,
-	const struct poptOption * opt, /*@unused@*/ const char * arg, 
-	/*@unused@*/ const void * data)
+		/*@unused@*/ enum poptCallbackReason reason,
+		const struct poptOption * opt, /*@unused@*/ const char * arg, 
+		/*@unused@*/ const void * data)
+	/*@modifies rpmQVArgs @*/
 {
     QVA_t qva = &rpmQVArgs;
 
@@ -62,6 +62,9 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     }
 }
 
+/**
+ * Common query/verify mode options.
+ */
 struct poptOption rpmQVSourcePoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 	rpmQVSourceArgCallback, 0, NULL, NULL },
@@ -131,6 +134,9 @@ static void queryArgCallback(/*@unused@*/poptContext con,
     }
 }
 
+/**
+ * Query mode options.
+ */
 struct poptOption rpmQueryPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 	queryArgCallback, 0, NULL, NULL },
@@ -157,4 +163,53 @@ struct poptOption rpmQueryPoptTable[] = {
    POPT_TABLEEND
 };
 
-/* ======================================================================== */
+/**
+ * Verify mode options.
+ */
+struct poptOption rpmVerifyPoptTable[] = {
+#ifdef	DYING
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+	verifyArgCallback, 0, NULL, NULL },
+#endif	/* DYING */
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
+	NULL, NULL },
+
+ { "nomd5", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_MD5,
+	N_("don't verify MD5 digest of files"), NULL },
+ { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_SIZE,
+        N_("don't verify size of files"), NULL },
+ { "nolinkto", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_LINKTO,
+        N_("don't verify symlink path of files"), NULL },
+ { "nouser", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_USER,
+        N_("don't verify owner of files"), NULL },
+ { "nogroup", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_GROUP,
+        N_("don't verify group of files"), NULL },
+ { "nomtime", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_MTIME,
+        N_("don't verify modification time of files"), NULL },
+ { "nomode", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_MODE,
+        N_("don't verify mode of files"), NULL },
+ { "nordev", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_RDEV,
+        N_("don't verify mode of files"), NULL },
+
+ { "nofiles", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_FILES,
+	N_("don't verify files in package"), NULL},
+ { "nodeps", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_DEPS,
+	N_("don't verify package dependencies"), NULL },
+ { "noscript", '\0', POPT_BIT_SET,&rpmQVArgs.qva_flags, VERIFY_SCRIPT,
+        N_("don't execute %verifyscript (if any)"), NULL },
+ { "noscripts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_SCRIPT,
+        N_("don't execute %verifyscript (if any)"), NULL },
+ { "nodigest", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_flags, VERIFY_DIGEST,
+        N_("don't verify header SHA1 digest"), NULL },
+
+    POPT_TABLEEND
+};

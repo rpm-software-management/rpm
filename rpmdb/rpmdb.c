@@ -11,8 +11,7 @@ static int _debug = 0;
 #include <signal.h>
 #include <sys/signal.h>
 
-#include <rpmlib.h>
-#include <rpmmacro.h>	/* XXX for rpmGetPath/rpmGenPath */
+#include <rpmcli.h>
 
 #include "rpmdb.h"
 #include "fprint.h"
@@ -28,11 +27,7 @@ static int _debug = 0;
 extern int _noDirTokens;
 /*@=redecl@*/
 static int _rebuildinprogress = 0;
-static int _db_filter_dups = 1;
-
-/*@-exportlocal -exportheadervar@*/
-int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
-/*@=exportlocal =exportheadervar@*/
+static int _db_filter_dups = 0;
 
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
@@ -145,29 +140,29 @@ static struct _dbiVec *mydbvecs[] = {
 };
 /*@=nullassign@*/
 
-INLINE int dbiSync(dbiIndex dbi, unsigned int flags) {
+INLINE int dbiSync(dbiIndex dbi, unsigned int flags)
+{
 if (_debug < 0 || dbi->dbi_debug)
 fprintf(stderr, "    Sync %s\n", tagName(dbi->dbi_rpmtag));
     return (*dbi->dbi_vec->sync) (dbi, flags);
 }
 
-INLINE int dbiByteSwapped(dbiIndex dbi) {
+INLINE int dbiByteSwapped(dbiIndex dbi)
+{
     return (*dbi->dbi_vec->byteswapped) (dbi);
 }
 
-INLINE int XdbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags,
-	const char * f, unsigned int l)
+INLINE int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
 {
 if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "+++ RMW %s %s (%s:%u)\n", tagName(dbi->dbi_rpmtag), ((flags & DBI_WRITECURSOR) ? "WRITECURSOR" : ""), f, l);
+fprintf(stderr, "+++ RMW %s %s\n", tagName(dbi->dbi_rpmtag), ((flags & DBI_WRITECURSOR) ? "WRITECURSOR" : ""));
     return (*dbi->dbi_vec->copen) (dbi, dbcp, flags);
 }
 
-INLINE int XdbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags,
-	const char * f, unsigned int l)
+INLINE int dbiCclose(dbiIndex dbi, /*@only@*/DBC * dbcursor, unsigned int flags)
 {
 if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "--- RMW %s (%s:%u)\n", tagName(dbi->dbi_rpmtag), f, l);
+fprintf(stderr, "--- RMW %s\n", tagName(dbi->dbi_rpmtag));
     return (*dbi->dbi_vec->cclose) (dbi, dbcursor, flags);
 }
 
@@ -180,7 +175,8 @@ static int printable(const void * ptr, size_t len)	/*@*/
     return 1;
 }
 
-INLINE int dbiDel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen, unsigned int flags)
+INLINE int dbiDel(dbiIndex dbi, DBC * dbcursor,
+	const void * keyp, size_t keylen, unsigned int flags)
 {
     int NULkey;
     int rc;
@@ -239,7 +235,8 @@ if (_debug < 0 || dbi->dbi_debug) {
     return rc;
 }
 
-INLINE int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
+INLINE int dbiPut(dbiIndex dbi, DBC * dbcursor,
+	const void * keyp, size_t keylen,
 	const void * datap, size_t datalen, unsigned int flags)
 {
     int NULkey;
@@ -827,14 +824,14 @@ static /*@only@*/ /*@null@*/
 rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
-	/*@modifies _filterDbDups @*/
+	/*@modifies _db_filter_dups @*/
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
     const char * epfx = _DB_ERRPFX;
     static int _initialized = 0;
 
     if (!_initialized) {
-	_filterDbDups = rpmExpandNumeric("%{_filterdbdups}");
+	_db_filter_dups = rpmExpandNumeric("%{_filterdbdups}");
 	_initialized = 1;
     }
 
@@ -861,7 +858,7 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     /*@=nullpass@*/
     db->db_remove_env = 0;
-    db->db_filter_dups = _filterDbDups;
+    db->db_filter_dups = _db_filter_dups;
     db->db_ndbi = dbiTagsMax;
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     /*@-globstate@*/ return db; /*@=globstate@*/
@@ -1492,7 +1489,7 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) {
     return rc;
 }
 
-Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned l)
+Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;
     void * uh = NULL;
@@ -1517,7 +1514,7 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned l)
      * marked with DB_WRITECURSOR as well.
      */
     if (mi->mi_dbc == NULL)
-	xx = XdbiCopen(dbi, &mi->mi_dbc, (mi->mi_cflags | DBI_ITERATOR), f, l);
+	xx = dbiCopen(dbi, &mi->mi_dbc, (mi->mi_cflags | DBI_ITERATOR));
     dbi->dbi_lastoffset = mi->mi_prevoffset;
 
 top:

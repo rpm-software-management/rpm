@@ -5,8 +5,6 @@
 #include "system.h"
 
 #include <rpmcli.h>
-#include <rpmmacro.h>
-#include <rpmurl.h>
 
 #include "manifest.h"
 #include "misc.h"

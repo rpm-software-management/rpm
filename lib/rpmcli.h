@@ -6,6 +6,8 @@
  */
 
 #include <rpmlib.h>
+#include <rpmurl.h>
+#include <rpmmacro.h>
 
 /** \ingroup rpmcli
  * Should version 3 packages be produced?
@@ -58,45 +60,70 @@ extern struct poptOption		rpmBuildPoptTable[];
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmQuery() operation, stored in qva_flags.
+ * @todo Merge rpmQueryFlags, rpmVerifyFlags, and rpmVerifyAttrs?.
  */
 typedef enum rpmQueryFlags_e {
-    QUERY_FOR_DEFAULT	= 0,
-    QUERY_FOR_LIST	= (1 <<  1),	/*!< query:  from --list */
-    QUERY_FOR_STATE	= (1 <<  2),	/*!< query:  from --state */
-    QUERY_FOR_DOCS	= (1 <<  3),	/*!< query:  from --docfiles */
-    QUERY_FOR_CONFIG	= (1 <<  4),	/*!< query:  from --configfiles */
-    QUERY_FOR_DUMPFILES	= (1 <<  8),	/*!< query:  from --dump */
+    QUERY_FOR_DEFAULT	= 0,		/*!< */
 /*@-enummemuse@*/
-    QUERY_FILES		= (1 <<  9),	/*!< verify: from --nofiles */
-    QUERY_DEPS		= (1 << 10),	/*!< verify: from --nodeps */
-    QUERY_SCRIPT	= (1 << 11),	/*!< verify: from --noscripts */
-    QUERY_MD5		= (1 << 12),	/*!< verify: from --nomd5 */
-    QUERY_DIGEST	= (1 << 13)	/*!< verify: from --nodigest */
+    QUERY_MD5		= (1 << 0),	/*!< from --nomd5 */
+    QUERY_SIZE		= (1 << 1),	/*!< from --nosize */
+    QUERY_LINKTO	= (1 << 2),	/*!< from --nolink */
+    QUERY_USER		= (1 << 3),	/*!< from --nouser) */
+    QUERY_GROUP		= (1 << 4),	/*!< from --nogroup) */
+    QUERY_MTIME		= (1 << 5),	/*!< from --nomtime) */
+    QUERY_MODE		= (1 << 6),	/*!< from --nomode) */
+    QUERY_RDEV		= (1 << 7),	/*!< from --nodev */
+	/* bits 8-15 unused, reserved for rpmVerifyAttrs */
+    QUERY_FILES		= (1 << 16),	/*!< verify: from --nofiles */
+    QUERY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
+    QUERY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
+    QUERY_DIGEST	= (1 << 19),	/*!< verify: from --nodigest */
 /*@=enummemuse@*/
+	/* bits 20-22 unused */
+    QUERY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
+    QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
+    QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
+    QUERY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
+    QUERY_FOR_DUMPFILES	= (1 << 27),	/*!< query:  from --dump */
 } rpmQueryFlags;
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmVerify() operation, stored in qva_flags.
+ * @todo Merge rpmQueryFlags, rpmVerifyFlags, and rpmVerifyAttrs values?.
  */
-/*@-typeuse@*/
 typedef enum rpmVerifyFlags_e {
 /*@-enummemuse@*/
-    VERIFY_FOR_DEFAULT	= 0,
-    VERIFY_FOR_LIST	= (1 <<  1),	/*!< query:  from --list */
-    VERIFY_FOR_STATE	= (1 <<  2),	/*!< query:  from --state */
-    VERIFY_FOR_DOCS	= (1 <<  3),	/*!< query:  from --docfiles */
-    VERIFY_FOR_CONFIG	= (1 <<  4),	/*!< query:  from --configfiles */
-    VERIFY_FOR_DUMPFILES= (1 <<  8),	/*!< query:  from --dump */
+    VERIFY_DEFAULT	= 0,		/*!< */
 /*@=enummemuse@*/
-    VERIFY_FILES	= (1 <<  9),	/*!< verify: from --nofiles */
-    VERIFY_DEPS		= (1 << 10),	/*!< verify: from --nodeps */
-    VERIFY_SCRIPT	= (1 << 11),	/*!< verify: from --noscripts */
-    VERIFY_MD5		= (1 << 12),	/*!< verify: from --nomd5 */
-    VERIFY_DIGEST	= (1 << 13)	/*!< verify: from --nodigest */
+    VERIFY_MD5		= (1 << 0),	/*!< from --nomd5 */
+    VERIFY_SIZE		= (1 << 1),	/*!< from --nosize */
+    VERIFY_LINKTO	= (1 << 2),	/*!< from --nolinkto */
+    VERIFY_USER		= (1 << 3),	/*!< from --nouser */
+    VERIFY_GROUP	= (1 << 4),	/*!< from --nogroup */
+    VERIFY_MTIME	= (1 << 5),	/*!< from --nomtime */
+    VERIFY_MODE		= (1 << 6),	/*!< from --nomode */
+    VERIFY_RDEV		= (1 << 7),	/*!< from --nodev */
+	/* bits 8-15 unused, reserved for rpmVerifyAttrs */
+    VERIFY_FILES	= (1 << 16),	/*!< verify: from --nofiles */
+    VERIFY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
+    VERIFY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
+    VERIFY_DIGEST	= (1 << 19),	/*!< verify: from --nodigest */
+	/* bits 20-22 unused */
+/*@-enummemuse@*/
+    VERIFY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
+    VERIFY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
+    VERIFY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
+    VERIFY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
+    VERIFY_FOR_DUMPFILES= (1 << 27),	/*!< query:  from --dump */
+/*@=enummemuse@*/
+	/* bits 28-30 used in rpmVerifyAttrs */
 } rpmVerifyFlags;
+
+#define	VERIFY_ATTRS	\
+  ( VERIFY_MD5 | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
+    VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV )
 #define	VERIFY_ALL	\
-    (VERIFY_FILES|VERIFY_DEPS|VERIFY_SCRIPT|VERIFY_MD5|VERIFY_DIGEST)
-/*@=typeuse@*/
+  ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST )
 
 /** \ingroup rpmcli
  * @param qva		parsed query/verify options

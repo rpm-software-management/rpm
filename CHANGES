@@ -95,6 +95,9 @@
 	- rpm --verify checks immutable header region digest if available.
 	- rpmbuild adds header region digest (SHA1 as string).
 	- use rpmTag* typedefs in new hge/hae/hme/hre header vectors.
+	- remove rpmrc Provides: Yet Again, use virtual packages.
+	- dump cursor debugging wrappers.
+	- rpm --verify can disable rpmFileAttr checks.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -11,7 +11,6 @@
 
 #include <rpmcli.h>
 #include <rpmbuild.h>
-#include <rpmurl.h>
 #include "manifest.h"
 #include "debug.h"
 

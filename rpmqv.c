@@ -12,7 +12,6 @@
 
 #include <rpmcli.h>
 #include <rpmbuild.h>
-#include <rpmurl.h>
 
 #ifdef	IAM_RPMBT
 #include "build.h"

@@ -1220,7 +1220,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	}
     }
 
-#ifndef	DYING
+#ifdef	DYING
   { static /*@observer@*/ const char noProvidesString[] = "nada";
     static /*@observer@*/ const char * rcProvidesString = noProvidesString;
     const char * start;
@@ -1402,7 +1402,8 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	if (multiLib && !isDependsMULTILIB(requireFlags[i]))
 	    continue;
 
-	keyDepend = printDepend("R", requires[i], requiresEVR[i], requireFlags[i]);
+	keyDepend = printDepend("R",
+		requires[i], requiresEVR[i], requireFlags[i]);
 
 	rc = unsatisfiedDepend(ts, " Requires", keyDepend,
 		requires[i], requiresEVR[i], requireFlags[i], &suggestion);
@@ -1419,33 +1420,29 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		psp->problems = xrealloc(psp->problems, sizeof(*psp->problems) *
 			    psp->alloced);
 	    }
-	    psp->problems[psp->num].byHeader = headerLink(h);
-	    psp->problems[psp->num].byName = xstrdup(name);
-	    psp->problems[psp->num].byVersion = xstrdup(version);
-	    psp->problems[psp->num].byRelease = xstrdup(release);
-	    psp->problems[psp->num].needsName = xstrdup(requires[i]);
-	    psp->problems[psp->num].needsVersion = xstrdup(requiresEVR[i]);
-	    psp->problems[psp->num].needsFlags = requireFlags[i];
-	    psp->problems[psp->num].sense = RPMDEP_SENSE_REQUIRES;
 
-	    if (suggestion) {
-		int j;
-		for (j = 0; suggestion[j]; j++)
-		    {};
-		psp->problems[psp->num].suggestedPackages =
-			xmalloc( (j + 1) * sizeof(void *) );
-		for (j = 0; suggestion[j]; j++)
-		    psp->problems[psp->num].suggestedPackages[j]
-			= suggestion[j]->key;
-		psp->problems[psp->num].suggestedPackages[j] = NULL;
-#ifdef	DYING
-		psp->problems[psp->num].suggestedPackage  = suggestion[0]->key;
-#endif
-	    } else {
-		psp->problems[psp->num].suggestedPackages = NULL;
-#ifdef	DYING
-		psp->problems[psp->num].suggestedPackage  = NULL;
-#endif
+	    {	rpmDependencyConflict pp = psp->problems + psp->num;
+		pp->byHeader = headerLink(h);
+		pp->byName = xstrdup(name);
+		pp->byVersion = xstrdup(version);
+		pp->byRelease = xstrdup(release);
+		pp->needsName = xstrdup(requires[i]);
+		pp->needsVersion = xstrdup(requiresEVR[i]);
+		pp->needsFlags = requireFlags[i];
+		pp->sense = RPMDEP_SENSE_REQUIRES;
+
+		if (suggestion) {
+		    int j;
+		    for (j = 0; suggestion[j]; j++)
+			{};
+		    pp->suggestedPackages =
+			xmalloc( (j + 1) * sizeof(*pp->suggestedPackages) );
+		    for (j = 0; suggestion[j]; j++)
+			pp->suggestedPackages[j] = suggestion[j]->key;
+		    pp->suggestedPackages[j] = NULL;
+		} else {
+		    pp->suggestedPackages = NULL;
+		}
 	    }
 
 	    psp->num++;
@@ -1502,18 +1499,18 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		psp->problems = xrealloc(psp->problems,
 					sizeof(*psp->problems) * psp->alloced);
 	    }
-	    psp->problems[psp->num].byHeader = headerLink(h);
-	    psp->problems[psp->num].byName = xstrdup(name);
-	    psp->problems[psp->num].byVersion = xstrdup(version);
-	    psp->problems[psp->num].byRelease = xstrdup(release);
-	    psp->problems[psp->num].needsName = xstrdup(conflicts[i]);
-	    psp->problems[psp->num].needsVersion = xstrdup(conflictsEVR[i]);
-	    psp->problems[psp->num].needsFlags = conflictFlags[i];
-	    psp->problems[psp->num].sense = RPMDEP_SENSE_CONFLICTS;
-	    psp->problems[psp->num].suggestedPackages = NULL;
-#ifdef	DYING
-	    psp->problems[psp->num].suggestedPackage = NULL;
-#endif
+
+	    {	rpmDependencyConflict pp = psp->problems + psp->num;
+		pp->byHeader = headerLink(h);
+		pp->byName = xstrdup(name);
+		pp->byVersion = xstrdup(version);
+		pp->byRelease = xstrdup(release);
+		pp->needsName = xstrdup(conflicts[i]);
+		pp->needsVersion = xstrdup(conflictsEVR[i]);
+		pp->needsFlags = conflictFlags[i];
+		pp->sense = RPMDEP_SENSE_CONFLICTS;
+		pp->suggestedPackages = NULL;
+	    }
 
 	    psp->num++;
 	    break;

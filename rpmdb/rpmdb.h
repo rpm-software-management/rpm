@@ -31,6 +31,7 @@ struct _dbiIndexItem {
     unsigned int dbNum;			/*!< database index */
 };
 
+#ifdef DYING
 /** \ingroup dbi
  * A single item in an index database (i.e. the "data saved").
  */
@@ -41,6 +42,7 @@ struct _dbiIR {
 /*@-typeuse@*/
 typedef	struct _dbiIR * DBIR_t;
 /*@=typeuse@*/
+#endif	/* DYING */
 
 /** \ingroup dbi
  * Items retrieved from the index database.
@@ -387,11 +389,6 @@ extern "C" {
  */
 int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int dbiflags)
 	/*@modifies dbi, *dbcp @*/;
-int XdbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int dbiflags,
-		const char *f, unsigned int l)
-	/*@modifies dbi, *dbcp @*/;
-#define	dbiCopen(_a,_b,_c) \
-	XdbiCopen(_a, _b, _c, __FILE__, __LINE__)
 
 #define	DBI_WRITECURSOR		(1 << 0)
 #define	DBI_ITERATOR		(1 << 1)
@@ -401,12 +398,7 @@ int XdbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int dbiflags,
  * @param flags		(unused)
  */
 int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
-	/*@modifies dbi @*/;
-int XdbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags,
-		const char *f, unsigned int l)
 	/*@modifies dbi, *dbcursor @*/;
-#define	dbiCclose(_a,_b,_c) \
-	XdbiCclose(_a, _b, _c, __FILE__, __LINE__)
 
 /** \ingroup dbi
  * Delete (key,data) pair(s) from index database.

@@ -261,7 +261,6 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     FD_t fdi;
     Spec spec;
     rpmRC rc;
-    int ec;
 
     fdi = (fileName != NULL)
 	? Fopen(fileName, "r.ufdio")
