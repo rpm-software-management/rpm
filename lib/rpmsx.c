@@ -83,13 +83,13 @@ static size_t rpmsxsPStem(const char * const buf)
 {
     /*@observer@*/
     static const char * const regex_chars = ".^$?*+|[({";
-    const char * tmp = strchr(buf + 1, '/');
+    const char * tmp = strchr(buf, '/');
     const char * ind;
 
     if (!tmp)
 	return 0;
 
-    for (ind = buf + 1; ind < tmp; ind++) {
+    for (ind = buf; ind < tmp; ind++) {
 	if (strchr(regex_chars, (int)*ind))
 	    return 0;
     }
