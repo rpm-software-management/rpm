@@ -1,11 +1,13 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "system.h"
+
 #include <pthread.h>
 #include <assert.h>
 #include "rpmlib.h"
 #include "rpmts.h"
+#include "rpmsq.h"	/* XXX for _rpmsq_debug */
 #include "rpmio.h"
+
+#include "debug.h"
 
 extern int _psm_debug;
 
@@ -16,67 +18,74 @@ static void *other_notify(const void *h,
 			  fnpyKey key,
 			  rpmCallbackData data)
 {
-  printf("notify %d %ld %ld\n", what, amount, total);
+    static FD_t fd;
 
-  if(what == RPMCALLBACK_INST_OPEN_FILE)
-    return Fopen(key, "r");
+    fprintf(stderr, "notify %d %ld %ld\n", what, amount, total);
 
-  return NULL;
+    switch (what) {
+    case RPMCALLBACK_INST_OPEN_FILE:
+	fd = Fopen(key, "r");
+	return fd;
+	break;
+    case RPMCALLBACK_INST_CLOSE_FILE:
+	if (fd != NULL) {
+	    (void) Fclose(fd);
+	    fd = NULL;
+	}
+	break;
+    default:
+	break;
+    }
+    return NULL;
 }
 
 static void *
 other_thread(void *dat)
 {
-  rpmts ts;
-  int fd, err;
-  FD_t fdt;
-  Header h = NULL;
+    rpmts ts;
+    int err;
+    FD_t fd;
+    Header h = NULL;
 
-  rpmReadConfigFiles(NULL, NULL);
-  ts = rpmtsCreate();
-  assert(ts);
-  (void) rpmtsSetRootDir(ts, "/");
+    rpmReadConfigFiles(NULL, NULL);
+    ts = rpmtsCreate();
+    assert(ts);
+    (void) rpmtsSetRootDir(ts, "/");
 
-  rpmIncreaseVerbosity();
-  rpmIncreaseVerbosity();
+    rpmIncreaseVerbosity();
+    rpmIncreaseVerbosity();
 
-  fd = open(dat, O_RDONLY);
-  assert(fd >= 0);
-  fdt = fdDup(fd);
-  rpmReadPackageFile(ts, fdt, "other_thread", &h);
-  Fclose(fdt);
-  close(fd);
+    fd = Fopen(dat, "r.ufdio");
+    assert(fd != NULL);
+    rpmReadPackageFile(ts, fd, "other_thread", &h);
+    Fclose(fd);
 
-#if 0
-  err = rpmtsOpenDB(ts, O_RDWR);
-  assert(!err);
-#endif
+    err = rpmtsAddInstallElement(ts, h, dat, 1, NULL);
 
-  err = rpmtsAddInstallElement(ts, h, dat, 1, NULL);
+    err = rpmtsSetNotifyCallback(ts, other_notify, NULL);
+    assert(!err);
 
-  err = rpmtsSetNotifyCallback(ts, other_notify, NULL);
-  assert(!err);
+    err = rpmtsRun(ts, NULL, RPMPROB_FILTER_REPLACEPKG);
+    if(err)
+	fprintf(stderr, "Run failed: %d\n", err);
 
-  err = rpmtsRun(ts, NULL, RPMPROB_FILTER_REPLACEPKG);
-  if(err)
-    printf("Run failed: %d\n", err);
-
-#if 0
-  err = rpmtsCloseDB(ts);
-  assert(!err);
-#endif
-
-  return NULL;
+    return NULL;
 }
 
 int main(int argc, char *argv[])
 {
-  pthread_t pth;
+    pthread_t pth;
 
-  _psm_debug = 1;
-  pthread_create(&pth, NULL, other_thread, argv[1]);
+    _psm_debug = 1;
+    _rpmsq_debug = 1;
 
-  pthread_join(pth, NULL);
+    rpmsqEnable(SIGINT, NULL);
+    rpmsqEnable(SIGQUIT, NULL);
+    rpmsqEnable(SIGCHLD, NULL);
 
-  return 0;
+    pthread_create(&pth, NULL, other_thread, argv[1]);
+
+    pthread_join(pth, NULL);
+
+    return 0;
 }

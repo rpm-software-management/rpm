@@ -6,6 +6,8 @@
  * Package state machine to handle a package from a transaction set.
  */
 
+#include <rpmsq.h>
+
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _psm_debug;
@@ -60,11 +62,7 @@ typedef enum pkgStage_e {
 /**
  */
 struct rpmpsm_s {
-    void * q_forw;		/*!< for use by insque(3)/remque(3). */
-    void * q_back;
-    pid_t child;		/*!< Currently running process. */
-    pid_t reaped;		/*!< Reaped waitpid return. */
-    int status;			/*!< Reaped waitpid status. */
+    struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
 
 /*@refcounted@*/
     rpmts ts;			/*!< transaction set */
@@ -95,7 +93,6 @@ struct rpmpsm_s {
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
-    int reaper;			/*!< Register SIGCHLD handler? */
     rpmCallbackType what;	/*!< Callback type. */
     unsigned long amount;	/*!< Callback amount. */
     unsigned long total;	/*!< Callback total. */

@@ -6,13 +6,19 @@
  *
  */
 
+#include <pthread.h>
 #include <signal.h>
 #include <sys/signal.h>
-#include <search.h>
+#include <search.h>		/* XXX insque(3)/remque(3) protos. */
 
 typedef struct rpmsig_s * rpmsig;
 
 typedef struct rpmsqElem * rpmsq;
+
+/*@-redecl@*/
+/*@unchecked@*/
+extern int _rpmsq_debug;
+/*@=redecl@*/
 
 /**
  * SIGCHLD queue element.
@@ -21,8 +27,12 @@ struct rpmsqElem {
     struct rpmsqElem * q_forw;	/*!< for use by insque(3)/remque(3). */
     struct rpmsqElem * q_back;
     pid_t child;		/*!< Currently running child. */
-    pid_t reaped;		/*!< Reaped waitpid(3) return. */
-    int status;			/*!< Reaped waitpid(3) status. */
+    volatile pid_t reaped;	/*!< Reaped waitpid(3) return. */
+    volatile int status;	/*!< Reaped waitpid(3) status. */
+    int reaper;			/*!< Register SIGCHLD handler? */
+    void * id;			/*!< Blocking thread id (pthread_t). */
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
 };
 
 /*@unchecked@*/
@@ -37,13 +47,13 @@ extern sigset_t rpmsqCaught;
 
 /**
  */
-void Insque(/*@null@*/ void * elem, /*@null@*/ void * prev)
+int rpmsqInsert(/*@null@*/ void * elem, /*@null@*/ void * prev)
 	/*@globals rpmsqQueue @*/
 	/*@modifies elem, rpmsqQueue @*/;
 
 /**
  */
-void Remque(/*@null@*/ void * elem)
+int rpmsqRemove(/*@null@*/ void * elem)
 	/*@modifies elem @*/;
 
 /**
@@ -63,10 +73,27 @@ int rpmsqEnable(int signum, /*@null@*/ sighandler_t handler)
 	/*@modifies rpmsqCaught, fileSystem, internalState @*/;
 
 /**
+ * Fork a child process.
+ * @param sq		scriptlet queue element
+ * @return		fork(2) pid
+ */
+pid_t rpmsqFork(rpmsq sq)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies sq, fileSystem, internalState @*/;
+
+/**
+ * Wait for child process to be reaped.
+ * @param sq		scriptlet queue element
+ * @return		reaped child pid
+ */
+pid_t rpmsqWait(rpmsq sq)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies sq, fileSystem, internalState @*/;
+
+/**
  * Execute a command, returning its status.
  */
-int
-rpmsqExecve (const char ** argv)
+int rpmsqExecve (const char ** argv)
 	/*@*/;
 
 #ifdef __cplusplus

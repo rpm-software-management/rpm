@@ -9,7 +9,6 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>
-#include <rpmsq.h>
 
 #include "cpio.h"
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
@@ -456,77 +455,6 @@ static /*@observer@*/ const char * const tag2sln(int tag)
 }
 
 /**
- * Register a child reaper, then fork a child.
- * @param psm		package state machine data
- * @return		fork(2) pid
- */
-static pid_t psmRegisterFork(rpmpsm psm)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies psm, fileSystem, internalState @*/
-{
-    sigset_t newMask, oldMask;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-
-  if (psm->reaper) {
-    Insque(psm, NULL);
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "  Register: %p\n", psm);
-/*@=modfilesys@*/
-
-    (void) rpmsqEnable(SIGCHLD, NULL);
-  }
-
-    psm->reaped = 0;
-    if ((psm->child = fork()) != 0) {
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Fork: %p child %d\n", psm, psm->child);
-/*@=modfilesys@*/
-    }
-
-    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
-
-    return psm->child;
-}
-
-/**
- * Unregister a child reaper.
- */
-static int psmWaitUnregister(rpmpsm psm, pid_t child)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    sigset_t newMask, oldMask;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    
-    /*@-infloops@*/
-    while (psm->reaped != psm->child)
-	(void) sigsuspend(&oldMask);
-    /*@=infloops@*/
-
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Wait: %p child %d\n", psm, psm->child);
-/*@=modfilesys@*/
-
-    if (psm->reaper) {
-	Remque(psm);
-	(void) rpmsqEnable(-SIGCHLD, NULL);
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "Unregister: %p child %d\n", psm, child);
-/*@=modfilesys@*/
-    }
-
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
  * Wait for child process to be reaped.
  * @param psm		package state machine data
  * @return		
@@ -535,19 +463,13 @@ static pid_t psmWait(rpmpsm psm)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
-    if (psm->reaper) {
-	(void) psmWaitUnregister(psm, psm->child);
-    } else {
-	do {
-	    psm->reaped = waitpid(psm->child, &psm->status, 0);
-	} while (psm->reaped >= 0 && psm->reaped != psm->child);
-    }
+    (void) rpmsqWait(&psm->sq);
 
     rpmMessage(RPMMESS_DEBUG, _("%s: waitpid(%d) rc %d status %x\n"),
-	psm->stepName, (unsigned)psm->child,
-	(unsigned)psm->reaped, psm->status);
+	psm->stepName, (unsigned)psm->sq.child,
+	(unsigned)psm->sq.reaped, psm->sq.status);
 
-    return psm->reaped;
+    return psm->sq.reaped;
 }
 
 /**
@@ -598,7 +520,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     int len;
     char * prefixBuf = NULL;
     const char * fn = NULL;
-    int i, xx;
+    int xx;
+    int i;
     int freePrefixes = 0;
     FD_t scriptFd;
     FD_t out;
@@ -608,10 +531,10 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (progArgv == NULL && script == NULL)
 	return rc;
 
-    psm->child = 0;
-    psm->reaped = 0;
-    psm->status = 0;
-    psm->reaper = 0;
+    psm->sq.child = 0;
+    psm->sq.reaped = 0;
+    psm->sq.status = 0;
+    psm->sq.reaper = 1;
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
@@ -730,8 +653,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     
     /*@-branchstate@*/
-    (void) psmRegisterFork(psm);
-    if (psm->child == 0) {
+    xx = rpmsqFork(&psm->sq);
+    if (psm->sq.child == 0) {
 	const char * rootDir;
 	int pipes[2];
 
@@ -818,16 +741,16 @@ fprintf(stderr, "      Exec: %s \"%s\"\n", sln, argv[0]);
 
     (void) psmWait(psm);
 
-    if (psm->reaped < 0) {
+    if (psm->sq.reaped < 0) {
 	rpmError(RPMERR_SCRIPT,
 		_("%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sln, n, v, r, psm->child, psm->reaped, strerror(errno));
+		 sln, n, v, r, psm->sq.child, psm->sq.reaped, strerror(errno));
 	rc = RPMRC_FAIL;
     } else
-    if (!WIFEXITED(psm->status) || WEXITSTATUS(psm->status)) {
+    if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
 	rpmError(RPMERR_SCRIPT,
 		_("%s(%s-%s-%s) scriptlet failed, exit status %d\n"),
-		sln, n, v, r, WEXITSTATUS(psm->status));
+		sln, n, v, r, WEXITSTATUS(psm->sq.status));
 	rc = RPMRC_FAIL;
     }
 
