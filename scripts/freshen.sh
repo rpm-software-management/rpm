@@ -36,8 +36,10 @@ for n in $*; do
     if [ ! -f $n ]; then
 	args="$args $n"
     else
-	name=`rpm --qf "%{NAME}" -qp $n`
-	$RPM -q $name >/dev/null 2>&1 && args="$args $n"
+	if ! rpm -q `rpm -qp $n` >/dev/null 2>&1; then
+	    name=`rpm --qf "%{NAME}" -qp $n`
+	    $RPM -q $name >/dev/null 2>&1 && args="$args $n"
+	fi
     fi
 done
 
