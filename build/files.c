@@ -23,6 +23,7 @@
 #include "rpmlead.h"
 #include "rpmlib.h"
 #include "misc.h"
+#include "macro.h"
 
 #define BINARY_HEADER 0
 #define SOURCE_HEADER 1
@@ -30,7 +31,7 @@
 struct file_entry {
     char file[1024];
     int isdoc;
-    int isconf;
+    int conf;
     int isspecfile;
     int verify_flags;
     char *uname;  /* reference -- do not free */
@@ -47,12 +48,15 @@ static int add_file_aux(const char *file, struct stat *sb, int flag);
 static int glob_error(const char *foo, int bar);
 static int glob_pattern_p (char *pattern);
 static int parseForVerify(char *buf, int *verify_flags);
+static int parseForConfig(char *buf, int *conf);
 static int parseForAttr(char *origbuf, char **currPmode,
 			char **currUname, char **currGname);
 
 static void resetDocdir(void);
 static void addDocdir(char *dirname);
 static int isDoc(char *filename);
+
+static int processFileListFailed;
 
 int process_filelist(Header header, struct PackageRec *pr,
 		     StringBuf sb, int *size, char *name,
@@ -63,7 +67,7 @@ int process_filelist(Header header, struct PackageRec *pr,
     char **files, **fp;
     struct file_entry *fes, *fest;
     struct file_entry **file_entry_array;
-    int isdoc, isconf, isdir, verify_flags;
+    int isdoc, conf, isdir, verify_flags;
     char *currPmode=NULL;	/* hold info from %attr() */
     char *currUname=NULL;	/* hold info from %attr() */
     char *currGname=NULL;	/* hold info from %attr() */
@@ -79,6 +83,7 @@ int process_filelist(Header header, struct PackageRec *pr,
     char *tcs;
     int currentTime;
 
+    processFileListFailed = 0;
     fes = NULL;
     *size = 0;
 
@@ -89,10 +94,11 @@ int process_filelist(Header header, struct PackageRec *pr,
 		build_subdir, pr->fileFile);
 	rpmMessage(RPMMESS_DEBUG, "Reading file names from: %s\n", buf);
 	if ((file = fopen(buf, "r")) == NULL) {
-	    perror("open fileFile");
-	    exit(1);
+	    rpmError(RPMERR_BADSPEC, "unable to open filelist: %s\n", buf);
+	    return(RPMERR_BADSPEC);
 	}
 	while (fgets(buf, sizeof(buf), file)) {
+	    expandMacros(buf);
 	    appendStringBuf(sb, buf);
 	}
 	fclose(file);
@@ -106,7 +112,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	strcpy(buf, *fp);  /* temp copy */
 	isdoc = 0;
 	special_doc = 0;
-	isconf = 0;
+	conf = 0;
 	isdir = 0;
 	if (currPmode) {
 	    free (currPmode);
@@ -124,13 +130,21 @@ int process_filelist(Header header, struct PackageRec *pr,
 	filename = NULL;
 
 	/* First preparse buf for %verify() */
-	if (!parseForVerify(buf, &verify_flags)) {
-	    return(RPMERR_BADSPEC);
+	if (parseForVerify(buf, &verify_flags)) {
+	    processFileListFailed = 1;
+	    fp++; continue;
 	}
 	
-	/* Next parse for for %attr() */
-	if (!parseForAttr(buf, &currPmode, &currUname, &currGname)) {
-	    return(RPMERR_BADSPEC);
+	/* Next parse for %attr() */
+	if (parseForAttr(buf, &currPmode, &currUname, &currGname)) {
+	    processFileListFailed = 1;
+	    fp++; continue;
+	}
+
+	/* Then parse for %config or %config() */
+	if (parseForConfig(buf, &conf)) {
+	    processFileListFailed = 1;
+	    fp++; continue;
 	}
 
 	s = strtok(buf, " \t\n");
@@ -141,8 +155,6 @@ int process_filelist(Header header, struct PackageRec *pr,
 		break;
 	    } else if (!strcmp(s, "%doc")) {
 		isdoc = 1;
-	    } else if (!strcmp(s, "%config")) {
-		isconf = 1;
 	    } else if (!strcmp(s, "%dir")) {
 		isdir = 1;
 	    } else {
@@ -150,7 +162,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 		    /* We already got a file -- error */
 		    rpmError(RPMERR_BADSPEC,
 			  "Two files on one line: %s", filename);
-		    return(RPMERR_BADSPEC);
+		    processFileListFailed = 1;
+		    fp++; continue;
 		}
 		if (*s != '/') {
 		    if (isdoc) {
@@ -159,7 +172,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 			/* not in %doc, does not begin with / -- error */
 			rpmError(RPMERR_BADSPEC,
 			      "File must begin with \"/\": %s", s);
-			return(RPMERR_BADSPEC);
+			processFileListFailed = 1;
+			fp++; continue;
 		    }
 		} else {
 		    filename = s;
@@ -172,10 +186,11 @@ int process_filelist(Header header, struct PackageRec *pr,
 		fp++;
 		continue;
 	    } else {
-		if (filename || isconf || isdir) {
+		if (filename || conf || isdir) {
 		    rpmError(RPMERR_BADSPEC,
 			  "Can't mix special %%doc with other forms: %s", fp);
-		    return(RPMERR_BADSPEC);
+		    processFileListFailed = 1;
+		    fp++; continue;
 		}
 		sprintf(buf, "%s/%s-%s-%s", rpmGetVar(RPMVAR_DEFAULTDOCDIR), 
 			name, version, release);
@@ -193,7 +208,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    if (*filename != '/') {
 		rpmError(RPMERR_BADSPEC,
 		      "File needs leading \"/\": %s", filename);
-		return(RPMERR_BADSPEC);
+		processFileListFailed = 1;
+		fp++; continue;
 	    }
 
 	    if (glob_pattern_p(filename)) {
@@ -205,26 +221,26 @@ int process_filelist(Header header, struct PackageRec *pr,
 		    strcpy(fullname, filename);
 		}
 
-	        if (glob(fullname, 0, glob_error, &glob_result)) {
+	        if (glob(fullname, 0, glob_error, &glob_result) ||
+		    (glob_result.gl_pathc < 1)) {
 		    rpmError(RPMERR_BADSPEC, "No matches: %s", fullname);
-		    return(RPMERR_BADSPEC);
+		    processFileListFailed = 1;
+		    globfree(&glob_result);
+		    fp++; continue;
 		}
-		if (glob_result.gl_pathc < 1) {
-		    rpmError(RPMERR_BADSPEC, "No matches: %s", fullname);
-		    return(RPMERR_BADSPEC);
-		}
-		x = 0;
+		
 		c = 0;
+		x = 0;
 		while (x < glob_result.gl_pathc) {
 		    int offset = strlen(rpmGetVar(RPMVAR_ROOT) ? : "");
 		    c += add_file(&fes, &(glob_result.gl_pathv[x][offset]),
-				  isdoc, isconf, isdir, verify_flags,
+				  isdoc, conf, isdir, verify_flags,
 				  currPmode, currUname, currGname, prefix);
 		    x++;
 		}
 		globfree(&glob_result);
 	    } else {
-	        c = add_file(&fes, filename, isdoc, isconf, isdir,
+	        c = add_file(&fes, filename, isdoc, conf, isdir,
 			     verify_flags, currPmode, currUname,
 			     currGname, prefix);
 	    }
@@ -232,7 +248,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    /* Source package are the simple case */
 	    fest = malloc(sizeof(struct file_entry));
 	    fest->isdoc = 0;
-	    fest->isconf = 0;
+	    fest->conf = 0;
 	    if (!strcmp(filename, specFile)) {
 		fest->isspecfile = 1;
 	    }
@@ -242,7 +258,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fest->gname = getGname(fest->statbuf.st_gid);
 	    if (! (fest->uname && fest->gname)) {
 		rpmError(RPMERR_BADSPEC, "Bad owner/group: %s", filename);
-		return(RPMERR_BADSPEC);
+		processFileListFailed = 1;
 	    }
 	    strcpy(fest->file, filename);
 	    fest->next = fes;
@@ -252,7 +268,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    
 	if (! c) {
 	    rpmError(RPMERR_BADSPEC, "File not found: %s", filename);
-	    return(RPMERR_BADSPEC);
+	    processFileListFailed = 1;
 	}
 	count += c;
 	
@@ -318,7 +334,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    }
 	    if ((c > 0) && !strcmp(fileList[c], fileList[c-1])) {
 		rpmError(RPMERR_BADSPEC, "File listed twice: %s", fileList[c]);
-		return(RPMERR_BADSPEC);
+		processFileListFailed = 1;
 	    }
 	    
 	    fileUnameList[c] = fest->uname;
@@ -355,8 +371,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 	        fileFlagsList[c] |= RPMFILE_DOC;
 	    if (fest->isdoc) 
 		fileFlagsList[c] |= RPMFILE_DOC;
-	    if (fest->isconf)
-		fileFlagsList[c] |= RPMFILE_CONFIG;
+	    if (fest->conf)
+		fileFlagsList[c] |= fest->conf;
 	    if (fest->isspecfile)
 		fileFlagsList[c] |= RPMFILE_SPECFILE;
 
@@ -434,7 +450,7 @@ int process_filelist(Header header, struct PackageRec *pr,
     }
     
     freeSplitString(files);
-    return 0;
+    return processFileListFailed;
 }
 
 /*************************************************************/
@@ -504,7 +520,7 @@ static int isDoc(char *filename)
 
 /* Need three globals to keep track of things in ftw() */
 static int Gisdoc;
-static int Gisconf;
+static int Gconf;
 static int Gverify_flags;
 static int Gcount;
 static char *GPmode;
@@ -514,7 +530,7 @@ static struct file_entry **Gfestack;
 static char *Gprefix;
 
 static int add_file(struct file_entry **festack, const char *name,
-		    int isdoc, int isconf, int isdir, int verify_flags,
+		    int isdoc, int conf, int isdir, int verify_flags,
 		    char *Pmode, char *Uname, char *Gname, char *prefix)
 {
     struct file_entry *p;
@@ -527,7 +543,7 @@ static int add_file(struct file_entry **festack, const char *name,
     /* Set these up for ftw() */
     Gfestack = festack;
     Gisdoc = isdoc;
-    Gisconf = isconf;
+    Gconf = conf;
     Gverify_flags = verify_flags;
     GPmode = Pmode;
     GUname = Uname;
@@ -548,7 +564,7 @@ static int add_file(struct file_entry **festack, const char *name,
     *copyTo = '\0';
 
     p->isdoc = isdoc;
-    p->isconf = isconf;
+    p->conf = conf;
     p->isspecfile = 0;  /* source packages are done by hand */
     p->verify_flags = verify_flags;
     if (rpmGetVar(RPMVAR_ROOT)) {
@@ -603,8 +619,8 @@ static int add_file(struct file_entry **festack, const char *name,
     }
     
     if (! (p->uname && p->gname)) {
-	fprintf(stderr, "Bad owner/group: %s\n", fullname);
-	exit(1);
+	rpmError(RPMERR_BADSPEC, "Bad owner/group: %s\n", fullname);
+	return 0;
     }
     
     if ((! isdir) && S_ISDIR(p->statbuf.st_mode)) {
@@ -640,7 +656,7 @@ static int add_file_aux(const char *file, struct stat *sb, int flag)
 
     /* The 1 will cause add_file() to *not* descend */
     /* directories -- ftw() is already doing it!    */
-    Gcount += add_file(Gfestack, name, Gisdoc, Gisconf, 1, Gverify_flags,
+    Gcount += add_file(Gfestack, name, Gisdoc, Gconf, 1, Gverify_flags,
 			GPmode, GUname, GGname, Gprefix);
 
     return 0; /* for ftw() */
@@ -702,7 +718,7 @@ static int parseForAttr(char *buf, char **currPmode,
     int mode, x;
 
     if (!(p = start = strstr(buf, "%attr"))) {
-	return 1;
+	return 0;
     }
 
     *currPmode = *currUname = *currGname = NULL;
@@ -714,7 +730,7 @@ static int parseForAttr(char *buf, char **currPmode,
 
     if (*p != '(') {
 	rpmError(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
-	return 0;
+	return RPMERR_BADSPEC;
     }
     p++;
 
@@ -725,7 +741,7 @@ static int parseForAttr(char *buf, char **currPmode,
 
     if (! *end) {
 	rpmError(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
-	return 0;
+	return RPMERR_BADSPEC;
     }
 
     strncpy(ourbuf, p, end-p);
@@ -738,7 +754,7 @@ static int parseForAttr(char *buf, char **currPmode,
     if (! (*currPmode && *currUname && *currGname)) {
 	rpmError(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
 	*currPmode = *currUname = *currGname = NULL;
-	return 0;
+	return RPMERR_BADSPEC;
     }
 
     /* Do a quick test on the mode argument */
@@ -747,7 +763,7 @@ static int parseForAttr(char *buf, char **currPmode,
 	if ((x == 0) || (mode >> 12)) {
 	    rpmError(RPMERR_BADSPEC, "Bad %%attr() mode spec: %s", buf);
 	    *currPmode = *currUname = *currGname = NULL;
-	    return 0;
+	    return RPMERR_BADSPEC;
 	}
     }
     
@@ -760,7 +776,7 @@ static int parseForAttr(char *buf, char **currPmode,
 	*start++ = ' ';
     }
 
-    return 1;
+    return 0;
 }
 
 /*************************************************************/
@@ -776,7 +792,7 @@ static int parseForVerify(char *buf, int *verify_flags)
     int not;
 
     if (!(p = start = strstr(buf, "%verify"))) {
-	return 1;
+	return 0;
     }
 
     p += 7;
@@ -786,7 +802,7 @@ static int parseForVerify(char *buf, int *verify_flags)
 
     if (*p != '(') {
 	rpmError(RPMERR_BADSPEC, "Bad %%verify() syntax: %s", buf);
-	return 0;
+	return RPMERR_BADSPEC;
     }
     p++;
 
@@ -797,7 +813,7 @@ static int parseForVerify(char *buf, int *verify_flags)
 
     if (! *end) {
 	rpmError(RPMERR_BADSPEC, "Bad %%verify() syntax: %s", buf);
-	return 0;
+	return RPMERR_BADSPEC;
     }
 
     strncpy(ourbuf, p, end-p);
@@ -830,7 +846,7 @@ static int parseForVerify(char *buf, int *verify_flags)
 	    *verify_flags |= RPMVERIFY_RDEV;
 	} else {
 	    rpmError(RPMERR_BADSPEC, "Invalid %%verify token: %s", p);
-	    return 0;
+	    return RPMERR_BADSPEC;
 	}
 	p = strtok(NULL, ", \n\t");
     }
@@ -839,5 +855,60 @@ static int parseForVerify(char *buf, int *verify_flags)
 	*verify_flags = ~(*verify_flags);
     }
 
-    return 1;
+    return 0;
+}
+
+static int parseForConfig(char *buf, int *conf)
+{
+    char *p, *start, *end;
+    char ourbuf[1024];
+
+    if (!(p = start = strstr(buf, "%config"))) {
+	return 0;
+    }
+    *conf = RPMFILE_CONFIG;
+
+    p += 7;
+    while (*p && (*p == ' ' || *p == '\t')) {
+	p++;
+    }
+
+    if (*p != '(') {
+	while (start < p) {
+	    *start++ = ' ';
+	}
+	return 0;
+    }
+    p++;
+
+    end = p;
+    while (*end && *end != ')') {
+	end++;
+    }
+
+    if (! *end) {
+	rpmError(RPMERR_BADSPEC, "Bad %%config() syntax: %s", buf);
+	return RPMERR_BADSPEC;
+    }
+
+    strncpy(ourbuf, p, end-p);
+    ourbuf[end-p] = '\0';
+    while (start <= end) {
+	*start++ = ' ';
+    }
+
+    p = strtok(ourbuf, ", \n\t");
+    while (p) {
+	if (!strcmp(p, "missingok")) {
+	    *conf |= RPMFILE_MISSINGOK;
+	} else if (!strcmp(p, "noreplace")) {
+	    *conf |= RPMFILE_NOREPLACE;
+	} else {
+	    rpmError(RPMERR_BADSPEC, "Invalid %%config token: %s", p);
+	    return RPMERR_BADSPEC;
+	}
+	p = strtok(NULL, ", \n\t");
+    }
+
+    return 0;
 }
