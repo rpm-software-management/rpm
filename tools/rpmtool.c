@@ -246,6 +246,30 @@ static void initTool(const char * argv0)
     }
 }
 
+static void spewHeader(FD_t fdo, Header h)
+{
+    headerTagTableEntry tbl = (headerIsEntry(h, RPMTAG_HEADERI18NTABLE))
+				? rpmTagTable : rpmSTagTable;
+
+    if (obits & RPMIOBITS_DUMP) {
+	headerDump(h, stdout, HEADER_DUMP_INLINE, tbl);
+    } else if (obits & RPMIOBITS_XML) {
+	const char * errstr = NULL;
+	const char * fmt = "[%{*:xml}\n]";
+	char * t;
+
+	t = headerSprintf(h, fmt, tbl, rpmHeaderFormats, &errstr);
+		
+	if (t != NULL) {
+	    if (rpmxpDTD != NULL && *rpmxpDTD != '\0')
+		Fwrite(rpmxpDTD, strlen(rpmxpDTD), 1, fdo);
+	    Fwrite(t, strlen(t), 1, fdo);
+	}
+	t = _free(t);
+    } else
+	headerWrite(fdo, h, HEADER_MAGIC_YES);
+}
+
 int
 main(int argc, char *const argv[])
 {
@@ -402,45 +426,14 @@ fprintf(stderr, "*** Fopen(%s,%s)\n", (ofn != NULL ? ofn : "-"), omode);
 	if (obits & RPMIOBITS_LEAD)
 	    writeLead(fdo, &lead);
 
-	if (obits & RPMIOBITS_SHEADER) {
-	    if (obits & RPMIOBITS_DUMP) {
-		headerDump(sigh, stdout, HEADER_DUMP_INLINE, rpmSTagTable);
-	    } else if (obits & RPMIOBITS_XML) {
-		const char * errstr = NULL;
+	if (obits & RPMIOBITS_SHEADER)
+	    spewHeader(fdo, sigh);
 
-		s = "[%{*:xml}\n]";
-		t = headerSprintf(sigh, s, rpmSTagTable, rpmHeaderFormats, &errstr);
-		
-		if (t != NULL) {
-		    if (rpmxpDTD != NULL && *rpmxpDTD != '\0')
-			Fwrite(rpmxpDTD, strlen(rpmxpDTD), 1, fdo);
-		    Fwrite(t, strlen(t), 1, fdo);
-		}
-		t = _free(t);
-	    } else
-		headerWrite(fdo, sigh, HEADER_MAGIC_YES);
-	}
+	if (obits & RPMIOBITS_HEADER)
+	    spewHeader(fdo, h);
 
-	if (obits & RPMIOBITS_HEADER) {
-	    if (obits & RPMIOBITS_DUMP) {
-		headerDump(h, stdout, HEADER_DUMP_INLINE, rpmTagTable);
-	    } else if (obits & RPMIOBITS_XML) {
-		const char * errstr = NULL;
-
-		s = "[%{*:xml}\n]";
-		t = headerSprintf(h, s, rpmTagTable, rpmHeaderFormats, &errstr);
-		
-		if (t != NULL) {
-		    if (rpmxpDTD != NULL && *rpmxpDTD != '\0')
-			Fwrite(rpmxpDTD, strlen(rpmxpDTD), 1, fdo);
-		    Fwrite(t, strlen(t), 1, fdo);
-		}
-		t = _free(t);
-	    } else
-		headerWrite(fdo, h, HEADER_MAGIC_YES);
-	}
-
-	if (obits & RPMIOBITS_PAYLOAD) {
+	if (obits & RPMIOBITS_PAYLOAD)
+	{
 	    if (obits & RPMIOBITS_UNCOMPRESS) {
 		const char * payload_compressor = NULL;
 		const char * rpmio_flags;
