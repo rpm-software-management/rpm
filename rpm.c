@@ -719,7 +719,6 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RECOMPILE;
-	    rmsource = 1;
 	    break;
 
 	  case GETOPT_BUILDROOT:
@@ -917,11 +916,11 @@ int main(int argc, char ** argv) {
     if (rootdir && rootdir[0] != '/')
 	argerror(_("arguments to --root (-r) must begin with a /"));
 
-    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && clean) 
-	argerror(_("--clean may only be used during package building"));
+    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && clean)
+	argerror(_("--clean may only be used with -b and -t"));
 
-    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && rmsource) 
-	argerror(_("--rmsource may only be used during package building"));
+    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && rmsource)
+	argerror(_("--rmsource may only be used with -b and -t"));
 
     if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && shortCircuit) 
 	argerror(_("--short-circuit may only be used during package building"));
@@ -1044,10 +1043,12 @@ int main(int argc, char ** argv) {
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages files given for rebuild"));
 
-	buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL |
-	    RPMBUILD_CLEAN | RPMBUILD_RMSOURCE;
+	buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL;
 	if (bigMode == MODE_REBUILD) {
 	    buildAmount |= RPMBUILD_PACKAGEBINARY;
+	    buildAmount |= RPMBUILD_RMSOURCE;
+	    buildAmount |= RPMBUILD_CLEAN;
+	    buildAmount |= RPMBUILD_RMBUILD;
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
