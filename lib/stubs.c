@@ -69,3 +69,7 @@
 #if !defined(HAVE_STRSTR)
 #include "misc/strstr.c"
 #endif
+
+#if defined(USE_GNU_GLOB)
+#include "misc/glob.c"
+#endif
