@@ -14,19 +14,53 @@
 
 #include "debug.h"
 
+static int _rpmbc_debug = 1;
+
+/** \ingroup python
+ */    
+static PyObject * 
+rpmbc_Debug(/*@unused@*/ rpmbcObject * s, PyObject * args)
+        /*@globals _Py_NoneStruct @*/
+        /*@modifies _Py_NoneStruct @*/ 
+{
+    if (!PyArg_ParseTuple(args, "i:Debug", &_rpmbc_debug)) return NULL;
+ 
+if (_rpmbc_debug < 0) 
+fprintf(stderr, "*** rpmbc_Debug(%p)\n", s);
+ 
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmbc_methods[] = {
+ {"Debug",	(PyCFunction)rpmbc_Debug,	METH_VARARGS,
+	NULL},
  {NULL,		NULL}		/* sentinel */
 };
 /*@=fullinitblock@*/
 
 /* ---------- */
 
+static rpmbcObject *
+rpmbc_new(void)
+{
+    rpmbcObject * s = PyObject_New(rpmbcObject, &rpmbc_Type);
+    if (s)
+	mp32nzero(&s->n);
+    return s;
+}
+
 static void
 rpmbc_dealloc(rpmbcObject * s)
 	/*@modifies s @*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_dealloc(%p)\n", s);
+
+    mp32nfree(&s->n);
+    PyMem_DEL(s);
 }
 
 static int
@@ -34,7 +68,10 @@ rpmbc_print(rpmbcObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@globals fileSystem @*/
 	/*@modifies s, fp, fileSystem @*/
 {
-    return -1;
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_print(%p)\n", s);
+    mp32print(fp, s->n.size, s->n.data);
+    return 0;
 }
 
 static PyObject *
@@ -48,6 +85,8 @@ static int
 rpmbc_compare(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_compare(%p,%p)\n", a, b);
     return 0;
 }
 
@@ -55,6 +94,8 @@ static PyObject *
 rpmbc_repr(rpmbcObject * a)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_repr(%p)\n", a);
     return NULL;
 }
 
@@ -64,27 +105,58 @@ static PyObject *
 rpmbc_add(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    return NULL;
+    rpmbcObject * z;
+    uint32 carry;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_add(%p,%p)\n", a, b);
+
+    if ((z = rpmbc_new()) != NULL) {
+	mp32ninit(&z->n, a->n.size, a->n.data);
+	carry = mp32addx(z->n.size, z->n.data, b->n.size, b->n.data);
+    }
+    return (PyObject *)z;
 }
 
 static PyObject *
 rpmbc_subtract(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    return NULL;
+    rpmbcObject * z;
+    uint32 carry;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_subtract(%p,%p)\n", a, b);
+
+    if ((z = rpmbc_new()) != NULL) {
+	mp32ninit(&z->n, a->n.size, a->n.data);
+	carry = mp32subx(z->n.size, z->n.data, b->n.size, b->n.data);
+    }
+    return (PyObject *)z;
 }
 
 static PyObject *
 rpmbc_multiply(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    return NULL;
+    rpmbcObject * z;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_multiply(%p,%p)\n", a, b);
+
+    if ((z = rpmbc_new()) != NULL) {
+	mp32nsize(&z->n, (a->n.size + b->n.size));
+	mp32mul(z->n.data, a->n.size, a->n.data, b->n.size, b->n.data);
+    }
+    return (PyObject *)z;
 }
 
 static PyObject *
 rpmbc_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_divide(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -92,6 +164,8 @@ static PyObject *
 rpmbc_remainder(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_remainder(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -99,6 +173,8 @@ static PyObject *
 rpmbc_divmod(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_divmod(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -106,6 +182,8 @@ static PyObject *
 rpmbc_power(rpmbcObject * a, rpmbcObject * b, rpmbcObject * c)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_power(%p,%p,%p)\n", a, b, c);
     return NULL;
 }
 
@@ -113,34 +191,65 @@ static PyObject *
 rpmbc_negative(rpmbcObject * a)
 	/*@*/
 {
-    return NULL;
+    rpmbcObject * z;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_negative(%p)\n", a);
+
+    if ((z = rpmbc_new()) != NULL) {
+	mp32ninit(&z->n, a->n.size, a->n.data);
+	mp32neg(z->n.size, z->n.data);
+    }
+    return (PyObject *)z;
 }
 
 static PyObject *
 rpmbc_positive(rpmbcObject * a)
 	/*@*/
 {
-    return NULL;
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_positive(%p)\n", a);
+
+    Py_INCREF(a);
+    return (PyObject *)a;
 }
 
 static PyObject *
 rpmbc_absolute(rpmbcObject * a)
 	/*@*/
 {
-    return NULL;
+    rpmbcObject * z;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_absolute(%p)\n", a);
+
+    if (mp32msbset(a->n.size, a->n.data) == 0) {
+	Py_INCREF(a);
+	return (PyObject *)a;
+    }
+
+    if ((z = rpmbc_new()) != NULL) {
+	mp32ninit(&z->n, a->n.size, a->n.data);
+	mp32neg(z->n.size, z->n.data);
+    }
+    return (PyObject *)z;
 }
 
 static int
 rpmbc_nonzero(rpmbcObject * a)
 	/*@*/
 {
-    return 0;
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_nonzero(%p)\n", a);
+    return mp32nz(a->n.size, a->n.data);
 }
 		
 static PyObject *
 rpmbc_invert(rpmbcObject * a)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_invert(%p)\n", a);
     return NULL;
 }
 
@@ -148,6 +257,13 @@ static PyObject *
 rpmbc_lshift(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    uint32 count = 0;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_lshift(%p,%p)\n", a, b);
+
+    mp32lshift(a->n.size, a->n.data, count);
+
     return NULL;
 }
 
@@ -155,6 +271,13 @@ static PyObject *
 rpmbc_rshift(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    uint32 count = 0;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_rshift(%p,%p)\n", a, b);
+
+    mp32rshift(a->n.size, a->n.data, count);
+
     return NULL;
 }
 
@@ -162,6 +285,8 @@ static PyObject *
 rpmbc_and(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_and(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -169,6 +294,8 @@ static PyObject *
 rpmbc_xor(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_xor(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -176,6 +303,8 @@ static PyObject *
 rpmbc_or(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_or(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -183,6 +312,8 @@ static int
 rpmbc_coerce(PyObject ** ap, PyObject ** bp)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_coerce(%p,%p)\n", ap, bp);
     return -1;
 }
 
@@ -190,6 +321,13 @@ static PyObject *
 rpmbc_int(rpmbcObject * a)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_int(%p)\n", a);
+
+    if (mp32size(a->n.size, a->n.data) > 1) {
+	PyErr_SetString(PyExc_ValueError, "rpmbc_int() arg too long to convert");
+	return NULL;
+    }
     return NULL;
 }
 
@@ -197,6 +335,8 @@ static PyObject *
 rpmbc_long(rpmbcObject * a)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_long(%p)\n", a);
     return NULL;
 }
 
@@ -204,6 +344,8 @@ static PyObject *
 rpmbc_float(rpmbcObject * a)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_float(%p)\n", a);
     return NULL;
 }
 
@@ -211,6 +353,8 @@ static PyObject *
 rpmbc_oct(rpmbcObject * a)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_oct(%p)\n", a);
     return NULL;
 }
 
@@ -218,6 +362,8 @@ static PyObject *
 rpmbc_hex(rpmbcObject * a)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_hex(%p)\n", a);
     return NULL;
 }
 
@@ -225,6 +371,13 @@ static PyObject *
 rpmbc_inplace_add(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    uint32 carry;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_add(%p,%p)\n", a, b);
+
+    carry = mp32addx(a->n.size, a->n.data, b->n.size, b->n.data);
+
     return NULL;
 }
 
@@ -232,6 +385,13 @@ static PyObject *
 rpmbc_inplace_subtract(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    uint32 carry;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_subtract(%p,%p)\n", a, b);
+
+    carry = mp32subx(a->n.size, a->n.data, b->n.size, b->n.data);
+
     return NULL;
 }
 
@@ -239,6 +399,13 @@ static PyObject *
 rpmbc_inplace_multiply(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    uint32 * result = NULL;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_multiply(%p,%p)\n", a, b);
+
+    mp32mul(result, a->n.size, a->n.data, b->n.size, b->n.data);
+
     return NULL;
 }
 
@@ -246,6 +413,8 @@ static PyObject *
 rpmbc_inplace_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_divide(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -253,6 +422,8 @@ static PyObject *
 rpmbc_inplace_remainder(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_remainder(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -260,6 +431,8 @@ static PyObject *
 rpmbc_inplace_power(rpmbcObject * a, rpmbcObject * b, rpmbcObject * c)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_power(%p,%p,%p)\n", a, b, c);
     return NULL;
 }
 
@@ -267,6 +440,13 @@ static PyObject *
 rpmbc_inplace_lshift(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    uint32 count = 0;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_lshift(%p,%p)\n", a, b);
+
+    mp32lshift(a->n.size, a->n.data, count);
+
     return NULL;
 }
 
@@ -274,6 +454,13 @@ static PyObject *
 rpmbc_inplace_rshift(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    uint32 count = 0;
+
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_rshift(%p,%p)\n", a, b);
+
+    mp32rshift(a->n.size, a->n.data, count);
+
     return NULL;
 }
 
@@ -281,12 +468,16 @@ static PyObject *
 rpmbc_inplace_and(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_and(%p,%p)\n", a, b);
     return NULL;
 }
 
 static PyObject *
 rpmbc_inplace_xor(rpmbcObject * a, rpmbcObject * b)
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_xor(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -294,6 +485,8 @@ static PyObject *
 rpmbc_inplace_or(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_or(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -301,6 +494,8 @@ static PyObject *
 rpmbc_floor_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_floor_divide(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -308,6 +503,8 @@ static PyObject *
 rpmbc_true_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_true_divide(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -315,6 +512,8 @@ static PyObject *
 rpmbc_inplace_floor_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_floor_divide(%p,%p)\n", a, b);
     return NULL;
 }
 
@@ -322,6 +521,8 @@ static PyObject *
 rpmbc_inplace_true_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+if (_rpmbc_debug)
+fprintf(stderr, "*** rpmbc_inplace_true_divide(%p,%p)\n", a, b);
     return NULL;
 }
 
