@@ -4,6 +4,8 @@
 	- fixed dependency checking during upgrades to work if the
 	  package wasn't previously installed
 	- clean up temp file after signature check
+	- dependencies weren't looking through packages that were
+	  being installed at the same time quite right
 
 2.1 -> 2.1.1:
 	- fixed -qi query format 
