@@ -1,3 +1,7 @@
+2.2.5 -> 2.2.6:
+	- new AutoReqProv: tag in spec file can disable automatic
+          require/provide generation
+
 2.2.4 -> 2.2.5:
 	- if rename() for moving .spec file from SOURCES to SPECS fails,
 	  try copying it instead
