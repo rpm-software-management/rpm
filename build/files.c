@@ -470,6 +470,8 @@ static int add_file(struct file_entry **festack, const char *name,
 		    char *Pmode, char *Uname, char *Gname)
 {
     struct file_entry *p;
+    char *copyTo, copied;
+    const char *copyFrom;
     char fullname[1024];
     int mode;
 
@@ -483,7 +485,18 @@ static int add_file(struct file_entry **festack, const char *name,
     GGname = Gname;
 
     p = malloc(sizeof(struct file_entry));
-    strcpy(p->file, name);
+
+    copyTo = p->file;
+    copied = '\0';
+    copyFrom = name;
+    while (*copyFrom) {
+	if (*copyFrom != '/' || copied != '/') {
+	    *copyTo++ = copied = *copyFrom;
+	}
+	copyFrom++;
+    }
+    *copyTo = '\0';
+
     p->isdoc = isdoc;
     p->isconf = isconf;
     p->verify_flags = verify_flags;
