@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-24 11:41-0400\n"
+"POT-Creation-Date: 1999-09-24 17:54-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1976,7 +1976,8 @@ msgstr ""
 #: ../lib/depends.c:339
 #, c-format
 msgid ""
-"the \"B\" dependency needs an epoch (assuming same as A) -- A %s\tB %s\n"
+"the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
+"\tA %s\tB %s\n"
 msgstr ""
 
 #: ../lib/depends.c:368
@@ -2034,23 +2035,23 @@ msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: ../lib/depends.c:893
+#: ../lib/depends.c:890
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: ../lib/depends.c:955
+#: ../lib/depends.c:952
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:1010 ../lib/depends.c:1314
+#: ../lib/depends.c:1007 ../lib/depends.c:1311
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:1105
+#: ../lib/depends.c:1102
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
