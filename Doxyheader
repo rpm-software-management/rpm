@@ -2,6 +2,8 @@
  */
 /** \defgroup	rpmcli	RPMCLI.
  */
+/** \defgroup	python	PYTHON.
+ */
 /** \defgroup	rpmbuild	RPMBUILD.
  */
 /** \defgroup	rpmrc	RPMRC.

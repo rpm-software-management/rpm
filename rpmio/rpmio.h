@@ -110,38 +110,13 @@ typedef int fdio_fflush_function_t (FD_t fd);
  * \name RPMRPC Vectors.
  */
 /*@{*/
-
-/** \ingroup rpmio
- */
 typedef int fdio_mkdir_function_t (const char * path, mode_t mode);
-
-/** \ingroup rpmrpc
- */
 typedef int fdio_chdir_function_t (const char * path);
-
-/** \ingroup rpmrpc
- */
 typedef int fdio_rmdir_function_t (const char * path);
-
-/** \ingroup rpmrpc
- */
 typedef int fdio_rename_function_t (const char * oldpath, const char * newpath);
-
-/** \ingroup rpmrpc
- */
 typedef int fdio_unlink_function_t (const char * path);
-
-
-/** \ingroup rpmrpc
- */
 typedef int fdio_stat_function_t (const char * path, struct stat * st);
-
-/** \ingroup rpmrpc
- */
 typedef int fdio_lstat_function_t (const char * path, struct stat * st);
-
-/** \ingroup rpmrpc
- */
 typedef int fdio_access_function_t (const char * path, int amode);
 /*@}*/
 

@@ -348,6 +348,7 @@ INPUT                  = \
 	./popt/popthelp.c \
 	./popt/poptint.h \
 	./popt/poptparse.c \
+	./python/rpmmodule.c \
 	./tools/dump.c \
 	./tools/dumpdb.c \
 	./tools/javadeps.c \
