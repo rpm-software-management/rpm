@@ -71,7 +71,10 @@ int doReSign(int add, char *passPhrase, char **argv)
 	fdClose(ofd);
 
 	/* Start writing the new RPM */
-	sprintf(tmprpm, "%s.tmp", rpm);
+	strcpy(tmprpm, rpm);
+	strcat(tmprpm, ".XXXXXX");
+	mktemp(tmprpm);
+
 	ofd = fdOpen(tmprpm, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	lead.signature_type = RPMSIG_HEADERSIG;
 	if (writeLead(ofd, &lead)) {

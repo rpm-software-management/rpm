@@ -30,16 +30,17 @@ static int buildForTarget(const char *arg, int buildAmount, const char *passPhra
 	const char *specDir;
 	const char * tmpSpecFile;
 	char * cmd, *s;
-	char tfn[64];
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
-	sprintf(tfn, "rpm-spec-file-%d", (int) getpid());
-	tmpSpecFile = rpmGetPath("%{_specdir}", tfn, NULL);
+	{   char tfn[64];
+	    strcpy(tfn, "rpm-spec.XXXXXX");
+	    tmpSpecFile = rpmGetPath("%{_specdir}", mktemp(tfn), NULL);
+	}
 
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
-	sprintf(cmd, "gunzip < %s | tar xOvf - Specfile 2>&1 > %s", arg,
-			tmpSpecFile);
+	sprintf(cmd, "gunzip < %s | tar xOvf - Specfile 2>&1 > %s",
+			arg, tmpSpecFile);
 	if (!(f = popen(cmd, "r"))) {
 	    fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));

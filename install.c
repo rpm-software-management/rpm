@@ -92,7 +92,6 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     int numFailed = 0;
     Header h;
     int isSource;
-    int tmpnum = 0;
     rpmTransactionSet rpmdep = NULL;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
@@ -134,15 +133,16 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	case URL_IS_PATH:
 	{   int myrc;
 	    const char *tfn;
-	    char tfnpid[64];
-	    if (rpmIsVerbose()) {
-		fprintf(stdout, _("Retrieving %s\n"), *filename);
-	    }
 
-	    sprintf(tfnpid, "rpm-%.5u-%.5u", (int) getpid(), tmpnum++);
-	    /* XXX watchout for rootdir = NULL */
-	    tfn = rpmGetPath( (rootdir ? rootdir : ""),
-		"%{_tmppath}", tfnpid, NULL);
+	    if (rpmIsVerbose())
+		fprintf(stdout, _("Retrieving %s\n"), *filename);
+
+	    {	char tfnbuf[64];
+		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
+		/* XXX watchout for rootdir = NULL */
+		tfn = rpmGetPath( (rootdir ? rootdir : ""),
+		    "%{_tmppath}", mktemp(tfnbuf), NULL);
+	    }
 
 	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
 	    myrc = urlGetFile(*filename, tfn);
