@@ -1,6 +1,6 @@
 ### These are variables meant to be exported
 
-PROGS = rpmlead rpmheader rpmarchive rpmsignature rpmchecksig dump dumpdb
+PROGS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
