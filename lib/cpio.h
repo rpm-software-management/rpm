@@ -47,7 +47,9 @@ enum cpioErrorReturns {
 	CPIOERR_MISSING_HARDLINK= (25			),
 	CPIOERR_MD5SUM_MISMATCH	= (26			),
 	CPIOERR_INTERNAL	= (27			),
-	CPIOERR_UNMAPPED_FILE	= (28			)
+	CPIOERR_UNMAPPED_FILE	= (28			),
+	CPIOERR_ENOENT		= (29			),
+	CPIOERR_ENOTEMPTY	= (30			)
 };
 
 /** \ingroup payload

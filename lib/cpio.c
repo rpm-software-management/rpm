@@ -235,6 +235,8 @@ const char *const cpioStrerror(int rc)
     case CPIOERR_MD5SUM_MISMATCH: s = _("MD5 sum mismatch");	break;
     case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
+    case CPIOERR_ENOENT:	s = strerror(ENOENT); break;
+    case CPIOERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
     }
     /*@=branchstate@*/
 

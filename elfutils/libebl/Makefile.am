@@ -14,7 +14,7 @@
 ## 3001 King Ranch Road, Ukiah, CA 95482.
 ##
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -Wall
-AM_CFLAGS = -Wall -Werror -DOBJDIR=\"$(shell pwd)\"
+AM_CFLAGS = -Wall -DOBJDIR=\"$(shell pwd)\" # -Werror
 
 LINT = splint
 

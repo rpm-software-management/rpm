@@ -17,7 +17,7 @@
 ## Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ##
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
-AM_CFLAGS = -Wall -Werror -Wshadow
+AM_CFLAGS = -Wall -Wshadow # -Werror
 INCLUDES = -I. -I$(srcdir) -I$(srcdir)/../libelf -I.. -I$(srcdir)/../lib
 
 LINT = splint

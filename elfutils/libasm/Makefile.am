@@ -14,7 +14,7 @@
 ## 3001 King Ranch Road, Ukiah, CA 95482.
 ##
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
-AM_CFLAGS = -Wall -Werror
+AM_CFLAGS = -Wall # -Werror
 INCLUDES = -I. -I$(srcdir) -I.. -I$(top_srcdir)/libelf -I$(top_srcdir)/libebl \
 	   -I$(top_srcdir)/lib
 GCC_INCLUDE = -I$(shell $(CC) -print-file-name=include)

@@ -572,10 +572,10 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     }
 
     ec = fsm->rc = 0;
-    rc = fsmNext(fsm, FSM_CREATE);
+    rc = fsmUNSAFE(fsm, FSM_CREATE);
     if (rc && !ec) ec = rc;
 
-    rc = fsmNext(fsm, fsm->goal);
+    rc = fsmUNSAFE(fsm, fsm->goal);
     if (rc && !ec) ec = rc;
 
 /*@-boundswrite@*/
@@ -591,7 +591,7 @@ int fsmTeardown(FSM_t fsm)
     int rc = fsm->rc;
 
     if (!rc)
-	rc = fsmNext(fsm, FSM_DESTROY);
+	rc = fsmUNSAFE(fsm, FSM_DESTROY);
 
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
@@ -851,7 +851,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	 * I don't think that's a specified standard.
 	 */
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-	rc = fsmNext(fsm, FSM_READLINK);
+	rc = fsmUNSAFE(fsm, FSM_READLINK);
 	if (rc) goto exit;
 	st->st_size = fsm->rdnb;
 	symbuf = alloca_strdup(fsm->rdbuf);	/* XXX save readlink return. */
@@ -1048,7 +1048,7 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 
 	rc = fsmUNSAFE(fsm, FSM_VERIFY);
 	if (!rc) continue;
-	if (rc != CPIOERR_LSTAT_FAILED) break;
+	if (!(rc == CPIOERR_ENOENT)) break;
 
 	/* XXX link(fsm->opath, fsm->path) */
 	rc = fsmNext(fsm, FSM_LINK);
@@ -1251,7 +1251,7 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	    if (rc == 0 && S_ISDIR(ost->st_mode)) {
 		/* Move pre-existing path marker forward. */
 		fsm->dnlx[dc] = (te - dn);
-	    } else if (rc == CPIOERR_LSTAT_FAILED) {
+	    } else if (rc == CPIOERR_ENOENT) {
 		rpmfi fi = fsmGetFi(fsm);
 		*te = '\0';
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
@@ -1305,9 +1305,9 @@ static int fsmStat(FSM_t fsm)
 
     if (fsm->path != NULL) {
 	int saveernno = errno;
-	rc = fsmNext(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+	rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
-	if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
+	if (rc == CPIOERR_ENOENT) {
 	    errno = saveerrno;
 	    rc = 0;
 	    fsm->exists = 0;
@@ -1587,9 +1587,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->path != NULL &&
 	    !(fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode)))
 	{
-	    rc = fsmNext(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+	    rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
-	    if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
+	    if (rc == CPIOERR_ENOENT) {
 		errno = saveerrno;
 		rc = 0;
 		fsm->exists = 0;
@@ -1691,12 +1691,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    /*@-dependenttrans@*/
 	    fsm->path = path;
 	    /*@=dependenttrans@*/
-	    if (rc != CPIOERR_LSTAT_FAILED) return rc;
+	    if (!(rc == CPIOERR_ENOENT)) return rc;
 	    rc = expandRegular(fsm);
 	} else if (S_ISDIR(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_LSTAT_FAILED) {
+	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode &= ~07777; 		/* XXX abuse st->st_mode */
 		st->st_mode |=  00700;
 		rc = fsmNext(fsm, FSM_MKDIR);
@@ -1724,14 +1724,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    fsm->opath = fsm->wrbuf;
 	    /*@=dependenttrans@*/
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_LSTAT_FAILED)
+	    if (rc == CPIOERR_ENOENT)
 		rc = fsmNext(fsm, FSM_SYMLINK);
 	    fsm->opath = opath;		/* XXX restore fsm->path */
 	} else if (S_ISFIFO(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
 	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_LSTAT_FAILED) {
+	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode = 0000;		/* XXX abuse st->st_mode */
 		rc = fsmNext(fsm, FSM_MKFIFO);
 		st->st_mode = st_mode;	/* XXX restore st->st_mode */
@@ -1741,7 +1741,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     /*@-unrecog@*/ S_ISSOCK(st->st_mode) /*@=unrecog@*/)
 	{
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_LSTAT_FAILED)
+	    if (rc == CPIOERR_ENOENT)
 		rc = fsmNext(fsm, FSM_MKNOD);
 	} else {
 	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
@@ -1833,9 +1833,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		if (S_ISDIR(st->st_mode)) {
 		    rc = fsmNext(fsm, FSM_RMDIR);
 		    if (!rc) break;
-		    switch (errno) {
-		    case ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
-		    case ENOTEMPTY:
+		    switch (rc) {
+		    case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
+		    case CPIOERR_ENOTEMPTY:
 	/* XXX make sure that build side permits %missingok on directories. */
 			if (fsm->fflags & RPMFILE_MISSINGOK)
 			    /*@innerbreak@*/ break;
@@ -1856,11 +1856,18 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		} else {
 		    rc = fsmNext(fsm, FSM_UNLINK);
 		    if (!rc) break;
-		    if (!(errno == ENOENT && (fsm->fflags & RPMFILE_MISSINGOK)))
+		    switch (rc) {
+		    case CPIOERR_ENOENT:
+			if (fsm->fflags & RPMFILE_MISSINGOK)
+			    /*@innerbreak@*/ break;
+			/*@fallthrough@*/
+		    default:
 			rpmError(
 			    (strict_erasures ? RPMERR_UNLINK : RPMDEBUG_UNLINK),
 				_("%s unlink of %s failed: %s\n"),
 				rpmfiTypeString(fi), fsm->path, strerror(errno));
+			/*@innerbreak@*/ break;
+		    }
 		}
 	    }
 	    /* XXX Failure to remove is not (yet) cause for failure. */
@@ -1953,7 +1960,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
     case FSM_VERIFY:
 	if (fsm->diskchecked && !fsm->exists) {
-	    rc = CPIOERR_LSTAT_FAILED;
+	    rc = CPIOERR_ENOENT;
 	    break;
 	}
 	if (S_ISREG(st->st_mode)) {
@@ -1974,13 +1981,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    rc = CPIOERR_UNLINK_FAILED;
 	    fsm->path = fsm->opath;
 	    fsm->opath = NULL;
-	    return (rc ? rc : CPIOERR_LSTAT_FAILED);	/* XXX HACK */
+	    return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
 	    /*@notreached@*/ break;
 	} else if (S_ISDIR(st->st_mode)) {
 	    if (S_ISDIR(ost->st_mode))		return 0;
 	    if (S_ISLNK(ost->st_mode)) {
-		rc = fsmStage(fsm, FSM_STAT);
-		if (rc == CPIOERR_STAT_FAILED && errno == ENOENT) rc = 0;
+		rc = fsmUNSAFE(fsm, FSM_STAT);
+		if (rc == CPIOERR_ENOENT) rc = 0;
 		if (rc) break;
 		errno = saveerrno;
 		if (S_ISDIR(ost->st_mode))	return 0;
@@ -1988,7 +1995,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	} else if (S_ISLNK(st->st_mode)) {
 	    if (S_ISLNK(ost->st_mode)) {
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-		rc = fsmNext(fsm, FSM_READLINK);
+		rc = fsmUNSAFE(fsm, FSM_READLINK);
 		errno = saveerrno;
 		if (rc) break;
 		if (!strcmp(fsm->opath, fsm->rdbuf))	return 0;
@@ -2004,8 +2011,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    /* XXX shouldn't do this with commit/undo. */
 	rc = 0;
 	if (fsm->stage == FSM_PROCESS) rc = fsmNext(fsm, FSM_UNLINK);
-	if (rc == 0)	rc = CPIOERR_LSTAT_FAILED;
-	return (rc ? rc : CPIOERR_LSTAT_FAILED);	/* XXX HACK */
+	if (rc == 0)	rc = CPIOERR_ENOENT;
+	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
 	/*@notreached@*/ break;
 
     case FSM_UNLINK:
@@ -2013,7 +2020,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_UNLINK_FAILED;
+	if (rc < 0)
+	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
 	break;
     case FSM_RENAME:
 	rc = Rename(fsm->opath, fsm->path);
@@ -2047,7 +2055,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_RMDIR_FAILED;
+	if (rc < 0)
+	    switch (errno) {
+	    case ENOENT:        rc = CPIOERR_ENOENT;    break;
+	    case ENOTEMPTY:     rc = CPIOERR_ENOTEMPTY; break;
+	    default:            rc = CPIOERR_RMDIR_FAILED; break;
+	    }
 	break;
     case FSM_CHOWN:
 	rc = chown(fsm->path, st->st_uid, st->st_gid);
@@ -2125,14 +2138,16 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_LSTAT_FAILED;
+	if (rc < 0)
+	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_LSTAT_FAILED);
 	break;
     case FSM_STAT:
 	rc = Stat(fsm->path, ost);
 	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_STAT_FAILED;
+	if (rc < 0)
+	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_STAT_FAILED);
 	break;
     case FSM_READLINK:
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
@@ -2155,7 +2170,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
 
     case FSM_NEXT:
-	rc = fsmNext(fsm, FSM_HREAD);
+	rc = fsmUNSAFE(fsm, FSM_HREAD);
 	if (rc) break;
 	if (!strcmp(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
 	    fsm->path = _free(fsm->path);

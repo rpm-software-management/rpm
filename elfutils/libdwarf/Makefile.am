@@ -14,7 +14,7 @@
 ## 3001 King Ranch Road, Ukiah, CA 95482.
 ##
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DDWARF_DEBUG
-AM_CFLAGS = -Wall -Werror
+AM_CFLAGS = -Wall # -Werror
 INCLUDES = -I. -I$(srcdir) -I$(srcdir)/../libelf -I.. -I$(srcdir)/../lib
 VERSION = 1
 
