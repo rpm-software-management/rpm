@@ -6,6 +6,8 @@
 	  are present
 	- check symlink() return for < 0, not != 0 (Bob Tanner)
 	- uses chroot() for installs --root option
+	- archive expansion doesn't create new devices or symlinks when
+	  the proper files already exist
 
 2.4.1 -> 2.4.2:
 	- completely rewrote queryformat code

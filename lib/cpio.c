@@ -199,7 +199,7 @@ static int setInfo(struct cpioHeader * hdr) {
 
 
     if (!S_ISLNK(hdr->mode)) {
-	if (!getuid() && !rc && chown(hdr->path, hdr->uid, hdr->gid))
+	if (!getuid() && chown(hdr->path, hdr->uid, hdr->gid))
 	    rc = CPIO_CHOWN_FAILED;
 	if (!rc && chmod(hdr->path, hdr->mode & 07777))
 	    rc = CPIO_CHMOD_FAILED;
@@ -308,12 +308,9 @@ static int expandRegular(struct ourfd * fd, struct cpioHeader * hdr,
 }
 
 static int expandSymlink(struct ourfd * fd, struct cpioHeader * hdr) {
-    char buf[2048];
+    char buf[2048], buf2[2048];
     struct stat sb;
-
-    if (!lstat(hdr->path, &sb))
-	if (unlink(hdr->path))
-	    return CPIO_UNLINK_FAILED;
+    int len;
 
     if ((hdr->size + 1)> sizeof(buf))
 	return CPIO_INTERNAL;
@@ -322,6 +319,19 @@ static int expandSymlink(struct ourfd * fd, struct cpioHeader * hdr) {
 	return CPIO_READ_FAILED;
 
     buf[hdr->size] = '\0';
+
+    if (!lstat(hdr->path, &sb)) {
+	if (S_ISLNK(sb.st_mode)) {
+	    len = readlink(hdr->path, buf2, sizeof(buf2) - 1);
+	    if (len > 0) {
+		buf2[len] = '\0';
+		if (!strcmp(buf, buf2)) return 0;
+	    }
+	}
+
+	if (unlink(hdr->path))
+	    return CPIO_UNLINK_FAILED;
+    }
 
     if (symlink(buf, hdr->path) < 0)
 	return CPIO_SYMLINK_FAILED;
@@ -348,9 +358,13 @@ static int expandFifo(struct ourfd * fd, struct cpioHeader * hdr) {
 static int expandDevice(struct ourfd * fd, struct cpioHeader * hdr) {
     struct stat sb;
 
-    if (!lstat(hdr->path, &sb))
+    if (!lstat(hdr->path, &sb)) {
+	if ((S_ISCHR(sb.st_mode) || S_ISBLK(sb.st_mode)) && 
+		(sb.st_rdev == hdr->rdev))
+	    return 0;
 	if (unlink(hdr->path))
 	    return CPIO_UNLINK_FAILED;
+    }
 
     if (mknod(hdr->path, hdr->mode & (~0777), hdr->rdev))
 	return CPIO_MKNOD_FAILED;
