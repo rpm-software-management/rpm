@@ -272,12 +272,12 @@ void rpmGetMachine(/*@out@*/char **arch, /*@out@*/char **os);
 
 typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
 
-typedef enum rpmCallbackType_e 
-	{ RPMCALLBACK_INST_PROGRESS, RPMCALLBACK_INST_START,
-	  RPMCALLBACK_INST_OPEN_FILE, RPMCALLBACK_INST_CLOSE_FILE,
-	  RPMCALLBACK_TRANS_PROGRESS, RPMCALLBACK_TRANS_START,
-	  RPMCALLBACK_UNINST_PROGRESS, RPMCALLBACK_UNINST_START,
-	} rpmCallbackType;
+typedef enum rpmCallbackType_e {
+    RPMCALLBACK_INST_PROGRESS, RPMCALLBACK_INST_START,
+    RPMCALLBACK_INST_OPEN_FILE, RPMCALLBACK_INST_CLOSE_FILE,
+    RPMCALLBACK_TRANS_PROGRESS, RPMCALLBACK_TRANS_START, RPMCALLBACK_TRANS_STOP,
+    RPMCALLBACK_UNINST_PROGRESS, RPMCALLBACK_UNINST_START, RPMCALLBACK_UNINST_STOP,
+} rpmCallbackType;
 typedef void * (*rpmCallbackFunction)(const Header h, 
 				      const rpmCallbackType what, 
 				      const unsigned long amount, 
