@@ -367,7 +367,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
 		memset(data, 0, sizeof(*data));
 		data->data = datap;
 		data->size = datalen;
-		xx = dbiGet(dbi, dbcursor, key, data, 0);
+		xx = dbiGet(dbi, dbcursor, key, data, DB_SET);
 		DNEVR = key->data;
 		DNEVRlen = key->size;
 		datap = data->data;

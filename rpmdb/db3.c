@@ -422,6 +422,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     if (dbcursor == NULL) {
 	int _printit;
 
+	/* XXX duplicates require cursors. */
 	rc = db->get(db, dbi->dbi_txnid, key, data, 0);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
@@ -430,8 +431,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	int _printit;
 
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
-	rc = dbcursor->c_get(dbcursor, key, data,
-		key->data == NULL ? DB_NEXT : DB_SET);
+	rc = dbcursor->c_get(dbcursor, key, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);

@@ -107,6 +107,7 @@
 	- rip out two layers of dbN gook, internal Berkeley db is here to stay.
 	- eliminate db1 support.
 	- enable CDB by default.
+	- use DBT_DB_MALLOC to eliminate re-malloc'ing header blobs.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

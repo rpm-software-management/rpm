@@ -6,7 +6,6 @@ AM_INIT_AUTOMAKE(zlib, 1.1.4)
 
 dnl Check for programs.
 AC_PROG_CC
-AM_DISABLE_SHARED
 AC_PROG_LIBTOOL
 
 CFLAGS="-DHAS_snprintf -DHAS_snprintf"

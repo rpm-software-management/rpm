@@ -53,7 +53,7 @@ struct _dbiVec {
  * @param rpmtag	rpm tag
  * @return		0 on success
  */
-    int (*open) (rpmdb rpmdb, int rpmtag, /*@out@*/ dbiIndex * dbip)
+    int (*open) (rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 	/*@globals fileSystem@*/
 	/*@modifies *dbip, fileSystem @*/;
 
@@ -357,11 +357,11 @@ extern "C" {
 /** \ingroup db3
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
- * @param rpmtag
+ * @param rpmtag	rpm tag
  * @return		index database handle
  */
 /*@unused@*/ /*@only@*/ /*@null@*/
-dbiIndex db3New(rpmdb rpmdb, int rpmtag)
+dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
@@ -393,7 +393,7 @@ extern const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
  * @param flags		(unused)
  * @return		index database handle
  */
-/*@only@*/ /*@null@*/ dbiIndex dbiOpen(/*@null@*/ rpmdb db, int rpmtag,
+/*@only@*/ /*@null@*/ dbiIndex dbiOpen(/*@null@*/ rpmdb db, rpmTag rpmtag,
 		unsigned int flags)
 	/*@modifies db @*/;
 
@@ -464,7 +464,7 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
-    assert(key->size > 0);
+    assert((flags == DB_NEXT) || key->size > 0);
     return (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
 }
 

@@ -913,7 +913,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
-			/*@null@*/ rpmdb db, int rpmtag,
+			/*@null@*/ rpmdb db, rpmTag rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
 	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
@@ -946,8 +946,8 @@ int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
  * @return		0 on success
  */
 int rpmdbRebuild(/*@null@*/ const char * prefix)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /*@}*/
 /* ==================================================================== */

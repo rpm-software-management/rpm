@@ -50,7 +50,7 @@
 #define LEADING_UNDERSCORE	0
 #define NO_UNDERSCORES 1
 
-#define JAVAGLUE 0
+#define JAVAGLUE 1
 
 #define HAVE_ERRNO_H 1
 #define HAVE_STRING_H 1
