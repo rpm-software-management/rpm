@@ -995,6 +995,8 @@ static int installSources(Header h, char * rootdir, int fd,
     struct fileInfo * files;
     int i;
     char * chptr;
+    char * currDir;
+    int currDirLen;
 
     rpmMessage(RPMMESS_DEBUG, "installing a source package\n");
 
@@ -1070,22 +1072,25 @@ static int installSources(Header h, char * rootdir, int fd,
 	fflush(stdout);
     }
 
-    i = open(".", O_RDONLY);
+    currDirLen = 50;
+    currDir = malloc(currDirLen);
+    while (!getcwd(currDir, currDirLen)) {
+	currDirLen += 50;
+	currDir = realloc(currDir, currDirLen);
+    }
+
     chdir(realSourceDir);
     if (installArchive(fd, fileCount > 0 ? files : NULL,
 			  fileCount, notify, 
 			  specFileIndex >=0 ? NULL : &specFile, 
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
 	if (fileCount > 0) freeFileMemory(fileMem);
+	free(currDir);
 	return 2;
     }
 
-    if (i >= 0) {
-	fchdir(i);
-	close(i);
-    } else {
-	chdir("/");
-    }
+    chdir(currDir);
+    free(currDir);
 
     if (specFileIndex == -1) {
 	if (!specFile) {
