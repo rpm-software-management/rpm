@@ -316,7 +316,7 @@ int rpmdepCheck(rpmDependencies rpmdep,
 	    return 1;
 	}
 
-	if (getEntry(h, RPMTAG_PROVIDES, &type, (void **) &provides, 
+	if (getEntry(p->h, RPMTAG_PROVIDES, &type, (void **) &provides, 
 		 &providesCount)) {
 	    for (j = 0; j < providesCount; j++) {
 		if (checkDependentConflicts(rpmdep, &ps, provides[j])) {
