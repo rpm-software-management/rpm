@@ -485,7 +485,6 @@ void freeSpec(/*@only@*/ Spec spec)
     
     headerFree(spec->buildRestrictions);
     spec->buildRestrictions = NULL;
-    FREE(spec->buildArchitectures);
 
     if (!spec->inBuildArchitectures) {
 	while (spec->buildArchitectureCount--) {
@@ -499,10 +498,6 @@ void freeSpec(/*@only@*/ Spec spec)
     FREE(spec->passPhrase);
     FREE(spec->cookie);
 
-#ifdef	DEAD
-    freeMacros(spec->macros);
-#endif
-    
     freeSources(spec->sources);	spec->sources = NULL;
     freePackages(spec);
     closeSpec(spec);

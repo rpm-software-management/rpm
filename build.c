@@ -170,7 +170,7 @@ int build(const char *arg, int buildAmount, const char *passPhrase,
 	  const char *buildRoot, int fromTarball, int test, char *cookie,
           const char * rcfile, char *targets, int force)
 {
-    char *target, *t;
+    char *t, *te;
     int rc;
 
     if (targets == NULL) {
@@ -183,9 +183,10 @@ int build(const char *arg, int buildAmount, const char *passPhrase,
 
     printf("Building target platforms: %s\n", targets);
 
-    t = targets;
-    while((target = strtok(t, ",")) != NULL) {
-	t = NULL;
+    for (t = targets; (te = strchr(t, ',')) != NULL; t = te) {
+	char *target = alloca(te-t+1);
+	strncpy(target, t, (te-t));
+	target[te-t] = '\0';
 	printf("Building for target %s\n", target);
 
 	rpmReadConfigFiles(rcfile, target);

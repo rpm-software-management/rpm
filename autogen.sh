@@ -7,7 +7,7 @@ USAGE="
 You need to install:
 	libtool-1.2d
 	autoconf-2.13
-	automake-2.4
+	automake-1.4
 "
 
 [ "`libtoolize --version`" != "$LTV" ] && echo "$USAGE" && exit 1
