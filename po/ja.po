@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-28 16:09-0500\n"
+"POT-Creation-Date: 2004-11-29 09:30-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -4138,68 +4138,68 @@ msgstr "ファイル %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s: は %d バイトより小さいです"
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:678
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:701
 #, fuzzy
 msgid "Bad server response"
 msgstr "サーバから正常な応答がありません"
 
-#: rpmio/rpmio.c:683
+#: rpmio/rpmio.c:703
 #, fuzzy
 msgid "Server I/O error"
 msgstr "サーバ IO エラー"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:705
 #, fuzzy
 msgid "Server timeout"
 msgstr "サーバタイムアウト"
 
-#: rpmio/rpmio.c:689
+#: rpmio/rpmio.c:707
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません"
 
-#: rpmio/rpmio.c:692
+#: rpmio/rpmio.c:709
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません"
 
-#: rpmio/rpmio.c:695
+#: rpmio/rpmio.c:711
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "サーバへの接続に失敗しました"
 
-#: rpmio/rpmio.c:698
+#: rpmio/rpmio.c:713
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータコネクションの確立に失敗しました"
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:715
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "ローカルファイルの IO エラー"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:717
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバのパッシブモード設定エラー"
 
-#: rpmio/rpmio.c:707
+#: rpmio/rpmio.c:719
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:721
 msgid "Abort in progress"
 msgstr "処理中のアボート"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:725
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "不明もしくは予期せぬエラー"
 
-#: rpmio/rpmio.c:1409
+#: rpmio/rpmio.c:1420
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s へ %s pw %s としてログイン中\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-28 16:09-0500\n"
+"POT-Creation-Date: 2004-11-29 09:30-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -4059,59 +4059,59 @@ msgstr "Fil %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:678
 msgid "Success"
 msgstr "Succes"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:701
 msgid "Bad server response"
 msgstr "Ugyldigt svar fra server"
 
-#: rpmio/rpmio.c:683
+#: rpmio/rpmio.c:703
 msgid "Server I/O error"
 msgstr "I/O-fejl for server"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:705
 msgid "Server timeout"
 msgstr "Tidsudløb for server"
 
-#: rpmio/rpmio.c:689
+#: rpmio/rpmio.c:707
 msgid "Unable to lookup server host address"
 msgstr "Kunne ikke skaffe serverens IP-addresse"
 
-#: rpmio/rpmio.c:692
+#: rpmio/rpmio.c:709
 msgid "Unable to lookup server host name"
 msgstr "Kunne ikke slå serverens navn op"
 
-#: rpmio/rpmio.c:695
+#: rpmio/rpmio.c:711
 msgid "Failed to connect to server"
 msgstr "Kunne ikke etablere en forbindelse til serveren"
 
-#: rpmio/rpmio.c:698
+#: rpmio/rpmio.c:713
 msgid "Failed to establish data connection to server"
 msgstr "Kunne ikke etablere en data-forbindelse til serveren"
 
-#: rpmio/rpmio.c:701
+#: rpmio/rpmio.c:715
 msgid "I/O error to local file"
 msgstr "I/O-fejl i lokal fil"
 
-#: rpmio/rpmio.c:704
+#: rpmio/rpmio.c:717
 msgid "Error setting remote server to passive mode"
 msgstr "Kunne ikke sætte fjernserveren i passiv tilstand"
 
-#: rpmio/rpmio.c:707
+#: rpmio/rpmio.c:719
 msgid "File not found on server"
 msgstr "Fil ikke fundet på server"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:721
 msgid "Abort in progress"
 msgstr "Afbryder programmet"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:725
 msgid "Unknown or unexpected error"
 msgstr "Ukendt eller uventet fejl"
 
-#: rpmio/rpmio.c:1409
+#: rpmio/rpmio.c:1420
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logger på %s som %s, adgangskode %s\n"
