@@ -1,5 +1,5 @@
 /* unzip.c -- IO for uncompress .zip files using zlib
-   Version 0.21 with encryption, March 10th, 2003
+   Version 1.00, September 10th, 2003
 
    Copyright (C) 1998-2003 Gilles Vollant
 
@@ -59,10 +59,10 @@ woven in by Terry Thorsen 1/2003.
 /* compile with -Dlocal if your debugger can't find static symbols */
 
 
-
-#if !defined(unix) && !defined(CASESENSITIVITYDEFAULT_YES) && \
-                      !defined(CASESENSITIVITYDEFAULT_NO)
-#define CASESENSITIVITYDEFAULT_NO
+#ifndef CASESENSITIVITYDEFAULT_NO
+#  if !defined(unix) && !defined(CASESENSITIVITYDEFAULT_YES)
+#    define CASESENSITIVITYDEFAULT_NO
+#  endif
 #endif
 
 
@@ -88,7 +88,7 @@ woven in by Terry Thorsen 1/2003.
 
 
 const char unz_copyright[] =
-   " unzip 0.21 Copyright 1998-2003 Gilles Vollant - http://www.winimage.com/zLibDll";
+   " unzip 1.00 Copyright 1998-2003 Gilles Vollant - http://www.winimage.com/zLibDll";
 
 /* unz_file_info_interntal contain internal info about a file in zipfile*/
 typedef struct unz_file_info_internal_s
@@ -145,14 +145,14 @@ typedef struct
     file_in_zip_read_info_s* pfile_in_zip_read; /* structure about the current
                                         file if we are decompressing it */
     int encrypted;
-    #ifndef NOUNCRPYT
+#    ifndef NOUNCRYPT
     unsigned long keys[3];     /* keys defining the pseudo-random sequence */
     const unsigned long* pcrc_32_tab;
-    #endif
+#    endif
 } unz_s;
 
 
-#ifndef NOUNCRPYT
+#ifndef NOUNCRYPT
 #include "crypt.h"
 #endif
 
@@ -828,7 +828,11 @@ extern int ZEXPORT unzLocateFile (file, szFileName, iCaseSensitivity)
     unz_s* s;
     int err;
 
-
+    /* We remember the 'current' position in the file so that we can jump
+     * back there if we fail.
+     */
+    unz_file_info cur_file_infoSaved;
+    unz_file_info_internal cur_file_info_internalSaved;
     uLong num_fileSaved;
     uLong pos_in_central_dirSaved;
 
@@ -843,25 +847,36 @@ extern int ZEXPORT unzLocateFile (file, szFileName, iCaseSensitivity)
     if (!s->current_file_ok)
         return UNZ_END_OF_LIST_OF_FILE;
 
+    /* Save the current state */
     num_fileSaved = s->num_file;
     pos_in_central_dirSaved = s->pos_in_central_dir;
+    cur_file_infoSaved = s->cur_file_info;
+    cur_file_info_internalSaved = s->cur_file_info_internal;
 
     err = unzGoToFirstFile(file);
 
     while (err == UNZ_OK)
     {
         char szCurrentFileName[UNZ_MAXFILENAMEINZIP+1];
-        unzGetCurrentFileInfo(file,NULL,
-                                szCurrentFileName,sizeof(szCurrentFileName)-1,
-                                NULL,0,NULL,0);
-        if (unzStringFileNameCompare(szCurrentFileName,
-                                        szFileName,iCaseSensitivity)==0)
-            return UNZ_OK;
-        err = unzGoToNextFile(file);
+        err = unzGetCurrentFileInfo(file,NULL,
+                                    szCurrentFileName,sizeof(szCurrentFileName)-1,
+                                    NULL,0,NULL,0);
+        if (err == UNZ_OK)
+        {
+            if (unzStringFileNameCompare(szCurrentFileName,
+                                            szFileName,iCaseSensitivity)==0)
+                return UNZ_OK;
+            err = unzGoToNextFile(file);
+        }
     }
 
+    /* We failed, so restore the state of the 'current file' to where we
+     * were.
+     */
     s->num_file = num_fileSaved ;
     s->pos_in_central_dir = pos_in_central_dirSaved ;
+    s->cur_file_info = cur_file_infoSaved;
+    s->cur_file_info_internal = cur_file_info_internalSaved;
     return err;
 }
 
@@ -1041,12 +1056,12 @@ extern int ZEXPORT unzOpenCurrentFile3 (file, method, level, raw, password)
     file_in_zip_read_info_s* pfile_in_zip_read_info;
     uLong offset_local_extrafield;  /* offset of the local extra field */
     uInt  size_local_extrafield;    /* size of the local extra field */
-    #ifndef NOUNCRPYT
+#    ifndef NOUNCRYPT
     char source[12];
-    #else
+#    else
     if (password != NULL)
         return UNZ_PARAMERROR;
-    #endif
+#    endif
 
     if (file==NULL)
         return UNZ_PARAMERROR;
@@ -1114,6 +1129,8 @@ extern int ZEXPORT unzOpenCurrentFile3 (file, method, level, raw, password)
       pfile_in_zip_read_info->stream.zalloc = (alloc_func)0;
       pfile_in_zip_read_info->stream.zfree = (free_func)0;
       pfile_in_zip_read_info->stream.opaque = (voidpf)0;
+      pfile_in_zip_read_info->stream.next_in = (voidpf)0;
+      pfile_in_zip_read_info->stream.avail_in = 0;
 
       err=inflateInit2(&pfile_in_zip_read_info->stream, -MAX_WBITS);
       if (err == Z_OK)
@@ -1142,7 +1159,7 @@ extern int ZEXPORT unzOpenCurrentFile3 (file, method, level, raw, password)
 
     s->pfile_in_zip_read = pfile_in_zip_read_info;
 
-    #ifndef NOUNCRPYT
+#    ifndef NOUNCRYPT
     if (password != NULL)
     {
         int i;
@@ -1162,7 +1179,7 @@ extern int ZEXPORT unzOpenCurrentFile3 (file, method, level, raw, password)
         s->pfile_in_zip_read->pos_in_zipfile+=12;
         s->encrypted=1;
     }
-    #endif
+#    endif
 
 
     return UNZ_OK;
@@ -1254,7 +1271,7 @@ extern int ZEXPORT unzReadCurrentFile  (file, buf, len)
                 return UNZ_ERRNO;
 
 
-            #ifndef NOUNCRPYT
+#            ifndef NOUNCRYPT
             if(s->encrypted)
             {
                 uInt i;
@@ -1263,7 +1280,7 @@ extern int ZEXPORT unzReadCurrentFile  (file, buf, len)
                       zdecode(s->keys,s->pcrc_32_tab,
                               pfile_in_zip_read_info->read_buffer[i]);
             }
-            #endif
+#            endif
 
 
             pfile_in_zip_read_info->pos_in_zipfile += uReadThis;

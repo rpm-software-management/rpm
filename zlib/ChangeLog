@@ -1,5 +1,177 @@
 
                 ChangeLog file for zlib
+
+Changes in 1.2.1.1 (9 January 2004)
+- Updated email address in README
+- Several FAQ updates
+- Fixed a big fat bug in inftrees.c that prevented decoding valid
+  dynamic blocks with only literals and no distance codes.
+- Add a note to puff.c on no distance codes case.
+
+Changes in 1.2.1 (17 November 2003)
+- Remove a tab in contrib/gzappend/gzappend.c
+- Update some interfaces in contrib for new zlib functions
+- Update zlib version number in some contrib entries
+- Add Windows CE definition for ptrdiff_t in zutil.h [Mai, Truta]
+- Support shared libraries on Hurd and KFreeBSD [Brown]
+- Fix error in NO_DIVIDE option of adler32.c
+
+Changes in 1.2.0.8 (4 November 2003)
+- Update version in contrib/delphi/ZLib.pas and contrib/pascal/zlibpas.pas
+- Add experimental NO_DIVIDE #define in adler32.c
+    - Possibly faster on some processors (let me know if it is)
+- Correct Z_BLOCK to not return on first inflate call if no wrap
+- Fix strm->data_type on inflate() return to correctly indicate EOB
+- Add deflatePrime() function for appending in the middle of a byte
+- Add contrib/gzappend for an example of appending to a stream
+- Update win32/DLL_FAQ.txt [Truta]
+- Delete Turbo C comment in README [Truta]
+- Improve some indentation in zconf.h [Truta]
+- Fix infinite loop on bad input in configure script [Church]
+- Fix gzeof() for concatenated gzip files [Johnson]
+- Add example to contrib/visual-basic.txt [Michael B.]
+- Add -p to mkdir's in Makefile.in [vda]
+- Fix configure to properly detect presence or lack of printf functions
+- Add AS400 support [Monnerat]
+- Add a little Cygwin support [Wilson]
+
+Changes in 1.2.0.7 (21 September 2003)
+- Correct some debug formats in contrib/infback9
+- Cast a type in a debug statement in trees.c
+- Change search and replace delimiter in configure from % to # [Beebe]
+- Update contrib/untgz to 0.2 with various fixes [Truta]
+- Add build support for Amiga [Nikl]
+- Remove some directories in old that have been updated to 1.2
+- Add dylib building for Mac OS X in configure and Makefile.in
+- Remove old distribution stuff from Makefile
+- Update README to point to DLL_FAQ.txt, and add comment on Mac OS X
+- Update links in README
+
+Changes in 1.2.0.6 (13 September 2003)
+- Minor FAQ updates
+- Update contrib/minizip to 1.00 [Vollant]
+- Remove test of gz functions in example.c when GZ_COMPRESS defined [Truta]
+- Update POSTINC comment for 68060 [Nikl]
+- Add contrib/infback9 with deflate64 decoding (unsupported)
+- For MVS define NO_vsnprintf and undefine FAR [van Burik]
+- Add pragma for fdopen on MVS [van Burik]
+
+Changes in 1.2.0.5 (8 September 2003)
+- Add OF to inflateBackEnd() declaration in zlib.h
+- Remember start when using gzdopen in the middle of a file
+- Use internal off_t counters in gz* functions to properly handle seeks
+- Perform more rigorous check for distance-too-far in inffast.c
+- Add Z_BLOCK flush option to return from inflate at block boundary
+- Set strm->data_type on return from inflate
+    - Indicate bits unused, if at block boundary, and if in last block
+- Replace size_t with ptrdiff_t in crc32.c, and check for correct size
+- Add condition so old NO_DEFLATE define still works for compatibility
+- FAQ update regarding the Windows DLL [Truta]
+- INDEX update: add qnx entry, remove aix entry [Truta]
+- Install zlib.3 into mandir [Wilson]
+- Move contrib/zlib_dll_FAQ.txt to win32/DLL_FAQ.txt; update [Truta]
+- Adapt the zlib interface to the new DLL convention guidelines [Truta]
+- Introduce ZLIB_WINAPI macro to allow the export of functions using
+  the WINAPI calling convention, for Visual Basic [Vollant, Truta]
+- Update msdos and win32 scripts and makefiles [Truta]
+- Export symbols by name, not by ordinal, in win32/zlib.def [Truta]
+- Add contrib/ada [Anisimkov]
+- Move asm files from contrib/vstudio/vc70_32 to contrib/asm386 [Truta]
+- Rename contrib/asm386 to contrib/masmx86 [Truta, Vollant]
+- Add contrib/masm686 [Truta]
+- Fix offsets in contrib/inflate86 and contrib/masmx86/inffas32.asm
+  [Truta, Vollant]
+- Update contrib/delphi; rename to contrib/pascal; add example [Truta]
+- Remove contrib/delphi2; add a new contrib/delphi [Truta]
+- Avoid inclusion of the nonstandard <memory.h> in contrib/iostream,
+  and fix some method prototypes [Truta]
+- Fix the ZCR_SEED2 constant to avoid warnings in contrib/minizip
+  [Truta]
+- Avoid the use of backslash (\) in contrib/minizip [Vollant]
+- Fix file time handling in contrib/untgz; update makefiles [Truta]
+- Update contrib/vstudio/vc70_32 to comply with the new DLL guidelines
+  [Vollant]
+- Remove contrib/vstudio/vc15_16 [Vollant]
+- Rename contrib/vstudio/vc70_32 to contrib/vstudio/vc7 [Truta]
+- Update README.contrib [Truta]
+- Invert the assignment order of match_head and s->prev[...] in
+  INSERT_STRING [Truta]
+- Compare TOO_FAR with 32767 instead of 32768, to avoid 16-bit warnings
+  [Truta]
+- Compare function pointers with 0, not with NULL or Z_NULL [Truta]
+- Fix prototype of syncsearch in inflate.c [Truta]
+- Introduce ASMINF macro to be enabled when using an ASM implementation
+  of inflate_fast [Truta]
+- Change NO_DEFLATE to NO_GZCOMPRESS [Truta]
+- Modify test_gzio in example.c to take a single file name as a
+  parameter [Truta]
+- Exit the example.c program if gzopen fails [Truta]
+- Add type casts around strlen in example.c [Truta]
+- Remove casting to sizeof in minigzip.c; give a proper type
+  to the variable compared with SUFFIX_LEN [Truta]
+- Update definitions of STDC and STDC99 in zconf.h [Truta]
+- Synchronize zconf.h with the new Windows DLL interface [Truta]
+- Use SYS16BIT instead of __32BIT__ to distinguish between
+  16- and 32-bit platforms [Truta]
+- Use far memory allocators in small 16-bit memory models for
+  Turbo C [Truta]
+- Add info about the use of ASMV, ASMINF and ZLIB_WINAPI in
+  zlibCompileFlags [Truta]
+- Cygwin has vsnprintf [Wilson]
+- In Windows16, OS_CODE is 0, as in MSDOS [Truta]
+- In Cygwin, OS_CODE is 3 (Unix), not 11 (Windows32) [Wilson]
+
+Changes in 1.2.0.4 (10 August 2003)
+- Minor FAQ updates
+- Be more strict when checking inflateInit2's windowBits parameter
+- Change NO_GUNZIP compile option to NO_GZIP to cover deflate as well
+- Add gzip wrapper option to deflateInit2 using windowBits
+- Add updated QNX rule in configure and qnx directory [Bonnefoy]
+- Make inflate distance-too-far checks more rigorous
+- Clean up FAR usage in inflate
+- Add casting to sizeof() in gzio.c and minigzip.c
+
+Changes in 1.2.0.3 (19 July 2003)
+- Fix silly error in gzungetc() implementation [Vollant]
+- Update contrib/minizip and contrib/vstudio [Vollant]
+- Fix printf format in example.c
+- Correct cdecl support in zconf.in.h [Anisimkov]
+- Minor FAQ updates
+
+Changes in 1.2.0.2 (13 July 2003)
+- Add ZLIB_VERNUM in zlib.h for numerical preprocessor comparisons
+- Attempt to avoid warnings in crc32.c for pointer-int conversion
+- Add AIX to configure, remove aix directory [Bakker]
+- Add some casts to minigzip.c
+- Improve checking after insecure sprintf() or vsprintf() calls
+- Remove #elif's from crc32.c
+- Change leave label to inf_leave in inflate.c and infback.c to avoid
+  library conflicts
+- Remove inflate gzip decoding by default--only enable gzip decoding by
+  special request for stricter backward compatibility
+- Add zlibCompileFlags() function to return compilation information
+- More typecasting in deflate.c to avoid warnings
+- Remove leading underscore from _Capital #defines [Truta]
+- Fix configure to link shared library when testing
+- Add some Windows CE target adjustments [Mai]
+- Remove #define ZLIB_DLL in zconf.h [Vollant]
+- Add zlib.3 [Rodgers]
+- Update RFC URL in deflate.c and algorithm.txt [Mai]
+- Add zlib_dll_FAQ.txt to contrib [Truta]
+- Add UL to some constants [Truta]
+- Update minizip and vstudio [Vollant]
+- Remove vestigial NEED_DUMMY_RETURN from zconf.in.h
+- Expand use of NO_DUMMY_DECL to avoid all dummy structures
+- Added iostream3 to contrib [Schwardt]
+- Replace rewind() with fseek() for WinCE [Truta]
+- Improve setting of zlib format compression level flags
+    - Report 0 for huffman and rle strategies and for level == 0 or 1
+    - Report 2 only for level == 6
+- Only deal with 64K limit when necessary at compile time [Truta]
+- Allow TOO_FAR check to be turned off at compile time [Truta]
+- Add gzclearerr() function [Souza]
+- Add gzungetc() function
+
 Changes in 1.2.0.1 (17 March 2003)
 - Add Z_RLE strategy for run-length encoding [Truta]
     - When Z_RLE requested, restrict matches to distance one
@@ -12,7 +184,7 @@ Changes in 1.2.0.1 (17 March 2003)
     - Include additional header file on VMS for off_t typedef
 - Try to use _vsnprintf where it supplants vsprintf [Vollant]
 - Add some casts in inffast.c
-- Enchance comments in zlib.h on what happens if the gzprintf() tries to
+- Enchance comments in zlib.h on what happens if gzprintf() tries to
   write more than 4095 bytes before compression
 - Remove unused state from inflateBackEnd()
 - Remove exit(0) from minigzip.c, example.c
@@ -318,7 +490,7 @@ Changes in 1.0.5 (3 Jan 98)
 - Eliminate memory leaks on error conditions in inflate
 - Removed some vestigial code in inflate
 - Update web address in README
-  
+
 Changes in 1.0.4 (24 Jul 96)
 - In very rare conditions, deflate(s, Z_FINISH) could fail to produce an EOF
   bit, so the decompressor could decompress all the correct data but went

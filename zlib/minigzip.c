@@ -1,7 +1,6 @@
 /* minigzip.c -- simulate gzip using the zlib compression library
  * Copyright (C) 1995-2002 Jean-loup Gailly.
- * Adapted for Z_RLE by Cosmin Truta, 2003.
- * For conditions of distribution and use, see copyright notice in zlib.h 
+ * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 /*
@@ -14,7 +13,7 @@
  * or in pipe mode.
  */
 
-/* @(#) $Id: minigzip.c,v 1.5 2002/03/17 15:46:23 jbj Exp $ */
+/* @(#) $Id$ */
 
 #include <stdio.h>
 #include "zlib.h"
@@ -32,7 +31,7 @@
 #  include <sys/stat.h>
 #endif
 
-#if defined(MSDOS) || defined(OS2) || defined(WIN32)
+#if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
 #  include <fcntl.h>
 #  include <io.h>
 #  define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
@@ -87,7 +86,8 @@ int  main             OF((int argc, char *argv[]));
 /* ===========================================================================
  * Display error message and exit
  */
-void error(const char * msg)
+void error(msg)
+    const char *msg;
 {
     fprintf(stderr, "%s: %s\n", prog, msg);
     exit(1);
@@ -97,7 +97,9 @@ void error(const char * msg)
  * Compress input to output then close both files.
  */
 
-void gz_compress(FILE * in, gzFile out)
+void gz_compress(in, out)
+    FILE   *in;
+    gzFile out;
 {
     local char buf[BUFLEN];
     int len;
@@ -110,7 +112,7 @@ void gz_compress(FILE * in, gzFile out)
     if (gz_compress_mmap(in, out) == Z_OK) return;
 #endif
     for (;;) {
-        len = fread(buf, 1, sizeof(buf), in);
+        len = (int)fread(buf, 1, sizeof(buf), in);
         if (ferror(in)) {
             perror("fread");
             exit(1);
@@ -128,7 +130,9 @@ void gz_compress(FILE * in, gzFile out)
 /* Try compressing the input file at once using mmap. Return Z_OK if
  * if success, Z_ERRNO otherwise.
  */
-int gz_compress_mmap(FILE * in, gzFile out)
+int gz_compress_mmap(in, out)
+    FILE   *in;
+    gzFile out;
 {
     int len;
     int err;
@@ -143,7 +147,7 @@ int gz_compress_mmap(FILE * in, gzFile out)
     if (buf_len <= 0) return Z_ERRNO;
 
     /* Now do the actual mmap: */
-    buf = mmap((caddr_t) 0, buf_len, PROT_READ, MAP_SHARED, ifd, (off_t)0); 
+    buf = mmap((caddr_t) 0, buf_len, PROT_READ, MAP_SHARED, ifd, (off_t)0);
     if (buf == (caddr_t)(-1)) return Z_ERRNO;
 
     /* Compress the whole file at once: */
@@ -161,7 +165,9 @@ int gz_compress_mmap(FILE * in, gzFile out)
 /* ===========================================================================
  * Uncompress input to output then close both files.
  */
-void gz_uncompress(gzFile in, FILE * out)
+void gz_uncompress(in, out)
+    gzFile in;
+    FILE   *out;
 {
     local char buf[BUFLEN];
     int len;
@@ -173,8 +179,8 @@ void gz_uncompress(gzFile in, FILE * out)
         if (len == 0) break;
 
         if ((int)fwrite(buf, 1, (unsigned)len, out) != len) {
-	    error("failed fwrite");
-	}
+            error("failed fwrite");
+        }
     }
     if (fclose(out)) error("failed fclose");
 
@@ -186,7 +192,9 @@ void gz_uncompress(gzFile in, FILE * out)
  * Compress the given file: create a corresponding .gz file and remove the
  * original.
  */
-void file_compress(char * file, char * mode)
+void file_compress(file, mode)
+    char  *file;
+    char  *mode;
 {
     local char outfile[MAX_NAME_LEN];
     FILE  *in;
@@ -214,13 +222,14 @@ void file_compress(char * file, char * mode)
 /* ===========================================================================
  * Uncompress the given file and remove the original.
  */
-void file_uncompress(char * file)
+void file_uncompress(file)
+    char  *file;
 {
     local char buf[MAX_NAME_LEN];
     char *infile, *outfile;
     FILE  *out;
     gzFile in;
-    int len = strlen(file);
+    uInt len = (uInt)strlen(file);
 
     strcpy(buf, file);
 
@@ -259,7 +268,9 @@ void file_uncompress(char * file)
  *   -1 to -9 : compression level
  */
 
-int main(int argc, char * argv[])
+int main(argc, argv)
+    int argc;
+    char *argv[];
 {
     int uncompr = 0;
     gzFile file;
@@ -272,18 +283,18 @@ int main(int argc, char * argv[])
 
     while (argc > 0) {
       if (strcmp(*argv, "-d") == 0)
-	uncompr = 1;
+        uncompr = 1;
       else if (strcmp(*argv, "-f") == 0)
-	outmode[3] = 'f';
+        outmode[3] = 'f';
       else if (strcmp(*argv, "-h") == 0)
-	outmode[3] = 'h';
+        outmode[3] = 'h';
       else if (strcmp(*argv, "-r") == 0)
-	outmode[3] = 'R';
+        outmode[3] = 'R';
       else if ((*argv)[0] == '-' && (*argv)[1] >= '1' && (*argv)[1] <= '9' &&
-	       (*argv)[2] == 0)
-	outmode[2] = (*argv)[1];
+               (*argv)[2] == 0)
+        outmode[2] = (*argv)[1];
       else
-	break;
+        break;
       argc--, argv++;
     }
     if (argc == 0) {
@@ -307,6 +318,5 @@ int main(int argc, char * argv[])
             }
         } while (argv++, --argc);
     }
-    exit(0);
-    return 0; /* to avoid warning */
+    return 0;
 }

@@ -120,13 +120,18 @@ int check_exist_file(filename)
 
 void do_banner()
 {
-    printf("MiniZip 0.15, demo of zLib + Zip package written by Gilles Vollant\n");
+    printf("MiniZip 1.00, demo of zLib + Zip package written by Gilles Vollant\n");
     printf("more info at http://www.winimage.com/zLibDll/unzip.html\n\n");
 }
 
 void do_help()
 {
-    printf("Usage : minizip [-o] file.zip [files_to_add]\n\n") ;
+    printf("Usage : minizip [-o] [-a] [-0 to -9] [-p password] file.zip [files_to_add]\n\n" \
+           "  -o  Overwrite existing file.zip\n" \
+           "  -a  Append to existing file.zip\n" \
+           "  -0  Store only\n" \
+           "  -1  Compress faster\n" \
+           "  -9  Compress better\n\n");
 }
 
 /* calculate the CRC32 of a file,
@@ -282,13 +287,13 @@ int main(argc,argv)
     {
         zipFile zf;
         int errclose;
-        #ifdef USEWIN32IOAPI
+#        ifdef USEWIN32IOAPI
         zlib_filefunc_def ffunc;
         fill_win32_filefunc(&ffunc);
         zf = zipOpen2(filename_try,(opt_overwrite==2) ? 2 : 0,NULL,&ffunc);
-        #else
+#        else
         zf = zipOpen(filename_try,(opt_overwrite==2) ? 2 : 0);
-        #endif
+#        endif
 
         if (zf == NULL)
         {

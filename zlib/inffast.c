@@ -1,6 +1,6 @@
 /* inffast.c -- fast decoding
  * Copyright (C) 1995-2003 Mark Adler
- * For conditions of distribution and use, see copyright notice in zlib.h 
+ * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 #include "zutil.h"
@@ -8,7 +8,7 @@
 #include "inflate.h"
 #include "inffast.h"
 
-/*@access z_streamp @*/
+#ifndef ASMINF
 
 /* Allow machine dependent optimization for post-increment or pre-increment.
    Based on testing to date,
@@ -19,6 +19,7 @@
    - none
    No measurable difference:
    - Pentium III (Anderson)
+   - 68060 (Nikl)
  */
 #ifdef POSTINC
 #  define OFF 0
@@ -63,29 +64,32 @@
       requires strm->avail_out >= 258 for each loop to avoid checking for
       output space.
  */
-void inflate_fast(z_streamp strm, unsigned start)
+void inflate_fast(strm, start)
+z_streamp strm;
+unsigned start;         /* inflate()'s starting value for strm->avail_out */
 {
     struct inflate_state FAR *state;
-    unsigned char FAR *in;	/* local strm->next_in */
-    unsigned char FAR *last;	/* while in < last, enough input available */
-    unsigned char FAR *out;	/* local strm->next_out */
-    unsigned char FAR *beg;	/* inflate()'s initial strm->next_out */
-    unsigned char FAR *end;	/* while out < end, enough space available */
-    unsigned wsize;		/* window size or zero if not using window */
-    unsigned write;		/* window write index */
-    unsigned char FAR *window;	/* allocated sliding window, if wsize != 0 */
-    unsigned long hold;		/* local strm->hold */
-    unsigned bits;		/* local strm->bits */
-    code const FAR *lcode;	/* local strm->lencode */
-    code const FAR *dcode;	/* local strm->distcode */
-    unsigned lmask;		/* mask for first level of length codes */
-    unsigned dmask;		/* mask for first level of distance codes */
-    code this;			/* retrieved table entry */
-    unsigned op;		/* code bits, operation, extra bits, or */
+    unsigned char FAR *in;      /* local strm->next_in */
+    unsigned char FAR *last;    /* while in < last, enough input available */
+    unsigned char FAR *out;     /* local strm->next_out */
+    unsigned char FAR *beg;     /* inflate()'s initial strm->next_out */
+    unsigned char FAR *end;     /* while out < end, enough space available */
+    unsigned wsize;             /* window size or zero if not using window */
+    unsigned whave;             /* valid bytes in the window */
+    unsigned write;             /* window write index */
+    unsigned char FAR *window;  /* allocated sliding window, if wsize != 0 */
+    unsigned long hold;         /* local strm->hold */
+    unsigned bits;              /* local strm->bits */
+    code const FAR *lcode;      /* local strm->lencode */
+    code const FAR *dcode;      /* local strm->distcode */
+    unsigned lmask;             /* mask for first level of length codes */
+    unsigned dmask;             /* mask for first level of distance codes */
+    code this;                  /* retrieved table entry */
+    unsigned op;                /* code bits, operation, extra bits, or */
                                 /*  window position, window bytes to copy */
-    unsigned len;		/* match length, unused bytes */
-    unsigned dist;		/* match distance */
-    unsigned char FAR *from;	/* where to copy match from */
+    unsigned len;               /* match length, unused bytes */
+    unsigned dist;              /* match distance */
+    unsigned char FAR *from;    /* where to copy match from */
 
     /* copy state to local variables */
     state = (struct inflate_state FAR *)strm->state;
@@ -95,6 +99,7 @@ void inflate_fast(z_streamp strm, unsigned start)
     beg = out - (start - strm->avail_out);
     end = out + (strm->avail_out - 257);
     wsize = state->wsize;
+    whave = state->whave;
     write = state->write;
     window = state->window;
     hold = state->hold;
@@ -119,15 +124,15 @@ void inflate_fast(z_streamp strm, unsigned start)
         hold >>= op;
         bits -= op;
         op = (unsigned)(this.op);
-        if (op == 0) {				/* literal */
+        if (op == 0) {                          /* literal */
             Tracevv((stderr, this.val >= 0x20 && this.val < 0x7f ?
                     "inflate:         literal '%c'\n" :
                     "inflate:         literal 0x%02x\n", this.val));
             PUP(out) = (unsigned char)(this.val);
         }
-        else if (op & 16) {			/* length base */
+        else if (op & 16) {                     /* length base */
             len = (unsigned)(this.val);
-            op &= 15;				/* number of extra bits */
+            op &= 15;                           /* number of extra bits */
             if (op) {
                 if (bits < op) {
                     hold += (unsigned long)(PUP(in)) << bits;
@@ -150,9 +155,9 @@ void inflate_fast(z_streamp strm, unsigned start)
             hold >>= op;
             bits -= op;
             op = (unsigned)(this.op);
-            if (op & 16) {			/* distance base */
+            if (op & 16) {                      /* distance base */
                 dist = (unsigned)(this.val);
-                op &= 15;			/* number of extra bits */
+                op &= 15;                       /* number of extra bits */
                 if (bits < op) {
                     hold += (unsigned long)(PUP(in)) << bits;
                     bits += 8;
@@ -165,52 +170,52 @@ void inflate_fast(z_streamp strm, unsigned start)
                 hold >>= op;
                 bits -= op;
                 Tracevv((stderr, "inflate:         distance %u\n", dist));
-                op = (unsigned)(out - beg);	/* max distance in output */
-                if (dist > op) {		/* see if copy from window */
-                    if (dist > wsize) {
+                op = (unsigned)(out - beg);     /* max distance in output */
+                if (dist > op) {                /* see if copy from window */
+                    op = dist - op;             /* distance back in window */
+                    if (op > whave) {
                         strm->msg = (char *)"invalid distance too far back";
                         state->mode = BAD;
                         break;
                     }
                     from = window - OFF;
-                    op = dist - op;		/* distance back in window */
-                    if (write == 0) {		/* very common case */
+                    if (write == 0) {           /* very common case */
                         from += wsize - op;
-                        if (op < len) {		/* some from window */
+                        if (op < len) {         /* some from window */
                             len -= op;
                             do {
                                 PUP(out) = PUP(from);
                             } while (--op);
-                            from = out - dist;	/* rest from output */
+                            from = out - dist;  /* rest from output */
                         }
                     }
-                    else if (write < op) {	/* wrap around window */
+                    else if (write < op) {      /* wrap around window */
                         from += wsize + write - op;
                         op -= write;
-                        if (op < len) {		/* some from end of window */
+                        if (op < len) {         /* some from end of window */
                             len -= op;
                             do {
                                 PUP(out) = PUP(from);
                             } while (--op);
                             from = window - OFF;
-                            if (write < len) {	/* some from start of window */
+                            if (write < len) {  /* some from start of window */
                                 op = write;
                                 len -= op;
                                 do {
                                     PUP(out) = PUP(from);
                                 } while (--op);
-                                from = out - dist;	/* rest from output */
+                                from = out - dist;      /* rest from output */
                             }
                         }
                     }
-                    else {			/* contiguous in window */
+                    else {                      /* contiguous in window */
                         from += write - op;
-                        if (op < len) {		/* some from window */
+                        if (op < len) {         /* some from window */
                             len -= op;
                             do {
                                 PUP(out) = PUP(from);
                             } while (--op);
-                            from = out - dist;	/* rest from output */
+                            from = out - dist;  /* rest from output */
                         }
                     }
                     while (len > 2) {
@@ -226,8 +231,8 @@ void inflate_fast(z_streamp strm, unsigned start)
                     }
                 }
                 else {
-                    from = out - dist;		/* copy direct from output */
-                    do {			/* minimum length is three */
+                    from = out - dist;          /* copy direct from output */
+                    do {                        /* minimum length is three */
                         PUP(out) = PUP(from);
                         PUP(out) = PUP(from);
                         PUP(out) = PUP(from);
@@ -240,7 +245,7 @@ void inflate_fast(z_streamp strm, unsigned start)
                     }
                 }
             }
-            else if ((op & 64) == 0) {		/* 2nd level distance code */
+            else if ((op & 64) == 0) {          /* 2nd level distance code */
                 this = dcode[this.val + (hold & ((1U << op) - 1))];
                 goto dodist;
             }
@@ -250,11 +255,11 @@ void inflate_fast(z_streamp strm, unsigned start)
                 break;
             }
         }
-        else if ((op & 64) == 0) {		/* 2nd level length code */
+        else if ((op & 64) == 0) {              /* 2nd level length code */
             this = lcode[this.val + (hold & ((1U << op) - 1))];
             goto dolen;
         }
-        else if (op & 32) {			/* end-of-block */
+        else if (op & 32) {                     /* end-of-block */
             Tracevv((stderr, "inflate:         end of block\n"));
             state->mode = TYPE;
             break;
@@ -296,3 +301,5 @@ void inflate_fast(z_streamp strm, unsigned start)
    - Larger unrolled copy loops (three is about right)
    - Moving len -= 3 statement into middle of loop
  */
+
+#endif /* !ASMINF */

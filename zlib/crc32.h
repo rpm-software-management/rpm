@@ -2,7 +2,6 @@
  * Generated automatically by crc32.c
  */
 
-/*@unchecked@*/
 local const unsigned long FAR crc_table[TBLS][256] =
 {
   {

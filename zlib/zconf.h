@@ -1,157 +1,125 @@
-/*@-constuse -typeuse@*/
 /* zconf.h -- configuration of the zlib compression library
  * Copyright (C) 1995-2003 Jean-loup Gailly.
- * For conditions of distribution and use, see copyright notice in zlib.h 
+ * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* @(#) $Id: zconf.h,v 1.10 2003/05/18 18:33:40 jbj Exp $ */
+/* @(#) $Id$ */
 
-#ifndef _ZCONF_H
-#define _ZCONF_H
+#ifndef ZCONF_H
+#define ZCONF_H
 
 /*
  * If you *really* need a unique prefix for all types and library functions,
  * compile with -DZ_PREFIX. The "standard" zlib should be compiled without it.
  */
-#define	Z_PREFIX
 #ifdef Z_PREFIX
-#  define deflateInit_	rpmz_deflateInit_
-#  define deflate	rpmz_deflate
-#  define deflateEnd	rpmz_deflateEnd
-#  define inflateInit_ 	rpmz_inflateInit_
-#  define inflate	rpmz_inflate
-#  define inflateEnd	rpmz_inflateEnd
-#  define deflateInit2_	rpmz_deflateInit2_
-#  define deflateSetDictionary rpmz_deflateSetDictionary
-#  define deflateCopy	rpmz_deflateCopy
-#  define deflateReset	rpmz_deflateReset
-#  define deflateParams	rpmz_deflateParams
-#  define deflateBound	rpmz_deflateBound
-#  define inflateInit2_	rpmz_inflateInit2_
-#  define inflateSetDictionary rpmz_inflateSetDictionary
-#  define inflateSync	rpmz_inflateSync
-#  define inflateSyncPoint rpmz_inflateSyncPoint
-#  define inflateCopy	rpmz_inflateCopy
-#  define inflateReset	rpmz_inflateReset
-#  define compress	rpmz_compress
-#  define compress2	rpmz_compress2
-#  define compressBound	rpmz_compressBound
-#  define uncompress	rpmz_uncompress
-#  define adler32	rpmz_adler32
-#  define crc32		rpmz_crc32
-#  define get_crc_table rpmz_get_crc_table
+#  define deflateInit_  z_deflateInit_
+#  define deflate       z_deflate
+#  define deflateEnd    z_deflateEnd
+#  define inflateInit_  z_inflateInit_
+#  define inflate       z_inflate
+#  define inflateEnd    z_inflateEnd
+#  define deflateInit2_ z_deflateInit2_
+#  define deflateSetDictionary z_deflateSetDictionary
+#  define deflateCopy   z_deflateCopy
+#  define deflateReset  z_deflateReset
+#  define deflatePrime  z_deflatePrime
+#  define deflateParams z_deflateParams
+#  define deflateBound  z_deflateBound
+#  define inflateInit2_ z_inflateInit2_
+#  define inflateSetDictionary z_inflateSetDictionary
+#  define inflateSync   z_inflateSync
+#  define inflateSyncPoint z_inflateSyncPoint
+#  define inflateCopy   z_inflateCopy
+#  define inflateReset  z_inflateReset
+#  define compress      z_compress
+#  define compress2     z_compress2
+#  define compressBound z_compressBound
+#  define uncompress    z_uncompress
+#  define adler32       z_adler32
+#  define crc32         z_crc32
+#  define get_crc_table z_get_crc_table
 
-#  define Byte		rpmz_Byte
-#  define uInt		rpmz_uInt
-#  define uLong		rpmz_uLong
-#  define Bytef	        rpmz_Bytef
-#  define charf		rpmz_charf
-#  define intf		rpmz_intf
-#  define uIntf		rpmz_uIntf
-#  define uLongf	rpmz_uLongf
-#  define voidpf	rpmz_voidpf
-#  define voidp		rpmz_voidp
-
-#  define gzclose	rpmz_gzclose
-#  define gzdopen	rpmz_gzdopen
-#  define gzeof		rpmz_gzeof
-#  define gzerror	rpmz_gzerror
-#  define gzflush	rpmz_gzflush
-#  define gzgetc	rpmz_gzgetc
-#  define gzgets	rpmz_gzgets
-#  define gz_magic	rpmz_gz_magic
-#  define gzopen	rpmz_gzopen
-#  define gz_open	rpmz_gz_open
-#  define gzprintf	rpmz_gzprintf
-#  define gzputc	rpmz_gzputc
-#  define gzputs	rpmz_gzputs
-#  define gzread	rpmz_gzread
-#  define gzrewind	rpmz_gzrewind
-#  define gzseek	rpmz_gzseek
-#  define gzsetparams	rpmz_gzsetparams
-#  define gztell	rpmz_gztell
-#  define gzwrite	rpmz_gzwrite
-
-#  define inflateBack		rpmz_inflateBack
-#  define inflateBackEnd	rpmz_inflateBackEnd
-#  define inflateBackInit_	rpmz_inflateBackInit_
-#  define inflate_fast		rpmz_inflate_fast
-#  define inflate_table		rpmz_inflate_table
-#  define _tr_align		rpmz__tr_align
-#  define _tr_flush_block	rpmz__tr_flush_block
-#  define _tr_init		rpmz__tr_init
-#  define _tr_stored_block	rpmz__tr_stored_block
-#  define _tr_tally		rpmz__tr_tally
-#  define zcalloc		rpmz_zcalloc
-#  define zcfree		rpmz_zcfree
-#  define z_errmsg		rpmz_z_errmsg
-#  define zError		rpmz_zError
-#  define zlibVersion		rpmz_zlibVersion
-
-#  define deflate_copyright	rpmz_deflate_copyright
-#  define inflate_copyright	rpmz_inflate_copyright
-#  define _dist_code		rpmz__dist_code
-#  define _length_code		rpmz__length_code
-
+#  define Byte          z_Byte
+#  define uInt          z_uInt
+#  define uLong         z_uLong
+#  define Bytef         z_Bytef
+#  define charf         z_charf
+#  define intf          z_intf
+#  define uIntf         z_uIntf
+#  define uLongf        z_uLongf
+#  define voidpf        z_voidpf
+#  define voidp         z_voidp
 #endif
 
+#if defined(__MSDOS__) && !defined(MSDOS)
+#  define MSDOS
+#endif
+#if (defined(OS_2) || defined(__OS2__)) && !defined(OS2)
+#  define OS2
+#endif
+#if defined(_WINDOWS) && !defined(WINDOWS)
+#  define WINDOWS
+#endif
 #if (defined(_WIN32) || defined(__WIN32__)) && !defined(WIN32)
 #  define WIN32
 #endif
-#if defined(__GNUC__) || defined(WIN32) || defined(__386__) || defined(i386)
-#  ifndef __32BIT__
-#    define __32BIT__
+#if (defined(MSDOS) || defined(OS2) || defined(WINDOWS)) && !defined(WIN32)
+#  if !defined(__GNUC__) && !defined(__FLAT__) && !defined(__386__)
+#    ifndef SYS16BIT
+#      define SYS16BIT
+#    endif
 #  endif
-#endif
-#if defined(__MSDOS__) && !defined(MSDOS)
-#  define MSDOS
 #endif
 
 /*
  * Compile with -DMAXSEG_64K if the alloc function cannot allocate more
  * than 64k bytes at a time (needed on systems with 16-bit int).
  */
-#if defined(MSDOS) && !defined(__32BIT__)
+#ifdef SYS16BIT
 #  define MAXSEG_64K
 #endif
 #ifdef MSDOS
 #  define UNALIGNED_OK
 #endif
 
-#if (defined(MSDOS) || defined(_WINDOWS) || defined(WIN32))  && !defined(STDC)
+#ifdef __STDC_VERSION__
+#  ifndef STDC
+#    define STDC
+#  endif
+#  if __STDC_VERSION__ >= 199901L
+#    ifndef STDC99
+#      define STDC99
+#    endif
+#  endif
+#endif
+#if !defined(STDC) && (defined(__STDC__) || defined(__cplusplus))
 #  define STDC
 #endif
-#if defined(__STDC__) || defined(__cplusplus) || defined(__OS2__)
-#  ifndef STDC
-#    define STDC
-#  endif
+#if !defined(STDC) && (defined(__GNUC__) || defined(__BORLANDC__))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(MSDOS) || defined(WINDOWS) || defined(WIN32))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(OS2) || defined(__HOS_AIX__))
+#  define STDC
 #endif
 
-#if defined __HOS_AIX__
-#  ifndef STDC
-#    define STDC
-#  endif
+#if defined(__OS400__) && !defined(STDC)    /* iSeries (formerly AS/400). */
+#  define STDC
 #endif
 
 #ifndef STDC
 #  ifndef const /* cannot use !defined(STDC) && !defined(const) on Mac */
-#    define const	/* note: need a more gentle solution here */
+#    define const       /* note: need a more gentle solution here */
 #  endif
 #endif
 
 /* Some Mac compilers merge all .h files incorrectly: */
-#if defined(__MWERKS__) || defined(applec) ||defined(THINK_C) ||defined(__SC__)
+#if defined(__MWERKS__)||defined(applec)||defined(THINK_C)||defined(__SC__)
 #  define NO_DUMMY_DECL
 #endif
-
-/* Old Borland C incorrectly complains about missing returns: */
-#if defined(__BORLANDC__) && (__BORLANDC__ < 0x460)
-#  define NEED_DUMMY_RETURN
-#endif
-#if defined(__TURBOC__) && !defined(__BORLANDC__)
-#  define NEED_DUMMY_RETURN
-#endif
-
 
 /* Maximum value for memLevel in deflateInit2 */
 #ifndef MAX_MEM_LEVEL
@@ -187,7 +155,7 @@
                         /* Type declarations */
 
 #ifndef OF /* function prototypes */
-#  if defined(STDC) || defined(__LCLINT__)
+#  ifdef STDC
 #    define OF(args)  args
 #  else
 #    define OF(args)  ()
@@ -200,77 +168,84 @@
  * to define NO_MEMCPY in zutil.h.  If you don't need the mixed model,
  * just define FAR to be empty.
  */
-#if (defined(M_I86SM) || defined(M_I86MM)) && !defined(__32BIT__)
-   /* MSC small or medium model */
-#  define SMALL_MEDIUM
-#  ifdef _MSC_VER
-#    define FAR _far
-#  else
-#    define FAR far
-#  endif
-#endif
-#if defined(__BORLANDC__) && (defined(__SMALL__) || defined(__MEDIUM__))
-#  ifndef __32BIT__
+#ifdef SYS16BIT
+#  if defined(M_I86SM) || defined(M_I86MM)
+     /* MSC small or medium model */
 #    define SMALL_MEDIUM
-#    define FAR _far
+#    ifdef _MSC_VER
+#      define FAR _far
+#    else
+#      define FAR far
+#    endif
+#  endif
+#  if (defined(__SMALL__) || defined(__MEDIUM__))
+     /* Turbo C small or medium model */
+#    define SMALL_MEDIUM
+#    ifdef __BORLANDC__
+#      define FAR _far
+#    else
+#      define FAR far
+#    endif
 #  endif
 #endif
 
-#if defined(WIN32) && (!defined(ZLIB_WIN32_NODLL)) && (!defined(ZLIB_DLL))
-#  define ZLIB_DLL
-#endif
-
-/* Compile with -DZLIB_DLL for Windows DLL support */
-#if defined(ZLIB_DLL)
-#  if defined(_WINDOWS) || defined(WINDOWS) || defined(WIN32)
-#    ifndef WINAPIV
+#if defined(WINDOWS) || defined(WIN32)
+   /* If building or using zlib as a DLL, define ZLIB_DLL.
+    * This is not mandatory, but it offers a little performance increase.
+    */
+#  ifdef ZLIB_DLL
+#    if defined(WIN32) && (!defined(__BORLANDC__) || (__BORLANDC__ >= 0x500))
+#      ifdef ZLIB_INTERNAL
+#        define ZEXTERN extern __declspec(dllexport)
+#      else
+#        define ZEXTERN extern __declspec(dllimport)
+#      endif
+#    endif
+#  endif  /* ZLIB_DLL */
+   /* If building or using zlib with the WINAPI/WINAPIV calling convention,
+    * define ZLIB_WINAPI.
+    * Caution: the standard ZLIB1.DLL is NOT compiled using ZLIB_WINAPI.
+    */
+#  ifdef ZLIB_WINAPI
 #    ifdef FAR
 #      undef FAR
 #    endif
 #    include <windows.h>
-#    endif
+     /* No need for _export, use ZLIB.DEF instead. */
+     /* For complete Windows compatibility, use WINAPI, not __stdcall. */
+#    define ZEXPORT WINAPI
 #    ifdef WIN32
-#      define ZEXPORT  WINAPI
-#      define ZEXPORTVA  WINAPIV
+#      define ZEXPORTVA WINAPIV
 #    else
-#      define ZEXPORT  WINAPI _export
-#      define ZEXPORTVA  FAR _cdecl _export
-#    endif
-#  endif
-#  if defined (__BORLANDC__)
-#    if (__BORLANDC__ >= 0x0500) && defined (WIN32)
-#      include <windows.h>
-#      define ZEXPORT __declspec(dllexport) WINAPI
-#      define ZEXPORTVA __declspec(dllexport) WINAPIV
-#    else
-#      if defined (_Windows) && defined (__DLL__)
-#        define ZEXPORT _export
-#        define ZEXPORTVA _export
-#      endif
+#      define ZEXPORTVA FAR CDECL
 #    endif
 #  endif
 #endif
 
 #if defined (__BEOS__)
-#  if defined (ZLIB_DLL)
-#    define ZEXTERN extern __declspec(dllexport)
-#  else
-#    define ZEXTERN extern __declspec(dllimport)
+#  ifdef ZLIB_DLL
+#    ifdef ZLIB_INTERNAL
+#      define ZEXPORT   __declspec(dllexport)
+#      define ZEXPORTVA __declspec(dllexport)
+#    else
+#      define ZEXPORT   __declspec(dllimport)
+#      define ZEXPORTVA __declspec(dllimport)
+#    endif
 #  endif
 #endif
 
+#ifndef ZEXTERN
+#  define ZEXTERN extern
+#endif
 #ifndef ZEXPORT
 #  define ZEXPORT
 #endif
 #ifndef ZEXPORTVA
 #  define ZEXPORTVA
 #endif
-#ifndef ZEXTERN
-#  define ZEXTERN extern
-#endif
 
 #ifndef FAR
-#   define FAR
+#  define FAR
 #endif
 
 #if !defined(__MACTYPES__)
@@ -292,15 +267,15 @@ typedef uLong FAR uLongf;
 
 #ifdef STDC
    typedef void const *voidpc;
-   typedef void FAR *voidpf;
-   typedef void     *voidp;
+   typedef void FAR   *voidpf;
+   typedef void       *voidp;
 #else
    typedef Byte const *voidpc;
-   typedef Byte FAR *voidpf;
-   typedef Byte     *voidp;
+   typedef Byte FAR   *voidpf;
+   typedef Byte       *voidp;
 #endif
 
-#ifdef HAVE_UNISTD_H
+#if 0           /* HAVE_UNISTD_H -- this line is updated by ./configure */
 #  include <sys/types.h> /* for off_t */
 #  include <unistd.h>    /* for SEEK_* and off_t */
 #  ifdef VMS
@@ -315,6 +290,17 @@ typedef uLong FAR uLongf;
 #endif
 #ifndef z_off_t
 #  define  z_off_t long
+#endif
+
+#if defined(__OS400__)
+#define NO_vsnprintf
+#endif
+
+#if defined(__MVS__)
+#  define NO_vsnprintf
+#  ifdef FAR
+#    undef FAR
+#  endif
 #endif
 
 /* MVS linker does not support external names larger than 8 bytes */
@@ -334,5 +320,4 @@ typedef uLong FAR uLongf;
 #   pragma map(inflate_copyright,"INCOPY")
 #endif
 
-#endif /* _ZCONF_H */
-/*@=constuse =typeuse@*/
+#endif /* ZCONF_H */

@@ -5,8 +5,8 @@
 
 /* @(#) $Id$ */
 
-#ifndef _ZCONF_H
-#define _ZCONF_H
+#ifndef ZCONF_H
+#define ZCONF_H
 
 /*
  * If you *really* need a unique prefix for all types and library functions,
@@ -23,6 +23,7 @@
 #  define deflateSetDictionary z_deflateSetDictionary
 #  define deflateCopy   z_deflateCopy
 #  define deflateReset  z_deflateReset
+#  define deflatePrime  z_deflatePrime
 #  define deflateParams z_deflateParams
 #  define deflateBound  z_deflateBound
 #  define inflateInit2_ z_inflateInit2_
@@ -51,42 +52,62 @@
 #  define voidp         z_voidp
 #endif
 
+#if defined(__MSDOS__) && !defined(MSDOS)
+#  define MSDOS
+#endif
+#if (defined(OS_2) || defined(__OS2__)) && !defined(OS2)
+#  define OS2
+#endif
+#if defined(_WINDOWS) && !defined(WINDOWS)
+#  define WINDOWS
+#endif
 #if (defined(_WIN32) || defined(__WIN32__)) && !defined(WIN32)
 #  define WIN32
 #endif
-#if defined(__GNUC__) || defined(WIN32) || defined(__386__) || defined(i386)
-#  ifndef __32BIT__
-#    define __32BIT__
+#if (defined(MSDOS) || defined(OS2) || defined(WINDOWS)) && !defined(WIN32)
+#  if !defined(__GNUC__) && !defined(__FLAT__) && !defined(__386__)
+#    ifndef SYS16BIT
+#      define SYS16BIT
+#    endif
 #  endif
-#endif
-#if defined(__MSDOS__) && !defined(MSDOS)
-#  define MSDOS
 #endif
 
 /*
  * Compile with -DMAXSEG_64K if the alloc function cannot allocate more
  * than 64k bytes at a time (needed on systems with 16-bit int).
  */
-#if defined(MSDOS) && !defined(__32BIT__)
+#ifdef SYS16BIT
 #  define MAXSEG_64K
 #endif
 #ifdef MSDOS
 #  define UNALIGNED_OK
 #endif
 
-#if (defined(MSDOS) || defined(_WINDOWS) || defined(WIN32))  && !defined(STDC)
+#ifdef __STDC_VERSION__
+#  ifndef STDC
+#    define STDC
+#  endif
+#  if __STDC_VERSION__ >= 199901L
+#    ifndef STDC99
+#      define STDC99
+#    endif
+#  endif
+#endif
+#if !defined(STDC) && (defined(__STDC__) || defined(__cplusplus))
 #  define STDC
 #endif
-#if defined(__STDC__) || defined(__cplusplus) || defined(__OS2__)
-#  ifndef STDC
-#    define STDC
-#  endif
+#if !defined(STDC) && (defined(__GNUC__) || defined(__BORLANDC__))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(MSDOS) || defined(WINDOWS) || defined(WIN32))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(OS2) || defined(__HOS_AIX__))
+#  define STDC
 #endif
 
-#if defined __HOS_AIX__
-#  ifndef STDC
-#    define STDC
-#  endif
+#if defined(__OS400__) && !defined(STDC)    /* iSeries (formerly AS/400). */
+#  define STDC
 #endif
 
 #ifndef STDC
@@ -96,18 +117,9 @@
 #endif
 
 /* Some Mac compilers merge all .h files incorrectly: */
-#if defined(__MWERKS__) || defined(applec) ||defined(THINK_C) ||defined(__SC__)
+#if defined(__MWERKS__)||defined(applec)||defined(THINK_C)||defined(__SC__)
 #  define NO_DUMMY_DECL
 #endif
-
-/* Old Borland C incorrectly complains about missing returns: */
-#if defined(__BORLANDC__) && (__BORLANDC__ < 0x460)
-#  define NEED_DUMMY_RETURN
-#endif
-#if defined(__TURBOC__) && !defined(__BORLANDC__)
-#  define NEED_DUMMY_RETURN
-#endif
-
 
 /* Maximum value for memLevel in deflateInit2 */
 #ifndef MAX_MEM_LEVEL
@@ -156,77 +168,84 @@
  * to define NO_MEMCPY in zutil.h.  If you don't need the mixed model,
  * just define FAR to be empty.
  */
-#if (defined(M_I86SM) || defined(M_I86MM)) && !defined(__32BIT__)
-   /* MSC small or medium model */
-#  define SMALL_MEDIUM
-#  ifdef _MSC_VER
-#    define FAR _far
-#  else
-#    define FAR far
-#  endif
-#endif
-#if defined(__BORLANDC__) && (defined(__SMALL__) || defined(__MEDIUM__))
-#  ifndef __32BIT__
+#ifdef SYS16BIT
+#  if defined(M_I86SM) || defined(M_I86MM)
+     /* MSC small or medium model */
 #    define SMALL_MEDIUM
-#    define FAR _far
+#    ifdef _MSC_VER
+#      define FAR _far
+#    else
+#      define FAR far
+#    endif
+#  endif
+#  if (defined(__SMALL__) || defined(__MEDIUM__))
+     /* Turbo C small or medium model */
+#    define SMALL_MEDIUM
+#    ifdef __BORLANDC__
+#      define FAR _far
+#    else
+#      define FAR far
+#    endif
 #  endif
 #endif
 
-#if defined(WIN32) && (!defined(ZLIB_WIN32_NODLL)) && (!defined(ZLIB_DLL))
-#  define ZLIB_DLL
-#endif
-
-/* Compile with -DZLIB_DLL for Windows DLL support */
-#if defined(ZLIB_DLL)
-#  if defined(_WINDOWS) || defined(WINDOWS) || defined(WIN32)
-#    ifndef WINAPIV
-#      ifdef FAR
-#        undef FAR
+#if defined(WINDOWS) || defined(WIN32)
+   /* If building or using zlib as a DLL, define ZLIB_DLL.
+    * This is not mandatory, but it offers a little performance increase.
+    */
+#  ifdef ZLIB_DLL
+#    if defined(WIN32) && (!defined(__BORLANDC__) || (__BORLANDC__ >= 0x500))
+#      ifdef ZLIB_INTERNAL
+#        define ZEXTERN extern __declspec(dllexport)
+#      else
+#        define ZEXTERN extern __declspec(dllimport)
 #      endif
-#      include <windows.h>
 #    endif
+#  endif  /* ZLIB_DLL */
+   /* If building or using zlib with the WINAPI/WINAPIV calling convention,
+    * define ZLIB_WINAPI.
+    * Caution: the standard ZLIB1.DLL is NOT compiled using ZLIB_WINAPI.
+    */
+#  ifdef ZLIB_WINAPI
+#    ifdef FAR
+#      undef FAR
+#    endif
+#    include <windows.h>
+     /* No need for _export, use ZLIB.DEF instead. */
+     /* For complete Windows compatibility, use WINAPI, not __stdcall. */
+#    define ZEXPORT WINAPI
 #    ifdef WIN32
-#      define ZEXPORT  WINAPI
-#      define ZEXPORTVA  WINAPIV
+#      define ZEXPORTVA WINAPIV
 #    else
-#      define ZEXPORT  WINAPI _export
-#      define ZEXPORTVA  FAR _cdecl _export
-#    endif
-#  endif
-#  if defined (__BORLANDC__)
-#    if (__BORLANDC__ >= 0x0500) && defined (WIN32)
-#      include <windows.h>
-#      define ZEXPORT __declspec(dllexport) WINAPI
-#      define ZEXPORTVA __declspec(dllexport) WINAPIV
-#    else
-#      if defined (_Windows) && defined (__DLL__)
-#        define ZEXPORT _export
-#        define ZEXPORTVA _export
-#      endif
+#      define ZEXPORTVA FAR CDECL
 #    endif
 #  endif
 #endif
 
 #if defined (__BEOS__)
-#  if defined (ZLIB_DLL)
-#    define ZEXTERN extern __declspec(dllexport)
-#  else
-#    define ZEXTERN extern __declspec(dllimport)
+#  ifdef ZLIB_DLL
+#    ifdef ZLIB_INTERNAL
+#      define ZEXPORT   __declspec(dllexport)
+#      define ZEXPORTVA __declspec(dllexport)
+#    else
+#      define ZEXPORT   __declspec(dllimport)
+#      define ZEXPORTVA __declspec(dllimport)
+#    endif
 #  endif
 #endif
 
+#ifndef ZEXTERN
+#  define ZEXTERN extern
+#endif
 #ifndef ZEXPORT
 #  define ZEXPORT
 #endif
 #ifndef ZEXPORTVA
 #  define ZEXPORTVA
 #endif
-#ifndef ZEXTERN
-#  define ZEXTERN extern
-#endif
 
 #ifndef FAR
-#   define FAR
+#  define FAR
 #endif
 
 #if !defined(__MACTYPES__)
@@ -248,12 +267,12 @@ typedef uLong FAR uLongf;
 
 #ifdef STDC
    typedef void const *voidpc;
-   typedef void FAR *voidpf;
-   typedef void     *voidp;
+   typedef void FAR   *voidpf;
+   typedef void       *voidp;
 #else
    typedef Byte const *voidpc;
-   typedef Byte FAR *voidpf;
-   typedef Byte     *voidp;
+   typedef Byte FAR   *voidpf;
+   typedef Byte       *voidp;
 #endif
 
 #if 0           /* HAVE_UNISTD_H -- this line is updated by ./configure */
@@ -273,6 +292,17 @@ typedef uLong FAR uLongf;
 #  define  z_off_t long
 #endif
 
+#if defined(__OS400__)
+#define NO_vsnprintf
+#endif
+
+#if defined(__MVS__)
+#  define NO_vsnprintf
+#  ifdef FAR
+#    undef FAR
+#  endif
+#endif
+
 /* MVS linker does not support external names larger than 8 bytes */
 #if defined(__MVS__)
 #   pragma map(deflateInit_,"DEIN")
@@ -290,4 +320,4 @@ typedef uLong FAR uLongf;
 #   pragma map(inflate_copyright,"INCOPY")
 #endif
 
-#endif /* _ZCONF_H */
+#endif /* ZCONF_H */

@@ -6,27 +6,27 @@
 /*
  * Change history:
  *
- * 1.2.beta0	24 Nov 2002
+ * 1.2.beta0    24 Nov 2002
  * - First version -- complete rewrite of inflate to simplify code, avoid
  *   creation of window when not needed, minimize use of window when it is
  *   needed, make inffast.c even faster, implement gzip decoding, and to
  *   improve code readability and style over the previous zlib inflate code
  *
- * 1.2.beta1	25 Nov 2002
+ * 1.2.beta1    25 Nov 2002
  * - Use pointers for available input and output checking in inffast.c
  * - Remove input and output counters in inffast.c
  * - Change inffast.c entry and loop from avail_in >= 7 to >= 6
  * - Remove unnecessary second byte pull from length extra in inffast.c
  * - Unroll direct copy to three copies per loop in inffast.c
  *
- * 1.2.beta2	4 Dec 2002
+ * 1.2.beta2    4 Dec 2002
  * - Change external routine names to reduce potential conflicts
  * - Correct filename to inffixed.h for fixed tables in inflate.c
  * - Make hbuf[] unsigned char to match parameter type in inflate.c
  * - Change strm->next_out[-state->offset] to *(strm->next_out - state->offset)
  *   to avoid negation problem on Alphas (64 bit) in inflate.c
  *
- * 1.2.beta3	22 Dec 2002
+ * 1.2.beta3    22 Dec 2002
  * - Add comments on state->bits assertion in inffast.c
  * - Add comments on op field in inftrees.h
  * - Fix bug in reuse of allocated window after inflateReset()
@@ -38,7 +38,7 @@
  * - Use local copies of stream next and avail values, as well as local bit
  *   buffer and bit count in inflate()--for speed when inflate_fast() not used
  *
- * 1.2.beta4	1 Jan 2003
+ * 1.2.beta4    1 Jan 2003
  * - Split ptr - 257 statements in inflate_table() to avoid compiler warnings
  * - Move a comment on output buffer sizes from inffast.c to inflate.c
  * - Add comments in inffast.c to introduce the inflate_fast() routine
@@ -54,19 +54,19 @@
  *   programs like gzip and unzip -- uses window as output buffer to avoid
  *   window copying
  *
- * 1.2.beta5	1 Jan 2003
+ * 1.2.beta5    1 Jan 2003
  * - Improved inflateBack() interface to allow the caller to provide initial
  *   input in strm.
  * - Fixed stored blocks bug in inflateBack()
  *
- * 1.2.beta6	4 Jan 2003
+ * 1.2.beta6    4 Jan 2003
  * - Added comments in inffast.c on effectiveness of POSTINC
  * - Typecasting all around to reduce compiler warnings
  * - Changed loops from while (1) or do {} while (1) to for (;;), again to
  *   make compilers happy
  * - Changed type of window in inflateBackInit() to unsigned char *
  *
- * 1.2.beta7	27 Jan 2003
+ * 1.2.beta7    27 Jan 2003
  * - Changed many types to unsigned or unsigned short to avoid warnings
  * - Added inflateCopy() function
  *
@@ -77,7 +77,7 @@
  *   and buffer address return values for the input function
  * - Check next_in and next_out for Z_NULL on entry to inflate()
  *
- * The history for versions past 1.2.0 are in ChangeLog in zlib distribution.
+ * The history for versions after 1.2.0 are in ChangeLog in zlib distribution.
  */
 
 #include "zutil.h"
@@ -91,22 +91,17 @@
 #  endif
 #endif
 
-/*@access z_streamp @*/
-
 /* function prototypes */
-local void fixedtables OF((struct inflate_state FAR *state))
-	/*@modifies state @*/;
-local int updatewindow OF((z_streamp strm, unsigned out))
-	/*@*/;
+local void fixedtables OF((struct inflate_state FAR *state));
+local int updatewindow OF((z_streamp strm, unsigned out));
 #ifdef BUILDFIXED
-   void makefixed OF((void))
-	/*@*/;
+   void makefixed OF((void));
 #endif
-local unsigned syncsearch OF((unsigned *have, /*@out@*/ unsigned char FAR *buf,
-                              unsigned len))
-	/*@modifies *have @*/;
+local unsigned syncsearch OF((unsigned FAR *have, unsigned char FAR *buf,
+                              unsigned len));
 
-int ZEXPORT inflateReset(z_streamp strm)
+int ZEXPORT inflateReset(strm)
+z_streamp strm;
 {
     struct inflate_state FAR *state;
 
@@ -118,6 +113,7 @@ int ZEXPORT inflateReset(z_streamp strm)
     state->last = 0;
     state->havedict = 0;
     state->wsize = 0;
+    state->whave = 0;
     state->hold = 0;
     state->bits = 0;
     state->lencode = state->distcode = state->next = state->codes;
@@ -125,8 +121,11 @@ int ZEXPORT inflateReset(z_streamp strm)
     return Z_OK;
 }
 
-int ZEXPORT inflateInit2_(z_streamp strm, int windowBits, const char *version,
-		int stream_size)
+int ZEXPORT inflateInit2_(strm, windowBits, version, stream_size)
+z_streamp strm;
+int windowBits;
+const char *version;
+int stream_size;
 {
     struct inflate_state FAR *state;
 
@@ -134,12 +133,12 @@ int ZEXPORT inflateInit2_(z_streamp strm, int windowBits, const char *version,
         stream_size != (int)(sizeof(z_stream)))
         return Z_VERSION_ERROR;
     if (strm == Z_NULL) return Z_STREAM_ERROR;
-    strm->msg = Z_NULL;			/* in case we return an error */
-    if (strm->zalloc == Z_NULL) {
+    strm->msg = Z_NULL;                 /* in case we return an error */
+    if (strm->zalloc == (alloc_func)0) {
         strm->zalloc = zcalloc;
         strm->opaque = (voidpf)0;
     }
-    if (strm->zfree == Z_NULL) strm->zfree = zcfree;
+    if (strm->zfree == (free_func)0) strm->zfree = zcfree;
     state = (struct inflate_state FAR *)
             ZALLOC(strm, 1, sizeof(struct inflate_state));
     if (state == Z_NULL) return Z_MEM_ERROR;
@@ -149,8 +148,12 @@ int ZEXPORT inflateInit2_(z_streamp strm, int windowBits, const char *version,
         state->wrap = 0;
         windowBits = -windowBits;
     }
-    else
-        state->wrap = 1;
+    else {
+        state->wrap = (windowBits >> 4) + 1;
+#ifdef GUNZIP
+        if (windowBits < 48) windowBits &= 15;
+#endif
+    }
     if (windowBits < 8 || windowBits > 15) {
         ZFREE(strm, state);
         strm->state = Z_NULL;
@@ -161,7 +164,10 @@ int ZEXPORT inflateInit2_(z_streamp strm, int windowBits, const char *version,
     return inflateReset(strm);
 }
 
-int ZEXPORT inflateInit_(z_streamp strm, const char *version, int stream_size)
+int ZEXPORT inflateInit_(strm, version, stream_size)
+z_streamp strm;
+const char *version;
+int stream_size;
 {
     return inflateInit2_(strm, DEF_WBITS, version, stream_size);
 }
@@ -176,7 +182,8 @@ int ZEXPORT inflateInit_(z_streamp strm, const char *version, int stream_size)
    used for threaded applications, since the rewriting of the tables and virgin
    may not be thread-safe.
  */
-local void fixedtables(struct inflate_state FAR *state)
+local void fixedtables(state)
+struct inflate_state FAR *state;
 {
 #ifdef BUILDFIXED
     static int virgin = 1;
@@ -239,7 +246,7 @@ local void fixedtables(struct inflate_state FAR *state)
 
     a.out > inffixed.h
  */
-void makefixed(void)
+void makefixed()
 {
     unsigned low, size;
     struct inflate_state state;
@@ -293,7 +300,9 @@ void makefixed(void)
    output will fall in the output data, making match copies simpler and faster.
    The advantage may be dependent on the size of the processor's data caches.
  */
-local int updatewindow(z_streamp strm, unsigned out)
+local int updatewindow(strm, out)
+z_streamp strm;
+unsigned out;
 {
     struct inflate_state FAR *state;
     unsigned copy, dist;
@@ -312,6 +321,7 @@ local int updatewindow(z_streamp strm, unsigned out)
     if (state->wsize == 0) {
         state->wsize = 1U << state->wbits;
         state->write = 0;
+        state->whave = 0;
     }
 
     /* copy state->wsize or less output bytes into the circular window */
@@ -319,6 +329,7 @@ local int updatewindow(z_streamp strm, unsigned out)
     if (copy >= state->wsize) {
         zmemcpy(state->window, strm->next_out - state->wsize, state->wsize);
         state->write = 0;
+        state->whave = state->wsize;
     }
     else {
         dist = state->wsize - state->write;
@@ -328,10 +339,12 @@ local int updatewindow(z_streamp strm, unsigned out)
         if (copy) {
             zmemcpy(state->window, strm->next_out - copy, copy);
             state->write = copy;
+            state->whave = state->wsize;
         }
         else {
             state->write += dist;
             if (state->write == state->wsize) state->write = 0;
+            if (state->whave < state->wsize) state->whave += dist;
         }
     }
     return 0;
@@ -399,7 +412,7 @@ local int updatewindow(z_streamp strm, unsigned out)
    if there is no input available. */
 #define PULLBYTE() \
     do { \
-        if (have == 0) goto leave; \
+        if (have == 0) goto inf_leave; \
         have--; \
         hold += (unsigned long)(*next++) << bits; \
         bits += 8; \
@@ -498,14 +511,14 @@ local int updatewindow(z_streamp strm, unsigned out)
    complete that state.  Those states are copying stored data, writing a
    literal byte, and copying a matching string.
 
-   When returning, a "goto leave" is used to update the total counters, update
-   the check value, and determine whether any progress has been made during
-   that inflate() call in order to return the proper return code.  Progress is
-   defined as a change in either strm->avail_in or strm->avail_out.  When there
-   is a window, goto leave will update the window with the last output written.
-   If a goto leave occurs in the middle of decompression and there is no window
-   currently, goto leave will create one and copy output to the window for the
-   next call of inflate().
+   When returning, a "goto inf_leave" is used to update the total counters,
+   update the check value, and determine whether any progress has been made
+   during that inflate() call in order to return the proper return code.
+   Progress is defined as a change in either strm->avail_in or strm->avail_out.
+   When there is a window, goto inf_leave will update the window with the last
+   output written.  If a goto inf_leave occurs in the middle of decompression
+   and there is no window currently, goto inf_leave will create one and copy
+   output to the window for the next call of inflate().
 
    In this implementation, the flush parameter of inflate() only affects the
    return code (per zlib.h).  inflate() always writes as much as possible to
@@ -518,22 +531,25 @@ local int updatewindow(z_streamp strm, unsigned out)
    will return Z_BUF_ERROR if it has not reached the end of the stream.
  */
 
-int ZEXPORT inflate(z_streamp strm, int flush)
+int ZEXPORT inflate(strm, flush)
+z_streamp strm;
+int flush;
 {
     struct inflate_state FAR *state;
-    unsigned char *next, *put;	/* next input and output */
-    unsigned have, left;	/* available input and output */
-    unsigned long hold;		/* bit buffer */
-    unsigned bits;		/* bits in bit buffer */
-    unsigned in, out;		/* save starting available input and output */
-    unsigned copy;		/* number of stored or match bytes to copy */
-    unsigned char *from;	/* where to copy match bytes from */
-    code this;			/* current decoding table entry */
-    code last;			/* parent table entry */
-    unsigned len;		/* length to copy for repeats, bits to drop */
-    int ret;			/* return code */
+    unsigned char FAR *next;    /* next input */
+    unsigned char FAR *put;     /* next output */
+    unsigned have, left;        /* available input and output */
+    unsigned long hold;         /* bit buffer */
+    unsigned bits;              /* bits in bit buffer */
+    unsigned in, out;           /* save starting available input and output */
+    unsigned copy;              /* number of stored or match bytes to copy */
+    unsigned char FAR *from;    /* where to copy match bytes from */
+    code this;                  /* current decoding table entry */
+    code last;                  /* parent table entry */
+    unsigned len;               /* length to copy for repeats, bits to drop */
+    int ret;                    /* return code */
 #ifdef GUNZIP
-    unsigned char hbuf[4];	/* buffer for gzip header crc calculation */
+    unsigned char hbuf[4];      /* buffer for gzip header crc calculation */
 #endif
     static const unsigned short order[19] = /* permutation of code lengths */
         {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
@@ -543,6 +559,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
         return Z_STREAM_ERROR;
 
     state = (struct inflate_state FAR *)strm->state;
+    if (state->mode == TYPE) state->mode = TYPEDO;      /* skip check */
     LOAD();
     in = have;
     out = left;
@@ -551,21 +568,24 @@ int ZEXPORT inflate(z_streamp strm, int flush)
         switch (state->mode) {
         case HEAD:
             if (state->wrap == 0) {
-                state->mode = TYPE;
+                state->mode = TYPEDO;
                 break;
             }
             NEEDBITS(16);
 #ifdef GUNZIP
-            if (hold == 0x8b1f) {	/* gzip header */
+            if ((state->wrap & 2) && hold == 0x8b1f) {  /* gzip header */
                 state->check = crc32(0L, Z_NULL, 0);
                 CRC2(state->check, hold);
                 INITBITS();
                 state->mode = FLAGS;
                 break;
             }
-            state->flags = 0;			/* expect zlib header */
+            state->flags = 0;           /* expect zlib header */
+            if (!(state->wrap & 1) ||   /* check if zlib header allowed */
+#else
+            if (
 #endif
-            if (((BITS(8) << 8) + (hold >> 8)) % 31) {
+                ((BITS(8) << 8) + (hold >> 8)) % 31) {
                 strm->msg = (char *)"incorrect header check";
                 state->mode = BAD;
                 break;
@@ -632,12 +652,12 @@ int ZEXPORT inflate(z_streamp strm, int flush)
                     next += copy;
                     state->length -= copy;
                 }
-                if (state->length) goto leave;
+                if (state->length) goto inf_leave;
             }
             state->mode = NAME;
         case NAME:
             if (state->flags & 0x0800) {
-                if (have == 0) goto leave;
+                if (have == 0) goto inf_leave;
                 copy = 0;
                 do {
                     len = (unsigned)(next[copy++]);
@@ -646,12 +666,12 @@ int ZEXPORT inflate(z_streamp strm, int flush)
                     state->check = crc32(state->check, next, copy);
                 have -= copy;
                 next += copy;
-                if (len) goto leave;
+                if (len) goto inf_leave;
             }
             state->mode = COMMENT;
         case COMMENT:
             if (state->flags & 0x1000) {
-                if (have == 0) goto leave;
+                if (have == 0) goto inf_leave;
                 copy = 0;
                 do {
                     len = (unsigned)(next[copy++]);
@@ -660,7 +680,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
                     state->check = crc32(state->check, next, copy);
                 have -= copy;
                 next += copy;
-                if (len) goto leave;
+                if (len) goto inf_leave;
             }
             state->mode = HCRC;
         case HCRC:
@@ -690,6 +710,8 @@ int ZEXPORT inflate(z_streamp strm, int flush)
             strm->adler = state->check = adler32(0L, Z_NULL, 0);
             state->mode = TYPE;
         case TYPE:
+            if (flush == Z_BLOCK) goto inf_leave;
+        case TYPEDO:
             if (state->last) {
                 BYTEBITS();
                 state->mode = CHECK;
@@ -699,18 +721,18 @@ int ZEXPORT inflate(z_streamp strm, int flush)
             state->last = BITS(1);
             DROPBITS(1);
             switch (BITS(2)) {
-            case 0:				/* stored block */
+            case 0:                             /* stored block */
                 Tracev((stderr, "inflate:     stored block%s\n",
                         state->last ? " (last)" : ""));
                 state->mode = STORED;
                 break;
-            case 1:				/* fixed block */
+            case 1:                             /* fixed block */
                 fixedtables(state);
                 Tracev((stderr, "inflate:     fixed codes block%s\n",
                         state->last ? " (last)" : ""));
-                state->mode = LEN;		/* decode codes */
+                state->mode = LEN;              /* decode codes */
                 break;
-            case 2:				/* dynamic block */
+            case 2:                             /* dynamic block */
                 Tracev((stderr, "inflate:     dynamic codes block%s\n",
                         state->last ? " (last)" : ""));
                 state->mode = TABLE;
@@ -722,7 +744,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
             DROPBITS(2);
             break;
         case STORED:
-            BYTEBITS();				/* go to byte boundary */
+            BYTEBITS();                         /* go to byte boundary */
             NEEDBITS(32);
             if ((hold & 0xffff) != ((hold >> 16) ^ 0xffff)) {
                 strm->msg = (char *)"invalid stored block lengths";
@@ -739,7 +761,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
             if (copy) {
                 if (copy > have) copy = have;
                 if (copy > left) copy = left;
-                if (copy == 0) goto leave;
+                if (copy == 0) goto inf_leave;
                 zmemcpy(put, next, copy);
                 have -= copy;
                 next += copy;
@@ -813,21 +835,21 @@ int ZEXPORT inflate(z_streamp strm, int flush)
                         }
                         len = state->lens[state->have - 1];
                         copy = 3 + BITS(2);
-                        DROPBITS(2); 
+                        DROPBITS(2);
                     }
                     else if (this.val == 17) {
                         NEEDBITS(this.bits + 3);
                         DROPBITS(this.bits);
                         len = 0;
                         copy = 3 + BITS(3);
-                        DROPBITS(3); 
+                        DROPBITS(3);
                     }
                     else {
                         NEEDBITS(this.bits + 7);
                         DROPBITS(this.bits);
                         len = 0;
                         copy = 11 + BITS(7);
-                        DROPBITS(7); 
+                        DROPBITS(7);
                     }
                     if (state->have + copy > state->nlen + state->ndist) {
                         strm->msg = (char *)"invalid bit length repeat";
@@ -943,8 +965,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
                 state->offset += BITS(state->extra);
                 DROPBITS(state->extra);
             }
-            if (state->offset > (state->wsize ? state->wsize :
-                                                out - left)) {
+            if (state->offset > state->whave + out - left) {
                 strm->msg = (char *)"invalid distance too far back";
                 state->mode = BAD;
                 break;
@@ -952,9 +973,9 @@ int ZEXPORT inflate(z_streamp strm, int flush)
             Tracevv((stderr, "inflate:         distance %u\n", state->offset));
             state->mode = MATCH;
         case MATCH:
-            if (left == 0) goto leave;
+            if (left == 0) goto inf_leave;
             copy = out - left;
-            if (state->offset > copy) {		/* copy from window */
+            if (state->offset > copy) {         /* copy from window */
                 copy = state->offset - copy;
                 if (copy > state->write) {
                     copy -= state->write;
@@ -964,7 +985,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
                     from = state->window + (state->write - copy);
                 if (copy > state->length) copy = state->length;
             }
-            else {				/* copy from output */
+            else {                              /* copy from output */
                 from = put - state->offset;
                 copy = state->length;
             }
@@ -977,7 +998,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
             if (state->length == 0) state->mode = LEN;
             break;
         case LIT:
-            if (left == 0) goto leave;
+            if (left == 0) goto inf_leave;
             *put++ = (unsigned char)(state->length);
             left--;
             state->mode = LEN;
@@ -1009,7 +1030,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
         case LENGTH:
             if (state->wrap && state->flags) {
                 NEEDBITS(32);
-                if (hold != (state->total & 0xffffffff)) {
+                if (hold != (state->total & 0xffffffffUL)) {
                     strm->msg = (char *)"incorrect length check";
                     state->mode = BAD;
                     break;
@@ -1021,10 +1042,10 @@ int ZEXPORT inflate(z_streamp strm, int flush)
             state->mode = DONE;
         case DONE:
             ret = Z_STREAM_END;
-            goto leave;
+            goto inf_leave;
         case BAD:
             ret = Z_DATA_ERROR;
-            goto leave;
+            goto inf_leave;
         case MEM:
             return Z_MEM_ERROR;
         case SYNC:
@@ -1038,7 +1059,7 @@ int ZEXPORT inflate(z_streamp strm, int flush)
        error.  Call updatewindow() to create and/or update the window state.
        Note: a memory error from inflate() is non-recoverable.
      */
-  leave:
+  inf_leave:
     RESTORE();
     if (state->wsize || (state->mode < CHECK && out != strm->avail_out))
         if (updatewindow(strm, out)) {
@@ -1053,15 +1074,18 @@ int ZEXPORT inflate(z_streamp strm, int flush)
     if (state->wrap && out)
         strm->adler = state->check =
             UPDATE(state->check, strm->next_out - out, out);
+    strm->data_type = state->bits + (state->last ? 64 : 0) +
+                      (state->mode == TYPE ? 128 : 0);
     if (((in == 0 && out == 0) || flush == Z_FINISH) && ret == Z_OK)
         ret = Z_BUF_ERROR;
     return ret;
 }
 
-int ZEXPORT inflateEnd(z_streamp strm)
+int ZEXPORT inflateEnd(strm)
+z_streamp strm;
 {
     struct inflate_state FAR *state;
-    if (strm == Z_NULL || strm->state == Z_NULL || strm->zfree == Z_NULL)
+    if (strm == Z_NULL || strm->state == Z_NULL || strm->zfree == (free_func)0)
         return Z_STREAM_ERROR;
     state = (struct inflate_state FAR *)strm->state;
     if (state->window != Z_NULL) ZFREE(strm, state->window);
@@ -1071,8 +1095,10 @@ int ZEXPORT inflateEnd(z_streamp strm)
     return Z_OK;
 }
 
-int ZEXPORT inflateSetDictionary(z_streamp strm, const Bytef *dictionary,
-		uInt dictLength)
+int ZEXPORT inflateSetDictionary(strm, dictionary, dictLength)
+z_streamp strm;
+const Bytef *dictionary;
+uInt dictLength;
 {
     struct inflate_state FAR *state;
     unsigned long id;
@@ -1092,12 +1118,16 @@ int ZEXPORT inflateSetDictionary(z_streamp strm, const Bytef *dictionary,
         state->mode = MEM;
         return Z_MEM_ERROR;
     }
-    if (dictLength > state->wsize)
+    if (dictLength > state->wsize) {
         zmemcpy(state->window, dictionary + dictLength - state->wsize,
                 state->wsize);
-    else
+        state->whave = state->wsize;
+    }
+    else {
         zmemcpy(state->window + state->wsize - dictLength, dictionary,
                 dictLength);
+        state->whave = dictLength;
+    }
     state->havedict = 1;
     Tracev((stderr, "inflate:   dictionary set\n"));
     return Z_OK;
@@ -1114,7 +1144,10 @@ int ZEXPORT inflateSetDictionary(z_streamp strm, const Bytef *dictionary,
    called again with more data and the *have state.  *have is initialized to
    zero for the first call.
  */
-local unsigned syncsearch(unsigned *have, unsigned char FAR *buf, unsigned len)
+local unsigned syncsearch(have, buf, len)
+unsigned FAR *have;
+unsigned char FAR *buf;
+unsigned len;
 {
     unsigned got;
     unsigned next;
@@ -1134,11 +1167,12 @@ local unsigned syncsearch(unsigned *have, unsigned char FAR *buf, unsigned len)
     return next;
 }
 
-int ZEXPORT inflateSync(z_streamp strm)
+int ZEXPORT inflateSync(strm)
+z_streamp strm;
 {
-    unsigned len;		/* number of bytes to look at or looked at */
-    unsigned long in, out;	/* temporary to save total_in and total_out */
-    unsigned char buf[4];	/* to restore bit buffer to byte string */
+    unsigned len;               /* number of bytes to look at or looked at */
+    unsigned long in, out;      /* temporary to save total_in and total_out */
+    unsigned char buf[4];       /* to restore bit buffer to byte string */
     struct inflate_state FAR *state;
 
     /* check parameters */
@@ -1184,7 +1218,8 @@ int ZEXPORT inflateSync(z_streamp strm)
    block. When decompressing, PPP checks that at the end of input packet,
    inflate is waiting for these length bytes.
  */
-int ZEXPORT inflateSyncPoint(z_streamp strm)
+int ZEXPORT inflateSyncPoint(strm)
+z_streamp strm;
 {
     struct inflate_state FAR *state;
 
@@ -1193,7 +1228,9 @@ int ZEXPORT inflateSyncPoint(z_streamp strm)
     return state->mode == STORED && state->bits == 0;
 }
 
-int ZEXPORT inflateCopy(z_streamp dest, z_streamp source)
+int ZEXPORT inflateCopy(dest, source)
+z_streamp dest;
+z_streamp source;
 {
     struct inflate_state FAR *state;
     struct inflate_state FAR *copy;
@@ -1201,7 +1238,7 @@ int ZEXPORT inflateCopy(z_streamp dest, z_streamp source)
 
     /* check input */
     if (dest == Z_NULL || source == Z_NULL || source->state == Z_NULL ||
-        source->zalloc == Z_NULL || source->zfree == Z_NULL)
+        source->zalloc == (alloc_func)0 || source->zfree == (free_func)0)
         return Z_STREAM_ERROR;
     state = (struct inflate_state FAR *)source->state;
 
