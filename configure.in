@@ -557,7 +557,10 @@ build_os_noversion=`echo "${build_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
 
 rm -f ./find-provides.sh
-if test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
+if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ; then
+	echo "using ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ./find-provides.sh
+elif test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
 	echo "using ${srcdir}/autodeps/${build_os_exact}.prov for automatic provides generation"
     ln -s ${srcdir}/autodeps/${build_os_exact}.prov ./find-provides.sh
 elif test -f ${srcdir}/autodeps/${build_os_major}.prov ; then
@@ -572,7 +575,10 @@ else
 fi
 
 rm -f ./find-requires.sh
-if test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
+if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ; then
+	echo "using ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ./find-requires.sh
+elif test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
 	echo "using ${srcdir}/autodeps/${build_os_exact}.req for automatic requires generation"
     ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-requires.sh
 elif test -f ${srcdir}/autodeps/${build_os_major}.req ; then

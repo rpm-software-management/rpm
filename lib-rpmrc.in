@@ -25,6 +25,7 @@ instchangelog:	5
 optflags: i386 -O2 -m486 -fno-strength-reduce
 optflags: alpha -O2
 optflags: sparc -O2
+optflags: sparc64 -O2
 optflags: m68k -O2 -fomit-frame-pointer
 optflags: ppc -O2 -fsigned-char
 optflags: parisc -O2 -mpa-risc-1-0
@@ -61,7 +62,8 @@ arch_canon:	m68k:	m68k	6
 arch_canon:	IP:	sgi	7
 arch_canon:     rs6000:	rs6000  8
 
-arch_canon:	sun4u:	usparc  10
+arch_canon:	sparc64:sparc64 10
+arch_canon:	sun4u:	sparc64 10
 arch_canon:	mipsel:	mipsel	11
 
 arch_canon:     armv4b:	armv4b 	12
@@ -139,7 +141,7 @@ arch_compat: osfmach3_ppc: ppc
 arch_compat: powerpc: ppc
 arch_compat: powerppc: ppc
 
-arch_compat: usparc: sparc
+arch_compat: sparc64: sparc
 arch_compat: sparc: noarch
 
 arch_compat: ppc: rs6000
@@ -183,6 +185,7 @@ buildarch_compat: i586: i486
 buildarch_compat: i486: i386
 buildarch_compat: i386: noarch
 
+buildarch_compat: sparc64: noarch
 buildarch_compat: sparc: noarch
 buildarch_compat: alpha: noarch
 buildarch_compat: m68k: noarch
