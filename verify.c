@@ -3,7 +3,7 @@
 #include "build/rpmbuild.h"
 
 #include "install.h"
-#include "url.h"
+#include "rpmurl.h"
 
 #if DEAD
 typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
