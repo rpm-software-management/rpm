@@ -65,6 +65,7 @@ main(int argc, char *const argv[])
 {
     poptContext optCon;
     rpmts ts = NULL;
+    rpmVSFlags vsflags;
     rpmgi gi = NULL;
     const char ** av;
     const char * arg;
@@ -79,6 +80,19 @@ main(int argc, char *const argv[])
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
     ts = rpmtsCreate();
+    vsflags = rpmExpandNumeric("%{?_vsflags_query}");
+    if (rpmcliQueryFlags & VERIFY_DIGEST)
+	vsflags |= _RPMVSF_NODIGESTS;
+    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
+	vsflags |= _RPMVSF_NOSIGNATURES;
+    if (rpmcliQueryFlags & VERIFY_HDRCHK)
+	vsflags |= RPMVSF_NOHDRCHK;
+    (void) rpmtsSetVSFlags(ts, vsflags);
+
+    {   int_32 tid = (int_32) time(NULL);
+	(void) rpmtsSetTid(ts, tid);
+    }
+
     av = poptGetArgs(optCon);
     gi = rpmgiNew(ts, gitag, av, ftsOpts);
     (void) rpmgiSetQueryFormat(gi, queryFormat);

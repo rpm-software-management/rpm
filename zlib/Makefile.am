@@ -24,7 +24,7 @@ example_LDFLAGS = -L. -lz
 minigzip_SOURCES = minigzip.c
 minigzip_LDFLAGS = -L. -lz
 
-BUILT_SOURCES = Doxyfile zlib.lcd
+BUILT_SOURCES = # Doxyfile zlib.lcd
 
 zlib.lcd: Makefile.am ${libz_la_SOURCES} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${libz_la_SOURCES} -dump $@ 2>/dev/null

@@ -1025,6 +1025,7 @@ verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
     (void) rpmDigestFinal(rpmDigestDup(md5ctx),
 		(void **)&md5sum, &md5len, 0);
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+    rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
     if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
 	res = RPMRC_FAIL;
@@ -1187,6 +1188,7 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 
 	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
+	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
 	/* Compare leading 16 bits of digest for quick check. */
 	s = dig->md5;
@@ -1312,6 +1314,7 @@ verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 #endif
 	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
+	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
 	mpnzero(&dig->hm);	(void) mpnsethex(&dig->hm, dig->sha1);
 
