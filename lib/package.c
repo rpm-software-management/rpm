@@ -52,14 +52,18 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 	       NULL <gulp> */
 
 	    *hdr = NULL;
-	} else {
+	} else if (lead.major == 2 || lead.major == 3) {
 	    if (readSignature(fd, NULL, lead.signature_type)) {
 	       return 2;
 	    }
 	    *hdr = readHeader(fd, (lead.major >= 3) ?
 			      HEADER_MAGIC : NO_HEADER_MAGIC);
 	    if (! *hdr) return 2;
-	}
+	} else {
+	    error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 2 are"
+		    " supported by this version of RPM");
+	    return 2;
+	} 
     } else {
 	if (lead.major == 1) {
 	    readOldHeader(fd, hdr, isSource);
