@@ -14,13 +14,10 @@ RPM/Error.pm		Perl code for the error package
 RPM/Error.xs		C/XS code for the error package
 RPM/Header.pm		Perl code for headers
 RPM/Header.xs		C/XS code for headers
-RPM/Package.pm		Perl code for packages
-RPM/Package.xs		C/XS code for packages
 typemap			Type-mappings for xsubpp to manage headers and database
 t/00_load.t		Test suite
 t/01_database.t
 t/02_headers.t
 t/03_errors.t
 t/04_utils.t
-t/05_package.t
 utils/rpmprune		Sample script
