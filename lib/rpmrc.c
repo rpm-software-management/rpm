@@ -979,7 +979,7 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 
     if (!gotDefaults) {
 	rc = uname(&un);
-	if (rc) return;
+	if (rc < 0) return;
 
 #if !defined(__linux__)
 #ifdef SNI

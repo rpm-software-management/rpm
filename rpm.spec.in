@@ -31,8 +31,6 @@ BuildRequires: db3-devel
 # XXX linked binaries like /bin/rpm.
 %ifnarch ia64
 Requires: glibc >= 2.1.92
-# XXX needed to avoid libdb.so.2 satisfied by compat/libc5 provides.
-Requires: db1 = 1.85
 %endif
 %endif
 
@@ -119,9 +117,9 @@ capabilities.
 
 %build
 %ifos linux
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man' # --enable-db1
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man'
 %else
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} # --enable-db1
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
 %endif
 
 make
@@ -141,9 +139,17 @@ mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
 install -m 755 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
-#cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
-#%%_dbapi		1
-#E_O_F
+cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
+%%_dbapi		1
+E_O_F
+
+mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
+for dbi in \
+	Basenames Conflictname Dirnames Group Installtid Name Providename \
+	Provideversion Removetid Requirename Requireversion Triggername
+do
+    touch $RPM_BUILD_ROOT/var/lib/rpm/dbi
+done
 
 %endif
 
@@ -163,27 +169,36 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 %ifos linux
-if [ -f /var/lib/rpm/packages.rpm ]; then
+if [ -f /var/lib/rpm/Packages -a -f /var/lib/rpm/packages.rpm ]; then
     echo "
-
-This version of rpm does not have db1 support, install rpm-4.0.2 and
-do rpm --rebuilddb to convert your database from db1 to db3 format.
-
+You have both
+	/var/lib/rpm/packages.rpm	db1 format installed package headers
+	/var/lib/rpm/Packages		db3 format installed package headers
+Please remove (or at least rename) one of those files, and re-install.
 "
     exit 1
 fi
-/usr/sbin/groupadd -g 37 rpm
-/usr/sbin/useradd  -d /var/lib/rpm -u 37 -g 37 rpm
+/usr/sbin/groupadd -g 37 @RPMGROUP@				> /dev/null 2>&1
+/usr/sbin/useradd  -d /var/lib/rpm -u 37 -g 37 @RPMUSER@	> /dev/null 2>&1
 %endif
 exit 0
 
 %post
 %ifos linux
 /sbin/ldconfig
+if [ -f /var/lib/rpm/packages.rpm ]; then
+    : # do nothing
+elif [ -f /var/lib/rpm/Packages ]; then
+    # undo db1 configuration
+    rm -f /etc/rpm/macros.db1
+else
+    # initialize db3 database
+    rm -f /etc/rpm/macros.db1
+    /bin/rpm --initdb
+fi
+/bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]* /var/lib/rpm/*.rpm
 %endif
-# initialize db3 database
-/bin/rpm --initdb
-/bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
+exit 0
 
 %ifos linux
 %postun
@@ -215,7 +230,22 @@ fi
 %config(missingok)	/etc/cron.daily/rpm
 %config(missingok)	/etc/logrotate.d/rpm
 %dir			/etc/rpm
-#%config(missingok)	/etc/rpm/macros.db1
+%config(missingok)	/etc/rpm/macros.db1
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Basenames
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Conflictname
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/__db.001
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Dirnames
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Group
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Installtid
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Name
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Packages
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Providename
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Provideversion
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Removetid
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Requirename
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Requireversion
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Triggername
 %endif
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpm2cpio
@@ -240,22 +270,6 @@ fi
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpm[deiukqv]
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc
-
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Basenames
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Conflictname
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/__db.001
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Dirnames
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Group
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Installtid
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Name
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Packages
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Providename
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Provideversion
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Removetid
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Requirename
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Requireversion
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Triggername
 
 %ifarch i386 i486 i586 i686 athlon
 %attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/i[3456]86*

@@ -30,7 +30,7 @@ lib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = $(DBLIBSRCS) dbconfig.c fprint.c rpmhash.c rpmdb.c
 librpmdb_la_LDFLAGS = @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
-librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) createlinks
+librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
 
 # XXX Add internal libtool dependence
 install-data-local:
@@ -41,11 +41,11 @@ install-data-local:
 falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
-.PHONY: createlinks
-createlinks:
+.created:
 	for lo in $(DB3LOBJS); do \
 	  [ -f $$lo ] || $(LN_S) $(top_builddir)/$(WITH_DB_SUBDIR)/$$lo $$lo ; \
 	done
+	touch $@
 
 clean-local:
 	rm -f $(DB3LOBJS)
@@ -57,3 +57,6 @@ sources:
 .PHONY:	lclint
 lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES)
+
+tfalloc: librpmdb.la tfalloc.o
+	$(LINK) -all-static $@.o $< $(mylibpaths) $(mylibs) $(LIBS)

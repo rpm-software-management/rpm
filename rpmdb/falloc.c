@@ -13,6 +13,7 @@
 
 #include "system.h"
 #include <rpmio_internal.h>
+#include <rpmmessages.h>
 #include <rpmerr.h>
 #include "falloc.h"
 #include "debug.h"
@@ -379,6 +380,42 @@ void fadFree(FD_t fd, unsigned int offset)
     }
 }
 
+static int insane = 0;
+
+static int fadSanity(FD_t fd, int offset, struct faHeader * fh)
+{
+    int rc = 0;
+
+    if (fh->size <= 0 || fh->size > 0x00200000 || (fh->size & 0x3f) != 0)
+	rc |= 0x1;
+
+    if (fh->freeNext &&
+	!(	fh->freeNext > sizeof(struct faFileHeader) &&
+		fh->freeNext < fadGetFileSize(fd) &&
+		(fh->freeNext & 0x3f) == sizeof(struct faFileHeader)) )
+	rc |= 0x2;
+
+    if (fh->freePrev &&
+	!(	fh->freePrev > sizeof(struct faFileHeader) &&
+		fh->freePrev < fadGetFileSize(fd) &&
+		(fh->freePrev & 0x3f) == sizeof(struct faFileHeader)) )
+	rc |= 0x4;
+
+    if (fh->isFree & ~1)
+	rc |= 0x8;
+
+    if (!insane && rc) {
+	rpmMessage(RPMMESS_DEBUG,
+    "offset %d(0x%08x) rc %d: size 0x%08x next %d(0x%08x) prev %d(0x%08x) isFree 0x%08x\n",
+		offset, (unsigned) offset, rc,
+		(unsigned) fh->size,
+		(int) fh->freeNext, fh->freeNext,
+		(int) fh->freePrev, fh->freePrev,
+		(unsigned) fh->isFree);
+    }
+    return rc;
+}
+
 int fadFirstOffset(FD_t fd)
 {
     return fadNextOffset(fd, 0);
@@ -388,6 +425,7 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
 {
     struct faHeader header;
     int offset;
+    int rc;
 
     offset = (lastOffset)
 	? (lastOffset - sizeof(header))
@@ -400,8 +438,36 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
     if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	return 0;
 
-    if (!lastOffset && !header.isFree)
+    if (!lastOffset && header.isFree == 0)
 	return (offset + sizeof(header));
+
+    /*
+     * XXX Try to reconnect at next record found. This isn't perfect
+     * XXX but handles many common db1 corruption problems.
+     */
+    rc = fadSanity(fd, offset, &header);
+    if (rc) {
+	struct faHeader myheader;
+	int o = offset + sizeof(header); 
+
+	memset(&myheader, 0, sizeof(myheader));
+	insane = 1;
+	for (	o = offset + 0x40;
+		o < fadGetFileSize(fd);
+		o += 0x40)
+	{
+	    rc = Pread(fd, &myheader, sizeof(myheader), o);
+	    if (rc != sizeof(header))
+		return 0;
+	    rc = fadSanity(fd, o, &myheader);
+	    if (rc == 0)
+		break;
+	}
+	insane = 0;
+	if (o >= fadGetFileSize(fd))
+	    return 0;
+	return (o + sizeof(header));
+    }
 
     do {
 	offset += header.size;
@@ -409,8 +475,8 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
 	if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	    return 0;
 
-	if (!header.isFree) break;
-    } while (offset < fadGetFileSize(fd) && header.isFree);
+	if (header.isFree == 0) break;
+    } while (offset < fadGetFileSize(fd) && header.isFree == 1);
 
     if (offset < fadGetFileSize(fd)) {
 	/* Sanity check this to make sure we're not going in loops */

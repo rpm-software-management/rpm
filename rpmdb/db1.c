@@ -128,14 +128,17 @@ static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags) {
     return rc;
 }
 
-/*@null@*/ static void * doGetRecord(FD_t pkgs, unsigned int offset)
+/*@null@*/ static void * doGetRecord(dbiIndex dbi, unsigned int offset)
 {
+    FD_t pkgs = dbi->dbi_db;
     void * uh = NULL;
     Header h = NULL;
     const char ** fileNames;
     int fileCount = 0;
+    int lasto = 0;
     int i;
 
+retry:
     if (offset >= fadGetFileSize(pkgs))
 	goto exit;
 
@@ -144,7 +147,8 @@ static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags) {
     h = headerRead(pkgs, HEADER_MAGIC_NO);
 
     /* let's sanity check this record a bit, otherwise just skip it */
-    if (!(	headerIsEntry(h, RPMTAG_NAME) &&
+    if (h != NULL &&
+	!(	headerIsEntry(h, RPMTAG_NAME) &&
 		headerIsEntry(h, RPMTAG_VERSION) &&
 		headerIsEntry(h, RPMTAG_RELEASE) &&
 		headerIsEntry(h, RPMTAG_BUILDTIME)))
@@ -152,8 +156,26 @@ static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags) {
 	h = headerFree(h);
     }
 
-    if (h == NULL)
+    if (h == NULL) {
+	/* XXX HACK: try to reconnect broken chain. */
+	if (lasto == 0) {
+	    rpmMessage(RPMMESS_WARNING,
+  _("Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"),
+			(int) offset, offset);
+	    lasto = (offset ? offset : -1);
+	    offset = fadNextOffset(pkgs, offset);
+	    if (offset > 0)
+		goto retry;
+	}
 	goto exit;
+    }
+
+    if (lasto) {
+	rpmMessage(RPMMESS_WARNING,
+		_("Reconnecting broken chain at offset %d(0x%08x).\n"),
+		(int) offset, offset);
+	dbi->dbi_lastoffset = offset;
+    }
 
     /* Retrofit "Provide: name = EVR" for binary packages. */
     providePackageNVR(h);
@@ -169,7 +191,8 @@ static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags) {
      * list.
      */
     if (!headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
-			   (const void **) &fileNames, &fileCount)) goto exit;
+			   (const void **) &fileNames, &fileCount))
+	goto exit;
 
     for (i = 0; i < fileCount; i++) 
 	if (*fileNames[i] != '/') break;
@@ -274,13 +297,8 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
 	    memcpy(data.data, &offset, sizeof(offset));
 	    data.size = sizeof(offset);
 	} else {		/* XXX simulated retrieval */
-	    data.data = doGetRecord(pkgs, offset);
+	    data.data = doGetRecord(dbi, offset);
 	    data.size = 0;	/* XXX WRONG */
-	    if (data.data == NULL) {
-if (keyp)	*keyp = key.data;
-if (keylen)	*keylen = key.size;
-		rc = EFAULT;
-	    }
 	}
     }
 #ifdef	DYING
