@@ -273,8 +273,8 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
  * @return		dependency index (or -1 if not found)
  */
 /*@null@*/
-int rpmdsFind(rpmds ds, rpmds this)
-	/*@*/;
+int rpmdsFind(rpmds ds, /*@null@*/ rpmds this)
+	/*@modifies ds, this @*/;
 
 /**
  * Merge a dependency set maintaining (N,EVR,Flags) sorted order.
@@ -283,8 +283,8 @@ int rpmdsFind(rpmds ds, rpmds this)
  * @return		(merged) dependency index
  */
 /*@null@*/
-int rpmdsMerge(/*@out@*/ rpmds * dsp, rpmds this)
-	/*@*/;
+int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds this)
+	/*@modifies *dsp, this @*/;
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.

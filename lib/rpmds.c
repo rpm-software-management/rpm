@@ -517,6 +517,7 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
     /*@=refcounttrans@*/
 }
 
+/*@-bounds@*/
 static const char ** rpmdsDupArgv(const char ** argv, int argc)
 	/*@*/
 {
@@ -540,15 +541,18 @@ assert(argv[ac] != NULL);
     av[ac] = NULL;
     return av;
 }
+/*@=bounds@*/
 
 static rpmds rpmdsDup(const rpmds this)
-	/*@*/
+	/*@modifies this @*/
 {
     rpmds ds = xcalloc(1, sizeof(*ds));
     size_t nb;
 
-    ds->h = (this->h ? headerLink(this->h) : NULL);
+    ds->h = (this->h != NULL ? headerLink(this->h) : NULL);
+/*@-assignexpose@*/
     ds->Type = this->Type;
+/*@=assignexpose@*/
     ds->tagN = this->tagN;
     ds->Count = this->Count;
     ds->i = this->i;
@@ -556,30 +560,36 @@ static rpmds rpmdsDup(const rpmds this)
     ds->u = this->u;
 
     nb = (ds->Count+1) * sizeof(*ds->N);
-    ds->N = (ds->h
+    ds->N = (ds->h != NULL
 	? memcpy(xmalloc(nb), this->N, nb)
 	: rpmdsDupArgv(this->N, this->Count) );
     ds->Nt = this->Nt;
 
     nb = (ds->Count+1) * sizeof(*ds->EVR);
-    ds->EVR = (ds->h
+    ds->EVR = (ds->h != NULL
 	? memcpy(xmalloc(nb), this->EVR, nb)
 	: rpmdsDupArgv(this->EVR, this->Count) );
     ds->EVRt = this->EVRt;
 
     nb = (ds->Count * sizeof(*ds->Flags));
-    ds->Flags = (ds->h
+    ds->Flags = (ds->h != NULL
 	? this->Flags
 	: memcpy(xmalloc(nb), this->Flags, nb) );
     ds->Ft = this->Ft;
 
+/*@-compmempass@*/ /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
+/*@=compmempass@*/
 
 }
 
+/*@-bounds@*/
 int rpmdsFind(rpmds ds, rpmds this)
 {
     int comparison;
+
+    if (ds == NULL || this == NULL)
+	return -1;
 
     ds->l = 0;
     ds->u = ds->Count;
@@ -596,13 +606,14 @@ int rpmdsFind(rpmds ds, rpmds this)
 	    ds->u = ds->i;
 	else if (comparison > 0)
 	    ds->l = ds->i + 1;
-	else {
+	else
 	    return ds->i;
-	}
     }
     return -1;
 }
+/*@=bounds@*/
 
+/*@-bounds@*/
 int rpmdsMerge(rpmds * dsp, rpmds this)
 {
     rpmds ds;
@@ -616,12 +627,14 @@ int save;
 	return -1;
 
     /* If not initialized yet, dup the 1st entry. */
+/*@-branchstate@*/
     if (*dsp == NULL) {
 	save = this->Count;
 	this->Count = 1;
 	*dsp = rpmdsDup(this);
 	this->Count = save;
     }
+/*@=branchstate@*/
     ds = *dsp;
 
     /*
@@ -629,6 +642,7 @@ int save;
      */
 save = this->i;
     this = rpmdsInit(this);
+    if (this != NULL)
     while (rpmdsNext(this) >= 0) {
 	/*
 	 * If this entry is already present, don't bother.
@@ -666,9 +680,12 @@ save = this->i;
 	ds->Count++;
 
     }
+/*@-nullderef@*/
 this->i = save;
+/*@=nullderef@*/
     return 0;
 }
+/*@=bounds@*/
 
 /**
  * Split EVR into epoch, version, and release components.

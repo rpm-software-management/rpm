@@ -274,12 +274,16 @@ static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
     return rc;
 }
 
-static char * rpmfcFileDep(char * buf, int ix, rpmds this)
+static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
+		/*@null@*/ rpmds this)
 	/*@modifies buf @*/
 {
     int_32 tagN = rpmdsTagN(this);
     char deptype = 'X';
 
+/*@-boundswrite@*/
+    buf[0] = '\0';
+/*@=boundswrite@*/
     switch (tagN) {
     case RPMTAG_PROVIDENAME:
 	deptype = 'P';
@@ -288,8 +292,11 @@ static char * rpmfcFileDep(char * buf, int ix, rpmds this)
 	deptype = 'R';
 	break;
     }
-    sprintf(buf, "%08d%c %s %s 0x%08x", ix, deptype,
+/*@-nullpass@*/
+    if (this != NULL)
+	sprintf(buf, "%08d%c %s %s 0x%08x", ix, deptype,
 		rpmdsN(this), rpmdsEVR(this), rpmdsFlags(this));
+/*@=nullpass@*/
     return buf;
 };
 
@@ -356,6 +363,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	    N = pav[i];
 	    EVR = "";
 	    Flags = dsContext;
+/*@-branchstate@*/
 	    if (pav[i+1] && strchr("=<>", *pav[i+1])) {
 		i++;
 		for (s = pav[i]; *s; s++) {
@@ -378,6 +386,7 @@ assert(*s != '\0');
 		EVR = pav[i];
 assert(EVR != NULL);
 	    }
+/*@=branchstate@*/
 
 	    this = rpmdsSingle(tagN, N, EVR, Flags);
 	    xx = rpmdsMerge(depsp, this);
@@ -1319,14 +1328,14 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, scareMem);
-    rpmdsMerge(&fc->provides, ds);
+    xx = rpmdsMerge(&fc->provides, ds);
     ds = rpmdsFree(ds);
     xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDENAME);
     xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEVERSION);
     xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEFLAGS);
 
     ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, scareMem);
-    rpmdsMerge(&fc->requires, ds);
+    xx = rpmdsMerge(&fc->requires, ds);
     ds = rpmdsFree(ds);
     xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIRENAME);
     xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREVERSION);
@@ -1362,6 +1371,7 @@ assert(ac == c);
 			p, c);
 
     /* Add Provides: */
+/*@-branchstate@*/
     if (fc->provides != NULL && (c = fc->provides->Count) > 0) {
 	p = (const void **) fc->provides->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
@@ -1386,6 +1396,7 @@ assert(ac == c);
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREFLAGS, RPM_INT32_TYPE,
 			p, c);
     }
+/*@=branchstate@*/
 
     /* Add dependency dictionary(#dependencies) */
     p = (const void **) argiData(fc->ddictx);

@@ -29,7 +29,9 @@ struct rpmfc_s {
     ARGV_t ddict;	/*!< (#dependencies) file depends dictionary */
     ARGI_t ddictx;	/*!< (#dependencies) file->dependency mapping */
 
+/*@relnull@*/
     rpmds provides;	/*!< (#provides) package provides */
+/*@relnull@*/
     rpmds requires;	/*!< (#requires) package requires */
 
     StringBuf sb_java;	/*!< concatenated list of java colored files. */
@@ -84,6 +86,8 @@ struct rpmfcTokens_s {
     int colors;
 };
 
+/**
+ */
 typedef struct rpmfcTokens_s * rpmfcToken;
 
 #ifdef __cplusplus
@@ -110,39 +114,49 @@ int rpmfcColoring(const char * fmstr)
  */
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
+	/*@modifies *fp, fc, fileSystem @*/;
+
 /**
  * Destroy a file classifier.
  * @param fc		file classifier
  * @return		NULL always
  */
+/*@-exportlocal@*/
 /*@null@*/
 rpmfc rpmfcFree(/*@only@*/ /*@null@*/ rpmfc fc)
 	/*@modifies fc @*/;
+/*@=exportlocal@*/
 
 /**
  * Create a file classifier.
  * @return		new file classifier
  */
+/*@-exportlocal@*/
 rpmfc rpmfcNew(void)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Build file class dictionary and mappings.
  * @param fc		file classifier
+ * @param argv		files to classify
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int rpmfcClassify(rpmfc fc, ARGV_t argv)
 	/*@globals global_fmagic, fileSystem, internalState @*/
 	/*@modifies fc, global_fmagic, fileSystem, internalState @*/;
+/*@=exportlocal@*/
 
 /**
  * Build file/package dependency dictionary and mappings.
  * @param fc		file classifier
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int rpmfcApply(rpmfc fc)
 	/*@modifies fc @*/;
+/*@=exportlocal@*/
 
 /**
  * Generate package dependencies.
