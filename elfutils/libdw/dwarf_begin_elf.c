@@ -54,6 +54,8 @@ check_section (Dwarf *result, GElf_Ehdr *ehdr, Elf_Scn *scn, bool inscngrp)
 {
   GElf_Shdr shdr_mem;
   GElf_Shdr *shdr;
+  const char *scnname;
+  int cnt;
 
   /* Get the section header data.  */
   shdr = gelf_getshdr (scn, &shdr_mem);
@@ -75,7 +77,7 @@ check_section (Dwarf *result, GElf_Ehdr *ehdr, Elf_Scn *scn, bool inscngrp)
 
   /* We recognize the DWARF section by their names.  This is not very
      safe and stable but the best we can do.  */
-  const char *scnname = elf_strptr (result->elf, ehdr->e_shstrndx,
+  scnname = elf_strptr (result->elf, ehdr->e_shstrndx,
 				    shdr->sh_name);
   if (scnname == NULL)
     {
@@ -88,17 +90,17 @@ check_section (Dwarf *result, GElf_Ehdr *ehdr, Elf_Scn *scn, bool inscngrp)
 
 
   /* Recognize the various sections.  Most names start with .debug_.  */
-  int cnt;
   for (cnt = 0; cnt < ndwarf_scnnames; ++cnt)
     if (strcmp (scnname, dwarf_scnnames[cnt]) == 0)
       {
+	Elf_Data *data;
 	/* Found it.  Remember where the data is.  */
 	if (unlikely (result->sectiondata[cnt] != NULL))
 	  /* A section appears twice.  That's bad.  We ignore the section.  */
 	  break;
 
 	/* Get the section data.  */
-	Elf_Data *data = elf_getdata (scn, NULL);
+	data = elf_getdata (scn, NULL);
 	if (data != NULL && data->d_size != 0)
 	  /* Yep, there is actually data available.  */
 	  result->sectiondata[cnt] = data;
@@ -144,6 +146,8 @@ static Dwarf *
 scngrp_read (Dwarf *result, Elf *elf, GElf_Ehdr *ehdr, Dwarf_Cmd cmd,
 	     Elf_Scn *scngrp)
 {
+  Elf32_Word *scnidx;
+  size_t cnt;
   /* SCNGRP is the section descriptor for a section group which might
      contain debug sections.  */
   Elf_Data *data = elf_getdata (scngrp, NULL);
@@ -156,8 +160,7 @@ scngrp_read (Dwarf *result, Elf *elf, GElf_Ehdr *ehdr, Dwarf_Cmd cmd,
 
   /* The content of the section is a number of 32-bit words which
      represent section indices.  The first word is a flag word.  */
-  Elf32_Word *scnidx = (Elf32_Word *) data->d_buf;
-  size_t cnt;
+  scnidx = (Elf32_Word *) data->d_buf;
   for (cnt = 1; cnt * sizeof (Elf32_Word) <= data->d_size; ++cnt)
     {
       Elf_Scn *scn = elf_getscn (elf, scnidx[cnt]);
@@ -185,6 +188,7 @@ dwarf_begin_elf (elf, cmd, scngrp)
 {
   GElf_Ehdr *ehdr;
   GElf_Ehdr ehdr_mem;
+  Dwarf *result;
 
   /* Get the ELF header of the file.  We need various pieces of
      information from it.  */
@@ -201,7 +205,7 @@ dwarf_begin_elf (elf, cmd, scngrp)
 
 
   /* Allocate the data structure.  */
-  Dwarf *result = (Dwarf *) calloc (1, sizeof (Dwarf));
+  result = (Dwarf *) calloc (1, sizeof (Dwarf));
   if (result == NULL)
     {
       __libdwarf_seterrno (DWARF_E_NOMEM);
@@ -235,7 +239,7 @@ dwarf_begin_elf (elf, cmd, scngrp)
       return NULL;
     }
 
-  __libdwarf_seterrno (DWARF_E_INVALIDCMD);
+  __libdwarf_seterrno (DWARF_E_INVALID_CMD);
   free (result);
   return NULL;
 }

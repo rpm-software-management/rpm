@@ -1,19 +1,16 @@
 /* Pedantic checking of ELF files compliance with gABI/psABI spec.
-   Copyright (C) 2001, 2002 Red Hat, Inc.
+   Copyright (C) 2001, 2002, 2003 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -21,6 +18,8 @@
 
 #include <argp.h>
 #include <assert.h>
+#include <byteswap.h>
+#include <endian.h>
 #include <error.h>
 #include <fcntl.h>
 #include <gelf.h>
@@ -32,6 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/param.h>
 
 #include <elf-knowledge.h>
 #include <system.h>
@@ -76,9 +76,9 @@ static struct argp argp =
 
 /* Declarations of local functions.  */
 static void process_file (int fd, Elf *elf, const char *prefix,
-			  const char *fname, bool only_one);
+			  const char *fname, size_t size, bool only_one);
 static void process_elf_file (Elf *elf, const char *prefix, const char *fname,
-			      bool only_one);
+			      size_t size, bool only_one);
 
 /* True if we should perform very strict testing.  */
 static bool be_strict;
@@ -142,8 +142,16 @@ main (int argc, char *argv[])
       else
 	{
 	  int prev_error_message_count = error_message_count;
+	  struct stat64 st;
 
-	  process_file (fd, elf, NULL, argv[remaining], only_one);
+	  if (fstat64 (fd, &st) != 0)
+	    {
+	      printf ("cannot stat '%s': %m\n", argv[remaining]);
+	      close (fd);
+	      continue;
+	    }
+
+	  process_file (fd, elf, NULL, argv[remaining], st.st_size, only_one);
 
 	  /* Now we can close the descriptor.  */
 	  if (elf_end (elf) != 0)
@@ -222,7 +230,7 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
 /* Process one file.  */
 static void
 process_file (int fd, Elf *elf, const char *prefix, const char *fname,
-	      bool only_one)
+	      size_t size, bool only_one)
 {
   /* We can handle two types of files: ELF files and archives.  */
   Elf_Kind kind = elf_kind (elf);
@@ -231,7 +239,7 @@ process_file (int fd, Elf *elf, const char *prefix, const char *fname,
     {
     case ELF_K_ELF:
       /* Yes!  It's an ELF file.  */
-      process_elf_file (elf, prefix, fname, only_one);
+      process_elf_file (elf, prefix, fname, size, only_one);
       break;
 
     case ELF_K_AR:
@@ -262,7 +270,8 @@ process_file (int fd, Elf *elf, const char *prefix, const char *fname,
 		Elf_Arhdr *arhdr = elf_getarhdr (subelf);
 		assert (arhdr != NULL);
 
-		process_file (fd, subelf, new_prefix, arhdr->ar_name, false);
+		process_file (fd, subelf, new_prefix, arhdr->ar_name,
+			      arhdr->ar_size, false);
 	      }
 
 	    /* Get next archive element.  */
@@ -305,7 +314,7 @@ static const int valid_e_machine[] =
     EM_H8_300H, EM_H8S, EM_H8_500, EM_IA_64, EM_MIPS_X, EM_COLDFIRE,
     EM_68HC12, EM_MMA, EM_PCP, EM_NCPU, EM_NDR1, EM_STARCORE, EM_ME16,
     EM_ST100, EM_TINYJ, EM_X86_64, EM_PDSP, EM_FX66, EM_ST9PLUS, EM_ST7,
-    EM_68HC16, EM_68HC11, EM_68HC08, EM_68HC05, EM_SVX, EM_AT19, EM_VAX,
+    EM_68HC16, EM_68HC11, EM_68HC08, EM_68HC05, EM_SVX, EM_ST19, EM_VAX,
     EM_CRIS, EM_JAVELIN, EM_FIREPATH, EM_ZSP, EM_MMIX, EM_HUANY, EM_PRISM,
     EM_AVR, EM_FR30, EM_D10V, EM_D30V, EM_V850, EM_M32R, EM_MN10300,
     EM_MN10200, EM_PJ, EM_OPENRISC, EM_ARC_A5, EM_XTENSA
@@ -319,7 +328,7 @@ static int shnum;
 
 
 static void
-check_elf_header (Ebl *ebl, GElf_Ehdr *ehdr)
+check_elf_header (Ebl *ebl, GElf_Ehdr *ehdr, size_t size)
 {
   char buf[512];
   int cnt;
@@ -459,10 +468,14 @@ invalid number of section header table entries"));
       if (ehdr->e_phentsize != 0 && ehdr->e_phentsize != sizeof (Elf32_Phdr))
 	error (0, 0, gettext ("invalid program header size: %hd"),
 	       ehdr->e_phentsize);
+      else if (ehdr->e_phoff + ehdr->e_phnum * ehdr->e_phentsize > size)
+	error (0, 0, gettext ("invalid program header position or size"));
 
       if (ehdr->e_shentsize != 0 && ehdr->e_shentsize != sizeof (Elf32_Shdr))
 	error (0, 0, gettext ("invalid section header size: %hd"),
 	       ehdr->e_shentsize);
+      else if (ehdr->e_shoff + ehdr->e_shnum * ehdr->e_shentsize > size)
+	error (0, 0, gettext ("invalid section header position or size"));
     }
   else if (gelf_getclass (ebl->elf) == ELFCLASS64)
     {
@@ -472,10 +485,14 @@ invalid number of section header table entries"));
       if (ehdr->e_phentsize != 0 && ehdr->e_phentsize != sizeof (Elf64_Phdr))
 	error (0, 0, gettext ("invalid program header size: %hd"),
 	       ehdr->e_phentsize);
+      else if (ehdr->e_phoff + ehdr->e_phnum * ehdr->e_phentsize > size)
+	error (0, 0, gettext ("invalid program header position or size"));
 
       if (ehdr->e_shentsize != 0 && ehdr->e_shentsize != sizeof (Elf64_Shdr))
 	error (0, 0, gettext ("invalid section header size: %hd"),
 	       ehdr->e_shentsize);
+      else if (ehdr->e_shoff + ehdr->e_shnum * ehdr->e_shentsize > size)
+	error (0, 0, gettext ("invalid section header position or size"));
     }
 }
 
@@ -669,12 +686,12 @@ section [%2d] '%s': symbol %d: XINDEX used for index which would fit in st_shndx
 		   xndx);
 	}
       else if ((sym->st_shndx >= SHN_LORESERVE
-		&& sym->st_shndx <= SHN_HIRESERVE
+		// && sym->st_shndx <= SHN_HIRESERVE    always true
 		&& sym->st_shndx != SHN_ABS
 		&& sym->st_shndx != SHN_COMMON)
 	       || (sym->st_shndx >= shnum
 		   && (sym->st_shndx < SHN_LORESERVE
-		       || sym->st_shndx > SHN_HIRESERVE)))
+		       /* || sym->st_shndx > SHN_HIRESERVE  always false */)))
 	error (0, 0, gettext ("\
 section [%2d] '%s': symbol %d: invalid section index"),
 	       idx, section_name (ebl, ehdr, idx), cnt);
@@ -705,11 +722,7 @@ section [%2d] '%s': symbol %d: st_value out of bounds"),
 
       if (GELF_ST_BIND (sym->st_info) == STB_LOCAL)
 	{
-	  if (shdr->sh_type == SHT_DYNSYM)
-	    error (0, 0, gettext ("\
-section [%2d] '%s': symbol %d: dynamic symbol table contain local symbol"),
-		   idx, section_name (ebl, ehdr, idx), cnt);
-	  else if (cnt >= shdr->sh_info)
+	  if (cnt >= shdr->sh_info)
 	    error (0, 0, gettext ("\
 section [%2d] '%s': symbol %d: local symbol outside range described in sh_info"),
 		   idx, section_name (ebl, ehdr, idx), cnt);
@@ -729,6 +742,9 @@ section [%2d] '%s': symbol %d: non-local section symbol"),
 	       idx, section_name (ebl, ehdr, idx), cnt);
     }
 }
+
+
+#define REL_DYN_P(name) (strcmp (name, ".rel.dyn") == 0)
 
 
 static void
@@ -767,7 +783,8 @@ check_rela (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
 			       &destshdr_mem);
       if (destshdr != NULL
 	  && destshdr->sh_type != SHT_PROGBITS
-	  && destshdr->sh_type != SHT_NOBITS)
+	  && destshdr->sh_type != SHT_NOBITS
+	  && ! REL_DYN_P (section_name (ebl, ehdr, idx)))
 	error (0, 0, gettext ("\
 section [%2d] '%s': invalid destination section type"),
 	       idx, section_name (ebl, ehdr, idx));
@@ -852,7 +869,8 @@ check_rel (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
 			       &destshdr_mem);
       if (destshdr != NULL
 	  && destshdr->sh_type != SHT_PROGBITS
-	  && destshdr->sh_type != SHT_NOBITS)
+	  && destshdr->sh_type != SHT_NOBITS
+	  && ! REL_DYN_P (section_name (ebl, ehdr, idx)))
 	error (0, 0, gettext ("\
 section [%2d] '%s': invalid destination section type"),
 	       idx, section_name (ebl, ehdr, idx));
@@ -944,6 +962,15 @@ check_dynamic (Ebl *ebl, GElf_Ehdr *ehdr, int idx)
     {
       [DT_RPATH] = true, [DT_SYMBOLIC] = true, [DT_TEXTREL] = true,
       [DT_BIND_NOW] = true
+    };
+  static const bool mandatory[DT_NUM] =
+    {
+      [DT_NULL] = true,
+      [DT_HASH] = true,
+      [DT_STRTAB] = true,
+      [DT_SYMTAB] = true,
+      [DT_STRSZ] = true,
+      [DT_SYMENT] = true
     };
   GElf_Addr reladdr = 0;
   GElf_Word relsz = 0;
@@ -1064,6 +1091,33 @@ section [%2d] '%s': contains %s entry but not %s"),
 		     ebl_dynamic_tag_name (ebl, inner, buf2, sizeof (buf2)));
 	    }
       }
+    else
+      {
+	if (mandatory[cnt])
+	  {
+	    char buf[50];
+	    error (0, 0, gettext ("\
+section [%2d] '%s': mandatory tag %s not present"),
+		   idx, section_name (ebl, ehdr, idx),
+		   ebl_dynamic_tag_name (ebl, cnt, buf, sizeof (buf)));
+	  }
+      }
+
+  /* Check the rel/rela tags.  At least one group must be available.  */
+  if ((has_dt[DT_RELA] || has_dt[DT_RELASZ] || has_dt[DT_RELAENT])
+      && (!has_dt[DT_RELA] || !has_dt[DT_RELASZ] || !has_dt[DT_RELAENT]))
+    error (0, 0, gettext ("\
+section [%2d] '%s': not all of %s, %s, and %s are present"),
+	   idx, section_name (ebl, ehdr, idx),
+	   "DT_RELA", "DT_RELASZ", "DT_RELAENT");
+
+  if ((has_dt[DT_REL] || has_dt[DT_RELSZ] || has_dt[DT_RELENT])
+      && (!has_dt[DT_REL] || !has_dt[DT_RELSZ] || !has_dt[DT_RELENT]))
+    error (0, 0, gettext ("\
+section [%2d] '%s': not all of %s, %s, and %s are present"),
+	   idx, section_name (ebl, ehdr, idx),
+	   "DT_REL", "DT_RELSZ", "DT_RELENT");
+
 }
 
 
@@ -1384,7 +1438,108 @@ section [%2d] '%s' is contained in more than one section group"),
 }
 
 
-static bool dot_interp_section;
+static bool has_loadable_segment;
+static bool has_interp_segment;
+
+static const struct
+{
+  const char *name;
+  size_t namelen;
+  int type;
+  enum { unused, exact, atleast } attrflag;
+  int attr;
+  int attr2;
+} special_sections[] =
+  {
+    /* See figure 4-14 in the gABI.  */
+    { ".bss", 5, SHT_NOBITS, exact, SHF_ALLOC | SHF_WRITE, 0 },
+    { ".comment", 8, SHT_PROGBITS, exact, 0, 0 },
+    { ".data", 6, SHT_PROGBITS, exact, SHF_ALLOC | SHF_WRITE, 0 },
+    { ".data1", 7, SHT_PROGBITS, exact, SHF_ALLOC | SHF_WRITE, 0 },
+    { ".debug", 7, SHT_PROGBITS, exact, 0, 0 },
+    { ".dynamic", 9, SHT_DYNAMIC, atleast, SHF_ALLOC, SHF_WRITE },
+    { ".dynstr", 8, SHT_STRTAB, exact, SHF_ALLOC, 0 },
+    { ".dynsym", 8, SHT_DYNSYM, exact, SHF_ALLOC, 0 },
+    { ".fini", 6, SHT_PROGBITS, exact, SHF_ALLOC | SHF_EXECINSTR, 0 },
+    { ".fini_array", 12, SHT_FINI_ARRAY, exact, SHF_ALLOC | SHF_WRITE, 0 },
+    { ".got", 5, SHT_PROGBITS, unused, 0, 0 }, // XXX more info?
+    { ".hash", 6, SHT_HASH, exact, SHF_ALLOC, 0 },
+    { ".init", 6, SHT_PROGBITS, exact, SHF_ALLOC | SHF_EXECINSTR, 0 },
+    { ".init_array", 12, SHT_INIT_ARRAY, exact, SHF_ALLOC | SHF_WRITE, 0 },
+    { ".interp", 8, SHT_PROGBITS, atleast, 0, SHF_ALLOC }, // XXX more tests?
+    { ".line", 6, SHT_PROGBITS, exact, 0, 0 },
+    { ".note", 6, SHT_NOTE, exact, 0, 0 },
+    { ".plt", 5, SHT_PROGBITS, unused, 0, 0 }, // XXX more tests
+    { ".preinit_array", 15, SHT_PREINIT_ARRAY, exact, SHF_ALLOC | SHF_WRITE, 0 },
+    { ".rel", 4, SHT_REL, atleast, 0, SHF_ALLOC }, // XXX more tests
+    { ".rela", 5, SHT_RELA, atleast, 0, SHF_ALLOC }, // XXX more tests
+    { ".rodata", 8, SHT_PROGBITS, exact, SHF_ALLOC, 0 },
+    { ".rodata1", 9, SHT_PROGBITS, exact, SHF_ALLOC, 0 },
+    { ".shstrtab", 10, SHT_STRTAB, exact, 0, 0 },
+    { ".strtab", 8, SHT_STRTAB, atleast, 0, SHF_ALLOC }, // XXX more tests
+    { ".symtab", 8, SHT_SYMTAB, atleast, 0, SHF_ALLOC }, // XXX more tests
+    { ".symtab_shndx", 14, SHT_SYMTAB_SHNDX, atleast, 0, SHF_ALLOC }, // XXX more tests
+    { ".tbss", 6, SHT_NOBITS, exact, SHF_ALLOC | SHF_WRITE | SHF_TLS, 0 },
+    { ".tdata", 7, SHT_PROGBITS, exact, SHF_ALLOC | SHF_WRITE | SHF_TLS, 0 },
+    { ".tdata1", 8, SHT_PROGBITS, exact, SHF_ALLOC | SHF_WRITE | SHF_TLS, 0 },
+    { ".text", 6, SHT_PROGBITS, exact, SHF_ALLOC | SHF_EXECINSTR, 0 }
+  };
+#define nspecial_sections \
+  (sizeof (special_sections) / sizeof (special_sections[0]))
+
+
+static const char *
+section_flags_string (GElf_Word flags, char *buf, size_t len)
+{
+  static const struct
+  {
+    GElf_Word flag;
+    const char *name;
+  } known_flags[] =
+    {
+#define NEWFLAG(name) { SHF_##name, #name }
+      NEWFLAG (WRITE),
+      NEWFLAG (ALLOC),
+      NEWFLAG (EXECINSTR),
+      NEWFLAG (MERGE),
+      NEWFLAG (STRINGS),
+      NEWFLAG (INFO_LINK),
+      NEWFLAG (LINK_ORDER),
+      NEWFLAG (OS_NONCONFORMING),
+      NEWFLAG (GROUP),
+      NEWFLAG (TLS)
+    };
+#undef NEWFLAG
+  const size_t nknown_flags = sizeof (known_flags) / sizeof (known_flags[0]);
+
+  char *cp = buf;
+  size_t cnt;
+
+  for (cnt = 0; cnt < nknown_flags; ++cnt)
+    if (flags & known_flags[cnt].flag)
+      {
+	size_t ncopy;
+
+	if (cp != buf && len > 1)
+	  {
+	    *cp++ = '|';
+	    --len;
+	  }
+
+	ncopy = MIN (len - 1, strlen (known_flags[cnt].name));
+	cp = mempcpy (cp, known_flags[cnt].name, ncopy);
+	len -= ncopy;
+
+	flags ^= known_flags[cnt].flag;
+      }
+
+  if (flags != 0 || cp == buf)
+    snprintf (cp, len - 1, "%" PRIx64, (uint64_t) flags);
+
+  *cp = '\0';
+
+  return buf;
+}
 
 
 static void
@@ -1393,6 +1548,7 @@ check_sections (Ebl *ebl, GElf_Ehdr *ehdr)
   GElf_Shdr shdr_mem;
   GElf_Shdr *shdr;
   int cnt;
+  bool dot_interp_section = false;
 
   /* Allocate array to count references in section groups.  */
   scnref = (int *) xcalloc (shnum, sizeof (int));
@@ -1436,6 +1592,7 @@ check_sections (Ebl *ebl, GElf_Ehdr *ehdr)
   for (cnt = 1; cnt < shnum; ++cnt)
     {
       Elf_Scn *scn;
+      const char *scnname;
 
       scn = elf_getscn (ebl->elf, cnt);
       shdr = gelf_getshdr (scn, &shdr_mem);
@@ -1447,9 +1604,100 @@ cannot get section header for section [%2d] '%s': %s"),
 	  continue;
 	}
 
-      if (strcmp (elf_strptr (ebl->elf, shstrndx, shdr->sh_name), ".interp")
-	  == 0)
-	dot_interp_section = true;
+      scnname = elf_strptr (ebl->elf, shstrndx, shdr->sh_name);
+
+      if (scnname == NULL)
+	error (0, 0, gettext ("section [%2d]: invalid name"), cnt);
+      else
+	{
+	  /* Check whether it is one of the special sections defined in
+	     the gABI.  */
+	  size_t s;
+	  for (s = 0; s < nspecial_sections; ++s)
+	    if (strncmp (scnname, special_sections[s].name,
+			 special_sections[s].namelen) == 0)
+	      {
+		char stbuf1[100];
+		char stbuf2[100];
+		char stbuf3[100];
+
+		if (shdr->sh_type != special_sections[s].type)
+		  error (0, 0, gettext ("section [%2zd] '%s' has wrong type:"
+					" expected %s, is %s"),
+			 s, scnname,
+			 ebl_section_type_name (ebl, special_sections[s].type,
+						stbuf1, sizeof (stbuf1)),
+			 ebl_section_type_name (ebl, shdr->sh_type,
+						stbuf2, sizeof (stbuf2)));
+
+		if (special_sections[s].attrflag == exact)
+		  {
+		    /* Except for the link order and group bit all the
+		       other bits should match exactly.  */
+		    if ((shdr->sh_flags & ~(SHF_LINK_ORDER | SHF_GROUP))
+			!= special_sections[s].attr)
+		      error (0, 0,
+			     gettext ("section [%2d] '%s' has wrong flags:"
+				      " expected %s, is %s"),
+			     cnt, scnname,
+			     section_flags_string (special_sections[s].attr,
+						   stbuf1, sizeof (stbuf1)),
+			     section_flags_string (shdr->sh_flags
+						   & ~SHF_LINK_ORDER,
+						   stbuf2, sizeof (stbuf2)));
+		  }
+		else if (special_sections[s].attrflag == atleast)
+		  {
+		    if ((shdr->sh_flags & special_sections[s].attr)
+			!= special_sections[s].attr
+			|| ((shdr->sh_flags & ~(SHF_LINK_ORDER | SHF_GROUP
+						| special_sections[s].attr
+						| special_sections[s].attr2))
+			    != 0))
+		      error (0, 0,
+			     gettext ("section [%2d] '%s' has wrong flags:"
+				      " expected %s and possibly %s, is %s"),
+			     cnt, scnname,
+			     section_flags_string (special_sections[s].attr,
+						   stbuf1, sizeof (stbuf1)),
+			     section_flags_string (special_sections[s].attr2,
+						   stbuf2, sizeof (stbuf2)),
+			     section_flags_string (shdr->sh_flags
+						   & ~(SHF_LINK_ORDER
+						       | SHF_GROUP),
+						   stbuf3, sizeof (stbuf3)));
+		  }
+
+		if (strcmp (scnname, ".interp") == 0)
+		  dot_interp_section = true;
+
+		if (strcmp (scnname, ".interp") == 0
+		    || strncmp (scnname, ".rel", 4) == 0
+		    || strcmp (scnname, ".strtab") == 0
+		    || strcmp (scnname, ".symtab") == 0
+		    || strcmp (scnname, ".symtab_shndx") == 0)
+		  {
+		    /* These sections must have the SHF_ALLOC flag set iff
+		       a loadable segment is available.
+
+		       XXX These tests are no 100% correct since strtab,
+		       symtab, etc only have to have the alloc bit set if
+		       any loadable section is affected.  */
+		    if ((shdr->sh_flags & SHF_ALLOC) != 0
+			&& !has_loadable_segment)
+		      error (0, 0, gettext ("\
+section [%2d] '%s' has SHF_ALLOC flag set but there is no loadable segment"),
+			     cnt, scnname);
+		    else if ((shdr->sh_flags & SHF_ALLOC) == 0
+			     && has_loadable_segment)
+		      error (0, 0, gettext ("\
+section [%2d] '%s' has SHF_ALLOC flag not set but there are loadable segments"),
+			     cnt, scnname);
+		  }
+
+		break;
+	      }
+	}
 
       if (shdr->sh_entsize != 0 && shdr->sh_size % shdr->sh_entsize)
 	error (0, 0, gettext ("\
@@ -1547,6 +1795,156 @@ section [%2d] '%s': merge flag set but entry size is zero"),
 	  break;
 	}
     }
+
+  if (has_interp_segment && !dot_interp_section)
+    error (0, 0,
+	   gettext ("INTERP program header entry but no .interp section"));
+}
+
+
+static void
+check_note (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Phdr *phdr, int cnt)
+{
+  char *notemem;
+  GElf_Xword align;
+  GElf_Xword idx;
+
+  if (ehdr->e_type != ET_CORE && ehdr->e_type != ET_REL
+      && ehdr->e_type != ET_EXEC && ehdr->e_type != ET_DYN)
+    error (0, 0,
+	   gettext ("phdr[%d]: no note entries defined for the type of file"),
+	   cnt);
+
+  notemem = gelf_rawchunk (ebl->elf, phdr->p_offset, phdr->p_filesz);
+
+  /* ELF64 files often use note section entries in the 32-bit format.
+     The p_align field is set to 8 in case the 64-bit format is used.
+     In case the p_align value is 0 or 4 the 32-bit format is
+     used.  */
+  align = phdr->p_align == 0 || phdr->p_align == 4 ? 4 : 8;
+#define ALIGNED_LEN(len) (((len) + align - 1) & ~(align - 1))
+
+  idx = 0;
+  while (idx < phdr->p_filesz)
+    {
+      uint64_t namesz;
+      uint64_t descsz;
+      uint64_t type;
+      uint32_t namesz32;
+      uint32_t descsz32;
+
+      if (align == 4)
+	{
+	  uint32_t *ptr = (uint32_t *) (notemem + idx);
+
+	  if ((__BYTE_ORDER == __LITTLE_ENDIAN
+	       && ehdr->e_ident[EI_DATA] == ELFDATA2MSB)
+	      || (__BYTE_ORDER == __BIG_ENDIAN
+		  && ehdr->e_ident[EI_DATA] == ELFDATA2LSB))
+	    {
+	      namesz32 = namesz = bswap_32 (*ptr);
+	      ++ptr;
+	      descsz32 = descsz = bswap_32 (*ptr);
+	      ++ptr;
+	      type = bswap_32 (*ptr);
+	    }
+	  else
+	    {
+	      namesz32 = namesz = *ptr++;
+	      descsz32 = descsz = *ptr++;
+	      type = *ptr;
+	    }
+	}
+      else
+	{
+	  uint64_t *ptr = (uint64_t *) (notemem + idx);
+	  uint32_t *ptr32 = (uint32_t *) (notemem + idx);
+
+	  if ((__BYTE_ORDER == __LITTLE_ENDIAN
+	       && ehdr->e_ident[EI_DATA] == ELFDATA2MSB)
+	      || (__BYTE_ORDER == __BIG_ENDIAN
+		  && ehdr->e_ident[EI_DATA] == ELFDATA2LSB))
+	    {
+	      namesz = bswap_64 (*ptr);
+	      ++ptr;
+	      descsz = bswap_64 (*ptr);
+	      ++ptr;
+	      type = bswap_64 (*ptr);
+
+	      namesz32 = bswap_32 (*ptr32);
+	      ++ptr32;
+	      descsz32 = bswap_32 (*ptr32);
+	    }
+	  else
+	    {
+	      namesz = *ptr++;
+	      descsz = *ptr++;
+	      type = *ptr;
+
+	      namesz32 = *ptr32++;
+	      descsz32 = *ptr32;
+	    }
+	}
+
+      if (idx + 3 * align > phdr->p_filesz
+	  || (idx + 3 * align + ALIGNED_LEN (namesz) + ALIGNED_LEN (descsz)
+	      > phdr->p_filesz))
+	{
+	  if (ehdr->e_ident[EI_CLASS] == ELFCLASS64
+	      && idx + 3 * 4 <= phdr->p_filesz
+	      && (idx + 3 * 4 + ALIGNED_LEN (namesz32) + ALIGNED_LEN (descsz32)
+		  <= phdr->p_filesz))
+	    error (0, 0, gettext ("\
+phdr[%d]: note entries probably in form of a 32-bit ELF file"), cnt);
+	  else
+	    error (0, 0, gettext ("phdr[%d]: extra %zu bytes after last note"),
+		   cnt, (size_t) (phdr->p_filesz - idx));
+	  break;
+	}
+
+      /* Make sure it is one of the note types we know about.  */
+      if (ehdr->e_type == ET_CORE)
+	{
+	  switch (type)
+	    {
+	    case NT_PRSTATUS:
+	    case NT_FPREGSET:
+	    case NT_PRPSINFO:
+	    case NT_TASKSTRUCT:		/* NT_PRXREG on Solaris.  */
+	    case NT_PLATFORM:
+	    case NT_AUXV:
+	    case NT_GWINDOWS:
+	    case NT_ASRS:
+	    case NT_PSTATUS:
+	    case NT_PSINFO:
+	    case NT_PRCRED:
+	    case NT_UTSNAME:
+	    case NT_LWPSTATUS:
+	    case NT_LWPSINFO:
+	    case NT_PRFPXREG:
+	      /* Known type.  */
+	      break;
+
+	    default:
+	      error (0, 0, gettext ("\
+phdr[%d]: unknown core file note type %" PRIu64 " at offset %" PRIu64),
+		     cnt, type, idx);
+	    }
+	}
+      else
+	{
+	  if (type != NT_VERSION)
+	    error (0, 0, gettext ("\
+phdr[%d]: unknown object file note type %" PRIu64 " at offset %" PRIu64),
+		   cnt, type, idx);
+	}
+
+      /* Move to the next entry.  */
+      idx += 3 * align + ALIGNED_LEN (namesz) + ALIGNED_LEN (descsz);
+
+    }
+
+  gelf_freechunk (ebl->elf, notemem);
 }
 
 
@@ -1554,20 +1952,16 @@ static void
 check_program_header (Ebl *ebl, GElf_Ehdr *ehdr)
 {
   int cnt;
+  int num_pt_interp = 0;
+  int num_pt_tls = 0;
 
   if (ehdr->e_phoff == 0)
-    {
-      /* No program header.  */
-      if (dot_interp_section)
-	error (0, 0,
-	       gettext (".interp section present but no program header"));
+    return;
 
-      return;
-    }
-
-  if (ehdr->e_type != ET_EXEC && ehdr->e_type != ET_DYN)
+  if (ehdr->e_type != ET_EXEC && ehdr->e_type != ET_DYN
+      && ehdr->e_type != ET_CORE)
     error (0, 0, gettext ("\
-only executables and shared objects can have program headers"));
+only executables, shared objects, and core files can have program headers"));
 
   for (cnt = 0; cnt < ehdr->e_phnum; ++cnt)
     {
@@ -1582,14 +1976,31 @@ only executables and shared objects can have program headers"));
 	  continue;
 	}
 
-      if (phdr->p_type >= PT_NUM)
+      if (phdr->p_type >= PT_NUM && phdr->p_type != PT_GNU_EH_FRAME)
 	error (0, 0, gettext ("\
 program header entry %d: unknown program header entry type"),
 	       cnt);
 
-      if (phdr->p_type == PT_INTERP && !dot_interp_section)
-	error (0, 0,
-	       gettext ("INTERP program header entry but no .interp section"));
+      if (phdr->p_type == PT_LOAD)
+	has_loadable_segment = true;
+      else if (phdr->p_type == PT_INTERP)
+	{
+	  if (++num_pt_interp != 1)
+	    {
+	      if (num_pt_interp == 2)
+		error (0, 0, gettext ("\
+more than one INTERP entry in program header"));
+	    }
+	  has_interp_segment = true;
+	}
+      else if (phdr->p_type == PT_TLS)
+	{
+	  if (++num_pt_tls == 2)
+	    error (0, 0,
+		   gettext ("more than one TLS entry in program header"));
+	}
+      else if (phdr->p_type == PT_NOTE)
+	check_note (ebl, ehdr, phdr, cnt);
     }
 }
 
@@ -1597,7 +2008,7 @@ program header entry %d: unknown program header entry type"),
 /* Process one file.  */
 static void
 process_elf_file (Elf *elf, const char *prefix, const char *fname,
-		  bool only_one)
+		  size_t size, bool only_one)
 {
   GElf_Ehdr ehdr_mem;
   GElf_Ehdr *ehdr = gelf_getehdr (elf, &ehdr_mem);
@@ -1624,12 +2035,12 @@ process_elf_file (Elf *elf, const char *prefix, const char *fname,
      is an error.  */
 
   /* Go straight by the gABI, check all the parts in turn.  */
-  check_elf_header (ebl, ehdr);
+  check_elf_header (ebl, ehdr, size);
+
+  /* Check the program header.  */
+  check_program_header (ebl, ehdr);
 
   /* Next the section headers.  It is OK if there are no section
      headers at all.  */
   check_sections (ebl, ehdr);
-
-  /* Finally check the program header.  */
-  check_program_header (ebl, ehdr);
 }

@@ -6,7 +6,7 @@
 
    You should have received a copy of the Open Software License along
    with this program; if not, you may obtain a copy of the Open Software
-   License version 1.0 from http://www.opensource.org/license/osl.php or
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
    by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
    3001 King Ranch Road, Ukiah, CA 95482.   */
 
@@ -24,6 +24,7 @@ main (int argc, char *argv[])
   Elf *elf;
   int fd;
   Elf_Scn *section;
+  char name[] = "test.XXXXXX";
 
   if (elf_version (EV_CURRENT) == EV_NONE)
     {
@@ -31,7 +32,6 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  char name[] = "test.XXXXXX";
   fd = mkstemp (name);
   if (fd < 0)
     {

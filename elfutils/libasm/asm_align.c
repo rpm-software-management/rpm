@@ -2,23 +2,21 @@
    Copyright (C) 2002 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
+#include <stdlib.h>
 #include <sys/param.h>
 
 #include <libasmP.h>
@@ -30,6 +28,7 @@ asm_align (asmscn, value)
      AsmScn_t *asmscn;
      GElf_Word value;
 {
+  int result = 0;
   if (asmscn == NULL)
     /* An earlier error.  */
     return -1;
@@ -53,7 +52,9 @@ asm_align (asmscn, value)
       cnt = value - (asmscn->offset & (value - 1));
 
       /* Ensure there is enough room to add the fill bytes.  */
-      __libasm_ensure_section_space (asmscn, cnt);
+      result = __libasm_ensure_section_space (asmscn, cnt);
+      if (result != 0)
+	goto out;
 
       /* Fill in the bytes.  We align the pattern according to the
 	 current offset.  */
@@ -90,15 +91,16 @@ asm_align (asmscn, value)
 	}
     }
 
+ out:
   rwlock_unlock (asmscn->ctx->lock);
 
-  return 0;
+  return result;
 }
 
 
 /* Ensure there are at least LEN bytes available in the output buffer
    for ASMSCN.  */
-void
+int
 __libasm_ensure_section_space (asmscn, len)
      AsmScn_t *asmscn;
      size_t len;
@@ -112,8 +114,10 @@ __libasm_ensure_section_space (asmscn, len)
       /* This is the first block.  */
       size = MAX (2 * len, 960);
 
-      asmscn->content = (struct AsmData *) xmalloc (sizeof (struct AsmData)
-						    + size);
+      asmscn->content = (struct AsmData *) malloc (sizeof (struct AsmData)
+						   + size);
+      if (asmscn->content == NULL)
+	return -1;
 
       asmscn->content->next = asmscn->content;
     }
@@ -123,11 +127,13 @@ __libasm_ensure_section_space (asmscn, len)
 
       if (asmscn->content->maxlen - asmscn->content->len >= len)
 	/* Nothing to do, there is enough space.  */
-	return;
+	return 0;
 
       size = MAX (2 *len, MIN (32768, 2 * asmscn->offset));
 
-      newp = (struct AsmData *) xmalloc (sizeof (struct AsmData) + size);
+      newp = (struct AsmData *) malloc (sizeof (struct AsmData) + size);
+      if (newp == NULL)
+	return -1;
 
       newp->next = asmscn->content->next;
       asmscn->content = asmscn->content->next = newp;
@@ -135,4 +141,6 @@ __libasm_ensure_section_space (asmscn, len)
 
   asmscn->content->len = 0;
   asmscn->content->maxlen = size;
+
+  return 0;
 }

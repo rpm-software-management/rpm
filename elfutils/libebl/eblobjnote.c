@@ -2,18 +2,15 @@
    Copyright (C) 2002 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -45,6 +42,7 @@ ebl_object_note (ebl, name, type, descsz, desc)
 	      uint32_t os;
 	      uint32_t version[descsz / 4 - 1];
 	    } *tag = (__typeof (tag)) desc;
+	    size_t cnt;
 
 	    const char *os;
 	    switch (tag->os)
@@ -71,7 +69,6 @@ ebl_object_note (ebl, name, type, descsz, desc)
 	      }
 
 	    printf (gettext ("    OS: %s, ABI: "), os);
-	    size_t cnt;
 	    for (cnt = 0; cnt < descsz / 4 - 1; ++cnt)
 	      {
 		if (cnt != 0)

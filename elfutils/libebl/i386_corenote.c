@@ -2,18 +2,15 @@
    Copyright (C) 2002 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -62,7 +59,10 @@ struct elf_prpsinfo
     unsigned long int pr_flag;		/* Flags.  */
     unsigned short int pr_uid;
     unsigned short int pr_gid;
-    int pr_pid, pr_ppid, pr_pgrp, pr_sid;
+    int pr_pid;
+    int pr_ppid;
+    int pr_pgrp;
+    int pr_sid;
     /* Lots missing */
     char pr_fname[16];			/* Filename of executable.  */
     char pr_psargs[80];			/* Initial part of arg list.  */
@@ -81,11 +81,11 @@ i386_core_note (name, type, descsz, desc)
   switch (type)
     {
     case NT_PRSTATUS:
+    { struct elf_prstatus *stat = (struct elf_prstatus *) desc;
+
       if (descsz < sizeof (struct elf_prstatus))
 	/* Not enough data.  */
 	break;
-
-      struct elf_prstatus *stat = (struct elf_prstatus *) desc;
 
       printf ("    SIGINFO:  signo: %d, code = %d, errno = %d\n"
 	      "    signal: %hd, pending: %#08lx, holding: %#08lx\n"
@@ -104,10 +104,10 @@ i386_core_note (name, type, descsz, desc)
 	      stat->pr_cursig,
 	      stat->pr_sigpend, stat->pr_sighold,
 	      stat->pr_pid, stat->pr_ppid, stat->pr_pgrp, stat->pr_sid,
-	      stat->pr_utime.tv_sec, stat->pr_utime.tv_usec,
-	      stat->pr_stime.tv_sec, stat->pr_stime.tv_usec,
-	      stat->pr_cutime.tv_sec, stat->pr_cutime.tv_usec,
-	      stat->pr_cstime.tv_sec, stat->pr_cstime.tv_usec,
+	      stat->pr_utime.tv_sec, (long int) stat->pr_utime.tv_usec,
+	      stat->pr_stime.tv_sec, (long int) stat->pr_stime.tv_usec,
+	      stat->pr_cutime.tv_sec, (long int) stat->pr_cutime.tv_usec,
+	      stat->pr_cstime.tv_sec, (long int) stat->pr_cstime.tv_usec,
 	      stat->pr_reg[6], stat->pr_reg[0], stat->pr_reg[1],
 	      stat->pr_reg[2], stat->pr_reg[3], stat->pr_reg[4],
 	      stat->pr_reg[5], stat->pr_reg[15], stat->pr_reg[12],
@@ -118,14 +118,14 @@ i386_core_note (name, type, descsz, desc)
 
       /* We handled this entry.  */
       result = true;
-      break;
+    } break;
 
     case NT_PRPSINFO:
+    { struct elf_prpsinfo *info = (struct elf_prpsinfo *) desc;
+
       if (descsz < sizeof (struct elf_prpsinfo))
 	/* Not enough data.  */
 	break;
-
-      struct elf_prpsinfo *info = (struct elf_prpsinfo *) desc;
 
       printf ("    state: %c (%hhd),  zombie: %hhd,  nice: %hhd\n"
 	      "    flags: %08lx,  uid: %hd,  gid: %hd\n"
@@ -139,7 +139,7 @@ i386_core_note (name, type, descsz, desc)
 
       /* We handled this entry.  */
       result = true;
-      break;
+    } break;
 
     default:
       break;

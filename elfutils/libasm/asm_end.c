@@ -1,19 +1,16 @@
 /* Finalize operations on the assembler context, free all resources.
-   Copyright (C) 2002 Red Hat, Inc.
+   Copyright (C) 2002, 2003 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -55,11 +52,16 @@ binary_end (AsmCtx_t *ctx)
   size_t strscnndx = 0;
   size_t xndxscnndx = 0;
   Elf_Data *data;
+  Elf_Data *shstrtabdata;
+  Elf_Data *strtabdata = NULL;
+  Elf_Data *xndxdata = NULL;
   GElf_Shdr shdr_mem;
   GElf_Shdr *shdr;
   GElf_Ehdr ehdr_mem;
   GElf_Ehdr *ehdr;
   AsmScn_t *asmscn;
+  int result = 0;
+  AsmScnGrp_t *scngrp;
 
   /* Iterate over the created sections and compute the offsets of the
      various subsections and fill in the content.  */
@@ -128,14 +130,14 @@ binary_end (AsmCtx_t *ctx)
 
       /* Create the symbol string table section.  */
       strscn = elf_newscn (ctx->out.elf);
-      data = elf_newdata (strscn);
+      strtabdata = elf_newdata (strscn);
       shdr = gelf_getshdr (strscn, &shdr_mem);
-      if (data == NULL || shdr == NULL)
+      if (strtabdata == NULL || shdr == NULL)
 	error (EXIT_FAILURE, 0, _("cannot create section for output file: %s"),
 	       elf_errmsg (-1));
       strscnndx = elf_ndxscn (strscn);
 
-      ebl_strtabfinalize (ctx->symbol_strtab, data);
+      ebl_strtabfinalize (ctx->symbol_strtab, strtabdata);
 
       shdr->sh_type = SHT_STRTAB;
       assert (shdr->sh_entsize == 0);
@@ -154,7 +156,9 @@ binary_end (AsmCtx_t *ctx)
       /* We know how many symbols there will be in the symbol table.  */
       data->d_size = gelf_fsize (ctx->out.elf, ELF_T_SYM,
 				 ctx->nsymbol_tab + 1, EV_CURRENT);
-      symtab = xmalloc (data->d_size);
+      symtab = malloc (data->d_size);
+      if (symtab == NULL)
+	return -1;
       data->d_buf = symtab;
       data->d_type = ELF_T_SYM;
       data->d_off = 0;
@@ -182,7 +186,8 @@ binary_end (AsmCtx_t *ctx)
 	    syment.st_value = sym->scn->offset + sym->offset;
 	    syment.st_size = sym->size;
 
-	    /* Add local symbols at the beginning, the other from the end.  */
+	    /* Add local symbols at the beginning, the other from
+	       the end.  */
 	    ptr = sym->binding == STB_LOCAL ? ptr_local++ : ptr_nonlocal--;
 
 	    /* Determine the section index.  We have to handle the
@@ -203,7 +208,6 @@ binary_end (AsmCtx_t *ctx)
 		       exist.  */
 		    Elf_Scn *xndxscn;
 		    size_t symscnndx = elf_ndxscn (symscn);
-		    Elf_Data *xndxdata;
 
 		    xndxscn = elf_newscn (ctx->out.elf);
 		    xndxdata = elf_newdata (xndxscn);
@@ -216,6 +220,7 @@ cannot create extended section index table: %s"),
 
 		    shdr->sh_type = SHT_SYMTAB_SHNDX;
 		    shdr->sh_entsize = sizeof (Elf32_Word);
+		    shdr->sh_addralign = sizeof (Elf32_Word);
 		    shdr->sh_link = symscnndx;
 
 		    (void) gelf_update_shdr (xndxscn, shdr);
@@ -228,7 +233,9 @@ cannot create extended section index table: %s"),
 		    xndxdata->d_size = elf32_fsize (ELF_T_WORD,
 						    ctx->nsymbol_tab + 1,
 						    EV_CURRENT);
-		    xshndx = xndxdata->d_buf = xcalloc (1, xndxdata->d_size);
+		    xshndx = xndxdata->d_buf = calloc (1, xndxdata->d_size);
+		    if (xshndx == NULL)
+		      return -1;
 		    /* Using ELF_T_WORD here relies on the fact that the
 		       32- and 64-bit types are the same size.  */
 		    xndxdata->d_type = ELF_T_WORD;
@@ -257,6 +264,8 @@ cannot create extended section index table: %s"),
       shdr->sh_link = strscnndx;
       shdr->sh_info = ptr_local;
       shdr->sh_entsize = gelf_fsize (ctx->out.elf, ELF_T_SYM, 1, EV_CURRENT);
+      shdr->sh_addralign = gelf_fsize (ctx->out.elf, ELF_T_ADDR, 1,
+				       EV_CURRENT);
 
       (void) gelf_update_shdr (symscn, shdr);
     }
@@ -265,9 +274,9 @@ cannot create extended section index table: %s"),
   /* Create the section header string table section and fill in the
      references in the section headers.  */
   shstrscn = elf_newscn (ctx->out.elf);
-  data = elf_newdata (shstrscn);
+  shstrtabdata = elf_newdata (shstrscn);
   shdr = gelf_getshdr (shstrscn, &shdr_mem);
-  if (shstrscn == NULL || data == NULL || shdr == NULL)
+  if (shstrscn == NULL || shstrtabdata == NULL || shdr == NULL)
     error (EXIT_FAILURE, 0, _("cannot create section for output file: %s"),
 	   elf_errmsg (-1));
 
@@ -275,7 +284,7 @@ cannot create extended section index table: %s"),
   /* Add the name of the section header string table.  */
   shstrscn_strent = ebl_strtabadd (ctx->section_strtab, ".shstrtab", 10);
 
-  ebl_strtabfinalize (ctx->section_strtab, data);
+  ebl_strtabfinalize (ctx->section_strtab, shstrtabdata);
 
   shdr->sh_type = SHT_STRTAB;
   assert (shdr->sh_entsize == 0);
@@ -312,7 +321,9 @@ cannot create extended section index table: %s"),
 	     here.  */
 	  data->d_size = elf32_fsize (ELF_T_WORD, runp->nmembers + 1,
 				      EV_CURRENT);
-	  grpdata = data->d_buf = xmalloc (data->d_size);
+	  grpdata = data->d_buf = malloc (data->d_size);
+	  if (grpdata == NULL)
+	    return -1;
 	  data->d_type = ELF_T_WORD;
 	  data->d_off = 0;
 	  data->d_align = elf32_fsize (ELF_T_WORD, 1, EV_CURRENT);
@@ -438,19 +449,36 @@ cannot create extended section index table: %s"),
   /* Write out the ELF file.  */
   if (unlikely (elf_update (ctx->out.elf, ELF_C_WRITE_MMAP)) < 0)
     {
-    err_libelf:
       __libasm_seterrno (ASM_E_LIBELF);
-      return -1;
+      result = -1;
     }
+
+  /* We do not need the section header and symbol string tables anymore.  */
+  free (shstrtabdata->d_buf);
+  if (strtabdata != NULL)
+    free (strtabdata->d_buf);
+  /* We might have allocated the extended symbol table index.  */
+  if (xndxdata != NULL)
+    free (xndxdata->d_buf);
+
+  /* Free section groups memory.  */
+  scngrp = ctx->groups;
+  if (scngrp != NULL)
+    do
+      free (elf_getdata (scngrp->scn, NULL)->d_buf);
+    while ((scngrp = scngrp->next) != ctx->groups);
 
   /* Finalize the ELF handling.  */
   if (unlikely (elf_end (ctx->out.elf)) != 0)
-    goto err_libelf;
+    {
+      __libasm_seterrno (ASM_E_LIBELF);
+      result = -1;
+    }
 
   /* Free the temporary resources.  */
   free (symtab);
 
-  return 0;
+  return result;
 }
 
 
@@ -489,10 +517,65 @@ asm_end (ctx)
 }
 
 
+static void
+free_section (AsmScn_t *scnp)
+{
+  void *oldp;
+  struct AsmData *data;
+
+  if (scnp->subnext != NULL)
+    free_section (scnp->subnext);
+
+  data = scnp->content;
+  if (data != NULL)
+    do
+      {
+	oldp = data;
+	data = data->next;
+	free (oldp);
+      }
+    while (oldp != scnp->content);
+
+  free (scnp);
+}
+
+
 void
 __libasm_finictx (ctx)
      AsmCtx_t *ctx;
 {
+  void *runp = NULL;
+  AsmSym_t *sym;
+  AsmScnGrp_t *scngrp;
+
+  /* Iterate through section table and free individual entries.  */
+  AsmScn_t *scn = ctx->section_list;
+  while (scn != NULL)
+    {
+      AsmScn_t *oldp = scn;
+      scn = scn->allnext;
+      free_section (oldp);
+    }
+
+  /* Free the resources of the symbol table.  */
+  while ((sym = asm_symbol_tab_iterate (&ctx->symbol_tab, &runp)) != NULL)
+    free (sym);
+  asm_symbol_tab_free (&ctx->symbol_tab);
+
+
+  /* Free section groups.  */
+  scngrp = ctx->groups;
+  if (scngrp != NULL)
+    do
+      {
+	AsmScnGrp_t *oldp = scngrp;
+
+	scngrp = scngrp->next;
+	free (oldp);
+      }
+    while (scngrp != ctx->groups);
+
+
   if (unlikely (ctx->textp))
     {
       /* Close the stream.  */
@@ -505,11 +588,6 @@ __libasm_finictx (ctx)
 	 find any.  */
       (void) close (ctx->fd);
 
-
-      /* XXX Iterate through section table and free individual entries.  */
-
-      /* Free the resources of the hash table.  */
-      asm_symbol_tab_free (&ctx->symbol_tab);
       /* And the string tables.  */
       ebl_strtabfree (ctx->section_strtab);
       ebl_strtabfree (ctx->symbol_strtab);

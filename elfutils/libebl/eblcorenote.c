@@ -2,18 +2,15 @@
    Copyright (C) 2002 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -44,10 +41,11 @@ ebl_core_note (ebl, name, type, descsz, desc)
 	break;
 
       case NT_AUXV:
-	;
+      {
 	size_t cnt;
 	size_t elsize = (class == ELFCLASS32
 			 ? sizeof (Elf32_auxv_t) : sizeof (Elf64_auxv_t));
+	const char *at;
 
 	for (cnt = 0; (cnt + 1) * elsize <= descsz; ++cnt)
 	  {
@@ -71,7 +69,6 @@ ebl_core_note (ebl, name, type, descsz, desc)
 
 	    /* XXX Do we need the auxiliary vector info anywhere
 	       else?  If yes, move code into a separate function.  */
-	    const char *at;
 
 	    switch (type)
 	      {
@@ -145,6 +142,7 @@ ebl_core_note (ebl, name, type, descsz, desc)
 	      /* Reached the end.  */
 	      break;
 	  }
+      }
 	break;
 
       default:

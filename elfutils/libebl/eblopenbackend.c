@@ -1,27 +1,24 @@
 /* Generate ELF backend handle.
-   Copyright (C) 2000, 2001, 2002 Red Hat, Inc.
+   Copyright (C) 2000, 2001, 2002, 2003 Red Hat, Inc.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
 #include <assert.h>
+#include <dlfcn.h>
 #include <error.h>
 #include <gelf.h>
-#include <ltdl.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,44 +38,83 @@ static const struct
   int em;
 } machines[] =
 {
-  { "libebl_m32", "elf_m32", "m32", 3, EM_M32 },
-  { "libebl_SPARC", "elf_sparc", "sparc", 5, EM_SPARC },
-  { "libebl_i386", "elf_i386", "i386", 4, EM_386 },
-  { "libebl_m68k", "elf_m68k", "m68k", 4, EM_68K },
-  { "libebl_m88k", "elf_m88k", "m88k", 4, EM_88K },
-  { "libebl_i860", "elf_i860", "i860", 4, EM_860 },
-  { "libebl_mips", "elf_mips", "mips", 4, EM_MIPS },
-  { "libebl_s370", "ebl_s370", "s370", 4, EM_S370 },
-  { "libebl_mips", "elf_mipsel", "mips", 4, EM_MIPS_RS3_LE },
-  { "libebl_parisc", "elf_parisc", "parisc", 6, EM_PARISC },
-  { "libebl_vpp500", "elf_vpp500", "vpp500", 5, EM_VPP500 },
-  { "libebl_v8plus", "elf_v8plus", "v8plus", 6, EM_SPARC32PLUS },
-  { "libebl_i960", "elf_i960", "i960", 4, EM_960 },
-  { "libebl_ppc", "elf_ppc", "ppc", 3, EM_PPC },
-  { "libebl_ppc64", "elf_ppc64", "ppc64", 5, EM_PPC64 },
-  { "libebl_s390", "ebl_s390", "s390", 4, EM_S390 },
-  { "libebl_v800", "ebl_v800", "v800", 4, EM_V800 },
-  { "libebl_fr20", "ebl_fr20", "fr20", 4, EM_FR20 },
-  { "libebl_rh32", "ebl_rh32", "rh32", 4, EM_RH32 },
-  { "libebl_rce", "ebl_rce", "rce", 3, EM_RCE },
-  { "libebl_arm", "ebl_arm", "arm", 3, EM_ARM },
-  { "libebl_sh", "elf_sh", "sh", 2, EM_SH },
-  /* XXX Many more missing ... */
+  { "i386", "elf_i386", "i386", 4, EM_386 },
+  { "ia64", "elf_ia64", "ia64", 4, EM_IA_64 },
+  { "alpha", "elf_alpha", "alpha", 5, EM_ALPHA },
+  { "x86_64", "elf_x86_64", "x86_64", 6, EM_X86_64 },
+  { "sh", "elf_sh", "sh", 2, EM_SH },
+  { "arm", "ebl_arm", "arm", 3, EM_ARM },
+  { "sparc", "elf_sparcv9", "sparc", 5, EM_SPARCV9 },
+  { "sparc", "elf_sparc", "sparc", 5, EM_SPARC },
+  { "sparc", "elf_sparcv8plus", "sparc", 5, EM_SPARC32PLUS },
+
+  { "m32", "elf_m32", "m32", 3, EM_M32 },
+  { "m68k", "elf_m68k", "m68k", 4, EM_68K },
+  { "m88k", "elf_m88k", "m88k", 4, EM_88K },
+  { "i860", "elf_i860", "i860", 4, EM_860 },
+  { "mips", "elf_mips", "mips", 4, EM_MIPS },
+  { "s370", "ebl_s370", "s370", 4, EM_S370 },
+  { "mips", "elf_mipsel", "mips", 4, EM_MIPS_RS3_LE },
+  { "parisc", "elf_parisc", "parisc", 6, EM_PARISC },
+  { "vpp500", "elf_vpp500", "vpp500", 5, EM_VPP500 },
+  { "sparc", "elf_v8plus", "v8plus", 6, EM_SPARC32PLUS },
+  { "i960", "elf_i960", "i960", 4, EM_960 },
+  { "ppc", "elf_ppc", "ppc", 3, EM_PPC },
+  { "ppc64", "elf_ppc64", "ppc64", 5, EM_PPC64 },
+  { "s390", "ebl_s390", "s390", 4, EM_S390 },
+  { "v800", "ebl_v800", "v800", 4, EM_V800 },
+  { "fr20", "ebl_fr20", "fr20", 4, EM_FR20 },
+  { "rh32", "ebl_rh32", "rh32", 4, EM_RH32 },
+  { "rce", "ebl_rce", "rce", 3, EM_RCE },
+  { "tricore", "elf_tricore", "tricore", 7, EM_TRICORE },
+  { "arc", "elf_arc", "arc", 3, EM_ARC },
+  { "h8", "elf_h8_300", "h8_300", 6, EM_H8_300 },
+  { "h8", "elf_h8_300h", "h8_300h", 6, EM_H8_300H },
+  { "h8", "elf_h8s", "h8s", 6, EM_H8S },
+  { "h8", "elf_h8_500", "h8_500", 6, EM_H8_500 },
+  { "mips_x", "elf_mips_x", "mips_x", 6, EM_MIPS_X },
+  { "coldfire", "elf_coldfire", "coldfire", 8, EM_COLDFIRE },
+  { "m68k", "elf_68hc12", "68hc12", 6, EM_68HC12 },
+  { "mma", "elf_mma", "mma", 3, EM_MMA },
+  { "pcp", "elf_pcp", "pcp", 3, EM_PCP },
+  { "ncpu", "elf_ncpu", "ncpu", 4, EM_NCPU },
+  { "ndr1", "elf_ndr1", "ndr1", 4, EM_NDR1 },
+  { "starcore", "elf_starcore", "starcore", 8, EM_STARCORE },
+  { "me16", "elf_me16", "em16", 4, EM_ME16 },
+  { "st100", "elf_st100", "st100", 5, EM_ST100 },
+  { "tinyj", "elf_tinyj", "tinyj", 5, EM_TINYJ },
+  { "pdsp", "elf_pdsp", "pdsp", 4, EM_PDSP },
+  { "fx66", "elf_fx66", "fx66", 4, EM_FX66 },
+  { "st9plus", "elf_st9plus", "st9plus", 7, EM_ST9PLUS },
+  { "st7", "elf_st7", "st7", 3, EM_ST7 },
+  { "m68k", "elf_68hc16", "68hc16", 6, EM_68HC16 },
+  { "m68k", "elf_68hc11", "68hc11", 6, EM_68HC11 },
+  { "m68k", "elf_68hc08", "68hc08", 6, EM_68HC08 },
+  { "m68k", "elf_68hc05", "68hc05", 6, EM_68HC05 },
+  { "svx", "elf_svx", "svx", 3, EM_SVX },
+  { "st19", "elf_st19", "st19", 4, EM_ST19 },
+  { "vax", "elf_vax", "vax", 3, EM_VAX },
+  { "cris", "elf_cris", "cris", 4, EM_CRIS },
+  { "javelin", "elf_javelin", "javelin", 7, EM_JAVELIN },
+  { "firepath", "elf_firepath", "firepath", 8, EM_FIREPATH },
+  { "zsp", "elf_zsp", "zsp", 3, EM_ZSP},
+  { "mmix", "elf_mmix", "mmix", 4, EM_MMIX },
+  { "hunay", "elf_huany", "huany", 5, EM_HUANY },
+  { "prism", "elf_prism", "prism", 5, EM_PRISM },
+  { "avr", "elf_avr", "avr", 3, EM_AVR },
+  { "fr30", "elf_fr30", "fr30", 4, EM_FR30 },
+  { "dv10", "elf_dv10", "dv10", 4, EM_D10V },
+  { "dv30", "elf_dv30", "dv30", 4, EM_D30V },
+  { "v850", "elf_v850", "v850", 4, EM_V850 },
+  { "m32r", "elf_m32r", "m32r", 4, EM_M32R },
+  { "mn10300", "elf_mn10300", "mn10300", 7, EM_MN10300 },
+  { "mn10200", "elf_mn10200", "mn10200", 7, EM_MN10200 },
+  { "pj", "elf_pj", "pj", 2, EM_PJ },
+  { "openrisc", "elf_openrisc", "openrisc", 8, EM_OPENRISC },
+  { "arc", "elf_arc_a5", "arc_a5", 6, EM_ARC_A5 },
+  { "xtensa", "elf_xtensa", "xtensa", 6, EM_XTENSA },
 };
 #define nmachines (sizeof (machines) / sizeof (machines[0]))
-
-
-/* Initialize the ltdl library.  */
-static void
-dlinit (void)
-{
-  if (lt_dlinit () != 0)
-    error (EXIT_FAILURE, 0, _("initialization of libltdl failed"));
-
-  /* Make sure we can find our modules.  */
-  /* XXX Use the correct path when done.  */
-  lt_dladdsearchdir (OBJDIR "/.libs");
-}
 
 
 /* Default callbacks.  Mostly they just return the error value.  */
@@ -104,6 +140,15 @@ static bool default_dynamic_tag_check (int64_t ignore);
 static GElf_Word default_sh_flags_combine (GElf_Word flags1, GElf_Word flags2);
 static const char *default_osabi_name (int ignore, char *buf, size_t len);
 static void default_destr (struct ebl *ignore);
+static const char *default_core_note_type_name (uint32_t, char *buf,
+						size_t len);
+static const char *default_object_note_type_name (uint32_t, char *buf,
+						  size_t len);
+static bool default_core_note (const char *name, uint32_t type,
+			       uint32_t descsz, const char *desc);
+static bool default_object_note (const char *name, uint32_t type,
+				 uint32_t descsz, const char *desc);
+static bool default_debugscn_p (const char *name);
 
 
 /* Find an appropriate backend for the file associated with ELF.  */
@@ -113,7 +158,6 @@ openbackend (elf, emulation, machine)
      const char *emulation;
      GElf_Half machine;
 {
-  once_define (static, once);
   Ebl *result;
   int cnt;
 
@@ -127,9 +171,6 @@ openbackend (elf, emulation, machine)
       // __libebl_seterror (ELF_E_NOMEM);
       return NULL;
     }
-
-  /* We have to initialized the dynamic loading library.  */
-  once_execute (once, dlinit);
 
   /* Fill in the default callbacks.  The initializer for the machine
      specific module can overwrite the values.  */
@@ -147,6 +188,11 @@ openbackend (elf, emulation, machine)
   result->dynamic_tag_check = default_dynamic_tag_check;
   result->sh_flags_combine = default_sh_flags_combine;
   result->osabi_name = default_osabi_name;
+  result->core_note_type_name = default_core_note_type_name;
+  result->object_note_type_name = default_object_note_type_name;
+  result->core_note = default_core_note;
+  result->object_note = default_object_note;
+  result->debugscn_p = default_debugscn_p;
   result->destr = default_destr;
 
   /* XXX Currently all we do is to look at 'e_machine' value in the
@@ -162,11 +208,19 @@ openbackend (elf, emulation, machine)
     if ((emulation != NULL && strcmp (emulation, machines[cnt].emulation) == 0)
 	|| (emulation == NULL && machines[cnt].em == machine))
       {
+	char dsoname[100];
+	void *h;
+
+	/* Well, we know the emulation name now.  */
+	result->emulation = machines[cnt].emulation;
+
 	/* Give it a try.  At least the machine type matches.  First
            try to load the module.  */
-	lt_dlhandle h;
+	strcpy (stpcpy (stpcpy (dsoname, "$ORIGIN/elfutils/libebl_"),
+			machines[cnt].dsoname),
+		".so");
 
-	h = lt_dlopenext (machines[cnt].dsoname);
+	h = dlopen (dsoname, RTLD_LAZY);
 	if (h != NULL)
 	  {
 	    /* We managed to load the object.  Now see whether the
@@ -177,14 +231,13 @@ openbackend (elf, emulation, machine)
 	    strcpy (mempcpy (symname, machines[cnt].prefix,
 			     machines[cnt].prefix_len), "_init");
 
-	    initp = (ebl_bhinit_t) lt_dlsym (h, symname);
+	    initp = (ebl_bhinit_t) dlsym (h, symname);
 	    if (initp != NULL
 		&& initp (elf, machine, result, sizeof (Ebl)) == 0)
 	      {
 		/* We found a module to handle our file.  */
 		result->dlhandle = h;
 		result->elf = elf;
-		result->emulation = machines[cnt].emulation;
 
 		/* A few entries are mandatory.  */
 		assert (result->name != NULL);
@@ -194,8 +247,16 @@ openbackend (elf, emulation, machine)
 	      }
 
 	    /* Not the module we need.  */
-	    (void) lt_dlclose (h);
+	    (void) dlclose (h);
 	  }
+
+	/* We cannot find a DSO but the emulation/machine ID matches.
+	   Return that information.  */
+	result->dlhandle = NULL;
+	result->elf = elf;
+	result->name = machines[cnt].prefix;
+
+	return result;
       }
 
   /* Nothing matched.  We use only the default callbacks.   */
@@ -334,4 +395,73 @@ static const char *
 default_osabi_name (int ignore, char *buf, size_t len)
 {
   return NULL;
+}
+
+static const char *
+default_core_note_type_name (uint32_t ignore, char *buf, size_t len)
+{
+  return NULL;
+}
+
+static const char *
+default_object_note_type_name (uint32_t ignore, char *buf, size_t len)
+{
+  return NULL;
+}
+
+static bool
+default_core_note (const char *name, uint32_t type, uint32_t descsz,
+		   const char *desc)
+{
+  return false;
+}
+
+static bool
+default_object_note (const char *name, uint32_t type, uint32_t descsz,
+		     const char *desc)
+{
+  return false;
+}
+
+static bool
+default_debugscn_p (const char *name)
+{
+  /* We know by default only about the DWARF debug sections which have
+     fixed names.  */
+  static const char *dwarf_scn_names[] =
+    {
+      /* DWARF 1 */
+      ".debug",
+      ".line",
+      /* GNU DWARF 1 extensions */
+      ".debug_srcinfo",
+      ".debug_sfnames",
+      /* DWARF 1.1 and DWARF 2 */
+      ".debug_aranges",
+      ".debug_pubnames",
+      /* DWARF 2 */
+      ".debug_info",
+      ".debug_abbrev",
+      ".debug_line",
+      ".debug_frame",
+      ".debug_str",
+      ".debug_loc",
+      ".debug_macinfo",
+      /* DWARF 3 */
+      ".debug_ranges",
+      /* SGI/MIPS DWARF 2 extensions */
+      ".debug_weaknames",
+      ".debug_funcnames",
+      ".debug_typenames",
+      ".debug_varnames"
+    };
+  const size_t ndwarf_scn_names = (sizeof (dwarf_scn_names)
+				   / sizeof (dwarf_scn_names[0]));
+  size_t cnt;
+
+  for (cnt = 0; cnt < ndwarf_scn_names; ++cnt)
+    if (strcmp (name, dwarf_scn_names[cnt]) == 0)
+      return true;
+
+  return false;
 }

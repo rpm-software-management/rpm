@@ -1,27 +1,26 @@
 /* Print information from ELF file in human-readable form.
-   Copyright (C) 2000, 2001, 2002 Red Hat, Inc.
+   Copyright (C) 2000, 2001, 2002, 2003 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2000.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
+#include <ar.h>
 #include <argp.h>
 #include <assert.h>
 #include <ctype.h>
+#include <dwarf.h>
 #include <errno.h>
 #include <error.h>
 #include <fcntl.h>
@@ -33,6 +32,7 @@
 #include <locale.h>
 #include <mcheck.h>
 #include <search.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdio_ext.h>
 #include <stdlib.h>
@@ -61,17 +61,23 @@ static const struct argp_option options[] =
   { "dynamic", 'D', NULL, 0, N_("Display dynamic symbols instead of normal symbols") },
   { "extern-only", 'g', NULL, 0, N_("Display only external symbols") },
   { "undefined-only", 'u', NULL, 0, N_("Display only undefined symbols") },
+  { "print-armap", 's', NULL, 0,
+    N_("Include index for symbols from archive members") },
+
   { NULL, 0, NULL, 0, N_("Output format:") },
   { "print-file-name", 'A', NULL, 0, N_("Print name of the input file before every symbol") },
-  { NULL, 'o', NULL, 0, N_("Same as -A") },
+  { NULL, 'o', NULL, OPTION_HIDDEN, "Same as -A" },
   { "format", 'f', "FORMAT", 0, N_("Use the output format FORMAT.  FORMAT can be `bsd', `sysv' or `posix'.  The default is `sysv'") },
   { NULL, 'B', NULL, 0, N_("Same as --format=bsd") },
   { "portability", 'P', NULL, 0, N_("Same as --format=posix") },
   { "radix", 't', "RADIX", 0, N_("Use RADIX for printing symbol values") },
-  { "mark-weak", OPT_MARK_WEAK, NULL, 0, N_("mark weak symbols") },
+  { "mark-weak", OPT_MARK_WEAK, NULL, 0, N_("Mark weak symbols") },
+  { "print-size", 'S', NULL, 0, N_("Print size of defined symbols") },
+
   { NULL, 0, NULL, 0, N_("Output options:") },
   { "numeric-sort", 'n', NULL, 0, N_("Sort symbols numerically by address") },
   { "no-sort", 'p', NULL, 0, N_("Do not sort the symbols") },
+  { "reverse-sort", 'r', NULL, 0, N_("Reverse the sense of the sort") },
   { NULL, 0, NULL, 0, N_("Miscellaneous:") },
   { NULL, 0, NULL, 0, NULL }
 };
@@ -96,7 +102,7 @@ static struct argp argp =
 
 
 /* Print symbols in file named FNAME.  */
-static int process_file (const char *fname);
+static int process_file (const char *fname, bool more_than_one);
 
 /* Handle content of archive.  */
 static int handle_ar (int fd, Elf *elf, const char *prefix, const char *fname,
@@ -131,14 +137,23 @@ static enum
 } format;
 
 /* Print defined, undefined, or both?  */
-static int hide_undefined;
-static int hide_defined;
+static bool hide_undefined;
+static bool hide_defined;
 
 /* Print local symbols also?  */
-static int hide_local;
+static bool hide_local;
 
 /* Nonzero if full filename should precede every symbol.  */
-static int print_file_name;
+static bool print_file_name;
+
+/* If true print size of defined symbols in BSD format.  */
+static bool print_size;
+
+/* If true print archive index.  */
+static bool print_armap;
+
+/* If true reverse sorting.  */
+static bool reverse_sort;
 
 /* Type of the section we are printing.  */
 static int symsec_type = SHT_SYMTAB;
@@ -161,7 +176,7 @@ static enum
 
 /* If nonzero weak symbols are distinguished from global symbols by adding
    a `*' after the identifying letter for the symbol class and type.  */
-static int mark_weak;
+static bool mark_weak;
 
 
 int
@@ -195,12 +210,16 @@ main (int argc, char *argv[])
 
   if (remaining == argc)
     /* The user didn't specify a name so we use a.out.  */
-    result = process_file ("a.out");
+    result = process_file ("a.out", false);
   else
-    /* Process all the remaining files.  */
-    do
-      result |= process_file (argv[remaining]);
-    while (++remaining < argc);
+    {
+      /* Process all the remaining files.  */
+      bool more_than_one = remaining + 1 < argc;
+
+      do
+	result |= process_file (argv[remaining], more_than_one);
+      while (++remaining < argc);
+    }
 
   return result;
 }
@@ -215,7 +234,7 @@ print_version (FILE *stream, struct argp_state *state)
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-"), "2002");
+"), "2003");
   fprintf (stream, gettext ("Written by %s.\n"), "Ulrich Drepper");
 }
 
@@ -242,7 +261,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
 
     case 'g':
-      hide_local = 1;
+      hide_local = true;
       break;
 
     case 'n':
@@ -263,13 +282,13 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
 
     case 'u':
-      hide_undefined = 0;
-      hide_defined = 1;
+      hide_undefined = false;
+      hide_defined = true;
       break;
 
     case 'A':
     case 'o':
-      print_file_name = 1;
+      print_file_name = true;
       break;
 
     case 'B':
@@ -285,12 +304,24 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
 
     case OPT_DEFINED:
-      hide_undefined = 1;
-      hide_defined = 0;
+      hide_undefined = true;
+      hide_defined = false;
       break;
 
     case OPT_MARK_WEAK:
-      mark_weak = 1;
+      mark_weak = true;
+      break;
+
+    case 'S':
+      print_size = true;
+      break;
+
+    case 's':
+      print_armap = true;
+      break;
+
+    case 'r':
+      reverse_sort = true;
       break;
 
     default:
@@ -317,7 +348,7 @@ Report bugs to <drepper@redhat.com>.\n"));
 
 
 static int
-process_file (const char *fname)
+process_file (const char *fname, bool more_than_one)
 {
   /* Open the file and determine the type.  */
   int fd;
@@ -337,7 +368,8 @@ process_file (const char *fname)
     {
       if (elf_kind (elf) == ELF_K_ELF)
 	{
-	  int result = handle_elf (elf, NULL, fname, NULL);
+	  int result = handle_elf (elf, more_than_one ? "" : NULL,
+				   fname, NULL);
 
 	  if (elf_end (elf) != 0)
 	    INTERNAL_ERROR (fname);
@@ -389,12 +421,50 @@ handle_ar (int fd, Elf *elf, const char *prefix, const char *fname,
   if (prefix != NULL)
     cp = stpcpy (cp, prefix);
   cp = stpcpy (cp, fname);
-  stpcpy (cp, "(");
+  stpcpy (cp, "[");
 
   cp = new_suffix;
   if (suffix != NULL)
     cp = stpcpy (cp, suffix);
-  stpcpy (cp, ")");
+  stpcpy (cp, "]");
+
+  /* First print the archive index if this is wanted.  */
+  if (print_armap)
+    {
+      Elf_Arsym *arsym = elf_getarsym (elf, NULL);
+
+      if (arsym != NULL)
+	{
+	  Elf_Arhdr *arhdr = NULL;
+	  size_t arhdr_off = 0;	/* Note: 0 is no valid offset.  */
+
+	  puts (gettext("\nArchive index:"));
+
+	  while (arsym->as_off != 0)
+	    {
+	      if (arhdr_off != arsym->as_off
+		  && (elf_rand (elf, arsym->as_off) != arsym->as_off
+		      || (subelf = elf_begin (fd, cmd, elf)) == NULL
+		      || (arhdr = elf_getarhdr (subelf)) == NULL))
+		{
+		  error (0, 0, gettext ("invalid offset %zu for symbol %s"),
+			 arsym->as_off, arsym->as_name);
+		  continue;
+		}
+
+	      printf (gettext ("%s in %s\n"), arsym->as_name, arhdr->ar_name);
+
+	      ++arsym;
+	    }
+
+	  if (elf_rand (elf, SARMAG) != SARMAG)
+	    {
+	      error (0, 0,
+		     gettext ("cannot reset archive offset to beginning"));
+	      return 1;
+	    }
+	}
+    }
 
   /* Process all the files contained in the archive.  */
   while ((subelf = elf_begin (fd, cmd, elf)) != NULL)
@@ -402,16 +472,22 @@ handle_ar (int fd, Elf *elf, const char *prefix, const char *fname,
       /* The the header for this element.  */
       Elf_Arhdr *arhdr = elf_getarhdr (subelf);
 
-        if (elf_kind (subelf) == ELF_K_ELF)
-	result |= handle_elf (subelf, new_prefix, arhdr->ar_name, new_suffix);
-      else if (elf_kind (subelf) == ELF_K_AR)
-	result |= handle_ar (fd, subelf, new_prefix, arhdr->ar_name,
-			     new_suffix);
-      else
+      /* Skip over the index entries.  */
+      if (strcmp (arhdr->ar_name, "/") != 0
+	  && strcmp (arhdr->ar_name, "//") != 0)
 	{
-	  error (0, 0, gettext ("%s%s%s: file format not recognized"),
-		 new_prefix, arhdr->ar_name, new_suffix);
-	  result = 1;
+	  if (elf_kind (subelf) == ELF_K_ELF)
+	    result |= handle_elf (subelf, new_prefix, arhdr->ar_name,
+				  new_suffix);
+	  else if (elf_kind (subelf) == ELF_K_AR)
+	    result |= handle_ar (fd, subelf, new_prefix, arhdr->ar_name,
+				 new_suffix);
+	  else
+	    {
+	      error (0, 0, gettext ("%s%s%s: file format not recognized"),
+		     new_prefix, arhdr->ar_name, new_suffix);
+	      result = 1;
+	    }
 	}
 
       /* Get next archive element.  */
@@ -421,6 +497,172 @@ handle_ar (int fd, Elf *elf, const char *prefix, const char *fname,
     }
 
   return result;
+}
+
+
+struct local_name
+{
+  const char *name;
+  size_t lineno;
+  Dwarf_Addr lowpc;
+  Dwarf_Addr highpc;
+  char file[0];
+};
+
+
+static int
+local_compare (const void *p1, const void *p2)
+{
+  struct local_name *g1 = (struct local_name *) p1;
+  struct local_name *g2 = (struct local_name *) p2;
+  int result;
+
+  result = strcmp (g1->name, g2->name);
+  if (result == 0)
+    {
+      if (g1->lowpc <= g2->lowpc && g1->highpc >= g2->highpc)
+	{
+	  /* g2 is contained in g1.  Update the data.  */
+	  g2->lowpc = g1->lowpc;
+	  g2->highpc = g1->highpc;
+	  result = 0;
+	}
+      else if (g2->lowpc <= g1->lowpc && g2->highpc >= g1->highpc)
+	{
+	  /* g1 is contained in g2.  Update the data.  */
+	  g1->lowpc = g2->lowpc;
+	  g1->highpc = g2->highpc;
+	  result = 0;
+	}
+      else
+	result = g1->lowpc < g2->lowpc ? -1 : 1;
+    }
+
+  return result;
+}
+
+
+static int
+get_var_range (Dwarf_Die die, Dwarf_Unsigned *lowpc, Dwarf_Unsigned *highpc)
+{
+  Dwarf_Attribute loc;
+  Dwarf_Error err;
+  Dwarf_Locdesc *locdesc;
+  Dwarf_Signed len;
+
+  if (dwarf_attr (die, DW_AT_location, &loc, &err) != DW_DLV_OK)
+    return 1;
+
+  if (dwarf_loclist (loc, &locdesc, &len, &err) != DW_DLV_OK)
+    return 1;
+
+  /* XXX incomplete.  */
+  return 1;
+}
+
+
+static void *
+get_local_names (Ebl *ebl, Dwarf_Debug dbg)
+{
+  /* We iterate over the content of the .debug_info section.  We only
+     look at the level immediately below the compile unit DIE.  */
+  int ret;
+  Dwarf_Error err;
+  Dwarf_Unsigned culen;
+  Dwarf_Unsigned nextcu;
+  Dwarf_Off offset = 0;
+  void *root = NULL;
+
+  while ((ret = dwarf_next_cu_header (dbg, &culen, NULL, NULL, NULL, &nextcu,
+				      &err)) == DW_DLV_OK)
+    {
+      Dwarf_Half tag;
+      Dwarf_Die die;
+      Dwarf_Die old = NULL;
+      char **files = NULL;
+      Dwarf_Signed nfiles;
+
+      offset += culen;
+
+      if (dwarf_offdie (dbg, offset, &die, &err) == DW_DLV_OK
+	  /* This better be a compile unit DIE. */
+	  && dwarf_tag (die, &tag, &err) == DW_DLV_OK
+	  && tag == DW_TAG_compile_unit
+	  /* Get the source files for this compilation unit.  */
+	  && dwarf_srcfiles (die, &files, &nfiles, &err) != DW_DLV_ERROR
+	  /* Search all immediate children for subprogram and variable
+	     DIEs.  */
+	  && (old = die, dwarf_child (die, &die, &err) == DW_DLV_OK))
+	do
+	  {
+	    dwarf_dealloc (dbg, old, DW_DLA_DIE);
+
+	    if (dwarf_tag (die, &tag, &err) == DW_DLV_OK
+		&& (tag == DW_TAG_subprogram || tag == DW_TAG_variable))
+	      {
+		/* We are interested in five attributes: name,
+		   decl_file, decl_line, low_pc, and high_pc.  */
+		Dwarf_Attribute name = NULL;
+		Dwarf_Attribute file = NULL;
+		Dwarf_Attribute line = NULL;
+		char *namestr;
+		Dwarf_Unsigned fileidx;
+		Dwarf_Unsigned lineno;
+		Dwarf_Addr lowpc;
+		Dwarf_Addr highpc;
+
+		if (dwarf_attr (die, DW_AT_name, &name, &err) == DW_DLV_OK
+		    && dwarf_formstring (name, &namestr, &err) == DW_DLV_OK
+		    && (dwarf_attr (die, DW_AT_decl_file, &file, &err)
+			== DW_DLV_OK)
+		    && dwarf_formudata (file, &fileidx, &err) == DW_DLV_OK
+		    && fileidx > 0 && fileidx <= nfiles
+		    && (dwarf_attr (die, DW_AT_decl_line, &line, &err)
+			== DW_DLV_OK)
+		    && dwarf_formudata (line, &lineno, &err) == DW_DLV_OK
+		    && lineno != 0
+		    && ((tag = DW_TAG_subprogram
+			 && dwarf_lowpc (die, &lowpc, &err) == DW_DLV_OK
+			 && dwarf_highpc (die, &highpc, &err) == DW_DLV_OK)
+			|| (tag == DW_TAG_variable
+			    && get_var_range (die, &lowpc, &highpc) == 0)))
+		  {
+		    struct local_name *newp;
+		    size_t namelen = strlen (namestr) + 1;
+		    const char *bfile = basename (files[fileidx - 1]);
+		    size_t filelen = strlen (bfile) + 1;
+
+		    newp = xmalloc (sizeof (*newp) + namelen + filelen);
+		    newp->name = memcpy (mempcpy (newp->file, bfile, filelen),
+					 namestr, namelen);
+		    newp->lineno = lineno;
+		    newp->lowpc = lowpc;
+		    newp->highpc = highpc;
+
+		    /* XXX Return value shouldn't be ignored.  If the
+		       new entry is not added to the tree the data
+		       structure should be freed.  */
+		    tsearch (newp, &root, local_compare);
+		  }
+
+		dwarf_dealloc (dbg, name, DW_DLA_ATTR);
+		dwarf_dealloc (dbg, file, DW_DLA_ATTR);
+		dwarf_dealloc (dbg, line, DW_DLA_ATTR);
+	      }
+
+	    old = die;
+	  }
+	while (dwarf_siblingof (dbg, die, &die, &err) == DW_DLV_OK);
+
+      dwarf_dealloc (dbg, old, DW_DLA_DIE);
+      while (nfiles-- > 0)
+	dwarf_dealloc (dbg, files[nfiles], DW_DLA_STRING);
+      dwarf_dealloc (dbg, files, DW_DLA_LIST);
+
+      offset = nextcu;
+    }
+
+  return root;
 }
 
 
@@ -459,6 +701,17 @@ global_compare (const void *p1, const void *p2)
 }
 
 
+static void
+free_global (void *p)
+{
+  struct global_name *g = (struct global_name *) p;
+
+  free ((char *) g->name);
+
+  free (p);
+}
+
+
 /* Show symbols in SysV format.  */
 static void
 show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
@@ -472,14 +725,15 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
   const char **scnnames;
   bool scnnames_malloced;
   const char *fmtstr;
-  uint32_t shstrndx;
+  size_t shstrndx;
   Dwarf_Debug dbg;
   Dwarf_Global *globals;
   Dwarf_Signed globcnt;
   Dwarf_Error err;
   const char *linenum;
   char linenumbuf[PATH_MAX + 10];
-  void *root = NULL;
+  void *global_root = NULL;
+  void *local_root = NULL;
 
   if (elf_getshnum (ebl->elf, &shnum) < 0)
     INTERNAL_ERROR (fullname);
@@ -513,12 +767,20 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
 		{
 		  newp->global = globals[cnt];
 		  newp->name = name;
-		  tsearch (newp, &root, global_compare);
+		  /* XXX Return value shouldn't be ignored.  If the
+		     new entry is not added to the tree the data
+		     structure should be freed.  */
+		  tsearch (newp, &global_root, global_compare);
 		}
 	    }
 	}
       else
 	globals = NULL;
+
+      /* Try to get the local symbols which are not in the
+	 .debug_pubnames section.  */
+      if (! hide_local)
+	local_root = get_local_names (ebl, dbg);
     }
   else
     dbg = NULL;
@@ -535,7 +797,7 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
     {
       GElf_Shdr shdr_mem;
 
-      assert (elf_ndxscn (scn) != cnt++);
+      assert (elf_ndxscn (scn) == cnt++);
 
       scnnames[elf_ndxscn (scn)]
 	= elf_strptr (ebl->elf, shstrndx,
@@ -543,8 +805,8 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
     }
 
   /* We always print this prolog.  */
-  if (prefix == NULL)
-    printf (gettext ("\n\nSymbols from %s:\n\n"), fname);
+  if (prefix == NULL || 1)
+    printf (gettext ("\n\nSymbols from %s:\n\n"), fullname);
   else
     printf (gettext ("\n\nSymbols from %s[%s]:\n\n"), prefix, fname);
 
@@ -582,17 +844,19 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
 	continue;
 
       linenum = "";
-      if (root != NULL)
+      if (syms[cnt].sym.st_shndx != SHN_UNDEF
+	  && GELF_ST_BIND (syms[cnt].sym.st_info) != STB_LOCAL
+	  && global_root != NULL)
 	{
 	  struct global_name fake;
 	  struct global_name **found;
 	  Dwarf_Off dieoff;
 	  Dwarf_Off cudieoff;
-	  Dwarf_Die die;
-	  Dwarf_Die cudie;
+	  Dwarf_Die die = NULL;
+	  Dwarf_Die cudie = NULL;
 
 	  fake.name = symstr;
-	  found = tfind (&fake, &root, global_compare);
+	  found = tfind (&fake, &global_root, global_compare);
 	  if (found != NULL
 	      && dwarf_global_name_offsets ((*found)->global, NULL, &dieoff,
 					    &cudieoff, &err) == DW_DLV_OK
@@ -600,8 +864,9 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
 	      && dwarf_offdie (dbg, cudieoff, &cudie, &err) == DW_DLV_OK)
 	    {
 	      Dwarf_Addr lowpc;
-	      Dwarf_Line *lines;
+	      Dwarf_Line *lines = NULL;
 	      Dwarf_Signed nlines;
+	      int inner;
 
 	      if (dwarf_srclines (cudie, &lines, &nlines, &err) == DW_DLV_OK
 		  && dwarf_lowpc (die, &lowpc, &err) == DW_DLV_OK)
@@ -609,7 +874,6 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
 		  Dwarf_Addr addr;
 		  Dwarf_Unsigned lineno;
 		  char *linesrc;
-		  int inner;
 
 		  for (inner = 1; inner < nlines; ++inner)
 		    if (dwarf_lineaddr (lines[inner], &addr, &err) != DW_DLV_OK
@@ -628,13 +892,36 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
 
 		      dwarf_dealloc (dbg, linesrc, DW_DLA_STRING);
 		    }
+		}
 
+	      if (lines != NULL)
+		{
 		  for (inner = 0; inner < nlines; ++inner)
 		    dwarf_dealloc (dbg, lines[inner], DW_DLA_LINE);
 		  dwarf_dealloc (dbg, lines, DW_DLA_LIST);
 		}
+	    }
 
-	      dwarf_dealloc (dbg, die, DW_DLA_DIE);
+	  dwarf_dealloc (dbg, die, DW_DLA_DIE);
+	  dwarf_dealloc (dbg, cudie, DW_DLA_DIE);
+	}
+
+      if (*linenum == '\0'
+	  && *symstr != '\0'
+	  && syms[cnt].sym.st_shndx != SHN_UNDEF
+	  && local_root != NULL)
+	{
+	  struct local_name fake;
+	  struct local_name **found;
+
+	  fake.name = symstr;
+	  fake.lowpc = fake.highpc = syms[cnt].sym.st_value;
+	  found = tfind (&fake, &local_root, local_compare);
+	  if (found != NULL)
+	    {
+	      snprintf (linenumbuf, sizeof (linenumbuf), "%s:%" PRIu64,
+			(*found)->file, (uint64_t) (*found)->lineno);
+	      linenum = linenumbuf;
 	    }
 	}
 
@@ -662,7 +949,8 @@ show_symbols_sysv (Ebl *ebl, GElf_Word strndx,
 
   if (dbg != NULL)
     {
-      tdestroy (root, free);
+      tdestroy (global_root, free_global);
+      tdestroy (local_root, free);
 
       if (globals != NULL)
 	{
@@ -708,17 +996,31 @@ show_symbols_bsd (Elf *elf, GElf_Ehdr *ehdr, GElf_Word strndx,
 {
   int digits = length_map[gelf_getclass (elf) - 1][radix];
   const char *fmtstr;
+  const char *sfmtstr;
+  const char *ufmtstr;
   size_t cnt;
 
   if (prefix != NULL && ! print_file_name)
     printf ("\n%s:\n", fname);
 
   if (radix == radix_hex)
-    fmtstr = "%0*" PRIx64 " %c%s %s\n";
+    {
+      fmtstr = "%0*" PRIx64 " %c%s %s\n";
+      sfmtstr = "%2$0*1$" PRIx64 " %7$0*6$" PRIx64 " %3$c%4$s %5$s\n";
+      ufmtstr = "%*s U%s %s\n";
+    }
   else if (radix == radix_decimal)
-    fmtstr = "%*" PRId64 " %c%s %s\n";
+    {
+      fmtstr = "%*" PRId64 " %c%s %s\n";
+      sfmtstr = "%2$*1$" PRId64 " %7$*6$" PRId64 " %3$c%4$s %5$s\n";
+      ufmtstr = "%*s U%s %s\n";
+    }
   else
-    fmtstr = "%0*" PRIo64 " %c%s %s\n";
+    {
+      fmtstr = "%0*" PRIo64 " %c%s %s\n";
+      sfmtstr = "%2$0*1$" PRIo64 " %7$0*6$" PRIo64 " %3$c%4$s %5$s\n";
+      ufmtstr = "%* U%s %s\n";
+    }
 
   /* Iterate over all symbols.  */
   for (cnt = 0; cnt < nsyms; ++cnt)
@@ -745,13 +1047,24 @@ show_symbols_bsd (Elf *elf, GElf_Ehdr *ehdr, GElf_Word strndx,
 	  putchar_unlocked (':');
 	}
 
-      printf (fmtstr,
-	      digits, syms[cnt].sym.st_value,
-	      class_type_char (&syms[cnt].sym),
-	      mark_weak
-	      ? (GELF_ST_BIND (syms[cnt].sym.st_info) == STB_WEAK ? "*" : " ")
-	      : "",
-	      elf_strptr (elf, strndx, syms[cnt].sym.st_name));
+      if (syms[cnt].sym.st_shndx == SHN_UNDEF)
+	printf (ufmtstr,
+		digits, "",
+		mark_weak
+		? (GELF_ST_BIND (syms[cnt].sym.st_info) == STB_WEAK
+		   ? "*" : " ")
+		: "",
+		elf_strptr (elf, strndx, syms[cnt].sym.st_name));
+      else
+	printf (print_size ? sfmtstr : fmtstr,
+		digits, syms[cnt].sym.st_value,
+		class_type_char (&syms[cnt].sym),
+		mark_weak
+		? (GELF_ST_BIND (syms[cnt].sym.st_info) == STB_WEAK
+		   ? "*" : " ")
+		: "",
+		elf_strptr (elf, strndx, syms[cnt].sym.st_name),
+		digits, (uint64_t) syms[cnt].sym.st_size);
     }
 }
 
@@ -766,7 +1079,7 @@ show_symbols_posix (Elf *elf, GElf_Ehdr *ehdr, GElf_Word strndx,
   size_t cnt;
 
   if (prefix != NULL && ! print_file_name)
-    printf ("%s[%s]:\n", prefix, fname);
+    printf ("%s:\n", fullname);
 
   if (radix == radix_hex)
     fmtstr = "%s %c%s %0*" PRIx64 "\n";
@@ -798,6 +1111,7 @@ show_symbols_posix (Elf *elf, GElf_Ehdr *ehdr, GElf_Word strndx,
 	{
 	  fputs_unlocked (fullname, stdout);
 	  putchar_unlocked (':');
+	  putchar_unlocked (' ');
 	}
 
       printf (fmtstr,
@@ -819,7 +1133,7 @@ show_symbols (Ebl *ebl, GElf_Ehdr *ehdr, Elf_Scn *scn, Elf_Scn *xndxscn,
 	      GElf_Shdr *shdr, const char *prefix, const char *fname,
 	      const char *fullname)
 {
-  uint32_t shstrndx;
+  size_t shstrndx;
   Elf_Data *data;
   Elf_Data *xndxdata;
   size_t size;
@@ -833,18 +1147,24 @@ show_symbols (Ebl *ebl, GElf_Ehdr *ehdr, Elf_Scn *scn, Elf_Scn *xndxscn,
     {
       GElf_SymX *s1 = (GElf_SymX *) p1;
       GElf_SymX *s2 = (GElf_SymX *) p2;
+      int result;
 
-      return strcmp (elf_strptr (ebl->elf, shdr->sh_link, s1->sym.st_name),
-		     elf_strptr (ebl->elf, shdr->sh_link, s2->sym.st_name));
+      result = strcmp (elf_strptr (ebl->elf, shdr->sh_link, s1->sym.st_name),
+		       elf_strptr (ebl->elf, shdr->sh_link, s2->sym.st_name));
+
+      return reverse_sort ? -result : result;
     }
 
   int sort_by_address (const void *p1, const void *p2)
     {
       GElf_SymX *s1 = (GElf_SymX *) p1;
       GElf_SymX *s2 = (GElf_SymX *) p2;
+      int result;
 
-      return (s1->sym.st_value < s2->sym.st_value
-	      ? -1 : (s1->sym.st_value == s2->sym.st_value ? 0 : 1));
+      result = (s1->sym.st_value < s2->sym.st_value
+		? -1 : (s1->sym.st_value == s2->sym.st_value ? 0 : 1));
+
+      return reverse_sort ? -result : result;
     }
 
   /* Get the section header string table index.  */
@@ -939,8 +1259,9 @@ handle_elf (Elf *elf, const char *prefix, const char *fname,
 	    const char *suffix)
 {
   size_t prefix_len = prefix == NULL ? 0 : strlen (prefix);
+  size_t suffix_len = suffix == NULL ? 0 : strlen (suffix);
   size_t fname_len = strlen (fname) + 1;
-  char fullname[prefix_len + 1 + fname_len];
+  char fullname[prefix_len + 1 + fname_len + suffix_len];
   char *cp = fullname;
   Elf_Scn *scn = NULL;
   int any = 0;
@@ -971,11 +1292,10 @@ handle_elf (Elf *elf, const char *prefix, const char *fname,
 
   /* Create the full name of the file.  */
   if (prefix != NULL)
-    {
-      cp = mempcpy (cp, prefix, prefix_len);
-      *cp++ = ':';
-    }
-  memcpy (cp, fname, fname_len);
+    cp = mempcpy (cp, prefix, prefix_len);
+  cp = mempcpy (cp, fname, fname_len);
+  if (suffix != NULL)
+    memcpy (cp - 1, suffix, suffix_len + 1);
 
   /* Find the symbol table.
 

@@ -40,12 +40,17 @@ get_offsets (Dwarf *dbg)
 
   while (readp + 14 < endp)
     {
+      int len_bytes;
+      Dwarf_Off len;
+      uint16_t version;
+      unsigned char *infop;
+
       /* If necessary, allocate more entries.  */
       if (cnt >= allocated)
 	{
+	  struct pubnames_s *newmem;
 	  allocated = MAX (10, 2 * allocated);
-	  struct pubnames_s *newmem
-	    = (struct pubnames_s *) realloc (mem, allocated * entsize);
+	  newmem = (struct pubnames_s *) realloc (mem, allocated * entsize);
 	  if (newmem == NULL)
 	    {
 	      __libdwarf_seterrno (DWARF_E_NOMEM);
@@ -58,8 +63,8 @@ get_offsets (Dwarf *dbg)
 	}
 
       /* Read the set header.  */
-      int len_bytes = 4;
-      Dwarf_Off len = read_4ubyte_unaligned_inc (dbg, readp);
+      len_bytes = 4;
+      len = read_4ubyte_unaligned_inc (dbg, readp);
       if (len == 0xffffffff)
 	{
 	  len = read_8ubyte_unaligned_inc (dbg, readp);
@@ -75,7 +80,7 @@ get_offsets (Dwarf *dbg)
 	break;
 
       /* Read the version.  It better be two for now.  */
-      uint16_t version = read_2ubyte_unaligned (dbg, readp);
+      version = read_2ubyte_unaligned (dbg, readp);
       if (version != 2)
 	{
 	  __libdwarf_seterrno (DWARF_E_INVALID_VERSION);
@@ -93,8 +98,7 @@ get_offsets (Dwarf *dbg)
       assert (dbg->sectiondata[IDX_debug_info]->d_buf != NULL);
       assert (mem[cnt].cu_offset + 3
 	      < dbg->sectiondata[IDX_debug_info]->d_size);
-      unsigned char *infop
-	= ((unsigned char *) dbg->sectiondata[IDX_debug_info]->d_buf
+      infop = ((unsigned char *) dbg->sectiondata[IDX_debug_info]->d_buf
 	   + mem[cnt].cu_offset);
       if (read_4ubyte_unaligned_noncvt (infop) == 0xffffffff)
 	mem[cnt].cu_header_size = 23;
@@ -127,6 +131,10 @@ dwarf_get_pubnames (dbg, callback, arg, offset)
      void *arg;
      size_t offset;
 {
+  size_t cnt;
+  unsigned char *startp;
+  unsigned char *readp;
+
   /* Make sure it is a valid offset.  */
   if (unlikely (dbg->sectiondata[IDX_debug_pubnames] == NULL
 		|| offset >= dbg->sectiondata[IDX_debug_pubnames]->d_size))
@@ -138,7 +146,6 @@ dwarf_get_pubnames (dbg, callback, arg, offset)
     return (size_t) -1;
 
   /* Find the place where to start.  */
-  size_t cnt;
   if (offset == 0)
     {
       cnt = 0;
@@ -155,9 +162,8 @@ dwarf_get_pubnames (dbg, callback, arg, offset)
       assert (cnt + 1 < dbg->pubnames_nsets);
     }
 
-  unsigned char *startp
-    = (unsigned char *) dbg->sectiondata[IDX_debug_pubnames]->d_buf;
-  unsigned char *readp = startp + offset;
+  startp = (unsigned char *) dbg->sectiondata[IDX_debug_pubnames]->d_buf;
+  readp = startp + offset;
   while (1)
     {
       Dwarf_Global gl;

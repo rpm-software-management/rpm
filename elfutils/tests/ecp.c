@@ -21,33 +21,39 @@
 int
 main (int argc, char *argv[])
 {
+  int infd;
+  Elf *inelf;
+  int outfd;
+  Elf *outelf;
+  GElf_Ehdr ehdr_mem;
+  GElf_Ehdr *ehdr;
+  Elf_Scn *scn = NULL;
+
   if (argc < 3)
     error (EXIT_FAILURE, 0, "usage: %s FROMNAME TONAME", argv[0]);
 
   elf_version (EV_CURRENT);
 
-  int infd = open (argv[1], O_RDONLY);
+  infd = open (argv[1], O_RDONLY);
   if (infd == -1)
     error (EXIT_FAILURE, errno, "cannot open input file '%s'", argv[1]);
 
-  Elf *inelf = elf_begin (infd, ELF_C_READ, NULL);
+  inelf = elf_begin (infd, ELF_C_READ, NULL);
   if (inelf == NULL)
     error (EXIT_FAILURE, 0, "problems opening '%s' as ELF file: %s",
 	   argv[1], elf_errmsg (-1));
 
-  int outfd = creat (argv[2], 0666);
+  outfd = creat (argv[2], 0666);
   if (outfd == -1)
     error (EXIT_FAILURE, errno, "cannot open output file '%s'", argv[2]);
 
-  Elf *outelf = elf_begin (outfd, ELF_C_WRITE, NULL);
+  outelf = elf_begin (outfd, ELF_C_WRITE, NULL);
   if (outelf == NULL)
     error (EXIT_FAILURE, 0, "problems opening '%s' as ELF file: %s",
 	   argv[2], elf_errmsg (-1));
 
   gelf_newehdr (outelf, gelf_getclass (inelf));
 
-  GElf_Ehdr ehdr_mem;
-  GElf_Ehdr *ehdr;
   gelf_update_ehdr (outelf, (ehdr = gelf_getehdr (inelf, &ehdr_mem)));
 
   if (ehdr->e_phnum > 0)
@@ -66,7 +72,6 @@ main (int argc, char *argv[])
 	}
     }
 
-  Elf_Scn *scn = NULL;
   while ((scn = elf_nextscn (inelf, scn)) != NULL)
     {
       Elf_Scn *newscn = elf_newscn (outelf);

@@ -28,8 +28,11 @@ callback (Dwarf *dbg, Dwarf_Global *gl, void *arg)
 	  (unsigned long long int) gl->cu_offset);
 
 #if 0
+ {
   Dwarf_Die cu_die;
   const char *cuname;
+  const char *diename;
+
   if (dwarf_offdie (dbg, gl->cu_offset, &cu_die) == NULL
       || (cuname = dwarf_diename (&cu_die)) == NULL)
     {
@@ -42,7 +45,6 @@ callback (Dwarf *dbg, Dwarf_Global *gl, void *arg)
       dwarf_dealloc (dbg, cuname, DW_DLA_STRING);
     }
 
-  const char *diename;
   if (dwarf_offdie (dbg, gl->die_offset, &die) == NULL
       || (diename = dwarf_diename (&die)) == NULL)
     {
@@ -54,6 +56,7 @@ callback (Dwarf *dbg, Dwarf_Global *gl, void *arg)
       printf ("object name: \"%s\"\n", diename);
       dwarf_dealloc (dbg, diename, DW_DLA_STRING);
     }
+ }
 #endif
   return DWARF_CB_OK;
 }

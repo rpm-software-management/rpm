@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2003-02-19 13:48-0800\n"
+"POT-Creation-Date: 2003-03-05 15:25-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,15 +170,15 @@ msgstr ""
 msgid "%s%s%s: file format not recognized"
 msgstr ""
 
-#: src/nm.c:792 src/nm.c:1174 src/readelf.c:661 src/readelf.c:791
+#: src/nm.c:791 src/nm.c:1173 src/readelf.c:661 src/readelf.c:791
 #: src/readelf.c:875 src/readelf.c:1059 src/readelf.c:1279 src/readelf.c:1431
 #: src/readelf.c:1605 src/readelf.c:1864 src/readelf.c:1941 src/readelf.c:2029
-#: src/readelf.c:2309 src/readelf.c:3726 src/size.c:424 src/size.c:498
-#: src/strip.c:428
+#: src/readelf.c:2309 src/readelf.c:3730 src/size.c:424 src/size.c:498
+#: src/strip.c:433
 msgid "cannot get section header string table index"
 msgstr ""
 
-#: src/nm.c:810
+#: src/nm.c:809
 #, c-format
 msgid ""
 "\n"
@@ -187,7 +187,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/nm.c:812
+#: src/nm.c:811
 #, c-format
 msgid ""
 "\n"
@@ -196,29 +196,29 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/nm.c:815
+#: src/nm.c:814
 #, c-format
 msgid ""
 "%*s%-*s %-*s Class  Type     %-*s Line          Section\n"
 "\n"
 msgstr ""
 
-#: src/nm.c:1184
+#: src/nm.c:1183
 #, c-format
 msgid "%s: entry size in section `%s' is not what we expect"
 msgstr ""
 
-#: src/nm.c:1188
+#: src/nm.c:1187
 #, c-format
 msgid "%s: size of section `%s' is not multiple of entry size"
 msgstr ""
 
-#: src/nm.c:1288
+#: src/nm.c:1287
 #, c-format
 msgid "%s%s%s%s: Invalid operation"
 msgstr ""
 
-#: src/nm.c:1345
+#: src/nm.c:1344
 #, c-format
 msgid "%s%s%s: no symbols"
 msgstr ""
@@ -312,7 +312,7 @@ msgstr ""
 msgid "Not an ELF file - it has the wrong magic bytes at the start"
 msgstr ""
 
-#: src/readelf.c:448 src/elflint.c:2021
+#: src/readelf.c:448 src/elflint.c:2028
 #, c-format
 msgid "cannot read ELF header: %s"
 msgstr ""
@@ -321,7 +321,7 @@ msgstr ""
 msgid "cannot create EBL handle"
 msgstr ""
 
-#: src/readelf.c:462 src/strip.c:485 src/ldgeneric.c:575 src/ldgeneric.c:966
+#: src/readelf.c:462 src/strip.c:490 src/ldgeneric.c:575 src/ldgeneric.c:966
 #, c-format
 msgid "cannot determine number of sections: %s"
 msgstr ""
@@ -869,7 +869,7 @@ msgstr ""
 msgid "unknown form %<PRIx64>"
 msgstr ""
 
-#: src/readelf.c:3113
+#: src/readelf.c:3114
 #, c-format
 msgid ""
 "\n"
@@ -877,50 +877,50 @@ msgid ""
 " [ Code]\n"
 msgstr ""
 
-#: src/readelf.c:3136
+#: src/readelf.c:3137
 #, c-format
 msgid " *** error while reading abbreviation: %s\n"
 msgstr ""
 
-#: src/readelf.c:3147
+#: src/readelf.c:3148
 #, c-format
 msgid " *** error while reading abbreviation code: %s\n"
 msgstr ""
 
-#: src/readelf.c:3154
+#: src/readelf.c:3155
 #, c-format
 msgid " *** error while reading abbreviation tag: %s\n"
 msgstr ""
 
-#: src/readelf.c:3162
+#: src/readelf.c:3163
 #, c-format
 msgid " *** error while reading abbreviation children flag: %s\n"
 msgstr ""
 
-#: src/readelf.c:3168
+#: src/readelf.c:3169
 #, c-format
 msgid " [%5<PRId64>] offset: %<PRId64>, children: %s, tag: %s\n"
 msgstr ""
 
-#: src/readelf.c:3171
+#: src/readelf.c:3172
 msgid "yes"
 msgstr ""
 
-#: src/readelf.c:3171
+#: src/readelf.c:3172
 msgid "no"
 msgstr ""
 
-#: src/readelf.c:3186
+#: src/readelf.c:3187
 #, c-format
 msgid " *** error while reading abbreviation entries: %s\n"
 msgstr ""
 
-#: src/readelf.c:3210
+#: src/readelf.c:3211
 #, c-format
 msgid "cannot get .debug_aranges content: %s"
 msgstr ""
 
-#: src/readelf.c:3215 src/readelf.c:3648
+#: src/readelf.c:3216 src/readelf.c:3652
 #, c-format
 msgid ""
 "\n"
@@ -931,19 +931,19 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/readelf.c:3230 src/readelf.c:3663
+#: src/readelf.c:3231 src/readelf.c:3667
 #, c-format
 msgid " [%5<PRId64>] ???\n"
 msgstr ""
 
-#: src/readelf.c:3232
+#: src/readelf.c:3233
 #, c-format
 msgid ""
 " [%5<PRId64>] start: %0#*<PRIx64>, length: %5<PRIu64>, CU DIE offset: %"
 "6<PRId64>\n"
 msgstr ""
 
-#: src/readelf.c:3256
+#: src/readelf.c:3270
 #, c-format
 msgid ""
 "\n"
@@ -951,12 +951,12 @@ msgid ""
 " [Offset]\n"
 msgstr ""
 
-#: src/readelf.c:3284
+#: src/readelf.c:3288
 #, c-format
 msgid "cannot get CU header in section '%s': %s"
 msgstr ""
 
-#: src/readelf.c:3289
+#: src/readelf.c:3293
 #, c-format
 msgid ""
 " Compilation unit at offset %<PRIu64>:\n"
@@ -964,70 +964,70 @@ msgid ""
 "<PRIu16>\n"
 msgstr ""
 
-#: src/readelf.c:3301
+#: src/readelf.c:3305
 #, c-format
 msgid "cannot get DIE at offset %<PRIu64> in section '%s': %s"
 msgstr ""
 
-#: src/readelf.c:3311
+#: src/readelf.c:3372
 #, c-format
 msgid "cannot get DIE offset: %s"
 msgstr ""
 
-#: src/readelf.c:3319
+#: src/readelf.c:3379
 #, c-format
 msgid "cannot get tag of DIE at offset %<PRIu64> in section '%s': %s"
 msgstr ""
 
-#: src/readelf.c:3418
+#: src/readelf.c:3424
 #, c-format
 msgid "cannot get attributes of DIE: %s"
 msgstr ""
 
-#: src/readelf.c:3430
+#: src/readelf.c:3436
 #, c-format
 msgid "cannot get attribute code: %s"
 msgstr ""
 
-#: src/readelf.c:3438
+#: src/readelf.c:3443
 #, c-format
 msgid "cannot get attribute form: %s"
 msgstr ""
 
-#: src/readelf.c:3451
+#: src/readelf.c:3456
 #, c-format
 msgid "cannot get attribute value: %s"
 msgstr ""
 
-#: src/readelf.c:3579
+#: src/readelf.c:3583
 #, c-format
 msgid "cannot get next DIE: %s\n"
 msgstr ""
 
-#: src/readelf.c:3586
+#: src/readelf.c:3590
 #, c-format
 msgid "cannot get next DIE: %s"
 msgstr ""
 
-#: src/readelf.c:3614 src/readelf.c:3624
+#: src/readelf.c:3618 src/readelf.c:3628
 #, c-format
 msgid ""
 "\n"
 "DWARF section '%s' at offset %#<PRIx64>:\n"
 msgstr ""
 
-#: src/readelf.c:3643
+#: src/readelf.c:3647
 #, c-format
 msgid "cannot get .debug_pubnames content: %s"
 msgstr ""
 
-#: src/readelf.c:3665
+#: src/readelf.c:3669
 #, c-format
 msgid ""
 " [%5<PRId64>] DIE offset: %6<PRId64>, CU DIE offset: %6<PRId64>, name: %s\n"
 msgstr ""
 
-#: src/readelf.c:3687
+#: src/readelf.c:3691
 #, c-format
 msgid ""
 "\n"
@@ -1035,33 +1035,33 @@ msgid ""
 " [Offset]  String\n"
 msgstr ""
 
-#: src/readelf.c:3699
+#: src/readelf.c:3703
 #, c-format
 msgid " *** error while reading strings: %s\n"
 msgstr ""
 
-#: src/readelf.c:3718
+#: src/readelf.c:3722
 #, c-format
 msgid "cannot get debug context descriptor: %s"
 msgstr ""
 
-#: src/readelf.c:3792
+#: src/readelf.c:3799
 #, c-format
 msgid ""
 "\n"
 "Note segment of %<PRId64> bytes at offset %#0*<PRIx64>:\n"
 msgstr ""
 
-#: src/readelf.c:3799
+#: src/readelf.c:3806
 #, c-format
 msgid "cannot get content of note section: %s"
 msgstr ""
 
-#: src/readelf.c:3802
+#: src/readelf.c:3809
 msgid "  Owner          Data size  Type\n"
 msgstr ""
 
-#: src/readelf.c:3841
+#: src/readelf.c:3848
 #, c-format
 msgid "  %-13.*s  %9<PRId32>  %s\n"
 msgstr ""
@@ -1184,61 +1184,61 @@ msgstr ""
 msgid "cannot set access and modification date of \"%s\""
 msgstr ""
 
-#: src/strip.c:388 src/strip.c:414
+#: src/strip.c:394 src/strip.c:419
 #, c-format
 msgid "cannot open `%s'"
 msgstr ""
 
-#: src/strip.c:401
+#: src/strip.c:407
 msgid "cannot open EBL backend"
 msgstr ""
 
-#: src/strip.c:437 src/strip.c:463
+#: src/strip.c:442 src/strip.c:468
 #, c-format
 msgid "cannot create new file `%s': %s"
 msgstr ""
 
-#: src/strip.c:524
+#: src/strip.c:529
 #, c-format
 msgid "illformed file `%s'"
 msgstr ""
 
-#: src/strip.c:788 src/strip.c:873
+#: src/strip.c:793 src/strip.c:878
 #, c-format
 msgid "while generating output file: %s"
 msgstr ""
 
-#: src/strip.c:837 src/strip.c:1218
+#: src/strip.c:842 src/strip.c:1224
 #, c-format
 msgid "%s: error while creating ELF header: %s"
 msgstr ""
 
-#: src/strip.c:845 src/strip.c:1240
+#: src/strip.c:850 src/strip.c:1246
 #, c-format
 msgid "while writing `%s': %s"
 msgstr ""
 
-#: src/strip.c:860
+#: src/strip.c:865
 #, c-format
 msgid "while preparing output for `%s'"
 msgstr ""
 
-#: src/strip.c:914 src/strip.c:971
+#: src/strip.c:919 src/strip.c:976
 #, c-format
 msgid "while create section header section: %s"
 msgstr ""
 
-#: src/strip.c:920
+#: src/strip.c:925
 #, c-format
 msgid "cannot allocate section data: %s"
 msgstr ""
 
-#: src/strip.c:1226
+#: src/strip.c:1232
 #, c-format
 msgid "%s: error while reading the file: %s"
 msgstr ""
 
-#: src/strip.c:1254 src/strip.c:1261
+#: src/strip.c:1260 src/strip.c:1267
 #, c-format
 msgid "error while finishing `%s': %s"
 msgstr ""
@@ -2297,190 +2297,190 @@ msgstr ""
 msgid "section [%2d] '%s' is contained in more than one section group"
 msgstr ""
 
-#: src/elflint.c:1563
+#: src/elflint.c:1565
 msgid "cannot get section header of zeroth section"
 msgstr ""
 
-#: src/elflint.c:1567
+#: src/elflint.c:1569
 msgid "zeroth section has nonzero name"
 msgstr ""
 
-#: src/elflint.c:1569
+#: src/elflint.c:1571
 msgid "zeroth section has nonzero type"
 msgstr ""
 
-#: src/elflint.c:1571
+#: src/elflint.c:1573
 msgid "zeroth section has nonzero flags"
 msgstr ""
 
-#: src/elflint.c:1573
+#: src/elflint.c:1575
 msgid "zeroth section has nonzero address"
 msgstr ""
 
-#: src/elflint.c:1575
+#: src/elflint.c:1577
 msgid "zeroth section has nonzero offset"
 msgstr ""
 
-#: src/elflint.c:1577
+#: src/elflint.c:1579
 msgid "zeroth section has nonzero info field"
 msgstr ""
 
-#: src/elflint.c:1579
+#: src/elflint.c:1581
 msgid "zeroth section has nonzero align value"
 msgstr ""
 
-#: src/elflint.c:1581
+#: src/elflint.c:1583
 msgid "zeroth section has nonzero entry size value"
 msgstr ""
 
-#: src/elflint.c:1584
+#: src/elflint.c:1586
 msgid ""
 "zeroth section has nonzero size value while ELF header has nonzero shnum "
 "value"
 msgstr ""
 
-#: src/elflint.c:1587
+#: src/elflint.c:1589
 msgid ""
 "zeroth section has nonzero link value while ELF header does not signal "
 "overflow in shstrndx"
 msgstr ""
 
-#: src/elflint.c:1598
+#: src/elflint.c:1601
 #, c-format
 msgid "cannot get section header for section [%2d] '%s': %s"
 msgstr ""
 
-#: src/elflint.c:1607
+#: src/elflint.c:1610
 #, c-format
 msgid "section [%2d]: invalid name"
 msgstr ""
 
-#: src/elflint.c:1622
+#: src/elflint.c:1625
 #, c-format
 msgid "section [%2zd] '%s' has wrong type: expected %s, is %s"
 msgstr ""
 
-#: src/elflint.c:1637
+#: src/elflint.c:1640
 #, c-format
 msgid "section [%2d] '%s' has wrong flags: expected %s, is %s"
 msgstr ""
 
-#: src/elflint.c:1655
+#: src/elflint.c:1658
 #, c-format
 msgid "section [%2d] '%s' has wrong flags: expected %s and possibly %s, is %s"
 msgstr ""
 
-#: src/elflint.c:1685
+#: src/elflint.c:1688
 #, c-format
 msgid ""
 "section [%2d] '%s' has SHF_ALLOC flag set but there is no loadable segment"
 msgstr ""
 
-#: src/elflint.c:1690
+#: src/elflint.c:1693
 #, c-format
 msgid ""
 "section [%2d] '%s' has SHF_ALLOC flag not set but there are loadable segments"
 msgstr ""
 
-#: src/elflint.c:1700
+#: src/elflint.c:1703
 #, c-format
 msgid "section [%2d] '%s': size not multiple of entry size"
 msgstr ""
 
-#: src/elflint.c:1705
+#: src/elflint.c:1708
 msgid "cannot get section header"
 msgstr ""
 
-#: src/elflint.c:1713
+#: src/elflint.c:1716
 #, c-format
 msgid "unsupported section type %d"
 msgstr ""
 
-#: src/elflint.c:1719
+#: src/elflint.c:1722
 #, c-format
 msgid "section [%2d] '%s' contain unknown flag"
 msgstr ""
 
-#: src/elflint.c:1722
+#: src/elflint.c:1725
 #, c-format
 msgid "section [%2d] '%s': thread-local data sections not yet supported"
 msgstr ""
 
-#: src/elflint.c:1727
+#: src/elflint.c:1730
 #, c-format
 msgid "section [%2d] '%s': invalid section reference in link value"
 msgstr ""
 
-#: src/elflint.c:1732
+#: src/elflint.c:1735
 #, c-format
 msgid "section [%2d] '%s': invalid section reference in info value"
 msgstr ""
 
-#: src/elflint.c:1739
+#: src/elflint.c:1742
 #, c-format
 msgid "section [%2d] '%s': strings flag set without merge flag"
 msgstr ""
 
-#: src/elflint.c:1744
+#: src/elflint.c:1747
 #, c-format
 msgid "section [%2d] '%s': merge flag set but entry size is zero"
 msgstr ""
 
-#: src/elflint.c:1752
+#: src/elflint.c:1755
 #, c-format
 msgid ""
 "section [%2d] '%s': ELF header says this is the section header string table "
 "but type is not SHT_TYPE"
 msgstr ""
 
-#: src/elflint.c:1798
+#: src/elflint.c:1801
 msgid "INTERP program header entry but no .interp section"
 msgstr ""
 
-#: src/elflint.c:1808
+#: src/elflint.c:1815
 #, c-format
 msgid "phdr[%d]: no note entries defined for the type of file"
 msgstr ""
 
-#: src/elflint.c:1890
+#: src/elflint.c:1897
 #, c-format
 msgid "phdr[%d]: note entries probably in form of a 32-bit ELF file"
 msgstr ""
 
-#: src/elflint.c:1893
+#: src/elflint.c:1900
 #, c-format
 msgid "phdr[%d]: extra %zu bytes after last note"
 msgstr ""
 
-#: src/elflint.c:1922
+#: src/elflint.c:1929
 #, c-format
 msgid "phdr[%d]: unknown core file note type %<PRIu64> at offset %<PRIu64>"
 msgstr ""
 
-#: src/elflint.c:1930
+#: src/elflint.c:1937
 #, c-format
 msgid "phdr[%d]: unknown object file note type %<PRIu64> at offset %<PRIu64>"
 msgstr ""
 
-#: src/elflint.c:1956
+#: src/elflint.c:1963
 msgid ""
 "only executables, shared objects, and core files can have program headers"
 msgstr ""
 
-#: src/elflint.c:1967
+#: src/elflint.c:1974
 #, c-format
 msgid "cannot get program header entry %d: %s"
 msgstr ""
 
-#: src/elflint.c:1973
+#: src/elflint.c:1980
 #, c-format
 msgid "program header entry %d: unknown program header entry type"
 msgstr ""
 
-#: src/elflint.c:1984
+#: src/elflint.c:1991
 msgid "more than one INTERP entry in program header"
 msgstr ""
 
-#: src/elflint.c:1993
+#: src/elflint.c:2000
 msgid "more than one TLS entry in program header"
 msgstr ""
