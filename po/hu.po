@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-16 17:39-0500\n"
+"POT-Creation-Date: 2001-11-17 02:54-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1410,83 +1410,83 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:103
+#: lib/depends.c:101
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/depends.c:419
+#: lib/depends.c:294
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:704
+#: lib/depends.c:566
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:729
+#: lib/depends.c:591
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:745
+#: lib/depends.c:607
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:766
+#: lib/depends.c:628
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:778
+#: lib/depends.c:640
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:791
+#: lib/depends.c:653
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:830
+#: lib/depends.c:692
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:832 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:694 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:832 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:694 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1173
+#: lib/depends.c:1031
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1415
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1491
+#: lib/depends.c:1342
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1568
+#: lib/depends.c:1416
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1628
+#: lib/depends.c:1476
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1665
+#: lib/depends.c:1511
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1670
+#: lib/depends.c:1516
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""

@@ -208,7 +208,7 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
  * @return		dependency set
  */
 /*@null@*/
-rpmDepSet dsiInit(/*@returned@*/ /*@null@*/ rpmDepSet ds)
+rpmDepSet dsiInit(/*@null@*/ rpmDepSet ds)
 	/*@modifies ds @*/;
 
 /**

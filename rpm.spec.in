@@ -582,3 +582,4 @@ fi
 - transaction.c: use wrappers/iterators to access TFI_t.
 - annotations to make a transactionElement opaque.
 - use array of pointers rather than contiguous array for ts->order.
+- methods to complete making transactionElement opaque.

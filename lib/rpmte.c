@@ -108,6 +108,8 @@ static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
 
     p->fd = NULL;
 
+    p->multiLib = 0;
+
     if (relocs != NULL) {
 	rpmRelocation * r;
 	int i;
@@ -137,11 +139,27 @@ transactionElement teFree(transactionElement te)
     return NULL;
 }
 
-transactionElement teNew(rpmTransactionSet ts, Header h,
-		fnpyKey key, rpmRelocation * relocs)
+transactionElement teNew(const rpmTransactionSet ts, Header h,
+		rpmTransactionType type,
+		fnpyKey key,
+		rpmRelocation * relocs,
+		int dboffset,
+		alKey pkgKey)
 {
     transactionElement te = xcalloc(1, sizeof(*te));
+
     addTE(ts, te, h, key, relocs);
+    switch (type) {
+    case TR_ADDED:
+	te->type = type;
+	te->u.addedKey = pkgKey;
+	break;
+    case TR_REMOVED:
+	te->type = type;
+	te->u.removed.dependsOnKey = pkgKey;
+	te->u.removed.dboffset = dboffset;
+	break;
+    }
     return te;
 }
 
@@ -186,6 +204,46 @@ int teGetMultiLib(transactionElement te)
     return (te != NULL ? te->multiLib : 0);
 }
 
+int teSetMultiLib(transactionElement te, int nmultiLib)
+{
+    int omultiLib = 0;
+    if (te != NULL) {
+	omultiLib = te->multiLib;
+	te->multiLib = nmultiLib;
+    }
+    return omultiLib;
+}
+
+int teGetDepth(transactionElement te)
+{
+    return (te != NULL ? te->depth : 0);
+}
+
+int teSetDepth(transactionElement te, int ndepth)
+{
+    int odepth = 0;
+    if (te != NULL) {
+	odepth = te->depth;
+	te->depth = ndepth;
+    }
+    return odepth;
+}
+
+int teGetNpreds(transactionElement te)
+{
+    return (te != NULL ? te->npreds : 0);
+}
+
+int teSetNpreds(transactionElement te, int npreds)
+{
+    int opreds = 0;
+    if (te != NULL) {
+	opreds = te->npreds;
+	te->npreds = npreds;
+    }
+    return opreds;
+}
+
 tsortInfo teGetTSI(transactionElement te)
 {
     /*@-compdef -retalias -retexpose -usereleased @*/
@@ -193,14 +251,60 @@ tsortInfo teGetTSI(transactionElement te)
     /*@=compdef =retalias =retexpose =usereleased @*/
 }
 
+void teFreeTSI(transactionElement te)
+{
+    if (te != NULL && teGetTSI(te) != NULL) {
+	tsortInfo tsi;
+
+	/* Clean up tsort remnants (if any). */
+	while ((tsi = teGetTSI(te)->tsi_next) != NULL) {
+	    teGetTSI(te)->tsi_next = tsi->tsi_next;
+	    tsi->tsi_next = NULL;
+	    tsi = _free(tsi);
+	}
+	te->tsi = _free(te->tsi);
+    }
+    /*@-nullstate@*/ /* FIX: te->tsi is NULL */
+    return;
+    /*@=nullstate@*/
+}
+
+void teNewTSI(transactionElement te)
+{
+    if (te != NULL) {
+	teFreeTSI(te);
+	te->tsi = xcalloc(1, sizeof(*te->tsi));
+    }
+}
+
+void teCleanDS(transactionElement te)
+{
+    te->this = dsFree(te->this);
+    te->provides = dsFree(te->provides);
+    te->requires = dsFree(te->requires);
+    te->conflicts = dsFree(te->conflicts);
+    te->obsoletes = dsFree(te->obsoletes);
+}
+
 alKey teGetAddedKey(transactionElement te)
 {
-    return (te != NULL ? te->u.addedKey : 0);
+    return (te != NULL ? te->u.addedKey : RPMAL_NOMATCH);
 }
+
+alKey teSetAddedKey(transactionElement te, alKey npkgKey)
+{
+    alKey opkgKey = RPMAL_NOMATCH;
+    if (te != NULL) {
+	opkgKey = te->u.addedKey;
+	te->u.addedKey = npkgKey;
+    }
+    return opkgKey;
+}
+
 
 alKey teGetDependsOnKey(transactionElement te)
 {
-    return (te != NULL ? te->u.removed.dependsOnKey : 0);
+    return (te != NULL ? te->u.removed.dependsOnKey : RPMAL_NOMATCH);
 }
 
 int teGetDBOffset(transactionElement te)
@@ -227,6 +331,7 @@ fnpyKey teGetKey(transactionElement te)
 
 rpmDepSet teGetDS(transactionElement te, rpmTag tag)
 {
+    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     if (te == NULL)
 	return NULL;
 
@@ -246,10 +351,12 @@ rpmDepSet teGetDS(transactionElement te, rpmTag tag)
 	return te->obsoletes;
     else
 	return NULL;
+    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
 TFI_t teGetFI(transactionElement te, rpmTag tag)
 {
+    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     if (te == NULL)
 	return NULL;
 
@@ -257,6 +364,7 @@ TFI_t teGetFI(transactionElement te, rpmTag tag)
 	return te->fi;
     else
 	return NULL;
+    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
 int teiGetOc(teIterator tei)

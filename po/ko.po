@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-16 17:39-0500\n"
+"POT-Creation-Date: 2001-11-17 02:54-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1423,89 +1423,89 @@ msgstr "헤더에 아카이브 파일이 없습니다"
 msgid " failed - "
 msgstr " 실패함 - "
 
-#: lib/depends.c:103
+#: lib/depends.c:101
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/depends.c:419
+#: lib/depends.c:294
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:704
+#: lib/depends.c:566
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:729
+#: lib/depends.c:591
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:745
+#: lib/depends.c:607
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:766
+#: lib/depends.c:628
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일    %s\n"
 
-#: lib/depends.c:778
+#: lib/depends.c:640
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:791
+#: lib/depends.c:653
 #, fuzzy
 msgid "(db package)"
 msgstr "패키지가 없습니다\n"
 
-#: lib/depends.c:830
+#: lib/depends.c:692
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) 의존(Depends) 캐시에 추가되었습니다.\n"
 
-#: lib/depends.c:832 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:694 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr "아니오"
 
-#: lib/depends.c:832 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:694 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr "예"
 
-#: lib/depends.c:1173
+#: lib/depends.c:1031
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\" (을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1415
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1491
+#: lib/depends.c:1342
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 깊이[depth])\n"
 
-#: lib/depends.c:1568
+#: lib/depends.c:1416
 msgid "========== successors only (presentation order)\n"
 msgstr "========== 후임자 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1628
+#: lib/depends.c:1476
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1665
+#: lib/depends.c:1511
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1670
+#: lib/depends.c:1516
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""

@@ -95,8 +95,10 @@ struct transactionElement_s {
 
 /*@-fielduse@*/	/* LCL: confused by union? */
     union { 
-/*@unused@*/ alKey addedKey;
-/*@unused@*/ struct {
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
+	alKey addedKey;
+	struct {
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
 	    alKey dependsOnKey;
 	    int dboffset;
 	} removed;
@@ -134,14 +136,20 @@ transactionElement teFree(/*@only@*/ /*@null@*/ transactionElement te)
  * Create a transaction element.
  * @param ts		transaction set
  * @param h		header
- * @param key		package retrieval key (e.g. file name)
- * @param relocs	package file relocations
+ * @param type		TR_ADDED/TR_REMOVED
+ * @param key		(TR_ADDED) package retrieval key (e.g. file name)
+ * @param relocs	(TR_ADDED) package file relocations
+ * @param dboffset	(TR_REMOVED) rpmdb instance
+ * @param pkgKey	associated added package (if any)
  * @return		new transaction element
  */
 /*@only@*/ /*@null@*/
 transactionElement teNew(const rpmTransactionSet ts, Header h,
-		/*@exposed@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ rpmRelocation * relocs)
+		rpmTransactionType type,
+		/*@exposed@*/ /*@dependent@*/ /*@null@*/ fnpyKey key,
+		/*@null@*/ rpmRelocation * relocs,
+		int dboffset,
+		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
 	/*@modifies ts, h @*/;
 
 /**
@@ -215,6 +223,49 @@ int teGetMultiLib(transactionElement te)
 	/*@*/;
 
 /**
+ * Set multlib flags of transaction element.
+ * @param te		transaction element
+ * @param nmultiLib	new multilib flags
+ * @return		previous multilib flags
+ */
+int teSetMultiLib(transactionElement te, int nmultiLib)
+	/*@modifies te @*/;
+
+/**
+ * Retrieve tsort tree depth of transaction element.
+ * @param te		transaction element
+ * @return		depth
+ */
+int teGetDepth(transactionElement te)
+	/*@*/;
+
+/**
+ * Set tsort tree depth of transaction element.
+ * @param te		transaction element
+ * @param ndepth	new depth
+ * @return		previous depth
+ */
+int teSetDepth(transactionElement te, int ndepth)
+	/*@modifies te @*/;
+
+/**
+ * Retrieve tsort no. of predecessors of transaction element.
+ * @param te		transaction element
+ * @return		no. of predecessors
+ */
+int teGetNpreds(transactionElement te)
+	/*@*/;
+
+/**
+ * Set tsort no. of predecessors of transaction element.
+ * @param te		transaction element
+ * @param ndepth	new no. of predecessors
+ * @return		previous no. of predecessors
+ */
+int teSetNpreds(transactionElement te, int npreds)
+	/*@modifies te @*/;
+
+/**
  * Retrieve tsort info for transaction element.
  * @param te		transaction element
  * @return		tsort info
@@ -223,20 +274,52 @@ tsortInfo teGetTSI(transactionElement te)
 	/*@*/;
 
 /**
+ * Destroy tsort info of transaction element.
+ * @param te		transaction element
+ */
+void teFreeTSI(transactionElement te)
+	/*@modifies te @*/;
+
+/**
+ * Initialize tsort info of transaction element.
+ * @param te		transaction element
+ */
+void teNewTSI(transactionElement te)
+	/*@modifies te @*/;
+
+/**
+ * Destroy dependency set info of transaction element.
+ * @param te		transaction element
+ */
+void teCleanDS(transactionElement te)
+	/*@modifies te @*/;
+
+/**
  * Retrieve pkgKey of TR_ADDED transaction element.
  * @param te		transaction element
  * @return		pkgKey
  */
-/*@exposed@*/
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
 alKey teGetAddedKey(transactionElement te)
 	/*@*/;
+
+/**
+ * Set pkgKey of TR_ADDED transaction element.
+ * @param te		transaction element
+ * @param npkgKey	new pkgKey
+ * @return		previous pkgKey
+ */
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
+alKey teSetAddedKey(transactionElement te,
+		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey npkgKey)
+	/*@modifies te @*/;
 
 /**
  * Retrieve dependent pkgKey of TR_REMOVED transaction element.
  * @param te		transaction element
  * @return		dependent pkgKey
  */
-/*@exposed@*/
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
 alKey teGetDependsOnKey(transactionElement te)
 	/*@*/;
 
