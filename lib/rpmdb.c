@@ -60,9 +60,10 @@ static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
     int i;
 
     dbpath = getVar(RPMVAR_DBPATH);
-    if (!dbpath) 
-	dbpath = "/var/lib/rpm/";
-    else  {
+    if (!dbpath) {
+	message(MESS_DEBUG, "no dbpath has been set");
+	return 1;
+    } else  {
 	i = strlen(dbpath);
 	if (dbpath[i - 1] != '/') {
 	    filename = alloca(i);
