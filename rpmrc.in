@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.30 2000/09/14 11:42:48 jbj Exp $
+# $Id: rpmrc.in,v 2.31 2000/10/22 07:51:45 notting Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -173,8 +173,6 @@ arch_compat: alphaev56: alphaev5
 arch_compat: alphaev5: alpha
 arch_compat: alpha: axp noarch
 
-arch_compat: ia64: noarch
-
 arch_compat: athlon: i686
 arch_compat: i686: i586
 arch_compat: i586: i486
@@ -223,6 +221,7 @@ arch_compat: hades: m68kmint noarch
 arch_compat: s390: i370
 arch_compat: i370: noarch
 
+arch_compat: ia64: i686
 arch_compat: ia64: noarch
 
 os_compat:   IRIX64: IRIX
