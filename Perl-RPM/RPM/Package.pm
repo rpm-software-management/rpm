@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   $Id: Package.pm,v 1.3 2000/10/05 04:48:59 rjray Exp $
+#   $Id: Package.pm,v 1.4 2000/10/08 10:09:26 rjray Exp $
 #
 #   Description:    Perl-level glue and such for the RPM::Package class, the
 #                   methods and accessors to package operations.
@@ -15,7 +15,6 @@
 #   Functions:      
 #
 #   Libraries:      RPM
-#                   RPM::Header
 #
 #   Global Consts:  
 #
@@ -31,10 +30,9 @@ use vars qw($VERSION $revision);
 use subs qw();
 
 use RPM;
-use RPM::Header;
 
 $VERSION = '0.29';
-$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 

@@ -4,39 +4,127 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Package.xs,v 1.2 2000/10/05 04:48:59 rjray Exp $";
+static char * const rcsid = "$Id: Package.xs,v 1.3 2000/10/08 10:09:26 rjray Exp $";
 
-/* These three are for reading the package data from external sources */
-static int new_from_fd_t(FD_t fd, RPM__Package new_pkg)
+RPM__Package rpmpkg_new(pTHX_ char* class, SV* source, int flags)
 {
-    return 1;
-}
+    char* fname;
+    int fname_len;
+    RPM__Package retval;
+    RPM__Header  pkghdr;
 
-static int new_from_fd(int fd, RPM__Package new_pkg)
-{
-    FD_t FD = fdDup(fd);
+    new_RPM__Package(retval);
+    if (! retval) { return retval; }
 
-    return(new_from_fd_t(FD, new_pkg));
-}
+    if (source && SvROK(source) && (SvTYPE(SvRV(source)) == SVt_PVHV))
+    {
+        /* This means a hashref of options was passed in for shortcuts' sake */
+        SV** svp;
+        HV* options = (HV *)SvRV(source);
 
-static int new_from_fname(const char* source, RPM__Package new_pkg)
-{
-    FD_t fd;
+        svp = hv_fetch(options, "source", 7, FALSE);
+        if (SvOK(*svp))
+            /* They specified a source in the hashref */
+            source = sv_2mortal(*svp);
+        else
+            /* They, um, didn't */
+            source = Nullsv;
 
-    if (! (fd = Fopen(source, "r+")))
-        return 0;
+        svp = hv_fetch(options, "callback", 9, FALSE);
+        if (SvOK(*svp))
+            rpmpkg_set_callback(retval, sv_2mortal(*svp));
 
-    return(new_from_fd_t(fd, new_pkg));
-}
+        svp = hv_fetch(options, "flags", 6, FALSE);
+        if (SvOK(*svp) && SvIOK(*svp))
+            flags = SvIV(sv_2mortal(*svp));
+    }
 
-RPM__Package rpmpkg_new(pTHX_ char* class, SV* source)
-{
+    if (source && SvOK(source))
+    {
+        /* Technically, at least one of these tests is a dupe, but necessary
+         * since source may have been re-assigned above. */
+        if (SvROK(source))
+            source = SvRV(source);
+        /* If it is a string value, assume it to be a file name */
+        if (SvPOK(source))
+        {
+            fname = SvPV(source, fname_len); 
+            retval->path = safemalloc(fname_len + 1);
+            strncpy(retval->path, fname, fname_len);
+            retval->path[fname_len] = '\0';
+            retval->header = rpmhdr_TIEHASH(aTHX_ Nullsv, source,
+                                            (flags & RPM_HEADER_MASK));
+            if (! retval->header)
+            {
+                if (retval->callback)
+                    SvREFCNT_dec((SV *)retval->callback);
+                safefree(retval);
+                return 0;
+            }
+        }
+        else
+        {
+            rpm_error(aTHX_ RPMERR_BADARG,
+                      "Argument 2 must be a filename");
+            if (retval->callback)
+                SvREFCNT_dec((SV *)retval->callback);
+            safefree(retval);
+            return 0;
+        }
+    }
+    else
+    {
+        /* Nothing valid in source means an empty object. Process flags. */
+        if (flags & RPM_PACKAGE_READONLY)
+            retval->readonly = 1;
+    }
+
+    return retval;
 }
 
 void rpmpkg_DESTROY(pTHX_ RPM__Package self)
 {
     /* Free/release the dynamic parts of the package structure */
-    rpmhdr_DESTROY(aTHX_ self->header);
+    if (self->path)
+        safefree(self->path);
+    /* The Perl structure have their own clean-up methods that will kick in */
+
+    return;
+}
+
+SV* rpmpkg_set_callback(pTHX_ RPM__Package self, SV* newcb)
+{
+    SV* oldcb;
+
+    oldcb = (self->callback) ?
+        newRV((SV *)self->callback) : newSVsv(&PL_sv_undef);
+
+    if (SvROK(newcb)) newcb = SvRV(newcb);
+    if (SvTYPE(newcb) == SVt_PVCV)
+        self->callback = (CV *)newcb;
+    else if (SvPOK(newcb))
+    {
+        char* fn_name;
+        char* sv_name;
+
+        sv_name = SvPV(newcb, PL_na);
+        if (! strstr(sv_name, "::"))
+        {
+            Newz(TRUE, fn_name, strlen(sv_name) + 7, char);
+            strncat(fn_name, "main::", 6);
+            strcat(fn_name + 6, sv_name);
+        }
+        else
+            fn_name = sv_name;
+
+        self->callback = perl_get_cv(fn_name, FALSE);
+    }
+    else
+    {
+        self->callback = Nullcv;
+    }
+
+    return oldcb;
 }
 
 int rpmpkg_install(pTHX_ RPM__Package self)
@@ -51,17 +139,17 @@ int rpmpkg_verify(pTHX_ RPM__Package self)
 {
 }
 
-unsigned int rpmpkg_size(pTHX_ RPM__Package self)
+SV* rpmpkg_size(pTHX_ RPM__Package self)
 {
-    if (self->header)
-    {
-        SV* size = rpmhdr_FETCH(self->header, newSVpv("SIZE", 5),
-                                /* These are internal params */ Nullch, 0, 0);
+    SV* size;
 
-        return (SvIV(size));
-    }
+    if (self->header)
+        size = rpmhdr_FETCH(self->header, newSVpv("SIZE", 5),
+                            /* These are internal params */ Nullch, 0, 0);
     else
-        return 0;
+        size = newSVsv(&PL_sv_undef);
+
+    return size;
 }
 
 /* T/F test whether the package references a SRPM */
@@ -114,12 +202,13 @@ MODULE = RPM::Package   PACKAGE = RPM::Package          PREFIX = rpmpkg_
 
 
 RPM::Package
-rpmpkg_new(class, source=Nullsv)
+rpmpkg_new(class, source=Nullsv, flags=0)
     char* class;
     SV* source;
+    int flags;
     PROTOTYPE: $;$
     CODE:
-    RETVAL = rpmpkg_new(aTHX_ class, source);
+    RETVAL = rpmpkg_new(aTHX_ class, source, flags);
     OUTPUT:
     RETVAL
 
@@ -129,6 +218,25 @@ rpmpkg_DESTROY(self)
     PROTOTYPE: $
     CODE:
     rpmpkg_DESTROY(aTHX_ self);
+
+SV*
+rpmpkg_set_callback(self, newcb)
+    RPM::Package self;
+    SV* newcb;
+    PROTOTYPE: $$
+    CODE:
+    RETVAL = rpmpkg_set_callback(aTHX_ self, newcb);
+    OUTPUT:
+    RETVAL
+
+RPM::Header
+rpmpkg_header(self)
+    RPM::Package self;
+    PROTOTYPE: $
+    CODE:
+    RETVAL = self->header;
+    OUTPUT:
+    RETVAL
 
 int
 rpmpkg_install(self, ...)
@@ -157,7 +265,7 @@ rpmpkg_verify(self, ...)
     OUTPUT:
     RETVAL
 
-unsigned int
+SV*
 rpmpkg_size(self)
     RPM::Package self;
     PROTOTYPE: $
@@ -172,15 +280,6 @@ rpmpkg_is_source(self)
     PROTOTYPE: $
     CODE:
     RETVAL = rpmpkg_is_source(aTHX_ self);
-    OUTPUT:
-    RETVAL
-
-RPM::Header
-rpmpkg_header(self)
-    RPM::Package self;
-    PROTOTYPE: $
-    CODE:
-    RETVAL = self->header;
     OUTPUT:
     RETVAL
 
