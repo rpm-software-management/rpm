@@ -406,7 +406,7 @@ void rpmProblemSetFree(rpmProblemSet probs);
 void rpmProblemSetFilter(rpmProblemSet ps, int flags);
 int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
-		       rpmProblemSet * newProbs, int flags);
+		       rpmProblemSet * newProbs, int flags, int ignoreSet);
 
 #define RPMPROB_FILTER_IGNOREOS		(1 << 0)
 #define RPMPROB_FILTER_IGNOREARCH	(1 << 1)
