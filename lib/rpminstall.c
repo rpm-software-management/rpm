@@ -1047,6 +1047,8 @@ bottom:
 	av[i] = _free(av[i]);
     av = _free(av);	ac = 0;
 
+rpmMessage(RPMMESS_DEBUG, "IDTXglob: returns %p\n", idtx);
+
     return idtx;
 }
 
@@ -1098,6 +1100,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	ip = NULL;
 	niids = 0;
     }
+rpmMessage(RPMMESS_DEBUG, "*** was installed, now remove %p[%d]\n", ip, niids);
 
     {	const char * globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
 	if (globstr == NULL || *globstr == '%') {
@@ -1106,6 +1109,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    goto exit;
 	}
 	rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID);
+
 	if (rtids != NULL) {
 	    rp = rtids->idt;
 	    nrids = rtids->nidt;
@@ -1115,6 +1119,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	}
 	globstr = _free(globstr);
     }
+rpmMessage(RPMMESS_DEBUG, "*** was removed, now install %p[%d]\n", rp, nrids);
 
     {	int notifyFlags, xx;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
