@@ -576,7 +576,7 @@ enum rpm_machtable_e {
  */
 int rpmReadConfigFiles(/*@null@*/ const char * file,
 		/*@null@*/ const char * target)
-	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
+	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem, internalState @*/;
@@ -623,7 +623,7 @@ int rpmMachineScore(int type, const char * name)
  * @return		0 always
  */
 int rpmShowRC(FILE * fp)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fp, rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
 /** \ingroup rpmrc
@@ -634,7 +634,7 @@ int rpmShowRC(FILE * fp)
  * @param osTable
  */
 void rpmSetTables(int archTable, int osTable)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
@@ -648,7 +648,7 @@ void rpmSetTables(int archTable, int osTable)
  * @param os		os name (or NULL)
  */
 void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
@@ -869,7 +869,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
  */
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
 		/*@out@*/ /*@null@*/ const char ** msg)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *msg, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
@@ -883,7 +883,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
  */
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
 		/*@out@*/ /*@null@*/ const char ** msg)
-        /*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+        /*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
         /*@modifies ts, *hdrp, *msg, rpmGlobalMacroContext,
                 fileSystem, internalState @*/;
 
@@ -897,7 +897,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
  */
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fd, *hdrp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
@@ -912,7 +912,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
 			/*@null@*/ /*@out@*/ const char ** cookie)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
@@ -1101,7 +1101,7 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
 		int numFiles, /*@null@*/ /*@out@*/ uint_32 ** usagesPtr,
 		int flags)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *usagesPtr, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -1180,7 +1180,7 @@ enum rpmtagSignature {
  */
 rpmRC rpmVerifySignature(const rpmts ts,
 		/*@out@*/ char * result)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *result, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 

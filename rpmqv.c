@@ -160,7 +160,7 @@ int main(int argc, const char ** argv)
 #endif
 	/*@globals __assert_program_name, rpmEVR, RPMVERSION,
 		rpmGlobalMacroContext, rpmCLIMacroContext,
-		fileSystem, internalState@*/
+		h_errno, fileSystem, internalState@*/
 	/*@modifies __assert_program_name,
 		fileSystem, internalState@*/
 {

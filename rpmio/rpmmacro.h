@@ -64,8 +64,7 @@ extern "C" {
  */
 void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
 					/*@null@*/ FILE * fp)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
@@ -81,8 +80,7 @@ void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
 int	expandMacros	(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
 				/*@in@*/ /*@out@*/ char * sbuf,
 				size_t slen)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies *sbuf, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
@@ -97,7 +95,7 @@ int	expandMacros	(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
 void	addMacro	(/*@null@*/ MacroContext mc, const char * n,
 				/*@null@*/ const char * o,
 				/*@null@*/ const char * b, int level)
-	/*@globals rpmGlobalMacroContext@*/
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
@@ -106,7 +104,7 @@ void	addMacro	(/*@null@*/ MacroContext mc, const char * n,
  * @param n		macro name
  */
 void	delMacro	(/*@null@*/ MacroContext mc, const char * n)
-	/*@globals rpmGlobalMacroContext@*/
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
@@ -118,7 +116,7 @@ void	delMacro	(/*@null@*/ MacroContext mc, const char * n)
  */
 int	rpmDefineMacro	(/*@null@*/ MacroContext mc, const char * macro,
 				int level)
-	/*@globals rpmGlobalMacroContext@*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 /**
@@ -127,7 +125,7 @@ int	rpmDefineMacro	(/*@null@*/ MacroContext mc, const char * macro,
  * @param level		macro recursion level (0 is entry API)
  */
 void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
-	/*@globals rpmGlobalMacroContext@*/
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /**
@@ -137,7 +135,7 @@ void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
  */
 void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)
 	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
-		fileSystem, internalState @*/
+		h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
@@ -145,7 +143,7 @@ void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)
  * @param mc		macro context (NULL uses global context).
  */
 void	rpmFreeMacros	(/*@null@*/ MacroContext mc)
-	/*@globals rpmGlobalMacroContext@*/
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies mc, rpmGlobalMacroContext @*/;
 
 typedef enum rpmCompressedMagic_e {
@@ -163,7 +161,7 @@ typedef enum rpmCompressedMagic_e {
  */
 int	isCompressed	(const char * file,
 				/*@out@*/ rpmCompressedMagic * compressed)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *compressed, fileSystem, internalState @*/;
 
 /**
@@ -172,7 +170,7 @@ int	isCompressed	(const char * file,
  * @return		macro expansion (malloc'ed)
  */
 char * rpmExpand	(/*@null@*/ const char * arg, ...)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /**
@@ -191,7 +189,7 @@ char * rpmCleanPath	(/*@returned@*/ /*@null@*/ char * path)
  */
 /*@-redecl@*/ /* LCL: shrug */
 const char * rpmGetPath	(/*@null@*/ const char * path, ...)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 /*@=redecl@*/
 
@@ -209,7 +207,7 @@ const char * rpmGetPath	(/*@null@*/ const char * path, ...)
 const char * rpmGenPath	(/*@null@*/ const char * urlroot,
 			/*@null@*/ const char * urlmdir,
 			/*@null@*/ const char * urlfile)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 /*@=redecl@*/
 
@@ -221,7 +219,7 @@ const char * rpmGenPath	(/*@null@*/ const char * urlroot,
  * @return		numeric value
  */
 int	rpmExpandNumeric (const char * arg)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 #ifdef __cplusplus

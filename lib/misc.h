@@ -18,7 +18,7 @@ extern "C" {
  * @return		rpmRC return code
  */
 rpmRC rpmMkdirPath (const char * dpath, const char * dname)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
@@ -92,7 +92,7 @@ int doputenv(const char * str)
 int makeTempFile(/*@null@*/ const char * prefix,
 		/*@null@*/ /*@out@*/ const char ** fnptr,
 		/*@out@*/ FD_t * fdptr)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *fnptr, *fdptr, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;

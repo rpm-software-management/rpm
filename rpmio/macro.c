@@ -114,7 +114,7 @@ int print_expand_trace = 0;
 /* forward ref */
 static int expandMacro(MacroBuf mb)
 	/*@globals rpmGlobalMacroContext,
-		print_macro_trace, print_expand_trace, fileSystem @*/
+		print_macro_trace, print_expand_trace, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext,
 		print_macro_trace, print_expand_trace, fileSystem @*/;
 
@@ -492,7 +492,7 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
  */
 static int
 expandT(MacroBuf mb, const char * f, size_t flen)
-	/*@globals rpmGlobalMacroContext, fileSystem@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem@*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
     char *sbuf;
@@ -546,7 +546,7 @@ expandS(MacroBuf mb, char * tbuf, size_t tbuflen)
 /*@-boundswrite@*/
 static int
 expandU(MacroBuf mb, char * u, size_t ulen)
-	/*@globals rpmGlobalMacroContext, fileSystem@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem@*/
 	/*@modifies mb, *u, rpmGlobalMacroContext, fileSystem @*/
 {
     const char *s = mb->s;
@@ -585,7 +585,7 @@ expandU(MacroBuf mb, char * u, size_t ulen)
 /*@-boundswrite@*/
 static int
 doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
     char pcmd[BUFSIZ];
@@ -624,7 +624,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
  */
 /*@dependent@*/ static const char *
 doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies mb, rpmGlobalMacroContext @*/
 {
     const char *s = se;
@@ -1032,7 +1032,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
  */
 static void
 doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
     char buf[BUFSIZ];
@@ -1058,7 +1058,7 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 static void
 doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 		/*@null@*/ const char * g, size_t gn)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ], *b = NULL, *be;
@@ -1160,7 +1160,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 static int
 expandMacro(MacroBuf mb)
 	/*@globals rpmGlobalMacroContext,
-		print_macro_trace, print_expand_trace, fileSystem @*/
+		print_macro_trace, print_expand_trace, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext,
 		print_macro_trace, print_expand_trace, fileSystem @*/
 {

@@ -845,7 +845,7 @@ ZEXTERN int ZEXPORT gzsetparams OF((gzFile file, int level, int strategy))
    opened for writing.
 */
 
-ZEXTERN int ZEXPORT    gzread  OF((gzFile file, voidp buf, unsigned len))
+ZEXTERN int ZEXPORT    gzread  OF((gzFile file, /*@out@*/ voidp buf, unsigned len))
 	/*@globals errno, fileSystem @*/
 	/*@modifies file, *buf, errno, fileSystem @*/;
 /*

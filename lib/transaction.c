@@ -84,7 +84,7 @@ static int sharedCmp(const void * one, const void * two)
 /*@-boundsread@*/
 static fileAction decideFileFate(const rpmts ts,
 		const rpmfi ofi, rpmfi nfi)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies nfi, fileSystem, internalState @*/
 {
     const char * fn = rpmfiFN(nfi);
@@ -210,7 +210,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 		rpmte p, rpmfi fi,
 		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     uint_32 tscolor = rpmtsColor(ts);
@@ -322,7 +322,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 /* XXX only ts->rpmdb modified */
 static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 		sharedFileInfo shared, int sharedCount)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = fi->hge;
@@ -515,7 +515,7 @@ bingoFps->baseName);
 /* XXX only ts->{probs,di} modified */
 static void handleOverlappedFiles(const rpmts ts,
 		const rpmte p, rpmfi fi)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, fileSystem, internalState @*/
 {
     uint_32 fixupSize = 0;
@@ -748,7 +748,7 @@ static int ensureOlder(rpmts ts,
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
 /*@-bounds@*/
 static void skipFiles(const rpmts ts, rpmfi fi)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
 {
     uint_32 tscolor = rpmtsColor(ts);

@@ -30,7 +30,7 @@ static int _print_pkts = 0;
 static int manageFile(/*@out@*/ FD_t *fdp,
 		/*@null@*/ /*@out@*/ const char **fnp,
 		int flags, /*@unused@*/ int rc)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fdp, *fnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -90,7 +90,7 @@ static int manageFile(/*@out@*/ FD_t *fdp,
 /*@-boundsread@*/
 static int copyFile(FD_t *sfdp, const char **sfnp,
 		FD_t *tfdp, const char **tfnp)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -167,7 +167,7 @@ static int getSignid(Header sig, int sigtag, unsigned char * signid)
  */
 static int rpmReSign(/*@unused@*/ rpmts ts,
 		QVA_t qva, const char ** argv)
-        /*@globals rpmGlobalMacroContext,
+        /*@globals rpmGlobalMacroContext, h_errno,
                 fileSystem, internalState @*/
         /*@modifies rpmGlobalMacroContext,
                 fileSystem, internalState @*/
@@ -548,7 +548,7 @@ exit:
 static int rpmcliImportPubkeys(const rpmts ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, rpmGlobalMacroContext,
+	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/

@@ -331,7 +331,7 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
-	/*@globals _cacheDependsRC, rpmGlobalMacroContext,
+	/*@globals _cacheDependsRC, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, _cacheDependsRC, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -577,7 +577,7 @@ exit:
 static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, requires, conflicts, rpmGlobalMacroContext,
 		fileSystem, internalState */
@@ -676,7 +676,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
  */
 static int checkPackageSet(rpmts ts, const char * dep,
 		/*@only@*/ /*@null@*/ rpmdbMatchIterator mi, int adding)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 1;
@@ -717,7 +717,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
  * @return		0 no problems found
  */
 static int checkDependentPackages(rpmts ts, const char * dep)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmdbMatchIterator mi;
@@ -732,7 +732,7 @@ static int checkDependentPackages(rpmts ts, const char * dep)
  * @return		0 no problems found
  */
 static int checkDependentConflicts(rpmts ts, const char * dep)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int rc = 0;
@@ -816,8 +816,10 @@ static void freeBadDeps(void)
  */
 /*@-boundsread@*/
 static int ignoreDep(const rpmte p, const rpmte q)
-	/*@globals badDeps, badDepsInitialized, rpmGlobalMacroContext @*/
-	/*@modifies badDeps, badDepsInitialized, rpmGlobalMacroContext @*/
+	/*@globals badDeps, badDepsInitialized,
+		rpmGlobalMacroContext, h_errno @*/
+	/*@modifies badDeps, badDepsInitialized,
+		rpmGlobalMacroContext @*/
 {
     struct badDeps_s * bdp;
 
@@ -1000,7 +1002,7 @@ static inline int addRelation(rpmts ts,
 		/*@dependent@*/ rpmte p,
 		unsigned char * selected,
 		rpmds requires)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, *selected, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {

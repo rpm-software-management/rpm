@@ -12,13 +12,13 @@
 #include "ugid.h"
 #include "debug.h"
 
-/*@access DIR@*/
-/*@access FD_t@*/
-/*@access urlinfo@*/
+/*@access DIR @*/
+/*@access FD_t @*/
+/*@access urlinfo @*/
 
 /* =============================================================== */
 static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     int rc;
@@ -34,21 +34,21 @@ static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
 }
 
 static int ftpChdir(const char * path)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("CWD", path, NULL);
 }
 
 static int ftpRmdir(const char * path)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("RMD", path, NULL);
 }
 
 static int ftpRename(const char * oldpath, const char * newpath)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     int rc;
@@ -58,7 +58,7 @@ static int ftpRename(const char * oldpath, const char * newpath)
 }
 
 static int ftpUnlink(const char * path)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("DELE", path, NULL);
@@ -825,7 +825,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
 		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
 	/*@globals ftpBufAlloced, ftpBuf,
-		fileSystem, internalState @*/
+		h_errno, fileSystem, internalState @*/
 	/*@modifies *st, *rlbuf, ftpBufAlloced, ftpBuf,
 		fileSystem, internalState @*/
 {
@@ -1035,7 +1035,7 @@ static const char * statstr(const struct stat * st,
 static int ftp_st_ino = 0xdead0000;
 
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals ftp_st_ino, fileSystem, internalState @*/
+	/*@globals ftp_st_ino, h_errno, fileSystem, internalState @*/
 	/*@modifies *st, ftp_st_ino, fileSystem, internalState @*/
 {
     char buf[1024];
@@ -1050,7 +1050,7 @@ fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 }
 
 static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals ftp_st_ino, fileSystem, internalState @*/
+	/*@globals ftp_st_ino, h_errno, fileSystem, internalState @*/
 	/*@modifies *st, ftp_st_ino, fileSystem, internalState @*/
 {
     char buf[1024];
@@ -1065,7 +1065,7 @@ fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
 }
 
 static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
 {
     int rc;
@@ -1109,7 +1109,7 @@ static int ftpmagicdir = 0x8440291;
 /*@-boundswrite@*/
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     FTPDIR mydir;

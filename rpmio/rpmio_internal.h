@@ -96,6 +96,7 @@ struct pgpDig_s {
 /** \ingroup rpmio
  */
 typedef struct _FDSTACK_s {
+/*@exposed@*/
     FDIO_t		io;
 /*@dependent@*/ void *	fp;
     int			fdno;
@@ -180,7 +181,9 @@ extern int _ftp_debug;
 /*@=redecl@*/
 
 #define DBG(_f, _m, _x) \
-    if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x
+    /*@-modfilesys@*/ \
+    if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x \
+    /*@=modfilesys@*/
 
 #if defined(__LCLINT__XXX)
 #define DBGIO(_f, _x)
@@ -204,7 +207,7 @@ int fdFgets(FD_t fd, char * buf, size_t len)
  */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
                 /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *uret, fileSystem, internalState @*/;
 
 /** \ingroup rpmio
@@ -216,7 +219,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 /** \ingroup rpmio
  */
 int ftpCmd(const char * cmd, const char * url, const char * arg2)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmio
@@ -596,7 +599,7 @@ int fdFileno(/*@null@*/ void * cookie)
  */
 int rpmioSlurp(const char * fn,
                 /*@out@*/ const unsigned char ** bp, /*@out@*/ ssize_t * blenp)
-        /*@globals fileSystem, internalState @*/
+        /*@globals h_errno, fileSystem, internalState @*/
         /*@modifies *bp, *blenp, fileSystem, internalState @*/;
 
 #ifdef __cplusplus

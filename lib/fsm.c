@@ -392,7 +392,7 @@ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
 /*@=boundsread@*/
 
 static void * fsmThread(void * arg)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies arg, fileSystem, internalState @*/
 {
     FSM_t fsm = arg;
@@ -402,7 +402,7 @@ static void * fsmThread(void * arg)
 }
 
 int fsmNext(FSM_t fsm, fileStage nstage)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     fsm->nstage = nstage;
@@ -421,7 +421,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->links, fsm->ix, fsm->sb, fsm->goal, fsm->nsuffix @*/
 	/*@defines fsm->li @*/
 	/*@releases fsm->path @*/
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     struct stat * st = &fsm->sb;
@@ -778,7 +778,7 @@ int fsmMapAttrs(FSM_t fsm)
 /*@-compdef@*/
 static int expandRegular(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->fmd5sum, fsm->md5sum, fsm->sb, fsm->wfd  @*/
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     const struct stat * st = &fsm->sb;
@@ -847,7 +847,7 @@ exit:
 /*@-compdef -compmempass@*/
 static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	/*@uses fsm->path, fsm->opath, fsm->sb, fsm->osb, fsm->cfd @*/
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
@@ -990,7 +990,7 @@ exit:
  */
 static int writeLinkedFile(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->nsuffix, fsm->ix, fsm->li, fsm->failedFile @*/
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
@@ -1043,7 +1043,7 @@ static int writeLinkedFile(/*@special@*/ /*@partial@*/ FSM_t fsm)
 /*@-compdef@*/
 static int fsmMakeLinks(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->opath, fsm->nsuffix, fsm->ix, fsm->li @*/
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
@@ -1110,7 +1110,7 @@ static int fsmMakeLinks(/*@special@*/ /*@partial@*/ FSM_t fsm)
 static int fsmCommitLinks(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->nsuffix, fsm->ix, fsm->sb,
 		fsm->li, fsm->links @*/
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
@@ -1157,7 +1157,7 @@ static int fsmCommitLinks(/*@special@*/ /*@partial@*/ FSM_t fsm)
  */
 static int fsmRmdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->dnlx, fsm->ldn, fsm->rdbuf, fsm->iter @*/
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
@@ -1216,7 +1216,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->sb, fsm->osb, fsm->rdbuf, fsm->iter,
 		fsm->ldn, fsm->ldnlen, fsm->ldnalloc @*/
 	/*@defines fsm->dnlx, fsm->ldn @*/
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     struct stat * st = &fsm->sb;

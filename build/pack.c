@@ -55,7 +55,7 @@ static inline int genSourceRpmName(Spec spec)
  */
 static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		const char * fmodeMacro)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fdo, csa, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -130,7 +130,7 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
  */
 static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 		const char * file, /*@only@*/ StringBuf sb)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
@@ -167,7 +167,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 /**
  */
 static int addFileToTag(Spec spec, const char * file, Header h, int tag)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -191,7 +191,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 /**
  */
 static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     StringBuf sb = newStringBuf();
@@ -210,7 +210,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 /**
  */
 static int processScriptFiles(Spec spec, Package pkg)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies pkg->header, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -383,7 +383,7 @@ static unsigned char header_magic[8] = {
 static int rpmpkg_version = -1;
 
 static int rpmLeadVersion(void)
-	/*@globals rpmpkg_version, rpmGlobalMacroContext @*/
+	/*@globals rpmpkg_version, rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmpkg_version, rpmGlobalMacroContext @*/
 {
     int rpmlead_version;

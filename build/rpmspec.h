@@ -241,7 +241,7 @@ extern "C" {
  * @return		0 on success, else no. of failures
  */
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -267,7 +267,7 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
  * @param tag
  */
 int addSource(Spec spec, Package pkg, const char * field, int tag)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
 		pkg->icon,

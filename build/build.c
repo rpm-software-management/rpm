@@ -20,7 +20,7 @@ static int _build_debug = 0;
 /**
  */
 static void doRmSource(Spec spec)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     struct Source *p;
@@ -119,6 +119,8 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	mPost = "%{___build_post}";
 	break;
     }
+    if (name == NULL)	/* XXX shouldn't happen */
+	name = "???";
     /*@=branchstate@*/
 
     if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
@@ -175,7 +177,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     if (what == RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
 	    fprintf(fp, "rm -rf %s\n", spec->buildSubdir);
-    } else
+    } else if (sb != NULL)
 	fprintf(fp, "%s", getStringBuf(sb));
 
     (void) fputs(buildPost, fp);

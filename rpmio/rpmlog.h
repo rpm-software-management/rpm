@@ -176,7 +176,7 @@ int rpmlogGetNrecs(void)	/*@*/;
  * Print all rpmError() messages.
  * @param f		file handle (NULL uses stderr)
  */
-void rpmlogPrint(FILE *f)
+void rpmlogPrint(/*@null@*/ FILE *f)
 	/*@modifies *f @*/;
 
 /**

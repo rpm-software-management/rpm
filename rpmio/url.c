@@ -193,7 +193,7 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
 /*@-boundswrite@*/
 /*@-mods@*/
 static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *uret, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     urlinfo u;

@@ -170,10 +170,11 @@ static int dbiTagToDbix(int rpmtag)
  * Initialize database (index, tag) tuple from configuration.
  */
 static void dbiTagsInit(void)
-	/*@globals rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
-	/*@modifies rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
+	/*@globals dbiTags, dbiTagsMax, rpmGlobalMacroContext, h_errno @*/
+	/*@modifies dbiTags, dbiTagsMax, rpmGlobalMacroContext @*/
 {
-/*@observer@*/ static const char * const _dbiTagStr_default =
+/*@observer@*/
+    static const char * const _dbiTagStr_default =
 	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys";
     char * dbiTagStr = NULL;
     char * o, * oe;
@@ -880,7 +881,7 @@ static /*@only@*/ /*@null@*/
 rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
-	/*@globals _db_filter_dups, rpmGlobalMacroContext @*/
+	/*@globals _db_filter_dups, rpmGlobalMacroContext, h_errno @*/
 	/*@modifies _db_filter_dups, rpmGlobalMacroContext @*/
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
@@ -933,7 +934,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
 		int mode, int perms, int flags)
-	/*@globals rpmdbRock, rpmGlobalMacroContext,
+	/*@globals rpmdbRock, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmdbRock, *dbp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -1128,7 +1129,7 @@ int rpmdbVerify(const char * prefix)
  */
 static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 		DBT * key, DBT * data, /*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, *key, *data, *matches, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
@@ -1344,7 +1345,7 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ const char * version,
 		/*@null@*/ const char * release,
 		/*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, *matches,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
@@ -1440,7 +1441,7 @@ exit:
  */
 static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, *matches,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
@@ -2279,7 +2280,7 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 
 /*@-bounds@*/ /* LCL: segfault */
 static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     DBC * dbcursor;
@@ -3377,7 +3378,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
  * @return		1 if file exists, 0 if not
  */
 static int rpmioFileExists(const char * urlfn)
-        /*@globals fileSystem, internalState @*/
+        /*@globals h_errno, fileSystem, internalState @*/
         /*@modifies fileSystem, internalState @*/
 {
     const char *fn;
@@ -3411,7 +3412,7 @@ static int rpmioFileExists(const char * urlfn)
 
 static int rpmdbRemoveDatabase(const char * prefix,
 		const char * dbpath, int _dbapi)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 { 
     int i;
@@ -3468,7 +3469,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
 		const char * newdbpath, int _newdbapi)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     int i;

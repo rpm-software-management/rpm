@@ -102,7 +102,7 @@ extern "C" {
  * @return		0 on success
  */
 int cpioTrailerWrite(FSM_t fsm)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/;
 
 /**
@@ -112,7 +112,7 @@ int cpioTrailerWrite(FSM_t fsm)
  * @return		0 on success
  */
 int cpioHeaderWrite(FSM_t fsm, struct stat * st)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/;
 
 /**
@@ -122,7 +122,7 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
  * @return		0 on success
  */
 int cpioHeaderRead(FSM_t fsm, struct stat * st)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, *st, fileSystem, internalState @*/;
 
 /** \ingroup payload

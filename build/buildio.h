@@ -39,7 +39,7 @@ extern "C" {
 		/*@out@*/ struct rpmlead * lead,
 		/*@out@*/ Header * sigs,
 		CSA_t csa)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *specp, *lead, *sigs, csa, csa->cpioFdIn,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -65,7 +65,7 @@ int writeRPM(Header * hdrp, /*@null@*/ unsigned char ** pkgidp,
 		CSA_t csa,
 		/*@null@*/ char * passPhrase,
 		/*@out@*/ const char ** cookie)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *hdrp, *pkgidp, *cookie, csa, csa->cpioArchiveSize,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

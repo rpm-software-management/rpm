@@ -251,7 +251,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, ts, fi, *archiveSize, *failedFile,
 		fileSystem, internalState @*/;
 
@@ -261,7 +261,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
  * @return		0 on success
  */
 int fsmTeardown(FSM_t fsm)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/;
 
 /*@-exportlocal@*/
@@ -303,7 +303,7 @@ int fsmMapAttrs(FSM_t fsm)
  * @return		0 on success
  */
 int fsmNext(FSM_t fsm, fileStage nstage)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, errno, fileSystem, internalState @*/;
 
 /**
@@ -314,7 +314,7 @@ int fsmNext(FSM_t fsm, fileStage nstage)
  */
 /*@-exportlocal@*/
 int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, errno, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 

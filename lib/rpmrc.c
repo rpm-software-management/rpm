@@ -142,7 +142,7 @@ static int defaultsInitialized = 0;
 
 /* prototypes */
 static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fd, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 static void rpmSetVarArch(int var, const char * val,
@@ -155,7 +155,7 @@ static void rebuildCompatTables(int type, const char * name)
 	/*@modifies internalState @*/;
 
 static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *canontarget, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
@@ -463,7 +463,7 @@ static void setVarDefault(int var, const char * macroname, const char * val,
 }
 
 static void setPathDefault(int var, const char * macroname, const char * subdir)
-	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 
@@ -514,7 +514,7 @@ export RPM_BUILD_ROOT\n}\
 ";
 
 static void setDefaults(void)
-	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 
@@ -552,7 +552,7 @@ static void setDefaults(void)
 
 /*@-usedef@*/	/*@ FIX: se usage inconsistent, W2DO? */
 static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fd, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *s;
@@ -777,7 +777,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 /*@-bounds@*/
 static int rpmPlatform(const char * platform)
 	/*@globals nplatpat, platpat,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
+		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies nplatpat, platpat,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1052,7 +1052,7 @@ static void mfspr_ill(int notused)
  */
 static void defaultMachine(/*@out@*/ const char ** arch,
 		/*@out@*/ const char ** os)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *arch, *os, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static struct utsname un;
@@ -1723,7 +1723,7 @@ void rpmFreeRpmrc(void)
  */
 static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	/*@globals defaultsInitialized, rpmGlobalMacroContext,
-		rpmCLIMacroContext, fileSystem, internalState @*/
+		rpmCLIMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies defaultsInitialized, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {

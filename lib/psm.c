@@ -154,7 +154,7 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
  */
 /*@-bounds@*/
 static rpmRC markReplacedFiles(const rpmpsm psm)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
@@ -514,7 +514,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
 static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
-	/*@globals ldconfig_done, rpmGlobalMacroContext,
+	/*@globals ldconfig_done, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies psm, ldconfig_done, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -785,7 +785,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
  * @return		rpmRC return code
  */
 static rpmRC runInstScript(rpmpsm psm)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmfi fi = psm->fi;
@@ -840,7 +840,7 @@ exit:
 static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState@*/
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -938,7 +938,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
  * @return		0 on success
  */
 static rpmRC runTriggers(rpmpsm psm)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -979,7 +979,7 @@ static rpmRC runTriggers(rpmpsm psm)
  * @return		0 on success
  */
 static rpmRC runImmedTriggers(rpmpsm psm)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -1148,7 +1148,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 }
 
 static void * rpmpsmThread(void * arg)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies arg, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmpsm psm = arg;
@@ -1158,7 +1158,7 @@ static void * rpmpsmThread(void * arg)
 }
 
 static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     psm->nstage = nstage;

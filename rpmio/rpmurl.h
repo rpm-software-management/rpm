@@ -153,7 +153,7 @@ urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)
  * @return		0 on success, -1 on error
  */
 int urlSplit(const char * url, /*@out@*/ urlinfo * uret)
-	/*@globals internalState @*/
+	/*@globals h_errno, internalState @*/
 	/*@modifies *uret, internalState @*/;
 
 /**
@@ -163,7 +163,7 @@ int urlSplit(const char * url, /*@out@*/ urlinfo * uret)
  * @return		0 on success, otherwise FTPERR_* code
  */
 int urlGetFile(const char * url, /*@null@*/ const char * dest)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 #ifdef __cplusplus

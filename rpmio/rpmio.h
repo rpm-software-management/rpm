@@ -282,7 +282,7 @@ int Fclose( /*@killref@*/ FD_t fd)
  */
 /*@null@*/ FD_t	Fopen(/*@null@*/ const char * path,
 			/*@null@*/ const char * fmode)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 
@@ -325,28 +325,28 @@ int Fcntl(FD_t fd, int op, void *lip)
  * mkdir(2) clone.
  */
 int Mkdir(const char * path, mode_t mode)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
  * chdir(2) clone.
  */
 int Chdir(const char * path)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
  * rmdir(2) clone.
  */
 int Rmdir(const char * path)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
  * rename(2) clone.
  */
 int Rename(const char * oldpath, const char * newpath)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -360,7 +360,7 @@ int Link(const char * oldpath, const char * newpath)
  * unlink(2) clone.
  */
 int Unlink(const char * path)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -368,7 +368,7 @@ int Unlink(const char * path)
  */
 /*@-incondefs@*/
 int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies *buf, errno, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
 	/*@ensures maxRead(buf) <= bufsiz @*/;
@@ -378,14 +378,14 @@ int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
  * stat(2) clone.
  */
 int Stat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 /**
  * lstat(2) clone.
  */
 int Lstat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 /**
@@ -418,7 +418,7 @@ void Globfree( /*@only@*/ glob_t * pglob)
  */
 /*@null@*/
 DIR * Opendir(const char * path)
-	/*@globals errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
@@ -552,7 +552,7 @@ int fdReadable(FD_t fd, int secs)
  * @return		0 on success, errno (or -1) on error
  */
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
@@ -593,7 +593,7 @@ typedef enum ftperrCode_e {
 /*@-redecl@*/
 /*@unused@*/
 /*@observer@*/ const char * urlStrerror(const char * url)
-	/*@globals internalState @*/
+	/*@globals h_errno, internalState @*/
 	/*@modifies internalState @*/;
 /*@=redecl@*/
 

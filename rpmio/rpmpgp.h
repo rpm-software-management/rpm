@@ -1227,7 +1227,7 @@ int pgpPrtPkts(const byte *pkts, unsigned int pktlen, pgpDig dig, int printing)
  */
 pgpArmor pgpReadPkts(const char * fn,
 		/*@out@*/ const byte ** pkt, /*@out@*/ size_t * pktlen)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *pkt, *pktlen, fileSystem, internalState @*/;
 
 /**

@@ -334,7 +334,7 @@ static struct optionalTag {
 /**
  */
 static void fillOutMainPackage(Header h)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies h, rpmGlobalMacroContext @*/
 {
     struct optionalTag *ot;
@@ -355,7 +355,7 @@ static void fillOutMainPackage(Header h)
  */
 /*@-boundswrite@*/
 static int readIcon(Header h, const char * file)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     const char *fn = NULL;
@@ -460,7 +460,7 @@ extern int noLang;
 /*@-boundswrite@*/
 static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 			     const char *lang)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->macros, spec->st, spec->buildRootURL,
 		spec->sources, spec->numSources, spec->noSource,
 		spec->buildRestrictions, spec->BANames, spec->BACount,

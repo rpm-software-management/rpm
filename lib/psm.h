@@ -179,7 +179,7 @@ rpmpsm rpmpsmNew(rpmts ts, /*@null@*/ rpmte te, rpmfi fi)
  * @return		0 on success
  */
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 #define	rpmpsmUNSAFE	rpmpsmSTAGE
 

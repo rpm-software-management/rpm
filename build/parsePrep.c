@@ -36,7 +36,7 @@
  * @return		0 on success
  */
 static int checkOwners(const char * urlfn)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     struct stat sb;
@@ -67,7 +67,7 @@ static int checkOwners(const char * urlfn)
 /*@-boundswrite@*/
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *fn, *urlfn;
@@ -161,7 +161,7 @@ static int checkOwners(const char * urlfn)
  */
 /*@-boundswrite@*/
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *fn, *urlfn;
@@ -282,7 +282,7 @@ static int checkOwners(const char * urlfn)
  * @return		0 on success
  */
 static int doSetupMacro(Spec spec, char *line)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->buildSubdir, spec->macros, spec->prep,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -438,7 +438,7 @@ static int doSetupMacro(Spec spec, char *line)
  */
 /*@-boundswrite@*/
 static int doPatchMacro(Spec spec, char *line)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->prep, rpmGlobalMacroContext,
 		fileSystem, internalState  @*/

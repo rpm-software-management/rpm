@@ -244,7 +244,7 @@ extern "C" {
  * @return		0 on success
  */
 int rpmtsCheck(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -264,7 +264,7 @@ int rpmtsCheck(rpmts ts)
  * @return		no. of (added) packages that could not be ordered
  */
 int rpmtsOrder(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -276,7 +276,7 @@ int rpmtsOrder(rpmts ts)
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -331,7 +331,7 @@ int rpmtsCloseDB(rpmts ts)
  * @return		0 on success
  */
 int rpmtsOpenDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -342,7 +342,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
  * @return		0 on success
  */
 int rpmtsInitDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -351,7 +351,7 @@ int rpmtsInitDB(rpmts ts, int dbmode)
  * @return		0 on success
  */
 int rpmtsRebuildDB(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -360,7 +360,7 @@ int rpmtsRebuildDB(rpmts ts)
  * @return		0 on success
  */
 int rpmtsVerifyDB(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
@@ -374,7 +374,7 @@ int rpmtsVerifyDB(rpmts ts)
 /*@only@*/ /*@null@*/
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
@@ -383,7 +383,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
  * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
  */
 rpmRC rpmtsFindPubkey(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState */;
 
 /** \ingroup rpmts
@@ -405,7 +405,7 @@ int rpmtsCloseSDB(rpmts ts)
  */
 /*@-exportlocal@*/
 int rpmtsOpenSDB(rpmts ts, int dbmode)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
@@ -418,7 +418,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
  */
 /*@-exportlocal@*/
 int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
@@ -857,7 +857,7 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmts
@@ -876,7 +876,7 @@ rpmts rpmtsCreate(void)
 int rpmtsAddInstallElement(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext,
+	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, h, rpmcliPackagesTotal, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;

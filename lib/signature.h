@@ -71,7 +71,7 @@ int rpmWriteSignature(FD_t fd, Header h)
  */
 int rpmAddSignature(Header sig, const char * file,
 		    int_32 sigTag, /*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sig, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /******************************************************************/
@@ -89,7 +89,7 @@ int rpmAddSignature(Header sig, const char * file,
  * @return		sigTag to use, 0 if none, -1 on error
  */
 int rpmLookupSignatureType(int action)
-	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup signature
@@ -101,7 +101,7 @@ int rpmLookupSignatureType(int action)
 /*@dependent@*/ /*@null@*/
 char * rpmGetPassPhrase(/*@null@*/ const char * prompt,
 		const int sigTag)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup signature
@@ -112,7 +112,7 @@ char * rpmGetPassPhrase(/*@null@*/ const char * prompt,
 /*@-exportlocal -redecl@*/
 /*@null@*/ const char * rpmDetectPGPVersion(
 			/*@null@*/ /*@out@*/ pgpVersion * pgpVer)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *pgpVer, rpmGlobalMacroContext @*/;
 /*@=exportlocal =redecl@*/
 

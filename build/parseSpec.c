@@ -130,7 +130,7 @@ static void forceIncludeFile(Spec spec, const char * fileName)
  */
 /*@-boundswrite@*/
 static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem @*/
 	/*@modifies spec->nextline, spec->nextpeekc, spec->lbuf, spec->line,
 		ofi->readPtr,

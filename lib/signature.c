@@ -376,7 +376,7 @@ Header rpmFreeSignature(Header h)
  */
 static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 		/*@out@*/ int_32 * pktlen, /*@null@*/ const char * passPhrase)
-	/*@globals errno, rpmGlobalMacroContext,
+	/*@globals errno, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies errno, *pkt, *pktlen, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -511,7 +511,7 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
  */
 static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 		/*@out@*/ int_32 * pktlen, /*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *pkt, *pktlen, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -626,7 +626,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
  */
 static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 		/*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sig, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     Header h = NULL;
@@ -782,7 +782,7 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
 }
 
 static int checkPassPhrase(const char * passPhrase, const int sigTag)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int passPhrasePipe[2];
@@ -1135,7 +1135,7 @@ static inline unsigned char nibble(char c)
 static rpmRC
 verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
     const void * sig = rpmtsSig(ts);
@@ -1255,7 +1255,7 @@ exit:
 static rpmRC
 verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
     const void * sig = rpmtsSig(ts);

@@ -118,7 +118,7 @@ static void printVersion(FILE * fp)
 /*@mayexit@*/
 void rpmcliConfigured(void)
 	/*@globals rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+		h_errno, fileSystem, internalState @*/
 	/*@modifies rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -137,7 +137,7 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
 	/*@globals rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+		h_errno, fileSystem, internalState @*/
 	/*@modifies rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {

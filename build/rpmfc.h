@@ -107,7 +107,7 @@ extern "C" {
  */
 int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
 		int failnonzero)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *sb_stdoutp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
         /*@requires maxSet(sb_stdoutp) >= 0 @*/;
@@ -184,7 +184,7 @@ int rpmfcApply(rpmfc fc)
  * @return		0 on success
  */
 int rpmfcGenerateDepends(const Spec spec, Package pkg)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies pkg->cpioList, pkg->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 

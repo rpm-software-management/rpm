@@ -22,7 +22,7 @@
 /**
  */
 static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *argvp, rpmGlobalMacroContext @*/
 	/*@requires maxRead(argvp) >= 0 @*/
 {
@@ -309,7 +309,7 @@ static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
  * @return		0 on success
  */
 static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * fn = fc->fn[fc->ix];
@@ -637,7 +637,7 @@ rpmfc rpmfcNew(void)
  * @return		0 on success
  */
 static int rpmfcSCRIPT(rpmfc fc)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * fn = fc->fn[fc->ix];
@@ -1324,7 +1324,7 @@ static void printDeps(Header h)
 /**
  */
 static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
         /*@modifies fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     StringBuf sb_stdin;

@@ -814,7 +814,7 @@ static int parseForLang(char * buf, FileList fl)
  */
 /*@-boundswrite@*/
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *lang, rpmGlobalMacroContext @*/
 {
     static int initialized = 0;
@@ -893,7 +893,7 @@ VFA_t virtualFileAttributes[] = {
 /*@-boundswrite@*/
 static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 			  FileList fl, /*@out@*/ const char ** fileName)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
 		fl->currentFlags,
 		fl->docDirs, fl->docDirCount, fl->isDir,
@@ -918,14 +918,19 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		fl->processingFailed = 1;
 		res = 1;
 	    }
-	    fl->docDirs[fl->docDirCount++] = xstrdup(s);
-	    if (strtokWithQuotes(NULL, " \t\n")) {
+	
+	    if (s != NULL)
+		fl->docDirs[fl->docDirCount++] = xstrdup(s);
+	    if (s == NULL || strtokWithQuotes(NULL, " \t\n")) {
 		rpmError(RPMERR_INTERNAL, _("Only one arg for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = 1;
 	    }
 	    break;
 	}
+#if defined(__LCLINT__)
+	assert(s != NULL);
+#endif
 
     /* Set flags for virtual file attributes */
     {	VFA_t *vfa;
@@ -1095,7 +1100,7 @@ static int checkHardLinks(FileList fl)
 /*@-bounds@*/
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmfi * fip, Header h, int isSrc)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1443,7 +1448,7 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 
 /* forward ref */
 static int recurseDir(FileList fl, const char * diskURL)
-	/*@globals check_fileList, rpmGlobalMacroContext,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
@@ -1461,7 +1466,7 @@ static int recurseDir(FileList fl, const char * diskURL)
 /*@-boundswrite@*/
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
-	/*@globals check_fileList, rpmGlobalMacroContext,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
@@ -1719,7 +1724,7 @@ static int recurseDir(FileList fl, const char * diskURL)
  * @return		0 on success
  */
 static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
-	/*@globals check_fileList, rpmGlobalMacroContext,
+	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies pkg->header, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
@@ -1780,7 +1785,7 @@ exit:
  */
 static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount,
@@ -1861,7 +1866,7 @@ exit:
 /*@-boundswrite@*/
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies spec->macros,
 		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
@@ -2338,7 +2343,7 @@ int processSourceFiles(Spec spec)
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
 static int checkFiles(StringBuf fileList)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 /*@-readonlytrans@*/

@@ -186,7 +186,7 @@ static const char *prToken(int val)
  */
 /*@-boundswrite@*/
 static int rdToken(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -325,7 +325,7 @@ static int rdToken(ParseState state)
 
 /*@null@*/
 static Value doLogical(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/;
 
@@ -334,7 +334,7 @@ static Value doLogical(ParseState state)
  */
 /*@null@*/
 static Value doPrimary(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -416,7 +416,7 @@ static Value doPrimary(ParseState state)
  */
 /*@null@*/
 static Value doMultiplyDivide(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -472,7 +472,7 @@ static Value doMultiplyDivide(ParseState state)
 /*@-boundswrite@*/
 /*@null@*/
 static Value doAddSubtract(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -537,7 +537,7 @@ static Value doAddSubtract(ParseState state)
  */
 /*@null@*/
 static Value doRelational(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
@@ -633,7 +633,7 @@ static Value doRelational(ParseState state)
  * @param state		expression parser state
  */
 static Value doLogical(ParseState state)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
 		rpmGlobalMacroContext @*/
 {
