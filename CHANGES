@@ -7,6 +7,8 @@
 	  which will survive a single level of shell expansion
 	- fixed --setperms and --setugids to handle empty packages and 
 	  packages with odd filenames
+	- include <sys/time.h> before <sys/resource.h>
+	- include "miscfn.h" first
 
 2.3.11 -> 2.4:
 	- changed RPMNLSDIR directories to and @datadir@ to better
