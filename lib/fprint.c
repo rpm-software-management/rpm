@@ -71,7 +71,8 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
 
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
-	if (realpath(".", dir) != NULL) {
+	dir[0] = '\0';
+	if ( /*@-unrecog@*/ realpath(".", dir) /*@=unrecog@*/ != NULL) {
 	    char *s = alloca(strlen(dir) + strlen(fullName) + 2);
 	    sprintf(s, "%s/%s", dir, fullName);
 	    fullName = chptr1 = s;
@@ -136,8 +137,8 @@ unsigned int fpHashFunction(const void * key)
     chptr = fp->basename;
     while (*chptr) ch ^= *chptr++;
 
-    hash |= ch << 24;
-    hash |= (((fp->dev >> 8) ^ fp->dev) & 0xFF) << 16;
+    hash |= ((unsigned)ch) << 24;
+    hash |= (((((unsigned)fp->dev) >> 8) ^ fp->dev) & 0xFF) << 16;
     hash |= fp->ino & 0xFFFF;
     
     return hash;
@@ -174,6 +175,8 @@ void fpLookupList(const char ** fullNames, fingerPrint * fpList, int numItems,
     cache.matchLength = 0;
     cache.pathsStripped = 0;    
     cache.stripLength = 0;
+    cache.dev = 0;
+    cache.ino = 0;
 
     for (i = 0; i < numItems; i++) {
 	fpList[i] = doLookup(fullNames[i], 1, &cache);

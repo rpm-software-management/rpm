@@ -4,10 +4,10 @@
 #include "hash.h"
 
 struct hashBucket {
-    const void * key;
-    const void ** data;
+    /*@owned@*/const void * key;
+    /*@owned@*/const void ** data;
     int dataCount;
-    struct hashBucket * next;
+    /*@dependent@*/struct hashBucket * next;
 };
 
 struct hashTable_s {
@@ -18,7 +18,7 @@ struct hashTable_s {
     hashEqualityType eq;
 };
 
-static struct hashBucket * findEntry(hashTable ht, const void * key)
+static /*@shared@*/ struct hashBucket * findEntry(hashTable ht, const void * key)
 {
     unsigned int hash;
     struct hashBucket * b;
@@ -53,7 +53,7 @@ unsigned int hashFunctionString(const void * string)
 	sum += *chp;
     }
 
-    return ((len << 16) + (sum << 8) + xorValue);
+    return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
 }
 
 hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
@@ -89,7 +89,7 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 	    memcpy(k, key, ht->keySize);
 	    b->key = k;
 	} else {
-	    b->key = (void *) key;
+	    b->key = key;
 	}
 	b->dataCount = 0;
 	b->next = ht->buckets[hash];

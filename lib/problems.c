@@ -5,6 +5,9 @@
 #include "depends.h"
 #include "misc.h"
 
+/*@access rpmProblemSet@*/
+/*@access rpmProblem@*/
+
 /* XXX FIXME: merge into problems */
 /* XXX used in verify.c */
 void printDepFlags(FILE * fp, const char * version, int flags)
@@ -45,10 +48,10 @@ void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
     }
 }
 
-char * rpmProblemString(rpmProblem prob)
+const char * rpmProblemString(rpmProblem prob)
 {
     const char * name, * version, * release;
-    const char * altName, * altVersion, * altRelease;
+    const char * altName = NULL, * altVersion = NULL, * altRelease = NULL;
     char * buf;
 
     headerNVR(prob.h, &name, &version, &release);

@@ -19,7 +19,7 @@
 #if defined(ENABLE_V1_PACKAGES)
 /* 0 = success */
 /* !0 = error */
-static int readOldHeader(FD_t fd, Header * hdr, int * isSource)
+static int readOldHeader(FD_t fd, /*@out@*/Header * hdr, /*@unused@*/ /*@out@*/int * isSource)
 {
     struct oldrpmHeader oldheader;
     struct oldrpmHeaderSpec spec;
@@ -143,31 +143,31 @@ static int readOldHeader(FD_t fd, Header * hdr, int * isSource)
 	    }
 	}
 
-	headerAddEntry(dbentry, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
 			fileList, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE, 
 		 fileLinktoList, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE, 
 			fileMD5List, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILESIZES, RPM_INT32_TYPE, fileSizeList, 
+	headerAddEntry(*hdr, RPMTAG_FILESIZES, RPM_INT32_TYPE, fileSizeList, 
 		 	spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEUIDS, RPM_INT32_TYPE, fileUIDList, 
+	headerAddEntry(*hdr, RPMTAG_FILEUIDS, RPM_INT32_TYPE, fileUIDList, 
 		 	spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEGIDS, RPM_INT32_TYPE, fileGIDList, 
+	headerAddEntry(*hdr, RPMTAG_FILEGIDS, RPM_INT32_TYPE, fileGIDList, 
 		 	spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEMTIMES, RPM_INT32_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILEMTIMES, RPM_INT32_TYPE, 
 			fileMtimesList, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEFLAGS, RPM_INT32_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILEFLAGS, RPM_INT32_TYPE, 
 			fileFlagsList, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEMODES, RPM_INT16_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILEMODES, RPM_INT16_TYPE, 
 			fileModesList, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILERDEVS, RPM_INT16_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILERDEVS, RPM_INT16_TYPE, 
 			fileRDevsList, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILESTATES, RPM_INT8_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILESTATES, RPM_INT8_TYPE, 
 			fileStatesList, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE, 
 			unames, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE, 
 			gnames, spec.fileCount);
 
 	free(fileList);
@@ -200,12 +200,12 @@ static int readOldHeader(FD_t fd, Header * hdr, int * isSource)
 /* 0 = success */
 /* 1 = bad magic */
 /* 2 = error */
-static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr, 
-			      Header * sigs, Header * hdrPtr)
+static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr, 
+			      /*@out@*/Header * sigs, /*@out@*/Header * hdrPtr)
 {
     Header hdrBlock;
     struct rpmlead leadBlock;
-    Header * hdr;
+    Header * hdr = NULL;
     struct rpmlead * lead;
     int_8 arch;
     int isSource;
@@ -297,7 +297,7 @@ static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr,
 	rpmError(RPMERR_NEWPACKAGE, _("only packages with major numbers <= 3 "
 		"are supported by this version of RPM"));
 	return 2;
-	break;
+	/*@notreached@*/ break;
     } 
 
     if (hdrPtr == NULL) headerFree(*hdr);

@@ -39,7 +39,7 @@ dbiIndex * dbiOpenIndex(const char * filename, int flags, int perms, DBTYPE type
 
 void dbiCloseIndex(dbiIndex * dbi) {
     dbi->db->close(dbi->db);
-    free(dbi->indexname);
+    xfree(dbi->indexname);
     free(dbi);
 }
 
@@ -54,6 +54,8 @@ int dbiGetFirstKey(dbiIndex * dbi, const char ** keyp) {
     if (dbi == NULL || dbi->db == NULL)
 	return 1;
     
+    key.data = NULL;
+    key.size = 0;
     rc = dbi->db->seq(dbi->db, &key, &data, R_FIRST);
     if (rc) {
 	return 1;
@@ -74,6 +76,8 @@ int dbiSearchIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set) {
 
     key.data = (void *)str;
     key.size = strlen(str);
+    data.data = NULL;
+    data.size = 0;
 
     rc = dbi->db->get(dbi->db, &key, &data, 0);
     if (rc == -1) {

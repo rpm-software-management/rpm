@@ -30,7 +30,12 @@
 # endif
 #endif
 
-struct fileInfo {
+/*@access rpmdb@*/
+/*@access rpmTransactionSet@*/
+/*@access rpmProblemSet@*/
+/*@access rpmProblem@*/
+
+typedef struct transactionFileInfo {
   /* for all packages */
     enum rpmTransactionType type;
     enum fileActions * actions;
@@ -49,7 +54,7 @@ struct fileInfo {
     uint_32 * replacedSizes;
   /* for TR_REMOVED packages */
     unsigned int record;
-};
+} TFI_t;
 
 struct diskspaceInfo {
     dev_t dev;
@@ -70,7 +75,7 @@ struct diskspaceInfo {
 #define	XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED)
 
-static void freeFi(struct fileInfo *fi)
+static void freeFi(TFI_t *fi)
 {
 	if (fi->h) {
 	    headerFree(fi->h); fi->h = NULL;
@@ -114,9 +119,9 @@ static void freeFi(struct fileInfo *fi)
 	}
 }
 
-static void freeFl(rpmTransactionSet ts, struct fileInfo *flList)
+static void freeFl(rpmTransactionSet ts, TFI_t *flList)
 {
-    struct fileInfo *fi;
+    TFI_t *fi;
     int oc;
 
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
@@ -564,7 +569,7 @@ static int filecmp(short mode1, const char * md51, const char * link1,
     return 0;
 }
 
-static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
+static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount, int reportConflicts,
 				    rpmProblemSet probs)
@@ -647,7 +652,7 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
     return 0;
 }
 
-static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
+static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount)
 {
@@ -677,7 +682,7 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
     return 0;
 }
 
-static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
+static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 			   rpmProblemSet probs, struct diskspaceInfo * dsl)
 {
     int i, j;
@@ -686,7 +691,7 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
   
     for (i = 0; i < fi->fc; i++) {
 	int otherPkgNum, otherFileNum;
-	const struct fileInfo ** recs;
+	const TFI_t ** recs;
 	int numRecs;
 
 	if (XFA_SKIPPING(fi->actions[i]))
@@ -877,7 +882,7 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
     return rc;
 }
 
-static void skipFiles(struct fileInfo * fi, int noDocs)
+static void skipFiles(TFI_t * fi, int noDocs)
 {
     int i;
     char ** netsharedPaths = NULL;
@@ -993,7 +998,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int fileCount;
     int totalFileCount = 0;
     hashTable ht;
-    struct fileInfo * flList, * fi;
+    TFI_t * flList, * fi;
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
     int flEntries;
@@ -1443,7 +1448,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	    headerFree(hdrs[i]);
 
-	    if (!alp->fd && fd)
+	    if (alp->fd == NULL && fd)
 		notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key,
 		   notifyData);
 	    break;
