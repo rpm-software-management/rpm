@@ -252,6 +252,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	printf(format, p);
 	break;
 
+      case RPM_CHAR_TYPE:
       case RPM_INT8_TYPE:
 	strcat(format, "d");
 	printf(format, *(((int_8 *) p) + arrayNum));
