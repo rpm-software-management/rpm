@@ -230,6 +230,9 @@
 	- python: add return codes for rollbacks and fooDB methods.
 	- avoid generating fingerprints for locale/zoneinfo sub-directories.
 	- python: add (optional) ts.check() callback.
+	- python: include instance in IDTXload, filename in IDTXglob, return
+	- python: argument to ts.addErase (if integer) deletes that instance.
+	- python: rpmmi methods to return this instance, and number of members.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -246,30 +246,54 @@ rpmts_AddErase(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    char * name;
+    PyObject * o;
     int count;
     rpmdbMatchIterator mi;
     
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "s:AddErase", &name))
+    if (!PyArg_ParseTuple(args, "O:AddErase", &o))
         return NULL;
 
-    mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
-    count = rpmdbGetIteratorCount(mi);
-    if (count <= 0) {
-        PyErr_SetString(pyrpmError, "package not installed");
-        return NULL;
-    } else { /* XXX: Note that we automatically choose to remove all matches */
-        Header h;
-        while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-	    if (recOffset)
-	        rpmtsAddEraseElement(s->ts, h, recOffset);
+    if (PyString_Check(o)) {
+	char * name = PyString_AsString(o);
+
+	mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
+	count = rpmdbGetIteratorCount(mi);
+	if (count <= 0) {
+	    mi = rpmdbFreeIterator(mi);
+	    PyErr_SetString(pyrpmError, "package not installed");
+	    return NULL;
+	} else { /* XXX: Note that we automatically choose to remove all matches */
+	    Header h;
+	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+		if (recOffset)
+		    rpmtsAddEraseElement(s->ts, h, recOffset);
+	    }
 	}
+	mi = rpmdbFreeIterator(mi);
+    } else
+    if (PyInt_Check(o)) {
+	uint_32 instance = PyInt_AsLong(o);
+
+	mi = rpmtsInitIterator(s->ts, RPMDBI_PACKAGES, &instance, sizeof(instance));
+	if (instance <= 0 || mi == NULL) {
+	    mi = rpmdbFreeIterator(mi);
+	    PyErr_SetString(pyrpmError, "package not installed");
+	    return NULL;
+	} else {
+	    Header h;
+	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+		uint_32 recOffset = rpmdbGetIteratorOffset(mi);
+		if (recOffset)
+		    rpmtsAddEraseElement(s->ts, h, recOffset);
+		break;
+	    }
+	}
+	mi = rpmdbFreeIterator(mi);
     }
-    rpmdbFreeIterator(mi);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -326,7 +350,7 @@ rpmts_Check(rpmtsObject * s, PyObject * args)
     int i;
     int xx;
 
-    pemset(&cbInfo, 0, sizeof(cbInfo));
+    memset(&cbInfo, 0, sizeof(cbInfo));
     if (!PyArg_ParseTuple(args, "|O:Check", &cbInfo.cb))
 	return NULL;
 
@@ -495,7 +519,7 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
 	result = PyTuple_New(idtx->nidt);
 	for (i = 0; i < idtx->nidt; i++) {
 	    idt = idtx->idt + i;
-	    tuple = Py_BuildValue("(iO)", idt->val.u32, hdr_Wrap(idt->h));
+	    tuple = Py_BuildValue("(iOi)", idt->val.u32, hdr_Wrap(idt->h), idt->instance);
 	    PyTuple_SET_ITEM(result,  i, tuple);
 	}
     }
@@ -539,7 +563,7 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
 	result = PyTuple_New(idtx->nidt);
 	for (i = 0; i < idtx->nidt; i++) {
 	    idt = idtx->idt + i;
-	    tuple = Py_BuildValue("(iO)", idt->val.u32, hdr_Wrap(idt->h));
+	    tuple = Py_BuildValue("(iOs)", idt->val.u32, hdr_Wrap(idt->h), idt->key);
 	    PyTuple_SET_ITEM(result,  i, tuple);
 	}
     }
