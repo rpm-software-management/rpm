@@ -3,7 +3,10 @@
 /* NOTES
  *
  * A PGP 2.6.2 1024 bit key generates a 152 byte signature
+ * A ViaCryptPGP 2.7.1 1024 bit key generates a 152 byte signature
  * A PGP 2.6.2  768 bit key generates a 120 byte signature
+ *
+ * This code only only works with 1024 bit keys!
  */
 
 #include <stdlib.h>
@@ -17,7 +20,7 @@
 #include "rpmlib.h"
 #include "rpmerr.h"
 
-static int makePGPSignature(char *file, int ofd);
+static int makePGPSignature(char *file, int ofd, char *passPhrase);
 static int verifyPGPSignature(int fd, void *sig, char *result);
 
 int readSignature(int fd, short sig_type, void **sig)
@@ -42,26 +45,49 @@ int readSignature(int fd, short sig_type, void **sig)
     return 1;
 }
 
-int makeSignature(char *file, short sig_type, int ofd)
+int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
 {
     switch (sig_type) {
     case RPMSIG_NONE:
 	/* Do nothing */
 	break;
     case RPMSIG_PGP262_1024:
-	makePGPSignature(file, ofd);
+	makePGPSignature(file, ofd, passPhrase);
 	break;
     }
 
     return 1;
 }
 
-static int makePGPSignature(char *file, int ofd)
+#if 0
+void ttycbreak(void)
+{
+    int tty;
+
+    if ((tty = open("/dev/tty", O_RDWR)) < 0) {
+	fprintf(stderr, "Unable to open tty.  Using standard input.\n");
+	tty = 0;
+    }
+
+    
+}
+
+char *getPassPhrase(char *prompt)
+{
+    if (prompt) {
+	puts(prompt);
+    }
+
+    
+    
+}
+#endif
+
+static int makePGPSignature(char *file, int ofd, char *passPhrase)
 {
     char secring[1024];
     char pubring[1024];
     char name[1024];
-    char *passPhrase = "This is a test.";
     char sigfile[1024];
     int pid, status;
     int fd, inpipe[2];
