@@ -334,72 +334,68 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 
 /**
  * Return length of entry data.
- * @todo Remove sanity check exit's.
  * @param type		entry data type
  * @param p		entry data
  * @param count		entry item count
  * @param onDisk	data is concatenated strings (with NUL's))?
- * @return		no. bytes in data
+ * @param pend		pointer to end of data (or NULL)
+ * @return		no. bytes in data, -1 on failure
  */
 /*@mayexit@*/
-static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk)
+static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
+		hPTR_t pend)
 	/*@*/
 {
+    const unsigned char * s = p;
+    const unsigned char * se = pend;
     int length = 0;
 
     switch (type) {
     case RPM_STRING_TYPE:
-	if (count == 1) {	/* Special case -- p is just the string */
-	    length = strlen(p) + 1;
-	    break;
+	if (count != 1)
+	    return -1;
+	while (*s++) {
+	    if (se && s > se)
+		return -1;
+	    length++;
 	}
-        /* This should not be allowed */
-	/*@-modfilesys@*/
-	fprintf(stderr, _("dataLength() RPM_STRING_TYPE count must be 1.\n"));
-	/*@=modfilesys@*/
-	exit(EXIT_FAILURE);
-	/*@notreached@*/ break;
+	length++;	/* count nul terminator too. */
+	break;
 
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-    {	int i;
-
-	/* This is like RPM_STRING_TYPE, except it's *always* an array */
-	/* Compute sum of length of all strings, including null terminators */
-	i = count;
+	/* These are like RPM_STRING_TYPE, except they're *always* an array */
+	/* Compute sum of length of all strings, including nul terminators */
 
 	if (onDisk) {
-	    const char * chptr = p;
-	    int thisLen;
-
-	    while (i--) {
-		thisLen = strlen(chptr) + 1;
-		length += thisLen;
-		chptr += thisLen;
+	    while (count--) {
+		length++;       /* count nul terminator too */
+               while (*s++) {
+		    if (se && s > se)
+			return -1;
+		    length++;
+		}
 	    }
 	} else {
-	    const char ** src = (const char **)p;
+	    const char ** av = (const char **)p;
 /*@-boundsread@*/
-	    while (i--) {
+	    while (count--) {
 		/* add one for null termination */
-		length += strlen(*src++) + 1;
+		length += strlen(*av++) + 1;
 	    }
 /*@=boundsread@*/
 	}
-    }	break;
+	break;
 
     default:
 /*@-boundsread@*/
-	if (typeSizes[type] != -1) {
-	    length = typeSizes[type] * count;
-	    break;
-	}
+	if (typeSizes[type] == -1)
+	    return -1;
+	length = typeSizes[(type & 0xf)] * count;
 /*@=boundsread@*/
-	/*@-modfilesys@*/
-	fprintf(stderr, _("Data type %d not supported\n"), (int) type);
-	/*@=modfilesys@*/
-	exit(EXIT_FAILURE);
-	/*@notreached@*/ break;
+	if (length < 0 || (se && (s + length) > se))
+	    return -1;
+	break;
     }
 
     return length;
@@ -426,16 +422,20 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk)
  * @param il		no. of entries
  * @param dl		start no. bytes of data
  * @param pe		header physical entry pointer (swapped)
- * @param dataStart	header data
+ * @param dataStart	header data start
+ * @param dataEnd	header data end
  * @param regionid	region offset
  * @return		no. bytes of data in region, -1 on error
  */
 static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
-		entryInfo pe, char * dataStart, int regionid)
+		entryInfo pe,
+		unsigned char * dataStart,
+		/*@null@*/ const unsigned char * dataEnd,
+		int regionid)
 	/*@modifies *entry, *dataStart @*/
 {
-    char * tprev = NULL;
-    char * t = NULL;
+    unsigned char * tprev = NULL;
+    unsigned char * t = NULL;
     int tdel, tl = dl;
     struct indexEntry_s ieprev;
 
@@ -452,8 +452,15 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    return -1;
 	ie.info.count = ntohl(pe->count);
 	ie.info.offset = ntohl(pe->offset);
+
 	ie.data = t = dataStart + ie.info.offset;
-	ie.length = dataLength(ie.info.type, ie.data, ie.info.count, 1);
+	if (dataEnd && t >= dataEnd)
+	    return -1;
+
+	ie.length = dataLength(ie.info.type, ie.data, ie.info.count, 1, dataEnd);
+	if (ie.length < 0 || hdrchkData(ie.length))
+	    return -1;
+
 	ie.rdlen = 0;
 
 	if (entry) {
@@ -497,14 +504,20 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 /*@-bounds@*/
 	case RPM_INT32_TYPE:
 	{   int_32 * it = (int_32 *)t;
-	    for (; ie.info.count > 0; ie.info.count--, it += 1)
+	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
+		if (dataEnd && ((unsigned char *)it) >= dataEnd)
+		    return -1;
 		*it = htonl(*it);
+	    }
 	    t = (char *) it;
 	}   /*@switchbreak@*/ break;
 	case RPM_INT16_TYPE:
 	{   int_16 * it = (int_16 *) t;
-	    for (; ie.info.count > 0; ie.info.count--, it += 1)
+	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
+		if (dataEnd && ((unsigned char *)it) >= dataEnd)
+		    return -1;
 		*it = htons(*it);
+	    }
 	    t = (char *) it;
 	}   /*@switchbreak@*/ break;
 /*@=bounds@*/
@@ -686,7 +699,7 @@ t = te;
 		ril++;
 		rdlen += entry->info.count;
 
-		count = regionSwab(NULL, ril, 0, pe, t, 0);
+		count = regionSwab(NULL, ril, 0, pe, t, NULL, 0);
 		if (count != rdlen)
 		    goto errxit;
 
@@ -705,7 +718,7 @@ t = te;
 		}
 		te += entry->info.count + drlen;
 
-		count = regionSwab(NULL, ril, 0, pe, t, 0);
+		count = regionSwab(NULL, ril, 0, pe, t, NULL, 0);
 		if (count != (rdlen + entry->info.count + drlen))
 		    goto errxit;
 	    }
@@ -931,7 +944,8 @@ Header headerLoad(/*@kept@*/ void * uh)
     void * pv = uh;
     Header h = NULL;
     entryInfo pe;
-    char * dataStart;
+    unsigned char * dataStart;
+    unsigned char * dataEnd;
     indexEntry entry; 
     int rdlen;
     int i;
@@ -944,7 +958,8 @@ Header headerLoad(/*@kept@*/ void * uh)
     /*@-castexpose@*/
     pe = (entryInfo) &ei[2];
     /*@=castexpose@*/
-    dataStart = (char *) (pe + il);
+    dataStart = (unsigned char *) (pe + il);
+    dataEnd = dataStart + dl;
 
     h = xcalloc(1, sizeof(*h));
     /*@-assignexpose@*/
@@ -980,13 +995,13 @@ Header headerLoad(/*@kept@*/ void * uh)
 	/*@-sizeoftype@*/
 	entry->info.count = REGION_TAG_COUNT;
 	/*@=sizeoftype@*/
-	entry->info.offset = ((char *)pe - dataStart); /* negative offset */
+	entry->info.offset = ((unsigned char *)pe - dataStart); /* negative offset */
 
 	/*@-assignexpose@*/
 	entry->data = pe;
 	/*@=assignexpose@*/
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
-	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
+	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, dataEnd, entry->info.offset);
 #if 0	/* XXX don't check, the 8/98 i18n bug fails here. */
 	if (rdlen != dl)
 	    goto errxit;
@@ -995,7 +1010,6 @@ Header headerLoad(/*@kept@*/ void * uh)
 	entry++;
 	h->indexUsed++;
     } else {
-	int nb = ntohl(pe->count);
 	int_32 rdl;
 	int_32 ril;
 
@@ -1014,6 +1028,7 @@ Header headerLoad(/*@kept@*/ void * uh)
 	    if (hdrchkData(off))
 		goto errxit;
 	    if (off) {
+		size_t nb = REGION_TAG_COUNT;
 		int_32 * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
 		ril = rdl/sizeof(*pe);
@@ -1034,7 +1049,7 @@ Header headerLoad(/*@kept@*/ void * uh)
 	entry->data = pe;
 	/*@=assignexpose@*/
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
-	rdlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, entry->info.offset);
+	rdlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, dataEnd, entry->info.offset);
 	if (rdlen < 0)
 	    goto errxit;
 	entry->rdlen = rdlen;
@@ -1046,7 +1061,7 @@ Header headerLoad(/*@kept@*/ void * uh)
 	    int rc;
 
 	    /* Load dribble entries from region. */
-	    rc = regionSwab(newEntry, ne, 0, pe+ril, dataStart, rid);
+	    rc = regionSwab(newEntry, ne, 0, pe+ril, dataStart, dataEnd, rid);
 	    if (rc < 0)
 		goto errxit;
 	    rdlen += rc;
@@ -1380,7 +1395,7 @@ static int copyEntry(const indexEntry entry,
 	    /*@=sizeoftype@*/
 /*@=bounds@*/
 
-	    rc = regionSwab(NULL, ril, 0, pe, dataStart, 0);
+	    rc = regionSwab(NULL, ril, 0, pe, dataStart, NULL, 0);
 	    /* XXX 1 on success. */
 	    rc = (rc < 0) ? 0 : 1;
 	} else {
@@ -1722,31 +1737,26 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 * type, hPTR_t * p,
 /**
  */
 static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
-		int_32 c, int dataLength)
+		int_32 cnt, int dataLength)
 	/*@modifies *dstPtr @*/
 {
-    const char ** src;
-    char * dst;
-    int i;
-
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-	/* Otherwise, p is char** */
-	i = c;
-	src = (const char **) srcPtr;
-	dst = dstPtr;
+    {	const char ** av = (const char **) srcPtr;
+	char * t = dstPtr;
+
 /*@-bounds@*/
-	while (i--) {
-	    if (*src) {
-		int len = strlen(*src) + 1;
-		memcpy(dst, *src, len);
-		dst += len;
-	    }
-	    src++;
+	while (cnt-- > 0 && dataLength > 0) {
+	    const char * s;
+	    if ((s = *av++) == NULL)
+		continue;
+	    do {
+		*t++ = *s++;
+	    } while (s[-1] && --dataLength > 0);
 	}
 /*@=bounds@*/
-	break;
+    }	break;
 
     default:
 /*@-boundswrite@*/
@@ -1762,17 +1772,22 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
  * @param p		entry data
  * @param c		entry item count
  * @retval lengthPtr	no. bytes in returned data
- * @return 		(malloc'ed) copy of entry data
+ * @return 		(malloc'ed) copy of entry data, NULL on error
  */
-static void * grabData(int_32 type, hPTR_t p, int_32 c,
-		/*@out@*/ int * lengthPtr)
+/*@null@*/
+static void *
+grabData(int_32 type, hPTR_t p, int_32 c, /*@out@*/ int * lengthPtr)
 	/*@modifies *lengthPtr @*/
 	/*@requires maxSet(lengthPtr) >= 0 @*/
 {
-    int length = dataLength(type, p, c, 0);
-    void * data = xmalloc(length);
+    void * data = NULL;
+    int length;
 
-    copyData(type, data, p, c, length);
+    length = dataLength(type, p, c, 0, NULL);
+    if (length > 0) {
+	data = xmalloc(length);
+	copyData(type, data, p, c, length);
+    }
 
     if (lengthPtr)
 	*lengthPtr = length;
@@ -1798,9 +1813,18 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
 	/*@modifies h @*/
 {
     indexEntry entry;
+    void * data;
+    int length;
 
     /* Count must always be >= 1 for headerAddEntry. */
     if (c <= 0)
+	return 0;
+
+    length = 0;
+/*@-boundswrite@*/
+    data = grabData(type, p, c, &length);
+/*@=boundswrite@*/
+    if (data == NULL || length <= 0)
 	return 0;
 
     /* Allocate more index space if necessary */
@@ -1815,9 +1839,8 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
     entry->info.type = type;
     entry->info.count = c;
     entry->info.offset = 0;
-/*@-boundswrite@*/
-    entry->data = grabData(type, p, c, &entry->length);
-/*@=boundswrite@*/
+    entry->data = data;
+    entry->length = length;
 
 /*@-boundsread@*/
     if (h->indexUsed > 0 && tag < h->index[h->indexUsed-1].info.tag)
@@ -1860,7 +1883,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
     if (!entry)
 	return 0;
 
-    length = dataLength(type, p, c, 0);
+    length = dataLength(type, p, c, 0, NULL);
 
     if (ENTRY_IN_REGION(entry)) {
 	char * t = xmalloc(entry->length + length);
@@ -2073,10 +2096,17 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
 {
     indexEntry entry;
     void * oldData;
+    void * data;
+    int length;
 
     /* First find the tag */
     entry = findEntry(h, tag, type);
     if (!entry)
+	return 0;
+
+    length = 0;
+    data = grabData(type, p, c, &length);
+    if (data == NULL || length <= 0)
 	return 0;
 
     /* make sure entry points to the first occurence of this tag */
@@ -2089,7 +2119,8 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
 
     entry->info.count = c;
     entry->info.type = type;
-    entry->data = grabData(type, p, c, &entry->length);
+    entry->data = data;
+    entry->length = length;
 
     /*@-branchstate@*/
     if (ENTRY_IN_REGION(entry)) {

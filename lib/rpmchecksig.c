@@ -793,7 +793,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		/* XXX only V3 signatures for now. */
 		if (sigp->version != 3) {
 		    rpmError(RPMERR_SIGVFY,
-		_("only V3 signatures can be verified, skipping V%u signature"),
+		_("only V3 signatures can be verified, skipping V%u signature\n"),
 			sigp->version);
 		    continue;
 		}

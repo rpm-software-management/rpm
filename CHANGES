@@ -288,6 +288,7 @@
 	- fix: resurrect --triggers (#73330).
 	- python: typo in NOKEY exception string.
 	- fix: parse pgp packets more carefully.
+	- fix: parse header data more carefully.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

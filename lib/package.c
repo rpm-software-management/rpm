@@ -96,7 +96,7 @@ static int typeAlign[16] =  {
  */
 #define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
 
-void headerMergeLegacySigs(Header h, const Header sig)
+void headerMergeLegacySigs(Header h, const Header sigh)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
     HAE_t hae = (HAE_t) headerAddEntry;
@@ -105,7 +105,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
     const void * ptr;
     int xx;
 
-    for (hi = headerInitIterator(sig);
+    for (hi = headerInitIterator(sigh);
         headerNextIterator(hi, &tag, &type, &ptr, &count);
         ptr = hfd(ptr, type))
     {
@@ -144,8 +144,34 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	    /*@switchbreak@*/ break;
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
-	if (!headerIsEntry(h, tag))
-	    xx = hae(h, tag, type, ptr, count);
+	if (!headerIsEntry(h, tag)) {
+	    if (hdrchkType(type))
+		continue;
+	    if (count < 0 || hdrchkData(count))
+		continue;
+	    switch(type) {
+	    case RPM_NULL_TYPE:
+		continue;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case RPM_CHAR_TYPE:
+	    case RPM_INT8_TYPE:
+	    case RPM_INT16_TYPE:
+	    case RPM_INT32_TYPE:
+		if (count != 1)
+		    continue;
+		/*@switchbreak@*/ break;
+	    case RPM_STRING_TYPE:
+	    case RPM_BIN_TYPE:
+		if (count >= 16*1024)
+		    continue;
+		/*@switchbreak@*/ break;
+	    case RPM_STRING_ARRAY_TYPE:
+	    case RPM_I18NSTRING_TYPE:
+		continue;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    }
+ 	    xx = hae(h, tag, type, ptr, count);
+	}
     }
     hi = headerFreeIterator(hi);
 }
@@ -153,7 +179,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
-    Header sig = rpmNewSignature();
+    Header sigh = rpmNewSignature();
     HeaderIterator hi;
     int_32 tag, stag, type, count;
     const void * ptr;
@@ -202,11 +228,11 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	    /*@switchbreak@*/ break;
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
-	if (!headerIsEntry(sig, stag))
-	    xx = headerAddEntry(sig, stag, type, ptr, count);
+	if (!headerIsEntry(sigh, stag))
+	    xx = headerAddEntry(sigh, stag, type, ptr, count);
     }
     hi = headerFreeIterator(hi);
-    return sig;
+    return sigh;
 }
 
 /**
@@ -308,7 +334,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 /*@=boundsread@*/
     int_32 ildl[2];
     int_32 pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
-    unsigned char * dataStart = (char *) (pe + il);
+    unsigned char * dataStart = (unsigned char *) (pe + il);
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
     const void * sig = NULL;
@@ -477,7 +503,7 @@ verifyinfo_exit:
 	/* XXX only V3 signatures for now. */
 	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 signatures can be verified, skipping V%u signature"),
+		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
 	    goto verifyinfo_exit;
@@ -517,7 +543,7 @@ verifyinfo_exit:
 	/* XXX only V3 signatures for now. */
 	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 signatures can be verified, skipping V%u signature"),
+		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
 	    goto verifyinfo_exit;
@@ -617,7 +643,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     ei = NULL;	/* XXX will be freed with header */
     
 exit:
-    if (rc == RPMRC_OK && hdrp)
+    if (rc == RPMRC_OK && hdrp && h)
 	*hdrp = headerLink(h);
     ei = _free(ei);
     h = headerFree(h);
@@ -733,7 +759,8 @@ int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     msg = NULL;
     rc = rpmReadHeader(ts, fd, &h, &msg);
     if (rc != RPMRC_OK || h == NULL) {
-	rpmError(RPMERR_FREAD, _("%s: headerRead failed: %s\n"), fn, msg);
+	rpmError(RPMERR_FREAD, _("%s: headerRead failed: %s"), fn,
+		(msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
     }
@@ -768,7 +795,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* XXX only V3 signatures for now. */
 	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 signatures can be verified, skipping V%u signature"),
+		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rc = RPMRC_OK;
 	    goto exit;
@@ -792,7 +819,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* XXX only V3 signatures for now. */
 	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 signatures can be verified, skipping V%u signature"),
+		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rc = RPMRC_OK;
 	    goto exit;
@@ -822,7 +849,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* XXX only V3 signatures for now. */
 	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 signatures can be verified, skipping V%u signature"),
+		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rc = RPMRC_OK;
 	    goto exit;

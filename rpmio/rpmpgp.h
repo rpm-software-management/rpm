@@ -1209,7 +1209,7 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 /**
  * Print/parse a OpenPGP packet(s).
  * @param pkts		OpenPGP packet(s)
- * @param pktlen		OpenPGP packet(s) length (no. of bytes)
+ * @param pktlen	OpenPGP packet(s) length (no. of bytes)
  * @retval dig		parsed output of signature/pubkey packet parameters
  * @param printing	should packets be printed?
  * @return		-1 on error, 0 on success
