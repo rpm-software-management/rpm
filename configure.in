@@ -121,6 +121,10 @@ AC_CHECK_FUNC(strcasecmp, [], [
     AC_CHECK_LIB(ucb, strcasecmp, [LIBS="-lucb $LIBS"])
 ])
 
+AC_CHECK_FUNC(random, [], [
+    AC_CHECK_LIB(random, random, [LIBS="$LIBS -lm"])
+])
+
 dnl
 dnl handle --disable-nls
 dnl
