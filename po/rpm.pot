@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-12-02 16:47-0500\n"
+"POT-Creation-Date: 2000-12-03 19:48-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3485,98 +3485,98 @@ msgstr ""
 msgid "read failed: %s (%d)"
 msgstr ""
 
-#: lib/rpmrc.c:147
+#: lib/rpmrc.c:149
 #, c-format
 msgid "missing second ':' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:150
+#: lib/rpmrc.c:152
 #, c-format
 msgid "missing architecture name at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:310
+#: lib/rpmrc.c:312
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:314
+#: lib/rpmrc.c:316
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:321
+#: lib/rpmrc.c:323
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr ""
 
-#: lib/rpmrc.c:356
+#: lib/rpmrc.c:358
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:363
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:551
+#: lib/rpmrc.c:553
 #, c-format
 msgid "Cannot expand %s"
 msgstr ""
 
-#: lib/rpmrc.c:556
+#: lib/rpmrc.c:558
 #, c-format
 msgid "Cannot read %s, HOME is too large."
 msgstr ""
 
-#: lib/rpmrc.c:573
+#: lib/rpmrc.c:575
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:618
+#: lib/rpmrc.c:620
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: lib/rpmrc.c:655
+#: lib/rpmrc.c:657
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:672 lib/rpmrc.c:746
+#: lib/rpmrc.c:674 lib/rpmrc.c:748
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:689 lib/rpmrc.c:711
+#: lib/rpmrc.c:691 lib/rpmrc.c:713
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr ""
 
-#: lib/rpmrc.c:698
+#: lib/rpmrc.c:700
 #, c-format
 msgid "cannot open %s at %s:%d: %s"
 msgstr ""
 
-#: lib/rpmrc.c:738
+#: lib/rpmrc.c:740
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:805
+#: lib/rpmrc.c:807
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:1202
+#: lib/rpmrc.c:1204
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1203
+#: lib/rpmrc.c:1205
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3783,12 +3783,12 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:286
+#: lib/verify.c:285
 #, c-format
 msgid "missing    %s\n"
 msgstr ""
 
-#: lib/verify.c:348
+#: lib/verify.c:347
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""

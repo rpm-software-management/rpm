@@ -47,6 +47,9 @@
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 	- portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
 	- python: bind package removal (#21274).
+	- autoconfigure building python bindings.
+	- autoconfigure generating rpm API doco.
+	- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

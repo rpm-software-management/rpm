@@ -122,11 +122,11 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
 		       sizeof(*psp->packages), (void *)pkgCompare);
 	if (!pack) {
 	    if (headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
-			  (void **) &installedFiles, &installedFileCount)) {
+			  (const void **) &installedFiles, &installedFileCount)) {
 		headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
-			  (void **) &installedDirIndexes, NULL);
+			  (const void **) &installedDirIndexes, NULL);
 		headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
-			  (void **) &installedDirs, NULL);
+			  (const void **) &installedDirs, NULL);
 
 		compareFileList(0, NULL, NULL, NULL, installedFileCount,
 				installedFiles, installedDirs,
@@ -156,7 +156,7 @@ static int findPackagesWithObsoletes(rpmdb db, struct pkgSet *psp)
 	}
 
 	if (headerGetEntryMinMemory((*pip)->h, RPMTAG_OBSOLETENAME, NULL,
-		       (void **) &obsoletes, &obsoletesCount)) {
+		       (const void **) &obsoletes, &obsoletesCount)) {
 	    while (obsoletesCount--) {
 		if (rpmdbCountPackages(db, obsoletes[obsoletesCount]) > 0) {
 		    (*pip)->selected = 1;
@@ -231,26 +231,26 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	    (*pip)->selected = 1;
 
 	    if (!headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
-			  (void **) &availFiles, &availFileCount)) {
+			  (const void **) &availFiles, &availFileCount)) {
 		availFiles = NULL;
 		availFileCount = 0;
 	    } else {
 		headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
-			    (void **) &availDirs, NULL);
+			    (const void **) &availDirs, NULL);
 		headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
-			    (void **) &availDirIndexes, NULL);
+			    (const void **) &availDirIndexes, NULL);
 	    }
 
 	{   rpmdbMatchIterator mi;
 	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	    while((installedHeader = rpmdbNextIterator(mi)) != NULL) {
 		if (headerGetEntryMinMemory(installedHeader, RPMTAG_BASENAMES, 
-			      NULL, (void **) &installedFiles,
+			      NULL, (const void **) &installedFiles,
 			      &installedFileCount)) {
 		    headerGetEntryMinMemory(installedHeader, RPMTAG_DIRNAMES, 
-				NULL, (void **) &installedDirs, NULL);
+				NULL, (const void **) &installedDirs, NULL);
 		    headerGetEntryMinMemory(installedHeader, RPMTAG_DIRINDEXES, 
-				NULL, (void **) &installedDirIndexes, NULL);
+				NULL, (const void **) &installedDirIndexes, NULL);
 
 		    compareFileList(availFileCount, availFiles,
 				    availDirs, availDirIndexes,
@@ -299,12 +299,12 @@ static int removeMovedFilesAlreadyHandled(struct pkgSet *psp,
 	    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
 
 	    if (headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
-			  (void **) &availFiles, &availFileCount)) {
+			  (const void **) &availFiles, &availFileCount)) {
 
 		headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
-			       (void **) &availDirs, NULL);
+			       (const void **) &availDirs, NULL);
 		headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
-			       (void **) &availDirIndexes, NULL);
+			       (const void **) &availDirIndexes, NULL);
 
 		for (i = 0; i < availFileCount; i++) {
 		    if (htInTable(ht, availDirs[availDirIndexes[i]],
@@ -351,11 +351,11 @@ static int findPackagesWithRelocatedFiles(struct pkgSet *psp,
 	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL,
 			 (void **) &availFiles, &availFileCount)) {
 		headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
-			    (void **) &availDirs, NULL);
+			    (const void **) &availDirs, NULL);
 		headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
-			    (void **) &availDirIndexes, NULL);
+			    (const void **) &availDirIndexes, NULL);
 		headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
-			    (void **) &availFileModes, NULL);
+			    (const void **) &availFileModes, NULL);
 
 		for (i = 0; i < availFileCount; i++) {
 		    if (S_ISDIR(availFileModes[i])) continue;

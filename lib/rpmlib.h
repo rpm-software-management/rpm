@@ -424,7 +424,7 @@ void rpmSetVar(int var, const char *val);
  * This is a colon separated list of files. URI's are permitted as well,
  * identified by the token '://', so file paths must not begin with '//'.
  */
-const char * macrofiles;
+extern const char * macrofiles;
 
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.

@@ -15,6 +15,8 @@
 
 static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 
+const char * macrofiles = MACROFILES;
+
 typedef /*@owned@*/ const char * cptr_t;
 
 struct machCacheEntry {

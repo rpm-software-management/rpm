@@ -5,6 +5,7 @@
 Doxyfile
 Makefile
 Makefile.in
+apidocs
 config.cache
 config.guess
 config.h

@@ -259,7 +259,6 @@ int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd)
     ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
     rc = runInstScript(ts, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
 		     0, 0);
-    ts->scriptFd = fdFree(ts->scriptFd, "rpmVerifyScript");
     rpmtransFree(ts);
     return rc;
 }

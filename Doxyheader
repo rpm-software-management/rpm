@@ -24,8 +24,6 @@
  */
 /** \defgroup	db1	DB1.
  */
-/** \defgroup	db2	DB2.
- */
 /** \defgroup	db3	DB3.
  */
 /** \defgroup	rpmrpc	RPMRPC.

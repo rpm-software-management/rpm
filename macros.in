@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.69 2000/11/02 17:57:26 jbj Exp $
+# $Id: macros.in,v 1.70 2000/12/04 00:55:17 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -50,6 +50,7 @@
 %__patch		@__PATCH@
 %__perl			@__PERL@
 %__pgp			%{_pgpbin}
+%__python		@__PYTHON@
 %__rm			@__RM@
 %__rsh			@__RSH@
 %__sed			@__SED@

@@ -2,13 +2,13 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL \
+EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	RPM-GPG-KEY RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	gendiff installplatform platform* \
 	po/*.in po/*.po po/rpm.pot \
 	python/*.am python/*.in python/*.c python/*.h python/testit \
-	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.spec
+	rpm.magic rpmpopt-$(VERSION) rpmqv.c
 
 # XXX TODO: python perl
 SUBDIRS = intl po popt rpmio lib build misc tools scripts tests doc .
@@ -81,10 +81,10 @@ rpmq.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMQV -o $@ -c $<
 
 rpm2cpio_SOURCES =	rpm2cpio.c
-rpm2cpio_LDFLAGS =	$(myLDFLAGS)
+rpm2cpio_LDFLAGS =	@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
-$(PROGRAMS): 		$(myLDADD)
+$(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
 .PHONY:	lclint
 lclint:
@@ -145,7 +145,6 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
-
 .PHONY: tar
 tar:
 	rm -rf /tmp/rpm-$(VERSION)
@@ -177,10 +176,10 @@ archive:
 nextsrpm: all archive
 	@sudo ./rpm -ta rpm-$(VERSION).tar.gz
 
-.PHONY: doxygen
-doxygen: Doxyfile
-	rm -rf doxygen
-	mkdir -p doxygen
+.PHONY:	doxygen
+doxygen @WITH_APIDOCS_TARGET@: Doxyfile
+	rm -rf $@
+	mkdir -p $@
 	doxygen
 
 ctags:
