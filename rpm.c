@@ -17,6 +17,7 @@
 #define GETOPT_EXCLUDEPATH	1019
 #define	GETOPT_DEFINEMACRO	1020
 #define	GETOPT_EVALMACRO	1021
+#define	GETOPT_RCFILE		1022
 
 enum modes {
     MODE_UNKNOWN	= 0,
@@ -123,6 +124,7 @@ static struct poptOption optionsTable[] = {
 /* info and install both using 'i' is dumb */
  { "install", '\0', 0, 0, GETOPT_INSTALL,	NULL, NULL},
  { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
+ { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,	NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,	NULL, NULL},
  { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},
@@ -139,7 +141,7 @@ static struct poptOption optionsTable[] = {
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
  { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
- { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,	NULL, NULL},
+ { "rcfile", '\0', 0, 0, GETOPT_RCFILE,		NULL, NULL},
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
  { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,	NULL, NULL},
  { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},
@@ -775,6 +777,12 @@ int main(int argc, const char ** argv)
 	    relocations[numRelocations].oldPath = optArg;
 	    relocations[numRelocations++].newPath = NULL;
 	    break;
+
+	  case GETOPT_RCFILE:
+	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
+	    fprintf(stderr, _("Use --macros with a colon separated list of macro files to read.\n"));
+	    exit(EXIT_FAILURE);
+	    /*@notreached@*/ break;
 
 	  default:
 	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);

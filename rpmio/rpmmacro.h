@@ -39,32 +39,75 @@ typedef /*@abstract@*/ struct MacroContext {
 extern "C" {
 #endif
 
+/**
+ */
 void	rpmDumpMacroTable	(MacroContext * mc, FILE * fp);
 
-/* XXX this is used only in build/expression.c and will go away. */
+/**
+ * @deprecated Used only in build/expression.c.
+ * @todo Eliminate.
+ */
 const char *getMacroBody (MacroContext *mc, const char *name);
 
+/**
+ * @deprecated Use rpmExpand().
+ * @todo Eliminate from API.
+ */
 int	expandMacros	(void * spec, MacroContext * mc, char * sbuf,
 				size_t sbuflen);
+
+/**
+ */
 void	addMacro	(MacroContext * mc, const char * n, const char * o,
 				const char * b, int depth);
+
+/**
+ */
 void	delMacro	(MacroContext * mc, const char * n);
 
+/**
+ */
 int	rpmDefineMacro	(MacroContext * mc, const char * macro, int level);
+
+/**
+ */
 void	rpmLoadMacros	(MacroContext *mc, int level);
+
+/**
+ */
 void	rpmInitMacros	(MacroContext * mc, const char * macrofiles);
+
+/**
+ */
 void	rpmFreeMacros	(MacroContext * mc);
 
 #define COMPRESSED_NOT   0
 #define COMPRESSED_OTHER 1
 #define COMPRESSED_BZIP2 2
+
+/**
+ */
 int	isCompressed	(const char * file, int * compressed);
 
+/**
+ */
 char *	rpmExpand	(const char * arg, ...);
+
+/**
+ */
 char *	rpmCleanPath	(char * path);
+
+/**
+ */
 const char *rpmGetPath	(const char * path, ...);
+
+/**
+ */
 const char *rpmGenPath	(const char * root, const char * mdir,
 				const char * file);
+
+/**
+ */
 int	rpmExpandNumeric (const char * arg);
 
 #ifdef __cplusplus

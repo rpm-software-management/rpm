@@ -435,7 +435,10 @@ void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy)
 
 #define	RPM_MIN_TYPE		0
 
-enum tagTypes {
+/**
+ * @todo Add RPM_XREF_TYPE to carry (hdrNum,tagNum,valNum) cross reference.
+ */
+typedef enum rpmTagType_e {
 	RPM_NULL_TYPE		= 0,
 	RPM_CHAR_TYPE		= 1,
 	RPM_INT8_TYPE		= 2,
@@ -446,7 +449,7 @@ enum tagTypes {
 	RPM_BIN_TYPE		= 7,
 	RPM_STRING_ARRAY_TYPE	= 8,
 	RPM_I18NSTRING_TYPE	= 9
-};
+} rpmTagType;
 
 #define	RPM_MAX_TYPE		9
 

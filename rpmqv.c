@@ -61,6 +61,7 @@ static int noPgp = 0;
 #define GETOPT_SHOWRC		1018
 #define	GETOPT_DEFINEMACRO	1020
 #define	GETOPT_EVALMACRO	1021
+#define	GETOPT_RCFILE		1022
 
 enum modes {
 
@@ -147,8 +148,10 @@ static struct poptOption optionsTable[] = {
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
 
- { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,NULL, NULL},
- { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO, NULL, NULL},
+ { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,
+	N_("define macro <name> with value <body>"), N_("'<name> <body>'") },
+ { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO,
+	N_("print macro expansion to stdout"), N_("<expr>+") },
 
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,	NULL, NULL},
  { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
@@ -172,7 +175,10 @@ static struct poptOption optionsTable[] = {
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
  { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
 
- { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,	NULL, NULL},
+ { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
+	N_("read <file:...> instead of default macro file(s)"),
+	N_("<file:...>") },
+ { "rcfile", '\0', 0, 0, GETOPT_RCFILE,		NULL, NULL},
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
 
 #if defined(IAM_RPMQV) || defined(IAM_RPMK)
@@ -286,14 +292,14 @@ static void printUsage(void) {
 
 #ifdef	IAM_RPMDB
     fprintf(fp, _("       %s {--initdb}   [--dbpath <dir>]\n"), __progname);
-    fprintf(fp, _("       %s {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]\n"), __progname);
+    fprintf(fp, _("       %s {--rebuilddb} [--macros <file:...>] [--dbpath <dir>]\n"), __progname);
 #endif
 
 #ifdef	IAM_RPMEIU
     fprintf(fp, _("       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"), __progname);
     puts(_("                        [--replacepkgs] [--replacefiles] [--root <dir>]"));
     puts(_("                        [--excludedocs] [--includedocs] [--noscripts]"));
-    puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
+    puts(_("                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"));
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
@@ -302,7 +308,7 @@ static void printUsage(void) {
     puts(_("                        [--ignoresize] file1.rpm ... fileN.rpm"));
     fprintf(fp,  ("       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"), __progname);
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
-    puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
+    puts(_("                        [--excludedocs] [--includedocs] [--macros <file:...>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
@@ -310,21 +316,21 @@ static void printUsage(void) {
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--excludepath <path>] [--ignoresize]"));
     puts(_("                        file1.rpm ... fileN.rpm"));
-    fprintf(fp, _("       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"), __progname);
+    fprintf(fp, _("       %s {--erase -e} [--root <dir>] [--noscripts] [--macros <file:...>]\n"), __progname);
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        [--justdb] [--notriggers] package1 ... packageN"));
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
     fprintf(fp,  ("       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"), __progname);
-    puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
+    puts(_("                        [--scripts] [--root <dir>] [--macros <file:...>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
     puts(_("                        [--triggeredby]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
     puts(_("                        [--provides] [--triggers] [--dump]"));
     puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));
-    fprintf(fp, _("       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"), __progname);
+    fprintf(fp, _("       %s {--verify -V -y} [-afpg] [--root <dir>] [--macros <file:...>]\n"), __progname);
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
     puts(_("                        [--nomd5] [targets]"));
     fprintf(fp,  ("       %s {--querytags}\n"), __progname);
@@ -333,20 +339,20 @@ static void printUsage(void) {
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMBT
-    fprintf(fp, _("       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  <file>]\n"), __progname);
+    fprintf(fp, _("       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--macros <file:...>]\n"), __progname);
     puts( ("                        [--sign] [--nobuild] ]"));
     puts(_("                        [--target=platform1[,platform2...]]"));
     puts(_("                        [--rmsource] [--rmspec] specfile"));
-    fprintf(fp, _("       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"), __progname);
-    fprintf(fp, _("       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"), __progname);
-    fprintf(fp, _("       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"), __progname);
+    fprintf(fp, _("       %s {--rmsource} [--macros <file:...>] [-v] specfile\n"), __progname);
+    fprintf(fp, _("       %s {--rebuild} [--macros <file:...>] [-v] source1.rpm ... sourceN.rpm\n"), __progname);
+    fprintf(fp, _("       %s {--recompile} [--macros <file:...>] [-v] source1.rpm ... sourceN.rpm\n"), __progname);
     fprintf(fp, _("       %s {--freshen -F} file1.rpm ... fileN.rpm\n"), __progname);
 #endif	/* IAM_RPMBT */
 
 #ifdef	IAM_RPMK
-    fprintf(fp, _("       %s {--resign} [--rcfile <file>] package1 package2 ... packageN\n"), __progname);
-    fprintf(fp, _("       %s {--addsign} [--rcfile <file>] package1 package2 ... packageN"), __progname);
-    fprintf(fp, _("       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]\n"), __progname);
+    fprintf(fp, _("       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"), __progname);
+    fprintf(fp, _("       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"), __progname);
+    fprintf(fp, _("       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--macros <file:...>]\n"), __progname);
     puts(_("                           package1 ... packageN"));
 #endif	/* IAM_RPMK */
 
@@ -393,12 +399,12 @@ static void printHelp(void) {
     puts(         _("  All modes support the following options:"));
     printHelpLine(_("   --define '<name> <body>'"),
 		  _("define macro <name> with value <body>"));
-    printHelpLine(_("   --eval '<name>+'       "),
-		  _("print the expansion of macro <name> to stdout"));
+    printHelpLine(_("   --eval '<expr>+'       "),
+		  _("print the expansion of macro <expr> to stdout"));
     printHelpLine(_("   --pipe <cmd>           "),
 		  _("send stdout to <cmd>"));
-    printHelpLine(_("   --rcfile <file>        "),
-		  _("use <file> instead of /etc/rpmrc and $HOME/.rpmrc"));
+    printHelpLine(_("   --macros <file:...>    "),
+		  _("use <file:...> instead of default list of macro files"));
     printHelpLine(  "   --showrc               ",
 		  _("display final rpmrc and macro configuration"));
 #if defined(IAM_RPMBT) || defined(IAM_RPMDB) || defined(IAM_RPMEIU) || defined(IAM_RPMQV)
@@ -912,6 +918,12 @@ int main(int argc, const char ** argv)
 	    xfree(val);
 	    noUsageMsg = 1;
 	  } break;
+
+	  case GETOPT_RCFILE:
+	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
+	    fprintf(stderr, _("Use \"--macros <file:...>\" instead..\n"));
+	    exit(EXIT_FAILURE);
+	    /*@notreached@*/ break;
 
 	  default:
 	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);

@@ -97,6 +97,7 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
     return rc;
 }	
 
+/** @todo Generalize --freshen policies. */
 int rpmInstall(const char * rootdir, const char ** fileArgv,
 		rpmtransFlags transFlags, 
 		rpmInstallInterfaceFlags interfaceFlags,

@@ -60,7 +60,7 @@ typedef enum rpmerrCode_e {
     RPMERR_UNMATCHEDIF	= _em(107), /*!< unclosed %ifarch or %ifos */
     RPMERR_BADARG	= _em(109), /*!< @todo Document. */
     RPMERR_SCRIPT	= _em(110), /*!< errors related to script exec */
-    RPMERR_READERROR	= _em(111), /*!< @todo Document. */
+    RPMERR_READ		= _em(111), /*!< @todo Document. */
     RPMERR_UNKNOWNOS	= _em(112), /*!< @todo Document. */
     RPMERR_UNKNOWNARCH	= _em(113), /*!< @todo Document. */
     RPMERR_EXEC		= _em(114), /*!< @todo Document. */
@@ -70,6 +70,9 @@ typedef enum rpmerrCode_e {
     RPMERR_BADSPEC	= _em(118), /*!< @todo Document. */
     RPMERR_LDD		= _em(119), /*!< couldn't understand ldd output */
     RPMERR_BADFILENAME	= _em(120), /*!< @todo Document. */
+    RPMERR_OPEN		= _em(121), /*!< @todo Document. */
+    RPMERR_POPEN	= _em(122), /*!< @todo Document. */
+    RPMERR_NOTREG	= _em(122), /*!< File %s is not a regular file */
 
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
     RPMERR_SIGGEN	= _em(201)  /*!< Error generating signature */
@@ -78,6 +81,10 @@ typedef enum rpmerrCode_e {
 /**
  * Retrofit rpmError() onto rpmlog sub-system.
  */
-#define	rpmError	rpmlog
+#define	rpmError			rpmlog
+#define	rpmErrorString()		rpmlogMessage()
+#define	rpmErrorSetCallback(_cb)	rpmlogSetCallback(_cb)
+typedef rpmlogCallback rpmErrorCallBackType;
+
 
 #endif  /* H_RPMERR */

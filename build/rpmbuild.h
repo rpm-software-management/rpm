@@ -77,28 +77,54 @@ typedef enum rpmParseState_e {
 extern "C" {
 #endif
 
-/* from build/names.h */
-
-/** */
+/**
+ * Destroy uid/gid caches.
+ */
 void freeNames(void);
 
-/** */
+/**
+ * Return cached user name from user id.
+ * @todo Implement using hash.
+ * @param		user id
+ * @return		cached user name
+ */
 /*@observer@*/ const char *getUname(uid_t uid);
 
-/** */
+/**
+ * Return cached user name.
+ * @todo Implement using hash.
+ * @param		user name
+ * @return		cached user name
+ */
 /*@observer@*/ const char *getUnameS(const char *uname);
 
-/** */
+/**
+ * Return cached group name from group id.
+ * @todo Implement using hash.
+ * @param		group id
+ * @return		cached group name
+ */
 /*@observer@*/ const char *getGname(gid_t gid);
 
-/** */
+/**
+ * Return cached group name.
+ * @todo Implement using hash.
+ * @param		group name
+ * @return		cached group name
+ */
 /*@observer@*/ const char *getGnameS(const char *gname);
 
-/** */
-/*@observer@*/ const char *const buildHost(void);
-
-/** */
+/**
+ * Return build time stamp.
+ * @return		build time stamp
+ */
 /*@observer@*/ time_t *const getBuildTime(void);
+
+/**
+ * Return build hostname.
+ * @return		build hostname
+ */
+/*@observer@*/ const char *const buildHost(void);
 
 /* from build/read.h */
 

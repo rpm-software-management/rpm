@@ -16,7 +16,6 @@ static gid_t gids[1024];
 /*@owned@*/ /*@null@*/ static const char *gnames[1024];
 static int gid_used = 0;
     
-/** */
 void freeNames(void)
 {
     int x;
@@ -26,11 +25,6 @@ void freeNames(void)
 	xfree(gnames[x]);
 }
 
-/*
- * getUname() takes a uid, gets the username, and creates an entry in the
- * table to hold a string containing the user name.
- */
-/** */
 const char *getUname(uid_t uid)
 {
     struct passwd *pw;
@@ -43,10 +37,8 @@ const char *getUname(uid_t uid)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024) {
-	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getUname()\n"));
-	exit(EXIT_FAILURE);
-    }
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getUname: too many uid's\n"));
     
     pw = getpwuid(uid);
     uids[x] = uid;
@@ -59,11 +51,6 @@ const char *getUname(uid_t uid)
     return unames[x];
 }
 
-/*
- * getUnameS() takes a username, gets the uid, and creates an entry in the
- * table to hold a string containing the user name.
- */
-/** */
 const char *getUnameS(const char *uname)
 {
     struct passwd *pw;
@@ -76,10 +63,8 @@ const char *getUnameS(const char *uname)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024) {
-	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getUname()\n"));
-	exit(EXIT_FAILURE);
-    }
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getUnameS: too many uid's\n"));
     
     pw = getpwnam(uname);
     uid_used++;
@@ -93,11 +78,6 @@ const char *getUnameS(const char *uname)
     return unames[x];
 }
 
-/*
- * getGname() takes a gid, gets the group name, and creates an entry in the
- * table to hold a string containing the group name.
- */
-/** */
 const char *getGname(gid_t gid)
 {
     struct group *gr;
@@ -110,10 +90,8 @@ const char *getGname(gid_t gid)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024) {
-	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getGname()\n"));
-	exit(EXIT_FAILURE);
-    }
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getGname: too many gid's\n"));
     
     gr = getgrgid(gid);
     gids[x] = gid;
@@ -126,11 +104,6 @@ const char *getGname(gid_t gid)
     return gnames[x];
 }
 
-/*
- * getGnameS() takes a group name, gets the gid, and creates an entry in the
- * table to hold a string containing the group name.
- */
-/** */
 const char *getGnameS(const char *gname)
 {
     struct group *gr;
@@ -143,10 +116,8 @@ const char *getGnameS(const char *gname)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024) {
-	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getGname()\n"));
-	exit(EXIT_FAILURE);
-    }
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getGnameS: too many gid's\n"));
     
     gr = getgrnam(gname);
     gid_used++;
@@ -160,19 +131,15 @@ const char *getGnameS(const char *gname)
     return gnames[x];
 }
 
-/** */
 time_t *const getBuildTime(void)
 {
     static time_t buildTime = 0;
 
-    if (! buildTime) {
+    if (! buildTime)
 	buildTime = time(NULL);
-    }
-
     return &buildTime;
 }
 
-/** */
 const char *const buildHost(void)
 {
     static char hostname[1024];

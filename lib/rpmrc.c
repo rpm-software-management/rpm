@@ -55,44 +55,44 @@ static struct _os_canon {
     { NULL,		0 }
 };
 
-static const char *macrofiles = MACROFILES;
+const char *macrofiles = MACROFILES;
 
 #ifndef	DYING
-const char *rpmGetVar(int var)
-{
-    return NULL;
-}
 
-void rpmGetArchInfo(const char ** name, int * num)
+void XrpmGetArchInfo(const char ** name, int * num, const char *_f, unsigned _l)
 {
-fprintf(stderr, "*** rpmGetArchInfo(%p,%p)\n", name, num);
+fprintf(stderr, "*** rpmGetArchInfo(%p,%p) %s:%u\n", name, num, _f, _l);
     if (name)
 	*name = rpmExpand("%{_target_cpu}", NULL);
 }
 
-void rpmGetOsInfo(const char ** name, int * num)
+void XrpmGetOsInfo(const char ** name, int * num, const char *_f, unsigned _l)
 {
-fprintf(stderr, "*** rpmGetOsInfo(%p,%p)\n", name, num);
+fprintf(stderr, "*** rpmGetOsInfo(%p,%p) %s:%u\n", name, num, _f, _l);
     if (name)
 	*name = rpmExpand("%{_target_os}", NULL);
 }
 
-void rpmGetMachine(const char **arch, const char **os)
+void XrpmGetMachine(const char **arch, const char **os, const char *_f, unsigned _l)
 {
+fprintf(stderr, "*** rpmGetMachine(%p,%p) %s:%u\n", arch, os, _f, _l);
 }
 
-void rpmSetMachine(const char * arch, const char * os)
+void XrpmSetMachine(const char * arch, const char * os, const char *_f, unsigned _l)
 {
+fprintf(stderr, "*** rpmSetMachine(%p,%p) %s:%u\n", arch, os, _f, _l);
 }
 #endif
 
-int rpmMachineScore(int type, const char * name)
+int XrpmMachineScore(int type, const char * name, const char * _f, unsigned _l)
 {
+fprintf(stderr, "*** rpmMachineScore(%d,\"%s\") %s:%u\n", type, name, _f, _l);
     return 0;
 }
 
 void rpmFreeRpmrc(void)
 {
+fprintf(stderr, "*** rpmFreeRpmrc()\n");
 }
 
 static void defaultMachine(/*@out@*/ char ** arch, /*@out@*/ char ** os)
@@ -218,7 +218,6 @@ fprintf(stderr, "*** _target: \"%s\"\n", *ct);
 int rpmReadConfigFiles(const char * mfiles, const char * target)
 {
 
-fprintf(stderr, "*** rpmReadConfigFiles(%s,%s) %s\n", mfiles, target, macrofiles);
     if (mfiles == NULL)
 	mfiles = macrofiles;
 
@@ -227,11 +226,14 @@ fprintf(stderr, "*** rpmReadConfigFiles(%s,%s) %s\n", mfiles, target, macrofiles
 
     if (mfiles) {
 	mfiles = rpmExpand(mfiles, NULL);
+fprintf(stderr, "*** rpmInitMacros(NULL,\"%s\")\n", mfiles);
 	rpmInitMacros(NULL, mfiles);
 	xfree(mfiles);
 
+#ifdef	DYING
 	/* Reset target macros */
 	rpmRebuildTargetVars(&target);
+#endif
     }
 
     return 0;
@@ -239,5 +241,6 @@ fprintf(stderr, "*** rpmReadConfigFiles(%s,%s) %s\n", mfiles, target, macrofiles
 
 int rpmShowRC(FILE *fp)
 {
+fprintf(stderr, "*** rpmShowRC(%p)\n", fp);
     return 0;
 }

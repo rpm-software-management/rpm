@@ -916,7 +916,7 @@ SYSCONFIGDIR="`echo /etc/rpm`"
 AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR")
 AC_SUBST(SYSCONFIGDIR)
 
-MACROFILES="${RPMCONFIGDIR}/macros:${RPMCONFIGDIR}/%{_target}/macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/macros.specspo:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
+MACROFILES="${RPMCONFIGDIR}/macros:${RPMCONFIGDIR}/%{_target_platform}/macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/macros.specspo:${SYSCONFIGDIR}/%{_target_platform}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES")
 AC_SUBST(MACROFILES)
 

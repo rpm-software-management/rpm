@@ -249,46 +249,46 @@ int buildSpec(Spec spec, int what, int test)
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
 				test))) {
-		return rc;
+		goto exit;
 	    }
 	}
     } else {
 	if ((what & RPMBUILD_PREP) &&
 	    (rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test)))
-		return rc;
+		goto exit;
 
 	if ((what & RPMBUILD_BUILD) &&
 	    (rc = doScript(spec, RPMBUILD_BUILD, NULL, NULL, test)))
-		return rc;
+		goto exit;
 
 	if ((what & RPMBUILD_INSTALL) &&
 	    (rc = doScript(spec, RPMBUILD_INSTALL, NULL, NULL, test)))
-		return rc;
+		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&
 	    (rc = processSourceFiles(spec)))
-		return rc;
+		goto exit;
 
 	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
 	    (what & RPMBUILD_FILECHECK)) &&
 	    (rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL, test)))
-		return rc;
+		goto exit;
 
 	if (((what & RPMBUILD_PACKAGESOURCE) && !test) &&
 	    (rc = packageSources(spec)))
-		return rc;
+		goto exit;
 
 	if (((what & RPMBUILD_PACKAGEBINARY) && !test) &&
 	    (rc = packageBinaries(spec)))
-		return rc;
+		goto exit;
 	
 	if ((what & RPMBUILD_CLEAN) &&
 	    (rc = doScript(spec, RPMBUILD_CLEAN, NULL, NULL, test)))
-		return rc;
+		goto exit;
 
 	if ((what & RPMBUILD_RMBUILD) &&
 	    (rc = doScript(spec, RPMBUILD_RMBUILD, NULL, NULL, test)))
-		return rc;
+		goto exit;
     }
 
     if (what & RPMBUILD_RMSOURCE)
@@ -296,6 +296,13 @@ int buildSpec(Spec spec, int what, int test)
 
     if (what & RPMBUILD_RMSPEC)
 	unlink(spec->specFile);
+    rc = 0;
 
-    return 0;
+exit:
+    if (rc && rpmlogGetNrecs() > 0) {
+	rpmMessage(RPMMESS_NORMAL, _("\n\nRPM build errors:\n"));
+	rpmlogPrint(NULL);
+    }
+
+    return rc;
 }

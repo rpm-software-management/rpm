@@ -55,14 +55,17 @@ typedef	FILE * FD_t;
 struct MacroContext rpmGlobalMacroContext;
 struct MacroContext rpmCLIMacroContext;
 
+/**
+ * Macro expansion data structure.
+ */
 typedef struct MacroBuf {
-	const char *s;		/* text to expand */
-	char *t;		/* expansion buffer */
-	size_t nb;		/* no. bytes remaining in expansion buffer */
-	int depth;		/* current expansion depth */
-	int macro_trace;	/* pre-print macro to expand? */
-	int expand_trace;	/* post-print macro expansion? */
-	void *spec;		/* (future) %file expansion info */
+	const char *s;		/*!< Text to expand. */
+	char *t;		/*!< Expansion buffer. */
+	size_t nb;		/*!< No. bytes remaining in expansion buffer. */
+	int depth;		/*!< Current expansion depth. */
+	int macro_trace;	/*!< Pre-print macro to expand? */
+	int expand_trace;	/*!< Post-print macro expansion? */
+	void *spec;		/*!< (future) %file expansion info. */
 	MacroContext *mc;
 } MacroBuf;
 
@@ -837,8 +840,10 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 	}
 }
 
-/* The main recursion engine */
-
+/**
+ * The main recursion engine.
+ * @todo Dynamically reallocate target buffer.
+ */
 static int
 expandMacro(MacroBuf *mb)
 {
