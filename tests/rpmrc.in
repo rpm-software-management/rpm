@@ -12,7 +12,7 @@ tmppath:	@testdir@@tmpdir@
 gzipbin:	@testdir@@GZIPBIN@
 bzip2bin:	@testdir@@BZIP2BIN@
 defaultdocdir:  @testdir@@prefix@/doc
-fixperms:	@FIXPERMS@
+fixperms:	a+rX,g-w,o-w
 rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
 instchangelog:	5
 

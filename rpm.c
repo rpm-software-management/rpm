@@ -789,6 +789,7 @@ int main(int argc, char ** argv) {
             if (optArg[0] != '/')
                 argerror(_("arguments to --dbpath must begin with a /"));
 	    rpmSetVar(RPMVAR_DBPATH, optArg);
+	    addMacro(&globalMacroContext, "_dbpath", NULL, optArg, RMIL_CMDLINE);
 	    gotDbpath = 1;
 	    break;
 
@@ -799,6 +800,7 @@ int main(int argc, char ** argv) {
 		argerror("Argument to --timecheck must be integer");
 	    }
 	    rpmSetVar(RPMVAR_TIMECHECK, optArg);
+	    addMacro(&globalMacroContext, "_timecheck", NULL, optArg, RMIL_CMDLINE);
 	    timeCheck = 1;
 	    break;
 
@@ -1026,8 +1028,14 @@ int main(int argc, char ** argv) {
 	argerror(_("--nopgp may only be used during signature checking and "
 		   "package verification"));
 
-    if (ftpProxy) rpmSetVar(RPMVAR_FTPPROXY, ftpProxy);
-    if (ftpPort) rpmSetVar(RPMVAR_FTPPORT, ftpPort);
+    if (ftpProxy) {
+	rpmSetVar(RPMVAR_FTPPROXY, ftpProxy);
+	addMacro(&globalMacroContext, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
+    }
+    if (ftpPort) {
+	rpmSetVar(RPMVAR_FTPPORT, ftpPort);
+	addMacro(&globalMacroContext, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
+    }
 
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
@@ -1056,6 +1064,7 @@ int main(int argc, char ** argv) {
     } else {
         /* Override any rpmrc setting */
         rpmSetVar(RPMVAR_SIGTYPE, "none");
+	addMacro(&globalMacroContext, "_sigtype", NULL, "none", RMIL_CMDLINE);
     }
 
     if (pipeOutput) {

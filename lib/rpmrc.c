@@ -12,6 +12,7 @@
 #include "misc.h"
 
 static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
+
 #if UNUSED
 static const char *macrofiles = MACROFILES;
 #endif
@@ -484,7 +485,7 @@ static void setVarDefault(int var, const char *macroname, const char *val, const
 
 static void setPathDefault(int var, const char *macroname, const char *subdir)
 {
-    char * topdir;
+    const char * topdir;
     char * fn;
 
     if (rpmGetVar(var)) return;
@@ -502,18 +503,39 @@ static void setPathDefault(int var, const char *macroname, const char *subdir)
 
     if (macroname != NULL) {
 #define	_TOPDIRMACRO	"%{_topdir}/"
-	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir) + 1);
+	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir));
 	strcpy(body, _TOPDIRMACRO);
 	strcat(body, subdir);
-	addMacro(&globalMacroContext, macroname, NULL, body, RMIL_RPMRC);
+	addMacro(&globalMacroContext, macroname, NULL, body, RMIL_DEFAULT);
 #undef _TOPDIRMACRO
     }
 }
 
+static const char *prescriptenviron = "\n\
+RPM_SOURCE_DIR=\"%{_sourcedir}\"\n\
+RPM_BUILD_DIR=\"%{_builddir}\"\n\
+RPM_OPT_FLAGS=\"%{optflags}\"\n\
+RPM_ARCH=\"%{_target_cpu}\"\n\
+RPM_OS=\"%{_target_os}\"\n\
+export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\n\
+RPM_DOC_DIR=\"%{_docdir}\"\n\
+export RPM_DOC_DIR\
+RPM_PACKAGE_NAME=\"%{name}\"\n\
+RPM_PACKAGE_VERSION=\"%{version}\"\n\
+RPM_PACKAGE_RELEASE=\"%{release}\"\n\
+export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\n\
+%{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\n\
+export RPM_BUILD_ROOT\n}\
+";
+
 static void setDefaults(void) {
 
+    initMacros(&globalMacroContext, NULL); /* XXX initialize data structures */
     addMacro(&globalMacroContext, "_usr", NULL, "/usr", RMIL_DEFAULT);
     addMacro(&globalMacroContext, "_var", NULL, "/var", RMIL_DEFAULT);
+
+    addMacro(&globalMacroContext, "_preScriptEnvironment", NULL,
+	prescriptenviron, RMIL_DEFAULT);
 
     setVarDefault(RPMVAR_MACROFILES,	"_macrofiles",
 		"/usr/lib/rpm/macros", "%{_usr}/lib/rpm/macros");

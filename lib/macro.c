@@ -866,7 +866,7 @@ expandMacro(MacroBuf *mb)
 			rc = 1;
 			continue;
 		}
-		f = ++s;/* skip { */
+		f = s+1;/* skip { */
 		se++;	/* skip } */
 		while (strchr("!?", *f) != NULL) {
 			switch(*f++) {

@@ -21,9 +21,11 @@ extern MacroContext globalMacroContext;
 /*
  * Markers for types of macros added throughout rpm.
  */
-#define	RMIL_DEFAULT	-11
-#define	RMIL_MACROFILES	-9
-#define	RMIL_RPMRC	-7
+#define	RMIL_DEFAULT	-15
+#define	RMIL_MACROFILES	-13
+#define	RMIL_RPMRC	-11
+
+#define	RMIL_CMDLINE	-7
 #define	RMIL_TARBALL	-5
 #define	RMIL_SPEC	-3
 #define	RMIL_OLDSPEC	-1
