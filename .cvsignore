@@ -2,6 +2,7 @@
 .depend
 .depend-done
 Makefile
+Makefile.in
 .libs
 rpm
 rpm2cpio
@@ -11,6 +12,7 @@ macros
 find-requires
 find-provides
 config.h
+config.h.in
 config.guess
 config.cache
 config.log
@@ -19,6 +21,7 @@ config.sub
 configure
 libtool
 stamp-h
+stamp.h-in
 ltconfig
 ltmain.sh
 *.tar.gz

@@ -2,6 +2,7 @@
 .depend
 aclocal.m4
 Makefile
+Makefile.in
 mappcinames
 pci-ids-temp.h
 configure
@@ -13,6 +14,7 @@ config.log
 config.status
 config.sub
 stamp-h
+stamp-h.in
 test1
 libtool
 ltconfig
