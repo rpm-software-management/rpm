@@ -1,6 +1,7 @@
-%define	with_python_subpackage	1
-%define	with_bzip2		1
-%define	with_apidocs		1
+%define	with_python_subpackage	1 %{nil}
+%define	with_bzip2		1 %{nil}
+%define	with_apidocs		1 %{nil}
+%define with_internal_db	1 %{nil}
 %define strip_binaries		1
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
@@ -23,6 +24,7 @@ Prereq: gawk fileutils textutils mktemp
 Requires: popt
 %endif
 
+%if !%{with_internal_db}
 BuildRequires: db3-devel
 
 # XXX glibc-2.1.92 has incompatible locale changes that affect statically
@@ -31,6 +33,7 @@ BuildRequires: db3-devel
 Requires: glibc >= 2.1.92
 # XXX needed to avoid libdb.so.2 satisfied by compat/libc5 provides.
 Requires: db1 = 1.85
+%endif
 %endif
 
 # XXX Red Hat 5.2 has not bzip2 or python

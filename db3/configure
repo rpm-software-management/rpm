@@ -1,0 +1,13 @@
+#!/bin/sh
+#set -x 
+db_dist="../db/dist"
+$db_dist/configure \
+	$(echo $* | sed -e "s% --srcdir=[^ ]*% --srcdir=$db_dist%")
+
+mv Makefile Makefile.orig
+cat Makefile.orig | sed -e '/^install:/c\
+distdir:\
+\
+install:\
+\
+db3_install: all install_setip \\' > Makefile

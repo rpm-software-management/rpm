@@ -5,12 +5,12 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	RPM-GPG-KEY RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	gendiff installplatform platform* \
+	db db3/configure gendiff installplatform platform* \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c
 
 # XXX TODO: perl
-SUBDIRS = intl po popt rpmio lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
+SUBDIRS = intl po @WITH_DB_SUBDIR@ popt rpmio lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt @INCPATH@
@@ -23,8 +23,11 @@ myLDFLAGS = # -L$(top_builddir)/build/.libs -L$(top_builddir)/lib/.libs \
 # XXX libtool can/should generate dependent libs.
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
 # XXX top_builddir ldpaths are wrong building in tree
-myLDADD = $(top_builddir)/build/librpmbuild.la $(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la \
+myLDADD = $(top_builddir)/build/librpmbuild.la \
+	$(top_builddir)/lib/librpm.la \
+	@libdb3a@ \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la \
 	@INTLLIBS@ @LIBMISC@
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`

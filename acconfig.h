@@ -132,15 +132,6 @@
 /* define if the statfs() call takes 4 arguments */
 #undef STAT_STATFS4
 
-/* Absolute path to rpm top_sourcedir. */
-#undef TOP_SOURCEDIR
-
-/* define if support rpm-1.0 packages is desired */
-#undef ENABLE_V1_PACKAGES
-
-/* define if experimental support rpm-4.0 packages is desired */
-#undef ENABLE_V5_PACKAGES
-
 /* Use the included glob.c? */
 #undef USE_GNU_GLOB
 
@@ -153,8 +144,8 @@
 /* Use the Berkeley db1 retrofit to db2/db3 API? */
 #undef USE_DB1
 
-/* Use the Berkeley db1 API from glibc? */
-#undef USE_DB0
+/* Define if you have the <db3/db.h> header file.  */
+#undef HAVE_DB3_DB_H
 
 /* Build with dmalloc support? */
 #undef DMALLOC

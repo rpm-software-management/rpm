@@ -266,14 +266,14 @@ dnl
 dnl Check for features
 dnl
 
-### use option --enable-v5-packages to turn on support for rpm-5.x packages
-AC_MSG_CHECKING(if you want experimental rpm-5.0 packages)
-AC_ARG_ENABLE(v5-packages,
-        [  --enable-v5-packages[=no]    [experimental] support for rpm-5.x packages],
-        [with_v5_packages=$enableval],
-        [with_v5_packages=no])
-AC_MSG_RESULT($with_v5_packages)
-test "$with_v5_packages" = yes && AC_DEFINE(ENABLE_V5_PACKAGES)
+dnl ### use option --enable-v5-packages to turn on support for rpm-5.x packages
+dnl AC_MSG_CHECKING(if you want experimental rpm-5.0 packages)
+dnl AC_ARG_ENABLE(v5-packages,
+dnl         [  --enable-v5-packages[=no]    [experimental] support for rpm-5.x packages],
+dnl         [with_v5_packages=$enableval],
+dnl         [with_v5_packages=no])
+dnl AC_MSG_RESULT($with_v5_packages)
+dnl test "$with_v5_packages" = yes && AC_DEFINE(ENABLE_V5_PACKAGES)
 
 dnl Checks for libraries.
 
@@ -315,10 +315,24 @@ if test "x$libthread" = "x"; then
 	AC_CHECK_LIB(thread, mutex_lock, [libthread="-lthread"])
 fi
 
+WITH_DB_SUBDIR=
+WITH_INTERNAL_DB=0
 DBLIBSRCS=""
 libdb3=""
+libdb3a=""
 libdb2=""
 libdb1=""
+
+dnl
+dnl Detect whether internal Berkeley DB should be built.
+dnl
+withval=yes
+AC_ARG_WITH(db, [  --without-db            do not use internal Berkeley db])
+
+if test $withval = no ; then
+dnl ------------------ without internal db
+
+AC_CHECK_HEADERS(db_185.h db1/db.h db3/db.h)
 
 dnl Check for Berkeley db3 API.
 AC_CHECK_FUNC(db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"],
@@ -362,15 +376,6 @@ AC_MSG_RESULT(no)
 usedb1=no
 ])
 
-if test "$usedb1" = "yes"; then
- dnl Check for Berkeley db1 API in glibc.
- AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db3.c"],
-   AC_CHECK_LIB(db1, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb1"],
-     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb"])
-   )
- )
-fi
-
 if test X"$DBLIBSRCS" = X; then
     AC_MSG_ERROR([sorry rpm requires libdb-3.x.a (from the Berkeley db package)]) 
 fi
@@ -384,11 +389,36 @@ if test -n "$libdb3" -a -n "$libthread" ; then
    LIBS="$saveLIBS"
 fi
 
+else
+dnl ------------------ with    internal db
+  AC_DEFINE(HAVE_DB3_DB_H)
+  WITH_DB_SUBDIR=db3
+  WITH_INTERNAL_DB=1
+  DBLIBSRCS="db3.c"
+  usedb1=no
+  libdb3="# \$(top_builddir)/db3/libdb.la"
+  libdb3a="\$(top_builddir)/db3/libdb.a"
+dnl  INCPATH="-I\$(top_builddir)/$(WITH_DB_SUBDIR) $INCPATH"
+fi
+
+if test "$usedb1" = "yes"; then
+ dnl Check for Berkeley db1 API in glibc.
+ AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db3.c"],
+   AC_CHECK_LIB(db1, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb1"],
+     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb"])
+   )
+ )
+fi
+
+AC_SUBST(WITH_DB_SUBDIR)
+AC_SUBST(WITH_INTERNAL_DB)
+
 DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
 
 AC_SUBST(DBLIBSRCS)
 AC_SUBST(DBLIBOBJS)
 AC_SUBST(libdb3)
+AC_SUBST(libdb3a)
 AC_SUBST(libdb2)
 AC_SUBST(libdb1)
 
@@ -456,7 +486,6 @@ AC_HEADER_MAJOR
 AC_HEADER_DIRENT
 AC_HEADER_TIME
 
-AC_CHECK_HEADERS(db_185.h db1/db.h db3/db.h)
 AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
 
 AC_CHECK_HEADERS(sys/socket.h sys/select.h)
@@ -1065,9 +1094,6 @@ AC_SUBST(FINDREQUIRES)
 FINDPROVIDES="${RPMCONFIGDIR}/find-provides"
 AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES")
 AC_SUBST(FINDPROVIDES)
-TOP_SOURCEDIR="`pwd`"
-AC_DEFINE_UNQUOTED(TOP_SOURCEDIR, "$TOP_SOURCEDIR")
-AC_SUBST(TOP_SOURCEDIR)
 
 testdir="`pwd`/tests"
 dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")
@@ -1088,17 +1114,29 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT([Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec scripts/brp-redhat
+AC_CONFIG_SUBDIRS(popt $WITH_DB_SUBDIR)
+
+AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile lib/Makefile build/Makefile tools/Makefile
-	scripts/Makefile
+	scripts/Makefile scripts/brp-redhat
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile
 	doc/Makefile doc/manual/Makefile
 	doc/ja/Makefile doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
-	python/Makefile perl/Makefile perl/Makefile.PL],
-	[echo timestamp > popt/stamp-h.in
-	echo timestamp > stamp-h.in])
+	python/Makefile perl/Makefile perl/Makefile.PL ],
+  [
+dnl	rm -f db/build_unix/configure
+dnl	echo "set -x ; exec ../dist/configure \$(echo \$* | sed -e 's% --srcdir=\[^ \]*% --srcdir=../dist%')" > db/build_unix/configure
+dnl	chmod +x db/build_unix/configure
+dnl	if test -n "$WITH_DB_SUBDIR"; then
+dnl	  ( cd $WITH_DB_SUBDIR
+dnl	    CFLAGS="$CFLAGS" ../dist/configure --prefix="$prefix" --enable-shared --enable-static
+ dnl	  )
+dnl	fi
+	echo timestamp > popt/stamp-h.in
+	echo timestamp > stamp-h.in
+  ]
+)
 dnl	touch Makefile.in
 dnl	sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
 

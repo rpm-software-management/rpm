@@ -15,6 +15,7 @@ EXTRA_PROGRAMS = rpminject rpmsort
 
 myLDADD = $(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
+	@libdb3a@ \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
 	@INTLLIBS@

@@ -44,6 +44,9 @@
 	- enough lclint annotations and fiddles already.
 	- fix: specfile queries with BuildArch: (#27589).
 	- fix: debugging message displays header keys (#38454).
+	- fix: specfile queries with BuildArch: (#27589).
+	- use internal db-3.2.9 sources to build by default.
+	- don't build db1 by default.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
