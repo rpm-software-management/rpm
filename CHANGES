@@ -13,6 +13,7 @@
 	- fixed --noscript, --notriggers, --excludedocs, and a bunch
 	  of other install/remove flags
 	- fixed noreplace handling
+	- complain about old packages being installed
 
 2.5.x -> 2.90
 	- added --excludepath

@@ -57,6 +57,12 @@ char * rpmProblemString(rpmProblem prob) {
 		release, altName, altVersion, altRelease);
 	break;
 
+      case RPMPROB_OLDPACKAGE:
+	sprintf(buf, _("package %s-%s-%s (which is newer then %s-%s-%s) is "
+		       "already installed"), altName, altVersion, altRelease,
+			name, version, release);
+	break;
+
       default:
 	sprintf(buf, _("unknown error %d encountered while manipulating "
 		"package %s-%s-%s"), prob.type, name, version, release);
@@ -84,6 +90,8 @@ void rpmProblemSetFilter(rpmProblemSet ps, int flags) {
 	    flag = RPMPROB_FILTER_REPLACENEWFILES; break;
 	  case RPMPROB_FILE_CONFLICT:
 	    flag = RPMPROB_FILTER_REPLACEOLDFILES; break;
+	  case RPMPROB_OLDPACKAGE:
+	    flag = RPMPROB_FILTER_OLDPACKAGE; break;
 	  default:
 	    flag = 0;
 	}

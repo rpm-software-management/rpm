@@ -1280,13 +1280,13 @@ int main(int argc, char ** argv) {
 	    probFilter |= RPMPROB_FILTER_REPLACEPKG | 
 			  RPMPROB_FILTER_REPLACEOLDFILES |
 			  RPMPROB_FILTER_REPLACENEWFILES |
-			  RPMPROB_FILTER_UPGRADETOOLD;
+			  RPMPROB_FILTER_OLDPACKAGE;
 	}
 	if (replaceFiles) probFilter |= RPMPROB_FILTER_REPLACEOLDFILES |
 			                RPMPROB_FILTER_REPLACENEWFILES;
 	if (badReloc) probFilter |= RPMPROB_FILTER_FORCERELOCATE;
 	if (replacePackages) probFilter |= RPMPROB_FILTER_REPLACEPKG;
-	if (oldPackage) probFilter |= RPMPROB_FILTER_UPGRADETOOLD;
+	if (oldPackage) probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	if (ignoreArch) probFilter |= RPMPROB_FILTER_IGNOREARCH; 
 	if (ignoreOs) probFilter |= RPMPROB_FILTER_IGNOREOS;
 

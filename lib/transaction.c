@@ -57,6 +57,8 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 			            int sharedCount);
 void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 			   rpmProblemSet probs);
+static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
+		       const void * key);
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
@@ -68,7 +70,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int i, j;
     struct availableList * al = &ts->addedPackages;
     int rc, ourrc = 0;
-    rpmProblem prob;
     struct availablePackage * alp;
     rpmProblemSet probs;
     dbiIndexSet dbi, * matches;
@@ -101,11 +102,21 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL);
 	}
 
+	rc = rpmdbFindPackage(ts->db, alp->name, &dbi);
+	if (rc == 2) {
+	    return -1;
+	} else if (!rc) {
+	    for (i = 0; i < dbi.count; i++) 
+		ensureOlder(ts->db, alp->h, dbi.recs[i].recOffset, 
+				  probs, alp->key);
+
+	    dbiFreeIndexRecord(dbi);
+	}
+
 	rc = findMatches(ts->db, alp->name, alp->version, alp->release, &dbi);
 	if (rc == 2) {
 	    return -1;
 	} else if (!rc) {
-	    prob.key = alp->key;
 	    psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL, 
 		     NULL);
 	    dbiFreeIndexRecord(dbi);
@@ -948,4 +959,25 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	    }
 	}
     }
+}
+
+static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
+		       const void * key) {
+    Header old;
+    int result, rc = 0;
+
+    old = rpmdbGetRecord(db, dbOffset);
+    if (old == NULL) return 1;
+
+    result = rpmVersionCompare(old, new);
+    if (result <= 0)
+	rc = 0;
+    else if (result > 0) {
+	rc = 1;
+	psAppend(probs, RPMPROB_OLDPACKAGE, key, new, NULL, old);
+    }
+
+    headerFree(old);
+
+    return rc;
 }

@@ -382,6 +382,7 @@ typedef enum rpmProblemType_e { RPMPROB_BADARCH,
 				RPMPROB_CONFLICT,
 				RPMPROB_NEW_FILE_CONFLICT,
 				RPMPROB_FILE_CONFLICT,
+				RPMPROB_OLDPACKAGE,
  			      } rpmProblemType;
 
 typedef struct rpmProblem_s {
@@ -411,7 +412,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 #define RPMPROB_FILTER_FORCERELOCATE	(1 << 3)
 #define RPMPROB_FILTER_REPLACENEWFILES	(1 << 4)
 #define RPMPROB_FILTER_REPLACEOLDFILES	(1 << 5)
-#define RPMPROB_FILTER_UPGRADETOOLD	(1 << 6)
+#define RPMPROB_FILTER_OLDPACKAGE	(1 << 6)
 
 /** messages.c **/
 
