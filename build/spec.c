@@ -15,6 +15,7 @@ TODO:
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <regex.h>
 #include <limits.h>
 #include <ctype.h>
@@ -46,6 +47,9 @@ static int lookup_package(Spec s, struct PackageRec **pr,
 static void dumpPackage(struct PackageRec *p, FILE *f);
 static void parseForDocFiles(struct PackageRec *package, char *line);
 
+static int dateToTimet(const char * datestr, time_t * secs);
+static void addChangelogEntry(Header h, int time, char *name, char *text);
+static int addChangelog(Header h, StringBuf sb);
 
 static int parseProvides(struct PackageRec *p, char *line);
 static int parseRequiresConflicts(struct PackageRec *p, char *line,
@@ -511,6 +515,171 @@ static void generateNamesAndDocScript(Spec s)
     }
 }
 
+/* datestr is of the form 'Wed Jan 1 1997' */
+static int dateToTimet(const char * datestr, time_t * secs)
+{
+    struct tm time;
+    char * chptr, * end, ** idx;
+    char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
+    static char * days[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", 
+				NULL };
+    static char * months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
+    static char lengths[] = { 31, 29, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30 };
+    
+    memset(&time, 0, sizeof(time));
+
+    end = chptr = date;
+
+    /* day of week */
+    if ((chptr = strtok(date, " \t\n")) == NULL) return -1;
+    idx = days;
+    while (*idx && strcmp(*idx, chptr)) idx++;
+    if (!*idx) return -1;
+
+    /* month */
+    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
+    idx = months;
+    while (*idx && strcmp(*idx, chptr)) idx++;
+    if (!*idx) return -1;
+
+    time.tm_mon = idx - months;
+
+    /* day */
+    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
+
+    time.tm_mday = strtol(chptr, &chptr, 10);
+    if (*chptr) return -1;
+    if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) return -1;
+
+    /* year */
+    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
+
+    time.tm_year = strtol(chptr, &chptr, 10);
+    if (*chptr) return -1;
+    if (time.tm_year < 1997 || time.tm_year >= 3000) return -1;
+    time.tm_year -= 1900;
+
+    *secs = mktime(&time);
+    if (*secs == -1) return -1;
+
+    /* adjust to GMT */
+    *secs += timezone;
+
+    return 0;
+}
+
+static void addChangelogEntry(Header h, int time, char *name, char *text)
+{
+    if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {
+	headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
+			  &time, 1);
+	headerAppendEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
+			  &name, 1);
+	headerAppendEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
+			 &text, 1);
+    } else {
+	headerAddEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
+		       &time, 1);
+	headerAddEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
+		       &name, 1);
+	headerAddEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
+		       &text, 1);
+    }
+}
+
+static int addChangelog(Header h, StringBuf sb)
+{
+    char *s;
+    int i;
+    int time, lastTime = 0;
+    char *date, *name, *text, *next;
+
+    s = getStringBuf(sb);
+
+    /* skip space */
+    while (*s && isspace(*s)) s++;
+
+    while (*s) {
+	if (*s != '*') {
+	    rpmError(RPMERR_BADSPEC, "%%changelog entries must start with *");
+	    return RPMERR_BADSPEC;
+	}
+
+	/* find end of line */
+	date = s;
+	while (*s && *s != '\n') s++;
+	if (! *s) {
+	    rpmError(RPMERR_BADSPEC, "incomplete %%changelog entry");
+	    return RPMERR_BADSPEC;
+	}
+	*s = '\0';
+	text = s + 1;
+	
+	/* 4 fields of date */
+	date++;
+	s = date;
+	for (i = 0; i < 4; i++) {
+	    while (*s && isspace(*s)) s++;
+	    while (*s && !isspace(*s)) s++;
+	}
+	while (isspace(*date)) date++;
+	if (dateToTimet(date, (time_t *)&time)) {
+	    rpmError(RPMERR_BADSPEC, "bad date in %%changelog: %s", date);
+	    return RPMERR_BADSPEC;
+	}
+	if (lastTime && lastTime < time) {
+	    rpmError(RPMERR_BADSPEC,
+		     "%%changelog not in decending chronological order");
+	    return RPMERR_BADSPEC;
+	}
+	lastTime = time;
+
+	/* skip space to the name */
+	while (*s && isspace(*s)) s++;
+	if (! *s) {
+	    rpmError(RPMERR_BADSPEC, "missing name in %%changelog");
+	    return RPMERR_BADSPEC;
+	}
+
+	/* name */
+	name = s;
+	while (*s) s++;
+	while (s > name && isspace(*s)) {
+	    *s-- = '\0';
+	}
+	if (s == name) {
+	    rpmError(RPMERR_BADSPEC, "missing name in %%changelog");
+	    return RPMERR_BADSPEC;
+	}
+
+	/* text */
+	while (*text && isspace(*text)) text++;
+	if (! *text) {
+	    rpmError(RPMERR_BADSPEC, "no description in %%changelog");
+	    return RPMERR_BADSPEC;
+	}
+	    
+	/* find the next leading '*' (or eos) */
+	s = text;
+	do {
+	    while (*s && *s != '*') s++;
+	} while (*s && *(s-1) != '\n');
+	next = s;
+	s--;
+
+	/* backup to end of description */
+	while ((s > text) && isspace(*s)) {
+	    *s-- = '\0';
+	}
+	
+	addChangelogEntry(h, time, name, text);
+	s = next;
+    }
+
+    return 0;
+}
+
 /**********************************************************************/
 /*                                                                    */
 /* Line reading                                                       */
@@ -880,8 +1049,9 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		/* %changelog is a little special.  It goes in the   */
 		/* "main" package no matter where it appears, and it */
 		/* ends up in all the packages.                      */
-		headerAddEntry(spec->packages->header, RPMTAG_CHANGELOG, RPM_STRING_TYPE,
-			 getStringBuf(sb), 1);
+		if (addChangelog(spec->packages->header, sb)) {
+		    return NULL;
+		}
 		break;
 	      case TRIGGERON_PART:
 		if (addTrigger(cur_package, RPMSENSE_TRIGGER_ON,
