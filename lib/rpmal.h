@@ -45,8 +45,8 @@ void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
  * @param fns		file info set
  * @return		available package index
  */
-alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey,
-		fnpyKey key, rpmDepSet provides, rpmFNSet fns)
+alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey, fnpyKey key,
+		/*@null@*/ rpmDepSet provides, /*@null@*/ rpmFNSet fns)
 	/*@modifies al, provides, fns @*/;
 
 /**

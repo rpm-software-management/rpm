@@ -19,16 +19,17 @@
 
 #include "debug.h"
 
-/*@access Header@*/		/* XXX compared with NULL */
-/*@access FD_t@*/		/* XXX compared with NULL */
-/*@access rpmdb@*/		/* XXX compared with NULL */
-/*@access rpmdbMatchIterator@*/	/* XXX compared with NULL */
+/*@access Header @*/		/* XXX compared with NULL */
+/*@access FD_t @*/		/* XXX compared with NULL */
+/*@access rpmdb @*/		/* XXX compared with NULL */
+/*@access rpmdbMatchIterator @*/	/* XXX compared with NULL */
 
-/*@access tsortInfo@*/
-/*@access rpmTransactionSet@*/
+/*@access rpmFNSet @*/
+/*@access tsortInfo @*/
+/*@access rpmTransactionSet @*/
 
 /*@access alKey @*/
-/*@access rpmProblemSet@*/
+/*@access rpmProblemSet @*/
 
 /**
  */
@@ -1753,13 +1754,12 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 int rpmdepCheck(rpmTransactionSet ts,
 		rpmProblem * conflicts, int * numConflicts)
 {
-    int scareMem = _DS_SCAREMEM;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi = NULL;
     teIterator pi = NULL; transactionElement p;
+    char * fn = NULL;
+    int fileAlloced = 0;
     int closeatexit = 0;
-    int j, xx;
+    int xx;
     int rc;
 
     /* Do lazy, readonly, open of rpm database. */
@@ -1782,7 +1782,6 @@ int rpmdepCheck(rpmTransactionSet ts,
      * are satisfied.
      */
     pi = teInitIterator(ts);
-    /* XXX Only added packages are checked (for now). */
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
 	rpmDepSet provides;
 	uint_32 multiLib;
@@ -1826,87 +1825,71 @@ int rpmdepCheck(rpmTransactionSet ts,
      * Look at the removed packages and make sure they aren't critical.
      */
     /*@-branchstate@*/
-    if (ts->numRemovedPackages > 0) {
-      rpmDepSet provides;
-      Header h;
+    pi = teInitIterator(ts);
+    while ((p = teNext(pi, TR_REMOVED)) != NULL) {
+	rpmDepSet provides;
+	rpmFNSet fns;
 
-      mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
-      xx = rpmdbAppendIterator(mi,
-			ts->removedPackages, ts->numRemovedPackages);
-      while ((h = rpmdbNextIterator(mi)) != NULL) {
+	rpmMessage(RPMMESS_DEBUG,  "========== --- %s\n" , p->NEVR);
 
-	{   const char * name = NULL;
-	    const char * pkgNEVR = hGetNEVR(h, &name);
-	    rpmMessage(RPMMESS_DEBUG,  "========== --- %s\n" , pkgNEVR);
-	    pkgNEVR = _free(pkgNEVR);
-
-	    /* Erasing: check name against requiredby matches. */
-	    rc = checkDependentPackages(ts, name);
-	    if (rc)
+	/* Erasing: check name against requiredby matches. */
+	rc = checkDependentPackages(ts, p->name);
+	if (rc)
 		goto exit;
+
+	rc = 0;
+	provides = p->provides;
+	provides = dsiInit(provides);
+	if (provides != NULL)
+	while (dsiNext(provides) >= 0) {
+	    const char * Name;
+
+	    if ((Name = dsiGetN(provides)) == NULL)
+		/*@innercontinue@*/ continue;	/* XXX can't happen */
+
+	    /* Erasing: check provides against requiredby matches. */
+	    if (!checkDependentPackages(ts, Name))
+		/*@innercontinue@*/ continue;
+	    rc = 1;
+	    /*@innerbreak@*/ break;
 	}
+	if (rc)
+	    goto exit;
 
-	    rc = 0;
-	    provides = dsiInit(dsNew(h, RPMTAG_PROVIDENAME, scareMem));
-	    if (provides != NULL)
-	    while (dsiNext(provides) >= 0) {
-		const char * Name;
+	fns = p->fns;
+	if (fns == NULL)
+	    continue;
+	if (fns->bnl == NULL)
+	    continue;	/* XXX can't happen */
+	if (fns->dnl == NULL)
+	    continue;	/* XXX can't happen */
+	if (fns->dil == NULL)
+	    continue;	/* XXX can't happen */
 
-		if ((Name = dsiGetN(provides)) == NULL)
-		    /*@innercontinue@*/ continue;	/* XXX can't happen */
-
-		/* Erasing: check provides against requiredby matches. */
-		if (!checkDependentPackages(ts, Name))
-		    /*@innercontinue@*/ continue;
-		rc = 1;
-		/*@innerbreak@*/ break;
-	    }
-	    provides = dsFree(provides);
-	    if (rc)
-		goto exit;
-
-	{   const char ** baseNames, ** dirNames;
-	    int_32 * dirIndexes;
-	    rpmTagType dnt, bnt;
-	    int fileCount;
-	    char * fileName = NULL;
-	    int fileAlloced = 0;
+	rc = 0;
+	for (fns->i = 0; fns->i < fns->fc; fns->i++) {
 	    int len;
 
-	    if (hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &fileCount))
-	    {
-		xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-		xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes,
-				NULL);
-		rc = 0;
-		for (j = 0; j < fileCount; j++) {
-		    len = strlen(baseNames[j]) + 1 +
-			  strlen(dirNames[dirIndexes[j]]);
-		    if (len > fileAlloced) {
-			fileAlloced = len * 2;
-			fileName = xrealloc(fileName, fileAlloced);
-		    }
-		    *fileName = '\0';
-		    (void) stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
-		    /* Erasing: check filename against requiredby matches. */
-		    if (!checkDependentPackages(ts, fileName))
-			/*@innercontinue@*/ continue;
-		    rc = 1;
-		    /*@innerbreak@*/ break;
-		}
-
-		fileName = _free(fileName);
-		baseNames = hfd(baseNames, bnt);
-		dirNames = hfd(dirNames, dnt);
-		if (rc)
-		    goto exit;
+	    len = strlen(fns->bnl[fns->i]) + 1 +
+				strlen(fns->dnl[fns->dil[fns->i]]);
+	    if (len > fileAlloced) {
+		fileAlloced = len * 2;
+		fn = xrealloc(fn, fileAlloced);
 	    }
+	    *fn = '\0';
+	    (void) stpcpy( stpcpy(fn, fns->dnl[fns->dil[fns->i]]), fns->bnl[fns->i]);
+	    /* Erasing: check filename against requiredby matches. */
+	    if (!checkDependentPackages(ts, fn))
+		/*@innercontinue@*/ continue;
+	    rc = 1;
+	    /*@innerbreak@*/ break;
 	}
 
-      }
-      mi = rpmdbFreeIterator(mi);
+	if (rc)
+	    goto exit;
     }
     /*@=branchstate@*/
+    pi = teFreeIterator(pi);
 
     if (ts->probs->numProblems) {
 	*conflicts = ts->probs->probs;
@@ -1916,6 +1899,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     rc = 0;
 
 exit:
+    fn = _free(fn);
     mi = rpmdbFreeIterator(mi);
     pi = teFreeIterator(pi);
     /*@-branchstate@*/
