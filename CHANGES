@@ -209,6 +209,7 @@
 	- remove /var/lib/rpm/__db* cache files if %__dbi_cdb is not configured.
 	- python: add hiesenbug patch.
 	- add legacy (compile only) wrappers for fdFileno et al.
+	- add -D_REENTRANT (note rpmlib is still not thread safe).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
