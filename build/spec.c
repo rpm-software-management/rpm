@@ -819,6 +819,12 @@ Spec parseSpec(FILE *f, char *specfile)
 	      case POSTUN_PART:
 		t1 = RPMTAG_POSTUN;
 		break;
+	      case DESCRIPTION_PART:
+		/* %description is a little special.  We need to */
+		/* strip off trailing blank lines.               */
+		t1 = RPMTAG_DESCRIPTION;
+		stripTrailingBlanksStringBuf(sb);
+		break;
 	      case CHANGELOG_PART:
 		/* %changelog is a little special.  It goes in the   */
 		/* "main" package no matter where it appears, and it */
@@ -1071,6 +1077,7 @@ Spec parseSpec(FILE *f, char *specfile)
 	  case CLEAN_PART:
 	    appendLineStringBuf(spec->clean, line);
 	    break;
+	  case DESCRIPTION_PART:
 	  case CHANGELOG_PART:
 	  case PREIN_PART:
 	  case POSTIN_PART:
