@@ -79,7 +79,7 @@ static int
 matchkey(const char *start, const char *end, const char *key)
 	/*@*/
 {
-  if (!start)
+  if (start == NULL)
     return 0;
   for (; start != end; start++, key++)
     if (*start != *key && *start != 'A' + (*key - 'a'))
@@ -100,7 +100,7 @@ getXMLCharset(const char *buf, char *charset)
   else if (!matchkey(p, next, "application"))
     return;
   p = getTok(&next);
-  if (!p || *p != '/')
+  if (!(p != NULL && *p == '/'))
     return;
   p = getTok(&next);
 #if 0
@@ -108,14 +108,14 @@ getXMLCharset(const char *buf, char *charset)
     return;
 #endif
   p = getTok(&next);
-  while (p) {
+  while (p != NULL) {
     if (*p == ';') {
       p = getTok(&next);
       if (matchkey(p, next, "charset")) {
         p = getTok(&next);
-        if (p && *p == '=') {
+        if (p != NULL && *p == '=') {
           p = getTok(&next);
-          if (p) {
+          if (p != NULL) {
             char *s = charset;
             if (*p == '"') {
               while (++p != next - 1) {

@@ -52,7 +52,7 @@ reportError(XML_Parser parser, const XML_Char *filename)
 {
   int code = XML_GetErrorCode(parser);
   const XML_Char *message = XML_ErrorString(code);
-  if (message)
+  if (message != NULL)
     ftprintf(stdout, T("%s:%d:%d: %s\n"),
              filename,
              XML_GetErrorLineNumber(parser),
@@ -90,13 +90,15 @@ isAsciiLetter(XML_Char c)
 #endif /* WIN32 */
 
 static const XML_Char *
-resolveSystemId(const XML_Char *base, const XML_Char *systemId,
-                XML_Char **toFree)
+resolveSystemId(/*@null@*/ const XML_Char *base,
+		/*@returned@*/ const XML_Char *systemId,
+                /*@out@*/ XML_Char **toFree)
 	/*@modifies *toFree @*/
 {
   XML_Char *s;
-  *toFree = 0;
-  if (!base
+/*@-mustdefine -nullstate@*/
+  *toFree = NULL;
+  if (base == NULL
       || *systemId == T('/')
 #ifdef WIN32
       || *systemId == T('\\')
@@ -106,18 +108,22 @@ resolveSystemId(const XML_Char *base, const XML_Char *systemId,
     return systemId;
   *toFree = (XML_Char *)malloc((tcslen(base) + tcslen(systemId) + 2)
                                * sizeof(XML_Char));
-  if (!*toFree)
+  if (*toFree == NULL)
     return systemId;
+/*@=mustdefine =nullstate@*/
+
   tcscpy(*toFree, base);
   s = *toFree;
-  if (tcsrchr(s, T('/')))
+  if (tcsrchr(s, T('/')) != NULL)
     s = tcsrchr(s, T('/')) + 1;
 #ifdef WIN32
   if (tcsrchr(s, T('\\')))
     s = tcsrchr(s, T('\\')) + 1;
 #endif
   tcscpy(s, systemId);
+/*@-retalias@*/
   return *toFree;
+/*@=retalias@*/
 }
 
 static int
@@ -125,7 +131,7 @@ externalEntityRefFilemap(XML_Parser parser,
                          const XML_Char *context,
                          const XML_Char *base,
                          const XML_Char *systemId,
-                         const XML_Char *publicId)
+                         /*@unused@*/ const XML_Char *publicId)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -141,7 +147,9 @@ externalEntityRefFilemap(XML_Parser parser,
   if (!filemap(filename, processFile, &args))
     result = 0;
   free(s);
+/*@-kepttrans@*/
   XML_ParserFree(entParser);
+/*@=kepttrans@*/
   return result;
 }
 
@@ -163,9 +171,9 @@ processStream(const XML_Char *filename, XML_Parser parser)
   for (;;) {
     int nread;
     char *buf = XML_GetBuffer(parser, READ_SIZE);
-    if (!buf) {
+    if (buf == NULL) {
       if (filename != NULL)
-        close(fd);
+        (void) close(fd);
       ftprintf(stderr, T("%s: out of memory\n"),
                filename != NULL ? filename : "xmlwf");
       return 0;
@@ -174,18 +182,18 @@ processStream(const XML_Char *filename, XML_Parser parser)
     if (nread < 0) {
       tperror(filename != NULL ? filename : "STDIN");
       if (filename != NULL)
-        close(fd);
+        (void) close(fd);
       return 0;
     }
     if (XML_ParseBuffer(parser, nread, nread == 0) == XML_STATUS_ERROR) {
       reportError(parser, filename != NULL ? filename : "STDIN");
       if (filename != NULL)
-        close(fd);
+        (void) close(fd);
       return 0;
     }
     if (nread == 0) {
       if (filename != NULL)
-        close(fd);
+        (void) close(fd);
       break;;
     }
   }
@@ -197,7 +205,7 @@ externalEntityRefStream(XML_Parser parser,
                         const XML_Char *context,
                         const XML_Char *base,
                         const XML_Char *systemId,
-                        const XML_Char *publicId)
+                        /*@unused@*/ const XML_Char *publicId)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -222,7 +230,7 @@ XML_ProcessFile(XML_Parser parser,
 
   if (!XML_SetBase(parser, filename)) {
     ftprintf(stderr, T("%s: out of memory"), filename);
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   if (flags & XML_EXTERNAL_ENTITIES)
@@ -230,6 +238,7 @@ XML_ProcessFile(XML_Parser parser,
                                       (flags & XML_MAP_FILE)
                                       ? externalEntityRefFilemap
                                       : externalEntityRefStream);
+/*@-branchstate@*/
   if (flags & XML_MAP_FILE) {
     PROCESS_ARGS args;
     args.retPtr = &result;
@@ -239,5 +248,6 @@ XML_ProcessFile(XML_Parser parser,
   }
   else
     result = processStream(filename, parser);
+/*@=branchstate@*/
   return result;
 }

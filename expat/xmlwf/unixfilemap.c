@@ -34,11 +34,11 @@ filemap(const char *name,
   }
   if (fstat(fd, &sb) < 0) {
     perror(name);
-    close(fd);
+    (void) close(fd);
     return 0;
   }
   if (!S_ISREG(sb.st_mode)) {
-    close(fd);
+    (void) close(fd);
     fprintf(stderr, "%s: not a regular file\n", name);
     return 0;
   }
@@ -48,13 +48,13 @@ filemap(const char *name,
                    MAP_FILE|MAP_PRIVATE, fd, (off_t)0);
   if (p == (void *)-1) {
     perror(name);
-    close(fd);
+    (void) close(fd);
     return 0;
   }
 /*@-noeffect@*/
   processor(p, nbytes, name, arg);
 /*@=noeffect@*/
-  munmap((caddr_t)p, nbytes);
-  close(fd);
+  (void) munmap((caddr_t)p, nbytes);
+  (void) close(fd);
   return 1;
 }
