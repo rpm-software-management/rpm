@@ -44,10 +44,19 @@ int expandMacros(char *buf)
 {
     char bufA[1024];
     char *copyTo, *copyFrom;
-    char *name, *rest;
+    char *name, *rest, *first;
     struct macroEntry *p;
     
     if (! buf) {
+	return 0;
+    }
+
+    /* Check if commented out */
+    first = buf;
+    while (*first && isspace(*first)) {
+	first++;
+    }
+    if (*first == '#') {
 	return 0;
     }
     
