@@ -6,6 +6,7 @@
 	  users to replace directories with symlinks)
 	- don't set config bit on directories
 	- strip trailing slashes from files (during build)
+	- %tags are now case sensitive (macros too)
 
 2.3.8 -> 2.3.9:
 	- reworked %setup to allow multiple -a and -b options, which
