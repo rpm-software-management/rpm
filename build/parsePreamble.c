@@ -272,9 +272,10 @@ exit:
 struct spectag *
 stashSt(Spec spec, Header h, int tag, const char *lang)
 {
-    struct spectags *st = spec->st;
     struct spectag *t = NULL;
-    if (st) {
+
+    if (spec->st) {
+	struct spectags *st = spec->st;
 	if (st->st_ntags == st->st_nalloc) {
 	    st->st_nalloc += 10;
 	    st->st_t = xrealloc(st->st_t, st->st_nalloc * sizeof(*(st->st_t)));
@@ -368,8 +369,8 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	break;
       case RPMTAG_GROUP:
       case RPMTAG_SUMMARY:
-	stashSt(spec, pkg->header, tag, lang);
-	/* fall thru */
+	(void) stashSt(spec, pkg->header, tag, lang);
+	/*@fallthrough@*/
       case RPMTAG_DISTRIBUTION:
       case RPMTAG_VENDOR:
       case RPMTAG_LICENSE:

@@ -4,7 +4,7 @@
 
 #include "rpmbuild.h"
 
-int addReqProv(Spec spec, Header h,
+int addReqProv(/*@unused@*/ Spec spec, Header h,
 	       int flag, const char *name, const char *version, int index)
 {
     const char **names;

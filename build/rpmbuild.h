@@ -69,13 +69,13 @@ extern "C" {
 
 /* from build/names.h */
 
-char *getUname(uid_t uid);
-char *getUnameS(const char *uname);
-char *getGname(gid_t gid);
-char *getGnameS(const char *gname);
+/*@observer@*/ const char *getUname(uid_t uid);
+/*@observer@*/ const char *getUnameS(const char *uname);
+/*@observer@*/ const char *getGname(gid_t gid);
+/*@observer@*/ const char *getGnameS(const char *gname);
 
-char *const buildHost(void);
-time_t *const getBuildTime(void);
+/*@observer@*/ const char *const buildHost(void);
+/*@observer@*/ time_t *const getBuildTime(void);
 
 /* from build/read.h */
 
@@ -127,7 +127,7 @@ void freePackage(/*@only@*/ Package p);
 
 /* from build/reqprov.h */
 
-int addReqProv(Spec spec, Header h,
+int addReqProv(/*@unused@*/Spec spec, Header h,
 		int flag, const char *name, const char *version, int index);
 
 /* from build/files.h */

@@ -31,8 +31,8 @@ typedef struct {
 
     const char *diskName; /* get file from here       */
     const char *fileName; /* filename in cpio archive */
-    const char *uname;
-    const char *gname;
+    /*@observer@*/ const char *uname;
+    /*@observer@*/ const char *gname;
     int		flags;
     int		verifyFlags;
     const char *langs;	/* XXX locales separated with | */
@@ -917,7 +917,8 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
     mode_t fileMode;
     uid_t fileUid;
     gid_t fileGid;
-    char *fileUname, *fileGname;
+    const char *fileUname;
+    const char *fileGname;
     char *lang;
     
     /* Path may have prepended buildroot, so locate the original filename. */

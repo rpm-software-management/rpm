@@ -5,7 +5,7 @@
 /* These have to be global to make up for stupid compilers */
     static int leaveDirs, skipDefaultAction;
     static int createDir, quietly;
-    static char * dirName;
+    /*@observer@*/ /*@null@*/ static char * dirName;
     static struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},

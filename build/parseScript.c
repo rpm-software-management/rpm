@@ -36,9 +36,9 @@ static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
 }
 
 /* these have to be global because of stupid compilers */
-    static char *name;
-    static char *prog;
-    static char *file;
+    /*@observer@*/ /*@null@*/ static char *name;
+    /*@observer@*/ /*@null@*/ static char *prog;
+    /*@observer@*/ /*@null@*/ static char *file;
     static struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},

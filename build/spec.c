@@ -354,7 +354,7 @@ static inline struct speclines * newSl(void)
     return sl;
 }
 
-static inline void freeSl(struct speclines *sl)
+static inline void freeSl(/*@only@*/struct speclines *sl)
 {
     int i;
     if (sl == NULL)
@@ -377,7 +377,7 @@ static inline struct spectags * newSt(void)
     return st;
 }
 
-static inline void freeSt(struct spectags *st)
+static inline void freeSt(/*@only@*/struct spectags *st)
 {
     int i;
     if (st == NULL)

@@ -218,7 +218,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     default:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"), fileName);
 	return RPMERR_BADMAGIC;
-	break;
+	/*@notreached@*/ break;
     }
 
     if (specp)
@@ -438,6 +438,7 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa)
     }
 
     gzdClose(cfd->cpioGzFd);
+    cfd->cpioGzFd = NULL;
     if (failedFile)
 	xfree(failedFile);
 

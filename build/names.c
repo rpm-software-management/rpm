@@ -5,18 +5,18 @@
 #include "rpmbuild.h"
 
 static uid_t uids[1024];
-static char *unames[1024];
+/*@owned@*/ /*@null@*/ static char *unames[1024];
 static int uid_used = 0;
 
 static gid_t gids[1024];
-static char *gnames[1024];
+/*@owned@*/ /*@null@*/ static char *gnames[1024];
 static int gid_used = 0;
     
 /*
  * getUname() takes a uid, gets the username, and creates an entry in the
  * table to hold a string containing the user name.
  */
-char *getUname(uid_t uid)
+const char *getUname(uid_t uid)
 {
     struct passwd *pw;
     int x;
@@ -48,7 +48,7 @@ char *getUname(uid_t uid)
  * getUnameS() takes a username, gets the uid, and creates an entry in the
  * table to hold a string containing the user name.
  */
-char *getUnameS(const char *uname)
+const char *getUnameS(const char *uname)
 {
     struct passwd *pw;
     int x;
@@ -81,7 +81,7 @@ char *getUnameS(const char *uname)
  * getGname() takes a gid, gets the group name, and creates an entry in the
  * table to hold a string containing the group name.
  */
-char *getGname(gid_t gid)
+const char *getGname(gid_t gid)
 {
     struct group *gr;
     int x;
@@ -113,7 +113,7 @@ char *getGname(gid_t gid)
  * getGnameS() takes a group name, gets the gid, and creates an entry in the
  * table to hold a string containing the group name.
  */
-char *getGnameS(const char *gname)
+const char *getGnameS(const char *gname)
 {
     struct group *gr;
     int x;
@@ -153,7 +153,7 @@ time_t *const getBuildTime(void)
     return &buildTime;
 }
 
-char *const buildHost(void)
+const char *const buildHost(void)
 {
     static char hostname[1024];
     static int gotit = 0;
@@ -161,7 +161,7 @@ char *const buildHost(void)
 
     if (! gotit) {
         gethostname(hostname, sizeof(hostname));
-	if ((hbn = gethostbyname(hostname))) {
+	if ((hbn = /*@-unrecog@*/ gethostbyname(hostname) /*@=unrecog@*/ )) {
 	    strcpy(hostname, hbn->h_name);
 	} else {
 	    rpmMessage(RPMMESS_WARNING, _("Could not canonicalize hostname: %s\n"),

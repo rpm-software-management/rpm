@@ -55,13 +55,13 @@ struct spectag {
     int t_tag;
     int t_startx;
     int t_nlines;
-    char *t_lang;
-    char *t_msgid;
+    /*@only@*/ const char *t_lang;
+    /*@only@*/ const char *t_msgid;
 };
 
 
 struct spectags {
-    struct spectag *st_t;
+    /*@owned@*/ struct spectag *st_t;
     int st_nalloc;
     int st_ntags;
 };
@@ -73,11 +73,11 @@ struct speclines {
 };
 
 struct SpecStruct {
-    /*@only@*/ char *specFile;
-    /*@only@*/ char *sourceRpmName;
+    /*@only@*/ const char *specFile;
+    /*@only@*/ const char *sourceRpmName;
 
-    struct speclines *sl;
-    struct spectags *st;
+    /*@owned@*/ struct speclines *sl;
+    /*@owned@*/ struct spectags *st;
 
     /*@owned@*/ struct OpenFileInfo *fileStack;
     char lbuf[BUFSIZ];
@@ -88,7 +88,7 @@ struct SpecStruct {
 
     /*@only@*/ struct ReadLevelEntry *readStack;
 
-    Header buildRestrictions;
+    /*@refcounted@*/ Header buildRestrictions;
     /*@owned@*/ struct SpecStruct **buildArchitectureSpecs;
     char ** buildArchitectures;
     int buildArchitectureCount;
@@ -109,7 +109,7 @@ struct SpecStruct {
     int numSources;
     int noSource;
 
-    Header sourceHeader;
+    /*@refcounted@*/ Header sourceHeader;
     int sourceCpioCount;
     /*@owned@*/ struct cpioFileMapping *sourceCpioList;
 

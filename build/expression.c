@@ -22,7 +22,7 @@
 #include <stdio.h>
 #define DEBUG(x) do { x ; } while (0)
 #else
-#define DEBUG(x) do { } while (0)
+#define DEBUG(x)
 #endif
 
 

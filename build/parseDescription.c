@@ -5,8 +5,8 @@
 extern int noLang;		/* XXX FIXME: pass as arg */
 
 /* These have to be global scope to make up for *stupid* compilers */
-    static char *name;
-    static char *lang;
+    /*@observer@*/ /*@null@*/ static char *name;
+    /*@observer@*/ /*@null@*/ static char *lang;
 
     static struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},

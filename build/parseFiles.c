@@ -3,8 +3,8 @@
 #include "rpmbuild.h"
 
 /* These have to be global scope to make up for *stupid* compilers */
-    static char *name;
-    static char *file;
+    /*@observer@*/ /*@null@*/ static char *name;
+    /*@observer@*/ /*@null@*/ static char *file;
     static struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
 	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},

@@ -23,7 +23,7 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
 }
 
 /* datestr is of the form 'Wed Jan 1 1997' */
-static int dateToTimet(const char * datestr, time_t * secs)
+static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 {
     struct tm time;
     char *p, *pe, *q, ** idx;

@@ -1,4 +1,4 @@
--I. -I.. -I../lib -DHAVE_CONFIG_H
+-I. -I.. -I../build -I../lib -I../popt -DHAVE_CONFIG_H
 
 +partial
 
@@ -9,9 +9,9 @@
 
 # don't-bother-me-yet parameters
 -branchstate
--immediatetrans
+#-immediatetrans
 -mustfree
--observertrans
+#-observertrans
 -statictrans
 
 # not-yet normal parameters
