@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-20 14:43-0400\n"
+"POT-Creation-Date: 1999-04-21 11:26-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1730,60 +1730,60 @@ msgstr ""
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1386 ../build/parsePrep.c:31
+#: ../build/files.c:1391 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1440
+#: ../build/files.c:1445
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1444
+#: ../build/files.c:1449
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1494
+#: ../build/files.c:1499
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1498
+#: ../build/files.c:1503
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1532
+#: ../build/files.c:1537
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1539
+#: ../build/files.c:1544
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1558
+#: ../build/files.c:1563
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1565
+#: ../build/files.c:1570
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1599
+#: ../build/files.c:1604
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1614
+#: ../build/files.c:1619
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1626
+#: ../build/files.c:1631
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1650
+#: ../build/files.c:1655
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -2549,83 +2549,83 @@ msgstr ""
 msgid "cannot read header at %d for lookup"
 msgstr ""
 
-#: ../lib/macro.c:123
+#: ../lib/macro.c:129
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: ../lib/macro.c:212
+#: ../lib/macro.c:218
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: ../lib/macro.c:247
+#: ../lib/macro.c:253
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: ../lib/macro.c:420
+#: ../lib/macro.c:426
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: ../lib/macro.c:446
+#: ../lib/macro.c:452
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: ../lib/macro.c:452
+#: ../lib/macro.c:458
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: ../lib/macro.c:457
+#: ../lib/macro.c:463
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: ../lib/macro.c:462
+#: ../lib/macro.c:468
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: ../lib/macro.c:487
+#: ../lib/macro.c:493
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: ../lib/macro.c:560
+#: ../lib/macro.c:566
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: ../lib/macro.c:642
+#: ../lib/macro.c:650
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: ../lib/macro.c:804
+#: ../lib/macro.c:825
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: ../lib/macro.c:860 ../lib/macro.c:876
+#: ../lib/macro.c:881 ../lib/macro.c:897
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: ../lib/macro.c:905
+#: ../lib/macro.c:930
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: ../lib/macro.c:1027
+#: ../lib/macro.c:1053
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: ../lib/macro.c:1105
+#: ../lib/macro.c:1131
 msgid "Target buffer overflow"
 msgstr ""
 
-#: ../lib/macro.c:1248 ../lib/macro.c:1256
+#: ../lib/macro.c:1274 ../lib/macro.c:1282
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: ../lib/macro.c:1259
+#: ../lib/macro.c:1285
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""

@@ -1,6 +1,7 @@
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected. (Shing-Gene Yung).
 	- fix: % before non-alphabetic non-macro special now passed unscathed.
+	- fix: noarch header gets initialized differently.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.

@@ -1295,7 +1295,12 @@ int processSourceFiles(Spec spec)
 
     sourceFiles = newStringBuf();
 
-    /* XXX This is where the source header used to be initialized. */
+    /* XXX
+     * XXX This is where the source header for noarch packages needs
+     * XXX to be initialized.
+     */
+    if (spec->sourceHeader == NULL)
+	initSourceHeader(spec);
 
     /* Construct the file list and source entries */
     appendLineStringBuf(sourceFiles, spec->specFile);
