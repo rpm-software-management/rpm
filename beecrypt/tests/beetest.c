@@ -273,8 +273,8 @@ static void testBlockCiphers(void)
 				printf("    encrypt/decrypt test block: ");
 				testBlockInit((uint8_t*) src_block, tmp->blocksize >> 2);
 
-				(void) blockEncryptCBC(tmp, encrypt_param, enc_block, src_block, 2);
-				(void) blockDecryptCBC(tmp, decrypt_param, dec_block, enc_block, 2);
+				(void) blockEncryptCBC(tmp, encrypt_param, enc_block, src_block, 2U);
+				(void) blockDecryptCBC(tmp, decrypt_param, dec_block, enc_block, 2U);
 
 				if (memcmp(dec_block, src_block, tmp->blocksize >> 2))
 				{
@@ -292,7 +292,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockEncryptECB(tmp, encrypt_param, spd_block, spd_block, 1024 * 1024);
+					(void) blockEncryptECB(tmp, encrypt_param, spd_block, spd_block, 1024U * 1024U);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -301,7 +301,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockDecryptECB(tmp, decrypt_param, spd_block, spd_block, 1024 * 1024);
+					(void) blockDecryptECB(tmp, decrypt_param, spd_block, spd_block, 1024U * 1024U);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -310,7 +310,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockEncryptCBC(tmp, encrypt_param, spd_block, spd_block, 1024 * 1024);
+					(void) blockEncryptCBC(tmp, encrypt_param, spd_block, spd_block, 1024U * 1024U);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -319,7 +319,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockDecryptCBC(tmp, decrypt_param, spd_block, spd_block, 1024 * 1024);
+					(void) blockDecryptCBC(tmp, decrypt_param, spd_block, spd_block, 1024U * 1024U);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;

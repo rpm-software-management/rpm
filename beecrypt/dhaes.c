@@ -84,7 +84,7 @@ int dhaes_pUsable(const dhaes_pParameters* params)
 
 	/* test if keybits length is appropriate for mac */
 	if ((mackeybits < params->mac->keybitsmin) ||
-			(params->mackeybits > params->mac->keybitsmax))
+			(((unsigned)params->mackeybits) > params->mac->keybitsmax))
 		return 0;
 
 	if (((mackeybits - params->mac->keybitsmin) % params->mac->keybitsinc) != 0)
@@ -182,7 +182,7 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 
 /**
  */
-static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* private, const mpnumber* public, const mpnumber* message, cipherOperation op)
+static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, const mpnumber* pubkey, const mpnumber* message, cipherOperation op)
 	/*@modifies ctxt @*/
 {
 	register int rc;
@@ -196,7 +196,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* private, co
 
 	/* compute the shared secret, Diffie-Hellman style */
 	mpnzero(&secret);
-	if (dlsvdp_pDHSecret(&ctxt->param, private, public, &secret))
+	if (dlsvdp_pDHSecret(&ctxt->param, privkey, pubkey, &secret))
 	{
 		mpnfree(&secret);
 		free(digest);
@@ -228,7 +228,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* private, co
 	if (ctxt->hash.algo->digestsize > 0)
 	{
 		byte* mackey = digest;
-		byte* cipherkey = digest + ((ctxt->mackeybits + 7U) >> 3);
+		byte* cipherkey = digest + ((unsigned)(ctxt->mackeybits + 7) >> 3);
 
 		if ((rc = keyedHashFunctionContextSetup(&ctxt->mac, mackey, ctxt->mackeybits)))
 			goto setup_end;
