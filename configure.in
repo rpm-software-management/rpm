@@ -315,9 +315,9 @@ libdb1=""
 PTHREAD=""
 dnl Check for Berkeley db3 API.
 AC_CHECK_FUNC(db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],
-  AC_CHECK_LIB(db, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c"],
-    AC_CHECK_LIB(db-3.1, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c" ; libdb3="-ldb-3.1"],
-      AC_CHECK_LIB(db-3.0, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.0"],,$PTHREAD)))
+  AC_CHECK_LIB(db-3.1, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c" ; libdb3="-ldb-3.1"],
+    AC_CHECK_LIB(db-3.0, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.0"],
+      AC_CHECK_LIB(db, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb"],,$PTHREAD)))
 )
 dnl Check for Berkeley db2 API.
 dnl AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],
@@ -327,8 +327,11 @@ dnl Check for Berkeley db1 API retrofit to db2/db3 database.
 dnl AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"],
 dnl     AC_CHECK_LIB(db, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"])
 dnl )
+
 dnl Check for Berkeley db1 API in glibc.
-AC_CHECK_LIB(db1, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c falloc.c" ; libdb1="-ldb1"])
+AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db3.c"],
+  AC_CHECK_LIB(db1, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c falloc.c" ; libdb1="-ldb1"],
+    AC_CHECK_LIB(db, dbopen, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db1.c falloc.c" ; libdb1="-ldb"],,)))
 
 if test X"$DBLIBOBJS" = X; then
     AC_MSG_ERROR([sorry rpm requires libdb-3.x.a or libdb1.a (from the Berkeley db package)]) 
