@@ -80,6 +80,16 @@ sub process_file {
   
   while (<FILE>) {
     
+    # skip the "= <<" block
+
+    if ( ( m/^\s*\$(.*)\s*=\s*<<\s*["'](.*)['"]/i) ||
+         ( m/^\s*\$(.*)\s*=\s*<<\s*(.*);/i) ) {
+      $tag = $2;
+      while (<FILE>) {
+        ( $_ =~ /^$tag/) && last;
+      }
+    }
+
     # skip the documentation
 
     # we should not need to have item in this if statement (it
