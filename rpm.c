@@ -1336,11 +1336,11 @@ int main(int argc, char ** argv) {
 	if (!noMd5) verifyFlags |= VERIFY_MD5;
 
 	if (verifySource == VERIFY_EVERY) {
-	    doVerify(rootdir, VERIFY_EVERY, NULL, verifyFlags);
+	    ec = doVerify(rootdir, VERIFY_EVERY, NULL, verifyFlags);
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for verify"));
-	    doVerify(rootdir, verifySource, poptGetArgs(optCon), verifyFlags);
+	    ec = doVerify(rootdir, verifySource, poptGetArgs(optCon), verifyFlags);
 	}
 	break;
     }

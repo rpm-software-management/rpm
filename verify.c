@@ -8,21 +8,22 @@
 #include "url.h"
 #include "verify.h"
 
-static void verifyHeader(char * prefix, Header h, int verifyFlags);
-static void verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
+static int verifyHeader(char * prefix, Header h, int verifyFlags);
+static int verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 			  int verifyFlags);
-static void verifyDependencies(rpmdb db, Header h);
+static int verifyDependencies(rpmdb db, Header h);
 
-static void verifyHeader(char * prefix, Header h, int verifyFlags) {
+static int verifyHeader(char * prefix, Header h, int verifyFlags) {
     char ** fileList;
     int count, type;
     int verifyResult;
-    int i;
+    int i, ec, rc;
     char * size, * md5, * link, * mtime, * mode;
     char * group, * user, * rdev;
     int_32 * fileFlagsList;
     int omitMask = 0;
 
+    ec = 0;
     if (!(verifyFlags & VERIFY_MD5)) omitMask = RPMVERIFY_MD5;
 
     headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL);
@@ -30,14 +31,15 @@ static void verifyHeader(char * prefix, Header h, int verifyFlags) {
     if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 			&count)) {
 	for (i = 0; i < count; i++) {
-	    if (rpmVerifyFile(prefix, h, i, &verifyResult, omitMask))
+	    if ((rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask)) != 0) {
 		printf("missing    %s\n", fileList[i]);
-	    else {
+	    } else {
 		size = md5 = link = mtime = mode = ".";
 		user = group = rdev = ".";
 
 		if (!verifyResult) continue;
 	    
+		rc = 1;
 		if (verifyResult & RPMVERIFY_MD5)
 		    md5 = "5";
 		if (verifyResult & RPMVERIFY_FILESIZE)
@@ -60,13 +62,16 @@ static void verifyHeader(char * prefix, Header h, int verifyFlags) {
 		       fileFlagsList[i] & RPMFILE_CONFIG ? 'c' : ' ', 
 		       fileList[i]);
 	    }
+	    if (rc)
+		ec = rc;
 	}
 	
 	free(fileList);
     }
+    return ec;
 }
 
-static void verifyDependencies(rpmdb db, Header h) {
+static int verifyDependencies(rpmdb db, Header h) {
     rpmDependencies rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
@@ -95,46 +100,58 @@ static void verifyDependencies(rpmdb db, Header h) {
 	}
 	printf("\n");
 	rpmdepFreeConflicts(conflicts, numConflicts);
+	return 1;
     }
+    return 0;
 }
 
-static void verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
-    if (verifyFlags & VERIFY_DEPS)
-	verifyDependencies(db, h);
-    if (verifyFlags & VERIFY_FILES)
-	verifyHeader(root, h, verifyFlags);
-    if (verifyFlags & VERIFY_SCRIPT) {
-	rpmVerifyScript(root, h, 1);
-    }
+static int verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
+    int ec, rc;
+    ec = 0;
+    if ((verifyFlags & VERIFY_DEPS) &&
+	(rc = verifyDependencies(db, h)) != 0)
+	    ec = rc;
+    if ((verifyFlags & VERIFY_FILES) &&
+	(rc = verifyHeader(root, h, verifyFlags)) != 0)
+	    ec = rc;;
+    if ((verifyFlags & VERIFY_SCRIPT) &&
+	(rc = rpmVerifyScript(root, h, 1)) != 0)
+	    ec = rc;
+    return ec;
 }
 
-static void verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
+static int verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 			  int verifyFlags) {
+    int ec, rc;
     int i;
     Header h;
 
+    ec = 0;
     for (i = 0; i < matches.count; i++) {
-	if (matches.recs[i].recOffset) {
-	    rpmMessage(RPMMESS_DEBUG, "verifying record number %d\n",
-			matches.recs[i].recOffset);
+	if (matches.recs[i].recOffset == 0)
+	    continue;
+	rpmMessage(RPMMESS_DEBUG, "verifying record number %d\n",
+		matches.recs[i].recOffset);
 	    
-	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
-	    if (!h) {
+	h = rpmdbGetRecord(db, matches.recs[i].recOffset);
+	if (!h) {
 		fprintf(stderr, _("error: could not read database record\n"));
-	    } else {
-		verifyPackage(prefix, db, h, verifyFlags);
+		ec = 1;
+	} else {
+		if ((rc = verifyPackage(prefix, db, h, verifyFlags)) != 0)
+		    ec = rc;
 		headerFree(h);
-	    }
 	}
     }
+    return ec;
 }
 
-void doVerify(char * prefix, enum verifysources source, char ** argv,
+int doVerify(char * prefix, enum verifysources source, char ** argv,
 	      int verifyFlags) {
     Header h;
     int offset;
     int fd;
-    int rc;
+    int ec, rc;
     int isSource;
     rpmdb db;
     dbiIndexSet matches;
@@ -143,25 +160,27 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
     int isUrl;
     char path[255];
 
+    ec = 0;
     if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {
 	db = NULL;
     } else {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
-	    exit(1);
+	    return 1;	/* XXX was exit(1) */
 	}
     }
 
     if (source == VERIFY_EVERY) {
-	offset = rpmdbFirstRecNum(db);
-	while (offset) {
-	    h = rpmdbGetRecord(db, offset);
-	    if (!h) {
-		fprintf(stderr, _("could not read database record!\n"));
-		exit(1);
-	    }
-	    verifyPackage(prefix, db, h, verifyFlags);
-	    headerFree(h);
-	    offset = rpmdbNextRecNum(db, offset);
+	for (offset = rpmdbFirstRecNum(db);
+	     offset != 0;
+	     offset = rpmdbNextRecNum(db, offset)) {
+		h = rpmdbGetRecord(db, offset);
+		if (!h) {
+		    fprintf(stderr, _("could not read database record!\n"));
+		    return 1;	/* XXX was exit(1) */
+		}
+		if ((rc = verifyPackage(prefix, db, h, verifyFlags)) != 0)
+		    ec = rc;
+		headerFree(h);
 	}
     } else {
 	while (*argv) {
@@ -189,7 +208,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		    close(fd);
 		    switch (rc) {
 			case 0:
-			    verifyPackage(prefix, db, h, verifyFlags);
+			    rc = verifyPackage(prefix, db, h, verifyFlags);
 			    headerFree(h);
 			    break;
 			case 1:
@@ -205,7 +224,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 				_("group %s does not contain any packages\n"), 
 				arg);
 		} else {
-		    verifyMatches(prefix, db, matches, verifyFlags);
+		    rc = verifyMatches(prefix, db, matches, verifyFlags);
 		    dbiFreeIndexRecord(matches);
 		}
 		break;
@@ -219,7 +238,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		    fprintf(stderr, _("file %s is not owned by any package\n"), 
 				arg);
 		} else {
-		    verifyMatches(prefix, db, matches, verifyFlags);
+		    rc = verifyMatches(prefix, db, matches, verifyFlags);
 		    dbiFreeIndexRecord(matches);
 		}
 		break;
@@ -231,7 +250,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		else if (rc == 2) {
 		    fprintf(stderr, _("error looking for package %s\n"), arg);
 		} else {
-		    verifyMatches(prefix, db, matches, verifyFlags);
+		    rc = verifyMatches(prefix, db, matches, verifyFlags);
 		    dbiFreeIndexRecord(matches);
 		}
 		break;
@@ -239,10 +258,13 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		case VERIFY_EVERY:
 		    ; /* nop */
 	    }
+	    if (rc)
+		ec = rc;
 	}
     }
    
     if (source != VERIFY_RPM) {
 	rpmdbClose(db);
     }
+    return ec;
 }

@@ -11,7 +11,7 @@
 enum verifysources { VERIFY_PATH, VERIFY_PACKAGE, VERIFY_EVERY, VERIFY_RPM, 
 			VERIFY_GRP, };
 
-void doVerify(char * prefix, enum verifysources source, char ** argv,
+int doVerify(char * prefix, enum verifysources source, char ** argv,
 	      int verifyFlags);
 
 #endif
