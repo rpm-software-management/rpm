@@ -2,7 +2,7 @@
 #define RPMHOOK_H
 
 typedef union {
-    char *s;
+    const char *s;
     int i;
     float f;
     void *p;
@@ -16,11 +16,15 @@ typedef struct rpmhookArgs_s {
 
 typedef int (*rpmhookFunc)(rpmhookArgs args, void *data);
 
+rpmhookArgs rpmhookArgsNew(int argc);
+rpmhookArgs rpmhookArgsFree(rpmhookArgs args);
+
 void rpmhookRegister(const char *name, rpmhookFunc func, void *data);
 void rpmhookUnregister(const char *name, rpmhookFunc func, void *data);
 void rpmhookUnregisterAny(const char *name, rpmhookFunc func);
 void rpmhookUnregisterAll(const char *name);
 void rpmhookCall(const char *name, const char *argt, ...);
+void rpmhookCallArgs(const char *name, rpmhookArgs args);
 
 #endif
 

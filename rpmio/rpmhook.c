@@ -28,6 +28,21 @@ typedef struct rpmhookTable_s {
     struct rpmhookBucket_s bucket[1];
 } * rpmhookTable;
 
+
+rpmhookArgs rpmhookArgsNew(int argc)
+{
+    rpmhookArgs args = (rpmhookArgs)xcalloc(1, sizeof(struct rpmhookArgs_s)+
+                                               (argc-1)*sizeof(rpmhookArgv));
+    args->argc = argc;
+    return args;
+}
+
+rpmhookArgs rpmhookArgsFree(rpmhookArgs args)
+{
+    free(args);
+    return NULL;
+}
+
 static rpmhookTable rpmhookTableNew(int size)
 {
     rpmhookTable table =
@@ -154,13 +169,10 @@ static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
 
 static rpmhookArgs rpmhookArgsParse(const char *argt, va_list ap)
 {
-    int argc = strlen(argt);
+    rpmhookArgs args = rpmhookArgsNew(strlen(argt));
     int i;
-    rpmhookArgs args = (rpmhookArgs)malloc(sizeof(struct rpmhookArgs_s)+
-                                           (argc-1)*sizeof(rpmhookArgv));
-    args->argc = argc;
     args->argt = argt;
-    for (i = 0; i != argc; i++) {
+    for (i = 0; i != args->argc; i++) {
         switch (argt[i]) {
             case 's':
                 args->argv[i].s = va_arg(ap, char *);
@@ -183,21 +195,16 @@ static rpmhookArgs rpmhookArgsParse(const char *argt, va_list ap)
     return args;
 }
 
-static void rpmhookTableCallV(rpmhookTable *table, const char *name,
-                             const char *argt, va_list ap)
+static void rpmhookTableCallArgs(rpmhookTable *table, const char *name,
+                                 rpmhookArgs args)
 {
-    rpmhookItem item;
-    rpmhookArgs args;
-    int n;
-    args = rpmhookArgsParse(argt, ap);
-    n = rpmhookTableFindBucket(table, name);
-    item = (*table)->bucket[n].item;
+    int n = rpmhookTableFindBucket(table, name);
+    rpmhookItem item = (*table)->bucket[n].item;
     while (item) {
         if (item->func(args, item->data) != 0)
             break;
         item = item->next;
     }
-    free(args);
 }
 
 static rpmhookTable globalTable = NULL;
@@ -230,11 +237,20 @@ void rpmhookUnregisterAll(const char *name)
 void rpmhookCall(const char *name, const char *argt, ...)
 {
     if (globalTable) {
+        rpmhookArgs args;
         va_list ap;
         va_start(ap, argt);
-        rpmhookTableCallV(&globalTable, name, argt, ap);
+        args = rpmhookArgsParse(argt, ap);
+        rpmhookTableCallArgs(&globalTable, name, args);
+        rpmhookArgsFree(args);
         va_end(ap);
     }
+}
+
+void rpmhookCallArgs(const char *name, rpmhookArgs args)
+{
+    if (globalTable)
+        rpmhookTableCallArgs(&globalTable, name, args);
 }
 
 /* vim:ts=4:sw=4:et

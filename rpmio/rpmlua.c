@@ -4,6 +4,7 @@
 #include <rpmmacro.h>
 #include <rpmerr.h>
 #include <rpmurl.h>
+#include <rpmhook.h>
 
 #include "../lua/include/lua.h"
 #include "../lua/include/lualib.h"
@@ -621,6 +622,141 @@ static int rpm_interactive(lua_State *L)
     return 0;
 }
 
+typedef struct rpmluaHookData_s {
+    lua_State *L;
+    int funcRef;
+    int dataRef;
+} * rpmluaHookData;
+
+static int rpmluaHookWrapper(rpmhookArgs args, void *data)
+{
+    rpmluaHookData hookdata = (rpmluaHookData)data;
+    lua_State *L = hookdata->L;
+    int ret = 0;
+    int i;
+    lua_rawgeti(L, LUA_REGISTRYINDEX, hookdata->funcRef);
+    lua_newtable(L);
+    for (i = 0; i != args->argc; i++) {
+	switch (args->argt[i]) {
+	    case 's':
+		lua_pushstring(L, args->argv[i].s);
+		lua_rawseti(L, -2, i+1);
+		break;
+	    case 'i':
+		lua_pushnumber(L, args->argv[i].i);
+		lua_rawseti(L, -2, i+1);
+		break;
+	    case 'f':
+		lua_pushnumber(L, args->argv[i].f);
+		lua_rawseti(L, -2, i+1);
+		break;
+	    case 'p':
+		lua_pushlightuserdata(L, args->argv[i].p);
+		lua_rawseti(L, -2, i+1);
+		break;
+	    default:
+                luaL_error(L, "unsupported type '%c' as "
+                              "a hook argument\n", args->argt[i]);
+		break;
+	}
+    }
+    if (lua_pcall(L, 1, 1, 0) != 0) {
+	rpmError(RPMERR_SCRIPT, _("lua hook failed: %s\n"),
+		 lua_tostring(L, -1));
+	lua_pop(L, 1);
+    } else {
+	if (lua_isnumber(L, -1))
+	    ret = (int)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+    }
+    return ret;
+}
+
+static int rpm_register(lua_State *L)
+{
+    if (!lua_isstring(L, 1)) {
+	luaL_argerror(L, 1, "hook name expected");
+    } else if (!lua_isfunction(L, 2)) {
+	luaL_argerror(L, 2, "function expected");
+    } else {
+	rpmluaHookData hookdata =
+	    lua_newuserdata(L, sizeof(struct rpmluaHookData_s));
+	lua_pushvalue(L, -1);
+	hookdata->dataRef = luaL_ref(L, LUA_REGISTRYINDEX);
+	lua_pushvalue(L, 2);
+	hookdata->funcRef = luaL_ref(L, LUA_REGISTRYINDEX);
+	hookdata->L = L;
+	rpmhookRegister(lua_tostring(L, 1), rpmluaHookWrapper, hookdata);
+	return 1;
+    }
+    return 0;
+}
+
+static int rpm_unregister(lua_State *L)
+{
+    if (!lua_isstring(L, 1)) {
+	luaL_argerror(L, 1, "hook name expected");
+    } else if (!lua_islightuserdata(L, 2)) {
+	luaL_argerror(L, 2, "hook information expected");
+    } else {
+	rpmluaHookData hookdata = (rpmluaHookData)lua_touserdata(L, 2);
+	luaL_unref(L, LUA_REGISTRYINDEX, hookdata->funcRef);
+	luaL_unref(L, LUA_REGISTRYINDEX, hookdata->dataRef);
+	rpmhookUnregister(lua_tostring(L, 1), rpmluaHookWrapper, hookdata);
+    }
+    return 0;
+}
+
+static int rpm_call(lua_State *L)
+{
+    if (!lua_isstring(L, 1)) {
+	luaL_argerror(L, 1, "hook name expected");
+    } else {
+	rpmhookArgs args = rpmhookArgsNew(lua_gettop(L)-1);
+	const char *name = lua_tostring(L, 1);
+	char *argt = (char *)xmalloc(args->argc+1);
+	int i;
+	for (i = 0; i != args->argc; i++) {
+	    switch (lua_type(L, i+1)) {
+		case LUA_TNIL:
+		    argt[i] = 'p';
+		    args->argv[i].p = NULL;
+		    break;
+		case LUA_TNUMBER: {
+		    float f = (float)lua_tonumber(L, i+1);
+		    if (f == (int)f) {
+			argt[i] = 'i';
+			args->argv[i].i = (int)f;
+		    } else {
+			argt[i] = 'f';
+			args->argv[i].f = f;
+		    }
+		    break;
+		}
+		case LUA_TSTRING:
+		    argt[i] = 's';
+		    args->argv[i].s = lua_tostring(L, i+1);
+		    break;
+		case LUA_TUSERDATA:
+		case LUA_TLIGHTUSERDATA:
+		    argt[i] = 'p';
+		    args->argv[i].p = lua_touserdata(L, i+1);
+		    break;
+		default:
+		    luaL_error(L, "unsupported Lua type passed to hook");
+		    argt[i] = 'p';
+		    args->argv[i].p = NULL;
+		    break;
+	    }
+	}
+	args->argt = argt;
+	rpmhookCallArgs(name, args);
+	free(argt);
+	rpmhookArgsFree(args);
+    }
+    return 0;
+}
+
 /* Based on luaB_print. */
 static int rpm_print (lua_State *L)
 	/*@globals fileSystem @*/
@@ -675,6 +811,9 @@ static int rpm_print (lua_State *L)
 static const luaL_reg rpmlib[] = {
     {"expand", rpm_expand},
     {"define", rpm_define},
+    {"register", rpm_register},
+    {"unregister", rpm_unregister},
+    {"call", rpm_call},
     {"interactive", rpm_interactive},
     {NULL, NULL}
 };
