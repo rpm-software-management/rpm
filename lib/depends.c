@@ -250,11 +250,26 @@ void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset) {
 }
 
 void rpmdepDone(rpmDependencies rpmdep) {
-     alFree(&rpmdep->addedPackages);
-     alFree(&rpmdep->availablePackages);
-     free(rpmdep->removedPackages);
+    alFree(&rpmdep->addedPackages);
+    alFree(&rpmdep->availablePackages);
+    free(rpmdep->removedPackages);
 
-     free(rpmdep);
+    free(rpmdep);
+}
+
+void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
+			 numConflicts) {
+    int i;
+
+    for (i = 0; i < numConflicts; i++) {
+	free(conflicts[i].byName);
+	free(conflicts[i].byVersion);
+	free(conflicts[i].byRelease);
+	free(conflicts[i].needsName);
+	free(conflicts[i].needsVersion);
+    }
+
+    free(conflicts);
 }
 
 int rpmdepCheck(rpmDependencies rpmdep, 
@@ -459,11 +474,11 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 		psp->problems = realloc(psp->problems, sizeof(*psp->problems) * 
 			    psp->alloced);
 	    }
-	    psp->problems[psp->num].byName = name;
-	    psp->problems[psp->num].byVersion = version;
-	    psp->problems[psp->num].byRelease = release;
-	    psp->problems[psp->num].needsName = requires[i];
-	    psp->problems[psp->num].needsVersion = requiresVersion[i];
+	    psp->problems[psp->num].byName = strdup(name);
+	    psp->problems[psp->num].byVersion = strdup(version);
+	    psp->problems[psp->num].byRelease = strdup(release);
+	    psp->problems[psp->num].needsName = strdup(requires[i]);
+	    psp->problems[psp->num].needsVersion = strdup(requiresVersion[i]);
 	    psp->problems[psp->num].needsFlags = requireFlags[i];
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_REQUIRES;
 
