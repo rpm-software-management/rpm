@@ -181,7 +181,7 @@ static int makePGPSignature(char *file, int ofd, char *passPhrase)
 	setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
 	/* setenv("PGPPASS", passPhrase, 1); */
 	execlp("pgp", "pgp",
-	       "+batchmode=on", "+verbose=0",
+	       "+batchmode=on", "+verbose=0", "+armor=off",
 	       name, secring, pubring,
 	       "-sb", file, sigfile,
 	       NULL);
