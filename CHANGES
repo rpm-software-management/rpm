@@ -79,6 +79,7 @@
 	- fix: lclint fiddles broke uCache initialization (#43139).
 	- always use db cursors.
 	- permit duplicates for btree indices.
+	- document build modes in rpmbuild.8, rpmbuild is born.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

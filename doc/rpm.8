@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "RPM" "8" "21 April 2001" "Red Hat, Inc." "Red Hat Linux"
+.TH "RPM" "8" "06 June 2001" "Red Hat, Inc." "Red Hat Linux"
 .SH NAME
 rpm \- RPM Package Manager
 .SH SYNOPSIS
@@ -24,8 +24,7 @@ rpm \- RPM Package Manager
 
 \fBrpm\fR {\fB-F|--freshen\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
-[\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
 .SS "BUILDING PACKAGES:"
 .PP
 
@@ -49,36 +48,42 @@ rpm \- RPM Package Manager
 .SS "SELECT-OPTIONS"
 .PP
 
-\fB\fR\fB[\fIPACKAGE_NAME\fB] [-a,--all]
+\fB[\fIPACKAGE_NAME\fB] [-a,--all]
 [-f,--file\ \fIFILE\fB] [-g,--group\ \fIGROUP\fB] [-p,--package\ \fIPACKAGE_FILE\fB]
 [--querybynumber\ \fINUMBER\fB] [--triggeredby\ \fIPACKAGE_NAME\fB]
 [--whatprovides\ \fICAPABILITY\fB] [--whatrequires\ \fICAPABILITY\fB]\fR
 .SS "QUERY-OPTIONS"
 .PP
 
-\fB\fR\fB[--changelog] [-c,--configfiles] [-d,--docfiles] [--dump] [--filesbypkg]
+\fB[--changelog] [-c,--configfiles] [-d,--docfiles] [--dump] [--filesbypkg]
 [-i,--info] [--last] [-l,--list] [--provides] [--qf,--queryformat\ \fIQUERYFMT\fB] [-R,--requires]
 [--scripts] [-s,--state] [--triggers,--triggerscripts]\fR
 .SS "INSTALL-OPTIONS"
 .PP
 
-\fB\fR\fB[--allfiles] [--badreloc] [--excludepath\ \fIOLDPATH\fB] [--excludedocs] [--force] [-h,--hash]
+\fB[--allfiles] [--badreloc] [--excludepath\ \fIOLDPATH\fB] [--excludedocs] [--force] [-h,--hash]
 [--ignoresize] [--ignorearch] [--ignoreos] [--includedocs] [--justdb]
 [--nodeps] [--noorder] [--noscripts] [--notriggers]
-[--oldpackage] [--percent] [--prefix\ \fINEWPATH\fB] [--relocate\ \fIOLDPATH\fB=\fINEWPATH\fB]
+[--oldpackage] [--percent] [--prefix \fINEWPATH\fB] [--relocate\ \fIOLDPATH\fB=\fINEWPATH\fB]
 [--repackage] [--replacefiles] [--replacepkgs] [--test]\fR
 .SS "BUILD-OPTIONS"
 .PP
 
-\fB\fR\fB[--buildroot\ \fIDIRECTORY\fB] [--clean] [--rmsource] [--rmspec]
-[--short-circuit] [--sign] [--target=\fIPLATFORM\fB] [--test]\fR
+\fB[--buildroot \fIDIRECTORY\fB] [--clean] [--nobuild] [--rmsource] [--rmspec]
+[--short-circuit] [--sign] [--target\ \fIPLATFORM\fB]\fR
 .SH "DESCRIPTION"
 .PP
 \fBrpm\fR is a powerful \fBPackage Manager\fR,
 which can be used to build, install, query, verify, update, and
-erase individual software packages.  A \fBPackage\fR consists
-of an archive of files, and package information, including name,
-version, and description.
+erase individual software packages.
+A \fBpackage\fR consists of an archive of files and
+meta-data used to install and erase the archive files. The meta-data
+includes helper scripts, file attributes, and descriptive information
+about the package.
+\fBPackages\fR come in two varieties: binary packages,
+used to encapsulate software to be installed, and source packages,
+containing the source code and recipe necessary to produce binary
+packages.
 .PP
 One of the following basic modes must be selected:
 \fBQuery\fR,
@@ -100,19 +105,23 @@ One of the following basic modes must be selected:
 .PP
 These options can be used in all the different modes.
 .TP
-\fB--dbpath \fIDIRECTORY\fB\fR
-Use the database in \fIDIRECTORY\fR rathen
-than the default path \fI/var/lib/rpm\fR
-.TP
 \fB-?, --help\fR
 Print a longer usage message then normal.
 .TP
-\fB--pipe \fICMD\fB\fR
-Pipes the output of \fBrpm\fR to the command \fICMD\fR.
+\fB--version\fR
+Print a single line containing the version number of \fBrpm\fR
+being used. 
 .TP
 \fB--quiet\fR
 Print as little as possible - normally only error messages will
 be displayed.
+.TP
+\fB-v\fR
+Print verbose information - normally routine progress messages will be
+displayed.
+.TP
+\fB-vv\fR
+Print lots of ugly debugging information.
 .TP
 \fB--rcfile \fIFILELIST\fB\fR
 Each of the files in the colon separated
@@ -124,6 +133,13 @@ expanded to the value of \fB$HOME\fR.
 The default \fIFILELIST\fR is
 \fI/usr/lib/rpm/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
 .TP
+\fB--pipe \fICMD\fB\fR
+Pipes the output of \fBrpm\fR to the command \fICMD\fR.
+.TP
+\fB--dbpath \fIDIRECTORY\fB\fR
+Use the database in \fIDIRECTORY\fR rathen
+than the default path \fI/var/lib/rpm\fR
+.TP
 \fB--root \fIDIRECTORY\fB\fR
 Use the system rooted at \fIDIRECTORY\fR for all operations.
 Note that this means the database will be read or modified under
@@ -132,13 +148,6 @@ Note that this means the database will be read or modified under
 \fB%post\fR
 scriptlet(s) are run after a chroot(2) to
 \fIDIRECTORY\fR.
-.TP
-\fB--version\fR
-Print a single line containing the version number of \fBrpm\fR
-being used. 
-.TP
-\fB-vv\fR
-Print lots of ugly debugging information.
 .SS "INSTALL AND UPGRADE OPTIONS"
 .PP
 The general form of an rpm install command is 
@@ -305,7 +314,7 @@ already installed, packages.
 Install the packages even if some of them are already installed
 on this system.
 .TP
-\fB--test\fR
+\fB--nobuild\fR
 Do not install the package, simply check for and report
 potential conflicts.
 .SS "QUERY OPTIONS"
@@ -656,6 +665,9 @@ When building a package, override the BuildRoot tag with directory
 \fB--clean\fR
 Remove the build tree after the packages are made.
 .TP
+\fB--nobuild\fR
+Do not execute any build stages. Useful for testing out spec files.
+.TP
 \fB--rmsource\fR
 Remove the sources after the build (may also be
 used standalone, e.g. "\fBrpm\fR \fB--rmsource foo.spec\fR").
@@ -681,9 +693,6 @@ as \fBarch-vendor-os\fR and set the macros
 \fB%_target_arch\fR, and
 \fB%_target_os\fR
 accordingly.
-.TP
-\fB--nobuild\fR
-Do not execute any build stages. Useful for testing out spec files.
 .SS "REBUILD AND RECOMPILE OPTIONS"
 .PP
 There are two other ways to invoke building with rpm:
@@ -751,7 +760,7 @@ for per-user configuration.
 .PP
 The general form of an rpm rebuild database command is 
 .PP
-\fBrpm\fR {\fB--initdb|--rebuilddb\fR} [\fB-v\fR] [\fB--dbpath \fIDIRECTORY\fB\fR] [\fB--root \fIDIRECTORY\fB\fR]
+\fBrpm\fR {\fB--initdb|--rebuilddb\fR} [\fB-v\fR] [\fB--dbpath\ \fIDIRECTORY\fB\fR] [\fB--root\ \fIDIRECTORY\fB\fR]
 .PP
 Use \fB--initdb\fR to create a new database, use
 \fB--rebuilddb\fR to rebuild the database indices from
@@ -816,7 +825,6 @@ of the default port. This option may also be specified by configuring
 the macro \fB%_httpport\fR.
 .SH "FILES"
 .PP
-
 \fI/usr/lib/rpm/rpmrc\fR
 
 \fI/etc/rpmrc\fR
@@ -852,8 +860,9 @@ the macro \fB%_httpport\fR.
 
 \fBrpm2cpio\fR(8),
 
-\fB http://www.rpm.org/ <URL:http://www.rpm.org/>
-\fR
+\fBrpmbuild\fR(8),
+
+\fBhttp://www.rpm.org/\fR
 .SH "AUTHORS"
 
 Marc Ewing <marc@redhat.com>
