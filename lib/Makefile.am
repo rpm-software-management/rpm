@@ -16,7 +16,7 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	header.h misc.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h depends.h fprint.h fsm.h hash.h \
+	cpio.h depends.h fsm.h \
 	manifest.h md5.h psm.h \
 	rpmlead.h signature.h
 
@@ -31,8 +31,8 @@ LIBS =
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	cpio.c depends.c formats.c fprint.c fs.c fsm.c getdate.c \
-	hash.c header.c manifest.c md5.c md5sum.c misc.c package.c \
+	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
+	header.c manifest.c md5.c md5sum.c misc.c package.c \
 	problems.c poptBT.c poptQV.c psm.c query.c rpmchecksig.c \
 	rpminstall.c rpmlead.c rpmlibprov.c rpmrc.c signature.c \
 	stringbuf.c tagName.c tagtable.c transaction.c verify.c

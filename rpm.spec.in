@@ -207,7 +207,7 @@ fi
 %files
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
-%attr(4755, @@RPMUSER@@, @@RPMGROUP@@)	/bin/rpm
+%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	/bin/rpm
 %dir			/etc/rpm
 %config(missingok)	/etc/rpm/macros.db1
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/rpm2cpio
@@ -228,7 +228,7 @@ fi
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/convertrpmrc.sh
 %attr(0644, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/macros
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/mkinstalldirs
-%attr(4755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpm[deiukqv]
+%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpm[deiukqv]
 %attr(0644, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpmrc
 
@@ -322,7 +322,7 @@ fi
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/magic.req
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/perl.prov
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/perl.req
-%attr(4755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpm[bt]
+%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpm[bt]
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpmdiff
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpmdiff.cgi
 %attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/u_pkg.sh

@@ -1191,7 +1191,7 @@ exit:
 	} else {
 	    DBC * dbcursor = NULL;
 	    int xx;
-	    xx = dbiCopen(dbi, &dbcursor, 0);
+	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
 	    xx = dbiPut(dbi, dbcursor, keyDepend, strlen(keyDepend), &rc, sizeof(rc), 0);
 	    if (xx)
 		_cacheDependsRC = 0;
@@ -1199,7 +1199,7 @@ exit:
 	    else
 		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %s) added to Depends cache.\n"), keyType, keyDepend, (rc ? _("NO ") : _("YES")));
 #endif
-	    xx = dbiCclose(dbi, dbcursor, 0);
+	    xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
 	}
     }
     return rc;

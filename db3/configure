@@ -1,11 +1,13 @@
 #!/bin/sh
 #set -x 
 db_dist="../db/dist"
-CFLAGS="$CFLAGS" $db_dist/configure \
-	$(echo $* | sed -e "s% --srcdir=[^ ]*% --enable-shared --enable-static --srcdir=$db_dist%")
+
+rm -f config.cache
+CFALGS="-O2" $db_dist/configure \
+	$(echo $* | sed -e "s% --cache-file=.*$% --enable-shared --enable-static --enable-debug --enable-rpc --srcdir=$db_dist%")
 
 mv Makefile Makefile.orig
-cat Makefile.orig | sed -e '/^install:/c\
+cat Makefile.orig | sed -e 's/ -g$/ -g -O2/' -e '/^install:/c\
 .PHONY: listobjs\
 listobjs:\
 	@echo $(OBJS)\
@@ -13,5 +15,3 @@ listobjs:\
 distdir install:\
 \
 db3_install: all install_setip \\' > Makefile
-
-make -s listobjs > db3lobjs

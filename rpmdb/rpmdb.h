@@ -2,7 +2,7 @@
 #define H_RPMDB
 
 /** \ingroup rpmdb dbi db1 db3
- * \file lib/rpmdb.h
+ * \file rpmdb/rpmdb.h
  * Access RPM indices using Berkeley DB interface(s).
  */
 
@@ -319,12 +319,15 @@ void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
 
 /** \ingroup dbi
  * @param dbi		index database handle
- * @param flags		(unused)
+ * @param dbiflags	DBI_WRITECURSOR or DBI_ITERATOR
  */
-int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags);
-int XdbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags, const char *f, unsigned int l);
+int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int dbiflags);
+int XdbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int dbiflags, const char *f, unsigned int l);
 #define	dbiCopen(_a,_b,_c) \
 	XdbiCopen(_a, _b, _c, __FILE__, __LINE__)
+
+#define	DBI_WRITECURSOR		(1 << 0)
+#define	DBI_ITERATOR		(1 << 1)
 
 /** \ingroup dbi
  * @param dbi		index database handle

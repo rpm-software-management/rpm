@@ -48,8 +48,12 @@
 	- use internal db-3.2.9 sources to build by default.
 	- don't build db1 support by default.
 	- create rpmdb.la so that linkage against rpm's db-3.2.9 is possible.
-	- rpm executables now setuid rpm to share write locks.
+	- rpm database has rpm.rpm g+w permissions to share db3 mutexes.
 	- expose more db3 macro configuration tokens.
+	- move fprint.[ch] and hash.[ch] to rpmdb directory.
+	- detect and fiddle incompatible mixtures of db3 env/open flags.
+	- add DBI_WRITECURSOR to map to db3 flags with CDB database model.
+	- add rpmdbSetIteratorRewrite to warn of pending lazy (re-)writes.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

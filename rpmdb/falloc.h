@@ -2,7 +2,7 @@
 #define H_FALLOC
 
 /** \ingroup db1
- * \file lib/falloc.h
+ * \file rpmdb/falloc.h
  * File space allocation routines.
  *
  * Best fit allocation is used, free blocks are compacted. Minimal

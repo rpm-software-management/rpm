@@ -1,5 +1,5 @@
 /** \ingroup rpmdb
- * \file lib/dbconfig.c
+ * \file rpmdb/dbconfig.c
  */
 
 #include "system.h"

@@ -1,5 +1,5 @@
 /** \ingroup db3
- * \file lib/db3.c
+ * \file rpmdb/db3.c
  */
 
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
@@ -184,6 +184,7 @@ static int db_init(dbiIndex dbi, const char *dbhome,
 	rpmdb->db_errfile = stderr;
 
     eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
+    if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
 
     if (dbfile)
 	rpmMessage(RPMMESS_DEBUG, _("opening db environment %s/%s %s\n"),
@@ -381,7 +382,7 @@ static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
     return rc;
 }
 
-static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp)
+static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp, int dbiflags)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -390,7 +391,10 @@ static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp)
 
     if (db == NULL) return -2;
 #if defined(__USE_DB3)
-    if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY)) {
+    if ((dbiflags & DBI_WRITECURSOR) &&
+	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+    {
+fprintf(stderr, "D: *** WRITECURSOR\n");
 	flags = DB_WRITECURSOR;
     } else
 	flags = 0;
@@ -409,7 +413,7 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
     int rc = 0;
 
     /* XXX per-iterator cursors */
-    if (flags == 1)
+    if (flags & DBI_ITERATOR)
 	return db3c_close(dbi, dbcursor);
 
     if (!dbi->dbi_use_cursors)
@@ -431,8 +435,8 @@ static int db3copen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
     int rc = 0;
 
     /* XXX per-iterator cursors */
-    if (flags == 1)
-	return db3c_open(dbi, dbcp);
+    if (flags & DBI_ITERATOR)
+	return db3c_open(dbi, dbcp, flags);
 
     if (!dbi->dbi_use_cursors) {
 	if (dbcp) *dbcp = NULL;
@@ -440,7 +444,7 @@ static int db3copen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
     }
 
     if ((dbcursor = dbi->dbi_rmw) == NULL) {
-	if ((rc = db3c_open(dbi, &dbcursor)) == 0)
+	if ((rc = db3c_open(dbi, &dbcursor, flags)) == 0)
 	    dbi->dbi_rmw = dbcursor;
     }
 
@@ -719,26 +723,40 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
      */
     if (dbi->dbi_use_dbenv) {
-	if (access(dbhome, W_OK|F_OK) == -1) {
+	if (access(dbhome, W_OK) == -1) {
 
 	    /* dbhome is unwritable, don't attempt DB_CREATE on DB->open ... */
 	    oflags &= ~DB_CREATE;
 
 	    /* ... but DBENV->open might still need DB_CREATE ... */
-	    if (!(dbi->dbi_eflags & DB_PRIVATE)) {
+	    if (dbi->dbi_eflags & DB_PRIVATE) {
+		dbi->dbi_eflags &= ~DB_JOINENV;
+	    } else {
+		dbi->dbi_eflags |= DB_JOINENV;
 		dbi->dbi_oeflags &= ~DB_CREATE;
 		dbi->dbi_oeflags &= ~DB_THREAD;
-		dbi->dbi_eflags = 0;
-		dbi->dbi_eflags |= DB_JOINENV;
+		/* ... but, unless DB_PRIVATE is used, skip DBENV. */
+		dbi->dbi_use_dbenv = 0;
 	    }
 
-	    /* ... DB_RDONLY seems OK ...  */
+	    /* ... DB_RDONLY maps dphome perms across files ...  */
 	    oflags |= DB_RDONLY;
 
-	    /* ... so DB_WRITECURSOR won't be needed ...  */
+	    /* ... and DB_WRITECURSOR won't be needed ...  */
 	    dbi->dbi_oflags |= DB_RDONLY;
-	} else {
-	    dbi->dbi_eflags &= ~DB_JOINENV;
+	} else {	/* dbhome is writable, check for persistent dbenv. */
+	    const char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
+
+	    if (access(dbf, F_OK) == -1) {
+		/* ... non-existent (or unwritable) DBENV, will create ... */
+		dbi->dbi_oeflags |= DB_CREATE;
+		dbi->dbi_eflags &= ~DB_JOINENV;
+	    } else {
+		/* ... pre-existent (or bogus) DBENV, will join ... */
+		dbi->dbi_oeflags &= ~DB_CREATE;
+		dbi->dbi_eflags |= DB_JOINENV;
+	    }
+	    dbf = _free(dbf);
 	}
     }
 
@@ -746,31 +764,25 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DB->open.
      */
     if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
-	/* Otherwise dbhome is writable, and DB->open flags may conflict. */
-	const char * dbfullpath;
-	const char * sdn = (dbfile ? dbfile : tagName(dbi->dbi_rpmtag));
-	char * t;
-	int nb;
+	/* dbhome is writable, and DB->open flags may conflict. */
+	const char * dbfn = (dbfile ? dbfile : tagName(dbi->dbi_rpmtag));
+	const char * dbf = rpmGetPath(dbhome, "/", dbfn, NULL);
 
-	nb = strlen(dbhome) + 1 + strlen(sdn);
-	dbfullpath = t = alloca(nb + 1);
-	t = stpcpy( stpcpy( stpcpy( t, dbhome), "/"), sdn);
-
-	if (access(dbfullpath, F_OK) == -1) {
-	    /* If file does not exist, DB->open might create ... */
+	if (access(dbf, F_OK) == -1) {
+	    /* File does not exist, DB->open might create ... */
 	    oflags &= ~DB_RDONLY;
 	} else {
-	    /* If file exists, DB->open need not create ... */
+	    /* File exists, DB->open need not create ... */
 	    oflags &= ~DB_CREATE;
 	}
 
 	/* Only writers need DB_WRITECURSOR ... */
-	if (!(oflags & DB_RDONLY) && access(dbfullpath, W_OK) == 0) {
+	if (!(oflags & DB_RDONLY) && access(dbf, W_OK) == 0) {
 	    dbi->dbi_oflags &= ~DB_RDONLY;
 	} else {
 	    dbi->dbi_oflags |= DB_RDONLY;
 	}
-
+	dbf = _free(dbf);
     }
 
     dbi->dbi_dbinfo = NULL;
@@ -784,6 +796,8 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
     if (rc == 0) {
 #if defined(__USE_DB3)
+	static int _lockdbfd = 0;
+
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
@@ -900,8 +914,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);
 
-	    if (rc == 0 && dbi->dbi_get_rmw_cursor) {
+	    if (rc == 0 && dbi->dbi_use_dbenv && (dbi->dbi_eflags & DB_INIT_CDB) && dbi->dbi_get_rmw_cursor) {
 		DBC * dbcursor = NULL;
+fprintf(stderr, "D: *** rmw WRITECURSOR\n");
 		xx = db->cursor(db, txnid, &dbcursor,
 			((oflags & DB_RDONLY) ? 0 : DB_WRITECURSOR));
 		xx = cvtdberr(dbi, "db->cursor", xx, _debug);
@@ -909,13 +924,31 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    } else
 		dbi->dbi_rmw = NULL;
 
-	    if (rc == 0 && dbi->dbi_lockdbfd) {
+	    /*
+	     * Lock a file using fcntl(2). Traditionally this is Packages,
+	     * the file used * to store metadata of installed header(s),
+	     * as Packages is always opened, and should be opened first,
+	     * for any rpmdb access.
+	     *
+	     * If no DBENV is used, then access is protected with a
+	     * shared/exclusive locking scheme, as always.
+	     *
+	     * With a DBENV, the fcntl(2) lock is necessary only to keep
+	     * the riff-raff from playing where they don't belong, as
+	     * the DBENV should provide it's own locking scheme. So try to
+	     * acquire a lock, but permit failures, as some other
+	     * DBENV player may already have acquired the lock.
+	     */
+	    if (rc == 0 && dbi->dbi_lockdbfd &&
+		(!dbi->dbi_use_dbenv || _lockdbfd++ == 0))
+	    {
 		int fdno = -1;
 
 		if (!(db->fd(db, &fdno) == 0 && fdno >= 0)) {
 		    rc = 1;
 		} else {
 		    struct flock l;
+		    memset(&l, 0, sizeof(l));
 		    l.l_whence = 0;
 		    l.l_start = 0;
 		    l.l_len = 0;
@@ -923,13 +956,15 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 				? F_WRLCK : F_RDLCK;
 		    l.l_pid = 0;
 
-		    if (fcntl(fdno, F_SETLK, (void *) &l)) {
-			rpmError(RPMERR_FLOCK,
+		    rc = fcntl(fdno, F_SETLK, (void *) &l);
+		    if (rc) {
+			rpmError(
+			    (!dbi->dbi_use_dbenv ? RPMERR_FLOCK : RPMWARN_FLOCK),
 				_("cannot get %s lock on %s/%s\n"),
 				((dbi->dbi_mode & (O_RDWR|O_WRONLY))
 					? _("exclusive") : _("shared")),
 				dbhome, (dbfile ? dbfile : ""));
-			rc = 1;
+			rc = (!dbi->dbi_use_dbenv ? 1 : 0);
 		    } else if (dbfile) {
 			rpmMessage(RPMMESS_DEBUG,
 				_("locked  db index       %s/%s\n"),

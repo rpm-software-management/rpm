@@ -356,13 +356,9 @@ INPUT                  = \
 	./lib/depends.c \
 	./lib/depends.h \
 	./lib/formats.c \
-	./lib/fprint.c \
-	./lib/fprint.h \
 	./lib/fs.c \
 	./lib/fsm.c \
 	./lib/fsm.h \
-	./lib/hash.c \
-	./lib/hash.h \
 	./lib/header.c \
 	./lib/header.h \
 	./lib/manifest.c \
@@ -400,6 +396,10 @@ INPUT                  = \
 	./rpmdb/dbconfig.c \
 	./rpmdb/falloc.c \
 	./rpmdb/falloc.h \
+	./rpmdb/fprint.c \
+	./rpmdb/fprint.h \
+	./rpmdb/rpmhash.c \
+	./rpmdb/rpmhash.h \
 	./rpmdb/rpmdb.c \
 	./rpmdb/rpmdb.h \
 	./rpmio/base64.c \

@@ -157,7 +157,7 @@ char *	rpmExpand	(/*@null@*/ const char * arg, ...)
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */
-const char *rpmGetPath	(/*@null@*/ const char * path, ...)
+const char * rpmGetPath	(/*@null@*/ const char * path, ...)
 	/*@*/;
 
 /**
@@ -170,7 +170,7 @@ const char *rpmGetPath	(/*@null@*/ const char * path, ...)
  * @param file		file URL (often a file, or NULL)
  * @return		expanded, merged, canonicalized path (malloc'ed)
  */
-const char *rpmGenPath	(/*@null@*/ const char * root,
+const char * rpmGenPath	(/*@null@*/ const char * root,
 			/*@null@*/ const char * mdir,
 			/*@null@*/ const char * file)
 	/*@*/;

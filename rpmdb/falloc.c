@@ -1,5 +1,5 @@
 /** \ingroup rpmio db1
- * \file lib/falloc.c
+ * \file rpmdb/falloc.c
  * 
  * The entire file space is thus divided into blocks with a "struct fablock"
  * at the header of each. The size fields doubly link this block list.

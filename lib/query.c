@@ -460,8 +460,10 @@ int showMatches(QVA_t qva, rpmdbMatchIterator mi, QVF_t showPackage)
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	int rc;
+	/*@-nullpass@*/
 	if ((rc = showPackage(qva, rpmdbGetIteratorRpmDB(mi), h)) != 0)
 	    ec = rc;
+	/*@=nullpass@*/
     }
     mi = rpmdbFreeIterator(mi);
     return ec;

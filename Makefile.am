@@ -180,6 +180,19 @@ setperms:
 	done
 	@$(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)
 	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(varprefix)/lib/rpm
+	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/[A-Z]*
+	-@$(__CHMOD) 0775 $(DESTDIR)$(varprefix)/lib/rpm
+	-@$(__CHMOD) 0755 $(DESTDIR)$(varprefix)/lib/rpm/Desktop
+	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/__db.*
+
+.PHONY:	unsetuid
+unsetuid:
+	@for f in $(rpmbin_PROGRAMS) ; do\
+	    $(__CHMOD) u-s $(DESTDIR)$(rpmbindir)/$$f ;\
+	done
+	@for f in $(pkglib_PROGRAMS) ; do\
+	    $(__CHMOD) u-s $(DESTDIR)$(pkglibdir)/$$f ;\
+	done
 
 .PHONY: tar
 tar:

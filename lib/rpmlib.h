@@ -650,7 +650,9 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
  * @param mi		rpm database iterator
  * @return		rpm database handle
  */
-/*@kept@*/ rpmdb rpmdbGetIteratorRpmDB(/*@null@*/ rpmdbMatchIterator mi) /*@*/;
+/*@kept@*/ /*@null@*/ rpmdb rpmdbGetIteratorRpmDB(
+		/*@null@*/ rpmdbMatchIterator mi)
+	/*@*/;
 
 /** \ingroup rpmdb
  * Return join key for current position of rpm database iterator.
@@ -707,6 +709,16 @@ void rpmdbSetIteratorVersion(/*@null@*/ rpmdbMatchIterator mi,
  */
 void rpmdbSetIteratorRelease(/*@null@*/ rpmdbMatchIterator mi,
 	/*@null@*/ const char * release)
+		/*@modifies mi @*/;
+
+/** \ingroup rpmdb
+ * Prepare iterator for lazy writes.
+ * @note: must be called before rpmdbNextIterator() in CDB model database.
+ * @param mi		rpm database iterator
+ * @param rewrite	new value of rewrite
+ * @return		previous value
+ */
+int rpmdbSetIteratorRewrite(/*@null@*/ rpmdbMatchIterator mi, int rewrite)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb

@@ -27,10 +27,8 @@ build/spec.c
 lib/cpio.c
 lib/depends.c
 lib/formats.c
-lib/fprint.c
 lib/fs.c
 lib/fsm.c
-lib/hash.c
 lib/header.c
 lib/manifest.c
 lib/md5.c
@@ -55,6 +53,8 @@ rpmdb/db2.c
 rpmdb/db3.c
 rpmdb/dbconfig.c
 rpmdb/falloc.c
+rpmdb/fprint.c
+rpmdb/rpmhash.c
 rpmdb/rpmdb.c
 rpmio/base64.c
 rpmio/digest.c

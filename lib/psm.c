@@ -499,6 +499,7 @@ static int markReplacedFiles(PSM_t psm)
 
     mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
     (void) rpmdbAppendIterator(mi, offsets, num);
+    (void) rpmdbSetIteratorRewrite(mi, 1);
 
     sfi = replaced;
     while ((h = rpmdbNextIterator(mi)) != NULL) {

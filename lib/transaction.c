@@ -9,7 +9,7 @@
 
 #include "psm.h"
 #include "fprint.h"
-#include "hash.h"
+#include "rpmhash.h"
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"

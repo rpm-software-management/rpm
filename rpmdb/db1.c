@@ -1,5 +1,5 @@
 /** \ingroup db1
- * \file lib/db1.c
+ * \file rpmdb/db1.c
  */
 
 #include "system.h"

@@ -102,7 +102,8 @@ typedef enum rpmerrCode_e {
     RPMERR_SIGVFY	= _nm(202), /*!< */
 
     RPMWARN_UNLINK	= _wm(512u+16),  /*!< unlink(2) failed */
-    RPMWARN_RMDIR	= _wm(512u+17)   /*!< rmdir(2) failed */
+    RPMWARN_RMDIR	= _wm(512u+17),  /*!< rmdir(2) failed */
+    RPMWARN_FLOCK	= _wm(512u+27)   /*!< locking the database failed */
 } rpmerrCode;
 
 /**
