@@ -8,9 +8,10 @@ AC_PROG_CPP
 AC_PROG_RANLIB
 
 dnl Checks for libraries.
-AC_CHECK_LIB(intl, gettext, [], AC_MSG_WARN([sorry this package needs libintl.a (from the gettext package)]))
+AC_CHECK_FUNC(gettext)
+AC_CHECK_LIB(intl, gettext, [LIBINTL="-lintl"])
 AC_CHECK_LIB(gdbm, dbminit, [], AC_MSG_WARN([sorry this package needs libgdbm.a (from the gdbm package)]))
-AC_CHECK_LIB(db, dbopen)
+AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a (from the db package)]))
 
 ZLIB=
 for zlib in z gz ; do
@@ -42,5 +43,6 @@ AC_SUBST(FTW)
 AC_SUBST(GETOPT)
 AC_SUBST(GETOPT1)
 AC_SUBST(LIBMISC)
+AC_SUBST(LIBINTL)
 
 AC_OUTPUT(Makefile lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
