@@ -60,7 +60,7 @@
 #include "mp.h"
 #include "debug.h"
 
-int elgv1sign(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
 	register uint32  size = p->size;
 	register uint32* temp = (uint32*) malloc((13*size+11) * sizeof(*temp));
@@ -68,27 +68,27 @@ int elgv1sign(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, ran
 	if (temp)
 	{
 		/* get a random k, invertible modulo (p-1) */
-		mp32brndinv_w(n, rgc, temp, temp+size, temp+2*size);
+		mpbrndinv_w(n, rgc, temp, temp+size, temp+2*size);
 
 		/* compute r = g^k mod p */
 		mpnfree(r);
 		mpnsize(r, size);
-		mp32bpowmod_w(p, g->size, g->data, size, temp, r->data, temp+2*size);
+		mpbpowmod_w(p, g->size, g->data, size, temp, r->data, temp+2*size);
 
 		/* compute x*r mod n */
-		mp32bmulmod_w(n, x->size, x->data, r->size, r->data, temp, temp+2*size);
+		mpbmulmod_w(n, x->size, x->data, r->size, r->data, temp, temp+2*size);
 
 		/* compute -(x*r) mod n */
 		mp32neg(size, temp);
 		(void) mp32add(size, temp, n->modl);
 
 		/* compute h(m) - x*r mod n */
-		mp32baddmod_w(n, hm->size, hm->data, size, temp, temp, temp+2*size);
+		mpbaddmod_w(n, hm->size, hm->data, size, temp, temp, temp+2*size);
 
 		/* compute s = inv(k)*(h(m) - x*r) mod n */
 		mpnfree(s);
 		mpnsize(s, size);
-		mp32bmulmod_w(n, size, temp, size, temp+size, s->data, temp+2*size);
+		mpbmulmod_w(n, size, temp, size, temp+size, s->data, temp+2*size);
 
 		free(temp);
 
@@ -97,7 +97,7 @@ int elgv1sign(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, ran
 	return -1;
 }
 
-int elgv1vrfy(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
 	register uint32  size = p->size;
 	register uint32* temp;
@@ -121,16 +121,16 @@ int elgv1vrfy(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, con
 		register int rc;
 
 		/* compute u1 = y^r mod p */
-		mp32bpowmod_w(p, y->size, y->data, r->size, r->data, temp, temp+2*size);
+		mpbpowmod_w(p, y->size, y->data, r->size, r->data, temp, temp+2*size);
 
 		/* compute u2 = r^s mod p */
-		mp32bpowmod_w(p, r->size, r->data, s->size, s->data, temp+size, temp+2*size);
+		mpbpowmod_w(p, r->size, r->data, s->size, s->data, temp+size, temp+2*size);
 
 		/* compute v2 = u1*u2 mod p */
-		mp32bmulmod_w(p, size, temp, size, temp+size, temp+size, temp+2*size);
+		mpbmulmod_w(p, size, temp, size, temp+size, temp+size, temp+2*size);
 
 		/* compute v1 = g^h(m) mod p */
-		mp32bpowmod_w(p, g->size, g->data, hm->size, hm->data, temp, temp+2*size);
+		mpbpowmod_w(p, g->size, g->data, hm->size, hm->data, temp, temp+2*size);
 
 		rc = mp32eq(size, temp, temp+size);
 
@@ -141,7 +141,7 @@ int elgv1vrfy(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, con
 	return 0;
 }
 
-int elgv3sign(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
 	register uint32  size = p->size;
 	register uint32* temp = (uint32*) malloc((6*size+2) * sizeof(*temp));
@@ -149,23 +149,23 @@ int elgv3sign(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, ran
 	if (temp)
 	{
 		/* get a random k */
-		mp32brnd_w(p, rgc, temp, temp+2*size);
+		mpbrnd_w(p, rgc, temp, temp+2*size);
 
 		/* compute r = g^k mod p */
 		mpnfree(r);
 		mpnsize(r, size);
-		mp32bpowmod_w(p, g->size, g->data, size, temp, r->data, temp+2*size);
+		mpbpowmod_w(p, g->size, g->data, size, temp, r->data, temp+2*size);
 
 		/* compute u1 = x*r mod n */
-		mp32bmulmod_w(n, x->size, x->data, size, r->data, temp+size, temp+2*size);
+		mpbmulmod_w(n, x->size, x->data, size, r->data, temp+size, temp+2*size);
 
 		/* compute u2 = k*h(m) mod n */
-		mp32bmulmod_w(n, size, temp, hm->size, hm->data, temp, temp+2*size);
+		mpbmulmod_w(n, size, temp, hm->size, hm->data, temp, temp+2*size);
 
 		/* compute s = u1+u2 mod n */
 		mpnfree(s);
 		mpnsize(s, n->size);
-		mp32baddmod_w(n, size, temp, size, temp+size, s->data, temp+2*size);
+		mpbaddmod_w(n, size, temp, size, temp+size, s->data, temp+2*size);
 
 		free(temp);
 
@@ -174,7 +174,7 @@ int elgv3sign(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, ran
 	return -1;
 }
 
-int elgv3vrfy(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
 	register uint32  size = p->size;
 	register uint32* temp;
@@ -198,16 +198,16 @@ int elgv3vrfy(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, con
 		register int rc;
 
 		/* compute u1 = y^r mod p */
-		mp32bpowmod_w(p, y->size, y->data, r->size, r->data, temp, temp+2*size);
+		mpbpowmod_w(p, y->size, y->data, r->size, r->data, temp, temp+2*size);
 
 		/* compute u2 = r^h(m) mod p */
-		mp32bpowmod_w(p, r->size, r->data, hm->size, hm->data, temp+size, temp+2*size);
+		mpbpowmod_w(p, r->size, r->data, hm->size, hm->data, temp+size, temp+2*size);
 
 		/* compute v2 = u1*u2 mod p */
-		mp32bmulmod_w(p, size, temp, size, temp+size, temp+size, temp+2*size);
+		mpbmulmod_w(p, size, temp, size, temp+size, temp+size, temp+2*size);
 
 		/* compute v1 = g^s mod p */
-		mp32bpowmod_w(p, g->size, g->data, s->size, s->data, temp, temp+2*size);
+		mpbpowmod_w(p, g->size, g->data, s->size, s->data, temp, temp+2*size);
 
 		rc = mp32eq(size, temp, temp+size);
 

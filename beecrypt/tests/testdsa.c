@@ -85,8 +85,8 @@ int main()
 
 	dlkp_pInit(&keypair);
 
-        mp32bsethex(&keypair.param.p, dsa_p);                 
-        mp32bsethex(&keypair.param.q, dsa_q);
+        mpbsethex(&keypair.param.p, dsa_p);                 
+        mpbsethex(&keypair.param.q, dsa_q);
         mpnsethex(&keypair.param.g, dsa_g);
         mpnsethex(&keypair.y, dsa_y);
         mpnsethex(&keypair.x, dsa_x);

@@ -50,11 +50,11 @@
  */
 typedef struct
 {
-	mp32barrett p;
-	mp32barrett q;
+	mpbarrett p;
+	mpbarrett q;
 	mpnumber  r;
 	mpnumber  g;
-	mp32barrett n;
+	mpbarrett n;
 } dldp_p;
 
 #ifdef __cplusplus

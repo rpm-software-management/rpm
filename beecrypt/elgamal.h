@@ -37,25 +37,25 @@ extern "C" {
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int elgv1sign(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 	/*@modifies r, s */;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int elgv3sign(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 	/*@modifies r, s */;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int elgv1vrfy(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int elgv3vrfy(const mp32barrett* p, const mp32barrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 	/*@*/;
 
 #ifdef __cplusplus

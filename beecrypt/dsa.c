@@ -48,7 +48,7 @@
 #include "debug.h"
 
 /*@-boundswrite@*/
-int dsasign(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
 	register uint32  psize = p->size;
 	register uint32  qsize = q->size;
@@ -78,7 +78,7 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, rando
 	mpnsize(r, qsize);
 
 	/* get a random k, invertible modulo q */
-	mp32brndinv_w(q, rgc, qtemp, qtemp+qsize, qwksp);
+	mpbrndinv_w(q, rgc, qtemp, qtemp+qsize, qwksp);
 
 /* FIPS 186 test vectors
 	qtemp[0] = 0x358dad57;
@@ -87,11 +87,11 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, rando
 	qtemp[3] = 0x1a376b2b;
 	qtemp[4] = 0xdeaadfbf;
 
-	mp32binv_w(q, qsize, qtemp, qtemp+qsize, qwksp);
+	mpbinv_w(q, qsize, qtemp, qtemp+qsize, qwksp);
 */
 
 	/* g^k mod p */
-	mp32bpowmod_w(p, g->size, g->data, qsize, qtemp, ptemp, pwksp);
+	mpbpowmod_w(p, g->size, g->data, qsize, qtemp, ptemp, pwksp);
 
 	/* (g^k mod p) mod q - simple modulo */
 	mp32nmod(qtemp+2*qsize, psize, ptemp, qsize, q->modl, pwksp);
@@ -102,13 +102,13 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, rando
 	mpnsize(s, qsize);
 
 	/* x*r mod q */
-	mp32bmulmod_w(q, x->size, x->data, r->size, r->data, qtemp, qwksp);
+	mpbmulmod_w(q, x->size, x->data, r->size, r->data, qtemp, qwksp);
 
 	/* add h(m) mod q */
-	mp32baddmod_w(q, qsize, qtemp, hm->size, hm->data, qtemp+2*qsize, qwksp);
+	mpbaddmod_w(q, qsize, qtemp, hm->size, hm->data, qtemp+2*qsize, qwksp);
 
 	/* multiply inv(k) mod q */
-	mp32bmulmod_w(q, qsize, qtemp+qsize, qsize, qtemp+2*qsize, s->data, qwksp);
+	mpbmulmod_w(q, qsize, qtemp+qsize, qsize, qtemp+2*qsize, s->data, qwksp);
 
 	rc = 0;
 
@@ -119,7 +119,7 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, rando
 }
 /*@=boundswrite@*/
 
-int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
 	register uint32  psize = p->size;
 	register uint32  qsize = q->size;
@@ -158,22 +158,22 @@ int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, const
 	qwksp = qtemp+2*qsize;
 
 	/* compute w = inv(s) mod q */
-	if (mp32binv_w(q, s->size, s->data, qtemp, qwksp))
+	if (mpbinv_w(q, s->size, s->data, qtemp, qwksp))
 	{
 		/* compute u1 = h(m)*w mod q */
-		mp32bmulmod_w(q, hm->size, hm->data, qsize, qtemp, qtemp+qsize, qwksp);
+		mpbmulmod_w(q, hm->size, hm->data, qsize, qtemp, qtemp+qsize, qwksp);
 
 		/* compute u2 = r*w mod q */
-		mp32bmulmod_w(q, r->size, r->data, qsize, qtemp, qtemp, qwksp);
+		mpbmulmod_w(q, r->size, r->data, qsize, qtemp, qtemp, qwksp);
 
 		/* compute g^u1 mod p */
-		mp32bpowmod_w(p, g->size, g->data, qsize, qtemp+qsize, ptemp, pwksp);
+		mpbpowmod_w(p, g->size, g->data, qsize, qtemp+qsize, ptemp, pwksp);
 
 		/* compute y^u2 mod p */
-		mp32bpowmod_w(p, y->size, y->data, qsize, qtemp, ptemp+psize, pwksp);
+		mpbpowmod_w(p, y->size, y->data, qsize, qtemp, ptemp+psize, pwksp);
 
 		/* multiply mod p */
-		mp32bmulmod_w(p, psize, ptemp, psize, ptemp+psize, ptemp, pwksp);
+		mpbmulmod_w(p, psize, ptemp, psize, ptemp+psize, ptemp, pwksp);
 
 		/* modulo q */
 		mp32nmod(ptemp+psize, psize, ptemp, qsize, q->modl, pwksp);

@@ -36,7 +36,7 @@ int rsapkInit(rsapk* pk)
 {
 	memset(pk, 0, sizeof(*pk));
 	/* or
-	mp32bzero(&pk->n);
+	mpbzero(&pk->n);
 	mpnzero(&pk->e);
 	*/
 
@@ -47,7 +47,7 @@ int rsapkInit(rsapk* pk)
 int rsapkFree(rsapk* pk)
 {
 	/*@-usereleased -compdef @*/ /* pk->n.modl is OK */
-	mp32bfree(&pk->n);
+	mpbfree(&pk->n);
 	mpnfree(&pk->e);
 
 	return 0;
@@ -56,7 +56,7 @@ int rsapkFree(rsapk* pk)
 
 int rsapkCopy(rsapk* dst, const rsapk* src)
 {
-	mp32bcopy(&dst->n, &src->n);
+	mpbcopy(&dst->n, &src->n);
 	mpncopy(&dst->e, &src->e);
 
 	return 0;

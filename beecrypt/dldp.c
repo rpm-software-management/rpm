@@ -51,7 +51,7 @@ int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x)
 	 * This is the variant of Diffie-Hellman as described in IEEE P1363
 	 */
 
-	mp32bnrnd(&dp->q, rgc, x);
+	mpbnrnd(&dp->q, rgc, x);
 
 	return 0;
 }
@@ -62,7 +62,7 @@ int dldp_pPublic(const dldp_p* dp, const mpnumber* x, mpnumber* y)
 	 * Public key y is computed as g^x mod p
 	 */
 
-	mp32bnpowmod(&dp->p, &dp->g, x, y);
+	mpbnpowmod(&dp->p, &dp->g, x, y);
 
 	return 0;
 }
@@ -73,8 +73,8 @@ int dldp_pPair(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x, mpnum
 	 * Combination of the two previous functions
 	 */
 
-	mp32bnrnd(&dp->q, rgc, x);
-	mp32bnpowmod(&dp->p, &dp->g, x, y);
+	mpbnrnd(&dp->q, rgc, x);
+	mpbnpowmod(&dp->p, &dp->g, x, y);
 
 	return 0;
 }
@@ -139,11 +139,11 @@ static int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
 
 int dldp_pInit(dldp_p* dp)
 {
-	mp32bzero(&dp->p);
-	mp32bzero(&dp->q);
+	mpbzero(&dp->p);
+	mpbzero(&dp->q);
 	mpnzero(&dp->g);
 	mpnzero(&dp->r);
-	mp32bzero(&dp->n);
+	mpbzero(&dp->n);
 
 	return 0;
 }
@@ -151,11 +151,11 @@ int dldp_pInit(dldp_p* dp)
 int dldp_pFree(dldp_p* dp)
 {
 	/*@-usedef -compdef@*/
-	mp32bfree(&dp->p);
-	mp32bfree(&dp->q);
+	mpbfree(&dp->p);
+	mpbfree(&dp->q);
 	mpnfree(&dp->g);
 	mpnfree(&dp->r);
-	mp32bfree(&dp->n);
+	mpbfree(&dp->n);
 	/*@=usedef =compdef@*/
 
 	return 0;
@@ -163,11 +163,11 @@ int dldp_pFree(dldp_p* dp)
 
 int dldp_pCopy(dldp_p* dst, const dldp_p* src)
 {
-	mp32bcopy(&dst->p, &src->p);
-	mp32bcopy(&dst->q, &src->q);
+	mpbcopy(&dst->p, &src->p);
+	mpbcopy(&dst->q, &src->q);
 	mpncopy(&dst->r, &src->r);
 	mpncopy(&dst->g, &src->g);
-	mp32bcopy(&dst->n, &src->n);
+	mpbcopy(&dst->n, &src->n);
 
 	return 0;
 }
@@ -193,7 +193,7 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 		/*@=globs@*/
 
 		/* clear n */
-		mp32bzero(&dp->n);
+		mpbzero(&dp->n);
 
 		/* clear g */
 		mpnzero(&dp->g);
@@ -227,13 +227,13 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 		/* set q */
 		mp32copy(psize, temp, dp->p.modl);
 		mp32divtwo(psize, temp);
-		mp32bset(&dp->q, psize, temp);
+		mpbset(&dp->q, psize, temp);
 
 		/* set r = 2 */
 		mpnsetw(&dp->r, 2);
 
 		/* clear n */
-		mp32bzero(&dp->n);
+		mpbzero(&dp->n);
 
 		(void) dldp_pgoqGenerator_w(dp, rgc, temp);
 
@@ -259,10 +259,10 @@ int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 	while (1)
 	{
 		/* get a random value h (stored into g) */
-		mp32brnd_w(&dp->p, rgc, dp->g.data, wksp);
+		mpbrnd_w(&dp->p, rgc, dp->g.data, wksp);
 
 		/* first compute h^r mod p (stored in g) */
-		mp32bpowmod_w(&dp->p, size, dp->g.data, dp->r.size, dp->r.data, dp->g.data, wksp);
+		mpbpowmod_w(&dp->p, size, dp->g.data, dp->r.size, dp->r.data, dp->g.data, wksp);
 
 		if (mp32isone(size, dp->g.data))
 			continue;
@@ -325,8 +325,8 @@ int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 		/*@=globs@*/
 
 		/* set n */
-		mp32bsubone(&dp->p, temp);
-		mp32bset(&dp->n, psize, temp);
+		mpbsubone(&dp->p, temp);
+		mpbset(&dp->n, psize, temp);
 
 		(void) dldp_pgonGenerator_w(dp, rgc, temp);
 
@@ -353,13 +353,13 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 		/*@=globs@*/
 
 		/* set n */
-		mp32bsubone(&dp->p, temp);
-		mp32bset(&dp->n, psize, temp);
+		mpbsubone(&dp->p, temp);
+		mpbset(&dp->n, psize, temp);
 
 		/* set q */
 		mp32copy(psize, temp, dp->p.modl);
 		mp32divtwo(psize, temp);
-		mp32bset(&dp->q, psize, temp);
+		mpbset(&dp->q, psize, temp);
 
 		/* set r = 2 */
 		mpnsetw(&dp->r, 2);
@@ -382,7 +382,7 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 
 	while (1)
 	{
-		mp32brnd_w(&dp->p, rgc, dp->g.data, wksp);
+		mpbrnd_w(&dp->p, rgc, dp->g.data, wksp);
 
 		if (mp32istwo(dp->r.size, dp->r.data))
 		{
@@ -390,11 +390,11 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 			 * A little math here: the only element in the group which has order 2 is (p-1);
 			 * the two group elements raised to power two which result in 1 (mod p) are thus (p-1) and 1
 			 *
-			 * mp32brnd_w doesn't return 1 or (p-1), so the test where g^2 mod p = 1 can be safely skipped
+			 * mpbrnd_w doesn't return 1 or (p-1), so the test where g^2 mod p = 1 can be safely skipped
 			 */
 
 			/* check g^q mod p*/
-			mp32bpowmod_w(&dp->p, size, dp->g.data, dp->q.size, dp->q.modl, wksp, wksp+size);
+			mpbpowmod_w(&dp->p, size, dp->g.data, dp->q.size, dp->q.modl, wksp, wksp+size);
 			if (mp32isone(size, wksp))
 				continue;
 		}
@@ -414,20 +414,20 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 			mp32divtwo(size, wksp);
 
 			/* compute t = g^s mod p */
-			mp32bpowmod_w(&dp->p, size, dp->g.data, size, wksp, wksp+size, wksp+2*size);
+			mpbpowmod_w(&dp->p, size, dp->g.data, size, wksp, wksp+size, wksp+2*size);
 			/* compute t^2 mod p = g^2s mod p = g^r mod p*/
-			mp32bsqrmod_w(&dp->p, size, wksp+size, wksp+size, wksp+2*size);
+			mpbsqrmod_w(&dp->p, size, wksp+size, wksp+size, wksp+2*size);
 			if (mp32isone(size, wksp+size))
 				continue;
 
 			/* compute t^q mod p = g^qs mod p */
-			mp32bpowmod_w(&dp->p, size, wksp, dp->q.size, dp->q.modl, wksp+size, wksp+2*size);
+			mpbpowmod_w(&dp->p, size, wksp, dp->q.size, dp->q.modl, wksp+size, wksp+2*size);
 			if (mp32isone(size, wksp+size))
 				continue;
 
 			/* compute g^2q mod p */
-			mp32bpowmod_w(&dp->p, size, dp->g.data, dp->q.size, dp->q.modl, wksp, wksp+size);
-			mp32bsqrmod_w(&dp->p, size, wksp, wksp+size, wksp+2*size);
+			mpbpowmod_w(&dp->p, size, dp->g.data, dp->q.size, dp->q.modl, wksp, wksp+size);
+			mpbsqrmod_w(&dp->p, size, wksp, wksp+size, wksp+2*size);
 			if (mp32isone(size, wksp+size))
 				continue;
 		}

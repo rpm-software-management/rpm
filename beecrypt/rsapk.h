@@ -34,7 +34,7 @@
  */
 typedef struct
 {
-	mp32barrett n;
+	mpbarrett n;
 	mpnumber e;
 } rsapk;
 

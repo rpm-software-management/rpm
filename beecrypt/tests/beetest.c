@@ -30,7 +30,7 @@
 #include "blockmode.h"
 #include "aes.h"
 #include "blowfish.h"
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 #include "dhaes.h"
 #include "dlkp.h"
 #include "dsa.h"
@@ -75,9 +75,9 @@ static int testVectorInvMod(const dlkp_p* keypair)
 		register uint32* temp = (uint32*) malloc((13*size+11) * sizeof(uint32));
 
 		/*@-nullpass -nullptrarith @*/ /* temp may be NULL */
-		mp32brndinv_w(&keypair->param.n, &rngc, temp, temp+size, temp+2*size);
+		mpbrndinv_w(&keypair->param.n, &rngc, temp, temp+size, temp+2*size);
 
-		mp32bmulmod_w(&keypair->param.n, size, temp, size, temp+size, temp, temp+2*size);
+		mpbmulmod_w(&keypair->param.n, size, temp, size, temp+size, temp, temp+2*size);
 
 		rc = mp32isone(size, temp);
 
@@ -102,7 +102,7 @@ static int testVectorExpMod(const dlkp_p* keypair)
 	
 	mpnzero(&y);
 	
-	mp32bnpowmod(&keypair->param.p, &keypair->param.g, &keypair->x, &y);
+	mpbnpowmod(&keypair->param.p, &keypair->param.g, &keypair->x, &y);
 
 	rc = mp32eqx(y.size, y.data, keypair->y.size, keypair->y.data);
 
@@ -320,7 +320,7 @@ static int testVectorRSA(void)
 		mpnzero(&digest);
 		mpnzero(&s);
 
-		mp32bnrnd(&kp.n, &rngc, &digest);
+		mpbnrnd(&kp.n, &rngc, &digest);
 
 		(void) rsapri(&kp, &digest, &s);
 
@@ -363,7 +363,7 @@ static int testVectorDLDP(void)
 		(void) dldp_pgoqMake(&dp, &rc, 768 >> 5, 512 >> 5, 1);
 
 		/* we have the parameters, now see if g^q == 1 */
-		mp32bnpowmod(&dp.p, &dp.g, (mpnumber*) &dp.q, &gq);
+		mpbnpowmod(&dp.p, &dp.g, (mpnumber*) &dp.q, &gq);
 		result = mp32isone(gq.size, gq.data);
 
 		mpnfree(&gq);
@@ -658,7 +658,7 @@ static void testExpMods(void)
 
 	randomGeneratorContext rngc;
 
-	mp32barrett p;
+	mpbarrett p;
 	mpnumber tmp;
 	mpnumber g;
 	mpnumber x;
@@ -666,7 +666,7 @@ static void testExpMods(void)
 
 	memset(&rngc, 0, sizeof(randomGeneratorContext));
 
-	mp32bzero(&p);
+	mpbzero(&p);
 	mpnzero(&g);
 	mpnzero(&x);
 	mpnzero(&y);
@@ -685,16 +685,16 @@ static void testExpMods(void)
 		fprintf(stdout, "Timing modular exponentiations\n");
 		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 512, 512, 512);
 		mpnsethex(&tmp, p_512);
-		mp32bset(&p, tmp.size, tmp.data);
+		mpbset(&p, tmp.size, tmp.data);
 		mpnsize(&g, p.size);
 		mpnsize(&x, p.size);
-		mp32bnrnd(&p, &rngc, &g);
-		mp32bnrnd(&p, &rngc, &x);
+		mpbnrnd(&p, &rngc, &g);
+		mpbnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
-			mp32bnpowmod(&p, &g, &x, &y);
+			mpbnpowmod(&p, &g, &x, &y);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -702,16 +702,16 @@ static void testExpMods(void)
 		#endif
 		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 768, 768, 768);
 		mpnsethex(&tmp, p_768);
-		mp32bset(&p, tmp.size, tmp.data);
+		mpbset(&p, tmp.size, tmp.data);
 		mpnsize(&g, p.size);
 		mpnsize(&x, p.size);
-		mp32bnrnd(&p, &rngc, &g);
-		mp32bnrnd(&p, &rngc, &x);
+		mpbnrnd(&p, &rngc, &g);
+		mpbnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
-			mp32bnpowmod(&p, &g, &x, &y);
+			mpbnpowmod(&p, &g, &x, &y);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -719,16 +719,16 @@ static void testExpMods(void)
 		#endif
 		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 1024, 1024, 1024);
 		mpnsethex(&tmp, p_1024);
-		mp32bset(&p, tmp.size, tmp.data);
+		mpbset(&p, tmp.size, tmp.data);
 		mpnsize(&g, p.size);
 		mpnsize(&x, p.size);
-		mp32bnrnd(&p, &rngc, &g);
-		mp32bnrnd(&p, &rngc, &x);
+		mpbnrnd(&p, &rngc, &g);
+		mpbnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
-			mp32bnpowmod(&p, &g, &x, &y);
+			mpbnpowmod(&p, &g, &x, &y);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -744,13 +744,13 @@ static void testExpMods(void)
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
-			mp32bnpowmod(&p, &g, &x, &y);
+			mpbnpowmod(&p, &g, &x, &y);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
-		mp32bfree(&p);
+		mpbfree(&p);
 		mpnfree(&g);
 		mpnfree(&x);
 		mpnfree(&y);
@@ -976,10 +976,10 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 
 	dlkp_pInit(&keypair);
 
-	mp32bsethex(&keypair.param.p, dsa_p);
-	mp32bsethex(&keypair.param.q, dsa_q);
+	mpbsethex(&keypair.param.p, dsa_p);
+	mpbsethex(&keypair.param.q, dsa_q);
 	mpnsethex(&keypair.param.g, dsa_g);
-	mp32bsethex(&keypair.param.n, elg_n);
+	mpbsethex(&keypair.param.n, elg_n);
 	mpnsethex(&keypair.y, dsa_y);
 	mpnsethex(&keypair.x, dsa_x);
 
@@ -1124,10 +1124,10 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	memset(&keypair, 0, sizeof(dlkp_p));
 	(void) dlkp_pInit(&keypair);
 
-	mp32bsethex(&keypair.param.p, dsa_p);
-	mp32bsethex(&keypair.param.q, dsa_q);
+	mpbsethex(&keypair.param.p, dsa_p);
+	mpbsethex(&keypair.param.q, dsa_q);
 	mpnsethex(&keypair.param.g, dsa_g);
-	mp32bsethex(&keypair.param.n, elg_n);
+	mpbsethex(&keypair.param.n, elg_n);
 	mpnsethex(&keypair.y, dsa_y);
 	mpnsethex(&keypair.x, dsa_x);
 

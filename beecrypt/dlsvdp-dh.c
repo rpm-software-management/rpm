@@ -31,7 +31,7 @@
 
 int dlsvdp_pDHSecret(const dldp_p* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)
 {
-	mp32bnpowmod(&dp->p, y, x, s);
+	mpbnpowmod(&dp->p, y, x, s);
 
 	return 0;
 }

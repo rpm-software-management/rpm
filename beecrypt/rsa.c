@@ -38,7 +38,7 @@ int rsapri(const rsakp* kp, const mpnumber* m, mpnumber* c)
 	if (temp)
 	{
 		mpnsize(c, size);
-		mp32bpowmod_w(&kp->n, m->size, m->data, kp->d.size, kp->d.data, c->data, temp);
+		mpbpowmod_w(&kp->n, m->size, m->data, kp->d.size, kp->d.data, c->data, temp);
 
 		free(temp);
 
@@ -77,20 +77,20 @@ int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
 
 	/* compute j1 = m^d1 mod p, store @ ptemp */
 /*@-compdef@*/
-	mp32bpowmod_w(&kp->p, psize, ptemp+psize, kp->d1.size, kp->d1.data, ptemp, ptemp+2*psize);
+	mpbpowmod_w(&kp->p, psize, ptemp+psize, kp->d1.size, kp->d1.data, ptemp, ptemp+2*psize);
 
 	/* resize m for powmod p */
 	mp32setx(qsize, qtemp+psize, m->size, m->data);
 
 	/* compute j2 = m^d2 mod q, store @ qtemp */
-	mp32bpowmod_w(&kp->q, qsize, qtemp+psize, kp->d2.size, kp->d2.data, qtemp, qtemp+2*qsize);
+	mpbpowmod_w(&kp->q, qsize, qtemp+psize, kp->d2.size, kp->d2.data, qtemp, qtemp+2*qsize);
 /*@=compdef@*/
 
 	/* compute j1-j2 mod p, store @ ptemp */
-	mp32bsubmod_w(&kp->p, psize, ptemp, qsize, qtemp, ptemp, ptemp+2*psize);
+	mpbsubmod_w(&kp->p, psize, ptemp, qsize, qtemp, ptemp, ptemp+2*psize);
 
 	/* compute h = c*(j1-j2) mod p, store @ ptemp */
-	mp32bmulmod_w(&kp->p, psize, ptemp, psize, kp->c.data, ptemp, ptemp+2*psize);
+	mpbmulmod_w(&kp->p, psize, ptemp, psize, kp->c.data, ptemp, ptemp+2*psize);
 
 	/* make sure the signature gets the proper size */
 	mpnsize(c, nsize);
@@ -116,7 +116,7 @@ int rsavrfy(const rsapk* pk, const mpnumber* m, const mpnumber* c)
 
 	if (temp)
 	{
-		mp32bpowmod_w(&pk->n, c->size, c->data, pk->e.size, pk->e.data, temp, temp+size);
+		mpbpowmod_w(&pk->n, c->size, c->data, pk->e.size, pk->e.data, temp, temp+size);
 
 		rc = mp32eqx(size, temp, m->size, m->data);
 

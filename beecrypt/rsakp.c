@@ -46,7 +46,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 	if (temp)
 	{
-		mp32barrett r, psubone, qsubone, phi;
+		mpbarrett r, psubone, qsubone, phi;
 
 		nsize = pqsize << 1;
 
@@ -63,16 +63,16 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 		if (mp32le(pqsize, kp->p.modl, kp->q.modl))
 		{
 			/*@-sizeoftype@*/
-			memcpy(&r, &kp->q, sizeof(mp32barrett));
-			memcpy(&kp->q, &kp->p, sizeof(mp32barrett));
-			memcpy(&kp->p, &r, sizeof(mp32barrett));
+			memcpy(&r, &kp->q, sizeof(r));
+			memcpy(&kp->q, &kp->p, sizeof(kp->q));
+			memcpy(&kp->p, &r, sizeof(kp->p));
 			/*@=sizeoftype@*/
 		}
 
-		mp32bzero(&r);
-		mp32bzero(&psubone);
-		mp32bzero(&qsubone);
-		mp32bzero(&phi);
+		mpbzero(&r);
+		mpbzero(&psubone);
+		mpbzero(&qsubone);
+		mpbzero(&phi);
 
 		while (1)
 		{
@@ -90,61 +90,61 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 			/*@-usedef -branchstate @*/ /* r is set */
 			if (mp32le(pqsize, kp->p.modl, r.modl))
 			{
-				mp32bfree(&kp->q);
+				mpbfree(&kp->q);
 				/*@-sizeoftype@*/
-				memcpy(&kp->q, &kp->p, sizeof(mp32barrett));
-				memcpy(&kp->p, &r, sizeof(mp32barrett));
+				memcpy(&kp->q, &kp->p, sizeof(kp->q));
+				memcpy(&kp->p, &r, sizeof(kp->p));
 				/*@=sizeoftype@*/
-				mp32bzero(&r);
+				mpbzero(&r);
 				newn = 1;
 			}
 			else if (mp32le(pqsize, kp->q.modl, r.modl))
 			{
-				mp32bfree(&kp->q);
+				mpbfree(&kp->q);
 				/*@-sizeoftype@*/
-				memcpy(&kp->q, &r, sizeof(mp32barrett));
+				memcpy(&kp->q, &r, sizeof(kp->q));
 				/*@=sizeoftype@*/
-				mp32bzero(&r);
+				mpbzero(&r);
 				newn = 1;
 			}
 			else
 			{
-				mp32bfree(&r);
+				mpbfree(&r);
 				newn = 0;
 			}
 			/*@=usedef =branchstate @*/
 		}
 
-		mp32bset(&kp->n, nsize, temp);
+		mpbset(&kp->n, nsize, temp);
 
 		/* compute p-1 */
-		mp32bsubone(&kp->p, temp);
-		mp32bset(&psubone, pqsize, temp);
+		mpbsubone(&kp->p, temp);
+		mpbset(&psubone, pqsize, temp);
 
 		/* compute q-1 */
-		mp32bsubone(&kp->q, temp);
-		mp32bset(&qsubone, pqsize, temp);
+		mpbsubone(&kp->q, temp);
+		mpbset(&qsubone, pqsize, temp);
 
 		/*@-usedef@*/	/* psubone/qsubone are set */
 		/* compute phi = (p-1)*(q-1) */
 		mp32mul(temp, pqsize, psubone.modl, pqsize, qsubone.modl);
-		mp32bset(&phi, nsize, temp);
+		mpbset(&phi, nsize, temp);
 
 		/* compute d = inv(e) mod phi */
 		mpnsize(&kp->d, nsize);
-		(void) mp32binv_w(&phi, kp->e.size, kp->e.data, kp->d.data, temp);
+		(void) mpbinv_w(&phi, kp->e.size, kp->e.data, kp->d.data, temp);
 
 		/* compute d1 = d mod (p-1) */
 		mpnsize(&kp->d1, pqsize);
-		mp32bmod_w(&psubone, kp->d.data, kp->d1.data, temp);
+		mpbmod_w(&psubone, kp->d.data, kp->d1.data, temp);
 
 		/* compute d2 = d mod (q-1) */
 		mpnsize(&kp->d2, pqsize);
-		mp32bmod_w(&qsubone, kp->d.data, kp->d2.data, temp);
+		mpbmod_w(&qsubone, kp->d.data, kp->d2.data, temp);
 
 		/* compute c = inv(q) mod p */
 		mpnsize(&kp->c, pqsize);
-		(void) mp32binv_w(&kp->p, pqsize, kp->q.modl, kp->c.data, temp);
+		(void) mpbinv_w(&kp->p, pqsize, kp->q.modl, kp->c.data, temp);
 
 		free(temp);
 		/*@=usedef@*/
@@ -160,11 +160,11 @@ int rsakpInit(rsakp* kp)
 {
 	memset(kp, 0, sizeof(*kp));
 	/* or
-	mp32bzero(&kp->n);
+	mpbzero(&kp->n);
 	mpnzero(&kp->e);
 	mpnzero(&kp->d);
-	mp32bzero(&kp->p);
-	mp32bzero(&kp->q);
+	mpbzero(&kp->p);
+	mpbzero(&kp->q);
 	mpnzero(&kp->d1);
 	mpnzero(&kp->d2);
 	mpnzero(&kp->c);
@@ -177,11 +177,11 @@ int rsakpInit(rsakp* kp)
 int rsakpFree(rsakp* kp)
 {
 	/*@-usereleased -compdef @*/ /* kp->param.{n,p,q}.modl is OK */
-	mp32bfree(&kp->n);
+	mpbfree(&kp->n);
 	mpnfree(&kp->e);
 	mpnfree(&kp->d);
-	mp32bfree(&kp->p);
-	mp32bfree(&kp->q);
+	mpbfree(&kp->p);
+	mpbfree(&kp->q);
 	mpnfree(&kp->d1);
 	mpnfree(&kp->d2);
 	mpnfree(&kp->c);
@@ -192,11 +192,11 @@ int rsakpFree(rsakp* kp)
 
 int rsakpCopy(rsakp* dst, const rsakp* src)
 {
-	mp32bcopy(&dst->n, &src->n);
+	mpbcopy(&dst->n, &src->n);
 	mpncopy(&dst->e, &src->e);
 	mpncopy(&dst->d, &src->d);
-	mp32bcopy(&dst->p, &src->p);
-	mp32bcopy(&dst->q, &src->q);
+	mpbcopy(&dst->p, &src->p);
+	mpbcopy(&dst->q, &src->q);
 	mpncopy(&dst->d1, &src->d1);
 	mpncopy(&dst->d2, &src->d2);
 	mpncopy(&dst->c, &src->c);

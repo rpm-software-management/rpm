@@ -37,13 +37,13 @@ extern "C" {
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dsasign(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 	/*@modifies r->size, r->data, *r->data, s->size, s->data @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 	/*@*/;
 
 #ifdef __cplusplus

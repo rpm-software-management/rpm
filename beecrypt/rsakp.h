@@ -34,11 +34,11 @@
 
 typedef struct
 {
-	mp32barrett n;
+	mpbarrett n;
 	mpnumber e;
 	mpnumber d;
-	mp32barrett p;
-	mp32barrett q;
+	mpbarrett p;
+	mpbarrett q;
 	mpnumber d1;
 	mpnumber d2;
 	mpnumber c;

@@ -51,20 +51,20 @@ int  mp32ptrials     (uint32 bits)
 /**
  */
 BEECRYPTAPI
-int  mp32pmilrab_w   (const mp32barrett* p, randomGeneratorContext* rc, int t, /*@out@*/ uint32* wksp)
+int  mp32pmilrab_w   (const mpbarrett* p, randomGeneratorContext* rc, int t, /*@out@*/ uint32* wksp)
 	/*@modifies wksp @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32prnd_w      (mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@null@*/ const mpnumber* f, /*@out@*/ uint32* wksp)
+void mp32prnd_w      (mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@null@*/ const mpnumber* f, /*@out@*/ uint32* wksp)
 	/*@globals mp32spprod @*/
 	/*@modifies p, rc, wksp @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32prndsafe_w  (mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@out@*/ uint32* wksp)
+void mp32prndsafe_w  (mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@out@*/ uint32* wksp)
 	/*@globals mp32spprod @*/
 	/*@modifies p, rc, wksp @*/;
 
@@ -72,14 +72,14 @@ void mp32prndsafe_w  (mp32barrett* p, randomGeneratorContext* rc, uint32 size, i
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32prndcon_w   (mp32barrett* p, randomGeneratorContext* rc, uint32, int, const mpnumber*, const mpnumber*, const mpnumber*, mpnumber*, /*@out@*/ uint32* wksp)
+void mp32prndcon_w   (mpbarrett* p, randomGeneratorContext* rc, uint32, int, const mpnumber*, const mpnumber*, const mpnumber*, mpnumber*, /*@out@*/ uint32* wksp)
 	/*@modifies wksp @*/;
 #endif
 
 /**
  */
 BEECRYPTAPI
-void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, /*@null@*/ const mpnumber* f, mpnumber* r, int cofactor, /*@out@*/ uint32* wksp)
+void mp32prndconone_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, const mpbarrett* q, /*@null@*/ const mpnumber* f, mpnumber* r, int cofactor, /*@out@*/ uint32* wksp)
 	/*@globals mp32spprod @*/
 	/*@modifies p, rc, r, wksp @*/;
 

@@ -47,7 +47,7 @@ int main()
                 dldp_pgoqMake(&params, &rngc, 512 >> 5, 160 >> 5, 1);
 
                 /* we have the parameters, now see if g^q == 1 */
-                mp32bnpowmod(&params.p, &params.g, (mpnumber*) &params.q, &gq);
+                mpbnpowmod(&params.p, &params.g, (mpnumber*) &params.q, &gq);
                 if (mp32isone(gq.size, gq.data))
 			printf("ok\n");
 		else
