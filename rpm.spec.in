@@ -6,6 +6,7 @@
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
+%define _use_internal_dependency_generator 1
 
 %define	__prefix	/usr
 %{?!_lib: %define _lib lib}
@@ -16,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.23
+Release: 0.25
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -459,6 +460,11 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Dec 13 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.25
+- debug_packages "works", but non-noarch w/o %setup has empty payload.
+- make dependency generation "opt-in" in order to build in distro.
+- rebuild rpm with internal dependency generation enabled.
+
 * Thu Dec 12 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.23
 - fix: add rpmlib(VersionedDependencies) if versioned Provides: found.
 - fix: add %%ifnarch noarch to debug_package macro.
