@@ -66,7 +66,11 @@ struct Script *openScript(Spec spec, int builddir, char *name)
     fprintf(script->file, "RPM_BUILD_DIR=\"%s\"\n", getVar(RPMVAR_BUILDDIR));
     fprintf(script->file, "RPM_DOC_DIR=\"%s\"\n", getVar(RPMVAR_DOCDIR));
     fprintf(script->file, "RPM_OPT_FLAGS=\"%s\"\n", getVar(RPMVAR_OPTFLAGS));
-    fprintf(script->file, "RPM_ROOT_DIR=\"%s\"\n", getVar(RPMVAR_ROOT));
+    if (getVar(RPMVAR_ROOT)) {
+	fprintf(script->file, "RPM_ROOT_DIR=\"%s\"\n", getVar(RPMVAR_ROOT));
+    } else {
+	fprintf(script->file, "RPM_ROOT_DIR=\"\"\n");
+    }
 
     fprintf(script->file, "RPM_PACKAGE_NAME=\"%s\"\n", spec->name);
     getEntry(main_package->header, RPMTAG_VERSION, &foo, (void **)&s, &foo);
