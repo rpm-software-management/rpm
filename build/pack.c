@@ -48,7 +48,9 @@ static int writeMagic(Spec s, int fd, char *name, unsigned short type);
 static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir);
 static int compare_fe(const void *ap, const void *bp);
-static int process_filelist(Header header, StringBuf sb, int *size, int type);
+static int process_filelist(Header header, StringBuf sb, int *size,
+			    char *name, char *version, char *release,
+			    int type);
 static char *buildHost(void);
 static int add_file_aux(char *file, struct stat *sb, int flag);
 static char *getUname(uid_t uid);
@@ -296,8 +298,6 @@ static int add_file(struct file_entry **festack,
     Gisdoc = isdoc;
     Gisconf = isconf;
 
-    /* XXX do globbing and %doc expansion here */
-
     p = malloc(sizeof(struct file_entry));
     strcpy(p->file, name);
     p->isdoc = isdoc;
@@ -395,7 +395,8 @@ static int glob_error(const char *foo, int bar)
     return 1;
 }
 
-static int process_filelist(Header header, StringBuf sb, int *size, int type)
+static int process_filelist(Header header, StringBuf sb, int *size,
+			    char *name, char *version, char *release, int type)
 {
     char buf[1024];
     char **files, **fp;
@@ -408,6 +409,8 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
     int c;
     int x;
     glob_t glob_result;
+    int special_doc;
+    int passed_special_doc = 0;
 
     fes = NULL;
     *size = 0;
@@ -421,6 +424,7 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
     while (*fp) {
 	strcpy(buf, *fp);  /* temp copy */
 	isdoc = 0;
+	special_doc = 0;
 	isconf = 0;
 	isdir = 0;
 	filename = NULL;
@@ -437,9 +441,30 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
 		addDocdir(s);
 		break;
 	    } else {
-		filename = s;
+		if (isdoc && (*s != '/')) {
+		    /* This is a special %doc macro */
+		    special_doc = 1;
+		} else {
+		    filename = s;
+		}
 	    }
 	    s = strtok(NULL, " \t\n");
+	}
+	if (special_doc) {
+	    if (passed_special_doc) {
+		fp++;
+		continue;
+	    } else {
+		if (filename || isconf || isdir) {
+		    error(RPMERR_BADSPEC,
+			  "Can't mix special %%doc with other forms: %s", fp);
+		    return(RPMERR_BADSPEC);
+		}
+		sprintf(buf, "%s/%s-%s-%s", getVar(RPMVAR_DOCDIR),
+			name, version, release);
+		filename = buf;
+		passed_special_doc = 1;
+	    }
 	}
 	if (! filename) {
 	    fp++;
@@ -726,7 +751,8 @@ int packageBinaries(Spec s)
 	}
 	freeIterator(headerIter);
 	
-	if (process_filelist(outHeader, pr->filelist, &size, RPMLEAD_BINARY)) {
+	if (process_filelist(outHeader, pr->filelist, &size,
+			     s->name, version, release, RPMLEAD_BINARY)) {
 	    return 1;
 	}
 	
@@ -833,7 +859,7 @@ int packageSource(Spec s)
     while (package) {
 	if (package->icon) {
 	    sprintf(src, "%s/%s", getVar(RPMVAR_SOURCEDIR), package->icon);
-	    sprintf(dest, "%s/%s", tempdir, source->source);
+	    sprintf(dest, "%s/%s", tempdir, package->icon);
 	    appendLineStringBuf(filelist, dest);
 	    symlink(src, dest);
 	}
@@ -871,7 +897,8 @@ int packageSource(Spec s)
     addEntry(outHeader, RPMTAG_PATCH, STRING_ARRAY_TYPE, patches, pcount);
     /* XXX - need: distribution, vendor, release */
 
-    if (process_filelist(outHeader, filelist, &size, RPMLEAD_SOURCE)) {
+    if (process_filelist(outHeader, filelist, &size,
+			 s->name, version, release, RPMLEAD_SOURCE)) {
 	return 1;
     }
     
@@ -902,11 +929,13 @@ int packageSource(Spec s)
     package = s->packages;
     while (package) {
 	if (package->icon) {
-	    sprintf(dest, "%s/%s", tempdir, source->source);
+	    sprintf(dest, "%s/%s", tempdir, package->icon);
 	    unlink(dest);
 	}
 	package = package->next;
     }
+    sprintf(dest, "%s%s", tempdir, strrchr(s->specfile, '/'));
+    unlink(dest);
     rmdir(tempdir);
     
     return 0;
