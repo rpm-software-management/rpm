@@ -1,3 +1,16 @@
+2.2.6 -> 2.2.7:
+	- applied lots of portability patches
+	- builds on Solaris machines now!
+	- will build w/o i18n support if GNU gettext isn't installed
+	- added inet_aton, setenv functions for libmisc
+	- added Sun4c, Sun4m architectures
+	- use vfork() if fork() doesn't exist (for AmigaOS)
+	- look for GNU cpio, complain if it doesn't exist at build time
+	- put path for GNU cpio in /usr/lib/librpmrc
+	- install rpm.shared if rpm wasn't built (for Solaris)
+	- readHeader() in librpm.a should work on sockets (which may
+	  return partial reads)
+
 2.2.5 -> 2.2.6:
 	- added --rebuilddb to rebuild database, updated man page
 	- fix fd leak in md5sum
