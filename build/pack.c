@@ -211,35 +211,39 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 {
     char **f, *s;
     int count;
-    int cpioPID;
-    int inpipe[2];
-    int outpipe[2];
-    int status;
-    gzFile zFile;
-    void *oldhandler;
-    int cpioDead;
-    int bytes;
-    unsigned char buf[8192];
+    int cpioPID, gzipPID;
+    int cpioDead, gzipDead;
+    int toCpio[2];
+    int fromCpio[2];
+    int toGzip[2];
+
     StringBuf writeBuff;
     char *writePtr;
     int writeBytesLeft, bytesWritten;
 
+    int bytes;
+    unsigned char buf[8192];
+
+    int status;
+    void *oldhandler;
+
     *archiveSize = 0;
     
-    pipe(inpipe);
-    pipe(outpipe);
+    pipe(toCpio);
+    pipe(fromCpio);
     
     oldhandler = signal(SIGPIPE, SIG_IGN);
 
+    /* CPIO */
     if (!(cpioPID = fork())) {
 	close(0);
 	close(1);
-	close(inpipe[1]);
-	close(outpipe[0]);
+	close(toCpio[1]);
+	close(fromCpio[0]);
 	close(fd);
 	
-	dup2(inpipe[0], 0);  /* Make stdin the in pipe */
-	dup2(outpipe[1], 1); /* Make stdout the out pipe */
+	dup2(toCpio[0], 0);   /* Make stdin the in pipe */
+	dup2(fromCpio[1], 1); /* Make stdout the out pipe */
 
 	if (tempdir) {
 	    chdir(tempdir);
@@ -261,16 +265,42 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 	exit(RPMERR_EXEC);
     }
     if (cpioPID < 0) {
-	error(RPMERR_FORK, "Couldn't fork");
+	error(RPMERR_FORK, "Couldn't fork cpio");
 	return RPMERR_FORK;
     }
 
-    close(inpipe[0]);
-    close(outpipe[1]);
-    fcntl(outpipe[0], F_SETFL, O_NONBLOCK);
-    fcntl(inpipe[1], F_SETFL, O_NONBLOCK);
+    pipe(toGzip);
+    
+    /* GZIP */
+    if (!(gzipPID = fork())) {
+	close(0);
+	close(1);
+	close(toGzip[1]);
+	close(toCpio[0]);
+	close(toCpio[1]);
+	close(fromCpio[0]);
+	close(fromCpio[1]);
+	
+	dup2(toGzip[0], 0);  /* Make stdin the in pipe       */
+	dup2(fd, 1);         /* Make stdout the passed-in fd */
 
-    zFile = gzdopen(fd, "w9");
+	execlp("gzip", "gzip", "-c9fn", NULL);
+	error(RPMERR_EXEC, "Couldn't exec gzip");
+	exit(RPMERR_EXEC);
+    }
+    if (gzipPID < 0) {
+	error(RPMERR_FORK, "Couldn't fork gzip");
+	return RPMERR_FORK;
+    }
+
+    close(toCpio[0]);
+    close(fromCpio[1]);
+    close(toGzip[0]);
+
+    /* It is OK to block writing to gzip.  But it is not OK */
+    /* to block reading or writing from/to cpio.            */
+    fcntl(fromCpio[0], F_SETFL, O_NONBLOCK);
+    fcntl(toCpio[1], F_SETFL, O_NONBLOCK);
 
     if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
 	/* count may already be 0, but this is safer */
@@ -290,15 +320,19 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
     writePtr = getStringBuf(writeBuff);
    
     cpioDead = 0;
+    gzipDead = 0;
     do {
 	if (waitpid(cpioPID, &status, WNOHANG)) {
 	    cpioDead = 1;
 	}
+	if (waitpid(gzipPID, &status, WNOHANG)) {
+	    gzipDead = 1;
+	}
 
-	/* Write some stuff to the cpio process */
+	/* Write some stuff to the cpio process if possible */
         if (writeBytesLeft) {
 	    if ((bytesWritten =
-		  write(inpipe[1], writePtr,
+		  write(toCpio[1], writePtr,
 		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
 	        if (errno != EAGAIN) {
 		    perror("Damn!");
@@ -309,26 +343,44 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 	    writeBytesLeft -= bytesWritten;
 	    writePtr += bytesWritten;
 	} else {
-	    close(inpipe[1]);
+	    close(toCpio[1]);
 	}
 	
-	/* Read any data from cpio, write it to the output fd */
-	bytes = read(outpipe[0], buf, sizeof(buf));
+	/* Read any data from cpio, write it to gzip */
+	bytes = read(fromCpio[0], buf, sizeof(buf));
 	while (bytes > 0) {
 	    *archiveSize += bytes;
-	    gzwrite(zFile, buf, bytes);
-	    bytes = read(outpipe[0], buf, sizeof(buf));
+	    write(toGzip[1], buf, bytes);
+	    bytes = read(fromCpio[0], buf, sizeof(buf));
 	}
 
-    } while (!cpioDead);
+	/* while cpio is running, or we are writing to gzip */
+	/* terminate if gzip dies on us in the middle       */
+    } while (((!cpioDead) || bytes) && (!gzipDead));
 
-    close(outpipe[0]);
-    gzclose(zFile);
+    if (gzipDead) {
+	error(RPMERR_GZIP, "gzip died");
+	return 1;
+    }
+    
+    close(toGzip[1]); /* Terminates the gzip process */
+    close(toCpio[1]);
+    close(fromCpio[0]);
     
     signal(SIGPIPE, oldhandler);
+
+    if (writeBytesLeft) {
+	error(RPMERR_CPIO, "failed to write all data to cpio");
+	return 1;
+    }
     waitpid(cpioPID, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	error(RPMERR_CPIO, "cpio failed");
+	return 1;
+    }
+    waitpid(gzipPID, &status, 0);
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	error(RPMERR_GZIP, "gzip failed");
 	return 1;
     }
 
