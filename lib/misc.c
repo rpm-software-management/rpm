@@ -1,5 +1,7 @@
 #include <errno.h>
 #include <ctype.h>
+#include <grp.h>
+#include <pwd.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -168,4 +170,133 @@ int dosetenv(const char *name, const char *value, int overwrite) {
     strcat(a, value);
     
     return putenv(a);
+}
+
+/* unameToUid(), uidTouname() and the group variants are really poorly
+   implemented. They really ought to use hash tables. I just made the
+   guess that most files would be owned by root or the same person/group
+   who owned the last file. Those two values are cached, everything else
+   is looked up via getpw() and getgr() functions.  If this performs
+   too poorly I'll have to implement it properly :-( */
+
+uid_t unameToUid(char * thisUname) {
+    static char * lastUname = NULL;
+    static int lastUnameLen = 0;
+    static int lastUnameAlloced;
+    static uid_t lastUid;
+    struct passwd * pwent;
+    int thisUnameLen;
+   
+    if (!thisUname) {
+	lastUnameLen = 0;
+	return -1;
+    }
+
+    thisUnameLen = strlen(thisUname);
+    if (thisUnameLen != lastUnameLen || strcmp(thisUname, lastUname)) {
+	if (lastUnameAlloced < thisUnameLen + 1) {
+	    lastUnameAlloced = thisUnameLen + 10;
+	    lastUname = realloc(lastUname, lastUnameAlloced);
+	}
+	strcpy(lastUname, thisUname);
+
+	pwent = getpwnam(thisUname);
+	if (!pwent) {
+	    lastUnameLen = 0;
+	    lastUid = -1;
+	} else {
+	    lastUid = pwent->pw_uid;
+	}
+    }
+
+    return lastUid;
+}
+
+uid_t gnameToGid(char * thisGname) {
+    static char * lastGname = NULL;
+    static int lastGnameLen = 0;
+    static int lastGnameAlloced;
+    static uid_t lastGid;
+    int thisGnameLen;
+    struct group * grent;
+
+    if (!thisGname) {
+	lastGnameLen = 0;
+	return -1;
+    }
+   
+    thisGnameLen = strlen(thisGname);
+    if (thisGnameLen != lastGnameLen || strcmp(thisGname, lastGname)) {
+	if (lastGnameAlloced < thisGnameLen + 1) {
+	    lastGnameAlloced = thisGnameLen + 10;
+	    lastGname = realloc(lastGname, lastGnameAlloced);
+	}
+	strcpy(lastGname, thisGname);
+
+	grent = getgrnam(thisGname);
+	if (!grent) {
+	    lastGnameLen = 0;
+	    lastGid = -1;
+	} else {
+	    lastGid = grent->gr_gid;
+	}
+    }
+
+    return lastGid;
+}
+
+char * uidToUname(uid_t uid) {
+    static int lastUid = -1;
+    static char * lastUname = NULL;
+    static int lastUnameLen = 0;
+    struct passwd * pwent;
+    int len;
+
+    if (uid == -1) {
+	lastUid = -1;
+	return NULL;
+    } else if (uid == lastUid) {
+	return lastUname;
+    } else {
+	pwent = getpwuid(uid);
+	if (!pwent) return NULL;
+
+	lastUid = uid;
+	len = strlen(pwent->pw_name);
+	if (lastUnameLen < len + 1) {
+	    lastUnameLen = len + 20;
+	    lastUname = realloc(lastUname, lastUnameLen);
+	}
+	strcpy(lastUname, pwent->pw_name);
+
+	return lastUname;
+    }
+}
+
+char * gidToGname(gid_t gid) {
+    static int lastGid = -1;
+    static char * lastGname = NULL;
+    static int lastGnameLen = 0;
+    struct group * grent;
+    int len;
+
+    if (gid == -1) {
+	lastGid = -1;
+	return NULL;
+    } else if (gid == lastGid) {
+	return lastGname;
+    } else {
+	grent = getgrgid(gid);
+	if (!grent) return NULL;
+
+	lastGid = gid;
+	len = strlen(grent->gr_name);
+	if (lastGnameLen < len + 1) {
+	    lastGnameLen = len + 20;
+	    lastGname = realloc(lastGname, lastGnameLen);
+	}
+	strcpy(lastGname, grent->gr_name);
+
+	return lastGname;
+    }
 }
