@@ -1,4 +1,4 @@
-LIBOBJECTS = spec.o vspec.o build.o pack.o
+LIBOBJECTS = spec.o vspec.o build.o pack.o myftw.o
 LIBBUILD = libbuild.a
 LOADLIBES = -lrpm $(LIBEFENCE)
 
