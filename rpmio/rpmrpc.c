@@ -1478,6 +1478,8 @@ fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
 	return NULL;
     if (ISAVMAGIC(dir))
 	return avReaddir(dir);
+    if (ISDAVMAGIC(dir))
+	return davReaddir(dir);
     return readdir(dir);
 }
 
@@ -1489,5 +1491,7 @@ fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
 	return 0;
     if (ISAVMAGIC(dir))
 	return avClosedir(dir);
+    if (ISDAVMAGIC(dir))
+	return davClosedir(dir);
     return closedir(dir);
 }

@@ -37,7 +37,7 @@ librpmio_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	@WITH_LUA_LIB@ \
 	$(top_builddir)/file/src/libmagic.la \
 	@WITH_ZLIB_LIB@ \
-	-lrt -lpthread
+	-lneon -lrt -lpthread
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
 

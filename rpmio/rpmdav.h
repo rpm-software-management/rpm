@@ -28,8 +28,10 @@ struct __dirstream {
 # define DT_SOCK	12
 # define DT_WHT		14
 typedef struct __dirstream *	AVDIR;
+typedef struct __dirstream *	DAVDIR;
 #else
 typedef DIR *			AVDIR;
+typedef DIR *			DAVDIR;
 #endif
 
 
@@ -38,6 +40,12 @@ typedef DIR *			AVDIR;
 /*@unchecked@*/
 extern int avmagicdir;
 #define ISAVMAGIC(_dir) (!memcmp((_dir), &avmagicdir, sizeof(avmagicdir)))
+
+/**
+ */
+/*@unchecked@*/
+extern int davmagicdir;
+#define ISDAVMAGIC(_dir) (!memcmp((_dir), &davmagicdir, sizeof(davmagicdir)))
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +79,25 @@ struct dirent * avReaddir(DIR * dir)
 DIR * avOpendir(const char * path)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * Close a DAV collection.
+ * @param dir		argv DIR
+ * @return 		0 always
+ */
+int davClosedir(/*@only@*/ DIR * dir)
+	/*@globals fileSystem @*/
+	/*@modifies dir, fileSystem @*/;
+
+/**
+ * Return next entry from a DAV collection.
+ * @param dir		argv DIR
+ * @return 		next entry
+ */
+/*@dependent@*/ /*@null@*/
+struct dirent * davReaddir(DIR * dir)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /**
  * Create an argv directory from DAV collection.
