@@ -341,6 +341,11 @@ fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmd
     return res;
 }
 
+static long hdr_hash(hdrObject *h)
+{
+    return h;
+}
+
 /** \ingroup python
  */
 static PyObject *

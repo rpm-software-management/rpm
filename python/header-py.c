@@ -336,6 +336,11 @@ static int hdr_compare(hdrObject * a, hdrObject * b)
     return rpmVersionCompare(a->h, b->h);
 }
 
+static long hdr_hash(hdrObject *h)
+{
+    return h;
+}
+
 /** \ingroup python
  */
 /*@unchecked@*/ /*@observer@*/
@@ -594,7 +599,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_as_number */
 	0,	 			/* tp_as_sequence */
 	&hdr_as_mapping,		/* tp_as_mapping */
-	0,				/* tp_hash */
+	hdr_hash,			/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
 	0,				/* tp_getattro */
