@@ -4,17 +4,23 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Constants.xs,v 1.3 2000/06/05 08:10:32 rjray Exp $";
+static char * const rcsid = "$Id: Constants.xs,v 1.4 2000/06/14 09:26:22 rjray Exp $";
 
 static int
-not_here(char *s)
+not_here(pTHX_ char *s)
 {
-    croak("%s not implemented on this architecture", s);
-    return -1;
+    char* errmsg;
+
+    Newz(NULL, errmsg, strlen(s) + 42, char);
+    snprintf(errmsg, strlen(s) + 41,
+             "%s not implemented on this architecture", s);
+    rpm_error(aTHX_ RPMERR_BADARG, errmsg);
+
+    return 0;
 }
 
 static int
-constant(char *name, int arg)
+constant(pTHX_ char *name, int arg)
 {
     errno = 0;
 
@@ -1517,7 +1523,7 @@ constant(char *name, int arg)
 
 not_there:
     errno = ENOENT;
-    return 0;
+    return not_here(aTHX_ name);
 }
 
 
@@ -1525,7 +1531,11 @@ MODULE = RPM::Constants PACKAGE = RPM::Constants
 
 
 int
-constant(name,arg)
-        char *          name
-        int             arg
-        PROTOTYPE: $;$
+constant(name, arg=0)
+    char* name;
+    int arg;
+    PROTOTYPE: $;$
+    CODE:
+    RETVAL = constant(aTHX_ name, arg);
+    OUTPUT:
+    RETVAL
