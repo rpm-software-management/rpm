@@ -290,6 +290,19 @@ void freeFi(TFI_t fi)
     case FI_UNDO:	return "undo";
     case FI_COMMIT:	return "commit";
     case FI_DESTROY:	return "destroy";
+    case FI_VERIFY:	return "verify";
+    case FI_UNLINK:	return "unlink";
+    case FI_RENAME:	return "rename";
+    case FI_MKDIR:	return "mkdir";
+    case FI_RMDIR:	return "rmdir";
+    case FI_CHOWN:	return "chown";
+    case FI_LCHOWN:	return "lchown";
+    case FI_CHMOD:	return "chmod";
+    case FI_UTIME:	return "utime";
+    case FI_SYMLINK:	return "symlink";
+    case FI_LINK:	return "link";
+    case FI_MKFIFO:	return "mkfifo";
+    case FI_MKNOD:	return "mknod";
     default:		return "???";
     }
     /*@noteached@*/
@@ -371,9 +384,11 @@ int pkgActions(const rpmTransactionSet ts, TFI_t fi)
 	if (fi->actions[i] & FA_DONE)
 	    continue;
 
+#if 0
 	rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
 			fi->dnl[fi->dil[i]], fi->bnl[i],
 		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
+#endif
 
 	ext = NULL;
 

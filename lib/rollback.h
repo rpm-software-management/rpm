@@ -10,18 +10,33 @@
 
 /**
  */
+#define	FI_INTERNAL	0x8000
+#define	_fi(_a)		((_a) | FI_INTERNAL)
 typedef enum fileStage_e {
-    FI_CREATE	= 0,
-    FI_INIT,
-    FI_MAP,
-    FI_SKIP,
-    FI_PRE,
-    FI_PROCESS,
-    FI_POST,
-    FI_NOTIFY,
-    FI_UNDO,
-    FI_COMMIT,
-    FI_DESTROY,
+    FI_CREATE	=  _fi(0),
+    FI_INIT	=   1,
+    FI_MAP	=   2,
+    FI_SKIP	=  _fi(3),
+    FI_PRE	=   4,
+    FI_PROCESS	=   5,
+    FI_POST	=   6,
+    FI_NOTIFY	=  _fi(7),
+    FI_UNDO	=   8,
+    FI_COMMIT	=   9,
+    FI_DESTROY	=  10,
+    FI_VERIFY	=  _fi(11),
+    FI_UNLINK	=  _fi(12),
+    FI_RENAME	=  _fi(13),
+    FI_MKDIR	=  _fi(14),
+    FI_RMDIR	=  _fi(15),
+    FI_CHOWN	=  _fi(16),
+    FI_LCHOWN	=  _fi(17),
+    FI_CHMOD	=  _fi(18),
+    FI_UTIME	=  _fi(19),
+    FI_SYMLINK	=  _fi(20),
+    FI_LINK	=  _fi(21),
+    FI_MKFIFO	=  _fi(22),
+    FI_MKNOD	=  _fi(23),
 } fileStage;
 
 /**

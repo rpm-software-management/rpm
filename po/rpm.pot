@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-27 12:37-0500\n"
+"POT-Creation-Date: 2001-01-27 21:12-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2185,80 +2185,50 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:650
+#: lib/cpio.c:913
 #, c-format
-msgid "can't rename %s to %s: %s\n"
+msgid "%8x %s -> %s path %s\n"
 msgstr ""
 
-#: lib/cpio.c:656
-#, c-format
-msgid "can't unlink %s: %s\n"
-msgstr ""
-
-#: lib/cpio.c:962
-#, c-format
-msgid "\t%s path %s\n"
-msgstr ""
-
-#: lib/cpio.c:968
-#, c-format
-msgid "\t%s mkdir/rename %s.TID\n"
-msgstr ""
-
-#: lib/cpio.c:1011
-#, c-format
-msgid "\t%s install %s.TID\n"
-msgstr ""
-
-#: lib/cpio.c:1031
-#, c-format
-msgid "\t%s set info %s.TID\n"
-msgstr ""
-
-#: lib/cpio.c:1053
-#, c-format
-msgid "\t%s rename/rmdir %s\n"
-msgstr ""
-
-#: lib/cpio.c:1130
+#: lib/cpio.c:1257
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1668
+#: lib/cpio.c:1661
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1671
+#: lib/cpio.c:1664
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1672
+#: lib/cpio.c:1665
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1690
+#: lib/cpio.c:1686
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1691
+#: lib/cpio.c:1687
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1692
+#: lib/cpio.c:1688
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1693
+#: lib/cpio.c:1689
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1694
+#: lib/cpio.c:1690
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1703
+#: lib/cpio.c:1699
 msgid " failed - "
 msgstr ""
 
@@ -3083,37 +3053,37 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rollback.c:374
+#: lib/rollback.c:388
 #, c-format
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/rollback.c:413
+#: lib/rollback.c:428
 #, c-format
 msgid "%s: %s%s created as %s\n"
 msgstr ""
 
-#: lib/rollback.c:440
+#: lib/rollback.c:455
 #, c-format
 msgid "%s: cannot remove %s - directory not empty\n"
 msgstr ""
 
-#: lib/rollback.c:445
+#: lib/rollback.c:460
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/rollback.c:457
+#: lib/rollback.c:472
 #, c-format
 msgid "%s removal of %s failed: %s\n"
 msgstr ""
 
-#: lib/rollback.c:475
+#: lib/rollback.c:490
 #, c-format
 msgid "%s: %s saved as %s\n"
 msgstr ""
 
-#: lib/rollback.c:481
+#: lib/rollback.c:496
 #, c-format
 msgid "%s rename of %s to %s failed: %s\n"
 msgstr ""
