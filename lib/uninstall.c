@@ -11,7 +11,7 @@
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
 			                 "/usr/X11R6/bin";
 
-typedef enum fileActions { REMOVE, BACKUP, KEEP } fileActions_t;
+typedef enum fileActions { U_REMOVE, U_BACKUP, U_KEEP } fileActions_t;
 
 static int sharedFileCmp(const void * one, const void * two);
 static int handleSharedFiles(rpmdb db, int offset, char ** fileList, 
@@ -170,7 +170,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     
 	  case RPMFILE_STATE_NETSHARED:
 	    rpmMessage(RPMMESS_DEBUG, _("     file is netshared (so don't touch it)\n"));
-	    fileActions[sharedList[i].mainFileNumber] = KEEP;
+	    fileActions[sharedList[i].mainFileNumber] = U_KEEP;
 	    break;
     
 	  case RPMFILE_STATE_NORMAL:
@@ -178,7 +178,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 			secFileMd5List[sharedList[i].secFileNumber])) {
 		rpmMessage(RPMMESS_DEBUG, _("    file is truely shared - saving\n"));
 	    }
-	    fileActions[sharedList[i].mainFileNumber] = KEEP;
+	    fileActions[sharedList[i].mainFileNumber] = U_KEEP;
 	    break;
 	}
     }
@@ -287,9 +287,9 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 	for (i = 0; i < fileCount; i++) 
 	    if (fileStatesList[i] == RPMFILE_STATE_NOTINSTALLED ||
 		fileStatesList[i] == RPMFILE_STATE_NETSHARED) 
-		fileActions[i] = KEEP;
+		fileActions[i] = U_KEEP;
 	    else
-		fileActions[i] = REMOVE;
+		fileActions[i] = U_REMOVE;
 
 	if (rpmGetVar(RPMVAR_NETSHAREDPATH)) {
 	    char ** netsharedPaths, ** nsp;
@@ -305,7 +305,7 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 		    (fileList[i][j] == '\0' || fileList[i][j] == '/')) {
 		    rpmMessage(RPMMESS_DEBUG, _("%s has a netshared override\n"),
 				fileList[i]);
-		    fileActions[i] = KEEP;
+		    fileActions[i] = U_KEEP;
 		}
 	    }
 
@@ -560,7 +560,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 
       case RPMFILE_STATE_NORMAL:
 	if(S_ISREG(mode) &&
-	  (action == REMOVE) && (flags & RPMFILE_CONFIG)) {
+	  (action == U_REMOVE) && (flags & RPMFILE_CONFIG)) {
 	    /* if it's a config file, we may not want to remove it */
 	    rpmMessage(RPMMESS_DEBUG, _("finding md5sum of %s\n"), file);
 
@@ -575,7 +575,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    else {
 		if (strcmp(currentMd5, md5)) {
 		    rpmMessage(RPMMESS_DEBUG, _("    file changed - will save\n"));
-		    action = BACKUP;
+		    action = U_BACKUP;
 		} else {
 		    rpmMessage(RPMMESS_DEBUG, 
 				_("    file unchanged - will remove\n"));
@@ -585,11 +585,11 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 
 	switch (action) {
 
-	  case KEEP:
+	  case U_KEEP:
 	    rpmMessage(RPMMESS_DEBUG, _("keeping %s\n"), file);
 	    break;
 
-	  case BACKUP:
+	  case U_BACKUP:
 	    rpmMessage(RPMMESS_DEBUG, _("saving %s as %s.rpmsave\n"), file, file);
 	    if (!test) {
 		newfile = alloca(strlen(file) + 20);
@@ -603,7 +603,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    }
 	    break;
 
-	  case REMOVE:
+	  case U_REMOVE:
 	    rpmMessage(RPMMESS_DEBUG, _("%s - removing\n"), file);
 	    if (S_ISDIR(mode)) {
 		if (!test) {
