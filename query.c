@@ -38,7 +38,8 @@ static char * defaultQueryFormat =
 	    "Install date: %-27{INSTALLTIME:date}   Build Host: %{BUILDHOST}\n"
 	    "Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n"
 	    "Size        : %{SIZE}\n"
-	    "Description : %{DESCRIPTION}\n";
+	    "Summary     : %{SUMMARY}\n"
+	    "Description :\n%{DESCRIPTION}\n";
 static char * requiresQueryFormat = 
 	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]";
 static char * providesQueryFormat = "[%{PROVIDES}\n]";
@@ -344,11 +345,13 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	}
 
 	if (queryFlags & QUERY_FOR_PROVIDES) {
-	    queryHeader(h, providesQueryFormat);
+	    if (isEntry(h, RPMTAG_PROVIDES))
+		queryHeader(h, providesQueryFormat);
 	}
 
 	if (queryFlags & QUERY_FOR_REQUIRES) {
-	    queryHeader(h, requiresQueryFormat);
+	    if (isEntry(h, RPMTAG_REQUIREFLAGS))
+		queryHeader(h, requiresQueryFormat);
 	}
 
 	if (queryFlags & QUERY_FOR_LIST) {
