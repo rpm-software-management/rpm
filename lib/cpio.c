@@ -36,6 +36,7 @@ enum hardLinkType { HARDLINK_INSTALL=1, HARDLINK_BUILD };
 
 /** \ingroup payload
  * Cpio archive header information.
+ * @todo add support for tar (soon) and ar (eventually) archive formats.
  */
 struct cpioCrcPhysicalHeader {
     char magic[6];
