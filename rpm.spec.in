@@ -457,6 +457,7 @@ exit 0
 %changelog
 * Fri Dec 27 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.40
 - add BETA-GPG-KEY (but not in headers using %%pubkey yet).
+- disable perl module magic rule.
 
 * Thu Dec 26 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.39
 - add Red Hat pubkeys to rpm header.

@@ -443,7 +443,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { "troff or preprocessor input",		RPMFC_MANPAGE },
 
   { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
-  { "Perl5 module source text", RPMFC_PERL|RPMFC_INCLUDE },
+  { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
 
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
@@ -707,8 +707,9 @@ static int rpmfcSCRIPT(rpmfc fc)
     (void) fclose(fp);
 
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
-	xx = rpmfcHelper(fc, 'P', "perl");
-	if (is_executable || fc->fcolor->vals[fc->ix] & RPMFC_TEXT)
+	if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
+	    xx = rpmfcHelper(fc, 'P', "perl");
+	if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
 	    xx = rpmfcHelper(fc, 'R', "perl");
     }
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {

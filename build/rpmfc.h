@@ -51,6 +51,7 @@ enum FCOLOR_e {
     RPMFC_ELF64			= (1 <<  1),
 #define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64)
 
+    RPMFC_MODULE		= (1 <<  7),
     RPMFC_EXECUTABLE		= (1 <<  8),
     RPMFC_SCRIPT		= (1 <<  9),
     RPMFC_TEXT			= (1 << 10),
