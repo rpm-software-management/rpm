@@ -641,16 +641,22 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 static struct PyMethodDef rpmts_methods[] = {
     {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
 	NULL },
+#ifdef	_LEGACY_BINDINGS_TOO
     {"add",		(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
 	NULL },
+#endif
     {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS,
 	NULL },
+#ifdef	_LEGACY_BINDINGS_TOO
     {"remove",		(PyCFunction) rpmts_AddErase,	METH_VARARGS,
 	NULL },
+#endif
     {"check",		(PyCFunction) rpmts_Check,	METH_VARARGS,
 	NULL },
+#ifdef	_LEGACY_BINDINGS_TOO
     {"depcheck",	(PyCFunction) rpmts_Check,	METH_VARARGS,
 	NULL },
+#endif
     {"order",		(PyCFunction) rpmts_Order,	METH_VARARGS,
 	NULL },
     {"clean",		(PyCFunction) rpmts_Clean,	METH_VARARGS,

@@ -865,7 +865,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NONE		= 0,
     RPMTRANS_FLAG_TEST		= (1 <<  0),	/*!< from --test */
-    RPMTRANS_FLAG_BUILD_PROBS	= (1 <<  1),	/*!< @todo Document. */
+    RPMTRANS_FLAG_BUILD_PROBS	= (1 <<  1),	/*!< don't process payload */
     RPMTRANS_FLAG_NOSCRIPTS	= (1 <<  2),	/*!< from --noscripts */
     RPMTRANS_FLAG_JUSTDB	= (1 <<  3),	/*!< from --justdb */
     RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */

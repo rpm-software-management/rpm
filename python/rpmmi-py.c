@@ -82,12 +82,33 @@
  */
 /*@{*/
 
-#if Py_TPFLAGS_HAVE_ITER
+/** \ingroup python
+ */
 static PyObject *
-rpmmi_Iter(rpmmiObject * s)
+rpmmi_Next(rpmmiObject * s, PyObject *args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    Header h;
+    
+    if (!PyArg_ParseTuple(args, ":Next"))
+	return NULL;
+
+    if (s->mi == NULL || (h = rpmdbNextIterator(s->mi)) == NULL) {
+	if (s->mi) s->mi = rpmdbFreeIterator(s->mi);
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+    return (PyObject *) hdr_Wrap(h);
+}
+
+#if Py_TPFLAGS_HAVE_ITER
+/** \ingroup python
+ */
+static PyObject *
+rpmmi_iter(rpmmiObject * s)
 	/*@*/
 {
-assert(s->mi);
     Py_INCREF(s);
     return (PyObject *)s;
 }
@@ -95,16 +116,15 @@ assert(s->mi);
 /** \ingroup python
  */
 static PyObject *
-rpmmi_Next(rpmmiObject * s)
+rpmmi_iternext(rpmmiObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
     Header h;
     
     if (s->mi == NULL || (h = rpmdbNextIterator(s->mi)) == NULL) {
-	if (s->mi) s->mi = rpmdbFreeIterator(s->mi);
-	Py_INCREF(Py_None);
-	return Py_None;
+	s->mi = rpmdbFreeIterator(s->mi);
+	return NULL;
     }
     return (PyObject *) hdr_Wrap(h);
 }
@@ -142,13 +162,9 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmmi_methods[] = {
-#if Py_TPFLAGS_HAVE_ITER
-    {"iter",	    (PyCFunction) rpmmi_Iter,		METH_VARARGS,
-	NULL},
     {"next",	    (PyCFunction) rpmmi_Next,		METH_VARARGS,
 "mi.next() -> hdr\n\
 - Retrieve next header that matches.\n" },
-#endif
     {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS,
 "mi.pattern(TagN, mire_type, pattern)\n\
 - Set a secondary match pattern on tags from retrieved header.\n" },
@@ -212,8 +228,8 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) rpmmi_Iter,	/* tp_iter */
-	(iternextfunc) rpmmi_Next,	/* tp_iternext */
+	(getiterfunc) rpmmi_iter,	/* tp_iter */
+	(iternextfunc) rpmmi_iternext,	/* tp_iternext */
 	rpmmi_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
@@ -234,6 +250,7 @@ PyTypeObject rpmmi_Type = {
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
 {
     rpmmiObject * mio;
+
     if (mi == NULL) {
 	Py_INCREF(Py_None);
         return (rpmmiObject *) Py_None;

@@ -9,6 +9,8 @@
 
 typedef struct rpmfiObject_s {
     PyObject_HEAD
+    int active;
+/*@null@*/
     rpmfi fi;
 } rpmfiObject;
 

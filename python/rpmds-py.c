@@ -92,14 +92,28 @@ rpmds_compare(rpmdsObject * a, rpmdsObject * b)
     return rpmdsCompare(a->ds, b->ds);
 }
 
-#if Py_TPFLAGS_HAVE_ITER
 static PyObject *
-rpmds_Next(rpmdsObject * s)
+rpmds_iter(rpmdsObject * s)
+	/*@modifies s @*/
+{
+    Py_INCREF(s);
+    return (PyObject *)s;
+}
+
+static PyObject *
+rpmds_iternext(rpmdsObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject * result = NULL;
 
+    /* Reset loop indices on 1st entry. */
+    if (!s->active) {
+	rpmdsInit(s->ds);
+	s->active = 1;
+    }
+
+    /* If more to do, return a (N, EVR, Flags) tuple. */
     if (rpmdsNext(s->ds) >= 0) {
 	const char * N = rpmdsN(s->ds);
 	const char * EVR = rpmdsEVR(s->ds);
@@ -117,39 +131,50 @@ rpmds_Next(rpmdsObject * s)
 	    PyTuple_SET_ITEM(result, 2, PyInt_FromLong(Flags));
 	}
 	    
-    }
+    } else
+	s->active = 0;
+
     return result;
 }
 
 static PyObject *
-rpmds_Iter(rpmdsObject * s)
-	/*@modifies s @*/
+rpmds_Next(rpmdsObject * s, PyObject *args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
-    rpmdsInit(s->ds);
-    Py_INCREF(s);
-    return (PyObject *)s;
+    PyObject * result;
+
+    if (!PyArg_ParseTuple(args, ":Next"))
+	return NULL;
+
+    result = rpmds_iternext(s);
+
+    if (result == NULL) {
+	Py_INCREF(Py_None);
+        return Py_None;
+    }
+    return result;
 }
-#endif
 
 #ifdef	NOTYET
 static PyObject *
 rpmds_Notify(rpmdsObject * s, PyObject * args)
 	/*@*/
 {
-	if (!PyArg_ParseTuple(args, ":Notify"))
-		return NULL;
-	Py_INCREF(Py_None);
-	return Py_None;
+    if (!PyArg_ParseTuple(args, ":Notify"))
+	return NULL;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *
 rpmds_Problem(rpmdsObject * s, PyObject * args)
 	/*@*/
 {
-	if (!PyArg_ParseTuple(args, ":Problem"))
-		return NULL;
-	Py_INCREF(Py_None);
-	return Py_None;
+    if (!PyArg_ParseTuple(args, ":Problem"))
+	return NULL;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 #endif
 
@@ -172,12 +197,9 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.Flags -> Flags	- Return current Flags.\n" },
  {"TagN",	(PyCFunction)rpmds_TagN,	METH_VARARGS,
 	"ds.TagN -> TagN	- Return current TagN.\n" },
-#if Py_TPFLAGS_HAVE_ITER
  {"next",	(PyCFunction)rpmds_Next,	METH_VARARGS,
-	NULL},
- {"iter",	(PyCFunction)rpmds_Iter,	METH_VARARGS,
-	NULL},
-#endif
+"ds.next() -> (N, EVR, Flags)\n\
+- Retrieve next dependency triple.\n" }, 
 #ifdef	NOTYET
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS,
 	NULL},
@@ -286,8 +308,8 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) rpmds_Iter,	/* tp_iter */
-	(iternextfunc) rpmds_Next,	/* tp_iternext */
+	(getiterfunc) rpmds_iter,	/* tp_iter */
+	(iternextfunc) rpmds_iternext,	/* tp_iternext */
 	rpmds_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
@@ -315,46 +337,64 @@ rpmds dsFromDs(rpmdsObject * s)
 rpmdsObject *
 rpmds_Wrap(rpmds ds)
 {
-    rpmdsObject *s = PyObject_NEW(rpmdsObject, &rpmds_Type);
+    rpmdsObject * s = PyObject_NEW(rpmdsObject, &rpmds_Type);
+
     if (s == NULL)
 	return NULL;
     s->ds = ds;
+    s->active = 0;
     return s;
 }
 
 rpmdsObject *
 rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args)
 {
+    PyObject * to = NULL;
     int tagN = RPMTAG_PROVIDENAME;
     const char * N;
     const char * EVR = NULL;
     int Flags = 0;
 
-    if (!PyArg_ParseTuple(args, "is|si:Single", &tagN, &N, &EVR, &Flags))
+    if (!PyArg_ParseTuple(args, "Os|si:Single", &to, &N, &EVR, &Flags))
 	return NULL;
+    if (to != NULL) {
+	tagN = tagNumFromPyObject(to);
+	if (tagN == -1) {
+	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	    return NULL;
+	}
+    }
     return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
 }
 
 rpmdsObject *
-hdr_dsFromHeader(/*@unused@*/ PyObject * s, PyObject * args)
+hdr_dsFromHeader(PyObject * s, PyObject * args)
 {
-    hdrObject * ho;
-    int tagN = RPMTAG_REQUIRENAME;
+    hdrObject * ho = (hdrObject *)s;
+    PyObject * to = NULL;
+    rpmTag tagN = RPMTAG_REQUIRENAME;
     int scareMem = 0;
 
-    if (!PyArg_ParseTuple(args, "O!|i:dsFromHeader", &hdr_Type, &ho, &tagN))
+    if (!PyArg_ParseTuple(args, "|O:dsFromHeader", &to))
 	return NULL;
+    if (to != NULL) {
+	tagN = tagNumFromPyObject(to);
+	if (tagN == -1) {
+	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	    return NULL;
+	}
+    }
     return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, scareMem) );
 }
 
 rpmdsObject *
-hdr_dsOfHeader(/*@unused@*/ PyObject * s, PyObject * args)
+hdr_dsOfHeader(PyObject * s, PyObject * args)
 {
-    hdrObject * ho;
+    hdrObject * ho = (hdrObject *)s;
     int tagN = RPMTAG_PROVIDENAME;
     int Flags = RPMSENSE_EQUAL;
 
-    if (!PyArg_ParseTuple(args, "O!:dsOfHeader", &hdr_Type, &ho))
+    if (!PyArg_ParseTuple(args, ":dsOfHeader"))
 	return NULL;
     return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
 }

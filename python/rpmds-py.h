@@ -11,6 +11,8 @@
  */
 typedef struct rpmdsObject_s {
     PyObject_HEAD
+    int		active;
+/*@null@*/
     rpmds	ds;
 } rpmdsObject;
 

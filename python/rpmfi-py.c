@@ -185,39 +185,106 @@ rpmfi_FGroup(rpmfiObject * s, PyObject * args)
 
 #if Py_TPFLAGS_HAVE_ITER
 static PyObject *
-rpmfi_Next(rpmfiObject * s, /*@unused@*/ PyObject * args)
+rpmfi_iter(rpmfiObject * s, /*@unused@*/ PyObject * args)
+	/*@modifies s @*/
+{
+    Py_INCREF(s);
+    return (PyObject *)s;
+}
+#endif
+
+static PyObject *
+rpmfi_iternext(rpmfiObject * s)
 	/*@modifies s @*/
 {
     PyObject * result = NULL;
 
+    /* Reset loop indices on 1st entry. */
+    if (!s->active) {
+	rpmfiInit(s->fi, 0);
+	s->active = 1;
+    }
+
+    /* If more to do, return the file tuple. */
     if (rpmfiNext(s->fi) >= 0) {
 	const char * FN = rpmfiFN(s->fi);
 	int FSize = rpmfiFSize(s->fi);
 	int FMode = rpmfiFMode(s->fi);
 	int FMtime = rpmfiFMtime(s->fi);
 	int FFlags = rpmfiFFlags(s->fi);
+	int FRdev = rpmfiFRdev(s->fi);
+	int FInode = rpmfiFInode(s->fi);
+	int FNlink = rpmfiFNlink(s->fi);
+	int FState = rpmfiFState(s->fi);
+	int VFlags = rpmfiVFlags(s->fi);
+	const char * FUser = rpmfiFUser(s->fi);
+	const char * FGroup = rpmfiFGroup(s->fi);
+	const unsigned char * md5 = rpmfiMD5(s->fi), *s = md5;
+	char FMD5[2*16+1], *t = FMD5;
+	static const char hex[] = "0123456789abcdef";
+	int gotmd5, i;
 
-	result = PyTuple_New(5);
-	PyTuple_SET_ITEM(result, 0, Py_BuildValue("s", FN));
-	PyTuple_SET_ITEM(result, 1, PyInt_FromLong(FSize));
-	PyTuple_SET_ITEM(result, 2, PyInt_FromLong(FMode));
-	PyTuple_SET_ITEM(result, 3, PyInt_FromLong(FMtime));
-	PyTuple_SET_ITEM(result, 4, PyInt_FromLong(FFlags));
+	gotmd5 = 0;
+	if (s)
+	for (i = 0; i < 16; i++) {
+	    gotmd5 |= *s;
+	    *t++ = hex[ (*s >> 4) & 0xf ];
+	    *t++ = hex[ (*s++   ) & 0xf ];
+	}
+	*t = '\0';
 
-/* XXX FIXME: more to return */
-    }
+	result = PyTuple_New(13);
+	if (FN == NULL) {
+	    Py_INCREF(Py_None);
+	    PyTuple_SET_ITEM(result, 0, Py_None);
+	} else
+	    PyTuple_SET_ITEM(result,  0, Py_BuildValue("s", FN));
+	PyTuple_SET_ITEM(result,  1, PyInt_FromLong(FSize));
+	PyTuple_SET_ITEM(result,  2, PyInt_FromLong(FMode));
+	PyTuple_SET_ITEM(result,  3, PyInt_FromLong(FMtime));
+	PyTuple_SET_ITEM(result,  4, PyInt_FromLong(FFlags));
+	PyTuple_SET_ITEM(result,  5, PyInt_FromLong(FRdev));
+	PyTuple_SET_ITEM(result,  6, PyInt_FromLong(FInode));
+	PyTuple_SET_ITEM(result,  7, PyInt_FromLong(FNlink));
+	PyTuple_SET_ITEM(result,  8, PyInt_FromLong(FState));
+	PyTuple_SET_ITEM(result,  9, PyInt_FromLong(VFlags));
+	if (FUser == NULL) {
+	    Py_INCREF(Py_None);
+	    PyTuple_SET_ITEM(result, 10, Py_None);
+	} else
+	    PyTuple_SET_ITEM(result, 10, Py_BuildValue("s", FUser));
+	if (FGroup == NULL) {
+	    Py_INCREF(Py_None);
+	    PyTuple_SET_ITEM(result, 11, Py_None);
+	} else
+	    PyTuple_SET_ITEM(result, 11, Py_BuildValue("s", FGroup));
+	if (!gotmd5) {
+	    Py_INCREF(Py_None);
+	    PyTuple_SET_ITEM(result, 12, Py_None);
+	} else
+	    PyTuple_SET_ITEM(result, 12, Py_BuildValue("s", FMD5));
+
+    } else
+	s->active = 0;
+
     return result;
 }
 
 static PyObject *
-rpmfi_Iter(rpmfiObject * s, /*@unused@*/ PyObject * args)
+rpmfi_Next(rpmfiObject * s, /*@unused@*/ PyObject * args)
 	/*@modifies s @*/
 {
-    rpmfiInit(s->fi, 0);
-    Py_INCREF(s);
-    return (PyObject *)s;
+    PyObject * result = NULL;
+
+    result = rpmfi_iternext(s);
+
+    if (result == NULL) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+
+    return result;
 }
-#endif
 
 #ifdef	NOTYET
 static PyObject *
@@ -282,12 +349,9 @@ static struct PyMethodDef rpmfi_methods[] = {
 	NULL},
  {"FGroup",	(PyCFunction)rpmfi_FGroup,	METH_VARARGS,
 	NULL},
-#if Py_TPFLAGS_HAVE_ITER
  {"next",	(PyCFunction)rpmfi_Next,	METH_VARARGS,
-	NULL},
- {"iter",	(PyCFunction)rpmfi_Iter,	METH_VARARGS,
-	NULL},
-#endif
+"fi.next() -> (FN, FSize, FMode, FMtime, FFlags, FRdev, FInode, FNlink, FState, VFlags, FUser, FGroup, FMD5))\n\
+- Retrieve next file info tuple.\n" },
 #ifdef	NOTYET
  {"NextD",	(PyCFunction)rpmfi_NextD,	METH_VARARGS,
 	NULL},
@@ -397,8 +461,8 @@ PyTypeObject rpmfi_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc)rpmfi_Iter,	/* tp_iter */
-	(iternextfunc)rpmfi_Next,	/* tp_iternext */
+	(getiterfunc)rpmfi_iter,	/* tp_iter */
+	(iternextfunc)rpmfi_iternext,	/* tp_iternext */
 	rpmfi_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
@@ -427,18 +491,30 @@ rpmfiObject *
 rpmfi_Wrap(rpmfi fi)
 {
     rpmfiObject *s = PyObject_NEW(rpmfiObject, &rpmfi_Type);
+
     if (s == NULL)
 	return NULL;
     s->fi = fi;
+    s->active = 0;
     return s;
 }
 
 rpmfiObject *
-hdr_fiFromHeader(/*@unused@*/ PyObject * s, PyObject * args)
+hdr_fiFromHeader(PyObject * s, PyObject * args)
 {
-    hdrObject * ho;
+    hdrObject * ho = (hdrObject *)s;
+    PyObject * to = NULL;
+    rpmTag tagN = RPMTAG_BASENAMES;
+    int scareMem = 0;
 
-    if (!PyArg_ParseTuple(args, "O!:fiFromHeader", &hdr_Type, &ho))
+    if (!PyArg_ParseTuple(args, "|O:fiFromHeader", &to))
 	return NULL;
-    return rpmfi_Wrap( rpmfiNew(NULL, NULL, hdrGetHeader(ho), RPMTAG_BASENAMES, 0) );
+    if (to != NULL) {
+	tagN = tagNumFromPyObject(to);
+	if (tagN == -1) {
+	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	    return NULL;
+	}
+    }
+    return rpmfi_Wrap( rpmfiNew(NULL, NULL, hdrGetHeader(ho), tagN, scareMem) );
 }
