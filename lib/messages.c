@@ -13,6 +13,11 @@ void setVerbosity(int level) {
     minLevel = level;
 }
 
+int isVerbose()
+{
+    return (minLevel >= MESS_VERBOSE);
+}
+
 void message(int level, char * format, ...) {
     va_list args;
 
