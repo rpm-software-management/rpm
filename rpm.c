@@ -225,7 +225,7 @@ static void printUsage(void) {
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
-    puts(_("                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"));
+    puts(_("                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"));
     puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
     puts(_("                        [--ftpport <port>] [--provides] [--triggers] [--dump]"));
     puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));

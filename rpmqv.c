@@ -319,7 +319,7 @@ static void printUsage(void) {
     fprintf(fp,  ("       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"), __progname);
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
-    puts(_("                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"));
+    puts(_("                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"));
     puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
     puts(_("                        [--ftpport <port>] [--provides] [--triggers] [--dump]"));
     puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));
