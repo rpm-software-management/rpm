@@ -74,7 +74,7 @@ static PyObject * errorString (PyObject * self, PyObject * args);
 static PyObject * versionCompare (PyObject * self, PyObject * args);
 static PyObject * labelCompare (PyObject * self, PyObject * args);
 static PyObject * rebuildDB (PyObject * self, PyObject * args);
-static PyObject * doFopen(PyObject * self, PyObject * args);
+/*  static PyObject * doFopen(PyObject * self, PyObject * args); */
 
 /* transaction set functions */
 static PyObject * rpmtransCreate(PyObject * self, PyObject * args);
@@ -144,7 +144,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
-    { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL },
+/*      { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL }, */
     { NULL }
 } ;
 
@@ -1819,7 +1819,7 @@ static int closeCallback(FILE * f) {
     }
     return 0; 
 }
-
+/* disable 
 static PyObject * doFopen(PyObject * self, PyObject * args) {
     char * path, * mode;
     FDlist *node;
@@ -1867,4 +1867,5 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
     
     return PyFile_FromFile (node->f, path, mode, closeCallback);
 }
+*/
 

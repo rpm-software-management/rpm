@@ -18,6 +18,7 @@ python_PROGRAMS = rpmmodule.so
 rpmmodule_so_SOURCES =
 # XXX rpmmodule_so_LDFLAGS = -L../lib/.libs -lrpm -L../popt/.libs -lpopt $(LIBS) -shared -Wl,-soname,rpmmodule.so
 rpmmodule_so_LDFLAGS = $(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmio/librpmio.la	     \
 	$(LIBS) -shared -Wl,-soname,rpmmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
