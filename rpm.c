@@ -9,7 +9,7 @@
 #include "query.h"
 #include "rpmlib.h"
 
-char * version = "2.0a";
+char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_UNKNOWN };
