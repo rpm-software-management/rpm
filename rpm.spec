@@ -1,13 +1,12 @@
 Summary: Red Hat Package Manager
 Name: rpm
-%define version 2.4.11
+%define version 2.4.12
 Version: %{version}
 Release: 1
 Group: Utilities/System
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.4.x/rpm-%{version}.tar.gz
 Copyright: GPL
 BuildRoot: /tmp/rpm
-Requires: cpio
 
 %package devel
 Summary: Header files and libraries for programs that manipulate rpm packages
