@@ -20,9 +20,7 @@ mylibs=	$(top_builddir)/build/.libs/librpmbuild.a \
 LDADD = $(top_builddir)/lib/.libs/librpm.a @LIBMISC@
 
 noinst_PROGRAMS = \
-	dump dumpdb javadeps rpmarchive rpmheader rpminject rpmlead rpmsignature
-
-rpminject_LDADD =	$(mylibs)
+	dump dumpdb javadeps rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = rpmgettext rpmputtext
@@ -38,3 +36,7 @@ rpmputtext_LDADD =	$(mylibs)
 dumpdb_LDADD = $(mylibs)
 
 $(PROGRAMS): $(mylibs)
+
+rpminject: rpminject.o $(mylibs)
+	@rm -f rpminject
+	$(LINK) rpminject.o $(mylibs) $(LIBS)

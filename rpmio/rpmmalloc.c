@@ -1,10 +1,10 @@
 #include "system.h"
 
-#include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
-
 void *vmefail(void)
 {
-    err(EXIT_FAILURE, "virtual memory exhausted");
+    fprintf(stderr, _("virtual memory exhausted.\n"));
+    exit(EXIT_FAILURE);
+    /*@notreached@*/
     return NULL;
 }
 

@@ -587,7 +587,7 @@ dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
 
 AC_CHECK_FUNCS(mtrace)
 
-AC_REPLACE_FUNCS(err getcwd getwd inet_aton putenv realpath)
+AC_REPLACE_FUNCS(getcwd getwd inet_aton putenv realpath)
 AC_REPLACE_FUNCS(strdup strerror strtol strtoul strspn strstr)
 
 dnl XXX stpcpy/stpncpy needed by rpmgettext
