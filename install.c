@@ -16,6 +16,9 @@ static int hashesPrinted = 0;
 static void printHash(const unsigned long amount, const unsigned long total);
 static void printPercent(const unsigned long amount, const unsigned long total);
 static int getFtpURL(char * hostAndFile, char * dest);
+static void printDepFlags(FILE * f, char * version, int flags);
+static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
+			     int numConflicts);
 
 static void printHash(const unsigned long amount, const unsigned long total) {
     int hashesNeeded;
@@ -214,7 +217,10 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	if (!(interfaceFlags & RPMINSTALL_NODEPS)) {
 	    rpmdep = rpmdepDependencies(db);
 	    for (i = 0; i < numBinaryPackages; i++)
-		rpmdepAddPackage(rpmdep, binaryHeaders[i]);
+		if (installFlags & INSTALL_UPGRADE)
+		    rpmdepUpgradePackage(rpmdep, binaryHeaders[i]);
+		else
+		    rpmdepAddPackage(rpmdep, binaryHeaders[i]);
 
 	    if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
 		numFailed = numPackages;
@@ -223,11 +229,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 
 	    if (!stopInstall && conflicts) {
 		fprintf(stderr, "failed dependencies:\n");
-		for (i = 0; i < numConflicts; i++) {
-		    fprintf(stderr, "\t%s is needed by %s-%s-%s\n",
-			    conflicts[i].needsName, conflicts[i].byName,
-			    conflicts[i].byVersion, conflicts[i].byRelease);
-		}
+		printDepProblems(stderr, conflicts, numConflicts);
 		
 		free(conflicts);
 		numFailed = numPackages;
@@ -329,12 +331,9 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	}
 
 	if (!stopUninstall && conflicts) {
-	    fprintf(stderr, "failed dependencies:\n");
-	    for (i = 0; i < numConflicts; i++) {
-		fprintf(stderr, "\t%s is needed by %s-%s-%s\n",
-			conflicts[i].needsName, conflicts[i].byName,
-			conflicts[i].byVersion, conflicts[i].byRelease);
-	    }
+	    fprintf(stderr, "removing these packages would break "
+			    "dependencies:\n");
+	    printDepProblems(stderr, conflicts, numConflicts);
 	    
 	    free(conflicts);
 	    numFailed += numPackages;
@@ -420,4 +419,31 @@ static int getFtpURL(char * hostAndFile, char * dest) {
     ftpClose(ftpconn);
 
     return fd;
+}
+
+static void printDepFlags(FILE * f, char * version, int flags) {
+    if (flags & REQUIRE_LESS) 
+	fprintf(f, "<");
+    if (flags & REQUIRE_GREATER)
+	fprintf(f, ">");
+    if (flags & REQUIRE_EQUAL)
+	fprintf(f, "=");
+    if (flags & REQUIRE_SERIAL)
+	fprintf(f, "S");
+
+    if (flags)
+	fprintf(f, " %s", version);
+}
+
+static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
+			     int numConflicts) {
+    int i;
+
+    for (i = 0; i < numConflicts; i++) {
+	fprintf(f, "\t%s ", conflicts[i].needsName);
+	printDepFlags(stderr, conflicts[i].needsVersion, 
+		      conflicts[i].needsFlags);
+	fprintf(f, " is needed by %s-%s-%s\n", conflicts[i].byName, 
+		conflicts[i].byVersion, conflicts[i].byRelease);
+    }
 }
