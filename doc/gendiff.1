@@ -20,14 +20,15 @@ unmodified directory copy.  Instead, only the individual files that
 are modified need to be saved.
 .PP
 Before editing a file, copy the file, appending the extension you have chosen
-to the filename.  I.e. if you were going to edit somefile.cpp, copy it to
-somefile.cpp.save before editing it.  Then edit the first copy (somefile.cpp).
+to the filename.  I.e. if you were going to edit somefile.cpp and have chosen
+the extension "fix", copy it to somefile.cpp.fix before editing it.
+Then edit the first copy (somefile.cpp).
 .PP
 After editing all the files you need to edit in this fashion, enter the
 directory one level above where your source code resides, and then type
 .SP
 .NF
-    $ gendiff somedirectory .orig > mydiff-orig.patch
+    $ gendiff somedirectory .fix > mydiff-fix.patch
 .FI
 .PP
 You should redirect the output to a file (as illustrated) unless you want to
