@@ -47,7 +47,8 @@ static void parseForDocFiles(struct PackageRec *package, char *line);
 
 
 static int parseProvides(struct PackageRec *p, char *line);
-static int parseRequires(struct PackageRec *p, char *line);
+static int parseRequiresConflicts(struct PackageRec *p, char *line,
+				  int flag);
 static void free_reqprov(struct ReqProv *p);
 static int noSourcePatch(Spec s, char *line, int_32 tag);
 
@@ -270,7 +271,8 @@ static struct ReqComp {
     { NULL, 0 },
 };
 
-static int parseRequires(struct PackageRec *p, char *line)
+static int parseRequiresConflicts(struct PackageRec *p, char *line,
+				  int flag)
 {
     char *req = NULL;
     char *version = NULL;
@@ -278,7 +280,8 @@ static int parseRequires(struct PackageRec *p, char *line)
     struct ReqComp *rc;
 
     while (req || (req = strtok(line, " ,\t\n"))) {
-	flags = REQUIRE_ANY;
+	flags = (flag == RPMTAG_CONFLICTFLAGS) ?
+	    REQUIRE_CONFLICTS : REQUIRE_ANY;
 	if ((version = strtok(NULL, " ,\t\n"))) {
 	    rc = ReqComparisons;
 	    while (rc->token && strcmp(version, rc->token)) {
@@ -290,8 +293,8 @@ static int parseRequires(struct PackageRec *p, char *line)
 		version = strtok(NULL, " ,\t\n");
 	    }
 	}
-	if (flags && !version) {
-	    error(RPMERR_BADSPEC, "Version required in dependency");
+	if ((flags & REQUIRE_SENSEMASK) && !version) {
+	    error(RPMERR_BADSPEC, "Version required in require/conflict");
 	    return RPMERR_BADSPEC;
 	}
 
@@ -341,6 +344,7 @@ static struct PackageRec *new_packagerec(void)
     p->reqprov = NULL;
     p->numReq = 0;
     p->numProv = 0;
+    p->numConflict = 0;
     p->next = NULL;
 
     return p;
@@ -617,28 +621,29 @@ struct preamble_line {
     int len;
     char *token;
 } preamble_spec[] = {
-    {RPMTAG_NAME,         0, "name"},
-    {RPMTAG_VERSION,      0, "version"},
-    {RPMTAG_RELEASE,      0, "release"},
-    {RPMTAG_SERIAL,       0, "serial"},
-    {RPMTAG_DESCRIPTION,  0, "description"},
-    {RPMTAG_SUMMARY,      0, "summary"},
-    {RPMTAG_COPYRIGHT,    0, "copyright"},
-    {RPMTAG_DISTRIBUTION, 0, "distribution"},
-    {RPMTAG_VENDOR,       0, "vendor"},
-    {RPMTAG_GROUP,        0, "group"},
-    {RPMTAG_PACKAGER,     0, "packager"},
-    {RPMTAG_URL,          0, "url"},
-    {RPMTAG_ROOT,         0, "root"},
-    {RPMTAG_SOURCE,       0, "source"},
-    {RPMTAG_PATCH,        0, "patch"},
-    {RPMTAG_NOSOURCE,     0, "nosource"},
-    {RPMTAG_NOPATCH,      0, "nopatch"},
-    {RPMTAG_EXCLUDE,      0, "exclude"},
-    {RPMTAG_EXCLUSIVE,    0, "exclusive"},
-    {RPMTAG_ICON,         0, "icon"},
-    {RPMTAG_PROVIDES,     0, "provides"},
-    {RPMTAG_REQUIREFLAGS, 0, "requires"},
+    {RPMTAG_NAME,          0, "name"},
+    {RPMTAG_VERSION,       0, "version"},
+    {RPMTAG_RELEASE,       0, "release"},
+    {RPMTAG_SERIAL,        0, "serial"},
+    {RPMTAG_DESCRIPTION,   0, "description"},
+    {RPMTAG_SUMMARY,       0, "summary"},
+    {RPMTAG_COPYRIGHT,     0, "copyright"},
+    {RPMTAG_DISTRIBUTION,  0, "distribution"},
+    {RPMTAG_VENDOR,        0, "vendor"},
+    {RPMTAG_GROUP,         0, "group"},
+    {RPMTAG_PACKAGER,      0, "packager"},
+    {RPMTAG_URL,           0, "url"},
+    {RPMTAG_ROOT,          0, "root"},
+    {RPMTAG_SOURCE,        0, "source"},
+    {RPMTAG_PATCH,         0, "patch"},
+    {RPMTAG_NOSOURCE,      0, "nosource"},
+    {RPMTAG_NOPATCH,       0, "nopatch"},
+    {RPMTAG_EXCLUDE,       0, "exclude"},
+    {RPMTAG_EXCLUSIVE,     0, "exclusive"},
+    {RPMTAG_ICON,          0, "icon"},
+    {RPMTAG_PROVIDES,      0, "provides"},
+    {RPMTAG_REQUIREFLAGS,  0, "requires"},
+    {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
     {0, 0, 0}
 };
 
@@ -1025,7 +1030,8 @@ Spec parseSpec(FILE *f, char *specfile)
 		      }
 		      break;
 		  case RPMTAG_REQUIREFLAGS:
-		      if (parseRequires(cur_package, s)) {
+		  case RPMTAG_CONFLICTFLAGS:
+		      if (parseRequiresConflicts(cur_package, s, tag)) {
 			  return NULL;
 		      }
 		      break;
