@@ -389,8 +389,8 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data, 
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     char * val, * t;
 
@@ -661,7 +661,6 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-/*@-bounds@*/	/* LCL: segfault */
 static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
@@ -696,6 +695,7 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
     *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
+/*@-bounds@*/
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
@@ -721,13 +721,13 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 
 	conds[i] = chptr;
     }
+/*@=bounds@*/
 
     names = hfd(names, tnt);
     versions = hfd(versions, tvt);
 
     return 0;
 }
-/*@=bounds@*/
 
 /**
  * Retrieve trigger type info.
@@ -767,6 +767,7 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
     *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
+/*@-bounds@*/
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
@@ -785,6 +786,7 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 	    /*@innerbreak@*/ break;
 	}
     }
+/*@=bounds@*/
 
     return 0;
 }

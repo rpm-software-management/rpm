@@ -1159,8 +1159,8 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
  * @return		0 on success
  */
 int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Print/parse an OpenPGP key packet.
@@ -1170,8 +1170,8 @@ int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
  * @return		0 on success
  */
 int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Print/parse an OpenPGP userid packet.
@@ -1181,8 +1181,8 @@ int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
  * @return		0 on success
  */
 int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Print/parse an OpenPGP comment packet.
@@ -1202,8 +1202,8 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
  * @return		-1 on error, otherwise this packet length
  */
 int pgpPrtPkt(const byte *pkt, unsigned int pleft)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 /**
@@ -1215,8 +1215,8 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
  * @return		-1 on error, 0 on success
  */
 int pgpPrtPkts(const byte *pkts, unsigned int pktlen, pgpDig dig, int printing)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dig, fileSystem, internalState @*/;
 
 /**
  * Parse armored OpenPGP packets from a file.

@@ -1,4 +1,3 @@
-/*@-unrecog@*/
 /** \ingroup rpmio
  * \file rpmio/rpmsq.c
  */
@@ -6,12 +5,103 @@
 #include "system.h"
 
 #if defined(__LCLINT__)
-struct qelem;
+#define	_BITS_SIGTHREAD_H	/* XXX avoid __sigset_t heartburn. */
+
 /*@-exportheader@*/
+/*@constant int SA_SIGINFO@*/
+extern int sighold(int sig)
+	/*@globals errno, systemState @*/;
+extern int sigignore(int sig)
+	/*@globals errno, systemState @*/;
+extern int sigpause(int sig)
+	/*@globals errno, systemState @*/;
+extern int sigrelse(int sig)
+	/*@globals errno, systemState @*/;
+extern void (*sigset(int sig, void (*disp)(int)))(int)
+	/*@globals errno, systemState @*/;
+
+struct qelem;
 extern	void insque(struct qelem * __elem, struct qelem * __prev)
-	/*@modifies  __elem, prev @*/;
+	/*@modifies  __elem, __prev @*/;
 extern	void remque(struct qelem * __elem)
 	/*@modifies  __elem @*/;
+
+extern pthread_t pthread_self(void)
+	/*@*/;
+extern int pthread_equal(pthread_t t1, pthread_t t2)
+	/*@*/;
+
+extern int pthread_create(/*@out@*/ pthread_t *restrict thread,
+		const pthread_attr_t *restrict attr,
+		void *(*start_routine)(void*), void *restrict arg)
+	/*@modifies *thread @*/;
+extern int pthread_join(pthread_t thread, /*@out@*/ void **value_ptr)
+	/*@modifies *value_ptr @*/;
+
+extern int pthread_setcancelstate(int state, /*@out@*/ int *oldstate)
+	/*@globals internalState @*/
+	/*@modifies *oldstate, internalState @*/;
+extern int pthread_setcanceltype(int type, /*@out@*/ int *oldtype)
+	/*@globals internalState @*/
+	/*@modifies *oldtype, internalState @*/;
+extern void pthread_testcancel(void)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+extern void pthread_cleanup_pop(int execute)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+extern void pthread_cleanup_push(void (*routine)(void*), void *arg)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+extern void _pthread_cleanup_pop(/*@out@*/ struct _pthread_cleanup_buffer *__buffer, int execute)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+extern void _pthread_cleanup_push(/*@out@*/ struct _pthread_cleanup_buffer *__buffer, void (*routine)(void*), /*@out@*/ void *arg)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+
+extern int pthread_mutexattr_destroy(pthread_mutexattr_t *attr)
+	/*@modifies *attr @*/;
+extern int pthread_mutexattr_init(/*@out@*/ pthread_mutexattr_t *attr)
+	/*@modifies *attr @*/;
+
+int pthread_mutexattr_gettype(const pthread_mutexattr_t *restrict attr,
+		/*@out@*/ int *restrict type)
+	/*@modifies *type @*/;
+int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type)
+	/*@modifies *attr @*/;
+
+extern int pthread_mutex_destroy(pthread_mutex_t *mutex)
+	/*@modifies *mutex @*/;
+extern int pthread_mutex_init(/*@out@*/ pthread_mutex_t *restrict mutex,
+		const pthread_mutexattr_t *restrict attr)
+	/*@modifies *mutex @*/;
+
+extern int pthread_mutex_lock(pthread_mutex_t *mutex)
+	/*@modifies *mutex @*/;
+extern int pthread_mutex_trylock(pthread_mutex_t *mutex)
+	/*@modifies *mutex @*/;
+extern int pthread_mutex_unlock(pthread_mutex_t *mutex)
+	/*@modifies *mutex @*/;
+
+extern int pthread_cond_destroy(pthread_cond_t *cond)
+	/*@modifies *cond @*/;
+extern int pthread_cond_init(/*@out@*/ pthread_cond_t *restrict cond,
+		const pthread_condattr_t *restrict attr)
+	/*@modifies *cond @*/;
+
+extern int pthread_cond_timedwait(pthread_cond_t *restrict cond,
+		pthread_mutex_t *restrict mutex,
+		const struct timespec *restrict abstime)
+	/*@modifies *cond, *mutex @*/;
+extern int pthread_cond_wait(pthread_cond_t *restrict cond,
+		pthread_mutex_t *restrict mutex)
+	/*@modifies *cond, *mutex @*/;
+extern int pthread_cond_broadcast(pthread_cond_t *cond)
+	/*@modifies *cond @*/;
+extern int pthread_cond_signal(pthread_cond_t *cond)
+	/*@modifies *cond @*/;
+
 /*@=exportheader@*/
 #endif
 
@@ -20,31 +110,33 @@ extern	void remque(struct qelem * __elem)
 #include <sys/wait.h>
 #include <search.h>
 
-#if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
+#if defined(HAVE_PTHREAD_H)
 
 #include <pthread.h>
 
 /*@unchecked@*/
+/*@-type@*/
 static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+/*@=type@*/
 
 #define	DO_LOCK()	pthread_mutex_lock(&rpmsigTbl_lock);
 #define	DO_UNLOCK()	pthread_mutex_unlock(&rpmsigTbl_lock);
 #define	INIT_LOCK()	\
-     {	pthread_mutexattr_t attr; \
-	pthread_mutexattr_init(&attr); \
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); \
-	pthread_mutex_init (&rpmsigTbl_lock, &attr); \
-	pthread_mutexattr_destroy(&attr); \
+    {	pthread_mutexattr_t attr; \
+	(void) pthread_mutexattr_init(&attr); \
+	(void) pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); \
+	(void) pthread_mutex_init (&rpmsigTbl_lock, &attr); \
+	(void) pthread_mutexattr_destroy(&attr); \
 	rpmsigTbl_sigchld->active = 0; \
-     }
+    }
 #define	ADD_REF(__tbl)	(__tbl)->active++
 #define	SUB_REF(__tbl)	--(__tbl)->active
 #define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr) \
-	pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, (__oldtypeptr)); \
+    (void) pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, (__oldtypeptr));\
 	pthread_cleanup_push((__handler), (__arg));
 #define	CLEANUP_RESET(__execute, __oldtype) \
-	pthread_cleanup_pop(__execute); \
-	pthread_setcanceltype ((__oldtype), &(__oldtype));
+    (void) pthread_cleanup_pop(__execute); \
+    (void) pthread_setcanceltype ((__oldtype), &(__oldtype));
 
 #define	SAME_THREAD(_a, _b)	pthread_equal(((pthread_t)_a), ((pthread_t)_b))
 
@@ -82,18 +174,15 @@ static struct rpmsqElem rpmsqRock;
 rpmsq rpmsqQueue = &rpmsqRock;
 /*@=compmempass@*/
 
-/*@-mustmod@*/
-int rpmsqInsert(void * elem, /*@unused@*/ void * prev)
+int rpmsqInsert(void * elem, void * prev)
 {
     rpmsq sq = (rpmsq) elem;
     int ret = -1;
 
     if (sq != NULL) {
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
-/*@=modfilesys@*/
 #endif
 	ret = sighold(SIGCHLD);
 	if (ret == 0) {
@@ -105,20 +194,15 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 	    sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/
 
-/*@-unqualifiedtrans@*/
 	    sq->id = ME();
-/*@=unqualifiedtrans@*/
 	    ret = pthread_mutex_init(&sq->mutex, NULL);
 	    ret = pthread_cond_init(&sq->cond, NULL);
-#if !defined(__LCLINT__)	/* XXX FIXME */
-	    insque(elem, (prev ? prev : rpmsqQueue));
-#endif
+	    insque(elem, (prev != NULL ? prev : rpmsqQueue));
 	    ret = sigrelse(SIGCHLD);
 	}
     }
     return ret;
 }
-/*@=mustmod@*/
 
 int rpmsqRemove(void * elem)
 {
@@ -128,10 +212,8 @@ int rpmsqRemove(void * elem)
     if (elem != NULL) {
 
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
-/*@=modfilesys@*/
 #endif
 	ret = sighold (SIGCHLD);
 	if (ret == 0) {
@@ -183,11 +265,8 @@ static struct rpmsig_s {
 };
 /*@=fullinitblock@*/
 
-/*@-incondefs@*/
 void rpmsqAction(int signum,
 		/*@unused@*/ void * info, /*@unused@*/ void * context)
-	/*@globals rpmsqQueue @*/
-	/*@modifies rpmsqQueue @*/
 {
     int save = errno;
     rpmsig tbl;
@@ -218,9 +297,7 @@ void rpmsqAction(int signum,
 			/*@innercontinue@*/ continue;
 		    sq->reaped = reaped;
 		    sq->status = status;
-#if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
 		    (void) pthread_cond_signal(&sq->cond);
-#endif
 		    /*@innerbreak@*/ break;
 		}
 	    }
@@ -232,7 +309,6 @@ void rpmsqAction(int signum,
     }
     errno = save;
 }
-/*@=incondefs@*/
 
 int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 	/*@globals rpmsigTbl @*/
@@ -243,11 +319,9 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
     rpmsig tbl;
     int ret = -1;
 
-    DO_LOCK ();
-#if !defined(__LCLINT__)
+    (void) DO_LOCK ();
     if (rpmsqQueue->id == NULL)
 	rpmsqQueue->id = ME();
-#endif
     for (tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
 	if (tblsignum != tbl->signum)
 	    continue;
@@ -279,7 +353,7 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 	ret = tbl->active;
 	break;
     }
-    DO_UNLOCK ();
+    (void) DO_UNLOCK ();
     return ret;
 }
 
@@ -291,10 +365,8 @@ pid_t rpmsqFork(rpmsq sq)
     if (sq->reaper) {
 	xx = rpmsqInsert(sq, NULL);
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
-/*@=modfilesys@*/
 #endif
 	xx = rpmsqEnable(SIGCHLD, NULL);
     }
@@ -323,10 +395,8 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
 /*@=bounds@*/
 
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "     Child(%p): %p child %d\n", ME(), sq, getpid());
-/*@=modfilesys@*/
 #endif
 
     } else {				/* Parent. */
@@ -334,10 +404,8 @@ fprintf(stderr, "     Child(%p): %p child %d\n", ME(), sq, getpid());
 	sq->child = pid;
 
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "    Parent(%p): %p child %d\n", ME(), sq, sq->child);
-/*@=modfilesys@*/
 #endif
 
     }
@@ -393,19 +461,15 @@ static int rpmsqWaitUnregister(rpmsq sq)
 	xx = pthread_mutex_unlock(&sq->mutex);
 
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "      Wake(%p): %p child %d reaper %d ret %d\n", ME(), sq, sq->child, sq->reaper, ret);
-/*@=modfilesys@*/
 #endif
 
     xx = rpmsqRemove(sq);
     xx = rpmsqEnable(-SIGCHLD, NULL);
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "   Disable(%p): %p\n", ME(), sq);
-/*@=modfilesys@*/
 #endif
 
     return ret;
@@ -415,10 +479,8 @@ pid_t rpmsqWait(rpmsq sq)
 {
 
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "      Wait(%p): %p child %d reaper %d\n", ME(), sq, sq->child, sq->reaper);
-/*@=modfilesys@*/
 #endif
 
     if (sq->reaper) {
@@ -432,18 +494,14 @@ fprintf(stderr, "      Wait(%p): %p child %d reaper %d\n", ME(), sq, sq->child, 
 	sq->reaped = reaped;
 	sq->status = status;
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "   Waitpid(%p): %p child %d reaped %d\n", ME(), sq, sq->child, sq->reaped);
-/*@=modfilesys@*/
 #endif
     }
 
 #ifdef _RPMSQ_DEBUG
-/*@-modfilesys@*/
 if (_rpmsq_debug)
 fprintf(stderr, "      Fini(%p): %p child %d status 0x%x\n", ME(), sq, sq->child, sq->status);
-/*@=modfilesys@*/
 #endif
 
     return sq->reaped;
@@ -478,8 +536,8 @@ int rpmsqThreadEqual(void * thread)
  */
 static void
 sigchld_cancel (void *arg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@globals rpmsigTbl, fileSystem, internalState @*/
+	/*@modifies rpmsigTbl, fileSystem, internalState @*/
 {
     pid_t child = *(pid_t *) arg;
     pid_t result;
@@ -490,29 +548,30 @@ sigchld_cancel (void *arg)
 	result = waitpid(child, NULL, 0);
     } while (result == (pid_t)-1 && errno == EINTR);
 
-    DO_LOCK ();
+    (void) DO_LOCK ();
     if (SUB_REF (rpmsigTbl_sigchld) == 0) {
 	(void) rpmsqEnable(-SIGQUIT, NULL);
 	(void) rpmsqEnable(-SIGINT, NULL);
     }
-    DO_UNLOCK ();
+    (void) DO_UNLOCK ();
 }
 
 /**
  * Execute a command, returning its status.
  */
-/*@-bounds@*/
 int
 rpmsqExecve (const char ** argv)
+	/*@globals rpmsigTbl @*/
+	/*@modifies rpmsigTbl @*/
 {
     int oldtype;
     int status = -1;
-    pid_t pid;
+    pid_t pid = 0;
     pid_t result;
     sigset_t newMask, oldMask;
     rpmsq sq = memset(alloca(sizeof(*sq)), 0, sizeof(*sq));
 
-    DO_LOCK ();
+    (void) DO_LOCK ();
     if (ADD_REF (rpmsigTbl_sigchld) == 0) {
 	if (rpmsqEnable(SIGINT, NULL) < 0) {
 	    SUB_REF (rpmsigTbl_sigchld);
@@ -523,12 +582,12 @@ rpmsqExecve (const char ** argv)
 	    goto out_restore_sigint;
 	}
     }
-    DO_UNLOCK ();
+    (void) DO_UNLOCK ();
 
     (void) sigemptyset (&newMask);
     (void) sigaddset (&newMask, SIGCHLD);
     if (sigprocmask (SIG_BLOCK, &newMask, &oldMask) < 0) {
-	DO_LOCK ();
+	(void) DO_LOCK ();
 	if (SUB_REF (rpmsigTbl_sigchld) == 0)
 	    goto out_restore_sigquit_and_sigint;
 	goto out;
@@ -561,7 +620,7 @@ rpmsqExecve (const char ** argv)
 
     CLEANUP_RESET(0, oldtype);
 
-    DO_LOCK ();
+    (void) DO_LOCK ();
     if ((SUB_REF (rpmsigTbl_sigchld) == 0 &&
         (rpmsqEnable(-SIGINT, NULL) < 0 || rpmsqEnable (-SIGQUIT, NULL) < 0))
       || sigprocmask (SIG_SETMASK, &oldMask, NULL) != 0)
@@ -575,8 +634,6 @@ out_restore_sigquit_and_sigint:
 out_restore_sigint:
     (void) rpmsqEnable(-SIGINT, NULL);
 out:
-    DO_UNLOCK ();
+    (void) DO_UNLOCK ();
     return status;
 }
-/*@=bounds@*/
-/*@=unrecog@*/

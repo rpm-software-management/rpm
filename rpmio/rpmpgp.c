@@ -476,7 +476,6 @@ static int pgpPrtSigParams(/*@unused@*/ pgpTag tag, byte pubkey_algo, byte sigty
     for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 1) break;
-	    /*@-mods@*/
 	    if (_dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
@@ -490,11 +489,9 @@ fprintf(stderr, "\t  m**d = "),  mp32println(stderr, _dig->c.size, _dig->c.data)
 		    /*@switchbreak@*/ break;
 		}
 	    }
-	    /*@=mods@*/
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (i >= 2) break;
-	    /*@-mods@*/
 	    if (_dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
@@ -513,7 +510,6 @@ fprintf(stderr, "\t  m**d = "),  mp32println(stderr, _dig->c.size, _dig->c.data)
 		}
 		if (xx) return xx;
 	    }
-	    /*@=mods@*/
 	    pgpPrtStr("", pgpSigDSA[i]);
 	} else {
 	    if (_print)
@@ -527,6 +523,8 @@ fprintf(stderr, "\t  m**d = "),  mp32println(stderr, _dig->c.size, _dig->c.data)
 }
 
 int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals _digp @*/
+	/*@modifies *_digp @*/
 {
     byte version = h[0];
     byte * p;
@@ -555,7 +553,6 @@ int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
 	pgpPrtHex(" signhash16", v->signhash16, sizeof(v->signhash16));
 	pgpPrtNL();
 
-/*@-mods@*/
 	if (_digp && _digp->pubkey_algo == 0) {
 	    _digp->version = v->version;
 	    _digp->hashlen = v->hashlen;
@@ -567,7 +564,6 @@ int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
 	    _digp->hash_algo = v->hash_algo;
 	    memcpy(_digp->signhash16, v->signhash16, sizeof(_digp->signhash16));
 	}
-/*@=mods@*/
 
 	p = ((byte *)v) + sizeof(*v);
 	rc = pgpPrtSigParams(tag, v->pubkey_algo, v->sigtype, p, h, hlen);
@@ -590,12 +586,10 @@ int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
 
 if (_debug && _print)
 fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
-/*@-mods@*/
 	if (_digp && _digp->pubkey_algo == 0) {
 	    _digp->hashlen = sizeof(*v) + plen;
 	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
 	}
-/*@=mods@*/
 	(void) pgpPrtSubType(p, plen, v->sigtype);
 	p += plen;
 
@@ -614,7 +608,6 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	pgpPrtHex(" signhash16", p, 2);
 	pgpPrtNL();
 
-/*@-mods@*/
 	if (_digp && _digp->pubkey_algo == 0) {
 	    _digp->version = v->version;
 	    _digp->sigtype = v->sigtype;
@@ -622,7 +615,6 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	    _digp->hash_algo = v->hash_algo;
 	    memcpy(_digp->signhash16, p, sizeof(_digp->signhash16));
 	}
-/*@=mods@*/
 
 	p += 2;
 	if (p > (h + hlen))
@@ -686,15 +678,14 @@ static const char * pgpSecretELGAMAL[] = {
 
 static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 		/*@returned@*/ const byte *p, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     int i;
 
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 2) break;
-	    /*@-mods@*/
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* n */
@@ -725,11 +716,9 @@ fprintf(stderr, "\t     e = "),  mp32println(stderr, _dig->rsa_pk.e.size, _dig->
 		    /*@switchbreak@*/ break;
 		}
 	    }
-	    /*@=mods@*/
 	    pgpPrtStr("", pgpPublicRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (i >= 4) break;
-	    /*@-mods@*/
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* p */
@@ -756,7 +745,6 @@ fprintf(stderr, "\t     y = "),  mp32println(stderr, _dig->y.size, _dig->y.data)
 		    /*@switchbreak@*/ break;
 		}
 	    }
-	    /*@=mods@*/
 	    pgpPrtStr("", pgpPublicDSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
 	    if (i >= 3) break;
@@ -765,7 +753,6 @@ fprintf(stderr, "\t     y = "),  mp32println(stderr, _dig->y.size, _dig->y.data)
 	    if (_print)
 		fprintf(stderr, "%7d", i);
 	}
-    /*@=mods@*/
 	pgpPrtStr("", pgpMpiStr(p));
 	pgpPrtNL();
     }
@@ -848,6 +835,8 @@ static const byte * pgpPrtSeckeyParams(/*@unused@*/ byte pubkey_algo,
 }
 
 int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals _digp @*/
+	/*@modifies *_digp @*/
 {
     byte version = *h;
     const byte * p;
@@ -868,13 +857,11 @@ int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
 	    fprintf(stderr, " valid %u days", plen);
 	pgpPrtNL();
 
-/*@-mods@*/
 	if (_digp && _digp->tag == tag) {
 	    _digp->version = v->version;
 	    memcpy(_digp->time, v->time, sizeof(_digp->time));
 	    _digp->pubkey_algo = v->pubkey_algo;
 	}
-/*@=mods@*/
 
 	p = ((byte *)v) + sizeof(*v);
 	p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen);
@@ -889,13 +876,11 @@ int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
 	    fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
 	pgpPrtNL();
 
-/*@-mods@*/
 	if (_digp && _digp->tag == tag) {
 	    _digp->version = v->version;
 	    memcpy(_digp->time, v->time, sizeof(_digp->time));
 	    _digp->pubkey_algo = v->pubkey_algo;
 	}
-/*@=mods@*/
 
 	p = ((byte *)v) + sizeof(*v);
 	p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen);
@@ -912,18 +897,18 @@ int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
 
 /*@-boundswrite@*/
 int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals _digp @*/
+	/*@modifies *_digp @*/
 {
     pgpPrtVal("", pgpTagTbl, tag);
     if (_print)
 	fprintf(stderr, " \"%.*s\"", (int)hlen, (const char *)h);
     pgpPrtNL();
-/*@-mods@*/
     if (_digp) {
 	char * t;
 	_digp->userid = t = memcpy(xmalloc(hlen+1), h, hlen);
 	t[hlen] = '\0';
     }
-/*@=mods@*/
     return 0;
 }
 /*@=boundswrite@*/
@@ -1062,9 +1047,9 @@ void pgpCleanDig(pgpDig dig)
 	mp32nfree(&dig->c);
 	mp32nfree(&dig->rsahm);
     }
-    /*@-nullstate@*/
+/*@-nullstate@*/
     return;
-    /*@=nullstate@*/
+/*@=nullstate@*/
 }
 /*@=boundswrite@*/
 
@@ -1122,13 +1107,14 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 }
 
 int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
+	/*@globals _dig, _digp, _print @*/
+	/*@modifies _dig, _digp, *_digp, _print @*/
 {
     unsigned int val = *pkts;
     const byte *p;
     unsigned int pleft;
     int len;
 
-    /*@-mods@*/
     _print = printing;
     _dig = dig;
     if (dig != NULL && (val & 0x80)) {
@@ -1137,7 +1123,6 @@ int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
 	_digp->tag = tag;
     } else
 	_digp = NULL;
-    /*@=mods@*/
 
     for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
 	len = pgpPrtPkt(p, pleft);

@@ -134,8 +134,8 @@ exit:
  * @return		0 on success
  */
 static int getSignid(Header sig, int sigtag, unsigned char * signid)
-	/*@globals fileSystem @*/
-	/*@modifies *signid, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *signid, fileSystem, internalState @*/
 {
     void * pkt = NULL;
     int_32 pkttyp = 0;

@@ -264,8 +264,8 @@ int rpmtsCheck(rpmts ts)
  * @return		no. of (added) packages that could not be ordered
  */
 int rpmtsOrder(rpmts ts)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies ts, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Process all package elements in a transaction set.
@@ -276,10 +276,8 @@ int rpmtsOrder(rpmts ts)
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState@*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Unreference a transaction instance.

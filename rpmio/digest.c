@@ -54,28 +54,28 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_MD5:
 	ctx->digestlen = 16;
 	ctx->datalen = 64;
-	/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(md5Param);
-	/*@=sizeoftype@*/
+/*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-	/*@-type@*/ /* FIX: cast? */
+/*@-type@*/ /* FIX: cast? */
 	ctx->Reset = (void *) md5Reset;
 	ctx->Update = (void *) md5Update;
 	ctx->Digest = (void *) md5Digest;
-	/*@=type@*/
+/*@=type@*/
 	break;
     case PGPHASHALGO_SHA1:
 	ctx->digestlen = 20;
 	ctx->datalen = 64;
-	/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha1Param);
-	/*@=sizeoftype@*/
+/*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-	/*@-type@*/ /* FIX: cast? */
+/*@-type@*/ /* FIX: cast? */
 	ctx->Reset = (void *) sha1Reset;
 	ctx->Update = (void *) sha1Update;
 	ctx->Digest = (void *) sha1Digest;
-	/*@=type@*/
+/*@=type@*/
 	break;
     case PGPHASHALGO_RIPEMD160:
     case PGPHASHALGO_MD2:
@@ -111,6 +111,7 @@ DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->
 
 /*@unchecked@*/
 static int _ie = 0x44332211;
+
 /*@-redef@*/
 /*@unchecked@*/
 static union _dendian {
@@ -118,6 +119,7 @@ static union _dendian {
     char b[4];
 } *_endian = (union _dendian *)&_ie;
 /*@=redef@*/
+
 #define        IS_BIG_ENDIAN()         (_endian->b[0] == '\x44')
 #define        IS_LITTLE_ENDIAN()      (_endian->b[0] == '\x11')
 
@@ -134,18 +136,18 @@ rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
     digest = xmalloc(ctx->digestlen);
 
 DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp, asAscii, ctx->param, digest));
-    /*@-noeffectuncon@*/ /* FIX: check rc */
+/*@-noeffectuncon@*/ /* FIX: check rc */
     (void) (*ctx->Digest) (ctx->param, digest);
-    /*@=noeffectuncon@*/
+/*@=noeffectuncon@*/
 
-    /*@-sizeoftype@*/
+/*@-sizeoftype@*/
     if (IS_LITTLE_ENDIAN())
     for (i = 0; i < (ctx->digestlen/sizeof(uint32)); i++)
 	digest[i] = swapu32(digest[i]);
-    /*@=sizeoftype@*/
+/*@=sizeoftype@*/
 
     /* Return final digest. */
-    /*@-branchstate@*/
+/*@-branchstate@*/
     if (!asAscii) {
 	if (lenp) *lenp = ctx->digestlen;
 	if (datap) {
@@ -166,7 +168,7 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
 	    *t = '\0';
 	}
     }
-    /*@=branchstate@*/
+/*@=branchstate@*/
     if (digest) {
 	memset(digest, 0, ctx->digestlen);	/* In case it's sensitive */
 	free(digest);

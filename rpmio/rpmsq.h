@@ -43,6 +43,7 @@ struct rpmsqElem {
     rpmtime_t ms_scriptlets;	/*!< Accumulated script duration (msecs). */
     int reaper;			/*!< Register SIGCHLD handler? */
     int pipes[2];		/*!< Parent/child interlock. */
+/*@shared@*/
     void * id;			/*!< Blocking thread id (pthread_t). */
     pthread_mutex_t mutex;	/*!< Signal delivery to thread condvar. */
     pthread_cond_t cond;
@@ -68,7 +69,8 @@ extern sigset_t rpmsqCaught;
  */
 /*@-exportlocal@*/
 int rpmsqInsert(/*@null@*/ void * elem, /*@null@*/ void * prev)
-	/*@modifies elem @*/;
+	/*@globals systemState @*/
+	/*@modifies elem, prev, systemState @*/;
 /*@=exportlocal@*/
 
 /**
@@ -90,8 +92,8 @@ int rpmsqRemove(/*@null@*/ void * elem)
  */
 /*@-exportlocal@*/
 void rpmsqAction(int signum, void * info, void * context)
-	/*@globals rpmsqCaught, errno, fileSystem @*/
-	/*@modifies rpmsqCaught, errno, fileSystem @*/;
+	/*@globals rpmsqCaught, rpmsqQueue, errno, fileSystem @*/
+	/*@modifies rpmsqCaught, rpmsqQueue, errno, fileSystem @*/;
 /*@=exportlocal@*/
 
 /**
@@ -101,8 +103,8 @@ void rpmsqAction(int signum, void * info, void * context)
  * @return		no. of refs, -1 on error
  */
 int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
-	/*@globals rpmsqCaught, fileSystem, internalState @*/
-	/*@modifies rpmsqCaught, fileSystem, internalState @*/;
+	/*@globals rpmsqCaught, rpmsqQueue, fileSystem, internalState @*/
+	/*@modifies rpmsqCaught, rpmsqQueue, fileSystem, internalState @*/;
 
 /**
  * Fork a child process.

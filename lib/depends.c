@@ -816,12 +816,11 @@ static void freeBadDeps(void)
  */
 /*@-boundsread@*/
 static int ignoreDep(const rpmte p, const rpmte q)
-	/*@globals badDeps, badDepsInitialized @*/
-	/*@modifies badDeps, badDepsInitialized @*/
+	/*@globals badDeps, badDepsInitialized, rpmGlobalMacroContext @*/
+	/*@modifies badDeps, badDepsInitialized, rpmGlobalMacroContext @*/
 {
     struct badDeps_s * bdp;
 
-/*@-globs -mods@*/
     if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
@@ -856,7 +855,6 @@ static int ignoreDep(const rpmte p, const rpmte q)
 	s = _free(s);
 	badDepsInitialized++;
     }
-/*@=globs =mods@*/
 
     /*@-compdef@*/
     if (badDeps != NULL)
@@ -1002,8 +1000,9 @@ static inline int addRelation(rpmts ts,
 		/*@dependent@*/ rpmte p,
 		unsigned char * selected,
 		rpmds requires)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, p, *selected, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, p, *selected, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
@@ -1071,10 +1070,8 @@ static inline int addRelation(rpmts ts,
     tsi->tsi_reqx = rpmdsIx(requires);
 
     tsi->tsi_next = rpmteTSI(q)->tsi_next;
-/*@-mods@*/
     rpmteTSI(q)->tsi_next = tsi;
     rpmteTSI(q)->tsi_qcnt++;			/* bump q successor count */
-/*@=mods@*/
     return 0;
 }
 /*@=mustmod@*/

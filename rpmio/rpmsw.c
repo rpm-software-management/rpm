@@ -79,10 +79,8 @@ static int rpmsw_initialized = 0;
 
 rpmsw rpmswNow(rpmsw sw)
 {
-/*@-noeffect@*/
     if (!rpmsw_initialized)
 	(void) rpmswInit();
-/*@=noeffect@*/
     if (sw == NULL)
 	return NULL;
     switch (rpmsw_type) {
@@ -144,7 +142,6 @@ rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
 }
 
 #if defined(HP_TIMING_NOW)
-/*@-type@*/
 static rpmtime_t rpmswCalibrate(void)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
@@ -161,9 +158,7 @@ static rpmtime_t rpmswCalibrate(void)
     req.tv_sec = 0;
     req.tv_nsec = 20 * 1000 * 1000;
     for (i = 0; i < 100; i++) {
-/*@-compdef@*/
 	rc = nanosleep(&req, &rem);
-/*@=compdef@*/
 	if (rc == 0)
 	    break;
 	if (rem.tv_sec == 0 && rem.tv_nsec == 0)
@@ -176,7 +171,6 @@ static rpmtime_t rpmswCalibrate(void)
 
     return ticks;
 }
-/*@=type@*/
 #endif
 
 rpmtime_t rpmswInit(void)
@@ -244,7 +238,6 @@ rpmtime_t rpmswInit(void)
     return rpmsw_overhead;
 }
 
-/*@-mods@*/
 int rpmswEnter(rpmop op, ssize_t rc)
 {
     if (op == NULL)
@@ -300,5 +293,3 @@ rpmtime_t rpmswSub(rpmop to, rpmop from)
     }
     return usecs;
 }
-
-/*@=mods@*/
