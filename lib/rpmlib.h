@@ -186,7 +186,8 @@ extern const int rpmTagTableSize;
 #define RPMVAR_NETSHAREDPATH		33
 #define RPMVAR_DEFAULTDOCDIR		34
 #define RPMVAR_FIXPERMS			35
-#define RPMVAR_LASTVAR	                36 /* IMPORTANT to keep right! */
+#define RPMVAR_GZIPBIN     		36
+#define RPMVAR_LASTVAR	                37 /* IMPORTANT to keep right! */
 
 char *rpmGetVar(int var);
 int rpmGetBooleanVar(int var);

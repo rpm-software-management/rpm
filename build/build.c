@@ -400,11 +400,11 @@ static char *do_untar(Spec spec, int c, int quietly)
     
     if (isCompressed(file)) {
 	sprintf(buf,
-		"gzip -dc %s | tar %s -\n"
+		"%s -dc %s | tar %s -\n"
 		"if [ $? -ne 0 ]; then\n"
 		"  exit $?\n"
 		"fi",
-		file, taropts);
+		rpmGetVar(RPMVAR_GZIPBIN), file, taropts);
     } else {
 	sprintf(buf, "tar %s %s", taropts, file);
     }
@@ -452,11 +452,11 @@ static char *do_patch(Spec spec, int c, int strip, char *db,
     if (isCompressed(file)) {
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"
-		"gzip -dc %s | patch -p%d %s -s\n"
+		"%s -dc %s | patch -p%d %s -s\n"
 		"if [ $? -ne 0 ]; then\n"
 		"  exit $?\n"
 		"fi",
-		c, file, strip, args);
+		rpmGetVar(RPMVAR_GZIPBIN), c, file, strip, args);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"

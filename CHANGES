@@ -23,6 +23,8 @@
 	- requirements which begin with a leading / require files (in
 	  the database!) instead of packages
 	- clean up conflictsindex during --rebuilddb
+	- get path to gzip from /usr/lib/rpmrc rather then just hoping it's 
+	  in the path
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output

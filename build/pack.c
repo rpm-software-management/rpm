@@ -175,6 +175,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     int fromCpio[2];
     int toGzip[2];
     char * cpiobin;
+    char * gzipbin;
 
     int writeBytesLeft, bytesWritten;
 
@@ -188,7 +189,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     void *oldhandler;
 
     cpiobin = rpmGetVar(RPMVAR_CPIOBIN);
-    if (!cpiobin) cpiobin = "cpio";
+    gzipbin = rpmGetVar(RPMVAR_CPIOBIN);
  
     *archiveSize = 0;
     
@@ -254,7 +255,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	dup2(toGzip[0], 0);  /* Make stdin the in pipe       */
 	dup2(fd, 1);         /* Make stdout the passed-in fd */
 
-	execlp("gzip", "gzip", "-c9fn", NULL);
+	execlp(gzipbin, gzipbin, "-c9fn", NULL);
 	rpmError(RPMERR_EXEC, "Couldn't exec gzip");
 	_exit(RPMERR_EXEC);
     }
