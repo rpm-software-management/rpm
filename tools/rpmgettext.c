@@ -83,7 +83,7 @@ static const char escapes[] = "\b\f\n\r\t";
 static const char escape_names[] = "bfnrt";
 
 static void
-copypo(char *t, char *s)
+expandRpmPO(char *t, const char *s)
 {
     const char *esc;
     int c;
@@ -109,6 +109,40 @@ copypo(char *t, char *s)
 	}
     }
     *t++ = '"';
+    *t = '\0';
+}
+
+static void
+contractRpmPO(char *t, const char *s)
+{
+    int instring = 0;
+    const char *esc;
+    int c;
+
+    while((c = *s++) != '\0') {
+	if (!(c == '"' || !(instring & 1)))
+		continue;
+	switch(c) {
+	case '\\':
+		if (strchr("0123467", *s)) {
+			char *se;
+			*t++ = strtol(s, &se, 8);
+			s = se;
+		} else if ((esc = strchr(escape_names, *s)) != NULL) {
+			*t++ = escapes[esc - escape_names];
+			s++;
+		} else {
+			*t++ = *s++;
+		}
+		break;
+	case '"':
+		instring++;
+		break;
+	default:
+		*t++ = c;
+		break;
+	}
+    }
     *t = '\0';
 }
 
@@ -152,12 +186,12 @@ dofile(int fd, const char *file, FILE *fp)
 
 	fprintf(fp, "\n#: %s:%s\n", file, getTagString(*tp));
 	e = *s;
-	copypo(buf, e);
+	expandRpmPO(buf, e);
 	fprintf(fp, "msgid %s\n", buf);
 	if (count <= 1)
 	    fprintf(fp, "nsgstr \"\"\n");
 	for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
-		copypo(buf, e);
+		expandRpmPO(buf, e);
 		fprintf(fp, "msgstr(%s) %s\n", langs[i], buf);
 	}
 
@@ -172,6 +206,9 @@ dofile(int fd, const char *file, FILE *fp)
 
 int debug = 0;
 int verbose = 0;
+char *inputdir = NULL;
+char *outputdir = NULL;
+int gentran = 0;
 
 int
 main(int argc, char **argv)
@@ -181,7 +218,7 @@ main(int argc, char **argv)
     extern int optind;
     int errflg = 0;
 
-    while((c = getopt(argc, argv, "dev")) != EOF)
+    while((c = getopt(argc, argv, "deI:O:Tv")) != EOF)
     switch (c) {
     case 'd':
 	debug++;
@@ -189,6 +226,14 @@ main(int argc, char **argv)
     case 'e':
 	escape = 0;
 	break;
+    case 'I':
+	inputdir = optarg;
+	break;
+    case 'O':
+	outputdir = optarg;
+	break;
+    case 'T':
+	gentran++;
     case 'v':
 	verbose++;
 	break;
@@ -206,17 +251,50 @@ main(int argc, char **argv)
     }
 
     for ( ; optind < argc; optind++ ) {
-	char *file;
+	char *file, ifn[BUFSIZ], ofn[BUFSIZ];
+	FILE *ofp;
 	int fd;
 
 	file = argv[optind];
-	if ((fd = open(file, O_RDONLY, 0644)) < 0) {
-	    perror(file);
+	ofp = stdout;
+
+	ifn[0] = '\0';
+	if (inputdir && *file != '/') {
+		strcpy(ifn, inputdir);
+		strcat(ifn, "/");
+	}
+	strcat(ifn, file);
+
+	if (gentran) {
+	    char *op;
+	    ofn[0] = '\0';
+	    if (outputdir && *file != '/') {
+		strcpy(ofn, outputdir);
+		strcat(ofn, "/");
+	    }
+	    strcat(ofn, file);
+
+	    if ((op = strrchr(ofn, '-')) != NULL &&
+		(op = strchr(op, '.')) != NULL)
+		    strcpy(op, ".tran");
+
+	    if ((ofp = fopen(ofn, "w")) == NULL) {
+		fprintf(stderr, "Can't open %s\n", ofn);
+		exit(4);
+	    }
+	}
+
+	if ((fd = open(ifn, O_RDONLY, 0644)) < 0) {
+	    perror(ifn);
 	    exit(2);
 	}
-	if (dofile(fd, file, stdout)) {
+	if (dofile(fd, ifn, ofp)) {
 		exit(3);
 	}
+	if (ofp != stdout)
+		fclose(ofp);
 	close(fd);
     }
+
+    return 0;
 }
