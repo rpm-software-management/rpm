@@ -35,7 +35,7 @@ sources:
 
 .PHONY: lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(libz_la_SOURCES)
+	$(LINT) $(DEFS) $(INCLUDES) $(libz_la_SOURCES) minigzip.c
 
 .PHONY: doxygen
 doxygen apidocs: Doxyfile
