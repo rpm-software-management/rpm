@@ -10,6 +10,7 @@ EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio tsw dumpasn1
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
+	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
@@ -31,11 +32,12 @@ librpmio_la_SOURCES = \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -release @VERSION@ $(LDFLAGS) \
+	@WITH_BEECRYPT_LIB@ \
 	$(top_builddir)/file/src/libfmagic.la \
 	@WITH_ZLIB_LIB@ \
 	-lrt -lpthread
-librpmio_la_LIBADD = $(BEECRYPTLOBJS)
-librpmio_la_DEPENDENCIES = .created
+librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
+librpmio_la_DEPENDENCIES = # .created
 
 $(top_builddir)/beecrypt/listobjs:
 	${MAKE} -C $(top_builddir)/beecrypt listobjs

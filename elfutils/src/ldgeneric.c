@@ -1,24 +1,22 @@
-/* Copyright (C) 2001, 2002 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/licenses/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
 #include <assert.h>
+#include <dlfcn.h>
 #include <errno.h>
 #include <error.h>
 #include <fcntl.h>
@@ -40,8 +38,6 @@
 /* Prototypes for local functions.  */
 static const char **ld_generic_lib_extensions (struct ld_state *)
      __attribute__ ((__const__));
-static int ld_generic_is_debugscn_p (const char *name,
-				     struct ld_state *statep);
 static int ld_generic_file_close (struct usedfiles *fileinfo,
 				  struct ld_state *statep);
 static int ld_generic_file_process (int fd, struct usedfiles *fileinfo,
@@ -140,7 +136,7 @@ ld_prepare_state (struct ld_state *statep, const char *emulation)
 {
   size_t emulation_len;
   char *fname;
-  lt_dlhandle h;
+  void *h;
   char *initname;
   int (*initfct) (struct ld_state *);
 
@@ -168,7 +164,6 @@ ld_prepare_state (struct ld_state *statep, const char *emulation)
   /* Initialize the callbacks.  These are the defaults, the appropriate
      backend can later install its own callbacks.  */
   statep->callbacks.lib_extensions = ld_generic_lib_extensions;
-  statep->callbacks.is_debugscn_p = ld_generic_is_debugscn_p;
   statep->callbacks.file_process = ld_generic_file_process;
   statep->callbacks.file_close = ld_generic_file_close;
   statep->callbacks.generate_sections = ld_generic_generate_sections;
@@ -200,33 +195,26 @@ ld_prepare_state (struct ld_state *statep, const char *emulation)
   emulation_len = strlen (emulation);
 
   /* Construct the file name.  */
-  fname = (char *) alloca (sizeof "libld_" + emulation_len);
-  memcpy (stpcpy (fname, "libld_"), emulation, emulation_len + 1);
-
-  /* Get the module loaded.  */
-  if (lt_dlinit () != 0)
-    error (EXIT_FAILURE, 0, gettext ("initialization of libltdl failed"));
-
-  /* Make sure we can find our modules.  */
-  /* XXX Use the correct path when done.  */
-  lt_dladdsearchdir (OBJDIR "/.libs");
+  fname = (char *) alloca (sizeof "libld_" - 1 + emulation_len + sizeof ".so");
+  strcpy (mempcpy (stpcpy (fname, "libld_"), emulation, emulation_len + 1),
+	  ".so");
 
   /* Try loading.  */
-  h = lt_dlopenext (fname);
+  h = dlopen (fname, RTLD_LAZY);
   if (h == NULL)
     error (EXIT_FAILURE, 0,
 	   gettext ("cannot load ld backend library '%s': %s"),
-	   fname, lt_dlerror ());
+	   fname, dlerror ());
 
   /* Find the initializer.  It must be present.  */
   initname = (char *) alloca (emulation_len + sizeof "_ld_init");
   strcpy (mempcpy (initname, emulation, emulation_len), "_ld_init");
-  initfct = (int (*) (struct ld_state *)) lt_dlsym (h, initname);
+  initfct = (int (*) (struct ld_state *)) dlsym (h, initname);
 
   if (initfct == NULL)
     error (EXIT_FAILURE, 0, gettext ("\
 cannot find init function in ld backend library '%s': %s"),
-	   fname, lt_dlerror ());
+	   fname, dlerror ());
 
   /* Store the handle.  */
   statep->ldlib = h;
@@ -578,7 +566,7 @@ check_definition (const GElf_Sym *sym, size_t symidx,
       const GElf_Sym *oldsym;
       struct usedfiles *oldfile;
       const char *scnname;
-      size_t xndx;
+      Elf32_Word xndx;
       size_t shndx;
       size_t shnum;
 
@@ -588,7 +576,7 @@ check_definition (const GElf_Sym *sym, size_t symidx,
 	       elf_errmsg (-1));
 
       /* XXX Use only ebl_section_name.  */
-      if ((sym->st_shndx < SHN_LORESERVE || sym->st_shndx > SHN_HIRESERVE)
+      if (sym->st_shndx < SHN_LORESERVE // || sym->st_shndx > SHN_HIRESERVE
 	  && sym->st_shndx < shnum)
 	scnname = elf_strptr (fileinfo->elf,
 			      fileinfo->shstrndx,
@@ -796,18 +784,18 @@ mark_section_group (struct usedfiles *fileinfo, Elf32_Word shndx,
 
       if (statep->strip == strip_none
 	  /* If we are stripping remove debug sections.  */
-	  || (!IS_DEBUGSCN_P (elf_strptr (fileinfo->elf,
-					  fileinfo->shstrndx,
-					  fileinfo->scninfo[idx].shdr.sh_name),
-			      statep)
+	  || (!ebl_debugscn_p (statep->ebl,
+			       elf_strptr (fileinfo->elf,
+					   fileinfo->shstrndx,
+					   fileinfo->scninfo[idx].shdr.sh_name))
 	      /* And the relocation sections for the debug
 		 sections.  */
 	      && ((fileinfo->scninfo[idx].shdr.sh_type != SHT_RELA
 		   && fileinfo->scninfo[idx].shdr.sh_type != SHT_REL)
-		  || !IS_DEBUGSCN_P (elf_strptr (fileinfo->elf,
-						 fileinfo->shstrndx,
-						 fileinfo->scninfo[fileinfo->scninfo[idx].shdr.sh_info].shdr.sh_name),
-				     statep))))
+		  || !ebl_debugscn_p (statep->ebl,
+				      elf_strptr (fileinfo->elf,
+						  fileinfo->shstrndx,
+						  fileinfo->scninfo[fileinfo->scninfo[idx].shdr.sh_info].shdr.sh_name)))))
 	{
 	  struct scninfo *ignore;
 
@@ -1071,7 +1059,8 @@ add_relocatable_file (struct usedfiles *fileinfo, struct ld_state *statep,
 	  fileinfo->nverdef = nversions = shdr->sh_info;
 	  /* We have NVERSIONS + 1 because the indeces used to access the
 	     sectino start with one; zero represents local binding.  */
-	  fileinfo->verdefused = (int *) xcalloc (sizeof (int), nversions + 1);
+	  fileinfo->verdefused = (GElf_Versym *) xcalloc (sizeof (GElf_Versym),
+							  nversions + 1);
 	  fileinfo->verdefent
 	    = (struct Ebl_Strent **) xmalloc (sizeof (struct Ebl_Strent *)
 					      * (nversions + 1));
@@ -1129,7 +1118,7 @@ add_relocatable_file (struct usedfiles *fileinfo, struct ld_state *statep,
 	    }
 	  if (fileinfo->scninfo[cnt].symbols->name == NULL)
 	    error (EXIT_FAILURE, 0, gettext ("\
-%s: cannot determine signature of section group [%2d] '%s': %s"),
+%s: cannot determine signature of section group [%2zd] '%s': %s"),
 		   fileinfo->fname,
 		   elf_ndxscn (fileinfo->scninfo[cnt].scn),
 		   elf_strptr (fileinfo->elf, fileinfo->shstrndx,
@@ -1186,7 +1175,7 @@ add_relocatable_file (struct usedfiles *fileinfo, struct ld_state *statep,
 	  for (cnt = 0; cnt < nlocalsymbols; ++cnt)
 	    {
 	      GElf_Sym symmem;
-	      size_t shndx;
+	      Elf32_Word shndx;
 	      const GElf_Sym *sym;
 
 	      sym = gelf_getsymshndx (symtabdata, xndxdata, cnt, &symmem,
@@ -1251,7 +1240,7 @@ add_relocatable_file (struct usedfiles *fileinfo, struct ld_state *statep,
       for (cnt = nlocalsymbols; cnt < nsymbols; ++cnt)
 	{
 	  GElf_Sym symmem;
-	  size_t shndx;
+	  Elf32_Word shndx;
 	  const GElf_Sym *sym = gelf_getsymshndx (symtabdata, xndxdata, cnt,
 						  &symmem, &shndx);
 	  struct symbol *newp;
@@ -2202,53 +2191,6 @@ ld_generic_flag_unresolved (struct ld_state *statep)
 }
 
 
-/* The linker has to be able to identify sections containing debug
-   information.  This cannot be done by section types etc, but only by
-   names.  Except for DWARF sections the names used for the platform
-   might differ.  This callback function tests whether a given name is
-   that of a debug section.  */
-static int
-ld_generic_is_debugscn_p (const char *name, struct ld_state *statep)
-{
-  /* We know by default only about the DWARF debug sections which have
-     fixed names.  */
-  static const char *dwarf_scn_names[] =
-    {
-      /* DWARF 1 */
-      ".debug",
-      ".line",
-      /* GNU DWARF 1 extensions */
-      ".debug_srcinfo",
-      ".debug_sfnames",
-      /* DWARF 1.1 and DWARF 2 */
-      ".debug_aranges",
-      ".debug_pubnames",
-      /* DWARF 2 */
-      ".debug_info",
-      ".debug_abbrev",
-      ".debug_line",
-      ".debug_frame",
-      ".debug_str",
-      ".debug_loc",
-      ".debug_macinfo",
-      /* SGI/MIPS DWARF 2 extensions */
-      ".debug_weaknames",
-      ".debug_funcnames",
-      ".debug_typenames",
-      ".debug_varnames"
-    };
-  size_t ndwarf_scn_names = (sizeof (dwarf_scn_names)
-			     / sizeof (dwarf_scn_names[0]));
-  size_t cnt;
-
-  for (cnt = 0; cnt < ndwarf_scn_names; ++cnt)
-    if (strcmp (name, dwarf_scn_names[cnt]) == 0)
-      return 1;
-
-  return 0;
-}
-
-
 /* Close the given file.  */
 static int
 ld_generic_file_close (struct usedfiles *fileinfo, struct ld_state *statep)
@@ -2864,7 +2806,7 @@ ld_generic_create_sections (struct ld_state *statep)
 	     containing the sections A, B, and C in the output
 	     file.  */
 	  struct scninfo *runp;
-	  int here_groupidx = 0;
+	  Elf32_Word here_groupidx = 0;
 	  struct scngroup *here_group;
 	  struct member *newp;
 
@@ -3078,15 +3020,15 @@ reduce_symbol_p (GElf_Sym *sym, struct Ebl_Strent *strent,
 
 
 static GElf_Addr
-eval_expression (struct expression *exp, GElf_Addr addr,
+eval_expression (struct expression *expr, GElf_Addr addr,
 		 struct ld_state *statep)
 {
   GElf_Addr val = ~((GElf_Addr) 0);
 
-  switch (exp->tag)
+  switch (expr->tag)
     {
     case exp_num:
-      val = exp->val.num;
+      val = expr->val.num;
       break;
 
     case exp_sizeof_headers:
@@ -3112,51 +3054,51 @@ eval_expression (struct expression *exp, GElf_Addr addr,
 	 to be necessary to handle any variable but ".".  Let's avoid
 	 the complication.  If it turns up to be needed we can add
 	 it.  */
-      if (strcmp (exp->val.str, ".") != 0)
+      if (strcmp (expr->val.str, ".") != 0)
 	error (EXIT_FAILURE, 0, gettext ("\
 address computation expression contains variable '%s'"),
-	       exp->val.str);
+	       expr->val.str);
 
       val = addr;
       break;
 
     case exp_mult:
-      val = (eval_expression (exp->val.binary.left, addr, statep)
-	     * eval_expression (exp->val.binary.right, addr, statep));
+      val = (eval_expression (expr->val.binary.left, addr, statep)
+	     * eval_expression (expr->val.binary.right, addr, statep));
       break;
 
     case exp_div:
-      val = (eval_expression (exp->val.binary.left, addr, statep)
-	     / eval_expression (exp->val.binary.right, addr, statep));
+      val = (eval_expression (expr->val.binary.left, addr, statep)
+	     / eval_expression (expr->val.binary.right, addr, statep));
       break;
 
     case exp_mod:
-      val = (eval_expression (exp->val.binary.left, addr, statep)
-	     % eval_expression (exp->val.binary.right, addr, statep));
+      val = (eval_expression (expr->val.binary.left, addr, statep)
+	     % eval_expression (expr->val.binary.right, addr, statep));
       break;
 
     case exp_plus:
-      val = (eval_expression (exp->val.binary.left, addr, statep)
-	     + eval_expression (exp->val.binary.right, addr, statep));
+      val = (eval_expression (expr->val.binary.left, addr, statep)
+	     + eval_expression (expr->val.binary.right, addr, statep));
       break;
 
     case exp_minus:
-      val = (eval_expression (exp->val.binary.left, addr, statep)
-	     - eval_expression (exp->val.binary.right, addr, statep));
+      val = (eval_expression (expr->val.binary.left, addr, statep)
+	     - eval_expression (expr->val.binary.right, addr, statep));
       break;
 
     case exp_and:
-      val = (eval_expression (exp->val.binary.left, addr, statep)
-	     & eval_expression (exp->val.binary.right, addr, statep));
+      val = (eval_expression (expr->val.binary.left, addr, statep)
+	     & eval_expression (expr->val.binary.right, addr, statep));
       break;
 
     case exp_or:
-      val = (eval_expression (exp->val.binary.left, addr, statep)
-	     | eval_expression (exp->val.binary.right, addr, statep));
+      val = (eval_expression (expr->val.binary.left, addr, statep)
+	     | eval_expression (expr->val.binary.right, addr, statep));
       break;
 
     case exp_align:
-      val = eval_expression (exp->val.child, addr, statep);
+      val = eval_expression (expr->val.child, addr, statep);
       if ((val & (val - 1)) != 0)
 	error (EXIT_FAILURE, 0, gettext ("argument '%" PRIuMAX "' of ALIGN in address computation expression is no power of two"),
 	       (uintmax_t) val);
@@ -4675,7 +4617,7 @@ section index too large in dynamic symbol table"));
 				  &versym);
 
 		  (void) gelf_update_versym (versymdata, nsym_dyn,
-					     symp->file->verdefused[versym]);
+					     &symp->file->verdefused[versym]);
 		}
 	      }
 	}
@@ -4766,13 +4708,13 @@ section index too large in dynamic symbol table"));
 				  &versym);
 
 		  (void) gelf_update_versym (versymdata, nsym_dyn,
-					     symp->file->verdefused[versym]);
+					     &symp->file->verdefused[versym]);
 		}
 	      else
 		{
 		  /* XXX Add support for version definitions.  */
-		  (void) gelf_update_versym (versymdata, nsym_dyn,
-					     VER_NDX_GLOBAL);
+		  GElf_Versym global = VER_NDX_GLOBAL;
+		  (void) gelf_update_versym (versymdata, nsym_dyn, &global);
 		}
 	    }
 
@@ -4904,7 +4846,7 @@ cannot create hash table section for output file: %s"),
 					    EV_CURRENT);
 	  size_t vernaux_size = gelf_fsize (statep->outelf, ELF_T_VNAUX, 1,
 					    EV_CURRENT);
-	  int offset;
+	  size_t offset;
 	  int ntotal;
 
 	  verneedscn = elf_getscn (statep->outelf, statep->verneedscnidx);
@@ -5817,6 +5759,9 @@ linker backend didn't specify function to relocate section"));
 static int
 ld_generic_finalize (struct ld_state *statep)
 {
+  struct stat temp_st;
+  struct stat new_st;
+
   /* Write out the ELF file data.  */
   if (elf_update (statep->outelf, ELF_C_WRITE) == -1)
       error (EXIT_FAILURE, 0, gettext ("while writing output file: %s"),
@@ -5837,14 +5782,29 @@ ld_generic_finalize (struct ld_state *statep)
     error (EXIT_FAILURE, errno,
 	   gettext ("cannot change access mode of output file"));
 
-  /* Close the file descriptor.  */
-  (void) close (statep->outfd);
+  /* Get the file status of the temporary file.  */
+  if (fstat (statep->outfd, &temp_st) != 0)
+    error (EXIT_FAILURE, errno, gettext ("cannot stat output file"));
 
   /* Now it's time to rename the file.  Remove an old existing file
      first.  */
   if (rename (statep->tempfname, statep->outfname) != 0)
     /* Something went wrong.  */
     error (EXIT_FAILURE, errno, gettext ("cannot rename output file"));
+
+  /* Make sure the output file is really the one we created.  */
+  if (stat (statep->outfname, &new_st) != 0
+      || new_st.st_ino != temp_st.st_ino
+      || new_st.st_dev != temp_st.st_dev)
+    {
+      /* Wow, somebody overwrote the output file, probably some intruder.  */
+      unlink (statep->outfname);
+      error (EXIT_FAILURE, 0, gettext ("\
+WARNING: temporary output overwritten before linking finished"));
+    }
+
+  /* Close the file descriptor.  */
+  (void) close (statep->outfd);
 
   /* Signal the cleanup handler that the file is correctly created.  */
   statep->tempfname = NULL;

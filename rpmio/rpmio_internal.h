@@ -9,20 +9,20 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
-#include <beecrypt/beecrypt.api.h>
+#include <beecrypt.api.h>
 #include <rpmpgp.h>
 #include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
-#include <beecrypt/beecrypt.h>
-#include <beecrypt/base64.h>
-#include <beecrypt/dsa.h>
-#include <beecrypt/endianness.h>
-#include <beecrypt/md5.h>
-#include <beecrypt/mp.h>
-#include <beecrypt/rsa.h>
-#include <beecrypt/rsapk.h>
-#include <beecrypt/sha1.h>
+#include <beecrypt.h>
+#include <base64.h>
+#include <dsa.h>
+#include <endianness.h>
+#include <md5.h>
+#include <mp.h>
+#include <rsa.h>
+#include <rsapk.h>
+#include <sha1.h>
 
 /** \ingroup rpmio
  * Values parsed from OpenPGP signature/pubkey packet(s).

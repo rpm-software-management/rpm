@@ -14,21 +14,21 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
-SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ file @WITH_DB_SUBDIR@ popt beecrypt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
+SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ file @WITH_DB_SUBDIR@ popt @WITH_BEECRYPT_SUBDIR@  rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/beecrypt \
+	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
-myLDFLAGS = @WITH_LIBELF_LIB@
+myLDFLAGS = @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 
 myLDADD = \
 	$(top_builddir)/lib/librpm.la \
@@ -76,7 +76,7 @@ rpmd.o:	$(top_srcdir)/rpmqv.c
 
 rpmi_SOURCES =
 rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-rpmi_LDADD =		rpmi.o $(myLDADD) @WITH_LIBELF_LIB@
+rpmi_LDADD =		rpmi.o $(myLDADD) @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 rpmi.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMEIU -o $@ -c rpmqv.c
 

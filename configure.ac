@@ -410,6 +410,27 @@ AC_CHECK_HEADER([dwarf.h], [
 ])
 AC_SUBST(WITH_LIBDWARF_INCLUDE)
 
+WITH_BEECRYPT_SUBDIR=
+WITH_BEECRYPT_INCLUDE=
+WITH_BEECRYPT_LIB=
+dnl AC_CHECK_HEADER([beecrypt/beecrypt.h], [
+dnl 	AC_CHECK_LIB(beecrypt, mpfprintln, [
+dnl 	    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the `beecrypt' library (-lbeecrypt).])
+dnl 	    WITH_BEECRYPT_INCLUDE="-I/usr/include/beecrypt"
+dnl 	    WITH_BEECRYPT_LIB="-lbeecrypt"
+dnl 	])
+dnl     ], [
+	if test -d beecrypt ; then
+	    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the `beecrypt' library (-lbeecrypt).])
+	    WITH_BEECRYPT_SUBDIR=beecrypt
+	    WITH_BEECRYPT_INCLUDE="-I\${top_srcdir}/${WITH_BEECRYPT_SUBDIR}"
+	    WITH_BEECRYPT_LIB="\${top_builddir}/${WITH_BEECRYPT_SUBDIR}/libbeecrypt.la"
+	fi
+dnl ])
+AC_SUBST(WITH_BEECRYPT_SUBDIR)
+AC_SUBST(WITH_BEECRYPT_INCLUDE)
+AC_SUBST(WITH_BEECRYPT_LIB)
+
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])

@@ -190,6 +190,7 @@ dwarf_begin_elf (elf, cmd, scngrp)
   GElf_Ehdr *ehdr;
   GElf_Ehdr ehdr_mem;
   Dwarf *result;
+  size_t mem_default_size;
 
   /* Get the ELF header of the file.  We need various pieces of
      information from it.  */
@@ -206,7 +207,7 @@ dwarf_begin_elf (elf, cmd, scngrp)
 
 
   /* Default memory allocation size.  */
-  size_t mem_default_size = sysconf (_SC_PAGESIZE) - 4 * sizeof (void *);
+  mem_default_size = sysconf (_SC_PAGESIZE) - 4 * sizeof (void *);
 
   /* Allocate the data structure.  */
   result = (Dwarf *) calloc (1, sizeof (Dwarf) + mem_default_size);

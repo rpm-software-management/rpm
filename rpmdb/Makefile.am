@@ -8,7 +8,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/beecrypt \
+	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@

@@ -73,7 +73,7 @@ uninstall: uninstall-am
 #	rm -f $(DESTDIR)$(libdir)/libdw.so
 #	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(includedir)/elfutils
 
-noinst_HEADERS = libdwP.h memory-access.h dwarf_abbrev_hash.h \
+noinst_HEADERS = libdwP.h memory-access.h \
 	dwarf.h libdw.h
 
 EXTRA_DIST = libdw.map

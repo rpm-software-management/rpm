@@ -17,7 +17,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/beecrypt \
+	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
 	-I$(pyincdir) \
 	@WITH_LIBELF_INCLUDE@ \
@@ -46,7 +46,8 @@ rpmdb_PROGRAMS = _rpmdb.so
 noinst_PROGRAMS = poptmodule.so
 
 rpmmodule_so_SOURCES =
-rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
+rpmmodule_so_LDFLAGS =	$(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
+rpmmodule_so_LDADD =	@WITH_BEECRYPT_LIB@
 
 _rpmdb_so_SOURCES = _rpmdb.c
 _rpmdb_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,_rpmdb.so
