@@ -4,7 +4,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: zconf.h,v 1.7 2002/04/07 19:52:43 jbj Exp $ */
+/* @(#) $Id: zconf.h,v 1.8 2002/11/05 23:08:19 jbj Exp $ */
 
 #ifndef _ZCONF_H
 #define _ZCONF_H
@@ -29,6 +29,7 @@
 #  define inflateSetDictionary z_inflateSetDictionary
 #  define inflateSync	z_inflateSync
 #  define inflateSyncPoint z_inflateSyncPoint
+#  define inflateCopy	z_inflateCopy
 #  define inflateReset	z_inflateReset
 #  define compress	z_compress
 #  define compress2	z_compress2
@@ -260,21 +261,9 @@ typedef uLong FAR uLongf;
 #   pragma map(inflateEnd,"INEND")
 #   pragma map(inflateSync,"INSY")
 #   pragma map(inflateSetDictionary,"INSEDI")
-#   pragma map(inflate_blocks,"INBL")
-#   pragma map(inflate_blocks_new,"INBLNE")
-#   pragma map(inflate_blocks_free,"INBLFR")
-#   pragma map(inflate_blocks_reset,"INBLRE")
-#   pragma map(inflate_codes_free,"INCOFR")
-#   pragma map(inflate_codes,"INCO")
+#   pragma map(inflate_table,"INTABL")
 #   pragma map(inflate_fast,"INFA")
-#   pragma map(inflate_flush,"INFLU")
-#   pragma map(inflate_mask,"INMA")
-#   pragma map(inflate_set_dictionary,"INSEDI2")
 #   pragma map(inflate_copyright,"INCOPY")
-#   pragma map(inflate_trees_bits,"INTRBI")
-#   pragma map(inflate_trees_dynamic,"INTRDY")
-#   pragma map(inflate_trees_fixed,"INTRFI")
-#   pragma map(inflate_trees_free,"INTRFR")
 #endif
 
 #endif /* _ZCONF_H */

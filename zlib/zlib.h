@@ -585,6 +585,23 @@ ZEXTERN int ZEXPORT inflateSetDictionary OF((z_streamp strm,
 
 ZEXTERN int ZEXPORT inflateSync OF((z_streamp strm))
 	/*@modifies strm @*/;
+/*
+     Sets the destination stream as a complete copy of the source stream.
+
+     This function can be useful when randomly accessing a large stream.  The
+   first pass through the stream can periodically record the inflate state,
+   allowing restarting inflate at those points when randomly accessing the
+   stream.
+
+     inflateCopy returns Z_OK if success, Z_MEM_ERROR if there was not
+   enough memory, Z_STREAM_ERROR if the source stream state was inconsistent
+   (such as zalloc being NULL). msg is left unchanged in both source and
+   destination.
+*/
+
+ZEXTERN int ZEXPORT inflateCopy OF((z_streamp dest,
+                                     z_streamp source))
+	/*@modifies dest, source @*/;
 /* 
     Skips invalid compressed data until a full flush point (see above the
   description of deflate with Z_FULL_FLUSH) can be found, or until all
@@ -608,6 +625,107 @@ ZEXTERN int ZEXPORT inflateReset OF((z_streamp strm))
 
       inflateReset returns Z_OK if success, or Z_STREAM_ERROR if the source
    stream state was inconsistent (such as zalloc or state being NULL).
+*/
+
+/*
+ZEXTERN int ZEXPORT inflateBackInit OF((z_stream FAR *strm, int windowBits,
+                                        unsigned char FAR *window));
+
+     Initializes the internal stream state for decompression using
+   inflateBack() calls.  The fields next_in, avail_in, zalloc, zfree and opaque
+   opaque in strm must be initialized before the call.  If zalloc and zfree are
+   Z_NULL, then the default library-derived memory allocation routines are
+   used.  windowBits is the base two logarithm of the window size, in the range
+   8..15.  window is a caller supplied buffer of that size.  Except for special
+   applications where it is assured that deflate was used with small window
+   sizes, windowBits must be 15 and a 32K byte window must be supplied to be
+   able to decompress general deflate streams.
+
+     See inflateBack() for the usage of these routines.
+
+     inflateBackInit will return Z_OK on success, Z_STREAM_ERROR if any of
+   the paramaters are invalid, Z_MEM_ERROR if the internal state could not
+   be allocated, or Z_VERSION_ERROR if the version of the library does not
+   match the version of the header file.
+*/
+
+typedef unsigned char FAR *(*in_func) OF((void FAR *, unsigned FAR *))
+	/*@*/;
+typedef int (*out_func) OF((void FAR *, unsigned char FAR *, unsigned))
+	/*@*/;
+
+ZEXTERN int ZEXPORT inflateBack OF((z_stream FAR *strm, in_func in,
+                                    out_func out, void FAR *opaque))
+	/*@modifies strm @*/;
+/*
+     inflateBack() does a raw inflate with a single call using a call-back
+   interface for input and output.  This is more efficient than inflate() for
+   file i/o applications in that it avoids copying between the output and the
+   sliding window by simply making the window itself the output buffer.  This
+   function trusts the application to not change the output buffer passed by
+   the output function, at least until inflateBack() returns.
+
+     inflateBackInit() must be called first to allocate the internal state
+   and to initialize the state with the user-provided window buffer.
+   inflateBack() may then be used multiple times to inflate a complete, raw
+   deflate stream with each call.  inflateBackEnd() is then called to free
+   the allocated state.
+
+     A raw deflate stream is one with no zlib or gzip header or trailer.
+   This routine would normally be used in a utility that reads zip or gzip
+   files and writes out uncompressed files.  The utility would decode the
+   header and process the trailer on its own, hence this routine expects
+   only the raw deflate stream to decompress.
+
+     inflateBack() uses two subroutines supplied by the caller that are then
+   called by inflateBack() for input and output.  inflateBack() calls those
+   routines until it reads a complete deflate stream and writes out all of
+   the uncompressed data, or until it encounters an error.  The function's
+   parameters and return types are defined above in the in_func and out_func
+   typedefs.  inflateBack() will call in(opaque, &len) which should return a
+   pointer to some input, and return the number of bytes of provided input in
+   len.  If there is no input available, in() can return Z_NULL (len is
+   ignored in that case), or len == 0, and inflateBack() will return an error.
+   inflateBack() will call out(opaque, buf, len) to write the uncompressed
+   data buf[0..len-1].  out() should return zero on success, or non-zero on
+   failure.  If out() returns non-zero, inflateBack() will return with an
+   error.  Neither in() nor out() are permitted to change the contents of the
+   window provided to inflateBackInit(), which is also the buffer that out()
+   uses to write from.  The length written by out() will be at most the window
+   size.  Any non-zero amount of input may be provided by in().
+
+     For convenience, inflateBack() can be provided input on the first call by
+   setting strm->next_in and strm->avail_in.  If that input is exhausted, then
+   in() will be called.  Therefore strm->next_in must be initialized before
+   calling inflateBack().  If strm->next_in is Z_NULL, then in() will be called
+   immediately for input.  If strm->next_in is not Z_NULL, then strm->avail_in
+   must also be initialized, and then input will initially be taken from
+   strm->next_in[0 .. strm->avail_in - 1].
+
+     The opaque parameter of inflateBack() is passed as the first parameter of
+   both in() and out() when they are called.  opauqe can be used to pass any
+   information that the caller-supplied in() and out() functions need to do
+   their job.
+
+     On return, inflateBack() will set strm->next_in and strm->avail_in to
+   pass back any unused input that was provided by the last in() call.  The
+   return values of inflateBack() can be Z_STREAM_END on success, Z_BUF_ERROR
+   if in() or out() returned an error, Z_DATA_ERROR if there was a format
+   error in the deflate stream (in which case strm->msg is set to indicate the
+   nature of the error), or Z_STREAM_ERROR if the stream was not properly
+   initialized.  In the case of Z_BUF_ERROR, an input or output error can be
+   distinguished using strm->next_in which will be Z_NULL only if in() returned
+   an error.  If strm->next is not Z_NULL, then the Z_BUF_ERROR was due to
+   out() returning non-zero.  Note that inflateBack() cannot return Z_OK.
+*/
+
+ZEXTERN int ZEXPORT inflateBackEnd(z_stream FAR *strm)
+	/*@modifies strm @*/;
+/*
+     All memory allocated by inflateBackInit() is freed.
+
+     inflateBackEnd() returns Z_OK on success, or Z_STREAM_ERROR if the stream
+   state was inconsistent.
 */
 
 
@@ -924,6 +1042,12 @@ ZEXTERN int ZEXPORT deflateInit2_ OF((z_streamp strm, int  level, int  method,
 ZEXTERN int ZEXPORT inflateInit2_ OF((z_streamp strm, int  windowBits,
                                       const char *version, int stream_size))
 	/*@modifies strm @*/;
+ZEXTERN int ZEXPORT inflateBackInit_ OF((z_stream FAR *strm, int windowBits,
+                                         unsigned char FAR *window,
+                                         const char *version,
+                                         int stream_size))
+	/*@modifies strm @*/;
+
 #define deflateInit(strm, level) \
         deflateInit_((strm), (level),       ZLIB_VERSION, sizeof(z_stream))
 #define inflateInit(strm) \
@@ -933,6 +1057,9 @@ ZEXTERN int ZEXPORT inflateInit2_ OF((z_streamp strm, int  windowBits,
                       (strategy),           ZLIB_VERSION, sizeof(z_stream))
 #define inflateInit2(strm, windowBits) \
         inflateInit2_((strm), (windowBits), ZLIB_VERSION, sizeof(z_stream))
+#define inflateBackInit(strm, windowBits, window) \
+        inflateBackInit_((strm), (windowBits), (window), \
+        ZLIB_VERSION, sizeof(z_stream))
 
 
 #if !defined(_Z_UTIL_H) && !defined(NO_DUMMY_DECL)

@@ -6,16 +6,15 @@ EXTRA_DIST = algorithm.txt ChangeLog Doxyfile FAQ INDEX README \
 	zlib.3 zlib.spec \
 	amiga/* contrib/* msdos/* nt/* os2/*
 
-# crc32.h
 noinst_HEADERS = \
-	deflate.h infblock.h infcodes.h inffast.h inffixed.h \
-	inftrees.h infutil.h trees.h zconf.h zlib.h zutil.h
+	crc32.h deflate.h inffast.h inffixed.h inflate.h \
+	inftrees.h trees.h zconf.h zlib.h zutil.h
 
 noinst_LTLIBRARIES = libz.la
 
 libz_la_SOURCES = \
 	adler32.c compress.c crc32.c deflate.c gzio.c \
-	infblock.c infcodes.c inffast.c inflate.c inftrees.c infutil.c \
+	infback.c inffast.c inflate.c inftrees.c \
 	trees.c uncompr.c zutil.c
 
 noinst_PROGRAMS = example minigzip
