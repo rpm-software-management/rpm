@@ -59,9 +59,13 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
 
     con->leftovers = calloc( (argc + 1), sizeof(char *) );
     con->options = options;
+    con->aliases = NULL;
+    con->numAliases = 0;
+    con->flags = flags;
+    con->execs = NULL;
+    con->numExecs = 0;
     con->finalArgvAlloced = argc * 2;
     con->finalArgv = calloc( con->finalArgvAlloced, sizeof(*con->finalArgv) );
-    con->flags = flags;
     con->execAbsolute = 1;
 
     if (getenv("POSIXLY_CORRECT") || getenv("POSIX_ME_HARDER"))
@@ -368,7 +372,7 @@ static /*@only@*/ const char * expandNextArg(poptContext con, const char * s)
 	*te++ = c;
     }
     *te = '\0';
-    t = realloc(t, strlen(t));
+    t = realloc(t, strlen(t));	/* XXX memory leak, hard to plug */
     return t;
 }
 
@@ -513,6 +517,7 @@ int poptGetNextOpt(poptContext con)
 
 		switch (opt->argInfo & POPT_ARG_MASK) {
 		  case POPT_ARG_STRING:
+		    /* XXX memory leak, hard to plug */
 		    *((const char **) opt->arg) = xstrdup(con->os->nextArg);
 		    break;
 
@@ -609,7 +614,7 @@ void poptFreeContext(poptContext con) {
 	if (con->execs[i].longName) xfree(con->execs[i].longName);
 	xfree(con->execs[i].script);
     }
-    xfree(con->execs);
+    if (con->execs) xfree(con->execs);
 
     free(con->leftovers);
     free(con->finalArgv);

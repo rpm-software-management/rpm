@@ -650,7 +650,7 @@ DPRINTF(100, ("\n"));
 						break;
 				}
 				if (l == nlangs)
-					onlylang[nlangs++] = strdup(lang);
+					onlylang[nlangs++] = xstrdup(lang);
 			}
 			lang = NULL;
 		}
@@ -1005,7 +1005,7 @@ main(int argc, char **argv)
     while((c = getopt(argc, argv, "defgEMl:C:I:O:Tv")) != EOF)
     switch (c) {
     case 'C':
-	mastercatalogue = strdup(optarg);
+	mastercatalogue = xstrdup(optarg);
 	break;
     case 'd':
 	debug++;
@@ -1021,7 +1021,7 @@ main(int argc, char **argv)
 	break;
     case 'l':
 	gottalang = 1;
-	onlylang[nlangs++] = strdup(optarg);
+	onlylang[nlangs++] = xstrdup(optarg);
 	break;
     case 'I':
 	inputdir = optarg;

@@ -276,8 +276,11 @@ int rpmCheckSig(int flags, const char **argv)
 	untrustedKeys[0] = '\0';
 	sprintf(buffer, "%s:%c", rpm, (rpmIsVerbose() ? '\n' : ' ') );
 
-	sigIter = headerInitIterator(sig);
-	while (headerNextIterator(sigIter, &tag, &type, &ptr, &count)) {
+	for (sigIter = headerInitIterator(sig);
+	    headerNextIterator(sigIter, &tag, &type, &ptr, &count);
+	    ptr = ((type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
+		? xfree(ptr), NULL : NULL))
+	{
 	    switch (tag) {
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:

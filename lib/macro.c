@@ -1399,7 +1399,7 @@ rpmExpand(const char *arg, ...)
     }
     va_end(ap);
     expandMacros(NULL, NULL, buf, sizeof(buf));
-    return xstrdup(buf);	/* XXX build memory leaks */
+    return xstrdup(buf);
 }
 
 int

@@ -213,19 +213,20 @@ static char *strtokWithQuotes(char *s, char *delim)
 static void timeCheck(int tc, Header h)
 {
     int *mtime;
-    char **file;
+    char **files;
     int count, x, currentTime;
 
-    headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &file, &count);
+    headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &files, &count);
     headerGetEntry(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
 
     currentTime = time(NULL);
     
     for (x = 0; x < count; x++) {
 	if (currentTime - mtime[x] > tc) {
-	    rpmMessage(RPMMESS_WARNING, _("TIMECHECK failure: %s\n"), file[x]);
+	    rpmMessage(RPMMESS_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
 	}
     }
+    FREE(files);
 }
 
 typedef struct VFA {
@@ -591,11 +592,14 @@ static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
 
     if (! initialized) {
 	const char *patt = rpmExpand("%{_langpatt}", NULL);
+	int rc = 0;
 	if (!(patt && *patt != '%'))
-	    return 1;
-	if (regcomp(&compiledPatt, patt, REG_EXTENDED))
-	    return -1;
+	    rc = 1;
+	else if (regcomp(&compiledPatt, patt, REG_EXTENDED))
+	    rc = -1;
 	xfree(patt);
+	if (rc)
+	    return rc;
 	hasRegex = 1;
 	initialized = 1;
     }
@@ -1170,11 +1174,12 @@ static int processPackageFiles(Spec spec, Package pkg,
 	ffn = rpmGetPath("%{_builddir}/",
 	    (spec->buildSubdir ? spec->buildSubdir : "") ,
 	    "/", pkg->fileFile, NULL);
+	f = fopen(ffn, "r");
+	xfree(ffn);
 
-	if ((f = fopen(ffn, "r")) == NULL) {
+	if (f == NULL) {
 	    rpmError(RPMERR_BADFILENAME,
 		     _("Could not open %%files file: %s"), pkg->fileFile);
-	    FREE(ffn);
 	    return RPMERR_BADFILENAME;
 	}
 	while (fgets(buf, sizeof(buf), f)) {
@@ -1186,12 +1191,11 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    appendStringBuf(pkg->fileList, buf);
 	}
 	fclose(f);
-	FREE(ffn);
     }
     
     /* Init the file list structure */
     
-    /* XXX spec->buildRoot == NULL, then strdup("") is returned */
+    /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGetPath(spec->buildRoot, NULL);
 
     if (headerGetEntry(pkg->header, RPMTAG_DEFAULTPREFIX,
@@ -1354,8 +1358,11 @@ void initSourceHeader(Spec spec)
 
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
-    hi = headerInitIterator(spec->packages->header);
-    while (headerNextIterator(hi, &tag, &type, &ptr, &count)) {
+    for (hi = headerInitIterator(spec->packages->header);
+	headerNextIterator(hi, &tag, &type, &ptr, &count);
+	ptr = ((type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
+	    ? xfree(ptr), NULL : NULL))
+    {
 	switch (tag) {
 	  case RPMTAG_NAME:
 	  case RPMTAG_VERSION:
@@ -1381,18 +1388,16 @@ void initSourceHeader(Spec spec)
 	    /* do not copy */
 	    break;
 	}
-	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE) {
-	    FREE(ptr);
-	}
     }
     headerFreeIterator(hi);
 
     /* Add the build restrictions */
-    hi = headerInitIterator(spec->buildRestrictions);
-    while (headerNextIterator(hi, &tag, &type, &ptr, &count)) {
+    for (hi = headerInitIterator(spec->buildRestrictions);
+	headerNextIterator(hi, &tag, &type, &ptr, &count);
+	ptr = ((type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
+	    ? xfree(ptr), NULL : NULL))
+    {
 	headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
-	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
-	    FREE(ptr);
     }
     headerFreeIterator(hi);
 

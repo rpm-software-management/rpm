@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-10-27 18:55-0400\n"
+"POT-Creation-Date: 1999-10-29 11:30-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,85 +39,85 @@ msgstr ""
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: build.c:163
+#: build.c:166
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr ""
 
-#: build.c:201
+#: build.c:200
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr ""
 
-#: build.c:207
+#: build.c:206
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: build.c:258
+#: build.c:257
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:267
+#: build.c:266
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
 
-#: build.c:313
+#: build.c:312
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:320
+#: build.c:319
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:324
+#: build.c:323
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:345
+#: build.c:344
 msgid "override build architecture"
 msgstr ""
 
-#: build.c:347
+#: build.c:346
 msgid "override build operating system"
 msgstr ""
 
-#: build.c:349
+#: build.c:348
 msgid "override build root"
 msgstr ""
 
-#: build.c:351 rpm.c:457
+#: build.c:350 rpm.c:457
 msgid "remove build tree when done"
 msgstr ""
 
-#: build.c:353
+#: build.c:352
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: build.c:355
+#: build.c:354
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:357
+#: build.c:356
 msgid "remove sources when done"
 msgstr ""
 
-#: build.c:359
+#: build.c:358
 msgid "remove specfile when done"
 msgstr ""
 
-#: build.c:361 rpm.c:455
+#: build.c:360 rpm.c:455
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: build.c:363
+#: build.c:362
 msgid "override target platform"
 msgstr ""
 
-#: build.c:365
+#: build.c:364
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -1224,7 +1224,7 @@ msgstr ""
 msgid "error reading header from package\n"
 msgstr ""
 
-#: build/build.c:83 build/pack.c:267
+#: build/build.c:83 build/pack.c:270
 msgid "Unable to open temp file"
 msgstr ""
 
@@ -1301,269 +1301,269 @@ msgstr ""
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:269 build/files.c:351 build/files.c:514
+#: build/files.c:270 build/files.c:352 build/files.c:515
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr ""
 
-#: build/files.c:280 build/files.c:468 build/files.c:525
+#: build/files.c:281 build/files.c:469 build/files.c:526
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr ""
 
-#: build/files.c:318 build/files.c:493
+#: build/files.c:319 build/files.c:494
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: build/files.c:367
+#: build/files.c:368
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
-#: build/files.c:405
+#: build/files.c:406
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr ""
 
-#: build/files.c:415
+#: build/files.c:416
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:427
+#: build/files.c:428
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:551
+#: build/files.c:552
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:561
+#: build/files.c:562
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:653
+#: build/files.c:657
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: build/files.c:659
+#: build/files.c:663
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:684
+#: build/files.c:688
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: build/files.c:697
+#: build/files.c:701
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: build/files.c:709
+#: build/files.c:713
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: build/files.c:795
+#: build/files.c:799
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: build/files.c:953
+#: build/files.c:957
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: build/files.c:963
+#: build/files.c:967
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: build/files.c:1006
+#: build/files.c:1010
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1020
+#: build/files.c:1024
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1090
+#: build/files.c:1094
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1134
+#: build/files.c:1138
 #, c-format
 msgid "File not found by glob: %s"
 msgstr ""
 
-#: build/files.c:1176
+#: build/files.c:1182
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: build/files.c:1183 build/pack.c:488
+#: build/files.c:1188 build/pack.c:491
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1510 build/parsePrep.c:29
+#: build/files.c:1515 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: build/files.c:1564
+#: build/files.c:1569
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1569
+#: build/files.c:1574
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1651
+#: build/files.c:1656
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1655
+#: build/files.c:1660
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1744
+#: build/files.c:1749
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1772 build/files.c:1781
+#: build/files.c:1777 build/files.c:1786
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1887
+#: build/files.c:1892
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
 
-#: build/names.c:32 build/names.c:64
+#: build/names.c:41 build/names.c:73
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
 msgstr ""
 
-#: build/names.c:97 build/names.c:129
+#: build/names.c:106 build/names.c:138
 msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
 msgstr ""
 
-#: build/names.c:167
+#: build/names.c:176
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:132
+#: build/pack.c:134
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:149
+#: build/pack.c:151
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
 
-#: build/pack.c:184
+#: build/pack.c:187
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:194
+#: build/pack.c:197
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:215
+#: build/pack.c:218
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:221
+#: build/pack.c:224
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:278
+#: build/pack.c:281
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:311
+#: build/pack.c:314
 #, c-format
 msgid "Could not open %s\n"
 msgstr ""
 
-#: build/pack.c:343 build/pack.c:385
+#: build/pack.c:346 build/pack.c:388
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:358
+#: build/pack.c:361
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:375
+#: build/pack.c:378
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr ""
 
-#: build/pack.c:400
+#: build/pack.c:403
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:416 build/pack.c:439
+#: build/pack.c:419 build/pack.c:442
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: build/pack.c:458
+#: build/pack.c:461
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:465
+#: build/pack.c:468
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:544
+#: build/pack.c:547
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:551
+#: build/pack.c:554
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:558
+#: build/pack.c:561
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:565
+#: build/pack.c:568
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:573
+#: build/pack.c:576
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:589
+#: build/pack.c:592
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -1654,7 +1654,7 @@ msgstr ""
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:192
+#: build/parsePreamble.c:194
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
@@ -1911,51 +1911,51 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:335
+#: lib/cpio.c:331
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:341
+#: lib/cpio.c:337
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:532
+#: lib/cpio.c:528
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:995
+#: lib/cpio.c:991
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:998
+#: lib/cpio.c:994
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:999
+#: lib/cpio.c:995
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1017
+#: lib/cpio.c:1013
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1018
+#: lib/cpio.c:1014
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1019
+#: lib/cpio.c:1015
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1020
+#: lib/cpio.c:1016
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1029
+#: lib/cpio.c:1025
 msgid " failed - "
 msgstr ""
 
@@ -1996,69 +1996,69 @@ msgstr ""
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:760
+#: lib/depends.c:761
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:799
+#: lib/depends.c:800
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr ""
 
-#: lib/depends.c:816
+#: lib/depends.c:817
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:847
+#: lib/depends.c:848
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:875
+#: lib/depends.c:876
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:897
+#: lib/depends.c:898
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:919
+#: lib/depends.c:920
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr ""
 
-#: lib/depends.c:932
+#: lib/depends.c:933
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:942
+#: lib/depends.c:943
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:990
+#: lib/depends.c:991
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1052
+#: lib/depends.c:1053
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1107 lib/depends.c:1415
+#: lib/depends.c:1108 lib/depends.c:1416
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: lib/depends.c:1202
+#: lib/depends.c:1203
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2078,26 +2078,26 @@ msgstr ""
 msgid "(not a number)"
 msgstr ""
 
-#: lib/fs.c:40
+#: lib/fs.c:56
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
-#: lib/fs.c:75 lib/fs.c:253
+#: lib/fs.c:91 lib/fs.c:260
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr ""
 
-#: lib/fs.c:114
+#: lib/fs.c:127
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/fs.c:119
+#: lib/fs.c:132
 #, c-format
 msgid "failed to open %s: %s"
 msgstr ""
 
-#: lib/fs.c:274
+#: lib/fs.c:282
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr ""
@@ -2728,57 +2728,57 @@ msgstr ""
 msgid "rebuilding database in rootdir %s\n"
 msgstr ""
 
-#: lib/rebuilddb.c:24 lib/rpmdb.c:69 lib/rpmdb.c:88 lib/rpmdb.c:105
+#: lib/rebuilddb.c:24 lib/rpmdb.c:68 lib/rpmdb.c:84 lib/rpmdb.c:99
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rebuilddb.c:33
+#: lib/rebuilddb.c:34
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rebuilddb.c:37
+#: lib/rebuilddb.c:38
 #, c-format
 msgid "creating directory: %s\n"
 msgstr ""
 
-#: lib/rebuilddb.c:39
+#: lib/rebuilddb.c:40
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rebuilddb.c:43
+#: lib/rebuilddb.c:44
 msgid "opening old database\n"
 msgstr ""
 
-#: lib/rebuilddb.c:50
+#: lib/rebuilddb.c:51
 msgid "opening new database\n"
 msgstr ""
 
-#: lib/rebuilddb.c:60 lib/rebuilddb.c:78
+#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr ""
 
-#: lib/rebuilddb.c:72
+#: lib/rebuilddb.c:73
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rebuilddb.c:91
+#: lib/rebuilddb.c:92
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:99
+#: lib/rebuilddb.c:100
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:101
+#: lib/rebuilddb.c:102
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:107
+#: lib/rebuilddb.c:108
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -2842,129 +2842,129 @@ msgstr ""
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:408
+#: lib/rpmchecksig.c:411
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:409 lib/rpmchecksig.c:423
+#: lib/rpmchecksig.c:412 lib/rpmchecksig.c:426
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:411 lib/rpmchecksig.c:425
+#: lib/rpmchecksig.c:414 lib/rpmchecksig.c:428
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:412 lib/rpmchecksig.c:426
+#: lib/rpmchecksig.c:415 lib/rpmchecksig.c:429
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:414 lib/rpmchecksig.c:428
+#: lib/rpmchecksig.c:417 lib/rpmchecksig.c:431
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:422
+#: lib/rpmchecksig.c:425
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:184
+#: lib/rpmdb.c:177
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:193 lib/url.c:431
+#: lib/rpmdb.c:186 lib/url.c:431
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:206 lib/rpmdb.c:214
+#: lib/rpmdb.c:199 lib/rpmdb.c:207
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: lib/rpmdb.c:207
+#: lib/rpmdb.c:200
 msgid "exclusive"
 msgstr ""
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:208
 msgid "shared"
 msgstr ""
 
-#: lib/rpmdb.c:246
+#: lib/rpmdb.c:239
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:468
+#: lib/rpmdb.c:461
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: lib/rpmdb.c:479
+#: lib/rpmdb.c:472
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:503 lib/uninstall.c:85
+#: lib/rpmdb.c:496 lib/uninstall.c:85
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: lib/rpmdb.c:511
+#: lib/rpmdb.c:504
 msgid "package has no name"
 msgstr ""
 
-#: lib/rpmdb.c:513
+#: lib/rpmdb.c:506
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:518
+#: lib/rpmdb.c:511
 msgid "package has no group\n"
 msgstr ""
 
-#: lib/rpmdb.c:520
+#: lib/rpmdb.c:513
 msgid "removing group index\n"
 msgstr ""
 
-#: lib/rpmdb.c:527
+#: lib/rpmdb.c:520
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:542
+#: lib/rpmdb.c:535
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:554
+#: lib/rpmdb.c:547
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:565
+#: lib/rpmdb.c:558
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:576
+#: lib/rpmdb.c:569
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:585
+#: lib/rpmdb.c:578
 msgid "package has no files\n"
 msgstr ""
 
-#: lib/rpmdb.c:667
+#: lib/rpmdb.c:660
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:726
+#: lib/rpmdb.c:719
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:735
+#: lib/rpmdb.c:728
 msgid "header changed size!"
 msgstr ""
 
@@ -3068,229 +3068,229 @@ msgstr ""
 msgid "read failed: %s (%d)"
 msgstr ""
 
-#: lib/rpmrc.c:177
+#: lib/rpmrc.c:142
 #, c-format
 msgid "missing second ':' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:180
+#: lib/rpmrc.c:145
 #, c-format
 msgid "missing architecture name at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:328
+#: lib/rpmrc.c:299
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:332
+#: lib/rpmrc.c:303
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:339
+#: lib/rpmrc.c:310
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr ""
 
-#: lib/rpmrc.c:373
+#: lib/rpmrc.c:344
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:378
+#: lib/rpmrc.c:349
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:561
+#: lib/rpmrc.c:532
 #, c-format
 msgid "Cannot expand %s"
 msgstr ""
 
-#: lib/rpmrc.c:576
+#: lib/rpmrc.c:547
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
-#: lib/rpmrc.c:608
+#: lib/rpmrc.c:585
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: lib/rpmrc.c:638
+#: lib/rpmrc.c:615
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:655 lib/rpmrc.c:730
+#: lib/rpmrc.c:632 lib/rpmrc.c:707
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:672 lib/rpmrc.c:695
+#: lib/rpmrc.c:649 lib/rpmrc.c:672
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr ""
 
-#: lib/rpmrc.c:681
+#: lib/rpmrc.c:658
 #, c-format
 msgid "cannot open %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:722
+#: lib/rpmrc.c:699
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:789
+#: lib/rpmrc.c:766
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:1149
+#: lib/rpmrc.c:1128
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1150
+#: lib/rpmrc.c:1129
 msgid "Please contact rpm-list@redhat.com\n"
-msgstr ""
-
-#: lib/signature.c:106
-#, c-format
-msgid "sigsize         : %d\n"
 msgstr ""
 
 #: lib/signature.c:107
 #, c-format
-msgid "Header + Archive: %d\n"
+msgid "sigsize         : %d\n"
 msgstr ""
 
 #: lib/signature.c:108
 #, c-format
+msgid "Header + Archive: %d\n"
+msgstr ""
+
+#: lib/signature.c:109
+#, c-format
 msgid "expected size   : %d\n"
 msgstr ""
 
-#: lib/signature.c:112
+#: lib/signature.c:113
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: lib/signature.c:134
+#: lib/signature.c:135
 msgid "No signature\n"
 msgstr ""
 
-#: lib/signature.c:137
+#: lib/signature.c:138
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: lib/signature.c:149
+#: lib/signature.c:150
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 
-#: lib/signature.c:153
+#: lib/signature.c:154
 msgid "New Header signature\n"
 msgstr ""
 
 #. 8-byte pad
-#: lib/signature.c:160 lib/signature.c:202
+#: lib/signature.c:161 lib/signature.c:203
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: lib/signature.c:161 lib/signature.c:203
+#: lib/signature.c:162 lib/signature.c:204
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: lib/signature.c:266
+#: lib/signature.c:267
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr ""
 
-#: lib/signature.c:277
+#: lib/signature.c:278
 msgid "pgp failed"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:284
+#: lib/signature.c:285
 msgid "pgp failed to write signature"
 msgstr ""
 
-#: lib/signature.c:289
+#: lib/signature.c:290
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:300 lib/signature.c:377
+#: lib/signature.c:301 lib/signature.c:378
 msgid "unable to read the signature"
 msgstr ""
 
-#: lib/signature.c:305
+#: lib/signature.c:306
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:343 lib/signature.c:686
+#: lib/signature.c:344 lib/signature.c:687
 msgid "Couldn't exec gpg"
 msgstr ""
 
-#: lib/signature.c:354
+#: lib/signature.c:355
 msgid "gpg failed"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:361
+#: lib/signature.c:362
 msgid "gpg failed to write signature"
 msgstr ""
 
-#: lib/signature.c:366
+#: lib/signature.c:367
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:382
+#: lib/signature.c:383
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:409
+#: lib/signature.c:410
 msgid "Generating signature using PGP.\n"
 msgstr ""
 
-#: lib/signature.c:415
+#: lib/signature.c:416
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:492 lib/signature.c:554
+#: lib/signature.c:493 lib/signature.c:555
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: lib/signature.c:552 lib/signature.c:625
+#: lib/signature.c:553 lib/signature.c:626
 msgid "exec failed!\n"
 msgstr ""
 
-#: lib/signature.c:627
+#: lib/signature.c:628
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
-#: lib/signature.c:715
+#: lib/signature.c:716
 msgid "Couldn't exec pgp"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:719 lib/signature.c:772
+#: lib/signature.c:720 lib/signature.c:773
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: lib/signature.c:752
+#: lib/signature.c:753
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: lib/signature.c:764
+#: lib/signature.c:765
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 

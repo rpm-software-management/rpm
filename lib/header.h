@@ -139,6 +139,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
    entry is present). */
 int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 	/*@out@*/ void **p, /*@out@*/int_32 *c);
+
 /* This gets an entry, and uses as little extra RAM as possible to represent
    it (this is only an issue for RPM_STRING_ARRAY_TYPE. */
 int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type,

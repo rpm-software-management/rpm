@@ -13,6 +13,7 @@ struct hashBucket {
 struct hashTable_s {
     int numBuckets;
     int keySize;
+    int freeData;
     struct hashBucket ** buckets;
     hashFunctionType fn;
     hashEqualityType eq;
@@ -56,7 +57,7 @@ unsigned int hashFunctionString(const void * string)
     return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
 }
 
-hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
+hashTable htCreate(int numBuckets, int keySize, int freeData, hashFunctionType fn,
 		   hashEqualityType eq)
 {
     hashTable ht;
@@ -65,6 +66,7 @@ hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
     ht->numBuckets = numBuckets;
     ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
     ht->keySize = keySize;
+    ht->freeData = freeData;
     ht->fn = fn;
     ht->eq = eq;
 
@@ -103,15 +105,18 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 
 void htFree(hashTable ht)
 {
-    int i;
     struct hashBucket * b, * n;
+    int i;
 
     for (i = 0; i < ht->numBuckets; i++) {
 	b = ht->buckets[i];
 	if (ht->keySize && b) xfree(b->key);
 	while (b) {
 	    n = b->next;
-	    if (b->data) xfree(b->data);
+	    if (b->data) {
+		if (ht->freeData && *b->data) xfree(*b->data);
+		xfree(b->data);
+	    }
 	    free(b);
 	    b = n;
 	}

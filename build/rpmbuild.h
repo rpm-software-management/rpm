@@ -69,6 +69,7 @@ extern "C" {
 
 /* from build/names.h */
 
+void freeNames(void);
 /*@observer@*/ const char *getUname(uid_t uid);
 /*@observer@*/ const char *getUnameS(const char *uname);
 /*@observer@*/ const char *getGname(gid_t gid);

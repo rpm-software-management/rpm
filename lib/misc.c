@@ -406,10 +406,10 @@ char * currentDirectory(void) {
 }
 
 void compressFilelist(Header h) {
-    char ** files;
-    char ** dirList;
+    const char ** files;
+    const char ** dirList;
     int * compDirList;
-    char ** baseNames;
+    const char ** baseNames;
     int fileCount;
     int i;
     char * tail;
@@ -427,7 +427,8 @@ void compressFilelist(Header h) {
 
     if (files[0][0] != '/') {
 	/* HACK. Source RPM, so just do things differently */
-	return ;
+	free(files);
+	return;
     }
 
     dirList = alloca(sizeof(*dirList) * fileCount);	/* worst case */
@@ -435,14 +436,14 @@ void compressFilelist(Header h) {
     compDirList = alloca(sizeof(*compDirList) * fileCount); 
 
     for (i = 0; i < fileCount; i++) {
-	tail = strrchr(files[i], '/') + 1;
+	char *tail = strrchr(files[i], '/') + 1;
 	
 	if (lastDir < 0 || (lastLen != (tail - files[i])) ||
 		strncmp(dirList[lastDir], files[i], tail - files[i])) {
-	    lastDir++;
-	    dirList[lastDir] = alloca(tail - files[i] + 1);
-	    memcpy(dirList[lastDir], files[i], tail - files[i]);
-	    dirList[lastDir][tail - files[i]] = '\0';
+	    char *s = alloca(tail - files[i] + 1);
+	    memcpy(s, files[i], tail - files[i]);
+	    s[tail - files[i]] = '\0';
+	    dirList[++lastDir] = s;
 	    lastLen = tail - files[i];
 	} 
 
@@ -468,10 +469,10 @@ static void doBuildFileList(Header h, /*@out@*/ char *** fileListPtr,
 			    /*@out@*/ int * fileCountPtr, int baseNameTag,
 			    int dirListTag, int dirIndexesTag) {
     int * dirList;
-    char ** dirs;
-    char ** tails;
+    const char ** dirs;
+    const char ** tails;
     int count;
-    char ** fileList;
+    const char ** fileList;
     int size;
     char * data;
     int i;
@@ -503,6 +504,8 @@ static void doBuildFileList(Header h, /*@out@*/ char *** fileListPtr,
 
     *fileListPtr = fileList;
     *fileCountPtr = count;
+    free(tails);
+    free(dirs);
 }
 
 void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {

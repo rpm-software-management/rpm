@@ -1,7 +1,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmmacro.h>	/* XXX for rpmGetPath */
+#include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "depends.h"
 #include "fprint.h"
@@ -1029,6 +1029,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 	    ds->needed -= BLOCK_ROUND(fixupSize, ds->block);
 	}
     }
+    if (filespec) free(filespec);
 }
 
 static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
@@ -1413,7 +1414,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     chdir("/");
     /*@-unrecog@*/ chroot(ts->root); /*@=unrecog@*/
 
-    ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
+    ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
     fpc = fpCacheCreate(totalFileCount);
 
     /* ===============================================

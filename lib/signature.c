@@ -74,7 +74,8 @@ const char * rpmDetectPGPVersion(pgpVersion *pgpVer)
 	char *pgpvbin;
 	struct stat statbuf;
 	
-	if (!pgpbin || ! (pgpvbin = (char *)alloca(strlen(pgpbin) + 2))) {
+	if (!(pgpbin && pgpbin[0] != '%') || ! (pgpvbin = (char *)alloca(strlen(pgpbin) + 2))) {
+	  if (pgpbin) xfree(pgpbin);
 	  saved_pgp_version = -1;
 	  return NULL;
 	}

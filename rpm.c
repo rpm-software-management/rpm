@@ -1361,7 +1361,12 @@ int main(int argc, const char ** argv)
     }
 
     /* keeps memory leak checkers quiet */
+    freeNames();
+    freeFilesystems();
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
 
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+#endif
     return ec;
 }

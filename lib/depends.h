@@ -33,9 +33,9 @@ struct fileIndexEntry {
 } ;
 
 struct dirInfo {
-    /*@owned@*/ char * dirName;		/* strdup'd */
+    /*@owned@*/ char * dirName;			/* xstrdup'd */
     int dirNum;
-    /*@owned@*/ struct fileIndexEntry * files;	/* malloc'd */
+    /*@owned@*/ struct fileIndexEntry * files;	/* xmalloc'd */
     int numFiles;
 } ;
 
@@ -49,7 +49,7 @@ struct availableList {
     struct availableIndex index;
     int size, alloced;
     int numDirs;
-    struct dirInfo * dirs;		/* malloc'd */
+    struct dirInfo * dirs;			/* xmalloc'd */
 };
 
 struct transactionElement {

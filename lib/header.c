@@ -949,8 +949,8 @@ headerFindI18NString(Header h, struct indexEntry *entry)
     return entry->data;
 }
 
-static int intGetEntry(Header h, int_32 tag, /*@out@*/int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c,
-		       int minMem)
+static int intGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
+	/*@out@*/ void **p, /*@out@*/ int_32 *c, int minMem)
 {
     struct indexEntry * entry;
     char * chptr;

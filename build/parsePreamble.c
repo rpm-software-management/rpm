@@ -185,15 +185,16 @@ static int checkForDuplicates(Header h, char *name)
 #if 0	/* XXX harmless, but headerInitIterator() does this anyways */
     headerSort(h);
 #endif
-    hi = headerInitIterator(h);
-    lastTag = 0;
-    while (headerNextIterator(hi, &tag, NULL, NULL, NULL)) {
-	if (tag == lastTag) {
-	    rpmError(RPMERR_BADSPEC, _("Duplicate %s entries in package: %s"),
+
+    for (hi = headerInitIterator(h), lastTag = 0;
+	headerNextIterator(hi, &tag, NULL, NULL, NULL);
+	lastTag = tag)
+    {
+	if (tag != lastTag)
+	    continue;
+	rpmError(RPMERR_BADSPEC, _("Duplicate %s entries in package: %s"),
 		     tagName(tag), name);
-	    res = 1;
-	}
-	lastTag = tag;
+	res = 1;
     }
     headerFreeIterator(hi);
 

@@ -69,6 +69,7 @@ int packageSources(Spec spec)
 
 	rc = writeRPM(spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
+	free(csa->cpioFdIn);
 	xfree(fn);
     }
     return rc;
@@ -126,6 +127,7 @@ int packageBinaries(Spec spec)
 	    char *binRpm, *binDir;
 	    binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
 			       rpmHeaderFormats, &errorString);
+	    xfree(binFormat);
 	    if (binRpm == NULL) {
 		headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
 			   (void **)&name, NULL);
@@ -164,6 +166,7 @@ int packageBinaries(Spec spec)
 
 	rc = writeRPM(pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
+	free(csa->cpioFdIn);
 	xfree(fn);
 	if (rc)
 	    return rc;

@@ -12,6 +12,22 @@ struct fsinfo {
 /*@only@*/ /*@null@*/ static const char ** fsnames = NULL;
 static int numFilesystems = 0;
 
+void freeFilesystems(void)
+{
+    if (filesystems) {
+	int i;
+	for (i = 0; i < numFilesystems; i++)
+	    xfree(filesystems[i].mntPoint);
+	free(filesystems);
+	filesystems = NULL;
+    }
+    if (fsnames) {
+	free(fsnames);
+	fsnames = NULL;
+    }
+    numFilesystems = 0;
+}
+
 #if HAVE_MNTCTL
 
 /* modeled after sample code from Till Bubeck */
@@ -75,12 +91,8 @@ static int getFilesystemList(void)
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), fsnames[i],
 			strerror(errno));
 
-	    free(filesystems);
-	    filesystems = NULL;
-	    for (i = 0; i < num; i++)
-		free(fsnames[i]);
-	    free(fsnames);
-	    fsnames = NULL;
+	    freeFileSystems();
+	    return 1;
 	}
 	
 	filesystems[i].dev = sb.st_dev;
@@ -94,11 +106,12 @@ static int getFilesystemList(void)
 
     return 0;
 }
-#else 
+
+#else	/* HAVE_MNTCTL */
+
 static int getFilesystemList(void)
 {
     int numAlloced = 10;
-    int num = 0;
     struct stat sb;
     int i;
     char * mntdir;
@@ -126,6 +139,7 @@ static int getFilesystemList(void)
 
     filesystems = xcalloc((numAlloced + 1), sizeof(*filesystems));	/* XXX memory leak */
 
+    numFilesystems = 0;
     while (1) {
 #	if GETMNTENT_ONE
 	    /* this is Linux */
@@ -146,23 +160,19 @@ static int getFilesystemList(void)
 	    rpmError(RPMERR_STAT, "failed to stat %s: %s", mntdir,
 			strerror(errno));
 
-	    for (i = 0; i < num; i++)
-		xfree(filesystems[i].mntPoint);
-	    free(filesystems);
-
-	    filesystems = NULL;
+	    freeFilesystems();
 	    return 1;
 	}
 
-	if (num == numAlloced) {
+	numFilesystems++;
+	if ((numFilesystems + 1) == numAlloced) {
 	    numAlloced += 10;
 	    filesystems = xrealloc(filesystems, 
 				  sizeof(*filesystems) * (numAlloced + 1));
 	}
 
-	filesystems[num].dev = sb.st_dev;
-	filesystems[num].mntPoint = xstrdup(mntdir);	/* XXX memory leak */
-	num++;
+	filesystems[numFilesystems-1].dev = sb.st_dev;
+	filesystems[numFilesystems-1].mntPoint = xstrdup(mntdir);
     }
 
 #   if GETMNTENT_ONE || GETMNTENT_TWO
@@ -171,19 +181,17 @@ static int getFilesystemList(void)
 	free(mounts);
 #   endif
 
-    filesystems[num].dev = 0;
-    filesystems[num].mntPoint = NULL;
+    filesystems[numFilesystems].dev = 0;
+    filesystems[numFilesystems].mntPoint = NULL;
 
-    fsnames = xcalloc((num + 1), sizeof(*fsnames));	/* XXX memory leak */
-    for (i = 0; i < num; i++)
+    fsnames = xcalloc((numFilesystems + 1), sizeof(*fsnames));
+    for (i = 0; i < numFilesystems; i++)
 	fsnames[i] = filesystems[i].mntPoint;
-    fsnames[num] = NULL;
-
-    numFilesystems = num;
+    fsnames[numFilesystems] = NULL;
 
     return 0; 
 }
-#endif
+#endif	/* HAVE_MNTCTL */
 
 int rpmGetFilesystemList(const char *** listptr, int * num)
 {
@@ -217,7 +225,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
     usages = xcalloc(numFilesystems, sizeof(usages));
 
-    sourceDir = rpmGetPath("", "/%{_sourcedir}", NULL);
+    sourceDir = rpmGetPath("%{_sourcedir}", NULL);
 
     maxLen = strlen(sourceDir);
     for (i = 0; i < numFiles; i++) {
@@ -252,6 +260,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 		if (errno != ENOENT) {
 		    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), buf,
 				strerror(errno));
+		    xfree(sourceDir);
 		    free(usages);
 		    return 1;
 		}
@@ -272,6 +281,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 		if (j == numFilesystems) {
 		    rpmError(RPMERR_BADDEV, 
 				_("file %s is on an unknown device"), buf);
+		    xfree(sourceDir);
 		    free(usages);
 		    return 1;
 		}

@@ -38,14 +38,14 @@ struct machEquivTable {
 };
 
 struct rpmvarValue {
-    char * value;
+    const char * value;
     /* eventually, this arch will be replaced with a generic condition */
-    char * arch;
+    const char * arch;
     struct rpmvarValue * next;
 };
 
 struct rpmOption {
-    char * name;
+    const char * name;
     int var;
     int archSpecific, required, macroize, localize;
     struct rpmOptionValue * value;
@@ -104,44 +104,9 @@ static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 static struct rpmvarValue values[RPMVAR_NUM];
 
 /* prototypes */
-static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char ** os);
 static int doReadRC(FD_t fd, const char * filename);
-static int optionCompare(const void * a, const void * b);
-static int addCanon(struct canonEntry **table, int *tableLen, char *line,
-			const char *fn, int lineNum);
-static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
-			const char *fn, int lineNum);
-static void freeRpmVar(struct rpmvarValue * orig);
 static void rpmSetVarArch(int var, const char * val, const char * arch);
-static struct canonEntry *lookupInCanonTable(char *name,
-					   struct canonEntry *table,
-					   int tableLen);
-static const char *lookupInDefaultTable(const char *name,
-				  struct defaultEntry *table,
-				  int tableLen);
-
-static void setVarDefault(int var, const char *macroname, const char *val, const char *body);
-static void setPathDefault(int var, const char *macroname, const char *subdir);
-static void setDefaults(void);
-
 static void rebuildCompatTables(int type, const char *name);
-
-/* compatiblity tables */
-static int machCompatCacheAdd(char * name, const char * fn, int linenum,
-				struct machCache * cache);
-static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
-						  const char * key);
-static struct machEquivInfo * machEquivSearch(
-		struct machEquivTable * table, const char * name);
-static void machAddEquiv(struct machEquivTable * table, const char * name,
-			   int distance);
-static void machCacheEntryVisit(struct machCache * cache,
-				  struct machEquivTable * table,
-				  const char * name,
-	  			  int distance);
-static void machFindEquivs(struct machCache * cache,
-			     struct machEquivTable * table,
-			     const char * key);
 
 static int optionCompare(const void * a, const void * b) {
     return strcasecmp(((struct rpmOption *) a)->name,
@@ -259,9 +224,9 @@ static void machAddEquiv(struct machEquivTable * table, const char * name,
 	    table->list = xrealloc(table->list, (table->count + 1)
 				    * sizeof(*table->list));
 	else
-	    table->list = xmalloc(sizeof(*table->list)); /* XXX memory leak */
+	    table->list = xmalloc(sizeof(*table->list));
 
-	table->list[table->count].name = xstrdup(name); /* XXX memory leak */
+	table->list[table->count].name = xstrdup(name);
 	table->list[table->count++].score = distance;
     }
 }
@@ -297,7 +262,13 @@ static void machFindEquivs(struct machCache * cache,
     for (i = 0; i < cache->size; i++)
 	cache->cache[i].visited = 0;
 
+    while (table->count > 0) {
+	xfree(table->list[--table->count].name);
+	table->list[table->count].name = NULL;
+    }
     table->count = 0;
+    if (table->list) xfree(table->list);
+    table->list = NULL;
 
     /* We have a general graph built using strings instead of pointers.
        Yuck. We have to start at a point at traverse it, remembering how
@@ -588,15 +559,21 @@ int rpmReadRC(const char * rcfiles)
 
     rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
-    if ((r = rpmGetVar(RPMVAR_MACROFILES)) != NULL)
-	initMacros(NULL, r);
+    {	const char *macrofiles;
+	if ((macrofiles = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
+	    macrofiles = strdup(macrofiles);
+	    initMacros(NULL, macrofiles);
+	    xfree(macrofiles);
+	}
+    }
 
     return rc;
 }
 
 static int doReadRC(FD_t fd, const char * filename)
 {
-    char *s, *se, *next;
+    const char *s;
+    char *se, *next;
     int linenum = 0;
     struct rpmOption searchOption, * option;
     int rc;
@@ -616,7 +593,7 @@ static int doReadRC(FD_t fd, const char * filename)
     while (*next) {
 	linenum++;
 
-	se = s = next;
+	s = se = next;
 	while (*se && *se != '\n') se++;
 	if (*se) *se++ = '\0';
 	next = se;
@@ -626,7 +603,7 @@ static int doReadRC(FD_t fd, const char * filename)
 	/* we used to allow comments to begin anywhere, but not anymore */
 	if (*s == '#' || *s == '\0') continue;
 
-	se = s;
+	se = (char *)s;
 	while (*se && !isspace(*se) && *se != ':') se++;
 
 	if (isspace(*se)) {
@@ -761,7 +738,7 @@ static int doReadRC(FD_t fd, const char * filename)
 	    }
 
 	    if (i < RPM_MACHTABLE_COUNT) {
-		char *rest = s + strlen(tables[i].key);
+		const char *rest = s + strlen(tables[i].key);
 		if (*rest == '_') rest++;
 
 		if (!strcmp(rest, "compat")) {
@@ -966,7 +943,7 @@ static void defaultMachine(const char ** arch, const char ** os) {
     if (os) *os = un.sysname;
 }
 
-static char * rpmGetVarArch(int var, char * arch) {
+static const char * rpmGetVarArch(int var, char * arch) {
     struct rpmvarValue * next;
 
     if (!arch) arch = current[ARCH];
@@ -985,7 +962,7 @@ static char * rpmGetVarArch(int var, char * arch) {
     return next ? next->value : NULL;
 }
 
-char *rpmGetVar(int var)
+const char *rpmGetVar(int var)
 {
     return rpmGetVarArch(var, NULL);
 }
@@ -997,11 +974,11 @@ static void freeRpmVar(struct rpmvarValue * orig) {
     while (var) {
 	next = var->next;
 	if (var->arch) {
-	    free(var->arch);
+	    xfree(var->arch);
 	    var->arch = NULL;
 	}
 	if (var->value) {
-	    free(var->value);
+	    xfree(var->value);
 	    var->value = NULL;
 	}
 
@@ -1032,16 +1009,18 @@ static void rpmSetVarArch(int var, const char * val, const char * arch) {
 	}
 
 	if (next->arch && arch && !strcmp(next->arch, arch)) {
-	    if (next->value) free(next->value);
-	    if (next->arch) free(next->arch);
+	    if (next->value) xfree(next->value);
+	    if (next->arch) xfree(next->arch);
 	} else if (next->arch || arch) {
 	    next->next = xmalloc(sizeof(*next->next));
 	    next = next->next;
+	    next->value = NULL;
+	    next->arch = NULL;
 	    next->next = NULL;
 	}
     }
 
-    next->value = xstrdup(val);
+    next->value = xstrdup(val);		/* XXX memory leak, hard to plug */
     next->arch = (arch ? xstrdup(arch) : NULL);
 }
 
@@ -1236,7 +1215,7 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 /*
  * XXX Make sure that per-arch optflags is initialized correctly.
  */
-  { char *optflags = rpmGetVarArch(RPMVAR_OPTFLAGS, ca);
+  { const char *optflags = rpmGetVarArch(RPMVAR_OPTFLAGS, ca);
     if (optflags != NULL) {
 	delMacro(NULL, "optflags");
 	addMacro(NULL, "optflags", NULL, optflags, RMIL_RPMRC);
@@ -1355,7 +1334,7 @@ int rpmShowRC(FILE *f)
 
     fprintf(f, "\nRPMRC VALUES:\n");
     for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
-	char *s = rpmGetVar(opt->var);
+	const char *s = rpmGetVar(opt->var);
 	if (s != NULL || rpmGetVerbosity() < RPMMESS_NORMAL)
 	    fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }

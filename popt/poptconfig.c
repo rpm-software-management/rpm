@@ -40,7 +40,7 @@ static void configLine(poptContext con, char * line) {
 	alias.longName = longName, alias.shortName = shortName;
 	poptAddAlias(con, alias, 0);
     } else if (!strcmp(entryType, "exec")) {
-	con->execs = realloc(con->execs, /* XXX memory leak */
+	con->execs = realloc(con->execs,
 				sizeof(*con->execs) * (con->numExecs + 1));
 	if (longName)
 	    con->execs[con->numExecs].longName = xstrdup(longName);

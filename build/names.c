@@ -5,13 +5,22 @@
 #include "rpmbuild.h"
 
 static uid_t uids[1024];
-/*@owned@*/ /*@null@*/ static char *unames[1024];
+/*@owned@*/ /*@null@*/ static const char *unames[1024];
 static int uid_used = 0;
 
 static gid_t gids[1024];
-/*@owned@*/ /*@null@*/ static char *gnames[1024];
+/*@owned@*/ /*@null@*/ static const char *gnames[1024];
 static int gid_used = 0;
     
+void freeNames(void)
+{
+    int x;
+    for (x = 0; x < uid_used; x++)
+	xfree(unames[x]);
+    for (x = 0; x < gid_used; x++)
+	xfree(gnames[x]);
+}
+
 /*
  * getUname() takes a uid, gets the username, and creates an entry in the
  * table to hold a string containing the user name.

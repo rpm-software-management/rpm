@@ -3,16 +3,20 @@
 #include <rpmlib.h>
 #include "fprint.h"
 
-fingerPrintCache fpCacheCreate(int sizeHint) {
+fingerPrintCache fpCacheCreate(int sizeHint)
+{
     fingerPrintCache fpc;
 
     fpc = xmalloc(sizeof(*fpc));
-    fpc->ht = htCreate(sizeHint * 2, sizeof(char *), hashFunctionString,
+    fpc->ht = htCreate(sizeHint * 2, sizeof(char *), 1, hashFunctionString,
 		       hashEqualityString);
     return fpc;
 }
 
-void fpCacheFree(fingerPrintCache cache) {
+void fpCacheFree(fingerPrintCache cache)
+{
+    htFree(cache->ht);
+    free(cache);
 }
 
 static const struct fprintCacheEntry_s * cacheContainsDirectory(
@@ -35,7 +39,6 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
     struct stat sb;
     char * buf;
     const struct fprintCacheEntry_s * cacheHit;
-    struct fprintCacheEntry_s * newEntry;
 
     /* assert(*dirName == '/' || !scareMemory); */
 
@@ -72,15 +75,18 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 	if ((cacheHit = cacheContainsDirectory(cache, *buf ? buf : "/"))) {
 	    fp.entry = cacheHit;
 	} else if (!stat(*buf ? buf : "/", &sb)) {
-	    newEntry = xmalloc(sizeof(*fp.entry));
+	    size_t nb = sizeof(*fp.entry) + (*buf ? strlen(buf) : 1) + 1;
+	    char * dn = xmalloc(nb);
+	    struct fprintCacheEntry_s * newEntry = (void *)dn;
+	    dn += sizeof(*newEntry);
+	    strcpy(dn, (*buf ? buf : "/"));
 	    newEntry->ino = sb.st_ino;
 	    newEntry->dev = sb.st_dev;
 	    newEntry->isFake = 0;
-	    newEntry->dirName = xstrdup(*buf ? buf : "/");	    
+	    newEntry->dirName = dn;
 	    fp.entry = newEntry;
 
-	    /* XXX FIXME: memory leak */
-	    htAddEntry(cache->ht, xstrdup(*buf ? buf : "/"), fp.entry);
+	    htAddEntry(cache->ht, dn, fp.entry);
 	}
 
         if (fp.entry) {
@@ -112,7 +118,8 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 }
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * fullName, 
-		     int scareMemory) {
+		     int scareMemory)
+{
     char *dn = strcpy(alloca(strlen(fullName)+1), fullName);
     char *bn = strrchr(dn, '/');
 
@@ -152,7 +159,8 @@ int fpEqual(const void * key1, const void * key2)
 
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
 		  const char ** baseNames, const int * dirIndexes, 
-		  int fileCount, fingerPrint * fpList) {
+		  int fileCount, fingerPrint * fpList)
+{
     int i;
 
     for (i = 0; i < fileCount; i++) {
@@ -169,7 +177,8 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
     }
 }
 
-void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList) {
+void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
+{
     int fileCount;
     const char ** baseNames, ** dirNames;
     int_32 * dirIndexes;

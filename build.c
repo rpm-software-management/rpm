@@ -91,7 +91,6 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     int test = ba->noBuild;
     FILE *f;
     const char * specfile;
-    int res = 0;
     struct stat statbuf;
     char buf[BUFSIZ];
     Spec spec = NULL;
@@ -102,6 +101,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	const char *specDir;
 	const char * tmpSpecFile;
 	char * cmd, *s;
+	int res;
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
@@ -158,13 +158,14 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 
 	s = alloca(strlen(specDir) + strlen(cmd) + 5);
 	sprintf(s, "%s/%s", specDir, cmd);
+	res = rename(tmpSpecFile, s);
+	xfree(specDir);
+	xfree(tmpSpecFile);
 	
-	if (rename(tmpSpecFile, s)) {
+	if (res) {
 	    fprintf(stderr, _("Failed to rename %s to %s: %s\n"),
 		    tmpSpecFile, s, strerror(errno));
 	    unlink(tmpSpecFile);
-	    xfree(specDir);
-	    xfree(tmpSpecFile);
 	    return 1;
 	}
 
@@ -183,8 +184,6 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	*cmd = '\0';
 
 	addMacro(NULL, "_sourcedir", NULL, buf, RMIL_TARBALL);
-	xfree(specDir);
-	xfree(tmpSpecFile);
 	specfile = s;
     } else if (arg[0] == '/') {
 	specfile = arg;
@@ -236,7 +235,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 
     freeSpec(spec);
     
-    return res;
+    return 0;
 }
 
 int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,

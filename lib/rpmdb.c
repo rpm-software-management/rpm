@@ -61,16 +61,13 @@ static void unblockSignals(void)
 
 int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
 {
-    const char * dbpath;
+    const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
     int rc = 0;
 
-    dbpath = rpmGetPath("%{_dbpath}", NULL);
-    if (dbpath == NULL || dbpath[0] == '%') {
+    if (!(dbpath && dbpath[0] != '%')) {
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
-	return 1;
-    }
-
-    if (openDatabase(prefix, dbpath, rpmdbp, O_RDONLY, 0644, 
+	rc = 1;
+    } else if (openDatabase(prefix, dbpath, rpmdbp, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
     }
@@ -80,33 +77,29 @@ int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
 
 int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms)
 {
-    const char * dbpath;
+    const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
     int rc;
 
-    dbpath = rpmGetPath("%{_dbpath}", NULL);
-    if (dbpath == NULL || dbpath[0] == '%') {
+    if (!(dbpath && dbpath[0] != '%')) {
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
-	return 1;
-    }
-
-    rc = openDatabase(prefix, dbpath, rpmdbp, mode, perms, 0);
+	rc = 1;
+    } else
+    	rc = openDatabase(prefix, dbpath, rpmdbp, mode, perms, 0);
     xfree(dbpath);
     return rc;
 }
 
 int rpmdbInit (const char * prefix, int perms)
 {
+    const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
     rpmdb db;
-    const char * dbpath;
     int rc;
 
-    dbpath = rpmGetPath("%{_dbpath}", NULL);
-    if (dbpath == NULL || dbpath[0] == '%') {
+    if (!(dbpath && dbpath[0] != '%')) {
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
-	return 1;
-    }
-
-    rc = openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 
+	rc = 1;
+    } else
+	rc = openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 
 			RPMDB_FLAG_JUSTCHECK);
     xfree(dbpath);
     return rc;

@@ -175,15 +175,11 @@ static int getNextHeader(FD_t cfd, /*@out@*/ struct cpioHeader * chPtr)
 
     GET_NUM_FIELD(physHeader.devMajor, major);
     GET_NUM_FIELD(physHeader.devMinor, minor);
-#ifndef __LCLINT__
-    chPtr->dev = makedev(major, minor);
-#endif
+    chPtr->dev = /*@-shiftsigned@*/ makedev(major, minor) /*@=shiftsigned@*/ ;
 
     GET_NUM_FIELD(physHeader.rdevMajor, major);
     GET_NUM_FIELD(physHeader.rdevMinor, minor);
-#ifndef __LCLINT__
-    chPtr->rdev = makedev(major, minor);
-#endif
+    chPtr->rdev = /*@-shiftsigned@*/ makedev(major, minor) /*@=shiftsigned@*/ ;
 
     GET_NUM_FIELD(physHeader.namesize, nameSize);
 
@@ -454,7 +450,7 @@ static void freeLink( /*@only@*/ struct hardLink * li)
 
     for (i = 0; i < li->nlink; i++) {
 	if (li->files[i] == NULL) continue;
-	free((void *)li->files[i]);
+	/*@-unqualifiedtrans@*/ free(li->files[i]) /*@=unqualifiedtrans@*/ ;
 	li->files[i] = NULL;
     }
     free(li->files);
@@ -483,7 +479,7 @@ static int createLinks(struct hardLink * li, /*@out@*/const char ** failedFile)
 	    return CPIOERR_LINK_FAILED;
 	}
 
-	free((void *)li->files[i]);
+	/*@-unqualifiedtrans@*/ free(li->files[i]) /*@=unqualifiedtrans@*/ ;
 	li->files[i] = NULL;
 	li->linksLeft--;
     }
@@ -728,10 +724,10 @@ static int writeFile(FD_t cfd, struct stat sb, struct cpioFileMapping * map,
     SET_NUM_FIELD(hdr.mtime, sb.st_mtime, buf);
     SET_NUM_FIELD(hdr.filesize, sb.st_size, buf);
 
-    num = major(sb.st_dev); SET_NUM_FIELD(hdr.devMajor, num, buf);
-    num = minor(sb.st_dev); SET_NUM_FIELD(hdr.devMinor, num, buf);
-    num = major(sb.st_rdev); SET_NUM_FIELD(hdr.rdevMajor, num, buf);
-    num = minor(sb.st_rdev); SET_NUM_FIELD(hdr.rdevMinor, num, buf);
+    num = major((unsigned)sb.st_dev); SET_NUM_FIELD(hdr.devMajor, num, buf);
+    num = minor((unsigned)sb.st_dev); SET_NUM_FIELD(hdr.devMinor, num, buf);
+    num = major((unsigned)sb.st_rdev); SET_NUM_FIELD(hdr.rdevMajor, num, buf);
+    num = minor((unsigned)sb.st_rdev); SET_NUM_FIELD(hdr.rdevMinor, num, buf);
 
     num = strlen(map->archivePath) + 1; SET_NUM_FIELD(hdr.namesize, num, buf);
     memcpy(hdr.checksum, "00000000", 8);

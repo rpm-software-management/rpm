@@ -567,7 +567,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root)
 
     rpmdep->orderAlloced = 5;
     rpmdep->orderCount = 0;
-    rpmdep->order = xcalloc(rpmdep->orderAlloced, sizeof(*rpmdep->order)); /* XXX memory leak */
+    rpmdep->order = xcalloc(rpmdep->orderAlloced, sizeof(*rpmdep->order));
 
     return rpmdep;
 }
@@ -710,6 +710,7 @@ void rpmtransFree(rpmTransactionSet rpmdep)
     alFree(&rpmdep->availablePackages);
     free(rpmdep->removedPackages);
     xfree(rpmdep->root);
+    free(rpmdep->order);
 
     free(rpmdep);
 }
@@ -1314,7 +1315,7 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     qsort(orderList, rpmdep->addedPackages.size, sizeof(*orderList),
 	  orderListIndexCmp);
 
-    newOrder = xmalloc(sizeof(*newOrder) * rpmdep->orderCount); /* XXX memory leak */
+    newOrder = xmalloc(sizeof(*newOrder) * rpmdep->orderCount);
     for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
 	key.alIndex = ordering[i];
 	needle = bsearch(&key, orderList, rpmdep->addedPackages.size,

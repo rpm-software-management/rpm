@@ -370,7 +370,7 @@ char * oldrpmdbGetPackageGroup(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel 
     
     rec = gdbm_fetch(oldrpmdb->groupIndex, key);
     if (!rec.dptr) {
-	return strdup("Unknown");
+	return xstrdup("Unknown");
     }
     
     g = malloc(rec.dsize + 1);
@@ -467,8 +467,8 @@ int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel labe
     list = splitString(rec.dptr, rec.dsize, '\1');
     free(rec.dptr);
 
-    pinfo->version = strdup(list[1]); 
-    pinfo->release = strdup(list[2]); 
+    pinfo->version = xstrdup(list[1]); 
+    pinfo->release = xstrdup(list[2]); 
     /* list[3] == "1" always */
     pinfo->name = malloc(strlen(list[0]) + strlen(list[4]) + 2);
     strcpy(pinfo->name, list[0]);
@@ -484,7 +484,7 @@ int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel labe
     strcat(pinfo->labelstr, ":");
     strcat(pinfo->labelstr, pinfo->release);
 
-    pinfo->preamble = strdup(list[5]);
+    pinfo->preamble = xstrdup(list[5]);
     pinfo->installTime = atoi(list[6]);
     pinfo->fileCount = atoi(list[7]);
     
@@ -498,27 +498,27 @@ int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel labe
 
     for (strptr = prelist; *strptr; strptr++) {
 	if (!strncasecmp("Description: ", *strptr, 13))
-	    pinfo->description = strdup((*strptr) + 13);
+	    pinfo->description = xstrdup((*strptr) + 13);
 	else if (!strncasecmp("Copyright: ", *strptr, 11))
-	    pinfo->copyright = strdup((*strptr) + 11);
+	    pinfo->copyright = xstrdup((*strptr) + 11);
 	else if (!strncasecmp("Distribution: ", *strptr, 14))
-	    pinfo->distribution = strdup((*strptr) + 14);
+	    pinfo->distribution = xstrdup((*strptr) + 14);
 	else if (!strncasecmp("Vendor: ", *strptr, 8))
-	    pinfo->vendor = strdup((*strptr) + 8);
+	    pinfo->vendor = xstrdup((*strptr) + 8);
 	else if (!strncasecmp("size: ", *strptr, 6))
 	    pinfo->size = atoi((*strptr) + 6);
 	else if (!strncasecmp("BuildDate: ", *strptr, 11))
 	    pinfo->buildTime =atoi((*strptr) + 11);
 	else if (!strncasecmp("BuildHost: ", *strptr, 11))
-	    pinfo->buildHost = strdup((*strptr) + 11);
+	    pinfo->buildHost = xstrdup((*strptr) + 11);
     }
     freeSplitString(prelist);
 
-    if (!pinfo->vendor) pinfo->vendor = strdup("");
-    if (!pinfo->description) pinfo->description = strdup("");
-    if (!pinfo->distribution) pinfo->distribution = strdup("");
+    if (!pinfo->vendor) pinfo->vendor = xstrdup("");
+    if (!pinfo->description) pinfo->description = xstrdup("");
+    if (!pinfo->distribution) pinfo->distribution = xstrdup("");
     if (!pinfo->copyright) {
-	pinfo->copyright = strdup("");
+	pinfo->copyright = xstrdup("");
 	fprintf(stdout, _("no copyright!\n"));
     }
 

@@ -15,8 +15,8 @@ int hashEqualityString(const void * key1, const void * key2);
 
 /* if keySize > 0, the key is duplicated within the table (which costs
    memory, but may be usefull anyway */
-hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
-		   hashEqualityType eq); 
+hashTable htCreate(int numBuckets, int keySize, int freeData,
+		hashFunctionType fn, hashEqualityType eq); 
 void htAddEntry(hashTable ht, const void * key, const void * data);
 void htFree( /*@only@*/ hashTable ht);
 /* returns 0 on success, 1 if the item is not found. tableKey may be NULL */

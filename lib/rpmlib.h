@@ -265,7 +265,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 
 #define	xfree(_p)	free((void *)_p)
 
-char * rpmGetVar(int var);
+const char * rpmGetVar(int var);
 void rpmSetVar(int var, const char *val);
 
 /** rpmrc.c **/
@@ -650,6 +650,7 @@ void rpmFreeSignature(Header h);
 int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
 
+void freeFilesystems(void);
 int rpmGetFilesystemList( /*@out@*/ const char *** listptr, /*@out@*/int * num);
 int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes,
 	int numFiles, /*@out@*/ uint_32 ** usagesPtr, int flags);

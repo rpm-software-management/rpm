@@ -20,9 +20,10 @@ int rpmdbRebuild(const char * rootdir)
     rpmMessage(RPMMESS_DEBUG, _("rebuilding database in rootdir %s\n"), rootdir);
 
     dbpath = rpmGetPath("%{_dbpath}", NULL);
-    if (!dbpath || dbpath[0] == '%') {
+    if (!(dbpath && dbpath[0] != '%')) {
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
-	return 1;
+	rc = 1;
+	goto exit;
     }
 
     sprintf(tfn, "rebuilddb.%d", (int) getpid());
