@@ -1,6 +1,6 @@
 #!/bin/bash
 
-find $1 -name "*$2" -print |
+find $1 \( -name "*$2" -o -name ".*$2" \) -print |
 while read f; do
 	diff -u $f ${f%%$2}
 done
