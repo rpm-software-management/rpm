@@ -39,10 +39,6 @@ int inet_aton(const char *cp, struct in_addr *inp);
 #define TIMEOUT_SECS 60
 #define BUFFER_SIZE 4096
 
-#ifndef IPPORT_FTP
-# define IPPORT_FTP 21
-#endif
-
 #if defined(USE_ALT_DNS) && USE_ALT_DNS 
 #include "dns.h"
 #endif

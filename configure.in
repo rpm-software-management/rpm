@@ -596,7 +596,7 @@ AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
 
 if test -n "$LIBOBJS" ; then
-    LIBMISC="$(top_builddir)/misc/libmisc.a"
+    LIBMISC='$(top_builddir)/misc/libmisc.a'
 fi
 
 LOCALEDIR="`echo ${prefix}/share/locale`"
