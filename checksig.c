@@ -15,7 +15,7 @@ int doReSign(char *passPhrase, char **argv)
     int fd, ofd, count;
     struct rpmlead lead;
     unsigned short sigtype;
-    char *sig, *rpm, *sigtarget;
+    char *sig, *rpm, sigtarget[1024];
     char tmprpm[1024];
     unsigned char buffer[8192];
     
@@ -48,7 +48,7 @@ int doReSign(char *passPhrase, char **argv)
 	}
 
 	/* Write the rest to a temp file */
-	sigtarget = tempnam("/var/tmp", "rpmbuild");
+	strcpy(sigtarget, tmpnam(NULL));
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
