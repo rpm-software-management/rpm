@@ -1017,21 +1017,14 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
 	char *s;
 
-#ifdef	DYING
-	if (i < (fl->fileListRecsUsed - 1) &&
-	    !strcmp(flp->fileURL, flp[1].fileURL))
-	{
-	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s\n"),
-		flp->fileURL);
-	    fl->processingFailed = 1;
-	}
-#endif
-
  	/* Merge duplicate entries. */
 	while (i < (fl->fileListRecsUsed - 1) &&
 	    !strcmp(flp->fileURL, flp[1].fileURL)) {
 
 	    /* Two entries for the same file found, merge the entries. */
+
+	    rpmMessage(RPMMESS_WARNING, _("File listed twice: %s\n"),
+		flp->fileURL);
 
 	    /* file flags */
 	    flp[1].flags |= flp->flags;	
@@ -1247,6 +1240,11 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
 	char * b;
 
+	/* Skip (possible) duplicate file entries, use last entry info. */
+	while (((flp - fl->fileList) < (fl->fileListRecsUsed - 1)) &&
+		!strcmp(flp->fileURL, flp[1].fileURL))
+	    flp++;
+
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
 	fi->dnl[fi->dil[i]] = d;
@@ -1273,8 +1271,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    continue;
 	}
 	fi->actions[i] = FA_COPYOUT;
-	fi->fuids[i] = flp->fl_uid;
-	fi->fgids[i] = flp->fl_gid;
+	fi->fuids[i] = getUidS(flp->uname);
+	fi->fgids[i] = getGidS(flp->gname);
+	if (fi->fuids[i] == (uid_t)-1) fi->fuids[i] = 0;
+	if (fi->fgids[i] == (gid_t)-1) fi->fgids[i] = 0;
 	fi->fmapflags[i] =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	if (isSrc)
@@ -1905,11 +1905,12 @@ int processSourceFiles(Spec spec)
 
     spec->sourceCpioList = NULL;
 
-    fl.fileList = xmalloc((spec->numSources + 1) * sizeof(*fl.fileList));
+    fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
     fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
     fl.totalFileSize = 0;
     fl.prefix = NULL;
+    fl.buildRootURL = NULL;
 
     s = getStringBuf(sourceFiles);
     files = splitString(s, strlen(s), '\n');

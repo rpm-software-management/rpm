@@ -146,6 +146,8 @@
 	- fix: disambiguate typedef and struct name(s) for kpackage.
 	- update intl dirs to gettext-0.10.38.
 	- fix: sanity check for header size added in headerCopyLoad() (#46469).
+	- fix: redundant entries in file manifests handled correctly (#46914).
+	- map uid/gid from metadata into payload headers.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

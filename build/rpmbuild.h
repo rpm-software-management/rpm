@@ -101,6 +101,14 @@ void freeNames(void)
 /*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
 
 /** \ingroup rpmbuild
+ * Return cached user id.
+ * @todo Implement using hash.
+ * @param		user name
+ * @return		cached uid
+ */
+uid_t getUidS(const char * uname)	/*@*/;
+
+/** \ingroup rpmbuild
  * Return cached group name from group id.
  * @todo Implement using hash.
  * @param		group id
@@ -115,6 +123,14 @@ void freeNames(void)
  * @return		cached group name
  */
 /*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
+
+/** \ingroup rpmbuild
+ * Return cached group id.
+ * @todo Implement using hash.
+ * @param		group name
+ * @return		cached gid
+ */
+gid_t getGidS(const char * gname)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return build hostname.

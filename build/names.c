@@ -69,6 +69,27 @@ const char *getUnameS(const char *uname)
     return unames[x];
 }
 
+uid_t getUidS(const char *uname)
+{
+    struct passwd *pw;
+    int x;
+
+    for (x = 0; x < uid_used; x++) {
+	if (!strcmp(unames[x],uname))
+	    return uids[x];
+    }
+
+    /* XXX - This is the other hard coded limit */
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getUidS: too many uid's\n"));
+    uid_used++;
+    
+    pw = getpwnam(uname);
+    uids[x] = (pw ? pw->pw_uid : -1);
+    unames[x] = (pw ? xstrdup(pw->pw_name) : xstrdup(uname));
+    return uids[x];
+}
+
 const char *getGname(gid_t gid)
 {
     struct group *gr;
@@ -109,6 +130,27 @@ const char *getGnameS(const char *gname)
     gids[x] = (gr ? gr->gr_gid : -1);
     gnames[x] = (gr ? xstrdup(gr->gr_name) : xstrdup(gname));
     return gnames[x];
+}
+
+gid_t getGidS(const char *gname)
+{
+    struct group *gr;
+    int x;
+
+    for (x = 0; x < gid_used; x++) {
+	if (!strcmp(gnames[x], gname))
+	    return gids[x];
+    }
+
+    /* XXX - This is the other hard coded limit */
+    if (x == 1024)
+	rpmlog(RPMLOG_CRIT, _("getGidS: too many gid's\n"));
+    gid_used++;
+    
+    gr = getgrnam(gname);
+    gids[x] = (gr ? gr->gr_gid : -1);
+    gnames[x] = (gr ? xstrdup(gr->gr_name) : xstrdup(gname));
+    return gids[x];
 }
 /*@=nullderef@*/
 

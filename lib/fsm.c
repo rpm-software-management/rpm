@@ -630,7 +630,7 @@ int fsmMapAttrs(FSM_t fsm)
 		(fi->fgids ? fi->fgids[i] : fi->gid); /* XXX chmod g-s */
 
 	if (fsm->mapFlags & CPIO_MAP_MODE)
-	    st->st_mode = (st->st_mode & S_IFMT) | finalMode;
+	    st->st_mode = (st->st_mode & S_IFMT) | (finalMode & ~S_IFMT);
 	if (fsm->mapFlags & CPIO_MAP_UID)
 	    st->st_uid = finalUid;
 	if (fsm->mapFlags & CPIO_MAP_GID)
@@ -1919,7 +1919,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	rc = Readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
-		fsm->path, (int)fsm->rdlen, (rc < 0 ? strerror(errno) : ""));
+		fsm->path, (int)(fsm->rdsize -1), (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_READLINK_FAILED;
 	else {
 	    fsm->rdnb = rc;
