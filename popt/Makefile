@@ -42,8 +42,10 @@ depend:
 	$(CPP) $(CFLAGS) -M $(SOURCES) > .depend
 
 install:
-	install -m 644 popt.h $(INCLUDE)/popt.h
-	install -m 644 $(LIBPOPT) $(LIBS)/$(LIBPOPT)
+	mkdir -p $(PREFIX)/$(INCLUDE)
+	mkdir -p $(PREFIX)/$(LIBS)
+	install -m 644 popt.h $(PREFIX)/$(INCLUDE)/popt.h
+	install -m 644 $(LIBPOPT) $(PREFIX)/$(LIBS)/$(LIBPOPT)
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
