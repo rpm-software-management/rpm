@@ -101,8 +101,18 @@ expandMacroTable(MacroContext *mc)
 static void
 sortMacroTable(MacroContext *mc)
 {
+	int i;
+
 	qsort(mc->macroTable, mc->firstFree, sizeof(*(mc->macroTable)),
 		compareMacroName);
+
+	/* Empty pointers are now at end of table. Reset first free index. */
+	for (i = 0; i < mc->firstFree; i++) {
+		if (mc->macroTable[i] != NULL)
+			continue;
+		mc->firstFree = i;
+		break;
+	}
 }
 
 void
@@ -121,6 +131,7 @@ dumpMacroTable(MacroContext *mc, FILE *f)
 	for (i = 0; i < mc->firstFree; i++) {
 		MacroEntry *me;
 		if ((me = mc->macroTable[i]) == NULL) {
+			/* XXX this should never happen */
 			nempty++;
 			continue;
 		}
@@ -554,28 +565,38 @@ static void
 freeArgs(MacroBuf *mb)
 {
 	MacroContext *mc = mb->mc;
-	int c;
+	int ndeleted = 0;
+	int i;
 
 	/* Delete dynamic macro definitions */
-	for (c = 0; c < mc->firstFree; c++) {
-		MacroEntry *me;
+	for (i = 0; i < mc->firstFree; i++) {
+		MacroEntry **mep, *me;
 		int skiptest = 0;
-		if ((me = mc->macroTable[c]) == NULL)
+		mep = &mc->macroTable[i];
+		me = *mep;
+
+		if (me == NULL)		/* XXX this should never happen */
 			continue;
 		if (me->level < mb->depth)
 			continue;
 		if (strlen(me->name) == 1 && strchr("#*0", *me->name)) {
 			if (*me->name == '*' && me->used > 0)
 				skiptest = 1;
-			; /* XXX skip test for %# %* %0 */
+			/* XXX skip test for %# %* %0 */
 		} else if (!skiptest && me->used <= 0) {
 #if NOTYET
 			rpmError(RPMERR_BADSPEC, _("Macro %%%s (%s) was not used below level %d"),
 				me->name, me->body, me->level);
 #endif
 		}
-		popMacro(&mc->macroTable[c]);
+		popMacro(mep);
+		if (!(mep && *mep))
+			ndeleted++;
 	}
+
+	/* If any deleted macros, sort macro table */
+	if (ndeleted)
+		sortMacroTable(mc);
 }
 
 static const char *
@@ -699,7 +720,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
 	optc++;
     }
 
-    /* Add macro for each arg. Concatenate args for !* */
+    /* Add macro for each arg. Concatenate args for !*. */
     b = be;
     for (c = optind; c < argc; c++) {
 	sprintf(aname, "%d", (c - optind + 1));
@@ -714,11 +735,11 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
 	optc++;
     }
 
-    /* Add arg count as macro */
+    /* Add arg count as macro. */
     sprintf(aname, "%d", (argc - optind));
     addMacro(mb->mc, "#", NULL, aname, mb->depth);
 
-    /* Add unexpanded args as macro */
+    /* Add unexpanded args as macro. */
     addMacro(mb->mc, "*", NULL, b, mb->depth);
 
     return se;
@@ -807,9 +828,6 @@ doFoo(MacroBuf *mb, const char *f, size_t fn, const char *g, size_t glen)
 	} else if (STREQ("F", f, fn)) {
 		b = buf + strlen(buf) + 1;
 		sprintf(b, "file%s.file", buf);
-#if DEAD
-fprintf(stderr, "FILE: \"%s\"\n", b);
-#endif
 	}
 
 	if (b) {
@@ -1194,14 +1212,14 @@ addMacro(MacroContext *mc, const char *n, const char *o, const char *b, int leve
 }
 
 void
-delMacro(MacroContext *mc, const char *name)
+delMacro(MacroContext *mc, const char *n)
 {
 	MacroEntry **mep;
 
 	if (mc == NULL)
 		mc = &globalMacroContext;
 	/* If name exists, pop entry */
-	if ((mep = findEntry(mc, name, 0)) != NULL) {
+	if ((mep = findEntry(mc, n, 0)) != NULL) {
 		popMacro(mep);
 		/* If deleted name, sort macro table */
 		if (!(mep && *mep))
@@ -1498,7 +1516,7 @@ main(int argc, char *argv[])
 		fclose(fp);
 	}
 
-	while(fgets(buf, sizeof(buf), stdin)) {
+	while(rdcl(buf, sizeof(buf), stdin, 1)) {
 		buf[strlen(buf)-1] = '\0';
 		x = expandMacros(NULL, NULL, buf, sizeof(buf));
 		fprintf(stderr, "%d->%s\n <-\n", x, buf);
