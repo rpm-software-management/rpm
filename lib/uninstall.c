@@ -128,7 +128,7 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal */
-	if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, 0, scriptFd)) {
+	if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, -1, scriptFd)) {
 	    return 2;
 	}
     }
