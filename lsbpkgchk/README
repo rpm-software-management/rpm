@@ -1,0 +1,16 @@
+LSBAPPCHK
+---------
+
+lsbpkgchk is a program which forms part of a series of checks that a
+package is LSB compliant. It verifies a package and its contents conform
+to the LSV specification.
+
+Usage: lsbpkgchk file
+
+Note that the version number displayed refers to the version of the
+specification that lsbpkgchk was built for, not the version of
+lsbpkgchk itself.
+
+Please send any comments or feedback you may have to
+lsb-test@linuxbase.org
+

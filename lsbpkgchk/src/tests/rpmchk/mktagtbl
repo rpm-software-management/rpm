@@ -1,0 +1,47 @@
+#!/usr/bin/perl
+
+use Mysql;
+
+use Env qw(LSBUSER LSBDBPASSWD LSBDB LSBDBHOST);
+
+$Dbh = Mysql->connect($LSBDBHOST,$LSBDB,$LSBUSER, $LSBDBPASSWD) || die $Mysql::db_errstr;
+
+sub
+dumptable($$)
+{
+local($ttype,$tname)=@_;
+
+$select = "SELECT DISTINCT * FROM RpmTag ";
+$select.= "WHERE Rgroup='Private' OR Rgroup='".$ttype."' ";
+$select.= "ORDER BY Rgroup,Rtag ";
+
+#print "$select\n";
+
+$sth = $Dbh->query($select) || die $Dbh->errmsg();
+
+printf "RpmIdxTagFuncRec %s[] = {\n", $tname;
+
+for(1..$sth->numrows) {
+	%entry=$sth->fetchhash;
+	printf "{%s,\t", $entry{'Rname'};
+	printf "\"%s\",\t", $entry{'Rname'};
+	printf "%s,\t", $entry{'Rtype'};
+	printf "%s,\t", $entry{'Rcount'};
+	split('_',$entry{'Rname'});
+	$tagname=@_[1];
+	printf "checkRpmIdx%s,\t", $tagname;
+	printf "%s,\t", $entry{'Rstatus'};
+	printf "NotSeen},\n";
+	}
+printf "\t};\n\n", $tname;
+}
+
+print "/* Generated file - Do Not Edit */\n\n";
+print "#include \"rpmchk.h\"\n";
+print "#include \"tagfuncs.h\"\n\n";
+
+dumptable("Signature","SigTags");
+print "\nint numSigIdxTags = sizeof(SigTags)/sizeof(RpmIdxTagFuncRec);\n\n";
+dumptable("Header","HdrTags");
+print "int numHdrIdxTags = sizeof(HdrTags)/sizeof(RpmIdxTagFuncRec);\n";
+

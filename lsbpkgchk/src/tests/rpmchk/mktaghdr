@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+use Mysql;
+
+use Env qw(LSBUSER LSBDBPASSWD LSBDB LSBDBHOST);
+
+$Dbh = Mysql->connect($LSBDBHOST,$LSBDB,$LSBUSER, $LSBDBPASSWD) || die $Mysql::db_errstr;
+
+sub
+dumpenum($$)
+{
+local($ttype,$tname)=@_;
+
+$select = "SELECT DISTINCT * FROM RpmTag ";
+$select.= "WHERE Rgroup='".$ttype."' ";
+$select.= "ORDER BY Rtag ";
+
+#print "$select\n";
+
+$sth = $Dbh->query($select) || die $Dbh->errmsg();
+
+print "typedef enum {\n";
+
+for(1..$sth->numrows) {
+	%entry=$sth->fetchhash;
+	printf "\t%s\t= %d,\n", $entry{'Rname'}, $entry{'Rtag'};
+	}
+printf "\t} %s;\n\n", $tname;
+}
+
+print "/* Generated file - Do Not Edit */\n\n";
+
+dumpenum("Private","HdrPrivIndexTag");
+dumpenum("Signature","SigIndexTag");
+dumpenum("Header","RpmIndexTag");
+
