@@ -284,8 +284,8 @@ extern GElf_Versym *gelf_getversym (Elf_Data *__data, int __ndx,
 	/*@modifies dst @*/;
 
 /* Update symbol version information.  */
-extern int gelf_update_versym (Elf_Data *__data, int __ndx, GElf_Versym __src)
-	/*@*/;
+extern int gelf_update_versym (Elf_Data *__data, int __ndx, GElf_Versym *src)
+	/*@modifies *src @*/;
 
 
 /* Retrieve required symbol version information at given offset.  */

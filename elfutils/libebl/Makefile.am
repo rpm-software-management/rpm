@@ -21,20 +21,16 @@ AM_CFLAGS = -Wall -Werror -DOBJDIR=\"$(shell pwd)\"
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/libelf -I$(top_srcdir)/lib -I.. \
 	   $(INCLTDL)
 
-LINT = splint
+lib_LTLIBRARIES = libebl.la
+pkglib_LTLIBRARIES = libebl_i386.la libebl_sh.la libebl_mips.la \
+		     libebl_x86_64.la
 
-#lib_LTLIBRARIES = libebl.la
-#pkglib_LTLIBRARIES = libebl_i386.la libebl_sh.la libebl_mips.la
-noinst_LTLIBRARIES = libebl.la \
-		libebl_i386.la libebl_sh.la libebl_mips.la
+euincludedir = $(includedir)/elfutils
+euinclude_HEADERS = libebl.h elf-knowledge.h
 
-euincludedir = ${includedir}/elfutils
-#euinclude_HEADERS = libebl.h elf-knowledge.h
+noinst_HEADERS = libeblP.h $(pkglib_LTLIBRARIES:%.la=%.h)
 
-noinst_HEADERS = libeblP.h libebl_i386.h libebl_sh.h libebl_mips.h \
-		libebl.h elf-knowledge.h
-
-EXTRA_DIST = libebl.map libebl_i386.map libebl_sh.map libebl_mips.map
+EXTRA_DIST = libebl.map $(pkglib_LTLIBRARIES:%.la=%.map)
 
 libebl_la_SOURCES = eblopenbackend.c eblclosebackend.c eblstrtab.c \
 		    eblreloctypename.c eblsegmenttypename.c \
@@ -62,7 +58,7 @@ libebl_mips_la_SOURCES = mips_init.c mips_destr.c mips_symbol.c
 libebl_mips_la_LDFLAGS = -module -Wl,--version-script,$(srcdir)/libebl_mips.map
 libebl_mips_la_DEPENDENCIES = libebl_mips.map
 
-.PSEUDO: lint
-lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(GCC_INCLUDE) -f $(top_srcdir)/splint.rc \
-		$(addprefix $(srcdir)/,$(libebl_la_SOURCES))
+libebl_x86_64_la_SOURCES = x86_64_init.c x86_64_destr.c x86_64_symbol.c
+libebl_x86_64_la_LDFLAGS = -module \
+			   -Wl,--version-script,$(srcdir)/libebl_x86_64.map
+libebl_x86_64_la_DEPENDENCIES = libebl_x86_64.map

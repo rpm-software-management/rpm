@@ -311,6 +311,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
       get_uleb128 (diridx, linep);
       if (unlikely (diridx >= ndirlist))
 	{
+	  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 	  __libdwarf_error (dbg, error, DW_E_INVALID_DIR_IDX);
 	  return DW_DLV_ERROR;
 	}
@@ -339,6 +340,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
       if (new_file->name == NULL)
 	{
 	  /* XXX Should we bother to free all the memory?  */
+	  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 	  __libdwarf_error (dbg, error, DW_E_NOMEM);
 	  return DW_DLV_ERROR;
 	}
@@ -358,6 +360,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
   /* Consistency check.  */
   if (unlikely (linep != header_start + header_length))
     {
+      dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
       __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
       return DW_DLV_ERROR;
     }
@@ -491,6 +494,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 		  }
 		if (new_file->name == NULL)
 		  {
+		    dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		    __libdwarf_error (dbg, error, DW_E_NOMEM);
 		    return DW_DLV_ERROR;
 		  }
@@ -519,6 +523,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 0))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -541,6 +546,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 1))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -554,6 +560,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 1))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -567,6 +574,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 1))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -580,6 +588,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 1))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -593,6 +602,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 0))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -605,6 +615,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 0))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -617,6 +628,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 0))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -630,6 +642,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 1))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -643,6 +656,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 0))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -655,6 +669,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
 	      if (unlikely (standard_opcode_lengths[opcode] != 0))
 		{
 		  /* XXX Free memory.  */
+		  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 		  __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
 		  return DW_DLV_ERROR;
 		}
@@ -688,6 +703,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
   if (files == NULL)
     {
       /* XXX Should we bother to free all the memory?  */
+      dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
       __libdwarf_error (dbg, error, DW_E_NOMEM);
       return DW_DLV_ERROR;
     }
@@ -708,6 +724,7 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
   lines = (Dwarf_Line *) malloc (nlinelist * sizeof (Dwarf_Line));
   if (lines == NULL)
     {
+      dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
       __libdwarf_error (dbg, error, DW_E_NOMEM);
       return DW_DLV_ERROR;
     }
@@ -721,6 +738,8 @@ dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
       linelist->line->files = files;
       linelist = linelist->next;
     }
+
+  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 
   return DW_DLV_OK;
 }

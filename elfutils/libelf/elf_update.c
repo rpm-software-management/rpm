@@ -158,7 +158,7 @@ elf_update (Elf *elf, Elf_Cmd cmd)
     }
 
  out:
-  rwlock_rdlock (elf->unlock);
+  rwlock_unlock (elf->unlock);
 
   return size;
 }

@@ -318,7 +318,10 @@ dwarf_srcfiles (Dwarf_Die die, char ***srcfiles, Dwarf_Signed *srcfilecount,
   /* Next the include directories and the file names.  */
   if (unlikely (read_file_names (dbg, comp_dir, &linep, srcfiles, srcfilecount,
 				 error) != DW_DLV_OK))
-    return DW_DLV_ERROR;
+    {
+      dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
+      return DW_DLV_ERROR;
+    }
 
   /* Consistency check.  */
   if (unlikely (linep != header_start + header_length))
@@ -329,9 +332,12 @@ dwarf_srcfiles (Dwarf_Die die, char ***srcfiles, Dwarf_Signed *srcfilecount,
 	dwarf_dealloc (dbg, (*srcfiles)[i], DW_DLA_STRING);
       dwarf_dealloc (dbg, *srcfiles, DW_DLA_LIST);
 
+      dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
       __libdwarf_error (dbg, error, DW_E_INVALID_DWARF);
       return DW_DLV_ERROR;
     }
+
+  dwarf_dealloc (dbg, stmt_list, DW_DLA_ATTR);
 
   return DW_DLV_OK;
 }

@@ -7,7 +7,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = m4 doc lib libltdl libelf libebl libdwarf libelf-po libebl-po libdwarf-po po
 
-EXTRA_DIST = splint.rc elfutils.spec.in GPG-KEY NOTES
+EXTRA_DIST = config.rpath splint.rc elfutils.spec GPG-KEY NOTES
 
 distcheck-hook:
 	chmod -R u+w $(distdir)

@@ -27,7 +27,7 @@
 
 
 int
-gelf_update_versym (Elf_Data *data, int ndx, GElf_Versym src)
+gelf_update_versym (Elf_Data *data, int ndx, GElf_Versym *src)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
 
@@ -55,7 +55,7 @@ gelf_update_versym (Elf_Data *data, int ndx, GElf_Versym src)
 
   rwlock_wrlock (data_scn->s->elf->lock);
 
-  ((GElf_Versym *) data_scn->d.d_buf)[ndx] = src;
+  ((GElf_Versym *) data_scn->d.d_buf)[ndx] = *src;
 
   /* Mark the section as modified.  */
   data_scn->s->flags |= ELF_F_DIRTY;

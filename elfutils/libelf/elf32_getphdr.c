@@ -51,7 +51,7 @@ elfw2(LIBELFBITS,getphdr) (Elf *elf)
 
   if (elf->class == 0)
     elf->class = ELFW(ELFCLASS,LIBELFBITS);
-  else if (elf->class == ELFW(ELFCLASS,LIBELFBITS))
+  else if (elf->class != ELFW(ELFCLASS,LIBELFBITS))
     {
       __libelf_seterrno (ELF_E_INVALID_CLASS);
       result = NULL;

@@ -47,7 +47,7 @@ elf_end (Elf *elf)
       return result;
     }
 
-  if (elf->kind == ELF_K_AR && elf->state.ar.children != NULL)
+  if (elf->kind == ELF_K_AR)
     {
       /* We cannot remove the descriptor now since we still have some
 	 descriptors which depend on it.  But we can free the archive
@@ -57,7 +57,9 @@ elf_end (Elf *elf)
 	 into this array.  */
       free (elf->state.ar.ar_sym);
       elf->state.ar.ar_sym = NULL;
-      return 0;
+
+      if (elf->state.ar.children != NULL)
+	return 0;
     }
 
   /* Remove this structure from the children list.  */
