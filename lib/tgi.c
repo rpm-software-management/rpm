@@ -67,10 +67,12 @@ main(int argc, char *const argv[])
     rpmts ts = NULL;
     rpmVSFlags vsflags;
     rpmgi gi = NULL;
-    const char ** av;
+    const char ** pav;
     const char * arg;
+    ARGV_t av;
     int ac;
     int rc = 0;
+    int xx;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
@@ -93,7 +95,20 @@ main(int argc, char *const argv[])
 	(void) rpmtsSetTid(ts, tid);
     }
 
-    av = poptGetArgs(optCon);
+    pav = poptGetArgs(optCon);
+
+    /* Glob all args and concatenate. */
+    av = xcalloc(1, sizeof(*av));
+    if (pav != NULL)
+    while ((arg = *pav++) != NULL) {
+	ARGV_t aav;
+	int aac;
+	aav = NULL;
+	xx = rpmGlob(arg, &aac, &aav);
+	xx = argvAppend(&av, aav);
+	aav = argvFree(aav);
+    }
+
     gi = rpmgiNew(ts, gitag, av, ftsOpts);
     (void) rpmgiSetQueryFormat(gi, queryFormat);
 

@@ -8,6 +8,7 @@
 #include <rpmgi.h>
 
 #include <rpmdb.h>
+#include "manifest.h"
 
 #include "debug.h"
 
@@ -64,6 +65,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
     }
 
     gi->queryFormat = _free(gi->queryFormat);
+    gi->argv = argvFree(gi->argv);
     if (gi->ftsp != NULL) {
 	int xx;
 	xx = Fts_close(gi->ftsp);
@@ -82,7 +84,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
     return NULL;
 }
 
-rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
 {
     rpmgi gi = xcalloc(1, sizeof(*gi));
 
@@ -107,7 +109,7 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	break;
     case RPMGI_ARGLIST:
     case RPMGI_FTSWALK:
-    {   char *const * argv = keyp;
+    {   ARGV_t argv = keyp;
 	unsigned flags = keylen;
 
 	gi->argv = argv;
@@ -178,6 +180,28 @@ static const char * rpmgiPathOrQF(rpmgi gi, const char * fn,
 }
 
 /*@null@*/
+static rpmRC rpmgiReadManifest(rpmgi gi, const char * fileURL)
+	/*@*/
+{
+    rpmRC rpmrc;
+    FD_t fd;
+
+    fd = Fopen(fileURL, "r.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
+                        Fstrerror(fd));
+	if (fd != NULL) (void) Fclose(fd);
+	return RPMRC_FAIL;
+    }
+
+    rpmrc = rpmReadPackageManifest(fd, &gi->argc, &gi->argv);
+
+    (void) Fclose(fd);
+
+    return rpmrc;
+}
+
+/*@null@*/
 static Header rpmgiReadHeader(rpmgi gi, const char * fileURL)
 	/*@*/
 {
@@ -198,16 +222,15 @@ static Header rpmgiReadHeader(rpmgi gi, const char * fileURL)
     (void) Fclose(fd);
 
     switch (rpmrc) {
-    default:
+    case RPMRC_NOTFOUND:
+	/* XXX Try to read a package manifest. Restart ftswalk on success. */
     case RPMRC_FAIL:
+    default:
 	h = headerFree(h);
 	break;
     case RPMRC_NOTTRUSTED:
     case RPMRC_NOKEY:
     case RPMRC_OK:
-	break;
-    case RPMRC_NOTFOUND:
-	/* Try to read a package manifest. Restart ftswalk on success. */
 	break;
     }
 
@@ -218,8 +241,9 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	/*@modifies gi @*/
 {
     const char * val = NULL;
-    const char * fn;
+    const char * fn = NULL;
     Header h = NULL;
+    rpmRC rpmrc;
 
     if (gi != NULL && ++gi->i >= 0)
     switch (gi->tag) {
@@ -247,8 +271,22 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	if (gi->argv != NULL && gi->argv[gi->i] != NULL) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
-	    fn = gi->argv[gi->i];
-	    h = rpmgiReadHeader(gi, fn);
+	    /* Read next header, lazily expanding manifests as found. */
+	    do {
+		fn = gi->argv[gi->i];
+		h = rpmgiReadHeader(gi, fn);
+		if (h != NULL)
+		    break;
+		/* Not a header, so try for a manifest. */
+		gi->argv[gi->i] = NULL;
+		rpmrc = rpmgiReadManifest(gi, fn);
+		if (rpmrc != RPMRC_OK) {
+		    gi->argv[gi->i] = fn;
+		    break;
+		}
+		fn = _free(fn);
+	    } while (1);
+	    /* XXX check rpmrc */
 	    val = rpmgiPathOrQF(gi, fn, &h);
 	    h = headerFree(h);
 	} else
@@ -258,7 +296,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	if (gi->argv == NULL)
 	    break;
 	if (gi->ftsp == NULL && gi->i == 0) {
-	    gi->ftsp = Fts_open(gi->argv, gi->ftsOpts, NULL);
+	    gi->ftsp = Fts_open((char *const *)gi->argv, gi->ftsOpts, NULL);
 	    /* XXX NULL with open(2)/malloc(3) errno set */
 	}
 
