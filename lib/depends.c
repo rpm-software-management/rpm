@@ -158,13 +158,15 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     struct dirInfo * dirMatch;
     int first, last, fileNum;
     int origNumDirs;
+    int pkgNum;
 
     if (al->size == al->alloced) {
 	al->alloced += 5;
 	al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);
     }
 
-    p = al->list + al->size++;
+    pkgNum = al->size++;
+    p = al->list + pkgNum;
     p->h = headerLink(h);	/* XXX reference held by transaction set */
 
     headerNVR(p->h, &p->name, &p->version, &p->release);
@@ -243,7 +245,10 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	    for (fileNum = first; fileNum <= last; fileNum++) {
 		dirMatch->files[dirMatch->numFiles].baseName =
 		    p->baseNames[fileNum];
+#ifdef	DYING
 		dirMatch->files[dirMatch->numFiles].package = p;
+#endif
+		dirMatch->files[dirMatch->numFiles].pkgNum = pkgNum;
 		dirMatch->numFiles++;
 	    }
 
@@ -774,7 +779,11 @@ alFileSatisfiesDepend(struct availableList * al,
 	    if (keyType)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added file "
 			    "list.\n"), keyType, fileName);
+#ifdef	DYING
 	    return dirMatch->files[i].package;
+#else
+	    return al->list + dirMatch->files[i].pkgNum;
+#endif
 	}
     }
 

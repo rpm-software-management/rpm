@@ -28,7 +28,10 @@ struct availableIndexEntry {
 } ;
 
 struct fileIndexEntry {
+#ifdef	DYING
     /*@owned@*/ struct availablePackage * package;
+#endif
+    int pkgNum;
     /*@dependent@*/ const char * baseName;
 } ;
 
