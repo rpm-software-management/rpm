@@ -288,7 +288,6 @@ fprintf(stderr, "\t%d %s %s %p[%d]\n", i, cname, vtype, v, nb);
 			scp->av[scp->ac] = memcpy(t, v, nb);
 			scp->avlen[scp->ac] = nb;
 			scp->ac++;
-assert(scp->ac <= scp->nalloc);
 		    }
 		} else
 		if (!strcmp(vtype, "double")) {
@@ -300,7 +299,6 @@ fprintf(stderr, "\t%d %s %s %g\n", i, cname, vtype, v);
 			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
 			scp->ac++;
-assert(scp->ac <= scp->nalloc);
 		    }
 		} else
 		if (!strcmp(vtype, "int")) {
@@ -312,7 +310,6 @@ fprintf(stderr, "\t%d %s %s %d\n", i, cname, vtype, v);
 			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
 			scp->ac++;
-assert(scp->ac <= scp->nalloc);
 		    }
 		} else
 		if (!strcmp(vtype, "int64")) {
@@ -324,7 +321,6 @@ fprintf(stderr, "\t%d %s %s %ld\n", i, cname, vtype, (long)v);
 			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
 			scp->ac++;
-assert(scp->ac <= scp->nalloc);
 		    }
 		} else
 		if (!strcmp(vtype, "text")) {
@@ -336,10 +332,9 @@ fprintf(stderr, "\t%d %s %s \"%s\"\n", i, cname, vtype, v);
 			scp->av[scp->ac] = memcpy(xmalloc(nb), v, nb);
 			scp->avlen[scp->ac] = nb;
 			scp->ac++;
-if (_debug)
-assert(scp->ac <= scp->nalloc);
 		    }
 		}
+assert(scp->ac <= scp->nalloc);
 	    }
 	    scp->nr++;
 	    /*@switchbreak@*/ break;
