@@ -152,7 +152,6 @@ typedef struct prefix {
 
 typedef struct {
   const XML_Char *str;
-/*@dependent@*/
   const XML_Char *localPart;
   const XML_Char *prefix;
   int strLen;
