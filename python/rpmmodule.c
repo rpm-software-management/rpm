@@ -7,6 +7,7 @@
 
 #include "Python.h"
 #include "rpmlib.h"
+#include "rpmmacro.h"
 #include "upgrade.h"
 
 /* from lib/misc.c */
@@ -38,6 +39,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args);
 static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args);
 
 void initrpm(void);
+static PyObject * doAddMacro(PyObject * self, PyObject * args);
 static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args);
 static PyObject * hdrLoad(PyObject * self, PyObject * args);
 static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args);
@@ -65,6 +67,7 @@ static int rpmtransSetAttr(rpmtransObject * o, char * name,
 
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
+    { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS, NULL },
     { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
     { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
     { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
@@ -415,6 +418,8 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
     return result;
 }
 
+
+
 static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
     rpmdbObject * o;
     char * root = "";
@@ -424,9 +429,18 @@ static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
 
     o = PyObject_NEW(rpmdbObject, &rpmdbType);
     o->db = NULL;
+
     if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, 0)) {
+	char * errmsg = "cannot open database in %s";
+	char * errstr = NULL;
+	int errsize;
+	
 	Py_DECREF(o);
-	PyErr_SetString(pyrpmError, "cannot open database in /var/lib/rpm");
+	/* PyErr_SetString should take varargs... */
+	errsize = strlen(errmsg) + *root == '\0' ? 15 /* "/var/lib/rpm" */ : strlen(root);
+	errstr = alloca(errsize);
+	snprintf(errstr, errsize, errmsg, *root == '\0' ? "/var/lib/rpm" : root);
+	PyErr_SetString(pyrpmError, errstr);
 	return NULL;
     }
 
@@ -1379,7 +1393,10 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
 
     list = PyList_New(0);
     for (i = 0; i < probs->numProblems; i++) {
-	prob = Py_BuildValue("s", rpmProblemString(probs->probs[i]));
+	prob = Py_BuildValue("s(isi)", rpmProblemString(probs->probs[i]),
+			     probs->probs[i].type,
+			     probs->probs[i].str1,
+			     probs->probs[i].ulong1);
 	PyList_Append(list, prob);
 	Py_DECREF(prob);
     }
@@ -1399,4 +1416,16 @@ static PyObject * archScore(PyObject * self, PyObject * args) {
     score = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
 
     return Py_BuildValue("i", score);
+}
+
+static PyObject * doAddMacro(PyObject * self, PyObject * args) {
+    char * name, * val;
+
+    if (!PyArg_ParseTuple(args, "ss", &name, &val))
+	return NULL;
+
+    addMacro(NULL, name, NULL, val, RMIL_DEFAULT);
+
+    Py_INCREF(Py_None);
+    return Py_None;
 }
