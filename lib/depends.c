@@ -488,7 +488,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
     /*
      * Search for an unsatisfied dependency.
      */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGESTS) && ts->solve != NULL)
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST) && ts->solve != NULL)
 	xx = (*ts->solve) (ts, dep);
 
 unsatisfied:

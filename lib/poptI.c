@@ -162,8 +162,8 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("do not reorder package installation to satisfy dependencies"),
 	NULL},
 
- { "nosuggests", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
-	RPMTRANS_FLAG_NOSUGGESTS,
+ { "nosuggest", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
+	RPMTRANS_FLAG_NOSUGGEST,
 	N_("do not suggest missing dependency resolution(s)"), NULL},
 
  { "noscripts", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,

@@ -895,7 +895,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
 /*@=enummemuse@*/
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
-    RPMTRANS_FLAG_NOSUGGESTS	= (1 << 28)	/*!< from --nosuggests */
+    RPMTRANS_FLAG_NOSUGGEST	= (1 << 28)	/*!< from --nosuggest */
 } rpmtransFlags;
 
 #define	_noTransScripts		\

@@ -15,8 +15,7 @@ rpm \- RPM Package Manager
 
 
 
-\fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fB--nodeps\fR] [\fB--nofiles\fR]
-    [\fB--nomd5\fR] [\fB--noscripts\fR]
+\fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fBverify-options\fR]
 
 
 
@@ -66,7 +65,8 @@ rpm \- RPM Package Manager
 
  [\fB\fIPACKAGE_NAME\fB\fR] [\fB-a,--all\fR] [\fB-f,--file \fIFILE\fB\fR]
  [\fB-g,--group \fIGROUP\fB\fR] {\fB-p,--package \fIPACKAGE_FILE\fB\fR]
- [\fB--querybynumber \fINUMBER\fB\fR] [\fB--triggeredby \fIPACKAGE_NAME\fB\fR]
+ [\fB--fileid \fIMD5\fB\fR] [\fB--hdrid \fISHA1\fB\fR] [\fB--pkgid \fIMD5\fB\fR] [\fB--tid \fITID\fB\fR]
+ [\fB--querybynumber \fIHDRNUM\fB\fR] [\fB--triggeredby \fIPACKAGE_NAME\fB\fR]
  [\fB--whatprovides \fICAPABILITY\fB\fR] [\fB--whatrequires \fICAPABILITY\fB\fR]
 
 .SS "query-options"
@@ -79,6 +79,15 @@ rpm \- RPM Package Manager
  [\fB-R,--requires\fR] [\fB--scripts\fR] [\fB-s,--state\fR]
  [\fB--triggers,--triggerscripts\fR]
 
+.SS "verify-options"
+.PP
+
+
+ [\fB--nodeps\fR] [\fB--nofiles\fR] [\fB--noscripts\fR]
+ [\fB--nodigest\fR] [\fB--nosignature\fR]
+ [\fB--nolinkto\fR] [\fB--nomd5\fR] [\fB--nosize\fR] [\fB--nouser\fR]
+ [\fB--nogroup\fR] [\fB--nomtime\fR] [\fB--nomode\fR] [\fB--nordev\fR]
+
 .SS "install-options"
 .PP
 
@@ -87,6 +96,7 @@ rpm \- RPM Package Manager
  [\fB--excludedocs\fR] [\fB--force\fR] [\fB-h,--hash\fR]
  [\fB--ignoresize\fR] [\fB--ignorearch\fR] [\fB--ignoreos\fR]
  [\fB--includedocs\fR] [\fB--justdb\fR] [\fB--nodeps\fR]
+ [\fB--nodigest\fR] [\fB--nosignature\fR] [\fB--nosuggest\fR]
  [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
  [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
  [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
@@ -251,9 +261,18 @@ Install documentation files. This is the default behavior.
 \fB--justdb\fR
 Update only the database, not the filesystem.
 .TP
+\fB--nodigest\fR
+Don't verify package or header digests when reading.
+.TP
+\fB--nosignature\fR
+Don't verify package or header signatures when reading.
+.TP
 \fB--nodeps\fR
 Don't do a dependency check before installing or upgrading
 a package.
+.TP
+\fB--nosuggest\fR
+Don't suggest package(s) that provide a missing dependency.
 .TP
 \fB--noorder\fR
 Don't reorder the packages for an install. The list of
@@ -399,8 +418,16 @@ Query all installed packages.
 \fB-f, --file \fIFILE\fB\fR
 Query package owning \fIFILE\fR.
 .TP
+\fB--fileid \fIMD5\fB\fR
+Query package that contains a given file identifier, i.e. the
+\fIMD5\fR digest of the file contents.
+.TP
 \fB-g, --group \fIGROUP\fB\fR
 Query packages with the group of \fIGROUP\fR.
+.TP
+\fB--hdrid \fISHA1\fB\fR
+Query package that contains a given header identifier, i.e. the
+\fISHA1\fR digest of the immutable header region.
 .TP
 \fB-p, --package \fIPACKAGE_FILE\fB\fR
 Query an (uninstalled) package \fIPACKAGE_FILE\fR.
@@ -420,8 +447,13 @@ that will be expanded to paths that are substituted in place of
 the package manifest as additional \fIPACKAGE_FILE\fR
 arguments to the query.
 .TP
-\fB--querybynumber \fINUMBER\fB\fR
-Query the \fINUMBER\fRth database entry
+\fB--pkgid \fIMD5\fB\fR
+Query package that contains a given package identifier, i.e. the
+\fIMD5\fR digest of the combined header and
+payload contents.
+.TP
+\fB--querybynumber \fIHDRNUM\fB\fR
+Query the \fIHDRNUM\fRth database entry
 directly; this is useful only for debugging.
 .TP
 \fB--specfile \fISPECFILE\fB\fR
@@ -430,6 +462,12 @@ it were a package. Although not all the information (e.g. file lists)
 is available, this type of query permits rpm to be used to extract
 information from spec files without having to write a specfile
 parser.
+.TP
+\fB--tid \fITID\fB\fR
+Query package(s) that have a given \fITID\fR
+transaction identifier. A unix time stamp is currently used as a
+transaction identifier. All package(s) installed or erased within
+a single transaction have a common identifier.
 .TP
 \fB--triggeredby \fIPACKAGE_NAME\fB\fR
 Query packages that are triggered by package(s)
@@ -507,8 +545,7 @@ the package.
 The general form of an rpm verify command is 
 .PP
 
-\fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fB--nodeps\fR] [\fB--nofiles\fR]
-    [\fB--nomd5\fR] [\fB--noscripts\fR]
+\fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fBverify-options\fR]
 
 .PP
 Verifying a package compares information about the installed files in
@@ -523,30 +560,52 @@ will be silently ignored.
 .PP
 The package selection options are the same as for package
 querying (including package manifest files as arguments).
-Other options that can be used only in verify mode are:
+Other options unique to verify mode are:
 .TP
 \fB--nodeps\fR
-Don't verify dependencies.
+Don't verify dependencies of packages.
+.TP
+\fB--nodigest\fR
+Don't verify package or header digests when reading.
 .TP
 \fB--nofiles\fR
-Don't verify files.
-.TP
-\fB--nomd5\fR
-Don't verify file MD5 checksums.
+Don't verify any attributes of package files.
 .TP
 \fB--noscripts\fR
 Don't execute the \fB%verifyscript\fR scriptlet (if any).
+.TP
+\fB--nosignature\fR
+Don't verify package or header signatures when reading.
+.TP
+\fB--nolinkto\fR
+.TP
+\fB--nomd5\fR
+.TP
+\fB--nosize\fR
+.TP
+\fB--nouser\fR
+.TP
+\fB--nogroup\fR
+.TP
+\fB--nomtime\fR
+.TP
+\fB--nomode\fR
+.TP
+\fB--nordev\fR
+Don't verify the corresponding file attribute.
 .PP
 The format of the output is a string of 8 characters, a possible
 attribute marker:
 
 .nf
-\fBc\fR \fB%config\fR configuration file
-\fBd\fR \fB%doc\fR documentation file
-\fBg\fR \fB%ghost\fR file (i.e. the file contents were not included in the package)
+\fBc\fR \fB%config\fR configuration file.
+\fBd\fR \fB%doc\fR documentation file.
+\fBg\fR \fB%ghost\fR file (i.e. the file contents are not included in the package payload).
+\fBl\fR \fB%license\fR license file.
+\fBr\fR \fB%readme\fR readme file.
 .fi
 
-from the package header and then the file name.
+from the package header, followed by the file name.
 Each of the 8 characters denotes the result of a comparison of
 attribute(s) of the file to the value of those attribute(s) recorded
 in the database.  A single
