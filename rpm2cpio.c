@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include <zlib.h>
 
-#include "lib/package.h"
 #include "rpmlib.h"
 
 char *zlib_err [] = {

@@ -7,7 +7,6 @@
 #include "header.h"
 #include "misc.h"
 #include "oldheader.h"
-#include "package.h"
 #include "rpmerr.h"
 #include "rpmlead.h"
 #include "rpmlib.h"

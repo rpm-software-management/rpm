@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 #include "lib/messages.h"
-#include "lib/package.h"
 #include "rpmlib.h"
 #include "query.h"
 

@@ -8,7 +8,6 @@
 #include "ftp.h"
 #include "install.h"
 #include "lib/rpmlib.h"
-#include "lib/package.h"
 #include "messages.h"
 #include "query.h"
 

@@ -15,6 +15,11 @@ struct rpmTagTableEntry {
     int val;
 };
 
+int pkgReadHeader(int fd, Header * hdr, int * isSource);
+   /* 0 = success */
+   /* 1 = bad magic */
+   /* 2 = error */
+
 extern const struct rpmTagTableEntry rpmTagTable[];
 extern const int rpmTagTableSize;
 
