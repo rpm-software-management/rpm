@@ -1648,6 +1648,8 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     struct orderListIndex * orderList;
     int nrescans = 10;
     int qlen;
+    int qd = 0x10000;
+    int qcnt;
     int i, j;
 
     alMakeIndex(&rpmdep->addedPackages);
@@ -1723,6 +1725,10 @@ rescan:
 	    qlen++;
     }
 
+    /* Mark all the roots in the forest with a tree id for sorting. */
+    for (qcnt = qd * (qlen+1), p = q; p != NULL; qcnt -= qd, p = p->tsi.tsi_suc)
+	p->tsi.tsi_qcnt = qcnt;
+
     /* T5. Output fromt of queue (T7. Remove from queue.) */
     for (; q != NULL; q = q->tsi.tsi_suc) {
 
@@ -1743,6 +1749,9 @@ rescan:
 	    if ((--p->tsi.tsi_count) <= 0) {
 		/* XXX FIXME: add control bit. */
 		p->tsi.tsi_suc = NULL;
+		/* Inherit parent's sort factor. */
+		if (p->tsi.tsi_qcnt < q->tsi.tsi_qcnt)
+		    p->tsi.tsi_qcnt = q->tsi.tsi_qcnt - 1;
 		addQ(p, &q->tsi.tsi_suc, &r);
 		qlen++;
 	    }

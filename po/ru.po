@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-08 23:06-0500\n"
+"POT-Creation-Date: 2001-01-09 16:35-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2470,20 +2470,20 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1662
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1712
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1807
+#: lib/depends.c:1816
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1838
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3545,36 +3545,36 @@ msgstr "открывается старая база данных через dbapi %d\n"
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2449
+#: lib/rpmdb.c:2446
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе данных неверна, пропускается."
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2483
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "невозможно добавить запись (первоначально в %d)"
 
-#: lib/rpmdb.c:2502
+#: lib/rpmdb.c:2501
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: lib/rpmdb.c:2510
+#: lib/rpmdb.c:2509
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: lib/rpmdb.c:2512
+#: lib/rpmdb.c:2511
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: lib/rpmdb.c:2522
+#: lib/rpmdb.c:2521
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: lib/rpmdb.c:2524
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"

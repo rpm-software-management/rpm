@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.128 2001/01/09 04:07:53 jbj Exp $
+# $Id: sl.po,v 1.129 2001/01/09 21:46:23 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-08 23:06-0500\n"
+"POT-Creation-Date: 2001-01-09 16:35-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2527,20 +2527,20 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1662
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1712
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1807
+#: lib/depends.c:1816
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1838
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3610,38 +3610,38 @@ msgstr "odpiranje stare podatkovne zbirke\n"
 msgid "opening new database with dbapi %d\n"
 msgstr "odpiramo nove podatkovne zbirke z dbapi %d\n"
 
-#: lib/rpmdb.c:2449
+#: lib/rpmdb.c:2446
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2483
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: lib/rpmdb.c:2502
+#: lib/rpmdb.c:2501
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke je bila neuspe¹na; stara ostaja na\n"
 "istem mestu\n"
 
-#: lib/rpmdb.c:2510
+#: lib/rpmdb.c:2509
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo je bila neuspe¹na!\n"
 
-#: lib/rpmdb.c:2512
+#: lib/rpmdb.c:2511
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "poskus povrnitve z nadomestitvijo datotek v %s z datotekami v %s"
 
-#: lib/rpmdb.c:2522
+#: lib/rpmdb.c:2521
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "odstranjevanje imenika: %s\n"
 
-#: lib/rpmdb.c:2524
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"

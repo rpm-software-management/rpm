@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-01-08 23:06-0500\n"
+msgstr "POT-Creation-Date: 2001-01-09 16:35-0500\n"
 
 #: build.c:26
 #, fuzzy, c-format
@@ -2585,20 +2585,20 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1662
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1712
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1807
+#: lib/depends.c:1816
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1838
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3653,35 +3653,35 @@ msgstr ""
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2449
+#: lib/rpmdb.c:2446
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2483
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:2502
+#: lib/rpmdb.c:2501
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2510
+#: lib/rpmdb.c:2509
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2512
+#: lib/rpmdb.c:2511
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2522
+#: lib/rpmdb.c:2521
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:2524
+#: lib/rpmdb.c:2523
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-08 23:06-0500\n"
+"POT-Creation-Date: 2001-01-09 16:35-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.143 2001/01/09 04:07:51 jbj Exp $
+# $Id: ja.po,v 1.144 2001/01/09 21:46:14 jbj Exp $
 #: rpm.c:185 rpmqv.c:386
 #, c-format
 msgid "rpm: %s\n"
@@ -2536,20 +2536,20 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1662
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1712
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1807
+#: lib/depends.c:1816
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1838
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3614,37 +3614,37 @@ msgstr "古いデータベースのオープン\n"
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rpmdb.c:2449
+#: lib/rpmdb.c:2446
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2483
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rpmdb.c:2502
+#: lib/rpmdb.c:2501
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rpmdb.c:2510
+#: lib/rpmdb.c:2509
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rpmdb.c:2512
+#: lib/rpmdb.c:2511
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rpmdb.c:2522
+#: lib/rpmdb.c:2521
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2524
+#: lib/rpmdb.c:2523
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"

@@ -357,8 +357,8 @@ int ufdClose( /*@only@*/ void * cookie);
  */
 /*@unused@*/ static inline void fdFiniMD5(FD_t fd, void **datap, size_t *lenp, int asAscii) {
     if (fd->digest == NULL) {
-	*datap = NULL;
-	*lenp = 0;
+	if (datap) *datap = NULL;
+	if (lenp) *lenp = 0;
 	return;
     }
     rpmDigestFinal(fd->digest, datap, lenp, asAscii);
@@ -369,8 +369,8 @@ int ufdClose( /*@only@*/ void * cookie);
  */
 /*@unused@*/ static inline void fdFiniSHA1(FD_t fd, void **datap, size_t *lenp, int asAscii) {
     if (fd->digest == NULL) {
-	*datap = NULL;
-	*lenp = 0;
+	if (datap) *datap = NULL;
+	if (lenp) *lenp = 0;
 	return;
     }
     rpmDigestFinal(fd->digest, datap, lenp, asAscii);

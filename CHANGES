@@ -96,6 +96,8 @@
 	- fix: 3 packages from Red Hat 5.2 had bogus %verifyscript tag.
 	- tsorted packages processed in successor count order.
 	- fix: resurrect --excludepath (#19666).
+	- fix: digests on input FD_t dinna work.
+	- fix: remove rebuilddb debugging leakage.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

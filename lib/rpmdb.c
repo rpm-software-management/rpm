@@ -2435,10 +2435,7 @@ int rpmdbRebuild(const char * rootdir)
 	/* RPMDBI_PACKAGES */
 	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-		const char * name, * version, * release;
 
-		headerNVR(h, &name, &version, &release);
-fprintf(stderr, "=== %s-%s-%s\n", name, version, release);
 	    /* let's sanity check this record a bit, otherwise just skip it */
 	    if (!(headerIsEntry(h, RPMTAG_NAME) &&
 		headerIsEntry(h, RPMTAG_VERSION) &&
@@ -2453,8 +2450,10 @@ fprintf(stderr, "=== %s-%s-%s\n", name, version, release);
 
 	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 	    if (_db_filter_dups || newdb->db_filter_dups) {
+		const char * name, * version, * release;
 		int skip = 0;
 
+		headerNVR(h, &name, &version, &release);
 
 		{   rpmdbMatchIterator mi;
 		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);

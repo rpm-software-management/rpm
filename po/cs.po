@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-08 23:06-0500\n"
+"POT-Creation-Date: 2001-01-09 16:35-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2455,20 +2455,20 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1662
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1712
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1807
+#: lib/depends.c:1816
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1838
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3527,36 +3527,36 @@ msgstr "otevírám starou databázi s dbapi %d\n"
 msgid "opening new database with dbapi %d\n"
 msgstr "otevírám novou databázi s dbapi %d\n"
 
-#: lib/rpmdb.c:2449
+#: lib/rpmdb.c:2446
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databázi je chybný -- vynechávám."
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2483
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nemohu pøidat záznam - pùvodnì u %d"
 
-#: lib/rpmdb.c:2502
+#: lib/rpmdb.c:2501
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "databázi nelze zvovu vytvoøit; pùvodní databáze zùstává na svém místì\n"
 
-#: lib/rpmdb.c:2510
+#: lib/rpmdb.c:2509
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: lib/rpmdb.c:2512
+#: lib/rpmdb.c:2511
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "pro obnovení nahraïte soubory v %s soubory z %s"
 
-#: lib/rpmdb.c:2522
+#: lib/rpmdb.c:2521
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ma¾u adresáø %s\n"
 
-#: lib/rpmdb.c:2524
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nemohu odstranit adresáø %s: %s\n"

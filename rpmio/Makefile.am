@@ -27,11 +27,15 @@ install-data-local:
 lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
+trpmio.o: trpmio.c
+
 trpmio: librpmio.la trpmio.o
 	$(LINK) -o $@ trpmio.o librpmio.la $(top_builddir)/popt/libpopt.la
 
+tkey.o: tkey.c
 tkey: librpmio.la tkey.o
 	$(LINK) -o $@ tkey.o librpmio.la $(top_builddir)/popt/libpopt.la
 
+tdigest.o: tdigest.c
 tdigest: librpmio.la tdigest.o
 	$(LINK) -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la
