@@ -415,8 +415,9 @@ typedef enum rpmTag_e {
     RPMTAG_DEPENDSDICT		= 1145,
     RPMTAG_SOURCEPKGID		= 1146,
     RPMTAG_FILECONTEXTS		= 1147,
-    RPMTAG_FSCONTEXTS		= 1148,
-    RPMTAG_RECONTEXTS		= 1149,
+    RPMTAG_FSCONTEXTS		= 1148,	/*!< extension */
+    RPMTAG_RECONTEXTS		= 1149,	/*!< extension */
+    RPMTAG_POLICIES		= 1150,	/*!< selinux *.te policy file. */
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/
@@ -452,9 +453,10 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_GHOST	= (1 <<  6),	/*!< from %%ghost */
     RPMFILE_LICENSE	= (1 <<  7),	/*!< from %%license */
     RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
-    RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude */
+    RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude, internal */
     RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
-    RPMFILE_PUBKEY	= (1 << 11)	/*!< from %%pubkey */
+    RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
+    RPMFILE_POLICY	= (1 << 12)	/*!< from %%policy */
 } rpmfileAttrs;
 
 #define	RPMFILE_ALL	~(RPMFILE_NONE)

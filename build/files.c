@@ -870,6 +870,7 @@ VFA_t virtualFileAttributes[] = {
 	{ "%readme",	0,	RPMFILE_README },
 	{ "%license",	0,	RPMFILE_LICENSE },
 	{ "%pubkey",	0,	RPMFILE_PUBKEY },
+	{ "%policy",	0,	RPMFILE_POLICY },
 
 #if WHY_NOT
 	{ "%icon",	0,	RPMFILE_ICON },
@@ -970,7 +971,9 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		specialDoc = 1;
 		strcat(specialDocBuf, " ");
 		strcat(specialDocBuf, s);
-	    } else if (fl->currentFlags & (RPMFILE_PUBKEY|RPMFILE_ICON)) {
+	    } else
+	    if (fl->currentFlags & (RPMFILE_POLICY|RPMFILE_PUBKEY|RPMFILE_ICON))
+	    {
 		*fileName = s;
 	    } else {
 		/* not in %doc, does not begin with / -- error */
@@ -1133,7 +1136,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
    	sx = rpmsxNew(sxfn);
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
-	char *s;
+	const char *s;
 
  	/* Merge duplicate entries. */
 	while (i < (fl->fileListRecsUsed - 1) &&
@@ -1732,13 +1735,14 @@ static int recurseDir(FileList fl, const char * diskURL)
 }
 
 /**
- * Add a pubkey to a binary package.
+ * Add a pubkey/policy/icon to a binary package.
  * @param pkg
  * @param fl		package file tree walk data
  * @param fileURL	path to file, relative is builddir, absolute buildroot.
  * @return		0 on success
  */
-static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
+static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
+		rpmTag tag)
 	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies pkg->header, *fl, fl->processingFailed,
@@ -1757,23 +1761,40 @@ static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
     int xx;
 
     (void) urlPath(fileURL, &fn);
-     if (*fn == '/') {
+    if (*fn == '/') {
 	fn = rpmGenPath(fl->buildRootURL, NULL, fn);
 	absolute = 1;
-     } else
+    } else
 	fn = rpmGenPath(buildURL, NULL, fn);
 
-    if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
-	rpmError(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
+    switch (tag) {
+    default:
+	rpmError(RPMERR_BADSPEC, _("%s: can't load unknwon tag (%d).\n"),
+		fn, tag);
 	goto exit;
-    }
-    if (rc != PGPARMOR_PUBKEY) {
-	rpmError(RPMERR_BADSPEC, _("%s: not an armored public key.\n"), fn);
-	goto exit;
+	/*@notreached@*/
+    case RPMTAG_PUBKEYS:
+	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
+	    rpmError(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
+	    goto exit;
+	}
+	if (rc != PGPARMOR_PUBKEY) {
+	    rpmError(RPMERR_BADSPEC, _("%s: not an armored public key.\n"), fn);
+	    goto exit;
+	}
+	apkt = pgpArmorWrap(PGPARMOR_PUBKEY, pkt, pktlen);
+	break;
+    case RPMTAG_POLICIES:
+	if ((rc = rpmioSlurp(fn, &pkt, &pktlen)) != 0) {
+	    rpmError(RPMERR_BADSPEC, _("%s: *.te policy read failed.\n"), fn);
+	    goto exit;
+	}
+	apkt = (const char *) pkt;	/* XXX unsigned char */
+	pkt = NULL;
+	break;
     }
 
-    apkt = pgpArmorWrap(PGPARMOR_PUBKEY, pkt, pktlen);
-    xx = headerAddOrAppendEntry(pkg->header, RPMTAG_PUBKEYS,
+    xx = headerAddOrAppendEntry(pkg->header, tag,
 		RPM_STRING_ARRAY_TYPE, &apkt, 1);
 
     rc = 0;
@@ -2058,7 +2079,11 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	} else if (fl.currentFlags & RPMFILE_PUBKEY) {
 /*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
-	    (void) processPubkeyFile(pkg, &fl, fileName);
+	    (void) processMetadataFile(pkg, &fl, fileName, RPMTAG_PUBKEYS);
+/*@=nullstate@*/
+	} else if (fl.currentFlags & RPMFILE_POLICY) {
+/*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
+	    (void) processMetadataFile(pkg, &fl, fileName, RPMTAG_POLICIES);
 /*@=nullstate@*/
 	} else {
 /*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
