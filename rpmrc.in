@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.12 1999/06/17 21:35:40 jbj Exp $
+# $Id: rpmrc.in,v 2.13 1999/07/03 14:52:06 jbj Exp $
 
 #############################################################
 
@@ -52,7 +52,7 @@ arch_canon:	ppc:	ppc	5
 arch_canon:	m68k:	m68k	6
 arch_canon:	IP:	sgi	7
 arch_canon:     rs6000:	rs6000  8
-arch_canon:     ia64:	ia64  9
+arch_canon:     ia64:	ia64	9
 
 arch_canon:	sparc64:sparc64 10
 arch_canon:	sun4u:	sparc64 10
@@ -61,14 +61,16 @@ arch_canon:	mipsel:	mipsel	11
 arch_canon:     armv4b:	armv4b 	12
 arch_canon:     armv4l:	armv4l 	12
 
-arch_canon:	m68kmint: m68kmint 13
-arch_canon:	atarist: m68kmint 13
-arch_canon:	atariste: m68kmint 13
-arch_canon:	ataritt: m68kmint 13
-arch_canon:	falcon: m68kmint 13
-arch_canon:	atariclone: m68kmint 13
-arch_canon:	milan: m68kmint 13
-arch_canon:	hades: m68kmint 13
+arch_canon:	m68kmint: m68kmint	13
+arch_canon:	atarist: m68kmint	13
+arch_canon:	atariste: m68kmint	13
+arch_canon:	ataritt: m68kmint	13
+arch_canon:	falcon: m68kmint	13
+arch_canon:	atariclone: m68kmint	13
+arch_canon:	milan: m68kmint		13
+arch_canon:	hades: m68kmint		13
+arch_canon:	i370: i370	14
+arch_canon:	i390: i390	15
 
 #############################################################
 # Canonical OS names and numbers
@@ -95,6 +97,10 @@ os_canon:  CYGWIN32_NT: cygwin32 14
 os_canon:  CYGWIN32_95: cygwin32 15
 os_canon:      UNIX_SV: MP_RAS: 16
 os_canon:         MiNT: FreeMiNT 17
+os_canon:       OS/390: OS/390	18
+os_canon:       VM/ESA: VM/ESA	19
+os_canon:    Linux/390: OS/390	20
+os_canon:    Linux/ESA: VM/ESA	20
 
 #############################################################
 # For a given uname().machine, the default build arch
@@ -185,6 +191,9 @@ arch_compat: falcon: m68kmint noarch
 arch_compat: atariclone: m68kmint noarch
 arch_compat: milan: m68kmint noarch
 arch_compat: hades: m68kmint noarch
+
+arch_compat: i390: i370
+arch_compat: i370: noarch
 
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
