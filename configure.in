@@ -289,7 +289,7 @@ if test "$LCHOWN" = no; then
     [  --enable-broken-chown  this system's chown follows symbolic links], 
 	    result=yes, result=no)
     if test $result = no; then
-	if test `id -u` = 0; then
+	if test `id | cut -f 2 -d \= | cut -f 1 -d \(` = 0; then
 	    rm -f foo bar
 	    touch foo
 	    ln -s foo bar
