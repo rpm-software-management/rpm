@@ -24,6 +24,7 @@
 #include "rpmerr.h"
 #include "rpmlead.h"
 #include "rpmlib.h"
+#include "signature.h"
 #include "misc.h"
 #include "pack.h"
 #include "messages.h"
@@ -36,6 +37,7 @@ struct file_entry {
     char file[1024];
     int isdoc;
     int isconf;
+    int verify_flags;
     char *uname;  /* reference -- do not free */
     char *gname;  /* reference -- do not free */
     struct stat statbuf;
@@ -43,9 +45,10 @@ struct file_entry {
 };
 
 static int cpio_gzip(Header header, int fd, char *tempdir);
-static int writeMagic(Spec s, int fd, char *name, unsigned short type);
-static int add_file(struct file_entry **festack,
-		    const char *name, int isdoc, int isconf, int isdir);
+static int writeMagic(int fd, char *name, unsigned short type,
+		      unsigned short sigtype);
+static int add_file(struct file_entry **festack, const char *name,
+		    int isdoc, int isconf, int isdir, int verify_flags);
 static int compare_fe(const void *ap, const void *bp);
 static int process_filelist(Header header, StringBuf sb, int *size,
 			    char *name, char *version, char *release,
@@ -56,12 +59,80 @@ static char *getUname(uid_t uid);
 static char *getGname(gid_t gid);
 static int glob_error(const char *foo, int bar);
 static int glob_pattern_p (char *pattern);
+static int parseForVerify(char *buf, int *verify_flags);
+
+static
+int generateRPM(char *name,       /* name-version-release         */
+		int type,         /* source or binary             */
+		Header header,    /* the header                   */
+		char *stempdir);  /* directory containing sources */
 
 static void resetDocdir(void);
 static void addDocdir(char *dirname);
 static int isDoc(char *filename);
 
-static int writeMagic(Spec s, int fd, char *name, unsigned short type)
+int generateRPM(char *name,       /* name-version-release         */
+		int type,         /* source or binary             */
+		Header header,    /* the header                   */
+		char *stempdir)   /* directory containing sources */
+{
+    unsigned short sigtype;
+    char *archName;
+    char filename[1024];
+    char *sigtarget;
+    int fd, ifd, count;
+    char buffer[8192];
+
+    /* Figure out the signature type */
+    if ((sigtype = sigLookupType()) == RPMSIG_BAD) {
+	error(RPMERR_BADSIGTYPE, "Bad signature type in rpmrc");
+	return RPMERR_BADSIGTYPE;
+    }
+
+    /* Make the output RPM filename */
+    if (type == RPMLEAD_SOURCE) {
+	sprintf(filename, "%s/%s.src.rpm", getVar(RPMVAR_SRPMDIR), name);
+    } else {
+	archName = getArchName();
+	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
+		archName, name, archName);
+    }
+
+    /* First we have to write the header and archive */
+    sigtarget = tempnam("/usr/tmp", "rpmbuild");
+    fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    writeHeader(fd, header);
+    if (cpio_gzip(header, fd, stempdir)) {
+	return 1;
+    }
+    close(fd);
+
+    /* Now write the lead */
+    fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    if (writeMagic(fd, name, type, sigtype)) {
+	return 1;
+    }
+
+    /* Generate the signature */
+    message(MESS_VERBOSE, "Generating signature: %d\n", sigtype);
+    fflush(stdout);
+    makeSignature(sigtarget, sigtype, fd);
+
+    /* Append the header and archive */
+    ifd = open(sigtarget, O_RDONLY);
+    while ((count = read(ifd, buffer, 8192)) > 0) {
+	write(fd, buffer, count);
+    }
+    close(ifd);
+    close(fd);
+    unlink(sigtarget);
+    
+    return 0;
+}
+
+static int writeMagic(int fd, char *name,
+		      unsigned short type,
+		      unsigned short sigtype)
 {
     struct rpmlead lead;
 
@@ -70,7 +141,7 @@ static int writeMagic(Spec s, int fd, char *name, unsigned short type)
     lead.type = type;
     lead.archnum = getArchNum();
     lead.osnum = getOsNum();
-    lead.signature_type = RPMLEAD_SIGNONE;
+    lead.signature_type = sigtype;
     strncpy(lead.name, name, sizeof(lead.name));
 
     writeLead(fd, &lead);
@@ -283,11 +354,12 @@ static char *getGname(gid_t gid)
 /* Need three globals to keep track of things in ftw() */
 static int Gisdoc;
 static int Gisconf;
+static int Gverify_flags;
 static int Gcount;
 static struct file_entry **Gfestack;
 
-static int add_file(struct file_entry **festack,
-		    const char *name, int isdoc, int isconf, int isdir)
+static int add_file(struct file_entry **festack, const char *name,
+		    int isdoc, int isconf, int isdir, int verify_flags)
 {
     struct file_entry *p;
     char fullname[1024];
@@ -296,11 +368,13 @@ static int add_file(struct file_entry **festack,
     Gfestack = festack;
     Gisdoc = isdoc;
     Gisconf = isconf;
+    Gverify_flags = verify_flags;
 
     p = malloc(sizeof(struct file_entry));
     strcpy(p->file, name);
     p->isdoc = isdoc;
     p->isconf = isconf;
+    p->verify_flags = verify_flags;
     if (getVar(RPMVAR_ROOT)) {
 	sprintf(fullname, "%s%s", getVar(RPMVAR_ROOT), name);
     } else {
@@ -343,7 +417,7 @@ static int add_file_aux(const char *file, struct stat *sb, int flag)
 
     /* The 1 will cause add_file() to *not* descend */
     /* directories -- ftw() is already doing it!    */
-    Gcount += add_file(Gfestack, name, Gisdoc, Gisconf, 1);
+    Gcount += add_file(Gfestack, name, Gisdoc, Gisconf, 1, Gverify_flags);
 
     return 0; /* for ftw() */
 }
@@ -394,6 +468,45 @@ static int glob_error(const char *foo, int bar)
     return 1;
 }
 
+static int parseForVerify(char *buf, int *verify_flags)
+{
+    char *p, *start, *end;
+    char ourbuf[1024];
+
+    if (!(p = start = strstr(buf, "%verify"))) {
+	return 1;
+    }
+
+    p += 7;
+    while (*p != '(') {
+	p++;
+    }
+    p++;
+
+    end = p;
+    while (*end != ')') {
+	end++;
+    }
+
+    strncpy(ourbuf, p, end-p);
+    while (start <= end) {
+	*start++ = ' ';
+    }
+
+    p = strtok(ourbuf, " \n\t");
+    while (p) {
+	if (!strcmp(p, "md5")) {
+	} else if (!strcmp(p, "md5")) {
+	} else {
+	    error(RPMERR_BADSPEC, "Invalid %verify token: %s", p);
+	    return 0;
+	}
+	p = strtok(NULL, " \n\t");
+    }
+
+    return 1;
+}
+
 static int process_filelist(Header header, StringBuf sb, int *size,
 			    char *name, char *version, char *release, int type)
 {
@@ -401,12 +514,11 @@ static int process_filelist(Header header, StringBuf sb, int *size,
     char **files, **fp;
     struct file_entry *fes, *fest;
     struct file_entry **file_entry_array;
-    int isdoc, isconf, isdir;
+    int isdoc, isconf, isdir, verify_flags;
     char *filename, *s;
     char *str;
     int count = 0;
-    int c;
-    int x;
+    int c, x;
     glob_t glob_result;
     int special_doc;
     int passed_special_doc = 0;
@@ -426,7 +538,14 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	special_doc = 0;
 	isconf = 0;
 	isdir = 0;
+	verify_flags = VERIFY_ALL;
 	filename = NULL;
+
+	/* First preparse buf for %verify() */
+	if (!parseForVerify(buf, &verify_flags)) {
+	    return(RPMERR_BADSPEC);
+	}
+	
 	s = strtok(buf, " \t\n");
 	while (s) {
 	    if (!strcmp(s, "%doc")) {
@@ -493,18 +612,20 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 		c = 0;
 		while (x < glob_result.gl_pathc) {
 		    c += add_file(&fes, glob_result.gl_pathv[x],
-				  isdoc, isconf, isdir);
+				  isdoc, isconf, isdir, verify_flags);
 		    x++;
 		}
 		globfree(&glob_result);
 	    } else {
-	        c = add_file(&fes, filename, isdoc, isconf, isdir);
+	        c = add_file(&fes, filename, isdoc, isconf,
+			     isdir, verify_flags);
 	    }
 	} else {
 	    /* Source package are the simple case */
 	    fest = malloc(sizeof(struct file_entry));
 	    fest->isdoc = 0;
 	    fest->isconf = 0;
+	    fest->verify_flags = 0;  /* XXX - something else? */
 	    stat(filename, &fest->statbuf);
 	    fest->uname = getUname(fest->statbuf.st_uid);
 	    fest->gname = getGname(fest->statbuf.st_gid);
@@ -537,6 +658,7 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	int_32 * fileFlagsList;
 	int_16 * fileModesList;
 	int_16 * fileRDevsList;
+ 	int_32 * fileVerifyFlagsList;
 
 	fileList = malloc(sizeof(char *) * count);
 	fileLinktoList = malloc(sizeof(char *) * count);
@@ -550,6 +672,7 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	fileFlagsList = malloc(sizeof(int_32) * count);
 	fileModesList = malloc(sizeof(int_16) * count);
 	fileRDevsList = malloc(sizeof(int_16) * count);
+	fileVerifyFlagsList = malloc(sizeof(int_32) * count);
 
 	/* Build a reverse sorted file array.  */
 	/* This makes uninstalls a lot easier. */
@@ -560,7 +683,8 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	    file_entry_array[c++] = fest;
 	    fest = fest->next;
 	}
-	qsort(file_entry_array, count, sizeof(struct file_entry *), compare_fe);
+	qsort(file_entry_array, count, sizeof(struct file_entry *),
+	      compare_fe);
 	
 	c = 0;
 	while (c < count) {
@@ -595,6 +719,7 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 
 	    fileModesList[c] = fest->statbuf.st_mode;
 	    fileRDevsList[c] = fest->statbuf.st_rdev;
+	    fileVerifyFlagsList[c] = fest->verify_flags;
 
 	    if (S_ISLNK(fest->statbuf.st_mode)) {
 		if (getVar(RPMVAR_ROOT)) {
@@ -628,6 +753,8 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	addEntry(header, RPMTAG_FILEFLAGS, INT32_TYPE, fileFlagsList, c);
 	addEntry(header, RPMTAG_FILEMODES, INT16_TYPE, fileModesList, c);
 	addEntry(header, RPMTAG_FILERDEVS, INT16_TYPE, fileRDevsList, c);
+	addEntry(header, RPMTAG_FILEVERIFYFLAGS, INT32_TYPE,
+		 fileVerifyFlagsList, c);
 	
 	/* Free the allocated strings */
 	c = count;
@@ -636,6 +763,21 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	    free(fileLinktoList[c]);
 	}
 
+	/* Free all those lists */
+	free(fileList);
+	free(fileLinktoList);
+	free(fileMD5List);
+	free(fileSizeList);
+	free(fileUIDList);
+	free(fileGIDList);
+	free(fileUnameList);
+	free(fileGnameList);
+	free(fileMtimesList);
+	free(fileFlagsList);
+	free(fileModesList);
+	free(fileRDevsList);
+	free(fileVerifyFlagsList);
+	
 	/* Free the file entry array */
 	free(file_entry_array);
 	
@@ -686,13 +828,13 @@ int packageBinaries(Spec s)
     HeaderIterator headerIter;
     int_32 tag, type, c;
     void *ptr;
-    int fd;
     char *version;
     char *release;
+    char *vendor;
+    char *dist;
     int size;
     int_8 os, arch;
-    char * archName;
-
+    
     if (!getEntry(s->packages->header, RPMTAG_VERSION, NULL,
 		  (void *) &version, NULL)) {
 	error(RPMERR_BADSPEC, "No version field");
@@ -706,14 +848,25 @@ int packageBinaries(Spec s)
 
     sprintf(sourcerpm, "%s-%s-%s.src.rpm", s->name, version, release);
 
+    vendor = NULL;
+    if (!isEntry(s->packages->header, RPMTAG_VENDOR)) {
+	vendor = getVar(RPMVAR_VENDOR);
+    }
+    dist = NULL;
+    if (!isEntry(s->packages->header, RPMTAG_DISTRIBUTION)) {
+	dist = getVar(RPMVAR_DISTRIBUTION);
+    }
+    
     /* Look through for each package */
     pr = s->packages;
     while (pr) {
+	/* A file count of -1 means no package */
 	if (pr->files == -1) {
 	    pr = pr->next;
 	    continue;
 	}
 	
+	/* Figure out the name of this package */
 	if (pr->subname) {
 	    strcpy(name, s->name);
 	    strcat(name, "-");
@@ -727,8 +880,9 @@ int packageBinaries(Spec s)
 	strcat(name, version);
 	strcat(name, "-");
 	strcat(name, release);
+
+	/**** Generate the Header ****/
 	
-	/* First build the header structure.            */
 	/* Here's the plan: copy the package's header,  */
 	/* then add entries from the primary header     */
 	/* that don't already exist.                    */
@@ -751,26 +905,12 @@ int packageBinaries(Spec s)
 	}
 	freeIterator(headerIter);
 	
-	if (process_filelist(outHeader, pr->filelist, &size,
-			     s->name, version, release, RPMLEAD_BINARY)) {
-	    return 1;
-	}
-	
-	archName = getArchName();
-	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
-		archName, name, archName);
-	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-	if (writeMagic(s, fd, name, RPMLEAD_BINARY)) {
-	    return 1;
-	}
-
 	/* Add some final entries to the header */
 	os = getArchNum();
 	arch = getArchNum();
 	addEntry(outHeader, RPMTAG_OS, INT8_TYPE, &os, 1);
 	addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
-	addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
 	addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
 	addEntry(outHeader, RPMTAG_SOURCERPM, STRING_TYPE, sourcerpm, 1);
 	if (pr->icon) {
@@ -792,21 +932,30 @@ int packageBinaries(Spec s)
 	    }
 	    free(icon);
 	}
-	/* XXX - need: distribution, vendor, release */
+	if (vendor) {
+	    addEntry(outHeader, RPMTAG_VENDOR, STRING_TYPE, vendor, 1);
+	}
+	if (dist) {
+	    addEntry(outHeader, RPMTAG_DISTRIBUTION, STRING_TYPE, dist, 1);
+	}
 	
-	writeHeader(fd, outHeader);
+	/**** Process the file list ****/
 	
-	/* Now do the cpio | gzip thing */
-	if (cpio_gzip(outHeader, fd, NULL)) {
+	if (process_filelist(outHeader, pr->filelist, &size,
+			     s->name, version, release, RPMLEAD_BINARY)) {
 	    return 1;
 	}
-    
-	close(fd);
+	/* And add the final Header entry */
+	addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
+
+	/**** Make the RPM ****/
+
+	generateRPM(name, RPMLEAD_BINARY, outHeader, NULL);
 
 	freeHeader(outHeader);
 	pr = pr->next;
     }
-    
+	
     return 0;
 }
 
@@ -817,18 +966,21 @@ int packageSource(Spec s)
     struct sources *source;
     struct PackageRec *package;
     char *tempdir;
-    char src[1024], dest[1024], filename[1024];
+    char src[1024], dest[1024], fullname[1024];
     char *version;
     char *release;
+    char *vendor;
+    char *dist;
     Header outHeader;
     StringBuf filelist;
-    int fd;
     int size;
     int_8 os, arch;
     char **sources;
     char **patches;
     int scount, pcount;
 
+    /**** Create links for all the sources ****/
+    
     tempdir = tempnam("/usr/tmp", "rpmbuild");
     mkdir(tempdir, 0700);
 
@@ -868,9 +1020,8 @@ int packageSource(Spec s)
 	package = package->next;
     }
 
-    /**************************************************/
+    /**** Generate the Header ****/
     
-    /* Now start packaging */
     if (!getEntry(s->packages->header, RPMTAG_VERSION, NULL,
 		  (void *) &version, NULL)) {
 	error(RPMERR_BADSPEC, "No version field");
@@ -880,13 +1031,6 @@ int packageSource(Spec s)
 		  (void *) &release, NULL)) {
 	error(RPMERR_BADSPEC, "No release field");
 	return RPMERR_BADSPEC;
-    }
-
-    sprintf(filename, "%s/%s-%s-%s.src.rpm", getVar(RPMVAR_SRPMDIR),
-	    s->name, version, release);
-    fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    if (writeMagic(s, fd, s->name, RPMLEAD_SOURCE)) {
-	return 1;
     }
 
     outHeader = copyHeader(s->packages->header);
@@ -900,28 +1044,31 @@ int packageSource(Spec s)
         addEntry(outHeader, RPMTAG_SOURCE, STRING_ARRAY_TYPE, sources, scount);
     if (pcount)
         addEntry(outHeader, RPMTAG_PATCH, STRING_ARRAY_TYPE, patches, pcount);
-    /* XXX - need: distribution, vendor, release */
+    if (!isEntry(s->packages->header, RPMTAG_VENDOR)) {
+	if ((vendor = getVar(RPMVAR_VENDOR))) {
+	    addEntry(outHeader, RPMTAG_VENDOR, STRING_TYPE, vendor, 1);
+	}
+    }
+    if (!isEntry(s->packages->header, RPMTAG_DISTRIBUTION)) {
+	if ((dist = getVar(RPMVAR_DISTRIBUTION))) {
+	    addEntry(outHeader, RPMTAG_DISTRIBUTION, STRING_TYPE, dist, 1);
+	}
+    }
 
+    /* Process the file list */
     if (process_filelist(outHeader, filelist, &size,
 			 s->name, version, release, RPMLEAD_SOURCE)) {
 	return 1;
     }
-    
+    /* And add the final Header entry */
     addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
 
-    writeHeader(fd, outHeader);
+    /**** Make the RPM ****/
 
-    /* Now do the cpio | gzip thing */
-    if (cpio_gzip(outHeader, fd, tempdir)) {
-	return 1;
-    }
+    sprintf(fullname, "%s-%s-%s", s->name, version, release);
+    generateRPM(fullname, RPMLEAD_SOURCE, outHeader, tempdir);
     
-    close(fd);
-    freeHeader(outHeader);
-
-    /**************************************************/
-
-    /* Now clean up */
+    /**** Now clean up ****/
 
     freeStringBuf(filelist);
     
