@@ -28,6 +28,7 @@
 	- state machines for packages (psm.c) and payloads (fsm.c)
 	- add --repackage option to put erased bits back into a package.
 	- fix: (ppc) copy va_list in loop (#36845).
+	- cpanflute perl dependency needs explicit epoch (#37034).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

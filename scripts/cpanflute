@@ -52,14 +52,14 @@ open (FILE, "> $MainDir/$filename");
 print FILE "Summary: $clm_name module for perl $class
 Name: perl-$clm_name
 Version: $clm_version
-Release: 6
+Release: 7
 Copyright: distributable
 Group: Applications/CPAN
 Source0: $clm_name-$clm_version.tar.gz
 Url: http://www.cpan.org
-BuildRoot: /var/tmp/perl-$clm_name-buildroot/
-BuildRequires: perl >= 5.00503
-Requires: perl >= 5.00503
+BuildRoot: %{_tmppath}/perl-$clm_name-buildroot/
+BuildRequires: perl >= 0:5.00503
+Requires: perl >= 0:5.00503
 
 %description
 $clm_name module for perl
