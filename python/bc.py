@@ -6,16 +6,11 @@ i = 1
 #b = rpm.bc("0000000000000010")
 #c = rpm.bc("0fedcba000000000")
 
-for i in range(30):
+for i in range(100):
 	a = rpm.bc(i)
 	for j in range(100):
 		b = rpm.bc(j)
 		print i, '^', j, '=', rpm.bc.__pow__(a, b)
-
-#rpm.bc().Debug(-1);
-#a = rpm.bc(4)
-#b = rpm.bc(5)
-#rpm.bc.__pow__(a, b)
 
 #rpm.bc.__add__(a, b)
 #rpm.bc.__sub__(a, b)
