@@ -1472,7 +1472,7 @@ assert(EVR != NULL);
     c = argiCount(fc->fcolor);
 assert(ac == c);
     if (p != NULL && c > 0)
-	xx = headerAddEntry(pkg->header, RPMTAG_FILECOLOR, RPM_INT32_TYPE,
+	xx = headerAddEntry(pkg->header, RPMTAG_FILECOLORS, RPM_INT32_TYPE,
 			p, c);
 
     /* Add classes(#classes) */

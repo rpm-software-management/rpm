@@ -265,6 +265,57 @@ int_32 rpmfiFInode(rpmfi fi)
     return finode;
 }
 
+uint_32 rpmfiFColor(rpmfi fi)
+{
+    int_32 fcolor = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->fcolors != NULL)
+	    fcolor = fi->fcolors[fi->i];
+/*@=boundsread@*/
+    }
+    return fcolor;
+}
+
+const char * rpmfiFClass(rpmfi fi)
+{
+    const char * fclass = NULL;
+    int cdictx;
+
+    if (fi != NULL && fi->fcdictx != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	cdictx = fi->fcdictx[fi->i];
+	if (fi->cdict != NULL && cdictx >= 0 && cdictx < fi->ncdict)
+	    fclass = fi->cdict[cdictx];
+/*@=boundsread@*/
+    }
+    return fclass;
+}
+
+int_32 rpmfiFDepends(rpmfi fi, const int_32 ** fddictp)
+{
+    int fddictx = -1;
+    int fddictn = 0;
+    const int_32 * fddict = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->fddictn != NULL)
+	    fddictn = fi->fddictn[fi->i];
+	if (fddictn > 0 && fi->fddictx != NULL)
+	    fddictx = fi->fddictx[fi->i];
+	if (fi->ddict != NULL && fddictx >= 0 && (fddictx+fddictn) <= fi->nddict)
+	    fddict = fi->ddict + fddictx;
+/*@=boundsread@*/
+    }
+/*@-boundswrite -dependenttrans -onlytrans @*/
+    if (fddictp)
+	*fddictp = fddict;
+/*@=boundswrite =dependenttrans =onlytrans @*/
+    return fddictn;
+}
+
 int_32 rpmfiFNlink(rpmfi fi)
 {
     int_32 nlink = 0;
@@ -910,6 +961,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->fmd5s = hfd(fi->fmd5s, -1);
 	fi->md5s = _free(fi->md5s);
 
+	fi->cdict = hfd(fi->cdict, -1);
+
 	fi->fuser = hfd(fi->fuser, -1);
 	fi->fuids = _free(fi->fuids);
 	fi->fgroup = hfd(fi->fgroup, -1);
@@ -927,6 +980,13 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	    fi->frdevs = _free(fi->frdevs);
 	    fi->finodes = _free(fi->finodes);
 	    fi->dil = _free(fi->dil);
+
+	    fi->fcolors = _free(fi->fcolors);
+	    fi->fcdictx = _free(fi->fcdictx);
+	    fi->ddict = _free(fi->ddict);
+	    fi->fddictx = _free(fi->fddictx);
+	    fi->fddictn = _free(fi->fddictn);
+
 	}
 	/*@=evalorder@*/
     }
@@ -1036,6 +1096,15 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
     xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
     xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, (void **) &fi->vflags, NULL);
     xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
+
+    xx = hge(h, RPMTAG_FILECOLORS, NULL, (void **) &fi->fcolors, NULL);
+    xx = hge(h, RPMTAG_CLASSDICT, NULL, (void **) &fi->cdict, &fi->ncdict);
+    xx = hge(h, RPMTAG_FILECLASS, NULL, (void **) &fi->fcdictx, NULL);
+
+    xx = hge(h, RPMTAG_DEPENDSDICT, NULL, (void **) &fi->ddict, &fi->nddict);
+    xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, (void **) &fi->fddictx, NULL);
+    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, (void **) &fi->fddictx, NULL);
+
     xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
     if (xx == 0 || fi->fstates == NULL)
 	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
@@ -1116,6 +1185,13 @@ if (fi->actions == NULL)
 	_fdupe(fi, vflags);
 	_fdupe(fi, fmodes);
 	_fdupe(fi, dil);
+
+	_fdupe(fi, fcolors);
+	_fdupe(fi, fcdictx);
+	_fdupe(fi, ddict);
+	_fdupe(fi, fddictx);
+	_fdupe(fi, fddictn);
+
 	fi->h = headerFree(fi->h);
     }
 
@@ -1321,4 +1397,3 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
     /*@=branchstate@*/
     if (fcp) *fcp = ac;
 }
-

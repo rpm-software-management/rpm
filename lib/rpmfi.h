@@ -78,6 +78,23 @@ struct rpmfi_s {
 /*@only@*/ /*@null@*/
     char * fstates;		/*!< File state(s) (from header) */
 
+/*@only@*/ /*@null@*/
+    const uint_32 * fcolors;	/*!< File color bits (header) */
+
+/*@only@*/ /*@null@*/
+    const char ** cdict;	/*!< File class dictionary (header) */
+    int_32 ncdict;		/*!< No. of class entries. */
+/*@only@*/ /*@null@*/
+    const uint_32 * fcdictx;	/*!< File class dictionary index (header) */
+
+/*@only@*/ /*@null@*/
+    const uint_32 * ddict;	/*!< File depends dictionary (header) */
+    int_32 nddict;		/*!< No. of depends entries. */
+/*@only@*/ /*@null@*/
+    const uint_32 * fddictx;	/*!< File depends dictionary start (header) */
+/*@only@*/ /*@null@*/
+    const uint_32 * fddictn;	/*!< File depends dictionary count (header) */
+
 /*@only@*/ /*?null?*/
     const uint_32 * vflags;	/*!< File verify flag(s) (from header) */
 
@@ -348,6 +365,33 @@ int_16 rpmfiFRdev(/*@null@*/ rpmfi fi)
  */
 int_32 rpmfiFInode(/*@null@*/ rpmfi fi)
 	/*@*/;
+
+/**
+ * Return current file color bits from file info set.
+ * @param fi		file info set
+ * @return		current file color, 0 on invalid
+ */
+uint_32 rpmfiFColor(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
+ * Return current file class from file info set.
+ * @param fi		file info set
+ * @return		current file class, 0 on invalid
+ */
+/*@observer@*/ /*@null@*/
+extern const char * rpmfiFClass(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
+ * Return current file depends dictionary from file info set.
+ * @param fi		file info set
+ * @retval *fddictp	file depends dictionary array (or NULL)
+ * @return		no. of file depends entries, 0 on invalid
+ */
+int_32 rpmfiFDepends(/*@null@*/ rpmfi fi,
+		/*@out@*/ /*@null@*/ const int_32 ** fddictp)
+	/*@modifies *fddictp @*/;
 
 /**
  * Return (calculated) current file nlink count from file info set.

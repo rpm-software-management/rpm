@@ -952,10 +952,10 @@ zapRelation(rpmte q, rpmte p,
     {
 	int_32 Flags;
 
-	/*@-abstract@*/
+	/*@-abstractcompare@*/
 	if (tsi->tsi_suc != p)
 	    continue;
-	/*@=abstract@*/
+	/*@=abstractcompare@*/
 
 	if (requires == NULL) continue;		/* XXX can't happen */
 

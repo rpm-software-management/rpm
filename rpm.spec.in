@@ -15,7 +15,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.44
+Release: 0.45
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -459,8 +459,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Sat Dec 28 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.44
+* Sat Dec 28 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.45
 - error if querying with iterator on different sized arrays.
+- add rpmfi methods to access color, class, and dependencies.
 
 * Fri Dec 27 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.42
 - add BETA-GPG-KEY (but not in headers using %%pubkey yet).

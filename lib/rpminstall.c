@@ -52,8 +52,10 @@ static void printHash(const unsigned long amount, const unsigned long total)
     rpmcliHashesTotal = (isatty (STDOUT_FILENO) ? 44 : 50);
 
     if (rpmcliHashesCurrent != rpmcliHashesTotal) {
+/*@+relaxtypes@*/
 	float pct = (total ? (((float) amount) / total) : 1.0);
 	hashesNeeded = (rpmcliHashesTotal * pct) + 0.5;
+/*@=relaxtypes@*/
 	while (hashesNeeded > rpmcliHashesCurrent) {
 	    if (isatty (STDOUT_FILENO)) {
 		int i;
@@ -77,9 +79,11 @@ static void printHash(const unsigned long amount, const unsigned long total)
 	    if (isatty(STDOUT_FILENO)) {
 	        for (i = 1; i < rpmcliHashesCurrent; i++)
 		    (void) putchar ('#');
+/*@+relaxtypes@*/
 		pct = (rpmcliProgressTotal
 		    ? (((float) rpmcliProgressCurrent) / rpmcliProgressTotal)
 		    : 1);
+/*@=relaxtypes@*/
 		fprintf(stdout, " [%3d%%]", (int)((100 * pct) + 0.5));
 	    }
 	    fprintf(stdout, "\n");
@@ -167,12 +171,14 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 
     case RPMCALLBACK_TRANS_PROGRESS:
     case RPMCALLBACK_INST_PROGRESS:
+/*@+relaxtypes@*/
 	if (flags & INSTALL_PERCENT)
 	    fprintf(stdout, "%%%% %f\n", (double) (total
 				? ((((float) amount) / total) * 100)
 				: 100.0));
 	else if (flags & INSTALL_HASH)
 	    printHash(amount, total);
+/*@=relaxtypes@*/
 	(void) fflush(stdout);
 	break;
 

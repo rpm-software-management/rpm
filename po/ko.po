@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-12-28 14:25-0500\n"
+"POT-Creation-Date: 2002-12-28 20:04-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -519,64 +519,64 @@ msgstr "파일이 prefix (%s)와 일치하지 않음: %s\n"
 msgid "File not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1757
+#: build/files.c:1763
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead이 실패했습니다\n"
 
-#: build/files.c:1761 lib/rpmchecksig.c:573
+#: build/files.c:1767 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1809
+#: build/files.c:1815
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "파일은 \"/\" 로 시작해야함: %s\n"
 
-#: build/files.c:1833
+#: build/files.c:1839
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob을 사용할 수 없음: %s\n"
 
-#: build/files.c:1850 lib/rpminstall.c:343
+#: build/files.c:1856 lib/rpminstall.c:349
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1910
+#: build/files.c:1916
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
 
-#: build/files.c:1921 build/pack.c:156
+#: build/files.c:1927 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "행: %s\n"
 
-#: build/files.c:2310
+#: build/files.c:2318
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
-#: build/files.c:2322 build/parsePrep.c:50
+#: build/files.c:2330 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
 
-#: build/files.c:2366
+#: build/files.c:2374
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: build/files.c:2387
+#: build/files.c:2397
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2415
+#: build/files.c:2425
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "파일 처리 중: %s-%s-%s\n"
@@ -1417,24 +1417,24 @@ msgstr "========== tsort를 진행합니다...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:405
-#: rpmdb/header.c:3327 rpmdb/header.c:3356 rpmdb/header.c:3380
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
+#: rpmdb/header.c:3332 rpmdb/header.c:3361 rpmdb/header.c:3385
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
-#: lib/formats.c:175
+#: lib/formats.c:170
 msgid "(not base64)"
 msgstr "(base64가 아닙니다)"
 
-#: lib/formats.c:185
+#: lib/formats.c:180
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
 
-#: lib/formats.c:255 lib/formats.c:304
+#: lib/formats.c:205 lib/formats.c:254
 msgid "(not a blob)"
 msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
 
-#: lib/formats.c:329
+#: lib/formats.c:279
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "어떠한 PGP 서명도 검사하지 않습니다"
@@ -2242,131 +2242,131 @@ msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/query.c:121 lib/rpmts.c:430
+#: lib/query.c:122 lib/rpmts.c:430
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
 
 #. @-boundswrite@
-#: lib/query.c:180
+#: lib/query.c:181
 msgid "(contains no files)"
 msgstr "(파일이 포함되어 있지 않음)"
 
-#: lib/query.c:245
+#: lib/query.c:246
 msgid "normal        "
 msgstr "정상(normal)        "
 
-#: lib/query.c:248
+#: lib/query.c:249
 msgid "replaced      "
 msgstr "교체됨(replaced)    "
 
-#: lib/query.c:251
+#: lib/query.c:252
 msgid "not installed "
 msgstr "설치되어 있지 않음  "
 
-#: lib/query.c:254
+#: lib/query.c:255
 msgid "net shared    "
 msgstr "net 공유됨          "
 
-#: lib/query.c:257
+#: lib/query.c:258
 msgid "(no state)    "
 msgstr "(상태를 알 수 없음) "
 
-#: lib/query.c:260
+#: lib/query.c:261
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(알 수 없는 %3d)    "
 
-#: lib/query.c:278
+#: lib/query.c:279
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 
-#: lib/query.c:311
+#: lib/query.c:312
 msgid "package has neither file owner or id lists\n"
 msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 
-#: lib/query.c:439 lib/query.c:486 lib/rpminstall.c:123 lib/rpminstall.c:458
-#: lib/rpminstall.c:589 lib/rpminstall.c:1005 lib/rpmts.c:441
+#: lib/query.c:440 lib/query.c:487 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
 
-#: lib/query.c:454
+#: lib/query.c:455
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s(을)를 질의하는데 실패했습니다\n"
 
-#: lib/query.c:464
+#: lib/query.c:465
 msgid "old format source packages cannot be queried\n"
 msgstr "이전 형식의 소스 패키지는 질의할 수 없습니다\n"
 
-#: lib/query.c:497 lib/rpminstall.c:602
+#: lib/query.c:498 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
 
-#: lib/query.c:526
+#: lib/query.c:527
 msgid "no packages\n"
 msgstr "패키지가 없습니다\n"
 
-#: lib/query.c:546
+#: lib/query.c:547
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s 그룹은 어떤 패키지에도 포함되어 있지 않습니다\n"
 
-#: lib/query.c:556
+#: lib/query.c:557
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s(을)를 생성하는(trigger) 패키지가 없습니다\n"
 
-#: lib/query.c:570 lib/query.c:592 lib/query.c:613 lib/query.c:648
+#: lib/query.c:571 lib/query.c:593 lib/query.c:614 lib/query.c:649
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s(이)가 잘못됨: %s\n"
 
-#: lib/query.c:580 lib/query.c:598 lib/query.c:623 lib/query.c:653
+#: lib/query.c:581 lib/query.c:599 lib/query.c:624 lib/query.c:654
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
 
-#: lib/query.c:664
+#: lib/query.c:665
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s(을)를 필요로 하는 패키지가 없습니다\n"
 
-#: lib/query.c:675
+#: lib/query.c:676
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s(을)를 제공하는 패키지가 없습니다\n"
 
-#: lib/query.c:709
+#: lib/query.c:710
 #, c-format
 msgid "file %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: lib/query.c:713
+#: lib/query.c:714
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s 파일은 어떤 패키지에도 들어있지 않습니다\n"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/query.c:743
+#: lib/query.c:744
 #, c-format
 msgid "package record number: %u\n"
 msgstr "패키지 기록(record) 번호: %u\n"
 
-#: lib/query.c:748
+#: lib/query.c:749
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:759 lib/rpminstall.c:773
+#: lib/query.c:760 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -2474,15 +2474,15 @@ msgstr ")"
 msgid "OK"
 msgstr "확인"
 
-#: lib/rpmds.c:477 lib/rpmds.c:817
+#: lib/rpmds.c:477 lib/rpmds.c:812
 msgid "NO "
 msgstr "아니오"
 
-#: lib/rpmds.c:477 lib/rpmds.c:817
+#: lib/rpmds.c:477 lib/rpmds.c:812
 msgid "YES"
 msgstr "예"
 
-#: lib/rpmds.c:783
+#: lib/rpmds.c:778
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2491,160 +2491,160 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:816
+#: lib/rpmds.c:811
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:840
+#: lib/rpmds.c:835
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"
 
-#: lib/rpmfi.c:605
+#: lib/rpmfi.c:657
 msgid "========== relocations\n"
 msgstr "========== 재배치\n"
 
-#: lib/rpmfi.c:609
+#: lib/rpmfi.c:661
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 제외  %s\n"
 
-#: lib/rpmfi.c:612
+#: lib/rpmfi.c:664
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 재배치 %s -> %s\n"
 
-#: lib/rpmfi.c:682
+#: lib/rpmfi.c:734
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "%s%s multilib 경로를 제외시킵니다\n"
 
-#: lib/rpmfi.c:748
+#: lib/rpmfi.c:800
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s(을)를 제외시킵니다\n"
 
-#: lib/rpmfi.c:758
+#: lib/rpmfi.c:810
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s(을)를 %s(으)로 재배치 합니다\n"
 
-#: lib/rpmfi.c:837
+#: lib/rpmfi.c:889
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "준비 중..."
 
-#: lib/rpminstall.c:188
+#: lib/rpminstall.c:194
 msgid "Preparing packages for installation..."
 msgstr "설치할 패키지를 준비하고 있습니다..."
 
-#: lib/rpminstall.c:206
+#: lib/rpminstall.c:212
 #, fuzzy
 msgid "Repackaging..."
 msgstr "준비 중..."
 
-#: lib/rpminstall.c:208
+#: lib/rpminstall.c:214
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:227
+#: lib/rpminstall.c:233
 #, fuzzy
 msgid "Upgrading..."
 msgstr "준비 중..."
 
-#: lib/rpminstall.c:229
+#: lib/rpminstall.c:235
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "패키지를 업그레이드 합니다"
 
-#: lib/rpminstall.c:390
+#: lib/rpminstall.c:396
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
 
-#: lib/rpminstall.c:405
+#: lib/rpminstall.c:411
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:418
+#: lib/rpminstall.c:424
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... %s(으)로\n"
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:428
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s(을)를 생략합니다 - 전송(transfer)에 실패함 - %s\n"
 
-#: lib/rpminstall.c:477 lib/rpminstall.c:854 tools/rpmgraph.c:147
+#: lib/rpminstall.c:483 lib/rpminstall.c:860 tools/rpmgraph.c:147
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
 
-#: lib/rpminstall.c:519
+#: lib/rpminstall.c:525
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:575
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/rpminstall.c:575
+#: lib/rpminstall.c:581
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s 파일은 최신 버전의 RPM을 필요로 합니다\n"
 
-#: lib/rpminstall.c:617
+#: lib/rpminstall.c:623
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d의 소스와 %d의 바이너리 패키지가 검색되었습니다\n"
 
-#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1230
+#: lib/rpminstall.c:637 lib/rpminstall.c:807 lib/rpminstall.c:1236
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
 
-#: lib/rpminstall.c:638 tools/rpmgraph.c:208
+#: lib/rpminstall.c:644 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:668
+#: lib/rpminstall.c:674
 msgid "installing binary packages\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:692
+#: lib/rpminstall.c:698
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:776
+#: lib/rpminstall.c:782
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:838
+#: lib/rpminstall.c:844
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:844
+#: lib/rpminstall.c:850
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1224
+#: lib/rpminstall.c:1230
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -3257,11 +3257,11 @@ msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 
-#: rpmdb/header.c:2828
+#: rpmdb/header.c:2832
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3132
+#: rpmdb/header.c:3136
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

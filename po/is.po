@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-28 14:25-0500\n"
+"POT-Creation-Date: 2002-12-28 20:04-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -508,64 +508,64 @@ msgstr ""
 msgid "File not found: %s\n"
 msgstr "Skráin fannst ekki: %s\n"
 
-#: build/files.c:1757
+#: build/files.c:1763
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: Fseek brást: %s\n"
 
-#: build/files.c:1761 lib/rpmchecksig.c:573
+#: build/files.c:1767 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1809
+#: build/files.c:1815
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1833
+#: build/files.c:1839
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Gat ekki opnað PreUn skrá: %s\n"
 
-#: build/files.c:1850 lib/rpminstall.c:343
+#: build/files.c:1856 lib/rpminstall.c:349
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Skráin fannst ekki með 'glob': %s\n"
 
-#: build/files.c:1910
+#: build/files.c:1916
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Gat ekki opnað %%files skrána %s: %s\n"
 
-#: build/files.c:1921 build/pack.c:156
+#: build/files.c:1927 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "lína: %s\n"
 
-#: build/files.c:2310
+#: build/files.c:2318
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ógild skrá %s: %s\n"
 
-#: build/files.c:2322 build/parsePrep.c:50
+#: build/files.c:2330 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2366
+#: build/files.c:2374
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2387
+#: build/files.c:2397
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2415
+#: build/files.c:2425
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1401,24 +1401,24 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:405
-#: rpmdb/header.c:3327 rpmdb/header.c:3356 rpmdb/header.c:3380
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
+#: rpmdb/header.c:3332 rpmdb/header.c:3361 rpmdb/header.c:3385
 msgid "(not a number)"
 msgstr ""
 
-#: lib/formats.c:175
+#: lib/formats.c:170
 msgid "(not base64)"
 msgstr ""
 
-#: lib/formats.c:185
+#: lib/formats.c:180
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:255 lib/formats.c:304
+#: lib/formats.c:205 lib/formats.c:254
 msgid "(not a blob)"
 msgstr ""
 
-#: lib/formats.c:329
+#: lib/formats.c:279
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "búa til undirskrift"
@@ -2205,130 +2205,130 @@ msgstr "gat ekki opnað %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s brást\n"
 
-#: lib/query.c:121 lib/rpmts.c:430
+#: lib/query.c:122 lib/rpmts.c:430
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
 
 #. @-boundswrite@
-#: lib/query.c:180
+#: lib/query.c:181
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:245
+#: lib/query.c:246
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:248
+#: lib/query.c:249
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:251
+#: lib/query.c:252
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:254
+#: lib/query.c:255
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:257
+#: lib/query.c:258
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:260
+#: lib/query.c:261
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:278
+#: lib/query.c:279
 msgid "package has not file owner/group lists\n"
 msgstr ""
 
-#: lib/query.c:311
+#: lib/query.c:312
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:439 lib/query.c:486 lib/rpminstall.c:123 lib/rpminstall.c:458
-#: lib/rpminstall.c:589 lib/rpminstall.c:1005 lib/rpmts.c:441
+#: lib/query.c:440 lib/query.c:487 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:454
+#: lib/query.c:455
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:464
+#: lib/query.c:465
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:497 lib/rpminstall.c:602
+#: lib/query.c:498 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/query.c:526
+#: lib/query.c:527
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:546
+#: lib/query.c:547
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:556
+#: lib/query.c:557
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:570 lib/query.c:592 lib/query.c:613 lib/query.c:648
+#: lib/query.c:571 lib/query.c:593 lib/query.c:614 lib/query.c:649
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Get ekki lesið %s: %s.\n"
 
-#: lib/query.c:580 lib/query.c:598 lib/query.c:623 lib/query.c:653
+#: lib/query.c:581 lib/query.c:599 lib/query.c:624 lib/query.c:654
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/query.c:664
+#: lib/query.c:665
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:675
+#: lib/query.c:676
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:709
+#: lib/query.c:710
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:713
+#: lib/query.c:714
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:743
+#: lib/query.c:744
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:748
+#: lib/query.c:749
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:759 lib/rpminstall.c:773
+#: lib/query.c:760 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2434,173 +2434,173 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:477 lib/rpmds.c:817
+#: lib/rpmds.c:477 lib/rpmds.c:812
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:477 lib/rpmds.c:817
+#: lib/rpmds.c:477 lib/rpmds.c:812
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:783
+#: lib/rpmds.c:778
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:816
+#: lib/rpmds.c:811
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:840
+#: lib/rpmds.c:835
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/rpmfi.c:605
+#: lib/rpmfi.c:657
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:609
+#: lib/rpmfi.c:661
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:612
+#: lib/rpmfi.c:664
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:682
+#: lib/rpmfi.c:734
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/rpmfi.c:748
+#: lib/rpmfi.c:800
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "lína %d: %s\n"
 
-#: lib/rpmfi.c:758
+#: lib/rpmfi.c:810
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:837
+#: lib/rpmfi.c:889
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:188
+#: lib/rpminstall.c:194
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:206
+#: lib/rpminstall.c:212
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:208
+#: lib/rpminstall.c:214
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:227
+#: lib/rpminstall.c:233
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:229
+#: lib/rpminstall.c:235
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "uppfæra pakka"
 
-#: lib/rpminstall.c:390
+#: lib/rpminstall.c:396
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Skrá %s: %s\n"
 
-#: lib/rpminstall.c:405
+#: lib/rpminstall.c:411
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:418
+#: lib/rpminstall.c:424
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:428
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:477 lib/rpminstall.c:854 tools/rpmgraph.c:147
+#: lib/rpminstall.c:483 lib/rpminstall.c:860 tools/rpmgraph.c:147
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:519
+#: lib/rpminstall.c:525
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:575
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:575
+#: lib/rpminstall.c:581
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:617
+#: lib/rpminstall.c:623
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1230
+#: lib/rpminstall.c:637 lib/rpminstall.c:807 lib/rpminstall.c:1236
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "gat ekki útbúið pakkaskilyrði:\n"
 
-#: lib/rpminstall.c:638 tools/rpmgraph.c:208
+#: lib/rpminstall.c:644 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:668
+#: lib/rpminstall.c:674
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:692
+#: lib/rpminstall.c:698
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:776
+#: lib/rpminstall.c:782
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:838
+#: lib/rpminstall.c:844
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:844
+#: lib/rpminstall.c:850
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1224
+#: lib/rpminstall.c:1230
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -3203,11 +3203,11 @@ msgstr ""
 msgid "| expected at end of expression"
 msgstr ""
 
-#: rpmdb/header.c:2828
+#: rpmdb/header.c:2832
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3132
+#: rpmdb/header.c:3136
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

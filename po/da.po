@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-28 14:25-0500\n"
+"POT-Creation-Date: 2002-12-28 20:04-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -520,64 +520,64 @@ msgstr "Fil passer ikke til præfiks (%s): %s\n"
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1757
+#: build/files.c:1763
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:1761 lib/rpmchecksig.c:573
+#: build/files.c:1767 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1809
+#: build/files.c:1815
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1833
+#: build/files.c:1839
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:1850 lib/rpminstall.c:343
+#: build/files.c:1856 lib/rpminstall.c:349
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1910
+#: build/files.c:1916
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1921 build/pack.c:156
+#: build/files.c:1927 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2310
+#: build/files.c:2318
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2322 build/parsePrep.c:50
+#: build/files.c:2330 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2366
+#: build/files.c:2374
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2387
+#: build/files.c:2397
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2415
+#: build/files.c:2425
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -1429,26 +1429,26 @@ msgstr "========== fortsætter tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:405
-#: rpmdb/header.c:3327 rpmdb/header.c:3356 rpmdb/header.c:3380
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
+#: rpmdb/header.c:3332 rpmdb/header.c:3361 rpmdb/header.c:3385
 msgid "(not a number)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:175
+#: lib/formats.c:170
 #, fuzzy
 msgid "(not base64)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:185
+#: lib/formats.c:180
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:255 lib/formats.c:304
+#: lib/formats.c:205 lib/formats.c:254
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:329
+#: lib/formats.c:279
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "overspring eventuelle PGP-signaturer"
@@ -2266,131 +2266,131 @@ msgstr "kunne ikke åbne %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: lib/query.c:121 lib/rpmts.c:430
+#: lib/query.c:122 lib/rpmts.c:430
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ugyldigt format: %s\n"
 
 #. @-boundswrite@
-#: lib/query.c:180
+#: lib/query.c:181
 msgid "(contains no files)"
 msgstr "(indeholder ingen filer)"
 
-#: lib/query.c:245
+#: lib/query.c:246
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:248
+#: lib/query.c:249
 msgid "replaced      "
 msgstr "erstattet     "
 
-#: lib/query.c:251
+#: lib/query.c:252
 msgid "not installed "
 msgstr "ej installeret"
 
-#: lib/query.c:254
+#: lib/query.c:255
 msgid "net shared    "
 msgstr "ej delt       "
 
-#: lib/query.c:257
+#: lib/query.c:258
 msgid "(no state)    "
 msgstr "(ingen status)"
 
-#: lib/query.c:260
+#: lib/query.c:261
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(ukendt %3d)  "
 
-#: lib/query.c:278
+#: lib/query.c:279
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:311
+#: lib/query.c:312
 msgid "package has neither file owner or id lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:439 lib/query.c:486 lib/rpminstall.c:123 lib/rpminstall.c:458
-#: lib/rpminstall.c:589 lib/rpminstall.c:1005 lib/rpmts.c:441
+#: lib/query.c:440 lib/query.c:487 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/query.c:454
+#: lib/query.c:455
 #, c-format
 msgid "query of %s failed\n"
 msgstr "forespørgsel af %s mislykkedes\n"
 
-#: lib/query.c:464
+#: lib/query.c:465
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:497 lib/rpminstall.c:602
+#: lib/query.c:498 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:526
+#: lib/query.c:527
 msgid "no packages\n"
 msgstr "ingen pakker\n"
 
-#: lib/query.c:546
+#: lib/query.c:547
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s indeholder ingen pakker\n"
 
-#: lib/query.c:556
+#: lib/query.c:557
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:570 lib/query.c:592 lib/query.c:613 lib/query.c:648
+#: lib/query.c:571 lib/query.c:593 lib/query.c:614 lib/query.c:649
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Kunne ikke læse %s: %s.\n"
 
-#: lib/query.c:580 lib/query.c:598 lib/query.c:623 lib/query.c:653
+#: lib/query.c:581 lib/query.c:599 lib/query.c:624 lib/query.c:654
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:664
+#: lib/query.c:665
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#: lib/query.c:675
+#: lib/query.c:676
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/query.c:709
+#: lib/query.c:710
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:713
+#: lib/query.c:714
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tilhører ingen pakke\n"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/query.c:743
+#: lib/query.c:744
 #, c-format
 msgid "package record number: %u\n"
 msgstr "pakkens post-nummer: %u\n"
 
-#: lib/query.c:748
+#: lib/query.c:749
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:759 lib/rpminstall.c:773
+#: lib/query.c:760 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -2498,16 +2498,16 @@ msgstr ")"
 msgid "OK"
 msgstr "O.K."
 
-#: lib/rpmds.c:477 lib/rpmds.c:817
+#: lib/rpmds.c:477 lib/rpmds.c:812
 #, fuzzy
 msgid "NO "
 msgstr "IKKE O.K."
 
-#: lib/rpmds.c:477 lib/rpmds.c:817
+#: lib/rpmds.c:477 lib/rpmds.c:812
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:783
+#: lib/rpmds.c:778
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2516,160 +2516,160 @@ msgstr ""
 "\"B\"-afhængighed kræver en epoke (antager samme som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:816
+#: lib/rpmds.c:811
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:840
+#: lib/rpmds.c:835
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 
-#: lib/rpmfi.c:605
+#: lib/rpmfi.c:657
 msgid "========== relocations\n"
 msgstr "========== gemmer omrokeringer\n"
 
-#: lib/rpmfi.c:609
+#: lib/rpmfi.c:661
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d ekskluderer %s\n"
 
-#: lib/rpmfi.c:612
+#: lib/rpmfi.c:664
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d omrokerer %s -> %s\n"
 
-#: lib/rpmfi.c:682
+#: lib/rpmfi.c:734
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "ekskluderer multilib-sti %s%s\n"
 
-#: lib/rpmfi.c:748
+#: lib/rpmfi.c:800
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "ekskluderer %s %s\n"
 
-#: lib/rpmfi.c:758
+#: lib/rpmfi.c:810
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "omrokerer %s til %s\n"
 
-#: lib/rpmfi.c:837
+#: lib/rpmfi.c:889
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "omrokerer kataloget %s til %s\n"
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "Forbereder..."
 
-#: lib/rpminstall.c:188
+#: lib/rpminstall.c:194
 msgid "Preparing packages for installation..."
 msgstr "Forbereder pakker til installation..."
 
-#: lib/rpminstall.c:206
+#: lib/rpminstall.c:212
 #, fuzzy
 msgid "Repackaging..."
 msgstr "Forbereder..."
 
-#: lib/rpminstall.c:208
+#: lib/rpminstall.c:214
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:227
+#: lib/rpminstall.c:233
 #, fuzzy
 msgid "Upgrading..."
 msgstr "Forbereder..."
 
-#: lib/rpminstall.c:229
+#: lib/rpminstall.c:235
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "opgradér pakke"
 
-#: lib/rpminstall.c:390
+#: lib/rpminstall.c:396
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Finder %s: (benytter %s)...\n"
 
-#: lib/rpminstall.c:405
+#: lib/rpminstall.c:411
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Modtager %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:418
+#: lib/rpminstall.c:424
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:428
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "overspringer %s - overførsel mislykkedes - %s\n"
 
-#: lib/rpminstall.c:477 lib/rpminstall.c:854 tools/rpmgraph.c:147
+#: lib/rpminstall.c:483 lib/rpminstall.c:860 tools/rpmgraph.c:147
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
-#: lib/rpminstall.c:519
+#: lib/rpminstall.c:525
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakke %s kan ikke omrokeres\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:575
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fejl ved læsning fra filen %s\n"
 
-#: lib/rpminstall.c:575
+#: lib/rpminstall.c:581
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s kræver en nyere version af RPM\n"
 
-#: lib/rpminstall.c:617
+#: lib/rpminstall.c:623
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "fandt %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1230
+#: lib/rpminstall.c:637 lib/rpminstall.c:807 lib/rpminstall.c:1236
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
 
-#: lib/rpminstall.c:638 tools/rpmgraph.c:208
+#: lib/rpminstall.c:644 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:668
+#: lib/rpminstall.c:674
 msgid "installing binary packages\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:692
+#: lib/rpminstall.c:698
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kunne ikke åbne fil %s: %s\n"
 
-#: lib/rpminstall.c:776
+#: lib/rpminstall.c:782
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" angiver flere pakker\n"
 
-#: lib/rpminstall.c:838
+#: lib/rpminstall.c:844
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/rpminstall.c:844
+#: lib/rpminstall.c:850
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"
 
-#: lib/rpminstall.c:1224
+#: lib/rpminstall.c:1230
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -3281,11 +3281,11 @@ msgstr "{ forventet efter : i udtryk"
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
-#: rpmdb/header.c:2828
+#: rpmdb/header.c:2832
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3132
+#: rpmdb/header.c:3136
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
