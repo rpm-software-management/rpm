@@ -220,7 +220,7 @@ restart:
 	ps = rpmtsProblems(ts);
 	if (ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
-	    printDepProblems(stderr, ps);
+	    rpmpsPrint(NULL, ps);
 	    ps = rpmpsFree(ps);
 	    rc = -1;
 	    goto exit;

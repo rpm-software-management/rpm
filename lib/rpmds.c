@@ -617,8 +617,8 @@ exit:
     return result;
 }
 
-void rpmdsProblem(rpmps ps, const char * pkgNEVR,
-		const rpmds ds, const fnpyKey * suggestedKeys)
+void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
+	const fnpyKey * suggestedKeys, int adding)
 {
     const char * Name =  rpmdsN(ds);
     const char * DNEVR = rpmdsDNEVR(ds);
@@ -637,10 +637,14 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR,
     rpmMessage(RPMMESS_DEBUG, _("package %s has unsatisfied %s: %s\n"),
 	    pkgNEVR, ds->Type, DNEVR+2);
 
-    type = (DNEVR[0] == 'C' && DNEVR[1] == ' ')
-		? RPMPROB_CONFLICT : RPMPROB_REQUIRES;
+    switch ((unsigned)DNEVR[0]) {
+    case 'C':	type = RPMPROB_CONFLICT;	break;
+    default:
+    case 'R':	type = RPMPROB_REQUIRES;	break;
+    }
+
     key = (suggestedKeys ? suggestedKeys[0] : NULL);
-    rpmpsAppend(ps, type, pkgNEVR, key, NULL, NULL, DNEVR, 0);
+    rpmpsAppend(ps, type, pkgNEVR, key, NULL, NULL, DNEVR, adding);
 }
 
 int rangeMatchesDepFlags (Header h, const rpmds req)

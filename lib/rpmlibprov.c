@@ -30,7 +30,7 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     N_("PreReq:, Provides:, and Obsoletes: dependencies support versions.") },
     { "rpmlib(CompressedFileNames)",	"3.0.4-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
-    N_("file name(s) are stored as (dirName,baseName,dirIndex) tuple, not as path.")},
+    N_("file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path.")},
     { "rpmlib(PayloadIsBzip2)",		"3.0.5-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload is compressed using bzip2.") },
@@ -57,12 +57,16 @@ void rpmShowRpmlibProvides(FILE * fp)
     const struct rpmlibProvides_s * rlp;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
-	fprintf(fp, "    %s", rlp->featureName);
-	if (rlp->featureEVR && rlp->featureFlags)
-	    printDepFlags(fp, rlp->featureEVR, rlp->featureFlags);
-	fprintf(fp, "\n");
-	if (rlp->featureDescription)
-	    fprintf(fp, "\t%s\n", rlp->featureDescription);
+	rpmds pro = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
+			rlp->featureEVR, rlp->featureFlags);
+	const char * DNEVR = rpmdsDNEVR(pro);
+
+	if (pro != NULL && DNEVR != NULL) {
+	    fprintf(fp, "    %s\n", DNEVR+2);
+	    if (rlp->featureDescription)
+		fprintf(fp, "\t%s\n", rlp->featureDescription);
+	}
+	pro = rpmdsFree(pro);
     }
 }
 

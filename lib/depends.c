@@ -550,18 +550,19 @@ exit:
 }
 
 /**
- * Check header requires/conflicts against against installed+added packages.
+ * Check added requires/conflicts against against installed+added packages.
  * @param ts		transaction set
  * @param pkgNEVR	package name-version-release
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
  * @param depName	dependency name to filter (or NULL)
  * @param multiLib	skip multilib colored dependencies?
+ * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
 static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
-		/*@null@*/ const char * depName, uint_32 multiLib)
+		/*@null@*/ const char * depName, uint_32 multiLib, int adding)
 	/*@globals fileSystem @*/
 	/*@modifies ts, requires, conflicts, fileSystem */
 {
@@ -603,7 +604,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	    }
 	    /*@=branchstate@*/
 
-	    rpmdsProblem(ts->probs, pkgNEVR, requires, suggestedKeys);
+	    rpmdsProblem(ts->probs, pkgNEVR, requires, suggestedKeys, adding);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -637,7 +638,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
 	case 0:		/* conflicts exist. */
-	    rpmdsProblem(ts->probs, pkgNEVR, conflicts, NULL);
+	    rpmdsProblem(ts->probs, pkgNEVR, conflicts, NULL, adding);
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
 	    /*@switchbreak@*/ break;
@@ -658,10 +659,11 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
  * @param ts		transaction set
  * @param dep		dependency name
  * @param mi		rpm database iterator
+ * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
-static int checkPackageSet(rpmts ts,
-		const char * dep, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
+static int checkPackageSet(rpmts ts, const char * dep,
+		/*@only@*/ /*@null@*/ rpmdbMatchIterator mi, int adding)
 	/*@globals fileSystem @*/
 	/*@modifies ts, mi, fileSystem @*/
 {
@@ -679,7 +681,7 @@ static int checkPackageSet(rpmts ts,
 	pkgNEVR = hGetNEVR(h, NULL);
 	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, dep, 0);
+	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
 	pkgNEVR = _free(pkgNEVR);
@@ -695,7 +697,7 @@ static int checkPackageSet(rpmts ts,
 }
 
 /**
- * Erasing: check name/provides/filename dep against requiredby matches.
+ * Check to-be-erased dependencies against installed requires.
  * @param ts		transaction set
  * @param dep		requires name
  * @return		0 no problems found
@@ -706,11 +708,11 @@ static int checkDependentPackages(rpmts ts, const char * dep)
 {
     rpmdbMatchIterator mi;
     mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
-    return checkPackageSet(ts, dep, mi);
+    return checkPackageSet(ts, dep, mi, 0);
 }
 
 /**
- * Adding: check name/provides dep against conflicts matches.
+ * Check to-be-added dependencies against installed conflicts.
  * @param ts		transaction set
  * @param dep		conflicts name
  * @return		0 no problems found
@@ -724,7 +726,7 @@ static int checkDependentConflicts(rpmts ts, const char * dep)
     if (rpmtsGetRdb(ts) != NULL) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
-	rc = checkPackageSet(ts, dep, mi);
+	rc = checkPackageSet(ts, dep, mi, 1);
     }
 
     return rc;
@@ -1713,7 +1715,7 @@ int rpmtsCheck(rpmts ts)
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			NULL,
-			rpmteMultiLib(p));
+			rpmteMultiLib(p), 1);
 	if (rc)
 	    goto exit;
 

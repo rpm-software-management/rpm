@@ -246,10 +246,12 @@ int rpmdsCompare(const rpmds A, const rpmds B)
  * @param ps		transaction set problems
  * @param pkgNEVR	package name/epoch/version/release
  * @param ds		dependency set
- * @param suggestedKeys
+ * @param suggestedKeys	filename or python object address
+ * @param adding	dependency problem is from added package set?
  */
 void rpmdsProblem(/*@null@*/ rpmps ps, const char * pkgNEVR, const rpmds ds,
-		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys)
+		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys,
+		int adding)
 	/*@modifies ps @*/;
 
 /**

@@ -65,21 +65,6 @@ extern "C" {
 #endif
 
 /**
- */
-void printDepFlags(FILE *fp, const char *version, int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
-
-/**
- * Print a problem array.
- * @param fp		output file
- * @param ps		dependency problems
- */
-void printDepProblems(FILE * fp, /*@null@*/ const rpmps ps)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
-
-/**
  * Return formatted string representation of a problem.
  * @param prob		rpm problem
  * @return		formatted string (malloc'd)
@@ -152,28 +137,23 @@ rpmps rpmpsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmps ps)
 	/*@modifies ps @*/;
 
 /**
- * Output formatted string representation of a problem to file handle.
- * @deprecated API: prob used to be passed by value, now passed by reference.
- * @param fp		file handle
- * @param prob		rpm problem
- */
-/*@-exportlocal@*/
-void rpmProblemPrint(FILE *fp, rpmProblem prob)
-	/*@globals fileSystem @*/
-	/*@modifies prob, *fp, fileSystem @*/;
-/*@=exportlocal@*/
-
-/**
  * Print problems to file handle.
- * @param fp		file handle
+ * @param fp		file handle (NULL uses stderr)
  * @param ps		problem set
  */
-void rpmpsPrint(FILE *fp, /*@null@*/ rpmps ps)
+void rpmpsPrint(/*@null@*/ FILE *fp, /*@null@*/ rpmps ps)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, ps, fileSystem @*/;
 
 /**
  * Append a problem to set.
+ * @param ps		problem set
+ * @param type		type of problem
+ * @param pkgNEVR	package name
+ * @param key		filename or python object address
+ * @param dn		directory name
+ * @param bn		file base name
+ * @param ulong1	generic pointer/long attribute
  */
 void rpmpsAppend(/*@null@*/ rpmps ps, rpmProblemType type,
 		/*@null@*/ const char * pkgNEVR,

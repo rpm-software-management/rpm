@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-28 08:45-0400\n"
+"POT-Creation-Date: 2002-06-28 17:47-0400\n"
 "PO-Revision-Date: 2002-04-09 16:44-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1476,23 +1476,23 @@ msgstr "%s: %-45s YES (db provides)\n"
 msgid "(db package)"
 msgstr "нет пакетов\n"
 
-#: lib/depends.c:832
+#: lib/depends.c:834
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:953
+#: lib/depends.c:955
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1229
+#: lib/depends.c:1231
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1335
+#: lib/depends.c:1337
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
@@ -1500,20 +1500,20 @@ msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "дерево, глубина)\n"
 
-#: lib/depends.c:1428
+#: lib/depends.c:1430
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1498
+#: lib/depends.c:1500
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1533
+#: lib/depends.c:1535
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1538
+#: lib/depends.c:1540
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2197,7 +2197,7 @@ msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
 #: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:503
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:891
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
@@ -2447,7 +2447,7 @@ msgstr "ошибка чтения из файла %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "для файла %s необходима более новая версия RPM\n"
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:744
+#: lib/rpminstall.c:495 lib/rpminstall.c:747
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
@@ -2457,7 +2457,7 @@ msgstr "%s не может быть установлен\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:545 lib/rpminstall.c:1075
+#: lib/rpminstall.c:545 lib/rpminstall.c:704 lib/rpminstall.c:1078
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
@@ -2480,21 +2480,17 @@ msgstr "невозможно открыть файл %s: %s\n"
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:704
-msgid "removing these packages would break dependencies:\n"
-msgstr "удаление этих пакетов нарушит зависимости:\n"
-
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:734
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:740
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
 
-#: lib/rpminstall.c:1069
+#: lib/rpminstall.c:1072
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "откатить (+%d,-%d) пакеты к %s"
@@ -2505,85 +2501,80 @@ msgid "read failed: %s (%d)\n"
 msgstr "ошибка чтения: %s (%d)\n"
 
 #. @observer@
-#: lib/rpmps.c:218
+#: lib/rpmps.c:200
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:226
+#: lib/rpmps.c:208
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "пакет %s - для другой архитектуры"
 
-#: lib/rpmps.c:231
+#: lib/rpmps.c:213
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "пакет %s - для другой операционной системы"
 
-#: lib/rpmps.c:236
+#: lib/rpmps.c:218
 #, c-format
 msgid "package %s is already installed"
 msgstr "пакет %s уже установлен"
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:223
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "путь %s в пакете %s - не перемещаемый"
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:228
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "конфликт файла %s при попытках установки %s и %s"
 
-#: lib/rpmps.c:251
+#: lib/rpmps.c:233
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "файл %s из устанавливаемого пакета %s конфликтует с файлом из пакета %s"
 
-#: lib/rpmps.c:256
+#: lib/rpmps.c:238
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакет %s (который новее, чем %s) уже установлен"
 
-#: lib/rpmps.c:261
+#: lib/rpmps.c:243
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "для установки пакета %s нужно %ld%cb на файловой системе %s"
 
-#: lib/rpmps.c:271
+#: lib/rpmps.c:253
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "для установки пакета %s нужно %ld inodes на файловой системе %s"
 
-#: lib/rpmps.c:276
+#: lib/rpmps.c:258
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "пакет %s pre-transaction syscall(s): %s: ошибка: %s"
 
-#: lib/rpmps.c:280
-#, c-format
-msgid "package %s has unsatisfied Requires: %s\n"
-msgstr "пакет %s содержит неудовлетворенные требования: %s\n"
+#: lib/rpmps.c:262
+#, fuzzy, c-format
+msgid "%s is needed by %s%s"
+msgstr " нужен для %s-%s-%s\n"
 
-#: lib/rpmps.c:284
-#, c-format
-msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "пакет %s содержит неудовлетворенные Конфликты: %s\n"
+#: lib/rpmps.c:264 lib/rpmps.c:269
+#, fuzzy
+msgid "(installed) "
+msgstr "не установлен "
 
-#: lib/rpmps.c:289
+#: lib/rpmps.c:267
+#, fuzzy, c-format
+msgid "%s conflicts with %s%s"
+msgstr " конфликтует с %s-%s-%s\n"
+
+#: lib/rpmps.c:273
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
-
-#: lib/rpmps.c:370
-#, fuzzy
-msgid "conflicts with"
-msgstr " конфликтует с %s-%s-%s\n"
-
-#: lib/rpmps.c:370
-#, fuzzy
-msgid "is needed by"
-msgstr " нужен для %s-%s-%s\n"
 
 #: lib/rpmrc.c:201
 #, c-format
@@ -3396,6 +3387,15 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "removing these packages would break dependencies:\n"
+#~ msgstr "удаление этих пакетов нарушит зависимости:\n"
+
+#~ msgid "package %s has unsatisfied Requires: %s\n"
+#~ msgstr "пакет %s содержит неудовлетворенные требования: %s\n"
+
+#~ msgid "package %s has unsatisfied Conflicts: %s\n"
+#~ msgstr "пакет %s содержит неудовлетворенные Конфликты: %s\n"
 
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "невозможно открыть базу данных RPM в %s\n"

@@ -169,24 +169,6 @@ int rpmpsTrim(rpmps ps, rpmps filter)
     return gotProblems;
 }
 
-/* XXX FIXME: merge into problems */
-/* XXX used in verify.c rpmlibprov.c */
-void printDepFlags(FILE * fp, const char * version, int flags)
-{
-    if (flags)
-	fprintf(fp, " ");
-
-    if (flags & RPMSENSE_LESS) 
-	fprintf(fp, "<");
-    if (flags & RPMSENSE_GREATER)
-	fprintf(fp, ">");
-    if (flags & RPMSENSE_EQUAL)
-	fprintf(fp, "=");
-
-    if (flags)
-	fprintf(fp, " %s", version);
-}
-
 #if !defined(HAVE_VSNPRINTF)
 /*@-shadow -bufferoverflowhigh @*/
 static inline int vsnprintf(/*@out@*/ char * buf, /*@unused@*/ int nb,
@@ -213,7 +195,7 @@ const char * rpmProblemString(const rpmProblem prob)
 /*@observer@*/
     const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "?pkgNEVR?");
 /*@observer@*/
-    const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "?altNEVR?");
+    const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "? ?altNEVR?");
 /*@observer@*/
     const char * str1 = (prob->str1 ? prob->str1 : N_("different"));
     int nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 100;
@@ -277,12 +259,14 @@ const char * rpmProblemString(const rpmProblem prob)
 		pkgNEVR, str1, strerror(prob->ulong1));
 	break;
     case RPMPROB_REQUIRES:
-	rc = snprintf(buf, nb, _("package %s has unsatisfied Requires: %s\n"),
-		pkgNEVR, altNEVR+2);
+	rc = snprintf(buf, nb, _("%s is needed by %s%s"),
+		altNEVR+2,
+		(prob->ulong1 ? "" : _("(installed) ")), pkgNEVR);
 	break;
     case RPMPROB_CONFLICT:
-	rc = snprintf(buf, nb, _("package %s has unsatisfied Conflicts: %s\n"),
-		pkgNEVR, altNEVR+2);
+	rc = snprintf(buf, nb, _("%s conflicts with %s%s"),
+		altNEVR+2,
+		(prob->ulong1 ? "" : _("(installed) ")), pkgNEVR);
 	break;
     default:
 	rc = snprintf(buf, nb,
@@ -293,30 +277,6 @@ const char * rpmProblemString(const rpmProblem prob)
 
     buf[nb] = '\0';
     return buf;
-}
-
-void rpmProblemPrint(FILE *fp, rpmProblem prob)
-{
-    const char * msg = rpmProblemString(prob);
-    fprintf(fp, "%s\n", msg);
-    msg = _free(msg);
-}
-
-void rpmpsPrint(FILE *fp, rpmps ps)
-{
-    int i;
-
-    if (ps == NULL)
-	return;
-
-    if (fp == NULL)
-	fp = stderr;
-
-    for (i = 0; i < ps->numProblems; i++) {
-	rpmProblem myprob = ps->probs + i;
-	if (!myprob->ignoreProblem)
-	    rpmProblemPrint(fp, myprob);
-    }
 }
 
 static int sameProblem(const rpmProblem ap, const rpmProblem bp)
@@ -340,19 +300,25 @@ static int sameProblem(const rpmProblem ap, const rpmProblem bp)
     return 0;
 }
 
-/* XXX FIXME: merge into rpmpsPrint */
-void printDepProblems(FILE * fp, rpmps ps)
+void rpmpsPrint(FILE *fp, rpmps ps)
 {
+    const char * msg;
     int i;
 
-    if (ps && ps->probs != NULL)
+    if (ps == NULL || ps->probs == NULL || ps->numProblems <= 0)
+	return;
+
+    if (fp == NULL)
+	fp = stderr;
+
     for (i = 0; i < ps->numProblems; i++) {
-	const char * pkgNEVR;
-	const char * altNEVR;
 	rpmProblem p;
 	int j;
 
 	p = ps->probs + i;
+
+	if (p->ignoreProblem)
+	    continue;
 
 	/* Filter already displayed problems. */
 	for (j = 0; j < i; j++) {
@@ -362,12 +328,9 @@ void printDepProblems(FILE * fp, rpmps ps)
 	if (j < i)
 	    continue;
 
-	pkgNEVR = (p->pkgNEVR ? p->pkgNEVR : "?pkgNEVR?");
-	altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
+	msg = rpmProblemString(p);
+	fprintf(fp, "\t%s\n", msg);
+	msg = _free(msg);
 
-	fprintf(fp, "\t%s %s %s\n", altNEVR+2,
-		((altNEVR[0] == 'C' && altNEVR[1] == ' ')
-			?  _("conflicts with") : _("is needed by")),
-		pkgNEVR);
     }
 }

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-28 08:45-0400\n"
+"POT-Creation-Date: 2002-06-28 17:47-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1497,42 +1497,42 @@ msgstr "Poskytuje:"
 msgid "(db package)"
 msgstr "nájdených %d balíkov\n"
 
-#: lib/depends.c:832
+#: lib/depends.c:834
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:953
+#: lib/depends.c:955
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuje sa index skupín\n"
 
 #. Record all relations.
-#: lib/depends.c:1229
+#: lib/depends.c:1231
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1335
+#: lib/depends.c:1337
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1428
+#: lib/depends.c:1430
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1498
+#: lib/depends.c:1500
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1533
+#: lib/depends.c:1535
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1538
+#: lib/depends.c:1540
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2254,7 +2254,7 @@ msgid "can't query %s: %s\n"
 msgstr "zmazanie %s zlyhalo: %s\n"
 
 #: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:503
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:891
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
@@ -2505,7 +2505,7 @@ msgstr "chyba pri vytváraní doèasného súboru %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:744
+#: lib/rpminstall.c:495 lib/rpminstall.c:747
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
@@ -2515,7 +2515,7 @@ msgstr "%s nie je mo¾né nain¹talova»\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: lib/rpminstall.c:545 lib/rpminstall.c:1075
+#: lib/rpminstall.c:545 lib/rpminstall.c:704 lib/rpminstall.c:1078
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
@@ -2538,21 +2538,17 @@ msgstr "nie je mo¾né otvori» súbor %s: %s"
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
-#: lib/rpminstall.c:704
-msgid "removing these packages would break dependencies:\n"
-msgstr "odstránenie týchto balíkov by poru¹ilo závislosti:\n"
-
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:734
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:740
 #, c-format
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpminstall.c:1069
+#: lib/rpminstall.c:1072
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2563,84 +2559,79 @@ msgid "read failed: %s (%d)\n"
 msgstr "èítanie zlyhalo: %s (%d)"
 
 #. @observer@
-#: lib/rpmps.c:218
+#: lib/rpmps.c:200
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:226
+#: lib/rpmps.c:208
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:231
+#: lib/rpmps.c:213
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr ""
 
-#: lib/rpmps.c:236
+#: lib/rpmps.c:218
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:223
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:228
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:251
+#: lib/rpmps.c:233
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/rpmps.c:256
+#: lib/rpmps.c:238
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:261
+#: lib/rpmps.c:243
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:271
+#: lib/rpmps.c:253
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:276
+#: lib/rpmps.c:258
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/rpmps.c:280
+#: lib/rpmps.c:262
 #, fuzzy, c-format
-msgid "package %s has unsatisfied Requires: %s\n"
-msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
+msgid "%s is needed by %s%s"
+msgstr " je vy¾adované %s-%s-%s\n"
 
-#: lib/rpmps.c:284
+#: lib/rpmps.c:264 lib/rpmps.c:269
+#, fuzzy
+msgid "(installed) "
+msgstr "nein¹talovaný "
+
+#: lib/rpmps.c:267
 #, fuzzy, c-format
-msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "balík %s koliduje: %s\n"
+msgid "%s conflicts with %s%s"
+msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/rpmps.c:289
+#: lib/rpmps.c:273
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
-
-#: lib/rpmps.c:370
-#, fuzzy
-msgid "conflicts with"
-msgstr " koliduje s %s-%s-%s\n"
-
-#: lib/rpmps.c:370
-#, fuzzy
-msgid "is needed by"
-msgstr " je vy¾adované %s-%s-%s\n"
 
 #: lib/rpmrc.c:201
 #, fuzzy, c-format
@@ -3463,6 +3454,17 @@ msgstr "url port musí by» èíslo\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"
+
+#~ msgid "removing these packages would break dependencies:\n"
+#~ msgstr "odstránenie týchto balíkov by poru¹ilo závislosti:\n"
+
+#, fuzzy
+#~ msgid "package %s has unsatisfied Requires: %s\n"
+#~ msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
+
+#, fuzzy
+#~ msgid "package %s has unsatisfied Conflicts: %s\n"
+#~ msgstr "balík %s koliduje: %s\n"
 
 #, fuzzy
 #~ msgid "cannot open rpm database in %s\n"

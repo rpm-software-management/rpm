@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-06-28 08:45-0400\n"
+"POT-Creation-Date: 2002-06-28 17:47-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1470,43 +1470,43 @@ msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 msgid "(db package)"
 msgstr "nenhum pacote\n"
 
-#: lib/depends.c:832
+#: lib/depends.c:834
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorar relações entre o nome do pacote [%d]\t%s -> %s\n"
 
-#: lib/depends.c:953
+#: lib/depends.c:955
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1229
+#: lib/depends.c:1231
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1335
+#: lib/depends.c:1337
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 "========== ordenar pacotes (order, #predecessors, #succesors, tree, depth)\n"
 
-#: lib/depends.c:1428
+#: lib/depends.c:1430
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1498
+#: lib/depends.c:1500
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1533
+#: lib/depends.c:1535
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1538
+#: lib/depends.c:1540
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2195,7 +2195,7 @@ msgid "can't query %s: %s\n"
 msgstr "não consigo pesquisar o %s: %s\n"
 
 #: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:503
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:891
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
@@ -2446,7 +2446,7 @@ msgstr "erro ao ler do ficheiros %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "o %s precisa duma versão mais recente do RPM\n"
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:744
+#: lib/rpminstall.c:495 lib/rpminstall.c:747
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "o %s não pode ser instalado\n"
@@ -2456,7 +2456,7 @@ msgstr "o %s não pode ser instalado\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "encontrados %d pacotes com código-fonte e %d binários\n"
 
-#: lib/rpminstall.c:545 lib/rpminstall.c:1075
+#: lib/rpminstall.c:545 lib/rpminstall.c:704 lib/rpminstall.c:1078
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "dependências falhadas:\n"
@@ -2479,21 +2479,17 @@ msgstr "não consigo aceder ao ficheiro %s: %s\n"
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "o \"%s\" especifica vários pacotes\n"
 
-#: lib/rpminstall.c:704
-msgid "removing these packages would break dependencies:\n"
-msgstr "a remoção destes pacotes irá quebrar dependências:\n"
-
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:734
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "não consigo aceder ao %s: %s\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:740
 #, c-format
 msgid "Installing %s\n"
 msgstr "A instalar o %s\n"
 
-#: lib/rpminstall.c:1069
+#: lib/rpminstall.c:1072
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "a efectuar o 'rollback' (+%d,-%d) pacotes para %s"
@@ -2504,88 +2500,83 @@ msgid "read failed: %s (%d)\n"
 msgstr "a leitura falhou: %s (%d)\n"
 
 #. @observer@
-#: lib/rpmps.c:218
+#: lib/rpmps.c:200
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:226
+#: lib/rpmps.c:208
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "o pacote %s é para uma arquitectura diferente"
 
-#: lib/rpmps.c:231
+#: lib/rpmps.c:213
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "o pacote %s é para um sistema operativo diferente"
 
-#: lib/rpmps.c:236
+#: lib/rpmps.c:218
 #, c-format
 msgid "package %s is already installed"
 msgstr "o pacote %s já está instalado"
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:223
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "a directoria %s no pacote %s não pode ser mudada de sítio"
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:228
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "o ficheiro %s está em conflito com as tentativas de instalação do %s e %s"
 
-#: lib/rpmps.c:251
+#: lib/rpmps.c:233
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "o ficheiro %s da instalação do %s está em conflito com o ficheiro do pacote %"
 "s"
 
-#: lib/rpmps.c:256
+#: lib/rpmps.c:238
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "o pacote %s (que é mais recente que o %s) já está instalado"
 
-#: lib/rpmps.c:261
+#: lib/rpmps.c:243
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "a instalação do pacote %s precisa de %ld%cb no sistema de ficheiros %s"
 
-#: lib/rpmps.c:271
+#: lib/rpmps.c:253
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "a instalação do pacote %s precisa de %ld 'inodes' no sistema de ficheiros %s"
 
-#: lib/rpmps.c:276
+#: lib/rpmps.c:258
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "a(s) chamada(s) de pré-transacção do pacote %s: %s falhou: %s"
 
-#: lib/rpmps.c:280
-#, c-format
-msgid "package %s has unsatisfied Requires: %s\n"
-msgstr "o pacote %s tem requisitos não satisfeitos: %s\n"
+#: lib/rpmps.c:262
+#, fuzzy, c-format
+msgid "%s is needed by %s%s"
+msgstr " é necessário pelo %s-%s-%s\n"
 
-#: lib/rpmps.c:284
-#, c-format
-msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "o pacote %s tem campos Conflits não satisfeitos: %s\n"
+#: lib/rpmps.c:264 lib/rpmps.c:269
+#, fuzzy
+msgid "(installed) "
+msgstr "não instalado "
 
-#: lib/rpmps.c:289
+#: lib/rpmps.c:267
+#, fuzzy, c-format
+msgid "%s conflicts with %s%s"
+msgstr " está em conflito com o %s-%s-%s\n"
+
+#: lib/rpmps.c:273
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "encontrado o erro desconhecido %d ao manipular o pacote %s"
-
-#: lib/rpmps.c:370
-#, fuzzy
-msgid "conflicts with"
-msgstr " está em conflito com o %s-%s-%s\n"
-
-#: lib/rpmps.c:370
-#, fuzzy
-msgid "is needed by"
-msgstr " é necessário pelo %s-%s-%s\n"
 
 #: lib/rpmrc.c:201
 #, c-format
@@ -3397,6 +3388,15 @@ msgstr "o porto do URL tem de ser um número\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"
+
+#~ msgid "removing these packages would break dependencies:\n"
+#~ msgstr "a remoção destes pacotes irá quebrar dependências:\n"
+
+#~ msgid "package %s has unsatisfied Requires: %s\n"
+#~ msgstr "o pacote %s tem requisitos não satisfeitos: %s\n"
+
+#~ msgid "package %s has unsatisfied Conflicts: %s\n"
+#~ msgstr "o pacote %s tem campos Conflits não satisfeitos: %s\n"
 
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "não consigo a base de dados do RPM em %s\n"

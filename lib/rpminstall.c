@@ -543,7 +543,7 @@ restart:
 	ps = rpmtsProblems(ts);
 	if (!stopInstall && rpmpsNumProblems(ps) > 0) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
-	    printDepProblems(stderr, ps);
+	    rpmpsPrint(NULL, ps);
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 
@@ -701,9 +701,8 @@ int rpmErase(rpmts ts,
 
 	ps = rpmtsProblems(ts);
 	if (!stopUninstall && rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("removing these packages would break "
-			      "dependencies:\n"));
-	    printDepProblems(stderr, ps);
+	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmpsPrint(NULL, ps);
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}
@@ -712,8 +711,12 @@ int rpmErase(rpmts ts,
 
     if (!stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
-	numFailed += rpmtsRun(ts, NULL, 0);
+	numPackages = rpmtsRun(ts, NULL, 0);
 	ps = rpmtsProblems(ts);
+	if (rpmpsNumProblems(ps) > 0)
+	    rpmpsPrint(NULL, ps);
+	numFailed += numPackages;
+	stopUninstall = 1;
 	ps = rpmpsFree(ps);
     }
 
@@ -1073,7 +1076,7 @@ int rpmRollback(rpmts ts,
 	ps = rpmtsProblems(ts);
 	if (rc != 0 && rpmpsNumProblems(ps) > 0) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
-	    printDepProblems(stderr, ps);
+	    rpmpsPrint(NULL, ps);
 	    ps = rpmpsFree(ps);
 	    goto exit;
 	}
