@@ -130,7 +130,7 @@ msgstr "       rpm {--version}"
 
 #: rpm.c:204
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
-msgstr "       rpm {--initdb}   [--dbpath <mappe>]"
+msgstr "       rpm {--initdb}   [--dbpath <kat>]"
 
 #: rpm.c:205
 msgid ""
@@ -141,7 +141,7 @@ msgstr ""
 #: rpm.c:206 rpmqv.c:294
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
-"                        [--replacepkgs] [--replacefiles] [--root <mappe>]"
+"                        [--replacepkgs] [--replacefiles] [--root <kat>]"
 
 #: rpm.c:207 rpmqv.c:295
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
@@ -151,7 +151,7 @@ msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                        [--rcfile <fil>] [--ignorearch] [--dbpath <mappe>]"
+"                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
 
 #: rpm.c:209 rpmqv.c:297
 msgid ""
@@ -191,7 +191,7 @@ msgstr ""
 
 #: rpm.c:216 rpmqv.c:304
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-msgstr "                        [--oldpackage] [--root <mappe>] [--noscripts]"
+msgstr "                        [--oldpackage] [--root <kat>] [--noscripts]"
 
 #: rpm.c:217 rpmqv.c:305
 msgid ""
@@ -203,8 +203,7 @@ msgstr ""
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
-"                        [--ignorearch]  [--dbpath <mappe>] [--prefix "
-"<mappe>] "
+"                        [--ignorearch]  [--dbpath <kat>] [--prefix <kat>] "
 
 #: rpm.c:219 rpmqv.c:307
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
@@ -231,14 +230,13 @@ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
 #: rpm.c:226 rpmqv.c:320
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr "                        [--scripts] [--root <mappe>] [--rcfile <fil>]"
+msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
 
 #: rpm.c:227 rpmqv.c:321
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:228 rpmqv.c:322
-#, fuzzy
 msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 msgstr ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <vært>]"
@@ -251,11 +249,11 @@ msgstr ""
 
 #: rpm.c:231 rpmqv.c:325
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-msgstr "                        [--changelog] [--dbpath <mappe>] [mål]"
+msgstr "                        [--changelog] [--dbpath <kat>] [mål]"
 
 #: rpm.c:232
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-msgstr "       rpm {--verify -V -y} [-afpg] [--root <mappe>] [--rcfile <fil>]"
+msgstr "       rpm {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil>]"
 
 #: rpm.c:233 rpmqv.c:327
 msgid ""
@@ -265,15 +263,15 @@ msgstr ""
 
 #: rpm.c:234 rpmqv.c:328
 msgid "                        [--nomd5] [targets]"
-msgstr "                        [--nomd5] [targets]"
+msgstr "                        [--nomd5] [mål]"
 
 #: rpm.c:235
 msgid "       rpm {--setperms} [-afpg] [target]"
-msgstr "       rpm {--setperms} [-afpg] [target]"
+msgstr "       rpm {--setperms} [-afpg] [mål]"
 
 #: rpm.c:236
 msgid "       rpm {--setugids} [-afpg] [target]"
-msgstr "       rpm {--setugids} [-afpg] [target]"
+msgstr "       rpm {--setugids} [-afpg] [mål]"
 
 #: rpm.c:237
 msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
@@ -282,11 +280,11 @@ msgstr "       rpm {--freshen -F} fil-1.rpm ... fil-N.rpm"
 #: rpm.c:238
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
-"       rpm {--erase -e} [--root <mappe>] [--noscripts] [--rcfile <fil>]"
+"       rpm {--erase -e} [--root <katalog>] [--noscripts] [--rcfile <fil>]"
 
 #: rpm.c:239 rpmqv.c:314
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-msgstr "                        [--dbpath <mappe>] [--nodeps] [--allmatches]"
+msgstr "                        [--dbpath <kat>] [--nodeps] [--allmatches]"
 
 #: rpm.c:240 rpmqv.c:315
 #, fuzzy
@@ -313,7 +311,7 @@ msgstr "                           pakke1 ... pakkeN"
 
 #: rpm.c:245
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <mappe>]"
+msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <kat>]"
 
 #: rpm.c:246
 msgid "       rpm {--querytags}"
@@ -353,7 +351,7 @@ msgstr ""
 
 #: rpm.c:292
 msgid "    --pipe <cmd>          "
-msgstr ""
+msgstr "    --pipe <kmd>          "
 
 #: rpm.c:293 rpmqv.c:398
 msgid "send stdout to <cmd>"
@@ -361,7 +359,7 @@ msgstr ""
 
 #: rpm.c:294
 msgid "    --rcfile <file>       "
-msgstr ""
+msgstr "    --rcfile <fil>        "
 
 #: rpm.c:295 rpmqv.c:400
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
@@ -389,7 +387,7 @@ msgstr ""
 
 #: rpm.c:306
 msgid "      --ftpproxy <host>   "
-msgstr ""
+msgstr "      --ftpproxy <vært>   "
 
 #: rpm.c:307 rpmqv.c:419
 msgid "hostname or IP of ftp proxy"
@@ -397,7 +395,7 @@ msgstr ""
 
 #: rpm.c:308
 msgid "      --ftpport <port>    "
-msgstr ""
+msgstr "      --ftpport <port>    "
 
 #: rpm.c:309 rpmqv.c:421
 msgid "port number of ftp server (or proxy)"
@@ -405,7 +403,7 @@ msgstr ""
 
 #: rpm.c:310
 msgid "      --httpproxy <host>  "
-msgstr ""
+msgstr "      --httpproxy <vært>  "
 
 #: rpm.c:311 rpmqv.c:423
 msgid "hostname or IP of http proxy"
@@ -413,7 +411,7 @@ msgstr ""
 
 #: rpm.c:312
 msgid "      --httpport <port>   "
-msgstr ""
+msgstr "      --httpport <port>   "
 
 #: rpm.c:313 rpmqv.c:425
 msgid "port number of http server (or proxy)"
@@ -425,7 +423,7 @@ msgstr ""
 
 #: rpm.c:318 rpm.c:364 rpm.c:389 rpm.c:441 rpm.c:515
 msgid "      --dbpath <dir>      "
-msgstr ""
+msgstr "      --dbpath <kat>      "
 
 #: rpm.c:319 rpm.c:365 rpm.c:390 rpm.c:442 rpm.c:516 rpmqv.c:405
 msgid "use <dir> as the directory for the database"
@@ -453,7 +451,7 @@ msgstr ""
 
 #: rpm.c:326
 msgid "query all packages"
-msgstr ""
+msgstr "forespørg alle pakker"
 
 #: rpm.c:327
 msgid "        -f <file>+        "
@@ -577,7 +575,7 @@ msgstr ""
 
 #: rpm.c:380 rpmqv.c:497
 msgid "install package"
-msgstr ""
+msgstr "installér pakke"
 
 #: rpm.c:381
 msgid "      --excludepath <path>"
@@ -601,7 +599,7 @@ msgstr ""
 
 #: rpm.c:387
 msgid "      --prefix <dir>      "
-msgstr ""
+msgstr "      --prefix <katalog>  "
 
 #: rpm.c:388 rpmqv.c:532
 msgid "relocate the package to <dir>, if relocatable"
@@ -609,7 +607,7 @@ msgstr ""
 
 #: rpm.c:392 rpmqv.c:504
 msgid "do not install documentation"
-msgstr ""
+msgstr "installér ikke dokumentation"
 
 #: rpm.c:394 rpmqv.c:508
 msgid "short hand for --replacepkgs --replacefiles"
@@ -691,11 +689,11 @@ msgstr ""
 
 #: rpm.c:436
 msgid "    --erase <package>"
-msgstr ""
+msgstr "    --erase <pakke>"
 
 #: rpm.c:438 rpmqv.c:550
 msgid "erase (uninstall) package"
-msgstr ""
+msgstr "slet (afinstallér) pakke"
 
 #: rpm.c:440 rpmqv.c:552
 msgid ""
@@ -730,11 +728,11 @@ msgstr ""
 
 #: rpm.c:464 rpmqv.c:575
 msgid "compile (prep and compile)"
-msgstr ""
+msgstr "kompilér (forbered og kompilér)"
 
 #: rpm.c:466 rpmqv.c:577
 msgid "install (prep, compile, install)"
-msgstr ""
+msgstr "installér (forbered, kompilér og installér)"
 
 #: rpm.c:468 rpmqv.c:579
 msgid "binary package (prep, compile, install, package)"
@@ -786,7 +784,7 @@ msgstr ""
 
 #: rpm.c:487
 msgid "      --timecheck <secs>  "
-msgstr ""
+msgstr "      --timecheck <sek>   "
 
 #: rpm.c:488
 msgid "set the time check to <secs> seconds (0 disables)"
@@ -812,7 +810,7 @@ msgstr ""
 
 #: rpm.c:496
 msgid "    --resign <pkg>+       "
-msgstr ""
+msgstr "    --resign <pakke>+     "
 
 #: rpm.c:497 rpmqv.c:610
 msgid "sign a package (discard current signature)"
@@ -820,23 +818,23 @@ msgstr ""
 
 #: rpm.c:498
 msgid "    --addsign <pkg>+      "
-msgstr ""
+msgstr "    --addsign <pakke>+    "
 
 #: rpm.c:499 rpmqv.c:612
 msgid "add a signature to a package"
-msgstr ""
+msgstr "tilføj signatur til pakke"
 
 #: rpm.c:500
 msgid "    --checksig <pkg>+"
-msgstr ""
+msgstr "    --checksig <pakke>+"
 
 #: rpm.c:501
 msgid "    -K <pkg>+             "
-msgstr ""
+msgstr "    -K <pakke>+           "
 
 #: rpm.c:502 rpmqv.c:616
 msgid "verify package signature"
-msgstr ""
+msgstr "verificér pakke signatur"
 
 #: rpm.c:504 rpmqv.c:618
 msgid "skip any PGP signatures"
@@ -1035,15 +1033,15 @@ msgstr ""
 
 #: rpm.c:934 rpmqv.c:1115
 msgid "--oldpackage may only be used during upgrades"
-msgstr ""
+msgstr "--oldpackage må kun bruges under opgraderinger"
 
 #: rpm.c:937 rpmqv.c:1120
 msgid "--nopgp may only be used during signature checking"
-msgstr ""
+msgstr "--nopgp må kun bruges under signaturkontrollering"
 
 #: rpm.c:940 rpmqv.c:1123
 msgid "--nogpg may only be used during signature checking"
-msgstr ""
+msgstr "--nogpg må kun bruges under signaturkontrollering"
 
 #: rpm.c:943 rpmqv.c:1128
 msgid ""
@@ -1061,7 +1059,7 @@ msgstr ""
 
 #: rpm.c:974 rpmqv.c:1162
 msgid "pgp not found: "
-msgstr ""
+msgstr "pgp ikke fundet: "
 
 #: rpm.c:978 rpmqv.c:1166
 msgid "Enter pass phrase: "
@@ -1126,11 +1124,11 @@ msgstr ""
 #: rpm2cpio.c:23
 #, c-format
 msgid "cannot open package: %s\n"
-msgstr ""
+msgstr "kan ikke åbne pakke: %s\n"
 
 #: rpm2cpio.c:33
 msgid "argument is not an RPM package\n"
-msgstr ""
+msgstr "argument er ikke en RPM-pakke\n"
 
 #: rpm2cpio.c:37
 msgid "error reading header from package\n"
@@ -1144,43 +1142,46 @@ msgstr ""
 #: rpmqv.c:284
 #, c-format
 msgid "Usage: %s {--help}\n"
-msgstr ""
+msgstr "Brug: %s {--help}\n"
 
 #: rpmqv.c:288
 #, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
-msgstr ""
+msgstr "       %s {--initdb}   [--dbpath <katalog>]\n"
 
 #: rpmqv.c:289
 #, c-format
 msgid "       %s {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]\n"
-msgstr ""
+msgstr "       %s {--rebuilddb} [--rcfile <fil>] [--dbpath <katalog>]\n"
 
 #: rpmqv.c:293
 #, c-format
 msgid ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 msgstr ""
+"       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 
 #: rpmqv.c:313
 #, c-format
 msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
 msgstr ""
+"       %s {--erase -e} [--root <katalog>] [--noscripts] [--rcfile <fil>]\n"
 
 #: rpmqv.c:326
 #, c-format
 msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
 msgstr ""
+"       %s {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <fil>]\n"
 
 #: rpmqv.c:330
 #, c-format
 msgid "       %s {--setperms} [-afpg] [target]\n"
-msgstr ""
+msgstr "       %s {--setperms} [-afpg] [mål]\n"
 
 #: rpmqv.c:331
 #, c-format
 msgid "       %s {--setugids} [-afpg] [target]\n"
-msgstr ""
+msgstr "       %s {--setugids} [-afpg] [mål]\n"
 
 #: rpmqv.c:335
 #, c-format
@@ -1188,6 +1189,8 @@ msgid ""
 "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<file>]\n"
 msgstr ""
+"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
+"<fil>]\n"
 
 #: rpmqv.c:337
 msgid "                        [--target=platform1[,platform2...]]"
@@ -1200,29 +1203,31 @@ msgstr "                        [--rmsource] [--rmspec] spec-fil"
 #: rpmqv.c:339
 #, c-format
 msgid "       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"
-msgstr ""
+msgstr "       %s {--rmsource} [--rcfile <fil>] [-v] 'spec'-fil\n"
 
 #: rpmqv.c:340
 #, c-format
 msgid ""
 "       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
 msgstr ""
+"       %s {--rebuild} [--rcfile <fil>] [-v] kilde1.rpm ... kildeN.rpm\n"
 
 #: rpmqv.c:341
 #, c-format
 msgid ""
 "       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
 msgstr ""
+"       %s {--recompile} [--rcfile <fil>] [-v] kilde1.rpm ... kildeN.rpm\n"
 
 #: rpmqv.c:342
 #, c-format
 msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
-msgstr ""
+msgstr "       %s {--freshen -F} fil1.rpm ... filN.rpm\n"
 
 #: rpmqv.c:346
 #, c-format
 msgid "       %s {--resign} [--rcfile <file>] package1 package2 ... packageN\n"
-msgstr ""
+msgstr "       %s {--resign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN\n"
 
 #: rpmqv.c:347
 #, c-format
@@ -1234,6 +1239,7 @@ msgstr ""
 msgid ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]\n"
 msgstr ""
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]\n"
 
 #: rpmqv.c:392
 msgid "  All modes support the following options:"
@@ -1241,27 +1247,27 @@ msgstr ""
 
 #: rpmqv.c:393
 msgid "   --define '<name> <body>'"
-msgstr ""
+msgstr "   --define '<name> <body>'"
 
 #: rpmqv.c:395
 msgid "   --eval '<name>+'       "
-msgstr ""
+msgstr "   --eval '<name>+'       "
 
 #: rpmqv.c:397
 msgid "   --pipe <cmd>           "
-msgstr ""
+msgstr "   --pipe <kmd>           "
 
 #: rpmqv.c:399
 msgid "   --rcfile <file>        "
-msgstr ""
+msgstr "   --rcfile <fil>         "
 
 #: rpmqv.c:404
 msgid "   --dbpath <dir>         "
-msgstr ""
+msgstr "   --dbpath <katalog>     "
 
 #: rpmqv.c:406
 msgid "   --root <dir>           "
-msgstr ""
+msgstr "   --root <katalog>       "
 
 #: rpmqv.c:416
 msgid ""
@@ -2243,6 +2249,16 @@ msgstr ""
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
+#: lib/depends.c:887
+#, c-format
+msgid "%s: %-45s YES (added package)\n"
+msgstr ""
+
+#: lib/depends.c:891
+#, c-format
+msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
+msgstr ""
+
 #: lib/depends.c:874
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
@@ -2256,6 +2272,11 @@ msgstr ""
 #: lib/depends.c:935
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
+msgstr ""
+
+#: lib/depends.c:994
+#, c-format
+msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
 #: lib/depends.c:951
@@ -2965,7 +2986,7 @@ msgstr ""
 
 #: lib/query.c:580
 msgid "no packages\n"
-msgstr ""
+msgstr "ingen pakker\n"
 
 #: lib/query.c:590
 #, c-format
@@ -2990,7 +3011,7 @@ msgstr ""
 #: lib/query.c:651
 #, c-format
 msgid "file %s: %s\n"
-msgstr ""
+msgstr "fil %s: %s\n"
 
 #: lib/query.c:654
 #, c-format
@@ -3000,7 +3021,7 @@ msgstr ""
 #: lib/query.c:680
 #, c-format
 msgid "invalid package number: %s\n"
-msgstr ""
+msgstr "ugyldig pakkenummer: %s\n"
 
 #: lib/query.c:683
 #, c-format
@@ -3235,7 +3256,7 @@ msgstr ""
 #: lib/rpmdb.c:2314
 #, c-format
 msgid "creating directory %s\n"
-msgstr ""
+msgstr "opretter kataloget %s\n"
 
 #: lib/rpmdb.c:2316
 #, c-format
@@ -3278,7 +3299,7 @@ msgstr ""
 #: lib/rpmdb.c:2425
 #, c-format
 msgid "removing directory %s\n"
-msgstr ""
+msgstr "fjener kataloget %s\n"
 
 #: lib/rpmdb.c:2427
 #, c-format
@@ -3292,11 +3313,11 @@ msgstr ""
 #: lib/rpminstall.c:133
 #, c-format
 msgid "found %d packages\n"
-msgstr ""
+msgstr "fundet %d pakke(r)\n"
 
 #: lib/rpminstall.c:138
 msgid "looking for packages to download\n"
-msgstr ""
+msgstr "leder efter pakker til at hente\n"
 
 #: lib/rpminstall.c:153
 #, c-format
@@ -3306,14 +3327,14 @@ msgstr ""
 #: lib/rpminstall.c:168
 #, c-format
 msgid "Retrieving %s\n"
-msgstr ""
+msgstr "Modtager %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
 #: lib/rpminstall.c:178
 #, c-format
 msgid " ... as %s\n"
-msgstr ""
+msgstr " ... som %s\n"
 
 #: lib/rpminstall.c:182
 #, c-format
@@ -3323,12 +3344,12 @@ msgstr ""
 #: lib/rpminstall.c:209
 #, c-format
 msgid "retrieved %d packages\n"
-msgstr ""
+msgstr "modtager %d pakker\n"
 
 #: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, c-format
 msgid "cannot open file %s: %s\n"
-msgstr ""
+msgstr "kan ikke åbne fil %s: %s\n"
 
 #: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, c-format
@@ -3366,7 +3387,7 @@ msgstr ""
 
 #: lib/rpminstall.c:369
 msgid "installing binary packages\n"
-msgstr ""
+msgstr "installerer binære pakker\n"
 
 #: lib/rpminstall.c:467
 #, c-format
@@ -3430,7 +3451,7 @@ msgstr ""
 #: lib/rpmrc.c:551
 #, c-format
 msgid "Cannot expand %s"
-msgstr ""
+msgstr "Kan ikke udvide %s"
 
 #: lib/rpmrc.c:556
 #, c-format
@@ -3466,22 +3487,22 @@ msgstr ""
 #: lib/rpmrc.c:698
 #, c-format
 msgid "cannot open %s at %s:%d: %s"
-msgstr ""
+msgstr "kan ikke åbne %s ved %s:%d: %s"
 
 #: lib/rpmrc.c:738
 #, c-format
 msgid "missing architecture for %s at %s:%d"
-msgstr ""
+msgstr "manglende arkitektur for %s ved %s:%d"
 
 #: lib/rpmrc.c:805
 #, c-format
 msgid "bad option '%s' at %s:%d"
-msgstr ""
+msgstr "ugyldig flag '%s' ved %s:%d"
 
 #: lib/rpmrc.c:1176
 #, c-format
 msgid "Unknown system: %s\n"
-msgstr ""
+msgstr "Ukendt system: %s\n"
 
 #: lib/rpmrc.c:1177
 msgid "Please contact rpm-list@redhat.com\n"
@@ -3662,7 +3683,7 @@ msgstr ""
 #: lib/uninstall.c:56
 #, c-format
 msgid "removal of %s failed: %s"
-msgstr ""
+msgstr "fjernelse af %s fejlede: %s"
 
 #: lib/uninstall.c:141
 #, c-format
@@ -3702,7 +3723,7 @@ msgstr ""
 
 #: rpmio/rpmio.c:529
 msgid "Success"
-msgstr ""
+msgstr "Succés"
 
 #: rpmio/rpmio.c:532
 msgid "Bad server response"
@@ -3714,7 +3735,7 @@ msgstr ""
 
 #: rpmio/rpmio.c:538
 msgid "Server timeout"
-msgstr ""
+msgstr "Tidsudløb for tjener"
 
 #: rpmio/rpmio.c:541
 msgid "Unable to lookup server host address"
@@ -3742,7 +3763,7 @@ msgstr ""
 
 #: rpmio/rpmio.c:559
 msgid "File not found on server"
-msgstr ""
+msgstr "Fil ikke fundet på tjener"
 
 #: rpmio/rpmio.c:562
 msgid "Abort in progress"
@@ -3760,18 +3781,18 @@ msgstr ""
 #: rpmio/macro.c:161
 #, c-format
 msgid "======================== active %d empty %d\n"
-msgstr ""
+msgstr "======================== aktiv %d tom %d\n"
 
 #. XXX just in case
 #: rpmio/macro.c:256
 #, c-format
 msgid "%3d>%*s(empty)"
-msgstr ""
+msgstr "%3d>%*s(tom)"
 
 #: rpmio/macro.c:291
 #, c-format
 msgid "%3d<%*s(empty)\n"
-msgstr ""
+msgstr "%3d<%*s(tom)\n"
 
 #: rpmio/macro.c:470
 msgid "Macro %%%s has unterminated body"
@@ -3779,7 +3800,7 @@ msgstr ""
 
 #: rpmio/macro.c:496
 msgid "Macro %%%s has illegal name (%%define)"
-msgstr ""
+msgstr "Makro %%%s har ugyldig navn (%%define)"
 
 #: rpmio/macro.c:502
 msgid "Macro %%%s has unterminated opts"
