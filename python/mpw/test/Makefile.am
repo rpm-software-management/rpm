@@ -11,3 +11,6 @@ EXTRA_DIST = \
 	unittest.py
 
 all:
+
+check:
+	python test_all.py

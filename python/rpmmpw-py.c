@@ -371,7 +371,7 @@ mpstr(char * t, size_t nt, size_t zsize, mpw* zdata, size_t zbase)
     mpw* wksp = alloca((size+1) * sizeof(*wksp));
     mpw* adata = alloca(size * sizeof(*adata));
     mpw* bdata = alloca(size * sizeof(*bdata));
-    static char mpwhars[] = "0123456789ampwdefghijklmnopqrstuvwxyz";
+    static char bchars[] = "0123456789abcdefghijklmnopqrstuvwxyz";
     size_t result;
 
 if (_mpw_debug < -1)
@@ -388,7 +388,7 @@ fprintf(stderr, "***       a: %p[%d]\t", adata, size), mpfprintln(stderr, size, 
 if (_mpw_debug < -1)
 fprintf(stderr, "***    nmod: %p[%d]\t", bdata, size), mpfprintln(stderr, size, bdata);
 	result = bdata[size-1];
-	t[nt] = mpwhars[result];
+	t[nt] = bchars[result];
 	mpndivmod(bdata, size, adata, 1, &zbase, wksp);
 if (_mpw_debug < -1)
 fprintf(stderr, "*** ndivmod: %p[%d]\t", bdata, size), mpfprintln(stderr, size, bdata);
@@ -448,6 +448,9 @@ fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, withname), mpfprintln(s
 	zdata = z->n.data + (z->n.size - zsize);
     }
 
+    if (withname && zsize > 1)
+	i++;	/* space for 'L' suffix */
+
     nt = mpsizeinbase(zsize, zdata, zbase);
     i += nt;
 
@@ -499,8 +502,11 @@ fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, withname), mpfprintln(s
 
     te += strlen(te);
 
-    if (withname)
+    if (withname) {
+	if (zsize > 1)
+	    *te++ = 'L';
 	*te++ = /*'('*/ ')';
+    }
     *te = '\0';
 
     assert(te - PyString_AS_STRING(so) <= i);
@@ -1128,7 +1134,7 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->
 	if (bsize == 1)
 	    count = bdata[0];
 	mpninit(&z->n, x->n.size, x->n.data);
-	mprshift(z->n.size, z->n.data, count);
+	mplshift(z->n.size, z->n.data, count);
     }	break;
     case '>':
     {	size_t bnorm = m->n.size - (mpbitcnt(m->n.size, m->n.data) + 31)/32;

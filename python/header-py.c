@@ -421,13 +421,18 @@ static struct PyMethodDef hdr_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
-/** \ingroup py_c
- */
-static PyObject * hdr_getattr(hdrObject * s, char * name)
+static PyObject * hdr_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(hdr_methods, (PyObject * ) s, name);
+    return PyObject_GenericGetAttr(o, n);
 }
+
+static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
+}
+
 
 /** \ingroup py_c
  */
@@ -643,7 +648,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_itemsize */
 	(destructor) hdr_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) hdr_getattr, 	/* tp_getattr */
+	(getattrfunc) 0, 		/* tp_getattr */
 	0,				/* tp_setattr */
 	(cmpfunc) hdr_compare,		/* tp_compare */
 	0,				/* tp_repr */
@@ -653,8 +658,8 @@ PyTypeObject hdr_Type = {
 	hdr_hash,			/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) hdr_getattro,	/* tp_getattro */
+	(setattrofunc) hdr_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	hdr_doc,			/* tp_doc */
