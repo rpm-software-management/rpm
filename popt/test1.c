@@ -31,10 +31,11 @@ int main(int argc, char ** argv) {
     struct poptOption options[] = {
 	{ "arg1", '\0', 0, &arg1, 0, "First argument with a really long" 
 	    " description. After all, we have to test argument help"
-	    " wrapping somehow, right?", "ARG1"},
+	    " wrapping somehow, right?", NULL },
 	{ "arg2", '2', POPT_ARG_STRING, &arg2, 0, "Another argument", "ARG" },
 	{ "arg3", '3', POPT_ARG_INT, &arg3, 0, "A third argument", "ANARG" },
-	{ "unused", '\0', 0, NULL, 0, "Unused option for help testing" },
+	{ "unused", '\0', POPT_ARG_STRING, NULL, 0, 
+	    "Unused option for help testing", "UNUSED" },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreArgs, 0, NULL },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &callbackArgs, 0, "Callback arguments" },
 	POPT_AUTOHELP

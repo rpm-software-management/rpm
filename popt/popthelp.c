@@ -26,6 +26,13 @@ struct poptOption poptHelpOptions[] = {
     { NULL, '\0', 0, NULL, 0 }
 } ;
 
+static const char * getArgDescrip(const struct poptOption * opt) {
+    if (!(opt->argInfo & POPT_ARG_MASK)) return NULL;
+
+    if (opt->argDescrip) return opt->argDescrip;
+    return "ARG";
+}
+
 static void singleOptionHelp(FILE * f, int maxLeftCol, 
 			     const struct poptOption * opt) {
     int indentLength = maxLeftCol + 5;
@@ -35,6 +42,7 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
     const char * ch;
     char format[10];
     char * left = alloca(maxLeftCol + 1);
+    const char * argDescrip = getArgDescrip(opt);
 
     *left = '\0';
     if (opt->longName && opt->shortName)
@@ -44,9 +52,9 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
     else if (opt->longName)
 	sprintf(left, "--%s", opt->longName);
     if (!*left) return ;
-    if (opt->argDescrip) {
+    if (argDescrip) {
 	strcat(left, "=");
-	strcat(left, opt->argDescrip);
+	strcat(left, argDescrip);
     }
 
     if (help)
@@ -77,6 +85,7 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
 static int maxArgWidth(const struct poptOption * opt) {
     int max = 0;
     int this;
+    const char * s;
     
     while (opt->longName || opt->shortName || opt->arg) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
@@ -88,8 +97,9 @@ static int maxArgWidth(const struct poptOption * opt) {
 		this += strlen(opt->longName) + 2;
 	    }
 
-	    if (opt->argDescrip)
-		this += strlen(opt->argDescrip) + 1;
+	    s = getArgDescrip(opt);
+	    if (s)
+		this += strlen(s) + 1;
 	}
 
 	if (this > max) max = this;
@@ -155,6 +165,7 @@ static int singleOptionUsage(FILE * f, int cursor,
     int len = 3;
     char shortStr[2];
     const char * item = shortStr;
+    const char * argDescrip = getArgDescrip(opt);
 
     if (opt->shortName) {
 	if (!(opt->argInfo & POPT_ARG_MASK)) 
@@ -169,8 +180,8 @@ static int singleOptionUsage(FILE * f, int cursor,
 
     if (len == 3) return cursor;
 
-    if (opt->argDescrip) 
-	len += strlen(opt->argDescrip) + 1;
+    if (argDescrip) 
+	len += strlen(argDescrip) + 1;
 
     if ((cursor + len) > 79) {
 	fprintf(f, "\n       ");
@@ -178,8 +189,8 @@ static int singleOptionUsage(FILE * f, int cursor,
     } 
 
     fprintf(f, " [-%s%s%s%s]", opt->shortName ? "" : "-", item,
-	    opt->argDescrip ? "=" : "", 
-	    opt->argDescrip ? opt->argDescrip : "");
+	    argDescrip ? (opt->shortName ? " " : "=") : "",
+	    argDescrip ? argDescrip : "");
 
     return cursor + len + 1;
 }
