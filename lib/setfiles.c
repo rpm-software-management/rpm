@@ -119,7 +119,7 @@ const char * const regex_chars = ".^$?*+|[({";
 
 /* Return the length of the text that can be considered the stem, returns 0
  * if there is no identifiable stem */
-int get_stem_from_spec(const char * const buf)
+static int get_stem_from_spec(const char * const buf)
 {
 	const char *tmp = strchr(buf + 1, '/');
 	const char *ind;
@@ -136,7 +136,7 @@ int get_stem_from_spec(const char * const buf)
 }
 
 /* return the length of the text that is the stem of a file name */
-int get_stem_from_file_name(const char * const buf)
+static int get_stem_from_file_name(const char * const buf)
 {
 	const char *tmp = strchr(buf + 1, '/');
 
@@ -149,7 +149,7 @@ int get_stem_from_file_name(const char * const buf)
  * or existing stem, (or -1 if there is no possible stem - IE for a file in
  * the root directory or a regex that is too complex for us).  Makes buf
  * point to the text AFTER the stem. */
-int find_stem_from_spec(const char **buf)
+static int find_stem_from_spec(const char **buf)
 {
 	int i;
 	int stem_len = get_stem_from_spec(*buf);
@@ -189,7 +189,7 @@ int find_stem_from_spec(const char **buf)
 /* find the stem of a file name, returns the index into stem_arr (or -1 if
  * there is no match - IE for a file in the root directory or a regex that is
  * too complex for us).  Makes buf point to the text AFTER the stem. */
-int find_stem_from_file(const char **buf)
+static int find_stem_from_file(const char **buf)
 {
 	int i;
 	int stem_len = get_stem_from_file_name(*buf);
@@ -370,7 +370,7 @@ static void file_spec_destroy(void)
 }
 
 
-int match(const char *name, struct stat *sb)
+static int match(const char *name, struct stat *sb)
 {
 	int i, ret, file_stem;
 	const char *fullname = name;
@@ -438,7 +438,7 @@ int match(const char *name, struct stat *sb)
 }
 
 /* Used with qsort to sort specs from lowest to highest hasMetaChars value */
-int spec_compare(const void* specA, const void* specB)
+static int spec_compare(const void* specA, const void* specB)
 {
 	return(
 		((const struct spec *)specB)->hasMetaChars -
@@ -452,7 +452,7 @@ int spec_compare(const void* specA, const void* specB)
  * specification is found and the context is different, give a warning
  * to the user (This could be changed to error). Return of non-zero is an error.
  */
-int nodups_specs()
+static int nodups_specs(void)
 {
 	int ii, jj;
 	struct spec *curr_spec;
@@ -486,7 +486,7 @@ int nodups_specs()
 	return 0;
 }
 
-void usage(const char * const name)
+static void usage(const char * const name)
 {
 	fprintf(stderr,
 		"usage:  %s [-dnqvW] spec_file pathname...\n"
@@ -494,20 +494,8 @@ void usage(const char * const name)
 	exit(1);
 }
 
-static int nerr = 0;
-
-void inc_err()
-{
-	nerr++;
-	if(nerr > 9 && !debug)
-	{
-		fprintf(stderr, "Exiting after 10 errors.\n");
-		exit(1);
-	}
-}
-
 /* Determine if the regular expression specification has any meta characters. */
-void spec_hasMetaChars(struct spec *spec)
+static void spec_hasMetaChars(struct spec *spec)
 {
 	char *c;
 	int len;
@@ -661,7 +649,7 @@ static int apply_spec(const char *file,
 	return 0;
 }
 
-void set_rootpath(const char *arg)
+static void set_rootpath(const char *arg)
 {
 	int len;
 
@@ -679,13 +667,213 @@ void set_rootpath(const char *arg)
 	rootpathlen = len;
 }
 
+static int nerr = 0;
+
+static void inc_err(void)
+{
+    nerr++;
+    if(nerr > 9 && !debug) {
+	fprintf(stderr, "Exiting after 10 errors.\n");
+	exit(1);
+    }
+}
+
+static
+int parseREContexts(const char *fn)
+{
+    FILE * fp;
+    char line_buf[255 + 1];
+    char * buf_p;
+    char * regex;
+    char * type;
+    char * context;
+    char * anchored_regex;
+    int items;
+    int len;
+    int lineno;
+    int pass;
+    int regerr;
+
+    if ((fp = fopen(fn, "r")) == NULL) {
+	perror(fn);
+	return -1;
+    }
+
+    /* 
+     * Perform two passes over the specification file.
+     * The first pass counts the number of specifications and
+     * performs simple validation of the input.  At the end
+     * of the first pass, the spec array is allocated.
+     * The second pass performs detailed validation of the input
+     * and fills in the spec array.
+     */
+    for (pass = 0; pass < 2; pass++) {
+	lineno = 0;
+	nspec = 0;
+	while (fgets(line_buf, sizeof line_buf, fp)) {
+	    lineno++;
+	    len = strlen(line_buf);
+	    if (line_buf[len - 1] != '\n') {
+		fprintf(stderr,
+			"%s:  no newline on line number %d (only read %s)\n",
+			fn, lineno, line_buf);
+		inc_err();
+		continue;
+	    }
+	    line_buf[len - 1] = 0;
+	    buf_p = line_buf;
+	    while (isspace(*buf_p))
+		buf_p++;
+	    /* Skip comment lines and empty lines. */
+	    if (*buf_p == '#' || *buf_p == 0)
+		continue;
+	    items = sscanf(line_buf, "%as %as %as", &regex, &type, &context);
+	    if (items < 2) {
+		fprintf(stderr,
+			"%s:  line number %d is missing fields (only read %s)\n",
+			fn, lineno, line_buf);
+		inc_err();
+		if (items == 1)
+		    free(regex);
+		continue;
+	    } else if (items == 2) {
+		/* The type field is optional. */
+		free(context);
+		context = type;
+		type = 0;
+	    }
+
+	    if (pass == 1) {
+		/* On the second pass, compile and store the specification in spec. */
+		const char *reg_buf = regex;
+		spec_arr[nspec].stem_id = find_stem_from_spec(&reg_buf);
+		spec_arr[nspec].regex_str = regex;
+
+		/* Anchor the regular expression. */
+		len = strlen(reg_buf);
+		anchored_regex = malloc(len + 3);
+		if (!anchored_regex) {
+		    fprintf(stderr,
+			"%s:  insufficient memory for anchored regexp on line %d\n",
+			fn, lineno);
+		    return -1;
+		}
+		sprintf(anchored_regex, "^%s$", reg_buf);
+
+		/* Compile the regular expression. */
+		regerr = regcomp(&spec_arr[nspec].regex,
+			    anchored_regex,
+			    REG_EXTENDED | REG_NOSUB);
+		if (regerr < 0) {
+		    regerror(regerr, &spec_arr[nspec].regex,
+				 errbuf, sizeof errbuf);
+		    fprintf(stderr,
+			"%s:  unable to compile regular expression %s on line number %d:  %s\n",
+			fn, regex, lineno,
+			errbuf);
+		    inc_err();
+		}
+		free(anchored_regex);
+
+		/* Convert the type string to a mode format */
+		spec_arr[nspec].type_str = type;
+		spec_arr[nspec].mode = 0;
+		if (!type)
+		    goto skip_type;
+		len = strlen(type);
+		if (type[0] != '-' || len != 2) {
+		    fprintf(stderr,
+			"%s:  invalid type specifier %s on line number %d\n",
+			fn, type, lineno);
+		    inc_err();
+		    goto skip_type;
+		}
+		switch (type[1]) {
+		case 'b':
+		    spec_arr[nspec].mode = S_IFBLK;
+		    break;
+		case 'c':
+		    spec_arr[nspec].mode = S_IFCHR;
+		    break;
+		case 'd':
+		    spec_arr[nspec].mode = S_IFDIR;
+		    break;
+		case 'p':
+		    spec_arr[nspec].mode = S_IFIFO;
+		    break;
+		case 'l':
+		    spec_arr[nspec].mode = S_IFLNK;
+		    break;
+		case 's':
+		    spec_arr[nspec].mode = S_IFSOCK;
+		    break;
+		case '-':
+		    spec_arr[nspec].mode = S_IFREG;
+		    break;
+		default:
+		    fprintf(stderr,
+			"%s:  invalid type specifier %s on line number %d\n",
+			fn, type, lineno);
+		    inc_err();
+		}
+
+	      skip_type:
+
+		spec_arr[nspec].context = context;
+
+		if (strcmp(context, "<<none>>")) {
+		    if (security_check_context(context) < 0 && errno != ENOENT) {
+			fprintf(stderr,
+				"%s:  invalid context %s on line number %d\n",
+				fn, context, lineno);
+			inc_err();
+		    }
+		}
+
+		/* Determine if specification has 
+		 * any meta characters in the RE */
+		spec_hasMetaChars(&spec_arr[nspec]);
+	    }
+
+	    nspec++;
+	    if (pass == 0) {
+		free(regex);
+		if (type)
+		    free(type);
+		free(context);
+	    }
+	}
+
+	if (nerr)
+	    return -1;
+
+	if (pass == 0) {
+	    QPRINTF("%s:  read %d specifications\n", fn, nspec);
+	    if (nspec == 0)
+		return 0;
+	    if ((spec_arr = malloc(sizeof(spec_t) * nspec)) == NULL) {
+		fprintf(stderr, "%s:  insufficient memory for specifications\n",
+			fn);
+		return -1;
+	    }
+	    memset(spec_arr, 0, sizeof(spec_t) * nspec);
+	    rewind(fp);
+	}
+    }
+    fclose(fp);
+
+    /* Sort the specifications with most general first */
+    qsort(spec_arr, nspec, sizeof(struct spec), spec_compare);
+
+    /* Verify no exact duplicates */
+    if (nodups_specs() != 0)
+	return -1;
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
-	FILE *fp;
-	char line_buf[255 + 1], *buf_p;
-	char *regex, *type, *context;
-	char *anchored_regex;
-	int opt, items, len, lineno, pass, regerr, i;
+	int opt, i;
 
 	/* Process any options. */
 	while ((opt = getopt(argc, argv, "dnqrsvW")) > 0) {
@@ -738,191 +926,12 @@ int main(int argc, char **argv)
 			usage(argv[0]);
 	}
 
-	/* Open the specification file. */
-	if ((fp = fopen(argv[optind], "r")) == NULL) {
+	/* Parse the specification file. */
+	if (parseREContexts(argv[optind]) != 0) {
 		perror(argv[optind]);
 		exit(1);
 	}
 	optind++;
-
-	/* 
-	 * Perform two passes over the specification file.
-	 * The first pass counts the number of specifications and
-	 * performs simple validation of the input.  At the end
-	 * of the first pass, the spec array is allocated.
-	 * The second pass performs detailed validation of the input
-	 * and fills in the spec array.
-	 */
-	for (pass = 0; pass < 2; pass++) {
-		lineno = 0;
-		nspec = 0;
-		while (fgets(line_buf, sizeof line_buf, fp)) {
-			lineno++;
-			len = strlen(line_buf);
-			if (line_buf[len - 1] != '\n') {
-				fprintf(stderr,
-					"%s:  no newline on line number %d (only read %s)\n",
-					argv[0], lineno, line_buf);
-				inc_err();
-				continue;
-			}
-			line_buf[len - 1] = 0;
-			buf_p = line_buf;
-			while (isspace(*buf_p))
-				buf_p++;
-			/* Skip comment lines and empty lines. */
-			if (*buf_p == '#' || *buf_p == 0)
-				continue;
-			items =
-			    sscanf(line_buf, "%as %as %as", &regex, &type,
-				   &context);
-			if (items < 2) {
-				fprintf(stderr,
-					"%s:  line number %d is missing fields (only read %s)\n",
-					argv[0], lineno, line_buf);
-				inc_err();
-				if (items == 1)
-					free(regex);
-				continue;
-			} else if (items == 2) {
-				/* The type field is optional. */
-				free(context);
-				context = type;
-				type = 0;
-			}
-
-			if (pass == 1) {
-				/* On the second pass, compile and store the specification in spec. */
-				const char *reg_buf = regex;
-				spec_arr[nspec].stem_id = find_stem_from_spec(&reg_buf);
-				spec_arr[nspec].regex_str = regex;
-
-				/* Anchor the regular expression. */
-				len = strlen(reg_buf);
-				anchored_regex = malloc(len + 3);
-				if (!anchored_regex) {
-					fprintf(stderr,
-						"%s:  insufficient memory for anchored regexp on line %d\n",
-						argv[0], lineno);
-					exit(1);
-				}
-				sprintf(anchored_regex, "^%s$", reg_buf);
-
-				/* Compile the regular expression. */
-				regerr =
-				    regcomp(&spec_arr[nspec].regex,
-					    anchored_regex,
-					    REG_EXTENDED | REG_NOSUB);
-				if (regerr < 0) {
-					regerror(regerr,
-						 &spec_arr[nspec].regex,
-						 errbuf, sizeof errbuf);
-					fprintf(stderr,
-						"%s:  unable to compile regular expression %s on line number %d:  %s\n",
-						argv[0], regex, lineno,
-						errbuf);
-					inc_err();
-				}
-				free(anchored_regex);
-
-				/* Convert the type string to a mode format */
-				spec_arr[nspec].type_str = type;
-				spec_arr[nspec].mode = 0;
-				if (!type)
-					goto skip_type;
-				len = strlen(type);
-				if (type[0] != '-' || len != 2) {
-					fprintf(stderr,
-						"%s:  invalid type specifier %s on line number %d\n",
-						argv[0], type, lineno);
-					inc_err();
-					goto skip_type;
-				}
-				switch (type[1]) {
-				case 'b':
-					spec_arr[nspec].mode = S_IFBLK;
-					break;
-				case 'c':
-					spec_arr[nspec].mode = S_IFCHR;
-					break;
-				case 'd':
-					spec_arr[nspec].mode = S_IFDIR;
-					break;
-				case 'p':
-					spec_arr[nspec].mode = S_IFIFO;
-					break;
-				case 'l':
-					spec_arr[nspec].mode = S_IFLNK;
-					break;
-				case 's':
-					spec_arr[nspec].mode = S_IFSOCK;
-					break;
-				case '-':
-					spec_arr[nspec].mode = S_IFREG;
-					break;
-				default:
-					fprintf(stderr,
-						"%s:  invalid type specifier %s on line number %d\n",
-						argv[0], type, lineno);
-					inc_err();
-				}
-
-			      skip_type:
-
-				spec_arr[nspec].context = context;
-
-				if (strcmp(context, "<<none>>")) {
-					if (security_check_context(context) < 0 && errno != ENOENT) {
-						fprintf(stderr,
-							"%s:  invalid context %s on line number %d\n",
-							argv[0], context,
-							lineno);
-						inc_err();
-					}
-				}
-
-				/* Determine if specification has 
-				 * any meta characters in the RE */
-				spec_hasMetaChars(&spec_arr[nspec]);
-			}
-
-			nspec++;
-			if (pass == 0) {
-				free(regex);
-				if (type)
-					free(type);
-				free(context);
-			}
-		}
-
-		if (nerr)
-			exit(1);
-
-		if (pass == 0) {
-			QPRINTF("%s:  read %d specifications\n", argv[0],
-			       nspec);
-			if (nspec == 0)
-				exit(0);
-			if ((spec_arr = malloc(sizeof(spec_t) * nspec)) ==
-			    NULL) {
-				fprintf(stderr,
-					"%s:  insufficient memory for specifications\n",
-					argv[0]);
-				exit(1);
-			}
-			bzero(spec_arr, sizeof(spec_t) * nspec);
-			rewind(fp);
-		}
-	}
-	fclose(fp);
-
-	/* Sort the specifications with most general first */
-	qsort(spec_arr, nspec, sizeof(struct spec), spec_compare);
-
-	/* Verify no exact duplicates */
-	if (nodups_specs() != 0) {
-		exit(1);
-	}
 
 	/*
 	 * Apply the specifications to the file systems.
