@@ -87,16 +87,18 @@ ok($pkg->tagformat("--%{NAME}%{VERSION}--") eq '--test-rpm1.0--');
 ok($pkg->tagformat("--%{NAME}%{VERSION}--") ne 'NOT A MATCH');
 ok(!$pkg->is_source_package);
 
-$pkg = RPM2->open_package("test-rpm-1.0-1.src.rpm");
-ok($pkg);
-ok($pkg->name eq 'test-rpm');
-ok($pkg->tagformat("--%{NAME}--") eq '--test-rpm--');
-ok($pkg->is_source_package);
 my @cl = $pkg->changelog();
 ok(scalar(@cl) == 1);
 ok($cl[0]->{time} == 1018735200); # Sun Apr 14 2002
 ok($cl[0]->{name} eq 'Chip Turner <cturner@localhost.localdomain>');
 ok($cl[0]->{text} eq '- Initial build.');
+
+
+$pkg = RPM2->open_package("test-rpm-1.0-1.src.rpm");
+ok($pkg);
+ok($pkg->name eq 'test-rpm');
+ok($pkg->tagformat("--%{NAME}--") eq '--test-rpm--');
+ok($pkg->is_source_package);
 
 my $pkg2 = RPM2->open_package("test-rpm-1.0-1.noarch.rpm");
 ok($pkg2->filename);
@@ -131,7 +133,7 @@ ok(RPM2->rpm_api_version == 4.0 or RPM2->vsf_nosha1 == 65536);
 $db  = undef;
 $i   = undef;
 
-# 
+#
 # Transaction tests.
 my $t = RPM2->create_transaction();
 ok(ref($t) eq 'RPM2::Transaction');
