@@ -167,7 +167,8 @@ archive:
 	cvs tag -F $(CVSTAG) .
 	@rm -rf /tmp/rpm-$(VERSION) /tmp/rpm
 	@cd /tmp; cvs export -r$(CVSTAG) rpm
-	mv /tmp/rpm /tmp/rpm-$(VERSION)
+	@mv /tmp/rpm /tmp/rpm-$(VERSION)
+	@rm /tmp/rpm-$(VERSION)/popt/popt.spec
 	@cd /tmp/rpm-$(VERSION); \
 	    autoconf
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
