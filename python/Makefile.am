@@ -44,14 +44,8 @@ python_LTLIBRARIES = poptmodule.la
 rpmdir = $(pylibdir)/site-packages/rpm
 rpm_LTLIBRARIES = _rpmmodule.la
 
-rpmdbdir = $(pylibdir)/site-packages/rpmdb
-rpmdb_LTLIBRARIES = _rpmdb.la
-
 _rpmmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
 _rpmmodule_la_LIBADD =  @WITH_BEECRYPT_LIB@
-
-_rpmdb_la_SOURCES = _rpmdb.c
-_rpmdb_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
 
 poptmodule_la_SOURCES = poptmodule.c
 poptmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version

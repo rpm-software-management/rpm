@@ -2,7 +2,7 @@
 # \verbatim
 #
 # @RPMCONFIGDIR@/@configure_input@
-# $Id: rpmpopt.in,v 2.39.2.1 2005/01/09 17:48:19 jbj Exp $
+# $Id: rpmpopt.in,v 2.39.2.2 2005/02/16 19:05:36 jbj Exp $
 #
 # This file *should not be modified*. Local customizations
 # belong in /etc/popt, not here. This file will be replaced
@@ -75,6 +75,9 @@ Description :\n%{DESCRIPTION}\n' \
 
 rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
 	--POPTdesc=$"list change logs for this package"
+
+rpm	alias --xml --qf '[%{*:xml}\n]' \
+	--POPTdesc=$"list metadata in xml"
 
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
@@ -353,6 +356,9 @@ Description :\n%{DESCRIPTION}\n' \
 rpmq	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
 	--POPTdesc=$"list change logs for this package"
 
+rpmq	alias --xml --qf '[%{*:xml}\n]' \
+	--POPTdesc=$"list metadata in xml"
+
 rpmq	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'
@@ -446,6 +452,9 @@ Description :\n%{DESCRIPTION}\n' \
 
 rpmquery	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
 	--POPTdesc=$"list change logs for this package"
+
+rpmquery	alias --xml --qf '[%{*:xml}\n]' \
+	--POPTdesc=$"list metadata in xml"
 
 rpmquery	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\

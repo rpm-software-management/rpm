@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.1
+Release: 0.3
 Group: System Environment/Base
 Source: ftp://jbj.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -500,5 +500,12 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Feb 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.3
+- sqlite3: revert cClose scoping, data is freed in cClose unlike db4.
+- build against sqlite3-3.1.2.
+- sqlite3: update encode/decode from sqlite-2.8.16.
+- add --xml popt alias for query modes.
+- remove _rpmdb now that python2.[34] are commonly available.
+
 * Sun Feb 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.1
 - start 4.4.2 devel.

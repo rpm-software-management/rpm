@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-13 17:18-0500\n"
+"POT-Creation-Date: 2005-02-16 10:57-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3751,161 +3751,161 @@ msgstr "kan inte öppna %s-indexet med db%d - %s (%d)\n"
 msgid "cannot open %s index\n"
 msgstr "kan inte öppna %s-indexet\n"
 
-#: rpmdb/rpmdb.c:969
+#: rpmdb/rpmdb.c:970
 msgid "no dbpath has been set\n"
 msgstr "ingen dbpath har satts\n"
 
-#: rpmdb/rpmdb.c:1247 rpmdb/rpmdb.c:1378 rpmdb/rpmdb.c:1434 rpmdb/rpmdb.c:2396
-#: rpmdb/rpmdb.c:2525 rpmdb/rpmdb.c:3300
+#: rpmdb/rpmdb.c:1248 rpmdb/rpmdb.c:1379 rpmdb/rpmdb.c:1435 rpmdb/rpmdb.c:2397
+#: rpmdb/rpmdb.c:2526 rpmdb/rpmdb.c:3301
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fel(%d) när \"%s\"-poster hämtades från %s-indexet\n"
 
-#: rpmdb/rpmdb.c:1628
+#: rpmdb/rpmdb.c:1629
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: hoppar över"
 
-#: rpmdb/rpmdb.c:1638
+#: rpmdb/rpmdb.c:1639
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fel(%d) när post nr. %d sparades i %s\n"
 
-#: rpmdb/rpmdb.c:2282
+#: rpmdb/rpmdb.c:2283
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: hoppar över"
 
-#: rpmdb/rpmdb.c:2314
+#: rpmdb/rpmdb.c:2315
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: skadat huvud nr. %u hämtat -- hoppar över.\n"
 
-#: rpmdb/rpmdb.c:2629
+#: rpmdb/rpmdb.c:2630
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan inte läsa huvud vid 0x%x\n"
 
-#: rpmdb/rpmdb.c:2695
+#: rpmdb/rpmdb.c:2696
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "fel(%d) när huvudpost nr. %d  för %s skulle tas bort\n"
 
-#: rpmdb/rpmdb.c:2810
+#: rpmdb/rpmdb.c:2811
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "tar bort \"%s\" från %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:2814
+#: rpmdb/rpmdb.c:2815
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "tar bort %d poster från %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:2842
+#: rpmdb/rpmdb.c:2843
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "fel(%d) när \"%s\"-poster från %s-indexet sattes\n"
 
-#: rpmdb/rpmdb.c:2863
+#: rpmdb/rpmdb.c:2864
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "fel(%d) när post \"%s\" sparades i %s\n"
 
-#: rpmdb/rpmdb.c:2873
+#: rpmdb/rpmdb.c:2874
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "fel(%d) när post \"%s\" togs bort från %s\n"
 
-#: rpmdb/rpmdb.c:3038
+#: rpmdb/rpmdb.c:3039
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fel(%d) vid allokering av ny paketinstans\n"
 
-#: rpmdb/rpmdb.c:3103
+#: rpmdb/rpmdb.c:3104
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: hoppar över"
 
-#: rpmdb/rpmdb.c:3275
+#: rpmdb/rpmdb.c:3276
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "lägger till \"%s\" till %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:3279
+#: rpmdb/rpmdb.c:3280
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "lägger till %d poster till %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:3319
+#: rpmdb/rpmdb.c:3320
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fel(%d) när post %s sparades i %s\n"
 
-#: rpmdb/rpmdb.c:3728
+#: rpmdb/rpmdb.c:3729
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "tar bort %s efter lyckad db3-ombyggnad.\n"
 
-#: rpmdb/rpmdb.c:3767
+#: rpmdb/rpmdb.c:3768
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
-#: rpmdb/rpmdb.c:3799
+#: rpmdb/rpmdb.c:3800
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "bygger om databas %s till %s\n"
 
-#: rpmdb/rpmdb.c:3803
+#: rpmdb/rpmdb.c:3804
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tillfällig databas %s existerar redan\n"
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3810
 #, c-format
 msgid "creating directory %s\n"
 msgstr "skapar katalog %s\n"
 
-#: rpmdb/rpmdb.c:3811
+#: rpmdb/rpmdb.c:3812
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "skapar katalog %s: %s\n"
 
-#: rpmdb/rpmdb.c:3820
+#: rpmdb/rpmdb.c:3821
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "öppnar gammal databas med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3831
+#: rpmdb/rpmdb.c:3832
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3862
+#: rpmdb/rpmdb.c:3863
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "huvud nr. %u i databasen är felaktigt -- hoppar över.\n"
 
-#: rpmdb/rpmdb.c:3902
+#: rpmdb/rpmdb.c:3903
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kan inte lägga till post ursprungligen vid %u\n"
 
-#: rpmdb/rpmdb.c:3916
+#: rpmdb/rpmdb.c:3917
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
 
-#: rpmdb/rpmdb.c:3924
+#: rpmdb/rpmdb.c:3925
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: rpmdb/rpmdb.c:3926
+#: rpmdb/rpmdb.c:3927
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: rpmdb/rpmdb.c:3936
+#: rpmdb/rpmdb.c:3937
 #, c-format
 msgid "removing directory %s\n"
 msgstr "tar bort katalog %s\n"
 
-#: rpmdb/rpmdb.c:3938
+#: rpmdb/rpmdb.c:3939
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"

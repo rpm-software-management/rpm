@@ -274,9 +274,9 @@ struct _dbiIndex {
     const char * dbi_root;	/*!< chroot(2) component of path */
 /*@null@*/
     const char * dbi_home;	/*!< directory component of path */
-/*@null@*/
+/*@relnull@*/
     const char * dbi_file;	/*!< file component of path */
-/*@null@*/
+/*@relnull@*/
     const char * dbi_subfile;
 /*@null@*/
     const char * dbi_tmpdir;	/*!< temporary directory */
