@@ -7,6 +7,7 @@
 #include "falloc.h"
 #include "oldrpmdb.h"
 #include "oldheader.h"
+#include "lib/rpmdb.h"
 
 int convertDB(void);
 

@@ -147,9 +147,6 @@ static struct poptOption optionsTable[] = {
  { 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
-
-static void argerror(char * desc);
-
 static void argerror(char * desc) {
     fprintf(stderr, _("rpm: %s\n"), desc);
     exit(EXIT_FAILURE);
@@ -508,8 +505,8 @@ int main(int argc, char ** argv) {
     char * cookie = NULL;
     char * optArg;
     pid_t pipeChild = 0;
-    char * pkg;
-    char * errString;
+    const char * pkg;
+    char * errString = NULL;
     poptContext optCon;
     char * infoCommand[] = { "--info", NULL };
     char * installCommand[] = { "--install", NULL };
@@ -1093,7 +1090,7 @@ int main(int argc, char ** argv) {
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD) {
-	    char ** argv;
+	    const char ** argv;
 	    struct stat sb;
 	    int errors = 0;
 

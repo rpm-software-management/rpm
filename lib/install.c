@@ -115,7 +115,6 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     struct fileInfo * file;
     int fileCount;
     int i;
-    char * chptr;
 
     if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
 		        fileCountPtr))

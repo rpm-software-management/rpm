@@ -42,13 +42,6 @@ int gentran = 0;
 
 int specedit = 0;
 
-static inline char *
-basename(const char *file)
-{
-	char *fn = strrchr(file, '/');
-	return fn ? fn+1 : (char *)file;
-}
-
 static const char *
 getTagString(int tval)
 {

@@ -1053,30 +1053,29 @@ int rpmGetBooleanVar(int var) {
     return 0;
 }
 
-void rpmSetVar(int var, const char *val) {
-    freeRpmVar(&values[var]);
-
-    values[var].arch = NULL;
-    values[var].next = NULL;
-
-    if (val)
-	values[var].value = strdup(val);
-    else
-	values[var].value = NULL;
-}
-
 /* this doesn't free the passed pointer! */
 static void freeRpmVar(struct rpmvarValue * orig) {
     struct rpmvarValue * next, * var = orig;
 
     while (var) {
 	next = var->next;
-	if (var->arch) free(var->arch);
-	if (var->value) free(var->value);
+	if (var->arch) {
+	    free(var->arch);
+	    var->arch = NULL;
+	}
+	if (var->value) {
+	    free(var->value);
+	    var->value = NULL;
+	}
 
 	if (var != orig) free(var);
 	var = next;
     }
+}
+
+void rpmSetVar(int var, const char *val) {
+    freeRpmVar(&values[var]);
+    values[var].value = (val ? strdup(val) : NULL);
 }
 
 static void rpmSetVarArch(int var, char * val, char * arch) {
@@ -1106,10 +1105,7 @@ static void rpmSetVarArch(int var, char * val, char * arch) {
     }
 
     next->value = strdup(val);
-    if (arch)
-	next->arch = strdup(arch);
-    else
-	next->arch = NULL;
+    next->arch = (arch ? strdup(arch) : NULL);
 }
 
 void rpmSetTables(int archTable, int osTable) {

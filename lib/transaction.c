@@ -17,7 +17,8 @@ struct fileInfo {
     enum fileActions * actions;
     fingerPrint * fps;
     uint_32 * fflags;
-    char ** fl, ** fmd5s;
+    const char ** fl;
+    char ** fmd5s;
     uint_16 * fmodes;
     Header h;
     int fc;
@@ -32,7 +33,7 @@ struct fileInfo {
 
 static rpmProblemSet psCreate(void);
 static void psAppend(rpmProblemSet probs, rpmProblemType type, 
-		     const void * key, Header h, char * str1, 
+		     const void * key, Header h, const char * str1, 
 		     Header altHeader);
 static int archOkay(Header h);
 static int osOkay(Header h);
@@ -42,7 +43,7 @@ static Header relocateFileList(struct availablePackage * alp,
 			       int allowBadRelocate);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
 static int sharedCmp(const void * one, const void * two);
-static enum fileActions decideFileFate(char * filespec, short dbMode, 
+static enum fileActions decideFileFate(const char * filespec, short dbMode, 
 				char * dbMd5, char * dbLink, short newMode, 
 				char * newMd5, char * newLink, int newFlags,
 				int brokenMd5);
@@ -519,7 +520,7 @@ static rpmProblemSet psCreate(void) {
 }
 
 static void psAppend(rpmProblemSet probs, rpmProblemType type, 
-		     const void * key, Header h, char * str1, Header altH) {
+		     const void * key, Header h, const char * str1, Header altH) {
     if (probs->numProblems == probs->numProblemsAlloced) {
 	if (probs->numProblemsAlloced)
 	    probs->numProblemsAlloced *= 2;
@@ -797,7 +798,7 @@ static int sharedCmp(const void * one, const void * two) {
     return 0;
 }
 
-static enum fileActions decideFileFate(char * filespec, short dbMode, 
+static enum fileActions decideFileFate(const char * filespec, short dbMode, 
 				char * dbMd5, char * dbLink, short newMode, 
 				char * newMd5, char * newLink, int newFlags,
 				int brokenMd5) {

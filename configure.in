@@ -416,6 +416,7 @@ AC_REPLACE_FUNCS(strdup strerror strtol strtoul strspn strstr)
 
 dnl XXX stpcpy/stpncpy needed by rpmgettext
 AC_REPLACE_FUNCS(stpcpy stpncpy strcasecmp strncasecmp strcspn)
+AC_REPLACE_FUNCS(basename)
 
 AC_CHECK_FUNCS(setlocale)
 

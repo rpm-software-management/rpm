@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 2.92
 Version: %{version}
-Release: 8
+Release: 9
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -58,7 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc RPM-PGP-KEY CHANGES groups
+%doc RPM-PGP-KEY CHANGES GROUPS
 %doc docs/*
 /bin/rpm
 /usr/bin/rpm2cpio

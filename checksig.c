@@ -8,13 +8,13 @@
 #include "rpmlead.h"
 #include "signature.h"
 
-int doReSign(int add, char *passPhrase, char **argv)
+int doReSign(int add, char *passPhrase, const char **argv)
 {
     FD_t fd, ofd;
     int count;
     struct rpmlead lead;
     unsigned short sigtype;
-    char *rpm;
+    const char *rpm;
     const char *sigtarget;
     char tmprpm[1024];
     unsigned char buffer[8192];
@@ -142,12 +142,12 @@ int doReSign(int add, char *passPhrase, char **argv)
     return 0;
 }
 
-int doCheckSig(int flags, char **argv)
+int doCheckSig(int flags, const char **argv)
 {
     FD_t fd, ofd;
     int res, res2, res3;
     struct rpmlead lead;
-    char *rpm;
+    const char *rpm;
     char result[1024];
     const char * sigtarget;
     unsigned char buffer[8192];

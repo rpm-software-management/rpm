@@ -379,12 +379,8 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 	}
 
 	if (parsePart == PART_BUILDARCHITECTURES) {
-#if 0	/* XXX W2DO??? */
 	    spec->buildArchitectureSpecs =
 		malloc(sizeof(Spec) * spec->buildArchitectureCount);
-#else
-	    spec->buildArchitectureSpecs = newSpec();
-#endif
 	    index = 0;
 	    for (x = 0; x < spec->buildArchitectureCount; x++) {
 		if (rpmMachineScore(RPM_MACHTABLE_BUILDARCH,
@@ -411,7 +407,12 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 		return RPMERR_BADSPEC;
 	    }
 
-	    /* XXX HACK: swap BuildArch sl/st with child */
+	    /* XXX HACK: Swap sl/st with child.
+	     * The restart of the parse when encountering BuildArch
+	     * causes problems for "rpm -q --specfile --specedit"
+	     * which needs to keep track of the entire spec file.
+	     */
+
 	    if (spec->sl && spec->st) {
 		Spec nspec = *spec->buildArchitectureSpecs;
 		struct speclines *sl = spec->sl;
