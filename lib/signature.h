@@ -2,8 +2,15 @@
 
 /* Signature types */
 #define RPMSIG_NONE         0  /* Do not change! */
-#define RPMSIG_PGP262_1024  1
+#define RPMSIG_PGP262_1024  1  /* No longer generated */
 #define RPMSIG_BAD          2  /* Returned for unknown types */
+
+/* These are the "new" style signatures.  We always do a MD5, */
+/* we can handle any PGP signature length, and the entire     */
+/* signature part is 8 byte aligned.                          */
+
+#define RPMSIG_MD5          3  /* New style signatures ... */
+#define RPMSIG_MD5_PGP      4
 
 /* verifySignature() results */
 #define RPMSIG_SIGOK        0
