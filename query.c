@@ -914,6 +914,6 @@ void queryPrintTags(void) {
     int i;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	printf("%s\n", t->name);
+	printf("%s\n", t->name + 7);
     }
 }
