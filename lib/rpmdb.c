@@ -58,11 +58,12 @@ int rpmdbInit (char * prefix, int perms) {
 	return 1;
     }
 
-    return openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 1);
+    return openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 
+			RPMDB_FLAG_JUSTCHECK);
 }
 
 static int openDbFile(char * prefix, char * dbpath, char * shortName, 
-		      int justCheck, int perms, dbiIndex ** db){
+		      int justCheck, int perms, dbiIndex ** db, DBTYPE type){
     char * filename = alloca(strlen(prefix) + strlen(dbpath) + 
 			     strlen(shortName) + 20);
 
@@ -73,7 +74,7 @@ static int openDbFile(char * prefix, char * dbpath, char * shortName,
     strcat(filename, shortName);
 
     if (!justCheck || !rpmfileexists(filename)) {
-	*db = dbiOpenIndex(filename, perms, 0644);
+	*db = dbiOpenIndex(filename, perms, 0644, type);
 	if (!*db) {
 	    return 1;
 	}
@@ -83,11 +84,13 @@ static int openDbFile(char * prefix, char * dbpath, char * shortName,
 }
 
 int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode, 
-		 int perms, int justcheck) {
+		 int perms, int flags) {
     char * filename;
     struct rpmdb_s db;
     int i, rc;
     struct flock lockinfo;
+    int justcheck = flags & RPMDB_FLAG_JUSTCHECK;
+    int minimal = flags & RPMDB_FLAG_MINIMAL;
 
     /* we should accept NULL as a valid prefix */
     if (!prefix) prefix="";
@@ -144,27 +147,33 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 	    } 
 	}
     }
+
+    if (minimal) {
+	*rpmdbp = malloc(sizeof(struct rpmdb_s));
+	**rpmdbp = db;
+	return 0;
+    }
     
     rc = openDbFile(prefix, dbpath, "nameindex.rpm", justcheck, mode,
-		    &db.nameIndex);
+		    &db.nameIndex, DB_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode,
-			&db.fileIndex);
+			&db.fileIndex, DB_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "providesindex.rpm", justcheck, mode,
-			&db.providesIndex);
+			&db.providesIndex, DB_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "requiredby.rpm", justcheck, mode,
-			&db.requiredbyIndex);
+			&db.requiredbyIndex, DB_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "conflictsindex.rpm", justcheck, mode,
-			&db.conflictsIndex);
+			&db.conflictsIndex, DB_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "groupindex.rpm", justcheck, mode,
-			&db.groupIndex);
+			&db.groupIndex, DB_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "triggerindex.rpm", justcheck, mode,
-			&db.triggerIndex);
+			&db.triggerIndex, DB_HASH);
 
     if (rc) {
 	faClose(db.pkgs);

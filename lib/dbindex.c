@@ -2,12 +2,12 @@
 
 #include "rpmlib.h"
 
-dbiIndex * dbiOpenIndex(char * filename, int flags, int perms) {
+dbiIndex * dbiOpenIndex(char * filename, int flags, int perms, DBTYPE type) {
     dbiIndex * db;
         
     db = malloc(sizeof(*db));
     db->indexname = strdup(filename);
-    db->db = dbopen(filename, flags, perms, DB_HASH, NULL);
+    db->db = dbopen(filename, flags, perms, type, NULL);
     if (!db->db) {
 	free(db->indexname);
 	free(db);

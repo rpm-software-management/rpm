@@ -9,8 +9,11 @@ extern "C" {
 
 /* for RPM's internal use only */
 
+#define RPMDB_FLAG_JUSTCHECK	(1 << 0)
+#define RPMDB_FLAG_MINIMAL	(1 << 1)
+
 int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
-		 int perms, int justcheck);
+		 int perms, int flags);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);

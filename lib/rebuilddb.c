@@ -36,7 +36,8 @@ int rpmdbRebuild(char * rootdir) {
     sprintf(newdbpath, "%s/rebuilddb.%d", dbpath, (int) getpid());
 
     rpmMessage(RPMMESS_DEBUG, _("opening old database\n"));
-    if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 0)) {
+    if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 
+		     RPMDB_FLAG_MINIMAL)) {
 	return 1;
     }
 
