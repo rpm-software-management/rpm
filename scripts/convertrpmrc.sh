@@ -5,8 +5,10 @@
 # prereq: awk fileutils textutils sh-utils mktemp
 #
 
-RPMRC=/etc/rpmrc
-MACROS=/etc/rpm/macros
+RPMRC=$1
+[ -z "$RPMRC" ] && RPMRC=/etc/rpmrc
+MACROS=$2
+[ -z "$MACROS" ] && MACROS=/etc/rpm/macros
 # for testing
 #RPMRC=/tmp/rpmrc
 #MACROS=/tmp/macros
@@ -25,7 +27,7 @@ DIRN="`dirname $MACROS`"
   exit 1
 }
 
-TMP=$(mktemp rpmrc.XXXXXX) || {
+TMP=$(mktemp /tmp/rpmrc.XXXXXX) || {
   echo could not create temp file 1>&2
   exit 1
 }
