@@ -567,3 +567,4 @@ fi
 - discarding entire signature header when using --addsign is dumb.
 - rip out rpmDependencyConflict, replace with rpmProblem instead.
 - no-brainer refcounts for rpmProblemSet object.
+- header tag sets are per-transactionElement, not per-availablePackage.

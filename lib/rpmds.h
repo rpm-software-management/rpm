@@ -7,10 +7,6 @@
  */
 
 /**
- */
-typedef /*@abstract@*/ struct rpmFNSet_s *		rpmFNSet;
-
-/**
  * A package filename set.
  */
 struct rpmFNSet_s {

@@ -6,6 +6,7 @@
 
 #define _NEED_TEITERATOR	1
 #include "psm.h"
+#include "rpmds.h"
 
 #include "rpmal.h"
 #include <rpmmacro.h>	/* XXX for rpmExpand */
@@ -49,21 +50,23 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 
 #include "debug.h"
 
-/*@access FD_t@*/		/* XXX compared with NULL */
-/*@access Header@*/		/* XXX compared with NULL */
-/*@access rpmProblemSet@*/	/* XXX need rpmProblemSetOK() */
-/*@access dbiIndexSet@*/
-/*@access rpmdb@*/
+/*@access FD_t @*/		/* XXX compared with NULL */
+/*@access Header @*/		/* XXX compared with NULL */
+/*@access rpmProblemSet @*/	/* XXX need rpmProblemSetOK() */
+/*@access dbiIndexSet @*/
+/*@access rpmdb @*/
 
-/*@access PSM_t@*/
+/*@access PSM_t @*/
 
-/*@access alKey@*/
-/*@access fnpyKey@*/
+/*@access alKey @*/
+/*@access fnpyKey @*/
 
-/*@access TFI_t@*/
-/*@access teIterator@*/
-/*@access transactionElement@*/
-/*@access rpmTransactionSet@*/
+/*@access rpmFNSet @*/
+/*@access TFI_t @*/
+
+/*@access teIterator @*/
+/*@access transactionElement @*/
+/*@access rpmTransactionSet @*/
 
 /**
  */
@@ -1117,7 +1120,12 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    mi = rpmdbFreeIterator(mi);
 	}
 
+#ifdef	DYING
 	totalFileCount += alGetFilesCount(ts->addedPackages, pkgKey);
+#else
+	if (p->fns != NULL)
+	    totalFileCount += p->fns->fc;
+#endif
 
 	h = headerFree(h, "alGetHeader (rpmtsRun sanity)");
 

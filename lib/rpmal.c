@@ -50,12 +50,14 @@ struct availablePackage_s {
 /*@dependent@*//*@null@*/
     int_32 * epoch;		/*!< Header epoch (if any). */
 
-/*@owned@*/ /*@null@*/
+/*@dependent@*//*@null@*/
     rpmDepSet provides;		/*!< Provides: dependencies. */
+/*@dependent@*//*@null@*/
+    rpmFNSet fns;		/*!< File info set. */
+#ifdef	DYING
 /*@owned@*/ /*@null@*/
     rpmDepSet requires;		/*!< Requires: dependencies. */
-/*@owned@*//*@null@*/
-    rpmFNSet fns;		/*!< File name set. */
+#endif
 
 #ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
@@ -190,9 +192,7 @@ int alGetMultiLib(const availableList al, alKey pkgKey)
     availablePackage alp = alGetPkg(al, alKey);
     return (alp != NULL ? alp->multiLib : 0);
 }
-#endif
 
-#ifndef	DYING
 int alGetFilesCount(const availableList al, alKey pkgKey)
 {
     availablePackage alp = alGetPkg(al, pkgKey);
@@ -202,7 +202,6 @@ int alGetFilesCount(const availableList al, alKey pkgKey)
 	    filesCount = alp->fns->fc;
     return filesCount;
 }
-#endif
 
 rpmDepSet alGetProvides(const availableList al, alKey pkgKey)
 {
@@ -219,6 +218,7 @@ rpmDepSet alGetRequires(const availableList al, alKey pkgKey)
     return (alp != NULL ? alp->requires : NULL);
     /*@=retexpose@*/
 }
+#endif
 
 Header alGetHeader(availableList al, alKey pkgKey, int unlink)
 {
@@ -284,12 +284,11 @@ availableList alFree(availableList al)
 
     if ((alp = al->list) != NULL)
     for (i = 0; i < al->size; i++, alp++) {
-
+#ifdef	DYING
 	alp->provides = dsFree(alp->provides);
 	alp->requires = dsFree(alp->requires);
-
 	alp->fns = fnsFree(alp->fns);
-
+#endif
 	alp->h = headerFree(alp->h, "alFree");
 
     }
@@ -426,9 +425,11 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	}
     }
 
+#ifdef	DYING
     alp->provides = dsFree(alp->provides);
     alp->requires = dsFree(alp->requires);
     alp->fns = fnsFree(alp->fns);
+#endif
     alp->h = headerFree(alp->h, "alDelPackage");
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
@@ -437,10 +438,13 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
     /*@=nullstate@*/
 }
 
-alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h)
+alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h,
+		rpmDepSet provides, rpmFNSet fns)
 	/*@modifies al, h @*/
 {
+#ifdef	DYING
     int scareMem = 1;
+#endif
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     availablePackage alp;
     alNum pkgNum = alKey2Num(al, pkgKey);
@@ -449,7 +453,6 @@ alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h)
     uint_32 multiLibMask = 0;
     uint_32 * pp = NULL;
 #endif
-    rpmFNSet fns;
 
     if (pkgNum >= 0 && pkgNum < al->size) {
 	alDelPackage(al, pkgKey);
@@ -466,14 +469,14 @@ alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h)
     /*@=nullptrarith@*/
 
     alp->h = headerLink(h, "alAddPackage");
-#ifdef	DYING
-    alp->multiLib = 0;	/* MULTILIB */
-#endif
+
     /*@-assignexpose -temptrans @*/
     alp->key = key;
     /*@=assignexpose =temptrans @*/
 
     xx = headerNVR(alp->h, &alp->name, &alp->version, &alp->release);
+    if (!hge(h, RPMTAG_EPOCH, NULL, (void **) &alp->epoch, NULL))
+	alp->epoch = NULL;
 
 /*@-modfilesys@*/
 if (_al_debug)
@@ -481,6 +484,7 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 /*@=modfilesys@*/
 
 #ifdef	DYING
+    alp->multiLib = 0;	/* MULTILIB */
   { uint_32 *pp = NULL;
     /* XXX This should be added always so that packages look alike.
      * XXX However, there is logic in files.c/depends.c that checks for
@@ -500,15 +504,16 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	}
     }
   }
-#endif
-
-    if (!hge(h, RPMTAG_EPOCH, NULL, (void **) &alp->epoch, NULL))
-	alp->epoch = NULL;
 
     alp->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
     alp->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
-
     alp->fns = fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
+#else
+    /*@-assignexpose -temptrans@*/
+    alp->provides = provides;
+    alp->fns = fns;
+    /*@=assignexpose =temptrans@*/
+#endif
 
     if (fns && fns->fc > 0) {
 	int * dirMapping;

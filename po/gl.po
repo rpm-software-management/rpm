@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-11-09 12:21-0500\n"
+"POT-Creation-Date: 2001-11-09 15:24-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1410,88 +1410,88 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/depends.c:332
+#: lib/depends.c:334
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:337
+#: lib/depends.c:339
 #, c-format
 msgid "package %s already added, ignoring\n"
 msgstr ""
 
-#: lib/depends.c:342
+#: lib/depends.c:344
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:630
+#: lib/depends.c:658
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:655
+#: lib/depends.c:683
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:671
+#: lib/depends.c:699
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:692
+#: lib/depends.c:720
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:704
+#: lib/depends.c:732
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:717
+#: lib/depends.c:745
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:756
+#: lib/depends.c:784
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
+#: lib/depends.c:786 lib/rpmds.c:404 lib/rpmds.c:559
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
+#: lib/depends.c:786 lib/rpmds.c:404 lib/rpmds.c:559
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1092
+#: lib/depends.c:1120
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1338
+#: lib/depends.c:1366
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1412
+#: lib/depends.c:1444
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1487
+#: lib/depends.c:1519
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1548
+#: lib/depends.c:1580
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1583
+#: lib/depends.c:1619
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1588
+#: lib/depends.c:1624
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2406,11 +2406,11 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:766
+#: lib/rpmal.c:771
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:865
+#: lib/rpmal.c:870
 msgid "(added provide)"
 msgstr ""
 
@@ -2478,20 +2478,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:500
+#: lib/rpmds.c:529
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:529
+#: lib/rpmds.c:558
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:554
+#: lib/rpmds.c:583
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -2820,13 +2820,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:249
+#: lib/transaction.c:252
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:902
+#: lib/transaction.c:905
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

@@ -280,7 +280,9 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     const char * pkgNVR = NULL;
     int duplicate = 0;
     transactionElement p;
+    rpmDepSet provides;
     rpmDepSet obsoletes;
+    rpmFNSet fns;
     alKey pkgKey;	/* addedPackages key */
     int apx;			/* addedPackages index */
     int xx;
@@ -346,17 +348,30 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	break;
     }
 
+    /*@-branchstate@*/
+    if (duplicate) {
+	p = ts->order + i;
+	provides = p->provides;
+	fns = p->fns;
+    } else {
+	provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
+	fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
+    }
+    /*@=branchstate@*/
+
+    /* XXX cast assumes that available keys are indices, not pointers */
+    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, key, h, provides, fns);
+    if (pkgKey == RPMAL_NOMATCH) {
+	ec = 1;
+	goto exit;
+    }
+
     /* XXX Note: i == ts->orderCount here almost always. */
     if (i == ts->orderAlloced) {
 	ts->orderAlloced += ts->delta;
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
-    /* XXX cast assumes that available keys are indices, not pointers */
-    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, key, h);
-    if (pkgKey == RPMAL_NOMATCH) {
-	ec = 1;
-	goto exit;
-    }
+
     p = ts->order + i;
     memset(p, 0, sizeof(*p));
     
@@ -387,6 +402,10 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     }
   }
 #endif
+
+    p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
+    p->fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
+    p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
 
     /*@-assignexpose -ownedtrans @*/
     p->key = key;
@@ -505,8 +524,13 @@ exit:
 
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
 {
+    int scareMem = _DS_SCAREMEM;
+    rpmDepSet provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
+    rpmFNSet fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
+
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, key, h);
+    (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, key, h,
+		provides, fns);
 }
 
 int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
@@ -547,6 +571,10 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 		}
 		p->relocs = _free(p->relocs);
 	    }
+	    p->provides = dsFree(p->provides);
+	    p->requires = dsFree(p->requires);
+	    p->fns = fnsFree(p->fns);
+
 	    /*@-type@*/ /* FIX: cast? */
 	    if (p->fd != NULL)
 	        p->fd = fdFree(p->fd, "alAddPackage (rpmtransFree)");
@@ -1342,7 +1370,11 @@ prtTSI(p->NEVR, p->tsi);
 	rpmDepSet requires;
 	int_32 Flags;
 
+#ifdef	DYING
 	requires = alGetRequires(ts->addedPackages, p->u.addedKey);
+#else
+	requires = p->requires;
+#endif
 
 	if (requires == NULL)
 	    continue;
@@ -1550,7 +1582,11 @@ prtTSI(" p", p->tsi);
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
+#ifdef	DYING
 		requires = alGetRequires(ts->addedPackages, p->u.addedKey);
+#else
+		requires = p->requires;
+#endif
 		requires = dsiInit(requires);
 		dp = zapRelation(q, p, requires, 1, &nzaps);
 
@@ -1786,7 +1822,11 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
+#ifdef	DYING
 	provides = alGetProvides(ts->addedPackages, p->u.addedKey);
+#else
+	provides = p->provides;
+#endif
 
 	rc = 0;
 	provides = dsiInit(provides);

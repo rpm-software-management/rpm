@@ -85,6 +85,13 @@ struct transactionElement_s {
 	TR_REMOVED	/*!< Package will be removed. */
     } type;		/*!< Package disposition (installed/removed). */
 
+/*@only@*/ /*@null@*/
+    rpmDepSet provides;		/*!< Provides: dependencies. */
+/*@only@*/ /*@null@*/
+    rpmDepSet requires;		/*!< Requires: dependencies. */
+/*@only@*//*@null@*/
+    rpmFNSet fns;		/*!< File info set. */
+
     uint_32 multiLib;	/* (TR_ADDED) MULTILIB */
     int_32 filesCount;	/* (TR_ADDED) No. files in package. */
 

@@ -28,9 +28,7 @@ int alGetSize(const availableList al)
  */
 int alGetMultiLib(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
-#endif
 
-#ifndef	DYING
 /**
  * Return available package files count.
  * @param al		available list
@@ -39,7 +37,6 @@ int alGetMultiLib(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
  */
 int alGetFilesCount(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
-#endif
 
 /**
  * Return available package provides.
@@ -60,6 +57,7 @@ rpmDepSet alGetProvides(/*@null@*/ const availableList al, /*@null@*/ alKey pkgK
 /*@null@*/
 rpmDepSet alGetRequires(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
+#endif
 
 /**
  * Return available package header.
@@ -128,11 +126,13 @@ void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
  * @param pkgKey	package key, RPMAL_NOMATCH to force an append
  * @param key		associated file name/python object
  * @param h		package header
+ * @param provides	provides dependency set
+ * @param fns		file info set
  * @return		available package index
  */
 alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey,
-		fnpyKey key, Header h)
-	/*@modifies al, h @*/;
+		fnpyKey key, Header h, rpmDepSet provides, rpmFNSet fns)
+	/*@modifies al, h, fns @*/;
 
 /**
  * Add package provides to available list index.
