@@ -3321,8 +3321,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (need == 0) break;
 
 	    spft = token->u.array.format;
-	    isxml =
-		(spft->type == PTOK_TAG && !strcmp(spft->u.tag.type, "xml"));
+	    isxml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
+		!strcmp(spft->u.tag.type, "xml"));
 
 	    if (isxml) {
 		const char * tagN = tagName(spft->u.tag.tag);

@@ -628,6 +628,7 @@ typedef struct miRE_s {
 } * miRE;
 
 struct _rpmdbMatchIterator {
+/*@dependent@*/ /*@null@*/
     rpmdbMatchIterator	mi_next;
 /*@only@*/
     const void *	mi_keyp;
@@ -736,16 +737,18 @@ static int enableSignals(void)
 /*@unchecked@*/
 static rpmdb rpmdbRock;
 
-/*@unchecked@*/
-static rpmdbMatchIterator rpmmiRock = NULL;
+/*@unchecked@*/ /*@exposed@*/ /*@null@*/
+static rpmdbMatchIterator rpmmiRock;
 
 int rpmdbCheckSignals(void)
-	/*@globals rpmdbRock, satbl @*/
-	/*@modifies rpmdbRock @*/
+	/*@globals rpmdbRock, rpmmiRock, satbl @*/
+	/*@modifies rpmdbRock, rpmmiRock @*/
 {
     struct sigtbl_s * tbl;
     sigset_t newMask, oldMask;
-    int terminate = 0;
+    static int terminate = 0;
+
+    if (terminate) return 0;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
@@ -762,11 +765,13 @@ int rpmdbCheckSignals(void)
 
 	rpmMessage(RPMMESS_DEBUG, "Exiting on signal ...\n");
 
+/*@-branchstate@*/
 	while ((mi = rpmmiRock) != NULL) {
 /*@i@*/	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
-	    mi = rpmdbFreeIterator(mi);
+/*@i@*/	    mi = rpmdbFreeIterator(mi);
 	}
+/*@=branchstate@*/
 
 /*@-newreftrans@*/
 	while ((db = rpmdbRock) != NULL) {
@@ -1677,6 +1682,8 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 }
 
 rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
+	/*@globals rpmmiRock @*/
+	/*@modifies rpmmiRock @*/
 {
     rpmdbMatchIterator * prev, next;
     dbiIndex dbi;
@@ -2449,7 +2456,9 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
 }
 
 rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
-	const void * keyp, size_t keylen)
+		const void * keyp, size_t keylen)
+	/*@globals rpmmiRock @*/
+	/*@modifies rpmmiRock @*/
 {
     rpmdbMatchIterator mi;
     DBT * key;
@@ -2522,6 +2531,8 @@ if (rc == 0)
 	}
 	if (rc)	{	/* error/not found */
 	    set = dbiFreeIndexSet(set);
+	    rpmmiRock = mi->mi_next;
+	    mi->mi_next = NULL;
 	    mi = _free(mi);
 	    return NULL;
 	}
@@ -2563,9 +2574,7 @@ if (rc == 0)
     mi->mi_ts = NULL;
     mi->mi_hdrchk = NULL;
 
-    /*@-nullret@*/ /* FIX: mi->mi_key.data may be NULL */
-    return mi;
-    /*@=nullret@*/
+/*@i@*/ return mi;
 }
 
 /* XXX psm.c */
