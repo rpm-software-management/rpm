@@ -1,5 +1,5 @@
 /*
-** $Id: luac.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: luac.c,v 1.2 2004/03/19 21:14:32 niemeyer Exp $
 ** Lua compiler (saves bytecodes to files; also list bytecodes)
 ** See Copyright Notice in lua.h
 */
@@ -182,7 +182,9 @@ int main(int argc, char* argv[])
   FILE* D=fopen(output,"wb");
   if (D==NULL) cannot(output,"open","out");
   if (stripping) strip(L,f);
+  lua_lock(L);
   luaU_dump(L,f,writer,D);
+  lua_unlock(L);
   if (ferror(D)) cannot(output,"write","out");
   fclose(D);
  }

@@ -1,5 +1,5 @@
 /*
-** $Id: liolib.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: liolib.c,v 1.2 2004/03/19 21:14:32 niemeyer Exp $
 ** Standard I/O (and system) library
 ** See Copyright Notice in lua.h
 */
@@ -158,7 +158,7 @@ static int aux_close (lua_State *L) {
 
 
 static int io_close (lua_State *L) {
-  if (lua_isnone(L, 1)) {
+  if (lua_isnone(L, 1) && lua_type(L, lua_upvalueindex(1)) == LUA_TTABLE) {
     lua_pushstring(L, IO_OUTPUT);
     lua_rawget(L, lua_upvalueindex(1));
   }
@@ -175,7 +175,7 @@ static int io_gc (lua_State *L) {
 
 
 static int io_tostring (lua_State *L) {
-  char buff[32];
+  char buff[128];
   FILE **f = topfile(L, 1);
   if (*f == NULL)
     strcpy(buff, "closed");
