@@ -14,6 +14,7 @@ typedef struct rpmtsObject_s {
     FD_t scriptFd;
     rpmtsi tsi;
     rpmElementType tsiFilter;
+    rpmprobFilterFlags ignoreSet;
 } rpmtsObject;
 
 /*@unchecked@*/

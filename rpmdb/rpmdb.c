@@ -2022,7 +2022,9 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    if (mire->tag != RPMTAG_EPOCH)
 		continue;
 	    t = RPM_INT32_TYPE;
+/*@-immediatetrans@*/
 	    u.i32p = &zero;
+/*@=immediatetrans@*/
 	    c = 1;
 	}
 
@@ -2139,6 +2141,8 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
 
     if (mi == NULL)
 	return NULL;
+
+    (void) checkSignals();
 
     dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)

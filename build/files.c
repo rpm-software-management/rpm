@@ -31,6 +31,7 @@
 
 /*@access Header @*/
 /*@access rpmfi @*/
+/*@access rpmte @*/
 /*@access FD_t @*/
 /*@access StringBuf @*/		/* compared with NULL */
 
@@ -1372,7 +1373,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
     if (fi == NULL) return;		/* XXX can't happen */
 
+/*@-onlytrans@*/
     fi->te = xcalloc(1, sizeof(*fi->te));
+/*@=onlytrans@*/
     fi->te->type = TR_ADDED;
 
     fi->dnl = _free(fi->dnl);

@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.84
+Release: 0.85
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -519,9 +519,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Tue Aug 20 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.84
+* Tue Aug 20 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.85
 - python: stupid typo broke ts.check().
 - fix: add epoch to "already installed" check.
+- check for interrupt during iteration.
+- python: add ts.setProbFilter() method, remove ts.run() argument.
 
 * Mon Aug 19 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.82
 - add --with-efence to configure, check install/upgrade with efence.

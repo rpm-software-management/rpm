@@ -1409,7 +1409,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	    /*@-type@*/ /* FIX: rpmte not opaque */
 	    {
 		/*@-noeffectuncon@*/ /* FIX: notify annotations */
-		p->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
+		p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
 				rpmteKey(p), ts->notifyData);
 		/*@=noeffectuncon@*/
 		if (rpmteFd(p) != NULL) {
@@ -1424,7 +1424,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon@*/ /* FIX: notify annotations */
-			p->fd = ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
+			p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
 					0, 0,
 					rpmteKey(p), ts->notifyData);
 			/*@=noeffectuncon@*/
@@ -1450,12 +1450,14 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		    fi->actions = NULL;
 		    fi = rpmfiFree(fi);
 		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
-		    p->fi = fi;
-		    fi->te = p;
-		    fi->fstates = _free(fi->fstates);
-		    fi->fstates = fstates;
-		    fi->actions = _free(fi->actions);
-		    fi->actions = actions;
+		    if (fi != NULL) {	/* XXX can't happen */
+			fi->te = p;
+			fi->fstates = _free(fi->fstates);
+			fi->fstates = fstates;
+			fi->actions = _free(fi->actions);
+			fi->actions = actions;
+			p->fi = fi;
+		    }
 		}
 		psm->fi = rpmfiLink(p->fi, NULL);
 
@@ -1470,23 +1472,23 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		    lastFailKey = pkgKey;
 		}
 /*@=nullstate@*/
-		fi->h = headerFree(fi->h);
 	    } else {
 		ourrc++;
 		lastFailKey = pkgKey;
 	    }
 
-	    p->h = headerFree(p->h);
-
 	    if (gotfd) {
 		/*@-noeffectuncon @*/ /* FIX: check rc */
-		(void) ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
+		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
 			rpmteKey(p), ts->notifyData);
 		/*@=noeffectuncon @*/
 		/*@-type@*/
 		p->fd = NULL;
 		/*@=type@*/
 	    }
+
+	    p->h = headerFree(p->h);
+
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", rpmteNEVR(p));
@@ -1507,7 +1509,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 /*@=nullstate@*/
 
 /*@-type@*/ /* FIX: p is almost opaque */
-	p->fi = rpmfiFree(fi);
+	p->fi = rpmfiFree(p->fi);
 /*@=type@*/
 
     }

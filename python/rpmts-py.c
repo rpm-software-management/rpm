@@ -128,12 +128,9 @@ static int _rpmts_debug = 0;
  *		packages.
  * @return	previous transFlags
  *
- * - run(problemSetFilter,callback,data) Attempt to execute a
- *	transaction set. After the transaction set has been populated
- *	with install and upgrade actions, it can be executed by invoking
- *	the run() method.
+ * - ts.setProbFilter(ignoreSet) Set transaction set problem filter.
  * @param problemSetFilter - control bit(s) to ignore classes of problems,
- *		any of
+ *		a logical or of one or more of the following bit(s):
  *	- rpm.RPMPROB_FILTER_IGNOREOS - 
  *	- rpm.RPMPROB_FILTER_IGNOREARCH - 
  *	- rpm.RPMPROB_FILTER_REPLACEPKG - 
@@ -142,6 +139,12 @@ static int _rpmts_debug = 0;
  *	- rpm.RPMPROB_FILTER_REPLACEOLDFILES - 
  *	- rpm.RPMPROB_FILTER_OLDPACKAGE - 
  *	- rpm.RPMPROB_FILTER_DISKSPACE - 
+ * @return	previous ignoreSet
+ *
+ * - ts.run(callback,data) Attempt to execute a transaction set.
+ *	After the transaction set has been populated with install/upgrade or
+ *	erase actions, the transaction set can be executed by invoking
+ *	the ts.run() method.
  */
 
 /** \ingroup python
@@ -1015,18 +1018,37 @@ fprintf(stderr, "*** rpmts_SetFlags(%p) ts %p transFlags %x\n", s, s->ts, transF
 
 /** \ingroup python
  */
+static PyObject * rpmts_SetProbFilter(rpmtsObject * s, PyObject * args)
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
+{
+    rpmprobFilterFlags ignoreSet = 0;
+    rpmprobFilterFlags oignoreSet;
+
+    if (!PyArg_ParseTuple(args, "i:ProbFilter", &ignoreSet))
+	return NULL;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_SetProbFilter(%p) ts %p ignoreSet %x\n", s, s->ts, ignoreSet);
+
+    oignoreSet = s->ignoreSet;
+    s->ignoreSet = ignoreSet;
+
+    return Py_BuildValue("i", oignoreSet);
+}
+
+/** \ingroup python
+ */
 static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
-    int ignoreSet;
     int rc, i;
     PyObject * list;
     rpmps ps;
     struct rpmtsCallbackType_s cbInfo;
 
-    if (!PyArg_ParseTuple(args, "iOO:Run", &ignoreSet, &cbInfo.cb,
-			  &cbInfo.data))
+    if (!PyArg_ParseTuple(args, "OO:Run", &cbInfo.cb, &cbInfo.data))
 	return NULL;
 
     cbInfo.tso = s;
@@ -1043,9 +1065,9 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 
 
 if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, ignoreSet);
+fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 
-    rc = rpmtsRun(s->ts, NULL, ignoreSet);
+    rc = rpmtsRun(s->ts, NULL, s->ignoreSet);
     ps = rpmtsProblems(s->ts);
 
     if (cbInfo.cb) {
@@ -1205,8 +1227,12 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
  {"setFlags",	(PyCFunction) rpmts_SetFlags,	METH_VARARGS,
 "ts.setFlags(transFlags) -> previous transFlags\n\
-- Set control bit(s) for processing a transaction set.\n\
-  Note: This method sets bit(s) passed as the first argument to ts.run()\n" },
+- Set control bit(s) for executing ts.run().\n\
+  Note: This method replaces the 1st argument to the old ts.run()\n" },
+ {"setProbFilter",	(PyCFunction) rpmts_SetProbFilter,	METH_VARARGS,
+"ts.setProbFilter(ignoreSet) -> previous ignoreSet\n\
+- Set control bit(s) for ignoring problems found by ts.run().\n\
+  Note: This method replaces the 2nd argument to the old ts.run()\n" },
  {"run",	(PyCFunction) rpmts_Run,	METH_VARARGS,
 	NULL },
  {"clean",	(PyCFunction) rpmts_Clean,	METH_VARARGS,

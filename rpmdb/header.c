@@ -2683,10 +2683,10 @@ static char * formatValue(sprintfTag tag, Header h,
     /*@=branchstate@*/
 
     if (tag->arrayCount) {
-	/*@-observertrans -modobserver@*/
+	/*@-branchstate -observertrans -modobserver@*/
 	if (datafree)
 	    data = headerFreeData(data, type);
-	/*@=observertrans =modobserver@*/
+	/*@=branchstate =observertrans =modobserver@*/
 
 	countBuf = count;
 	data = &countBuf;

@@ -997,6 +997,8 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
     }
 
     fi = xcalloc(1, sizeof(*fi));
+    if (fi == NULL)	/* XXX can't happen */
+	goto exit;
 
     fi->magic = RPMFIMAGIC;
     fi->Type = Type;

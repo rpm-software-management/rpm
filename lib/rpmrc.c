@@ -31,7 +31,7 @@ const char * macrofiles = MACROFILES;
 
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
-/*@only@*/ /*@unchecked@*/
+/*@only@*/ /*@relnul@*/ /*@unchecked@*/
 static const char ** platpat = NULL;
 /*@unchecked@*/
 static int nplatpat = 0;
@@ -1645,10 +1645,12 @@ void rpmFreeRpmrc(void)
 {
     int i, j, k;
 
+/*@-onlyunqglobaltrans -unqualifiedtrans @*/
     if (platpat)
     for (i = 0; i < nplatpat; i++)
 	platpat[i] = _free(platpat[i]);
     platpat = _free(platpat);
+/*@-onlyunqglobaltrans =unqualifiedtrans @*/
     nplatpat = 0;
 
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
@@ -1708,9 +1710,9 @@ void rpmFreeRpmrc(void)
     current[OS] = _free(current[OS]);
     current[ARCH] = _free(current[ARCH]);
     defaultsInitialized = 0;
-/*@-nullstate@*/ /* FIX: current may be NULL */
+/*@-globstate -nullstate@*/ /* FIX: platpat/current may be NULL */
     return;
-/*@=nullstate@*/
+/*@=globstate =nullstate@*/
 }
 
 /** \ingroup rpmrc

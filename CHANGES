@@ -255,6 +255,8 @@
 	- skip redundant /sbin/ldconfig scripts on upgrade (if possible).
 	- python: stupid typo broke ts.check().
 	- fix: add epoch to "already installed" check.
+	- check for interrupt during iteration.
+	- python: add ts.setProbFilter() method, remove ts.run() argument.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

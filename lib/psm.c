@@ -888,7 +888,7 @@ static pid_t psmWait(rpmpsm psm)
 	/*@modifies psm, fileSystem, internalState @*/
 {
     if (psm->reaper) {
-	/* XXX FIXME: signal race on psm->reaped prevents pause(3) */
+	/*@-infloops@*/
 	while (psm->reaped == 0)
 	    (void) sleep(2);
 	/*@=infloops@*/
@@ -915,7 +915,7 @@ fprintf(stderr, "      Wait: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmt
 /*@unchecked@*/
 static int ldconfig_done = 0;
 
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
 static const char * ldconfig_path = "/sbin/ldconfig";
 
 /**
@@ -940,8 +940,10 @@ static int runScript(rpmpsm psm, Header h,
 		const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState@*/
-	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals ldconfig_done, rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies psm, ldconfig_done, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
@@ -1259,10 +1261,9 @@ exit:
  */
 static int handleOneTrigger(const rpmpsm psm, Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState@*/
-	/*@modifies psm, triggeredH, *triggersAlreadyRun, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState@*/
+	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 1;
     const rpmts ts = psm->ts;
@@ -1299,7 +1300,10 @@ static int handleOneTrigger(const rpmpsm psm, Header sourceH, Header triggeredH,
 	if (!(Flags & psm->sense))
 	    continue;
 
-	if (!rpmdsNVRMatchesDep(sourceH, trigger, 1))
+	/*
+	 * XXX Trigger on any provided dependency, not just the package NEVR.
+	 */
+	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
 	    continue;
 
 	if (!(	hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
@@ -1605,10 +1609,12 @@ int rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 assert(psm->mi == NULL);
 	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te), 0);
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION,
-			RPMMIRE_DEFAULT, rpmteV(psm->te));
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE,
-			RPMMIRE_DEFAULT, rpmteR(psm->te));
+	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_EPOCH, RPMMIRE_DEFAULT,
+			rpmteE(psm->te));
+	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION, RPMMIRE_DEFAULT,
+			rpmteV(psm->te));
+	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
+			rpmteR(psm->te));
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
