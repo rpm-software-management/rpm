@@ -392,7 +392,8 @@ Header loadHeader(void *pv)
     h->data_used = dl;
     h->data = p;
 
-    h->fully_sorted = 0;
+    /* This assumes you only loadHeader() something you unloadHeader()-ed */
+    h->fully_sorted = 1;
     h->mutable = 0;
 
     return h;
@@ -402,6 +403,7 @@ void *unloadHeader(Header h)
 {
     void *p;
     int_32 *pi;
+    Header res;
 
     pi = p = malloc(2 * sizeof(int_32) +
 		    h->entries_used * sizeof(struct indexEntry) +
@@ -413,6 +415,9 @@ void *unloadHeader(Header h)
     pi += h->entries_used * sizeof(struct indexEntry);
     memcpy(pi, h->data, h->data_used);
 
+    res = copyHeader(p);
+    free(p);
+   
     return p;
 }
 
@@ -642,7 +647,9 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	/* Fall through to STRING_ARRAY_TYPE */
     case STRING_ARRAY_TYPE:
         /* Correction! */
-        *type = STRING_ARRAY_TYPE;
+        if (type) {
+	    *type = STRING_ARRAY_TYPE;
+	}
 	/* Otherwise, build up an array of char* to return */
 	x = index->count;
 	*p = malloc(x * sizeof(char *));
