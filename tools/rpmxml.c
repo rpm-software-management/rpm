@@ -235,7 +235,6 @@ printf("%d %d %s %d\n", xp->depth, xp->nodeType, xp->name, xp->isEmptyElement);
 	break;
     }
 
-
     if (xp->value != NULL) {
         xmlFree(xp->value);
 	xp->value = NULL;

@@ -9,7 +9,9 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
+#if !defined(__LCLINT__)
 #include <unistd.h>
+#endif
 
 #ifndef MAP_FILE
 #define MAP_FILE 0

@@ -3,7 +3,6 @@
 #+partial
 +forcehints
 
--warnunixlib
 -warnposix
 
 +unixlib
@@ -15,6 +14,15 @@
 # --- in progress
 +bounds
 -boundswrite		# 8
+
+-compdestroy		# 1
+-fixedformalarray
+-incondefs		# 10
+-matchfields		# 2
+-mustdefine
+-mustmod
+-mutrep
+-nullstate
 
 -declundef		# 62
 -enummemuse		# 6

@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.151 2004/06/17 20:18:34 arekm Exp $
+# $Id: macros.in,v 1.152 2004/10/09 20:22:01 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -378,7 +378,17 @@ package or when debugging this package.\
 %_filter_GLIBC_PRIVATE			0
 
 # Desired selinux policy tree
-%__policy_tree	targeted
+%__policy_tree	%{expand:%%global __policy_tree %{lua:\
+t="targeted"\
+f = io.open("/etc/selinux/config")\
+if f then\
+  for l in f:lines() do\
+    if "SELINUXTYPE=" == string.sub(l,0,12) then t=string.sub(l,13); end\
+  end\
+  f:close()\
+end\
+print (t)\
+}}%{__policy_tree}
 
 # Path to selinux file context patterns.
 %__file_context_path /etc/selinux/%{__policy_tree}/contexts/files/file_contexts
@@ -666,6 +676,10 @@ package or when debugging this package.\
 #
 # XXX	Note: escaped %% for use in headerSprintf()
 %_autorelocate_path	@autorelocate_path@
+
+#	A default directory color to choose when directories are
+#	auto-relocated.
+%_autorelocate_dcolor @autorelocate_dcolor@
 
 #	The path to the dependency universe database. The default value
 #	is the rpmdb-redhat location. The macro is usually defined in

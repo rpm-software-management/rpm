@@ -103,7 +103,7 @@ BEECRYPTAPI
 int mpnsetbin(mpnumber* n, const byte* osdata, size_t ossize)
 	/*@modifies n @*/;
 BEECRYPTAPI
-int mpnsethex(mpnumber* n, const char* hex)
+int mpnsethex(/*@out@*/ mpnumber* n, const char* hex)
 	/*@modifies n @*/;
 
 BEECRYPTAPI

@@ -699,7 +699,7 @@ int rpmdbCheckSignals(void)
 	rpmdb db;
 	rpmdbMatchIterator mi;
 
-	rpmMessage(RPMMESS_DEBUG, "Exiting on signal ...\n");
+	rpmMessage(RPMMESS_NORMAL, "Exiting on signal(0x%lx) ...\n", *((unsigned long *)&rpmsqCaught));
 
 /*@-branchstate@*/
 	while ((mi = rpmmiRock) != NULL) {

@@ -24,7 +24,9 @@
 #endif
 
 #ifdef HAVE_UNISTD_H
+#if !defined(__LCLINT__)
 #include <unistd.h>
+#endif
 #endif
 
 #ifndef O_BINARY

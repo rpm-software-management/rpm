@@ -773,38 +773,41 @@ dnl %files gets something like
 dnl	/usr/*/locale/*/LC_MESSAGES/*.mo
 dnl (Note: more than one asterisk in glob pattern.)
 dnl
-AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
-    [rpm_cv_glob=yes],
-    [AC_CHECK_FUNCS(glob, rpm_cv_glob=no, rpm_cv_glob=yes)])
-
-if test $rpm_cv_glob = no ; then
-    AC_CACHE_CHECK([for GNU extensions to glob], rpm_cv_glob_ext, [
-    rm -f t
-    mkdir t
-    mkdir t/p
-    touch t/p/foo.8
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <unistd.h>
-#include <sys/stat.h>
-#include <glob.h>
-main() {
-  glob_t gl ;
-  gl.gl_stat = stat;
-  exit(glob("t/*/*.8", GLOB_PERIOD, NULL, &gl) || gl.gl_pathc < 1);
-} ]])],[rpm_cv_glob_ext=yes],[rpm_cv_glob_ext=no],[rpm_cv_glob_ext=no])
-    rm -r t
-    ])
-    if test "$rpm_cv_glob_ext" = no ; then
-	echo "    --> using the included GNU glob instead." >&AS_MESSAGE_FD([])
-	rpm_cv_glob=yes
-    fi
-fi
-
-if test "$rpm_cv_glob" = yes; then
+dnl XXX Glob is "fixed" in glibc-2.3.3-61, but the cost is that
+dnl dangling symlinks are no longer globbed. Always use the internal glob.
+dnl
+#AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
+#    [rpm_cv_glob=yes],
+#    [AC_CHECK_FUNCS(glob, rpm_cv_glob=no, rpm_cv_glob=yes)])
+#
+#if test $rpm_cv_glob = no ; then
+#    AC_CACHE_CHECK([for GNU extensions to glob], rpm_cv_glob_ext, [
+#    rm -f t
+#    mkdir t
+#    mkdir t/p
+#    touch t/p/foo.8
+#    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+##include <unistd.h>
+##include <sys/stat.h>
+##include <glob.h>
+#main() {
+#  glob_t gl ;
+#  gl.gl_stat = stat;
+#  exit(glob("t/*/*.8", GLOB_PERIOD, NULL, &gl) || gl.gl_pathc < 1);
+#} ]])],[rpm_cv_glob_ext=yes],[rpm_cv_glob_ext=no],[rpm_cv_glob_ext=no])
+#    rm -r t
+#    ])
+#    if test "$rpm_cv_glob_ext" = no ; then
+#	echo "    --> using the included GNU glob instead." >&AS_MESSAGE_FD([])
+#	rpm_cv_glob=yes
+#    fi
+#fi
+#
+#if test "$rpm_cv_glob" = yes; then
     AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
     AC_LIBOBJ(glob)
     AC_LIBOBJ(fnmatch)
-fi
+#fi
 dnl
 dnl Auto-detect which python bindings should be built.
 dnl

@@ -30,18 +30,21 @@
 /*!\
  * Decode white space character set (default).
  */
+/*@unchecked@*/ /*@observer@*/
 extern const char* b64decode_whitespace;
 #define B64DECODE_WHITESPACE	" \f\n\r\t\v"
 
 /*!\
  * Encode 72 characters per line (default).
  */
+/*@unchecked@*/
 extern int b64encode_chars_per_line;
 #define B64ENCODE_CHARS_PER_LINE	72
 
 /*!\
  * Encode end-of-line string (default).
  */
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char* b64encode_eolstr;
 #define B64ENCODE_EOLSTR	"\n"
 
@@ -77,7 +80,7 @@ char* b64crc(const unsigned char* data, size_t ns)
  * \return 0 on success, 1: s == NULL, 2: bad length, 3: bad char
  */
 BEECRYPTAPI
-int b64decode(const char* s, void** datap, size_t* lenp)
+int b64decode(const char* s, /*@out@*/ void** datap, /*@out@*/ size_t* lenp)
 	/*@modifies *datap, *lenp @*/;
 
 /*!

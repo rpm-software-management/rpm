@@ -287,7 +287,9 @@ void rpmsqAction(int signum,
 	if (tbl->signum != signum)
 	    continue;
 
-	(void) sigaddset(&rpmsqCaught, signum);
+	/* XXX Ignore any signals that were originally SIG_IGN */
+	if (tbl->oact.sa_handler != SIG_IGN)
+	    (void) sigaddset(&rpmsqCaught, signum);
 
 	switch (signum) {
 	case SIGCHLD:
