@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.150 2004/05/30 17:52:57 jbj Exp $
+# $Id: macros.in,v 1.151 2004/06/17 20:18:34 arekm Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -86,6 +86,56 @@
 %__automake		automake
 %__autoconf		autoconf
 
+#==============================================================================
+# Conditional build stuff.
+
+# Check if symbol is defined.
+# Example usage: %if %{defined with_foo} && %{undefined with_bar} ...
+%defined()	%{expand:%%{?%{1}:1}%%{!?%{1}:0}}
+%undefined()	%{expand:%%{?%{1}:0}%%{!?%{1}:1}}
+
+# Shorthand for %{defined with_...}
+%with()		%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
+%without()	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
+
+# Handle conditional builds. %bcond_with is for case when feature is
+# default off and needs to be activated with --with ... command line
+# switch. %bcond_without is for the dual case.
+#
+# %bcond_with foo defines symbol with_foo if --with foo was specified on
+# command line.
+# %bcond_without foo defines symbol with_foo if --without foo was *not*
+# specified on command line.
+#
+# For example (spec file):
+#
+# (at the beginning)
+# %bcond_with extra_fonts
+# %bcond_without static
+# (and later)
+# %if %{with extra_fonts}
+# ...
+# %else
+# ...
+# %endif
+# %if ! %{with static}
+# ...
+# %endif
+# %ifdef %{with static}
+# ...
+# %endif
+# %{?with_static: ... }
+# %{!?with_static: ... }
+# %{?with_extra_fonts: ... }
+# %{!?with_extra_fonts: ... }
+
+#
+# The bottom line: never use without_foo, _with_foo nor _without_foo, only
+# with_foo. This way changing default set of bconds for given spec is just
+# a matter of changing single line in it and syntax is more readable.
+%bcond_with()		%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
+%bcond_without()	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
+#
 #==============================================================================
 # ---- Required rpmrc macros.
 #	Macros that used to be initialized as a side effect of rpmrc parsing.
