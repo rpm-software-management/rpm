@@ -403,8 +403,6 @@ static char * getScript(char * which, struct oldrpmdb *oldrpmdb,
 	return NULL;
     }
 
-    printf("found for: %s\n", labelstr);
-
     return rec.dptr;
 }
 
