@@ -103,7 +103,7 @@ static void printUsage(void) {
     puts(_("                        [--nomd5] [targets]"));
     puts(_("       rpm {--setperms} [-afpg] [target]"));
     puts(_("       rpm {--setugids} [-afpg] [target]"));
-    puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
+    puts(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        package1 ... packageN"));
     puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
