@@ -15,7 +15,7 @@
 
 /* Internal interface */
 
-#define RPMLOCK_FILE "/var/lib/rpm/transaction.lock"
+#define RPMLOCK_FILE "/var/lock/rpm/transaction"
 
 /*@observer@*/ /*@unchecked@*/
 static const char * _rpmlock_file = RPMLOCK_FILE;
@@ -39,13 +39,6 @@ static rpmlock rpmlock_new(const char *rootdir)
 	rpmlock lock = (rpmlock) malloc(sizeof(*lock));
 	if (lock) {
 		mode_t oldmask = umask(022);
-		char *path = (char *)malloc(strlen(rootdir)+
-					    strlen(RPMLOCK_FILE)+2);
-		if (!path) {
-			free(lock);
-			return NULL;
-		}
-		sprintf(path, "%s/%s", rootdir, RPMLOCK_FILE);
 		lock->fd = open(RPMLOCK_FILE, O_RDWR|O_CREAT, 0644);
 		(void) umask(oldmask);
 
