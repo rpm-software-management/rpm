@@ -144,6 +144,9 @@
 	- fix: assertion failure iff incomplete package install (#66837).
 	- python: link internal libelf (if used) directly into rpmmodule.so.
 	- use rpmdb-redhat for suggestions if/when configured (#67430).
+	- disambiguate failures to import (with error messages, duh).
+	- fix: multiple relocations (#67596).
+	- add --build/--program-prefix, delete libtoolize, from %configure.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

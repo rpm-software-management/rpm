@@ -93,3 +93,9 @@ s:'"$TOP_DIR"'::
 s:^\([^%].*\)::
 s:%lang(C) ::
 ' >> $MO_NAME
+
+if ! grep -q / $MO_NAME; then
+	echo "No translations found for ${NAME} in ${TOP_DIR}"
+	exit 1
+fi
+exit 0

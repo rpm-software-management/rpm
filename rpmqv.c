@@ -329,6 +329,9 @@ int main(int argc, const char ** argv)
     int ec = 0;
     int status;
     int p[2];
+#ifdef	IAM_RPMEIU
+    int i;
+#endif
 	
 #if HAVE_MCHECK_H && HAVE_MTRACE
     /*@-noeffect@*/
@@ -460,6 +463,8 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMEIU
+    for (i = 0; i < ia->numRelocations; i++)
+	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
     ia->relocations = _free(ia->relocations);
     memset(ia, 0, sizeof(*ia));
     ia->transFlags = RPMTRANS_FLAG_NONE;
@@ -1217,6 +1222,8 @@ exit:
 #endif
 
 #ifdef	IAM_RPMEIU
+    for (i = 0; i < ia->numRelocations; i++)
+	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
     ia->relocations = _free(ia->relocations);
 #endif
 

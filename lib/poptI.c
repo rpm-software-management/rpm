@@ -52,16 +52,19 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	ia->relocations = xrealloc(ia->relocations, 
 			sizeof(*ia->relocations) * (ia->numRelocations + 1));
 	/*@-temptrans@*/
-	ia->relocations[ia->numRelocations].oldPath = arg;
+	ia->relocations[ia->numRelocations].oldPath = xstrdup(arg);
 	/*@=temptrans@*/
 	ia->relocations[ia->numRelocations].newPath = NULL;
 	ia->numRelocations++;
 	break;
     case POPT_RELOCATE:
-      {	char * newPath = NULL;
+      { char * oldPath = NULL;
+	char * newPath = NULL;
+	
 	if (arg == NULL || *arg != '/') 
 	    argerror(_("relocations must begin with a /"));
-	if (!(newPath = strchr(arg, '=')))
+	oldPath = xstrdup(arg);
+	if (!(newPath = strchr(oldPath, '=')))
 	    argerror(_("relocations must contain a ="));
 	*newPath++ = '\0';
 	if (*newPath != '/') 
@@ -69,7 +72,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	ia->relocations = xrealloc(ia->relocations, 
 			sizeof(*ia->relocations) * (ia->numRelocations + 1));
 	/*@-temptrans@*/
-	ia->relocations[ia->numRelocations].oldPath = arg;
+	ia->relocations[ia->numRelocations].oldPath = oldPath;
 	/*@=temptrans@*/
 	/*@-kepttrans@*/
 	ia->relocations[ia->numRelocations].newPath = newPath;
