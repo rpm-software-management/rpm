@@ -520,7 +520,7 @@ fi
 
 %changelog
 * Wed Jun 12 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.26
-- fix: separate existence and number checks for problems found.
+- fix: separate existence and number checks for problems found (#66552).
 
 * Mon Jun 10 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.25
 - document digital signature verification in rpm.8.
