@@ -11,7 +11,7 @@ EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL RPM-PGP-KEY \
 EXTRA_PROGRAMS = rpmconvert
 
 # XXX TODO: python perl
-SUBDIRS = popt build lib po intl misc tools scripts tests doc .
+SUBDIRS = intl po popt build lib misc tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \

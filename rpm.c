@@ -581,13 +581,13 @@ int main(int argc, char ** argv)
     specedit = NULL;
 
     /* set up the correct locale */
-    (void)setlocale(LC_ALL, "" );
+    setlocale(LC_ALL, "" );
 
 #ifdef	__LCLINT__
 #define	LOCALEDIR	"/usr/share/locale"
 #endif
-    (void)bindtextdomain(PACKAGE, LOCALEDIR);
-    (void)textdomain(PACKAGE);
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
 
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 

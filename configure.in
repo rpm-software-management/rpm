@@ -1,3 +1,4 @@
+
 dnl configure.in for RPM
 dnl
 dnl Don't add checks for things we can't work around, unless those checks
@@ -261,7 +262,7 @@ test "$with_v4_packages" = yes && AC_DEFINE(ENABLE_V4_PACKAGES)
 ### use option --enable-bzip2-payload to turn on support for packages with bzip2 payloads
 AC_MSG_CHECKING(if you want support for packages with bzip2 payloads)
 AC_ARG_ENABLE(bzip2-payload,
-        [  --enable-bzip2-payload[=no]   [experimental] support for packages with bzip2 paylaods],
+        [  --enable-bzip2-payload[=no]  [experimental] support for packages with bzip2 paylaods],
         [with_bzip2_payload=$enableval],
         [with_bzip2_payload=no])
 AC_MSG_RESULT($with_bzip2_payload)
@@ -597,7 +598,7 @@ AC_REPLACE_FUNCS(basename)
 dnl
 dnl XXX Regex replacement isn't known to be needed yet.
 dnl
-AC_ARG_WITH(regex, [  --with-regex            Use the GNU regex library ],
+AC_ARG_WITH(regex, [  --with-regex            use the GNU regex library ],
     [rpm_cv_regex=yes],
     [AC_CHECK_FUNCS(regcomp, rpm_cv_regex=no, rpm_cv_regex=yes)])
 
@@ -625,7 +626,7 @@ dnl XXX Glob may be broken on solaris and aix when %files gets something like
 dnl	/usr/share/locale/*/LC_MESSAGES/*.mo
 dnl (Note: two asterisks in glob pattern.)
 dnl
-AC_ARG_WITH(glob, [  --with-glob            Use the internal glob ],
+AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
     [rpm_cv_glob=yes],
     [AC_CHECK_FUNCS(glob, rpm_cv_glob=no, rpm_cv_glob=yes)])
 
@@ -894,7 +895,9 @@ AC_OUTPUT([Makefile rpmrc macros lib/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile
 	doc/Makefile doc/manual/Makefile doc/pl/Makefile doc/ru/Makefile
-	python/Makefile],
-	[touch Makefile.in
-	sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
+	python/Makefile])
+dnl	[echo timestamp > popt/stamp-h.in
+dnl	echo timestamp > stamp-h.in
+dnl	touch Makefile.in
+dnl	sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
 

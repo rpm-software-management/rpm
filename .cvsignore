@@ -2,7 +2,6 @@
 .depend
 .depend-done
 Makefile
-Makefile.in
 .libs
 rpm
 rpm2cpio
@@ -11,7 +10,6 @@ rpmrc
 macros
 find-requires
 find-provides
-config.h.in
 config.h
 config.guess
 config.cache
