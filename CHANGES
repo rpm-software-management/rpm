@@ -1,3 +1,6 @@
+2.4.7 -> 2.4.8:
+	- added noarch build compatibilities for ppc, m68k
+
 2.4.6 -> 2.4.7:
 	- had some wrong month lengths in changelog date parsing
 	- updated fine-requires (Linux version) to add lines for shell
