@@ -23,7 +23,7 @@ typedef /*@abstract@*/ struct MD5Context MD5_CTX;
 extern "C" {
 #endif
 
-void rpmMD5Init(struct MD5Context *context, int brokenEndian);
+void rpmMD5Init(/*@out@*/struct MD5Context *context, int brokenEndian);
 void rpmMD5Update(struct MD5Context *context, unsigned char const *buf,
 	       unsigned len);
 void rpmMD5Final(unsigned char digest[16], struct MD5Context *context);
