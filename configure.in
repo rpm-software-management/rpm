@@ -308,6 +308,7 @@ DBLIBSRCS=""
 libdb3=""
 libdb2=""
 libdb1=""
+
 dnl Check for Berkeley db3 API.
 AC_CHECK_FUNC(db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"],
   AC_CHECK_LIB(db-3.1, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.1"],
@@ -320,10 +321,14 @@ AC_CHECK_FUNC(db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"],
 
 dnl Check for Berkeley db2 API.
 dnl AC_CHECK_FUNC(db_open, [DBLIBSRCS="$DBLIBSRCS db2.c"],
-dnl   AC_CHECK_LIB(db, db_open, [LIBS="$LIBS"; DBLIBSRCS="$DBLIBSRCS db2.c" ; libdb2="-ldb"])
+dnl   AC_CHECK_LIB(db2, db_open, [LIBS="$LIBS"; DBLIBSRCS="$DBLIBSRCS db2.c" ; libdb2="-ldb2"],
+dnl     AC_CHECK_LIB(db, db_open, [LIBS="$LIBS"; DBLIBSRCS="$DBLIBSRCS db2.c" ; libdb2="-ldb"],
+dnl     )
+dnl   )
 dnl )
+
 dnl Check for Berkeley db1 API retrofit to db2/db3 database.
-dnl AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c"],
+dnl AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c"],
 dnl     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c"])
 dnl )
 

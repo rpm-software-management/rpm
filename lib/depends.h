@@ -141,6 +141,8 @@ struct rpmTransactionSet_s {
 				/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
+/*@shared@*/ TFI_t flList;	/*!< Transaction element(s) file info. */
+    int flEntries;		/*!< No. of transaction elements. */
     int chrootDone;		/*!< Has chroot(2) been been done? */
 /*@only@*/ const char * rootDir;/*!< Path to top of install tree. */
 /*@only@*/ const char * currDir;/*!< Current working directory. */

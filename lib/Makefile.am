@@ -22,7 +22,7 @@ LIBS =
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	cpio.c $(DBLIBSRCS) depends.c \
+	cpio.c $(DBLIBSRCS) dbconfig.c depends.c \
 	formats.c fprint.c fs.c fsm.c hash.c header.c \
 	md5.c md5sum.c misc.c package.c problems.c \
 	poptBT.c poptQV.c psm.c query.c \

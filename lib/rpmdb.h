@@ -289,6 +289,15 @@ extern "C" {
  */
 void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
 
+/** \ingroup db3
+ * Format db3 open flags for debugging print.
+ * @param dbflags		db open flags
+ * @param print_dbenv_flags	format db env flags instead?
+ * @return			formatted flags (static buffer)
+ */
+/*@exposed@*/ const char *const prDbiOpenFlags(int dbflags,
+						int print_dbenv_flags);
+
 /** \ingroup dbi
  * Return handle for an index database.
  * @param rpmdb		rpm database

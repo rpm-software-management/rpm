@@ -17,6 +17,14 @@ int rpmlogGetNrecs(void)
     return nrecs;
 }
 
+int rpmlogCode(void)
+{
+    if (nrecs > 0)
+	return recs[nrecs-1].code;
+    return -1;
+}
+
+
 const char * rpmlogMessage(void)
 {
     if (nrecs > 0)
@@ -95,15 +103,31 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     int pri = RPMLOG_PRI(code);
     int mask = RPMLOG_MASK(pri);
     /*@unused@*/ int fac = RPMLOG_FAC(code);
-    char msgbuf[BUFSIZ], *msg;
+    char *msgbuf, *msg;
+    int msgnb = BUFSIZ, nb;
     FILE * msgout = stderr;
     rpmlogRec rec;
 
     if ((mask & rpmlogMask) == 0)
 	return;
 
-    /*@-unrecog@*/ vsnprintf(msgbuf, sizeof(msgbuf), fmt, ap); /*@=unrecog@*/
-    msgbuf[sizeof(msgbuf) - 1] = '\0';
+    msgbuf = xmalloc(msgnb);
+    *msgbuf = '\0';
+
+    /* Allocate a sufficently large buffer for output. */
+    while (1) {
+	/*@-unrecog@*/
+	nb = vsnprintf(msgbuf, msgnb, fmt, ap);
+	/*@=unrecog@*/
+	if (nb > -1 && nb < msgnb)
+	    break;
+	if (nb > -1)		/* glibc 2.1 */
+	    msgnb = nb+1;
+	else			/* glibc 2.0 */
+	    msgnb *= 2;
+	msgbuf = xrealloc(msgbuf, msgnb);
+    }
+    msgbuf[msgnb - 1] = '\0';
     msg = msgbuf;
 
     /* Save copy of all messages at warning (or below == "more important"). */
@@ -119,10 +143,13 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	++nrecs;
 
 	rec->code = code;
-	rec->message = xstrdup(msg);
+	rec->message = msgbuf;
+	msgbuf = NULL;
 
 	if (_rpmlogCallback) {
 	    _rpmlogCallback();
+	    if (msgbuf)
+		free(msgbuf);
 	    return;	/* XXX Preserve legacy rpmError behavior. */
 	}
     }
@@ -152,6 +179,8 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 
     fputs(msg, msgout);
     fflush(msgout);
+    if (msgbuf)
+	free(msgbuf);
     if (pri <= RPMLOG_CRIT)
 	exit(EXIT_FAILURE);
 }
@@ -163,6 +192,11 @@ void rpmlog (int code, const char *fmt, ...)
     va_start(ap, fmt);
     vrpmlog(code, fmt, ap);
     va_end(ap);
+}
+
+int rpmErrorCode(void)
+{
+    return rpmlogCode();
 }
 
 const char * rpmErrorString(void)

@@ -598,6 +598,7 @@ int rpmErase(const char * rootdir, const char ** argv,
     }
 
     if (!stopUninstall) {
+	transFlags |= RPMTRANS_FLAG_REVERSE;
 	numFailed += rpmRunTransactions(ts, NULL, NULL, NULL, &probs,
 					transFlags, 0);
     }

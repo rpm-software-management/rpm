@@ -25,10 +25,11 @@ build/parseSpec.c
 build/reqprov.c
 build/spec.c
 lib/cpio.c
-lib/depends.c
 lib/db1.c
 lib/db2.c
 lib/db3.c
+lib/dbconfig.c
+lib/depends.c
 lib/falloc.c
 lib/formats.c
 lib/fprint.c

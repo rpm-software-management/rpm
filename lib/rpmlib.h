@@ -1077,6 +1077,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
     RPMTRANS_FLAG_COMMIT	= (1 << 13),
     RPMTRANS_FLAG_UNDO		= (1 << 14),
+    RPMTRANS_FLAG_REVERSE	= (1 << 15),
 } rpmtransFlags;
 
 /** \ingroup rpmtrans

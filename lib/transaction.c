@@ -61,6 +61,17 @@ struct diskspaceInfo {
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
+
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)	free((void *)this);
+    return NULL;
+}
+
 static void freeFl(rpmTransactionSet ts, TFI_t flList)
 {
     TFI_t fi;
@@ -1261,6 +1272,90 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     if (languages) freeSplitString((char **)languages);
 }
 
+/**
+ * Iterator across transaction elements, forward on install, backward on erase.
+ */
+struct tsIterator_s {
+/*@kept@*/ rpmTransactionSet ts;	/*!< transaction set. */
+    int reverse;			/*!< reversed traversal? */
+    int ocsave;				/*!< last returned iterator index. */
+    int oc;				/*!< iterator index. */
+};
+
+/**
+ */
+static int tsGetOc(void * this) {
+    struct tsIterator_s * iter = this;
+    int oc = iter->ocsave;
+    return oc;
+}
+
+/**
+ */
+static struct availablePackage * tsGetAlp(void * this) {
+    struct tsIterator_s * iter = this;
+    struct availablePackage * alp = NULL;
+    int oc = iter->ocsave;
+
+    if (oc != -1) {
+	rpmTransactionSet ts = iter->ts;
+	TFI_t fi = ts->flList + oc;
+	if (fi->type == TR_ADDED)
+	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+    }
+    return alp;
+}
+
+/**
+ * Destroy transaction element iterator.
+ * @param this		transaction element iterator
+ * @retval		NULL always
+ */
+static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ const void * this)
+{
+    return _free((void *)this);
+}
+
+/**
+ * Create transaction element iterator.
+ * @param this		transaction set
+ * @return		transaction element iterator
+ */
+static void * tsInitIterator(/*@kept@*/ const void * this)
+{
+    rpmTransactionSet ts = (void *)this;
+    struct tsIterator_s * iter = NULL;
+
+    iter = xcalloc(1, sizeof(*iter));
+    iter->ts = ts;
+    iter->oc = ((ts->transFlags & RPMTRANS_FLAG_REVERSE)
+			? (ts->orderCount - 1) : 0);
+    iter->ocsave = iter->oc;
+    return iter;
+}
+
+/**
+ * Return next transaction element's file info.
+ * @param this		file info iterator
+ * @return		next index, -1 on termination
+ */
+static TFI_t tsNextIterator(void * this) {
+    struct tsIterator_s * iter = this;
+    rpmTransactionSet ts = iter->ts;
+    TFI_t fi = NULL;
+    int oc = -1;
+
+    if (iter->reverse) {
+	if (iter->oc >= 0)		oc = iter->oc--;
+    } else {
+    	if (iter->oc < ts->orderCount)	oc = iter->oc++;
+    }
+    iter->ocsave = oc;
+    if (oc != -1)
+	fi = ts->flList + oc;
+    return fi;
+}
+
 #define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmRunTransactions(	rpmTransactionSet ts,
@@ -1269,20 +1364,20 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 			rpmtransFlags transFlags, rpmprobFilterFlags ignoreSet)
 {
     int i, j;
-    int rc, ourrc = 0;
+    int ourrc = 0;
     struct availablePackage * alp;
     Header * hdrs;
     int totalFileCount = 0;
     hashTable ht;
-    TFI_t flList, fi;
+    TFI_t fi;
     struct diskspaceInfo * dip;
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
-    int flEntries;
     int nexti;
     int lastFailed;
     int oc;
     fingerPrintCache fpc;
+    void * tsi;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -1425,15 +1520,15 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* ===============================================
      * Initialize file list:
      */
-    flEntries = ts->addedPackages.size + ts->numRemovedPackages;
-    flList = alloca(sizeof(*flList) * (flEntries));
+    ts->flEntries = ts->addedPackages.size + ts->numRemovedPackages;
+    ts->flList = alloca(sizeof(*ts->flList) * (ts->flEntries));
 
     /*
      * FIXME?: we'd be better off assembling one very large file list and
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-    for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+    for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++) {
 	const char **preTrans;
 	int preTransCount;
 
@@ -1501,7 +1596,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
-    for (fi = flList; (fi - flList) < flEntries; fi++) {
+    for (fi = ts->flList; (fi - ts->flList) < ts->flEntries; fi++) {
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 	for (i = 0; i < fi->fc; i++) {
 	    if (XFA_SKIPPING(fi->actions[i]))
@@ -1510,18 +1605,18 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
     }
 
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, flEntries,
+    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->flEntries,
 	NULL, ts->notifyData));
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-    for (fi = flList; (fi - flList) < flEntries; fi++) {
+    for (fi = ts->flList; (fi - ts->flList) < ts->flEntries; fi++) {
 	dbiIndexSet * matches;
 	int knownBad;
 
-	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
-	       NULL, ts->notifyData));
+	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - ts->flList),
+			ts->flEntries, NULL, ts->notifyData));
 
 	if (fi->fc == 0) continue;
 
@@ -1645,7 +1740,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
     }
 
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, flEntries,
+    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->flEntries,
 	NULL, ts->notifyData));
 
     if (ts->chrootDone) {
@@ -1658,7 +1753,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      * Free unused memory as soon as possible.
      */
 
-    for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+    for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++) {
 	if (fi->fc == 0)
 	    continue;
 	if (fi->fps) {
@@ -1676,13 +1771,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
            (ts->probs->numProblems && (!okProbs || psTrim(okProbs, ts->probs)))) {
 	*newProbs = ts->probs;
 
-	for (alp = ts->addedPackages.list, fi = flList;
+	for (alp = ts->addedPackages.list, fi = ts->flList;
 	        (alp - ts->addedPackages.list) < ts->addedPackages.size;
 		alp++, fi++) {
 	    headerFree(hdrs[alp - ts->addedPackages.list]);
 	}
 
-	freeFl(ts, flList);
+	freeFl(ts, ts->flList);
 	return ts->orderCount;
     }
 
@@ -1690,7 +1785,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      * Save removed files before erasing.
      */
     if (ts->transFlags & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
-	for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+	for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++) {
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
 		break;
@@ -1707,14 +1802,31 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      */
 
     lastFailed = -2;	/* erased packages have -1 */
-    for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+#ifdef	DYING
+    for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++)
+#else
+    tsi = tsInitIterator(ts);
+    while ((fi = tsNextIterator(tsi)) != NULL)
+#endif
+    {
 	int gotfd;
 
 	gotfd = 0;
-	switch (ts->order[oc].type) {
+#ifdef	DYING
+	switch (ts->order[oc].type)
+#else
+	switch (fi->type)
+#endif
+  	{
 	case TR_ADDED:
+#ifdef	DYING
 	    i = ts->order[oc].u.addedIndex;
 	    alp = ts->addedPackages.list + i;
+#else
+	    alp = tsGetAlp(tsi);
+assert(alp == fi->ap);
+	    i = alp - ts->addedPackages.list;
+#endif
 
 	    if (alp->fd == NULL) {
 		alp->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
@@ -1775,6 +1887,7 @@ if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
 	    }
 	    break;
 	case TR_REMOVED:
+	    oc = tsGetOc(tsi);
 	    /* If install failed, then we shouldn't erase. */
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		break;
@@ -1786,8 +1899,11 @@ if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
 	}
 	(void) rpmdbSync(ts->rpmdb);
     }
+#ifndef	DYING
+    tsi = tsFreeIterator(tsi);
+#endif
 
-    freeFl(ts, flList);
+    freeFl(ts, ts->flList);
 
     if (ourrc)
     	return -1;

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-12 13:55-0500\n"
+"POT-Creation-Date: 2001-02-15 15:44-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2222,6 +2222,105 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
+#: lib/db1.c:92 lib/db2.c:117 lib/db3.c:102
+#, c-format
+msgid "db%d error(%d) from %s: %s\n"
+msgstr ""
+
+#: lib/db1.c:95 lib/db2.c:120 lib/db3.c:105
+#, c-format
+msgid "db%d error(%d): %s\n"
+msgstr ""
+
+#: lib/db1.c:387
+#, c-format
+msgid "closed  db file        %s\n"
+msgstr ""
+
+#: lib/db1.c:390
+#, c-format
+msgid "removed db file        %s\n"
+msgstr ""
+
+#: lib/db1.c:421
+#, c-format
+msgid "bad db file %s\n"
+msgstr ""
+
+#: lib/db1.c:426
+#, c-format
+msgid "opening db file        %s mode 0x%x\n"
+msgstr ""
+
+#. XXX check errno validity
+#: lib/db1.c:449
+#, c-format
+msgid "cannot get %s lock on database\n"
+msgstr ""
+
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
+msgid "exclusive"
+msgstr ""
+
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
+msgid "shared"
+msgstr ""
+
+#: lib/db2.c:145 lib/db3.c:130
+#, c-format
+msgid "closed  db environment %s/%s\n"
+msgstr ""
+
+#: lib/db2.c:161 lib/db3.c:146
+#, c-format
+msgid "removed db environment %s/%s\n"
+msgstr ""
+
+#: lib/db2.c:198 lib/db3.c:183
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr ""
+
+#: lib/db2.c:588 lib/db3.c:569
+#, c-format
+msgid "closed  db index       %s/%s\n"
+msgstr ""
+
+#: lib/db2.c:678 lib/db3.c:659
+#, c-format
+msgid "opening db index       %s/%s %s mode=0x%x\n"
+msgstr ""
+
+#: lib/db2.c:784 lib/db3.c:764
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr ""
+
+#: lib/db2.c:791 lib/db3.c:771
+#, c-format
+msgid "locked  db index       %s/%s\n"
+msgstr ""
+
+#: lib/dbconfig.c:258
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored\n"
+msgstr ""
+
+#: lib/dbconfig.c:287
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr ""
+
+#: lib/dbconfig.c:296
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr ""
+
+#: lib/dbconfig.c:305
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr ""
+
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:565
 #, c-format
@@ -2322,130 +2421,6 @@ msgstr ""
 
 #: lib/depends.c:1850
 msgid "========== continuing tsort ...\n"
-msgstr ""
-
-#: lib/db1.c:92 lib/db2.c:112 lib/db3.c:456
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr ""
-
-#: lib/db1.c:95 lib/db2.c:115 lib/db3.c:459
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr ""
-
-#: lib/db1.c:387
-#, c-format
-msgid "closed  db file        %s\n"
-msgstr ""
-
-#: lib/db1.c:390
-#, c-format
-msgid "removed db file        %s\n"
-msgstr ""
-
-#: lib/db1.c:421
-#, c-format
-msgid "bad db file %s\n"
-msgstr ""
-
-#: lib/db1.c:426
-#, c-format
-msgid "opening db file        %s mode 0x%x\n"
-msgstr ""
-
-#. XXX check errno validity
-#: lib/db1.c:449
-#, c-format
-msgid "cannot get %s lock on database\n"
-msgstr ""
-
-#: lib/db1.c:450 lib/db3.c:1120
-msgid "exclusive"
-msgstr ""
-
-#: lib/db1.c:450 lib/db3.c:1120
-msgid "shared"
-msgstr ""
-
-#: lib/db2.c:141
-#, c-format
-msgid "closed  db environment %s/%s(%s)\n"
-msgstr ""
-
-#: lib/db2.c:153
-#, c-format
-msgid "removed db environment %s/%s(%s)\n"
-msgstr ""
-
-#: lib/db2.c:190
-#, c-format
-msgid "opening db environment %s/%s(%s) %s\n"
-msgstr ""
-
-#: lib/db2.c:565
-#, c-format
-msgid "closed  db index       %s/%s(%s)\n"
-msgstr ""
-
-#: lib/db2.c:643
-#, c-format
-msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
-msgstr ""
-
-#: lib/db3.c:268
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored\n"
-msgstr ""
-
-#: lib/db3.c:297
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr ""
-
-#: lib/db3.c:306
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr ""
-
-#: lib/db3.c:315
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr ""
-
-#: lib/db3.c:484
-#, c-format
-msgid "closed  db environment %s/%s\n"
-msgstr ""
-
-#: lib/db3.c:500
-#, c-format
-msgid "removed db environment %s/%s\n"
-msgstr ""
-
-#: lib/db3.c:537
-#, c-format
-msgid "opening db environment %s/%s %s\n"
-msgstr ""
-
-#: lib/db3.c:923
-#, c-format
-msgid "closed  db index       %s/%s\n"
-msgstr ""
-
-#: lib/db3.c:1013
-#, c-format
-msgid "opening db index       %s/%s %s mode=0x%x\n"
-msgstr ""
-
-#: lib/db3.c:1118
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr ""
-
-#: lib/db3.c:1125
-#, c-format
-msgid "locked  db index       %s/%s\n"
 msgstr ""
 
 #: lib/falloc.c:141
@@ -3371,7 +3346,7 @@ msgstr ""
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:327 lib/rpminstall.c:632
+#: lib/rpminstall.c:327 lib/rpminstall.c:633
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -3423,12 +3398,12 @@ msgstr ""
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:619
+#: lib/rpminstall.c:620
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:625
+#: lib/rpminstall.c:626
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3661,46 +3636,46 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:392
+#: lib/transaction.c:403
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:395
+#: lib/transaction.c:406
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/transaction.c:398
+#: lib/transaction.c:409
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/transaction.c:472
+#: lib/transaction.c:483
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:521
+#: lib/transaction.c:532
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/transaction.c:528
+#: lib/transaction.c:539
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:600
+#: lib/transaction.c:611
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:605
+#: lib/transaction.c:616
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:729
+#: lib/transaction.c:740
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3870,22 +3845,22 @@ msgstr ""
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/rpmlog.c:24
+#: rpmio/rpmlog.c:32
 msgid "(no error)"
 msgstr ""
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:83 rpmio/rpmlog.c:84 rpmio/rpmlog.c:85
+#: rpmio/rpmlog.c:91 rpmio/rpmlog.c:92 rpmio/rpmlog.c:93
 msgid "fatal error: "
 msgstr ""
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:86
+#: rpmio/rpmlog.c:94
 msgid "error: "
 msgstr ""
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:87
+#: rpmio/rpmlog.c:95
 msgid "warning: "
 msgstr ""
 

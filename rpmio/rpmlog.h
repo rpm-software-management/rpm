@@ -174,6 +174,15 @@ int rpmlogGetNrecs(void);
 /*@observer@*/ const char * rpmlogMessage(void);
 
 /**
+ * Return error code from last rpmError() message.
+ * @deprecated Perl-RPM needs, what's really needed is predictable, non-i18n
+ *	encumbered, error text that can be retrieved through rpmlogMessage()
+ *	and parsed IMHO.
+ * @return		code from last message
+ */
+int rpmlogCode(void);
+
+/**
  * Print all rpmError() messages.
  * @param f		file handle (NULL uses stderr)
  */
@@ -211,6 +220,13 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb);
  * @deprecated gnorpm needs, use rpmlogSetCallback() instead.
  */
 rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb);
+
+/**
+ * Return error code from last rpmError() message.
+ * @deprecated Perl-RPM needs, use rpmlogCode() instead.
+ * @return		code from last message
+ */
+int rpmErrorCode(void);
 
 /**
  * Return text of last rpmError() message.
