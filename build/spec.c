@@ -1,4 +1,5 @@
-/** \file build/spec.c
+/** \ingroup rpmbuild
+ * \file build/spec.c
  * Handle spec data structure.
  */
 

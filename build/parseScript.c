@@ -1,4 +1,5 @@
-/** \file build/parseScript.c
+/** \ingroup rpmbuild
+ * \file build/parseScript.c
  *  Parse install-time script section from spec file.
  */
 

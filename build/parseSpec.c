@@ -1,4 +1,5 @@
-/** \file build/parseSpec.c
+/** \ingroup rpmbuild
+ * \file build/parseSpec.c
  *  Top level dispatcher for spec file parsing.
  */
 
@@ -40,7 +41,6 @@ static inline void initParts(struct PartRec *p)
 	p->len = strlen(p->token);
 }
 
-/** */
 int isPart(char *line)
 {
     char c;
@@ -91,7 +91,6 @@ static int matchTok(const char *token, const char *line)
     return rc;
 }
 
-/** */
 void handleComments(char *s)
 {
     SKIPSPACE(s);
@@ -168,11 +167,12 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 /*         1 - EOF     */
 /*        <0 - error   */
 
-/** */
 int readLine(Spec spec, int strip)
 {
+#ifdef	DYING
     const char *arch;
     const char *os;
+#endif
     char  *s;
     int match;
     struct ReadLevelEntry *rl;
@@ -229,10 +229,12 @@ retry:
 	}
     }
     
+#ifdef	DYING
     arch = NULL;
     rpmGetArchInfo(&arch, NULL);
     os = NULL;
     rpmGetOsInfo(&os, NULL);
+#endif
 
     /* Copy next file line into the spec line buffer */
     if ((rc = copyNextLine(spec, ofi, strip)) != 0)
@@ -243,17 +245,25 @@ retry:
 
     match = -1;
     if (! strncmp("%ifarch", s, sizeof("%ifarch")-1)) {
+	const char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 7;
 	match = matchTok(arch, s);
+	xfree(arch);
     } else if (! strncmp("%ifnarch", s, sizeof("%ifnarch")-1)) {
+	const char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 8;
 	match = !matchTok(arch, s);
+	xfree(arch);
     } else if (! strncmp("%ifos", s, sizeof("%ifos")-1)) {
+	const char *os = rpmExpand("%{_target_os}", NULL);
 	s += 5;
 	match = matchTok(os, s);
+	xfree(os);
     } else if (! strncmp("%ifnos", s, sizeof("%ifnos")-1)) {
+	const char *os = rpmExpand("%{_target_os}", NULL);
 	s += 6;
 	match = !matchTok(os, s);
+	xfree(os);
     } else if (! strncmp("%if", s, sizeof("%if")-1)) {
 	s += 3;
         match = parseExpressionBoolean(spec, s);
@@ -326,7 +336,6 @@ retry:
     return 0;
 }
 
-/** */
 void closeSpec(Spec spec)
 {
     OFI_t *ofi;
@@ -342,14 +351,15 @@ void closeSpec(Spec spec)
 
 extern int noLang;		/* XXX FIXME: pass as arg */
 
-/** */
 int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 		const char *buildRootURL, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force)
 {
     int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
+#ifdef	DYING
     const char *saveArch;
+#endif
     Package pkg;
     int x, index;
     Spec spec;
@@ -450,9 +460,13 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    for (x = 0; x < spec->buildArchitectureCount; x++) {
 		if (rpmMachineScore(RPM_MACHTABLE_BUILDARCH,
 				    spec->buildArchitectures[x])) {
+#ifdef	DYING
 		    rpmGetMachine(&saveArch, NULL);
 		    saveArch = xstrdup(saveArch);
 		    rpmSetMachine(spec->buildArchitectures[x], NULL);
+#else
+		    addMacro(NULL, "_target_cpu", NULL, spec->buildArchitectures[x], RMIL_RPMRC);
+#endif
 		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
 				  specFile, spec->rootURL, buildRootURL, 1,
 				  passPhrase, cookie, anyarch, force)) {
@@ -460,8 +474,12 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 			freeSpec(spec);
 			return RPMERR_BADSPEC;
 		    }
+#ifdef	DYING
 		    rpmSetMachine(saveArch, NULL);
 		    xfree(saveArch);
+#else
+		    delMacro(NULL, "_target_cpu");
+#endif
 		    index++;
 		}
 	    }
@@ -495,23 +513,29 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
     }
 
     /* Check for description in each package and add arch and os */
-    { const char *arch = NULL;
-      const char *os = NULL;
-      char *myos = NULL;
+  { 
+#ifdef	DYING
+    const char *arch = NULL;
+    const char *os = NULL;
+    char *myos = NULL;
 
-      rpmGetArchInfo(&arch, NULL);
-      rpmGetOsInfo(&os, NULL);
-      /*
-       * XXX Capitalizing the 'L' is needed to insure that old
-       * XXX os-from-uname (e.g. "Linux") is compatible with the new
-       * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
-       * XXX A copy of this string is embedded in headers.
-       */
-      if (!strcmp(os, "linux")) {
+    rpmGetArchInfo(&arch, NULL);
+    rpmGetOsInfo(&os, NULL);
+    /*
+     * XXX Capitalizing the 'L' is needed to insure that old
+     * XXX os-from-uname (e.g. "Linux") is compatible with the new
+     * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
+     * XXX A copy of this string is embedded in headers.
+     */
+    if (!strcmp(os, "linux")) {
 	myos = xstrdup(os);
 	*myos = 'L';
 	os = myos;
-      }
+    }
+#else
+    const char *arch = rpmExpand("%{_target_cpu}", NULL);
+    const char *os = rpmExpand("%{_target_os}", NULL);
+#endif
 
       for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
@@ -524,9 +548,14 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 
 	headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
 	headerAddEntry(pkg->header, RPMTAG_ARCH, RPM_STRING_TYPE, arch, 1);
-      }
-      FREE(myos);
     }
+#ifdef	DYING
+    FREE(myos);
+#else
+    xfree(arch);
+    xfree(os);
+#endif
+  }
 
     closeSpec(spec);
     *specp = spec;

@@ -1,7 +1,8 @@
 #ifndef _H_MYFTW_
 #define _H_MYFTW_
 
-/** \file build/myftw.h
+/** \ingroup rpmbuild
+ * \file build/myftw.h
  * Portable ftw(3) using lstat() instead of stat().
  */
 

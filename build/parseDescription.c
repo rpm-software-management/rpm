@@ -1,4 +1,5 @@
-/** \file build/parseDescription.c
+/** \ingroup rpmbuild
+ * \file build/parseDescription.c
  *  Parse %description section from spec file.
  */
 

@@ -1,4 +1,5 @@
-/** \file build/parseChangelog.c
+/** \ingroup rpmbuild
+ * \file build/parseChangelog.c
  *  Parse %changelog section from spec file.
  */
 

@@ -1,5 +1,9 @@
 #include "system.h"
 
+/** \ingroup db2
+ * \file lib/db2.c
+ */
+
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <db2/db.h>

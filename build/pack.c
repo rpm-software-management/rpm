@@ -1,4 +1,5 @@
-/** \file build/pack.c
+/** \ingroup rpmbuild
+ * \file build/pack.c
  *  Assemble components of an RPM package.
  */
 
@@ -415,8 +416,10 @@ int writeRPM(Header h, const char *fileName, int type,
     archnum = -1;
     osnum = -1;
     if (Fileno(csa->cpioFdIn) < 0) {
+#ifndef DYING
 	rpmGetArchInfo(NULL, &archnum);
 	rpmGetOsInfo(NULL, &osnum);
+#endif
     } else if (csa->lead != NULL) {	/* XXX FIXME: exorcize lead/arch/os */
 	archnum = csa->lead->archnum;
 	osnum = csa->lead->osnum;

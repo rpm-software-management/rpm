@@ -1,7 +1,8 @@
 #ifndef H_CPIO
 #define H_CPIO
 
-/** \file lib/cpio.h
+/** \ingroup payload
+ * \file lib/cpio.h
  *  Structures used to handle cpio payloads within rpm packages.
  *
  *  Warning: Don't think that rpm's cpio implementation behaves just like
@@ -17,7 +18,7 @@
 
 #include <rpmio_internal.h>
 
-/**
+/** \ingroup payload
  * Note:  CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
  * be positive numbers or this setting the high bit stuff is a bad idea.
  */
@@ -53,7 +54,7 @@
 #define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
 #define CPIO_MULTILIB		(1 << 31) /* internal, only for building */
 
-/**
+/** \ingroup payload
  * Defines a single file to be included in a cpio payload.
  */
 struct cpioFileMapping {
@@ -65,7 +66,7 @@ struct cpioFileMapping {
     int mapFlags;
 };
 
-/**
+/** \ingroup payload
  * The first argument passed in a cpio progress callback.
  *
  * Note: When building the cpio payload, only "file" is filled in.
@@ -81,11 +82,11 @@ struct cpioCallbackInfo {
 extern "C" {
 #endif
 
-/**
+/** \ingroup payload
  */
 typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
 
-/**
+/** \ingroup payload
  * The RPM internal equivalent of the command line "cpio -i".
  * If no mappings are passed, this installs everything! If one is passed
  * it should be sorted according to cpioFileMapCmp() and only files included
@@ -108,7 +109,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		       /*@out@*/const char ** failedFile)
 	/*@modifies fileSystem, cfd, *failedFile @*/;
 
-/**
+/** \ingroup payload
  * The RPM internal equivalent of the command line "cpio -o".
  *
  * @param cfd		file handle
@@ -124,7 +125,7 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		     unsigned int * archiveSize, /*@out@*/const char ** failedFile)
 	/*@modifies fileSystem, cfd, *archiveSize, *failedFile @*/;
 
-/**
+/** \ingroup payload
  * Compare two cpio file map entries (qsort/bsearch).
  * This is designed to be qsort/bsearch compatible.
  * @param a		1st map
@@ -133,7 +134,7 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
  */
 int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
 
-/**
+/** \ingroup payload
  * Return fornmatted error message on payload handling failure.
  */
 /*@observer@*/ const char *cpioStrerror(int rc)		/*@*/;

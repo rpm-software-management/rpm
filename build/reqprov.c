@@ -1,4 +1,5 @@
-/** \file build/reqprov.c
+/** \ingroup rpmbuild
+ * \file build/reqprov.c
  *  Add dependency tags to package header(s).
  */
 

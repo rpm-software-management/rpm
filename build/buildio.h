@@ -1,7 +1,8 @@
 #ifndef	_H_BUILDIO_
 #define	_H_BUILDIO_
 
-/** \file build/buildio.h
+/** \ingroup rpmbuild
+ * \file build/buildio.h
  *  XXX this information will move elsewhere eventually
  */
 

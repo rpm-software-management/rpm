@@ -1,4 +1,5 @@
-/** \file build/parsePrep.c
+/** \ingroup rpmbuild
+ * \file build/parsePrep.c
  *  Parse %prep section from spec file.
  */
 

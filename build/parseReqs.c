@@ -1,4 +1,5 @@
-/** \file build/parseReqs.c
+/** \ingroup rpmbuild
+ * \file build/parseReqs.c
  *  Parse dependency tag from spec file or from auto-dependency generator.
  */
 

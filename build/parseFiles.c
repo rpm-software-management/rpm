@@ -1,4 +1,5 @@
-/** \file build/parseFiles.c
+/** \ingroup rpmbuild
+ * \file build/parseFiles.c
  *  Parse %files section from spec file.
  */
 

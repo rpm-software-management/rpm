@@ -1,3 +1,6 @@
+/** \ingroup rpmbuild
+ * \file build/misc.c
+ */
 #include "system.h"
 
 #include "rpmbuild.h"

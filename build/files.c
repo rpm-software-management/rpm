@@ -1,4 +1,5 @@
-/** \file build/files.c
+/** \ingroup rpmbuild
+ * \file build/files.c
  *  The post-build, pre-packaging file tree walk to assemble the package
  *  manifest.
  */

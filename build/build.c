@@ -1,4 +1,5 @@
-/** \file build/build.c
+/** \ingroup rpmbuild
+ * \file build/build.c
  *  Top-level build dispatcher.
  */
 

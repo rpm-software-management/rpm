@@ -1,17 +1,13 @@
-/** \file build/expression.c
+/** \ingroup rpmbuild
+ * \file build/expression.c
  *  Simple logical expression parser.
- */
-
-/*
- * Simple Expression Parser
- * Copyright (C) 1998 Tom Dyas <tdyas@eden.rutgers.edu>
- *
  * This module implements a basic expression parser with support for
  * integer and string datatypes. For ease of programming, we use the
  * top-down "recursive descent" method of parsing. While a
  * table-driven bottom-up parser might be faster, it does not really
  * matter for the expressions we will be parsing.
  *
+ * Copyright (C) 1998 Tom Dyas <tdyas@eden.rutgers.edu>
  * This work is provided under the GPL or LGPL at your choice.
  */
 

@@ -1,5 +1,9 @@
 #include "system.h"
 
+/** \ingroup db3
+ * \file lib/db3.c
+ */
+
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #ifdef	__LCLINT__
@@ -25,7 +29,9 @@ typedef	int int32_t;
 
 struct _dbiIndex db3dbi;
 
-/* Analogue to struct poptOption */
+/** \ingroup db3
+ *  Analogue to struct poptOption
+ */
 struct dbOption {
     const char * longName;	/* may be NULL */
     int argInfo;
@@ -36,6 +42,8 @@ struct dbOption {
 #define	_POPT_SET_BIT	(POPT_ARG_VAL|POPT_ARGFLAG_OR)
 
 /*@-immediatetrans@*/
+/** \ingroup db3
+ */
 struct dbOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
  { "xa_create",	_POPT_SET_BIT,		&db3dbi.dbi_cflags, DB_XA_CREATE },
@@ -1168,6 +1176,8 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     return rc;
 }
 
+/** \ingroup db3
+ */
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3copen, db3cclose, db3cdel, db3cget, db3cput,

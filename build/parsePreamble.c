@@ -1,4 +1,5 @@
-/** \file build/parsePreamble.c
+/** \ingroup rpmbuild
+ * \file build/parsePreamble.c
  *  Parse tags in global section from spec file.
  */
 
@@ -131,11 +132,17 @@ static int isMemberInEntry(Header header, const char *name, int tag)
 
 static int checkForValidArchitectures(Spec spec)
 {
+#ifndef	DYING
     const char *arch = NULL;
     const char *os = NULL;
 
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);
+#else
+    const char *arch = rpmExpand("%{_target_cpu}", NULL);
+    const char *os = rpmExpand("%{_target_os}", NULL);
+	/* XXX FIXME memory leak here. */
+#endif
     
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUDEARCH) == 1) {

@@ -1,5 +1,9 @@
 #include "system.h"
 
+/** \ingroup db1
+ * \file lib/db1.c
+ */
+
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <db1/db.h>
@@ -37,6 +41,8 @@ static inline DBTYPE db3_to_dbtype(int dbitype)
     /*@notreached@*/ return DB_HASH;
 }
 
+/** \ingroup db1
+ */
 char * db1basename (int rpmtag) {
     char * base = NULL;
     switch (rpmtag) {
@@ -487,6 +493,8 @@ exit:
     return rc;
 }
 
+/** \ingroup db1
+ */
 struct _dbiVec db1vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db1open, db1close, db1sync, db1copen, db1cclose, db1cdel, db1cget, db1cput,

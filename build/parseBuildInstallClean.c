@@ -1,4 +1,5 @@
-/** \file build/parseBuildInstallClean.c
+/** \ingroup rpmbuild
+ * \file build/parseBuildInstallClean.c
  *  Parse %build/%install/%clean section from spec file.
  */
 #include "system.h"

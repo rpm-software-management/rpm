@@ -1,7 +1,8 @@
-/** \file lib/cpio.c
+/** \ingroup payload rpmio
+ * \file lib/cpio.c
  *  Handle cpio payloads within rpm packages.
  *
- * @warning FIXME: We don't translate between cpio and system mode bits! These
+ * \warning FIXME: We don't translate between cpio and system mode bits! These
  * should both be the same, but really odd things are going to happen if
  * that's not true!
  */
@@ -16,7 +17,7 @@
 #define CPIO_CRC_MAGIC	"070702"
 #define TRAILER		"TRAILER!!!"
 
-/**
+/** \ingroup payload
  * Keeps track of set of all hard linked files in archive.
  */
 struct hardLink {
@@ -33,7 +34,7 @@ struct hardLink {
 
 enum hardLinkType { HARDLINK_INSTALL=1, HARDLINK_BUILD };
 
-/**
+/** \ingroup payload
  * Cpio archive header information.
  */
 struct cpioCrcPhysicalHeader {
@@ -55,7 +56,7 @@ struct cpioCrcPhysicalHeader {
 
 #define	PHYS_HDR_SIZE	110		/* don't depend on sizeof(struct) */
 
-/**
+/** \ingroup payload
  * File name and stat information.
  */
 struct cpioHeader {

@@ -1,7 +1,8 @@
 #ifndef _H_SPEC_
 #define _H_SPEC_
 
-/** \file build/rpmspec.h
+/** \ingroup rpmbuild
+ * \file build/rpmspec.h
  *  The Spec and Package data structures used during build.
  */
 
