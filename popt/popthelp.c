@@ -27,7 +27,7 @@ static void displayArgs(poptContext con, enum poptCallbackReason foo,
 }
 
 struct poptOption poptHelpOptions[] = {
-    { NULL, '\0', POPT_ARG_CALLBACK, &displayArgs, '\0', NULL },
+    { NULL, '\0', POPT_ARG_CALLBACK, (void *)&displayArgs, '\0', NULL },
     { "help", '?', 0, NULL, '?', N_("Show this help message") },
     { "usage", '\0', 0, NULL, 'u', N_("Display brief usage message") },
     { NULL, '\0', 0, NULL, 0 }

@@ -1,4 +1,4 @@
-dnl aclocal.m4 generated automatically by aclocal 1.4a
+dnl aclocal.m4 generated automatically by aclocal 1.4
 
 dnl Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
@@ -21,8 +21,6 @@ dnl AM_INIT_AUTOMAKE(package,version, [no-define])
 
 AC_DEFUN(AM_INIT_AUTOMAKE,
 [AC_REQUIRE([AC_PROG_INSTALL])
-dnl We require 2.13 because we rely on SHELL being computed by configure.
-AC_PREREQ([2.13])
 PACKAGE=[$1]
 AC_SUBST(PACKAGE)
 VERSION=[$2]
@@ -238,9 +236,10 @@ esac
 ])
 
 
-# serial 29 AM_PROG_LIBTOOL
+# serial 30 AM_PROG_LIBTOOL
 AC_DEFUN(AM_PROG_LIBTOOL,
-[AC_REQUIRE([AM_ENABLE_SHARED])dnl
+[AC_PREREQ(2.12.2)dnl
+AC_REQUIRE([AM_ENABLE_SHARED])dnl
 AC_REQUIRE([AM_ENABLE_STATIC])dnl
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
 AC_REQUIRE([AC_CANONICAL_BUILD])dnl
@@ -519,7 +518,7 @@ AC_CACHE_VAL(ac_cv_path_NM,
   ac_cv_path_NM="$NM"
 else
   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in /usr/ucb /usr/ccs/bin $PATH /bin; do
+  for ac_dir in $PATH /usr/ccs/bin /usr/ucb /bin; do
     test -z "$ac_dir" && ac_dir=.
     if test -f $ac_dir/nm; then
       # Check to see if the nm accepts a BSD-compat flag.
@@ -527,12 +526,14 @@ else
       #   nm: unknown option "B" ignored
       if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
         ac_cv_path_NM="$ac_dir/nm -B"
+	break
       elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
         ac_cv_path_NM="$ac_dir/nm -p"
+	break
       else
-        ac_cv_path_NM="$ac_dir/nm"
+        ac_cv_path_NM=${ac_cv_path_NM="$ac_dir/nm"} # keep the first match, but
+	continue # so that we can try to find one that supports BSD flags
       fi
-      break
     fi
   done
   IFS="$ac_save_ifs"
@@ -569,10 +570,6 @@ case "$host_os" in
 aix*)
   ac_symcode='[BCDTU]'
   ;;
-sunos* | cygwin32* | mingw32*)
-  ac_sympat='_\([_A-Za-z][_A-Za-z0-9]*\)'
-  ac_symxfrm='_\1 \1'
-  ;;
 irix*)
   # Cannot use undefined symbols on IRIX because inlined functions mess us up.
   ac_symcode='[BCDEGRST]'
@@ -596,12 +593,17 @@ cygwin32* | mingw32*)
 esac
 changequote([,])dnl
 
-# Write the raw and C identifiers.
-ac_cv_sys_global_symbol_pipe="sed -n -e 's/^.* $ac_symcode $ac_sympat$/$ac_symxfrm/p'"
+# Try without a prefix undercore, then with it.
+for ac_symprfx in "" "_"; do
 
-# Check to see that the pipe works correctly.
-ac_pipe_works=no
-cat > conftest.$ac_ext <<EOF
+  # Write the raw and C identifiers.
+  # Unlike in ltconfig.in, we need $ac_symprfx before $ac_symxfrm here,
+  # otherwise AM_SYS_SYMBOL_UNDERSCORE will always be false
+  ac_cv_sys_global_symbol_pipe="sed -n -e 's/^.* $ac_symcode $ac_symprfx$ac_sympat$/$ac_symprfx$ac_symxfrm/p'"
+
+  # Check to see that the pipe works correctly.
+  ac_pipe_works=no
+  cat > conftest.$ac_ext <<EOF
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -612,41 +614,42 @@ void nm_test_func(){}
 #endif
 int main(){nm_test_var='a';nm_test_func;return 0;}
 EOF
-if AC_TRY_EVAL(ac_compile); then
-  # Now try to grab the symbols.
-  ac_nlist=conftest.nm
-  if AC_TRY_EVAL(NM conftest.$ac_objext \| $ac_cv_sys_global_symbol_pipe \> $ac_nlist) && test -s "$ac_nlist"; then
+  if AC_TRY_EVAL(ac_compile); then
+    # Now try to grab the symbols.
+    ac_nlist=conftest.nm
+  
+    if AC_TRY_EVAL(NM conftest.$ac_objext \| $ac_cv_sys_global_symbol_pipe \> $ac_nlist) && test -s "$ac_nlist"; then
 
-    # Try sorting and uniquifying the output.
-    if sort "$ac_nlist" | uniq > "$ac_nlist"T; then
-      mv -f "$ac_nlist"T "$ac_nlist"
-      ac_wcout=`wc "$ac_nlist" 2>/dev/null`
+      # Try sorting and uniquifying the output.
+      if sort "$ac_nlist" | uniq > "$ac_nlist"T; then
+        mv -f "$ac_nlist"T "$ac_nlist"
+        ac_wcout=`wc "$ac_nlist" 2>/dev/null`
 changequote(,)dnl
-      ac_count=`echo "X$ac_wcout" | sed -e 's,^X,,' -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
+        ac_count=`echo "X$ac_wcout" | sed -e 's,^X,,' -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
 changequote([,])dnl
-      (test "$ac_count" -ge 0) 2>/dev/null || ac_count=-1
-    else
-      rm -f "$ac_nlist"T
-      ac_count=-1
-    fi
+        (test "$ac_count" -ge 0) 2>/dev/null || ac_count=-1
+      else
+        rm -f "$ac_nlist"T
+        ac_count=-1
+      fi
 
-    # Make sure that we snagged all the symbols we need.
-    if egrep ' nm_test_var$' "$ac_nlist" >/dev/null; then
-      if egrep ' nm_test_func$' "$ac_nlist" >/dev/null; then
-	cat <<EOF > conftest.c
+      # Make sure that we snagged all the symbols we need.
+      if egrep ' nm_test_var$' "$ac_nlist" >/dev/null; then
+        if egrep ' nm_test_func$' "$ac_nlist" >/dev/null; then
+	  cat <<EOF > conftest.c
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 EOF
-        # Now generate the symbol file.
-        sed 's/^.* \(.*\)$/extern char \1;/' < "$ac_nlist" >> conftest.c
+          # Now generate the symbol file.
+          sed 's/^.* \(.*\)$/extern char \1;/' < "$ac_nlist" >> conftest.c
 
-	cat <<EOF >> conftest.c
+	  cat <<EOF >> conftest.c
 #if defined (__STDC__) && __STDC__
-# define __ptr_t void *
+# define lt_ptr_t void *
 #else
-# define __ptr_t char *
+# define lt_ptr_t char *
 #endif
 
 /* The number of symbols in dld_preloaded_symbols, -1 if unsorted. */
@@ -655,53 +658,63 @@ int dld_preloaded_symbol_count = $ac_count;
 /* The mapping between symbol names and symbols. */
 struct {
   char *name;
-  __ptr_t address;
+  lt_ptr_t address;
 }
 changequote(,)dnl
 dld_preloaded_symbols[] =
 changequote([,])dnl
 {
 EOF
-        sed 's/^\(.*\) \(.*\)$/  {"\1", (__ptr_t) \&\2},/' < "$ac_nlist" >> conftest.c
+        sed 's/^\(.*\) \(.*\)$/  {"\1", (lt_ptr_t) \&\2},/' < "$ac_nlist" >> conftest.c
         cat <<\EOF >> conftest.c
-  {0, (__ptr_t) 0}
+  {0, (lt_ptr_t) 0}
 };
 
 #ifdef __cplusplus
 }
 #endif
 EOF
-        # Now try linking the two files.
-        mv conftest.$ac_objext conftestm.$ac_objext
-	ac_save_LIBS="$LIBS"
-	ac_save_CFLAGS="$CFLAGS"
-        LIBS="conftestm.$ac_objext"
-	CFLAGS="$CFLAGS$no_builtin_flag"
-        if AC_TRY_EVAL(ac_link) && test -s conftest; then
-          ac_pipe_works=yes
+          # Now try linking the two files.
+          mv conftest.$ac_objext conftestm.$ac_objext
+	  ac_save_LIBS="$LIBS"
+	  ac_save_CFLAGS="$CFLAGS"
+          LIBS="conftestm.$ac_objext"
+	  CFLAGS="$CFLAGS$no_builtin_flag"
+          if AC_TRY_EVAL(ac_link) && test -s conftest; then
+            ac_pipe_works=yes
+          else
+            echo "configure: failed program was:" >&AC_FD_CC
+            cat conftest.c >&AC_FD_CC
+          fi
+          LIBS="$ac_save_LIBS"
+	  CFLAGS="$ac_save_CFLAGS"
         else
-          echo "configure: failed program was:" >&AC_FD_CC
-          cat conftest.c >&AC_FD_CC
+          echo "cannot find nm_test_func in $ac_nlist" >&AC_FD_CC
         fi
-        LIBS="$ac_save_LIBS"
-	CFLAGS="$ac_save_CFLAGS"
       else
-        echo "cannot find nm_test_func in $ac_nlist" >&AC_FD_CC
+        echo "cannot find nm_test_var in $ac_nlist" >&AC_FD_CC
       fi
     else
-      echo "cannot find nm_test_var in $ac_nlist" >&AC_FD_CC
+      echo "cannot run $ac_cv_sys_global_symbol_pipe" >&AC_FD_CC
     fi
   else
-    echo "cannot run $ac_cv_sys_global_symbol_pipe" >&AC_FD_CC
+    echo "$progname: failed program was:" >&AC_FD_CC
+    cat conftest.c >&AC_FD_CC
   fi
-else
-  echo "$progname: failed program was:" >&AC_FD_CC
-  cat conftest.c >&AC_FD_CC
-fi
-rm -rf conftest*
+  rm -rf conftest*
 
-# Do not use the global_symbol_pipe unless it works.
-test "$ac_pipe_works" = yes || ac_cv_sys_global_symbol_pipe=
+  # Do not use the global_symbol_pipe unless it works.
+  if test "$ac_pipe_works" = yes; then
+    if test x"$ac_symprfx" = x"_"; then
+      ac_cv_sys_symbol_underscore=yes
+    else
+      ac_cv_sys_symbol_underscore=no
+    fi
+    break
+  else
+    ac_cv_sys_global_symbol_pipe=
+  fi
+done
 ])
 
 ac_result=yes
@@ -753,9 +766,7 @@ fi
 rm -rf conftest*
 ])
 AC_MSG_RESULT($ac_cv_sys_symbol_underscore)
-if test x$ac_cv_sys_symbol_underscore = xyes; then
-  AC_DEFINE(WITH_SYMBOL_UNDERSCORE,1,
-  [define if compiled symbols have a leading underscore])
-fi
+USE_SYMBOL_UNDERSCORE=${ac_cv_sys_symbol_underscore=no}
+AC_SUBST(USE_SYMBOL_UNDERSCORE)dnl
 ])
 

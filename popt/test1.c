@@ -13,35 +13,30 @@ void option_callback(poptContext con, enum poptCallbackReason reason,
     fprintf(stdout, "callback: %c %s %s ", opt->val, (char *) data, arg);    
 }
 
-int main(int argc, char ** argv) {
-    int rc;
-    int arg1 = 0;
-    char * arg2 = "(none)";
-    poptContext optCon;
-    char ** rest;
-    int arg3 = 0;
-    int inc = 0;
-    int help = 0;
-    int usage = 0;
-    int shortopt = 0;
-    int singleDash = 0;
-    struct poptOption moreCallbackArgs[] = {
+int arg1 = 0;
+char * arg2 = "(none)";
+int arg3 = 0;
+int inc = 0;
+int shortopt = 0;
+int singleDash = 0;
+
+static struct poptOption moreCallbackArgs[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-		option_callback, 0, NULL },
+		(void *)option_callback, 0, NULL },
 	{ "cb2", 'c', POPT_ARG_STRING, NULL, 'c', "Test argument callbacks" },
 	{ NULL, '\0', 0, NULL, 0 } 
-    };
-    struct poptOption callbackArgs[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK, option_callback, 0, "sampledata" },
+};
+static struct poptOption callbackArgs[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK, (void *)option_callback, 0, "sampledata" },
 	{ "cb", 'c', POPT_ARG_STRING, NULL, 'c', "Test argument callbacks" },
 	{ "long", '\0', 0, NULL, 'l', "Unused option for help testing" },
 	{ NULL, '\0', 0, NULL, 0 } 
-    };
-    struct poptOption moreArgs[] = {
+};
+static struct poptOption moreArgs[] = {
 	{ "inc", 'i', 0, &inc, 0, "An included argument" },
 	{ NULL, '\0', 0, NULL, 0 } 
-    };
-    struct poptOption options[] = {
+};
+static struct poptOption options[] = {
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreCallbackArgs, 0, "arg for cb2" },
 	{ "arg1", '\0', 0, &arg1, 0, "First argument with a really long" 
 	    " description. After all, we have to test argument help"
@@ -59,7 +54,14 @@ int main(int argc, char ** argv) {
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &callbackArgs, 0, "Callback arguments" },
 	POPT_AUTOHELP
 	{ NULL, '\0', 0, NULL, 0 } 
-    };
+};
+
+int main(int argc, char ** argv) {
+    int rc;
+    poptContext optCon;
+    char ** rest;
+    int help = 0;
+    int usage = 0;
 
     optCon = poptGetContext("test1", argc, argv, options, 0);
     poptReadConfigFile(optCon, "./test-poptrc");
@@ -88,7 +90,7 @@ int main(int argc, char ** argv) {
     if (shortopt)
 	fprintf(stdout, " short: %d", shortopt);
     if (singleDash)
-	fprintf(stdout, " -", shortopt);
+	fprintf(stdout, " -");
 
     rest = poptGetArgs(optCon);
     if (rest) {

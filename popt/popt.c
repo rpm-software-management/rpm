@@ -52,7 +52,7 @@ static void invokeCallbacks(poptContext con, const struct poptOption * table,
 	} else if (((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK) &&
 		   ((!post && (opt->argInfo & POPT_CBFLAG_PRE)) ||
 		    ( post && (opt->argInfo & POPT_CBFLAG_POST)))) {
-	    cb = opt->arg;
+	    cb = (poptCallbackType)opt->arg;
 	    cb(con, post ? POPT_CALLBACK_REASON_POST : POPT_CALLBACK_REASON_PRE,
 	       NULL, NULL, opt->descrip);
 	}
@@ -274,7 +274,7 @@ static const struct poptOption * findOption(const struct poptOption * table,
     *callbackData = NULL;
     *callback = NULL;
     if (cb) {
-	*callback = cb->arg;
+	*callback = (poptCallbackType)cb->arg;
 	if (!(cb->argInfo & POPT_CBFLAG_INC_DATA))
 	    *callbackData = cb->descrip;
     }

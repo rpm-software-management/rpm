@@ -1,5 +1,11 @@
 #!/bin/sh
 
+srcdir="`dirname $0`"
+test -z "$srcdir" && srcdir=.
+
+THEDIR="`pwd`"
+
+cd "$srcdir"
 libtoolize --copy --force
 aclocal
 autoheader
@@ -10,8 +16,10 @@ if [ "$1" = "--noconfigure" ]; then
     exit 0;
 fi
 
+cd "$THEDIR"
+
 if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
-    ./configure --disable-shared --prefix=/usr
+    $srcdir/configure --disable-shared --prefix=/usr
 else
-    ./configure --disable-shared "$@"
+    $srcdir/configure --disable-shared "$@"
 fi
