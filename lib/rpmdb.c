@@ -1935,7 +1935,6 @@ static int rpmdbRemoveDatabase(const char * rootdir,
     char * filename;
     int xx;
 
-fprintf(stderr, "*** rpmdbRemoveDatabase(%s, %s,%d)\n", rootdir, dbpath, _dbapi);
     i = strlen(dbpath);
     if (dbpath[i - 1] != '/') {
 	filename = alloca(i);
@@ -1987,7 +1986,6 @@ static int rpmdbMoveDatabase(const char * rootdir,
     int rc = 0;
     int xx;
  
-fprintf(stderr, "*** rpmdbMoveDatabase(%s, %s,%d, %s,%d)\n", rootdir, olddbpath, _olddbapi, newdbpath, _newdbapi);
     i = strlen(olddbpath);
     if (olddbpath[i - 1] != '/') {
 	ofilename = alloca(i + 2);
