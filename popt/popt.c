@@ -392,6 +392,10 @@ int poptGetNextOpt(poptContext con) {
 		    *((char **) opt->arg) = con->os->nextArg;
 		    break;
 
+		  case POPT_ARG_VAL:
+		    *((int *) opt->arg) = opt->val;
+		    break;
+
 		  case POPT_ARG_INT:
 		  case POPT_ARG_LONG:
 		    aLong = strtol(con->os->nextArg, &end, 0);
@@ -419,7 +423,7 @@ int poptGetNextOpt(poptContext con) {
 
 	if (cb)
 	    cb(con, POPT_CALLBACK_REASON_OPTION, opt, con->os->nextArg, cbData);
-	else if (opt->val) 
+	else if (opt->val && ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL))
 	    done = 1;
 
 	if ((con->finalArgvCount + 2) >= (con->finalArgvAlloced)) {

@@ -32,8 +32,12 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %attr(0644, root, root) /usr/lib/libpopt.a
 %attr(0644, root, root) /usr/include/popt.h
+%attr(0644, root, root) /usr/man/man3/popt.3
 
 %changelog
+* Tue Nov 17 1998 Michael K. Johnson <johnsonm@redhat.com>
+- added man page to default install
+
 * Thu Oct 22 1998 Erik Troan <ewt@redhat.com>
 - see CHANGES file for 1.2
 

@@ -110,23 +110,23 @@ first two members,
 the first is a long name, while the latter is a single character.
 .sp
 The 
-.IR argInfo " member tell popt what type of argument is expected" 
+.IR argInfo " member tells popt what type of argument is expected" 
 after the argument.  If no option is expected,
-.BR POPT_ARG_NONE " should be used.  (Connoisseurs of " getopt() 
-.RI "will note that " argInfo " is the only required field of "
-.BR "struct poptOption" " that is not directly analogous to a field in "
-.RB "the " getopt_long() " argument table.  The similarity between the "
-.RB "two allows for easy transitions from " getopt_long " to popt.) " 
+.B POPT_ARG_NONE
+should be used.
 The rest of the valid values are shown in the following table:
 .sp
-.nf
-.B  "   Value            Description                arg Type"
-.BR POPT_ARG_NONE "   No argument expected             int"
-.BR POPT_ARG_STRING " No type checking to be performed char *"
-.BR POPT_ARG_INT "    An integer argument is expected  int"
-.BR POPT_ARG_LONG "   A long integer is expected       long"
+.TS
+lfB lfB lfB
+lfB lfR lfR.
+Value	Description	arg Type
+POPT_ARG_NONE	No argument expected	int
+POPT_ARG_STRING	No type checking to be performed	char *
+POPT_ARG_INT	An integer argument is expected	int
+POPT_ARG_LONG	A long integer is expected	long
+POPT_ARG_VAL	Integer value taken from \f(CWval\fR	int
+.TE
 .sp
-.fi
 If \fIargInfo\fR value is logically or'd with \fBPOPT_ARGFLAG_ONEDASH\fR,
 the long argument may be given with a single - instead of two. For example,
 if \fB--longopt\fR is an option with \fBPOPT_ARGFLAG_ONEDASH\fR, is
@@ -148,6 +148,14 @@ an argument, the variable that
 .RB "Any string is acceptable for " POPT_ARG_STRING " arguments, but "
 .BR POPT_ARG_INT " and " POPT_ARG_LONG " are converted to the 
 appropriate type, and an error returned if the conversion fails.
+.sp
+\fBPOPT_ARG_VAL\fR causes \fIarg\fP to be set to the (integer) value of
+\fIval\fP when the argument is found.  This is most often useful for
+mutually-exclusive arguments in cases where it is not an error for
+multiple arguments to occur and where you want the last argument
+specified to win; for example, "rm -i -f".  \fBPOPT_ARG_VAL\fP causes
+the parsing function not to return a value, since the value of \fIval\fP
+has already been used.
 .sp
 .RI "The next option, " val ", is the value popt's parsing function 
 should return when the option is encountered.  If it is 0, the parsing

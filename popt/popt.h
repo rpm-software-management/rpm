@@ -22,6 +22,7 @@
 					   for this table and any
 					   included tables; arg points
 					   to the domain string */
+#define POPT_ARG_VAL		7	/* arg should take value val */
 #define POPT_ARG_MASK		0x0000FFFF
 #define POPT_ARGFLAG_ONEDASH	0x80000000  /* allow -longoption */
 #define POPT_ARGFLAG_DOC_HIDDEN 0x40000000  /* don't show in help/usage */
