@@ -213,11 +213,11 @@ static const struct poptOption * findOption(const struct poptOption * table,
     const struct poptOption * cb = NULL;
 
     while (opt->longName || opt->shortName || opt->arg) {
-	if (opt->argInfo == POPT_ARG_INCLUDE_TABLE) {
+	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    opt2 = findOption(opt->arg, longName, shortName, callback, 
 			      callbackData);
 	    if (opt2) return opt2;
-	} else if (opt->argInfo == POPT_ARG_CALLBACK) {
+	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK) {
 	    cb = opt;
 	} else if (longName && opt->longName && 
 		   !strcmp(longName, opt->longName)) {
@@ -325,9 +325,9 @@ int poptGetNextOpt(poptContext con) {
 		con->os->nextCharArg = origOptString;
 	}
 
-	if (opt->arg && opt->argInfo == POPT_ARG_NONE) 
+	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) 
 	    *((int *)opt->arg) = 1;
-	else if (opt->argInfo != POPT_ARG_NONE) {
+	else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
 	    if (longArg) {
 		con->os->nextArg = longArg;
 	    } else if (con->os->nextCharArg) {
@@ -344,7 +344,7 @@ int poptGetNextOpt(poptContext con) {
 	    }
 
 	    if (opt->arg) {
-		switch (opt->argInfo) {
+		switch (opt->argInfo & POPT_ARG_MASK) {
 		  case POPT_ARG_STRING:
 		    *((char **) opt->arg) = con->os->nextArg;
 		    break;
@@ -357,7 +357,7 @@ int poptGetNextOpt(poptContext con) {
 
 		    if (aLong == LONG_MIN || aLong == LONG_MAX)
 			return POPT_ERROR_OVERFLOW;
-		    if (opt->argInfo == POPT_ARG_LONG) {
+		    if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
 			*((long *) opt->arg) = aLong;
 		    } else {
 			if (aLong > INT_MAX || aLong < INT_MIN)
@@ -369,7 +369,7 @@ int poptGetNextOpt(poptContext con) {
 		  default:
 		    /* XXX I18N? */
 		    fprintf(stdout, "option type (%d) not implemented in popt\n",
-		      opt->argInfo);
+		      opt->argInfo & POPT_ARG_MASK);
 		    exit(1);
 		}
 	    }
@@ -394,7 +394,7 @@ int poptGetNextOpt(poptContext con) {
 	else 
 	    sprintf(con->finalArgv[i], "-%c", opt->shortName);
 
-	if (opt->arg && opt->argInfo != POPT_ARG_NONE) 
+	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) 
 	    con->finalArgv[con->finalArgvCount++] = strdup(con->os->nextArg);
     }
 
