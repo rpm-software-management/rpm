@@ -1681,7 +1681,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	}
 
 	alloced = condNumFormats * 20;
-	val = malloc(alloced);
+	val = malloc(alloced ? alloced : 1);
 	*val = '\0';
 	len = 0;
 
@@ -1783,6 +1783,8 @@ void freeExtensionCache(const struct headerSprintfExtension * extensions,
 	else
 	    ext++;
     }
+
+    free(cache);
 }
 
 char * headerSprintf(Header h, const char * origFmt, 
@@ -1832,6 +1834,7 @@ char * headerSprintf(Header h, const char * origFmt,
 
     free(fmtString);
     freeExtensionCache(extensions, extCache);
+    free(format);
 
     return answer;
 }
