@@ -257,7 +257,7 @@ static const struct poptOption * findOption(const struct poptOption * table,
     const struct poptOption * cb = NULL;
 
     /* This happens when a single - is given */
-    if (singleDash && !shortName)
+    if (singleDash && !shortName && !*longName)
 	shortName = '-';
 
     while (opt->longName || opt->shortName || opt->arg) {
