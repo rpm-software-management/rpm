@@ -34,22 +34,23 @@ static void printHash(const unsigned long amount, const unsigned long total)
 
 #ifdef FANCY_HASH
     if (isatty (STDOUT_FILENO))
-       hashesTotal = 44;
+	hashesTotal = 44;
 #endif
 
     if (hashesPrinted != hashesTotal) {
-        hashesNeeded = hashesTotal * (total ? (((float) amount) / total) : 1);
+	hashesNeeded = hashesTotal * (total ? (((float) amount) / total) : 1);
 	while (hashesNeeded > hashesPrinted) {
 #ifdef FANCY_HASH
-           if (isatty (STDOUT_FILENO)) {
-               int i;
-               for (i = 0; i < hashesPrinted; i++) putchar ('#');
-               for (; i < hashesTotal; i++) putchar (' ');
-               printf ("(%3d%%)", (int)(100 * (total ? (((float) amount) / total) : 1)));
-               for (i = 0; i < (hashesTotal + 6); i++) putchar ('\b');
-           } else
+	    if (isatty (STDOUT_FILENO)) {
+		int i;
+		for (i = 0; i < hashesPrinted; i++) putchar ('#');
+		for (; i < hashesTotal; i++) putchar (' ');
+		printf ("(%3d%%)",
+			(int)(100 * (total ? (((float) amount) / total) : 1)));
+		for (i = 0; i < (hashesTotal + 6); i++) putchar ('\b');
+	    } else
 #endif
-               fprintf(stdout, "#");
+	    fprintf(stdout, "#");
 
 	    fflush(stdout);
 	    hashesPrinted++;
@@ -57,17 +58,17 @@ static void printHash(const unsigned long amount, const unsigned long total)
 	fflush(stdout);
 	hashesPrinted = hashesNeeded;
 
-       if (hashesPrinted == hashesTotal) {
+	if (hashesPrinted == hashesTotal) {
 #ifdef FANCY_HASH
-           int i;
-           progressCurrent++;
-           for (i = 1; i < hashesPrinted; i++) putchar ('#');
-           printf (" [%3d%%]\n", (int)(100 * (progressTotal ?
-               (((float) progressCurrent) / progressTotal) : 1)));
+	    int i;
+	    progressCurrent++;
+	    for (i = 1; i < hashesPrinted; i++) putchar ('#');
+	    printf (" [%3d%%]\n", (int)(100 * (progressTotal ?
+			(((float) progressCurrent) / progressTotal) : 1)));
 #else
-           fprintf (stdout, "\n");
+	    fprintf (stdout, "\n");
 #endif
-       }
+	}
     }
 }
 
@@ -86,12 +87,14 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
     static FD_t fd;
 
     switch (what) {
-      case RPMCALLBACK_INST_OPEN_FILE:
+    case RPMCALLBACK_INST_OPEN_FILE:
 	fd = Fopen(filename, "r.ufdio");
-	fd = fdLink(fd, "persist (showProgress)");
+	if (fd)
+	    fd = fdLink(fd, "persist (showProgress)");
 	return fd;
+	/*@notreached@*/ break;
 
-      case RPMCALLBACK_INST_CLOSE_FILE:
+    case RPMCALLBACK_INST_CLOSE_FILE:
 	fd = fdFree(fd, "persist (showProgress)");
 	if (fd) {
 	    Fclose(fd);
@@ -99,31 +102,30 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	}
 	break;
 
-      case RPMCALLBACK_INST_START:
+    case RPMCALLBACK_INST_START:
 	hashesPrinted = 0;
-	if (flags & INSTALL_LABEL) {
-	    if (flags & INSTALL_HASH) {
-		s = headerSprintf(h, "%{NAME}",
-				  rpmTagTable, rpmHeaderFormats, NULL);
+	if (!(flags & INSTALL_LABEL))
+	    break;
+	if (flags & INSTALL_HASH) {
+	    s = headerSprintf(h, "%{NAME}", rpmTagTable, rpmHeaderFormats,NULL);
 #ifdef FANCY_HASH
-               if (isatty (STDOUT_FILENO))
-                   fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
-              else
+	    if (isatty (STDOUT_FILENO))
+		fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
+	    else
 #else
-                   fprintf(stdout, "%-28s", s);
+		fprintf(stdout, "%-28s", s);
 #endif
-		fflush(stdout);
-	    } else {
-		s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
+	    fflush(stdout);
+	} else {
+	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
 				  rpmTagTable, rpmHeaderFormats, NULL);
-		fprintf(stdout, "%s\n", s);
-	    }
-	    free(s);
+	    fprintf(stdout, "%s\n", s);
 	}
+	free(s);
 	break;
 
-      case RPMCALLBACK_TRANS_PROGRESS:
-      case RPMCALLBACK_INST_PROGRESS:
+    case RPMCALLBACK_TRANS_PROGRESS:
+    case RPMCALLBACK_INST_PROGRESS:
 	if (flags & INSTALL_PERCENT) {
 	    fprintf(stdout, "%%%% %f\n", (total
 				? ((float) ((((float) amount) / total) * 100))
@@ -133,35 +135,34 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	}
 	break;
 
-      case RPMCALLBACK_TRANS_START:
-       hashesPrinted = 0;
+    case RPMCALLBACK_TRANS_START:
+	hashesPrinted = 0;
 #ifdef FANCY_HASH
-       progressTotal = 1;
-       progressCurrent = 0;
+	progressTotal = 1;
+	progressCurrent = 0;
 #endif
-       if (flags & INSTALL_LABEL) {
-           if (flags & INSTALL_HASH) {
-               fprintf(stdout, "%-28s", _("Preparing..."));
-               fflush(stdout);
-           } else {
-               printf("%s\n", _("Preparing packages for installation..."));
-           }
-       }
-       break;
+	if (!(flags & INSTALL_LABEL))
+	    break;
+	if (flags & INSTALL_HASH) {
+	    fprintf(stdout, "%-28s", _("Preparing..."));
+	    fflush(stdout);
+	} else {
+	    printf("%s\n", _("Preparing packages for installation..."));
+	}
+	break;
 
-      case RPMCALLBACK_TRANS_STOP:
-       if (flags & INSTALL_HASH) {
-           printHash(1, 1);            /* Fixes "preparing..." progress bar */
-       }
+    case RPMCALLBACK_TRANS_STOP:
+	if (flags & INSTALL_HASH)
+	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
 #ifdef FANCY_HASH
-       progressTotal = packagesTotal;
-       progressCurrent = 0;
+	progressTotal = packagesTotal;
+	progressCurrent = 0;
 #endif
-       break;
+	break;
 
-      case RPMCALLBACK_UNINST_PROGRESS:
-      case RPMCALLBACK_UNINST_START:
-      case RPMCALLBACK_UNINST_STOP:
+    case RPMCALLBACK_UNINST_PROGRESS:
+    case RPMCALLBACK_UNINST_START:
+    case RPMCALLBACK_UNINST_STOP:
 	/* ignore */
 	break;
     }
@@ -297,8 +298,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	(void) urlPath(*fileURL, &fileName);
 	fd = Fopen(*fileURL, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), *fileURL,
-		Fstrerror(fd));
+	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
+				*fileURL, Fstrerror(fd));
 	    if (fd) Fclose(fd);
 	    numFailed++;
 	    pkgURL[i] = NULL;
@@ -449,7 +450,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	rpmProblemSet probs = NULL;
 
 #ifdef FANCY_HASH
-       packagesTotal = numRPMS;
+	packagesTotal = numRPMS;
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 	rc = rpmRunTransactions(ts, showProgress, (void *) ((long)notifyFlags), 

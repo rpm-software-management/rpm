@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-24 16:31-0500\n"
+"POT-Creation-Date: 2001-01-24 22:29-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1628,82 +1628,82 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1225
+#: build/files.c:1226
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1235
+#: build/files.c:1236
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1278 build/files.c:1799 build/parsePrep.c:42
+#: build/files.c:1279 build/files.c:1800 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1290
+#: build/files.c:1291
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1367
+#: build/files.c:1368
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1397
+#: build/files.c:1398
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1451
+#: build/files.c:1452
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1460 build/pack.c:108
+#: build/files.c:1461 build/pack.c:108
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:1787
+#: build/files.c:1788
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1855
+#: build/files.c:1856
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:1860
+#: build/files.c:1861
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:1942
+#: build/files.c:1943
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:1946
+#: build/files.c:1947
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2073
+#: build/files.c:2074
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2101 build/files.c:2115
+#: build/files.c:2102 build/files.c:2116
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2228
+#: build/files.c:2229
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2250,92 +2250,92 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:949
+#: lib/depends.c:956
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1008
+#: lib/depends.c:1015
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1060
+#: lib/depends.c:1067
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1079
+#: lib/depends.c:1086
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1096
+#: lib/depends.c:1103
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1118
+#: lib/depends.c:1125
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1131
+#: lib/depends.c:1138
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1145
+#: lib/depends.c:1152
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1161
+#: lib/depends.c:1168
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1182
+#: lib/depends.c:1189
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1240
+#: lib/depends.c:1247
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1307
+#: lib/depends.c:1314
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1523
+#: lib/depends.c:1530
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1662
+#: lib/depends.c:1669
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1709
+#: lib/depends.c:1716
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1754
+#: lib/depends.c:1761
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1803
+#: lib/depends.c:1810
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1834
+#: lib/depends.c:1841
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2512,7 +2512,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1015 lib/install.c:271
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:239
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2597,17 +2597,12 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:101
-#, c-format
-msgid "   file: %s%s action: %s\n"
-msgstr ""
-
-#: lib/install.c:122
+#: lib/install.c:90
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/install.c:130
+#: lib/install.c:98
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
@@ -2617,75 +2612,80 @@ msgstr ""
 #. * was used up - if so, we should return a different error.
 #.
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:532
+#: lib/install.c:496
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/install.c:533
+#: lib/install.c:497
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:573
+#: lib/install.c:537
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/install.c:579
+#: lib/install.c:543
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/install.c:606
+#: lib/install.c:566
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:663 lib/install.c:696
+#: lib/install.c:601 lib/install.c:635
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/install.c:716
+#: lib/install.c:655
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:718 lib/uninstall.c:37
+#: lib/install.c:657
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/install.c:815
+#: lib/install.c:759
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:851 lib/uninstall.c:94
+#: lib/install.c:837
 #, c-format
-msgid "%s: %s-%s-%s has %d files, test = %d\n"
+msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/install.c:900 lib/install.c:1065 lib/uninstall.c:132
-#: lib/uninstall.c:181
-#, c-format
-msgid "%s: running %s script(s) (if any)\n"
-msgstr ""
-
-#: lib/install.c:907
-msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
-msgstr ""
-
-#: lib/install.c:955
+#: lib/install.c:866
 #, c-format
 msgid "%s%s created as %s\n"
 msgstr ""
 
-#: lib/install.c:991
+#: lib/install.c:887 lib/uninstall.c:71
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/install.c:996
+#: lib/install.c:892 lib/uninstall.c:74
 #, c-format
 msgid "%s rename of %s to %s failed: %s\n"
+msgstr ""
+
+#: lib/install.c:913 lib/uninstall.c:125
+#, c-format
+msgid "%s: %s-%s-%s has %d files, test = %d\n"
+msgstr ""
+
+#: lib/install.c:980 lib/install.c:1079 lib/uninstall.c:163
+#: lib/uninstall.c:184
+#, c-format
+msgid "%s: running %s script(s) (if any)\n"
+msgstr ""
+
+#: lib/install.c:987
+msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
 #: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
@@ -3020,7 +3020,7 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:563 lib/rpminstall.c:314
+#: lib/query.c:563 lib/rpminstall.c:315
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
@@ -3084,7 +3084,7 @@ msgstr ""
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:746 lib/rpminstall.c:550
+#: lib/query.c:746 lib/rpminstall.c:551
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3320,117 +3320,117 @@ msgstr ""
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:144
+#: lib/rpminstall.c:147
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:150
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:208
+#: lib/rpminstall.c:209
 msgid "counting packages to install\n"
 msgstr ""
 
-#: lib/rpminstall.c:212
+#: lib/rpminstall.c:213
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:217
+#: lib/rpminstall.c:218
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: lib/rpminstall.c:232
+#: lib/rpminstall.c:233
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr ""
 
-#: lib/rpminstall.c:247
+#: lib/rpminstall.c:248
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:257
+#: lib/rpminstall.c:258
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:261
+#: lib/rpminstall.c:262
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:288
+#: lib/rpminstall.c:289
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:300 lib/rpminstall.c:474
+#: lib/rpminstall.c:301 lib/rpminstall.c:475
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:318 lib/rpminstall.c:615
+#: lib/rpminstall.c:319 lib/rpminstall.c:616
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:333
+#: lib/rpminstall.c:334
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:355
+#: lib/rpminstall.c:356
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:400
+#: lib/rpminstall.c:401
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:405
+#: lib/rpminstall.c:406
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:423
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:433
+#: lib/rpminstall.c:434
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:454
+#: lib/rpminstall.c:455
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:537
+#: lib/rpminstall.c:538
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:554
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:576
+#: lib/rpminstall.c:577
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:604
+#: lib/rpminstall.c:605
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:610
+#: lib/rpminstall.c:611
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3712,24 +3712,24 @@ msgstr ""
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/uninstall.c:51
+#: lib/uninstall.c:45
+#, c-format
+msgid "   file: %s action: %s\n"
+msgstr ""
+
+#: lib/uninstall.c:93
 #, c-format
 msgid "cannot remove %s - directory not empty\n"
 msgstr ""
 
-#: lib/uninstall.c:55
+#: lib/uninstall.c:98
 #, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/uninstall.c:65
+#: lib/uninstall.c:109
 #, c-format
 msgid "removal of %s failed: %s\n"
-msgstr ""
-
-#: lib/uninstall.c:164
-#, c-format
-msgid "   file: %s action: %s\n"
 msgstr ""
 
 #: lib/verify.c:59

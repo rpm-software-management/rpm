@@ -1089,7 +1089,7 @@ static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
 	rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
 
-  { TFI_t fi = xmalloc(sizeof(*fi) * fl->fileListRecsUsed);
+  { TFI_t fi = xcalloc(sizeof(*fi), 1);
     char * a, * d;
 
     fi->type = TR_ADDED;
@@ -1097,13 +1097,14 @@ static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
     if (fi->dnl) {
 	free((void *)fi->dnl); fi->dnl = NULL;
     }
+    if (fi->bnl) {
+	free((void *)fi->bnl); fi->bnl = NULL;
+    }
+
     fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen);
     d = (char *)(fi->dnl + fi->fc);
     *d = '\0';
 
-    if (fi->bnl) {
-	free((void *)fi->bnl); fi->bnl = NULL;
-    }
     fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
     fi->dil = (int *)(fi->bnl + fi->fc);
 

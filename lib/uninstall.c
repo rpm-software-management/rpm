@@ -14,73 +14,105 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 
+#define	SUFFIX_RPMORIG	".rpmorig"
 #define	SUFFIX_RPMSAVE	".rpmsave"
+#define	SUFFIX_RPMNEW	".rpmnew"
 
 /**
- * Remove (or rename) file according to file disposition.
+ * Perform erase file actions.
+ * @todo Permit missingok for dirs, add %missingok VFA_t when building.
+ * @param ts		transaction set
  * @param fi		transaction element file info
- * @param i		file info index
- * @param file		file name (root prepended)
- * @return
+ * @return		0 on success, 1 on failure
  */
-static int removeFile(TFI_t fi, int i, const char * ofn)
+static int eraseActions(const rpmTransactionSet ts, TFI_t fi)
 {
+    static char * stepName = "erase";
+    int nb = (!ts->chrootDone ? strlen(ts->rootDir) : 0);
+    char * opath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
+    char * o = (!ts->chrootDone ? stpcpy(opath, ts->rootDir) : opath);
+    char * npath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
+    char * n = (!ts->chrootDone ? stpcpy(npath, ts->rootDir) : npath);
     int rc = 0;
-	
-    switch (fi->actions[i]) {
+    int i;
 
-    case FA_BACKUP:
-    {	char * nfn = alloca(strlen(ofn) + sizeof(SUFFIX_RPMSAVE));
-	(void)stpcpy(stpcpy(nfn, ofn), SUFFIX_RPMSAVE);
+    if (fi->actions == NULL)
+	return rc;
 
-	if (rename(ofn, nfn)) {
-	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s\n"),
-			ofn, nfn, strerror(errno));
+    /* Traverse filelist backwards to help insure that rmdir() will work. */
+    for (i = fi->fc - 1; i >= 0; i--) {
+
+	rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
+			o, fileActionString(fi->actions[i]));
+
+	if (ts->transFlags & RPMTRANS_FLAG_TEST)
+	    continue;
+
+	if (ts->notify)
+	    (void) ts->notify(fi->h, RPMCALLBACK_UNINST_PROGRESS, i,
+			fi->actions[i], o, ts->notifyData);
+
+	switch (fi->actions[i]) {
+	case FA_ALTNAME:
+	case FA_SAVE:
+	case FA_CREATE:
+	case FA_SKIP:
+	case FA_SKIPMULTILIB:
+	case FA_SKIPNSTATE:
+	case FA_SKIPNETSHARED:
+	case FA_UNKNOWN:
+	    continue;
+	    /*@notreached@*/ break;
+
+	case FA_BACKUP:
+	    /* Append file name to (possible) root dir. */
+	    (void) stpcpy( stpcpy(o, fi->dnl[fi->dil[i]]), fi->bnl[i]);
+	    (void) stpcpy( stpcpy(n, o), SUFFIX_RPMSAVE);
+	    rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), o, n);
+	    if (!rename(opath, npath))
+		continue;
+	    rpmError(RPMERR_RENAME, _("%s rename of %s to %s failed: %s\n"),
+			stepName, o, n, strerror(errno));
 	    rc = 1;
-	}
-    }	break;
+	    break;
 
-    case FA_REMOVE:
-	if (S_ISDIR(fi->fmodes[i])) {
-	    /* XXX should permit %missingok for directories as well */
-	    if (rmdir(ofn)) {
+	case FA_REMOVE:
+	    /* Append file name to (possible) root dir. */
+	    (void) stpcpy( stpcpy(o, fi->dnl[fi->dil[i]]), fi->bnl[i]);
+	    if (S_ISDIR(fi->fmodes[i])) {
+		if (!rmdir(opath))
+		    continue;
 		switch (errno) {
-		case ENOENT:	/* XXX rmdir("/") linux 2.2.x kernel hack */
+		case ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
 		case ENOTEMPTY:
+#ifdef	NOTYET
+		    if (fi->fflags[i] & RPMFILE_MISSINGOK)
+			continue;
+#endif
 		    rpmError(RPMERR_RMDIR, 
-			_("cannot remove %s - directory not empty\n"), 
-			ofn);
+				_("cannot remove %s - directory not empty\n"), 
+				o);
 		    break;
 		default:
-		    rpmError(RPMERR_RMDIR, _("rmdir of %s failed: %s\n"),
-				ofn, strerror(errno));
+		    rpmError(RPMERR_RMDIR,
+				_("rmdir of %s failed: %s\n"),
+				o, strerror(errno));
 		    break;
 		}
 		rc = 1;
+		break;
 	    }
-	} else {
-	    if (unlink(ofn)) {
-		if (errno != ENOENT || !(fi->fflags[i] & RPMFILE_MISSINGOK)) {
-		    rpmError(RPMERR_UNLINK, 
-			      _("removal of %s failed: %s\n"),
-				ofn, strerror(errno));
-		}
-		rc = 1;
-	    }
+	    if (!unlink(opath))
+		continue;
+	    if (errno == ENOENT && (fi->fflags[i] & RPMFILE_MISSINGOK))
+		continue;
+	    rpmError(RPMERR_UNLINK, _("removal of %s failed: %s\n"),
+				o, strerror(errno));
+	    rc = 1;
+	    break;
 	}
-	break;
-    case FA_UNKNOWN:
-    case FA_CREATE:
-    case FA_SAVE:
-    case FA_ALTNAME:
-    case FA_SKIP:
-    case FA_SKIPNSTATE:
-    case FA_SKIPNETSHARED:
-    case FA_SKIPMULTILIB:
-	break;
     }
- 
-    return 0;
+    return rc;
 }
 
 int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
@@ -89,7 +121,6 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
     Header h;
     const void * pkgKey = NULL;
     int rc = 0;
-    int i;
 
     rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
 		stepName, fi->name, fi->version, fi->release,
@@ -130,61 +161,32 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
     }
 
     rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
-	stepName, "pre-erase");
+		stepName, "pre-erase");
 
-    if (!(ts->transFlags & RPMTRANS_FLAG_TEST)) {
-	rc = runInstScript(ts, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, fi->scriptArg,
+    rc = runInstScript(ts, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, fi->scriptArg,
 		          (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS));
-	if (rc)
-	    return 1;
-    }
-    if (!(ts->transFlags & RPMTRANS_FLAG_JUSTDB) && fi->fc > 0) {
-	int rdlen = (ts->rootDir && !(ts->rootDir[0] == '/' && ts->rootDir[1] == '\0'))
-			? strlen(ts->rootDir) : 0;
-	int fnmaxlen = fi->dnlmax + fi->bnlmax + rdlen + sizeof("/") - 1;
-	char * ofn = alloca(fnmaxlen);
+    if (rc)
+	return 1;
 
-	*ofn = '\0';
-	if (rdlen) {
-	    strcpy(ofn, ts->rootDir);
-	    (void) rpmCleanPath(ofn);
-	    rdlen = strlen(ofn);
-	}
+    if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
 
 	if (ts->notify)
 	    (void)ts->notify(h, RPMCALLBACK_UNINST_START, fi->fc, fi->fc,
 		pkgKey, ts->notifyData);
 
-	/* Traverse filelist backwards to help insure that rmdir() will work. */
-	for (i = fi->fc - 1; i >= 0; i--) {
-
-	    /* XXX this assumes that dirNames always starts/ends with '/' */
-	    (void) stpcpy( stpcpy(ofn+rdlen, fi->dnl[fi->dil[i]]), fi->bnl[i]);
-
-	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
-			ofn, fileActionString(fi->actions[i]));
-
-	    if (ts->transFlags & RPMTRANS_FLAG_TEST)
-		continue;
-	    if (ts->notify)
-		(void) ts->notify(h, RPMCALLBACK_UNINST_PROGRESS, i,
-			fi->actions[i], ofn, ts->notifyData);
-	    removeFile(fi, i, ofn);
-	}
+	rc = eraseActions(ts, fi);
 
 	if (ts->notify)
 	    (void)ts->notify(h, RPMCALLBACK_UNINST_STOP, 0, fi->fc,
 			pkgKey, ts->notifyData);
     }
 
-    if (!(ts->transFlags & RPMTRANS_FLAG_TEST)) {
-	rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
+    rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
 		stepName, "post-erase");
 
-	rc = runInstScript(ts, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
-			fi->scriptArg, (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS));
-	/* XXX postun failures are not cause for erasure failure. */
-    }
+    rc = runInstScript(ts, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
+		fi->scriptArg, (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS));
+    /* XXX postun failures are not cause for erasure failure. */
 
     if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal. */

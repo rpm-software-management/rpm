@@ -759,15 +759,12 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     const char ** obsoletes;
     int alNum;
 
-    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-    if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
-	return 1;
-
-    /* FIXME: handling upgrades like this is *almost* okay. It doesn't
-       check to make sure we're upgrading to a newer version, and it
-       makes it difficult to generate a return code based on the number of
-       packages which failed. */
-
+    /*
+     * FIXME: handling upgrades like this is *almost* okay. It doesn't
+     * check to make sure we're upgrading to a newer version, and it
+     * makes it difficult to generate a return code based on the number of
+     * packages which failed.
+     */
     if (ts->orderCount == ts->orderAlloced) {
 	ts->orderAlloced += ts->delta;
 	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
@@ -777,7 +774,12 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     		ts->addedPackages.list;
     ts->order[ts->orderCount++].u.addedIndex = alNum;
 
-    if (!upgrade || ts->rpmdb == NULL) return 0;
+    if (!upgrade || ts->rpmdb == NULL)
+	return 0;
+
+    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
+    if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
+	return 0;
 
     headerNVR(h, &name, NULL, NULL);
 
