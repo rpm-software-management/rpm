@@ -416,6 +416,8 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	}
 	headerFreeIterator(headerIter);
 
+	headerRemoveEntry(outHeader, RPMTAG_BUILDARCHS);
+
 	rpmGetArchInfo(&arch, NULL);
 	rpmGetOsInfo(&os, NULL);
 	

@@ -1066,7 +1066,7 @@ Spec *parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     Spec s;
     char **archs = NULL;
     char **arch;
-    int i;
+    int i, count;
     
     s = parseSpecAux(f, specfile, buildRootOverride, &archs);
 
@@ -1084,11 +1084,11 @@ Spec *parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     }
 
     /* We have a BuildArchitectures field */
-    i = 0;
-    while (archs[i]) {
-	i++;
+    count = 0;
+    while (archs[count]) {
+	count++;
     }
-    res = (Spec *) malloc(i * sizeof(Spec));
+    res = (Spec *) malloc(count * sizeof(Spec));
 
     i = 0;
     arch = archs;
@@ -1107,6 +1107,8 @@ Spec *parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		free(res);
 		return NULL;
 	    }
+	    headerAddEntry(res[i]->packages->header, RPMTAG_BUILDARCHS,
+			   RPM_STRING_ARRAY_TYPE, archs, count);
 	    res[i]->buildArch = strdup(*arch);
 	    i++;
 	}
