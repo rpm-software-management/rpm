@@ -8,6 +8,7 @@
 	- resurrect manifests, RPMRC_NOTFOUND returned by readLead().
 	- permit secondary tag match patterns with RPMQV_ALL.
 	- python: missed tuple refcount in IDTXload/IDTXglob.
+	- fix: IDTXglob should return REMOVETID sorted headers (#89857).
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.
