@@ -32,7 +32,7 @@
    one. Version numbers still need verification, but it gets us in the
    right area w/o a linear search through the database. */
 
-struct rpmdb {
+struct rpmdb_s {
     faFile pkgs;
     dbiIndex * nameIndex, * fileIndex, * groupIndex, * providesIndex;
     dbiIndex * requiredbyIndex, * conflictsIndex;
@@ -75,7 +75,7 @@ int rpmdbInit (char * prefix, int perms) {
 int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode, 
 		 int perms, int justcheck) {
     char * filename;
-    struct rpmdb db;
+    struct rpmdb_s db;
     int i;
     struct flock lockinfo;
 
@@ -219,7 +219,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 	}
     }
 
-    *rpmdbp = malloc(sizeof(struct rpmdb));
+    *rpmdbp = malloc(sizeof(struct rpmdb_s));
     **rpmdbp = db;
 
     if (justcheck) {

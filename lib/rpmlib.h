@@ -210,7 +210,7 @@ int rpmOsScore(char * os);
 
 /** **/
 
-typedef struct rpmdb * rpmdb;
+typedef struct rpmdb_s * rpmdb;
 
 typedef void (*rpmNotifyFunction)(const unsigned long amount,
 			       const unsigned long total);
