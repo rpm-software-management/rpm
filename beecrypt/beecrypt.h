@@ -433,19 +433,19 @@ int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
 /** \ingroup HASH_m
  */
 BEECRYPTAPI
-int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n)
+int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mpnumber* n)
 	/*@modifies ctxt */;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI
-int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number* dig)
+int hashFunctionContextDigest(hashFunctionContext* ctxt, mpnumber* dig)
 	/*@modifies ctxt, *dig */;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI /*@unused@*/
-int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number* match)
+int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* match)
 	/*@modifies ctxt */;
 
 #ifdef __cplusplus
@@ -636,19 +636,19 @@ int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memch
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI /*@unused@*/
-int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp32number* n)
+int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mpnumber* n)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI
-int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mp32number* dig)
+int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mpnumber* dig)
 	/*@modifies ctxt, *dig @*/;
 
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI
-int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp32number* match)
+int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mpnumber* match)
 	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus

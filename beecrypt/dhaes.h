@@ -48,8 +48,8 @@ typedef struct
 typedef struct
 {
 	dldp_p						param;
-	mp32number					pub;
-	mp32number					pri;
+	mpnumber					pub;
+	mpnumber					pri;
 	hashFunctionContext			hash;
 	blockCipherContext			cipher;
 	keyedHashFunctionContext	mac;
@@ -80,13 +80,13 @@ int dhaes_pContextInit       (dhaes_pContext* ctxt, const dhaes_pParameters* par
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pri)
+int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pri)
 	/*@modifies ctxt */;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pub)
+int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pub)
 	/*@modifies ctxt */;
 
 /**
@@ -98,13 +98,13 @@ int dhaes_pContextFree       (/*@only@*/ dhaes_pContext* ctxt)
 /**
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt,       mp32number* ephemeralPublicKey,       mp32number* mac, const memchunk* cleartext, randomGeneratorContext* rng)
+memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt,       mpnumber* ephemeralPublicKey,       mpnumber* mac, const memchunk* cleartext, randomGeneratorContext* rng)
 	/*@modifies ctxt, ephemeralPublicKey, mac, rng */;
 
 /**
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemeralPublicKey, const mp32number* mac, const memchunk* ciphertext)
+memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralPublicKey, const mpnumber* mac, const memchunk* ciphertext)
 	/*@modifies ctxt */;
 
 #ifdef __cplusplus

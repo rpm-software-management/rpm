@@ -35,7 +35,7 @@ int dlpk_pInit(dlpk_p* pk)
 	if (dldp_pInit(&pk->param) < 0)
 		return -1;
 
-	mp32nzero(&pk->y);
+	mpnzero(&pk->y);
 
 	return 0;
 }
@@ -46,7 +46,7 @@ int dlpk_pFree(dlpk_p* pk)
 	if (dldp_pFree(&pk->param) < 0)
 		return -1;
 
-	mp32nfree(&pk->y);
+	mpnfree(&pk->y);
 
 	return 0;
 	/*@=usereleased =compdef @*/
@@ -57,7 +57,7 @@ int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
 	if (dldp_pCopy(&dst->param, &src->param) < 0)
 		return -1;
 
-	mp32ncopy(&dst->y, &src->y);
+	mpncopy(&dst->y, &src->y);
 
 	return 0;
 }

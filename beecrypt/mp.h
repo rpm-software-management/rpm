@@ -37,50 +37,6 @@
 
 #include "mpopt.h"
 
-#include <stdint.h>		/* XXX scaffolding. */
-#define	MP_WBITS	32	/* XXX scaffolding. */
-#define	HAVE_UINT64_T	1	/* XXX scaffolding. */
-
-#define MP_HWBITS	(MP_WBITS >> 1)
-#define MP_WBYTES	(MP_WBITS >> 3)
-#define MP_WNIBBLES	(MP_WBITS >> 2)
-
-#if (MP_WBITS == 64)
-# define MP_WORDS_TO_BITS(x)	((x) << 6)
-# define MP_WORDS_TO_NIBBLES(x)	((x) << 4)
-# define MP_WORDS_TO_BYTES(x)	((x) << 3)
-# define MP_BITS_TO_WORDS(x)	((x) >> 6)
-# define MP_NIBBLES_TO_WORDS(x)	((x) >> 4)
-# define MP_BYTES_TO_WORDS(x)	((x) >> 3)
-#elif (MP_WBITS == 32)
-# define MP_WORDS_TO_BITS(x)	((x) << 5)
-# define MP_WORDS_TO_NIBBLES(x)	((x) << 3)
-# define MP_WORDS_TO_BYTES(x)	((x) << 2)
-# define MP_BITS_TO_WORDS(x)	((x) >> 5) 
-# define MP_NIBBLES_TO_WORDS(x)	((x) >> 3)
-# define MP_BYTES_TO_WORDS(x)	((x) >> 2)
-#else
-# error
-#endif
-
-#if (MP_WBITS == 64)
-typedef uint64_t mpw;
-typedef uint32_t mphw;
-#elif (MP_WBITS == 32)
-# if HAVE_UINT64_T
-#  define HAVE_MPDW 1
-typedef uint64_t mpdw;
-# endif
-typedef uint32_t mpw;
-typedef uint16_t mphw;
-#else
-# error
-#endif
-
-#define MP_MSBMASK	(((mpw) 0x1) << (MP_WBITS-1))
-#define MP_LSBMASK	 ((mpw) 0x1)
-#define MP_ALLMASK	~((mpw) 0x0)
-
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -43,7 +43,7 @@ static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@
 static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ uint32* wksp)
 	/*@modifies dp->g, wksp @*/;
 
-int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x)
+int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x)
 {
 	/*
 	 * Note: the private key is randomly selected to be smaller than q
@@ -56,7 +56,7 @@ int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x)
 	return 0;
 }
 
-int dldp_pPublic(const dldp_p* dp, const mp32number* x, mp32number* y)
+int dldp_pPublic(const dldp_p* dp, const mpnumber* x, mpnumber* y)
 {
 	/*
 	 * Public key y is computed as g^x mod p
@@ -67,7 +67,7 @@ int dldp_pPublic(const dldp_p* dp, const mp32number* x, mp32number* y)
 	return 0;
 }
 
-int dldp_pPair(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x, mp32number* y)
+int dldp_pPair(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x, mpnumber* y)
 {
 	/*
 	 * Combination of the two previous functions
@@ -141,8 +141,8 @@ int dldp_pInit(dldp_p* dp)
 {
 	mp32bzero(&dp->p);
 	mp32bzero(&dp->q);
-	mp32nzero(&dp->g);
-	mp32nzero(&dp->r);
+	mpnzero(&dp->g);
+	mpnzero(&dp->r);
 	mp32bzero(&dp->n);
 
 	return 0;
@@ -153,8 +153,8 @@ int dldp_pFree(dldp_p* dp)
 	/*@-usedef -compdef@*/
 	mp32bfree(&dp->p);
 	mp32bfree(&dp->q);
-	mp32nfree(&dp->g);
-	mp32nfree(&dp->r);
+	mpnfree(&dp->g);
+	mpnfree(&dp->r);
 	mp32bfree(&dp->n);
 	/*@=usedef =compdef@*/
 
@@ -165,8 +165,8 @@ int dldp_pCopy(dldp_p* dst, const dldp_p* src)
 {
 	mp32bcopy(&dst->p, &src->p);
 	mp32bcopy(&dst->q, &src->q);
-	mp32ncopy(&dst->r, &src->r);
-	mp32ncopy(&dst->g, &src->g);
+	mpncopy(&dst->r, &src->r);
+	mpncopy(&dst->g, &src->g);
 	mp32bcopy(&dst->n, &src->n);
 
 	return 0;
@@ -184,19 +184,19 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 	{
 		/* first generate q */
 		/*@-globs@*/
-		mp32prnd_w(&dp->q, rgc, qsize, mp32ptrials(qsize << 5), (const mp32number*) 0, temp);
+		mp32prnd_w(&dp->q, rgc, qsize, mp32ptrials(qsize << 5), (const mpnumber*) 0, temp);
 		/*@=globs@*/
 
 		/* generate p with the appropriate congruences */
 		/*@-globs@*/
-		mp32prndconone_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), &dp->q, (const mp32number*) 0, &dp->r, cofactor, temp);
+		mp32prndconone_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), &dp->q, (const mpnumber*) 0, &dp->r, cofactor, temp);
 		/*@=globs@*/
 
 		/* clear n */
 		mp32bzero(&dp->n);
 
 		/* clear g */
-		mp32nzero(&dp->g);
+		mpnzero(&dp->g);
 
 		(void) dldp_pgoqGenerator_w(dp, rgc, temp);
 
@@ -230,7 +230,7 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 		mp32bset(&dp->q, psize, temp);
 
 		/* set r = 2 */
-		mp32nsetw(&dp->r, 2);
+		mpnsetw(&dp->r, 2);
 
 		/* clear n */
 		mp32bzero(&dp->n);
@@ -253,8 +253,8 @@ int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 
 	register uint32  size = dp->p.size;
 
-	mp32nfree(&dp->g);
-	mp32nsize(&dp->g, size);
+	mpnfree(&dp->g);
+	mpnsize(&dp->g, size);
 
 	while (1)
 	{
@@ -316,12 +316,12 @@ int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 	{
 		/* generate q */
 		/*@-globs@*/
-		mp32prnd_w(&dp->q, rgc, qsize, mp32ptrials(qsize << 5), (const mp32number*) 0, temp);
+		mp32prnd_w(&dp->q, rgc, qsize, mp32ptrials(qsize << 5), (const mpnumber*) 0, temp);
 		/*@=globs@*/
 
 		/* generate p with the appropriate congruences */
 		/*@-globs@*/
-		mp32prndconone_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), &dp->q, (const mp32number*) 0, &dp->r, 2, temp);
+		mp32prndconone_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), &dp->q, (const mpnumber*) 0, &dp->r, 2, temp);
 		/*@=globs@*/
 
 		/* set n */
@@ -362,7 +362,7 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 		mp32bset(&dp->q, psize, temp);
 
 		/* set r = 2 */
-		mp32nsetw(&dp->r, 2);
+		mpnsetw(&dp->r, 2);
 
 		(void) dldp_pgonGenerator_w(dp, rgc, temp);
 
@@ -377,8 +377,8 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 {
 	register uint32  size = dp->p.size;
 
-	mp32nfree(&dp->g);
-	mp32nsize(&dp->g, size);
+	mpnfree(&dp->g);
+	mpnsize(&dp->g, size);
 
 	while (1)
 	{

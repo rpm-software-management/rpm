@@ -74,15 +74,15 @@ int testVectorInvMod(const dlkp_p* keypair)
 int testVectorExpMod(const dlkp_p* keypair)
 {
 	int rc;
-	mp32number y;
+	mpnumber y;
 	
-	mp32nzero(&y);
+	mpnzero(&y);
 	
 	mp32bnpowmod(&keypair->param.p, &keypair->param.g, &keypair->x, &y);
 
 	rc = mp32eqx(y.size, y.data, keypair->y.size, keypair->y.data);
 
-	mp32nfree(&y);
+	mpnfree(&y);
 
 	return rc;
 }
@@ -95,13 +95,13 @@ int testVectorElGamalV1(const dlkp_p* keypair)
 
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	{
-		mp32number digest, r, s;
+		mpnumber digest, r, s;
 
-		mp32nzero(&digest);
-		mp32nzero(&r);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&r);
+		mpnzero(&s);
 
-		mp32nsize(&digest, 5);
+		mpnsize(&digest, 5);
 
 		rngc.rng->next(rngc.param, digest.data, digest.size);
 
@@ -109,9 +109,9 @@ int testVectorElGamalV1(const dlkp_p* keypair)
 
 		rc = elgv1vrfy(&keypair->param.p, &keypair->param.n, &keypair->param.g, &digest, &keypair->y, &r, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&r);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&r);
+		mpnfree(&s);
 
 		randomGeneratorContextFree(&rngc);
 	}
@@ -126,13 +126,13 @@ int testVectorElGamalV3(const dlkp_p* keypair)
 
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	{
-		mp32number digest, r, s;
+		mpnumber digest, r, s;
 
-		mp32nzero(&digest);
-		mp32nzero(&r);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&r);
+		mpnzero(&s);
 
-		mp32nsize(&digest, 5);
+		mpnsize(&digest, 5);
 
 		rngc.rng->next(rngc.param, digest.data, digest.size);
 
@@ -140,9 +140,9 @@ int testVectorElGamalV3(const dlkp_p* keypair)
 
 		rc = elgv3vrfy(&keypair->param.p, &keypair->param.n, &keypair->param.g, &digest, &keypair->y, &r, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&r);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&r);
+		mpnfree(&s);
 
 		randomGeneratorContextFree(&rngc);
 	}
@@ -160,7 +160,7 @@ int testVectorDHAES(const dlkp_p* keypair)
 	/* incomplete */
 	if (dhaes_pInit(&dh, &keypair->param, &blowfish, &hmacmd5, &md5, randomGeneratorDefault()) == 0)
 	{
-		mp32number mkey, mac;
+		mpnumber mkey, mac;
 
 		memchunk src, *dst, *cmp;
 
@@ -170,8 +170,8 @@ int testVectorDHAES(const dlkp_p* keypair)
 		memset(src.data, 1, src.size);
 
 		/* initialize the message key and mac */
-		mp32nzero(&mkey);
-		mp32nzero(&mac);
+		mpnzero(&mkey);
+		mpnzero(&mac);
 
 		/* encrypt the message */
 		dst = dhaes_pEncrypt(&dh, &keypair->y, &mkey, &mac, &src);
@@ -211,15 +211,15 @@ int testVectorRSA()
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	{
 		rsakp kp;
-		mp32number digest, s;
+		mpnumber digest, s;
 
 		rsakpInit(&kp);
 		fprintf(stdout, "making RSA CRT keypair\n");
 		rsakpMake(&kp, &rngc, 32);
 		fprintf(stdout, "RSA CRT keypair generated\n");
 
-		mp32nzero(&digest);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&s);
 
 		mp32bnrnd(&kp.n, &rngc, &digest);
 
@@ -227,8 +227,8 @@ int testVectorRSA()
 
 		rc = rsavrfy((rsapk*) &kp, &digest, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&s);
 
 		rsakpFree(&kp);
 
@@ -250,17 +250,17 @@ int testVectorDLDP()
 	if (randomGeneratorContextInit(&rc, randomGeneratorDefault()) == 0)
 	{
 		register int result;
-		mp32number gq;
+		mpnumber gq;
 
-		mp32nzero(&gq);
+		mpnzero(&gq);
 
 		dldp_pgoqMake(&dp, &rc, 768 >> 5, 512 >> 5, 1);
 
 		/* we have the parameters, now see if g^q == 1 */
-		mp32bnpowmod(&dp.p, &dp.g, (mp32number*) &dp.q, &gq);
+		mp32bnpowmod(&dp.p, &dp.g, (mpnumber*) &dp.q, &gq);
 		result = mp32isone(gq.size, gq.data);
 
-		mp32nfree(&gq);
+		mpnfree(&gq);
 		dldp_pFree(&dp);
 
 		randomGeneratorContextFree(&rc);
@@ -510,16 +510,16 @@ void testExpMods()
 	randomGeneratorContext rngc;
 
 	mp32barrett p;
-	mp32number tmp;
-	mp32number g;
-	mp32number x;
-	mp32number y;
+	mpnumber tmp;
+	mpnumber g;
+	mpnumber x;
+	mpnumber y;
 
 	mp32bzero(&p);
-	mp32nzero(&g);
-	mp32nzero(&x);
-	mp32nzero(&y);
-	mp32nzero(&tmp);
+	mpnzero(&g);
+	mpnzero(&x);
+	mpnzero(&y);
+	mpnzero(&tmp);
 
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	{
@@ -531,10 +531,10 @@ void testExpMods()
 		
 		fprintf(stdout, "Timing modular exponentiations\n");
 		fprintf(stdout, "\t(512 bits ^ 512 bits) mod 512 bits:");
-		mp32nsethex(&tmp, p_512);
+		mpnsethex(&tmp, p_512);
 		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
 		mp32bnrnd(&p, &rngc, &g);
 		mp32bnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
@@ -548,10 +548,10 @@ void testExpMods()
 		fprintf(stdout, "\t 100x in %.3f seconds\n", ttime);
 		#endif
 		fprintf(stdout, "\t(768 bits ^ 768 bits) mod 768 bits:");
-		mp32nsethex(&tmp, p_768);
+		mpnsethex(&tmp, p_768);
 		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
 		mp32bnrnd(&p, &rngc, &g);
 		mp32bnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
@@ -565,10 +565,10 @@ void testExpMods()
 		fprintf(stdout, "\t 100x in %.3f seconds\n", ttime);
 		#endif
 		fprintf(stdout, "\t(1024 bits ^ 1024 bits) mod 1024 bits:");
-		mp32nsethex(&tmp, p_1024);
+		mpnsethex(&tmp, p_1024);
 		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
 		mp32bnrnd(&p, &rngc, &g);
 		mp32bnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
@@ -582,7 +582,7 @@ void testExpMods()
 		fprintf(stdout, "\t 100x in %.3f seconds\n", ttime);
 		#endif
 		/* now run a test with x having 160 bits */
-		mp32nsize(&x, 5);
+		mpnsize(&x, 5);
 		rngc.rng->next(rngc.param, x.data, x.size);
 		fprintf(stdout, "\t(1024 bits ^ 160 bits) mod 1024 bits:");
 		#if HAVE_TIME_H
@@ -596,10 +596,10 @@ void testExpMods()
 		fprintf(stdout, "\t 100x in %.3f seconds\n", ttime);
 		#endif
 		mp32bfree(&p);
-		mp32nfree(&g);
-		mp32nfree(&x);
-		mp32nfree(&y);
-		mp32nfree(&tmp);
+		mpnfree(&g);
+		mpnfree(&x);
+		mpnfree(&y);
+		mpnfree(&tmp);
 
 		randomGeneratorContextFree(&rngc);
 	}
@@ -679,10 +679,10 @@ int main()
 
 	mp32bsethex(&keypair.param.p, dsa_p);
 	mp32bsethex(&keypair.param.q, dsa_q);
-	mp32nsethex(&keypair.param.g, dsa_g);
+	mpnsethex(&keypair.param.g, dsa_g);
 	mp32bsethex(&keypair.param.n, elg_n);
-	mp32nsethex(&keypair.y, dsa_y);
-	mp32nsethex(&keypair.x, dsa_x);
+	mpnsethex(&keypair.y, dsa_y);
+	mpnsethex(&keypair.x, dsa_x);
 
 	if (testVectorInvMod(&keypair))
 		fprintf(stdout, "InvMod works!\n");

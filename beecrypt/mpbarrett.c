@@ -1199,13 +1199,13 @@ int mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* rc, int t, uint3
 }
 /*@=boundsread@*/
 
-void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, mp32number* result)
+void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, mpnumber* result)
 {
 	register uint32  size = b->size;
 	register uint32* temp = (uint32*) malloc(size * sizeof(uint32));
 
-	mp32nfree(result);
-	mp32nsize(result, size);
+	mpnfree(result);
+	mpnsize(result, size);
 	/*@-nullpass@*/		/* temp may be NULL */
 	/*@-usedef@*/		/* result->data unallocated? */
 	mp32brnd_w(b, rc, result->data, temp);
@@ -1215,7 +1215,7 @@ void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, mp32number* res
 	/*@=nullpass@*/
 }
 
-void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y, mp32number* result)
+void mp32bnmulmod(const mp32barrett* b, const mpnumber* x, const mpnumber* y, mpnumber* result)
 {
 	register uint32  size = b->size;
 	register uint32* temp = (uint32*) malloc((4*size+2) * sizeof(uint32));
@@ -1226,8 +1226,8 @@ void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y
 	register uint32* opnd = temp+size*2+2;
 	/*@=nullptrarith@*/
 
-	mp32nfree(result);
-	mp32nsize(result, size);
+	mpnfree(result);
+	mpnsize(result, size);
 
 	if (fill)
 		mp32zero(fill, opnd);
@@ -1242,7 +1242,7 @@ void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y
 	/*@=nullpass@*/
 }
 
-void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, mp32number* result)
+void mp32bnsqrmod(const mp32barrett* b, const mpnumber* x, mpnumber* result)
 {
 	register uint32  size = b->size;
 	register uint32* temp = (uint32*) malloc(size * sizeof(uint32));
@@ -1253,8 +1253,8 @@ void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, mp32number* result)
 	register uint32* opnd = temp + size*2+2;
 	/*@=nullptrarith@*/
 
-	mp32nfree(result);
-	mp32nsize(result, size);
+	mpnfree(result);
+	mpnsize(result, size);
 
 	if (fill)
 		mp32zero(fill, opnd);
@@ -1269,13 +1269,13 @@ void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, mp32number* result)
 	/*@=nullpass@*/
 }
 
-void mp32bnpowmod(const mp32barrett* b, const mp32number* x, const mp32number* pow, mp32number* y)
+void mp32bnpowmod(const mp32barrett* b, const mpnumber* x, const mpnumber* pow, mpnumber* y)
 {
 	register uint32  size = b->size;
 	register uint32* temp = (uint32*) malloc((4*size+2) * sizeof(uint32));
 
-	mp32nfree(y);
-	mp32nsize(y, size);
+	mpnfree(y);
+	mpnsize(y, size);
 
 	/*@-nullpass@*/		/* temp may be NULL */
 	mp32bpowmod_w(b, x->size, x->data, pow->size, pow->data, y->data, temp);
@@ -1284,13 +1284,13 @@ void mp32bnpowmod(const mp32barrett* b, const mp32number* x, const mp32number* p
 	/*@=nullpass@*/
 }
 
-void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mp32number* pow, mp32number* y)
+void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mpnumber* pow, mpnumber* y)
 {
 	register uint32  size = b->size;
 	register uint32* temp = (uint32*) malloc((4*size+2) * sizeof(uint32));
 
-	mp32nfree(y);
-	mp32nsize(y, size);
+	mpnfree(y);
+	mpnsize(y, size);
 
 	/*@-nullpass@*/		/* temp may be NULL */
 	/*@-internalglobs -mods@*/ /* noisy */

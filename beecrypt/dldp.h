@@ -52,8 +52,8 @@ typedef struct
 {
 	mp32barrett p;
 	mp32barrett q;
-	mp32number  r;
-	mp32number  g;
+	mpnumber  r;
+	mpnumber  g;
 	mp32barrett n;
 } dldp_p;
 
@@ -87,19 +87,19 @@ int dldp_pCopy(dldp_p* dst, const dldp_p* src)
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x)
+int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x)
 	/*@modifies rgc, x @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dldp_pPublic(const dldp_p* dp, const mp32number* x, mp32number* y)
+int dldp_pPublic(const dldp_p* dp, const mpnumber* x, mpnumber* y)
 	/*@modifies y @*/;
 
 /**
  */
 BEECRYPTAPI
-int dldp_pPair(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x, mp32number* y)
+int dldp_pPair(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x, mpnumber* y)
 	/*@modifies rgc, x, y @*/;
 
 /*

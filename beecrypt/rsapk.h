@@ -35,7 +35,7 @@
 typedef struct
 {
 	mp32barrett n;
-	mp32number e;
+	mpnumber e;
 } rsapk;
 
 #ifdef __cplusplus

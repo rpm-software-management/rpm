@@ -122,8 +122,8 @@ int dhaes_pContextInit(dhaes_pContext* ctxt, const dhaes_pParameters* params)
 	(void) dldp_pInit(&ctxt->param);
 	(void) dldp_pCopy(&ctxt->param, params->param);
 
-	mp32nzero(&ctxt->pub);
-	mp32nzero(&ctxt->pri);
+	mpnzero(&ctxt->pub);
+	mpnzero(&ctxt->pri);
 
 	/*@-modobserver@*/
 	if (hashFunctionContextInit(&ctxt->hash, params->hash))
@@ -142,22 +142,22 @@ int dhaes_pContextInit(dhaes_pContext* ctxt, const dhaes_pParameters* params)
 	return 0;
 }
 
-int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pri)
+int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pri)
 {
 	if (dhaes_pContextInit(ctxt, params))
 		return -1;
 
-	mp32ncopy(&ctxt->pri, pri);
+	mpncopy(&ctxt->pri, pri);
 
 	return 0;
 }
 
-int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pub)
+int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pub)
 {
 	if (dhaes_pContextInit(ctxt, params))
 		return -1;
 
-	mp32ncopy(&ctxt->pub, pub);
+	mpncopy(&ctxt->pub, pub);
 
 	return 0;
 }
@@ -166,8 +166,8 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 {
 	(void) dldp_pFree(&ctxt->param);
 
-	mp32nfree(&ctxt->pub);
-	mp32nfree(&ctxt->pri);
+	mpnfree(&ctxt->pub);
+	mpnfree(&ctxt->pri);
 
 	/*@-mustfree -modobserver @*/ /* ctxt is OK */
 	if (hashFunctionContextFree(&ctxt->hash))
@@ -185,31 +185,31 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 
 /**
  */
-static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* privkey, const mp32number* pubkey, const mp32number* message, cipherOperation op)
+static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, const mpnumber* pubkey, const mpnumber* message, cipherOperation op)
 	/*@modifies ctxt @*/
 {
 	register int rc;
 
-	mp32number secret;
-	mp32number digest;
+	mpnumber secret;
+	mpnumber digest;
 
 	/* compute the shared secret, Diffie-Hellman style */
-	mp32nzero(&secret);
+	mpnzero(&secret);
 	if (dlsvdp_pDHSecret(&ctxt->param, privkey, pubkey, &secret))
 		/*@-mustfree@*/ /* FIX: secret.data leak? */
 		return -1;
 		/*@=mustfree@*/
 
 	/* compute the hash of the message (ephemeral public) key and the shared secret */
-	mp32nzero(&digest);
+	mpnzero(&digest);
 	(void) hashFunctionContextReset     (&ctxt->hash);
 	(void) hashFunctionContextUpdateMP32(&ctxt->hash, message);
 	(void) hashFunctionContextUpdateMP32(&ctxt->hash, &secret);
 	(void) hashFunctionContextDigest    (&ctxt->hash, &digest);
 
 	/* we don't need the secret anymore */
-	mp32nwipe(&secret);
-	mp32nfree(&secret);
+	mpnwipe(&secret);
+	mpnfree(&secret);
 
 	/**
 	 * NOTE: blockciphers and keyed hash functions take keys with sizes
@@ -241,23 +241,23 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* privkey, 
 	/*@=usedef@*/
 
 setup_end:
-	mp32nwipe(&digest);
-	mp32nfree(&digest);
+	mpnwipe(&digest);
+	mpnfree(&digest);
 
 	/*@-mustfree@*/ /* {secret,digest}.data are OK */
 	return rc;
 	/*@=mustfree@*/
 }
 
-memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mp32number* ephemeralPublicKey, mp32number* mac, const memchunk* cleartext, randomGeneratorContext* rng)
+memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mpnumber* ephemeralPublicKey, mpnumber* mac, const memchunk* cleartext, randomGeneratorContext* rng)
 {
 	memchunk* ciphertext = (memchunk*) 0;
 	memchunk* paddedtext;
 
-	mp32number ephemeralPrivateKey;
+	mpnumber ephemeralPrivateKey;
 
 	/* make the ephemeral keypair */
-	mp32nzero(&ephemeralPrivateKey);
+	mpnzero(&ephemeralPrivateKey);
 	(void) dldp_pPair(&ctxt->param, rng, &ephemeralPrivateKey, ephemeralPublicKey);
 
 	/* Setup the key and initialize the mac and the blockcipher */
@@ -295,15 +295,15 @@ memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mp32number* ephemeralPubli
 	ciphertext = paddedtext;
 
 encrypt_end:
-	mp32nwipe(&ephemeralPrivateKey);
-	mp32nfree(&ephemeralPrivateKey);
+	mpnwipe(&ephemeralPrivateKey);
+	mpnfree(&ephemeralPrivateKey);
 
 	/*@-mustfree@*/	/* ephemeralPrivateKey.data is OK */
 	return ciphertext;
 	/*@=mustfree@*/
 }
 
-memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemeralPublicKey, const mp32number* mac, const memchunk* ciphertext)
+memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralPublicKey, const mpnumber* mac, const memchunk* ciphertext)
 {
 	memchunk* cleartext = (memchunk*) 0;
 	memchunk* paddedtext;

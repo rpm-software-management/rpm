@@ -48,7 +48,7 @@
 #include "debug.h"
 
 /*@-boundswrite@*/
-int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, randomGeneratorContext* rgc, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
+int dsasign(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
 	register uint32  psize = p->size;
 	register uint32  qsize = q->size;
@@ -74,8 +74,8 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 	qwksp = qtemp+3*qsize;
 
 	/* allocate r */
-	mp32nfree(r);
-	mp32nsize(r, qsize);
+	mpnfree(r);
+	mpnsize(r, qsize);
 
 	/* get a random k, invertible modulo q */
 	mp32brndinv_w(q, rgc, qtemp, qtemp+qsize, qwksp);
@@ -98,8 +98,8 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 	mp32copy(qsize, r->data, qtemp+psize+qsize);
 
 	/* allocate s */
-	mp32nfree(s);
-	mp32nsize(s, qsize);
+	mpnfree(s);
+	mpnsize(s, qsize);
 
 	/* x*r mod q */
 	mp32bmulmod_w(q, x->size, x->data, r->size, r->data, qtemp, qwksp);
@@ -119,7 +119,7 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 }
 /*@=boundswrite@*/
 
-int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, const mp32number* hm, const mp32number* y, const mp32number* r, const mp32number* s)
+int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
 	register uint32  psize = p->size;
 	register uint32  qsize = q->size;

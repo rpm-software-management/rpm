@@ -34,10 +34,10 @@
  */
 typedef struct
 {
-	uint32  size;
+	size_t	size;
 /*@owned@*/ /*@relnull@*/
-	uint32* data;
-} mp32number;
+	mpw*	data;
+} mpnumber;
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,55 +46,55 @@ extern "C" {
 /**
  */
 BEECRYPTAPI
-void mp32nzero(/*@out@*/ mp32number* n)
+void mpnzero(/*@out@*/ mpnumber* n)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32nsize(mp32number* n, uint32 size)
+void mpnsize(mpnumber* n, size_t size)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32ninit(mp32number* n, uint32 size, const uint32* data)
+void mpninit(mpnumber* n, size_t size, const mpw* data)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32nfree(mp32number* n)
+void mpnfree(mpnumber* n)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32ncopy(mp32number* n, const mp32number* copy)
+void mpncopy(mpnumber* n, const mpnumber* copy)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32nwipe(mp32number* n)
+void mpnwipe(mpnumber* n)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32nset   (mp32number* n, uint32 size, /*@null@*/ const uint32* data)
+void mpnset   (mpnumber* n, size_t size, /*@null@*/ const mpw* data)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32nsetw  (mp32number* n, uint32 val)
+void mpnsetw  (mpnumber* n, mpw val)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32nsethex(/*@out@*/ mp32number* n, const char* hex)
+void mpnsethex(/*@out@*/ mpnumber* n, const char* hex)
 	/*@modifies n->size, n->data @*/;
 
 #ifdef __cplusplus

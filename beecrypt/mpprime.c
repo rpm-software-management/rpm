@@ -1219,7 +1219,7 @@ int mp32pmilrab_w(const mp32barrett* p, randomGeneratorContext* rc, int t, uint3
  * needs workspace of (7*size+2) words
  */
 /*@-boundswrite@*/
-void mp32prnd_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32number* f, uint32* wksp)
+void mp32prnd_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mpnumber* f, uint32* wksp)
 {
 	/*
 	 * Generate a prime into p with (size*32) bits
@@ -1247,7 +1247,7 @@ void mp32prnd_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, 
 				continue;
 
 			/* if we have an f, do the congruence test */
-			if (f != (mp32number*) 0)
+			if (f != (mpnumber*) 0)
 			{
 				mp32copy(size, wksp, p->modl);
 				(void) mp32subw(size, wksp, 1);
@@ -1272,7 +1272,7 @@ void mp32prnd_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, 
  * needs workspace of (7*size+2) words
  */
 /*@-boundswrite@*/
-void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, const mp32number* f, mp32number* r, int cofactor, uint32* wksp)
+void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, const mpnumber* f, mpnumber* r, int cofactor, uint32* wksp)
 {
 	/*
 	 * Generate a prime p with n bits such that p mod q = 1, and p = qr+1; r = 2s
@@ -1342,7 +1342,7 @@ void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, i
 				continue;
 
 			/* if we have an f, do the congruence test */
-			if (f != (mp32number*) 0)
+			if (f != (mpnumber*) 0)
 			{
 				mp32copy(size, wksp, p->modl);
 				(void) mp32subw(size, wksp, 1);
@@ -1367,7 +1367,7 @@ void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, i
 			if (!mp32pmilrab_w(p, rc, t, wksp))
 				continue;
 
-			mp32nset(r, s.size, s.modl);
+			mpnset(r, s.size, s.modl);
 			(void) mp32multwo(r->size, r->data);
 			mp32bfree(&s);
 

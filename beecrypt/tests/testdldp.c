@@ -39,21 +39,21 @@ int main()
 
         if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
         {                        
-                mp32number gq;
+                mpnumber gq;
 
-                mp32nzero(&gq);
+                mpnzero(&gq);
 
 		/* make parameters with p = 512 bits, q = 160 bits, g of order (q) */
                 dldp_pgoqMake(&params, &rngc, 512 >> 5, 160 >> 5, 1);
 
                 /* we have the parameters, now see if g^q == 1 */
-                mp32bnpowmod(&params.p, &params.g, (mp32number*) &params.q, &gq);
+                mp32bnpowmod(&params.p, &params.g, (mpnumber*) &params.q, &gq);
                 if (mp32isone(gq.size, gq.data))
 			printf("ok\n");
 		else
 			failures++;
 
-                mp32nfree(&gq);
+                mpnfree(&gq);
 
                 dldp_pFree(&params);
 

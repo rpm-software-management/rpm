@@ -29,7 +29,7 @@
 #include "dlsvdp-dh.h"
 #include "debug.h"
 
-int dlsvdp_pDHSecret(const dldp_p* dp, const mp32number* x, const mp32number* y, mp32number* s)
+int dlsvdp_pDHSecret(const dldp_p* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)
 {
 	mp32bnpowmod(&dp->p, y, x, s);
 

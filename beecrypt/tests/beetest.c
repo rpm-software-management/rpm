@@ -98,15 +98,15 @@ static int testVectorExpMod(const dlkp_p* keypair)
 	/*@*/
 {
 	int rc;
-	mp32number y;
+	mpnumber y;
 	
-	mp32nzero(&y);
+	mpnzero(&y);
 	
 	mp32bnpowmod(&keypair->param.p, &keypair->param.g, &keypair->x, &y);
 
 	rc = mp32eqx(y.size, y.data, keypair->y.size, keypair->y.data);
 
-	mp32nfree(&y);
+	mpnfree(&y);
 
 	return rc;
 }
@@ -125,13 +125,13 @@ static int testVectorDSA(const dlkp_p* keypair)
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	/*@=nullpass =modobserver @*/
 	{
-		mp32number digest, r, s;
+		mpnumber digest, r, s;
 
-		mp32nzero(&digest);
-		mp32nzero(&r);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&r);
+		mpnzero(&s);
 
-		mp32nsize(&digest, 5);
+		mpnsize(&digest, 5);
 
 		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
@@ -141,9 +141,9 @@ static int testVectorDSA(const dlkp_p* keypair)
 
 		rc = dsavrfy(&keypair->param.p, &keypair->param.q, &keypair->param.g, &digest, &keypair->y, &r, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&r);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&r);
+		mpnfree(&s);
 
 		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
@@ -166,13 +166,13 @@ static int testVectorElGamalV1(const dlkp_p* keypair)
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	/*@=nullpass =modobserver @*/
 	{
-		mp32number digest, r, s;
+		mpnumber digest, r, s;
 
-		mp32nzero(&digest);
-		mp32nzero(&r);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&r);
+		mpnzero(&s);
 
-		mp32nsize(&digest, 5);
+		mpnsize(&digest, 5);
 
 		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
@@ -182,9 +182,9 @@ static int testVectorElGamalV1(const dlkp_p* keypair)
 
 		rc = elgv1vrfy(&keypair->param.p, &keypair->param.n, &keypair->param.g, &digest, &keypair->y, &r, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&r);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&r);
+		mpnfree(&s);
 
 		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
@@ -207,13 +207,13 @@ static int testVectorElGamalV3(const dlkp_p* keypair)
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	/*@=nullpass =modobserver @*/
 	{
-		mp32number digest, r, s;
+		mpnumber digest, r, s;
 
-		mp32nzero(&digest);
-		mp32nzero(&r);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&r);
+		mpnzero(&s);
 
-		mp32nsize(&digest, 5);
+		mpnsize(&digest, 5);
 
 		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
@@ -223,9 +223,9 @@ static int testVectorElGamalV3(const dlkp_p* keypair)
 
 		rc = elgv3vrfy(&keypair->param.p, &keypair->param.n, &keypair->param.g, &digest, &keypair->y, &r, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&r);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&r);
+		mpnfree(&s);
 
 		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
@@ -247,7 +247,7 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	/* incomplete */
 	if (dhaes_pInit(&dh, &keypair->param) == 0)
 	{
-		mp32number mkey, mac;
+		mpnumber mkey, mac;
 
 		memchunk src, *dst, *cmp;
 
@@ -258,8 +258,8 @@ static int testVectorDHAES(const dlkp_p* keypair)
 		memset(src.data, 1, src.size);
 
 		/* initialize the message key and mac */
-		mp32nzero(&mkey);
-		mp32nzero(&mac);
+		mpnzero(&mkey);
+		mpnzero(&mac);
 
 		/* encrypt the message */
 		dst = dhaes_pEncrypt(&dh, &keypair->y, &mkey, &mac, &src);
@@ -308,7 +308,7 @@ static int testVectorRSA(void)
 	/*@=nullpass =modobserver @*/
 	{
 		rsakp kp;
-		mp32number digest, s;
+		mpnumber digest, s;
 
 		memset(&kp, 0, sizeof(rsakp));
 
@@ -317,8 +317,8 @@ static int testVectorRSA(void)
 		(void) rsakpMake(&kp, &rngc, 32);
 		fprintf(stdout, "RSA CRT keypair generated\n");
 
-		mp32nzero(&digest);
-		mp32nzero(&s);
+		mpnzero(&digest);
+		mpnzero(&s);
 
 		mp32bnrnd(&kp.n, &rngc, &digest);
 
@@ -326,8 +326,8 @@ static int testVectorRSA(void)
 
 		rc = rsavrfy((rsapk*) &kp, &digest, &s);
 
-		mp32nfree(&digest);
-		mp32nfree(&s);
+		mpnfree(&digest);
+		mpnfree(&s);
 
 		(void) rsakpFree(&kp);
 
@@ -356,17 +356,17 @@ static int testVectorDLDP(void)
 	/*@=nullpass =modobserver @*/
 	{
 		register int result;
-		mp32number gq;
+		mpnumber gq;
 
-		mp32nzero(&gq);
+		mpnzero(&gq);
 
 		(void) dldp_pgoqMake(&dp, &rc, 768 >> 5, 512 >> 5, 1);
 
 		/* we have the parameters, now see if g^q == 1 */
-		mp32bnpowmod(&dp.p, &dp.g, (mp32number*) &dp.q, &gq);
+		mp32bnpowmod(&dp.p, &dp.g, (mpnumber*) &dp.q, &gq);
 		result = mp32isone(gq.size, gq.data);
 
-		mp32nfree(&gq);
+		mpnfree(&gq);
 		(void) dldp_pFree(&dp);
 
 		/*@-modobserver@*/
@@ -605,9 +605,9 @@ static void testHashFunctions(void)
 				double ttime;
 				clock_t tstart, tstop;
 				#endif
-				mp32number digest;
+				mpnumber digest;
 
-				mp32nzero(&digest);
+				mpnzero(&digest);
 
 				fprintf(stdout, "  %s:\n", tmp->name);
 
@@ -638,7 +638,7 @@ static void testHashFunctions(void)
 					/*@=modobserver@*/
 				}
 
-				mp32nfree(&digest);
+				mpnfree(&digest);
 			}
 		}
 		/*@=branchstate@*/
@@ -659,18 +659,18 @@ static void testExpMods(void)
 	randomGeneratorContext rngc;
 
 	mp32barrett p;
-	mp32number tmp;
-	mp32number g;
-	mp32number x;
-	mp32number y;
+	mpnumber tmp;
+	mpnumber g;
+	mpnumber x;
+	mpnumber y;
 
 	memset(&rngc, 0, sizeof(randomGeneratorContext));
 
 	mp32bzero(&p);
-	mp32nzero(&g);
-	mp32nzero(&x);
-	mp32nzero(&y);
-	mp32nzero(&tmp);
+	mpnzero(&g);
+	mpnzero(&x);
+	mpnzero(&y);
+	mpnzero(&tmp);
 
 	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
@@ -684,10 +684,10 @@ static void testExpMods(void)
 		
 		fprintf(stdout, "Timing modular exponentiations\n");
 		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 512, 512, 512);
-		mp32nsethex(&tmp, p_512);
+		mpnsethex(&tmp, p_512);
 		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
 		mp32bnrnd(&p, &rngc, &g);
 		mp32bnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
@@ -701,10 +701,10 @@ static void testExpMods(void)
 		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
 		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 768, 768, 768);
-		mp32nsethex(&tmp, p_768);
+		mpnsethex(&tmp, p_768);
 		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
 		mp32bnrnd(&p, &rngc, &g);
 		mp32bnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
@@ -718,10 +718,10 @@ static void testExpMods(void)
 		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
 		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 1024, 1024, 1024);
-		mp32nsethex(&tmp, p_1024);
+		mpnsethex(&tmp, p_1024);
 		mp32bset(&p, tmp.size, tmp.data);
-		mp32nsize(&g, p.size);
-		mp32nsize(&x, p.size);
+		mpnsize(&g, p.size);
+		mpnsize(&x, p.size);
 		mp32bnrnd(&p, &rngc, &g);
 		mp32bnrnd(&p, &rngc, &x);
 		#if HAVE_TIME_H
@@ -735,7 +735,7 @@ static void testExpMods(void)
 		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
 		/* now run a test with x having 160 bits */
-		mp32nsize(&x, 5);
+		mpnsize(&x, 5);
 		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rngc.rng->next(rngc.param, x.data, x.size);
 		/*@=noeffectuncon@*/
@@ -751,10 +751,10 @@ static void testExpMods(void)
 		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
 		mp32bfree(&p);
-		mp32nfree(&g);
-		mp32nfree(&x);
-		mp32nfree(&y);
-		mp32nfree(&tmp);
+		mpnfree(&g);
+		mpnfree(&x);
+		mpnfree(&y);
+		mpnfree(&tmp);
 
 		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
@@ -770,12 +770,12 @@ static void testRSA(void)
 	/*@modifies fileSystem, internalState */
 {
 	randomGeneratorContext rngc;
-	mp32number hm, s;
+	mpnumber hm, s;
 	rsakp kp;
 
 	memset(&rngc, 0, sizeof(randomGeneratorContext));
-	mp32nzero(&hm);
-	mp32nzero(&s);
+	mpnzero(&hm);
+	mpnzero(&s);
 
 	fprintf(stdout, "Timing RSA:\n");
 
@@ -804,7 +804,7 @@ static void testRSA(void)
 		fprintf(stdout, "    done in %.3f seconds\n", ttime);
 		#endif
 
-		mp32nsize(&hm, 4);
+		mpnsize(&hm, 4);
 		rngc.rng->next(rngc.param, hm.data, hm.size);
 
 		fprintf(stdout, "  RSA sign:");
@@ -846,7 +846,7 @@ static void testDLAlgorithms(void)
 	/*@modifies fileSystem, internalState */
 {
 	randomGeneratorContext rngc;
-	mp32number hm, r, s;
+	mpnumber hm, r, s;
 	dldp_p dp;
 	dlkp_p kp;
 
@@ -854,9 +854,9 @@ static void testDLAlgorithms(void)
 	memset(&dp, 0, sizeof(dldp_p));
 	memset(&kp, 0, sizeof(dlkp_p));
 
-	mp32nzero(&hm);
-	mp32nzero(&r);
-	mp32nzero(&s);
+	mpnzero(&hm);
+	mpnzero(&r);
+	mpnzero(&s);
 
 	(void) dldp_pInit(&dp);
 	(void) dlkp_pInit(&kp);
@@ -896,7 +896,7 @@ static void testDLAlgorithms(void)
 		fprintf(stdout, "  done in %.3f seconds\n", ttime);
 		#endif
 
-		mp32nsize(&hm, 5);
+		mpnsize(&hm, 5);
 		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rngc.rng->next(rngc.param, hm.data, hm.size);
 		/*@=noeffectuncon@*/
@@ -978,10 +978,10 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 
 	mp32bsethex(&keypair.param.p, dsa_p);
 	mp32bsethex(&keypair.param.q, dsa_q);
-	mp32nsethex(&keypair.param.g, dsa_g);
+	mpnsethex(&keypair.param.g, dsa_g);
 	mp32bsethex(&keypair.param.n, elg_n);
-	mp32nsethex(&keypair.y, dsa_y);
-	mp32nsethex(&keypair.x, dsa_x);
+	mpnsethex(&keypair.y, dsa_y);
+	mpnsethex(&keypair.x, dsa_x);
 
 	if (testVectorInvMod(&keypair))
 		fprintf(stdout, "InvMod works!\n");
@@ -1126,10 +1126,10 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 
 	mp32bsethex(&keypair.param.p, dsa_p);
 	mp32bsethex(&keypair.param.q, dsa_q);
-	mp32nsethex(&keypair.param.g, dsa_g);
+	mpnsethex(&keypair.param.g, dsa_g);
 	mp32bsethex(&keypair.param.n, elg_n);
-	mp32nsethex(&keypair.y, dsa_y);
-	mp32nsethex(&keypair.x, dsa_x);
+	mpnsethex(&keypair.y, dsa_y);
+	mpnsethex(&keypair.x, dsa_x);
 
 	if (testVectorInvMod(&keypair))
 		fprintf(stdout, "InvMod works!\n");

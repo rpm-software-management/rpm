@@ -35,7 +35,7 @@
 typedef struct
 {
 	dldp_p param;
-	mp32number y;
+	mpnumber y;
 } dlpk_p;
 
 #ifdef __cplusplus

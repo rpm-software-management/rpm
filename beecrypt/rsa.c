@@ -30,14 +30,14 @@
 #include "mp.h"
 #include "debug.h"
 
-int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)
+int rsapri(const rsakp* kp, const mpnumber* m, mpnumber* c)
 {
 	register uint32  size = kp->n.size;
 	register uint32* temp = (uint32*) malloc((4*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
-		mp32nsize(c, size);
+		mpnsize(c, size);
 		mp32bpowmod_w(&kp->n, m->size, m->data, kp->d.size, kp->d.data, c->data, temp);
 
 		free(temp);
@@ -48,7 +48,7 @@ int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)
 }
 
 
-int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
+int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
 {
 	register uint32  nsize = kp->n.size;
 	register uint32  psize = kp->p.size;
@@ -93,7 +93,7 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 	mp32bmulmod_w(&kp->p, psize, ptemp, psize, kp->c.data, ptemp, ptemp+2*psize);
 
 	/* make sure the signature gets the proper size */
-	mp32nsize(c, nsize);
+	mpnsize(c, nsize);
 
 	/* compute s = h*q + j2 */
 	mp32mul(c->data, psize, ptemp, qsize, kp->q.modl);
@@ -108,7 +108,7 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 /**
  * @return	1 if signature verifies, 0 otherwise (can also indicate errors)
  */
-int rsavrfy(const rsapk* pk, const mp32number* m, const mp32number* c)
+int rsavrfy(const rsapk* pk, const mpnumber* m, const mpnumber* c)
 {
 	int rc;
 	register uint32  size = pk->n.size;

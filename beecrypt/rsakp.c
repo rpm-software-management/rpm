@@ -51,7 +51,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 		nsize = pqsize << 1;
 
 		/* set e */
-		mp32nsetw(&kp->e, 65535);
+		mpnsetw(&kp->e, 65535);
 
 		/* generate a random prime p and q */
 		/*@-globs@*/
@@ -131,19 +131,19 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 		mp32bset(&phi, nsize, temp);
 
 		/* compute d = inv(e) mod phi */
-		mp32nsize(&kp->d, nsize);
+		mpnsize(&kp->d, nsize);
 		(void) mp32binv_w(&phi, kp->e.size, kp->e.data, kp->d.data, temp);
 
 		/* compute d1 = d mod (p-1) */
-		mp32nsize(&kp->d1, pqsize);
+		mpnsize(&kp->d1, pqsize);
 		mp32bmod_w(&psubone, kp->d.data, kp->d1.data, temp);
 
 		/* compute d2 = d mod (q-1) */
-		mp32nsize(&kp->d2, pqsize);
+		mpnsize(&kp->d2, pqsize);
 		mp32bmod_w(&qsubone, kp->d.data, kp->d2.data, temp);
 
 		/* compute c = inv(q) mod p */
-		mp32nsize(&kp->c, pqsize);
+		mpnsize(&kp->c, pqsize);
 		(void) mp32binv_w(&kp->p, pqsize, kp->q.modl, kp->c.data, temp);
 
 		free(temp);
@@ -161,13 +161,13 @@ int rsakpInit(rsakp* kp)
 	memset(kp, 0, sizeof(*kp));
 	/* or
 	mp32bzero(&kp->n);
-	mp32nzero(&kp->e);
-	mp32nzero(&kp->d);
+	mpnzero(&kp->e);
+	mpnzero(&kp->d);
 	mp32bzero(&kp->p);
 	mp32bzero(&kp->q);
-	mp32nzero(&kp->d1);
-	mp32nzero(&kp->d2);
-	mp32nzero(&kp->c);
+	mpnzero(&kp->d1);
+	mpnzero(&kp->d2);
+	mpnzero(&kp->c);
 	*/
 
 	return 0;
@@ -178,13 +178,13 @@ int rsakpFree(rsakp* kp)
 {
 	/*@-usereleased -compdef @*/ /* kp->param.{n,p,q}.modl is OK */
 	mp32bfree(&kp->n);
-	mp32nfree(&kp->e);
-	mp32nfree(&kp->d);
+	mpnfree(&kp->e);
+	mpnfree(&kp->d);
 	mp32bfree(&kp->p);
 	mp32bfree(&kp->q);
-	mp32nfree(&kp->d1);
-	mp32nfree(&kp->d2);
-	mp32nfree(&kp->c);
+	mpnfree(&kp->d1);
+	mpnfree(&kp->d2);
+	mpnfree(&kp->c);
 
 	return 0;
 	/*@=usereleased =compdef @*/
@@ -193,13 +193,13 @@ int rsakpFree(rsakp* kp)
 int rsakpCopy(rsakp* dst, const rsakp* src)
 {
 	mp32bcopy(&dst->n, &src->n);
-	mp32ncopy(&dst->e, &src->e);
-	mp32ncopy(&dst->d, &src->d);
+	mpncopy(&dst->e, &src->e);
+	mpncopy(&dst->d, &src->d);
 	mp32bcopy(&dst->p, &src->p);
 	mp32bcopy(&dst->q, &src->q);
-	mp32ncopy(&dst->d1, &src->d1);
-	mp32ncopy(&dst->d2, &src->d2);
-	mp32ncopy(&dst->c, &src->c);
+	mpncopy(&dst->d1, &src->d1);
+	mpncopy(&dst->d2, &src->d2);
+	mpncopy(&dst->c, &src->c);
 
 	return 0;
 }

@@ -54,14 +54,14 @@ int fake_seed(randomGeneratorParam* p, const uint32* data, int size)
 
 int fake_next(randomGeneratorParam* p, uint32* data, int size)
 {
-	mp32number tmp;
+	mpnumber tmp;
 
-	mp32nzero(&tmp);
-	mp32nsethex(&tmp, dsa_k);
+	mpnzero(&tmp);
+	mpnsethex(&tmp, dsa_k);
 
 	mp32setx(size, data, tmp.size, tmp.data);
 
-	mp32nfree(&tmp);
+	mpnfree(&tmp);
 
 	return 0;
 }
@@ -78,7 +78,7 @@ int main()
 	int failures = 0;
 
 	dlkp_p keypair;
-	mp32number hm, r, s;
+	mpnumber hm, r, s;
 	randomGeneratorContext rngc;
 
 	memset(&rngc, 0, sizeof(rngc));
@@ -87,16 +87,16 @@ int main()
 
         mp32bsethex(&keypair.param.p, dsa_p);                 
         mp32bsethex(&keypair.param.q, dsa_q);
-        mp32nsethex(&keypair.param.g, dsa_g);
-        mp32nsethex(&keypair.y, dsa_y);
-        mp32nsethex(&keypair.x, dsa_x);
+        mpnsethex(&keypair.param.g, dsa_g);
+        mpnsethex(&keypair.y, dsa_y);
+        mpnsethex(&keypair.x, dsa_x);
 
-	mp32nzero(&hm);
-	mp32nsethex(&hm, dsa_hm);
+	mpnzero(&hm);
+	mpnsethex(&hm, dsa_hm);
 
 	/* first test, from NIST FIPS 186-1 */
-	mp32nzero(&r);
-	mp32nzero(&s);
+	mpnzero(&r);
+	mpnzero(&s);
 
 	if (randomGeneratorContextInit(&rngc, &fakeprng))
 		return -1;
@@ -112,12 +112,12 @@ int main()
 	if (randomGeneratorContextFree(&rngc))
 		return -1;
 
-	mp32nfree(&s);
-	mp32nfree(&r);
+	mpnfree(&s);
+	mpnfree(&r);
 
 	/* second test, sign a hash and verify the signature */
-	mp32nzero(&s);
-	mp32nzero(&r);
+	mpnzero(&s);
+	mpnzero(&r);
 
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()))
 		return -1;
@@ -133,10 +133,10 @@ int main()
 	if (randomGeneratorContextFree(&rngc))
 		return -1;
 		
-	mp32nfree(&s);
-	mp32nfree(&r);
+	mpnfree(&s);
+	mpnfree(&r);
 
-	mp32nfree(&hm);
+	mpnfree(&hm);
 
 	dlkp_pFree(&keypair);
 

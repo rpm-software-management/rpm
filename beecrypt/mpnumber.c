@@ -1,4 +1,3 @@
-/*@-sizeoftype@*/
 /** \ingroup MP_m
  * \file mpnumber.c
  *
@@ -32,39 +31,39 @@
 #include "mp.h"
 #include "debug.h"
 
-void mp32nzero(mp32number* n)
+void mpnzero(mpnumber* n)
 {
 	n->size = 0;
-	n->data = (uint32*) 0;
+	n->data = (mpw*) 0;
 }
 
 /*@-compdef @*/	/* n->data not initialized */
-void mp32nsize(mp32number* n, uint32 size)
+void mpnsize(mpnumber* n, size_t size)
 {
 	if (size)
 	{
 		if (n->data)
 		{
 			if (n->size != size)
-				n->data = (uint32*) realloc(n->data, size * sizeof(uint32));
+				n->data = (mpw*) realloc(n->data, size * sizeof(*n->data));
 		}
 		else
-			n->data = (uint32*) malloc(size * sizeof(uint32));
+			n->data = (mpw*) malloc(size * sizeof(*n->data));
 
 		if (n->data)
 			n->size = size;
 		else
 		{
 			n->size = 0;
-			n->data = (uint32*) 0;
+			n->data = (mpw*) 0;
 		}
 
 	}
 	else if (n->data)
 	{
 		free(n->data);
+		n->data = (mpw*) 0;
 		n->size = 0;
-		n->data = (uint32*) 0;
 	}
 	else
 		{};
@@ -72,54 +71,54 @@ void mp32nsize(mp32number* n, uint32 size)
 /*@=compdef @*/
 
 /*@-boundswrite@*/
-void mp32ninit(mp32number* n, uint32 size, const uint32* data)
+void mpninit(mpnumber* n, size_t size, const mpw* data)
 {
 	n->size = size;
 	if (n->data)
 	{
 		free(n->data);
-		n->data = (uint32*) 0;
+		n->data = (mpw*) 0;
 	}
-	n->data = (uint32*) malloc(size * sizeof(uint32));
+	n->data = (mpw*) malloc(size * sizeof(*n->data));
 
 	if (n->data && data)
 		mp32copy(size, n->data, data);
 }
 /*@=boundswrite@*/
 
-void mp32nfree(mp32number* n)
+void mpnfree(mpnumber* n)
 {
 	if (n->data)
 	{
 		free(n->data);
-		n->data = (uint32*) 0;
+		n->data = (mpw*) 0;
 	}
 	n->size = 0;
 }
 
-void mp32ncopy(mp32number* n, const mp32number* copy)
+void mpncopy(mpnumber* n, const mpnumber* copy)
 {
-	mp32nset(n, copy->size, copy->data);
+	mpnset(n, copy->size, copy->data);
 }
 
-void mp32nwipe(mp32number* n)
+void mpnwipe(mpnumber* n)
 {
 	if (n->data)
 		mp32zero(n->size, n->data);
 }
 
 /*@-boundswrite@*/
-void mp32nset(mp32number* n, uint32 size, const uint32* data)
+void mpnset(mpnumber* n, size_t size, const mpw* data)
 {
 	if (size)
 	{
 		if (n->data)
 		{
 			if (n->size != size)
-				n->data = (uint32*) realloc(n->data, size * sizeof(uint32));
+				n->data = (mpw*) realloc(n->data, size * sizeof(*n->data));
 		}
 		else
-			n->data = (uint32*) malloc(size * sizeof(uint32));
+			n->data = (mpw*) malloc(size * sizeof(*n->data));
 
 		if (n->data && data)
 			/*@-nullpass@*/ /* data is notnull */
@@ -128,13 +127,13 @@ void mp32nset(mp32number* n, uint32 size, const uint32* data)
 		else
 		{
 			n->size = 0;
-			n->data = (uint32*) 0;
+			n->data = (mpw*) 0;
 		}
 	}
 	else if (n->data)
 	{
 		free(n->data);
-		n->data = (uint32*) 0;
+		n->data = (mpw*) 0;
 		n->size = 0;
 	}
 	else
@@ -143,15 +142,15 @@ void mp32nset(mp32number* n, uint32 size, const uint32* data)
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
-void mp32nsetw(mp32number* n, uint32 val)
+void mpnsetw(mpnumber* n, mpw val)
 {
 	if (n->data)
 	{
 		if (n->size != 1)
-			n->data = (uint32*) realloc(n->data, sizeof(uint32));
+			n->data = (mpw*) realloc(n->data, 1 * sizeof(*n->data));
 	}
 	else
-		n->data = (uint32*) malloc(sizeof(uint32));
+		n->data = (mpw*) malloc(1 * sizeof(*n->data));
 
 	if (n->data)
 	{
@@ -161,36 +160,36 @@ void mp32nsetw(mp32number* n, uint32 val)
 	else
 	{
 		n->size = 0;
-		n->data = (uint32*) 0;
+		n->data = (mpw*) 0;
 	}
 }
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
 /*@-usedef @*/	/* n->data may be NULL */
-void mp32nsethex(mp32number* n, const char* hex)
+void mpnsethex(mpnumber* n, const char* hex)
 {
-	uint32 length = strlen(hex);
-	uint32 size = (length+7) >> 3;
-	uint8 rem = (uint8)(length & 0x7);
+	register size_t len = strlen(hex);
+	register size_t size = (len+7) >> 3;
+	uint8 rem = (uint8)(len & 0x7);
 
 	if (n->data)
 	{
 		if (n->size != size)
-			n->data = (uint32*) realloc(n->data, size * sizeof(uint32));
+			n->data = (mpw*) realloc(n->data, size * sizeof(*n->data));
 	}
 	else
-		n->data = (uint32*) malloc(size * sizeof(uint32));
+		n->data = (mpw*) malloc(size * sizeof(*n->data));
 
 	if (n->data)
 	{
-		register uint32  val = 0;
-		register uint32* dst = n->data;
+		register size_t  val = 0;
+		register mpw* dst = n->data;
 		register char ch;
 
 		n->size = size;
 
-		while (length-- > 0)
+		while (len-- > 0)
 		{
 			ch = *(hex++);
 			val <<= 4;
@@ -203,7 +202,7 @@ void mp32nsethex(mp32number* n, const char* hex)
 			else
 				{};
 
-			if ((length & 0x7) == 0)
+			if ((len & 0x7) == 0)
 			{
 				*(dst++) = val;
 				val = 0;
@@ -221,5 +220,4 @@ void mp32nsethex(mp32number* n, const char* hex)
 	}
 }
 /*@=usedef @*/
-/*@=sizeoftype@*/
 /*@=boundswrite@*/

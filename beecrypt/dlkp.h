@@ -37,8 +37,8 @@
 typedef struct
 {
 	dldp_p param;
-	mp32number y;
-	mp32number x;
+	mpnumber y;
+	mpnumber x;
 } dlkp_p;
 
 #ifdef __cplusplus

@@ -35,13 +35,13 @@
 typedef struct
 {
 	mp32barrett n;
-	mp32number e;
-	mp32number d;
+	mpnumber e;
+	mpnumber d;
 	mp32barrett p;
 	mp32barrett q;
-	mp32number d1;
-	mp32number d2;
-	mp32number c;
+	mpnumber d1;
+	mpnumber d2;
+	mpnumber c;
 } rsakp;
 
 #ifdef __cplusplus

@@ -198,38 +198,38 @@ int  mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* rc, int t, /*@o
 	/*@modifies wksp @*/;
 
 /**
- * @note Takes mp32number as parameter.
+ * @note Takes mpnumber as parameter.
  */
 BEECRYPTAPI
-void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, mp32number* result)
+void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, mpnumber* result)
 	/*@modifies result @*/;
 
 /**
- * @note Takes mp32number as parameter.
+ * @note Takes mpnumber as parameter.
  */
 BEECRYPTAPI /*@unused@*/
-void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y, mp32number* result)
+void mp32bnmulmod(const mp32barrett* b, const mpnumber* x, const mpnumber* y, mpnumber* result)
 	/*@modifies result @*/;
 
 /**
- * @note Takes mp32number as parameter.
+ * @note Takes mpnumber as parameter.
  */
 BEECRYPTAPI /*@unused@*/
-void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, mp32number* result)
+void mp32bnsqrmod(const mp32barrett* b, const mpnumber* x, mpnumber* result)
 	/*@modifies result @*/;
 
 /**
- * @note Takes mp32number as parameter.
+ * @note Takes mpnumber as parameter.
  */
 BEECRYPTAPI
-void mp32bnpowmod   (const mp32barrett* b, const mp32number* x, const mp32number* pow, mp32number* y)
+void mp32bnpowmod   (const mp32barrett* b, const mpnumber* x, const mpnumber* pow, mpnumber* y)
 	/*@modifies y @*/;
 
 /**
- * @note Takes mp32number as parameter.
+ * @note Takes mpnumber as parameter.
  */
 BEECRYPTAPI /*@unused@*/
-void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mp32number* pow, mp32number* y)
+void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mpnumber* pow, mpnumber* y)
 	/*@modifies y @*/;
 
 #ifdef __cplusplus

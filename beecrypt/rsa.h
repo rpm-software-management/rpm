@@ -37,19 +37,19 @@ extern "C" {
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int rsapri   (const rsakp* kp, const mp32number* m, mp32number* c)
+int rsapri   (const rsakp* kp, const mpnumber* m, mpnumber* c)
 	/*@modifies c */;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
+int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
 	/*@modifies c */;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int rsavrfy  (const rsapk* pk, const mp32number* m, const mp32number* c)
+int rsavrfy  (const rsapk* pk, const mpnumber* m, const mpnumber* c)
 	/*@*/;
 
 #ifdef __cplusplus

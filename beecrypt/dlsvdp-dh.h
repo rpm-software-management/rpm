@@ -37,7 +37,7 @@ extern "C" {
 /**
  */
 BEECRYPTAPI
-int dlsvdp_pDHSecret(const dldp_p* dp, const mp32number* x, const mp32number* y, mp32number* s)
+int dlsvdp_pDHSecret(const dldp_p* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)
 	/*@modifies s */;
 
 #ifdef __cplusplus

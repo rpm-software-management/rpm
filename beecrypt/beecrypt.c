@@ -405,7 +405,7 @@ int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
 }
 
 /*@-boundswrite@*/
-int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n)
+int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mpnumber* n)
 {
 	if (ctxt == (hashFunctionContext*) 0)
 		return -1;
@@ -416,7 +416,7 @@ int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n
 	if (ctxt->param == (hashFunctionParam*) 0)
 		return -1;
 
-	if (n != (mp32number*) 0)
+	if (n != (mpnumber*) 0)
 	{
 		register int rc = -1;
 		register byte* temp = (byte*) malloc((n->size << 2) + 1);
@@ -442,7 +442,7 @@ int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n
 }
 /*@=boundswrite@*/
 
-int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number* dig)
+int hashFunctionContextDigest(hashFunctionContext* ctxt, mpnumber* dig)
 {
 	if (ctxt == (hashFunctionContext*) 0)
 		return -1;
@@ -453,28 +453,28 @@ int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number* dig)
 	if (ctxt->param == (hashFunctionParam*) 0)
 		return -1;
 
-	if (dig != (mp32number*) 0)
+	if (dig != (mpnumber*) 0)
 	{
-		mp32nsize(dig, (ctxt->algo->digestsize + 3) >> 2);
+		mpnsize(dig, (ctxt->algo->digestsize + 3) >> 2);
 
 		return ctxt->algo->digest(ctxt->param, dig->data);
 	}
 	return -1;
 }
 
-int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number* match)
+int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* match)
 {
 	register int rc = 0;
 
-	mp32number dig;
+	mpnumber dig;
 
-	mp32nzero(&dig);
+	mpnzero(&dig);
 
 	if (hashFunctionContextDigest(ctxt, &dig) == 0)
 		if (dig.size == match->size)
 			rc = mp32eq(dig.size, dig.data, match->data);
 
-	mp32nfree(&dig);
+	mpnfree(&dig);
 
 	/*@-mustfree@*/ /* dig.data is OK */
 	return rc;
@@ -647,7 +647,7 @@ int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memch
 }
 
 /*@-boundswrite@*/
-int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp32number* n)
+int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mpnumber* n)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
@@ -658,7 +658,7 @@ int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp3
 	if (ctxt->param == (keyedHashFunctionParam*) 0)
 		return -1;
 
-	if (n != (mp32number*) 0)
+	if (n != (mpnumber*) 0)
 	{
 		register int rc;
 		register byte* temp = (byte*) malloc((n->size << 2) + 1);
@@ -684,7 +684,7 @@ int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp3
 }
 /*@=boundswrite@*/
 
-int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mp32number* dig)
+int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mpnumber* dig)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
@@ -695,29 +695,29 @@ int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mp32number* d
 	if (ctxt->param == (keyedHashFunctionParam*) 0)
 		return -1;
 
-	if (dig != (mp32number*) 0)
+	if (dig != (mpnumber*) 0)
 	{
-		mp32nsize(dig, (ctxt->algo->digestsize + 3) >> 2);
+		mpnsize(dig, (ctxt->algo->digestsize + 3) >> 2);
 
 		return ctxt->algo->digest(ctxt->param, dig->data);
 	}
 	return -1;
 }
 
-int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp32number* match)
+int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mpnumber* match)
 {
 	register int rc = 0;
 
-	mp32number dig;
+	mpnumber dig;
 
-	mp32nzero(&dig);
+	mpnzero(&dig);
 
 	if (keyedHashFunctionContextDigest(ctxt, &dig) == 0)
 		if (dig.size == match->size)
 			
 			rc = mp32eq(dig.size, dig.data, match->data);
 
-	mp32nfree(&dig);
+	mpnfree(&dig);
 
 	/*@-mustfree@*/ /* dig.data is OK */
 	return rc;
