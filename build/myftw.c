@@ -26,7 +26,6 @@ Cambridge, MA 02139, USA.  */
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <ftw.h>
 
 #ifndef NAMLEN
 #define NAMLEN(a) strlen((a)->d_name)
@@ -88,7 +87,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	   * as an forgivable error.  -- Uli.  */
 	  if (errno != EACCES && errno != ENOENT)
 	    return -1;
-	  flag = FTW_NS;
+	  flag = MYFTW_NS;
 	}
       else if (S_ISDIR (s.st_mode))
 	{
@@ -99,20 +98,20 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 
 	  dirs[newlev] = opendir (dir);
 	  if (dirs[newlev] != NULL)
-	    flag = FTW_D;
+	    flag = MYFTW_D;
 	  else
 	    {
 	      if (errno != EACCES)
 		return -1;
-	      flag = FTW_DNR;
+	      flag = MYFTW_DNR;
 	    }
 	}
       else
-	flag = FTW_F;
+	flag = MYFTW_F;
 
       retval = (*func) (dir, &s, flag);
 
-      if (flag == FTW_D)
+      if (flag == MYFTW_D)
 	{
 	  if (retval == 0)
 	    retval = myftw_dir (dirs, newlev, descriptors, dir,
@@ -186,29 +185,29 @@ int myftw (const char *dir,
        * as an forgivable error.  -- Uli.  */
       if (errno != EACCES && errno != ENOENT)
 	return -1;
-      flag = FTW_NS;
+      flag = MYFTW_NS;
     }
   else if (S_ISDIR (s.st_mode))
     {
       dirs[0] = opendir (dir);
       if (dirs[0] != NULL)
-	flag = FTW_D;
+	flag = MYFTW_D;
       else
 	{
 	  if (errno != EACCES)
 	    return -1;
-	  flag = FTW_DNR;
+	  flag = MYFTW_DNR;
 	}
     }
   else
-    flag = FTW_F;
+    flag = MYFTW_F;
 
   len = strlen (dir);
   memcpy ((void *) buf, (void *) dir, len + 1);
 
   retval = (*func) (buf, &s, flag);
 
-  if (flag == FTW_D)
+  if (flag == MYFTW_D)
     {
       if (retval == 0)
 	retval = myftw_dir (dirs, 0, descriptors, buf, len, func);
