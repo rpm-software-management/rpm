@@ -131,13 +131,10 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
     dbIndexSet matches;
     char * arg;
 
-    if (source != VERIFY_SRPM && source != VERIFY_RPM) {
-	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
-	    exit(1);
-	}
-    }
-
-    if (source != VERIFY_SRPM && source != VERIFY_RPM) {
+    if ((source == VERIFY_SRPM || source == VERIFY_RPM) && 
+	!(verifyFlags & VERIFY_DEPS)) {
+	db = NULL;
+    } else {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
 	    exit(1);
 	}
