@@ -3,6 +3,7 @@
 .depend-done
 Makefile
 Makefile.in
+.libs
 rpm
 rpm2cpio
 rpmconvert
