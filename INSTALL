@@ -131,7 +131,7 @@ Edit the rpm.spec file to mirror any special steps you needed to
 follow to make rpm compile and change the specfile to match your
 taste.  You will need to put the rpm source tar file into the
 redhat/SOURCES directory and we suggest putting the specfile in the
-redhat/SPECS directory, then run rpm -ba rpm.spec.  You will end up
+redhat/SPECS directory, then run rpmbuild -ba rpm.spec.  You will end up
 with two rpms which can be found in redhat/RPMS and redhat/SRPMS.
 
 If you are going to install rpm on machines with OS package managers
