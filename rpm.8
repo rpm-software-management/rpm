@@ -56,6 +56,8 @@ man pages and texinfo documents).
 .IP "\fB\-\-includedocs\fP"
 Install documentation files. This is only needed if \fIexcludedocs: 1\fP
 is specified in an rpmrc file.
+.IP "\fB\-\-nodeps\fP"
+Don't check dependencies before installing the packages.
 .IP "\fB\-\-test\fP"
 Do not install the package, simply check for and report potential
 conflicts.
@@ -67,6 +69,8 @@ are removed from the system.
 .SH UNINSTALL OPTIONS
 .IP "\fB\-\-noscripts\fP"
 Don't execute the preuninstall or postuninstall scripts.
+.IP "\fB\-\-nodeps\fP"
+Don't check dependencies before uninstalling the packages.
 .IP "\fB\-\-test\fP"
 Don't really uninstall anything, just go through the motions. This is
 designed primarily for testing and should normally be used with the
@@ -161,6 +165,8 @@ Information selection options:
 .br
 .IP "\fB\-i\fP"
 Display package information, including name, version, and description.
+.IP "\fB\-D\fP"
+List packages this one depends on (same as \fB--deps\fP).
 .IP "\fB\-l\fP"
 List files in package.
 .IP "\fB\-s\fP"
