@@ -74,6 +74,7 @@ static int addSource(Spec spec, char *line)
     char *s, *s1, c;
     char *file;
     unsigned long int x;
+    char name[1024], expansion[1024];
 
     p = malloc(sizeof(struct sources));
     p->next = spec->sources;
@@ -137,6 +138,10 @@ static int addSource(Spec spec, char *line)
 	p->source = p->fullSource;
     }
 
+    sprintf(expansion, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+    sprintf(name, "%s%d", (p->ispatch) ? "PATCH" : "SOURCE", p->num);
+    addMacro(name, expansion);
+    
     if (p->ispatch) {
 	rpmMessage(RPMMESS_DEBUG, "Patch(%d) = %s\n", p->num, p->fullSource);
     } else {
