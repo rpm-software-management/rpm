@@ -404,7 +404,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	}
 
 /* XXX FIXME: build/build.c Fdopen assertion failure, makeTempFile uses fdio */
-#ifndef	NOTYET
+#ifdef	DYING
 	fd = fdio->open(tfn, (O_CREAT|O_RDWR|O_EXCL), 0700);
 #else
 	fd = Fopen(tfn, "w+x.ufdio");
@@ -424,14 +424,16 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
     }
 
 #ifndef	NOTYET
-    fstat(Fileno(fd), &sb2);
+    if (fstat(Fileno(fd), &sb2) == 0)
 #else
-    Stat(tfn, &sb2);
+    if (Stat(tfn, &sb2) == 0)
 #endif
-    if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
-	xfree(tfn);
-	return 1;
+    {
+	if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
+	    rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
+	    xfree(tfn);
+	    return 1;
+	}
     }
 
     if (fnptr)

@@ -348,7 +348,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 	(void)notify(h, RPMCALLBACK_INST_PROGRESS, 0, archiveSize, pkgKey, 
 	       notifyData);
 
-    cfd = Fdopen(fdDup(Fileno(fd)), "r.gzdio");
+    cfd = Fdopen(fd, "r.gzdio");
     rc = cpioInstallArchive(cfd, map, mappedFiles, 
 		    ((notify && archiveSize) || specFile) ? callback : NULL, 
 		    &info, &failedFile);

@@ -761,7 +761,7 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
     DPRINTF(99, ("rewriteBinaryRPM(\"%s\",\"%s\",%p)\n", fni, fno, mlp));
 
     csa->cpioArchiveSize = 0;
-    csa->cpioFdIn = fdNew(fdio, "init (rewriteBinary)");
+    csa->cpioFdIn = fdNew("init (rewriteBinary)");
     csa->cpioList = NULL;
     csa->cpioCount = 0;
     csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */

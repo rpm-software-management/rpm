@@ -18,7 +18,7 @@ typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
 typedef /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd,
 		const char * msg, const char * file, unsigned line);
 
-typedef /*@null@*/ FD_t fdio_new_function_t (FDIO_t iop, const char * msg,
+typedef /*@null@*/ FD_t fdio_new_function_t (const char * msg,
 		const char * file, unsigned line);
 
 typedef int fdio_fileno_function_t (void * cookie);
@@ -89,9 +89,15 @@ int	Access	(const char * path, int amode);
 
 /*@observer@*/ extern FDIO_t gzdio;
 
+void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno);
+void fdPop(FD_t fd);
+
 void fdSetFdno(FD_t fd, int fdno);
-/*@null@*/ const FDIO_t fdGetIoCookie(FD_t fd);
-void fdSetIoCookie(FD_t fd, FDIO_t iop);
+off_t fdSize(FD_t fd);
+void fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie);
+
+/*@null@*/ const FDIO_t fdGetIo(FD_t fd);
+void fdSetIo(FD_t fd, FDIO_t io);
 
 int fdGetRdTimeoutSecs(FD_t fd);
 
@@ -115,7 +121,7 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 
 #define	fdLink(_fd, _msg)	fdio->ref(_fd, _msg, __FILE__, __LINE__)
 #define	fdFree(_fd, _msg)	fdio->deref(_fd, _msg, __FILE__, __LINE__)
-#define	fdNew(_iop, _msg)	fdio->new(_iop, _msg, __FILE__, __LINE__)
+#define	fdNew(_msg)		fdio->new(_msg, __FILE__, __LINE__)
 
 #if 0
 #define	fdFileno	fdio->fileno
@@ -131,6 +137,7 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 /*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
 /*@observer@*/ const char * urlStrerror(const char * url);
 
+int ufdCopy(FD_t sfd, FD_t tfd);
 int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 const char *const ftpStrerror(int errorNumber);
 

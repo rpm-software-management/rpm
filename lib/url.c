@@ -64,20 +64,22 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
     if (--u->nrefs > 0)
 	return u;
     if (u->ctrl) {
+	void * uctrl = u->ctrl;
 	if (fdio->fileno(u->ctrl) >= 0)
 	    fdio->close(u->ctrl);
 	u->ctrl = fdio->deref(u->ctrl, "persist ctrl (urlFree)", file, line);
 	if (u->ctrl)
-	    fprintf(stderr, _("warning: u %p ctrl nrefs != 0 (%s %s)\n"),
-			u, u->host, u->service);
+	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
+			u, uctrl, u->host, u->service);
     }
     if (u->data) {
+	void * udata = u->data;
 	if (fdio->fileno(u->data) >= 0)
 	    fdio->close(u->data);
 	u->data = fdio->deref(u->data, "persist data (urlFree)", file, line);
 	if (u->data)
-	    fprintf(stderr, _("warning: data nrefs != 0 (%s %s)\n"),
-			u, u->host, u->service);
+	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
+			u, udata, u->host, u->service);
     }
     if (u->buf) {
 	free(u->buf);

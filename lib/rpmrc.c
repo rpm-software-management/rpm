@@ -104,7 +104,7 @@ static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 static struct rpmvarValue values[RPMVAR_NUM];
 
 /* prototypes */
-static int doReadRC(FD_t fd, const char * filename);
+static int doReadRC(FD_t fd, const char * urlfn);
 static void rpmSetVarArch(int var, const char * val, const char * arch);
 static void rebuildCompatTables(int type, const char *name);
 
@@ -548,7 +548,7 @@ int rpmReadRC(const char * rcfiles)
 	strcat(fn, r);
 
 	/* Read another rcfile */
-	fd = Fopen(fn, "r.ufdio");
+	fd = Fopen(fn, "r.fpio");
 	if (fd == NULL || Ferror(fd)) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 	    if (rcfiles == defrcfiles && myrcfiles != r)
@@ -579,7 +579,7 @@ int rpmReadRC(const char * rcfiles)
     return rc;
 }
 
-static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
+static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 {
     const char *s;
     char *se, *next;
@@ -587,17 +587,18 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
     struct rpmOption searchOption, * option;
     int rc;
 
-    /* XXX fstat doesn't work on ufdio, default to 64K  */
-  { struct stat sb;
-    int fdno = Fileno(fd);
-    size_t nb;
-    fstat(fdno, &sb);
-    nb = (sb.st_size > 0 ?  sb.st_size : (8*BUFSIZ - 2));
+    /* XXX really need rc = Slurp(fd, const char * filename, char ** buf) */
+  { off_t size = fdSize(fd);
+    size_t nb = (size >= 0 ? size : (8*BUFSIZ - 2));
+    if (nb == 0) {
+	Fclose(fd);
+	return 0;
+    }
     next = alloca(nb + 2);
     next[0] = '\0';
     rc = Fread(next, sizeof(*next), nb, fd);
-    if (Ferror(fd) || (sb.st_size > 0 && rc != nb)) {	/* XXX Feof(fd) */
-	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,
+    if (Ferror(fd) || (size > 0 && rc != nb)) {	/* XXX Feof(fd) */
+	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), urlfn,
 		 Fstrerror(fd));
 	rc = 1;
     } else
@@ -635,7 +636,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 
 	if (*se != ':') {
 	    rpmError(RPMERR_RPMRC, _("missing ':' (found 0x%02x) at %s:%d"),
-		     (0xff & *se), filename, linenum);
+		     (0xff & *se), urlfn, linenum);
 	    return 1;
 	}
 	*se++ = '\0';	/* terminate keyword or option, point to value */
@@ -652,7 +653,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 	    arch = val = fn = NULL;
 	    if (*se == '\0') {
 		rpmError(RPMERR_RPMRC, _("missing argument for %s at %s:%d"),
-		      option->name, filename, linenum);
+		      option->name, urlfn, linenum);
 		return 1;
 	    }
 
@@ -669,16 +670,16 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 		fn = rpmGetPath(s, NULL);
 		if (fn == NULL || *fn == '\0') {
 		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
-			option->name, filename, linenum, s);
+			option->name, urlfn, linenum, s);
 		    if (fn) xfree(fn);
 		    return 1;
 		    /*@notreached@*/
 		}
 
-		fdinc = Fopen(fn, "r.ufdio");
+		fdinc = Fopen(fn, "r.fpio");
 		if (fdinc == NULL || Ferror(fdinc)) {
 		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d: %s"),
-			fn, filename, linenum, Fstrerror(fdinc));
+			fn, urlfn, linenum, Fstrerror(fdinc));
 		    rc = 1;
 		} else {
 		    rc = doReadRC(fdinc, fn);
@@ -691,7 +692,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 		fn = rpmGetPath(se, NULL);
 		if (fn == NULL || *fn == '\0') {
 		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
-			option->name, filename, linenum, fn);
+			option->name, urlfn, linenum, fn);
 		    if (fn) xfree(fn);
 		    return 1;
 		}
@@ -718,7 +719,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 		if (*se == '\0') {
 		    rpmError(RPMERR_RPMRC,
 				_("missing architecture for %s at %s:%d"),
-			  	option->name, filename, linenum);
+			  	option->name, urlfn, linenum);
 		    return 1;
 		}
 		*se++ = '\0';
@@ -726,7 +727,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 		if (*se == '\0') {
 		    rpmError(RPMERR_RPMRC,
 				_("missing argument for %s at %s:%d"),
-			  	option->name, filename, linenum);
+			  	option->name, urlfn, linenum);
 		    return 1;
 		}
 	    }
@@ -763,7 +764,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 		if (*rest == '_') rest++;
 
 		if (!strcmp(rest, "compat")) {
-		    if (machCompatCacheAdd(se, filename, linenum,
+		    if (machCompatCacheAdd(se, urlfn, linenum,
 						&tables[i].cache))
 			return 1;
 		    gotit = 1;
@@ -771,13 +772,13 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 			   !strcmp(rest, "translate")) {
 		    if (addDefault(&tables[i].defaults,
 				   &tables[i].defaultsLength,
-				   se, filename, linenum))
+				   se, urlfn, linenum))
 			return 1;
 		    gotit = 1;
 		} else if (tables[i].hasCanon &&
 			   !strcmp(rest, "canon")) {
 		    if (addCanon(&tables[i].canons, &tables[i].canonsLength,
-				 se, filename, linenum))
+				 se, urlfn, linenum))
 			return 1;
 		    gotit = 1;
 		}
@@ -785,7 +786,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 
 	    if (!gotit) {
 		rpmError(RPMERR_RPMRC, _("bad option '%s' at %s:%d"),
-			    s, filename, linenum);
+			    s, urlfn, linenum);
 	    }
 	}
     }

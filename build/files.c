@@ -1176,7 +1176,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	ffn = rpmGetPath("%{_builddir}/",
 	    (spec->buildSubdir ? spec->buildSubdir : "") ,
 	    "/", pkg->fileFile, NULL);
-	fd = Fopen(ffn, "r.ufdio");
+	fd = Fopen(ffn, "r.fpio");
 	xfree(ffn);
 
 	if (fd == NULL || Ferror(fd)) {

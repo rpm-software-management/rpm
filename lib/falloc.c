@@ -48,7 +48,7 @@ FD_t fadOpen(const char * path, int flags, int perms)
 	/* XXX Fstrerror */
 	return NULL;
 
-    fdSetIoCookie(fd, fadio);
+    fdSetIo(fd, fadio);
     fadSetFirstFree(fd, 0);
     fadSetFileSize(fd, Fseek(fd, 0, SEEK_END));
 

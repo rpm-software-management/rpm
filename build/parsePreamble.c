@@ -229,22 +229,24 @@ static int readIcon(Header h, const char *file)
 {
     const char *fn = NULL;
     char *icon;
+#ifdef	DYING
     struct stat statbuf;
+#endif
     FD_t fd;
     int rc = 0;
-    int nb;
+    off_t size;
+    size_t nb, iconsize;
 
     /* XXX use rpmGenPath(rootdir, "%{_sourcedir}/", file) for icon path. */
     fn = rpmGetPath("%{_sourcedir}/", file, NULL);
 
+#ifdef	DYING
     if (Stat(fn, &statbuf)) {
 	rpmError(RPMERR_BADSPEC, _("Unable to stat icon: %s"), fn);
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
-
-    icon = xmalloc(statbuf.st_size);
-    *icon = '\0';
+#endif
 
     fd = Fopen(fn, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
@@ -253,8 +255,19 @@ static int readIcon(Header h, const char *file)
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
-    nb = Fread(icon, sizeof(char), statbuf.st_size, fd);
-    if (nb != statbuf.st_size) {
+    size = fdSize(fd);
+    iconsize = (size >= 0 ? size : (8 * BUFSIZ));
+    if (iconsize == 0) {
+	Fclose(fd);
+	rc = 0;
+	goto exit;
+    }
+
+    icon = xmalloc(iconsize + 1);
+    *icon = '\0';
+
+    nb = Fread(icon, sizeof(char), iconsize, fd);
+    if (Ferror(fd) || (size >= 0 && nb != size)) {
 	rpmError(RPMERR_BADSPEC, _("Unable to read icon %s: %s"),
 		fn, Fstrerror(fd));
 	rc = RPMERR_BADSPEC;
@@ -264,9 +277,9 @@ static int readIcon(Header h, const char *file)
 	goto exit;
 
     if (! strncmp(icon, "GIF", sizeof("GIF")-1)) {
-	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, statbuf.st_size);
+	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, iconsize);
     } else if (! strncmp(icon, "/* XPM", sizeof("/* XPM")-1)) {
-	headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, statbuf.st_size);
+	headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, iconsize);
     } else {
 	rpmError(RPMERR_BADSPEC, _("Unknown icon type: %s"), file);
 	rc = RPMERR_BADSPEC;

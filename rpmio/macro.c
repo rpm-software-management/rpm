@@ -1300,7 +1300,7 @@ initMacros(MacroContext *mc, const char *macrofiles)
 		strncat(buf, mfile, sizeof(buf) - strlen(buf));
 		buf[sizeof(buf)-1] = '\0';
 
-		fd = Fopen(buf, "r.ufdio");
+		fd = Fopen(buf, "r.fpio");
 		if (fd == NULL || Ferror(fd))
 			continue;
 
@@ -1357,11 +1357,7 @@ int isCompressed(const char *file, int *compressed)
 
     *compressed = COMPRESSED_NOT;
 
-#ifdef	DYING
-    fd = fdOpen(file, O_RDONLY, 0);
-#else
     fd = Fopen(file, "r.ufdio");
-#endif
     if (fd == NULL || Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, Fstrerror(fd));

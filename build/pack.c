@@ -59,13 +59,14 @@ int packageSources(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew(fdio, "init (packageSources)");
+	csa->cpioFdIn = fdNew("init (packageSources)");
+	csa->cpioFdIn = fdLink(csa->cpioFdIn, "persist (packageSources)");
 	csa->cpioList = spec->sourceCpioList;
 	csa->cpioCount = spec->sourceCpioCount;
 
 	rc = writeRPM(spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
-	free(csa->cpioFdIn);
+	csa->cpioFdIn = fdFree(csa->cpioFdIn, "persist (packageSources)");
 	xfree(fn);
     }
     return rc;
@@ -156,13 +157,14 @@ int packageBinaries(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew(fdio, "init (packageBinaries)");
+	csa->cpioFdIn = fdNew("init (packageBinaries)");
+	csa->cpioFdIn = fdLink(csa->cpioFdIn, "persist (packageBinaries)");
 	csa->cpioList = pkg->cpioList;
 	csa->cpioCount = pkg->cpioCount;
 
 	rc = writeRPM(pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
-	free(csa->cpioFdIn);
+	csa->cpioFdIn = fdFree(csa->cpioFdIn, "persist (packageBinaries)");
 	xfree(fn);
 	if (rc)
 	    return rc;
@@ -245,6 +247,9 @@ int writeRPM(Header h, const char *fileName, int type,
     char buf[BUFSIZ];
     Header sig;
     struct rpmlead lead;
+#ifdef	DYING
+    int fdno;
+#endif
 
     if (Fileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
@@ -267,6 +272,12 @@ int writeRPM(Header h, const char *fileName, int type,
 	rpmError(RPMERR_CREATE, _("Unable to open temp file"));
 	return RPMERR_CREATE;
     }
+
+#ifdef	DYING
+    fd = fdLink(fd, "persist");	/* XXX keep fd from being freed */
+    fdno = Fileno(fd);		/* XXX HACK HACK HACK to keep fdno open */
+#endif
+
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
     } else { /* Write the archive and get the size */
@@ -279,6 +290,11 @@ int writeRPM(Header h, const char *fileName, int type,
 	    rc = RPMERR_BADARG;
 	}
     }
+
+#ifdef DYING
+    fdSetFdno(fd, fdno);	/* XXX HACK HACK HACK to keep fdno open */
+#endif
+
     if (rc != 0) {
 	Fclose(fd);
 	unlink(sigtarget);
@@ -419,7 +435,11 @@ static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmode)
     int rc;
     const char *failedFile = NULL;
 
+#ifndef	DYING
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
+#else
+    cfd = Fdopen(fdo, fmode);
+#endif
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {
@@ -438,7 +458,7 @@ static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmode)
 static int cpio_copy(FD_t fdo, CSA_t *csa)
 {
     char buf[BUFSIZ];
-    ssize_t nb;
+    size_t nb;
 
     while((nb = Fread(buf, sizeof(buf[0]), sizeof(buf), csa->cpioFdIn)) > 0) {
 	if (Fwrite(buf, sizeof(buf[0]), nb, fdo) != nb) {
@@ -448,7 +468,7 @@ static int cpio_copy(FD_t fdo, CSA_t *csa)
 	}
 	csa->cpioArchiveSize += nb;
     }
-    if (nb < 0) {
+    if (Ferror(csa->cpioFdIn)) {
 	rpmError(RPMERR_CPIO, _("cpio_copy read failed: %s"),
 		Fstrerror(csa->cpioFdIn));
 	return 1;
@@ -462,15 +482,8 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
     const char *fn = buf;
     FD_t fd;
 
-#ifdef	DYING
-    strcpy(fn, "%{_builddir}/");
-    expandMacros(spec, spec->macros, fn, sizeof(fn));
-    strcat(fn, spec->buildSubdir);
-    strcat(fn, "/");
-    strcat(fn, file);
-#else
+    /* XXX use rpmGenPath(rootdir, "%{_buildir}/%{_buildsubdir}/", file) */
     fn = rpmGetPath("%{_builddir}/", spec->buildSubdir, "/", file, NULL);
-#endif
 
     fd = Fopen(fn, "r.ufdio");
     if (fn != buf) xfree(fn);

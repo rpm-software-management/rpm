@@ -169,10 +169,10 @@ int readLine(Spec spec, int strip)
 retry:
     /* Make sure the current file is open */
     if (ofi->fd == NULL) {
-	if ((ofi->fd = Fopen(ofi->fileName, "r.ufdio")) == NULL) {
+	if ((ofi->fd = Fopen(ofi->fileName, "r.fpio")) == NULL) {
 	    /* XXX Fstrerror */
-	    rpmError(RPMERR_BADSPEC, _("Unable to open: %s\n"),
-		     ofi->fileName);
+	    rpmError(RPMERR_BADSPEC, _("Unable to open %s: %s\n"),
+		     ofi->fileName, Fstrerror(ofi->fd));
 	    return RPMERR_BADSPEC;
 	}
 	spec->lineNum = ofi->lineNum = 0;

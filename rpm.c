@@ -70,6 +70,7 @@ static int initdb;
 static int justdb;
 static int noDeps;
 static int noGpg;
+extern int noLibio;
 static int noMd5;
 static int noOrder;
 static int noPgp;
@@ -132,6 +133,7 @@ static struct poptOption optionsTable[] = {
  { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},
+ { "nolibio", '\0', 0, &noLibio, 0,		NULL, NULL},
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
  { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
  { "nopgp", '\0', 0, &noPgp, 0,			NULL, NULL},
@@ -581,6 +583,7 @@ int main(int argc, const char ** argv)
     justdb = 0;
     noDeps = 0;
     noGpg = 0;
+    noLibio = 0;
     noMd5 = 0;
     noOrder = 0;
     noPgp = 0;
