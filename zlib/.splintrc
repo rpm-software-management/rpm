@@ -13,13 +13,9 @@
 
 # --- in progress
 -globs
--infloopsuncon
--internalglobs
--modunconnomods
--nullassign
--nullstate
--oldstyle
--staticinittrans
+-infloops		# 1
+-nullassign		# 1
+-staticinittrans	# 5
 
 -abstract		# 4
 -aliasunique		# 2
@@ -31,12 +27,12 @@
 -compmempass		# 37
 -evalorder		# 2
 -globstate		# 1
--mods			# 13
+-mods			# 5
 -noeffectuncon		# 10
 -nullderef		# 9
 -nullpass		# 24
 -nullptrarith		# 4
--nullret		# 13
+-nullret		# 11
 -protoparammatch	# 22
 -redef			# 4
 -retalias		# 4

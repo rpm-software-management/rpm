@@ -48,9 +48,11 @@
 #  define REV(w) (((w)>>24)+(((w)>>8)&0xff00)+ \
                 (((w)&0xff00)<<8)+(((w)&0xff)<<24))
    local unsigned long crc32_little OF((unsigned long,
-                        const unsigned char FAR *, unsigned));
+                        const unsigned char FAR *, unsigned))
+	/*@*/;
    local unsigned long crc32_big OF((unsigned long,
-                        const unsigned char FAR *, unsigned));
+                        const unsigned char FAR *, unsigned))
+	/*@*/;
 #  define TBLS 8
 #else
 #  define TBLS 1
@@ -60,9 +62,11 @@
 
 local int crc_table_empty = 1;
 local unsigned long FAR crc_table[TBLS][256];
-local void make_crc_table OF((void));
+local void make_crc_table OF((void))
+	/*@*/;
 #ifdef MAKECRCH
-   local void write_table OF((FILE *, const unsigned long FAR *));
+   local void write_table OF((FILE *, const unsigned long FAR *))
+	/*@*/;
 #endif /* MAKECRCH */
 
 /*
@@ -177,7 +181,7 @@ local void write_table(out, table)
 /* =========================================================================
  * This function can be used by asm versions of crc32()
  */
-const unsigned long FAR * ZEXPORT get_crc_table()
+const unsigned long FAR * ZEXPORT get_crc_table(void)
 {
 #ifdef DYNAMIC_CRC_TABLE
   if (crc_table_empty) make_crc_table();
@@ -190,10 +194,7 @@ const unsigned long FAR * ZEXPORT get_crc_table()
 #define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
 
 /* ========================================================================= */
-unsigned long ZEXPORT crc32(crc, buf, len)
-    unsigned long crc;
-    const unsigned char FAR *buf;
-    unsigned len;
+unsigned long ZEXPORT crc32(unsigned long crc, const unsigned char FAR *buf, unsigned len)
 {
     if (buf == Z_NULL) return 0UL;
 
@@ -233,10 +234,7 @@ unsigned long ZEXPORT crc32(crc, buf, len)
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
-local unsigned long crc32_little(crc, buf, len)
-    unsigned long crc;
-    const unsigned char FAR *buf;
-    unsigned len;
+local unsigned long crc32_little(unsigned long crc, const unsigned char FAR *buf, unsigned len)
 {
     register u4 c;
     register const u4 FAR *buf4;
@@ -273,10 +271,7 @@ local unsigned long crc32_little(crc, buf, len)
 #define DOBIG32 DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4
 
 /* ========================================================================= */
-local unsigned long crc32_big(crc, buf, len)
-    unsigned long crc;
-    const unsigned char FAR *buf;
-    unsigned len;
+local unsigned long crc32_big(unsigned long crc, const unsigned char FAR *buf, unsigned len)
 {
     register u4 c;
     register const u4 FAR *buf4;

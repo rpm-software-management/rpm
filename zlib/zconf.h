@@ -155,7 +155,7 @@
                         /* Type declarations */
 
 #ifndef OF /* function prototypes */
-#  ifdef STDC
+#  if defined(STDC) || defined(__LCLINT__)
 #    define OF(args)  args
 #  else
 #    define OF(args)  ()

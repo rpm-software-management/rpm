@@ -221,9 +221,11 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define zmemzero(dest, len) memset(dest, 0, len)
 #  endif
 #else
-   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len));
-   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len));
-   extern void zmemzero OF((Bytef* dest, uInt len));
+   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len))
+	/*@modifies dest @*/;
+   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len))\		/*@*/;
+   extern void zmemzero OF((Bytef* dest, uInt len))
+	/*@modifies dest @*/;
 #endif
 
 /* Diagnostic functions */
@@ -247,8 +249,10 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 
 
-voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size));
-void   zcfree  OF((voidpf opaque, voidpf ptr));
+voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size))
+	/*@*/;
+void   zcfree  OF((voidpf opaque, voidpf ptr))
+	/*@modifies ptr @*/;
 
 #define ZALLOC(strm, items, size) \
            (*((strm)->zalloc))((strm)->opaque, (items), (size))
