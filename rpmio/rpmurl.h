@@ -29,29 +29,35 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
  */
 struct urlinfo_s {
 /*@refs@*/ int nrefs;		/*!< no. of references */
-/*@owned@*/ /*@null@*/
+/*@owned@*/ /*@relnull@*/
     const char * url;		/*!< copy of original url */
+/*@owned@*/ /*@relnull@*/
+    const char * scheme;	/*!< URI scheme. */
 /*@owned@*/ /*@null@*/
-    const char * service;
+    const char * user;		/*!< URI user. */
 /*@owned@*/ /*@null@*/
-    const char * user;
+    const char * password;	/*!< URI password. */
+/*@owned@*/ /*@relnull@*/
+    const char * host;		/*!< URI host. */
 /*@owned@*/ /*@null@*/
-    const char * password;
-/*@owned@*/ /*@null@*/
-    const char * host;
-/*@owned@*/ /*@null@*/
-    const char * portstr;
+    const char * portstr;	/*!< URI port string. */
 /*@owned@*/ /*@null@*/
     const char * proxyu;	/*!< FTP: proxy user */
 /*@owned@*/ /*@null@*/
     const char * proxyh;	/*!< FTP/HTTP: proxy host */
     int proxyp;			/*!< FTP/HTTP: proxy port */
-    int	port;
-    int urltype;
+    int	port;			/*!< URI port. */
+    int urltype;		/*!< URI type. */
     FD_t ctrl;			/*!< control channel */
     FD_t data;			/*!< per-xfer data channel */
-    void * sess;
-    void * lock_store;
+
+/*@relnull@*/
+    void * capabilities;	/*!< neon ne_server_capabilities ptr */
+/*@relnull@*/
+    void * lockstore;		/*!< neon ne_lock_store ptr */
+/*@relnull@*/
+    void * sess;		/*!< neon ne_session ptr */
+    
     int bufAlloced;		/*!< sizeof I/O buffer */
 /*@owned@*/
     char * buf;			/*!< I/O buffer */

@@ -113,15 +113,15 @@ DIR * davOpendir(const char * path)
  * stat(2) clone.
  */
 int davStat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies *st, errno, fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *st, fileSystem, internalState @*/;
 
 /**
  * lstat(2) clone.
  */
 int davLstat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies *st, errno, fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *st, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

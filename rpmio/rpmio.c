@@ -1914,7 +1914,7 @@ int ufdClose( /*@only@*/ void * cookie)
 
 	/* XXX Why not (u->urltype == URL_IS_HTTP) ??? */
 	/* XXX Why not (u->urltype == URL_IS_HTTPS) ??? */
-	if (u->service != NULL && !strcmp(u->service, "http")) {
+	if (u->scheme != NULL && !strcmp(u->scheme, "http")) {
 	    if (fd->wr_chunked) {
 		int rc;
 	    /* XXX HTTP PUT requires terminating 0 length chunk. */

@@ -120,7 +120,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	if (u->ctrl)
 	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
 			u, u->ctrl, (u->host ? u->host : ""),
-			(u->service ? u->service : ""));
+			(u->scheme ? u->scheme : ""));
 	/*@=usereleased@*/
     }
     if (u->data) {
@@ -140,12 +140,12 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	if (u->data)
 	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
 			u, u->data, (u->host ? u->host : ""),
-			(u->service ? u->service : ""));
+			(u->scheme ? u->scheme : ""));
 	/*@=usereleased@*/
     }
     u->buf = _free(u->buf);
     u->url = _free(u->url);
-    u->service = _free((void *)u->service);
+    u->scheme = _free((void *)u->scheme);
     u->user = _free((void *)u->user);
     u->password = _free((void *)u->password);
     u->host = _free((void *)u->host);
@@ -170,7 +170,7 @@ void urlFreeCache(void)
 			_("warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
 			i, _url_cache[i], _url_cache[i]->nrefs,
 			(_url_cache[i]->host ? _url_cache[i]->host : ""),
-			(_url_cache[i]->service ? _url_cache[i]->service : ""));
+			(_url_cache[i]->scheme ? _url_cache[i]->scheme : ""));
 	}
     }
     _url_cache = _free(_url_cache);
@@ -218,7 +218,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	 *    a) both items are not NULL and don't compare.
 	 *    b) either of the items is not NULL.
 	 */
-	if (urlStrcmp(u->service, ou->service))
+	if (urlStrcmp(u->scheme, ou->scheme))
 	    continue;
     	if (urlStrcmp(u->host, ou->host))
 	    continue;
@@ -292,7 +292,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 		int port = strtol(proxy, &end, 0);
 		if (!(end && *end == '\0')) {
 		    fprintf(stderr, _("error: %sport must be a number\n"),
-			(u->service ? u->service : ""));
+			(u->scheme ? u->scheme : ""));
 		    return;
 		}
 		u->proxyp = port;
@@ -318,7 +318,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 		int port = strtol(proxy, &end, 0);
 		if (!(end && *end == '\0')) {
 		    fprintf(stderr, _("error: %sport must be a number\n"),
-			(u->service ? u->service : ""));
+			(u->scheme ? u->scheme : ""));
 		    return;
 		}
 		u->proxyp = port;
@@ -415,7 +415,7 @@ urltype urlPath(const char * url, const char ** pathp)
 
 /*
  * Split URL into components. The URL can look like
- *	service://user:password@host:port/path
+ *	scheme://user:password@host:port/path
  */
 /*@-bounds@*/
 /*@-modfilesys@*/
@@ -441,10 +441,10 @@ int urlSplit(const char * url, urlinfo *uret)
     while (1) {
 	/* Point to end of next item */
 	while (*se && *se != '/') se++;
-	/* Item was service. Save service and go for the rest ...*/
+	/* Item was scheme. Save scheme and go for the rest ...*/
     	if (*se && (se != s) && se[-1] == ':' && se[0] == '/' && se[1] == '/') {
 		se[-1] = '\0';
-	    u->service = xstrdup(s);
+	    u->scheme = xstrdup(s);
 	    se += 2;	/* skip over "//" */
 	    s = se++;
 	    continue;
@@ -491,10 +491,10 @@ int urlSplit(const char * url, urlinfo *uret)
     }
     u->host = xstrdup(f);
 
-    if (u->port < 0 && u->service != NULL) {
+    if (u->port < 0 && u->scheme != NULL) {
 	struct servent *serv;
 	/*@-multithreaded -moduncon @*/
-	serv = getservbyname(u->service, "tcp");
+	serv = getservbyname(u->scheme, "tcp");
 	/*@=multithreaded =moduncon @*/
 	if (serv != NULL)
 	    u->port = ntohs(serv->s_port);

@@ -87,7 +87,6 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
     return 0;
 }
 
-
 static int ftsOpts = 0;
 
 static void ftsWalk(const char * path)

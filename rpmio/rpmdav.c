@@ -49,14 +49,15 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 }
 
 /* =============================================================== */
-/*@unchecked@*/
-static ne_server_capabilities caps;
-
 static int davFree(urlinfo u)
 	/*@globals internalState @*/
 	/*@modifies u, internalState @*/
 {
     if (u != NULL && u->sess != NULL) {
+	u->capabilities = _free(u->capabilities);
+	if (u->lockstore != NULL)
+	    ne_lockstore_destroy(u->lockstore);
+	u->lockstore = NULL;
 	ne_session_destroy(u->sess);
 	u->sess = NULL;
     }
@@ -76,27 +77,34 @@ trust_all_server_certs(/*@unused@*/ void *userdata, /*@unused@*/ int failures,
 
 static int davInit(const char * url, urlinfo * uret)
 	/*@globals internalState @*/
-	/*@modifies internalState @*/
+	/*@modifies *uret, internalState @*/
 {
     urlinfo u = NULL;
     int xx;
 
+/*@-globs@*/	/* FIX: h_errno annoyance. */
     if (urlSplit(url, &u))
 	return -1;	/* XXX error returns needed. */
+/*@=globs@*/
 
-   if (u->urltype == URL_IS_HTTPS && u->sess == NULL) {
+   if (u->urltype == URL_IS_HTTPS && u->url != NULL && u->sess == NULL) {
+	ne_server_capabilities * capabilities;
 
 /*@-noeffect@*/
-	ne_debug_init(stderr, 0);
+	ne_debug_init(stderr, 0);		/* XXX oneshot? */
 /*@=noeffect@*/
-	xx = ne_sock_init();
-	u->lock_store = ne_lockstore_create();
+	xx = ne_sock_init();			/* XXX oneshot? */
 
-	u->sess = ne_session_create(u->service, u->host, u->port);
-	if (!strcasecmp(u->service, "https"))
+	u->capabilities = capabilities = xcalloc(1, sizeof(*capabilities));
+	u->sess = ne_session_create(u->scheme, u->host, u->port);
+
+	/* XXX check that neon is ssl enabled. */
+	if (!strcasecmp(u->scheme, "https"))
 	    ne_ssl_set_verify(u->sess, trust_all_server_certs, (char *)u->host);
                                                                                 
-	ne_lockstore_register(u->lock_store, u->sess);
+	u->lockstore = ne_lockstore_create();	/* XXX oneshot? */
+	ne_lockstore_register(u->lockstore, u->sess);
+
 	ne_set_useragent(u->sess, PACKAGE "/" PACKAGE_VERSION);
     }
 
@@ -109,13 +117,13 @@ static int davInit(const char * url, urlinfo * uret)
 
 static int davConnect(urlinfo u)
 	/*@globals internalState @*/
-	/*@modifies internalState @*/
+	/*@modifies u, internalState @*/
 {
     const char * path = NULL;
     int rc;
 
     (void) urlPath(u->url, &path);
-    rc = ne_options(u->sess, path, &caps);
+    rc = ne_options(u->sess, path, u->capabilities);
     switch (rc) {
     case NE_OK:
 	break;
@@ -189,10 +197,12 @@ static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const c
 
 /* =============================================================== */
 struct fetch_context_s {
+/*@relnull@*/
     struct fetch_resource_s **resrock;
-/*@observer@*/
     const char *uri;
     unsigned int include_target; /* Include resource at href */
+/*@refcounted@*/
+    urlinfo u;
     int ac;
     int nalloced;
     ARGV_t av;
@@ -203,7 +213,8 @@ struct fetch_context_s {
 
 /*@null@*/
 static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s *ctx)
-	/*@modifies ctx @*/
+	/*@globals internalState @*/
+	/*@modifies ctx, internalState @*/
 {
     if (ctx == NULL)
 	return NULL;
@@ -212,17 +223,29 @@ static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s 
     ctx->modes = _free(ctx->modes);
     ctx->sizes = _free(ctx->sizes);
     ctx->mtimes = _free(ctx->mtimes);
+    ctx->u = urlFree(ctx->u, __FUNCTION__);
     ctx->uri = _free(ctx->uri);
     memset(ctx, 0, sizeof(*ctx));
     ctx = _free(ctx);
     return NULL;
 }
 
+/*@null@*/
 static void *fetch_create_context(const char *uri)
-        /*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
-    struct fetch_context_s * ctx = ne_calloc(sizeof(*ctx));
+    struct fetch_context_s * ctx;
+    urlinfo u;
+
+/*@-globs@*/	/* FIX: h_errno annoyance. */
+    if (urlSplit(uri, &u))
+	return NULL;
+/*@=globs@*/
+
+    ctx = ne_calloc(sizeof(*ctx));
     ctx->uri = xstrdup(uri);
+    ctx->u = urlLink(u, __FUNCTION__);
     return ctx;
 }
 
@@ -333,7 +356,6 @@ fprintf(stderr, "Skipping target resource.\n");
     isexec = ne_propset_value(set, &fetch_props[2]);
     checkin = ne_propset_value(set, &fetch_props[4]);
     checkout = ne_propset_value(set, &fetch_props[5]);
-
     
     if (clength == NULL)
 	status = ne_propset_status(set, &fetch_props[0]);
@@ -484,9 +506,9 @@ static void display_ls_line(struct fetch_resource_s *res)
 }
 #endif
 
-static int davFetch(urlinfo u, struct fetch_context_s * ctx)
+static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
 	/*@globals internalState @*/
-	/*@modifies *avp, internalState @*/
+	/*@modifies ctx, internalState @*/
 {
     const char * path = NULL;
     int depth = 1;					/* XXX passed arg? */
@@ -560,15 +582,15 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 	switch (current->type) {
 	case resr_normal:
 	    st_mode = S_IFREG;
-	    break;
+	    /*@switchbreak@*/ break;
 	case resr_collection:
 	    st_mode = S_IFDIR;
-	    break;
+	    /*@switchbreak@*/ break;
 	case resr_reference:
 	case resr_error:
 	default:
 	    st_mode = 0;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	ctx->modes[ctx->ac] = st_mode;
 	ctx->sizes[ctx->ac] = current->size;
@@ -577,20 +599,21 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 
 	current = fetch_destroy_item(current);
     }
+    ctx->resrock = NULL;	/* HACK: avoid leaving stack reference. */
 
     return rc;
 }
 
 static int davNLST(struct fetch_context_s * ctx)
 	/*@globals internalState @*/
-	/*@modifies *avp, internalState @*/
+	/*@modifies ctx, internalState @*/
 {
     urlinfo u = NULL;
     int rc;
     int xx;
 
     rc = davInit(ctx->uri, &u);
-    if (rc)
+    if (rc || u == NULL)
 	goto exit;
 
     rc = davConnect(u);
@@ -691,15 +714,19 @@ static const char * statstr(const struct stat * st,
 static int dav_st_ino = 0xdead0000;
 
 int davStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals dav_st_ino, h_errno, fileSystem, internalState @*/
+	/*@globals dav_st_ino, fileSystem, internalState @*/
 	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
 {
     struct fetch_context_s * ctx = NULL;
     char buf[1024];
-    int rc = 0;
+    int rc = -1;
 
 /* HACK: neon really wants collections with trailing '/' */
     ctx = fetch_create_context(path);
+    if (ctx == NULL) {
+/* HACK: errno = ??? */
+	goto exit;
+    }
     rc = davNLST(ctx);
     if (rc) {
 /* HACK: errno = ??? */
@@ -730,15 +757,19 @@ exit:
 }
 
 int davLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals dav_st_ino, h_errno, fileSystem, internalState @*/
+	/*@globals dav_st_ino, fileSystem, internalState @*/
 	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
 {
     struct fetch_context_s * ctx = NULL;
     char buf[1024];
-    int rc = 0;
+    int rc = -1;
 
 /* HACK: neon really wants collections with trailing '/' */
     ctx = fetch_create_context(path);
+    if (ctx == NULL) {
+/* HACK: errno = ??? */
+	goto exit;
+    }
     rc = davNLST(ctx);
     if (rc) {
 /* HACK: errno = ??? */
@@ -989,9 +1020,15 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     /* Load DAV collection into argv. */
     ctx = fetch_create_context(path);
-    rc = davNLST(ctx);
-    if (rc)
+    if (ctx == NULL) {
+/* HACK: errno = ??? */
 	return NULL;
+    }
+    rc = davNLST(ctx);
+    if (rc) {
+/* HACK: errno = ??? */
+	return NULL;
+    }
 
     nb = 0;
     ac = 0;
