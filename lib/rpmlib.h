@@ -63,6 +63,7 @@
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
+#define RPMFILE_STATE_NOTINSTALLED	2
 
 /* these can be ORed together */
 #define RPMFILE_CONFIG			1
@@ -73,6 +74,7 @@
 #define INSTALL_TEST		(1 << 2)
 #define INSTALL_UPGRADE		(1 << 3)
 #define INSTALL_UPGRADETOOLD	(1 << 4)
+#define INSTALL_NODOCS		(1 << 5)
 
 #define VERIFY_NONE             0
 #define VERIFY_MD5              (1 << 0)
@@ -110,9 +112,11 @@
 #define RPMVAR_PGP_NAME                 20
 #define RPMVAR_PGP_SECRING              21
 #define RPMVAR_PGP_PUBRING              22
-#define RPMVAR_LASTVAR	                23 /* IMPORTANT to keep right! */
+#define RPMVAR_EXCLUDEDOCS              23
+#define RPMVAR_LASTVAR	                24 /* IMPORTANT to keep right! */
 
 char *getVar(int var);
+int getBooleanVar(int var);
 void setVar(int var, char *val);
 
 int readConfigFiles(void);
