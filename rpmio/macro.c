@@ -1396,7 +1396,50 @@ rpmGetPath(const char *path, ...)
 
 /* =============================================================== */
 
-#ifdef DEBUG_MACROS
+#if defined(DEBUG_MACROS)
+
+#if defined(EVAL_MACROS)
+
+char *macrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros";
+
+int
+main(int argc, char *argv[])
+{
+	int c;
+	int errflg = 0;
+	extern char *optarg;
+	extern int optind;
+
+	while ((c = getopt(argc, argv, "f:")) != EOF ) {
+	    switch (c) {
+	    case 'f':
+		macrofiles = optarg;
+		break;
+	    case '?':
+	    default:
+		errflg++;
+		break;
+	    }
+	}
+	if (errflg || optind >= argc) {
+	    fprintf(stderr, "Usage: %s [-f macropath ] macro ...\n", argv[0]);
+	    exit(1);
+	}
+
+	initMacros(NULL, macrofiles);
+	for ( ; optind < argc; optind++) {
+	    const char *val;
+
+	    val = rpmGetPath(argv[optind], NULL);
+	    if (val) {
+		fprintf(stdout, "%s:\t%s\n", argv[optind], val);
+		xfree(val);
+	    }
+	}
+	return 0;
+}
+
+#else	/* !EVAL_MACROS */
 
 char *macrofiles = "../macros:./testmacros";
 char *testfile = "./test";
@@ -1430,4 +1473,5 @@ main(int argc, char *argv[])
 
 	return 0;
 }
+#endif	/* EVAL_MACROS */
 #endif	/* DEBUG_MACROS */

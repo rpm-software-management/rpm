@@ -47,3 +47,6 @@ lclint:
 tmacro: macro.c
 	$(CC) $(CFLAGS) ${DEFS} -DDEBUG_MACROS ${INCLUDES} -o $@ $<
 
+rpmeval: macro.c
+	$(CC) $(CFLAGS) ${DEFS} -DDEBUG_MACROS -DEVAL_MACROS ${INCLUDES} -o $@ $<
+
