@@ -88,6 +88,10 @@
 
 /* --------------------------------------------------------------------- */
 
+#if defined(__APPLE__)
+#include <sys/types.h>
+#endif
+
 #include <Python.h>
 #include <stddef.h>   /* for offsetof() */
 #include <db.h>
@@ -102,7 +106,7 @@
 #endif
 
 #define PY_BSDDB_VERSION "4.2.4"
-static char *rcs_id = "$Id: _rpmdb.c,v 1.14 2004/11/17 17:05:39 pauln Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.14.2.1 2005/02/12 19:03:32 jbj Exp $";
 
 
 #ifdef WITH_THREAD

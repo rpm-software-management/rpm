@@ -3,6 +3,9 @@ BUILT_SOURCES = listobjs
 
 EXTRA_DIST = test.c
 
+# XXX Make sure compress.c links internal zlib
+INCLUDES = -I. -I ../../zlib
+
 pkglibdir =  @prefix@/lib/rpm
 MAGIC    = $(pkglibdir)/magic
 
@@ -23,7 +26,7 @@ libmagic_la_LDFLAGS = -version-info 1:0:0
 
 noinst_PROGRAMS = file
 file_SOURCES = file.c
-file_LDFLAGS = # -all-static
+file_LDFLAGS = -L../../zlib # -all-static
 file_LDADD = libmagic.la
 
 listobjs:

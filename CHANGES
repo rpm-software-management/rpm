@@ -22,6 +22,8 @@
 	- discover and use getmntinfo if present.
 	- perform callbacks as always (#147537).
 	- permit build scriptlet interpreters to be individually overridden.
+	- zlib: uniqify certain symbols to prevent name space pollution.
+	- macosx: include <sys/types.h> so that python sees the u_char typedef.
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).

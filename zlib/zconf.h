@@ -14,43 +14,53 @@
  */
 #define	Z_PREFIX
 #ifdef Z_PREFIX
+#  define deflateInit_		rpmz_deflateInit_
+#  define deflate		rpmz_deflate
+#  define deflateEnd		rpmz_deflateEnd
+#  define inflateInit_		rpmz_inflateInit_
+#  define inflate		rpmz_inflate
+#  define inflateEnd		rpmz_inflateEnd
+#  define deflateInit2_		rpmz_deflateInit2_
+#  define deflateSetDictionary	rpmz_deflateSetDictionary
+#  define deflateSetHeader	rpmz_deflateSetHeader
+#  define deflateCopy		rpmz_deflateCopy
+#  define deflateReset		rpmz_deflateReset
+#  define deflateParams		rpmz_deflateParams
+#  define deflateBound		rpmz_deflateBound
+#  define deflatePrime		rpmz_deflatePrime
+#  define inflateInit2_		rpmz_inflateInit2_
+#  define inflateSetDictionary	rpmz_inflateSetDictionary
+#  define inflateSync		rpmz_inflateSync
+#  define inflateSyncPoint	rpmz_inflateSyncPoint
+#  define inflateCopy		rpmz_inflateCopy
+#  define inflateReset		rpmz_inflateReset
+#  define inflateBack		rpmz_inflateBack
+#  define inflateBackEnd	rpmz_inflateBackEnd
+#  define compress		rpmz_compress
+#  define compress2		rpmz_compress2
+#  define compressBound		rpmz_compressBound
+#  define uncompress		rpmz_uncompress
+#  define adler32		rpmz_adler32
+#  define adler32_combine	rpmz_adler32_combine
+#  define crc32			rpmz_crc32
+#  define crc32_combine		rpmz_crc32_combine
+#  define get_crc_table		rpmz_get_crc_table
+#  define zError		rpmz_zError
 
-#  define deflateInit_	rpmz_deflateInit_
-#  define deflate	rpmz_deflate
-#  define deflateEnd	rpmz_deflateEnd
-#  define inflateInit_ 	rpmz_inflateInit_
-#  define inflate	rpmz_inflate
-#  define inflateEnd	rpmz_inflateEnd
-#  define deflateInit2_	rpmz_deflateInit2_
-#  define deflateSetDictionary rpmz_deflateSetDictionary
-#  define deflateCopy	rpmz_deflateCopy
-#  define deflateReset	rpmz_deflateReset
-#  define deflateParams	rpmz_deflateParams
-#  define deflateBound	rpmz_deflateBound
-#  define inflateInit2_	rpmz_inflateInit2_
-#  define inflateSetDictionary rpmz_inflateSetDictionary
-#  define inflateSync	rpmz_inflateSync
-#  define inflateSyncPoint rpmz_inflateSyncPoint
-#  define inflateCopy	rpmz_inflateCopy
-#  define inflateReset	rpmz_inflateReset
-#  define compress	rpmz_compress
-#  define compress2	rpmz_compress2
-#  define compressBound	rpmz_compressBound
-#  define uncompress	rpmz_uncompress
-#  define adler32	rpmz_adler32
-#  define crc32		rpmz_crc32
-#  define get_crc_table rpmz_get_crc_table
-
-#  define Byte		rpmz_Byte
-#  define uInt		rpmz_uInt
-#  define uLong		rpmz_uLong
-#  define Bytef	        rpmz_Bytef
-#  define charf		rpmz_charf
-#  define intf		rpmz_intf
-#  define uIntf		rpmz_uIntf
-#  define uLongf	rpmz_uLongf
-#  define voidpf	rpmz_voidpf
-#  define voidp		rpmz_voidp
+#  define alloc_func		rpmz_alloc_func
+#  define free_func		rpmz_free_func
+#  define in_func		rpmz_in_func
+#  define out_func		rpmz_out_func
+#  define Byte			rpmz_Byte
+#  define uInt			rpmz_uInt
+#  define uLong			rpmz_uLong
+#  define Bytef			rpmz_Bytef
+#  define charf			rpmz_charf
+#  define intf			rpmz_intf
+#  define uIntf			rpmz_uIntf
+#  define uLongf		rpmz_uLongf
+#  define voidpf		rpmz_voidpf
+#  define voidp			rpmz_voidp
 
 #  define gzclose	rpmz_gzclose
 #  define gzdopen	rpmz_gzdopen
@@ -72,9 +82,13 @@
 #  define gztell	rpmz_gztell
 #  define gzwrite	rpmz_gzwrite
 
+#  define gzclearerr	rpmz_gzclearerr
+#  define gzungetc	rpmz_gzungetc
+
 #  define inflateBack		rpmz_inflateBack
 #  define inflateBackEnd	rpmz_inflateBackEnd
 #  define inflateBackInit_	rpmz_inflateBackInit_
+#  define inflateGetHeader	rpmz_inflateGetHeader
 #  define inflate_fast		rpmz_inflate_fast
 #  define inflate_table		rpmz_inflate_table
 #  define _tr_align		rpmz__tr_align
@@ -87,6 +101,7 @@
 #  define z_errmsg		rpmz_z_errmsg
 #  define zError		rpmz_zError
 #  define zlibVersion		rpmz_zlibVersion
+#  define zlibCompileFlags	rpmz_zlibCompileFlags
 
 #  define deflate_copyright	rpmz_deflate_copyright
 #  define inflate_copyright	rpmz_inflate_copyright
@@ -135,9 +150,6 @@
 #      define STDC99
 #    endif
 #  endif
-#endif
-#if defined(__LCLINT__)
-#  define STDC
 #endif
 #if !defined(STDC) && (defined(__STDC__) || defined(__cplusplus))
 #  define STDC
@@ -201,7 +213,7 @@
                         /* Type declarations */
 
 #ifndef OF /* function prototypes */
-#  ifdef STDC
+#  if defined(STDC) || defined(__LCLINT__)
 #    define OF(args)  args
 #  else
 #    define OF(args)  ()
@@ -306,9 +318,11 @@ typedef unsigned long  uLong; /* 32 bits or more */
 #else
    typedef Byte  FAR Bytef;
 #endif
+/*@-typeuse@*/
 typedef char  FAR charf;
 typedef int   FAR intf;
 typedef uInt  FAR uIntf;
+/*@=typeuse@*/
 typedef uLong FAR uLongf;
 
 #ifdef STDC
