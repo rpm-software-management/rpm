@@ -1,9 +1,10 @@
-#include "system.h"
-#include <rpmio.h>
+#include <sys/types.h>
+#include <fcntl.h>
+
 #include <rpmlib.h>
 #include <rpmdb.h>
+#include <rpmio.h>
 #include <rpmmacro.h>
-#include "debug.h"
 
 #define FA_MAGIC      0x02050920
 
@@ -225,7 +226,7 @@ char **argv;
 
   if (argc != 2)
     {
-      fprintf(stderr, "usage: rpm3import <packages.rpm>\n");
+      fprintf(stderr, "usage: %s <packages.rpm>\n", argv[0]);
       exit(1);
     }
   if ((fd = fadOpen(argv[1])) == 0)
