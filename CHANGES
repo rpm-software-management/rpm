@@ -7,6 +7,8 @@
 	- updated README
 	- added --allmatches to allow erasing multiple versions/releases
 	  of a package
+	- changed ftp URL's to use \r\n, not just \n (this should let RPM
+	  work w/ some picky (but rfc compliant) ftp servers
 	
 2.3.7 -> 2.3.8:
 	- added -t? options to build packages from tarballs which contain
