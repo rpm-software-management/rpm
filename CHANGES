@@ -36,6 +36,8 @@
 	- complain if critical rpmrc variables (cpiobin, gzipbin, etc) aren't
 	  set anywhere
 	- allow --dbpath for --rebuilddb
+	- added check for systems whose chown() follows symlinks
+	- added packager and url to default -qi output
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output

@@ -26,5 +26,7 @@ Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}\
 Install date: %-27{INSTALLTIME:date}   Build Host: %{BUILDHOST}\
 Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\
 Size        : %{SIZE}\
+Packager    : %{PACKAGER}\
+URL         : %{URL}\
 Summary     : %{SUMMARY}\
 Description :\n%{DESCRIPTION}\n'
