@@ -488,6 +488,8 @@ struct preamble_line {
     {RPMTAG_EXCLUDE,      0, "exclude"},
     {RPMTAG_EXCLUSIVE,    0, "exclusive"},
     {RPMTAG_ICON,         0, "icon"},
+    {RPMTAG_ICON,         0, "provides"},
+    {RPMTAG_ICON,         0, "requires"},
     {0, 0, 0}
 };
 
@@ -816,6 +818,10 @@ Spec parseSpec(FILE *f, char *specfile)
 			  return NULL;
 		      }
 		      break;
+		  case RPMTAG_PROVIDES:
+		      if (parseProvides(line)) {
+		      }
+		      break;
 		  default:
 		      /* message(MESS_DEBUG, "Skipping: %s\n", line); */
 		      /* This shouldn't happen? */
@@ -827,7 +833,9 @@ Spec parseSpec(FILE *f, char *specfile)
 		s1 = line;
 		while (*s1 && *s1 != ' ' && *s1 != '\t') s1++;
 		if (*s1) {
-		    message(MESS_WARNING, "Unknown Field: %s\n", line);
+		    /*message(MESS_WARNING, "Unknown Field: %s\n", line);*/
+		    error(RPMERR_BADSPEC, "Unknown Field: %s\n", line);
+		    return NULL;
 		}
 	    }
 	    break;
