@@ -1,9 +1,0 @@
-/* $Id: typemap,v 1.4 1999/07/16 08:44:54 gafton Exp $ */
-
-TYPEMAP
-
-Header			T_PTROBJ
-rpmTransactionSet	T_PTROBJ
-rpmdb			T_PTROBJ
-
-const char *		T_PV
