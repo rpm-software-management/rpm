@@ -2,7 +2,9 @@
  */
 /** \defgroup	rpmcli	RPMCLI.
  */
-/** \defgroup	python	PYTHON.
+/** \defgroup	python	PYTHON API.
+ */
+/** \defgroup	py_c  	PYTHON-C Language Bindings.
  */
 /** \defgroup	rpmbuild	RPMBUILD.
  */
