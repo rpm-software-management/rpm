@@ -8,6 +8,7 @@
 	- don't build misc directory unless it's necessary
 	- empty package files should be treated the same as files
 	  with bad magic, not as read errors
+	- fix bug where Prefix directory is included in file list
 
 2.4.8 -> 2.4.9:
 	- fix for verification on systems where a single group id
