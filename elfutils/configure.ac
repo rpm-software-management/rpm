@@ -16,7 +16,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software Foundation,
 dnl Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 dnl
-AC_INIT([elfutils],[0.57],[drepper@redhat.com],[elfutils])
+AC_INIT([elfutils],[0.58],[drepper@redhat.com],[elfutils])
 AM_INIT_AUTOMAKE([gnits 1.6.3 dist-bzip2])
 AC_COPYRIGHT([Copyright (C) 1996-2001, 2002 Red Hat, Inc.])
 AC_CONFIG_SRCDIR([libelf/elf_begin.c])
