@@ -16,7 +16,7 @@ BuildRequires: python-devel >= 1.5.2
 BuildRoot: /var/tmp/%{name}-root
 
 %description
-The Red Hat Package Manager (RPM) is a powerful command line driven
+The RPM Package Manager (RPM) is a powerful command line driven
 package management system capable of installing, uninstalling,
 verifying, querying, and updating software packages.  Each software
 package consists of an archive of files along with information about
@@ -30,7 +30,7 @@ Requires: popt
 %description devel
 This package contains the RPM C library and header files.  These
 development files will simplify the process of writing programs which
-manipulate RPM packages and databases. These file are intended to
+manipulate RPM packages and databases. These files are intended to
 simplify the process of creating graphical package managers or any
 other tools that need an intimate knowledge of RPM packages in order
 to function.
@@ -40,34 +40,35 @@ will manipulate RPM packages and databases.
 
 %ifos linux
 %package python
-Summary: Python bindings for applications which will manipulate RPM packages.
+Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 BuildRequires: popt >= 1.5
 Requires: popt >= 1.5
 Requires: python >= 1.5.2
 
 %description python
-This package contains the module that permits Python applications to use
-the interface supplied by RPM libraries.
+The rpm-python package contains a module which permits applications
+written in the Python programming language to use the interface
+supplied by RPM (RPM Package Manager) libraries.
 
-This package should be installed if you want to develop Python programs that
-will manipulate RPM packages and databases.
+This package should be installed if you want to develop Python
+programs that will manipulate RPM packages and databases.
 %endif
 
 %package -n popt
 Summary: A C library for parsing command line parameters.
-Group: System Environment/Libraries
+Group: Development/Libraries
 Version: 1.5
 
 %description -n popt
-Popt is a C library for parsing command line parameters.  Popt
-was heavily influenced by the getopt() and getopt_long() functions,
-but it improves on them by allowing more powerful argument expansion.
-Popt can parse arbitrary argv[] style arrays and automatically set
-variables based on command line arguments.  Popt allows command
-line arguments to be aliased via configuration files and includes
-utility functions for parsing arbitrary strings into argv[] arrays
-using shell-like rules.
+Popt is a C library for parsing command line parameters.  Popt was
+heavily influenced by the getopt() and getopt_long() functions, but it
+improves on them by allowing more powerful argument expansion.  Popt
+can parse arbitrary argv[] style arrays and automatically set
+variables based on command line arguments.  Popt allows command line
+arguments to be aliased via configuration files and includes utility
+functions for parsing arbitrary strings into argv[] arrays using
+shell-like rules.
 
 Install popt if you're a C programmer and you'd like to use its
 capabilities.
