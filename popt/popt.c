@@ -29,6 +29,7 @@ struct poptContext_s {
     char * appName;
     struct poptAlias * aliases;
     int numAliases;
+    int flags;
 };
 
 poptContext poptGetContext(char * name ,int argc, char ** argv, 
@@ -41,7 +42,11 @@ poptContext poptGetContext(char * name ,int argc, char ** argv,
     con->os->currAlias = NULL;
     con->os->nextCharArg = NULL;
     con->os->nextArg = NULL;
-    con->os->next = 1;			/* skip argv[0] */
+
+    if (flags & POPT_KEEP_FIRST)
+	con->os->next = 0;			/* include argv[0] */
+    else
+	con->os->next = 1;			/* skip argv[0] */
 
     con->leftovers = malloc(sizeof(char *) * (argc + 1));
     con->numLeftovers = 0;
@@ -50,6 +55,7 @@ poptContext poptGetContext(char * name ,int argc, char ** argv,
     con->options = options;
     con->aliases = NULL;
     con->numAliases = 0;
+    con->flags = 0;
     
     if (!name)
 	con->appName = NULL;
