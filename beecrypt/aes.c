@@ -30,6 +30,7 @@
 #include "mp32.h"
 #include "debug.h"
 
+/*@-exportheadervar -exportlocal@*/ /* FIX: tables needed by aes asm */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
@@ -729,6 +730,7 @@ const uint32 _ad4[256] = {
     0xe1e1e1e1, 0x69696969, 0x14141414, 0x63636363,
     0x55555555, 0x21212121, 0x0c0c0c0c, 0x7d7d7d7d
 };
+/*@=exportheadervar =exportlocal@*/
 
 /**
  */

@@ -31,7 +31,7 @@
 #include "dhaes.h"
 #include "dlkp.h"
 #include "elgamal.h"
-#include "fips180.h"
+#include "sha1.h"
 #include "hmacmd5.h"
 #include "md5.h"
 #include "rsa.h"

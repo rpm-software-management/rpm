@@ -61,12 +61,12 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 	if (m->size > psize || m->size > qsize)
 		return -1;
 
-	ptemp = (uint32*) malloc((6*psize+2)*sizeof(uint32));
-	if (ptemp == (uint32*) 0)
+	ptemp = (uint32*) malloc((6*psize+2)*sizeof(*ptemp));
+	if (ptemp == NULL)
 		return -1;
 
-	qtemp = (uint32*) malloc((6*qsize+2)*sizeof(uint32));
-	if (qtemp == (uint32*) 0)
+	qtemp = (uint32*) malloc((6*qsize+2)*sizeof(*qtemp));
+	if (qtemp == NULL)
 	{
 		free(ptemp);
 		return -1;
