@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -488,6 +488,11 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Nov  8 2004 Jeff Johnson <jbj@jbj.org> rpm-4.4-0.2
+- bump popt version to 1.10.
+- attempt dependency tree breadth, take 1.
+- use external libneon for http/https transport.
+
 * Wed Oct 27 2004 Jeff Johnson <jbj@jbj.org> rpm-4.4-0.1
 - pentium3/pentium4 arch support (pluto@PLD).
 - cpuid() cleanups for PIC/non-PIC and gcc 3.4 (pluto@PLD).
