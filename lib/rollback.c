@@ -168,8 +168,8 @@ void freeFi(TFI_t fi)
 
 /*@observer@*/ const char *const fiTypeString(TFI_t fi) {
     switch(fi->type) {
-    case TR_ADDED:	return "install";
-    case TR_REMOVED:	return "  erase";
+    case TR_ADDED:	return " install";
+    case TR_REMOVED:	return "   erase";
     default:		return "???";
     }
     /*@noteached@*/

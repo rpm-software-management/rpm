@@ -37,8 +37,9 @@ static struct tagMacro {
  * @param h		header
  * @return		0 always
  */
-static int rpmInstallLoadMacros(Header h)
+static int rpmInstallLoadMacros(TFI_t fi, Header h)
 {
+    HGE_t hge = (HGE_t)fi->hge;
     struct tagMacro *tagm;
     union {
 	const char * ptr;
@@ -48,7 +49,7 @@ static int rpmInstallLoadMacros(Header h)
     int_32 type;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
-	if (!headerGetEntry(h, tagm->tag, &type, (void **) &body, NULL))
+	if (!hge(h, tagm->tag, &type, (void **) &body, NULL))
 	    continue;
 	switch (type) {
 	case RPM_INT32_TYPE:
@@ -100,10 +101,13 @@ static void setFileOwners(TFI_t fi)
  * @param h		header
  * @return		none
  */
-static void trimChangelog(Header h)
+static void trimChangelog(TFI_t fi, Header h)
 {
+    HGE_t hge = (HGE_t)fi->hge;
+    HFD_t hfd = fi->hfd;
     int * times;
-    char ** names, ** texts;
+    const char ** names, ** texts;
+    int cnt, ctt;
     long numToKeep = rpmExpandNumeric(
 		"%{?_instchangelog:%{_instchagelog}}%{!?_instchangelog:5}");
     char * end;
@@ -118,11 +122,11 @@ static void trimChangelog(Header h)
 	return;
     }
 
-    if (!headerGetEntry(h, RPMTAG_CHANGELOGTIME, NULL, (void **) &times,
-			&count) ||
+    if (!hge(h, RPMTAG_CHANGELOGTIME, NULL, (void **) &times, &count) ||
 	count < numToKeep) return;
-    headerGetEntry(h, RPMTAG_CHANGELOGNAME, NULL, (void **) &names, &count);
-    headerGetEntry(h, RPMTAG_CHANGELOGTEXT, NULL, (void **) &texts, &count);
+
+    hge(h, RPMTAG_CHANGELOGNAME, &cnt, (void **) &names, &count);
+    hge(h, RPMTAG_CHANGELOGTEXT, &ctt, (void **) &texts, &count);
 
     headerModifyEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE, times,
 		      numToKeep);
@@ -131,8 +135,8 @@ static void trimChangelog(Header h)
     headerModifyEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE, texts,
 		      numToKeep);
 
-    free(names);
-    free(texts);
+    names = hfd(names, cnt);
+    texts = hfd(texts, ctt);
 }
 #endif	/* DYING */
 
@@ -143,8 +147,10 @@ static void trimChangelog(Header h)
  * @param actions	array of file dispositions
  * @return		0 on success, 1 on failure
  */
-static int mergeFiles(Header h, Header newH, TFI_t fi)
+static int mergeFiles(TFI_t fi, Header h, Header newH)
 {
+    HGE_t hge = (HGE_t)fi->hge;
+    HFD_t hfd = fi->hfd;
     fileAction * actions = fi->actions;
     int i, j, k, fc;
     int_32 type = 0;
@@ -179,18 +185,18 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
 	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS
     };
 
-    headerGetEntry(h, RPMTAG_SIZE, NULL, (void **) &fileSizes, NULL);
+    hge(h, RPMTAG_SIZE, NULL, (void **) &fileSizes, NULL);
     fileSize = *fileSizes;
-    headerGetEntry(newH, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, &count);
+    hge(newH, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, &count);
     for (i = 0, fc = 0; i < count; i++)
 	if (actions[i] != FA_SKIPMULTILIB) {
 	    fc++;
 	    fileSize += fileSizes[i];
 	}
     headerModifyEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &fileSize, 1);
+
     for (i = 0; mergeTags[i]; i++) {
-        if (!headerGetEntryMinMemory(newH, mergeTags[i], &type,
-				    (const void **) &data, &count))
+        if (!hge(newH, mergeTags[i], &type, (void **) &data, &count))
 	    continue;
 	switch (type) {
 	case RPM_CHAR_TYPE:
@@ -232,15 +238,12 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
 	    return 1;
 	    /*@notreached@*/ break;
 	}
-	data = headerFreeData(data, type);
+	data = hfd(data, type);
     }
-    headerGetEntry(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes,
-		   &count);
-    headerGetEntryMinMemory(newH, RPMTAG_DIRNAMES, NULL,
-			    (const void **) &newDirNames, NULL);
-    headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, (const void **) &data,
-			    &dirNamesCount);
+    hge(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes, &count);
+    hge(newH, RPMTAG_DIRNAMES, NULL, (void **) &newDirNames, NULL);
+    hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    hge(h, RPMTAG_DIRNAMES, NULL, (void **) &data, &dirNamesCount);
 
     dirNames = xcalloc(dirNamesCount + fc, sizeof(char *));
     for (i = 0; i < dirNamesCount; i++)
@@ -262,29 +265,26 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
 	headerAddOrAppendEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			       dirNames + dirNamesCount,
 			       dirCount - dirNamesCount);
-    if (data) free (data);
-    if (newDirNames) free (newDirNames);
+    data = hfd(data, -1);
+    newDirNames = hfd(newDirNames, -1);
     free (newdata);
     free (dirNames);
 
     for (i = 0; i < 9; i += 3) {
 	const char **Names, **EVR, **newNames, **newEVR;
+	int nnt, nvt, rnt;
 	uint_32 *Flags, *newFlags;
 	int Count = 0, newCount = 0;
 
-	if (!headerGetEntryMinMemory(newH, requireTags[i], NULL,
-				    (const void **) &newNames, &newCount))
+	if (!hge(newH, requireTags[i], &nnt, (void **) &newNames, &newCount))
 	    continue;
 
-	headerGetEntryMinMemory(newH, requireTags[i+1], NULL,
-				(const void **) &newEVR, NULL);
-	headerGetEntry(newH, requireTags[i+2], NULL, (void **) &newFlags, NULL);
-	if (headerGetEntryMinMemory(h, requireTags[i], NULL,
-				    (const void **) &Names, &Count))
+	hge(newH, requireTags[i+1], &nvt, (void **) &newEVR, NULL);
+	hge(newH, requireTags[i+2], NULL, (void **) &newFlags, NULL);
+	if (hge(h, requireTags[i], &rnt, (void **) &Names, &Count))
 	{
-	    headerGetEntryMinMemory(h, requireTags[i+1], NULL,
-				    (const void **) &EVR, NULL);
-	    headerGetEntry(h, requireTags[i+2], NULL, (void **) &Flags, NULL);
+	    hge(h, requireTags[i+1], NULL, (void **) &EVR, NULL);
+	    hge(h, requireTags[i+2], NULL, (void **) &Flags, NULL);
 	    for (j = 0; j < newCount; j++)
 		for (k = 0; k < Count; k++)
 		    if (!strcmp (newNames[j], Names[k])
@@ -314,6 +314,9 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
 	    headerAddOrAppendEntry(h, requireTags[i+2], RPM_INT32_TYPE,
 				       newFlags, k);
 	}
+	newNames = hfd(newNames, nnt);
+	newEVR = hfd(newEVR, nvt);
+	Names = hfd(Names, rnt);
     }
     return 0;
 }
@@ -326,6 +329,7 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
  */
 static int markReplacedFiles(const rpmTransactionSet ts, const TFI_t fi)
 {
+    HGE_t hge = (HGE_t)fi->hge;
     rpmdb rpmdb = ts->rpmdb;
     const struct sharedFileInfo * replaced = fi->replaced;
     const struct sharedFileInfo * sfi;
@@ -368,7 +372,7 @@ static int markReplacedFiles(const rpmTransactionSet ts, const TFI_t fi)
 
 	modified = 0;
 
-	if (!headerGetEntry(h, RPMTAG_FILESTATES, NULL, (void **)&secStates, &count))
+	if (!hge(h, RPMTAG_FILESTATES, NULL, (void **)&secStates, &count))
 	    continue;
 	
 	prev = rpmdbGetIteratorOffset(mi);
@@ -696,7 +700,7 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 
     rpmBuildFileList(fi->h, &fi->apath, NULL);
 
-    rpmInstallLoadMacros(fi->h);
+    rpmInstallLoadMacros(fi, fi->h);
 
     rc = installSources(ts, fi, specFile);
 
@@ -716,7 +720,8 @@ exit:
  */
 int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 {
-/*@observer@*/ static char * stepName = "install";
+    HGE_t hge = (HGE_t)fi->hge;
+/*@observer@*/ static char * stepName = " install";
     Header oldH = NULL;
     int otherOffset = 0;
     int ec = 2;		/* assume error return */
@@ -760,8 +765,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	 * prefix stripped to form the cpio list, while all other packages
 	 * need the leading / stripped.
 	 */
-	rc = headerGetEntry(fi->h, RPMTAG_DEFAULTPREFIX, NULL,
-				(void **) &p, NULL);
+	rc = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &p, NULL);
 	fi->striplen = (rc ? strlen(p) + 1 : 1); 
 	fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
@@ -772,11 +776,9 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	    rpmBuildFileList(fi->h, &fi->apath, NULL);
 
 	if (fi->fuser == NULL)
-	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEUSERNAME, NULL,
-				(const void **) &fi->fuser, NULL);
+	    hge(fi->h, RPMTAG_FILEUSERNAME, NULL, (void **) &fi->fuser, NULL);
 	if (fi->fgroup == NULL)
-	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEGROUPNAME, NULL,
-				(const void **) &fi->fgroup, NULL);
+	    hge(fi->h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fi->fgroup, NULL);
 	if (fi->fuids == NULL)
 	    fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
 	if (fi->fgids == NULL)
@@ -833,7 +835,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	for (i = 0; i < fi->fc; i++) {
 	    if (fi->actions && fi->actions[i] == FA_CREATE)
 		continue;
-    rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
+    rpmMessage(RPMMESS_DEBUG, _("     file: %s%s action: %s\n"),
 		fi->dnl[fi->dil[i]], fi->bnl[i],
 		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
 	}
@@ -863,7 +865,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
     }
 
 #ifdef	DYING
-    trimChangelog(h);
+    trimChangelog(fi, fi->h);
 #endif
 
     /* if this package has already been installed, remove it from the database
@@ -874,16 +876,14 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
     if (ts->transFlags & RPMTRANS_FLAG_MULTILIB) {
 	uint_32 multiLib, * newMultiLib, * p;
 
-	if (headerGetEntry(fi->h, RPMTAG_MULTILIBS, NULL,
-				(void **) &newMultiLib, NULL)
-	    && headerGetEntry(oldH, RPMTAG_MULTILIBS, NULL,
-			      (void **) &p, NULL)) {
+	if (hge(fi->h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib, NULL) &&
+	    hge(oldH, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL)) {
 	    multiLib = *p;
 	    multiLib |= *newMultiLib;
 	    headerModifyEntry(oldH, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 			      &multiLib, 1);
 	}
-	if (mergeFiles(oldH, fi->h, fi))
+	if (mergeFiles(fi, oldH, fi->h))
 	    goto exit;
     }
 

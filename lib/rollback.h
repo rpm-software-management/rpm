@@ -37,7 +37,7 @@ typedef enum fileStage_e {
     FSM_BUILD	=  9,
 
     FSM_CREATE	=  _fi(17),
-    FSM_MAP	=  _fd(18),
+    FSM_MAP	=  _fi(18),
     FSM_MKDIRS	=  _fi(19),
     FSM_RMDIRS	=  _fi(20),
     FSM_MKLINKS	=  _fi(21),

@@ -246,7 +246,7 @@ int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, /*@unused@*/fileStage
 	/*@notreached@*/ break;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
+    rpmMessage(RPMMESS_DEBUG, _("    file: %s%s action: %s\n"),
 		fi->dnl[fi->dil[i]], fi->bnl[i],
 		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
 
@@ -852,21 +852,6 @@ int fsmMapPath(FSM_t fsm)
 #undef _tsmask
     fsm->mapFlags = 0;
 
-    if (fsm->goal == FSM_INSTALL) {
-	if (fsm->iter == NULL)
-	    return rc;
-	fsm->ix = mapFind(fsm->iter, fsm->path);
-    } else {
-        fsm->ix = mapNextIterator(fsm->iter);
-    }
-
-    if (fsm->goal == FSM_BUILD) {
-	if (fsm->ix < 0) {
-	    rc = CPIOERR_HDR_TRAILER;
-	    return rc;
-	}
-    }
-
     i = fsm->ix;
     if (fi && i >= 0 && i < fi->fc) {
 
@@ -921,6 +906,7 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    break;
 
 	case FA_ALTNAME:
+if (_fsm_debug)
 fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
 	    assert(fi->type == TR_ADDED);
 	    fsm->nsuffix = SUFFIX_RPMNEW;
@@ -1240,11 +1226,14 @@ static int fsmCommitLinks(FSM_t fsm)
 {
     const char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
+    int iterIndex = fsm->ix;
     struct stat * st = &fsm->sb;
-    FSMI_t iter = fsm->iter;
-    int iterIndex = iter->i;
     int rc = 0;
     int i;
+
+    fsm->path = NULL;
+    fsm->nsuffix = NULL;
+    fsm->ix = -1;
 
     for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
 	if (fsm->li->inode == st->st_ino && fsm->li->dev == st->st_dev)
@@ -1253,14 +1242,15 @@ static int fsmCommitLinks(FSM_t fsm)
 
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->files[i] == NULL) continue;
-	iter->i = fsm->li->filex[i];
-	fsm->path = xstrdup(fsm->li->files[i]);
+	fsm->ix = fsm->li->filex[i];
+	rc = fsmStage(fsm, FSM_MAP);
 	rc = fsmStage(fsm, FSM_COMMIT);
 	fsm->path = _free(fsm->path);
+	fsm->li->files[i] = _free(fsm->li->files[i]);
 	fsm->li->filex[i] = -1;
     }
 
-    iter->i = iterIndex;
+    fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
     fsm->path = path;
     return rc;
@@ -1351,10 +1341,20 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		fsm->mkdirsdone = 1;
 	    }
 
-	    /* Read next header from payload. */
+	    /* Read next header from payload, checking for end-of-payload. */
 	    rc = fsmStage(fsm, FSM_NEXT);
 	}
 	if (rc) break;
+
+	/* Identify mapping index. */
+	fsm->ix = ((fsm->goal == FSM_INSTALL)
+		? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
+
+	/* On build, detect end-of-loop. */
+	if (fsm->goal == FSM_BUILD && fsm->ix < 0) {
+	    rc = CPIOERR_HDR_TRAILER;
+	    break;
+	}
 
 	/* Generate file path. */
 	rc = fsmMapPath(fsm);
@@ -1389,6 +1389,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_PRE:
 	break;
     case FSM_MAP:
+	rc = fsmMapPath(fsm);
 	break;
     case FSM_MKDIRS:
 	{   const char * path = fsm->path;

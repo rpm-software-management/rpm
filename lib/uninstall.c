@@ -16,7 +16,7 @@
 
 int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 {
-/*@observer@*/ static char * stepName = "erase";
+/*@observer@*/ static char * stepName = "   erase";
     Header h;
     const void * pkgKey = NULL;
     int rc = 0;
