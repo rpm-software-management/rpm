@@ -68,7 +68,7 @@ struct dirent * avReaddir(DIR * dir)
  * @return 		argv DIR
  */
 /*@null@*/
-static DIR * avOpendir(const char * path)
+DIR * avOpendir(const char * path)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
@@ -78,7 +78,7 @@ static DIR * avOpendir(const char * path)
  * @return 		argv DIR
  */
 /*@null@*/
-static DIR * davOpendir(const char * path)
+DIR * davOpendir(const char * path)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
