@@ -1120,7 +1120,7 @@ int main(int argc, const char ** argv)
 	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
 	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
 	if (upgrade) interfaceFlags |= INSTALL_UPGRADE;
-	if (freshen) interfaceFlags |= INSTALL_FRESHEN;
+	if (freshen) interfaceFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN);
 
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for install"));
