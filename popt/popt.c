@@ -368,9 +368,11 @@ int poptGetNextOpt(poptContext con) {
 		con->os->nextCharArg = origOptString;
 	}
 
-	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) 
+	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) {
 	    *((int *)opt->arg) = 1;
-	else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
+	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_VAL) {
+	    if (opt->arg) *((int *) opt->arg) = opt->val;
+	} else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
 	    if (longArg) {
 		con->os->nextArg = longArg;
 	    } else if (con->os->nextCharArg) {
@@ -390,10 +392,6 @@ int poptGetNextOpt(poptContext con) {
 		switch (opt->argInfo & POPT_ARG_MASK) {
 		  case POPT_ARG_STRING:
 		    *((char **) opt->arg) = con->os->nextArg;
-		    break;
-
-		  case POPT_ARG_VAL:
-		    *((int *) opt->arg) = opt->val;
 		    break;
 
 		  case POPT_ARG_INT:
@@ -440,7 +438,8 @@ int poptGetNextOpt(poptContext con) {
 	else 
 	    sprintf(con->finalArgv[i], "-%c", opt->shortName);
 
-	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) 
+	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE
+		     && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL) 
 	    con->finalArgv[con->finalArgvCount++] = strdup(con->os->nextArg);
     }
 
