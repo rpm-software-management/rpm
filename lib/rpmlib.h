@@ -1706,9 +1706,8 @@ typedef enum rpmEraseInterfaceFlags_e {
 /** \ingroup signature
  * Tags found in signature header from package.
  */
-/*@-enummemuse@*/
 enum rpmtagSignature {
-    RPMSIGTAG_SIZE	= 1000,	/*!< Size in bytes. */
+    RPMSIGTAG_SIZE	= 1000,	/*!< Header+Payload size in bytes. */
 /* the md5 sum was broken *twice* on big endian machines */
     RPMSIGTAG_LEMD5_1	= 1001,	/*!< Broken MD5, take 1 */
     RPMSIGTAG_PGP	= 1002,	/*!< PGP 2.6.3 signature. */
@@ -1716,29 +1715,7 @@ enum rpmtagSignature {
     RPMSIGTAG_MD5	= 1004,	/*!< MD5 signature. */
     RPMSIGTAG_GPG	= 1005, /*!< GnuPG signature. */
     RPMSIGTAG_PGP5	= 1006,	/*!< PGP5 signature @deprecated legacy. */
-
-/* Signature tags by Public Key Algorithm (RFC 2440) */
-/* N.B.: These tags are tenative, the values may change */
-    RPMTAG_PK_BASE	= 512,		/*!< @todo Implement. */
-    RPMTAG_PK_RSA_ES	= RPMTAG_PK_BASE+1,	/*!< (unused */
-    RPMTAG_PK_RSA_E	= RPMTAG_PK_BASE+2,	/*!< (unused) */
-    RPMTAG_PK_RSA_S	= RPMTAG_PK_BASE+3,	/*!< (unused) */
-    RPMTAG_PK_ELGAMAL_E	= RPMTAG_PK_BASE+16,	/*!< (unused) */
-    RPMTAG_PK_DSA	= RPMTAG_PK_BASE+17,	/*!< (unused) */
-    RPMTAG_PK_ELLIPTIC	= RPMTAG_PK_BASE+18,	/*!< (unused) */
-    RPMTAG_PK_ECDSA	= RPMTAG_PK_BASE+19,	/*!< (unused) */
-    RPMTAG_PK_ELGAMAL_ES= RPMTAG_PK_BASE+20,	/*!< (unused) */
-    RPMTAG_PK_DH	= RPMTAG_PK_BASE+21,	/*!< (unused) */
-
-    RPMTAG_HASH_BASE	= 512+64,	/*!< @todo Implement. */
-    RPMTAG_HASH_MD5	= RPMTAG_HASH_BASE+1,	/*!< (unused) */
-    RPMTAG_HASH_SHA1	= RPMTAG_HASH_BASE+2,	/*!< (unused) */
-    RPMTAG_HASH_RIPEMD160= RPMTAG_HASH_BASE+3,	/*!< (unused) */
-    RPMTAG_HASH_MD2	= RPMTAG_HASH_BASE+5,	/*!< (unused) */
-    RPMTAG_HASH_TIGER192= RPMTAG_HASH_BASE+6,	/*!< (unused) */
-    RPMTAG_HASH_HAVAL_5_160= RPMTAG_HASH_BASE+7	/*!< (unused) */
 };
-/*@=enummemuse@*/
 
 /**
  *  Return codes from verifySignature().
@@ -1753,18 +1730,17 @@ typedef enum rpmVerifySignatureReturn_e {
 
 /** \ingroup signature
  * Verify a signature from a package.
- * @param file		file name of header+payload
+ * @param fn		file name of header+payload
  * @param sigTag	type of signature
  * @param sig		signature itself
  * @param siglen	no. of bytes in signature
  * @retval result	detailed text result of signature verification
  * @return		result of signature verification
  */
-rpmVerifySignatureReturn rpmVerifySignature(const char *file,
+rpmVerifySignatureReturn rpmVerifySignature(const char * fn,
 		int_32 sigTag, const void * sig, int siglen,
 		const rpmDigest dig, /*@out@*/ char * result)
-	/*@globals fileSystem @*/
-	/*@modifies *result, fileSystem @*/;
+	/*@modifies *result @*/;
 
 /** \ingroup signature
  * Destroy signature header from package.

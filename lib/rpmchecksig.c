@@ -76,11 +76,13 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
     return 1;
 }
 
+/**
+ */
 static int copyFile(FD_t *sfdp, const char **sfnp,
-	FD_t *tfdp, const char **tfnp, rpmDigest dig)
+		FD_t *tfdp, const char **tfnp)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, *dig, rpmGlobalMacroContext,
+	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     unsigned char buffer[BUFSIZ];
@@ -92,19 +94,8 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	goto exit;
 
-    /*@-type@*/ /* FIX: cast? */
-    if (dig != NULL) {
-	(void) fdInitDigest(*sfdp, PGPHASHALGO_MD5, 0);
-	dig->sha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-    }
-    /*@=type@*/
-
-    while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
-    /*@-type@*/ /* FIX: cast? */
-	if (dig)
-	    (void) rpmDigestUpdate(dig->sha1ctx, buffer, count);
-    /*@=type@*/
-
+    while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0)
+    {
 	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) != count) {
 	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
@@ -115,14 +106,6 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
 	goto exit;
     }
-
-    /*@-type@*/ /* FIX: cast? */
-    if (dig != NULL) {
-	dig->md5ctx = _free(dig->md5ctx);
-	dig->md5ctx = (*sfdp)->digest;
-	(*sfdp)->digest = NULL;
-    }
-    /*@=type@*/
 
     rc = 0;
 
@@ -185,7 +168,7 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (copyFile(&fd, &rpm, &ofd, &sigtarget, NULL))
+	if (copyFile(&fd, &rpm, &ofd, &sigtarget))
 	    goto exit;
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
@@ -225,7 +208,7 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 
 	/* Append the header and archive from the temp file */
 	/* ASSERT: fd == NULL && ofd != NULL */
-	if (copyFile(&fd, &sigtarget, &ofd, &trpm, NULL))
+	if (copyFile(&fd, &sigtarget, &ofd, &trpm))
 	    goto exit;
 	/* Both fd and ofd are now closed. */
 	/* ASSERT: fd == NULL && ofd == NULL */
@@ -261,35 +244,116 @@ exit:
     return res;
 }
 
+/**
+ */
+static /*@only@*/ /*@null@*/
+rpmDigest freeDig(/*@only@*/ /*@null@*/ rpmDigest dig)
+	/*@modifies dig @*/
+{
+    if (dig != NULL) {
+	dig->md5ctx = _free(dig->md5ctx);
+	dig->md5 = _free(dig->md5);
+	dig->sha1ctx = _free(dig->sha1ctx);
+	dig->sha1 = _free(dig->sha1);
+	dig->hash_data = _free(dig->hash_data);
+
+	mp32nfree(&dig->hm);
+	mp32nfree(&dig->r);
+	mp32nfree(&dig->s);
+
+	(void) rsapkFree(&dig->rsa_pk);
+	mp32nfree(&dig->m);
+	mp32nfree(&dig->c);
+	mp32nfree(&dig->rsahm);
+	dig = _free(dig);
+    }
+    return dig;
+}
+
+/**
+ */
+static /*@only@*/ rpmDigest newDig(void)
+	/*@*/
+{
+    rpmDigest dig = xcalloc(1, sizeof(*dig));
+    return dig;
+}
+
+/**
+ */
+static int readFile(FD_t *sfdp, const char **sfnp, rpmDigest dig)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *sfdp, *sfnp, *dig, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    unsigned char buffer[BUFSIZ];
+    ssize_t count;
+    int rc = 1;
+    int xx;
+
+    if (manageFile(sfdp, sfnp, O_RDONLY, 0))
+	goto exit;
+
+    /*@-type@*/ /* FIX: cast? */
+    fdInitDigest(*sfdp, PGPHASHALGO_MD5, 0);
+    dig->sha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+    /*@=type@*/
+    dig->nbytes = 0;
+
+    while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0)
+    {
+	/*@-type@*/ /* FIX: cast? */
+	xx = rpmDigestUpdate(dig->sha1ctx, buffer, count);
+	/*@=type@*/
+	dig->nbytes += count;
+    }
+
+    if (count < 0) {
+	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
+	goto exit;
+    } else
+	dig->nbytes += count;
+
+    /*@-type@*/ /* FIX: cast? */
+    dig->md5ctx = _free(dig->md5ctx);
+    dig->md5ctx = (*sfdp)->digest;
+    /*@=type@*/
+    (*sfdp)->digest = NULL;
+
+    rc = 0;
+
+exit:
+    if (*sfdp)	xx = manageFile(sfdp, NULL, 0, rc);
+    return rc;
+}
+
 int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 {
     FD_t fd = NULL;
-    FD_t ofd = NULL;
     int res2, res3;
     struct rpmlead lead, *l = &lead;
     const char *pkgfn = NULL;
     char result[1024];
-    const char * sigtarget = NULL;
-    unsigned char buffer[8192];
-    unsigned char missingKeys[7164];
-    unsigned char untrustedKeys[7164];
+    char buffer[8192], * b;
+    char missingKeys[7164], * m;
+    char untrustedKeys[7164], * u;
     Header sig;
     HeaderIterator hi;
     int_32 tag, type, count;
     const void * ptr;
     int res = 0;
+    int xx;
 
     const char * gpgpk = NULL;
     unsigned int gpgpklen = 0;
     const char * pgppk = NULL;
     unsigned int pgppklen = 0;
 
-    rpmDigest dig = alloca(sizeof(*dig));
+    rpmDigest dig = NULL;
     rpmRC rc;
 
     if (argv == NULL) return res;
-
-    memset(dig, 0, sizeof(*dig));
 
     /*@-branchstate@*/
     while ((pkgfn = *argv++) != NULL) {
@@ -327,19 +391,20 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    goto bottom;
 	}
 
-	/* Write the header and archive to a temp file */
-	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (copyFile(&fd, &pkgfn, &ofd, &sigtarget, dig)) {
+	dig = newDig();
+
+	/* Read the file, generating digests. */
+	if (readFile(&fd, &pkgfn, dig)) {
 	    res++;
 	    goto bottom;
 	}
-	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
-	/* ASSERT: fd == NULL && ofd == NULL */
 
 	res2 = 0;
-	missingKeys[0] = '\0';
-	untrustedKeys[0] = '\0';
-	sprintf(buffer, "%s:%c", pkgfn, (rpmIsVerbose() ? '\n' : ' ') );
+	b = buffer;		*b = '\0';
+	m = missingKeys;	*m = '\0';
+	u = untrustedKeys;	*u = '\0';
+	sprintf(b, "%s:%c", pkgfn, (rpmIsVerbose() ? '\n' : ' ') );
+	b += strlen(b);
 
 	for (hi = headerInitIterator(sig);
 	    headerNextIterator(hi, &tag, &type, &ptr, &count);
@@ -352,27 +417,27 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    case RPMSIGTAG_PGP:
 		if (!(flags & CHECKSIG_PGP)) 
 		     /*@innercontinue@*/ continue;
-if (rpmIsVerbose())
+if (rpmIsDebug())
 fprintf(stderr, "========================= Package RSA Signature\n");
-		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
+		xx = pgpPrtPkts(ptr, count, dig, rpmIsDebug());
     /*@-type@*/ /* FIX: cast? */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->md5ctx);
 
-		(void) rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
-		(void) rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+		xx = rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+		xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
 
 		/* XXX compare leading 16 bits of digest for quick check. */
 	    }
     /*@=type@*/
 		/* XXX retrieve by keyid from signature. */
 		if (pgppk == NULL) {
-		    (void) b64decode(redhatPubKeyRSA, (void **)&pgppk, &pgppklen);
-if (rpmIsVerbose())
+		    xx = b64decode(redhatPubKeyRSA, (void **)&pgppk, &pgppklen);
+if (rpmIsDebug())
 fprintf(stderr, "========================= Red Hat RSA Public Key\n");
-		    (void) pgpPrtPkts(pgppk, pgppklen, NULL, rpmIsVerbose());
+		    xx = pgpPrtPkts(pgppk, pgppklen, NULL, rpmIsDebug());
 		}
 
-		(void) pgpPrtPkts(pgppk, pgppklen, dig, 0);
+		xx = pgpPrtPkts(pgppk, pgppklen, dig, 0);
 
 	    {	const char * prefix = "3020300c06082a864886f70d020505000410";
 		unsigned int nbits = 1024;
@@ -397,24 +462,24 @@ fprintf(stderr, "========================= Red Hat RSA Public Key\n");
 	    case RPMSIGTAG_GPG:
 		if (!(flags & CHECKSIG_GPG)) 
 		     /*@innercontinue@*/ continue;
-if (rpmIsVerbose())
+if (rpmIsDebug())
 fprintf(stderr, "========================= Package DSA Signature\n");
-		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
+		xx = pgpPrtPkts(ptr, count, dig, rpmIsDebug());
     /*@-type@*/ /* FIX: cast? */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->sha1ctx);
-		(void) rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
-		(void) rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
+		xx = rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+		xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 		mp32nzero(&dig->hm);	mp32nsethex(&dig->hm, dig->sha1);
 	    }
     /*@=type@*/
 		/* XXX retrieve by keyid from signature. */
 		if (gpgpk == NULL) {
-		    (void) b64decode(redhatPubKeyDSA, (void **)&gpgpk, &gpgpklen);
-if (rpmIsVerbose())
+		    xx = b64decode(redhatPubKeyDSA, (void **)&gpgpk, &gpgpklen);
+if (rpmIsDebug())
 fprintf(stderr, "========================= Red Hat DSA Public Key\n");
-		    (void) pgpPrtPkts(gpgpk, gpgpklen, NULL, rpmIsVerbose());
+		    xx = pgpPrtPkts(gpgpk, gpgpklen, NULL, rpmIsDebug());
 		}
-		(void) pgpPrtPkts(gpgpk, gpgpklen, dig, 0);
+		xx = pgpPrtPkts(gpgpk, gpgpklen, dig, 0);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
@@ -429,22 +494,23 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 	    if (ptr == NULL) /* XXX can't happen */
 		/*@innercontinue@*/ continue;
 
-	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, 
-					   dig, result))) {
+	    res3 = rpmVerifySignature(pkgfn, tag, ptr, count, dig, result);
+	    if (res3) {
 		if (rpmIsVerbose()) {
-		    strcat(buffer, result);
+		    b = stpcpy(b, "    ");
+		    b = stpcpy(b, result);
 		    res2 = 1;
 		} else {
 		    char *tempKey;
 		    switch (tag) {
 		      case RPMSIGTAG_SIZE:
-			strcat(buffer, "SIZE ");
+			b = stpcpy(b, "SIZE ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
 		      case RPMSIGTAG_LEMD5_2:
 		      case RPMSIGTAG_LEMD5_1:
 		      case RPMSIGTAG_MD5:
-			strcat(buffer, "MD5 ");
+			b = stpcpy(b, "MD5 ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
 		      case RPMSIGTAG_PGP5:	/* XXX legacy */
@@ -454,7 +520,7 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 			case RPMSIG_NOKEY:
 			case RPMSIG_NOTTRUSTED:
 			{   int offset = 7;
-			    strcat(buffer, "(PGP) ");
+			    b = stpcpy(b, "(PGP) ");
 			    tempKey = strstr(result, "Key ID");
 			    if (tempKey == NULL) {
 			        tempKey = strstr(result, "keyid:");
@@ -462,16 +528,16 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 			    }
 			    if (tempKey) {
 			      if (res3 == RPMSIG_NOKEY) {
-				strcat(missingKeys, " PGP#");
-				strncat(missingKeys, tempKey + offset, 8);
+				m = stpcpy(m, " PGP#");
+				m = stpncpy(m, tempKey + offset, 8);
 			      } else {
-			        strcat(untrustedKeys, " PGP#");
-				strncat(untrustedKeys, tempKey + offset, 8);
+			        u = stpcpy(u, " PGP#");
+				u = stpncpy(u, tempKey + offset, 8);
 			      }
 			    }
 			}   /*@innerbreak@*/ break;
 			default:
-			    strcat(buffer, "PGP ");
+			    b = stpcpy(b, "PGP ");
 			    res2 = 1;
 			    /*@innerbreak@*/ break;
 			}
@@ -480,46 +546,47 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 			/* Do not consider this a failure */
 			switch (res3) {
 			case RPMSIG_NOKEY:
-			    strcat(buffer, "(GPG) ");
-			    strcat(missingKeys, " GPG#");
+			    b = stpcpy(b, "(GPG) ");
+			    m = stpcpy(m, " GPG#");
 			    tempKey = strstr(result, "key ID");
 			    if (tempKey)
-				strncat(missingKeys, tempKey+7, 8);
+				m = stpncpy(m, tempKey+7, 8);
 			    /*@innerbreak@*/ break;
 			default:
-			    strcat(buffer, "GPG ");
+			    b = stpcpy(b, "GPG ");
 			    res2 = 1;
 			    /*@innerbreak@*/ break;
 			}
 			/*@switchbreak@*/ break;
 		      default:
-			strcat(buffer, "?UnknownSignatureType? ");
+			b = stpcpy(b, "?UnknownSignatureType? ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
 		    }
 		}
 	    } else {
 		if (rpmIsVerbose()) {
-		    strcat(buffer, result);
+		    b = stpcpy(b, "    ");
+		    b = stpcpy(b, result);
 		} else {
 		    switch (tag) {
 		    case RPMSIGTAG_SIZE:
-			strcat(buffer, "size ");
+			b = stpcpy(b, "size ");
 			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_LEMD5_2:
 		    case RPMSIGTAG_LEMD5_1:
 		    case RPMSIGTAG_MD5:
-			strcat(buffer, "md5 ");
+			b = stpcpy(b, "md5 ");
 			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
-			strcat(buffer, "pgp ");
+			b = stpcpy(b, "pgp ");
 			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_GPG:
-			strcat(buffer, "gpg ");
+			b = stpcpy(b, "gpg ");
 			/*@switchbreak@*/ break;
 		    default:
-			strcat(buffer, "??? ");
+			b = stpcpy(b, "??? ");
 			/*@switchbreak@*/ break;
 		    }
 		}
@@ -528,80 +595,43 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 	hi = headerFreeIterator(hi);
 
 	res += res2;
-	(void) unlink(sigtarget);
-	sigtarget = _free(sigtarget);
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
-		rpmError(RPMERR_SIGVFY, "%s", (char *)buffer);
+		rpmError(RPMERR_SIGVFY, "%s", buffer);
 	    } else {
-		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", (char *)buffer,
+		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buffer,
 			_("NOT OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
-			(char *)missingKeys,
+			missingKeys,
 			(missingKeys[0] != '\0') ? _(") ") : "",
 			(untrustedKeys[0] != '\0') ? _(" (UNTRUSTED KEYS:") : "",
-			(char *)untrustedKeys,
+			untrustedKeys,
 			(untrustedKeys[0] != '\0') ? _(")") : "");
 
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
-		rpmError(RPMERR_SIGVFY, "%s", (char *)buffer);
+		rpmError(RPMERR_SIGVFY, "%s", buffer);
 	    } else {
-		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", (char *)buffer,
+		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buffer,
 			_("OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
-			(char *)missingKeys,
+			missingKeys,
 			(missingKeys[0] != '\0') ? _(") ") : "",
 			(untrustedKeys[0] != '\0') ? _(" (UNTRUSTED KEYS:") : "",
-			(char *)untrustedKeys,
+			untrustedKeys,
 			(untrustedKeys[0] != '\0') ? _(")") : "");
 	    }
 	}
 
     bottom:
-	if (fd)		(void) manageFile(&fd, NULL, 0, 0);
-	if (ofd)	(void) manageFile(&ofd, NULL, 0, 0);
-	if (sigtarget) {
-	    (void) unlink(sigtarget);
-	    sigtarget = _free(sigtarget);
-	}
-	dig->md5ctx = _free(dig->md5ctx);
-	dig->md5 = _free(dig->md5);
-	dig->sha1ctx = _free(dig->sha1ctx);
-	dig->sha1 = _free(dig->sha1);
-	dig->hash_data = _free(dig->hash_data);
-
-	mp32nfree(&dig->hm);
-	mp32nfree(&dig->r);
-	mp32nfree(&dig->s);
-
-	(void) rsapkFree(&dig->rsa_pk);
-	mp32nfree(&dig->m);
-	mp32nfree(&dig->c);
-	mp32nfree(&dig->rsahm);
+	if (fd)		xx = manageFile(&fd, NULL, 0, 0);
+	dig = freeDig(dig);
     }
     /*@=branchstate@*/
 
-    dig->md5ctx = _free(dig->md5ctx);
-    dig->md5 = _free(dig->md5);
-    dig->sha1ctx = _free(dig->sha1ctx);
-    dig->sha1 = _free(dig->sha1);
-    dig->hash_data = _free(dig->hash_data);
-
-    mp32bfree(&dig->p);
-    mp32bfree(&dig->q);
-    mp32nfree(&dig->g);
-    mp32nfree(&dig->y);
-    mp32nfree(&dig->hm);
-    mp32nfree(&dig->r);
-    mp32nfree(&dig->s);
-
-    (void) rsapkFree(&dig->rsa_pk);
-    mp32nfree(&dig->m);
-    mp32nfree(&dig->c);
-    mp32nfree(&dig->rsahm);
+    dig = freeDig(dig);
 
     return res;
 }

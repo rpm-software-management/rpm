@@ -858,6 +858,8 @@ typedef struct pgpSig_s {
 	struct pgpPktSigV4_s v4;
     } sig;
 
+    size_t nbytes;			/*!< No. bytes of plain text. */
+
 /*@only@*/ /*@null@*/ void * sha1ctx;	/*!< (dsa) sha1 hash context. */
 /*@only@*/ /*@null@*/ void * sha1;	/*!< (dsa) V3 signature hash. */
     size_t sha1len;			/*!< (dsa) V3 signature hash length. */

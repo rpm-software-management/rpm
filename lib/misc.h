@@ -12,12 +12,6 @@
 #include "header.h"
 #include "ugid.h"
 
-/**
- */
-typedef int (*md5func) (const char * fn, /*@out@*/ unsigned char * digest)
-	/*@globals fileSystem@*/
-	/*@modifies *digest, fileSystem @*/;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
