@@ -404,9 +404,14 @@ static int parseForAttr(char *buf, struct FileList *fl)
     ar->ar_fmodestr = strtok(ourbuf, ", \n\t");
     ar->ar_user = strtok(NULL, ", \n\t");
     ar->ar_group = strtok(NULL, ", \n\t");
-    ar->ar_dmodestr = strtok(NULL, ", \n\t");
 
-    if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group)) {
+    if (defattr)
+        ar->ar_dmodestr = strtok(NULL, ", \n\t");
+    else
+	ar->ar_dmodestr = NULL;
+
+    if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group) || 
+		strtok(NULL, ", \n\t")) {
 	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
@@ -969,16 +974,12 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
     fileUid = statp->st_uid;
     fileGid = statp->st_gid;
 
-    if (S_ISDIR(fileMode)) {
-	if (fl->cur_ar.ar_dmodestr != NULL) {
-	    fileMode &= S_IFMT;
-	    fileMode |= fl->cur_ar.ar_dmode;
-	}
-    } else {
-	if (fl->cur_ar.ar_fmodestr != NULL) {
-	    fileMode &= S_IFMT;
-	    fileMode |= fl->cur_ar.ar_fmode;
-	}
+    if (S_ISDIR(fileMode) && fl->cur_ar.ar_dmodestr) {
+	fileMode &= S_IFMT;
+	fileMode |= fl->cur_ar.ar_dmode;
+    } else if (fl->cur_ar.ar_fmodestr != NULL) {
+	fileMode &= S_IFMT;
+	fileMode |= fl->cur_ar.ar_fmode;
     }
     if (fl->cur_ar.ar_user) {
 	fileUname = getUnameS(fl->cur_ar.ar_user);
