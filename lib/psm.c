@@ -706,6 +706,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t out;
     rpmRC rc = RPMRC_OK;
     const char *n, *v, *r;
+#if __ia64__
+    const char *a;
+#endif
 
     if (progArgv == NULL && script == NULL)
 	return rc;
@@ -719,6 +722,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
+#if __ia64__
+    xx = hge(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
+#endif
 
     /* XXX bash must have functional libtermcap.so.2 */
     if (!strcmp(n, "libtermcap"))
@@ -756,8 +762,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
 
 #if __ia64__
-    if (!strcmp(n, "glibc")
-     && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade"))
+    /* XXX This assumes that all interpreters are elf executables. */
+    if ((a != NULL && a[0] == 'i' && a[1] != '\0' && a[2] == '8' && a[3] == '6')
+     && strcmp(argv[0], "/sbin/ldconfig"))
     {
 	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
 	const char * errstr;
@@ -980,6 +987,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     (void) psmWait(psm);
 
+  /* XXX filter order dependent multilib "other" arch helper error. */
+  if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
     if (psm->sq.reaped < 0) {
 	rpmError(RPMERR_SCRIPT,
 		_("%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
@@ -992,6 +1001,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		sln, n, v, r, WEXITSTATUS(psm->sq.status));
 	rc = RPMRC_FAIL;
     }
+  }
 
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
 
@@ -2047,16 +2057,18 @@ psm->te->h = headerFree(psm->te->h);
 	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')
 	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
 	{
-	    static int _loaded = 0;
+	    static int _pw_loaded = 0;
+	    static int _gr_loaded = 0;
 
-	    /*
-	     * This loads all of the name services libraries, in case we
-	     * don't have access to them in the chroot().
-	     */
-	    if (!_loaded) {
+	    if (!_pw_loaded) {
 		(void)getpwnam("root");
 		endpwent();
-		_loaded++;
+		_pw_loaded++;
+	    }
+	    if (!_gr_loaded) {
+		(void)getgrnam("root");
+		endgrent();
+		_gr_loaded++;
 	    }
 
 	    xx = chdir("/");

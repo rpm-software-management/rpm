@@ -54,7 +54,6 @@
 	- fix: escape '+' in regex patterns through RPMMIRE_DEFAULT (#103851).
 	- RPMMIRE_DEFAULT is overkill, use RPMMIRE_STRCMP instead (#103851).
 	- don't use mktemp if mkstemp is available (#103850).
-	- use -fPIC -DPIC on all platforms, not just mandatory (#112713).
 	- python: return None for NEVRAO, [] for everything else.
 	- python: throw exception on bad arg to labelCompare (#113661).
 	- re-add --enable-posixmutexes to build.
@@ -86,6 +85,16 @@
 	- change default behavior to resolve file conflicts as LIFO.
 	- add --fileconflicts to recover rpm traditional behavior.
 	- prefer elf64 over elf32 files, everywhere and always (#126853).
+	- ia64: auto-relocate entire, not partial, directory contents (#126905).
+	- ia64: auto-relocate glibc.ix86 interpreter path (#100563).
+	- shared libraries in separate rpm-libs package.
+	- fix: defattr for rpm-libs (#130461).
+	- fix: static glibc/libgcc helpers always installed (#127522).
+	- ia64: make sure that autorelocated file dependencies are satisfied.
+	- ia64: relocate all scriptlet interpreters.
+	- ia64: don't bother trying to preload autorelocated modules.
+	- fix: filesystem package needs mail/lock w/o getgrnam.
+	- fix: do getpwnam/getgrnam to load correct modules before chroot.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
@@ -109,6 +118,7 @@
 	- find-debuginfo.sh: permit stripping unwritable by non-root (#112429).
 	- missing build dependency (#111104).
 	- spelling corrections (#112728).
+	- use -fPIC -DPIC on all platforms, not just mandatory (#112713).
 	- popt: pad to display length, not strlen, for i18n popt args (#106240).
 	- python: include Python.h before glibc features.h.
 	- python: return [], not None, accessing header tags (#112794).

@@ -100,7 +100,18 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 	    endgrent();
 	    /*@=internalglobs@*/
 	    grent = getgrnam(thisGname);
-	    if (grent == NULL) return -1;
+	    if (grent == NULL) {
+		/* XXX The filesystem package needs group/lock w/o getgrnam. */
+		if (strcmp(thisGname, "lock") == 0) {
+		    *gid = lastGid = 54;
+		    return 0;
+		} else
+		if (strcmp(thisGname, "mail") == 0) {
+		    *gid = lastGid = 12;
+		    return 0;
+		} else
+		return -1;
+	    }
 	}
 	lastGid = grent->gr_gid;
     }
