@@ -418,7 +418,6 @@ void rpmDisplayQueryTags(FILE * f)
     }
 }
 
-#ifndef	DYING
 int showMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
 {
     Header h;
@@ -432,48 +431,22 @@ int showMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
     rpmdbFreeIterator(mi);
     return ec;
 }
-#else
-int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage)
-{
-    Header h;
-    int ec = 0;
-    int i;
-
-    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	int rc;
-	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-	if (recOffset == 0)
-	    continue;
-	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
-	    
-	h = rpmdbGetRecord(db, recOffset);
-	if (h == NULL) {
-		fprintf(stderr, _("error: could not read database record\n"));
-		ec = 1;
-	} else {
-		if ((rc = showPackage(qva, db, h)) != 0)
-		    ec = rc;
-		headerFree(h);
-	}
-    }
-    return ec;
-}
-#endif
 
 /*
  * XXX Eliminate linkage loop into librpmbuild.a
  */
+/**
+ */
 int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 		const char *buildRoot, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force) = NULL;
+/**
+ */
 void	(*freeSpecVec) (Spec spec) = NULL;
 
 int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	rpmdb db, QVF_t showPackage)
 {
-#ifdef	DYING
-    dbiIndexSet matches = NULL;		/* XXX DYING */
-#endif
     rpmdbMatchIterator mi = NULL;
     Header h;
     int rc;
@@ -682,18 +655,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
     }	break;
 
     case RPMQV_PACKAGE:
-#ifdef	DYING
-	rc = rpmdbFindByLabel(db, arg, &matches);
-	if (rc == 1) {
-	    retcode = 1;
-	    fprintf(stderr, _("package %s is not installed\n"), arg);
-	} else if (rc == 2) {
-	    retcode = 1;
-	    fprintf(stderr, _("error looking for package %s\n"), arg);
-	} else {
-	    retcode = showMatches(qva, db, matches, showPackage);
-	}
-#else
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	mi = rpmdbInitIterator(db, RPMDBI_LABEL, arg, 0);
 	if (mi == NULL) {
@@ -702,16 +663,9 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
 	}
-#endif
 	break;
     }
    
-#ifdef	DYING
-    if (matches) {	/* XXX DYING */
-	dbiFreeIndexSet(matches);
-	matches = NULL;
-    }
-#endif
     return retcode;
 }
 

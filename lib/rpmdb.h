@@ -357,22 +357,6 @@ int dbiByteSwapped(dbiIndex dbi);
 char * db0basename(int rpmtag);
 
 /**
- * Remove package header from rpm database and indices.
- * @param rpmdb		rpm database
- * @param offset	location in Packages dbi
- * @param tolerant	(legacy) print error messages?
- * @return		0 on success
- */
-int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
-
-/**
- * Add package header to rpm database and indices.
- * @param rpmdb		rpm database
- * @param rpmtag	rpm tag
- */
-int rpmdbAdd(rpmdb rpmdb, Header dbentry);
-
-/**
  */
 unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
 
@@ -382,12 +366,34 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
 int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, /*@out@*/dbiIndexSet * matchList, 
 		    int numItems);
 
-/* XXX only for the benefit of runTransactions() */
 /**
- * @param rpmdb		rpm database
+ * Destroy set of index database items.
+ * @param set	set of index database items
  */
-int findMatches(rpmdb rpmdb, const char * name, const char * version,
-	const char * release, /*@out@*/ dbiIndexSet * matches);
+void dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set);
+
+/**
+ * Count items in index database set.
+ * @param set	set of index database items
+ * @return	number of items
+ */
+unsigned int dbiIndexSetCount(dbiIndexSet set);
+
+/**
+ * Return record offset of header from element in index database set.
+ * @param set	set of index database items
+ * @param recno	index of item in set
+ * @return	record offset of header
+ */
+unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
+
+/**
+ * Return file index from element in index database set.
+ * @param set	set of index database items
+ * @param recno	index of item in set
+ * @return	file index
+ */
+unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 
 #ifdef __cplusplus
 }

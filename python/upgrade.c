@@ -589,7 +589,7 @@ int ugFindUpgradePackages(struct pkgSet *psp, char *installRoot)
     rpmSetVerbosity(RPMMESS_FATALERROR);
     old = rpmErrorSetCallback(emptyErrorCallback);
 
-    if (rpmdbOpenForTraversal(installRoot, &db)) {
+    if (rpmdbOpen(installRoot, &db, O_RDONLY, 0644)) {
 	/*logMessage("failed opening %s/var/lib/rpm/packages.rpm",
 		     installRoot);*/
 	return(-1);

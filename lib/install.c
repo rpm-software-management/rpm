@@ -7,7 +7,6 @@
 #include "cpio.h"
 #include "install.h"
 #include "misc.h"
-#include "rpmdb.h"	/* XXX for rpmdbAdd/rpmdbRemove/rpmdbUpdateRecord */
 
 struct callbackInfo {
     unsigned long archiveSize;
@@ -677,9 +676,8 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
     rpmInstallLoadMacros(h);
 
     rc = installSources(h, rootdir, fd, specFile, notify, notifyData);
-    if (h != NULL) {
+    if (h)
  	headerFree(h);
-    }
 
     return rc;
 }
@@ -701,7 +699,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     char * fileStates = NULL;
     int i;
     int otherOffset = 0;
-    dbiIndexSet matches = NULL;
     int scriptArg;
     int stripSize = 1;		/* strip at least first / for cpio */
     struct fileMemory *fileMem = NULL;
@@ -939,17 +936,13 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     rc = 0;
 
 exit:
-    if (matches) {
-	dbiFreeIndexSet(matches);
-	matches = NULL;
-    }
     if (rootdir && currDir) {
 	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
 	chdir(currDir);
     }
-    if (fileMem) freeFileMemory(fileMem);
-    if (rc) {
+    if (fileMem)
+	freeFileMemory(fileMem);
+    if (rc)
 	headerFree(h);
-    }
     return rc;
 }

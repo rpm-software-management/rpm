@@ -7,7 +7,6 @@
 #include "depends.h"	/* XXX for headerMatchesDepFlags */
 #include "install.h"
 #include "misc.h"	/* XXX for makeTempFile, doputenv */
-#include "rpmdb.h"	/* XXX for rpmdbRemove */
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
@@ -452,7 +451,6 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 
     if (!headerGetEntry(triggeredH, RPMTAG_TRIGGERNAME, NULL, 
 			(void **) &triggerNames, &numTriggers)) {
-	headerFree(triggeredH);
 	return 0;
     }
 

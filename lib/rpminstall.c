@@ -400,9 +400,6 @@ int rpmErase(const char * rootdir, const char ** argv, int transFlags,
 		 int interfaceFlags)
 {
     rpmdb db;
-#ifdef	DYING
-    dbiIndexSet matches = NULL;
-#endif
     int mode;
     int count;
     const char ** arg;
@@ -429,46 +426,6 @@ int rpmErase(const char * rootdir, const char ** argv, int transFlags,
 
     rpmdep = rpmtransCreateSet(db, rootdir);
     for (arg = argv; *arg; arg++) {
-#ifdef	DYING
-	int rc;
-	int i;
-
-	rc = rpmdbFindByLabel(db, *arg, &matches);
-	switch (rc) {
-	case 1:
-	    rpmMessage(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
-	    numFailed++;
-	    break;
-	case 2:
-	    rpmMessage(RPMMESS_ERROR, _("searching for package %s\n"), *arg);
-	    numFailed++;
-	    break;
-	default:
-	    count = 0;
-	    for (i = 0; i < dbiIndexSetCount(matches); i++)
-		if (dbiIndexRecordOffset(matches, i)) count++;
-
-	    if (count > 1 && !(interfaceFlags & UNINSTALL_ALLMATCHES)) {
-		rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"), 
-			*arg);
-		numFailed++;
-		break;
-	    }
-	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-		if (recOffset) {
-		    rpmtransRemovePackage(rpmdep, recOffset);
-		    numPackages++;
-		}
-	    }
-
-	    break;
-	}
-	if (matches) {
-	    dbiFreeIndexSet(matches);
-	    matches = NULL;
-	}
-#else	/* DYING */
 	rpmdbMatchIterator mi;
 
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
@@ -492,7 +449,6 @@ int rpmErase(const char * rootdir, const char ** argv, int transFlags,
 	    }
 	}
 	rpmdbFreeIterator(mi);
-#endif	/* DYING */
     }
 
     if (!(interfaceFlags & UNINSTALL_NODEPS)) {

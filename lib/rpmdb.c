@@ -454,12 +454,12 @@ static inline int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
     return (numCopied == num);
 }
 
-/* XXX rpminstall.c, transaction.c */
+/* XXX transaction.c */
 unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set->count;
 }
 
-/* XXX rpminstall.c, transaction.c */
+/* XXX transaction.c */
 unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
     return set->recs[recno].recOffset;
 }
@@ -479,7 +479,7 @@ static inline void dbiIndexRecordOffsetSave(dbiIndexSet set, int recno, unsigned
     set->recs[recno].recOffset = recoff;
 }
 
-/* XXX depends.c, install.c, query.c, rpminstall.c, transaction.c */
+/* XXX transaction.c */
 void dbiFreeIndexSet(dbiIndexSet set) {
     if (set) {
 	if (set->recs) free(set->recs);
@@ -681,12 +681,6 @@ exit:
 	*dbp = rpmdb;
 
     return rc;
-}
-
-/* XXX python/upgrade.c */
-int rpmdbOpenForTraversal(const char * prefix, rpmdb * dbp)
-{
-    return openDatabase(prefix, NULL, dbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
 }
 
 /* XXX python/rpmmodule.c */

@@ -16,38 +16,6 @@ extern "C" {
 #endif
 
 /**
- * Destroy set of index database items.
- * @param set	set of index database items
- */
-void dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set);
-
-/* XXX API compatibility */
-#define	dbiFreeIndexRecord(_a)	dbiFreeIndexSet(_a)
-
-/**
- * Count items in index database set.
- * @param set	set of index database items
- * @return	number of items
- */
-unsigned int dbiIndexSetCount(dbiIndexSet set);
-
-/**
- * Return record offset of header from element in index database set.
- * @param set	set of index database items
- * @param recno	index of item in set
- * @return	record offset of header
- */
-unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
-
-/**
- * Return file index from element in index database set.
- * @param set	set of index database items
- * @param recno	index of item in set
- * @return	file index
- */
-unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
-
-/**
  */
 int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
 	/*@out@*/ Header * hdr);
@@ -358,6 +326,7 @@ typedef enum rpmCallbackType_e {
     RPMCALLBACK_TRANS_PROGRESS, RPMCALLBACK_TRANS_START, RPMCALLBACK_TRANS_STOP,
     RPMCALLBACK_UNINST_PROGRESS, RPMCALLBACK_UNINST_START, RPMCALLBACK_UNINST_STOP
 } rpmCallbackType;
+
 typedef void * (*rpmCallbackFunction)(const Header h, 
 				      const rpmCallbackType what, 
 				      const unsigned long amount, 
@@ -366,11 +335,15 @@ typedef void * (*rpmCallbackFunction)(const Header h,
 
 void	urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount);
 
+/* ==================================================================== */
 /**
  * @param dbp	address of rpm database
  */
 int rpmdbOpen (const char * root, /*@out@*/ rpmdb * dbp, int mode, int perms);
     /* 0 on error */
+
+/**
+ */
 int rpmdbInit(const char * root, int perms);
     /* nonzero on error */
 
@@ -379,38 +352,11 @@ int rpmdbInit(const char * root, int perms);
  */
 void rpmdbClose ( /*@only@*/ rpmdb db);
 
-/* Databases like this should only have rpmdb*RecNum and rpmdbGetRecord
-   used on them. Anything else could fail! */
-/**
- * @param dbp		address of rpm database
- */
-int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * dbp);
-
-#ifdef	DYING
-/**
- * @param db		rpm database
- */
-Header rpmdbGetRecord(rpmdb db, unsigned int offset);
-
-/**
- * @param db		rpm database
- */
-int rpmdbFindPackage(rpmdb db, const char * name,
-	/*@out@*/ dbiIndexSet * matches);
-
-/* these are just convenience functions */
-/**
- * @param db		rpm database
- */
-int rpmdbFindByLabel(rpmdb db, const char * label,
-	/*@out@*/ dbiIndexSet * matches);
-#endif
-
 /**
  * Return number of instances of package in rpm database.
  * @param db		rpm database
  * @param name		rpm package name
- * @return		number of instances of package in database
+ * @return		number of instances
  */
 int rpmdbCountPackages(rpmdb db, const char *name);
 
@@ -480,6 +426,27 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi);
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
 			const void * key, size_t keylen);
 
+/**
+ * Remove package header from rpm database and indices.
+ * @param rpmdb		rpm database
+ * @param offset	location in Packages dbi
+ * @param tolerant	(legacy) print error messages?
+ * @return		0 on success
+ */
+int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
+
+/**
+ * Add package header to rpm database and indices.
+ * @param rpmdb		rpm database
+ * @param rpmtag	rpm tag
+ */
+int rpmdbAdd(rpmdb rpmdb, Header dbentry);
+
+/**
+ */
+int rpmdbRebuild(const char * root);
+
+/* ==================================================================== */
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
     const char * oldPath;	/* NULL here evals to RPMTAG_DEFAULTPREFIX, */
@@ -487,14 +454,25 @@ typedef struct rpmRelocation_s {
     const char * newPath;	/* NULL means to omit the file completely! */
 } rpmRelocation;
 
+
+/**
+ */
 int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
 			    rpmCallbackFunction notify, void * notifyData,
 			    char ** cookie);
-int rpmVersionCompare(Header first, Header second);
-int rpmdbRebuild(const char * root);
 
+/**
+ */
+int rpmVersionCompare(Header first, Header second);
+
+
+/**
+ */
 int rpmVerifyFile(const char * root, Header h, int filenum,
 	/*@out@*/ int * result, int omitMask);
+
+/**
+ */
 int rpmVerifyScript(const char * root, Header h, FD_t err);
 
 /* Transaction sets are inherently unordered! RPM may reorder transaction
@@ -527,16 +505,34 @@ struct rpmDependencyConflict {
 
    returns 0 on success, 1 on I/O error, 2 if the package needs capabilities
    which are not implemented */
+
+/**
+ */
 int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 		/*@owned@*/ const void * key, int update,
 		rpmRelocation * relocs);
+
+/**
+ */
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h,
 		/*@owned@*/ const void * key);
+
+/**
+ */
 void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
+
+/**
+ */
 void rpmtransFree( /*@only@*/ rpmTransactionSet rpmdep);
+
+/**
+ */
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd);
 
 /* this checks for dependency satisfaction, but *not* ordering */
+
+/**
+ */
 int rpmdepCheck(rpmTransactionSet rpmdep,
 	/*@exposed@*/ /*@out@*/ struct rpmDependencyConflict ** conflicts,
 	/*@exposed@*/ /*@out@*/ int * numConflicts);
@@ -544,7 +540,13 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 /* Orders items, returns error on circle, finals keys[] is NULL. No dependency
    check is done, use rpmdepCheck() for that. If dependencies are not
    satisfied a "best-try" ordering is returned. */
+
+/**
+ */
 int rpmdepOrder(rpmTransactionSet order);
+
+/**
+ */
 void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 	int numConflicts);
 
@@ -827,11 +829,8 @@ typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
 
 /**
  */
-#ifdef	DYING
-int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage);
-#else
-int showMatches(QVA_t *qva, /*@only@*/ rpmdbMatchIterator mi, QVF_t showPackage);
-#endif
+int showMatches(QVA_t *qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
+	QVF_t showPackage);
 
 #define QUERY_FOR_LIST		(1 << 1)
 #define QUERY_FOR_STATE		(1 << 2)
@@ -869,6 +868,9 @@ extern struct poptOption rpmVerifyPoptTable[];
  * @param db		rpm database
  */
 int showVerifyPackage(QVA_t *qva, /*@only@*/ rpmdb db, Header h);
+
+/**
+ */
 int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 
 /* ==================================================================== */
@@ -884,10 +886,19 @@ int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 #define UNINSTALL_NODEPS	(1 << 0)
 #define UNINSTALL_ALLMATCHES	(1 << 1)
 
+
+/**
+ */
 int rpmInstall(const char * rootdir, const char ** argv, int installFlags, 
 	      int interfaceFlags, int probFilter, rpmRelocation * relocations);
+
+/**
+ */
 int rpmInstallSource(const char * prefix, const char * arg, const char ** specFile,
 		    char ** cookie);
+
+/**
+ */
 int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags, 
 		 int interfaceFlags);
 
@@ -898,7 +909,13 @@ int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags,
 #define CHECKSIG_MD5 (1 << 1)
 #define CHECKSIG_GPG (1 << 2)
 
+
+/**
+ */
 int rpmCheckSig(int flags, const char **argv);
+
+/**
+ */
 int rpmReSign(int add, char *passPhrase, const char **argv);
 
 #define ADD_SIGNATURE 1

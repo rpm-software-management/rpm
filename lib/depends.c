@@ -612,7 +612,6 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 			const void * key, int upgrade, rpmRelocation * relocs)
 {
     /* this is an install followed by uninstalls */
-    dbiIndexSet matches = NULL;
     const char * name;
     int count;
     const char ** obsoletes;
@@ -670,11 +669,6 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 
 	for (j = 0; j < count; j++) {
 
-	    if (matches) {
-		dbiFreeIndexSet(matches);
-		matches = NULL;
-	    }
-
 	    /* XXX avoid self-obsoleting packages. */
 	    if (!strcmp(name, obsoletes[j]))
 		continue;
@@ -706,11 +700,6 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 
 	if (obsoletesEVR) free(obsoletesEVR);
 	free(obsoletes);
-    }
-
-    if (matches) {
-	dbiFreeIndexSet(matches);
-	matches = NULL;
     }
 
     return 0;
