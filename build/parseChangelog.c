@@ -88,7 +88,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     time.tm_year = strtol(p, &q, 10);
     if (!(q && *q == '\0')) return -1;
-    if (time.tm_year < 1997 || time.tm_year >= 3000) return -1;
+    if (time.tm_year < 1990 || time.tm_year >= 3000) return -1;
     time.tm_year -= 1900;
 
     *secs = mktime(&time);
