@@ -186,7 +186,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
 			  char * owner, char * group, int uid, int gid,
 			  char * linkto) {
-    char * perms = "----------";
+    char perms[11];
     char sizefield[15];
     char ownerfield[9], groupfield[9];
     char timefield[100] = "";
@@ -196,6 +196,8 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
     static int thisMonth = 0;
     struct tm * tstruct;
     char * namefield = name;
+
+    strcpy(perms, "----------");
    
     if (!thisYear) {
 	currenttime = time(NULL);
