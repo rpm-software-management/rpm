@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-29 09:36-0500\n"
+"POT-Creation-Date: 1999-11-30 09:22-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,59 +65,59 @@ msgstr ""
 msgid "Building for target %s\n"
 msgstr ""
 
-#: build.c:344
+#: build.c:346
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:351
+#: build.c:353
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:355
+#: build.c:357
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:376
+#: build.c:378
 msgid "override build architecture"
 msgstr ""
 
-#: build.c:378
+#: build.c:380
 msgid "override build operating system"
 msgstr ""
 
-#: build.c:380
+#: build.c:382
 msgid "override build root"
 msgstr ""
 
-#: build.c:382 rpm.c:493
+#: build.c:384 rpm.c:493
 msgid "remove build tree when done"
 msgstr ""
 
-#: build.c:384
+#: build.c:386
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: build.c:386
+#: build.c:388
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:388
+#: build.c:390
 msgid "remove sources when done"
 msgstr ""
 
-#: build.c:390
+#: build.c:392
 msgid "remove specfile when done"
 msgstr ""
 
-#: build.c:392 rpm.c:491
+#: build.c:394 rpm.c:491
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: build.c:394
+#: build.c:396
 msgid "override target platform"
 msgstr ""
 
-#: build.c:396
+#: build.c:398
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -2229,73 +2229,73 @@ msgstr ""
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:417
+#: lib/install.c:416
 #, c-format
-msgid "cannot create %s: %s"
+msgid "cannot create sourcedir %s"
 msgstr ""
 
-#: lib/install.c:425 lib/install.c:447
+#: lib/install.c:422 lib/install.c:442
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:429
+#: lib/install.c:426
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:440
+#: lib/install.c:436
 #, c-format
-msgid "cannot create %s"
+msgid "cannot create specdir %s"
 msgstr ""
 
-#: lib/install.c:451
+#: lib/install.c:446
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:485 lib/install.c:513
+#: lib/install.c:480 lib/install.c:508
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:535
+#: lib/install.c:530
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:537 lib/install.c:816 lib/uninstall.c:27
+#: lib/install.c:532 lib/install.c:811 lib/uninstall.c:27
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:628
+#: lib/install.c:623
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:685
+#: lib/install.c:680
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:746
+#: lib/install.c:741
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:751
+#: lib/install.c:746
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:776
+#: lib/install.c:771
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:812
+#: lib/install.c:807
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:886
+#: lib/install.c:881
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2543,145 +2543,145 @@ msgstr ""
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:486
+#: lib/query.c:487
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:495 lib/rpminstall.c:227
+#: lib/query.c:496 lib/rpminstall.c:227
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:498
+#: lib/query.c:499
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:526
+#: lib/query.c:527
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:551
+#: lib/query.c:552
 msgid "could not read database record!\n"
 msgstr ""
 
-#: lib/query.c:562
+#: lib/query.c:563
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:572
+#: lib/query.c:573
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:582
+#: lib/query.c:583
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:592
+#: lib/query.c:593
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:607
+#: lib/query.c:608
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:610
+#: lib/query.c:611
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:623
+#: lib/query.c:624
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:626
+#: lib/query.c:627
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: lib/query.c:629
+#: lib/query.c:630
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:641 lib/rpminstall.c:417
+#: lib/query.c:642 lib/rpminstall.c:417
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/query.c:644
+#: lib/query.c:645
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:666
+#: lib/query.c:667
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:725
+#: lib/query.c:726
 msgid "query package owning file"
 msgstr ""
 
-#: lib/query.c:727
+#: lib/query.c:728
 msgid "query packages in group"
 msgstr ""
 
-#: lib/query.c:729
+#: lib/query.c:730
 msgid "query a package file"
 msgstr ""
 
-#: lib/query.c:733
+#: lib/query.c:734
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:735
+#: lib/query.c:736
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: lib/query.c:737
+#: lib/query.c:738
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:739
+#: lib/query.c:740
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:778
+#: lib/query.c:779
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/query.c:780
+#: lib/query.c:781
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/query.c:782
+#: lib/query.c:783
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/query.c:784
+#: lib/query.c:785
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:788
+#: lib/query.c:789
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:790
+#: lib/query.c:791
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:793
+#: lib/query.c:794
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:795
+#: lib/query.c:796
 msgid "display a verbose file listing"
 msgstr ""
 
@@ -3027,59 +3027,59 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:751
+#: lib/rpmio.c:750
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:754
+#: lib/rpmio.c:753
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:757
+#: lib/rpmio.c:756
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:760
+#: lib/rpmio.c:759
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:763
+#: lib/rpmio.c:762
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:766
+#: lib/rpmio.c:765
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:769
+#: lib/rpmio.c:768
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:772
+#: lib/rpmio.c:771
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:775
+#: lib/rpmio.c:774
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:777
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:780
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:783
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:788
+#: lib/rpmio.c:787
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1309
+#: lib/rpmio.c:1308
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

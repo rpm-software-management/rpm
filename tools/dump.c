@@ -9,12 +9,12 @@ int main(int argc, char ** argv)
 
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1) {
-	fdi = fdDup(STDIN_FILENO);
+	fdi = Fopen("-", "r.ufdio");
     } else {
 	fdi = Fopen(argv[1], "r.ufdio");
     }
 
-    if (Ferror(fdi)) {
+    if (fdi == NULL || Ferror(fdi)) {
 	fprintf(stderr, _("cannot open %s: %s\n"), argv[1], strerror(errno));
 	exit(EXIT_FAILURE);
     }

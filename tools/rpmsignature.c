@@ -13,13 +13,13 @@ int main(int argc, char **argv)
     
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1) {
-	fdi = fdDup(STDIN_FILENO);
+	fdi = Fopen("-", "r.ufdio");
     } else {
 	fdi = Fopen(argv[1], "r.ufdio");
-	if (Ferror(fdi)) {
-	    perror(argv[1]);
-	    exit(1);
-	}
+    }
+    if (Ferror(fdi)) {
+	perror("input");
+	exit(1);
     }
 
     readLead(fdi, &lead);
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 	fprintf(stderr, _("No signature available.\n"));
 	break;
       default:
-	fdo = fdDup(STDOUT_FILENO);
+	fdo = Fopen("-", "w.ufdio");
 	rpmWriteSignature(fdo, sig);
     }
     

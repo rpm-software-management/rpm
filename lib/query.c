@@ -471,7 +471,8 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 #else
 			Fstrerror(fd));
 #endif
-	    Fclose(fd);
+	    if (fd)
+		Fclose(fd);
 	    retcode = 1;
 	    break;
 	}

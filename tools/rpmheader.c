@@ -15,20 +15,21 @@ int main(int argc, char **argv)
     
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1) {
-	fdi = fdDup(STDIN_FILENO);
+	fdi = Fopen("-", "r.ufdio");
     } else {
 	fdi = Fopen(argv[1], "r.ufdio");
-	if (Ferror(fdi)) {
-	    perror(argv[1]);
-	    exit(EXIT_FAILURE);
-	}
+    }
+
+    if (fdi == NULL || Ferror(fdi)) {
+	perror("input");
+	exit(EXIT_FAILURE);
     }
 
     readLead(fdi, &lead);
     rpmReadSignature(fdi, NULL, lead.signature_type);
     hd = headerRead(fdi, (lead.major >= 3) ?
 		    HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-    fdo = fdDup(STDOUT_FILENO);
+    fdo = Fopen("-", "w.ufdio");
     rc = headerWrite(fdo, hd, HEADER_MAGIC_YES);
     
     return rc;
