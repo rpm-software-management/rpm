@@ -65,3 +65,17 @@ Revision history for Perl extension RPM.
 	Added a method to the RPM::Header class, is_source(), that returns a
 	true value (1) if the header is associated with a source RPM.
 
+0.xy
+	-
+
+	Added NVR() method to RPM::Header for obvious reasons of convenience.
+
+	Eliminated a croak(), replaced with rpm_error(). Also replaced the
+	warn()'s in typemap with calls to rpm_error.
+
+	Took out all remaining warn()'s and croak()'s, replacing them with
+	rpm_error() calls. Most notable in the error-return cases of
+	RPM::Database::init and ::rebuild.
+
+	More thread-safing, in particular the heretofore-ignored RPM::Constants
+	XS module.
