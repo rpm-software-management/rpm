@@ -64,14 +64,14 @@ void rpmMessage(int level, const char * format, ...) {
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
 	    exit(EXIT_FAILURE);
-	    /*@unreached@*/ break;
+	    /*@notreached@*/ break;
 
 	  default:
 	    fprintf(stderr, _("internal error (rpm bug?): "));
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
 	    exit(EXIT_FAILURE);
-	    /*@unreached@*/ break;
+	    /*@notreached@*/ break;
 
 	}
     }

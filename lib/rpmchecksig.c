@@ -156,7 +156,7 @@ int rpmReSign(int add, char *passPhrase, const char **argv)
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
 	strcat(tmprpm, ".XXXXXX");
-	mktemp(tmprpm);
+	/*@-unrecog@*/ mktemp(tmprpm) /*@=unrecog@*/;
 	trpm = tmprpm;
 
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))

@@ -329,7 +329,7 @@ printNewSpecfile(Spec spec)
 	    sprintf(buf, "%s(%s)", n, tagName(t->t_tag));
 	    t->t_msgid = xstrdup(buf);
 	}
-	msgstr = xstrdup(dgettext(specedit, t->t_msgid));
+	msgstr = xstrdup(/*@-unrecog@*/ dgettext(specedit, t->t_msgid) /*@=unrecog@*/);
 
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
