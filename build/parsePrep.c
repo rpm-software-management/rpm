@@ -23,6 +23,11 @@
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
+/**
+ * Check that file owner and group are known.
+ * @param urlfn		file url
+ * @return		0 on success
+ */
 static int checkOwners(const char *urlfn)
 {
     struct stat sb;
@@ -39,6 +44,17 @@ static int checkOwners(const char *urlfn)
     return 0;
 }
 
+/**
+ * Expand %patchN macro into %prep scriptlet.
+ * @param spec		build info
+ * @param c		patch index
+ * @param strip		patch level (i.e. patch -p argument)
+ * @param db		saved file suffix (i.e. patch --suffix argument)
+ * @param reverse	include -R?
+ * @param removeEmpties	include -E?
+ * @return		expanded %patch macro (NULL on error)
+ */
+ */
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
 {
@@ -122,6 +138,14 @@ static int checkOwners(const char *urlfn)
     return buf;
 }
 
+/**
+ * Expand %setup macro into %prep scriptlet.
+ * @param spec		build info
+ * @param c		source index
+ * @param quietly	should -vv be omitted from tar?
+ * @return		expanded %setup macro (NULL on error)
+ */
+ */
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
 {
     const char *fn, *urlfn;
@@ -204,6 +228,13 @@ static int checkOwners(const char *urlfn)
     return buf;
 }
 
+/**
+ * Parse %setup macro.
+ * @todo FIXME: Option -q broken when not immediately after %setup.
+ * @param spec		build info
+ * @param line		current line from spec file
+ * @return		0 on success
+ */
 static int doSetupMacro(Spec spec, char *line)
 {
     char buf[BUFSIZ];
@@ -346,6 +377,12 @@ static int doSetupMacro(Spec spec, char *line)
     return 0;
 }
 
+/**
+ * Parse %patch line.
+ * @param spec		build info
+ * @param line		current line from spec file
+ * @return		0 on success
+ */
 static int doPatchMacro(Spec spec, char *line)
 {
     char *opt_b;
@@ -484,9 +521,8 @@ int parsePrep(Spec spec)
 	}
     }
 
-    lines = splitString(getStringBuf(buf), strlen(getStringBuf(buf)), '\n');
-    saveLines = lines;
-    while (*lines) {
+    saveLines = splitString(getStringBuf(buf), strlen(getStringBuf(buf)), '\n');
+    for (lines = saveLines; *lines; lines++) {
 	res = 0;
 	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, *lines);
@@ -500,7 +536,6 @@ int parsePrep(Spec spec)
 	    freeStringBuf(buf);
 	    return res;
 	}
-	lines++;
     }
 
     freeSplitString(saveLines);
