@@ -20,7 +20,7 @@
 #include "rpmlead.h"
 #include "signature.h"
 
-typedef int (*md5func)(char * fn, unsigned char * digest);
+typedef int (*md5func)(const char * fn, unsigned char * digest);
 
 static int makePGPSignature(char *file, void **sig, int_32 *size,
 			    char *passPhrase);

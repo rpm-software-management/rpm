@@ -9,7 +9,7 @@ rpminc_HEADERS = dbindex.h header.h misc.h rpmlib.h rpmmacro.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h install.h \
 	md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
-	rpmdb.h rpmlead.h signature.h tread.h
+	rpmdb.h rpmio.h rpmlead.h signature.h tread.h
 
 lib_LIBRARIES = librpm.a
 librpm_a_SOURCES = \
@@ -17,7 +17,7 @@ librpm_a_SOURCES = \
 	formats.c fs.c header.c install.c \
 	lookup.c macro.c md5.c md5sum.c \
 	messages.c misc.c oldheader.c package.c query.c \
-	rebuilddb.c rpmdb.c rpmerr.c rpmlead.c \
+	rebuilddb.c rpmdb.c rpmerr.c rpmio.c rpmlead.c \
 	rpmrc.c signature.c stringbuf.c tagtable.c \
 	tread.c uninstall.c verify.c
 

@@ -48,7 +48,7 @@ char *getUname(uid_t uid)
  * getUnameS() takes a username, gets the uid, and creates an entry in the
  * table to hold a string containing the user name.
  */
-char *getUnameS(char *uname)
+char *getUnameS(const char *uname)
 {
     struct passwd *pw;
     int x;
@@ -113,7 +113,7 @@ char *getGname(gid_t gid)
  * getGnameS() takes a group name, gets the gid, and creates an entry in the
  * table to hold a string containing the group name.
  */
-char *getGnameS(char *gname)
+char *getGnameS(const char *gname)
 {
     struct group *gr;
     int x;

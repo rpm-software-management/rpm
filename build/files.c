@@ -12,36 +12,36 @@
 
 #define MAXDOCDIR 1024
 
-struct FileListRec {
-    char *diskName; /* get file from here       */
-    char *fileName; /* filename in cpio archive */
+typedef struct {
+    const char *diskName; /* get file from here       */
+    const char *fileName; /* filename in cpio archive */
     mode_t mode;
     uid_t uid;
     gid_t gid;
     dev_t device;
     ino_t inode;
-    char *uname;
-    char *gname;
+    const char *uname;
+    const char *gname;
     int flags;
     int verifyFlags;
     int size;
     int mtime;
     dev_t rdev;
-    char *lang;
-};
+    const char *lang;
+} FileListRec;
 
 struct AttrRec {
-    char *PmodeString;
+    const char *PmodeString;
     int Pmode;
-    char *PdirmodeString;
+    const char *PdirmodeString;
     int Pdirmode;
-    char *Uname;
-    char *Gname;
+    const char *Uname;
+    const char *Gname;
 };
 
 struct FileList {
-    char *buildRoot;
-    char *prefix;
+    const char *buildRoot;
+    const char *prefix;
 
     int fileCount;
     int totalFileSize;
@@ -57,14 +57,14 @@ struct FileList {
     struct AttrRec current;
     struct AttrRec def;
     int defVerifyFlags;
-    char *currentLang;
+    const char *currentLang;
 
     /* Hard coded limit of MAXDOCDIR docdirs.         */
     /* If you break it you are doing something wrong. */
     char *docDirs[MAXDOCDIR];
     int docDirCount;
     
-    struct FileListRec *fileList;
+    FileListRec *fileList;
     int fileListRecsAlloced;
     int fileListRecsUsed;
 };
@@ -72,9 +72,9 @@ struct FileList {
 #ifdef	DYING
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test);
-static void freeFileList(struct FileListRec *fileList, int count);
+static void freeFileList(FileListRec *fileList, int count);
 static int compareFileListRecs(const void *ap, const void *bp);
-static int isDoc(struct FileList *fl, char *fileName);
+static int isDoc(struct FileList *fl, const char *fileName);
 static int processBinaryFile(Package pkg, struct FileList *fl, char *fileName);
 static int addFile(struct FileList *fl, char *name, struct stat *statp);
 static int parseForSimple(Spec spec, Package pkg, char *buf,
@@ -197,18 +197,16 @@ static void timeCheck(int tc, Header h)
 
     currentTime = time(NULL);
     
-    x = 0;
-    while (x < count) {
+    for (x = 0; x < count; x++) {
 	if (currentTime - mtime[x] > tc) {
 	    rpmMessage(RPMMESS_WARNING, _("TIMECHECK failure: %s\n"), file[x]);
 	}
-	x++;
     }
 }
 
 static int parseForVerify(char *buf, struct FileList *fl)
 {
-    char *p, *start, *end, *name;
+    char *p, *q, *start, *end, *name;
     char ourbuf[BUFSIZ];
     int not, verifyFlags;
     int *resultVerify;
@@ -252,10 +250,12 @@ static int parseForVerify(char *buf, struct FileList *fl)
 	*start++ = ' ';
     }
 
-    p = strtok(ourbuf, ", \n\t");
     not = 0;
     verifyFlags = RPMVERIFY_NONE;
-    while (p) {
+
+    q = ourbuf;
+    while ((p = strtok(q, ", \n\t")) != NULL) {
+	q = NULL;
 	if (!strcmp(p, "not")) {
 	    not = 1;
 	} else if (!strcmp(p, "md5")) {
@@ -279,7 +279,6 @@ static int parseForVerify(char *buf, struct FileList *fl)
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
-	p = strtok(NULL, ", \n\t");
     }
 
     *resultVerify = not ? ~(verifyFlags) : verifyFlags;
@@ -695,15 +694,15 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 
 static int compareFileListRecs(const void *ap, const void *bp)
 {
-    char *a, *b;
+    const char *a, *b;
 
-    a = ((struct FileListRec *)ap)->fileName;
-    b = ((struct FileListRec *)bp)->fileName;
+    a = ((FileListRec *)ap)->fileName;
+    b = ((FileListRec *)bp)->fileName;
 
     return strcmp(a, b);
 }
 
-static int isDoc(struct FileList *fl, char *fileName)
+static int isDoc(struct FileList *fl, const char *fileName)
 {
     int x = fl->docDirCount;
 
@@ -719,10 +718,10 @@ static void genCpioListAndHeader(struct FileList *fl,
 				 struct cpioFileMapping **cpioList,
 				 int *cpioCount, Header h, int isSrc)
 {
-    int skipLen = 0;
-    struct FileListRec *p;
+    int skipLen;
     int count;
-    struct cpioFileMapping *cpioListPtr;
+    FileListRec *flp;
+    struct cpioFileMapping *clp;
     char *s, buf[BUFSIZ];
     
     /* Sort the big list */
@@ -730,128 +729,119 @@ static void genCpioListAndHeader(struct FileList *fl,
 	  sizeof(*(fl->fileList)), compareFileListRecs);
     
     /* Generate the cpio list and the header */
+    skipLen = 0;
     if (! isSrc) {
-	if (fl->prefix) {
-	    skipLen = 1 + strlen(fl->prefix);
-	} else {
-	    skipLen = 1;
-	}
+	skipLen = 1;
+	if (fl->prefix)
+	    skipLen += strlen(fl->prefix);
     }
-    *cpioList = malloc(sizeof(**cpioList) * fl->fileListRecsUsed);
+
     *cpioCount = 0;
-    cpioListPtr = *cpioList;
-    p = fl->fileList;
-    count = fl->fileListRecsUsed;
-    while (count) {
-	if ((count > 1) && !strcmp(p->fileName, p[1].fileName)) {
-	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s"), p->fileName);
+    clp = *cpioList = malloc(sizeof(**cpioList) * fl->fileListRecsUsed);
+
+    for (flp = fl->fileList, count = fl->fileListRecsUsed; count > 0; flp++, count--) {
+	if ((count > 1) && !strcmp(flp->fileName, flp[1].fileName)) {
+	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s"), flp->fileName);
 	    fl->processingFailed = 1;
 	}
 	
 	/* Make the cpio list */
-	if (! (p->flags & RPMFILE_GHOST)) {
-	    cpioListPtr->fsPath = strdup(p->diskName);
-	    cpioListPtr->archivePath = strdup(p->fileName + skipLen);
-	    cpioListPtr->finalMode = p->mode;
-	    cpioListPtr->finalUid = p->uid;
-	    cpioListPtr->finalGid = p->gid;
-	    cpioListPtr->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE |
+	if (! (flp->flags & RPMFILE_GHOST)) {
+	    clp->fsPath = strdup(flp->diskName);
+	    clp->archivePath = strdup(flp->fileName + skipLen);
+	    clp->finalMode = flp->mode;
+	    clp->finalUid = flp->uid;
+	    clp->finalGid = flp->gid;
+	    clp->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE |
 		CPIO_MAP_UID | CPIO_MAP_GID;
 	    if (isSrc) {
-		cpioListPtr->mapFlags |= CPIO_FOLLOW_SYMLINKS;
+		clp->mapFlags |= CPIO_FOLLOW_SYMLINKS;
 	    }
-	    cpioListPtr++;
+	    clp++;
 	    (*cpioCount)++;
 	}
 	
 	/* Make the header */
 	headerAddOrAppendEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE,
-			       &(p->fileName), 1);
+			       &(flp->fileName), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
-			       &(p->size), 1);
+			       &(flp->size), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
-			       &(p->uname), 1);
+			       &(flp->uname), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
-			       &(p->gname), 1);
+			       &(flp->gname), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
-			       &(p->mtime), 1);
-    if (sizeof(p->mode) != sizeof(uint_16)) {
-	uint_16 pmode = (uint_16)p->mode;
+			       &(flp->mtime), 1);
+    if (sizeof(flp->mode) != sizeof(uint_16)) {
+	uint_16 pmode = (uint_16)flp->mode;
 	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(pmode), 1);
     } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
-			       &(p->mode), 1);
+			       &(flp->mode), 1);
     }
-    if (sizeof(p->rdev) != sizeof(uint_16)) {
-	uint_16 prdev = (uint_16)p->rdev;
+    if (sizeof(flp->rdev) != sizeof(uint_16)) {
+	uint_16 prdev = (uint_16)flp->rdev;
 	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(prdev), 1);
     } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
-			       &(p->rdev), 1);
+			       &(flp->rdev), 1);
     }
-    if (sizeof(p->device) != sizeof(uint_32)) {
-	uint_32 pdevice = (uint_32)p->device;
+    if (sizeof(flp->device) != sizeof(uint_32)) {
+	uint_32 pdevice = (uint_32)flp->device;
 	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(pdevice), 1);
     } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
-			       &(p->device), 1);
+			       &(flp->device), 1);
     }
 	headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-			       &(p->inode), 1);
+			       &(flp->inode), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
-			       &(p->lang), 1);
+			       &(flp->lang), 1);
 	
 	/* We used to add these, but they should not be needed */
 	/* headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
-	 *		   RPM_INT32_TYPE, &(p->uid), 1);
+	 *		   RPM_INT32_TYPE, &(flp->uid), 1);
 	 * headerAddOrAppendEntry(h, RPMTAG_FILEGIDS,
-	 *		   RPM_INT32_TYPE, &(p->gid), 1);
+	 *		   RPM_INT32_TYPE, &(flp->gid), 1);
 	 */
 	
 	buf[0] = '\0';
+	if (S_ISREG(flp->mode))
+	    mdfile(flp->diskName, buf);
 	s = buf;
-	if (S_ISREG(p->mode)) {
-	    mdfile(p->diskName, buf);
-	}
 	headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
 	
 	buf[0] = '\0';
+	if (S_ISLNK(flp->mode))
+	    buf[readlink(flp->diskName, buf, BUFSIZ)] = '\0';
 	s = buf;
-	if (S_ISLNK(p->mode)) {
-	    buf[readlink(p->diskName, buf, BUFSIZ)] = '\0';
-	}
 	headerAddOrAppendEntry(h, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
 	
-	if (p->flags & RPMFILE_GHOST) {
-	    p->verifyFlags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
+	if (flp->flags & RPMFILE_GHOST) {
+	    flp->verifyFlags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
 				RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
 	}
 	headerAddOrAppendEntry(h, RPMTAG_FILEVERIFYFLAGS, RPM_INT32_TYPE,
-			       &(p->verifyFlags), 1);
+			       &(flp->verifyFlags), 1);
 	
-	if (!isSrc && isDoc(fl, p->fileName)) {
-	    p->flags |= RPMFILE_DOC;
-	}
-	if (p->mode & S_IFDIR) {
-	    p->flags &= ~RPMFILE_CONFIG;
-	    p->flags &= ~RPMFILE_DOC;
-	}
+	if (!isSrc && isDoc(fl, flp->fileName))
+	    flp->flags |= RPMFILE_DOC;
+	if (S_ISDIR(flp->mode))
+	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
+
 	headerAddOrAppendEntry(h, RPMTAG_FILEFLAGS, RPM_INT32_TYPE,
-			       &(p->flags), 1);
-	
-	p++;
-	count--;
+			       &(flp->flags), 1);
     }
     headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
 }
 
-static void freeFileList(struct FileListRec *fileList, int count)
+static void freeFileList(FileListRec *fileList, int count)
 {
     while (count--) {
 	FREE(fileList[count].diskName);
@@ -863,9 +853,9 @@ static void freeFileList(struct FileListRec *fileList, int count)
 
 static int addFile(struct FileList *fl, char *name, struct stat *statp)
 {
+    FileListRec *flp;
     char fileName[BUFSIZ];
     char diskName[BUFSIZ];
-    char *prefixTest, *prefixPtr;
     struct stat statbuf;
     int_16 fileMode;
     int fileUid, fileGid;
@@ -895,8 +885,8 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
-	prefixTest = fileName;
-	prefixPtr = fl->prefix;
+	const char *prefixTest = fileName;
+	const char *prefixPtr = fl->prefix;
 
 	while (*prefixPtr && *prefixTest && (*prefixTest == *prefixPtr)) {
 	    prefixPtr++;
@@ -929,79 +919,82 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	myftw(diskName, 16, (myftwFunc) addFile, fl);
 	fl->isDir = 0;
 	fl->inFtw = 0;
-    } else {
-	fileMode = statp->st_mode;
-	fileUid = statp->st_uid;
-	fileGid = statp->st_gid;
-	
-	/* %attr ? */
-	if (S_ISDIR(fileMode) && fl->current.PdirmodeString) {
-	    if (fl->current.PdirmodeString[0] != '-') {
-		fileMode &= S_IFMT;
-		fileMode |= fl->current.Pdirmode;
-	    }
-	} else {
-	    if (fl->current.PmodeString) {
-		fileMode &= S_IFMT;
-		fileMode |= fl->current.Pmode;
-	    }
-	}
-	if (fl->current.Uname) {
-	    fileUname = getUnameS(fl->current.Uname);
-	} else {
-	    fileUname = getUname(fileUid);
-	}
-	if (fl->current.Gname) {
-	    fileGname = getGnameS(fl->current.Gname);
-	} else {
-	    fileGname = getGname(fileGid);
-	}
-	
-	if (! (fileUname && fileGname)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskName);
-	    fl->processingFailed = 1;
-	    return RPMERR_BADSPEC;
-	}
-    
-	rpmMessage(RPMMESS_DEBUG, _("File %d: %s\n"), fl->fileCount, fileName);
-
-	/* Add to the file list */
-	if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
-	    fl->fileListRecsAlloced += 128;
-	    fl->fileList = realloc(fl->fileList,
-				   fl->fileListRecsAlloced *
-				   sizeof(*(fl->fileList)));
-	}
-	    
-	fl->fileList[fl->fileListRecsUsed].fileName = strdup(fileName);
-	fl->fileList[fl->fileListRecsUsed].diskName = strdup(diskName);
-	fl->fileList[fl->fileListRecsUsed].mode = fileMode;
-	fl->fileList[fl->fileListRecsUsed].uid = fileUid;
-	fl->fileList[fl->fileListRecsUsed].gid = fileGid;
-	fl->fileList[fl->fileListRecsUsed].uname = fileUname;
-	fl->fileList[fl->fileListRecsUsed].gname = fileGname;
-
-	if (fl->currentLang) {
-	    fl->fileList[fl->fileListRecsUsed].lang = strdup(fl->currentLang);
-	} else if (! parseForRegexLang(fileName, &lang)) {
-	    fl->fileList[fl->fileListRecsUsed].lang = strdup(lang);
-	} else {
-	    fl->fileList[fl->fileListRecsUsed].lang = strdup("");
-	}
-
-	fl->fileList[fl->fileListRecsUsed].flags = fl->currentFlags;
-	fl->fileList[fl->fileListRecsUsed].verifyFlags =
-	    fl->currentVerifyFlags;
-	fl->fileList[fl->fileListRecsUsed].size = statp->st_size;
-	fl->fileList[fl->fileListRecsUsed].mtime = statp->st_mtime;
-	fl->fileList[fl->fileListRecsUsed].rdev = statp->st_rdev;
-	fl->fileList[fl->fileListRecsUsed].device = statp->st_dev;
-	fl->fileList[fl->fileListRecsUsed].inode = statp->st_ino;
-	fl->fileListRecsUsed++;
-
-	fl->totalFileSize += statp->st_size;
-	fl->fileCount++;
+	return 0;
     }
+
+    fileMode = statp->st_mode;
+    fileUid = statp->st_uid;
+    fileGid = statp->st_gid;
+
+    /* %attr ? */
+    if (S_ISDIR(fileMode) && fl->current.PdirmodeString) {
+	if (fl->current.PdirmodeString[0] != '-') {
+	    fileMode &= S_IFMT;
+	    fileMode |= fl->current.Pdirmode;
+	}
+    } else {
+	if (fl->current.PmodeString) {
+	    fileMode &= S_IFMT;
+	    fileMode |= fl->current.Pmode;
+	}
+    }
+    if (fl->current.Uname) {
+	fileUname = getUnameS(fl->current.Uname);
+    } else {
+	fileUname = getUname(fileUid);
+    }
+    if (fl->current.Gname) {
+	fileGname = getGnameS(fl->current.Gname);
+    } else {
+	fileGname = getGname(fileGid);
+    }
+	
+    if (! (fileUname && fileGname)) {
+	rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskName);
+	fl->processingFailed = 1;
+	return RPMERR_BADSPEC;
+    }
+    
+    rpmMessage(RPMMESS_DEBUG, _("File %d: %s\n"), fl->fileCount, fileName);
+
+    /* Add to the file list */
+    if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
+	fl->fileListRecsAlloced += 128;
+	fl->fileList = realloc(fl->fileList,
+			fl->fileListRecsAlloced * sizeof(*(fl->fileList)));
+    }
+	    
+    flp = &fl->fileList[fl->fileListRecsUsed];
+
+    flp->fileName = strdup(fileName);
+    flp->diskName = strdup(diskName);
+    flp->mode = fileMode;
+    flp->uid = fileUid;
+    flp->gid = fileGid;
+    flp->uname = fileUname;
+    flp->gname = fileGname;
+
+    if (fl->currentLang) {
+	flp->lang = strdup(fl->currentLang);
+    } else if (! parseForRegexLang(fileName, &lang)) {
+	flp->lang = strdup(lang);
+    } else {
+	flp->lang = strdup("");
+    }
+
+    flp->flags = fl->currentFlags;
+    flp->verifyFlags = fl->currentVerifyFlags;
+
+    flp->size = statp->st_size;
+    flp->mtime = statp->st_mtime;
+    flp->rdev = statp->st_rdev;
+    flp->device = statp->st_dev;
+    flp->inode = statp->st_ino;
+
+    fl->fileListRecsUsed++;
+
+    fl->totalFileSize += flp->size;
+    fl->fileCount++;
 
     return 0;
 }
@@ -1036,10 +1029,8 @@ static int processBinaryFile(Package pkg, struct FileList *fl, char *fileName)
 	    return 1;
 	}
 	
-	x = 0;
-	while (x < glob_result.gl_pathc) {
+	for (x = 0; x < glob_result.gl_pathc; x++) {
 	    rc = addFile(fl, &(glob_result.gl_pathv[x][offset]), NULL);
-	    x++;
 	}
 	globfree(&glob_result);
     } else {
@@ -1134,14 +1125,12 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     s = getStringBuf(pkg->fileList);
     files = splitString(s, strlen(s), '\n');
-    fp = files;
 
-    while (*fp) {
+    for (fp = files; *fp != NULL; fp++) {
 	s = *fp;
 	SKIPSPACE(s);
-	if (! *s) {
-	    fp++; continue;
-	}
+	if (*s == '\0')
+	    continue;
 	fileName = NULL;
 	strcpy(buf, s);
 	
@@ -1153,42 +1142,33 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.current.Pmode = fl.def.Pmode;
 	fl.current.Pdirmode = fl.def.Pdirmode;
 	fl.isSpecialDoc = 0;
+
 	FREE(fl.current.PmodeString);
 	FREE(fl.current.PdirmodeString);
 	FREE(fl.current.Uname);
 	FREE(fl.current.Gname);
 	FREE(fl.currentLang);
-	if (fl.def.PmodeString) {
+	if (fl.def.PmodeString)
 	    fl.current.PmodeString = strdup(fl.def.PmodeString);
-	}
-	if (fl.def.PdirmodeString) {
+	if (fl.def.PdirmodeString)
 	    fl.current.PdirmodeString = strdup(fl.def.PdirmodeString);
-	}
-	if (fl.def.Uname) {
+	if (fl.def.Uname)
 	    fl.current.Uname = strdup(fl.def.Uname);
-	}
-	if (fl.def.Gname) {
+	if (fl.def.Gname)
 	    fl.current.Gname = strdup(fl.def.Gname);
-	}
 
-	if (parseForVerify(buf, &fl)) {
-	    fp++; continue;
-	}
-	if (parseForAttr(buf, &fl)) {
-	    fp++; continue;
-	}
-	if (parseForConfig(buf, &fl)) {
-	    fp++; continue;
-	}
-	if (parseForLang(buf, &fl)) {
-	    fp++; continue;
-	}
-	if (parseForSimple(spec, pkg, buf, &fl, &fileName)) {
-	    fp++; continue;
-	}
-	if (! fileName) {
-	    fp++; continue;
-	}
+	if (parseForVerify(buf, &fl))
+	    continue;
+	if (parseForAttr(buf, &fl))
+	    continue;
+	if (parseForConfig(buf, &fl))
+	    continue;
+	if (parseForLang(buf, &fl))
+	    continue;
+	if (parseForSimple(spec, pkg, buf, &fl, &fileName))
+	    continue;
+	if (fileName == NULL)
+	    continue;
 
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
@@ -1211,8 +1191,6 @@ static int processPackageFiles(Spec spec, Package pkg,
 	} else {
 	    processBinaryFile(pkg, &fl, fileName);
 	}
-	
-	fp++;
     }
 
     /* Now process special doc, if there is one */
@@ -1269,7 +1247,6 @@ int processSourceFiles(Spec spec)
     int x, isSpec = 1;
     struct FileList fl;
     char *s, **files, **fp, *fn;
-    struct stat sb;
     HeaderIterator hi;
     int tag, type, count;
     Package pkg;
@@ -1357,7 +1334,7 @@ int processSourceFiles(Spec spec)
     spec->sourceCpioList = NULL;
     spec->sourceCpioCount = 0;
 
-    fl.fileList = malloc((spec->numSources + 1) * sizeof(struct FileListRec));
+    fl.fileList = malloc((spec->numSources + 1) * sizeof(FileListRec));
     fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
     fl.totalFileSize = 0;
@@ -1365,54 +1342,58 @@ int processSourceFiles(Spec spec)
 
     s = getStringBuf(sourceFiles);
     files = splitString(s, strlen(s), '\n');
-    fp = files;
 
     /* The first source file is the spec file */
     x = 0;
-    while (*fp) {
+    for (fp = files; *fp != NULL; fp++) {
+	FileListRec *flp;
 	s = *fp;
 	SKIPSPACE(s);
-	if (! *s) {
-	    fp++; continue;
-	}
+	if (! *s)
+	    continue;
 
-	fl.fileList[x].flags = isSpec ? RPMFILE_SPECFILE : 0;
+	flp = &fl.fileList[x];
+
+	flp->flags = isSpec ? RPMFILE_SPECFILE : 0;
 	/* files with leading ! are no source files */
 	if (*s == '!') {
-	    fl.fileList[x].flags |= RPMFILE_GHOST;
+	    flp->flags |= RPMFILE_GHOST;
 	    s++;
 	}
-	fl.fileList[x].diskName = strdup(s);
+	flp->diskName = strdup(s);
 	fn = strrchr(s, '/');
 	if (fn) {
 	    fn++;
 	} else {
 	    fn = s;
 	}
-	fl.fileList[x].fileName = strdup(fn);
-	fl.fileList[x].verifyFlags = RPMVERIFY_ALL;
+	flp->fileName = strdup(fn);
+	flp->verifyFlags = RPMVERIFY_ALL;
+
+    {	struct stat sb;
 	stat(s, &sb);
-	fl.fileList[x].mode = sb.st_mode;
-	fl.fileList[x].uid = sb.st_uid;
-	fl.fileList[x].gid = sb.st_gid;
-	fl.fileList[x].uname = getUname(sb.st_uid);
-	fl.fileList[x].gname = getGname(sb.st_gid);
-	fl.fileList[x].size = sb.st_size;
-	fl.fileList[x].mtime = sb.st_mtime;
-	fl.fileList[x].rdev = sb.st_rdev;
-	fl.fileList[x].device = sb.st_dev;
-	fl.fileList[x].inode = sb.st_ino;
-	fl.fileList[x].lang = strdup("");
+	flp->mode = sb.st_mode;
+	flp->uid = sb.st_uid;
+	flp->gid = sb.st_gid;
+	flp->size = sb.st_size;
+	flp->mtime = sb.st_mtime;
+	flp->rdev = sb.st_rdev;
+	flp->device = sb.st_dev;
+	flp->inode = sb.st_ino;
+    }
+
+	flp->uname = getUname(flp->uid);
+	flp->gname = getGname(flp->gid);
+	flp->lang = strdup("");
 	
-	fl.totalFileSize += sb.st_size;
+	fl.totalFileSize += flp->size;
 	
-	if (! (fl.fileList[x].uname && fl.fileList[x].gname)) {
+	if (! (flp->uname && flp->gname)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s"), s);
 	    fl.processingFailed = 1;
 	}
 
 	isSpec = 0;
-	fp++;
 	x++;
     }
     fl.fileListRecsUsed = x;
@@ -1566,14 +1547,13 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 	    return RPMERR_EXEC;
 	}
 	
-	f = fsave = splitString(getStringBuf(readBuf),
+	fsave = splitString(getStringBuf(readBuf),
 				strlen(getStringBuf(readBuf)), '\n');
 	freeStringBuf(readBuf);
-	while (*f) {
+	for (f = fsave; *f != NULL; f++) {
 	    if (**f) {
 		addReqProv(spec, pkg, RPMSENSE_PROVIDES, *f, NULL, 0);
 	    }
-	    f++;
 	}
 	freeSplitString(fsave);
     }
@@ -1593,14 +1573,13 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 	    return RPMERR_EXEC;
 	}
 
-	f = fsave = splitString(getStringBuf(readBuf),
+	fsave = splitString(getStringBuf(readBuf),
 				strlen(getStringBuf(readBuf)), '\n');
 	freeStringBuf(readBuf);
-	while (*f) {
+	for (f = fsave; *f != NULL; f++) {
 	    if (**f) {
 		addReqProv(spec, pkg, RPMSENSE_ANY, *f, NULL, 0);
 	    }
-	    f++;
 	}
 	freeSplitString(fsave);
     }
@@ -1624,10 +1603,8 @@ static void printReqs(Spec spec, Package pkg)
     if (headerGetEntry(pkg->header, RPMTAG_PROVIDES,
 		       NULL, (void **) &names, &count)) {
 	rpmMessage(RPMMESS_NORMAL, _("Provides:"));
-	x = 0;
-	while (x < count) {
+	for (x = 0; x < count; x++) {
 	    rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
-	    x++;
 	}
 	rpmMessage(RPMMESS_NORMAL, "\n");
 	FREE(names);
@@ -1637,8 +1614,7 @@ static void printReqs(Spec spec, Package pkg)
 		       NULL, (void **) &names, &count)) {
 	headerGetEntry(pkg->header, RPMTAG_REQUIREFLAGS,
 		       NULL, (void **) &flags, NULL);
-	x = 0;
-	while (x < count) {
+	for (x = 0; x < count; x++) {
 	    if (flags[x] & RPMSENSE_PREREQ) {
 		if (! startedPreReq) {
 		    rpmMessage(RPMMESS_NORMAL, _("Prereqs:"));
@@ -1646,13 +1622,11 @@ static void printReqs(Spec spec, Package pkg)
 		}
 		rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
 	    }
-	    x++;
 	}
 	if (startedPreReq) {
 	    rpmMessage(RPMMESS_NORMAL, "\n");
 	}
-	x = 0;
-	while (x < count) {
+	for (x = 0; x < count; x++) {
 	    if (! (flags[x] & RPMSENSE_PREREQ)) {
 		if (! startedReq) {
 		    rpmMessage(RPMMESS_NORMAL, _("Requires:"));
@@ -1660,7 +1634,6 @@ static void printReqs(Spec spec, Package pkg)
 		}
 		rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
 	    }
-	    x++;
 	}
 	rpmMessage(RPMMESS_NORMAL, "\n");
 	FREE(names);

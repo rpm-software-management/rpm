@@ -20,13 +20,13 @@ void MD5Update(struct MD5Context *context, unsigned char const *buf,
 void MD5Final(unsigned char digest[16], struct MD5Context *context);
 void MD5Transform(uint32 buf[4], uint32 const in[16]);
 
-int mdfile(char *fn, unsigned char *digest);
-int mdbinfile(char *fn, unsigned char *bindigest);
+int mdfile(const char *fn, unsigned char *digest);
+int mdbinfile(const char *fn, unsigned char *bindigest);
 
 /* These assume a little endian machine and return incorrect results!
    They are here for compatibility with old (broken) versions of RPM */
-int mdfileBroken(char *fn, unsigned char *digest);
-int mdbinfileBroken(char *fn, unsigned char *bindigest);
+int mdfileBroken(const char *fn, unsigned char *digest);
+int mdbinfileBroken(const char *fn, unsigned char *bindigest);
 
 /*
  * This is needed to make RSAREF happy on some MS-DOS compilers.

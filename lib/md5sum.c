@@ -14,7 +14,7 @@
 
 #include "md5.h"
 
-static int domd5(char * fn, unsigned char * digest, int asAscii,
+static int domd5(const char * fn, unsigned char * digest, int asAscii,
 		 int brokenEndian) {
     unsigned char buf[1024];
     unsigned char bindigest[16];
@@ -52,18 +52,18 @@ static int domd5(char * fn, unsigned char * digest, int asAscii,
     return 0;
 }
 
-int mdbinfile(char *fn, unsigned char *bindigest) {
+int mdbinfile(const char *fn, unsigned char *bindigest) {
     return domd5(fn, bindigest, 0, 0);
 }
 
-int mdbinfileBroken(char *fn, unsigned char *bindigest) {
+int mdbinfileBroken(const char *fn, unsigned char *bindigest) {
     return domd5(fn, bindigest, 0, 1);
 }
 
-int mdfile(char *fn, unsigned char *digest) {
+int mdfile(const char *fn, unsigned char *digest) {
     return domd5(fn, digest, 1, 0);
 }
 
-int mdfileBroken(char *fn, unsigned char *digest) {
+int mdfileBroken(const char *fn, unsigned char *digest) {
     return domd5(fn, digest, 1, 1);
 }

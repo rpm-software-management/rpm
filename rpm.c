@@ -72,6 +72,7 @@ static int shortCircuit;
 static int showrc;
 static int signIt;
 static int test;
+static int useCatalog;
 
 static int rpm_version;
 
@@ -79,9 +80,10 @@ static struct rpmQueryArguments queryArgs;
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
  { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,	NULL, NULL},
+/* all and allmatches both using 'a' is dumb */
  { "all", 'a', 0, 0, 'a',			NULL, NULL},
  { "allfiles", '\0', 0, &allFiles, 0,		NULL, NULL},
- { "allmatches", 'a', 0, &allMatches, 0,	NULL, NULL},
+ { "allmatches", '\0', 0, &allMatches, 0,	NULL, NULL},
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
  { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
  { "buildarch", '\0', POPT_ARG_STRING, &arch, GETOPT_BUILDARCH,	NULL, NULL},
@@ -139,6 +141,7 @@ static struct poptOption optionsTable[] = {
  { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK,	NULL, NULL},
  { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
  { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
+ { "usecatalog", '\0', 0, &useCatalog, 0,	NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
  { "verify", 'V', 0, 0, 'V',			NULL, NULL},
  {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
@@ -149,7 +152,6 @@ static struct poptOption optionsTable[] = {
 		rpmQueryPoptTable, 0,		(void *) &queryArgs, NULL },
  { 0, 0, 0, 0, 0,	NULL, NULL }
 };
-
 
 
 static void argerror(char * desc);

@@ -28,7 +28,7 @@
 
 #include <ctype.h>
 
-#define FREE(x) { if (x) free(x); x = NULL; }
+#define FREE(x) { if (x) free((void *)x); x = NULL; }
 #define SKIPSPACE(s) { while (*(s) && isspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !isspace(*(s))) (s)++; }
 #define SKIPTONEWLINE(s) { while (*s && *s != '\n') s++; }
@@ -70,9 +70,9 @@ extern "C" {
 /* from build/names.h */
 
 char *getUname(uid_t uid);
-char *getUnameS(char *uname);
+char *getUnameS(const char *uname);
 char *getGname(gid_t gid);
-char *getGnameS(char *gname);
+char *getGnameS(const char *gname);
 
 char *const buildHost(void);
 time_t *const getBuildTime(void);

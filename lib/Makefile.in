@@ -127,7 +127,7 @@ rpminc_HEADERS = dbindex.h header.h misc.h rpmlib.h rpmmacro.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h install.h \
 	md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
-	rpmdb.h rpmlead.h signature.h tread.h
+	rpmdb.h rpmio.h rpmlead.h signature.h tread.h
 
 lib_LIBRARIES = librpm.a
 librpm_a_SOURCES = \
@@ -135,7 +135,7 @@ librpm_a_SOURCES = \
 	formats.c fs.c header.c install.c \
 	lookup.c macro.c md5.c md5sum.c \
 	messages.c misc.c oldheader.c package.c query.c \
-	rebuilddb.c rpmdb.c rpmerr.c rpmlead.c \
+	rebuilddb.c rpmdb.c rpmerr.c rpmio.c rpmlead.c \
 	rpmrc.c signature.c stringbuf.c tagtable.c \
 	tread.c uninstall.c verify.c
 
@@ -152,8 +152,9 @@ LDFLAGS = @LDFLAGS@
 librpm_a_LIBADD = 
 librpm_a_OBJECTS =  cpio.o dbindex.o depends.o falloc.o formats.o fs.o \
 header.o install.o lookup.o macro.o md5.o md5sum.o messages.o misc.o \
-oldheader.o package.o query.o rebuilddb.o rpmdb.o rpmerr.o rpmlead.o \
-rpmrc.o signature.o stringbuf.o tagtable.o tread.o uninstall.o verify.o
+oldheader.o package.o query.o rebuilddb.o rpmdb.o rpmerr.o rpmio.o \
+rpmlead.o rpmrc.o signature.o stringbuf.o tagtable.o tread.o \
+uninstall.o verify.o
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
@@ -171,9 +172,9 @@ DEP_FILES =  .deps/cpio.P .deps/dbindex.P .deps/depends.P .deps/falloc.P \
 .deps/lookup.P .deps/macro.P .deps/md5.P .deps/md5sum.P \
 .deps/messages.P .deps/misc.P .deps/oldheader.P .deps/package.P \
 .deps/query.P .deps/rebuilddb.P .deps/rpmdb.P .deps/rpmerr.P \
-.deps/rpmlead.P .deps/rpmrc.P .deps/signature.P .deps/stringbuf.P \
-.deps/tagtable .deps/tagtable.P .deps/tread.P .deps/uninstall.P \
-.deps/verify.P
+.deps/rpmio.P .deps/rpmlead.P .deps/rpmrc.P .deps/signature.P \
+.deps/stringbuf.P .deps/tagtable .deps/tagtable.P .deps/tread.P \
+.deps/uninstall.P .deps/verify.P
 SOURCES = $(librpm_a_SOURCES)
 OBJECTS = $(librpm_a_OBJECTS)
 
