@@ -1483,7 +1483,6 @@ static int archOkay(Header h) {
 }
 
 static int osOkay(Header h) {
-    int_8 * pkgOsNum;
     void * pkgOs;
     int type, count;
 
