@@ -27,10 +27,10 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
 	return 1;
     }
 
-    MD5Init(&ctx, brokenEndian);
+    rpmMD5Init(&ctx, brokenEndian);
     while ((n = fread(buf, 1, sizeof(buf), fp)) > 0)
-	    MD5Update(&ctx, buf, n);
-    MD5Final(bindigest, &ctx);
+	    rpmMD5Update(&ctx, buf, n);
+    rpmMD5Final(bindigest, &ctx);
     if (ferror(fp)) {
 	fclose(fp);
 	return 1;

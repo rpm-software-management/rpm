@@ -14,11 +14,11 @@ struct MD5Context {
 	int doByteReverse;
 };
 
-void MD5Init(struct MD5Context *context, int brokenEndian);
-void MD5Update(struct MD5Context *context, unsigned char const *buf,
+void rpmMD5Init(struct MD5Context *context, int brokenEndian);
+void rpmMD5Update(struct MD5Context *context, unsigned char const *buf,
 	       unsigned len);
-void MD5Final(unsigned char digest[16], struct MD5Context *context);
-void MD5Transform(uint32 buf[4], uint32 const in[16]);
+void rpmMD5Final(unsigned char digest[16], struct MD5Context *context);
+void rpmMD5Transform(uint32 buf[4], uint32 const in[16]);
 
 int mdfile(const char *fn, unsigned char *digest);
 int mdbinfile(const char *fn, unsigned char *bindigest);
