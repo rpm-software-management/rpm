@@ -83,6 +83,7 @@ int execScript(struct Script *script)
     
     writeScript(script, "\nexit 0;\n");
     fclose(script->file);
+    script->file = NULL;
     chmod(script->name, 0700);
 
     if (!(pid = fork())) {
@@ -100,7 +101,8 @@ int execScript(struct Script *script)
 
 void freeScript(struct Script *script)
 {
-    fclose(script->file);
+    if (script->file)
+	fclose(script->file);
     unlink(script->name);
     free(script->name);
     free(script);
@@ -140,5 +142,61 @@ int execClean(Spec s)
 
 int verifyList(Spec s)
 {
+    return 0;
+}
+
+#define RPMBUILD_PREP        1
+#define RPMBUILD_BUILD      (1 << 1)
+#define RPMBUILD_INSTALL    (1 << 2)
+#define RPMBUILD_BINARY     (1 << 3)
+#define RPMBUILD_SOURCE     (1 << 4)
+#define RPMBUILD_CLEAN      (1 << 5)
+#define RPMBUILD_LIST       (1 << 6)
+
+int doBuild(Spec s, int flags)
+{
+
+    if (flags & RPMBUILD_LIST) {
+	if (verifyList(s)) {
+	    return 1;
+	}
+    }
+
+    if (flags & RPMBUILD_PREP) {
+	if (execPrep(s)) {
+	    return 1;
+	}
+    }
+
+    if (flags & RPMBUILD_BUILD) {
+	if (execBuild(s)) {
+	    return 1;
+	}
+    }
+
+    if (flags & RPMBUILD_INSTALL) {
+	if (execInstall(s)) {
+	    return 1;
+	}
+    }
+
+    if (flags & RPMBUILD_BINARY) {
+	if (packageBinaries(s)) {
+	    return 1;
+	}
+    }
+
+    if (flags & RPMBUILD_SOURCE) {
+	if (packageSource(s)) {
+	    return 1;
+	}
+    }
+
+    if (flags & RPMBUILD_CLEAN) {
+	if (execClean(s)) {
+	    return 1;
+	}
+    }
+
     return 0;
 }
