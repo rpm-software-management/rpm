@@ -74,7 +74,7 @@ getTagVal(const char *tname)
     return tval;
 }
 
-const struct headerTypeTableEntry {
+static const struct headerTypeTableEntry {
     char *name;
     int val;
 } rpmTypeTable[] = {

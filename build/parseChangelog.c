@@ -2,7 +2,7 @@
 
 #include "rpmbuild.h"
 
-static void addChangelogEntry(Header h, time_t time, char *name, char *text)
+void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     int_32 mytime = time;	/* XXX convert to header representation */
     if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {

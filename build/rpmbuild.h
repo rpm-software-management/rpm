@@ -98,6 +98,7 @@ char *cleanFileName(const char *name);
 
 /* from build/parse.h */
 
+void addChangelogEntry(Header h, time_t time, const char *name, const char *text);
 int parseChangelog(Spec spec);
 int parseDescription(Spec spec);
 int parseFiles(Spec spec);

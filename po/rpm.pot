@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-21 18:42-0400\n"
+"POT-Creation-Date: 1999-09-23 17:39-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2809,7 +2809,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:193 ../lib/url.c:430
+#: ../lib/rpmdb.c:193 ../lib/url.c:431
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
@@ -3299,12 +3299,12 @@ msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX PARANOIA
-#: ../lib/url.c:316
+#: ../lib/url.c:317
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../lib/url.c:445
+#: ../lib/url.c:446
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""

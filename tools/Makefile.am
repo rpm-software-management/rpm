@@ -18,7 +18,9 @@ mylibs=	$(top_builddir)/build/.libs/librpmbuild.a \
 LDADD = $(top_builddir)/lib/.libs/librpm.a
 
 noinst_PROGRAMS = \
-	rpmlead rpmheader rpmarchive rpmsignature dump dumpdb javadeps
+	dump dumpdb javadeps rpmarchive rpmheader rpminject rpmlead rpmsignature
+
+rpminject_LDADD =	$(mylibs) @LIBMISC@
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = rpmgettext rpmputtext
