@@ -192,7 +192,7 @@ static rpmRC readPackageHeaders(FD_t fd,
     } 
 
     if (hdrPtr == NULL)
-	*hdr = headerFree(*hdr);
+	*hdr = headerFree(*hdr, "ReadPackageHeaders exit");
     
     return RPMRC_OK;
 }
@@ -367,9 +367,9 @@ exit:
 	headerMergeLegacySigs(h, sig);
 
 	/* Bump reference count for return. */
-	*hdrp = headerLink(h);
+	*hdrp = headerLink(h, "ReadPackageFile *hdrp");
     }
-    h = headerFree(h);
+    h = headerFree(h, "ReadPackageFile");
     if (ts->sig != NULL)
 	ts->sig = headerFreeData(ts->sig, ts->sigtype);
     if (ts->dig != NULL)

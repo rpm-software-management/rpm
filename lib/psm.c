@@ -181,10 +181,10 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	    validRelocations = hfd(validRelocations, validType);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
-	return headerLink(origH);
+	return headerLink(origH, "relocate(return)");
     }
 
-    h = headerLink(origH);
+    h = headerLink(origH, "relocate(orig)");
 
     relocations = alloca(sizeof(*relocations) * numRelocations);
 
@@ -593,7 +593,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
     fi->hfd = hfd = headerFreeData;
 
     /*@-branchstate@*/
-    if (h && fi->h == NULL)	fi->h = headerLink(h);
+    if (h && fi->h == NULL)	fi->h = headerLink(h, "loadFi");
     /*@=branchstate@*/
 
     /* Duplicate name-version-release so that headers can be free'd. */
@@ -653,7 +653,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
 
 	if (ts != NULL && fi->h != NULL)
 	{   Header foo = relocateFileList(ts, fi, fi->h, fi->actions);
-	    foo = headerFree(foo);
+	    foo = headerFree(foo, "loadFi TR_ADDED relocate");
 	}
 
     if (!fi->keep_header) {
@@ -676,7 +676,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
 	    fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
 	fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
 				fi->dil, fi->fc * sizeof(*fi->dil));
-	fi->h = headerFree(fi->h);
+	fi->h = headerFree(fi->h, "loadFi TR_ADDED");
     }
 
 	break;
@@ -700,7 +700,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
 	    fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
 	fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
 				fi->dil, fi->fc * sizeof(*fi->dil));
-	fi->h = headerFree(fi->h);
+	fi->h = headerFree(fi->h, "loadFi TR_REMOVED");
 	break;
     }
 
@@ -771,7 +771,7 @@ void freeFi(TFI_t fi)
     fi->replacedSizes = _free(fi->replacedSizes);
     fi->replaced = _free(fi->replaced);
 
-    fi->h = headerFree(fi->h);
+    fi->h = headerFree(fi->h, "freeFi");
 
     /*@-nullstate@*/ /* FIX: fi->{name,version,release,actions,...,h} NULL */
     return;
@@ -1216,7 +1216,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     loadFi(ts, fi, fi->h, 1);
     hge = fi->hge;
     hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    h = headerFree(h);	/* XXX reference held by transaction set */
+    h = headerFree(h, "InstallSourcePackage");
 
     (void) rpmInstallLoadMacros(fi, fi->h);
 
@@ -1336,7 +1336,7 @@ exit:
     _specdir = _free(_specdir);
     _sourcedir = _free(_sourcedir);
 
-    if (h) h = headerFree(h);
+    if (h) h = headerFree(h, "InstallSourcePackage exit");
 
     if (fi) {
 	freeFi(fi);
@@ -2095,7 +2095,7 @@ assert(psm->mi == NULL);
 		    psm->oh = headerCopyLoad(uh);
 		    uh = hfd(uh, uht);
 		} else {
-		    psm->oh = headerLink(fi->h);
+		    psm->oh = headerLink(fi->h, "PSM_PKGSAVE_PRE)");
 		}
 	    }
 
@@ -2418,8 +2418,8 @@ assert(psm->mi == NULL);
 	}
 
 	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE))
-	    fi->h = headerFree(fi->h);
-	psm->oh = headerFree(psm->oh);
+	    fi->h = headerFree(fi->h, "PSM_PKGSAVE_POST fi->h");
+	psm->oh = headerFree(psm->oh, "PSM_PKGSAVE_POST psm->oh");
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->failedFile = _free(psm->failedFile);
@@ -2547,7 +2547,7 @@ assert(psm->mi == NULL);
 
 	fi->h = rpmdbNextIterator(psm->mi);
 	if (fi->h)
-	    fi->h = headerLink(fi->h);
+	    fi->h = headerLink(fi->h, "PSM_RPMDB_LOAD)");
 else {
 fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
 }

@@ -156,7 +156,7 @@ Package freePackage(Package pkg)
     pkg->postUnFile = _free(pkg->postUnFile);
     pkg->verifyFile = _free(pkg->verifyFile);
 
-    pkg->header = headerFree(pkg->header);
+    pkg->header = headerFree(pkg->header, "pkg->header");
     pkg->fileList = freeStringBuf(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList) {
@@ -505,7 +505,7 @@ Spec freeSpec(Spec spec)
 	rl = _free(rl);
     }
     
-    spec->sourceHeader = headerFree(spec->sourceHeader);
+    spec->sourceHeader = headerFree(spec->sourceHeader, "spec->sourceHeader");
 
     if (spec->sourceCpioList) {
 	TFI_t fi = spec->sourceCpioList;
@@ -516,7 +516,7 @@ Spec freeSpec(Spec spec)
 	/*@=refcounttrans@*/
     }
     
-    spec->buildRestrictions = headerFree(spec->buildRestrictions);
+    spec->buildRestrictions = headerFree(spec->buildRestrictions, "spec->>buildRestrictions");
 
     if (!spec->recursing) {
 	if (spec->BASpecs != NULL)

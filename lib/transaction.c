@@ -1135,7 +1135,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 
 	totalFileCount += alGetFilesCount(ts->addedPackages, i);
 
-	h = headerFree(h);
+	h = headerFree(h, "alGetHeader (rpmtsRun sanity)");
 
     }
 
@@ -1207,7 +1207,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 		mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
 		if ((fi->h = rpmdbNextIterator(mi)) != NULL)
-		    fi->h = headerLink(fi->h);
+		    fi->h = headerLink(fi->h,  "TR_REMOVED loadFi");
 		mi = rpmdbFreeIterator(mi);
 	    }
 	    if (fi->h == NULL) {
@@ -1492,7 +1492,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s-%s-%s\n",
 			fi->name, fi->version, fi->release);
-	    h = (fi->h ? headerLink(fi->h) : NULL);
+	    h = (fi->h ? headerLink(fi->h, "TR_ADDED install") : NULL);
 	    /*@-branchstate@*/
 	    if (fi->fd == NULL) {
 		/*@-noeffectuncon @*/ /* FIX: ??? */
@@ -1502,7 +1502,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 		if (fi->fd != NULL) {
 		    rpmRC rpmrc;
 
-		    h = headerFree(h);
+		    h = headerFree(h, "TR_ADDED install");
 
 		    /*@-mustmod@*/	/* LCL: segfault */
 		    rpmrc = rpmReadPackageFile(ts, fi->fd,
@@ -1519,9 +1519,9 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 			ourrc++;
 		    } else if (fi->h != NULL) {
 			Header foo = relocateFileList(ts, fi, h, NULL);
-			h = headerFree(h);
-			h = headerLink(foo);
-			foo = headerFree(foo);
+			h = headerFree(h, "TR_ADDED read free");
+			h = headerLink(foo, "TR_ADDED relocate xfer");
+			foo = headerFree(foo, "TR_ADDED relocate");
 		    }
 		    if (fi->fd != NULL) gotfd = 1;
 		}
@@ -1532,9 +1532,9 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 		Header hsave = NULL;
 
 		if (fi->h) {
-		    hsave = headerLink(fi->h);
-		    fi->h = headerFree(fi->h);
-		    fi->h = headerLink(h);
+		    hsave = headerLink(fi->h, "TR_ADDED fi->h hsave");
+		    fi->h = headerFree(fi->h, "TR_ADDED fi->h free");
+		    fi->h = headerLink(h, "TR_ADDED fi->h link");
 		} else {
 char * fstates = fi->fstates;
 fileAction * actions = fi->actions;
@@ -1573,17 +1573,17 @@ fi->relocs = relocs;
 		    ourrc++;
 		    lastFailed = i;
 		}
-		fi->h = headerFree(fi->h);
+		fi->h = headerFree(fi->h, "TR_ADDED fi->h free");
 		if (hsave) {
-		    fi->h = headerLink(hsave);
-		    hsave = headerFree(hsave);
+		    fi->h = headerLink(hsave, "TR_ADDED fi->h restore");
+		    hsave = headerFree(hsave, "TR_ADDED hsave free");
 		}
 	    } else {
 		ourrc++;
 		lastFailed = i;
 	    }
 
-	    h = headerFree(h);
+	    h = headerFree(h, "TR_ADDED h free");
 
 	    if (gotfd) {
 		/*@-noeffectuncon @*/ /* FIX: check rc */

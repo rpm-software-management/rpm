@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-30 22:54-0500\n"
+"POT-Creation-Date: 2001-11-01 14:59-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1466,83 +1466,83 @@ msgid " failed - "
 msgstr " nie powiod³o siê -"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:184
+#: lib/depends.c:183
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:213
+#: lib/depends.c:212
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
+#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
+#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
 #, fuzzy
 msgid "NO "
 msgstr "NIE DOBRZE"
 
-#: lib/depends.c:356
+#: lib/depends.c:355
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/depends.c:544
+#: lib/depends.c:547
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:549
+#: lib/depends.c:552
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/depends.c:554
+#: lib/depends.c:557
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:790
+#: lib/depends.c:795
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:819
+#: lib/depends.c:824
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:859
+#: lib/depends.c:864
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:872
+#: lib/depends.c:877
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:886
+#: lib/depends.c:891
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:902
+#: lib/depends.c:907
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:923
+#: lib/depends.c:928
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
@@ -1550,47 +1550,53 @@ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:989
+#: lib/depends.c:994
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1067
+#: lib/depends.c:1074
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "pakiet %s jest w konflikcie: %s\n"
 
-#: lib/depends.c:1319
+#: lib/depends.c:1330
 #, fuzzy, c-format
-msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
+msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie indeksu grupy\n"
 
 #. Record all relations.
-#: lib/depends.c:1475
+#: lib/depends.c:1581
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1543
+#: lib/depends.c:1668
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1595
+#: lib/depends.c:1744
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1656
+#: lib/depends.c:1830
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1686
+#: lib/depends.c:1864
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
+#. Return no. of packages that could not be ordered.
+#: lib/depends.c:1869
+#, c-format
+msgid "rpmdepOrder failed, %d elements remain\n"
+msgstr ""
+
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2929 lib/header.c:2950 lib/header.c:2972
+#: lib/header.c:2958 lib/header.c:2979 lib/header.c:3001
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -1683,89 +1689,89 @@ msgstr "ostrze¿enie: %s utworzony jako %s"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:314
+#: lib/header.c:342
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:949
+#: lib/header.c:379 lib/header_internal.c:161 lib/psm.c:949
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ danych %d nie jest obs³ugiwany\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2186
+#: lib/header.c:2215
 #, c-format
 msgid "missing { after %"
 msgstr "brak { po %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2216
+#: lib/header.c:2245
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2230
+#: lib/header.c:2259
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2244
+#: lib/header.c:2273
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2261
+#: lib/header.c:2290
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2288
+#: lib/header.c:2317
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2306
+#: lib/header.c:2335
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2310
+#: lib/header.c:2339
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2376
+#: lib/header.c:2405
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2385
+#: lib/header.c:2414
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2398 lib/header.c:2440
+#: lib/header.c:2427 lib/header.c:2469
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2408
+#: lib/header.c:2437
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2425
+#: lib/header.c:2454
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2450
+#: lib/header.c:2479
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: lib/header.c:2673
+#: lib/header.c:2702
 msgid "(unknown type)"
 msgstr "(nieznany typ)"
 
@@ -2244,69 +2250,69 @@ msgstr "podpisz pakiet (porzuæ bierz±c± sygnaturê)"
 msgid "generate signature"
 msgstr "generuj sygnaturê PGP/GPG"
 
-#: lib/problems.c:208
+#: lib/problems.c:202
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " jest wymagany przez %s-%s-%s\n"
 
-#: lib/problems.c:211
+#: lib/problems.c:205
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " jest w konflikcie z %s-%s-%s\n"
 
-#: lib/problems.c:251
+#: lib/problems.c:245
 #, fuzzy, c-format
 msgid "package %s is for a different architecture"
 msgstr "pakiet %s-%s-%s zbudowano dla innej architektury"
 
-#: lib/problems.c:256
+#: lib/problems.c:250
 #, fuzzy, c-format
 msgid "package %s is for a different operating system"
 msgstr "pakiet %s-%s-%s zbudowano dla innego systemu operacyjnego"
 
-#: lib/problems.c:261
+#: lib/problems.c:255
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/problems.c:266
+#: lib/problems.c:260
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/problems.c:271
+#: lib/problems.c:265
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:276
+#: lib/problems.c:270
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "plik %s z pakietu %s-%s-%s jest w konflikcie z plikiem z pakietu %s-%s-%s"
 
-#: lib/problems.c:281
+#: lib/problems.c:275
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "pakiet %s-%s-%s (który jest nowszy ni¿ %s-%s-%s) jest ju¿ zainstalowany"
 
-#: lib/problems.c:286
+#: lib/problems.c:280
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "instalacja pakietu %s-%s-%s wymaga %ld%c w systemie plików %s"
 
-#: lib/problems.c:296
+#: lib/problems.c:290
 #, fuzzy, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "instalacja pakietu %s-%s-%s wymaga %ld%c w systemie plików %s"
 
-#: lib/problems.c:301
+#: lib/problems.c:295
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:308
+#: lib/problems.c:302
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s-%s-%s"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-30 22:54-0500\n"
+"POT-Creation-Date: 2001-11-01 14:59-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1492,82 +1492,82 @@ msgid " failed - "
 msgstr "La construction a chou.\n"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:184
+#: lib/depends.c:183
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:213
+#: lib/depends.c:212
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
+#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
+#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:356
+#: lib/depends.c:355
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/depends.c:544
+#: lib/depends.c:547
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:549
+#: lib/depends.c:552
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/depends.c:554
+#: lib/depends.c:557
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:790
+#: lib/depends.c:795
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:819
+#: lib/depends.c:824
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:859
+#: lib/depends.c:864
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:872
+#: lib/depends.c:877
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:886
+#: lib/depends.c:891
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:902
+#: lib/depends.c:907
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:923
+#: lib/depends.c:928
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
@@ -1575,47 +1575,53 @@ msgstr ""
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:989
+#: lib/depends.c:994
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
 #. conflicts exist.
-#: lib/depends.c:1067
+#: lib/depends.c:1074
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: lib/depends.c:1319
-#, c-format
-msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
-msgstr ""
+#: lib/depends.c:1330
+#, fuzzy, c-format
+msgid "removing %s \"%s\" from tsort relations.\n"
+msgstr "impossible d'ouvrir: %s\n"
 
 #. Record all relations.
-#: lib/depends.c:1475
+#: lib/depends.c:1581
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1543
+#: lib/depends.c:1668
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1595
+#: lib/depends.c:1744
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1656
+#: lib/depends.c:1830
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1686
+#: lib/depends.c:1864
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
+#. Return no. of packages that could not be ordered.
+#: lib/depends.c:1869
+#, c-format
+msgid "rpmdepOrder failed, %d elements remain\n"
+msgstr ""
+
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2929 lib/header.c:2950 lib/header.c:2972
+#: lib/header.c:2958 lib/header.c:2979 lib/header.c:3001
 msgid "(not a number)"
 msgstr ""
 
@@ -1706,90 +1712,90 @@ msgstr "impossible d'ouvrir: %s\n"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:314
+#: lib/header.c:342
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:949
+#: lib/header.c:379 lib/header_internal.c:161 lib/psm.c:949
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2186
+#: lib/header.c:2215
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2216
+#: lib/header.c:2245
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2230
+#: lib/header.c:2259
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2244
+#: lib/header.c:2273
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2261
+#: lib/header.c:2290
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2288
+#: lib/header.c:2317
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2306
+#: lib/header.c:2335
 #, fuzzy
 msgid "unexpected ]"
 msgstr "source de requte inattendue"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2310
+#: lib/header.c:2339
 #, fuzzy
 msgid "unexpected }"
 msgstr "source de requte inattendue"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2376
+#: lib/header.c:2405
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2385
+#: lib/header.c:2414
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2398 lib/header.c:2440
+#: lib/header.c:2427 lib/header.c:2469
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2408
+#: lib/header.c:2437
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2425
+#: lib/header.c:2454
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2450
+#: lib/header.c:2479
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2673
+#: lib/header.c:2702
 msgid "(unknown type)"
 msgstr ""
 
@@ -2283,67 +2289,67 @@ msgstr ""
 msgid "generate signature"
 msgstr "      --sign            - genre une signature PGP"
 
-#: lib/problems.c:208
+#: lib/problems.c:202
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:211
+#: lib/problems.c:205
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:251
+#: lib/problems.c:245
 #, fuzzy, c-format
 msgid "package %s is for a different architecture"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:256
+#: lib/problems.c:250
 #, fuzzy, c-format
 msgid "package %s is for a different operating system"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:261
+#: lib/problems.c:255
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:266
+#: lib/problems.c:260
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:271
+#: lib/problems.c:265
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:276
+#: lib/problems.c:270
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/problems.c:281
+#: lib/problems.c:275
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:286
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:296
+#: lib/problems.c:290
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:301
+#: lib/problems.c:295
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:308
+#: lib/problems.c:302
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""

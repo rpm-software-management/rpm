@@ -30,7 +30,7 @@ int main(int argc, char ** argv)
     Fclose(fdi);
   
     headerDump(h, stdout, HEADER_DUMP_INLINE, rpmTagTable);
-    h = headerFree(h);
+    h = headerFree(h, "headerDump");
 
     return 0;
 }

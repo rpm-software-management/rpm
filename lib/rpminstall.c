@@ -413,7 +413,7 @@ restart:
 		}
 		mi = rpmdbFreeIterator(mi);
 		if (count == 0) {
-		    eiu->h = headerFree(eiu->h);
+		    eiu->h = headerFree(eiu->h, "Install freshen");
 		    continue;
 		}
 		/* Package is newer than those currently installed. */
@@ -426,7 +426,7 @@ restart:
 	    /*@=nullstate@*/
 
 	    /* XXX reference held by transaction set */
-	    eiu->h = headerFree(eiu->h);
+	    eiu->h = headerFree(eiu->h, "Install added");
 	    if (eiu->relocations)
 		eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
 
@@ -724,7 +724,7 @@ IDTX IDTXfree(IDTX idtx)
 	if (idtx->idt)
 	for (i = 0; i < idtx->nidt; i++) {
 	    IDT idt = idtx->idt + i;
-	    idt->h = headerFree(idt->h);
+	    idt->h = headerFree(idt->h, "IDTXfree");
 	    idt->key = _free(idt->key);
 	}
 	idtx->idt = _free(idtx->idt);
@@ -857,13 +857,13 @@ IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
 
 	    idtx = IDTXgrow(idtx, 1);
 	    if (idtx == NULL || idtx->idt == NULL) {
-		h = headerFree(h);
+		h = headerFree(h, "IDTXglob skip");
 		(void) Fclose(fd);
 		continue;
 	    }
 	    {	IDT idt;
 		idt = idtx->idt + idtx->nidt;
-		idt->h = headerLink(h);
+		idt->h = headerLink(h, "IDTXglob idt->h");
 		idt->key = av[i];
 		av[i] = NULL;
 		idt->instance = 0;
@@ -873,7 +873,7 @@ IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
 	}
 	/*@=branchstate@*/
 
-	h = headerFree(h);
+	h = headerFree(h, "IDTXglob next");
 	(void) Fclose(fd);
     }
 

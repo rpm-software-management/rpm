@@ -301,7 +301,8 @@ Header (*HDRnew) (void)
  * @return		NULL always
  */
 typedef
-/*@null@*/ Header (*HDRfree) (/*@null@*/ /*@killref@*/ Header h)
+/*@null@*/ Header (*HDRfree) (/*@null@*/ /*@killref@*/ Header h,
+		const char * msg, const char * fn, unsigned ln)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -310,7 +311,17 @@ typedef
  * @return		referenced header instance
  */
 typedef
-Header (*HDRlink) (Header h)
+Header (*HDRlink) (Header h, const char * msg, const char * fn, unsigned ln)
+        /*@modifies h @*/;
+
+/** \ingroup header
+ * Dereference a header instance.
+ * @param h		header
+ * @return		NULL always
+ */
+typedef
+Header (*HDRunlink) (/*@killref@*/ Header h,
+		const char * msg, const char * fn, unsigned ln)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -641,9 +652,10 @@ int (*HDRnextiter) (HeaderIterator hi,
  */
 typedef /*@abstract@*/ struct HV_s * HV_t;
 struct HV_s {
+    HDRlink	Xhdrlink;
+    HDRunlink	Xhdrunlink;
+    HDRfree	Xhdrfree;
     HDRnew	hdrnew;
-    HDRfree	hdrfree;
-    HDRlink	hdrlink;
     HDRsort	hdrsort;
     HDRunsort	hdrunsort;
     HDRsizeof	hdrsizeof;
@@ -698,6 +710,10 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
     }
     return NULL;
 }
+
+#define	headerLink(_h, _msg)	XheaderLink(_h, _msg, __FILE__, __LINE__)
+#define	headerUnlink(_h, _msg)	XheaderUnlink(_h, _msg, __FILE__, __LINE__)
+#define	headerFree(_h, _msg)	XheaderFree(_h, _msg, __FILE__, __LINE__)
 
 #if !defined(__HEADER_PROTOTYPES__)
 #include <hdrinline.h>

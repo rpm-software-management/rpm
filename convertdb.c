@@ -188,7 +188,7 @@ int convertDB(void)
         rpmdbAdd(db, dbentry);
 
 	free(group);
-	headerFree(dbentry);
+	headerFree(dbentry, "convertDB");
 
 	oldrpmdbFreePackageInfo(package);
     }

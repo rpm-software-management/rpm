@@ -159,9 +159,9 @@ Header alGetHeader(availableList al, int pkgNum, int unlink)
     Header h = NULL;
 
     if (alp != NULL && alp->h != NULL) {
-	h = headerLink(alp->h);
+	h = headerLink(alp->h, "alGetHeader");
 	if (unlink) {
-	    alp->h = headerFree(alp->h);
+	    alp->h = headerFree(alp->h, "alGetHeader unlink");
 	    alp->h = NULL;
 	}
     }
@@ -277,7 +277,7 @@ availableList alFree(availableList al)
 	p->requires.N = hfd(p->requires.N, -1);
 	p->requires.EVR = hfd(p->requires.EVR, -1);
 	p->baseNames = hfd(p->baseNames, -1);
-	p->h = headerFree(p->h);
+	p->h = headerFree(p->h, "alFree");
 
 	if (p->relocs) {
 	    for (r = p->relocs; (r->oldPath || r->newPath); r++) {
@@ -414,7 +414,7 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 
 	dirNames = hfd(dirNames, dnt);
     }
-    p->h = headerFree(p->h);
+    p->h = headerFree(p->h, "alDelPackage");
     memset(p, 0, sizeof(*p));
     /*@-nullstate@*/ /* FIX: al->list->h may be NULL */
     return;
@@ -447,7 +447,7 @@ alAddPackage(availableList al, int pkgNum,
 
     p = al->list + pkgNum;
 
-    p->h = headerLink(h);	/* XXX reference held by transaction set */
+    p->h = headerLink(h, "alAddPackage");	/* XXX reference held by transaction set */
     p->multiLib = 0;	/* MULTILIB */
 
     xx = headerNVR(p->h, &p->name, &p->version, &p->release);

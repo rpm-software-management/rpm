@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-30 22:54-0500\n"
+"POT-Creation-Date: 2001-11-01 14:59-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1484,7 +1484,7 @@ msgid " failed - "
 msgstr "失敗 - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:184
+#: lib/depends.c:183
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -1493,75 +1493,75 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします(\"A\"と同じであると仮定して)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:213
+#: lib/depends.c:212
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
+#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
+#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:356
+#: lib/depends.c:355
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/depends.c:544
+#: lib/depends.c:547
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:549
+#: lib/depends.c:552
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/depends.c:554
+#: lib/depends.c:557
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:790
+#: lib/depends.c:795
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:819
+#: lib/depends.c:824
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:859
+#: lib/depends.c:864
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:872
+#: lib/depends.c:877
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:886
+#: lib/depends.c:891
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:902
+#: lib/depends.c:907
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:923
+#: lib/depends.c:928
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
@@ -1569,47 +1569,53 @@ msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:989
+#: lib/depends.c:994
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1067
+#: lib/depends.c:1074
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1319
+#: lib/depends.c:1330
 #, fuzzy, c-format
-msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
+msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1475
+#: lib/depends.c:1581
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1543
+#: lib/depends.c:1668
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1595
+#: lib/depends.c:1744
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1656
+#: lib/depends.c:1830
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1686
+#: lib/depends.c:1864
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
+#. Return no. of packages that could not be ordered.
+#: lib/depends.c:1869
+#, c-format
+msgid "rpmdepOrder failed, %d elements remain\n"
+msgstr ""
+
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2929 lib/header.c:2950 lib/header.c:2972
+#: lib/header.c:2958 lib/header.c:2979 lib/header.c:3001
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -1702,89 +1708,89 @@ msgstr "警告: %s は %s として作成されます"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:314
+#: lib/header.c:342
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:949
+#: lib/header.c:379 lib/header_internal.c:161 lib/psm.c:949
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2186
+#: lib/header.c:2215
 #, c-format
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2216
+#: lib/header.c:2245
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2230
+#: lib/header.c:2259
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2244
+#: lib/header.c:2273
 msgid "empty tag name"
 msgstr "空のタグ名"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2261
+#: lib/header.c:2290
 msgid "unknown tag"
 msgstr "不明なタグ"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2288
+#: lib/header.c:2317
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2306
+#: lib/header.c:2335
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2310
+#: lib/header.c:2339
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2376
+#: lib/header.c:2405
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2385
+#: lib/header.c:2414
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2398 lib/header.c:2440
+#: lib/header.c:2427 lib/header.c:2469
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2408
+#: lib/header.c:2437
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2425
+#: lib/header.c:2454
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2450
+#: lib/header.c:2479
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
-#: lib/header.c:2673
+#: lib/header.c:2702
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
@@ -2281,76 +2287,76 @@ msgstr "パッケージに署名します(現在の署名は捨てられます)"
 msgid "generate signature"
 msgstr "PGP/GPG 署名を生成します"
 
-#: lib/problems.c:208
+#: lib/problems.c:202
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr "は %s-%s-%s に必要とされています\n"
 
-#: lib/problems.c:211
+#: lib/problems.c:205
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " %s-%s-%s と競合します\n"
 
-#: lib/problems.c:251
+#: lib/problems.c:245
 #, fuzzy, c-format
 msgid "package %s is for a different architecture"
 msgstr "パッケージ %s-%s-%s は異なるアーキテクチャ向けです"
 
-#: lib/problems.c:256
+#: lib/problems.c:250
 #, fuzzy, c-format
 msgid "package %s is for a different operating system"
 msgstr "パッケージ %s-%s-%s は異なる OS 向けです"
 
-#: lib/problems.c:261
+#: lib/problems.c:255
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/problems.c:266
+#: lib/problems.c:260
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/problems.c:271
+#: lib/problems.c:265
 #, fuzzy, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "ファイル %s は %s-%s-%s と %s-%s-%s のインストールのファイルと競合しています"
 
-#: lib/problems.c:276
+#: lib/problems.c:270
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "%s-%s-%s のインストールからのファイル %s はパッケージ %s-%s-%s からのファイル"
 "と競合しています"
 
-#: lib/problems.c:281
+#: lib/problems.c:275
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "パッケージ %s-%s-%s (%s-%s-%sよりも新しいもの) はすでにインストールされていま"
 "す"
 
-#: lib/problems.c:286
+#: lib/problems.c:280
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:296
+#: lib/problems.c:290
 #, fuzzy, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:301
+#: lib/problems.c:295
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:308
+#: lib/problems.c:302
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"

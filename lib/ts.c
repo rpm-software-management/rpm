@@ -211,7 +211,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
 	break;
     }
 
-    h = headerFree(h);
+    h = headerFree(h, "ftsPrint exit");
     if (fd)
 	xx = Fclose(fd);
     return 0;

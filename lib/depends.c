@@ -467,7 +467,8 @@ static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
     }
 
     if (ts->removedPackages != NULL) {	/* XXX can't happen. */
-	ts->removedPackages[ts->numRemovedPackages++] = dboffset;
+	ts->removedPackages[ts->numRemovedPackages] = dboffset;
+	ts->numRemovedPackages++;
 	qsort(ts->removedPackages, ts->numRemovedPackages,
 			sizeof(*ts->removedPackages), intcmp);
     }
@@ -479,7 +480,8 @@ static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
 
     ts->order[ts->orderCount].type = TR_REMOVED;
     ts->order[ts->orderCount].u.removed.dboffset = dboffset;
-    ts->order[ts->orderCount++].u.removed.dependsOnIndex = depends;
+    ts->order[ts->orderCount].u.removed.dependsOnIndex = depends;
+    ts->orderCount++;
 
     return 0;
 }
@@ -538,7 +540,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 
 	ph = alGetHeader(ts->addedPackages, i, 0);
 	rc = rpmVersionCompare(ph, h);
-	ph = headerFree(ph);
+	ph = headerFree(ph, "alGetHeader");
 
 	if (rc > 0) {
 	    rpmMessage(RPMMESS_WARNING,
@@ -735,7 +737,7 @@ rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
 
     if (conflicts)
     for (i = 0; i < numConflicts; i++) {
-	conflicts[i].byHeader = headerFree(conflicts[i].byHeader);
+	conflicts[i].byHeader = headerFree(conflicts[i].byHeader, "problem");
 	conflicts[i].byName = _free(conflicts[i].byName);
 	conflicts[i].byVersion = _free(conflicts[i].byVersion);
 	conflicts[i].byRelease = _free(conflicts[i].byRelease);
@@ -999,7 +1001,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	    }
 
 	    {	rpmDependencyConflict pp = psp->problems + psp->num;
-		pp->byHeader = headerLink(h);
+		pp->byHeader = headerLink(h, "problem(requires)");
 		pp->byName = xstrdup(name);
 		pp->byVersion = xstrdup(version);
 		pp->byRelease = xstrdup(release);
@@ -1079,7 +1081,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	    }
 
 	    {	rpmDependencyConflict pp = psp->problems + psp->num;
-		pp->byHeader = headerLink(h);
+		pp->byHeader = headerLink(h, "problem(conflicts)");
 		pp->byName = xstrdup(name);
 		pp->byVersion = xstrdup(version);
 		pp->byRelease = xstrdup(release);
@@ -1511,14 +1513,14 @@ static void addQ(transactionElement p,
 
 int rpmdepOrder(rpmTransactionSet ts)
 {
-    int nadded = alGetSize(ts->addedPackages);
+    int numAddedPackages = alGetSize(ts->addedPackages);
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
     transactionElement p;
     transactionElement q;
     transactionElement r;
     tsortInfo tsi;
     tsortInfo tsi_next;
-    int * ordering = alloca(sizeof(*ordering) * (nadded + 1));
+    int * ordering = alloca(sizeof(*ordering) * (numAddedPackages + 1));
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
     int loopcheck;
@@ -1538,7 +1540,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 /*@=modfilesystem =nullpass@*/
 
     /* T1. Initialize. */
-    loopcheck = ts->orderCount;
+    loopcheck = numAddedPackages;	/* XXX TR_ADDED only: should be ts->orderCount */
     if ((p = ts->order) != NULL)
     for (i = 0; i < ts->orderCount; i++, p++) {
 
@@ -1552,7 +1554,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 	p->release = NULL;
 
 	/* XXX Only added packages are ordered (for now). */
-	switch(p->type) {
+	switch (p->type) {
 	case TR_ADDED:
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1582,7 +1584,7 @@ prtTSI(p->NEVR, &p->tsi);
 	rpmDepSet requires;
 
 	/* XXX Only added packages are ordered (for now). */
-	switch(p->type) {
+	switch (p->type) {
 	case TR_ADDED:
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1645,7 +1647,7 @@ fprintf(stderr, "\t+++ %p[%d] %s %s-%s-%s requires[%d] %p[%d] Flags %p\n", p, i,
     if ((p = ts->order) != NULL)
     for (i = 0; i < ts->orderCount; i++, p++) {
 	/* XXX Only added packages are ordered (for now). */
-	switch(p->type) {
+	switch (p->type) {
 	case TR_ADDED:
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1672,7 +1674,7 @@ rescan:
     for (i = 0; i < ts->orderCount; i++, p++) {
 
 	/* XXX Only added packages are ordered (for now). */
-	switch(p->type) {
+	switch (p->type) {
 	case TR_ADDED:
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1701,7 +1703,7 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
     for (; q != NULL; q = q->tsi.tsi_suc) {
 
 	/* XXX Only added packages are ordered (for now). */
-	switch(q->type) {
+	switch (q->type) {
 	case TR_ADDED:
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1714,7 +1716,8 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 			orderingCount, q->npreds, q->tsi.tsi_qcnt, q->depth,
 			(2 * q->depth), "",
 			(q->NEVR ? q->NEVR : "???"));
-	ordering[orderingCount++] = q->u.addedIndex;
+	ordering[orderingCount] = q->u.addedIndex;
+	orderingCount++;
 	qlen--;
 	loopcheck--;
 
@@ -1753,7 +1756,7 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 	for (i = 0; i < ts->orderCount; i++, q++) {
 
 	    /* XXX Only added packages are ordered (for now). */
-	    switch(q->type) {
+	    switch (q->type) {
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
@@ -1774,7 +1777,7 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 	for (i = 0; i < ts->orderCount; i++, q++) {
 
 	    /* XXX Only added packages are ordered (for now). */
-	    switch(q->type) {
+	    switch (q->type) {
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
@@ -1797,7 +1800,7 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 	    int printed;
 
 	    /* XXX Only added packages are ordered (for now). */
-	    switch(r->type) {
+	    switch (r->type) {
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
@@ -1861,6 +1864,12 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 	    rpmMessage(RPMMESS_DEBUG, _("========== continuing tsort ...\n"));
 	    goto rescan;
 	}
+
+	/* Return no. of packages that could not be ordered. */
+	rpmMessage(RPMMESS_ERROR, _("rpmdepOrder failed, %d elements remain\n"),
+			loopcheck);
+	return loopcheck;
+
 	return 1;
     }
 
@@ -1870,14 +1879,13 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
      * the new package. This would be easier if we could sort the
      * addedPackages array, but we store indexes into it in various places.
      */
-    nadded = alGetSize(ts->addedPackages);
-    orderList = xcalloc(nadded, sizeof(*orderList));
+    orderList = xcalloc(numAddedPackages, sizeof(*orderList));
     j = 0;
     if ((p = ts->order) != NULL)
     for (i = 0, j = 0; i < ts->orderCount; i++, p++) {
 
 	/* XXX Only added packages are ordered (for now). */
-	switch(p->type) {
+	switch (p->type) {
 	case TR_ADDED:
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1895,14 +1903,14 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 	p->NEVR = _free(p->NEVR);
 	p->name = _free(p->name);
 
-	/* Prepare added package partial ordering permutation. */
+	/* Prepare added package ordering permutation. */
 	orderList[j].alIndex = p->u.addedIndex;
 	orderList[j].orIndex = i;
 	j++;
     }
-    assert(j <= nadded);
+    assert(j <= numAddedPackages);
 
-    qsort(orderList, nadded, sizeof(*orderList), orderListIndexCmp);
+    qsort(orderList, numAddedPackages, sizeof(*orderList), orderListIndexCmp);
 
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
     for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
@@ -1910,7 +1918,8 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 	orderListIndex needle;
 
 	key.alIndex = ordering[i];
-	needle = bsearch(&key, orderList, nadded, sizeof(key),orderListIndexCmp);
+	needle = bsearch(&key, orderList, numAddedPackages,
+				sizeof(key), orderListIndexCmp);
 	/* bsearch should never, ever fail */
 	if (needle == NULL) continue;
 
@@ -1987,7 +1996,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     Header h = NULL;
     availablePackage p;
     problemsSet ps = NULL;
-    int nadded;
+    int numAddedPackages;
     int closeatexit = 0;
     int i, j, xx;
     int rc;
@@ -1999,7 +2008,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	closeatexit = 1;
     }
 
-    nadded = alGetSize(ts->addedPackages);
+    numAddedPackages = alGetSize(ts->addedPackages);
 
     ps = xcalloc(1, sizeof(*ps));
     ps->alloced = 5;
@@ -2016,7 +2025,7 @@ int rpmdepCheck(rpmTransactionSet ts,
      * Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
-    for (i = 0; i < nadded; i++)
+    for (i = 0; i < numAddedPackages; i++)
     {
 	char * pkgNVR, * n, * v, * r;
 	rpmDepSet provides;
@@ -2033,7 +2042,7 @@ int rpmdepCheck(rpmTransactionSet ts,
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , pkgNVR);
 	h = alGetHeader(ts->addedPackages, i, 0);
 	rc = checkPackageDeps(ts, ps, h, NULL, multiLib);
-	h = headerFree(h);
+	h = headerFree(h, "alGetHeader");
 	if (rc) {
 	    pkgNVR = _free(pkgNVR);
 	    goto exit;

@@ -423,11 +423,11 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
 	
 	addChangelogEntry(h, *getBuildTime(), name, text);
 	headerCopyTags(*hdrp, h, cltags);
-	headerFree(*hdrp);
+	headerFree(*hdrp, "headerInject *hdrp");
 	headerSort(h);
 	*hdrp = h;
     } else {
-	headerFree(h);
+	headerFree(h, "headerInject h");
     }
 
     return ec;

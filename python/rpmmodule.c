@@ -171,15 +171,15 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) 
     if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
 	return NULL; 
 
-    h = headerLink(s->h);
+    h = headerLink(s->h, "hdrUnload h");
     /* XXX this legacy switch is a hack, needs to be removed. */
     if (legacy) {
 	h = headerCopy(s->h);	/* XXX strip region tags, etc */
-	headerFree(s->h);
+	headerFree(s->h, "hdrUnload s->h");
     }
     len = headerSizeof(h, 0);
     buf = headerUnload(h);
-    h = headerFree(h);
+    h = headerFree(h, "hdrUnload h");
 
     if (buf == NULL || len == 0) {
 	PyErr_SetString(pyrpmError, "can't unload bad header\n");
@@ -455,14 +455,14 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args) {
     if (!PyArg_ParseTuple(args, ""))
         return NULL;
 
-    h = headerLink(s->h);
+    h = headerLink(s->h, "rhnUnload h");
 
     /* Legacy headers are forced into immutable region. */
     if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	Header nh = headerReload(h, RPMTAG_HEADERIMMUTABLE);
 	/* XXX Another unload/load cycle to "seal" the immutable region. */
 	uh = headerUnload(nh);
-	headerFree(nh);
+	headerFree(nh, "rhnUnload nh");
 	h = headerLoad(uh);
 	headerAllocated(h);
     }
@@ -488,7 +488,7 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args) {
 
     len = headerSizeof(h, 0);
     uh = headerUnload(h);
-    headerFree(h);
+    headerFree(h, "rhnUnload h");
 
     rc = PyString_FromStringAndSize(uh, len);
     free(uh);
@@ -527,7 +527,7 @@ static PyObject * hdrGetAttr(hdrObject * s, char * name) {
 /** \ingroup python
  */
 static void hdrDealloc(hdrObject * s) {
-    if (s->h) headerFree(s->h);
+    if (s->h) headerFree(s->h, "hdrDealloc s->h");
     if (s->md5list) free(s->md5list);
     if (s->fileList) free(s->fileList);
     if (s->linkList) free(s->linkList);
@@ -783,7 +783,7 @@ rpmdbMINext(rpmdbMIObject * s, PyObject * args) {
     }
 
     ho = PyObject_NEW(hdrObject, &hdrType);
-    ho->h = headerLink(h);
+    ho->h = headerLink(h, "rpmdbMINext");
     ho->fileList = ho->linkList = ho->md5list = NULL;
     ho->uids = ho->gids = ho->mtimes = ho->fileSizes = NULL;
     ho->modes = ho->rdevs = NULL;
@@ -1112,7 +1112,7 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, &offset, sizeof(offset));
 	if ((h->h = rpmdbNextIterator(mi)) != NULL)
-	    h->h = headerLink(h->h);
+	    h->h = headerLink(h->h, "rpmdbSubscript");
 	rpmdbFreeIterator(mi);
     }
     h->fileList = h->linkList = h->md5list = NULL;
@@ -1897,7 +1897,7 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
     /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
     if (!headerIsEntry(hdr, RPMTAG_HEADERIMMUTABLE)) {
 	PyErr_SetString(pyrpmError, "bad header, not immutable");
-	headerFree(hdr);
+	headerFree(hdr, "rhnLoad hdr #1");
 	return NULL;
     }
 
@@ -1905,13 +1905,13 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
     if (!headerIsEntry(hdr, RPMTAG_SHA1HEADER)
     &&  !headerIsEntry(hdr, RPMTAG_SHA1RHN)) {
 	PyErr_SetString(pyrpmError, "bad header, no digest");
-	headerFree(hdr);
+	headerFree(hdr, "rhnLoad hdr #2");
 	return NULL;
     }
 
     if (rpmVerifyDigest(hdr)) {
 	PyErr_SetString(pyrpmError, "bad header, digest check failed");
-	headerFree(hdr);
+	headerFree(hdr, "rhnLoad hdr #3");
 	return NULL;
     }
 
@@ -2299,7 +2299,7 @@ static PyObject * getTsHeader (PyObject * self, PyObject * args) {
     
     if (transactionSetHeader) {
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
-	h->h = headerLink(transactionSetHeader);
+	h->h = headerLink(transactionSetHeader, "checkSig");
 	h->fileList = h->linkList = h->md5list = NULL;
 	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
 	h->modes = h->rdevs = NULL;

@@ -200,7 +200,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     if (headerp && rc == 0)
 	*headerp = h;
     else
-	h = headerFree(h);
+	h = headerFree(h, "ReadSignature");
 
     return rc;
 }
@@ -233,7 +233,7 @@ Header rpmNewSignature(void)
 
 Header rpmFreeSignature(Header h)
 {
-    return headerFree(h);
+    return headerFree(h, "FreeSignature");
 }
 
 static int makePGPSignature(const char * file, /*@out@*/ void ** sig,

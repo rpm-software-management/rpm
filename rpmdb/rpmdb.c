@@ -1227,7 +1227,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 	    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &offset, sizeof(offset));
 	    h = rpmdbNextIterator(mi);
 	    if (h)
-		h = headerLink(h);
+		h = headerLink(h, "rpmdbFindByFile");
 	    mi = rpmdbFreeIterator(mi);
 	}
 
@@ -1261,7 +1261,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 
 	baseNames = hfd(baseNames, bnt);
 	dirNames = hfd(dirNames, dnt);
-	h = headerFree(h);
+	h = headerFree(h, "rpmdbFindByFile");
     }
 
     rec = _free(rec);
@@ -1387,7 +1387,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 
 	    h = rpmdbNextIterator(mi);
 	    if (h)
-		h = headerLink(h);
+		h = headerLink(h, "dbiFindMatches");
 	    mi = rpmdbFreeIterator(mi);
 	}
 
@@ -1396,7 +1396,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 	else
 	    (*matches)->recs[i].hdrNum = 0;
 
-	h = headerFree(h);
+	h = headerFree(h, "dbiFindMatches");
     }
     /*@=branchstate@*/
 
@@ -1591,7 +1591,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
 	    xx = dbiUpdateRecord(dbi, mi->mi_dbc, mi->mi_prevoffset, mi->mi_h);
 	}
-	mi->mi_h = headerFree(mi->mi_h);
+	mi->mi_h = headerFree(mi->mi_h, "mi->mi_h");
     }
     /*@=branchstate@*/
     if (dbi) {
@@ -2122,7 +2122,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
     if (mi->mi_h) {
 	if (mi->mi_modified && mi->mi_prevoffset)
 	    (void)dbiUpdateRecord(dbi, mi->mi_dbc, mi->mi_prevoffset, mi->mi_h);
-	mi->mi_h = headerFree(mi->mi_h);
+	mi->mi_h = headerFree(mi->mi_h, "mi->mi_h");
     }
 
     /* Is this the end of the iteration? */
@@ -2403,7 +2403,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
 	h = rpmdbNextIterator(mi);
 	if (h)
-	    h = headerLink(h);
+	    h = headerLink(h, "rpmdbRemove");
 	mi = rpmdbFreeIterator(mi);
     }
 
@@ -2556,7 +2556,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 
     (void) unblockSignals(db, &signalMask);
 
-    h = headerFree(h);
+    h = headerFree(h, "rpmdbRemove");
 
     return 0;
 }
@@ -3373,7 +3373,7 @@ int rpmdbRebuild(const char * prefix)
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
 		rc = rpmdbAdd(newdb, -1, (nh ? nh : h));
-		nh = headerFree(nh);
+		nh = headerFree(nh, "rpmdbRebuild");
 	    }
 
 	    if (rc) {

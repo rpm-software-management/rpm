@@ -40,29 +40,49 @@ Header headerNew(void)
 
 /** \ingroup header
  * Dereference a header instance.
+ * @todo Remove debugging entry from the ABI.
  * @param h		header
  * @return		NULL always
  */
 /*@unused@*/ static inline
-/*@null@*/ Header headerFree( /*@null@*/ /*@killref@*/ Header h)
+/*@null@*/ Header XheaderFree( /*@killref@*/ /*@null@*/ Header h,
+		const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
     /*@-abstract@*/
     if (h == NULL) return NULL;
     /*@=abstract@*/
-    return (h2hv(h)->hdrfree) (h);
+    return (h2hv(h)->Xhdrfree) (h, msg, fn, ln);
 }
 
 /** \ingroup header
  * Reference a header instance.
+ * @todo Remove debugging entry from the ABI.
  * @param h		header
- * @return		referenced header instance
+ * @return		new theader reference
  */
 /*@unused@*/ static inline
-Header headerLink(Header h)
+Header XheaderLink(Header h, const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->hdrlink) (h);
+    return (h2hv(h)->Xhdrlink) (h, msg, fn, ln);
+}
+
+/** \ingroup header
+ * Dereference a header instance.
+ * @todo Remove debugging entry from the ABI.
+ * @param h		header
+ * @return		new theader reference
+ */
+/*@unused@*/ static inline
+Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies h @*/
+{
+    /*@-abstract@*/
+    if (h == NULL) return NULL;
+    /*@=abstract@*/
+    return (h2hv(h)->Xhdrunlink) (h, msg, fn, ln);
 }
 
 /*@-exportlocal@*/

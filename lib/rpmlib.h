@@ -1479,9 +1479,9 @@ int rpmdepCheck(rpmTransactionSet ts,
  * eliminated by removing PreReq's from the loop(s). Only dependencies from
  * added or removed packages are used to determine ordering using a
  * topological sort (Knuth vol. 1, p. 262). Use rpmdepCheck() to verify
- * that all dependencies can be reolved.
+ * that all dependencies can be resolved.
  *
- * The order ends up as installed packages followed by removed packages,
+ * The final order ends up as installed packages followed by removed packages,
  * with packages removed for upgrades immediately following the new package
  * to be installed.
  *
@@ -1489,7 +1489,7 @@ int rpmdepCheck(rpmTransactionSet ts,
  * transaction set, but we store indexes into the array in various places.
  *
  * @param ts		transaction set
- * @return		0 if packages are successfully ordered, 1 otherwise
+ * @return		no. of (added) packages that could not be ordered
  */
 int rpmdepOrder(rpmTransactionSet ts)
 	/*@globals internalState@*/

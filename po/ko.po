@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-30 22:54-0500\n"
+"POT-Creation-Date: 2001-11-01 14:59-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1424,7 +1424,7 @@ msgid " failed - "
 msgstr " 실패함 - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:184
+#: lib/depends.c:183
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -1433,75 +1433,75 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:213
+#: lib/depends.c:212
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
+#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
 msgid "YES"
 msgstr "예"
 
-#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
+#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
 msgid "NO "
 msgstr "아니오"
 
-#: lib/depends.c:356
+#: lib/depends.c:355
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/depends.c:544
+#: lib/depends.c:547
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:549
+#: lib/depends.c:552
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:554
+#: lib/depends.c:557
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:790
+#: lib/depends.c:795
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (캐시됨)\n"
 
-#: lib/depends.c:819
+#: lib/depends.c:824
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:859
+#: lib/depends.c:864
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s 예 (db 파일)\n"
 
-#: lib/depends.c:872
+#: lib/depends.c:877
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:886
+#: lib/depends.c:891
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s 예 (db 패키지)\n"
 
-#: lib/depends.c:902
+#: lib/depends.c:907
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s 아니오\n"
 
-#: lib/depends.c:923
+#: lib/depends.c:928
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) 의존(Depends) 캐시에 추가되었습니다.\n"
@@ -1509,48 +1509,54 @@ msgstr "%s: (%s, %s) 의존(Depends) 캐시에 추가되었습니다.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:989
+#: lib/depends.c:994
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1067
+#: lib/depends.c:1074
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "패키지 %s (이)가 충돌함: %s\n"
 
-#: lib/depends.c:1319
-#, c-format
-msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
+#: lib/depends.c:1330
+#, fuzzy, c-format
+msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\" (을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1475
+#: lib/depends.c:1581
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1543
+#: lib/depends.c:1668
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 깊이[depth])\n"
 
-#: lib/depends.c:1595
+#: lib/depends.c:1744
 msgid "========== successors only (presentation order)\n"
 msgstr "========== 후임자 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1656
+#: lib/depends.c:1830
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1686
+#: lib/depends.c:1864
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
+#. Return no. of packages that could not be ordered.
+#: lib/depends.c:1869
+#, c-format
+msgid "rpmdepOrder failed, %d elements remain\n"
+msgstr ""
+
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2929 lib/header.c:2950 lib/header.c:2972
+#: lib/header.c:2958 lib/header.c:2979 lib/header.c:3001
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
@@ -1644,88 +1650,88 @@ msgstr "%s (이)가 %s (으)로 생성되었습니다\n"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:314
+#: lib/header.c:342
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE 카운트는 반드시 '1' 이어야 합니다.\n"
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:949
+#: lib/header.c:379 lib/header_internal.c:161 lib/psm.c:949
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "%d 데이터 유형은 사용하실 수 없습니다\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2186
+#: lib/header.c:2215
 #, c-format
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 를 찾을 수 없습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2216
+#: lib/header.c:2245
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 를 찾을 수 없습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2230
+#: lib/header.c:2259
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2244
+#: lib/header.c:2273
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2261
+#: lib/header.c:2290
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2288
+#: lib/header.c:2317
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2306
+#: lib/header.c:2335
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 사용되고 있습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2310
+#: lib/header.c:2339
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 사용되고 있습니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2376
+#: lib/header.c:2405
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2385
+#: lib/header.c:2414
 msgid "{ expected after ? in expression"
 msgstr "표현식에서 '?' 뒤에 '{' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2398 lib/header.c:2440
+#: lib/header.c:2427 lib/header.c:2469
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2408
+#: lib/header.c:2437
 msgid ": expected following ? subexpression"
 msgstr "하부 표현식(subexpression)의 '?' 다음에 ':' 이 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2425
+#: lib/header.c:2454
 msgid "{ expected after : in expression"
 msgstr "표현식에서 ':' 뒤에 '{' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2450
+#: lib/header.c:2479
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 필요합니다"
 
-#: lib/header.c:2673
+#: lib/header.c:2702
 msgid "(unknown type)"
 msgstr "(알 수 없는 유형)"
 
@@ -2173,72 +2179,72 @@ msgstr "패키지에 서명합니다 (기존의 서명은 삭제됩니다)"
 msgid "generate signature"
 msgstr "서명을 작성합니다"
 
-#: lib/problems.c:208
+#: lib/problems.c:202
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
 
-#: lib/problems.c:211
+#: lib/problems.c:205
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " %s-%s-%s (와)과 충돌합니다\n"
 
-#: lib/problems.c:251
+#: lib/problems.c:245
 #, c-format
 msgid "package %s is for a different architecture"
 msgstr "%s (은)는 다른 아키텍쳐를 위한 패키지입니다"
 
-#: lib/problems.c:256
+#: lib/problems.c:250
 #, c-format
 msgid "package %s is for a different operating system"
 msgstr "%s (은)는 다른 운영체제를 위한 패키지입니다"
 
-#: lib/problems.c:261
+#: lib/problems.c:255
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/problems.c:266
+#: lib/problems.c:260
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
-#: lib/problems.c:271
+#: lib/problems.c:265
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%2$s (와)과 %3$s 의 설치 과정에서 %1$s 파일이 서로 충돌합니다"
 
-#: lib/problems.c:276
+#: lib/problems.c:270
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%2$s 에서 설치되는 %1$s 파일은 %3$s 패키지의 파일과 충돌합니다"
 
-#: lib/problems.c:281
+#: lib/problems.c:275
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
-#: lib/problems.c:286
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb (이)가 필요합"
 "니다"
 
-#: lib/problems.c:296
+#: lib/problems.c:290
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld 의 아이노드(inode)"
 "가 필요합니다"
 
-#: lib/problems.c:301
+#: lib/problems.c:295
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 "%s 패키지의 선(pre)-트랜잭션 시스템콜(syscall): %s (이)가 실패했습니다: %s"
 
-#: lib/problems.c:308
+#: lib/problems.c:302
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""

@@ -32,7 +32,7 @@ void rpmProblemSetFree(rpmProblemSet tsprobs)
     for (i = 0; i < tsprobs->numProblems; i++) {
 	rpmProblem p = tsprobs->probs + i;
 #ifdef	DYING
-	p->h = headerFree(p->h);
+	p->h = headerFree(p->h, "problems");
 #endif
 	p->pkgNEVR = _free(p->pkgNEVR);
 	p->altNEVR = _free(p->altNEVR);

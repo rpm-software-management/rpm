@@ -546,3 +546,4 @@ fi
 - start hiding availablePackage data/methods in rpmal.c/rpmal.h.
 - add some dinky availablePackage methods.
 - transaction.c: cleanly uncouple availablePackage from TFI_t.
+- add header refcount annotations throughout.

@@ -158,7 +158,7 @@ restart:
 
 	if (rc == 0) {
 	    rc = rpmtransAddPackage(ts, h, NULL, fileName, 0, NULL);
-	    headerFree(h);  /* XXX reference held by transaction set */
+	    headerFree(h, "do_tsort"); 
 	    continue;
 	}
 
@@ -229,7 +229,7 @@ restart:
 	    case TR_ADDED:
 		i = ts->order[oc].u.addedIndex;
 		alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
-		h = headerLink(alp->h);
+		h = headerLink(alp->h, "TR_ADDED alp->h");
 		str = "+++";
 		break;
 	    case TR_REMOVED:
@@ -237,7 +237,7 @@ restart:
 		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, &i, sizeof(i));
 		h = rpmdbNextIterator(mi);
 		if (h)
-		    h = headerLink(h);
+		    h = headerLink(h, "TR_REMOVED mi->h");
 		rpmdbFreeIterator(mi);
 		str = "---";
 		break;
@@ -252,7 +252,7 @@ restart:
 		    headerNVR(h, &n, &v, &r);
 		    fprintf(stdout, "%s %s-%s-%s\n", str, n, v, r);
 		}
-		headerFree(h);
+		headerFree(h, "do_tsort");
 	    }
 
 	}

@@ -33,6 +33,9 @@
 #define PARSER_IN_ARRAY 1
 #define PARSER_IN_EXPR  2
 
+/*@unchecked@*/
+static int _h_debug = 0;
+
 /** \ingroup header
  */
 /*@observer@*/ /*@unchecked@*/
@@ -91,31 +94,38 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
 }
 
 /** \ingroup header
- * Create new (empty) header instance.
- * @return		header
+ * Reference a header instance.
+ * @param h		header
+ * @return		referenced header instance
  */
 HSTATIC
-Header headerNew(void)
-	/*@*/
+Header XheaderLink(Header h, const char * msg, const char * fn, unsigned ln)
+	/*@modifies h @*/
 {
-    Header h = xcalloc(1, sizeof(*h));
+    if (h != NULL) h->nrefs++;
+/*@-modfilesystem@*/
+if (_h_debug)
+fprintf(stderr, "--> h %p ++ %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
+/*@=modfilesystem@*/
+    /*@-refcounttrans@*/ return h; /*@=refcounttrans@*/
+}
 
-    /*@-assignexpose@*/
-    h->hv = *hdrVec;		/* structure assignment */
-    /*@=assignexpose@*/
-    h->blob = NULL;
-    h->indexAlloced = INDEX_MALLOC_SIZE;
-    h->indexUsed = 0;
-    h->flags = HEADERFLAG_SORTED;
-    h->nrefs = 1;
-
-    h->index = (h->indexAlloced
-	? xcalloc(h->indexAlloced, sizeof(*h->index))
-	: NULL);
-
-    /*@-globstate -observertrans @*/
-    return h;
-    /*@=globstate =observertrans @*/
+/** \ingroup header
+ * Dereference a header instance.
+ * @param h		header
+ * @return		NULL always
+ */
+HSTATIC
+Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies h @*/
+{
+/*@-modfilesystem@*/
+if (_h_debug)
+fprintf(stderr, "--> h %p -- %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
+/*@=modfilesystem@*/
+    h->nrefs--;
+    return NULL;
 }
 
 /** \ingroup header
@@ -124,10 +134,13 @@ Header headerNew(void)
  * @return		NULL always
  */
 HSTATIC /*@null@*/
-Header headerFree( /*@null@*/ /*@killref@*/ Header h)
+Header XheaderFree( /*@null@*/ /*@killref@*/ Header h,
+		const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
-    if (h == NULL || --h->nrefs > 0)
+    (void) XheaderUnlink(h, msg, fn, ln);
+
+    if (h == NULL || h->nrefs > 0)
 	return NULL;	/* XXX return previous header? */
 
     if (h->index) {
@@ -153,16 +166,31 @@ Header headerFree( /*@null@*/ /*@killref@*/ Header h)
 }
 
 /** \ingroup header
- * Reference a header instance.
- * @param h		header
- * @return		referenced header instance
+ * Create new (empty) header instance.
+ * @return		header
  */
 HSTATIC
-Header headerLink(Header h)
-	/*@modifies h @*/
+Header headerNew(void)
+	/*@*/
 {
-    h->nrefs++;
-    /*@-refcounttrans@*/ return h; /*@=refcounttrans@*/
+    Header h = xcalloc(1, sizeof(*h));
+
+    /*@-assignexpose@*/
+    h->hv = *hdrVec;		/* structure assignment */
+    /*@=assignexpose@*/
+    h->blob = NULL;
+    h->indexAlloced = INDEX_MALLOC_SIZE;
+    h->indexUsed = 0;
+    h->flags = HEADERFLAG_SORTED;
+
+    h->index = (h->indexAlloced
+	? xcalloc(h->indexAlloced, sizeof(*h->index))
+	: NULL);
+
+    /*@-globstate -observertrans @*/
+    h->nrefs = 0;
+    return headerLink(h, "headerNew");
+    /*@=globstate =observertrans @*/
 }
 
 /**
@@ -908,7 +936,8 @@ Header headerLoad(/*@kept@*/ void * uh)
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags = HEADERFLAG_SORTED;
-    h->nrefs = 1;
+    h->nrefs = 0;
+    h = headerLink(h, "headerLoad");
 
     /*
      * XXX XFree86-libs, ash, and pdksh from Red Hat 5.2 have bogus
@@ -1060,7 +1089,7 @@ Header headerReload(/*@only@*/ Header h, int tag)
     /*@-onlytrans@*/
     void * uh = doHeaderUnload(h, &length);
 
-    h = headerFree(h);
+    h = headerFree(h, "headerReload");
     /*@=onlytrans@*/
     if (uh == NULL)
 	return NULL;
@@ -3109,7 +3138,7 @@ HSTATIC /*@null@*/
 HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
 	/*@modifies hi @*/
 {
-    hi->h = headerFree(hi->h);
+    hi->h = headerFree(hi->h, "Iterator");
     hi = _free(hi);
     return hi;
 }
@@ -3127,7 +3156,7 @@ HeaderIterator headerInitIterator(Header h)
 
     headerSort(h);
 
-    hi->h = headerLink(h);
+    hi->h = headerLink(h, "Iterator");
     hi->next_index = 0;
     return hi;
 }
@@ -3204,9 +3233,10 @@ Header headerCopy(Header h)
 
 /*@observer@*/ /*@unchecked@*/
 static struct HV_s hdrVec1 = {
+    XheaderLink,
+    XheaderUnlink,
+    XheaderFree,
     headerNew,
-    headerFree,
-    headerLink,
     headerSort,
     headerUnsort,
     headerSizeof,

@@ -627,7 +627,7 @@ restart:
 	    /* Query a package file. */
 	    if (rpmrc == RPMRC_OK) {
 		res = qva->qva_showPackage(qva, ts, h);
-		h = headerFree(h);
+		h = headerFree(h, "QueryVerify");
 		rpmtransClean(ts);
 		continue;
 	    }

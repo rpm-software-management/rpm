@@ -393,7 +393,7 @@ static int rpmImportPubkey(rpmTransactionSet ts,
 
 bottom:
 	/* Clean up. */
-	h = headerFree(h);
+	h = headerFree(h, "ImportPubkey");
 	dig = pgpFreeDig(dig);
 	pkt = _free(pkt);
 	n = _free(n);

@@ -158,7 +158,7 @@ retry:
 		headerIsEntry(h, RPMTAG_RELEASE) &&
 		headerIsEntry(h, RPMTAG_BUILDTIME)))
     {
-	h = headerFree(h);
+	h = headerFree(h, "doGetRecord");
     }
 
     if (h == NULL) {
@@ -235,7 +235,7 @@ exit:
     /*@-branchstate@*/
     if (h != NULL) {
 	uh = headerUnload(h);
-	h = headerFree(h);
+	h = headerFree(h, "doGetRecord exit");
     }
     /*@=branchstate@*/
     return uh;
@@ -431,7 +431,7 @@ static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
             fdSetContentLength(pkgs, -1);
 	    if (rc)
 		rc = EIO;
-	    h = headerFree(h);
+	    h = headerFree(h, "db1cput");
 	}
     }
 #ifdef	DYING
