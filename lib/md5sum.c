@@ -17,7 +17,8 @@
 #include "md5.h"
 #include "messages.h"
 
-int mdfile(char *fn, unsigned char *digest) {
+static int domd5(char * fn, unsigned char * digest, int asAscii,
+		 int brokenEndian) {
     unsigned char buf[1024];
     unsigned char bindigest[16];
     FILE * fp;
@@ -29,7 +30,7 @@ int mdfile(char *fn, unsigned char *digest) {
 	return 1;
     }
 
-    MD5Init(&ctx);
+    MD5Init(&ctx, brokenEndian);
     while ((n = fread(buf, 1, sizeof(buf), fp)) > 0)
 	    MD5Update(&ctx, buf, n);
     MD5Final(bindigest, &ctx);
@@ -38,39 +39,34 @@ int mdfile(char *fn, unsigned char *digest) {
 	return 1;
     }
 
-    sprintf(digest, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
-                    "%02x%02x%02x%02x%02x",
-	    bindigest[0],  bindigest[1],  bindigest[2],  bindigest[3],
-	    bindigest[4],  bindigest[5],  bindigest[6],  bindigest[7],
-	    bindigest[8],  bindigest[9],  bindigest[10], bindigest[11],
-	    bindigest[12], bindigest[13], bindigest[14], bindigest[15]);
+    if (!asAscii) {
+	memcpy(digest, bindigest, 16);
+    } else {
+	sprintf(digest, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
+			"%02x%02x%02x%02x%02x",
+		bindigest[0],  bindigest[1],  bindigest[2],  bindigest[3],
+		bindigest[4],  bindigest[5],  bindigest[6],  bindigest[7],
+		bindigest[8],  bindigest[9],  bindigest[10], bindigest[11],
+		bindigest[12], bindigest[13], bindigest[14], bindigest[15]);
 
-    fclose(fp);
+	fclose(fp);
+    }
 
     return 0;
 }
 
 int mdbinfile(char *fn, unsigned char *bindigest) {
-    unsigned char buf[1024];
-    FILE * fp;
-    MD5_CTX ctx;
-    int n;
+    return domd5(fn, bindigest, 0, 0);
+}
 
-    fp = fopen(fn, "r");
-    if (!fp) {
-	return 1;
-    }
+int mdbinfileBroken(char *fn, unsigned char *bindigest) {
+    return domd5(fn, bindigest, 0, 1);
+}
 
-    MD5Init(&ctx);
-    while ((n = fread(buf, 1, sizeof(buf), fp)) > 0)
-	    MD5Update(&ctx, buf, n);
-    MD5Final(bindigest, &ctx);
-    if (ferror(fp)) {
-	fclose(fp);
-	return 1;
-    }
+int mdfile(char *fn, unsigned char *digest) {
+    return domd5(fn, digest, 1, 0);
+}
 
-    fclose(fp);
-
-    return 0;
+int mdfileBroken(char *fn, unsigned char *digest) {
+    return domd5(fn, digest, 1, 1);
 }
