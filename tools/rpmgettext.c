@@ -205,10 +205,14 @@ genSrpmFileName(Header h)
 
     headerGetEntry(h, RPMTAG_SOURCERPM, NULL, (void **)&sourcerpm, NULL);
 
+#if 0
     if (strcmp(sourcerpm, sfn))
 	return strdup(sourcerpm);
 
     return NULL;
+#else
+    return strdup(sourcerpm);
+#endif
 
 }
 
@@ -266,7 +270,7 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
 
     for (tp = poTags; *tp != 0; tp++) {
 	char **s, *e, *onlymsgstr;
-	int i, type, count;
+	int i, type, count, nmsgstrs;
 
 	if (!headerGetRawEntry(h, *tp, &type, (void **)&s, &count))
 	    continue;
@@ -289,26 +293,30 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
 	
 
 	/* Print xref comment */
-	fprintf(fp, "\n#: %s:%s\n", basename(file), getTagString(*tp));
+	fprintf(fp, "\n#%s\n", getTagString(*tp));
+	fprintf(fp, "#: %s:%d\n", basename(file), *tp);
 	if (sourcerpm)
-	    fprintf(fp, "#: %s:%d\n", sourcerpm, 0);
+	    fprintf(fp, "#: %s:%d\n", sourcerpm, *tp);
 
 	/* Print msgid */
 	e = *s;
 	expandRpmPO(buf, e);
 	fprintf(fp, "msgid %s\n", buf);
 
-	if (count <= 1)
-	    fprintf(fp, "msgstr \"\"\n");
+	nmsgstrs = 0;
 	for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
 		if (!(onlymsgstr == NULL || onlymsgstr == e))
 			continue;
+		nmsgstrs++;
 		expandRpmPO(buf, e);
 		fprintf(fp, "msgstr");
 		if (onlymsgstr == NULL)
 			fprintf(fp, "(%s)", langs[i]);
 		fprintf(fp, " %s\n", buf);
 	}
+
+	if (nmsgstrs < 1)
+	    fprintf(fp, "msgstr \"\"\n");
 
 	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
 	    FREE(s)
