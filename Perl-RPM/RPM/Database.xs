@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.4 2000/06/05 08:06:09 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.5 2000/06/14 09:27:01 rjray Exp $";
 
 /*
   Use this define for deriving the saved rpmdb struct, rather than coding
@@ -256,12 +256,12 @@ void rpmdb_DESTROY(pTHX_ RPM__Database self)
         dbiFreeIndexRecord(*dbstruct->index_set);
 }
 
-int rpmdb_init(const char* class, const char* root, int perms)
+int rpmdb_init(SV* class, const char* root, int perms)
 {
     return (1 - rpmdbInit(root, perms));
 }
 
-int rpmdb_rebuild(const char* class, const char* root)
+int rpmdb_rebuild(SV* class, const char* root)
 {
     return (1 - rpmdbRebuild(root));
 }
@@ -460,22 +460,32 @@ rpmdb_DESTROY(self)
 
 int
 rpmdb_init(class, root=NULL, perms=O_RDWR)
-    const char* class;
+    SV* class;
     const char* root;
     int perms;
     PROTOTYPE: $;$$
     INIT:
-    if (strcmp(class, "RPM::Database"))
-        croak("RPM::Database::init must be called as a static method");
+    if (! (SvPOK(class) && strcmp(SvPV(class, PL_na), "RPM::Database")))
+    {
+        rpm_error(aTHX_ RPMERR_BADARG,
+                  "RPM::Database::init must be called as a static method");
+        ST(0) = sv_2mortal(newSViv(0));
+        XSRETURN(1);
+    }
 
 int
 rpmdb_rebuild(class, root=NULL)
-    const char* class;
+    SV* class;
     const char* root;
     PROTOTYPE: $;$
     INIT:
-    if (strcmp(class, "RPM::Database"))
-        croak("RPM::Database::rebuild must be called as a static method");
+    if (! (SvPOK(class) && strcmp(SvPV(class, PL_na), "RPM::Database")))
+    {
+        rpm_error(aTHX_ RPMERR_BADARG,
+                  "RPM::Database::rebuild must be called as a static method");
+        ST(0) = sv_2mortal(newSViv(0));
+        XSRETURN(1);
+    }
 
 void
 rpmdb_find_by_file(self, string)
