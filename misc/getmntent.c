@@ -20,7 +20,7 @@ our_mntent * getmntent(FILE *filep) {
 
     return &item;
 }
-#else {
+#else 
 our_mntent *getmntent(FILE *filep) {
     static our_mntent item = { NULL };
     char buf[1024], * start;
@@ -66,4 +66,5 @@ our_mntent *getmntent(FILE *filep) {
 
     return NULL;
 }
-}
+#endif
+
