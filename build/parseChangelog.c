@@ -152,7 +152,7 @@ static int addChangelog(Header h, StringBuf sb)
 	}
 	if (lastTime && lastTime < time) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("%%changelog not in decending chronological order\n"));
+		     _("%%changelog not in descending chronological order\n"));
 	    return RPMERR_BADSPEC;
 	}
 	lastTime = time;
