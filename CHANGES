@@ -4,6 +4,9 @@
 	- added triggers to package builds
 	- tagged spec file in spec file
 	- added %verifyscript (which isn't used yet)
+	- changed pkgReadHeader() mechanism to be more generic
+	- added find-provides for Solaris, made find-provides setup
+	  more generic (w/ configure.in picking the right one)
 
 2.2.7 -> 2.2.8:
 	- added --ftpproxy, --ftpport (and wrote about them in rpm.8)
