@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-05 11:47-0400\n"
+"POT-Creation-Date: 1999-04-08 17:06-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -280,110 +280,125 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr "FTP bilinmeyen ya da beklenmeyen hata"
 
-#: ../install.c:124
+#: ../install.c:129
 #, fuzzy
 msgid "counting packages to install\n"
 msgstr "yüklenecek paketler belirtilmedi"
 
-#: ../install.c:128
+#: ../install.c:133
 #, fuzzy, c-format
 msgid "found %d packages\n"
 msgstr "Tüm paketleri sorgulama"
 
-#: ../install.c:137
+#: ../install.c:142
 #, fuzzy
 msgid "looking for packages to download\n"
 msgstr "%s pakedi aranýrken hata oluþtu\n"
 
-#: ../install.c:148
+#: ../install.c:153
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s alýnýyor\n"
 
-#: ../install.c:157
+#: ../install.c:162
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:161
+#: ../install.c:166
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "hata: %s atlanýyor - aktarým baþarýsýz - %s\n"
 
-#: ../install.c:178
+#: ../install.c:183
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:187 ../install.c:291
+#: ../install.c:192 ../install.c:329
 #, fuzzy, c-format
 msgid "cannot open file %s\n"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: ../install.c:199 ../lib/query.c:540
+#: ../install.c:204 ../lib/query.c:540
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s bir RPM paketi deðil (gibi)\n"
 
-#: ../install.c:203 ../install.c:428
+#: ../install.c:208 ../install.c:466
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "hata: %s yüklenemedi\n"
 
-#: ../install.c:218 ../install.c:341
+#: ../install.c:223 ../install.c:379
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
 
-#: ../install.c:236
+#: ../install.c:244
+#, fuzzy, c-format
+msgid "package %s is not relocateable\n"
+msgstr "%s pakedi yüklenmemiþ\n"
+
+#: ../install.c:256
+#, fuzzy, c-format
+msgid "error reading from file %s\n"
+msgstr "%s dizinin oluþturulmasýnda hata: %s"
+
+#: ../install.c:259
+#, c-format
+msgid "file %s requires a newer version of RPM\n"
+msgstr ""
+
+#: ../install.c:274
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%s grubu hiç paket içermiyor\n"
 
-#: ../install.c:246
+#: ../install.c:284
 msgid "failed dependencies:\n"
 msgstr "baðýmlýlýk hatasý, aþaðýdaki paketlere ihtiyacýnýz var:\n"
 
-#: ../install.c:264
+#: ../install.c:302
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "paket yüklemek"
 
-#: ../install.c:352 ../lib/query.c:685 ../verify.c:243
+#: ../install.c:390 ../lib/query.c:685 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s pakedi yüklenmemiþ\n"
 
-#: ../install.c:356
+#: ../install.c:394
 #, fuzzy, c-format
 msgid "searching for package %s\n"
 msgstr "%s paketi bulunamadý\n"
 
-#: ../install.c:365
+#: ../install.c:403
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
 
-#: ../install.c:391
+#: ../install.c:429
 msgid "removing these packages would break dependencies:\n"
 msgstr "bu paketin silinmesi aþaðýdaki baðýmlýlýklarý etkileyecektir:\n"
 
-#: ../install.c:418
+#: ../install.c:456
 #, fuzzy, c-format
 msgid "cannot open %s\n"
 msgstr "hata: %s eriþilemiyor\n"
 
-#: ../install.c:423
+#: ../install.c:461
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s yükleniyor\n"
 
-#: ../install.c:467
+#: ../install.c:505
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ", %s-%s-%s tarafýndan kullanýlýyor\n"
 
-#: ../install.c:470
+#: ../install.c:508
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ", %s-%s-%s ile çeliþiyor\n"
@@ -1259,8 +1274,8 @@ msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
 #: ../rpm.c:625 ../rpm.c:631 ../rpm.c:638 ../rpm.c:644 ../rpm.c:653
 #: ../rpm.c:660 ../rpm.c:707 ../rpm.c:713 ../rpm.c:777 ../rpm.c:785
-#: ../rpm.c:792 ../rpm.c:801 ../rpm.c:808 ../rpm.c:816 ../rpm.c:849
-#: ../rpm.c:901 ../rpm.c:908
+#: ../rpm.c:792 ../rpm.c:801 ../rpm.c:808 ../rpm.c:816 ../rpm.c:852
+#: ../rpm.c:904 ../rpm.c:911
 msgid "only one major mode may be specified"
 msgstr "sadece bir ana kip (major mode) belirtilebilir"
 
@@ -1283,7 +1298,7 @@ msgstr ""
 "--tarbuild (-t) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
 
 #: ../rpm.c:720 ../rpm.c:727 ../rpm.c:735 ../rpm.c:743 ../rpm.c:753
-#: ../rpm.c:761 ../rpm.c:769 ../rpm.c:915
+#: ../rpm.c:761 ../rpm.c:769 ../rpm.c:918
 msgid "one type of query/verify may be performed at a time"
 msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
 
@@ -1291,138 +1306,132 @@ msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
 msgid "arguments to --dbpath must begin with a /"
 msgstr "--dbpath için verilen argümanlar '/' ile baþlamalý"
 
-#. XXX FIXME
-#: ../rpm.c:834
-#, fuzzy
-msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
-msgstr "dosyalarý <eskidizin> den <yenidizin> e relocate et"
-
-#: ../rpm.c:855
+#: ../rpm.c:858
 msgid "relocations must begin with a /"
 msgstr "relocate iþlemi / ile baþlamalý"
 
-#: ../rpm.c:857
+#: ../rpm.c:860
 msgid "relocations must contain a ="
 msgstr "relocate satýrýnda = bulunmalý"
 
-#: ../rpm.c:860
+#: ../rpm.c:863
 msgid "relocations must have a / following the ="
 msgstr "relocate için = den sonra bir / gerekir"
 
-#: ../rpm.c:869
+#: ../rpm.c:872
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "relocate iþlemi / ile baþlamalý"
 
-#: ../rpm.c:878
+#: ../rpm.c:881
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: ../rpm.c:928
+#: ../rpm.c:931
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath veritabaný kullanýlmayan bir iþlemde belirtildi"
 
-#: ../rpm.c:933
+#: ../rpm.c:936
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck sadece paket oluþturulurken kullanýlabilir"
 
-#: ../rpm.c:936 ../rpm.c:939
+#: ../rpm.c:939 ../rpm.c:942
 msgid "unexpected query specifiers"
 msgstr "sorgulama için beklenmeyen bilgiler girildi"
 
-#: ../rpm.c:943
+#: ../rpm.c:946
 msgid "unexpected query source"
 msgstr "beklenmeyen sorgulama kaynaðý girildi"
 
-#: ../rpm.c:948
+#: ../rpm.c:951
 #, fuzzy
 msgid "only installation, upgrading and rmsource may be forced"
 msgstr "sadece yükleme ve güncelleme zorlanabilir (force edilebilir)"
 
-#: ../rpm.c:951
+#: ../rpm.c:954
 msgid "files may only be relocated during package installation"
 msgstr "dosyalar sadece paket yüklemesi sýrasýnda relocate edilebilir"
 
-#: ../rpm.c:954
+#: ../rpm.c:957
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
 
-#: ../rpm.c:957
+#: ../rpm.c:960
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate sadece yeni paketler yüklenirken kullanýlýr"
 
-#: ../rpm.c:960
+#: ../rpm.c:963
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:963
+#: ../rpm.c:966
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix komutunun argümanlarý '/' ile baþlamalý"
 
-#: ../rpm.c:966
+#: ../rpm.c:969
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:970
+#: ../rpm.c:973
 msgid "--percent may only be specified during package installation"
 msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:974
+#: ../rpm.c:977
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:978
+#: ../rpm.c:981
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:982
+#: ../rpm.c:985
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:986
+#: ../rpm.c:989
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:990
+#: ../rpm.c:993
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "--excludedocs ve --includedocs bir arada kullanýlamaz (bi daha olmasýn)"
 
-#: ../rpm.c:994
+#: ../rpm.c:997
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:998
+#: ../rpm.c:1001
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1002
+#: ../rpm.c:1005
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1006
+#: ../rpm.c:1009
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches sadece paket silinmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1010
+#: ../rpm.c:1013
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1014
+#: ../rpm.c:1017
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb sadece paket yükleme ve silmelerinde kullanýlýr"
 
-#: ../rpm.c:1019
+#: ../rpm.c:1022
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr "--noscripts sadece paket yükleme, silme ve doðrulamalarýnda kullanýlýr"
 
-#: ../rpm.c:1023
+#: ../rpm.c:1026
 #, fuzzy
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
@@ -1430,24 +1439,24 @@ msgid ""
 msgstr ""
 "--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
 
-#: ../rpm.c:1028
+#: ../rpm.c:1031
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
 "--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
 
-#: ../rpm.c:1032
+#: ../rpm.c:1035
 msgid "--nofiles may only be specified during package verification"
 msgstr "--nofiles sadece paket doðrulamasý sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1037
+#: ../rpm.c:1040
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test sadece paket yüklemelerinde, silme ve derlemelerinde kullanýlýr"
 
-#: ../rpm.c:1042
+#: ../rpm.c:1045
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1455,144 +1464,144 @@ msgstr ""
 "--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde "
 "kullanýlýr"
 
-#: ../rpm.c:1047
+#: ../rpm.c:1050
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) komutun argümanlarý '/' ile baþlamalý"
 
-#: ../rpm.c:1051
+#: ../rpm.c:1054
 msgid "--clean may only be used with -b and -t"
 msgstr "--clean sadece -b ve -t ile kullanýlýr"
 
-#: ../rpm.c:1054
+#: ../rpm.c:1057
 msgid "--rmsource may only be used with -b and -t"
 msgstr "--rmsource sadece -b ve -t ile kullanýlýr"
 
-#: ../rpm.c:1057
+#: ../rpm.c:1060
 msgid "--short-circuit may only be used during package building"
 msgstr "--short-circuit sadece paket oluþturulmasý sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1061
+#: ../rpm.c:1064
 #, fuzzy
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 "--short-circuit mutlaka -bc, bi, -tc veya -ti ile beraber kullanýlmalýdýr"
 
-#: ../rpm.c:1067
+#: ../rpm.c:1070
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1072
+#: ../rpm.c:1075
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr "FTP seçenekleri sadece sorgulama, yükleme ve güncellemede kullanýlýr"
 
-#: ../rpm.c:1078
+#: ../rpm.c:1081
 #, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr "FTP seçenekleri sadece sorgulama, yükleme ve güncellemede kullanýlýr"
 
-#: ../rpm.c:1082
+#: ../rpm.c:1085
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp sadece Ýmza kontrolü sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1085
+#: ../rpm.c:1088
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nopgp sadece Ýmza kontrolü sýrasýnda kullanýlabilir"
 
-#: ../rpm.c:1088
+#: ../rpm.c:1091
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 "--nopgp sadece imza kontrolü veya paket doðrulamasý sýrasýnda kullanýlýr"
 
-#: ../rpm.c:1114
+#: ../rpm.c:1117
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: ../rpm.c:1131
+#: ../rpm.c:1134
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Dosya sunucuda bulunamadý"
 
-#: ../rpm.c:1134
+#: ../rpm.c:1137
 msgid "Use `%%_signature pgp5' instead of `%%_signature pgp' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1141
+#: ../rpm.c:1144
 #, fuzzy
 msgid "pgp version 5 not found: "
 msgstr "Dosya sunucuda bulunamadý"
 
-#: ../rpm.c:1144
+#: ../rpm.c:1147
 msgid "Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1151
+#: ../rpm.c:1154
 msgid "Pass phrase check failed\n"
 msgstr "Parola kontrolü baþarýsýzlýkla sonuçlandý\n"
 
-#: ../rpm.c:1154
+#: ../rpm.c:1157
 msgid "Pass phrase is good.\n"
 msgstr "Parola doðru.\n"
 
-#: ../rpm.c:1161
+#: ../rpm.c:1164
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1166
+#: ../rpm.c:1169
 msgid "--sign may only be used during package building"
 msgstr "--sign sadece paket olusturulurken kullanýlabilir"
 
-#: ../rpm.c:1183
+#: ../rpm.c:1186
 #, fuzzy
 msgid "exec failed\n"
 msgstr "%s: Eriþilemedi\n"
 
-#: ../rpm.c:1202
+#: ../rpm.c:1205
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags için beklenmeyen argümanlar"
 
-#: ../rpm.c:1213
+#: ../rpm.c:1216
 msgid "no packages given for signature check"
 msgstr "imzasý kontrol edilecek paketler belirtilmedi"
 
-#: ../rpm.c:1221
+#: ../rpm.c:1224
 msgid "no packages given for signing"
 msgstr "imzalanacak paketler belirtilmedi"
 
-#: ../rpm.c:1230
+#: ../rpm.c:1233
 msgid "no packages files given for rebuild"
 msgstr "yeniden oluþturmak için paket dosyalarý belirtilmedi"
 
-#: ../rpm.c:1287
+#: ../rpm.c:1290
 msgid "no spec files given for build"
 msgstr "oluþturma için gerekli spec dosyasý belirtilmedi"
 
-#: ../rpm.c:1289
+#: ../rpm.c:1292
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirttilmedi"
 
-#: ../rpm.c:1302
+#: ../rpm.c:1305
 msgid "no packages given for uninstall"
 msgstr "sistemden silinecek paketler belirtilmedi"
 
-#: ../rpm.c:1351
+#: ../rpm.c:1354
 msgid "no packages given for install"
 msgstr "yüklenecek paketler belirtilmedi"
 
-#: ../rpm.c:1373
+#: ../rpm.c:1376
 msgid "extra arguments given for query of all packages"
 msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
 
-#: ../rpm.c:1379
+#: ../rpm.c:1382
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: ../rpm.c:1397
+#: ../rpm.c:1400
 msgid "no arguments given for verify"
 msgstr "doðrulama için hiç argüman belirtilmedi"
 
@@ -2447,31 +2456,31 @@ msgstr "%s kaydý %s dosyasýna yazýlamýyor"
 msgid "error removing record %s into %s"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: ../lib/depends.c:412 ../lib/depends.c:571
+#: ../lib/depends.c:429 ../lib/depends.c:588
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "baðýmlýlýk sorgulamasý için %d numaralý baþlýk okunamýyor"
 
-#: ../lib/depends.c:477
+#: ../lib/depends.c:494
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:665
+#: ../lib/depends.c:682
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: ../lib/depends.c:708
+#: ../lib/depends.c:725
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: ../lib/depends.c:808
+#: ../lib/depends.c:825
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:860
+#: ../lib/depends.c:877
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "gerekenler zincirinde döngü: %s"
@@ -2487,22 +2496,22 @@ msgstr ""
 msgid "(not a number)"
 msgstr "(üye deðil)"
 
-#: ../lib/fs.c:40
+#: ../lib/fs.c:41
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr "mntctl() çaðrýsý boyut bilgisi vermedi: %s"
 
-#: ../lib/fs.c:75 ../lib/fs.c:237
+#: ../lib/fs.c:76 ../lib/fs.c:246
 #, fuzzy, c-format
 msgid "failed to stat %s: %s"
 msgstr "%s açýlamadý: %s"
 
-#: ../lib/fs.c:116
+#: ../lib/fs.c:117
 #, c-format
 msgid "failed to open %s: %s"
 msgstr "%s açýlamadý: %s"
 
-#: ../lib/fs.c:258
+#: ../lib/fs.c:267
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr ""
@@ -2636,7 +2645,7 @@ msgstr ""
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:440 ../lib/install.c:804 ../lib/uninstall.c:337
+#: ../lib/install.c:440 ../lib/install.c:808 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s 'nin isminin  %s 'ye çevrilmesinde belirtilen hata oluþtu: %s"
@@ -2681,12 +2690,12 @@ msgstr ""
 msgid "spec file in: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: ../lib/install.c:749 ../lib/install.c:781
+#: ../lib/install.c:749 ../lib/install.c:785
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: ../lib/install.c:802
+#: ../lib/install.c:806
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
@@ -2756,7 +2765,7 @@ msgid "Unterminated %c: %s"
 msgstr ""
 
 #: ../lib/macro.c:905
-msgid "Empty token"
+msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
 #: ../lib/macro.c:1027
@@ -3383,17 +3392,17 @@ msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/transaction.c:735
+#: ../lib/transaction.c:736
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:741
+#: ../lib/transaction.c:742
 #, fuzzy, c-format
 msgid "excluding %s\n"
 msgstr "%s alýnýyor\n"
 
-#: ../lib/transaction.c:829
+#: ../lib/transaction.c:830
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3443,6 +3452,10 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
+#, fuzzy
+#~ msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
+#~ msgstr "dosyalarý <eskidizin> den <yenidizin> e relocate et"
+
 #~ msgid "error: cannot open file %s\n"
 #~ msgstr "hata: %s dosyasý okunamadý\n"
 
@@ -3464,10 +3477,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "error %d reading header: %s\n"
 #~ msgstr "%s dizinin oluþturulmasýnda hata: %s"
-
-#, fuzzy
-#~ msgid "package is not relocatable"
-#~ msgstr "%s pakedi yüklenmemiþ\n"
 
 #, fuzzy
 #~ msgid "path %s is not relocatable"

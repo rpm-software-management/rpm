@@ -1,7 +1,7 @@
 #: ../rpm.c:179 ../rpm.c:263
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-04-05 11:47-0400\n"
+"POT-Creation-Date: 1999-04-08 17:06-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -272,107 +272,122 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка FTP"
 
-#: ../install.c:124
+#: ../install.c:129
 msgid "counting packages to install\n"
 msgstr "считаю пакеты для установки\n"
 
-#: ../install.c:128
+#: ../install.c:133
 #, c-format
 msgid "found %d packages\n"
 msgstr "найдено %d пакетов\n"
 
-#: ../install.c:137
+#: ../install.c:142
 msgid "looking for packages to download\n"
 msgstr "ищу пакеты для получения с ftp\n"
 
-#: ../install.c:148
+#: ../install.c:153
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Получаю %s\n"
 
-#: ../install.c:157
+#: ../install.c:162
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:161
+#: ../install.c:166
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "ошибка: пропускаю %s - ошибка передачи - %s\n"
 
-#: ../install.c:178
+#: ../install.c:183
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "получено %d пакетов\n"
 
-#: ../install.c:187 ../install.c:291
+#: ../install.c:192 ../install.c:329
 #, fuzzy, c-format
 msgid "cannot open file %s\n"
 msgstr "не могу открыть файл %s: "
 
-#: ../install.c:199 ../lib/query.c:540
+#: ../install.c:204 ../lib/query.c:540
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s не похож на пакет RPM...\n"
 
-#: ../install.c:203 ../install.c:428
+#: ../install.c:208 ../install.c:466
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "ошибка: %s не может быть установлен\n"
 
-#: ../install.c:218 ../install.c:341
+#: ../install.c:223 ../install.c:379
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "ошибка: не могу открыть %s%s/packages.rpm\n"
 
-#: ../install.c:236
+#: ../install.c:244
+#, fuzzy, c-format
+msgid "package %s is not relocateable\n"
+msgstr "пакет не перемещаем"
+
+#: ../install.c:256
+#, fuzzy, c-format
+msgid "error reading from file %s\n"
+msgstr "ошибка создания временного файла %s"
+
+#: ../install.c:259
+#, c-format
+msgid "file %s requires a newer version of RPM\n"
+msgstr ""
+
+#: ../install.c:274
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: ../install.c:246
+#: ../install.c:284
 msgid "failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
 
-#: ../install.c:264
+#: ../install.c:302
 msgid "installing binary packages\n"
 msgstr "устанавливаю бинарные пакеты\n"
 
-#: ../install.c:352 ../lib/query.c:685 ../verify.c:243
+#: ../install.c:390 ../lib/query.c:685 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: ../install.c:356
+#: ../install.c:394
 #, fuzzy, c-format
 msgid "searching for package %s\n"
 msgstr "ошибка поиска пакета %s\n"
 
-#: ../install.c:365
+#: ../install.c:403
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: ../install.c:391
+#: ../install.c:429
 msgid "removing these packages would break dependencies:\n"
 msgstr "удаление этих пакетов нарушит зависимости:\n"
 
-#: ../install.c:418
+#: ../install.c:456
 #, fuzzy, c-format
 msgid "cannot open %s\n"
 msgstr "ошибка: не могу открыть %s\n"
 
-#: ../install.c:423
+#: ../install.c:461
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливаю %s\n"
 
-#: ../install.c:467
+#: ../install.c:505
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " нужен для %s-%s-%s\n"
 
-#: ../install.c:470
+#: ../install.c:508
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " конфликтует с %s-%s-%s\n"
@@ -1211,8 +1226,8 @@ msgstr "перестроить базу данных из существующей базы"
 
 #: ../rpm.c:625 ../rpm.c:631 ../rpm.c:638 ../rpm.c:644 ../rpm.c:653
 #: ../rpm.c:660 ../rpm.c:707 ../rpm.c:713 ../rpm.c:777 ../rpm.c:785
-#: ../rpm.c:792 ../rpm.c:801 ../rpm.c:808 ../rpm.c:816 ../rpm.c:849
-#: ../rpm.c:901 ../rpm.c:908
+#: ../rpm.c:792 ../rpm.c:801 ../rpm.c:808 ../rpm.c:816 ../rpm.c:852
+#: ../rpm.c:904 ../rpm.c:911
 msgid "only one major mode may be specified"
 msgstr "может быть указан только один из основных режимов"
 
@@ -1235,7 +1250,7 @@ msgstr ""
 "опция --tarbuild (-t) требует a,b,i,c,p,l в качестве единственного аргумента"
 
 #: ../rpm.c:720 ../rpm.c:727 ../rpm.c:735 ../rpm.c:743 ../rpm.c:753
-#: ../rpm.c:761 ../rpm.c:769 ../rpm.c:915
+#: ../rpm.c:761 ../rpm.c:769 ../rpm.c:918
 msgid "one type of query/verify may be performed at a time"
 msgstr "за один раз может быть исполнен только один тип проверки или запроса"
 
@@ -1243,133 +1258,127 @@ msgstr "за один раз может быть исполнен только один тип проверки или запроса"
 msgid "arguments to --dbpath must begin with a /"
 msgstr "аргументы для --dbpath должны начинаться с /"
 
-#. XXX FIXME
-#: ../rpm.c:834
-#, fuzzy
-msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
-msgstr "      --relocate <oldpath>=<newpath>"
-
-#: ../rpm.c:855
+#: ../rpm.c:858
 msgid "relocations must begin with a /"
 msgstr "перемещения должны начинаться с /"
 
-#: ../rpm.c:857
+#: ../rpm.c:860
 msgid "relocations must contain a ="
 msgstr "перемещения должны содержать ="
 
-#: ../rpm.c:860
+#: ../rpm.c:863
 msgid "relocations must have a / following the ="
 msgstr "перемещения должны иметь / после ="
 
-#: ../rpm.c:869
+#: ../rpm.c:872
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "перемещения должны начинаться с /"
 
-#: ../rpm.c:878
+#: ../rpm.c:881
 #, fuzzy, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Внутренняя ошибка при обработке аргументов  :-(\n"
 
-#: ../rpm.c:928
+#: ../rpm.c:931
 msgid "--dbpath given for operation that does not use a database"
 msgstr "опция --dbpath задана для операции, не использующей базу данных"
 
-#: ../rpm.c:933
+#: ../rpm.c:936
 msgid "--timecheck may only be used during package builds"
 msgstr "опция --timecheck может быть использована только при сборке пакетов"
 
-#: ../rpm.c:936 ../rpm.c:939
+#: ../rpm.c:939 ../rpm.c:942
 msgid "unexpected query specifiers"
 msgstr "неожиданная спецификация запроса"
 
-#: ../rpm.c:943
+#: ../rpm.c:946
 msgid "unexpected query source"
 msgstr "неожиданный источник запроса"
 
-#: ../rpm.c:948
+#: ../rpm.c:951
 #, fuzzy
 msgid "only installation, upgrading and rmsource may be forced"
 msgstr "принудительными могут быть только установка и обновление"
 
-#: ../rpm.c:951
+#: ../rpm.c:954
 msgid "files may only be relocated during package installation"
 msgstr "файлы могут быть перемещены только при установке пакета"
 
-#: ../rpm.c:954
+#: ../rpm.c:957
 msgid "only one of --prefix or --relocate may be used"
 msgstr "может быть использована только одна из опций --prefix или --relocate"
 
-#: ../rpm.c:957
+#: ../rpm.c:960
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "опцию --relocate можно использовать только при установке новых пакетов"
 
-#: ../rpm.c:960
+#: ../rpm.c:963
 msgid "--prefix may only be used when installing new packages"
 msgstr "опцию --prefix можно использовать только при установке новых пакетов"
 
-#: ../rpm.c:963
+#: ../rpm.c:966
 msgid "arguments to --prefix must begin with a /"
 msgstr "аргументы для --prefix должны начинаться с /"
 
-#: ../rpm.c:966
+#: ../rpm.c:969
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "опция --hash (-h) может быть указана только при установке пакета"
 
-#: ../rpm.c:970
+#: ../rpm.c:973
 msgid "--percent may only be specified during package installation"
 msgstr "опция --percent может быть указана только при установке пакета"
 
-#: ../rpm.c:974
+#: ../rpm.c:977
 msgid "--replacefiles may only be specified during package installation"
 msgstr "опция --replacefiles может быть указана только при установке пакета"
 
-#: ../rpm.c:978
+#: ../rpm.c:981
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "опция --replacepkgs может быть указана только при установке пакета"
 
-#: ../rpm.c:982
+#: ../rpm.c:985
 msgid "--excludedocs may only be specified during package installation"
 msgstr "опция --excludedocs может быть указана только при установке пакета"
 
-#: ../rpm.c:986
+#: ../rpm.c:989
 msgid "--includedocs may only be specified during package installation"
 msgstr "опция --includedocs может быть указана только при установке пакета"
 
-#: ../rpm.c:990
+#: ../rpm.c:993
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "может быть использована только одна из опций --excludedocs или --includedocs"
 
-#: ../rpm.c:994
+#: ../rpm.c:997
 msgid "--ignorearch may only be specified during package installation"
 msgstr "опция --ignorearch может быть указана только при установке пакета"
 
-#: ../rpm.c:998
+#: ../rpm.c:1001
 msgid "--ignoreos may only be specified during package installation"
 msgstr "опция --ignoreos может быть указана только при установке пакета"
 
-#: ../rpm.c:1002
+#: ../rpm.c:1005
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "опция --ignoreos может быть указана только при установке пакета"
 
-#: ../rpm.c:1006
+#: ../rpm.c:1009
 msgid "--allmatches may only be specified during package erasure"
 msgstr "опция --allmatches может быть указана только при удалении пакета"
 
-#: ../rpm.c:1010
+#: ../rpm.c:1013
 msgid "--allfiles may only be specified during package installation"
 msgstr "опция --allfiles может быть указана только при установке пакета"
 
-#: ../rpm.c:1014
+#: ../rpm.c:1017
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "опция --justdb может быть указана только при установке или удалении пакета"
 
-#: ../rpm.c:1019
+#: ../rpm.c:1022
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -1377,7 +1386,7 @@ msgstr ""
 "опция --noscripts может быть указана только при установке, удалении и "
 "верификации пакета"
 
-#: ../rpm.c:1023
+#: ../rpm.c:1026
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
@@ -1385,7 +1394,7 @@ msgstr ""
 "опция --notriggers может быть указана только при установке, удалении и "
 "верификации пакета"
 
-#: ../rpm.c:1028
+#: ../rpm.c:1031
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
@@ -1393,11 +1402,11 @@ msgstr ""
 "опция --nodeps может быть указана только при установке, удалении и "
 "верификации пакета"
 
-#: ../rpm.c:1032
+#: ../rpm.c:1035
 msgid "--nofiles may only be specified during package verification"
 msgstr "опция --nofiles может быть указана только при верификации пакета"
 
-#: ../rpm.c:1037
+#: ../rpm.c:1040
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -1405,7 +1414,7 @@ msgstr ""
 "опция --test может быть указана только при установке, удалении и сборке "
 "пакета"
 
-#: ../rpm.c:1042
+#: ../rpm.c:1045
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1413,42 +1422,42 @@ msgstr ""
 "опция --root (-r) может быть указана только при установке, удалении, "
 "запросах пакета и перестроении базы данных"
 
-#: ../rpm.c:1047
+#: ../rpm.c:1050
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументы для --root (-r) должны начинаться с /"
 
-#: ../rpm.c:1051
+#: ../rpm.c:1054
 msgid "--clean may only be used with -b and -t"
 msgstr "опция --clean может быть использована только с -b или -t"
 
-#: ../rpm.c:1054
+#: ../rpm.c:1057
 msgid "--rmsource may only be used with -b and -t"
 msgstr "опция --rmsource может быть использована только с -b или -t"
 
-#: ../rpm.c:1057
+#: ../rpm.c:1060
 msgid "--short-circuit may only be used during package building"
 msgstr ""
 "опция --short-circuit может быть использована только при сборке пакетов"
 
-#: ../rpm.c:1061
+#: ../rpm.c:1064
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 "опция --short-circuit может быть использована только с -bc, -bi, -bs, -tc "
 "-ti или -ts"
 
-#: ../rpm.c:1067
+#: ../rpm.c:1070
 msgid "--oldpackage may only be used during upgrades"
 msgstr ""
 "опция --oldpackage может быть использована только при обновлении пакетов"
 
-#: ../rpm.c:1072
+#: ../rpm.c:1075
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "опции ftp могут быть использованы только при запросах, установке и "
 "обновлении пакетов"
 
-#: ../rpm.c:1078
+#: ../rpm.c:1081
 #, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
@@ -1456,16 +1465,16 @@ msgstr ""
 "опции ftp могут быть использованы только при запросах, установке и "
 "обновлении пакетов"
 
-#: ../rpm.c:1082
+#: ../rpm.c:1085
 msgid "--nopgp may only be used during signature checking"
 msgstr "опция --nopgp может быть использована только при проверке подписи"
 
-#: ../rpm.c:1085
+#: ../rpm.c:1088
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "опция --nopgp может быть использована только при проверке подписи"
 
-#: ../rpm.c:1088
+#: ../rpm.c:1091
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
@@ -1473,90 +1482,90 @@ msgstr ""
 "опция --nopgp может быть использована только при проверке подписи и "
 "верификации пакета"
 
-#: ../rpm.c:1114
+#: ../rpm.c:1117
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "не могу открыть файл %s: "
 
-#: ../rpm.c:1131
+#: ../rpm.c:1134
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Файл не найден: %s"
 
-#: ../rpm.c:1134
+#: ../rpm.c:1137
 msgid "Use `%%_signature pgp5' instead of `%%_signature pgp' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1141
+#: ../rpm.c:1144
 #, fuzzy
 msgid "pgp version 5 not found: "
 msgstr "Файл не найден: %s"
 
-#: ../rpm.c:1144
+#: ../rpm.c:1147
 msgid "Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1151
+#: ../rpm.c:1154
 msgid "Pass phrase check failed\n"
 msgstr "Неверный пароль\n"
 
-#: ../rpm.c:1154
+#: ../rpm.c:1157
 msgid "Pass phrase is good.\n"
 msgstr "Пароль принят.\n"
 
-#: ../rpm.c:1161
+#: ../rpm.c:1164
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1166
+#: ../rpm.c:1169
 msgid "--sign may only be used during package building"
 msgstr "опция --sign может быть использована только при сборке пакетов"
 
-#: ../rpm.c:1183
+#: ../rpm.c:1186
 msgid "exec failed\n"
 msgstr "запуск не удался\n"
 
-#: ../rpm.c:1202
+#: ../rpm.c:1205
 msgid "unexpected arguments to --querytags "
 msgstr "неожиданные аргументы для --querytags "
 
-#: ../rpm.c:1213
+#: ../rpm.c:1216
 msgid "no packages given for signature check"
 msgstr "не заданы пакеты для проверки подписи"
 
-#: ../rpm.c:1221
+#: ../rpm.c:1224
 msgid "no packages given for signing"
 msgstr "не заданы пакеты для подписи"
 
-#: ../rpm.c:1230
+#: ../rpm.c:1233
 msgid "no packages files given for rebuild"
 msgstr "не заданы пакеты для пересборки"
 
-#: ../rpm.c:1287
+#: ../rpm.c:1290
 msgid "no spec files given for build"
 msgstr "не задан spec-файл для сборки пакета"
 
-#: ../rpm.c:1289
+#: ../rpm.c:1292
 msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
-#: ../rpm.c:1302
+#: ../rpm.c:1305
 msgid "no packages given for uninstall"
 msgstr "не заданы пакеты для удаления"
 
-#: ../rpm.c:1351
+#: ../rpm.c:1354
 msgid "no packages given for install"
 msgstr "не заданы пакеты для установки"
 
-#: ../rpm.c:1373
+#: ../rpm.c:1376
 msgid "extra arguments given for query of all packages"
 msgstr "в запросе ко всем пакетам заданы лишние аргументы"
 
-#: ../rpm.c:1379
+#: ../rpm.c:1382
 msgid "no arguments given for query"
 msgstr "не заданы аргументы запроса"
 
-#: ../rpm.c:1397
+#: ../rpm.c:1400
 msgid "no arguments given for verify"
 msgstr "не заданы аргументы для верификации"
 
@@ -2407,31 +2416,31 @@ msgstr "ошибка сохранения записи %s в %s"
 msgid "error removing record %s into %s"
 msgstr "ошибка удаления записи %s из %s"
 
-#: ../lib/depends.c:412 ../lib/depends.c:571
+#: ../lib/depends.c:429 ../lib/depends.c:588
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "не могу прочесть хедер в %d для проверки зависимостей"
 
-#: ../lib/depends.c:477
+#: ../lib/depends.c:494
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr "зависимости: ищу %s\n"
 
-#: ../lib/depends.c:665
+#: ../lib/depends.c:682
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "требования пакета %s не удовлетворены: %s\n"
 
-#: ../lib/depends.c:708
+#: ../lib/depends.c:725
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: ../lib/depends.c:808
+#: ../lib/depends.c:825
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr "ошибка dbrecMatchesDepFlags() при чтении хедера"
 
-#: ../lib/depends.c:860
+#: ../lib/depends.c:877
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "замкнутый цикл в цепочке требований для установки: %s"
@@ -2447,22 +2456,22 @@ msgstr "free list corrupt (%d)- contact support@redhat.com\n"
 msgid "(not a number)"
 msgstr "(не число)"
 
-#: ../lib/fs.c:40
+#: ../lib/fs.c:41
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr "mntctl() не возвратил размера fugger(??): %s"
 
-#: ../lib/fs.c:75 ../lib/fs.c:237
+#: ../lib/fs.c:76 ../lib/fs.c:246
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr "не могу получить информацию об %s: %s"
 
-#: ../lib/fs.c:116
+#: ../lib/fs.c:117
 #, c-format
 msgid "failed to open %s: %s"
 msgstr "не могу открыть %s: %s"
 
-#: ../lib/fs.c:258
+#: ../lib/fs.c:267
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr "файл %s - на неизвестном устройстве"
@@ -2595,7 +2604,7 @@ msgstr "предупреждение: %s создан как %s"
 msgid "warning: %s saved as %s"
 msgstr "предупреждение: %s сохранен как %s"
 
-#: ../lib/install.c:440 ../lib/install.c:804 ../lib/uninstall.c:337
+#: ../lib/install.c:440 ../lib/install.c:808 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "ошибка переименования %s в %s: %s"
@@ -2639,11 +2648,11 @@ msgstr "исходники в: %s\n"
 msgid "spec file in: %s\n"
 msgstr "файл spec в: %s\n"
 
-#: ../lib/install.c:749 ../lib/install.c:781
+#: ../lib/install.c:749 ../lib/install.c:785
 msgid "source package contains no .spec file"
 msgstr "исходный пакет не содержит файла .spec"
 
-#: ../lib/install.c:802
+#: ../lib/install.c:806
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "переименовываю %s в %s\n"
@@ -2713,7 +2722,7 @@ msgid "Unterminated %c: %s"
 msgstr "Незакрытая {: %s"
 
 #: ../lib/macro.c:905
-msgid "Empty token"
+msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
 #: ../lib/macro.c:1027
@@ -3333,17 +3342,17 @@ msgstr "Вы должны установить \"pgp_name:\" в вашем rpmrc"
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/transaction.c:735
+#: ../lib/transaction.c:736
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещаю %s в %s\n"
 
-#: ../lib/transaction.c:741
+#: ../lib/transaction.c:742
 #, fuzzy, c-format
 msgid "excluding %s\n"
 msgstr "Исполняю: %s\n"
 
-#: ../lib/transaction.c:829
+#: ../lib/transaction.c:830
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
@@ -3393,6 +3402,10 @@ msgstr "в пакете нет ни имен пользователей, ни их ID (так не бывает)"
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr "в пакете нет ни имен групп, ни их ID (так не бывает)"
 
+#, fuzzy
+#~ msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
+#~ msgstr "      --relocate <oldpath>=<newpath>"
+
 #~ msgid "error: cannot open file %s\n"
 #~ msgstr "ошибка: не могу открыть файл %s\n"
 
@@ -3425,9 +3438,6 @@ msgstr "в пакете нет ни имен групп, ни их ID (так не бывает)"
 
 #~ msgid "error %d reading header: %s\n"
 #~ msgstr "ошибка %d чтения хедера: %s\n"
-
-#~ msgid "package is not relocatable"
-#~ msgstr "пакет не перемещаем"
 
 #~ msgid "package has multiple relocatable components"
 #~ msgstr "пакет содержит несколько перемещаемых компонентов"

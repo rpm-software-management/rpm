@@ -12,7 +12,7 @@ MSGMERGE = msgmerge
 
 NLSPACKAGE = @PACKAGE@
 
-LINGUAS = ro
+LINGUAS = ro sk
 CATALOGS = $(addsuffix .mo, $(LINGUAS))
 
 POTFILES = \

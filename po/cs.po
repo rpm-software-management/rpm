@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-05 11:47-0400\n"
+"POT-Creation-Date: 1999-04-08 17:06-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -279,107 +279,122 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr "Neznámá nebo neèekaná chyba FTP"
 
-#: ../install.c:124
+#: ../install.c:129
 msgid "counting packages to install\n"
 msgstr "probíhá poèítání balíèkù pro instalaci\n"
 
-#: ../install.c:128
+#: ../install.c:133
 #, c-format
 msgid "found %d packages\n"
 msgstr "nalezeno %d balíèkù\n"
 
-#: ../install.c:137
+#: ../install.c:142
 msgid "looking for packages to download\n"
 msgstr "probíhá hledání balíèkù pro sta¾ení\n"
 
-#: ../install.c:148
+#: ../install.c:153
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Probíhá naèítání %s\n"
 
-#: ../install.c:157
+#: ../install.c:162
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:161
+#: ../install.c:166
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "chyba: vynechává se %s - pøenos neúspì¹ný - %s\n"
 
-#: ../install.c:178
+#: ../install.c:183
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "získalo se %d balíèkù\n"
 
-#: ../install.c:187 ../install.c:291
+#: ../install.c:192 ../install.c:329
 #, fuzzy, c-format
 msgid "cannot open file %s\n"
 msgstr "nelze otevøít soubor %s: "
 
-#: ../install.c:199 ../lib/query.c:540
+#: ../install.c:204 ../lib/query.c:540
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
 
-#: ../install.c:203 ../install.c:428
+#: ../install.c:208 ../install.c:466
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "chyba: %s nelze nainstalovat\n"
 
-#: ../install.c:218 ../install.c:341
+#: ../install.c:223 ../install.c:379
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "chyba: nelze otevøít %s%s/packages.rpm\n"
 
-#: ../install.c:236
+#: ../install.c:244
+#, fuzzy, c-format
+msgid "package %s is not relocateable\n"
+msgstr "balíèek %s není nainstalován\n"
+
+#: ../install.c:256
+#, fuzzy, c-format
+msgid "error reading from file %s\n"
+msgstr "chyba pøi vytváøení adresáøe %s: %s"
+
+#: ../install.c:259
+#, c-format
+msgid "file %s requires a newer version of RPM\n"
+msgstr ""
+
+#: ../install.c:274
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "nalezeno %d zdrojových a %d binárních balíèkù\n"
 
-#: ../install.c:246
+#: ../install.c:284
 msgid "failed dependencies:\n"
 msgstr "chybné závislosti:\n"
 
-#: ../install.c:264
+#: ../install.c:302
 msgid "installing binary packages\n"
 msgstr "probíhá instalace binárních balíèkù\n"
 
-#: ../install.c:352 ../lib/query.c:685 ../verify.c:243
+#: ../install.c:390 ../lib/query.c:685 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: ../install.c:356
+#: ../install.c:394
 #, fuzzy, c-format
 msgid "searching for package %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
 
-#: ../install.c:365
+#: ../install.c:403
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" specifikuje více balíèkù\n"
 
-#: ../install.c:391
+#: ../install.c:429
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranìní tìchto balíèkù by poru¹ilo závislosti:\n"
 
-#: ../install.c:418
+#: ../install.c:456
 #, fuzzy, c-format
 msgid "cannot open %s\n"
 msgstr "chyba: nelze otevøít %s\n"
 
-#: ../install.c:423
+#: ../install.c:461
 #, c-format
 msgid "Installing %s\n"
 msgstr "Probíhá instalace %s\n"
 
-#: ../install.c:467
+#: ../install.c:505
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " je nutné pro %s-%s-%s\n"
 
-#: ../install.c:470
+#: ../install.c:508
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " koliduje s %s-%s-%s\n"
@@ -1215,8 +1230,8 @@ msgstr "pøestavit databázi z existující databáze"
 
 #: ../rpm.c:625 ../rpm.c:631 ../rpm.c:638 ../rpm.c:644 ../rpm.c:653
 #: ../rpm.c:660 ../rpm.c:707 ../rpm.c:713 ../rpm.c:777 ../rpm.c:785
-#: ../rpm.c:792 ../rpm.c:801 ../rpm.c:808 ../rpm.c:816 ../rpm.c:849
-#: ../rpm.c:901 ../rpm.c:908
+#: ../rpm.c:792 ../rpm.c:801 ../rpm.c:808 ../rpm.c:816 ../rpm.c:852
+#: ../rpm.c:904 ../rpm.c:911
 msgid "only one major mode may be specified"
 msgstr "specifikovat lze jen jeden hlavní re¾im"
 
@@ -1240,7 +1255,7 @@ msgstr ""
 "argument"
 
 #: ../rpm.c:720 ../rpm.c:727 ../rpm.c:735 ../rpm.c:743 ../rpm.c:753
-#: ../rpm.c:761 ../rpm.c:769 ../rpm.c:915
+#: ../rpm.c:761 ../rpm.c:769 ../rpm.c:918
 msgid "one type of query/verify may be performed at a time"
 msgstr "v daném okam¾iku lze provést jeden typ dotazu èi ovìøení"
 
@@ -1248,131 +1263,125 @@ msgstr "v daném okam¾iku lze provést jeden typ dotazu èi ovìøení"
 msgid "arguments to --dbpath must begin with a /"
 msgstr "argumenty pro --dbpath musejí zaèínat znakem /"
 
-#. XXX FIXME
-#: ../rpm.c:834
-#, fuzzy
-msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
-msgstr "      --relocate <starácesta>=<novácesta>"
-
-#: ../rpm.c:855
+#: ../rpm.c:858
 msgid "relocations must begin with a /"
 msgstr "pøemístìní musejí zaèínat znakem /"
 
-#: ../rpm.c:857
+#: ../rpm.c:860
 msgid "relocations must contain a ="
 msgstr "pøemístìní musejí obsahovat ="
 
-#: ../rpm.c:860
+#: ../rpm.c:863
 msgid "relocations must have a / following the ="
 msgstr "pøemístìní musejí mít za znakem = znak /"
 
-#: ../rpm.c:869
+#: ../rpm.c:872
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "pøemístìní musejí zaèínat znakem /"
 
-#: ../rpm.c:878
+#: ../rpm.c:881
 #, fuzzy, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Interní chyba pøi zpracování argumentù :-(\n"
 
-#: ../rpm.c:928
+#: ../rpm.c:931
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath zadána pro operaci, která databázi nepou¾ívá"
 
-#: ../rpm.c:933
+#: ../rpm.c:936
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck lze pou¾ít jen pøi sestavování balíèkù"
 
-#: ../rpm.c:936 ../rpm.c:939
+#: ../rpm.c:939 ../rpm.c:942
 msgid "unexpected query specifiers"
 msgstr "neèekané specifikátory dotazu"
 
-#: ../rpm.c:943
+#: ../rpm.c:946
 msgid "unexpected query source"
 msgstr "neèekaný zdroj dotazu"
 
-#: ../rpm.c:948
+#: ../rpm.c:951
 #, fuzzy
 msgid "only installation, upgrading and rmsource may be forced"
 msgstr "vynucena mù¾e být jen instalace a aktualizace"
 
-#: ../rpm.c:951
+#: ../rpm.c:954
 msgid "files may only be relocated during package installation"
 msgstr "soubory mohou být pøemístìny jen pøi instalaci balíèkù"
 
-#: ../rpm.c:954
+#: ../rpm.c:957
 msgid "only one of --prefix or --relocate may be used"
 msgstr "pou¾ít lze jen jeden z --prefix nebo --relocate"
 
-#: ../rpm.c:957
+#: ../rpm.c:960
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate se mù¾e pou¾ít jen pøi instalaci balíèkù"
 
-#: ../rpm.c:960
+#: ../rpm.c:963
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix se mù¾e pou¾ít jen pøi instalaci nových balíèkù"
 
-#: ../rpm.c:963
+#: ../rpm.c:966
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumenty pro --prefix musejí zaèínat znakem /"
 
-#: ../rpm.c:966
+#: ../rpm.c:969
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:970
+#: ../rpm.c:973
 msgid "--percent may only be specified during package installation"
 msgstr "--percent se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:974
+#: ../rpm.c:977
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:978
+#: ../rpm.c:981
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:982
+#: ../rpm.c:985
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:986
+#: ../rpm.c:989
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:990
+#: ../rpm.c:993
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "specifikovat lze jen jeden z --excludedocs a --includedocs"
 
-#: ../rpm.c:994
+#: ../rpm.c:997
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:998
+#: ../rpm.c:1001
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:1002
+#: ../rpm.c:1005
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoreos se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:1006
+#: ../rpm.c:1009
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches se mù¾e specifikovat jen pøi mazání balíèkù"
 
-#: ../rpm.c:1010
+#: ../rpm.c:1013
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: ../rpm.c:1014
+#: ../rpm.c:1017
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb se mù¾e specifikovat jen pøi instalaci nebo mazání balíèkù"
 
-#: ../rpm.c:1019
+#: ../rpm.c:1022
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -1380,7 +1389,7 @@ msgstr ""
 "--noscripts se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
 "balíèkù"
 
-#: ../rpm.c:1023
+#: ../rpm.c:1026
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
@@ -1388,7 +1397,7 @@ msgstr ""
 "--notriggers se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
 "balíèkù"
 
-#: ../rpm.c:1028
+#: ../rpm.c:1031
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
@@ -1396,11 +1405,11 @@ msgstr ""
 "--nodeps se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
 "balíèkù"
 
-#: ../rpm.c:1032
+#: ../rpm.c:1035
 msgid "--nofiles may only be specified during package verification"
 msgstr "--nofiles se mù¾e specifikovat jen pøi verifikaci balíèkù"
 
-#: ../rpm.c:1037
+#: ../rpm.c:1040
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -1408,7 +1417,7 @@ msgstr ""
 "--test se mù¾e specifikovat jen pøi instalaci, mazání nebo sestavování "
 "balíèkù"
 
-#: ../rpm.c:1042
+#: ../rpm.c:1045
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1416,143 +1425,143 @@ msgstr ""
 "--root (-r) se mù¾e urèit jen pøi instalaci, mazání, dotazování a opìtných "
 "sestavování databází"
 
-#: ../rpm.c:1047
+#: ../rpm.c:1050
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty pro --root (-r) musejí zaèínat znakem /"
 
-#: ../rpm.c:1051
+#: ../rpm.c:1054
 msgid "--clean may only be used with -b and -t"
 msgstr "--clean lze pou¾ít pouze s -b nebo -t"
 
-#: ../rpm.c:1054
+#: ../rpm.c:1057
 msgid "--rmsource may only be used with -b and -t"
 msgstr "--rmsource lze pou¾ít pouze s -b nebo -t"
 
-#: ../rpm.c:1057
+#: ../rpm.c:1060
 msgid "--short-circuit may only be used during package building"
 msgstr "--short-circuit lze pou¾ít jen pøi sestavování balíèkù"
 
-#: ../rpm.c:1061
+#: ../rpm.c:1064
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr "--short-circuit lze pou¾ít pouze s -bc, -bi, -bs, -tc, -ti nebo -ts"
 
-#: ../rpm.c:1067
+#: ../rpm.c:1070
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage lze pou¾ít jen pøi aktualizacích"
 
-#: ../rpm.c:1072
+#: ../rpm.c:1075
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "volby ftp lze pou¾ít jen pøi dotazování, instalacích a aktualizacích balíèkù"
 
-#: ../rpm.c:1078
+#: ../rpm.c:1081
 #, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "volby ftp lze pou¾ít jen pøi dotazování, instalacích a aktualizacích balíèkù"
 
-#: ../rpm.c:1082
+#: ../rpm.c:1085
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp lze pou¾ít jen pøi kontrolování podpisù"
 
-#: ../rpm.c:1085
+#: ../rpm.c:1088
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nopgp lze pou¾ít jen pøi kontrolování podpisù"
 
-#: ../rpm.c:1088
+#: ../rpm.c:1091
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 "--nopgp se mù¾e pou¾ít jen pøi kontrolování podpisù a verifikaci balíèkù"
 
-#: ../rpm.c:1114
+#: ../rpm.c:1117
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "nelze otevøít soubor %s: "
 
-#: ../rpm.c:1131
+#: ../rpm.c:1134
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: ../rpm.c:1134
+#: ../rpm.c:1137
 msgid "Use `%%_signature pgp5' instead of `%%_signature pgp' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1141
+#: ../rpm.c:1144
 #, fuzzy
 msgid "pgp version 5 not found: "
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: ../rpm.c:1144
+#: ../rpm.c:1147
 msgid "Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1151
+#: ../rpm.c:1154
 msgid "Pass phrase check failed\n"
 msgstr "Chybná heslová fráze\n"
 
-#: ../rpm.c:1154
+#: ../rpm.c:1157
 msgid "Pass phrase is good.\n"
 msgstr "Heslová fráze je dobrá.\n"
 
-#: ../rpm.c:1161
+#: ../rpm.c:1164
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1166
+#: ../rpm.c:1169
 msgid "--sign may only be used during package building"
 msgstr "--sign lze pou¾ít jen pøi sestavování balíèkù"
 
-#: ../rpm.c:1183
+#: ../rpm.c:1186
 msgid "exec failed\n"
 msgstr "nelze spustit\n"
 
-#: ../rpm.c:1202
+#: ../rpm.c:1205
 msgid "unexpected arguments to --querytags "
 msgstr "neèekané argumenty pro --querytags "
 
-#: ../rpm.c:1213
+#: ../rpm.c:1216
 msgid "no packages given for signature check"
 msgstr "ke kontrole podpisu nezadány ¾ádné balíèky"
 
-#: ../rpm.c:1221
+#: ../rpm.c:1224
 msgid "no packages given for signing"
 msgstr "k podpisu nezadány ¾ádné balíèky"
 
-#: ../rpm.c:1230
+#: ../rpm.c:1233
 msgid "no packages files given for rebuild"
 msgstr "k opìtnému sestavení nezadány ¾ádné soubory balíèkù"
 
-#: ../rpm.c:1287
+#: ../rpm.c:1290
 msgid "no spec files given for build"
 msgstr "pro sestavení nezadány ¾ádné soubory .spec"
 
-#: ../rpm.c:1289
+#: ../rpm.c:1292
 msgid "no tar files given for build"
 msgstr "pro sestavení nezadány ¾ádné soubory tar"
 
-#: ../rpm.c:1302
+#: ../rpm.c:1305
 msgid "no packages given for uninstall"
 msgstr "pro deinstalaci nezadány ¾ádné balíèky"
 
-#: ../rpm.c:1351
+#: ../rpm.c:1354
 msgid "no packages given for install"
 msgstr "pro instalaci nezadány ¾ádné balíèky"
 
-#: ../rpm.c:1373
+#: ../rpm.c:1376
 msgid "extra arguments given for query of all packages"
 msgstr "k dotazu na v¹echny balíèky zadány argumenty navíc"
 
-#: ../rpm.c:1379
+#: ../rpm.c:1382
 msgid "no arguments given for query"
 msgstr "k dotazu nezadány ¾ádné argumenty"
 
-#: ../rpm.c:1397
+#: ../rpm.c:1400
 msgid "no arguments given for verify"
 msgstr "pro verifikaci nezadány ¾ádné argumenty"
 
@@ -2405,31 +2414,31 @@ msgstr "chyba pøi ukládání záznamu %s do %s"
 msgid "error removing record %s into %s"
 msgstr "chyba pøi odstraòování záznamu %s do %s"
 
-#: ../lib/depends.c:412 ../lib/depends.c:571
+#: ../lib/depends.c:429 ../lib/depends.c:588
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "nelze èíst hlavièku u %d pro kontrolu závislostí"
 
-#: ../lib/depends.c:477
+#: ../lib/depends.c:494
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr "závislosti: probíhá hledání %s\n"
 
-#: ../lib/depends.c:665
+#: ../lib/depends.c:682
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "polo¾ka 'vy¾aduje' balíèku %s není splnìna: %s\n"
 
-#: ../lib/depends.c:708
+#: ../lib/depends.c:725
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balíèek %s koliduje: %s\n"
 
-#: ../lib/depends.c:808
+#: ../lib/depends.c:825
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr "dbrecMatchesDepFlags() nemù¾e pøeèíst hlavièku"
 
-#: ../lib/depends.c:860
+#: ../lib/depends.c:877
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "smyèka v øetìzu podmínek: %s"
@@ -2445,22 +2454,22 @@ msgstr "Zkontaktujte rpm-list@redhat.com\n"
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
-#: ../lib/fs.c:40
+#: ../lib/fs.c:41
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr "mntctl() nevrátil velikost polo¾ky fugger: %s"
 
-#: ../lib/fs.c:75 ../lib/fs.c:237
+#: ../lib/fs.c:76 ../lib/fs.c:246
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr "nelze provést statistiku %s: %s"
 
-#: ../lib/fs.c:116
+#: ../lib/fs.c:117
 #, c-format
 msgid "failed to open %s: %s"
 msgstr "nelze otevøít %s: %s"
 
-#: ../lib/fs.c:258
+#: ../lib/fs.c:267
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr "soubor %s je na neznámém zaøízení"
@@ -2594,7 +2603,7 @@ msgstr ""
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:440 ../lib/install.c:804 ../lib/uninstall.c:337
+#: ../lib/install.c:440 ../lib/install.c:808 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s nelze pøejmenovat na %s: %s"
@@ -2640,12 +2649,12 @@ msgstr ""
 msgid "spec file in: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: ../lib/install.c:749 ../lib/install.c:781
+#: ../lib/install.c:749 ../lib/install.c:785
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "balíèek %s neobsahuje soubory"
 
-#: ../lib/install.c:802
+#: ../lib/install.c:806
 #, fuzzy, c-format
 msgid "renaming %s to %s\n"
 msgstr "Probíhá získávání %s jako %s\n"
@@ -2715,7 +2724,7 @@ msgid "Unterminated %c: %s"
 msgstr ""
 
 #: ../lib/macro.c:905
-msgid "Empty token"
+msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
 #: ../lib/macro.c:1027
@@ -3333,17 +3342,17 @@ msgstr "V souboru rpmrc se musí nastavit \"pgp_name:\""
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/transaction.c:735
+#: ../lib/transaction.c:736
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "Probíhá získávání %s jako %s\n"
 
-#: ../lib/transaction.c:741
+#: ../lib/transaction.c:742
 #, fuzzy, c-format
 msgid "excluding %s\n"
 msgstr "Probíhá naèítání %s\n"
 
-#: ../lib/transaction.c:829
+#: ../lib/transaction.c:830
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3393,6 +3402,10 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
+#, fuzzy
+#~ msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
+#~ msgstr "      --relocate <starácesta>=<novácesta>"
+
 #~ msgid "error: cannot open file %s\n"
 #~ msgstr "chyba: nelze otevøít soubor %s\n"
 
@@ -3427,10 +3440,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "error %d reading header: %s\n"
 #~ msgstr "chyba pøi vytváøení adresáøe %s: %s"
-
-#, fuzzy
-#~ msgid "package is not relocatable"
-#~ msgstr "balíèek %s není nainstalován\n"
 
 #, fuzzy
 #~ msgid "path %s is not relocatable"
