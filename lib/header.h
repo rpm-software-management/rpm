@@ -37,14 +37,16 @@ struct headerTagTableEntry {
     int val;
 };
 
-enum headerSprintfExtenstionType { HEADER_EXT_TAG, HEADER_EXT_FORMAT,
-				   HEADER_EXT_MORE, HEADER_EXT_LAST = 0};
+enum headerSprintfExtenstionType { HEADER_EXT_LAST = 0, HEADER_EXT_FORMAT,
+				   HEADER_EXT_MORE, HEADER_EXT_TAG };
 
 /* This will only ever be passed RPM_TYPE_INT32 or RPM_TYPE_STRING to
    help keep things simple */
 typedef char * (*headerTagFormatFunction)(int_32 type, const void * data, 
 					  char * formatPrefix,
 					  int padding, int element);
+typedef int (*headerTagTagFunction)(Header h, int_32 * type, void ** data,
+				       int_32 * count, int * freeData);
 
 struct headerSprintfExtension {
     enum headerSprintfExtenstionType type;
@@ -52,6 +54,7 @@ struct headerSprintfExtension {
     union {
 	void * generic;
 	headerTagFormatFunction formatFunction;
+	headerTagTagFunction tagFunction;
 	struct headerSprintfExtension * more;
     } u;
 };

@@ -13,9 +13,12 @@ static char * depflagsFormat(int_32 type, const void * data,
 		             char * formatPrefix, int padding, int element);
 static char * fflagsFormat(int_32 type, const void * data, 
 		           char * formatPrefix, int padding, int element);
+static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
+		      int * freeData);
 static char * permsString(int mode);
 
 const struct headerSprintfExtension rpmHeaderFormats[] = {
+    { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms", { permsFormat } },
@@ -144,4 +147,24 @@ static char * depflagsFormat(int_32 type, const void * data,
     }
 
     return val;
+}
+
+static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
+		      int * freeData) {
+    char ** list;
+    int i;
+
+    if (rpmGetFilesystemList(&list)) {
+	return 1;
+    }
+
+    *type = RPM_STRING_ARRAY_TYPE;
+    *((char ***) data) = list;
+
+    for (i = 0; list[i]; i++) ;
+    *count = i;
+
+    *freeData = 0;
+
+    return 0; 
 }

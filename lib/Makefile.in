@@ -8,7 +8,8 @@ LIBOBJECTS = 	header.o 	misc.o		messages.o 	\
 		stringbuf.o	rpmlead.o	package.o	\
 		uninstall.o	oldheader.o	install.o	\
 		signature.o	verify.o	rebuilddb.o	\
-		tread.o 	cpio.o		formats.o
+		tread.o 	cpio.o		formats.o	\
+		fs.o
 
 SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS))) 
 TAGTABLE = tagtable.o

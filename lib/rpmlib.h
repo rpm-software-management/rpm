@@ -363,6 +363,8 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define RPMERR_NORELOCATE	-32	/* tried to relocate improper package */
 #define RPMERR_BADOS            -33     /* bad architecture or arch mismatch */
 #define RPMMESS_BACKUP          -34     /* backup made during [un]install */
+#define RPMERR_MTAB		-35	/* failed to read mount table */
+#define RPMERR_STAT		-36	/* failed to stat something */
 
 /* spec.c build.c pack.c */
 #define RPMERR_UNMATCHEDIF      -107    /* unclosed %ifarch or %ifos */
@@ -415,5 +417,7 @@ void rpmFreeSignature(Header h);
 
 int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
+
+int rpmGetFilesystemList(char *** listptr);
 
 #endif

@@ -66,6 +66,8 @@ struct indexEntry {
 };
 
 struct sprintfTag {
+    /* if NULL tag element is invalid */
+    headerTagTagFunction ext;   
     int_32 tag;
     int justOne;
     char * format;
@@ -976,6 +978,7 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
     int numTokens;
     int currToken;
     const struct headerTagTableEntry * entry;
+    const struct headerSprintfExtension * ext;
     int i;
     int done = 0;
 
@@ -1065,12 +1068,31 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		if (!strcasecmp(entry->name, tagname)) break;
 
 	    if (!entry->name) {
-		*error = "unknown tag";
-		freeFormat(format, numTokens);
-		return 1;
+		ext = extensions;
+		while (ext->type != HEADER_EXT_LAST) {
+		    if (ext->type == HEADER_EXT_TAG && 
+			!strcmp(ext->name, tagname)) {
+			break;
+		    }
+
+		    if (ext->type == HEADER_EXT_MORE)
+			ext = ext->u.more;
+		    else
+			ext++;
+		}
+
+		if (ext->type == HEADER_EXT_TAG) {
+		    *error = "unknown tag";
+		    freeFormat(format, numTokens);
+		    return 1;
+		}
+
+		format[currToken].u.tag.ext = ext->u.tagFunction;
+	    } else {
+		format[currToken].u.tag.ext = NULL;
+		format[currToken].u.tag.tag = entry->val;
 	    }
 
-	    format[currToken].u.tag.tag = entry->val;
 	    format[currToken].type = PTOK_TAG;
 
 	    start = next;
@@ -1138,11 +1160,21 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     char ** strarray;
     headerTagFormatFunction tagtype = NULL;
     const struct headerSprintfExtension * ext;
+    int freeit = 0;
 
-    if (!headerGetEntry(h, tag->tag, &type, &data, &count)){
-	count = 1;
-	type = RPM_STRING_TYPE;	
-	data = "(none)";
+    if (tag->ext) {
+	if (tag->ext(h, &type, &data, &count, &freeit)) {
+	    count = 1;
+	    type = RPM_STRING_TYPE;	
+	    data = "(none)";
+	}
+    } else {
+	if (!headerGetEntry(h, tag->tag, &type, &data, &count)){
+	    count = 1;
+	    type = RPM_STRING_TYPE;	
+	    data = "(none)";
+	}
+	freeit = type == (RPM_STRING_ARRAY_TYPE);
     }
 
     strcpy(buf, "%");
@@ -1180,7 +1212,6 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	    sprintf(val, strarray[element], data);
 	}
 
-	free(strarray);
 	break;
 
       case RPM_STRING_TYPE:
@@ -1226,6 +1257,8 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	strcpy(val, "(unknown type)");
     }
 
+    if (freeit) free(data);
+
     return val;
 }
 
@@ -1237,6 +1270,9 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
     int len, alloced;
     int i, j;
     int numElements;
+    int type;
+    int freeit;
+    void * data;
 
     /* we assume the token and header have been validated already! */
 
@@ -1260,8 +1296,17 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	    if (token->u.array.format[i].type != PTOK_TAG ||
 		token->u.array.format[i].u.tag.justOne) continue;
 
-	    headerGetEntry(h, token->u.array.format[i].u.tag.tag, NULL, 
-			   (void **) &val, &numElements);
+	    if (token->u.array.format[i].u.tag.ext) {
+		 if (token->u.array.format[i].u.tag.ext(h, &type, &data, 
+						        &numElements, &freeit)) 
+		     continue;
+		 if (freeit) free(data);
+	    } else {
+		if (!headerGetEntry(h, token->u.array.format[i].u.tag.tag, 
+				    &type, (void **) &val, &numElements))
+		    continue;
+		if (type == RPM_STRING_ARRAY_TYPE) free(val);
+	    } 
 	    break;
 	}
 

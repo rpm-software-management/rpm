@@ -62,4 +62,20 @@ extern void *myrealloc(void *, size_t);
 #define lchown chown
 #endif
 
+#if HAVE_MNTENT_H
+#include <mntent.h>
+#define GETMNTENT_ONE
+#define our_mntent struct mntent
+#elif HAVE_SYS_MNTTAB_H
+#include <sys/mnttab.h>
+#define GETMNTENT_TWO
+#define our_mntent struct mnttab
+#else
+#error Neither mntent.h nor mnttab.h exists. I cannot build on this system.
+#endif
+
+#ifndef MOUNTED
+#define MOUNTED "/etc/mnttab"
+#endif
+
 #endif
