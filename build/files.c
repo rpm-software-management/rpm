@@ -1150,7 +1150,7 @@ static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
 	    fi->actions[i] = FA_SKIP;
 	    continue;
 	}
-	fi->actions[i] = FA_CREATE;
+	fi->actions[i] = FA_COPYOUT;
 	fi->fuids[i] = flp->fl_uid;
 	fi->fgids[i] = flp->fl_gid;
 	fi->fmapflags[i] =

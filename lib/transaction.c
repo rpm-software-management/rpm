@@ -1120,7 +1120,8 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 		ds->bneeded += s;
 		break;
 
-	    /* FIXME: If a two packages share a file (same md5sum), and
+	    /*
+	     * FIXME: If a two packages share a file (same md5sum), and
 	     * that file is being replaced on disk, will ds->bneeded get
 	     * decremented twice? Quite probably!
 	     */
@@ -1683,6 +1684,22 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	freeFl(ts, flList);
 	return ts->orderCount;
+    }
+
+    /* ===============================================
+     * Save removed files before erasing.
+     */
+    if (ts->transFlags & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
+	for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
+	    switch (ts->order[oc].type) {
+	    case TR_ADDED:
+		break;
+	    case TR_REMOVED:
+		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE)
+		    repackage(ts, fi);
+		break;
+	    }
+	}
     }
 
     /* ===============================================

@@ -140,10 +140,16 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi);
  * Erase binary package (from transaction set).
  * @param ts		transaction set
  * @param fi		transaction element file info
- * @param pkgKey	package private data
  * @return		0 on success
  */
 int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi);
+
+/**
+ * @param ts		transaction set
+ * @param fi		transaction element file info
+ * @return		0 on success
+ */
+int repackage(const rpmTransactionSet ts, TFI_t fi);
 
 #ifdef __cplusplus
 }

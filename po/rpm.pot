@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-10 11:46-0500\n"
+"POT-Creation-Date: 2001-02-11 16:49-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:481
+#: build/pack.c:481 lib/psm.c:1384
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:563
+#: build/pack.c:563 lib/psm.c:1448
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2459,7 +2459,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2551 lib/header.c:2568 lib/header.c:2588
+#: lib/header.c:2596 lib/header.c:2613 lib/header.c:2633
 msgid "(not a number)"
 msgstr ""
 
@@ -2492,41 +2492,41 @@ msgstr ""
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:214
+#: lib/fsm.c:272
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:216
+#: lib/fsm.c:274
 #, c-format
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1177
+#: lib/fsm.c:1042
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1279 lib/fsm.c:1395
+#: lib/fsm.c:1344 lib/fsm.c:1461
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1420
+#: lib/fsm.c:1486
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1425
+#: lib/fsm.c:1491
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1434
+#: lib/fsm.c:1500
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1451
+#: lib/fsm.c:1517
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2536,88 +2536,88 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1036 lib/psm.c:500
+#: lib/header.c:207 lib/header.c:1081 lib/psm.c:504
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1459
+#: lib/header.c:1504
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1904
+#: lib/header.c:1949
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1934
+#: lib/header.c:1979
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1948
+#: lib/header.c:1993
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1960
+#: lib/header.c:2005
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1977
+#: lib/header.c:2022
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2004
+#: lib/header.c:2049
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2022
+#: lib/header.c:2067
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2026
+#: lib/header.c:2071
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2086
+#: lib/header.c:2131
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2095
+#: lib/header.c:2140
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2108 lib/header.c:2149
+#: lib/header.c:2153 lib/header.c:2194
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2118
+#: lib/header.c:2163
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2134
+#: lib/header.c:2179
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2159
+#: lib/header.c:2204
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2330
+#: lib/header.c:2375
 msgid "(unknown type)"
 msgstr ""
 
@@ -2626,11 +2626,11 @@ msgstr ""
 msgid "error creating temporary file %s\n"
 msgstr ""
 
-#: lib/package.c:88
+#: lib/package.c:118
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:143
+#: lib/package.c:173
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
@@ -2904,12 +2904,12 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:344
+#: lib/psm.c:348
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:352
+#: lib/psm.c:356
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
@@ -2919,48 +2919,48 @@ msgstr ""
 #. * was used up - if so, we should return a different error.
 #.
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/psm.c:725
+#: lib/psm.c:728
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:726
+#: lib/psm.c:729
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:767
+#: lib/psm.c:770
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/psm.c:773
+#: lib/psm.c:776
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/psm.c:794
+#: lib/psm.c:797
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/psm.c:846
+#: lib/psm.c:849
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:926
+#: lib/psm.c:929
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:997 lib/psm.c:1188
+#: lib/psm.c:1000 lib/psm.c:1191
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1061 lib/psm.c:1143 lib/psm.c:1231 lib/psm.c:1253
+#: lib/psm.c:1064 lib/psm.c:1146 lib/psm.c:1235 lib/psm.c:1257
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/psm.c:1068
+#: lib/psm.c:1071
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
@@ -3568,100 +3568,95 @@ msgstr ""
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 
-#: lib/signature.c:211
+#: lib/signature.c:218
 #, c-format
-msgid "Signature size: %d\n"
+msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:212
-#, c-format
-msgid "Signature pad : %d\n"
-msgstr ""
-
-#: lib/signature.c:274
+#: lib/signature.c:277
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr ""
 
-#: lib/signature.c:285
+#: lib/signature.c:288
 msgid "pgp failed\n"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:292
+#: lib/signature.c:295
 msgid "pgp failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:297
+#: lib/signature.c:300
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:308 lib/signature.c:385
+#: lib/signature.c:311 lib/signature.c:388
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: lib/signature.c:313
+#: lib/signature.c:316
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:351 lib/signature.c:694
+#: lib/signature.c:354 lib/signature.c:700
 msgid "Couldn't exec gpg\n"
 msgstr ""
 
-#: lib/signature.c:362
+#: lib/signature.c:365
 msgid "gpg failed\n"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:369
+#: lib/signature.c:372
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:374
+#: lib/signature.c:377
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:390
+#: lib/signature.c:393
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:417
+#: lib/signature.c:421
 msgid "Generating signature using PGP.\n"
 msgstr ""
 
-#: lib/signature.c:423
+#: lib/signature.c:427
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:502 lib/signature.c:563
+#: lib/signature.c:507 lib/signature.c:568
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 
-#: lib/signature.c:635
+#: lib/signature.c:641
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 
-#: lib/signature.c:723
+#: lib/signature.c:729
 msgid "Couldn't exec pgp\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:727 lib/signature.c:780
+#: lib/signature.c:733 lib/signature.c:786
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:760
+#: lib/signature.c:766
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:772
+#: lib/signature.c:778
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 

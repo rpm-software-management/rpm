@@ -29,8 +29,6 @@ void headerMergeLegacySigs(Header h, const Header sig)
         headerNextIterator(hi, &tag, &type, &ptr, &count);
         ptr = headerFreeData(ptr, type))
     {
-	if (tag < RPMSIGTAG_SIZE)
-	    continue;
 	switch (tag) {
 	case RPMSIGTAG_SIZE:	tag = RPMTAG_SIGSIZE;	break;
 	case RPMSIGTAG_LEMD5_1:	tag = RPMTAG_SIGLEMD5_1;break;
@@ -40,11 +38,43 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	case RPMSIGTAG_GPG:	tag = RPMTAG_SIGGPG;	break;
 	case RPMSIGTAG_PGP5:	tag = RPMTAG_SIGPGP5;	break;
 	default:					break;
+	    continue;
+	    /*@notreached@*/ break;
 	}
 	if (!headerIsEntry(h, tag))
 	    headerAddEntry(h, tag, type, ptr, count);
     }
     headerFreeIterator(hi);
+}
+
+Header headerRegenSigHeader(const Header h)
+{
+    Header sig = rpmNewSignature();
+    HeaderIterator hi;
+    int_32 tag, stag, type, count;
+    const void * ptr;
+
+    for (hi = headerInitIterator(h);
+        headerNextIterator(hi, &tag, &type, &ptr, &count);
+        ptr = headerFreeData(ptr, type))
+    {
+	switch (tag) {
+	case RPMTAG_SIGSIZE:	stag = RPMSIGTAG_SIZE;	break;
+	case RPMTAG_SIGLEMD5_1:	stag = RPMSIGTAG_LEMD5_1;break;
+	case RPMTAG_SIGPGP:	stag = RPMSIGTAG_PGP;	break;
+	case RPMTAG_SIGLEMD5_2:	stag = RPMSIGTAG_LEMD5_2;break;
+	case RPMTAG_SIGMD5:	stag = RPMSIGTAG_MD5;	break;
+	case RPMTAG_SIGGPG:	stag = RPMSIGTAG_GPG;	break;
+	case RPMTAG_SIGPGP5:	stag = RPMSIGTAG_PGP5;	break;
+	default:
+	    continue;
+	    /*@notreached@*/ break;
+	}
+	if (!headerIsEntry(sig, stag))
+	    headerAddEntry(sig, stag, type, ptr, count);
+    }
+    headerFreeIterator(hi);
+    return sig;
 }
 
 /**

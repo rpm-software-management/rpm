@@ -63,6 +63,13 @@ int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
 void headerMergeLegacySigs(Header h, const Header sig)
 	/*@modifies h @*/;
 
+/** \ingroup header
+ * Regenerate signature header.
+ * @param h		header
+ * @return 		regenerated signature header
+ */
+Header headerRegenSigHeader(const Header h)	/*@*/;
+
 /**
  * Retrieve file names from header.
  * The representation of file names in package headers changed in rpm-4.0.
@@ -873,7 +880,9 @@ int rpmVersionCompare(Header first, Header second);
  */
 typedef enum fileAction_e {
     FA_UNKNOWN = 0,	/*!< initial action for file ... */
-    FA_CREATE,		/*!< ... to be replaced. */
+    FA_CREATE,		/*!< ... copy in from payload. */
+    FA_COPYIN,		/*!< ... copy in from payload. */
+    FA_COPYOUT,		/*!< ... copy out to payload. */
     FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
     FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
     FA_SKIP, 		/*!< ... already replaced, don't remove. */

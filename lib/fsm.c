@@ -77,13 +77,19 @@ static /*@only@*//*@null@*/ const char * fsmFsPath(/*@null@*/ const FSM_t fsm,
 
 /** \ingroup payload
  * Destroy file info iterator.
+ * @param this		file info iterator
  * @retval		NULL always
  */
-static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * this) {
+static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * this)
+{
     return _free((void *)this);
 }
 
 /** \ingroup payload
+ * Create file info iterator.
+ * @param this		transaction set
+ * @param that		transaction element file info
+ * @return		file info iterator
  */
 static void *
 mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
@@ -95,30 +101,76 @@ mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = ts;
     iter->fi = fi;
-    switch (fi->type) {
-    case TR_ADDED:	iter->i = 0;		break;
-    case TR_REMOVED:	iter->i = fi->fc - 1;	break;
-    }
+    iter->reverse = (fi->type == TR_REMOVED && fi->action != FA_COPYOUT);
+    iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
     return iter;
 }
 
 /** \ingroup payload
+ * Return next index into file info.
+ * @param this		file info iterator
+ * @return		next index, -1 on termination
  */
 static int mapNextIterator(void * this) {
     FSMI_t iter = this;
     const TFI_t fi = iter->fi;
     int i = -1;
 
-    switch (fi->type) {
-    case TR_ADDED:	if (iter->i < fi->fc)	i = iter->i++;	break;
-    case TR_REMOVED:	if (iter->i >= 0)	i = iter->i--;	break;
+    if (iter->reverse) {
+	if (iter->i >= 0)	i = iter->i--;
+    } else {
+    	if (iter->i < fi->fc)	i = iter->i++;
     }
     iter->isave = i;
     return i;
 }
 
 /** \ingroup payload
+ */
+static int cpioStrCmp(const void * a, const void * b)
+{
+    const char * afn = *(const char **)a;
+    const char * bfn = *(const char **)b;
+
+    /* Match rpm-4.0 payloads with ./ prefixes. */
+    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
+    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
+
+    /* If either path is absolute, make it relative. */
+    if (afn[0] == '/')	afn += 1;
+    if (bfn[0] == '/')	bfn += 1;
+
+    return strcmp(afn, bfn);
+}
+
+/** \ingroup payload
+ * Locate archive path in file info.
+ * @param this		file info iterator
+ * @param fsmPath	archive path
+ * @return		index into file info, -1 if archive path was not found
+ */
+static int mapFind(void * this, const char * fsmPath) {
+    FSMI_t iter = this;
+    const TFI_t fi = iter->fi;
+    int ix = -1;
+
+    if (fi && fi->fc > 0 && fi->apath && fsmPath && *fsmPath) {
+	const char ** p;
+
+	p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath), cpioStrCmp);
+	if (p == NULL) {
+	    fprintf(stderr, "*** not mapped %s\n", fsmPath);
+	} else {
+	    iter->i = p - fi->apath;
+	    ix = mapNextIterator(iter);
+	}
+    }
+    return ix;
+}
+
+/** \ingroup payload
+ * Directory name iterator.
  */
 typedef struct dnli_s {
 /*@dependent@*/ TFI_t fi;
@@ -129,6 +181,9 @@ typedef struct dnli_s {
 } * DNLI_t;
 
 /** \ingroup payload
+ * Destroy directory name iterator.
+ * @param this		file info iterator
+ * @retval		NULL always
  */
 static /*@null@*/ void * dnlFreeIterator(/*@only@*//*@null@*/ const void * this)
 {
@@ -152,7 +207,10 @@ static inline int dnlIndex(const DNLI_t dnli) {
 }
 
 /** \ingroup payload
+ * Create directory name iterator.
  * @param fsm		file state machine data
+ * @param reverse	traverse directory names in reverse order?
+ * @return		directory name iterator
  */
 static /*@only@*/ void * dnlInitIterator(const FSM_t fsm, int reverse)
 {
@@ -223,8 +281,12 @@ static /*@only@*/ void * dnlInitIterator(const FSM_t fsm, int reverse)
 }
 
 /** \ingroup payload
+ * Return next directory name (from file info).
+ * @param dnli		directory name iterator
+ * @return		next directory name
  */
-static const char * dnlNextIterator(/*@null@*/ DNLI_t dnli) {
+static /*@observer@*/ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
+{
     const char * dn = NULL;
 
     if (dnli && dnli->active) {
@@ -242,44 +304,6 @@ static const char * dnlNextIterator(/*@null@*/ DNLI_t dnli) {
 	dnli->isave = i;
     }
     return dn;
-}
-
-/** \ingroup payload
- */
-static int cpioStrCmp(const void * a, const void * b) {
-    const char * afn = *(const char **)a;
-    const char * bfn = *(const char **)b;
-
-    /* Match rpm-4.0 payloads with ./ prefixes. */
-    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
-    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
-
-    /* If either path is absolute, make it relative. */
-    if (afn[0] == '/')	afn += 1;
-    if (bfn[0] == '/')	bfn += 1;
-
-    return strcmp(afn, bfn);
-}
-
-/** \ingroup payload
- */
-static int mapFind(void * this, const char * fsmPath) {
-    FSMI_t iter = this;
-    const TFI_t fi = iter->fi;
-    int ix = -1;
-
-    if (fi) {
-	const char ** p;
-
-	p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath), cpioStrCmp);
-	if (p == NULL) {
-	    fprintf(stderr, "*** not mapped %s\n", fsmPath);
-	} else {
-	    iter->i = p - fi->apath;
-	    ix = mapNextIterator(iter);
-	}
-    }
-    return ix;
 }
 
 /** \ingroup payload
@@ -482,8 +506,6 @@ int fsmMapPath(FSM_t fsm)
 	fsm->mapFlags = (fi->fmapflags ? fi->fmapflags[i] : fi->mapflags);
 
 	/* src rpms have simple base name in payload. */
-	fsm->archivePath =
-		(fi->apath ? fi->apath[i] + fi->striplen : fi->bnl[i]);
 	fsm->dirName = fi->dnl[fi->dil[i]];
 	fsm->baseName = fi->bnl[i];
 
@@ -497,8 +519,11 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 
+	case FA_COPYOUT:
+	    break;
+	case FA_COPYIN:
 	case FA_CREATE:
-	    assert(fi->type == TR_ADDED);
+assert(fi->type == TR_ADDED);
 	    break;
 
 	case FA_SKIPNSTATE:
@@ -525,13 +550,13 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    break;
 
 	case FA_ALTNAME:
-	    assert(fi->type == TR_ADDED);
+assert(fi->type == TR_ADDED);
 	    fsm->nsuffix = SUFFIX_RPMNEW;
 	    break;
 
 	case FA_SAVE:
 fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
-	    assert(fi->type == TR_ADDED);
+assert(fi->type == TR_ADDED);
 	    fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
 	case FA_ERASE:
@@ -675,8 +700,20 @@ static int writeFile(FSM_t fsm, int writeData)
 	st->st_size = fsm->rdnb;
     }
 
-    if (fsm->mapFlags & CPIO_MAP_PATH)
-	fsm->path = fsm->archivePath;
+    if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
+	int nb = strlen(fsm->dirName) + strlen(fsm->baseName) + sizeof(".");
+	char * t = alloca(nb);
+	*t = '\0';
+	fsm->path = t;
+	if (fsm->mapFlags & CPIO_MAP_ADDDOT)
+	    *t++ = '.';
+	t = stpcpy( stpcpy(t, fsm->dirName), fsm->baseName);
+    } else if (fsm->mapFlags & CPIO_MAP_PATH) {
+	TFI_t fi = fsmGetFi(fsm);
+	fsm->path =
+	    (fi->apath ? fi->apath[fsm->ix] + fi->striplen : fi->bnl[fsm->ix]);
+    }
+
     rc = fsmStage(fsm, FSM_HWRITE);
     fsm->path = path;
     if (rc) goto exit;
@@ -801,7 +838,9 @@ static int writeLinkedFile(FSM_t fsm)
 }
 
 /** \ingroup payload
+ * Create pending hard links to existing file.
  * @param fsm		file state machine data
+ * @return		0 on success
  */
 static int fsmMakeLinks(FSM_t fsm)
 {
@@ -851,7 +890,9 @@ static int fsmMakeLinks(FSM_t fsm)
 }
 
 /** \ingroup payload
+ * Commit hard linked file set atomically.
  * @param fsm		file state machine data
+ * @return		0 on success
  */
 static int fsmCommitLinks(FSM_t fsm)
 {
@@ -886,6 +927,141 @@ static int fsmCommitLinks(FSM_t fsm)
     return rc;
 }
 
+/**
+ * Remove (if created) directories not explicitly included in package.
+ * @param fsm		file state machine data
+ * @return		0 on success
+ */
+static int fsmRmdirs(FSM_t fsm)
+{
+    const char * path = fsm->path;
+    void * dnli = dnlInitIterator(fsm, 1);
+    char * dn = fsm->rdbuf;
+    int dc = dnlCount(dnli);
+    int rc = 0;
+
+    fsm->path = NULL;
+    dn[0] = '\0';
+    while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
+	int dnlen = strlen(fsm->path);
+	char * te;
+
+	dc = dnlIndex(dnli);
+	if (fsm->dnlx[dc] < 1 || fsm->dnlx[dc] >= dnlen)
+	    continue;
+
+	/* Copy to avoid const on fsm->path. */
+	te = stpcpy(dn, fsm->path) - 1;
+	fsm->path = dn;
+
+	/* Remove generated directories. */
+	do {
+	    if (*te == '/') {
+		*te = '\0';
+		rc = fsmStage(fsm, FSM_RMDIR);
+		*te = '/';
+	    }
+	    if (rc) break;
+	    te--;
+	} while ((te - dn) > fsm->dnlx[dc]);
+    }
+    dnli = dnlFreeIterator(dnli);
+    fsm->path = path;
+    return rc;
+}
+
+/**
+ * Create (if necessary) directories not explicitly included in package.
+ * @param fsm		file state machine data
+ * @return		0 on success
+ */
+static int fsmMkdirs(FSM_t fsm)
+{
+    struct stat * st = &fsm->sb;
+    struct stat * ost = &fsm->osb;
+    const char * path = fsm->path;
+    mode_t st_mode = st->st_mode;
+    void * dnli = dnlInitIterator(fsm, 0);
+    char * dn = fsm->rdbuf;
+    int dc = dnlCount(dnli);
+    int rc = 0;
+    int i;
+
+    fsm->path = NULL;
+
+    dn[0] = '\0';
+    fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
+    while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
+	int dnlen = strlen(fsm->path);
+	char * te;
+
+	dc = dnlIndex(dnli);
+	if (dc < 0) continue;
+	fsm->dnlx[dc] = dnlen;
+	if (dnlen <= 1)
+	    continue;
+	if (dnlen <= fsm->ldnlen && !strcmp(fsm->path, fsm->ldn))
+	    continue;
+
+	/* Copy to avoid const on fsm->path. */
+	(void) stpcpy(dn, fsm->path);
+	fsm->path = dn;
+
+	/* Assume '/' directory exists, otherwise "mkdir -p" if non-existent. */
+	for (i = 1, te = dn + 1; *te; te++, i++) {
+	    if (*te != '/') continue;
+
+	    *te = '\0';
+
+	    /* Already validated? */
+	    if (i < fsm->ldnlen &&
+		(fsm->ldn[i] == '/' || fsm->ldn[i] == '\0') &&
+		!strncmp(fsm->path, fsm->ldn, i))
+	    {
+		*te = '/';
+		/* Move pre-existing path marker forward. */
+		fsm->dnlx[dc] = (te - dn);
+		continue;
+	    }
+
+	    /* Validate next component of path. */
+	    rc = fsmStage(fsm, FSM_LSTAT);
+	    *te = '/';
+
+	    /* Directory already exists? */
+	    if (rc == 0 && S_ISDIR(ost->st_mode)) {
+		/* Move pre-existing path marker forward. */
+		fsm->dnlx[dc] = (te - dn);
+	    } else if (rc == CPIOERR_LSTAT_FAILED) {
+		TFI_t fi = fsmGetFi(fsm);
+		*te = '\0';
+		st->st_mode = S_IFDIR | (fi->dperms & 07777);
+		rc = fsmStage(fsm, FSM_MKDIR);
+		if (!rc)
+		    rpmMessage(RPMMESS_WARNING,
+			_("%s directory created with perms %04o.\n"),
+			fsm->path, (st->st_mode & 07777));
+		*te = '/';
+	    }
+	    if (rc) break;
+	}
+	if (rc) break;
+
+	/* Save last validated path. */
+	if (fsm->ldnalloc < (dnlen + 1)) {
+	    fsm->ldnalloc = dnlen + 100;
+	    fsm->ldn = xrealloc(fsm->ldn, fsm->ldnalloc);
+	}
+	strcpy(fsm->ldn, fsm->path);
+ 	fsm->ldnlen = dnlen;
+    }
+    dnli = dnlFreeIterator(dnli);
+    fsm->path = path;
+    st->st_mode = st_mode;		/* XXX restore st->st_mode */
+    return rc;
+}
+
+
 int fsmStage(FSM_t fsm, fileStage stage)
 {
 #ifdef	UNUSED
@@ -901,6 +1077,10 @@ int fsmStage(FSM_t fsm, fileStage stage)
     int left;
     int i;
 
+#define	_fafilter(_a)	\
+    (!((_a) == FA_CREATE || (_a) == FA_ERASE || (_a) == FA_COPYIN || (_a) == FA_COPYOUT) \
+	? fileActionString(_a) : "")
+
     if (stage & FSM_DEAD) {
 	/* do nothing */
     } else if (stage & FSM_INTERNAL) {
@@ -909,8 +1089,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		cur,
 		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
 		(fsm->path ? fsm->path : ""),
-		((fsm->action != FA_UNKNOWN && fsm->action != FA_CREATE)
-			? fileActionString(fsm->action) : ""));
+		_fafilter(fsm->action));
     } else {
 	fsm->stage = stage;
 	if (_fsm_debug || !(stage & FSM_VERBOSE))
@@ -918,9 +1097,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		cur,
 		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
 		(fsm->path ? fsm->path + fsm->astriplen : ""),
-		((fsm->action != FA_UNKNOWN && fsm->action != FA_CREATE)
-			? fileActionString(fsm->action) : ""));
+		_fafilter(fsm->action));
     }
+#undef	_fafilter
 
     switch (stage) {
     case FSM_UNKNOWN:
@@ -1112,125 +1291,11 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	rc = fsmMapPath(fsm);
 	break;
     case FSM_MKDIRS:
-	{   const char * path = fsm->path;
-	    mode_t st_mode = st->st_mode;
-	    void * dnli = dnlInitIterator(fsm, 0);
-	    char * dn = fsm->rdbuf;
-	    int dc = dnlCount(dnli);
-
-	    fsm->path = NULL;
-	    dn[0] = '\0';
-	    fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
-	    while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
-		int dnlen = strlen(fsm->path);
-		char * te;
-
-		dc = dnlIndex(dnli);
-		if (dc < 0) continue;
-		fsm->dnlx[dc] = dnlen;
-		if (dnlen <= 1)
-		    continue;
-		if (dnlen <= fsm->ldnlen && !strcmp(fsm->path, fsm->ldn))
-		    continue;
-
-		/* Copy to avoid const on fsm->path. */
-		(void) stpcpy(dn, fsm->path);
-		fsm->path = dn;
-
-		/* Initial mode for created dirs is 0700 */
-		st->st_mode &= ~07777; 		/* XXX abuse st->st_mode */
-		st->st_mode |=  00700;
-
-		/* Assume '/' directory, otherwise "mkdir -p" */
-		for (i = 1, te = dn + 1; *te; te++, i++) {
-		    if (*te != '/') continue;
-
-		    *te = '\0';
-
-		    /* Already validated? */
-		    if (i < fsm->ldnlen &&
-			(fsm->ldn[i] == '/' || fsm->ldn[i] == '\0') &&
-			!strncmp(fsm->path, fsm->ldn, i))
-		    {
-			*te = '/';
-			/* Move pre-existing path marker forward. */
-			fsm->dnlx[dc] = (te - dn);
-			continue;
-		    }
-
-		    /* Validate next component of path. */
-		    rc = fsmStage(fsm, FSM_LSTAT);
-		    *te = '/';
-
-		    /* Directory already exists? */
-		    if (rc == 0 && S_ISDIR(ost->st_mode)) {
-			/* Move pre-existing path marker forward. */
-			fsm->dnlx[dc] = (te - dn);
-		    } else if (rc == CPIOERR_LSTAT_FAILED) {
-			TFI_t fi = fsmGetFi(fsm);
-			mode_t st_mode = st->st_mode;
-			*te = '\0';
-			st->st_mode = S_IFDIR | (fi->dperms & 07777);
-			rc = fsmStage(fsm, FSM_MKDIR);
-			if (!rc)
-			    rpmMessage(RPMMESS_WARNING,
-				_("%s directory created with perms %04o.\n"),
-				fsm->path, (st->st_mode & 07777));
-			*te = '/';
-			st->st_mode = st_mode;
-		    }
-		    if (rc) break;
-		}
-		if (rc) break;
-
-		/* Save last validated path. */
-		if (fsm->ldnalloc < (dnlen + 1)) {
-		    fsm->ldnalloc = dnlen + 100;
-		    fsm->ldn = xrealloc(fsm->ldn, fsm->ldnalloc);
-		}
-		strcpy(fsm->ldn, fsm->path);
-	 	fsm->ldnlen = dnlen;
-	    }
-	    dnli = dnlFreeIterator(dnli);
-	    fsm->path = path;
-	    st->st_mode = st_mode;		/* XXX restore st->st_mode */
-	}
+	rc = fsmMkdirs(fsm);
 	break;
     case FSM_RMDIRS:
-	if (fsm->dnlx) {
-	    const char * path = fsm->path;
-	    void * dnli = dnlInitIterator(fsm, 1);
-	    char * dn = fsm->rdbuf;
-	    int dc = dnlCount(dnli);
-
-	    fsm->path = NULL;
-	    dn[0] = '\0';
-	    while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
-		int dnlen = strlen(fsm->path);
-		char * te;
-
-		dc = dnlIndex(dnli);
-		if (fsm->dnlx[dc] < 1 || fsm->dnlx[dc] >= dnlen)
-		    continue;
-
-		/* Copy to avoid const on fsm->path. */
-		te = stpcpy(dn, fsm->path) - 1;
-		fsm->path = dn;
-
-		/* Remove generated directories. */
-		do {
-		    if (*te == '/') {
-			*te = '\0';
-			rc = fsmStage(fsm, FSM_RMDIR);
-			*te = '/';
-		    }
-		    if (rc) break;
-		    te--;
-		} while ((te - dn) > fsm->dnlx[dc]);
-	    }
-	    dnli = dnlFreeIterator(dnli);
-	    fsm->path = path;
-	}
+	if (fsm->dnlx)
+	    rc = fsmRmdirs(fsm);
 	break;
     case FSM_PROCESS:
 	if (fsm->postpone) {
@@ -1341,6 +1406,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_POST:
 	break;
     case FSM_MKLINKS:
+	rc = fsmMakeLinks(fsm);
 	break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
 	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {

@@ -70,7 +70,7 @@ int rpmLookupSignatureType(int action)
 /* rpmDetectPGPVersion() returns the absolute path to the "pgp"  */
 /* executable of the requested version, or NULL when none found. */
 
-const char * rpmDetectPGPVersion(pgpVersion *pgpVer)
+const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 {
     /* Actually this should support having more then one pgp version. */ 
     /* At the moment only one version is possible since we only       */
@@ -125,7 +125,7 @@ static inline int checkSize(FD_t fd, int siglen, int pad, int datalen)
     return ((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size);
 }
 
-int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
+int rpmReadSignature(FD_t fd, Header * headerp, short sigType)
 {
     byte buf[2048];
     int sigSize, pad;
@@ -143,11 +143,11 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 #endif
     
     switch (sigType) {
-      case RPMSIG_NONE:
+    case RPMSIG_NONE:
 	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
 	rc = 0;
 	break;
-      case RPMSIG_PGP262_1024:
+    case RPMSIG_PGP262_1024:
 	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
 	/* These are always 256 bytes */
 	if (timedRead(fd, buf, 256) != 256)
@@ -156,12 +156,13 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 	headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
 	rc = 0;
 	break;
-      case RPMSIG_MD5:
-      case RPMSIG_MD5_PGP:
+    case RPMSIG_MD5:
+    case RPMSIG_MD5_PGP:
 	rpmError(RPMERR_BADSIGTYPE,
 	      _("Old (internal-only) signature!  How did you get that!?\n"));
 	break;
-      case RPMSIG_HEADERSIG:
+    case RPMSIG_HEADERSIG:
+    case RPMSIG_UNSIGNED:
 	/* This is a new style signature */
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	if (h == NULL)
@@ -173,17 +174,20 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 	    sigSize -= (16 + 16);
 
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count))
-	    break;
-	if (checkSize(fd, sigSize, pad, *archSize))
-	    break;
+	if (sigType == RPMSIG_HEADERSIG) {
+	    if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type,
+				(void **)&archSize, &count))
+		break;
+	    if (checkSize(fd, sigSize, pad, *archSize))
+		break;
+	}
 	if (pad) {
 	    if (timedRead(fd, buf, pad) != pad)
 		break;
 	}
 	rc = 0;
 	break;
-      default:
+    default:
 	break;
     }
 
@@ -195,24 +199,23 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
     return rc;
 }
 
-int rpmWriteSignature(FD_t fd, Header header)
+int rpmWriteSignature(FD_t fd, Header h)
 {
-    int sigSize, pad;
     static byte buf[8] = "\000\000\000\000\000\000\000\000";
-    int rc = 0;
+    int sigSize, pad;
+    int rc;
     
-    rc = headerWrite(fd, header, HEADER_MAGIC_YES);
+    rc = headerWrite(fd, h, HEADER_MAGIC_YES);
     if (rc)
 	return rc;
 
-    sigSize = headerSizeof(header, HEADER_MAGIC_YES);
+    sigSize = headerSizeof(h, HEADER_MAGIC_YES);
     pad = (8 - (sigSize % 8)) % 8;
     if (pad) {
-	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
-	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	if (Fwrite(buf, sizeof(buf[0]), pad, fd) != pad)
 	    rc = 1;
     }
+    rpmMessage(RPMMESS_DEBUG, _("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
     return rc;
 }
 
@@ -227,15 +230,15 @@ void rpmFreeSignature(Header h)
     headerFree(h);
 }
 
-static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_32 *size,
-			    const char *passPhrase)
+static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
+		/*@out@*/ int_32 * size, const char * passPhrase)
 {
-    char sigfile[1024];
+    char * sigfile = alloca(1024);
     int pid, status;
     int inpipe[2];
     struct stat st;
 
-    sprintf(sigfile, "%s.sig", file);
+    (void) stpcpy( stpcpy(sigfile, file), ".sig");
 
     inpipe[0] = inpipe[1] = 0;
     pipe(inpipe);
@@ -320,16 +323,16 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
  * but this could be a good place to start looking if errors in GPG signature
  * creation crop up.
  */
-static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_32 *size,
-			    const char *passPhrase)
+static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
+		/*@out@*/ int_32 * size, const char * passPhrase)
 {
-    char sigfile[1024];
+    char * sigfile = alloca(1024);
     int pid, status;
     int inpipe[2];
-    FILE *fpipe;
+    FILE * fpipe;
     struct stat st;
 
-    sprintf(sigfile, "%s.sig", file);
+    (void) stpcpy( stpcpy(sigfile, file), ".sig");
 
     inpipe[0] = inpipe[1] = 0;
     pipe(inpipe);
@@ -392,7 +395,8 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
     return 0;
 }
 
-int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *passPhrase)
+int rpmAddSignature(Header header, const char * file, int_32 sigTag,
+		const char *passPhrase)
 {
     struct stat st;
     int_32 size;
@@ -431,7 +435,7 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
 }
 
 static rpmVerifySignatureReturn
-verifySizeSignature(const char *datafile, int_32 size, char *result)
+verifySizeSignature(const char * datafile, int_32 size, char * result)
 {
     struct stat st;
 
@@ -450,8 +454,8 @@ verifySizeSignature(const char *datafile, int_32 size, char *result)
 #define	X(_x)	(unsigned)((_x) & 0xff)
 
 static rpmVerifySignatureReturn
-verifyMD5Signature(const char *datafile, const byte *sig, 
-			      char *result, md5func fn)
+verifyMD5Signature(const char * datafile, const byte * sig, 
+			      char * result, md5func fn)
 {
     byte md5sum[16];
 
@@ -484,7 +488,8 @@ verifyMD5Signature(const char *datafile, const byte *sig,
 }
 
 static rpmVerifySignatureReturn
-verifyPGPSignature(const char *datafile, const void * sig, int count, char *result)
+verifyPGPSignature(const char * datafile, const void * sig, int count,
+		char * result)
 {
     int pid, status, outpipe[2];
     FD_t sfd;
@@ -595,7 +600,8 @@ verifyPGPSignature(const char *datafile, const void * sig, int count, char *resu
 }
 
 static rpmVerifySignatureReturn
-verifyGPGSignature(const char *datafile, const void * sig, int count, char *result)
+verifyGPGSignature(const char * datafile, const void * sig, int count,
+		char * result)
 {
     int pid, status, outpipe[2];
     FD_t sfd;
@@ -656,7 +662,7 @@ verifyGPGSignature(const char *datafile, const void * sig, int count, char *resu
     return res;
 }
 
-static int checkPassPhrase(const char *passPhrase, const int sigTag)
+static int checkPassPhrase(const char * passPhrase, const int sigTag)
 {
     int passPhrasePipe[2];
     int pid, status;
@@ -744,7 +750,7 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
     return 0;
 }
 
-char *rpmGetPassPhrase(const char *prompt, const int sigTag)
+char *rpmGetPassPhrase(const char * prompt, const int sigTag)
 {
     char *pass;
     int aok;
@@ -791,8 +797,8 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
 }
 
 rpmVerifySignatureReturn
-rpmVerifySignature(const char *file, int_32 sigTag, const void * sig, int count,
-		    char *result)
+rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
+		int count, char * result)
 {
     switch (sigTag) {
     case RPMSIGTAG_SIZE:

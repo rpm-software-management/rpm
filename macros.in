@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.70 2000/12/04 00:55:17 jbj Exp $
+# $Id: macros.in,v 1.71 2001/02/11 22:02:29 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -18,7 +18,7 @@
 #==============================================================================
 # ---- A macro that expands to nothing.
 #
-%nil	%{!?nil}
+%nil			%{!?nil}
 
 #==============================================================================
 # ---- filesystem macros.
@@ -31,7 +31,7 @@
 # ---- Generally useful path macros.
 #
 %__awk			@AWK@
-%__bzip2		%{_bzip2bin}
+%__bzip2		@BZIP2BIN@
 %__cat			@__CAT@
 %__chgrp		@__CHGRP@
 %__chmod		@__CHMOD@
@@ -39,7 +39,7 @@
 %__cp			@__CP@
 %__cpio			@__CPIO@
 %__grep			@__GREP@
-%__gzip			%{_gzipbin}
+%__gzip			@GZIPBIN@
 %__id			@__ID@
 %__install		@__INSTALL@
 %__ln_s			@LN_S@
@@ -49,14 +49,14 @@
 %__mv			@__MV@
 %__patch		@__PATCH@
 %__perl			@__PERL@
-%__pgp			%{_pgpbin}
+%__pgp			@PGPBIN@
 %__python		@__PYTHON@
 %__rm			@__RM@
 %__rsh			@__RSH@
 %__sed			@__SED@
 %__ssh			@__SSH@
 %__tar			@__TAR@
-%__unzip		%{_unzipbin}
+%__unzip		@UNZIPBIN@
 
 #==============================================================================
 # ---- Build system path macros.
@@ -85,12 +85,24 @@
 #	These are the default values that can be overridden by other
 #	(e.g. per-platform, per-system, per-packager, per-package) macros.
 #
+#
+#	The directory where sources/patches will be unpacked and built.
 %_builddir		%{_topdir}/BUILD
+
+#	The interpreter used for build scriptlets.
 %_buildshell		/bin/sh
-%_bzip2bin		@BZIP2BIN@
+
+#	The path to the bzip2 executable (legacy).
+%_bzip2bin		%{__bzip2}
+
+#	The location of the rpm database file(s).
 %_dbpath		%{_var}/lib/rpm
+
+#	The location of the rpm database file(s) after "rpm --rebuilddb".
 %_dbpath_rebuild	%{_dbpath}
+
 %_defaultdocdir		%{_usr}/doc
+
 #
 %__find_provides	@FINDPROVIDES@
 %__find_requires	@FINDREQUIRES@
@@ -106,20 +118,46 @@
 %_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
 %_fixperms		%{__chmod} -Rf @FIXPERMS@
 #
-%_gzipbin		@GZIPBIN@
+
+#	The path to the gzip executable (legacy).
+%_gzipbin		%{__gzip}
+
+#	The number of changelog entries kept when installing (legacy, unused in
+#	rpm-4.0.1 and later).
 %_instchangelog		5
-%_pgpbin		@PGPBIN@
+
+#	The path to the pgp executable (legacy).
+%_pgpbin		%{__pgp}
+
+#	The directory where newly built binary packages will be written.
 %_rpmdir		%{_topdir}/RPMS
-#
-# XXX Note escaped %% for use in headerSprintf
-%_rpmfilename		%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+
+#	A template used to generate the output binary package file name
+#	(legacy).
+%_rpmfilename		%{_build_name_fmt}
+
+#	The default signature type.
 %_signature		none
+
+#	The directory where sources/patches from a source package will be
+#	installed. This is also where sources/patches are found when building.
 %_sourcedir		%{_topdir}/SOURCES
+
+#	The directory where the spec file from a source package will be
+#	installed.
 %_specdir		%{_topdir}/SPECS
+
+#	The directory where newly built source packages will be written.
 %_srcrpmdir		%{_topdir}/SRPMS
+
+#	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
+
+#	Path to top of build area.
 %_topdir		%{_usrsrc}/redhat
-%_unzipbin		@UNZIPBIN@
+
+#	The path to the unzip executable (legacy).
+%_unzipbin		%{__unzip}
 
 #==============================================================================
 # ---- Optional rpmrc macros.
@@ -183,6 +221,7 @@
 
 #
 #	Deprecated.
+#
 #%_langpatt
 
 #	A colon separated list of paths where files should *not* be installed.
@@ -269,6 +308,25 @@
 %_dbi_config_Depends	%{_dbi_config}:temporary
 
 #==============================================================================
+# ---- transaction macros.
+#	Macro(s) used to parameterize 
+#
+#	The output binary package file name template used when building
+#	binary packages.
+# XXX Note escaped %% for use in headerSprintf
+%_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+
+#	The output binary package file name template used when repackaging
+#	erased packages.
+# XXX Note escaped %% for use in headerSprintf
+%_repackage_name_fmt	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+
+#	The directory in which erased packages will be saved when using
+#	the --repackage option.
+%_repackage_dir		/var/tmp
+%_repackage_root	%{nil}
+
+#==============================================================================
 # ---- per-platform macros.
 #	Macros that are specific to an individual platform. The values here
 #	will be used if the per-platform macro file does not exist..
@@ -291,22 +349,22 @@
 # ---- Scriptlet template templates.
 #	Global defaults used for building scriptlet templates.
 #
-# XXX legacy configuration, this will be eliminated after rpm-3.0.4.
-%_preScriptEnvironment	\
-RPM_SOURCE_DIR=\"%{_sourcedir}\"\
-RPM_BUILD_DIR=\"%{_builddir}\"\
-RPM_OPT_FLAGS=\"%{optflags}\"\
-RPM_ARCH=\"%{_arch}\"\
-RPM_OS=\"%{_os}\"\
-export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
-RPM_DOC_DIR=\"%{_docdir}\"\
-export RPM_DOC_DIR\
-RPM_PACKAGE_NAME=\"%{name}\"\
-RPM_PACKAGE_VERSION=\"%{version}\"\
-RPM_PACKAGE_RELEASE=\"%{release}\"\
-export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
-%{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\
-export RPM_BUILD_ROOT}
+# XXX legacy configuration, use ___build_pre et al instead.
+#%_preScriptEnvironment	\
+#RPM_SOURCE_DIR=\"%{_sourcedir}\"\
+#RPM_BUILD_DIR=\"%{_builddir}\"\
+#RPM_OPT_FLAGS=\"%{optflags}\"\
+#RPM_ARCH=\"%{_arch}\"\
+#RPM_OS=\"%{_os}\"\
+#export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
+#RPM_DOC_DIR=\"%{_docdir}\"\
+#export RPM_DOC_DIR\
+#RPM_PACKAGE_NAME=\"%{name}\"\
+#RPM_PACKAGE_VERSION=\"%{version}\"\
+#RPM_PACKAGE_RELEASE=\"%{release}\"\
+#export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
+#%{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\
+#export RPM_BUILD_ROOT}
 
 %___build_shell		%{?_buildshell:%{_buildshell}}%{!?_buildshell:/bin/sh}
 %___build_args		-e
@@ -502,9 +560,7 @@ cd %{u2p:%{_builddir}}\
 #	run configure with correct prefix, platform, and CFLAGS.
 #	optionally restore current directory (not implemented).
 # The configure macro should be invoked as %configure (rather than %{configure})
-# because the rest of the arguments will be expanded using %*. Another
-# gotcha is that arguments, if present, should be on the same line as the
-# %configure.
+# because the rest of the arguments will be expanded using %*.
 #
 # This is the version of %configure used through rpm-3.0.4.
 #%configure	\
@@ -637,7 +693,7 @@ done \
 # arch macro for all Intel i?86 compatibile processors
 #  (Note: This macro (and it's analogues) will probably be obsoleted when
 #   rpm can use regular expressions against target platforms in macro
-#   conditionals. This change will be introduced after rpm-3.0.4).
+#   conditionals.
 #
 %ix86   i386 i486 i586 i686 i786 i886 i986
 

@@ -9,6 +9,8 @@
 #include <rpmurl.h>
 
 #include "psm.h"
+#include "rpmlead.h"		/* writeLead proto */
+#include "signature.h"		/* signature constants */
 #include "misc.h"
 #include "debug.h"
 
@@ -97,7 +99,7 @@ void loadFi(Header h, TFI_t fi)
 
 	break;
     case TR_REMOVED:
-	fi->mapflags = CPIO_MAP_PATH;
+	fi->mapflags = CPIO_MAP_ABSOLUTE | CPIO_MAP_ADDDOT | CPIO_MAP_PATH | CPIO_MAP_MODE;
 	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
 	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
 	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
@@ -195,6 +197,8 @@ void freeFi(TFI_t fi)
     switch (a) {
     case FA_UNKNOWN:	return "unknown";
     case FA_CREATE:	return "create";
+    case FA_COPYOUT:	return "copyout";
+    case FA_COPYIN:	return "copyin";
     case FA_BACKUP:	return "backup";
     case FA_SAVE:	return "save";
     case FA_SKIP:	return "skip";
@@ -703,7 +707,6 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
     {	FD_t cfd;
 
 	cfd = Fdopen(fdDup(Fileno(alp->fd)), rpmio_flags);
-	cfd = fdLink(cfd, "persist (installArchive");
 
 	rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi, cfd, NULL, &failedFile);
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1189,6 +1192,7 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 		stepName, fi->name, fi->version, fi->release,
 		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
 
+assert(fi->type == TR_REMOVED);
     /*
      * When we run scripts, we pass an argument which is the number of 
      * versions of this package that will be installed when we are finished.
@@ -1274,4 +1278,176 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	rpmdbRemove(ts->rpmdb, ts->id, fi->record);
 
     return 0;
+}
+
+int repackage(const rpmTransactionSet ts, TFI_t fi)
+{
+    HGE_t hge = fi->hge;
+    HFD_t hfd = fi->hfd;
+    FD_t fd = NULL;
+    const char * pkgURL = NULL;
+    const char * pkgfn = NULL;
+    Header h = NULL;
+    Header oh = NULL;
+    char * rpmio_flags;
+    int chrootDone = 0;
+    int saveerrno;
+    int rc = 0;
+
+assert(fi->type == TR_REMOVED);
+    /* Retrieve installed header. */
+    {	rpmdbMatchIterator mi = NULL;
+
+	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
+				&fi->record, sizeof(fi->record));
+
+	h = rpmdbNextIterator(mi);
+	if (h == NULL) {
+	    rpmdbFreeIterator(mi);
+	    return 2;
+	}
+	h = headerLink(h);
+	rpmdbFreeIterator(mi);
+    }
+
+    /* Regenerate original header. */
+    {	void * uh = NULL;
+	int_32 uht, uhc;
+
+	if (headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
+	    oh = headerCopyLoad(uh);
+	    uh = hfd(uh, uht);
+	} else {
+	    oh = headerLink(h);
+	}
+    }
+
+    /* Open output package for writing. */
+    {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
+	const char * pkgbn =
+		headerSprintf(h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
+
+	bfmt = _free(bfmt);
+	pkgURL = rpmGenPath(	"%{?_repackage_root:%{_repackage_root}}",
+				"%{?_repackage_dir:%{_repackage_dir}}",
+				pkgbn);
+	pkgbn = _free(pkgbn);
+	(void) urlPath(pkgURL, &pkgfn);
+	fd = Fopen(pkgfn, "w.ufdio");
+	if (fd == NULL || Ferror(fd)) {
+	    rc = 1;
+	    goto exit;
+	}
+    }
+
+    /* Retrieve type of payload compression. */
+    {	const char * payload_compressor = NULL;
+	char * t;
+
+	if (!hge(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
+			    (void **) &payload_compressor, NULL))
+	    payload_compressor = "gzip";
+	rpmio_flags = t = alloca(sizeof("w9.gzdio"));
+	t = stpcpy(t, "w9");
+	if (!strcmp(payload_compressor, "gzip"))
+	    t = stpcpy(t, ".gzdio");
+	if (!strcmp(payload_compressor, "bzip2"))
+	    t = stpcpy(t, ".bzdio");
+    }
+
+    /* Write the lead section into the package. */
+    {	int archnum = -1;
+	int osnum = -1;
+	struct rpmlead lead;
+
+#ifndef	DYING
+	rpmGetArchInfo(NULL, &archnum);
+	rpmGetOsInfo(NULL, &osnum);
+#endif
+
+	memset(&lead, 0, sizeof(lead));
+	/* XXX Set package version conditioned on noDirTokens. */
+	lead.major = 4;
+	lead.minor = 0;
+	lead.type = RPMLEAD_BINARY;
+	lead.archnum = archnum;
+	lead.osnum = osnum;
+	lead.signature_type = RPMSIG_UNSIGNED;
+
+	{   char buf[256];
+	    sprintf(buf, "%s-%s-%s", fi->name, fi->version, fi->release);
+	    strncpy(lead.name, buf, sizeof(lead.name));
+	}
+
+	rc = writeLead(fd, &lead);
+	if (rc) {
+	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
+		 Fstrerror(fd));
+	    rc = 1;
+	    goto exit;
+	}
+    }
+
+    /* Write the signature section into the package. */
+    {	Header sig = headerRegenSigHeader(h);
+	rc = rpmWriteSignature(fd, sig);
+	headerFree(sig);
+	if (rc) goto exit;
+    }
+
+    /* Write the metadata section into the package. */
+    rc = headerWrite(fd, oh, HEADER_MAGIC_YES);
+    if (rc) goto exit;
+
+    /* Change root directory if requested and not already done. */
+    if (ts->rootDir && !ts->chrootDone) {
+	chdir("/");
+	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
+	chrootDone = ts->chrootDone = 1;
+    }
+
+    /* Write the payload into the package. */
+    {	FD_t cfd;
+	fileAction * actions = fi->actions;
+	fileAction action = fi->action;
+
+	fi->action = FA_COPYOUT;
+	fi->actions = NULL;
+
+	Fflush(fd);
+	cfd = Fdopen(fdDup(Fileno(fd)), rpmio_flags);
+
+	/* XXX failedFile? */
+	rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd, NULL, NULL);
+	(void) fsmTeardown(fi->fsm);
+
+	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
+	Fclose(cfd);
+	errno = saveerrno;
+	fi->action = action;
+	fi->actions = actions;
+    }
+
+exit:
+    /* Restore root directory if changed. */
+    if (ts->rootDir && chrootDone) {
+	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
+	chrootDone = ts->chrootDone = 0;
+	chdir(ts->currDir);
+    }
+
+    if (h)	headerFree(h);
+    if (oh)	headerFree(oh);
+    if (fd) {
+	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
+	Fclose(fd);
+	errno = saveerrno;
+    }
+
+    if (!rc)
+	rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"), pkgURL);
+
+    pkgURL = _free(pkgURL);
+
+    return rc;
 }

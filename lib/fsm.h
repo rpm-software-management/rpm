@@ -102,6 +102,7 @@ struct hardLink {
 struct fsmIterator_s {
 /*@kept@*/ rpmTransactionSet ts;	/*!< transaction set. */
 /*@kept@*/ TFI_t fi;			/*!< transaction element file info. */
+    int reverse;			/*!< reversed traversal? */
     int isave;				/*!< last returned iterator index. */
     int i;				/*!< iterator index. */
 };
@@ -149,7 +150,6 @@ struct fsm_s {
     int rc;				/*!< External file stage return code. */
     int commit;				/*!< Commit synchronously? */
     cpioMapFlags mapFlags;		/*!< Bit(s) to control mapping. */
-/*@shared@*/ const char * archivePath;	/*!< Path to store in cpio archive. */
 /*@shared@*/ const char * dirName;	/*!< File directory name. */
 /*@shared@*/ const char * baseName;	/*!< File base name. */
 /*@shared@*/ const char * fmd5sum;	/*!< File MD5 sum (NULL disables). */

@@ -471,7 +471,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	lead.osnum = osnum;
 	lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
 
-	{	    const char *name, *version, *release;
+	{   const char *name, *version, *release;
 	    headerNVR(h, &name, &version, &release);
 	    sprintf(buf, "%s-%s-%s", name, version, release);
 	    strncpy(lead.name, buf, sizeof(lead.name));
