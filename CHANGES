@@ -5,6 +5,7 @@
 	- sqlite3: update encode/decode from sqlite-2.8.16.
 	- add --xml popt alias for query modes.
 	- remove _rpmdb now that python2.[34] are commonly available.
+	- remove remnant -I/opt/local hacks, --prefix=/usr is recommended.
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.

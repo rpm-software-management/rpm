@@ -214,7 +214,7 @@ static unsigned int endian = 0x11223344;
 static int sqlite_encode_binary(const unsigned char *in, int n, unsigned char *out)
 	/*@modifies *out @*/
 {
-  int i, j, e, m;
+  int i, j, e = 0, m;
   unsigned char x;
   int cnt[256];
   if( n<=0 ){
@@ -453,10 +453,6 @@ static int sql_busy_handler(void * dbi_void, int time)
 static int sql_initDB(dbiIndex dbi)
 	/*@*/
 {
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_initDB()\n");
-#endif
-
     DB * db = dbi->dbi_db;
     SQL_DB * sqldb;
     int rc = 0;
@@ -466,6 +462,10 @@ static int sql_initDB(dbiIndex dbi)
     int ncolumn;
     char * pzErrmsg;
     char cmd[BUFSIZ];
+
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_initDB()\n");
+#endif
 
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;

@@ -321,7 +321,7 @@ localdone=
 
 dirs=$prefix
 if test "$cross_compiling" != "yes"; then
-  dirs="$dirs /opt/local /usr/local"
+  dirs="$dirs /usr/local"
 fi
 for dir in $dirs
 do
@@ -1312,8 +1312,6 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	doc/sk/Makefile
 	python/Makefile
 	python/rpm/Makefile
-	python/rpmdb/Makefile
-	python/rpmdb/test/Makefile
  	lua/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
