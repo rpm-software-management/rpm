@@ -175,7 +175,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
     if (!(qva->qva_flags & QUERY_FOR_LIST))
 	goto exit;
 
-    fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     if (rpmfiFC(fi) <= 0) {
 /*@-boundswrite@*/
 	te = stpcpy(te, _("(contains no files)"));
@@ -337,7 +337,7 @@ exit:
     }
     t = _free(t);
 
-    fi = rpmfiFree(fi, 1);
+    fi = rpmfiFree(fi);
     return rc;
 }
 

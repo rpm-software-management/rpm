@@ -30,10 +30,10 @@ int _rpmfi_debug = 0;
 rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmfi_debug && msg != NULL)
 fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
     fi->nrefs--;
     return NULL;
 }
@@ -42,10 +42,10 @@ rpmfi XrpmfiLink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
     fi->nrefs++;
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmfi_debug && msg != NULL)
 fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
 }
 
@@ -340,10 +340,10 @@ int rpmfiNext(rpmfi fi)
 	} else
 	    fi->i = -1;
 
-/*@-modfilesystem @*/
+/*@-modfilesys @*/
 if (_rpmfi_debug  < 0 && i != -1)
 fprintf(stderr, "*** fi %p\t%s[%d] %s%s\n", fi, (fi->Type ? fi->Type : "?Type?"), i, (i >= 0 ? fi->dnl[fi->j] : ""), (i >= 0 ? fi->bnl[fi->i] : ""));
-/*@=modfilesystem @*/
+/*@=modfilesys @*/
 
     }
 
@@ -374,10 +374,10 @@ int rpmfiNextD(rpmfi fi)
 	else
 	    fi->j = -1;
 
-/*@-modfilesystem @*/
+/*@-modfilesys @*/
 if (_rpmfi_debug  < 0 && j != -1)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), j);
-/*@=modfilesystem @*/
+/*@=modfilesys @*/
 
     }
 
@@ -883,7 +883,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 }
 /*@=bounds@*/
 
-rpmfi rpmfiFree(rpmfi fi, int freefimem)
+rpmfi rpmfiFree(rpmfi fi)
 {
     HFD_t hfd = headerFreeData;
 
@@ -892,10 +892,10 @@ rpmfi rpmfiFree(rpmfi fi, int freefimem)
     if (fi->nrefs > 1)
 	return rpmfiUnlink(fi, fi->Type);
 
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
 
     /*@-branchstate@*/
     if (fi->fc > 0) {
@@ -946,12 +946,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
     /*@-nullstate -refcounttrans -usereleased@*/
     (void) rpmfiUnlink(fi, fi->Type);
-    /*@-branchstate@*/
-    if (freefimem) {
-	memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
-	fi = _free(fi);
-    }
-    /*@=branchstate@*/
+    memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
+    fi = _free(fi);
     /*@=nullstate =refcounttrans =usereleased@*/
 
     return NULL;
@@ -979,15 +975,14 @@ static inline unsigned char nibble(char c)
 	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
 			(_fi)->_data, (_fi)->fc * sizeof(*(_fi)->_data))
 
-rpmfi rpmfiNew(rpmts ts, rpmfi fi,
-		Header h, rpmTag tagN, int scareMem)
+rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
 {
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     HFD_t hfd = headerFreeData;
+    rpmfi fi = NULL;
     const char * Type;
     uint_32 * uip;
-    int malloced = 0;
     int dnlmax, bnlmax;
     unsigned char * t;
     int len;
@@ -1001,12 +996,7 @@ rpmfi rpmfiNew(rpmts ts, rpmfi fi,
 	goto exit;
     }
 
-    /*@-branchstate@*/
-    if (fi == NULL) {
-	fi = xcalloc(1, sizeof(*fi));
-	malloced = 0;	/* XXX always return with memory alloced. */
-    }
-    /*@=branchstate@*/
+    fi = xcalloc(1, sizeof(*fi));
 
     fi->magic = RPMFIMAGIC;
     fi->Type = Type;
@@ -1030,19 +1020,8 @@ rpmfi rpmfiNew(rpmts ts, rpmfi fi,
     fi->archiveSize = (xx ? *uip : 0);
 
     if (!hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
-	/*@-branchstate@*/
-	if (malloced) {
-	    if (scareMem && fi->h)
-		fi->h = headerFree(fi->h);
-	    fi->fsm = freeFSM(fi->fsm);
-	    /*@-refcounttrans@*/
-	    fi = _free(fi);
-	    /*@=refcounttrans@*/
-	} else {
-	    fi->fc = 0;
-	    fi->dc = 0;
-	}
-	/*@=branchstate@*/
+	fi->fc = 0;
+	fi->dc = 0;
 	goto exit;
     }
     xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
@@ -1147,10 +1126,10 @@ if (fi->actions == NULL)
     fi->fperms = 0644;
 
 exit:
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
 
     /*@-compdef -nullstate@*/ /* FIX: rpmfi null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));

@@ -215,7 +215,7 @@ rpmal rpmalFree(rpmal al)
     if ((alp = al->list) != NULL)
     for (i = 0; i < al->size; i++, alp++) {
 	alp->provides = rpmdsFree(alp->provides);
-	alp->fi = rpmfiFree(alp->fi, 1);
+	alp->fi = rpmfiFree(alp->fi);
     }
 
     if ((die = al->dirs) != NULL)
@@ -368,7 +368,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
     }
 
     alp->provides = rpmdsFree(alp->provides);
-    alp->fi = rpmfiFree(alp->fi, 1);
+    alp->fi = rpmfiFree(alp->fi);
 
 /*@-boundswrite@*/
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */

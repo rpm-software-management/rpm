@@ -182,12 +182,12 @@ static void rpmtsAddAvailableElement(rpmts ts, Header h,
 {
     int scareMem = 0;
     rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    rpmfi fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
     (void) rpmalAdd(&ts->availablePackages, RPMAL_NOMATCH, key,
 		provides, fi);
-    fi = rpmfiFree(fi, 1);
+    fi = rpmfiFree(fi);
     provides = rpmdsFree(provides);
 
 if (_rpmts_debug < 0)

@@ -207,10 +207,13 @@ void mp32nsethex(mp32number* n, const char* hex)
 			{
 				*(dst++) = val;
 				val = 0;
-			}
+				rem = 0;
+			} else
+				rem = 1;
 		}
-		if (rem != 0)
+		if (rem != 0) {
 			*dst = val;
+		}
 	}
 	else {
 		n->size = 0;

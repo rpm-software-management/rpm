@@ -126,6 +126,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	    if (!poptParseArgvString(cmd, &ac, &av)) {
 		av[ac-1] = path;
 		av[ac] = NULL;
+		unsetenv("MALLOC_CHECK_");
 		xx = execve(av[0], (char *const *)av+1, environ);
 	    }
 	    _exit(127);

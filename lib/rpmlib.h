@@ -847,7 +847,7 @@ typedef /*@abstract@*/ struct fsm_s * FSM_t;
 /** \ingroup rpmtrans
  * Package state machine data.
  */
-typedef /*@abstract@*/ struct psm_s * PSM_t;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 
 /**
  * Return package header from file handle, verifying digests/signatures as

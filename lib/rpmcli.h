@@ -337,8 +337,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
  * @return		0 always
  */
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
-	/*@globals internalState @*/
-	/*@modifies ts, h, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, h, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Display package information.

@@ -6,6 +6,11 @@
  * Package state machine to handle a package from a transaction set.
  */
 
+/*@-exportlocal@*/
+/*@unchecked@*/
+extern int _psm_debug;
+/*@=exportlocal@*/
+
 /**
  */
 #define	PSM_VERBOSE	0x8000
@@ -54,10 +59,10 @@ typedef enum pkgStage_e {
 
 /**
  */
-struct psm_s {
+struct rpmpsm_s {
 /*@refcounted@*/
     rpmts ts;			/*!< transaction set */
-/*@dependent@*/
+/*@dependent@*/ /*@null@*/
     rpmte te;			/*!< current transaction element */
 /*@refcounted@*/
     rpmfi fi;			/*!< transaction element file info */
@@ -83,6 +88,11 @@ struct psm_s {
     int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
+    int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
+    int reaper;			/*!< Register SIGCHLD handler? */
+    pid_t reaped;		/*!< Reaped waitpid return. */
+    pid_t child;		/*!< Currently running process. */
+    int status;			/*!< Reaped waitpid status. */
     rpmCallbackType what;	/*!< Callback type. */
     unsigned long amount;	/*!< Callback amount. */
     unsigned long total;	/*!< Callback total. */
@@ -90,6 +100,9 @@ struct psm_s {
     pkgStage goal;
 /*@unused@*/
     pkgStage stage;
+
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
 };
 
 #ifdef __cplusplus
@@ -97,16 +110,73 @@ extern "C" {
 #endif
 
 /**
+ * Unreference a package state machine instance.
+ * @param psm		package state machine
+ * @param msg
+ * @return		NULL always
+ */
+/*@unused@*/ /*@null@*/
+rpmpsm rpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
+		/*@null@*/ const char * msg)
+	/*@modifies psm @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
+/*@null@*/
+rpmpsm XrpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+	/*@modifies psm @*/;
+/*@=exportlocal@*/
+#define	rpmpsmUnlink(_psm, _msg)	XrpmpsmUnlink(_psm, _msg, __FILE__, __LINE__)
+
+/**
+ * Reference a package state machine instance.
+ * @param psm		package state machine
+ * @param msg
+ * @return		new package state machine reference
+ */
+/*@unused@*/ /*@newref@*/
+rpmpsm rpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg)
+	/*@modifies psm @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
+/*@newref@*/
+rpmpsm XrpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies psm @*/;
+/*@=exportlocal@*/
+#define	rpmpsmLink(_psm, _msg)	XrpmpsmLink(_psm, _msg, __FILE__, __LINE__)
+
+/**
+ * Destroy a package state machine.
+ * @param psm		package state machine
+ * @return		NULL always
+ */
+/*@null@*/
+rpmpsm rpmpsmFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm)
+	/*@globals fileSystem @*/
+	/*@modifies psm, fileSystem @*/;
+
+/**
+ * Create and load a package state machine.
+ * @param ts		transaction set
+ * @param te		transaction set element
+ * @param fi		file info set
+ * @return		new package state machine
+ */
+rpmpsm rpmpsmNew(rpmts ts, /*@null@*/ rpmte te, rpmfi fi)
+	/*@modifies ts, fi @*/;
+
+/**
  * Package state machine driver.
  * @param psm		package state machine data
  * @param stage		next stage
  * @return		0 on success
  */
-int psmStage(PSM_t psm, pkgStage stage)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies psm, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+int rpmpsmStage(rpmpsm psm, pkgStage stage)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

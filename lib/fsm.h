@@ -225,7 +225,8 @@ extern "C" {
  * @return		always NULL
  */
 /*@null@*/ FSM_t freeFSM(/*@only@*/ /*@null@*/ FSM_t fsm)
-	/*@modifies fsm @*/;
+	/*@globals fileSystem @*/
+	/*@modifies fsm, fileSystem @*/;
 
 /**
  * Load external data into file state machine.

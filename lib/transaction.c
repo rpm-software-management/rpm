@@ -36,7 +36,7 @@
 /*@access dbiIndexSet @*/
 /*@access rpmdb @*/
 
-/*@access PSM_t @*/
+/*@access rpmpsm @*/
 
 /*@access alKey @*/
 /*@access fnpyKey @*/
@@ -229,7 +229,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    altNEVR = hGetNEVR(h, NULL);
-	    otherFi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
@@ -288,7 +288,7 @@ static int handleInstInstalledFiles(const rpmts ts,
     ps = rpmpsFree(ps);
 
     altNEVR = _free(altNEVR);
-    otherFi = rpmfiFree(otherFi, 1);
+    otherFi = rpmfiFree(otherFi);
 
     fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
 			   sizeof(*fi->replaced) * (numReplaced + 1));
@@ -961,10 +961,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     sharedFileInfo shared, sharedList;
     int numShared;
     int nexti;
-    alKey lastKey;
+    alKey lastFailKey;
     fingerPrintCache fpc;
     rpmps ps;
-    PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
+    rpmpsm psm;
     rpmtsi pi;	rpmte p;
     rpmtsi qi;	rpmte q;
     int numAdded;
@@ -1005,9 +1005,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     {	int_32 tid = (int_32) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
-
-    memset(psm, 0, sizeof(*psm));
-    psm->ts = rpmtsLink(ts, "tsRun");
 
     /* Get available space on mounted file systems. */
     xx = rpmtsInitDSI(ts);
@@ -1197,7 +1194,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(fc, sizeof(*matches));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
-	    psm->ts = rpmtsUnlink(ts, "tsRun (rpmFindFpList fail)");
 	    ps = rpmpsFree(ps);
 	    return 1;	/* XXX WTFO? */
 	}
@@ -1335,8 +1331,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		(okProbs != NULL || rpmpsTrim(ts->probs, okProbs)))
        )
     {
-	if (psm->ts != NULL)
-	    psm->ts = rpmtsUnlink(psm->ts, "tsRun (problems)");
 	return ts->orderCount;
     }
 
@@ -1348,7 +1342,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	progress = 0;
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	    fi = rpmtsiFi(pi);
+	    if ((fi = rpmtsiFi(pi)) == NULL)
+		continue;	/* XXX can't happen */
 	    switch (rpmteType(p)) {
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
@@ -1363,16 +1358,17 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
                         numRemoved, NULL, ts->notifyData));
 		progress++;
 
-		psm->te = p;
-		psm->fi = rpmfiLink(fi, "tsRepackage");
 	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
-		psm->fi->mapflags |= CPIO_MAP_ABSOLUTE;
-		psm->fi->mapflags |= CPIO_MAP_ADDDOT;
-		psm->fi->mapflags |= CPIO_ALL_HARDLINKS;
-		xx = psmStage(psm, PSM_PKGSAVE);
-		(void) rpmfiUnlink(fi, "tsRepackage");
-		psm->fi = NULL;
-		psm->te = NULL;
+		fi->mapflags |= CPIO_MAP_ABSOLUTE;
+		fi->mapflags |= CPIO_MAP_ADDDOT;
+		fi->mapflags |= CPIO_ALL_HARDLINKS;
+		psm = rpmpsmNew(ts, p, fi);
+		xx = rpmpsmStage(psm, PSM_PKGSAVE);
+		psm = rpmpsmFree(psm);
+		fi->mapflags &= ~CPIO_MAP_ABSOLUTE;
+		fi->mapflags &= ~CPIO_MAP_ADDDOT;
+		fi->mapflags &= ~CPIO_ALL_HARDLINKS;
+
 		/*@switchbreak@*/ break;
 	    }
 	}
@@ -1386,8 +1382,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     /* ===============================================
      * Install and remove packages.
      */
-rpmMessage(RPMMESS_DEBUG, _("install/erase %d elements\n"), rpmtsNElements(ts));
-    lastKey = (alKey)-2;	/* erased packages have -1 */
+    lastFailKey = (alKey)-2;	/* erased packages have -1 */
     pi = rpmtsiInit(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1398,8 +1393,10 @@ rpmMessage(RPMMESS_DEBUG, _("install/erase %d elements\n"), rpmtsNElements(ts));
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
-	psm->te = p;
-	psm->fi = rpmfiLink(fi, "tsInstall");
+	psm = rpmpsmNew(ts, p, fi);
+	psm->unorderedSuccessor =
+		(rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
+
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 
@@ -1438,40 +1435,43 @@ rpmMessage(RPMMESS_DEBUG, _("install/erase %d elements\n"), rpmtsNElements(ts));
 	    /*@=type@*/
 
 	    if (rpmteFd(p) != NULL) {
+		/*
+		 * XXX Sludge necessary to tranfer existing fstates/actions
+		 * XXX around a recreated file info set.
+		 */
+		psm->fi = rpmfiFree(psm->fi);
 		{
-char * fstates = fi->fstates;
-fileAction * actions = fi->actions;
+		    char * fstates = fi->fstates;
+		    fileAction * actions = fi->actions;
 
-fi->fstates = NULL;
-fi->actions = NULL;
-		    psm->fi = rpmfiFree(psm->fi, 1);
-		    (void) rpmfiFree(fi, 0);
-/*@-usereleased@*/
-fi->magic = RPMFIMAGIC;
-fi->te = p;
-fi->record = 0;
-		    (void) rpmfiNew(ts, fi, p->h, RPMTAG_BASENAMES, 1);
-		    psm->fi = rpmfiLink(fi, "tsInstall");
-fi->fstates = _free(fi->fstates);
-fi->fstates = fstates;
-fi->actions = _free(fi->actions);
-fi->actions = actions;
-/*@=usereleased@*/
-
+		    fi->fstates = NULL;
+		    fi->actions = NULL;
+		    fi = rpmfiFree(fi);
+		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		    p->fi = fi;
+		    fi->te = p;
+		    fi->fstates = _free(fi->fstates);
+		    fi->fstates = fstates;
+		    fi->actions = _free(fi->actions);
+		    fi->actions = actions;
 		}
+		psm->fi = rpmfiLink(p->fi, NULL);
+
 		if (rpmteMultiLib(p))
 		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_MULTILIB));
 		else
 		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) & ~RPMTRANS_FLAG_MULTILIB));
 
-		if (psmStage(psm, PSM_PKGINSTALL)) {
+/*@-nullstate@*/ /* FIX: psm->fi may be NULL */
+		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;
-		    lastKey = pkgKey;
+		    lastFailKey = pkgKey;
 		}
+/*@=nullstate@*/
 		fi->h = headerFree(fi->h);
 	    } else {
 		ourrc++;
-		lastKey = pkgKey;
+		lastFailKey = pkgKey;
 	    }
 
 	    p->h = headerFree(p->h);
@@ -1488,25 +1488,29 @@ fi->actions = actions;
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", rpmteNEVR(p));
-	    /* If install failed, then we shouldn't erase. */
-	    if (rpmteDependsOnKey(p) != lastKey) {
-		if (psmStage(psm, PSM_PKGERASE))
+	    /*
+	     * XXX This has always been a hack, now mostly broken.
+	     * If install failed, then we shouldn't erase.
+	     */
+	    if (rpmteDependsOnKey(p) != lastFailKey) {
+		if (rpmpsmStage(psm, PSM_PKGERASE))
 		    ourrc++;
 	    }
 	    /*@switchbreak@*/ break;
 	}
 	xx = rpmdbSync(rpmtsGetRdb(ts));
-	(void) rpmfiUnlink(psm->fi, "tsInstall");
-	psm->fi = NULL;
-	psm->te = NULL;
+
+/*@-nullstate@*/ /* FIX: psm->fi may be NULL */
+	psm = rpmpsmFree(psm);
+/*@=nullstate@*/
+
 /*@-type@*/ /* FIX: p is almost opaque */
-	p->fi = rpmfiFree(fi, 1);
+	p->fi = rpmfiFree(fi);
 /*@=type@*/
+
     }
     /*@=branchstate@*/
     pi = rpmtsiFree(pi);
-
-    psm->ts = rpmtsUnlink(psm->ts, "tsRun");
 
     /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
     if (ourrc)

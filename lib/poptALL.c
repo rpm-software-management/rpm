@@ -31,6 +31,9 @@ extern int _fps_debug;
 extern int _fsm_debug;
 
 /*@unchecked@*/
+extern int _psm_debug;
+
+/*@unchecked@*/
 extern int _rpmal_debug;
 
 /*@unchecked@*/
@@ -262,6 +265,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
 	N_("debug option/argument processing"), NULL},
 #endif
+ { "psmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_debug, -1,
+	N_("debug package state machine"), NULL},
  { "rpmaldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmal_debug, -1,
 	NULL, NULL},
  { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,

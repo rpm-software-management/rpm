@@ -663,7 +663,7 @@ static void handler(int signum)
 /*@=incondefs@*/
 
 /**
- * Enable all signal handlers
+ * Enable all signal handlers.
  */
 static int enableSignals(void)
 	/*@globals caught, satbl, fileSystem @*/
@@ -726,7 +726,7 @@ static int checkSignals(void)
 }
 
 /**
- * Disable all signal handlers
+ * Disable all signal handlers.
  */
 static int disableSignals(void)
 	/*@globals satbl, fileSystem @*/
@@ -747,7 +747,6 @@ static int disableSignals(void)
     }
     return sigprocmask(SIG_SETMASK, &oldMask, NULL);
 }
-
 
 /**
  * Block all signals, returning previous signal mask.
@@ -3279,7 +3278,7 @@ static struct skipDir_s {
 static int skipDir(const char * dn)
 	/*@*/
 {
-    struct skipDir_s * sd = skipDirs;;
+    struct skipDir_s * sd = skipDirs;
     int dnlen;
 
     dnlen = strlen(dn);

@@ -1645,6 +1645,12 @@ void rpmFreeRpmrc(void)
 {
     int i, j, k;
 
+    if (platpat)
+    for (i = 0; i < nplatpat; i++)
+	platpat[i] = _free(platpat[i]);
+    platpat = _free(platpat);
+    nplatpat = 0;
+
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
 	tableType t;
 	t = tables + i;

@@ -409,26 +409,25 @@ rpmfi rpmfiInitD(/*@null@*/ rpmfi fi, int dx)
 /**
  * Destroy a file info set.
  * @param fi		file info set
- * @param freefimem	free fi memory too?
  * @return		NULL always
  */
 /*@null@*/
-rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi, int freefimem)
-	/*@modifies fi@*/;
+rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
+	/*@globals fileSystem @*/
+	/*@modifies fi, fileSystem @*/;
 
 /**
  * Create and load a file info set.
  * @param ts		transaction set
- * @param fi		file info set (NULL if creating)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
  * @param scareMem	Use pointers to refcounted header memory?
  * @return		new file info set
  */
 /*@null@*/
-rpmfi rpmfiNew(/*@null@*/ rpmts ts, /*@null@*/ rpmfi fi,
-		Header h, rpmTag tagN, int scareMem)
-	/*@modifies ts, fi, h @*/;
+rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
+	/*@globals fileSystem @*/
+	/*@modifies ts, h, fileSystem @*/;
 
 /**
  * Return file type from mode_t.

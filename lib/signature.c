@@ -313,6 +313,7 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 
 	/* dosetenv("PGPPASS", passPhrase, 1); */
 
+	unsetenv("MALLOC_CHECK_");
 	if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
 	    switch(pgpVer) {
 	    case PGP_2:
@@ -443,6 +444,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
 /*@=boundsread@*/
 
+	unsetenv("MALLOC_CHECK_");
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
 	rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
 /*@-boundsread@*/
@@ -712,6 +714,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	}
 	xx = dup2(passPhrasePipe[0], 3);
 
+	unsetenv("MALLOC_CHECK_");
 	switch (sigTag) {
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_GPG:

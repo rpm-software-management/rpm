@@ -156,10 +156,11 @@ struct rpmts_s {
     int numAvailablePackages;	/*!< No. available package instances. */
 #endif
 
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
     rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
+    int unorderedSuccessors;	/*!< Index of 1st element of successors. */
 
     int chrootDone;		/*!< Has chroot(2) been been done? */
 /*@only@*/ /*@null@*/
@@ -254,10 +255,12 @@ rpmts rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmts ts,
 	/*@modifies ts @*/;
 
 /** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
 /*@null@*/
 rpmts XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmts ts,
 		const char * msg, const char * fn, unsigned ln)
 	/*@modifies ts @*/;
+/*@=exportlocal@*/
 #define	rpmtsUnlink(_ts, _msg)	XrpmtsUnlink(_ts, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmts
@@ -428,14 +431,16 @@ void rpmtsCleanDig(rpmts ts)
  * @param ts		transaction set
  */
 void rpmtsClean(rpmts ts)
-	/*@modifies ts @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmts
  * Re-create an empty transaction set.
  * @param ts		transaction set
  */
 void rpmtsEmpty(rpmts ts)
-	/*@modifies ts @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmts
  * Destroy transaction set, closing the database as well.
@@ -462,6 +467,15 @@ rpmVSFlags rpmtsVSFlags(rpmts ts)
  * @return		previous value
  */
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Set index of 1st element of successors.
+ * @param ts		transaction set
+ * @param first		new index of 1st element of successors
+ * @return		previous value
+ */
+int rpmtsUnorderedSuccessors(rpmts ts, int first)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -759,8 +773,10 @@ rpmts rpmtsCreate(void)
 int rpmtsAddInstallElement(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, h, rpmcliPackagesTotal, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Add package to be erased to transaction set.
@@ -770,7 +786,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  * @return		0 on success
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
-	/*@modifies ts, h @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, h, fileSystem @*/;
 
 /** \ingroup rpmts
  * Retrieve keys from ordered transaction set.
@@ -784,7 +801,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 int rpmtsGetKeys(rpmts ts,
 		/*@null@*/ /*@out@*/ fnpyKey ** ep,
 		/*@null@*/ /*@out@*/ int * nep)
-	/*@modifies ts, ep, nep @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, ep, nep, fileSystem @*/;
 
 /**
  * Return (malloc'd) header name-version-release string.

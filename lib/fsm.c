@@ -101,11 +101,12 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
  * @retval		NULL always
  */
 static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     FSMI_t iter = p;
     if (iter) {
-	iter->ts = rpmtsUnlink(iter->ts, "mapIterator");
+	iter->ts = rpmtsFree(iter->ts);
 	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
     }
     return _free(p);

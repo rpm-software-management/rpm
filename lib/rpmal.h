@@ -37,7 +37,8 @@ rpmal rpmalCreate(int delta)
  */
 /*@null@*/
 rpmal rpmalFree(/*@only@*/ /*@null@*/ rpmal al)
-	/*@modifies al @*/;
+	/*@globals fileSystem @*/
+	/*@modifies al, fileSystem @*/;
 
 /**
  * Delete package from available list.
@@ -46,7 +47,8 @@ rpmal rpmalFree(/*@only@*/ /*@null@*/ rpmal al)
  */
 /*@-exportlocal@*/
 void rpmalDel(/*@null@*/ rpmal al, /*@null@*/ alKey pkgKey)
-	/*@modifies al @*/;
+	/*@globals fileSystem @*/
+	/*@modifies al, fileSystem @*/;
 /*@=exportlocal@*/
 
 /**
@@ -62,7 +64,8 @@ alKey rpmalAdd(rpmal * alistp,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmds provides, /*@null@*/ rpmfi fi)
-	/*@modifies *alistp, provides, fi @*/;
+	/*@globals fileSystem @*/
+	/*@modifies *alistp, provides, fi, fileSystem @*/;
 
 /**
  * Add package provides to available list index.

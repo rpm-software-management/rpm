@@ -901,6 +901,13 @@ if test $withval = yes ; then
   LIBS="$LIBS -ldmalloc"
 fi
 
+withval=no
+AC_ARG_WITH(efence, [  --with-efence           build with efence debugging support ])
+if test $withval = yes ; then
+  AC_DEFINE(EFENCE, 1, [Build with libefence support?])
+  LIBS="$LIBS -lefence"
+fi
+
 AC_CHECK_FUNCS(setlocale)
 
 dnl XXX Solaris <= 2.6 only permits 8 chars in password.

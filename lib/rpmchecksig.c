@@ -549,6 +549,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
     while ((fn = *argv++) != NULL) {
 /*@=boundsread@*/
 
+rpmtsClean(ts);
 	pkt = _free(pkt);
 
 	/* Read pgp packet. */
@@ -573,6 +574,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
     }
     /*@=branchstate@*/
     
+rpmtsClean(ts);
     pkt = _free(pkt);
     return res;
 }

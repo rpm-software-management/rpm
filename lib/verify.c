@@ -18,7 +18,7 @@
 
 /*@access rpmps @*/
 /*@access rpmProblem @*/
-/*@access PSM_t @*/	/* XXX for %verifyscript through psmStage() */
+/*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
 /*@access FD_t @*/	/* XXX compared with NULL */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
@@ -222,26 +222,21 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
 	/*@modifies ts, fi, scriptFd, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
+    rpmpsm psm = rpmpsmNew(ts, NULL, fi);
     int rc = 0;
-    PSM_t psm;
-
-    psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
-    psm->ts = rpmtsLink(ts, "rpmVerifyScript");
 
     if (scriptFd != NULL)
-	rpmtsSetScriptFd(ts, scriptFd);
+	rpmtsSetScriptFd(psm->ts, scriptFd);
 
-    psm->fi = rpmfiLink(fi, "rpmVerifyScript");
     psm->stepName = "verify";
     psm->scriptTag = RPMTAG_VERIFYSCRIPT;
     psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
-    rc = psmStage(psm, PSM_SCRIPT);
-    psm->fi = rpmfiUnlink(fi, "rpmVerifyScript");
+    rc = rpmpsmStage(psm, PSM_SCRIPT);
 
     if (scriptFd != NULL)
-	rpmtsSetScriptFd(ts, NULL);
+	rpmtsSetScriptFd(psm->ts, NULL);
 
-    psm->ts = rpmtsUnlink(ts, "rpmVerifyScript");
+    psm = rpmpsmFree(psm);
 
     return rc;
 }
@@ -431,7 +426,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
     int ec = 0;
     int rc;
 
-    fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     if (fi != NULL) {
 
 	if (qva->qva_flags & VERIFY_DEPS) {
@@ -458,7 +453,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 		rc = Fclose(fdo);
 	}
 
-	fi = rpmfiFree(fi, 1);
+	fi = rpmfiFree(fi);
     }
 
     return ec;

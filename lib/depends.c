@@ -78,7 +78,8 @@ static int intcmp(const void * a, const void * b)
  */
 static int removePackage(rpmts ts, Header h, int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
-	/*@modifies ts, h @*/
+	/*@globals fileSystem @*/
+	/*@modifies ts, h, fileSystem @*/
 {
     rpmte p;
 
@@ -1387,6 +1388,7 @@ rescan:
 	}
 	if (!_printed && loopcheck == qlen && rpmteTSI(q)->tsi_suc != NULL) {
 	    _printed++;
+	    (void) rpmtsUnorderedSuccessors(ts, orderingCount);
 	    rpmMessage(RPMMESS_DEBUG,
 		_("========== successors only (presentation order)\n"));
 

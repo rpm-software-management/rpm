@@ -30,10 +30,10 @@ int _rpmds_unspecified_epoch_noise = 0;
 rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmds_debug && msg != NULL)
 fprintf(stderr, "--> ds %p -- %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
     ds->nrefs--;
     return NULL;
 }
@@ -43,10 +43,10 @@ rpmds XrpmdsLink(rpmds ds, const char * msg, const char * fn, unsigned ln)
     if (ds == NULL) return NULL;
     ds->nrefs++;
 
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmds_debug && msg != NULL)
 fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
 
     /*@-refcounttrans@*/ return ds; /*@=refcounttrans@*/
 }
@@ -62,10 +62,10 @@ rpmds rpmdsFree(rpmds ds)
     if (ds->nrefs > 1)
 	return rpmdsUnlink(ds, ds->Type);
 
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
 
     if (ds->tagN == RPMTAG_PROVIDENAME) {
 	tagEVR = RPMTAG_PROVIDEVERSION;
@@ -175,10 +175,10 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
 /*@=boundsread@*/
 
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
 
     }
     /*@=branchstate@*/
@@ -497,10 +497,10 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 	} else
 	    ds->i = -1;
 
-/*@-modfilesystem @*/
+/*@-modfilesys @*/
 if (_rpmds_debug  < 0 && i != -1)
 fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds->Type ? ds->Type : "?Type?"), i, (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
-/*@=modfilesystem @*/
+/*@=modfilesys @*/
 
     }
 

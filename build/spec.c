@@ -167,12 +167,7 @@ Package freePackage(Package pkg)
     if (pkg->cpioList) {
 	rpmfi fi = pkg->cpioList;
 	pkg->cpioList = NULL;
-	fi = rpmfiFree(fi, 1);
-#ifdef	DYING
-	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
-	fi = _free(fi);
-	/*@=refcounttrans@*/
-#endif
+	fi = rpmfiFree(fi);
     }
 
     pkg->specialDoc = freeStringBuf(pkg->specialDoc);
@@ -525,12 +520,7 @@ Spec freeSpec(Spec spec)
     if (spec->sourceCpioList) {
 	rpmfi fi = spec->sourceCpioList;
 	spec->sourceCpioList = NULL;
-	fi = rpmfiFree(fi, 1);
-#ifdef	DYING
-	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
-	fi = _free(fi);
-	/*@=refcounttrans@*/
-#endif
+	fi = rpmfiFree(fi);
     }
     
     spec->buildRestrictions = headerFree(spec->buildRestrictions);

@@ -429,15 +429,13 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
     const char ** list;
 
 /*@-boundswrite@*/
-    if (rpmGetFilesystemList(&list, count)) {
+    if (rpmGetFilesystemList(&list, count))
 	return 1;
-    }
 /*@=boundswrite@*/
 
-    *type = RPM_STRING_ARRAY_TYPE;
-    *((const char ***) data) = list;
-
-    *freeData = 0;
+    if (type) *type = RPM_STRING_ARRAY_TYPE;
+    if (data) *((const char ***) data) = list;
+    if (freeData) *freeData = 0;
 
     return 0; 
 }
@@ -468,11 +466,11 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 	if (freeData) *freeData = 0;
 	return 0;
     } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &array, count)) {
+	if (type) *type = RPM_STRING_TYPE;
 /*@-boundsread@*/
 	if (data) *data = xstrdup(array[0]);
 /*@=boundsread@*/
 	if (freeData) *freeData = 1;
-	if (type) *type = RPM_STRING_TYPE;
 	array = hfd(array, ipt);
 	return 0;
     }
@@ -514,9 +512,8 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
     }
 
 /*@-boundswrite@*/
-    if (rpmGetFilesystemList(NULL, count)) {
+    if (rpmGetFilesystemList(NULL, count))
 	return 1;
-    }
 /*@=boundswrite@*/
 
     *type = RPM_INT32_TYPE;

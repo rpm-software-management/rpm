@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.81
+Release: 0.82
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -519,6 +519,18 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Aug 19 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.82
+- add --with-efence to configure, check install/upgrade with efence.
+- beecrypt: short hex string conversion overflows target buffer.
+- mark "successors only" packages in transaction.
+- reap scriptlets with SIGCHLD handler.
+- rename PSM_t to rpmpsm, add methods and refcounts to manage.
+- remove %%configure/%%makeinstall from arch-os/macros, default is OK.
+- don't export MALLOC_CHECK_ to scriptlets.
+- squeaky clean memory leak checking.
+- always malloc rpmfi structure, refcounts are correct in rpmtsRun().
+- skip redundant /sbin/ldconfig scripts on upgrade (if possible).
+
 * Thu Aug 15 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.81
 - rollback: re-create empty transaction set for multiple rollbacks.
 - fix: %%basename typo (Dmitry V. Levin<ldv@altlinux.org>).

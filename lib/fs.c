@@ -25,20 +25,16 @@ static int numFilesystems = 0;
 
 void freeFilesystems(void)
 {
-    if (filesystems) {
-	int i;
+    int i;
+
 /*@-boundswrite@*/
-	for (i = 0; i < numFilesystems; i++)
-	    filesystems[i].mntPoint = _free(filesystems[i].mntPoint);
+    if (filesystems)
+    for (i = 0; i < numFilesystems; i++)
+	filesystems[i].mntPoint = _free(filesystems[i].mntPoint);
 /*@=boundswrite@*/
-	filesystems = _free(filesystems);
-    }
-    if (fsnames) {
-#if 0	/* XXX leak/segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" */
-	free(fsnames);
-#endif
-	fsnames = NULL;
-    }
+
+    filesystems = _free(filesystems);
+    fsnames = _free(fsnames);
     numFilesystems = 0;
 }
 

@@ -1365,16 +1365,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
 
-  { rpmfi fi = xcalloc(1, sizeof(*fi));
-    int scareMem = 1;
+  { int scareMem = 1;
+    rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
+    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     char * a, * d;
 
-    /* XXX FIXME drill rpmts ts all the way down here */
-/*@i@*/ fi->te = xcalloc(1, sizeof(*fi->te));
-/*@i@*/ fi->te->type = TR_ADDED;
-
-    fi = rpmfiNew(NULL, fi, h, RPMTAG_BASENAMES, scareMem);
     if (fi == NULL) return;		/* XXX can't happen */
+
+    fi->te = xcalloc(1, sizeof(*fi->te));
+    fi->te->type = TR_ADDED;
 
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
@@ -2332,6 +2331,7 @@ static StringBuf getOutputFrom(char * dir, char * argv[],
 	    (void) chdir(dir);
 	}
 	
+	unsetenv("MALLOC_CHECK_");
 	(void) execvp(argv[0], argv);
 	/* XXX this error message is probably not seen. */
 	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),

@@ -33,13 +33,16 @@
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
 
+/*@unchecked@*/
+int _psm_debug = 0;
+
 /*@access Header @*/		/* compared with NULL */
 /*@access rpmdbMatchIterator @*//* compared with NULL */
 /*@access FD_t @*/		/* compared with NULL */
 /*@access rpmdb @*/		/* compared with NULL */
 
 /*@access FSM_t @*/		/* compared with NULL */
-/*@access PSM_t @*/
+/*@access rpmpsm @*/
 
 /*@access rpmfi @*/
 /*@access rpmte @*/	/* XXX rpmInstallSourcePackage */
@@ -340,7 +343,7 @@ static int mergeFiles(rpmfi fi, Header h, Header newH)
  * @return		0 always
  */
 /*@-bounds@*/
-static int markReplacedFiles(const PSM_t psm)
+static int markReplacedFiles(const rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -426,8 +429,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     HGE_t hge;
     HFD_t hfd;
     Header h = NULL;
-    struct psm_s psmbuf;
-    PSM_t psm = &psmbuf;
+    struct rpmpsm_s psmbuf;
+    rpmpsm psm = &psmbuf;
     int isSource;
     rpmRC rc;
     int i;
@@ -447,7 +450,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
      (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
-    fi = rpmfiNew(ts, fi, h, RPMTAG_BASENAMES, scareMem);
+    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     h = headerFree(h);
 
     if (fi == NULL) {	/* XXX can't happen */
@@ -567,9 +570,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     psm->goal = PSM_PKGINSTALL;
 
     /*@-compmempass@*/	/* FIX: psm->fi->dnl should be owned. */
-    rc = psmStage(psm, PSM_PROCESS);
+    rc = rpmpsmStage(psm, PSM_PROCESS);
 
-    (void) psmStage(psm, PSM_FINI);
+    (void) rpmpsmStage(psm, PSM_FINI);
     /*@=compmempass@*/
 
     if (rc) rc = RPMRC_FAIL;
@@ -592,7 +595,7 @@ exit:
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
 	fi->te = NULL;
-	fi = rpmfiFree(fi, 1);
+	fi = rpmfiFree(fi);
     }
     /*@=branchstate@*/
 
@@ -602,7 +605,7 @@ exit:
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
 
-    psm->ts = rpmtsUnlink(ts, "InstallSourcePackage");
+    psm->ts = rpmtsFree(psm->ts);
 
     return rc;
 }
@@ -629,6 +632,293 @@ static /*@observer@*/ const char * const tag2sln(int tag)
 }
 
 /**
+ */
+/*@unchecked@*/
+static sigset_t caught;
+
+/**
+ */
+/*@unchecked@*/
+static struct psmtbl_s {
+    int nalloced;
+    int npsms;
+/*@null@*/
+    rpmpsm * psms;
+} psmtbl = { 0, 0, NULL };
+
+/* forward ref */
+static void handler(int signum)
+	/*@globals caught, psmtbl, fileSystem @*/
+	/*@modifies caught, psmtbl, fileSystem @*/;
+
+/**
+ */
+/*@unchecked@*/
+/*@-fullinitblock@*/
+static struct sigtbl_s {
+    int signum;
+    int active;
+    struct sigaction act;
+    struct sigaction oact;
+} satbl[] = {
+    { SIGCHLD,	0, { {handler} } },
+    { -1,	0, { {NULL}    } },
+};
+/*@=fullinitblock@*/
+
+/**
+ */
+/*@-incondefs@*/
+static void handler(int signum)
+{
+    struct sigtbl_s * tbl;
+
+    for(tbl = satbl; tbl->signum >= 0; tbl++) {
+	if (tbl->signum != signum)
+	    continue;
+	if (!tbl->active)
+	    continue;
+	(void) sigaddset(&caught, signum);
+	switch (signum) {
+	case SIGCHLD:
+	{   int status = 0;
+	    pid_t reaped = waitpid(0, &status, WNOHANG);
+	    int i;
+
+	    if (psmtbl.psms)
+	    for (i = 0; i < psmtbl.npsms; i++) {
+		rpmpsm psm = psmtbl.psms[i];
+		if (psm->child != reaped)
+		    /*@innercontinue@*/ continue;
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "      Reap: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
+/*@=modfilesys@*/
+		psm->reaped = reaped;
+		psm->status = status;
+		/*@innerbreak@*/ break;
+	    }
+	}   /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
+	}
+	break;
+    }
+}
+/*@=incondefs@*/
+
+/**
+ * Enable a signal handler.
+ */
+static int enableSignal(int signum)
+	/*@globals caught, satbl, fileSystem @*/
+	/*@modifies caught, satbl, fileSystem @*/
+{
+    sigset_t newMask, oldMask;
+    struct sigtbl_s * tbl;
+
+    (void) sigfillset(&newMask);		/* block all signals */
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+    for (tbl = satbl; tbl->signum >= 0; tbl++) {
+	if (signum >= 0 && signum != tbl->signum)
+	    continue;
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "    Enable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms, psmtbl.nalloced, tbl->active);
+/*@=modfilesys@*/
+	if (tbl->active++ <= 0) {
+	    (void) sigdelset(&caught, tbl->signum);
+	    (void) sigaction(tbl->signum, &tbl->act, &tbl->oact);
+	}
+	break;
+    }
+    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
+}
+
+/**
+ * Disable a signal handler.
+ */
+static int disableSignal(int signum)
+	/*@globals satbl, fileSystem @*/
+	/*@modifies satbl, fileSystem @*/
+{
+    sigset_t newMask, oldMask;
+    struct sigtbl_s * tbl;
+
+    (void) sigfillset(&newMask);		/* block all signals */
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+    for (tbl = satbl; tbl->signum >= 0; tbl++) {
+	if (signum >= 0 && signum != tbl->signum)
+	    continue;
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "   Disable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms, psmtbl.nalloced, tbl->active);
+/*@=modfilesys@*/
+	if (--tbl->active <= 0) {
+	    tbl->active = 0;		/* XXX just in case */
+	    (void) sigaction(tbl->signum, &tbl->oact, NULL);
+	}
+	break;
+    }
+    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
+}
+
+/**
+ * Register a child reaper.
+ */
+static int psmRegister(rpmpsm psm, pid_t child)
+	/*@globals psmtbl, fileSystem @*/
+	/*@modifies psm, psmtbl, fileSystem @*/
+{
+    sigset_t newMask, oldMask;
+    int empty = -1;
+    int i = psmtbl.npsms;
+
+    (void) sigfillset(&newMask);		/* block all signals */
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+
+    if (psmtbl.psms)
+    for (i = 0; i < psmtbl.npsms; i++) {
+	if (empty == -1 && psmtbl.psms[i] == NULL)
+	    empty = i;
+	if (psm != psmtbl.psms[i])
+	    continue;
+	break;
+    }
+    if (i == psmtbl.npsms) {
+	if (i >= psmtbl.nalloced) {
+	    if (psmtbl.nalloced == 0) psmtbl.nalloced = 5;
+	    while (psmtbl.nalloced < i)
+		psmtbl.nalloced += psmtbl.nalloced;
+	    psmtbl.psms = xrealloc(psmtbl.psms,
+			psmtbl.nalloced * sizeof(*psmtbl.psms));
+	}
+	empty = psmtbl.npsms++;
+    }
+    psm->child = child;
+    psm->reaped = 0;
+    if (psmtbl.psms)	/* XXX can't happen */
+	psmtbl.psms[empty] = rpmpsmLink(psm, "psmRegister");
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "  Register: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, empty, psmtbl.npsms, psmtbl.nalloced, psm, child);
+/*@=modfilesys@*/
+
+    (void) enableSignal(SIGCHLD);
+    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
+}
+
+/**
+ * Unregister a child reaper.
+ */
+static int psmUnregister(rpmpsm psm, pid_t child)
+	/*@globals psmtbl, fileSystem @*/
+	/*@modifies psmtbl, fileSystem @*/
+{
+    sigset_t newMask, oldMask;
+    int i = 0;
+
+    (void) sigfillset(&newMask);		/* block all signals */
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+    
+    if (psmtbl.psms)
+    for (i = 0; i < psmtbl.npsms; i++) {
+	if (psmtbl.psms[i] == NULL)
+	    continue;
+	if (psm != psmtbl.psms[i])
+	    continue;
+	if (child != psm->child)
+	    continue;
+	break;
+    }
+
+    if (i < psmtbl.npsms) {
+	(void) disableSignal(SIGCHLD);
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "Unregister: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmtbl.npsms, psmtbl.nalloced, psm, child);
+/*@=modfilesys@*/
+	if (psmtbl.psms)	/* XXX can't happen */
+	    psmtbl.psms[i] = rpmpsmFree(psmtbl.psms[i]);
+	if (psmtbl.npsms == (i+1))
+	    psmtbl.npsms--;
+	if (psmtbl.npsms == 0) {
+	    psmtbl.psms = _free(psmtbl.psms);
+	    psmtbl.nalloced = 0;
+	}
+    }
+
+    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
+}
+
+/**
+ * Register a new child process with the reaper.
+ * @param psm		package state machine data
+ * @return		
+ */
+static pid_t psmFork(rpmpsm psm)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
+{
+    pid_t child;
+
+    /* Fork and Register parent's signal handler. */
+    if ((child = fork()) != 0) {
+	if (!psm->reaper) {
+	    psm->child = child;
+	    psm->reaped = 0;
+	} else {
+	    (void) psmRegister(psm, child);
+	}
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, child);
+/*@=modfilesys@*/
+    }
+    return child;
+}
+
+/**
+ * Wait for child process to be reaped.
+ * @param psm		package state machine data
+ * @return		
+ */
+static pid_t psmWait(rpmpsm psm)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
+{
+    if (psm->reaper) {
+	/* XXX FIXME: signal race on psm->reaped prevents pause(3) */
+	while (psm->reaped == 0)
+	    (void) sleep(2);
+	/*@=infloops@*/
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "      Wait: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
+/*@=modfilesys@*/
+	(void) psmUnregister(psm, psm->child);
+    } else {
+	do {
+	    psm->reaped = waitpid(psm->child, &psm->status, 0);
+	} while (psm->reaped >= 0 && psm->reaped != psm->child);
+    }
+
+    rpmMessage(RPMMESS_DEBUG, _("%s: waitpid(%d) rc %d status %x\n"),
+	psm->stepName, (unsigned)psm->child,
+	(unsigned)psm->reaped, psm->status);
+
+    return psm->reaped;
+}
+
+/**
+ */
+/*@unchecked@*/
+static int ldconfig_done = 0;
+
+/*@unchecked@*/ /*@observer@*/
+static const char * ldconfig_path = "/sbin/ldconfig";
+
+/**
  * Run scriptlet with args.
  *
  * Run a script with an interpreter. If the interpreter is not specified,
@@ -646,12 +936,12 @@ static /*@observer@*/ const char * const tag2sln(int tag)
  * @param arg2		ditto, but for the target package
  * @return		0 on success, 1 on error
  */
-static int runScript(PSM_t psm, Header h,
+static int runScript(rpmpsm psm, Header h,
 		const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState@*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
@@ -666,8 +956,6 @@ static int runScript(PSM_t psm, Header h,
     int maxPrefixLength;
     int len;
     char * prefixBuf = NULL;
-    pid_t child;
-    int status = 0;
     const char * fn = NULL;
     int i, xx;
     int freePrefixes = 0;
@@ -679,20 +967,44 @@ static int runScript(PSM_t psm, Header h,
     if (progArgv == NULL && script == NULL)
 	return 0;
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: running %s scriptlet\n"),
-		psm->stepName, tag2sln(psm->scriptTag));
+    psm->child = 0;
+    psm->reaped = 0;
+    psm->status = 0;
+    psm->reaper = 1;
+
+    /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
+    xx = headerNVR(h, &n, &v, &r);
+    /*
+     * If a successor node, and ldconfig was just run, don't bother.
+     */
+    if (ldconfig_path && progArgv && psm->unorderedSuccessor) {
+ 	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
+	    rpmMessage(RPMMESS_DEBUG,
+		_("%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"),
+		psm->stepName, tag2sln(psm->scriptTag), n, v, r,
+		progArgv[0]);
+	    return rc;
+	}
+    }
+
+    rpmMessage(RPMMESS_DEBUG,
+		_("%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"),
+		psm->stepName, tag2sln(psm->scriptTag), n, v, r,
+		(psm->unorderedSuccessor ? "a" : ""));
 
     if (!progArgv) {
 	argv = alloca(5 * sizeof(*argv));
 	argv[0] = "/bin/sh";
 	argc = 1;
+	ldconfig_done = 0;
     } else {
 	argv = alloca((progArgc + 4) * sizeof(*argv));
 	memcpy(argv, progArgv, progArgc * sizeof(*argv));
 	argc = progArgc;
+	ldconfig_done = (ldconfig_path && !strcmp(argv[0], ldconfig_path)
+		? 1 : 0);
     }
 
-    xx = headerNVR(h, &n, &v, &r);
     if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &prefixes, &numPrefixes)) {
 	freePrefixes = 1;
     } else if (hge(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &oldPrefix, NULL)) {
@@ -726,6 +1038,9 @@ static int runScript(PSM_t psm, Header h,
 	    static const char set_x[] = "set -x\n";
 	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
 	}
+
+	if (ldconfig_path && strstr(script, ldconfig_path) != NULL)
+	    ldconfig_done = 1;
 
 	xx = Fwrite(script, sizeof(script[0]), strlen(script), fd);
 	xx = Fclose(fd);
@@ -765,14 +1080,11 @@ static int runScript(PSM_t psm, Header h,
 	}
     } else {
 	out = fdDup(STDOUT_FILENO);
-#ifdef	DYING
-	out = fdLink(out, "runScript persist");
-#endif
     }
     if (out == NULL) return 1;	/* XXX can't happen */
     
     /*@-branchstate@*/
-    if (!(child = fork())) {
+    if (!psmFork(psm)) {
 	const char * rootDir;
 	int pipes[2];
 
@@ -830,12 +1142,22 @@ static int runScript(PSM_t psm, Header h,
 	    rootDir = strchr(rootDir, '/');
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
-	    if (!rpmtsChrootDone(ts) && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
+	    if (!rpmtsChrootDone(ts) &&
+		!(rootDir[0] == '/' && rootDir[1] == '\0'))
+	    {
 		/*@-superuser -noeffect @*/
 		xx = chroot(rootDir);
 		/*@=superuser =noeffect @*/
 	    }
 	    xx = chdir("/");
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"),
+			psm->stepName, sln, n, v, r,
+			argv[0], (unsigned)getpid());
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "      Exec: %s \"%s\"\n", sln, argv[0]);
+/*@=modfilesys@*/
+	    unsetenv("MALLOC_CHECK_");
 	    xx = execv(argv[0], (char *const *)argv);
 	    break;
 	default:
@@ -847,19 +1169,19 @@ static int runScript(PSM_t psm, Header h,
     }
     /*@=branchstate@*/
 
-    if (waitpid(child, &status, 0) < 0) {
+    (void) psmWait(psm);
+
+    if (psm->reaped < 0) {
 	rpmError(RPMERR_SCRIPT,
-     _("execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"),
-		 sln, n, v, r, strerror (errno));
-	/* XXX what to do here? */
-	rc = RPMRC_OK;
-    } else {
-	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	    rpmError(RPMERR_SCRIPT,
-     _("execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"),
-		     sln, n, v, r, WEXITSTATUS(status));
-	    rc = RPMRC_FAIL;
-	}
+		_("%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
+		 sln, n, v, r, psm->child, psm->reaped, strerror(errno));
+	rc = RPMRC_FAIL;
+    } else
+    if (!WIFEXITED(psm->status) || WEXITSTATUS(psm->status)) {
+	rpmError(RPMERR_SCRIPT,
+		_("%s(%s-%s-%s) scriptlet failed, exit status %d\n"),
+		sln, n, v, r, WEXITSTATUS(psm->status));
+	rc = RPMRC_FAIL;
     }
 
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
@@ -882,9 +1204,9 @@ static int runScript(PSM_t psm, Header h,
  * @param psm		package state machine data
  * @return		rpmRC return code
  */
-static rpmRC runInstScript(PSM_t psm)
+static rpmRC runInstScript(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
@@ -935,11 +1257,11 @@ exit:
  * @param triggersAlreadyRun
  * @return
  */
-static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
+static int handleOneTrigger(const rpmpsm psm, Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies triggeredH, *triggersAlreadyRun, rpmGlobalMacroContext,
+	/*@modifies psm, triggeredH, *triggersAlreadyRun, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     int scareMem = 1;
@@ -1032,7 +1354,7 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
  * @param psm		package state machine data
  * @return		0 on success, 1 on error
  */
-static int runTriggers(PSM_t psm)
+static int runTriggers(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext,
@@ -1040,12 +1362,17 @@ static int runTriggers(PSM_t psm)
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    int numPackage;
+    int numPackage = -1;
     rpmRC rc = RPMRC_OK;
+    const char * N = NULL;
 
-    numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), rpmteN(psm->te)) + psm->countCorrection;
+    if (psm->te) 	/* XXX can't happen */
+	N = rpmteN(psm->te);
+    if (N) 		/* XXX can't happen */
+	numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N)
+				+ psm->countCorrection;
     if (numPackage < 0)
-	return 1;
+	return RPMRC_NOTFOUND;
 
     if (fi->h != NULL)	/* XXX can't happen */
     {	Header triggeredH;
@@ -1053,11 +1380,9 @@ static int runTriggers(PSM_t psm)
 	int countCorrection = psm->countCorrection;
 
 	psm->countCorrection = 0;
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, rpmteN(psm->te), 0);
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, N, 0);
+	while((triggeredH = rpmdbNextIterator(mi)) != NULL)
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
-	}
-
 	mi = rpmdbFreeIterator(mi);
 	psm->countCorrection = countCorrection;
     }
@@ -1070,7 +1395,7 @@ static int runTriggers(PSM_t psm)
  * @param psm		package state machine data
  * @return		0 on success, 1 on error
  */
-static int runImmedTriggers(PSM_t psm)
+static int runImmedTriggers(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext,
@@ -1164,12 +1489,85 @@ static int runImmedTriggers(PSM_t psm)
     /*@noteached@*/
 }
 
+rpmpsm XrpmpsmUnlink(rpmpsm psm, const char * msg, const char * fn, unsigned ln)
+{
+    if (psm == NULL) return NULL;
+/*@-modfilesys@*/
+if (_psm_debug && msg != NULL)
+fprintf(stderr, "--> psm %p -- %d %s at %s:%u\n", psm, psm->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    psm->nrefs--;
+    return NULL;
+}
+
+rpmpsm XrpmpsmLink(rpmpsm psm, const char * msg, const char * fn, unsigned ln)
+{
+    if (psm == NULL) return NULL;
+    psm->nrefs++;
+
+/*@-modfilesys@*/
+if (_psm_debug && msg != NULL)
+fprintf(stderr, "--> psm %p ++ %d %s at %s:%u\n", psm, psm->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+
+    /*@-refcounttrans@*/ return psm; /*@=refcounttrans@*/
+}
+
+rpmpsm rpmpsmFree(rpmpsm psm)
+{
+    const char * msg = "rpmpsmFree";
+    if (psm == NULL)
+	return NULL;
+
+    if (psm->nrefs > 1)
+	return rpmpsmUnlink(psm, msg);
+
+/*@-nullstate@*/
+    psm->fi = rpmfiFree(psm->fi);
+#ifdef	NOTYET
+    psm->te = rpmteFree(psm->te);
+#else
+    psm->te = NULL;
+#endif
+    psm->ts = rpmtsFree(psm->ts);
+
+    (void) rpmpsmUnlink(psm, msg);
+
+    /*@-refcounttrans -usereleased@*/
+/*@-boundswrite@*/
+    memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
+/*@=boundswrite@*/
+    psm = _free(psm);
+    /*@=refcounttrans =usereleased@*/
+
+    return NULL;
+/*@=nullstate@*/
+}
+
+rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
+{
+    const char * msg = "rpmpsmNew";
+    rpmpsm psm = xcalloc(1, sizeof(*psm));
+
+    if (ts)	psm->ts = rpmtsLink(ts, msg);
+#ifdef	NOTYET
+    if (te)	psm->te = rpmteLink(te, msg);
+#else
+/*@-assignexpose -temptrans @*/
+    if (te)	psm->te = te;
+/*@=assignexpose =temptrans @*/
+#endif
+    if (fi)	psm->fi = rpmfiLink(fi, msg);
+
+    return rpmpsmLink(psm, msg);
+}
+
 /**
  * @todo Packages w/o files never get a callback, hence don't get displayed
  * on install with -v.
  */
-/*@-nullpass@*/ /* FIX: testing null annotation for fi->h */
-int psmStage(PSM_t psm, pkgStage stage)
+/*@-bounds -nullpass@*/ /* FIX: testing null annotation for fi->h */
+int rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
@@ -1265,8 +1663,9 @@ assert(psm->mi == NULL);
 	    psm->scriptArg = psm->npkgs_installed - 1;
 	
 	    /* Retrieve installed header. */
-	    rc = psmStage(psm, PSM_RPMDB_LOAD);
+	    rc = rpmpsmStage(psm, PSM_RPMDB_LOAD);
 if (rc == 0)
+if (psm->te)
 psm->te->h = headerLink(fi->h);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
@@ -1293,7 +1692,7 @@ psm->te->h = headerLink(fi->h);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	/* Change root directory if requested and not already done. */
-	rc = psmStage(psm, PSM_CHROOT_IN);
+	rc = rpmpsmStage(psm, PSM_CHROOT_IN);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
@@ -1304,7 +1703,7 @@ psm->te->h = headerLink(fi->h);
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
-		rc = psmStage(psm, PSM_SCRIPT);
+		rc = rpmpsmStage(psm, PSM_SCRIPT);
 		if (rc) {
 		    rpmError(RPMERR_SCRIPT,
 			_("%s: %s scriptlet failed (%d), skipping %s\n"),
@@ -1323,16 +1722,16 @@ psm->te->h = headerLink(fi->h);
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = psmStage(psm, PSM_TRIGGERS);
+		rc = rpmpsmStage(psm, PSM_TRIGGERS);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = psmStage(psm, PSM_IMMED_TRIGGERS);
+		rc = rpmpsmStage(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
-		rc = psmStage(psm, PSM_SCRIPT);
+		rc = rpmpsmStage(psm, PSM_SCRIPT);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    int noArchiveSize = 0;
@@ -1378,7 +1777,7 @@ psm->te->h = headerLink(fi->h);
 
 	    /* Retrieve type of payload compression. */
 	    /*@-nullstate@*/	/* FIX: psm->oh may be NULL */
-	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
+	    rc = rpmpsmStage(psm, PSM_RPMIO_FLAGS);
 	    /*@=nullstate@*/
 
 	    /* Write the lead section into the package. */
@@ -1483,7 +1882,7 @@ psm->te->h = headerLink(fi->h);
 	    }
 
 	    /* Retrieve type of payload compression. */
-	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
+	    rc = rpmpsmStage(psm, PSM_RPMIO_FLAGS);
 
 	    if (rpmteFd(fi->te) == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
@@ -1510,13 +1909,13 @@ psm->te->h = headerLink(fi->h);
 	    /*@=mods@*/
 
 	    if (!rc)
-		rc = psmStage(psm, PSM_COMMIT);
+		rc = rpmpsmStage(psm, PSM_COMMIT);
 
 	    /* XXX make sure progress is closed out */
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
 	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
 	    psm->total = psm->amount;
-	    xx = psmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmStage(psm, PSM_NOTIFY);
 
 	    if (rc) {
 		rpmError(RPMERR_CPIO,
@@ -1530,7 +1929,7 @@ psm->te->h = headerLink(fi->h);
 		psm->what = RPMCALLBACK_UNPACK_ERROR;
 		psm->amount = 0;
 		psm->total = 0;
-		xx = psmStage(psm, PSM_NOTIFY);
+		xx = rpmpsmStage(psm, PSM_NOTIFY);
 
 		break;
 	    }
@@ -1545,7 +1944,7 @@ psm->te->h = headerLink(fi->h);
 	    psm->what = RPMCALLBACK_UNINST_START;
 	    psm->amount = fc;		/* XXX W2DO? looks wrong. */
 	    psm->total = fc;
-	    xx = psmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmStage(psm, PSM_NOTIFY);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi,
 			NULL, NULL, &psm->failedFile);
@@ -1554,7 +1953,7 @@ psm->te->h = headerLink(fi->h);
 	    psm->what = RPMCALLBACK_UNINST_STOP;
 	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
 	    psm->total = fc;
-	    xx = psmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmStage(psm, PSM_NOTIFY);
 
 	}
 	if (psm->goal == PSM_PKGSAVE) {
@@ -1592,7 +1991,7 @@ psm->te->h = headerLink(fi->h);
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
 	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
 	    psm->total = psm->amount;
-	    xx = psmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmStage(psm, PSM_NOTIFY);
 
 	    fi->action = action;
 	    fi->actions = actions;
@@ -1636,11 +2035,11 @@ psm->te->h = headerLink(fi->h);
 	     * the database before adding the new one.
 	     */
 	    if (fi->record && !(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
-		rc = psmStage(psm, PSM_RPMDB_REMOVE);
+		rc = rpmpsmStage(psm, PSM_RPMDB_REMOVE);
 		if (rc) break;
 	    }
 
-	    rc = psmStage(psm, PSM_RPMDB_ADD);
+	    rc = rpmpsmStage(psm, PSM_RPMDB_ADD);
 	    if (rc) break;
 
 	    psm->scriptTag = RPMTAG_POSTIN;
@@ -1649,16 +2048,16 @@ psm->te->h = headerLink(fi->h);
 	    psm->countCorrection = 0;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
-		rc = psmStage(psm, PSM_SCRIPT);
+		rc = rpmpsmStage(psm, PSM_SCRIPT);
 		if (rc) break;
 	    }
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = psmStage(psm, PSM_TRIGGERS);
+		rc = rpmpsmStage(psm, PSM_TRIGGERS);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = psmStage(psm, PSM_IMMED_TRIGGERS);
+		rc = rpmpsmStage(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 	    }
 
@@ -1674,30 +2073,30 @@ psm->te->h = headerLink(fi->h);
 	    psm->countCorrection = -1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
-		rc = psmStage(psm, PSM_SCRIPT);
+		rc = rpmpsmStage(psm, PSM_SCRIPT);
 		/* XXX WTFO? postun failures don't cause erasure failure. */
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = psmStage(psm, PSM_TRIGGERS);
+		rc = rpmpsmStage(psm, PSM_TRIGGERS);
 		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
-		rc = psmStage(psm, PSM_RPMDB_REMOVE);
+		rc = rpmpsmStage(psm, PSM_RPMDB_REMOVE);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	}
 
 	/* Restore root directory if changed. */
-	xx = psmStage(psm, PSM_CHROOT_OUT);
+	xx = rpmpsmStage(psm, PSM_CHROOT_OUT);
 	break;
     case PSM_UNDO:
 	break;
     case PSM_FINI:
 	/* Restore root directory if changed. */
-	xx = psmStage(psm, PSM_CHROOT_OUT);
+	xx = rpmpsmStage(psm, PSM_CHROOT_OUT);
 
 	if (psm->fd) {
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1729,11 +2128,12 @@ psm->te->h = headerLink(fi->h);
 	    psm->amount = 0;
 	    psm->total = 0;
 	    /*@-nullstate@*/ /* FIX: psm->fd may be NULL. */
-	    xx = psmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmStage(psm, PSM_NOTIFY);
 	    /*@=nullstate@*/
 	}
 
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
+if (psm->te)
 if (psm->te->h)
 psm->te->h = headerFree(psm->te->h);
 	    if (fi->h)
@@ -1759,11 +2159,11 @@ psm->te->h = headerFree(psm->te->h);
 	psm->rc = RPMRC_OK;
 	psm->stepName = pkgStageString(stage);
 
-	rc = psmStage(psm, PSM_INIT);
-	if (!rc) rc = psmStage(psm, PSM_PRE);
-	if (!rc) rc = psmStage(psm, PSM_PROCESS);
-	if (!rc) rc = psmStage(psm, PSM_POST);
-	xx = psmStage(psm, PSM_FINI);
+	rc = rpmpsmStage(psm, PSM_INIT);
+	if (!rc) rc = rpmpsmStage(psm, PSM_PRE);
+	if (!rc) rc = rpmpsmStage(psm, PSM_PROCESS);
+	if (!rc) rc = rpmpsmStage(psm, PSM_POST);
+	xx = rpmpsmStage(psm, PSM_FINI);
 	break;
     case PSM_PKGCOMMIT:
 	break;
@@ -1772,7 +2172,9 @@ psm->te->h = headerFree(psm->te->h);
 	break;
     case PSM_NOTIFY:
     {	void * ptr;
+/*@-nullpass@*/ /* FIX: psm->te may be NULL */
 	ptr = rpmtsNotify(ts, psm->te, psm->what, psm->amount, psm->total);
+/*@-nullpass@*/
     }	break;
     case PSM_DESTROY:
 	break;
@@ -1890,4 +2292,4 @@ assert(psm->mi == NULL);
     return rc;
     /*@=nullstate@*/
 }
-/*@=nullpass@*/
+/*@=bounds =nullpass@*/

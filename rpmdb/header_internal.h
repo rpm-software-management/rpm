@@ -68,8 +68,8 @@ struct headerToken {
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct sprintfTag * sprintfTag;
-struct sprintfTag {
+typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
+struct sprintfTag_s {
 /*@null@*/ headerTagTagFunction ext;   /*!< if NULL tag element is invalid */
     int extNum;
     int_32 tag;
@@ -82,8 +82,8 @@ struct sprintfTag {
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct extensionCache * extensionCache;
-struct extensionCache {
+typedef /*@abstract@*/ struct extensionCache_s * extensionCache;
+struct extensionCache_s {
     int_32 type;
     int_32 count;
     int avail;
@@ -108,7 +108,7 @@ struct sprintfToken {
 	/*@only@*/ sprintfToken format;
 	    int numTokens;
 	} array;
-	struct sprintfTag tag;
+	struct sprintfTag_s tag;
 	struct {
 	/*@dependent@*/ char * string;
 	    int len;
@@ -118,7 +118,7 @@ struct sprintfToken {
 	    int numIfTokens;
 	/*@only@*/ /*@null@*/ sprintfToken elseFormat;
 	    int numElseTokens;
-	    struct sprintfTag tag;
+	    struct sprintfTag_s tag;
 	} cond;
     } u;
 };

@@ -86,10 +86,10 @@ char * hGetNEVR(Header h, const char ** np)
 
 rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmts_debug)
 fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
     ts->nrefs--;
     return NULL;
 }
@@ -97,10 +97,10 @@ fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
 rpmts XrpmtsLink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
     ts->nrefs++;
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmts_debug)
 fprintf(stderr, "--> ts %p ++ %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
     /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
 }
 
@@ -432,10 +432,10 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     }
 
     if (ts->transFlags & RPMTRANS_FLAG_ADDINDEPS) {
-	Header h;
 	FD_t fd;
 	rpmRC rpmrc;
 
+	h = headerFree(h);
 	fd = Fopen(str, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), str,
@@ -520,10 +520,15 @@ int rpmtsSetSolveCallback(rpmts ts,
 		const void * solveData)
 {
     int rc = 0;
+
+/*@-branchstate@*/
     if (ts) {
+/*@-assignexpose -temptrans @*/
 	ts->solve = solve;
 	ts->solveData = solveData;
+/*@=assignexpose =temptrans @*/
     }
+/*@=branchstate@*/
     return rc;
 }
 
@@ -539,7 +544,7 @@ rpmps rpmtsProblems(rpmts ts)
 
 void rpmtsCleanDig(rpmts ts)
 {
-    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+    ts->sig = headerFreeData(ts->sig, -1);
     ts->dig = pgpFreeDig(ts->dig);
 }
 
@@ -589,21 +594,18 @@ void rpmtsEmpty(rpmts ts)
     ts->orderCount = 0;
 
     ts->numRemovedPackages = 0;
+/*@-nullstate@*/	/* FIX: partial annotations */
+    return;
+/*@=nullstate@*/
 }
 
 rpmts rpmtsFree(rpmts ts)
 {
-    rpmtsi pi; rpmte p;
-    int oc;
-
     if (ts == NULL)
 	return NULL;
 
-    (void) rpmtsUnlink(ts, "tsCreate");
-
-/*@-usereleased@*/
-    if (ts->nrefs > 0)
-	return NULL;
+    if (ts->nrefs > 1)
+	return rpmtsUnlink(ts, "tsCreate");
 
 /*@-nullstate@*/	/* FIX: partial annotations */
     rpmtsEmpty(ts);
@@ -637,8 +639,11 @@ rpmts rpmtsFree(rpmts ts)
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
-    /*@-refcounttrans@*/ ts = _free(ts); /*@=refcounttrans@*/
-/*@=usereleased@*/
+    (void) rpmtsUnlink(ts, "tsCreate");
+
+    /*@-refcounttrans -usereleased @*/
+    ts = _free(ts);
+    /*@=refcounttrans =usereleased @*/
 
     return NULL;
 }
@@ -659,6 +664,17 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
 	ts->vsflags = vsflags;
     }
     return ovsflags;
+}
+
+int rpmtsUnorderedSuccessors(rpmts ts, int first)
+{
+    int unorderedSuccessors = 0;
+    if (ts != NULL) {
+	unorderedSuccessors = ts->unorderedSuccessors;
+	if (first >= 0)
+	    ts->unorderedSuccessors = first;
+    }
+    return unorderedSuccessors;
 }
 
 const char * rpmtsRootDir(rpmts ts)
@@ -812,8 +828,7 @@ int rpmtsSetSig(rpmts ts,
 		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
 {
     if (ts != NULL) {
-	if (ts->sig)
-	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+	ts->sig = headerFreeData(ts->sig, -1);
 	ts->sigtag = sigtag;
 	ts->sigtype = sigtype;
 /*@-assignexpose -kepttrans@*/

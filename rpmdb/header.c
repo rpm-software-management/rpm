@@ -2665,6 +2665,8 @@ static char * formatValue(sprintfTag tag, Header h,
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
+	} else {
+	    datafree = extCache[tag->extNum].freeit;
 	}
 /*@=boundswrite@*/
     } else {
@@ -2682,7 +2684,8 @@ static char * formatValue(sprintfTag tag, Header h,
 
     if (tag->arrayCount) {
 	/*@-observertrans -modobserver@*/
-	data = headerFreeData(data, type);
+	if (datafree)
+	    data = headerFreeData(data, type);
 	/*@=observertrans =modobserver@*/
 
 	countBuf = count;
@@ -3016,7 +3019,7 @@ allocateExtensionCache(const headerSprintfExtension extensions)
     }
 
     /*@-sizeoftype@*/
-    return xcalloc(i, sizeof(struct extensionCache));
+    return xcalloc(i, sizeof(struct extensionCache_s));
     /*@=sizeoftype@*/
 }
 

@@ -363,7 +363,8 @@ int lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
  * @param spec		spec file control structure
  * @return		package control structure
  */
-/*@only@*/ Package newPackage(Spec spec)
+/*@only@*/
+Package newPackage(Spec spec)
 	/*@modifies spec->packages, spec->packages->next @*/;
 
 /** \ingroup rpmbuild
@@ -371,16 +372,20 @@ int lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
  * @param packages	package control structure chain
  * @return		NULL
  */
-/*@null@*/ Package freePackages(/*@only@*/ /*@null@*/ Package packages)
-	/*@modifies packages @*/;
+/*@null@*/
+Package freePackages(/*@only@*/ /*@null@*/ Package packages)
+	/*@globals fileSystem @*/
+	/*@modifies packages, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Destroy package control structure.
  * @param pkg		package control structure
  * @return		NULL
  */
-/*@null@*/ Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
-	/*@modifies pkg @*/;
+/*@null@*/
+Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
+	/*@globals fileSystem @*/
+	/*@modifies pkg, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Add dependency to header, filtering duplicates.

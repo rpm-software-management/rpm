@@ -20,10 +20,10 @@ int _rpmps_debug = 0;
 rpmps XrpmpsUnlink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
     ps->nrefs--;
 /*@-refcounttrans@*/
     return ps;
@@ -34,10 +34,10 @@ rpmps XrpmpsLink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
     ps->nrefs++;
-/*@-modfilesystem@*/
+/*@-modfilesys@*/
 if (_rpmps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
+/*@=modfilesys@*/
 /*@-refcounttrans@*/
     return ps;
 /*@=refcounttrans@*/

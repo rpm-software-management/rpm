@@ -243,6 +243,16 @@
 	- rollback: re-create empty transaction set for multiple rollbacks.
 	- fix: %%basename typo (Dmitry V. Levin<ldv@altlinux.org>).
 	- fix: queryformat segfaults (Dmitry V. Levin<ldv@altlinux.org>).
+	- add --with-efence to configure, check install/upgrade with efence.
+	- beecrypt: short hex string conversion overflows target buffer.
+	- mark "successors only" packages in transaction.
+	- reap scriptlets with SIGCHLD handler.
+	- rename PSM_t to rpmpsm, add methods and refcounts to manage.
+	- remove %%configure/%%makeinstall from arch-os/macros, default is OK.
+	- don't export MALLOC_CHECK_ to scriptlets.
+	- squeaky clean memory leak checking.
+	- always malloc rpmfi structure, refcounts are correct in rpmtsRun().
+	- skip redundant /sbin/ldconfig scripts on upgrade (if possible).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

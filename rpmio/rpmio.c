@@ -3152,6 +3152,7 @@ int Fcntl(FD_t fd, int op, void *lip)
 /* =============================================================== */
 /* Helper routines that may be generally useful.
  */
+/*@-bounds@*/
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 {
     char * d, * de;
@@ -3200,6 +3201,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 			path, mode);
     return rc;
 }
+/*@=bounds@*/
 
 /*@-boundswrite@*/
 int rpmioSlurp(const char * fn, const byte ** bp, ssize_t * blenp)

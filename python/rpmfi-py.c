@@ -369,7 +369,7 @@ rpmfi_dealloc(/*@only@*/ /*@null@*/ rpmfiObject * s)
 	/*@modifies s @*/
 {
     if (s) {
-	s->fi = rpmfiFree(s->fi, 1);
+	s->fi = rpmfiFree(s->fi);
 	PyMem_DEL(s);
     }
 }
@@ -504,6 +504,7 @@ hdr_fiFromHeader(PyObject * s, PyObject * args)
 {
     hdrObject * ho = (hdrObject *)s;
     PyObject * to = NULL;
+    rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
     rpmTag tagN = RPMTAG_BASENAMES;
     int scareMem = 0;
 
@@ -516,5 +517,5 @@ hdr_fiFromHeader(PyObject * s, PyObject * args)
 	    return NULL;
 	}
     }
-    return rpmfi_Wrap( rpmfiNew(NULL, NULL, hdrGetHeader(ho), tagN, scareMem) );
+    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), tagN, scareMem) );
 }

@@ -35,7 +35,8 @@ void rpmteCleanDS(rpmte te)
 /**
  */
 static void delTE(rpmte p)
-	/*@modifies p @*/
+	/*@globals fileSystem @*/
+	/*@modifies p, fileSystem @*/
 {
     rpmRelocation * r;
 
@@ -49,7 +50,7 @@ static void delTE(rpmte p)
 
     rpmteCleanDS(p);
 
-    p->fi = rpmfiFree(p->fi, 1);
+    p->fi = rpmfiFree(p->fi);
 
     /*@-noeffectuncon@*/
     if (p->fd != NULL)
@@ -78,7 +79,8 @@ static void delTE(rpmte p)
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@modifies ts, p, h @*/
+	/*@globals fileSystem @*/
+	/*@modifies ts, p, h, fileSystem @*/
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -112,7 +114,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
     p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
@@ -428,8 +430,10 @@ int rpmtsiOc(rpmtsi tsi)
 rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 		const char * fn, unsigned int ln)
 {
+    /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
     if (tsi)
-	tsi->ts = rpmtsUnlink(tsi->ts, "rpmtsiInit");
+	tsi->ts = rpmtsFree(tsi->ts);
+
 /*@-modfilesys@*/
 if (_rpmte_debug)
 fprintf(stderr, "*** tsi %p -- %s:%d\n", tsi, fn, ln);
