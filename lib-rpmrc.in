@@ -36,6 +36,8 @@ arch_canon:    000050703700:   rs6000  8
 
 arch_canon:    9000/712:       hppa1.1 9
 
+arch_cnaon:    sun4u:   usparc  9
+
 #############################################################
 # Canonical OS names and numbers
 
@@ -44,6 +46,7 @@ os_canon:	IRIX:	Irix	2
 # This is wrong
 os_canon:	SunOS5:	solaris	3
 os_canon:	SunOS4:	SunOS	4
+
 os_canon:      AmigaOS: AmigaOS 5
 os_canon:          AIX: AIX     5
 os_canon:        HP-UX: hpux10  6
@@ -89,3 +92,5 @@ arch_compat: osfmach3_i486: i486 osfmach3_i386
 arch_compat: osfmach3_i386: i486
 
 arch_compat: osfmach3_ppc: ppc
+
+arch_compat: usparc: sparc
