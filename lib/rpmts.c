@@ -1512,7 +1512,7 @@ rpmts rpmtsCreate(void)
     ts->score = NULL;
 
     ts->lua = rpmluaNew();
-    rpmluaSetTS(ts->lua, ts);
+    rpmluaSetData(ts->lua, "ts", ts);
 
     ts->nrefs = 0;
 

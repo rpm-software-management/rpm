@@ -43,6 +43,7 @@ typedef	FILE * FD_t;
 #include <rpmio_internal.h>
 #include <rpmmessages.h>
 #include <rpmerr.h>
+#include <rpmlua.h>
 
 #endif
 
@@ -1359,6 +1360,32 @@ expandMacro(MacroBuf mb)
 		rpmDumpMacroTable(mb->mc, NULL);
 		while (iseol(*se))
 			se++;
+		s = se;
+		continue;
+	}
+
+	if (STREQ("lua", f, fn)) {
+		rpmlua lua = rpmluaNew();
+		const char *ls = s+sizeof("{lua:")-1;
+		const char *lse = se-sizeof("}")+1;
+		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		const char *printbuf;
+		memcpy(scriptbuf, ls, lse-ls);
+		scriptbuf[lse-ls] = '\0';
+		rpmluaSetPrintBuffer(lua, 1);
+		if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
+		    rc = 1;
+		printbuf = rpmluaGetPrintBuffer(lua);
+		if (printbuf) {
+		    int len = strlen(printbuf);
+		    if (len > mb->nb)
+			len = mb->nb;
+		    memcpy(mb->t, printbuf, len);
+		    mb->t += len;
+		    mb->nb -= len;
+		}
+		free(scriptbuf);
+		lua = rpmluaFree(lua);
 		s = se;
 		continue;
 	}

@@ -9,6 +9,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>
+#include <rpmlua.h>
 
 #include "cpio.h"
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
@@ -560,6 +561,78 @@ exit:
 }
 
 /**
+ * Run internal Lua script.
+ */
+rpmRC runLuaScript(rpmlua lua, Header h, const char *sln,
+		   int progArgc, const char **progArgv,
+		   const char *script, int arg1, int arg2)
+{
+    int rootFd = -1;
+    const char *n, *v, *r;
+    rpmRC rc = RPMRC_OK;
+    int i;
+    int xx;
+    rpmts ts;
+    rpmluav var;
+    
+    xx = headerNVR(h, &n, &v, &r);
+
+    ts = rpmluaGetData(lua, "ts");
+    if (ts && !rpmtsChrootDone(ts)) {
+	const char *rootDir = rpmtsRootDir(ts);
+	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
+	    chdir("/");
+	    rootFd = open(".", O_RDONLY, 0);
+	    if (rootFd >= 0) {
+		chroot(rootDir);
+		rpmtsSetChrootDone(ts, 1);
+	    }
+	}
+    }
+
+    /* Create arg variable */
+    rpmluaPushTable(lua, "arg");
+    var = rpmluavNew();
+    rpmluavSetListMode(var, 1);
+    if (progArgv) {
+	for (i = 0; i < progArgc && progArgv[i]; i++) {
+	    rpmluavSetValue(var, RPMLUAV_STRING, progArgv[i]);
+	    rpmluaSetVar(lua, var);
+	}
+    }
+    if (arg1 >= 0) {
+	rpmluavSetValueNum(var, arg1);
+	rpmluaSetVar(lua, var);
+    }
+    if (arg2 >= 0) {
+	rpmluavSetValueNum(var, arg2);
+	rpmluaSetVar(lua, var);
+    }
+    var = rpmluavFree(var);
+    rpmluaPop(lua);
+
+    {
+	char buf[BUFSIZ];
+	snprintf(buf, BUFSIZ, "%s(%s-%s-%s)", sln, n, v, r);
+	if (rpmluaRunScript(lua, script, buf) == -1)
+	    rc = RPMRC_FAIL;
+    }
+
+    rpmluaDelVar(lua, "arg");
+
+    if (rootFd >= 0) {
+	fchdir(rootFd);
+	close(rootFd);
+	chroot(".");
+	rpmtsSetChrootDone(ts, 0);
+    }
+
+exit:
+    return rc;
+}
+
+
+/**
  */
 /*@unchecked@*/
 static int ldconfig_done = 0;
@@ -619,8 +692,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	return rc;
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
-	return rpmluaRunScript(ts->lua, h, sln, progArgc, progArgv,
-			       script, arg1, arg2);
+	return runLuaScript(ts->lua, h, sln, progArgc, progArgv,
+			    script, arg1, arg2);
     }
 
     psm->sq.reaper = 1;
