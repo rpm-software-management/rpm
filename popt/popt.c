@@ -1,5 +1,5 @@
 /* (C) 1998 Red Hat Software, Inc. -- Licensing details are in the COPYING
-   file accompanying popt source distributions, available from 
+   file accompanying popt source distributions, available from
    ftp://ftp.redhat.com/pub/code/popt */
 
 #ifdef HAVE_CONFIG_H
@@ -45,7 +45,7 @@ static void invokeCallbacks(poptContext con, const struct poptOption * table,
 			    int post) {
     const struct poptOption * opt = table;
     poptCallbackType cb;
-    
+
     while (opt->longName || opt->shortName || opt->arg) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    invokeCallbacks(con, opt->arg, post);
@@ -60,7 +60,7 @@ static void invokeCallbacks(poptContext con, const struct poptOption * table,
     }
 }
 
-poptContext poptGetContext(const char * name, int argc, char ** argv, 
+poptContext poptGetContext(const char * name, int argc, char ** argv,
 			   const struct poptOption * options, int flags) {
     poptContext con = malloc(sizeof(*con));
 
@@ -82,7 +82,7 @@ poptContext poptGetContext(const char * name, int argc, char ** argv,
 
     if (getenv("POSIXLY_CORRECT") || getenv("POSIX_ME_HARDER"))
 	con->flags |= POPT_CONTEXT_POSIXMEHARDER;
-    
+
     if (name)
 	con->appName = strcpy(malloc(strlen(name) + 1), name);
 
@@ -146,7 +146,7 @@ static int handleExec(poptContext con, char * longName, char shortName) {
     {	char *s  = malloc((longName ? strlen(longName) : 0) + 3);
 	if (longName)
 	    sprintf(s, "--%s", longName);
-	else 
+	else
 	    sprintf(s, "-%c", shortName);
 	con->finalArgv[i] = s;
     }
@@ -160,9 +160,9 @@ static int handleAlias(poptContext con, const char * longName, char shortName,
     int i;
 
     if (con->os->currAlias && con->os->currAlias->longName && longName &&
-	!strcmp(con->os->currAlias->longName, longName)) 
+	!strcmp(con->os->currAlias->longName, longName))
 	return 0;
-    if (con->os->currAlias && shortName && 
+    if (con->os->currAlias && shortName &&
 	    shortName == con->os->currAlias->shortName)
 	return 0;
 
@@ -177,7 +177,7 @@ static int handleAlias(poptContext con, const char * longName, char shortName,
 
     if (i < 0) return 0;
 
-    if ((con->os - con->optionStack + 1) 
+    if ((con->os - con->optionStack + 1)
 	    == POPT_OPTION_DEPTH)
 	return POPT_ERROR_OPTSTOODEEP;
 
@@ -201,7 +201,7 @@ static void execCommand(poptContext con) {
     int pos = 0;
     const char * script = con->doExec->script;
 
-    argv = malloc(sizeof(*argv) * 
+    argv = malloc(sizeof(*argv) *
 			(6 + con->numLeftovers + con->finalArgvCount));
 
     if (!con->execAbsolute && strchr(script, '/')) return;
@@ -266,7 +266,7 @@ findOption(const struct poptOption * table, const char * longName,
 
     while (opt->longName || opt->shortName || opt->arg) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
-	    opt2 = findOption(opt->arg, longName, shortName, callback, 
+	    opt2 = findOption(opt->arg, longName, shortName, callback,
 			      callbackData, singleDash);
 	    if (opt2) {
 		if (*callback && !*callbackData)
@@ -275,7 +275,7 @@ findOption(const struct poptOption * table, const char * longName,
 	    }
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK) {
 	    cb = opt;
-	} else if (longName && opt->longName && 
+	} else if (longName && opt->longName &&
 		   (!singleDash || (opt->argInfo & POPT_ARGFLAG_ONEDASH)) &&
 		   !strcmp(longName, opt->longName)) {
 	    break;
@@ -298,21 +298,18 @@ findOption(const struct poptOption * table, const char * longName,
 }
 
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
-int poptGetNextOpt(poptContext con) {
-    char * optString, * chptr, * localOptString;
-    const char * longArg = NULL;
-    const char * origOptString;
-    long aLong;
-    char * end;
+int poptGetNextOpt(poptContext con)
+{
     const struct poptOption * opt = NULL;
     int done = 0;
-    int i;
-    poptCallbackType cb = NULL;
-    const void * cbData = NULL;
-    int singleDash;
 
     while (!done) {
-	while (!con->os->nextCharArg && con->os->next == con->os->argc 
+	const char * origOptString = NULL;
+	poptCallbackType cb = NULL;
+	const void * cbData = NULL;
+	const char * longArg = NULL;
+
+	while (!con->os->nextCharArg && con->os->next == con->os->argc
 		&& con->os > con->optionStack)
 	    con->os--;
 	if (!con->os->nextCharArg && con->os->next == con->os->argc) {
@@ -322,7 +319,8 @@ int poptGetNextOpt(poptContext con) {
 	}
 
 	if (!con->os->nextCharArg) {
-		
+	    char * localOptString, * optString;
+
 	    origOptString = con->os->argv[con->os->next++];
 
 	    if (con->restLeftover || *origOptString != '-') {
@@ -333,8 +331,8 @@ int poptGetNextOpt(poptContext con) {
 	    }
 
 	    /* Make a copy we can hack at */
-	    localOptString = optString = 
-			strcpy(alloca(strlen(origOptString) + 1), 
+	    localOptString = optString =
+			strcpy(alloca(strlen(origOptString) + 1),
 			origOptString);
 
 	    if (!optString[0])
@@ -344,6 +342,9 @@ int poptGetNextOpt(poptContext con) {
 		con->restLeftover = 1;
 		continue;
 	    } else {
+		char *oe;
+		int singleDash;
+
 		optString++;
 		if (*optString == '-')
 		    singleDash = 0, optString++;
@@ -355,16 +356,19 @@ int poptGetNextOpt(poptContext con) {
 		if (handleExec(con, optString, '\0'))
 		    continue;
 
-		chptr = optString;
-		while (*chptr && *chptr != '=') chptr++;
-		if (*chptr == '=') {
-		    longArg = origOptString + (chptr - localOptString) + 1;
-		    *chptr = '\0';
+		/* Check for "--long=arg" option. */
+		for (oe = optString; *oe && *oe != '='; oe++)
+		    ;
+		if (*oe == '=') {
+		    *oe++ = '\0';
+		    /* XXX longArg is mapped back to persistent storage. */
+		    longArg = origOptString + (oe - localOptString);
 		}
 
 		opt = findOption(con->options, optString, '\0', &cb, &cbData,
 				 singleDash);
-		if (!opt && !singleDash) return POPT_ERROR_BADOPT;
+		if (!opt && !singleDash)
+		    return POPT_ERROR_BADOPT;
 	    }
 
 	    if (!opt)
@@ -384,9 +388,10 @@ int poptGetNextOpt(poptContext con) {
 	    if (handleExec(con, NULL, *origOptString))
 		continue;
 
-	    opt = findOption(con->options, NULL, *origOptString, &cb, 
+	    opt = findOption(con->options, NULL, *origOptString, &cb,
 			     &cbData, 0);
-	    if (!opt) return POPT_ERROR_BADOPT;
+	    if (!opt)
+		return POPT_ERROR_BADOPT;
 
 	    origOptString++;
 	    if (*origOptString)
@@ -396,15 +401,16 @@ int poptGetNextOpt(poptContext con) {
 	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) {
 	    *((int *)opt->arg) = 1;
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_VAL) {
-	    if (opt->arg) *((int *) opt->arg) = opt->val;
+	    if (opt->arg)
+		*((int *) opt->arg) = opt->val;
 	} else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
 	    if (longArg) {
 		con->os->nextArg = longArg;
 	    } else if (con->os->nextCharArg) {
 		con->os->nextArg = con->os->nextCharArg;
 		con->os->nextCharArg = NULL;
-	    } else { 
-		while (con->os->next == con->os->argc && 
+	    } else {
+		while (con->os->next == con->os->argc &&
 		       con->os > con->optionStack)
 		    con->os--;
 		if (con->os->next == con->os->argc)
@@ -414,6 +420,9 @@ int poptGetNextOpt(poptContext con) {
 	    }
 
 	    if (opt->arg) {
+		long aLong;
+		char *end;
+
 		switch (opt->argInfo & POPT_ARG_MASK) {
 		  case POPT_ARG_STRING:
 		    *((const char **) opt->arg) = con->os->nextArg;
@@ -422,7 +431,7 @@ int poptGetNextOpt(poptContext con) {
 		  case POPT_ARG_INT:
 		  case POPT_ARG_LONG:
 		    aLong = strtol(con->os->nextArg, &end, 0);
-		    if (!(end && *end == '\0')) 
+		    if (!(end && *end == '\0'))
 			return POPT_ERROR_BADNUMBER;
 
 		    if (aLong == LONG_MIN || aLong == LONG_MAX)
@@ -432,7 +441,7 @@ int poptGetNextOpt(poptContext con) {
 		    } else {
 			if (aLong > INT_MAX || aLong < INT_MIN)
 			    return POPT_ERROR_OVERFLOW;
-			*((int *) opt->arg) =aLong;
+			*((int *) opt->arg) = aLong;
 		    }
 		    break;
 
@@ -455,17 +464,16 @@ int poptGetNextOpt(poptContext con) {
 			    sizeof(*con->finalArgv) * con->finalArgvAlloced);
 	}
 
-	i = con->finalArgvCount++;
 	{    char *s = malloc((opt->longName ? strlen(opt->longName) : 0) + 3);
 	    if (opt->longName)
 		sprintf(s, "--%s", opt->longName);
-	    else 
+	    else
 		sprintf(s, "-%c", opt->shortName);
-	    con->finalArgv[i] = s;
+	    con->finalArgv[con->finalArgvCount++] = s;
 	}
 
 	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE
-		     && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL) 
+		     && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
 	    con->finalArgv[con->finalArgvCount++] = strdup(con->os->nextArg);
     }
 
@@ -532,10 +540,10 @@ int poptAddAlias(poptContext con, struct poptAlias newAlias,
     if (!con->aliases)
 	con->aliases = malloc(sizeof(newAlias) * con->numAliases);
     else
-	con->aliases = realloc(con->aliases, 
+	con->aliases = realloc(con->aliases,
 			       sizeof(newAlias) * con->numAliases);
     alias = con->aliases + aliasNum;
-    
+
     alias->longName = (newAlias.longName)
 	? strcpy(malloc(strlen(newAlias.longName) + 1), newAlias.longName)
 	: NULL;

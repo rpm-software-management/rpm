@@ -16,6 +16,7 @@ config.sub
 stamp-h
 stamp-h.in
 test1
+test2
 libtool
 ltconfig
 ltmain.sh
