@@ -57,6 +57,7 @@
 #define RPMTAG_EXCLUDE                  1041
 #define RPMTAG_EXCLUSIVE                1042
 #define RPMTAG_ICON                     1043
+#define RPMTAG_SOURCERPM                1044
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
