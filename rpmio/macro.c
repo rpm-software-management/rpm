@@ -1638,14 +1638,29 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     int argc = 0;
     const char ** argv = NULL;
     char * globRoot = NULL;
-    size_t maxb, nb;
+#ifdef ENABLE_NLS	
+	char * old_collate = NULL;
+	char * old_ctype = NULL;
+	char * t;
+#endif
+	size_t maxb, nb;
     int i, j;
     int rc;
 
     rc = XpoptParseArgvString(patterns, &ac, &av);
     if (rc)
 	return rc;
-
+#ifdef ENABLE_NLS
+	t = setlocale(LC_COLLATE, NULL);
+	if (t)
+		old_collate = strdup(t);
+	t = setlocale(LC_CTYPE, NULL);
+	if (t)
+		old_ctype = strdup(t);
+	setlocale(LC_COLLATE, "C");
+	setlocale(LC_CTYPE, "C");
+#endif
+	
     if (av != NULL)
     for (j = 0; j < ac; j++) {
 	const char * globURL;
@@ -1725,7 +1740,17 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 
 
 exit:
-    av = _free(av);
+#ifdef ENABLE_NLS
+    if (old_collate) {
+	setlocale(LC_COLLATE, old_collate);
+	free(old_collate);
+    }
+    if (old_ctype) {
+	setlocale(LC_CTYPE, old_ctype);
+	free(old_ctype);
+    }
+#endif
+	av = _free(av);
 /*@-branchstate@*/
     if (rc || argvPtr == NULL) {
 /*@-dependenttrans -unqualifiedtrans@*/
