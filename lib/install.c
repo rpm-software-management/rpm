@@ -476,7 +476,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
 
 	if (rootdir) {
-	    tmpPath = alloca(strlen(rootdir) + 15);
+	    tmpPath = alloca(strlen(rootdir) + 
+			     strlen(rpmGetVar(RPMVAR_TMPPATH)) + 20);
 	    strcpy(tmpPath, rootdir);
 	    strcat(tmpPath, rpmGetVar(RPMVAR_TMPPATH));
 	} else
@@ -1403,7 +1404,8 @@ static int installSources(Header h, char * rootdir, int fd,
     rpmMessage(RPMMESS_DEBUG, "spec file in: %s\n", realSpecDir);
 
     if (rootdir) {
-	tmpPath = alloca(strlen(rootdir) + 15);
+	tmpPath = alloca(strlen(rootdir) + 
+			 strlen(rpmGetVar(RPMVAR_TMPPATH)) + 20);
 	strcpy(tmpPath, rootdir);
 	strcat(tmpPath, rpmGetVar(RPMVAR_TMPPATH));
     } else
