@@ -1,8 +1,8 @@
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 3.0
+%define version 3.0.1
 Version: %{version}
-Release: 6.0
+Release: 1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
