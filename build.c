@@ -110,6 +110,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	const char * tmpSpecFile;
 	char * cmd, *s;
 	int res;
+	static const char *zcmds[] = { "cat", "gzip", "bunzip2", "cat" };
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
@@ -118,9 +119,11 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	    tmpSpecFile = rpmGetPath("%{_specdir}/", mktemp(tfn), NULL);
 	}
 
+	isCompressed(arg, &res);
+
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
-	sprintf(cmd, "gunzip < %s | tar xOvf - Specfile 2>&1 > %s",
-			arg, tmpSpecFile);
+	sprintf(cmd, "%s < %s | tar xOvf - Specfile 2>&1 > %s",
+			zcmds[res & 0x3], arg, tmpSpecFile);
 	if (!(fp = popen(cmd, "r"))) {
 	    fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));
@@ -132,8 +135,8 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	    /* Try again */
 	    pclose(fp);
 
-	    sprintf(cmd, "gunzip < %s | tar xOvf - \\*.spec 2>&1 > %s", arg,
-		    tmpSpecFile);
+	    sprintf(cmd, "%s < %s | tar xOvf - \\*.spec 2>&1 > %s", arg,
+		    zcmds[res & 0x3], tmpSpecFile);
 	    if (!(fp = popen(cmd, "r"))) {
 		fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));
