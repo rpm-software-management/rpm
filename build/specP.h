@@ -39,6 +39,7 @@ struct PackageRec {
     char *icon;
     int files;       /* If -1, package has no files, and won't be written */
     StringBuf filelist;
+    StringBuf doc;   /* Used to buffer up %doc lines until fully parsed */
     struct PackageRec *next;
 };
 
