@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script reads filenames from STDIN and outputs any relevant provides
 # information that needs to be included in the package.
