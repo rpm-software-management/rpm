@@ -45,11 +45,13 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
 int readLead(FD_t fd, struct rpmlead *lead)
 {
     memset(lead, 0, sizeof(*lead));
+    /*@-type@*/ /* FIX: remove timed read */
     if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
 	rpmError(RPMERR_READ, _("read failed: %s (%d)\n"), Fstrerror(fd), 
 	      errno);
 	return 1;
     }
+    /*@=type@*/
 
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);

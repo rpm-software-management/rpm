@@ -1796,7 +1796,9 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
     case RPMMIRE_STRCMP:
 	break;
     case RPMMIRE_REGEX:
+	/*@-type@*/
 	preg = xcalloc(1, sizeof(*preg));
+	/*@=type@*/
 	cflags = (REG_EXTENDED | REG_NOSUB);
 	rc = regcomp(preg, allpat, cflags);
 	if (rc) {

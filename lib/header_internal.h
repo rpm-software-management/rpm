@@ -161,9 +161,11 @@ int headerGetRawEntry(Header h, int_32 tag,
  * @param h		header
  * @return		no. of references
  */
+/*@-type@*/ /* FIX: cast? */
 /*@unused@*/ static inline int headerUsageCount(Header h) /*@*/ {
     return h->nrefs;
 }
+/*@=type@*/
 
 /** \ingroup header
  * Dump a header in human readable format (for debugging).

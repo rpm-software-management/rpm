@@ -28,6 +28,7 @@ char ** headerGetLangs(Header h)
     /*@-nullret@*/ return table; /*@=nullret@*/	/* LCL: double indirection? */
 }
 
+/*@-type@*/ /* FIX: shrug */
 void headerDump(Header h, FILE *f, int flags,
 	const struct headerTagTableEntry_s * tags)
 {
@@ -165,4 +166,5 @@ void headerDump(Header h, FILE *f, int flags,
 	p++;
     }
 }
+/*@=type@*/
 /*@=sizeoftype@*/

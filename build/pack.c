@@ -141,7 +141,9 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 	sb = freeStringBuf(sb);
 	return NULL;
     }
+    /*@-type@*/ /* FIX: cast? */
     if ((f = fdGetFp(fd)) != NULL)
+    /*@=type@*/
     while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
@@ -766,12 +768,14 @@ int packageBinaries(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
+	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
 	csa->cpioList = pkg->cpioList;
 
 	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
+	/*@=type@*/
 	fn = _free(fn);
 	if (rc)
 	    return rc;
@@ -803,12 +807,14 @@ int packageSources(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
+	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageSources)");
 	csa->cpioList = spec->sourceCpioList;
 
 	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
+	/*@=type@*/
 	fn = _free(fn);
     }
     return rc;

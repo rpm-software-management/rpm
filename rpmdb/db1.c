@@ -1,3 +1,4 @@
+/*@-type@*/ /* FIX: shrug */
 /** \ingroup db1
  * \file rpmdb/db1.c
  */
@@ -620,3 +621,4 @@ struct _dbiVec db1vec = {
     db1ccount, db1byteswapped, db1stat
 };
 /*@=exportheadervar@*/
+/*@=type@*/

@@ -87,11 +87,13 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 
 /**
  */
-/*@-bitwisesigned -compmempass@*/
+/*@-bitwisesigned -compmempass @*/
 /*@unchecked@*/
 struct poptOption rpmInstallPoptTable[] = {
+/*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	installArgCallback, 0, NULL, NULL },
+/*@=type@*/
 
  { "allfiles", '\0', POPT_BIT_SET,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ALLFILES,
@@ -220,4 +222,4 @@ struct poptOption rpmInstallPoptTable[] = {
 
    POPT_TABLEEND
 };
-/*@=bitwisesigned =compmempass@*/
+/*@=bitwisesigned =compmempass @*/

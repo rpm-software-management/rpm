@@ -1117,8 +1117,10 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     if (magicp == HEADER_MAGIC_YES)
 	i += 2;
 
+    /*@-type@*/ /* FIX: cast? */
     if (timedRead(fd, (char *)block, i*sizeof(*block)) != (i * sizeof(*block)))
 	goto exit;
+    /*@=type@*/
 
     i = 0;
 
@@ -1143,8 +1145,10 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     ei[1] = htonl(dl);
     len -= sizeof(il) + sizeof(dl);
 
+    /*@-type@*/ /* FIX: cast? */
     if (timedRead(fd, (char *)&ei[2], len) != len)
 	goto exit;
+    /*@=type@*/
     
     h = headerLoad(ei);
 
@@ -2986,6 +2990,7 @@ static char * shescapeFormat(int_32 type, hPTR_t data,
     return result;
 }
 
+/*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal", { octalFormat } },
     { HEADER_EXT_FORMAT, "hex", { hexFormat } },
@@ -2994,6 +2999,7 @@ const struct headerSprintfExtension_s headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
+/*@=type@*/
 
 /** \ingroup header
  * Duplicate tag values from one header into another.

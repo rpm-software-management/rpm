@@ -1,3 +1,4 @@
+/*@-type@*/ /* FIX: annotate db3 methods */
 /** \ingroup db3
  * \file rpmdb/db3.c
  */
@@ -1229,3 +1230,4 @@ struct _dbiVec db3vec = {
     db3ccount, db3byteswapped, db3stat
 };
 /*@=exportheadervar@*/
+/*@=type@*/

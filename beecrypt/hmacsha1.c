@@ -33,6 +33,7 @@
 const keyedHashFunction hmacsha1 = { "HMAC-SHA-1", sizeof(hmacsha1Param), 64, 5 * sizeof(uint32), 64, 512, 32, (keyedHashFunctionSetup) hmacsha1Setup, (keyedHashFunctionReset) hmacsha1Reset, (keyedHashFunctionUpdate) hmacsha1Update, (keyedHashFunctionDigest) hmacsha1Digest };
 /*@=sizeoftype@*/
 
+/*@-type@*/
 int hmacsha1Setup (hmacsha1Param* sp, const uint32* key, int keybits)
 {
 	return hmacSetup((hmacParam*) sp, &sha1, &sp->param, key, keybits);
@@ -52,3 +53,4 @@ int hmacsha1Digest(hmacsha1Param* sp, uint32* data)
 {
 	return hmacDigest((hmacParam*) sp, &sha1, &sp->param, data);
 }
+/*@=type@*/

@@ -384,8 +384,10 @@ int main(int argc, const char ** argv)
 
     /* XXX Eliminate query linkage loop */
     specedit = 0;
+    /*@-type@*/	/* FIX: casts? */
     parseSpecVec = parseSpec;
     freeSpecVec = freeSpec;
+    /*@=type@*/
 
     /* set up the correct locale */
     (void) setlocale(LC_ALL, "" );

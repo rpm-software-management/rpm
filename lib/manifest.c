@@ -67,7 +67,9 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     const char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
     const char ** argv = (argvPtr ? *argvPtr : NULL);
+    /*@-type@*/ /* FIX: cast? */
     FILE * f = fdGetFp(fd);
+    /*@=type@*/
     int rc = 0;
     int i;
 

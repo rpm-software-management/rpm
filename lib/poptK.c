@@ -48,8 +48,10 @@ static void signArgCallback( /*@unused@*/ poptContext con,
  */
 /*@unchecked@*/
 struct poptOption rpmSignPoptTable[] = {
+/*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	signArgCallback, 0, NULL, NULL },
+/*@=type@*/
  { "addsign", '\0', 0, 0, POPT_ADDSIGN,
 	N_("add a signature to a package"), NULL },
  { "resign", '\0', 0, 0, POPT_RESIGN,

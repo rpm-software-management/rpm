@@ -914,7 +914,7 @@ int pgpLen(const byte *s, /*@out@*/ unsigned int *lenp)
 	(*lenp) = *s++;
 	return 1;
     } else if (*s < 255) {
-	(*lenp) = ((s[0] - 192) << 8) + s[1] + 192;
+	(*lenp) = ((((unsigned)s[0]) - 192) << 8) + s[1] + 192;
 	return 2;
     } else {
 	(*lenp) = pgpGrab(s+1, 4);

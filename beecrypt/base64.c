@@ -333,9 +333,9 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 	*te = '\0';
     }
 
-    /*@-mustfree@*/
+    /*@-mustfree -compdef @*/
     return t;
-    /*@=mustfree@*/
+    /*@=mustfree =compdef @*/
 }
 /*@=internalglobs =modfilesys @*/
 

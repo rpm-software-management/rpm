@@ -1,4 +1,4 @@
-/*@-sizeoftype@*/
+/*@-sizeoftype -type@*/
 /** \ingroup ES_m
  * \file entropy.c
  *
@@ -1610,4 +1610,4 @@ dev_tty_end:
 #endif
 
 #endif
-/*@=sizeoftype@*/
+/*@=sizeoftype =type@*/

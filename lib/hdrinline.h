@@ -1,3 +1,4 @@
+/*@-type@*/ /* FIX: cast to HV_t bogus */
 #ifndef H_HDRINLINE
 #define H_HDRINLINE
 
@@ -492,3 +493,4 @@ int headerNextIterator(HeaderIterator hi,
 #endif
 
 #endif	/* H_HDRINLINE */
+/*@=type@*/

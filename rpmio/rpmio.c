@@ -1,3 +1,4 @@
+/*@-type@*/ /* LCL: function typedefs */
 /** \ingroup rpmio
  * \file rpmio/rpmio.c
  */
@@ -3063,3 +3064,4 @@ static struct FDIO_s fpio_s = {
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
 FDIO_t fpio = /*@-compmempass@*/ &fpio_s /*@=compmempass@*/ ;
+/*@=type@*/

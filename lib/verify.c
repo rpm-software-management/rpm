@@ -284,8 +284,10 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
     PSM_t psm = &psmbuf;
     int rc;
 
+    /*@-type@*/ /* FIX: cast? */
     if (scriptFd != NULL)
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
+    /*@=type@*/
     fi->magic = TFIMAGIC;
     loadFi(h, fi);
     memset(psm, 0, sizeof(*psm));
@@ -369,7 +371,9 @@ static int verifyHeader(QVA_t qva, Header h)
     int count;
     int_32 * fileFlags = NULL;
     rpmVerifyAttrs verifyResult = 0;
+    /*@-type@*/ /* FIX: union? */
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
+    /*@=type@*/
     int ec = 0;		/* assume no problems */
     int i;
 
@@ -488,6 +492,7 @@ static int verifyDependencies(rpmdb db, Header h)
 	int nb = 512;
 	(void) headerNVR(h, &n, &v, &r);
 
+	/*@-type@*/ /* FIX: rpmDependencyConflict usage */
 	for (i = 0; i < numConflicts; i++) {
 	    nb += strlen(conflicts[i].needsName) + sizeof(", ") - 1;
 	    if (conflicts[i].needsFlags)
@@ -511,6 +516,8 @@ static int verifyDependencies(rpmdb db, Header h)
 	    }
 	}
 	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	/*@=type@*/
+
 	if (te > t) {
 	    *te++ = '\n';
 	    *te = '\0';

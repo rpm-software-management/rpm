@@ -70,8 +70,10 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
  */
 /*@unchecked@*/
 struct poptOption rpmQVSourcePoptTable[] = {
+/*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 	rpmQVSourceArgCallback, 0, NULL, NULL },
+/*@=type@*/
  { "all", 'a', 0, 0, 'a',
 	N_("query/verify all packages"), NULL },
  { "file", 'f', 0, 0, 'f',
@@ -150,8 +152,10 @@ static void queryArgCallback(/*@unused@*/poptContext con,
  */
 /*@unchecked@*/
 struct poptOption rpmQueryPoptTable[] = {
+/*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 	queryArgCallback, 0, NULL, NULL },
+/*@=type@*/
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
  { "configfiles", 'c', 0, 0, 'c',

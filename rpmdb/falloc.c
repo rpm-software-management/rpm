@@ -60,7 +60,9 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
     if (flags & O_WRONLY)
 	return NULL;
 
+    /*@-type@*/ /* FIX: cast? */
     fd = ufdio->_open(path, flags, perms);
+    /*@=type@*/
     if (Ferror(fd))
 	/* XXX Fstrerror */
 	return NULL;

@@ -1,4 +1,4 @@
-/*@-sizeoftype@*/
+/*@-sizeoftype -type@*/
 /** \ingroup MP_m
  * \file mp32barrett.c
  *
@@ -460,7 +460,9 @@ void mp32bmulmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 		mp32zero(fill, temp);
 
 	mp32mul(temp+fill, xsize, xdata, ysize, ydata);
+	/*@-compdef@*/	/* *temp undefined */
 	mp32bmod_w(b, temp, result, wksp);
+	/*@=compdef@*/
 }
 
 /**
@@ -478,7 +480,9 @@ void mp32bsqrmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 		mp32zero(fill, temp);
 
 	mp32sqr(temp+fill, xsize, xdata);
+	/*@-compdef@*/	/* *temp undefined */
 	mp32bmod_w(b, temp, result, wksp);
+	/*@=compdef@*/
 }
 
 /**
@@ -980,7 +984,9 @@ void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y
 
 	/* xsize and ysize must be <= b->size */
 	register uint32  fill = 2*size-x->size-y->size;
+	/*@-nullptrarith@*/	/* temp may be NULL */
 	register uint32* opnd = temp+size*2+2;
+	/*@=nullptrarith@*/
 
 	mp32nfree(result);
 	mp32nsize(result, size);
@@ -990,9 +996,9 @@ void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y
 
 	mp32mul(opnd+fill, x->size, x->data, y->size, y->data);
 	/*@-nullpass@*/		/* temp may be NULL */
-	/*@-usedef@*/		/* result->data unallocated? */
+	/*@-usedef -compdef @*/	/* result->data unallocated? */
 	mp32bmod_w(b, opnd, result->data, temp);
-	/*@=usedef@*/
+	/*@=usedef =compdef @*/
 
 	free(temp);
 	/*@=nullpass@*/
@@ -1005,7 +1011,9 @@ void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, mp32number* result)
 
 	/* xsize must be <= b->size */
 	register uint32  fill = 2*(size-x->size);
+	/*@-nullptrarith@*/	/* temp may be NULL */
 	register uint32* opnd = temp + size*2+2;
+	/*@=nullptrarith@*/
 
 	mp32nfree(result);
 	mp32nsize(result, size);
@@ -1015,9 +1023,9 @@ void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, mp32number* result)
 
 	mp32sqr(opnd+fill, x->size, x->data);
 	/*@-nullpass@*/		/* temp may be NULL */
-	/*@-usedef@*/		/* result->data unallocated? */
+	/*@-usedef -compdef @*/	/* result->data unallocated? */
 	mp32bmod_w(b, opnd, result->data, temp);
-	/*@=usedef@*/
+	/*@=usedef =compdef @*/
 
 	free(temp);
 	/*@=nullpass@*/
@@ -1054,4 +1062,4 @@ void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mp32number
 	free(temp);
 	/*@=nullpass@*/
 }
-/*@=sizeoftype@*/
+/*@=sizeoftype =type@*/

@@ -478,7 +478,9 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     fsm->goal = goal;
     if (cfd) {
+	/*@-type@*/ /* FIX: cast? */
 	fsm->cfd = fdLink(cfd, "persist (fsm)");
+	/*@=type@*/
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
@@ -486,10 +488,12 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     if (fsm->goal == FSM_PKGINSTALL) {
 	if (ts && ts->notify) {
+	    /*@-type@*/ /* FIX: cast? */
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
 		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
 	    /*@=noeffectuncon @*/
+	    /*@=type@*/
 	}
     }
 
@@ -529,7 +533,9 @@ int fsmTeardown(FSM_t fsm) {
 
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd) {
+	/*@-type@*/ /* FIX: cast? */
 	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
+	/*@=type@*/
 	fsm->cfd = NULL;
     }
     fsm->failedFile = NULL;
@@ -857,10 +863,12 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	TFI_t fi = fsmGetFi(fsm);
 	if (ts && ts->notify && fi) {
 	    size_t size = (fdGetCpioPos(fsm->cfd) - pos);
+	    /*@-type@*/ /* FIX: cast? */
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS, size, size,
 			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
 	    /*@=noeffectuncon @*/
+	    /*@=type@*/
 	}
     }
 
@@ -1633,11 +1641,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rpmTransactionSet ts = fsmGetTs(fsm);
 	    TFI_t fi = fsmGetFi(fsm);
 	    if (ts && ts->notify && fi) {
+		/*@-type@*/ /* FIX: cast? */
 		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
 			fdGetCpioPos(fsm->cfd), fi->archiveSize,
 			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
 		/*@=noeffectuncon @*/
+		/*@=type@*/
 	    }
 	}
 	break;

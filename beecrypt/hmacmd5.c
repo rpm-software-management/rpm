@@ -33,6 +33,7 @@
 const keyedHashFunction hmacmd5 = { "HMAC-MD5", sizeof(hmacmd5Param), 64, 4 * sizeof(uint32), 64, 512, 32, (const keyedHashFunctionSetup) hmacmd5Setup, (const keyedHashFunctionReset) hmacmd5Reset, (const keyedHashFunctionUpdate) hmacmd5Update, (const keyedHashFunctionDigest) hmacmd5Digest };
 /*@=sizeoftype@*/
 
+/*@-type@*/
 int hmacmd5Setup (hmacmd5Param* sp, const uint32* key, int keybits)
 {
 	return hmacSetup((hmacParam*) sp, &md5, &sp->param, key, keybits);
@@ -52,3 +53,4 @@ int hmacmd5Digest(hmacmd5Param* sp, uint32* data)
 {
 	return hmacDigest((hmacParam*) sp, &md5, &sp->param, data);
 }
+/*@=type@*/

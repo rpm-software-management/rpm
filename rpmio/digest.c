@@ -55,9 +55,11 @@ rpmDigestInit(rpmDigestFlags flags)
 	/*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->param = xcalloc(1, sizeof(md5Param));
 	/*@=sizeoftype@*/
+	/*@-type@*/ /* FIX: cast? */
 	ctx->Reset = (void *) md5Reset;
 	ctx->Update = (void *) md5Update;
 	ctx->Digest = (void *) md5Digest;
+	/*@=type@*/
     }
 
     if (flags & RPMDIGEST_SHA1) {
@@ -66,9 +68,11 @@ rpmDigestInit(rpmDigestFlags flags)
 	/*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->param = xcalloc(1, sizeof(sha1Param));
 	/*@=sizeoftype@*/
+	/*@-type@*/ /* FIX: cast? */
 	ctx->Reset = (void *) sha1Reset;
 	ctx->Update = (void *) sha1Update;
 	ctx->Digest = (void *) sha1Digest;
+	/*@=type@*/
     }
 
     /*@-noeffectuncon@*/ /* FIX: check rc */

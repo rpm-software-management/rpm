@@ -92,13 +92,17 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
 	fd = Fopen(filename, "r.ufdio");
+	/*@-type@*/ /* FIX: still necessary? */
 	if (fd)
 	    fd = fdLink(fd, "persist (showProgress)");
+	/*@=type@*/
 	return fd;
 	/*@notreached@*/ break;
 
     case RPMCALLBACK_INST_CLOSE_FILE:
+	/*@-type@*/ /* FIX: still necessary? */
 	fd = fdFree(fd, "persist (showProgress)");
+	/*@=type@*/
 	if (fd) {
 	    (void) Fclose(fd);
 	    fd = NULL;

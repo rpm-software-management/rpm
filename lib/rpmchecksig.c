@@ -58,8 +58,10 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 	}
 	if (fnp)
 	    *fnp = fn;
+	/*@-type@*/ /* FIX: cast? */
 	*fdp = fdLink(fd, "manageFile return");
 	fdFree(fd, "manageFile return");
+	/*@=type@*/
 	return 0;
     }
 
@@ -86,14 +88,18 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	goto exit;
 
+    /*@-type@*/ /* FIX: cast? */
     if (dig != NULL) {
 	dig->md5ctx = rpmDigestInit(RPMDIGEST_MD5);
 	(void) fdInitSHA1(*sfdp, 0);
     }
+    /*@=type@*/
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
+    /*@-type@*/ /* FIX: cast? */
 	if (dig)
 	    rpmDigestUpdate(dig->md5ctx, buffer, count);
+    /*@=type@*/
 
 	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) != count) {
 	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
@@ -106,11 +112,13 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 	goto exit;
     }
 
+    /*@-type@*/ /* FIX: cast? */
     if (dig != NULL) {
 	dig->sha1ctx = _free(dig->sha1ctx);
 	dig->sha1ctx = (*sfdp)->digest;
 	(*sfdp)->digest = NULL;
     }
+    /*@=type@*/
 
     rc = 0;
 
@@ -345,6 +353,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 if (rpmIsVerbose())
 fprintf(stderr, "========================= Package RSA Signature\n");
 		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
+    /*@-type@*/ /* FIX: cast? */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->md5ctx);
 
 		rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
@@ -352,6 +361,7 @@ fprintf(stderr, "========================= Package RSA Signature\n");
 
 		/* XXX compare leading 16 bits of digest for quick check. */
 	    }
+    /*@=type@*/
 		/* XXX retrieve by keyid from signature. */
 		if (pgppk == NULL) {
 		    (void) b64decode(redhatPubKeyRSA, (void **)&pgppk, &pgppklen);
@@ -388,11 +398,13 @@ fprintf(stderr, "========================= Red Hat RSA Public Key\n");
 if (rpmIsVerbose())
 fprintf(stderr, "========================= Package DSA Signature\n");
 		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
+    /*@-type@*/ /* FIX: cast? */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->sha1ctx);
 		rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
 		rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 		mp32nzero(&dig->hm);	mp32nsethex(&dig->hm, dig->sha1);
 	    }
+    /*@=type@*/
 		/* XXX retrieve by keyid from signature. */
 		if (gpgpk == NULL) {
 		    (void) b64decode(redhatPubKeyDSA, (void **)&gpgpk, &gpgpklen);

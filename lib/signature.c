@@ -161,8 +161,10 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     case RPMSIGTYPE_PGP262_1024:
 	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
 	/* These are always 256 bytes */
+	/*@-type@*/ /* FIX: eliminate timedRead @*/
 	if (timedRead(fd, buf, 256) != 256)
 	    break;
+	/*@=type@*/
 	h = headerNew();
 	(void) headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
 	rc = RPMRC_OK;
@@ -193,8 +195,10 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 		break;
 	    rc = checkSize(fd, sigSize, pad, *archSize);
 	}
+	/*@-type@*/ /* FIX: eliminate timedRead @*/
 	if (pad && timedRead(fd, buf, pad) != pad)
 	    rc = RPMRC_SHORTREAD;
+	/*@=type@*/
 	break;
     default:
 	break;
@@ -318,7 +322,9 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 	int rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
+	    /*@-type@*/ /* FIX: eliminate timedRead @*/
 	    rc = timedRead(fd, *sig, *size);
+	    /*@=type@*/
 	    if (sigfile) (void) unlink(sigfile);
 	    (void) Fclose(fd);
 	}
@@ -402,7 +408,9 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 	int rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
+	    /*@-type@*/ /* FIX: eliminate timedRead @*/
 	    rc = timedRead(fd, *sig, *size);
+	    /*@=type@*/
 	    if (sigfile) (void) unlink(sigfile);
 	    (void) Fclose(fd);
 	}
@@ -537,6 +545,7 @@ verifyPGPSignature(const char * datafile, const byte * sig, int count,
     pgpVersion pgpVer;
     int rc;
 
+/*@-type@*/
     rc = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
 
 if (rc == 0 || rpmIsVerbose()) {
@@ -549,6 +558,7 @@ fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
     printf("\t c = ");	(void)fflush(stdout); mp32println(dig->c.size, dig->c.data);
     printf("\t m = ");	(void)fflush(stdout); mp32println(dig->rsahm.size, dig->rsahm.data);
 }
+/*@=type@*/
 
     /* What version do we have? */
     if ((path = rpmDetectPGPVersion(&pgpVer)) == NULL) {
@@ -680,6 +690,7 @@ verifyGPGSignature(const char * datafile, const byte * sig, int count,
     int res = RPMSIG_OK;
     int rc;
   
+/*@-type@*/
     rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
 		&dig->y, &dig->r, &dig->s);
 
@@ -696,6 +707,7 @@ fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
     printf("\t s = ");	(void)fflush(stdout); mp32println(dig->s.size, dig->s.data);
     printf("\thm = ");	(void)fflush(stdout); mp32println(dig->hm.size, dig->hm.data);
 }
+/*@=type@*/
 
     /* Write out the signature */
 #ifdef	DYING

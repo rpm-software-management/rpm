@@ -159,9 +159,9 @@ Package freePackage(Package pkg)
     pkg->fileList = freeStringBuf(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList) {
-	TFI_t fi = pkg->cpioList;
+	void * fi = pkg->cpioList;
 	pkg->cpioList = NULL;
-	freeFi(fi);
+/*@i@*/	freeFi((TFI_t)fi);
 	fi = _free(fi);
     }
 
@@ -505,9 +505,9 @@ Spec freeSpec(Spec spec)
     spec->sourceHeader = headerFree(spec->sourceHeader);
 
     if (spec->sourceCpioList) {
-	TFI_t fi = spec->sourceCpioList;
+	void * fi = spec->sourceCpioList;
 	spec->sourceCpioList = NULL;
-	freeFi(fi);
+/*@i@*/	freeFi(fi);
 	fi = _free(fi);
     }
     

@@ -1,3 +1,4 @@
+/*@-type@*/ /* LCL: function typedefs */
 /** \ingroup rpmio
  * \file rpmio/url.c
  */
@@ -547,3 +548,4 @@ exit:
 
     return rc;
 }
+/*@=type@*/

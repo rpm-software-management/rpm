@@ -67,6 +67,7 @@ typedef struct
 #include "blowfish.h"
 #include "blockmode.h"
 
+/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static entropySource entropySourceList[] =
 {
@@ -92,6 +93,7 @@ static entropySource entropySourceList[] =
 # endif
 #endif
 };
+/*@=type@*/
 
 #define ENTROPYSOURCES (sizeof(entropySourceList) / sizeof(entropySource))
 
@@ -156,12 +158,14 @@ int entropyGatherNext(uint32* data, int size)
 	return -1;
 }
 
+/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static const randomGenerator* randomGeneratorList[] =
 {
 	&fips186prng,
 	&mtprng
 };
+/*@=type@*/
 
 #define RANDOMGENERATORS	(sizeof(randomGeneratorList) / sizeof(randomGenerator*))
 
@@ -258,6 +262,7 @@ int randomGeneratorContextNext(randomGeneratorContext* ctxt, uint32* data, int s
 	return ctxt->rng->next(ctxt->param, data, size);
 }
 
+/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static const hashFunction* hashFunctionList[] =
 {
@@ -265,6 +270,7 @@ static const hashFunction* hashFunctionList[] =
 	&sha1,
 	&sha256
 };
+/*@=type@*/
 
 #define HASHFUNCTIONS (sizeof(hashFunctionList) / sizeof(hashFunction*))
 
@@ -472,6 +478,7 @@ int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number* 
 	/*@=mustfree@*/
 }
 
+/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static const keyedHashFunction* keyedHashFunctionList[] =
 {
@@ -479,6 +486,7 @@ static const keyedHashFunction* keyedHashFunctionList[] =
 	&hmacsha1,
 	&hmacsha256
 };
+/*@=type@*/
 
 #define KEYEDHASHFUNCTIONS 	(sizeof(keyedHashFunctionList) / sizeof(keyedHashFunction*))
 
@@ -708,11 +716,13 @@ int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp
 }
 
 
+/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static const blockCipher* blockCipherList[] =
 {
 	&blowfish
 };
+/*@=type@*/
 
 #define BLOCKCIPHERS (sizeof(blockCipherList) / sizeof(blockCipher*))
 

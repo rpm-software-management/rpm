@@ -9,10 +9,6 @@
 #ifndef H_POPT
 #define H_POPT
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdio.h>			/* for FILE * */
 
 #define POPT_OPTION_DEPTH	10
@@ -183,6 +179,11 @@ typedef struct poptOption * poptOption;
 enum poptCallbackReason { POPT_CALLBACK_REASON_PRE, 
 			  POPT_CALLBACK_REASON_POST,
 			  POPT_CALLBACK_REASON_OPTION };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*@-type@*/
 
 /** \ingroup popt
  * Table callback prototype.
@@ -437,6 +438,7 @@ int poptStrippedArgv(poptContext con, int argc, char ** argv)
 	/*@modifies *argv @*/;
 /*@=fcnuse@*/
 
+/*@=type@*/
 #ifdef  __cplusplus
 }
 #endif

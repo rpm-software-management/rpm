@@ -31,7 +31,6 @@
 -numenummembers 1024	# RPMTAG has 138 members
 -numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
-#-sizeoftype		# ~240 occurences, <sys/select.h> tedium, more
 -strictops
 -strictusereleased
 -stringliterallen 4096	# redhat*PubKey's are big
@@ -59,4 +58,9 @@
 # --- not-yet at standard level
 -boolops		# 1898 occurences
 -predboolint		# 1248 occurences
--type			# 3019 occurences
+#-type			# 3019 occurences
++boolint
++charint
++ignorequals
++ignoresigns
++matchanyintegral

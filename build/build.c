@@ -145,10 +145,12 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	xfd = fd;
     /*@=branchstate@*/
 
+    /*@-type@*/ /* FIX: cast? */
     if ((fp = fdGetFp(xfd)) == NULL) {
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }
+    /*@=type@*/
     
     (void) urlPath(rootURL, &rootDir);
     /*@-branchstate@*/

@@ -1,3 +1,4 @@
+/*@-type@*/ /* LCL: function typedefs */
 /** \ingroup rpmio
  * \file rpmio/rpmrpc.c
  */
@@ -1230,3 +1231,4 @@ fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
     return closedir(dir);
 }
 /*@=voidabstract@*/
+/*@=type@*/

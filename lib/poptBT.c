@@ -127,11 +127,13 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 
 /**
  */
-/*@-bitwisesigned -compmempass@*/
+/*@-bitwisesigned -compmempass @*/
 /*@unchecked@*/
 struct poptOption rpmBuildPoptTable[] = {
+/*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	buildArgCallback, 0, NULL, NULL },
+/*@=type@*/
 
  { "bp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BP,
 	N_("build through %prep (unpack sources and apply patches) from <specfile>"),
@@ -218,4 +220,4 @@ struct poptOption rpmBuildPoptTable[] = {
 
    POPT_TABLEEND
 };
-/*@=bitwisesigned =compmempass@*/
+/*@=bitwisesigned =compmempass @*/

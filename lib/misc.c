@@ -461,11 +461,13 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 
     fileNames = xmalloc(size);
     data = ((char *) fileNames) + (sizeof(*fileNames) * count);
+    /*@-branchstate@*/
     for (i = 0; i < count; i++) {
 	fileNames[i] = data;
 	data = stpcpy( stpcpy(data, dirNames[dirIndexes[i]]), baseNames[i]);
 	*data++ = '\0';
     }
+    /*@=branchstate@*/
     baseNames = hfd(baseNames, bnt);
     dirNames = hfd(dirNames, dnt);
 

@@ -99,7 +99,9 @@ static /*@null@*/ void * freeFl(rpmTransactionSet ts,
 
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
 {
+    /*@-type@*/ /* FIX: cast? */
     ts->scriptFd = (fd ? fdLink(fd, "rpmtransSetScriptFd") : NULL);
+    /*@=type@*/
 }
 
 int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
@@ -1409,7 +1411,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	 */
 	if (fi->flangs && languages && *fi->flangs[i]) {
 	    const char **lang, *l, *le;
-	    for (lang = languages; *lang != '\0'; lang++) {
+	    for (lang = languages; *lang != NULL; lang++) {
 		if (!strcmp(*lang, "all"))
 		    /*@innerbreak@*/ break;
 		for (l = fi->flangs[i]; *l != '\0'; l = le) {

@@ -203,7 +203,9 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
+	/*@-type@*/ /* FIX: cast? */
 	FILE * f = fdGetFp(ofi->fd);
+	/*@=type@*/
 	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
 	    /* EOF */
 	    if (spec->readStack->next) {

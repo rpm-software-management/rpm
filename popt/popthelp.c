@@ -1,5 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 
+/*@-type@*/
 /** \ingroup popt
  * \file popt/popthelp.c
  */
@@ -650,3 +651,4 @@ void poptSetOtherOptionHelp(poptContext con, const char * text)
     con->otherHelp = _free(con->otherHelp);
     con->otherHelp = xstrdup(text);
 }
+/*@=type@*/

@@ -193,8 +193,10 @@ static void alFree(availableList al)
 	    }
 	    p->relocs = _free(p->relocs);
 	}
+	/*@-type@*/ /* FIX: cast? */
 	if (p->fd != NULL)
 	    p->fd = fdFree(p->fd, "alAddPackage (alFree)");
+	/*@=type@*/
     }
 
     if (al->dirs != NULL)
@@ -398,7 +400,9 @@ alAddPackage(availableList al,
     }
 
     p->key = key;
+    /*@-type@*/ /* FIX: cast? */
     p->fd = (fd != NULL ? fdLink(fd, "alAddPackage") : NULL);
+    /*@=type@*/
 
     if (relocs) {
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
@@ -933,9 +937,11 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	ts->di = _free(ts->di);
 	ts->removedPackages = _free(ts->removedPackages);
 	ts->order = _free(ts->order);
+	/*@-type@*/ /* FIX: cast? */
 	if (ts->scriptFd != NULL)
 	    ts->scriptFd =
 		fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
+	/*@=type@*/
 	ts->rootDir = _free(ts->rootDir);
 	ts->currDir = _free(ts->currDir);
 

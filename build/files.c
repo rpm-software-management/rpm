@@ -2200,7 +2200,9 @@ static StringBuf getOutputFrom(char * dir, char * argv[],
     StringBuf readBuff;
     int done;
 
+    /*@-type@*/ /* FIX: cast? */
     oldhandler = signal(SIGPIPE, SIG_IGN);
+    /*@=type@*/
 
     toProg[0] = toProg[1] = 0;
     (void) pipe(toProg);
@@ -2305,7 +2307,9 @@ top:
     	(void) close(toProg[1]);
     if (fromProg[0] >= 0)
 	(void) close(fromProg[0]);
+    /*@-type@*/ /* FIX: cast? */
     (void) signal(SIGPIPE, oldhandler);
+    /*@=type@*/
 
     /* Collect status from prog */
     (void)waitpid(progPID, &status, 0);
