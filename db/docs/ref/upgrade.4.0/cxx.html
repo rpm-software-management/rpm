@@ -1,0 +1,48 @@
+<!--Id: cxx.so,v 1.2 2001/11/16 16:49:43 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.0: C++ ostream objects</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../../ref/upgrade.4.0/java.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.0/asr.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Release 4.0: C++ ostream objects</h1>
+<p>In the 4.0 release, the Berkeley DB C++ API has been changed to use the ISO
+standard C++ API in preference to the older, less portable interfaces,
+where available.  This means the Berkeley DB methods that used to take an
+ostream object as a parameter now expect a std::ostream.  Specifically,
+the following methods have changed:
+<p><blockquote><pre>DbEnv::set_error_stream
+Db::set_error_stream
+Db::verify</pre></blockquote>
+<p>On many platforms, the old and the new C++ styles are interchangeable;
+on some platforms (notably Win32), they are incompatible. If your code
+uses these methods and you have trouble with the 4.0 release, you should
+update code that looks like this:
+<p><blockquote><pre>#include &lt;iostream.h&gt;
+#include &lt;db_cxx.h&gt;
+<p>
+void foo(Db db) {
+	db.set_error_stream(&cerr);
+}</pre></blockquote>
+<p>to look like this:
+<p><blockquote><pre>#include &lt;iostream&gt;
+#include &lt;db_cxx.h&gt;
+<p>
+using std::cerr;
+<p>
+void foo(Db db) {
+	db.set_error_stream(&cerr);
+}</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/upgrade.4.0/java.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.0/asr.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

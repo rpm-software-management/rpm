@@ -1,0 +1,74 @@
+<!--Id: rep_start.so,v 1.2 2001/10/25 14:08:43 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;rep_start</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_ENV-&gt;rep_start</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;rep_start(DB_ENV *env, DBT *cdata, u_int32_t flags);
+</pre></h3>
+<h1>Description</h1>
+<p>The DB_ENV-&gt;rep_start function configures the database environment as a client
+or master in a group of replicated database environments.  Replication
+master environments are the only database environments where replicated
+databases may be modified.  Replication client environments are
+read-only as long as they are clients.  Replication client environments
+may be upgraded to be replication master environments in the case that
+the current master fails or there is no master present.
+<p>The enclosing database environment must already have been opened by
+calling the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> function and must already have been configured
+to send replication messages by calling the <a href="../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function.
+<p>The <b>cdata</b> parameter is an opaque data item that is sent over
+the communication infrastructure when the client or master comes online
+(see <a href="../ref/rep/newsite.html">Connecting to a new site</a> for
+more information).  If no such information is useful, <b>cdata</b>
+should be NULL.
+<p>The <b>flags</b> value must be set to one of the following values:
+<p><dl compact>
+<p><dt><a name="DB_REP_CLIENT">DB_REP_CLIENT</a><dd>Configure the environment as a replication client.
+<p><dt><a name="DB_REP_LOGSONLY">DB_REP_LOGSONLY</a><dd>Configure the environment as a log files-only client.
+<p><dt><a name="DB_REP_MASTER">DB_REP_MASTER</a><dd>Configure the environment as a replication master.
+</dl>
+<p>The DB_ENV-&gt;rep_start function returns a non-zero error value on failure and 0 on success.
+<h1>Errors</h1>
+<p>The DB_ENV-&gt;rep_start function may fail and return a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p>The environment was not already configured to communicate with a
+replication group by a call to <a href="../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>.
+<p>The environment was not already opened.
+</dl>
+<p>The DB_ENV-&gt;rep_start function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
+If a catastrophic error has occurred, the DB_ENV-&gt;rep_start function may fail and return
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
+in the same way.
+<h1>See Also</h1>
+<a href="../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>,
+<a href="../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>,
+<a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>,
+and
+<a href="../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

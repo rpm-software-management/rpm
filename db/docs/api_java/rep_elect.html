@@ -1,0 +1,83 @@
+<!--Id: rep_elect.so,v 1.4 2001/10/26 13:57:00 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv.rep_elect</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbEnv.rep_elect</h1>
+</td>
+<td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+import com.sleepycat.db.*;
+<p>
+public int rep_elect(int nsites,
+  int priority, int timeout, int *envid);
+    throws DbException;
+</pre></h3>
+<h1>Description</h1>
+<p>The DbEnv.rep_elect method holds an election for the master of a replication
+group, returning the new master's ID in the <b>envid</b> parameter.
+<p>The <b>nsites</b> parameter indicates the number of environments that
+the application believes are in the replication group.  This number is
+used by Berkeley DB to avoid having two masters active simultaneously, even
+in the case of a network partition.  During an election, a new master
+cannot be elected unless more than half of <b>nsites</b> agree on
+the new master.  Thus, in the face of a network partition, the side of
+the partition with more than half the environments will elect a new
+master and continue, while the environments communicating with fewer
+than half the other environments will fail to find a new master.
+<p>The <b>priority</b> parameter is the priority of this environment.  It
+must be a positive integer, or 0 if this environment is not permitted
+to become a master (see <a href="../ref/rep/pri.html">Replication
+environment priorities</a> for more information).
+<a name="3"><!--meow--></a>
+<p>The <b>timeout</b> parameter specifies a timeout period for an
+election.  If the election has not completed after <b>timeout</b>
+microseconds, the thread will return Db.DB_REP_UNAVAIL.
+<p>The DbEnv.rep_elect method either returns successfully, with the new
+master's environment ID in the memory pointed to by the <b>envid</b>
+parameter, or it will return Db.DB_REP_UNAVAIL if the participating
+group members were unable to elect a new master for any reason.  In the
+event of a successful return, the new master's ID may be the ID of the
+previous master, or the ID of the current environment.  The application
+is responsible for adjusting its usage of the other environments in the
+replication group, including directing all database updates to the newly
+selected master, in accordance with the results of this election.
+<p>The thread of control that calls the DbEnv.rep_elect method must not be the
+thread of control that processes incoming messages; processing the
+incoming messages is necessary to successfully complete an election.
+<p>The DbEnv.rep_elect method throws an exception that encapsulates a non-zero error value on
+failure.
+<h1>Errors</h1>
+<p>The DbEnv.rep_elect method may fail and throw an exception encapsulating a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>DB_REP_UNAVAIL<dd>The replication group was unable to elect a master.
+</dl>
+<p>The DbEnv.rep_elect method may fail and throw an exception for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the DbEnv.rep_elect method may fail and throw
+a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>, in which case all subsequent Berkeley DB calls
+will fail in the same way.
+<h1>See Also</h1>
+<a href="../api_java/rep_start.html">DbEnv.rep_start</a>,
+<a href="../api_java/rep_elect.html">DbEnv.rep_elect</a>,
+<a href="../api_java/rep_message.html">DbEnv.rep_process_message</a>,
+and
+<a href="../api_java/rep_transport.html">DbEnv.set_rep_transport</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!--Id: ex_comm.so,v 1.5 2001/11/18 15:32:21 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Ex_repquote: a TCP/IP based communication infrastructure</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/ex.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/ex_rq.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Ex_repquote: a TCP/IP based communication infrastructure</h1>
+<p>All Berkeley DB replication applications must implement a communication
+infrastructure.  The communication infrastructure consists of three
+parts: a way to map environment IDs to particular sites, the functions
+to get and receive messages, and the application architecture that
+supports the particular communication infrastructure used (for example,
+individual threads per communicating site, a shared message handler for
+all sites, a hybrid solution).  The communication infrastructure is
+implemented in the file <b>ex_repquote/ex_rq_net.c</b>, and each part
+of that infrastructure is described as follows.
+<p>Ex_repquote maintains a table of environment ID to TCP/IP port mappings.
+This table is stored in the app_private field of the <a href="../../api_c/env_create.html">DB_ENV</a>
+object so it can be accessed by any function that has the database
+environment handle.  The table is represented by a machtab_t structure
+which contains a reference to a linked list of member_t's, both of which
+are defined in <b>ex_repquote/ex_rq_net.c</b>.  Each member_t contains
+the host and port identification, the environment ID, and a file
+descriptor.  The table is maintained by the following interfaces:
+<p><blockquote><pre>int machtab_add(machtab_t *machtab, int fd, u_int32_t hostaddr, int port, int *eidp);
+int machtab_init(machtab_t **machtabp, int priority, int nsites);
+int machtab_getinfo(machtab_t *machtab, int eid, u_int32_t *hostp, int *portp);
+void machtab_parm(machtab_t *machtab, int *nump, int *priorityp, u_int32_t *timeoutp);
+int machtab_rem(machtab_t *machtab, int eid, int lock);
+</pre></blockquote>
+<p>These interfaces are particular to this application and communication
+infrastructure, but provide an indication of the sort of functionality
+that is needed to maintain the application-specific state for a
+TCP/IP-based infrastructure.  The goal of the table and its interfaces
+is threefold: First, it must guarantee that given an environment ID,
+the send function can send a message to the appropriate place.  Second,
+when given the special environment ID <a href="../../api_c/rep_transport.html#DB_EID_BROADCAST">DB_EID_BROADCAST</a>, the send
+function can send messages to all the machines in the group.  Third,
+upon receipt of an incoming message, the receive function can correctly
+identify the sender and pass the appropriate environment ID to the
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.
+<p>Mapping a particular environment ID to a specific port is accomplished
+by looping through the linked list until the desired environment ID is
+found.  Broadcast communication is implemented by looping through the
+linked list and sending to each member found.  Since each port
+communicates with only a single other environment, receipt of a message
+on a particular port precisely identifies the sender.
+<p>The example provided is merely one way to satisfy these requirements,
+and there are alternative implementations as well.  For instance,
+instead of associating separate socket connections with each remote
+environment, an application might instead label each message with a
+sender identifier; instead of looping through a table and sending a
+copy of a message to each member of the replication group, the
+application could send a single message using a broadcast protocol.
+<p>In ex_repquote's case, the send function (slightly simplified) is as
+follows:
+<pre><p><blockquote>int
+quote_send(dbenv, control, rec, eid, flags)
+	DB_ENV *dbenv;
+	const DBT *control, *rec;
+	int eid;
+	u_int32_t flags;
+{
+	int fd, n, ret;
+	machtab_t *machtab;
+	member_t *m;
+<p>
+	machtab = (machtab_t *)dbenv-&gt;app_private;
+<p>
+	/* 
+	 * If this is a broadcast, call a separate function to
+	 * iterate through the table of environment (a/k/a
+	 * machine) IDs and call quote_send_one on each.
+	 * (This function is not reproduced here, but can be
+	 * seen in ex_rq_net.c.)
+	 */
+	if (eid == DB_EID_BROADCAST) {
+		n = quote_send_broadcast(machtab, rec, control, flags);
+		if (n &lt; 0)
+			return (DB_REP_UNAVAIL);
+		return (0);
+	}
+<p>
+	/* Find the fild descriptor, fd, associated with this EID. */
+	fd = 0;
+	if ((ret = pthread_mutex_lock(&machtab-&gt;mtmutex)) != 0)
+		return (0);
+	for (m = LIST_FIRST(&machtab-&gt;machlist); m != NULL;
+	    m = LIST_NEXT(m, links)) {
+		if (m-&gt;eid == eid) {
+			fd = m-&gt;fd;
+			break;
+		}
+	}
+	if (pthread_mutex_unlock(&machtab-&gt;mtmutex) != 0)
+		return (-1);
+<p>
+	if (fd == 0)
+		return (DB_REP_UNAVAIL);
+<p>
+	/* We have a file descriptor;  write the data over it. */
+	ret = quote_send_one(rec, control, fd, flags);
+<p>
+	return (ret);
+}
+<p>
+static int
+quote_send_broadcast(machtab, rec, control, flags)
+	machtab_t *machtab;
+	const DBT *rec, *control;
+	u_int32_t flags;
+{
+	int ret, sent;
+	member_t *m, *next;
+	if ((ret = pthread_mutex_lock(&machtab-&gt;mtmutex)) != 0)
+		return (0);
+	sent = 0;
+	for (m = LIST_FIRST(&machtab-&gt;machlist); m != NULL; m = next) {
+		next = LIST_NEXT(m, links);
+		if ((ret = quote_send_one(rec, control, m-&gt;fd, flags)) != 0) {
+			(void)machtab_rem(machtab, m-&gt;eid, 0);
+		} else
+			sent++;
+	}
+	if (pthread_mutex_unlock(&machtab-&gt;mtmutex) != 0)
+		return (-1);
+	return (sent);
+}</blockquote></pre>
+<p>The quote_send_one function has been omitted as it simply writes the
+data requested over the file descriptor that it is passed.  It contains
+nothing specific to Berkeley DB or this communication infrastructure.  The
+complete code can be found in <b>ex_repquote/ex_rq_net.c</b>.
+<p>The quote_send function is passed as the callback to <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>;
+Berkeley DB automatically sends messages as needed for replication.  The
+receive function is a mirror to the quote_send_one function.  It is not
+a callback function (the application is responsible for collecting
+messages and calling <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> on them as is convenient).  In
+the sample application, all messages transmitted are Berkeley DB messages that
+get handled by <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>, however, this is not always going
+to be the case.  The application may want to pass its own messages
+across the same channels, distinguish between its own messages and those
+of Berkeley DB, and then pass only the Berkeley DB ones to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>.
+<p>The final component of the communication infrastructure is the process
+model used to communicate with all the sites in the replication group.
+Each site creates a thread of control that listens on its designated
+socket (as specified by the <b>-m</b> command line argument) and
+then creates a new channel for each site that contacts it.  In addition,
+each site explicitly connects to the sites specified in the
+<b>-o</b> command line argument.  This is a fairly standard TCP/IP
+process architecture and is implemented by the following functions (all
+in <b>ex_repquote/ex_rq_net.c</b>).
+<p><blockquote><pre>int get_connected_socket(machtab_t *machtab, char *progname, char *remotehost,
+int port, int *is_open, int *eidp): Connect to the specified host/port, add the
+site to the machtab, and return a file descriptor for communication with this
+site.
+<p>
+int listen_socket_init(char *progname, int port): Initialize a socket for
+listening on a particular part.
+<p>
+int listen_socket_accept(machtab_t *machtab, char *progname, int socket,
+int *eidp): Accept a connection on a socket and add it to the machtab.
+int listen_socket_connect</pre></blockquote>
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/ex.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/ex_rq.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

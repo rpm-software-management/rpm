@@ -1,0 +1,94 @@
+<!--Id: rep_transport.so,v 1.4 2001/10/26 23:51:06 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::set_rep_transport</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbEnv::set_rep_transport</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::set_rep_transport(int envid,
+    int (*send)(DB_ENV *dbenv,
+    const Dbt *control, const Dbt *rec, int envid, u_int32_t flags));
+</pre></h3>
+<h1>Description</h1>
+<p>The DbEnv::set_rep_transport method initializes the communication infrastructure
+for a database environment participating in a replicated application.
+<p>The <b>envid</b> parameter is the local environment's ID.  It must be
+a positive integer and uniquely identify this Berkeley DB database environment
+(see <a href="../ref/rep/id.html">Replication environment IDs</a> for more
+information).
+<p>The <b>send</b> parameter is a callback interface used to transmit data
+using the replication application's communication infrastructure.  The
+parameters to <b>send</b> are as follows:
+<p><dl compact>
+<p><dt>dbenv<dd>The enclosing database environment.
+<p><dt>control<dd>The control parameter is the first of the two data elements to be
+transmitted by the <b>send</b> interface.
+<p><dt>rec<dd>The rec parameter is the second of the two data elements to be
+transmitted by the <b>send</b> interface.
+<p><dt>envid<dd>The <b>envid</b> parameter is a positive integer identifier that
+specifies the replication environment to which the message should be
+sent (see <a href="../ref/rep/id.html">Replication environment IDs</a> for
+more information).
+<p><a name="3"><!--meow--></a>
+The special identifier DB_EID_BROADCAST indicates that a message
+should be broadcast to every environment in the replication group.  The
+application may use a true broadcast protocol, or may send the message
+in sequence to each machine with which it is in communication.
+<p><dt>flag<dd>
+<p>The <b>flags</b> value must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one or
+more of the following values:
+<p><dl compact>
+<p><dt><a name="DB_REP_PERMANENT">DB_REP_PERMANENT</a><dd>The record being sent is critical for maintaining database integrity
+(for example, the message includes a transaction commit).  The
+application should take appropriate action to enforce the reliability
+guarantees it has chosen, such as waiting for acknowledgement from one
+or more clients.
+</dl>
+</dl>
+<p>The <b>send</b> interface must return 0 on success and non-zero on
+failure.  If the <b>send</b> interface fails, the message being sent
+is necessary to maintain database integrity, and the local log is not
+configured for synchronous flushing, the local log will be flushed;
+otherwise, any error from the <b>send</b> interface will be ignored.
+<p>It may sometimes be useful to pass application-specific data to the
+<b>send</b> interface; see <a href="../ref/env/faq.html">Environment
+FAQ</a> for a discussion on how to do this.
+<p>The <b>flags</b> parameter is currently unused, and must be set to 0.
+<p>The DbEnv::set_rep_transport method either returns a non-zero error value or throws an exception that
+encapsulates a non-zero error value on failure, and returns 0 on success.
+<h1>Errors</h1>
+<p>The DbEnv::set_rep_transport method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the DbEnv::set_rep_transport method may fail and either
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw an exception encapsulating
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
+in the same way.
+<h1>See Also</h1>
+<a href="../api_cxx/rep_start.html">DbEnv::rep_start</a>,
+<a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a>,
+<a href="../api_cxx/rep_message.html">DbEnv::rep_process_message</a>,
+and
+<a href="../api_cxx/rep_transport.html">DbEnv::set_rep_transport</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!--Id: ex.so,v 1.3 2001/11/18 15:17:22 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Ex_repquote: a replication example</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/ex_comm.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Ex_repquote: a replication example</h1>
+<p>Ex_repquote, found in the <b>examples_c/ex_repquote</b> subdirectory
+of the Berkeley DB distribution, is a simple but complete demonstration of a
+replicated application.  The application is a mock stock ticker.  The
+master accepts a stock symbol and an integer value as input, stores this
+information into a replicated database; the clients display the contents
+of the database every few seconds.
+<p>The ex_repquote application's communication infrastructure is based on
+TCP/IP sockets, and uses POSIX 1003.1 style networking/socket support.
+As a result, it is not as portable as the Berkeley DB library itself.  The
+Makefile created by the standard UNIX configuration will build the
+ex_repquote application on most platforms.  Enter "make ex_repquote" to
+attempt to build it.
+<p>The synopsis for ex_repquote is as follows:
+<pre>ex_repquote [<b>-MC</b>] [<b>-h home</b>] [<b>-m host:port</b>] [<b>-o host:port</b>] [<b>-n sites</b>] [<b>-p priority</b>]</pre>
+<p>The options to ex_repquote are as follows:
+<p><dl compact>
+<p><dt><b>-M</b><dd>Configure this process as a master.
+<p><dt><b>-C</b><dd>Configure this process as a client.
+<p><dt><b>-h</b><dd>Specify a home directory for the database environment; by
+default, the current working directory is used.
+<p><dt><b>-m</b><dd>Listen on port "port" of host "host" for incoming connections.
+<p><dt><b>-o</b><dd>Attempt to connect to another member of the replication group which is
+listening on host "host" at port "port".  Members of a replication group
+should be able to find all other members of a replication group so long
+as they are in contact with at least one other member of the replication
+group.
+<p><dt><b>-n</b><dd>Specify the total number of sites in the replication group.
+<p><dt><b>-p</b><dd>Set the election priority.  See <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> for more
+information.
+</dl>
+<p>A typical ex_repquote session begins with a command such as the
+following, to start a master:
+<p><blockquote><pre>ex_repquote -M -p 100 -n 4 -h DIR1 -m localhost:5000</pre></blockquote>
+<p>and several clients:
+<p><blockquote><pre>ex_repquote -C -p 50 -n 4 -h DIR2 -m localhost:5001 -o localhost:5000
+ex_repquote -C -p 10 -n 4 -h DIR3 -m localhost:5002 -o localhost:5000
+ex_repquote -C -p  0 -n 4 -h DIR4 -m localhost:5003 -o localhost:5000</pre></blockquote>
+<p>In this example, the client with home directory DIR4 can never become
+a master (its priority is 0).  Both of the other clients can become
+masters, but the one with home directory DIR2 is preferred.  Priorities
+are assigned by the application and should reflect the desirability of
+having particular clients take over as master in the case that the
+master fails.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/ex_comm.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>
