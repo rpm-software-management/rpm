@@ -26,6 +26,9 @@ clean:
 
 depend:
 	$(CPP) $(CFLAGS) -M *.c > .depend
+	for d in $(SUBDIRS); do \
+		(cd $$d; $(MAKE) $@) ;\
+	done
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
