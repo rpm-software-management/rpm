@@ -32,4 +32,4 @@ $(LIBRPM): $(LIBOBJECTS)
 	$(RANLIB) $@
 
 clean:
-	rm -f *.a *.o *~ test dump test.out
+	rm -f *.a *.o *~ $(ALL) test.out
