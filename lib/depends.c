@@ -726,11 +726,11 @@ static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(struct availabl
 
 /* 2 == error */
 /* 1 == dependency not satisfied */
-static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char *keyType,
+static int unsatisfiedDepend(rpmTransactionSet rpmdep,
+	const char *keyType, const char *keyDepend,
 	const char * keyName, const char * keyEVR, int keyFlags,
 	/*@out@*/struct availablePackage ** suggestion)
 {
-    const char *keyDepend = printDepend(keyName, keyEVR, keyFlags);
     dbiIndexSet matches;
     int rc = 0;	/* assume dependency is satisfied */
     int i;
@@ -843,9 +843,6 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char *keyType,
     rc = 1;	/* dependency is unsatisfied */
 
 exit:
-    if (keyDepend)
-	xfree(keyDepend);
-
     return rc;
 }
 
@@ -883,8 +880,8 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	keyDepend = printDepend(requires[i], requiresEVR[i], requireFlags[i]);
 
-	rc = unsatisfiedDepend(rpmdep, " requires", requires[i], requiresEVR[i],
-			       requireFlags[i], &suggestion);
+	rc = unsatisfiedDepend(rpmdep, " requires", keyDepend,
+		requires[i], requiresEVR[i], requireFlags[i], &suggestion);
 
 	switch (rc) {
 	case 0:		/* requirements are satisfied. */
@@ -946,8 +943,8 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	keyDepend = printDepend(conflicts[i], conflictsEVR[i], conflictFlags[i]);
 
-	rc = unsatisfiedDepend(rpmdep, "conflicts", conflicts[i], conflictsEVR[i],
-			       conflictFlags[i], NULL);
+	rc = unsatisfiedDepend(rpmdep, "conflicts", keyDepend,
+		conflicts[i], conflictsEVR[i], conflictFlags[i], NULL);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
