@@ -1162,7 +1162,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_BADFILENAME,
 		_("Could not open %%files file %s: %s"),
-		pkg->fileFile, Fstrerror(fd));
+		ffn, Fstrerror(fd));
 	    return RPMERR_BADFILENAME;
 	}
 	while (fgets(buf, sizeof(buf), (FILE *)fdGetFp(fd))) {
