@@ -5,6 +5,7 @@
 
 #include "errno.h"
 #include "header.h"
+#include "misc.h"
 #include "oldheader.h"
 #include "package.h"
 #include "rpmerr.h"
@@ -22,6 +23,7 @@ static int readOldHeader(int fd, Header * hdr, int * isSource);
 int pkgReadHeader(int fd, Header * hdr, int * isSource) {
     struct rpmlead lead;
     struct oldrpmlead * oldLead = (struct oldrpmlead *) &lead;
+    int_8 arch;
 
     if (readLead(fd, &lead)) {
 	return 2;
@@ -50,6 +52,8 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
     } else {
 	if (lead.major == 1) {
 	    readOldHeader(fd, hdr, isSource);
+	    arch = getArchNum();
+	    addEntry(hdr, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
 	} else if (lead.major == 2) {
 	    if (!readSignature(fd, lead.signature_type, NULL)) {
 	       return 2;
