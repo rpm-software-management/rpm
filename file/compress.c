@@ -183,9 +183,7 @@ uncompressgzipped(const unsigned char *old,
 	if(flg & FHCRC)
 		data_start += 2;
 
-	if ((*newch = (unsigned char *)malloc(HOWMANY + 1)) == NULL) {
-		return 0;
-	}
+	*newch = (unsigned char *) xmalloc(HOWMANY + 1);
 	
 	z.next_in = (Bytef *)(old + data_start);
 	z.avail_in = n - data_start;
@@ -274,10 +272,7 @@ uncompressbuf(int method, const unsigned char *old,
 		}
 		(void) close(fdin[1]);
 		fdin[1] = -1;
-		if ((*newch = (unsigned char *) malloc(HOWMANY + 1)) == NULL) {
-			n = 0;
-			goto err;
-		}
+		*newch = (unsigned char *) xmalloc(HOWMANY + 1);
 		if ((n = sread(fdout[0], *newch, HOWMANY)) <= 0) {
 			free(*newch);
 			n = 0;

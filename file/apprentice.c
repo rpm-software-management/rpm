@@ -299,25 +299,12 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	if (*nmagicp + 1 >= maxmagic){
 		maxmagic += ALLOC_INCR;
 /*@-unqualifiedtrans @*/
-		if ((m = (struct magic *) realloc(*magicp,
-		    sizeof(struct magic) * maxmagic)) == NULL) {
-			(void) fprintf(stderr, "%s: Out of memory (%s).\n",
-			    progname, strerror(errno));
-/*@-usereleased@*/
-			if (*magicp != NULL)
-				free(*magicp);
-/*@=usereleased@*/
-			if (action == CHECK)
-				return -1;
-			else
-				exit(EXIT_FAILURE);
-		}
+		*magicp = xrealloc(*magicp, sizeof(struct magic) * maxmagic);
 /*@=unqualifiedtrans @*/
-		*magicp = m;
-		memset(&(*magicp)[*nmagicp], 0, sizeof(struct magic)
-		    * ALLOC_INCR);
-	}
-	m = &(*magicp)[*nmagicp];
+		m = &(*magicp)[*nmagicp];
+		memset(m, 0, sizeof(struct magic) * ALLOC_INCR);
+	} else
+		m = &(*magicp)[*nmagicp];
 	m->flag = 0;
 	m->cont_level = 0;
 
@@ -774,7 +761,6 @@ byteswap(struct magic *m, uint32_t nmagic)
 /*
  * make a dbname
  */
-/*@null@*/
 static char *
 mkdbname(const char *fn)
 	/*@globals fileSystem @*/
@@ -783,16 +769,8 @@ mkdbname(const char *fn)
 	static const char ext[] = ".mgc";
 	/*@only@*/
 	static char *buf = NULL;
-	size_t len = strlen(fn) + sizeof(ext) + 1;
-	if (buf == NULL)
-		buf = malloc(len);
-	else
-		buf = realloc(buf, len);
-	if (buf == NULL) {
-		(void) fprintf(stderr, "%s: Out of memory (%s).\n", progname,
-		    strerror(errno));
-		return NULL;
-	}
+
+	buf = xrealloc(buf, strlen(fn) + sizeof(ext) + 1);
 	(void)strcpy(buf, fn);
 	(void)strcat(buf, ext);
 	return buf;
@@ -825,13 +803,7 @@ apprentice_file(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	}
 
         maxmagic = MAXMAGIS;
-	*magicp = (struct magic *) calloc(sizeof(struct magic), maxmagic);
-	if (*magicp == NULL) {
-		(void) fprintf(stderr, "%s: Out of memory (%s).\n", progname,
-		    strerror(errno));
-		if (action == CHECK)
-			return -1;
-	}
+	*magicp = (struct magic *) xcalloc(sizeof(struct magic), maxmagic);
 
 	/* parse it */
 	if (action == CHECK)	/* print silly verbose header for USG compat. */
@@ -867,6 +839,7 @@ apprentice_compile(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 {
 	int fd;
 	char *dbname = mkdbname(fn);
+	/*@observer@*/
 	static const uint32_t ar[] = {
 	    MAGICNO, VERSIONNO
 	};
@@ -940,11 +913,7 @@ apprentice_map(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		goto error;
 	}
 #else
-	if ((mm = malloc((size_t)st.st_size)) == NULL) {
-		(void) fprintf(stderr, "%s: Out of memory (%s).\n", progname,
-		     strerror(errno));
-		goto error;
-	}
+	mm = xmalloc((size_t)st.st_size);
 	if (read(fd, mm, (size_t)st.st_size) != (size_t)st.st_size) {
 		(void) fprintf(stderr, "%s: Read failed (%s).\n", progname,
 		    strerror(errno));
@@ -1031,12 +1000,7 @@ apprentice_1(const char *fn, int action)
 	if (rv != 0)
 		return rv;
 	     
-	if ((ml = malloc(sizeof(*ml))) == NULL) {
-		(void) fprintf(stderr, "%s: Out of memory (%s).\n", progname,
-		    strerror(errno));
-		if (action == CHECK)
-			return -1;
-	}
+	ml = xmalloc(sizeof(*ml));
 
 	if (magic == NULL || nmagic == 0)
 		return rv;
@@ -1070,17 +1034,8 @@ apprentice(const char *fn, int action)
 	mlist.next = &mlist;
 	mlist.prev = &mlist;
 /*@=immediatetrans@*/
-	mfn = malloc(strlen(fn)+1);
-	if (mfn == NULL) {
-		(void) fprintf(stderr, "%s: Out of memory (%s).\n", progname,
-		    strerror(errno));
-/*@-compmempass@*/
-		if (action == CHECK)
-			return -1;
-		else
-			exit(EXIT_FAILURE);
-/*@=compmempass@*/
-	}
+
+	mfn = xmalloc(strlen(fn)+1);
 	fn = strcpy(mfn, fn);
   
 /*@-branchstate@*/

@@ -345,6 +345,12 @@ main(int argc, char **argv)
 /*@=nullassign =readonlytrans@*/
 #endif
 
+#if HAVE_MCHECK_H && HAVE_MTRACE
+	/*@-noeffect@*/
+	mtrace(); /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+	/*@=noeffect@*/
+#endif
+
 #ifdef LC_CTYPE
 	setlocale(LC_CTYPE, ""); /* makes islower etc work for other langs */
 #endif
@@ -366,14 +372,13 @@ main(int argc, char **argv)
 		magicfile = usermagic;
 	else {
 		if ((home = getenv("HOME")) != NULL) {
-			if ((usermagic = malloc(strlen(home) + 8)) != NULL) {
-				(void)strcpy(usermagic, home);
-				(void)strcat(usermagic, "/.magic");
-				if (stat(usermagic, &sb)<0) 
-					free(usermagic);
-				else
-					magicfile = usermagic;
-			}
+			usermagic = xmalloc(strlen(home) + 8);
+			(void)strcpy(usermagic, home);
+			(void)strcat(usermagic, "/.magic");
+			if (stat(usermagic, &sb)<0) 
+				free(usermagic);
+			else
+				magicfile = usermagic;
 		}
 	}
 
@@ -418,11 +423,9 @@ main(int argc, char **argv)
 		case 'i':
 			iflag++;
 			mime = malloc(strlen(magicfile) + sizeof(".mime"));
-			if (mime != NULL) {
-				(void)strcpy(mime, magicfile);
-				(void)strcat(mime, ".mime");
-				magicfile = mime;
-			}
+			(void)strcpy(mime, magicfile);
+			(void)strcat(mime, ".mime");
+			magicfile = mime;
 			/*@switchbreak@*/ break;
 		case 'k':
 			kflag = 1;
@@ -484,5 +487,10 @@ main(int argc, char **argv)
 			process(argv[optind], wid);
 	}
 
+#if HAVE_MCHECK_H && HAVE_MTRACE
+	/*@-noeffect@*/
+	muntrace(); /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+	/*@=noeffect@*/
+#endif
 	return 0;
 }

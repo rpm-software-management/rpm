@@ -59,13 +59,14 @@ AC_PROG_LIBTOOL
 
 dnl Checks for headers
 AC_HEADER_STDC
+AC_HEADER_STDINT
 AC_HEADER_MAJOR
 AC_HEADER_SYS_WAIT
-AC_HEADER_STDINT
 AC_CHECK_HEADERS(sys/mman.h sys/stat.h sys/types.h)
 AC_CHECK_HEADERS(fcntl.h)
 AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_HEADERS(locale.h)
+AC_CHECK_HEADERS(mcheck.h)
 AC_CHECK_HEADERS(regex.h)
 AC_CHECK_HEADERS(unistd.h)
 
@@ -95,9 +96,10 @@ AC_CHECK_SIZEOF_STDC_HEADERS(uint32_t, 0)
 AC_CHECK_SIZEOF_STDC_HEADERS(uint64_t, 0)
 
 dnl Checks for functions
-AC_CHECK_FUNCS(mmap strerror strtoul mkstemp)
+AC_CHECK_FUNCS(mtrace mkstemp mmap strdup strerror strtoul)
 
 dnl Checks for libraries
-AC_CHECK_LIB(z,gzopen)
+AC_CHECK_LIB(z, gzopen)
+dnl AC_CHECK_LIB(bz2, BZ2_bzReadOpen)
 
 AC_OUTPUT(Makefile)

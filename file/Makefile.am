@@ -20,7 +20,7 @@ man_MANS = file.1 $(man_MAGIC)
 file_SOURCES = file.c apprentice.c fsmagic.c softmagic.c ascmagic.c \
 	compress.c is_tar.c readelf.c print.c \
 	file.h names.h patchlevel.h readelf.h tar.h
-file_LDFLAGS = -all-static
+#file_LDFLAGS = -all-static
 
 EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime \
 	Localstuff Header $(magic_FRAGMENTS) file.man magic.man

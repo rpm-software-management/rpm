@@ -190,6 +190,69 @@ extern char *sys_errlist[];
 #define strtoul(a, b, c)	strtol(a, b, c)
 #endif
 
+/*@-declundef -incondefs @*/
+/**
+ */
+/*@mayexit@*/ /*@only@*/ /*@out@*/
+void * xmalloc (size_t size)
+	/*@globals errno @*/
+	/*@ensures maxSet(result) == (size - 1) @*/
+	/*@modifies errno @*/;
+
+/**
+ */
+/*@mayexit@*/ /*@only@*/
+void * xcalloc (size_t nmemb, size_t size)
+	/*@ensures maxSet(result) == (nmemb - 1) @*/
+	/*@*/;
+
+/**
+ * @todo Annotate ptr with returned/out.
+ */
+/*@mayexit@*/ /*@only@*/
+void * xrealloc (/*@null@*/ /*@only@*/ void * ptr, size_t size)
+	/*@ensures maxSet(result) == (size - 1) @*/
+	/*@modifies *ptr @*/;
+
+/**
+ */
+/*@mayexit@*/ /*@only@*/
+char * xstrdup (const char *str)
+	/*@*/;
+/*@=declundef =incondefs @*/
+
+#if HAVE_MCHECK_H
+#include <mcheck.h>
+#if defined(__LCLINT__)
+/*@-declundef -incondefs @*/ /* LCL: missing annotations */
+extern int mcheck (void (*__abortfunc) (enum mcheck_status)) __THROW
+	/*@globals internalState@*/
+	/*@modifies internalState @*/;
+extern int mcheck_pedantic (void (*__abortfunc) (enum mcheck_status)) __THROW
+	/*@globals internalState@*/
+	/*@modifies internalState @*/;
+extern void mcheck_check_all (void)
+	/*@globals internalState@*/
+	/*@modifies internalState @*/;
+extern enum mcheck_status mprobe (void *__ptr) __THROW
+	/*@globals internalState@*/
+	/*@modifies internalState @*/;
+extern void mtrace (void) __THROW
+	/*@globals internalState@*/
+	/*@modifies internalState @*/;
+extern void muntrace (void) __THROW
+	/*@globals internalState@*/
+	/*@modifies internalState @*/;
+/*@=declundef =incondefs @*/
+#endif /* defined(__LCLINT__) */
+#endif	/* HAVE_MCHECK_H */
+
+/* Memory allocation via macro defs to get meaningful locations from mtrace() */
+#define	xmalloc(_size) 		(malloc(_size) ? : (error("out of memory"), NULL))
+#define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : (error("out of memory"), NULL))
+#define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : (error("out of memory"), NULL))
+#define	xstrdup(_str)	(strcpy(xmalloc(strlen(_str)+1), (_str)))
+
 #if HAVE_LOCALE_H
 # include <locale.h>
 #endif
