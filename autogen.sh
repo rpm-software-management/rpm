@@ -29,7 +29,14 @@ if [ "$1" = "--noconfigure" ]; then
 fi
 
 if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
-    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var "$@"
+    if [ -d /usr/share/man ]; then
+	mandir=/usr/share/man
+	infodir=/usr/share/info
+    else
+	mandir=/usr/man
+	infodir=/usr/info
+    fi
+    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} "$@"
 else
     ./configure "$@"
 fi
