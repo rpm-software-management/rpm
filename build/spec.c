@@ -629,18 +629,34 @@ Spec parseSpec(FILE *f, char *specfile)
 		} else {
 		    lookupopts = LP_SUBNAME;
 		}
-	    }
-	    if (tag == PREAMBLE_PART) {
-		lookupopts |= LP_CREATE | LP_FAIL_EXISTS;
-	    }
-
-	    /* XXX - should be able to drop the -n in non-%package parts */
-	    if (! lookup_package(spec, &cur_package, s, lookupopts)) {
-		error(RPMERR_INTERNAL, "Package lookup failed!");
-		return NULL;
+	        /* Handle trailing whitespace */
+	        s1 = s + strlen(s) - 1;
+	        while (*s1 == ' ' || *s1 == '\n' || *s1 == '\t') {
+		   s1--;
+		}
+	        s1++;
+	        *s1 = '\0';
 	    }
 
-	    message(MESS_DEBUG, "Switched to package: %s\n", s);
+	    switch (tag) {
+	      case PREP_PART:
+	      case BUILD_PART:
+	      case INSTALL_PART:
+	      case CLEAN_PART:
+	      case CHANGELOG_PART:
+	        /* Do not switch parts for these */
+	        break;
+	      case PREAMBLE_PART:
+	        lookupopts |= LP_CREATE | LP_FAIL_EXISTS;
+	        /* Fall through */
+	      default:
+	        /* XXX - should be able to drop the -n in non-%package parts */
+	        if (! lookup_package(spec, &cur_package, s, lookupopts)) {
+		    error(RPMERR_INTERNAL, "Package lookup failed: %s", s);
+		    return NULL;
+	        }
+	        message(MESS_DEBUG, "Switched to package: %s\n", s);
+	    }
 
 	    if (cur_part == FILES_PART) {
 		/* set files to 0 (current -1 means no %files, no package */
@@ -650,7 +666,8 @@ Spec parseSpec(FILE *f, char *specfile)
 	    continue;
         }
 
-	/* Check for implicit "base" package */
+	/* Check for implicit "base" package.                        */
+        /* That means that the specfile does not start with %package */
 	if (! cur_package) {
 	    lookupopts = 0;
 	    if (cur_part == PREAMBLE_PART) {
