@@ -84,6 +84,9 @@ struct Script *openScript(Spec spec, int builddir, char *name)
 	fprintf(script->file, "exec > /dev/null\n\n");
     }
 
+    /* Set the umask to a known value */
+    fprintf(script->file, "umask 022\n");
+
     fprintf(script->file, "\necho Excuting: %s\n", name);
     fprintf(script->file, "cd %s\n\n", getVar(RPMVAR_BUILDDIR));
     if (builddir) {
