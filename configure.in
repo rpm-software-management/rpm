@@ -21,17 +21,17 @@ AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 
-echo $ac_n "checking for POSIX chmod... $ac_c"
+AC_MSG_CHECKING(checking for POSIX chmod...)
 touch foo.chmodtest
 chmod 744 foo.chmodtest
 chmod +X foo.chmodtest 2>/dev/null
 a=`ls -l foo.chmodtest | awk '{print $1}'`
 rm -f foo.chmodtest
 if test "$a" = "-rwxr-xr-x"; then
-    echo "yes"
+    AC_MSG_RESULT(yes)
     FIXPERMS=a+rX,g-w,o-w 
 else
-    echo "no (tell your OS vendor about GNU fileutils)"
+    AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
     FIXPERMS=a+r,g-w,o-w 
 fi
 
@@ -53,7 +53,7 @@ if test "$cross_compiling" = "no"; then
     dnl Hope for the best
     CPIOBIN="cpio"
 else
-    echo $ac_n "checking for GNU cpio... $ac_c"
+    AC_MSG_CHECKING(checking for GNU cpio...)
     if test -z "$CPIOBIN"; then
 	    oldifs="$IFS"
 	    IFS=:
@@ -69,34 +69,31 @@ else
     fi
 
     if test -z "$CPIOBIN"; then
-	    echo "no"
-	    echo ""
-	    echo "RPM will not work without GNU cpio 2.4.2 or later."
-	    exit 1
+	    AC_MSG_RESULT(no)
+	    AC_MSG_ERROR(RPM will not work without GNU cpio 2.4.2 or later.)
     else
-	    echo "yes"
+	    AC_MSG_RESULT(yes)
     fi
 fi
 
 topdir=`pwd`
 
-echo $ac_n "checking for /usr/local/lib... $ac_c"
+AC_MSG_CHECKING(checking for /usr/local/lib...)
 if test -d /usr/local/lib ; then
 	LIBS="$LIBS -L/usr/local/lib"
 	LIBPATH="$LIBPATH -L/usr/local/lib"
 	
-	echo "yes"
+	AC_MSG_RESULT(yes)
 else
-	echo "no"
+	AC_MSG_RESULT(no)
 fi
 
-echo $ac_n "checking for /usr/local/include... $ac_c"
+AC_MSG_CHECKING(checking for /usr/local/include...)
 if test -d /usr/local/include ; then
 	INCPATH="$INCPATH -I/usr/local/include"
-	
-	echo "yes"
+	AC_MSG_RESULT(yes)
 else
-	echo "no"
+	AC_MSG_RESULT(no)
 fi
 
 dnl Checks for libraries.
@@ -181,6 +178,15 @@ if test "$PO" = po; then
 fi
 
 AC_C_BIGENDIAN
+
+dnl look for libc features
+NEEDS_HERRNO=yes
+AC_MSG_CHECKING(checking if <netdb.h> defines h_errno...)
+AC_TRY_LINK(netdb.h,printf("%d",h_errno),NEEDS_ERRNO=no)
+AC_MSG_RESULT($NEEDS_HERRNO)
+if test $NEEDS_HERRNO = yes; then
+	AC_DEFINE(HAVE_HERRNO)
+fi
 
 dnl Checks for library functions.
 AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), MISCOBJS="$MISCOBJS inet_aton.o")
