@@ -26,6 +26,7 @@ if ($test_pack)
     @test_requires = `rpm -q --requires $test_pack`;
     chomp(@test_requires);
     @test_requires = map { (split(/ /, $_))[0] } grep(! m|^/|, @test_requires);
+    @test_requires = grep(! /^rpmlib\(/, @test_requires);
     @test_required_by = `rpm -q --whatrequires $test_pack`;
     chomp(@test_required_by);
     @test_required_by = map { @p = split('-', $_);

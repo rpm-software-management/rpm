@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.16 2000/11/14 06:19:10 rjray Exp $
+# $Id: Makefile.PL,v 1.17 2000/11/16 08:06:35 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -228,9 +228,6 @@ BuildRoot: %{_tmppath}/%{name}-root
 Native Bindings to the RPM API for Perl 5.005 and later. Uses a combination
 of Perl and C/XS (compiled) code to provide access to the RPM database,
 headers of installed packages, and more.
-
-# Provide perl-specific find-requires.
-%define __find_requires /usr/lib/rpm/find-requires.perl
 
 %prep
 %setup -q -n SPEC_DISTNAME-%{version} 
