@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.44
+Release: 0.45
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -217,6 +217,12 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Fri Feb 25 2000 Jeff Johnson <jbj@redhat.com>
+- fix: filter excluded paths before adding install prefixes (#8709).
+- add i18n lookaside to PO catalogue(s) for i18n strings.
+- try for /etc/rpm/macros.specspo so that specspo autoconfigures rpm.
+- per-platform configuration factored into /usr/lib/rpm subdir.
+
 * Tue Feb 15 2000 Jeff Johnson <jbj@redhat.com>
 - new rpm-build package to isolate rpm dependencies on perl/bash2.
 - always remove duplicate identical package entries on --rebuilddb.

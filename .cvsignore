@@ -21,6 +21,7 @@ libtool
 ltconfig
 ltmain.sh
 macros
+platform
 rpm
 rpm2cpio
 rpmconvert

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+DESTDIR="${DESTDIR:-/}"
+pkglibdir="${pkglibdir:-/usr/lib/rpm}"
+
+RPMRC="${1:-rpmrc}"
+MACROS="${2:-macros}"
+PLATFORM="${3:-platform}"
+
+TEMPRC="/tmp/rpmrc.$$"
+cat << E_O_F > $TEMPRC
+include:	$RPMRC
+macrofiles:	$MACROS
+E_O_F
+
+RPM="rpm --rcfile $TEMPRC"
+
+ARCH="$($RPM --eval '%{_arch}')"
+VENDOR="$($RPM --eval '%{_vendor}')"
+OS="$($RPM --eval '%{_os}')"
+
+PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}"
+
+[ -d $PPD ] || mkdir $PPD
+
+RPMRC_OPTFLAGS="$($RPM --eval '%{optflags}')"
+RPMRC_OPTFLAGS="$(echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g')"
+
+cat $PLATFORM |
+    sed	-e s,\\\$\{,\%\{_, \
+	-e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," > ${PPD}/macros
+
+rm $TEMPRC

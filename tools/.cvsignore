@@ -1,5 +1,6 @@
 .deps
 .depend
+.libs
 Makefile
 Makefile.in
 dump
@@ -8,7 +9,7 @@ javadeps
 rpmarchive
 rpmgettext
 rpmheader
+rpminject
 rpmlead
 rpmputtext
 rpmsignature
-.libs

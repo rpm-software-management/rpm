@@ -80,6 +80,7 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
+	./installplatform ./rpmrc ./macros ./platform
 
 .PHONY: tar
 tar:
