@@ -56,10 +56,7 @@
 
 #if 0
   /* define this to trace the functions that are called in here... */
-  #define SQL_TRACE_FUNCTIONS
-  #define SQL_TRACE_ENCODINGS
   #define SQL_TRACE_TRANSACTIONS
-  #define SQL_TRACE_CURSOR
 #endif
 
 /* Define the things normally in a header... */
@@ -109,6 +106,24 @@ union _dbswap {
 
 /*@unchecked@*/
 static unsigned int endian = 0x11223344;
+
+static void dbg_keyval(const char * msg, dbiIndex dbi, DBC * dbcursor,
+		DBT * key, DBT * data, unsigned int flags)
+{
+
+    fprintf(stderr, "%s on %s (%p,%p,%p,0x%x)", msg, dbi->dbi_subfile, dbcursor, key, data, flags);
+
+    /* XXX FIXME: ptr alignment is fubar here. */
+    if (key != NULL && key->data != NULL) {
+	fprintf(stderr, "  key 0x%x[%d]", *(long *)key->data, key->size);
+	if (dbi->dbi_rpmtag == RPMTAG_NAME)
+	    fprintf(stderr, " \"%s\"", (const char *)key->data);
+    }
+    if (data != NULL && data->data != NULL)
+	fprintf(stderr, " data 0x%x[%d]", *(long *)data->data, data->size);
+
+    fprintf(stderr, "\n");
+}
 
 /*===================================================================*/
 /*
@@ -463,10 +478,6 @@ static int sql_initDB(dbiIndex dbi)
     char * pzErrmsg;
     char cmd[BUFSIZ];
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_initDB()\n");
-#endif
-
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
@@ -481,23 +492,47 @@ static int sql_initDB(dbiIndex dbi)
     (void) sqlite3_free_table(resultp);
 
     if ( rc == 0 && nrow < 1 ) {
-      sprintf(cmd, "CREATE TABLE '%s' (key blob UNIQUE, value blob);",
-		dbi->dbi_subfile);
-      rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-
-      if ( rc == 0 ) {
-        sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT);");
+	const char * keytype;
+	const char * valtype;
+	switch (dbi->dbi_rpmtag) {
+	case RPMDBI_PACKAGES:
+	    keytype = "int UNIQUE";
+	    valtype = "blob";
+	    break;
+	case RPMTAG_NAME:
+	case RPMTAG_GROUP:
+	case RPMTAG_DIRNAMES:
+	case RPMTAG_BASENAMES:
+	case RPMTAG_CONFLICTNAME:
+	case RPMTAG_PROVIDENAME:
+	case RPMTAG_PROVIDEVERSION:
+	case RPMTAG_REQUIRENAME:
+	case RPMTAG_REQUIREVERSION:
+	    keytype = "text UNIQUE";
+	    valtype = "blob";
+	    break;
+	default:
+	    keytype = "blob UNIQUE";
+	    valtype = "blob";
+	    break;
+	}
+	sprintf(cmd, "CREATE TABLE '%s' (key %s, value %s);",
+			dbi->dbi_subfile, keytype, valtype);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-      }
 
-      if ( rc == 0 ) {
-	sprintf(cmd, "INSERT INTO 'db_info' values('%d');", ((union _dbswap *)&endian)->uc[0]);
-	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-      }
+	if ( rc == 0 ) {
+	    sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT);");
+	    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+	}
+
+	if ( rc == 0 ) {
+	    sprintf(cmd, "INSERT INTO 'db_info' values('%d');", ((union _dbswap *)&endian)->uc[0]);
+	    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+	}
     }
 
     if ( rc )
-      rpmMessage(RPMMESS_WARNING, "Unable to initDB %s (%d)\n",
+	rpmMessage(RPMMESS_WARNING, "Unable to initDB %s (%d)\n",
 		pzErrmsg, rc);
 
     return rc;
@@ -519,10 +554,6 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
     SQL_DB * sqldb;
     SQL_CURSOR * sqlcursor, *prev;
     int rc = 0;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cclose()\n");
-#endif
 
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
@@ -602,10 +633,6 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
     DB * db = dbi->dbi_db;
     SQL_DB * sqldb;
     int rc = 0;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_close()\n");
-#endif
 
     if (db && db->app_private && ((SQL_DB *)db->app_private)->db)
     {
@@ -689,10 +716,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     DB * db = NULL;
 
     SQL_DB * sqldb;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_open()\n");
-#endif
 
     dbi = xcalloc(1, sizeof(*dbi));
     
@@ -842,10 +865,6 @@ static int sql_sync (dbiIndex dbi, unsigned int flags)
     SQL_DB * sqldb;
     int rc = 0;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_sync()\n");
-#endif
-
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
@@ -875,10 +894,6 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
     DBC * dbcursor;
     SQL_CURSOR * sqlcursor;
     int rc = 0;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_copen()\n");
-#endif
 
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
@@ -931,44 +946,27 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     DB * db = dbi->dbi_db;
     SQL_DB * sqldb;
     int rc = 0;
-    unsigned char * key_enc_string, * data_enc_string;
+    unsigned char * kenc, * denc;
     int key_len, data_len;
     char * pzErrmsg;
     char * cmd;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cdel()\n");
-#endif
 
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
 
-#ifdef SQL_TRACE_CURSOR
-    /* XXX FIXME: ptr alignment is fubar here. */
-    rpmMessage(RPMMESS_DEBUG, "  cdel on %s  key 0x%x (%d), data 0x%x (%d), flags %d\n",
-		dbi->dbi_subfile,
-		*(long *)key->data, key->size,
-		*(long *)data->data, data->size,
-		flags);   
-#endif
+dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
-    key_enc_string = alloca (2 + ((257 * key->size)/254) + 1);
-    key_len=sqlite_encode_binary((char *)key->data, key->size, key_enc_string);
-    key_enc_string[key_len]='\0';
+    kenc = alloca (2 + ((257 * key->size)/254) + 1);
+    key_len=sqlite_encode_binary((char *)key->data, key->size, kenc);
+    kenc[key_len]='\0';
 
-    data_enc_string = alloca (2 + ((257 * data->size)/254) + 1);
-    data_len=sqlite_encode_binary((char *)data->data, data->size, data_enc_string);
-    data_enc_string[data_len]='\0';
+    denc = alloca (2 + ((257 * data->size)/254) + 1);
+    data_len=sqlite_encode_binary((char *)data->data, data->size, denc);
+    denc[data_len]='\0';
 
-#ifdef SQL_TRACE_ENCODINGS
-    /* XXX FIXME: ptr alignment is fubar here. */
-    rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x (%d)\n", *(long *)key_enc_string, key_len);
-    rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x (%d)\n", *(long *)data_enc_string, data_len);
-#endif
-    
     cmd = sqlite3_mprintf("DELETE FROM '%q' WHERE key='%q' AND value='%q';",
-	dbi->dbi_subfile, key_enc_string, data_enc_string);
+	dbi->dbi_subfile, kenc, denc);
     rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
     sqlite3_free(cmd);
 
@@ -1001,26 +999,25 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     char * pzErrmsg;
     char * cmd;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cget()\n");
-#endif
-
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
 
+dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
+
     if ( dbcursor == NULL ) {
-      rc = sql_copen ( dbi, NULL, &dbcursor, 0 );
-      cleanup = 1;
+	rc = sql_copen ( dbi, NULL, &dbcursor, 0 );
+	cleanup = 1;
     }
 
     /* Find our version of the db3 cursor */
     sqlcursor = sqldb->head_cursor;
     while ( sqlcursor != NULL && sqlcursor->name != dbcursor ) {
-      sqlcursor = sqlcursor->next_cursor;
+	sqlcursor = sqlcursor->next_cursor;
     }
 
     assert(sqlcursor != NULL);
+fprintf(stderr, "\tsqlcursor %p\n", sqlcursor);
 
     /*
      * First determine if we have a key, or if we're going to
@@ -1028,189 +1025,175 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
      */
 
     if ( rc == 0 && key->size == 0 ) {
-      sqlcursor->all++;
+	sqlcursor->all++;
 
-      /*
-       * Scan the whole db..
-       * We are not guarenteed a return order..
-       * .. so get the 0x0 key first ..
-       * (rpm expects the 0x0 key first)
-       */
-      if ( sqlcursor->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES ) {
+	/*
+	 * Scan the whole db..
+	 * We are not guarenteed a return order..
+	 * .. so get the 0x0 key first ..
+	 * (rpm expects the 0x0 key first)
+	 */
+	if ( sqlcursor->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES ) {
 static int mykeydata;
-	flags=DB_SET;
-	key->size=4;
+fprintf(stderr, "\tPACKAGES #0 hack ...\n");
+	    flags=DB_SET;
+	    key->size=4;
 /*@-immediatetrans@*/
 if (key->data == NULL) key->data = &mykeydata;
 /*@=immediatetrans@*/
-	memset(key->data, 0, 4);
-      }
+	    memset(key->data, 0, 4);
+	}
     }
 
     /* New retrieval */
     if ( rc == 0 &&  ( ( flags == DB_SET ) || ( sqlcursor->resultp == NULL )) ) {
-#ifdef SQL_TRACE_CURSOR
-      rpmMessage(RPMMESS_DEBUG, " cget  rc %d, flags %d, sqlcursor->result 0%x\n",
+fprintf(stderr, "\tcget  rc %d, flags %d, sqlcursor->result 0%x\n",
 		rc, flags, sqlcursor->resultp);
-#endif
 
-      if ( sqlcursor->resultp ) {
-	(void) sqlite3_free_table( sqlcursor->resultp );
-	sqlcursor->resultp = NULL;
-	sqlcursor->nrow=0;
-	sqlcursor->ncolumn=0;
-	sqlcursor->row_iterator=0;
-      }
+	if ( sqlcursor->resultp ) {
+	    (void) sqlite3_free_table( sqlcursor->resultp );
+	    sqlcursor->resultp = NULL;
+	    sqlcursor->nrow=0;
+	    sqlcursor->ncolumn=0;
+	    sqlcursor->row_iterator=0;
+	}
 
-      switch(key->size) {
+	switch(key->size) {
 	case 0:
-	  cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
+	    cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
 			dbi->dbi_subfile);
-	  rc = sqlite3_get_table(sqldb->db, cmd,
+	    rc = sqlite3_get_table(sqldb->db, cmd,
 			&sqlcursor->resultp, &sqlcursor->nrow, &sqlcursor->ncolumn,
 			&pzErrmsg
 		);
-	  sqlite3_free(cmd);
-	  break;
+	    sqlite3_free(cmd);
+	    break;
 	default:
-	{
-	  unsigned char * key_enc_string;
-	  int key_len;
+	  { unsigned char * kenc;
+	    int key_len;
 
-#ifdef SQL_TRACE_CURSOR
     /* XXX FIXME: ptr alignment is fubar here. */
-	  rpmMessage(RPMMESS_DEBUG, "  cget on %s  find   key 0x%x (%d), flags %d\n",
+fprintf(stderr, "\tcget on %s  find   key 0x%x (%d), flags %d\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)key->data, key->size,
 		flags);
-#endif
 
-	  key_enc_string = alloca (2 + ((257 * key->size)/254) + 1);
-	  key_len=sqlite_encode_binary((char *)key->data, key->size, key_enc_string);
-	  key_enc_string[key_len]='\0';
+	    switch (dbi->dbi_rpmtag) {
+	    case RPMTAG_NAME:
+	    case RPMTAG_GROUP:
+	    case RPMTAG_DIRNAMES:
+	    case RPMTAG_BASENAMES:
+	    case RPMTAG_CONFLICTNAME:
+	    case RPMTAG_PROVIDENAME:
+	    case RPMTAG_PROVIDEVERSION:
+	    case RPMTAG_REQUIRENAME:
+	    case RPMTAG_REQUIREVERSION:
+		cmd = sqlite3_mprintf("SELECT key,value FROM '%q' WHERE key='%q';",
+			dbi->dbi_subfile, key->data);
+		break;
+	    default:
+		kenc = alloca (2 + ((257 * key->size)/254) + 1);
+		key_len=sqlite_encode_binary((char *)key->data, key->size, kenc);
+		kenc[key_len]='\0';
 
-#ifdef SQL_TRACE_ENCODINGS
-    /* XXX FIXME: ptr alignment is fubar here. */
-	  rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x (%d)\n",
-		 *(long *)key_enc_string, key_len);
-#endif
-
-	  cmd = sqlite3_mprintf("SELECT key,value FROM '%q' WHERE key='%q';",
-			dbi->dbi_subfile, key_enc_string);
-	  rc = sqlite3_get_table(sqldb->db, cmd,
+		cmd = sqlite3_mprintf("SELECT key,value FROM '%q' WHERE key='%q';",
+			dbi->dbi_subfile, kenc);
+		break;
+	    }
+	    rc = sqlite3_get_table(sqldb->db, cmd,
 			&sqlcursor->resultp, &sqlcursor->nrow, &sqlcursor->ncolumn,
 			&pzErrmsg);
-	  sqlite3_free(cmd);
+	    sqlite3_free(cmd);
 
-	  break;
+	  } break;
 	}
-      }
-#ifdef SQL_TRACE_CURSOR
-      rpmMessage(RPMMESS_DEBUG, "  cget got %d rows, %d columns\n",
+fprintf(stderr, "\tcget got %d rows, %d columns\n",
 	sqlcursor->nrow, sqlcursor->ncolumn);
-#endif
     }
 
     if ( rc == 0 && ! sqlcursor->resultp )
-      rc = DB_NOTFOUND;
+	rc = DB_NOTFOUND;
 
 repeat:
     if ( rc == 0 ) {
-      sqlcursor->row_iterator++;
-      if ( sqlcursor->row_iterator > sqlcursor->nrow )
-	rc = DB_NOTFOUND; /* At the end of the list */
-      else {
-#ifdef SQL_TRACE_ENCODINGS
-    /* XXX FIXME: ptr alignment is fubar here. */
-	rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x\n",
-		 *(long *)sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)]);
-	rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x\n",
-		 *(long *)sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)]);
-#endif
+	sqlcursor->row_iterator++;
+	if ( sqlcursor->row_iterator > sqlcursor->nrow )
+	    rc = DB_NOTFOUND; /* At the end of the list */
+	else {
 	
-	/* If we're looking at the whole db, return the key */
-	if ( sqlcursor->all ) {
-	  unsigned char * key_dec_string;
-	  size_t key_len=strlen(sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)]
-			);
+	    /* If we're looking at the whole db, return the key */
+	    if ( sqlcursor->all ) {
+		unsigned char * key_dec_string;
+		size_t key_len =
+			strlen(sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)]);
 
-	  key_dec_string=alloca (2 + ((257 * key_len)/254));
+		key_dec_string=alloca (2 + ((257 * key_len)/254));
 
-	  key->size=sqlite_decode_binary(
-		sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)],
-		key_dec_string
-		);
+		key->size=sqlite_decode_binary(
+			sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)],
+			key_dec_string);
 
-	  if (key->flags & DB_DBT_MALLOC)
-	    key->data=xmalloc(key->size);
-	  else
-	    key->data=allocTempBuffer(dbcursor, key->size);
+		if (key->flags & DB_DBT_MALLOC)
+		    key->data=xmalloc(key->size);
+		else
+		    key->data=allocTempBuffer(dbcursor, key->size);
 
-	  (void) memcpy( key->data, key_dec_string, key->size );
-	}
+		(void) memcpy( key->data, key_dec_string, key->size );
+	    }
 
 	/* Decode the data */
-	{
-	  unsigned char * data_dec_string;
-	  size_t data_len=strlen(sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)]);
+	    {   unsigned char * data_dec_string;
+		size_t data_len=strlen(sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)]);
 
-	  data_dec_string=alloca (2 + ((257 * data_len)/254));
+		data_dec_string=alloca (2 + ((257 * data_len)/254));
 
-	  data->size=sqlite_decode_binary(
-		sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)],
-		data_dec_string
-		);
+		data->size=sqlite_decode_binary(
+			sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)],
+			data_dec_string);
 
-	  if (data->flags & DB_DBT_MALLOC)
-	    data->data=xmalloc(data->size);
-	  else
-	    data->data=allocTempBuffer(dbcursor, data->size);
+		if (data->flags & DB_DBT_MALLOC)
+		    data->data=xmalloc(data->size);
+		else
+		    data->data=allocTempBuffer(dbcursor, data->size);
 
-	  (void) memcpy( data->data, data_dec_string, data->size );
-	}
+		(void) memcpy( data->data, data_dec_string, data->size );
+	    }
 
 	/* We need to skip this entry... (we've already returned it) */
     /* XXX FIXME: ptr alignment is fubar here. */
-	if ( dbi->dbi_rpmtag == RPMDBI_PACKAGES &&
+	    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES &&
 		sqlcursor->all > 1 &&
-		key->size ==4 && *(long *)key->data == 0 
-	   ) {
-#ifdef SQL_TRACE_CURSOR
-	  rpmMessage(RPMMESS_DEBUG, "  cget on %s  skipping 0x0 record\n",
+		key->size ==4 && *(long *)key->data == 0 )
+	    {
+fprintf(stderr, "\tcget on %s  skipping 0x0 record\n",
 		dbi->dbi_subfile);
-#endif
-	  goto repeat;
-	}
+		goto repeat;
+	    }
 
-#ifdef SQL_TRACE_CURSOR
     /* XXX FIXME: ptr alignment is fubar here. */
-	rpmMessage(RPMMESS_DEBUG, "  cget on %s  found  key 0x%x (%d)\n",
+fprintf(stderr, "\tcget on %s  found  key 0x%x (%d)\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)key->data, key->size
 		);
-	rpmMessage(RPMMESS_DEBUG, "  cget on %s  found data 0x%x (%d)\n",
+fprintf(stderr, "\tcget on %s  found data 0x%x (%d)\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)data->data, data->size
 		);
-#endif
-      }  
+	}
     }
 
-#ifdef SQL_TRACE_CURSOR
     if ( rc == DB_NOTFOUND )
-	rpmMessage(RPMMESS_DEBUG, "  cget on %s  not found\n",
-		dbi->dbi_subfile);
-#endif
+	    fprintf(stderr, "\tcget on %s  not found\n", dbi->dbi_subfile);
 
     /* If we retrieved the 0x0 record.. clear so next pass we'll get them all.. */
     if ( sqlcursor->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES ) {
-      if ( sqlcursor->resultp ) {
-	(void) sqlite3_free_table( sqlcursor->resultp );
-	sqlcursor->resultp = NULL;
-	sqlcursor->nrow=0;
-	sqlcursor->ncolumn=0;
-	sqlcursor->row_iterator=0;
-      }
+	if ( sqlcursor->resultp ) {
+	    (void) sqlite3_free_table( sqlcursor->resultp );
+	    sqlcursor->resultp = NULL;
+	    sqlcursor->nrow=0;
+	    sqlcursor->ncolumn=0;
+	    sqlcursor->row_iterator=0;
+	}
     }
 
     if (cleanup)
@@ -1236,44 +1219,47 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     DB * db = dbi->dbi_db;
     SQL_DB * sqldb;
     int rc = 0;
-    unsigned char * key_enc_string, * data_enc_string;
+    unsigned char * kenc, * denc;
     int key_len, data_len;
     char * pzErrmsg;
     char * cmd;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cput()\n");
-#endif
 
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
     assert(sqldb != NULL && sqldb->db != NULL);
 
-#ifdef SQL_TRACE_CURSOR
-    /* XXX FIXME: ptr alignment is fubar here. */
-    rpmMessage(RPMMESS_DEBUG, "  cput on %s  key 0x%x (%d), data 0x%x (%d), flags %d\n",
-		dbi->dbi_subfile,
-		*(long *)key->data, key->size,
-		*(long *)data->data, data->size,
-		flags);   
-#endif
+dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
-    key_enc_string = alloca (2 + ((257 * key->size)/254) + 1);
-    key_len=sqlite_encode_binary((char *)key->data, key->size, key_enc_string);
-    key_enc_string[key_len]='\0';
+    switch (dbi->dbi_rpmtag) {
+    default:
+	kenc = alloca (2 + ((257 * key->size)/254) + 1);
+	key_len=sqlite_encode_binary((char *)key->data, key->size, kenc);
+	kenc[key_len]='\0';
 
-    data_enc_string = alloca (2 + ((257 * data->size)/254) + 1);
-    data_len=sqlite_encode_binary((char *)data->data, data->size, data_enc_string);
-    data_enc_string[data_len]='\0';
+	denc = alloca (2 + ((257 * data->size)/254) + 1);
+	data_len=sqlite_encode_binary((char *)data->data, data->size, denc);
+	denc[data_len]='\0';
 
-#ifdef SQL_TRACE_ENCODINGS
-    /* XXX FIXME: ptr alignment is fubar here. */
-    rpmMessage(RPMMESS_DEBUG, " encoded key 0x%x (%d)\n", *(long *)key_enc_string, key_len);
-    rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x (%d)\n", *(long *)data_enc_string, data_len);
-#endif
-    
-    cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES('%q', '%q');",
-	dbi->dbi_subfile, key_enc_string, data_enc_string);
+	cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES('%q', '%q');",
+		dbi->dbi_subfile, kenc, denc);
+	break;
+    case RPMTAG_NAME:
+    case RPMTAG_GROUP:
+    case RPMTAG_DIRNAMES:
+    case RPMTAG_BASENAMES:
+    case RPMTAG_CONFLICTNAME:
+    case RPMTAG_PROVIDENAME:
+    case RPMTAG_PROVIDEVERSION:
+    case RPMTAG_REQUIRENAME:
+    case RPMTAG_REQUIREVERSION:
+	denc = alloca (2 + ((257 * data->size)/254) + 1);
+	data_len=sqlite_encode_binary((char *)data->data, data->size, denc);
+	denc[data_len]='\0';
+
+	cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES('%q', '%q');",
+		dbi->dbi_subfile, key->data, denc);
+	break;
+    }
     rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
     sqlite3_free(cmd);
 
@@ -1301,10 +1287,6 @@ static int sql_byteswapped (dbiIndex dbi)
     int ncolumn;
     char * pzErrmsg;
     union _dbswap db_endian;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_byteswapped()\n");
-#endif
 
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
@@ -1497,10 +1479,6 @@ static int sql_stat (dbiIndex dbi, unsigned int flags)
     char * pzErrmsg;
     char * cmd;
     long nkeys = -1;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_stat()\n");
-#endif
 
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
