@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <string.h>
+#include <errno.h>
 
 #include "pack.h"
 #include "header.h"
