@@ -1,7 +1,8 @@
 3.0.1 -> 3.0.2
+	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).
 
 3.0 -> 3.0.1
-	- fix: %verifyscript resurrected. (Shing-Gene Yung).
+	- fix: %verifyscript resurrected (Shing-Gene Yung).
 	- fix: % before non-alphabetic non-macro special now passed unscathed.
 	- fix: noarch header gets initialized differently.
 	- fix: $2 to triggerpostun scripts was wrong

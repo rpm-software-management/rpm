@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.9 1999/05/23 18:33:00 ewt Exp $
+# $Id: rpmrc.in,v 2.10 1999/05/24 21:32:05 jbj Exp $
 
 #############################################################
 
@@ -20,7 +20,6 @@ optflags: hppa1.2 -O2 -mpa-risc-1-0
 optflags: hppa2.0 -O2 -mpa-risc-1-0
 optflags: mipseb -O2
 optflags: mipsel -O2
-optflags: armv4 -O2 -fsigned-char -fomit-frame-pointer
 optflags: armv4b -O2 -fsigned-char -fomit-frame-pointer
 optflags: armv4l -O2 -fsigned-char -fomit-frame-pointer
 
@@ -54,7 +53,6 @@ arch_canon:	mipsel:	mipsel	11
 
 arch_canon:     armv4b:	armv4b 	12
 arch_canon:     armv4l:	armv4l 	12
-arch_canon:     sa110:	armv4	12
 
 #############################################################
 # Canonical OS names and numbers
@@ -152,9 +150,8 @@ arch_compat: hppa1.1: hppa1.0
 arch_compat: hppa1.0: parisc
 arch_compat: parisc: noarch
 
-arch_compat: armv4: arm armv4b armv4l noarch
-arch_compat: armv4b: arm armv4 noarch
-arch_compat: armv4l: arm armv4 noarch
+arch_compat: armv4b: noarch
+arch_compat: armv4l: noarch
 
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
@@ -194,7 +191,6 @@ buildarch_compat: m68k: noarch
 buildarch_compat: ppc: noarch
 buildarch_compat: mipsel: noarch
 buildarch_compat: mipseb: noarch
-buildarch_compat: armv4: armv4b armv4l noarch
 buildarch_compat: armv4b: noarch
 buildarch_compat: armv4l: noarch
 buildarch_compat: parisc: noarch
