@@ -675,7 +675,7 @@ static void defaultMachine(char ** arch, char ** os) {
 	while (*chptr++)
 	    if (*chptr == '/') *chptr = '-';
 
-	#if defined(__hpux__) && defined(_SC_CPU_VERSION)
+	#if defined(__hpux) && defined(_SC_CPU_VERSION)
 	{
 	    int cpu_version = sysconf(_SC_CPU_VERSION);
 
