@@ -13,6 +13,9 @@
 /* Define as 1 if you have <dirent.h> */
 #define HAVE_DIRENT_H 0
 
+/* Define as 1 if you have <limits.h> */
+#define HAVE_LIMITS_H 0
+
 /* Define as 1 if you have <machine/types.h> */
 #define MACHINE_TYPES_H 0
 
