@@ -14,6 +14,8 @@
 #include <time.h>
 #include <ftw.h>
 #include <netinet/in.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include "header.h"
 #include "specP.h"
@@ -33,6 +35,8 @@ struct file_entry {
     char file[1024];
     int isdoc;
     int isconf;
+    char *uname;  /* reference -- do not free */
+    char *gname;  /* reference -- do not free */
     struct stat statbuf;
     struct file_entry *next;
 };
@@ -43,6 +47,8 @@ static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir);
 static int process_filelist(Header header, StringBuf sb, int type);
 static int add_file_aux(char *file, struct stat *sb, int flag);
+static char *getUname(uid_t uid);
+static char *getGname(gid_t gid);
 
 static int writeMagic(Spec s, int fd, char *name, unsigned short type)
 {
@@ -158,6 +164,74 @@ static int cpio_gzip(Header header, int fd, char *tempdir)
     return 0;
 }
 
+static char *getUname(uid_t uid)
+{
+    static uid_t uids[1024];
+    static char *unames[1024];
+    static int used = 0;
+    
+    struct passwd *pw;
+    int x;
+
+    x = 0;
+    while (x < used) {
+	if (uids[x] == uid) {
+	    return unames[x];
+	}
+	x++;
+    }
+
+    /* XXX - This is the other hard coded limit */
+    if (x == 1024) {
+	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in getUname()\n");
+	exit(RPMERR_INTERNAL);
+    }
+    
+    pw = getpwuid(uid);
+    uids[x] = uid;
+    used++;
+    if (pw) {
+	unames[x] = strdup(pw->pw_name);
+    } else {
+	unames[x] = "";
+    }
+    return unames[x];
+}
+
+static char *getGname(gid_t gid)
+{
+    static gid_t gids[1024];
+    static char *gnames[1024];
+    static int used = 0;
+    
+    struct group *gr;
+    int x;
+
+    x = 0;
+    while (x < used) {
+	if (gids[x] == gid) {
+	    return gnames[x];
+	}
+	x++;
+    }
+
+    /* XXX - This is the other hard coded limit */
+    if (x == 1024) {
+	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in getGname()\n");
+	exit(RPMERR_INTERNAL);
+    }
+    
+    gr = getgrgid(gid);
+    gids[x] = gid;
+    used++;
+    if (gr) {
+	gnames[x] = strdup(gr->gr_name);
+    } else {
+	gnames[x] = "";
+    }
+    return gnames[x];
+}
+
 /* Need three globals to keep track of things in ftw() */
 static int Gisdoc;
 static int Gisconf;
@@ -189,6 +263,8 @@ static int add_file(struct file_entry **festack,
     if (lstat(fullname, &p->statbuf)) {
 	return 0;
     }
+    p->uname = getUname(p->statbuf.st_uid);
+    p->gname = getGname(p->statbuf.st_gid);
 
     if ((! isdir) && S_ISDIR(p->statbuf.st_mode)) {
 	/* This means we need to decend with ftw() */
@@ -282,6 +358,8 @@ static int process_filelist(Header header, StringBuf sb, int type)
 	    fest->isdoc = 0;
 	    fest->isconf = 0;
 	    stat(filename, &fest->statbuf);
+	    fest->uname = getUname(fest->statbuf.st_uid);
+	    fest->gname = getGname(fest->statbuf.st_gid);
 	    strcpy(fest->file, filename);
 	    fest->next = fes;
 	    fes = fest;
@@ -305,6 +383,8 @@ static int process_filelist(Header header, StringBuf sb, int type)
 	int_32 * fileSizeList;
 	int_32 * fileUIDList;
 	int_32 * fileGIDList;
+	char ** fileUnameList;
+	char ** fileGnameList;
 	int_32 * fileMtimesList;
 	int_32 * fileFlagsList;
 	int_16 * fileModesList;
@@ -316,6 +396,8 @@ static int process_filelist(Header header, StringBuf sb, int type)
 	fileSizeList = malloc(sizeof(int_32) * count);
 	fileUIDList = malloc(sizeof(int_32) * count);
 	fileGIDList = malloc(sizeof(int_32) * count);
+	fileUnameList = malloc(sizeof(char *) * count);
+	fileGnameList = malloc(sizeof(char *) * count);
 	fileMtimesList = malloc(sizeof(int_32) * count);
 	fileFlagsList = malloc(sizeof(int_32) * count);
 	fileModesList = malloc(sizeof(int_16) * count);
@@ -325,10 +407,12 @@ static int process_filelist(Header header, StringBuf sb, int type)
 	c = count;
 	while (c--) {
 	    if (type == RPMLEAD_BINARY) {
-		fileList[c] = strdup(fes->file);
+		fileList[c] = fes->file;
 	    } else {
-		fileList[c] = strdup(strrchr(fes->file, '/') + 1);
+		fileList[c] = strrchr(fes->file, '/') + 1;
 	    }
+	    fileUnameList[c] = fes->uname;
+	    fileGnameList[c] = fes->gname;
 	    if (S_ISREG(fes->statbuf.st_mode)) {
 		mdfile(fes->file, buf);
 		fileMD5List[c] = strdup(buf);
@@ -369,11 +453,16 @@ static int process_filelist(Header header, StringBuf sb, int type)
 	/* Add the header entries */
 	c = count;
 	addEntry(header, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, fileList, c);
-	addEntry(header, RPMTAG_FILELINKTOS, STRING_ARRAY_TYPE, fileLinktoList, c);
+	addEntry(header, RPMTAG_FILELINKTOS, STRING_ARRAY_TYPE,
+		 fileLinktoList, c);
 	addEntry(header, RPMTAG_FILEMD5S, STRING_ARRAY_TYPE, fileMD5List, c);
 	addEntry(header, RPMTAG_FILESIZES, INT32_TYPE, fileSizeList, c);
 	addEntry(header, RPMTAG_FILEUIDS, INT32_TYPE, fileUIDList, c);
 	addEntry(header, RPMTAG_FILEGIDS, INT32_TYPE, fileGIDList, c);
+	addEntry(header, RPMTAG_FILEUSERNAME, STRING_ARRAY_TYPE,
+		 fileUnameList, c);
+	addEntry(header, RPMTAG_FILEGROUPNAME, STRING_ARRAY_TYPE,
+		 fileGnameList, c);
 	addEntry(header, RPMTAG_FILEMTIMES, INT32_TYPE, fileMtimesList, c);
 	addEntry(header, RPMTAG_FILEFLAGS, INT32_TYPE, fileFlagsList, c);
 	addEntry(header, RPMTAG_FILEMODES, INT16_TYPE, fileModesList, c);
@@ -382,7 +471,6 @@ static int process_filelist(Header header, StringBuf sb, int type)
 	/* Free the allocated strings */
 	c = count;
 	while (c--) {
-	    free(fileList[c]);
 	    free(fileMD5List[c]);
 	    free(fileLinktoList[c]);
 	}
@@ -489,7 +577,6 @@ int packageBinaries(Spec s)
 
 	/* Add some final entries to the header */
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
-	addEntry(outHeader, RPMTAG_INSTALLTIME, INT32_TYPE, &buildtime, 1);
 	if (pr->icon) {
 	    sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR), pr->icon);
 	    stat(filename, &statbuf);
@@ -583,7 +670,6 @@ int packageSource(Spec s)
 
     outHeader = copyHeader(s->packages->header);
     addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
-    addEntry(outHeader, RPMTAG_INSTALLTIME, INT32_TYPE, &buildtime, 1);
     /* XXX - need: distribution, vendor, release, builder, buildhost */
 
     if (process_filelist(outHeader, filelist, RPMLEAD_SOURCE)) {
