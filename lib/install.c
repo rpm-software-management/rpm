@@ -1581,25 +1581,24 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 
 int rpmVersionCompare(Header first, Header second) {
     char * one, * two;
-    int_32 * serialOne, * serialTwo;
+    int_32 * epochOne, * epochTwo;
     int rc;
 
-    if (!headerGetEntry(first, RPMTAG_SERIAL, NULL, (void **) &serialOne, NULL))
-	serialOne = NULL;
-    if (!headerGetEntry(second, RPMTAG_SERIAL, NULL, (void **) &serialTwo, 
+    if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &serialOne, NULL))
+	epochOne = NULL;
+    if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (void **) &epochTwo, 
 			NULL))
-	serialTwo = NULL;
+	epochTwo = NULL;
 
-    if (serialOne && !serialTwo) 
+    if (epochOne && !epochTwo) 
 	return 1;
-    else if (!serialOne && serialTwo) 
+    else if (!epochOne && epochTwo) 
 	return -1;
-    else if (serialOne && serialTwo) {
-	if (*serialOne < *serialTwo)
+    else if (epochOne && epochTwo) {
+	if (*epochOne < *epochTwo)
 	    return -1;
-	else if (*serialOne > *serialTwo)
+	else if (*epochOne > *epochTwo)
 	    return 1;
-	return 0;
     }
 	
     headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
