@@ -195,7 +195,7 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
     pipe(inpipe);
     
     if (!(pid = fork())) {
-	close(0);
+	close(STDIN_FILENO);
 	dup2(inpipe[0], 3);
 	close(inpipe[1]);
 	dosetenv("PGPPASSFD", "3", 1);
@@ -370,9 +370,9 @@ static int verifyPGPSignature(char *datafile, void *sig,
     pipe(outpipe);
 
     if (!(pid = fork())) {
-	close(1);
+	close(STDOUT_FILENO);
 	close(outpipe[0]);
-	dup2(outpipe[1], 1);
+	dup2(outpipe[1], STDOUT_FILENO);
 	if (rpmGetVar(RPMVAR_PGP_PATH)) {
 	    dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
 	}
@@ -445,16 +445,16 @@ static int checkPassPhrase(char *passPhrase)
 
     pipe(passPhrasePipe);
     if (!(pid = fork())) {
-	close(0);
-	close(1);
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
 	if (! rpmIsVerbose()) {
-	    close(2);
+	    close(STDERR_FILENO);
 	}
-	if ((fd = open("/dev/null", O_RDONLY)) != 0) {
-	    dup2(fd, 0);
+	if ((fd = open("/dev/null", O_RDONLY)) != STDIN_FILENO) {
+	    dup2(fd, STDIN_FILENO);
 	}
-	if ((fd = open("/dev/null", O_WRONLY)) != 1) {
-	    dup2(fd, 1);
+	if ((fd = open("/dev/null", O_WRONLY)) != STDOUT_FILENO) {
+	    dup2(fd, STDOUT_FILENO);
 	}
 	dup2(passPhrasePipe[0], 3);
 	dosetenv("PGPPASSFD", "3", 1);

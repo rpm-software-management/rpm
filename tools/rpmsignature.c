@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     Header sig;
     
     if (argc == 1) {
-	fdi = fdDup(0);
+	fdi = fdDup(STDIN_FILENO);
     } else {
 	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 	fprintf(stderr, _("No signature available.\n"));
 	break;
       default:
-	fdo = fdDup(1);
+	fdo = fdDup(STDOUT_FILENO);
 	rpmWriteSignature(fdo, sig);
     }
     

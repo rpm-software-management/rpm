@@ -29,8 +29,7 @@ struct rpmdb_s {
 
 static void removeIndexEntry(dbiIndex * dbi, char * name, dbiIndexRecord rec,
 		             int tolerant, char * idxName);
-static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
-		         unsigned int fileNumber);
+static int addIndexEntry(dbiIndex * idx, char * index, dbiIndexRecord rec);
 static void blockSignals(void);
 static void unblockSignals(void);
 
@@ -301,8 +300,8 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     char ** conflictList, ** triggerList;
     int i;
 
-    rec.recOffset = offset;
-    rec.fileNumber = 0;
+    /* structure assignment */
+    rec = dbiReturnIndexRecordInstance(offset, 0);
 
     h = rpmdbGetRecord(db, offset);
     if (h == NULL) {
@@ -380,7 +379,8 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	 &count)) {
 	for (i = 0; i < count; i++) {
 	    rpmMessage(RPMMESS_DEBUG, _("removing file index for %s\n"), fileList[i]);
-	    rec.fileNumber = i;
+	    /* structure assignment */
+	    rec = dbiReturnIndexRecordInstance(offset, i);
 	    removeIndexEntry(db->fileIndex, fileList[i], rec, tolerant, 
 			     "file index");
 	}
@@ -402,14 +402,9 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     return 0;
 }
 
-static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
-		         unsigned int fileNumber) {
+static int addIndexEntry(dbiIndex * idx, char * index, dbiIndexRecord rec) {
     dbiIndexSet set;
-    dbiIndexRecord irec;   
     int rc;
-
-    irec.recOffset = offset;
-    irec.fileNumber = fileNumber;
 
     rc = dbiSearchIndex(idx, index, &set);
     if (rc == -1)  		/* error */
@@ -417,7 +412,7 @@ static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
 
     if (rc == 1)  		/* new item */
 	set = dbiCreateIndexRecord();
-    dbiAppendIndexRecord(&set, irec);
+    dbiAppendIndexRecord(&set, rec);
     if (dbiUpdateIndex(idx, index, &set))
 	exit(1);
     dbiFreeIndexRecord(set);
@@ -425,6 +420,7 @@ static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
 }
 
 int rpmdbAdd(rpmdb db, Header dbentry) {
+    dbiIndexRecord rec;
     unsigned int dboffset;
     unsigned int i, j;
     char ** fileList;
@@ -473,9 +469,13 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     headerWrite(faFileno(db->pkgs), dbentry, HEADER_MAGIC_NO);
 
     /* Now update the appropriate indexes */
-    if (addIndexEntry(db->nameIndex, name, dboffset, 0))
+
+    /* structure assignment */
+    rec = dbiReturnIndexRecordInstance(dboffset, 0);
+
+    if (addIndexEntry(db->nameIndex, name, rec))
 	rc = 1;
-    if (addIndexEntry(db->groupIndex, group, dboffset, 0))
+    if (addIndexEntry(db->groupIndex, group, rec))
 	rc = 1;
 
     for (i = 0; i < triggerCount; i++) {
@@ -483,21 +483,20 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	for (j = 0; j < i; j++)
 	    if (!strcmp(triggerList[i], triggerList[j])) break;
 	if (j == i)
-	    rc += addIndexEntry(db->triggerIndex, triggerList[i], dboffset, 0);
+	    rc += addIndexEntry(db->triggerIndex, triggerList[i], rec);
     }
 
     for (i = 0; i < conflictCount; i++)
-	rc += addIndexEntry(db->conflictsIndex, conflictList[i], dboffset, 0);
+	rc += addIndexEntry(db->conflictsIndex, conflictList[i], rec);
 
     for (i = 0; i < requiredbyCount; i++)
-	rc += addIndexEntry(db->requiredbyIndex, requiredbyList[i], 
-			    dboffset, 0);
+	rc += addIndexEntry(db->requiredbyIndex, requiredbyList[i], rec);
 
     for (i = 0; i < providesCount; i++)
-	rc += addIndexEntry(db->providesIndex, providesList[i], dboffset, 0);
+	rc += addIndexEntry(db->providesIndex, providesList[i], rec);
 
     for (i = 0; i < count; i++) 
-	rc += addIndexEntry(db->fileIndex, fileList[i], dboffset, i);
+	rc += addIndexEntry(db->fileIndex, fileList[i], rec);
 
     dbiSyncIndex(db->nameIndex);
     dbiSyncIndex(db->groupIndex);

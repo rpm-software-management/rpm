@@ -1451,8 +1451,8 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	close(toProg[1]);
 	close(fromProg[0]);
 	
-	dup2(toProg[0], 0);   /* Make stdin the in pipe */
-	dup2(fromProg[1], 1); /* Make stdout the out pipe */
+	dup2(toProg[0], STDIN_FILENO);   /* Make stdin the in pipe */
+	dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
 
 	close(toProg[0]);
 	close(fromProg[1]);

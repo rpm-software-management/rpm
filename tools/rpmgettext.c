@@ -988,7 +988,7 @@ main(int argc, char **argv)
     /* XXX I don't want to read rpmrc yet */
     rpmSetVar(RPMVAR_TMPPATH, "/tmp");
 
-    fdi = fdDup(0);
+    fdi = fdDup(STDIN_FILENO);
 
     if (!strcmp(program_name, RPMGETTEXT)) {
 	if (optind == argc) {

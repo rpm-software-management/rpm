@@ -614,7 +614,7 @@ void headerDump(Header h, FILE *f, int flags,
 	    case RPM_INT16_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%04x (%d)\n", ct++,
-			    (unsigned) *((int_16 *) dp),
+			    (unsigned) (*((int_16 *) dp) & 0xffff),
 			    (int) *((int_16 *) dp));
 		    dp += sizeof(int_16);
 		}
@@ -622,7 +622,7 @@ void headerDump(Header h, FILE *f, int flags,
 	    case RPM_INT8_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%02x (%d)\n", ct++,
-			    (unsigned) *((int_8 *) dp),
+			    (unsigned) (*((int_8 *) dp) & 0xff),
 			    (int) *((int_8 *) dp));
 		    dp += sizeof(int_8);
 		}
@@ -631,7 +631,7 @@ void headerDump(Header h, FILE *f, int flags,
 	      while (c > 0) {
 		  fprintf(f, "       Data: %.3d ", ct);
 		  while (c--) {
-		      fprintf(f, "%02x ", (unsigned) *(int_8 *)dp);
+		      fprintf(f, "%02x ", (unsigned) (*(int_8 *)dp & 0xff));
 		      ct++;
 		      dp += sizeof(int_8);
 		      if (! (ct % 8)) {
@@ -645,7 +645,7 @@ void headerDump(Header h, FILE *f, int flags,
 		while (c--) {
 		    ch = (char) *((char *) dp);
 		    fprintf(f, "       Data: %.3d 0x%2x %c (%d)\n", ct++,
-			    (unsigned)ch,
+			    (unsigned)(ch & 0xff),
 			    (isprint(ch) ? ch : ' '),
 			    (char) *((char *) dp));
 		    dp += sizeof(char);

@@ -95,9 +95,11 @@ int dbiAppendIndexRecord(dbiIndexSet * set, dbiIndexRecord rec) {
     return 0;
 }
 
+/* structure return */
 dbiIndexSet dbiCreateIndexRecord(void) {
     dbiIndexSet set;
 
+    set.recs = NULL;
     set.count = 0;
     return set;
 }

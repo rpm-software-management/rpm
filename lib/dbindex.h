@@ -9,12 +9,12 @@
 
 /* this will break if sizeof(int) != 4 */
 
-typedef struct {
+typedef /*@abstract@*/ struct {
     unsigned int recOffset;
     unsigned int fileNumber;
 } dbiIndexRecord;
 
-typedef struct {
+typedef /*@abstract@*/ struct {
     dbiIndexRecord * recs;
     int count;
 } dbiIndexSet;
@@ -41,6 +41,30 @@ int dbiRemoveIndexRecord(dbiIndexSet * set, dbiIndexRecord rec);
    /* 0 on success - fails if rec is not found */
 dbiIndexSet dbiCreateIndexRecord(void);
 void dbiFreeIndexRecord(dbiIndexSet set);
+
+extern inline int dbiIndexSetCount(dbiIndexSet set);
+extern inline int dbiIndexSetCount(dbiIndexSet set) {
+    return set.count;
+}
+
+/* structure return */
+extern inline dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber);
+extern inline dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
+    dbiIndexRecord rec;
+    rec.recOffset = recOffset;
+    rec.fileNumber = fileNumber;
+    return rec;
+}
+
+extern inline unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
+extern inline unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
+    return set.recs[recno].recOffset;
+}
+
+extern inline unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
+extern inline unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
+    return set.recs[recno].fileNumber;
+}
 
 #ifdef __cplusplus
 }

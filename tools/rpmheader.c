@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     Header hd;
     
     if (argc == 1) {
-	fdi = fdDup(0);
+	fdi = fdDup(STDIN_FILENO);
     } else {
 	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     rpmReadSignature(fdi, NULL, lead.signature_type);
     hd = headerRead(fdi, (lead.major >= 3) ?
 		    HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-    fdo = fdDup(1);
+    fdo = fdDup(STDOUT_FILENO);
     headerWrite(fdo, hd, HEADER_MAGIC_YES);
     
     return 0;

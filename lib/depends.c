@@ -252,8 +252,8 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
     headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &name, &count);
 
     if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
-	for (i = 0; i < matches.count; i++) {
-	    rpmdepRemovePackage(rpmdep, matches.recs[i].recOffset);
+	for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	    rpmdepRemovePackage(rpmdep, dbiIndexRecordOffset(matches, i));
 	}
 
 	dbiFreeIndexRecord(matches);
@@ -263,8 +263,8 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
 			&count)) {
 	for (j = 0; j < count; j++) {
 	    if (!rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))  {
-		for (i = 0; i < matches.count; i++) {
-		    rpmdepRemovePackage(rpmdep, matches.recs[i].recOffset);
+		for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		    rpmdepRemovePackage(rpmdep, dbiIndexRecordOffset(matches, i));
 		}
 
 		dbiFreeIndexRecord(matches);
@@ -457,8 +457,9 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 	if (*reqName == '/') {
 	    /* reqFlags better be 0! */
 	    if (!rpmdbFindByFile(rpmdep->db, reqName, &matches)) {
-		for (i = 0; i < matches.count; i++) {
-		    if (bsearch(&matches.recs[i].recOffset, 
+		for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+		    if (bsearch(&recOffset, 
 				rpmdep->removedPackages, 
 				rpmdep->numRemovedPackages, 
 				sizeof(int), intcmp)) 
@@ -467,13 +468,14 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 		}
 
 		dbiFreeIndexRecord(matches);
-		if (i < matches.count) return 0;
+		if (i < dbiIndexSetCount(matches)) return 0;
 	    }
 	} else {
 	    if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, 
 						  &matches)) {
-		for (i = 0; i < matches.count; i++) {
-		    if (bsearch(&matches.recs[i].recOffset, 
+		for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+		    if (bsearch(&recOffset,
 				rpmdep->removedPackages, 
 				rpmdep->numRemovedPackages, 
 				sizeof(int), intcmp)) 
@@ -482,25 +484,26 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 		}
 
 		dbiFreeIndexRecord(matches);
-		if (i < matches.count) return 0;
+		if (i < dbiIndexSetCount(matches)) return 0;
 	    }
 
 	    if (!rpmdbFindPackage(rpmdep->db, reqName, &matches)) {
-		for (i = 0; i < matches.count; i++) {
-		    if (bsearch(&matches.recs[i].recOffset, 
+		for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+		    if (bsearch(&recOffset,
 				rpmdep->removedPackages, 
 				rpmdep->numRemovedPackages, 
 				sizeof(int), intcmp)) 
 			continue;
 
-		    if (dbrecMatchesDepFlags(rpmdep, matches.recs[i].recOffset, 
+		    if (dbrecMatchesDepFlags(rpmdep, recOffset, 
 					     reqVersion, reqFlags)) {
 			break;
 		    }
 		}
 
 		dbiFreeIndexRecord(matches);
-		if (i < matches.count) return 0;
+		if (i < dbiIndexSetCount(matches)) return 0;
 	    }
 	}
     }
@@ -518,11 +521,12 @@ static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp,
     Header h;
 
     for (i = 0; i < matches->count; i++) {
-	if (bsearch(&matches->recs[i].recOffset, rpmdep->removedPackages, 
+	unsigned int recOffset = dbiIndexRecordOffset(*matches, i);
+	if (bsearch(&recOffset, rpmdep->removedPackages, 
 		    rpmdep->numRemovedPackages, sizeof(int), intcmp)) 
 	    continue;
 
-	h = rpmdbGetRecord(rpmdep->db, matches->recs[i].recOffset);
+	h = rpmdbGetRecord(rpmdep->db, recOffset);
 	if (h == NULL) {
 	    rpmError(RPMERR_DBCORRUPT, 
                      _("cannot read header at %d for dependency check"),

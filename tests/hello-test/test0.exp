@@ -27,8 +27,19 @@ Executing: %install
 install -m 0755 hello /var/tmp/hello-root/usr/local/bin
 + exit 0
 Processing files: hello
+Executing: %doc
++ umask 022
++ cd /usr/src/redhat/BUILD
++ cd hello-1.0
++ DOCDIR=/var/tmp/hello-root/usr/doc/hello-1.0
++ export DOCDIR
++ rm -rf /var/tmp/hello-root/usr/doc/hello-1.0
++ /bin/mkdir -p /var/tmp/hello-root/usr/doc/hello-1.0
++ cp -pr FAQ /var/tmp/hello-root/usr/doc/hello-1.0
++ exit 0
 Finding provides...
 Finding requires...
+Prereqs: /bin/sh
 Requires: ld-linux.so.2 libc.so.6
 Wrote: /usr/src/redhat/SRPMS/hello-1.0-1.src.rpm
 Wrote: /usr/src/redhat/RPMS/sparc/hello-1.0-1.sparc.rpm

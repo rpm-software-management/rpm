@@ -113,7 +113,7 @@ static int verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
     if ((verifyFlags & VERIFY_FILES) &&
 	(rc = verifyHeader(root, h, verifyFlags)) != 0)
 	    ec = rc;;
-    fdo = fdDup(1);
+    fdo = fdDup(STDOUT_FILENO);
     if ((verifyFlags & VERIFY_SCRIPT) &&
 	(rc = rpmVerifyScript(root, h, fdo)) != 0)
 	    ec = rc;
@@ -127,13 +127,14 @@ static int verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
     Header h;
 
     ec = 0;
-    for (i = 0; i < matches.count; i++) {
-	if (matches.recs[i].recOffset == 0)
+    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+	if (recOffset == 0)
 	    continue;
-	rpmMessage(RPMMESS_DEBUG, _("verifying record number %d\n"),
-		matches.recs[i].recOffset);
+	rpmMessage(RPMMESS_DEBUG, _("verifying record number %u\n"),
+		recOffset);
 	    
-	h = rpmdbGetRecord(db, matches.recs[i].recOffset);
+	h = rpmdbGetRecord(db, recOffset);
 	if (h == NULL) {
 		fprintf(stderr, _("error: could not read database record\n"));
 		ec = 1;
@@ -199,7 +200,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		    fd = fdDup(fdno);
 		    close(fdno);
 		} else if (!strcmp(arg, "-")) {
-		    fd = fdDup(0);
+		    fd = fdDup(STDIN_FILENO);
 		} else {
 		    if (fdFileno(fd = fdOpen(arg, O_RDONLY, 0)) < 0) {
 			fprintf(stderr, _("open of %s failed: %s\n"), arg, 

@@ -326,8 +326,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	    numFailed++;
 	} else {
 	    count = 0;
-	    for (i = 0; i < matches.count; i++)
-		if (matches.recs[i].recOffset) count++;
+	    for (i = 0; i < dbiIndexSetCount(matches); i++)
+		if (dbiIndexRecordOffset(matches, i)) count++;
 
 	    if (count > 1 && !(interfaceFlags & UNINSTALL_ALLMATCHES)) {
 		fprintf(stderr, _("\"%s\" specifies multiple packages\n"), 
@@ -341,9 +341,10 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 		    packageOffsets = realloc(packageOffsets, 
 				sizeof(int *) * packageOffsetsAlloced);
 		}
-		for (i = 0; i < matches.count; i++) {
-		    if (matches.recs[i].recOffset) {
-			packageOffsets[j++] = matches.recs[i].recOffset;
+		for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+		    if (recOffset) {
+			packageOffsets[j++] = recOffset;
 		    }
 		}
 	    }

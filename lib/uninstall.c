@@ -47,16 +47,17 @@ int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 
     for (i = 0; i < fileCount; i++) {
 	if (!rpmdbFindByFile(db, fileList[i], &matches)) {
-	    for (j = 0; j < matches.count; j++) {
-		if (matches.recs[j].recOffset != offset) {
+	    for (j = 0; j < dbiIndexSetCount(matches); j++) {
+	        unsigned int recOffset = dbiIndexRecordOffset(matches, j);
+		if (recOffset != offset) {
 		    if (itemsUsed == itemsAllocated) {
 			itemsAllocated += 10;
 			list = realloc(list, sizeof(struct sharedFile) * 
 					    itemsAllocated);
 		    }
 		    list[itemsUsed].mainFileNumber = i;
-		    list[itemsUsed].secRecOffset = matches.recs[j].recOffset;
-		    list[itemsUsed].secFileNumber = matches.recs[j].fileNumber;
+		    list[itemsUsed].secRecOffset = dbiIndexRecordOffset(matches, j);
+		    list[itemsUsed].secFileNumber = dbiIndexRecordFileNumber(matches, j);
 		    itemsUsed++;
 		}
 	    }
@@ -230,7 +231,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	return 1;
     }
  
-    scriptArg = matches.count - 1;
+    scriptArg = dbiIndexSetCount(matches) - 1;
     dbiFreeIndexRecord(matches);
 
     if (!(flags & RPMUNINSTALL_NOTRIGGERS)) {
@@ -376,7 +377,7 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
     int i;
     int freePrefixes = 0;
     int pipes[2];
-    int out = 1;
+    FD_t out;
 
     if (!progArgv && !script)
 	return 0;
@@ -440,28 +441,30 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 
     if (errfd != NULL) {
 	if (rpmIsVerbose()) {
-	    out = fdFileno(errfd);
+	    out = errfd;
 	} else {
-	    out = open("/dev/null", O_WRONLY);
-	    if (out < 0) {
-		out = fdFileno(errfd);
+	    out = fdOpen("/dev/null", O_WRONLY, 0);
+	    if (fdFileno(out) < 0) {
+		out = errfd;
 	    }
 	}
+    } else {
+	out = fdDup(STDOUT_FILENO);
     }
     
     if (!(child = fork())) {
 	/* make stdin inaccessible */
 	pipe(pipes);
 	close(pipes[1]);
-	dup2(pipes[0], 0);
+	dup2(pipes[0], STDIN_FILENO);
 	close(pipes[0]);
 
 	if (errfd != NULL) {
-	    if (fdFileno(errfd) != 2) dup2(fdFileno(errfd), 2);
-	    if (out != 1) dup2(out, 1);
+	    if (fdFileno(errfd) != STDERR_FILENO) dup2(fdFileno(errfd), STDERR_FILENO);
+	    if (fdFileno(out) != STDOUT_FILENO) dup2(fdFileno(out), STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (out > 2 && out != fdFileno(errfd)) close (out); 
-	    if (fdFileno(errfd) > 2) fdClose (errfd);
+	    if (fdFileno(out) > STDERR_FILENO && out != errfd) fdClose (out); 
+	    if (fdFileno(errfd) > STDERR_FILENO) fdClose (errfd);
 	}
 
 	doputenv(SCRIPT_PATH);
@@ -491,9 +494,9 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 
     if (freePrefixes) free(prefixes);
 
+    fdClose(out);	/* XXX dup'd STDOUT_FILENO */
     if (errfd != NULL) {
-	if (out > 2) close(out);
-	if (fdFileno(errfd) > 2) fdClose(errfd);
+	if (fdFileno(errfd) > STDERR_FILENO) fdClose(errfd);
     }
     
     if (script) {
@@ -690,7 +693,7 @@ static int handleOneTrigger(char * root, rpmdb db, int sense, Header sourceH,
 	if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
 	    rc = runScript(triggeredH, root, 1, triggerProgs + index,
 			    triggerScripts[index], 
-			    matches.count + arg1correction, arg2, 0);
+			    dbiIndexSetCount(matches) + arg1correction, arg2, 0);
 	    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
 	}
 
@@ -724,12 +727,13 @@ int runTriggers(char * root, rpmdb db, int sense, Header h,
 	return 0;
 
     rpmdbFindPackage(db, packageName, &otherMatches);
-    numPackage = otherMatches.count + countCorrection;
+    numPackage = dbiIndexSetCount(otherMatches) + countCorrection;
     dbiFreeIndexRecord(otherMatches);
 
     rc = 0;
-    for (i = 0; i < matches.count; i++) {
-	if ((triggeredH = rpmdbGetRecord(db, matches.recs[i].recOffset)) == NULL) 
+    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+	if ((triggeredH = rpmdbGetRecord(db, recOffset)) == NULL) 
 	    return 1;
 
 	rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
@@ -771,11 +775,12 @@ int runImmedTriggers(char * root, rpmdb db, int sense, Header h,
 	    continue;
 	} 
 
-	for (j = 0; j < matches.count; j++) {
-	    if ((sourceH = rpmdbGetRecord(db, matches.recs[j].recOffset)) == NULL) 
+	for (j = 0; j < dbiIndexSetCount(matches); j++) {
+	    unsigned int recOffset = dbiIndexRecordOffset(matches, j);
+	    if ((sourceH = rpmdbGetRecord(db, recOffset)) == NULL) 
 		return 1;
 	    rc |= handleOneTrigger(root, db, sense, sourceH, h, 
-				   countCorrection, matches.count, triggersRun);
+				   countCorrection, dbiIndexSetCount(matches), triggersRun);
 	    headerFree(sourceH);
 	    if (triggersRun[triggerIndices[i]]) break;
 	}

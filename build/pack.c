@@ -56,6 +56,11 @@ int packageSources(Spec spec)
     headerAddEntry(spec->sourceHeader, RPMTAG_BUILDTIME,
 		   RPM_INT32_TYPE, getBuildTime(), 1);
 
+    {	int capability = 0;
+	headerAddEntry(spec->sourceHeader, RPMTAG_CAPABILITY, RPM_INT32_TYPE,
+			&capability, 1);
+    }
+
     genSourceRpmName(spec);
 
     /* XXX this should be %_srpmdir */
@@ -127,6 +132,11 @@ int packageBinaries(Spec spec)
 	headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
 
+    {	int capability = 0;
+	headerAddEntry(pkg->header, RPMTAG_CAPABILITY, RPM_INT32_TYPE,
+			&capability, 1);
+    }
+
 	genSourceRpmName(spec);
 	headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
 		       spec->sourceRpmName, 1);
@@ -174,7 +184,7 @@ int readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
 	    strerror(errno));
 	return RPMERR_BADMAGIC;
     } else {
-	fdi = fdDup(0);
+	fdi = fdDup(STDIN_FILENO);
     }
 
     /* Get copy of lead */

@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     gzFile stream;
     
     if (argc == 1) {
-	fdi = fdDup(0);
+	fdi = fdDup(STDIN_FILENO);
     } else {
 	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 	perror("cannot open package");
 	exit(1);
     }
-    fdo = fdDup(1);
+    fdo = fdDup(STDOUT_FILENO);
 
     rc = rpmReadPackageHeader(fdi, &hd, &isSource, NULL, NULL);
     if (rc == 1) {

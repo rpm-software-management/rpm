@@ -304,11 +304,11 @@ int rpmdbFindByRequiredBy(rpmdb db, char * requires, dbiIndexSet * matches);
 int rpmdbFindByConflicts(rpmdb db, char * conflicts, dbiIndexSet * matches);
 int rpmdbFindByTriggeredBy(rpmdb db, char * package, dbiIndexSet * matches);
 
-/* these are just convience functions */
+/* these are just convenience functions */
 int rpmdbFindByLabel(rpmdb db, char * label, dbiIndexSet * matches);
 int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
 
-/* we pass these aroung as an array with a sentinel */
+/* we pass these around as an array with a sentinel */
 struct rpmRelocation {
     char * oldPath;	/* NULL here evals to RPMTAG_DEFAULTPREFIX, this */
     char * newPath;     /* odd behavior is only for backwards compatibility */

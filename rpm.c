@@ -1097,14 +1097,14 @@ int main(int argc, char ** argv) {
 
 	if (!(pipeChild = fork())) {
 	    close(p[1]);
-	    dup2(p[0], 0);
+	    dup2(p[0], STDIN_FILENO);
 	    close(p[0]);
 	    execl("/bin/sh", "/bin/sh", "-c", pipeOutput, NULL);
 	    fprintf(stderr, _("exec failed\n"));
 	}
 
 	close(p[0]);
-	dup2(p[1], 1);
+	dup2(p[1], STDOUT_FILENO);
 	close(p[1]);
     }
 	

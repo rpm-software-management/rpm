@@ -5,10 +5,10 @@
 int main(int argc, char ** argv)
 {
     Header h;
-    FD_t fdi, fdo;
+    FD_t fdi;
 
     if (argc == 1) {
-	fdi = fdDup(0);
+	fdi = fdDup(STDIN_FILENO);
     } else {
 	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
@@ -25,8 +25,7 @@ int main(int argc, char ** argv)
     }
     fdClose(fdi);
   
-    fdo = fdDup(1);
-    headerDump(h, stdout, fdo, rpmTagTable);
+    headerDump(h, stdout, HEADER_DUMP_INLINE, rpmTagTable);
     headerFree(h);
 
     return 0;

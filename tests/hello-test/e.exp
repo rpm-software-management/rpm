@@ -1,7 +1,7 @@
 D: counting packages to uninstall
 D: opening database in //var/lib/rpm/
 D: found 1 packages to uninstall
-D: uninstalling record number 1752
+D: uninstalling record number 24
 D: will remove files test = 0
 D: /hello-test/../usr/local/bin/hello - removing
 D: /usr/doc/hello-1.0/FAQ - removing

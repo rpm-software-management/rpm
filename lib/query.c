@@ -393,12 +393,13 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
     int i;
     Header h;
 
-    for (i = 0; i < matches.count; i++) {
-	if (matches.recs[i].recOffset) {
+    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+	if (recOffset) {
 	    rpmMessage(RPMMESS_DEBUG, _("querying record number %d\n"),
-			matches.recs[i].recOffset);
+			recOffset);
 	    
-	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
+	    h = rpmdbGetRecord(db, recOffset);
 	    if (h == NULL) {
 		fprintf(stderr, _("error: could not read database record\n"));
 	    } else {
@@ -443,7 +444,7 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 	    fd = fdDup(fdno);
 	    close(fdno);
 	} else if (!strcmp(arg, "-")) {
-	    fd = fdDup(0);
+	    fd = fdDup(STDIN_FILENO);
 	} else {
 	    if (fdFileno(fd = fdOpen( arg, O_RDONLY, 0)) < 0) {
 		fprintf(stderr, _("open of %s failed: %s\n"), arg, 

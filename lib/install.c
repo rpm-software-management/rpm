@@ -521,7 +521,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
  	scriptArg = 1;
     } else {
 	hasOthers = 1;
-	scriptArg = matches.count + 1;
+	scriptArg = dbiIndexSetCount(matches) + 1;
     }
 
     if (flags & RPMINSTALL_UPGRADE) {
@@ -540,17 +540,18 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 	*/
 
 	if (hasOthers) {
-	    toRemoveAlloced = matches.count + 1;
+	    toRemoveAlloced = dbiIndexSetCount(matches) + 1;
 	    intptr = toRemove = malloc(toRemoveAlloced * sizeof(int));
-	    for (i = 0; i < matches.count; i++) {
-		if (matches.recs[i].recOffset != otherOffset) {
+	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+		if (recOffset != otherOffset) {
 		    if (!(flags & RPMINSTALL_UPGRADETOOLD)) 
-			if (ensureOlder(db, h, matches.recs[i].recOffset)) {
+			if (ensureOlder(db, h, recOffset)) {
 			    headerFree(h);
 			    dbiFreeIndexRecord(matches);
 			    return 2;
 			}
-		    *intptr++ = matches.recs[i].recOffset;
+		    *intptr++ = recOffset;
 		}
 	    }
 
@@ -568,13 +569,13 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 		rpmMessage(RPMMESS_DEBUG, _("package %s is now obsolete and will"
 			   " be removed\n"), obsoletes[i]);
 
-		toRemoveAlloced += matches.count;
+		toRemoveAlloced += dbiIndexSetCount(matches);
 		j = toRemove ? intptr - toRemove : 0; 
 		toRemove = realloc(toRemove, toRemoveAlloced * sizeof(int));
 		intptr = toRemove + j;
 
-		for (j = 0; j < matches.count; j++)
-		    *intptr++ = matches.recs[j].recOffset;
+		for (j = 0; j < dbiIndexSetCount(matches); j++)
+		    *intptr++ = dbiIndexRecordOffset(matches, j);
 
 		dbiFreeIndexRecord(matches);
 	    }
@@ -1042,8 +1043,9 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
     int type, count;
 
     if (!rpmdbFindPackage(db, name, &matches)) {
-	for (i = 0; i < matches.count; i++) {
-	    sech = rpmdbGetRecord(db, matches.recs[i].recOffset);
+	for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+	    sech = rpmdbGetRecord(db, recOffset);
 	    if (sech == NULL) {
 		return 1;
 	    }
@@ -1054,7 +1056,7 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 			&count);
 
 	    if (!strcmp(secVersion, version) && !strcmp(secRelease, release)) {
-		*offset = matches.recs[i].recOffset;
+		*offset = recOffset;
 		if (!(flags & RPMINSTALL_REPLACEPKG)) {
 		    rpmError(RPMERR_PKGINSTALLED, 
 			  _("package %s-%s-%s is already installed"),
