@@ -7,6 +7,7 @@
 #include "cpio.h"
 #include "install.h"
 #include "misc.h"
+#include <assert.h>
 
 struct callbackInfo {
     unsigned long archiveSize;
@@ -415,13 +416,25 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
     rpmdbMatchIterator mi;
     Header h;
     unsigned int * offsets;
+    unsigned int prev;
     int num;
 
-    for (num = 0, fileInfo = replList; fileInfo->otherPkg; fileInfo++)
+    num = prev = 0;
+    for (fileInfo = replList; fileInfo->otherPkg; fileInfo++) {
+	if (prev && prev == fileInfo->otherPkg)
+	    continue;
+	prev = fileInfo->otherPkg;
 	num++;
+    }
+
     offsets = alloca(num * sizeof(*offsets));
-    for (num = 0, fileInfo = replList; fileInfo->otherPkg; fileInfo++)
+    num = prev = 0;
+    for (fileInfo = replList; fileInfo->otherPkg; fileInfo++) {
+	if (prev && prev == fileInfo->otherPkg)
+	    continue;
+	prev = fileInfo->otherPkg;
 	offsets[num++] = fileInfo->otherPkg;
+    }
 
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     rpmdbAppendIterator(mi, offsets, num);
@@ -435,8 +448,9 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 	headerGetEntry(h, RPMTAG_FILESTATES, NULL, (void **)&secStates, &count);
 	
 	modified = 0;
-	while ( fileInfo->otherPkg &&
-		fileInfo->otherPkg == rpmdbGetIteratorOffset(mi)) {
+	prev = rpmdbGetIteratorOffset(mi);
+	while (fileInfo->otherPkg && fileInfo->otherPkg == prev) {
+	    assert(fileInfo->otherFileNum < count);
 	    secStates[fileInfo->otherFileNum] = RPMFILE_STATE_REPLACED;
 	    modified = 1;
 	    fileInfo++;

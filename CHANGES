@@ -92,6 +92,8 @@
 	- remove (dead) rpmdb API code in python bindings.
 	- remove (legacy) support for version 1 packaging.
 	- remove (legacy) support for converting gdbm databases.
+	- fix: make set of replaced file headers unique.
+	- fix: don't attempt dbiOpen with anything but requested dbN.
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

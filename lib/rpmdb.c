@@ -266,9 +266,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 	errno = 0;
 	dbi = NULL;
 	rc = (*mydbvecs[_dbapi]->open) (rpmdb, rpmtag, &dbi);
-	if (rc == 0 && dbi)
-	    break;
-	/*@fallthrough@*/
+	break;
     case -1:
 	_dbapi = 4;
 	while (_dbapi-- > 1) {
@@ -301,12 +299,11 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 	rc = (_rebuildinprogress ? 0 : 1);
 	if (rc && !_printed++)
 	    fprintf(stderr, _("\n\
---> The rpm database is in db%d format, not the suggested db%d format.\n\
+--> The rpm database cannot be opened in db%d format.\n\
     If you have just upgraded the rpm package you need to convert\n\
     your database to db%d format by running \"rpm --rebuilddb\" as root.\n\
 \n\
-"),	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3),
-	(_dbapi_rebuild > 0 ? _dbapi_rebuild : 3));
+"),	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3));
 	goto exit;
     }
 
@@ -338,29 +335,6 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 \n\
 "),	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3),
 	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3), _dbapi);
-	goto exit;
-    }
-
-    /* Two co-resident databases. */
-    if (rc == 0 && dbi) {
-	const char * pkgs = rpmGenPath(rpmdb->db_root, "%{_dbpath}/", "packages.rpm");
-	static int _printed = 0;
-
-	rc = (_dbapi > 1 && rpmfileexists(pkgs) && !_rebuildinprogress);
-	if (rc && !_printed++)
-		fprintf(stderr, _("\n\
---> An rpm database in db1 format exists in %s.\n\
-    Please convert to db%d format by running \"rpm --rebuilddb\" as root.\n\
-\n\
-"),	pkgs, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3));
-	if (rc && dbi) {
-	    xfree(pkgs);
-	    pkgs = rpmGenPath( dbi->dbi_root, dbi->dbi_home,
-		(dbi->dbi_file ? dbi->dbi_file : tagName(dbi->dbi_rpmtag)));
-	    dbiClose(dbi, 0);
-	    unlink(pkgs);
-	}
-	xfree(pkgs);
 	goto exit;
     }
 

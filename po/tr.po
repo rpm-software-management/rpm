@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-07-15 10:39-0400\n"
+"POT-Creation-Date: 2000-07-15 11:53-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2658,7 +2658,7 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:250 lib/header.c:721 lib/install.c:323
+#: lib/header.c:250 lib/header.c:721 lib/install.c:324
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2731,109 +2731,109 @@ msgstr "dizinin sonunda | bekleniyordu"
 msgid "(unknown type)"
 msgstr "(bilinmeyen tip)"
 
-#: lib/install.c:148 lib/uninstall.c:195
+#: lib/install.c:149 lib/uninstall.c:195
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/install.c:167
+#: lib/install.c:168
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: lib/install.c:175
+#: lib/install.c:176
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: lib/install.c:204
+#: lib/install.c:205
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:557
+#: lib/install.c:571
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:558
+#: lib/install.c:572
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:602
+#: lib/install.c:616
 #, fuzzy
 msgid "installing a source package\n"
 msgstr "paket yüklemek"
 
-#: lib/install.c:622
+#: lib/install.c:636
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/install.c:628 lib/install.c:658
+#: lib/install.c:642 lib/install.c:672
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/install.c:632
+#: lib/install.c:646
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:652
+#: lib/install.c:666
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/install.c:662
+#: lib/install.c:676
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/install.c:696 lib/install.c:724
+#: lib/install.c:710 lib/install.c:738
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/install.c:746
+#: lib/install.c:760
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:748 lib/install.c:1021 lib/uninstall.c:28
+#: lib/install.c:762 lib/install.c:1035 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s 'nin isminin  %s 'ye çevrilmesinde belirtilen hata oluþtu: %s"
 
-#: lib/install.c:840
+#: lib/install.c:854
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:890
+#: lib/install.c:904
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s ortak (shared) dosyalar içeriyor\n"
 
-#: lib/install.c:950
+#: lib/install.c:964
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:955
+#: lib/install.c:969
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:980
+#: lib/install.c:994
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1017
+#: lib/install.c:1031
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1105
+#: lib/install.c:1119
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -3343,22 +3343,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:292
+#: lib/rpmdb.c:290
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "hata: %s eriþilemiyor\n"
 
-#: lib/rpmdb.c:303
+#: lib/rpmdb.c:301
 #, c-format
 msgid ""
 "\n"
-"--> The rpm database is in db%d format, not the suggested db%d format.\n"
+"--> The rpm database cannot be opened in db%d format.\n"
 "    If you have just upgraded the rpm package you need to convert\n"
 "    your database to db%d format by running \"rpm --rebuilddb\" as root.\n"
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:317
+#: lib/rpmdb.c:314
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n"
@@ -3368,7 +3368,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:332
+#: lib/rpmdb.c:329
 msgid ""
 "\n"
 "--> The rpm database is in db%d format, not the suggested db%d format.\n"
@@ -3379,145 +3379,136 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:351
-#, c-format
-msgid ""
-"\n"
-"--> An rpm database in db1 format exists in %s.\n"
-"    Please convert to db%d format by running \"rpm --rebuilddb\" as root.\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:423
+#: lib/rpmdb.c:397
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
-#: lib/rpmdb.c:541
+#: lib/rpmdb.c:515
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s"
 msgstr "%s kaydý %s dosyasýna yazýlamýyor"
 
-#: lib/rpmdb.c:550
+#: lib/rpmdb.c:524
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:785 lib/rpmdb.c:2305
+#: lib/rpmdb.c:759 lib/rpmdb.c:2279
 msgid "no dbpath has been set"
 msgstr "dbpath deðeri girilmemiþ"
 
-#: lib/rpmdb.c:884
+#: lib/rpmdb.c:858
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:1096
+#: lib/rpmdb.c:1070
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "%s pakedi aranýrken hata oluþtu\n"
 
-#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:97
+#: lib/rpmdb.c:1129 lib/rpmdb.c:1648 lib/uninstall.c:97
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
-#: lib/rpmdb.c:1727
+#: lib/rpmdb.c:1701
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1738
+#: lib/rpmdb.c:1712
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:1747
+#: lib/rpmdb.c:1721
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:1889
+#: lib/rpmdb.c:1863
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "%s pakedi aranýrken hata oluþtu\n"
 
-#: lib/rpmdb.c:1946
+#: lib/rpmdb.c:1920
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1962
+#: lib/rpmdb.c:1936
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1971
+#: lib/rpmdb.c:1945
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2330
+#: lib/rpmdb.c:2304
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2308
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "geçici veritabaný %s mevcut"
 
-#: lib/rpmdb.c:2340
+#: lib/rpmdb.c:2314
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2342
+#: lib/rpmdb.c:2316
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2349
+#: lib/rpmdb.c:2323
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2358
+#: lib/rpmdb.c:2332
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2381
+#: lib/rpmdb.c:2355
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: lib/rpmdb.c:2413
+#: lib/rpmdb.c:2387
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d de yer alan kayýt saklayamýyor"
 
-#: lib/rpmdb.c:2431
+#: lib/rpmdb.c:2405
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2439
+#: lib/rpmdb.c:2413
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2441
+#: lib/rpmdb.c:2415
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2451
+#: lib/rpmdb.c:2425
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2453
+#: lib/rpmdb.c:2427
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s açýlamadý: %s"

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-07-15 10:39-0400\n"
+"POT-Creation-Date: 2000-07-15 11:53-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2602,7 +2602,7 @@ msgstr "plik %s jest na nieznanym urz±dzeniu"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
 
-#: lib/header.c:250 lib/header.c:721 lib/install.c:323
+#: lib/header.c:250 lib/header.c:721 lib/install.c:324
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ danych %d nie jest obs³ugiwany\n"
@@ -2673,107 +2673,107 @@ msgstr "spodziewany | na koñcu wyra¿enia"
 msgid "(unknown type)"
 msgstr "(nieznany typ)"
 
-#: lib/install.c:148 lib/uninstall.c:195
+#: lib/install.c:149 lib/uninstall.c:195
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   plik: %s akcja: %s\n"
 
-#: lib/install.c:167
+#: lib/install.c:168
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root"
 
-#: lib/install.c:175
+#: lib/install.c:176
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr "grupa %s nie istnieje - u¿yto grupy root"
 
-#: lib/install.c:204
+#: lib/install.c:205
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr "warto¶æ %%instchangelog w pliku makra powinna byæ liczb±, a nie jest"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:557
+#: lib/install.c:571
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "rozpakowanie archiwum nie powiod³o siê %s%s: %s"
 
-#: lib/install.c:558
+#: lib/install.c:572
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/install.c:602
+#: lib/install.c:616
 msgid "installing a source package\n"
 msgstr "instacja pakietu ¼ród³owego\n"
 
-#: lib/install.c:622
+#: lib/install.c:636
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "nie mo¿na utworzyæ %s"
 
-#: lib/install.c:628 lib/install.c:658
+#: lib/install.c:642 lib/install.c:672
 #, c-format
 msgid "cannot write to %s"
 msgstr "nie mo¿na zapisaæ do %s"
 
-#: lib/install.c:632
+#: lib/install.c:646
 #, c-format
 msgid "sources in: %s\n"
 msgstr "¼ród³a w: %s\n"
 
-#: lib/install.c:652
+#: lib/install.c:666
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "nie mo¿na utworzyæ %s"
 
-#: lib/install.c:662
+#: lib/install.c:676
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "plik spec w: %s\n"
 
-#: lib/install.c:696 lib/install.c:724
+#: lib/install.c:710 lib/install.c:738
 msgid "source package contains no .spec file"
 msgstr "pakiet ¼ród³owy nie zawiera pliku .spec"
 
-#: lib/install.c:746
+#: lib/install.c:760
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: lib/install.c:748 lib/install.c:1021 lib/uninstall.c:28
+#: lib/install.c:762 lib/install.c:1035 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "zmiana nazwy z %s na %s nie powiod³a sie: %s"
 
-#: lib/install.c:840
+#: lib/install.c:854
 msgid "source package expected, binary found"
 msgstr "spodziewany pakiet ¼ród³owy a nie binarny"
 
-#: lib/install.c:890
+#: lib/install.c:904
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "pakiet: %s-%s-%s test plików = %d\n"
 
-#: lib/install.c:950
+#: lib/install.c:964
 msgid "stopping install as we're running --test\n"
 msgstr "przebieg testowy - instalacja zatrzymana\n"
 
-#: lib/install.c:955
+#: lib/install.c:969
 msgid "running preinstall script (if any)\n"
 msgstr "uruchamianie skryptu preinstall (je¶li istnieje)\n"
 
-#: lib/install.c:980
+#: lib/install.c:994
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "ostrze¿enie: %s utworzony jako %s"
 
-#: lib/install.c:1017
+#: lib/install.c:1031
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "ostrze¿enie: %s zapisany jako %s"
 
-#: lib/install.c:1105
+#: lib/install.c:1119
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "uruchamianie skryptu postinstall (je¶li istnieje)\n"
@@ -3268,22 +3268,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:292
+#: lib/rpmdb.c:290
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: lib/rpmdb.c:303
+#: lib/rpmdb.c:301
 #, c-format
 msgid ""
 "\n"
-"--> The rpm database is in db%d format, not the suggested db%d format.\n"
+"--> The rpm database cannot be opened in db%d format.\n"
 "    If you have just upgraded the rpm package you need to convert\n"
 "    your database to db%d format by running \"rpm --rebuilddb\" as root.\n"
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:317
+#: lib/rpmdb.c:314
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n"
@@ -3293,7 +3293,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:332
+#: lib/rpmdb.c:329
 msgid ""
 "\n"
 "--> The rpm database is in db%d format, not the suggested db%d format.\n"
@@ -3304,35 +3304,26 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:351
-#, c-format
-msgid ""
-"\n"
-"--> An rpm database in db1 format exists in %s.\n"
-"    Please convert to db%d format by running \"rpm --rebuilddb\" as root.\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:423
+#: lib/rpmdb.c:397
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "b³±d pobierania rekordu %s z %s"
 
-#: lib/rpmdb.c:541
+#: lib/rpmdb.c:515
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s"
 msgstr "b³±d zapisywania rekordu %s do %s"
 
-#: lib/rpmdb.c:550
+#: lib/rpmdb.c:524
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s"
 msgstr "b³±d usuwania rekordu %s z %s"
 
-#: lib/rpmdb.c:785 lib/rpmdb.c:2305
+#: lib/rpmdb.c:759 lib/rpmdb.c:2279
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: lib/rpmdb.c:884
+#: lib/rpmdb.c:858
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -3341,111 +3332,111 @@ msgstr ""
 "nowym formacie"
 
 #. error
-#: lib/rpmdb.c:1096
+#: lib/rpmdb.c:1070
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:97
+#: lib/rpmdb.c:1129 lib/rpmdb.c:1648 lib/uninstall.c:97
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla poszukiwania"
 
-#: lib/rpmdb.c:1727
+#: lib/rpmdb.c:1701
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "usuwanie wpisu w bazie\n"
 
-#: lib/rpmdb.c:1738
+#: lib/rpmdb.c:1712
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "usuwanie indeksu grupy\n"
 
-#: lib/rpmdb.c:1747
+#: lib/rpmdb.c:1721
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "usuwanie indeksu nazw\n"
 
-#: lib/rpmdb.c:1889
+#: lib/rpmdb.c:1863
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: lib/rpmdb.c:1946
+#: lib/rpmdb.c:1920
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1962
+#: lib/rpmdb.c:1936
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: lib/rpmdb.c:1971
+#: lib/rpmdb.c:1945
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2330
+#: lib/rpmdb.c:2304
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "odbudowywujê bazê danych w rootdir %s\n"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2308
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "tymczasowa baza danych %s ju¿ istnieje"
 
-#: lib/rpmdb.c:2340
+#: lib/rpmdb.c:2314
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/rpmdb.c:2342
+#: lib/rpmdb.c:2316
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "b³±d przy tworzeniu katalogu %s: %s"
 
-#: lib/rpmdb.c:2349
+#: lib/rpmdb.c:2323
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otwieranie starej bazy danych\n"
 
-#: lib/rpmdb.c:2358
+#: lib/rpmdb.c:2332
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otwieranie nowej bazy danych\n"
 
-#: lib/rpmdb.c:2381
+#: lib/rpmdb.c:2355
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "rekord numer %d w bazie danych jest b³êdny -- rekord pominiêto"
 
-#: lib/rpmdb.c:2413
+#: lib/rpmdb.c:2387
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie mo¿na dodaæ rekordu oryginalnie przy %d"
 
-#: lib/rpmdb.c:2431
+#: lib/rpmdb.c:2405
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: lib/rpmdb.c:2439
+#: lib/rpmdb.c:2413
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: lib/rpmdb.c:2441
+#: lib/rpmdb.c:2415
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "naprawcze zastêpowanie plików w %s plikami z %s"
 
-#: lib/rpmdb.c:2451
+#: lib/rpmdb.c:2425
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/rpmdb.c:2453
+#: lib/rpmdb.c:2427
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"

@@ -264,6 +264,8 @@ fi
 - remove (dead) rpmdb API code in python bindings.
 - remove (legacy) support for version 1 packaging.
 - remove (legacy) support for converting gdbm databases.
+- fix: make set of replaced file headers unique.
+- fix: don't attempt dbiOpen with anything but requested dbN.
 
 * Thu Jul 13 2000 Jeff Johnson <jbj@redhat.com>
 - fix: initialize pretransaction argv (segfault).
