@@ -160,7 +160,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    }
 	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir));
 	    sprintf(packages[i], "%s/var/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
-		    tmpnum++, getpid());
+		    tmpnum++, (int) getpid());
 	    message(MESS_DEBUG, "getting %s as %s\n", *filename, packages[i]);
 	    fd = getFtpURL(*filename + 6, packages[i]);
 	    if (fd < 0) {
