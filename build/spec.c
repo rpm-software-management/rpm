@@ -853,6 +853,7 @@ struct preamble_line {
     {RPMTAG_DESCRIPTION,   0, "description"},
     {RPMTAG_SUMMARY,       0, "summary"},
     {RPMTAG_COPYRIGHT,     0, "copyright"},
+    {RPMTAG_COPYRIGHT,     0, "license"},
     {RPMTAG_DISTRIBUTION,  0, "distribution"},
     {RPMTAG_VENDOR,        0, "vendor"},
     {RPMTAG_GROUP,         0, "group"},
