@@ -1309,9 +1309,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     t = stpcpy(t, "-----\n");
 /*@=boundswrite@*/
 
-/*@-globstate@*/	/* XXX b64encode_eolstr */
     return val;
-/*@=globstate@*/
 }
 
 /*@=boundsread@*/
