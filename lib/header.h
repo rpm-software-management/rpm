@@ -169,4 +169,4 @@ void headerSort(Header h);
 
 #define HEADER_I18NTABLE	100
 
-#endif H_HEADER
+#endif /* H_HEADER */

@@ -13,4 +13,4 @@ char *getGnameS(char *gname);
 char *buildHost(void);
 time_t *getBuildTime(void);
 
-#endif _NAMES_H_
+#endif /* _NAMES_H_ */

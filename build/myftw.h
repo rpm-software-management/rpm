@@ -16,4 +16,4 @@ int myftw (const char *dir,
 	   int (*func) (void *fl, char *name, struct stat *statp),
 	   void *fl);
 
-#endif _MYFTW_H_
+#endif /* _MYFTW_H_ */

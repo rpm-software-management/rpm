@@ -124,4 +124,4 @@ char *getFullSource(Spec spec, int num, int flag);
 void freeSources(Spec spec);
 int parseNoSource(Spec spec, char *field, int tag);
 
-#endif _SPEC_H_
+#endif /* _SPEC_H_ */

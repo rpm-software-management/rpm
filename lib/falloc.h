@@ -24,4 +24,4 @@ void faClose(faFile fa);
 int faFirstOffset(faFile fa);
 int faNextOffset(faFile fa, unsigned int lastOffset);  /* 0 at end */
 
-#endif H_FALLOC
+#endif /* H_FALLOC */
