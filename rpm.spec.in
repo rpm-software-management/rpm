@@ -187,16 +187,16 @@ exit 0
 %ifos linux
 /sbin/ldconfig
 if [ -f /var/lib/rpm/packages.rpm ]; then
-    : # do nothing
+    /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/*.rpm
 elif [ -f /var/lib/rpm/Packages ]; then
     # undo db1 configuration
     rm -f /etc/rpm/macros.db1
+    /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
 else
     # initialize db3 database
     rm -f /etc/rpm/macros.db1
     /bin/rpm --initdb
 fi
-/bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]* /var/lib/rpm/*.rpm
 %endif
 exit 0
 

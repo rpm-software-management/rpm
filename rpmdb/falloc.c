@@ -382,31 +382,34 @@ void fadFree(FD_t fd, unsigned int offset)
     }
 }
 
-static int insane = 0;
-
-static int fadSanity(FD_t fd, int offset, struct faHeader * fh)
+static int fadSanity(FD_t fd, int offset, const struct faHeader * fh, int printit)
+	/*@modifies fileSystem @*/
 {
     int rc = 0;
 
-    if (fh->size <= 0 || fh->size > 0x00200000 || (fh->size & 0x3f) != 0)
+    /* Check size range and alignment. */
+    if (!(fh->size > 0 || fh->size <= 0x00200000 && (fh->size & 0x3f) == 0))
 	rc |= 0x1;
 
+    /* Check forward link range, alignment and offset. */
     if (fh->freeNext &&
 	!(	fh->freeNext > sizeof(struct faFileHeader) &&
 		fh->freeNext < fadGetFileSize(fd) &&
 		(fh->freeNext & 0x3f) == sizeof(struct faFileHeader)) )
 	rc |= 0x2;
 
+    /* Check backward link range, alignment and offset. */
     if (fh->freePrev &&
 	!(	fh->freePrev > sizeof(struct faFileHeader) &&
 		fh->freePrev < fadGetFileSize(fd) &&
 		(fh->freePrev & 0x3f) == sizeof(struct faFileHeader)) )
 	rc |= 0x4;
 
+    /* Check that only the isFree bit is (possibly) set. */
     if (fh->isFree & ~1)
 	rc |= 0x8;
 
-    if (!insane && rc) {
+    if (printit && rc) {
 	rpmMessage(RPMMESS_DEBUG,
     "offset %d(0x%08x) rc %d: size 0x%08x next %d(0x%08x) prev %d(0x%08x) isFree 0x%08x\n",
 		offset, (unsigned) offset, rc,
@@ -427,7 +430,6 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
 {
     struct faHeader header;
     int offset;
-    int rc;
 
     offset = (lastOffset)
 	? (lastOffset - sizeof(header))
@@ -447,46 +449,35 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
      * XXX Try to reconnect at next record found. This isn't perfect
      * XXX but handles many common db1 corruption problems.
      */
-    rc = fadSanity(fd, offset, &header);
-    if (rc) {
+    if (fadSanity(fd, offset, &header, 0)) {
 	struct faHeader myheader;
-	int o = offset + sizeof(header); 
+	int o = offset;
 
 	memset(&myheader, 0, sizeof(myheader));
-	insane = 1;
-	for (	o = offset + 0x40;
-		o < fadGetFileSize(fd);
-		o += 0x40)
-	{
-	    rc = Pread(fd, &myheader, sizeof(myheader), o);
-	    if (rc != sizeof(header))
+	do {
+	    o += 0x40;	/* XXX allocation chunks are padded to 64b */
+	    if (o >= fadGetFileSize(fd))
 		return 0;
-	    rc = fadSanity(fd, o, &myheader);
-	    if (rc == 0)
-		break;
-	}
-	insane = 0;
-	if (o >= fadGetFileSize(fd))
-	    return 0;
+	    if (Pread(fd, &myheader, sizeof(myheader), o) != sizeof(header))
+		return 0;
+	} while (fadSanity(fd, o, &myheader, 0));
 	return (o + sizeof(header));
     }
 
     do {
 	offset += header.size;
+	if (offset >= fadGetFileSize(fd))
+	    return 0;
 
 	if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	    return 0;
 
-	if (header.isFree == 0) break;
-    } while (offset < fadGetFileSize(fd) && header.isFree == 1);
+    } while (header.isFree == 1);
 
-    if (offset < fadGetFileSize(fd)) {
-	/* Sanity check this to make sure we're not going in loops */
-	offset += sizeof(header);
+    /* Sanity check this to make sure we're not going in loops */
+    offset += sizeof(header);
+    if (offset <= lastOffset)
+	return 0;	/* XXX used to return -1 */
 
-	if (offset <= lastOffset) return -1;
-
-	return offset;
-    } else
-	return 0;
+    return offset;
 }

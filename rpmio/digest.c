@@ -465,9 +465,7 @@ rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 
     /* Process data in ctx->datalen chunks */
     for (; len >= ctx->datalen; buf += ctx->datalen, len -= ctx->datalen) {
-	/*@-mayaliasunique@*/
-	memcpy(ctx->in, buf, ctx->datalen);
-	/*@=mayaliasunique@*/
+	memmove(ctx->in, buf, ctx->datalen);
 	if (ctx->doByteReverse)
 	    byteReverse(ctx->in, ctx->datalen);
 	/*@-moduncon@*/
@@ -476,9 +474,7 @@ rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
     }
 
     /* Handle any remaining bytes of data. */
-    /*@-mayaliasunique@*/
-    memcpy(ctx->in, buf, len);
-    /*@=mayaliasunique@*/
+    memmove(ctx->in, buf, len);
 }
 
 void

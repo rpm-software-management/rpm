@@ -296,6 +296,10 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 	    key.data = &dbi->dbi_lastoffset;
 	    /*@=immediatetrans@*/
 	    key.size = sizeof(dbi->dbi_lastoffset);
+
+	    /* Catch end-of-chain conditions. */
+	    if (dbi->dbi_lastoffset == 0)
+		goto bail;
 	}
 
 	memcpy(&offset, key.data, sizeof(offset));
@@ -339,6 +343,7 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 	rc = EINVAL;
 #endif
 
+bail:
     if (rc == 0) {
 	if (keyp)	*keyp = key.data;
 	if (keylen)	*keylen = key.size;

@@ -11,6 +11,7 @@ static int _debug = 0;
 #include <signal.h>
 #include <sys/signal.h>
 
+#include <fnmatch.h>
 #include <regex.h>
 
 #include <rpmcli.h>
@@ -1197,8 +1198,8 @@ int rpmdbCountPackages(rpmdb db, const char * name)
  * @param dbi		index database handle (always RPMTAG_NAME)
  * @param dbcursor	index database cursor
  * @param name		package name
- * @param version	package version (can be a regex pattern)
- * @param release	package release (can be a regex pattern)
+ * @param version	package version (can be a pattern)
+ * @param release	package release (can be a pattern)
  * @retval matches	set of header instances that match
  * @return 		0 on match, 1 on no match, 2 on error
  */
@@ -1227,7 +1228,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 
     gotMatches = 0;
 
-    /* make sure the version and releases match */
+    /* Make sure the version and release match. */
     for (i = 0; i < dbiIndexSetCount(*matches); i++) {
 	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
 	Header h;
@@ -1240,11 +1241,15 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 			RPMDBI_PACKAGES, &recoff, sizeof(recoff));
 
 	    /* Set iterator selectors for version/release if available. */
-	    if (version && rpmdbSetIteratorRE(mi, RPMTAG_VERSION, version)) {
+	    if (version &&
+		rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version))
+	    {
 		rc = 2;
 		goto exit;
 	    }
-	    if (release && rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, release)) {
+	    if (release &&
+		rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release))
+	    {
 		rc = 2;
 		goto exit;
 	    }
@@ -1280,9 +1285,8 @@ exit:
 
 /**
  * Lookup by name, name-version, and finally by name-version-release.
- * Both version and release can be regex patterns.
+ * Both version and release can be patterns.
  * @todo Name must be an exact match, as name is a db key.
- * @todo N-V-R split needs to be made RE aware, i.e. '[0-9]' is split badly.
  * @param dbi		index database handle (always RPMTAG_NAME)
  * @param dbcursor	index database cursor
  * @param arg		name[-version[-release]] string
@@ -1293,8 +1297,11 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
 	/*@modifies dbi, *dbcursor, *matches, fileSystem @*/
 {
-    char * localarg, * chptr;
-    char * release;
+    const char * release;
+    char * localarg;
+    char * s;
+    char c;
+    int brackets;
     int rc;
  
     if (arg == NULL || strlen(arg) == 0) return 1;
@@ -1309,15 +1316,25 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
 
     /* maybe a name and a release */
     localarg = alloca(strlen(arg) + 1);
-    strcpy(localarg, arg);
+    s = stpcpy(localarg, arg);
 
-    chptr = (localarg + strlen(localarg)) - 1;
-    while (chptr > localarg && *chptr != '-') chptr--;
+    c = '\0';
+    brackets = 0;
+    for (s -= 1; s > localarg; s--) {
+	switch (*s) {
+	case '[':	brackets = 1;			break;
+	case ']':	if (c != '[') brackets = 0;	break;
+	}
+	c = *s;
+	if (!brackets && *s == '-')
+	    break;
+    }
+
     /*@-nullstate@*/	/* FIX: *matches may be NULL. */
-    if (chptr == localarg) return 1;
+    if (s == localarg) return 1;
 
-    *chptr = '\0';
-    rc = dbiFindMatches(dbi, dbcursor, localarg, chptr + 1, NULL, matches);
+    *s = '\0';
+    rc = dbiFindMatches(dbi, dbcursor, localarg, s + 1, NULL, matches);
     if (rc != 1) return rc;
 
     /*@-unqualifiedtrans@*/
@@ -1326,12 +1343,24 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
     
     /* how about name-version-release? */
 
-    release = chptr + 1;
-    while (chptr > localarg && *chptr != '-') chptr--;
-    if (chptr == localarg) return 1;
+    release = s + 1;
 
-    *chptr = '\0';
-    return dbiFindMatches(dbi, dbcursor, localarg, chptr + 1, release, matches);
+    c = '\0';
+    brackets = 0;
+    for (; s > localarg; s--) {
+	switch (*s) {
+	case '[':	brackets = 1;			break;
+	case ']':	if (c != '[') brackets = 0;	break;
+	}
+	c = *s;
+	if (!brackets && *s == '-')
+	    break;
+    }
+
+    if (s == localarg) return 1;
+
+    *s = '\0';
+    return dbiFindMatches(dbi, dbcursor, localarg, s + 1, release, matches);
     /*@=nullstate@*/
 }
 
@@ -1372,10 +1401,13 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
 
 typedef struct miRE_s {
     rpmTag		tag;		/*!< header tag */
-/*@only@*/ const char *	pattern;	/*!< regular expression */
-    int			cflags;		/*!< compile flags */
-/*@only@*/ regex_t *	preg;		/*!< compiled pattern buffer */
-    int			eflags;		/*!< match flags */
+    rpmMireMode		mode;		/*!< pattern match mode */
+/*@only@*/ const char *	pattern;	/*!< pattern string */
+    int			notmatch;	/*!< like "grep -v" */
+/*@only@*/ regex_t *	preg;		/*!< regex compiled pattern buffer */
+    int			cflags;		/*!< regcomp(3) flags */
+    int			eflags;		/*!< regexec(3) flags */
+    int			fnflags;	/*!< fnmatch(3) flags */
 } * miRE;
 
 struct _rpmdbMatchIterator {
@@ -1480,14 +1512,34 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
 static int miregexec(miRE mire, const char * val)
 	/*@*/
 {
-    int rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
+    int rc = 0;
 
-    if (rc && rc != REG_NOMATCH) {
-	char msg[256];
-	(void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
-	msg[sizeof(msg)-1] = '\0';
-	rpmError(RPMERR_REGEXEC, "%s: regexec failed: %s\n", mire->pattern, msg);
+    switch (mire->mode) {
+    case RPMMIRE_STRCMP:
+	rc = strcmp(mire->pattern, val);
+	break;
+    case RPMMIRE_DEFAULT:
+    case RPMMIRE_REGEX:
+	rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
+	if (rc && rc != REG_NOMATCH) {
+	    char msg[256];
+	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
+	    msg[sizeof(msg)-1] = '\0';
+	    rpmError(RPMERR_REGEXEC, "%s: regexec failed: %s\n",
+			mire->pattern, msg);
+	    rc = -1;
+	}
+	break;
+    case RPMMIRE_GLOB:
+	rc = fnmatch(mire->pattern, val, mire->fnflags);
+	if (rc && rc != FNM_NOMATCH)
+	    rc = -1;
+	break;
+    default:
+	rc = -1;
+	break;
     }
+
     return rc;
 }
 
@@ -1504,37 +1556,144 @@ static int mireCmp(const void * a, const void * b)
     return (mireA->tag - mireB->tag);
 }
 
-int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag, const char * pattern)
+/**
+ * Copy pattern, escaping for appropriate mode.
+ * @param tag		rpm tag
+ * @retval modep	type of pattern match
+ * @param pattern	pattern to duplicate
+ * @return		duplicated pattern
+ */
+static /*@only*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
+			const char * pattern)
+	/*@*/
 {
-    const char * allpat = NULL;
-    regex_t * preg = NULL;
+    const char * s;
+    char * pat;
+    char * t;
+    int brackets;
+    size_t nb;
+    int c;
+
+    switch (*modep) {
+    default:
+    case RPMMIRE_DEFAULT:
+	if (tag == RPMTAG_DIRNAMES || tag == RPMTAG_BASENAMES) {
+	    *modep = RPMMIRE_GLOB;
+	    pat = xstrdup(pattern);
+	    break;
+	}
+
+	nb = strlen(pattern) + sizeof("^$");
+
+	/* periods are escaped, splats become '.*' */
+	c = '\0';
+	brackets = 0;
+	for (s = pattern; *s != '\0'; s++) {
+	    switch (*s) {
+	    case '.':
+	    case '*':	if (!brackets) nb++;		break;
+	    case '\\':	s++;				break;
+	    case '[':	brackets = 1;			break;
+	    case ']':	if (c != '[') brackets = 0;	break;
+	    }
+	    c = *s;
+	}
+
+	pat = t = xmalloc(nb);
+
+	if (pattern[0] != '^') *t++ = '^';
+
+	/* periods are escaped, splats become '.*' */
+	c = '\0';
+	brackets = 0;
+	for (s = pattern; *s != '\0'; s++, t++) {
+	    switch (*s) {
+	    case '.':	if (!brackets) *t++ = '\\';	break;
+	    case '*':	if (!brackets) *t++ = '.';	break;
+	    case '\\':	*t++ = *s++;			break;
+	    case '[':	brackets = 1;			break;
+	    case ']':	if (c != '[') brackets = 0;	break;
+	    }
+	    c = *t = *s;
+	}
+
+	if (pattern[nb-1] != '$') *t++ = '$';
+	*t = '\0';
+	*modep = RPMMIRE_REGEX;
+	break;
+    case RPMMIRE_STRCMP:
+    case RPMMIRE_REGEX:
+    case RPMMIRE_GLOB:
+	pat = xstrdup(pattern);
+	break;
+    }
+
+    return pat;
+}
+
+int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
+		rpmMireMode mode, const char * pattern)
+{
+    static rpmMireMode defmode = (rpmMireMode)-1;
     miRE mire = NULL;
-    int cflags = (REG_EXTENDED | REG_NOSUB);
+    const char * allpat = NULL;
+    int notmatch = 0;
+    regex_t * preg = NULL;
+    int cflags = 0;
     int eflags = 0;
+    int fnflags = 0;
     int rc = 0;
+
+    if (defmode == (rpmMireMode)-1) {
+	const char *t = rpmExpand("%{?_query_selector_match}", NULL);
+	if (*t == '\0' || !strcmp(t, "default"))
+	    defmode = RPMMIRE_DEFAULT;
+	else if (!strcmp(t, "strcmp"))
+	    defmode = RPMMIRE_STRCMP;
+	else if (!strcmp(t, "regex"))
+	    defmode = RPMMIRE_REGEX;
+	else if (!strcmp(t, "glob"))
+	    defmode = RPMMIRE_GLOB;
+	else
+	    defmode = RPMMIRE_DEFAULT;
+	t = _free(t);
+     }
 
     if (mi == NULL || pattern == NULL)
 	return rc;
 
-    {	int nb = strlen(pattern);
-	char * t = xmalloc(nb + sizeof("^.$"));
-	allpat = t;
-	if (pattern[0] != '^') *t++ = '^';
-
-	/* XXX let's fix a common error with RE's */
-	if (pattern[0] == '*') *t++ = '.';
-
-	t = stpcpy(t, pattern);
-	if (pattern[nb-1] != '$') *t++ = '$';
-	*t = '\0';
+    /* Leading '!' inverts pattern match sense, like "grep -v". */
+    if (*pattern == '!') {
+	notmatch = 1;
+	pattern++;
     }
-    preg = xcalloc(1, sizeof(*preg));
-    rc = regcomp(preg, allpat, cflags);
-    if (rc) {
-	char msg[256];
-	(void) regerror(rc, preg, msg, sizeof(msg)-1);
-	msg[sizeof(msg)-1] = '\0';
-	rpmError(RPMERR_REGCOMP, "%s: regcomp failed: %s\n", allpat, msg);
+
+    allpat = mireDup(tag, &mode, pattern);
+
+    if (mode == RPMMIRE_DEFAULT)
+	mode = defmode;
+
+    switch (mode) {
+    case RPMMIRE_DEFAULT:
+    case RPMMIRE_STRCMP:
+	break;
+    case RPMMIRE_REGEX:
+	preg = xcalloc(1, sizeof(*preg));
+	cflags = (REG_EXTENDED | REG_NOSUB);
+	rc = regcomp(preg, allpat, cflags);
+	if (rc) {
+	    char msg[256];
+	    (void) regerror(rc, preg, msg, sizeof(msg)-1);
+	    msg[sizeof(msg)-1] = '\0';
+	    rpmError(RPMERR_REGCOMP, "%s: regcomp failed: %s\n", allpat, msg);
+	    goto exit;
+	}
+	break;
+    case RPMMIRE_GLOB:
+	fnflags = FNM_PATHNAME | FNM_PERIOD;
+	break;
+    default:
+	rc = -1;
 	goto exit;
     }
 
@@ -1543,20 +1702,26 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag, const char * pattern)
     mi->mi_nre++;
     
     mire->tag = tag;
+    mire->mode = mode;
     mire->pattern = allpat;
-    mire->cflags = cflags;
+    mire->notmatch = notmatch;
     mire->preg = preg;
+    mire->cflags = cflags;
     mire->eflags = eflags;
+    mire->fnflags = fnflags;
 
     (void) qsort(mi->mi_re, mi->mi_nre, sizeof(*mi->mi_re), mireCmp);
 
 exit:
     if (rc) {
-	/*@-kepttrans@*/	/* FIX: mire has kept values */
+	/*@=kepttrans@*/	/* FIX: mire has kept values */
 	allpat = _free(allpat);
-	regfree(preg);
-	preg = _free(preg);
+	if (preg) {
+	    regfree(preg);
+	    preg = _free(preg);
+	}
 	/*@=kepttrans@*/
+	mire = _free(mire);
     }
     return rc;
 }
@@ -1587,6 +1752,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
     int ntags = 0;
     int nmatches = 0;
     int i, j;
+    int rc;
 
     if (mi->mi_h == NULL)	/* XXX can't happen */
 	return 0;
@@ -1608,30 +1774,35 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    case RPM_CHAR_TYPE:
 	    case RPM_INT8_TYPE:
 		sprintf(numbuf, "%d", (int) *u.i8p);
-		if (!miregexec(mire, numbuf))
+		rc = miregexec(mire, numbuf);
+		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		break;
 	    case RPM_INT16_TYPE:
 		sprintf(numbuf, "%d", (int) *u.i16p);
-		if (!miregexec(mire, numbuf))
+		rc = miregexec(mire, numbuf);
+		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		break;
 	    case RPM_INT32_TYPE:
 		sprintf(numbuf, "%d", (int) *u.i32p);
-		if (!miregexec(mire, numbuf))
+		rc = miregexec(mire, numbuf);
+		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		break;
 	    case RPM_STRING_TYPE:
-		if (!miregexec(mire, u.str))
+		rc = miregexec(mire, u.str);
+		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		break;
 	    case RPM_I18NSTRING_TYPE:
 	    case RPM_STRING_ARRAY_TYPE:
 		for (j = 0; j < c; j++) {
-		    if (miregexec(mire, u.argv[j]))
-			continue;
-		    anymatch++;
-		    /*@innerbreak@*/ break;
+		    rc = miregexec(mire, u.argv[j]);
+		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch)) {
+			anymatch++;
+			/*@innerbreak@*/ break;
+		    }
 		}
 		break;
 	    case RPM_NULL_TYPE:
@@ -1659,11 +1830,11 @@ static int mireSkip (const rpmdbMatchIterator mi)
 }
 
 int rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release) {
-    return rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, release);
+    return rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release);
 }
 
 int rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version) {
-    return rpmdbSetIteratorRE(mi, RPMTAG_VERSION, version);
+    return rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version);
 }
 
 int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite) {
@@ -2911,13 +3082,10 @@ int rpmdbRebuild(const char * rootdir)
 		/*@-shadow@*/
 		{   rpmdbMatchIterator mi;
 		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);
-#ifdef	DYING
-		    (void) rpmdbSetIteratorVersion(mi, version);
-		    (void) rpmdbSetIteratorRelease(mi, release);
-#else
-		    (void) rpmdbSetIteratorRE(mi, RPMTAG_VERSION, version);
-		    (void) rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, release);
-#endif
+		    (void) rpmdbSetIteratorRE(mi, RPMTAG_VERSION,
+				RPMMIRE_DEFAULT, version);
+		    (void) rpmdbSetIteratorRE(mi, RPMTAG_RELEASE,
+				RPMMIRE_DEFAULT, release);
 		    while (rpmdbNextIterator(mi)) {
 			skip = 1;
 			/*@innerbreak@*/ break;

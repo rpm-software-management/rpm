@@ -1585,9 +1585,7 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
 	break;
 
     default:
-	/*@-mayaliasunique@*/
-	memcpy(dstPtr, srcPtr, dataLength);
-	/*@=mayaliasunique@*/
+	memmove(dstPtr, srcPtr, dataLength);
 	break;
     }
 }
@@ -1717,9 +1715,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	    table->info.offset = 0;
 	} else
 	    table->data = xrealloc(table->data, table->length + length);
-	/*@-mayaliasunique@*/
-	memcpy(((char *)table->data) + table->length, lang, length);
-	/*@=mayaliasunique@*/
+	memmove(((char *)table->data) + table->length, lang, length);
 	table->length += length;
 	table->info.count++;
     }
@@ -1744,9 +1740,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	    entry->data = xrealloc(entry->data, entry->length + length);
 
 	memset(((char *)entry->data) + entry->length, '\0', ghosts);
-	/*@-mayaliasunique@*/
-	strcpy(((char *)entry->data) + entry->length + ghosts, string);
-	/*@=mayaliasunique@*/
+	memmove(((char *)entry->data) + entry->length + ghosts, string, strlen(string));
 
 	entry->length += length;
 	entry->info.count = langNum + 1;

@@ -45,7 +45,7 @@ pkglibdir =		@RPMCONFIGDIR@
 pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
 pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
-			config.guess config.sub
+			config.guess config.sub config.site
 
 rpmpopt-$(VERSION): rpmpopt
 	cp rpmpopt $@

@@ -114,27 +114,27 @@ rpm	alias --timecheck	--define '_timecheck !#:+'
 # Popt glue to preserve legacy CLI behavior.
 #
 # XXX popt exec parsing doesn't honor POPT_ARGFLAG_ONEDASH
-#rpm	exec --bp		rpmb -bp
-#rpm	exec --bc		rpmb -bc
-#rpm	exec --bi		rpmb -bi
-#rpm	exec --bl		rpmb -bl
-#rpm	exec --ba		rpmb -ba
-#rpm	exec --bb		rpmb -bb
-#rpm	exec --bs		rpmb -bs
-#rpm	exec --tp		rpmb -tp
-#rpm	exec --tc		rpmb -tc
-#rpm	exec --ti		rpmb -ti
-#rpm	exec --tl		rpmb -tl
-#rpm	exec --ta		rpmb -ta
-#rpm	exec --tb		rpmb -tb
-#rpm	exec --ts		rpmb -ts
-#rpm	exec --rebuild		rpmb --rebuild
-#rpm	exec --recompile	rpmb --recompile
-#rpm	exec --clean		rpmb --clean
-#rpm	exec --rmsource		rpmb --rmsource
-#rpm	exec --rmspec		rpmb --rmspec
-#rpm	exec --target		rpmb --target
-#rpm	exec --short-circuit	rpmb --short-circuit
+rpm	exec --bp		rpmb -bp
+rpm	exec --bc		rpmb -bc
+rpm	exec --bi		rpmb -bi
+rpm	exec --bl		rpmb -bl
+rpm	exec --ba		rpmb -ba
+rpm	exec --bb		rpmb -bb
+rpm	exec --bs		rpmb -bs
+rpm	exec --tp		rpmb -tp
+rpm	exec --tc		rpmb -tc
+rpm	exec --ti		rpmb -ti
+rpm	exec --tl		rpmb -tl
+rpm	exec --ta		rpmb -ta
+rpm	exec --tb		rpmb -tb
+rpm	exec --ts		rpmb -ts
+rpm	exec --rebuild		rpmb --rebuild
+rpm	exec --recompile	rpmb --recompile
+rpm	exec --clean		rpmb --clean
+rpm	exec --rmsource		rpmb --rmsource
+rpm	exec --rmspec		rpmb --rmspec
+rpm	exec --target		rpmb --target
+rpm	exec --short-circuit	rpmb --short-circuit
 
 rpm	exec --initdb		rpmd --initdb
 rpm	exec --rebuilddb	rpmd --rebuilddb
@@ -157,17 +157,17 @@ rpm	exec -V			rpmv -V
 rpm	exec -y			rpmv -y
 rpm	exec --verify		rpmv --verify
 
-#rpm	alias --with		--define "_with_!#:+       --with-!#:+"
-#rpm	alias --without		--define "_without_!#:+    --without-!#:+"
+rpm	alias --with		--define "_with_!#:+       --with-!#:+"
+rpm	alias --without		--define "_without_!#:+    --without-!#:+"
 #==============================================================================
-#rpmb	alias --dbpath		--define '_dbpath !#:+'
-#rpmb	alias --ftpport		--define '_ftpport !#:+'
-#rpmb	alias --ftpproxy	--define '_ftpproxy !#:+'
-#rpmb	alias --httpport	--define '_httpport !#:+'
-#rpmb	alias --httpproxy	--define '_httpproxy !#:+'
-#rpmb	alias --timecheck	--define '_timecheck !#:+'
-#rpmb	alias --with		--define "_with_!#:+       --with-!#:+"
-#rpmb	alias --without		--define "_without_!#:+    --without-!#:+"
+rpmb	alias --dbpath		--define '_dbpath !#:+'
+rpmb	alias --ftpport		--define '_ftpport !#:+'
+rpmb	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmb	alias --httpport	--define '_httpport !#:+'
+rpmb	alias --httpproxy	--define '_httpproxy !#:+'
+rpmb	alias --timecheck	--define '_timecheck !#:+'
+rpmb	alias --with		--define "_with_!#:+       --with-!#:+"
+rpmb	alias --without		--define "_without_!#:+    --without-!#:+"
 #==============================================================================
 rpmbuild	alias --dbpath		--define '_dbpath !#:+'
 rpmbuild	alias --ftpport		--define '_ftpport !#:+'

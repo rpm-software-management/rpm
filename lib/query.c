@@ -633,7 +633,7 @@ restart:
 	    retcode = 1;
 	} else {
 	    for (av = (const char **) arg; av && *av; av++) {
-		if (!rpmdbSetIteratorRE(mi, RPMTAG_NAME, *av))
+		if (!rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, *av))
 		    continue;
 		mi = rpmdbFreeIterator(mi);
 		retcode = 1;

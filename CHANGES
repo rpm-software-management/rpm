@@ -102,6 +102,12 @@
 	- permit rpm -qa to take RE args applied to name tag.
 	- permit dbiFindMatches() to use version/release patterns.
 	- eliminate all uses of rpmdbSetIterator{Version,Release}.
+	- fix: db1 end-of-file not detected in legacy compatible way.
+	- fix: remove (harmless) chown error message from %post.
+	- add --target/--host to %configure, add example cross-build/config.site
+		scripts to /usr/lib/rpm <arjanv@redhat.com> (#44581).
+	- rpmdb iterator selectors permit default/strcmp/regex/glob matching.
+	- rpmdb iterator selectors permit negative matches.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
