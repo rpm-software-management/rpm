@@ -206,7 +206,8 @@ int doCheckSig(int flags, char **argv)
 	    if ((tag == RPMSIGTAG_PGP) && !(flags & CHECKSIG_PGP)) 
 		continue;
 	    else if ((tag == RPMSIGTAG_MD5 || 
-		      tag == RPMSIGTAG_LITTLEENDIANMD5) 
+		      tag == RPMSIGTAG_LEMD5_2 ||
+		      tag == RPMSIGTAG_LEMD5_1) 
 		      && !(flags & CHECKSIG_MD5)) 
 		continue;
 
@@ -222,7 +223,8 @@ int doCheckSig(int flags, char **argv)
 			res2 = 1;
 			break;
 		      case RPMSIGTAG_MD5:
-		      case RPMSIGTAG_LITTLEENDIANMD5:
+		      case RPMSIGTAG_LEMD5_1:
+		      case RPMSIGTAG_LEMD5_2:
 			strcat(buffer, "MD5 ");
 			res2 = 1;
 			break;
@@ -250,7 +252,8 @@ int doCheckSig(int flags, char **argv)
 			strcat(buffer, "size ");
 			break;
 		      case RPMSIGTAG_MD5:
-		      case RPMSIGTAG_LITTLEENDIANMD5:
+		      case RPMSIGTAG_LEMD5_1:
+		      case RPMSIGTAG_LEMD5_2:
 			strcat(buffer, "md5 ");
 			break;
 		      case RPMSIGTAG_PGP:
