@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-02-14 17:59-0500\n"
+"POT-Creation-Date: 2003-02-20 12:52-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3691,7 +3691,7 @@ msgstr "Przerywanie ..."
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:1393
+#: rpmio/rpmio.c:1401
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logowanie do %s jako %s, has³o %s\n"

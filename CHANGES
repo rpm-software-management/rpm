@@ -124,6 +124,7 @@
 	- skip fingerprints in /usr/share/doc and /usr/src/debug.
 	- add file(1) as /usr/lib/rpm/rpmfile.
 	- enable transaction coloring for s390x/ppc64.
+	- file: check size read from elf header (#85297).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

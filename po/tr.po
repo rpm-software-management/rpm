@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-02-14 17:59-0500\n"
+"POT-Creation-Date: 2003-02-20 12:52-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3642,7 +3642,7 @@ msgstr "Kesme iþlemi sürüyor"
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1393
+#: rpmio/rpmio.c:1401
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.68
+Release: 0.69
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -471,6 +471,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Thu Feb 27 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.69
+- file: check size read from elf header (#85297).
+
 * Thu Feb  6 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.66
 - popt: diddle doxygen/splint annotations, corrected doco.
 - file: fix ogg/vorbis file classification problems.

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.375 2003/02/14 23:04:08 jbj Exp $
+# $Id: sl.po,v 1.376 2003/02/27 20:58:28 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-02-14 17:59-0500\n"
+"POT-Creation-Date: 2003-02-20 12:52-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3695,7 +3695,7 @@ msgstr "Prekinitev v teku"
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: rpmio/rpmio.c:1393
+#: rpmio/rpmio.c:1401
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"

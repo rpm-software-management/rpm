@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-02-14 17:59-0500\n"
+"POT-Creation-Date: 2003-02-20 12:52-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -3530,7 +3530,7 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1393
+#: rpmio/rpmio.c:1401
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
