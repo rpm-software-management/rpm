@@ -19,11 +19,9 @@
 #include "misc.h"
 #include "messages.h"
 #include "rpmlib.h"
+#include "install.h"
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
-
-static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
-			                 "/usr/X11R6/bin\nexport PATH\n";
 
 int rpmVerifyFile(char * prefix, Header h, int filenum, int * result, 
 		  int omitMask) {
@@ -212,90 +210,6 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 }
 
 int rpmVerifyScript(char * root, Header h, int err) {
-    int out, fd;
-    char * script;
-    char * fn;
-    char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
-    int status;
-    char * installPrefixEnv = NULL;
-    char * installPrefix;
-
-    if (!headerGetEntry(h, RPMTAG_VERIFYSCRIPT, NULL, (void **) &script, 
-			NULL)) {
-	return 0;
-    }
-
-    if (rpmIsVerbose()) {
-	out = err;
-    } else {
-	out = open("/dev/null", O_APPEND);
-	if (out < 0) {
-	    out = err;
-	}
-    }
-
-    fn = alloca(strlen(tmpdir) + 20);
-    sprintf(fn, "%s/rpm-%d.vscript", tmpdir, (int) getpid());
-
-    rpmMessage(RPMMESS_DEBUG, "verify script found - "
-		"running from file %s\n", fn);
-
-    fd = open(fn, O_CREAT | O_RDWR);
-    unlink(fn);
-    if (fd < 0) {
-	rpmError(RPMERR_SCRIPT, "error creating file for verify script");
-	return 1;
-    }
-    write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
-    write(fd, script, strlen(script));
-    lseek(fd, 0, SEEK_SET);
-
-    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &installPrefix,
-		 NULL)) {
-	installPrefixEnv = alloca(strlen(installPrefix) + 30);
-	strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
-	strcat(installPrefixEnv, installPrefix);
-    }
-
-    if (!fork()) {
-	if (installPrefixEnv) {
-	    doputenv(installPrefixEnv);
-	}
-
-	dup2(fd, 0);
-	close(fd);
-
-	if (err != 2) dup2(err, 2);
-        if (out != 1) dup2(out, 1);
-
-	/* make sure we don't close stdin/stderr/stdout by mistake! */
-	if (err > 2) close (err);
-	if (out > 2 && out != err) close (out);
-
-	if (strcmp(root, "/")) {
-	    rpmMessage(RPMMESS_DEBUG, "performing chroot(%s)\n", root);
-	    chroot(root);
-	    chdir("/");
-	}
-
-	if (rpmIsDebug())
-	    execl("/bin/sh", "/bin/sh", "-x", "-s", NULL);
-	else
-	    execl("/bin/sh", "/bin/sh", "-s", NULL);
-	exit(-1);
-    }
-
-    if (out > 2) close(out);
-    if (err > 2) close(err);
-    close(fd);
-    if (!rpmIsVerbose()) close(out);
-
-    wait(&status);
-
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SCRIPT, "execution of verify script failed");
-	return 1;
-    }
-
-    return 0;
+    return runScript(root, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
+		     0, 0, err);
 }
