@@ -15,6 +15,18 @@ char *getVar(int var)
 	return values[var];
 }
 
+int getBooleanVar(int var) {
+    char * val;
+
+    val = getVar(var);
+    if (!val) return 0;
+
+    if (val[0] == 'y' || val[0] == 'Y') return 1;
+    if (!strcmp(val, "0")) return 0;
+
+    return 1;
+}
+
 void setVar(int var, char *val)
 {
     if (var > RPMVAR_LASTVAR) 
