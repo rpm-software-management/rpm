@@ -10,9 +10,6 @@
 
 -unrecogcomments	# XXX ignore doxygen markings
 
-
-#-deepbreak		# shortcut 485 occurences
-
 +strict			# lclint level
 -includenest 16		# getting deep, sigh
 

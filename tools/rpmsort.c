@@ -4,8 +4,8 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
-#define	_NEED_TEITERATOR	1
-#include "depends.h"
+#include "rpmte.h"
+#include "rpmts.h"
 
 #include "manifest.h"
 #include "misc.h"

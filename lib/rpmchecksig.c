@@ -9,7 +9,7 @@
 #include <rpmcli.h>
 #include "rpmpgp.h"
 
-#include "depends.h"
+#include "rpmts.h"
 
 #include "rpmlead.h"
 #include "signature.h"

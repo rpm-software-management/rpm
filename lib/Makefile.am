@@ -17,7 +17,7 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	misc.h rpmcli.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h depends.h fsm.h manifest.h psm.h \
+	cpio.h fsm.h manifest.h psm.h \
 	rpmal.h rpmds.h rpmfi.h rpmlead.h rpmte.h rpmts.h signature.h
 
 mylibpaths = \

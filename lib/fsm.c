@@ -7,6 +7,11 @@
 
 #include "psm.h"
 #include "rpmerr.h"
+
+#include "rpmfi.h"
+#include "rpmte.h"
+#include "rpmts.h"
+
 #include "debug.h"
 
 /*@access FD_t @*/

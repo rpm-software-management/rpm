@@ -6,6 +6,9 @@
 #include "system.h"
 
 #include "psm.h"
+#include "rpmfi.h"
+#include "rpmts.h"
+
 #include <rpmcli.h>
 
 #include "legacy.h"	/* XXX domd5(), uidToUname(), gnameToGid */

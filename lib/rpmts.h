@@ -6,9 +6,17 @@
  * Structures and prototypes used for an rpmTransactionSet
  */
 
+#include <rpmhash.h>	/* XXX hashTable */
+#include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
+
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _ts_debug;
+/*@=exportlocal@*/
+
+/*@unchecked@*/
+/*@-exportlocal@*/
+extern int _cacheDependsRC;
 /*@=exportlocal@*/
 
 /** \ingroup rpmdep
@@ -28,7 +36,7 @@ struct rpmTransactionSet_s {
     int filesystemCount;	/*!< No. of mounted filesystems. */
 /*@dependent@*/
     const char ** filesystems;	/*!< Mounted filesystem names. */
-/*@only@*/
+/*@only@*/ /*@null@*/
     struct diskspaceInfo * di;	/*!< Per filesystem disk/inode usage. */
 
     int dbmode;			/*!< Database open mode. */

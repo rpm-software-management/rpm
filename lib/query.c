@@ -15,7 +15,8 @@
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
-#include "depends.h"
+#include "rpmts.h"
+
 #include "manifest.h"
 
 #include "debug.h"

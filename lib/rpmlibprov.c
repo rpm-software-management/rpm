@@ -6,7 +6,7 @@
 
 #include <rpmlib.h>
 
-#include "depends.h"
+#include "rpmds.h"
 
 #include "debug.h"
 

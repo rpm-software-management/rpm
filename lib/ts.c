@@ -5,7 +5,7 @@
 #include <rpmlib.h>
 #include <rpmpgp.h>
 
-#include "depends.h"
+#include "rpmts.h"
 
 #include "debug.h"
 

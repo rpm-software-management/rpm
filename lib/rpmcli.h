@@ -427,16 +427,16 @@ extern int packagesTotal;
  * Install source rpm package.
  * @param ts		transaction set
  * @param arg		source rpm file name
- * @retval specFile	address of (installed) spec file name
+ * @retval specFilePtr	address of (installed) spec file name
  * @retval cookie
  * @return		0 on success
  */
 int rpmInstallSource(rpmTransactionSet ts, const char * arg,
-		/*@null@*/ /*@out@*/ const char ** specFile,
+		/*@null@*/ /*@out@*/ const char ** specFilePtr,
 		/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies ts, *specFile, *cookie, rpmGlobalMacroContext,
+	/*@modifies ts, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli

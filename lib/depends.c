@@ -8,8 +8,11 @@
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 
-#define _NEED_TEITERATOR	1
-#include "depends.h"
+#include "rpmal.h"
+#include "rpmds.h"
+#include "rpmfi.h"
+#include "rpmte.h"
+#include "rpmts.h"
 
 #include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
 
@@ -178,7 +181,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
     if (!duplicate)
 	ts->orderCount++;
     
-    pkgKey = alAddPackage(ts->addedPackages, pkgKey, teGetKey(p),
+    pkgKey = alAddPackage(&ts->addedPackages, pkgKey, teGetKey(p),
 			teGetDS(p, RPMTAG_PROVIDENAME),
 			teGetFI(p, RPMTAG_BASENAMES));
     if (pkgKey == RPMAL_NOMATCH) {
@@ -302,7 +305,7 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
     TFI_t fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
 
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, key,
+    (void) alAddPackage(&ts->availablePackages, RPMAL_NOMATCH, key,
 		provides, fi);
     fi = fiFree(fi, 1);
     provides = dsFree(provides);
@@ -1542,6 +1545,7 @@ assert(newOrderCount == ts->orderCount);
     ts->orderAlloced = ts->orderCount;
     orderList = _free(orderList);
 
+#ifdef	DYING
     /* Clean up after dependency checks */
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
@@ -1550,6 +1554,10 @@ assert(newOrderCount == ts->orderCount);
     pi = teFreeIterator(pi);
 
     ts->addedPackages = alFree(ts->addedPackages);
+    ts->numAddedPackages = 0;
+#else
+    rpmtransClean(ts);
+#endif
 
     return 0;
 }

@@ -9,7 +9,7 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
-#include "depends.h"
+#include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
 #include "legacy.h"	/* XXX providePackageNVR() and compressFileList() */

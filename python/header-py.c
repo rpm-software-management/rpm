@@ -5,7 +5,10 @@
 #include "Python.h"
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
-#include "depends.h"	/* XXX for ts->rpmdb */
+
+#include "rpmfi.h"
+#include "rpmts.h"	/* XXX for ts->rpmdb */
+
 #include "legacy.h"
 #include "misc.h"
 #include "header_internal.h"

@@ -9,7 +9,11 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
-#include "depends.h"
+#include "rpmal.h"
+#include "rpmds.h"
+#include "rpmfi.h"
+#include "rpmte.h"
+#include "rpmts.h"
 
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
@@ -28,17 +32,11 @@
 /*@access PSM_t@*/
 
 /*@access TFI_t@*/
+/*@access transactionElement@*/	/* XXX rpmInstallSourcePackage */
 /*@access rpmTransactionSet@*/
 
 /*@access alKey@*/
 /*@access rpmDepSet@*/
-
-#ifdef	DYING
-/*@-redecl -declundef -exportheadervar@*/
-/*@unchecked@*/
-extern const char * chroot_prefix;
-/*@=redecl =declundef =exportheadervar@*/
-#endif
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -109,8 +107,8 @@ static struct tagMacro {
  * @return		0 always
  */
 static int rpmInstallLoadMacros(TFI_t fi, Header h)
-	/*@globals rpmGlobalMacroContext, internalState @*/
-	/*@modifies rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
     HGE_t hge = (HGE_t) fi->hge;
     struct tagMacro * tagm;
@@ -498,7 +496,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 /*@-assignexpose@*/
     fi->te = ts->order[0];
 /*@=assignexpose@*/
-/*@i@*/ fi->te->fd = fd;
+    fi->te->fd = fdLink(fd, "installSourcePackage");
     hge = fi->hge;
     hfd = fi->hfd;
 
@@ -623,12 +621,21 @@ exit:
     if (h) h = headerFree(h, "InstallSourcePackage exit");
 
     /*@-branchstate@*/
-    if (fi)
+    if (fi) {
+	if (fi->te->fd)
+	    (void) Fclose(fi->te->fd);
+	fi->te->fd = NULL;
+	fi->te = NULL;
 	fi = fiFree(fi, 1);
+    }
     /*@=branchstate@*/
 
     psm->fi = NULL;
     psm->te = NULL;
+
+    /* XXX nuke the added package(s). */
+    rpmtransClean(ts);
+
     psm->ts = rpmtsUnlink(ts, "InstallSourcePackage");
 
     return rc;
@@ -1586,7 +1593,7 @@ assert(psm->mi == NULL);
 		rc = RPMRC_FAIL;
 		break;
 	    }
-	    /*@-nullpass@*/	/* LCL: psm->fd != NULL here. */
+	    /*@-nullpass@*/	/* FIX: fdDup mey return NULL. */
 	    xx = Fflush(psm->fd);
 	    psm->cfd = Fdopen(fdDup(Fileno(psm->fd)), psm->rpmio_flags);
 	    /*@=nullpass@*/
@@ -1740,7 +1747,9 @@ assert(psm->mi == NULL);
 	    psm->what = RPMCALLBACK_CPIO_ERROR;
 	    psm->amount = 0;
 	    psm->total = 0;
+	    /*@-nullstate@*/ /* FIX: psm->fd may be NULL. */
 	    xx = psmStage(psm, PSM_NOTIFY);
+	    /*@=nullstate@*/
 	}
 
 	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE))
@@ -1816,13 +1825,6 @@ assert(psm->mi == NULL);
 	    /*@=superuser@*/
 	    psm->chrootDone = ts->chrootDone = 1;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 1;
-#ifdef	DYING
-	    /*@-onlytrans@*/
-	    /*@-mods@*/
-	    chroot_prefix = ts->rootDir;
-	    /*@=mods@*/
-	    /*@=onlytrans@*/
-#endif
 	}
 	break;
     case PSM_CHROOT_OUT:

@@ -110,7 +110,6 @@ struct transactionElement_s {
 
 };
 
-#if defined(_NEED_TEITERATOR)
 /**
  * Iterator across transaction elements, forward on install, backward on erase.
  */
@@ -121,7 +120,6 @@ struct teIterator_s {
     int ocsave;			/*!< last returned iterator index. */
     int oc;			/*!< iterator index. */
 };
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -431,7 +429,6 @@ rpmDepSet teGetDS(transactionElement te, rpmTag tag)
 TFI_t teGetFI(transactionElement te, rpmTag tag)
 	/*@*/;
 
-#if defined(_NEED_TEITERATOR)
 /**
  * Return transaction element index.
  * @param tei		transaction element iterator
@@ -498,8 +495,6 @@ transactionElement teNextIterator(teIterator tei)
 /*@dependent@*/ /*@null@*/
 transactionElement teNext(teIterator tei, rpmTransactionType type)
         /*@modifies tei @*/;
-
-#endif	/* defined(_NEED_TEITERATOR) */
 
 #ifdef __cplusplus
 }

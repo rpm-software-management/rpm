@@ -7,7 +7,10 @@
 
 #include "fsm.h"	/* XXX newFSM and CPIO_MAP_* */
 
-#include "depends.h"
+#include "rpmfi.h"
+#include "rpmte.h"
+#include "rpmts.h"
+
 #include "misc.h"	/* XXX stripTrailingChar */
 
 #include "debug.h"

@@ -8,8 +8,8 @@
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 #include <rpmpgp.h>		/* XXX rpmtransFree() needs pgpFreeDig */
 
-#define _NEED_TEITERATOR	1
-#include "depends.h"
+#include "rpmte.h"
+#include "rpmts.h"
 
 #include "rpmdb.h"		/* XXX stealing db->db_mode. */
 
@@ -102,9 +102,19 @@ char * hGetNEVR(Header h, const char ** np)
 void rpmtransClean(rpmTransactionSet ts)
 {
     if (ts) {
-	HFD_t hfd = headerFreeData;
+	teIterator pi; transactionElement p;
+
+	/* Clean up after dependency checks. */
+	pi = teInitIterator(ts);
+	while ((p = teNextIterator(pi)) != NULL)
+	    teCleanDS(p);
+	pi = teFreeIterator(pi);
+
+	ts->addedPackages = alFree(ts->addedPackages);
+	ts->numAddedPackages = 0;
+
 	if (ts->sig != NULL)
-	    ts->sig = hfd(ts->sig, ts->sigtype);
+	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
 	if (ts->dig != NULL)
 	    ts->dig = pgpFreeDig(ts->dig);
     }
@@ -124,18 +134,8 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 
 	(void) rpmtsCloseDB(ts);
 
-	for (pi = teInitIterator(ts), oc = 0; (p = teNextIterator(pi)) != NULL; oc++) {
-/*@-type -unqualifiedtrans @*/
-	    ts->order[oc] = teFree(ts->order[oc]);
-/*@=type =unqualifiedtrans @*/
-	}
-	pi = teFreeIterator(pi);
-/*@-type +voidabstract @*/	/* FIX: double indirection */
-	ts->order = _free(ts->order);
-/*@=type =voidabstract @*/
-
-	ts->addedPackages = alFree(ts->addedPackages);
 	ts->availablePackages = alFree(ts->availablePackages);
+	ts->numAvailablePackages = 0;
 	ts->di = _free(ts->di);
 	ts->removedPackages = _free(ts->removedPackages);
 	if (ts->scriptFd != NULL) {
@@ -145,6 +145,16 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	}
 	ts->rootDir = _free(ts->rootDir);
 	ts->currDir = _free(ts->currDir);
+
+	for (pi = teInitIterator(ts), oc = 0; (p = teNextIterator(pi)) != NULL; oc++) {
+/*@-type -unqualifiedtrans @*/
+	    ts->order[oc] = teFree(ts->order[oc]);
+/*@=type =unqualifiedtrans @*/
+	}
+	pi = teFreeIterator(pi);
+/*@-type +voidabstract @*/	/* FIX: double indirection */
+	ts->order = _free(ts->order);
+/*@=type =voidabstract @*/
 
 /*@-nullstate@*/	/* FIX: partial annotations */
 	rpmtransClean(ts);
@@ -203,16 +213,13 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->chrootDone = 0;
 
     ts->numAddedPackages = 0;
-    ts->addedPackages = alCreate(ts->delta);
-
+    ts->addedPackages = NULL;
     ts->numAvailablePackages = 0;
-    ts->availablePackages = alCreate(ts->delta);
-
-    ts->orderAlloced = ts->delta;
+    ts->availablePackages = NULL;
+    ts->numAddedPackages = 0;
+    ts->orderAlloced = 0;
     ts->orderCount = 0;
-/*@-type -abstract@*/
-    ts->order = xcalloc(ts->orderAlloced, sizeof(*ts->order));
-/*@=type =abstract@*/
+    ts->order = NULL;
 
     ts->sig = NULL;
     ts->dig = NULL;

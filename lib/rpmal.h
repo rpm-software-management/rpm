@@ -13,9 +13,11 @@ typedef /*@abstract@*/ struct availableList_s *		availableList;
  * @param delta		no. of entries to add on each realloc
  * @return al		new available list
  */
+/*@-exportlocal@*/
 /*@only@*/
 availableList alCreate(int delta)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Free available packages, items, and directory members.
@@ -32,24 +34,24 @@ availableList alFree(/*@only@*/ /*@null@*/ availableList al)
  * @param pkgKey	package key
  */
 /*@-exportlocal@*/
-void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
+void alDelPackage(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
 	/*@modifies al @*/;
 /*@=exportlocal@*/
 
 /**
  * Add package to available list.
- * @param al		available list
+ * @param alistp	address of available list
  * @param pkgKey	package key, RPMAL_NOMATCH to force an append
  * @param key		associated file name/python object
  * @param provides	provides dependency set
  * @param fi		file info set
  * @return		available package index
  */
-alKey alAddPackage(availableList al,
+alKey alAddPackage(availableList * alistp,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmDepSet provides, /*@null@*/ TFI_t fi)
-	/*@modifies al, provides, fi @*/;
+	/*@modifies *alistp, provides, fi @*/;
 
 /**
  * Add package provides to available list index.
@@ -68,7 +70,7 @@ void alAddProvides(availableList al,
  * Generate index for available list.
  * @param al		available list
  */
-void alMakeIndex(availableList al)
+void alMakeIndex(/*@null@*/ availableList al)
 	/*@modifies al @*/;
 
 /**

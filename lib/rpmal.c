@@ -6,7 +6,9 @@
 
 #include <rpmlib.h>
 
-#include "depends.h"
+#include "rpmal.h"
+#include "rpmds.h"
+#include "rpmfi.h"
 
 #include "debug.h"
 
@@ -287,7 +289,7 @@ void alDelPackage(availableList al, alKey pkgKey)
     availablePackage alp;
     TFI_t fi;
 
-    if (al->list == NULL)
+    if (al == NULL || al->list == NULL)
 	return;		/* XXX can't happen */
 
     alp = al->list + pkgNum;
@@ -366,11 +368,18 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
     return;
 }
 
-alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key,
+alKey alAddPackage(availableList * alistp, alKey pkgKey, fnpyKey key,
 		rpmDepSet provides, TFI_t fi)
 {
-    alNum pkgNum = alKey2Num(al, pkgKey);
+    alNum pkgNum;
+    availableList al;
     availablePackage alp;
+
+    /* If list doesn't exist yet, create. */
+    if (*alistp == NULL)
+	*alistp = alCreate(5);
+    al = *alistp;
+    pkgNum = alKey2Num(al, pkgKey);
 
     if (pkgNum >= 0 && pkgNum < al->size) {
 	alDelPackage(al, pkgKey);
@@ -566,10 +575,12 @@ assert(ix < 0x10000);
 
 void alMakeIndex(availableList al)
 {
-    availableIndex ai = &al->index;
+    availableIndex ai;
     availablePackage alp;
     int i;
 
+    if (al == NULL) return;
+    ai = &al->index;
     if (ai->size || al->list == NULL) return;
 
     for (i = 0; i < al->size; i++) {

@@ -278,7 +278,11 @@ static void printUsage(void)
 }
 
 /*@-mods@*/ /* FIX: shrug */
-int main(int argc, const char ** argv, char ** envp)
+#if defined(__GLIBC__) || defined(__LCLINT__)
+int main(int argc, const char ** argv)
+#else
+int main(int argc, const char ** argv, /*@unused@*/ char ** envp)
+#endif
 	/*@globals __assert_program_name, rpmEVR, RPMVERSION,
 		rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem, internalState@*/
@@ -329,7 +333,7 @@ int main(int argc, const char ** argv, char ** envp)
 #endif
     setprogname(argv[0]);	/* Retrofit glibc __progname */
 
-#if !defined(__GLIBC__)
+#if !defined(__GLIBC__) && !defined(__LCLINT__)
     environ = envp;
 #endif  
 

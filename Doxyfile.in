@@ -360,7 +360,6 @@ INPUT                  = \
 	@top_srcdir@/lib/cpio.c \
 	@top_srcdir@/lib/cpio.h \
 	@top_srcdir@/lib/depends.c \
-	@top_srcdir@/lib/depends.h \
 	@top_srcdir@/lib/formats.c \
 	@top_srcdir@/lib/fs.c \
 	@top_srcdir@/lib/fsm.c \

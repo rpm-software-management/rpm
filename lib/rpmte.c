@@ -4,8 +4,12 @@
  */
 #include "system.h"
 
-#define	_NEED_TEITERATOR	1
 #include "psm.h"
+
+#include "rpmds.h"
+#include "rpmfi.h"
+#include "rpmte.h"
+#include "rpmts.h"
 
 #include "debug.h"
 
@@ -454,6 +458,9 @@ transactionElement teNextIterator(teIterator tei)
 {
     transactionElement te = NULL;
     int oc = -1;
+
+    if (tei == NULL || tei->ts == NULL || tei->ts->order == NULL)
+	return te;
 
     if (tei->reverse) {
 	if (tei->oc >= 0)			oc = tei->oc--;

@@ -8,7 +8,6 @@
  * @todo Eliminate, merge into rpmlib.
  */
 
-#include "psm.h"
 #include "rpmbuild.h"
 
 /**

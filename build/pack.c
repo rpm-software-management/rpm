@@ -7,9 +7,11 @@
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
-#include "buildio.h"
 
-#include "depends.h"
+#include "psm.h"
+#include "rpmfi.h"
+
+#include "buildio.h"
 
 #include "legacy.h"	/* XXX providePackageNVR */
 #include "signature.h"

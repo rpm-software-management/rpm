@@ -6,8 +6,12 @@
 
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
-#define _NEED_TEITERATOR	1
 #include "psm.h"
+
+#include "rpmds.h"
+#include "rpmfi.h"
+#include "rpmte.h"
+#include "rpmts.h"
 
 #include "rpmdb.h"
 #include "fprint.h"

@@ -7,7 +7,8 @@
 #include <rpmurl.h>
 #include <rpmpgp.h>
 
-#include "depends.h"
+#include "rpmds.h"
+#include "rpmts.h"
 #include "misc.h"	/* XXX myGlobPatternP */
 
 #include "debug.h"

@@ -9,7 +9,8 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
 
-#include "depends.h"
+#include "rpmts.h"
+
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
 #include "legacy.h"	/* XXX for mdbinfile() */
 #include "rpmlead.h"

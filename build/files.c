@@ -14,6 +14,9 @@
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
 
+#include "psm.h"
+#include "rpmfi.h"
+#include "rpmte.h"
 #include "buildio.h"
 
 #include "myftw.h"

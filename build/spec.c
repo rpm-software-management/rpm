@@ -6,6 +6,8 @@
 #include "system.h"
 
 #include "buildio.h"
+#include "rpmfi.h"
+
 #include "debug.h"
 
 /*@-redecl@*/

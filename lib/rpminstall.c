@@ -6,7 +6,8 @@
 
 #include <rpmcli.h>
 
-#include "depends.h"		/* XXX ts->rpmdb */
+#include "rpmts.h"		/* XXX ts->rpmdb */
+
 #include "manifest.h"
 #include "misc.h"	/* XXX for rpmGlob() */
 #include "debug.h"
@@ -18,8 +19,6 @@
 /*@access FD_t @*/		/* XXX compared with NULL */
 /*@access IDTX @*/
 /*@access IDT @*/
-
-extern int _rpmio_debug;
 
 /*@unchecked@*/
 static int hashesPrinted = 0;
@@ -709,8 +708,6 @@ int rpmInstallSource(rpmTransactionSet ts, const char * arg,
     FD_t fd;
     int rc;
 
-fprintf(stderr, "*** rpmInstallSource(%p,%s,%p,%p)\n", ts, arg, specFilePtr, cookie);
-_rpmio_debug = -1;
     fd = Fopen(arg, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));

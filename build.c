@@ -7,6 +7,9 @@
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
+#include "rpmte.h"
+#include "rpmts.h"
+
 #include "build.h"
 #include "debug.h"
 
@@ -28,6 +31,8 @@ static int checkSpec(rpmTransactionSet ts, Header h)
      && !headerIsEntry(h, RPMTAG_CONFLICTNAME))
 	return 0;
 
+    rc = rpmtransAddPackage(ts, h, NULL, 0, NULL);
+
     rc = rpmdepCheck(ts, &conflicts, &numConflicts);
     /*@-branchstate@*/
     if (rc == 0 && conflicts) {
@@ -37,6 +42,9 @@ static int checkSpec(rpmTransactionSet ts, Header h)
 	rc = 1;
     }
     /*@=branchstate@*/
+
+    /* XXX nuke the added package. */
+    rpmtransClean(ts);
 
     return rc;
 }
