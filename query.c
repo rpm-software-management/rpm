@@ -149,6 +149,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
     const struct headerTagTableEntry * t;
     void * p;
     int type;
+    int showCount = 0;
     int notArray = 0;
     time_t dateint;
     struct tm * tstruct;
@@ -193,6 +194,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 
     switch (*tagptr) {
 	case '=':	notArray = 1, tagptr++;	break;
+	case '#':	showCount = 1, tagptr++; break;
     }
 
     tagLength = chptr - tagptr;
@@ -223,6 +225,11 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	type = RPM_STRING_TYPE;
     } else if (notArray) {
 	*cntptr = -1;
+    } else if (showCount) {
+	i = count;
+	p = &i;
+	type = RPM_INT32_TYPE;
+	count = 1;
     } else if (count > 1 && (arrayNum == -1)) {
 	p = "(array)";
 	count = 1;
