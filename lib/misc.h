@@ -7,13 +7,6 @@ void stripTrailingSlashes(char * str);
 
 int exists(char * filespec);
 
-int getOsNum(void);
-int getArchNum(void);
-char *getOsName(void);
-char *getArchName(void);
-
-void initArchOs(char *arch, char *os);
-
 int vercmp(char * one, char * two);
 
 #endif
