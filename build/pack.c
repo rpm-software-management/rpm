@@ -16,6 +16,7 @@
 #include <netinet/in.h>
 #include <pwd.h>
 #include <grp.h>
+#include <netdb.h>
 
 #include "header.h"
 #include "specP.h"
@@ -47,9 +48,14 @@ static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir);
 static int compare_fe(const void *ap, const void *bp);
 static int process_filelist(Header header, StringBuf sb, int *size, int type);
+static char *buildHost(void);
 static int add_file_aux(char *file, struct stat *sb, int flag);
 static char *getUname(uid_t uid);
 static char *getGname(gid_t gid);
+
+static void resetDocdir(void);
+static void addDocdir(char *dirname);
+static int isDoc(char *filename);
 
 static int writeMagic(Spec s, int fd, char *name, unsigned short type)
 {
@@ -162,6 +168,43 @@ static int cpio_gzip(Header header, int fd, char *tempdir)
 	return 1;
     }
 
+    return 0;
+}
+
+/* XXX hard coded limit -- only 1024 %docdir allowed */
+static char *docdirs[1024];
+static int docdir_count;
+
+static void resetDocdir(void)
+{
+    while (docdir_count--) {
+        free(docdirs[docdir_count]);
+    }
+    docdir_count = 0;
+    docdirs[docdir_count++] = strdup("/usr/doc");
+    docdirs[docdir_count++] = strdup("/usr/man");
+    docdirs[docdir_count++] = strdup("/usr/info");
+}
+
+static void addDocdir(char *dirname)
+{
+    if (docdir_count == 1024) {
+	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in addDocdir()\n");
+	exit(RPMERR_INTERNAL);
+    }
+    docdirs[docdir_count++] = strdup(dirname);
+}
+
+static int isDoc(char *filename)
+{
+    int x = 0;
+
+    while (x < docdir_count) {
+        if (strstr(filename, docdirs[x]) == filename) {
+	    return 1;
+        }
+	x++;
+    }
     return 0;
 }
 
@@ -327,6 +370,8 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
 
     fes = NULL;
     *size = 0;
+
+    resetDocdir();
     
     str = getStringBuf(sb);
     files = splitString(str, strlen(str), '\n');
@@ -346,6 +391,10 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
 		isconf = 1;
 	    } else if (!strcmp(s, "%dir")) {
 		isdir = 1;
+	    } else if (!strcmp(s, "%docdir")) {
+	        s = strtok(NULL, " \t\n");
+		addDocdir(s);
+		break;
 	    } else {
 		filename = s;
 	    }
@@ -451,6 +500,8 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
 	    fileGIDList[c] = fest->statbuf.st_gid;
 	    fileMtimesList[c] = fest->statbuf.st_mtime;
 	    fileFlagsList[c] = 0;
+	    if (isDoc(fest->file))
+	        fileFlagsList[c] |= RPMFILE_DOC;
 	    if (fest->isdoc) 
 		fileFlagsList[c] |= RPMFILE_DOC;
 	    if (fest->isconf)
@@ -519,6 +570,21 @@ static time_t buildtime;
 void markBuildTime(void)
 {
     buildtime = time(NULL);
+}
+
+static char *buildHost(void)
+{
+    static char hostname[1024];
+    static int gotit = 0;
+    struct hostent *hbn;
+
+    if (! gotit) {
+        gethostname(hostname, sizeof(hostname));
+	hbn = gethostbyname(hostname);
+	strcpy(hostname, hbn->h_name);
+	gotit = 1;
+    }
+    return(hostname);
 }
 
 int packageBinaries(Spec s)
@@ -612,6 +678,7 @@ int packageBinaries(Spec s)
 	addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
 	addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
+	addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
 	if (pr->icon) {
 	    sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR), pr->icon);
 	    stat(filename, &statbuf);
@@ -631,7 +698,7 @@ int packageBinaries(Spec s)
 	    }
 	    free(icon);
 	}
-	/* XXX - need: distribution, vendor, release, builder, buildhost */
+	/* XXX - need: distribution, vendor, release */
 	
 	writeHeader(fd, outHeader);
 	
@@ -720,7 +787,8 @@ int packageSource(Spec s)
     addEntry(outHeader, RPMTAG_OS, INT8_TYPE, &os, 1);
     addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
     addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
-    /* XXX - need: distribution, vendor, release, builder, buildhost */
+    addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
+    /* XXX - need: distribution, vendor, release */
 
     if (process_filelist(outHeader, filelist, &size, RPMLEAD_SOURCE)) {
 	return 1;
