@@ -47,7 +47,7 @@ memchunk* pkcs5Unpad(size_t blockbytes, memchunk* tmp)
 	if (tmp)
 	{
 		byte padvalue;
-		int i;
+		unsigned int i;
 
 /*@-usedef@*/ /* LCL: tmp->{data,size} not initialized? */
 		if (tmp->data == (byte*) 0)
@@ -95,7 +95,7 @@ memchunk* pkcs5UnpadCopy(/*@unused@*/ size_t blockbytes, const memchunk* src)
 {
 	memchunk* tmp;
 	byte padvalue;
-	int i;
+	unsigned int i;
 
 	if (src == (memchunk*) 0)
 		return (memchunk*) 0;

@@ -187,7 +187,7 @@ typedef struct
 {
 /*@observer@*/
     const char* name;			/*!< random generator name */
-    const unsigned int paramsize;
+    const size_t paramsize;
     const randomGeneratorSetup setup;
     const randomGeneratorSeed seed;
     const randomGeneratorNext next;
@@ -334,9 +334,9 @@ typedef struct
 {
 /*@observer@*/
     const char* name;			/*!< hash function name */
-    const unsigned int paramsize;	/*!< in bytes */
-    const unsigned int blocksize;	/*!< in bytes */
-    const unsigned int digestsize;	/*!< in bytes */
+    const size_t paramsize;		/*!< in bytes */
+    const size_t blocksize;		/*!< in bytes */
+    const size_t digestsize;		/*!< in bytes */
     const hashFunctionReset reset;
     const hashFunctionUpdate update;
     const hashFunctionDigest digest;
@@ -535,12 +535,12 @@ typedef struct
 {
 /*@observer@*/
     const char* name;			/*!< keyed hash function name */
-    const unsigned int paramsize;	/*!< in bytes */
-    const unsigned int blocksize;	/*!< in bytes */
-    const unsigned int digestsize;	/*!< in bytes */
-    const unsigned int keybitsmin;	/*!< min keysize in bits */
-    const unsigned int keybitsmax;	/*!< max keysize in bits */
-    const unsigned int keybitsinc;	/*!< keysize increment in bits */
+    const size_t paramsize;		/*!< in bytes */
+    const size_t blocksize;		/*!< in bytes */
+    const size_t digestsize;		/*!< in bytes */
+    const size_t keybitsmin;		/*!< min keysize in bits */
+    const size_t keybitsmax;		/*!< max keysize in bits */
+    const size_t keybitsinc;		/*!< keysize increment in bits */
     const keyedHashFunctionSetup setup;
     const keyedHashFunctionReset reset;
     const keyedHashFunctionUpdate update;
@@ -750,16 +750,16 @@ typedef struct
 {
 /*@observer@*/
     const char* name;			/*!< block cipher name */
-    const unsigned int paramsize;	/*!< in bytes */
-    const unsigned int blocksize;	/*!< in bytes */
-    const unsigned int keybitsmin;	/*!< min keysize in bits */
-    const unsigned int keybitsmax;	/*!< max keysize in bits */
-    const unsigned int keybitsinc;	/*!< keysize increment in bits */
+    const size_t paramsize;		/*!< in bytes */
+    const size_t blocksize;		/*!< in bytes */
+    const size_t keybitsmin;		/*!< min keysize in bits */
+    const size_t keybitsmax;		/*!< max keysize in bits */
+    const size_t keybitsinc;		/*!< keysize increment in bits */
     const blockCipherSetup setup;
     const blockCipherSetIV setiv;
     const blockCipherEncrypt encrypt;
     const blockCipherDecrypt decrypt;
-    const blockCipherFeedback   getfb;
+    const blockCipherFeedback getfb;
 } blockCipher;
 
 #ifdef __cplusplus

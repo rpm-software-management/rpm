@@ -1,4 +1,4 @@
-BeeCrypt 3.0.0 | gcc-3.3             | SuSE Linux 8.2       | Pentium 3      600 | 512 MB: 1447 (--with-arch=pentium3)
+Note: timings are average values and may vary under different conditions,
 i.e. the amount of free memory, swapped memory, amount of cpu cache, etc.
 I've tried to make them as accurate as possible, within limits.
 
@@ -10,30 +10,35 @@ Linux - I'm just a little cramped for space...
 
 BENCHmark Modular Exponentation (more is better):
 
-BeeCrypt 3.0.0 | gcc-3.2.2           | Debian Linux 3.0     | Itanium 2      900 |  12 GB: 7317 ()
-BeeCrypt 3.0.0 | gcc-3.3             | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB: 6920 (--with-arch=pentium4)
-BeeCrypt 3.0.0 | gcc-2.95.4          | Debian Linux 3.0     | Alpha EV6.7    666 |   2 GB: 5742 ()
-BeeCrypt 3.0.0 | gcc-2.96            | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB: 3280 (--with-arch=pentiumpro)
-BeeCrypt 3.0.0 | gcc-3.2.2           | AIX 5.1              | POWER3-II      333 | 512 MB: 1782 (--with-arch=powerpc64)
-BeeCrypt 3.0.0 | gcc-3.3             | SuSE Linux 8.2       | Pentium 3      600 | 512 MB: 1447 (--with-arch=pentium3)
-BeeCrypt 3.0.0 | gcc-3.2.2           | AIX 5.1              | POWER3-II      333 | 512 MB:  756 ()
-BeeCrypt 3.0.0 | Forte C 5.1         | Solaris 8            | UltraSparc II  400 |   4 GB:  425 (--with-arch=sparcv8plus)
-BeeCrypt 3.0.0 |                     | Debian Linux 3.0     | StrongARM 1110 128 |  32 MB:  341 ()
-BeeCrypt 3.0.0 | gcc-2.95.4          | Debian Linux 3.0r1   | M68030          25 |  36 MB:    8 ()
+BeeCrypt 3.0.0 | gcc-3.x             | RedHat Linux         | Opteron MP    1600 |       : 17230
+BeeCrypt 3.0.0 | gcc-3.2.2           | Debian Linux 3.0     | Itanium 2      900 |  12 GB:  7317
+BeeCrypt 3.0.0 | gcc-3.3             | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB:  6920 [--with-arch=pentium4]
+BeeCrypt 3.0.0 | gcc-2.95.4          | Debian Linux 3.0     | Alpha EV6.7    666 |   2 GB:  5742
+BeeCrypt 3.0.0 | gcc-2.96            | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB:  3280 [--with-arch=pentiumpro]
+BeeCrypt 3.0.0 | gcc-3.x             | RedHat Linux         | POWER4+       1200 |       :  2592
+BeeCrypt 3.0.0 | gcc-3.x             | RedHat Linux         | P3 Xeon        900 |       :  2169
+BeeCrypt 3.0.0 | gcc-3.2.2           | AIX 5.1              | POWER3-II      333 | 512 MB:  1782 [--with-arch=powerpc64]
+BeeCrypt 3.0.0 | gcc-3.x             | RedHat Linux         | zSeries 900        |       :  1687 (s390x)
+BeeCrypt 3.0.0 | gcc-3.3             | SuSE Linux 8.2       | Pentium 3      600 | 512 MB:  1447 [--with-arch=pentium3]
+BeeCrypt 3.0.0 | gcc-3.2.2           | AIX 5.1              | POWER3-II      333 | 512 MB:   756
+BeeCrypt 3.0.0 | Forte C 5.1         | Solaris 8            | UltraSparc II  400 |   4 GB:   425 [--with-arch=sparcv8plus]
+BeeCrypt 3.0.0 |                     | Debian Linux 3.0     | StrongARM 1110 128 |  32 MB:   341
+BeeCrypt 3.0.0 | gcc-2.95.4          | Debian Linux 3.0r1   | M68040          33 |  52 MB:    24
+BeeCrypt 3.0.0 | gcc-2.95.4          | Debian Linux 3.0r1   | M68030          25 |  36 MB:     8
 
 BENCHmark Hash Function (more is better):
 
 MD5
-BeeCrypt 3.0.0 | gcc-2.96            | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB: 137.0 MB/s (--with-arch=pentiumpro)
+BeeCrypt 3.0.0 | gcc-2.96            | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB: 137.0 MB/s [--with-arch=pentiumpro]
 
 SHA-1
-BeeCrypt 3.0.0 | gcc-2.96            | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB:  77.0 MB/s (--with-arch=pentiumpro)
+BeeCrypt 3.0.0 | gcc-2.96            | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB:  77.0 MB/s [--with-arch=pentiumpro]
 
 SHA-256
-BeeCrypt 3.0.0 | gcc-2.96            | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB:  37.8 MB/s (--with-arch=pentiumpro)
+BeeCrypt 3.0.0 | gcc-2.96            | RedHat AS 2.1        | P4 Xeon       2400 |   4 GB:  37.8 MB/s [--with-arch=pentiumpro]
 
 BENCHmark Block Cipher (more is better):
 
 AES, 128 bits
 
-BLowfish, 128 bits
+Blowfish, 128 bits

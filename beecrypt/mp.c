@@ -1028,7 +1028,7 @@ size_t mprshiftlsz(size_t size, mpw* data)
 	/* count 'all zero' words and move src pointer */
 	while (size--)
 	{
-		/* test if we a non-zero word */
+		/* test if we have a non-zero word */
 		if ((carry = *(slide--)))
 		{
 			/* count 'least signification zero bits and set zbits counter */
@@ -1041,6 +1041,9 @@ size_t mprshiftlsz(size_t size, mpw* data)
 		}
 		zwords++;
 	}
+
+	if ((rbits == 0) && (zwords == 0))
+		return 0;
 
 	/* shouldn't happen, but let's test anyway */
 	if (size == 0)
@@ -1096,7 +1099,6 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, mpw* result, mpw* 
 	/* get the smallest returned values, and set shift to that */
 
 	shift = mprshiftlsz(size, wksp);
-
 	temp = mprshiftlsz(size, result);
 
 	if (shift > temp)

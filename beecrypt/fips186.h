@@ -51,7 +51,7 @@ typedef struct
 	sha1Param	param;
 	mpw		state[FIPS186_STATE_SIZE];
 	byte		digest[20];
-	int		digestremain;
+	unsigned char	digestremain;
 } fips186Param;
 
 #ifdef __cplusplus

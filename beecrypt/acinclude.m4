@@ -280,7 +280,7 @@ AC_DEFUN(BEECRYPT_GNU_CC,[
   fi
   if test "$ac_enable_debug" = yes; then
     BEECRYPT_CFLAGS_REM([-O2])
-    CFLAGS="$CFLAGS -Wall"
+    CFLAGS="$CFLAGS -Wall -pedantic"
   else
     # Generic optimizations, including cpu tuning
     BEECRYPT_CFLAGS_REM([-g])

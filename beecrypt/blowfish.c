@@ -323,7 +323,7 @@ int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOper
 	{
 		register uint32_t* p = bp->p;
 		register uint32_t* s = bp->s;
-		register int i, j, k;
+		register unsigned int i, j, k;
 
 		uint32_t tmp, work[2];
 

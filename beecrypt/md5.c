@@ -174,7 +174,7 @@ void md5Process(md5Param* mp)
 
 int md5Update(md5Param* mp, const byte* data, size_t size)
 {
-	register int proclength;
+	register unsigned short proclength;
 
 	#if (MP_WBITS == 64)
 	mpw add[1];
@@ -193,13 +193,13 @@ int md5Update(md5Param* mp, const byte* data, size_t size)
 /*@-type@*/
 	while (size > 0)
 	{
-		proclength = ((mp->offset + size) > 64) ? (64 - mp->offset) : size;
+		proclength = ((mp->offset + size) > 64U) ? (64U - mp->offset) : size;
 		memmove(((byte *) mp->data) + mp->offset, data, proclength);
 		size -= proclength;
 		data += proclength;
 		mp->offset += proclength;
 
-		if (mp->offset == 64)
+		if (mp->offset == 64U)
 		{
 			md5Process(mp);
 			mp->offset = 0;

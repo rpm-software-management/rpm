@@ -52,6 +52,7 @@
 #endif
 
 #if defined(_MSC_VER) || __MWERKS__
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

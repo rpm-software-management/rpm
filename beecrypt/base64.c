@@ -252,7 +252,7 @@ char * b64encode (const void * data, size_t ns)
     if (s == NULL)	return NULL;
     if (*s == '\0')	return calloc(1, sizeof(*t));
 
-    if (ns == 0) ns = strlen(s);
+    if (ns == 0) ns = strlen((const char*) s);
     nt = ((ns + 2) / 3) * 4;
 
     /* Add additional bytes necessary for eol string(s). */
@@ -316,7 +316,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
     }
 
     /*@-mustfree -compdef @*/
-    return t;
+    return (char *) t;
     /*@=mustfree =compdef @*/
 }
 /*@=globs =internalglobs =modfilesys @*/

@@ -1,5 +1,7 @@
 dnl  blowfishopt.ppc.m4
 dnl
+dnl  Note: Only tested on big-endian PowerPC!
+dnl
 dnl  Copyright (c) 2003 Bob Deblier
 dnl 
 dnl  Author: Bob Deblier <bob.deblier@pandora.be>
@@ -101,7 +103,7 @@ ifelse(ASM_BIGENDIAN,yes,`
 	li r0,0
 	lwbrx r7,r5,r0
 	li r0,4
-	lwbrx r7,r5,r0
+	lwbrx r8,r5,r0
 ')
 	
 	eblock
@@ -113,7 +115,7 @@ ifelse(ASM_BIGENDIAN,yes,`
 	li r0,4
 	stwbrx r7,r4,r0
 	li r0,0
-	stwbrx r7,r4,r0
+	stwbrx r8,r4,r0
 ')
 
 	li r3,0

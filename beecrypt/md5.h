@@ -41,7 +41,7 @@ typedef struct
 	#else
 	# error
 	#endif
-	short offset;
+	unsigned short offset;
 } md5Param;
 
 #ifdef __cplusplus

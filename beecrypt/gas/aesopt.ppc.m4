@@ -1,6 +1,6 @@
 dnl  aesopt.ppc.m4
 dnl
-dnl  NOTE: Only works for big-endian PowerPC!
+dnl  NOTE: Only tested for big-endian PowerPC!
 dnl
 dnl  Copyright (c) 2003 Bob Deblier
 dnl 

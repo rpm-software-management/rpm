@@ -26,8 +26,6 @@
 
 #include "beecrypt.h"
 
-#include <stdio.h>
-
 #ifdef __cplusplus
 inline int16_t swap16(int16_t n)
 {
