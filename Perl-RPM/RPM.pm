@@ -10,10 +10,10 @@ require Exporter;
 
 @ISA = qw(Exporter DynaLoader);
 $VERSION = '0.28';
-$revision = do { my @r=(q$Revision: 1.8 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.9 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(rpm_osname rpm_archname);
-@EXPORT_OK = @EXPORT;
+@EXPORT_OK = (@EXPORT, 'vercmp');
 
 bootstrap RPM $VERSION;
 
@@ -24,6 +24,43 @@ bootstrap_Database($VERSION);
 bootstrap_Error($VERSION);
 
 1;
+
+###############################################################################
+#
+#   Sub Name:       vercmp
+#
+#   Description:    Compare two sets of version/release values as though they
+#                   were from headers.
+#
+#   Arguments:      NAME      IN/OUT  TYPE      DESCRIPTION
+#                   $verA     in      scalar    First version component
+#                   $relA     in      scalar    First release component
+#                   $verB     in      scalar    Second version component
+#                   $relB     in      scalar    Second release component
+#
+#   Globals:        None.
+#
+#   Environment:    None.
+#
+#   Returns:        -1, 0 or 1, as a comparison operator
+#
+###############################################################################
+sub vercmp
+{
+    my ($verA, $relA, $verB, $relB) = @_;
+
+    require RPM::Header unless $INC{'RPM/Header.pm'};
+
+    my $headA = new RPM::Header;
+    my $headB = new RPM::Header;
+
+    $headA->{version} = $verA;
+    $headA->{release} = $relA;
+    $headB->{version} = $verB;
+    $headB->{release} = $relB;
+
+    $headA->cmpver($headB);
+}
 
 __END__
 
@@ -65,6 +102,20 @@ As above, but returns the architecture string instead. Again, this may not
 directly match the running system, but rather is the value that B<rpm> is
 using. B<rpm> will use the lowest-matching architecture whenever possible,
 for maximum cross-platform compatibility.
+
+=back
+
+The following utility function may be explicitly requested via B<use> or
+B<import>:
+
+=over vercmp($verA, $relA, $verB, $relB)
+
+Allows RPM-style comparison of version/release pairs without having the full
+B<RPM::Header> objects in memory. This enables programs to compare versions
+without having to worry about how RPM handles the mixture of alphanumeric
+cases that are supported internally. The return value is -1, 0 or 1, as with
+any comparison operator. This is purposefully named differently from the
+B<cmpver> method in B<RPM::Header> so as to avoid confusion.
 
 =back
 
