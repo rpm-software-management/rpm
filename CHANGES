@@ -1,3 +1,6 @@
+2.1.1 -> 2.1.2:
+	- fixed error message for unrelocateable packages
+
 2.1 -> 2.1.1:
 	- fixed -qi query format 
 
