@@ -74,6 +74,7 @@ struct option optionTable[] = {
     { "buildroot",              RPMVAR_BUILDROOT,               0 },
     { "cpiobin",                RPMVAR_CPIOBIN,                 0 },
     { "dbpath",			RPMVAR_DBPATH,			0 },
+    { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0 },
     { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0 },
     { "ftpport",		RPMVAR_FTPPORT,			0 },
@@ -244,10 +245,10 @@ static int archosCompatCacheAdd(char * name, char * fn, int linenum,
     chptr = name;
     while (*chptr && *chptr != ':') chptr++;
     if (!*chptr) {
-	error(RPMERR_RPMRC, "missing second ':' at %s:%d\n", fn, linenum);
+	error(RPMERR_RPMRC, "missing second ':' at %s:%d", fn, linenum);
 	return 1;
     } else if (chptr == name) {
-	error(RPMERR_RPMRC, "missing architecture name at %s:%d\n", fn, 
+	error(RPMERR_RPMRC, "missing architecture name at %s:%d", fn, 
 			     linenum);
 	return 1;
     }
@@ -319,18 +320,18 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
     t->short_name = strtok(NULL, " \t");
     s = strtok(NULL, " \t");
     if (! (t->name && t->short_name && s)) {
-	error(RPMERR_RPMRC, "Incomplete data line at %s:%d\n", fn, lineNum);
+	error(RPMERR_RPMRC, "Incomplete data line at %s:%d", fn, lineNum);
 	return RPMERR_RPMRC;
     }
     if (strtok(NULL, " \t")) {
-	error(RPMERR_RPMRC, "Too many args in data line at %s:%d\n",
+	error(RPMERR_RPMRC, "Too many args in data line at %s:%d",
 	      fn, lineNum);
 	return RPMERR_RPMRC;
     }
 
     t->num = strtoul(s, &s1, 10);
     if ((*s1) || (s1 == s) || (t->num == ULONG_MAX)) {
-	error(RPMERR_RPMRC, "Bad arch/os number: %s (%s:%d)\n", s,
+	error(RPMERR_RPMRC, "Bad arch/os number: %s (%s:%d)", s,
 	      fn, lineNum);
 	return(RPMERR_RPMRC);
     }
@@ -364,11 +365,11 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
     t->name = strtok(line, ": \t");
     t->defName = strtok(NULL, " \t");
     if (! (t->name && t->defName)) {
-	error(RPMERR_RPMRC, "Incomplete default line at %s:%d\n", fn, lineNum);
+	error(RPMERR_RPMRC, "Incomplete default line at %s:%d", fn, lineNum);
 	return RPMERR_RPMRC;
     }
     if (strtok(NULL, " \t")) {
-	error(RPMERR_RPMRC, "Too many args in default line at %s:%d\n",
+	error(RPMERR_RPMRC, "Too many args in default line at %s:%d",
 	      fn, lineNum);
 	return RPMERR_RPMRC;
     }
@@ -455,7 +456,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	for (chptr = start; *chptr && *chptr != ':'; chptr++);
 
 	if (! *chptr) {
-	    error(RPMERR_RPMRC, "missing ':' at %s:%d\n", fn, linenum);
+	    error(RPMERR_RPMRC, "missing ':' at %s:%d", fn, linenum);
 	    return 1;
 	}
 
@@ -464,7 +465,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	while (*chptr && isspace(*chptr)) chptr++;
 
 	if (! *chptr) {
-	    error(RPMERR_RPMRC, "missing argument for %s at %s:%d\n", 
+	    error(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
 		  start, fn, linenum);
 	    return 1;
 	}
@@ -510,7 +511,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	option = bsearch(&searchOption, optionTable, optionTableSize,
 			 sizeof(struct option), optionCompare);
 	if (!option) {
-	    error(RPMERR_RPMRC, "bad option '%s' at %s:%d\n", 
+	    error(RPMERR_RPMRC, "bad option '%s' at %s:%d", 
 			start, fn, linenum);
 	    continue;			/* aborting here is rude */
 	}
@@ -524,7 +525,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 
 		for (chptr = start; *chptr && !isspace(*chptr); chptr++);
 		if (! *chptr) {
-		    error(RPMERR_RPMRC, "missing argument for %s at %s:%d\n", 
+		    error(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
 			  option->name, fn, linenum);
 		    return 1;
 		}
@@ -532,7 +533,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 		
 		while (*chptr && isspace(*chptr)) chptr++;
 		if (! *chptr) {
-		    error(RPMERR_RPMRC, "missing argument for %s at %s:%d\n", 
+		    error(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
 			  option->name, fn, linenum);
 		    return 1;
 		}
@@ -557,8 +558,8 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 static void setDefaults(void) {
     setVar(RPMVAR_OPTFLAGS, "-O2");
     setVar(RPMVAR_SIGTYPE, "none");
-    setVar(RPMVAR_PGP_PATH, NULL);
-    setVar(RPMVAR_PGP_NAME, NULL);
+    setVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
+    setVar(RPMVAR_TOPDIR, "/usr/src/redhat");
 }
 
 static int readConfigFilesAux(char *file, int readWhat)
