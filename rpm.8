@@ -144,9 +144,11 @@ characters) and \fBprintf(3)\fP type formatters. As \fBrpm\fP
 already knows the type to print, the type specifier must be
 omitted however, and replaced by the name of the header tag to
 be printed, enclosed by \fB{}\fP characters. The 
-\fBRPMTAG_\fP portion of the tag name may be omitted, and the
-tag name may be preceded by a \fB\-\fP to format the tag as
-a date if possible.
+\fBRPMTAG_\fP portion of the tag name may be omitted.
+
+Alternate output formats may be requested by following the tag with
+\fB:\fItypetag\fR. Currently, the following types are supported: \fBoctal\fR,
+\fBdate\fR, \fBshescape\fR, \fBperms\fR, \fBfflags\fR, and \fBdepflags\fR.
 
 For example, to print only the names of the packages queried, you
 could use \fB%{NAME}\fP as the format string. To print the packages
