@@ -161,36 +161,6 @@ class BasicTestCase(unittest.TestCase):
             print '\n', '-=' * 30
             print "Running %s.test03_Signs..." % \
                   self.__class__.__name__
-	wp = rpm.mpw(11)
-	wm = -wp
-	wpp = wp + 1
-	wmm = -wpp
-	zp = long(11)
-	zm = -zp
-	zpp = zp + 1
-	zmm = -zpp
-	print "add --:\t", (wm+wm), "\t", (zm+zm)
-	print "add -+:\t", (wm+wp), "\t", (zm+zp)
-	print "add +-:\t", (wp+wm), "\t", (zp+zm)
-	print "add ++:\t", (wp+wp), "\t", (zp+zp)
-	print "sub --:\t", (wm-wm), "\t", (zm-zm)
-	print "sub -+:\t", (wm-wp), "\t", (zm-zp)
-	print "sub +-:\t", (wp-wm), "\t", (zp-zm)
-	print "sub ++:\t", (wp-wp), "\t", (zp-zp)
-	print "mul --:\t", (wm*wm), "\t", (zm*zm)
-	print "mul -+:\t", (wm*wp), "\t", (zm*zp)
-	print "mul +-:\t", (wp*wm), "\t", (zp*zm)
-	print "mul ++:\t", (wp*wp), "\t", (zp*zp)
-	print "div --:\t", (wm/wm), "\t", (zm/zm)
-	print "div -+:\t", (wm/wp), "\t", (zm/zp)
-	print "div +-:\t", (wp/wm), "\t", (zp/zm)
-	print "div ++:\t", (wp/wp), "\t", (zp/zp)
-
-	print "pow --:\t", (wm**wm), "\t", (zm**zm)
-	print "pow -+:\t", (wm**wp), "\t", (zm**zp)
-	print "pow +-:\t", (wp**wm), "\t", (zp**zm)
-	print "pow ++:\t", (wp**wp), "\t", (zp**zp)
-
 	wpa = rpm.mpw(13)
 	wma = -wpa
 	wpb = wpa - 3
@@ -199,15 +169,68 @@ class BasicTestCase(unittest.TestCase):
 	zma = -zpa
 	zpb = zpa - 3
 	zmb = -zpb
+	print "add --:\t", (wma+wmb), "\t", (zma+zmb)
+	print "add -+:\t", (wma+wpb), "\t", (zma+zpb)
+	print "add +-:\t", (wpa+wmb), "\t", (zpa+zmb)
+	print "add ++:\t", (wpa+wpb), "\t", (zpa+zpb)
+
+	print "sub --:\t", (wma-wmb), "\t", (zma-zmb)
+	print "sub -+:\t", (wma-wpb), "\t", (zma-zpb)
+	print "sub +-:\t", (wpa-wmb), "\t", (zpa-zmb)
+	print "sub ++:\t", (wpa-wpb), "\t", (zpa-zpb)
+	print "sub --:\t", (wmb-wma), "\t", (zmb-zma)
+	print "sub -+:\t", (wmb-wpa), "\t", (zmb-zpa)
+	print "sub +-:\t", (wpb-wma), "\t", (zpb-zma)
+	print "sub ++:\t", (wpb-wpa), "\t", (zpb-zpa)
+
+	print "mul --:\t", (wma*wmb), "\t", (zma*zmb)
+	print "mul -+:\t", (wma*wpb), "\t", (zma*zpb)
+	print "mul +-:\t", (wpa*wmb), "\t", (zpa*zmb)
+	print "mul ++:\t", (wpa*wpb), "\t", (zpa*zpb)
+
+	print "div --:\t", (wma/wmb), "\t", (zma/zmb)
+	print "div -+:\t", (wma/wpb), "\t", (zma/zpb)
+	print "div +-:\t", (wpa/wmb), "\t", (zpa/zmb)
+	print "div ++:\t", (wpa/wpb), "\t", (zpa/zpb)
+	print "div --:\t", (wmb/wma), "\t", (zmb/zma)
+	print "div -+:\t", (wmb/wpa), "\t", (zmb/zpa)
+	print "div +-:\t", (wpb/wma), "\t", (zpb/zma)
+	print "div ++:\t", (wpb/wpa), "\t", (zpb/zpa)
+
+	print "pow --:\t", (wma**wmb), "\t", (zma**zmb)
+	print "pow -+:\t", (wma**wpb), "\t", (zma**zpb)
+	print "pow +-:\t", (wpa**wmb), "\t", (zpa**zmb)
+	print "pow ++:\t", (wpa**wpb), "\t", (zpa**zpb)
+	print "pow --:\t", (wmb**wma), "\t", (zmb**zma)
+	print "pow -+:\t", (wmb**wpa), "\t", (zmb**zpa)
+	print "pow +-:\t", (wpb**wma), "\t", (zpb**zma)
+	print "pow ++:\t", (wpb**wpa), "\t", (zpb**zpa)
+
+#	wpa = rpm.mpw(13)
+#	wma = -wpa
+#	wpb = wpa - 3
+#	wmb = -wpb
+#	zpa = long(13)
+#	zma = -zpa
+#	zpb = zpa - 3
+#	zmb = -zpb
 	print "mod --:\t", (wma%wmb), "\t", (zma%zmb)
 	print "mod -+:\t", (wma%wpb), "\t", (zma%zpb)
 	print "mod +-:\t", (wpa%wmb), "\t", (zpa%zmb)
 	print "mod ++:\t", (wpa%wpb), "\t", (zpa%zpb)
+	print "mod --:\t", (wmb%wma), "\t", (zmb%zma)
+	print "mod -+:\t", (wmb%wpa), "\t", (zmb%zpa)
+	print "mod +-:\t", (wpb%wma), "\t", (zpb%zma)
+	print "mod ++:\t", (wpb%wpa), "\t", (zpb%zpa)
 
 	print "rem --:\t", divmod(wma, wmb), "\t", divmod(zma, zmb)
 	print "rem -+:\t", divmod(wma, wpb), "\t", divmod(zma, zpb)
 	print "rem +-:\t", divmod(wpa, wmb), "\t", divmod(zpa, zmb)
 	print "rem ++:\t", divmod(wpa, wpb), "\t", divmod(zpa, zpb)
+	print "rem --:\t", divmod(wmb, wma), "\t", divmod(zmb, zma)
+	print "rem -+:\t", divmod(wmb, wpa), "\t", divmod(zmb, zpa)
+	print "rem +-:\t", divmod(wpb, wma), "\t", divmod(zpb, zma)
+	print "rem ++:\t", divmod(wpb, wpa), "\t", divmod(zpb, zpa)
 	pass
 
     #----------------------------------------

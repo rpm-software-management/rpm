@@ -1447,6 +1447,9 @@ fprintf(stderr, "sub ++: borrow\n");
 
 	zsize -= bsize;
 
+	if (zsign < 0)
+	    (void) mpaddw(zsize, zdata, (mpw)1);
+
 	z = mpw_FromMPW(zsize, zdata, 1);
 	if (zsign < 0)
 	    z->ob_size = -z->ob_size;
