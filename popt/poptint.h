@@ -54,9 +54,11 @@ struct poptContext_s {
 #endif
 
 #ifdef HAVE_DGETTEXT
-#define POPT_(foo) dgettext("popt", foo)
+#define D_(dom, str) dgettext(dom, str)
+#define POPT_(foo) D_("popt", foo)
 #else
 #define POPT_(foo) (foo)
+#define D_(dom, str) (str)
 #endif
 
 #define N_(foo) (foo)

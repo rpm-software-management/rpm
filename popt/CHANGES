@@ -1,3 +1,7 @@
+1.1 -> 1.2.1
+	- added POPT_ARG_INTL_DOMAIN (Elliot Lee)
+	- updated Makefile's to be more GNUish (Elliot Lee)
+
 1.1 -> 1.2
 	- added popt.3 man page (Robert Lynch)
 	- don't use mmap anymore (its lack of portability isn't worth the

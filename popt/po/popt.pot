@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-10-27 11:46-0500\n"
+"POT-Creation-Date: 1998-10-29 17:51-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,10 +14,10 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: ../popthelp.c:29
+#: ../popthelp.c:31
 msgid "Show this help message"
 msgstr ""
 
-#: ../popthelp.c:30
+#: ../popthelp.c:32
 msgid "Display brief usage message"
 msgstr ""

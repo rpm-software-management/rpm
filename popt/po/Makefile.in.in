@@ -1,4 +1,6 @@
+prefix=@prefix@
 srcdir = @srcdir@
+datadir = @datadir@
 top_srcdir = @top_srcdir@
 VPATH = $(srcdir)
 
