@@ -93,13 +93,22 @@ typedef struct FileListRec_s {
 /**
  */
 typedef struct AttrRec_s {
+/*@null@*/
     const char *ar_fmodestr;
+/*@null@*/
     const char *ar_dmodestr;
+/*@null@*/
     const char *ar_user;
+/*@null@*/
     const char *ar_group;
     mode_t	ar_fmode;
     mode_t	ar_dmode;
 } * AttrRec;
+
+/*@-readonlytrans@*/
+/*@unchecked@*/ /*@observer@*/
+static struct AttrRec_s root_ar = { NULL, NULL, "root", "root", 0, 0 };
+/*@=readonlytrans@*/
 
 /* list of files */
 /*@unchecked@*/ /*@only@*/ /*@null@*/
@@ -1991,6 +2000,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     nullAttrRec(&fl.cur_ar);
     nullAttrRec(&fl.def_ar);
+    dupAttrRec(&root_ar, &fl.def_ar);	/* XXX assume %defattr(-,root,root) */
 
     fl.defVerifyFlags = RPMVERIFY_ALL;
     fl.nLangs = 0;

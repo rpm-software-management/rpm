@@ -854,7 +854,7 @@ assert(ods->Flags != NULL);
 
 }
 
-int rpmdsFind(rpmds ds, rpmds ods)
+int rpmdsFind(rpmds ds, const rpmds ods)
 {
     int comparison;
 

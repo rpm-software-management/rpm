@@ -331,8 +331,8 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
  * @return		dependency index (or -1 if not found)
  */
 /*@null@*/
-int rpmdsFind(rpmds ds, /*@null@*/ rpmds ods)
-	/*@modifies ds, ods @*/;
+int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
+	/*@modifies ds @*/;
 
 /**
  * Merge a dependency set maintaining (N,EVR,Flags) sorted order.
