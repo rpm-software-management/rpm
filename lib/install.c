@@ -693,7 +693,7 @@ static int setFileOwnerships(char * prefix, char ** fileList,
 			     enum instActions * instActions, int fileCount) {
     int i;
     char * chptr;
-    int doFork = 1;
+    int doFork = 0;
     pid_t child;
     int status;
 
