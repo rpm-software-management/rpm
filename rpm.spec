@@ -646,3 +646,4 @@ fi
 - rpm-4.0.4 release candidate.
 - add cpanflute2, another perl.req fiddle.
 - make peace with gcc-3.1, remove compiler cruft.
+- make peace with automake et al in 8.0, ugh.

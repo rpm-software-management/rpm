@@ -21,10 +21,10 @@ noinst_HEADERS = \
 	rpmal.h rpmds.h rpmfi.h rpmlead.h rpmte.h signature.h
 
 mylibpaths = \
-	-L$(top_builddir)/lib/.libs \
-	-L$(top_builddir)/rpmdb/.libs \
-	-L$(top_builddir)/rpmio/.libs \
-	-L$(top_builddir)/popt/.libs
+	-L$(top_builddir)/lib \
+	-L$(top_builddir)/rpmdb \
+	-L$(top_builddir)/rpmio \
+	-L$(top_builddir)/popt
 
 mylibs = -lrpm -lrpmdb -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
 LIBS =
@@ -92,7 +92,7 @@ trb: trb.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trb.o $(mylibs) $(LIBS)
 
 ts: ts.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ ts.o $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ ts.o $(mylibpaths) $(mylibs) $(LIBS)
 
 trhn: trhn.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trhn.o $(mylibs) $(LIBS)

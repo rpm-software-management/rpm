@@ -315,7 +315,7 @@ do
 	esac
 
 	AC_MSG_CHECKING(for $dir/lib in LIBS)
-	if test -d $dir/lib ; then
+	if test -d $dir/lib 2> /dev/null ; then
 		addlib $dir/lib
 		AC_MSG_RESULT(yes)
 	else
