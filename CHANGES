@@ -16,6 +16,7 @@
 	- create /usr/lib/rpm directory and move rpmrc et al there
 
 2.5.3 -> 2.5.4:
+	- permit --{buildroot,timecheck,test,sign} with -tX (Toshio Kuratomi).
 	- fix database rebuilds with triggers (Steve Sanberg).
 	- diagnostic message if unreadable/short source or patch file.
 	- eliminate redundant close in provide/require processing.
