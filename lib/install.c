@@ -100,7 +100,8 @@ static void freeFileMemory(struct fileMemory fileMem);
 /* 1 bad magic */
 /* 2 error */
 int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
-			    rpmNotifyFunction notify, char * labelFormat) {
+			    rpmNotifyFunction notify, char * labelFormat,
+			    char ** cookie) {
     int rc, isSource;
     Header h;
     int major, minor;
@@ -119,6 +120,14 @@ int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
 	h = NULL;
     }
 
+    if (cookie) {
+	*cookie = NULL;
+	if (h && headerGetEntry(h, RPMTAG_COOKIE, NULL, (void *) cookie,
+				NULL)) {
+	    *cookie = strdup(*cookie);
+	}
+    }
+    
     rc = installSources(h, rootdir, fd, specFile, notify, labelFormat);
     if (h) headerFree(h);
  
@@ -391,7 +400,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		toRemove = realloc(toRemove, toRemoveAlloced * sizeof(int));
 		intptr = toRemove + j;
 
-		for (j = 0; j < count; j++)
+		for (j = 0; j < matches.count; j++)
 		    *intptr++ = matches.recs[j].recOffset;
 
 		dbiFreeIndexRecord(matches);
@@ -1187,11 +1196,10 @@ static int installSources(Header h, char * rootdir, int fd,
 	for (i = 0; i < fileCount; i++)
 	    files[i].relativePath = files[i].relativePath;
 
-#if 0 /* Unfortunately this doesnt work as RPMs building code seems broken */
-	for (i = 0; i < fileCount; i++)
-	    if (files[i].flags & RPMFILE_SPECFILE) break;
-#endif
-	i = fileCount;
+	if (headerIsEntry(h, RPMTAG_COOKIE))
+	    for (i = 0; i < fileCount; i++)
+		if (files[i].flags & RPMFILE_SPECFILE) break;
+
 	if (i == fileCount) {
 	    /* find the spec file by name */
 	    for (i = 0; i < fileCount; i++) {
