@@ -106,6 +106,8 @@ int generateRPM(char *name,       /* name-version-release         */
     archiveTemp = tempnam("/usr/tmp", "rpmbuild");
     fd = open(archiveTemp, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     if (cpio_gzip(header, fd, stempdir, &archiveSize)) {
+	close(fd);
+	unlink(archiveTemp);
 	return 1;
     }
     close(fd);
@@ -128,13 +130,21 @@ int generateRPM(char *name,       /* name-version-release         */
     /* Now write the lead */
     fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     if (writeMagic(fd, name, type, sigtype)) {
+	close(fd);
+	unlink(sigtarget);
+	unlink(filename);
 	return 1;
     }
 
     /* Generate the signature */
     message(MESS_VERBOSE, "Generating signature: %d\n", sigtype);
     fflush(stdout);
-    makeSignature(sigtarget, sigtype, fd, passPhrase);
+    if (makeSignature(sigtarget, sigtype, fd, passPhrase)) {
+	close(fd);
+	unlink(sigtarget);
+	unlink(filename);
+	return 1;
+    }
 
     /* Append the header and archive */
     ifd = open(sigtarget, O_RDONLY);
@@ -1045,7 +1055,10 @@ int packageBinaries(Spec s, char *passPhrase)
 
 	/**** Make the RPM ****/
 
-	generateRPM(name, RPMLEAD_BINARY, outHeader, NULL, passPhrase);
+	if (generateRPM(name, RPMLEAD_BINARY, outHeader, NULL, passPhrase)) {
+	    /* Build failed */
+	    return 1;
+	}
 
 	freeHeader(outHeader);
 	pr = pr->next;
@@ -1163,7 +1176,10 @@ int packageSource(Spec s, char *passPhrase)
     sprintf(fullname, "%s-%s-%s", s->name, version, release);
     message(MESS_VERBOSE, "Source Packaging: %s\n", fullname);
    
-    generateRPM(fullname, RPMLEAD_SOURCE, outHeader, tempdir, passPhrase);
+    if (generateRPM(fullname, RPMLEAD_SOURCE, outHeader,
+		    tempdir, passPhrase)) {
+	return 1;
+    }
     
     /**** Now clean up ****/
 
