@@ -685,10 +685,20 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	    fl->processingFailed = 1;
 	    res = 1;
 	} else {
-	/* XXX FIXME: this is easy to do as macro expansion */
 	/* XXX WATCHOUT: buf is an arg */
-	    strcpy(buf, "%{_docdir}/%{name}-%{version}");
-	    expandMacros(spec, spec->macros, buf, BUFSIZ);
+	    {	const char *ddir, *name, *version;
+
+		headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
+			(void *) &name, NULL);
+		headerGetEntry(pkg->header, RPMTAG_VERSION, NULL,
+			(void *) &version, NULL);
+
+		ddir = rpmGetPath("%{_docdir}/", name, "-", version, NULL);
+		strcpy(buf, ddir);
+		xfree(ddir);
+	    }
+
+	/* XXX FIXME: this is easy to do as macro expansion */
 
 	    if (! fl->passedSpecialDoc) {
 		pkg->specialDoc = newStringBuf();
