@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.9 2000/06/22 08:43:12 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.10 2000/07/21 17:02:33 rjray Exp $";
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -16,7 +16,7 @@ static char * const rcsid = "$Id: Header.xs,v 1.9 2000/06/22 08:43:12 rjray Exp 
     (header) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Header *)SvIV(*(s_ptr)) : NULL; \
     if (! (header)) \
         return (err_ret);
-/* And a no-return-value version: */
+/* And a no-return version: */
 #define header_from_object(s_ptr, header, object) \
     hv_fetch_nomg((s_ptr), (object), STRUCT_KEY, STRUCT_KEY_LEN, FALSE); \
     (header) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Header *)SvIV(*(s_ptr)) : NULL;
