@@ -54,7 +54,6 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 	    }
 	    *hdr = readHeader(fd);
 	    if (! *hdr) return 2;
-	    freeHeader(*hdr);
 	}
     } else {
 	if (lead.major == 1) {
