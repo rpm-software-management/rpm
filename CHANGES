@@ -16,6 +16,7 @@
 	- added information on --nodeps to usage messages
 	- implement --timecheck and rpmrc timecheck:
 	- implement -bl
+	- catch duplicate files in file lists
 
 2.2 -> 2.2.1:
 	- made rpmRemovePackage() print message in verbose mode
