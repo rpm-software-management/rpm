@@ -1482,7 +1482,7 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     readBuff = newStringBuf();
 
     do {
-	/* Write some stuff to the process if possible */
+	/* Write any data to program */
         if (writeBytesLeft) {
 	    if ((bytesWritten =
 		  write(toProg[1], writePtr,
@@ -1495,7 +1495,7 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	    }
 	    writeBytesLeft -= bytesWritten;
 	    writePtr += bytesWritten;
-	} else if (toProg[1] >= 0) {
+	} else if (toProg[1] >= 0) {	/* close write fd */
 	    close(toProg[1]);
 	    toProg[1] = -1;
 	}
@@ -1506,24 +1506,25 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	    appendStringBuf(readBuff, buf);
 	}
 
-	/* terminate when prog dies */
-    } while (!waitpid(progPID, &status, WNOHANG));
+	/* terminate on (non-blocking) error or EOF */
+    } while (!(bytes < 0 && errno != EAGAIN || bytes == 0));
 
+    /* Clean up */
     if (toProg[1] >= 0)
     	close(toProg[1]);
     close(fromProg[0]);
     signal(SIGPIPE, oldhandler);
 
-    if (writeBytesLeft) {
-	rpmError(RPMERR_EXEC, _("failed to write all data to %s"), argv[0]);
-	return NULL;
-    }
+    /* Collect status from prog */
     waitpid(progPID, &status, 0);
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	rpmError(RPMERR_EXEC, _("%s failed"), argv[0]);
 	return NULL;
     }
-
+    if (writeBytesLeft) {
+	rpmError(RPMERR_EXEC, _("failed to write all data to %s"), argv[0]);
+	return NULL;
+    }
     return readBuff;
 }
 
