@@ -297,6 +297,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
      */
     for (fileURL = pkgURL; *fileURL; fileURL++) {
 	const char * fileName;
+	rpmRC rpmrc;
+
 	(void) urlPath(*fileURL, &fileName);
 	fd = Fopen(*fileURL, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
@@ -308,10 +310,10 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	    continue;
 	}
 
-	rc = rpmReadPackageHeader(fd, &h, &isSource, &major, NULL);
+	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, &major, NULL);
 
-	switch (rc) {
-	case 1:
+	switch (rpmrc) {
+	case RPMRC_BADMAGIC:
 	    Fclose(fd);
 	    rpmMessage(RPMMESS_ERROR, 
 			_("%s does not appear to be a RPM package\n"), 
@@ -319,12 +321,15 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	    numFailed++;
 	    pkgURL[i] = NULL;
 	    break;
+	case RPMRC_FAIL:
+	case RPMRC_SHORTREAD:
 	default:
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fileURL);
 	    numFailed++;
 	    pkgURL[i] = NULL;
 	    break;
-	case 0:
+	case RPMRC_BADSIZE:
+	case RPMRC_OK:
 	    if (isSource) {
 		sourceURL[numSRPMS++] = fileName;
 		Fclose(fd);
@@ -484,9 +489,11 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		continue;
 	    }
 
-	    if (!(transFlags & RPMTRANS_FLAG_TEST))
-		numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
-				showProgress, (void *) ((long)notifyFlags), NULL);
+	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
+		rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, NULL,
+			showProgress, (void *) ((long)notifyFlags), NULL);
+		if (rpmrc != RPMRC_OK) numFailed++;
+	    }
 
 	    Fclose(fd);
 	}
@@ -617,9 +624,11 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     if (rpmIsVerbose())
 	fprintf(stdout, _("Installing %s\n"), arg);
 
-    rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL, 
+    {	rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL,
 				 cookie);
-    if (rc == 1) {
+	rc = (rpmrc == RPMRC_OK ? 0 : 1);
+    }
+    if (rc != 0) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
 	if (specFile && *specFile) {
 	    free((void *)*specFile);

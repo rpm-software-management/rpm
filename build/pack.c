@@ -236,7 +236,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
 {
     FD_t fdi;
     Spec spec;
-    int rc;
+    rpmRC rc;
 
     if (fileName != NULL) {
 	fdi = Fopen(fileName, "r.ufdio");
@@ -271,12 +271,15 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
    /* Read the rpm lead and header */
     rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
     switch (rc) {
-    case 1:
+    case RPMRC_BADMAGIC:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
 		fileName);
 	return RPMERR_BADMAGIC;
-    case 0:
+    case RPMRC_OK:
 	break;
+    case RPMRC_FAIL:
+    case RPMRC_BADSIZE:
+    case RPMRC_SHORTREAD:
     default:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"),
 		fileName);

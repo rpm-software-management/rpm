@@ -623,13 +623,14 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	}
     }
 
-    if (failedFile)
-	free((void *)failedFile);
+    failedFile = _free(failedFile);
 
     return rc;
 }
 
-static int chkdir (const char * dpath, const char * dname)
+/**
+ */
+static rpmRC  chkdir (const char * dpath, const char * dname)
 {
     struct stat st;
     int rc;
@@ -653,42 +654,43 @@ static int chkdir (const char * dpath, const char * dname)
 	if (rc < 0) {
 	    rpmError(RPMERR_CREATE, _("cannot create %s %s\n"),
 			dname, dpath);
-	    return 2;
+	    return RPMRC_FAIL;
 	}
     }
     if ((rc = Access(dpath, W_OK))) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s\n"), dpath);
-	return 2;
+	return RPMRC_FAIL;
     }
-    return 0;
+    return RPMRC_OK;
 }
 
 /**
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @retval specFilePtr	address of spec file name
- * @return		0 on success, 1 on bad magic, 2 on error
+ * @return		rpmRC return code
  */
-static int installSources(const rpmTransactionSet ts, TFI_t fi,
+static rpmRC installSources(const rpmTransactionSet ts, TFI_t fi,
 			/*@out@*/ const char ** specFilePtr)
 {
+    HFD_t hfd = fi->hfd;
     const char * _sourcedir = rpmGenPath(ts->rootDir, "%{_sourcedir}", "");
     const char * _specdir = rpmGenPath(ts->rootDir, "%{_specdir}", "");
     const char * specFile = NULL;
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
     int i;
 
     rpmMessage(RPMMESS_DEBUG, _("installing a source package\n"));
 
     rc = chkdir(_sourcedir, "sourcedir");
     if (rc) {
-	rc = 2;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     rc = chkdir(_specdir, "specdir");
     if (rc) {
-	rc = 2;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -712,9 +714,7 @@ static int installSources(const rpmTransactionSet ts, TFI_t fi,
 	int sourcelen = strlen(_sourcedir) + 2;
 	char * t;
 
-	if (fi->dnl) {
-	    free((void *)fi->dnl); fi->dnl = NULL;
-	}
+	fi->dnl = hfd(fi->dnl, -1);
 
 	fi->dc = 2;
 	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl) + fi->fc * sizeof(*fi->dil) +
@@ -738,17 +738,17 @@ static int installSources(const rpmTransactionSet ts, TFI_t fi,
     rc = installArchive(ts, fi, 1);
 
     if (rc) {
-	rc = 2;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
 exit:
-    if (rc == 0 && specFile && specFilePtr)
+    if (rc == RPMRC_OK && specFile && specFilePtr)
 	*specFilePtr = specFile;
     else
-	free((void *)specFile);
-    if (_specdir)	free((void *)_specdir);
-    if (_sourcedir)	free((void *)_sourcedir);
+	specFile = _free(specFile);
+    _specdir = _free(_specdir);
+    _sourcedir = _free(_sourcedir);
     return rc;
 }
 
@@ -788,7 +788,7 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
+rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 			const char ** specFile,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
 			char ** cookie)
@@ -799,7 +799,7 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     int isSource;
     Header h;
     int major, minor;
-    int rc;
+    rpmRC rc;
     int i;
 
     ts->notify = notify;
@@ -811,7 +811,7 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 
     if (!isSource) {
 	rpmError(RPMERR_NOTSRPM, _("source package expected, binary found\n"));
-	rc = 2;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -821,7 +821,7 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 	    *cookie = xstrdup(*cookie);
     }
 
-    rc = rpmtransAddPackage(ts, h, fd, NULL, 0, NULL);
+    (void) rpmtransAddPackage(ts, h, fd, NULL, 0, NULL);
 
     fi->type = TR_ADDED;
     fi->ap = ts->addedPackages.list;

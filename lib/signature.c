@@ -103,35 +103,50 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
     return pgpbin;
 }
 
-static inline int checkSize(FD_t fd, int siglen, int pad, int datalen)
+/**
+ * Check package size.
+ * @todo rpmio: use fdSize rather than fstat(2) to get file size.
+ * @param fd			package file handle
+ * @param siglen		signature header size
+ * @param pad			signature padding
+ * @param datalen		length of header+payload
+ * @return 			rpmRC return code
+ */
+static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
 {
     struct stat st;
+    rpmRC rc;
 
-    fstat(Fileno(fd), &st);
+    if (fstat(Fileno(fd), &st))
+	return RPMRC_FAIL;
 
     if (!S_ISREG(st.st_mode)) {
 	rpmMessage(RPMMESS_DEBUG,
 	    _("file is not regular -- skipping size check\n"));
-	return 0;
+	return RPMRC_OK;
     }
-    rpmMessage(RPMMESS_DEBUG,
+
+    rc = (((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size)
+	? RPMRC_BADSIZE : RPMRC_OK);
+
+    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
 	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
 		sizeof(struct rpmlead)+siglen+pad+datalen,
 		sizeof(struct rpmlead), siglen, pad, datalen);
-    rpmMessage(RPMMESS_DEBUG,
+    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
 	_("  Actual size: %12d\n"), st.st_size);
 
-    return ((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size);
+    return rc;
 }
 
-int rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
+rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 {
     byte buf[2048];
     int sigSize, pad;
     int_32 type, count;
     int_32 *archSize;
     Header h = NULL;
-    int rc = 1;		/* assume failure */
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
 
     if (headerp)
 	*headerp = NULL;
@@ -144,7 +159,7 @@ int rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     switch (sig_type) {
     case RPMSIGTYPE_NONE:
 	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
-	rc = 0;
+	rc = RPMRC_OK;
 	break;
     case RPMSIGTYPE_PGP262_1024:
 	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
@@ -153,7 +168,7 @@ int rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	    break;
 	h = headerNew();
 	headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
-	rc = 0;
+	rc = RPMRC_OK;
 	break;
     case RPMSIGTYPE_MD5:
     case RPMSIGTYPE_MD5_PGP:
@@ -166,6 +181,8 @@ int rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	if (h == NULL)
 	    break;
+
+	rc = RPMRC_OK;
 	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
 
 	/* XXX Legacy headers have a HEADER_IMAGE tag added. */
@@ -177,14 +194,10 @@ int rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	    if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type,
 				(void **)&archSize, &count))
 		break;
-	    if (checkSize(fd, sigSize, pad, *archSize))
-		break;
+	    rc = checkSize(fd, sigSize, pad, *archSize);
 	}
-	if (pad) {
-	    if (timedRead(fd, buf, pad) != pad)
-		break;
-	}
-	rc = 0;
+	if (pad && timedRead(fd, buf, pad) != pad)
+	    rc = RPMRC_SHORTREAD;
 	break;
     default:
 	break;

@@ -1721,13 +1721,14 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 			    alp->key, ts->notifyData);
 		if (alp->fd) {
 		    Header h;
+		    rpmRC rpmrc;
 
 		    headerFree(hdrs[i]);
 		    hdrs[i] = NULL;
-		    rc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
-		    if (rc) {
-			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-				    alp->key, ts->notifyData);
+		    rpmrc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
+		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
+			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
+					0, 0, alp->key, ts->notifyData);
 			alp->fd = NULL;
 			ourrc++;
 		    } else {

@@ -48,9 +48,9 @@ Header rpmNewSignature(void);
  * @param fd		file handle
  * @retval header	address of (signature) header
  * @param sig_type	type of signature header to read (from lead).
- * @return		0 on success, 1 on error
+ * @return		rpmRC return code
  */
-int rpmReadSignature(FD_t fd, /*@out@*/ Header *header, sigType sig_type);
+rpmRC rpmReadSignature(FD_t fd, /*@out@*/ Header *header, sigType sig_type);
 
 /** \ingroup signature
  * Write signature header.

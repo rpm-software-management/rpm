@@ -15,6 +15,16 @@
 /*@access Header@*/			/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
+}
+
 /* ======================================================================== */
 static char * permsString(int mode)
 {
@@ -221,7 +231,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 		te = t + tb;
 	    }
 	    te = stpcpy(te, str);
-	    free((void *)str);
+	    str = _free(str);
 	}
     }
 
@@ -412,7 +422,7 @@ printNewSpecfile(Spec spec)
 
 	fmt[0] = '\0';
 	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}\n");
-	if (msgstr) free((void *)msgstr);
+	msgstr = _free(msgstr);
 	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr == NULL) {
 	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
@@ -447,7 +457,7 @@ printNewSpecfile(Spec spec)
 	    break;
 	}
     }
-    if (msgstr) free((void *)msgstr);
+    msgstr = _free(msgstr);
 
     for (i = 0; i < sl->sl_nlines; i++) {
 	if (sl->sl_lines[i] == NULL)
@@ -521,6 +531,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
     case RPMQV_RPM:
     {	int argc = 0;
 	const char ** argv = NULL;
+	rpmRC rpmrc;
 	int i;
 
 	rc = rpmGlob(arg, &argc, &argv);
@@ -543,12 +554,13 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 		break;
 	    }
 
-	    retcode = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	    rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 
 	    Fclose(fd);
 
-	    switch (retcode) {
-	    case 0:
+	    switch (rpmrc) {
+	    case RPMRC_BADSIZE:
+	    case RPMRC_OK:
 		if (h == NULL) {
 		    rpmError(RPMERR_QUERY,
 			_("old format source packages cannot be queried\n"));
@@ -558,11 +570,12 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 		retcode = showPackage(qva, rpmdb, h);
 		headerFree(h);
 		break;
-	    case 1:
+	    case RPMRC_BADMAGIC:
 		rpmError(RPMERR_QUERY,
 			_("%s does not appear to be a RPM package\n"), argv[i]);
 		/*@fallthrough@*/
-	    case 2:
+	    case RPMRC_SHORTREAD:
+	    case RPMRC_FAIL:
 		rpmError(RPMERR_QUERY,
 			_("query of %s failed\n"), argv[i]);
 		retcode = 1;
@@ -571,8 +584,8 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	}
 	if (argv) {
 	    for (i = 0; i < argc; i++)
-		free((void *)argv[i]);
-	    free((void *)argv);
+		argv[i] = _free(argv[i]);
+	    argv = _free(argv);
 	}
     }	break;
 
@@ -705,7 +718,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
 	}
-	free((void *)fn);
+	fn = _free(fn);
     }	break;
 
     case RPMQV_DBOFFSET:

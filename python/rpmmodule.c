@@ -1703,10 +1703,10 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     hdrObject * h;
     Header header;
     Header sigs;
-    int rc;
     FD_t fd;
     int rawFd;
     int isSource = 0;
+    rpmRC rc;
 
     if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
     fd = fdDup(rawFd);
@@ -1715,7 +1715,8 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     Fclose(fd);
 
     switch (rc) {
-      case 0:
+    case RPMRC_BADSIZE:
+    case RPMRC_OK:
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
 	h->h = header;
 	h->sigs = sigs;
@@ -1726,12 +1727,14 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
 	    isSource = 1;
 	break;
 
-      case 1:
+    case RPMRC_BADMAGIC:
 	Py_INCREF(Py_None);
 	h = (hdrObject *) Py_None;
 	break;
 
-      default:
+    case RPMRC_FAIL:
+    case RPMRC_SHORTREAD:
+    default:
 	PyErr_SetString(pyrpmError, "error reading package");
 	return NULL;
     }

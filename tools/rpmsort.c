@@ -39,6 +39,7 @@ do_tsort(const char *fileArgv[])
 
     for (fileURL = fileArgv; *fileURL; fileURL++) {
 	const char * fileName;
+	rpmRC rpmrc;
 	FD_t fd;
 
 	(void) urlPath(*fileURL, &fileName);
@@ -51,7 +52,7 @@ do_tsort(const char *fileArgv[])
             continue;
         }
 
-	rc = rpmReadPackageHeader(fd, &h, NULL, NULL, NULL);
+	rpmrc = rpmReadPackageHeader(fd, &h, NULL, NULL, NULL);
 
 	rc = rpmtransAddPackage(ts, h, NULL, fileName, 0, NULL);
 

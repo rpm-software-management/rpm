@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-12 10:41-0500\n"
+"POT-Creation-Date: 2001-02-12 13:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1472,7 +1472,7 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:114 build/pack.c:381
+#: build/build.c:114 build/pack.c:384
 msgid "Unable to open temp file.\n"
 msgstr ""
 
@@ -1789,66 +1789,66 @@ msgstr ""
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:281
+#: build/pack.c:284
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:393
+#: build/pack.c:396
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:434
+#: build/pack.c:437
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:444
+#: build/pack.c:447
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:481 lib/psm.c:1304
+#: build/pack.c:484 lib/psm.c:1304
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
 
-#: build/pack.c:496
+#: build/pack.c:499
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr ""
 
-#: build/pack.c:506
+#: build/pack.c:509
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:520
+#: build/pack.c:523
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:530
+#: build/pack.c:533
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:536
+#: build/pack.c:539
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:563 lib/psm.c:1360
+#: build/pack.c:566 lib/psm.c:1360
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:628
+#: build/pack.c:631
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:645
+#: build/pack.c:648
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -2626,11 +2626,11 @@ msgstr ""
 msgid "error creating temporary file %s\n"
 msgstr ""
 
-#: lib/package.c:118
+#: lib/package.c:119
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:173
+#: lib/package.c:179
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
@@ -2928,17 +2928,17 @@ msgstr ""
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:654
+#: lib/psm.c:655
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/psm.c:660
+#: lib/psm.c:661
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/psm.c:681
+#: lib/psm.c:683
 msgid "installing a source package\n"
 msgstr ""
 
@@ -2965,124 +2965,124 @@ msgstr ""
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
-#: lib/query.c:151
+#: lib/query.c:161
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
 
-#: lib/query.c:233
+#: lib/query.c:243
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:284
+#: lib/query.c:294
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:286
+#: lib/query.c:296
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:288
+#: lib/query.c:298
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:290
+#: lib/query.c:300
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:292
+#: lib/query.c:302
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:297
+#: lib/query.c:307
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:316 lib/query.c:361
+#: lib/query.c:326 lib/query.c:371
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:418
+#: lib/query.c:428
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/query.c:534
+#: lib/query.c:545
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:554
+#: lib/query.c:566
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:563 lib/rpminstall.c:317
+#: lib/query.c:575 lib/rpminstall.c:319
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:567
+#: lib/query.c:580
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:601
+#: lib/query.c:614
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:624
+#: lib/query.c:637
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:635
+#: lib/query.c:648
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:645
+#: lib/query.c:658
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:655
+#: lib/query.c:668
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:666
+#: lib/query.c:679
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:697
+#: lib/query.c:710
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:701
+#: lib/query.c:714
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:727
+#: lib/query.c:740
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:730
+#: lib/query.c:743
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:735
+#: lib/query.c:748
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:746 lib/rpminstall.c:558
+#: lib/query.c:759 lib/rpminstall.c:565
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3106,67 +3106,67 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:136 lib/rpmchecksig.c:270
+#: lib/rpmchecksig.c:137 lib/rpmchecksig.c:273
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:141
+#: lib/rpmchecksig.c:142
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:145
+#: lib/rpmchecksig.c:146
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:153 lib/rpmchecksig.c:284
+#: lib/rpmchecksig.c:155 lib/rpmchecksig.c:289
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:157 lib/rpmchecksig.c:289
+#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:294
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:190
+#: lib/rpmchecksig.c:192
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:196
+#: lib/rpmchecksig.c:198
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:276
+#: lib/rpmchecksig.c:279
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:438
+#: lib/rpmchecksig.c:443
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
+#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:442 lib/rpmchecksig.c:456
+#: lib/rpmchecksig.c:447 lib/rpmchecksig.c:461
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
+#: lib/rpmchecksig.c:449 lib/rpmchecksig.c:463
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:452
+#: lib/rpmchecksig.c:457
 msgid "OK"
 msgstr ""
 
@@ -3366,69 +3366,69 @@ msgstr ""
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:303 lib/rpminstall.c:481
+#: lib/rpminstall.c:305 lib/rpminstall.c:486
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:323 lib/rpminstall.c:623
+#: lib/rpminstall.c:327 lib/rpminstall.c:632
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:338
+#: lib/rpminstall.c:343
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:360
+#: lib/rpminstall.c:365
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:405
+#: lib/rpminstall.c:410
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:410
+#: lib/rpminstall.c:415
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:427
+#: lib/rpminstall.c:432
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:440
+#: lib/rpminstall.c:445
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:461
+#: lib/rpminstall.c:466
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:545
+#: lib/rpminstall.c:552
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: lib/rpminstall.c:561
+#: lib/rpminstall.c:568
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:584
+#: lib/rpminstall.c:591
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:612
+#: lib/rpminstall.c:619
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:618
+#: lib/rpminstall.c:625
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3543,121 +3543,121 @@ msgstr ""
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/signature.c:114
+#: lib/signature.c:125
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: lib/signature.c:118
+#: lib/signature.c:133
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:122
+#: lib/signature.c:137
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:146
+#: lib/signature.c:161
 msgid "No signature\n"
 msgstr ""
 
-#: lib/signature.c:150
+#: lib/signature.c:165
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: lib/signature.c:161
+#: lib/signature.c:176
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 
-#: lib/signature.c:217
+#: lib/signature.c:230
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:276
+#: lib/signature.c:289
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr ""
 
-#: lib/signature.c:287
+#: lib/signature.c:300
 msgid "pgp failed\n"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:294
+#: lib/signature.c:307
 msgid "pgp failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:299
+#: lib/signature.c:312
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:310 lib/signature.c:387
+#: lib/signature.c:323 lib/signature.c:400
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: lib/signature.c:315
+#: lib/signature.c:328
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:353 lib/signature.c:699
+#: lib/signature.c:366 lib/signature.c:712
 msgid "Couldn't exec gpg\n"
 msgstr ""
 
-#: lib/signature.c:364
+#: lib/signature.c:377
 msgid "gpg failed\n"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:371
+#: lib/signature.c:384
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:376
+#: lib/signature.c:389
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:392
+#: lib/signature.c:405
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:420
+#: lib/signature.c:433
 msgid "Generating signature using PGP.\n"
 msgstr ""
 
-#: lib/signature.c:426
+#: lib/signature.c:439
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:506 lib/signature.c:567
+#: lib/signature.c:519 lib/signature.c:580
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 
-#: lib/signature.c:640
+#: lib/signature.c:653
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 
-#: lib/signature.c:728
+#: lib/signature.c:741
 msgid "Couldn't exec pgp\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:732 lib/signature.c:785
+#: lib/signature.c:745 lib/signature.c:798
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:765
+#: lib/signature.c:778
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:777
+#: lib/signature.c:790
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 

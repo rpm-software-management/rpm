@@ -119,7 +119,8 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sig = NULL;
-    int rc = EXIT_FAILURE;
+    int res = EXIT_FAILURE;
+    rpmRC rc;
     
 #ifdef ALPHA_LOSSAGE
 l = malloc(sizeof(*l));
@@ -149,7 +150,8 @@ l = malloc(sizeof(*l));
 	    break;
 	}
 
-	if (rpmReadSignature(fd, &sig, l->signature_type)) {
+	rc = rpmReadSignature(fd, &sig, l->signature_type);
+	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
 	    goto exit;
 	}
@@ -214,12 +216,12 @@ l = malloc(sizeof(*l));
 	rename(trpm, rpm);	tmprpm[0] = '\0';
     }
 
-    rc = 0;
+    res = 0;
 
 exit:
 if (l != &lead) free(l);
-    if (fd)	manageFile(&fd, NULL, 0, rc);
-    if (ofd)	manageFile(&ofd, NULL, 0, rc);
+    if (fd)	manageFile(&fd, NULL, 0, res);
+    if (ofd)	manageFile(&ofd, NULL, 0, res);
 
     if (sig) {
 	rpmFreeSignature(sig);
@@ -235,7 +237,7 @@ if (l != &lead) free(l);
 	tmprpm[0] = '\0';
     }
 
-    return rc;
+    return res;
 }
 
 int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
@@ -255,6 +257,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
     int_32 tag, type, count;
     const void * ptr;
     int res = 0;
+    rpmRC rc;
 
 #ifdef ALPHA_LOSSAGE
 l = malloc(sizeof(*l));
@@ -280,7 +283,9 @@ l = malloc(sizeof(*l));
 	default:
 	    break;
 	}
-	if (rpmReadSignature(fd, &sig, l->signature_type)) {
+
+	rc = rpmReadSignature(fd, &sig, l->signature_type);
+	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
 	    goto bottom;
