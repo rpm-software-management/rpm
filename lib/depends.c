@@ -455,7 +455,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 	while ((start = strstr(rcProvidesString, reqName))) {
 	    if (isspace(start[i]) || !start[i])
 		return 0;
-	    start += i;
+	    rcProvidesString = start + 1;
 	}
     }
 
