@@ -16,9 +16,9 @@
 static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 
 struct machCacheEntry {
-    char * name;
+    const char * name;
     int count;
-    char ** equivs;
+    const char ** equivs;
     int visited;
 };
 
@@ -28,7 +28,7 @@ struct machCache {
 };
 
 struct machEquivInfo {
-    char * name;
+    const char * name;
     int score;
 };
 
@@ -66,8 +66,9 @@ struct canonEntry {
 
    for giggles, 'key'_canon, 'key'_compat, and 'key'_canon will also work */
 struct tableType {
-    char * key;
-    int hasCanon, hasTranslate;
+    const char * const key;
+    const int hasCanon;
+    const int hasTranslate;
     struct machEquivTable equiv;
     struct machCache cache;
     struct defaultEntry * defaults;
@@ -102,6 +103,7 @@ static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
 static char * current[2];
 static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 static struct rpmvarValue values[RPMVAR_NUM];
+static int defaultsInitialized = 0;
 
 /* prototypes */
 static int doReadRC(FD_t fd, const char * urlfn);
@@ -159,8 +161,9 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	entry = machCacheFindEntry(cache, name);
 	if (entry) {
 	    for (i = 0; i < entry->count; i++)
-		free(entry->equivs[i]);
-	    if (entry->count) free(entry->equivs);
+		xfree(entry->equivs[i]);
+	    xfree(entry->equivs);
+	    entry->equivs = NULL;
 	    entry->count = 0;
 	}
     }
@@ -284,6 +287,9 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 {
     struct canonEntry *t;
     char *s, *s1;
+    const char * tname;
+    const char * tshort_name;
+    int tnum;
 
     if (! *tableLen) {
 	*tableLen = 2;
@@ -294,10 +300,10 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
     }
     t = & ((*table)[*tableLen - 2]);
 
-    t->name = strtok(line, ": \t");
-    t->short_name = strtok(NULL, " \t");
+    tname = strtok(line, ": \t");
+    tshort_name = strtok(NULL, " \t");
     s = strtok(NULL, " \t");
-    if (! (t->name && t->short_name && s)) {
+    if (! (tname && tshort_name && s)) {
 	rpmError(RPMERR_RPMRC, _("Incomplete data line at %s:%d"), fn, lineNum);
 	return RPMERR_RPMRC;
     }
@@ -307,21 +313,22 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 	return RPMERR_RPMRC;
     }
 
-    t->num = strtoul(s, &s1, 10);
+    tnum = strtoul(s, &s1, 10);
     if ((*s1) || (s1 == s) || (t->num == ULONG_MAX)) {
 	rpmError(RPMERR_RPMRC, _("Bad arch/os number: %s (%s:%d)"), s,
 	      fn, lineNum);
 	return(RPMERR_RPMRC);
     }
 
-    t->name = xstrdup(t->name);
-    t->short_name = xstrdup(t->short_name);
+    t[0].name = xstrdup(tname);
+    t[0].short_name = xstrdup(tshort_name);
+    t[0].num = tnum;
 
     /* From A B C entry */
     /* Add  B B C entry */
-    t[1].name = xstrdup(t->short_name);
-    t[1].short_name = xstrdup(t->short_name);
-    t[1].num = t->num;
+    t[1].name = xstrdup(tshort_name);
+    t[1].short_name = xstrdup(tshort_name);
+    t[1].num = tnum;
 
     return 0;
 }
@@ -504,11 +511,10 @@ int rpmReadRC(const char * rcfiles)
 {
     char *myrcfiles, *r, *re;
     int rc;
-    static int first = 1;
 
-    if (first) {
+    if (!defaultsInitialized) {
 	setDefaults();
-	first = 0;
+	defaultsInitialized = 1;
     }
 
     if (rcfiles == NULL)
@@ -1270,6 +1276,8 @@ void rpmFreeRpmrc(void)
 		if (t->equiv.list[j].name)	xfree(t->equiv.list[j].name);
 	    }
 	    xfree(t->equiv.list);
+	    t->equiv.list = NULL;
+	    t->equiv.count = 0;
 	}
 	if (t->cache.cache) {
 	    for (j = 0; j < t->cache.size; j++) {
@@ -1279,12 +1287,14 @@ void rpmFreeRpmrc(void)
 		if (e->name)		xfree(e->name);
 		if (e->equivs) {
 		    for (k = 0; k < e->count; k++) {
-		    if (e->equivs[k])	xfree(e->equivs[k]);
+			if (e->equivs[k])	xfree(e->equivs[k]);
 		    }
 		    xfree(e->equivs);
 		}
 	    }
 	    xfree(t->cache.cache);
+	    t->cache.cache = NULL;
+	    t->cache.size = 0;
 	}
 	if (t->defaults) {
 	    for (j = 0; j < t->defaultsLength; j++) {
@@ -1292,6 +1302,8 @@ void rpmFreeRpmrc(void)
 		if (t->defaults[j].defName)	xfree(t->defaults[j].defName);
 	    }
 	    xfree(t->defaults);
+	    t->defaults = NULL;
+	    t->defaultsLength = 0;
 	}
 	if (t->canons) {
 	    for (j = 0; j < t->canonsLength; j++) {
@@ -1299,6 +1311,8 @@ void rpmFreeRpmrc(void)
 		if (t->canons[j].short_name)	xfree(t->canons[j].short_name);
 	    }
 	    xfree(t->canons);
+	    t->canons = NULL;
+	    t->canonsLength = 0;
 	}
     }
 
@@ -1310,11 +1324,20 @@ void rpmFreeRpmrc(void)
 	    if (this->arch)	xfree(this->arch);
 	    xfree(this);
 	}
-	if (values[i].value)	xfree(values[i].value);
-	if (values[i].arch)	xfree(values[i].arch);
+	if (values[i].value)
+	    xfree(values[i].value);
+	values[i].value = NULL;
+	if (values[i].arch)
+	    xfree(values[i].arch);
+	values[i].arch = NULL;
     }
-    if (current[OS])	xfree(current[OS]);
-    if (current[ARCH])	xfree(current[ARCH]);
+    if (current[OS])
+	xfree(current[OS]);
+    current[OS] = NULL;
+    if (current[ARCH])
+	xfree(current[ARCH]);
+    current[ARCH] = NULL;
+    defaultsInitialized = 0;
     return;
 }
 

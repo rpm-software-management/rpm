@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-15 10:33-0500\n"
+msgstr "POT-Creation-Date: 1999-12-16 14:22-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -3269,93 +3269,93 @@ msgstr ""
 msgid "read failed: %s (%d)"
 msgstr ""
 
-#: lib/rpmrc.c:142
+#: lib/rpmrc.c:144
 #, c-format
 msgid "missing second ':' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:145
+#: lib/rpmrc.c:147
 #, c-format
 msgid "missing architecture name at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:301
+#: lib/rpmrc.c:307
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:305
+#: lib/rpmrc.c:311
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:312
+#: lib/rpmrc.c:318
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr ""
 
-#: lib/rpmrc.c:346
+#: lib/rpmrc.c:353
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:351
+#: lib/rpmrc.c:358
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:541
+#: lib/rpmrc.c:547
 #, c-format
 msgid "Cannot expand %s"
 msgstr ""
 
-#: lib/rpmrc.c:556
+#: lib/rpmrc.c:562
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:601
+#: lib/rpmrc.c:607
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: lib/rpmrc.c:638
+#: lib/rpmrc.c:644
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:655 lib/rpmrc.c:729
+#: lib/rpmrc.c:661 lib/rpmrc.c:735
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:672 lib/rpmrc.c:694
+#: lib/rpmrc.c:678 lib/rpmrc.c:700
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmrc.c:681
+#: lib/rpmrc.c:687
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmrc.c:721
+#: lib/rpmrc.c:727
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:788
+#: lib/rpmrc.c:794
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:1156
+#: lib/rpmrc.c:1162
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1157
+#: lib/rpmrc.c:1163
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3556,11 +3556,11 @@ msgstr ""
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:221
+#: lib/uninstall.c:222
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:394
+#: lib/uninstall.c:400
 msgid "execution of script failed"
 msgstr ""
 

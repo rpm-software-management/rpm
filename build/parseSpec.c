@@ -364,10 +364,10 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
             return RPMERR_BADSPEC;
         }
 	spec->gotBuildRootURL = 1;
-	spec->buildRootURL = buildRootURL;
+	spec->buildRootURL = xstrdup(buildRootURL);
 	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
 if (_debug)
-fprintf(stderr, "*** PS buildRootURL %s macro set to %s\n", buildRootURL, buildRoot);
+fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootURL, spec->buildRootURL, buildRoot);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->inBuildArchitectures = inBuildArch;

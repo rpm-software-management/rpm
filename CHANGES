@@ -25,6 +25,8 @@
 	- fix: compressFileList was over-generating dirNames.
 	- fix: alAddPackage sorted dirNames too soon, destroying dirMapping.
 	- expose enough of legacy fdio interface to compile gnorpm.
+	- fix: missing strdup when overriding buildroot from command line
+	  argument (#1026,#5006).
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
