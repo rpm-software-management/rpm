@@ -461,6 +461,8 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     struct fileToInstall * file;
     char * chptr;
     char ** args;
+    char filelist[40] = { '\0' };
+    FILE * f;
     int len;
     int childDead = 0;
 
@@ -492,11 +494,46 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	args[i++] = "--verbose";
 
     /* note - if fileCount == 0, all files get installed */
+    /* if fileCount > 500, we use a temporary file to pass the file
+       list to cpio rather then args because we're in danger of passing
+       too much argv/env stuff */
 
-    for (j = 0; j < fileCount; j++)
-	args[i++] = files[j].fileName;
+    if (fileCount > 500) {
+	message(MESS_DEBUG, "using a /tmp filelist\n");
+	sprintf(filelist, "/tmp/rpm-cpiofilelist.%d.tmp", getpid());
+	f = fopen(filelist, "w");
+	if (!f) {
+	    error(RPMERR_CREATE, "failed to create %s: %s", filelist,
+		  strerror(errno));
+	    return 1;
+	}
+	
+	for (j = 0; j < fileCount; j++) {
+	    if ((fputs(files[j].fileName, f) == EOF) || 
+		(fputs("\n", f) == EOF)) {
+		if (errno == ENOSPC) {
+		    error(RPMERR_NOSPACE, "out of space on device");
+		} else {
+		    error(RPMERR_CREATE, "failed to create %s: %s", filelist,
+			  strerror(errno));
+		}
 
-    args[i++] = NULL;
+		fclose(f);
+		unlink(filelist);
+		return 1;
+	    }
+	}
+
+	fclose(f);
+
+	args[i++] = "--pattern-file";
+	args[i++] = filelist;
+    } else {
+	for (j = 0; j < fileCount; j++)
+	    args[i++] = files[j].fileName;
+
+	args[i++] = NULL;
+    }
     
     stream = gzdopen(fd, "r");
     pipe(p);
@@ -551,6 +588,14 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	    bytes = read(statusPipe[0], line, sizeof(line));
 
 	    while (bytes > 0) {
+		/* the sooner we erase this, the better. less chance
+		   of leaving it sitting around after a SIGINT
+		   (or SIGSEGV!) */
+		if (filelist[0]) {
+		    unlink(filelist);
+		    filelist[0] = '\0';
+		}
+
 		fileInstalled.fileName = line;
 
 		while ((chptr = (strchr(fileInstalled.fileName, '\n')))) {
@@ -595,6 +640,10 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     if (needSecondPipe) close(statusPipe[0]);
     signal(SIGPIPE, oldhandler);
     waitpid(child, &status, 0);
+
+    if (filelist[0]) {
+	unlink(filelist);
+    }
 
     if (cpioFailed || !WIFEXITED(status) || WEXITSTATUS(status)) {
 	/* this would probably be a good place to check if disk space
