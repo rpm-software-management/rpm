@@ -307,20 +307,13 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
 	    numFailed += numBinaryPackages;
 	} else if (rc) {
 	    numFailed += rc;
-	    for (i = 0; i < probs->numProblems; i++) {
-		if (!probs->probs[i].ignoreProblem) {
-		    char *msg = rpmProblemString(probs->probs[i]);
-		    rpmMessage(RPMMESS_ERROR, "%s\n", msg);
-		    free(msg);
-		}
-	    }
+	    rpmProblemSetPrint(stderr, probs);
 	}
 
 	if (probs) rpmProblemSetFree(probs);
     }
 
     if (numBinaryPackages) rpmtransFree(rpmdep);
-
 
     if (numSourcePackages && !stopInstall) {
 	for (i = 0; i < numSourcePackages; i++) {
@@ -471,41 +464,4 @@ int doSourceInstall(const char * rootdir, const char * arg, const char ** specFi
     fdClose(fd);
 
     return rc;
-}
-
-void printDepFlags(FILE * f, const char * version, int flags) {
-    if (flags)
-	fprintf(f, " ");
-
-    if (flags & RPMSENSE_LESS) 
-	fprintf(f, "<");
-    if (flags & RPMSENSE_GREATER)
-	fprintf(f, ">");
-    if (flags & RPMSENSE_EQUAL)
-	fprintf(f, "=");
-    if (flags & RPMSENSE_SERIAL)
-	fprintf(f, "S");
-
-    if (flags)
-	fprintf(f, " %s", version);
-}
-
-void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
-			     int numConflicts) {
-    int i;
-
-    for (i = 0; i < numConflicts; i++) {
-	fprintf(f, "\t%s", conflicts[i].needsName);
-	if (conflicts[i].needsFlags) {
-	    printDepFlags(stderr, conflicts[i].needsVersion, 
-			  conflicts[i].needsFlags);
-	}
-
-	if (conflicts[i].sense == RPMDEP_SENSE_REQUIRES) 
-	    fprintf(f, _(" is needed by %s-%s-%s\n"), conflicts[i].byName, 
-		    conflicts[i].byVersion, conflicts[i].byRelease);
-	else
-	    fprintf(f, _(" conflicts with %s-%s-%s\n"), conflicts[i].byName, 
-		    conflicts[i].byVersion, conflicts[i].byRelease);
-    }
 }

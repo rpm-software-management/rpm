@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-06-02 10:40-0400\n"
+"POT-Creation-Date: 1999-06-02 13:59-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: ../build.c:24 ../install.c:221 ../install.c:379
+#: ../build.c:24 ../install.c:221 ../install.c:372
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
@@ -320,7 +320,7 @@ msgstr ""
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:190 ../install.c:329
+#: ../install.c:190 ../install.c:322
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
@@ -330,7 +330,7 @@ msgstr ""
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:206 ../install.c:466
+#: ../install.c:206 ../install.c:459
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -363,43 +363,33 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:390 ../lib/query.c:717
+#: ../install.c:383 ../lib/query.c:717
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:394
+#: ../install.c:387
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: ../install.c:403
+#: ../install.c:396
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:429
+#: ../install.c:422
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:456
+#: ../install.c:449
 #, c-format
 msgid "cannot open %s\n"
 msgstr ""
 
-#: ../install.c:461
+#: ../install.c:454
 #, c-format
 msgid "Installing %s\n"
-msgstr ""
-
-#: ../install.c:505
-#, c-format
-msgid " is needed by %s-%s-%s\n"
-msgstr ""
-
-#: ../install.c:508
-#, c-format
-msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
 #: ../oldrpmdb.c:454
@@ -2663,48 +2653,58 @@ msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
 
-#: ../lib/problems.c:29
+#: ../lib/problems.c:39
 #, c-format
-msgid "package %s-%s-%s is for a different operating system"
+msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../lib/problems.c:34
+#: ../lib/problems.c:42
+#, c-format
+msgid " conflicts with %s-%s-%s\n"
+msgstr ""
+
+#: ../lib/problems.c:68
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr ""
 
-#: ../lib/problems.c:39
+#: ../lib/problems.c:73
+#, c-format
+msgid "package %s-%s-%s is for a different operating system"
+msgstr ""
+
+#: ../lib/problems.c:78
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr ""
 
-#: ../lib/problems.c:44
+#: ../lib/problems.c:83
 #, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:49
+#: ../lib/problems.c:88
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:55
+#: ../lib/problems.c:94
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:61
+#: ../lib/problems.c:100
 #, c-format
 msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
 msgstr ""
 
-#: ../lib/problems.c:67
+#: ../lib/problems.c:106
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%c on the %s filesystem"
 msgstr ""
 
-#: ../lib/problems.c:77
+#: ../lib/problems.c:118
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""

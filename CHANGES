@@ -3,6 +3,7 @@
 	- permit multiple "Provides: " lines in rpmrc (#2999).
 	- add BuildConflicts: and BuildRequires: in spec file and src rpm.
 	- fix: bigendian's with longlong file sizes (e.g. IRIX) dinna work.
+	- move printDep* routines into rpmlib for gnorpm et al.
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

@@ -5,6 +5,45 @@
 #include "depends.h"
 #include "misc.h"
 
+/* XXX FIXME: merge into problems */
+void printDepFlags(FILE * fp, const char * version, int flags) {
+    if (flags)
+	fprintf(fp, " ");
+
+    if (flags & RPMSENSE_LESS) 
+	fprintf(fp, "<");
+    if (flags & RPMSENSE_GREATER)
+	fprintf(fp, ">");
+    if (flags & RPMSENSE_EQUAL)
+	fprintf(fp, "=");
+    if (flags & RPMSENSE_SERIAL)
+	fprintf(fp, "S");
+
+    if (flags)
+	fprintf(fp, " %s", version);
+}
+
+/* XXX FIXME: merge into problems */
+void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
+			     int numConflicts) {
+    int i;
+
+    for (i = 0; i < numConflicts; i++) {
+	fprintf(fp, "\t%s", conflicts[i].needsName);
+	if (conflicts[i].needsFlags) {
+	    printDepFlags(fp, conflicts[i].needsVersion, 
+			  conflicts[i].needsFlags);
+	}
+
+	if (conflicts[i].sense == RPMDEP_SENSE_REQUIRES) 
+	    fprintf(fp, _(" is needed by %s-%s-%s\n"), conflicts[i].byName, 
+		    conflicts[i].byVersion, conflicts[i].byRelease);
+	else
+	    fprintf(fp, _(" conflicts with %s-%s-%s\n"), conflicts[i].byName, 
+		    conflicts[i].byVersion, conflicts[i].byRelease);
+    }
+}
+
 char * rpmProblemString(rpmProblem prob) {
     char * name, * version, * release;
     char * buf;
@@ -25,16 +64,16 @@ char * rpmProblemString(rpmProblem prob) {
     buf = malloc(strlen(name) + strlen(version) + strlen(release) + 400);
 
     switch (prob.type) {
-      case RPMPROB_BADOS:
-	sprintf(buf, _("package %s-%s-%s is for a different operating system"), 
-		name, version, release);
-	break;
-	
       case RPMPROB_BADARCH:
 	sprintf(buf, _("package %s-%s-%s is for a different architecture"), 
 		name, version, release);
 	break;
 
+      case RPMPROB_BADOS:
+	sprintf(buf, _("package %s-%s-%s is for a different operating system"), 
+		name, version, release);
+	break;
+	
       case RPMPROB_PKG_INSTALLED:
 	sprintf(buf, _("package %s-%s-%s is already installed"),
 		name, version, release);
@@ -73,6 +112,8 @@ char * rpmProblemString(rpmProblem prob) {
 		       prob.str1);
 	break;
 
+      case RPMPROB_REQUIRES:
+      case RPMPROB_CONFLICT:
       default:
 	sprintf(buf, _("unknown error %d encountered while manipulating "
 		"package %s-%s-%s"), prob.type, name, version, release);
@@ -82,32 +123,25 @@ char * rpmProblemString(rpmProblem prob) {
     return buf;
 }
 
-void rpmProblemSetFilter(rpmProblemSet ps, int flags) {
+void rpmProblemPrint(FILE *fp, rpmProblem prob)
+{
+    const char *msg = rpmProblemString(prob);
+    fprintf(fp, "%s\n", msg);
+    xfree(msg);
+}
+
+void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)
+{
     int i;
-    int flag;
 
-    for (i = 0; i < ps->numProblems; i++) {
-	switch (ps->probs[i].type) {
-	  case RPMPROB_BADOS:
-	    flag = RPMPROB_FILTER_IGNOREOS; break;
-	  case RPMPROB_BADARCH:
-	    flag = RPMPROB_FILTER_IGNOREARCH; break;
-	  case RPMPROB_PKG_INSTALLED:
-	    flag = RPMPROB_FILTER_REPLACEPKG; break;
-	  case RPMPROB_BADRELOCATE:
-	    flag = RPMPROB_FILTER_FORCERELOCATE; break;
-	  case RPMPROB_NEW_FILE_CONFLICT:
-	    flag = RPMPROB_FILTER_REPLACENEWFILES; break;
-	  case RPMPROB_FILE_CONFLICT:
-	    flag = RPMPROB_FILTER_REPLACEOLDFILES; break;
-	  case RPMPROB_OLDPACKAGE:
-	    flag = RPMPROB_FILTER_OLDPACKAGE; break;
-	  case RPMPROB_DISKSPACE:
-	    flag = RPMPROB_FILTER_DISKSPACE; break;
-	  default:
-	    flag = 0;
-	}
+    if (probs == NULL)
+	return;
 
-	ps->probs[i].ignoreProblem = !!(flags & flag);
+    if (fp == NULL)
+	fp = stderr;
+
+    for (i = 0; i < probs->numProblems; i++) {
+	if (!probs->probs[i].ignoreProblem)
+	    rpmProblemPrint(fp, probs->probs[i]);
     }
 }

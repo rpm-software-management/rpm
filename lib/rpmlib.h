@@ -409,9 +409,16 @@ typedef struct rpmProblemSet_s {
     rpmProblem * probs;
 } * rpmProblemSet;
 
+void printDepFlags(FILE *fp, const char *version, int flags);
+void printDepProblems(FILE *fp, struct rpmDependencyConflict *conflicts,
+	int numConflicts);
+
 char * rpmProblemString(rpmProblem prob);
+void rpmProblemPrint(FILE *fp, rpmProblem prob);
+void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs);
+
 void rpmProblemSetFree(rpmProblemSet probs);
-void rpmProblemSetFilter(rpmProblemSet ps, int flags);
+
 int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
 		       rpmProblemSet * newProbs, int flags, int ignoreSet);
