@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-11-26 16:52-0500\n"
+"POT-Creation-Date: 1999-11-26 17:29-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1769,18 +1769,18 @@ msgstr "Не могу прочитать пиктограмму: %s"
 msgid "Unknown icon type: %s"
 msgstr "Неизвестный тип пиктограммы: %s"
 
-#: build/parsePreamble.c:339
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "строка %d: Неверный тэг: %s"
 
 #. Empty field
-#: build/parsePreamble.c:347
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "строка %d: Пустой тэг: %s"
 
-#: build/parsePreamble.c:370 build/parsePreamble.c:377
+#: build/parsePreamble.c:369 build/parsePreamble.c:376
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s"
@@ -1815,22 +1815,22 @@ msgstr "строка %d: Неверный формат BuildArchitecture: %s"
 msgid "Internal error: Bogus tag %d"
 msgstr "Внутренняя ошибка: \"Левый\" тэг %d"
 
-#: build/parsePreamble.c:696
+#: build/parsePreamble.c:688
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Неверная спецификация пакета: %s"
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:694
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Пакет уже существует: %s"
 
-#: build/parsePreamble.c:729
+#: build/parsePreamble.c:721
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "строка %d: Неизвестный тэг: %s"
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:746
 msgid "Spec file can't use BuildRoot"
 msgstr "Файл spec не может использовать BuildRoot"
 

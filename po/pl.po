@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 1999-11-26 16:52-0500\n"
+"POT-Creation-Date: 1999-11-26 17:29-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1761,18 +1761,18 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Unknown icon type: %s"
 msgstr "Nieznany typ ikony: %s"
 
-#: build/parsePreamble.c:339
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "linia %d: Niepoprawna forma etykiety: %s"
 
 #. Empty field
-#: build/parsePreamble.c:347
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "linia %d: Pusta etykieta: %s"
 
-#: build/parsePreamble.c:370 build/parsePreamble.c:377
+#: build/parsePreamble.c:369 build/parsePreamble.c:376
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "linia %d: Nielegalny znak '-' w %s: %s"
@@ -1807,22 +1807,22 @@ msgstr "linia %d: B³êdny format wpisu BuildArchitecture: %s"
 msgid "Internal error: Bogus tag %d"
 msgstr "B³±d wewnêtrzny: Fa³szywa etykieta %d"
 
-#: build/parsePreamble.c:696
+#: build/parsePreamble.c:688
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "B³êdna specyfikacja pakietu: $s"
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:694
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Pakiet ju¿ istnieje: %s"
 
-#: build/parsePreamble.c:729
+#: build/parsePreamble.c:721
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "linia %d: Nieznana etykieta: %s"
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:746
 msgid "Spec file can't use BuildRoot"
 msgstr "W pliku spec nie mo¿na u¿ywaæ wpisów BuildRoot"
 

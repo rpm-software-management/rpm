@@ -29,7 +29,7 @@ librpm_la_SOURCES = \
 	lookup.c macro.c md5.c md5sum.c \
 	messages.c misc.c oldheader.c package.c problems.c query.c \
 	rebuilddb.c rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \
-	rpmio.c rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c \
+	rpmio.c rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
 	tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
 
 tagtable.c: rpmlib.h 

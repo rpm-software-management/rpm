@@ -32,20 +32,14 @@
 /* Define as 1 if you have gettext and don't want to use GNU gettext.  */
 #undef HAVE_GETTEXT
 
-/* Define if your locale.h file contains LC_MESSAGES.  */
-#undef HAVE_LC_MESSAGES
-
 /* Define to 1 if you have the stpcpy function.  */
 #undef HAVE_STPCPY
 
-/* Define as 1 if you have inet_aton() */
-#undef HAVE_INET_ATON
+/* Define if your locale.h file contains LC_MESSAGES.  */
+#undef HAVE_LC_MESSAGES
 
 /* Define as 1 if you have mntctl() (only aix?) */
 #undef HAVE_MNTCTL
-
-/* Define as 1 if your system provides realpath() */
-#undef HAVE_REALPATH
 
 /* Define as 1 if <netdb.h> defines h_errno */
 #undef HAVE_HERRNO
@@ -137,15 +131,6 @@
 
 /* define if experimental support rpm-4.0 packages is desired */
 #undef ENABLE_V4_PACKAGES
-
-/* define if experimental support for packages with bzip2 payloads is desired */
-#undef ENABLE_BZIP2_PAYLOAD
-
-/* Use the included regex.c? */
-#undef USE_GNU_REGEX
-
-/* Use the included glob.c? */
-#undef USE_GNU_GLOB
 
 ^L
 /* Leave that blank line there!!  Autoheader needs it.

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-11-26 16:52-0500\n"
+msgstr "POT-Creation-Date: 1999-11-26 17:29-0500\n"
 
 #: build.c:25 lib/rpminstall.c:246 lib/rpminstall.c:406
 #, c-format
@@ -1855,18 +1855,18 @@ msgstr "kan inte öppna: %s\n"
 msgid "Unknown icon type: %s"
 msgstr ""
 
-#: build/parsePreamble.c:339
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:347
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:370 build/parsePreamble.c:377
+#: build/parsePreamble.c:369 build/parsePreamble.c:376
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "kan inte öppna: %s\n"
@@ -1901,22 +1901,22 @@ msgstr ""
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:696
+#: build/parsePreamble.c:688
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Paket urvals parametrar:"
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:694
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:729
+#: build/parsePreamble.c:721
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:746
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 

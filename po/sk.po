@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 1999-11-26 16:52-0500\n"
+"POT-Creation-Date: 1999-11-26 17:29-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1773,18 +1773,18 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Unknown icon type: %s"
 msgstr "Neznámy typ ikony: %s"
 
-#: build/parsePreamble.c:339
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "riadok %d: Znetvorený popis: %s"
 
 #. Empty field
-#: build/parsePreamble.c:347
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "riadok %d: Prázdny popis: %s"
 
-#: build/parsePreamble.c:370 build/parsePreamble.c:377
+#: build/parsePreamble.c:369 build/parsePreamble.c:376
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
@@ -1819,22 +1819,22 @@ msgstr "riadok %d: Chybný formát BuildArchitecture: %s"
 msgid "Internal error: Bogus tag %d"
 msgstr "Interná chyba: Èudný popis %d "
 
-#: build/parsePreamble.c:696
+#: build/parsePreamble.c:688
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Chybná ¹pecifikácia balíka: %s"
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:694
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Balík u¾ existuje: %s"
 
-#: build/parsePreamble.c:729
+#: build/parsePreamble.c:721
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "riadok %d: Neznámy popis: %s"
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:746
 msgid "Spec file can't use BuildRoot"
 msgstr "Spec súbor nemô¾e pou¾i» BuildRoot"
 

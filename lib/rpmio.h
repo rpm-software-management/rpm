@@ -13,6 +13,21 @@ typedef /*@observer@*/ struct FDIO_s * FDIO_t;
 extern "C" {
 #endif
 
+#if HAVE_LIBIO_H
+#include <libio.h>
+#else
+typedef ssize_t cookie_read_function_t (void *cookie, void *buf, size_t nbytes);
+typedef ssize_t cookie_write_function_t (void *cookie, const void *buf, size_t nbytes);
+typedef int cookie_seek_function_t (void *cookie, fpos_t *pos, int whence);
+typedef int cookie_close_function_t (void *cookie);
+typedef struct {
+  cookie_read_function_t *read;
+  cookie_write_function_t *write;
+  cookie_seek_function_t *seek; 
+  cookie_close_function_t *close;
+} cookie_io_functions_t;
+#endif
+
 typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
 		const char * msg, const char * file, unsigned line);
 typedef /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd,

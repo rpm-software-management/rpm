@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-11-26 16:52-0500\n"
+"POT-Creation-Date: 1999-11-26 17:29-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1893,19 +1893,19 @@ msgstr "Nicht möglich %s zu schreiben"
 msgid "Unknown icon type: %s"
 msgstr "(unbekannter Typ)"
 
-#: build/parsePreamble.c:339
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:347
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
 # , c-format
-#: build/parsePreamble.c:370 build/parsePreamble.c:377
+#: build/parsePreamble.c:369 build/parsePreamble.c:376
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -1940,22 +1940,22 @@ msgstr "fehlende Architektur für %s bei %s:%d"
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:696
+#: build/parsePreamble.c:688
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Optionen der Paketauswahl:"
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:694
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:729
+#: build/parsePreamble.c:721
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:746
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
