@@ -1,4 +1,4 @@
-# $Id: configure.ac,v 11.220 2004/10/28 14:43:29 bostic Exp $
+# $Id: configure.ac,v 11.221 2004/11/16 01:07:57 mjc Exp $
 # Process this file with autoconf to produce a configure script.
 
 PACKAGE=db
@@ -197,8 +197,8 @@ if test "$GCC" = "yes"; then
 	CFLAGS=`echo "$CFLAGS" | sed 's/-O /-O2 /g'`
 else
 	case "$host_os" in
-	hpux11*)
-		CPPFLAGS="$CPPFLAGS -mt";;
+	hpux11.0*)	;;
+	hpux11*)	CPPFLAGS="$CPPFLAGS -mt";;
 	esac
 fi
 
@@ -443,6 +443,7 @@ fi
 AC_SEARCH_LIBS(fdatasync, rt, [dnl
     if test "$ac_cv_search_fdatasync" != "none required" ; then
         LIBJSO_LIBS="$LIBJSO_LIBS -lrt";
+        LIBSO_LIBS="$LIBSO_LIBS -lrt";
         LIBTSO_LIBS="$LIBTSO_LIBS -lrt";
     fi])
 

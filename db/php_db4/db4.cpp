@@ -56,6 +56,11 @@ struct php_DB {
     int autocommit;
 };
 
+struct php_DB_ENV {
+    DB_ENV *dbenv;
+    int autocommit;
+};
+
 static void _free_php_db_txn(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
     struct php_DB_TXN *pdbtxn = (struct php_DB_TXN *) rsrc->ptr;
@@ -90,12 +95,15 @@ static void _free_php_db(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 static void _free_php_dbenv(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 #ifndef HAVE_MOD_DB4
+    struct php_DB_ENV *pdb = (struct php_DB_ENV *)rsrc->ptr;
     DbEnv *dbe;
-    DB_ENV *dbenv = (DB_ENV *) rsrc->ptr;
-	dbe = DbEnv::get_DbEnv(dbenv);
-    if(dbe) dbe->close(0);
-	delete dbe;
+	if(pdb->dbenv) {
+		dbe = DbEnv::get_DbEnv(pdb->dbenv);
+	    if(dbe) dbe->close(0);
+		delete dbe;
+	}
 #endif
+	if(pdb) efree(pdb);
 }
 
 static zend_class_entry *db_txn_ce;
@@ -695,25 +703,38 @@ PHP_MINFO_FUNCTION(db4)
 void setDbEnv(zval *z, DB_ENV *dbenv TSRMLS_DC)
 {
     long rsrc_id;
-
-    rsrc_id = zend_register_resource(NULL, dbenv, le_dbenv);
+	struct php_DB_ENV *pdb = (struct php_DB_ENV *) emalloc(sizeof(*pdb));
+	pdb->dbenv = dbenv;
+    rsrc_id = zend_register_resource(NULL, pdb, le_dbenv);
     zend_list_addref(rsrc_id);
     add_property_resource(z, "_dbenv_ptr", rsrc_id);
 }
 
 DB_ENV *php_db4_getDbEnvFromObj(zval *z TSRMLS_DC)
 {
-    DB_ENV *dbenv;
+    struct php_DB_ENV *pdb;
     zval **rsrc;
     if(zend_hash_find(HASH_OF(z), "_dbenv_ptr", sizeof("_dbenv_ptr"), 
           (void **) &rsrc) == SUCCESS) 
     {
-        dbenv = (DB_ENV *) zend_fetch_resource(rsrc TSRMLS_CC, -1, "Db4Env", NULL, 1, le_dbenv);
-        return dbenv;
+        pdb = (struct php_DB_ENV *) zend_fetch_resource(rsrc TSRMLS_CC, -1, "Db4Env", NULL, 1, le_dbenv);
+        return pdb->dbenv;
     }
     return NULL;
 }
 
+struct php_DB_ENV *php_db4_getPhpDbEnvFromObj(zval *z TSRMLS_DC)
+{
+    struct php_DB_ENV *pdb;
+    zval **rsrc;
+    if(zend_hash_find(HASH_OF(z), "_dbenv_ptr", sizeof("_dbenv_ptr"), 
+          (void **) &rsrc) == SUCCESS) 
+    {
+        pdb = (struct php_DB_ENV *) zend_fetch_resource(rsrc TSRMLS_CC, -1, "Db4Env", NULL, 1, le_dbenv);
+        return pdb;
+    }
+    return NULL;
+}
 
 #define getDbEnvFromThis(a)        \
 do { \
@@ -1815,17 +1836,22 @@ ZEND_NAMED_FUNCTION(_wrap_new_DbEnv)
  */
 ZEND_NAMED_FUNCTION(_wrap_db_env_close) 
 {
-    DB_ENV *dbenv;
-DbEnv *dbe;
-u_int32_t flags = 0;
-int ret;
-
-getDbEnvFromThis(dbenv);
-if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &flags) == FAILURE) {
-	RETURN_FALSE;
-}
-dbe = DbEnv::get_DbEnv(dbenv);
-RETURN_BOOL(dbe->close(flags));
+    struct php_DB_ENV *pdb;
+    DbEnv *dbe;
+    u_int32_t flags = 0;
+    int ret;
+    
+    pdb = php_db4_getPhpDbEnvFromObj(getThis());
+    if(!pdb || !pdb->dbenv) { 
+      RETURN_FALSE;
+    }
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &flags) == FAILURE) {
+    	RETURN_FALSE;
+    }
+    dbe = DbEnv::get_DbEnv(pdb->dbenv);
+    dbe->close(flags);
+    pdb->dbenv = NULL;
+    RETURN_TRUE;
 }
 /* }}} */
 
@@ -1892,7 +1918,7 @@ ZEND_NAMED_FUNCTION(_wrap_db_env_open)
 {
     DB_ENV *dbenv;
     zval *self;
-    char *home;
+    char *home = NULL;
     long  homelen;
     u_int32_t flags = DB_CREATE  | DB_INIT_LOCK | DB_INIT_LOG | \
             DB_INIT_MPOOL | DB_INIT_TXN ;
@@ -1901,7 +1927,7 @@ ZEND_NAMED_FUNCTION(_wrap_db_env_open)
 
     getDbEnvFromThis(dbenv);
     self = getThis();
-    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &home, &homelen, 
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s!ll", &home, &homelen, 
         &flags, &mode) == FAILURE)
     {
         return;
@@ -1910,7 +1936,7 @@ ZEND_NAMED_FUNCTION(_wrap_db_env_open)
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "open(%s, %d, %o) failed: %s (%d) %s:%d\n", home, flags, mode, strerror(ret), ret, __FILE__, __LINE__);
         RETURN_FALSE;
     }
-    add_property_stringl(self, "home", home, homelen, 1);
+	if(home) add_property_stringl(self, "home", home, homelen, 1);
 }
 /* }}} */
 

@@ -578,6 +578,7 @@ __seq_close(seq, flags)
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
+	DB_MPOOL *dbmp;
 	int ret;
 
 	ret = 0;
@@ -585,6 +586,10 @@ __seq_close(seq, flags)
 
 	if (flags != 0)
 		ret = __db_ferr(dbenv, "DB_SEQUENCE->close", 0);
+	if (seq->seq_mutexp != NULL) {
+		dbmp = dbenv->mp_handle;
+		__db_mutex_free(dbenv, dbmp->reginfo, seq->seq_mutexp);
+	}
 	if (seq->seq_key.data != NULL)
 		__os_free(dbenv, seq->seq_key.data);
 	if (seq->seq_data.data != &seq->seq_record)

@@ -85,7 +85,7 @@ db_load_main(argc, argv)
 	int argc;
 	char *argv[];
 {
-	enum { NOTSET, FILEID_RESET, LSN_RESET, INVALID } reset;
+	enum { NOTSET, FILEID_RESET, LSN_RESET, STANDARD_LOAD } mode;
 	extern char *optarg;
 	extern int optind, __db_getopt_reset;
 	DBTYPE dbtype;
@@ -107,7 +107,7 @@ db_load_main(argc, argv)
 	if ((ret = db_load_version_check(ldg.progname)) != 0)
 		return (ret);
 
-	reset = NOTSET;
+	mode = NOTSET;
 	ldf = 0;
 	exitval = existed = 0;
 	dbtype = DB_UNKNOWN;
@@ -130,16 +130,16 @@ db_load_main(argc, argv)
 	while ((ch = getopt(argc, argv, "c:f:h:nP:r:Tt:V")) != EOF)
 		switch (ch) {
 		case 'c':
-			if (reset != NOTSET)
+			if (mode != NOTSET && mode != STANDARD_LOAD)
 				return (db_load_usage());
-			reset = INVALID;
+			mode = STANDARD_LOAD;
 
 			*clp++ = optarg;
 			break;
 		case 'f':
-			if (reset != NOTSET)
+			if (mode != NOTSET && mode != STANDARD_LOAD)
 				return (db_load_usage());
-			reset = INVALID;
+			mode = STANDARD_LOAD;
 
 			if (freopen(optarg, "r", stdin) == NULL) {
 				fprintf(stderr, "%s: %s: reopen: %s\n",
@@ -151,9 +151,9 @@ db_load_main(argc, argv)
 			ldg.home = optarg;
 			break;
 		case 'n':
-			if (reset != NOTSET)
+			if (mode != NOTSET && mode != STANDARD_LOAD)
 				return (db_load_usage());
-			reset = INVALID;
+			mode = STANDARD_LOAD;
 
 			ldf |= LDF_NOOVERWRITE;
 			break;
@@ -168,26 +168,26 @@ db_load_main(argc, argv)
 			ldf |= LDF_PASSWORD;
 			break;
 		case 'r':
-			if (reset == INVALID)
+			if (mode == STANDARD_LOAD)
 				return (db_load_usage());
 			if (strcmp(optarg, "lsn") == 0)
-				reset = LSN_RESET;
+				mode = LSN_RESET;
 			else if (strcmp(optarg, "fileid") == 0)
-				reset = FILEID_RESET;
+				mode = FILEID_RESET;
 			else
 				return (db_load_usage());
 			break;
 		case 'T':
-			if (reset != NOTSET)
+			if (mode != NOTSET && mode != STANDARD_LOAD)
 				return (db_load_usage());
-			reset = INVALID;
+			mode = STANDARD_LOAD;
 
 			ldf |= LDF_NOHEADER;
 			break;
 		case 't':
-			if (reset != NOTSET)
+			if (mode != NOTSET && mode != STANDARD_LOAD)
 				return (db_load_usage());
-			reset = INVALID;
+			mode = STANDARD_LOAD;
 
 			if (strcmp(optarg, "btree") == 0) {
 				dbtype = DB_BTREE;
@@ -230,7 +230,7 @@ db_load_main(argc, argv)
 		goto shutdown;
 
 	/* If we're resetting the LSNs, that's an entirely separate path. */
-	switch (reset) {
+	switch (mode) {
 	case FILEID_RESET:
 		exitval = dbenv->fileid_reset(
 		    dbenv, argv[0], ldf & LDF_PASSWORD ? 1 : 0);
@@ -239,7 +239,8 @@ db_load_main(argc, argv)
 		exitval = dbenv->lsn_reset(
 		    dbenv, argv[0], ldf & LDF_PASSWORD ? 1 : 0);
 		break;
-	default:
+	case NOTSET:
+	case STANDARD_LOAD:
 		while (!ldg.endofile)
 			if (db_load_load(dbenv, argv[0], dbtype, clist, ldf,
 			    &ldg, &existed) != 0)

@@ -28,7 +28,7 @@ int __rep_tally __P((DB_ENV *, REP *, int, int *, u_int32_t, roff_t));
 void __rep_cmp_vote __P((DB_ENV *, REP *, int *, DB_LSN *, int, u_int32_t, u_int32_t));
 int __rep_cmp_vote2 __P((DB_ENV *, REP *, int, u_int32_t));
 int __rep_check_doreq __P((DB_ENV *, REP *));
-void __rep_lockout __P((DB_ENV *, DB_REP *, REP *));
+void __rep_lockout __P((DB_ENV *, DB_REP *, REP *, u_int32_t));
 int __rep_region_init __P((DB_ENV *));
 int __rep_region_destroy __P((DB_ENV *));
 void __rep_dbenv_refresh __P((DB_ENV *));

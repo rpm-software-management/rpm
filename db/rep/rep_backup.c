@@ -474,6 +474,7 @@ __rep_page_req(dbenv, eid, rec)
 	if (ret == 0 && t_ret != 0)
 		ret = t_ret;
 err:
+	__os_free(dbenv, msgfp);
 	return (ret);
 }
 
@@ -690,7 +691,7 @@ __rep_update_setup(dbenv, eid, rp, rec)
 	 * code and that will clear all the flags and allow others to
 	 * proceed.
 	 */
-	__rep_lockout(dbenv, db_rep, rep);
+	__rep_lockout(dbenv, db_rep, rep, 1);
 	/*
 	 * We need to update the timestamp and kill any open handles
 	 * on this client.  The files are changing completely.
@@ -739,6 +740,8 @@ __rep_update_setup(dbenv, eid, rp, rec)
 	rep->npages = 0;
 	rep->waiting_pg = PGNO_INVALID;
 	rep->max_wait_pg = PGNO_INVALID;
+
+	__os_free(dbenv, rup);
 
 	RPRINT(dbenv, rep, (dbenv, &mb,
 	    "Update setup for %d files.", rep->nfiles));

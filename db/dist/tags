@@ -635,7 +635,7 @@ DB_TEST_SUBLOCKS	../dbinc/debug.h	/^#define	DB_TEST_SUBLOCKS(env, flags) do {			
 DB_THREAD	../dbinc/db.in	196
 DB_TIMEOUT	../dbinc/db.in	1225
 DB_TIME_NOTGRANTED	../dbinc/db.in	289
-DB_TRAIL	../env/env_open.c	923
+DB_TRAIL	../env/env_open.c	920
 DB_TRUNCATE	../dbinc/db.in	197
 DB_TXN	../dbinc/db.in	151
 DB_TXNHEAD	../dbinc/db_int.in	527
@@ -1525,7 +1525,7 @@ PGNO	../dbinc/db_page.h	/^#define	PGNO(p)		(((PAGE *)p)->pgno)$/
 PGNO_BASE_MD	../dbinc/db_page.h	34
 PGNO_INVALID	../dbinc/db_page.h	33
 POWER_OF_TWO	../dbinc/db_int.in	/^#define	POWER_OF_TWO(x)	(((x) & ((x) - 1)) == 0)$/
-PREPLISTSIZE	../rep/rep_method.c	512
+PREPLISTSIZE	../rep/rep_method.c	536
 PREV_PGNO	../dbinc/db_page.h	/^#define	PREV_PGNO(p)	(((PAGE *)p)->prev_pgno)$/
 PTHREAD_UNLOCK_ATTEMPTS	../mutex/mut_pthread.c	57
 PUTOVFL	../dbinc/hash.h	128
@@ -1612,8 +1612,8 @@ REGION_CREATE	../dbinc/region.h	229
 REGION_CREATE_OK	../dbinc/region.h	230
 REGION_ID_ENV	../dbinc/region.h	108
 REGION_JOIN_OK	../dbinc/region.h	231
-REPDBNAME	../rep/rep_method.c	407
-REPPAGENAME	../rep/rep_method.c	408
+REPDBNAME	../rep/rep_method.c	431
+REPPAGENAME	../rep/rep_method.c	432
 REP_ALIVE	../dbinc/rep.h	13
 REP_ALIVE_REQ	../dbinc/rep.h	14
 REP_ALL_REQ	../dbinc/rep.h	15
@@ -2816,7 +2816,7 @@ __db_util_logset	../common/util_log.c	/^__db_util_logset(progname, fname)$/
 __db_util_siginit	../common/util_sig.c	/^__db_util_siginit()$/
 __db_util_sigresend	../common/util_sig.c	/^__db_util_sigresend()$/
 __db_verify	../db/db_vrfy.c	/^__db_verify(dbp, name, subdb, handle, callback, fl/
-__db_verify_arg	../db/db_vrfy.c	/^__db_verify_arg(dbp, dname, flags)$/
+__db_verify_arg	../db/db_vrfy.c	/^__db_verify_arg(dbp, dname, handle, flags)$/
 __db_verify_internal	../db/db_vrfy.c	/^__db_verify_internal(dbp, fname, dname, handle, ca/
 __db_verify_pp	../db/db_vrfy.c	/^__db_verify_pp(dbp, file, database, outfile, flags/
 __db_vrfy_ccclose	../db/db_vrfyutil.c	/^__db_vrfy_ccclose(dbc)$/
@@ -3829,7 +3829,7 @@ __rep_get_limit	../rep/rep_method.c	/^__rep_get_limit(dbenv, gbytesp, bytesp)$/
 __rep_getnext	../rep/rep_record.c	/^__rep_getnext(dbenv)$/
 __rep_grow_sites	../rep/rep_util.c	/^__rep_grow_sites(dbenv, nsites)$/
 __rep_is_client	../rep/rep_util.c	/^__rep_is_client(dbenv)$/
-__rep_lockout	../rep/rep_record.c	/^__rep_lockout(dbenv, db_rep, rep)$/
+__rep_lockout	../rep/rep_record.c	/^__rep_lockout(dbenv, db_rep, rep, msg_th)$/
 __rep_log_setup	../rep/rep_backup.c	/^__rep_log_setup(dbenv, rep)$/
 __rep_loggap_req	../rep/rep_backup.c	/^__rep_loggap_req(dbenv, rep, lsnp, moregap)$/
 __rep_lsn_cmp	../rep/rep_record.c	/^__rep_lsn_cmp(lsn1, lsn2)$/

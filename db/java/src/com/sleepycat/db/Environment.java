@@ -14,7 +14,6 @@ import com.sleepycat.db.internal.DbEnv;
 
 public class Environment {
     private DbEnv dbenv;
-    private java.io.File home;
     private int autoCommitFlag;
 
     /* package */
@@ -29,7 +28,6 @@ public class Environment {
         throws DatabaseException, java.io.FileNotFoundException {
 
         this(EnvironmentConfig.checkNull(config).openEnvironment(home));
-        this.home = home;
         this.autoCommitFlag =
             ((dbenv.get_open_flags() & DbConstants.DB_INIT_TXN) == 0) ? 0 :
                 DbConstants.DB_AUTO_COMMIT;
@@ -125,7 +123,8 @@ public class Environment {
     public java.io.File getHome()
         throws DatabaseException {
 
-        return home;
+        String home = dbenv.get_home();
+        return (home == null) ? null : new java.io.File(home);
     }
 
     /* Cache management. */
@@ -307,6 +306,7 @@ public class Environment {
     public java.io.File[] getArchiveDatabases()
         throws DatabaseException {
 
+        final String home = dbenv.get_home();
         final String[] dbNames = dbenv.log_archive(DbConstants.DB_ARCH_DATA);
         final java.io.File[] dbFiles = new java.io.File[dbNames.length];
         for (int i = 0; i < dbNames.length; i++)

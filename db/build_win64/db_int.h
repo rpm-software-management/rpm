@@ -5,7 +5,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_int.h,v 11.28 2004/11/09 01:30:41 bostic Exp $
+ * $Id: db_int.in,v 11.155 2004/10/28 16:07:38 ubell Exp $
  */
 
 #ifndef _DB_INTERNAL_H_

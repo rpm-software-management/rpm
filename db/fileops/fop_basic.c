@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: fop_basic.c,v 1.31 2004/01/28 03:36:09 bostic Exp $
+ * $Id: fop_basic.c,v 1.32 2004/11/15 20:04:50 bostic Exp $
  */
 
 #include "db_config.h"
@@ -244,6 +244,7 @@ __fop_rename(dbenv, txn, oldname, newname, fid, appname, flags)
 	int ret;
 	char *n, *o;
 
+	o = n = NULL;
 	if ((ret = __db_appname(dbenv, appname, oldname, 0, NULL, &o)) != 0)
 		goto err;
 	if ((ret = __db_appname(dbenv, appname, newname, 0, NULL, &n)) != 0)
@@ -266,9 +267,9 @@ __fop_rename(dbenv, txn, oldname, newname, fid, appname, flags)
 
 	ret = __memp_nameop(dbenv, fid, newname, o, n);
 
-err:	if (o != oldname)
+err:	if (o != NULL)
 		__os_free(dbenv, o);
-	if (n != newname)
+	if (n != NULL)
 		__os_free(dbenv, n);
 	return (ret);
 }

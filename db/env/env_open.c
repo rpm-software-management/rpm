@@ -492,12 +492,9 @@ __dbenv_config(dbenv, db_home, flags)
 	if ((ret = __db_home(dbenv, db_home, flags)) != 0)
 		return (ret);
 
-	/*
-	 * If the application specified an environment directory, parse any
-	 * config file we find there.
-	 */
+	/* Parse the config file. */
 	p = NULL;
-	if (dbenv->db_home != NULL && (ret =
+	if ((ret =
 	    __db_appname(dbenv, DB_APP_NONE, "DB_CONFIG", 0, NULL, &p)) != 0)
 		return (ret);
 	if (p == NULL)

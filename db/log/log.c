@@ -1288,16 +1288,19 @@ __log_inmem_chkspace(dblp, len)
 	DB_ASSERT(lp->db_log_inmemory);
 
 	/*
+	 * Allow room for an extra header so that we don't need to check for
+	 * space when switching files.
+	 */
+	len += sizeof(HDR);
+
+	/*
 	 * If transactions are enabled and we're about to fill available space,
 	 * update the active LSN and recheck.  If transactions aren't enabled,
 	 * don't even bother checking: in that case we can always overwrite old
 	 * log records, because we're never going to abort.
-	 *
-	 * Allow room for an extra header so that we don't need to check for
-	 * space when switching files.
 	 */
 	while (TXN_ON(dblp->dbenv) &&
-	    RINGBUF_LEN(lp, lp->b_off, lp->a_off) <= len + sizeof(HDR)) {
+	    RINGBUF_LEN(lp, lp->b_off, lp->a_off) <= len) {
 		old_active_lsn = lp->active_lsn;
 		active_lsn = lp->lsn;
 

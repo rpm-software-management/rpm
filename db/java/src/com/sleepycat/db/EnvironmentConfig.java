@@ -997,11 +997,14 @@ public class EnvironmentConfig implements Cloneable {
         logRecordHandler = dbenv.get_app_dispatch();
         messageHandler = dbenv.get_msgcall();
         panicHandler = dbenv.get_paniccall();
-       // XXX: replicationTransport and envid aren't available?
+        // XXX: replicationTransport and envid aren't available?
 
         /* Other settings */
-        cacheSize = dbenv.get_cachesize();
-        cacheCount = dbenv.get_cachesize_ncache();
+        if (initializeCache) {
+            cacheSize = dbenv.get_cachesize();
+            cacheCount = dbenv.get_cachesize_ncache();
+            mmapSize = dbenv.get_mp_mmapsize();
+        }
 
         String[] dataDirArray = dbenv.get_data_dirs();
         if (dataDirArray == null)
@@ -1044,7 +1047,6 @@ public class EnvironmentConfig implements Cloneable {
             logRegionSize = 0;
         }
         messageStream = dbenv.get_message_stream();
-        mmapSize = dbenv.get_mp_mmapsize();
 
         // XXX: intentional information loss?
         password = (dbenv.get_encrypt_flags() == 0) ? null : "";

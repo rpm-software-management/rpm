@@ -147,7 +147,8 @@ __rep_start(dbenv, dbt, flags)
 	DB_REP *db_rep;
 	REP *rep;
 	u_int32_t repflags;
-	int announce, init_db, redo_prepared, ret, sleep_cnt, t_ret, was_client;
+	int announce, init_db, redo_prepared, ret, role_chg;
+	int sleep_cnt, t_ret;
 #ifdef DIAGNOSTIC
 	DB_MSGBUF mb;
 #endif
@@ -203,27 +204,34 @@ __rep_start(dbenv, dbt, flags)
 	} else
 		rep->start_th = 1;
 
+	role_chg = (F_ISSET(rep, REP_F_CLIENT) && LF_ISSET(DB_REP_MASTER)) ||
+	    (F_ISSET(rep, REP_F_MASTER) && LF_ISSET(DB_REP_CLIENT));
+
 	/*
-	 * We are about to delete the replication database.  We need to
-	 * make sure that no one else is in the midst of processing a
-	 * replication message.
+	 * Wait for any active txns or mpool ops to complete, and
+	 * prevent any new ones from occurring, only if we're
+	 * changing roles.  If we are not changing roles, then we
+	 * only need to coordinate with msg_th.
 	 */
-	for (sleep_cnt = 0; rep->msg_th != 0;) {
-		if (++sleep_cnt % 60 == 0)
-			__db_err(dbenv,
+	if (role_chg)
+		__rep_lockout(dbenv, db_rep, rep, 0);
+	else {
+		for (sleep_cnt = 0; rep->msg_th != 0;) {
+			if (++sleep_cnt % 60 == 0)
+				__db_err(dbenv,
 	"DB_ENV->rep_start waiting %d minutes for replication message thread",
-			    sleep_cnt / 60);
-		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
-		__os_sleep(dbenv, 1, 0);
-		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
+				    sleep_cnt / 60);
+			MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
+			__os_sleep(dbenv, 1, 0);
+			MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
+		}
 	}
 
 	if (rep->eid == DB_EID_INVALID)
 		rep->eid = dbenv->rep_eid;
 
 	if (LF_ISSET(DB_REP_MASTER)) {
-		was_client = F_ISSET(rep, REP_F_CLIENT);
-		if (was_client) {
+		if (role_chg) {
 			/*
 			 * If we're upgrading from having been a client,
 			 * preclose, so that we close our temporary database.
@@ -243,7 +251,7 @@ __rep_start(dbenv, dbt, flags)
 		redo_prepared = 0;
 		if (!F_ISSET(rep, REP_F_MASTER)) {
 			/* Master is not yet set. */
-			if (was_client) {
+			if (role_chg) {
 				if (rep->w_gen > rep->recover_gen)
 					rep->gen = ++rep->w_gen;
 				else if (rep->gen > rep->recover_gen)
@@ -291,8 +299,13 @@ __rep_start(dbenv, dbt, flags)
 		(void)__rep_send_message(dbenv,
 		    DB_EID_BROADCAST, REP_NEWMASTER, &lsn, NULL, 0);
 		ret = 0;
-		if (was_client)
+		if (role_chg) {
 			ret = __txn_reset(dbenv);
+			MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
+			F_CLR(rep, REP_F_READY);
+			rep->in_recovery = 0;
+			MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
+		}
 		/*
 		 * Take a transaction checkpoint so that our new generation
 		 * number get written to the log.
@@ -305,19 +318,22 @@ __rep_start(dbenv, dbt, flags)
 			ret = t_ret;
 	} else {
 		init_db = 0;
-		was_client = F_ISSET(rep, REP_F_CLIENT);
-		announce = !was_client || rep->master_id == DB_EID_INVALID;
+		announce = role_chg || rep->master_id == DB_EID_INVALID;
 
+		/*
+		 * If we're changing roles from master to client or if
+		 * we never were any role at all, we need to init the db.
+		 */
+		if (role_chg || !F_ISSET(rep, REP_F_CLIENT)) {
+			rep->master_id = DB_EID_INVALID;
+			init_db = 1;
+		}
 		/* Zero out everything except recovery and tally flags. */
 		repflags = F_ISSET(rep, REP_F_NOARCHIVE |
 		    REP_F_RECOVER_MASK | REP_F_TALLY);
 		FLD_SET(repflags, REP_F_CLIENT);
 
 		rep->flags = repflags;
-		if (!was_client) {
-			rep->master_id = DB_EID_INVALID;
-			init_db = 1;
-		}
 		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
 
 		/*
@@ -338,6 +354,10 @@ __rep_start(dbenv, dbt, flags)
 			goto errlock;
 		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
 		rep->start_th = 0;
+		if (role_chg) {
+			F_CLR(rep, REP_F_READY);
+			rep->in_recovery = 0;
+		}
 		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
 
 		/*
@@ -368,6 +388,10 @@ errlock:
 		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
 errunlock:
 		rep->start_th = 0;
+		if (role_chg) {
+			F_CLR(rep, REP_F_READY);
+			rep->in_recovery = 0;
+		}
 err:		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
 	}
 	return (ret);

@@ -47,7 +47,7 @@ static int   __db_salvage_unknowns __P((DB *, VRFY_DBINFO *, void *,
 		int (*)(void *, const void *), u_int32_t));
 static int   __db_verify __P((DB *, const char *, const char *,
 		void *, int (*)(void *, const void *), u_int32_t));
-static int   __db_verify_arg __P((DB *, const char *, u_int32_t));
+static int   __db_verify_arg __P((DB *, const char *, void *, u_int32_t));
 static int   __db_vrfy_freelist
 		__P((DB *, VRFY_DBINFO *, db_pgno_t, u_int32_t));
 static int   __db_vrfy_invalid
@@ -103,7 +103,7 @@ __db_verify_internal(dbp, fname, dname, handle, callback, flags)
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
-	int ret;
+	int ret, t_ret;
 
 	dbenv = dbp->dbenv;
 
@@ -116,11 +116,12 @@ __db_verify_internal(dbp, fname, dname, handle, callback, flags)
 	 * should never be unreferenced pages.  Always check for unreferenced
 	 * pages on those systems.
 	 */
-	LF_SET(DB_UNREF);
+	if (!LF_ISSET(DB_SALVAGE))
+		LF_SET(DB_UNREF);
 #endif
 
-	if ((ret = __db_verify_arg(dbp, dname, flags)) != 0)
-		return (ret);
+	if ((ret = __db_verify_arg(dbp, dname, handle, flags)) != 0)
+		goto err;
 
 	/*
 	 * Forbid working in an environment that uses transactions or
@@ -131,10 +132,17 @@ __db_verify_internal(dbp, fname, dname, handle, callback, flags)
 	if (TXN_ON(dbenv) || LOCKING_ON(dbenv) || LOGGING_ON(dbenv)) {
 		__db_err(dbenv,
     "DB->verify may not be used with transactions, logging, or locking");
-		return (EINVAL);
+		ret = EINVAL;
+		goto err;
 	}
 
-	return (__db_verify(dbp, fname, dname, handle, callback, flags));
+	ret = __db_verify(dbp, fname, dname, handle, callback, flags);
+
+	/* Db.verify is a DB handle destructor. */
+err:	if ((t_ret = __db_close(dbp, NULL, 0)) != 0 && ret == 0)
+		ret = t_ret;
+
+	return (ret);
 }
 
 /*
@@ -142,9 +150,10 @@ __db_verify_internal(dbp, fname, dname, handle, callback, flags)
  *	Check DB->verify arguments.
  */
 static int
-__db_verify_arg(dbp, dname, flags)
+__db_verify_arg(dbp, dname, handle, flags)
 	DB *dbp;
 	const char *dname;
+	void *handle;
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
@@ -157,20 +166,31 @@ __db_verify_arg(dbp, dname, flags)
 
 	/*
 	 * DB_SALVAGE is mutually exclusive with the other flags except
-	 * DB_AGGRESSIVE and DB_PRINTABLE.
+	 * DB_AGGRESSIVE, DB_PRINTABLE.
+	 *
+	 * DB_AGGRESSIVE and DB_PRINTABLE are only meaningful when salvaging.
+	 *
+	 * DB_SALVAGE requires an output stream.
 	 */
-	if (LF_ISSET(DB_SALVAGE) &&
-	    (flags & ~DB_AGGRESSIVE & ~DB_PRINTABLE) != DB_SALVAGE)
-		return (__db_ferr(dbenv, "__db_verify", 1));
+	if (LF_ISSET(DB_SALVAGE)) {
+		if (LF_ISSET(~(DB_AGGRESSIVE | DB_PRINTABLE | DB_SALVAGE)))
+			return (__db_ferr(dbenv, "DB->verify", 1));
+		if (handle == NULL) {
+			__db_err(dbenv,
+			    "DB_SALVAGE requires a an output handle");
+			return (EINVAL);
+		}
+	} else
+		if (LF_ISSET(DB_AGGRESSIVE | DB_PRINTABLE))
+			return (__db_ferr(dbenv, "DB->verify", 1));
 
-	/* DB_AGGRESSIVE and DB_PRINTABLE are only meaningful when salvaging. */
-	if ((LF_ISSET(DB_AGGRESSIVE) || LF_ISSET(DB_PRINTABLE)) &&
-	    !LF_ISSET(DB_SALVAGE))
-		return (__db_ferr(dbenv, "__db_verify", 1));
-
-	if (LF_ISSET(DB_ORDERCHKONLY) && LF_ISSET(DB_SALVAGE | DB_NOORDERCHK))
-		return (__db_ferr(dbenv, "__db_verify", 1));
-
+	/* 
+	 * DB_ORDERCHKONLY is mutually exclusive with DB_SALVAGE and
+	 * DB_NOORDERCHK, and requires a database name.
+	 */
+	if ((ret = __db_fcchk(dbenv, "DB->verify", flags,
+	    DB_ORDERCHKONLY, DB_SALVAGE | DB_NOORDERCHK)) != 0)
+		return (ret);
 	if (LF_ISSET(DB_ORDERCHKONLY) && dname == NULL) {
 		__db_err(dbenv, "DB_ORDERCHKONLY requires a database name");
 		return (EINVAL);
@@ -382,8 +402,6 @@ done:	if (!LF_ISSET(DB_SALVAGE) && dbp->db_feedback != NULL)
 
 	if (fhp != NULL &&
 	    (t_ret = __os_closehandle(dbenv, fhp)) != 0 && ret == 0)
-		ret = t_ret;
-	if (dbp != NULL && (t_ret = __db_close(dbp, NULL, 0)) != 0 && ret == 0)
 		ret = t_ret;
 	if (vdp != NULL &&
 	    (t_ret = __db_vrfy_dbinfo_destroy(dbenv, vdp)) != 0 && ret == 0)

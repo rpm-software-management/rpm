@@ -1,3 +1,15 @@
+*** A note about pthreads ***
+The db4 c++ library by default tries to link against libpthread on some
+systems (notably Linux).  If your PHP install is not linked against
+libpthread, you will need to disable pthread support in db4.  This can
+be done by compiling db4 with the flag  --with-mutex=x86/gcc-assembly.
+PHP can itself be forced to link against libpthread either by manually
+editing
+its build files (which some distributions do), or by building it with
+--with-experimental-zts.
+
+
+
 To install this php module linked against the mod_db4 framework,
 execute the following steps:
 

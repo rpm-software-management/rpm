@@ -280,6 +280,7 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 				goto err;
 			}
 			first_lsn = ckp_args->ckp_lsn;
+			__os_free(dbenv, ckp_args);
 			have_rec = 0;
 		}
 
@@ -551,6 +552,7 @@ done:
 				goto err;
 			}
 			first_lsn = ckp_args->ckp_lsn;
+			__os_free(dbenv, ckp_args);
 		}
 		if ((ret = __log_c_get(logc, &first_lsn, &data, DB_SET)) != 0)
 			goto err;
@@ -591,9 +593,6 @@ err:	if (logc != NULL && (t_ret = __log_c_close(logc)) != 0 && ret == 0)
 
 	if (dtab != NULL)
 		__os_free(dbenv, dtab);
-
-	if (ckp_args != NULL)
-		__os_free(dbenv, ckp_args);
 
 	dbenv->tx_timestamp = 0;
 

@@ -300,6 +300,16 @@ __rep_process_message(dbenv, control, rec, eidp, ret_lsnp)
 		case REP_LOG_MORE:
 			if (!F_ISSET(rep, REP_F_RECOVER_LOG))
 				goto skip;
+			/*
+			 * If we're recovering the log we only want
+			 * log records that are in the range we need
+			 * to recover.  Otherwise we can end up storing
+			 * a huge number of "new" records, only to
+			 * truncate the temp database later after we
+			 * run recovery.
+			 */
+			if (log_compare(&rp->lsn, &rep->last_lsn) > 0)
+				goto skip;
 			break;
 		case REP_ALIVE:
 		case REP_ALIVE_REQ:
@@ -1407,17 +1417,6 @@ err:	/* Check if we need to go back into the table. */
 	}
 	MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
 
-	if (ret == 0 && rp->rectype == REP_NEWFILE && lp->db_log_autoremove)
-		__log_autoremove(dbenv);
-	if (control_dbt.data != NULL)
-		__os_ufree(dbenv, control_dbt.data);
-	if (rec_dbt.data != NULL)
-		__os_ufree(dbenv, rec_dbt.data);
-
-	if (ret == DB_REP_NOTPERM && !F_ISSET(rep, REP_F_RECOVER_LOG) &&
-	    !IS_ZERO_LSN(max_lsn) && ret_lsnp != NULL)
-		*ret_lsnp = max_lsn;
-
 	/*
 	 * Startup is complete when we process our first live record.  However,
 	 * we want to return DB_REP_STARTUPDONE on the first record we can --
@@ -1429,6 +1428,17 @@ err:	/* Check if we need to go back into the table. */
 		rep->stat.st_startup_complete = 1;
 		ret = DB_REP_STARTUPDONE;
 	}
+	if (ret == 0 && rp->rectype == REP_NEWFILE && lp->db_log_autoremove)
+		__log_autoremove(dbenv);
+	if (control_dbt.data != NULL)
+		__os_ufree(dbenv, control_dbt.data);
+	if (rec_dbt.data != NULL)
+		__os_ufree(dbenv, rec_dbt.data);
+
+	if (ret == DB_REP_NOTPERM && !F_ISSET(rep, REP_F_RECOVER_LOG) &&
+	    !IS_ZERO_LSN(max_lsn) && ret_lsnp != NULL)
+		*ret_lsnp = max_lsn;
+
 #ifdef DIAGNOSTIC
 	if (ret == DB_REP_ISPERM)
 		RPRINT(dbenv, rep, (dbenv, &mb, "Returning ISPERM [%lu][%lu]",
@@ -1993,7 +2003,7 @@ __rep_verify_match(dbenv, reclsnp, savetime)
 		goto errunlock;
 	}
 
-	__rep_lockout(dbenv, db_rep, rep);
+	__rep_lockout(dbenv, db_rep, rep, 1);
 
 	/* OK, everyone is out, we can now run recovery. */
 	MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
@@ -2133,8 +2143,6 @@ __rep_remfirst(dbenv, cntrl, rec)
 		return (ret);
 
 	/* The DBTs need to persist through another call. */
-	memset(cntrl, 0, sizeof(*cntrl));
-	memset(rec, 0, sizeof(*rec));
 	F_SET(cntrl, DB_DBT_REALLOC);
 	F_SET(rec, DB_DBT_REALLOC);
 	if ((ret = __db_c_get(dbc, cntrl, rec, DB_RMW | DB_FIRST)) == 0) {
@@ -2251,6 +2259,8 @@ __rep_process_rec(dbenv, rp, rec, typep, ret_lsnp)
 	}
 
 	memcpy(typep, rec->data, sizeof(*typep));
+	memset(&control_dbt, 0, sizeof(control_dbt));
+	memset(&rec_dbt, 0, sizeof(rec_dbt));
 
 	/*
 	 * We write all records except for checkpoint records here.
@@ -2381,6 +2391,10 @@ __rep_process_rec(dbenv, rp, rec, typep, ret_lsnp)
 out:
 	if (ret == 0 && F_ISSET(rp, DB_LOG_PERM))
 		*ret_lsnp = rp->lsn;
+	if (control_dbt.data != NULL)
+		__os_ufree(dbenv, control_dbt.data);
+	if (rec_dbt.data != NULL)
+		__os_ufree(dbenv, rec_dbt.data);
 
 	return (ret);
 }
@@ -2470,17 +2484,18 @@ __rep_check_doreq(dbenv, rep)
 
 /*
  * __rep_lockout --
- * PUBLIC: void __rep_lockout __P((DB_ENV *, DB_REP *, REP *));
+ * PUBLIC: void __rep_lockout __P((DB_ENV *, DB_REP *, REP *, u_int32_t));
  *
  * Coordinate with other threads in the library and active txns so
  * that we can run single-threaded, for recovery or internal backup.
  * Assumes the caller holds rep_mutexp.
  */
 void
-__rep_lockout(dbenv, db_rep, rep)
+__rep_lockout(dbenv, db_rep, rep, msg_th)
 	DB_ENV *dbenv;
 	DB_REP *db_rep;
 	REP *rep;
+	u_int32_t msg_th;
 {
 	int wait_cnt;
 
@@ -2504,7 +2519,7 @@ __rep_lockout(dbenv, db_rep, rep)
 	 * to go to 1 (us).
 	 */
 	rep->in_recovery = 1;
-	for (wait_cnt = 0; rep->handle_cnt != 0 || rep->msg_th > 1;) {
+	for (wait_cnt = 0; rep->handle_cnt != 0 || rep->msg_th > msg_th;) {
 		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
 		__os_sleep(dbenv, 1, 0);
 #ifdef DIAGNOSTIC

@@ -453,10 +453,8 @@ next_file:	++nlsn.file;
 			goto err;
 		if (rp != NULL)
 			goto cksum;
-		if (lp->db_log_inmemory) {
-			ret = DB_NOTFOUND;
-			goto err;
-		}
+		if (lp->db_log_inmemory)
+			goto nohdr;
 	}
 
 	/*
@@ -525,7 +523,7 @@ cksum:	/*
 	 * going to have to retry.
 	 */
 	if (hdr.len == 0) {
-		switch (flags) {
+nohdr:		switch (flags) {
 		case DB_FIRST:
 		case DB_NEXT:
 			/* Zero'd records always indicate the end of a file. */
