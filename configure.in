@@ -293,6 +293,12 @@ if test "x$tmpdir" = "x"; then
     fi
 fi
 
+# Solaris 2.5.1 seems to confuse things
+if echo "$build" grep "solaris2.5" > /dev/null ; then
+	echo "Real Time is hacking things up for Solaris 2.5.x"
+	build_os="solaris"
+fi
+
 if echo "$build" | egrep 'solaris|hpux10|sco' >/dev/null ; then
 	# Solaris needs -ldl to use -lnsl, and it can't build static
 	# binaries if you use -ldl
