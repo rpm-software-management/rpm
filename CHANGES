@@ -28,6 +28,7 @@
 	- fix: last char in rpmrc w/o terminating newline lost (#4361).
 	- prepare for handling \r in macro exapnsions.
 	- fix: n>1 occurrences of %config(noreplace) should not FA_CREATE (#4355).
+	- fix: use pgp5 rather than pgp-2.6.3 if both are in %_pgpbin (#4564).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

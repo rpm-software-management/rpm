@@ -85,11 +85,10 @@ const char * rpmDetectPGPVersion(int sigTag)
 	}
 	sprintf(pgpvbin, "%sv", pgpbin);
 
-	/* XXX Prefer pgp-2.6.3 over pgp5 */
-	if (stat(pgpbin, &statbuf) == 0)
-	  pgp_version = 26;
-	else if (stat(pgpvbin, &statbuf) == 0)
+	if (stat(pgpvbin, &statbuf) == 0)
 	  pgp_version = 50;
+	else if (stat(pgpbin, &statbuf) == 0)
+	  pgp_version = 26;
 	else
 	  pgp_version = -1;
 
