@@ -300,20 +300,20 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	if (!fi->actions) 
 	    fi->actions = calloc(sizeof(*fi->actions), fi->fc);
 
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL, 
-				(void *) &fi->fmd5s, NULL);
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL, 
-				(void *) &fi->flinks, NULL);
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMODES, NULL, 
+	headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL, 
 				(void *) &fi->fmodes, NULL);
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILEFLAGS, NULL, 
+	headerGetEntry(fi->h, RPMTAG_FILEFLAGS, NULL, 
 				(void *) &fi->fflags, NULL);
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILESIZES, NULL, 
+	headerGetEntry(fi->h, RPMTAG_FILESIZES, NULL, 
 				(void *) &fi->fsizes, NULL);
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILESTATES, NULL, 
+	headerGetEntry(fi->h, RPMTAG_FILESTATES, NULL, 
 				(void *) &fi->fstates, NULL);
 
 	if (ts->order[oc].type == TR_REMOVED) {
+	    headerGetEntry(fi->h, RPMTAG_FILEMD5S, NULL, 
+				    (void *) &fi->fmd5s, NULL);
+	    headerGetEntry(fi->h, RPMTAG_FILELINKTOS, NULL, 
+				    (void *) &fi->flinks, NULL);
 	    fi->fsizes = memcpy(malloc(fi->fc * sizeof(*fi->fsizes)),
 				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
 	    fi->fflags = memcpy(malloc(fi->fc * sizeof(*fi->fflags)),
@@ -326,6 +326,11 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    fi->h = NULL;
 	} else {
 	    /* ADDED package */
+
+	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL, 
+				    (void *) &fi->fmd5s, NULL);
+	    headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL, 
+				    (void *) &fi->flinks, NULL);
 
 	    /* 0 makes for noops */
 	    fi->replacedSizes = calloc(fi->fc, sizeof(*fi->replacedSizes));
