@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 INCLUDES = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
@@ -28,7 +30,7 @@ mylibpaths = \
 	-L$(top_builddir)/rpmio \
 	-L$(top_builddir)/popt
 
-mylibs = -lrpm -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
+mylibs = -lrpm -lrpmio -lpopt @WITH_LIBELF_LIB@ @LIBS@ @INTLLIBS@ @LIBMISC@
 LIBS =
 
 DB3LOBJS = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
@@ -40,7 +42,7 @@ librpmdb_la_SOURCES = \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -release @VERSION@ @libdb3@
-librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS) @WITH_LIBELF_LIB@
+librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
 
 # XXX make sure that db.h symlink is generated
@@ -92,9 +94,9 @@ rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS
 sources:
 	@echo $(librpmdb_la_SOURCES:%=rpmdb/%)
 
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES)
+.PHONY:	lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES)
 
 tdbi: librpmdb.la tdbi.o
 	$(LINK) -all-static $@.o $< $(mylibpaths) $(mylibs) $(LIBS)

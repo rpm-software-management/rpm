@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
@@ -25,7 +27,7 @@ mylibpaths = \
 	-L$(top_builddir)/rpmio \
 	-L$(top_builddir)/popt
 
-mylibs = -lrpm -lrpmdb -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
+mylibs = -lrpm -lrpmdb -lrpmio -lpopt @WITH_LIBELF_LIB@ @LIBS@ @INTLLIBS@ @LIBMISC@
 LIBS =
 
 lib_LTLIBRARIES = librpm.la
@@ -83,9 +85,9 @@ rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 sources:
 	@echo $(librpm_la_SOURCES:%=lib/%)
 
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
+.PHONY:	lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
 
 th: th.c librpm.la
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)

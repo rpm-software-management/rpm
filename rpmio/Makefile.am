@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
 
 EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
@@ -55,9 +57,9 @@ rpmio.lcd: Makefile.am ${librpmio_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS
 sources:
 	@echo $(librpmio_la_SOURCES:%=rpmio/%)
 
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
+.PHONY:	lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
 tdigest_SOURCES = tdigest.c
 tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
