@@ -1,6 +1,7 @@
 LIBOBJECTS = spec.o build.o pack.o
 LIBBUILD = libbuild.a
 PROGS = rpmbuild
+LOADLIBES = -lrpm $(LIBEFENCE)
 
 # -----------------------------------------------------------------------
 
@@ -17,6 +18,8 @@ everything: $(LIBBUILD) $(PROGS)
 $(LIBBUILD): $(LIBOBJECTS) 
 	$(AR) $@ $(LIBOBJECTS)
 	$(RANLIB) $@
+
+$(PROGS): $(LIBOBJECTS)
 
 clean:
 	rm -f *.a *.o *~ $(PROGS)
