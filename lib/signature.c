@@ -15,16 +15,19 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <asm/byteorder.h>
 #include <fcntl.h>
 #include <strings.h>
 
 #include "signature.h"
 #include "md5.h"
 #include "rpmlib.h"
+#include "rpmlead.h"
 #include "rpmerr.h"
 
 static int makeMD5Signature(char *file, int ofd);
 static int makePGPSignature(char *file, int ofd, char *passPhrase);
+static int checkSize(int fd, int size, int sigsize);
 static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result);
 static int verifyMD5Signature(char *datafile, void *sigfile, char *result);
 static int verifyOLDPGPSignature(int fd, void *sig, char *result);
@@ -90,7 +93,8 @@ int verifySignature(int fd, short sig_type, void *sig, char *result, int pgp)
 int readSignature(int fd, short sig_type, void **sig)
 {
     unsigned char buf[2048];
-    int length;
+    int length, pad;
+    int_32 size[2];
     
     switch (sig_type) {
     case RPMSIG_NONE:
@@ -110,6 +114,12 @@ int readSignature(int fd, short sig_type, void **sig)
 	break;
     case RPMSIG_MD5:
 	/* 8 byte aligned */
+	if (read(fd, size, 8) != 8) {
+	    return 0;
+	}
+	if (checkSize(fd, ntohl(size[0]), 8 + 16)) {
+	    return 0;
+	}
 	if (read(fd, buf, 16) != 16) {
 	    return 0;
 	}
@@ -120,10 +130,17 @@ int readSignature(int fd, short sig_type, void **sig)
 	break;
     case RPMSIG_MD5_PGP:
 	/* 8 byte aligned */
+	if (read(fd, size, 8) != 8) {
+	    return 0;
+	}
 	if (read(fd, buf, 18) != 18) {
 	    return 0;
 	}
 	length = buf[16] * 256 + buf[17];
+	pad = (8 - ((length + 18) % 8)) % 8;
+	if (checkSize(fd, ntohl(size[0]), 8 + 16 + 2 + length + pad)) {
+	    return 0;
+	}
 	if (read(fd, buf + 18, length) != length) {
 	    return 0;
 	}
@@ -132,9 +149,8 @@ int readSignature(int fd, short sig_type, void **sig)
 	    memcpy(*sig, buf, 18 + length);
 	}
 	/* The is the align magic */
-	length = (8 - ((length + 18) % 8)) % 8;
-	if (length) {
-	    if (read(fd, buf, length) != length) {
+	if (pad) {
+	    if (read(fd, buf, pad) != pad) {
 		return 0;
 	    }
 	}
@@ -195,7 +211,18 @@ int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
 static int makeMD5Signature(char *file, int ofd)
 {
     unsigned char sig[16];
+    struct stat statbuf;
+    int_32 size[2];
 
+    /* Size */
+    stat(file, &statbuf);
+    size[0] = htonl(statbuf.st_size);
+    size[1] = 0;
+    if (write(ofd, &size, 8) != 8) {
+	return 1;
+    }
+
+    /* MD5 */
     mdbinfile(file, sig);
     if (write(ofd, sig, 16) != 16) {
 	return 1;
@@ -295,6 +322,21 @@ static int makePGPSignature(char *file, int ofd, char *passPhrase)
     }
     
     return 0;
+}
+
+static int checkSize(int fd, int size, int sigsize)
+{
+    int headerArchiveSize;
+    struct stat statbuf;
+
+    fstat(fd, &statbuf);
+    headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;
+
+    message(MESS_DEBUG, "sigsize         : %d\n", sigsize);
+    message(MESS_DEBUG, "Header + Archive: %d\n", headerArchiveSize);
+    message(MESS_DEBUG, "expected size   : %d\n", size);
+
+    return size - headerArchiveSize;
 }
 
 static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result)
