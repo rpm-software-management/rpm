@@ -86,6 +86,8 @@ rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VER
 rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
 
+rpm	alias --dwim --force --nodeps
+
 rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides \
 	--POPTdesc=$"find package name that contains a provided capability (needs rpmdb-redhat package installed)"
 
