@@ -35,6 +35,7 @@
 	- handle solaris systems better
 	- complain if critical rpmrc variables (cpiobin, gzipbin, etc) aren't
 	  set anywhere
+	- allow --dbpath for --rebuilddb
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output

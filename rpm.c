@@ -892,7 +892,7 @@ int main(int argc, char ** argv) {
 
     if (bigMode != MODE_QUERY && bigMode != MODE_INSTALL && 
 	bigMode != MODE_UNINSTALL && bigMode != MODE_VERIFY &&
-	bigMode != MODE_INITDB && gotDbpath)
+	bigMode != MODE_INITDB && bigMode != MODE_REBUILDDB && gotDbpath)
 	argerror(_("--dbpath given for operation that does not use a "
 			"database"));
 
