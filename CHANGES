@@ -12,6 +12,7 @@
 	- add https://svn.uhulinux.hu/packages/dev/zlib/patches/02-rsync.patch
 	- changes to build on Mac OS X using darwinports neon/beecrypt.
 	- blueprint rpm-4_4 and HEAD to minimize diff spew.
+	- add missing #if defined(ENABLE_NLS) (#146184).
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).

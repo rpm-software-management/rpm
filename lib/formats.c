@@ -1056,7 +1056,9 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	    (void) setenv(language, langval, 1);
 	else
 	    unsetenv(language);
+#if defined(ENABLE_NLS)
 /*@i@*/	++_nl_msg_cat_cntr;
+#endif
 
 	if (domain && msgid) {
 	    *data = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
