@@ -8,7 +8,7 @@ Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
-Prereq: awk fileutils textutils sh-utils mktemp
+Prereq: gawk fileutils textutils sh-utils mktemp
 %endif
 BuildRoot: /var/tmp/rpm-%{version}-root
 
