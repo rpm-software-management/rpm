@@ -151,6 +151,7 @@ static struct poptOption optionsTable[] = {
 	{ "replacefiles", '\0', 0, &replaceFiles, 0 },
 	{ "replacepkgs", '\0', 0, &replacePackages, 0 },
 	{ "resign", '\0', 0, 0, GETOPT_RESIGN },
+	{ "rmsource", '\0', 0, 0, GETOPT_RMSOURCE },
 	{ "root", 'r', POPT_ARG_STRING, &rootdir, 0 },
 	{ "short-circuit", '\0', 0, &shortCircuit, 0 },
 	{ "showrc", '\0', 0, 0, 0 },
@@ -801,9 +802,9 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case GETOPT_RMSOURCE:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD)
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD &&
+		bigMode != MODE_TARBUILD)
 		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_BUILD;
 	    rmsource = 1;
 	    break;
 
@@ -900,6 +901,9 @@ int main(int argc, char ** argv) {
 	exit(1);
     }
 
+    if (rmsource && bigMode == MODE_UNKNOWN)
+	bigMode = MODE_BUILD;
+    
     if (initdb)
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
