@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.10 2000/10/05 04:48:59 rjray Exp $
+ * $Id: RPM.h,v 1.11 2000/10/08 10:08:58 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -45,6 +45,14 @@
 #  include <rpm/header.h>
 #  include <rpm/dbindex.h>
 #endif
+
+/* Various flags. For now, one nybble for header and one for package. */
+#define RPM_HEADER_MASK        0x0f
+#define RPM_HEADER_READONLY    0x01
+#define RPM_HEADER_FROM_REF    0x02
+
+#define RPM_PACKAGE_MASK       0xf0
+#define RPM_PACKAGE_READONLY   0x10
 
 /*
  *    Perl complement: RPM::Database
@@ -107,9 +115,6 @@ typedef HV* RPM__Header;
 
 #define new_RPM__Header(x) x = newHV()
 
-#define RPM_HEADER_READONLY 1
-#define RPM_HEADER_FROM_REF 2
-
 
 /*
  *    Perl complement: RPM::Package
@@ -124,13 +129,13 @@ typedef HV* RPM__Header;
 
 typedef struct {
     /* The filepath, ftp path or URI that refers to the package */
-    const char* path;
+    char* path;
     /* A weak ref to the header structure for the package, if it exists */
     RPM__Header header;
     /* The RPM signature (if present) is stored in the same struct as hdrs */
     Header signature;
     /* Should this be treated as a read-only source? */
-    int read_only;
+    int readonly;
     /* The current notify/callback function associated with this package */
     CV* callback;
 } RPM_Package;
@@ -196,8 +201,10 @@ extern RPM__Header rpmdb_FETCH(pTHX_ RPM__Database, SV *);
 extern int rpmdb_EXISTS(pTHX_ RPM__Database, SV *);
 
 /* RPM/Package.xs: */
-extern int rpmpkg_is_source(pTHX_ RPM_Package *);
-extern int rpmpkg_cmpver(pTHX_ RPM_Package *, RPM_Package *);
-extern int rpmpkg_cmpver2(pTHX_ RPM_Package *, RPM__Header);
+extern RPM__Package rpmpkg_new(pTHX_ char *, SV *, int);
+extern SV* rpmpkg_set_callback(pTHX_ RPM__Package, SV *);
+extern int rpmpkg_is_source(pTHX_ RPM__Package);
+extern int rpmpkg_cmpver_pkg(pTHX_ RPM__Package, RPM__Package);
+extern int rpmpkg_cmpver_hdr(pTHX_ RPM__Package, RPM__Header);
 
 #endif /* H_RPM_XS_HDR */
