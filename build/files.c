@@ -216,7 +216,7 @@ static void timeCheck(int tc, Header h)
     char **file;
     int count, x, currentTime;
 
-    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &file, &count);
+    headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &file, &count);
     headerGetEntry(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
 
     currentTime = time(NULL);
@@ -812,8 +812,10 @@ static void genCpioListAndHeader(struct FileList *fl,
 	    (*cpioCount)++;
 	}
 	
-	/* Make the header */
-	headerAddOrAppendEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE,
+	/* Make the header, the OLDFILENAMES will get converted to a 
+	   compressed file list write before we write the actual package to
+	   disk. */
+	headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->fileName), 1);
 
       if (sizeof(flp->fl_size) != sizeof(uint_32)) {

@@ -3,6 +3,7 @@
 #include "rpmbuild.h"
 #include "buildio.h"
 
+#include "lib/misc.h"
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 
@@ -250,6 +251,8 @@ int writeRPM(Header h, const char *fileName, int type,
 	headerAddEntry(h, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
 		&csa->cpioArchiveSize, 1);
     }
+
+    compressFilelist(h);
 
     /* Create and add the cookie */
     if (cookie) {
