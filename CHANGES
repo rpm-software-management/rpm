@@ -1,3 +1,6 @@
+2.1.2 -> 2.1.3:
+	- don't fail, and do report, if -K can't find a PGP key
+
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
         - automatic shared lib provides now work with buildprefix
