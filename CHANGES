@@ -1,3 +1,8 @@
+2.3.4 -> 2.3.5:
+	- %{#TAG} in query format prints the array length
+	- cleanup up protoypes in rpmlib.h
+	- let -Vp work on URLs
+
 2.3.3 -> 2.3.4:
 	- %changelog processing
 	- fixed broken requires/conflicts parsing for spec file
