@@ -149,13 +149,25 @@ static PyObject * hdrKeyList(hdrObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * hdrUnload(hdrObject * s, PyObject * args) {
+static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) {
     char * buf;
-    int len;
     PyObject * rc;
+    int len, legacy = 0;
+    static char *kwlist[] = { "legacyHeader", NULL};
 
-    len = headerSizeof(s->h, 0);
-    buf = headerUnload(s->h);
+    if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
+	return NULL; 
+
+    if (legacy) {
+	Header h;
+
+	h = headerCopy(s->h);
+	len = headerSizeof(h, 0);
+	buf = headerUnload(h);
+    } else {
+	len = headerSizeof(s->h, 0);
+	buf = headerUnload(s->h);
+    }
 
     rc = PyString_FromStringAndSize(buf, len);
     free(buf);
@@ -418,7 +430,7 @@ static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args) {
  */
 static struct PyMethodDef hdrMethods[] = {
 	{"keys",	(PyCFunction) hdrKeyList,	1 },
-	{"unload",	(PyCFunction) hdrUnload,	1 },
+	{"unload",	(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS },
 	{"verifyFile",	(PyCFunction) hdrVerifyFile,	1 },
 	{"expandFilelist",	(PyCFunction) hdrExpandFilelist,	1 },
 	{"compressFilelist",	(PyCFunction) hdrCompressFilelist,	1 },
@@ -2335,7 +2347,7 @@ void initrpm(void) {
 
 
 #define REGISTER_ENUM(val) \
-    PyDict_SetItemString(d, #val, o=PyInt_FromLong(## val)); \
+    PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \
     Py_DECREF(o);
     
     REGISTER_ENUM(RPMFILE_STATE_NORMAL);
