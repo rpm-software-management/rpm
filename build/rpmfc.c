@@ -332,12 +332,16 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	return -1;
 	/*@notreached@*/ break;
     case 'P':
+	if (fc->skipProv)
+	    return 0;
 	xx = snprintf(buf, sizeof(buf), "%%{?__%s_provides}", nsdep);
 	depsp = &fc->provides;
 	dsContext = RPMSENSE_FIND_PROVIDES;
 	tagN = RPMTAG_PROVIDENAME;
 	break;
     case 'R':
+	if (fc->skipReq)
+	    return 0;
 	xx = snprintf(buf, sizeof(buf), "%%{?__%s_requires}", nsdep);
 	depsp = &fc->requires;
 	dsContext = RPMSENSE_FIND_REQUIRES;
@@ -577,15 +581,21 @@ rpmfc rpmfcFree(rpmfc fc)
 {
     if (fc) {
 	fc->fn = argvFree(fc->fn);
-	fc->fcdictx = argiFree(fc->fcdictx);
 	fc->fcolor = argiFree(fc->fcolor);
-	fc->cdict = argvFree(fc->cdict);
+	fc->fcdictx = argiFree(fc->fcdictx);
 	fc->fddictx = argiFree(fc->fddictx);
 	fc->fddictn = argiFree(fc->fddictn);
+	fc->cdict = argvFree(fc->cdict);
 	fc->ddict = argvFree(fc->ddict);
 	fc->ddictx = argiFree(fc->ddictx);
+
 	fc->provides = rpmdsFree(fc->provides);
 	fc->requires = rpmdsFree(fc->requires);
+
+	fc->sb_java = freeStringBuf(fc->sb_java);
+	fc->sb_perl = freeStringBuf(fc->sb_perl);
+	fc->sb_python = freeStringBuf(fc->sb_python);
+
     }
     fc = _free(fc);
     return NULL;
@@ -750,6 +760,7 @@ static int rpmfcELF(rpmfc fc)
 	case SHT_GNU_verdef:
 	    deptype = 'P';
 	    data = NULL;
+	    if (!fc->skipProv)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		offset = 0;
 		for (cnt = shdr->sh_info; --cnt >= 0; ) {
@@ -804,6 +815,7 @@ static int rpmfcELF(rpmfc fc)
 	case SHT_GNU_verneed:
 	    deptype = 'R';
 	    data = NULL;
+	    if (!fc->skipReq)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		offset = 0;
 		for (cnt = shdr->sh_info; --cnt >= 0; ) {
@@ -868,6 +880,8 @@ static int rpmfcELF(rpmfc fc)
 			/*@notreached@*/ /*@switchbreak@*/ break;
 		    case DT_NEEDED:
 			/* Add to package requires. */
+			if (fc->skipReq)
+			    /*@innercontinue@*/ continue;
 			deptype = 'R';
 			depsp = &fc->requires;
 			tagN = RPMTAG_REQUIRENAME;
@@ -877,6 +891,8 @@ assert(s != NULL);
 			/*@switchbreak@*/ break;
 		    case DT_SONAME:
 			/* Add to package provides. */
+			if (fc->skipProv)
+			    /*@innercontinue@*/ continue;
 			deptype = 'P';
 			depsp = &fc->provides;
 			tagN = RPMTAG_PROVIDENAME;
@@ -970,6 +986,8 @@ int rpmfcApply(rpmfc fc)
     previx = -1;
     for (i = 0; i < nddict; i++) {
 	s = fc->ddict[i];
+
+	/* Parse out (file#,deptype,N,EVR,Flags) */
 	ix = strtol(s, &se, 10);
 assert(se != NULL);
 	deptype = *se++;
@@ -1325,21 +1343,27 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     av[ac] = NULL;
 
     fc = rpmfcNew();
+    fc->skipProv = !pkg->autoProv;
+    fc->skipReq = !pkg->autoReq;
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
-    ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, scareMem);
-    xx = rpmdsMerge(&fc->provides, ds);
-    ds = rpmdsFree(ds);
-    xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDENAME);
-    xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEVERSION);
-    xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEFLAGS);
+    if (!fc->skipProv) {
+	ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, scareMem);
+	xx = rpmdsMerge(&fc->provides, ds);
+	ds = rpmdsFree(ds);
+	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDENAME);
+	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEVERSION);
+	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEFLAGS);
+    }
 
-    ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, scareMem);
-    xx = rpmdsMerge(&fc->requires, ds);
-    ds = rpmdsFree(ds);
-    xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIRENAME);
-    xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREVERSION);
-    xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREFLAGS);
+    if (!fc->skipReq) {
+	ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, scareMem);
+	xx = rpmdsMerge(&fc->requires, ds);
+	ds = rpmdsFree(ds);
+	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIRENAME);
+	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREVERSION);
+	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREFLAGS);
+    }
 
     /* Build file class dictionary. */
     xx = rpmfcClassify(fc, av);
@@ -1351,14 +1375,14 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     p = (const void **) argiData(fc->fcolor);
     c = argiCount(fc->fcolor);
 assert(ac == c);
-    if (p != NULL)
+    if (p != NULL && c > 0)
 	xx = headerAddEntry(pkg->header, RPMTAG_FILECOLOR, RPM_INT32_TYPE,
 			p, c);
 
     /* Add classes(#classes) */
     p = (const void **) argvData(fc->cdict);
     c = argvCount(fc->cdict);
-    if (p != NULL)
+    if (p != NULL && c > 0)
 	xx = headerAddEntry(pkg->header, RPMTAG_CLASSDICT, RPM_STRING_ARRAY_TYPE,
 			p, c);
 
@@ -1366,13 +1390,13 @@ assert(ac == c);
     p = (const void **) argiData(fc->fcdictx);
     c = argiCount(fc->fcdictx);
 assert(ac == c);
-    if (p != NULL)
+    if (p != NULL && c > 0)
 	xx = headerAddEntry(pkg->header, RPMTAG_FILECLASS, RPM_INT32_TYPE,
 			p, c);
 
     /* Add Provides: */
 /*@-branchstate@*/
-    if (fc->provides != NULL && (c = fc->provides->Count) > 0) {
+    if (fc->provides != NULL && (c = fc->provides->Count) > 0 && !fc->skipProv) {
 	p = (const void **) fc->provides->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
 			p, c);
@@ -1385,7 +1409,7 @@ assert(ac == c);
     }
 
     /* Add Requires: */
-    if (fc->requires != NULL && (c = fc->requires->Count) > 0) {
+    if (fc->requires != NULL && (c = fc->requires->Count && !fc->skipReq) > 0) {
 	p = (const void **) fc->requires->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
 			p, c);

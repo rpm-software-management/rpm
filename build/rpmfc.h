@@ -19,6 +19,8 @@ struct rpmfc_s {
     int fknown;		/*!< no. of classified files */
     int fwhite;		/*!< no. of "white" files */
     int ix;		/*!< current file index */
+    int skipProv;	/*!< don't auto-generate Provides:? */
+    int skipReq;	/*!< don't auto-generate Requires:? */
 
     ARGV_t fn;		/*!< (#files) file names */
     ARGI_t fcolor;	/*!< (#files) file colors */
