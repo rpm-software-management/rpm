@@ -3,6 +3,8 @@
 #include "rpmbuild.h"
 #include "buildio.h"
 
+extern int specedit;
+
 #ifdef	DYING
 static void freeTriggerFiles(struct TriggerFileEntry *p);
 #endif
@@ -331,6 +333,55 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
     return 0;
 }
 
+static inline struct speclines * newSl(void)
+{
+    struct speclines *sl;
+    if (!specedit)
+	return NULL;
+    sl = malloc(sizeof(struct speclines));
+    sl->sl_lines = NULL;
+    sl->sl_nalloc = 0;
+    sl->sl_nlines = 0;
+    return sl;
+}
+
+static inline void freeSl(struct speclines *sl)
+{
+    int i;
+    if (sl == NULL)
+	return;
+    for (i = 0; i < sl->sl_nlines; i++)
+	FREE(sl->sl_lines[i]);
+    FREE(sl->sl_lines);
+    free(sl);
+}
+
+static inline struct spectags * newSt(void)
+{
+    struct spectags *st;
+    if (!specedit)
+	return NULL;
+    st = malloc(sizeof(struct spectags));
+    st->st_t = NULL;
+    st->st_nalloc = 0;
+    st->st_ntags = 0;
+    return st;
+}
+
+static inline void freeSt(struct spectags *st)
+{
+    int i;
+    if (st == NULL)
+	return;
+    for (i = 0; i < st->st_ntags; i++) {
+	struct spectag *t = st->st_t + i;
+	FREE(t->t_lang);
+	FREE(t->t_msgid);
+    }
+    FREE(st->st_t);
+    free(st);
+}
+
 Spec newSpec(void)
 {
     Spec spec;
@@ -339,6 +390,9 @@ Spec newSpec(void)
     
     spec->specFile = NULL;
     spec->sourceRpmName = NULL;
+
+    spec->sl = newSl();
+    spec->st = newSt();
 
     spec->fileStack = NULL;
     spec->line[0] = '\0';
@@ -392,6 +446,9 @@ void freeSpec(/*@only@*/ Spec spec)
 {
     struct OpenFileInfo *ofi;
     struct ReadLevelEntry *rl;
+
+    freeSl(spec->sl);	spec->sl = NULL;
+    freeSt(spec->st);	spec->st = NULL;
 
     freeStringBuf(spec->prep);	spec->prep = NULL;
     freeStringBuf(spec->build);	spec->build = NULL;

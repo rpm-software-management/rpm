@@ -40,6 +40,8 @@ int nogroups = 1;
 
 int gentran = 0;
 
+int specedit = 0;
+
 static inline char *
 basename(const char *file)
 {

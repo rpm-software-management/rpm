@@ -51,9 +51,33 @@ struct OpenFileInfo {
     /*@owned@*/ struct OpenFileInfo *next;
 };
 
+struct spectag {
+    int t_tag;
+    int t_startx;
+    int t_nlines;
+    char *t_lang;
+    char *t_msgid;
+};
+
+
+struct spectags {
+    struct spectag *st_t;
+    int st_nalloc;
+    int st_ntags;
+};
+
+struct speclines {
+    char **sl_lines;
+    int sl_nalloc;
+    int sl_nlines;
+};
+
 struct SpecStruct {
     /*@only@*/ char *specFile;
     /*@only@*/ char *sourceRpmName;
+
+    struct speclines *sl;
+    struct spectags *st;
 
     /*@owned@*/ struct OpenFileInfo *fileStack;
     char line[BUFSIZ];
@@ -140,6 +164,7 @@ extern "C" {
 void freeSpec(/*@only@*/ Spec spec);
 
 struct OpenFileInfo * newOpenFileInfo(void);
+struct spectag *stashSt(Spec spec, Header h, int tag, const char *lang);
 
 int addSource(Spec spec, Package pkg, char *field, int tag);
 int parseNoSource(Spec spec, char *field, int tag);

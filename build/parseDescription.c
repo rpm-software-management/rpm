@@ -26,6 +26,7 @@ int parseDescription(Spec spec)
     int arg;
     char **argv = NULL;
     poptContext optCon = NULL;
+    struct spectag *t = NULL;
 
     name = NULL;
     lang = RPMBUILD_DEFAULT_LANG;
@@ -86,6 +87,8 @@ int parseDescription(Spec spec)
 	return RPMERR_BADSPEC;
     }
 #endif
+
+    t = stashSt(spec, pkg->header, RPMTAG_DESCRIPTION, lang);
     
     sb = newStringBuf();
 
@@ -97,6 +100,7 @@ int parseDescription(Spec spec)
 	}
 	while (! (nextPart = isPart(spec->line))) {
 	    appendLineStringBuf(sb, spec->line);
+	    if (t) t->t_nlines++;
 	    if ((rc =
 		 readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;

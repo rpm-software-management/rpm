@@ -154,6 +154,15 @@ retry:
 	ofi->readPtr = ofi->readBuf;
 	ofi->lineNum++;
 	spec->lineNum = ofi->lineNum;
+	if (spec->sl) {
+	    struct speclines *sl = spec->sl;
+	    if (sl->sl_nlines == sl->sl_nalloc) {
+		sl->sl_nalloc += 100;
+		sl->sl_lines = (char **)realloc(sl->sl_lines, 
+			sl->sl_nalloc * sizeof(*(sl->sl_lines)));
+	    }
+	    sl->sl_lines[sl->sl_nlines++] = strdup(ofi->readBuf);
+	}
 	/*rpmMessage(RPMMESS_DEBUG, "LINE: %s", spec->readBuf);*/
     }
     

@@ -424,6 +424,69 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
     }
 }
 
+extern int specedit;
+
+static void
+printNewSpecfile(Spec spec)
+{
+    struct speclines *sl = spec->sl;
+    struct spectags *st = spec->st;
+    char buf[8192];
+    int i, j;
+
+    if (sl == NULL || st == NULL)
+	return;
+
+#define	SPECSPACKAGE	"specs"
+
+    for (i = 0; i < st->st_ntags; i++) {
+	char *msgstr;
+	struct spectag *t;
+	t = st->st_t + i;
+
+	/* XXX Summary tag often precedes name, so build msgid now. */
+	if (t->t_msgid == NULL) {
+	    char *n;
+	    headerGetEntry(spec->packages->header, RPMTAG_NAME, NULL,
+		(void *) &n, NULL);
+	    sprintf(buf, "%s(%s)", n, tagName(t->t_tag));
+	    if ((n = strchr(buf, '(')) != NULL) n[1] = tolower(n[1]);
+	    t->t_msgid = strdup(buf);
+	}
+	msgstr = strdup(dgettext(SPECSPACKAGE, t->t_msgid));
+
+	switch(t->t_tag) {
+	case RPMTAG_SUMMARY:
+	case RPMTAG_GROUP:
+	    FREE(sl->sl_lines[t->t_startx]);
+	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
+		continue;
+	    sprintf(buf, "%s: %s\n",
+		((t->t_tag == RPMTAG_GROUP) ? "Group" : "Summary"),
+		msgstr);
+	    sl->sl_lines[t->t_startx] = strdup(buf);
+	    break;
+	case RPMTAG_DESCRIPTION:
+	    for (j = 1; j < t->t_nlines; j++)
+		FREE(sl->sl_lines[t->t_startx + j]);
+	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG)) {
+		FREE(sl->sl_lines[t->t_startx]);
+		continue;
+	    }
+	    sl->sl_lines[t->t_startx + 1] = strdup(msgstr);
+	    if (t->t_nlines > 2)
+		sl->sl_lines[t->t_startx + 2] = strdup("\n\n");
+	    break;
+	}
+    }
+
+    for (i = 0; i < sl->sl_nlines; i++) {
+	if (sl->sl_lines[i] == NULL)
+	    continue;
+	printf("%s", sl->sl_lines[i]);
+    }
+}
+
 int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags, 
 	     const char * arg, const char * queryFormat) {
     Header h;
@@ -502,6 +565,14 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	    retcode = 1;
 	    break;
 	}
+
+	if (specedit) {
+	    printNewSpecfile(spec);
+	    freeSpec(spec);
+	    retcode = 0;
+	    break;
+	}
+
 	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 #if 0
 	    char *binRpm, *errorString;

@@ -65,6 +65,7 @@ static int replacePackages;
 static char * rootdir;
 static int showrc;
 static int signIt;
+	int specedit = 0;
 static int test;
 
 static int rpm_version;
@@ -127,6 +128,7 @@ static struct poptOption optionsTable[] = {
  { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
+ { "specedit", '\0', 0, &specedit, 0,		NULL, NULL},
  { "tarball", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
  { "test", '\0', 0, &test, 0,			NULL, NULL},
  { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK,	NULL, NULL},

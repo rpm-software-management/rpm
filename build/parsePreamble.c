@@ -44,7 +44,6 @@ static int findPreambleTag(Spec spec, int *tag, char **macro, char *lang);
 static int checkForRequired(Header h, char *name);
 static int checkForDuplicates(Header h, char *name);
 static void fillOutMainPackage(Header h);
-static char *tagName(int tag);
 static int checkForValidArchitectures(Spec spec);
 static int isMemberInEntry(Header header, char *name, int tag);
 static int readIcon(Header h, char *file);
@@ -176,7 +175,7 @@ static int checkForValidArchitectures(Spec spec)
     return 0;
 }
 
-static char *tagName(int tag)
+const char *tagName(int tag)
 {
     int i = 0;
     static char nameBuf[1024];
@@ -194,7 +193,6 @@ static char *tagName(int tag)
 	}
 	i++;
     }
-
     return nameBuf;
 }
 
@@ -305,6 +303,34 @@ exit:
     return rc;
 }
 
+struct spectag *
+stashSt(Spec spec, Header h, int tag, const char *lang)
+{
+    struct spectags *st = spec->st;
+    struct spectag *t = NULL;
+    if (st) {
+	if (st->st_ntags == st->st_nalloc) {
+	    st->st_nalloc += 10;
+	    st->st_t = realloc(st->st_t, st->st_nalloc * sizeof(*(st->st_t)));
+	}
+	t = st->st_t + st->st_ntags++;
+	t->t_tag = tag;
+	t->t_startx = spec->lineNum - 1;
+	t->t_nlines = 1;
+	t->t_lang = strdup(lang);
+	t->t_msgid = NULL;
+	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
+	    char *n, buf[1024];
+	    if (headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &n, NULL)) {
+		sprintf(buf, "%s(%s)", n, tagName(tag));
+		if ((n = strchr(buf, '(')) != NULL) n[1] = tolower(n[1]);
+		t->t_msgid = strdup(buf);
+	    }
+	}
+    }
+    return t;
+}
+
 #define SINGLE_TOKEN_ONLY \
 if (multiToken) { \
     rpmError(RPMERR_BADSPEC, _("line %d: Tag takes single token only: %s"), \
@@ -372,9 +398,12 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	    }
 	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, RMIL_OLDSPEC-1);
 	}
-	/* fall through */
+	headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
+	break;
       case RPMTAG_GROUP:
       case RPMTAG_SUMMARY:
+	stashSt(spec, pkg->header, tag, lang);
+	/* fall thru */
       case RPMTAG_DISTRIBUTION:
       case RPMTAG_VENDOR:
       case RPMTAG_LICENSE:

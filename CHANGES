@@ -1,4 +1,5 @@
 2.90 -> 2.91
+	- permit substitution of I18N strings from PO meta-catalogues.
 	- rename file before unlinking to avoid EBUSY failures.
 	- add callbacks for installer updates while doing URL xfers.
 	- resurrect http queries/verifies.
