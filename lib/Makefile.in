@@ -37,11 +37,12 @@ $(LIBRPM): $(LIBRPM)($(LIBOBJECTS) $(TAGTABLE))
 tagtable.c: rpmlib.h 
 	echo '#include "rpmlib.h"' > tagtable.c
 	echo '' >> tagtable.c
-	echo 'const struct rpmTagTableEntry rpmTagTable[] = {' >> tagtable.c
+	echo 'const struct headerTagTableEntry rpmTagTable[] = {' >> tagtable.c
 	awk '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ { printf("\t{ \"%s\", %s },\n", $$2, $$3); }' < $(srcdir)/rpmlib.h >> tagtable.c
+	echo '	{ NULL, 0 }' >> tagtable.c
 	echo '};' >> tagtable.c
 	echo '' >> tagtable.c
-	echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct rpmTagTableEntry);' >> tagtable.c
+	echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry);' >> tagtable.c
 
 install:
 	$(INSTALL) -m 755 -o 0 -g 0 -d $(INCDIR)
