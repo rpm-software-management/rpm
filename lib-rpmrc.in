@@ -6,6 +6,7 @@ topdir:		@prefix@/src/redhat
 tmppath:	@tmpdir@
 cpiobin:	@CPIOBIN@
 defaultdocdir:  @prefix@/doc
+fixperms:	@FIXPERMS@
 
 #############################################################
 
