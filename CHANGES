@@ -78,6 +78,7 @@
 	- fix: removed headers from db need a headerCopy().
 	- send query/verify output through rpmlog().
 	- resurrect rpmErrorSetCallback() and rpmErrorString().
+	- use malloc'ed buffer for large queries.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

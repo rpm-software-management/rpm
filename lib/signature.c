@@ -558,7 +558,6 @@ verifyPGPSignature(const char *datafile, const void * sig, int count, char *resu
 	    break;
 	}
 
-	fprintf(stderr, _("exec failed!\n"));
 	rpmError(RPMERR_EXEC, 
 		 _("Could not run pgp.  Use --nopgp to skip PGP checks."));
 	_exit(RPMERR_EXEC);
@@ -631,7 +630,6 @@ verifyGPGSignature(const char *datafile, const void * sig, int count, char *resu
 	       "--batch", "--no-verbose", 
 	       "--verify", sigfile, datafile,
 	       NULL);
-	fprintf(stderr, _("exec failed!\n"));
 	rpmError(RPMERR_EXEC, 
 		 _("Could not run gpg.  Use --nogpg to skip GPG checks."));
 	_exit(RPMERR_EXEC);

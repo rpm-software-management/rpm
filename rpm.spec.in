@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Dec 27 2000 Jeff Johnson <jbj@redhat.com>
+- use malloc'ed buffer for large queries.
+
 * Tue Dec 26 2000 Jeff Johnson <jbj@redhat.com>
 - send query/verify output through rpmlog().
 - resurrect rpmErrorSetCallback() and rpmErrorString().

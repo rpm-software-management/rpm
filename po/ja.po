@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-26 14:00-0500\n"
+"POT-Creation-Date: 2000-12-27 16:13-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.132 2000/12/26 19:07:02 jbj Exp $
+# $Id: ja.po,v 1.133 2000/12/27 21:19:56 jbj Exp $
 #: rpm.c:185 rpmqv.c:269
 #, c-format
 msgid "rpm: %s\n"
@@ -3177,120 +3177,120 @@ msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 msgid "incorrect format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
 
-#: lib/query.c:224
+#: lib/query.c:233
 msgid "(contains no files)"
 msgstr "ファイルを含んでいません"
 
-#: lib/query.c:275
+#: lib/query.c:284
 msgid "normal        "
 msgstr "通常"
 
-#: lib/query.c:277
+#: lib/query.c:286
 msgid "replaced      "
 msgstr "置き換えられています"
 
-#: lib/query.c:279
+#: lib/query.c:288
 msgid "not installed "
 msgstr "インストールされていません"
 
-#: lib/query.c:281
+#: lib/query.c:290
 msgid "net shared    "
 msgstr "ネット共有"
 
-#: lib/query.c:283
+#: lib/query.c:292
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(未知の %3d)"
 
-#: lib/query.c:288
+#: lib/query.c:297
 msgid "(no state)    "
 msgstr "(何の状態もありません)"
 
-#: lib/query.c:307 lib/query.c:352
+#: lib/query.c:316 lib/query.c:361
 msgid "package has neither file owner or id lists"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:403
+#: lib/query.c:418
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:519
+#: lib/query.c:534
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:539
+#: lib/query.c:554
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:548 lib/rpminstall.c:312
+#: lib/query.c:563 lib/rpminstall.c:312
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s は RPM パッケージではありません\n"
 
-#: lib/query.c:552
+#: lib/query.c:567
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:586
+#: lib/query.c:601
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:609
+#: lib/query.c:624
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:620
+#: lib/query.c:635
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:630
+#: lib/query.c:645
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:640
+#: lib/query.c:655
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:651
+#: lib/query.c:666
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:682
+#: lib/query.c:697
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:686
+#: lib/query.c:701
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:712
+#: lib/query.c:727
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:715
+#: lib/query.c:730
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:720
+#: lib/query.c:735
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:731 lib/rpminstall.c:546
+#: lib/query.c:746 lib/rpminstall.c:546
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -3858,7 +3858,7 @@ msgstr "署名を読むことができません"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:350 lib/signature.c:695
+#: lib/signature.c:350 lib/signature.c:693
 #, fuzzy
 msgid "Couldn't exec gpg"
 msgstr "gpg を実行できません"
@@ -3895,39 +3895,35 @@ msgstr "PGP を使用して署名の生成中\n"
 msgid "Generating signature using GPG.\n"
 msgstr "GPG を使用して署名の生成中\n"
 
-#: lib/signature.c:501 lib/signature.c:563
+#: lib/signature.c:501 lib/signature.c:562
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 "pgp を実行できませんでした。\n"
 "PGP チェックをスキップするために --nopgp を使用してください。"
 
-#: lib/signature.c:561 lib/signature.c:634
-msgid "exec failed!\n"
-msgstr "実行失敗!\n"
-
-#: lib/signature.c:636
+#: lib/signature.c:634
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 "gpg を実行できませんでした。\n"
 "GPG チェックをスキップするために --nogpg を使用してください。"
 
-#: lib/signature.c:724
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr "pgp を実行できません"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:728 lib/signature.c:781
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr "マクロファイル中で無効な %%_signature スペック"
 
-#: lib/signature.c:761
+#: lib/signature.c:759
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:773
+#: lib/signature.c:771
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
@@ -4226,6 +4222,9 @@ msgstr "%s のオープンに失敗: %s"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#~ msgid "exec failed!\n"
+#~ msgstr "実行失敗!\n"
 
 #, fuzzy
 #~ msgid "%%instchangelog value in macro file should be a number, but isn't"

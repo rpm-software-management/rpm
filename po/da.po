@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-26 14:00-0500\n"
+"POT-Creation-Date: 2000-12-27 16:13-0500\n"
 "PO-Revision-Date: 2000-03-07 05:17+01:00\n"
 "Last-Translator: K. Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish/Dansk <dansk@klid.dk>\n"
@@ -3013,119 +3013,119 @@ msgstr ""
 msgid "incorrect format: %s\n"
 msgstr ""
 
-#: lib/query.c:224
+#: lib/query.c:233
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:275
+#: lib/query.c:284
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:277
+#: lib/query.c:286
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:279
+#: lib/query.c:288
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:281
+#: lib/query.c:290
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:283
+#: lib/query.c:292
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:288
+#: lib/query.c:297
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:307 lib/query.c:352
+#: lib/query.c:316 lib/query.c:361
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:403
+#: lib/query.c:418
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/query.c:519
+#: lib/query.c:534
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:539
+#: lib/query.c:554
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:548 lib/rpminstall.c:312
+#: lib/query.c:563 lib/rpminstall.c:312
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:552
+#: lib/query.c:567
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:586
+#: lib/query.c:601
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:609
+#: lib/query.c:624
 msgid "no packages\n"
 msgstr "ingen pakker\n"
 
-#: lib/query.c:620
+#: lib/query.c:635
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:630
+#: lib/query.c:645
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:640
+#: lib/query.c:655
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:651
+#: lib/query.c:666
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:682
+#: lib/query.c:697
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:686
+#: lib/query.c:701
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:712
+#: lib/query.c:727
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldig pakkenummer: %s\n"
 
-#: lib/query.c:715
+#: lib/query.c:730
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:720
+#: lib/query.c:735
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:731 lib/rpminstall.c:546
+#: lib/query.c:746 lib/rpminstall.c:546
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3687,7 +3687,7 @@ msgstr ""
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:350 lib/signature.c:695
+#: lib/signature.c:350 lib/signature.c:693
 msgid "Couldn't exec gpg"
 msgstr ""
 
@@ -3719,33 +3719,29 @@ msgstr ""
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:501 lib/signature.c:563
+#: lib/signature.c:501 lib/signature.c:562
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: lib/signature.c:561 lib/signature.c:634
-msgid "exec failed!\n"
-msgstr ""
-
-#: lib/signature.c:636
+#: lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
-#: lib/signature.c:724
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:728 lib/signature.c:781
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: lib/signature.c:761
+#: lib/signature.c:759
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: lib/signature.c:773
+#: lib/signature.c:771
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 

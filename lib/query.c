@@ -141,19 +141,15 @@ static void printFileInfo(char * te, const char * name,
     if (perms) free(perms);
 }
 
-static inline char * queryHeader(char * te, Header h, const char * qfmt)
+static inline const char * queryHeader(Header h, const char * qfmt)
 {
     const char * errstr;
     const char * str;
 
     str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
-    if (str == NULL) {
+    if (str == NULL)
 	rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
-	return te;
-    }
-    te = stpcpy(te, str);
-    te += strlen(te);
-    return te;
+    return str;
 }
 
 static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
@@ -176,7 +172,6 @@ static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
 
 int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 {
-    char buf[BUFSIZ];
     char * t, * te;
     
     int queryFlags = qva->qva_flags;
@@ -199,9 +194,10 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
     uint_16 * fileRdevList;
     int_32 * dirIndexes;
     int rc = 0;		/* XXX FIXME: need real return code */
+    int nonewline = 0;
     int i;
 
-    te = t = buf;
+    te = t = xmalloc(BUFSIZ);
     *te = '\0';
 
     if (!queryFormat && !queryFlags) {
@@ -213,8 +209,21 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 	goto exit;
     }
 
-    if (queryFormat)
-	te = queryHeader(te, h, queryFormat);
+    if (queryFormat) {
+	const char * str = queryHeader(h, queryFormat);
+	nonewline = 1;
+	if (str) {
+	    size_t tb = (te - t);
+	    size_t sb = strlen(str);
+
+	    if (sb >= (BUFSIZ - tb)) {
+		t = xrealloc(t, BUFSIZ+sb);
+		te = t + tb;
+	    }
+	    te = stpcpy(te, str);
+	    free((void *)str);
+	}
+    }
 
     if (!(queryFlags & QUERY_FOR_LIST))
 	goto exit;
@@ -358,7 +367,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 	    *te++ = '\n';
 	    *te = '\0';
 	    rpmMessage(RPMMESS_NORMAL, "%s", t);
-	    te = t = buf;
+	    te = t;
 	    *t = '\0';
 	}
     }
@@ -366,8 +375,14 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
     rc = 0;
 
 exit:
-    if (te > t)
+    if (te > t) {
+	if (!nonewline) {
+	    *te++ = '\n';
+	    *te = '\0';
+	}
 	rpmMessage(RPMMESS_NORMAL, "%s", t);
+    }
+    if (t) free(t);
     if (dirNames) free(dirNames);
     if (baseNames) free(baseNames);
     if (fileLinktoList) free(fileLinktoList);
