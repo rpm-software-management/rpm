@@ -12,6 +12,8 @@
 #include "install.h"
 #include "misc.h"	/* XXX for makeTempFile, doputenv */
 
+/*@access Header@*/		/* XXX compared with NULL */
+
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
 #define	SUFFIX_RPMSAVE	".rpmsave"
@@ -558,7 +560,7 @@ int runTriggers(const rpmTransactionSet ts, int sense, Header h,
 
     headerNVR(h, &name, NULL, NULL);
 
-    numPackage = rpmdbCountPackages(ts->rpmdb, name);
+    numPackage = rpmdbCountPackages(ts->rpmdb, name) + countCorrection;
     if (numPackage < 0)
 	return 1;
 
