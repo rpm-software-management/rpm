@@ -13,6 +13,7 @@ typedef struct mpwObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     mpnumber n;
+    mpw data[1];
 } mpwObject;
 
 /**
