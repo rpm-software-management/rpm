@@ -198,7 +198,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
     struct tm * tstruct;
     char * namefield = name;
 
-    strcpy(perms, "----------");
+    strcpy(perms, "-----------");
    
     if (!thisYear) {
 	currenttime = time(NULL);
@@ -207,17 +207,33 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 	thisMonth = tstruct->tm_mon;
     }
 
-    if (mode & S_IRUSR) perms[1]= 'r';
-    if (mode & S_IWUSR) perms[2]= 'w';
-    if (mode & S_IXUSR) perms[3]= 'x';
+    if (mode & S_ISVTX) perms[9] = 't';
 
-    if (mode & S_IRGRP) perms[4]= 'r';
-    if (mode & S_IWGRP) perms[5]= 'w';
-    if (mode & S_IXGRP) perms[6]= 'x';
+    if (mode & S_IRUSR) perms[1] = 'r';
+    if (mode & S_IWUSR) perms[2] = 'w';
+    if (mode & S_IXUSR) perms[3] = 'x';
+ 
+    if (mode & S_IRGRP) perms[4] = 'r';
+    if (mode & S_IWGRP) perms[5] = 'w';
+    if (mode & S_IXGRP) perms[6] = 'x';
 
-    if (mode & S_IROTH) perms[7]= 'r';
-    if (mode & S_IWOTH) perms[8]= 'w';
-    if (mode & S_IXOTH) perms[9]= 'x';
+    if (mode & S_IROTH) perms[7] = 'r';
+    if (mode & S_IWOTH) perms[8] = 'w';
+    if (mode & S_IXOTH) perms[9] = 'x';
+
+    if (mode & S_ISUID) {
+	if (mode & S_IXUSR) 
+	    perms[3] = 's'; 
+	else
+	    perms[3] = 'S'; 
+    }
+
+    if (mode & S_ISGID) {
+	if (mode & S_IXGRP) 
+	    perms[6] = 's'; 
+	else
+	    perms[6] = 'S'; 
+    }
 
     if (owner) 
 	strncpy(ownerfield, owner, 8);
