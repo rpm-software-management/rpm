@@ -102,6 +102,10 @@ rpmQueryFlags rpmcliQueryFlags;
 /*@-exportheadervar@*/
 /*@unchecked@*/
 extern int _ftp_debug;
+/*@unchecked@*/
+extern int _av_debug;
+/*@unchecked@*/
+extern int _dav_debug;
 
 /*@unchecked@*/
 extern int noLibio;
@@ -317,7 +321,11 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "fsmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_threads, -1,
 	N_("use threads for file state machine"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
+	N_("debug FTP/HTTP data stream"), NULL},
+ { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
+	N_("debug argv collections"), NULL},
+ { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
+	N_("debug WebDAV data stream"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
 	NULL, NULL},
 #ifdef	DYING

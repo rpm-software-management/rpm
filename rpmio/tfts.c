@@ -11,10 +11,16 @@
 /*@unchecked@*/
 static int _fts_debug = 0;
 
-#define FTPPATH         "ftp://porkchop/mnt/redhat/beehive/comps/dist/7.2-rpm"
-#define DIRPATH         "/mnt/redhat/beehive/comps/dist/7.2-rpm"
-static char * dirpath = DIRPATH;
+#if 1
+#define HTTPPATH        "https://wellfleet.jbj.org/rawhide/test/"
+#else
+#define HTTPPATH        "https://wellfleet.jbj.org/rawhide/"
+#endif
+#define FTPPATH         "ftp://wellfleet.jbj.org/pub/rawhide/packages/test"
+#define DIRPATH         "/var/ftp/pub/rawhide/packages/test"
+static char * httppath = HTTPPATH;
 static char * ftppath = FTPPATH;
+static char * dirpath = DIRPATH;
 
 static int ndirs = 0;
 static int nfiles = 0;
@@ -154,8 +160,14 @@ main(int argc, const char *argv[])
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
+_av_debug = -1;
+_ftp_debug = -1;
+_dav_debug = -1;
     ftsWalk(dirpath);
+#if 1
     ftsWalk(ftppath);
+#endif
+    ftsWalk(httppath);
 
     return 0;
 }

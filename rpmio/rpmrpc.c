@@ -1045,20 +1045,21 @@ static const char * statstr(const struct stat * st,
 {
     sprintf(buf,
 	"*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
-	(unsigned)st->st_dev,
-	(unsigned)st->st_ino,
-	st->st_mode,
-	(unsigned)st->st_nlink,
-	st->st_uid,
-	st->st_gid,
-	(unsigned)st->st_rdev,
-	(unsigned)st->st_size);
+	(unsigned int)st->st_dev,
+	(unsigned int)st->st_ino,
+	(unsigned int)st->st_mode,
+	(unsigned int)st->st_nlink,
+	(unsigned int)st->st_uid,
+	(unsigned int)st->st_gid,
+	(unsigned int)st->st_rdev,
+	(unsigned int)st->st_size);
     return buf;
 }
 
 /*@unchecked@*/
 static int ftp_st_ino = 0xdead0000;
 
+/* FIXME: borked for path with trailing '/' */
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals ftp_st_ino, h_errno, fileSystem, internalState @*/
 	/*@modifies *st, ftp_st_ino, fileSystem, internalState @*/
@@ -1074,6 +1075,7 @@ fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
     return rc;
 }
 
+/* FIXME: borked for path with trailing '/' */
 static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals ftp_st_ino, h_errno, fileSystem, internalState @*/
 	/*@modifies *st, ftp_st_ino, fileSystem, internalState @*/
@@ -1257,7 +1259,9 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     case URL_IS_FTP:
 	return ftpStat(path, st);
 	/*@notreached@*/ break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+	return davStat(path, st);
+	/*@notreached@*/ break;
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -1283,7 +1287,9 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     case URL_IS_FTP:
 	return ftpLstat(path, st);
 	/*@notreached@*/ break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+	return davLstat(path, st);
+	/*@notreached@*/ break;
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;

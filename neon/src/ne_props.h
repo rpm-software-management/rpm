@@ -56,7 +56,7 @@ BEGIN_NEON_DECLS
 typedef struct {
 /*@observer@*/ /*@null@*/
     const char *nspace;
-/*@observer@*/
+/*@observer@*/ /*@null@*/
     const char *name;
 } ne_propname;
 

@@ -122,11 +122,16 @@ assert(server != NULL);
     switch (rc) {
     case NE_OK:
 	break;
+    case NE_ERROR:
+	/* HACK: "301 Moved Permanently" on empty subdir. */
+	if (!strncmp("301 ", ne_get_error(sess), sizeof("301 ")-1))
+	    break;
+	/*@fallthrough@*/
     case NE_CONNECT:
     case NE_LOOKUP:
     default:
-fprintf(stderr, "Connect to %s:%d failed:\n%s\n",
-		   server->host, server->port, ne_get_error(sess));
+fprintf(stderr, "Connect to %s:%d failed(%d):\n%s\n",
+		   server->host, server->port, rc, ne_get_error(sess));
 	break;
     }
     return rc;
@@ -154,12 +159,75 @@ struct fetch_resource_s {
     int error_status; /* error status returned for this resource */
 };
 
+/*@null@*/
+static void *fetch_destroy_item(/*@only@*/ struct fetch_resource_s *res)
+	/*@modifies res @*/
+{
+    NE_FREE(res->uri);
+    NE_FREE(res->error_reason);
+    res = _free(res);
+    return NULL;
+}
+
+/*@null@*/
+static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
+	/*@modifies res @*/
+{
+    struct fetch_resource_s *next;
+/*@-branchstate@*/
+    for (; res != NULL; res = next) {
+	next = res->next;
+	res = fetch_destroy_item(res);
+    }
+/*@=branchstate@*/
+    return NULL;
+}
+
+static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const char *uri)
+        /*@*/
+{
+    struct fetch_resource_s * res = ne_calloc(sizeof(*res));
+    return res;
+}
+
+/* =============================================================== */
 struct fetch_context_s {
     struct fetch_resource_s **resrock;
 /*@observer@*/
     const char *uri;
     unsigned int include_target; /* Include resource at href */
+    int ac;
+    int nalloced;
+    ARGV_t av;
+    mode_t * modes;
+    size_t * sizes;
+    time_t * mtimes;
 };
+
+/*@null@*/
+static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s *ctx)
+	/*@modifies ctx @*/
+{
+    if (ctx == NULL)
+	return NULL;
+    if (ctx->av != NULL)
+	ctx->av = argvFree(ctx->av);
+    ctx->modes = _free(ctx->modes);
+    ctx->sizes = _free(ctx->sizes);
+    ctx->mtimes = _free(ctx->mtimes);
+    ctx->uri = _free(ctx->uri);
+    memset(ctx, 0, sizeof(*ctx));
+    ctx = _free(ctx);
+    return NULL;
+}
+
+static void *fetch_create_context(const char *uri)
+        /*@*/
+{
+    struct fetch_context_s * ctx = ne_calloc(sizeof(*ctx));
+    ctx->uri = xstrdup(uri);
+    return ctx;
+}
 
 /*@unchecked@*/ /*@observer@*/
 static const ne_propname fetch_props[] = {
@@ -169,7 +237,7 @@ static const ne_propname fetch_props[] = {
     { "DAV:", "resourcetype" },
     { "DAV:", "checked-in" },
     { "DAV:", "checked-out" },
-    { NULL, "" }
+    { NULL, NULL }
 };
 
 #define ELM_resourcetype (NE_PROPS_STATE_TOP + 1)
@@ -180,33 +248,6 @@ static const struct ne_xml_idmap fetch_idmap[] = {
     { "DAV:", "resourcetype", ELM_resourcetype },
     { "DAV:", "collection", ELM_collection }
 };
-
-static void fetch_destroy_item(/*@only@*/ struct fetch_resource_s *res)
-	/*@modifies res @*/
-{
-    NE_FREE(res->uri);
-    NE_FREE(res->error_reason);
-    res = _free(res);
-}
-
-static void fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
-	/*@modifies res @*/
-{
-    struct fetch_resource_s *next;
-/*@-branchstate@*/
-    for (; res != NULL; res = next) {
-	next = res->next;
-	fetch_destroy_item(res);
-    }
-/*@=branchstate@*/
-}
-
-static void *fetch_create(/*@unused@*/ void *userdata, /*@unused@*/ const char *uri)
-        /*@*/
-{
-    struct fetch_resource_s * res = ne_calloc(sizeof(*res));
-    return res;
-}
 
 static int fetch_startelm(void *userdata, int parent, 
 		const char *nspace, const char *name,
@@ -349,7 +390,8 @@ fprintf(stderr, "Skipping target resource.\n");
 fprintf(stderr, "End resource %s\n", newres->uri);
 
     for (current = *ctx->resrock, previous = NULL; current != NULL; 
-	previous = current, current=current->next) {
+	previous = current, current = current->next)
+    {
 	if (fetch_compare(current, newres) >= 0) {
 	    break;
 	}
@@ -445,7 +487,7 @@ static void display_ls_line(struct fetch_resource_s *res)
 }
 #endif
 
-static int davFetch(const char * uri, ARGV_t *avp, /*@unused@*/ int *acp)
+static int davFetch(struct fetch_context_s * ctx)
 	/*@globals internalState @*/
 	/*@modifies *avp, internalState @*/
 {
@@ -454,77 +496,116 @@ static int davFetch(const char * uri, ARGV_t *avp, /*@unused@*/ int *acp)
     struct fetch_resource_s * resitem = NULL;
     struct fetch_resource_s ** resrock = &resitem;	/* XXX passed arg? */
     ne_propfind_handler *pfh;
-    struct fetch_context_s fetchctx, * ctx = &fetchctx;
     struct fetch_resource_s *current, *next;
-    const char * val;
+    mode_t st_mode;
     int rc = 0;
     int xx;
 
 assert(sess != NULL);
 assert(server != NULL);
 
-    pfh = ne_propfind_create(sess, uri, depth);
+    pfh = ne_propfind_create(sess, ctx->uri, depth);
 
     ctx->resrock = resrock;
-/*@-temptrans@*/
-    ctx->uri = uri;
-/*@=temptrans@*/
     ctx->include_target = include_target;
 
     ne_xml_push_handler(ne_propfind_get_parser(pfh), 
                         fetch_startelm, NULL, NULL, pfh);
 
-    ne_propfind_set_private(pfh, fetch_create, NULL);
+    ne_propfind_set_private(pfh, fetch_create_item, NULL);
 
     rc = ne_propfind_named(pfh, fetch_props, fetch_results, ctx);
 
     ne_propfind_destroy(pfh);
 
     for (current = resitem; current != NULL; current = next) {
-	next = current->next;
-	if (strlen(current->uri) <= strlen(server->path)) {
-	    fetch_destroy_item(current);
-	    continue;
-	}
-#ifdef	DYING
-	display_ls_line(current);
-#endif
+	const char *s, *se;
+	char * val;
 
-	val = strrchr(current->uri, '/');
-	if (val != NULL && strlen(val+1) > 0) {
-	    val++;
-	} else {
-	    val = current->uri;
+	next = current->next;
+
+	/* Collections have trailing '/' that needs trim. */
+	/* The top level collection is returned as well. */
+	se = current->uri + strlen(current->uri);
+	if (se[-1] == '/') {
+	    if (strlen(current->uri) <= strlen(server->path)) {
+		current = fetch_destroy_item(current);
+		continue;
+	    }
+	    se--;
 	}
+	s = se;
+	while (s > current->uri && s[-1] != '/')
+	    s--;
+
+	val = ne_strndup(s, (se - s));
+
 /*@-nullpass@*/
 	val = ne_path_unescape(val);
 /*@=nullpass@*/
-	xx = argvAdd(avp, val);
 
-	fetch_destroy_item(current);
+	xx = argvAdd(&ctx->av, val);
+if (_dav_debug)
+fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
+	NE_FREE(val);
+
+	while (ctx->ac >= ctx->nalloced) {
+	    if (ctx->nalloced <= 0)
+		ctx->nalloced = 1;
+	    ctx->nalloced *= 2;
+	    ctx->modes = xrealloc(ctx->modes,
+				(sizeof(*ctx->modes) * ctx->nalloced));
+	    ctx->sizes = xrealloc(ctx->sizes,
+				(sizeof(*ctx->sizes) * ctx->nalloced));
+	    ctx->mtimes = xrealloc(ctx->mtimes,
+				(sizeof(*ctx->mtimes) * ctx->nalloced));
+	}
+
+	switch (current->type) {
+	case resr_normal:
+	    st_mode = S_IFREG;
+	    break;
+	case resr_collection:
+	    st_mode = S_IFDIR;
+	    break;
+	case resr_reference:
+	case resr_error:
+	default:
+	    st_mode = 0;
+	    break;
+	}
+	ctx->modes[ctx->ac] = st_mode;
+	ctx->sizes[ctx->ac] = current->size;
+	ctx->mtimes[ctx->ac] = current->modtime;
+	ctx->ac++;
+
+	current = fetch_destroy_item(current);
     }
 
     return rc;
 }
 
-static int davNLST(const char * uri, ARGV_t *avp, int *acp)
+static int davNLST(struct fetch_context_s * ctx)
 	/*@globals internalState @*/
 	/*@modifies *avp, internalState @*/
 {
-    const char * rpath;
     int rc;
+    int xx;
+
+    rc = davInit(ctx->uri);
+    if (rc)
+	goto exit;
+
+    rc = davConnect();
+    if (rc)
+	goto exit;
 
 assert(sess != NULL);
 assert(server != NULL);
 
-    rpath = ne_strdup(server->path);
-    rc = davFetch(uri, avp, acp);
+    rc = davFetch(ctx);
     switch (rc) {
     case NE_OK:
-#ifdef	DYING
-	if (avp != NULL)
-	    argvPrint(__FUNCTION__, *avp, NULL);
-#endif
         break;
     default:
 fprintf(stderr, "Fetch from %s:%d failed:\n%s\n",
@@ -532,8 +613,9 @@ fprintf(stderr, "Fetch from %s:%d failed:\n%s\n",
         break;
     }
 
-    rpath = _free(rpath);
-
+exit:
+    if (rc)
+	xx = davFree();
     return rc;
 }
 
@@ -588,41 +670,106 @@ static int davUnlink(const char * path)
 #endif	/* NOTYET */
 
 /* =============================================================== */
-	
-#ifdef	NOTYET
+
+static const char * statstr(const struct stat * st,
+		/*@returned@*/ /*@out@*/ char * buf)
+	/*@modifies *buf @*/
+{
+    sprintf(buf,
+	"*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
+	(unsigned)st->st_dev,
+	(unsigned)st->st_ino,
+	st->st_mode,
+	(unsigned)st->st_nlink,
+	st->st_uid,
+	st->st_gid,
+	(unsigned)st->st_rdev,
+	(unsigned)st->st_size);
+    return buf;
+}
+
 /*@unchecked@*/
 static int dav_st_ino = 0xdead0000;
 
-static int davStat(const char * path, /*@out@*/ struct stat *st)
+int davStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals dav_st_ino, h_errno, fileSystem, internalState @*/
 	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
 {
+    struct fetch_context_s * ctx = NULL;
     char buf[1024];
-    int rc;
-    rc = davNLST(path, DO_FTP_STAT, st, NULL, 0);
+    int rc = 0;
+
+/* HACK: neon really wants collections with trailing '/' */
+    ctx = fetch_create_context(path);
+    rc = davNLST(ctx);
+    if (rc) {
+/* HACK: errno = ??? */
+	goto exit;
+    }
+
+    memset(st, 0, sizeof(*st));
+    st->st_mode = ctx->modes[0];
+    st->st_size = ctx->sizes[0];
+    st->st_mtime = ctx->mtimes[0];
+    if (S_ISDIR(st->st_mode)) {
+	st->st_nlink = 2;
+	st->st_mode |= 0755;
+    } else
+    if (S_ISREG(st->st_mode)) {
+	st->st_nlink = 1;
+	st->st_mode |= 0644;
+    } 
+
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
     if (st->st_ino == 0)
 	st->st_ino = dav_st_ino++;
 if (_dav_debug)
 fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
+exit:
+    ctx = fetch_destroy_context(ctx);
     return rc;
 }
 
-static int davLstat(const char * path, /*@out@*/ struct stat *st)
+int davLstat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals dav_st_ino, h_errno, fileSystem, internalState @*/
 	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
 {
+    struct fetch_context_s * ctx = NULL;
     char buf[1024];
-    int rc;
-    rc = davNLST(path, DO_FTP_LSTAT, st, NULL, 0);
+    int rc = 0;
+
+/* HACK: neon really wants collections with trailing '/' */
+    ctx = fetch_create_context(path);
+    rc = davNLST(ctx);
+    if (rc) {
+/* HACK: errno = ??? */
+	goto exit;
+    }
+
+    memset(st, 0, sizeof(*st));
+    st->st_mode = ctx->modes[0];
+    st->st_size = ctx->sizes[0];
+    st->st_mtime = ctx->mtimes[0];
+    if (S_ISDIR(st->st_mode)) {
+	st->st_nlink = 2;
+	st->st_mode |= 0755;
+    } else
+    if (S_ISREG(st->st_mode)) {
+	st->st_nlink = 1;
+	st->st_mode |= 0644;
+    } 
+
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
     if (st->st_ino == 0)
 	st->st_ino = dav_st_ino++;
 if (_dav_debug)
 fprintf(stderr, "*** davLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
+exit:
+    ctx = fetch_destroy_context(ctx);
     return rc;
 }
 
+#ifdef	NOTYET
 static int davReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
@@ -828,6 +975,7 @@ fprintf(stderr, "*** davReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name)
 /*@-boundswrite@*/
 DIR * davOpendir(const char * path)
 {
+    struct fetch_context_s * ctx;
     DAVDIR avdir;
     struct dirent * dp;
     size_t nb;
@@ -836,31 +984,24 @@ DIR * davOpendir(const char * path)
     char * t;
     int ac, nac;
     int rc;
-    int xx;
 
 if (_dav_debug)
 fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     /* Load DAV collection into argv. */
-    rc = davInit(path);
-    if (!rc)
-	rc = davConnect();
-    av = NULL;
-    ac = 0;
-/*@-nullstate@*/
-    if (!rc)
-	rc = davNLST(path, &av, &ac);
-/*@=nullstate@*/
-    xx = davFree();
+    ctx = fetch_create_context(path);
+    rc = davNLST(ctx);
     if (rc)
 	return NULL;
 
-    nb = sizeof(".") + sizeof("..");
+    nb = 0;
     ac = 0;
+    av = ctx->av;
     if (av != NULL)
     while (av[ac] != NULL)
 	nb += strlen(av[ac++]) + 1;
     ac += 2;	/* for "." and ".." */
+    nb += sizeof(".") + sizeof("..");
 
     nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
     avdir = xcalloc(1, nb);
@@ -897,7 +1038,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     if (av != NULL)
     while (av[ac] != NULL) {
 	nav[nac] = t;
-	dt[nac] = DT_REG;	/* HACK: sub-collection needs DT_DIR */
+	dt[nac] = (S_ISDIR(ctx->modes[ac]) ? DT_DIR : DT_REG);
 	t = stpcpy(t, av[ac]);
 	ac++;
 	t++;
@@ -905,7 +1046,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     }
     nav[nac] = NULL;
 
-    av = argvFree(av);
+    ctx = fetch_destroy_context(ctx);
 
 /*@-kepttrans@*/
     return (DIR *) avdir;
