@@ -224,6 +224,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     char * currDir = NULL, * tmpptr;
     int currDirLen;
 
+    if (flags & RPMINSTALL_JUSTDB)
+	flags |= RPMINSTALL_NOSCRIPTS;
+
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
 
@@ -242,6 +245,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    labelFormat = NULL;
 	    h = NULL;
 	}
+
+	if (flags & RPMINSTALL_JUSTDB) return 0;
 
 	rc = installSources(h, rootdir, fd, NULL, notify, labelFormat);
 	if (h) headerFree(h);
@@ -378,7 +383,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	chroot(rootdir);
     }
 
-    if (headerIsEntry(h, RPMTAG_FILENAMES)) {
+    if (!(flags & RPMINSTALL_JUSTDB) && headerIsEntry(h, RPMTAG_FILENAMES)) {
 	char ** netsharedPaths;
 	char ** nsp;
 

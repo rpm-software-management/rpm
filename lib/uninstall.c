@@ -213,6 +213,9 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     enum { REMOVE, BACKUP, KEEP } * fileActions;
     int scriptArg;
 
+    if (flags & RPMUNINSTALL_JUSTDB)
+	flags |= RPMUNINSTALL_NOSCRIPTS;
+
     h = rpmdbGetRecord(db, offset);
     if (!h) {
 	rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
@@ -249,8 +252,9 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     }
     
     rpmMessage(RPMMESS_DEBUG, "%s files test = %d\n", rmmess, flags & RPMUNINSTALL_TEST);
-    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
-	 &fileCount)) {
+    if (!(flags & RPMUNINSTALL_JUSTDB) &&
+	headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+	               &fileCount)) {
 	if (prefix[0]) {
 	    fnbuffersize = 1024;
 	    fnbuffer = alloca(fnbuffersize);

@@ -88,14 +88,14 @@ static void printUsage(void) {
     puts(_("                        [--excludedocs] [--includedocs] [--noscripts]"));
     puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
-    puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
     puts(_("                        file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
-    puts(_("                        [--ignoreos] [--nodeps] [--allfiles]"));
+    puts(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"));
     puts(_("                        file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
@@ -110,7 +110,7 @@ static void printUsage(void) {
     puts(_("       rpm {--setugids} [-afpg] [target]"));
     puts(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
-    puts(_("                        package1 ... packageN"));
+    puts(_("                        [--justdb] package1 ... packageN"));
     puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"));
     puts(_("                        [--buildarch <arch>] specfile"));
@@ -263,6 +263,8 @@ static void printHelp(void) {
 		  _("don't verify package operating system"));
     printHelpLine("      --includedocs       ",
 		  _("install documentation"));
+    printHelpLine("      --justdb            ",
+		  _("update the database, but do not modify the filesystem"));
     printHelpLine("      --nodeps            ",
 		  _("do not verify package dependencies"));
     printHelpLine("      --noscripts         ",
@@ -291,6 +293,8 @@ static void printHelp(void) {
 		  _("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"));
     printHelpLine("      --dbpath <dir>      ",
 		  _("use <dir> as the directory for the database"));
+    printHelpLine("      --justdb            ",
+		  _("update the database, but do not modify the filesystem"));
     printHelpLine("      --nodeps            ",
 		  _("do not verify package dependencies"));
     printHelpLine("      --noscripts         ",
@@ -490,7 +494,7 @@ int main(int argc, char ** argv) {
     int incldocs = 0, noScripts = 0, noDeps = 0, allMatches = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
-    int noMd5 = 0, allFiles = 0;
+    int noMd5 = 0, allFiles = 0, justdb = 0;
     int checksigFlags = 0;
     char *tce;
     int timeCheck = 0;
@@ -547,6 +551,7 @@ int main(int argc, char ** argv) {
 	    { "initdb", '\0', 0, &initdb, 0 },
 	/* info and install both using 'i' is dumb */
 	    { "install", '\0', 0, 0, GETOPT_INSTALL },
+	    { "justdb", '\0', 0, &justdb, 0 },
 	    { "list", 'l', 0, 0, 'l' },
 	    { "nodeps", '\0', 0, &noDeps, 0 },
 	    { "nofiles", '\0', 0, &noFiles, 0 },
@@ -979,6 +984,10 @@ int main(int argc, char ** argv) {
 	argerror(_("--allfiles may only be specified during package "
 		   "installation"));
 
+    if (justdb && bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL)
+	argerror(_("--justdb may only be specified during package "
+		   "installation and erasure"));
+
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
 	bigMode != MODE_VERIFY && noScripts)
 	argerror(_("--noscripts may only be specified during package "
@@ -1201,6 +1210,7 @@ int main(int argc, char ** argv) {
 
 	if (noScripts) uninstallFlags |= RPMUNINSTALL_NOSCRIPTS;
 	if (test) uninstallFlags |= RPMUNINSTALL_TEST;
+	if (justdb) uninstallFlags |= RPMUNINSTALL_JUSTDB;
 	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
 	if (allMatches) interfaceFlags |= UNINSTALL_ALLMATCHES;
 
@@ -1218,6 +1228,7 @@ int main(int argc, char ** argv) {
 	if (ignoreArch) installFlags |= RPMINSTALL_NOARCH;
 	if (ignoreOs) installFlags |= RPMINSTALL_NOOS;
 	if (allFiles) installFlags |= RPMINSTALL_ALLFILES;
+	if (justdb) installFlags |= RPMINSTALL_JUSTDB;
 
 	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
 	if (showHash) interfaceFlags |= INSTALL_HASH;
