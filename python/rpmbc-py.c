@@ -155,27 +155,80 @@ static PyObject *
 rpmbc_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    rpmbcObject * z = NULL;
+    uint32 * wksp;
+
 if (_rpmbc_debug)
 fprintf(stderr, "*** rpmbc_divide(%p,%p)\n", a, b);
-    return NULL;
+
+    if (mp32z(b->n.size, b->n.data)) {
+	PyErr_SetString(PyExc_ZeroDivisionError, "rpmbc_divide by zero");
+	return NULL;
+    }
+
+    if ((z = rpmbc_new()) == NULL
+     || (wksp = malloc(b->n.size+1)) == NULL) {
+	Py_XDECREF(z);
+	return NULL;
+    }
+
+    mp32nsize(&z->n, a->n.size+1);
+    mp32ndivmod(z->n.data, a->n.size, a->n.data, b->n.size, b->n.data, wksp);
+
+    return (PyObject *)z;
 }
 
 static PyObject *
 rpmbc_remainder(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    rpmbcObject * z;
+
 if (_rpmbc_debug)
 fprintf(stderr, "*** rpmbc_remainder(%p,%p)\n", a, b);
-    return NULL;
+
+    if ((z = rpmbc_new()) != NULL) {
+	uint32 * wksp = malloc(a->n.size+1);
+	mp32nsize(&z->n, a->n.size);
+	mp32nmod(z->n.data, a->n.size, a->n.data, b->n.size, b->n.data, wksp);
+	free(wksp);
+    }
+    return (PyObject *)z;
 }
 
 static PyObject *
 rpmbc_divmod(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    PyObject * z = NULL;
+    rpmbcObject * d = NULL;
+    rpmbcObject * r = NULL;
+
 if (_rpmbc_debug)
 fprintf(stderr, "*** rpmbc_divmod(%p,%p)\n", a, b);
-    return NULL;
+
+    if (mp32z(b->n.size, b->n.data)) {
+	PyErr_SetString(PyExc_ZeroDivisionError, "rpmbc_divmod by zero");
+	return NULL;
+    }
+
+    if ((z = PyTuple_New(2)) == NULL
+     || (d = rpmbc_new()) == NULL
+     || (r = rpmbc_new()) == NULL) {
+	Py_XDECREF(z);
+	Py_XDECREF(d);
+	Py_XDECREF(r);
+	return NULL;
+    }
+
+    mp32nsize(&d->n, a->n.size+1);
+    mp32nsize(&r->n, b->n.size+1);
+
+    mp32ndivmod(d->n.data, a->n.size, a->n.data, b->n.size, b->n.data, r->n.data);
+
+    (void) PyTuple_SetItem(z, 0, (PyObject *)d);
+    (void) PyTuple_SetItem(z, 1, (PyObject *)r);
+    return (PyObject *)z;
 }
 
 static PyObject *
