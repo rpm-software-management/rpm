@@ -45,8 +45,8 @@ fmagicSPrint(const fmagic fm, struct magic *m)
 
     switch (m->type) {
     case FILE_BYTE:
-	v = signextend(m, p->b);
-	fmagicPrintf(fm, m->desc, (unsigned char) v);
+	v = file_signextend(m, p->b);
+	file_printf(fm, m->desc, (unsigned char) v);
 /*@-sizeoftype@*/
 	t = m->offset + sizeof(char);
 /*@=sizeoftype@*/
@@ -55,8 +55,8 @@ fmagicSPrint(const fmagic fm, struct magic *m)
     case FILE_SHORT:
     case FILE_BESHORT:
     case FILE_LESHORT:
-	v = signextend(m, p->h);
-	fmagicPrintf(fm, m->desc, (unsigned short) v);
+	v = file_signextend(m, p->h);
+	file_printf(fm, m->desc, (unsigned short) v);
 /*@-sizeoftype@*/
 	t = m->offset + sizeof(short);
 /*@=sizeoftype@*/
@@ -65,8 +65,8 @@ fmagicSPrint(const fmagic fm, struct magic *m)
     case FILE_LONG:
     case FILE_BELONG:
     case FILE_LELONG:
-	v = signextend(m, p->l);
-	fmagicPrintf(fm, m->desc, (uint32_t) v);
+	v = file_signextend(m, p->l);
+	file_printf(fm, m->desc, (uint32_t) v);
 /*@-sizeoftype@*/
 	t = m->offset + sizeof(int32_t);
 /*@=sizeoftype@*/
@@ -75,7 +75,7 @@ fmagicSPrint(const fmagic fm, struct magic *m)
     case FILE_STRING:
     case FILE_PSTRING:
 	if (m->reln == '=') {
-	    fmagicPrintf(fm, m->desc, m->value.s);
+	    file_printf(fm, m->desc, m->value.s);
 	    t = m->offset + strlen(m->value.s);
 	} else {
 	    if (*m->value.s == '\0') {
@@ -83,7 +83,7 @@ fmagicSPrint(const fmagic fm, struct magic *m)
 		if (cp != NULL)
 		    *cp = '\0';
 	    }
-	    fmagicPrintf(fm, m->desc, p->s);
+	    file_printf(fm, m->desc, p->s);
 	    t = m->offset + strlen(p->s);
 	}
 	break;
@@ -91,7 +91,7 @@ fmagicSPrint(const fmagic fm, struct magic *m)
     case FILE_DATE:
     case FILE_BEDATE:
     case FILE_LEDATE:
-	fmagicPrintf(fm, m->desc, fmttime(p->l, 1));
+	file_printf(fm, m->desc, file_fmttime(p->l, 1));
 /*@-sizeoftype@*/
 	t = m->offset + sizeof(time_t);
 /*@=sizeoftype@*/
@@ -100,14 +100,14 @@ fmagicSPrint(const fmagic fm, struct magic *m)
     case FILE_LDATE:
     case FILE_BELDATE:
     case FILE_LELDATE:
-	fmagicPrintf(fm, m->desc, fmttime(p->l, 0));
+	file_printf(fm, m->desc, file_fmttime(p->l, 0));
 /*@-sizeoftype@*/
 	t = m->offset + sizeof(time_t);
 /*@=sizeoftype@*/
 	break;
 
     case FILE_REGEX:
-  	fmagicPrintf(fm, m->desc, p->s);
+  	file_printf(fm, m->desc, p->s);
 	t = m->offset + strlen(p->s);
 	break;
 
@@ -399,12 +399,12 @@ fmagicSConvert(fmagic fm, struct magic *m)
 
 
 static void
-fmagicSDebug(int32_t offset, char *str, int len)
+fmagicSDebug(int32_t offset, char *str, size_t len)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     (void) fprintf(stderr, "fmagicSGet @%d: ", offset);
-    showstr(stderr, (char *) str, len);
+    file_showstr(stderr, (char *) str, len);
     (void) fputc('\n', stderr);
     (void) fputc('\n', stderr);
 }
@@ -450,7 +450,7 @@ fmagicSGet(fmagic fm, struct magic *m)
 
     if (fm->flags & FMAGIC_FLAGS_DEBUG) {
 	fmagicSDebug(offset, (char *) p, sizeof(*p));
-	mdump(m);
+	file_mdump(m);
     }
 
     if (m->flag & INDIR) {
@@ -738,7 +738,7 @@ fmagicSGet(fmagic fm, struct magic *m)
 
 	if (fm->flags & FMAGIC_FLAGS_DEBUG) {
 	    fmagicSDebug(offset, (char *) p, sizeof(*p));
-	    mdump(m);
+	    file_mdump(m);
 	}
     }
 /*@-compmempass@*/
@@ -857,8 +857,8 @@ fmagicSCheck(const fmagic fm, struct magic *m)
 	return 0;
     }
 
-    if(m->type != FILE_STRING && m->type != FILE_PSTRING)
-	v = signextend(m, v);
+    if (m->type != FILE_STRING && m->type != FILE_PSTRING)
+	v = file_signextend(m, v);
 
     switch (m->reln) {
     case 'x':
@@ -987,7 +987,7 @@ fmagicSMatch(const fmagic fm)
 
 	if (! firstline) { /* we found another match */
 	    /* put a newline and '-' to do some simple formatting */
-	    fmagicPrintf(fm, "\n- ");
+	    file_printf(fm, "\n- ");
 	}
 
 	if ((cont_level+1) >= tmplen) {
@@ -1027,7 +1027,7 @@ fmagicSMatch(const fmagic fm)
 		if (need_separator
 		   && (m->nospflag == 0) && (m->desc[0] != '\0'))
 		{
-		    fmagicPrintf(fm, " ");
+		    file_printf(fm, " ");
 		    need_separator = 0;
 		}
 		if ((cont_level+1) >= tmplen) {

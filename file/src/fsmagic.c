@@ -56,31 +56,31 @@ fmagicD(fmagic fm)
 	if (ret) {
 		/* Yes, I do mean stdout. */
 		/* No \n, caller will provide. */
-		fmagicPrintf(fm, "can't stat `%s' (%s).", fn, strerror(errno));
+		file_printf(fm, "can't stat `%s' (%s).", fn, strerror(errno));
 		return 1;
 	}
 
 	if ((fm->flags & FMAGIC_FLAGS_MIME)) {
 		if ((st->st_mode & S_IFMT) != S_IFREG) {
-			fmagicPrintf(fm, "application/x-not-regular-file");
+			file_printf(fm, "application/x-not-regular-file");
 			return 1;
 		}
 	}
 	else {
 #if defined(S_ISUID) || defined(__LCLINT__)
-		if (st->st_mode & S_ISUID) fmagicPrintf(fm, "setuid ");
+		if (st->st_mode & S_ISUID) file_printf(fm, "setuid ");
 #endif
 #if defined(S_ISGID) || defined(__LCLINT__)
-		if (st->st_mode & S_ISGID) fmagicPrintf(fm, "setgid ");
+		if (st->st_mode & S_ISGID) file_printf(fm, "setgid ");
 #endif
 #if defined(S_ISVTX) || defined(__LCLINT__)
-		if (st->st_mode & S_ISVTX) fmagicPrintf(fm, "sticky ");
+		if (st->st_mode & S_ISVTX) file_printf(fm, "sticky ");
 #endif
 	}
 	
 	switch (st->st_mode & S_IFMT) {
 	case S_IFDIR:
-		fmagicPrintf(fm, "directory");
+		file_printf(fm, "directory");
 		return 1;
 #if defined(S_IFCHR) || defined(__LCLINT__)
 	case S_IFCHR:
@@ -93,18 +93,18 @@ fmagicD(fmagic fm)
 			break;
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
-		fmagicPrintf(fm, "character special (%d/%d/%d)",
+		file_printf(fm, "character special (%d/%d/%d)",
 			major(st->st_rdev),
 			dv_unit(st->st_rdev),
 			dv_subunit(st->st_rdev));
 # else
 /*@-shiftimplementation@*/
-		fmagicPrintf(fm, "character special (%ld/%ld)",
+		file_printf(fm, "character special (%ld/%ld)",
 			(long) major(st->st_rdev), (long) minor(st->st_rdev));
 /*@=shiftimplementation@*/
 # endif
 #else
-		fmagicPrintf(fm, "character special");
+		file_printf(fm, "character special");
 #endif
 		return 1;
 #endif
@@ -119,30 +119,30 @@ fmagicD(fmagic fm)
 			break;
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
-		fmagicPrintf(fm, "block special (%d/%d/%d)",
+		file_printf(fm, "block special (%d/%d/%d)",
 			major(st->st_rdev),
 			dv_unit(st->st_rdev),
 			dv_subunit(st->st_rdev));
 # else
 /*@-shiftimplementation@*/
-		fmagicPrintf(fm, "block special (%ld/%ld)",
+		file_printf(fm, "block special (%ld/%ld)",
 			(long) major(st->st_rdev), (long) minor(st->st_rdev));
 /*@=shiftimplementation@*/
 # endif
 #else
-		fmagicPrintf(fm, "block special");
+		file_printf(fm, "block special");
 #endif
 		return 1;
 #endif
 	/* TODO add code to handle V7 MUX and Blit MUX files */
 #if defined(S_IFIFO) || defined(__LCLINT__)
 	case S_IFIFO:
-		fmagicPrintf(fm, "fifo (named pipe)");
+		file_printf(fm, "fifo (named pipe)");
 		return 1;
 #endif
 #if defined(S_IFDOOR)
 	case S_IFDOOR:
-		fmagicPrintf(fm, "door");
+		file_printf(fm, "door");
 		return 1;
 #endif
 #if defined(S_IFLNK) || defined(__LCLINT__)
@@ -154,7 +154,7 @@ fmagicD(fmagic fm)
 
 			buf[0] = '\0';
 			if ((nch = readlink(fn, buf, BUFSIZ-1)) <= 0) {
-				fmagicPrintf(fm, "unreadable symlink (%s).", strerror(errno));
+				file_printf(fm, "unreadable symlink (%s).", strerror(errno));
 				return 1;
 			}
 			buf[nch] = '\0';	/* readlink(2) needs this */
@@ -163,7 +163,7 @@ fmagicD(fmagic fm)
 /*@-branchstate@*/
 			if (*buf == '/') {
 			    if (stat(buf, &tstatbuf) < 0) {
-				fmagicPrintf(fm, "broken symbolic link to %s", buf);
+				file_printf(fm, "broken symbolic link to %s", buf);
 				return 1;
 			    }
 			}
@@ -181,7 +181,7 @@ fmagicD(fmagic fm)
 				tmp = buf2;
 			    }
 			    if (stat(tmp, &tstatbuf) < 0) {
-				fmagicPrintf(fm, "broken symbolic link to %s", buf);
+				file_printf(fm, "broken symbolic link to %s", buf);
 				return 1;
 			    }
                         }
@@ -189,11 +189,11 @@ fmagicD(fmagic fm)
 
 			/* Otherwise, handle it. */
 			if ((fm->flags & FMAGIC_FLAGS_FOLLOW)) {
-				fmagicPrintf(fm, "\n");
+				file_printf(fm, "\n");
 				xx = fmagicProcess(fm, buf, strlen(buf));
 				return 1;
 			} else { /* just print what it points to */
-				fmagicPrintf(fm, "symbolic link to %s", buf);
+				file_printf(fm, "symbolic link to %s", buf);
 			}
 		}
 		return 1;
@@ -201,7 +201,7 @@ fmagicD(fmagic fm)
 #if defined(S_IFSOCK)
 #ifndef __COHERENT__
 	case S_IFSOCK:
-		fmagicPrintf(fm, "socket");
+		file_printf(fm, "socket");
 		return 1;
 #endif
 #endif
@@ -225,7 +225,7 @@ fmagicD(fmagic fm)
 	 * when we read the file.)
 	 */
 	if (!(fm->flags & FMAGIC_FLAGS_SPECIAL) && st->st_size == 0) {
-		fmagicPrintf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
+		file_printf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
 			? "application/x-empty" : "empty"));
 		return 1;
 	}
@@ -262,7 +262,7 @@ fmagicF(fmagic fm, int zfl)
 		return 'a';
 
 	/* abandon hope, all ye who remain here */
-	fmagicPrintf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
+	file_printf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
 		? "application/octet-stream" : "data"));
 	return '\0';
 }
@@ -297,7 +297,7 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 /*@=branchstate@*/
 
 	if (wid > 0 && !(fm->flags & FMAGIC_FLAGS_BRIEF))
-	     fmagicPrintf(fm, "%s:%*s ", fm->fn, 
+	     file_printf(fm, "%s:%*s ", fm->fn, 
 			   (int) (wid - strlen(fm->fn)), "");
 
 	if (fm->fn != stdname) {
@@ -310,10 +310,10 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 		if ((fm->fd = open(fm->fn, O_RDONLY)) < 0) {
 			/* We can't open it, but we were able to stat it. */
 			if (fm->sb.st_mode & 0002)
-				fmagicPrintf(fm, "writeable, ");
+				file_printf(fm, "writeable, ");
 			if (fm->sb.st_mode & 0111)
-				fmagicPrintf(fm, "executable, ");
-			fmagicPrintf(fm, "can't read `%s' (%s).", fm->fn, strerror(errno));
+				file_printf(fm, "executable, ");
+			file_printf(fm, "can't read `%s' (%s).", fm->fn, strerror(errno));
 			goto exit;
 		}
 	}
@@ -328,7 +328,7 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 	}
 
 	if (fm->nb == 0)
-		fmagicPrintf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
+		file_printf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
 			? "application/x-empty" : "empty"), fm);
 	else {
 		fm->buf[fm->nb++] = '\0';	/* null-terminate data buffer */

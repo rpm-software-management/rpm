@@ -220,27 +220,27 @@ extern int fmagicZ(fmagic fm)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fm, fileSystem, internalState @*/;
 
-extern void fmagicPrintf(const fmagic fm, const char *f, ...)
+extern void file_printf(const fmagic fm, const char *f, ...)
 	/*@modifies fm @*/;
 
 /*@observer@*/
-extern char *fmttime(long v, int local)
+extern const char *file_fmttime(uint32_t v, int local)
 	/*@*/;
 
-extern void magwarn(const char *f, ...)
+extern void file_magwarn(const char *f, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-extern void mdump(struct magic *m)
+extern void file_mdump(struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-extern void showstr(FILE *fp, const char *s, int len)
+extern void file_showstr(FILE *fp, const char *s, size_t len)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/;
 
-extern uint32_t signextend(struct magic *m, uint32_t v)
+extern uint32_t file_signextend(struct magic *m, uint32_t v)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-extern int pipe2file(int fd, void *startbuf, size_t nbytes)
+extern int file_pipe2file(int fd, const void *startbuf, size_t nbytes)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
 

@@ -85,7 +85,7 @@ const char *default_magicfile = MAGIC;
  * extend the sign bit if the comparison is to be signed
  */
 uint32_t
-signextend(struct magic *m, uint32_t v)
+file_signextend(struct magic *m, uint32_t v)
 {
 	if (!(m->flag & UNSIGNED))
 		switch(m->type) {
@@ -119,7 +119,7 @@ signextend(struct magic *m, uint32_t v)
 		case FILE_REGEX:
 			break;
 		default:
-			magwarn("can't happen: m->type=%d\n", m->type);
+			file_magwarn("can't happen: m->type=%d\n", m->type);
 			return -1;
 		}
 	return v;
@@ -298,7 +298,7 @@ getvalue(struct magic *m, /*@out@*/ char **p)
 		m->vallen = slen;
 	} else
 		if (m->reln != 'x') {
-			m->value.l = signextend(m, strtoul(*p, p, 0));
+			m->value.l = file_signextend(m, strtoul(*p, p, 0));
 			eatsize(p);
 		}
 	return 0;
@@ -349,7 +349,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	/* get offset, then skip over it */
 	m->offset = (int) strtoul(l,&t,0);
         if (l == t)
-		magwarn("offset %s invalid", l);
+		file_magwarn("offset %s invalid", l);
         l = t;
 
 	if (m->flag & INDIR) {
@@ -382,7 +382,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 				m->in_type = FILE_BYTE;
 				break;
 			default:
-				magwarn("indirect offset type %c invalid", *l);
+				file_magwarn("indirect offset type %c invalid", *l);
 				break;
 			}
 			l++;
@@ -430,7 +430,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		else
 			t = l;
 		if (*t++ != ')') 
-			magwarn("missing ')' in indirect offset");
+			file_magwarn("missing ')' in indirect offset");
 		l = t;
 	}
 
@@ -514,13 +514,13 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		m->type = FILE_REGEX;
 		l += sizeof("regex");
 	} else {
-		magwarn("type %s invalid", l);
+		file_magwarn("type %s invalid", l);
 		return -1;
 	}
 	/* New-style anding: "0 byte&0x80 =0x80 dynamically linked" */
 	/* New and improved: ~ & | ^ + - * / % -- exciting, isn't it? */
 	if (*l == '~') {
-		if (FILE_STRING != m->type && FILE_PSTRING != m->type)
+		if (m->type != FILE_STRING && m->type != FILE_PSTRING)
 			m->mask_op = FILE_OPINVERSE;
 		++l;
 	}
@@ -528,50 +528,50 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	case '&':
 		m->mask_op |= FILE_OPAND;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '|':
 		m->mask_op |= FILE_OPOR;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '^':
 		m->mask_op |= FILE_OPXOR;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '+':
 		m->mask_op |= FILE_OPADD;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '-':
 		m->mask_op |= FILE_OPMINUS;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '*':
 		m->mask_op |= FILE_OPMULTIPLY;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '%':
 		m->mask_op |= FILE_OPMODULO;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '/':
-		if (FILE_STRING != m->type && FILE_PSTRING != m->type) {
+		if (m->type != FILE_STRING && m->type != FILE_PSTRING) {
 			m->mask_op |= FILE_OPDIVIDE;
 			++l;
-			m->mask = signextend(m, strtoul(l, &l, 0));
+			m->mask = file_signextend(m, strtoul(l, &l, 0));
 			eatsize(&l);
 		} else {
 			m->mask = 0L;
@@ -588,7 +588,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 					    STRING_COMPACT_OPTIONAL_BLANK;
 					/*@switchbreak@*/ break;
 				default:
-					magwarn("string extension %c invalid",
+					file_magwarn("string extension %c invalid",
 					    *l);
 					return -1;
 				}
@@ -638,7 +638,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	/*
 	 * TODO finish this macro and start using it!
 	 * #define offsetcheck {if (offset > HOWMANY-1) 
-	 *	magwarn("offset too big"); }
+	 *	file_magwarn("offset too big"); }
 	 */
 
 	/*
@@ -660,7 +660,7 @@ GetDesc:
 
 #ifndef COMPILE_ONLY
 	if (action == FILE_CHECK) {
-		mdump(m);
+		file_mdump(m);
 	}
 #endif
 	++(*nmagicp);		/* make room for next */
@@ -672,7 +672,7 @@ GetDesc:
  * Print a string containing C character escapes.
  */
 void
-showstr(FILE *fp, const char *s, int len)
+file_showstr(FILE *fp, const char *s, size_t len)
 {
 	char	c;
 
