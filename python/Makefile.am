@@ -6,7 +6,8 @@ LINT = splint
 
 PYVER= @WITH_PYTHON_VERSION@
 
-pylibdir = $(shell python -c 'import sys; print sys.path[1]')
+# XXX grrr, sys.path[1] wrong value in python-2.3.2
+pylibdir = $(shell python -c 'import sys; print sys.path[2]')
 pyincdir = $(prefix)/include/python${PYVER}
 
 SUBDIRS = rpmdb

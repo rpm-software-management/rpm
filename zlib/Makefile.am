@@ -3,8 +3,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 
 EXTRA_DIST = algorithm.txt ChangeLog Doxyfile FAQ INDEX README \
-	zlib.3 zlib.spec \
-	amiga/* contrib/* msdos/* nt/* os2/*
+	old/* zlib.spec
 
 noinst_HEADERS = \
 	crc32.h deflate.h inffast.h inffixed.h inflate.h \

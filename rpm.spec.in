@@ -20,10 +20,10 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
-Copyright: GPL
+License: GPL
 Conflicts: patch < 2.5
 %ifos linux
 Prereq: fileutils shadow-utils
@@ -36,8 +36,8 @@ BuildRequires: elfutils-libelf
 
 BuildRequires: zlib-devel
 
-BuildRequires: beecrypt-devel >= 0:3.0.0-2
-Requires: beecrypt-devel >= 0:3.0.0-2
+BuildRequires: beecrypt-devel >= 3.0.1
+Requires: beecrypt-devel >= 3.0.1
 
 # XXX Red Hat 5.2 has not bzip2 or python
 %if %{with_bzip2}
@@ -134,7 +134,7 @@ CFLAGS="$RPM_OPT_FLAGS -fPIC"; export CFLAGS
 %else
 CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 %endif
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc \
+./configure --prefix=%{__prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
 	$WITH_PYTHON --without-javaglue
@@ -142,6 +142,9 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc \
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
 %endif
+
+# XXX hack out O_DIRECT support in db4 for now.
+perl -pi -e 's/#define HAVE_O_DIRECT 1/#undef HAVE_O_DIRECT/' db3/db_config.h
 
 make
 
@@ -473,6 +476,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Dec  7 2003 Jeff Johnson <jbj@jbj.org> 4.3-0.2
+- only internal Berkeley db from now on.
+- revive "make dist".
+
 * Wed Mar 19 2003 Jeff Johnson <jbj@redhat.com> 4.3-0.1
 - upgrade to zlib-1.2.beta7.
 - pass structure pointer, not args, through headerSprintf call chain.

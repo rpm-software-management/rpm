@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2003-03-19 11:03-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-07 15:21-0500\n"
 "PO-Revision-Date: 2001-07-24 00:03+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -9,103 +10,103 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popt.c:34
+#: popt.c:35
 msgid "unknown errno"
 msgstr "neznámé èíslo chyby"
 
-#: popt.c:940
+#: popt.c:944
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "volba (%d) není v popt implementována\n"
 
-#: popt.c:1160
+#: popt.c:1164
 msgid "missing argument"
 msgstr "chybí argument"
 
-#: popt.c:1162
+#: popt.c:1166
 msgid "unknown option"
 msgstr "neznámá volba"
 
-#: popt.c:1164
+#: popt.c:1168
 msgid "mutually exclusive logical operations requested"
 msgstr "po¾adovány vzájemnì výluèné logické operace"
 
-#: popt.c:1166
+#: popt.c:1170
 msgid "opt->arg should not be NULL"
 msgstr "opt->arg nesmí být NULL"
 
-#: popt.c:1168
+#: popt.c:1172
 msgid "aliases nested too deeply"
 msgstr "aliasy vnoøené pøíli¹ hluboko"
 
-#: popt.c:1170
+#: popt.c:1174
 msgid "error in parameter quoting"
 msgstr "chyba v quotování parametrù"
 
-#: popt.c:1172
+#: popt.c:1176
 msgid "invalid numeric value"
 msgstr "chybná numerická hodnota"
 
-#: popt.c:1174
+#: popt.c:1178
 msgid "number too large or too small"
 msgstr "èíslo je pøíli¹ velké nebo pøíli¹ malé"
 
-#: popt.c:1176
+#: popt.c:1180
 msgid "memory allocation failed"
 msgstr "selhala alokace pamìti"
 
-#: popt.c:1180
+#: popt.c:1184
 msgid "unknown error"
 msgstr "neznámá chyba"
 
-#: popthelp.c:57
+#: popthelp.c:61
 msgid "Show this help message"
 msgstr "Vypí¹e tuto nápovìdu"
 
-#: popthelp.c:58
+#: popthelp.c:62
 msgid "Display brief usage message"
 msgstr "Vypí¹e krátký návod k pou¾ití"
 
-#: popthelp.c:61
+#: popthelp.c:65
 msgid "Display option defaults in message"
 msgstr "Zobrazit implicitní volby ve zprávì"
 
-#: popthelp.c:103
+#: popthelp.c:107
 msgid "NONE"
 msgstr "NONE"
 
-#: popthelp.c:105
+#: popthelp.c:109
 msgid "VAL"
 msgstr "VAL"
 
-#: popthelp.c:109
+#: popthelp.c:113
 msgid "INT"
 msgstr "INT"
 
-#: popthelp.c:110
+#: popthelp.c:114
 msgid "LONG"
 msgstr "LONG"
 
-#: popthelp.c:111
+#: popthelp.c:115
 msgid "STRING"
 msgstr "STRING"
 
-#: popthelp.c:112
+#: popthelp.c:116
 msgid "FLOAT"
 msgstr "FLOAT"
 
-#: popthelp.c:113
+#: popthelp.c:117
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: popthelp.c:114
+#: popthelp.c:118
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:486
+#: popthelp.c:493
 msgid "Usage:"
 msgstr "Pou¾ití:"
 
-#: popthelp.c:510
+#: popthelp.c:517
 msgid "[OPTION...]"
 msgstr "[VOLBY...]"

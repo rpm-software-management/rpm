@@ -6,7 +6,7 @@ fsect = @fsect@
 #man_MANS = file.1 $(man_MAGIC) # libmagic.3
 noinst_MANS = file.1 $(man_MAGIC) # libmagic.3
 
-EXTRA_DIST = file.man magic.man libmagic.man
+EXTRA_DIST = file.man magic.man # libmagic.man
 CLEANFILES = $(man_MANS)
 
 file.1:	Makefile file.man

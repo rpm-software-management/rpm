@@ -472,58 +472,11 @@ dnl for this macro (not LIBS=...), otherwise the check for dbopen
 dnl will fail.
 AC_CHECK_LIB(port, writev)
 
-WITH_DB_SUBDIR=
-WITH_INTERNAL_DB=0
-DBLIBSRCS=""
-libdb3=""
-libdb3a=""
-
-dnl
-dnl Detect whether internal Berkeley DB should be built.
-dnl
-withval=yes
-AC_ARG_WITH(db, [  --without-db            do not use internal Berkeley db])
-
-if test $withval = no ; then
-dnl ------------------ without internal db
-
-AC_CHECK_HEADERS(db3/db.h)
-
-dnl Check for Berkeley db3 API.
-AC_CHECK_FUNC(db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"],
-  AC_CHECK_LIB(db-3.2, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.2"],
-    AC_CHECK_LIB(db-3.1, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.1"],
-      AC_CHECK_LIB(db-3.0, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.0"],
-        AC_CHECK_LIB(db, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb"],
-        )
-      )
-    )
-  )
-)
-
-if test X"$DBLIBSRCS" = X; then
-    AC_MSG_ERROR([sorry rpm requires libdb-3.x.a (from the Berkeley db package)]) 
-fi
-
-if test -n "$libdb3" -a -n "$libthread" ; then
-   AC_MSG_CHECKING(whether $libdb3 needs $libthread)
-   saveLIBS="$LIBS"
-   LIBS="$LIBS $libdb3"
-   AC_TRY_LINK_FUNC(db_create, AC_MSG_RESULT(no),
-	[libdb3="$libdb3 $libthread"; AC_MSG_RESULT(yes)])
-   LIBS="$saveLIBS"
-fi
-
-else
 dnl ------------------ with    internal db
-  AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
-  WITH_DB_SUBDIR=db3
-  WITH_INTERNAL_DB=1
-  DBLIBSRCS="db3.c"
-  libdb3="# \$(top_builddir)/db3/libdb.la"
-  libdb3a="\$(top_builddir)/db3/libdb.a"
-dnl  INCPATH="-I\$(top_builddir)/$(WITH_DB_SUBDIR) $INCPATH"
-fi
+AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
+WITH_DB_SUBDIR=db3
+WITH_INTERNAL_DB=1
+DBLIBSRCS="db3.c"
 
 AC_SUBST(WITH_DB_SUBDIR)
 AC_SUBST(WITH_INTERNAL_DB)
@@ -533,15 +486,6 @@ DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
 
 AC_SUBST(DBLIBSRCS)
 AC_SUBST(DBLIBOBJS)
-AC_SUBST(libdb3)
-AC_SUBST(libdb3a)
-
-for dbi in $DBLIBSRCS; do
-  case $dbi in
-  db3.c) AC_DEFINE(USE_DB3, 1, [Use the Berkeley db3 API?]) ;;
-  db1.c) AC_DEFINE(USE_DB1, 1, [Use the Berkeley db1 retrofit to db3 API?]) ;;
-  esac
-done
 
 dnl AmigaOS and IXEmul have a fork() dummy
   case "$target" in
@@ -791,7 +735,6 @@ AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
-AC_TYPE_ST_RDEV_T
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
@@ -1293,8 +1236,6 @@ AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	python/Makefile
 	python/rpmdb/Makefile
 	python/rpmdb/test/Makefile
-	python/mpw/Makefile
-	python/mpw/test/Makefile
   ], [	echo timestamp > popt/stamp-h.in
 	echo timestamp > beecrypt/stamp-h.in
 	echo timestamp > stamp-h.in

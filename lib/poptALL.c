@@ -37,6 +37,9 @@ extern int _fsm_threads;
 extern int _hdr_debug;
 
 /*@unchecked@*/
+extern int _print_pkts;
+
+/*@unchecked@*/
 extern int _psm_debug;
 
 /*@unchecked@*/
@@ -288,6 +291,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
 	N_("debug option/argument processing"), NULL},
 #endif
+ { "prtpkts", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_print_pkts, -1,
+	NULL, NULL},
  { "psmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_debug, -1,
 	N_("debug package state machine"), NULL},
  { "psmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_threads, -1,

@@ -733,8 +733,8 @@ static int rpmfcSCRIPT(rpmfc fc)
  * @return		0 on success
  */
 static int rpmfcELF(rpmfc fc)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fc, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 #if HAVE_GELF_H && HAVE_LIBELF
     const char * fn = fc->fn[fc->ix];
@@ -762,6 +762,13 @@ static int rpmfcELF(rpmfc fc)
     int isElf64;
     int isDSO;
     int gotSONAME = 0;
+    static int filter_GLIBC_PRIVATE = 0;
+    static int oneshot = 0;
+
+    if (oneshot == 0) {
+	oneshot = 1;
+	filter_GLIBC_PRIVATE = rpmExpandNumeric("%{?_filter_GLIBC_PRIVATE}");
+    }
 
     /* Files with executable bit set only. */
     if (stat(fn, st) != 0)
@@ -823,7 +830,11 @@ static int rpmfcELF(rpmfc fc)
 			    soname = xstrdup(s);
 			    auxoffset += aux->vda_next;
 			    /*@innercontinue@*/ continue;
-			} else if (soname != NULL) {
+			} else
+			if (soname != NULL
+			 && !(filter_GLIBC_PRIVATE != 0
+				&& !strcmp(s, "GLIBC_PRIVATE")))
+			{
 			    buf[0] = '\0';
 			    t = buf;
 			    t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
@@ -878,7 +889,12 @@ static int rpmfcELF(rpmfc fc)
 			s = elf_strptr(elf, shdr->sh_link, aux->vna_name);
 			if (s == NULL)
 			    /*@innerbreak@*/ break;
-			if (soname != NULL) {
+
+			/* Filter dependencies that contain GLIBC_PRIVATE */
+			if (soname != NULL
+			 && !(filter_GLIBC_PRIVATE != 0
+				&& !strcmp(s, "GLIBC_PRIVATE")))
+			{
 			    buf[0] = '\0';
 			    t = buf;
 			    t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");

@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-08-26 15:43-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-07 15:11-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -109,7 +110,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: rpmqv.c:129 lib/poptALL.c:111
+#: rpmqv.c:129 lib/poptALL.c:114
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM versio %s\n"
@@ -1260,19 +1261,19 @@ msgstr "älä tarkista paketin riippuvuuksia"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:232 lib/poptI.c:254 lib/poptQV.c:329
+#: build/poptBT.c:229 lib/poptALL.c:235 lib/poptI.c:254 lib/poptQV.c:329
 #: lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "älä tarkista paketin riippuvuuksia"
 
-#: build/poptBT.c:231 lib/poptALL.c:234 lib/poptI.c:256 lib/poptQV.c:332
+#: build/poptBT.c:231 lib/poptALL.c:237 lib/poptI.c:256 lib/poptQV.c:332
 #: lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "älä tarkista paketin arkkitehtuuria"
 
-#: build/poptBT.c:233 lib/poptALL.c:240 lib/poptI.c:258 lib/poptQV.c:335
+#: build/poptBT.c:233 lib/poptALL.c:243 lib/poptI.c:258 lib/poptQV.c:335
 #: lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1669,115 +1670,115 @@ msgstr "%s: readLead  epäonnistui\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead  epäonnistui\n"
 
-#: lib/poptALL.c:219
+#: lib/poptALL.c:222
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:220 lib/poptALL.c:223
+#: lib/poptALL.c:223 lib/poptALL.c:226
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:222
+#: lib/poptALL.c:225
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:228
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "tulosta käytetyn rpm:n versio"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:229
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:228 lib/poptALL.c:247 lib/poptALL.c:251
+#: lib/poptALL.c:231 lib/poptALL.c:250 lib/poptALL.c:254
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:229 lib/poptALL.c:248 lib/poptALL.c:252
+#: lib/poptALL.c:232 lib/poptALL.c:251 lib/poptALL.c:255
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:237 lib/poptALL.c:271
+#: lib/poptALL.c:240 lib/poptALL.c:274
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:246
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "lähetä vakiotuloste <komento>:lle"
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:247
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:255
+#: lib/poptALL.c:258
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "käytä <hakem> ylimpänä hakemistona"
 
-#: lib/poptALL.c:256
+#: lib/poptALL.c:259
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:259
+#: lib/poptALL.c:262
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:261
+#: lib/poptALL.c:264
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: lib/poptALL.c:263
+#: lib/poptALL.c:266
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:268
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:267
+#: lib/poptALL.c:270
 msgid "print the version of rpm being used"
 msgstr "tulosta käytetyn rpm:n versio"
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:283
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "en voinut avata %s: %s"
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:285
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "en voinut avata %s: %s"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:287
 msgid "debug protocol data stream"
 msgstr ""
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:292
 msgid "debug option/argument processing"
 msgstr ""
 
-#: lib/poptALL.c:292
+#: lib/poptALL.c:297
 #, fuzzy
 msgid "debug package state machine"
 msgstr "en voinut avata %s: %s"
 
-#: lib/poptALL.c:294
+#: lib/poptALL.c:299
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "en voinut avata %s: %s"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:311
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:318
+#: lib/poptALL.c:323
 msgid "debug URL cache handling"
 msgstr ""
 
 #. @-nullpass@
-#: lib/poptALL.c:388
+#: lib/poptALL.c:393
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -2327,7 +2328,7 @@ msgstr "en voinut avata %s: %s"
 msgid "%s failed: %s\n"
 msgstr "pgp epäonnistui"
 
-#: lib/query.c:118 lib/rpmts.c:558
+#: lib/query.c:118 lib/rpmts.c:565
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "virhe formaatissa: %s\n"
@@ -2378,7 +2379,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "paketilla ei ole nimeä"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:462
-#: lib/rpminstall.c:593 lib/rpminstall.c:1018 lib/rpmts.c:569
+#: lib/rpminstall.c:593 lib/rpminstall.c:1018 lib/rpmts.c:576
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2603,31 +2604,31 @@ msgstr "paketti %s ei ole %s:ssä"
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:783
+#: lib/rpmfi.c:784
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:787
+#: lib/rpmfi.c:788
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Haen: %s\n"
 
-#: lib/rpmfi.c:790
+#: lib/rpmfi.c:791
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpmfi.c:918
+#: lib/rpmfi.c:919
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Haen: %s\n"
 
-#: lib/rpmfi.c:928
+#: lib/rpmfi.c:929
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1021
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
@@ -2961,45 +2962,45 @@ msgstr "En voi avata %s luettavaksi: %s."
 msgid "cannot open Packages database in %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:246
+#: lib/rpmts.c:252
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/rpmts.c:264
+#: lib/rpmts.c:270
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: lib/rpmts.c:272
+#: lib/rpmts.c:278
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/rpmts.c:448
+#: lib/rpmts.c:455
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:590
+#: lib/rpmts.c:597
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/rpmts.c:602
+#: lib/rpmts.c:609
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "Haen: %s\n"
 
-#: lib/rpmts.c:1070
+#: lib/rpmts.c:1077
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1072
+#: lib/rpmts.c:1079
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1128
+#: lib/rpmts.c:1135
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr ""
@@ -3220,85 +3221,85 @@ msgstr "puuttuva '{' '%':n jälkeen"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "%s-%s-%s:n tyydyttämättömät riippuvuudet:"
 
-#: rpmdb/db3.c:156
+#: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:159
+#: rpmdb/db3.c:163
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:185
+#: rpmdb/db3.c:189
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:203
+#: rpmdb/db3.c:207
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:292
+#: rpmdb/db3.c:296
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:779
+#: rpmdb/db3.c:782
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:846
+#: rpmdb/db3.c:849
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:986
+#: rpmdb/db3.c:989
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1090
+#: rpmdb/db3.c:1093
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:1328
+#: rpmdb/db3.c:1331
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db3.c:1330
+#: rpmdb/db3.c:1333
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:1330
+#: rpmdb/db3.c:1333
 msgid "shared"
 msgstr "jaettua"
 
-#: rpmdb/db3.c:1334
+#: rpmdb/db3.c:1337
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/dbconfig.c:329
+#: rpmdb/dbconfig.c:337
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:369
+#: rpmdb/dbconfig.c:377
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:378
+#: rpmdb/dbconfig.c:386
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:387
+#: rpmdb/dbconfig.c:395
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""

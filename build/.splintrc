@@ -3,7 +3,6 @@
 +partial
 +forcehints
 
-#-warnunixlib
 -warnposix
 
 +unixlib

@@ -1,12 +1,13 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.381 2003/11/23 19:52:11 jbj Exp $
+# $Id: sl.po,v 1.382 2003/12/11 19:10:36 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-08-26 15:43-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-07 15:11-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -114,7 +115,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "datoteka %s: %s\n"
 
-#: rpmqv.c:129 lib/poptALL.c:111
+#: rpmqv.c:129 lib/poptALL.c:114
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM razlièica %s\n"
@@ -1268,19 +1269,19 @@ msgstr "brez preverjanja soodvisnosti paketa"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:232 lib/poptI.c:254 lib/poptQV.c:329
+#: build/poptBT.c:229 lib/poptALL.c:235 lib/poptI.c:254 lib/poptQV.c:329
 #: lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: build/poptBT.c:231 lib/poptALL.c:234 lib/poptI.c:256 lib/poptQV.c:332
+#: build/poptBT.c:231 lib/poptALL.c:237 lib/poptI.c:256 lib/poptQV.c:332
 #: lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "brez preverjanja arhitekture paketa"
 
-#: build/poptBT.c:233 lib/poptALL.c:240 lib/poptI.c:258 lib/poptQV.c:335
+#: build/poptBT.c:233 lib/poptALL.c:243 lib/poptI.c:258 lib/poptQV.c:335
 #: lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1673,116 +1674,116 @@ msgstr "%s: readLead je bil neuspe¹en\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 
-#: lib/poptALL.c:219
+#: lib/poptALL.c:222
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:220 lib/poptALL.c:223
+#: lib/poptALL.c:223 lib/poptALL.c:226
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:222
+#: lib/poptALL.c:225
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:228
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "uporabljana razlièica rpm"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:229
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:228 lib/poptALL.c:247 lib/poptALL.c:251
+#: lib/poptALL.c:231 lib/poptALL.c:250 lib/poptALL.c:254
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:229 lib/poptALL.c:248 lib/poptALL.c:252
+#: lib/poptALL.c:232 lib/poptALL.c:251 lib/poptALL.c:255
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:237 lib/poptALL.c:271
+#: lib/poptALL.c:240 lib/poptALL.c:274
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:246
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "standardni izhod preusmerjen na <ukaz>"
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:247
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:255
+#: lib/poptALL.c:258
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "uporabi <imenik> za korenski imenik"
 
-#: lib/poptALL.c:256
+#: lib/poptALL.c:259
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:259
+#: lib/poptALL.c:262
 msgid "display known query tags"
 msgstr "prika¾i znane znaèke za poizvedovanje"
 
-#: lib/poptALL.c:261
+#: lib/poptALL.c:264
 msgid "display final rpmrc and macro configuration"
 msgstr "prika¾i konèni rpmrc in nastavitev makra"
 
-#: lib/poptALL.c:263
+#: lib/poptALL.c:266
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:268
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:267
+#: lib/poptALL.c:270
 msgid "print the version of rpm being used"
 msgstr "razlièica rpm, ki jo uporabljate"
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:283
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:285
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:287
 msgid "debug protocol data stream"
 msgstr ""
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:292
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Notranja napaka pri obdelavi argumentov (%d) :-\n"
 
-#: lib/poptALL.c:292
+#: lib/poptALL.c:297
 #, fuzzy
 msgid "debug package state machine"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/poptALL.c:294
+#: lib/poptALL.c:299
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:311
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:318
+#: lib/poptALL.c:323
 msgid "debug URL cache handling"
 msgstr ""
 
 #. @-nullpass@
-#: lib/poptALL.c:388
+#: lib/poptALL.c:393
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -2326,7 +2327,7 @@ msgstr "neuspe¹no odpiranje %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s neuspe¹en"
 
-#: lib/query.c:118 lib/rpmts.c:558
+#: lib/query.c:118 lib/rpmts.c:565
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "napaka v obliki: %s\n"
@@ -2376,7 +2377,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:462
-#: lib/rpminstall.c:593 lib/rpminstall.c:1018 lib/rpmts.c:569
+#: lib/rpminstall.c:593 lib/rpminstall.c:1018 lib/rpmts.c:576
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2603,31 +2604,31 @@ msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
-#: lib/rpmfi.c:783
+#: lib/rpmfi.c:784
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:787
+#: lib/rpmfi.c:788
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je izkljuèen: %s"
 
-#: lib/rpmfi.c:790
+#: lib/rpmfi.c:791
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/rpmfi.c:918
+#: lib/rpmfi.c:919
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/rpmfi.c:928
+#: lib/rpmfi.c:929
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1021
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "premiokanje imenika %s v %s\n"
@@ -2962,46 +2963,46 @@ msgstr "%s ni mo¾no odpreti za branje: %s."
 msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
-#: lib/rpmts.c:246
+#: lib/rpmts.c:252
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/rpmts.c:264
+#: lib/rpmts.c:270
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: lib/rpmts.c:272
+#: lib/rpmts.c:278
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/rpmts.c:448
+#: lib/rpmts.c:455
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "datoteke %s/packages.rpm ni mogo¾no odpreti\n"
 
-#: lib/rpmts.c:590
+#: lib/rpmts.c:597
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "vrstica: %s"
 
-#: lib/rpmts.c:602
+#: lib/rpmts.c:609
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "izvori v: %s\n"
 
-#: lib/rpmts.c:1070
+#: lib/rpmts.c:1077
 #, fuzzy
 msgid "mounted filesystems:\n"
 msgstr "zbiranje seznama priklopljenih datoteènih sistemov.\n"
 
-#: lib/rpmts.c:1072
+#: lib/rpmts.c:1079
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1128
+#: lib/rpmts.c:1135
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr ""
@@ -3223,85 +3224,85 @@ msgstr "manjka     %s\n"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: rpmdb/db3.c:156
+#: rpmdb/db3.c:160
 #, fuzzy, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d napaka(%d)"
 
-#: rpmdb/db3.c:159
+#: rpmdb/db3.c:163
 #, fuzzy, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d napaka(%d)"
 
-#: rpmdb/db3.c:185
+#: rpmdb/db3.c:189
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "zaprto  db okolje %s/%s\n"
 
-#: rpmdb/db3.c:203
+#: rpmdb/db3.c:207
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "odstranjeno db okolje %s/%s\n"
 
-#: rpmdb/db3.c:292
+#: rpmdb/db3.c:296
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "odpiranje db okolja %s/%s %s\n"
 
-#: rpmdb/db3.c:779
+#: rpmdb/db3.c:782
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db3.c:846
+#: rpmdb/db3.c:849
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db3.c:986
+#: rpmdb/db3.c:989
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1090
+#: rpmdb/db3.c:1093
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
 
-#: rpmdb/db3.c:1328
+#: rpmdb/db3.c:1331
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:1330
+#: rpmdb/db3.c:1333
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db3.c:1330
+#: rpmdb/db3.c:1333
 msgid "shared"
 msgstr "skupno"
 
-#: rpmdb/db3.c:1334
+#: rpmdb/db3.c:1337
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "zaklenjeno  db kazalo       %s/%s\n"
 
-#: rpmdb/dbconfig.c:329
+#: rpmdb/dbconfig.c:337
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "dbiSetConfig: neprepoznana izbira db: \"%s\" prezrto\n"
 
-#: rpmdb/dbconfig.c:369
+#: rpmdb/dbconfig.c:377
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s ima neveljavno ¹tevilèno vrednost, prezrto\n"
 
-#: rpmdb/dbconfig.c:378
+#: rpmdb/dbconfig.c:386
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ima preveliko ali premajhno dolgo (long) vrednost, prezrto\n"
 
-#: rpmdb/dbconfig.c:387
+#: rpmdb/dbconfig.c:395
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""

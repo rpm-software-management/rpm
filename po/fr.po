@@ -11,7 +11,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
-"POT-Creation-Date: 2003-08-26 15:43-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-07 15:11-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -119,7 +120,7 @@ msgstr "Options communes à tous les modes de rpm:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:129 lib/poptALL.c:111
+#: rpmqv.c:129 lib/poptALL.c:114
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
@@ -1263,17 +1264,17 @@ msgstr "ne pas vérifier les dépendances de construction"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "générer un(des) entête(s) compatible(s) avec l'emballage rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:232 lib/poptI.c:254 lib/poptQV.c:329
+#: build/poptBT.c:229 lib/poptALL.c:235 lib/poptI.c:254 lib/poptQV.c:329
 #: lib/poptQV.c:338 lib/poptQV.c:377
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: build/poptBT.c:231 lib/poptALL.c:234 lib/poptI.c:256 lib/poptQV.c:332
+#: build/poptBT.c:231 lib/poptALL.c:237 lib/poptI.c:256 lib/poptQV.c:332
 #: lib/poptQV.c:340 lib/poptQV.c:380
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier l'entête de la base de données à la récupération"
 
-#: build/poptBT.c:233 lib/poptALL.c:240 lib/poptI.c:258 lib/poptQV.c:335
+#: build/poptBT.c:233 lib/poptALL.c:243 lib/poptI.c:258 lib/poptQV.c:335
 #: lib/poptQV.c:342 lib/poptQV.c:382
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la(les) signature(s) du paquetage"
@@ -1662,110 +1663,110 @@ msgstr "%s: headerRead a échoué: %s"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread a échoué: %s\n"
 
-#: lib/poptALL.c:219
+#: lib/poptALL.c:222
 msgid "predefine MACRO with value EXPR"
 msgstr "prédéfinir la MACRO avec l'EXPRression"
 
-#: lib/poptALL.c:220 lib/poptALL.c:223
+#: lib/poptALL.c:223 lib/poptALL.c:226
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:222
+#: lib/poptALL.c:225
 msgid "define MACRO with value EXPR"
 msgstr "definit MACRO ayant pour valeur EXPR"
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:228
 msgid "print macro expansion of EXPR"
 msgstr "affiche la macro-expansion d'EXPR"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:229
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:228 lib/poptALL.c:247 lib/poptALL.c:251
+#: lib/poptALL.c:231 lib/poptALL.c:250 lib/poptALL.c:254
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "Lire <FICHIER:...> au lieu du(des) fichier(s) par défaut"
 
-#: lib/poptALL.c:229 lib/poptALL.c:248 lib/poptALL.c:252
+#: lib/poptALL.c:232 lib/poptALL.c:251 lib/poptALL.c:255
 msgid "<FILE:...>"
 msgstr "<FICHIER:...>"
 
-#: lib/poptALL.c:237 lib/poptALL.c:271
+#: lib/poptALL.c:240 lib/poptALL.c:274
 msgid "disable use of libio(3) API"
 msgstr "utilisation de l'API libio(3) désactivée"
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:246
 msgid "send stdout to CMD"
 msgstr "envoyer la sortie standard à CMD"
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:247
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:255
+#: lib/poptALL.c:258
 msgid "use ROOT as top level directory"
 msgstr "utiliser RACINE comme répertoire racine"
 
-#: lib/poptALL.c:256
+#: lib/poptALL.c:259
 msgid "ROOT"
 msgstr "RACINE"
 
-#: lib/poptALL.c:259
+#: lib/poptALL.c:262
 msgid "display known query tags"
 msgstr "afficher les tags de requête connus"
 
-#: lib/poptALL.c:261
+#: lib/poptALL.c:264
 msgid "display final rpmrc and macro configuration"
 msgstr "afficher la configuration finale des macros et rpmrc"
 
-#: lib/poptALL.c:263
+#: lib/poptALL.c:266
 msgid "provide less detailed output"
 msgstr "afficher moins de détails"
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:268
 msgid "provide more detailed output"
 msgstr "afficher plus de détails"
 
-#: lib/poptALL.c:267
+#: lib/poptALL.c:270
 msgid "print the version of rpm being used"
 msgstr "afficher la version de rpm utilisé"
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:283
 msgid "debug payload file state machine"
 msgstr "déboguer la machine à états du fichier de la charge utile"
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:285
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "déboguer la machine à états du fichier de la charge utile"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:287
 msgid "debug protocol data stream"
 msgstr "déboguer le flux de données du protocole"
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:292
 msgid "debug option/argument processing"
 msgstr "déboguer le traitement des options/arguments"
 
-#: lib/poptALL.c:292
+#: lib/poptALL.c:297
 msgid "debug package state machine"
 msgstr "déboguer la machine à état du paquetage"
 
-#: lib/poptALL.c:294
+#: lib/poptALL.c:299
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "déboguer la machine à état du paquetage"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:311
 msgid "debug rpmio I/O"
 msgstr "déboguer les E/S de rpmio"
 
-#: lib/poptALL.c:318
+#: lib/poptALL.c:323
 msgid "debug URL cache handling"
 msgstr "déboguer la manipulation de cache d'URL"
 
 #. @-nullpass@
-#: lib/poptALL.c:388
+#: lib/poptALL.c:393
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: table d'option mal configurée (%d)\n"
@@ -2278,7 +2279,7 @@ msgstr "échec de %s sur le fichier %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "échec %s: %s\n"
 
-#: lib/query.c:118 lib/rpmts.c:558
+#: lib/query.c:118 lib/rpmts.c:565
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "format incorrect: %s\n"
@@ -2327,7 +2328,7 @@ msgstr ""
 "le paquetage n'a ni la liste des id ni celle des possesseurs de fichiers\n"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:462
-#: lib/rpminstall.c:593 lib/rpminstall.c:1018 lib/rpmts.c:569
+#: lib/rpminstall.c:593 lib/rpminstall.c:1018 lib/rpmts.c:576
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2552,31 +2553,31 @@ msgstr "le paquetage %s a un(e) %s non-satisfaites: %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignoré à cause du drapeau missingok\n"
 
-#: lib/rpmfi.c:783
+#: lib/rpmfi.c:784
 msgid "========== relocations\n"
 msgstr "========== relogements\n"
 
-#: lib/rpmfi.c:787
+#: lib/rpmfi.c:788
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d exclus  %s\n"
 
-#: lib/rpmfi.c:790
+#: lib/rpmfi.c:791
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d reloge %s -> %s\n"
 
-#: lib/rpmfi.c:918
+#: lib/rpmfi.c:919
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "exclusion de %s %s\n"
 
-#: lib/rpmfi.c:928
+#: lib/rpmfi.c:929
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "relogement de %s vers %s\n"
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1021
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "relogement du répertoire %s vers %s\n"
@@ -2921,45 +2922,45 @@ msgstr "Impossible d'ouvrir %s en lecture: %s.\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "impossible d'ouvrir la base de données Package dans %s\n"
 
-#: lib/rpmts.c:246
+#: lib/rpmts.c:252
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "'(' supplémentaire dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:264
+#: lib/rpmts.c:270
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "'(' manquante dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:272
+#: lib/rpmts.c:278
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "')' manquante dans le label du paquetage: %s\n"
 
-#: lib/rpmts.c:448
+#: lib/rpmts.c:455
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "Impossible d'ouvrir la base de données Solve dans %s\n"
 
-#: lib/rpmts.c:590
+#: lib/rpmts.c:597
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Ajout de: %s\n"
 
-#: lib/rpmts.c:602
+#: lib/rpmts.c:609
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Suggestion: %s\n"
 
-#: lib/rpmts.c:1070
+#: lib/rpmts.c:1077
 msgid "mounted filesystems:\n"
 msgstr "systèmes de fichiers montés:\n"
 
-#: lib/rpmts.c:1072
+#: lib/rpmts.c:1079
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1128
+#: lib/rpmts.c:1135
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
@@ -3176,87 +3177,87 @@ msgstr "manquant %c %s"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "dépendances non satisfaites pour %s: "
 
-#: rpmdb/db3.c:156
+#: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "erreur db%d(%d) de %s: %s\n"
 
-#: rpmdb/db3.c:159
+#: rpmdb/db3.c:163
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "erreur db%d(%d): %s\n"
 
-#: rpmdb/db3.c:185
+#: rpmdb/db3.c:189
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "fermeture  db environnement %s/%s\n"
 
-#: rpmdb/db3.c:203
+#: rpmdb/db3.c:207
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "enlèvement db environnement %s/%s\n"
 
-#: rpmdb/db3.c:292
+#: rpmdb/db3.c:296
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "ouverture  db environnement %s/%s %s\n"
 
-#: rpmdb/db3.c:779
+#: rpmdb/db3.c:782
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "fermeture     index db    %s/%s\n"
 
-#: rpmdb/db3.c:846
+#: rpmdb/db3.c:849
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "vérif.     db index       %s/%s\n"
 
-#: rpmdb/db3.c:986
+#: rpmdb/db3.c:989
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 "trouvés(%d) mutex posix non-partagés, rajout de DB_PRIVATE, utilisation des "
 "verrous fcntl\n"
 
-#: rpmdb/db3.c:1090
+#: rpmdb/db3.c:1093
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "ouverture     index db    %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1328
+#: rpmdb/db3.c:1331
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "impossible d'avoir le verrou %s sur %s/%s\n"
 
-#: rpmdb/db3.c:1330
+#: rpmdb/db3.c:1333
 msgid "exclusive"
 msgstr "exclusif"
 
-#: rpmdb/db3.c:1330
+#: rpmdb/db3.c:1333
 msgid "shared"
 msgstr "partagé"
 
-#: rpmdb/db3.c:1334
+#: rpmdb/db3.c:1337
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "verrouillage  index db    %s/%s\n"
 
-#: rpmdb/dbconfig.c:329
+#: rpmdb/dbconfig.c:337
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "options de db inconnues: \"%s\" ignoré.\n"
 
-#: rpmdb/dbconfig.c:369
+#: rpmdb/dbconfig.c:377
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s est une valeur numérique invalide, ignoré\n"
 
-#: rpmdb/dbconfig.c:378
+#: rpmdb/dbconfig.c:386
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s est une valeur 'long' trop petite ou trop grande, ignoré\n"
 
-#: rpmdb/dbconfig.c:387
+#: rpmdb/dbconfig.c:395
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s est une valeur entière trop petite ou trop grande, ignoré\n"

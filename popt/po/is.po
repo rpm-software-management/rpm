@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2003-03-19 11:03-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-07 15:21-0500\n"
 "PO-Revision-Date: 2001-06-08 01:35+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -9,103 +10,103 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: popt.c:34
+#: popt.c:35
 msgid "unknown errno"
 msgstr "óþekkt villunúmer"
 
-#: popt.c:940
+#: popt.c:944
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "rofagerðin (%d) er ekki studd í popt\n"
 
-#: popt.c:1160
+#: popt.c:1164
 msgid "missing argument"
 msgstr "vantar viðfang"
 
-#: popt.c:1162
+#: popt.c:1166
 msgid "unknown option"
 msgstr "óþekktur rofi"
 
-#: popt.c:1164
+#: popt.c:1168
 msgid "mutually exclusive logical operations requested"
 msgstr "beðið um rofa sem slökkva hvor á öðrum"
 
-#: popt.c:1166
+#: popt.c:1170
 msgid "opt->arg should not be NULL"
 msgstr "opt->arg ætti ekki að vera NULL"
 
-#: popt.c:1168
+#: popt.c:1172
 msgid "aliases nested too deeply"
 msgstr "alíasar of flóknir"
 
-#: popt.c:1170
+#: popt.c:1174
 msgid "error in parameter quoting"
 msgstr "villa í viðföngum (gæsalappir og svo frv.)"
 
-#: popt.c:1172
+#: popt.c:1176
 msgid "invalid numeric value"
 msgstr "ógilt tölulegt gildi"
 
-#: popt.c:1174
+#: popt.c:1178
 msgid "number too large or too small"
 msgstr "talan of stór eða smá"
 
-#: popt.c:1176
+#: popt.c:1180
 msgid "memory allocation failed"
 msgstr "ekki tókst að taka frá minni"
 
-#: popt.c:1180
+#: popt.c:1184
 msgid "unknown error"
 msgstr "óþekkt villa"
 
-#: popthelp.c:57
+#: popthelp.c:61
 msgid "Show this help message"
 msgstr "Sýna þessa hjálp"
 
-#: popthelp.c:58
+#: popthelp.c:62
 msgid "Display brief usage message"
 msgstr "Sýna stuttar notkunarleiðbeiningar"
 
-#: popthelp.c:61
+#: popthelp.c:65
 msgid "Display option defaults in message"
 msgstr "Sýna sjálfgefin gildi rofa í skilaboðum"
 
-#: popthelp.c:103
+#: popthelp.c:107
 msgid "NONE"
 msgstr "ENGIN"
 
-#: popthelp.c:105
+#: popthelp.c:109
 msgid "VAL"
 msgstr "VAL"
 
-#: popthelp.c:109
+#: popthelp.c:113
 msgid "INT"
 msgstr "INT"
 
-#: popthelp.c:110
+#: popthelp.c:114
 msgid "LONG"
 msgstr "LONG"
 
-#: popthelp.c:111
+#: popthelp.c:115
 msgid "STRING"
 msgstr "STRING"
 
-#: popthelp.c:112
+#: popthelp.c:116
 msgid "FLOAT"
 msgstr "FLOAT"
 
-#: popthelp.c:113
+#: popthelp.c:117
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: popthelp.c:114
+#: popthelp.c:118
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:486
+#: popthelp.c:493
 msgid "Usage:"
 msgstr "Notkun:"
 
-#: popthelp.c:510
+#: popthelp.c:517
 msgid "[OPTION...]"
 msgstr "[ROFI...]"

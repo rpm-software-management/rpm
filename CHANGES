@@ -5,6 +5,8 @@
 	- permit secondary tag match patterns with RPMQV_ALL.
 	- fix: cut-n-paste error setting nopromote for Conflicts: (#81965).
 	- don't use error string after gzclose (Dmitry V. Levin).
+	- only internal Berkeley db from now on.
+	- revive "make dist".
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.

@@ -172,7 +172,11 @@ install-data-local:
 	mipsel*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/mipsel ;;\
 	mips*)  $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/mips ;;\
 	powerpc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64 ;;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppciseries ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppcpseries ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64 ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64iseries ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64pseries ;;\
 	*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
 	esac
 	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch

@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6\n"
-"POT-Creation-Date: 2003-03-19 11:03-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-07 15:21-0500\n"
 "PO-Revision-Date: 2001-09-06 20:06+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -9,103 +10,103 @@ msgstr ""
 "Content-Type: text/plain; charset=EUC-KR\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: popt.c:34
+#: popt.c:35
 msgid "unknown errno"
 msgstr "알 수 없는 오류코드(errno) 입니다"
 
-#: popt.c:940
+#: popt.c:944
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "옵션 유형 (%d)은 popt에서 사용할 수 없습니다\n"
 
-#: popt.c:1160
+#: popt.c:1164
 msgid "missing argument"
 msgstr "인수가 지정되지 않았습니다"
 
-#: popt.c:1162
+#: popt.c:1166
 msgid "unknown option"
 msgstr "알 수 없는 옵션입니다"
 
-#: popt.c:1164
+#: popt.c:1168
 msgid "mutually exclusive logical operations requested"
 msgstr "양쪽에 배타적 논리 연산이 지정되었습니다"
 
-#: popt.c:1166
+#: popt.c:1170
 msgid "opt->arg should not be NULL"
 msgstr "옵션->인수가 NULL이 되어서는 안됩니다"
 
-#: popt.c:1168
+#: popt.c:1172
 msgid "aliases nested too deeply"
 msgstr "별칭(alias)이 복잡하게 설정되었습니다"
 
-#: popt.c:1170
+#: popt.c:1174
 msgid "error in parameter quoting"
 msgstr "매개변수에 오류가 있습니다"
 
-#: popt.c:1172
+#: popt.c:1176
 msgid "invalid numeric value"
 msgstr "잘못된 수치 값입니다"
 
-#: popt.c:1174
+#: popt.c:1178
 msgid "number too large or too small"
 msgstr "숫자가 너무 크거나 너무 적습니다"
 
-#: popt.c:1176
+#: popt.c:1180
 msgid "memory allocation failed"
 msgstr "메모리 할당에 실패했습니다"
 
-#: popt.c:1180
+#: popt.c:1184
 msgid "unknown error"
 msgstr "알 수 없는 오류입니다"
 
-#: popthelp.c:57
+#: popthelp.c:61
 msgid "Show this help message"
 msgstr "이 도움말을 보여줍니다"
 
-#: popthelp.c:58
+#: popthelp.c:62
 msgid "Display brief usage message"
 msgstr "간단한 사용법을 보여줍니다"
 
-#: popthelp.c:61
+#: popthelp.c:65
 msgid "Display option defaults in message"
 msgstr "기본적인 옵션을 보여줍니다"
 
-#: popthelp.c:103
+#: popthelp.c:107
 msgid "NONE"
 msgstr "없음(NONE)"
 
-#: popthelp.c:105
+#: popthelp.c:109
 msgid "VAL"
 msgstr "값(VAL)"
 
-#: popthelp.c:109
+#: popthelp.c:113
 msgid "INT"
 msgstr "정수(INT)"
 
-#: popthelp.c:110
+#: popthelp.c:114
 msgid "LONG"
 msgstr "정수(LONG)"
 
-#: popthelp.c:111
+#: popthelp.c:115
 msgid "STRING"
 msgstr "문자열(STRING)"
 
-#: popthelp.c:112
+#: popthelp.c:116
 msgid "FLOAT"
 msgstr "소수(FLOAT)"
 
-#: popthelp.c:113
+#: popthelp.c:117
 msgid "DOUBLE"
 msgstr "소수(DOUBLE)"
 
-#: popthelp.c:114
+#: popthelp.c:118
 msgid "ARG"
 msgstr "인수(ARG)"
 
-#: popthelp.c:486
+#: popthelp.c:493
 msgid "Usage:"
 msgstr "사용법:"
 
-#: popthelp.c:510
+#: popthelp.c:517
 msgid "[OPTION...]"
 msgstr "[옵션...]"

@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2003-03-19 11:03-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-07 15:21-0500\n"
 "PO-Revision-Date: 2000-02-11 13:01+0200\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -9,104 +10,104 @@ msgstr ""
 "Content-Type: text/plain; charset=iso8859-9\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popt.c:34
+#: popt.c:35
 msgid "unknown errno"
 msgstr "bilinmeyen hata no"
 
-#: popt.c:940
+#: popt.c:944
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "seçenek türü (%d) popt için geçersiz\n"
 
-#: popt.c:1160
+#: popt.c:1164
 msgid "missing argument"
 msgstr "argüman eksik"
 
-#: popt.c:1162
+#: popt.c:1166
 msgid "unknown option"
 msgstr "bilinmeyen seçenek"
 
-#: popt.c:1164
+#: popt.c:1168
 msgid "mutually exclusive logical operations requested"
 msgstr "birbirini dýþlayan mantýksal iþlemler istendi"
 
-#: popt.c:1166
+#: popt.c:1170
 msgid "opt->arg should not be NULL"
 msgstr ""
 
-#: popt.c:1168
+#: popt.c:1172
 msgid "aliases nested too deeply"
 msgstr "adlarda çok fazla içiçelikler"
 
-#: popt.c:1170
+#: popt.c:1174
 msgid "error in parameter quoting"
 msgstr "parametrelerde týrnak iþaretleme hatalý "
 
-#: popt.c:1172
+#: popt.c:1176
 msgid "invalid numeric value"
 msgstr "sayýsal deðer geçersiz"
 
-#: popt.c:1174
+#: popt.c:1178
 msgid "number too large or too small"
 msgstr "sayý ya çok büyük ya da çok küçük"
 
-#: popt.c:1176
+#: popt.c:1180
 msgid "memory allocation failed"
 msgstr ""
 
-#: popt.c:1180
+#: popt.c:1184
 msgid "unknown error"
 msgstr "bilinmeyen hata"
 
-#: popthelp.c:57
+#: popthelp.c:61
 msgid "Show this help message"
 msgstr "Bu yardým iletisini gösterir"
 
-#: popthelp.c:58
+#: popthelp.c:62
 msgid "Display brief usage message"
 msgstr "Kýsa bir kullaným iletisi göster"
 
-#: popthelp.c:61
+#: popthelp.c:65
 #, fuzzy
 msgid "Display option defaults in message"
 msgstr "Kýsa bir kullaným iletisi göster"
 
-#: popthelp.c:103
+#: popthelp.c:107
 msgid "NONE"
 msgstr "YOK"
 
-#: popthelp.c:105
+#: popthelp.c:109
 msgid "VAL"
 msgstr "DEÐ"
 
-#: popthelp.c:109
+#: popthelp.c:113
 msgid "INT"
 msgstr "INT"
 
-#: popthelp.c:110
+#: popthelp.c:114
 msgid "LONG"
 msgstr "LONG"
 
-#: popthelp.c:111
+#: popthelp.c:115
 msgid "STRING"
 msgstr "STRING"
 
-#: popthelp.c:112
+#: popthelp.c:116
 msgid "FLOAT"
 msgstr "FLOAT"
 
-#: popthelp.c:113
+#: popthelp.c:117
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: popthelp.c:114
+#: popthelp.c:118
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:486
+#: popthelp.c:493
 msgid "Usage:"
 msgstr "Kullanýmý:"
 
-#: popthelp.c:510
+#: popthelp.c:517
 msgid "[OPTION...]"
 msgstr "[SEÇENEK...]"

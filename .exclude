@@ -5,6 +5,7 @@ CVS
 .libs
 apidocs
 autodeps
+autom4te.cache
 intl
 scripts
 po

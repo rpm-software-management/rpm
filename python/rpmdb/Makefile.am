@@ -9,7 +9,8 @@ SUBDIRS = test
 EXTRA_DIST = \
 	__init__.py dbobj.py db.py dbrecio.py dbshelve.py dbtables.py dbutils.py
 
-pylibdir = $(shell python -c 'import sys; print sys.path[1]')
+# XXX grrr, sys.path[1] wrong value in python-2.3.2
+pylibdir = $(shell python -c 'import sys; print sys.path[2]')
 
 rpmdbdir = $(pylibdir)/site-packages/rpmdb
 rpmdb_SCRIPTS = \

@@ -36,10 +36,11 @@ mylibs = librpmdb.la
 
 LIBS =
 
-DB3LO = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
-DB3LOBJS = $(DB3LO:%.lo=%.o)
+# XXX watchout, ../db3/libdb.la created by this Makefile may surprise
+libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
 
-LDFLAGS = -L$(DESTDIR)$(usrlibdir)
+# XXX grrr, RPM_BUILD_ROOT prevents build pollution if/when -lrpm different
+LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmdb.la
@@ -51,10 +52,9 @@ librpmdb_la_SOURCES = \
 librpmdb_la_LDFLAGS = -release 4.3 \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
-	@WITH_LIBELF_LIB@ \
-	@libdb3@
-librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
-librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
+	@WITH_LIBELF_LIB@
+librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
+librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
 
 # XXX make sure that db.h symlink is generated
 dbconfig.c db3.c: db.h
@@ -80,11 +80,9 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 db.h:
 	@ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
 
-.created:	db.h
-	for lo in $(DB3LOBJS); do \
-	  [ -f $$lo ] || $(LN_S) $(top_builddir)/$(WITH_DB_SUBDIR)/$$lo $$lo ; \
-	done
-	touch $@
+# XXX grrr, force noinst libdb.la for db3.
+$(libdb_la):
+	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.1.la > $(libdb_la)
 
 rpmdb_archive_SOURCES =
 rpmdb_archive_LDADD = \
@@ -164,10 +162,9 @@ rpmdb_verify_LDADD = \
 	librpmdb.la
 
 clean-local:
-	rm -f $(DB3LOBJS) *.o .created db.h
+	rm -f *.o db.h $(libdb_la)
 
-# XXX TODO: figger why .created addition here dinna work
-BUILT_SOURCES = tagtbl.c # .created
+BUILT_SOURCES = tagtbl.c
 
 rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null

@@ -238,6 +238,10 @@ main(int argc, char ** argv)
       exit(1);
     }
   rpmInitMacros(NULL, "/usr/lib/rpm/macros");
+
+  /* speed things up */
+  (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
+
   if (rpmdbOpen("/", &db, O_RDWR, 0644)) {
     fprintf(stderr, "could not open rpm database\n");
     exit(1);
