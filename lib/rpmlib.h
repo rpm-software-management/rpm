@@ -149,7 +149,6 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMFILE_LICENSE			(1 << 7)
 #define	RPMFILE_README			(1 << 8)
 
-#define	RPMINSTALL_REPLACEFILES		(1 << 1)
 #define	RPMINSTALL_TEST			(1 << 2)
 #define	RPMINSTALL_UPGRADETOOLD		(1 << 4)
 #define	RPMINSTALL_NODOCS		(1 << 5)
@@ -372,6 +371,10 @@ typedef enum rpmProblemType_e { RPMPROB_BADARCH,
 				RPMPROB_BADOS,
 				RPMPROB_PKG_INSTALLED,
 				RPMPROB_BADRELOCATE,
+				RPMPROB_REQUIRES,
+				RPMPROB_CONFLICT,
+				RPMPROB_NEW_FILE_CONFLICT,
+				RPMPROB_FILE_CONFLICT,
  			      } rpmProblemType;
 
 typedef struct rpmProblem_s {
@@ -380,6 +383,7 @@ typedef struct rpmProblem_s {
     rpmProblemType type;
     int ignoreProblem;
     char * str1;
+    
 } rpmProblem;
 
 typedef struct rpmProblemSet_s {
@@ -399,6 +403,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 #define RPMPROB_FILTER_IGNOREARCH	(1 << 1)
 #define RPMPROB_FILTER_REPLACEPKG	(1 << 2)
 #define RPMPROB_FILTER_FORCERELOCATE	(1 << 3)
+#define RPMPROB_FILTER_REPLACENEWFILES	(1 << 4)
+#define RPMPROB_FILTER_REPLACEOLDFILES	(1 << 5)
 
 /** messages.c **/
 

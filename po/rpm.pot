@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-12-16 08:56-0800\n"
+"POT-Creation-Date: 1998-12-21 22:01-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1309,19 +1309,19 @@ msgstr ""
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: ../rpm.c:1241
+#: ../rpm.c:1243
 msgid "no packages given for install"
 msgstr ""
 
-#: ../rpm.c:1263
+#: ../rpm.c:1265
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: ../rpm.c:1269
+#: ../rpm.c:1271
 msgid "no arguments given for query"
 msgstr ""
 
-#: ../rpm.c:1287
+#: ../rpm.c:1289
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -2211,8 +2211,8 @@ msgid "free list corrupt (%u)- contact support@redhat.com\n"
 msgstr ""
 
 #: ../lib/formats.c:97 ../lib/formats.c:114 ../lib/formats.c:134
-#: ../lib/formats.c:166 ../lib/header.c:1955 ../lib/header.c:1971
-#: ../lib/header.c:1991
+#: ../lib/formats.c:166 ../lib/header.c:1971 ../lib/header.c:1987
+#: ../lib/header.c:2007
 msgid "(not a number)"
 msgstr ""
 
@@ -2236,84 +2236,84 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: ../lib/header.c:667
+#: ../lib/header.c:670
 #, c-format
 msgid "Data type %d not supprted\n"
 msgstr ""
 
 #. This should not be allowed
-#: ../lib/header.c:888
+#: ../lib/header.c:904
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: ../lib/header.c:918
+#: ../lib/header.c:934
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: ../lib/header.c:977
+#: ../lib/header.c:993
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1311
+#: ../lib/header.c:1327
 msgid "? expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1318
+#: ../lib/header.c:1334
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: ../lib/header.c:1328 ../lib/header.c:1360
+#: ../lib/header.c:1344 ../lib/header.c:1376
 msgid "} expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1335
+#: ../lib/header.c:1351
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: ../lib/header.c:1348
+#: ../lib/header.c:1364
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: ../lib/header.c:1367
+#: ../lib/header.c:1383
 msgid "| expected at end of expression"
 msgstr ""
 
-#: ../lib/header.c:1461
+#: ../lib/header.c:1477
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1489
+#: ../lib/header.c:1505
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1501
+#: ../lib/header.c:1517
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1511
+#: ../lib/header.c:1527
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1526
+#: ../lib/header.c:1542
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1552
+#: ../lib/header.c:1568
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1568
+#: ../lib/header.c:1584
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1570
+#: ../lib/header.c:1586
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1745
+#: ../lib/header.c:1761
 msgid "(unknown type)"
 msgstr ""
 
@@ -2378,7 +2378,7 @@ msgstr ""
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:539 ../lib/install.c:1201 ../lib/uninstall.c:599
+#: ../lib/install.c:539 ../lib/install.c:1193 ../lib/uninstall.c:599
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -2469,45 +2469,40 @@ msgstr ""
 msgid "\tother version never installed\n"
 msgstr ""
 
-#: ../lib/install.c:997
-#, c-format
-msgid "%s conflicts with file from %s-%s-%s"
-msgstr ""
-
-#: ../lib/install.c:1016
+#: ../lib/install.c:1009
 #, c-format
 msgid "%s from %s-%s-%s will be replaced\n"
 msgstr ""
 
-#: ../lib/install.c:1081
+#: ../lib/install.c:1073
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:1097 ../lib/install.c:1102
+#: ../lib/install.c:1089 ../lib/install.c:1094
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:1106
+#: ../lib/install.c:1098
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:1107
+#: ../lib/install.c:1099
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:1140 ../lib/install.c:1179
+#: ../lib/install.c:1132 ../lib/install.c:1171
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:1199
+#: ../lib/install.c:1191
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: ../lib/install.c:1315
+#: ../lib/install.c:1307
 #, c-format
 msgid "package %s-%s-%s (which is newer) is already installed"
 msgstr ""

@@ -28,17 +28,23 @@ char * rpmProblemString(rpmProblem prob) {
 
       case RPMPROB_PKG_INSTALLED:
 	sprintf(buf, _("package %s-%s-%s is already installed"),
-			  name, version, release);
+		name, version, release);
 	break;
 
       case RPMPROB_BADRELOCATE:
 	sprintf(buf, _("path %s is not relocateable for package %s-%s-%s"),
-		     prob.str1, name, version, release);
+		prob.str1, name, version, release);
+	break;
+
+      case RPMPROB_NEW_FILE_CONFLICT:
+	sprintf(buf, _("file %s conflicts between attemped installs of "
+		       "%s-%s-%s and FIXME"), prob.str1, name, version, 
+		release);
 	break;
 
       default:
 	sprintf(buf, _("unknown error %d encountered while manipulating "
-		"package %s-%s-%s"), name, version, release);
+		"package %s-%s-%s"), prob.type, name, version, release);
 	break;
     }
 
@@ -59,6 +65,10 @@ void rpmProblemSetFilter(rpmProblemSet ps, int flags) {
 	    flag = RPMPROB_FILTER_REPLACEPKG; break;
 	  case RPMPROB_BADRELOCATE:
 	    flag = RPMPROB_FILTER_FORCERELOCATE; break;
+	  case RPMPROB_NEW_FILE_CONFLICT:
+	    flag = RPMPROB_FILTER_REPLACENEWFILES; break;
+	  case RPMPROB_FILE_CONFLICT:
+	    flag = RPMPROB_FILTER_REPLACEOLDFILES; break;
 	  default:
 	    flag = 0;
 	}

@@ -1210,10 +1210,12 @@ int main(int argc, char ** argv) {
 
       case MODE_INSTALL:
 	if (force) {
-	    probFilter |= RPMPROB_FILTER_REPLACEPKG;
-	    installFlags |= RPMINSTALL_REPLACEFILES;
+	    probFilter |= RPMPROB_FILTER_REPLACEPKG | 
+			  RPMPROB_FILTER_REPLACEOLDFILES |
+			  RPMPROB_FILTER_REPLACENEWFILES;
 	}
-	if (replaceFiles) installFlags |= RPMINSTALL_REPLACEFILES;
+	if (replaceFiles) probFilter |= RPMPROB_FILTER_REPLACEOLDFILES |
+			                RPMPROB_FILTER_REPLACENEWFILES;
 	if (badReloc) probFilter |= RPMPROB_FILTER_FORCERELOCATE;
 	if (replacePackages) probFilter |= RPMPROB_FILTER_REPLACEPKG;
 	if (test) installFlags |= RPMINSTALL_TEST;

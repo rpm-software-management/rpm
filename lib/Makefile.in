@@ -142,7 +142,7 @@ librpm_a_SOURCES = \
 	messages.c misc.c oldheader.c package.c query.c \
 	rebuilddb.c rpmdb.c rpmerr.c rpmio.c rpmlead.c \
 	rpmrc.c signature.c stringbuf.c tagtable.c \
-	tread.c uninstall.c verify.c transaction.c problems.c
+	tread.c uninstall.c verify.c transaction.c problems.c hash.c
 
 BUILT_SOURCES = tagtable.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -159,7 +159,7 @@ librpm_a_OBJECTS =  cpio.o dbindex.o depends.o falloc.o formats.o fs.o \
 header.o install.o lookup.o macro.o md5.o md5sum.o messages.o misc.o \
 oldheader.o package.o query.o rebuilddb.o rpmdb.o rpmerr.o rpmio.o \
 rpmlead.o rpmrc.o signature.o stringbuf.o tagtable.o tread.o \
-uninstall.o verify.o transaction.o problems.o
+uninstall.o verify.o transaction.o problems.o hash.o
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
@@ -173,7 +173,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP = --best
 DEP_FILES =  .deps/cpio.P .deps/dbindex.P .deps/depends.P .deps/falloc.P \
-.deps/formats.P .deps/fs.P .deps/header.P .deps/install.P \
+.deps/formats.P .deps/fs.P .deps/hash.P .deps/header.P .deps/install.P \
 .deps/lookup.P .deps/macro.P .deps/md5.P .deps/md5sum.P \
 .deps/messages.P .deps/misc.P .deps/oldheader.P .deps/package.P \
 .deps/problems.P .deps/query.P .deps/rebuilddb.P .deps/rpmdb.P \

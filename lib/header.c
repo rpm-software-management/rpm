@@ -105,7 +105,8 @@ static struct indexEntry *findEntry(Header h, int_32 tag, int_32 type);
 static void * grabData(int_32 type, void * p, int_32 c, int * lengthPtr);
 static int dataLength(int_32 type, void * p, int_32 count, int onDisk);
 static void copyEntry(struct indexEntry * entry, 
-			int_32 *type, void **p, int_32 *c);
+			int_32 *type, void **p, int_32 *c,
+			int minimizeMemory);
 static void freeFormat(struct sprintfToken * format, int num);
 static void findTag(char * name, const struct headerTagTableEntry * tags, 
 		    const struct headerSprintfExtension * extensions,
@@ -139,7 +140,9 @@ static char * shescapeFormat(int_32 type, const void * data,
 static int getExtension(Header h, headerTagTagFunction fn, int_32 * typeptr,
 			void ** data, int_32 * countptr, 
 			struct extensionCache * ext);
-char *headerFindI18NString(Header h, struct indexEntry *entry);
+static char *headerFindI18NString(Header h, struct indexEntry *entry);
+static int intGetEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c,
+		       int mimMem);
 
 const struct headerSprintfExtension headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal", { octalFormat } },
@@ -192,7 +195,7 @@ int headerNextIterator(HeaderIterator iter,
     if (tag) {
 	*tag = h->index[slot].info.tag;
     }
-    copyEntry(h->index + slot, type, p, c);
+    copyEntry(h->index + slot, type, p, c, 0);
 
     return 1;
 }
@@ -718,7 +721,8 @@ int headerIsEntry(Header h, int_32 tag)
 }
 
 static void copyEntry(struct indexEntry * entry, 
-			int_32 *type, void **p, int_32 *c) {
+			int_32 *type, void **p, int_32 *c,
+			int minimizeMemory) {
     int i, tableSize;
     char ** ptrEntry;
     char * chptr;
@@ -742,9 +746,14 @@ static void copyEntry(struct indexEntry * entry,
       case RPM_I18NSTRING_TYPE:
 	i = entry->info.count;
 	tableSize = i * sizeof(char *);
-	ptrEntry = *p = malloc(tableSize + entry->length);
-	chptr = ((char *) *p) + tableSize;
-	memcpy(chptr, entry->data, entry->length);
+	if (minimizeMemory) {
+	    ptrEntry = *p = malloc(tableSize);
+	    chptr = entry->data;
+	} else {
+	    ptrEntry = *p = malloc(tableSize + entry->length);
+	    chptr = ((char *) *p) + tableSize;
+	    memcpy(chptr, entry->data, entry->length);
+	}
 	while (i--) {
 	    *ptrEntry++ = chptr;
 	    chptr = strchr(chptr, 0);
@@ -769,22 +778,20 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c) {
 	return 0;
     }
 
-    copyEntry(entry, type, p, c);
+    copyEntry(entry, type, p, c, 0);
 
     return 1;
 }
 
-int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
-{
+static int intGetEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c,
+		       int minMem) {
     struct indexEntry * entry;
     char * chptr;
-
-    if (!p) return headerIsEntry(h, tag);
 
     /* First find the tag */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
     if (!entry) {
-	*p = NULL;
+	if (p) *p = NULL;
 	return 0;
     }
 
@@ -796,10 +803,19 @@ int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 
 	*p = chptr;
     } else {
-	copyEntry(entry, type, p, c);
+	copyEntry(entry, type, p, c, minMem);
     }
 
     return 1;
+}
+
+int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type, void **p, 
+			    int_32 *c) {
+    return intGetEntry(h, tag, type, p, c, 1);
+}
+
+int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c) {
+    return intGetEntry(h, tag, type, p, c, 0);
 }
 
 /********************************************************************/
@@ -2099,7 +2115,7 @@ void headerResetLang(Header h) {
     headerSetLangPath(h, getenv("LANG"));
 }
 
-char *headerFindI18NString(Header h, struct indexEntry *entry)
+static char *headerFindI18NString(Header h, struct indexEntry *entry)
 {
     char * lang, * buf, * chptr, * start, * next, * resptr;
     struct indexEntry * table;

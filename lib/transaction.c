@@ -3,8 +3,21 @@
 #include "rpmlib.h"
 
 #include "depends.h"
+#include "hash.h"
 #include "install.h"
 #include "misc.h"
+
+struct fileFate {
+    enum fileFate_e { KEEP, REMOVE } action;
+    Header winner;			/* only set for KEEP actions */
+};
+
+struct fileInfo {
+    Header h;
+    enum fileInfo_e { ADDED, REMOVED } action;
+    char ** fl, ** fmd5s;
+    int fc;
+};
 
 static rpmProblemSet psCreate(void);
 static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key, 
@@ -14,6 +27,7 @@ static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
 			       rpmProblemSet probs);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
+static void aggregateFileList(struct fileInfo * info, hashTable ht);
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
@@ -22,7 +36,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target);
 int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
 		       rpmProblemSet * newProbs, int flags) {
-    int i;
+    int i, j, numPackages, pkgNum, fileNum;
     struct availableList * al = &ts->addedPackages;
     int rc, ourrc = 0;
     int instFlags = 0, rmFlags = 0;
@@ -31,6 +45,17 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     rpmProblemSet probs;
     dbiIndexSet dbi;
     Header * hdrs;
+    int fileCount;
+    int totalFileCount = 0;
+    hashTable ht, fates;
+    struct fileInfo * flList, * fi, * winner;
+    int winnerFileNum;
+    struct fileFate * fateList;
+    int numFates;
+    struct fileInfo ** recs;
+    int numRecs;
+
+    /* FIXME: what if the same package is included in ts twice? */
 
     if (flags & RPMTRANS_FLAG_TEST) {
 	instFlags |= RPMINSTALL_TEST; 
@@ -41,7 +66,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     *newProbs = probs;
     hdrs = alloca(sizeof(*hdrs) * al->size);
 
-    for (i = 0, alp = al->list; i < al->size; i++, alp++) {
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
 	if (!archOkay(alp->h))
 	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL);
 
@@ -58,7 +83,94 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    dbiFreeIndexRecord(dbi);
 	}
 
-	hdrs[i] = relocateFileList(alp, probs);
+	hdrs[pkgNum] = relocateFileList(alp, probs);
+
+	if (headerGetEntry(alp->h, RPMTAG_FILENAMES, NULL, NULL, &fileCount))
+	    totalFileCount += fileCount;
+    }
+
+    flList = alloca(sizeof(*flList) * (al->size + ts->numRemovedPackages));
+
+    ht = htCreate(totalFileCount * 2);
+    numPackages = 0;
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+	if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL, 
+				     (void *) &flList[numPackages].fl, 
+				     &flList[numPackages].fc))
+	    continue;
+	headerGetEntryMinMemory(alp->h, RPMTAG_FILEMD5S, NULL, 
+				(void *) &flList[numPackages].fmd5s, NULL);
+
+	flList[numPackages].h = alp->h;
+	flList[numPackages].action = ADDED;
+	aggregateFileList(flList + numPackages, ht);
+	numPackages++;
+    }
+	
+/* FIXME 
+    for (i = 0; i < ts->numRemovedPackages; i++) {
+	flList[numPackages]->h = alp->h;
+	flList[numPackages]->info = info;
+	aggregateFileList(flList + numPackages, ht);
+	numPackages++;
+    }
+*/
+
+    numPackages = 0;
+    fateList = alloca(totalFileCount * sizeof(*fateList));
+    fates = htCreate(totalFileCount * 2);
+    numFates = 0;
+
+#if 0
+    /* We build this list to reduce database i/o, while still allowing
+       error messages to come out in a sensible order. */
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+	if (!ts->db || rpmdbFindByFile(ts->db, fi->fl[i], &matches))
+	    continue;
+
+	for (j = 0; j < matches.count; j++) {
+	    
+	}
+    }
+#endif
+
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+	if (alp->h != flList[numPackages].h) continue;
+	fi = flList + numPackages;
+
+	for (i = 0; i < fi->fc; i++) {
+	    if (htHasEntry(fates, fi->fl[i])) continue;
+
+	    htGetEntry(ht, fi->fl[i], (void ***) &recs, &numRecs);
+	    /* note that &recs[0] must equal fi! */
+	    for (j = numRecs - 1; j > 0 && (recs[j]->action != ADDED); 
+		 winner--);
+	    winner = recs[j];
+
+	    for (winnerFileNum = 0; winnerFileNum < winner->fc; 
+			winnerFileNum++)
+	    	if (!strcmp(fi->fl[i], recs[j]->fl[winnerFileNum])) break;
+
+	    for (j = 0; recs[j] != winner; j++) {
+		/* FIXME: there are more efficient searches in the world... */
+		for (fileNum = 0; fileNum < recs[j]->fc; fileNum++)
+		    if (!strcmp(fi->fl[i], recs[j]->fl[fileNum])) break;
+
+		if (strcmp(winner->fmd5s[winnerFileNum], 
+			   recs[j]->fmd5s[fileNum])) {
+		    /* FIXME: we need to pass the conflicting header */
+		    psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, alp->key, 
+			     alp->h, fi->fl[i]);
+		}
+	    }
+
+	    fateList[numFates].action = KEEP;
+	    fateList[numFates].winner = alp->h;
+	    htAddEntry(fates, fi->fl[i], fateList + numFates);
+	    numFates++;
+	}
+
+	numPackages++;
     }
 
     if (probs->numProblems && (!okProbs || psTrim(okProbs, probs))) {
@@ -67,14 +179,13 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    headerFree(hdrs[i]);
 	return al->size + ts->numRemovedPackages;
     }
-    
 
-    for (i = 0, alp = al->list; i < al->size; i++, alp++) {
-	if (installBinaryPackage(ts->root, ts->db, al->list[i].fd, 
-			  	 hdrs[i], al->list[i].relocs, instFlags,
-				 notify, notifyData))
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+	if (installBinaryPackage(ts->root, ts->db, al->list[pkgNum].fd, 
+			  	 hdrs[pkgNum], al->list[pkgNum].relocs, 
+				 instFlags, notify, notifyData))
 	    ourrc++;
-	headerFree(hdrs[i]);
+	headerFree(hdrs[pkgNum]);
     }
 
     for (i = 0; i < ts->numRemovedPackages; i++) {
@@ -110,7 +221,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key,
     probs->probs[probs->numProblems].type = type;
     probs->probs[probs->numProblems].key = key;
     probs->probs[probs->numProblems].h = headerLink(h);
-    probs->probs[probs->numProblems].str1 = str1;
+    probs->probs[probs->numProblems].str1 = strdup(str1);
     probs->probs[probs->numProblems++].ignoreProblem = 0;
 }
 
@@ -217,7 +328,7 @@ static Header relocateFileList(struct availablePackage * alp,
 			relocations[i].oldPath)) break;
 	if (j == numValid)
 	    psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h, 
-		     strdup(relocations[i].oldPath));
+		     relocations[i].oldPath);
     }
 
     /* stupid bubble sort, but it's probably faster here */
@@ -340,8 +451,18 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target) {
     return gotProblems;
 }
 
+/* this really shouldn't be able to fail <gulp> */
+static void aggregateFileList(struct fileInfo * info, hashTable ht) {
+    char ** fl;
+    int fc, i;
 
+    if (!headerGetEntryMinMemory(info->h, RPMTAG_FILENAMES, NULL, (void *) &fl,
+				 &fc))
+	return;
 
+    for (i = 0; i < fc; i++) 
+	htAddEntry(ht, fl[i], info);
 
-
+    free(fl);
+}
 

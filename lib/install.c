@@ -993,30 +993,22 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 	if (filecmp(files[mainNum].mode, files[mainNum].md5, 
 		    files[mainNum].link, secFileModesList[secNum],
 		    secFileMd5List[secNum], secFileLinksList[secNum])) {
-	    if (!(flags & RPMINSTALL_REPLACEFILES) && !intptr) {
-		rpmError(RPMERR_PKGINSTALLED, _("%s conflicts with file from "
-		         "%s-%s-%s"), 
-			 files[sharedList[i].mainFileNumber].relativePath,
-		         name, version, release);
-		rc = 1;
-	    } else {
-		if (numReplacedFiles == numReplacedAlloced) {
-		    numReplacedAlloced += 10;
-		    replacedList = realloc(replacedList, 
-					   sizeof(*replacedList) * 
-					       numReplacedAlloced);
-		}
-	       
-		replacedList[numReplacedFiles].recOffset = 
-		    sharedList[i].secRecOffset;
-		replacedList[numReplacedFiles].fileNumber = 	
-		    sharedList[i].secFileNumber;
-		numReplacedFiles++;
-
-		rpmMessage(RPMMESS_DEBUG, _("%s from %s-%s-%s will be replaced\n"), 
-			files[sharedList[i].mainFileNumber].relativePath,
-			name, version, release);
+	    if (numReplacedFiles == numReplacedAlloced) {
+		numReplacedAlloced += 10;
+		replacedList = realloc(replacedList, 
+				       sizeof(*replacedList) * 
+					   numReplacedAlloced);
 	    }
+	   
+	    replacedList[numReplacedFiles].recOffset = 
+		sharedList[i].secRecOffset;
+	    replacedList[numReplacedFiles].fileNumber = 	
+		sharedList[i].secFileNumber;
+	    numReplacedFiles++;
+
+	    rpmMessage(RPMMESS_DEBUG, _("%s from %s-%s-%s will be replaced\n"), 
+		    files[sharedList[i].mainFileNumber].relativePath,
+		    name, version, release);
 	}
 
 	/* if this is a config file, we need to be carefull here */
