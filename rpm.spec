@@ -202,7 +202,6 @@ fi
 
 %files build
 %defattr(-,root,root)
-%{__prefix}/bin/rpm[bt]
 %{__prefix}/bin/rpmbuild
 %{__prefix}/lib/rpm/brp-*
 %{__prefix}/lib/rpm/check-prereqs
