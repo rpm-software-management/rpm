@@ -8,16 +8,13 @@ debugedit
 dump
 dumpdb
 javadeps
-rpmarchive
 rpmcache
 rpmdeps
 rpmfile
 rpmgraph
-rpmheader
 rpminject
-rpmlead
 rpmsort
-rpmsignature
+rpmtool
 striptofile
 tpkgid
 unstripfile
