@@ -50,27 +50,27 @@ static char *_preScriptEnvironment =
 	"RPM_SOURCE_DIR=\"%{_sourcedir}\"\n"
 	"RPM_BUILD_DIR=\"%{_builddir}\"\n"
 	"RPM_OPT_FLAGS=\"%{optflags}\"\n"
-	"export  RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS\n"
+	"RPM_ARCH=\"%{arch}\"\n"
+	"RPM_OS=\"%{os}\"\n"
+	"export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\n"
+	"RPM_DOC_DIR=\"%{_docdir}\"\n"
+	"export RPM_DOC_DIR\n"
+	"RPM_PACKAGE_NAME=\"%{name}\"\n"
+	"RPM_PACKAGE_VERSION=\"%{version}\"\n"
+	"RPM_PACKAGE_RELEASE=\"%{release}\"\n"
+	"export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\n"
 ;
 
 static int writeVars(Spec spec, FILE *f)
 {
-    char *arch, *os, *s;
+    char *s;
     char buf[BUFSIZ];
 
     strcpy(buf, _preScriptEnvironment);
     expandMacros(spec, spec->macros, buf, sizeof(buf));
-    fprintf(f, "%s\n", buf);
+    strcat(buf, "\n");
+    fputs(buf, f);
     
-    rpmGetArchInfo(&arch, NULL);
-    rpmGetOsInfo(&os, NULL);
-
-    fprintf(f, "RPM_DOC_DIR=\"%s\"\n", spec->docDir);
-    fprintf(f, "RPM_ARCH=\"%s\"\n", arch);
-    fprintf(f, "RPM_OS=\"%s\"\n", os);
-
-    fprintf(f, "export RPM_DOC_DIR RPM_ARCH RPM_OS\n");
-
     if (spec->buildRoot) {
 	fprintf(f, "RPM_BUILD_ROOT=\"%s\"\n", spec->buildRoot);
 	fprintf(f, "export RPM_BUILD_ROOT\n");
@@ -81,6 +81,7 @@ static int writeVars(Spec spec, FILE *f)
 	fprintf(f, "fi\n");
     }
 
+#if DEAD
     headerGetEntry(spec->packages->header, RPMTAG_NAME,
 		   NULL, (void **)&s, NULL);
     fprintf(f, "RPM_PACKAGE_NAME=\"%s\"\n", s);
@@ -92,6 +93,7 @@ static int writeVars(Spec spec, FILE *f)
     fprintf(f, "RPM_PACKAGE_RELEASE=\"%s\"\n", s);
     fprintf(f, "export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION "
 	    "RPM_PACKAGE_RELEASE\n");
+#endif
     
     return 0;
 }

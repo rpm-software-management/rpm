@@ -360,8 +360,6 @@ Spec newSpec(void)
     
     spec->buildSubdir = NULL;
 
-    spec->docDir = NULL;
-
     spec->passPhrase = NULL;
     spec->timeCheck = 0;
     spec->cookie = NULL;
@@ -408,7 +406,6 @@ void freeSpec(Spec spec)
     FREE(spec->buildSubdir);
     FREE(spec->specFile);
     FREE(spec->sourceRpmName);
-    FREE(spec->docDir);
 
     while (spec->readStack) {
 	rl = spec->readStack;

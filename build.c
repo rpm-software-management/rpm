@@ -23,7 +23,11 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
     Spec spec = NULL;
 
     if (fromTarball) {
-	specDir = rpmGetVar(RPMVAR_SPECDIR);
+	specDir = alloca(BUFSIZ);
+	strcpy(specDir, "%{_specdir}");
+	/* XXX can't use spec->macros yet */
+	expandMacros(NULL, &globalMacroContext, specDir, BUFSIZ);
+
 	tmpSpecFile = alloca(BUFSIZ);
 	sprintf(tmpSpecFile, "%s/rpm-spec-file-%d", specDir, (int) getpid());
 

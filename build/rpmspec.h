@@ -64,8 +64,6 @@ struct SpecStruct {
     char *buildRoot;
     char *buildSubdir;
 
-    char *docDir;
-
     char *passPhrase;
     int timeCheck;
     char *cookie;

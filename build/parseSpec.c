@@ -232,7 +232,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	spec->gotBuildRoot = 1;
 	spec->buildRoot = strdup(buildRoot);
     }
-    spec->docDir = strdup(rpmGetVar(RPMVAR_DEFAULTDOCDIR));
+    addMacro(&globalMacroContext, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->inBuildArchitectures = inBuildArch;
     if (passPhrase) {
 	spec->passPhrase = strdup(passPhrase);

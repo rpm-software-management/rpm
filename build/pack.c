@@ -57,7 +57,11 @@ int packageSources(Spec spec)
 		   RPM_INT32_TYPE, getBuildTime(), 1);
 
     genSourceRpmName(spec);
-    sprintf(fileName, "%s/%s", rpmGetVar(RPMVAR_SRPMDIR), spec->sourceRpmName);
+
+    /* XXX this should be %_srpmdir */
+    strcpy(fileName, "%{_srcrpmdir}/");
+    expandMacros(spec, spec->macros, fileName, sizeof(fileName));
+    strcat(fileName, spec->sourceRpmName);
 
     /* Add the build restrictions */
     iter = headerInitIterator(spec->buildRestrictions);
@@ -100,16 +104,13 @@ int packageBinaries(Spec spec)
     char *name, fileName[BUFSIZ];
     Package pkg;
 
-    pkg = spec->packages;
-    while (pkg) {
-	if (!pkg->fileList) {
-	    pkg = pkg->next;
-	    continue;
-	}
+    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 
-	if ((rc = processScriptFiles(spec, pkg))) {
+	if (!pkg->fileList)
+	    continue;
+
+	if ((rc = processScriptFiles(spec, pkg)))
 	    return rc;
-	}
 	
 	if (spec->cookie) {
 	    headerAddEntry(pkg->header, RPMTAG_COOKIE,
@@ -133,14 +134,17 @@ int packageBinaries(Spec spec)
 	binFormat = rpmGetVar(RPMVAR_RPMFILENAME);
 	binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
 			       rpmHeaderFormats, &errorString);
-	if (!binRpm) {
+	if (binRpm == NULL) {
 	    headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
 			   (void **)&name, NULL);
 	    rpmError(RPMERR_BADFILENAME, "Could not generate output "
 		     "filename for package %s: %s\n", name, errorString);
 	    return RPMERR_BADFILENAME;
 	}
-	sprintf(fileName, "%s/%s", rpmGetVar(RPMVAR_RPMDIR), binRpm);
+	strcpy(fileName, "%{_rpmdir}/");
+	expandMacros(spec, spec->macros, fileName, sizeof(fileName));
+	strcat(fileName, binRpm);
+
 	FREE(binRpm);
 
 	memset(csa, 0, sizeof(*csa));
@@ -153,8 +157,6 @@ int packageBinaries(Spec spec)
 			    csa, spec->passPhrase, NULL))) {
 	    return rc;
 	}
-	
-	pkg = pkg->next;
     }
     
     return 0;

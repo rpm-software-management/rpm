@@ -925,7 +925,6 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
     if ((rc = padoutfd(cfd, &totalsize, 4)))
 	return rc;
 
-fprintf(stderr, "ARCHIVESIZE  total: %d\n", totalsize);
     if (archiveSize) *archiveSize = totalsize;
 
     return 0;

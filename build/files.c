@@ -666,11 +666,8 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	    res = 1;
 	} else {
 	/* XXX FIXME: this is easy to do as macro expansion */
-	    headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
-			   (void *) &name, NULL);
-	    headerGetEntry(pkg->header, RPMTAG_VERSION, NULL,
-			   (void *) &version, NULL);
-	    sprintf(buf, "%s/%s-%s", spec->docDir, name, version);
+	    strcpy(buf, "%{_docdir}/%{name}-%{version}");
+	    expandMacros(spec, spec->macros, buf, BUFSIZ);
 
 	    if (! fl->passedSpecialDoc) {
 		pkg->specialDoc = newStringBuf();
@@ -1124,7 +1121,10 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.docDirs[fl.docDirCount++] = strdup("/usr/man");
     fl.docDirs[fl.docDirCount++] = strdup("/usr/info");
     fl.docDirs[fl.docDirCount++] = strdup("/usr/X11R6/man");
-    fl.docDirs[fl.docDirCount++] = strdup(spec->docDir);
+    {	strcpy(buf, "%{_docdir}");
+	expandMacros(spec, spec->macros, buf, sizeof(buf));
+	fl.docDirs[fl.docDirCount++] = strdup(buf);
+    }
     
     fl.fileList = NULL;
     fl.fileListRecsAlloced = 0;

@@ -24,7 +24,7 @@ extern MacroContext globalMacroContext;
 #define	RMIL_MACROFILES	-9
 #define	RMIL_RPMRC	-7
 #define	RMIL_TARBALL	-5
-#define	RMIL_SPEC	-1
+#define	RMIL_SPEC	-3
 #define	RMIL_OLDSPEC	-1
 #define	RMIL_GLOBAL	0
 

@@ -413,14 +413,14 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	break;
       case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;
-	FREE(spec->docDir);
 	if (field[0] != '/') {
 	    rpmError(RPMERR_BADSPEC,
 		     "line %d: Docdir must begin with '/': %s",
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	spec->docDir = strdup(field);
+	delMacro(&globalMacroContext, "_docdir");
+	addMacro(&globalMacroContext, "_docdir", NULL, field, RMIL_SPEC);
 	break;
       case RPMTAG_SERIAL:
 	SINGLE_TOKEN_ONLY;
