@@ -320,7 +320,7 @@ mpsizeinbase(size_t xsize, mpw* xdata, size_t base)
     } else {
 	res = (nbits * mp_bases[base].chars_per_bit_exactly) + 1;
     }
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "*** mpsizeinbase(%p[%d], %d) res %u\n", xdata, xsize, base, (unsigned)res);
     return res;
 }
@@ -373,7 +373,7 @@ mpstr(char * t, size_t nt, size_t zsize, mpw* zdata, size_t zbase)
     static char bchars[] = "0123456789abcdefghijklmnopqrstuvwxyz";
     size_t result;
 
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, zdata, zsize, zbase), mpprintln(stderr, zsize, zdata);
 
     mpsetx(size, bdata, zsize, zdata);
@@ -381,15 +381,15 @@ fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, zdata, zsize, zbase),
     t[nt] = '\0';
     while (nt--) {
 	mpsetx(size, adata, size, bdata);
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "***       a: %p[%d]\t", adata, size), mpprintln(stderr, size, adata);
 	mpnmod(bdata, size, adata, 1, &zbase, wksp);
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "***    nmod: %p[%d]\t", bdata, size), mpprintln(stderr, size, bdata);
 	result = bdata[size-1];
 	t[nt] = bchars[result];
 	mpndivmod(bdata, size, adata, 1, &zbase, wksp);
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "*** ndivmod: %p[%d]\t", bdata, size), mpprintln(stderr, size, bdata);
 	if (mpz(size, bdata))
 	    break;
@@ -418,7 +418,7 @@ rpmbc_format(rpmbcObject * z, size_t zbase, int withname)
 	return NULL;
     }
 
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "*** rpmbc_format(%p,%d,%d):\t", z, zbase, withname), mpprintln(stderr, z->n.size, z->n.data);
 
     assert(zbase >= 2 && zbase <= 36);
@@ -784,7 +784,7 @@ static void
 rpmbc_dealloc(rpmbcObject * s)
 	/*@modifies s @*/
 {
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "*** rpmbc_dealloc(%p)\n", s);
 
     mpnfree(&s->n);
@@ -797,7 +797,7 @@ rpmbc_print(rpmbcObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/
 {
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "*** rpmbc_print(%p)\n", s);
     mpprint(fp, s->n.size, s->n.data);
     return 0;
@@ -938,7 +938,7 @@ rpmbc_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
     if (ns != NULL)
 	mpnzero(&((rpmbcObject *)ns)->n);
 
-if (_bc_debug < 0)
+if (_bc_debug < -1)
 fprintf(stderr, "*** rpmbc_new(%p[%s],%p[%s],%p[%s]) ret %p[%s]\n", subtype, lbl(subtype), args, lbl(args), kwds, lbl(kwds), ns, lbl(ns));
     return ns;
 }
@@ -952,6 +952,9 @@ rpmbc_New(void)
     return ns;
 }
 
+/** \ingroup py_c
+ * Convert integer to mp.
+ */
 static rpmbcObject *
 rpmbc_i2bc(PyObject * o)
 {
@@ -974,6 +977,297 @@ rpmbc_i2bc(PyObject * o)
     return NULL;
 }
 
+/** \ingroup py_c
+ * Compute 1 argument operations.
+ */
+static PyObject *
+rpmbc_ops1(const char *fname, char op, rpmbcObject *x)
+        /*@*/
+{
+    rpmbcObject * z = rpmbc_New();
+    mpbarrett b;
+
+    mpbzero(&b);
+    if (x == NULL || z == NULL)
+	goto exit;
+
+if (_bc_debug < 0) {
+fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpprintln(stderr, x->n.size, x->n.data);
+}
+
+    switch (op) {
+    default:
+	Py_DECREF(z);
+	z = NULL;
+	goto exit;
+	/*@notreached@*/ break;
+    case '~':
+	mpninit(&z->n, x->n.size, x->n.data);
+	mpnot(z->n.size, z->n.data);
+	break;
+    case '-':
+	mpninit(&z->n, x->n.size, x->n.data);
+	mpneg(z->n.size, z->n.data);
+	break;
+    }
+
+if (_bc_debug < 0)
+fprintf(stderr, "*** rpmbc_%s %p[%d]\t", fname, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+
+exit:
+    mpbfree(&b);
+    Py_XDECREF(x);
+    return (PyObject *)z;
+}
+
+/** \ingroup py_c
+ * Compute 2 argument operations.
+ */
+static PyObject *
+rpmbc_ops2(const char *fname, char op, rpmbcObject *x, rpmbcObject *m)
+        /*@*/
+{
+    rpmbcObject * z = rpmbc_New();
+    mpbarrett b;
+    mpw* wksp;
+    int carry;
+
+    mpbzero(&b);
+    if (x == NULL || m == NULL || z == NULL)
+	goto exit;
+
+if (_bc_debug < 0) {
+fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpprintln(stderr, x->n.size, x->n.data);
+fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n.size, m->n.data);
+}
+
+    switch (op) {
+    default:
+	Py_DECREF(z);
+	z = NULL;
+	goto exit;
+	/*@notreached@*/ break;
+    case '+':
+	mpninit(&z->n, x->n.size, x->n.data);
+	carry = mpaddx(z->n.size, z->n.data, m->n.size, m->n.data);
+	break;
+    case '-':
+	mpninit(&z->n, x->n.size, x->n.data);
+	carry = mpsubx(z->n.size, z->n.data, m->n.size, m->n.data);
+	break;
+    case '*':
+    {	size_t zsize = x->n.size + m->n.size;
+	mpw* zdata = alloca(zsize * sizeof(*zdata));
+	size_t znorm;
+
+	mpmul(zdata, x->n.size, x->n.data, m->n.size, m->n.data);
+	znorm = zsize - (mpbitcnt(zsize, zdata) + 31)/32;
+	zsize -= znorm;
+	zdata += znorm;
+	mpnset(&z->n, zsize, zdata);
+    }	break;
+    case '/':
+    {	size_t asize = x->n.size;
+	mpw* adata = x->n.data;
+	size_t anorm = asize - (mpbitcnt(asize, adata) + 31)/32;
+	size_t bsize = m->n.size;
+	mpw* bdata = m->n.data;
+	size_t bnorm = bsize - (mpbitcnt(bsize, bdata) + 31)/32;
+	size_t zsize;
+	mpw* zdata;
+	size_t znorm;
+	mpw* wksp;
+
+	if (anorm < asize) {
+	    asize -= anorm;
+	    adata += anorm;
+	}
+	zsize = asize + 1;
+	zdata = alloca(zsize * sizeof(*zdata));
+	if (bnorm < bsize) {
+	    bsize -= bnorm;
+	    bdata += bnorm;
+	}
+	wksp = alloca((bsize+1) * sizeof(*wksp));
+
+	myndivmod(zdata, asize, adata, bsize, bdata, wksp);
+
+	zsize -= bsize;
+	znorm = mpsize(zsize, zdata);
+	if (znorm < zsize) {
+	    zsize -= znorm;
+	    zdata += znorm;
+	}
+
+	mpnset(&z->n, zsize, zdata);
+    }	break;
+    case '%':
+    {	size_t bsize = m->n.size;
+	mpw* bdata = m->n.data;
+	size_t bnorm = mpsize(bsize, bdata);
+	size_t zsize = x->n.size;
+	mpw* zdata = alloca(zsize * sizeof(*zdata));
+	mpw* wksp;
+
+	if (bnorm < bsize) {
+	    bsize -= bnorm;
+	    bdata += bnorm;
+	}
+	wksp = alloca((bsize+1) * sizeof(*wksp));
+
+	mpnmod(zdata, x->n.size, x->n.data, bsize, bdata, wksp);
+	mpnset(&z->n, zsize, zdata);
+    }	break;
+    case '<':
+    {	size_t bnorm = m->n.size - (mpbitcnt(m->n.size, m->n.data) + 31)/32;
+	size_t bsize = m->n.size - bnorm;
+	mpw* bdata = m->n.data + bnorm;
+	size_t count = 0;
+
+	if (bsize == 1)
+	    count = bdata[0];
+	mpninit(&z->n, x->n.size, x->n.data);
+	mprshift(z->n.size, z->n.data, count);
+    }	break;
+    case '>':
+    {	size_t bnorm = m->n.size - (mpbitcnt(m->n.size, m->n.data) + 31)/32;
+	size_t bsize = m->n.size - bnorm;
+	mpw* bdata = m->n.data + bnorm;
+	size_t count = 0;
+
+	if (bsize == 1)
+	    count = bdata[0];
+	mpninit(&z->n, x->n.size, x->n.data);
+	mprshift(z->n.size, z->n.data, count);
+    }	break;
+    case '&':
+	if (x->n.size <= m->n.size) {
+	    mpninit(&z->n, x->n.size, x->n.data);
+	    mpand(z->n.size, z->n.data, m->n.data + (m->n.size - x->n.size));
+	} else {
+	    mpninit(&z->n, m->n.size, m->n.data);
+	    mpand(z->n.size, z->n.data, x->n.data + (x->n.size - m->n.size));
+	}
+	break;
+    case '|':
+	if (x->n.size <= m->n.size) {
+	    mpninit(&z->n, x->n.size, x->n.data);
+	    mpor(z->n.size, z->n.data, m->n.data + (m->n.size - x->n.size));
+	} else {
+	    mpninit(&z->n, m->n.size, m->n.data);
+	    mpor(z->n.size, z->n.data, x->n.data + (x->n.size - m->n.size));
+	}
+	break;
+    case '^':
+	if (x->n.size <= m->n.size) {
+	    mpninit(&z->n, x->n.size, x->n.data);
+	    mpxor(z->n.size, z->n.data, m->n.data + (m->n.size - x->n.size));
+	} else {
+	    mpninit(&z->n, m->n.size, m->n.data);
+	    mpxor(z->n.size, z->n.data, x->n.data + (x->n.size - m->n.size));
+	}
+	break;
+    case 'P':
+	mpnpow_w(&z->n, x->n.size, x->n.data, m->n.size, m->n.data);
+	break;
+    case 'G':
+	wksp = alloca((x->n.size) * sizeof(*wksp));
+	mpnsize(&z->n, m->n.size);
+	mpgcd_w(x->n.size, x->n.data, m->n.data, z->n.data, wksp);
+	break;
+    case 'I':
+	wksp = alloca(6*(m->n.size+1)*sizeof(*wksp));
+	mpbset(&b, m->n.size, m->n.data);
+	mpnsize(&z->n, m->n.size);
+	mpbinv_w(&b, x->n.size, x->n.data, z->n.data, wksp);
+	break;
+    case 'S':
+	wksp = alloca((4*m->n.size+2)*sizeof(*wksp));
+	mpbset(&b, m->n.size, m->n.data);
+	mpnsize(&z->n, m->n.size);
+	mpbsqrmod_w(&b, x->n.size, x->n.data, z->n.data, wksp);
+	break;
+    }
+
+if (_bc_debug)
+fprintf(stderr, "*** rpmbc_%s %p[%d]\t", fname, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+
+exit:
+    mpbfree(&b);
+    Py_XDECREF(x);
+    Py_XDECREF(m);
+    return (PyObject *)z;
+}
+
+/** \ingroup py_c
+ * Compute 3 argument operations.
+ */
+static PyObject *
+rpmbc_ops3(const char *fname, char op,
+		rpmbcObject *x, rpmbcObject *y, rpmbcObject *m)
+        /*@*/
+{
+    rpmbcObject * z = rpmbc_New();
+    mpbarrett b;
+    size_t zsize;
+    mpw* zdata;
+    mpw* wksp;
+
+    mpbzero(&b);
+    if (x == NULL || y == NULL || m == NULL || z == NULL)
+	goto exit;
+
+if (_bc_debug < 0) {
+fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpprintln(stderr, x->n.size, x->n.data);
+fprintf(stderr, "    b %p[%d]:\t", y->n.data, y->n.size), mpprintln(stderr, y->n.size, y->n.data);
+fprintf(stderr, "    c %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n.size, m->n.data);
+}
+
+    mpbset(&b, m->n.size, m->n.data);
+
+    zsize = b.size;
+    zdata = alloca(zsize * sizeof(*zdata));
+    wksp = alloca((4*zsize+2)*sizeof(*wksp));
+
+    switch (op) {
+    case '/':
+    case '%':
+    default:
+	Py_DECREF(z);
+	z = NULL;
+	goto exit;
+	/*@notreached@*/ break;
+    case '+':
+	fname = "Addm";
+	mpbaddmod_w(&b, x->n.size, x->n.data, y->n.size, y->n.data, zdata, wksp);
+	break;
+    case '-':
+	fname = "Subm";
+	mpbsubmod_w(&b, x->n.size, x->n.data, y->n.size, y->n.data, zdata, wksp);
+	break;
+    case '*':
+	fname = "Mulm";
+	mpbmulmod_w(&b, x->n.size, x->n.data, y->n.size, y->n.data, zdata, wksp);
+	break;
+    case 'P':
+	fname = "Powm";
+	mpbpowmod_w(&b, x->n.size, x->n.data, y->n.size, y->n.data, zdata, wksp);
+	break;
+    }
+
+    mpnset(&z->n, zsize, zdata);
+
+if (_bc_debug < 0)
+fprintf(stderr, "*** rpmbc_%s %p[%d]\t", fname, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+
+exit:
+    mpbfree(&b);
+    Py_XDECREF(x);
+    Py_XDECREF(y);
+    Py_XDECREF(m);
+    return (PyObject *)z;
+}
+
 /* ---------- */
 
 /** \ingroup py_c
@@ -993,219 +1287,16 @@ fprintf(stderr, "*** rpmbc_Debug(%p)\n", s);
 }
 
 /** \ingroup py_c
+ * Compute gcd(x, y).
  */
 static PyObject *
-rpmbc_Gcd(/*@unused@*/ rpmbcObject * s, PyObject * args)
+rpmbc_Gcd(rpmbcObject * s, PyObject * args)
         /*@*/
 {
-    PyObject * op1;
-    PyObject * op2;
-    rpmbcObject * a = NULL;
-    rpmbcObject * b = NULL;
-    rpmbcObject * z = NULL;
-    mpw* wksp = NULL;
+    PyObject * xo, * mo;
 
-    if (!PyArg_ParseTuple(args, "OO:Gcd", &op1, &op2)) return NULL;
-
-    if ((a = rpmbc_i2bc(op1)) != NULL
-     && (b = rpmbc_i2bc(op2)) != NULL
-     && (z = rpmbc_New()) != NULL)
-    {
-	wksp = alloca((a->n.size) * sizeof(*wksp));
-	mpnsize(&z->n, a->n.size);
-	mpgcd_w(a->n.size, a->n.data, b->n.data, z->n.data, wksp);
-    }
-
-if (_bc_debug) {
-fprintf(stderr, "*** rpmbc_Gcd(%p):\t", s), mpprintln(stderr, z->n.size, z->n.data);
-fprintf(stderr, "    a(%p):\t", a), mpprintln(stderr, a->n.size, a->n.data);
-fprintf(stderr, "    b(%p):\t", b), mpprintln(stderr, b->n.size, b->n.data);
-}
-
-    Py_DECREF(a);
-    Py_DECREF(b);
-
-    return (PyObject *)z;
-}
-
-/** \ingroup py_c
- */
-static PyObject *
-rpmbc_Sqrt(/*@unused@*/ rpmbcObject * s, PyObject * args)
-        /*@*/
-{
-    PyObject * op1;
-    rpmbcObject * a = NULL;
-    rpmbcObject * z = NULL;
-
-    if (!PyArg_ParseTuple(args, "O:Sqrt", &op1)) return NULL;
-
-    if ((a = rpmbc_i2bc(op1)) != NULL
-     && (z = rpmbc_New()) != NULL)
-    {
-	size_t zsize = 2*a->n.size;
-	mpw* zdata = alloca(zsize * sizeof(*zdata));
-	size_t znorm;
-
-	mpsqr(zdata, a->n.size, a->n.data);
-
-	znorm = zsize - (mpbitcnt(zsize, zdata) + 31)/32;
-	zsize -= znorm;
-	zdata += znorm;
-	mpnset(&z->n, zsize, zdata);
-
-if (_bc_debug < 0)
-fprintf(stderr, "*** rpmbc_Sqrt %p[%d]\t", z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
-
-    }
-
-    Py_DECREF(a);
-
-    return (PyObject *)z;
-}
-
-/** \ingroup py_c
- * Compute x+y (modulo m).
- */
-static PyObject *
-rpmbc_Addm(/*@unused@*/ rpmbcObject * s, PyObject * args)
-        /*@*/
-{
-    PyObject * xo, * yo, * mo;
-    rpmbcObject * x = NULL;
-    rpmbcObject * y = NULL;
-    rpmbcObject * m = NULL;
-    rpmbcObject * z = NULL;
-    mpbarrett b;
-    size_t zsize;
-    mpw* zdata;
-    mpw* wksp;
-
-    if (!PyArg_ParseTuple(args, "OOO:Addm", &xo, &yo, &mo)) return NULL;
-
-    if ((x = rpmbc_i2bc(xo)) == NULL
-     || (y = rpmbc_i2bc(yo)) == NULL
-     || (m = rpmbc_i2bc(mo)) == NULL
-     || (z = rpmbc_New()) == NULL)
-    {
-	Py_XDECREF(x);
-	Py_XDECREF(y);
-	Py_XDECREF(m);
-	return NULL;
-    }
-
-    mpbzero(&b);
-    mpbset(&b, m->n.size, m->n.data);
-
-    zsize = b.size;
-    zdata = alloca(zsize * sizeof(*zdata));
-    wksp = alloca((4*zsize+2)*sizeof(*wksp));
-
-    mpbaddmod_w(&b, x->n.size, x->n.data, y->n.size, y->n.data, zdata, wksp);
-
-    mpnset(&z->n, zsize, zdata);
-    mpbfree(&b);
-
-if (_bc_debug < 0)
-fprintf(stderr, "*** rpmbc_Addm %p[%d]\t", z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
-}
-
-/** \ingroup py_c
- * Compute x-y (modulo m).
- */
-static PyObject *
-rpmbc_Subm(/*@unused@*/ rpmbcObject * s, PyObject * args)
-        /*@*/
-{
-    PyObject * xo, * yo, * mo;
-    rpmbcObject * x = NULL;
-    rpmbcObject * y = NULL;
-    rpmbcObject * m = NULL;
-    rpmbcObject * z = NULL;
-    mpbarrett b;
-    size_t zsize;
-    mpw* zdata;
-    mpw* wksp;
-
-    if (!PyArg_ParseTuple(args, "OOO:Subm", &xo, &yo, &mo)) return NULL;
-
-    if ((x = rpmbc_i2bc(xo)) == NULL
-     || (y = rpmbc_i2bc(yo)) == NULL
-     || (m = rpmbc_i2bc(mo)) == NULL
-     || (z = rpmbc_New()) == NULL)
-    {
-	Py_XDECREF(x);
-	Py_XDECREF(y);
-	Py_XDECREF(m);
-	return NULL;
-    }
-
-    mpbzero(&b);
-    mpbset(&b, m->n.size, m->n.data);
-
-    zsize = b.size;
-    zdata = alloca(zsize * sizeof(*zdata));
-    wksp = alloca((4*zsize+2)*sizeof(*wksp));
-
-    mpbsubmod_w(&b, x->n.size, x->n.data, y->n.size, y->n.data, zdata, wksp);
-
-    mpnset(&z->n, zsize, zdata);
-    mpbfree(&b);
-
-if (_bc_debug < 0)
-fprintf(stderr, "*** rpmbc_Subm %p[%d]\t", z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
-}
-
-/** \ingroup py_c
- * Compute x*y (modulo m).
- */
-static PyObject *
-rpmbc_Mulm(/*@unused@*/ rpmbcObject * s, PyObject * args)
-        /*@*/
-{
-    PyObject * xo, * yo, * mo;
-    rpmbcObject * x = NULL;
-    rpmbcObject * y = NULL;
-    rpmbcObject * m = NULL;
-    rpmbcObject * z = NULL;
-    mpbarrett b;
-    size_t zsize;
-    mpw* zdata;
-    mpw* wksp;
-
-    if (!PyArg_ParseTuple(args, "OOO:Mulm", &xo, &yo, &mo)) return NULL;
-
-    if ((x = rpmbc_i2bc(xo)) == NULL
-     || (y = rpmbc_i2bc(yo)) == NULL
-     || (m = rpmbc_i2bc(mo)) == NULL
-     || (z = rpmbc_New()) == NULL)
-    {
-	Py_XDECREF(x);
-	Py_XDECREF(y);
-	Py_XDECREF(m);
-	return NULL;
-    }
-
-    mpbzero(&b);
-    mpbset(&b, m->n.size, m->n.data);
-
-    zsize = b.size;
-    zdata = alloca(zsize * sizeof(*zdata));
-    wksp = alloca((4*zsize+2)*sizeof(*wksp));
-
-    mpbmulmod_w(&b, x->n.size, x->n.data, y->n.size, y->n.data, zdata, wksp);
-
-    mpnset(&z->n, zsize, zdata);
-    mpbfree(&b);
-
-if (_bc_debug < 0)
-fprintf(stderr, "*** rpmbc_Mulm %p[%d]\t", z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    if (!PyArg_ParseTuple(args, "OO:Gcd", &xo, &mo)) return NULL;
+    return rpmbc_ops2("Gcd", 'G', rpmbc_i2bc(xo), rpmbc_i2bc(mo));
 }
 
 /** \ingroup py_c
@@ -1216,89 +1307,78 @@ rpmbc_Invm(/*@unused@*/ rpmbcObject * s, PyObject * args)
         /*@*/
 {
     PyObject * xo, * mo;
-    rpmbcObject * x = NULL;
-    rpmbcObject * m = NULL;
-    rpmbcObject * z = NULL;
-    mpbarrett b;
-    size_t zsize;
-    mpw* zdata;
-    mpw* wksp;
 
     if (!PyArg_ParseTuple(args, "OO:Invm", &xo, &mo)) return NULL;
+    return rpmbc_ops2("Invm", 'I', rpmbc_i2bc(xo), rpmbc_i2bc(mo));
+}
 
-    if ((x = rpmbc_i2bc(xo)) == NULL
-     || (m = rpmbc_i2bc(mo)) == NULL
-     || (z = rpmbc_New()) == NULL)
-    {
-	Py_XDECREF(x);
-	Py_XDECREF(m);
-	return NULL;
-    }
+/** \ingroup py_c
+ * Compute x*x (modulo m).
+ */
+static PyObject *
+rpmbc_Sqrm(rpmbcObject * s, PyObject * args)
+        /*@*/
+{
+    PyObject * xo, * mo;
 
-    mpbzero(&b);
-    mpbset(&b, m->n.size, m->n.data);
+    if (!PyArg_ParseTuple(args, "OO:Sqrm", &xo, &mo)) return NULL;
+    return rpmbc_ops2("Sqrm", 'S', rpmbc_i2bc(xo), rpmbc_i2bc(mo));
+}
 
-    zsize = b.size;
-    zdata = alloca(zsize * sizeof(*zdata));
-    wksp = alloca(6*(zsize+1)*sizeof(*wksp));
+/** \ingroup py_c
+ * Compute x+y (modulo m).
+ */
+static PyObject *
+rpmbc_Addm(rpmbcObject * s, PyObject * args)
+        /*@*/
+{
+    PyObject * xo, * yo, * mo;
 
-    mpbinv_w(&b, x->n.size, x->n.data, zdata, wksp);
+    if (!PyArg_ParseTuple(args, "OOO:Addm", &xo, &yo, &mo)) return NULL;
+    return rpmbc_ops3("Addm", '+',
+		rpmbc_i2bc(xo), rpmbc_i2bc(yo), rpmbc_i2bc(mo));
+}
 
-    mpnset(&z->n, zsize, zdata);
-    mpbfree(&b);
+/** \ingroup py_c
+ * Compute x-y (modulo m).
+ */
+static PyObject *
+rpmbc_Subm(rpmbcObject * s, PyObject * args)
+        /*@*/
+{
+    PyObject * xo, * yo, * mo;
 
-if (_bc_debug < 0)
-fprintf(stderr, "*** rpmbc_Invm %p[%d]\t", z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+    if (!PyArg_ParseTuple(args, "OOO:Subm", &xo, &yo, &mo)) return NULL;
+    return rpmbc_ops3("Subm", '-',
+		rpmbc_i2bc(xo), rpmbc_i2bc(yo), rpmbc_i2bc(mo));
+}
 
-    return (PyObject *)z;
+/** \ingroup py_c
+ * Compute x*y (modulo m).
+ */
+static PyObject *
+rpmbc_Mulm(rpmbcObject * s, PyObject * args)
+        /*@*/
+{
+    PyObject * xo, * yo, * mo;
+
+    if (!PyArg_ParseTuple(args, "OOO:Mulm", &xo, &yo, &mo)) return NULL;
+    return rpmbc_ops3("Mulm", '*',
+		rpmbc_i2bc(xo), rpmbc_i2bc(yo), rpmbc_i2bc(mo));
 }
 
 /** \ingroup py_c
  * Compute x**y (modulo m).
  */
 static PyObject *
-rpmbc_Powm(/*@unused@*/ rpmbcObject * s, PyObject * args)
+rpmbc_Powm(rpmbcObject * s, PyObject * args)
         /*@*/
 {
     PyObject * xo, * yo, * mo;
-    rpmbcObject * x = NULL;
-    rpmbcObject * y = NULL;
-    rpmbcObject * m = NULL;
-    rpmbcObject * z = NULL;
-    mpbarrett b;
-    size_t zsize;
-    mpw* zdata;
-    mpw* wksp;
 
     if (!PyArg_ParseTuple(args, "OOO:Powm", &xo, &yo, &mo)) return NULL;
-
-    if ((x = rpmbc_i2bc(xo)) == NULL
-     || (y = rpmbc_i2bc(yo)) == NULL
-     || (m = rpmbc_i2bc(mo)) == NULL
-     || (z = rpmbc_New()) == NULL)
-    {
-	Py_XDECREF(x);
-	Py_XDECREF(y);
-	Py_XDECREF(m);
-	return NULL;
-    }
-
-    mpbzero(&b);
-    mpbset(&b, m->n.size, m->n.data);
-
-    zsize = b.size;
-    zdata = alloca(zsize * sizeof(*zdata));
-    wksp = alloca((4*zsize+2)*sizeof(*wksp));
-
-    mpbpowmod_w(&b, x->n.size, x->n.data, y->n.size, y->n.data, zdata, wksp);
-
-    mpnset(&z->n, zsize, zdata);
-    mpbfree(&b);
-
-if (_bc_debug < 0)
-fprintf(stderr, "*** rpmbc_Powm %p[%d]\t", z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    return rpmbc_ops3("Powm", 'P',
+		rpmbc_i2bc(xo), rpmbc_i2bc(yo), rpmbc_i2bc(mo));
 }
 
 /*@-fullinitblock@*/
@@ -1308,15 +1388,15 @@ static struct PyMethodDef rpmbc_methods[] = {
 	NULL},
  {"gcd",	(PyCFunction)rpmbc_Gcd,		METH_VARARGS,
 	NULL},
- {"sqrt",	(PyCFunction)rpmbc_Sqrt,	METH_VARARGS,
+ {"invm",	(PyCFunction)rpmbc_Invm,	METH_VARARGS,
+	NULL},
+ {"sqrm",	(PyCFunction)rpmbc_Sqrm,	METH_VARARGS,
 	NULL},
  {"addm",	(PyCFunction)rpmbc_Addm,	METH_VARARGS,
 	NULL},
  {"subm",	(PyCFunction)rpmbc_Subm,	METH_VARARGS,
 	NULL},
  {"mulm",	(PyCFunction)rpmbc_Mulm,	METH_VARARGS,
-	NULL},
- {"invm",	(PyCFunction)rpmbc_Invm,	METH_VARARGS,
 	NULL},
  {"powm",	(PyCFunction)rpmbc_Powm,	METH_VARARGS,
 	NULL},
@@ -1337,152 +1417,44 @@ static PyObject *
 rpmbc_add(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-    int carry;
-
-    if ((z = rpmbc_New()) != NULL) {
-	mpninit(&z->n, a->n.size, a->n.data);
-	carry = mpaddx(z->n.size, z->n.data, b->n.size, b->n.data);
-    }
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_add(%p,%p):\t", a, b), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("add", '+', a, b);
 }
 
 static PyObject *
 rpmbc_subtract(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-    int carry;
-
-    if ((z = rpmbc_New()) != NULL) {
-	mpninit(&z->n, a->n.size, a->n.data);
-	carry = mpsubx(z->n.size, z->n.data, b->n.size, b->n.data);
-    }
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_subtract(%p,%p):\t", a, b), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("sub", '-', a, b);
 }
 
 static PyObject *
 rpmbc_multiply(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    if ((z = rpmbc_New()) != NULL) {
-	size_t zsize = a->n.size + b->n.size;
-	mpw* zdata = alloca(zsize * sizeof(*zdata));
-	size_t znorm;
-
-	mpmul(zdata, a->n.size, a->n.data, b->n.size, b->n.data);
-	znorm = zsize - (mpbitcnt(zsize, zdata) + 31)/32;
-	zsize -= znorm;
-	zdata += znorm;
-	mpnset(&z->n, zsize, zdata);
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_multiply(%p,%p):\t", a, b), mpprintln(stderr, z->n.size, z->n.data);
-    }
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("mul", '*', a, b);
 }
 
 static PyObject *
 rpmbc_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-
     if (mpz(b->n.size, b->n.data)) {
 	PyErr_SetString(PyExc_ZeroDivisionError, "rpmbc_divide by zero");
 	return NULL;
     }
-
-    if ((z = rpmbc_New()) != NULL) {
-	size_t asize = a->n.size;
-	mpw* adata = a->n.data;
-	size_t anorm = asize - (mpbitcnt(asize, adata) + 31)/32;
-	size_t bsize = b->n.size;
-	mpw* bdata = b->n.data;
-	size_t bnorm = bsize - (mpbitcnt(bsize, bdata) + 31)/32;
-	size_t zsize;
-	mpw* zdata;
-	size_t znorm;
-	mpw* wksp;
-
-if (_bc_debug < 0)
-fprintf(stderr, "*** a %p[%d]\t", adata, asize), mpprintln(stderr, asize, adata);
-if (_bc_debug < 0)
-fprintf(stderr, "*** b %p[%d]\t", adata, asize), mpprintln(stderr, bsize, bdata);
-	if (anorm < asize) {
-	    asize -= anorm;
-	    adata += anorm;
-	}
-	zsize = asize + 1;
-	zdata = alloca(zsize * sizeof(*zdata));
-	if (bnorm < bsize) {
-	    bsize -= bnorm;
-	    bdata += bnorm;
-	}
-	wksp = alloca((bsize+1) * sizeof(*wksp));
-
-if (_bc_debug < 0)
-fprintf(stderr, "*** a %p[%d]\t", adata, asize), mpprintln(stderr, asize, adata);
-if (_bc_debug < 0)
-fprintf(stderr, "*** b %p[%d]\t", adata, asize), mpprintln(stderr, bsize, bdata);
-	myndivmod(zdata, asize, adata, bsize, bdata, wksp);
-if (_bc_debug < 0)
-fprintf(stderr, "*** z %p[%d]\t", zdata, zsize), mpprintln(stderr, zsize, zdata);
-	zsize -= bsize;
-	znorm = mpsize(zsize, zdata);
-	if (znorm < zsize) {
-	    zsize -= znorm;
-	    zdata += znorm;
-	}
-if (_bc_debug < 0)
-fprintf(stderr, "*** z %p[%d]\t", zdata, zsize), mpprintln(stderr, zsize, zdata);
-	mpnset(&z->n, zsize, zdata);
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_divide(%p,%p):\t", a, b), mpprintln(stderr, z->n.size, z->n.data);
-    }
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("div", '/', a, b);
 }
 
 static PyObject *
 rpmbc_remainder(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    if ((z = rpmbc_New()) != NULL) {
-	size_t bsize = b->n.size;
-	mpw* bdata = b->n.data;
-	size_t bnorm = mpsize(bsize, bdata);
-	size_t zsize = a->n.size;
-	mpw* zdata = alloca(zsize * sizeof(*zdata));
-	mpw* wksp;
-
-	if (bnorm < bsize) {
-	    bsize -= bnorm;
-	    bdata += bnorm;
-	}
-	wksp = alloca((bsize+1) * sizeof(*wksp));
-
-	mpnmod(zdata, a->n.size, a->n.data, bsize, bdata, wksp);
-	mpnset(&z->n, zsize, zdata);
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_remainder(%p,%p):\t", a, b), mpprintln(stderr, z->n.size, z->n.data);
-    }
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("rem", '%', a, b);
 }
 
 static PyObject *
@@ -1531,8 +1503,11 @@ rpmbc_divmod(rpmbcObject * a, rpmbcObject * b)
 
     mpndivmod(zdata, asize, adata, bsize, bdata, wksp);
 
-if (_bc_debug < 0)
-fprintf(stderr, "*** a %p[%d] b %p[%d] z %p[%d]\t", adata, asize, bdata, bsize, zdata, zsize), mpprintln(stderr, zsize, zdata);
+if (_bc_debug < 0) {
+fprintf(stderr, "    a %p[%d]:\t", adata, asize), mpprintln(stderr, asize, adata);
+fprintf(stderr, "    b %p[%d]:\t", bdata, bsize), mpprintln(stderr, bsize, bdata);
+fprintf(stderr, "    z %p[%d]:\t", zdata, zsize), mpprintln(stderr, zsize, zdata);
+}
 
     zsize -= bsize;
     mpnset(&r->n, bsize, zdata+zsize);
@@ -1545,9 +1520,9 @@ fprintf(stderr, "*** a %p[%d] b %p[%d] z %p[%d]\t", adata, asize, bdata, bsize, 
     mpnset(&q->n, zsize, zdata);
 
 if (_bc_debug) {
+fprintf(stderr, "    q %p[%d]:\t", q->n.data, q->n.size), mpprintln(stderr, q->n.size, q->n.data);
+fprintf(stderr, "    r %p[%d]:\t", r->n.data, r->n.size), mpprintln(stderr, r->n.size, r->n.data);
 fprintf(stderr, "*** rpmbc_divmod(%p,%p)\n", a, b);
-fprintf(stderr, "    q(%p):\t", q), mpprintln(stderr, q->n.size, q->n.data);
-fprintf(stderr, "    r(%p):\t", r), mpprintln(stderr, r->n.size, r->n.data);
 }
 
     (void) PyTuple_SetItem(z, 0, (PyObject *)q);
@@ -1559,35 +1534,22 @@ static PyObject *
 rpmbc_power(rpmbcObject * a, rpmbcObject * b, rpmbcObject * c)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    if ((z = rpmbc_New()) != NULL) {
-
-	mpnpow_w(&z->n, a->n.size, a->n.data, b->n.size, b->n.data);
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_power(%p,%p,%p):\t", a, b, c), mpprintln(stderr, z->n.size, z->n.data);
-
-    }
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+#ifdef	NOTYET
+    if (c != NULL) {
+	Py_INCREF(c);
+	return rpmbc_ops3("Powm", 'P', a, b, c);
+    } else
+#endif
+	return rpmbc_ops2("pow", 'P', a, b);
 }
 
 static PyObject *
 rpmbc_negative(rpmbcObject * a)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    if ((z = rpmbc_New()) != NULL) {
-	mpninit(&z->n, a->n.size, a->n.data);
-	mpneg(z->n.size, z->n.data);
-    }
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_negative(%p):\t", a), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    Py_INCREF(a);
+    return rpmbc_ops1("neg", '-', a);
 }
 
 static PyObject *
@@ -1637,147 +1599,48 @@ static PyObject *
 rpmbc_invert(rpmbcObject * a)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    if ((z = rpmbc_New()) != NULL) {
-	mpninit(&z->n, a->n.size, a->n.data);
-	mpnot(z->n.size, z->n.data);
-    }
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_invert(%p):\t", a), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    Py_INCREF(a);
+    return rpmbc_ops1("not", '~', a);
 }
 
 static PyObject *
 rpmbc_lshift(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    /* XXX check shift count in range. */
-    if ((z = rpmbc_New()) != NULL) {
-	size_t bnorm = b->n.size - (mpbitcnt(b->n.size, b->n.data) + 31)/32;
-	size_t bsize = b->n.size - bnorm;
-	mpw* bdata = b->n.data + bnorm;
-	size_t count = 0;
-
-	if (bsize == 1)
-	    count = bdata[0];
-	mpninit(&z->n, a->n.size, a->n.data);
-	mplshift(z->n.size, z->n.data, count);
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_lshift(%p[%s],%p[%s]):\t", a, lbl(a), b, lbl(b)), mpprintln(stderr, z->n.size, z->n.data);
-
-    }
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("lshift", '<', a, b);
 }
 
 static PyObject *
 rpmbc_rshift(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    /* XXX check shift count in range. */
-    if ((z = rpmbc_New()) != NULL) {
-	size_t bnorm = b->n.size - (mpbitcnt(b->n.size, b->n.data) + 31)/32;
-	size_t bsize = b->n.size - bnorm;
-	mpw* bdata = b->n.data + bnorm;
-	size_t count = 0;
-
-	if (bsize == 1)
-	    count = bdata[0];
-	mpninit(&z->n, a->n.size, a->n.data);
-	mprshift(z->n.size, z->n.data, count);
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_rshift(%p[%s],%p[%s]):\t", a, lbl(a), b, lbl(b)), mpprintln(stderr, z->n.size, z->n.data);
-
-    }
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("rshift", '>', a, b);
 }
 
 static PyObject *
 rpmbc_and(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    if ((z = rpmbc_New()) != NULL) {
-	rpmbcObject * c, * d;
-
-	if (a->n.size <= b->n.size) {
-	    c = a;
-	    d = b;
-	} else {
-	    c = b;
-	    d = a;
-	}
-	mpninit(&z->n, c->n.size, c->n.data);
-	mpand(z->n.size, z->n.data, d->n.data + (d->n.size - c->n.size));
-    }
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_and(%p,%p):\t", a, b), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("and", '&', a, b);
 }
 
 static PyObject *
 rpmbc_xor(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    if ((z = rpmbc_New()) != NULL) {
-	rpmbcObject * c, * d;
-
-	if (a->n.size <= b->n.size) {
-	    c = a;
-	    d = b;
-	} else {
-	    c = b;
-	    d = a;
-	}
-	mpninit(&z->n, c->n.size, c->n.data);
-	mpxor(z->n.size, z->n.data, d->n.data + (d->n.size - c->n.size));
-    }
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_xor(%p,%p):\t", a, b), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("xor", '^', a, b);
 }
 
 static PyObject *
 rpmbc_or(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    rpmbcObject * z;
-
-    if ((z = rpmbc_New()) != NULL) {
-	rpmbcObject * c, * d;
-
-	if (a->n.size <= b->n.size) {
-	    c = a;
-	    d = b;
-	} else {
-	    c = b;
-	    d = a;
-	}
-	mpninit(&z->n, c->n.size, c->n.data);
-	mpor(z->n.size, z->n.data, d->n.data + (d->n.size - c->n.size));
-    }
-
-if (_bc_debug)
-fprintf(stderr, "*** rpmbc_or(%p,%p):\t", a, b), mpprintln(stderr, z->n.size, z->n.data);
-
-    return (PyObject *)z;
+    Py_INCREF(a); Py_INCREF(b);
+    return rpmbc_ops2("or", '|', a, b);
 }
 
 static int
