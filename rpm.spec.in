@@ -15,7 +15,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.35
+Release: 0.36
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -28,12 +28,6 @@ Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
 BuildRequires: elfutils-libelf
-
-# XXX /dev/futex kernel support needed:
-Conflicts: kernel < 2.4.20
-
-# XXX NPTL glibc support needed:
-Requires: glibc >= 2.3.1-16nptl
 
 BuildRequires: zlib-devel
 
@@ -461,6 +455,14 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Dec 23 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.36
+- add matching "config(N) = EVR"  dependencies iff %%config is found.
+
+* Sun Dec 22 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.35
+- fix: remove rpmfi scareMem so that headers can be reloaded on ia64.
+- fix: set DB_PRIVATE, not DB_ENV_PRIVATE, if unshared posix mutexes.
+- remove useless (and now unnecessary) kernel/glibc dependencies (#79872).
+
 * Sat Dec 21 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.34
 - add --enable-posixmutexes when configuring on linux.
 - add rpmdb_{deadlock,dump,load,svc,stat,verify} utilities.

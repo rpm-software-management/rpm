@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-23 15:42-0500\n"
+"POT-Creation-Date: 2002-12-24 02:13-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -584,59 +584,59 @@ msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1523
+#: build/files.c:1527
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:1547
+#: build/files.c:1551
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1747
+#: build/files.c:1751
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: build/files.c:1771
+#: build/files.c:1775
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: build/files.c:1788 lib/rpminstall.c:343
+#: build/files.c:1792 lib/rpminstall.c:343
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1848
+#: build/files.c:1852
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
 # , c-format
-#: build/files.c:1859 build/pack.c:156
+#: build/files.c:1863 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/files.c:2246
+#: build/files.c:2250
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:2258 build/parsePrep.c:50
+#: build/files.c:2262 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2302
+#: build/files.c:2306
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: build/files.c:2323
+#: build/files.c:2327
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -644,7 +644,7 @@ msgid ""
 msgstr ""
 
 # , c-format
-#: build/files.c:2351
+#: build/files.c:2355
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -791,58 +791,58 @@ msgid "Unable to reload signature header.\n"
 msgstr "Nicht möglich %s zu schreiben"
 
 # , c-format
-#: build/pack.c:599
+#: build/pack.c:596
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/pack.c:635 lib/psm.c:1841
+#: build/pack.c:632 lib/psm.c:1841
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
 # , c-format
-#: build/pack.c:650
+#: build/pack.c:647
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
 # , c-format
-#: build/pack.c:661
+#: build/pack.c:658
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
 # , c-format
-#: build/pack.c:675
+#: build/pack.c:672
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
 # , c-format
-#: build/pack.c:685
+#: build/pack.c:682
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
 # , c-format
-#: build/pack.c:691
+#: build/pack.c:688
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:716 lib/psm.c:2146
+#: build/pack.c:725 lib/psm.c:2146
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:789
+#: build/pack.c:798
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:806
+#: build/pack.c:815
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
@@ -992,7 +992,7 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:426
+#: build/parsePreamble.c:588 build/parseSpec.c:427
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
@@ -1169,49 +1169,49 @@ msgid "line %d: Second %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/parseSpec.c:160
+#: build/parseSpec.c:161
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
 #. XXX Fstrerror
-#: build/parseSpec.c:212
+#: build/parseSpec.c:213
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
-#: build/parseSpec.c:228
+#: build/parseSpec.c:229
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:300
+#: build/parseSpec.c:301
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#: build/parseSpec.c:309
+#: build/parseSpec.c:310
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:321
+#: build/parseSpec.c:322
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:335 build/parseSpec.c:344
+#: build/parseSpec.c:336 build/parseSpec.c:345
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:544
+#: build/parseSpec.c:546
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: build/parseSpec.c:602
+#: build/parseSpec.c:607
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
@@ -1402,27 +1402,27 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: build/spec.c:234
+#: build/spec.c:237
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/spec.c:240
+#: build/spec.c:243
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/spec.c:303
+#: build/spec.c:306
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/spec.c:639
+#: build/spec.c:642
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: build/spec.c:714
+#: build/spec.c:718
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
@@ -3330,25 +3330,30 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "verified db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1069
+#: rpmdb/db3.c:968
+#, c-format
+msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgstr ""
+
+#: rpmdb/db3.c:1071
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1306
+#: rpmdb/db3.c:1308
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 msgid "shared"
 msgstr "geteilt"
 
-#: rpmdb/db3.c:1312
+#: rpmdb/db3.c:1314
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"

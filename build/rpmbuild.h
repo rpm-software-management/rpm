@@ -476,12 +476,13 @@ int parseSpec(rpmts ts, const char * specFile,
 
 /** \ingroup rpmbuild
  * Build stages state machine driver.
+ * @param ts		transaction set
  * @param spec		spec file control structure
  * @param what		bit(s) to enable stages of build
  * @param test		don't execute scripts or package if testing
  * @return		0 on success
  */
-int buildSpec(Spec spec, int what, int test)
+int buildSpec(rpmts ts, Spec spec, int what, int test)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
 		spec->sourceRpmName, spec->sourcePkgId,

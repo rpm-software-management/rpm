@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-23 15:42-0500\n"
+"POT-Creation-Date: 2002-12-24 02:13-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -520,64 +520,64 @@ msgstr "Dosya iki kere gösterildi: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bað BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1523
+#: build/files.c:1527
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1547
+#: build/files.c:1551
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1747
+#: build/files.c:1751
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:1771
+#: build/files.c:1775
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
 
-#: build/files.c:1788 lib/rpminstall.c:343
+#: build/files.c:1792 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
 
-#: build/files.c:1848
+#: build/files.c:1852
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 
-#: build/files.c:1859 build/pack.c:156
+#: build/files.c:1863 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
 
-#: build/files.c:2246
+#: build/files.c:2250
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalý: %s: %s\n"
 
-#: build/files.c:2258 build/parsePrep.c:50
+#: build/files.c:2262 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
 
-#: build/files.c:2302
+#: build/files.c:2306
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "arþiv paketi açýlýrken baþarýsýz%s%s: %s\n"
 
-#: build/files.c:2323
+#: build/files.c:2327
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2351
+#: build/files.c:2355
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Ýþlenen dosyalar: %s-%s-%s\n"
@@ -715,52 +715,52 @@ msgstr "Ýmza üretiliyor: %d\n"
 msgid "Unable to reload signature header.\n"
 msgstr "%s'den baþlýk okunamadý: %s\n"
 
-#: build/pack.c:599
+#: build/pack.c:596
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: build/pack.c:635 lib/psm.c:1841
+#: build/pack.c:632 lib/psm.c:1841
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "paket yazýlamadý: %s\n"
 
-#: build/pack.c:650
+#: build/pack.c:647
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s açýlamadý: %s\n"
 
-#: build/pack.c:661
+#: build/pack.c:658
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s'den baþlýk okunamadý: %s\n"
 
-#: build/pack.c:675
+#: build/pack.c:672
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s'e baþlýk yazýlamadý: %s\n"
 
-#: build/pack.c:685
+#: build/pack.c:682
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s'den payload okunamadý: %s\n"
 
-#: build/pack.c:691
+#: build/pack.c:688
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s'e payload yazýlamadý: %s\n"
 
-#: build/pack.c:716 lib/psm.c:2146
+#: build/pack.c:725 lib/psm.c:2146
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Yazýldý: %s\n"
 
-#: build/pack.c:789
+#: build/pack.c:798
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "%s paket dosyasý için çýktý dosya adý üretilemedi: %s\n"
 
-#: build/pack.c:806
+#: build/pack.c:815
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s dosyasý oluþturulamýyor: %s\n"
@@ -901,7 +901,7 @@ msgstr "satýr %d: Etiket boþ: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:426
+#: build/parsePreamble.c:588 build/parseSpec.c:427
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
@@ -1067,47 +1067,47 @@ msgstr "satýr %d: betik programý '/' ile baþlamalý: %s\n"
 msgid "line %d: Second %s\n"
 msgstr "satýr %d: %s saniye\n"
 
-#: build/parseSpec.c:160
+#: build/parseSpec.c:161
 #, c-format
 msgid "line %d: %s\n"
 msgstr "satýr %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:212
+#: build/parseSpec.c:213
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: build/parseSpec.c:228
+#: build/parseSpec.c:229
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if kapanmamýþ\n"
 
-#: build/parseSpec.c:300
+#: build/parseSpec.c:301
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean %d ile döner\n"
 
-#: build/parseSpec.c:309
+#: build/parseSpec.c:310
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%if'siz bir  %%else alýndý\n"
 
-#: build/parseSpec.c:321
+#: build/parseSpec.c:322
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%if'siz bir %%endif alýndý\n"
 
-#: build/parseSpec.c:335 build/parseSpec.c:344
+#: build/parseSpec.c:336 build/parseSpec.c:345
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "%%include deyimi bozuk\n"
 
-#: build/parseSpec.c:544
+#: build/parseSpec.c:546
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:602
+#: build/parseSpec.c:607
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -1292,27 +1292,27 @@ msgstr "hedef platforma zorlar"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "spec dosyasýndaki i18n iletilerine bakar"
 
-#: build/spec.c:234
+#: build/spec.c:237
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "satýr %d: Numara hatalý: %s\n"
 
-#: build/spec.c:240
+#: build/spec.c:243
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "satýr %d: Hatalý no%s numarasý: %d\n"
 
-#: build/spec.c:303
+#: build/spec.c:306
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "satýr %d: Hatalý %s numarasý: %s\n"
 
-#: build/spec.c:639
+#: build/spec.c:642
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s sorgulanamýyor: %s\n"
 
-#: build/spec.c:714
+#: build/spec.c:718
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s spec dosyasýnýn sorgulanmasý baþarýsýz, çözümlenemiyor\n"
@@ -3152,25 +3152,30 @@ msgstr "kapandý      db endeks %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "doðrulandý    db endeks %s/%s\n"
 
-#: rpmdb/db3.c:1069
+#: rpmdb/db3.c:968
+#, c-format
+msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgstr ""
+
+#: rpmdb/db3.c:1071
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1306
+#: rpmdb/db3.c:1308
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 msgid "exclusive"
 msgstr "baðdaþýk"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 msgid "shared"
 msgstr "paylaþýmlý"
 
-#: rpmdb/db3.c:1312
+#: rpmdb/db3.c:1314
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"

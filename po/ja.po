@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-23 15:42-0500\n"
+"POT-Creation-Date: 2002-12-24 02:13-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -540,64 +540,64 @@ msgstr "ファイルが2回表記されています: %s"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1523
+#: build/files.c:1527
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:1547
+#: build/files.c:1551
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1747
+#: build/files.c:1751
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1771
+#: build/files.c:1775
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "%d 行目: バージョンは許可されていません: %s"
 
-#: build/files.c:1788 lib/rpminstall.c:343
+#: build/files.c:1792 lib/rpminstall.c:343
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1848
+#: build/files.c:1852
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1859 build/pack.c:156
+#: build/files.c:1863 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "行目: %s"
 
-#: build/files.c:2246
+#: build/files.c:2250
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:2258 build/parsePrep.c:50
+#: build/files.c:2262 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:2302
+#: build/files.c:2306
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "パッケージ %s の探索中\n"
 
-#: build/files.c:2323
+#: build/files.c:2327
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2351
+#: build/files.c:2355
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -736,52 +736,52 @@ msgstr "署名の生成中: %d\n"
 msgid "Unable to reload signature header.\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:599
+#: build/pack.c:596
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:635 lib/psm.c:1841
+#: build/pack.c:632 lib/psm.c:1841
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:650
+#: build/pack.c:647
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:661
+#: build/pack.c:658
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:675
+#: build/pack.c:672
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:685
+#: build/pack.c:682
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:691
+#: build/pack.c:688
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:716 lib/psm.c:2146
+#: build/pack.c:725 lib/psm.c:2146
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:789
+#: build/pack.c:798
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:806
+#: build/pack.c:815
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -922,7 +922,7 @@ msgstr "%d 行目: 空のタグ: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:426
+#: build/parsePreamble.c:588 build/parseSpec.c:427
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
@@ -1089,48 +1089,48 @@ msgstr "%d 行目: スクリプトプログラムは '/' で始まらなければなりません: %s"
 msgid "line %d: Second %s\n"
 msgstr "%d 行目: 2番目の %s"
 
-#: build/parseSpec.c:160
+#: build/parseSpec.c:161
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "%d 行目: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:212
+#: build/parseSpec.c:213
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "オープンできません: %s\n"
 
-#: build/parseSpec.c:228
+#: build/parseSpec.c:229
 #, fuzzy, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if が閉じていません"
 
-#: build/parseSpec.c:300
+#: build/parseSpec.c:301
 #, fuzzy, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s%d: parseExpressionBoolean が %d を返しました"
 
-#: build/parseSpec.c:309
+#: build/parseSpec.c:310
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: if がないのに %%else があります"
 
-#: build/parseSpec.c:321
+#: build/parseSpec.c:322
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: if がないのに %%endif があります"
 
-#: build/parseSpec.c:335 build/parseSpec.c:344
+#: build/parseSpec.c:336 build/parseSpec.c:345
 #, fuzzy, c-format
 msgid "malformed %%include statement\n"
 msgstr "おかしな %%include ステートメントです"
 
-#: build/parseSpec.c:544
+#: build/parseSpec.c:546
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "作成(build)可能なアーキテクチャはありません"
 
-#: build/parseSpec.c:602
+#: build/parseSpec.c:607
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "パッケージには %%description がありません: %s"
@@ -1320,27 +1320,27 @@ msgstr "ターゲットプラットフォームを上書きします"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "スペックファイルカタログ中の I18N 文字列を探しています"
 
-#: build/spec.c:234
+#: build/spec.c:237
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "%d 行目: 不正な番号: %s"
 
-#: build/spec.c:240
+#: build/spec.c:243
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "%d 行目: 不正な no%s 番号: %d"
 
-#: build/spec.c:303
+#: build/spec.c:306
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "%d 行目: 不正な %s 番号: %s\n"
 
-#: build/spec.c:639
+#: build/spec.c:642
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: build/spec.c:714
+#: build/spec.c:718
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
@@ -3244,25 +3244,30 @@ msgstr "%s 用の file インデックスを削除します\n"
 msgid "verified db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:1069
+#: rpmdb/db3.c:968
+#, c-format
+msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgstr ""
+
+#: rpmdb/db3.c:1071
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: rpmdb/db3.c:1306
+#: rpmdb/db3.c:1308
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 msgid "exclusive"
 msgstr "除外"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/db3.c:1312
+#: rpmdb/db3.c:1314
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"

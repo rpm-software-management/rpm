@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-12-23 15:42-0500\n"
+"POT-Creation-Date: 2002-12-24 02:13-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -517,64 +517,64 @@ msgstr "Ficheiro listado duas vezes: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "A 'symlink' aponta para a BuildRoot: %s -> %s\n"
 
-#: build/files.c:1523
+#: build/files.c:1527
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "O ficheiro não corresponde ao prefixo (%s): %s\n"
 
-#: build/files.c:1547
+#: build/files.c:1551
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Ficheiro não encontrado: %s\n"
 
-#: build/files.c:1747
+#: build/files.c:1751
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "O ficheiro precisa de começar por \"/\": %s\n"
 
-#: build/files.c:1771
+#: build/files.c:1775
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob não permitido: %s\n"
 
-#: build/files.c:1788 lib/rpminstall.c:343
+#: build/files.c:1792 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Ficheiro não encontrado pelo glob: %s\n"
 
-#: build/files.c:1848
+#: build/files.c:1852
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Não consegui abrir o ficheiro do %%files %s: %s\n"
 
-#: build/files.c:1859 build/pack.c:156
+#: build/files.c:1863 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linha: %s\n"
 
-#: build/files.c:2246
+#: build/files.c:2250
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ficheiro inválido: %s: %s\n"
 
-#: build/files.c:2258 build/parsePrep.c:50
+#: build/files.c:2262 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Dono/grupo inválido: %s\n"
 
-#: build/files.c:2302
+#: build/files.c:2306
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "a abertura do pacote falhou%s%s: %s\n"
 
-#: build/files.c:2323
+#: build/files.c:2327
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2351
+#: build/files.c:2355
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "A processar os ficheiros: %s-%s-%s\n"
@@ -710,52 +710,52 @@ msgstr "A gerar a assinatura: %d\n"
 msgid "Unable to reload signature header.\n"
 msgstr "Não consegui reler o cabeçalho do assinatura.\n"
 
-#: build/pack.c:599
+#: build/pack.c:596
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Não consigo aceder ao %s: %s\n"
 
-#: build/pack.c:635 lib/psm.c:1841
+#: build/pack.c:632 lib/psm.c:1841
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Não consegui gravar o pacote: %s\n"
 
-#: build/pack.c:650
+#: build/pack.c:647
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Não consegui abrir o sigtarget %s: %s\n"
 
-#: build/pack.c:661
+#: build/pack.c:658
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:675
+#: build/pack.c:672
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
-#: build/pack.c:685
+#: build/pack.c:682
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Não consegui ler o conteúdo de %s: %s\n"
 
-#: build/pack.c:691
+#: build/pack.c:688
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Não consegui escrever o conteúdo de %s: %s\n"
 
-#: build/pack.c:716 lib/psm.c:2146
+#: build/pack.c:725 lib/psm.c:2146
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravei: %s\n"
 
-#: build/pack.c:789
+#: build/pack.c:798
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Não consigo gerar o ficheiro de saída para o pacote %s: %s\n"
 
-#: build/pack.c:806
+#: build/pack.c:815
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "não consigo criar o %s: %s\n"
@@ -896,7 +896,7 @@ msgstr "linha %d: Opção em branco: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linha %d: Carácter '-' ilegal no %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:426
+#: build/parsePreamble.c:588 build/parseSpec.c:427
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "O BuildRoot não pode ser o \"/\": %s\n"
@@ -1062,47 +1062,47 @@ msgstr "linha %d: o programa de 'script' tem de começar por '/': %s\n"
 msgid "line %d: Second %s\n"
 msgstr "linha %d: Segundo %s\n"
 
-#: build/parseSpec.c:160
+#: build/parseSpec.c:161
 #, c-format
 msgid "line %d: %s\n"
 msgstr "linha %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:212
+#: build/parseSpec.c:213
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Incapaz de aceder ao %s: %s\n"
 
-#: build/parseSpec.c:228
+#: build/parseSpec.c:229
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if não fechado\n"
 
-#: build/parseSpec.c:300
+#: build/parseSpec.c:301
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: o parseExpressionBoolean devolve %d\n"
 
-#: build/parseSpec.c:309
+#: build/parseSpec.c:310
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Descobri um %%else sem um %%if\n"
 
-#: build/parseSpec.c:321
+#: build/parseSpec.c:322
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Descobri um %%endif sem um %%if\n"
 
-#: build/parseSpec.c:335 build/parseSpec.c:344
+#: build/parseSpec.c:336 build/parseSpec.c:345
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "instrução %%include desorganizada\n"
 
-#: build/parseSpec.c:544
+#: build/parseSpec.c:546
 msgid "No compatible architectures found for build\n"
 msgstr "Não foram encontradas arquitecturas compatíveis para as quais criar\n"
 
-#: build/parseSpec.c:602
+#: build/parseSpec.c:607
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "O pacote não tem uma %%description: %s\n"
@@ -1280,27 +1280,27 @@ msgstr "ignorar a plataforma-alvo"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "procurar as mensagens de i18N no catálogo do ficheiro spec"
 
-#: build/spec.c:234
+#: build/spec.c:237
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "linha %d: Número inválido: %s\n"
 
-#: build/spec.c:240
+#: build/spec.c:243
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "linha %d: Número no%s inválido: %d\n"
 
-#: build/spec.c:303
+#: build/spec.c:306
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "linha %d: Número %s inválido: %s\n"
 
-#: build/spec.c:639
+#: build/spec.c:642
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "não consigo pesquisar o %s: %s\n"
 
-#: build/spec.c:714
+#: build/spec.c:718
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "a pesquisa do ficheiro spec %s falhou, não consigo analisar\n"
@@ -3140,25 +3140,30 @@ msgstr "fechei o índice do db   %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "verifiquei o índice do db %s/%s\n"
 
-#: rpmdb/db3.c:1069
+#: rpmdb/db3.c:968
+#, c-format
+msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgstr ""
+
+#: rpmdb/db3.c:1071
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "a abrir o índice do db  %s/%s %s modo=0x%x\n"
 
-#: rpmdb/db3.c:1306
+#: rpmdb/db3.c:1308
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "não consigo trancar o %s no %s/%s\n"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 msgid "shared"
 msgstr "partilhado"
 
-#: rpmdb/db3.c:1312
+#: rpmdb/db3.c:1314
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "tranquei o índice do db %s/%s\n"

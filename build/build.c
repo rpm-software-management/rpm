@@ -270,7 +270,7 @@ fprintf(stderr, "*** delMacros\n");
     return rc;
 }
 
-int buildSpec(Spec spec, int what, int test)
+int buildSpec(rpmts ts, Spec spec, int what, int test)
 {
     int rc = 0;
 
@@ -281,7 +281,7 @@ int buildSpec(Spec spec, int what, int test)
 	if (spec->BASpecs != NULL)
 	for (x = 0; x < spec->BACount; x++) {
 /*@-boundsread@*/
-	    if ((rc = buildSpec(spec->BASpecs[x],
+	    if ((rc = buildSpec(ts, spec->BASpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
 				test))) {

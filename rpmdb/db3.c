@@ -962,8 +962,10 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
 #if HAVE_LIBPTHREAD
 	/* Set DB_PRIVATE if posix mutexes are not shared. */
-	if (db3_pthread_nptl()) {
+	xx = db3_pthread_nptl();
+	if (xx) {
 	    dbi->dbi_eflags |= DB_PRIVATE;
+	    rpmMessage(RPMMESS_DEBUG, _("unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"), xx);
 	}
 #endif
 

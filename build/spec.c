@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "buildio.h"
+#include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmts.h"
 
@@ -113,6 +114,7 @@ Package newPackage(Spec spec)
     p = xcalloc(1, sizeof(*p));
 
     p->header = headerNew();
+    p->ds = NULL;
     p->icon = NULL;
 
     p->autoProv = 1;
@@ -163,6 +165,7 @@ Package freePackage(Package pkg)
     pkg->verifyFile = _free(pkg->verifyFile);
 
     pkg->header = headerFree(pkg->header);
+    pkg->ds = rpmdsFree(pkg->ds);
     pkg->fileList = freeStringBuf(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList) {

@@ -70,6 +70,10 @@
 	- add %check scriptlet to run after %install (#64137).
 	- simplify specfile query linkage loop.
 	- drill rpmts into parseSpec(), carrying Spec along.
+	- fix: remove rpmfi scareMem so that headers can be reloaded on ia64.
+	- fix: set DB_PRIVATE, not DB_ENV_PRIVATE, if unshared posix mutexes.
+	- remove useless kernel/glibc dependencies (#79872).
+	- add matching "config(N) = EVR"  dependencies iff %%config is found.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

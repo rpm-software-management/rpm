@@ -1335,6 +1335,11 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     ARGV_t av;
     int ac = rpmfiFC(fi);
     const void ** p;
+    char buf[BUFSIZ];
+    const char * N;
+    const char * EVR;
+    int_32 Flags;
+    int genConfigDeps;
     int c;
     int rc = 0;
     int xx;
@@ -1360,10 +1365,18 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     /* Extract absolute file paths in argv format. */
     av = xcalloc(ac+1, sizeof(*av));
 
+    genConfigDeps = 0;
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
-    while ((c = rpmfiNext(fi)) >= 0)
+    while ((c = rpmfiNext(fi)) >= 0) {
+	rpmfileAttrs fileAttrs;
+
+	/* Does package have any %config files? */
+	fileAttrs = rpmfiFFlags(fi);
+	genConfigDeps |= (fileAttrs & RPMFILE_CONFIG);
+
 	av[c] = xstrdup(rpmfiFN(fi));
+    }
     av[ac] = NULL;
 
     fc = rpmfcNew();
@@ -1379,6 +1392,16 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDENAME);
 	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEVERSION);
 	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEFLAGS);
+
+	/* Add config dependency, Provides: config(N) = EVR */
+	if (genConfigDeps) {
+	    N = rpmdsN(pkg->ds);
+	    EVR = rpmdsEVR(pkg->ds);
+	    sprintf(buf, "config(%s)", N);
+	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR, RPMSENSE_EQUAL);
+	    xx = rpmdsMerge(&fc->provides, ds);
+	    ds = rpmdsFree(ds);
+	}
     }
 
     if (!fc->skipReq) {
@@ -1388,6 +1411,16 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIRENAME);
 	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREVERSION);
 	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREFLAGS);
+
+	/* Add config dependency,  Requires: config(N) = EVR */
+	if (genConfigDeps) {
+	    N = rpmdsN(pkg->ds);
+	    EVR = rpmdsEVR(pkg->ds);
+	    sprintf(buf, "config(%s)", N);
+	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR, RPMSENSE_EQUAL);
+	    xx = rpmdsMerge(&fc->requires, ds);
+	    ds = rpmdsFree(ds);
+	}
     }
 
     /* Build file class dictionary. */

@@ -175,7 +175,7 @@ struct Package_s {
 /*@refcounted@*/
     Header header;
 /*@refcounted@*/
-    rpmds this;
+    rpmds ds;			/*!< Requires: N = EVR */
 /*@refcounted@*/
     rpmfi cpioList;
 

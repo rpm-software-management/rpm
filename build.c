@@ -280,7 +280,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
 
-    if (buildSpec(spec, buildAmount, ba->noBuild)) {
+    if (buildSpec(ts, spec, buildAmount, ba->noBuild)) {
 	rc = 1;
 	goto exit;
     }

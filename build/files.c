@@ -2362,7 +2362,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     }
 
     /* Now we have in fileList list of files from all packages.
-     * We pass it to a script which do the work of finding missing
+     * We pass it to a script which does the work of finding missing
      * and duplicated files.
      */
     

@@ -10,6 +10,7 @@ static int _debug = 0;
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
+#include "rpmds.h"
 #include "rpmts.h"
 #include "debug.h"
 
@@ -617,6 +618,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		RPM_STRING_TYPE, arch, 1);
 	(void) headerAddEntry(pkg->header, RPMTAG_PLATFORM,
 		RPM_STRING_TYPE, platform, 1);
+
+	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+
     }
 
 #ifdef	DYING
