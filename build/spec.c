@@ -481,6 +481,7 @@ struct preamble_line {
     {RPMTAG_VENDOR,       0, "vendor"},
     {RPMTAG_GROUP,        0, "group"},
     {RPMTAG_PACKAGER,     0, "packager"},
+    {RPMTAG_URL,          0, "url"},
     {RPMTAG_ROOT,         0, "root"},
     {RPMTAG_SOURCE,       0, "source"},
     {RPMTAG_PATCH,        0, "patch"},
