@@ -75,6 +75,7 @@ int packageSources(Spec spec)
 
     FREE(spec->cookie);
     
+    memset(csa, 0, sizeof(*csa));
     csa->cpioArchiveSize = 0;
     csa->cpioFdIn = -1;
     csa->cpioList = spec->sourceCpioList;
@@ -132,6 +133,7 @@ int packageBinaries(Spec spec)
 	sprintf(fileName, "%s/%s", rpmGetVar(RPMVAR_RPMDIR), binRpm);
 	FREE(binRpm);
 
+	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = -1;
 	csa->cpioList = pkg->cpioList;
@@ -157,10 +159,12 @@ int writeRPM(Header header, char *fileName, int type,
     Header sig;
     struct rpmlead lead;
 
-    csa->cpioArchiveSize = 0;
-    /* Add the a bogus archive size to the Header */
-    headerAddEntry(header, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
-		   &csa->cpioArchiveSize, 1);
+    if (csa->cpioList != NULL) {
+	csa->cpioArchiveSize = 0;
+	/* Add the a bogus archive size to the Header */
+	headerAddEntry(header, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
+		&csa->cpioArchiveSize, 1);
+    }
 
     /* Create and add the cookie */
     if (cookie) {
@@ -193,8 +197,10 @@ int writeRPM(Header header, char *fileName, int type,
     }
 
     /* Now set the real archive size in the Header */
-    headerModifyEntry(header, RPMTAG_ARCHIVESIZE,
-		      RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
+    if (csa->cpioList != NULL) {
+	headerModifyEntry(header, RPMTAG_ARCHIVESIZE,
+		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
+    }
     lseek(fd, 0,  SEEK_SET);
     headerWrite(fd, header, HEADER_MAGIC_YES);
 
@@ -214,8 +220,18 @@ int writeRPM(Header header, char *fileName, int type,
     headerGetEntry(header, RPMTAG_VERSION, NULL, (void **)&version, NULL);
     headerGetEntry(header, RPMTAG_RELEASE, NULL, (void **)&release, NULL);
     sprintf(buf, "%s-%s-%s", name, version, release);
-    rpmGetArchInfo(NULL, &arch);
-    rpmGetOsInfo(NULL, &os);
+
+    if (csa->cpioList != NULL) {
+	rpmGetArchInfo(NULL, &arch);
+	rpmGetOsInfo(NULL, &os);
+    } else if (csa->lead != NULL) {	/* XXX FIXME: exorcize lead/arch/os */
+	arch = csa->lead->archnum;
+	os = csa->lead->osnum;
+    } else {
+	arch = -1;
+	os = -1;
+    }
+
     memset(&lead, 0, sizeof(lead));
     lead.major = RPM_MAJOR_NUMBER;
     lead.minor = 0;

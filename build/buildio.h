@@ -11,6 +11,7 @@ typedef struct cpioSourceArchive {
     int		cpioFdIn;
     struct cpioFileMapping *cpioList;
     int		cpioCount;
+    struct rpmlead *lead;	/* XXX FIXME: exorcize lead/arch/os */
 } CSA_t;
 
 #ifdef __cplusplus
