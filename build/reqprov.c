@@ -287,6 +287,9 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 		s++;
 	    }
 	    *s = '\0';
+	    if ((s = strrchr(tok, '/'))) {
+		tok = s + 1;
+	    }
 	    addReqProv(p, REQUIRE_ANY, tok, NULL);
 	}
 
