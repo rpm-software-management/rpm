@@ -301,6 +301,7 @@ INPUT                  = \
 	./Doxyheader \
 	./doc/manual/builddependencies \
 	./doc/manual/buildroot \
+	./doc/manual/conditionalbuilds \
 	./doc/manual/dependencies \
 	./doc/manual/format \
 	./doc/manual/macros \

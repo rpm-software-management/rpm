@@ -161,7 +161,18 @@ rpmb	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmb	alias --httpport	--define '_httpport !#:+'
 rpmb	alias --httpproxy	--define '_httpproxy !#:+'
 rpmb	alias --timecheck	--define '_timecheck !#:+'
+rpmb	alias --with		--define "_with_!#:+       --with-!#:+"
+rpmb	alias --without		--define "_without_!#:+    --without-!#:+"
 #==============================================================================
+rpmbuild	alias --dbpath		--define '_dbpath !#:+'
+rpmbuild	alias --ftpport		--define '_ftpport !#:+'
+rpmbuild	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmbuild	alias --httpport	--define '_httpport !#:+'
+rpmbuild	alias --httpproxy	--define '_httpproxy !#:+'
+rpmbuild	alias --timecheck	--define '_timecheck !#:+'
+rpmbuild	alias --with		--define "_with_!#:+     --with-!#:+"
+rpmbuild	alias --without		--define "_without_!#:+  --without-!#:+"
+==============================================================================
 rpmdb	alias --dbpath		--define '_dbpath !#:+'
 rpmdb	alias --ftpport		--define '_ftpport !#:+'
 rpmdb	alias --ftpproxy	--define '_ftpproxy !#:+'

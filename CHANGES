@@ -12,6 +12,7 @@
 	- add cpuid asm voodoo to detect athlon processors.
 	- add %exclude support (i.e. "everything but") to %files.
 		(Michael (Micksa) Slade" <micksa@knobbits.org>)
+	- add --with/--without popt glue for conditional builds(Tomasz Kloczko).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
