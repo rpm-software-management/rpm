@@ -279,7 +279,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     struct fileMemory fileMem;
     int freeFileMem = 0;
     char * currDir = NULL, * tmpptr;
-    int currDirLen;
 
     if (flags & RPMINSTALL_JUSTDB)
 	flags |= RPMINSTALL_NOSCRIPTS;
@@ -301,22 +300,15 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     }
 
     if (rootdir) {
-	currDirLen = 50;
-	currDir = malloc(currDirLen);
-	while (!getcwd(currDir, currDirLen) && errno == ERANGE) {
-	    currDirLen += 50;
-	    currDir = realloc(currDir, currDirLen);
-	}
-
-	tmpptr = currDir;
-	currDir = alloca(strlen(tmpptr) + 1);
-	strcpy(currDir, tmpptr);
-	free(tmpptr);
-
 	/* this loads all of the name services libraries, in case we
 	   don't have access to them in the chroot() */
 	(void)getpwnam("root");
 	endpwent();
+
+	tmpptr = currentDirectory();
+	currDir = alloca(strlen(tmpptr) + 1);
+	strcpy(currDir, tmpptr);
+	free(tmpptr);
 
 	chdir("/");
 	chroot(rootdir);
@@ -723,13 +715,11 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 			  specFileIndex >=0 ? NULL : &specFile, 
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
 	if (fileCount > 0) freeFileMemory(fileMem);
-	free(currDir);
 	rc = 2;
 	goto exit;
     }
 
     chdir(currDir);
-    free(currDir);
 
     if (specFileIndex == -1) {
 	if (!specFile) {
