@@ -25,6 +25,17 @@ struct rpmlead {
     char reserved[16];      /* pads to 96 bytes -- 8 byte aligned! */
 } ;
 
+struct oldrpmlead {		/* for version 1 packages */
+    unsigned char magic[4];
+    unsigned char major, minor;
+    short type;
+    short archnum;
+    char name[66];
+    unsigned long specOffset;
+    unsigned long specLength;
+    unsigned long archiveOffset;
+} ;
+
 int writeLead(int fd, struct rpmlead *lead);
 int readLead(int fd, struct rpmlead *lead);
 

@@ -1,8 +1,9 @@
+#include <netinet/in.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <asm/byteorder.h>
 
+#include "rpmerr.h"
 #include "rpmlead.h"
 
 int writeLead(int fd, struct rpmlead *lead)
@@ -28,12 +29,18 @@ int writeLead(int fd, struct rpmlead *lead)
 
 int readLead(int fd, struct rpmlead *lead)
 {
-    read(fd, lead, sizeof(*lead));
+    if (read(fd, lead, sizeof(*lead)) != sizeof(*lead)) {
+	error(RPMERR_READERROR, "read failed: %s (%d)", strerror(errno), 
+	      errno);
+	return 1;
+    }
 
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);
     lead->osnum = ntohs(lead->osnum);
-    lead->signature_type = ntohs(lead->signature_type);
+
+    if (lead->major >= 2)
+	lead->signature_type = ntohs(lead->signature_type);
 
     return 0;
 }
