@@ -1300,19 +1300,35 @@ rpmts_Match(rpmtsObject * s, PyObject * args)
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
     PyObject *TagN = NULL;
+    PyObject *Key = NULL;
     char *key = NULL;
+    long lkey = 0;
     int len = 0;
     int tag = RPMDBI_PACKAGES;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "|Ozi", &TagN, &key, &len))
+    if (!PyArg_ParseTuple(args, "|OO", &TagN, &Key))
 	return NULL;
 
     if (TagN && (tag = tagNumFromPyObject (TagN)) == -1) {
 	PyErr_SetString(PyExc_TypeError, "unknown tag type");
 	return NULL;
+    }
+
+    if (Key) {
+	if (PyString_Check(Key)) {
+	    key = PyString_AsString(Key);
+	    len = PyString_Size(Key);
+	} else if (PyInt_Check(Key)) {
+	    lkey = PyInt_AsLong(Key);
+	    key = (char *)&lkey;
+	    len = sizeof(lkey);
+	} else {
+	    PyErr_SetString(PyExc_TypeError, "unknown key type");
+	    return NULL;
+	}
     }
 
     /* XXX If not already opened, open the database O_RDONLY now. */

@@ -977,6 +977,49 @@ PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args)
 
 /**
  */
+PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args)
+{
+    FD_t fd;
+    int fileno;
+    off_t offset;
+    PyObject * tuple;
+    Header h;
+
+    if (!PyArg_ParseTuple(args, "i", &fileno)) return NULL;
+
+    offset = lseek(fileno, 0, SEEK_CUR);
+
+    fd = fdDup(fileno);
+
+    if (!fd) {
+	PyErr_SetFromErrno(pyrpmError);
+	return NULL;
+    }
+
+    Py_BEGIN_ALLOW_THREADS
+    h = headerRead(fd, HEADER_MAGIC_YES);
+    Py_END_ALLOW_THREADS
+
+    Fclose(fd);
+
+    tuple = PyTuple_New(2);
+
+    if (h && tuple) {
+	PyTuple_SET_ITEM(tuple, 0, (PyObject *) hdr_Wrap(h));
+	PyTuple_SET_ITEM(tuple, 1, PyLong_FromLong(offset));
+	h = headerFree(h);
+    } else {
+	Py_INCREF(Py_None);
+	Py_INCREF(Py_None);
+	PyTuple_SET_ITEM(tuple, 0, Py_None);
+	PyTuple_SET_ITEM(tuple, 1, Py_None);
+    }
+
+    return tuple;
+}
+
+/**
+ */
 PyObject * versionCompare (PyObject * self, PyObject * args)
 {
     hdrObject * h1, * h2;

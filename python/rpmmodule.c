@@ -139,6 +139,8 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS,
 	NULL },
+    { "readHeaderFromFD", (PyCFunction) rpmSingleHeaderFromFD, METH_VARARGS,
+	NULL },
 
     { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS,
 	NULL },
@@ -433,8 +435,9 @@ void initrpm(void)
     REGISTER_ENUM(TR_ADDED);
     REGISTER_ENUM(TR_REMOVED);
 
-    PyDict_SetItemString(d, "RPMAL_NOMATCH", o=PyInt_FromLong( (long)RPMAL_NOMATCH ));
-    Py_DECREF(o);
+    REGISTER_ENUM(RPMDBI_PACKAGES);
+
+    REGISTER_ENUM(RPMAL_NOMATCH);
 }
 
 /*@}*/

@@ -37,6 +37,8 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args)
 	/*@*/;
 PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args)
 	/*@*/;
+PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args)
+	/*@*/;
 PyObject * rpmReadHeaders (FD_t fd)
 	/*@*/;
 PyObject * rhnLoad(PyObject * self, PyObject * args)
