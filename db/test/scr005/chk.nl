@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.nl,v 1.5 2001/10/12 17:55:33 bostic Exp 
+# Id: chk.nl,v 1.6 2002/01/07 15:12:12 bostic Exp 
 #
 # Check to make sure that there are no trailing newlines in __db_err calls.
 
@@ -68,12 +68,23 @@ chk(fp, name)
 			if (ch == '\n')
 				++line;
 		}
-		while ((ch = getc(fp)) != '"') {
-			if (ch == EOF)
+		while ((ch = getc(fp)) != '"')
+			switch (ch) {
+			case EOF:
 				return (exitv);
-			if (ch == '\n')
+			case '\\n':
 				++line;
-			if (ch == '\\\\')
+				break;
+			case '.':
+				if ((ch = getc(fp)) != '"')
+					ungetc(ch, fp);
+				else {
+					fprintf(stderr,
+				    "%s: <period> at line %d\n", name, line);
+					exitv = 1;
+				}
+				break;
+			case '\\\\':
 				if ((ch = getc(fp)) != 'n')
 					ungetc(ch, fp);
 				else if ((ch = getc(fp)) != '"')
@@ -83,7 +94,8 @@ chk(fp, name)
 				    "%s: <newline> at line %d\n", name, line);
 					exitv = 1;
 				}
-		}
+				break;
+			}
 	}
 	return (exitv);
 }
@@ -93,7 +105,7 @@ cc t.c -o t
 if ./t $d/*/*.[ch] $d/*/*.cpp $d/*/*.in ; then
 	:
 else
-	echo "FAIL: found __db_err calls with newline strings."
+	echo "FAIL: found __db_err calls ending with periods/newlines."
 	exit 1
 fi
 

@@ -6,10 +6,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestKeyRange.cpp,v 1.2 2001/10/09 20:58:35 dda Exp 
+ * Id: TestKeyRange.cpp,v 1.4 2002/01/23 14:26:41 bostic Exp 
  */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -90,7 +90,7 @@ void TestKeyRange::run()
 	db.set_errpfx("TestKeyRange");
 	db.set_pagesize(1024);		/* Page size: 1K. */
 	db.set_cachesize(0, 32 * 1024, 0);
-	db.open(FileName, NULL, DB_BTREE, DB_CREATE, 0664);
+	db.open(NULL, FileName, NULL, DB_BTREE, DB_CREATE, 0664);
 
 	//
 	// Insert records into the database, where the key is the user

@@ -1,6 +1,6 @@
 =head1 NAME
 
-BerkeleyDB - Perl extension for Berkeley DB version 2 or 3
+BerkeleyDB - Perl extension for Berkeley DB version 2, 3 or 4
 
 =head1 SYNOPSIS
 
@@ -23,6 +23,8 @@ BerkeleyDB - Perl extension for Berkeley DB version 2 or 3
   $db  = new BerkeleyDB::Unknown [OPTIONS] ;
 
   $status = BerkeleyDB::db_remove [OPTIONS]
+  $status = BerkeleyDB::db_rename [OPTIONS]
+  $status = BerkeleyDB::db_verify [OPTIONS]
 
   $hash{$key} = $value ;
   $value = $hash{$key} ;
@@ -35,11 +37,14 @@ BerkeleyDB - Perl extension for Berkeley DB version 2 or 3
   $status = $db->db_del() ;
   $status = $db->db_sync() ;
   $status = $db->db_close() ;
+  $status = $db->db_close() ;
+  $status = $db->db_pget()
   $hash_ref = $db->db_stat() ;
   $status = $db->db_key_range();
   $type = $db->type() ;
   $status = $db->status() ;
   $boolean = $db->byteswapped() ;
+  $status = $db->truncate($count) ;
 
   ($flag, $old_offset, $old_length) = $db->partial_set($offset, $length) ;
   ($flag, $old_offset, $old_length) = $db->partial_clear() ;
@@ -50,6 +55,7 @@ BerkeleyDB - Perl extension for Berkeley DB version 2 or 3
   $status = $cursor->c_put() ;
   $status = $cursor->c_del() ;
   $status = $cursor->c_count() ;
+  $status = $cursor->c_pget() ;
   $status = $cursor->status() ;
   $status = $cursor->c_close() ;
 
@@ -60,6 +66,7 @@ BerkeleyDB - Perl extension for Berkeley DB version 2 or 3
   $status = $env->txn_checkpoint()
   $hash_ref = $env->txn_stat()
   $status = $env->setmutexlocks()
+  $status = $env->set_flags()
 
   $txn = $env->txn_begin() ;
   $db->Txn($txn);
@@ -76,6 +83,7 @@ BerkeleyDB - Perl extension for Berkeley DB version 2 or 3
 
   $status = $env->set_data_dir() ;
   $status = $env->set_tmp_dir() ;
+  $status = $env->set_verbose() ;
 
   $BerkeleyDB::Error
   $BerkeleyDB::db_version
@@ -98,11 +106,12 @@ B<NOTE: This document is still under construction. Expect it to be
 incomplete in places.>
 
 This Perl module provides an interface to most of the functionality
-available in Berkeley DB versions 2 and 3. In general it is safe to assume
+available in Berkeley DB versions 2, 3 and 4. In general it is safe to assume
 that the interface provided here to be identical to the Berkeley DB
 interface. The main changes have been to make the Berkeley DB API work
 in a Perl way. Note that if you are using Berkeley DB 2.x, the new
-features available in Berkeley DB 3.x are not available via this module.
+features available in Berkeley DB 3.x or DB 4.x are not available via
+this module.
 
 The reader is expected to be familiar with the Berkeley DB
 documentation. Where the interface provided here is identical to the
@@ -118,7 +127,7 @@ classes.
 
 The B<BerkeleyDB::Env> class provides an interface to the Berkeley DB
 function B<db_appinit> in Berkeley DB 2.x or B<db_env_create> and
-B<DBENV-E<gt>open> in Berkeley DB 3.x. Its purpose is to initialise a
+B<DBENV-E<gt>open> in Berkeley DB 3.x/4.x. Its purpose is to initialise a
 number of sub-systems that can then be used in a consistent way in all
 the databases you make use of the environment.
 
@@ -132,9 +141,10 @@ shouldn't need to make use of B<BerkeleyDB::Env>.
              [ -Server       => $name, ]
              [ -CacheSize    => $number, ]
              [ -Config       => { name => value, name => value }, ]
-             [ -ErrFile      => filename or filehandle, ]
+             [ -ErrFile      => filename, ]
              [ -ErrPrefix    => "string", ]
              [ -Flags        => number, ]
+             [ -SetFlags     => bitmask, ]
              [ -LockDetect   => number, ]
              [ -Verbose      => boolean, ]
 
@@ -197,8 +207,8 @@ The code below shows an example of how it can be used.
 
 =item -ErrFile
 
-Expects either the name of a file or a reference to a filehandle. Any
-errors generated internally by Berkeley DB will be logged to this file.
+Expects a filenme. Any errors generated internally by Berkeley DB will
+be logged to this file.
 
 =item -ErrPrefix
 
@@ -263,6 +273,13 @@ B<DB_USE_ENVIRON>
 
 B<DB_USE_ENVIRON_ROOT>
 
+=item -SetFlags
+
+Calls ENV->set_flags with the supplied bitmask. Use this when you need to make
+use of DB_ENV->set_flags before DB_ENV->open is called.
+
+Only valid when Berkeley DB 3.x or better is used.
+
 =item -LockDetect
 
 Specifies what to do when a lock conflict occurs. The value should be one of
@@ -291,6 +308,8 @@ The environment class has the following methods:
 
 This method is identical to the B<-ErrPrefix> flag. It allows the
 error prefix string to be changed dynamically.
+
+=item $env->set_flags(bitmask, 1|0);
 
 =item $txn = $env->TxnMgr()
 
@@ -328,6 +347,12 @@ Berkeley DB 3.0 or 3.2 and better it calls B<DBENV-E<gt>set_mutexlocks>.
 
 TODO.
 
+=head1 Global Classes
+
+  $status = BerkeleyDB::db_remove [OPTIONS]
+  $status = BerkeleyDB::db_rename [OPTIONS]
+  $status = BerkeleyDB::db_verify [OPTIONS]
+  
 =head1 THE DATABASE CLASSES
 
 B<BerkeleyDB> supports the following database formats:
@@ -381,7 +406,7 @@ the next sections.
 
 Equivalent to calling B<db_open> with type B<DB_HASH> in Berkeley DB 2.x and
 calling B<db_create> followed by B<DB-E<gt>open> with type B<DB_HASH> in
-Berkeley DB 3.x. 
+Berkeley DB 3.x or greater. 
 
 Two forms of constructor are supported:
 
@@ -690,7 +715,7 @@ TODO
 
 Equivalent to calling B<db_open> with type B<DB_BTREE> in Berkeley DB 2.x and
 calling B<db_create> followed by B<DB-E<gt>open> with type B<DB_BTREE> in
-Berkeley DB 3.x. 
+Berkeley DB 3.x or greater. 
 
 Two forms of constructor are supported:
 
@@ -938,7 +963,7 @@ TODO
 
 Equivalent to calling B<db_open> with type B<DB_RECNO> in Berkeley DB 2.x and
 calling B<db_create> followed by B<DB-E<gt>open> with type B<DB_RECNO> in
-Berkeley DB 3.x. 
+Berkeley DB 3.x or greater. 
 
 Two forms of constructor are supported:
 
@@ -1031,8 +1056,8 @@ Here is the output from the script:
 =head1 BerkeleyDB::Queue
 
 Equivalent to calling B<db_create> followed by B<DB-E<gt>open> with
-type B<DB_QUEUE> in Berkeley DB 3.x. This database format isn't available if
-you use Berkeley DB 2.x.
+type B<DB_QUEUE> in Berkeley DB 3.x or greater. This database format
+isn't available if you use Berkeley DB 2.x.
 
 Two forms of constructor are supported:
 
@@ -1076,7 +1101,7 @@ This class is used to open an existing database.
 
 Equivalent to calling B<db_open> with type B<DB_UNKNOWN> in Berkeley DB 2.x and
 calling B<db_create> followed by B<DB-E<gt>open> with type B<DB_UNKNOWN> in
-Berkeley DB 3.x. 
+Berkeley DB 3.x or greater. 
 
 The constructor looks like this:
 
@@ -1110,7 +1135,7 @@ be created and removed once the program terminates.
 =item -Subname
 
 Specifies the name of the sub-database to open.
-This option is only valid if you are using Berkeley DB 3.x.
+This option is only valid if you are using Berkeley DB 3.x or greater.
 
 =item -Flags
 
@@ -1286,12 +1311,18 @@ equivalent field would be accessed as follows:
 
     $version = $ref->{'bt_version'} ;
 
-If you are using Berkeley DB 3.x, this method will work will all database
-formats. When DB 2.x is used, it only works with B<BerkeleyDB::Btree>.
+If you are using Berkeley DB 3.x or better, this method will work will
+all database formats. When DB 2.x is used, it only works with
+B<BerkeleyDB::Btree>.
 
 =head2 $status = $db->status()
 
 Returns the status of the last C<$db> method called.
+
+=head2 $status = $db->truncate($count)
+
+Truncates the datatabase and returns the number or records deleted
+in C<$count>.
 
 =head1 CURSORS
 
@@ -1700,10 +1731,10 @@ I get asked.
 
 Before Berkeley DB 2.x was written there was only one Perl module that
 interfaced to Berkeley DB. That module is called B<DB_File>. Although
-B<DB_File> can be build with Berkeley DB 1.x, 2.x or 3.x, it only provides
+B<DB_File> can be build with Berkeley DB 1.x, 2.x, 3.x or 4.x, it only provides
 an interface to the functionality available in Berkeley DB 1.x. That
 means that it doesn't support transactions, locking or any of the other
-new features available in DB 2.x or 3.x.
+new features available in DB 2.x or better.
 
 =head2 How do I store Perl data structures with BerkeleyDB?
 
@@ -1723,7 +1754,7 @@ The official web site for Berkeley DB is F<http://www.sleepycat.com>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-2001 Paul Marquess. All rights reserved. This program
+Copyright (c) 1997-2002 Paul Marquess. All rights reserved. This program
 is free software; you can redistribute it and/or modify it under the
 same terms as Perl itself.
 

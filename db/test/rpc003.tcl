@@ -1,14 +1,15 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 2001-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: rpc003.tcl,v 11.5 2001/08/29 19:07:42 sue Exp 
+# Id: rpc003.tcl,v 11.9 2002/07/16 20:53:03 bostic Exp 
 #
 # Test RPC and secondary indices.
 proc rpc003 { } {
 	source ./include.tcl
 	global dict nsecondaries
+	global rpc_svc
 
 	#
 	# First set up the files.  Secondary indices only work readonly
@@ -39,7 +40,7 @@ proc rpc003 { } {
 
 	# Open an environment
 	# XXX if one is not supplied!
-	set env [berkdb env -create -home $testdir]
+	set env [berkdb_env -create -home $testdir]
 	error_check_good env_open [is_valid_env $env] TRUE
 
 	# Open the primary.
@@ -84,12 +85,12 @@ proc rpc003 { } {
 	# We have set up our databases, so now start the server and
 	# read them over RPC.
 	#
-	set dpid [exec $util_path/berkeley_db_svc -h $rpc_testdir &]
+	set dpid [exec $util_path/$rpc_svc -h $rpc_testdir &]
 	puts "\tRpc003.c: Started server, pid $dpid"
 	tclsleep 2
 
 	set home [file tail $rpc_testdir]
-	set env [eval {berkdb env -create -mode 0644 -home $home \
+	set env [eval {berkdb_env_noerr -create -mode 0644 -home $home \
 	    -server $rpc_server}]
 	error_check_good lock_env:open [is_valid_env $env] TRUE
 
@@ -141,10 +142,8 @@ proc rpc003 { } {
 	error_check_good primary_close [$pdb close] 0
 	error_check_good env_close [$env close] 0
 
-	exec $KILL $dpid
-	return
+	tclkill $dpid
 }
-
 
 proc rpc003_assoc_err { popen sopen msg } {
 	set pdb [eval $popen]

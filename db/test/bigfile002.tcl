@@ -1,14 +1,14 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001
+# Copyright (c) 2001-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: bigfile002.tcl,v 11.4 2001/08/03 18:31:15 sandstro Exp 
+# Id: bigfile002.tcl,v 11.7 2002/08/10 13:39:26 bostic Exp 
 #
 # TEST	bigfile002
 # TEST	This one should be faster and not require so much disk space,
-#	although it doesn't test as extensively.  Create an mpool file
-#	with 1K pages.  Dirty page 6000000.  Sync.
+# TEST	although it doesn't test as extensively.  Create an mpool file
+# TEST	with 1K pages.  Dirty page 6000000.  Sync.
 proc bigfile002 { args } {
 	source ./include.tcl
 
@@ -19,7 +19,7 @@ proc bigfile002 { args } {
 	env_cleanup $testdir
 
 	# Create env.
-	set env [berkdb env -create -home $testdir]
+	set env [berkdb_env -create -home $testdir]
 	error_check_good valid_env [is_valid_env $env] TRUE
 
 	# Create the file.

@@ -395,3 +395,24 @@
 
    * Added "clean" attribute to Makefile.PL
  
+1.802 6th January 2002
+
+   * The message about some test failing in db-recno.t had the wrong test
+     numbers. Fixed.
+
+   * merged core patch 13942.
+
+1.803 1st March 2002
+
+   * Fixed a problem with db-btree.t where it complained about an "our"
+     variable redeclaation.
+
+   * FETCH, STORE & DELETE don't map the flags parameter into the
+     equivalent Berkeley DB function anymore.
+
+1.804 2nd June 2002
+
+   * Perl core patch 14939 added a new warning to "splice". This broke the
+     db-recno test harness. Fixed.
+
+   * merged core patches 16502 & 16540.

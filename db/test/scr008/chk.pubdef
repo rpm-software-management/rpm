@@ -45,9 +45,9 @@ while read name isdoc isinc isjava; do
 done
 
 # Check that pubdef.in has everything listed in db.in.
-f=$d/include/db.in
+f=$d/dbinc/db.in
 sed -n \
-    -e 's/^#define[	 ]*\(DB_[A-Z_]*\).*/\1/p' \
+    -e 's/^#define[	 ]*\(DB_[A-Z_0-9]*\).*/\1/p' \
     -e 's/^[	 ]*\(DB_[A-Z_]*\)=[0-9].*/\1/p' \
     -e d < $f |
 while read name; do
@@ -60,10 +60,10 @@ while read name; do
 done
 
 # Check that db.in has everything listed in pubdef.in.
-f=$d/include/db.in
+f=$d/dbinc/db.in
 sed '/^#/d' $p |
 while read name isdoc isinc isjava; do
-	if `egrep -w "#define[	 ]$name|[	 ][	 ]*$name=[0-9]" \
+	if `egrep -w "#define[	 ]$name|[	 ][	 ]*$name=[0-9][0-9]*" \
 	    $f > /dev/null`; then
 		[ "X$isinc" != "XI" ] && {
 			echo "$name should not appear in $f"

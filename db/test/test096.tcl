@@ -1,18 +1,20 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2001
+# Copyright (c) 1999-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: test096.tcl,v 11.9 2001/08/03 16:39:49 bostic Exp 
+# Id: test096.tcl,v 11.18 2002/07/22 16:53:00 sue Exp 
 #
 # TEST	test096
 # TEST	Db->truncate test.
-proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
+proc test096 { method {pagesize 512} {nentries 50} {ndups 4} args} {
 	global fixed_len
 	source ./include.tcl
 
 	set orig_fixed_len $fixed_len
-	set opts [convert_args $method $args]
+	set args [convert_args $method $args]
+	set encargs ""
+	set args [split_encargs $args encargs]
 	set omethod [convert_method $method]
 
 	puts "Test096: $method db truncate method test"
@@ -33,22 +35,23 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	if { $eindex != -1 } {
 		incr eindex
 		set env [lindex $args $eindex]
-		#
-		# Make sure the env we were given supports txns.
-		#
-		set stat [catch {$env txn} txn]
-		if { $stat != 0 } {
+		set txnenv [is_txnenv $env]
+		if { $txnenv == 0 } {
 			puts "Environment w/o txns specified;  skipping."
 			return
 		}
-		error_check_good txnabort [$txn abort] 0
+		if { $nentries == 1000 } {
+			set nentries 100
+		}
+		reduce_dups nentries ndups
+		set testdir [get_home $env]
 		set closeenv 0
 	} else {
 		env_cleanup $testdir
 
 		#
 		# We need an env for exclusive-use testing.
-		set env [berkdb env -create -home $testdir -txn]
+		set env [eval {berkdb_env -create -home $testdir -txn} $encargs]
 		error_check_good env_create [is_valid_env $env] TRUE
 		set closeenv 1
 	}
@@ -56,7 +59,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	set t1 $testdir/t1
 
 	puts "\tTest096.a: Create $nentries entries"
-	set db [eval {berkdb_open_noerr -create \
+	set db [eval {berkdb_open -create -auto_commit \
 	    -env $env $omethod -mode 0644} $args $testfile]
 	error_check_good db_open [is_valid_db $db] TRUE
 
@@ -68,9 +71,13 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	while { [gets $did str] != -1 && $count < $nentries } {
 		set key $str
 		set datastr [reverse $str]
+		set t [$env txn]
+		error_check_good txn [is_valid_txn $t $env] TRUE
+		set txn "-txn $t"
 		set ret [eval {$db put} \
 		    $txn $pflags {$key [chop_data $method $datastr]}]
 		error_check_good put $ret 0
+		error_check_good txn [$t commit] 0
 
 		set ret [eval {$db get} $gflags {$key}]
 		error_check_good $key:dbget [llength $ret] 1
@@ -81,15 +88,15 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 
 	puts "\tTest096.b: Truncate database"
 	error_check_good dbclose [$db close] 0
-	set dbtr [eval {berkdb_open_noerr -create \
+	set dbtr [eval {berkdb_open -create -auto_commit \
 	    -env $env $omethod -mode 0644} $args $testfile]
 	error_check_good db_open [is_valid_db $dbtr] TRUE
 
-	set ret [$dbtr truncate]
+	set ret [$dbtr truncate -auto_commit]
 	error_check_good dbtrunc $ret $nentries
 	error_check_good db_close [$dbtr close] 0
 
-	set db [berkdb_open -env $env $testfile]
+	set db [eval {berkdb_open -env $env} $args $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	set ret [$db get -glob *]
 	error_check_good dbget [llength $ret] 0
@@ -101,8 +108,8 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	#
 	puts "\tTest096.d: Create $nentries entries with $ndups duplicates"
 	set ret [berkdb dbremove -env $env $testfile]
-	set db [eval {berkdb_open_noerr -pagesize $pagesize -dup -create \
-	    -env $env $omethod -mode 0644} $args $testfile]
+	set db [eval {berkdb_open -pagesize $pagesize -dup -auto_commit \
+	    -create -env $env $omethod -mode 0644} $args $testfile]
 	error_check_good db_open [is_valid_db $db] TRUE
 	set did [open $dict]
 	set count 0
@@ -113,9 +120,13 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 		set key $str
 		for { set i 1 } { $i <= $ndups } { incr i } {
 			set datastr $i:$str
+			set t [$env txn]
+			error_check_good txn [is_valid_txn $t $env] TRUE
+			set txn "-txn $t"
 			set ret [eval {$db put} \
 			    $txn $pflags {$key [chop_data $method $datastr]}]
 			error_check_good put $ret 0
+			error_check_good txn [$t commit] 0
 		}
 
 		set ret [eval {$db get} $gflags {$key}]
@@ -129,7 +140,11 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	for { set i 1 } {$i <= $ndups} {incr i} {
 		lappend dlist $i
 	}
+	set t [$env txn]
+	error_check_good txn [is_valid_txn $t $env] TRUE
+	set txn "-txn $t"
 	dup_check $db $txn $t1 $dlist
+	error_check_good txn [$t commit] 0
 	puts "\tTest096.e: Verify off page duplicates status"
 	set stat [$db stat]
 	error_check_bad stat:offpage [is_substr $stat \
@@ -141,7 +156,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	puts "\tTest096.f: Truncate database in a txn then abort"
 	set txn [$env txn]
 
-	set dbtr [eval {berkdb_open_noerr -create \
+	set dbtr [eval {berkdb_open -auto_commit -create \
 	    -env $env $omethod -mode 0644} $args $testfile]
 	error_check_good db_open [is_valid_db $dbtr] TRUE
 	error_check_good txnbegin [is_valid_txn $txn $env] TRUE
@@ -152,7 +167,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	error_check_good txnabort [$txn abort] 0
 	error_check_good db_close [$dbtr close] 0
 
-	set db [berkdb_open -env $env $testfile]
+	set db [eval {berkdb_open -auto_commit -env $env} $args $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	set ret [$db get -glob *]
 	error_check_good dbget [llength $ret] $recs
@@ -162,22 +177,23 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	set txn [$env txn]
 	error_check_good txnbegin [is_valid_txn $txn $env] TRUE
 
-	set dbtr [eval {berkdb_open_noerr -create \
+	set dbtr [eval {berkdb_open -auto_commit -create \
 	    -env $env $omethod -mode 0644} $args $testfile]
 	error_check_good db_open [is_valid_db $dbtr] TRUE
 
 	set ret [$dbtr truncate -txn $txn]
 	error_check_good dbtrunc $ret $recs
 
-	error_check_good db_close [$dbtr close] 0
 	error_check_good txncommit [$txn commit] 0
+	error_check_good db_close [$dbtr close] 0
 
-	set db [berkdb_open -env $env $testfile]
+	set db [berkdb_open -auto_commit -env $env $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	set ret [$db get -glob *]
 	error_check_good dbget [llength $ret] 0
 	error_check_good dbclose [$db close] 0
 
+	set testdir [get_home $env]
 	error_check_good dbverify [verify_dir $testdir "\tTest096.h: "] 0
 
 	if { $closeenv == 1 } {

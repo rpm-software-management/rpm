@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000
+ * Copyright (c) 2000-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestConstruct02.java,v 1.3 2001/10/05 02:36:09 bostic Exp 
+ * Id: TestConstruct02.java,v 1.5 2002/01/23 14:29:51 bostic Exp 
  */
 
 /*
@@ -185,7 +185,7 @@ public class TestConstruct02
 	Db db = new Db(dbenv, 0);
 	db.set_error_stream(System.err);
 	db.set_pagesize(1024);
-	db.open(CONSTRUCT02_DBNAME, null, Db.DB_BTREE,
+	db.open(null, CONSTRUCT02_DBNAME, null, Db.DB_BTREE,
 		Db.DB_CREATE, 0664);
 
 	rundb(db, itemcount++);
@@ -200,7 +200,7 @@ public class TestConstruct02
 	db = new Db(dbenv, 0);
 	db.set_error_stream(System.err);
 	db.set_pagesize(1024);
-	db.open(CONSTRUCT02_DBNAME, null, Db.DB_BTREE,
+	db.open(null, CONSTRUCT02_DBNAME, null, Db.DB_BTREE,
 		Db.DB_CREATE, 0664);
 	rundb(db, itemcount++);
 	rundb(db, itemcount++);

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2001
+# Copyright (c) 1996-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: txnscript.tcl,v 11.1 2001/05/31 18:12:45 sue Exp 
+# Id: txnscript.tcl,v 11.3 2002/01/23 15:33:40 bostic Exp 
 #
 # Txn003 script - outstanding child prepare script
 # Usage: txnscript envcmd dbcmd gidf key data
@@ -36,7 +36,7 @@ set dbenv [eval $envcmd]
 error_check_good envopen [is_valid_env $dbenv] TRUE
 
 set usedb 1
-set db [berkdb_open -env $dbenv $dbfile]
+set db [berkdb_open -auto_commit -env $dbenv $dbfile]
 error_check_good dbopen [is_valid_db $db] TRUE
 
 puts "\tTxnscript.a: begin parent and child txn"

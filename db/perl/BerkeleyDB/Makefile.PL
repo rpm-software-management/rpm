@@ -43,7 +43,7 @@ $OS2 = "-DOS2" if $^O eq 'os2' ;
 WriteMakefile(
 	NAME 		=> 'BerkeleyDB',
 	LIBS 		=> ["-L${LIB_DIR} $LIBS"],
-        MAN3PODS        => ' ',         # Pods will be built by installman.
+	MAN3PODS        => {},         # Pods will be built by installman. 
 	INC		=> "-I$INC_DIR",
 	VERSION_FROM	=> 'BerkeleyDB.pm',
 	XSPROTOARG	=> '-noprototypes',
@@ -63,14 +63,8 @@ sub MY::postamble {
 $(NAME).pod:	$(NAME).pod.P t/examples.t.T t/examples3.t.T mkpod
 	perl ./mkpod
 
-$(NAME).xs:	constants.h constants.xs typemap
+$(NAME).xs:	typemap
 	$(TOUCH) $(NAME).xs
-
-constants.h constants.xs:	mkconsts
-	bleedperl mkconsts xs 
-
-$(NAME).pm:	mkconsts
-	bleedperl mkconsts pm $(NAME).pm > $(NAME).pm.tmp && mv $(NAME).pm.tmp $(NAME).pm
 
 Makefile:	config.in 
 

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.cxxtests,v 1.3 2001/10/23 21:23:04 dda Exp 
+# Id: chk.cxxtests,v 1.5 2002/07/05 22:17:59 dda Exp 
 #
 # Check to make sure that regression tests for C++ run.
 
@@ -8,7 +8,7 @@ TEST_CXX_SRCDIR=../test/scr015  # must be a relative directory
 
 # All paths must be relative to a subdirectory of the build directory
 LIBS="-L.. -ldb -ldb_cxx"
-CXXFLAGS="-I.. -I../../include"
+CXXFLAGS="-I.. -I../../dbinc"
 
 # Test must be run from a local build directory, not from a test
 # directory.
@@ -43,6 +43,7 @@ for testname in $testnames; do
 	rm -rf TESTCXX; mkdir TESTCXX
 	cd ./TESTCXX
 	testprefix=../$TEST_CXX_SRCDIR/$testname
+
 	${CXX} ${CXXFLAGS} -o $testname $testprefix.cpp ${LIBS} > ../$testname.compileout 2>&1 || {
 		echo "FAIL: compilation of $testname failed, see ../$testname.compileout"
 		exit 1

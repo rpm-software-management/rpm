@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.stats,v 1.4 2001/10/12 17:55:37 bostic Exp 
+# Id: chk.stats,v 1.5 2002/03/27 04:33:04 bostic Exp 
 #
 # Check to make sure all of the stat structure members are included in
 # all of the possible formats.
@@ -21,7 +21,7 @@ t=__tmp
 inc_fields()
 {
 	sed -e "/struct $1 {/,/^};$/p" \
-	    -e d < $d/include/db.in |
+	    -e d < $d/dbinc/db.in |
 	sed -e 1d \
 	    -e '$d' \
 	    -e '/;/!d' \
@@ -80,7 +80,7 @@ man()
 			echo "	$1: ignoring $i"
 			continue
 		fi
-		if egrep -w $i $d/include/db.in > /dev/null; then
+		if egrep -w $i $d/dbinc/db.in > /dev/null; then
 			:;
 		else
 			echo "	$1: $i not found in db.h."

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.code,v 1.9 2001/10/17 16:15:22 bostic Exp 
+# Id: chk.code,v 1.10 2002/02/04 16:03:26 bostic Exp 
 #
 # Check to make sure that the code samples in the documents build.
 
@@ -26,7 +26,7 @@ for i in `find $d/docs_src -name '*.cs'`; do
 	    -e 's/__LB__/[/g' \
 	    -e 's/__LT__/</g' \
 	    -e 's/__RB__/]/g' < $i > t.c
-	if cc -Wall -I.. t.c ../libdb.a -o t; then
+	if cc -Wall -Werror -I.. t.c ../libdb.a -o t; then
 		:
 	else
 		echo "FAIL: unable to compile $i"

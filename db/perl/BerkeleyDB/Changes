@@ -1,12 +1,36 @@
 Revision history for Perl extension BerkeleyDB.
 
-0.17 26 23 September 2001
+0.19 5th June 2002
+        * Removed the targets that used mkconsts from Makefile.PL. They relied
+          on a module that is not available in all versions of Perl.
+        * added support for env->set_verbose
+        * added support for db->truncate
+        * added support for db->rename via BerkeleyDB::db_rename
+        * added support for db->verify via BerkeleyDB::db_verify
+        * added support for db->associate, db->pget & cursor->c_pget
+        * Builds with Berkeley DB 4.1.x
+ 
+
+0.18 6th January 2002
+        * Dropped support for ErrFile as a file handle. It was proving too
+          difficult to get at the underlying FILE * in XS.
+          Reported by Jonas Smedegaard (Debian powerpc) & Kenneth Olwing (Win32)
+        * Fixed problem with abort macro in XSUB.h clashing with txn abort
+          method in Berkeley DB 4.x -- patch supplied by Kenneth Olwing.
+        * DB->set_alloc was getting called too late in BerkeleyDB.xs. 
+          This was causing problems with ActivePerl -- problem reported
+          by Kenneth Olwing.
+        * When opening a queue, the Len proprty set the DB_PAD flag. 
+          Should have been DB_FIXEDLEN. Fix provided by Kenneth Olwing.
+        * Test harness fixes from Kenneth Olwing.
+
+0.17 23 September 2001
         * Fixed a bug in BerkeleyDB::Recno - reported by Niklas Paulsson. 
         * Added log_archive - patch supplied by Benjamin Holzman
         * Added txn_discard
         * Builds with Berkeley DB 4.0.x
 
-0.16 26 1 August 2001
+0.16 1 August 2001
         * added support for Berkeley DB 3.3.x (but no support for any of the
           new features just yet)
 

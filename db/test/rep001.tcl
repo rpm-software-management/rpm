@@ -1,51 +1,69 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001
+# Copyright (c) 2001-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: rep001.tcl,v 11.3 2001/11/16 10:50:12 krinsky Exp 
+# Id: rep001.tcl,v 1.14 2002/08/08 18:13:12 sue Exp 
 #
 # TEST  rep001
-# TEST	Replication smoke test.
+# TEST	Replication rename and forced-upgrade test.
 # TEST
 # TEST	Run a modified version of test001 in a replicated master environment;
 # TEST  verify that the database on the client is correct.
+# TEST	Next, remove the database, close the master, upgrade the 
+# TEST	client, reopen the master, and make sure the new master can correctly
+# TEST	run test001 and propagate it in the other direction.
 
+proc rep001 { method { niter 1000 } { tnum "01" } args } {
+	global passwd
 
-proc rep001 { method args } {
+	puts "Rep0$tnum: Replication sanity test."
+
+	set envargs ""
+	rep001_sub $method $niter $tnum $envargs $args
+
+	puts "Rep0$tnum: Replication and security sanity test."
+	append envargs " -encryptaes $passwd "
+	append args " -encrypt "
+	rep001_sub $method $niter $tnum $envargs $args
+}
+
+proc rep001_sub { method niter tnum envargs largs } {
 	source ./include.tcl
 	global testdir
+	global encrypt
 
 	env_cleanup $testdir
 
-	replsetup $testdir/REPDIR_MSGQUEUE
+	replsetup $testdir/MSGQUEUEDIR
 
-	set masterdir $testdir/REPDIR_MASTER
-	set clientdir $testdir/REPDIR_CLIENT
+	set masterdir $testdir/MASTERDIR
+	set clientdir $testdir/CLIENTDIR
 
 	file mkdir $masterdir
 	file mkdir $clientdir
 
-	puts "Rep001: Replication sanity test."
+	if { [is_record_based $method] == 1 } {
+		set checkfunc test001_recno.check
+	} else {
+		set checkfunc test001.check
+	}
 
 	# Open a master.
 	repladd 1
-	set masterenv [berkdb env -create -log_max 1000000 \
-	    -home $masterdir -txn -rep_master -rep_transport [list 1 replsend]]
+	set masterenv \
+	    [eval {berkdb_env -create -lock_max 2500 -log_max 1000000} \
+	    $envargs {-home $masterdir -txn -rep_master -rep_transport \
+	    [list 1 replsend]}]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
-	set clientenv [berkdb env -create \
-	    -home $clientdir -txn -rep_client -rep_transport [list 2 replsend]]
+	set clientenv [eval {berkdb_env -create} $envargs -txn -lock_max 2500 \
+	    {-home $clientdir -rep_client -rep_transport [list 2 replsend]}]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
-	# Run a modified test001 in the master.
-	puts "\tRep001.a: Running test001 in replicated env."
-	eval rep_test001 $method 10000 "01" -env $masterenv $args
-
-	# Loop, processing first the master's messages, then the client's,
-	# until both queues are empty.
+	# Bring the client online by processing the startup messages.
 	set donenow 0
 	while { 1 } {
 		set nproced 0
@@ -58,157 +76,174 @@ proc rep001 { method args } {
 		}
 	}
 
+	# Open a test database on the master (so we can test having handles
+	# open across an upgrade).
+	puts "\tRep0$tnum.a:\
+	    Opening test database for post-upgrade client logging test."
+	set master_upg_db [berkdb_open \
+	    -create -auto_commit -btree -env $masterenv rep0$tnum-upg.db]
+	set puttxn [$masterenv txn]
+	error_check_good master_upg_db_put \
+	    [$master_upg_db put -txn $puttxn hello world] 0
+	error_check_good puttxn_commit [$puttxn commit] 0
+	error_check_good master_upg_db_close [$master_upg_db close] 0
+
+	# Run a modified test001 in the master (and update client).
+	puts "\tRep0$tnum.b: Running test001 in replicated env."
+	eval test001 $method $niter 0 $tnum 1 -env $masterenv $largs
+	set donenow 0
+	while { 1 } {
+		set nproced 0
+
+		incr nproced [replprocessqueue $masterenv 1]
+		incr nproced [replprocessqueue $clientenv 2]
+
+		if { $nproced == 0 } {
+			break
+		}
+	}
+
+	# Open the cross-upgrade database on the client and check its contents.
+	set client_upg_db [berkdb_open \
+	     -create -auto_commit -btree -env $clientenv rep0$tnum-upg.db]
+	error_check_good client_upg_db_get [$client_upg_db get hello] \
+	     [list [list hello world]]
+	# !!! We use this handle later.  Don't close it here.
+
 	# Verify the database in the client dir.
-	puts "\tRep001.b: Verifying client database contents."
+	puts "\tRep0$tnum.c: Verifying client database contents."
+	set testdir [get_home $masterenv]
 	set t1 $testdir/t1
 	set t2 $testdir/t2
 	set t3 $testdir/t3
-	open_and_dump_file test001.db $clientenv "" $testdir/t1 test001.check \
-	    dump_file_direction "-first" "-next"
-	filesort $t1 $t3
+	open_and_dump_file test0$tnum.db $clientenv $t1 \
+	    $checkfunc dump_file_direction "-first" "-next"
+
+	# Remove the file (and update client).
+	puts "\tRep0$tnum.d: Remove the file on the master and close master."
+	error_check_good remove \
+	    [$masterenv dbremove -auto_commit test0$tnum.db] 0
+	error_check_good masterenv_close [$masterenv close] 0
+	set donenow 0
+	while { 1 } {
+		set nproced 0
+
+		incr nproced [replprocessqueue $masterenv 1]
+		incr nproced [replprocessqueue $clientenv 2]
+
+		if { $nproced == 0 } {
+			break
+		}
+	}
+
+	# Don't get confused in Tcl.
+	puts "\tRep0$tnum.e: Upgrade client."
+	set newmasterenv $clientenv
+	error_check_good upgrade_client [$newmasterenv rep_start -master] 0
+
+	# Run test001 in the new master
+	puts "\tRep0$tnum.f: Running test001 in new master."
+	eval test001 $method $niter 0 $tnum 1 -env $newmasterenv $largs
+	set donenow 0
+	while { 1 } {
+		set nproced 0
+
+		incr nproced [replprocessqueue $newmasterenv 2]
+
+		if { $nproced == 0 } {
+			break
+		}
+	}
+
+	puts "\tRep0$tnum.g: Reopen old master as client and catch up."
+	# Throttle master so it can't send everything at once
+	$newmasterenv rep_limit 0 [expr 64 * 1024]
+	set newclientenv [eval {berkdb_env -create -recover} $envargs \
+	    -txn -lock_max 2500 \
+	    {-home $masterdir -rep_client -rep_transport [list 1 replsend]}]
+	error_check_good newclient_env [is_valid_env $newclientenv] TRUE
+	set donenow 0
+	while { 1 } {
+		set nproced 0
+
+		incr nproced [replprocessqueue $newclientenv 1]
+		incr nproced [replprocessqueue $newmasterenv 2]
+
+		if { $nproced == 0 } {
+			break
+		}
+	}
+	set stats [$newmasterenv rep_stat]
+	set nthrottles [getstats $stats {Transmission limited}]
+	error_check_bad nthrottles $nthrottles -1
+	error_check_bad nthrottles $nthrottles 0
+
+	# Run a modified test001 in the new master (and update client).
+	puts "\tRep0$tnum.h: Running test001 in new master."
+	eval test001 $method \
+	    $niter $niter $tnum 1 -env $newmasterenv $largs
+	set donenow 0
+	while { 1 } {
+		set nproced 0
+
+		incr nproced [replprocessqueue $newclientenv 1]
+		incr nproced [replprocessqueue $newmasterenv 2]
+
+		if { $nproced == 0 } {
+			break
+		}
+	}
+
+	# Test put to the database handle we opened back when the new master
+	# was a client.
+	puts "\tRep0$tnum.i: Test put to handle opened before upgrade."
+	set puttxn [$newmasterenv txn]
+	error_check_good client_upg_db_put \
+	    [$client_upg_db put -txn $puttxn hello there] 0
+	error_check_good puttxn_commit [$puttxn commit] 0
+	set donenow 0
+	while { 1 } {
+		set nproced 0
+
+		incr nproced [replprocessqueue $newclientenv 1]
+		incr nproced [replprocessqueue $newmasterenv 2]
+
+		if { $nproced == 0 } {
+			break
+		}
+	}
+
+	# Close the new master's handle for the upgrade-test database;  we
+	# don't need it.  Then check to make sure the client did in fact
+	# update the database.
+	error_check_good client_upg_db_close [$client_upg_db close] 0
+	set newclient_upg_db [berkdb_open -env $newclientenv rep0$tnum-upg.db]
+	error_check_good newclient_upg_db_get [$newclient_upg_db get hello] \
+	    [list [list hello there]]
+	error_check_good newclient_upg_db_close [$newclient_upg_db close] 0
+
+	# Verify the database in the client dir.
+	puts "\tRep0$tnum.j: Verifying new client database contents."
+	set testdir [get_home $newmasterenv]
+	set t1 $testdir/t1
+	set t2 $testdir/t2
+	set t3 $testdir/t3
+	open_and_dump_file test0$tnum.db $newclientenv $t1 \
+	    $checkfunc dump_file_direction "-first" "-next"
+
+	if { [string compare [convert_method $method] -recno] != 0 } {
+		filesort $t1 $t3
+	}
 	error_check_good diff_files($t2,$t3) [filecmp $t2 $t3] 0
 
-	verify_dir $clientdir "\tRep001.c:" 0 0 1
+
+	error_check_good newmasterenv_close [$newmasterenv close] 0
+	error_check_good newclientenv_close [$newclientenv close] 0
+
+	if { [lsearch $envargs "-encrypta*"] !=-1 } {
+		set encrypt 1
+	}
+	error_check_good verify \
+	    [verify_dir $clientdir "\tRep0$tnum.k: " 0 0 1] 0
+	replclose $testdir/MSGQUEUEDIR
 }
-
-proc rep_test001 { method {nentries 10000} {tnum "01"} args } {
-	source ./include.tcl
-
-	set args [convert_args $method $args]
-	set omethod [convert_method $method]
-
-	puts "\tRep0$tnum: $method ($args) $nentries equal key/data pairs"
-
-	# Create the database and open the dictionary
-	set eindex [lsearch -exact $args "-env"]
-	#
-	# If we are using an env, then testfile should just be the db name.
-	# Otherwise it is the test directory and the name.
-	# If we are not using an external env, then test setting
-	# the database cache size and using multiple caches.
-	if { $eindex == -1 } {
-		set testfile $testdir/test0$tnum.db
-		append args " -cachesize {0 1048576 3} "
-		set env NULL
-	} else {
-		set testfile test0$tnum.db
-		incr eindex
-		set env [lindex $args $eindex]
-	}
-	set t1 $testdir/t1
-	set t2 $testdir/t2
-	set t3 $testdir/t3
-	set db [eval {berkdb_open \
-	     -create -mode 0644} $args $omethod $testfile]
-	error_check_good dbopen [is_valid_db $db] TRUE
-	set did [open $dict]
-
-	set pflags ""
-	set gflags ""
-	set txn ""
-
-	if { [is_record_based $method] == 1 } {
-		set checkfunc test001_recno.check
-		append gflags " -recno"
-	} else {
-		set checkfunc test001.check
-	}
-	puts "\t\tRep0$tnum.a: put/get loop"
-	# Here is the loop where we put and get each key/data pair
-	set count 0
-	while { [gets $did str] != -1 && $count < $nentries } {
-		if { [is_record_based $method] == 1 } {
-			global kvals
-
-			set key [expr $count + 1]
-			if { 0xffffffff > 0 && $key > 0xffffffff } {
-				set key [expr $key - 0x100000000]
-			}
-			if { $key == 0 || $key - 0xffffffff == 1 } {
-				incr key
-				incr count
-			}
-			set kvals($key) [pad_data $method $str]
-		} else {
-			set key $str
-			set str [reverse $str]
-		}
-		set curtxn [$env txn]
-		set ret [eval {$db put} \
-		    -txn $curtxn $pflags {$key [chop_data $method $str]}]
-		error_check_good put $ret 0
-		error_check_good txn_commit($key) [$curtxn commit] 0
-
-		set ret [eval {$db get} $gflags {$key}]
-		error_check_good \
-		    get $ret [list [list $key [pad_data $method $str]]]
-
-		# Test DB_GET_BOTH for success
-		set ret [$db get -get_both $key [pad_data $method $str]]
-		error_check_good \
-		    getboth $ret [list [list $key [pad_data $method $str]]]
-
-		# Test DB_GET_BOTH for failure
-		set ret [$db get -get_both $key [pad_data $method BAD$str]]
-		error_check_good getbothBAD [llength $ret] 0
-
-		incr count
-	}
-	close $did
-	# Now we will get each key from the DB and compare the results
-	# to the original.
-	puts "\t\tRep0$tnum.b: dump file"
-	dump_file $db $txn $t1 $checkfunc
-	error_check_good db_close [$db close] 0
-
-	# Now compare the keys to see if they match the dictionary (or ints)
-	if { [is_record_based $method] == 1 } {
-		set oid [open $t2 w]
-		for {set i 1} {$i <= $nentries} {incr i} {
-			set j [expr $i]
-			if { 0xffffffff > 0 && $j > 0xffffffff } {
-				set j [expr $j - 0x100000000]
-			}
-			if { $j == 0 } {
-				incr i
-				incr j
-			}
-			puts $oid $j
-		}
-		close $oid
-	} else {
-		set q q
-		filehead $nentries $dict $t2
-	}
-	filesort $t2 $t3
-	file rename -force $t3 $t2
-	filesort $t1 $t3
-
-	error_check_good \tRep0$tnum:diff($t3,$t2) \
-	    [filecmp $t3 $t2] 0
-
-	puts "\t\tRep0$tnum.c: close, open, and dump file"
-	# Now, reopen the file and run the last test again.
-	open_and_dump_file $testfile $env $txn $t1 $checkfunc \
-	    dump_file_direction "-first" "-next"
-	if { [string compare $omethod "-recno"] != 0 } {
-		filesort $t1 $t3
-	}
-
-	error_check_good \tRep0$tnum:diff($t2,$t3) \
-	    [filecmp $t2 $t3] 0
-
-	# Now, reopen the file and run the last test again in the
-	# reverse direction.
-	puts "\t\tRep0$tnum.d: close, open, and dump file in reverse direction"
-	open_and_dump_file $testfile $env $txn $t1 $checkfunc \
-	    dump_file_direction "-last" "-prev"
-
-	if { [string compare $omethod "-recno"] != 0 } {
-		filesort $t1 $t3
-	}
-
-	error_check_good \tRep0$tnum:diff($t3,$t2) \
-	    [filecmp $t3 $t2] 0
-}
-

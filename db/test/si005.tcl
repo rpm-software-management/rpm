@@ -1,10 +1,10 @@
 
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001
+# Copyright (c) 2001-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: si005.tcl,v 11.2 2001/07/02 01:08:46 bostic Exp 
+# Id: si005.tcl,v 11.4 2002/04/29 17:12:03 sandstro Exp 
 #
 # Sindex005: Secondary index and join test.
 proc sindex005 { methods {nitems 1000} {tnum 5} args } {
@@ -46,7 +46,7 @@ proc sindex005 { methods {nitems 1000} {tnum 5} args } {
 
 	# Open an environment
 	# XXX if one is not supplied!
-	set env [berkdb env -create -home $testdir]
+	set env [berkdb_env -create -home $testdir]
 	error_check_good env_open [is_valid_env $env] TRUE
 
 	# Open the databases.

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2001
+# Copyright (c) 1996-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: recd15scr.tcl,v 1.3 2001/05/10 15:22:18 sue Exp 
+# Id: recd15scr.tcl,v 1.5 2002/01/30 13:18:04 margo Exp 
 #
 # Recd15 - lots of txns - txn prepare script
 # Usage: recd15script envcmd dbcmd gidf numtxns
@@ -37,7 +37,7 @@ error_check_good envopen [is_valid_env $dbenv] TRUE
 set usedb 0
 if { $dbfile != "NULL" } {
 	set usedb 1
-	set db [berkdb_open -env $dbenv $dbfile]
+	set db [berkdb_open -auto_commit -env $dbenv $dbfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 }
 

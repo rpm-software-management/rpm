@@ -1,10 +1,10 @@
                                    BerkeleyDB
 
-                                  Version 0.17
+                                  Version 0.19
 
-                                22nd October 2001
+                                  5th June 2002
 
-	Copyright (c) 1997-2001 Paul Marquess. All rights reserved. This
+	Copyright (c) 1997-2002 Paul Marquess. All rights reserved. This
 	program is free software; you can redistribute it and/or modify
 	it under the same terms as Perl itself.
 
@@ -106,37 +106,56 @@ This symptom can imply:
     Solution: Edit config.in and set the LIB and INCLUDE variables to point
               to the directories where libdb.a and db.h are installed.
 
-Wrong db.h
-----------
+#error db.h is not for Berkeley DB at all.
+------------------------------------------
 
-If you get an error like this when building this module:
+If you get the error above when building this module it means that there
+is a file called "db.h" on your system that isn't the one that comes
+with Berkeley DB.
 
-  cc -c -I./libraries/ -Dbool=char -DHAS_BOOL -I/usr/local/include -O2
-  -DVERSION=\"0.07\" -DXS_VERSION=\"0.07\" -fpic
-  -I/usr/local/lib/perl5/5.00503/i586-linux/CORE  BerkeleyDB.c
-  BerkeleyDB.xs:93: parse error before `DB_INFO'
-  BerkeleyDB.xs:93: warning: no semicolon at end of struct or union
-  BerkeleyDB.xs:94: warning: data definition has no type or storage class
-  BerkeleyDB.xs:95: parse error before `0x80000000'
-  BerkeleyDB.xs:110: parse error before `}'
-  BerkeleyDB.xs:110: warning: data definition has no type or storage class
-  BerkeleyDB.xs:117: parse error before `DB_ENV'
-  ...
+Options:
 
-This error usually happens when if you only have Berkeley DB version 1
-on your system or you have both version 1 and version 2 (or 3) of Berkeley
-DB installed on your system. When building BerkeleyDB it attempts 
-to use the db.h for Berkeley DB version 1. This perl module can only
-be built with Berkeley DB version 2 or 3.
+ 1. You don't have Berkeley DB installed on your system at all.
+    Solution: get & install Berkeley DB.
+
+ 2. Edit config.in and make sure the INCLUDE variable points to the
+    directory where the Berkeley DB file db.h is installed.
+
+ 3. If option 2 doesn't work, try tempoarily renaming the db.h file
+    that is causing the error.
+
+#error db.h is for Berkeley DB 1.x - need at least Berkeley DB 2.6.4
+--------------------------------------------------------------------
+
+The error above will occur if there is a copy of the Berkeley DB 1.x
+file db.h on your system.
+
+This error will happen when 
+
+  1. you only have Berkeley DB version 1 on your system.
+     Solution: get & install a newer version of Berkeley DB.
+
+  2. you have both version 1 and a later version of Berkeley DB
+     installed on your system. When building BerkeleyDB it attempts to
+     use the db.h for Berkeley DB version 1.
+     Solution: Edit config.in and set the LIB and INCLUDE variables
+               to point to the directories where libdb.a and db.h are
+               installed.
+
+
+#error db.h is for Berkeley DB 2.0-2.5 - need at least Berkeley DB 2.6.4
+------------------------------------------------------------------------
+
+The error above will occur if there is a copy of the the file db.h for
+Berkeley DB 2.0 to 2.5 on your system.
 
 This symptom can imply:
 
- 1. You don't have Berkeley DB version 2 or 3 installed on your system
-    at all.
-    Solution: get & install Berkeley DB.
+ 1. You don't have a new enough version of Berkeley DB.
+    Solution: get & install a newer version of Berkeley DB.
 
- 2. You do have Berkeley DB 2 or 3 installed, but it isn't in a standard
-    place.
+ 2. You have the correct version of Berkeley DB installed, but it isn't
+    in a standard place.
     Solution: Edit config.in and set the LIB and INCLUDE variables
               to point to the directories where libdb.a and db.h are
               installed.
@@ -158,11 +177,11 @@ when you run the test harness:
   at /usr/local/lib/perl5/5.00503/i586-linux/DynaLoader.pm line 169.
   ...
 
-This error usually happens when you have both version 1 and version
-2 (or 3) of Berkeley DB installed on your system and BerkeleyDB attempts
-to build using the db.h for Berkeley DB version 2/3 and the version 1
+This error usually happens when you have both version 1 and a newer version
+of Berkeley DB installed on your system. BerkeleyDB attempts
+to build using the db.h for Berkeley DB version 2/3/4 and the version 1
 library. Unfortunately the two versions aren't compatible with each
-other. BerkeleyDB can only be built with Berkeley DB version 2 or 3.
+other. BerkeleyDB can only be built with Berkeley DB version 2, 3 or 4.
 
 Solution: Setting the LIB & INCLUDE variables in config.in to point to the
           correct directories can sometimes be enough to fix this
@@ -302,7 +321,7 @@ be used to build this module. Follow the instructions in "BUILDING THE
 MODULE", remembering to set the INCLUDE and LIB variables in config.in.
 
 
-The second approach will work with both Berkeley DB 2.x and 3.x.
+The second approach will work with Berkeley DB 2.x or better.
 Start by building Berkeley DB as a shared library. This is from
 the Berkeley DB build instructions:
 
@@ -420,7 +439,7 @@ To help me help you, I need of the following information:
  2. The version of BerkeleyDB you have. If you have successfully
     installed BerkeleyDB, this one-liner will tell you:
 
-       perl -MBerkeleyDB -e 'print "BerkeleyDB ver $BerkeleyDB::VERSION\n"'
+       perl -MBerkeleyDB -e 'print qq{BerkeleyDB ver $BerkeleyDB::VERSION\n}'
 
     If you haven't installed BerkeleyDB then search BerkeleyDB.pm for a
     line like this:
@@ -430,7 +449,7 @@ To help me help you, I need of the following information:
  3. The version of Berkeley DB you have installed. If you have
     successfully installed BerkeleyDB, this one-liner will tell you:
 
-        perl -MBerkeleyDB -e 'print BerkeleyDB::DB_VERSION_STRING."\n"'
+        perl -MBerkeleyDB -e 'print BerkeleyDB::DB_VERSION_STRING.qq{\n}'
 
     If you haven't installed BerkeleyDB then search db.h for a line
     like this:

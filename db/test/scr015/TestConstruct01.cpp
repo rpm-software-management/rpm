@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000
+ * Copyright (c) 2000-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestConstruct01.cpp,v 1.3 2001/10/05 01:50:17 bostic Exp 
+ * Id: TestConstruct01.cpp,v 1.5 2002/01/23 14:26:40 bostic Exp 
  */
 
 /*
@@ -109,8 +109,7 @@ void rundb(Db *db, int count, int has_env)
 	// opening the db.
 	//
 	CHK(db->set_pagesize(1024));
-	CHK(db->open(name, NULL, DB_BTREE,
-		 count ? 0 : DB_CREATE, 0664));
+	CHK(db->open(NULL, name, NULL, DB_BTREE, count ? 0 : DB_CREATE, 0664));
 
 	// The bit map of keys we've seen
 	long bitmap = 0;

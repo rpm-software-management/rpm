@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000
+ * Copyright (c) 2000-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestSimpleAccess.cpp,v 1.3 2001/10/05 01:50:17 bostic Exp 
+ * Id: TestSimpleAccess.cpp,v 1.5 2002/01/23 14:26:41 bostic Exp 
  */
 
 /*
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 {
 	try {
 		Db *db = new Db(NULL, 0);
-		db->open("my.db", NULL, DB_BTREE, DB_CREATE, 0644);
+		db->open(NULL, "my.db", NULL, DB_BTREE, DB_CREATE, 0644);
 
 		// populate our massive database.
 		// all our strings include null for convenience.

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2001
+# Copyright (c) 2000-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: test095.tcl,v 11.13 2001/10/11 18:08:40 sandstro Exp 
+# Id: test095.tcl,v 11.16 2002/08/08 15:38:12 bostic Exp 
 #
 # TEST	test095
 # TEST	Bulk get test. [#2934]
@@ -12,6 +12,7 @@ proc test095 { method {nsets 1000} {noverflows 25} {tnum 95} args } {
 	set args [convert_args $method $args]
 	set omethod [convert_method $method]
 
+	set txnenv 0
 	set eindex [lsearch -exact $args "-env"]
 	#
 	# If we are using an env, then testfile should just be the db name.
@@ -26,6 +27,12 @@ proc test095 { method {nsets 1000} {noverflows 25} {tnum 95} args } {
 		set basename test0$tnum
 		incr eindex
 		set env [lindex $args $eindex]
+		set txnenv [is_txnenv $env]
+		if { $txnenv == 1 } {
+			puts "Skipping for environment with txns"
+			return
+		}
+		set testdir [get_home $env]
 		set carg {}
 	}
 	cleanup $testdir $env
@@ -266,6 +273,7 @@ proc t95_verify { res multiple_keys } {
 # Add nsets dup sets, each consisting of {word$ndups word$n} pairs,
 # with "word" having (i * pad_bytes)  bytes extra padding.
 proc t95_populate { db did nsets pad_bytes } {
+	set txn ""
 	for { set i 1 } { $i <= $nsets } { incr i } {
 		# basekey is a padded dictionary word
 		gets $did basekey
@@ -278,7 +286,7 @@ proc t95_populate { db did nsets pad_bytes } {
 		for { set j 0 } { $j < $i } { incr j } {
 			set data $basekey.[format %4u $j]
 			error_check_good db_put($key,$data) \
-			    [$db put $key $data] 0
+			    [eval {$db put} $txn {$key $data}] 0
 		}
 	}
 

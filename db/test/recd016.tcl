@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2001
+# Copyright (c) 1999-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: recd016.tcl,v 11.1 2001/11/07 18:45:02 sue Exp 
+# Id: recd016.tcl,v 11.6 2002/05/24 16:14:15 sue Exp 
 #
 # TEST	recd016
 # TEST	This is a recovery test for testing running recovery while
@@ -39,12 +39,17 @@ proc recd016 { method args } {
 	set t3 $testdir/t3
 	set t4 $testdir/t4
 	set t5 $testdir/t5
+	# Since we are using txns, we need at least 1 lock per
+	# record (for queue).  So set lock_max accordingly.
+	set lkmax [expr $nentries * 2]
 
 	puts "\tRecd016.a: Create environment and database"
-	set env_cmd "berkdb env -create -log_max $log_max -txn -home $testdir"
+	set env_cmd "berkdb_env -create -log_max $log_max \
+	    -lock_max $lkmax -txn -home $testdir"
 	set env [eval $env_cmd]
 	error_check_good dbenv [is_valid_env $env] TRUE
-	set db [eval {berkdb_open -create} $omethod -env $env $args $testfile]
+	set db [eval {berkdb_open -create} \
+	    $omethod -auto_commit -env $env $args $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	set did [open $dict]
 	set abid [open $t4 w]
@@ -149,8 +154,7 @@ proc recd016 { method args } {
 	set env [eval $env_cmd]
 	error_check_good dbenv [is_valid_env $env] TRUE
 
-	set txn ""
-	open_and_dump_file $testfile $env $txn $t1 $checkfunc \
+	open_and_dump_file $testfile $env $t1 $checkfunc \
 	    dump_file_direction "-first" "-next"
 	filesort $t1 $t3
 	error_check_good envclose [$env close] 0

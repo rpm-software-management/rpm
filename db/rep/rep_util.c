@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_util.c,v 1.29 2001/11/16 10:57:51 krinsky Exp ";
+static const char revid[] = "Id: rep_util.c,v 1.50 2002/08/06 04:50:36 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -17,27 +17,26 @@ static const char revid[] = "Id: rep_util.c,v 1.29 2001/11/16 10:57:51 krinsky E
 #endif
 
 #include "db_int.h"
-#include "log.h"
-#include "rep.h"
-#include "txn.h"
-#include "db_page.h"
-#include "db_am.h"
-#include "btree.h"
-#include "hash.h"
-#include "qam.h"
-#include "db_shash.h"
-#include "lock.h"
+#include "dbinc/db_page.h"
+#include "dbinc/btree.h"
+#include "dbinc/fop.h"
+#include "dbinc/hash.h"
+#include "dbinc/log.h"
+#include "dbinc/qam.h"
+#include "dbinc/rep.h"
+#include "dbinc/txn.h"
 
 /*
  * rep_util.c:
  *	Miscellaneous replication-related utility functions, including
  *	those called by other subsystems.
  */
-static int __rep_apply_thread __P((DB_ENV *,
-    int (**)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *),
-    DBT *, DB_LSN *, TXN_RECS *));
 static int __rep_cmp_bylsn __P((const void *, const void *));
 static int __rep_cmp_bypage __P((const void *, const void *));
+
+#ifdef REP_DIAGNOSTIC
+static void __rep_print_logmsg __P((DB_ENV *, const DBT *, DB_LSN *));
+#endif
 
 /*
  * __rep_check_alloc --
@@ -90,6 +89,7 @@ __rep_send_message(dbenv, eid, rtype, lsnp, dbtp, flags)
 	DBT cdbt, scrap_dbt;
 	REP_CONTROL cntrl;
 	u_int32_t send_flags;
+	int ret;
 
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
@@ -104,7 +104,7 @@ __rep_send_message(dbenv, eid, rtype, lsnp, dbtp, flags)
 	cntrl.flags = flags;
 	cntrl.rep_version = DB_REPVERSION;
 	cntrl.log_version = DB_LOGVERSION;
-	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
+	MUTEX_LOCK(dbenv, db_rep->mutexp);
 	cntrl.gen = rep->gen;
 	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 
@@ -118,11 +118,66 @@ __rep_send_message(dbenv, eid, rtype, lsnp, dbtp, flags)
 		dbtp = &scrap_dbt;
 	}
 
-	send_flags = (LF_ISSET(DB_FLUSH) ? DB_REP_PERMANENT : 0);
+	send_flags = (LF_ISSET(DB_PERMANENT) ? DB_REP_PERMANENT : 0);
 
-	return (db_rep->rep_send(dbenv, &cdbt, dbtp, eid, send_flags));
+#if 0
+	__rep_print_message(eid, &cntrl, "rep_send_message");
+#endif
+#ifdef REP_DIAGNOSTIC
+	if (rtype == REP_LOG)
+		__rep_print_logmsg(dbenv, dbtp, lsnp);
+#endif
+	ret = db_rep->rep_send(dbenv, &cdbt, dbtp, eid, send_flags);
+
+	/*
+	 * We don't hold the rep lock, so this could miscount if we race.
+	 * I don't think it's worth grabbing the mutex for that bit of
+	 * extra accuracy.
+	 */
+	if (ret == 0)
+		rep->stat.st_msgs_sent++;
+	else
+		rep->stat.st_msgs_send_failures++;
+
+	return (ret);
 }
 
+#ifdef REP_DIAGNOSTIC
+
+/*
+ * __rep_print_logmsg --
+ *	This is a debugging routine for printing out log records that
+ * we are about to transmit to a client.
+ */
+
+static void
+__rep_print_logmsg(dbenv, logdbt, lsnp)
+	DB_ENV *dbenv;
+	const DBT *logdbt;
+	DB_LSN *lsnp;
+{
+	/* Static structures to hold the printing functions. */
+	static int (**ptab)__P((DB_ENV *,
+	    DBT *, DB_LSN *, db_recops, void *)) = NULL;
+	size_t ptabsize = 0;
+
+	if (ptabsize == 0) {
+		/* Initialize the table. */
+		(void)__bam_init_print(dbenv, &ptab, &ptabsize);
+		(void)__crdel_init_print(dbenv, &ptab, &ptabsize);
+		(void)__db_init_print(dbenv, &ptab, &ptabsize);
+		(void)__dbreg_init_print(dbenv, &ptab, &ptabsize);
+		(void)__fop_init_print(dbenv, &ptab, &ptabsize);
+		(void)__qam_init_print(dbenv, &ptab, &ptabsize);
+		(void)__ham_init_print(dbenv, &ptab, &ptabsize);
+		(void)__txn_init_print(dbenv, &ptab, &ptabsize);
+	}
+
+	(void)__db_dispatch(dbenv,
+	    ptab, ptabsize, (DBT *)logdbt, lsnp, DB_TXN_PRINT, NULL);
+}
+
+#endif
 /*
  * __rep_new_master --
  *	Called after a master election to sync back up with a new master.
@@ -152,13 +207,14 @@ __rep_new_master(dbenv, cntrl, eid)
 
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
-	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
+	MUTEX_LOCK(dbenv, db_rep->mutexp);
 	ELECTION_DONE(rep);
 	change = rep->gen != cntrl->gen || rep->master_id != eid;
 	if (change) {
 		rep->gen = cntrl->gen;
 		rep->master_id = eid;
 		F_SET(rep, REP_F_RECOVER);
+		rep->stat.st_master_changes++;
 	}
 	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 
@@ -180,8 +236,8 @@ __rep_new_master(dbenv, cntrl, eid)
 	if (last_lsn.offset > sizeof(LOGP))
 		last_lsn.offset -= lp->len;
 	R_UNLOCK(dbenv, &dblp->reginfo);
-	if (IS_INIT_LSN(lsn)) {
-empty:		MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
+	if (IS_INIT_LSN(lsn) || IS_ZERO_LSN(lsn)) {
+empty:		MUTEX_LOCK(dbenv, db_rep->mutexp);
 		F_CLR(rep, REP_F_RECOVER);
 		MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 
@@ -211,6 +267,9 @@ empty:		MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
 			return (ret);
 	}
 
+	R_LOCK(dbenv, &dblp->reginfo);
+	lp->verify_lsn = last_lsn;
+	R_UNLOCK(dbenv, &dblp->reginfo);
 	if ((ret = __rep_send_message(dbenv,
 	    eid, REP_VERIFY_REQ, &last_lsn, NULL, 0)) != 0)
 		return (ret);
@@ -240,9 +299,10 @@ __rep_lockpgno_init(dbenv, dtabp, dtabsizep)
 	if ((ret = __bam_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0 ||
 	    (ret = __crdel_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0 ||
 	    (ret = __db_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0 ||
+	    (ret = __dbreg_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0 ||
+	    (ret = __fop_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0 ||
 	    (ret = __qam_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0 ||
 	    (ret = __ham_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0 ||
-	    (ret = __log_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0 ||
 	    (ret = __txn_init_getpgnos(dbenv, dtabp, dtabsizep)) != 0)
 		return (ret);
 
@@ -277,12 +337,13 @@ __rep_unlockpages(dbenv, lid)
  *
  * PUBLIC: int __rep_lockpages __P((DB_ENV *,
  * PUBLIC:     int (**)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *),
- * PUBLIC:     DB_LSN *, DB_LSN *, TXN_RECS *, u_int32_t));
+ * PUBLIC:     size_t, DB_LSN *, DB_LSN *, TXN_RECS *, u_int32_t));
  */
 int
-__rep_lockpages(dbenv, dtab, key_lsn, max_lsn, recs, lid)
+__rep_lockpages(dbenv, dtab, dtabsize, key_lsn, max_lsn, recs, lid)
 	DB_ENV *dbenv;
 	int (**dtab)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+	size_t dtabsize;
 	DB_LSN *key_lsn, *max_lsn;
 	TXN_RECS *recs;
 	u_int32_t lid;
@@ -328,10 +389,13 @@ __rep_lockpages(dbenv, dtab, key_lsn, max_lsn, recs, lid)
 
 	/* Single transaction apply. */
 	if (max_lsn != NULL) {
+		DB_ASSERT(0); /* XXX */
+		/*
 		tmp_lsn = *max_lsn;
-		if ((ret = __rep_apply_thread(dbenv, dtab,
+		if ((ret = __rep_apply_thread(dbenv, dtab, dtabsize,
 		    &data_dbt, &tmp_lsn, t)) != 0)
 			goto err;
+			*/
 	}
 
 	/* In recovery. */
@@ -343,11 +407,19 @@ __rep_lockpages(dbenv, dtab, key_lsn, max_lsn, recs, lid)
 		/* Save lsn values, since dispatch functions can change them. */
 		tmp_lsn = *key_lsn;
 		ret = __db_dispatch(dbenv,
-		    dtab, &data_dbt, &tmp_lsn, DB_TXN_APPLY, t);
+		    dtab, dtabsize, &data_dbt, &tmp_lsn, DB_TXN_GETPGNOS, t);
 
 		if ((t_ret = logc->close(logc, 0)) != 0 && ret == 0)
 			ret = t_ret;
-		if (ret != 0)
+
+		/*
+		 * If ret == DB_DELETED, this record refers to a temporary
+		 * file and there's nothing to apply.
+		 */
+		if (ret == DB_DELETED) {
+			ret = 0;
+			goto out;
+		} else if (ret != 0)
 			goto err;
 	}
 
@@ -380,8 +452,8 @@ __rep_lockpages(dbenv, dtab, key_lsn, max_lsn, recs, lid)
 	/* Handle single lock case specially, else allocate space for locks. */
 	if (unique == 1) {
 		memset(&lo, 0, sizeof(lo));
-		lo.data = &t->array[i].pgdesc;
-		lo.size = sizeof(&t->array[0].pgdesc);
+		lo.data = &t->array[0].pgdesc;
+		lo.size = sizeof(t->array[0].pgdesc);
 		ret = dbenv->lock_get(dbenv, lid, 0, &lo, DB_LOCK_WRITE, &l);
 		goto out2;
 	}
@@ -408,30 +480,26 @@ __rep_lockpages(dbenv, dtab, key_lsn, max_lsn, recs, lid)
 			locks.reqs[unique].mode = DB_LOCK_WRITE;
 			locks.reqs[unique].obj = &locks.objs[unique];
 			locks.objs[unique].data = &t->array[i].pgdesc;
-			locks.objs[unique].size = sizeof(&t->array[i].pgdesc);
+			locks.objs[unique].size = sizeof(t->array[i].pgdesc);
 			unique++;
 		}
 	}
 
 	/* Finally, get the locks. */
 	if ((ret =
-	    dbenv->lock_vec(dbenv, lid, 0, locks.reqs, unique, &lvp)) != 0)
-		goto err;
-
-	if (0) {
+	    dbenv->lock_vec(dbenv, lid, 0, locks.reqs, unique, &lvp)) != 0) {
 		/*
-		 * If we finished successfully, then we need to retain
-		 * the locks, but we can free everything else up, because
-		 * we can do a release by locker-id.
+		 * If we were unsuccessful, unlock any locks we acquired before
+		 * the error and return the original error value.
 		 */
-err:		if ((t_ret = __rep_unlockpages(dbenv, lid)) != 0 && ret == 0)
-			ret = t_ret;
+		(void)__rep_unlockpages(dbenv, lid);
 	}
 
+err:
 out:	if (locks.objs != NULL)
-		__os_free(dbenv, locks.objs, locks.n * sizeof(DBT));
+		__os_free(dbenv, locks.objs);
 	if (locks.reqs != NULL)
-		__os_free(dbenv, locks.reqs, locks.n * sizeof(DB_LOCKREQ));
+		__os_free(dbenv, locks.reqs);
 
 	/*
 	 * Before we return, sort by LSN so that we apply records in the
@@ -439,11 +507,14 @@ out:	if (locks.objs != NULL)
 	 */
 	qsort(t->array, t->npages, sizeof(LSN_PAGE), __rep_cmp_bylsn);
 
-out2:	if ((ret != 0 || recs == NULL) && t->nalloc != 0)
-		__os_free(dbenv, t->array, t->nalloc * sizeof(LSN_PAGE));
+out2:	if ((ret != 0 || recs == NULL) && t->nalloc != 0) {
+		__os_free(dbenv, t->array);
+		t->array = NULL;
+		t->npages = t->nalloc = 0;
+	}
 
 	if (F_ISSET(&data_dbt, DB_DBT_REALLOC) && data_dbt.data != NULL)
-		__os_free(dbenv, data_dbt.data, 0);
+		__os_ufree(dbenv, data_dbt.data);
 
 	return (ret);
 }
@@ -526,62 +597,6 @@ __rep_cmp_bylsn(a, b)
 }
 
 /*
- * __rep_apply_thread
- *	Recursive function that will let us visit every entry in a transaction
- *	chain including all child transactions so that we can then apply
- *	the entire transaction family at once.
- */
-static int
-__rep_apply_thread(dbenv, dtab, datap, lsnp, recp)
-	DB_ENV *dbenv;
-	int (**dtab) __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
-	DBT *datap;
-	DB_LSN *lsnp;
-	TXN_RECS *recp;
-{
-	__txn_child_args *argp;
-	DB_LOGC *logc;
-	DB_LSN c_lsn;
-	u_int32_t rectype;
-	int ret, t_ret;
-
-	if ((ret = dbenv->log_cursor(dbenv, &logc, 0)) != 0)
-		return (ret);
-
-	while (!IS_ZERO_LSN(*lsnp) &&
-	    (ret = logc->get(logc, lsnp, datap, DB_SET)) == 0) {
-		memcpy(&rectype, datap->data, sizeof(rectype));
-		if (rectype == DB_txn_child) {
-			if ((ret = __txn_child_read(dbenv,
-			    datap->data, &argp)) != 0)
-				goto err;
-			c_lsn = argp->c_lsn;
-			*lsnp = argp->prev_lsn;
-			__os_free(dbenv, argp, 0);
-			ret = __rep_apply_thread(dbenv,
-			    dtab, datap, &c_lsn, recp);
-		} else {
-			ret = __db_dispatch(dbenv, dtab,
-			    datap, lsnp, DB_TXN_APPLY, recp);
-			/*
-			 * Explicitly copy the previous lsn since the
-			 * page gathering routines don't modify it for you.
-			 */
-			memcpy(lsnp, (u_int8_t *)datap->data +
-			    sizeof(u_int32_t) + sizeof (DB_TXN *),
-			    sizeof(DB_LSN));
-		}
-
-		if (ret != 0)
-			goto err;
-	}
-
-err:	if ((t_ret = logc->close(logc, 0)) != 0 && ret == 0)
-		ret = t_ret;
-	return (ret);
-}
-
-/*
  * __rep_is_client
  *	Used by other subsystems to figure out if this is a replication
  * client sites.
@@ -600,7 +615,7 @@ __rep_is_client(dbenv)
 		return (0);
 	rep = db_rep->region;
 
-	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
+	MUTEX_LOCK(dbenv, db_rep->mutexp);
 	ret = F_ISSET(rep, REP_F_UPGRADE | REP_F_LOGSONLY);
 	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 	return (ret);
@@ -610,19 +625,22 @@ __rep_is_client(dbenv)
  * __rep_send_vote
  *	Send this site's vote for the election.
  *
- * PUBLIC: int __rep_send_vote __P((DB_ENV *, DB_LSN *, int, int));
+ * PUBLIC: int __rep_send_vote __P((DB_ENV *, DB_LSN *, int, int, int));
  */
 int
-__rep_send_vote(dbenv, lsnp, nsites, pri)
+__rep_send_vote(dbenv, lsnp, nsites, pri, tiebreaker)
 	DB_ENV *dbenv;
 	DB_LSN *lsnp;
-	int nsites, pri;
+	int nsites, pri, tiebreaker;
 {
 	DBT vote_dbt;
 	REP_VOTE_INFO vi;
 
+	memset(&vi, 0, sizeof(vi));
+
 	vi.priority = pri;
 	vi.nsites = nsites;
+	vi.tiebreaker = tiebreaker;
 
 	memset(&vote_dbt, 0, sizeof(vote_dbt));
 	vote_dbt.data = &vi;
@@ -664,7 +682,7 @@ __rep_grow_sites(dbenv, nsites)
 
 	infop = dbenv->reginfo;
 	renv = infop->primary;
-	MUTEX_LOCK(dbenv, &renv->mutex, dbenv->lockfhp);
+	MUTEX_LOCK(dbenv, &renv->mutex);
 	if ((ret = __db_shalloc(infop->addr,
 	    sizeof(nalloc * sizeof(int)), sizeof(int), &tally)) == 0) {
 		if (rep->tally_off != INVALID_ROFF)
@@ -753,5 +771,95 @@ err:	if (LOCK_ISSET(lk) && (t_ret = __LPUT(dbc, lk)) != 0 && ret == 0)
 	if (dbp != NULL && (t_ret = dbp->close(dbp, 0)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
+}
+#endif
+
+#if 0
+/*
+ * PUBLIC: void __rep_print_message __P((int, REP_CONTROL *, char *));
+ */
+void
+__rep_print_message(eid, rp, str)
+	int eid;
+	REP_CONTROL *rp;
+	char *str;
+{
+	char *type;
+	switch (rp->rectype) {
+	case REP_ALIVE:
+		type = "alive";
+		break;
+	case REP_ALIVE_REQ:
+		type = "alive_req";
+		break;
+	case REP_ALL_REQ:
+		type = "all_req";
+		break;
+	case REP_ELECT:
+		type = "elect";
+		break;
+	case REP_FILE:
+		type = "file";
+		break;
+	case REP_FILE_REQ:
+		type = "file_req";
+		break;
+	case REP_LOG:
+		type = "log";
+		break;
+	case REP_LOG_MORE:
+		type = "log_more";
+		break;
+	case REP_LOG_REQ:
+		type = "log_req";
+		break;
+	case REP_MASTER_REQ:
+		type = "master_req";
+		break;
+	case REP_NEWCLIENT:
+		type = "newclient";
+		break;
+	case REP_NEWFILE:
+		type = "newfile";
+		break;
+	case REP_NEWMASTER:
+		type = "newmaster";
+		break;
+	case REP_NEWSITE:
+		type = "newsite";
+		break;
+	case REP_PAGE:
+		type = "page";
+		break;
+	case REP_PAGE_REQ:
+		type = "page_req";
+		break;
+	case REP_PLIST:
+		type = "plist";
+		break;
+	case REP_PLIST_REQ:
+		type = "plist_req";
+		break;
+	case REP_VERIFY:
+		type = "verify";
+		break;
+	case REP_VERIFY_FAIL:
+		type = "verify_fail";
+		break;
+	case REP_VERIFY_REQ:
+		type = "verify_req";
+		break;
+	case REP_VOTE1:
+		type = "vote1";
+		break;
+	case REP_VOTE2:
+		type = "vote2";
+		break;
+	default:
+		type = "NOTYPE";
+		break;
+	}
+	printf("%s: eid %d, type %s, LSN [%u][%u]\n", str, eid,
+		type, rp->lsn.file, rp->lsn.offset);
 }
 #endif

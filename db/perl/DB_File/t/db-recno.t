@@ -1,8 +1,5 @@
 #!./perl -w
 
-use warnings;
-use strict ;
-
 BEGIN {
     unless(grep /blib/, @INC) {
         chdir 't' if -d 't';
@@ -10,12 +7,14 @@ BEGIN {
     }
 }
  
+use warnings;
+use strict;
 use Config;
  
 BEGIN {
     if(-d "lib" && -f "TEST") {
         if ($Config{'extensions'} !~ /\bDB_File\b/ ) {
-            print "1..138\n";
+            print "1..0 # Skip: DB_File was not built\n";
             exit 0;
         }
     }
@@ -23,7 +22,7 @@ BEGIN {
 
 use DB_File; 
 use Fcntl;
-use vars qw($dbh $Dfile $bad_ones $FA) ;
+our ($dbh, $Dfile, $bad_ones, $FA);
 
 # full tied array support started in Perl 5.004_57
 # Double check to see if it is available.
@@ -78,26 +77,38 @@ sub docat
     open(CAT,$file) || die "Cannot open $file:$!";
     my $result = <CAT>;
     close(CAT);
+    normalise($result) ;
     return $result;
 }
 
 sub docat_del
 { 
     my $file = shift;
-    local $/ = undef;
-    open(CAT,$file) || die "Cannot open $file: $!";
-    my $result = <CAT>;
-    close(CAT);
+    my $result = docat($file);
     unlink $file ;
     return $result;
 }   
 
 sub bad_one
 {
-    print STDERR <<EOM unless $bad_ones++ ;
+    unless ($bad_ones++) {
+	print STDERR <<EOM ;
 #
-# Some older versions of Berkeley DB version 1 will fail tests 51,
-# 53 and 55.
+# Some older versions of Berkeley DB version 1 will fail db-recno
+# tests 61, 63 and 65.
+EOM
+        if ($^O eq 'darwin'
+	    && $Config{db_version_major} == 1
+	    && $Config{db_version_minor} == 0
+	    && $Config{db_version_patch} == 0) {
+	    print STDERR <<EOM ;
+#
+# For example Mac OS X 10.1.4 (or earlier) has such an old
+# version of Berkeley DB.
+EOM
+	}
+
+	print STDERR <<EOM ;
 #
 # You can safely ignore the errors if you're never going to use the
 # broken functionality (recno databases with a modified bval). 
@@ -108,21 +119,41 @@ sub bad_one
 # being updated -- Check out http://www.sleepycat.com/ for more details.
 #
 EOM
+    }
 }
 
-my $splice_tests = 10 + 1; # ten regressions, plus the randoms
+sub normalise
+{
+    return unless $^O eq 'cygwin' ;
+    foreach (@_)
+      { s#\r\n#\n#g }     
+}
+
+BEGIN 
+{ 
+    { 
+        local $SIG{__DIE__} ; 
+        eval { require Data::Dumper ; import Data::Dumper } ; 
+    }
+ 
+    if ($@) {
+        *Dumper = sub { my $a = shift; return "[ @{ $a } ]" } ;
+    }          
+}
+
+my $splice_tests = 10 + 11 + 1; # ten regressions, 11 warnings, plus the randoms
 my $total_tests = 138 ;
 $total_tests += $splice_tests if $FA ;
 print "1..$total_tests\n";   
 
-my $Dfile = "recno.tmp";
+$Dfile = "recno.tmp";
 unlink $Dfile ;
 
 umask(0);
 
 # Check the interface to RECNOINFO
 
-my $dbh = new DB_File::RECNOINFO ;
+$dbh = new DB_File::RECNOINFO ;
 ok(1, ! defined $dbh->{bval}) ;
 ok(2, ! defined $dbh->{cachesize}) ;
 ok(3, ! defined $dbh->{psize}) ;
@@ -165,8 +196,10 @@ my $X  ;
 my @h ;
 ok(17, $X = tie @h, 'DB_File', $Dfile, O_RDWR|O_CREAT, 0640, $DB_RECNO ) ;
 
+my %noMode = map { $_, 1} qw( amigaos MSWin32 NetWare cygwin ) ;
+
 ok(18, ((stat($Dfile))[2] & 0777) == (($^O eq 'os2' || $^O eq 'MacOS') ? 0666 : 0640)
-	||  $^O eq 'MSWin32' ||  $^O eq 'NetWare' || $^O eq 'amigaos') ;
+	||  $noMode{$^O} );
 
 #my $l = @h ;
 my $l = $X->length ;
@@ -382,7 +415,7 @@ unlink $Dfile;
 
    use warnings ;
    use strict ;
-   use vars qw( @ISA @EXPORT) ;
+   our (@ISA, @EXPORT);
 
    require Exporter ;
    use DB_File;
@@ -426,7 +459,7 @@ unlink $Dfile;
    1 ;
 EOM
 
-    close FILE ;
+    close FILE  or die "Could not close: $!";
 
     BEGIN { push @INC, '.'; } 
     eval 'use SubDB ; ';
@@ -436,6 +469,7 @@ EOM
     eval '
 	$X = tie(@h, "SubDB","recno.tmp", O_RDWR|O_CREAT, 0640, $DB_RECNO );
 	' ;
+    die "Could not tie: $!" unless $X;
 
     main::ok(68, $@ eq "") ;
 
@@ -774,7 +808,7 @@ EOM
 
     use warnings FATAL => qw(all);
     use strict ;
-    use vars qw(@h $H $file $i) ;
+    our (@h, $H, $file, $i);
     use DB_File ;
     use Fcntl ;
     
@@ -921,6 +955,81 @@ EOM
 exit unless $FA ;
 
 # Test SPLICE
+
+{
+    # check that the splice warnings are under the same lexical control
+    # as their non-tied counterparts.
+
+    use warnings;
+    use strict;
+
+    my $a = '';
+    my @a = (1);
+    local $SIG{__WARN__} = sub {$a = $_[0]} ;
+
+    unlink $Dfile;
+    my @tied ;
+    
+    tie @tied, 'DB_File', $Dfile, O_RDWR|O_CREAT, 0664, $DB_RECNO 
+	or die "Can't open file: $!\n" ;
+
+    # uninitialized offset
+    use warnings;
+    my $offset ;
+    $a = '';
+    splice(@a, $offset);
+    ok(139, $a =~ /^Use of uninitialized value /);
+    $a = '';
+    splice(@tied, $offset);
+    ok(140, $a =~ /^Use of uninitialized value in splice/);
+
+    no warnings 'uninitialized';
+    $a = '';
+    splice(@a, $offset);
+    ok(141, $a eq '');
+    $a = '';
+    splice(@tied, $offset);
+    ok(142, $a eq '');
+
+    # uninitialized length
+    use warnings;
+    my $length ;
+    $a = '';
+    splice(@a, 0, $length);
+    ok(143, $a =~ /^Use of uninitialized value /);
+    $a = '';
+    splice(@tied, 0, $length);
+    ok(144, $a =~ /^Use of uninitialized value in splice/);
+
+    no warnings 'uninitialized';
+    $a = '';
+    splice(@a, 0, $length);
+    ok(145, $a eq '');
+    $a = '';
+    splice(@tied, 0, $length);
+    ok(146, $a eq '');
+
+    # offset past end of array
+    use warnings;
+    $a = '';
+    splice(@a, 3);
+    my $splice_end_array = ($a =~ /^splice\(\) offset past end of array/);
+    $a = '';
+    splice(@tied, 3);
+    ok(147, !$splice_end_array || $a =~ /^splice\(\) offset past end of array/);
+
+    no warnings 'misc';
+    $a = '';
+    splice(@a, 3);
+    ok(148, $a eq '');
+    $a = '';
+    splice(@tied, 3);
+    ok(149, $a eq '');
+
+    untie @tied;
+    unlink $Dfile;
+}
+
 # 
 # These are a few regression tests: bundles of five arguments to pass
 # to test_splice().  The first four arguments correspond to those
@@ -978,15 +1087,14 @@ my @tests = ([ [ 'falsely', 'dinosaur', 'remedy', 'commotion',
 	       'void' ],
 	    );
 
-my $testnum = 139;
+my $testnum = 150;
 my $failed = 0;
 require POSIX; my $tmp = POSIX::tmpnam();
 foreach my $test (@tests) {
     my $err = test_splice(@$test);
     if (defined $err) {
-	require Data::Dumper;
-	print STDERR "failed: ", Data::Dumper::Dumper($test);
-	print STDERR "error: $err\n";
+	print STDERR "# failed: ", Dumper($test);
+	print STDERR "# error: $err\n";
 	$failed = 1;
 	ok($testnum++, 0);
     }
@@ -995,7 +1103,7 @@ foreach my $test (@tests) {
 
 if ($failed) {
     # Not worth running the random ones
-    print STDERR 'skipping ', $testnum++, "\n";
+    print STDERR '# skipping ', $testnum++, "\n";
 }
 else {
     # A thousand randomly-generated tests
@@ -1005,11 +1113,10 @@ else {
 	my $test = rand_test();
 	my $err = test_splice(@$test);
 	if (defined $err) {
-	    require Data::Dumper;
-	    print STDERR "failed: ", Data::Dumper::Dumper($test);
-	    print STDERR "error: $err\n";
+	    print STDERR "# failed: ", Dumper($test);
+	    print STDERR "# error: $err\n";
 	    $failed = 1;
-	    print STDERR "skipping any remaining random tests\n";
+	    print STDERR "# skipping any remaining random tests\n";
 	    last;
 	}
     }
@@ -1045,13 +1152,14 @@ sub test_splice {
     my @array = @$array;
     my @list = @$list;
 
-    open(TEXT, ">$tmp") or die "cannot write to $tmp: $!";
-    foreach (@array) { print TEXT "$_\n" }
-    close TEXT or die "cannot close $tmp: $!";
+    unlink $tmp;
     
     my @h;
-    my $H = tie @h, 'DB_File', $tmp, O_RDWR, 0644, $DB_RECNO
+    my $H = tie @h, 'DB_File', $tmp, O_CREAT|O_RDWR, 0644, $DB_RECNO
       or die "cannot open $tmp: $!";
+
+    my $i = 0;
+    foreach ( @array ) { $h[$i++] = $_ }
     
     return "basic DB_File sanity check failed"
       if list_diff(\@array, \@h);
@@ -1132,7 +1240,7 @@ sub test_splice {
 
     foreach ($ms_error, @ms_warnings) {
 	chomp;
-	s/ at \S+ line \d+\.?$//;
+	s/ at \S+ line \d+\.?.*//s;
     }
 
     return "different errors: '$s_error' vs '$ms_error'"
@@ -1169,7 +1277,7 @@ sub test_splice {
     untie @h;
     
     open(TEXT, $tmp) or die "cannot open $tmp: $!";
-    @h = <TEXT>; chomp @h;
+    @h = <TEXT>; normalise @h; chomp @h;
     close TEXT or die "cannot close $tmp: $!";
     return('list is different when re-read from disk: '
 	   . Dumper(\@array) . ' vs ' . Dumper(\@h))

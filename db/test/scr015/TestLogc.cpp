@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000
+ * Copyright (c) 2000-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestLogc.cpp,v 1.4 2001/10/16 15:40:53 dda Exp 
+ * Id: TestLogc.cpp,v 1.6 2002/01/23 14:26:41 bostic Exp 
  */
 
 /*
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 		// Do some database activity to get something into the log.
 		Db *db1 = new Db(env, 0);
-		db1->open("first.db", NULL, DB_BTREE, DB_CREATE, 0);
+		db1->open(NULL, "first.db", NULL, DB_BTREE, DB_CREATE, 0);
 		Dbt *key = new Dbt((char *)"a", 1);
 		Dbt *data = new Dbt((char *)"b", 1);
 		db1->put(NULL, key, data, 0);
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 		db1->close(0);
 
 		Db *db2 = new Db(env, 0);
-		db2->open("second.db", NULL, DB_BTREE, DB_CREATE, 0);
+		db2->open(NULL, "second.db", NULL, DB_BTREE, DB_CREATE, 0);
 		key->set_data((char *)"w");
 		data->set_data((char *)"x");
 		db2->put(NULL, key, data, 0);

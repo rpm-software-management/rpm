@@ -8,7 +8,7 @@ public class CallbackTest
         try {
             Db db = new Db(null, 0);
             db.set_bt_compare(new BtreeCompare());
-            db.open("test.db", "", Db.DB_BTREE, Db.DB_CREATE, 0666);
+            db.open(null, "test.db", "", Db.DB_BTREE, Db.DB_CREATE, 0666);
             StringDbt[] keys = new StringDbt[10];
             StringDbt[] datas = new StringDbt[10];
             for (int i = 0; i<10; i++) {

@@ -1,10 +1,10 @@
 # DB_File.pm -- Perl 5 interface to Berkeley DB 
 #
 # written by Paul Marquess (Paul.Marquess@btinternet.com)
-# last modified 26th Nov 2001
-# version 1.801
+# last modified 2nd June 2002
+# version 1.804
 #
-#     Copyright (c) 1995-2001 Paul Marquess. All rights reserved.
+#     Copyright (c) 1995-2002 Paul Marquess. All rights reserved.
 #     This program is free software; you can redistribute it and/or
 #     modify it under the same terms as Perl itself.
 
@@ -146,11 +146,18 @@ package DB_File ;
 use warnings;
 use strict;
 our ($VERSION, @ISA, @EXPORT, $AUTOLOAD, $DB_BTREE, $DB_HASH, $DB_RECNO);
-our ($db_version, $use_XSLoader);
+our ($db_version, $use_XSLoader, $splice_end_array);
 use Carp;
 
 
-$VERSION = "1.801" ;
+$VERSION = "1.804" ;
+
+{
+    local $SIG{__WARN__} = sub {$splice_end_array = "@_";};
+    my @a =(1); splice(@a, 3);
+    $splice_end_array = 
+        ($splice_end_array =~ /^splice\(\) offset past end of array at /);
+}      
 
 #typedef enum { DB_BTREE, DB_HASH, DB_RECNO } DBTYPE;
 $DB_BTREE = new DB_File::BTREEINFO ;
@@ -303,7 +310,7 @@ sub SPLICE
     my $self = shift;
     my $offset = shift;
     if (not defined $offset) {
-	carp 'Use of uninitialized value in splice';
+	warnings::warnif('uninitialized', 'Use of uninitialized value in splice');
 	$offset = 0;
     }
 
@@ -328,13 +335,15 @@ sub SPLICE
 	$offset = $new_offset;
     }
 
-    if ($offset > $size) {
- 	$offset = $size;
+    if (not defined $length) {
+	warnings::warnif('uninitialized', 'Use of uninitialized value in splice');
+	$length = 0;
     }
 
-    if (not defined $length) {
-	carp 'Use of uninitialized value in splice';
-	$length = 0;
+    if ($offset > $size) {
+ 	$offset = $size;
+	warnings::warnif('misc', 'splice() offset past end of array')
+            if $splice_end_array;
     }
 
     # 'If LENGTH is omitted, removes everything from OFFSET onward.'
@@ -978,7 +987,7 @@ code:
     use strict ;
     use DB_File ;
 
-    our ($filename, %h) ;
+    my ($filename, %h) ;
 
     $filename = "tree" ;
     unlink $filename ;
@@ -1033,7 +1042,7 @@ Here is the script above rewritten using the C<seq> API method.
     use strict ;
     use DB_File ;
 
-    our ($filename, $x, %h, $status, $key, $value) ;
+    my ($filename, $x, %h, $status, $key, $value) ;
 
     $filename = "tree" ;
     unlink $filename ;
@@ -1105,7 +1114,7 @@ this:
     use strict ;
     use DB_File ;
 
-    our ($filename, $x, %h) ;
+    my ($filename, $x, %h) ;
 
     $filename = "tree" ;
 
@@ -1155,7 +1164,7 @@ Assuming the database from the previous example:
     use strict ;
     use DB_File ;
 
-    our ($filename, $x, %h, $found) ;
+    my ($filename, $x, %h, $found) ;
 
     $filename = "tree" ;
 
@@ -1194,7 +1203,7 @@ Again assuming the existence of the C<tree> database
     use strict ;
     use DB_File ;
 
-    our ($filename, $x, %h, $found) ;
+    my ($filename, $x, %h, $found) ;
 
     $filename = "tree" ;
 
@@ -1240,7 +1249,7 @@ and print the first matching key/value pair given a partial key.
     use DB_File ;
     use Fcntl ;
 
-    our ($filename, $x, %h, $st, $key, $value) ;
+    my ($filename, $x, %h, $st, $key, $value) ;
 
     sub match
     {
@@ -1439,7 +1448,7 @@ L<THE API INTERFACE>).
 
     use warnings ;
     use strict ;
-    our (@h, $H, $file, $i) ;
+    my (@h, $H, $file, $i) ;
     use DB_File ;
     use Fcntl ;
 
@@ -2004,7 +2013,7 @@ F<authors/id/TOMC/scripts/nshist.gz>).
     use DB_File ;
     use Fcntl ;
 
-    our ($dotdir, $HISTORY, %hist_db, $href, $binary_time, $date) ;
+    my ($dotdir, $HISTORY, %hist_db, $href, $binary_time, $date) ;
     $dotdir = $ENV{HOME} || $ENV{LOGNAME};
 
     $HISTORY = "$dotdir/.netscape/history.db";
@@ -2225,7 +2234,7 @@ compile properly on IRIX 5.3.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1995-2001 Paul Marquess. All rights reserved. This program
+Copyright (c) 1995-2002 Paul Marquess. All rights reserved. This program
 is free software; you can redistribute it and/or modify it under the
 same terms as Perl itself.
 

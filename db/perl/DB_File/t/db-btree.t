@@ -1,8 +1,5 @@
 #!./perl -w
 
-use warnings;
-use strict;
-
 BEGIN {
     unless(grep /blib/, @INC) {
         chdir 't' if -d 't';
@@ -10,21 +7,34 @@ BEGIN {
     }
 }
  
+use warnings;
+use strict;
 use Config;
  
 BEGIN {
     if(-d "lib" && -f "TEST") {
         if ($Config{'extensions'} !~ /\bDB_File\b/ ) {
-            print "1..157\n";
+            print "1..0 # Skip: DB_File was not built\n";
             exit 0;
         }
+    }
+    if ($^O eq 'darwin'
+	&& $Config{db_version_major} == 1
+	&& $Config{db_version_minor} == 0
+	&& $Config{db_version_patch} == 0) {
+	warn <<EOM;
+#
+# This test is known to crash in Mac OS X versions 10.1.4 (or earlier)
+# because of the buggy Berkeley DB version included with the OS.
+#
+EOM
     }
 }
 
 use DB_File; 
 use Fcntl;
 
-print "1..157\n";
+print "1..163\n";
 
 sub ok
 {
@@ -75,23 +85,31 @@ sub lexical
 sub docat
 { 
     my $file = shift;
-    #local $/ = undef unless wantarray ;
+    local $/ = undef ;
     open(CAT,$file) || die "Cannot open $file: $!";
-    my @result = <CAT>;
+    my $result = <CAT>;
     close(CAT);
-    wantarray ? @result : join("", @result) ;
+    $result = normalise($result) ;
+    return $result ;
 }   
 
 sub docat_del
 { 
     my $file = shift;
-    #local $/ = undef unless wantarray ;
-    open(CAT,$file) || die "Cannot open $file: $!";
-    my @result = <CAT>;
-    close(CAT);
+    my $result = docat($file);
     unlink $file ;
-    wantarray ? @result : join("", @result) ;
+    return $result ;
 }   
+
+sub normalise
+{
+    my $data = shift ;
+    $data =~ s#\r\n#\n#g 
+        if $^O eq 'cygwin' ;
+
+    return $data ;
+}
+
 
 
 my $db185mode =  ($DB_File::db_version == 1 && ! $DB_File::db_185_compat) ;
@@ -149,11 +167,15 @@ ok(18, $@ =~ /^DB_File::BTREEINFO::FETCH - Unknown element 'fred' at/ ) ;
 
 my ($X, %h) ;
 ok(19, $X = tie(%h, 'DB_File',$Dfile, O_RDWR|O_CREAT, 0640, $DB_BTREE )) ;
+die "Could not tie: $!" unless $X;
 
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,
    $blksize,$blocks) = stat($Dfile);
+
+my %noMode = map { $_, 1} qw( amigaos MSWin32 NetWare cygwin ) ;
+
 ok(20, ($mode & 0777) == (($^O eq 'os2' || $^O eq 'MacOS') ? 0666 : 0640)
-   || $^O eq 'amigaos' || $^O eq 'MSWin32' || $^O eq 'NetWare');
+   || $noMode{$^O} );
 
 my ($key, $value, $i);
 while (($key,$value) = each(%h)) {
@@ -515,9 +537,9 @@ $dbh3->{compare} = sub { length $_[0] <=> length $_[1] } ;
  
  
 my (%g, %k);
-tie(%h, 'DB_File',$Dfile1, O_RDWR|O_CREAT, 0640, $dbh1 ) ; 
-tie(%g, 'DB_File',$Dfile2, O_RDWR|O_CREAT, 0640, $dbh2 ) ;
-tie(%k, 'DB_File',$Dfile3, O_RDWR|O_CREAT, 0640, $dbh3 ) ;
+tie(%h, 'DB_File',$Dfile1, O_RDWR|O_CREAT, 0640, $dbh1 ) or die $!;
+tie(%g, 'DB_File',$Dfile2, O_RDWR|O_CREAT, 0640, $dbh2 ) or die $!;
+tie(%k, 'DB_File',$Dfile3, O_RDWR|O_CREAT, 0640, $dbh3 ) or die $!;
  
 my @Keys = qw( 0123 12 -1234 9 987654321 def  ) ;
 my (@srt_1, @srt_2, @srt_3);
@@ -609,7 +631,7 @@ unlink $Dfile1 ;
 
    use warnings ;
    use strict ;
-   use vars qw( @ISA @EXPORT) ;
+   our (@ISA, @EXPORT);
 
    require Exporter ;
    use DB_File;
@@ -947,7 +969,7 @@ EOM
     use strict ;
     use DB_File ;
 
-    use vars qw($filename %h ) ;
+    my ($filename, %h);
 
     $filename = "tree" ;
     unlink $filename ;
@@ -999,7 +1021,7 @@ EOM
     use strict ;
     use DB_File ;
  
-    use vars qw($filename $x %h $status $key $value) ;
+    my ($filename, $x, %h, $status, $key, $value);
 
     $filename = "tree" ;
     unlink $filename ;
@@ -1055,7 +1077,7 @@ EOM
     use strict ;
     use DB_File ;
  
-    use vars qw($filename $x %h ) ;
+    my ($filename, $x, %h);
 
     $filename = "tree" ;
  
@@ -1104,9 +1126,9 @@ EOM
     use strict ;
     use DB_File ;
  
-    use vars qw($filename $x %h $found) ;
+    my ($filename, $x, %h, $found);
 
-    my $filename = "tree" ;
+    $filename = "tree" ;
  
     # Enable duplicate records
     $DB_BTREE->{'flags'} = R_DUP ;
@@ -1139,9 +1161,9 @@ EOM
     use strict ;
     use DB_File ;
  
-    use vars qw($filename $x %h $found) ;
+    my ($filename, $x, %h, $found);
 
-    my $filename = "tree" ;
+    $filename = "tree" ;
  
     # Enable duplicate records
     $DB_BTREE->{'flags'} = R_DUP ;
@@ -1175,7 +1197,7 @@ EOM
     use DB_File ;
     use Fcntl ;
 
-    use vars qw($filename $x %h $st $key $value) ;
+    my ($filename, $x, %h, $st, $key, $value);
 
     sub match
     {
@@ -1300,6 +1322,48 @@ EOM
 	or die "Can't open file: $!\n" ;
     %h = (); ;
     ok(157, $a eq "") ;
+    untie %h ;
+    unlink $Dfile;
+}
+
+{
+    # When iterating over a tied hash using "each", the key passed to FETCH
+    # will be recycled and passed to NEXTKEY. If a Source Filter modifies the
+    # key in FETCH via a filter_fetch_key method we need to check that the
+    # modified key doesn't get passed to NEXTKEY.
+    # Also Test "keys" & "values" while we are at it.
+
+    use warnings ;
+    use strict ;
+    use DB_File ;
+
+    unlink $Dfile;
+    my $bad_key = 0 ;
+    my %h = () ;
+    my $db ;
+    ok(158, $db = tie(%h, 'DB_File', $Dfile, O_RDWR|O_CREAT, 0640, $DB_BTREE ) );
+    $db->filter_fetch_key (sub { $_ =~ s/^Beta_/Alpha_/ if defined $_}) ;
+    $db->filter_store_key (sub { $bad_key = 1 if /^Beta_/ ; $_ =~ s/^Alpha_/Beta_/}) ;
+
+    $h{'Alpha_ABC'} = 2 ;
+    $h{'Alpha_DEF'} = 5 ;
+
+    ok(159, $h{'Alpha_ABC'} == 2);
+    ok(160, $h{'Alpha_DEF'} == 5);
+
+    my ($k, $v) = ("","");
+    while (($k, $v) = each %h) {}
+    ok(161, $bad_key == 0);
+
+    $bad_key = 0 ;
+    foreach $k (keys %h) {}
+    ok(162, $bad_key == 0);
+
+    $bad_key = 0 ;
+    foreach $v (values %h) {}
+    ok(163, $bad_key == 0);
+
+    undef $db ;
     untie %h ;
     unlink $Dfile;
 }

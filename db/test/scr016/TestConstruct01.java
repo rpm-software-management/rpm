@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000
+ * Copyright (c) 2000-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestConstruct01.java,v 1.4 2001/10/05 02:36:08 bostic Exp 
+ * Id: TestConstruct01.java,v 1.6 2002/01/23 14:29:51 bostic Exp 
  */
 
 /*
@@ -96,7 +96,7 @@ public class TestConstruct01
 	// opening the db.
 	//
 	db.set_pagesize(1024);
-	db.open(name, null, Db.DB_BTREE,
+	db.open(null, name, null, Db.DB_BTREE,
 		(count != 0) ? 0 : Db.DB_CREATE, 0664);
 
 

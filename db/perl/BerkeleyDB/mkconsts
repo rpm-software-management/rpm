@@ -597,6 +597,78 @@ use constant IGNORE => 'ignore' ;
 	# enum db_status_t
 	DB_LSTAT_EXPIRED           => IGNORE, # 4.0.7
 
+	#########
+	# 4.0.14
+	#########
+
+	DB_EID_BROADCAST           => DEFINE,
+	DB_EID_INVALID             => DEFINE,
+	DB_VERB_REPLICATION        => DEFINE,
+
+	#########
+	# 4.1.12
+	#########
+
+	DBC_OWN_LID                => IGNORE,
+	DB_AM_CHKSUM               => IGNORE,
+	DB_AM_CL_WRITER            => IGNORE,
+	DB_AM_COMPENSATE           => IGNORE,
+	DB_AM_CREATED              => IGNORE,
+	DB_AM_CREATED_MSTR         => IGNORE,
+	DB_AM_DBM_ERROR            => IGNORE,
+	DB_AM_DELIMITER            => IGNORE,
+	DB_AM_ENCRYPT              => IGNORE,
+	DB_AM_FIXEDLEN             => IGNORE,
+	DB_AM_IN_RENAME            => IGNORE,
+	DB_AM_OPEN_CALLED          => IGNORE,
+	DB_AM_PAD                  => IGNORE,
+	DB_AM_RECNUM               => IGNORE,
+	DB_AM_RENUMBER             => IGNORE,
+	DB_AM_REVSPLITOFF          => IGNORE,
+	DB_AM_SNAPSHOT             => IGNORE,
+	DB_AUTO_COMMIT             => DEFINE,
+	DB_CHKSUM_SHA1             => DEFINE,
+	DB_DIRECT                  => DEFINE,
+	DB_DIRECT_DB               => DEFINE,
+	DB_DIRECT_LOG              => DEFINE,
+	DB_ENCRYPT                 => DEFINE,
+	DB_ENCRYPT_AES             => DEFINE,
+	DB_ENV_DIRECT_DB           => DEFINE,
+	DB_ENV_DIRECT_LOG          => DEFINE,
+	DB_ENV_FATAL               => DEFINE,
+	DB_ENV_OVERWRITE           => DEFINE,
+	DB_ENV_TXN_WRITE_NOSYNC    => DEFINE,
+	DB_HANDLE_LOCK             => DEFINE,
+	DB_LOCK_NOTEXIST           => DEFINE,
+	DB_LOCK_REMOVE             => DEFINE,
+	DB_NOCOPY                  => DEFINE,
+	DB_OVERWRITE               => DEFINE,
+	DB_PERMANENT               => DEFINE,
+	DB_PRINTABLE               => DEFINE,
+	DB_RENAMEMAGIC             => DEFINE,
+	DB_TEST_SUBDB_LOCKS        => DEFINE,
+	DB_TXN_LOCK                => DEFINE,
+	DB_TXN_WRITE_NOSYNC        => DEFINE,
+	DB_WRITEOPEN               => DEFINE,
+	DB_WRNOSYNC                => DEFINE,
+	_DB_EXT_PROT_IN_           => IGNORE,
+
+	# enum db_lockop_t
+	DB_LOCK_TRADE              => '4.1.12',
+
+	# enum db_status_t
+	DB_LSTAT_NOTEXIST          => IGNORE, # 4.1.12
+
+	# enum DB_CACHE_PRIORITY
+	DB_PRIORITY_VERY_LOW       => '4.1.12',
+	DB_PRIORITY_LOW            => '4.1.12',
+	DB_PRIORITY_DEFAULT        => '4.1.12',
+	DB_PRIORITY_HIGH           => '4.1.12',
+	DB_PRIORITY_VERY_HIGH      => '4.1.12',
+
+	# enum db_recops
+	DB_TXN_GETPGNOS            => '4.1.12',
+	DB_TXN_PRINT               => '4.1.12',
 	) ;
 
 sub enum_Macro
@@ -632,6 +704,7 @@ sub OutputXS
           { push @names, { name => $key, macro => [enum_Macro($val), "#endif\n"] } }
     }
 
+    warn "Updating constants.xs & constants.h...\n";
     WriteConstants(
               NAME    => BerkeleyDB,
               NAMES   => \@names,
@@ -642,37 +715,47 @@ sub OutputXS
 
 sub OutputPM
 {
+    my $filename = 'BerkeleyDB.pm';
+    warn "Updating $filename...\n";
+    open IN, "<$filename" || die "Cannot open $filename: $!\n";
+    open OUT, ">$filename.tmp" || die "Cannot open $filename.tmp: $!\n";
+
     my $START = '@EXPORT = qw(' ;
     my $START_re = quotemeta $START ;
     my $END = ');';
     my $END_re = quotemeta $END ;
 
     # skip to the @EXPORT declaration
-    OUTER: while (<>)
+    OUTER: while (<IN>)
     {
         if ( /^\s*$START_re/ )
         {
             # skip to the end marker.
-            while (<>) 
+            while (<IN>) 
                 { last OUTER if /^\s*$END_re/ }
         }
-        print ;
+        print OUT ;
     }
     
-    print "$START\n";
+    print OUT "$START\n";
     foreach my $key (sort keys %constants)
     {
         next if $constants{$key} eq IGNORE;
-	print "\t$key\n";
+	print OUT "\t$key\n";
     }
-    print "\t$END\n";
+    print OUT "\t$END\n";
     
-    while (<>)
+    while (<IN>)
     {
-        print ;
+        print OUT ;
     }
+
+    close IN;
+    close OUT;
+
+    rename $filename, "$filename.bak" || die "Cannot rename $filename: $!\n" ;
+    rename "$filename.tmp", $filename || die "Cannot rename $filename.tmp: $!\n" ;
 }
 
-my $opt = shift ;
-OutputXS() if $opt =~ /^xs/i ;
-OutputPM() if $opt =~ /^pm/i ;
+OutputXS() ;
+OutputPM() ;

@@ -1,10 +1,10 @@
                                      DB_File
 
-                                  Version 1.801
+                                  Version 1.804
 
-                                  26th Nov 2001
+                                  2nd June 2002
 
- 	Copyright (c) 1995-2001 Paul Marquess. All rights reserved. This
+ 	Copyright (c) 1995-2002 Paul Marquess. All rights reserved. This
 	program is free software; you can redistribute it and/or modify
 	it under the same terms as Perl itself.
 
@@ -22,7 +22,7 @@ DESCRIPTION
 
 DB_File is a module which allows Perl programs to make use of the
 facilities provided by Berkeley DB version 1. (DB_File can be built
-version 2,i 3 or 4 of Berkeley DB, but it will only support the 1.x
+version 2, 3 or 4 of Berkeley DB, but it will only support the 1.x
 features),
 
 If you want to make use of the new features available in Berkeley DB
@@ -298,8 +298,8 @@ To find out if you have the patch installed, the command "showrev -p"
 will display the patches that are currently installed on your system.
 
 
-HP-UX Notes
------------
+HP-UX 10 Notes
+--------------
 
 Some people running HP-UX 10 have reported getting an error like this
 when building DB_File with the native HP-UX compiler.
@@ -324,6 +324,22 @@ following steps should do the trick:
 
   3: Build and install the Berkeley DB distribution as usual.
 
+HP-UX 11 Notes
+--------------
+
+Some people running the combination of HP-UX 11 and Berkeley DB 2.7.7 have
+reported getting this error when the run the test harness for DB_File
+
+    ...
+    lib/db-btree.........Can't call method "DELETE" on an undefined value at lib/db-btree.t line 216.
+    FAILED at test 26
+    lib/db-hash..........Can't call method "DELETE" on an undefined value at lib/db-hash.t line 183.
+    FAILED at test 22
+    ...
+
+The fix for this is to rebuild and install Berkeley DB with the bigfile
+option disabled.
+
 
 IRIX NOTES
 ----------
@@ -338,21 +354,23 @@ FEEDBACK
 
 How to report a problem with DB_File.
 
-To help me help you, I need the following information:
+When reporting any problem, I need the information requested below. 
 
- 1. The version of Perl and the operating system name and version you
-    are running. The *complete* output from running "perl -V" will
-    tell me all I need to know. Don't edit the output in any way. Note,
-    I want you to run "perl -V" and NOT "perl -v".
+ 1. The *complete* output from running this
 
-    If your perl does not understand the "-V" option it is too old. DB_File
-    needs Perl version 5.004 or better.
+        perl -V
+
+    Do not edit the output in any way. 
+    Note, I want you to run "perl -V" and NOT "perl -v".
+
+    If your perl does not understand the "-V" option it is too
+    old. DB_File needs Perl version 5.00405 or better.
 
  2. The version of DB_File you have.
     If you have successfully installed DB_File, this one-liner will
     tell you:
 
-       perl -e 'use DB_File; print "DB_File ver $DB_File::VERSION\n"'
+       perl -e 'use DB_File; print qq{DB_File ver $DB_File::VERSION\n}'
 
     If you haven't installed DB_File then search DB_File.pm for a line
     like this:
@@ -367,12 +385,27 @@ To help me help you, I need the following information:
     If you have successfully installed DB_File, this command will display
     the version of Berkeley DB it was built with:
 
-       perl -e 'use DB_File; print "Berkeley DB ver $DB_File::db_ver\n"'
+       perl -e 'use DB_File; print qq{Berkeley DB ver $DB_File::db_ver\n}'
 
- 4. If you are having problems building DB_File, send me a complete log
-    of what happened.
+ 4. A copy the file config.in from the DB_File main source directory.
 
- 5. Now the difficult one. If you think you have found a bug in DB_File
+ 5. A listing of directories where Berkeley DB is installed.
+    For example, if Berkeley DB is installed in /usr/BerkeleDB/lib and
+    /usr/BerkeleyDB/include, I need the output from running this
+
+        ls -l /usr/BerkeleyDB/lib
+        ls -l /usr/BerkeleyDB/include
+
+ 6. If you are having problems building DB_File, send me a complete log
+    of what happened. Start by unpacking the DB_File module into a fresh
+    directory and keep a log of all the steps
+
+        [edit config.in, if necessary]
+        perl Makefile.PL
+        make 
+        make test TEST_VERBOSE=1
+
+ 7. Now the difficult one. If you think you have found a bug in DB_File
     and you want me to fix it, you will *greatly* enhance the chances
     of me being able to track it down by sending me a small
     self-contained Perl script that illustrates the problem you are

@@ -2,7 +2,7 @@
 package BerkeleyDB;
 
 
-#     Copyright (c) 1997-2001 Paul Marquess. All rights reserved.
+#     Copyright (c) 1997-2002 Paul Marquess. All rights reserved.
 #     This program is free software; you can redistribute it and/or
 #     modify it under the same terms as Perl itself.
 #
@@ -14,14 +14,25 @@ BEGIN { require 5.004_04 }
 
 use strict;
 use Carp;
-use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
+use vars qw($VERSION @ISA @EXPORT $AUTOLOAD
+		$use_XSLoader);
 
-$VERSION = '0.17';
+$VERSION = '0.19';
 
 require Exporter;
-require DynaLoader;
+#require DynaLoader;
 require AutoLoader;
-use IO ;
+
+BEGIN {
+    $use_XSLoader = 1 ;
+    { local $SIG{__DIE__} ; eval { require XSLoader } ; }
+ 
+    if ($@) {
+        $use_XSLoader = 0 ;
+        require DynaLoader;
+        @ISA = qw(DynaLoader);
+    }
+}
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -39,6 +50,7 @@ use IO ;
 	DB_ARCH_ABS
 	DB_ARCH_DATA
 	DB_ARCH_LOG
+	DB_AUTO_COMMIT
 	DB_BEFORE
 	DB_BROADCAST_EID
 	DB_BTREE
@@ -48,6 +60,7 @@ use IO ;
 	DB_CACHED_COUNTS
 	DB_CDB_ALLDB
 	DB_CHECKPOINT
+	DB_CHKSUM_SHA1
 	DB_CLIENT
 	DB_CL_WRITER
 	DB_COMMIT
@@ -59,16 +72,26 @@ use IO ;
 	DB_CXX_NO_EXCEPTIONS
 	DB_DELETED
 	DB_DELIMITER
+	DB_DIRECT
+	DB_DIRECT_DB
+	DB_DIRECT_LOG
 	DB_DIRTY_READ
 	DB_DONOTINDEX
 	DB_DUP
 	DB_DUPCURSOR
 	DB_DUPSORT
+	DB_EID_BROADCAST
+	DB_EID_INVALID
+	DB_ENCRYPT
+	DB_ENCRYPT_AES
 	DB_ENV_APPINIT
 	DB_ENV_CDB
 	DB_ENV_CDB_ALLDB
 	DB_ENV_CREATE
 	DB_ENV_DBLOCAL
+	DB_ENV_DIRECT_DB
+	DB_ENV_DIRECT_LOG
+	DB_ENV_FATAL
 	DB_ENV_LOCKDOWN
 	DB_ENV_LOCKING
 	DB_ENV_LOGGING
@@ -76,6 +99,7 @@ use IO ;
 	DB_ENV_NOMMAP
 	DB_ENV_NOPANIC
 	DB_ENV_OPEN_CALLED
+	DB_ENV_OVERWRITE
 	DB_ENV_PANIC_OK
 	DB_ENV_PRIVATE
 	DB_ENV_REGION_INIT
@@ -89,6 +113,7 @@ use IO ;
 	DB_ENV_THREAD
 	DB_ENV_TXN
 	DB_ENV_TXN_NOSYNC
+	DB_ENV_TXN_WRITE_NOSYNC
 	DB_ENV_USER_ALLOC
 	DB_ENV_YIELDCPU
 	DB_EXCL
@@ -105,6 +130,7 @@ use IO ;
 	DB_GET_BOTHC
 	DB_GET_BOTH_RANGE
 	DB_GET_RECNO
+	DB_HANDLE_LOCK
 	DB_HASH
 	DB_HASHMAGIC
 	DB_HASHOLDVER
@@ -141,6 +167,7 @@ use IO ;
 	DB_LOCK_MINLOCKS
 	DB_LOCK_MINWRITE
 	DB_LOCK_NORUN
+	DB_LOCK_NOTEXIST
 	DB_LOCK_NOTGRANTED
 	DB_LOCK_NOTHELD
 	DB_LOCK_NOWAIT
@@ -151,11 +178,13 @@ use IO ;
 	DB_LOCK_PUT_READ
 	DB_LOCK_RANDOM
 	DB_LOCK_RECORD
+	DB_LOCK_REMOVE
 	DB_LOCK_RIW_N
 	DB_LOCK_RW_N
 	DB_LOCK_SET_TIMEOUT
 	DB_LOCK_SWITCH
 	DB_LOCK_TIMEOUT
+	DB_LOCK_TRADE
 	DB_LOCK_UPGRADE
 	DB_LOCK_UPGRADE_WRITE
 	DB_LOCK_YOUNGEST
@@ -186,6 +215,7 @@ use IO ;
 	DB_NEXT
 	DB_NEXT_DUP
 	DB_NEXT_NODUP
+	DB_NOCOPY
 	DB_NODUPDATA
 	DB_NOLOCKING
 	DB_NOMMAP
@@ -207,15 +237,23 @@ use IO ;
 	DB_OPEN_CALLED
 	DB_OPFLAGS_MASK
 	DB_ORDERCHKONLY
+	DB_OVERWRITE
 	DB_PAD
 	DB_PAGEYIELD
 	DB_PAGE_LOCK
 	DB_PAGE_NOTFOUND
 	DB_PANIC_ENVIRONMENT
+	DB_PERMANENT
 	DB_POSITION
 	DB_POSITIONI
 	DB_PREV
 	DB_PREV_NODUP
+	DB_PRINTABLE
+	DB_PRIORITY_DEFAULT
+	DB_PRIORITY_HIGH
+	DB_PRIORITY_LOW
+	DB_PRIORITY_VERY_HIGH
+	DB_PRIORITY_VERY_LOW
 	DB_PRIVATE
 	DB_PR_HEADERS
 	DB_PR_PAGE
@@ -237,6 +275,7 @@ use IO ;
 	DB_REGION_MAGIC
 	DB_REGION_NAME
 	DB_REGISTERED
+	DB_RENAMEMAGIC
 	DB_RENUMBER
 	DB_REP_CLIENT
 	DB_REP_DUPMASTER
@@ -283,6 +322,7 @@ use IO ;
 	DB_TEST_PREEXTUNLINK
 	DB_TEST_PREOPEN
 	DB_TEST_PRERENAME
+	DB_TEST_SUBDB_LOCKS
 	DB_THREAD
 	DB_TIMEOUT
 	DB_TRUNCATE
@@ -293,6 +333,8 @@ use IO ;
 	DB_TXN_BACKWARD_ROLL
 	DB_TXN_CKP
 	DB_TXN_FORWARD_ROLL
+	DB_TXN_GETPGNOS
+	DB_TXN_LOCK
 	DB_TXN_LOCK_2PL
 	DB_TXN_LOCK_MASK
 	DB_TXN_LOCK_OPTIMIST
@@ -305,9 +347,11 @@ use IO ;
 	DB_TXN_NOWAIT
 	DB_TXN_OPENFILES
 	DB_TXN_POPENFILES
+	DB_TXN_PRINT
 	DB_TXN_REDO
 	DB_TXN_SYNC
 	DB_TXN_UNDO
+	DB_TXN_WRITE_NOSYNC
 	DB_UNKNOWN
 	DB_UNRESOLVED_CHILD
 	DB_UPDATE_SECONDARY
@@ -317,6 +361,7 @@ use IO ;
 	DB_VERB_CHKPOINT
 	DB_VERB_DEADLOCK
 	DB_VERB_RECOVERY
+	DB_VERB_REPLICATION
 	DB_VERB_WAITSFOR
 	DB_VERIFY
 	DB_VERIFY_BAD
@@ -328,6 +373,8 @@ use IO ;
 	DB_VRFY_FLAGMASK
 	DB_WRITECURSOR
 	DB_WRITELOCK
+	DB_WRITEOPEN
+	DB_WRNOSYNC
 	DB_XA_CREATE
 	DB_XIDDATASIZE
 	DB_YIELDCPU
@@ -343,7 +390,11 @@ sub AUTOLOAD {
     goto &{$AUTOLOAD};
 }         
 
-bootstrap BerkeleyDB $VERSION;
+#bootstrap BerkeleyDB $VERSION;
+if ($use_XSLoader)
+  { XSLoader::load("BerkeleyDB", $VERSION)}
+else
+  { bootstrap BerkeleyDB $VERSION }  
 
 # Preloaded methods go here.
 
@@ -407,15 +458,6 @@ sub env_remove
 					Config		=> undef,
 					}, @_) ;
 
-    if (defined $got->{ErrFile}) {
-	if (!isaFilehandle($got->{ErrFile})) {
-	    my $handle = new IO::File ">$got->{ErrFile}"
-		or croak "Cannot open file $got->{ErrFile}: $!\n" ;
-	    $got->{ErrFile} = $handle ;
-	}
-    }
-
-    
     if (defined $got->{Config}) {
     	croak("Config parameter must be a hash reference")
             if ! ref $got->{Config} eq 'HASH' ;
@@ -452,6 +494,52 @@ sub db_remove
     return _db_remove($got);
 }
 
+sub db_rename
+{
+    my $got = BerkeleyDB::ParseParameters(
+		      {
+			Filename 	=> undef,
+			Subname		=> undef,
+			Newname		=> undef,
+			Flags		=> 0,
+			Env		=> undef,
+		      }, @_) ;
+
+    croak("Env not of type BerkeleyDB::Env")
+	if defined $got->{Env} and ! isa($got->{Env},'BerkeleyDB::Env');
+
+    croak("Must specify a filename")
+	if ! defined $got->{Filename} ;
+
+    croak("Must specify a Subname")
+	if ! defined $got->{Subname} ;
+
+    croak("Must specify a Newname")
+	if ! defined $got->{Newname} ;
+
+    return _db_rename($got);
+}
+
+sub db_verify
+{
+    my $got = BerkeleyDB::ParseParameters(
+		      {
+			Filename 	=> undef,
+			Subname		=> undef,
+			Outfile		=> undef,
+			Flags		=> 0,
+			Env		=> undef,
+		      }, @_) ;
+
+    croak("Env not of type BerkeleyDB::Env")
+	if defined $got->{Env} and ! isa($got->{Env},'BerkeleyDB::Env');
+
+    croak("Must specify a filename")
+	if ! defined $got->{Filename} ;
+
+    return _db_verify($got);
+}
+
 package BerkeleyDB::Env ;
 
 use UNIVERSAL qw( isa ) ;
@@ -477,9 +565,10 @@ sub new
     #			[ -Home		=> $path, ]
     #			[ -Mode		=> mode, ]
     #			[ -Config	=> { name => value, name => value }
-    #			[ -ErrFile   	=> filename or filehandle, ]
+    #			[ -ErrFile   	=> filename, ]
     #			[ -ErrPrefix 	=> "string", ]
     #			[ -Flags	=> DB_INIT_LOCK| ]
+    #			[ -Set_Flags	=> $flags,]
     #			[ -Cachesize	=> number ]
     #			[ -LockDetect	=>  ]
     #			[ -Verbose	=> boolean ]
@@ -493,6 +582,7 @@ sub new
 					ErrFile  	=> undef,
 					ErrPrefix 	=> undef,
 					Flags     	=> 0,
+					SetFlags     	=> 0,
 					Cachesize     	=> 0,
 					LockDetect     	=> 0,
 					Verbose		=> 0,
@@ -500,11 +590,13 @@ sub new
 					}, @_) ;
 
     if (defined $got->{ErrFile}) {
-	if (!isaFilehandle($got->{ErrFile})) {
-	    my $handle = new IO::File ">$got->{ErrFile}"
-		or croak "Cannot open file $got->{ErrFile}: $!\n" ;
-	    $got->{ErrFile} = $handle ;
-	}
+    	croak("ErrFile parameter must be a file name")
+            if ref $got->{ErrFile} ;
+	#if (!isaFilehandle($got->{ErrFile})) {
+	#    my $handle = new IO::File ">$got->{ErrFile}"
+#		or croak "Cannot open file $got->{ErrFile}: $!\n" ;
+#	    $got->{ErrFile} = $handle ;
+#	}
     }
 
     
@@ -627,7 +719,8 @@ sub new
     if ($addr) {
         $obj = bless [$addr] , $self ;
 	push @{ $obj }, $got->{Env} if $got->{Env} ;
-        $obj->Txn($got->{Txn}) if $got->{Txn} ;
+        $obj->Txn($got->{Txn}) 
+            if $got->{Txn} ;
     }
     return $obj ;
 }
@@ -682,7 +775,8 @@ sub new
     if ($addr) {
         $obj = bless [$addr] , $self ;
 	push @{ $obj }, $got->{Env} if $got->{Env} ;
-        $obj->Txn($got->{Txn}) if $got->{Txn} ;
+        $obj->Txn($got->{Txn}) 
+            if $got->{Txn} ;
     }
     return $obj ;
 }
@@ -744,7 +838,8 @@ sub new
     if ($addr) {
         $obj = bless [$addr] , $self ;
 	push @{ $obj }, $got->{Env} if $got->{Env} ;
-        $obj->Txn($got->{Txn}) if $got->{Txn} ;
+        $obj->Txn($got->{Txn}) 
+            if $got->{Txn} ;
     }	
     return $obj ;
 }
@@ -804,7 +899,8 @@ sub new
     if ($addr) {
         $obj = bless [$addr] , $self ;
 	push @{ $obj }, $got->{Env} if $got->{Env} ;
-        $obj->Txn($got->{Txn}) if $got->{Txn} ;
+        $obj->Txn($got->{Txn})
+            if $got->{Txn} ;
     }	
     return $obj ;
 }
@@ -910,7 +1006,8 @@ sub new
     if ($addr) {
         $obj = bless [$addr], "BerkeleyDB::$type" ;
 	push @{ $obj }, $got->{Env} if $got->{Env} ;
-        $obj->Txn($got->{Txn}) if $got->{Txn} ;
+        $obj->Txn($got->{Txn})
+            if $got->{Txn} ;
     }	
     return $obj ;
 }

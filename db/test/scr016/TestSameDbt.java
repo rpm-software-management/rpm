@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestSameDbt.java,v 1.2 2001/10/05 02:36:10 bostic Exp 
+ * Id: TestSameDbt.java,v 1.4 2002/01/23 14:29:51 bostic Exp 
  */
 
 /*
@@ -22,7 +22,7 @@ public class TestSameDbt
     {
         try {
             Db db = new Db(null, 0);
-            db.open("my.db", null, Db.DB_BTREE, Db.DB_CREATE, 0644);
+            db.open(null, "my.db", null, Db.DB_BTREE, Db.DB_CREATE, 0644);
 
             // try reusing the dbt
             Dbt keydatadbt = new Dbt("stuff".getBytes());

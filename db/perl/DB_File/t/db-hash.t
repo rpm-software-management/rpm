@@ -1,8 +1,5 @@
 #!./perl 
 
-use warnings ;
-use strict ;
-
 BEGIN {
     unless(grep /blib/, @INC) {
         chdir 't' if -d 't';
@@ -10,23 +7,23 @@ BEGIN {
     }
 }
  
+use warnings;
+use strict;
 use Config;
  
 BEGIN {
     if(-d "lib" && -f "TEST") {
         if ($Config{'extensions'} !~ /\bDB_File\b/ ) {
-            print "1..111\n";
+            print "1..0 # Skip: DB_File was not built\n";
             exit 0;
         }
     }
 }
 
-use strict;
-use warnings;
 use DB_File; 
 use Fcntl;
 
-print "1..111\n";
+print "1..117\n";
 
 sub ok
 {
@@ -66,9 +63,20 @@ sub docat_del
     open(CAT,$file) || die "Cannot open $file: $!";
     my $result = <CAT>;
     close(CAT);
+    $result = normalise($result) ;
     unlink $file ;
     return $result;
 }   
+
+sub normalise
+{
+    my $data = shift ;
+    $data =~ s#\r\n#\n#g 
+        if $^O eq 'cygwin' ;
+    return $data ;
+}
+
+
 
 my $Dfile = "dbhash.tmp";
 my $null_keys_allowed = ($DB_File::db_ver < 2.004010 
@@ -117,11 +125,15 @@ ok(14, $@ =~ /^DB_File::HASHINFO::FETCH - Unknown element 'fred' at/ );
 # Now check the interface to HASH
 my ($X, %h);
 ok(15, $X = tie(%h, 'DB_File',$Dfile, O_RDWR|O_CREAT, 0640, $DB_HASH ) );
+die "Could not tie: $!" unless $X;
 
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,
    $blksize,$blocks) = stat($Dfile);
+
+my %noMode = map { $_, 1} qw( amigaos MSWin32 NetWare cygwin ) ;
+
 ok(16, ($mode & 0777) == (($^O eq 'os2' || $^O eq 'MacOS') ? 0666 : 0640) ||
-   $^O eq 'amigaos' || $^O eq 'MSWin32' || $^O eq 'NetWare');
+   $noMode{$^O} );
 
 my ($key, $value, $i);
 while (($key,$value) = each(%h)) {
@@ -396,7 +408,7 @@ untie %h ;
 
    use warnings ;
    use strict ;
-   use vars qw( @ISA @EXPORT) ;
+   our (@ISA, @EXPORT);
 
    require Exporter ;
    use DB_File;
@@ -676,7 +688,7 @@ EOM
     use warnings FATAL => qw(all);
     use strict ;
     use DB_File ;
-    use vars qw( %h $k $v ) ;
+    our (%h, $k, $v);
 
     unlink "fruit" ;
     tie %h, "DB_File", "fruit", O_RDWR|O_CREAT, 0640, $DB_HASH 
@@ -749,6 +761,48 @@ EOM
     tie %h, 'DB_File', $Dfile or die "Can't open file: $!\n" ;
     %h = (); ;
     ok(111, $a eq "") ;
+    untie %h ;
+    unlink $Dfile;
+}
+
+{
+    # When iterating over a tied hash using "each", the key passed to FETCH
+    # will be recycled and passed to NEXTKEY. If a Source Filter modifies the
+    # key in FETCH via a filter_fetch_key method we need to check that the
+    # modified key doesn't get passed to NEXTKEY.
+    # Also Test "keys" & "values" while we are at it.
+
+    use warnings ;
+    use strict ;
+    use DB_File ;
+
+    unlink $Dfile;
+    my $bad_key = 0 ;
+    my %h = () ;
+    my $db ;
+    ok(112, $db = tie(%h, 'DB_File', $Dfile, O_RDWR|O_CREAT, 0640, $DB_HASH ) );
+    $db->filter_fetch_key (sub { $_ =~ s/^Beta_/Alpha_/ if defined $_}) ;
+    $db->filter_store_key (sub { $bad_key = 1 if /^Beta_/ ; $_ =~ s/^Alpha_/Beta_/}) ;
+
+    $h{'Alpha_ABC'} = 2 ;
+    $h{'Alpha_DEF'} = 5 ;
+
+    ok(113, $h{'Alpha_ABC'} == 2);
+    ok(114, $h{'Alpha_DEF'} == 5);
+
+    my ($k, $v) = ("","");
+    while (($k, $v) = each %h) {}
+    ok(115, $bad_key == 0);
+
+    $bad_key = 0 ;
+    foreach $k (keys %h) {}
+    ok(116, $bad_key == 0);
+
+    $bad_key = 0 ;
+    foreach $v (values %h) {}
+    ok(117, $bad_key == 0);
+
+    undef $db ;
     untie %h ;
     unlink $Dfile;
 }

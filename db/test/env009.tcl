@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2001
+# Copyright (c) 1999-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: env009.tcl,v 11.2 2001/08/03 16:39:24 bostic Exp 
+# Id: env009.tcl,v 11.5 2002/08/12 20:40:36 sandstro Exp 
 #
 # TEST	env009
 # TEST	Test calls to all the various stat functions.  We have several
@@ -17,7 +17,7 @@ proc env009 { } {
 	env_cleanup $testdir
 	puts "\tEnv009.a: Setting up env and a database."
 
-	set e [berkdb env -create -home $testdir -txn]
+	set e [berkdb_env -create -home $testdir -txn]
 	error_check_good dbenv [is_valid_env $e] TRUE
 	set dbbt [berkdb_open -create -btree $testdir/env009bt.db]
 	error_check_good dbopen [is_valid_db $dbbt] TRUE
@@ -27,7 +27,7 @@ proc env009 { } {
 	error_check_good dbopen [is_valid_db $dbq] TRUE
 
 	set rlist {
-	{ "lock_stat" "Max locks" "Env009.b"}
+	{ "lock_stat" "Maximum locks" "Env009.b"}
 	{ "log_stat" "Magic" "Env009.c"}
 	{ "mpool_stat" "Number of caches" "Env009.d"}
 	{ "txn_stat" "Max Txns" "Env009.e"}

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.javafiles,v 1.4 2001/10/12 17:55:33 bostic Exp 
+# Id: chk.javafiles,v 1.5 2002/01/30 19:50:52 bostic Exp 
 #
 # Check to make sure we haven't forgotten to add any Java files to the list
 # of source files in the Makefile.
@@ -13,14 +13,14 @@ d=../..
 }
 
 f=$d/dist/Makefile.in
-d=$d/java/src/com/sleepycat
+j=$d/java/src/com/sleepycat
 
 t1=__1
 t2=__2
 
-find ${d}/db/ $d/examples -name \*.java -print |
+find $j/db/ $j/examples $d/rpc_server/java -name \*.java -print |
     sed -e 's/^.*\///' | sort > $t1
-tr ' \t' '\n' < ${f} | sed -e '/\.java$/!d' -e 's/^.*\///' | sort > $t2
+tr ' \t' '\n' < $f | sed -e '/\.java$/!d' -e 's/^.*\///' | sort > $t2
 
 cmp $t1 $t2 > /dev/null || {
 	echo "<<< java source files >>> Makefile"

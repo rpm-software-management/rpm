@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestReplication.java,v 1.1 2001/10/12 13:02:33 dda Exp 
+ * Id: TestReplication.java,v 1.3 2002/01/23 14:29:51 bostic Exp 
  */
 
 /*
@@ -117,7 +117,7 @@ public class TestReplication extends Thread
             }
             System.err.println("c70");
             Db db = new Db(client_env, 0);
-            db.open("x.db", null, Db.DB_BTREE, 0, 0);
+            db.open(null, "x.db", null, Db.DB_BTREE, 0, 0);
             Dbt data = new Dbt();
             System.err.println("c80");
             db.get(null, new Dbt("Hello".getBytes()), data, 0);
@@ -204,7 +204,7 @@ public class TestReplication extends Thread
             System.err.println("10");
             Db db = new Db(master_env, 0);
             System.err.println("20");
-            db.open("x.db", null, Db.DB_BTREE, Db.DB_CREATE, 0644);
+            db.open(null, "x.db", null, Db.DB_BTREE, Db.DB_CREATE, 0644);
             System.err.println("30");
             db.put(null, new Dbt("Hello".getBytes()),
                    new Dbt("world".getBytes()), 0);

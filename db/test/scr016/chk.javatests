@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.javatests,v 1.2 2001/10/12 13:02:34 dda Exp 
+# Id: chk.javatests,v 1.4 2002/03/27 04:33:08 bostic Exp 
 #
 # Check to make sure that regression tests for Java run.
 
@@ -17,7 +17,7 @@ export LD_LIBRARY_PATH="../.libs"
 
 # All paths must be relative to a subdirectory of the build directory
 LIBS="-L.. -ldb -ldb_cxx"
-CXXFLAGS="-I.. -I../../include"
+CXXFLAGS="-I.. -I../../dbinc"
 
 # Test must be run from a local build directory, not from a test
 # directory.
@@ -30,7 +30,7 @@ cd ..
 	echo 'FAIL: chk.javatests must be run from a local build directory.'
 	exit 1
 }
-version=`head -1 ../README | sed -e 's/.* \([0-9]*\.[0-9]*\)\..*/\1/'`
+version=`sed -e 's/.* \([0-9]*\.[0-9]*\)\..*/\1/' -e q ../README `
 [ -f libdb_java-$version.la ] || make libdb_java-$version.la || {
 	echo "FAIL: unable to build libdb_java-$version.la"
 	exit 1

@@ -41,7 +41,7 @@ $OS2 = "-DOS2" if $Config{'osname'} eq 'os2' ;
 WriteMakefile(
 	NAME 		=> 'DB_File',
 	LIBS 		=> ["-L${LIB_DIR} $LIBS"],
-        MAN3PODS        => ' ',         # Pods will be built by installman.
+        MAN3PODS        => {},         # Pods will be built by installman.
 	INC		=> "-I$INC_DIR",
 	VERSION_FROM	=> 'DB_File.pm',
 	XSPROTOARG	=> '-noprototypes',
@@ -254,16 +254,29 @@ sub UpDowngrade
     if ($] < 5.006001) {
         # From: use|no warnings "blah"
         # To:   local ($^W) = 1; # use|no warnings "blah"
+        #
+        # and
+        #
+        # From: warnings::warnif(x,y);
+        # To:   $^W && carp(y); # warnif -- x
         $warn_sub = sub {
 	    s/^(\s*)(no\s+warnings)/${1}local (\$^W) = 0; #$2/ ;
 	    s/^(\s*)(use\s+warnings)/${1}local (\$^W) = 1; #$2/ ;
+
+	    s/^(\s*)warnings::warnif\s*\((.*?)\s*,\s*(.*?)\)\s*;/${1}\$^W && carp($3); # warnif - $2/ ;
           };
     }
     else {
         # From: local ($^W) = 1; # use|no warnings "blah"
         # To:   use|no warnings "blah"
+        #
+        # and
+        #
+        # From: $^W && carp(y); # warnif -- x
+        # To:   warnings::warnif(x,y);
         $warn_sub = sub {
 	    s/^(\s*)local\s*\(\$\^W\)\s*=\s*\d+\s*;\s*#\s*((no|use)\s+warnings.*)/$1$2/ ;
+	    s/^(\s*)\$\^W\s+\&\&\s*carp\s*\((.*?)\)\s*;\s*#\s*warnif\s*-\s*(.*)/${1}warnings::warnif($3, $2);/ ;
           };
     }
 
