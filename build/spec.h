@@ -3,8 +3,10 @@
  * spec.h - routines for parsing are looking up info in a spec file
  */
 
-#ifndef _spec_h
-#define _spec_h
+#ifndef _SPEC_H_
+#define _SPEC_H_
+
+#include <stdio.h>
 
 typedef struct SpecRec *Spec;
 
@@ -18,4 +20,4 @@ char *getFullSource(Spec s, int ispatch, int num);
 
 int verifySpec(Spec s);
 
-#endif _spec_h
+#endif _SPEC_H_
