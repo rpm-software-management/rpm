@@ -48,7 +48,8 @@ static char * scriptQueryFormat =
 	    "preinstall script:\n%{RPMTAG_PREIN}\n"
 	    "postinstall script:\n%{RPMTAG_POSTIN}\n"
 	    "preuninstall script:\n%{RPMTAG_PREUN}\n"
-	    "postuninstall script:\n%{RPMTAG_POSTUN}\n";
+	    "postuninstall script:\n%{RPMTAG_POSTUN}\n"
+	    "verify script:\n%{VERIFYSCRIPT}\n";
 
 static int queryHeader(Header h, char * chptr) {
     int count = 0;
