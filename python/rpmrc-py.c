@@ -80,7 +80,6 @@ PyObject * rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args)
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
 /**
  */
-
 static const char * lbl(void * s)
 	/*@*/
 {

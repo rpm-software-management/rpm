@@ -344,6 +344,7 @@ void initrpm(void)
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
     if (PyType_Ready(&rpmal_Type) < 0) return;
+    if (PyType_Ready(&rpmbc_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfd_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
