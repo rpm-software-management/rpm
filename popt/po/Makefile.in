@@ -7,7 +7,7 @@ INSTALL_PROGRAM= ${INSTALL}
 INSTALL_DATA= ${INSTALL} -m 644
 CC = gcc
 
-installprefix = $(DESTDIR)
+installprefix = @prefix@
 
 MSGMERGE = msgmerge
 
