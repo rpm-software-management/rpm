@@ -7,7 +7,7 @@ EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	gendiff po/*.in po/*.po po/rpm.pot \
 	python/*.am python/*.in python/*.c python/*.h python/testit \
-	rpm.magic rpmpopt rpm.spec
+	rpm.magic rpmpopt rpm.spec installplatform
 
 EXTRA_PROGRAMS = rpmconvert
 

@@ -918,6 +918,8 @@ fi
 LOCALEDIR="`echo ${usrprefix}/share/locale`"
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR")
 AC_SUBST(LOCALEDIR)
+LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
+AC_SUBST(LIBDIR)
 RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR")
 AC_SUBST(RPMCONFIGDIR)

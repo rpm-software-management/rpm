@@ -3,7 +3,7 @@
 #==============================================================================
 # ---- per-platform macros.
 #
-%_arch			@RPMCANONARCH@
+%_arch			@RPMRC_ARCH@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
@@ -21,7 +21,8 @@
 %_sysconfdir		@sysconfdir@
 %_sharedstatedir	@sharedstatedir@
 %_localstatedir		@localstatedir@
-%_libdir		@libdir@
+%_lib			@LIB@
+%_libdir		@LIBDIR@
 %_includedir		@includedir@
 %_oldincludedir		@oldincludedir@
 %_infodir		@infodir@
@@ -31,15 +32,16 @@
 # ---- Build policy macros.
 #
 #------------------------------------------------------------------------
-#	Expanded at end of %install (Red Hat uses these for 6.2)
+#	Expanded at end of %install
 #
-#%__spec_install_post    \
-#    /usr/lib/rpm/brp-compress \
-#    /usr/lib/rpm/brp-strip \
-#    /usr/lib/rpm/brp-strip-comment-note \
-#%{nil}
+%__arch_install_post   @ARCH_INSTALL_POST@
+%__os_install_post     %{___build_post}
+%__spec_install_post\
+     %{__arch_install_post}\
+     %{__os_install_post}\
+%{nil}
 #------------------------------------------------------------------------
-#	Expanded at end of %prep (Red Hat uses these for 6.2)
+#	Expanded at end of %prep
 #
 %__id_u			@__ID_U@
 %__chown_Rhf		@__CHOWN_RHF@

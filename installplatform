@@ -15,27 +15,48 @@ E_O_F
 
 RPM="./rpm --rcfile $TEMPRC"
 
-ARCH="`$RPM --eval '%{_arch}'`"
+arch="`$RPM --eval '%{_arch}'`"
 VENDOR="`$RPM --eval '%{_vendor}'`"
 OS="`$RPM --eval '%{_os}'`"
-TARGET_PLATFORM="`$RPM --eval '%{_target_platform}'`"
-TARGET="`$RPM --eval '%{_target}'`"
+target_platform="`$RPM --eval '%{_target_platform}'`"
+target="`$RPM --eval '%{_target}'`"
 
-PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}"
+case "$arch" in
+  sparc*) SUBSTS="s_sparc64_sparc_ s_sparc_sparc64_" ;;
+  *) SUBST=y___ ;;
+esac
 
-[ -d $PPD ] || mkdir $PPD
+for SUBST in $SUBSTS; do
+  ARCH=`echo $arch | sed -e $SUBST`
+  TARGET_PLATFORM=`echo $target_platform | sed -e $SUBST`
+  TARGET=`echo $target | sed -e $SUBST`
+  LIB=lib
 
-RPMRC_OPTFLAGS="`$RPM --eval '%{optflags}'`"
-RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
+  PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}"
 
+  [ -d $PPD ] || mkdir $PPD
 
-cat $PLATFORM | \
-  sed -e s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS, -e 's,\${,%{_,' \
-> ${PPD}/macros
+  RPMRC_OPTFLAGS="`$RPM --eval '%{optflags}'`"
+  RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
 
-#
-# Better try to create these too until the smoke clears. Yuck.
-[ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
-[ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
+  ARCH_INSTALL_POST='%{nil}'
+  case "${ARCH}-${OS}" in
+    sparc64-linux) ARCH_INSTALL_POST=${pkglibdir}/brp-sparc64-linux ;;
+  esac
+
+  cat $PLATFORM | \
+    sed -e s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS, \
+	-e s,@RPMRC_ARCH@,$ARCH, \
+	-e s,@LIB@,$LIB, \
+	-e s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST, \
+	-e 's,\${,%{_,' \
+  > ${PPD}/macros
+
+  #
+  # Better try to create these too until the smoke clears. Yuck.
+  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
+  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
+
+done
 
 rm $TEMPRC

@@ -1,0 +1,29 @@
+#!/bin/sh
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+files=
+LC_ALL=
+LANG=
+
+# Move 64bit ELF objects from /lib, /usr/lib, /usr/X11R6/lib to */lib64
+# directories
+
+for f in `find $RPM_BUILD_ROOT{,/usr,/usr/X11R6}/lib -maxdepth 1 -type f -o -type l 2>/dev/null`; do
+	if objdump -h $f 2>/dev/null | grep ':[ 	]*file format elf64-sparc$' >/dev/null 2>&1; then
+		files="$files $f"
+	fi
+done
+for f in $files; do
+	d=`dirname $f`
+	n=`basename $f`
+	if [ ! -d ${d}64 ]; then mkdir -p ${d}64; fi
+	if [ -L $f ]; then
+		l=`ls -l $f | awk '{ print $11 }' | sed 's_lib\(/[^/]*\)$_lib64\1_'`
+		ln -sf $l ${d}64/$n
+		rm -f $f
+	else
+		mv -f $f ${d}64/$n
+	fi
+done

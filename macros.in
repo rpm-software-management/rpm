@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.50 2000/04/06 15:20:29 jbj Exp $
+# $Id: macros.in,v 1.51 2000/04/19 16:03:49 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -226,6 +226,9 @@
 # XXX use the rpmrc instantiated macro for now
 #%optflags		-O2
 
+%__arch_install_post	%{nil}
+%__os_install_post	%{___build_post}
+
 #==============================================================================
 # ---- Scriptlet template templates.
 #	Global defaults used for building scriptlet templates.
@@ -320,7 +323,10 @@ cd %{u2p:%{_builddir}}\
 %__spec_install_cmd	%{___build_cmd}
 %__spec_install_pre	%{___build_pre}
 %__spec_install_body	%{___build_body}
-%__spec_install_post	%{___build_post}
+%__spec_install_post\
+%{__arch_install_post}\
+%{__os_install_post}\
+%{nil}
 %__spec_install_template	#!%{__spec_install_shell}\
 %{__spec_install_pre}\
 %{nil}
@@ -400,7 +406,8 @@ cd %{u2p:%{_builddir}}\
 %_sysconfdir		%{_prefix}/etc
 %_sharedstatedir	%{_prefix}/com
 %_localstatedir		%{_prefix}/var
-%_libdir		%{_exec_prefix}/lib
+%_lib			lib
+%_libdir		%{_exec_prefix}/%{_lib}
 %_includedir		%{_prefix}/include
 %_oldincludedir		/usr/include
 %_infodir		%{_prefix}/info
