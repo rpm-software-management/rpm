@@ -224,12 +224,6 @@ struct poptOption rpmQueryPoptTable[] = {
  * Verify mode options.
  */
 struct poptOption rpmVerifyPoptTable[] = {
-#ifdef	DYING
-/*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-	verifyArgCallback, 0, NULL, NULL },
-/*@=type@*/
-#endif	/* DYING */
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
 
@@ -272,6 +266,9 @@ struct poptOption rpmVerifyPoptTable[] = {
  { "nodigest", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify package digest(s)"), NULL },
+ { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_flags, VERIFY_HDRCHK,
+        N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify package signature(s)"), NULL },
@@ -309,6 +306,9 @@ struct poptOption rpmSignPoptTable[] = {
 
  { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify package digest(s)"), NULL },
+ { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_flags, VERIFY_HDRCHK,
+        N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify package signature(s)"), NULL },
 

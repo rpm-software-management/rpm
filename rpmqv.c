@@ -946,14 +946,16 @@ int main(int argc, const char ** argv)
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
-	(void) rpmdbInit(rootdir, 0644);
+	(void) rpmtsInitDB(ts, 0644);
 	break;
 
     case MODE_REBUILDDB:
-	ec = rpmdbRebuild(rootdir);
-	break;
+    {   int vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
+	(void)rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
+	ec = rpmtsRebuildDB(ts);
+    }	break;
     case MODE_VERIFYDB:
-	ec = rpmdbVerify(rootdir);
+	ec = rpmtsVerifyDB(ts);
 	break;
 #endif	/* IAM_RPMDB */
 

@@ -16,6 +16,7 @@ extern int _ts_debug;
 #define	_RPMTS_VSF_NODIGESTS		(1 << 0)
 #define	_RPMTS_VSF_NOSIGNATURES		(1 << 1)
 #define	_RPMTS_VSF_VERIFY_LEGACY	(1 << 2)
+#define	_RPMTS_VSF_NOHDRCHK		(1 << 3)
 
 #if defined(_RPMTS_INTERNAL)
 
@@ -251,6 +252,34 @@ int rpmtsCloseDB(rpmts ts)
 int rpmtsOpenDB(rpmts ts, int dbmode)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Initialize the database used by the transaction.
+ * @deprecated An explicit rpmdbInit() is almost never needed.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+int rpmtsInitDB(rpmts ts, int dbmode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Rebuild the database used by the transaction.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+int rpmtsRebuildDB(rpmts ts)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Verify the database used by the transaction.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+int rpmtsVerifyDB(rpmts ts)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Return transaction database iterator.

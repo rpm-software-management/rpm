@@ -44,6 +44,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 
 /*@access dbiIndexSet@*/
 /*@access dbiIndexItem@*/
+/*@access rpmts@*/		/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
 /*@access pgpDig@*/
@@ -61,6 +62,54 @@ static int _db_filter_dups = 0;
 /*@globstate@*/ /*@null@*/ int * dbiTags = NULL;
 /*@unchecked@*/
 int dbiTagsMax = 0;
+
+/* Bit mask macros. */
+/*@-exporttype@*/
+typedef	unsigned int __pbm_bits;
+/*@=exporttype@*/
+#define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
+#define	__PBM_IX(d)		((d) / __PBM_NBITS)
+#define __PBM_MASK(d)		((__pbm_bits) 1 << (((unsigned)(d)) % __PBM_NBITS))
+/*@-exporttype@*/
+typedef struct {
+    __pbm_bits bits[1];
+} pbm_set;
+/*@=exporttype@*/
+#define	__PBM_BITS(set)	((set)->bits)
+
+#define	PBM_FREE(s)	_free(s);
+#define PBM_SET(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] |= __PBM_MASK (d))
+#define PBM_CLR(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] &= ~__PBM_MASK (d))
+#define PBM_ISSET(d, s) ((__PBM_BITS (s)[__PBM_IX (d)] & __PBM_MASK (d)) != 0)
+
+#define	PBM_ALLOC(d)	xcalloc(__PBM_IX (d) + 1, sizeof(__pbm_bits))
+
+/**
+ * Reallocate a bit map.
+ * @retval sp		address of bit map pointer
+ * @retval odp		no. of bits in map
+ * @param nd		desired no. of bits
+ */
+/*@unused@*/
+static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
+	/*@modifies *sp, *odp @*/
+{
+    int i, nb;
+
+/*@-bounds -sizeoftype@*/
+    if (nd > (*odp)) {
+	nd *= 2;
+	nb = __PBM_IX(nd) + 1;
+	*sp = xrealloc(*sp, nb * sizeof(__pbm_bits));
+	for (i = __PBM_IX(*odp) + 1; i < nb; i++)
+	    __PBM_BITS(*sp)[i] = 0;
+	*odp = nd;
+    }
+/*@=bounds =sizeoftype@*/
+/*@-compdef -retalias -usereleased@*/
+    return *sp;
+/*@=compdef =retalias =usereleased@*/
+}
 
 /**
  * Convert hex to binary nibble.
@@ -287,9 +336,20 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
     }
 
 exit:
-    if (rc == 0 && dbi)
+    if (dbi != NULL && rc == 0) {
 	db->_dbi[dbix] = dbi;
-    else
+/*@-sizeoftype@*/
+	if (rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
+	    db->db_nbits = 1024;
+	    if (!dbiStat(dbi, DB_FAST_STAT)) {
+		DB_HASH_STAT * hash = (DB_HASH_STAT *)dbi->dbi_stats;
+		if (hash)
+		    db->db_nbits += hash->hash_nkeys;
+	    }
+	    db->db_bits = PBM_ALLOC(db->db_nbits);
+	}
+/*@=sizeoftype@*/
+    } else
 	dbi = db3Free(dbi);
 
 /*@-compdef -nullstate@*/ /* FIX: db->_dbi may be NULL */
@@ -675,6 +735,7 @@ int rpmdbClose(rpmdb db)
     db->db_errpfx = _free(db->db_errpfx);
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
+    db->db_bits = PBM_FREE(db->db_bits);
     db->_dbi = _free(db->_dbi);
     /*@-refcounttrans@*/ db = _free(db); /*@=refcounttrans@*/
     /*@=usereleased@*/
@@ -1412,6 +1473,12 @@ struct _rpmdbMatchIterator {
     int			mi_nre;
 /*@only@*/ /*@null@*/
     miRE		mi_re;
+/*@null@*/
+    rpmts		mi_ts;
+/*@null@*/
+    rpmRC (*mi_hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg)
+	/*@modifies ts, *msg @*/;
+
 };
 
 /**
@@ -1441,6 +1508,17 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	key->size = sizeof(mi->mi_prevoffset);
 	data->data = headerUnload(mi->mi_h);
 	data->size = headerSizeof(mi->mi_h, HEADER_MAGIC_NO);
+
+#ifdef	NOTYET
+	/* Check header digest/signature (if requested). */
+	if (mi->mi_ts && mi->mi_hdrchk) {
+	    const char * msg = NULL;
+	    rpmRC rpmrc;
+	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data->data, data->size, &msg);
+	    msg = _free(msg);
+	}
+#endif
+
 	if (data->data != NULL) {
 	    (void) blockSignals(dbi->dbi_rpmdb, &signalMask);
 	    rc = dbiPut(dbi, mi->mi_dbc, key, data, DB_KEYLAST);
@@ -1879,7 +1957,8 @@ static int mireSkip (const rpmdbMatchIterator mi)
     return (ntags == nmatches ? 0 : 1);
 }
 
-int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite) {
+int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite)
+{
     int rc;
     if (mi == NULL)
 	return 0;
@@ -1891,7 +1970,8 @@ int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite) {
     return rc;
 }
 
-int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) {
+int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
+{
     int rc;
     if (mi == NULL)
 	return 0;
@@ -1899,6 +1979,20 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) {
     mi->mi_modified = modified;
     return rc;
 }
+
+int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
+	rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+{
+    int rc = 0;
+    if (mi == NULL)
+	return 0;
+/*@-assignexpose -newreftrans @*/
+/*@i@*/ mi->mi_ts = ts;
+    mi->mi_hdrchk = hdrchk;
+/*@=assignexpose =newreftrans @*/
+    return rc;
+}
+
 
 /*@-nullstate@*/ /* FIX: mi->mi_key.data may be NULL */
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
@@ -2018,6 +2112,42 @@ top:
     if (uh == NULL)
 	return NULL;
 
+    /* Check header digest/signature once (if requested). */
+/*@-boundsread -branchstate -sizeoftype @*/
+    if (mi->mi_ts && mi->mi_hdrchk) {
+	const char * msg = NULL;
+	pbm_set * set = NULL;
+	rpmRC rpmrc = RPMRC_NOTFOUND;
+
+	if (mi->mi_db->db_bits) {
+	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
+			&mi->mi_db->db_nbits, mi->mi_offset);
+	    if (PBM_ISSET(mi->mi_offset, set)) {
+#ifdef	NOISY
+		rpmMessage(RPMMESS_DEBUG, _("h#%6u: already checked.\n"),
+			mi->mi_offset);
+#endif
+		rpmrc = RPMRC_OK;
+	    }
+	}
+	if (rpmrc == RPMRC_NOTFOUND) {
+	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
+	    if (msg)
+		rpmMessage(RPMMESS_DEBUG, _("h#%6u: %s"),
+			mi->mi_offset, msg);
+	    if (set && rpmrc == RPMRC_OK)
+		PBM_SET(mi->mi_offset, set);
+	}
+	if (rpmrc == RPMRC_FAIL) {
+	    rpmError(RPMERR_BADHEADER, _("rpmdb: header #%u: %s -- skipping.\n"),
+			mi->mi_offset, (msg ? msg : ""));
+	    msg = _free(msg);
+	    goto top;
+	}
+	msg = _free(msg);
+    }
+/*@=boundsread =branchstate =sizeoftype @*/
+
     /* Did the header blob load correctly? */
 #if !defined(_USE_COPY_LOAD)
 /*@-onlytrans@*/
@@ -2030,7 +2160,7 @@ top:
 #endif
     if (mi->mi_h == NULL || !headerIsEntry(mi->mi_h, RPMTAG_NAME)) {
 	rpmError(RPMERR_BADHEADER,
-		_("rpmdb: damaged header instance #%u retrieved, skipping.\n"),
+		_("rpmdb: damaged header #%u retrieved -- skipping.\n"),
 		mi->mi_offset);
 	goto top;
     }
@@ -2266,13 +2396,18 @@ if (rc == 0)
     mi->mi_nre = 0;
     mi->mi_re = NULL;
 
+    mi->mi_ts = NULL;
+    mi->mi_hdrchk = NULL;
+
     /*@-nullret@*/ /* FIX: mi->mi_key.data may be NULL */
     return mi;
     /*@=nullret@*/
 }
 
 /* XXX psm.c */
-int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
+int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
+		/*@unused@*/ rpmts ts,
+		/*@unused@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -2576,7 +2711,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 }
 
 /* XXX install.c */
-int rpmdbAdd(rpmdb db, int iid, Header h)
+int rpmdbAdd(rpmdb db, int iid, Header h,
+		/*@unused@*/ rpmts ts,
+		/*@unused@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -3299,7 +3436,8 @@ static int rpmdbMoveDatabase(const char * prefix,
     return rc;
 }
 
-int rpmdbRebuild(const char * prefix)
+int rpmdbRebuild(const char * prefix, rpmts ts,
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
 	/*@globals _rebuildinprogress @*/
 	/*@modifies _rebuildinprogress @*/
 {
@@ -3412,6 +3550,9 @@ int rpmdbRebuild(const char * prefix)
 
 	/* RPMDBI_PACKAGES */
 	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
+	if (ts && hdrchk)
+	    (void) rpmdbSetHdrChk(mi, ts, hdrchk);
+
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	    /* let's sanity check this record a bit, otherwise just skip it */
@@ -3421,7 +3562,7 @@ int rpmdbRebuild(const char * prefix)
 		headerIsEntry(h, RPMTAG_BUILDTIME)))
 	    {
 		rpmError(RPMERR_INTERNAL,
-			_("record number %u in database is bad -- skipping.\n"),
+			_("header #%u in the database is bad -- skipping.\n"),
 			_RECNUM);
 		continue;
 	    }
@@ -3455,7 +3596,7 @@ int rpmdbRebuild(const char * prefix)
 	    /* Deleted entries are eliminated in legacy headers by copy. */
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
-		rc = rpmdbAdd(newdb, -1, (nh ? nh : h));
+		rc = rpmdbAdd(newdb, -1, (nh ? nh : h), ts, hdrchk);
 		nh = headerFree(nh);
 	    }
 

@@ -369,7 +369,7 @@ struct _dbiIndex {
     unsigned int dbi_q_extentsize;
 
 /*@refcounted@*/
-    rpmdb dbi_rpmdb;
+    rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
     int	dbi_jlen;		/*!< size of join key */
 
@@ -415,11 +415,14 @@ struct rpmdb_s {
 	/*@*/;
     void (*db_free) (/*@only@*/ void * ptr)
 	/*@modifies *ptr @*/;
+/*@only@*/ /*@null@*/
+    unsigned char * db_bits;	/*!< package instance bit mask. */
+    int		db_nbits;	/*!< no. of bits in mask. */
     int		db_opens;
 /*@only@*/ /*@null@*/
-    void * db_dbenv;		/*!< Berkeley DB_ENV handle */
+    void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
     int		db_ndbi;	/*!< No. of tag indices. */
-    dbiIndex *	_dbi;		/*!< Tag indices. */
+    dbiIndex * _dbi;		/*!< Tag indices. */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -719,6 +722,17 @@ int dbiByteSwapped(dbiIndex dbi)
         dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
     return dbi->dbi_byteswapped;
 }
+/** \ingroup dbi
+ * Is database byte swapped?
+ * @param dbi		index database handle
+ * @return		0 no
+ */
+/*@unused@*/ static inline
+int dbiStat(dbiIndex dbi, unsigned int flags)
+	/*@modifies dbi @*/
+{
+    return (*dbi->dbi_vec->stat) (dbi, flags);
+}
 /*@=globuse =mustmod @*/
 
 /*@=exportlocal@*/
@@ -961,6 +975,17 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
+ * Modify iterator to verify retrieved header blobs.
+ * @param mi		rpm database iterator
+ * @param ts		transaction set
+ * @param (*hdrchk)	headerCheck() vector
+ * @return		0 always
+ */
+int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts,
+		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg))
+	/*@modifies mi @*/;
+
+/** \ingroup rpmdb
  * Return database iterator.
  * @param db		rpm database
  * @param rpmtag	rpm tag
@@ -999,29 +1024,39 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
  * @param db		rpm database
  * @param iid		install transaction id (iid = 0 or -1 to skip)
  * @param h		header
+ * @param ts		(unused) transaction set (or NULL)
+ * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h)
+int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
+		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
 	/*@globals fileSystem @*/
 	/*@modifies db, h, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
  * @param db		rpm database
- * @param rid		remove transaction id (rid = 0 or -1 to skip)
+ * @param rid		(unused) remove transaction id (rid = 0 or -1 to skip)
  * @param hdrNum	package instance number in database
+ * @param ts		(unused) transaction set (or NULL)
+ * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
+int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
+		/*@null@*/ rpmts ts,
+		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
 	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.
  * @param prefix	path to top of install tree
+ * @param ts		transaction set (or NULL)
+ * @param (*hdrchk)	headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbRebuild(/*@null@*/ const char * prefix)
+int rpmdbRebuild(/*@null@*/ const char * prefix, /*@null@*/ rpmts ts,
+		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 

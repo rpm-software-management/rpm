@@ -23,17 +23,17 @@ _free(/*@only@*/ /*@null@*/ const void * p)
 }
 
 /* Bit mask macros. */
-/*@-exporttype@*/
+/*@-exporttype -redef @*/
 typedef	unsigned int __pbm_bits;
-/*@=exporttype@*/
+/*@=exporttype =redef @*/
 #define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
 #define	__PBM_IX(d)		((d) / __PBM_NBITS)
 #define __PBM_MASK(d)		((__pbm_bits) 1 << (((unsigned)(d)) % __PBM_NBITS))
-/*@-exporttype@*/
+/*@-exporttype -redef @*/
 typedef struct {
     __pbm_bits bits[1];
 } pbm_set;
-/*@=exporttype@*/
+/*@=exporttype =redef @*/
 #define	__PBM_BITS(set)	((set)->bits)
 
 #define	PBM_ALLOC(d)	calloc(__PBM_IX (d) + 1, sizeof(__pbm_bits))

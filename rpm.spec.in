@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.52
+Release: 0.54
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -514,6 +514,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jul 24 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.54
+- imbue %ghost with missingok attribute with --verify (#68933).
+
+* Tue Jul 23 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.53
+- verify signatures/digests retrieved through rpmdbNextIterator().
+
 * Sun Jul 21 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.52
 - add methods to make signature handling opaque wrto rpmts.
 

@@ -167,8 +167,8 @@ typedef enum rpmQueryFlags_e {
     QUERY_DIGEST	= (1 << 19),	/*!< verify: from --nodigest */
     QUERY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
     QUERY_PATCHES	= (1 << 21),	/*!< placeholder (SuSE) */
+    QUERY_HDRCHK	= (1 << 22),	/*!< verify: from --nohdrchk */
 /*@=enummemuse@*/
-	/* bit 22 unused */
     QUERY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
     QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
@@ -202,8 +202,8 @@ typedef enum rpmVerifyFlags_e {
     VERIFY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
     VERIFY_DIGEST	= (1 << 19),	/*!< verify: from --nodigest */
     VERIFY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
-    VERFIY_PATCHES	= (1 << 21),	/*!< placeholder (SuSE) */
-	/* bit 22 unused */
+    VERIFY_PATCHES	= (1 << 21),	/*!< placeholder (SuSE) */
+    VERIFY_HDRCHK	= (1 << 22),	/*!< verify: from --nohdrchk */
 /*@-enummemuse@*/
     VERIFY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     VERIFY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
@@ -219,7 +219,7 @@ typedef enum rpmVerifyFlags_e {
     VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV )
 #define	VERIFY_ALL	\
   ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
-    VERIFY_SIGNATURE )
+    VERIFY_SIGNATURE | VERIFY_HDRCHK )
 
 /** \ingroup rpmcli
  */

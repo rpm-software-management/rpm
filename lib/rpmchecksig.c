@@ -540,7 +540,7 @@ static int rpmImportPubkey(const rpmts ts,
 #endif
 
 	/* Add header to database. */
-	xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h);
+	xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
 
 bottom:
 	/* Clean up. */

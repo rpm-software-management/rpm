@@ -185,7 +185,7 @@ int convertDB(void)
 	    free(fileStatesList);
 	}
 
-        rpmdbAdd(db, dbentry);
+        rpmdbAdd(db, dbentry, NULL, NULL);
 
 	free(group);
 	headerFree(dbentry);

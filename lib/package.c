@@ -15,6 +15,7 @@
 #include "legacy.h"	/* XXX providePackageNVR() and compressFileList() */
 #include "rpmlead.h"
 
+#include "header_internal.h"	/* XXX headerCheck */
 #include "signature.h"
 #include "debug.h"
 
@@ -24,10 +25,72 @@
 /*@access pgpDigParams @*/
 /*@access rpmts @*/
 /*@access Header @*/		/* XXX compared with NULL */
+/*@access entryInfo @*/		/* XXX headerCheck */
+/*@access indexEntry @*/		/* XXX headerCheck */
 /*@access FD_t @*/		/* XXX stealing digests */
 
 /*@unchecked@*/
 static int _print_pkts = 0;
+
+/*@unchecked@*/
+static int nkeyids = 0;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+static int * keyids;
+
+/*@unchecked@*/
+static unsigned char header_magic[8] = {
+        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
+};
+
+/**
+ * Alignment needs (and sizeof scalars types) for internal rpm data types.
+ */
+/*@observer@*/ /*@unchecked@*/
+static int typeAlign[16] =  {
+    1,	/*!< RPM_NULL_TYPE */
+    1,	/*!< RPM_CHAR_TYPE */
+    1,	/*!< RPM_INT8_TYPE */
+    2,	/*!< RPM_INT16_TYPE */
+    4,	/*!< RPM_INT32_TYPE */
+    8,	/*!< RPM_INT64_TYPE */
+    1,	/*!< RPM_STRING_TYPE */
+    1,	/*!< RPM_BIN_TYPE */
+    1,	/*!< RPM_STRING_ARRAY_TYPE */
+    1,	/*!< RPM_I18NSTRING_TYPE */
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+/**
+ * Sanity check on no. of tags.
+ * This check imposes a limit of 65K tags, more than enough.
+ */
+#define hdrchkTags(_ntags)      ((_ntags) & 0xffff0000)
+
+/**
+ * Sanity check on type values.
+ */
+#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
+
+/**
+ * Sanity check on data size and/or offset.
+ * This check imposes a limit of 16 MB, more than enough.
+ */
+#define hdrchkData(_nbytes) ((_nbytes) & 0xff000000)
+
+/**
+ * Sanity check on data alignment for data type.
+ */
+#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
+
+/**
+ * Sanity check on range of data offset.
+ */
+#define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
 
 void headerMergeLegacySigs(Header h, const Header sig)
 {
@@ -139,11 +202,6 @@ Header headerRegenSigHeader(const Header h)
     return sig;
 }
 
-/*@unchecked@*/
-static int nkeyids = 0;
-/*@unchecked@*/ /*@only@*/ /*@null@*/
-static int * keyids;
-
 /**
  * Remember current key id.
  * @param ts		transaction set
@@ -183,10 +241,308 @@ static int rpmtsStashKeyid(rpmts ts)
     return 0;
 }
 
-/*@unchecked@*/
-static unsigned char header_magic[8] = {
-        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
+/**
+ * Perform simple sanity and range checks on header tag(s).
+ * @param il		no. of tags in header
+ * @param dl		no. of bytes in header data.
+ * @param pe		1st element in tag array, big-endian
+ * @param info		failing (or last) tag element, host-endian
+ * @return		-1 on success, otherwise failing tag element index
+ */
+static int headerVerifyInfo(int il, int dl, entryInfo pe, entryInfo info,
+		int negate)
+	/*@modifies info @*/
+{
+    int i;
+
+/*@-boundsread@*/
+    for (i = 0; i < il; i++) {
+	info->tag = ntohl(pe[i].tag);
+	info->type = ntohl(pe[i].type);
+	info->offset = ntohl(pe[i].offset);
+	if (negate)
+	    info->offset = -info->offset;
+	info->count = ntohl(pe[i].count);
+
+	if (hdrchkType(info->type) || hdrchkAlign(info->type, info->offset) ||
+		hdrchkRange(dl, info->offset) || hdrchkData(info->count))
+	    return i;
+    }
+/*@=boundsread@*/
+    return -1;
+}
+
+/**
+ * Check header consistency, performing headerGetEntry() the hard way.
+ *
+ * Sanity checks on the header are performed while looking for a
+ * header-only digest or signature to verify the blob. If found,
+ * the digest or signature is verified.
+ *
+ * @param ts		transaction set
+ * @param uh		unloaded header blob
+ * @param uc		no. of bytes in blob (or 0 to disable)
+ * @retval *msg		signature verification msg
+ * @return		RPMRC_OK/RPMRC_NOTFOUND/RPMRC_FAIL
+ */
+rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
+{
+    pgpDig dig;
+    unsigned char buf[8*BUFSIZ];
+    int_32 * ei = (int_32 *) uh;
+/*@-boundsread@*/
+    int_32 il = ntohl(ei[0]);
+    int_32 dl = ntohl(ei[1]);
+    entryInfo pe = (entryInfo) &ei[2];
+/*@=boundsread@*/
+    int_32 ildl[2];
+    int_32 pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
+    unsigned char * dataStart = (char *) (pe + il);
+    indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
+    entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
+    const void * sig = NULL;
+    const char * b;
+    int vsflags = rpmtsVerifySigFlags(ts);
+    int siglen = 0;
+    int blen;
+    size_t nb;
+    int_32 ril = 0;
+    unsigned char * end = NULL;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    int xx;
+    int i;
+
+    /* Is the blob the right size? */
+    if (uc > 0 && pvlen != uc)
+	goto exit;
+
+    /* Check (and convert) the 1st tag element. */
+    if (headerVerifyInfo(1, dl, pe, &entry->info, 0) != -1)
+	goto exit;
+
+    /* Is there an immutable header region tag? */
+/*@-sizeoftype@*/
+    if (!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
+       && entry->info.type == RPM_BIN_TYPE
+       && entry->info.count == REGION_TAG_COUNT))
+    {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+/*@=sizeoftype@*/
+
+    /* Is there an immutable header region tag trailer? */
+    end = dataStart + entry->info.offset;
+/*@-bounds@*/
+    (void) memcpy(info, end, entry->info.count);
+/*@=bounds@*/
+    end += entry->info.count;
+
+/*@-sizeoftype@*/
+    if (headerVerifyInfo(1, dl, info, &entry->info, 1) != -1
+     || !(entry->info.tag == RPMTAG_HEADERIMMUTABLE
+       && entry->info.type == RPM_BIN_TYPE
+       && entry->info.count == REGION_TAG_COUNT))
+	goto exit;
+/*@=sizeoftype@*/
+/*@-boundswrite@*/
+    memset(info, 0, sizeof(*info));
+/*@=boundswrite@*/
+
+    /* Is the no. of tags in the region less than the total no. of tags? */
+    ril = entry->info.offset/sizeof(*pe);
+    if (ril > il)
+	goto exit;
+
+    /* Find a header-only digest/signature tag. */
+    for (i = ril; i < il; i++) {
+	if (headerVerifyInfo(1, dl, pe+i, &entry->info, 0) != -1)
+	    goto exit;
+
+	switch (entry->info.tag) {
+	case RPMTAG_SHA1HEADER:
+	    if (vsflags & _RPMTS_VSF_NODIGESTS)
+		/*@switchbreak@*/ break;
+	    blen = 0;
+/*@-boundsread@*/
+	    for (b = dataStart + entry->info.offset; *b != '\0'; b++) {
+		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
+		    /*@innerbreak@*/ break;
+		blen++;
+	    }
+	    if (entry->info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
+		goto exit;
+/*@=boundsread@*/
+	    if (info->tag == 0) {
+/*@-boundswrite@*/
+		*info = entry->info;	/* structure assignment */
+/*@=boundswrite@*/
+		siglen = blen + 1;
+	    }
+	    /*@switchbreak@*/ break;
+#ifdef	NOTYET
+	case RPMTAG_RSAHEADER:
+#endif
+	case RPMTAG_DSAHEADER:
+	    if (vsflags & _RPMTS_VSF_NOSIGNATURES)
+		/*@switchbreak@*/ break;
+	    if (entry->info.type != RPM_BIN_TYPE)
+		goto exit;
+/*@-boundswrite@*/
+	    *info = entry->info;	/* structure assignment */
+/*@=boundswrite@*/
+	    siglen = info->count;
+	    /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
+	}
+    }
+    rc = RPMRC_NOTFOUND;
+
+exit:
+    /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
+    if (rc != RPMRC_NOTFOUND)
+	return rc;
+
+    /* If no header-only digest/signature, then do simple sanity check. */
+    if (info->tag == 0) {
+verifyinfo_exit:
+	if (headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0) != -1)
+	    rc = RPMRC_FAIL;
+	else
+	    rc = RPMRC_OK;
+	return rc;
+    }
+
+    /* Verify header-only digest/signature. */
+    dig = rpmtsDig(ts);
+    if (dig == NULL)
+	goto verifyinfo_exit;
+    dig->nbytes = 0;
+
+/*@-boundsread@*/
+    sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
+/*@=boundsread@*/
+    (void) rpmtsSetSig(ts, info->tag, info->type, sig, info->count);
+
+    switch (info->tag) {
+#ifdef	NOTYET
+    case RPMTAG_RSAHEADER:
+	/* Parse the parameters from the OpenPGP packets that will be needed. */
+	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
+	/* XXX only V3 signatures for now. */
+	if (dig->signature.version != 3) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("only V3 signatures can be verified, skipping V%u signature"),
+		dig->signature.version);
+	    rpmtsCleanDig(ts);
+	    goto verifyinfo_exit;
+	}
+
+	ildl[0] = htonl(ril);
+	ildl[1] = (end - dataStart);
+	ildl[1] = htonl(ildl[1]);
+
+	dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+
+	b = (unsigned char *) header_magic;
+	nb = sizeof(header_magic);
+        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) ildl;
+	nb = sizeof(ildl);
+        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) pe;
+	nb = (htonl(ildl[0]) * sizeof(*pe));
+        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) dataStart;
+	nb = htonl(ildl[1]);
+        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        dig->nbytes += nb;
+
+	break;
+#endif
+    case RPMTAG_DSAHEADER:
+	/* Parse the parameters from the OpenPGP packets that will be needed. */
+	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
+	/* XXX only V3 signatures for now. */
+	if (dig->signature.version != 3) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("only V3 signatures can be verified, skipping V%u signature"),
+		dig->signature.version);
+	    rpmtsCleanDig(ts);
+	    goto verifyinfo_exit;
+	}
+	/*@fallthrough@*/
+    case RPMTAG_SHA1HEADER:
+/*@-boundswrite@*/
+	ildl[0] = htonl(ril);
+	ildl[1] = (end - dataStart);
+	ildl[1] = htonl(ildl[1]);
+/*@=boundswrite@*/
+
+	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+
+	b = (unsigned char *) header_magic;
+	nb = sizeof(header_magic);
+        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) ildl;
+	nb = sizeof(ildl);
+        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) pe;
+	nb = (htonl(ildl[0]) * sizeof(*pe));
+        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) dataStart;
+	nb = htonl(ildl[1]);
+        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        dig->nbytes += nb;
+
+	break;
+    default:
+	break;
+    }
+
+/** @todo Implement disable/enable/warn/error/anal policy. */
+
+/*@-boundswrite@*/
+    buf[0] = '\0';
+/*@=boundswrite@*/
+    switch (rpmVerifySignature(ts, buf)) {
+    case RPMSIG_OK:		/* Signature is OK. */
+	rc = RPMRC_OK;
+	break;
+    case RPMSIG_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
+    case RPMSIG_NOKEY:		/* Key is unavailable. */
+	rc = RPMRC_OK;
+	break;
+    case RPMSIG_UNKNOWN:	/* Signature is unknown type. */
+	rc = RPMRC_OK;
+	break;
+    default:
+    case RPMSIG_BAD:		/* Signature does not verify. */
+	rc = RPMRC_FAIL;
+	break;
+    }
+
+/*@-boundswrite@*/
+    if (msg != NULL)
+	*msg = xstrdup(buf);
+/*@=boundswrite@*/
+
+    rpmtsCleanDig(ts);
+    return rc;
+}
 
 int rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, Header * hdrp)
@@ -332,8 +688,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     switch (sigtag) {
     case RPMSIGTAG_RSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, siglen, dig,
-			(_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 	/* XXX only V3 signatures for now. */
 	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
@@ -357,8 +712,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, siglen, dig,
-			(_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 	/* XXX only V3 signatures for now. */
 	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,

@@ -229,7 +229,7 @@ int rpmInstall(rpmts ts,
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
-    int vsflags = _RPMTS_VSF_VERIFY_LEGACY;
+    int vsflags, ovsflags;
     int ac = 0;
     int rc;
     int xx;
@@ -243,11 +243,18 @@ int rpmInstall(rpmts ts,
 
     ts->goal = TSM_INSTALL;
 
+    if (ia->installInterfaceFlags & INSTALL_UPGRADE)
+	vsflags = rpmExpandNumeric("%{_vsflags_erase}");
+    else
+	vsflags = rpmExpandNumeric("%{_vsflags_install}");
     if (ia->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMTS_VSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)
 	vsflags |= _RPMTS_VSF_NOSIGNATURES;
-    xx = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
+    if (ia->qva_flags & VERIFY_HDRCHK)
+	vsflags |= _RPMTS_VSF_NOHDRCHK;
+    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
+    ovsflags = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
 
     {	int notifyFlags;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -636,9 +643,20 @@ int rpmErase(rpmts ts,
     int numFailed = 0;
     int stopUninstall = 0;
     int numPackages = 0;
+    int vsflags, ovsflags;
     rpmps ps;
 
     if (argv == NULL) return 0;
+
+    vsflags = rpmExpandNumeric("%{_vsflags_erase}");
+    if (ia->qva_flags & VERIFY_DIGEST)
+	vsflags |= _RPMTS_VSF_NODIGESTS;
+    if (ia->qva_flags & VERIFY_SIGNATURE)
+	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+    if (ia->qva_flags & VERIFY_HDRCHK)
+	vsflags |= _RPMTS_VSF_NOHDRCHK;
+    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
+    ovsflags = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 

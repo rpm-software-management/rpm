@@ -153,7 +153,7 @@ static int ftsCacheUpdate(rpmts ts)
 	if (rc != 1) break;
 
 	/* --- Add new cache header to database. */
-	rc = rpmdbAdd(rpmtsGetRdb(ts), tid, ip->h);
+	rc = rpmdbAdd(rpmtsGetRdb(ts), tid, ip->h, NULL, NULL);
 	if (rc) break;
 
     }

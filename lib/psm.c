@@ -1841,11 +1841,11 @@ fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h != NULL)	/* XXX can't happen */
-	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h);
+	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h, NULL, NULL);
 	break;
     case PSM_RPMDB_REMOVE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record);
+	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL, NULL);
 	break;
 
     default:

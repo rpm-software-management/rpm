@@ -138,12 +138,36 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     return rc;
 }
 
+int rpmtsInitDB(rpmts ts, int dbmode)
+{
+    return rpmdbInit(ts->rootDir, dbmode);
+}
+
+int rpmtsRebuildDB(rpmts ts)
+{
+    int rc;
+    if (!(ts->vsflags & _RPMTS_VSF_NOHDRCHK))
+	rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
+    else
+	rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
+    return rc;
+}
+
+int rpmtsVerifyDB(rpmts ts)
+{
+    return rpmdbVerify(ts->rootDir);
+}
+
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
+    rpmdbMatchIterator mi;
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
 	return NULL;
-    return rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
+    mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
+    if (mi && !(ts->vsflags & _RPMTS_VSF_NOHDRCHK))
+	(void) rpmdbSetHdrChk(mi, ts, headerCheck);
+    return mi;
 }
 
 rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
@@ -170,9 +194,6 @@ rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
 	ts->pkpkt = _free(ts->pkpkt);
 	ts->pkpktlen = 0;
 	memset(ts->pksignid, 0, sizeof(ts->pksignid));
-
-	/* Make sure the database is open. */
-	(void) rpmtsOpenDB(ts, ts->dbmode);
 
 	/* Retrieve the pubkey that matches the signature. */
 	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));

@@ -1059,12 +1059,6 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	pgpCleanDig(dig);
 
 	/*@-branchstate@*/
-	if (dig->md5ctx != NULL)
-	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
-	dig->md5ctx = NULL;
-
-	/*@-branchstate@*/
 	if (dig->hdrsha1ctx != NULL)
 	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
 	/*@=branchstate@*/
@@ -1083,6 +1077,20 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	mp32nfree(&dig->hm);
 	mp32nfree(&dig->r);
 	mp32nfree(&dig->s);
+
+#ifdef	NOTYET
+	/*@-branchstate@*/
+	if (dig->hdrmd5ctx != NULL)
+	    (void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->hdrmd5ctx = NULL;
+#endif
+
+	/*@-branchstate@*/
+	if (dig->md5ctx != NULL)
+	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->md5ctx = NULL;
 
 	mp32bfree(&dig->rsa_pk.n);
 	mp32nfree(&dig->rsa_pk.e);

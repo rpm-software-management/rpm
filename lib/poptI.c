@@ -189,6 +189,8 @@ struct poptOption rpmInstallPoptTable[] = {
 
  { "nodigest", '\0', POPT_BIT_SET, &rpmIArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify package digest(s)"), NULL },
+ { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.qva_flags, VERIFY_HDRCHK,
+        N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_BIT_SET, &rpmIArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify package signature(s)"), NULL },
 
