@@ -96,8 +96,16 @@ int	Ferror	(FD_t fd);
 int	Fileno	(FD_t fd);
 
 int	Fcntl	(FD_t, int op, void *lip);
-ssize_t Pread	(FD_t fd, /*@out@*/ void * buf, size_t count, off_t offset);
-ssize_t Pwrite	(FD_t fd, const void * buf, size_t count, off_t offset);
+#ifdef USE_COOKIE_SEEK_POINTER
+ssize_t Pread(FD_t fd, void * buf, size_t count, off64_t offset);
+#else
+ssize_t Pread(FD_t fd, void * buf, size_t count, off_t offset);
+#endif
+#ifdef USE_COOKIE_SEEK_POINTER
+ssize_t Pwrite(FD_t fd, const void * buf, size_t count, off64_t offset);
+#else
+ssize_t Pwrite(FD_t fd, const void * buf, size_t count, off_t offset);
+#endif
 int	Mkdir	(const char * path, mode_t mode);
 int	Chdir	(const char * path);
 int	Rmdir	(const char * path);
