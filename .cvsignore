@@ -4,11 +4,12 @@
 Makefile
 Makefile.in
 rpm
-rpm.shared
 rpm2cpio
 rpmconvert
 rpmrc
 macros
+find-requires
+find-provides
 config.h.in
 config.h
 config.guess
