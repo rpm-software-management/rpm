@@ -15,6 +15,7 @@
 	- fix: default for rd_timeoutsecs is 1 sec (avoid ufdio assertion).
 	- fix: new FILENAMES tags require package index, not pointer in lookups.
 	- rename new FILENAMES tags to BASENAMES/DIRNAMES/DIRINDEXES.
+	- fix: don't look at password when searching urlCache.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

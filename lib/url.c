@@ -146,12 +146,14 @@ static int urlStrcmp(const char *str1, const char *str2)
     return 0;
 }
 
-static void urlFind(urlinfo *uret, int mustAsk)
+#define	urlFind(_a, _b)	XurlFind(_a, _b, __LINE__)
+static void XurlFind(urlinfo *uret, int mustAsk, unsigned line)
 {
     urlinfo u;
     int ucx;
     int i;
 
+fprintf(stderr, "*** urlFind(%p,%d) %s:%u\n", uret, mustAsk, __FILE__, line);
     if (uret == NULL)
 	return;
 
@@ -173,13 +175,9 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	 */
 	if (urlStrcmp(u->service, ou->service))
 	    continue;
-	if (urlStrcmp(u->service, ou->service))
-	    continue;
     	if (urlStrcmp(u->host, ou->host))
 	    continue;
 	if (urlStrcmp(u->user, ou->user))
-	    continue;
-	if (urlStrcmp(u->password, ou->password))
 	    continue;
 	if (urlStrcmp(u->portstr, ou->portstr))
 	    continue;
@@ -223,7 +221,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
 	    char * prompt;
-	    prompt = alloca(strlen(u->host) + strlen(u->user) + 40);
+	    prompt = alloca(strlen(u->host) + strlen(u->user) + 256);
 	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
 	    FREE(u->password);
 	    u->password = xstrdup( /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/ );
