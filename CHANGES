@@ -14,6 +14,7 @@
 	- add new fully recursive macro.c
 
 2.5.3 -> 2.5.4:
+	- quote users/groups/filenames in --setugids.
 	- add russian translation w man pages (Serguei Koubouchine <ksi@gu.net>)
 	- fix virtual file attribute bug that skipped all files in binary rpm.
 	- eliminate infinite loop with missing tmpdir (Trent Jarvi).
