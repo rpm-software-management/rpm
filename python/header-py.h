@@ -25,7 +25,7 @@ Header hdrGetHeader(hdrObject * h)
 long tagNumFromPyObject (PyObject *item)
 	/*@*/;
 
-PyObject * labelCompare (PyObject * self, PyObject * args, PyObject * kwds)
+PyObject * labelCompare (PyObject * self, PyObject * args)
 	/*@*/;
 PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;

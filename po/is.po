@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-19 12:42-0500\n"
+"POT-Creation-Date: 2004-11-24 23:45-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -3958,59 +3958,59 @@ msgstr "Skrá %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Skráin %s er minni en %u bæti\n"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:676
 msgid "Success"
 msgstr "Tókst"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:679
 msgid "Bad server response"
 msgstr "Þjónninn svaraði rangt"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:682
 msgid "Server I/O error"
 msgstr "Les/ritvilla á þjóninum"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:685
 msgid "Server timeout"
 msgstr "Þjónninn tímaði út"
 
-#: rpmio/rpmio.c:685
+#: rpmio/rpmio.c:688
 msgid "Unable to lookup server host address"
 msgstr "Gat ekki flett upp vistfangi þjónsins"
 
-#: rpmio/rpmio.c:688
+#: rpmio/rpmio.c:691
 msgid "Unable to lookup server host name"
 msgstr "Gat ekki flett upp heiti þjónsins"
 
-#: rpmio/rpmio.c:691
+#: rpmio/rpmio.c:694
 msgid "Failed to connect to server"
 msgstr "Gat ekki tengst þjóninum"
 
-#: rpmio/rpmio.c:694
+#: rpmio/rpmio.c:697
 msgid "Failed to establish data connection to server"
 msgstr "Gat ekki opnað gagnatengingu við þjóninn"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:700
 msgid "I/O error to local file"
 msgstr "Les/ritvilla í skrána"
 
-#: rpmio/rpmio.c:700
+#: rpmio/rpmio.c:703
 msgid "Error setting remote server to passive mode"
 msgstr "Ekki tókst að fá þjóninn í \"passive\" ham"
 
-#: rpmio/rpmio.c:703
+#: rpmio/rpmio.c:706
 msgid "File not found on server"
 msgstr "Skráin fannst ekki á þjóninum"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:709
 msgid "Abort in progress"
 msgstr "Er að hætta við"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:713
 msgid "Unknown or unexpected error"
 msgstr "Óþekkt eða óvænt villa"
 
-#: rpmio/rpmio.c:1404
+#: rpmio/rpmio.c:1407
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "tengist %s sem %s með aðgangsorði %s\n"

@@ -1054,14 +1054,12 @@ static int compare_values(const char *str1, const char *str2)
     return rpmvercmp(str1, str2);
 }
 
-PyObject * labelCompare (PyObject * self, PyObject * args, PyObject * kwds)
+PyObject * labelCompare (PyObject * self, PyObject * args)
 {
     char *v1, *r1, *e1, *v2, *r2, *e2;
     int rc;
-    char * kwlist[] = {"epoch0", "version0", "release0",
-    		       "epoch1", "version1", "release1", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "(zzz)(zzz)", kwlist,
+    if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
 			&e1, &v1, &r1, &e2, &v2, &r2))
 	return NULL;
 

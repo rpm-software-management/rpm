@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-19 12:42-0500\n"
+"POT-Creation-Date: 2004-11-24 23:45-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -4043,59 +4043,59 @@ msgstr "Ficheiro %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:676
 msgid "Success"
 msgstr "Sucesso"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:679
 msgid "Bad server response"
 msgstr "Resposta errada do servidor"
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:682
 msgid "Server I/O error"
 msgstr "Erro de E/S do servidor"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:685
 msgid "Server timeout"
 msgstr "Tempo de espera pelo servidor expirado"
 
-#: rpmio/rpmio.c:685
+#: rpmio/rpmio.c:688
 msgid "Unable to lookup server host address"
 msgstr "Incapaz de descobrir o endereço da máquina do servidor"
 
-#: rpmio/rpmio.c:688
+#: rpmio/rpmio.c:691
 msgid "Unable to lookup server host name"
 msgstr "Incapaz de descobrir o nome da máquina do servidor"
 
-#: rpmio/rpmio.c:691
+#: rpmio/rpmio.c:694
 msgid "Failed to connect to server"
 msgstr "Não consegui ligar ao servidor"
 
-#: rpmio/rpmio.c:694
+#: rpmio/rpmio.c:697
 msgid "Failed to establish data connection to server"
 msgstr "Não consigo estabelecer uma ligação de dados ao servidor"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:700
 msgid "I/O error to local file"
 msgstr "Erro de E/S no ficheiro local"
 
-#: rpmio/rpmio.c:700
+#: rpmio/rpmio.c:703
 msgid "Error setting remote server to passive mode"
 msgstr "Erro ao configurar o servidor remoto para o modo passivo"
 
-#: rpmio/rpmio.c:703
+#: rpmio/rpmio.c:706
 msgid "File not found on server"
 msgstr "Ficheiro não encontrado no servidor"
 
-#: rpmio/rpmio.c:706
+#: rpmio/rpmio.c:709
 msgid "Abort in progress"
 msgstr "Interrupção em progresso"
 
-#: rpmio/rpmio.c:710
+#: rpmio/rpmio.c:713
 msgid "Unknown or unexpected error"
 msgstr "Erro desconhecido ou inesperado"
 
-#: rpmio/rpmio.c:1404
+#: rpmio/rpmio.c:1407
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "a ligar ao %s como %s com senha %s\n"
