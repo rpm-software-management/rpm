@@ -4,6 +4,8 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <glob.h>	/* XXX rpmio.h */
+#include <dirent.h>	/* XXX rpmio.h */
 
 #include "Python.h"
 #include "rpmlib.h"

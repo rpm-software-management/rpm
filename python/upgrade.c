@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <rpm/rpmlib.h>
-#include <rpm/header.h>
 #include <string.h>
+
+#include <glob.h>	/* XXX rpmio.h */
+#include <dirent.h>	/* XXX rpmio.h */
+
+#include <rpmlib.h>
 
 #include "hash.h"
 #include "upgrade.h"
@@ -102,7 +105,7 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
 	pack = bsearch(&keyaddr, psp->packages, psp->numPackages,
 		       sizeof(*psp->packages), (void *)pkgCompare);
 	if (!pack) {
-	    if (headerGetEntry(h, RPMTAG_FILENAMES, NULL,
+	    if (headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL,
 			  (void **) &installedFiles, &installedFileCount)) {
 		compareFileList(0, NULL, installedFileCount,
 				installedFiles, ht);
@@ -217,7 +220,7 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	    DEBUG (("UPGRADE\n"))
 	    (*pip)->selected = 1;
 
-	    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL,
+	    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL,
 			  (void **) &availFiles, &availFileCount)) {
 		availFiles = NULL;
 		availFileCount = 0;
@@ -227,7 +230,7 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 		/* Compare the file lists */
 		installedHeader =
 		    rpmdbGetRecord(db, matches.recs[i].recOffset);
-		if (!headerGetEntry(installedHeader, RPMTAG_FILENAMES, NULL,
+		if (!headerGetEntry(installedHeader, RPMTAG_OLDFILENAMES, NULL,
 			      (void **) &installedFiles,
 			      &installedFileCount)) {
 		    installedFiles = NULL;
@@ -279,7 +282,7 @@ static int removeMovedFilesAlreadyHandled(struct pkgSet *psp,
 	    name = NULL;
 	    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
 
-	    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL,
+	    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL,
 			  (void **) &availFiles, &availFileCount)) {
 		availFiles = NULL;
 		availFileCount = 0;
@@ -324,7 +327,7 @@ static int findPackagesWithRelocatedFiles(struct pkgSet *psp,
 
 	    availFiles = NULL;
 	    availFileCount = 0;
-	    if (headerGetEntry(h, RPMTAG_FILENAMES, NULL,
+	    if (headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL,
 			 (void **) &availFiles, &availFileCount)) {
 		for (i = 0; i < availFileCount; i++) {
 		    if ((file = htInTable(ht, availFiles[i]))) {

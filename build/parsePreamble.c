@@ -94,7 +94,7 @@ static int parseYesNo(char *s)
     return 1;
 }
 
-static char *findLastChar(char *s)
+static inline char * findLastChar(char * s)
 {
     char *res = s;
 
@@ -332,9 +332,8 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     int num, rc, len;
     
     /* Find the start of the "field" and strip trailing space */
-    while ((*field) && (*field != ':')) {
+    while ((*field) && (*field != ':'))
 	field++;
-    }
     if (*field != ':') {
 	rpmError(RPMERR_BADSPEC, _("line %d: Malformed tag: %s"),
 		 spec->lineNum, spec->line);
@@ -422,7 +421,8 @@ fprintf(stderr, "*** PPA BuildRoot %s set from macro\n", buildRootURL);
 		(void) urlPath(specURL, (const char **)&field);
 		if (*field == '\0') field = "/";
 		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
-		field = spec->buildRootURL = buildRootURL;
+		spec->buildRootURL = buildRootURL;
+		field = (char *) buildRootURL;
 if (_debug)
 fprintf(stderr, "*** PPA BuildRoot %s set from field\n", buildRootURL);
 	    }
@@ -572,7 +572,6 @@ static struct PreambleRec {
     {RPMTAG_RELEASE,		0, 0, "release"},
     {RPMTAG_EPOCH,		0, 0, "epoch"},
     {RPMTAG_EPOCH,		0, 0, "serial"},
-/*    {RPMTAG_DESCRIPTION,	0, 0, "description"}, */
     {RPMTAG_SUMMARY,		0, 1, "summary"},
     {RPMTAG_LICENSE,		0, 0, "copyright"},
     {RPMTAG_LICENSE,		0, 0, "license"},
@@ -581,7 +580,6 @@ static struct PreambleRec {
     {RPMTAG_GROUP,		0, 1, "group"},
     {RPMTAG_PACKAGER,		0, 0, "packager"},
     {RPMTAG_URL,		0, 0, "url"},
-/*    {RPMTAG_ROOT,		0, 0, "root"}, */
     {RPMTAG_SOURCE,		0, 0, "source"},
     {RPMTAG_PATCH,		0, 0, "patch"},
     {RPMTAG_NOSOURCE,		0, 0, "nosource"},
@@ -590,8 +588,6 @@ static struct PreambleRec {
     {RPMTAG_EXCLUSIVEARCH,	0, 0, "exclusivearch"},
     {RPMTAG_EXCLUDEOS,		0, 0, "excludeos"},
     {RPMTAG_EXCLUSIVEOS,	0, 0, "exclusiveos"},
-/*    {RPMTAG_EXCLUDE,		0, 0, "exclude"}, */
-/*    {RPMTAG_EXCLUSIVE,	0, 0, "exclusive"}, */
     {RPMTAG_ICON,		0, 0, "icon"},
     {RPMTAG_PROVIDEFLAGS,	0, 0, "provides"},
     {RPMTAG_REQUIREFLAGS,	0, 0, "requires"},
@@ -613,32 +609,28 @@ static struct PreambleRec {
     {0, 0, 0, 0}
 };
 
-static void initPreambleList(void)
+static inline void initPreambleList(void)
 {
-    struct PreambleRec *p = preambleList;
-
-    while (p->token) {
+    struct PreambleRec *p;
+    for (p = preambleList; p->token; p++)
 	p->len = strlen(p->token);
-	p++;
-    }
 }
 
 static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, char *lang)
 {
     char *s;
-    struct PreambleRec *p = preambleList;
+    struct PreambleRec *p;
 
-    if (! p->len) {
+    if (preambleList[0].len == 0)
 	initPreambleList();
+
+    for (p = preambleList; p->token; p++) {
+	if (!strncasecmp(spec->line, p->token, p->len))
+	    break;
     }
 
-    while (p->token && strncasecmp(spec->line, p->token, p->len)) {
-	p++;
-    }
-
-    if (!p->token) {
+    if (p->token == NULL)
 	return 1;
-    }
 
     s = spec->line + p->len;
     SKIPSPACE(s);
