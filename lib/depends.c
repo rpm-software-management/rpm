@@ -129,6 +129,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 {
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 dscolor;
+    uint_32 hcolor;
+    rpmdbMatchIterator mi;
+    Header oh;
+    uint_32 ohcolor;
     int isSource;
     int duplicate = 0;
     rpmtsi pi; rpmte p;
@@ -152,6 +156,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    hcolor = hGetColor(h);
+
     pkgKey = RPMAL_NOMATCH;
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	const char * parch;
@@ -246,16 +252,23 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    goto exit;
     }
 
-    {	rpmdbMatchIterator mi;
-	Header oh;
+    /* On upgrade, erase older packages of same color (if any). */
 
-	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
-	while((oh = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmVersionCompare(h, oh))
-		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
-	}
-	mi = rpmdbFreeIterator(mi);
+    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
+    while((oh = rpmdbNextIterator(mi)) != NULL) {
+
+	/* Ignore colored packages not in our rainbow. */
+	ohcolor = hGetColor(oh);
+	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
+	    continue;
+
+	/* Skip packages that contain identical NEVR. */
+	if (rpmVersionCompare(h, oh) == 0)
+	    continue;
+
+	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
     }
+    mi = rpmdbFreeIterator(mi);
 
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
@@ -273,27 +286,28 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
 	/* XXX avoid self-obsoleting packages. */
 	if (!strcmp(rpmteN(p), Name))
+	    continue;
+
+	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
+
+	xx = rpmdbPruneIterator(mi,
+	    ts->removedPackages, ts->numRemovedPackages, 1);
+
+	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	    /* Ignore colored packages not in our rainbow. */
+	    ohcolor = hGetColor(oh);
+	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
 		continue;
 
-	{   rpmdbMatchIterator mi;
-	    Header oh;
-
-	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-
-	    xx = rpmdbPruneIterator(mi,
-		ts->removedPackages, ts->numRemovedPackages, 1);
-
-	    while((oh = rpmdbNextIterator(mi)) != NULL) {
-		/*
-		 * Rpm prior to 3.0.3 does not have versioned obsoletes.
-		 * If no obsoletes version info is available, match all names.
-		 */
-		if (rpmdsEVR(obsoletes) == NULL
-		 || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
-		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
-	    }
-	    mi = rpmdbFreeIterator(mi);
+	    /*
+	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
+	     * If no obsoletes version info is available, match all names.
+	     */
+	    if (rpmdsEVR(obsoletes) == NULL
+	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
+		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
 	}
+	mi = rpmdbFreeIterator(mi);
     }
     obsoletes = rpmdsFree(obsoletes);
 
