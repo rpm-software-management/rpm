@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.125 2001/01/03 20:19:31 jbj Exp $
+# $Id: sl.po,v 1.126 2001/01/04 02:24:30 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-03 14:05-0500\n"
+"POT-Creation-Date: 2001-01-03 21:22-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2084,17 +2084,17 @@ msgstr "opis v %%changelog manjka"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%description: %s"
 
-#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:182
+#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:185
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "vrstica %d: Napaèna izbira %s: %s"
 
-#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:194
+#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:197
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "vrstica %d: Preveè imen: %s"
 
-#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:203
+#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:206
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "vrstica %d: Paket ne obstaja: %s"
@@ -2315,17 +2315,17 @@ msgstr "vrstica %d: Zahtevana razlièica: %s"
 msgid "line %d: triggers must have --: %s"
 msgstr "vrstica %d: pro¾ila morajo vsebovati --: %s"
 
-#: build/parseScript.c:161 build/parseScript.c:219
+#: build/parseScript.c:161 build/parseScript.c:222
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "vrstica %d: Napaka pri razèlembi %s: %s"
 
-#: build/parseScript.c:171
+#: build/parseScript.c:172
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "vrstica %d: skriptni program se mora zaèeti z ,/`: %s"
 
-#: build/parseScript.c:211
+#: build/parseScript.c:214
 #, c-format
 msgid "line %d: Second %s"
 msgstr "vrstica %d: Drugi %s"

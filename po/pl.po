@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-03 14:05-0500\n"
+"POT-Creation-Date: 2001-01-03 21:22-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2094,17 +2094,17 @@ msgstr "brak opisu w %%changelog"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "linia %d: b³±d w interpretacji wpisu %%description: %s"
 
-#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:182
+#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:185
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "linia %d: B³edna opcja %s: %s"
 
-#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:194
+#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:197
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "linia %d: Zbyt du¿o nazw: %s"
 
-#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:203
+#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:206
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "linia %d: Pakiet nie istnieje: %s"
@@ -2324,17 +2324,17 @@ msgstr "linia %d: Wymagana wersja: %s"
 msgid "line %d: triggers must have --: %s"
 msgstr "linia %d: triggery musz± mieæ --: %s"
 
-#: build/parseScript.c:161 build/parseScript.c:219
+#: build/parseScript.c:161 build/parseScript.c:222
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "linia %d: B³±d przetwarzania %s: %s"
 
-#: build/parseScript.c:171
+#: build/parseScript.c:172
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "linia %d: skrypt (tu jako program) musi siê zaczynaæ od '/': %s"
 
-#: build/parseScript.c:211
+#: build/parseScript.c:214
 #, c-format
 msgid "line %d: Second %s"
 msgstr "linia %d: Drugi %s"

@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.16
+Release: 0.17
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -312,6 +312,8 @@ fi
 * Wed Jan  3 2001 Jeff Johnson <jbj@redhat.com>
 - fix: avoid locale issues with strcasecmp/strncasecmp (#23199).
 - remove almost all explicit uses of stderr in rpmlib using rpmError().
+- fix: pass scriptlet args, as in %post -p "/sbin/ldconfig -n /lib".
+	(Rodrigo Barbosa)
 
 * Tue Jan  2 2001 Jeff Johnson <jbj@redhat.com>
 - fix apidocs.

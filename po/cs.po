@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-03 14:05-0500\n"
+"POT-Creation-Date: 2001-01-03 21:22-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2012,17 +2012,17 @@ msgstr "¾ádný popis v %%changelog"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "øádek %d: Chyba pøi parsování %%description: %s"
 
-#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:182
+#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:185
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "øádek %d: ¹patná volba %s: %s"
 
-#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:194
+#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:197
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "øádek %d: Pøíli¹ mnoho jmen: %s"
 
-#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:203
+#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:206
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "øádek %d: Balíèek neexistuje: %s"
@@ -2243,17 +2243,17 @@ msgstr "øádek %d: Vy¾adována verze: %s"
 msgid "line %d: triggers must have --: %s"
 msgstr "øádek %d: spou¹tì (triggery) musí mít --: %s"
 
-#: build/parseScript.c:161 build/parseScript.c:219
+#: build/parseScript.c:161 build/parseScript.c:222
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "øádek %d: Chyba pøi parsování %s: %s"
 
-#: build/parseScript.c:171
+#: build/parseScript.c:172
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "øádek %d: jméno skriptu musí zaèínat '/': %s"
 
-#: build/parseScript.c:211
+#: build/parseScript.c:214
 #, c-format
 msgid "line %d: Second %s"
 msgstr "øádek %d: Druhý %s"

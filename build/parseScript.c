@@ -165,7 +165,8 @@ int parseScript(Spec spec, int parsePart)
     
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0) {
-	if (arg == 'p') {
+	switch (arg) {
+	case 'p':
 	    if (prog[0] != '/') {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: script program must begin "
@@ -173,8 +174,10 @@ int parseScript(Spec spec, int parsePart)
 		rc = RPMERR_BADSPEC;
 		goto exit;
 	    }
-	} else if (arg == 'n') {
+	    break;
+	case 'n':
 	    flag = PART_NAME;
+	    break;
 	}
     }
     
@@ -221,7 +224,7 @@ int parseScript(Spec spec, int parsePart)
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
-    
+
     sb = newStringBuf();
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	nextPart = PART_NONE;
@@ -241,19 +244,25 @@ int parseScript(Spec spec, int parsePart)
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
-    addReqProv(spec, pkg->header, (tagflags | RPMSENSE_INTERP), prog, NULL, 0);
+    addReqProv(spec, pkg->header, (tagflags | RPMSENSE_INTERP), progArgv[0], NULL, 0);
 
     /* Trigger script insertion is always delayed in order to */
     /* get the index right.                                   */
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
 	/* Add file/index/prog triple to the trigger file list */
-	index = addTriggerIndex(pkg, file, p, prog);
+	index = addTriggerIndex(pkg, file, p, progArgv[0]);
 
 	/* Generate the trigger tags */
 	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags)))
 	    goto exit;
     } else {
-	headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE, prog, 1);
+	if (progArgc == 1)
+	    headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE,
+			*progArgv, progArgc);
+	else
+	    headerAddEntry(pkg->header, progtag, RPM_STRING_ARRAY_TYPE,
+			progArgv, progArgc);
+
 	if (*p)
 	    headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);
 

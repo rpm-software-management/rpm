@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-03 14:05-0500\n"
+"POT-Creation-Date: 2001-01-03 21:22-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.140 2001/01/03 20:19:29 jbj Exp $
+# $Id: ja.po,v 1.141 2001/01/04 02:24:19 jbj Exp $
 #: rpm.c:185 rpmqv.c:386
 #, c-format
 msgid "rpm: %s\n"
@@ -2089,17 +2089,17 @@ msgstr "%%changelog 中に説明がありません"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "%d 行目: %%description の解析エラー: %s"
 
-#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:182
+#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:185
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "%d 行目: 不正なオプション %s:%s"
 
-#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:194
+#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:197
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "%d 行目: 名前が多すぎます: %s"
 
-#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:203
+#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:206
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "%d 行目: パッケージが存在しません: %s"
@@ -2319,17 +2319,17 @@ msgstr "%d 行目: バージョンが必要です: %s"
 msgid "line %d: triggers must have --: %s"
 msgstr "%d 行目: トリガーは -- がなければなりません: %s"
 
-#: build/parseScript.c:161 build/parseScript.c:219
+#: build/parseScript.c:161 build/parseScript.c:222
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "%d 行目: %s の構文解析エラー: %s"
 
-#: build/parseScript.c:171
+#: build/parseScript.c:172
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "%d 行目: スクリプトプログラムは '/' で始まらなければなりません: %s"
 
-#: build/parseScript.c:211
+#: build/parseScript.c:214
 #, c-format
 msgid "line %d: Second %s"
 msgstr "%d 行目: 2番目の %s"

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-01-03 14:05-0500\n"
+msgstr "POT-Creation-Date: 2001-01-03 21:22-0500\n"
 
 #: build.c:26
 #, fuzzy, c-format
@@ -2143,17 +2143,17 @@ msgstr ""
 msgid "line %d: Error parsing %%description: %s"
 msgstr ""
 
-#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:182
+#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:185
 #, fuzzy, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:194
+#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:197
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr ""
 
-#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:203
+#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:206
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr ""
@@ -2372,17 +2372,17 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "line %d: triggers must have --: %s"
 msgstr ""
 
-#: build/parseScript.c:161 build/parseScript.c:219
+#: build/parseScript.c:161 build/parseScript.c:222
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr ""
 
-#: build/parseScript.c:171
+#: build/parseScript.c:172
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr ""
 
-#: build/parseScript.c:211
+#: build/parseScript.c:214
 #, c-format
 msgid "line %d: Second %s"
 msgstr ""
