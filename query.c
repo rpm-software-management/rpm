@@ -40,7 +40,7 @@ void printHeader(Header h, int queryFlags) {
 	    getEntry(h, RPMTAG_SIZE, &type, (void **) &size, &count);
 	    getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, &count);
 
-	    tstruct = localtime(&pBuildDate);
+	    tstruct = localtime((time_t *) pBuildDate);
 	    strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", tstruct);
 	   
 	    printf("Name        : %-27s Distribution: %s\n", 
