@@ -189,7 +189,7 @@ addlib() {
   shift
   case "$target" in 
     *-*-solaris*)	LIBS="$LIBS -L$l -R $l $*";;
-    *)		LIBS="$LIBS -L$l *$";;
+    *)		LIBS="$LIBS -L$l $*";;
   esac
 }
 
