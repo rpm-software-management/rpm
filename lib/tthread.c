@@ -35,6 +35,7 @@ other_thread(void *dat)
   rpmReadConfigFiles(NULL, NULL);
   ts = rpmtsCreate();
   assert(ts);
+  (void) rpmtsSetRootDir(ts, "/");
 
   rpmIncreaseVerbosity();
   rpmIncreaseVerbosity();

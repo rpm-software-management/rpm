@@ -60,6 +60,12 @@ typedef enum pkgStage_e {
 /**
  */
 struct rpmpsm_s {
+    void * q_forw;		/*!< for use by insque(3)/remque(3). */
+    void * q_back;
+    pid_t child;		/*!< Currently running process. */
+    pid_t reaped;		/*!< Reaped waitpid return. */
+    int status;			/*!< Reaped waitpid status. */
+
 /*@refcounted@*/
     rpmts ts;			/*!< transaction set */
 /*@dependent@*/ /*@null@*/
@@ -68,7 +74,7 @@ struct rpmpsm_s {
     rpmfi fi;			/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
-    Header oh;			/*!< Repackage/multilib header. */
+    Header oh;			/*!< Repackage header. */
 /*@null@*/
     rpmdbMatchIterator mi;
 /*@observer@*/
@@ -90,9 +96,6 @@ struct rpmpsm_s {
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
     int reaper;			/*!< Register SIGCHLD handler? */
-    pid_t reaped;		/*!< Reaped waitpid return. */
-    pid_t child;		/*!< Currently running process. */
-    int status;			/*!< Reaped waitpid status. */
     rpmCallbackType what;	/*!< Callback type. */
     unsigned long amount;	/*!< Callback amount. */
     unsigned long total;	/*!< Callback total. */

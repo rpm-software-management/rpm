@@ -100,8 +100,8 @@ trb: trb.o librpm.la
 tthread: tthread.o librpm.la
 	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs) @WITH_LIBELF_LIB@
 
-tsystem: tsystem.o
-	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< -lpthread
+tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
+	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
 
 tplatform: tplatform.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)

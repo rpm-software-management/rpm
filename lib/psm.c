@@ -5,13 +5,11 @@
 
 #include "system.h"
 
-#include <signal.h>
-#include <sys/signal.h>
-
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>
+#include <rpmsq.h>
 
 #include "cpio.h"
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
@@ -458,199 +456,34 @@ static /*@observer@*/ const char * const tag2sln(int tag)
 }
 
 /**
- */
-/*@unchecked@*/
-static sigset_t caught;
-
-/**
- */
-/*@unchecked@*/
-static struct psmtbl_s {
-    int nalloced;
-    int npsms;
-/*@null@*/
-    rpmpsm * psms;
-} psmtbl = { 0, 0, NULL };
-
-/* forward ref */
-static void handler(int signum)
-	/*@globals caught, psmtbl, fileSystem @*/
-	/*@modifies caught, psmtbl, fileSystem @*/;
-
-/**
- */
-/*@unchecked@*/
-/*@-fullinitblock@*/
-static struct sigtbl_s {
-    int signum;
-    int active;
-    void (*handler) (int signum);
-    struct sigaction oact;
-} satbl[] = {
-    { SIGCHLD,	0, handler },
-    { -1,	0, NULL },
-};
-/*@=fullinitblock@*/
-
-/**
- */
-/*@-incondefs@*/
-static void handler(int signum)
-{
-    struct sigtbl_s * tbl;
-
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->signum != signum)
-	    continue;
-	if (!tbl->active)
-	    continue;
-	(void) sigaddset(&caught, signum);
-	switch (signum) {
-	case SIGCHLD:
-	    while (1) {
-		int status = 0;
-		pid_t reaped = waitpid(0, &status, WNOHANG);
-		int i;
-
-		if (reaped <= 0)
-		    /*@innerbreak@*/ break;
-
-		if (psmtbl.psms)
-		for (i = 0; i < psmtbl.npsms; i++) {
-		    rpmpsm psm = psmtbl.psms[i];
-		    if (psm->child != reaped)
-			/*@innercontinue@*/ continue;
-
-#if _PSM_DEBUG
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Reap: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
-/*@=modfilesys@*/
-#endif
-
-		    psm->reaped = reaped;
-		    psm->status = status;
-		    /*@innerbreak@*/ break;
-		}
-	    }
-	    /*@switchbreak@*/ break;
-	default:
-	    /*@switchbreak@*/ break;
-	}
-	break;
-    }
-}
-/*@=incondefs@*/
-
-/**
- * Enable a signal handler.
- */
-static int enableSignal(int signum)
-	/*@globals caught, satbl, fileSystem @*/
-	/*@modifies caught, satbl, fileSystem @*/
-{
-    sigset_t newMask, oldMask;
-    struct sigtbl_s * tbl;
-    struct sigaction act;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    for (tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (signum >= 0 && signum != tbl->signum)
-	    continue;
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "    Enable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms, psmtbl.nalloced, tbl->active);
-/*@=modfilesys@*/
-	if (tbl->active++ <= 0) {
-	    (void) sigdelset(&caught, tbl->signum);
-	    memset(&act, 0, sizeof(act));
-	    act.sa_handler = tbl->handler;
-	    (void) sigaction(tbl->signum, &act, &tbl->oact);
-	}
-	break;
-    }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
- * Disable a signal handler.
- */
-static int disableSignal(int signum)
-	/*@globals satbl, fileSystem @*/
-	/*@modifies satbl, fileSystem @*/
-{
-    sigset_t newMask, oldMask;
-    struct sigtbl_s * tbl;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    for (tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (signum >= 0 && signum != tbl->signum)
-	    continue;
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "   Disable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms, psmtbl.nalloced, tbl->active);
-/*@=modfilesys@*/
-	if (--tbl->active <= 0) {
-	    tbl->active = 0;		/* XXX just in case */
-	    (void) sigaction(tbl->signum, &tbl->oact, NULL);
-	}
-	break;
-    }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
  * Register a child reaper, then fork a child.
  * @param psm		package state machine data
  * @return		fork(2) pid
  */
 static pid_t psmRegisterFork(rpmpsm psm)
-	/*@globals psmtbl, fileSystem, internalState @*/
-	/*@modifies psm, psmtbl, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
 {
     sigset_t newMask, oldMask;
-    int empty = -1;
-    int i = psmtbl.npsms;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
 
   if (psm->reaper) {
-    if (psmtbl.psms)
-    for (i = 0; i < psmtbl.npsms; i++) {
-	if (empty == -1 && psmtbl.psms[i] == NULL)
-	    empty = i;
-	if (psm != psmtbl.psms[i])
-	    continue;
-	break;
-    }
-    if (i == psmtbl.npsms) {
-	if (i >= psmtbl.nalloced) {
-	    if (psmtbl.nalloced == 0) psmtbl.nalloced = 5;
-	    while (psmtbl.nalloced < i)
-		psmtbl.nalloced += psmtbl.nalloced;
-	    psmtbl.psms = xrealloc(psmtbl.psms,
-			psmtbl.nalloced * sizeof(*psmtbl.psms));
-	}
-	empty = psmtbl.npsms++;
-    }
-    if (psmtbl.psms)	/* XXX can't happen */
-	psmtbl.psms[empty] = rpmpsmLink(psm, "psmRegister");
+    Insque(psm, NULL);
 /*@-modfilesys@*/
 if (_psm_debug)
-fprintf(stderr, "  Register: %p[%d:%d:%d] = %p\n", psmtbl.psms, empty, psmtbl.npsms, psmtbl.nalloced, psm);
+fprintf(stderr, "  Register: %p\n", psm);
 /*@=modfilesys@*/
 
-    (void) enableSignal(SIGCHLD);
+    (void) rpmsqEnable(SIGCHLD, NULL);
   }
 
     psm->reaped = 0;
     if ((psm->child = fork()) != 0) {
 /*@-modfilesys@*/
 if (_psm_debug)
-fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
+fprintf(stderr, "      Fork: %p child %d\n", psm, psm->child);
 /*@=modfilesys@*/
     }
 
@@ -663,11 +496,10 @@ fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmt
  * Unregister a child reaper.
  */
 static int psmWaitUnregister(rpmpsm psm, pid_t child)
-	/*@globals psmtbl, fileSystem, internalState @*/
-	/*@modifies psmtbl, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     sigset_t newMask, oldMask;
-    int i = 0;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
@@ -679,34 +511,16 @@ static int psmWaitUnregister(rpmpsm psm, pid_t child)
 
 /*@-modfilesys@*/
 if (_psm_debug)
-fprintf(stderr, "      Wait: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
+fprintf(stderr, "      Wait: %p child %d\n", psm, psm->child);
 /*@=modfilesys@*/
 
-    if (psmtbl.psms)
-    for (i = 0; i < psmtbl.npsms; i++) {
-	if (psmtbl.psms[i] == NULL)
-	    continue;
-	if (psm != psmtbl.psms[i])
-	    continue;
-	if (child != psm->child)
-	    continue;
-	break;
-    }
-
-    if (i < psmtbl.npsms) {
-	(void) disableSignal(SIGCHLD);
+    if (psm->reaper) {
+	Remque(psm);
+	(void) rpmsqEnable(-SIGCHLD, NULL);
 /*@-modfilesys@*/
 if (_psm_debug)
-fprintf(stderr, "Unregister: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmtbl.npsms, psmtbl.nalloced, psm, child);
+fprintf(stderr, "Unregister: %p child %d\n", psm, child);
 /*@=modfilesys@*/
-	if (psmtbl.psms)	/* XXX can't happen */
-	    psmtbl.psms[i] = rpmpsmFree(psmtbl.psms[i]);
-	if (psmtbl.npsms == (i+1))
-	    psmtbl.npsms--;
-	if (psmtbl.npsms == 0) {
-	    psmtbl.psms = _free(psmtbl.psms);
-	    psmtbl.nalloced = 0;
-	}
     }
 
     return sigprocmask(SIG_SETMASK, &oldMask, NULL);
@@ -797,7 +611,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     psm->child = 0;
     psm->reaped = 0;
     psm->status = 0;
-    psm->reaper = 1;
+    psm->reaper = 0;
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);

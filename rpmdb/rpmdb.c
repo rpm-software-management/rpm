@@ -6,12 +6,7 @@
 
 #define	_USE_COPY_LOAD	/* XXX don't use DB_DBT_MALLOC (yet) */
 
-/*@unchecked@*/
-int _rpmdb_debug = 0;
-
 #include <sys/file.h>
-#include <signal.h>
-#include <sys/signal.h>
 
 #ifndef	DYING	/* XXX already in "system.h" */
 /*@-noparams@*/
@@ -35,6 +30,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
+#include <rpmsq.h>
 
 #include "rpmdb.h"
 #include "fprint.h"
@@ -48,6 +44,9 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
 /*@access pgpDig@*/
+
+/*@unchecked@*/
+int _rpmdb_debug = 0;
 
 /*@unchecked@*/
 static int _rebuildinprogress = 0;
@@ -660,80 +659,6 @@ struct _rpmdbMatchIterator {
 
 };
 
-/**
- */
-/*@unchecked@*/
-static sigset_t caught;
-
-/* forward ref */
-static void handler(int signum);
-
-/**
- */
-/*@unchecked@*/
-/*@-fullinitblock@*/
-static struct sigtbl_s {
-    int signum;
-    int active;
-    void (*handler) (int signum);
-    struct sigaction oact;
-} satbl[] = {
-    { SIGHUP,	0, handler },
-    { SIGINT,	0, handler },
-    { SIGTERM,	0, handler },
-    { SIGQUIT,	0, handler },
-    { SIGPIPE,	0, handler },
-    { -1,	0, NULL },
-};
-/*@=fullinitblock@*/
-
-/**
- */
-/*@-incondefs@*/
-static void handler(int signum)
-	/*@globals caught, satbl @*/
-	/*@modifies caught @*/
-{
-    struct sigtbl_s * tbl;
-
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->signum != signum)
-	    continue;
-	if (!tbl->active)
-	    continue;
-	(void) sigaddset(&caught, signum);
-	break;
-    }
-}
-/*@=incondefs@*/
-
-/**
- * Enable all signal handlers.
- */
-static int enableSignals(void)
-	/*@globals caught, satbl, fileSystem @*/
-	/*@modifies caught, satbl, fileSystem @*/
-{
-    sigset_t newMask, oldMask;
-    struct sigtbl_s * tbl;
-    struct sigaction act;
-    int rc;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    rc = 0;
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->active++ > 0)
-	    continue;
-	(void) sigdelset(&caught, tbl->signum);
-	memset(&act, 0, sizeof(act));
-	act.sa_handler = tbl->handler;
-	rc = sigaction(tbl->signum, &act, &tbl->oact);
-	if (rc) break;
-    }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
 /*@unchecked@*/
 static rpmdb rpmdbRock;
 
@@ -741,10 +666,9 @@ static rpmdb rpmdbRock;
 static rpmdbMatchIterator rpmmiRock;
 
 int rpmdbCheckSignals(void)
-	/*@globals rpmdbRock, rpmmiRock, satbl @*/
+	/*@globals rpmdbRock, rpmmiRock @*/
 	/*@modifies rpmdbRock, rpmmiRock @*/
 {
-    struct sigtbl_s * tbl;
     sigset_t newMask, oldMask;
     static int terminate = 0;
 
@@ -752,12 +676,13 @@ int rpmdbCheckSignals(void)
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->active == 0)
-	    continue;
-	if (sigismember(&caught, tbl->signum))
-	    terminate = 1;
-    }
+
+    if (sigismember(&rpmsqCaught, SIGINT)
+     || sigismember(&rpmsqCaught, SIGQUIT)
+     || sigismember(&rpmsqCaught, SIGHUP)
+     || sigismember(&rpmsqCaught, SIGTERM)
+     || sigismember(&rpmsqCaught, SIGPIPE))
+	terminate = 1;
 
     if (terminate) {
 	rpmdb db;
@@ -786,45 +711,21 @@ int rpmdbCheckSignals(void)
 }
 
 /**
- * Disable all signal handlers.
- */
-static int disableSignals(void)
-	/*@globals satbl, fileSystem @*/
-	/*@modifies satbl, fileSystem @*/
-{
-    struct sigtbl_s * tbl;
-    sigset_t newMask, oldMask;
-    int rc;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    rc = 0;
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (--tbl->active > 0)
-	    continue;
-	rc = sigaction(tbl->signum, &tbl->oact, NULL);
-	if (rc) break;
-    }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
  * Block all signals, returning previous signal mask.
  */
 static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
-	/*@globals satbl, fileSystem @*/
-	/*@modifies *oldMask, satbl, fileSystem @*/
+	/*@globals rpmsigTbl, fileSystem @*/
+	/*@modifies *oldMask, rpmsigTbl, fileSystem @*/
 {
-    struct sigtbl_s * tbl;
     sigset_t newMask;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, oldMask);
-    for(tbl = satbl; tbl->signum >= 0; tbl++) {
-	if (tbl->active == 0)
-	    continue;
-	(void) sigdelset(&newMask, tbl->signum);
-    }
+    sigdelset(&newMask, SIGINT);
+    sigdelset(&newMask, SIGQUIT);
+    sigdelset(&newMask, SIGHUP);
+    sigdelset(&newMask, SIGTERM);
+    sigdelset(&newMask, SIGPIPE);
     return sigprocmask(SIG_BLOCK, &newMask, NULL);
 }
 
@@ -949,7 +850,11 @@ int rpmdbClose(rpmdb db)
     /*@=usereleased@*/
 
 exit:
-    (void) disableSignals();
+    (void) rpmsqEnable(-SIGHUP,	NULL);
+    (void) rpmsqEnable(-SIGINT,	NULL);
+    (void) rpmsqEnable(-SIGTERM,NULL);
+    (void) rpmsqEnable(-SIGQUIT,NULL);
+    (void) rpmsqEnable(-SIGPIPE,NULL);
     return rc;
 }
 /*@=incondefs@*/
@@ -1060,7 +965,11 @@ static int openDatabase(/*@null@*/ const char * prefix,
     if (db == NULL)
 	return 1;
 
-    (void) enableSignals();
+    (void) rpmsqEnable(SIGHUP,	NULL);
+    (void) rpmsqEnable(SIGINT,	NULL);
+    (void) rpmsqEnable(SIGTERM,NULL);
+    (void) rpmsqEnable(SIGQUIT,NULL);
+    (void) rpmsqEnable(SIGPIPE,NULL);
 
     db->db_api = _dbapi;
 
