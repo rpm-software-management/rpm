@@ -1,0 +1,25 @@
+.\" {PTM/WK/1999-11-21}
+.\" rpm2cpio - Converts Red Hat Package (RPM) to cpio archive
+.TH rpm 8 "15 wrze¶nia 1995" "Red Hat Software" "Red Hat Commercial Linux"
+.SH NAZWA
+rpm2cpio \- konwersja pakietu RPM (Red Hat Packge) na archiwum cpio
+.SH SK£ADNIA
+.B rpm2cpio
+.RI [ nazwapliku ]
+.SH OPIS
+\fBrpm2cpio\fP konwertuje podany, jako jedyny argument, plik .rpm
+do postaci archiwum cpio na standardowym wyj¶ciu. Je¶li nie podano argumentu,
+to strumieñ rpm czytany jest ze standardowego wej¶cia.
+
+.br
+.I rpm2cpio rpm-1.1-1.i386.rpm
+.br
+.I rpm2cpio < glint-1.0-1.i386.rpm
+
+.SH ZOBACZ TAK¯E
+.BR glint (8) ,
+.BR rpm (8)
+.SH AUTOR
+.nf
+Erik Troan <ewt@redhat.com>
+.fi

@@ -2,7 +2,7 @@
 
 @SET_MAKE@
 
-man_MANS	= rpm.8 rpm2cpio.8
-mandir		= @mandir@/pl
+man_MANS	= rpm.8
+mandir		= @mandir@/fr
 
 EXTRA_DIST	= $(man_MANS)

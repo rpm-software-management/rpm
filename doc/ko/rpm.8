@@ -1,0 +1,356 @@
+.\" rpm - Red Hat Package Manager
+.TH rpm 8 "1996년 7월 15일" "레드햇 소프트웨어" "레드햇 리눅스"
+.SH 이름
+rpm \- 레드햇 패키지 관리자
+.SH 개요
+\fBrpm\fP [옵션들] 
+.SH 설명
+\fBrpm\fP 은 강력한 \fI패키지 관리자\fP 로서 
+각각의 소프트웨어 패키지를 만들고 설치하고 질문하고 검증하고 갱신하며
+제거할 수 있다.
+\fI패키지\fP 란  설치할 화일들과 이름, 버전, 설명 등을
+포함하는 패키지 정보를 지닌 저장 화일이다.
+
+기본적인 7 가지 동작 모드가 있으며 각각 다른 옵션들을 갖는다.
+\fI설치\fP, \fI질문\fP,
+\fI검증\fP, \fI서명 확인\fP, \fI제거\fP, \fI제작\fP,
+그리고 \fI데이터베이스 재건설\fP 이 바로 그것이다.
+
+설치 모드:
+.br
+.I "\fB    rpm \-i [설치옵션] <패키지 화일>+\fP"
+.br
+질문 모드:
+.br
+.I "\fB    rpm \-q [질문옵션]\fP"
+.br
+검증 모드:
+.br
+.I "\fB    rpm \-V|\-y|\-\-verify [검증옵션]\fP"
+.br
+서명 확인 모드:
+.br
+.I "\fB    rpm \-\-checksig <패키지화일>+\fP"
+.br
+제거 모드:
+.br
+.I "\fB    rpm \-e <패키지명>+\fP"
+.br
+제작 모드:
+.br
+.I "\fB    rpm \-b\fIO\fB [제작옵션] <패키지스펙>+\fP"
+.br
+
+.SH 일반적 옵션
+다음 옵션들은 각기 다른 모드에서도 사용가능하다.
+.IP "\fB\-vv\fP"
+아주 자세하게 디버깅 정보를 출력한다.
+.IP "\fB\-\-keep\-temps\fP"
+임시 화일을 지우지 않는다. (/tmp/rpm\-*). rpm 을 디버깅할 때만
+주로 사용한다.
+.IP "\fB\-\-quiet\fP"
+최대한 출력을 자제하며 오로지 에러 메세지만 출력한다.
+.IP "\fB\-\-help\fP"
+좀 더 긴 사용법 설명서를 출력한다.
+.IP "\fB\-\-version\fP"
+사용 중인 rpm 의 버전을 한 줄로 표시한다.
+.IP "\fB\-\-rcfile <화일>\fP"
+\fB/etc/rpmrc\fP 또는 \fB$HOME/.rpmrc\fP 을 사용하지 않고
+\fB<file>\fP 을 사용하도록 한다.
+.IP "\fB\-\-root <dir>\fP"
+모든 동작에 대하여 최상위 디렉토리를 주어진 디렉토리로 설정하고 작업한다.
+예를 들어 설치시 주어진 디렉토리를 / 라고 생각하고 그것을 기준으로
+설치해나간다.
+
+.SH 설치 옵션
+rpm 설치 명령의 일반적인 형태는 다음과 같다.
+.PP
+	\fBrpm \-i [설치옵션들] <패키지화일>+\fP
+.PP
+.IP "\fB\-\-force\fP"
+\-\-replacepkgs, \-\-replacefiles, \-\-oldpackage 를 모두 사용한 것과
+같다.
+.IP "\fB\-h, \-\-hash\fP"
+패키지를 풀 때 해쉬마크(#)를 표시한다. 총 갯수는 50 개이다.
+좀 더 나은 출력을 위해서는 \fB\-v\fP 를 함께 사용하라.
+.IP "\fB\-\-oldpackage\fP"
+새로운 패키지를 지우고 더 예전 패키지로 교체할 때 사용한다.
+.IP "\fB\-\-percent\fP"
+패키지 화일을 풀 때 퍼센트 표시를 한다. 다른 도구로부터 rpm 을 이용할 때
+사용할 목적으로 만들어졌다.
+.IP "\fB\-\-replacefiles\fP"
+이미 설치된 다른 패키지의 화일을 덮어쓰면서라도 패키지를 강제로 설치한다.
+.IP "\fB\-\-replacepkgs\fP"
+패키지가 이미 설치되어 있다 하더라도 다시 설치한다.
+.IP "\fB\-\-root \fI<디렉토리>\fP"
+\fI<디렉토리>\fP를 루트로 하는 시스템에 설치를 수행한다.
+데이터베이스는 \fI<디렉토리>\fP 밑에서 갱신되고 \fIpre\fP 또는 \fIpost\fP
+스크립트는 \fI<디렉토리>\fP로 chroot() 한 후 실행됨을 의미한다.
+.IP "\fB\-\-noscripts\fP"
+preinstall, postinstall 스크립트를 실행하지 않는다.
+.IP "\fB\-\-excludedocs\fP"
+문서라고 표시되어 있는 화일(맨페이지와 texinfo 문서)은 설치하지 않는다.
+.IP "\fB\-\-includedocs\fP"
+문서 화일을 포함한다. 이 옵션은 rpmrc 화일에 \fIexcludedocs: 1\fP 이라는
+것이 명시되어 있을 때만 필요하다.
+.IP "\fB\-\-nodeps\fP"
+패키지를 설치하기 전에 의존성을 검사하지 않는다.
+.IP "\fB\-\-test\fP"
+패키지를 실제로 설치하지는 않고 충돌 사항이 있는지 점검하고 보고한다.
+.IP "\fB\-U, \-\-upgrade\fP"
+현재 설치되어 있는 패키지를 새로운 버전의 RPM으로 업그레이드하라.
+인스톨과 같지만 예전 버전의 것이 자동으로 지워진다는 것이 다르다.
+
+
+
+.SH 질문 옵션
+rpm 질문 옵션의 일반적인 형식은 다음과 같다.
+.PP
+	\fBrpm \-q [질문옵션]\fP
+.PP
+여러분은 패키지 정보가 표시될 형식을 결정해주어야 한다.
+\fB\-\-queryformat\fP 옵션 뒤에 형식 문자열을 적어주면 된다.
+
+질문 형식은 표준 \fBprintf(3)\fP 형식을 약간 변형한 것이다.
+형식은 정적 문자열과( 개행문자, 탭, 그리고 다른 특수문자에
+대한 표준 C 문자 이스케이프 표기) \fBprintf(3)\fP 형식지정자로 구성되어
+있다.
+\fBrpm\fP은 이미 출력 형태를 알고 있으므로 타입 지정자는 생략하고
+\fB{}\fP 문자로 묶어서 헤더 태그의 이름으로 바꾸어 주어야 한다.
+태그명 중 \fBRPMTAG_\fP 부분은 생략해야 하며 태그명 앞에는 \fB\-\fP 문자를
+적어주어야 한다.
+
+예를 들어 질문 대상 패키지의 이름만 출력하고자 하는 경우 여러분은 
+\fB%{NAME}\fP 을 형식 문자열로 사용해야 한다. 패키지명과 배포판 정보를
+두 개의 칼럼으로 표시하고자 할 때는 \fB%\-30{NAME}%{DISTRIBUTION}\fP 라고
+적는다.
+
+\fBrpm\fP 은 \fB\-\-querytags\fP 옵션을 주면 인식하고 있는 모든 태그의
+목록을 보여준다.
+
+질문 옵션에는 2 가지 세트가 있다: 패키지 선택과 정보 선택
+
+패키지 선택 옵션:
+.br
+.IP "\fB\fI<패키지명>\fP"
+\fB\fI<package_name>\fP라는 이름의 패키지에 대한 질문를 수행한다.
+.IP "\fB\-a\fP"
+모든 패키지에 대하여 질문를 수행한다.
+.IP "\fB\-whatrequires \fI<기능>\fP"
+제대로 작동하기 위해서는 \fI<기능>\fP 을 필요로 하는 모든 패키지에 대하여
+질문을 수행한다.
+.IP "\fB\-whatprovides \fI<가상>\fP"
+\fI<virtual>\fP 기능을 제공하는 모든 패키지에 대하여 질문을 수행한다.
+.IP "\fB\-f \fI<화일>\fP"
+\fI<화일>\fP를 포함하는 패키지에 대하여 질문을 수행한다.
+.IP "\fB\-F\fP"
+\fB\-f\fP 와 같지만 화일명을 표준 입력에서 읽는다.
+.IP "\fB\-p \fI<패키지화일>\fP"
+설치된 또는 설치되지 않은 \fI<패키지화일>\fP 에 대하여 질문을 수행한다.
+.IP "\fB\-P\fP"
+\fB\-p\fP 와 같지만 패키지 화일명을 표준 입력에서 읽는다.
+
+.P
+정보 선택 옵션:
+.br
+.IP "\fB\-i\fP"
+패키지 이름, 버전, 설명 등의 정보를 출력한다.
+만약 \fB\-\-queryformat\fP 이 주어져 있다면 그것을 이용하여 출력한다.
+.IP "\fB\-R\fP"
+현재 패키지지가 의존하고 있는 패키지 목록을 보여준다.
+(\fB\-\-requires\fP 과 같음)
+.IP "\fB\-\-provides\fP"
+패키지가 제공하는 기능을 보여준다.
+.IP "\fB\-l\fP"
+패키지 안의 화일을 보여준다.
+.IP "\fB\-s\fP"
+패키지 안에 든 화일의 \fI상태\fP를 보여준다.(\fB\-l\fP은 포함)
+각 화일의 상태는 \fInormal\fP(정상), \fInot installed\fP(설치되지 않음),
+\fIreplaced\f(다른 것으로 교체됨)의 값을 갖는다.
+.IP "\fB\-d\fP"
+문서 화일만 보여준다.(\fB\-l\fP은 포함)
+.IP "\fB\-c\fP"
+설정 화일만 보여준다.(\fB\-l\fP은 포함)
+.IP "\fB\-\-scripts\fP"
+설치, 제거 과정에 사용되는 쉘 스크립트가 있다면 그 내용을 출력한다.
+.IP "\fB\-\-dump\fP"
+다음과 같은 화일 정보를 덤프한다: 경로 크기 수정일, MD5 체크섬, 모드,
+소유자, 그룹, 설정 화일 여부, 문서 화일 여부, rdev, 심볼릭 링크 여부.
+최소한 \fB\-l\fP, \fB\-c\fP, \fB\-d\fP 이들 옵션 중 하나가 사용되어야
+한다.
+
+.SH 검증 옵션
+rpm 검증 옵션의 일반적인 형태는 다음과 같다.
+.PP
+	\fBrpm \-V|\-y|\-\-verify [검증옵션]\fP
+.PP
+설치되어 있는 화일들에 대하여 rpm 데이터베이스에 저장된 내용과 오리지널
+패키지의 내용을 비교한다. 검증 내용은 크기, MD5 체크섬, 퍼미션, 타입, 소유자,
+그룹 등이다. 차이점이 발견되면 출력한다. 패키지 지시 옵션은 패키지 질문
+옵션에서와 같다.
+
+출력 형식은 8 자의 문자열이다. "\fBc\fP"은 설정 화일을 의미하며 그리고
+화일명이 나타난다. 각각의 8 개 문자는 RPM 데이터베이스에 저장된 속성과 비교한
+결과를 나타낸다. "." (피리어드) 문자는 이상없음을 나타낸다. 비교 결과 문제점이
+발견되면 다음과 같은 문자가 나타난다.
+
+.IP "\fB5\fP"
+MD5 체크섬
+.IP "\fBS\fP"
+화일 크기
+.IP "\fBL\fP"
+심볼릭 링크
+.IP "\fBT\fP"
+갱신일
+.IP "\fBD\fP"
+장치
+.IP "\fBU\fP"
+사용자
+.IP "\fBG\fP"
+그룹
+.IP "\fBM\fP"
+퍼미션과 화일 타입을 포함한 모드
+
+.SH 서명 확인
+rpm 서명 확인 명령은 다음과 같다.
+.PP
+	\fBrpm \-\-checksig <패키지화일>+\fP
+.PP
+패키지의 오리지널 여부를 가려내기 위하여 패키지 안에 든 PGP 서명을 점검한다.
+PGP 설정 정보는 /etc/rpmrc 에서 읽어온다.
+세부사항은 "PGP 서명" 섹션을 보기 바란다.
+
+.SH 제거 옵션
+rpm 제거 명령의 일반적인 형태는 다음과 같다.
+.PP
+	\fB    rpm \-e <패키지화일>+\fP
+.PP
+.IP "\fB\-\-noscripts\fP"
+preunistall, postuninstall 스크립트를 실행하지 않는다.
+.IP "\fB\-\-nodeps\fP"
+패키지 제거시 의존성을 검사하지 않는다.
+.IP "\fB\-\-test\fP"
+실제로 패키지를 제거하는 것은 아니고 테스트해본다.
+\fB\-vv\fP 옵션.
+
+.SH 제작 옵션
+rpm 제작 명령의 일반적 형식은 다음과 같다.
+.PP
+    \fBrpm \-b\fIO\fP [제작옵션] <패키지 스펙>+\fP
+.PP
+\fB\-b\fIO\fR 은 제작 단계와 제작할 패키지를 나타내는 것으로서 다음 중
+하나의 값을 갖는다:
+
+.IP "\fB\-bp\fP"
+스펙 화일의 "%prep" 단계를 실행한다. 보통 소스를 풀고 패치를 가하는 작업이다.
+.IP "\fB\-bl\fP"
+"목록 점검"을 한다. "%files" 섹션은 확장 매크로이다. 이 화일들이 존재하는지
+여부를 알아본다.
+.IP "\fB\-bc\fP"
+"%build" 단계를 수행한다.( prep 단계를 한 후 ) 
+보통 make 에 해당하는 일을 해낸다.
+.IP "\fB\-bi\fP"
+"%install" 단계를 수행한다.( prep, build 단계를 거친 후 )
+보통 make install 에 해당하는 일을 한다.
+.IP "\fB\-bb\fP"
+바이너리 패키지를 만든다.( prep, build, install 단계를 수행한 후 )
+.IP "\fB\-ba\fP"
+바이너리와 소스 패키지를 만든다.( prep, build, install 단계를 수행한 후 )
+.PP
+다음 옵션도 사용가능하다:
+.IP "\fB\-\-short\-circuit\fP"
+중간 단계를 거치지 않고 지정한 단계로 직접 이동한다.
+\fB\-bc\fP 와 \fB\-bi\fP하고만 쓸 수 있다.
+.IP "\fB\-\-timecheck\fP"
+"시간점검"을 0 ( 불가능 )으로 설정한다. 이 값은 rpmrc 에서 "timecheck:" 로
+설정할 수 있다. 시간점검값은 초로 표시되는데 화일이 패키징되는 걸리는 최대
+시간을 정한다. 시간을 초과하는 화일들에 대하여 경고 메시지가 출력된다. 
+.IP "\fB\-\-clean\fP"
+패키지를 만든 후 build 디렉토리를 지운다.
+.IP "\fB\-\-test\fP"
+어떠한 build 단계를 거치지 않는다.
+스펙 화일을 테스트할 때 유용하다.
+.IP "\fB\-\-sign\fP"
+패키지 안에 PGP 서명을 넣는다. 패키지를 누가 만들었는지 확인할 수 있다.
+/etc/rpmrc 에 대한 설명은 PGP 서명 섹션을 읽어보라.
+
+.SH 재제작, 재컴파일 옵션
+
+단 두 가지만 있을 뿐이다:
+
+.I "\fBrpm \-\-recompile <소스패키지화일>+\fP"
+
+.I "\fBrpm \-\-rebuild <소스패키지화일>+\fP"
+
+rpm 은 주어진 소스 패키지를 설치하고 prep, 컴파일, 설치를 해준다.
+\fB\-\-rebuild\fP는 새로운 바이너리 패키지도 만들어준다.
+제작을 마치면 build 디렉토리는 \fB\-\-clean\fP 옵션에서와 마찬가지로
+지워진다. 패키지로부터 나온 소스와 스펙화일은 삭제된다.
+
+.SH 기존의 RPM에 서명하기
+
+.I "\fBrpm \-\-resign <바이너리패키지화일>+\fP"
+
+패키지 화일에 새로운 서명을 한다. 기존의 서명은 삭제된다.
+
+.SH PGP 서명
+
+서명 기능을 사용하기 위해서는 PGP 를 사용할 수 있어야 한다.( 여러분의 패스
+걸린 디렉토리 설치되어 있어야 한다 ) 그리고 RPM 공개키를 포함하는 공개키 링을
+찾을 수 있어야 한다. 기본적으로 RPM은 PGPPATH에서 지시하는 PGP 기본 설정을
+사용한다. PGP가 기본적으로 사용하는 키링을 갖고 있지 않을 때는 /etc/rpmrc
+화일에 다음과 같이 설정해두어야 한다.
+
+.IP "\fBpgp_path\fP"
+/usr/lib/rpm 대신 쓰일 경로명. 여러분의 키링을 포함해야 한다.
+.PP
+
+여러분이 만든 패키지에 서명을 하려면, 여러분은 자신의 공개키와 비밀키 한 쌍을
+만들어두어야 한다.( PGP 매뉴얼 참고 )
+/etc/rpmrc 에 적는 것 말고도 다음 사항을 추가해야 한다:
+
+.IP "\fBsignature\fP"
+서명 유형. 현재로서는 pgp 만 지원된다.
+.IP "\fBpgp_name\fP"
+여러분의 패키지에 서명할 user 명을 적는다.
+.PP
+
+패키지 제작시 \-\-sign 옵션을 추가한다.
+여러분의 입력을 받고 나면 패키지가 만들어지고 동시에 서명된다.
+
+.SH 데이터베이스 재생성 옵션
+
+rpm 데이터베이스를 다시 만드는 명령은 다음과 같다.
+.PP
+	\fBrpm \-\-rebuilddb\fP
+.PP
+
+이 모드와 사용되는 옵션으로는 \fB-\-dbpath\fP 와 \fB-\-root\fP 둘 뿐이다.
+
+.SH 관련 화일
+.nf
+/etc/rpmrc
+~/.rpmrc
+/var/lib/rpm/packages
+/var/lib/rpm/pathidx
+/var/lib/rpm/nameidx
+/tmp/rpm*
+.fi
+.El
+.SH 참고
+.IR glint (8) ,
+.IR rpm2cpio (8) ,
+.B http://www.redhat.com/rpm
+.nf
+.SH 저자
+.nf
+Marc Ewing <marc@redhat.com>
+Erik Troan <ewt@redhat.com>
+.fi
+.SH 번역자
+.br
+이 만 용
+.B <geoman@nownuri.nowcom.co.kr>
+.br
+.B "         <freeyong@soback.kornet.nm.kr>"
+

@@ -1,0 +1,462 @@
+.\" Traduction 06/08/2000 par Frédéric Delanoy (fdelanoy@info.fundp.ac.be)
+.\"
+.\" rpm - Gestionnaire de Paquetages Red Hat
+.TH RPM 8 "6 Août 2000" "Red Hat" "Manuel de l'administrateur Linux"
+.SH NOM 
+rpm \- Gestionnaire de Paquetages Red Hat.
+.SH SYNOPSIS
+\fBrpm\fP [options] 
+.SH DESCRIPTION
+\fBrpm\fP est un puissant \fIgestionnaire de paquetages\fP, qui peut être utilisé pour construire, installer, interroger, vérifier, mettre à jour, et désinstaller des paquetages de logicies individuels.  Un \fIpaquetage\fP consiste en une archive de fichiers, et en de l'information sur ce paquetage, incluant le nom, la version et la description du paquetage.
+
+Un des modes de base suivants doit être sélectionné :
+\fIInitialiser Base De Données\fP, \fIReconstruire Base De Données\fP, \fIConstruire Paquetage\fP, \fIRecompiler Paquetage\fP, \fIConstruire Paquetage à partir Tarball\fP, \fIInterroger\fP, \fIMontrer Etiquettes de Requêtes\fP, \fIInstaller\fP, \fIRafraîchir\fP, \fIDésinstaller\fP, \fIVérifier\fP, \fIVérifier Signature\fP, \fIResigner\fP, \fIAjouter Signature\fP, \fIfixer propriétaires et groupes\fR et \fIMontrer Configuration\fP.
+
+Maintenance de la Base De Données :
+.br
+.I "\fB    rpm \-i [\-\-initdb]\fP"
+.br
+.I "\fB    rpm \-i [\-\-rebuiddb]\fP"
+
+Construction :
+.br
+.I "\fB    rpm [\-b|t] [spec_paquetage]+\fP"
+.br
+.I "\fB    rpm [\-\-rebuild] [source_rpm]+\fP"
+.br
+.I "\fB    rpm [\-\-tarbuild] [source_tarrée]+\fP"
+.br
+
+Requêtes :
+.br
+.I "\fB    rpm [\-\-query] [options_de_requête]\fP"
+.br
+.I "\fB    rpm [\-\-querytags]\fP"
+.br
+
+Maintenir les paquetages installés :
+.br
+.I "\fB    rpm [\-\-install] [options] [fichier_paquetage]+\fP"
+.br
+.I "\fB    rpm [\-\-freshen|\-F] [options_installation] [fichier_paquetage]+\fP"
+.br
+.I "\fB    rpm [\-\-uninstall|\-e] [options_désinstallation] [paquetage]+\fP"
+.br
+.I "\fB    rpm [\-\-verify|\-V] [options_vérification] [paquetage]+\fP"
+.br
+
+Signatures:
+.br
+.I "\fB    rpm [\-\-verify|\-V] [options_vérification] [paquetage]+\fP"
+.br
+.I "\fB    rpm [\-\-resign] [fichier_paquetage]+\fP"
+.br
+.I "\fB    rpm [\-\-addsign] [fichier_paquetage]+\fP"
+.br
+
+Divers :
+.br
+.I "\fB    rpm [\-\-showrc]\fP"
+.br
+.I "\fB    rpm [\-\-setperms] [paquetage]+\fP"
+.br
+.I "\fB    rpm [\-\-setgids] [paquetage]+\fP"
+.br
+
+
+.SH OPTIONS GENERALES
+Ces options peuvent être utilisées dans différents modes.
+.IP "\fB\-vv\fP"
+Afficher un tas d'horribles informations de déboggage.
+.IP "\fB\-\-quiet\fP"
+Afficher le moins possible ; normalement seuls les messages d'erreur seront affichés.
+.IP "\fB\-\-help\fP"
+Afficher un message d'utilisation plus long que d'habitude.
+.IP "\fB\-\-version\fP"
+Afficher une seule ligne contenant le numéro de version utilisé par \fBrpm\fP.
+.IP "\fB\-\-rcfile \fI<liste_fichiers>\fP"
+Chacun des fichiers dans la \fI<liste_fichiers>\fP séparés par des deux\-point est lu séquentiellement par \fBrpm\fP pour obtenir des informations de configuration.  La \fI<liste_fichiers>\fP par défaut est \fB/usr/lib/rpm/rpmrc:/etc/rpmrc:~/.rpmrc\fP.  Seul le premier fichier dans la liste doit exister, les tildes sont étendues à \fB$HOME\fP.
+.IP "\fB\-\-root \fI<répertoire>\fP"
+Utiliser le système "enraciné" dans \fI<répertoire>\fP pour toutes les opérations.  Notez que cela signifie que la base de données sera lue ou modifiée dans \fI<répertoire>\fP et que chacun des scripts \fIpre\fP et \fIpost\fP seront lancés après un chroot() vers \fI<répertoire>\fP.
+.IP "\fB\-\-dbpath \fI<chemin>\fP"
+Utiliser la base de données RPM située dans \fI<chemin>\fP.
+.IP "\fB\-\-justdb\fP"
+Mettre à jour uniquement la base de données, pas le système de fichiers.
+.IP "\fB\-\-ftpproxy \fI<hôte>\fP, \fB\-\-httpproxy \fI<hôte>\fP"
+Utiliser \fI<hôte>\fP en tant qu'hôte proxy FTP ou HTTP.  Voir \fBOPTIONS FTP/HTTP\fP.
+.IP "\fB\-\-ftpport \fI<port>\fP, \fB\-\-httpport \fI<port>\fP"
+Utiliser \fI<port>\fP comme port FTP ou HTTP sur l'hôte proxy.  Voir \fBOPTIONS FTP/HTTP\fP.
+.IP "\fB\-\-pipe \fI<cmd>\fP"
+Envoyer la sortie de \fBrpm\fP à la commande \fI<cmd>\fP par l'intermédiaire d'un tube.
+
+.SH OPTIONS D'INSTALLATION ET DE MISE A NIVEAU
+La forme de la commande d'installation rpm est
+.PP
+	\fBrpm \-i [options_installation] \fI<fichier_paquetage>+\fP
+.PP
+Ceci installe un nouveau paquetage.  La forme générale d'une commande de mise à niveau rpm est
+.PP
+	\fBrpm \-U [options_installation] \fI<fichier_paquetage>+\fP
+.PP
+Ceci met à jour ou installe le paquetage installé actuellement à la version du nouveau RPM.  Ceci est la même chose que l'installation, sauf que les autres versions du paquetage sont supprimées du système.
+.PP
+	\fBrpm [\-F|--rafraîchir] [options_installation] \fI<fichier_paquetage>+\fP
+.PP
+Ceci mettra à niveau les paquetages, mais uniquement si une version plus ancienne existe actuellement.
+
+Le \fI<fichier_paquetage>\fP peut être spécifié par une URL ftp ou http, auquel cas le paquetage sera téléchargé avant d'être installé.  Voir \fBOPTIONS FTP/HTTP\fP pour obtenir des informations sur le support intégré de ftp et http par RPM.
+.PP
+.IP "\fB\-\-force\fP"
+Idem que \fB\-\-replacepkgs\fP, \fB\-\-replacefiles\fP, et \fB\-\-oldpaquetage\fP.
+.IP "\fB\-h\fP, \fB\-\-hash\fP"
+Afficher 50 marques de hachage quand l'archive du paquetage est déballée.  A utiliser avec \fB\-v\fP pour un bel affichage.
+.IP "\fB\-\-oldpackage\fP"
+Permettre à une mise à niveau de remplacer un paquetage par un paquetage plus ancien.
+.IP "\fB\-\-percent\fP"
+Afficher les pourcentages quand les fichiers sont extraits de l'archive du paquetage, ceci dans le but de rendre RPM facile à lancer à partir d'autres outils.
+.IP "\fB\-\-replacefiles\fP"
+Installer les paquetages même s'ils remplacent des fichiers d'autres paquetages déjà installés.
+.IP "\fB\-\-replacepkgs\fP"
+Installer les paquetages même si certains d'entre eux sont déjà installés sur ce système.
+.IP "\fB\-\-allfiles\fP"
+Installer ou mettre à niveau tous les fichiers manquants du paquetage, même s'ils existent déjà.
+.IP "\fB\-\-nodeps\fP"
+Ne pas effectuer de vérification de dépendances avant d'installer ou de mettre à niveau un paquetage.
+.IP "\fB\-\-noscripts\fP"
+Ne pas exécuter les scripts de pré\- et post\- installation.
+.IP "\fB\-\-notriggers\fP"
+Ne pas exécuter les scripts qui sont déclenchés par l'installation de ce paquetage.
+.IP "\fB\-\-ignoresize\fP"
+Ne pas examiner les systèmes de fichiers montés pour vérifier qu'il y ait un espace disque suffisant avant d'installer ce paquetage.
+.IP "\fB\-\-excludepath \fI<chemin>\fP"
+Ne pas installer les fichiers dont les noms commencent par \fI<chemin>\fP.
+.IP "\fB\-\-excludedocs\fP"
+Ne pas installer de fichiers qui sont marqués comme documentation (ce qui inclut les pages de manuel et les documents texinfo).
+.IP "\fB\-\-includedocs\fP"
+Installer les fichiers de documentation. C'est le comportement par défaut.
+.IP "\fB\-\-test\fP"
+Ne pas installer le paquetage, uniquement le vérifier et rapporter les conflits potentiels.
+.IP "\fB\-\-ignorearch\fP"
+Ceci permet l'installation ou la mise à niveau même si l'architecture du binaire RPM et de l'hôte ne correspondent pas.
+.IP "\fB\-\-ignoreos\fP"
+Ceci permet l'installation ou la mise à niveau même si les systèmes d'exploitation du binaire RPM et de l'hôte ne correspondent pas.
+.IP "\fB\-\-prefix \fI<chemin>\fP"
+Ceci fixe le préfixe d'installation à \fI<chemin>\fP pour les paquetages relogeables.
+.IP "\fB\-\-relocate \fI<ancien_chemin>\fB=\fI<nouveau_chemin>\fP"
+Pour les paquetages relogeables, traduit les fichiers qui seraient mis dans \fI<oldchemin>\fP par \fI<newchemin>\fP.
+.IP "\fB\-\-badreloc\fP"
+A utiliser en conjonction avec \-\-relocate, ceci force le relogement même si le paquetage n'est pas relogeable.
+.IP "\fB\-\-noorder\fP"
+Ne pas réordonner les paquetages pour une installation.  La liste des paquetages devrait normalement être réordonnée pour satisfaire aux dépendances.
+
+.SH OPTIONS DE REQUETE
+La forme générale d'une commande de requête rpm est
+.PP
+	\fBrpm \-q [options_de_requête]\fP
+.PP
+Vous pouvez spécifier le format d'information de paquetage qui sera affiché.  Pour cela, utilisez l'option \fB[\-\-queryformat|\-qf]\fP, suivie de la chaîne de caractères de format.
+
+Les formats de requête sont des versions modifiées du formattage standard \fBprintf(3)\fP.  Ce format est constitué de chaînes de caractères statiques (qui peuvent inclure les séquences d'échappement du C standard pour les sauts de lignes, les tabulations, et d'autres caractères spéciaux) et les formatteurs du type de ceux de \fBprintf(3)\fP.  Comme \fBrpm\fP connaît déjà les types à afficher, le spécificateur de type doit néanmoins être omis, et remplacé par le nom de l'étiquette (tag) d'entête à afficher, enfermé dans des caractères \fB{}\fP.  La partie \fBRPMTAG_\fP du nom de l'étiquette peut être omise.
+
+Des formats de sortie alternatifs peuvent être requis en faisant suivre l'étiquette par \fB:\fItypetag\fR.  Actuellement, les types suivants sont supportés : \fBoctal\fR, \fBdate\fR, \fBshescape\fR, \fBperms\fR, \fBfflags\fR, et \fBdepflags\fR.
+
+Par exemple, pour afficher uniquement les noms des paquetages requis, vous pouvez utiliser \fB%{NOM}\fP comme chaîne de caractères de format. Pour afficher de l'information de nom et de distribution en deux colonnes, vous pouvez utiliser \fB%\-30{NOM}%{DISTRIBUTION}\fP.
+
+\fBrpm\fP affichera une liste de toutes les étiquettes qu'il connaît quand il est invoqué avec l'argument \fB\-\-querytags\fP.
+
+Il y a deux sous\-ensembles d'option pour les requêtes : la sélection de paquetages et la sélection d'information.
+
+Options de sélection de paquetages :
+.br
+.IP "\fB\fI<nom_paquetage>\fP"
+Interroger le paquetage intallé nommé \fI<nom_paquetage>\fP.
+.IP "\fB\-a\fP, \fB\-\-all\fP"
+Interroger tous les paquetages intallés.
+.IP "\fB\-\-whatrequires \fI<capacité>\fP"
+Interroger tous les paquetages qui ont besoin de \fI<capacité>\fP pour leur fonctionnement propre.
+.IP "\fB\-\-whatprovides \fI<virtuel>\fP"
+Interroger tous les paquetages qui fournissent la capacité \fI<virtuel>\fP.
+.IP "\fB\-f \fI<fichier>\fP, \fB\-\-fichier \fI<fichier>\fP"
+Interroger le paquetage possédant \fI<fichier>\fP.
+.IP "\fB\-g \fI<groupe>\fP, \fB\-\-groupe \fI<groupe>\fP"
+Interroger les paquetages dont le groupe est \fI<groupe>\fP.
+.IP "\fB\-p \fI<fichier_paquetage>\fP"
+Interroger un paquetage \fI<fichier_paquetage>\fP non installé .  Le \fI<fichier_paquetage>\fP peut être spécifié comme une URL de type ftp ou http, auquel cas l'entête du paquetage sera téléchargée et interrogée.  Voir \fBOPTIONS FTP/HTTP\fP pour obtenir de l'information sur le support intégré d'un client ftp et http par RPM.
+.IP "\fB\-\-specfile \fI<fichier_de_specs>\fP"
+Analyse syntaxiquement (parse) et interroge \fI<fichier_de_specs>\fP comme s'il était un paquetage. Bien que toutes les informations (p.ex. les listes de fichiers) ne soient pas disponibles, ce type d'interrogation permet à rpm d'être utilisé pour extraire de l'information de fichiers de spécifications sans avoir à écrire un parseur de fichiers de spécifications.
+.IP "\fB\-\-querybynombre \fI<nombre>\fP"
+Interroger la \fI<nombre>\fPième entrée de la base de données directement; ceci est utile à des fins de déboggage.
+.IP "\fB\-\-triggeredby \fI<pkg>\fP"
+Interroger les paquetages qui sont déclenchés par les paquetages \fI<pkg>\fP.
+
+.P
+Options de sélection d'information :
+.br
+.IP "\fB\-i\fP"
+Afficher l'information du paquetage, incluant son nom, sa version, et sa description.  Cette option utilisera \fB\-\-queryformat\fP s'il a été spécifié.
+.IP "\fB\-R\fP, \fB\-\-requires\fP"
+Lister les paquetages desquels dépend ce paquetage.
+.IP "\fB\-\-provides\fP"
+Lister les capacités que fournit ce paquetage.
+.IP "\fB\-\-changelog\fP"
+Lister les informations de modifications de ce paquetage.
+.IP "\fB\-l\fP, \fB\-\-list\fP"
+Lister les fichiers du paquetage.
+.IP "\fB\-s\fP, \fB\-\-state\fP"
+Afficher les \fIétats\fP des fichiers du paquetage (implique \fB\-l\fP).  L'état de chaque fichier est soit \fInormal\fP, \fInon installé\fP, ou \fIremplacé\fP.
+.IP "\fB\-d\fP, \fB\-\-docfiles\fP"
+Lister uniquement les fichiers de documentation (implique \fB\-l\fP).  
+.IP "\fB\-c\fP, \fB\-\-configfiles\fP"
+Lister uniquement les fichiers de configuration (implique \fB\-l\fP).  
+.IP "\fB\-\-scripts\fP"
+Lister les scripts shell spécifiques au paquetage qui sont utilisés comme une partie des processus d'installation et de désinstallation, s'il y en a.
+.IP "\fB\-\-triggers\fP, \fB\-\-triggerscripts\fP"
+Afficher les scripts de déclenchement, s'il y en a, qui sont contenus dans le paquetage.
+.IP "\fB\-\-dump\fP"
+Afficher l'information du fichier comme suit : chemin taille mtime somme_md5 mode propriétaire groupe isconfig isdoc rdev symlink.  Ceci doit être utilisé avec au moins une option parmi \fB\-l\fP, \fB\-c\fP, \fB\-d\fP.
+.IP "\fB\-\-last\fP"
+Ordonner le listing des paquetages par date d'installation de sorte que les derniers fichiers installés soient au sommet.
+.IP "\fB\-\-filesbypkg\fP"
+Lister tous les fichiers de chaque paquetage.
+.IP "\fB\-\-triggerscripts\fP"
+Montrer tous les scripts de déclenchement pour les paquetages sélectionnés.
+
+.SH OPTIONS DE VERIFICATION
+La forme générale d'une commande de vérification rpm est
+.PP
+	\fBrpm \-V|\-y|\-\-verify [verify\-options]\fP
+.PP
+Vérifier un paquetage compare les informations sur les fichiers installés dans le paquetage avec les informations sur les fichiers obtenues à partir du paquetage original et conservées dans la base de données rpm.  Entre autres choses, la vérification compare la taille, la somme MD5, les permissions, le propriétaire et les groupes de chaque fichier.  Toutes les discordances sont affichées.  Les options de spécification de paquetage sont les mêmes que pour l'interrogation de paquetages.
+
+Les fichiers qui n'étaient pas installés en provenance du paquetage, par exemple les fichiers de documentation exclus à l'installation en utilisant l'option "\fB\-\-excludedocs\fP", sont ignorés silencieusement.
+
+Options pouvant être utilisées en mode de vérification :
+
+.IP "\fB\-\-nomd5\fP"
+Ignore les erreurs de somme de contrôle MD5 pendant la vérification.
+.IP "\fB\-\-nopgp\fP"
+Ignore les erreurs de contrôle PGP pendant la vérification.
+.IP "\fB\-\-nofiles\fP"
+Ignore les fichiers manquants pendant la vérification.
+
+Le format de sortie est constitué d'une chaîne de caractères de 8 caractère, d'un "\fBc\fP" éventuel dénottant un fichier de configuration, et ensuite du nom du fichier.  Chacun des 8 caractères dénote le résultat d'une comparaison d'un attribut du fichier avec la valeur de cet attribut enregistré dans la base de données rpm.  Un simple "\fB.\fP" (point) signifie que le test s'est bien passé.  Les caractères suivants dénote l'échec à certains tests :
+
+.IP "\fB5\fP"
+Somme MD5
+.IP "\fBS\fP"
+Taille du fichier
+.IP "\fBL\fP"
+Lien symbolique
+.IP "\fBT\fP"
+Mtime
+.IP "\fBD\fP"
+Périphérique
+.IP "\fBU\fP"
+Utilisateur
+.IP "\fBG\fP"
+Groupe
+.IP "\fBM\fP"
+Mode (inclut les permissions et le type de fichier)
+
+.SH VERIFICATION DE SIGNATURE
+La forme générale d'une commande de vérification d'une signature rpm est
+.PP
+	\fBrpm \-\-checksig \fI<fichier_paquetage>+\fP
+.PP
+Ceci vérifie la signature PGP du paquetage \fI<fichier_paquetage>\fP pour s'assurer de son intégrité et de son origine.  Les informations de configurations de PGP sont lues à partir des fichiers de configuration.  Voir la section sur les SIGNATURES PGP pour les détails.
+
+.SH OPTIONS DE DESINSTALLATION
+La forme générale d'une commande de désinstallation rpm est
+.PP
+	\fB    rpm \-e \fI<nom_paquetage>+\fP
+.PP
+.IP "\fB\-\-allmatches\fP"
+Supprimer toutes les versions du paquetage auquel correspond \fI<nom_paquetage>\fR.  Normalement, une erreur est émise si \fI<paquetage_nom>\fR correspond à de multiples paquetages.
+.IP "\fB\-\-noscripts\fP"
+Ne pas exécuter les scripts de pré\- et de post\- désinstallation.
+.IP "\fB\-\-notriggers\fP"
+Ne pas exécuter les scripts qui sont déclenchés par la suppression de ce paquetage.
+.IP "\fB\-\-nodeps\fP"
+Ne pas vérifier les dépendances avant de désinstaller les paquetages.
+.IP "\fB\-\-test\fP"
+Ne pas réellement désinstaller quoi que ce soit, juste effectuer un test pour voir si c'est possible.  Utile en conjonction avec l'option \fB\-vv\fP.
+
+.SH OPTIONS DE CONSTRUCTION
+La forme générale d'une commande de construction rpm est
+.PP
+    \fBrpm \-[b|t]\fIO\fP [options_de_construction] \fI<spec_paquetage>+\fP
+.PP
+L'argument utilisé est \fB-b\fR si un fichier de spécifications est utilisé pour construire le paquetage et \fB-t\fR si \fBRPM\fR devrait regarder à l'intérieur d'un fichier gzippé (ou tarré) pour obtenir le fichier de spécifications à utiliser.  Après le premier argument, l'argument suivant (\fIO\fR) spécifie les étapes de construction et de mise en paquets à effectuer et est un argument parmi :
+
+.IP "\fB\-bp\fP"
+Exécute l'étape "%prep" du fichier de spécifications.  Normalement, ceci implique de déballer les sources et d'appliquer tous les patchs.
+.IP "\fB\-bl\fP"
+Faire une "vérification de liste".  La section "%files" du fichier de spécifications subit l'expansion des macros, et des vérifications sont effectuées pour vérifier que chaque fichier existe.
+.IP "\fB\-bc\fP"
+Effectuer l'étape "%build" du fichier de spécifications (après avoir effectué l'étape prep).  Cela implique en général l'équivalent d'un "make".
+.IP "\fB\-bi\fP"
+Effectuer l'étape "%install" du fichier de spécifications (après avoir effectué les étapes prep et build).  Cela implique en général l'équivalent d'un "make install".
+.IP "\fB\-bb\fP"
+Construire un paquetage binaire (après avoir effectué les étapes prep, build, et install).
+.IP "\fB\-bs\fP"
+Construire uniquement le paquetage source (après avoir effectué les étapes prep, build, et install).
+.IP "\fB\-ba\fP"
+Construire les paquetages paquetages binaires et sources (après avoir effectué les étapes prep, build, et install).
+.PP
+Les options suivantes peuvent également être utilisées :
+.IP "\fB\-\-short\-circuit\fP"
+Passer directement à l'étape spécifiée (çàd, passer toutes les étapes menant à l'étape spécifiée).  Uniquement valide avec \fB\-bc\fP et \fB\-bi\fP.
+.IP "\fB\-\-timecheck\fP"
+Fixer l'âge de "timecheck" (0 pour le désactiver).  Cette valeur peut également être configurée en définissant la macro "_timecheck".  La valeur de timecheck exprime, en secondes, l'âge maximum d'un fichier en train d'être mis en paquetage.  Des avertissements seront affichés pour tous les fichiers au\-delà de l'âge de timecheck.
+.IP "\fB\-\-clean\fP"
+Supprimer l'arbre de construction après que les paquetages aient été créés.
+.IP "\fB\-\-rmsource\fP"
+Supprimer les sources et le fichier de spécifications après la construction (peut également être utilisé seul, p.ex. "\fBrpm \-\-rmsource foo.spec\fP").
+.IP "\fB\-\-test\fP"
+N'exécuter aucune étape de construction.  Utile pour tester en profondeur les fichiers de spécifications.
+.IP "\fB\-\-sign\fP"
+Incorpore une signature PGP dans le paquetage.  Cette signature peut être utilisée pour vérifier l'intégrité et l'origine du paquetage.  Voir la section sur les SIGNATURES PGP pour les détails de configuration.
+.IP "\fB\-\-buildroot \fI<répertoire>\fP"
+Pendant la construction du paquetage, surcharger l'étiquette de Construction de Racine avec le répertoire \fI<répertoire>\fP.
+.IP "\fB\-\-target \fI<plate\-forme>\fP"
+Pendant la construction du paquetage, interpréter \fI<plate\-forme>\fP comme \fBarch-vendor-os\fP et fixer les macros \fB_target\fP, \fB_target_arch\fP et \fB_target_os\fP en conséquence.
+.IP "\fB\-\-buildarch \fI<arch>\fP"
+Pendant la construction du paquetage, fixer l'architecture à \fI<arch>\fP.  Cette option a été rendue obsolète par \fB\-\-target\fI dans RPM 3.0.
+.IP "\fB\-\-buildos \fI<se>\fP"
+Pendant la construction du paquetage, fixer l'architecture à \fI<os>\fP.  Cette option a été rendue obsolète par \fB\-\-target\fI dans RPM 3.0.
+
+.SH OPTIONS DE RECONSTRUCTION ET DE RECOMPILATION
+
+Il y a deux autres façons d'invoquer une construction avec rpm:
+
+.I "\fBrpm \-\-recompile \fI<fichier_paquetage_sources>+\fP"
+
+.I "\fBrpm \-\-rebuild \fI<fichier_paquetage_sources>+\fP"
+
+Quand il est invoqué de cette façon, \fBrpm\fP installe le paquetage de sources désigné, et effectue une préparation, une compilation et une installation.  En plus, \fB\-\-rebuild\fP construit un nouveau paquetage bianire.  Quand la construction est terminée, le répertoire de construction est supprimé (comme avec \fB\-\-clean\fP) et les sources ainsi que le fichier de spécifications du paquetage sont supprimés.
+
+.SH SIGNATURE D'UN RPM EXISTANT
+
+.I "\fBrpm \-\-resign \fI<fichier_paquetage_binaires>+\fP"
+
+Cette option génère et insère de nouvelles signatures pour les paquetages spécifiés.  Toute signature existante est supprimée.
+
+.I "\fBrpm \-\-addsign \fI<fichier_paquetage_binaires>+\fP"
+
+Cette option génère et concatène les nouvelles signatures des paquetages spécifiés à celles qui existaient déjà.
+
+.SH SIGNATURES PGP
+
+Pour utiliser la caractéristique des signatures, RPM doit être configuré pour lancer PGP, et il doit être capable de trouver un groupe de clés publiques (keyring) avec des clés publiques RPM à l'intérieur.  Par défaut, RPM utilise les comportements par défaut de PGP pour trouver les keyrings (en utilisant PGPPATH).  Si vos keyrings ne sont pas situées là où PGP s'attend à ce qu'elles soient, vous aurez besoin de configurer la macro
+
+.IP "\fB_pgp_path\fP"
+pour fournir la localisation des keyrings PGP à utiliser.
+.PP
+
+Si vous voulez être capable de signer les paquetages que vous avez créés vous\-même, vous devrez également créer votre propre paire clé publique/clé secrète (voir le manuel PGP).  Vous devrez également configurer les macros suivantes :
+
+.IP "\fB_signature\fP"
+Le type de la signature.  Actuellement, seule celle de pgp est supportée.
+.IP "\fB_pgp_name\fP"
+Le nom de l'"utilisateur" dont vous voulez utiliser la clé pour signer vos paquetages.
+.PP
+
+Pendant la construction de paquetages, vous ajouterez ensuite le signe \-\- à la ligne de commandes.  On vous demandera votre phrase de passe, et votre paquetage sera construit et signé.
+
+Par exemple, pour être capable d'utiliser PGP pour signer les paquetages en tant qu'utilisateur \fp"John Doe <jdoe@foo.com>"\fP à partir des key rings situées dans \fB/etc/rpm/.pgp\fP en utilisant l'exécutable \fB/usr/bin/pgp\fP, vous devriez inclure
+
+.I "\fB%_signature pgp\fP"
+
+.I "\fB%_pgp_path /etc/rpm/.pgp\fP"
+
+.I "\fB%_pgp_name John Doe <jdoe@foo.com>\fP"
+
+.I "\fB%_pgpbin /usr/bin/pgp\fP"
+
+dans un fichier de configuration de macros.  Utilisez \fB/etc/rpm/macros\fP pour une configuration par système et \fB~/.rpmmacros\fP pour une configuration par utilisateur.
+
+.SH OPTIONS DE RECONSTRUCTION DE LA BASE DE DONNEES
+
+La forme générale d'une commande de reconstruction d'une base de données rpm est
+.PP
+	\fBrpm \-\-rebuiddb\fP
+.PP
+
+Pour reconstuire une nouvelle base de données, tapez :
+.PP
+	\fBrpm \-\-initdb\fP
+.PP
+
+Les seules options pour ces modes sont \fB-\-dbchemin\fP et \fB-\-root\fP.
+
+.SH SHOWRC 
+
+Lancer
+
+.PP
+	\fBrpm \-\-showrc\fP
+
+.PP
+montrera les valeurs que va utiliser RPM pour toutes les options qui peuvent être fixées dans les fichiers \fIrpmrc\fP.
+
+.SH OPTIONS FTP/HTTP
+
+RPM inclut des simples clients FTP et HTTP pour simplifier l'installation et l'interrogation de paquetages qui sont disponibles sur internet.  Les fichiers de paquetage pour l'installation, la mise à niveau et les opérations d'interrogation peuvent être spécifiés dans une URL du style ftp ou http :
+
+.PP
+	\fBftp://<utilisateur>:<mot_de_passe>@nom_hôte:<port>/chemin/vers/paquetage.rpm\fP
+.PP
+Si la partie \fB:mot_de_passe\fP est omise, le mot de passe sera demandé (une seule fois par paire utilisateur/nom_hôte).  Si l'utilisateur et le mot de passe sont omis, le ftp anonyme est utilisé.  Dans tous les cas, des transferts ftp passifs (PASV) sont utilisés.
+
+RPM permet d'utiliser les options suivantes avec les URLs ftp :
+
+.IP "\fB\--ftpproxy \fI<nom_hôte>\fP"
+L'hôte \fI<nom_hôte>\fP sera utilisé comme un serveur délégué (proxy) pour tous les transferts ftp, ce qui permet aux utilisateurs d'effectuer des connexions au travers des gardes\-barrière qui utilisent des systèmes de proxies.  Cette option peut également être spécifiée en configurant la macro \fB_ftpproxy\fP.
+
+.IP "\fB\--ftpport \fI<port>\fP"
+Le port TCP numéro \fI<port>\fP à utiliser pour les connexions ftp sur le serveur proxy ftp au lieu du port par défaut.  Cette option peut également être spécifiée en configurant la macro \fB_ftpport\fP.
+.PP
+
+RPM permet d'utiliser les options suivantes avec les URLs http :
+
+.IP "\fB\--httpproxy \fI<nom_hôte>\fP"
+L'hôte \fI<nom_hôte>\fP sera utilisé comme un serveur délégué (proxy) pour tous les transferts http.  Cette option peut également être spécifiée en configurant la macro \fB_httpproxy\fP.
+
+.IP "\fB\--httpport \fI<port>\fP"
+Le port TCP numéro \fI<port>\fP à utiliser pour les connexions http sur le serveur proxy ftp au lieu du port par défaut.  Cette option peut également être spécifiée en configurant la macro \fB_httpport\fP.
+.PP
+
+.SH FICHIERS
+.nf
+/usr/lib/rpm/rpmrc
+/etc/rpmrc
+~/.rpmrc
+/usr/lib/rpm/macros
+/etc/rpm/macros
+~/.rpmmacros
+/var/lib/rpm/conflictsindex.rpm
+/var/lib/rpm/fileindex.rpm
+/var/lib/rpm/groupindex.rpm
+/var/lib/rpm/nameindex.rpm
+/var/lib/rpm/packages.rpm
+/var/lib/rpm/providesindex.rpm
+/var/lib/rpm/requiredby.rpm
+/var/lib/rpm/triggerindex.rpm
+/tmp/rpm*
+.fi
+.El
+.SH VOIR AUSSI
+.IR glint (8)
+,
+.IR rpm2cpio (8)
+,
+.B http://www.rpm.org/
+.nf
+.SH AUTEURS
+.nf
+Marc Ewing <marc@redhat.com>
+Jeff Johnson <jbj@redhat.com>
+Erik Troan <ewt@redhat.com>
+.fi
+.SH TRADUCTION
+Frédéric Delanoy, 2000.

@@ -1,0 +1,31 @@
+.\" rpm2cpio - Converts Red Hat Package (RPM) to cpio archive
+.TH rpm 8 "1995년 9월 15일" "레드햇 소프트웨어" "레드햇 상용 리눅스"
+.SH 이름
+rpm2cpio \- 레드햇 (RPM) 패키지를 cpio 화일로 변환
+.SH 개요
+\fBrpm2cpio\fP [filename] 
+.SH 설명
+\fBrpm2cpio\fP 는 .rpm 화일명을 하나 받아들여서 표준출력으로 cpio 저장화일을
+출력한다. 만약 아무런 전달인수가 없다면 표준입력으로부터 rpm 화일을
+받아들인다.
+
+.br
+.I "\fBrpm2cpio rpm-1.1-1.i386.rpm\fP"
+.br
+.I "\fBrpm2cpio < glint-1.0-1.i386.rpm\fP"
+
+.SH 참고
+.IR glint (8) ,
+.IR rpm (8)
+.SH 저자
+.nf
+Erik Troan <ewt@redhat.com>
+.fi
+
+.SH 번역자
+.br
+이 만 용
+.B <geoman@nownuri.nowcom.co.kr>
+.br
+.B "         <freeyong@soback.kornet.nm.kr>"
+
