@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-04 10:09-0500\n"
+"POT-Creation-Date: 2001-03-04 12:14-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1853,7 +1853,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1487
+#: build/pack.c:484 lib/psm.c:1443
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1883,7 +1883,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1697
+#: build/pack.c:566 lib/psm.c:1679
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2556,7 +2556,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1081 lib/psm.c:370
+#: lib/header.c:207 lib/header.c:1081 lib/psm.c:373
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2924,68 +2924,64 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:258
-#, c-format
-msgid "user %s does not exist - using root\n"
-msgstr ""
-
-#: lib/psm.c:266
-#, c-format
-msgid "group %s does not exist - using root\n"
-msgstr ""
-
-#: lib/psm.c:557
+#: lib/psm.c:560
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/psm.c:563
+#: lib/psm.c:566
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/psm.c:585
-msgid "installing a source package\n"
-msgstr ""
-
-#: lib/psm.c:635
-msgid "source package contains no .spec file\n"
-msgstr ""
-
-#: lib/psm.c:724
+#: lib/psm.c:600
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:994
+#: lib/psm.c:702
+msgid "source package contains no .spec file\n"
+msgstr ""
+
+#: lib/psm.c:950
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1001
+#: lib/psm.c:957
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1305
+#: lib/psm.c:1261
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1418
+#: lib/psm.c:1374
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1536
+#: lib/psm.c:1480
+#, c-format
+msgid "user %s does not exist - using root\n"
+msgstr ""
+
+#: lib/psm.c:1489
+#, c-format
+msgid "group %s does not exist - using root\n"
+msgstr ""
+
+#: lib/psm.c:1518
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1537
+#: lib/psm.c:1519
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1788
+#: lib/psm.c:1770
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
