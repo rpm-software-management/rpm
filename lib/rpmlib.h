@@ -731,9 +731,10 @@ typedef enum rpmProblemType_e {
 /**
  */
 typedef /*@abstract@*/ struct rpmProblem_s {
-    Header h;
-    Header altH;
+/*@only@*/ /*@null@*/ const char * pkgNEVR;
+/*@only@*/ /*@null@*/ const char * altNEVR;
 /*@dependent@*/ const void * key;
+    Header h;
     rpmProblemType type;
     int ignoreProblem;
 /*@only@*/ const char * str1;
@@ -906,6 +907,18 @@ void rpmtransFree( /*@only@*/ rpmTransactionSet rpmdep);
  */
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
 	/*@modifies ts, fd @*/;
+
+/** \ingroup rpmtrans
+ * Retrieve keys from ordered transaction set.
+ * @todo Removed packages have no keys, returned as interleaved NULL pointers.
+ * @param ts		rpm transaction set
+ * @retval ep		address of returned element array pointer (or NULL)
+ * @retval nep		address of no. of returned elements (or NULL)
+ * @return		0 always
+ */
+int rpmtransGetKeys(const rpmTransactionSet ts,
+	/*@out@*/ const void *** ep, /*@out@*/ int * nep)
+		/*@modifies ep, nep @*/;
 
 /** \ingroup rpmtrans
  * Check that all dependencies can be resolved.

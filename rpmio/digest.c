@@ -1,11 +1,10 @@
 /** \ingroup signature
  * \file rpmio/digest.c
- *
  */
 
 #include "system.h"
-
 #include "rpmio_internal.h"
+#include "debug.h"
 
 typedef unsigned int uint32;
 typedef unsigned char byte;

@@ -12,21 +12,21 @@ static int _debug = 0;
 #include <sys/signal.h>
 
 #include <rpmlib.h>
-#include <rpmurl.h>	/* XXX for assert.h */
 #include <rpmmacro.h>	/* XXX for rpmGetPath/rpmGenPath */
 
 #include "rpmdb.h"
+#include "fprint.h"
+#include "misc.h"
+#include "debug.h"
 
 /*@access dbiIndexSet@*/
 /*@access dbiIndexItem@*/
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
 
-#include "fprint.h"
-#include "misc.h"
-
 extern int _noDirTokens;
 static int _rebuildinprogress = 0;
+static int _db_filter_dups = 0;
 
 int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 
@@ -68,7 +68,7 @@ static void dbiTagsInit(void)
 
     dbiTagStr = rpmExpand("%{_dbi_tags}", NULL);
     if (!(dbiTagStr && *dbiTagStr && *dbiTagStr != '%')) {
-	xfree(dbiTagStr);
+	free((void *)dbiTagStr);
 	dbiTagStr = xstrdup(_dbiTagStr_default);
     }
 
@@ -709,19 +709,19 @@ int rpmdbClose (rpmdb rpmdb)
     	rpmdb->_dbi[dbix] = NULL;
     }
     if (rpmdb->db_errpfx) {
-	xfree(rpmdb->db_errpfx);
+	free((void *)rpmdb->db_errpfx);
 	rpmdb->db_errpfx = NULL;
     }
     if (rpmdb->db_root) {
-	xfree(rpmdb->db_root);
+	free((void *)rpmdb->db_root);
 	rpmdb->db_root = NULL;
     }
     if (rpmdb->db_home) {
-	xfree(rpmdb->db_home);
+	free((void *)rpmdb->db_home);
 	rpmdb->db_home = NULL;
     }
     if (rpmdb->_dbi) {
-	xfree(rpmdb->_dbi);
+	free((void *)rpmdb->_dbi);
 	rpmdb->_dbi = NULL;
     }
     free(rpmdb);
@@ -1295,11 +1295,11 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
     }
 
     if (mi->mi_release) {
-	xfree(mi->mi_release);
+	free((void *)mi->mi_release);
 	mi->mi_release = NULL;
     }
     if (mi->mi_version) {
-	xfree(mi->mi_version);
+	free((void *)mi->mi_version);
 	mi->mi_version = NULL;
     }
     if (mi->mi_dbc) {
@@ -1311,7 +1311,7 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	mi->mi_set = NULL;
     }
     if (mi->mi_keyp) {
-	xfree(mi->mi_keyp);
+	free((void *)mi->mi_keyp);
 	mi->mi_keyp = NULL;
     }
     free(mi);
@@ -1345,7 +1345,7 @@ void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release) {
     if (mi == NULL)
 	return;
     if (mi->mi_release) {
-	xfree(mi->mi_release);
+	free((void *)mi->mi_release);
 	mi->mi_release = NULL;
     }
     mi->mi_release = (release ? xstrdup(release) : NULL);
@@ -1355,7 +1355,7 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version) {
     if (mi == NULL)
 	return;
     if (mi->mi_version) {
-	xfree(mi->mi_version);
+	free((void *)mi->mi_version);
 	mi->mi_version = NULL;
     }
     mi->mi_version = (version ? xstrdup(version) : NULL);
@@ -1425,7 +1425,7 @@ top:
     } while (mi->mi_offset == 0);
 
     if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset)
-	return mi->mi_h;
+	goto exit;
 
     /* Retrieve next header */
     if (uh == NULL) {
@@ -1460,6 +1460,16 @@ top:
 
     mi->mi_prevoffset = mi->mi_offset;
     mi->mi_modified = 0;
+
+exit:
+#ifdef	NOTNOW
+    if (mi->mi_h) {
+	const char *n, *v, *r;
+	headerNVR(mi->mi_h, &n, &v, &r);
+	rpmMessage(RPMMESS_DEBUG, "%s-%s-%s at 0x%x, h %p\n", n, v, r,
+		mi->mi_offset, mi->mi_h);
+    }
+#endif
     return mi->mi_h;
 }
 
@@ -1774,7 +1784,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
 	    switch (rpmtype) {
 	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_I18NSTRING_TYPE:
-		xfree(rpmvals);
+		free((void *)rpmvals);
 		rpmvals = NULL;
 		break;
 	    }
@@ -1994,7 +2004,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		case RPMTAG_REQUIRENAME:
 		    /* Filter out install prerequisites. */
 		    if (requireFlags && isInstallPreReq(requireFlags[i])) {
-		rpmMessage(RPMMESS_DEBUG, ("%6d %s\n"), i, rpmvals[i]);
+		rpmMessage(RPMMESS_DEBUG, ("%6d %s (install prerequisite) skipped\n"), i, rpmvals[i]);
 			continue;
 		    }
 		    rec->tagNum = i;
@@ -2027,7 +2037,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	    switch (rpmtype) {
 	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_I18NSTRING_TYPE:
-		xfree(rpmvals);
+		free((void *)rpmvals);
 		rpmvals = NULL;
 		break;
 	    }
@@ -2197,7 +2207,7 @@ static int rpmdbRemoveDatabase(const char * rootdir,
 	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
 	    (void)rpmCleanPath(filename);
 	    xx = unlink(filename);
-	    xfree(base);
+	    free((void *)base);
 	}
 	break;
     }
@@ -2306,7 +2316,7 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	    (void)rpmCleanPath(nfilename);
 	    if ((xx = Rename(ofilename, nfilename)) != 0)
 		rc = 1;
-	    xfree(base);
+	    free((void *)base);
 	}
 	break;
     }
@@ -2345,7 +2355,7 @@ int rpmdbRebuild(const char * rootdir)
     dbpath = rootdbpath = rpmGetPath(rootdir, tfn, NULL);
     if (!(rootdir[0] == '/' && rootdir[1] == '\0'))
 	dbpath += strlen(rootdir);
-    xfree(tfn);
+    free((void *)tfn);
 
     tfn = rpmGetPath("%{_dbpath_rebuild}", NULL);
     if (!(tfn && tfn[0] != '%' && strcmp(tfn, dbpath))) {
@@ -2354,14 +2364,14 @@ int rpmdbRebuild(const char * rootdir)
 	sprintf(pidbuf, "rebuilddb.%d", (int) getpid());
 	t = xmalloc(strlen(dbpath) + strlen(pidbuf) + 1);
 	(void)stpcpy(stpcpy(t, dbpath), pidbuf);
-	if (tfn) xfree(tfn);
+	if (tfn) free((void *)tfn);
 	tfn = t;
 	nocleanup = 0;
     }
     newdbpath = newrootdbpath = rpmGetPath(rootdir, tfn, NULL);
     if (!(rootdir[0] == '/' && rootdir[1] == '\0'))
 	newdbpath += strlen(rootdir);
-    xfree(tfn);
+    free((void *)tfn);
 
     rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
 	rootdbpath, newrootdbpath);
@@ -2422,7 +2432,7 @@ int rpmdbRebuild(const char * rootdir)
 	    }
 
 	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
-	    if (newdb->db_filter_dups) {
+	    if (_db_filter_dups || newdb->db_filter_dups) {
 		const char * name, * version, * release;
 		int skip = 0;
 
@@ -2443,10 +2453,15 @@ int rpmdbRebuild(const char * rootdir)
 		    continue;
 	    }
 
-	    /* Retrofit "Provide: name = EVR" for binary packages. */
-	    providePackageNVR(h);
+	    /* Deleted entries are eliminated in legacy headers by copy. */
+	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
+				? headerCopy(h) : NULL);
+		rc = rpmdbAdd(newdb, (nh ? nh : h));
+		if (nh)
+		    headerFree(nh);
+	    }
 
-	    if (rpmdbAdd(newdb, h)) {
+	    if (rc) {
 		rpmError(RPMERR_INTERNAL,
 			_("cannot add record originally at %d"), _RECNUM);
 		failed = 1;
@@ -2491,8 +2506,8 @@ exit:
 	    rpmMessage(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }
-    if (newrootdbpath)	xfree(newrootdbpath);
-    if (rootdbpath)	xfree(rootdbpath);
+    if (newrootdbpath)	free((void *)newrootdbpath);
+    if (rootdbpath)	free((void *)rootdbpath);
 
     return rc;
 }

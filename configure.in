@@ -7,7 +7,7 @@ dnl it, why check it?
 AC_INIT(rpm.c)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(rpm, 4.1)
+AM_INIT_AUTOMAKE(rpm, 4.0.2)
 AM_CONFIG_HEADER(config.h)
 
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
@@ -723,21 +723,21 @@ fi
 dnl
 dnl Auto-detect whether python bindings should be built.
 dnl
-AC_ARG_WITH(python, [  --with-python           build rpm python bindings ],
-  rpm_cv_python=yes, rpm_cv_python=no)
+withval=auto
+AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
-if test $rpm_cv_python = no ; then
+if test $withval = auto ; then
   AC_MSG_CHECKING(for python 1.5.2)
   AC_TRY_RUN([
 #include <python1.5/Python.h>
 main() {
   exit(strcmp("1.5.2", PY_VERSION));
 } ],
-  rpm_cv_python=yes, rpm_cv_python=no, rpm_cv_python=no)
-  AC_MSG_RESULT([$rpm_cv_python])
+  withval=yes, withval=no, withval=no)
+  AC_MSG_RESULT($with_val)
 fi
 
-if test $rpm_cv_python = yes; then
+if test $withval = yes ; then
   WITH_PYTHON_SUBDIR=python
   WITH_PYTHON_SUBPACKAGE=1
 else
@@ -751,21 +751,16 @@ AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
 dnl
 dnl Auto-detect whether doxygen generated API docs should be included.
 dnl
-AC_ARG_WITH(apidocs, [  --with-apidocs           build rpm API docs ],
-  [ if test __DOXYGEN = no; then
-      AC_MSG_ERROR(--> rpm API docs need doxygen in PATH)
-    fi
-    rpm_cv_apidocs=yes
-  ],
-  [ if test __DOXYGEN = no; then
-      rpm_cv_apidocs=no
-    else
-      rpm_cv_apidocs=yes
-    fi
-  ]
-)
+withval=auto
+AC_ARG_WITH(apidocs, [  --with-apidocs          build rpm API docs ])
 
-if test $rpm_cv_apidocs = yes; then
+if test $withval = auto -a $__DOXYGEN != no ; then
+  withval=yes
+elif test $withval = yes -a $__DOXYGEN = no ; then
+  AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)
+fi
+
+if test $withval = yes; then
   WITH_APIDOCS_TARGET=apidocs
   WITH_APIDOCS=1
 else
@@ -773,6 +768,13 @@ else
 fi
 AC_SUBST(WITH_APIDOCS_TARGET)
 AC_SUBST(WITH_APIDOCS)
+
+withval=no
+AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
+if test $withval = yes ; then
+  AC_DEFINE(DMALLOC)
+  LIBS="$LIBS -ldmalloc"
+fi
 
 AC_CHECK_FUNCS(setlocale)
 

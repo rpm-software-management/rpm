@@ -1,11 +1,11 @@
-#include "system.h"
-
 /**
  * \file lib/fs.c
  */
 
+#include "system.h"
 #include <rpmlib.h>
-#include <rpmmacro.h>
+#include <rpmmacro.h>	/* XXX for rpmGetPath */
+#include "debug.h"
 
 struct fsinfo {
 /*@only@*/ const char * mntPoint;	/*!< path to mount point. */
@@ -22,7 +22,7 @@ void freeFilesystems(void)
     if (filesystems) {
 	int i;
 	for (i = 0; i < numFilesystems; i++)
-	    xfree(filesystems[i].mntPoint);
+	    free((void *)filesystems[i].mntPoint);
 	free(filesystems);
 	filesystems = NULL;
     }
@@ -286,7 +286,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 		if (errno != ENOENT) {
 		    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), buf,
 				strerror(errno));
-		    xfree(sourceDir);
+		    free((void *)sourceDir);
 		    free(usages);
 		    return 1;
 		}
@@ -307,7 +307,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 		if (j == numFilesystems) {
 		    rpmError(RPMERR_BADDEV, 
 				_("file %s is on an unknown device"), buf);
-		    xfree(sourceDir);
+		    free((void *)sourceDir);
 		    free(usages);
 		    return 1;
 		}
@@ -321,7 +321,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	usages[lastfs] += fssizes[i];
     }
 
-    if (sourceDir) xfree(sourceDir);
+    if (sourceDir) free((void *)sourceDir);
 
     *usagesPtr = usages;
 

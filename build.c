@@ -5,6 +5,7 @@
 
 #include "build.h"
 #include "install.h"
+#include "debug.h"
 
 static int checkSpec(Header h)
 {
@@ -23,7 +24,7 @@ static int checkSpec(Header h)
 	const char *dn;
 	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
 	rpmError(RPMERR_OPEN, _("cannot open rpm database in %s\n"), dn);
-	xfree(dn);
+	free((void *)dn);
 	exit(EXIT_FAILURE);
     }
     ts = rpmtransCreateSet(db, rootdir);
@@ -128,8 +129,8 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 			zcmds[res & 0x3], arg, tmpSpecFile);
 	if (!(fp = popen(cmd, "r"))) {
 	    rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m"));
-	    xfree(specDir);
-	    xfree(tmpSpecFile);
+	    free((void *)specDir);
+	    free((void *)tmpSpecFile);
 	    return 1;
 	}
 	if ((!fgets(buf, sizeof(buf) - 1, fp)) || !strchr(buf, '/')) {
@@ -140,16 +141,16 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 		    zcmds[res & 0x3], arg, tmpSpecFile);
 	    if (!(fp = popen(cmd, "r"))) {
 		rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m"));
-		xfree(specDir);
-		xfree(tmpSpecFile);
+		free((void *)specDir);
+		free((void *)tmpSpecFile);
 		return 1;
 	    }
 	    if (!fgets(buf, sizeof(buf) - 1, fp)) {
 		/* Give up */
 		rpmError(RPMERR_READ, _("Failed to read spec file from %s"), arg);
 		unlink(tmpSpecFile);
-		xfree(specDir);
-		xfree(tmpSpecFile);
+		free((void *)specDir);
+		free((void *)tmpSpecFile);
 	    	return 1;
 	    }
 	}
@@ -170,16 +171,16 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	specURL = s = alloca(strlen(specDir) + strlen(cmd) + 5);
 	sprintf(s, "%s/%s", specDir, cmd);
 	res = rename(tmpSpecFile, s);
-	xfree(specDir);
+	free((void *)specDir);
 	
 	if (res) {
 	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m"),
 			tmpSpecFile, s);
 	    unlink(tmpSpecFile);
-	    xfree(tmpSpecFile);
+	    free((void *)tmpSpecFile);
 	    return 1;
 	}
-	xfree(tmpSpecFile);
+	free((void *)tmpSpecFile);
 
 	/* Make the directory which contains the tarball the source 
 	   directory for this run */
@@ -263,11 +264,10 @@ exit:
     if (spec)
 	freeSpec(spec);
     if (buildRootURL)
-	xfree(buildRootURL);
+	free((void *)buildRootURL);
     return rc;
 }
 
-/** */
 int build(const char * arg, struct rpmBuildArguments * ba,
 	const char * passPhrase, int fromTarball, char * cookie,
 	const char * rcfile, int force, int nodeps)

@@ -4,12 +4,7 @@
 
 #include "system.h"
 
-#ifdef	__LCLINT__
-#define	ntohl(_x)	(_x)
-#define	ntohs(_x)	(_x)
-#define	htonl(_x)	(_x)
-#define	htons(_x)	(_x)
-#else
+#if !defined(__LCLINT__)
 #include <netinet/in.h>
 #endif	/* __LCLINT__ */
 
@@ -17,6 +12,10 @@
 #include <rpmmessages.h>
 #include <rpmio_internal.h>
 
+#include "debug.h"
+
+/*@access FD_t@*/		/* XXX compared with NULL */
+/*@access urlinfo@*/
 
 #ifndef	IPPORT_FTP
 #define	IPPORT_FTP	21
@@ -24,9 +23,6 @@
 #ifndef	IPPORT_HTTP
 #define	IPPORT_HTTP	80
 #endif
-
-/*@access FD_t@*/		/* XXX compared with NULL */
-/*@access urlinfo@*/
 
 #define	URL_IOBUF_SIZE	4096
 int url_iobuf_size = URL_IOBUF_SIZE;
@@ -119,16 +115,16 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	free(u->buf);
 	u->buf = NULL;
     }
-    if (u->url)		xfree(u->url);
-    if (u->service)	xfree(u->service);
-    if (u->user)	xfree(u->user);
-    if (u->password)	xfree(u->password);
-    if (u->host)	xfree(u->host);
-    if (u->portstr)	xfree(u->portstr);
-    if (u->proxyu)	xfree(u->proxyu);
-    if (u->proxyh)	xfree(u->proxyh);
+    if (u->url)		free((void *)u->url);
+    if (u->service)	free((void *)u->service);
+    if (u->user)	free((void *)u->user);
+    if (u->password)	free((void *)u->password);
+    if (u->host)	free((void *)u->host);
+    if (u->portstr)	free((void *)u->portstr);
+    if (u->proxyu)	free((void *)u->proxyu);
+    if (u->proxyh)	free((void *)u->proxyh);
 
-    /*@-refcounttrans@*/ xfree(u); /*@-refcounttrans@*/
+    /*@-refcounttrans@*/ free((void *)u); /*@-refcounttrans@*/
     return NULL;
 }
 
@@ -217,7 +213,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;
-    if (u->proxyh)	xfree(u->proxyh);
+    if (u->proxyh)	free((void *)u->proxyh);
 
     /* Perform one-time FTP initialization */
     if (u->urltype == URL_IS_FTP) {
@@ -226,7 +222,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	    char * prompt;
 	    prompt = alloca(strlen(u->host) + strlen(u->user) + 256);
 	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
-	    if (u->password)	xfree(u->password);
+	    if (u->password)	free((void *)u->password);
 	    u->password = /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/;
 	    u->password = xstrdup(u->password);	/* XXX xstrdup has side effects. */
 	}
@@ -240,7 +236,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 		u->proxyu = nu;
 		u->proxyh = xstrdup(proxy);
 	    }
-	    xfree(proxy);
+	    free((void *)proxy);
 	}
 
 	if (u->proxyp < 0) {
@@ -255,7 +251,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 		}
 		u->proxyp = port;
 	    }
-	    xfree(proxy);
+	    free((void *)proxy);
 	}
     }
 
@@ -266,7 +262,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
 	    if (proxy && *proxy != '%')
 		u->proxyh = xstrdup(proxy);
-	    xfree(proxy);
+	    free((void *)proxy);
 	}
 
 	if (u->proxyp < 0) {
@@ -281,7 +277,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 		}
 		u->proxyp = port;
 	    }
-	    xfree(proxy);
+	    free((void *)proxy);
 	}
 
     }

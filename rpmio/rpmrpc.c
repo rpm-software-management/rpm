@@ -3,10 +3,10 @@
  */
 
 #include "system.h"
-
 #include <rpmio_internal.h>
 #include <popt.h>
 #include "ugid.h"
+#include "debug.h"
 
 /*@access FD_t@*/
 /*@access urlinfo@*/
@@ -230,7 +230,7 @@ int Unlink(const char * path) {
 /* XXX swiped from mc-4.5.39-pre9 vfs/ftpfs.c */
 
 #define	g_strdup	xstrdup
-#define	g_free		xfree
+#define	g_free		free
 
 /*
  * FIXME: this is broken. It depends on mc not crossing border on month!
@@ -958,7 +958,7 @@ static void ftpGlobfree(glob_t * pglob) {
 if (_rpmio_debug)
 fprintf(stderr, "*** ftpGlobfree(%p)\n", pglob);
     if (pglob->gl_offs == -1)	/* XXX HACK HACK HACK */
-	xfree(pglob->gl_pathv);
+	free((void *)pglob->gl_pathv);
 }
 
 int Stat(const char * path, struct stat * st) {

@@ -13,8 +13,10 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
-#include "rpmlib.h"
+#include <rpmbuild.h>
+#include <rpmlib.h>
+
+#include "debug.h"
 
 /* #define DEBUG_PARSER 1 */
 
@@ -24,7 +26,6 @@
 #else
 #define DEBUG(x)
 #endif
-
 
 /*
  * Encapsulation of a "value"
@@ -62,7 +63,7 @@ static Value valueMakeString(/*@only@*/ const char *s)
 static void valueFree( /*@only@*/ Value v)
 {
   if (v) {
-    if (v->type == VALUE_TYPE_STRING) xfree(v->data.s);
+    if (v->type == VALUE_TYPE_STRING) free((void *)v->data.s);
     free(v);
   }
 }

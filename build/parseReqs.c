@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "debug.h"
 
 static struct ReqComp {
     char *token;

@@ -51,6 +51,18 @@
 	- autoconfigure generating rpm API doco.
 	- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
 	- use package version 3 if --nodirtokens is specified.
+	- add package names to problem sets early, don't save removed header.
+	- make sure that replaced tags in region are counted in headerSizeof().
+	- support for dmalloc debugging.
+	- filter region tags in headerNextIterator, exit throut headerReload.
+	- add rpmtransGetKeys() to retrieve transaction keys in tsort'ed order.
+	- python bindings for rpmtransGetKeys().
+	- fix: include alignment in count when swabbing header region.
+	- handle added dirtoken tags (mostly) correctly with header regions.
+	- add FHS doc/man/info dirs, diddle autoconf goo.
+	- fix: headerUnload handles headers w/o regions correctly on rebuilddb.
+	- resurrect rpmrc Provides: as well as implicit dependency on packge
+		info.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

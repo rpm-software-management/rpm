@@ -1,5 +1,3 @@
-#include "system.h"
-
 /** \ingroup db3
  * \file lib/db3.c
  */
@@ -13,6 +11,8 @@ typedef	unsigned char u_int8_t;
 typedef	int int32_t;
 #endif
 
+#include "system.h"
+
 #include <db3/db.h>
 
 #include <rpmlib.h>
@@ -20,6 +20,8 @@ typedef	int int32_t;
 #include <rpmurl.h>	/* XXX urlPath proto */
 
 #include "rpmdb.h"
+#include "debug.h"
+
 /*@access rpmdb@*/
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
@@ -200,15 +202,15 @@ static int dbSaveInt(const struct dbOption * opt, long aLong) {
 
 void db3Free(dbiIndex dbi) {
     if (dbi) {
-	if (dbi->dbi_root)	xfree(dbi->dbi_root);
-	if (dbi->dbi_home)	xfree(dbi->dbi_home);
-	if (dbi->dbi_file)	xfree(dbi->dbi_file);
-	if (dbi->dbi_subfile)	xfree(dbi->dbi_subfile);
-	if (dbi->dbi_errpfx)	xfree(dbi->dbi_errpfx);
-	if (dbi->dbi_re_source)	xfree(dbi->dbi_re_source);
+	if (dbi->dbi_root)	free((void *)dbi->dbi_root);
+	if (dbi->dbi_home)	free((void *)dbi->dbi_home);
+	if (dbi->dbi_file)	free((void *)dbi->dbi_file);
+	if (dbi->dbi_subfile)	free((void *)dbi->dbi_subfile);
+	if (dbi->dbi_errpfx)	free((void *)dbi->dbi_errpfx);
+	if (dbi->dbi_re_source)	free((void *)dbi->dbi_re_source);
 	if (dbi->dbi_dbenv)	free(dbi->dbi_dbenv);
 	if (dbi->dbi_dbinfo)	free(dbi->dbi_dbinfo);
-	xfree(dbi);
+	free((void *)dbi);
     }
 }
 
@@ -277,7 +279,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	    	break;
 	    case POPT_ARG_STRING:
 	    {	const char ** t = opt->arg;
-		if (*t) xfree(*t);
+		if (*t) free((void *)*t);
 		*t = xstrdup( (p ? p : "") );
 	    }	break;
 
@@ -933,7 +935,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     dbi->dbi_db = NULL;
 
     if (urlfn)
-	xfree(urlfn);
+	free((void *)urlfn);
 
     db3Free(dbi);
 
@@ -1171,7 +1173,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	db3close(dbi, 0);
 
     if (urlfn)
-	xfree(urlfn);
+	free((void *)urlfn);
 
     return rc;
 }

@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "debug.h"
 
 /** */
 int addReqProv(/*@unused@*/ Spec spec, Header h,

@@ -9,6 +9,7 @@
 #include <rpmurl.h>
 
 #include "build.h"
+#include "debug.h"
 
 struct rpmBuildArguments         rpmBTArgs;
 

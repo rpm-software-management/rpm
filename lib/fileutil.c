@@ -1,12 +1,11 @@
-#include "system.h"
-
 /**
  * \file lib/fileutil.c
  */
 
+#include "system.h"
 #include <rpmlib.h>
-
 #include "misc.h"
+#include "debug.h"
 
 static struct {
     const char *token;

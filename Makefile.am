@@ -43,7 +43,7 @@ rpmpopt-$(VERSION): rpmpopt
 	cp $< $@
 
 noinst_HEADERS = \
-	acconfig.h	build.h		system.h
+	acconfig.h	build.h		debug.h		system.h
 
 rpm_SOURCES =		rpm.c
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
@@ -179,7 +179,7 @@ nextsrpm: all archive
 doxygen @WITH_APIDOCS_TARGET@: Doxyfile
 	rm -rf $@
 	mkdir -p $@
-	doxygen
+	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
 
 ctags:
 	find . -type f -name "*.[ch]*" | xargs @CTAGS@

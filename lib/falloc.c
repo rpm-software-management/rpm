@@ -1,5 +1,3 @@
-#include "system.h"
-
 /** \ingroup rpmio db1
  * \file lib/falloc.c
  * 
@@ -13,8 +11,10 @@
  *
  */
 
+#include "system.h"
 #include <rpmio_internal.h>
 #include "falloc.h"
+#include "debug.h"
 
 /** \ingroup db1
  */

@@ -1,16 +1,17 @@
-#include "system.h"
-
-int _depends_debug = 0;
-
 /** \ingroup rpmdep
  * \file lib/depends.c
  */
+
+int _depends_debug = 0;
+
+#include "system.h"
 
 #include <rpmlib.h>
 
 #include "depends.h"
 #include "rpmdb.h"
 #include "misc.h"
+#include "debug.h"
 
 /*@access dbiIndex@*/		/* XXX compared with NULL */
 /*@access dbiIndexSet@*/	/* XXX compared with NULL */
@@ -21,12 +22,21 @@ int _depends_debug = 0;
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
     int type, count;
-    if (np && !headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count))
-	*np = NULL;
-    if (vp && !headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count))
-	*vp = NULL;
-    if (rp && !headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count))
-	*rp = NULL;
+    if (np) {
+	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
+	    && type == RPM_STRING_TYPE && count == 1))
+		*np = NULL;
+    }
+    if (vp) {
+	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count)
+	    && type == RPM_STRING_TYPE && count == 1))
+		*vp = NULL;
+    }
+    if (rp) {
+	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count)
+	    && type == RPM_STRING_TYPE && count == 1))
+		*rp = NULL;
+    }
     return 0;
 }
 
@@ -164,8 +174,8 @@ static void alFree(struct availableList * al)
 
 	if (p->relocs) {
 	    for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-		if (r->oldPath) xfree(r->oldPath);
-		if (r->newPath) xfree(r->newPath);
+		if (r->oldPath) free((void *)r->oldPath);
+		if (r->newPath) free((void *)r->newPath);
 	    }
 	    free(p->relocs);
 	}
@@ -174,7 +184,7 @@ static void alFree(struct availableList * al)
     }
 
     for (i = 0; i < al->numDirs; i++) {
-	xfree(al->dirs[i].dirName);
+	free((void *)al->dirs[i].dirName);
 	free(al->dirs[i].files);
     }
 
@@ -582,8 +592,8 @@ int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
 exit:
     rpmMessage(RPMMESS_DEBUG, _("  %s    A %s\tB %s\n"),
 	(result ? "YES" : "NO "), aDepend, bDepend);
-    if (aDepend) xfree(aDepend);
-    if (bDepend) xfree(bDepend);
+    if (aDepend) free((void *)aDepend);
+    if (bDepend) free((void *)bDepend);
     return result;
 }
 
@@ -616,7 +626,7 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 
     if (!headerGetEntry(h, RPMTAG_PROVIDENAME, &type,
 		(void **) &provides, &providesCount)) {
-	if (providesEVR) xfree(providesEVR);
+	if (providesEVR) free((void *)providesEVR);
 	return 0;	/* XXX should never happen */
     }
 
@@ -635,8 +645,8 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 	    break;
     }
 
-    if (provides) xfree(provides);
-    if (providesEVR) xfree(providesEVR);
+    if (provides) free((void *)provides);
+    if (providesEVR) free((void *)providesEVR);
 
     return result;
 }
@@ -863,9 +873,9 @@ void rpmtransFree(rpmTransactionSet rpmdep)
     if (rpmdep->scriptFd)
 	rpmdep->scriptFd = fdFree(rpmdep->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
     if (rpmdep->rootDir)
-	xfree(rpmdep->rootDir);
+	free((void *)rpmdep->rootDir);
     if (rpmdep->currDir)
-	xfree(rpmdep->currDir);
+	free((void *)rpmdep->currDir);
 
     free(rpmdep);
 }
@@ -918,7 +928,7 @@ alFileSatisfiesDepend(struct availableList * al,
     dirNeedle.dirNameLen = strlen(dirName);
     dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
 		       sizeof(dirNeedle), dirInfoCompare);
-    xfree(dirName);
+    free((void *)dirName);
     if (!dirMatch) return NULL;
 
     baseName = strrchr(fileName, '/') + 1;
@@ -1054,7 +1064,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	}
     }
 
-#ifdef	DYING
+#ifndef	DYING
   { const char * rcProvidesString;
     const char * start;
     int i;
@@ -1123,6 +1133,22 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    }
 	}
 	rpmdbFreeIterator(mi);
+
+#ifndef DYING
+	mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_NAME, keyName, 0);
+	rpmdbPruneIterator(mi,
+			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db package)\n"),
+			keyType, keyDepend+2);
+		rpmdbFreeIterator(mi);
+		goto exit;
+	    }
+	}
+	rpmdbFreeIterator(mi);
+#endif
+
     }
 
     if (suggestion)
@@ -1238,7 +1264,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	    ourrc = 1;
 	    break;
 	}
-	xfree(keyDepend);
+	free((void *)keyDepend);
     }
 
     if (requiresCount) {
@@ -1303,7 +1329,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	    ourrc = 1;
 	    break;
 	}
-	xfree(keyDepend);
+	free((void *)keyDepend);
     }
 
     if (conflictsCount) {
@@ -1771,7 +1797,7 @@ rescan:
 		rpmMessage(RPMMESS_NORMAL, "    %-40s %s\n", buf, dp);
 
 		if (dp) {
-		    xfree(dp);
+		    free((void *)dp);
 		    dp = NULL;
 		}
 	    }
@@ -1935,7 +1961,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 		    break;
 		    }
 		}
-		xfree(provides);
+		free((void *)provides);
 		if (rc)
 		    goto exit;
 	    }

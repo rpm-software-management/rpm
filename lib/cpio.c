@@ -8,11 +8,10 @@
  */
 
 #include "system.h"
-
 #include "cpio.h"
-/*@access FD_t@*/
+#include "debug.h"
 
-#define	xfree(_p)	free((void *)_p)
+/*@access FD_t@*/
 
 #define CPIO_NEWC_MAGIC	"070701"
 #define CPIO_CRC_MAGIC	"070702"
@@ -500,7 +499,7 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 	} else {
 	    if (strcmp(md5sum, filemd5))
 		rc = CPIOERR_MD5SUM_MISMATCH;
-	    xfree(md5sum);
+	    free((void *)md5sum);
 	}
     }
 
@@ -750,7 +749,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 	struct stat * st;
 
 	if (hdr->path) {
-	    xfree(hdr->path);
+	    free((void *)hdr->path);
 	    hdr->path = NULL;
 	}
 	if ((rc = getNextHeader(cfd, hdr))) {
@@ -775,7 +774,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 	} else {
 	    if (map) {
 		if (map->mapFlags & CPIO_MAP_PATH) {
-		    if (hdr->path) xfree(hdr->path);
+		    if (hdr->path) free((void *)hdr->path);
 		    hdr->path = xstrdup(map->fsPath);
 		}
 
@@ -871,7 +870,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
     } while (rc == 0);
 
     if (hdr->path) {
-	xfree(hdr->path);
+	free((void *)hdr->path);
 	hdr->path = NULL;
     }
 

@@ -2,9 +2,11 @@
 
 #include "system.h"
 
+#include "header.h"
 #include "rpmlead.h"
 #include "signature.h"
-#include "header.h"
+
+#include "debug.h"
 
 int main(int argc, char **argv)
 {

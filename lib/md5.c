@@ -19,8 +19,8 @@
  */
 
 #include "system.h"
-
 #include "md5.h"
+#include "debug.h"
 
 static int _ie = 0x44332211;
 static union _mendian { int i; char b[4]; } *_endian = (union _mendian *)&_ie;

@@ -80,6 +80,7 @@ static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args);
 static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args);
 static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args);
 static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args);
+static PyObject * py_rpmtransGetKeys(rpmtransObject * s, PyObject * args);
 static PyObject * rpmtransOrder(rpmtransObject * s, PyObject * args);
 static void rpmtransDealloc(PyObject * o);
 static PyObject * rpmtransGetAttr(rpmtransObject * o, char * name);
@@ -268,6 +269,7 @@ static struct PyMethodDef rpmtransMethods[] = {
 	{"depcheck",	(PyCFunction) rpmtransDepCheck,	1 },
 	{"order",	(PyCFunction) rpmtransOrder,	1 },
 	{"run",		(PyCFunction) rpmtransRun, 1 },
+	{"getKeys",	(PyCFunction) py_rpmtransGetKeys, 1 },
 	{NULL,		NULL}		/* sentinel */
 };
 
@@ -1663,13 +1665,14 @@ struct tsCallbackType {
 
 
 
-static void * tsCallback(const Header h, const rpmCallbackType what,
+static void * tsCallback(const void * hd, const rpmCallbackType what,
 		         const unsigned long amount, const unsigned long total,
-	                 const void * pkgKey, void * data) {
+	                 const void * pkgKey, rpmCallbackData data) {
     struct tsCallbackType * cbInfo = data;
     PyObject * args, * result;
     int fd;
     static FD_t fdt;
+    const Header h = (Header) hd;
 
     if (cbInfo->pythonError) return NULL;
 
@@ -1749,6 +1752,30 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
     rpmProblemSetFree(probs);
 
     return list;
+}
+
+static PyObject * py_rpmtransGetKeys(rpmtransObject * s, PyObject * args) {
+    const void **data = NULL;
+    int num, i;
+    PyObject *tuple;
+
+    rpmtransGetKeys(s->ts, &data, &num);
+    if (data == NULL) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+
+    tuple = PyTuple_New(num);
+
+    for (i = 0; i < num; i++) {
+	PyObject *obj = (PyObject *) data[i];
+	Py_INCREF(obj);
+	PyTuple_SetItem(tuple, i, obj);
+    }
+
+    free (data);
+
+    return tuple;
 }
 
 static PyObject * archScore(PyObject * self, PyObject * args) {

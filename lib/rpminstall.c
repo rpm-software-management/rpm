@@ -9,6 +9,7 @@
 #include <rpmurl.h>
 
 #include "misc.h"
+#include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
@@ -259,15 +260,15 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 			argv[j], ftpStrerror(myrc));
 		    numFailed++;
 		    pkgURL[i] = NULL;
-		    xfree(tfn);
+		    free((void *)tfn);
 		} else {
 		    tmppkgURL[numTmpPkgs++] = pkgURL[i++] = tfn;
 		}
 	    }
 	    if (argv) {
 		for (j = 0; j < argc; j++)
-		    xfree(argv[j]);
-		xfree(argv);
+		    free((void *)argv[j]);
+		free((void *)argv);
 		argv = NULL;
 	    }
 	}   break;
@@ -328,7 +329,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 					"%{_dbpath}", NULL);
 			rpmMessage(RPMMESS_ERROR, 
 				_("cannot open Packages database in %s\n"), dn);
-			xfree(dn);
+			free((void *)dn);
 			exit(EXIT_FAILURE);
 		    }
 		    rpmdep = rpmtransCreateSet(db, rootdir);
@@ -342,7 +343,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
 				       (void **) &paths, &c) && (c == 1)) {
 			defaultReloc->oldPath = xstrdup(paths[0]);
-			xfree(paths);
+			free((void *)paths);
 		    } else {
 			const char * name;
 			headerNVR(h, &name, NULL, NULL);
@@ -404,7 +405,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		}
 
 		if (defaultReloc) {
-		    xfree(defaultReloc->oldPath);
+		    free((void *)defaultReloc->oldPath);
 		    defaultReloc->oldPath = NULL;
 		}
 
@@ -482,10 +483,10 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 
     for (i = 0; i < numTmpPkgs; i++) {
 	Unlink(tmppkgURL[i]);
-	xfree(tmppkgURL[i]);
+	free((void *)tmppkgURL[i]);
     }
-    xfree(tmppkgURL);	tmppkgURL = NULL;
-    xfree(pkgURL);	pkgURL = NULL;
+    free((void *)tmppkgURL);	tmppkgURL = NULL;
+    free((void *)pkgURL);	pkgURL = NULL;
 
     /* FIXME how do we close our various fd's? */
 
@@ -496,11 +497,11 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 errxit:
     if (tmppkgURL) {
 	for (i = 0; i < numTmpPkgs; i++)
-	    xfree(tmppkgURL[i]);
-	xfree(tmppkgURL);
+	    free((void *)tmppkgURL[i]);
+	free((void *)tmppkgURL);
     }
     if (pkgURL)
-	xfree(pkgURL);
+	free((void *)pkgURL);
     if (dbIsOpen) rpmdbClose(db);
     return numPkgs;
 }
@@ -530,7 +531,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	const char *dn;
 	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
-	xfree(dn);
+	free((void *)dn);
 	exit(EXIT_FAILURE);
     }
 
@@ -609,7 +610,7 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     if (rc == 1) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
 	if (specFile && *specFile) {
-	    xfree(*specFile);
+	    free((void *)*specFile);
 	    *specFile = NULL;
 	}
 	if (cookie && *cookie) {

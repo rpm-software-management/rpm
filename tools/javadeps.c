@@ -64,6 +64,7 @@ marc@redhat.com and ewt@redhat.com.
 */
 
 #include <stdarg.h>
+#include "debug.h"
 
 /*---------typedefs---------*/
 
@@ -230,7 +231,7 @@ usage (void)
 	 "                  output of --provides.\n\n"
 	 "'RPM_Requires: '  This string lists additional requirements of\n"
 	 "                  the java class.  The string should be a white \n"
-	 "                  space ([\\t   \v\\n\\r\\f\\ ]) separated list of \n"
+	 "                  space ([\\t\v\\n\\r\\f\\ ]) separated list of \n"
 	 "                  dependency strings.  Each dependency string must\n"
 	 "                  be of the same format as would be valid in the \n"
 	 "                  Requires or Provides line of the specfile.  This\n"
@@ -243,7 +244,7 @@ usage (void)
 	 "assumed to be zero. \n\n"
 	 "");
   printf("EXAMPLES (Java Keywords): \n\n"
-	 "\t public static final String REVISION = \"$Revision: 2.7 $\";\n"
+	 "\t public static final String REVISION = \"$Revision: 2.8 $\";\n"
 	 "\t public static final String EPOCH = \"4\";\n"
 	 "\t public static final String REQUIRES = \"RPM_Requires: "
 	 "java(gnu.regexp.RE) java(com.ibm.site.util.Options)>=1.5\";\n"

@@ -66,6 +66,7 @@
 /* WARNING: 1 means success, 0 means failure (yes, this is backwards) */
 
 #include <stdio.h>
+#include <rpmio.h>
 
 #ifdef __cplusplus
 extern "C" {

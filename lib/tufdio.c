@@ -9,6 +9,7 @@
 
 #include <stdarg.h>
 #include <err.h>
+#include "debug.h"
 
 extern int _ftp_debug;
 extern int _url_debug;

@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "debug.h"
 
 /* These have to be global scope to make up for *stupid* compilers */
     /*@observer@*/ /*@null@*/ static const char *name = NULL;

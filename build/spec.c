@@ -7,6 +7,7 @@
 
 #include "rpmbuild.h"
 #include "buildio.h"
+#include "debug.h"
 
 extern int specedit;
 extern MacroContext rpmGlobalMacroContext;
@@ -345,7 +346,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 	sprintf(buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
-	xfree(body);
+	free((void *)body);
     }
     
     return 0;

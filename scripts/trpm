@@ -1,0 +1,189 @@
+#!/bin/sh
+
+dbg=	# echo
+
+dist=7.0
+type=all
+arch=`/bin/rpm --eval '%{_arch}'`
+
+root=`pwd`/root
+sudo=sudo
+rpm="/X/src/rpm401/rpm --root $root"
+rpmb=/usr/bin/rpmbuild
+rpmdb=/usr/bin/rpmdb
+justdb="--justdb --noscripts --notriggers --ignoresize"
+dmopts="-l dmalloc.log -i 100 low"
+db1=
+sorted=	# "| sort"
+
+minglob="
+basesystem-
+bash-[12]
+filesystem-
+glibc-2
+ldconfig-
+libtermcap-2
+mktemp-
+setup-
+termcap-
+"
+
+min1glob="
+$minglob
+bzip2-[01]
+chkconfig-
+db1-1
+db2-2
+db3-3
+dev-
+diffutils-
+e2fsprogs-1
+fileutils-
+findutils-
+gawk-
+gdb-
+gdbm-1
+grep-
+gzip-
+info-
+mount-
+ncurses-[45]
+procps-2
+psmisc-
+sed-
+shadow-utils-
+rmt-
+tar-
+textutils-
+vim-common-
+vim-minimal-
+zlib-1
+"
+
+min2glob="
+$min1glob
+cpio-
+cracklib-
+glib-1
+logrotate-
+mingetty-
+popt-
+pwdb-
+slang-[01]
+which-
+words-
+"
+
+baseglob="
+$min2glob
+console-tools-
+initscripts-
+kernel-2
+modutils-
+pam-0
+pamconfig-
+sh-utils-
+sysklogd-
+util-linux-
+vixie-cron-
+rpm-[34]
+rpm-devel-[34]
+"
+
+develglob="
+$baseglob
+bzip2-devel-
+db1-devel-
+db2-devel-
+db3-devel-
+gdbm-devel-
+glibc-devel-
+kernel-headers-
+ncurses-devel-
+tcl-
+zlib-devel-
+"
+
+buildglob="
+$develglob
+autoconf-
+automake-
+binutils-
+cpp-
+cvs-
+db3-utils-
+egcs-2
+gcc-2
+gettext-
+krb5-libs-
+libstdc++-
+libtool-
+make-
+m4-
+perl-
+tcsh-
+"
+
+notallpat="(kernel-[^2h])"
+
+for cmd in $*
+do
+    echo "=======> start $cmd	`date`"
+    case $cmd in
+    debug)		dbg=echo	;;
+    dmalloc)		eval `dmalloc -b $dmopts`	;;
+    db1)		db1="--define '%_dbapi 1'"	;;
+    5.2|6.2|7.0|7.1)	dist=$cmd	;;
+    manifest)
+	rm -f *-$dist-$arch
+	pkgs="/$dist/$arch"
+ 	ls -1 ${pkgs}/*.rpm | egrep "(noarch|$arch).rpm" > list-$dist-$arch
+	cat list-$dist-$arch | egrep -v $notallpat > all-$dist-$arch
+	for l in min min1 min2 base devel build
+	do
+	    glv='$'${l}glob
+	    glist="`eval echo $glv`"
+	    for g in $glist ; do
+		ls -1 ${pkgs}/${g}*.rpm 2> /dev/null
+	    done | egrep "(noarch|$arch).rpm" $sorted > $l-$dist-$arch
+	done
+	;;
+    --initdb)
+	[ -d $root ] && \
+		$dbg $sudo mv $root ${root}-$$ && \
+		$dbg $sudo rm -rf ${root}-$$ &
+	sleep 2
+	$dbg $sudo mkdir -p $root/var/lib/rpm
+	$dbg $sudo $rpm $db1 --initdb
+	;;
+    --savedb)
+	( $dbg cd $root/var/lib && $dbg $sudo tar czvf rpmdb.tar.gz rpm ; )
+	;;
+    --rebuilddb)
+	$dbg $sudo $rpm --rebuilddb -vv
+	;;
+    --justdb)
+	[ -f $type-$dist-$arch ] || {
+	    echo $type-$dist-$arch not found
+	    exit 1
+	}
+	$dbg $sudo $rpm $db1 -Uv $justdb `cat $type-$dist-$arch`
+	;;
+    -U*|-F*)
+	[ -f $type-$dist-$arch ] || {
+	    echo $type-$dist-$arch not found
+	    exit 1
+	}
+	$dbg $sudo $rpm $db1 $cmd `cat $type-$dist-$arch`
+	;;
+    -[Vqei]*)
+	$dbg $sudo $rpm $cmd
+	;;
+    chroot)
+	$dbg $sudo cp /etc/resolv.conf $root/etc
+	$dbg $sudo env HOME=/root chroot $root
+	;;
+    *)		type=$cmd	;;
+    esac
+done
+echo "=======> finish	`date`"

@@ -1,13 +1,12 @@
 /** \ingroup signature
  * \file rpmio/base64.c
- *
  */
 
 static int _debug = 0;
 
 #include "system.h"
-
 #include "base64.h"
+#include "debug.h"
 
 typedef unsigned char byte;
 

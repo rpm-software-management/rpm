@@ -43,6 +43,7 @@ Cambridge, MA 02139, USA.  */
 #endif
 
 #include "myftw.h"
+#include "debug.h"
 
 /* Traverse one level of a directory tree.  */
 

@@ -1,9 +1,10 @@
 #include "system.h"
 
-#include "build/rpmbuild.h"
+#include <rpmbuild.h>
 
 #include "rpm_malloc.h"
 #include "oldrpmdb.h"
+#include "debug.h"
 
 static int labelstrlistToLabelList(char * str, int length, 
 				   struct oldrpmdbLabel ** list);

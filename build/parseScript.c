@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "debug.h"
 
 static int addTriggerIndex(Package pkg, const char *file, const char *script, const char *prog)
 {

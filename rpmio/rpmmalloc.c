@@ -3,6 +3,7 @@
  */
 
 #include "system.h"
+#include "debug.h"
 
 #if !defined(EXIT_FAILURE)
 #define	EXIT_FAILURE	1

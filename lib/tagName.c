@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include "debug.h"
 
 const char *const tagName(int tag)
 {

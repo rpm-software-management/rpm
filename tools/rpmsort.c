@@ -5,6 +5,7 @@
 
 #include "depends.h"
 #include "header.h"
+#include "debug.h"
 
 extern int _depends_debug;
 

@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "debug.h"
 
 /** */
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)

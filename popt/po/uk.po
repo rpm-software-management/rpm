@@ -4,8 +4,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: popt 1.4\n"
-"POT-Creation-Date: 2000-09-11 12:53-0400\n"
+"Project-Id-Version: popt 1.6.1\n"
+"POT-Creation-Date: 2000-11-20 14:36-0500\n"
 "PO-Revision-Date: 1999-09-30 16:54+0200\n"
 "Last-Translator: Yuri Syrota <rasta@renome.rovno.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"

@@ -1,13 +1,13 @@
-#include "system.h"
-
 /**
  * \file lib/fprint.c
  */
 
+#include "system.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmCleanPath */
 
 #include "fprint.h"
+#include "debug.h"
 
 fingerPrintCache fpCacheCreate(int sizeHint)
 {

@@ -8,18 +8,14 @@
 # include <machine/types.h>
 #endif
 
-#ifdef	__LCLINT__
-#define	ntohl(_x)	(_x)
-#define	ntohs(_x)	(_x)
-#define	htonl(_x)	(_x)
-#define	htons(_x)	(_x)
-#else
+#if !defined(__LCLINT__)
 #include <netinet/in.h>
 #endif	/* __LCLINT__ */
 
 #include <rpmlib.h>
 
 #include "rpmlead.h"
+#include "debug.h"
 
 /* The lead needs to be 8 byte aligned */
 

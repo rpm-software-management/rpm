@@ -9,6 +9,7 @@ static int _debug = 0;
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
+#include "debug.h"
 
 /**
  */
@@ -240,22 +241,22 @@ retry:
 	const char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 7;
 	match = matchTok(arch, s);
-	xfree(arch);
+	free((void *)arch);
     } else if (! strncmp("%ifnarch", s, sizeof("%ifnarch")-1)) {
 	const char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 8;
 	match = !matchTok(arch, s);
-	xfree(arch);
+	free((void *)arch);
     } else if (! strncmp("%ifos", s, sizeof("%ifos")-1)) {
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	s += 5;
 	match = matchTok(os, s);
-	xfree(os);
+	free((void *)os);
     } else if (! strncmp("%ifnos", s, sizeof("%ifnos")-1)) {
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	s += 6;
 	match = !matchTok(os, s);
-	xfree(os);
+	free((void *)os);
     } else if (! strncmp("%if", s, sizeof("%if")-1)) {
 	s += 3;
         match = parseExpressionBoolean(spec, s);
@@ -471,7 +472,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 		    }
 #ifdef	DYING
 		    rpmSetMachine(saveArch, NULL);
-		    xfree(saveArch);
+		    free((void *)saveArch);
 #else
 		    delMacro(NULL, "_target_cpu");
 #endif
@@ -547,8 +548,8 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 #ifdef	DYING
     FREE(myos);
 #else
-    xfree(arch);
-    xfree(os);
+    free((void *)arch);
+    free((void *)os);
 #endif
   }
 

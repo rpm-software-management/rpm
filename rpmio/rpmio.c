@@ -1,16 +1,11 @@
-#include "system.h"
-
 /** \ingroup rpmio
  * \file rpmio/rpmio.c
  */
 
+#include "system.h"
 #include <stdarg.h>
 
 #ifdef	__LCLINT__
-#define	ntohl(_x)	(_x)
-#define	ntohs(_x)	(_x)
-#define	htonl(_x)	(_x)
-#define	htons(_x)	(_x)
 typedef	unsigned int		uint32_t;
 #define	INADDR_ANY		((uint32_t) 0x00000000)
 #define	IPPROTO_IP		0
@@ -46,7 +41,6 @@ extern int h_errno;
 #define	IPPORT_HTTP	80
 #endif
 
-
 #if !defined(HAVE_INET_ATON)
 static int inet_aton(const char *cp, struct in_addr *inp)
 {
@@ -69,6 +63,10 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #include "ugid.h"
 #include "rpmmessages.h"
 
+#include "debug.h"
+
+/*@access urlinfo@*/
+
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 #define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
@@ -80,8 +78,6 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #define	UFDONLY(fd)	/* assert(fdGetIo(fd) == ufdio) */
 
 #define	fdGetFILE(_fd)	((FILE *)fdGetFp(_fd))
-
-/*@access urlinfo@*/
 
 #if _USE_LIBIO
 int noLibio = 0;

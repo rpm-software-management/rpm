@@ -3,11 +3,12 @@
 #include "rpmbuild.h"
 #include "buildio.h"
 
+#include "header.h"
 #include "rpmlead.h"
 #include "signature.h"
-#include "header.h"
 
 #include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
+#include "debug.h"
 
 typedef enum injmode_e { INJ_UNKNOWN, INJ_ADD, INJ_DELETE, INJ_MODIFY } injmode_t;
 

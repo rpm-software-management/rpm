@@ -1,23 +1,18 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-09-11 12:53-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: popt 1.6.1\n"
+"POT-Creation-Date: 2000-11-20 14:36-0500\n"
+"PO-Revision-Date: 2000-09-05 12:30+0200\n"
+"Last-Translator: Roman Maurer <roman.maurer@hermes.si>\n"
+"Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=iso-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: popthelp.c:27
 msgid "Show this help message"
-msgstr ""
+msgstr "Prika¾i to sporoèilo s pomoèjo"
 
 #: popthelp.c:28
 msgid "Display brief usage message"
-msgstr ""
+msgstr "Prika¾i kratko sporoèilo o uporabi"

@@ -1,13 +1,10 @@
-#include "system.h"
-
 /** \ingroup rpmrc rpmio
  * \file rpmio/macro.c
- *
  */
 
 static int _debug = 0;
 
-#include <assert.h>
+#include "system.h"
 #include <stdarg.h>
 
 #if !defined(isblank)
@@ -32,7 +29,6 @@ static int _debug = 0;
 #define	_(x)	x
 
 #define	vmefail()		(exit(1), NULL)
-#define	xfree(_p)		free((void *)_p)
 #define	urlPath(_xr, _r)	*(_r) = (_xr)
 
 typedef	FILE * FD_t;
@@ -53,6 +49,8 @@ typedef	FILE * FD_t;
 #endif
 
 #include <rpmmacro.h>
+
+#include "debug.h"
 
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access MacroContext@*/
@@ -1573,7 +1571,7 @@ rpmExpandNumeric(const char *arg)
 	if (!(end && *end == '\0'))
 	    rc = 0;
     }
-    xfree(val);
+    free((void *)val);
 
     return rc;
 }
@@ -1736,9 +1734,9 @@ fprintf(stderr, "*** RGP ut %d file %s nurl %d\n", ut, file, nurl);
 
     result = rpmGetPath(url, root, "/", mdir, "/", file, NULL);
 
-    xfree(xroot);
-    xfree(xmdir);
-    xfree(xfile);
+    free((void *)xroot);
+    free((void *)xmdir);
+    free((void *)xfile);
 if (_debug)
 fprintf(stderr, "*** RGP result %s\n", result);
     return result;
@@ -1783,7 +1781,7 @@ main(int argc, char *argv[])
 	    val = rpmGetPath(argv[optind], NULL);
 	    if (val) {
 		fprintf(stdout, "%s:\t%s\n", argv[optind], val);
-		xfree(val);
+		free((void *)val);
 	    }
 	}
 	rpmFreeMacros(NULL);

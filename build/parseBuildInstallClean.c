@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "debug.h"
 
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 {

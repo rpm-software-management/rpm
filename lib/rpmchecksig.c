@@ -10,6 +10,7 @@
 #include "rpmlead.h"
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */
+#include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
@@ -201,7 +202,7 @@ l = malloc(sizeof(*l));
 
 	/* Clean up intermediate target */
 	unlink(sigtarget);
-	xfree(sigtarget);	sigtarget = NULL;
+	free((void *)sigtarget);	sigtarget = NULL;
 
 	/* Move final target into place. */
 	unlink(rpm);
@@ -221,7 +222,7 @@ if (l != &lead) free(l);
     }
     if (sigtarget) {
 	unlink(sigtarget);
-	xfree(sigtarget);
+	free((void *)sigtarget);
 	sigtarget = NULL;
     }
     if (tmprpm[0] != '\0') {
@@ -301,7 +302,7 @@ l = malloc(sizeof(*l));
 	for (sigIter = headerInitIterator(sig);
 	    headerNextIterator(sigIter, &tag, &type, &ptr, &count);
 	    ptr = ((type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
-		? xfree(ptr), NULL : NULL))
+		? free((void *)ptr), NULL : NULL))
 	{
 	    switch (tag) {
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
@@ -423,7 +424,7 @@ l = malloc(sizeof(*l));
 	headerFreeIterator(sigIter);
 	res += res2;
 	unlink(sigtarget);
-	xfree(sigtarget);	sigtarget = NULL;
+	free((void *)sigtarget);	sigtarget = NULL;
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
@@ -459,7 +460,7 @@ l = malloc(sizeof(*l));
 	if (ofd)	manageFile(&ofd, NULL, 0, 0);
 	if (sigtarget) {
 	    unlink(sigtarget);
-	    xfree(sigtarget);	sigtarget = NULL;
+	    free((void *)sigtarget);	sigtarget = NULL;
 	}
     }
 if (l != &lead) free(l);

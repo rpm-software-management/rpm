@@ -12,6 +12,7 @@
 #include "misc.h"
 #include "signature.h"
 #include "rpmlead.h"
+#include "debug.h"
 
 extern int _noDirTokens;
 
@@ -51,8 +52,8 @@ static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmodeMacro)
 
     Fclose(cfd);
     if (failedFile)
-	xfree(failedFile);
-    xfree(fmode);
+	free((void *)failedFile);
+    free((void *)fmode);
 
     return rc;
 }
@@ -88,7 +89,7 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
     fn = rpmGetPath("%{_builddir}/", spec->buildSubdir, "/", file, NULL);
 
     fd = Fopen(fn, "r.ufdio");
-    if (fn != buf) xfree(fn);
+    if (fn != buf) free((void *)fn);
     if (fd == NULL || Ferror(fd)) {
 	freeStringBuf(sb);
 	return NULL;
@@ -316,7 +317,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	break;
     }
     if (!(rpmio_flags && *rpmio_flags)) {
-	if (rpmio_flags) xfree(rpmio_flags);
+	if (rpmio_flags) free((void *)rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");
     }
     s = strchr(rpmio_flags, '.');
@@ -367,7 +368,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	    rc = RPMERR_BADARG;
 	}
     }
-    if (rpmio_flags) xfree(rpmio_flags);
+    if (rpmio_flags) free((void *)rpmio_flags);
 
     if (rc)
 	goto exit;
@@ -529,7 +530,7 @@ exit:
     }
     if (sigtarget) {
 	Unlink(sigtarget);
-	xfree(sigtarget);
+	free((void *)sigtarget);
     }
 
     if (rc == 0)
@@ -583,7 +584,7 @@ int packageBinaries(Spec spec)
     {	const char * optflags = rpmExpand("%{optflags}", NULL);
 	headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,
 			optflags, 1);
-	xfree(optflags);
+	free((void *)optflags);
     }
 
 	genSourceRpmName(spec);
@@ -594,7 +595,7 @@ int packageBinaries(Spec spec)
 	    char *binRpm, *binDir;
 	    binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
 			       rpmHeaderFormats, &errorString);
-	    xfree(binFormat);
+	    free((void *)binFormat);
 	    if (binRpm == NULL) {
 		const char *name;
 		headerNVR(pkg->header, &name, NULL, NULL);
@@ -620,9 +621,9 @@ int packageBinaries(Spec spec)
 			break;
 		    }
 		}
-		xfree(dn);
+		free((void *)dn);
 	    }
-	    xfree(binRpm);
+	    free((void *)binRpm);
 	}
 
 	memset(csa, 0, sizeof(*csa));
@@ -634,7 +635,7 @@ int packageBinaries(Spec spec)
 	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
-	xfree(fn);
+	free((void *)fn);
 	if (rc)
 	    return rc;
     }
@@ -671,7 +672,7 @@ int packageSources(Spec spec)
 	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
-	xfree(fn);
+	free((void *)fn);
     }
     return rc;
 }

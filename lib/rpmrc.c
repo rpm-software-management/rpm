@@ -12,6 +12,7 @@
 #include <rpmmacro.h>
 
 #include "misc.h"
+#include "debug.h"
 
 static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 
@@ -166,8 +167,8 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	entry = machCacheFindEntry(cache, name);
 	if (entry) {
 	    for (i = 0; i < entry->count; i++)
-		xfree(entry->equivs[i]);
-	    xfree(entry->equivs);
+		free((void *)entry->equivs[i]);
+	    free((void *)entry->equivs);
 	    entry->equivs = NULL;
 	    entry->count = 0;
 	}
@@ -271,11 +272,11 @@ static void machFindEquivs(struct machCache * cache,
 	cache->cache[i].visited = 0;
 
     while (table->count > 0) {
-	xfree(table->list[--table->count].name);
+	free((void *)table->list[--table->count].name);
 	table->list[table->count].name = NULL;
     }
     table->count = 0;
-    if (table->list) xfree(table->list);
+    if (table->list) free((void *)table->list);
     table->list = NULL;
 
     /*
@@ -413,8 +414,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
     {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	rpmSetMachine(cpu, os);
-	xfree(cpu);
-	xfree(os);
+	free((void *)cpu);
+	free((void *)os);
     }
 
     return 0;
@@ -449,7 +450,7 @@ static void setPathDefault(int var, const char *macroname, const char *subdir)
 	strcat(fn, subdir);
 
 	rpmSetVar(var, fn);
-	if (topdir)	xfree(topdir);
+	if (topdir)	free((void *)topdir);
     }
 
     if (macroname != NULL) {
@@ -591,7 +592,7 @@ int rpmReadRC(const char * rcfiles)
 	if ((macrofiles = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
 	    macrofiles = strdup(macrofiles);
 	    rpmInitMacros(NULL, macrofiles);
-	    xfree(macrofiles);
+	    free((void *)macrofiles);
 	}
     }
 
@@ -690,7 +691,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		if (fn == NULL || *fn == '\0') {
 		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
 			option->name, urlfn, linenum, s);
-		    if (fn) xfree(fn);
+		    if (fn) free((void *)fn);
 		    return 1;
 		    /*@notreached@*/
 		}
@@ -703,7 +704,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		} else {
 		    rc = doReadRC(fdinc, fn);
 		}
-		if (fn) xfree(fn);
+		if (fn) free((void *)fn);
 		if (rc) return rc;
 		continue;	/* XXX don't save include value as var/macro */
 	      }	/*@notreached@*/ break;
@@ -712,7 +713,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		if (fn == NULL || *fn == '\0') {
 		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
 			option->name, urlfn, linenum, fn);
-		    if (fn) xfree(fn);
+		    if (fn) free((void *)fn);
 		    return 1;
 		}
 		se = (char *)fn;
@@ -765,7 +766,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		free(name);
 	    }
 	    rpmSetVarArch(option->var, val, arch);
-	    if (fn) xfree(fn);
+	    if (fn) free((void *)fn);
 
 	} else {	/* For arch/os compatibilty tables ... */
 	    int gotit;
@@ -1048,11 +1049,11 @@ static void freeRpmVar(struct rpmvarValue * orig) {
     while (var) {
 	next = var->next;
 	if (var->arch) {
-	    xfree(var->arch);
+	    free((void *)var->arch);
 	    var->arch = NULL;
 	}
 	if (var->value) {
-	    xfree(var->value);
+	    free((void *)var->value);
 	    var->value = NULL;
 	}
 
@@ -1083,8 +1084,8 @@ static void rpmSetVarArch(int var, const char * val, const char * arch) {
 	}
 
 	if (next->arch && arch && !strcmp(next->arch, arch)) {
-	    if (next->value) xfree(next->value);
-	    if (next->arch) xfree(next->arch);
+	    if (next->value) free((void *)next->value);
+	    if (next->arch) free((void *)next->arch);
 	} else if (next->arch || arch) {
 	    next->next = xmalloc(sizeof(*next->next));
 	    next = next->next;
@@ -1150,14 +1151,14 @@ void rpmSetMachine(const char * arch, const char * os) {
     }
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
-	if (current[ARCH]) xfree(current[ARCH]);
+	if (current[ARCH]) free((void *)current[ARCH]);
 	current[ARCH] = xstrdup(arch);
 	rebuildCompatTables(ARCH, host_cpu);
     }
 
     if (!current[OS] || strcmp(os, current[OS])) {
 	char * t = xstrdup(os);
-	if (current[OS]) xfree(current[OS]);
+	if (current[OS]) free((void *)current[OS]);
 	/*
 	 * XXX Capitalizing the 'L' is needed to insure that old
 	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
@@ -1316,9 +1317,9 @@ void rpmFreeRpmrc(void)
 	t = tables + i;
 	if (t->equiv.list) {
 	    for (j = 0; j < t->equiv.count; j++) {
-		if (t->equiv.list[j].name)	xfree(t->equiv.list[j].name);
+		if (t->equiv.list[j].name) free((void *)t->equiv.list[j].name);
 	    }
-	    xfree(t->equiv.list);
+	    free((void *)t->equiv.list);
 	    t->equiv.list = NULL;
 	    t->equiv.count = 0;
 	}
@@ -1327,33 +1328,33 @@ void rpmFreeRpmrc(void)
 		struct machCacheEntry *e;
 		e = t->cache.cache + j;
 		if (e == NULL)	continue;
-		if (e->name)		xfree(e->name);
+		if (e->name)		free((void *)e->name);
 		if (e->equivs) {
 		    for (k = 0; k < e->count; k++) {
-			if (e->equivs[k])	xfree(e->equivs[k]);
+			if (e->equivs[k])	free((void *)e->equivs[k]);
 		    }
-		    xfree(e->equivs);
+		    free((void *)e->equivs);
 		}
 	    }
-	    xfree(t->cache.cache);
+	    free((void *)t->cache.cache);
 	    t->cache.cache = NULL;
 	    t->cache.size = 0;
 	}
 	if (t->defaults) {
 	    for (j = 0; j < t->defaultsLength; j++) {
-		if (t->defaults[j].name)	xfree(t->defaults[j].name);
-		if (t->defaults[j].defName)	xfree(t->defaults[j].defName);
+		if (t->defaults[j].name) free((void *)t->defaults[j].name);
+		if (t->defaults[j].defName) free((void *)t->defaults[j].defName);
 	    }
-	    xfree(t->defaults);
+	    free((void *)t->defaults);
 	    t->defaults = NULL;
 	    t->defaultsLength = 0;
 	}
 	if (t->canons) {
 	    for (j = 0; j < t->canonsLength; j++) {
-		if (t->canons[j].name)		xfree(t->canons[j].name);
-		if (t->canons[j].short_name)	xfree(t->canons[j].short_name);
+		if (t->canons[j].name)	free((void *)t->canons[j].name);
+		if (t->canons[j].short_name)	free((void *)t->canons[j].short_name);
 	    }
-	    xfree(t->canons);
+	    free((void *)t->canons);
 	    t->canons = NULL;
 	    t->canonsLength = 0;
 	}
@@ -1363,22 +1364,22 @@ void rpmFreeRpmrc(void)
 	struct rpmvarValue *this;
 	while ((this = values[i].next) != NULL) {
 	    values[i].next = this->next;
-	    if (this->value)	xfree(this->value);
-	    if (this->arch)	xfree(this->arch);
-	    xfree(this);
+	    if (this->value)	free((void *)this->value);
+	    if (this->arch)	free((void *)this->arch);
+	    free((void *)this);
 	}
 	if (values[i].value)
-	    xfree(values[i].value);
+	    free((void *)values[i].value);
 	values[i].value = NULL;
 	if (values[i].arch)
-	    xfree(values[i].arch);
+	    free((void *)values[i].arch);
 	values[i].arch = NULL;
     }
     if (current[OS])
-	xfree(current[OS]);
+	free((void *)current[OS]);
     current[OS] = NULL;
     if (current[ARCH])
-	xfree(current[ARCH]);
+	free((void *)current[ARCH]);
     current[ARCH] = NULL;
     defaultsInitialized = 0;
     return;

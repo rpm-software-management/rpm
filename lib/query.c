@@ -8,8 +8,9 @@
 # define PATH_MAX 255
 #endif
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
 #include <rpmurl.h>
+#include "debug.h"
 
 /*@access Header@*/			/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
@@ -381,7 +382,7 @@ printNewSpecfile(Spec spec)
 
 	fmt[0] = '\0';
 	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}\n");
-	if (msgstr) xfree(msgstr);
+	if (msgstr) free((void *)msgstr);
 	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr == NULL) {
 	    fprintf(stderr, _("can't query %s: %s\n"), tn, errstr);
@@ -416,7 +417,7 @@ printNewSpecfile(Spec spec)
 	    break;
 	}
     }
-    if (msgstr) xfree(msgstr);
+    if (msgstr) free((void *)msgstr);
 
     for (i = 0; i < sl->sl_nlines; i++) {
 	if (sl->sl_lines[i] == NULL)
@@ -538,8 +539,8 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	}
 	if (argv) {
 	    for (i = 0; i < argc; i++)
-		xfree(argv[i]);
-	    xfree(argv);
+		free((void *)argv[i]);
+	    free((void *)argv);
 	}
     }	break;
 
@@ -668,7 +669,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
 	}
-	xfree(fn);
+	free((void *)fn);
     }	break;
 
     case RPMQV_DBOFFSET:

@@ -7,6 +7,7 @@
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
+#include "debug.h"
 
 static int_32 copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
@@ -282,7 +283,7 @@ static void fillOutMainPackage(Header h)
 	    const char *val = rpmExpand(ot->ot_mac, NULL);
 	    if (val && *val != '%')
 		headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
-	    xfree(val);
+	    free((void *)val);
 	}
     }
 }
@@ -336,7 +337,7 @@ static int readIcon(Header h, const char *file)
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
-    xfree(icon);
+    free((void *)icon);
     
 exit:
     FREE(fn);
@@ -476,7 +477,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	    } else {
 		const char * specURL = field;
 
-		xfree(buildRootURL);
+		free((void *)buildRootURL);
 		(void) urlPath(specURL, (const char **)&field);
 		if (*field == '\0') field = "/";
 		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
@@ -493,10 +494,10 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	if (!strcmp(buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("BuildRoot can not be \"/\": %s"), spec->buildRootURL);
-	    xfree(buildRootURL);
+	    free((void *)buildRootURL);
 	    return RPMERR_BADSPEC;
 	}
-	xfree(buildRootURL);
+	free((void *)buildRootURL);
       }	break;
       case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);

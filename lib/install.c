@@ -12,7 +12,7 @@
 #include "install.h"
 #include "depends.h"
 #include "misc.h"
-#include <assert.h>
+#include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 
@@ -247,7 +247,7 @@ static void trimChangelog(Header h)
 
     {	char *buf = rpmExpand("%{_instchangelog}", NULL);
 	if (!(buf && *buf != '%')) {
-	    xfree(buf);
+	    free((void *)buf);
 	    return;
 	}
 	numToKeep = strtol(buf, &end, 10);
@@ -255,10 +255,10 @@ static void trimChangelog(Header h)
 	if (!(end && *end == '\0')) {
 	    rpmError(RPMERR_RPMRC, _("%%instchangelog value in macro file "
 		 "should be a number, but isn't"));
-	    xfree(buf);
+	    free((void *)buf);
 	    return;
 	}
-	xfree(buf);
+	free((void *)buf);
     }
 
     if (numToKeep < 0) return;
@@ -678,7 +678,7 @@ static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
     }
 
     if (failedFile)
-	xfree(failedFile);
+	free((void *)failedFile);
 
     return rc;
 }
@@ -846,7 +846,7 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 	correctSpecFile = alloca(strlen(realSpecDir) + strlen(specFile) + 2);
 	(void)stpcpy(stpcpy(stpcpy(correctSpecFile,realSpecDir), "/"), specFile);
 
-	xfree(specFile);
+	free((void *)specFile);
 
 	if (strcmp(instSpecFile, correctSpecFile)) {
 	    rpmMessage(RPMMESS_DEBUG,
@@ -869,9 +869,9 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 
 exit:
     if (fileMem)	freeFileMemory(fileMem);
-    if (currDir)	xfree(currDir);
-    if (realSpecDir)	xfree(realSpecDir);
-    if (realSourceDir)	xfree(realSourceDir);
+    if (currDir)	free((void *)currDir);
+    if (realSpecDir)	free((void *)realSpecDir);
+    if (realSourceDir)	free((void *)realSourceDir);
     return rc;
 }
 
@@ -1018,7 +1018,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	{   const char *s = currentDirectory();
 	    currDir = alloca(strlen(s) + 1);
 	    strcpy(currDir, s);
-	    xfree(s);
+	    free((void *)s);
 	}
 
 	chdir("/");

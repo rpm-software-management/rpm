@@ -3,8 +3,8 @@
  */
 
 #include "system.h"
-
 #include "ugid.h"
+#include "debug.h"
 
 /* unameToUid(), uidTouname() and the group variants are really poorly
    implemented. They really ought to use hash tables. I just made the

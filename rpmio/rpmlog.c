@@ -3,10 +3,9 @@
  */
 
 #include "system.h"
-
 #include <stdarg.h>
-
 #include "rpmlog.h"
+#include "debug.h"
 
 /*@access rpmlogRec @*/
 

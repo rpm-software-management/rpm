@@ -4,9 +4,9 @@
  */
 
 #include "system.h"
-
 #include <rpmlib.h>
 #include "hash.h"
+#include "debug.h"
 
 typedef /*@owned@*/ const void * voidptr;
 
@@ -125,12 +125,12 @@ void htFree(hashTable ht)
 
     for (i = 0; i < ht->numBuckets; i++) {
 	b = ht->buckets[i];
-	if (ht->keySize && b) xfree(b->key);
+	if (ht->keySize && b) free((void *)b->key);
 	while (b) {
 	    n = b->next;
 	    if (b->data) {
-		if (ht->freeData && *b->data) xfree(*b->data);
-		xfree(b->data);
+		if (ht->freeData && *b->data) free((void *)*b->data);
+		free((void *)b->data);
 	    }
 	    free(b);
 	    b = n;

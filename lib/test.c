@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include "debug.h"
 
 void main(int argc, char **argv)
 {

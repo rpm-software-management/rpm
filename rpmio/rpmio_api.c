@@ -8,6 +8,9 @@
 #define	fdFileno	_fdFileno
 #include <rpmio_internal.h>
 #undef	fdFileno
+
+#include "debug.h"
+
 /*@access FD_t@*/
 
 int fdFileno(void * cookie) {

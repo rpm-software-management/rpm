@@ -156,6 +156,9 @@
 /* Use the Berkeley db1 API from glibc? */
 #undef USE_DB0
 
+/* Build with dmalloc support? */
+#undef DMALLOC
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:

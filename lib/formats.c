@@ -1,12 +1,12 @@
-#include "system.h"
-
 /** \ingroup header
  * \file lib/formats.c
  */
 
+#include "system.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 #include "misc.h"
+#include "debug.h"
 
 /**
  * Return ls-like formatted mode string.

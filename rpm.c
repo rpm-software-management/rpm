@@ -6,6 +6,7 @@
 #include "build.h"
 #include "install.h"
 #include "signature.h"
+#include "debug.h"
 
 #define GETOPT_ADDSIGN		1005
 #define GETOPT_RESIGN		1006
@@ -655,7 +656,7 @@ int main(int argc, const char ** argv)
 
     poptResetContext(optCon);
 
-    if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
+    if (qva->qva_queryFormat) free((void *)qva->qva_queryFormat);
     memset(qva, 0, sizeof(*qva));
     qva->qva_source = RPMQV_PACKAGE;
     qva->qva_mode = ' ';
@@ -748,7 +749,7 @@ int main(int argc, const char ** argv)
 	  case GETOPT_EVALMACRO:
 	  { const char *val = rpmExpand(optArg, NULL);
 	    fprintf(stdout, "%s\n", val);
-	    xfree(val);
+	    free((void *)val);
 	    noUsageMsg = 1;
 	  } break;
 
@@ -1197,7 +1198,7 @@ int main(int argc, const char ** argv)
     freeNames();
     freeFilesystems();
     urlFreeCache();
-    if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
+    if (qva->qva_queryFormat) free((void *)qva->qva_queryFormat);
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */

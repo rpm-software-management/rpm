@@ -1,7 +1,7 @@
 #include "system.h"
-
 #include "rpmio_internal.h"
 #include "popt.h"
+#include "debug.h"
 
 static rpmDigestFlags flags = RPMDIGEST_MD5;
 
@@ -54,7 +54,7 @@ main(int argc, const char *argv[])
 	if (digest) {
 	    fprintf(stdout, "%s  %s\n", digest, fn);
 	    fflush(stdout);
-	    xfree(digest);
+	    free((void *)digest);
 	}
     }
     return rc;

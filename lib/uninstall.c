@@ -11,6 +11,7 @@
 #include "depends.h"	/* XXX for headerMatchesDepFlags */
 #include "install.h"
 #include "misc.h"	/* XXX for makeTempFile, doputenv */
+#include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 
@@ -366,7 +367,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
 	    if (ipath && ipath[5] != '%')
 		path = ipath;
 	    doputenv(path);
-	    if (ipath)	xfree(ipath);
+	    if (ipath)	free((void *)ipath);
 	}
 
 	for (i = 0; i < numPrefixes; i++) {
@@ -407,7 +408,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
     
     if (script) {
 	if (!rpmIsDebug()) unlink(fn);
-	xfree(fn);
+	free((void *)fn);
     }
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {

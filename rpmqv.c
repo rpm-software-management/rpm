@@ -57,6 +57,8 @@ static int noPgp = 0;
 #include "signature.h"
 #endif
 
+#include "debug.h"
+
 #define GETOPT_DBPATH		1010
 #define GETOPT_SHOWRC		1018
 #define	GETOPT_DEFINEMACRO	1020
@@ -774,7 +776,7 @@ int main(int argc, const char ** argv)
     poptResetContext(optCon);
 
 #ifdef	IAM_RPMQV
-    if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
+    if (qva->qva_queryFormat) free((void *)qva->qva_queryFormat);
     memset(qva, 0, sizeof(*qva));
     qva->qva_source = RPMQV_PACKAGE;
     qva->qva_mode = ' ';
@@ -782,7 +784,7 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMBT
-    if (ba->buildRootOverride) xfree(ba->buildRootOverride);
+    if (ba->buildRootOverride) free((void *)ba->buildRootOverride);
     if (ba->targets) free(ba->targets);
     memset(ba, 0, sizeof(*ba));
     ba->buildMode = ' ';
@@ -921,7 +923,7 @@ int main(int argc, const char ** argv)
 	  case GETOPT_EVALMACRO:
 	  { const char *val = rpmExpand(optArg, NULL);
 	    fprintf(stdout, "%s\n", val);
-	    xfree(val);
+	    free((void *)val);
 	    noUsageMsg = 1;
 	  } break;
 
@@ -1280,7 +1282,7 @@ int main(int argc, const char ** argv)
 	    ec = build(specFile, ba, passPhrase, 0, cookie, rcfile, force, noDeps);
 	    free(cookie);
 	    cookie = NULL;
-	    xfree(specFile);
+	    free((void *)specFile);
 	    specFile = NULL;
 
 	    if (ec)
@@ -1561,11 +1563,11 @@ int main(int argc, const char ** argv)
     urlFreeCache();
 
 #ifdef	IAM_RPMQV
-    if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
+    if (qva->qva_queryFormat) free((void *)qva->qva_queryFormat);
 #endif
 
 #ifdef	IAM_RPMBT
-    if (ba->buildRootOverride) xfree(ba->buildRootOverride);
+    if (ba->buildRootOverride) free((void *)ba->buildRootOverride);
     if (ba->targets) free(ba->targets);
 #endif
 

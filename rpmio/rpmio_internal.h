@@ -9,7 +9,6 @@ static inline int fdFileno(void * cookie);
 
 #include <rpmio.h>
 #include <rpmurl.h>
-#include <assert.h>
 
 /** \ingroup rpmio
  */
@@ -130,8 +129,6 @@ extern int _rpmio_debug;
 
 #define DBGIO(_f, _x)   DBG((_f), RPMIO_DEBUG_IO, _x)
 #define DBGREFS(_f, _x) DBG((_f), RPMIO_DEBUG_REFS, _x)
-
-#define xfree(_p)       free((void *)_p)
 
 #ifdef __cplusplus
 extern "C" {

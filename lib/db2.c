@@ -1,18 +1,18 @@
-#include "system.h"
-
 /** \ingroup db2
  * \file lib/db2.c
  */
 
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
+#include "system.h"
 #include <db2/db.h>
-
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>	/* XXX urlPath proto */
 
 #include "rpmdb.h"
+#include "debug.h"
+
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
@@ -578,7 +578,7 @@ static int db2close(dbiIndex dbi, unsigned int flags)
     dbi->dbi_db = NULL;
 
     if (urlfn)
-	xfree(urlfn);
+	free((void *)urlfn);
 
     db2Free(dbi);
 
@@ -756,7 +756,7 @@ static int db2open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     }
 
     if (urlfn)
-	xfree(urlfn);
+	free((void *)urlfn);
 
     return rc;
 }

@@ -4,12 +4,7 @@
 
 #include "system.h"
 
-#ifdef	__LCLINT__
-#define	ntohl(_x)	(_x)
-#define	ntohs(_x)	(_x)
-#define	htonl(_x)	(_x)
-#define	htons(_x)	(_x)
-#else
+#if !defined(__LCLINT__)
 #include <netinet/in.h>
 #endif	/* __LCLINT__ */
 
@@ -18,6 +13,7 @@
 #include "misc.h"
 #include "rpmlead.h"
 #include "signature.h"
+#include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 
