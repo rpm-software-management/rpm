@@ -448,7 +448,7 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
  * @param te		transaction element
  * @param tag		dependency tag (RPMTAG_PROVIDENAME, RPMTAG_REQUIRENAME)
  */
-void rpmteColorDS(rpmte te, rpmTag tagN)
+void rpmteColorDS(rpmte te, rpmTag tag)
         /*@modifies te @*/;
 
 /**

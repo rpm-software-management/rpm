@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-29 21:35-0500\n"
+"POT-Creation-Date: 2002-12-30 09:42-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2503,15 +2503,15 @@ msgstr ")"
 msgid "OK"
 msgstr "Tamam"
 
-#: lib/rpmds.c:540 lib/rpmds.c:899
+#: lib/rpmds.c:540 lib/rpmds.c:900
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/rpmds.c:540 lib/rpmds.c:899
+#: lib/rpmds.c:540 lib/rpmds.c:900
 msgid "YES"
 msgstr "EVET"
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:865
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2520,13 +2520,13 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:898
+#: lib/rpmds.c:899
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:922
+#: lib/rpmds.c:923
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"

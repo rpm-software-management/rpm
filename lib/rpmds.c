@@ -490,12 +490,12 @@ int_32 rpmdsSetColor(const rpmds ds, int_32 color)
     int_32 ocolor = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
+/*@-bounds@*/
 	if (ds->Color != NULL) {
 	    ocolor = ds->Color[ds->i];
 	    ds->Color[ds->i] = color;
 	}
-/*@=boundsread@*/
+/*@=bounds@*/
     }
     return ocolor;
 }
@@ -518,12 +518,12 @@ int_32 rpmdsSetRefs(const rpmds ds, int_32 refs)
     int_32 orefs = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
+/*@-bounds@*/
 	if (ds->Refs != NULL) {
 	    orefs = ds->Refs[ds->i];
 	    ds->Refs[ds->i] = refs;
 	}
-/*@=boundsread@*/
+/*@=bounds@*/
     }
     return orefs;
 }
@@ -581,7 +581,8 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
 }
 
 /*@-bounds@*/
-static const char ** rpmdsDupArgv(const char ** argv, int argc)
+static /*@null@*/
+const char ** rpmdsDupArgv(/*@null@*/ const char ** argv, int argc)
 	/*@*/
 {
     const char ** av;
@@ -589,6 +590,8 @@ static const char ** rpmdsDupArgv(const char ** argv, int argc)
     int ac = 0;
     char * t;
 
+    if (argv == NULL)
+	return NULL;
     for (ac = 0; ac < argc; ac++) {
 assert(argv[ac] != NULL);
 	nb += strlen(argv[ac]) + 1;
@@ -629,9 +632,8 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->Nt = ods->Nt;
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-/*@-nullderef -nullpass@*/
-assert(ds->EVR != NULL);
-assert(ds->Flags != NULL);
+assert(ods->EVR != NULL);
+assert(ods->Flags != NULL);
 
     nb = (ds->Count+1) * sizeof(*ds->EVR);
     ds->EVR = (ds->h != NULL
@@ -644,7 +646,6 @@ assert(ds->Flags != NULL);
 	? ods->Flags
 	: memcpy(xmalloc(nb), ods->Flags, nb) );
     ds->Ft = ods->Ft;
-/*@=nullderef =nullpass@*/
 
 /*@-compmempass@*/ /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
@@ -731,9 +732,9 @@ save = ods->i;
 	ds->N = N;
 	
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-/*@-nullderef@*/
-assert(ds->EVR != NULL);
-assert(ds->Flags != NULL);
+/*@-nullderef -nullpass -nullptrarith @*/
+assert(ods->EVR != NULL);
+assert(ods->Flags != NULL);
 
 	for (j = ds->Count; j > ds->u; j--)
 	    ds->EVR[j] = ds->EVR[j-1];
@@ -750,7 +751,7 @@ assert(ds->Flags != NULL);
 	Flags[ds->u] = ods->Flags[ods->i];
 	ds->Flags = _free(ds->Flags);
 	ds->Flags = Flags;
-/*@=nullderef@*/
+/*@=nullderef =nullpass =nullptrarith @*/
 
 	ds->i = ds->Count;
 	ds->Count++;

@@ -500,7 +500,8 @@ rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
  */
 void rpmfiBuildFClasses(Header h,
 		/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
-	/*@modifies *fclassp, *fcp @*/;
+	/*@globals fileSystem @*/
+	/*@modifies h, *fclassp, *fcp, fileSystem @*/;
 
 /**
  * Retrieve per-file dependencies from header.
@@ -514,7 +515,8 @@ void rpmfiBuildFClasses(Header h,
  */
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
-	/*@modifies h, *fdepsp, *fcp @*/;
+	/*@globals fileSystem @*/
+	/*@modifies h, *fdepsp, *fcp, fileSystem @*/;
 
 /**
  * Return file type from mode_t.

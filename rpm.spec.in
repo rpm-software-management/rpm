@@ -468,6 +468,7 @@ exit 0
 - python: add fi.FColor() and fi.FClass() methods.
 - calculate dependency color and refernces.
 - python: add ds.Color() and ds.Refs() methods.
+- fix: typo in assertion.
 
 * Sat Dec 28 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.45
 - error if querying with iterator on different sized arrays.

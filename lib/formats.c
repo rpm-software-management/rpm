@@ -683,7 +683,8 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
 static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
+	/*@globals fileSystem @*/
+	/*@modifies h, *type, *data, *count, *freeData, fileSystem @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -705,7 +706,8 @@ static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
 static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@modifies h, *type, *data, *count, *freeData @*/
+	/*@globals fileSystem @*/
+	/*@modifies h, *type, *data, *count, *freeData, fileSystem @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -727,7 +729,8 @@ static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
 static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@modifies h, *type, *data, *count, *freeData @*/
+	/*@globals fileSystem @*/
+	/*@modifies h, *type, *data, *count, *freeData, fileSystem @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {

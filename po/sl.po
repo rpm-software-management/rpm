@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.357 2002/12/30 02:38:21 jbj Exp $
+# $Id: sl.po,v 1.358 2002/12/30 14:50:49 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-29 21:35-0500\n"
+"POT-Creation-Date: 2002-12-30 09:42-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2541,16 +2541,16 @@ msgstr ")"
 msgid "OK"
 msgstr "V REDU"
 
-#: lib/rpmds.c:540 lib/rpmds.c:899
+#: lib/rpmds.c:540 lib/rpmds.c:900
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
 
-#: lib/rpmds.c:540 lib/rpmds.c:899
+#: lib/rpmds.c:540 lib/rpmds.c:900
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:865
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2559,13 +2559,13 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:898
+#: lib/rpmds.c:899
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:922
+#: lib/rpmds.c:923
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"

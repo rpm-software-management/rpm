@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-29 21:35-0500\n"
+"POT-Creation-Date: 2002-12-30 09:42-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2541,29 +2541,29 @@ msgstr ")"
 msgid "OK"
 msgstr "V PORIADKU"
 
-#: lib/rpmds.c:540 lib/rpmds.c:899
+#: lib/rpmds.c:540 lib/rpmds.c:900
 #, fuzzy
 msgid "NO "
 msgstr "NIE JE V PORIADKU"
 
-#: lib/rpmds.c:540 lib/rpmds.c:899
+#: lib/rpmds.c:540 lib/rpmds.c:900
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:865
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:898
+#: lib/rpmds.c:899
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:922
+#: lib/rpmds.c:923
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"

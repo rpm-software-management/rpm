@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-29 21:35-0500\n"
+"POT-Creation-Date: 2002-12-30 09:42-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2581,15 +2581,15 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:540 lib/rpmds.c:899
+#: lib/rpmds.c:540 lib/rpmds.c:900
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:540 lib/rpmds.c:899
+#: lib/rpmds.c:540 lib/rpmds.c:900
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:865
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2598,13 +2598,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします(\"A\"と同じであると仮定して)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:898
+#: lib/rpmds.c:899
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:922
+#: lib/rpmds.c:923
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"

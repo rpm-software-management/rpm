@@ -256,7 +256,7 @@ int_32 rpmdsColor(/*@null@*/ const rpmds ds)
  * @return		previous dependency color
  */
 int_32 rpmdsSetColor(/*@null@*/ const rpmds ds, int_32 color)
-	/*@*/;
+	/*@modifies ds @*/;
 
 /**
  * Return current dependency file refs.
@@ -273,7 +273,7 @@ int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
  * @return		previous dependency refs
  */
 int_32 rpmdsSetRefs(/*@null@*/ const rpmds ds, int_32 refs)
-	/*@*/;
+	/*@modifies ds @*/;
 
 /**
  * Notify of results of dependency match.
