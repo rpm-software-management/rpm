@@ -8,15 +8,15 @@ rpm=/bin/rpm
 #rpmi=mrpm
 #rpmi="strace -o xxx /bin/rpm"
 rpmi="$rpm"
+#rpmi=/usr/lib/rpm/rpmi
 rpmb=/usr/bin/rpmbuild
 rpmq=/usr/bin/rpmquery
 rpmdb=/usr/bin/rpmdb
 rpmk=/usr/bin/rpmsign
 
-pgppubkey=/usr/lib/rpm/RPM-PGP-KEY
-gpgpubkey=/usr/lib/rpm/RPM-GPG-KEY
-betapubkey=/usr/lib/rpm/BETA-GPG-KEY
-jbjpubkey=/usr/lib/rpm/JBJ-GPG-KEY
+pgppubkey="`echo /usr/share/doc/rpm-4*/RPM-PGP-KEY`"
+gpgpubkey="`echo /usr/share/doc/rpm-4*/RPM-GPG-KEY`"
+betapubkey="`echo /usr/share/doc/rpm-4*/BETA-GPG-KEY`"
 
 #rpm=/X/src/rpm402/rpm
 #rpmb=/X/src/rpm402/rpmb
@@ -28,9 +28,9 @@ jbjpubkey=/usr/lib/rpm/JBJ-GPG-KEY
 #rpmq=$rpm
 #rpmdb=$rpm
 
-dist=7.0
+dist=8.0
 type=min
-arch=`$rpm --eval '%{_arch}'`
+arch=`$rpm --eval '%{_arch}' | sed -e 's/i686/i386/'`
 
 top=`pwd`
 root=$top/$dist
@@ -59,6 +59,7 @@ $min0glob
 bzip2-[01]
 bzip2-libs-
 chkconfig-
+coreutils-
 db1-1
 db2-2
 db3-3
@@ -114,6 +115,7 @@ bdflush-
 console-tools-
 cyrus-sasl-[12]
 cyrus-sasl-md5-
+elfutils-libelf-
 glib2-2
 gmp-[234]
 initscripts-
@@ -123,6 +125,7 @@ kbd-
 kernel-2
 krb5-libs-
 libuser-
+libelf-*
 losetup-
 lvm-
 mkinitrd-
@@ -132,6 +135,7 @@ openldap-2
 openssl-0
 pam-0
 pamconfig-
+redhat-release-
 sh-utils-
 sysklogd-
 usermode-1
@@ -178,6 +182,7 @@ gcc-c++-[23]
 gettext-
 krb5-configs-
 libgcc-3
+libgcj-3
 libstdc++-
 libtool-
 make-
@@ -186,31 +191,35 @@ ncurses-devel-
 patch-
 perl-5
 perl-CGI-
+perl-Filter-
+perl-Parse-RecDescent-
 python-[12]
 rpm-build-
 file-3
 tcsh-
+zip-
 "
 
 mozillaglob="
 $buildglob
-mozilla-
 compat-libstdc++-7
-indexhtml-
-redhat-menus-
-gtk+-1
-XFree86-libs-[34]
-ORBit-0
-fontconfig-0
-freetype-2
-XFree86-Mesa-libGL-
-libpng-
-libjpeg-
-vorbis-tools-
-libvorbis-
-libogg-
-libao-0
 curl-
+fontconfig-2
+freetype-2
+gtk+-1
+indexhtml-
+libao-0
+libjpeg-
+libpng-
+libogg-
+libvorbis-
+mozilla-
+ORBit-0
+redhat-menus-
+vorbis-tools-
+XFree86-Mesa-libGL-
+XFree86-libs-[34]
+XFree86-libs-data-
 "
 
 classes="min0 min1 min2 base devel build mozilla"
@@ -283,10 +292,11 @@ EOF
 	$dbg $sudo touch $root/etc/fstab
 	$dbg $sudo touch $root/etc/mtab
 	$dbg $sudo $rpmdb $rc --root $root --initdb
-#	$dbg $sudo $rpmk $rc --root $root --import $pgppubkey
-#	$dbg $sudo $rpmk $rc --root $root --import $gpgpubkey
-#	$dbg $sudo $rpmk $rc --root $root --import $betapubkey
-#	$dbg $sudo $rpmk $rc --root $root --import $jbjpubkey
+	if [ X"`$rpm --version`" = X"RPM version 4.2" ]; then
+	    $dbg $sudo $rpmk $rc --root $root --import $pgppubkey
+	    $dbg $sudo $rpmk $rc --root $root --import $gpgpubkey
+	    $dbg $sudo $rpmk $rc --root $root --import $betapubkey
+	fi
 	;;
     --savedb)
 	( $dbg cd $root/var/lib && $dbg $sudo tar czvf rpmdb.tar.gz rpm ; )
