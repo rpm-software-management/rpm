@@ -28,6 +28,10 @@
 
 #define INDEX_MALLOC_SIZE 8
 
+#define PARSER_BEGIN 	0
+#define PARSER_IN_ARRAY 1
+#define PARSER_IN_EXPR  2
+
 static unsigned char header_magic[4] = { 0x8e, 0xad, 0xe8, 0x01 };
 
 /* handy -- this tells us alignments for defined elements as well */
@@ -85,7 +89,7 @@ struct extensionCache {
 };
 
 struct sprintfToken {
-    enum { PTOK_NONE = 0, PTOK_TAG, PTOK_ARRAY, PTOK_STRING } type;
+    enum { PTOK_NONE = 0, PTOK_TAG, PTOK_ARRAY, PTOK_STRING, PTOK_NEST } type;
     union {
 	struct {
 	    struct sprintfToken * format;
@@ -96,6 +100,10 @@ struct sprintfToken {
 	    char * string;
 	    int len;
 	} string;
+	struct {
+	    struct sprintfToken * format;
+	    int numTokens;
+	} nest;
     } u;
 };
 
@@ -107,15 +115,22 @@ static int dataLength(int_32 type, void * p, int_32 count, int onDisk);
 static void copyEntry(struct indexEntry * entry, 
 			int_32 *type, void **p, int_32 *c);
 static void freeFormat(struct sprintfToken * format, int num);
-int parseFormat(char * format, const struct headerTagTableEntry * tags,
-		const struct headerSprintfExtension * extentions,
-		struct sprintfToken ** formatPtr, int * numTokensPtr,
-		char ** endPtr, char ** error);
+static void findTag(char * name, const struct headerTagTableEntry * tags, 
+		    const struct headerSprintfExtension * extensions,
+		    const struct headerTagTableEntry ** tagMatch,
+		    const struct headerSprintfExtension ** extMatch);
+static int parseExpression(struct sprintfToken * token, char * str, 
+		           const struct headerTagTableEntry * tags, 
+		           const struct headerSprintfExtension * extensions,
+		           char ** endPtr, char ** error);
+static int parseFormat(char * format, const struct headerTagTableEntry * tags,
+		       const struct headerSprintfExtension * extentions,
+		       struct sprintfToken ** formatPtr, int * numTokensPtr,
+		       char ** endPtr, int state, char ** error);
 static char * singleSprintf(Header h, struct sprintfToken * token,
 			    const struct headerSprintfExtension * extensions,
 			    struct extensionCache * extCache, int element);
 static char escapedChar(const char ch);
-static char * escapeString(const char * src);
 static char * formatValue(struct sprintfTag * tag, Header h, 
 			  const struct headerSprintfExtension * extensions,
 			  struct extensionCache * extcache, int element);
@@ -1096,15 +1111,151 @@ static void freeFormat(struct sprintfToken * format, int num) {
     for (i = 0; i < num; i++) {
 	if (format[i].type == PTOK_ARRAY) 
 	    freeFormat(format[i].u.array.format, format[i].u.array.numTokens);
+	if (format[i].type == PTOK_NEST) 
+	    freeFormat(format[i].u.nest.format, format[i].u.nest.numTokens);
     }
     free(format);
 }
 
-int parseFormat(char * str, const struct headerTagTableEntry * tags,
-		const struct headerSprintfExtension * extensions,
-		struct sprintfToken ** formatPtr, int * numTokensPtr,
-		char ** endPtr, char ** error) {
-    char * chptr, * start, * next, * tagname;
+static void findTag(char * name, const struct headerTagTableEntry * tags, 
+		    const struct headerSprintfExtension * extensions,
+		    const struct headerTagTableEntry ** tagMatch,
+		    const struct headerSprintfExtension ** extMatch) {
+    const struct headerTagTableEntry * entry;
+    const struct headerSprintfExtension * ext;
+    char * tagname;
+    int i;
+
+    *tagMatch = NULL;
+    *extMatch = NULL;
+
+    if (strncmp("RPMTAG_", name, 7)) {
+	tagname = alloca(strlen(name) + 10);
+	strcpy(tagname, "RPMTAG_");
+	strcat(tagname, name);
+    } else {
+	tagname = name;
+    }
+
+    for (entry = tags; entry->name; entry++)
+	if (!strcasecmp(entry->name, tagname)) break;
+
+    if (entry->name) {
+	*tagMatch = entry;
+    } else {
+	ext = extensions, i =0;
+	while (ext->type != HEADER_EXT_LAST) {
+	    if (ext->type == HEADER_EXT_TAG && 
+		!strcasecmp(ext->name, tagname)) {
+		break;
+	    }
+
+	    if (ext->type == HEADER_EXT_MORE)
+		ext = ext->u.more;
+	    else
+		ext++;
+	    i++;
+	}
+
+	if (ext->type == HEADER_EXT_TAG) {
+	    *extMatch = ext;
+	}
+    }
+}
+
+static int parseExpression(struct sprintfToken * token, char * str, 
+		           const struct headerTagTableEntry * tags, 
+		           const struct headerSprintfExtension * extensions,
+		           char ** endPtr, char ** error) {
+    char * chptr, * end;
+    struct sprintfToken ifpart, elsepart;
+    const struct headerTagTableEntry * entry;
+    const struct headerSprintfExtension * ext;
+
+    chptr = str;
+    while (*chptr && *chptr != '?') chptr++;
+
+    if (*chptr != '?') {
+	*error = "? expected in expression";
+	return 1;
+    }
+
+    *chptr++ = '\0';;
+
+    if (*chptr != '{') {
+	*error = "{ exected after ? in expression";
+	return 1;
+    }
+
+    chptr++;
+
+    if (parseFormat(chptr, tags, extensions, &ifpart.u.nest.format, 
+		    &ifpart.u.nest.numTokens, &end, PARSER_IN_EXPR, error)) 
+	return 1;
+    if (!*end) {
+	*error = "} expected in expression";
+	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
+	return 1;
+    }
+
+    chptr = end;
+    if (*chptr != ':') {
+	*error = ": expected following ? subexpression";
+	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
+	return 1;
+    }
+
+    chptr++;
+
+    if (*chptr != '{') {
+	*error = "{ exected after : in expression";
+	return 1;
+    }
+
+    chptr++;
+
+    if (parseFormat(chptr, tags, extensions, &elsepart.u.nest.format, 
+		    &elsepart.u.nest.numTokens, &end, PARSER_IN_EXPR, error)) 
+	return 1;
+    if (!*end) {
+	*error = "} expected in expression";
+	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
+	freeFormat(elsepart.u.nest.format, elsepart.u.nest.numTokens);
+	return 1;
+    }
+
+    chptr = end;
+    if (*chptr != '|') {
+	*error = "| expected at end of expression";
+	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
+	freeFormat(elsepart.u.nest.format, elsepart.u.nest.numTokens);
+	return 1;
+    }
+	
+    chptr++;
+
+    *endPtr = chptr;
+	
+    findTag(str, tags, extensions, &entry, &ext);
+		
+    if (entry || ext) {
+	freeFormat(elsepart.u.nest.format, elsepart.u.nest.numTokens);
+	*token = ifpart;
+    } else {
+	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
+	*token = elsepart;
+    }
+
+    token->type = PTOK_NEST;
+
+    return 0;
+}
+
+static int parseFormat(char * str, const struct headerTagTableEntry * tags,
+		       const struct headerSprintfExtension * extensions,
+		       struct sprintfToken ** formatPtr, int * numTokensPtr,
+		       char ** endPtr, int state, char ** error) {
+    char * chptr, * start, * next, * dst;
     struct sprintfToken * format;
     int numTokens;
     int currToken;
@@ -1120,120 +1271,109 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
     numTokens = numTokens * 2 + 1;
 
     format = calloc(sizeof(*format), numTokens);
+    if (endPtr) *endPtr = NULL;
 
-    start = str;
+    dst = start = str;
     currToken = -1;
     while (*start && !done) {
 	switch (*start) {
 	  case '%':
 	    currToken++;
+	    *dst++ = '\0';
+	    start++;
 
-	    *start++ = '\0';
-	    format[currToken].u.tag.format = start;
-	    format[currToken].u.tag.pad = 0;
-	    format[currToken].u.tag.justOne = 0;
-	    format[currToken].u.tag.arrayCount = 0;
+	    if (*start == '|') {
+		char * newEnd;
 
-	    chptr = start;
-	    while (*chptr && *chptr != '{') chptr++;
-	    if (!*chptr) {
-		*error = "missing { after %";
-		freeFormat(format, numTokens);
-		return 1;
-	    }
-
-	    *chptr++ = '\0';
-
-	    while (start < chptr) {
-		if (isdigit(*start)) {
-		    i = strtoul(start, &start, 10);
-		    format[currToken].u.tag.pad += i;
-		} else {
-		    start++;
-		}
-	    }
-
-	    if (*start == '=') {
-		format[currToken].u.tag.justOne = 1;
 		start++;
-	    } else if (*start == '#') {
-		format[currToken].u.tag.justOne = 1;
-		format[currToken].u.tag.arrayCount = 1;
-		start++;
-	    }
-
-	    next = start;
-	    while (*next && *next != '}') next++;
-	    if (!*next) {
-		*error = "missing } after %{";
-		freeFormat(format, numTokens);
-		return 1;
-	    }
-	    *next++ = '\0';
-
-	    chptr = start;
-	    while (*chptr && *chptr != ':') chptr++;
-
-	    if (*chptr) {
-		*chptr++ = '\0';
-		if (!*chptr) {
-		    *error = "empty tag format";
+		if (parseExpression(format + currToken, start, tags, 
+				    extensions, &newEnd, error)) {
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
-		format[currToken].u.tag.type = chptr;
+		start = newEnd;
 	    } else {
-		format[currToken].u.tag.type = NULL;
-	    }
-	
-	    if (!*start) {
-		*error = "empty tag name";
-		freeFormat(format, numTokens);
-		return 1;
-	    }
+		format[currToken].u.tag.format = start;
+		format[currToken].u.tag.pad = 0;
+		format[currToken].u.tag.justOne = 0;
+		format[currToken].u.tag.arrayCount = 0;
 
-	    if (strncmp("RPMTAG_", start, 7)) {
-		tagname = malloc(strlen(start) + 10);
-		strcpy(tagname, "RPMTAG_");
-		strcat(tagname, start);
-	    } else {
-		tagname = strdup(start);
-	    }
-
-	    for (entry = tags; entry->name; entry++)
-		if (!strcasecmp(entry->name, tagname)) break;
-
-	    if (!entry->name) {
-		ext = extensions, i =0;
-		while (ext->type != HEADER_EXT_LAST) {
-		    if (ext->type == HEADER_EXT_TAG && 
-			!strcasecmp(ext->name, tagname)) {
-			break;
-		    }
-
-		    if (ext->type == HEADER_EXT_MORE)
-			ext = ext->u.more;
-		    else
-			ext++;
-		    i++;
+		chptr = start;
+		while (*chptr && *chptr != '{') chptr++;
+		if (!*chptr) {
+		    *error = "missing { after %";
+		    freeFormat(format, numTokens);
+		    return 1;
 		}
 
-		if (ext->type != HEADER_EXT_TAG) {
+		*chptr++ = '\0';
+
+		while (start < chptr) {
+		    if (isdigit(*start)) {
+			i = strtoul(start, &start, 10);
+			format[currToken].u.tag.pad += i;
+		    } else {
+			start++;
+		    }
+		}
+
+		if (*start == '=') {
+		    format[currToken].u.tag.justOne = 1;
+		    start++;
+		} else if (*start == '#') {
+		    format[currToken].u.tag.justOne = 1;
+		    format[currToken].u.tag.arrayCount = 1;
+		    start++;
+		}
+
+		next = start;
+		while (*next && *next != '}') next++;
+		if (!*next) {
+		    *error = "missing } after %{";
+		    freeFormat(format, numTokens);
+		    return 1;
+		}
+		*next++ = '\0';
+
+		chptr = start;
+		while (*chptr && *chptr != ':') chptr++;
+
+		if (*chptr) {
+		    *chptr++ = '\0';
+		    if (!*chptr) {
+			*error = "empty tag format";
+			freeFormat(format, numTokens);
+			return 1;
+		    }
+		    format[currToken].u.tag.type = chptr;
+		} else {
+		    format[currToken].u.tag.type = NULL;
+		}
+	    
+		if (!*start) {
+		    *error = "empty tag name";
+		    freeFormat(format, numTokens);
+		    return 1;
+		}
+
+		findTag(start, tags, extensions, &entry, &ext);
+
+		if (entry) {
+		    format[currToken].u.tag.ext = NULL;
+		    format[currToken].u.tag.tag = entry->val;
+		} else if (ext) {
+		    format[currToken].u.tag.ext = ext->u.tagFunction;
+		    format[currToken].u.tag.extNum = ext - extensions;
+		} else {
 		    *error = "unknown tag";
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
 
-		format[currToken].u.tag.ext = ext->u.tagFunction;
-		format[currToken].u.tag.extNum = i;
-	    } else {
-		format[currToken].u.tag.ext = NULL;
-		format[currToken].u.tag.tag = entry->val;
+		format[currToken].type = PTOK_TAG;
+
+		start = next;
 	    }
-
-	    format[currToken].type = PTOK_TAG;
-
-	    start = next;
 
 	    break;
 
@@ -1244,7 +1384,13 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if (parseFormat(start, tags, extensions, 
 			    &format[currToken].u.array.format,
 			    &format[currToken].u.array.numTokens,
-			    &start, error)) {
+			    &start, PARSER_IN_ARRAY, error)) {
+		freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    if (!start) {
+		*error = "] expected at end of array";
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1254,8 +1400,13 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    break;
 
 	  case ']':
-	    if (!endPtr) {
-		*error = "unexpected ]";
+	  case '}':
+	    if ((*start == ']' && state != PARSER_IN_ARRAY) ||
+	        (*start == '}' && state != PARSER_IN_EXPR)) {
+		if (*start == ']')
+		    *error = "unexpected ]";
+		else
+		    *error = "unexpected }";
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1268,11 +1419,19 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if (currToken < 0 || format[currToken].type != PTOK_STRING) {
 		currToken++;
 		format[currToken].type = PTOK_STRING;
-		format[currToken].u.string.string = start;
+		dst = format[currToken].u.string.string = start;
 	    }
-	    start++;
+
+	    if (*start == '\\') {
+		start++;
+		*dst++ = escapedChar(*start++);
+	    } else {
+		*dst++ = *start++;
+	    }
 	}
     }
+
+    *dst = '\0';
 
     currToken++;
     for (i = 0; i < currToken; i++) {
@@ -1455,6 +1614,27 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 			  token->u.tag.justOne ? 0 : element);
 	break;
 
+      case PTOK_NEST:
+	alloced = token->u.nest.numTokens * 20;
+	val = malloc(alloced);
+	*val = '\0';
+	len = 0;
+
+	for (i = 0; i < token->u.nest.numTokens; i++) {
+	    thisItem = singleSprintf(h, token->u.nest.format + i, 
+				     extensions, extCache, i);
+	    thisItemLen = strlen(thisItem);
+	    if ((thisItemLen + len) >= alloced) {
+		alloced = (thisItemLen + len) + 200;
+		val = realloc(val, alloced);	
+	    }
+	    strcat(val, thisItem);
+	    len += thisItemLen;
+	    free(thisItem);
+	}
+
+	break;
+
       case PTOK_ARRAY:
 	numElements = -1;
 	for (i = 0; i < token->u.array.numTokens; i++) {
@@ -1508,26 +1688,6 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
     return val;
 }
 
-static char * escapeString(const char * src) {
-    char * rc = malloc(strlen(src) + 1);
-    char * dst;
-
-    dst = rc;
-
-    while (*src) {
-	if (*src == '\\') { 
-	    src++;
-	    *dst++ = escapedChar(*src++);
-	} else {
-	    *dst++ = *src++;
-	}
-    }
-
-    *dst = '\0';
-
-    return rc;
-}
-
 static struct extensionCache * allocateExtensionCache(
 		     const struct headerSprintfExtension * extensions) {
     const struct headerSprintfExtension * ext = extensions;
@@ -1558,9 +1718,11 @@ char * headerSprintf(Header h, const char * origFmt,
     int i;
     struct extensionCache * extCache;
  
-    fmtString = escapeString(origFmt);
+    /*fmtString = escapeString(origFmt);*/
+    fmtString = strdup(origFmt);
    
-    if (parseFormat(fmtString, tags, extensions, &format, &numTokens, NULL,			    error)) {
+    if (parseFormat(fmtString, tags, extensions, &format, &numTokens, 
+		    NULL, PARSER_BEGIN, error)) {
 	free(fmtString);
 	return NULL;
     }

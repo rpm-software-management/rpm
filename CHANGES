@@ -1,6 +1,7 @@
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
 	- repaired %{#TAG} query format
+	- implemented ternary operator as query expression
 
 2.4.1 -> 2.4.2:
 	- completely rewrote queryformat code

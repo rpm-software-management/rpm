@@ -121,3 +121,17 @@ name after the tag name. Here are some examples:
 
 The :shescape may be used on plain strings to get a string which can pass
 through a single level of shell and give the original string.
+
+Query Expressions
+-----------------
+
+Simple conditionals may be evaluated through query expressions. Expressions
+are delimited by %|...|. The only type of expression currently supported
+is a C-like ternary conditional, which provides simple if/then/else
+conditions. For example, the following query format display "present" if
+the SOMETAG tag is present, and "missing" otherwise:
+
+    %|SOMETAG?{present}:{missing}|
+
+Notice that the subformats "present" and "missing" must be inside of curly
+braces.
