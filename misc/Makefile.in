@@ -137,22 +137,23 @@ EXTRA_DIST =  	alloca.c	error.c		fakefork.c	fnmatch.c		getcwd.c	getmntent.c	getw
 noinst_HEADERS =  	error.h		fnmatch.h	glob.h					libgettext.h	message.h	po-lex.h	str-list.h		fstrcmp.h
 
 
-noinst_LIBRARIES = libmisc.a
+noinst_LTLIBRARIES = libmisc.la
 
-libmisc_a_SOURCES = 
+libmisc_la_SOURCES = 
 
-libmisc_a_LIBADD = @LIBOBJS@ @ALLOCA@
-libmisc_a_DEPENDENCIES = $(libmisc_a_LIBADD)
+libmisc_la_LIBADD = @LIBOBJS@ @ALLOCA@
+libmisc_la_DEPENDENCIES = $(libmisc_la_LIBADD)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-LIBRARIES =  $(noinst_LIBRARIES)
+LTLIBRARIES =  $(noinst_LTLIBRARIES)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
-libmisc_a_OBJECTS = 
+libmisc_la_LDFLAGS = 
+libmisc_la_OBJECTS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -176,8 +177,8 @@ DEP_FILES =  .deps/alloca.P .deps/error.P .deps/fnmatch.P .deps/getcwd.P \
 .deps/stpncpy.P .deps/strcasecmp.P .deps/strcspn.P .deps/strdup.P \
 .deps/strerror.P .deps/strncasecmp.P .deps/strspn.P .deps/strstr.P \
 .deps/strtol.P .deps/strtoul.P
-SOURCES = $(libmisc_a_SOURCES)
-OBJECTS = $(libmisc_a_OBJECTS)
+SOURCES = $(libmisc_la_SOURCES)
+OBJECTS = $(libmisc_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -190,14 +191,14 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 
-mostlyclean-noinstLIBRARIES:
+mostlyclean-noinstLTLIBRARIES:
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
 
-distclean-noinstLIBRARIES:
+distclean-noinstLTLIBRARIES:
 
-maintainer-clean-noinstLIBRARIES:
+maintainer-clean-noinstLTLIBRARIES:
 
 .s.o:
 	$(COMPILE) -c $<
@@ -231,10 +232,8 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-libmisc.a: $(libmisc_a_OBJECTS) $(libmisc_a_DEPENDENCIES)
-	-rm -f libmisc.a
-	$(AR) cru libmisc.a $(libmisc_a_OBJECTS) $(libmisc_a_LIBADD)
-	$(RANLIB) libmisc.a
+libmisc.la: $(libmisc_la_OBJECTS) $(libmisc_la_DEPENDENCIES)
+	$(LINK)  $(libmisc_la_LDFLAGS) $(libmisc_la_OBJECTS) $(libmisc_la_LIBADD) $(LIBS)
 
 tags: TAGS
 
@@ -336,7 +335,7 @@ install-am: all-am
 install: install-am
 uninstall-am:
 uninstall: uninstall-am
-all-am: Makefile $(LIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -352,25 +351,25 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean-am:  mostlyclean-noinstLIBRARIES mostlyclean-compile \
+mostlyclean-am:  mostlyclean-noinstLTLIBRARIES mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
 		mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-noinstLIBRARIES clean-compile clean-libtool clean-tags \
-		clean-depend clean-generic mostlyclean-am
+clean-am:  clean-noinstLTLIBRARIES clean-compile clean-libtool \
+		clean-tags clean-depend clean-generic mostlyclean-am
 
 clean: clean-am
 
-distclean-am:  distclean-noinstLIBRARIES distclean-compile \
+distclean-am:  distclean-noinstLTLIBRARIES distclean-compile \
 		distclean-libtool distclean-tags distclean-depend \
 		distclean-generic clean-am
 	-rm -f libtool
 
 distclean: distclean-am
 
-maintainer-clean-am:  maintainer-clean-noinstLIBRARIES \
+maintainer-clean-am:  maintainer-clean-noinstLTLIBRARIES \
 		maintainer-clean-compile maintainer-clean-libtool \
 		maintainer-clean-tags maintainer-clean-depend \
 		maintainer-clean-generic distclean-am
@@ -379,8 +378,8 @@ maintainer-clean-am:  maintainer-clean-noinstLIBRARIES \
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: mostlyclean-noinstLIBRARIES distclean-noinstLIBRARIES \
-clean-noinstLIBRARIES maintainer-clean-noinstLIBRARIES \
+.PHONY: mostlyclean-noinstLTLIBRARIES distclean-noinstLTLIBRARIES \
+clean-noinstLTLIBRARIES maintainer-clean-noinstLTLIBRARIES \
 mostlyclean-compile distclean-compile clean-compile \
 maintainer-clean-compile mostlyclean-libtool distclean-libtool \
 clean-libtool maintainer-clean-libtool tags mostlyclean-tags \

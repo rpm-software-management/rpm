@@ -11,9 +11,11 @@ SUBDIRS = popt build lib po intl misc tools scripts tests .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
 
-tbd = `pwd`/$(top_builddir)
+mylibs=	$(top_builddir)/build/librpmbuild.la \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/popt/libpopt.la
 
-LDFLAGS = -all@LDFLAGS_STATIC@ -L$(tbd)/build -L$(tbd)/lib -L$(tbd)/popt -L$(tbd)/misc
+LDFLAGS = -all@LDFLAGS_STATIC@
 
 rpmbindir = $(subst usr/bin,bin,$(bindir))
 rpmbin_PROGRAMS = rpm
@@ -33,13 +35,11 @@ noinst_HEADERS = \
 	install.h	system.h	url.h	\
 	verify.h
 
-mylibs = ./build/librpmbuild.a ./lib/librpm.a ./popt/libpopt.a
-
 rpm_SOURCES =		build.c checksig.c ftp.c install.c rpm.c url.c \
 			verify.c
-rpm_LDADD =		-lrpmbuild -lrpm -lpopt @LIBMISC@
+rpm_LDADD =		$(mylibs) @LIBMISC@
 
-$(PROGRAMS): $(mylibs)
+$(PROGRAMS): 		$(mylibs) @LIBMISC@
 
 include ./Makefile.inc
 
@@ -50,10 +50,10 @@ lclint:
 CVSTAG = r$(subst .,-,$(VERSION))
 
 rpm2cpio_SOURCES =	rpm2cpio.c
-rpm2cpio_LDADD =	-lrpmbuild -lrpm -lpopt
+rpm2cpio_LDADD =	$(mylibs)
 
 rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
-rpmconvert_LDADD =	-lrpmbuild -lrpm -lpopt -lgdbm
+rpmconvert_LDADD =	$(mylibs) -lgdbm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/var/lib/rpm

@@ -2,3 +2,6 @@
 .depend
 Makefile
 tagtable.c
+.libs
+*.la
+*.lo

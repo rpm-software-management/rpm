@@ -12,8 +12,8 @@ noinst_HEADERS = \
 	lookup.h md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
 	rpmdb.h rpmlead.h signature.h tread.h
 
-lib_LIBRARIES = librpm.a
-librpm_a_SOURCES = \
+lib_LTLIBRARIES = librpm.la
+librpm_la_SOURCES = \
 	cpio.c dbindex.c depends.c falloc.c \
 	formats.c fs.c header.c install.c \
 	lookup.c macro.c md5.c md5sum.c \
@@ -38,4 +38,4 @@ BUILT_SOURCES = tagtable.c
 .PHONY:	lclint
 .PHONY:	lclint
 lclint:
-	lclint ${DEFS} ${INCLUDES} ${librpm_a_SOURCES}
+	lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES}

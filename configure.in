@@ -445,7 +445,7 @@ if test "$LCHOWN" = no; then
     dnl Does chown() follow symlinks? This should be a good enough test.
     AC_MSG_CHECKING(whether chown() follows symlinks)
     AC_ARG_ENABLE([broken-chown],
-    [  --enable-broken-chown  this system's chown follows symbolic links], 
+    [  --enable-broken-chown   this system's chown follows symbolic links], 
 	    result=$enableval, result=unknown)
     if echo "$build" | egrep "(aix)|(hpux)|(linux)" > /dev/null ; then
 	result=yes

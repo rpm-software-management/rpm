@@ -18,7 +18,7 @@ argv[] arrays using shell-like rules.
 
 %prep
 %setup -q
-CFLAGS="$RPM_OPT_FLAGS" ./autogen.sh --prefix=/usr
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr --disable-shared
 
 %build
 make

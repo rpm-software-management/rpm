@@ -83,8 +83,6 @@ EXTRA_DIST = CHANGES autogen.sh findme.h $(man_MANS) popt.spec poptint.h 	testit
 
 SUBDIRS = po
 
-tbd = `pwd`/$(top_builddir)
-LDFLAGS = -L$(tbd)
 INCLUDES = -I$(top_srcdir)
 
 noinst_INCLUDES = findme.h poptint.h

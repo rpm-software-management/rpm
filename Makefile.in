@@ -13,9 +13,6 @@
 # Top level Makefile for rpm
 
 
-# Generated automatically from Makefile.inc.in by configure.
-
-
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -123,9 +120,10 @@ SUBDIRS = popt build lib po intl misc tools scripts tests .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
 
-tbd = `pwd`/$(top_builddir)
+mylibs = $(top_builddir)/build/librpmbuild.la 	$(top_builddir)/lib/librpm.la 	$(top_builddir)/popt/libpopt.la
 
-LDFLAGS = -all@LDFLAGS_STATIC@ -L$(tbd)/build -L$(tbd)/lib -L$(tbd)/popt -L$(tbd)/misc
+
+LDFLAGS = -all@LDFLAGS_STATIC@
 
 rpmbindir = $(subst usr/bin,bin,$(bindir))
 rpmbin_PROGRAMS = rpm
@@ -143,11 +141,9 @@ config_SCRIPTS = find-provides find-requires mkinstalldirs
 noinst_HEADERS =  	acconfig.h	build.h		checksig.h	ftp.h		install.h	system.h	url.h		verify.h
 
 
-mylibs = ./build/librpmbuild.a ./lib/librpm.a ./popt/libpopt.a
-
 rpm_SOURCES = build.c checksig.c ftp.c install.c rpm.c url.c 			verify.c
 
-rpm_LDADD = -lrpmbuild -lrpm -lpopt @LIBMISC@
+rpm_LDADD = $(mylibs) @LIBMISC@
 
 CPP = gcc -E
 prefix = /usr
@@ -174,10 +170,10 @@ CC = gcc
 CVSTAG = r$(subst .,-,$(VERSION))
 
 rpm2cpio_SOURCES = rpm2cpio.c
-rpm2cpio_LDADD = -lrpmbuild -lrpm -lpopt
+rpm2cpio_LDADD = $(mylibs)
 
 rpmconvert_SOURCES = convertdb.c oldrpmdb.c
-rpmconvert_LDADD = -lrpmbuild -lrpm -lpopt -lgdbm
+rpmconvert_LDADD = $(mylibs) -lgdbm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
@@ -188,13 +184,16 @@ PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS) $(rpmbin_PROGRAMS)
 DEFS = @DEFS@ -I. -I$(srcdir) -I.
 CPPFLAGS = @CPPFLAGS@
 rpm2cpio_OBJECTS =  rpm2cpio.o
-rpm2cpio_DEPENDENCIES = 
+rpm2cpio_DEPENDENCIES =  $(top_builddir)/build/librpmbuild.la \
+$(top_builddir)/lib/librpm.la $(top_builddir)/popt/libpopt.la
 rpm2cpio_LDFLAGS = 
 rpmconvert_OBJECTS =  convertdb.o oldrpmdb.o
-rpmconvert_DEPENDENCIES = 
+rpmconvert_DEPENDENCIES =  $(top_builddir)/build/librpmbuild.la \
+$(top_builddir)/lib/librpm.la $(top_builddir)/popt/libpopt.la
 rpmconvert_LDFLAGS = 
 rpm_OBJECTS =  build.o checksig.o ftp.o install.o rpm.o url.o verify.o
-rpm_DEPENDENCIES = 
+rpm_DEPENDENCIES =  $(top_builddir)/build/librpmbuild.la \
+$(top_builddir)/lib/librpm.la $(top_builddir)/popt/libpopt.la
 rpm_LDFLAGS = 
 SCRIPTS =  $(bin_SCRIPTS) $(config_SCRIPTS)
 
@@ -772,7 +771,7 @@ installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
-$(PROGRAMS): $(mylibs)
+$(PROGRAMS): 		$(mylibs) @LIBMISC@
 
 .PHONY:	lclint
 lclint:

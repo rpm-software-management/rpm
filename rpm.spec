@@ -29,7 +29,7 @@ intimate knowledge of RPM packages.
 %setup -q
 
 %build
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr --disable-shared
 make
 
 %install

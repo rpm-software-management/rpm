@@ -16,3 +16,7 @@ test1
 libtool
 ltconfig
 ltmain.sh
+.libs
+*.la
+*.lo
+popt-*.tar.gz

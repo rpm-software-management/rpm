@@ -131,20 +131,21 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl -I$(top_srcdir)/misc @INCPATH@
 
-tbd = `pwd`/$(top_builddir)
-LDFLAGS = -L$(tbd)/popt -L$(tbd)/build -L$(tbd)/lib -L$(tbd)/misc
-LDADD = -lrpm
-
 EXTRA_DIST = fstrcmp.c message.c str-list.c rpmchecksig.c
+
+mylibs = $(top_builddir)/build/librpmbuild.la 	$(top_builddir)/lib/librpm.la 	$(top_builddir)/popt/libpopt.la
+
+
+LDADD = $(top_builddir)/lib/librpm.la
 
 noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb 	rpmgettext rpmputtext
 
 
 rpmgettext_SOURCES = rpmgettext.c
-rpmgettext_LDADD = -lrpmbuild -lpopt -lrpm @LIBMISC@
+rpmgettext_LDADD = $(mylibs) @LIBMISC@
 
 rpmputtext_SOURCES = rpmgettext.c
-rpmputtext_LDADD = -lrpmbuild -lpopt -lrpm @LIBMISC@
+rpmputtext_LDADD = $(mylibs) @LIBMISC@
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -153,41 +154,44 @@ PROGRAMS =  $(noinst_PROGRAMS)
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
 rpmlead_SOURCES = rpmlead.c
 rpmlead_OBJECTS =  rpmlead.o
 rpmlead_LDADD = $(LDADD)
-rpmlead_DEPENDENCIES = 
+rpmlead_DEPENDENCIES =  $(top_builddir)/lib/librpm.la
 rpmlead_LDFLAGS = 
 rpmheader_SOURCES = rpmheader.c
 rpmheader_OBJECTS =  rpmheader.o
 rpmheader_LDADD = $(LDADD)
-rpmheader_DEPENDENCIES = 
+rpmheader_DEPENDENCIES =  $(top_builddir)/lib/librpm.la
 rpmheader_LDFLAGS = 
 rpmarchive_SOURCES = rpmarchive.c
 rpmarchive_OBJECTS =  rpmarchive.o
 rpmarchive_LDADD = $(LDADD)
-rpmarchive_DEPENDENCIES = 
+rpmarchive_DEPENDENCIES =  $(top_builddir)/lib/librpm.la
 rpmarchive_LDFLAGS = 
 rpmsignature_SOURCES = rpmsignature.c
 rpmsignature_OBJECTS =  rpmsignature.o
 rpmsignature_LDADD = $(LDADD)
-rpmsignature_DEPENDENCIES = 
+rpmsignature_DEPENDENCIES =  $(top_builddir)/lib/librpm.la
 rpmsignature_LDFLAGS = 
 dump_SOURCES = dump.c
 dump_OBJECTS =  dump.o
 dump_LDADD = $(LDADD)
-dump_DEPENDENCIES = 
+dump_DEPENDENCIES =  $(top_builddir)/lib/librpm.la
 dump_LDFLAGS = 
 dumpdb_SOURCES = dumpdb.c
 dumpdb_OBJECTS =  dumpdb.o
 dumpdb_LDADD = $(LDADD)
-dumpdb_DEPENDENCIES = 
+dumpdb_DEPENDENCIES =  $(top_builddir)/lib/librpm.la
 dumpdb_LDFLAGS = 
 rpmgettext_OBJECTS =  rpmgettext.o
-rpmgettext_DEPENDENCIES = 
+rpmgettext_DEPENDENCIES =  $(top_builddir)/build/librpmbuild.la \
+$(top_builddir)/lib/librpm.la $(top_builddir)/popt/libpopt.la
 rpmgettext_LDFLAGS = 
 rpmputtext_OBJECTS =  rpmgettext.o
-rpmputtext_DEPENDENCIES = 
+rpmputtext_DEPENDENCIES =  $(top_builddir)/build/librpmbuild.la \
+$(top_builddir)/lib/librpm.la $(top_builddir)/popt/libpopt.la
 rpmputtext_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -449,7 +453,7 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
-$(PROGRAMS): ../build/librpmbuild.a ../lib/librpm.a ../popt/libpopt.a
+$(PROGRAMS): $(mylibs)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
