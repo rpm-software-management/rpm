@@ -616,7 +616,6 @@ static int doReadRC(int fd, char * filename) {
                if (fdinclude >= 0) {
                  doReadRC(fdinclude,filetoinclude);
                  close(fd);
-                 free(filetoinclude);
                } else {
                  rpmError(RPMERR_RPMRC, 
                    _("included file %s at %s:%d cannot be opened"),
