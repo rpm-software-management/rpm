@@ -348,11 +348,10 @@ static int doSetupMacro(Spec spec, StringBuf sb, char *line)
     sprintf(buf, "cd %s/%s", getVar(RPMVAR_BUILDDIR), build_subdir);
     appendLineStringBuf(sb, buf);
     if (! geteuid()) {
-	strcpy(buf, "chown -R root.root .");
-	appendLineStringBuf(sb, buf);
+	appendLineStringBuf(sb, "chown -R root .");
+	appendLineStringBuf(sb, "chgrp -R root .");
     }
-    strcpy(buf, "chmod -R a+rX,g-w,o-w .");
-    appendLineStringBuf(sb, buf);
+    appendLineStringBuf(sb, "chmod -R a+rX,g-w,o-w .");
     
     return 0;
 }
