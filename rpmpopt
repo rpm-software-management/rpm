@@ -34,9 +34,9 @@ rpm alias --setugids -q --qf \
 rpm alias --conflicts	--qf \
   "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]"
 rpm alias --obsoletes	--qf \
-  "[%{OBSOLETENAME} %{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}\n]"
+  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]"
 rpm alias --provides	--qf \
-  "[%{PROVIDENAME} %{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}\n]"
+  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]"
 
 # XXX prereq output is part of requires for query
 #rpm alias --prereq	--qf '[%{PREREQ}:depflags\n]'
