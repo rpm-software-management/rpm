@@ -787,44 +787,64 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c)
 
 static char *headerFindI18NString(Header h, struct indexEntry *entry)
 {
-    char * lang, * buf, * chptr, * start, * next, * resptr;
+    const char *lang, *l, *le;
     struct indexEntry * table;
-    int langNum;
 
-    if (! (lang = getenv("LANGUAGE"))) {
-	lang = getenv("LANG");
-    }
+    if (((lang = getenv("LANGUAGE")) == NULL &&
+	 (lang = getenv("LANG")) == NULL))
+	    return entry->data;
     
-    table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
-
-    if (!lang || !table) {
+    if ((table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
 	return entry->data;
-    }
 
-    buf = alloca(strlen(lang) + 1);
-    strcpy(buf, lang);
+    for (l = lang; *l; l = le) {
+	const char *td, *fe;
+	char *ed;
+	int count;
 
-    start = buf;
-    while (start) {
-	chptr = strchr(start, ':');
-	if (chptr) *chptr = '\0';
-	
-	next = table->data;
-	resptr = entry->data;
-	for (langNum = 0; langNum < entry->info.count; langNum++) {
-	    if (!strcmp(next, start) && *resptr) break;
-	    next += strlen(next) + 1;
-	    resptr += strlen(resptr) + 1;
+	while (*l && *l == ':')			/* skip leading colons */
+	    l++;
+	if (*l == '\0')
+	    break;
+	for (le = l; *le && *le != ':'; le++)	/* find end of this locale */
+	    ;
+
+	/*
+	 * The range [l,le) now contains the next locale to match:
+	 *    ll[_CC][.EEEEE][@dddd]
+	 * where
+	 *    ll	ISO language code (in lowercase).
+	 *    CC	(optional) ISO coutnry code (in uppercase).
+	 *    EEEEE	(optional) encoding (not really standardized).
+	 *    dddd	(optional) dialect.
+	 */
+
+	/* For each entry in the header ... */
+	for (count = entry->info.count, td = table->data, ed = entry->data;
+	     count-- > 0; td += strlen(td) + 1, ed += strlen(ed) + 1) {
+
+	    /* First try a complete match. */
+	    if (!strncmp(td, l, (le - l)))
+		return ed;
+
+	    /* Next, try stripping optional dialect and matching.  */
+	    for (fe = l; fe < le && *fe != '@'; fe++)
+		;
+	    if (fe < le && !strncmp(td, l, (fe - l)))
+		return ed;
+
+	    /* Next, try stripping optional codeset and matching.  */
+	    for (fe = l; fe < le && *fe != '.'; fe++)
+		;
+	    if (fe < le && !strncmp(td, l, (fe - l)))
+		return ed;
+
+	    /* Finally, try stripping optional country code and matching. */
+	    for (fe = l; fe < le && *fe != '_'; fe++)
+		;
+	    if (fe < le && !strncmp(td, l, (fe - l)))
+		return ed;
 	}
-	
-	if (langNum < entry->info.count) {
-	    return resptr;
-	}
-
-	if (chptr)
-	    start = chptr + 1;
-	else
-	    start = NULL;
     }
 
     return entry->data;
