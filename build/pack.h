@@ -3,8 +3,6 @@
 
 #include "spec.h"
 
-#define RPM_LEAD_SIZE 78
-
 int packageBinaries(Spec s);
 int packageSource(Spec s);
 
