@@ -1053,7 +1053,10 @@ int main(int argc, char ** argv)
 	    struct stat sb;
 	    int errors = 0;
 
-	    argv = poptGetArgs(optCon);
+	    if ((argv = poptGetArgs(optCon)) == NULL)) {
+		fprintf(stderr, _("no files to sign\n"));
+		errors++;
+	    } else
 	    while (*argv) {
 		if (stat(*argv, &sb)) {
 		    fprintf(stderr, _("cannot access file %s\n"), *argv);
