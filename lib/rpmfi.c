@@ -1225,58 +1225,49 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
 void rpmfiBuildFClasses(Header h,
 	/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char ** cdict;
-    const int_32 * fcdictx;
-    int_32 ncdict, nfcdictx;
+    int scareMem = 1;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    int ac;
     const char ** av;
-    int_32 ac = 0;
+    const char * FClass;
     size_t nb;
-    rpmTagType fct, cdt;
     char * t;
-    int i, j, xx;
 
-    if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) NULL, &ac) || ac == 0) {
-	if (fclassp) *fclassp = NULL;
-	if (fcp) *fcp = 0;
-	return;		/* no file list */
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
     }
 
-    fcdictx = NULL;
-    nfcdictx = 0;
-    xx = hge(h, RPMTAG_FILECLASS, &fct, (void **) &fcdictx, &nfcdictx);
-    cdict = NULL;
-    ncdict = 0;
-    xx = hge(h, RPMTAG_CLASSDICT, &cdt, (void **) &cdict, &ncdict);
-
+    /* Compute size of file class argv array blob. */
     nb = (ac + 1) * sizeof(*av);
-    for (i = 0; i < ac; i++) {
-	if (fcdictx != NULL && cdict != NULL) {
-	    j = fcdictx[i];
-assert(j < ncdict);
-	    nb += strlen(cdict[j]);
-	}
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	FClass = rpmfiFClass(fi);
+	if (FClass && *FClass != '\0')
+	    nb += strlen(FClass);
 	nb += 1;
     }
 
+    /* Create and load file class argv array. */
     av = xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
-    /*@-branchstate@*/
-    for (i = 0; i < ac; i++) {
-	av[i] = t;
-	if (fcdictx != NULL && cdict != NULL) {
-	    j = fcdictx[i];
-	    t = stpcpy(t, cdict[j]);
-	}
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	FClass = rpmfiFClass(fi);
+	av[ac++] = t;
+	if (FClass && *FClass != '\0')
+	    t = stpcpy(t, FClass);
 	*t++ = '\0';
     }
     av[ac] = NULL;
     /*@=branchstate@*/
 
-    cdict = hfd(cdict, cdt);
-    fcdictx = hfd(fcdictx, fct);
-
+exit:
+    fi = rpmfiFree(fi);
     /*@-branchstate@*/
     if (fclassp)
 	*fclassp = av;
@@ -1289,9 +1280,9 @@ assert(j < ncdict);
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
 {
+    int scareMem = 1;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int scareMem = 1;
     char deptype = 'R';
     char mydt;
     rpmds ds;

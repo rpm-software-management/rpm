@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 for pkg in $*
 do
     if [ "$pkg" = "" -o ! -e "$pkg" ]; then
@@ -7,8 +8,8 @@ do
 	exit 1
     fi
 
-    plaintext=`mktemp $0-$$.XXXXXX`
-    detached=`mktemp $0-$$.XXXXXX`
+    plaintext=`mktemp /tmp/tgpg-$$.XXXXXX`
+    detached=`mktemp /tmp/tgpg-$$.XXXXXX`
 
 # --- Extract detached signature
     rpm -qp -vv --qf '%{siggpg:armor}' $pkg > $detached

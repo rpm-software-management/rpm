@@ -353,6 +353,19 @@ rpmq	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VE
 
 rpmq	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
+
+rpmq	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
+	--POPTdesc=$"list file names with classes"
+
+rpmq	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLOR}\n]' \
+	--POPTdesc=$"list file names with colors"
+
+rpmq	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
+	--POPTdesc=$"list file names with provides"
+
+rpmq	alias --filerequire --qf '[%{FILENAMES}\t%{FILEREQUIRE}\n]' \
+	--POPTdesc=$"list file names with requires"
+
 #==============================================================================
 rpmquery	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \
@@ -425,6 +438,19 @@ rpmquery	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-
 
 rpmquery	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
+
+rpmquery	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
+	--POPTdesc=$"list file names with classes"
+
+rpmquery	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLOR}\n]' \
+	--POPTdesc=$"list file names with colors"
+
+rpmquery	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
+	--POPTdesc=$"list file names with provides"
+
+rpmquery	alias --filerequire --qf '[%{FILENAMES}\t%{FILEREQUIRE}\n]' \
+	--POPTdesc=$"list file names with requires"
+
 #==============================================================================
 rpmu	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \

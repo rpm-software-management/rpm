@@ -478,7 +478,7 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 
 /**
  * Create and load a file info set.
- * @param ts		transaction set
+ * @param ts		transaction set (NULL skips path relocation)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
  * @param scareMem	Use pointers to refcounted header memory?

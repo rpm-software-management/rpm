@@ -2735,6 +2735,7 @@ static int parseExpression(sprintfToken token, char * str,
 /*@=boundswrite@*/
 
 /**
+ * Call a header extension only once, saving results.
  * @param h		header
  * @param fn
  * @retval *typeptr
@@ -2898,7 +2899,7 @@ static char * formatValue(sprintfTag tag, Header h,
 
     case RPM_STRING_TYPE:
 	if (tagtype)
-	    val = tagtype(RPM_STRING_ARRAY_TYPE, data, buf, tag->pad,  0);
+	    val = tagtype(RPM_STRING_TYPE, data, buf, tag->pad,  0);
 
 	if (val) {
 	    need = strlen(val);
@@ -2931,7 +2932,7 @@ static char * formatValue(sprintfTag tag, Header h,
 	}
 
 	if (tagtype)
-	    val = tagtype(RPM_INT32_TYPE, &intVal, buf, tag->pad,  element);
+	    val = tagtype(RPM_INT32_TYPE, &intVal, buf, tag->pad, element);
 
 	if (val) {
 	    need = strlen(val);
@@ -2946,11 +2947,12 @@ static char * formatValue(sprintfTag tag, Header h,
 	break;
 
     case RPM_BIN_TYPE:
+	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	if (tagtype)
 	    val = tagtype(RPM_BIN_TYPE, data, buf, tag->pad, count);
 
 	if (val) {
-	    need = count;	/* XXX broken iff RPM_BIN_TYPE extension */
+	    need = strlen(val);
 	} else {
 #ifdef	NOTYET
 	    val = memcpy(xmalloc(count), data, count);
