@@ -6,7 +6,7 @@ AC_INIT([file],[4.02])
 AC_CANONICAL_TARGET
 AC_CONFIG_HEADERS([config.h])
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 
 AC_MSG_CHECKING(for builtin ELF support)
 AC_ARG_ENABLE(elf,
