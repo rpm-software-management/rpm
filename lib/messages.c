@@ -13,7 +13,7 @@ void setVerbosity(int level) {
     minLevel = level;
 }
 
-int isVerbose()
+int isVerbose(void)
 {
     return (minLevel >= MESS_VERBOSE);
 }
