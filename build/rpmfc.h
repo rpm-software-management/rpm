@@ -23,6 +23,7 @@ struct rpmfc_s {
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
     int tracked;	/*!< Versioned Provides: tracking dependency added? */
+    size_t brlen;	/*!< strlen(spec->buildRoot) */
 
     ARGV_t fn;		/*!< (#files) file names */
     ARGI_t fcolor;	/*!< (#files) file colors */

@@ -502,6 +502,7 @@ exit 0
 %changelog
 * Sun Feb 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-1
 - don't classify files in /dev (#146623).
+- don't build with sqlite3 if <sqlite3.h> is missing.
 
 * Sat Feb 12 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.24
 - zlib: uniqify certain symbols to prevent name space pollution.

@@ -520,11 +520,19 @@ dnl ------------------ with    internal db
 AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
 WITH_DB_SUBDIR=db3
 WITH_INTERNAL_DB=1
-AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
-WITH_SQLITE3=1
-WITH_SQLITE3_INCLUDE=
-WITH_SQLITE3_LIB=-lsqlite3
-DBLIBSRCS="db3.c sqlite.c"
+DBLIBSRCS="db3.c"
+
+AC_CHECK_HEADER([sqlite3.h], [
+  AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
+  WITH_SQLITE3=1
+  WITH_SQLITE3_INCLUDE=
+  WITH_SQLITE3_LIB=-lsqlite3
+  DBLIBSRCS="$DBLIBSRCS sqlite.c"
+],[
+  WITH_SQLITE3=0
+  WITH_SQLITE3_INCLUDE=
+  WITH_SQLITE3_LIB=
+])
 
 AC_SUBST(WITH_DB_SUBDIR)
 AC_SUBST(WITH_INTERNAL_DB)
