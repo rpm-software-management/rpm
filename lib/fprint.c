@@ -8,6 +8,7 @@ struct lookupCache {
     char * match;
     int pathsStripped;
     int matchLength;
+    int stripLength;
     dev_t dev;
     ino_t ino;
 };
@@ -30,7 +31,7 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
 			    struct lookupCache * cache) {
     char dir[PATH_MAX];
     const char * chptr1;
-    char * end;
+    char * end, * bn;
     fingerPrint fp;
     struct stat sb;
     char * buf;
@@ -50,8 +51,10 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
 		if (*chptr1 == '/') stripCount--;
 		chptr1++;
 	    }
-	    if (!stripCount) {
-		chptr1 = fullName + cache->matchLength + 1;
+
+	    chptr1 = fullName + cache->matchLength + 1;
+	    if (stripCount == 0 && !(cache->stripLength > 0 &&
+		strncmp(cache->match+cache->matchLength+1, chptr1, cache->stripLength))) {
 		if (scareMemory)
 		    fp.basename = chptr1;
 		else
@@ -86,7 +89,7 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
 
     buf = alloca(strlen(fullName) + 1);
     strcpy(buf, fullName);
-    end = strrchr(buf, '/');
+    end = bn = strrchr(buf, '/');
     stripCount = 0;
     while (*buf) {
 	*end = '\0';
@@ -103,8 +106,12 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
 	    fp.dev = sb.st_dev;
 
 	    if (cache) {
-		strcpy(cache->match, buf);
-		cache->matchLength = strlen(buf);
+		strcpy(cache->match, fullName);
+		cache->match[strlen(fullName)+1] = '\0';
+		cache->matchLength = (end-buf);
+		cache->match[cache->matchLength] = '\0';
+		cache->stripLength = (bn - (end+1));
+		cache->match[bn-buf] = '\0';
 		cache->pathsStripped = stripCount;
 		cache->dev = sb.st_dev;
 		cache->ino = sb.st_ino;
@@ -160,10 +167,11 @@ void fpLookupList(const char ** fullNames, fingerPrint * fpList, int numItems,
 	if (j > maxLen) maxLen = j;
     }
 
-    cache.match = alloca(maxLen + 1);
+    cache.match = alloca(maxLen + 2);
     *cache.match = '\0';
     cache.matchLength = 0;
     cache.pathsStripped = 0;    
+    cache.stripLength = 0;
 
     for (i = 0; i < numItems; i++) {
 	fpList[i] = doLookup(fullNames[i], 1, &cache);
