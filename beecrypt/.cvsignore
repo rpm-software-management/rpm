@@ -2,8 +2,10 @@
 .depend
 .depend-done
 .libs
+Doxyfile
 Makefile
 Makefile.in
+apidocs
 config.cache
 config.guess
 config.gnu.h
@@ -11,6 +13,7 @@ config.log
 config.status
 config.sub
 configure
+doxygen
 libtool
 ltconfig
 ltmain.sh

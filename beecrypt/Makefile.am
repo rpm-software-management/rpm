@@ -60,3 +60,10 @@ lclintfiles = base64.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c d
 .PHONY: lclint
 lclint:
 	lclint $(DEFS) $(INCLUDES) ${lclintfiles}
+
+DOXYGEN = /usr/bin/doxygen
+.PHONY: doxygen
+doxygen apidocs: Doxyfile
+	rm -rf $@
+	mkdir -p $@
+	- [ -x ${DOXYGEN} ] && ${DOXYGEN}

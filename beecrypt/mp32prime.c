@@ -1106,7 +1106,7 @@ void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, i
 					mp32setx(s.size, wksp, q->size, q->modl);
 					mp32gcd_w(s.size, s.modl, wksp, wksp+s.size, wksp+2*s.size);
 
-					if (!mp32isone(s.size, wksp))
+					if (!mp32isone(s.size, wksp+s.size))
 						continue;
 				}
 			}
