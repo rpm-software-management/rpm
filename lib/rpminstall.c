@@ -933,6 +933,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
     HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
 
+rpmMessage(RPMMESS_DEBUG, "IDTXload(%p, %d)\n", ts, tag);
     /*@-branchstate@*/
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
@@ -958,6 +959,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 	    idt = idtx->idt + idtx->nidt;
 	    /*@=nullderef@*/
 	    idt->h = headerLink(h);
+rpmMessage(RPMMESS_DEBUG, "\tidt %p h %p\n", idt, idt->h);
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
 	    idt->val.u32 = *tidp;
@@ -983,8 +985,10 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
     int xx;
     int i;
 
+rpmMessage(RPMMESS_DEBUG, "IDTXglob(%p, %s, %d)\n", ts, globstr, tag);
     av = NULL;	ac = 0;
     xx = rpmGlob(globstr, &ac, &av);
+rpmMessage(RPMMESS_DEBUG, "\txx %d ac %d av %p\n", xx, ac, av);
 
     if (xx == 0)
     for (i = 0; i < ac; i++) {
@@ -992,6 +996,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	int_32 count;
 	int isSource;
 
+rpmMessage(RPMMESS_DEBUG, "\tav[%d] %s\n", i, av[i]);
 	fd = Fopen(av[i], "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
             rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), av[i],
