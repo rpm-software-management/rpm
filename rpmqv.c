@@ -13,15 +13,15 @@
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
-#define	POPT_NODEPS		1025
-#define	POPT_FORCE		1026
-#define	POPT_NOMD5		1027
-#define	POPT_NOSCRIPTS		1028
+#define	POPT_NODEPS		-1025
+#define	POPT_FORCE		-1026
+#define	POPT_NOMD5		-1027
+#define	POPT_NOSCRIPTS		-1028
 
 #ifdef	IAM_RPMBT
 #include "build.h"
-#define GETOPT_REBUILD		1003
-#define GETOPT_RECOMPILE	1004
+#define GETOPT_REBUILD		-1003
+#define GETOPT_RECOMPILE	-1004
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
@@ -30,12 +30,12 @@
 
 #include "debug.h"
 
-#define GETOPT_DBPATH		1010
-#define GETOPT_SHOWRC		1018
-#define	GETOPT_DEFINEMACRO	1020
-#define	GETOPT_EVALMACRO	1021
+#define GETOPT_DBPATH		-1010
+#define GETOPT_SHOWRC		-1018
+#define	GETOPT_DEFINEMACRO	-1020
+#define	GETOPT_EVALMACRO	-1021
 #ifdef	NOTYET
-#define	GETOPT_RCFILE		1022
+#define	GETOPT_RCFILE		-1022
 #endif
 
 enum modes {
@@ -1033,7 +1033,7 @@ int main(int argc, const char ** argv)
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
 	if (!poptPeekArg(optCon))
-	    argerror(_("no packages given for uninstall"));
+	    argerror(_("no packages given for erase"));
 
 	if (ia->noDeps) ia->eraseInterfaceFlags |= UNINSTALL_NODEPS;
 

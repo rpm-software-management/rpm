@@ -16,9 +16,9 @@ extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@unchecked@*/
 struct rpmInstallArguments_s rpmIArgs;
 
-#define	POPT_RELOCATE		1016
-#define	POPT_EXCLUDEPATH	1019
-#define	POPT_ROLLBACK		1024
+#define	POPT_RELOCATE		-1016
+#define	POPT_EXCLUDEPATH	-1019
+#define	POPT_ROLLBACK		-1024
 
 /*@exits@*/ static void argerror(const char * desc)
 	/*@*/
@@ -40,7 +40,13 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 {
     struct rpmInstallArguments_s * ia = &rpmIArgs;
 
+#if 0
+fprintf(stderr, "*** opt %s %c info 0x%x arg %p val 0x%x arg %p %s\n", opt->longName, opt->shortName, opt->argInfo, opt->arg, opt->val, arg, arg);
+#endif
+
+    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     /*@-branchstate@*/
+    if (opt->arg == NULL)
     switch (opt->val) {
     case POPT_EXCLUDEPATH:
 	if (arg == NULL || *arg != '/') 
@@ -74,11 +80,15 @@ static void installArgCallback( /*@unused@*/ poptContext con,
       }	break;
     case POPT_ROLLBACK:
       {	time_t tid;
+	if (arg == NULL)
+	    argerror(_("rollback takes a time/date stamp argument"));
+
 	/*@-moduncon@*/
 	tid = get_date(arg, NULL);
 	/*@=moduncon@*/
-	if (tid == (time_t)-1)
-	    argerror(_("malformed rollback time"));
+
+	if (tid == (time_t)-1 || tid == (time_t)0)
+	    argerror(_("malformed rollback time/date stamp argument"));
 	ia->rbtid = tid;
       }	break;
     }
@@ -211,7 +221,7 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.probFilter, RPMPROB_FILTER_REPLACEPKG,
 	N_("reinstall if the package is already present"), NULL},
  { "rollback", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_ROLLBACK,
-	N_("deinstall new package(s), reinstall old package(s), back to date"),
+	N_("deinstall new, reinstall old, package(s), back to <date>"),
 	N_("<date>") },
  { "test", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_TEST,
 	N_("don't install, but tell if it would work or not"), NULL},

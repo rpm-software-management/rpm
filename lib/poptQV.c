@@ -16,13 +16,13 @@ struct rpmQVKArguments_s rpmQVKArgs;
 /*@unchecked@*/
 int specedit = 0;
 
-#define POPT_QUERYFORMAT	1000
-#define POPT_WHATREQUIRES	1001
-#define POPT_WHATPROVIDES	1002
-#define POPT_QUERYBYNUMBER	1003
-#define POPT_TRIGGEREDBY	1004
-#define POPT_DUMP		1005
-#define POPT_SPECFILE		1006
+#define POPT_QUERYFORMAT	-1000
+#define POPT_WHATREQUIRES	-1001
+#define POPT_WHATPROVIDES	-1002
+#define POPT_QUERYBYNUMBER	-1003
+#define POPT_TRIGGEREDBY	-1004
+#define POPT_DUMP		-1005
+#define POPT_SPECFILE		-1006
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
