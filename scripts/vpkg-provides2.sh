@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# This script is not finished.  It is a bunch of ideas for using the
+# OS package manager to create a spec file of virtual dependencies for
+# each OS package.  I wish to only use tools which are installed in
+# the OS by default.
+
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd
 export PATH

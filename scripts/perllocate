@@ -1,0 +1,246 @@
+#!/usr/bin/perl
+
+# perllocate - a perl replacement for GNU locate.  This allows perl
+# regular expressions instead of shell globs.
+
+# Written by Ken Estes, Mail.com.
+
+use Getopt::Long;
+
+
+sub usage {
+  
+    my $usage =<<EOF;
+
+$0  [--version]  [--help]
+	[-d path] [--database=path]  pattern...
+
+Arguments
+
+
+--version	Print version information for this program
+
+--help		Show this usage page
+
+-d path
+--database=path
+		Instead of searching the default  file  name  database,
+		search  the  file  name  databases  in path, which is a
+		colon-separated list of database file names.   You  can
+		also  use  the  environment variable LOCATE_PATH to set
+		the list of database files to search.  The option over-
+		rides the environment variable if both are used. If 
+		neither are used the default database file is $DEFAULT_DB.
+
+
+Synopsis
+
+A perl5 based replacement for GNU locate.  The arguments accepted are
+identical but the patterns matched are perl5 instead of the
+traditional locate glob patterns.  This program reads 'LOCATE02'
+databases which were first introduced with locate version 4.0.
+
+For each given pattern, locate searches one or more databases of file
+names and displays the file names that contain the pattern.  Patterns
+that contain metacharacters should be quoted to protect them from
+expansion by the shell.
+
+Patterns are perl5 regular expressions; see perlre(1).  The database
+entries are a stored as a case-insensitive (lowercase) sorted list.
+
+The file name databases contain lists of files that were on the system
+when the databases were last updated.  The system administrator can
+choose the file name of the default database, the frequency with
+which the databases are updated, and the directories for which they
+contain entries; see updatedb(1L).
+
+
+
+Environment
+
+     LOCATE_PATH
+          Colon-separated list of databases to search.
+
+Usage Example
+
+
+$0 --help
+$0 --version
+
+$0 gcc
+$0 perl5
+$0 'rpm$' 'tar$' 'gz$' 'ps$'
+$0 '^\s*' 
+$0 '/RPMS/'
+
+
+EOF
+
+    print $usage;
+    exit 0;
+
+}
+
+
+
+sub set_static_vars {
+
+# This functions sets all the static variables which are often
+# configuration parameters.  Since it only sets variables to static
+# quantites it can not fail at run time. Some of these variables are
+# adjusted by parse_args() but asside from that none of these
+# variables are ever written to. All global variables are defined here
+# so we have a list of them and a comment of what they are for.
+  
+  $DB_FILE_MAGIC = "\0LOCATE02\0";
+  
+  $DEFAULT_DB = '/usr/local/var/locatedb';
+
+  $VERSION = (qw$Revision: 1.1 $)[1];
+  
+  # set a known path.
+ 
+  $ENV{'PATH'}= (
+		 '/opt/gnu/bin'.
+		 ':/usr/local/bin'.
+		 ':/usr/bin'.
+		 ':/bin'.
+		 '');
+  
+  # taint perl requires we clean up these bad environmental variables.
+  
+  delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+  
+  return ;
+}
+
+
+sub parse_args{
+
+  if( !GetOptions("version", "help", "d=s", "database=s",) ) {
+    print("Illegal options in \@ARGV: '@ARGV'\n");
+    usage() ;
+    exit 1 ;
+  }
+  
+  if($opt_version) {
+    print "$0: Version: $VERSION\n";
+    exit 0;  
+  }
+  
+  if ($opt_help) {
+    usage();
+  }
+  
+  ($#ARGV == -1) &&
+    die("Must supply a pattern argument.\n");
+
+  $DB_PATH = ( $opt_database ||
+	       $opt_d ||
+	       ENV{'LOCATE_PATH'} ||
+	       $DEFAULT_DB );
+
+  return ;
+}
+
+
+# read the locatedb file into memory
+
+sub read_database {
+  my ($filename) = @_;
+
+  # read whole file into memory
+  {
+    open (DBFILE, "<$filename")||
+      die("$0: Could not open: $filename for reading. $!\n");
+
+    # not needed on unix but lets be very clear
+    binmode (DBFILE);
+
+    # slurp whole file
+    my $old_irs = $/;
+    undef $/;
+
+    $FILE = <DBFILE>;
+    
+    $/ = $old_irs;
+
+    close(DBFILE)||
+      die("$0: Could not close: $filename. $!\n");
+    
+    $FILE =~ m/^$DB_FILE_MAGIC/ ||
+      die("$0: file: $filename is not an GNU locatedb file. ".
+	  "No magic number found.\n");
+  }  
+  return ;
+}
+
+
+sub parse_database {
+  my ($pattern) = @_;
+
+  my $file_size = length($FILE);
+  my $position = length($DB_FILE_MAGIC);
+
+  my ( $new_prefix_size, $new_filename, 
+       $old_prefix_size, $old_filename, ) = ();
+
+  while ($position < $file_size) {
+    my ($offset, $suffix) = ();
+
+    # read offset
+
+    ($offset) = unpack("c", substr($FILE, $position, 1));
+    $position++;
+    if ($offest == 0x80) {
+
+      # offset is too large to store in one byte, the data we want is
+      # in the next two bytes.
+
+      ($offset) = unpack("n", substr($FILE, $position, 2));
+      $position += 2;
+    }
+
+    # read suffix
+
+    {
+      my $null_position = index ($FILE, "\0", $position);
+      my $length = $null_position - $position;
+      $suffix = substr($FILE, $position, $length);
+      $position += $length + 1;
+    }
+    
+    # new values depend on old values and the contents of the database.
+    
+    $new_prefix_size = $offset + $old_prefix_size;
+    
+    $new_filename = substr($old_filename, 0, $new_prefix_size)
+		      .$suffix;
+    
+    if ( $new_filename =~ m/$pattern/ ) {
+      print "$new_filename\n";
+    }
+
+    $old_prefix_size = $new_prefix_size;
+    $old_filename = $new_filename;
+  }
+
+  return ;
+}
+
+
+# -------------- main --------------
+{
+
+  set_static_vars();
+  parse_args();
+
+  foreach $file ( split(/:/, $DB_PATH) ) {
+    read_database($file);
+    my $pattern = '('.join(')|(', @ARGV).')';
+    parse_database($pattern);
+  }
+  
+  exit 0;
+}
+

@@ -1,0 +1,101 @@
+#!/usr/bin/perl
+
+# tcl.req - a simple makedepends like script for tcl.
+
+# I plan to rewrite this in C so that perl is not required by RPM at
+# build time.
+
+# by Ken Estes Mail.com kestes@staff.mail.com
+
+use File::Basename;
+
+if ("@ARGV") {
+  foreach (@ARGV) {
+    process_file($_);
+  }
+} else {
+  
+  # notice we are passed a list of filenames NOT as common in unix the
+  # contents of the file.
+  
+  foreach (<>) {
+    process_file($_);
+  }
+}
+
+
+foreach $module (sort keys %require) {
+    print "tcl($module)\n";
+}
+
+exit 0;
+
+
+
+sub process_file {
+  
+  my ($file) = @_;
+  chomp $file;
+  
+  open(FILE, "<$file")||
+    die("$0: Could not open file: '$file' : $!\n");
+  
+  while (<FILE>) {
+
+    # Each keyword can appear multiple times.  Don't
+    #  bother with datastructures to store these strings,
+    #  if we need to print it print it now.
+    
+    if ( m/^\s*\$RPM_Requires\s*=\s*["'](.*)['"]/i) {
+      foreach $_ (spit(/\s+/, $1)) {
+	print "$_\n";
+      }
+    }
+
+    s/\#.*//;
+    
+    # Each keyword can appear multiple times.  Don't
+    #  bother with datastructures to store these strings,
+    #  if we need to print it print it now.
+    
+    if ( m/^\s*\$RPM_Requires\s*=\s*["'](.*)['"]/i) {
+      foreach $_ (spit(/\s+/, $1))
+	print "$_\n";
+    }
+
+
+# we wish to capture these source statements:
+
+#  source "$PATH/lib/util.tcl"
+#  source "comconf.tcl"
+#  if {[catch {source $env(CONTROL_PANEL_LIB_DIR)/bindings.tcl}] != 0} {
+
+    # quick check to see if the complex regexps could possibly match.
+    # This should speed things up.
+
+    (m/source/) || next;
+
+    # note we include parethesis and '$' and '\' in the pattern
+
+    if ( 
+	(m!source\s+([\'\"])?([0-9A-Za-z/._\-\\\(\)\$]+)!)
+       ) {	
+      
+      my ($module) = $2;
+
+      # If there is some interpolation of variables, 
+      # see if taking the basename will give us the filename.
+
+      ($module =~ m/\$/) &&
+	($module = basename($module));
+      
+      ($module =~ m/\$/) ||
+	($require{$module}=1);
+    }
+  }
+
+  close(FILE)||
+    die("$0: Could not close file: '$file' : $!\n");
+  
+  return ; 
+}

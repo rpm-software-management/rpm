@@ -9,7 +9,8 @@ EXTRA_DIST = \
 	find-prov.pl find-req.pl cpanflute find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perl.prov perl.req rpmdiff rpmdiff.cgi \
-	trpm u_pkg.sh vpkg-provides.sh vpkg-provides2.sh
+	sql.prov sql.req tcl.req trpm u_pkg.sh \
+	vpkg-provides.sh vpkg-provides2.sh
 
 installprefix = $(DESTDIR)
 
@@ -22,5 +23,6 @@ config_SCRIPTS = \
 	brp-sparc64-linux check-prereqs convertrpmrc.sh find-lang.sh \
 	find-prov.pl find-req.pl cpanflute find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \
-	magic.prov magic.req perl.prov perl.req rpmdiff rpmdiff.cgi u_pkg.sh \
+	magic.prov magic.req perl.prov perl.req rpmdiff rpmdiff.cgi \
+	sql.prov sql.req tcl.req u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh

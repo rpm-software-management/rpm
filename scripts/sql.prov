@@ -1,0 +1,115 @@
+#!/usr/bin/perl
+
+# RPM and it's source code are covered under two separate licenses. 
+
+# The entire code base may be distributed under the terms of the GNU
+# General Public License (GPL), which appears immediately below.
+# Alternatively, all of the source code in the lib subdirectory of the
+# RPM source code distribution as well as any code derived from that
+# code may instead be distributed under the GNU Library General Public
+# License (LGPL), at the choice of the distributor. The complete text
+# of the LGPL appears at the bottom of this file.
+
+# This alternatively is allowed to enable applications to be linked
+# against the RPM library (commonly called librpm) without forcing
+# such applications to be distributed under the GPL.
+
+# Any questions regarding the licensing of RPM should be addressed to
+# marc@redhat.com and ewt@redhat.com.
+
+
+# sql.prov - a simple script to print the proper name for sql from
+# both the sepecification and body files.
+
+
+# by Ken Estes Mail.com kestes@staff.mail.com
+
+if ("@ARGV") {
+  foreach (@ARGV) {
+    process_file($_);
+  }
+} else {
+
+  # notice we are passed a list of filenames NOT as common in unix the
+  # contents of the file.
+
+  foreach (<>) {
+    process_file($_);
+  }
+}
+
+
+
+foreach $module (sort keys %require) {
+  print "sql($module)\n";
+}
+
+exit 0;
+
+
+
+sub process_file {
+
+  my ($filename) = @_;
+  chomp $filename;
+  
+  open(FILE, "<$filename")||
+    die("$0: Could not open file: '$filename' : $!\n");
+
+  my ($package, $version) = ();
+
+  my (@file) = <FILE>;
+  
+  my ($file) = "@file";
+
+  close(FILE)||
+    die("$0: Could not close file: '$file' : $!\n");
+
+  # skip the comments
+
+  $file =~ s!/\*(.*?)\*/!!gs;
+  $file =~ s!\s*--(.*?)\n!\n!gm;
+
+  @file = split(/\n/, $file);
+
+  foreach (@file) {
+
+    # remove strings
+
+    s!\'[^\']*\'!!g;
+
+
+    # not everyone puts the package name of the file as the first
+    # package name so we report all namespaces as if they were
+    # provided packages (really ugly).
+
+    if (m/\bpackage\s+(body\s*)?(\S+)\s+[ia]s/i) {
+      $package=$2;
+      $package=lc($package);
+      $require{$package}=1;
+    }
+
+    if (m/((procedure)|(function))\s+(\S+)\s*\(/i) {
+      my $func = $4;
+      $func = lc($func);
+      if ($package) {
+	$require{"$package.$func"}=1;
+      } else {
+	$require{$func}=1;
+      }
+    }
+
+    # Each keyword can appear multiple times.  Don't
+    #  bother with datastructures to store these strings,
+    #  if we need to print it print it now.
+	
+    if ( m/^\s*\$RPM_Provides\s*:=\s*["'](.*)['"]/i) {
+      foreach $_ (spit(/\s+/, $1)) {
+        print "$_\n";
+      }
+    }
+
+  }
+
+  return ;
+}

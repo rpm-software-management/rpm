@@ -1,0 +1,386 @@
+#!/usr/bin/perl
+
+# A perl script to be run from cron which creates an rpm database of
+# all your binary RPMS.  This database contains the most recent
+# version of every branch of each package found in the package
+# repositories.  The database is useful for querying since it is as if
+# you have installed all these packages into your system.  You can
+# find which packages hold a file or which packages satify a
+# dependency.  We are only load the information from the packages and
+# do not save the contents of the packages into the file system.
+
+# Branch is a Version Control concept and is coded into the packages
+# rpm version by convention.  We build the same packages for many
+# different projects.  Each project works on its own branch and may
+# have different source code for the same rpm.  The branch name is
+# encouded in the version number of the package followed by a '.'.
+# The full database needs to have the most recent copy of each package
+# on each branch. For example rpm package version "3.43" would be the
+# "43" release of the branch "3" and rpm package version "potato.91"
+# would be the "91" release of the "potato" branch.
+
+# written by Ken Estes kestes@staff.mail.com
+
+
+use File::Basename;
+use File::stat;
+
+
+
+# An rpm_package is a hash of:
+#     $package{'fqn'}="perl-5.00502-3"
+#     $package{'rpm_file'}="$RPMS_DIR/".
+#                "./sparc/perl-5.00502-3.solaris2.6-sparc.rpm"
+#     $package{'srpm_file'}="$SRPMS_DIR/".
+#                           "./perl-5.00502-3.src.rpm"
+#     $package{'name'}="perl"
+#     $package{'version'}="5.00502"
+#     $package{'release'}="3"
+
+# fqn is "fully qualified name"
+
+# the packages are stored in the datastructure
+#	$BY_NAME{$name}{$branch}{$version}{$release};
+
+
+
+sub set_static_vars {
+
+# This functions sets all the static variables which are often
+# configuration parameters.  Since it only sets variables to static
+# quantites it can not fail at run time. Some of these variables are
+# adjusted by parse_args() but asside from that none of these
+# variables are ever written to. All global variables are defined here
+# so we have a list of them and a comment of what they are for.
+
+  $VERSION = ( qw$Revision: 1.1 $ )[1]; 
+
+  @ORIG_ARGV = @ARGV;
+
+  # The pattern for parsing fqn into ($name, $version, $release).
+  # This is difficult to parse since some hyphens are significant and
+  # others are not, some packages have alphabetic characters in the
+  # version number.
+
+  $PACKAGE_PAT ='(.*)-([^-]+)-([^-]+).solaris2.6-\w*.rpm';
+
+  # packages which will end up in the database match this pattern
+  # currently we are not retricting the packages which go into the
+  # database.
+
+  $PICKLIST_PAT = '.';
+
+  # the list of  directories where rpms are stored
+  @RPM_ARCHIVES = ('/export/rpms/redhat',);
+
+  # the full path name of the database we are creating.
+
+  $RPM_DB_DIR = "/export/rpms/redhat/repository.rpmdb";
+
+  # set a known path.
+  
+  # the correct path has not been finalized yet, but this is close.
+  
+  $ENV{'PATH'}= (
+		 '/usr/local/bin'.
+		 ':/usr/bin'.
+		 ':/bin'.
+		 '');
+  
+  # taint perl requires we clean up these bad environmental
+  # variables.
+  
+  delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+  
+  return 1;
+} #set_static_vars
+
+
+
+
+sub get_env {
+
+# this function sets variables similar to set_static variables.  This
+# function may fail only if the OS is in a very strange state.  after
+# we leave this function we should be all set up to give good error
+# handling, should things fail.
+
+  $| = 1; 
+  $PID = $$; 
+  $PROGRAM = basename($0); 
+  $TIME = time();
+  $LOCALTIME = localtime($main::TIME); 
+  $START_TIME = $TIME;
+
+  {
+    my ($sec,$min,$hour,$mday,$mon,
+	$year,$wday,$yday,$isdst) =
+	  localtime(time());
+    
+    # convert confusing perl time vars to what users expect
+    
+    $year += 1900;
+    $mon++;
+    
+    $DATE_STR = sprintf("%02u%02u%02u", $year, $mon, $mday, );
+    $TIME_STR = sprintf("%02u%02u", $hour, $min);
+  }
+  # a unique id for cache file generation
+  $UID = "$DATE_STR.$TIME_STR.$PID";
+
+  return 1;
+} # get_env
+
+
+
+sub parse_fqn {
+
+  # This is difficult to parse since some hyphens are significant and
+  # others are not, some packages have alphabetic characters in the
+  # version number. 
+
+  # Also remember that the format of the file is dependent on how RPM
+  # is configured so this may not be portable to all RPM users.
+
+  (!("@_" =~ m/^$PACKAGE_PAT$/)) &&
+    die("rpm_package_name: '@_' is not in a valid format");
+  
+  return ($1, $2, $3);
+}
+
+
+sub new_rpm_package {
+
+# An rpm_package is a hash of:
+#     $package{'fqn'}="perl-5.00502-3"
+#     $package{'rpm_file'}="$RPMS_DIR/".
+#                "./sparc/perl-5.00502-3.solaris2.6-sparc.rpm"
+#     $package{'srpm_file'}="$SRPMS_DIR/".
+#                           "./perl-5.00502-3.src.rpm"
+#     $package{'name'}="perl"
+#     $package{'version'}="5.00502"
+#     $package{'release'}="3"
+
+  my ($rpm_file) = @_;
+  my $error = '';  
+  my($name, $version, $release) = main::parse_fqn(basename($rpm_file));
+
+  my ($package) = ();
+  
+  $package->{'fqn'}="$name-$version-$release";
+  $package->{'name'}=$name;
+  $package->{'version'}=$version;
+  $package->{'release'}=$release;
+  $package->{'rpm_file'}=$rpm_file;
+
+  # these are needed to do proper sorting of major/minor numbers in
+  # the version of the package
+
+  $package->{'version_cmp'}=[split(/\./, $version)];
+  $package->{'release_cmp'}=[split(/\./, $release)]; 
+
+  # our packages have a naming convention where then branch name is
+  # the first part of the version.
+
+  $package->{'branch'}= @{ $package->{'version_cmp'} }[0];
+
+  return $package;
+}
+
+
+# return the most recent version of package for a given package name/branch pair
+
+sub get_latest_fqn {
+  my ($name, $branch) =(@_);
+
+  my @out = ();
+
+  foreach $version ( keys %{ $BY_NAME{$name}{$branch} }) {
+    foreach $release ( keys %{ $BY_NAME{$name}{$branch}{$version} }) {
+
+      push @out, $BY_NAME{$name}{$branch}{$version}{$release};
+
+    }
+  }
+
+  # the $BY_NAME datastructure is fairly good but the list can not be
+  # sorted right. Sort again using the Schwartzian Transform as
+  # discribed in perlfaq4
+
+  my @sorted = sort {
+
+    # compare the versions but make no assumptions
+    # about how many elements there are
+    
+    my $i=0;
+    my @a_version = @{ $a->{'version_cmp'} }; 
+    my @b_version = @{ $b->{'version_cmp'} };
+    while ( 
+	   ($#a_version > $i) && 
+	   ($#b_version > $i) && 
+	   ($a_version[$i] == $b_version[$i]) 
+	  ) {
+      $i++;
+    }
+    
+    my $j = 0;
+    my @a_release = @{ $a->{'release_cmp'} }; 
+    my @b_release = @{ $b->{'release_cmp'} };
+    while ( 
+	   ($#a_release > $j) && 
+	   ($#b_release > $j) &&
+	   ($a_release[$j] == $b_release[$j])
+	  ) {
+      $j++;
+    }
+    
+    return (
+	    ($b_version[$i] <=> $a_version[$i])
+	    ||
+	    ($b_release[$j] <=> $a_release[$j])
+	   );
+  }
+  @out;
+
+  return @sorted[0];
+}
+
+
+# traverse the package repositories and create a data structure of all
+# the packages we find.
+
+sub parse_package_names {
+  my $db_dir = basename($RPM_DB_DIR);
+  foreach $archive (@RPM_ARCHIVES) {
+    
+    open(FILES, "-|") || 
+      exec("find", $archive, "-print") ||
+	die("Could not run find. $!\n");
+
+    while ($filename = <FILES>) { 
+
+      # we want only the binary rpm files of interest
+
+      ($filename =~ m/\.rpm$/) || next;
+      ($filename =~ m/\.src\.rpm$/) && next;
+      ($filename =~ m/$PICKLIST_PAT/) || next;
+
+      # do not mistake database files for packages
+
+      ($filename =~ m!/$db_dir/!) && next;
+
+      chomp $filename;
+
+      $pkg = new_rpm_package($filename);
+      $BY_NAME{$pkg->{'name'}}{$pkg->{'branch'}}{$pkg->{'version'}}{$pkg->{'release'}} = $pkg;
+
+    }
+
+    close(FILES) || 
+      die("Could not close find. $!\n");
+    
+  }
+
+  return %BY_NAME;
+}
+
+
+
+# traverse the data structure of all the packages and load the most
+# recent version from each branch into the database.  We are only
+# loading the information from the package not saving the files into
+# the file system.
+
+sub create_new_db {
+
+
+  my $uid = $<;
+  
+  # eventually there will be a builder id who will run this code but
+  # for now.
+  
+  ($uid == 0 ) && 
+    die("Must not run this program as root\n");
+  
+  # set up to load the database
+
+  {
+
+    my $tmp_db = "$RPM_DB_DIR.$UID";
+    
+    system("mkdir", "-p", $tmp_db, );
+    ($?) && 
+      die("$0: System error: $! \n");
+    
+    system("rpm", "--initdb",
+	   "--dbpath", $tmp_db, );
+    ($?) && 
+      die("$0: System error: $! \n");
+    
+    open(README, ">$tmp_db/README") ||
+      die("Could not open $tmp_db/README. $! \n");
+    print README <<EOF;
+#
+# This directory is updated daily by a cron job. 
+# program: $0
+# version: $VERSION
+# updated ran at: $LOCALTIME
+
+# This directory contains an rpm database which has been loaded with
+# the most recent version of every package in our archive.  It is
+# intended to be used for queries to find packages. Example:
+
+# rpm --dbpath /net/master-mm/export/rpms/redhat/rpmfulldb 
+#	-q --whatprovides 'java(com.iname.site.context.LoginContext)'
+
+
+# rpm --dbpath /net/master-mm/export/rpms/redhat/rpmfulldb 
+# 	-qf /usr/local/bin/rpmdiff
+
+
+EOF
+    close(README) ||
+      die("Could not close $tmp_db/README. $! \n");
+  }
+
+  # load the database with the packages we want.
+
+  foreach $pkg_name (keys %BY_NAME) {
+    foreach $branch (keys %{ $BY_NAME{$pkg_name} }) {
+      $pkg_file = get_latest_fqn($pkg_name, $branch)->{'rpm_file'};
+
+      system("rpm", "-i", "--nodeps", "--noscripts", "--justdb", 
+	     "--dbpath", $tmp_db, 
+	     $pkg_file);
+      ($?) && 
+	die("$0: System error: $! \n");
+    }
+  }
+
+  # do the update as close to atomically as is practicale.
+
+  system("rm", "-rf", $RPM_DB_DIR,);
+  ($?) && 
+    die("$0: System error: $! \n");
+  
+  rename($tmp_db, $RPM_DB_DIR,) || 
+    die("Could not rename file: $tmp_db => $RPM_DB_DIR. $! \n");
+
+  return ;
+}
+
+
+
+
+
+#       Main        
+{
+  set_static_vars();
+  get_env();
+
+  my %by_name=parse_package_names();
+  create_new_db(%by_name);
+
+  exit 0;
+}
+

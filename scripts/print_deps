@@ -1,0 +1,45 @@
+#!/usr/bin/perl
+
+# a glue program for print out dependencies based on filenames
+# by Ken Estes kestes@staff.mail.com
+
+use File::Basename;
+use Getopt::Long;
+
+
+GetOptions (	
+	    qw( identifier=s basename! )
+	      );
+	    
+
+if ("@ARGV") {
+  foreach (@ARGV) {
+    process_file($_);
+  }
+} else {
+
+  # notice we are passed a list of filenames NOT as common in unix the
+  # contents of the file.
+
+  foreach (<>) {
+    process_file($_);
+  }
+}
+
+sub process_file {
+  my ($str) = @_;
+  chomp $str;
+
+  if ($opt_basename) {
+    $str = basename($str);
+  }
+
+  if ($opt_identifier) {
+    print "${opt_identifier}(${str})\n";
+  } else {
+    print "$str\n";
+  }
+
+  return ;
+}
+

@@ -2,6 +2,12 @@
 
 # a universal interface to Unix OS package managment systems
 
+# This script is not finished.  It is a bunch of ideas for creating a
+# universal package manager using the OS package manager.  I wish to
+# only use tools which are installed in the OS by default and be
+# portable to all OS package managers.
+
+
 PATH="/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd:$PATH"
 export PATH
 
@@ -17,6 +23,10 @@ fi
 #
 # Set OS dependent defaults
 #
+
+# note: that the "package name" which are returned by this script
+# should always include the version and release number.
+
 case $osname in
 	Linux)
 		check_all_packages='rpm -Va'

@@ -1,0 +1,1625 @@
+#!/usr/bin/perl
+
+
+# rpmsync - written by Ken Estes kestes@staff.mail.com
+
+# $Revision: 1.1 $
+# $Date: 2001/03/15 13:58:16 $
+# $Author: jbj $
+# $Source: /home/boston/jkeating/rpmcvs/cvs/devel/rpm/scripts/rpmsync,v $
+# $Name:  $
+
+use Fcntl;
+use File::Basename;
+use Getopt::Long;
+use IO::Socket;
+use IPC::Open3;
+use POSIX;
+use Symbol;
+use Sys::Hostname;
+use Sys::Syslog;
+
+
+# An rpm_package is a hash of:
+#     $package{'fqn'}="perl-5.00502-3"
+#     $package{'rpm_file'}="$RPMS_DIR/".
+#                "./sparc/perl-5.00502-3.solaris2.6-sparc.rpm"
+#     $package{'srpm_file'}="$SRPMS_DIR/".
+#                           "./perl-5.00502-3.src.rpm"
+#     $package{'name'}="perl"
+#     $package{'version'}="5.00502"
+#     $package{'release'}="3"
+
+# fqn is "fully qualified name"
+
+# The state of the system is a orderd list (topologically sorted by
+# dependendencies) of fqn's. The list may contain additional RPM flags
+# to be used on a particular list entry.
+
+# we are going to compare two states the actual state of the machine
+# %INSTALLED_BY_NAME this is indexed by package names and gives a list
+# of rpm_package objects which are installed currently on the machine.
+# Each entry is a list of the packages with the given name which are
+# installed.
+
+# The keys of the hash %LISTED_BY_FQN are the fqn's which are listed
+# in the manifest package list.
+
+
+# Here are a bunch of interesting RPM error messages:
+# rpm: --oldpackage may only be used during upgrades 
+
+sub usage {
+my $usage = <<"EOF";
+Usage:
+	$PROGRAM --update | --force |--force_and_verify | --rollback | --test
+		[--log_file file] [--manifest_file file]
+		[--script_file file]
+		[--skip_check] [--verbose] [--silent] 
+		[--help] [--version]
+
+
+Required Aguments:
+
+
+--test		test what an update would change.  Compare the installed 
+		packges with the packages listed in the manifest file.  
+		This option will show what commands would be executed if 
+		we were to run an update without actually changing anything.
+		When an --update finishes it automatically runs --test 
+		and exits with error if there is any work not
+		completed.  This command has nothing to do with the 
+		'--verify' (-V) option to rpm.
+
+--update	Update the packages installed on the system with the newer 
+		versions listed in the manifest file.  This will not reinstall
+		packages which are listed and already installed but are 
+		corrupted or were installed with the wrong set of arguments.  
+		It will erase packages which are installed on the system but 
+		not listed in the package list.  All packages must have a 
+		later version number then the previous packages.
+
+--rollback	Rollback a previously installed update.  This command 
+		requires that the pervious manfest file be reinstalled.  All 
+		update commands are run in the reverse order from the --update,
+		this ensures that the packages are undone exactly as they were
+		installed.
+
+--force		Ensure that the packages installed on the machine are 
+		exactly those packages listed in the manifest file and that no
+		installed files are currpted.  First each package in the 
+		manifest file is installed using --force (even if it is already
+		installed) then each package which is installed but not listed
+		in the manifest list is removed from the machine.
+
+--force_and_verify  This command behaves as if you ran this program first with
+		     --force then ran rpm -Va.  The program will exit with 
+		     error if either of these steps fail.  This allows you to 
+		     perform unsafe operations (changing the name of a package
+		     in a manifest list via a force) in a relatively safe 
+		     manner.
+
+
+Optional Aguments:
+
+
+--rpm_args	Specify additional arguments to pass to rpm for all package
+		operations.  This option is used by both the update and erase
+		commands.  This option can appear more then once on the
+		command line and the concatination of all options will be sent
+		to rpm.  This option should not be need somtimes it is useful,
+		in an emergency, to install packges with broken dependencies
+		or packages with duplicate files.  This is a quick way of 
+		getting the --nodeps and --force and any other needed 
+		arguments to rpm. 
+
+--log_file	specify a log file different from the default:
+			 $LOG_FILE
+
+--manifest_file	specify a manifest file different from the default:
+			 $MANIFEST_FILE
+
+--skip_check	turn off internal sanity checks used by this script.  This
+		is not related to the --check option or to rpm -V.
+
+--script_file   do not run any commands on this machine instead create a 
+		shell file which can be used to install all the packages 
+		in the manifest.  This script is useful during machine 
+		creation.  To use this option you must specify 
+		--update or --force.
+
+--verbose	provide verbose output, only useful for debugging 
+		this program.
+
+--silent	Do not send any output to stdout/stderr messages will 
+		still go to $LOG_FILE or syslog
+
+--help		show this usage page.
+
+--version	print the version number of this program.
+
+
+This program is used to ensure that the RPM packages installed on a
+system match the list of packages in a manifest.  The package list
+looks like the output of 'rpm -qa' but is required to be in a
+tolological order.  If special flags are needed for particular
+packages (like --nodeps or --force or --oldpackage or --noscriopts or
+--root <dir> or --relocate oldpath=newpath or --rcfile <file>) they
+can be added on the line after package name with a space separating
+the two.  Shell style comments (starting with \# and lasting till the
+next \\n) are legal in the package list.  The default package list
+file is $MANIFEST_FILE.
+
+It is expected that most updates will use the --update command with
+--force saved for those rare situations where the machine is known to
+be in a very bad state or there are installed packages which are
+currupted.
+
+
+
+Examples:
+
+
+rpmsync --help
+rpmsync --version
+rpmsync --update
+rpmsync --force
+rpmsync --test
+
+rpmsync --force --rpm_args nodeps
+
+rpmsync --update --rpm_args nodeps  --rpm_args noscripts \\
+	--skip_check --verbose
+
+rpmsync --update --script_file /tmp/rpmpkg.bootstrap.sh
+
+EOF
+
+print $usage;
+exit 0;
+}
+
+
+
+
+
+sub new_rpm_package {
+
+# An rpm_package is a hash of:
+#     $package{'fqn'}="perl-5.00502-3"
+#     $package{'rpm_file'}="$RPMS_DIR/".
+#                "./sparc/perl-5.00502-3.solaris2.6-sparc.rpm"
+#     $package{'srpm_file'}="$SRPMS_DIR/".
+#                           "./perl-5.00502-3.src.rpm"
+#     $package{'name'}="perl"
+#     $package{'version'}="5.00502"
+#     $package{'release'}="3"
+
+  my ($fqn, $error_context) = @_;
+  my $error = '';  
+  my($name, $version, $release) = main::parse_fqn($fqn, $error_context);
+
+  my ($rpm_file, $install_script_file) = 
+    main::which_binary_package_path($name, $version, $release);
+  ($rpm_file) ||
+    ($error .= "Could not find binary file for package: '$fqn'\n");
+  
+#  my ($srpm_file) = main::which_source_package_path($name, $version, $release);
+#  ($srpm_file) || 
+#    ($error .= "Could not find source file for package: '$fqn'\n");
+  
+  if ($error) {
+    if (!$SKIP_CHECK) {
+      die($error);
+    } else {
+      warn($error);
+    }
+  }
+
+  my ($package) = ();
+  
+  $package->{'fqn'}=$fqn;
+  $package->{'name'}=$name;
+  $package->{'version'}=$version;
+  $package->{'release'}=$release;
+  $package->{'rpm_file'}=$rpm_file;
+  $package->{'install_script_file'}=$install_script_file;
+  $package->{'srpm_file'}=$srpm_file;
+  
+  return bless($package, $class);
+}
+
+
+sub is_installed {
+
+# returns true iff the package passed in is in fact installed on the
+# machine.
+
+  my ($required_pkg) = @_;
+  my $installed_pkgs = $INSTALLED_BY_NAME{$required_pkg->{'name'}};
+  # look for the right version/release of this package
+  foreach $installed_pkg ( @{ $installed_pkgs } ) {
+    ($installed_pkg->{'fqn'} eq $required_pkg->{'fqn'}) && 
+      return 1;
+  }
+  
+  return 0;
+}
+
+
+
+sub clean_up {
+
+# any cleanup actions to be performed on exit should go here
+
+  closelog();
+  close(STDERR);
+  close(STDOUT);
+
+  return 1;
+} # clean_up
+
+
+
+sub fatal_error {
+  my  @error = @_;
+
+  foreach $_ (split("\n",join('',@error))) {
+    (!$SILENT) && print STDERR ("$PROGRAM (fatal): $_\n");
+    print LOG ("[$LOCALTIME] (fatal): $_\n");
+  }
+  syslog('crit', "fatal error at: ".localtime(time()));
+  clean_up();
+  die("[$LOCALTIME] $PROGRAM: fatal error at: ".localtime(time()) );
+}
+
+
+sub log_error {
+  my  @error = @_;
+
+  foreach $_ (split("\n",join('',@error))) {
+    (!$SILENT) && print STDERR ("$PROGRAM (warn): $_\n");
+    print LOG ("[$LOCALTIME] (warn): $_\n");
+  }
+
+}
+
+
+sub info_error {
+  my  @error = @_;
+
+  foreach $_ (split("\n",join('',@error))) {
+    (!$SILENT) && print STDERR ("$PROGRAM (info): $_\n");
+    print LOG ("[$LOCALTIME] (info): $_\n");
+  }
+
+}
+
+
+sub which_binary_package_path {
+
+# this line will depend on the 'rpmfilename: ' in the rpmrc file in
+# the future we will need to try 'noos' as well as noarch, it is not
+# implemented in our RPM version.
+
+  my ($name, $version, $release) = @_;
+  
+  foreach $dir ( split(':', $SEARCH_PATH) ) {
+    foreach $arch ($ARCH, 'noarch', '') {
+      foreach $os ($OS, 'noos', '') {
+	
+    my $filename = '';
+    my $install_script_filename = '';
+    
+    $filename = eval "return \"$BINARY_PACKAGE_FILE_PAT\";";
+    $install_script_filename = $filename;
+    $install_script_filename =~ s/^$dir/\$REPOSITORY/;
+    ( -f $filename ) && ( -s $filename ) && ( -r $filename ) 
+      && return ($filename, $install_script_filename);    
+    ;
+  }
+    }
+  } 
+  return ;
+}
+
+
+sub which_source_package_path {
+
+# Each binary rpm package encodes the name of the source file which it
+# came from.  This is important since some sources generate several
+# binary packages (emacs, vim, perl), given one of those packages it
+# would be hard to find the source file name just doing regular
+# expressions on the name.  We extract this information using an rpm
+# query.
+
+  my ($name, $version, $release) = @_;
+  
+  $binary_package_file =  (which_binary_package_path(@_))[0];
+
+  $binary_package_file || return ;
+
+  # this command would be better
+  # rpm -qp --queryformat '[%{SOURCERPM}\n]' 
+
+  my ($wait_status, $log_out, $log_err) = 
+    system3('cmd_vec' => [$SYS_CMDS{'rpm'}, '-qip', $binary_package_file],);
+
+  my ($source_rpm_file) = grep (/Source RPM: /, split(/\n+/, $log_out ));
+  
+  ( $source_rpm_file =~ m/Source RPM:\s([-.\w]+)/ ) ||
+    return ;
+  
+  $source_rpm_file = $1;
+
+  foreach $dir ( split(':', $SEARCH_PATH) ) {
+    my $filename = '';
+    
+    $filename = eval "return \"$SOURCE_PACKAGE_FILE_PAT\";";
+    ( -f $filename ) && ( -s $filename ) && ( -r $filename ) 
+      && return $filename;    
+  }
+  
+  return ;
+}
+
+
+sub parse_fqn {
+
+  # This is difficult to parse since some hyphens are significant and
+  # others are not, some packages have alphabetic characters in the
+  # version number. 
+
+  # Also remember that the format of the file is dependent on how RPM
+  # is configured so this may not be portable to all RPM users.
+  my ($fqn, $error_context) = @_;
+
+  (!("$fqn" =~ m/^$PACKAGE_PAT$/)) &&
+    die("package name '$fqn' is not in a valid format, $error_context");
+  
+  return ($1, $2, $3);
+}
+
+
+
+sub system3 {
+
+# Lanuch a new child and wait for it to die.  This is like a call to
+# system but we get the stdout and stderr in addition to $?.
+
+# call the function like this 
+
+# my  ($wait_status, $log_out, $log_err) = 
+# open3(
+#     'cmd_vec' => [],
+#     'stdin_str' => '',
+#     'log_cmds'=> '';
+#     'ingore_error' => ''
+#      );
+
+# cmd_vec is a command to run in execv format.  It is a list not a
+# string since we want the safe version of exec
+
+# stdin_str is a string to pass on the standard in to the child program.
+
+# If log_cmds is set then the command will be sent to syslog and the
+# log file.  All output from the command is also sent to the log file.
+
+# open3 signals all errors through a die so will I.  If the command
+# exits with nonzero wait_status then system3 calls die.  This feature
+# can be turned of fby setting ignore_errors.
+
+# the system3 function returns:
+
+# wait_status: the wait_status of the child process
+
+# log_out: the stdout that the child process wrote.
+
+# log_err: the stderr the child process wrote.
+
+  my (%args) = @_;
+
+  my ($log_cmds, $ignore_error, $cmd_ref, $stdin) = @_;
+
+#  if ( ! ( (-x $args{'cmd_vec'}->[0]) && (-f $args{'cmd_vec'}->[0]) ) ) {
+#    die ("Command not exectuable: '$args{'cmd_vec'}->[0]',\n");
+#  }      
+  
+  my $info ="executing: '@{ $args{'cmd_vec'} }',\n";
+  
+  if ($args{'log_cmds'} || ($VERBOSE) ) {
+    warn($info);
+  }
+  
+  # start the process
+  
+  my $fh_in  = gensym(); 
+  my $fh_out = gensym(); 
+  my $fh_err = gensym(); 
+
+  ($fh_in && $fh_out && $fh_err) || 
+    die ("Could not create new symbol, 'gensym()' object.\n");
+  
+  my $child_pid = IPC::Open3::open3(
+				    $fh_in,
+				    $fh_out,
+				    $fh_err,
+				    @{$args{'cmd_vec'}}
+				    );
+  
+  # this check should be redundant but better safe then sorry
+  
+  ($child_pid) || 
+      die ("Open3() did not start: '@{$cmd}'. $!\n");
+  
+    if ($args{'stdin_str'}) {
+
+      # we should not have a deadlock with this syswrite since this
+      # process writes and then the child reads.  It is hard to
+      # imagine how this could fail and the machine still be in a
+      # reasonable shape.
+
+      my $write_len = length($args{'stdin_str'})+1;
+      my $rc = syswrite ($fh_in, 
+			 $args{'stdin_str'}."\n", $write_len);
+      
+      (defined ($rc) && ( $rc == $write_len ) ) ||
+	die("Syswrite to child stdin failed. ".
+	    "Could not write: '$write_len' ".
+	    "only wrote: '$rc' characters. ".
+	    "Trying to write to stdin: '$stdin'. ".
+	    ": $!\n");
+    }
+
+
+  close($fh_in) || 
+    die("Could not close child stdin: $!\n");
+  
+  main::nonblock($fh_out);
+  main::nonblock($fh_err);
+  
+  my $log_out = undef;
+  my $log_err = undef; 
+
+  my $reaped_pid = -1;
+  my $wait_status = 0;
+
+  # wait for child to die, but keep clearing out stdout and stderr
+  # buffers for process so we do not deadlock.  
+
+  # WE seem to be loosing childrens signals occasionally, so actively
+  # check if the child is alive.
+
+  while ($reaped_pid != $child_pid) {    
+
+    sleep(1);
+    
+    $reaped_pid = waitpid(-1, &WNOHANG | POSIX::WUNTRACED);
+    
+    if ($reaped_pid == $child_pid) {
+      
+      ($wait_status = $?);
+      
+      # child signaled but did not exit
+      # set to the same pid as 'no child waiting'
+      
+      (WIFSTOPPED($wait_status)) &&
+	($reaped_pid = -1);
+    }
+    
+    my $data_out = '';
+    my $data_err = '';
+    my $rc = '';
+    
+    # do the reading after reaping so we are sure that we exit the
+    # loop only after draining the sockets.
+    
+    # I do not think we need to log $rc errors as they happen
+    # frequently and nothing seems wrong:
+    #      Resource temporarily unavailable file_handle
+    
+    do {
+      $rc = sysread($fh_out, $data_out, POSIX::BUFSIZ, 0);
+      $log_out .= $data_out;
+    } until ($rc <= 0);
+
+    do {
+      $rc = sysread($fh_err, $data_err, POSIX::BUFSIZ, 0);
+      $log_err .= $data_err;
+    } until ($rc <= 0);
+
+    ($data_err) && warn($data_err);   
+
+  } # while pid
+
+  # the reads are at the bottom of the loop so we do not need to do
+  # any more reading of the filehandles.
+
+  close($fh_out) || 
+      &$log_error("Could not close child stdout: $!\n");    
+  
+  close($fh_err) || 
+      &$log_error("Could not close child stderr: $!\n");
+  
+  my @info = (
+	      "command results: \n",
+	      "  wait_status: $wait_status\n",
+	      "  stdout: '\n",
+	      # turn string into a list and indent each element
+	      (map {"    $_\n"} (split /\n+/, $log_out)),
+	      "  stdout: '\n",
+	      "  stderr: '\n",
+	      # turn string into a list and indent each element
+	      (map {"    $_\n"} (split /\n+/, $log_err)),
+	      "  stderr: '\n",
+	     );
+  
+  if ( (!$args{'ignore_error'}) && ($wait_status) ) {
+    print "\n\n";
+    die("Cmd exited with error:\n",
+	"\t@{$args{'cmd_vec'}}\n",
+	@info);
+  }
+
+  if ( ($VERBOSE) ||
+       ( ($args{'log_cmds'})  &&
+	 ($wait_status || $log_out || $log_err) ) ) {
+    warn(@info);
+  }
+  
+  return ($wait_status, $log_out, $log_err);
+} # system3
+
+
+sub get_rpm_info {
+  my (@rpm_args) = @_;
+
+  update_time();
+  my (@rpm_info) = '';
+
+  my ($wait_status, $log_out, $log_err) = 
+    system3('cmd_vec' => [$SYS_CMDS{'rpm'}, '-qa'],);
+
+  (@rpm_info) = split(/\n+/, $log_out);
+
+  %INSTALLED_BY_NAME=();
+  my $lineno =0;
+  foreach $fqn (@rpm_info) {
+    $lineno++;
+    chomp $fqn;
+    my ($pkg) = new_rpm_package($fqn, "System Info lineno: $lineno");
+    push @{ $INSTALLED_BY_NAME{$pkg->{'name'}} }, $pkg;
+  }
+  
+  return ; 
+}
+
+
+sub remove_extra_packages {
+
+  # arguments are not used but allowed for symetry with other
+  # functions
+
+  my(@pkg_list) = @_;
+  
+  get_rpm_info();
+
+  # Remove packages installed on the machine but not not in the
+  # manifest.  This is important as we sometimes change the package
+  # names while upgrading them and if we did not remove all packages
+  # which are not listed these packages would remain.
+
+  # We also need to remove old versions of just upgraded packages.
+  # Currently we have a problem, some old packages are not being
+  # removed when we do an rpm update.  Since we are currently only
+  # installing one version of each package, remove all other versions
+  # then what was required.
+
+
+  # We would like to remove all packages in reverse topological order.
+  # I have no way of finding out what that order is, so I use a single
+  # command which removes all pacakges.  RPM will figure out the
+  # correct order at run time.  This will cause us to reach the
+  # command line limit if the list of packages to remove is large
+  # enough.
+
+  my @extra_packages = ();
+  
+  foreach $pkgname ( keys %INSTALLED_BY_NAME ) { 
+    foreach $pkg (@{ $INSTALLED_BY_NAME{$pkgname} }) {
+      
+      ($LISTED_BY_FQN{$pkg->{'fqn'}}) && next;
+      
+      push @extra_packages, $pkg->{'fqn'};
+    }
+  }
+
+  if (@extra_packages) {
+    my ($wait_status, $log_out, $log_err) = 
+      system3(
+	      'cmd_vec' => [$SYS_CMDS{'rpm'}, '-e', @RPM_ARGS,
+			  @extra_packages],
+	      'log_cmds'=> 1,
+	     );
+  }
+
+  return ;
+}
+
+
+# update the installation with packages
+
+sub update_packages {
+  my(@pkg_list) = @_;
+  
+  get_rpm_info();
+
+  
+  # first just test and see if this upgrade could work.
+  # this may blowup some OS maximal argument size limit
+
+#  my ($wait_status, $log_out, $log_err) = 
+#    system3(
+#	    'cmd_vec' => [$SYS_CMDS{'rpm'}, "--test", '-U', 
+#			  @RPM_ARGS,
+#			  @upgrade_list],
+#	    'log_cmds'=> 1,
+#	   );
+  
+  
+  foreach $pkg (@pkg_list) {
+    
+    (is_installed($pkg)) && next;
+    
+    my ($wait_status, $log_out, $log_err) = 
+      system3(
+	      'cmd_vec' => [ 
+			    $SYS_CMDS{'rpm'}, '-U',
+			    @{ $pkg->{'rpm_flags'} }, @RPM_ARGS, 
+			    $pkg->{'rpm_file'} ],
+	      'log_cmds'=> 1,
+	     );
+  } # each $fqn
+  
+  return ;
+} # update
+
+
+
+# rollback the previous update installation
+
+sub rollback_packages {
+  my(@pkg_list) = @_;
+  
+  get_rpm_info();
+
+  
+  # first just test and see if this upgrade could work.
+  # this may blowup some OS maximal argument size limit
+
+#  my ($wait_status, $log_out, $log_err) = 
+#    system3(
+#	    'cmd_vec' => [$SYS_CMDS{'rpm'}, "--test", '-U', 
+#			  @RPM_ARGS,
+#			  @upgrade_list],
+#	    'log_cmds'=> 1,
+#	   );
+  
+  
+  foreach $pkg (reverse @pkg_list) {
+
+    (is_installed($pkg)) && next;
+    
+    my ($wait_status, $log_out, $log_err) = 
+      system3(
+	      'cmd_vec' => [
+			    $SYS_CMDS{'rpm'}, '-U', '--oldpackage',
+ 			    @{ $pkg->{'rpm_flags'} }, @RPM_ARGS,
+			    $pkg->{'rpm_file'}
+			   ],
+	      'log_cmds'=> 1,
+	     );
+    
+  } # each $fqn
+
+  return ;
+} # rollback
+
+
+# force ALL the packages to be reinstalled
+
+sub force_packages {
+  my(@pkg_list) = @_;
+
+  # force all the packages in the list to be reinstalled
+
+  # first just test and see if this upgrade could work.
+  # this may blowup some maximal argument size
+  
+#  my ($wait_status, $log_out, $log_err) = 
+#    system3(
+#	    'cmd_vec' => [$SYS_CMDS{'rpm'}, "--test", '-U', '--force', 
+#			  @pkg_list],
+#	    'log_cmds'=> 1,
+#	   );
+  
+  
+  foreach $pkg (@pkg_list) {
+    my ($wait_status, $log_out, $log_err) = 
+      system3(
+	      'cmd_vec' => [
+			    $SYS_CMDS{'rpm'}, '-U', '--force', '--oldpackage', 
+			    @{ $pkg->{'rpm_flags'} }, @RPM_ARGS,
+			    $pkg->{rpm_file}
+			   ],
+	      'log_cmds'=> 1,
+	     );
+  } 
+  
+  return ;
+} # force 
+
+
+
+# check that the verify command exits without error.
+
+sub verify_packages {
+
+  my ($wait_status, $log_out, $log_err) = 
+    system3(
+	    'cmd_vec' => [
+			  $SYS_CMDS{'rpm'}, '-Va',
+			 ],
+	    'log_cmds'=> 1,
+	   );
+
+  return ;
+} # verify
+
+
+
+sub create_scriptfile {
+  my(@pkg_list) = @_;
+
+  my $num_pkgs = scalar(@pkg_list);
+
+  if ($FORCE) {
+    @args = ('-U', '--force');    
+  } elsif ($UPDATE) {
+    @args = ('-U', );
+  } else {
+    die("Scripts can only be created for --update or --force")
+  }
+
+  my $out = '';
+
+  $out =<<EOF
+
+# This file automatically generated by program: $0
+# version: $main::VERSION
+# on host: $main::HOSTNAME
+# localtime: $main::LOCALTIME
+# 
+# This install file automatically installs
+#    manifest file $MANIFEST_FILE
+
+    $SYS_CMDS{'rpm'} --rebuilddb
+
+EOF
+;
+
+  foreach $pkg (@pkg_list) {
+    my @cmd = (
+	       $SYS_CMDS{'rpm'}, @args, 
+	       @{ $pkg->{'rpm_flags'} }, @RPM_ARGS,
+	       $pkg->{install_script_file}
+	      );
+
+    $out .=<<EOF;
+
+    @cmd
+    if [ \$\? \-ne 0 ]; then
+      echo \>\&2 "\$0: Error running: @cmd"
+      exit 1;
+    fi
+
+EOF
+
+  } 
+
+  
+  $out .=<<EOF;
+
+  # check that the install for accuracy
+
+  $SYS_CMDS{'rpm'} --rebuilddb;
+
+  $SYS_CMDS{'rpm'} -Va;
+  if [ \$\? \-ne 0 ]; then
+    echo \>\&2 "\$0: Error installing Packages";
+    echo \>\&2 "\$0: 'rpm -Va' reports errors";
+    exit 1;
+  fi
+
+    num_installed_pkgs=\` $SYS_CMDS{'rpm'} -qa | wc \-\l | sed "s/[^0-9]//g" \`;
+    if [ \$num_installed_pkgs \-ne $num_pkgs ]; then
+      echo \>\&2 "\$0: Error installing Packages";
+      echo \>\&2 "\$0: rpm -qa gives \$num_installed_pkgs packages installed";
+      echo \>\&2 "\$0: expected $num_pkgs installed";
+      exit 1;
+    fi
+
+   exit 0;
+
+EOF
+
+  return $out;
+} # create_script
+
+
+
+
+# check what running with --update would do.  If I were to write a
+# check_rollback_packages the output would be similar but the packge
+# update order would be reversed.
+
+sub test_update {
+  my(@pkg_list) = @_;
+  
+  get_rpm_info();
+
+  # find what we will upgrade
+  
+  foreach $pkg (@pkg_list) {
+    is_installed($pkg) && next;
+    push @out, "out of sync, must update: $pkg->{'fqn'}\n";
+  } # each $fqn
+  
+
+  # remove old versions of what we installed.
+
+  foreach $pkgname ( keys %INSTALLED_BY_NAME ) { 
+    foreach $pkg (@{ $INSTALLED_BY_NAME{$pkgname} }) {
+
+      ($LISTED_BY_FQN{$pkg->{'fqn'}}) && next;
+
+      push @out, "out of sync, must delete: $pkg->{'fqn'}\n";
+    }
+  }
+
+  return @out;
+} # test_update
+
+
+
+sub nonblock {
+  
+    # unbuffer a fh so we can select on it
+    
+    my ($fh) = shift;
+    my $rc = '';
+    my $flags = '';
+    
+    $flags = fcntl($fh, F_GETFL, 0) ||
+	fatal_error("Could not get flags of socket: $fh : $!\n");
+    
+    $flags |= O_NONBLOCK;
+    
+    $rc = fcntl($fh, F_SETFL, $flags) ||
+	fatal_error("Could not set flags of socket: $fh : $!\n");
+    
+    return 1;
+}
+
+
+
+sub mkdir_R {
+# a recusive mkdir function
+
+  my ($dir, $mode) = @_;
+  my @dir = split('/', $dir);
+
+  foreach $i (0..$#dir) {
+
+    my ($dir) = join('/', @dir[0..$i]);
+    ($dir) || next;
+
+      (-d $dir) ||
+	mkdir($dir, $mode) ||
+	  die("Could not mkdir: $dir, for writing: $!\n");
+  }
+  
+  return ;
+}
+
+
+sub chk_system_config {
+  # refuse to start if the system is in a dangerous state
+
+  
+  @problem = ();
+
+  # this is just a placeholder for now
+  # checks go here and failures add to @problem
+
+  return @problem;
+}
+
+
+# park a bunch of unused function here for future scripts
+
+
+sub run_local_rcscripts {
+  my @script_args = @_;
+
+  (-d $LOCAL_RC2_DIR) || return ;
+
+  my @rc_files = ();
+
+  opendir(DIR, "$LOCAL_RC2_DIR") ||
+    die("Could not opendir: '$LOCAL_RC2_DIR': $!\n");
+
+  @rc_files = grep(/^S/, readdir(DIR));
+
+  closedir(DIR) ||
+    die("Could not closedir : '$LOCAL_RC2_DIR': $!\n");
+  
+  ( scalar(@rc_files) > 0 ) || return ;
+
+  if ($script_args[0] eq 'start') {
+    @rc_files =         sort @rc_files;
+  }else{
+    @rc_files = reverse sort @rc_files;
+  }
+
+  foreach $script (@rc_file) {
+    my ($wait_status, $log_out, $log_err) = 
+      system3(
+	      'cmd_vec' => ["$LOCAL_RC2_DIR/$script", @script_args],
+	      'log_cmds'=> 1,
+	     );
+  }
+
+  return ;
+}
+
+
+sub update_package_list {
+
+  my $update_script = '';
+  
+  # learn what updates we wish to make
+
+  {
+    open(FILELIST, "<$BUILD_FILE") ||
+      die("Could not open build file: '$BUILD_FILE': $!\n");
+
+    my $lineno = 0;
+    while ($fqn=<FILELIST>) {
+      $lineno++;
+      $fqn =~ s/\#.*$//;
+      $fqn =~ s/\s+//g;
+
+      # untaint the input. As a security precaution only allow a few
+      # "good characters" in the package name, or our eval of the
+      # update_script might do some really unexpected things.
+
+      if ($fqn =~ m/([-_.a-zA-Z0-9]+)/) {
+	my $pkg = new_rpm_package($1, "file: $BUILD_FILE lineno: $lineno");
+	$update_script .= "\$fqn =~ s/^$pkg->{'name'}-\\d.*\$/$pkg->{'fqn'}/;\n"
+      }
+    }
+    
+    close(FILELIST) ||
+      die("Could not close build file: '$BUILD_FILE': $!\n");
+  }
+
+  # Perform the modifications to the file list
+
+  {
+
+# co -l $MANIFEST_FILE
+
+    rename($MANIFEST_FILE, $MANIFEST_FILE.".bak") ||
+      die("Could not rename ".
+	  "file: $MANIFEST_FILE, ${PACKAGE_FILE}.bak: $!\n");
+
+    open(FILELIST_IN, "<${PACKAGE_FILE}.bak") ||
+      die("Could not open for writing ".
+	  "packagefile: '${PACKAGE_FILE}.bak': $!\n");
+
+    open(FILELIST_OUT, ">$MANIFEST_FILE") ||
+      die("Could not read from packagefile: '${PACKAGE_FILE}.bak': $!\n");
+    
+    while ($fqn=<FILELIST_IN>) {
+      eval $update_script;
+      print FILELIST_OUT $fqn;
+    }
+    
+    close(FILELIST_OUT) ||
+      die("Could not close packagefile: '$MANIFEST_FILE': $!\n");
+
+    close(FILELIST_IN) ||
+      die("Could not close packagefile: '${PACKAGE_FILE}.bak': $!\n");
+
+# ci -u $MANIFEST_FILE
+
+  }
+
+  return ;
+}
+
+
+sub include_file {
+  my ($filename) = @_;
+  my (@inc) = ();
+  my $fh = gensym();  
+  
+  (-f "$INCLUDE_DIR/$filename") ||
+    die("include file: $INCLUDE_DIR/$filename, \n".
+	"found while expanding: $BUILD_FILE, does not exist.\n");
+  
+  open($fh, ">$INCLUDE_DIR/$filename") ||
+    die("Could not open include file: '$INCLUDE_DIR/$filename': $!\n");
+  
+  while (defined($line = <$fh>) ) {
+    
+    if ($line =~ m/\w*\$([-_.a-zA-Z0-9]+)/) {
+      push @inc, include_file($line);
+    } else {
+      push @inc, $line;
+    }
+    
+  }
+  
+  close($fh) ||
+    die("Could not close include file: '$INCLUDE_DIR/$filename': $!\n");
+  
+  return @inc;
+}
+
+
+sub expand_package_list {
+
+  my $update_script = '';
+  
+  # learn what updates we wish to make
+
+    open(INFILE, "<$BUILD_FILE") ||
+      die("Could not open build file: '$BUILD_FILE': $!\n");
+    
+    open(OUTFILE, ">$TMP_FILE") ||
+      die("Could not open tmp file: '$TMP_FILE': $!\n");
+    
+    while ($line=<INFILE>) {
+
+      # untaint the input. As a security precaution only allow a few
+      # "good characters" in the package name.
+
+      if ($line =~ m/\w*\$([-_.a-zA-Z0-9]+)/) {
+	print include_file($1);
+      } else {
+	print $line;
+      }
+
+    }
+    
+    close(INFILE) ||
+      die("Could not close build file: '$BUILD_FILE': $!\n");
+
+    close(OUTFILE) ||
+      die("Could not close tmp file: '$TMP_FILE': $!\n");
+
+  return ;
+}
+
+
+sub update_time {
+
+  $TIME = time();
+  $LOCALTIME = localtime($main::TIME);
+
+  return ;
+}
+
+
+
+sub set_static_vars {
+
+# This functions sets all the static variables which are often
+# configuration parameters.  Since it only sets variables to static
+# quantites it can not fail at run time. Some of these variables are
+# adjusted by parse_args() but asside from that none of these
+# variables are ever written to. All global variables are defined here
+# so we have a list of them and a comment of what they are for.
+  
+  @ORIG_ARGV = @ARGV;
+  
+  $INCLUDE_DIR = "";
+  $TMP_FILE = "";
+
+  $LOG_FILE="/var/log/rpmsync/log";
+  $LOCK_FILE="/var/lock/rpmsync";
+  $MANIFEST_FILE="/usr/local/etc/rpmpkg.manifest";
+
+  $FTP_PATH='ftp://machine.iname.net/pub/redhat';
+  $SEARCH_PATH = (
+		  # the old hard mounted master-mm package repository
+		  '/net/master-mm/export/rpms/redhat'.
+
+		  # the new auto mounted master-mm package repository
+		  ':/network/master-mm.mail.com/export/rpms/redhat'.
+
+		  # look in obvious places on the machine for packages
+		  ':/tmp'.
+
+		  ':/usr/local/src/redhat/noarch'.
+		  ':/usr/local/src/redhat/sparc'.
+		  ':/usr/local/src/redhat/i386'.
+
+		  # for testing: this is how the current build machine
+		  # is set up.
+
+		  ':/data1/archive/redhat');
+
+  $VERSION = ( qw$Revision: 1.1 $ )[1];
+
+  $VERBOSE=0;
+  $SKIP_CHECK=0;
+
+  # The pattern for fqn.  remember that the format of the file is
+  # dependent on how RPM is configured so this may not be portable to
+  # all RPM users.
+
+  $BINARY_PACKAGE_FILE_PAT = ('$dir/RPMS/$arch/'.
+			      '$name-$version-$release.$os-$arch.rpm');
+  $SOURCE_PACKAGE_FILE_PAT = '$dir/SRPMS/$source_rpm_file';
+
+  # The pattern for parsing fqn into ($name, $version, $release).
+  # This is difficult to parse since some hyphens are significant and
+  # others are not, some packages have alphabetic characters in the
+  # version number.
+
+  $PACKAGE_PAT ='(.*)-([^-]+)-([^-]+)';
+
+  # set a known path
+  
+  $ENV{'PATH'}= (
+		 '/usr/bin'.
+		 ':/data/gnu/bin'.
+		 ':/data/local/bin'.
+		 ':/data/devel/bin'.
+		 ':/usr/local/bin'.
+		 ':/bin'.
+		 '');
+  
+  
+  # taint perl requires we clean up these bad environmental variables.
+  
+  delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+  
+  %SYS_CMDS = (
+	       'hostname' => 'hostname',
+	       'rpm' => 'rpm',
+	       'uname' => 'uname',
+	      );
+
+  $SIG{'CHLD'} = 'DEFAULT';
+
+  return ;
+}
+
+
+sub get_env {
+
+# this function sets variables similar to set_static variables.  This
+# function may fail only if the OS is in a very strange state.  after
+# we leave this function we should be all set up to give good error
+# handling, should things fail.
+
+  $| = 1;
+  $PROGRAM = basename($0);
+  $PID = $$; 
+  $TIME = time();
+  $LOCALTIME = localtime($main::TIME); 
+
+  $START_TIME = $TIME;
+  $UID = $<;
+
+  update_time();
+  my ($wait_status, $log_out, $log_err) = 
+    system3('cmd_vec' => ['hostname'],);
+
+  $HOSTNAME = $log_out;
+  chomp $HOSTNAME;
+
+  my ($wait_status, $log_out, $log_err) = 
+    system3('cmd_vec' => ['uname', '-a'],);
+  $uname = $log_out;
+
+  ( $uname =~ m/sparc/ ) && ( $ARCH="sparc");
+  ( $uname =~ m/i\d86/ ) && ( $ARCH="i386" );
+  
+  $osname = $^O;
+  ( $osname =~ m/solaris/ ) && ( $OS="solaris2.6" );
+  ( $osname =~ m/linux/ )   && ( $OS="linux" );
+  
+  return ;
+} # get_env
+
+
+sub parse_args {
+
+  Getopt::Long::config('require_order', 'auto_abbrev', 'ignore_case');
+
+  my ($help, $version, $force_and_verify);
+
+  %option_linkage = (
+		     "version" => \$version,
+		     "verbose" => \$VERBOSE,
+		     "silent" => \$SILENT,
+		     "help" => \$help,
+		     "skip_check" => \$SKIP_CHECK,
+		     "log_file" => \$LOG_FILE,
+		     "manifest_file" => \$MANIFEST_FILE,
+		     "update"=>\$UPDATE,
+		     "force"=>\$FORCE,
+		     "force_and_verify"=>\$force_and_verify,
+		     "rollback"=>\$ROLLBACK,
+		     "test"=>\$TEST,
+		     "rpm_args" =>\@RPM_ARGS,
+		     "script_file" =>\$SCRIPT_FILE,
+		    );
+
+
+  GetOptions (\%option_linkage, qw(
+		 silent! verbose! version! help! skip_check!
+		 update! force! force_and_verify! rollback! test! 
+		 manifest_file=s script_file=s
+		 log_file=s manifest_file=s
+		 rpm_args=s@
+		)) ||
+		    die("Illegal options in \@ARGV: '@ARGV',");
+
+  if ($force_and_verify) {
+    $FORCE = 1;
+    $VERIFY = 1;
+  }
+
+  if ($version) {
+    print "$0: Version: $VERSION\n";
+    exit 0;  
+  }
+  
+  if ($help) {
+    usage();
+  }
+
+  $Process::VERBOSE = $VERBOSE;
+
+  {
+
+    my $args=0;
+
+    ($UPDATE) &&
+      $args++;
+    
+    ($FORCE) &&
+      $args++;
+    
+    ($TEST) &&
+      $args++;
+    
+    ($ROLLBACK) &&
+      $args++;
+    
+    ($args == 0) &&
+      die("Must have: 'update', 'force', 'test', 'rollback', argument.\n");
+    
+    ($args > 1) &&
+      die("Can not choice more then one: ".
+	  "'update', 'force', 'test', 'rollback', arguments.\n");
+  }
+
+  return 1;
+} # parse_args
+
+
+sub set_logging {
+
+# setup the logging facilities to send errors to syslog/log file.
+
+# this needs to come after parse_args() so that we send usage and argv
+# errors to the stderr.
+
+  {
+    my $logopt = 'cons,ndelay';
+    my $facility = 'daemon';
+
+    # no need to test if this succeeds.  It calls croak so we will
+    # die if there is a problem.
+
+    openlog($PROGRAM, $logopt, $facility);
+  }
+
+  $SIG{'__WARN__'} = \&log_error;
+  $SIG{'__DIE__'} =  \&fatal_error;
+
+  my @sys_errors = chk_system_config();
+
+  if (@sys_errors) { 
+    if ($SKIP_CHECK) {
+
+      # even though we are skipping the test put a record of the
+      # problems in the log
+
+      warn(
+	   "Warning Error list:\n",
+	   @sys_errors,
+	   "End Warning Error list\n",
+	   "These Errors would be fatal, ".
+	   "if run without '--skip_check'\n"
+	  );
+
+    } else {
+
+      # should not start with these problems
+
+      die("Fatal Error list:\n",
+		  @sys_errors,
+		  "End Fatal Error list\n");
+    }
+  }
+
+  if ($LOG_FILE) {
+    # redirect error log
+    mkdir_R(dirname($LOG_FILE), 0755);
+
+    open (LOG, ">>$LOG_FILE") || 
+      die("Could not open log_file: $LOG_FILE, ".
+	  "for writing: $!\n");
+
+    print LOG "\n";
+    chmod 0744, $LOG_FILE;
+    LOG->autoflush(1);
+  } 
+
+  STDERR->autoflush(1);
+
+}
+
+    
+sub get_package_list  {
+
+# load the $package_file into memory
+
+# this fucntion must follow get_env() since we need $skip_check to be
+# respected, if set.
+
+  my ($package_file) = @_;
+  my @pkg_list = ();
+
+  (%LISTED_BY_FQN) = ();
+  
+  my %package_count = ();
+  open(FILELIST, "<$package_file") ||
+    die("Could not open packagefile: '$package_file': $!\n");
+
+  my $fqn;  
+  my $lineno = 0;
+
+  while ($fqn=<FILELIST>) {
+    $lineno++;
+    my $new_package = '';
+    my $pkg_flags = '';
+
+    chomp $fqn;
+    $fqn =~ s/\#.*$//;
+    if ($fqn =~ s/\s+(.*)$// ) {
+      $pkg_flags = $1;
+    }
+    ($fqn) || next;
+
+    $new_package = new_rpm_package($fqn, "file: BUILD_FILE lineno: $lineno");
+    ($pkg_flags) && 
+      ($new_package->{'rpm_flags'} = [ split(/\s+/, $pkg_flags) ] );
+    $package_count{ $new_package->{'name'} }++;
+    $LISTED_BY_FQN{$new_package->{'fqn'}} = 1;    
+    push @pkg_list, $new_package ;
+  }
+  
+  close(FILELIST) ||
+    die("Could not close packagefile: '$package_file': $!\n");
+
+  foreach $pkg_name (sort keys %package_count) {
+    ($package_count{ $pkg_name } > 1) && 
+      die("Package: $pkg_name is listed ".
+	  "$package_count{ $pkg_name } times ".
+	  "in file: $package_file\n");
+  }
+
+  return (@pkg_list);
+}
+
+
+sub get_package_hash  {
+
+# load the $package_file into memory
+
+# this fucntion must follow get_env() since we need $skip_check to be
+# respected, if set.
+
+  my $package_file = @_;
+  my $pkg_hash = ();
+
+  open(FILELIST, "<$package_file") ||
+    die("Could not open packagefile: '$package_file': $!\n");
+  my $lineno = 0;
+  
+  while ($fqn=<FILELIST>) {
+    $lineno++;
+    $fqn =~ s/\#.*$//;
+    $fqn =~ s/\s+//g;
+    chomp $fqn;
+    ($fqn) || next;
+
+    my ($pkg) = new_rpm_package($fqn, "file: $package_file lineno: $lineno");
+    push @{ $pkg_hash{$pkg->{'name'}} }, $pkg;
+  }
+  
+
+  close(FILELIST) ||
+    die("Could not close packagefile: '$package_file': $!\n");
+
+  return ($pkg_hash);
+}
+
+
+
+sub pkg_diff {
+
+  $hash0=get_package_hash($file0);
+  $hash1=get_package_hash($file1);
+
+  my ($pkg_out, $file_out);
+  my @warnings = ();
+  my %seen = ();
+
+  foreach $pkg_name ( keys %{$hash0}, keys %{$hash1} ) {
+
+    $seen{$pkg_name} && next;
+    $seen{$pkg_name} = 1;
+     if ( 
+	( scalar($hash0->{$pkg_name}) > 1) ||
+	( scalar($hash1->{$pkg_name} > 1 ) ) 
+       ) {
+      push @warnings, $pkg_name;
+    }
+
+    if ( ($hash0->{$pkg_name}) && 
+	 (!($hash1->{$pkg_name}) ) ) {
+      $pkg_out .= "missing $hash0->{$pkg_name}->{'fqn'}\n";
+      next;
+    } elsif ( (!($hash0->{$pkg_name})) && 
+	      ($hash1->{$pkg_name}) ) {
+      $pkg_out .= "added   $hash1->{$pkg_name}->{'fqn'}\n";
+      next;
+    } else {
+
+      my ($wait_status, $log_out, $log_err) = 
+	system3('cmd_vec' => [
+			      'rpmdiff',
+			      ($hash0->{$pkg_name}->{'name'}),
+			      ($hash1->{$pkg_name}->{'name'}),
+			     ],);
+      $file_out .= $log_out;      
+    }
+
+  } # each $pkg_name
+
+  print  ("Package Differences:\n\n".
+	  sort( split(/\n+/, $pkg_out) ).
+	  "\n\nFile Differences:\n\n".
+	  sort( split(/\n+/, $file_out) ) );
+  
+  if (@warnings) {
+    print STDERR ("The following packages have more then one version\n".
+		  " mentioned in the pkglist: ".
+		  join(", ", @warnings)."\n".
+		  "The diff algorithm assumes only single versions\n".
+		  "in pkglist file.\n");
+  }
+  
+  return ;
+}
+
+
+
+# -----------------------main--------------------------
+
+{
+  set_static_vars();
+  get_env();
+
+  parse_args();
+  set_logging();
+  @MANIFEST = get_package_list($MANIFEST_FILE);
+  
+  # Learn the state of the machine and ensure that we have the srpms
+  # and rpms for this state.  This must be done after parsing the
+  # arguments since we may have set '--skip_check'
+
+  get_rpm_info('-qa');
+
+  info_error("starting argv: '@ORIG_ARGV' \n");
+  syslog('info', "starting argv: '@ORIG_ARGV' \n");
+
+  my ($exit_with_error) = 0;
+
+  my ($wait_status, $log_out, $log_err) = ();
+
+  ($UID == 0 ) &&
+    ( ($wait_status, $log_out, $log_err) = 
+      system3('cmd_vec' => [$SYS_CMDS{'rpm'}, '--rebuilddb'],));
+
+  if ($TEST) {
+
+    my (@todo) = test_update(@MANIFEST);
+
+    if (@todo) {
+      warn(@todo);
+      $exit_with_error = 1;
+    }
+
+  } elsif ($SCRIPT_FILE) {
+
+    open(SCRIPT_FILE, ">$SCRIPT_FILE") ||
+      die("Could not write to file: $SCRIPT_FILE. $!\n");
+
+    my $script = create_scriptfile(@MANIFEST);
+    print SCRIPT_FILE $script;
+
+    close(SCRIPT_FILE) ||
+      die("Could not close file: $SCRIPT_FILE. $!\n");
+
+  } else {
+
+    # eventually there will be a installer id who will run this code but
+    # for now rpm must be run as  root.
+    
+    ($UID == 0 ) || 
+      die("Must run this program as root\n");
+
+    ($FORCE) && 
+      force_packages(@MANIFEST);
+    
+    ($UPDATE) && 
+      update_packages(@MANIFEST);
+    
+    ($ROLLBACK) &&
+      rollback_packages(@MANIFEST);
+    
+    remove_extra_packages(@MANIFEST);
+    
+    my ($wait_status, $log_out, $log_err) = 
+      system3('cmd_vec' => [$SYS_CMDS{'rpm'}, '--rebuilddb'],);
+    
+    my @problems = test_update(@MANIFEST);
+    
+    (@problems) && die("@problems");
+
+    ($VERIFY) &&
+      verify_packages(@MANIFEST);    
+  }
+  
+  info_error("finished argv: '@ORIG_ARGV' \n");
+  syslog('info', "finished argv: '@ORIG_ARGV' \n");
+  
+  clean_up();
+
+  ($exit_with_error) && 
+    exit 9;
+
+  exit 0;  
+}
+

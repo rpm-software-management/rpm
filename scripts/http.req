@@ -25,12 +25,42 @@
 # (html with embedded java) since jhtml is deprecated so is this part
 # of the code.
 
+# These references create dependencies:
+
+#	<form action="signup.jhtml" method="POST">
+#
+#	<img src="images/spacer.gif" width=1>
+#
+#	<A HREF="signup.jhtml">
+#
+#	adWidget.writeAd(out, "login.html", "expired");
+#
+#	response.sendRedirect("http://"+request.getServerName()+"/mailcom/login.jhtml");
+
+
+# Notice how we look for strings WITH the proper ending. This is
+# because the java sometimes has really strange double quoting
+# conventions.  Look at how splitting out the strings in this
+# fragment would get you the wrong text.
+
+#      <img src="`c.getImage("bhunterlogo.gif")`" width=217 >
+
+# Ignore non relative references since these dependencies can not be
+# met. (ie, no package you install will ever provide
+# 'http://www.yahoo.com').
+
+# I use basename since I have seen too many http references which
+# begin with '../' and I can not figure out where the document root
+# is for the webserver this would just kill the dependnecy tracking
+# mechanism.
+
+
 
 use File::Basename;
 
 # this is the pattern of extensions to call requirements
 
-$DEPS_PAT = '\.((cgi)|(ps)|(pdf)|(png)|(jpg)|(gif)|(tiff)|(tif)|(xbm)|(html)|(htm)|(shtml)|(jhtml))$'; #'
+$DEPS_PAT = '\.((cgi)|(ps)|(pdf)|(png)|(jpg)|(gif)|(tiff)|(tif)|(xbm)|(html)|(htm)|(shtml)|(jhtml))'; #'
 
 if ("@ARGV") {
   foreach (@ARGV) {
@@ -81,18 +111,27 @@ sub process_file {
   s!/\*.*?\*/!!g;
   s/<!--.*?-->//g;
 
-  # html references other html documents inside strings.  Ignore non
-  # relative references since these dependencies can not be met. (ie,
-  # no package you install will ever provide 'http://www.yahoo.com').
+  # Ignore non relative references since these dependencies can not be
+  # met. (ie, no package you install will ever provide
+  # 'http://www.yahoo.com').
+
   # I use basename since I have seen too many http references which
-  # begin with '../' this would just kill the dependnecy tracking
+  # begin with '../' and I can not figure out where the document root
+  # is for the webserver this would just kill the dependnecy tracking
   # mechanism.
 
-  while ( m{\"([^\"]+)\"}g ) {
+
+  # Notice how we look for strings WITH the proper ending. This is
+  # because the java sometimes has really strange double quoting
+  # conventions.  Look at how splitting out the strings in this
+  # fragment would get you the wrong text.
+
+  #      <img src="`c.getImage("bhunterlogo.gif")`" width=217 >
+
+  while ( m{\"([^\"]+$DEPS_PAT)\"}g ) {
     my $string = $1;
     chomp $string;
-    if ( ( $string !~ m!http://! ) &&
-	 ( $string =~ m!$DEPS_PAT! ) ) {
+    if ( $string !~ m!http://! ) {
       $string = basename($string);
       $string =~ s!\s+!!g;
       $seen{"http(${string})"} = 1;
@@ -119,7 +158,7 @@ sub process_file {
     
   }
 
-  close(FILE, "<$file")||
+  close(FILE)||
     die("$0: Could not close file: '$file' : $!\n");
   
   return ;

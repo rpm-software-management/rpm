@@ -6,20 +6,31 @@
 # 
 # This file is distributed under the terms of the GNU General Public License
 #
+
 # vpkg-provides.sh is part of RPM, the Red Hat Package Manager.
-# vpkg-provides.sh searches a list of directories (based on what OS it's
-# being executed on) for shared libraries and interpreters that have been
-# installed by some packaging system other than RPM.  It then generates a
-# spec file that can be used to build a "virtual package" that provides all
-# of these things without actually installing any files.  This makes it much
-# easier to use RPM on non-Linux systems.
-#
+
+# vpkg-provides.sh searches a list of directories (based on what OS
+# it's being executed on) for shared libraries and interpreter files
+# that have been installed by some packaging system other than RPM.
+# It then generates a spec file that can be used to build a "virtual
+# package" that provides all of these things without actually
+# installing any files.  The spec file in effect tells rpm what it
+# needs to know about operating system files which are not under rpm
+# control.  This makes it much easier to use RPM on non-Linux systems.
+
+# By default the script also generates a %verifyscript (with hard
+# coded $shlib_dirs, $ignore_dirs values) which will check that the
+# checksum of each file in the directories searched has not changed
+# since the package was built.
+
 # Comments: This script is a quick hack.  A better solution is to use the
 # vendor's package management commands to actually query what's installed, and
 # build one or more spec files based on that.  This is something
 # I intend to write, probably in perl, but the need for something like this
 # first effort was great, so I didn't want to wait until the better solution
 # was done.
+
+# The complete specfile will be sent to stdout.
 
 # you will need to create a spec_header for the virtual package.  This
 # header will provide such specfile information as:
@@ -33,16 +44,19 @@
 #  Source: 
 
 
-usage= "usage: $0 [--spec_header '/path/to/os-base-header.spec'] \n"
-usage= "$usage\t[--find_provides '/path/to/find-provides']\n"
-usage= "$usage\t[--shlib_dirs 'dirs:which:contain:shared:libs']\n"
-usage= "$usage\t[--ignore_dirs 'egrep|pattern|of|paths|to|ignore']\n"
+# most of the command line arguments have defaults
+
+usage="usage: $0 --spec_header '/path/to/os-base-header.spec' \n"
+usage="$usage\t[--find_provides '/path/to/find-provides']\n"
+usage="$usage\t[--shlib_dirs 'dirs:which:contain:shared:libs']\n"
+usage="$usage\t[--ignore_dirs 'egrep|pattern|of|paths|to|ignore']\n"
 
 # these two should be unnessary as the regular dependency analysis
 # should take care of interpreters as well as shared libraries.
 
-usage= "$usage\t[--interp_dirs 'dirs:which:contain:interpreters']\n"
-usage= "$usage\t[--interps 'files:to:assume:are:installed']\n"
+usage="$usage\t[--interp_dirs 'dirs:which:contain:interpreters']\n"
+usage="$usage\t[--interps 'files:to:assume:are:installed']\n"
+usage="$usage\t[--no_verify]\n"
 
 
 # this command may not be portable to all OS's, does something else
@@ -55,7 +69,7 @@ hostname=`uname -n`
 
 # if some subdirectories of the system directories needs to be ignored
 # (eg /usr/local is a subdirectory of /usr but should not be part of
-# the virtual package) then call this script with IGNORE_DIRS set to a
+# the virtual package) then call this script with ignore_dirs set to a
 # vaild egrep pattern which discribes the directories to ignored.
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd
@@ -68,7 +82,11 @@ export PATH
 spec_header='/usr/lib/rpm/os-base-header.spec';
 interps="sh:csh:ksh:dtksh:wish:tclsh:perl:awk:gawk:nawk:oawk"
 find_provides='/usr/lib/rpm/find-provides';
-ignore_dirs="."
+
+    # no file names begin with this character so it is a good default
+    # for dirs to ignore.  
+
+ignore_dirs="@"
 
 
 osname=`uname -s`
@@ -174,6 +192,9 @@ do
 		interps=$1
 		shift
 		;;
+	--no_verify)
+		no_verify=1
+		;;
 	--help)
 		echo $usage
 		exit 0
@@ -223,7 +244,7 @@ fi
 #
 for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
-	find $d -type f -print 2>/dev/null | egrep -v \'$IGNORE_DIRS\' | $find_provides >> $provides_tmp
+	find $d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $find_provides >> $provides_tmp
 done
 
 sum_tmp=/tmp/sum.$$
@@ -237,7 +258,7 @@ fi
 #
 for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
-	find $d -type f -print 2>/dev/null | egrep -v \'$IGNORE_DIRS\' | $sum_cmd >> $sum_tmp
+	find $d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $sum_cmd >> $sum_tmp
 done
 
 
@@ -247,17 +268,20 @@ done
 cat $spec_header
 
 #
-# Output the shared libraries
+# output the 'Provides: ' part of the spec file
 #
 {
+    #
+    # Output the shared libraries
+    #
     for f in `cat $provides_tmp | sort -u`
     do
 	echo "Provides: $f"
     done
 
-#
-# Output the available shell interpreters
-#
+    #
+    # Output the available shell interpreters
+    #
     for d in `echo $interp_dirs | sed -e 's/:/ /g'`
     do
 	for f in `echo $interps | sed -e 's/:/ /g'`
@@ -280,17 +304,27 @@ cat <<_EIEIO_
 This is a virtual RPM package.  It contains no actual files.  It uses the
 \`Provides' token from RPM 3.x and later to list many of the shared libraries
 and interpreters that are part of the base operating system and associated
-subsets for $osname.
+OS packages for $osname.
 
 This virtual package was constructed based on the vendor/system software
-installed on the $osname machine named $hostname, as of the date
-$date.
+installed on the '$osname' machine named '$hostname', as of the date
+'$date'.
+
+Input to the script:
+
+                spec_header=$spec_header
+                ignore_dirs=$ignore_dirs
+                find_provides=$find_provides
+                shlib_dirs=$shlib_dirs
+                interp_dirs=$interp_dirs
+                interps=$interps
 
 _EIEIO_
 
 #
 # Output the build sections of the spec file
 #
+
 echo '%prep'
 echo '# nothing to do'
 echo '%build'
@@ -300,8 +334,10 @@ echo '# nothing to do'
 echo '%clean'
 echo '# nothing to do'
 
+if [ -z "${no_verify}" ]; then
+
 #
-# Output the verify section of the spec file
+# Output the optional verify section of the spec file
 #
 
 cat <<_EIEIO_
@@ -325,7 +361,7 @@ fi
 
 for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
-	find \$d -type f -print 2>/dev/null | egrep -v \'$IGNORE_DIRS\' | $sum_cmd >> \$sum_current_tmp
+	find \$d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $sum_cmd >> \$sum_current_tmp
 done
 
 cat >\$sum_package_tmp <<_EOF_
@@ -342,12 +378,15 @@ _EOF_
 
 cmp \$sum_package_tmp \$sum_current_tmp 
 
-if [ $? -ne 0 ]; then
-	echo "Differences found by: cmp \$sum_package_tmp \$sum_current_tmp"
+if [ \$? -ne 0 ]; then
+	echo"Differences found by: cmp \$sum_package_tmp \$sum_current_tmp"
 	exit \$?
 fi
 
 _EIEIO_
+
+# end optional verify section
+fi
 
 #
 # Output the files section of the spec file
@@ -355,3 +394,5 @@ _EIEIO_
 
 echo '%files'
 echo '# no files in a virtual package'
+
+exit 0
