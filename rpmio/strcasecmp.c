@@ -3,11 +3,12 @@
  */
 
 #include "system.h"
+#include "rpmio.h"
 #include "debug.h"
 
 static inline unsigned char xtolower(unsigned char c)
 {
-    return ((c >= 'A' && c <= 'Z') ? (c | 0x40) : c);
+    return ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c);
 }
 
 int xstrcasecmp(const char *s1, const char *s2)
