@@ -189,7 +189,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     void *oldhandler;
 
     cpiobin = rpmGetVar(RPMVAR_CPIOBIN);
-    gzipbin = rpmGetVar(RPMVAR_CPIOBIN);
+    gzipbin = rpmGetVar(RPMVAR_GZIPBIN);
  
     *archiveSize = 0;
     
@@ -629,13 +629,12 @@ int packageSource(Spec s, char *passPhrase)
     struct sources *source;
     struct PackageRec *package;
     char *tempdir;
-    char src[1024], dest[1024], fullname[1024], filename[1024];
+    char src[1024], dest[1024], fullname[1024], filename[1024], specFile[1024];
     char *version;
     char *release;
     char *vendor;
     char *dist;
     char *p;
-    char *specFile;
     Header outHeader;
     StringBuf filelist;
     StringBuf cpioFileList;
@@ -659,11 +658,11 @@ int packageSource(Spec s, char *passPhrase)
     
     /* Link in the spec file and all the sources */
     p = strrchr(s->specfile, '/');
-    specFile = p+1;
     sprintf(dest, "%s%s", tempdir, p);
+    strcpy(specFile, dest);
     symlink(s->specfile, dest);
     appendLineStringBuf(filelist, dest);
-    appendLineStringBuf(cpioFileList, specFile);
+    appendLineStringBuf(cpioFileList, p+1);
     source = s->sources;
     scount = 0;
     pcount = 0;
