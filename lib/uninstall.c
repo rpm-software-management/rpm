@@ -367,6 +367,7 @@ static int removeFile(char * file, unsigned int flags, short mode,
       case CREATE:
       case SAVE:
       case SKIP:
+      case SKIPNSTATE:
       case ALTNAME:
 	break;
     }

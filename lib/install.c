@@ -404,6 +404,12 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		ext = NULL;
 		break;
 
+	      case SKIPNSTATE:
+		installFile = 0;
+		ext = NULL;
+		files[i].state = RPMFILE_STATE_NOTINSTALLED;
+		break;
+
 	      case UNKNOWN:
 	      case REMOVE:
 		break;
@@ -890,6 +896,7 @@ const char * fileActionString(enum fileActions a) {
       case BACKUP: return "backup";
       case SAVE: return "save";
       case SKIP: return "skip";
+      case SKIPNSTATE: return "skipnstate";
       case ALTNAME: return "altname";
       case REMOVE: return "remove";
     }
