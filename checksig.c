@@ -153,7 +153,6 @@ int doCheckSig(int flags, const char **argv)
     unsigned char buffer[8192];
     unsigned char missingKeys[7164];
     unsigned char untrustedKeys[7164];
-    char *tempKey;
     Header sig;
     HeaderIterator sigIter;
     int_32 tag, type, count;
@@ -210,15 +209,12 @@ int doCheckSig(int flags, const char **argv)
 	fdClose(fd);
 	fdClose(ofd);
 
-	sigIter = headerInitIterator(sig);
 	res2 = 0;
 	missingKeys[0] = '\0';
 	untrustedKeys[0] = '\0';
-	if (rpmIsVerbose()) {
-	    sprintf(buffer, "%s:\n", rpm);
-	} else {
-	    sprintf(buffer, "%s: ", rpm);
-	}
+	sprintf(buffer, "%s:%c", rpm, (rpmIsVerbose() ? '\n' : ' ') );
+
+	sigIter = headerInitIterator(sig);
 	while (headerNextIterator(sigIter, &tag, &type, &ptr, &count)) {
 	    if ((tag == RPMSIGTAG_PGP || tag == RPMSIGTAG_PGP5)
 	    	    && !(flags & CHECKSIG_PGP)) 
@@ -237,6 +233,7 @@ int doCheckSig(int flags, const char **argv)
 		    strcat(buffer, result);
 		    res2 = 1;
 		} else {
+		    char *tempKey;
 		    switch (tag) {
 		      case RPMSIGTAG_SIZE:
 			strcat(buffer, "SIZE ");
@@ -255,17 +252,18 @@ int doCheckSig(int flags, const char **argv)
 			    int offset = 7;
 			    strcat(buffer, "(PGP) ");
 			    tempKey = strstr(result, "Key ID");
-			    if (!tempKey)
-			    {
+			    if (tempKey == NULL) {
 			        tempKey = strstr(result, "keyid:");
 				offset = 9;
 			    }
-			    if (res3 == RPMSIG_NOKEY) {
+			    if (tempKey) {
+			      if (res3 == RPMSIG_NOKEY) {
 				strcat(missingKeys, " PGP#");
 				strncat(missingKeys, tempKey + offset, 8);
-			    } else {
+			      } else {
 			        strcat(untrustedKeys, " PGP#");
 				strncat(untrustedKeys, tempKey + offset, 8);
+			      }
 			    }
 			} else {
 			    strcat(buffer, "PGP ");
@@ -278,7 +276,8 @@ int doCheckSig(int flags, const char **argv)
 			    strcat(buffer, "(GPG) ");
 			    strcat(missingKeys, " GPG#");
 			    tempKey = strstr(result, "key ID");
-			    strncat(missingKeys, tempKey+7, 8);
+			    if (tempKey)
+				strncat(missingKeys, tempKey+7, 8);
 			} else {
 			    strcat(buffer, "GPG ");
 			    res2 = 1;
