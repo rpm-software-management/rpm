@@ -8,6 +8,10 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include "popt.h"
 
 struct optionStackEntry {
@@ -389,7 +393,8 @@ int poptParseArgvString(char * s, int * argcPtr, char *** argvPtr) {
 	argc++, buf++;
     }
 
-    argv2 = (void * )dst = malloc(argc * sizeof(*argv) + (buf - bufStart));
+    dst = malloc(argc * sizeof(*argv) + (buf - bufStart));
+    argv2 = (void *) dst;
     dst += argc * sizeof(*argv);
     memcpy(argv2, argv, argc * sizeof(*argv));
     memcpy(dst, bufStart, buf - bufStart);
