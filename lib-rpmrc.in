@@ -1,0 +1,43 @@
+# Please send new entries to rpm-list@redhat.com
+
+# Architecture translations
+
+arch_data: osfmach3_i986: i986 1
+arch_data: osfmach3_i886: i886 1
+arch_data: osfmach3_i786: i786 1
+arch_data: osfmach3_i686: i686 1
+arch_data: osfmach3_i586: i586 1
+arch_data: osfmach3_i486: i486 1
+arch_data: osfmach3_i386: i386 1
+arch_data: i986: i986 1
+arch_data: i886: i886 1
+arch_data: i786: i786 1
+arch_data: i686: i686 1
+arch_data: i586: i586 1
+arch_data: i486: i486 1
+arch_data: i386: i386 1
+
+arch_data: alpha: axp 2
+
+arch_data: sparc: sparc 3
+arch_data: sun4:  sparc 3
+
+# This is really a place holder for MIPS.
+arch_data: mips: mips 4
+
+arch_data: ppc:          ppc 5
+arch_data: osfmach3_ppc: ppc 5
+
+# This is really a place holder for 68000
+arch_data: 68000: 68k 6
+
+# This is wrong.
+arch_data: IP: sgi 7
+
+# OS Translations
+
+os_data: Linux:  Linux   1
+os_data: IRIX:   Irix    2
+# This is wrong
+os_data: SunOS5: solaris 3
+os_data: SunOS4: SunOS   4
