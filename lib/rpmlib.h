@@ -146,4 +146,6 @@ int rpmdbAdd(rpmdb db, Header dbentry);
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
 int rpmVerifyFile(char * prefix, Header h, int filenum, int * result);
 
+int mdfile(char *fn, unsigned char *digest);
+
 #endif
