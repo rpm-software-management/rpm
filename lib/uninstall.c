@@ -174,21 +174,22 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     return rc;
 }
 
-int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, 
-		     int upgrade, int flags) {
+int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     Header h;
     int i;
     int fileCount;
-    char * rmmess;
+    char * rmmess, * name;
     char * fnbuffer = NULL;
+    dbIndexSet matches;
     int fnbuffersize = 0;
     int prefixLength = strlen(prefix);
     char ** fileList, ** fileMd5List;
-    int type;
+    int type, count;
     uint_32 * fileFlagsList;
     int_16 * fileModesList;
     char * fileStatesList;
     enum { REMOVE, BACKUP, KEEP } * fileActions;
+    int scriptArg;
 
     h = rpmdbGetRecord(db, offset);
     if (!h) {
@@ -197,7 +198,17 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset,
 	return 1;
     }
 
-    /* dependency checking should go in here */
+    /* when we run scripts, we pass an argument which is the number of 
+       versions of this package that will be installed when we are finished */
+    getEntry(h, RPMTAG_NAME, &type, (void **) &name,  &count);
+    if (rpmdbFindPackage(db, name, &matches)) {
+	error(RPMERR_DBCORRUPT, "cannot read packages named %s for uninstall",
+	      name);
+	return 1;
+    }
+ 
+    scriptArg = matches.count - 1;
+    freeDBIndexRecord(matches);
 
     if (flags & UNINSTALL_TEST) {
 	rmmess = "would remove";
@@ -206,13 +217,11 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset,
     }
 
     message(MESS_DEBUG, "running preuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_PREUN, flags & UNINSTALL_NOSCRIPTS, upgrade);
+    runScript(prefix, h, RPMTAG_PREUN, scriptArg, flags & UNINSTALL_NOSCRIPTS);
     
     message(MESS_DEBUG, "%s files test = %d\n", rmmess, flags & UNINSTALL_TEST);
-    if (!getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+    if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	 &fileCount)) {
-	puts("(contains no files)");
-    } else {
 	if (prefix[0]) {
 	    fnbuffersize = 1024;
 	    fnbuffer = alloca(fnbuffersize);
@@ -261,7 +270,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset,
     }
 
     message(MESS_DEBUG, "running postuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_POSTUN, flags & UNINSTALL_NOSCRIPTS, upgrade);
+    runScript(prefix, h, RPMTAG_POSTUN, scriptArg, flags & UNINSTALL_NOSCRIPTS);
 
     freeHeader(h);
 
@@ -272,8 +281,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset,
     return 0;
 }
 
-int runScript(char * prefix, Header h, int tag, 
-	      int norunScripts, int upgrade) {
+int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
     int count, type;
     char * script;
     char * fn;
@@ -281,9 +289,9 @@ int runScript(char * prefix, Header h, int tag,
     int isdebug = isDebug();
     int child;
     int status;
-    char * upgradeArg;
+    char upgradeArg[20];
 
-    upgradeArg = (upgrade) ? "upgrade" : "";
+    sprintf(upgradeArg, "%d", arg);
 
     if (norunScripts) return 0;
     
