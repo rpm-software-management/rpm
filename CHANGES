@@ -11,6 +11,11 @@
 	  break things eventually but it's much more flexible now
 	- added buildarch/buildos compatibility tables, listed values
 	  in --showrc
+	- added cpio archive building code; GNU cpio is no longer used!
+	  packages created w/ rpm 2.4.4 and later cannot be installed with
+	  rpm 2.4 - rpm 2.4.3 however (version of RPM before 2.4 will 
+	  work fine, however). An "error -2 reading header" happens when
+	  this is attempted
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
