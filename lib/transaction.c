@@ -41,7 +41,9 @@ typedef struct transactionFileInfo {
     enum fileActions * actions;
     fingerPrint * fps;
     uint_32 * fflags, * fsizes;
-    const char ** fl;
+    const char ** bnl;	    /* base names */
+    const char ** dnl;	    /* dir names */
+    const int * dil;	    /* dir index list */
     char ** fmd5s;
     uint_16 * fmodes;
     Header h;
@@ -89,8 +91,10 @@ static void freeFi(TFI_t *fi)
 	if (fi->replaced) {
 	    free(fi->replaced); fi->replaced = NULL;
 	}
-	if (fi->fl) {
-	    free(fi->fl); fi->fl = NULL;
+	if (fi->bnl) {
+	    free(fi->bnl); fi->bnl = NULL;
+	    free(fi->dnl); fi->dnl = NULL;
+	    fi->dil = NULL;
 	}
 	if (fi->flinks) {
 	    free(fi->flinks); fi->flinks = NULL;
@@ -173,6 +177,16 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 	probs->probs[probs->numProblems].altH = NULL;
 
     probs->probs[probs->numProblems++].ignoreProblem = 0;
+}
+
+static void psAppendFile(rpmProblemSet probs, rpmProblemType type,
+		     const void * key, Header h, const char * dirName,
+		     const char * baseName, Header altH, unsigned long ulong1)
+{
+    char * str = alloca(strlen(dirName) + strlen(baseName) + 2);
+
+    sprintf(str, "%s/%s", dirName, baseName);
+    psAppend(probs, type, key, h, str, altH, ulong1);
 }
 
 static int archOkay(Header h)
@@ -600,10 +614,11 @@ static enum fileTypes whatis(short mode)
     return result;
 }
 
-static enum fileActions decideFileFate(const char * filespec, short dbMode,
+static enum fileActions decideFileFate(const char * dirName,
+			const char * baseName, short dbMode,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
-				int brokenMd5, int transFlags)
+			int brokenMd5, int transFlags)
 {
     char buffer[1024];
     const char * dbAttr, * newAttr;
@@ -611,6 +626,9 @@ static enum fileActions decideFileFate(const char * filespec, short dbMode,
     struct stat sb;
     int i, rc;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
+    char * filespec = alloca(strlen(dirName) + strlen(baseName) + 2);
+
+    sprintf(filespec, "%s/%s", dirName, baseName);
 
     if (lstat(filespec, &sb)) {
 	/*
@@ -758,8 +776,9 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
 	    if (reportConflicts)
-		psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key,
-			 fi->ap->h, fi->fl[fileNum], h,0 );
+		psAppendFile(probs, RPMPROB_FILE_CONFLICT, fi->ap->key,
+			 fi->ap->h, fi->dnl[fi->dil[fileNum]], 
+			 fi->bnl[fileNum], h,0 );
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
 		if (!shared->isRemoved)
@@ -768,7 +787,9 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 	}
 
 	if ((otherFlags[otherFileNum] | fi->fflags[fileNum]) & RPMFILE_CONFIG) {
-	    fi->actions[fileNum] = decideFileFate(fi->fl[fileNum],
+	    fi->actions[fileNum] = decideFileFate(
+			fi->dnl[fi->dil[fileNum]],
+			fi->bnl[fileNum],
 			otherModes[otherFileNum],
 			otherMd5s[otherFileNum],
 			otherLinks[otherFileNum],
@@ -830,6 +851,8 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
     int i, j;
     struct diskspaceInfo * ds = NULL;
     uint_32 fixupSize = 0;
+    char * filespec = NULL;
+    int fileSpecAlloced = 0;
   
     for (i = 0; i < fi->fc; i++) {
 	int otherPkgNum, otherFileNum;
@@ -839,9 +862,17 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 	if (XFA_SKIPPING(fi->actions[i]))
 	    continue;
 
+	j = strlen(strlen(fi->dnl[fi->dil[i]]) + fi->bnl[i] + 2);
+	if (j > fileSpecAlloced) {
+	    fileSpecAlloced = j * 2;
+	    filespec = xrealloc(filespec, fileSpecAlloced);
+	}
+
+	sprintf(filespec, "%s/%s", fi->dnl[fi->dil[i]], fi->bnl[i]);
+
 	if (dsl) {
 	    ds = dsl;
-	    while (ds->block && ds->dev != fi->fps[i].dev) ds++;
+	    while (ds->block && ds->dev != fi->fps[i].entry->dev) ds++;
 	    if (!ds->block) ds = NULL;
 	    fixupSize = 0;
 	}
@@ -903,7 +934,8 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
 		    break;
-		if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fi->fl[i], &sb)) {
+		if ((fi->fflags[i] & RPMFILE_CONFIG) && 
+			!lstat(filespec, &sb)) {
 		    /* Here is a non-overlapped pre-existing config file. */
 		    fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
@@ -921,13 +953,13 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 			fi->fmd5s[i],
 			fi->flinks[i])) {
 		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap->key,
-			 fi->ap->h, fi->fl[i], recs[otherPkgNum]->ap->h, 0);
+			 fi->ap->h, filespec, recs[otherPkgNum]->ap->h, 0);
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = recs[otherPkgNum]->fsizes[otherFileNum];
 
-	    if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fi->fl[i], &sb)) {
+	    if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(filespec, &sb)) {
 		/* Here is an overlapped  pre-existing config file. */
 		fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
@@ -962,7 +994,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char mdsum[50];
-		if (!mdfile(fi->fl[i], mdsum) && strcmp(fi->fmd5s[i], mdsum)) {
+		if (!mdfile(filespec, mdsum) && strcmp(fi->fmd5s[i], mdsum)) {
 		    fi->actions[i] = FA_BACKUP;
 		    break;
 		}
@@ -1073,12 +1105,14 @@ static void skipFiles(TFI_t * fi, int noDocs)
 	 */
 	for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
 	    int len;
+	    const char * dir = fi->dnl[fi->dil[i]];
+
 	    len = strlen(*nsp);
-	    if (strncmp(fi->fl[i], *nsp, len))
+	    if (strncmp(dir, *nsp, len))
 		continue;
 
 	    /* Only directories or complete file paths can be net shared */
-	    if (!(fi->fl[i][len] == '/' || fi->fl[i][len] == '\0'))
+	    if (!(dir[len] == '/' || dir[len] == '\0'))
 		continue;
 	    break;
 	}
@@ -1152,6 +1186,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int filesystemCount;
     struct diskspaceInfo * di = NULL;
     int oc;
+    fingerPrintCache fpc;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -1309,12 +1344,17 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    break;
 	}
 
-	if (!headerGetEntry(fi->h, RPMTAG_OLDFILENAMES, NULL,
-				     (void **) &fi->fl, &fi->fc)) {
+	if (!headerGetEntry(fi->h, RPMTAG_COMPFILELIST, NULL,
+				     (void **) &fi->bnl, &fi->fc)) {
 	    /* This catches removed packages w/ no file lists */
 	    fi->fc = 0;
 	    continue;
 	}
+
+	headerGetEntry(fi->h, RPMTAG_COMPFILEDIRS, NULL, (void **) &fi->dil, 
+		       &fi->fc);
+	headerGetEntry(fi->h, RPMTAG_COMPDIRLIST, NULL, (void **) &fi->dnl, 
+		       &fi->fc);
 
 	/* actions is initialized earlier for added packages */
 	if (fi->actions == NULL)
@@ -1375,12 +1415,13 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     chroot(ts->root);
 
     ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
+    fpc = fpCacheCreate(totalFileCount);
 
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
     for (fi = flList; (fi - flList) < flEntries; fi++) {
-	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
+	fpLookupHeader(fpc, fi->h, fi->fps);
 	for (i = 0; i < fi->fc; i++) {
 	    if (XFA_SKIPPING(fi->actions[i]))
 		continue;
@@ -1516,7 +1557,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
 	if (fi->fc == 0)
 	    continue;
-	free(fi->fl); fi->fl = NULL;
+	free(fi->dnl); fi->dnl = NULL;
+	free(fi->bnl); fi->bnl = NULL;
 	switch (fi->type) {
 	case TR_ADDED:
 	    free(fi->fmd5s); fi->fmd5s = NULL;
@@ -1528,6 +1570,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    break;
 	}
     }
+
+    fpCacheFree(fpc);
 
     /* ===============================================
      * If unfiltered problems exist, free memory and return.

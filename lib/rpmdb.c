@@ -365,8 +365,10 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     char ** baseNames, ** dirNames;
     int_32 * dirIndexes;
     char * otherFile;
+    fingerPrintCache fpc;
 
-    fp1 = fpLookup(filespec, 0);
+    fpc = fpCacheCreate(20);
+    fp1 = fpLookup(fpc, filespec, 0);
 
     basename = strrchr(filespec, '/');
     if (!basename) 
@@ -375,7 +377,10 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 	basename++;
 
     rc = dbiSearchIndex(db->fileIndex, basename, &allMatches);
-    if (rc) return rc;
+    if (rc) {
+	fpCacheFree(fpc);
+	return rc;
+    }
 
     *matches = dbiCreateIndexRecord();
     i = 0;
@@ -399,7 +404,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 	    strcpy(otherFile, dirNames[dirIndexes[num]]);
 	    strcat(otherFile, baseNames[num]);
 
-	    fp2 = fpLookup(otherFile, 1);
+	    fp2 = fpLookup(fpc, otherFile, 1);
 	    if (FP_EQUAL(fp1, fp2)) 
 		dbiAppendIndexRecord(matches, allMatches.recs[i]);
 
@@ -415,6 +420,8 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     }
 
     dbiFreeIndexRecord(allMatches);
+
+    fpCacheFree(fpc);
 
     if (!matches->count) {
 	dbiFreeIndexRecord(*matches);
@@ -484,10 +491,9 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
     int type;
     unsigned int count;
     dbiIndexRecord rec;
-    char ** fileList, ** providesList, ** requiredbyList;
+    char ** baseFileNames, ** providesList, ** requiredbyList;
     char ** conflictList, ** triggerList;
     int i;
-    char * basename;
 
     /* structure assignment */
     rec = dbiReturnIndexRecordInstance(offset, 0);
@@ -564,23 +570,17 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	free(conflictList);
     }
 
-    if (headerGetEntry(h, RPMTAG_OLDFILENAMES, &type, (void **) &fileList, 
+    if (headerGetEntry(h, RPMTAG_COMPFILELIST, &type, (void **) &baseFileNames, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    basename = strrchr(fileList[i], '/');
-	    if (!basename) 
-		basename = fileList[i];
-	    else
-		basename++;
-
 	    rpmMessage(RPMMESS_DEBUG, _("removing file index for %s\n"), 
-			basename);
+			baseFileNames[i]);
 	    /* structure assignment */
 	    rec = dbiReturnIndexRecordInstance(offset, i);
-	    removeIndexEntry(db->fileIndex, basename, rec, tolerant, 
+	    removeIndexEntry(db->fileIndex, baseFileNames[i], rec, tolerant, 
 			     "file index");
 	}
-	free(fileList);
+	free(baseFileNames);
     } else {
 	rpmMessage(RPMMESS_DEBUG, _("package has no files\n"));
     }
@@ -624,7 +624,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 {
     unsigned int dboffset;
     unsigned int i, j;
-    const char ** fileList;
+    const char ** baseFileNames;
     const char ** providesList;
     const char ** requiredbyList;
     const char ** conflictList;
@@ -642,8 +642,8 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     if (!group) group = "Unknown";
 
     count = 0;
-    headerGetEntry(dbentry, RPMTAG_OLDFILENAMES, &type, (void **) &fileList, 
-	           &count);
+    headerGetEntry(dbentry, RPMTAG_COMPFILELIST, &type, (void **) 
+		    &baseFileNames, &count);
     headerGetEntry(dbentry, RPMTAG_PROVIDENAME, &type, (void **) &providesList, 
 	           &providesCount);
     headerGetEntry(dbentry, RPMTAG_REQUIRENAME, &type, 
@@ -693,14 +693,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 	rc += addIndexEntry(db->providesIndex, providesList[i], dboffset, 0);
 
     for (i = 0; i < count; i++) {
-	const char * basename;
-	basename = strrchr(fileList[i], '/');
-	if (!basename) 
-	    basename = fileList[i];
-	else
-	    basename++;
-	if (*basename)
-	    rc += addIndexEntry(db->fileIndex, basename, dboffset, i);
+	rc += addIndexEntry(db->fileIndex, baseFileNames[i], dboffset, i);
     }
 
     dbiSyncIndex(db->nameIndex);
@@ -717,7 +710,7 @@ exit:
     if (providesCount) free(providesList);
     if (conflictCount) free(conflictList);
     if (triggerCount) free(triggerList);
-    if (count) free(fileList);
+    if (count) free(baseFileNames);
 
     return rc;
 }
@@ -849,6 +842,10 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     int i, j;
     int start, end;
     int num;
+    int_32 fc;
+    char ** dirNames, ** fullBaseNames, ** baseNames;
+    int_32 * dirIndexes, * fullDirIndexes;
+    fingerPrintCache fpc;
 
     /* this may be worth batching by basename, but probably not as
        basenames are quite unique as it is */
@@ -890,6 +887,8 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     for (i = 0; i < numItems; i++)
 	matchList[i] = dbiCreateIndexRecord();
 
+    fpc = fpCacheCreate(numIntMatches);
+
     /* For each set of files matched in a package ... */
     for (start = 0; start < numIntMatches; start = end) {
 	struct intMatch * im;
@@ -912,20 +911,27 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    return 1;
 	}
 
-	{   const char ** fullfl, **fl;
-	    int_32 fc;
-	   
-	    headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
-				(void **) &fullfl, &fc);
+	headerGetEntryMinMemory(h, RPMTAG_COMPDIRLIST, NULL, 
+			    (void **) &dirNames, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_COMPFILELIST, NULL, 
+			    (void **) &fullBaseNames, &fc);
+	headerGetEntryMinMemory(h, RPMTAG_COMPFILEDIRS, NULL, 
+			    (void **) &fullDirIndexes, NULL);
 
-	    fl = xcalloc(num, sizeof(*fl));
-	    for (i = 0; i < num; i++)
-		fl[i] = fullfl[im[i].rec.fileNumber];
-	    free(fullfl);
-	    fps = xcalloc(num, sizeof(*fps));
-	    fpLookupList(fl, fps, num, 1);
-	    free(fl);
+	baseNames = xcalloc(num, sizeof(*baseNames));
+	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
+	for (i = 0; i < num; i++) {
+	    baseNames[i] = fullBaseNames[im[i].rec.fileNumber];
+	    dirIndexes[i] = fullDirIndexes[im[i].rec.fileNumber];
 	}
+
+	fps = xcalloc(num, sizeof(*fps));
+	fpLookupList(fpc, dirNames, baseNames, dirIndexes, num, fps);
+
+	free(dirNames);
+	free(fullBaseNames);
+	free(baseNames);
+	free(dirIndexes);
 
 	/* Add db (recnum,filenum) to list for fingerprint matches. */
 	for (i = 0; i < num; i++) {
@@ -937,9 +943,9 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	headerFree(h);
 
 	free(fps);
-
     }
 
+    fpCacheFree(fpc);
     free(intMatches);
 
     return 0;

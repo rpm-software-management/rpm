@@ -448,7 +448,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     }
     rpmMessage(RPMMESS_DEBUG, _("spec file in: %s\n"), realSpecDir);
 
-    if (h != NULL && headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
+    if (h != NULL && headerIsEntry(h, RPMTAG_COMPFILENAMES)) {
 	/* we can't remap v1 packages */
 	assembleFileList(h, &fileMem, &fileCount, &files, 0, NULL);
 
@@ -717,7 +717,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	/*@-unrecog@*/ chroot(rootdir); /*@=unrecog@*/
     }
 
-    if (!(flags & RPMTRANS_FLAG_JUSTDB) && headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
+    if (!(flags & RPMTRANS_FLAG_JUSTDB) && headerIsEntry(h, RPMTAG_COMPFILENAMES)) {
 	const char * defaultPrefix;
 	/* old format relocateable packages need the entire default
 	   prefix stripped to form the cpio list, while all other packages 
@@ -847,7 +847,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	if (fileMem) freeFileMemory(fileMem);
 	fileMem = NULL;
     } else if (flags & RPMTRANS_FLAG_JUSTDB) {
-	if (headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, NULL, &fileCount)) {
+	if (headerGetEntry(h, RPMTAG_COMPFILENAMES, NULL, NULL, &fileCount)) {
 	    fileStates = xmalloc(sizeof(*fileStates) * fileCount);
 	    memset(fileStates, RPMFILE_STATE_NORMAL, fileCount);
 	    headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates, 

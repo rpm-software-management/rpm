@@ -200,13 +200,13 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     uint_32 * usages;
     int numFiles;
 
-    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &filenames, NULL)) 
-	filenames = NULL;
-
     if (!headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, 
 		       &numFiles)) {
 	filesizes = NULL;
 	numFiles = 0;
+	filenames = NULL;
+    } else {
+	buildFileList(h, (char ***) &filenames, &numFiles);
     }
 
     if (rpmGetFilesystemList(NULL, count)) {
@@ -227,6 +227,8 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
 	return 1;
 
     *data = usages;
+
+    if (filenames) free(filenames);
 
     return 0;
 }
