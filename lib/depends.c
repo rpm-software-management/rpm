@@ -346,8 +346,8 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
 			sizeof(*ts->removedPackages), intcmp);
     }
 
-    if (ts->orderCount == ts->orderAlloced) {
-	ts->orderAlloced += ts->delta;
+    if (ts->orderCount >= ts->orderAlloced) {
+	ts->orderAlloced += (ts->orderCount - ts->orderAlloced) + ts->delta;
 	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
     }
 
@@ -377,6 +377,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
     teIterator pi; transactionElement p;
     rpmDepSet add;
     rpmDepSet obsoletes;
+    const char * name;
     alKey pkgKey;	/* addedPackages key */
     int xx;
     int ec = 0;
@@ -416,8 +417,8 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	delTE(p);
     }
 
-    if (oc == ts->orderAlloced) {
-	ts->orderAlloced += ts->delta;
+    if (oc >= ts->orderAlloced) {
+	ts->orderAlloced += (oc - ts->orderAlloced) + ts->delta;
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
 
@@ -477,10 +478,11 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	    goto exit;
     }
 
+    /* XXX WARNING: nothing below can access *p as t->order may be realloc'd */
     {	rpmdbMatchIterator mi;
 	Header h2;
 
-	mi = rpmtsInitIterator(ts, RPMTAG_NAME, p->name, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
 	    /*@-branchstate@*/
 	    if (rpmVersionCompare(h, h2))
@@ -495,6 +497,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 		if (oldmultiLibMask && multiLibMask
 		 && !(oldmultiLibMask & multiLibMask))
 		{
+		    p = ts->order + oc;
 		    p->multiLib = multiLibMask;
 		}
 	    }
@@ -503,7 +506,10 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	mi = rpmdbFreeIterator(mi);
     }
 
-    obsoletes = dsiInit(rpmdsLink(p->obsoletes, "Obsoletes"));
+    p = ts->order + oc;
+    name = p->name;
+    obsoletes = rpmdsLink(p->obsoletes, "Obsoletes");
+    obsoletes = dsiInit(p->obsoletes);
     if (obsoletes != NULL)
     while (dsiNext(obsoletes) >= 0) {
 	const char * Name;
@@ -512,7 +518,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	    continue;	/* XXX can't happen */
 
 	/* XXX avoid self-obsoleting packages. */
-	if (!strcmp(p->name, Name))
+	if (!strcmp(name, Name))
 		continue;
 
 	{   rpmdbMatchIterator mi;
@@ -543,7 +549,9 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 
 exit:
     pi = teFreeIterator(pi);
+    /*@-compdef -usereleased@*/	/* FIX: p->obsoletes heartburn */
     return ec;
+    /*@=compdef =usereleased@*/
 }
 
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-15 13:11-0500\n"
+"POT-Creation-Date: 2001-11-15 19:25-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1470,84 +1470,84 @@ msgstr " nie powiod³o siê -"
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/depends.c:400
+#: lib/depends.c:401
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/depends.c:667
+#: lib/depends.c:675
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:692
+#: lib/depends.c:700
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:708
+#: lib/depends.c:716
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:729
+#: lib/depends.c:737
 #, fuzzy
 msgid "(db files)"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/depends.c:741
+#: lib/depends.c:749
 #, fuzzy
 msgid "(db provides)"
 msgstr "Udostêpniane zasoby:"
 
-#: lib/depends.c:754
+#: lib/depends.c:762
 #, fuzzy
 msgid "(db package)"
 msgstr "znaleziono %d pakietów\n"
 
-#: lib/depends.c:793
+#: lib/depends.c:801
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
 #, fuzzy
 msgid "NO "
 msgstr "NIE DOBRZE"
 
-#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie indeksu grupy\n"
 
 #. Record all relations.
-#: lib/depends.c:1365
+#: lib/depends.c:1373
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1436
+#: lib/depends.c:1444
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1511
+#: lib/depends.c:1519
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1571
+#: lib/depends.c:1579
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1606
+#: lib/depends.c:1614
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1611
+#: lib/depends.c:1619
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2920,12 +2920,12 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s pominiêty z powodu flagi missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:981
+#: lib/transaction.c:1015
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/transaction.c:1071
+#: lib/transaction.c:1106
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

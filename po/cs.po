@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-15 13:11-0500\n"
+"POT-Creation-Date: 2001-11-15 19:25-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1437,84 +1437,84 @@ msgstr "selhal - "
 msgid "cannot open Packages database in %s\n"
 msgstr "nemohu otevøít databázi balíèkù v %s\n"
 
-#: lib/depends.c:400
+#: lib/depends.c:401
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/depends.c:667
+#: lib/depends.c:675
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:692
+#: lib/depends.c:700
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
-#: lib/depends.c:708
+#: lib/depends.c:716
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:729
+#: lib/depends.c:737
 #, fuzzy
 msgid "(db files)"
 msgstr "¹patný db soubor %s\n"
 
-#: lib/depends.c:741
+#: lib/depends.c:749
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:754
+#: lib/depends.c:762
 #, fuzzy
 msgid "(db package)"
 msgstr "¾ádné balíèky\n"
 
-#: lib/depends.c:793
+#: lib/depends.c:801
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) pøidáno do ke¹e závislostí.\n"
 
-#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr "NE "
 
-#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr "ANO"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1365
+#: lib/depends.c:1373
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1436
+#: lib/depends.c:1444
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:1511
+#: lib/depends.c:1519
 msgid "========== successors only (presentation order)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1571
+#: lib/depends.c:1579
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1606
+#: lib/depends.c:1614
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1611
+#: lib/depends.c:1619
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2838,12 +2838,12 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s pøeskoèeno, proto¾e chybí pøíznak\n"
 
 #. @innercontinue@
-#: lib/transaction.c:981
+#: lib/transaction.c:1015
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "vynechávám adresáø %s\n"
 
-#: lib/transaction.c:1071
+#: lib/transaction.c:1106
 msgid "getting list of mounted filesystems\n"
 msgstr "získávám seznam pøipojených systémù souborù\n"
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-15 13:11-0500\n"
+"POT-Creation-Date: 2001-11-15 19:25-0500\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1431,84 +1431,84 @@ msgstr " misslyckades - "
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/depends.c:400
+#: lib/depends.c:401
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s är redan installerat"
 
-#: lib/depends.c:667
+#: lib/depends.c:675
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:692
+#: lib/depends.c:700
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
-#: lib/depends.c:708
+#: lib/depends.c:716
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s JA (rpmlib tillhandahåller)\n"
 
-#: lib/depends.c:729
+#: lib/depends.c:737
 #, fuzzy
 msgid "(db files)"
 msgstr "felaktig db-fil %s\n"
 
-#: lib/depends.c:741
+#: lib/depends.c:749
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db-tillhandahållande)\n"
 
-#: lib/depends.c:754
+#: lib/depends.c:762
 #, fuzzy
 msgid "(db package)"
 msgstr "inga paket\n"
 
-#: lib/depends.c:793
+#: lib/depends.c:801
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
-#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr "JA"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1365
+#: lib/depends.c:1373
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1436
+#: lib/depends.c:1444
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, djup)\n"
 
-#: lib/depends.c:1511
+#: lib/depends.c:1519
 msgid "========== successors only (presentation order)\n"
 msgstr "========== endast efterföljare (presentationsordning)\n"
 
-#: lib/depends.c:1571
+#: lib/depends.c:1579
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1606
+#: lib/depends.c:1614
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1611
+#: lib/depends.c:1619
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2836,12 +2836,12 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"
 
 #. @innercontinue@
-#: lib/transaction.c:981
+#: lib/transaction.c:1015
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
 
-#: lib/transaction.c:1071
+#: lib/transaction.c:1106
 msgid "getting list of mounted filesystems\n"
 msgstr "hämtar lista över monterade filsystem\n"
 

@@ -42,7 +42,7 @@ struct TFI_s {
     const char ** fmd5s;	/*!< File MD5 sum(s) (from header) */
 /*@only@*/ /*?null?*/
     const char ** flinks;	/*!< File link(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@null@*/
     const char ** flangs;	/*!< File lang(s) */
 
 /*@only@*/ /*?null?*/

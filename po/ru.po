@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-15 13:11-0500\n"
+"POT-Creation-Date: 2001-11-15 19:25-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1446,85 +1446,85 @@ msgstr "не удалось - "
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
-#: lib/depends.c:400
+#: lib/depends.c:401
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакет %s уже установлен"
 
-#: lib/depends.c:667
+#: lib/depends.c:675
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:692
+#: lib/depends.c:700
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:708
+#: lib/depends.c:716
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:729
+#: lib/depends.c:737
 #, fuzzy
 msgid "(db files)"
 msgstr "неверный файл базы данных %s\n"
 
-#: lib/depends.c:741
+#: lib/depends.c:749
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:754
+#: lib/depends.c:762
 #, fuzzy
 msgid "(db package)"
 msgstr "нет пакетов\n"
 
-#: lib/depends.c:793
+#: lib/depends.c:801
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
-#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1142
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1365
+#: lib/depends.c:1373
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1436
+#: lib/depends.c:1444
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:1511
+#: lib/depends.c:1519
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1571
+#: lib/depends.c:1579
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1606
+#: lib/depends.c:1614
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1611
+#: lib/depends.c:1619
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2851,12 +2851,12 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:981
+#: lib/transaction.c:1015
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
 
-#: lib/transaction.c:1071
+#: lib/transaction.c:1106
 msgid "getting list of mounted filesystems\n"
 msgstr "получение списка смонтированных файловых систем\n"
 

@@ -160,7 +160,7 @@ int tfiNext(TFI_t fi)
 
 /*@-modfilesystem @*/
 if (_fi_debug  < 0 && i != -1)
-fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), i);
+fprintf(stderr, "*** fi %p\t%s[%d] %s%s\n", fi, (fi->Type ? fi->Type : "?Type?"), i, (i >= 0 ? fi->dnl[fi->j] : ""), (i >= 0 ? fi->bnl[fi->i] : ""));
 /*@=modfilesystem @*/
 
     }

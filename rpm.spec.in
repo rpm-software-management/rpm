@@ -579,3 +579,4 @@ fi
 - split file info tag sets into rpmfi.c.
 - create toy TFI_t iterators.
 - tweak overlapped file fingerprint retrieval for speed.
+- transaction.c: use wrappers/iterators to access TFI_t.

@@ -581,6 +581,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
     while ((i = tfiNext(fi)) >= 0) {
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
+	TFI_t otherFi;
 	const TFI_t * recs;
 	int numRecs;
 
@@ -634,7 +635,6 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	otherFileNum = -1;			/* keep gcc quiet */
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
 	    struct fingerPrint_s * otherFps;
-	    TFI_t otherFi;
 	    int otherFc;
 
 	    otherFi = recs[otherPkgNum];
@@ -644,7 +644,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 		/*@innercontinue@*/ continue;
 
 	    otherFps = otherFi->fps;
-	    otherFc = otherFi->fc;
+	    otherFc = tfiGetFC(otherFi);
 
 	    otherFileNum = findFps(fiFps, otherFps, otherFc);
 
@@ -671,16 +671,17 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 		/*@switchbreak@*/ break;
 	    }
 
+assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
 	    if ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
-	     && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
-			recs[otherPkgNum]->fmd5s[otherFileNum],
-			recs[otherPkgNum]->flinks[otherFileNum],
+	     && filecmp(otherFi->fmodes[otherFileNum],
+			otherFi->fmd5s[otherFileNum],
+			otherFi->flinks[otherFileNum],
 			fi->fmodes[i],
 			fi->fmd5s[i],
 			fi->flinks[i]))
 	    {
-		const char * altNEVR = recs[otherPkgNum]->te->NEVR;
+		const char * altNEVR = otherFi->te->NEVR;
 		rpmProblemSetAppend(ts->probs, RPMPROB_NEW_FILE_CONFLICT,
 			p->NEVR, p->key,
 			fn, NULL,
@@ -689,7 +690,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
-	    fixupSize = recs[otherPkgNum]->fsizes[otherFileNum];
+	    fixupSize = otherFi->fsizes[otherFileNum];
 
 	    if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
 		/* Here is an overlapped  pre-existing config file. */
@@ -702,14 +703,15 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
+assert(otherFi != NULL);
 		/* Here is an overlapped added file we don't want to nuke. */
-		if (recs[otherPkgNum]->actions[otherFileNum] != FA_ERASE) {
+		if (otherFi->actions[otherFileNum] != FA_ERASE) {
 		    /* On updates, don't remove files. */
 		    fi->actions[i] = FA_SKIP;
 		    /*@switchbreak@*/ break;
 		}
 		/* Here is an overlapped removed file: skip in previous. */
-		recs[otherPkgNum]->actions[otherFileNum] = FA_SKIP;
+		otherFi->actions[otherFileNum] = FA_SKIP;
 	    }
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@switchbreak@*/ break;
@@ -815,6 +817,7 @@ static int ensureOlder(rpmTransactionSet ts,
 
 /**
  */
+/*@-mustmod@*/ /* FIX: fi->actions is modified. */
 static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
@@ -827,6 +830,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     const char * s;
     int * drc;
     char * dff;
+    int dc;
     int i, j;
 
     if (!noDocs)
@@ -852,19 +856,36 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     /*@=branchstate@*/
 
     /* Compute directory refcount, skip directory if now empty. */
-    drc = alloca(fi->dc * sizeof(*drc));
-    memset(drc, 0, fi->dc * sizeof(*drc));
-    dff = alloca(fi->dc * sizeof(*dff));
-    memset(dff, 0, fi->dc * sizeof(*dff));
+    dc = tfiGetDC(fi);
+    drc = alloca(dc * sizeof(*drc));
+    memset(drc, 0, dc * sizeof(*drc));
+    dff = alloca(dc * sizeof(*dff));
+    memset(dff, 0, dc * sizeof(*dff));
 
-    for (i = 0; i < fi->fc; i++) {
+#ifdef	DYING
+    for (i = 0; i < fi->fc; i++)
+#else
+    if ((fi = tfiInit(fi, 0)) != NULL)
+    while ((i = tfiNext(fi)) >= 0)
+#endif
+    {
 	char **nsp;
 
+#ifdef	DYING
 	bn = fi->bnl[i];
 	bnlen = strlen(bn);
 	ix = fi->dil[i];
 	dn = fi->dnl[ix];
 	dnlen = strlen(dn);
+#else
+	bn = tfiGetBN(fi);
+	bnlen = strlen(bn);
+	ix = tfiGetDX(fi);
+	dn = tfiGetDN(fi);
+	dnlen = strlen(dn);
+#endif
+	if (dn == NULL)
+	    continue;	/* XXX can't happen */
 
 	drc[ix]++;
 
@@ -947,7 +968,14 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     }
 
     /* Skip (now empty) directories that had skipped files. */
-    for (j = 0; j < fi->dc; j++) {
+#ifndef	NOTYET
+    if (fi != NULL)	/* XXX can't happen */
+    for (j = 0; j < dc; j++)
+#else
+    if ((fi = tdiInit(fi)) != NULL)
+    while (j = tdiNext(fi) >= 0)
+#endif
+    {
 
 	if (drc[j]) continue;	/* dir still has files. */
 	if (!dff[j]) continue;	/* dir was not emptied here. */
@@ -962,7 +990,13 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	}
 
 	/* If explicitly included in the package, skip the directory. */
-	for (i = 0; i < fi->fc; i++) {
+#ifdef	DYING
+	for (i = 0; i < fi->fc; i++)
+#else
+	if ((fi = tfiInit(fi, 0)) != NULL)
+	while ((i = tfiNext(fi)) >= 0)
+#endif
+	{
 	    const char * dir;
 
 	    if (XFA_SKIPPING(fi->actions[i]))
@@ -990,6 +1024,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 #endif
     if (languages) freeSplitString((char **)languages);
 }
+/*@=mustmod@*/
 
 /**
  * Return transaction element's file info.
@@ -1132,6 +1167,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     pi = teInitIterator(ts);
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
 	rpmdbMatchIterator mi;
+	int fc;
+
+	if ((fi = teGetFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
+	fc = tfiGetFC(fi);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    if (!archOkay(p->arch))
@@ -1174,8 +1214,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
 
 	/* Count no. of files (if any). */
-	if (p->fi != NULL)
-	    totalFileCount += p->fi->fc;
+	totalFileCount += fc;
 
     }
     pi = teFreeIterator(pi);
@@ -1183,16 +1222,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* The ordering doesn't matter here */
     pi = teInitIterator(ts);
     while ((p = teNext(pi, TR_REMOVED)) != NULL) {
-	fi = p->fi;
-	if (fi == NULL)
-	    continue;
-	if (fi->bnl == NULL)
+	int fc;
+
+	if ((fi = teGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
-	if (fi->dnl == NULL)
-	    continue;	/* XXX can't happen */
-	if (fi->dil == NULL)
-	    continue;	/* XXX can't happen */
-	totalFileCount += fi->fc;
+	fc = tfiGetFC(fi);
+
+	totalFileCount += fc;
     }
     pi = teFreeIterator(pi);
 
@@ -1207,9 +1243,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      */
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
+	int fc;
 
 	if ((fi = teGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
+	fc = tfiGetFC(fi);
 
 #ifdef	DYING	/* XXX W2DO? this is now done teGetFi, okay ??? */
 	fi->magic = TFIMAGIC;
@@ -1221,7 +1259,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	case TR_ADDED:
 	    fi->record = 0;
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
-	    if (fi->fc > 0)
+	    if (fc > 0)
 		skipFiles(ts, fi);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1230,7 +1268,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
 	/*@=branchstate@*/
 
-	fi->fps = (fi->fc > 0 ? xmalloc(fi->fc * sizeof(*fi->fps)) : NULL);
+	fi->fps = (fc > 0 ? xmalloc(fc * sizeof(*fi->fps)) : NULL);
     }
     pi = teFreeIterator(pi);
 
@@ -1256,17 +1294,25 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      */
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
+	int fc;
 
 	if ((fi = teGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
+	fc = tfiGetFC(fi);
 
-	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
+	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
 	/*@-branchstate@*/
-	for (i = 0; i < fi->fc; i++) {
+#ifdef	DYING
+	for (i = 0; i < fi->fc; i++)
+#else
+ 	if ((fi = tfiInit(fi, 0)) != NULL)
+	while ((i = tfiNext(fi)) >= 0)
+#endif
+	{
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@innercontinue@*/ continue;
 	    /*@-dependenttrans@*/
-	    htAddEntry(ts->ht, fi->fps + i, fi);
+	    htAddEntry(ts->ht, fi->fps + i, (void *) fi);
 	    /*@=dependenttrans@*/
 	}
 	/*@=branchstate@*/
@@ -1285,31 +1331,45 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     while ((p = teNextIterator(pi)) != NULL) {
 	dbiIndexSet * matches;
 	int knownBad;
+	int fc;
 
 	if ((fi = teGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
+	fc = tfiGetFC(fi);
 
 	/*@-noeffectuncon @*/ /* FIX: check rc */
 	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, teGetOc(pi),
 			ts->orderCount, NULL, ts->notifyData));
 	/*@=noeffectuncon@*/
 
-	if (fi->fc == 0) continue;
+	if (fc == 0) continue;
 
 	/* Extract file info for all files in this package from the database. */
-	matches = xcalloc(fi->fc, sizeof(*matches));
-	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fi->fc)) {
+	matches = xcalloc(fc, sizeof(*matches));
+	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fc)) {
 	    psm->ts = rpmtsUnlink(ts, "tsRun (rpmFindFpList fail)");
 	    return 1;	/* XXX WTFO? */
 	}
 
 	numShared = 0;
+#ifdef	DYING
 	for (i = 0; i < fi->fc; i++)
+#else
+ 	if ((fi = tfiInit(fi, 0)) != NULL)
+	while ((i = tfiNext(fi)) >= 0)
+#endif
 	    numShared += dbiIndexSetCount(matches[i]);
 
 	/* Build sorted file info list for this package. */
 	shared = sharedList = xcalloc((numShared + 1), sizeof(*sharedList));
-	for (i = 0; i < fi->fc; i++) {
+
+#ifdef DYING
+	for (i = 0; i < fi->fc; i++)
+#else
+ 	if ((fi = tfiInit(fi, 0)) != NULL)
+	while ((i = tfiNext(fi)) >= 0)
+#endif
+	{
 	    /*
 	     * Take care not to mark files as replaced in packages that will
 	     * have been removed before we will get here.
@@ -1385,7 +1445,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/* Check added package has sufficient space on each partition used. */
 	switch (p->type) {
 	case TR_ADDED:
-	    if (!(ts->di && fi->fc))
+	    if (!(ts->di && tfiGetFC(fi) > 0))
 		/*@switchbreak@*/ break;
 	    for (i = 0; i < ts->filesystemCount; i++) {
 
@@ -1440,7 +1500,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     while ((p = teNextIterator(pi)) != NULL) {
 	if ((fi = teGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
-	if (fi->fc == 0)
+	if (tfiGetFC(fi) == 0)
 	    continue;
 	fi->fps = _free(fi->fps);
     }
@@ -1533,9 +1593,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		    if (p->fd != NULL) gotfd = 1;
 		}
 	    }
-	    /*@=branchstate@*/
 
-	    /*@-branchstate@*/
 	    if (p->fd != NULL) {
 		{
 char * fstates = fi->fstates;
@@ -1568,7 +1626,6 @@ fi->actions = actions;
 		ourrc++;
 		lastKey = pkgKey;
 	    }
-	    /*@=branchstate@*/
 
 	    h = headerFree(h, "TR_ADDED h free");
 
