@@ -6,7 +6,7 @@ LINT = splint
 
 PYVER= @WITH_PYTHON_VERSION@
 
-pylibdir = $(python -c 'import sys; print sys.path[1]')
+pylibdir = $(shell python -c 'import sys; print sys.path[1]')
 pyincdir = $(prefix)/include/python${PYVER}
 
 SUBDIRS = rpmdb test
