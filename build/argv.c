@@ -21,15 +21,15 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
 {
     ARGV_t av;
-    int ac;
 
     if (fp == NULL) fp = stderr;
 
     if (msg)
 	fprintf(fp, "===================================== %s\n", msg);
 
-    for (ac = 0, av = argv; *av; av++, ac++)
-	fprintf(fp, "%5d: %s\n", ac, *av);
+    if (argv)
+    for (av = argv; *av; av++)
+	fprintf(fp, "%s\n", *av);
 
 }
 
@@ -56,7 +56,15 @@ ARGV_t argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
     return NULL;
 }
 
-int argvCount(/*@null@*/ const ARGV_t argv)
+int argiCount(ARGI_t argi)
+{
+    int nvals = 0;
+    if (argi)
+	nvals = argi->nvals;
+    return nvals;
+}
+
+int argvCount(const ARGV_t argv)
 {
     int argc = 0;
     if (argv)
@@ -92,7 +100,7 @@ ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
     return bsearch(&val, argv, argvCount(argv), sizeof(*argv), compar);
 }
 
-int argiAdd(/*@out@*/ ARGI_t * argip, unsigned ix, int val)
+int argiAdd(/*@out@*/ ARGI_t * argip, int ix, int val)
 {
     ARGI_t argi;
 
@@ -101,6 +109,8 @@ int argiAdd(/*@out@*/ ARGI_t * argip, unsigned ix, int val)
     if (*argip == NULL)
 	*argip = xcalloc(1, sizeof(**argip));
     argi = *argip;
+    if (ix < 0)
+	ix = argi->nvals;
     if (ix >= argi->nvals) {
 	argi->vals = xrealloc(argi->vals, (ix + 1) * sizeof(*argi->vals));
 	memset(argi->vals + argi->nvals, 0,

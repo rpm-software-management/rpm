@@ -48,6 +48,13 @@ ARGV_t argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
 	/*@modifies argv @*/;
 
 /**
+ * Return no. of elements in argi array.
+ * @param argi		argi array
+ */
+int argiCount(/*@null@*/ const ARGI_t argi)
+	/*@*/;
+
+/**
  * Return no. of elements in argv array.
  * @param argv		argv array
  */
@@ -82,11 +89,11 @@ ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
 /**
  * Add an int to an argi array.
  * @retval *argip	argi array
- * @parm ix		argi array index
+ * @parm ix		argi array index (or -1 to append)
  * @param val		int arg to add
  * @return		0 always
  */
-int argiAdd(/*@out@*/ ARGI_t * argip, unsigned ix, int val)
+int argiAdd(/*@out@*/ ARGI_t * argip, int ix, int val)
 	/*@modifies *argip @*/;
 
 /**

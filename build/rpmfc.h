@@ -1,18 +1,27 @@
 #ifndef _H_RPMFC_
 #define _H_RPMFC_
 
+/*@notchecked@*/
+extern int _rpmfc_debug;
+
 typedef struct rpmfc_s * rpmfc;
 
 struct rpmfc_s {
-    ARGV_t av;		/*!< file(1) output lines */
-    int ac;		/*!< no. of lines */
-    int ix;		/*!< current lineno */
-    ARGV_t fn;		/*!< file names */
-    ARGI_t fcolor;	/*!< file colors */
-    ARGI_t fdictx;	/*!< file class dictionary indices */
-    ARGV_t dict;	/*!< file class dictionary */
+    int nfiles;		/*!< no. of files */
+    int fknown;		/*!< no. of classified files */
+    int fwhite;		/*!< no. of "white" files */
+    int ix;		/*!< current file index */
+    ARGV_t fn;		/*!< (#files) file names */
+    ARGI_t fcolor;	/*!< (#files) file colors */
+    ARGI_t fcdictx;	/*!< (#files) file class dictionary indices */
+    ARGI_t fddictx;	/*!< (#files) file depends dictionary start */
+    ARGI_t fddictn;	/*!< (#files) file depends dictionary no. entries */
+    ARGV_t cdict;	/*!< (#classes) file class dictionary */
+    ARGV_t ddict;	/*!< (#dependencies) file depends dictionary */
+    ARGI_t ddictx;	/*!< (#dependencies) file->dependency mapping */
+    ARGV_t provides;	/*!< (#provides) package provides */
+    ARGV_t requires;	/*!< (#requires) package requires */
 };
-
 
 enum FCOLOR_e {
     RPMFC_BLACK			= 0,
@@ -37,6 +46,12 @@ enum FCOLOR_e {
     RPMFC_FONT			= (1 << 21),
     RPMFC_IMAGE			= (1 << 22),
     RPMFC_MANPAGE		= (1 << 23),
+
+    RPMFC_PERL			= (1 << 24),
+    RPMFC_JAVA			= (1 << 25),
+    RPMFC_PYTHON		= (1 << 26),
+    RPMFC_PHP			= (1 << 27),
+    RPMFC_TCL			= (1 << 28),
 
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),
@@ -78,9 +93,16 @@ rpmfc rpmfcNew(void)
 	/*@*/;
 
 /**
+ * Build file class dictionary and mappings.
  */
-int rpmfcClassify(/*@out@*/ rpmfc *fcp, ARGV_t argv)
+int rpmfcClassify(rpmfc fc, ARGV_t argv)
 	/*@modifies *fcp @*/;
+
+/**
+ * BUild file/package dependency dictionary and mappings.
+ */
+int rpmfcApply(rpmfc fc)
+	/*@modifies fc @*/;
 
 #ifdef __cplusplus
 }

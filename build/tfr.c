@@ -4,144 +4,24 @@
 #include <argv.h>
 #include <rpmfc.h>
 
-
-#if HAVE_GELF_H
-
-#include <gelf.h>
-
-#endif
-
 #include "debug.h"
 
-static int rpmfcELF(rpmfc fc)
-{
-#if HAVE_GELF_H && HAVE_LIBELF
-    const char * fn = fc->fn[fc->ix];;
-    Elf * elf;
-    Elf_Scn * scn;
-    Elf_Data * data;
-    GElf_Ehdr ehdr_mem, * ehdr;
-    GElf_Shdr shdr_mem, * shdr;
-    GElf_Verdef def_mem, * def;
-    GElf_Verneed need_mem, * need;
-    GElf_Dyn dyn_mem, * dyn;
-    unsigned int auxoffset;
-    unsigned int offset;
-    int fdno;
-    int cnt2;
-    int cnt;
-
-fprintf(stderr, "*** %s\n", fn);
-    fdno = open(fn, O_RDONLY);
-    if (fdno < 0)
-	return fdno;
-
-    (void) elf_version(EV_CURRENT);
-
-    elf = NULL;
-    if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
-     || elf_kind(elf) != ELF_K_ELF
-     || (ehdr = gelf_getehdr(elf, &ehdr_mem)) == NULL
-     || !(ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC))
-	goto exit;
-
-    /*@-branchstate -uniondef @*/
-    scn = NULL;
-    while ((scn = elf_nextscn(elf, scn)) != NULL) {
-	shdr = gelf_getshdr(scn, &shdr_mem);
-	if (shdr == NULL)
-	    break;
-
-	switch (shdr->sh_type) {
-	default:
-	    continue;
-	    /*@switchbreak@*/ break;
-	case SHT_GNU_verdef:
-fprintf(stderr, "\tsection %s\n", elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name));
-	    data = NULL;
-	    while ((data = elf_getdata (scn, data)) != NULL) {
-		offset = 0;
-		for (cnt = shdr->sh_info; --cnt >= 0; ) {
-		
-		    def = gelf_getverdef (data, offset, &def_mem);
-		    if (def == NULL)
-			break;
-		    auxoffset = offset + def->vd_aux;
-		    for (cnt2 = def->vd_cnt; --cnt2 >= 0; ) {
-			GElf_Verdaux aux_mem, * aux;
-
-			aux = gelf_getverdaux (data, auxoffset, &aux_mem);
-			if (aux == NULL)
-			    break;
-fprintf(stderr, "\t\tverdef: %s\n", elf_strptr(elf, shdr->sh_link, aux->vda_name));
-
-			auxoffset += aux->vda_next;
-		    }
-		    offset += def->vd_next;
-		}
-	    }
-	    /*@switchbreak@*/ break;
-	case SHT_GNU_verneed:
-fprintf(stderr, "\tsection %s\n", elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name));
-	    data = NULL;
-	    while ((data = elf_getdata (scn, data)) != NULL) {
-		offset = 0;
-		for (cnt = shdr->sh_info; --cnt >= 0; ) {
-		    need = gelf_getverneed (data, offset, &need_mem);
-		    if (need == NULL)
-			break;
-		    auxoffset = offset + need->vn_aux;
-		    for (cnt2 = need->vn_cnt; --cnt2 >= 0; ) {
-			GElf_Vernaux aux_mem, * aux;
-
-			aux = gelf_getvernaux (data, auxoffset, &aux_mem);
-			if (aux == NULL)
-			    break;
-fprintf(stderr, "\t\tverneed: %s\n", elf_strptr(elf, shdr->sh_link, aux->vna_name));
-
-			auxoffset += aux->vna_next;
-		    }
-		    offset += need->vn_next;
-		}
-	    }
-	    /*@switchbreak@*/ break;
-	case SHT_DYNAMIC:
-fprintf(stderr, "\tsection %s\n", elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name));
-	    data = NULL;
-	    while ((data = elf_getdata (scn, data)) != NULL) {
-		for (cnt = 0; cnt < (shdr->sh_size / shdr->sh_entsize); ++cnt) {
-		    dyn = gelf_getdyn (data, cnt, &dyn_mem);
-		    switch (dyn->d_tag) {
-		    default:
-			/*@innercontinue@*/ continue;
-			/*@notreached@*/ break;
-		    case DT_NEEDED:
-fprintf(stderr, "\t\tneeded: %s\n", elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val));
-			/*@switchbreak@*/ break;
-		    case DT_SONAME:
-fprintf(stderr, "\t\tsoname: %s\n", elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val));
-			/*@switchbreak@*/ break;
-		    }
-		}
-	    }
-	    /*@switchbreak@*/ break;
-	}
-    }
-    /*@=branchstate =uniondef @*/
-
-exit:
-    if (elf) (void) elf_end(elf);
-    return 0;
-#else
-    return -1;
-#endif
-}
+static int print_provides;
+static int print_requires;
 
 static struct poptOption optionsTable[] = {
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),
 	NULL }, 
+
+ { "rpmfcdebug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfc_debug, -1,
+        NULL, NULL },
+
+ { "provides", 'P', POPT_ARG_VAL, &print_provides, -1,
+        NULL, NULL },
+ { "requires", 'R', POPT_ARG_VAL, &print_requires, -1,
+        NULL, NULL },
 
    POPT_AUTOALIAS
    POPT_AUTOHELP
@@ -162,7 +42,7 @@ main(int argc, char *const argv[])
     const char * s;
     int ec = 1;
     int xx;
-int fcolor;
+char buf[BUFSIZ];
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
@@ -194,18 +74,25 @@ int fcolor;
     xx = argvSplit(&xav, getStringBuf(sb), "\n");
     sb = freeStringBuf(sb);
 
-    xx = argvSort(xav, argvCmp);
+    xx = argvSort(xav, NULL);
 
-    fc = NULL;
-    xx = rpmfcClassify(&fc, xav);
+    /* Build file class dictionary. */
+    fc = rpmfcNew();
+    xx = rpmfcClassify(fc, xav);
 
-    for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
-	fcolor = fc->fcolor->vals[fc->ix];
-	if (fcolor & RPMFC_ELF) {
-	    xx = rpmfcELF(fc);
-	    continue;
-	}
-    }
+    /* Build file/package dependency dictionary. */
+    xx = rpmfcApply(fc);
+
+if (_rpmfc_debug) {
+sprintf(buf, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
+rpmfcPrint(buf, fc, NULL);
+}
+
+    if (print_provides)
+	argvPrint(NULL, fc->provides, stdout);
+    if (print_requires)
+	argvPrint(NULL, fc->requires, stdout);
+
     fc = rpmfcFree(fc);
 
     xav = argvFree(xav);
