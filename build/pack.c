@@ -123,11 +123,19 @@ int generateRPM(char *name,       /* name-version-release         */
     while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
         if (count == -1) {
 	    perror("Couldn't read archiveTemp");
-	    exit(1);
+	    close(fd);
+	    close(ifd);
+	    unlink(archiveTemp);
+	    unlink(sigtarget);
+	    return 1;
         }
         if (write(fd, buffer, count) < 0) {
 	    perror("Couldn't write package to temp file");
-	    exit(1);
+	    close(fd);
+	    close(ifd);
+	    unlink(archiveTemp);
+	    unlink(sigtarget);
+	    return 1;
         }
     }
     close(ifd);
@@ -158,11 +166,19 @@ int generateRPM(char *name,       /* name-version-release         */
     while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
         if (count == -1) {
 	    perror("Couldn't read sigtarget");
-	    exit(1);
+	    close(ifd);
+	    close(fd);
+	    unlink(sigtarget);
+	    unlink(filename);
+	    return 1;
         }
         if (write(fd, buffer, count) < 0) {
 	    perror("Couldn't write package");
-	    exit(1);
+	    close(ifd);
+	    close(fd);
+	    unlink(sigtarget);
+	    unlink(filename);
+	    return 1;
         }
     }
     close(ifd);
