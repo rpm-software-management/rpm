@@ -171,14 +171,15 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	sprintf(s, "%s/%s", specDir, cmd);
 	res = rename(tmpSpecFile, s);
 	xfree(specDir);
-	xfree(tmpSpecFile);
 	
 	if (res) {
 	    fprintf(stderr, _("Failed to rename %s to %s: %s\n"),
 		    tmpSpecFile, s, strerror(errno));
 	    unlink(tmpSpecFile);
+	    xfree(tmpSpecFile);
 	    return 1;
 	}
+	xfree(tmpSpecFile);
 
 	/* Make the directory which contains the tarball the source 
 	   directory for this run */
