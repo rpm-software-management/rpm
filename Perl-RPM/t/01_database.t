@@ -5,10 +5,28 @@ use RPM::Database;
 $SIG{__WARN__} = sub { $@ = shift; };
 $SIG{__DIE__} = sub { $@ = shift; };
 
-print "1..12\n";
+print "1..13\n";
+$count = 1;
+
+#
+# Prior to starting up, we need to do some less-direct queries of the RPM
+# database, so that we have baseline data to test against.
+#
+@all_packs = `rpm -q -a --queryformat "\%{NAME}\\n"`;
+chomp(@all_packs);
+$all_packs{$_}++ for (@all_packs);
+
+#
+# With a full list of packages now known, find one to use for package existence
+# testing.
+#
+for (qw(rpm kernel bash file passwd))
+{
+    $test_pack = $_, last if (exists $all_packs{$_});
+}
 
 tie %DB, "RPM::Database" or print "not ";
-print "ok 1\n";
+print "ok $count\n"; $count++;
 
 unless (tied %DB)
 {
@@ -16,28 +34,31 @@ unless (tied %DB)
     exit -1;
 }
 
-# This package must exist, obviously
-$rpm = $DB{rpm};
+# Start with the test package
+$rpm = $DB{$test_pack};
 print "not " unless (defined $rpm and ref $rpm);
-print "ok 2\n";
+print "ok $count\n"; $count++;
 
 # Verify that STORE, DELETE and CLEAR operations are blocked
 # STORE
-eval { $DB{foo_package} = 'baz'; print "not " if ($DB{foo_package} eq 'baz') };
-print "ok 3\n";
+eval {
+    $DB{foo_package} = 'baz';
+    print "not " if (exists $DB{foo_package} and ($DB{foo_package} eq 'baz'));
+};
+print "ok $count\n"; $count++;
 
 # DELETE
 eval { delete $DB{foo_package} and print "not " };
-print "ok 4\n";
+print "ok $count\n"; $count++;
 
 # CLEAR
 eval { %DB = () and print "not " };
-print "ok 5\n";
+print "ok $count\n"; $count++;
 
 # Test the untying
 eval { untie %DB };
 print "not " if ($@);
-print "ok 6\n";
+print "ok $count\n"; $count++;
 
 # That should cover the basic TIEHASH operands sufficiently.
 
@@ -49,29 +70,33 @@ print "ok 6\n";
 # Test the non-tie approach
 $rpm = new RPM::Database;
 print "not " unless (defined $rpm and ref $rpm);
-print "ok 7\n";
+print "ok $count\n"; $count++;
+
+# Ensure that the same test package is visible
+print "not " unless (exists $rpm->{$test_pack} and ref($rpm->{$test_pack}));
+print "ok $count\n"; $count++;
 
 @matches = $rpm->find_by_file('/bin/rpm');
 # There should be exactly one match:
 print "not " unless (@matches == 1);
-print "ok 8\n";
+print "ok $count\n"; $count++;
 
 print "not " unless ($matches[0]->{name} eq 'rpm');
-print "ok 9\n";
+print "ok $count\n"; $count++;
 
 # There may be more than one package that depends on rpm
 @matches = $rpm->find_by_required_by('rpm');
 for (@matches) { $_ = $_->{name} }
 # As long as we see this one (it has to be present to build this package)
-print "not " unless (grep 'rpm-devel', @matches);
-print "ok 10\n";
+print "not " unless (grep($_ eq 'rpm-devel', @matches));
+print "ok $count\n"; $count++;
 
 # Try to fetch a bogus package
 $hdr = $rpm->{i_hope_no_one_makes_a_package_by_this_name};
 print "not " if $hdr;
-print "ok 11\n";
+print "ok $count\n"; $count++;
 
 undef $rpm;
-print "ok 12\n";
+print "ok $count\n"; $count++;
 
 exit 0;

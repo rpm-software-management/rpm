@@ -5,22 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.8 2000/10/05 04:48:59 rjray Exp $";
-
-/*
-  Use this define for deriving the saved rpmdb struct, rather than coding
-  it a dozen places. Note that the hv_fetch call is the no-magic one defined
-  in RPM.h
-*/
-#define dbstruct_from_object_ret(s_ptr, rdb, object, err_ret) \
-    hv_fetch_nomg((s_ptr), (object), STRUCT_KEY, STRUCT_KEY_LEN, FALSE); \
-    (rdb) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Database *)SvIV(*(s_ptr)) : NULL; \
-    if (! (rdb)) return (err_ret);
-/* And a no-return-value version: */
-#define dbstruct_from_object(s_ptr, rdb, object) \
-    hv_fetch_nomg((s_ptr), (object), STRUCT_KEY, STRUCT_KEY_LEN, FALSE); \
-    (rdb) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Database *)SvIV(*(s_ptr)) : NULL; \
-    if (! (rdb)) return;
+static char * const rcsid = "$Id: Database.xs,v 1.9 2000/11/10 08:49:57 rjray Exp $";
 
 /*
   rpmdb_TIEHASH
@@ -36,10 +21,10 @@ RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
     int    mode  = O_RDONLY;
     mode_t perms = 0;
     HV*    opt_hash;
-    SV*    value;
+    SV*    t_magic;
     SV**   svp;
-    RPM_Database* dbstruct;
-    RPM__Database TIEHASH;
+    RPM_Database* retvalp; /* For "private" */
+    RPM__Database RETVAL;
 
     if (opts)
     {
@@ -68,29 +53,31 @@ RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
     }
 
     /* With that all processed, attempt to open the actual RPM DB */
-    /* The dbstruct is used for the C-level rpmlib information on databases */
-    dbstruct = safemalloc(sizeof(RPM_Database));
-    Zero(dbstruct, 1, RPM_Database);
-    if (rpmdbOpen(root, &dbstruct->dbp, mode, perms) != 0)
+    /* The retvalp is used for the C-level rpmlib information on databases */
+    retvalp = new_RPM_storage(RPM_Database);
+    if (rpmdbOpen(root, &retvalp->dbp, mode, perms) != 0)
         /* rpm lib will have set the error already */
         return (Null(RPM__Database));
     else
     {
-        dbstruct->current_rec = 0;
+        retvalp->current_rec = 0;
 #if RPM_MAJOR < 4
-        dbstruct->index_set = (void *)NULL;
+        retvalp->index_set = (void *)NULL;
 #else
-        dbstruct->noffs = dbstruct->offx = 0;
-        dbstruct->offsets = (int *)NULL;
+        retvalp->noffs = retvalp->offx = 0;
+        retvalp->offsets = (int *)NULL;
 #endif
     }
 
-    new_RPM__Database(TIEHASH);
-    /* STRUCT_KEY is used to stash the C-level struct on the TIEHASH obj */
-    hv_store_nomg(TIEHASH,
-                  STRUCT_KEY, STRUCT_KEY_LEN, newSViv((unsigned)dbstruct),
-                  FALSE);
-    return TIEHASH;
+    RETVAL = newHV();
+    retvalp->storage = newHV();
+    t_magic = newSViv((unsigned)retvalp);
+
+    sv_magic((SV *)RETVAL, Nullsv, 'P', Nullch, 0);
+    sv_magic((SV *)RETVAL, t_magic, '~', Nullch, 0);
+    SvREFCNT_dec(t_magic);
+
+    return RETVAL;
 }
 
 RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
@@ -109,7 +96,7 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
     /* Any successful operation will re-assign this */
     FETCH = Null(RPM__Header);
 
-    dbstruct_from_object_ret(svp, dbstruct, self, FETCH);
+    struct_from_object_ret(RPM_Database, dbstruct, self, FETCH);
     /* De-reference key, if it is a reference */
     if (SvROK(key))
         key = SvRV(key);
@@ -124,10 +111,10 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
 
         /* Step 1: Check to see if this has already been requested and is
            thus cached on the hash itself */
-        hv_fetch_nomg(svp, self, (char *)name, namelen, FALSE);
-        if (svp && SvOK(*svp))
+        svp = hv_fetch(dbstruct->storage, (char *)name, namelen, FALSE);
+        if (svp && SvROK(*svp))
         {
-            FETCH = (RPM__Header)SvIV(*svp);
+            FETCH = (RPM__Header)SvRV(*svp);
             return FETCH;
         }
 
@@ -201,15 +188,16 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
 #if RPM_MAJOR >= 4
         hdr = headerLink(hdr);
 #endif
-        FETCH = rpmhdr_TIEHASH(aTHX_ sv_2mortal(newSVpv("RPM::Header", 12)),
-                               sv_2mortal(newRV((SV *)hdr)),
+        FETCH = rpmhdr_TIEHASH(aTHX_ "RPM::Header",
+                               sv_2mortal(newSViv((unsigned)hdr)),
                                RPM_HEADER_FROM_REF | RPM_HEADER_READONLY);
         /* If name is no longer NULL, it means our vector in was a string
            (key), so put the result back into the hash-cache. */
         if (name != NULL)
         {
-            hv_store_nomg(self, (char *)name, namelen,
-                          newSViv((unsigned)FETCH), FALSE);
+            hv_store(dbstruct->storage, (char *)name, namelen,
+                     newRV((SV *)FETCH), FALSE);
+            SvREFCNT_inc((SV *)FETCH);
         }
     }
 #if RPM_MAJOR >= 4
@@ -219,13 +207,12 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
     return FETCH;
 }
 
-int rpmdb_EXISTS(pTHX_ RPM__Database self, SV* key)
+bool rpmdb_EXISTS(pTHX_ RPM__Database self, SV* key)
 {
     SV* tmp;
 
     tmp = (SV *)rpmdb_FETCH(aTHX_ self, key);
-    /* There is probably a cleaner test for (SV *)tmp == PL_sv_undef */
-    return (SvANY(tmp) != NULL);
+    return (tmp != Nullsv);
 }
 
 /*
@@ -237,9 +224,8 @@ int rpmdb_EXISTS(pTHX_ RPM__Database self, SV* key)
 int rpmdb_FIRSTKEY(pTHX_ RPM__Database self, SV** key, RPM__Header* value)
 {
     RPM_Database* dbstruct;
-    SV** svp;
 
-    dbstruct_from_object_ret(svp, dbstruct, self, 0);
+    struct_from_object_ret(RPM_Database, dbstruct, self, 0);
 #if RPM_MAJOR < 4
     /* This more or less resets our "iterator" */
     dbstruct->current_rec = 0;
@@ -285,9 +271,8 @@ int rpmdb_NEXTKEY(pTHX_ RPM__Database self, SV* key,
                   SV** nextkey, RPM__Header* nextvalue)
 {
     RPM_Database* dbstruct;
-    SV** svp;
 
-    dbstruct_from_object_ret(svp, dbstruct, self, 0);
+    struct_from_object_ret(RPM_Database, dbstruct, self, 0);
 
 #if RPM_MAJOR < 4
     if (! (dbstruct->current_rec = rpmdbNextRecNum(dbstruct->dbp,
@@ -311,10 +296,9 @@ int rpmdb_NEXTKEY(pTHX_ RPM__Database self, SV* key,
 
 void rpmdb_DESTROY(pTHX_ RPM__Database self)
 {
-    SV** svp;
     RPM_Database* dbstruct;  /* This is the struct used to hold C-level data */
 
-    dbstruct_from_object(svp, dbstruct, self);
+    struct_from_object(RPM_Database, dbstruct, self);
 
     rpmdbClose(dbstruct->dbp);
 #if RPM_MAJOR < 4
@@ -323,10 +307,10 @@ void rpmdb_DESTROY(pTHX_ RPM__Database self)
 #else
     if (dbstruct->offsets)
         safefree(dbstruct->offsets);
-    dbstruct->noffs = dbstruct->offx = 0;
-    dbstruct->offsets = NULL;
 #endif
 
+    hv_undef(dbstruct->storage);
+    safefree(dbstruct);
     hv_undef(self);
 }
 
@@ -349,7 +333,6 @@ AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
 {
     const char* str = NULL; /* For the actual string out of (SV *)string    */
     STRLEN len;             /* Arg for SvPV(..., len)                       */
-    SV** svp;
     RPM_Database* dbstruct; /* This is the struct used to hold C-level data */
     AV* return_val;
     int result, loop;
@@ -357,11 +340,11 @@ AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
 #if RPM_MAJOR >= 4
     rpmdbMatchIterator mi;
 #endif
-    
+
     /* Any successful operation will store items on this */
     return_val = newAV();
 
-    dbstruct_from_object_ret(svp, dbstruct, self, return_val);
+    struct_from_object_ret(RPM_Database, dbstruct, self, return_val);
     /* De-reference key, if it is a reference */
     if (SvROK(string))
         string = SvRV(string);
@@ -418,6 +401,7 @@ AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
     return return_val;
 }
 
+
 MODULE = RPM::Database  PACKAGE = RPM::Database         PREFIX = rpmdb_
 
 
@@ -442,8 +426,8 @@ rpmdb_FETCH(self, key)
     RETVAL
 
 int
-rpmdb_STORE(self, key, value)
-    RPM::Database self;
+rpmdb_STORE(self=NULL, key=NULL, value=NULL)
+    SV* self;
     SV* key;
     SV* value;
     PROTOTYPE: $$$
@@ -455,22 +439,22 @@ rpmdb_STORE(self, key, value)
     OUTPUT:
         RETVAL
 
-int
-rpmdb_DELETE(self, key)
-    RPM::Database self;
+SV*
+rpmdb_DELETE(self=NULL, key=NULL)
+    SV* self;
     SV* key;
     PROTOTYPE: $$
     CODE:
     {
         rpm_error(aTHX_ RPMERR_NOCREATEDB, "DELETE: operation not permitted");
-        RETVAL = 0;
+        RETVAL = Nullsv;
     }
     OUTPUT:
-        RETVAL
+    RETVAL
 
 int
-rpmdb_CLEAR(self)
-    RPM::Database self;
+rpmdb_CLEAR(self=NULL)
+    SV* self;
     PROTOTYPE: $
     CODE:
     {
@@ -478,9 +462,9 @@ rpmdb_CLEAR(self)
         RETVAL = 0;
     }
     OUTPUT:
-        RETVAL
+    RETVAL
 
-int
+bool
 rpmdb_EXISTS(self, key)
     RPM::Database self;
     SV* key;
@@ -492,13 +476,12 @@ rpmdb_EXISTS(self, key)
 
 void
 rpmdb_FIRSTKEY(self)
-    RPM::Header self;
+    RPM::Database self;
     PROTOTYPE: $
-    PREINIT:
-    SV* key;
-    SV* value;
     PPCODE:
     {
+        SV* key;
+        SV* value;
         RPM__Header hvalue;
 
         if (! rpmdb_FIRSTKEY(aTHX_ self, &key, &hvalue))
@@ -519,17 +502,16 @@ rpmdb_NEXTKEY(self, key=NULL)
     RPM::Database self;
     SV* key;
     PROTOTYPE: $;$
-    PREINIT:
-    SV* nextkey;
-    SV* nextvalue;
     PPCODE:
     {
+        SV* nextkey;
+        SV* nextvalue;
         RPM__Header hvalue;
 
         if (! rpmdb_NEXTKEY(aTHX_ self, key, &nextkey, &hvalue))
         {
             nextkey = newSVsv(&PL_sv_undef);
-            nextvalue = newRV(&PL_sv_undef);
+            nextvalue = newSVsv(&PL_sv_undef);
         }
         else
             nextvalue = newRV((SV *)hvalue);

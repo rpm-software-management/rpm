@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: RPM.xs,v 1.8 2000/10/13 09:24:05 rjray Exp $";
+static char * const rcsid = "$Id: RPM.xs,v 1.9 2000/11/10 08:49:57 rjray Exp $";
 
 extern XS(boot_RPM__Constants);
 extern XS(boot_RPM__Header);
@@ -59,7 +59,6 @@ const char* num2tag(pTHX_ int num)
 {
     SV** svp;
     char str_num[8];
-    SV* tmp;
 
     Zero(str_num, 1, 8);
     snprintf(str_num, 8, "%d", num);

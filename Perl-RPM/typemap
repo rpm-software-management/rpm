@@ -3,35 +3,18 @@
 TYPEMAP
 
 const char *            T_PTROBJ
-RPM::Database           O_RPM_Database
-RPM::Header             O_RPM_Header
+RPM::Database           O_RPM_Tied
+RPM::Header             O_RPM_Tied
 RPM::Package            O_RPM_Blessed
 RPM::Transaction        O_RPM_Blessed
 
-#
-# The following mappings for O_HvRV are taken directly from Dean Roehrich's
-# excellent XS Cookbook, vol. A.
-#
-
 OUTPUT
-O_RPM_Database
+O_RPM_Tied
         if ($var)
         {
-            $arg = sv_bless(newRV_noinc((SV*)$var),
-                            gv_stashpv("RPM::Database", TRUE));
-            hv_magic($var, (GV *)Nullhv, 'P');
-        }
-        else
-        {
-            $arg = newSVsv(&PL_sv_undef);
-        }
-
-O_RPM_Header
-        if ($var)
-        {
-            $arg = sv_bless(newRV_noinc((SV*)$var),
-                            gv_stashpv("RPM::Header", TRUE));
-            hv_magic($var, (GV *)Nullhv, 'P');
+            $arg = sv_bless(sv_2mortal(newRV_noinc((SV*)$var)),
+                            gv_stashpv(\"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\",
+                                       TRUE));
         }
         else
         {
@@ -50,17 +33,7 @@ O_RPM_Blessed
         }
 
 INPUT
-O_RPM_Database
-        if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVHV))
-            $var = (HV*)SvRV($arg);
-        else
-        {
-            rpm_error(aTHX_ RPMERR_BADARG,
-                      \"${Package}::$func_name: not a blessed HV reference\");
-            XSRETURN_UNDEF;
-        }
-
-O_RPM_Header
+O_RPM_Tied
         if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVHV))
             $var = (HV*)SvRV($arg);
         else

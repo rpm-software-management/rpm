@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.12 2000/10/10 08:37:20 rjray Exp $
+ * $Id: RPM.h,v 1.13 2000/11/10 08:49:57 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -51,9 +51,33 @@
 #define RPM_HEADER_READONLY    0x01
 #define RPM_HEADER_FROM_REF    0x02
 
-#define RPM_PACKAGE_MASK       0xf0
-#define RPM_PACKAGE_READONLY   0x10
-#define RPM_PACKAGE_NOREAD     0x20
+#define RPM_PACKAGE_MASK       0x0f00
+#define RPM_PACKAGE_READONLY   0x0100
+#define RPM_PACKAGE_NOREAD     0x0200
+
+/*
+  Use this define for deriving the saved underlying struct, rather than coding
+  it a dozen places.
+*/
+#define struct_from_object_ret(type, header, object, err_ret) \
+    { \
+        MAGIC* mg = mg_find((SV *)(object), '~'); \
+        if (mg) \
+            (header) = (type *)SvIV(mg->mg_obj); \
+        else \
+            return (err_ret); \
+    }
+/* And a no-return version: */
+#define struct_from_object(type, header, object) \
+    { \
+        MAGIC* mg = mg_find((SV *)(object), '~'); \
+        if (mg) \
+            (header) = (type *)SvIV(mg->mg_obj); \
+        else \
+            (header) = Null(type *); \
+    }
+
+#define new_RPM_storage(type) (type *)safemalloc(sizeof(type))
 
 /*
  *    Perl complement: RPM::Database
@@ -61,9 +85,7 @@
 
 /*
   This is the underlying struct that implements the interface to the RPM
-  database. Since we need the actual object to be a hash, the struct will
-  be stored as an SV (actually, a pointer to a struct) on a special key
-  defined below.
+  database.
 */
 
 typedef struct {
@@ -76,11 +98,11 @@ typedef struct {
     int offx;
     int* offsets;
 #endif
+    /* This HV will be used to cache key/value pairs to avoid re-computing */
+    HV* storage;
 } RPM_Database;
 
 typedef HV* RPM__Database;
-
-#define new_RPM__Database(x) x = newHV()
 
 
 /*
@@ -89,9 +111,7 @@ typedef HV* RPM__Database;
 
 /*
   This is the underlying struct that implements the interface to the RPM
-  headers. As above, we need the actual object to be a hash, so the struct
-  will be stored as an SV on the same sort of special key as RPM__Database
-  uses.
+  headers.
 */
 
 typedef struct {
@@ -104,6 +124,8 @@ typedef struct {
     int isSource;   /* If this header is for a source RPM (SRPM) */
     int major;      /* Major and minor rev numbers of package's format */
     int minor;
+    /* This HV will be used to cache key/value pairs to avoid re-computing */
+    HV* storage;
     /* Keep a per-header iterator for things like FIRSTKEY and NEXTKEY */
     HeaderIterator iterator;
     int read_only;
@@ -113,8 +135,6 @@ typedef struct {
 } RPM_Header;
 
 typedef HV* RPM__Header;
-
-#define new_RPM__Header(x) x = newHV()
 
 
 /*
@@ -139,34 +159,12 @@ typedef struct {
     int readonly;
     /* The current notify/callback function associated with this package */
     CV* callback;
+    /* Any data they want to have passed to the callback */
+    SV* cb_data;
 } RPM_Package;
 
 typedef RPM_Package* RPM__Package;
 
-#define new_RPM__Package(x) x = (RPM__Package)safemalloc(sizeof(RPM_Package))
-
-
-/*
-  Because our HV* are going to be set magical, the following is needed for
-  explicit fetch and store calls that are done within the tied FETCH/STORE
-  methods.
-*/
-#define hv_fetch_nomg(SVP, h, k, kl, f) \
-        SvMAGICAL_off((SV *)(h)); \
-        (SVP) = hv_fetch((h), (k), (kl), (f)); \
-        SvMAGICAL_on((SV *)(h))
-#define hv_store_nomg(h, k, kl, v, f) \
-        SvMAGICAL_off((SV *)(h)); \
-        hv_store((h), (k), (kl), (v), (f)); \
-        SvMAGICAL_on((SV *)(h))
-
-/*
-  This silly-looking key is what will be used on the RPM::Header and
-  RPM::Database objects to stash the underlying struct.
-*/
-#define STRUCT_KEY "<<<struct>>>"
-/* This must match! */
-#define STRUCT_KEY_LEN 13
 
 /*
   These represent the various interfaces that are allowed for use outside
@@ -184,11 +182,11 @@ extern void rpm_error(pTHX_ int, const char *);
 
 /* RPM/Header.xs: */
 extern const char* sv2key(pTHX_ SV *);
-extern RPM__Header rpmhdr_TIEHASH(pTHX_ SV *, SV *, int);
+extern RPM__Header rpmhdr_TIEHASH(pTHX_ char *, SV *, int);
 extern SV* rpmhdr_FETCH(pTHX_ RPM__Header, SV *, const char *, int, int);
 extern int rpmhdr_STORE(pTHX_ RPM__Header, SV *, SV *);
 extern int rpmhdr_DELETE(pTHX_ RPM__Header, SV *);
-extern int rpmhdr_EXISTS(pTHX_ RPM__Header, SV *);
+extern bool rpmhdr_EXISTS(pTHX_ RPM__Header, SV *);
 extern unsigned int rpmhdr_size(pTHX_ RPM__Header);
 extern int rpmhdr_tagtype(pTHX_ RPM__Header, SV *);
 extern int rpmhdr_write(pTHX_ RPM__Header, SV *, int);
@@ -199,7 +197,7 @@ extern int rpmhdr_scalar_tag(pTHX_ SV*, int);
 /* RPM/Database.xs: */
 extern RPM__Database rpmdb_TIEHASH(pTHX_ char *, SV *);
 extern RPM__Header rpmdb_FETCH(pTHX_ RPM__Database, SV *);
-extern int rpmdb_EXISTS(pTHX_ RPM__Database, SV *);
+extern bool rpmdb_EXISTS(pTHX_ RPM__Database, SV *);
 
 /* RPM/Package.xs: */
 extern RPM__Package rpmpkg_new(pTHX_ char *, SV *, int);

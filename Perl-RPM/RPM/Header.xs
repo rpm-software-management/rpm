@@ -4,24 +4,30 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.19 2000/10/12 05:09:16 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.20 2000/11/10 08:49:57 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
-  it a dozen places. Note that the hv_fetch call is the no-magic one defined
-  in RPM.h
+  it a dozen places.
 */
-#define header_from_object_ret(s_ptr, header, object, err_ret) \
-    hv_fetch_nomg((s_ptr), (object), STRUCT_KEY, STRUCT_KEY_LEN, FALSE); \
-    (header) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Header *)SvIV(*(s_ptr)) : NULL; \
-    if (! (header)) \
-        return (err_ret);
+#define header_from_object_ret(header, object, err_ret) \
+    { \
+        MAGIC* mg = mg_find((SV *)(object), '~'); \
+        if (mg) \
+            (header) = (RPM_Header *)SvIV(mg->mg_obj); \
+        else \
+            return (err_ret); \
+    }
 /* And a no-return version: */
-#define header_from_object(s_ptr, header, object) \
-    hv_fetch_nomg((s_ptr), (object), STRUCT_KEY, STRUCT_KEY_LEN, FALSE); \
-    (header) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Header *)SvIV(*(s_ptr)) : NULL;
-
+#define header_from_object(header, object) \
+    { \
+        MAGIC* mg = mg_find((SV *)(object), '~'); \
+        if (mg) \
+            (header) = (RPM_Header *)SvIV(mg->mg_obj); \
+        else \
+            (header) = Null(RPM_Header *); \
+    }
 
 /* Any constants that are specific to the RPM::Header class will be exported
    from here, via this C-level constant() routine */
@@ -73,11 +79,6 @@ const char* sv2key(pTHX_ SV* key)
 SV* key2sv(pTHX_ const char* key)
 {
     return (sv_2mortal(newSVpv((char *)key, PL_na)));
-}
-
-static SV* ikey2sv(pTHX_ int key)
-{
-    return (sv_2mortal(newSViv(key)));
 }
 
 /* This creates a header data-field from the passed-in data */
@@ -250,7 +251,7 @@ static int new_from_fname(pTHX_ const char* source, RPM_Header* new_hdr)
         return 0;
     }
 
-    if (retval = new_from_fd_t(fd, new_hdr))
+    if ((retval = new_from_fd_t(fd, new_hdr)))
     {
         Fclose(fd);
         new_hdr->source_name = safemalloc(strlen(source) + 1);
@@ -260,19 +261,20 @@ static int new_from_fname(pTHX_ const char* source, RPM_Header* new_hdr)
     return retval;
 }
 
-RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
+RPM__Header rpmhdr_TIEHASH(pTHX_ char* class, SV* source, int flags)
 {
     char* fname;
     int fname_len;
-    RPM__Header TIEHASH;
-    RPM_Header* hdr_struct; /* Use this to store the actual C-level data */
+    RPM__Header RETVAL;
+    RPM_Header* retvalp; /* Use this to store the actual C-level data */
+    SV* t_magic;  
 
-    hdr_struct = safemalloc(sizeof(RPM_Header));
-    Zero(hdr_struct, 1, RPM_Header);
-    TIEHASH = Null(RPM__Header);
+    retvalp = new_RPM_storage(RPM_Header);
+    Zero(retvalp, 1, RPM_Header);
+    RETVAL = Nullhv;
 
     if (! source)
-        hdr_struct->hdr = headerNew();
+        retvalp->hdr = headerNew();
     else if (! (flags & RPM_HEADER_FROM_REF))
     {
         /* If we aren't starting out with a pointer to a Header
@@ -282,52 +284,59 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
         if (SvPOK(source))
         {
             fname = SvPV(source, fname_len);
-            if (! new_from_fname(aTHX_ fname, hdr_struct))
+            if (! new_from_fname(aTHX_ fname, retvalp))
             {
-                return TIEHASH;
+                return RETVAL;
             }
         }
         else if (IoIFP(sv_2io(source)))
         {
             if (! new_from_fd(PerlIO_fileno(IoIFP(sv_2io(source))),
-                              hdr_struct))
+                              retvalp))
             {
-                return TIEHASH;
+                return RETVAL;
             }
         }
         else
         {
             rpm_error(aTHX_ RPMERR_BADARG,
                       "Argument 2 must be filename or GLOB");
-            return TIEHASH;
+            return RETVAL;
         }
     }
     else
     {
-        hdr_struct->hdr = (Header)SvRV(source);
+        retvalp->hdr = (Header)SvIV(source);
         /* We simply don't know these three settings at this point */
-        hdr_struct->isSource = 0;
-        hdr_struct->major = 0;
-        hdr_struct->minor = 0;
+        retvalp->isSource = 0;
+        retvalp->major = 0;
+        retvalp->minor = 0;
     }
 
     /* These three are likely to be most of the data requests, anyway */
-    headerNVR(hdr_struct->hdr,
-              &hdr_struct->name, &hdr_struct->version, &hdr_struct->release);
+    headerNVR(retvalp->hdr,
+              &retvalp->name, &retvalp->version, &retvalp->release);
     /* This defaults to false, but RPM::Database will set it true */
-    hdr_struct->read_only = flags & RPM_HEADER_READONLY;
+    retvalp->read_only = flags & RPM_HEADER_READONLY;
     
-    hdr_struct->iterator = (HeaderIterator)NULL;
+    retvalp->iterator = (HeaderIterator)NULL;
 
-    new_RPM__Header(TIEHASH);
+    retvalp->storage = newHV();
+    RETVAL = newHV();
+    t_magic = newSViv((unsigned)retvalp);
     /* With the actual HV*, store the type-keys for the three cached values: */
-    hv_store_nomg(TIEHASH, "NAME_t", 7, newSViv(RPM_STRING_TYPE), FALSE);
-    hv_store_nomg(TIEHASH, "VERSION_t", 10, newSViv(RPM_STRING_TYPE), FALSE);
-    hv_store_nomg(TIEHASH, "RELEASE_t", 10, newSViv(RPM_STRING_TYPE), FALSE);
-    hv_store_nomg(TIEHASH,
-                  STRUCT_KEY, STRUCT_KEY_LEN,
-                  newSViv((unsigned)hdr_struct), FALSE);
-    return TIEHASH;
+    hv_store(retvalp->storage,
+             "NAME_t", 7, newSViv(RPM_STRING_TYPE), FALSE);
+    hv_store(retvalp->storage,
+             "VERSION_t", 10, newSViv(RPM_STRING_TYPE), FALSE);
+    hv_store(retvalp->storage,
+             "RELEASE_t", 10, newSViv(RPM_STRING_TYPE), FALSE);
+
+    sv_magic((SV *)RETVAL, Nullsv, 'P', Nullch, 0);
+    sv_magic((SV *)RETVAL, t_magic, '~', Nullch, 0);
+    SvREFCNT_dec(t_magic);
+
+    return RETVAL;
 }
 
 SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
@@ -344,7 +353,7 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
 
     FETCH = newSVsv(&PL_sv_undef);
 
-    header_from_object_ret(svp, hdr, self, FETCH);
+    struct_from_object_ret(RPM_Header, hdr, self, FETCH);
 
     name = sv2key(aTHX_ key);
     if (! (name && (namelen = strlen(name))))
@@ -375,7 +384,7 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
     {
         /* If it wasn't one of those three, then we have to explicitly fetch
            it, either from the store in cache or via the headerGetEntry call */
-        hv_fetch_nomg(svp, self, uc_name, namelen, FALSE);
+        svp = hv_fetch(hdr->storage, uc_name, namelen, FALSE);
         if (svp && SvOK(*svp))
         {
             FETCH = newSVsv(*svp);
@@ -389,10 +398,10 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
             SV* new_item = rpmhdr_create(aTHX_ data_in, type_in, size_in,
                                          scalar_tag(aTHX_ Nullsv, tag_by_num));
 
-            hv_store_nomg(self, uc_name, namelen, newRV((SV *)new_item),
-                          FALSE);
-            hv_store_nomg(self, strcat(uc_name, "_t"), (namelen + 2),
-                          newSViv(type_in), FALSE);
+            hv_store(hdr->storage, uc_name, namelen, newRV((SV *)new_item),
+                     FALSE);
+            hv_store(hdr->storage, strcat(uc_name, "_t"), (namelen + 2),
+                     newSViv(type_in), FALSE);
 
             FETCH = new_item;
         }
@@ -402,7 +411,6 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
             char* new_item_p;
             int new_item_type;
             int size;
-            char urk[2];
 
             /* Pull the tag by the int value we now have */
             if (! headerGetEntry(hdr->hdr, tag_by_num,
@@ -417,10 +425,10 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
             new_item = rpmhdr_create(aTHX_ new_item_p, new_item_type, size,
                                      scalar_tag(aTHX_ Nullsv, tag_by_num));
 
-            hv_store_nomg(self, uc_name, namelen, newRV((SV *)new_item),
-                          FALSE);
-            hv_store_nomg(self, strcat(uc_name, "_t"), (namelen + 2),
-                          newSViv(new_item_type), FALSE);
+            hv_store(hdr->storage, uc_name, namelen, newRV((SV *)new_item),
+                     FALSE);
+            hv_store(hdr->storage, strcat(uc_name, "_t"), (namelen + 2),
+                     newSViv(new_item_type), FALSE);
             FETCH = new_item;
         }
     }
@@ -441,12 +449,12 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, SV* value)
     char errmsg[256];
     STRLEN namelen;
     int size, i, is_scalar;
-    I32 num_ent, data_type, data_key;
+    I32 num_ent, data_type;
     void* data;
     AV* a_value = Nullav;
     RPM_Header* hdr;
 
-    header_from_object_ret(svp, hdr, self, 0);
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
     if (hdr->read_only)
         return 0;
 
@@ -562,7 +570,8 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, SV* value)
     {
         /* This will permanently concat "_t" to uc_name. But we'll craftily
            manipulate that later on with namelen. */
-        hv_fetch_nomg(svp, self, strcat(uc_name, "_t"), (namelen + 2), FALSE);
+        svp = hv_fetch(hdr->storage, strcat(uc_name, "_t"), (namelen + 2),
+                       FALSE);
         if (! (svp && SvOK(*svp)))
         {
             /*
@@ -771,9 +780,9 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, SV* value)
     /* Store the new data */
     headerAddEntry(hdr->hdr, num_ent, data_type, data, size);
     /* Store on the hash */
-    hv_store_nomg(self, uc_name, namelen,
-                  (is_scalar) ? newSVsv(value) : newRV_noinc((SV *)a_value),
-                  FALSE);
+    hv_store(hdr->storage, uc_name, namelen,
+             (is_scalar) ? newSVsv(value) : newRV_noinc((SV *)a_value),
+             FALSE);
 
     return 1;
 }
@@ -784,10 +793,9 @@ int rpmhdr_DELETE(pTHX_ RPM__Header self, SV* key)
     int namelen;       /* Arg for SvPV(..., len)               */
     char* uc_name;     /* UC'd version of name                 */
     RPM_Header* hdr;   /* Pointer to C-level struct            */
-    SV** svp;
     int retval, num, i;
 
-    header_from_object_ret(svp, hdr, self, 0);
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
     if (hdr->read_only)
         return 0;
 
@@ -821,11 +829,8 @@ int rpmhdr_DELETE(pTHX_ RPM__Header self, SV* key)
     }
     else
     {
-        /* Remove magic long enough to do two hv_delete() calls */
-        SvMAGICAL_off((SV *)self);
-        hv_delete(self, uc_name, namelen, G_DISCARD);
-        hv_delete(self, strcat(uc_name, "_t"), namelen + 2, G_DISCARD);
-        SvMAGICAL_on((SV *)self);
+        hv_delete(hdr->storage, uc_name, namelen, G_DISCARD);
+        hv_delete(hdr->storage, strcat(uc_name, "_t"), namelen + 2, G_DISCARD);
         retval = 1;
     }
 
@@ -833,15 +838,14 @@ int rpmhdr_DELETE(pTHX_ RPM__Header self, SV* key)
     return retval;
 }
 
-int rpmhdr_EXISTS(pTHX_ RPM__Header self, SV* key)
+bool rpmhdr_EXISTS(pTHX_ RPM__Header self, SV* key)
 {
     const char* name;
     char* uc_name;
     int namelen, tag_by_num, i;
-    SV** svp;
     RPM_Header* hdr;
 
-    header_from_object_ret(svp, hdr, self, 0);
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
     name = sv2key(aTHX_ key);
     if (! (name && (namelen = strlen(name))))
         return 0;
@@ -856,21 +860,27 @@ int rpmhdr_EXISTS(pTHX_ RPM__Header self, SV* key)
     tag_by_num = tag2num(aTHX_ uc_name);
     Safefree(uc_name);
     if (! tag_by_num)
-        /* Later we need to set some sort of error message */
+    {
+        char errmsg[256];
+
+        snprintf(errmsg, 256,
+                 "RPM::Header::EXISTS: unknown (to rpm) tag %s", uc_name);
+        rpm_error(aTHX_ RPMERR_BADARG, errmsg);
+        Safefree(uc_name);
         return 0;
+    }
 
     return (headerIsEntry(hdr->hdr, tag_by_num));
 }
 
 int rpmhdr_FIRSTKEY(pTHX_ RPM__Header self, SV** key, SV** value)
 {
-    SV** svp;
     RPM_Header* hdr;
     int tag, type, size;
     char* ptr;
     const char* tagname;
 
-    header_from_object_ret(svp, hdr, self, 0);
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
     /* If there is an existing iterator attached to the struct, free it */
     if (hdr->iterator)
         headerFreeIterator(hdr->iterator);
@@ -897,13 +907,12 @@ int rpmhdr_FIRSTKEY(pTHX_ RPM__Header self, SV** key, SV** value)
 int rpmhdr_NEXTKEY(pTHX_ RPM__Header self, SV* key,
                    SV** nextkey, SV** nextvalue)
 {
-    SV** svp;
     RPM_Header* hdr;
     int tag, type, size;
     char* ptr;
     const char* tagname;
 
-    header_from_object_ret(svp, hdr, self, 0);
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
     /* If there is not an existing iterator, we can't continue */
     if (! hdr->iterator)
         return 0;
@@ -932,10 +941,9 @@ int rpmhdr_NEXTKEY(pTHX_ RPM__Header self, SV* key,
 
 void rpmhdr_DESTROY(pTHX_ RPM__Header self)
 {
-    SV** svp;
     RPM_Header* hdr;
 
-    header_from_object(svp, hdr, self);
+    struct_from_object(RPM_Header, hdr, self);
     if (! hdr) return;
 
     if (hdr->iterator)
@@ -943,15 +951,16 @@ void rpmhdr_DESTROY(pTHX_ RPM__Header self)
     if (hdr->hdr)
         headerFree(hdr->hdr);
 
+    hv_undef(hdr->storage);
+    Safefree(hdr);
     hv_undef(self);
 }
 
 unsigned int rpmhdr_size(pTHX_ RPM__Header self)
 {
-    SV** svp;
     RPM_Header* hdr;
 
-    header_from_object_ret(svp, hdr, self, 0);
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
 
     if (! hdr->hdr)
         return 0;
@@ -966,6 +975,9 @@ int rpmhdr_tagtype(pTHX_ RPM__Header self, SV* key)
     char* uc_name;
     SV** svp;
     int i, retval;
+    RPM_Header* hdr;
+
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
 
     name = sv2key(aTHX_ key);
     if (! (name && (namelen = strlen(name))))
@@ -979,7 +991,7 @@ int rpmhdr_tagtype(pTHX_ RPM__Header self, SV* key)
 
     retval = RPM_NULL_TYPE;
 
-    hv_fetch_nomg(svp, self, uc_name, strlen(uc_name) + 1, FALSE);
+    svp = hv_fetch(hdr->storage, uc_name, strlen(uc_name), FALSE);
     if (svp && SvOK(*svp))
     {
         /* The base tag has already been fetched and thus we have a type */
@@ -995,12 +1007,14 @@ int rpmhdr_tagtype(pTHX_ RPM__Header self, SV* key)
 
         if (sub_fetch)
         {
-            hv_fetch_nomg(svp, self, uc_name, strlen(uc_name), FALSE);
+            svp = hv_fetch(hdr->storage, uc_name, strlen(uc_name), FALSE);
             if (svp && SvOK(*svp))
             {
                 /* The base tag has now been fetched */
                 retval =  SvIV(*svp);
             }
+            SvREFCNT_dec(*svp);
+            SvREFCNT_dec(sub_fetch);
         }
     }
 
@@ -1015,12 +1029,11 @@ int rpmhdr_write(pTHX_ RPM__Header self, SV* gv_in, int magicp)
     FD_t fd;
     RPM_Header* hdr;
     GV* gv;
-    SV** svp;
     int written = 0;
 
     gv = (SvPOK(gv_in) && (SvTYPE(gv_in) == SVt_PVGV)) ?
         (GV *)SvRV(gv_in) : (GV *)gv_in;
-    header_from_object_ret(svp, hdr, self, 0);
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
 
     if (!gv || !(io = GvIO(gv)) || !(fp = IoIFP(io)))
         return written;
@@ -1036,10 +1049,9 @@ int rpmhdr_write(pTHX_ RPM__Header self, SV* gv_in, int magicp)
 /* T/F test whether the header references a SRPM */
 int rpmhdr_is_source(pTHX_ RPM__Header self)
 {
-    SV** svp;
     RPM_Header* hdr;
 
-    header_from_object_ret(svp, hdr, self, 0);
+    struct_from_object_ret(RPM_Header, hdr, self, 0);
 
     if (! hdr->hdr)
         return 0;
@@ -1055,16 +1067,15 @@ int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
 {
     RPM_Header* one;
     RPM_Header* two;
-    SV** svp;
 
-    header_from_object(svp, one, self);
+    struct_from_object(RPM_Header, one, self);
     if (! one)
     {
         rpm_error(aTHX_ RPMERR_BADARG,
                   "RPM::Header::rpmhdr_cmpver: Arg 1 has no header data");
         return 0;
     }
-    header_from_object(svp, two, other);
+    struct_from_object(RPM_Header, two, other);
     if (! two)
     {
         rpm_error(aTHX_ RPMERR_BADARG,
@@ -1081,10 +1092,9 @@ int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
 */
 char* rpmhdr_source_name(RPM__Header self)
 {
-    SV** svp;
     RPM_Header* hdr;
 
-    header_from_object(svp, hdr, self);
+    struct_from_object(RPM_Header, hdr, self);
 
     return hdr->source_name;
 }
@@ -1146,7 +1156,7 @@ MODULE = RPM::Header    PACKAGE = RPM::Header           PREFIX = rpmhdr_
 
 RPM::Header
 rpmhdr_TIEHASH(class, source=NULL, flags=0)
-    SV* class;
+    char* class;
     SV* source;
     int flags;
     PROTOTYPE: $;$$
@@ -1171,8 +1181,6 @@ rpmhdr_STORE(self, key, value)
     SV* key;
     SV* value;
     PROTOTYPE: $$$
-    PREINIT:
-    AV* avalue;
     CODE:
     RETVAL = rpmhdr_STORE(aTHX_ self, key, value);
     OUTPUT:
@@ -1189,8 +1197,8 @@ rpmhdr_DELETE(self, key)
     RETVAL
 
 int
-rpmhdr_CLEAR(self)
-    RPM::Header self;
+rpmhdr_CLEAR(self=NULL)
+    SV* self;
     PROTOTYPE: $
     CODE:
     {
@@ -1200,7 +1208,7 @@ rpmhdr_CLEAR(self)
     OUTPUT:
     RETVAL
 
-int
+bool
 rpmhdr_EXISTS(self, key)
     RPM::Header self;
     SV* key;
@@ -1214,12 +1222,11 @@ void
 rpmhdr_FIRSTKEY(self)
     RPM::Header self;
     PROTOTYPE: $
-    PREINIT:
-    SV* key;
-    SV* value;
-    int i;
     PPCODE:
     {
+        SV* key;
+        SV* value;
+
         if (! rpmhdr_FIRSTKEY(aTHX_ self, &key, &value))
         {
             key = newSVsv(&PL_sv_undef);
@@ -1235,12 +1242,11 @@ rpmhdr_NEXTKEY(self, key=NULL)
     RPM::Header self;
     SV* key;
     PROTOTYPE: $;$
-    PREINIT:
-    SV* nextkey;
-    SV* nextvalue;
-    int i;
     PPCODE:
     {
+        SV* nextkey;
+        SV* nextvalue;
+
         if (! rpmhdr_NEXTKEY(aTHX_ self, key, &nextkey, &nextvalue))
         {
             nextkey = newSVsv(&PL_sv_undef);
@@ -1322,10 +1328,9 @@ rpmhdr_NVR(self)
     PROTOTYPE: $
     PPCODE:
     {
-        SV** svp;
         RPM_Header* hdr;
 
-        header_from_object(svp, hdr, self);
+        struct_from_object(RPM_Header, hdr, self);
 
         if (hdr->name)
         {
