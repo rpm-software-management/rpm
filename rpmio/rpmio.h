@@ -135,7 +135,10 @@ off_t	fdSize	(FD_t fd);
 
 /* XXX Legacy interfaces needed by gnorpm, rpmfind et al */
 
+/*@-shadow@*/
 int	fdFileno(void * cookie);
+/*@=shadow@*/
+
 /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode);
 ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count);
 ssize_t	fdWrite(void * cookie, const char * buf, size_t count);

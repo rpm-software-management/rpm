@@ -57,7 +57,7 @@ struct _FD_s {
 	long int	fileSize;	/* fadio: */
 	long int	fd_cpioPos;	/* cpio: */
 };
-/*@access FD_t */
+/*@access FD_t@*/
 
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
 
@@ -240,12 +240,14 @@ int ufdClose( /*@only@*/ void * cookie);
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
+/*@-shadow@*/
 /*@unused@*/ static inline int fdFileno(void * cookie) {
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
     return fd->fps[0].fdno;
 }
+/*@=shadow@*/
 
 #ifdef __cplusplus
 }
