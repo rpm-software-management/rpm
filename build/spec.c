@@ -755,20 +755,22 @@ static int read_line(FILE *f, char *line)
 	        return 0;
 	    }
 	}
-	expandMacros(line);
 	if ((! strncmp("%ifarch", line, 7)) ||
 	    (! strncmp("%ifnarch", line, 8))) {
+	    expandMacros(line);
 	    rl = malloc(sizeof(struct read_level_entry));
 	    rl->next = read_level;
 	    rl->reading = read_level->reading && match_arch(line);
 	    read_level = rl;
 	} else if ((! strncmp("%ifos", line, 5)) ||
 		   (! strncmp("%ifnos", line, 6))) {
+	    expandMacros(line);
 	    rl = malloc(sizeof(struct read_level_entry));
 	    rl->next = read_level;
 	    rl->reading = read_level->reading && match_os(line);
 	    read_level = rl;
 	} else if (! strncmp("%else", line, 5)) {
+	    expandMacros(line);
 	    if (! read_level->next) {
 	        /* Got an else with no %if ! */
 		rpmError(RPMERR_UNMATCHEDIF, "Got a %%else with no if");
@@ -777,6 +779,7 @@ static int read_line(FILE *f, char *line)
 	    read_level->reading =
 	        read_level->next->reading && ! read_level->reading;
 	} else if (! strncmp("%endif", line, 6)) {
+	    expandMacros(line);
 	    if (! read_level->next) {
 		rpmError(RPMERR_UNMATCHEDIF, "Got a %%endif with no if");
 		return RPMERR_UNMATCHEDIF;
@@ -785,6 +788,9 @@ static int read_line(FILE *f, char *line)
 	    read_level = rl->next;
 	    free(rl);
 	} else {
+	    if (read_level->reading) {
+		expandMacros(line);
+	    }
             gotline = 1;
         }
     } while (! (gotline && read_level->reading));
