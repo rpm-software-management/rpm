@@ -576,22 +576,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
       }	break;
 
     case RPMQV_ALL:
-#ifdef DYING
-    {	unsigned int offset;
-	for (offset = rpmdbFirstRecNum(db);
-	     offset != 0;
-	     offset = rpmdbNextRecNum(db, offset)) {
-		h = rpmdbGetRecord(db, offset);
-		if (h == NULL) {
-		    fprintf(stderr, _("could not read database record!\n"));
-		    return 1;
-		}
-		if ((rc = showPackage(qva, db, h)) != 0)
-		    retcode = rc;
-		headerFree(h);
-	}
-    }
-#else
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("no packages\n"));
@@ -599,18 +583,9 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	} else {
 	    retcode = XshowMatches(qva, mi, showPackage);
 	}
-#endif
 	break;
 
     case RPMQV_GROUP:
-#ifdef DYING
-	if (rpmdbFindByGroup(db, arg, &matches)) {
-	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
-	    retcode = 1;
-	} else {
-	    retcode = showMatches(qva, db, matches, showPackage);
-	}
-#else
 	mi = rpmdbInitIterator(db, RPMDBI_GROUP, arg, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
@@ -618,18 +593,9 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	} else {
 	    retcode = XshowMatches(qva, mi, showPackage);
 	}
-#endif
 	break;
 
     case RPMQV_TRIGGEREDBY:
-#ifdef DYING
-	if (rpmdbFindByTriggeredBy(db, arg, &matches)) {
-	    fprintf(stderr, _("no package triggers %s\n"), arg);
-	    retcode = 1;
-	} else {
-	    retcode = showMatches(qva, db, matches, showPackage);
-	}
-#else
 	mi = rpmdbInitIterator(db, RPMDBI_TRIGGER, arg, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("no package triggers %s\n"), arg);
@@ -637,18 +603,9 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	} else {
 	    retcode = XshowMatches(qva, mi, showPackage);
 	}
-#endif	/* DYING */
 	break;
 
     case RPMQV_WHATREQUIRES:
-#ifdef DYING
-	if (rpmdbFindByRequiredBy(db, arg, &matches)) {
-	    fprintf(stderr, _("no package requires %s\n"), arg);
-	    retcode = 1;
-	} else {
-	    retcode = showMatches(qva, db, matches, showPackage);
-	}
-#else
 	mi = rpmdbInitIterator(db, RPMDBI_REQUIREDBY, arg, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("no package requires %s\n"), arg);
@@ -656,19 +613,10 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	} else {
 	    retcode = XshowMatches(qva, mi, showPackage);
 	}
-#endif	/* DYING */
 	break;
 
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/') {
-#ifdef DYING
-	    if (rpmdbFindByProvides(db, arg, &matches)) {
-		fprintf(stderr, _("no package provides %s\n"), arg);
-		retcode = 1;
-	    } else {
-		retcode = showMatches(qva, db, matches, showPackage);
-	    }
-#else
 	    mi = rpmdbInitIterator(db, RPMDBI_PROVIDES, arg, 0);
 	    if (mi == NULL) {
 		fprintf(stderr, _("no package provides %s\n"), arg);
@@ -676,29 +624,10 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    } else {
 		retcode = XshowMatches(qva, mi, showPackage);
 	    }
-#endif	/* DYING */
 	    break;
 	}
 	/*@fallthrough@*/
     case RPMQV_PATH:
-#ifdef DYING
-	if (rpmdbFindByFile(db, arg, &matches)) {
-	    int myerrno = 0;
-	    if (access(arg, F_OK) != 0)
-		myerrno = errno;
-	    switch (myerrno) {
-	    default:
-		fprintf(stderr, _("file %s: %s\n"), arg, strerror(myerrno));
-		break;
-	    case 0:
-		fprintf(stderr, _("file %s is not owned by any package\n"), arg);
-		break;
-	    }
-	    retcode = 1;
-	} else {
-	    retcode = showMatches(qva, db, matches, showPackage);
-	}
-#else
 	mi = rpmdbInitIterator(db, RPMDBI_FILE, arg, 0);
 	if (mi == NULL) {
 	    int myerrno = 0;
@@ -716,7 +645,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	} else {
 	    retcode = XshowMatches(qva, mi, showPackage);
 	}
-#endif	/* DYING */
 	break;
 
     case RPMQV_DBOFFSET:
@@ -736,16 +664,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    return 1;
 	}
 	rpmMessage(RPMMESS_DEBUG, _("package record number: %d\n"), recNumber);
-#ifdef DYING
-	h = rpmdbGetRecord(db, recNumber);
-	if (h == NULL)  {
-	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
-	    retcode = 1;
-	} else {
-	    retcode = showPackage(qva, db, h);
-	    headerFree(h);
-	}
-#else
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &recNumber, sizeof(recNumber));
 	if (mi == NULL) {
 	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
@@ -753,7 +671,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	} else {
 	    retcode = XshowMatches(qva, mi, showPackage);
 	}
-#endif
     }	break;
 
     case RPMQV_PACKAGE:

@@ -96,30 +96,11 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 
     {	Header h = NULL;
 
-#ifdef	DYING
-	int recnum; 
-#define	_RECNUM	recnum
-	for (recnum = rpmdbFirstRecNum(olddb);
-	     recnum > 0;
-	     recnum = rpmdbNextRecNum(olddb, recnum))
-	{
-	    if (h) {
-		headerFree(h);
-		h = NULL;
-	    }
-	    if ((h = rpmdbGetRecord(olddb, recnum)) == NULL) {
-		rpmError(RPMERR_INTERNAL,
-			_("record number %d in database is bad -- skipping it"),
-			recnum);
-		continue;
-	    }
-#else
 	rpmdbMatchIterator mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
 	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-#endif
 
 	    /* let's sanity check this record a bit, otherwise just skip it */
 	    if (!(headerIsEntry(h, RPMTAG_NAME) &&
@@ -163,17 +144,9 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 		failed = 1;
 		break;
 	    }
-#ifndef	DYING
-	}
-	rpmdbFreeIterator(mi);
-#else
 	}
 
-	if (h) {
-	    headerFree(h);
-	    h = NULL;
-	}
-#endif
+	rpmdbFreeIterator(mi);
 
     }
 

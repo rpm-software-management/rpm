@@ -24,31 +24,12 @@ int main(int argc, char ** argv)
 
     {	Header h = NULL;
 	unsigned int blockNum = 0;
-#ifdef	DYING
-	unsigned int offset;
-#define	_RECNUM	offset
-
-	for (offset = rpmdbFirstRecNum(db);
-	     offset > 0;
-	     offset = rpmdbNextRecNum(db, offset))
-	{
-	    if (h) {
-		headerFree(h);
-		h = NULL;
-	    }
-	    h = rpmdbGetRecord(db, offset);
-	    if (!h) {
-		fprintf(stderr, _("rpmdbGetRecord() failed at offset %d\n"),
-			offset);
-		exit(1);
-	    }
-#else
 	rpmdbMatchIterator mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
+
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-#endif
 
 	    blockNum++;
 	    if (!(dspBlockNum != 0 && dspBlockNum != blockNum))
@@ -59,18 +40,9 @@ int main(int argc, char ** argv)
     
 	    if (dspBlockNum && blockNum > dspBlockNum)
 		exit(0);
-
-#ifndef DYING
 	}
+
 	rpmdbFreeIterator(mi);
-#else
-	}
-
-	if (h) {
-	    headerFree(h);
-	    h = NULL;
-	}
-#endif
 
     }
 
