@@ -95,7 +95,7 @@ void mp32nsetw  (mp32number* n, uint32 val)
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32nsethex(mp32number* n, const char* hex)
+void mp32nsethex(/*@out@*/ mp32number* n, const char* hex)
 	/*@modifies n->size, n->data @*/;
 
 #ifdef __cplusplus

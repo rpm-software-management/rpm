@@ -88,6 +88,7 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 	(void) fdInitSHA1(*sfdp, 0);
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
+	/* XXX calculate MD5 sum here, always (well there's --nomd5) needed. */
 	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) != count) {
 	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
@@ -100,19 +101,9 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     }
 
     if (dig != NULL) {
-#ifdef	DYING
-	(void) fdFiniSHA1(*sfdp, &dig->data, &dig->size, 0);
-if (rpmIsVerbose()) {
-fprintf(stderr, "========================= Package SHA1 Digest\n");
-fprintf(stderr, "%s\n", pgpHexStr(dig->data, dig->size));
-}
-	mp32nsethex(&dig->hm, pgpHexStr(dig->data, dig->size));
-printf("\thm = ");  mp32println(dig->hm.size, dig->hm.data);
-#else
 	dig->ctx = _free(dig->ctx);
 	dig->ctx = (*sfdp)->digest;
 	(*sfdp)->digest = NULL;
-#endif
     }
 
     rc = 0;
@@ -194,7 +185,7 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
 	strcat(tmprpm, ".XXXXXX");
-	/*@-unrecog@*/ mktemp(tmprpm) /*@=unrecog@*/;
+	(void) mktemp(tmprpm);
 	trpm = tmprpm;
 
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
@@ -256,7 +247,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     FD_t ofd = NULL;
     int res2, res3;
     struct rpmlead lead, *l = &lead;
-    const char *rpm = NULL;
+    const char *pkgfn = NULL;
     char result[1024];
     const char * sigtarget = NULL;
     unsigned char buffer[8192];
@@ -270,11 +261,14 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     rpmDigest dig = alloca(sizeof(*dig));
     rpmRC rc;
 
+    if (argv == NULL) return res;
+
     memset(dig, 0, sizeof(*dig));
 
 {   static const char * pubkey = NULL;
     static unsigned int pklen = 0;
 
+    /* XXX retrieve by keyid from signature. */
     if (pubkey == NULL) {
 	(void) b64decode(redhatPubKeyDSA, (void **)&pubkey, &pklen);
 if (rpmIsVerbose())
@@ -284,23 +278,22 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
     (void) pgpPrtPkts(pubkey, pklen, dig, 0);
 }
 
-    if (argv)
-    while ((rpm = *argv++) != NULL) {
+    while ((pkgfn = *argv++) != NULL) {
 
-	if (manageFile(&fd, &rpm, O_RDONLY, 0)) {
+	if (manageFile(&fd, &pkgfn, O_RDONLY, 0)) {
 	    res++;
 	    goto bottom;
 	}
 
 	memset(l, 0, sizeof(*l));
 	if (readLead(fd, l)) {
-	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), rpm);
+	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), pkgfn);
 	    res++;
 	    goto bottom;
 	}
 	switch (l->major) {
 	case 1:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), rpm);
+	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), pkgfn);
 	    res++;
 	    goto bottom;
 	    /*@notreached@*/ break;
@@ -310,19 +303,19 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 
 	rc = rpmReadSignature(fd, &sig, l->signature_type);
 	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), pkgfn);
 	    res++;
 	    goto bottom;
 	}
 	if (sig == NULL) {
-	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
+	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), pkgfn);
 	    res++;
 	    goto bottom;
 	}
 
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (copyFile(&fd, &rpm, &ofd, &sigtarget, dig)) {
+	if (copyFile(&fd, &pkgfn, &ofd, &sigtarget, dig)) {
 	    res++;
 	    goto bottom;
 	}
@@ -332,7 +325,7 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 	res2 = 0;
 	missingKeys[0] = '\0';
 	untrustedKeys[0] = '\0';
-	sprintf(buffer, "%s:%c", rpm, (rpmIsVerbose() ? '\n' : ' ') );
+	sprintf(buffer, "%s:%c", pkgfn, (rpmIsVerbose() ? '\n' : ' ') );
 
 	for (hi = headerInitIterator(sig);
 	    headerNextIterator(hi, &tag, &type, &ptr, &count);
@@ -514,10 +507,6 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 	}
 	dig->data = _free(dig->data);
 	dig->ctx = _free(dig->ctx);
-	mp32bfree(&dig->p);
-	mp32bfree(&dig->q);
-	mp32nfree(&dig->g);
-	mp32nfree(&dig->y);
 	mp32nfree(&dig->hm);
 	mp32nfree(&dig->r);
 	mp32nfree(&dig->s);
@@ -525,5 +514,12 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 
     dig->data = _free(dig->data);
     dig->ctx = _free(dig->ctx);
+    mp32bfree(&dig->p);
+    mp32bfree(&dig->q);
+    mp32nfree(&dig->g);
+    mp32nfree(&dig->y);
+    mp32nfree(&dig->hm);
+    mp32nfree(&dig->r);
+    mp32nfree(&dig->s);
     return res;
 }

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-05 14:58-0400\n"
+"POT-Creation-Date: 2001-10-08 12:01-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2276,37 +2276,37 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr "linie %d: %s\n"
 
-#: lib/fsm.c:1122
+#: lib/fsm.c:1124
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1399
+#: lib/fsm.c:1401
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1518 lib/fsm.c:1643
+#: lib/fsm.c:1520 lib/fsm.c:1645
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gemt som %s\n"
 
-#: lib/fsm.c:1669
+#: lib/fsm.c:1671
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kan ikke fjerne %s - katalog ikke tomt\n"
 
-#: lib/fsm.c:1675
+#: lib/fsm.c:1677
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 
-#: lib/fsm.c:1685
+#: lib/fsm.c:1687
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/fsm.c:1704
+#: lib/fsm.c:1706
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"
@@ -3083,77 +3083,77 @@ msgstr "%s: åbning mislykkedes: %s\n"
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile mislykkedes\n"
 
-#: lib/rpmchecksig.c:92
+#: lib/rpmchecksig.c:93
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:98
+#: lib/rpmchecksig.c:99
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:297
+#: lib/rpmchecksig.c:141 lib/rpmchecksig.c:290
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/rpmchecksig.c:155
+#: lib/rpmchecksig.c:146
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Kan ikke underskrive v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:159
+#: lib/rpmchecksig.c:150
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Kan ikke genunderskrive v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:168 lib/rpmchecksig.c:313
+#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:306
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature mislykkedes\n"
 
-#: lib/rpmchecksig.c:172 lib/rpmchecksig.c:318
+#: lib/rpmchecksig.c:163 lib/rpmchecksig.c:311
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen tilgængelig signatur\n"
 
-#: lib/rpmchecksig.c:205
+#: lib/rpmchecksig.c:196
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:211
+#: lib/rpmchecksig.c:202
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:303
+#: lib/rpmchecksig.c:296
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen tilgængelig signatur (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:484
+#: lib/rpmchecksig.c:477
 msgid "NOT OK"
 msgstr "IKKE O.K."
 
-#: lib/rpmchecksig.c:485 lib/rpmchecksig.c:499
+#: lib/rpmchecksig.c:478 lib/rpmchecksig.c:492
 msgid " (MISSING KEYS:"
 msgstr " (MANGLENDE NØGLER:    "
 
-#: lib/rpmchecksig.c:487 lib/rpmchecksig.c:501
+#: lib/rpmchecksig.c:480 lib/rpmchecksig.c:494
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:488 lib/rpmchecksig.c:502
+#: lib/rpmchecksig.c:481 lib/rpmchecksig.c:495
 msgid " (UNTRUSTED KEYS:"
 msgstr " (IKKE-BETROEDE NØGLER:"
 
-#: lib/rpmchecksig.c:490 lib/rpmchecksig.c:504
+#: lib/rpmchecksig.c:483 lib/rpmchecksig.c:497
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:498
+#: lib/rpmchecksig.c:491
 msgid "OK"
 msgstr "O.K."
 
@@ -3411,7 +3411,7 @@ msgstr "kunne ikke læse signaturen\n"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fik %d byte af PGP-signatur\n"
 
-#: lib/signature.c:366 lib/signature.c:804
+#: lib/signature.c:366 lib/signature.c:787
 msgid "Couldn't exec gpg\n"
 msgstr "Kunne ikke køre gpg\n"
 
@@ -3447,27 +3447,27 @@ msgstr "Genererer signatur med gpg.\n"
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Kunne ikke køre pgp. Brug --nopgp for at overspringe PGP-tjek.\n"
 
-#: lib/signature.c:741
+#: lib/signature.c:724
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Kunne ikke køre gpg. Brug --nogpg for at overspringe GPG-tjek.\n"
 
-#: lib/signature.c:833
+#: lib/signature.c:816
 msgid "Couldn't exec pgp\n"
 msgstr "Kunne ikke køre pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:837 lib/signature.c:890
+#: lib/signature.c:820 lib/signature.c:873
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Ugyldig angivelse af '%%_signature'-spec i makrofil.\n"
 
-#: lib/signature.c:870
+#: lib/signature.c:853
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Du skal angive \"%%_gpg_name\" i din makrofil\n"
 
-#: lib/signature.c:882
+#: lib/signature.c:865
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du skal angive \"%%_pgp_name\" i din makrofil\n"

@@ -256,6 +256,28 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
     fprintf(stderr, "%s(%u)", pgpValStr(vs, val), (unsigned)val);
 }
 
+static void pgpHexSet(const char * pre, int lbits,
+		/*@out@*/ mp32number * mpn, const byte * p)
+	/*@modifies *mpn @*/
+{
+    unsigned int mbits = pgpMpiBits(p);
+    unsigned int nbits = (lbits > mbits ? lbits : mbits);
+    unsigned int nbytes = ((nbits + 7) >> 3);
+    char * t = xmalloc(2*nbytes+1);
+    unsigned int ix = 2 * ((nbits - mbits) >> 3);
+
+if (_debug)
+fprintf(stderr, "*** mbits %u nbits %u nbytes %u t %p[%d] ix %u\n", mbits, nbits, nbytes, t, (2*nbytes+1), ix);
+    if (ix > 0) memset(t, (int)'0', ix);
+    strcpy(t+ix, pgpMpiHex(p));
+if (_debug)
+fprintf(stderr, "*** %s %s\n", pre, t);
+    mp32nsethex(mpn, t);
+    free(t);
+if (_debug && _print)
+printf("\t %s ", pre), mp32println(mpn->size, mpn->data);
+}
+
 /*@-varuse -readonlytrans @*/
 static const char * pgpSigRSA[] = {
     " m**d =",
@@ -315,14 +337,10 @@ int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* r */
-		    mp32nsethex(&_dig->r, pgpMpiHex(p));
-if (_debug && _print)
-printf("\t     r = "),  mp32println(_dig->r.size, _dig->r.data);
+		    pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p);
 		    break;
 		case 1:		/* s */
-		    mp32nsethex(&_dig->s, pgpMpiHex(p));
-if (_debug && _print)
-printf("\t     s = "),  mp32println(_dig->s.size, _dig->s.data);
+		    pgpHexSet(pgpSigDSA[i], 160, &_dig->s, p);
 		    break;
 		default:
 		    break;
@@ -478,14 +496,10 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* r */
-		    mp32nsethex(&_dig->r, pgpMpiHex(p));
-if (_debug && _print)
-printf("\t     r = "),  mp32println(_dig->r.size, _dig->r.data);
+		    pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p);
 		    break;
 		case 1:		/* s */
-		    mp32nsethex(&_dig->s, pgpMpiHex(p));
-if (_debug && _print)
-printf("\t     s = "),  mp32println(_dig->s.size, _dig->s.data);
+		    pgpHexSet(pgpSigDSA[i], 160, &_dig->s, p);
 		    break;
 		default:
 		    break;

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-05 14:58-0400\n"
+"POT-Creation-Date: 2001-10-08 12:01-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2271,37 +2271,37 @@ msgstr "========= Adresáøe, které nebyly explicitnì zaøazeny do balíèku:\n"
 msgid "%9d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1122
+#: lib/fsm.c:1124
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "vytvoøen adresáø %s s právy %04o.\n"
 
-#: lib/fsm.c:1399
+#: lib/fsm.c:1401
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1518 lib/fsm.c:1643
+#: lib/fsm.c:1520 lib/fsm.c:1645
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s ulo¾eno jako %s\n"
 
-#: lib/fsm.c:1669
+#: lib/fsm.c:1671
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s odstranìní %s selhalo: Adresáø není prázdný\n"
 
-#: lib/fsm.c:1675
+#: lib/fsm.c:1677
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s selhal: %s\n"
 
-#: lib/fsm.c:1685
+#: lib/fsm.c:1687
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s selhal: %s\n"
 
-#: lib/fsm.c:1704
+#: lib/fsm.c:1706
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s vytvoøen jako %s\n"
@@ -3057,77 +3057,77 @@ msgstr "%s: otevøení selhalo: %s\n"
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile selhalo\n"
 
-#: lib/rpmchecksig.c:92
+#: lib/rpmchecksig.c:93
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite selhalo: %s\n"
 
-#: lib/rpmchecksig.c:98
+#: lib/rpmchecksig.c:99
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:297
+#: lib/rpmchecksig.c:141 lib/rpmchecksig.c:290
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/rpmchecksig.c:155
+#: lib/rpmchecksig.c:146
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: RPM v1.0 nelze podepsat\n"
 
-#: lib/rpmchecksig.c:159
+#: lib/rpmchecksig.c:150
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Nemohu znovu podepsat RPM v2.0\n"
 
-#: lib/rpmchecksig.c:168 lib/rpmchecksig.c:313
+#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:306
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature selhalo\n"
 
-#: lib/rpmchecksig.c:172 lib/rpmchecksig.c:318
+#: lib/rpmchecksig.c:163 lib/rpmchecksig.c:311
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Není dostupný ¾ádný podpis\n"
 
-#: lib/rpmchecksig.c:205
+#: lib/rpmchecksig.c:196
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead selhalo: %s\n"
 
-#: lib/rpmchecksig.c:211
+#: lib/rpmchecksig.c:202
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature selhalo: %s\n"
 
-#: lib/rpmchecksig.c:303
+#: lib/rpmchecksig.c:296
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Není dostupný ¾ádný podpis (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:484
+#: lib/rpmchecksig.c:477
 msgid "NOT OK"
 msgstr "NENÍ OK"
 
-#: lib/rpmchecksig.c:485 lib/rpmchecksig.c:499
+#: lib/rpmchecksig.c:478 lib/rpmchecksig.c:492
 msgid " (MISSING KEYS:"
 msgstr " (CHYBÍ KLÍÈ:"
 
-#: lib/rpmchecksig.c:487 lib/rpmchecksig.c:501
+#: lib/rpmchecksig.c:480 lib/rpmchecksig.c:494
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:488 lib/rpmchecksig.c:502
+#: lib/rpmchecksig.c:481 lib/rpmchecksig.c:495
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEDÙVÌRYHODNÝ KLÍÈ:"
 
-#: lib/rpmchecksig.c:490 lib/rpmchecksig.c:504
+#: lib/rpmchecksig.c:483 lib/rpmchecksig.c:497
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:498
+#: lib/rpmchecksig.c:491
 msgid "OK"
 msgstr "OK"
 
@@ -3384,7 +3384,7 @@ msgstr "nemohu èíst podpis\n"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Pøeèteno %d bajtù PGP podpisu\n"
 
-#: lib/signature.c:366 lib/signature.c:804
+#: lib/signature.c:366 lib/signature.c:787
 msgid "Couldn't exec gpg\n"
 msgstr "Nemohu spustit gpg\n"
 
@@ -3420,27 +3420,27 @@ msgstr "Generuji GPG podpis.\n"
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Nemohu spustit pgp. Vynechte kontrolu PGP pomocí --nopgp.\n"
 
-#: lib/signature.c:741
+#: lib/signature.c:724
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Nelze spustit gpg. Vynechte kontrolu GPG pomocí --nogpg.\n"
 
-#: lib/signature.c:833
+#: lib/signature.c:816
 msgid "Couldn't exec pgp\n"
 msgstr "Nemohu spustit pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:837 lib/signature.c:890
+#: lib/signature.c:820 lib/signature.c:873
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "©patná %%_signature spec v souboru maker\n"
 
-#: lib/signature.c:870
+#: lib/signature.c:853
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_gpg_name\" ve svém makro souboru\n"
 
-#: lib/signature.c:882
+#: lib/signature.c:865
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_pgp_name\" ve svém makro souboru\n"

@@ -1,7 +1,7 @@
 Summary: The BeeCrypt Cryptography Library
 Name: beecrypt
 Version: 2.2.0
-Release: 2
+Release: 1
 Copyright: LGPL
 Group: Development/Libraries
 Source0: http://beecrypt.virtualunlimited.com/download/beecrypt-%{version}.tar.gz
@@ -53,6 +53,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_includedir}/beecrypt
 
 %changelog
+* Mon Oct  8 2001 Jeff Johnson <jbj@redhat.com>
+- upgrade to 2.2.0pre.
+
 * Mon Sep 24 2001 Jeff Johnsopn <jbj@redhat.com>
 - add static libraries.
 

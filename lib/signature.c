@@ -662,24 +662,14 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     int res = RPMSIG_OK;
     int rc;
   
-#ifdef	DYING
-{   static const char * pubkey = NULL;
-    static unsigned int pklen = 0;
-    int rc;
+    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
+		&dig->y, &dig->r, &dig->s);
 
-    if (pubkey == NULL) {
-	(void) b64decode(redhatPubKeyDSA, (void **)&pubkey, &pklen);
-fprintf(stderr, "========================= Red Hat DSA Public Key\n");
-	    (void) pgpPrtPkts(pubkey, pklen, NULL, rpmIsVerbose());
-    }
-    (void) pgpPrtPkts(pubkey, pklen, dig, 0);
-fprintf(stderr, "========================= Package DSA Signature\n");
-    (void) pgpPrtPkts(sig, count, dig, rpmIsVerbose());
+if (rc == 0) {
 
-
-}
-#else
-if (rpmIsVerbose()) {
+fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
+        datafile, rc);
+    (void) pgpPrtPkts(sig, count, dig, 1);
     printf("\t p = ");	mp32println(dig->p.size, dig->p.modl);
     printf("\t q = ");	mp32println(dig->q.size, dig->q.modl);
     printf("\t g = ");	mp32println(dig->g.size, dig->g.data);
@@ -688,13 +678,6 @@ if (rpmIsVerbose()) {
     printf("\t s = ");	mp32println(dig->s.size, dig->s.data);
     printf("\thm = ");	mp32println(dig->hm.size, dig->hm.data);
 }
-
-    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
-		&dig->y, &dig->r, &dig->s);
-
-fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
-        datafile, rc);
-#endif
 
     /* Write out the signature */
 #ifdef	DYING

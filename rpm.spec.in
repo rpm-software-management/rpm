@@ -519,3 +519,4 @@ fi
 - bind beecrypt md5/sha1 underneath rpmio.
 - create RFC-2440 OpenPGP API in rpmio.
 - proof-of-concept GPG/DSA verification for legacy signatures.
+- upgrade to beecrypt-2.2.0pre.

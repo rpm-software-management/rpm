@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-05 14:58-0400\n"
+"POT-Creation-Date: 2001-10-08 12:01-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2267,37 +2267,37 @@ msgstr "========= 패키지에 디렉토리가 포함되어 있지 않음:\n"
 msgid "%9d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1122
+#: lib/fsm.c:1124
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%04o 허가권(perms)의 %s 디렉토리가 생성되었습니다.\n"
 
-#: lib/fsm.c:1399
+#: lib/fsm.c:1401
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "헤더 파일 목록에서 아카이브 파일 %s (을)를 찾을 수 없습니다\n"
 
-#: lib/fsm.c:1518 lib/fsm.c:1643
+#: lib/fsm.c:1520 lib/fsm.c:1645
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s (이)가 %s (으)로 저장되었습니다\n"
 
-#: lib/fsm.c:1669
+#: lib/fsm.c:1671
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리를 삭제하는데 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:1675
+#: lib/fsm.c:1677
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: lib/fsm.c:1685
+#: lib/fsm.c:1687
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s %s 링크를 해제하는데 실패함: %s\n"
 
-#: lib/fsm.c:1704
+#: lib/fsm.c:1706
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s (이)가 %s (으)로 생성되었습니다\n"
@@ -3066,77 +3066,77 @@ msgstr "%s: 여는데 실패했습니다: %s\n"
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile에 실패했습니다\n"
 
-#: lib/rpmchecksig.c:92
+#: lib/rpmchecksig.c:93
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:98
+#: lib/rpmchecksig.c:99
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:297
+#: lib/rpmchecksig.c:141 lib/rpmchecksig.c:290
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead에 실패했습니다\n"
 
-#: lib/rpmchecksig.c:155
+#: lib/rpmchecksig.c:146
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: v1.0 RPM은 서명할 수 없습니다\n"
 
-#: lib/rpmchecksig.c:159
+#: lib/rpmchecksig.c:150
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 RPM은 재-서명할 수 없습니다\n"
 
-#: lib/rpmchecksig.c:168 lib/rpmchecksig.c:313
+#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:306
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature에 실패했습니다\n"
 
-#: lib/rpmchecksig.c:172 lib/rpmchecksig.c:318
+#: lib/rpmchecksig.c:163 lib/rpmchecksig.c:311
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 유효한 서명이 없습니다\n"
 
-#: lib/rpmchecksig.c:205
+#: lib/rpmchecksig.c:196
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:211
+#: lib/rpmchecksig.c:202
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:303
+#: lib/rpmchecksig.c:296
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 유효한 서명이 없습니다 (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:484
+#: lib/rpmchecksig.c:477
 msgid "NOT OK"
 msgstr "올바르지 않음"
 
-#: lib/rpmchecksig.c:485 lib/rpmchecksig.c:499
+#: lib/rpmchecksig.c:478 lib/rpmchecksig.c:492
 msgid " (MISSING KEYS:"
 msgstr " (키를 찾을 수 없음:"
 
-#: lib/rpmchecksig.c:487 lib/rpmchecksig.c:501
+#: lib/rpmchecksig.c:480 lib/rpmchecksig.c:494
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:488 lib/rpmchecksig.c:502
+#: lib/rpmchecksig.c:481 lib/rpmchecksig.c:495
 msgid " (UNTRUSTED KEYS:"
 msgstr " (키를 신뢰할 수 없음:"
 
-#: lib/rpmchecksig.c:490 lib/rpmchecksig.c:504
+#: lib/rpmchecksig.c:483 lib/rpmchecksig.c:497
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:498
+#: lib/rpmchecksig.c:491
 msgid "OK"
 msgstr "확인"
 
@@ -3392,7 +3392,7 @@ msgstr "서명을 읽을 수 없습니다\n"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "%d 바이트의 PGP 서명을 얻었습니다\n"
 
-#: lib/signature.c:366 lib/signature.c:804
+#: lib/signature.c:366 lib/signature.c:787
 msgid "Couldn't exec gpg\n"
 msgstr "gpg를 실행할 수 없습니다\n"
 
@@ -3430,29 +3430,29 @@ msgstr ""
 "pgp를 실행할 수 없습니다.  PGP 검사를 생략하시려면, --nopgp 옵션을 이용하십시"
 "요.\n"
 
-#: lib/signature.c:741
+#: lib/signature.c:724
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "gpg를 실행할 수 없습니다.  GPG 검사를 생략하시려면, --nogpg 옵션을 이용하십시"
 "요.\n"
 
-#: lib/signature.c:833
+#: lib/signature.c:816
 msgid "Couldn't exec pgp\n"
 msgstr "pgp를 실행할 수 없습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:837 lib/signature.c:890
+#: lib/signature.c:820 lib/signature.c:873
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일에 부적합한 %%_signature의 내용이 있습니다\n"
 
-#: lib/signature.c:870
+#: lib/signature.c:853
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_gpg_name\" 을 설정해 주셔야 합니다\n"
 
-#: lib/signature.c:882
+#: lib/signature.c:865
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_pgp_name\" 을 설정해 주셔야 합니다\n"

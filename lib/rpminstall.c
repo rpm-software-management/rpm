@@ -260,7 +260,7 @@ restart:
 
 	    {	char tfnbuf[64];
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
-		/*@-unrecog@*/ mktemp(tfnbuf) /*@=unrecog@*/;
+		(void) mktemp(tfnbuf);
 		tfn = rpmGenPath(rootdir, "%{_tmppath}/", tfnbuf);
 	    }
 

@@ -1021,6 +1021,7 @@ static int fsmRmdirs(/*@special@*/ FSM_t fsm)
 	fsm->path = dn;
 
 	/* Remove generated directories. */
+	/*@-usereleased@*/ /* LCL: te used after release? */
 	do {
 	    if (*te == '/') {
 		*te = '\0';
@@ -1031,6 +1032,7 @@ static int fsmRmdirs(/*@special@*/ FSM_t fsm)
 		/*@innerbreak@*/ break;
 	    te--;
 	} while ((te - fsm->path) > fsm->dnlx[dc]);
+	/*@=usereleased@*/
     }
     dnli = dnlFreeIterator(dnli);
     /*@=observertrans =dependenttrans@*/
