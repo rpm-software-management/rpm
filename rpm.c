@@ -31,6 +31,8 @@
 #define GETOPT_PREFIX		1011
 #define GETOPT_TIMECHECK        1012
 #define GETOPT_REBUILDDB        1013
+#define GETOPT_FTPPORT          1014
+#define GETOPT_FTPPROXY         1015
 
 char * version = VERSION;
 
@@ -70,26 +72,29 @@ void printUsage(void) {
 
     puts(_("usage: rpm {--help}"));
     puts(_("       rpm {--version}"));
-    puts(_("       rpm {--initdb}     [--dbpath <dir>]"));
+    puts(_("       rpm {--initdb}   [--dbpath <dir>]"));
     puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
-    puts(_("                          [--replacepkgs] [--replacefiles] [--root <dir>]"));
-    puts(_("                          [--excludedocs] [--includedocs] [--noscripts]"));
-    puts(_("                          [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
-    puts(_("                          [--prefix <dir>] [--ignoreos] [--nodeps]"));
-    puts(_("                          file1.rpm ... fileN.rpm"));
+    puts(_("                        [--replacepkgs] [--replacefiles] [--root <dir>]"));
+    puts(_("                        [--excludedocs] [--includedocs] [--noscripts]"));
+    puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
+    puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps]"));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
-    puts(_("                          [--oldpackage] [--root <dir>] [--noscripts]"));
-    puts(_("                          [--excludedocs] [--includedocs] [--rcfile <file>]"));
-    puts(_("                          [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
-    puts(_("                          [--ignoreos] [--nodeps] file1.rpm ... fileN.rpm"));
+    puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
+    puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
+    puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        [--ignoreos] [--nodeps] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
+    puts(_("                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y} [-afFpP] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [targets]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
-    puts(_("                        [--dbpath <dir>] package1 ... packageN"));
+    puts(_("                        [--dbpath <dir>] [--nodeps] package1 ... packageN"));
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--test] [--timecheck <s>] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
@@ -109,7 +114,7 @@ void printHelp(void) {
     puts(_("usage:"));
     puts(_("   --help		- print this message"));
     puts(_("   --version	- print the version of rpm being used"));
-    puts(_("   all modes support the following arguments"));
+    puts(_("   all modes support the following arguments:"));
     puts(_("      --rcfile <file>     - use <file> instead of /etc/rpmrc and $HOME/.rpmrc"));
     puts(_("       -v		      - be a little more verbose"));
     puts(_("       -vv	              - be incredibly verbose (for debugging)"));
@@ -117,6 +122,10 @@ void printHelp(void) {
     puts(_("      --root <dir>        - use <dir> as the top level directory"));
     puts(_("      --dbpath <dir>      - use <dir> as the directory for the database"));
     puts(_("      --queryformat <s>   - use s as the header format (implies -i)"));
+    puts(_("   install, upgrade and query (with -p) allow ftp URL's to be used in place\n"));
+    puts(_("   file names as well as the following options:\n"));
+    puts(_("      --ftpproxy <host>   - hostname or IP of ftp proxy\n"));
+    puts(_("      --ftpport <port>    - port number of ftp server (or proxy)\n"));
     puts(_("      Package specification options:"));
     puts(_("        -a                - query all packages"));
     puts(_("        -f <file>+        - query package owning <file>"));
@@ -290,6 +299,7 @@ int main(int argc, char ** argv) {
     char *passPhrase = "";
     char *buildRootOverride = NULL;
     char *arch = NULL;
+    char * ftpProxy = NULL, * ftpPort = NULL;
     char *os = NULL;
     char * smallArgv[2] = { NULL, NULL };
     char ** currarg;
@@ -311,6 +321,8 @@ int main(int argc, char ** argv) {
             { "excludedocs", 0, &excldocs, 0},
 	    { "file", 0, 0, 'f' },
 	    { "force", 0, &force, 0 },
+	    { "ftpport", 1, 0, GETOPT_FTPPORT },
+	    { "ftpproxy", 1, 0, GETOPT_FTPPROXY },
 	    { "group", 0, 0, 'g' },
 	    { "hash", 0, &showHash, 'h' },
 	    { "help", 0, &help, 0 },
@@ -698,6 +710,14 @@ int main(int argc, char ** argv) {
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_REBUILDDB;
 	    break;
+
+	  case GETOPT_FTPPORT:
+	    ftpPort = optarg;
+	    break;
+
+	  case GETOPT_FTPPROXY:
+	    ftpProxy = optarg;
+	    break;
 	    
 	  default:
 	    if (options[long_index].flag) {
@@ -834,8 +854,17 @@ int main(int argc, char ** argv) {
     if (bigMode == MODE_QUERY && dump && !(queryFor & QUERY_FOR_LIST))
 	argerror(_("--dump of queries must be used with -l, -c, or -d"));
 
+    if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
+	(bigMode == MODE_QUERY && (querySource == QUERY_RPM ||
+	    querySource == QUERY_SRPM)))) 
+	argerror(_("ftp options can only be used during package queries, "
+		 "installs, and upgrades"));
+
     if (oldPackage || (force && (installFlags & INSTALL_UPGRADE)))
 	installFlags |= INSTALL_UPGRADETOOLD;
+
+    if (ftpProxy) setVar(RPMVAR_FTPPROXY, ftpProxy);
+    if (ftpPort) setVar(RPMVAR_FTPPORT, ftpPort);
 
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
