@@ -122,6 +122,10 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
     /* This URL is now cached. */
     *uret = u = uCache[i];
 
+    /* Zap proxy host and port in case they have been reset */
+    FREE(u->proxyp);
+    FREE(u->proxyh);
+
     /* Perform one-time FTP initialization */
     if (!strcmp(u->service, "ftp")) {
 	char *proxy;
