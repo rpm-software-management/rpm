@@ -2,12 +2,12 @@
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: ../rpm-qo.c:81 ../rpm-qo.c:111 ../rpm.c:200 ../rpm.c:279
+#: ../rpm.c:200 ../rpm.c:279
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-09-27 17:54-0400\n"
+"POT-Creation-Date: 1998-09-28 18:02-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,36 +118,6 @@ msgstr " (EKSÝK ANAHTARLAR)"
 
 #: ../checksig.c:291
 msgid "OK"
-msgstr ""
-
-#: ../convertdb.c:37
-#, fuzzy
-msgid "RPM database already exists"
-msgstr "geçici veritabaný %s mevcut"
-
-#: ../convertdb.c:42
-msgid "Old db is missing"
-msgstr ""
-
-#: ../convertdb.c:53
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr ""
-
-#: ../convertdb.c:59
-msgid "Old db is corrupt"
-msgstr ""
-
-#: ../convertdb.c:68
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr ""
-
-#: ../convertdb.c:200
-msgid "rpmconvert: no arguments expected"
-msgstr ""
-
-#: ../convertdb.c:206
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
 #: ../ftp.c:425
@@ -286,7 +256,7 @@ msgstr "paket yüklemek"
 msgid "counting packages to uninstall\n"
 msgstr "sistemden silinecek paketler belirtilmedi"
 
-#: ../install.c:321 ../query.c:516 ../verify.c:249
+#: ../install.c:321 ../query.c:520 ../verify.c:249
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s pakedi yüklenmemiþ\n"
@@ -330,20 +300,6 @@ msgstr ", %s-%s-%s tarafýndan kullanýlýyor\n"
 msgid " conflicts with %s-%s-%s\n"
 msgstr ", %s-%s-%s ile çeliþiyor\n"
 
-#: ../oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr ""
-
-#: ../oldrpmdb.c:461
-#, fuzzy
-msgid "package not found in database"
-msgstr "%s pakedi %s içerisinde bulunamadý"
-
-#: ../oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr ""
-
 #: ../query.c:28
 #, c-format
 msgid "error in format: %s\n"
@@ -353,123 +309,123 @@ msgstr "format hatasý: %s\n"
 msgid "(contains no files)"
 msgstr "(hiç dosya içermiyor)"
 
-#: ../query.c:117
+#: ../query.c:118
 msgid "normal        "
 msgstr ""
 
-#: ../query.c:119
+#: ../query.c:120
 msgid "replaced      "
 msgstr ""
 
-#: ../query.c:121
+#: ../query.c:122
 msgid "net shared    "
 msgstr ""
 
-#: ../query.c:123
+#: ../query.c:124
 #, fuzzy
 msgid "not installed "
 msgstr "%s pakedi yüklenmemiþ\n"
 
-#: ../query.c:125
+#: ../query.c:126
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(bilinmeyen tip)"
 
-#: ../query.c:129
+#: ../query.c:130
 msgid "(no state)    "
 msgstr ""
 
-#: ../query.c:145 ../query.c:174
+#: ../query.c:146 ../query.c:176
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../query.c:314
+#: ../query.c:318
 #, c-format
 msgid "querying record number %d\n"
 msgstr ""
 
-#: ../query.c:319 ../verify.c:138
+#: ../query.c:323 ../verify.c:138
 msgid "error: could not read database record\n"
 msgstr "hata: veritabaný kaydý okunamadý\n"
 
-#: ../query.c:355 ../query.c:362 ../verify.c:194 ../verify.c:201
+#: ../query.c:359 ../query.c:366 ../verify.c:194 ../verify.c:201
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s 'ye erisimde belirtilen hata oluþtu: %s\n"
 
-#: ../query.c:378
+#: ../query.c:382
 msgid "old format source packages cannot be queried\n"
 msgstr "eski tip kaynak paketleri sorgulanamýyor\n"
 
-#: ../query.c:387
+#: ../query.c:391
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s bir RPM paketi deðil (gibi)\n"
 
-#: ../query.c:391
+#: ../query.c:395
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: ../query.c:404 ../verify.c:178
+#: ../query.c:408 ../verify.c:178
 msgid "could not read database record!\n"
 msgstr "veritabaný kaydý okunamadý!\n"
 
-#: ../query.c:415 ../verify.c:224
+#: ../query.c:419 ../verify.c:224
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s grubu hiç paket içermiyor\n"
 
-#: ../query.c:425
+#: ../query.c:429
 #, c-format
 msgid "no package provides %s\n"
 msgstr "hiç bir paket  %s saðlamýyor\n"
 
-#: ../query.c:435
+#: ../query.c:439
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "hiç bir paket %s tetiklemiyor\n"
 
-#: ../query.c:445
+#: ../query.c:449
 #, c-format
 msgid "no package requires %s\n"
 msgstr "hiç bir paket %s gerektirmiyor\n"
 
-#: ../query.c:463 ../query.c:469
+#: ../query.c:467 ../query.c:473
 msgid "maximum path length exceeded\n"
 msgstr ""
 
-#: ../query.c:481
+#: ../query.c:485
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: ../query.c:484 ../verify.c:238
+#: ../query.c:488 ../verify.c:238
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: ../query.c:497
+#: ../query.c:501
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: ../query.c:500
+#: ../query.c:504
 #, c-format
 msgid "showing package: %d\n"
 msgstr "%d : numaralý paketi gösteriyorum\n"
 
-#: ../query.c:504
+#: ../query.c:508
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "%d numaralý kayýt okunamadý\n"
 
-#: ../query.c:519 ../verify.c:251
+#: ../query.c:523 ../verify.c:251
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "%s pakedi aranýrken hata oluþtu\n"
 
-#: ../rpm-qo.c:42 ../rpm.c:177
+#: ../rpm.c:177
 #, c-format
 msgid "rpm: %s\n"
 msgstr ""
@@ -487,363 +443,27 @@ msgstr ""
 # May 5, 1998 
 #
 # , c-format
-#: ../rpm-qo.c:54 ../rpm.c:188
+#: ../rpm.c:188
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Sürüm %s\n"
 
-#: ../rpm-qo.c:58
-#, fuzzy
-msgid "Copyright (C) 1995 - Red Hat Software"
+#: ../rpm.c:192
+msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr "Copyright (C) 1998 - Red Hat Software"
 
-#: ../rpm-qo.c:59 ../rpm.c:193
+#: ../rpm.c:193
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
 msgstr "Bu ðrogram GNU Kamu lisansý uyarýnca serbestçe daðýtýlabilir."
 
-#: ../rpm-qo.c:68 ../rpm.c:202
+#: ../rpm.c:202
 msgid "usage: rpm {--help}"
 msgstr "Kullaným: rpm {--help}"
 
-#: ../rpm-qo.c:69 ../rpm.c:203
+#: ../rpm.c:203
 msgid "       rpm {--version}"
 msgstr "       rpm {--version}"
-
-#: ../rpm-qo.c:70
-#, fuzzy
-msgid "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
-#: ../rpm-qo.c:71 ../rpm.c:222
-msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr ""
-"                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
-
-#: ../rpm-qo.c:72 ../rpm.c:223
-msgid "                        [--whatprovides] [--whatrequires] [--requires]"
-msgstr ""
-
-#: ../rpm-qo.c:73
-#, fuzzy
-msgid ""
-"                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpproxy <sunucu>] [--ftpport <port>]"
-
-#: ../rpm-qo.c:74
-#, fuzzy
-msgid ""
-"                        [--provides] [--dump] [--dbpath <dir>] [targets]"
-msgstr ""
-"                        [--provides] [--dump] [--dbpath <dizin>] "
-"[--changelog]"
-
-#: ../rpm-qo.c:75 ../rpm.c:247
-msgid "       rpm {--querytags}"
-msgstr "       rpm {--querytags}"
-
-#: ../rpm-qo.c:83 ../rpm.c:281
-msgid "usage:"
-msgstr "Kullaným:"
-
-#: ../rpm-qo.c:84
-#, fuzzy
-msgid "   --help\t\t- print this message"
-msgstr "Bu bilgiyi verir"
-
-#: ../rpm-qo.c:85
-#, fuzzy
-msgid "   --version\t- print the version of rpm being used"
-msgstr "Kullanýlan RPM sürümünü verir"
-
-#: ../rpm-qo.c:86 ../rpm.c:286
-msgid "   all modes support the following arguments:"
-msgstr "   tüm kipler aþaðýdaki argümanlarý kabul ederler:"
-
-#: ../rpm-qo.c:87
-#, fuzzy
-msgid "       -v\t\t      - be a little more verbose"
-msgstr "daha çok açýklama verir"
-
-#: ../rpm-qo.c:88
-#, fuzzy
-msgid "       -vv\t              - be incredibly verbose (for debugging)"
-msgstr "çok fazla açýklama verir (hata ayýklama için)"
-
-#: ../rpm-qo.c:89
-#, fuzzy
-msgid "   -q                   - query mode"
-msgstr "                        [--nomd5] [targets]"
-
-#: ../rpm-qo.c:90
-#, fuzzy
-msgid "      --queryformat <s>   - use s as the header format (implies -i)"
-msgstr "'header format' olarak s kullanýlýr (-i'yi gerektirir)"
-
-#: ../rpm-qo.c:91 ../rpm.c:307
-msgid "      Package specification options:"
-msgstr "      Paket seçim seçenekleri:"
-
-#: ../rpm-qo.c:92
-#, fuzzy
-msgid "        -a                - query all packages"
-msgstr "                           paket1 ... paketN"
-
-#: ../rpm-qo.c:93
-#, fuzzy
-msgid "        -f <file>+        - query package owning <file>"
-msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
-
-#: ../rpm-qo.c:94
-#, fuzzy
-msgid "        -F                - like -f, but read file names from stdin"
-msgstr ""
-"                        [--replacepkgs] [--replacefiles] [--root <dizin>]"
-
-#: ../rpm-qo.c:95
-#, fuzzy
-msgid "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
-
-#: ../rpm-qo.c:96
-#, fuzzy
-msgid "        -P                - like -p, but read package names from stdin"
-msgstr "                           paket1 ... paketN"
-
-#: ../rpm-qo.c:97
-#, fuzzy
-msgid "\t   --whatprovides <i> - query packages which provide <i> capability"
-msgstr "<i> yeteneði olan paketleri sorgulama"
-
-#: ../rpm-qo.c:98
-#, fuzzy
-msgid "\t   --whatrequires <i> - query packages which require <i> capability"
-msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
-
-#: ../rpm-qo.c:99 ../rpm.c:320
-msgid "      Information selection options:"
-msgstr "      Bilgilendirme seçenekleri:"
-
-#: ../rpm-qo.c:100
-#, fuzzy
-msgid "        -i                - display package information"
-msgstr "                           paket1 ... paketN"
-
-#: ../rpm-qo.c:101
-#, fuzzy
-msgid "        -l                - display package file list"
-msgstr "                           paket1 ... paketN"
-
-#: ../rpm-qo.c:102
-#, fuzzy
-msgid "        -s                - show file states (implies -l)"
-msgstr "dosyalarýn durumunu gösterir (-l gerektirir)"
-
-#: ../rpm-qo.c:103
-#, fuzzy
-msgid "        -d                - list only documentation files (implies -l)"
-msgstr "sadece belge dosyalarýný gösterir (-l gerektirir)"
-
-#: ../rpm-qo.c:104
-#, fuzzy
-msgid "        -c                - list only configuration files (implies -l)"
-msgstr ""
-"sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
-
-#: ../rpm-qo.c:105
-msgid ""
-"        --dump            - show all verifiable information for each file"
-msgstr ""
-
-#: ../rpm-qo.c:106
-#, fuzzy
-msgid "                            (must be used with -l, -c, or -d)"
-msgstr "sorgulamada --dump mutlaka -l, -c, or -d ile kullanýlmalýdýr"
-
-#: ../rpm-qo.c:107
-#, fuzzy
-msgid "        --provides        - list capabilbities package provides"
-msgstr "paketin saðladýðý yetenekleri sýralar"
-
-#: ../rpm-qo.c:108 ../rpm.c:337
-msgid "        --requires"
-msgstr "        --requires"
-
-#: ../rpm-qo.c:109
-#, fuzzy
-msgid "        -R                - list package dependencies"
-msgstr "                           paket1 ... paketN"
-
-#: ../rpm-qo.c:110
-#, fuzzy
-msgid "        --scripts         - print the various [un]install scripts"
-msgstr "paketin çeþitli yükleme, silme betiklerini (scripts) gösterir"
-
-#: ../rpm-qo.c:112
-#, fuzzy
-msgid ""
-"    --querytags         - list the tags that can be used in a query format"
-msgstr "sorgulama sýrasýnda kullanýlabilecek 'Tag'leri sýralar"
-
-#: ../rpm-qo.c:203
-#, fuzzy
-msgid "only one type of query may be performed at a time"
-msgstr "bir anda sadece tek bir tarz sorgulama yapýlabilir"
-
-#: ../rpm-qo.c:209 ../rpm-qo.c:310 ../rpm-qo.c:361 ../rpm.c:637 ../rpm.c:643
-#: ../rpm.c:650 ../rpm.c:656 ../rpm.c:665 ../rpm.c:672 ../rpm.c:718
-#: ../rpm.c:724 ../rpm.c:813 ../rpm.c:820 ../rpm.c:826 ../rpm.c:834
-#: ../rpm.c:840 ../rpm.c:848 ../rpm.c:881 ../rpm.c:927 ../rpm.c:933
-msgid "only one major mode may be specified"
-msgstr "sadece bir ana kip (major mode) belirtilebilir"
-
-#: ../rpm-qo.c:255 ../rpm-qo.c:263 ../rpm-qo.c:270 ../rpm-qo.c:278
-#: ../rpm-qo.c:286 ../rpm-qo.c:294 ../rpm-qo.c:302 ../rpm-qo.c:319
-#: ../rpm-qo.c:327 ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770
-#: ../rpm.c:790 ../rpm.c:798 ../rpm.c:806
-msgid "one type of query/verify may be performed at a time"
-msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
-
-#: ../rpm-qo.c:368 ../rpm.c:945
-msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath veritabaný kullanýlmayan bir iþlemde belirtildi"
-
-#: ../rpm-qo.c:372 ../rpm.c:953 ../rpm.c:956
-msgid "unexpected query specifiers"
-msgstr "sorgulama için beklenmeyen bilgiler girildi"
-
-#: ../rpm-qo.c:376 ../rpm.c:960
-msgid "unexpected query source"
-msgstr "beklenmeyen sorgulama kaynaðý girildi"
-
-#: ../rpm-qo.c:379 ../rpm.c:963
-msgid "only installation and upgrading may be forced"
-msgstr "sadece yükleme ve güncelleme zorlanabilir (force edilebilir)"
-
-#: ../rpm-qo.c:382 ../rpm.c:975
-msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:385 ../rpm.c:981
-msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:389 ../rpm.c:985
-msgid "--percent may only be specified during package installation"
-msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:393 ../rpm.c:989
-msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:397 ../rpm.c:993
-msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:401 ../rpm.c:997
-msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:405 ../rpm.c:1001
-msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:409 ../rpm.c:1005
-msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr ""
-"--excludedocs ve --includedocs bir arada kullanýlamaz (bi daha olmasýn)"
-
-#: ../rpm-qo.c:413 ../rpm.c:1009
-msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:417 ../rpm.c:1013
-msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:421
-#, fuzzy
-msgid ""
-"--noscripts may only be specified during package installation and "
-"uninstallation"
-msgstr "--noscripts sadece paket yükleme, silme ve doðrulamalarýnda kullanýlýr"
-
-#: ../rpm-qo.c:426
-#, fuzzy
-msgid ""
-"--nodeps may only be specified during package installation, uninstallation, "
-"and verification"
-msgstr ""
-"--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
-
-#: ../rpm-qo.c:430 ../rpm.c:1043
-msgid "--nofiles may only be specified during package verification"
-msgstr "--nofiles sadece paket doðrulamasý sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:435
-#, fuzzy
-msgid ""
-"--test may only be specified during package installation, uninstallation, "
-"and building"
-msgstr "--test sadece paket yüklemelerinde, silme ve derlemelerinde kullanýlýr"
-
-#: ../rpm-qo.c:440
-#, fuzzy
-msgid ""
-"--root (-r) may only be specified during installation, uninstallation, "
-"querying, and database rebuilds"
-msgstr ""
-"--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde "
-"kullanýlýr"
-
-#: ../rpm-qo.c:445
-#, fuzzy
-msgid "--clean may only be used during package building"
-msgstr "--sign sadece paket olusturulurken kullanýlabilir"
-
-#: ../rpm-qo.c:448 ../rpm.c:1067
-msgid "--short-circuit may only be used during package building"
-msgstr "--short-circuit sadece paket oluþturulmasý sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:451
-#, fuzzy
-msgid "--short-circuit may only be used with -bc or -bi"
-msgstr ""
-"--short-circuit mutlaka -bc, bi, -tc veya -ti ile beraber kullanýlmalýdýr"
-
-#: ../rpm-qo.c:455 ../rpm.c:1076
-msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:458
-#, fuzzy
-msgid "--dump may only be used during queryies"
-msgstr "--dump sadece sorgulama sýrasýnda kullanýlabilir"
-
-#: ../rpm-qo.c:461 ../rpm.c:1082
-msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "sorgulamada --dump mutlaka -l, -c, or -d ile kullanýlmalýdýr"
-
-#: ../rpm-qo.c:466 ../rpm.c:1087
-msgid ""
-"ftp options can only be used during package queries, installs, and upgrades"
-msgstr "FTP seçenekleri sadece sorgulama, yükleme ve güncellemede kullanýlýr"
-
-#: ../rpm-qo.c:479 ../rpm.c:1159
-msgid "unexpected arguments to --querytags "
-msgstr "--querytags için beklenmeyen argümanlar"
-
-#: ../rpm-qo.c:489 ../rpm.c:1328
-msgid "extra arguments given for query of all packages"
-msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
-
-#: ../rpm-qo.c:507 ../rpm.c:1333
-msgid "no arguments given for query"
-msgstr "sorgulama için hiç argüman belirtilmedi"
-
-#: ../rpm.c:192
-msgid "Copyright (C) 1998 - Red Hat Software"
-msgstr "Copyright (C) 1998 - Red Hat Software"
 
 #: ../rpm.c:204
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
@@ -932,6 +552,15 @@ msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
 #: ../rpm.c:221
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+
+#: ../rpm.c:222
+msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
+msgstr ""
+"                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
+
+#: ../rpm.c:223
+msgid "                        [--whatprovides] [--whatrequires] [--requires]"
+msgstr ""
 
 #: ../rpm.c:224
 #, fuzzy
@@ -1053,6 +682,14 @@ msgstr "                           paket1 ... paketN"
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
 
+#: ../rpm.c:247
+msgid "       rpm {--querytags}"
+msgstr "       rpm {--querytags}"
+
+#: ../rpm.c:281
+msgid "usage:"
+msgstr "Kullaným:"
+
 #: ../rpm.c:283
 msgid "print this message"
 msgstr "Bu bilgiyi verir"
@@ -1060,6 +697,10 @@ msgstr "Bu bilgiyi verir"
 #: ../rpm.c:285
 msgid "print the version of rpm being used"
 msgstr "Kullanýlan RPM sürümünü verir"
+
+#: ../rpm.c:286
+msgid "   all modes support the following arguments:"
+msgstr "   tüm kipler aþaðýdaki argümanlarý kabul ederler:"
 
 #: ../rpm.c:287
 msgid "      --rcfile <file>     "
@@ -1099,12 +740,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "Veritabaný dizini olarak <dizin> kullanýlýr"
 
 #: ../rpm.c:299
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:300
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "'header format' olarak s kullanýlýr (-i'yi gerektirir)"
 
 #: ../rpm.c:301
@@ -1114,7 +755,8 @@ msgstr ""
 "   yükleme, güncelleme ve sorgulama (-p ile) iþlemlerimde dosya isimleri "
 
 #: ../rpm.c:302
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   yerine FTP adreslerini aþaðýdaki seçeneklerle kabul eder:\n"
 
 #: ../rpm.c:303
@@ -1132,6 +774,10 @@ msgstr ""
 #: ../rpm.c:306
 msgid "port number of ftp server (or proxy)"
 msgstr "FTP sunucusunun (ya da Proxy'nin) port numarasý"
+
+#: ../rpm.c:307
+msgid "      Package specification options:"
+msgstr "      Paket seçim seçenekleri:"
 
 #: ../rpm.c:309
 msgid "query all packages"
@@ -1155,32 +801,37 @@ msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
 
 #: ../rpm.c:314
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
 #: ../rpm.c:315
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
 #: ../rpm.c:316
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "        --requires"
 
 #: ../rpm.c:317
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "<i> yeteneði olan paketleri sorgulama"
 
 #: ../rpm.c:318
 #, fuzzy
-msgid "        --whatrequires <icap>"
+msgid "        --whatrequires <cap>"
 msgstr "        --requires"
 
 #: ../rpm.c:319
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
+
+#: ../rpm.c:320
+msgid "      Information selection options:"
+msgstr "      Bilgilendirme seçenekleri:"
 
 #: ../rpm.c:322
 msgid "display package information"
@@ -1219,6 +870,10 @@ msgstr ""
 msgid "list capabilities package provides"
 msgstr "paketin saðladýðý yetenekleri sýralar"
 
+#: ../rpm.c:337
+msgid "        --requires"
+msgstr "        --requires"
+
 #: ../rpm.c:339
 msgid "list package dependencies"
 msgstr "paketin baðýmlýlýklarýný (gerektirdiði paketleri) gösterir"
@@ -1233,7 +888,7 @@ msgstr ""
 
 #: ../rpm.c:347
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:348
@@ -1416,7 +1071,7 @@ msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:445
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:446
@@ -1469,8 +1124,9 @@ msgid "generate PGP signature"
 msgstr "PGP-imzasý yaratýr"
 
 #: ../rpm.c:467
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:468
 msgid "use <dir> as the build root"
@@ -1490,12 +1146,12 @@ msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
 
 #: ../rpm.c:473
 #, fuzzy
-msgid "      --timecheck <secs>     "
+msgid "      --timecheck <secs>  "
 msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:474
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "zaman kontrolünü S saniyeye ayarlar (0 ile tümüyle kaldýrýr)"
 
 #: ../rpm.c:476
@@ -1512,7 +1168,7 @@ msgstr ""
 
 #: ../rpm.c:478
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<adým> <spec>      "
 
 #: ../rpm.c:479
@@ -1574,6 +1230,13 @@ msgstr "geçerli bir veri tabaný olmasýný saðlar"
 msgid "rebuild database from existing database"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
+#: ../rpm.c:637 ../rpm.c:643 ../rpm.c:650 ../rpm.c:656 ../rpm.c:665
+#: ../rpm.c:672 ../rpm.c:718 ../rpm.c:724 ../rpm.c:813 ../rpm.c:820
+#: ../rpm.c:826 ../rpm.c:834 ../rpm.c:840 ../rpm.c:848 ../rpm.c:881
+#: ../rpm.c:927 ../rpm.c:933
+msgid "only one major mode may be specified"
+msgstr "sadece bir ana kip (major mode) belirtilebilir"
+
 #: ../rpm.c:658
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u ve --uninstall komutlarý eskidirler ve çalýþmamaktadýrlar.\n"
@@ -1591,6 +1254,11 @@ msgstr ""
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--tarbuild (-t) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
+
+#: ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770 ../rpm.c:790
+#: ../rpm.c:798 ../rpm.c:806
+msgid "one type of query/verify may be performed at a time"
+msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
 
 #: ../rpm.c:856
 msgid "arguments to --dbpath must begin with a /"
@@ -1616,9 +1284,25 @@ msgstr "relocate için = den sonra bir / gerekir"
 msgid "Internal error in argument processing :-(\n"
 msgstr ""
 
+#: ../rpm.c:945
+msgid "--dbpath given for operation that does not use a database"
+msgstr "--dbpath veritabaný kullanýlmayan bir iþlemde belirtildi"
+
 #: ../rpm.c:950
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck sadece paket oluþturulurken kullanýlabilir"
+
+#: ../rpm.c:953 ../rpm.c:956
+msgid "unexpected query specifiers"
+msgstr "sorgulama için beklenmeyen bilgiler girildi"
+
+#: ../rpm.c:960
+msgid "unexpected query source"
+msgstr "beklenmeyen sorgulama kaynaðý girildi"
+
+#: ../rpm.c:963
+msgid "only installation and upgrading may be forced"
+msgstr "sadece yükleme ve güncelleme zorlanabilir (force edilebilir)"
 
 #: ../rpm.c:966
 msgid "files may only be relocated during package installation"
@@ -1632,9 +1316,50 @@ msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
 msgid "--relocate may only be used when installing new packages"
 msgstr "--relocate sadece yeni paketler yüklenirken kullanýlýr"
 
+#: ../rpm.c:975
+msgid "--prefix may only be used when installing new packages"
+msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
+
 #: ../rpm.c:978
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix komutunun argümanlarý '/' ile baþlamalý"
+
+#: ../rpm.c:981
+msgid "--hash (-h) may only be specified during package installation"
+msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: ../rpm.c:985
+msgid "--percent may only be specified during package installation"
+msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: ../rpm.c:989
+msgid "--replacefiles may only be specified during package installation"
+msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: ../rpm.c:993
+msgid "--replacepkgs may only be specified during package installation"
+msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: ../rpm.c:997
+msgid "--excludedocs may only be specified during package installation"
+msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: ../rpm.c:1001
+msgid "--includedocs may only be specified during package installation"
+msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: ../rpm.c:1005
+msgid "only one of --excludedocs and --includedocs may be specified"
+msgstr ""
+"--excludedocs ve --includedocs bir arada kullanýlamaz (bi daha olmasýn)"
+
+#: ../rpm.c:1009
+msgid "--ignorearch may only be specified during package installation"
+msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+
+#: ../rpm.c:1013
+msgid "--ignoreos may only be specified during package installation"
+msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
 #: ../rpm.c:1017
 msgid "--allmatches may only be specified during package erasure"
@@ -1669,6 +1394,10 @@ msgid ""
 msgstr ""
 "--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
 
+#: ../rpm.c:1043
+msgid "--nofiles may only be specified during package verification"
+msgstr "--nofiles sadece paket doðrulamasý sýrasýnda kullanýlabilir"
+
 #: ../rpm.c:1048
 msgid ""
 "--test may only be specified during package installation, erasure, and "
@@ -1695,15 +1424,32 @@ msgstr "--clean sadece -b ve -t ile kullanýlýr"
 msgid "--rmsource may only be used with -b and -t"
 msgstr "--rmsource sadece -b ve -t ile kullanýlýr"
 
+#: ../rpm.c:1067
+msgid "--short-circuit may only be used during package building"
+msgstr "--short-circuit sadece paket oluþturulmasý sýrasýnda kullanýlabilir"
+
 #: ../rpm.c:1071
 #, fuzzy
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 "--short-circuit mutlaka -bc, bi, -tc veya -ti ile beraber kullanýlmalýdýr"
 
+#: ../rpm.c:1076
+msgid "--oldpackage may only be used during upgrades"
+msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
+
 #: ../rpm.c:1079
 msgid "--dump may only be used during queries"
 msgstr "--dump sadece sorgulama sýrasýnda kullanýlabilir"
+
+#: ../rpm.c:1082
+msgid "--dump of queries must be used with -l, -c, or -d"
+msgstr "sorgulamada --dump mutlaka -l, -c, or -d ile kullanýlmalýdýr"
+
+#: ../rpm.c:1087
+msgid ""
+"ftp options can only be used during package queries, installs, and upgrades"
+msgstr "FTP seçenekleri sadece sorgulama, yükleme ve güncellemede kullanýlýr"
 
 #: ../rpm.c:1094
 msgid "--nopgp may only be used during signature checking"
@@ -1731,6 +1477,10 @@ msgstr "--sign sadece paket olusturulurken kullanýlabilir"
 #, fuzzy
 msgid "exec failed\n"
 msgstr "%s: Eriþilemedi\n"
+
+#: ../rpm.c:1159
+msgid "unexpected arguments to --querytags "
+msgstr "--querytags için beklenmeyen argümanlar"
 
 #: ../rpm.c:1170
 msgid "no packages given for signature check"
@@ -1760,18 +1510,17 @@ msgstr "sistemden silinecek paketler belirtilmedi"
 msgid "no packages given for install"
 msgstr "yüklenecek paketler belirtilmedi"
 
+#: ../rpm.c:1328
+msgid "extra arguments given for query of all packages"
+msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
+
+#: ../rpm.c:1333
+msgid "no arguments given for query"
+msgstr "sorgulama için hiç argüman belirtilmedi"
+
 #: ../rpm.c:1350
 msgid "no arguments given for verify"
 msgstr "doðrulama için hiç argüman belirtilmedi"
-
-#: ../rpm2cpio.c:39
-msgid "argument is not an RPM package\n"
-msgstr ""
-
-#: ../rpm2cpio.c:42
-#, fuzzy
-msgid "error reading header from package\n"
-msgstr "%s paketi bulunamadý\n"
 
 #: ../url.c:47
 #, c-format
@@ -1815,6 +1564,59 @@ msgstr ""
 #: ../verify.c:215
 #, c-format
 msgid "%s is not an RPM\n"
+msgstr ""
+
+#: ../rpm2cpio.c:39
+msgid "argument is not an RPM package\n"
+msgstr ""
+
+#: ../rpm2cpio.c:42
+#, fuzzy
+msgid "error reading header from package\n"
+msgstr "%s paketi bulunamadý\n"
+
+#: ../convertdb.c:37
+#, fuzzy
+msgid "RPM database already exists"
+msgstr "geçici veritabaný %s mevcut"
+
+#: ../convertdb.c:42
+msgid "Old db is missing"
+msgstr ""
+
+#: ../convertdb.c:53
+msgid "failed to create RPM database /var/lib/rpm"
+msgstr ""
+
+#: ../convertdb.c:59
+msgid "Old db is corrupt"
+msgstr ""
+
+#: ../convertdb.c:68
+#, c-format
+msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+msgstr ""
+
+#: ../convertdb.c:200
+msgid "rpmconvert: no arguments expected"
+msgstr ""
+
+#: ../convertdb.c:206
+msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+msgstr ""
+
+#: ../oldrpmdb.c:454
+#, c-format
+msgid "pulling %s from database\n"
+msgstr ""
+
+#: ../oldrpmdb.c:461
+#, fuzzy
+msgid "package not found in database"
+msgstr "%s pakedi %s içerisinde bulunamadý"
+
+#: ../oldrpmdb.c:522
+msgid "no copyright!\n"
 msgstr ""
 
 #: ../build/build.c:96 ../build/pack.c:191
@@ -3412,6 +3214,173 @@ msgstr ""
 #: ../lib/verify.c:189
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Copyright (C) 1995 - Red Hat Software"
+#~ msgstr "Copyright (C) 1998 - Red Hat Software"
+
+#, fuzzy
+#~ msgid "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
+#~ msgstr "                        [--ftpproxy <sunucu>] [--ftpport <port>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
+#~ msgstr ""
+#~ "                        [--provides] [--dump] [--dbpath <dizin>] "
+#~ "[--changelog]"
+
+#, fuzzy
+#~ msgid "   --help\t\t- print this message"
+#~ msgstr "Bu bilgiyi verir"
+
+#, fuzzy
+#~ msgid "   --version\t- print the version of rpm being used"
+#~ msgstr "Kullanýlan RPM sürümünü verir"
+
+#, fuzzy
+#~ msgid "       -v\t\t      - be a little more verbose"
+#~ msgstr "daha çok açýklama verir"
+
+#, fuzzy
+#~ msgid "       -vv\t              - be incredibly verbose (for debugging)"
+#~ msgstr "çok fazla açýklama verir (hata ayýklama için)"
+
+#, fuzzy
+#~ msgid "   -q                   - query mode"
+#~ msgstr "                        [--nomd5] [targets]"
+
+#, fuzzy
+#~ msgid "      --queryformat <s>   - use s as the header format (implies -i)"
+#~ msgstr "'header format' olarak s kullanýlýr (-i'yi gerektirir)"
+
+#, fuzzy
+#~ msgid "        -a                - query all packages"
+#~ msgstr "                           paket1 ... paketN"
+
+#, fuzzy
+#~ msgid "        -f <file>+        - query package owning <file>"
+#~ msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
+
+#, fuzzy
+#~ msgid "        -F                - like -f, but read file names from stdin"
+#~ msgstr ""
+#~ "                        [--replacepkgs] [--replacefiles] [--root <dizin>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
+#~ msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -P                - like -p, but read package names from stdin"
+#~ msgstr "                           paket1 ... paketN"
+
+#, fuzzy
+#~ msgid ""
+#~ "\t   --whatprovides <i> - query packages which provide <i> capability"
+#~ msgstr "<i> yeteneði olan paketleri sorgulama"
+
+#, fuzzy
+#~ msgid ""
+#~ "\t   --whatrequires <i> - query packages which require <i> capability"
+#~ msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
+
+#, fuzzy
+#~ msgid "        -i                - display package information"
+#~ msgstr "                           paket1 ... paketN"
+
+#, fuzzy
+#~ msgid "        -l                - display package file list"
+#~ msgstr "                           paket1 ... paketN"
+
+#, fuzzy
+#~ msgid "        -s                - show file states (implies -l)"
+#~ msgstr "dosyalarýn durumunu gösterir (-l gerektirir)"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -d                - list only documentation files (implies -l)"
+#~ msgstr "sadece belge dosyalarýný gösterir (-l gerektirir)"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -c                - list only configuration files (implies -l)"
+#~ msgstr ""
+#~ "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
+
+#, fuzzy
+#~ msgid "                            (must be used with -l, -c, or -d)"
+#~ msgstr "sorgulamada --dump mutlaka -l, -c, or -d ile kullanýlmalýdýr"
+
+#, fuzzy
+#~ msgid "        --provides        - list capabilbities package provides"
+#~ msgstr "paketin saðladýðý yetenekleri sýralar"
+
+#, fuzzy
+#~ msgid "        -R                - list package dependencies"
+#~ msgstr "                           paket1 ... paketN"
+
+#, fuzzy
+#~ msgid "        --scripts         - print the various [un]install scripts"
+#~ msgstr "paketin çeþitli yükleme, silme betiklerini (scripts) gösterir"
+
+#, fuzzy
+#~ msgid ""
+#~ "    --querytags         - list the tags that can be used in a query format"
+#~ msgstr "sorgulama sýrasýnda kullanýlabilecek 'Tag'leri sýralar"
+
+#, fuzzy
+#~ msgid "only one type of query may be performed at a time"
+#~ msgstr "bir anda sadece tek bir tarz sorgulama yapýlabilir"
+
+#, fuzzy
+#~ msgid ""
+#~ "--noscripts may only be specified during package installation and "
+#~ "uninstallation"
+#~ msgstr ""
+#~ "--noscripts sadece paket yükleme, silme ve doðrulamalarýnda kullanýlýr"
+
+#, fuzzy
+#~ msgid ""
+#~ "--nodeps may only be specified during package installation, uninstallation, "
+#~ "and verification"
+#~ msgstr ""
+#~ "--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
+
+#, fuzzy
+#~ msgid ""
+#~ "--test may only be specified during package installation, uninstallation, "
+#~ "and building"
+#~ msgstr ""
+#~ "--test sadece paket yüklemelerinde, silme ve derlemelerinde kullanýlýr"
+
+#, fuzzy
+#~ msgid ""
+#~ "--root (-r) may only be specified during installation, uninstallation, "
+#~ "querying, and database rebuilds"
+#~ msgstr ""
+#~ "--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde "
+#~ "kullanýlýr"
+
+#, fuzzy
+#~ msgid "--clean may only be used during package building"
+#~ msgstr "--sign sadece paket olusturulurken kullanýlabilir"
+
+#, fuzzy
+#~ msgid "--short-circuit may only be used with -bc or -bi"
+#~ msgstr ""
+#~ "--short-circuit mutlaka -bc, bi, -tc veya -ti ile beraber kullanýlmalýdýr"
+
+#, fuzzy
+#~ msgid "--dump may only be used during queryies"
+#~ msgstr "--dump sadece sorgulama sýrasýnda kullanýlabilir"
 
 #~ msgid "build the packages for architecture <arch>"
 #~ msgstr "paketleri <arch> mimarisi için oluþturur"

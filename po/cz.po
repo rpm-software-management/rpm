@@ -1,7 +1,7 @@
-#: ../rpm-qo.c:81 ../rpm-qo.c:111 ../rpm.c:200 ../rpm.c:279
+#: ../rpm.c:200 ../rpm.c:279
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-27 17:54-0400\n"
+"POT-Creation-Date: 1998-09-28 18:02-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -121,36 +121,6 @@ msgstr " (CHYBÌJÍ KLÁVESY)"
 
 #: ../checksig.c:291
 msgid "OK"
-msgstr ""
-
-#: ../convertdb.c:37
-#, fuzzy
-msgid "RPM database already exists"
-msgstr "doèasná databáze %s ji¾ existuje"
-
-#: ../convertdb.c:42
-msgid "Old db is missing"
-msgstr ""
-
-#: ../convertdb.c:53
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr ""
-
-#: ../convertdb.c:59
-msgid "Old db is corrupt"
-msgstr ""
-
-#: ../convertdb.c:68
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr ""
-
-#: ../convertdb.c:200
-msgid "rpmconvert: no arguments expected"
-msgstr ""
-
-#: ../convertdb.c:206
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
 #: ../ftp.c:425
@@ -289,7 +259,7 @@ msgstr "instalovat balíèek"
 msgid "counting packages to uninstall\n"
 msgstr "pro deinstalaci nezadány ¾ádné balíèky"
 
-#: ../install.c:321 ../query.c:516 ../verify.c:249
+#: ../install.c:321 ../query.c:520 ../verify.c:249
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -333,20 +303,6 @@ msgstr " je nutné pro %s-%s-%s\n"
 msgid " conflicts with %s-%s-%s\n"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: ../oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr ""
-
-#: ../oldrpmdb.c:461
-#, fuzzy
-msgid "package not found in database"
-msgstr "balíèek %s nenalezen v %s"
-
-#: ../oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr ""
-
 #: ../query.c:28
 #, c-format
 msgid "error in format: %s\n"
@@ -356,488 +312,149 @@ msgstr "chyba v formátu: %s\n"
 msgid "(contains no files)"
 msgstr "(neobsahuje ¾ádné soubory)"
 
-#: ../query.c:117
+#: ../query.c:118
 msgid "normal        "
 msgstr ""
 
-#: ../query.c:119
+#: ../query.c:120
 msgid "replaced      "
 msgstr ""
 
-#: ../query.c:121
+#: ../query.c:122
 msgid "net shared    "
 msgstr ""
 
-#: ../query.c:123
+#: ../query.c:124
 #, fuzzy
 msgid "not installed "
 msgstr "balíèek %s není nainstalován\n"
 
-#: ../query.c:125
+#: ../query.c:126
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(neznámý typ)"
 
-#: ../query.c:129
+#: ../query.c:130
 msgid "(no state)    "
 msgstr ""
 
-#: ../query.c:145 ../query.c:174
+#: ../query.c:146 ../query.c:176
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../query.c:314
+#: ../query.c:318
 #, c-format
 msgid "querying record number %d\n"
 msgstr ""
 
-#: ../query.c:319 ../verify.c:138
+#: ../query.c:323 ../verify.c:138
 msgid "error: could not read database record\n"
 msgstr "chyba: nelze naèíst databázový záznam\n"
 
-#: ../query.c:355 ../query.c:362 ../verify.c:194 ../verify.c:201
+#: ../query.c:359 ../query.c:366 ../verify.c:194 ../verify.c:201
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
 
-#: ../query.c:378
+#: ../query.c:382
 msgid "old format source packages cannot be queried\n"
 msgstr "zdrojové balíèky ve starém formátu nelze dotazovat\n"
 
-#: ../query.c:387
+#: ../query.c:391
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "nezdá se, ¾e by %s byl balíèek RPM\n"
 
-#: ../query.c:391
+#: ../query.c:395
 #, c-format
 msgid "query of %s failed\n"
 msgstr "dotaz na %s selhal\n"
 
-#: ../query.c:404 ../verify.c:178
+#: ../query.c:408 ../verify.c:178
 msgid "could not read database record!\n"
 msgstr "nelze naèíst databázový záznam!\n"
 
-#: ../query.c:415 ../verify.c:224
+#: ../query.c:419 ../verify.c:224
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
-#: ../query.c:425
+#: ../query.c:429
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾ádný balíèek neposkytuje %s\n"
 
-#: ../query.c:435
+#: ../query.c:439
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neuvolní %s\n"
 
-#: ../query.c:445
+#: ../query.c:449
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: ../query.c:463 ../query.c:469
+#: ../query.c:467 ../query.c:473
 msgid "maximum path length exceeded\n"
 msgstr ""
 
-#: ../query.c:481
+#: ../query.c:485
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "otevøení %s selhalo: %s"
 
-#: ../query.c:484 ../verify.c:238
+#: ../query.c:488 ../verify.c:238
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "¾ádný balíèek nevlastní soubor %s\n"
 
-#: ../query.c:497
+#: ../query.c:501
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: ../query.c:500
+#: ../query.c:504
 #, c-format
 msgid "showing package: %d\n"
 msgstr "zobrazen balíèek: %d\n"
 
-#: ../query.c:504
+#: ../query.c:508
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "záznam %d nelze naèíst\n"
 
-#: ../query.c:519 ../verify.c:251
+#: ../query.c:523 ../verify.c:251
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
 
-#: ../rpm-qo.c:42 ../rpm.c:177
+#: ../rpm.c:177
 #, c-format
 msgid "rpm: %s\n"
 msgstr ""
 
-#: ../rpm-qo.c:54 ../rpm.c:188
+#: ../rpm.c:188
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM verze %s\n"
 
-#: ../rpm-qo.c:58
-#, fuzzy
-msgid "Copyright (C) 1995 - Red Hat Software"
+#: ../rpm.c:192
+msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr "Copyright (c) 1998 - Red Hat Software"
 
-#: ../rpm-qo.c:59 ../rpm.c:193
+#: ../rpm.c:193
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
 msgstr ""
 "Toto lze volnì distribuovat znovu podle podmínek GPL (GNU Public License)."
 
-#: ../rpm-qo.c:68 ../rpm.c:202
+#: ../rpm.c:202
 msgid "usage: rpm {--help}"
 msgstr "pou¾ití: rpm {--help}"
 
-#: ../rpm-qo.c:69 ../rpm.c:203
+#: ../rpm.c:203
 msgid "       rpm {--version}"
 msgstr "       rpm {--version}"
-
-#: ../rpm-qo.c:70
-#, fuzzy
-msgid "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
-#: ../rpm-qo.c:71 ../rpm.c:222
-msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr ""
-"                      [--scripts] [--root <adresáø>] [--rcfile <soubor>]"
-
-#: ../rpm-qo.c:72 ../rpm.c:223
-msgid "                        [--whatprovides] [--whatrequires] [--requires]"
-msgstr "                      [--whatprovides] [--whatrequires] [--requires]"
-
-#: ../rpm-qo.c:73
-#, fuzzy
-msgid ""
-"                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                      [--ftpproxy <hostitel>] [--ftpport <port>]"
-
-#: ../rpm-qo.c:74
-#, fuzzy
-msgid ""
-"                        [--provides] [--dump] [--dbpath <dir>] [targets]"
-msgstr ""
-"                      [--provides] [--dump] [--dbpath <adresáø>] "
-"[--changelog]"
-
-#: ../rpm-qo.c:75 ../rpm.c:247
-msgid "       rpm {--querytags}"
-msgstr "       rpm {--querytags}"
-
-#: ../rpm-qo.c:83 ../rpm.c:281
-msgid "usage:"
-msgstr "pou¾ití:"
-
-#: ../rpm-qo.c:84
-#, fuzzy
-msgid "   --help\t\t- print this message"
-msgstr "vytisknout tuto zprávu"
-
-#: ../rpm-qo.c:85
-#, fuzzy
-msgid "   --version\t- print the version of rpm being used"
-msgstr "vytisknout verzi pou¾ívaného rpm"
-
-#: ../rpm-qo.c:86 ../rpm.c:286
-msgid "   all modes support the following arguments:"
-msgstr "   v¹echny re¾imy podporují následující argumenty:"
-
-#: ../rpm-qo.c:87
-#, fuzzy
-msgid "       -v\t\t      - be a little more verbose"
-msgstr "o nìco popisnìj¹í re¾im"
-
-#: ../rpm-qo.c:88
-#, fuzzy
-msgid "       -vv\t              - be incredibly verbose (for debugging)"
-msgstr "velmi popisný re¾im (pro odlaïování)"
-
-#: ../rpm-qo.c:89
-#, fuzzy
-msgid "   -q                   - query mode"
-msgstr "                      [--nomd5] [cíle]"
-
-#: ../rpm-qo.c:90
-#, fuzzy
-msgid "      --queryformat <s>   - use s as the header format (implies -i)"
-msgstr "pou¾ít s jako hlavièkový formát (implikuje -i)"
-
-#: ../rpm-qo.c:91 ../rpm.c:307
-msgid "      Package specification options:"
-msgstr "      Mo¾nosti specifikace balíèku:"
-
-#: ../rpm-qo.c:92
-#, fuzzy
-msgid "        -a                - query all packages"
-msgstr "                         balíèek1 ... balíèekN"
-
-#: ../rpm-qo.c:93
-#, fuzzy
-msgid "        -f <file>+        - query package owning <file>"
-msgstr "dotazovat balíèek vlastnící <soubor>"
-
-#: ../rpm-qo.c:94
-#, fuzzy
-msgid "        -F                - like -f, but read file names from stdin"
-msgstr ""
-"                      [--replacepkgs] [--replacefiles] [--root <adresáø>]"
-
-#: ../rpm-qo.c:95
-#, fuzzy
-msgid "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-msgstr "dotazovat (nenainstalovaný) balíèek <souborbalíèku>"
-
-#: ../rpm-qo.c:96
-#, fuzzy
-msgid "        -P                - like -p, but read package names from stdin"
-msgstr "                         balíèek1 ... balíèekN"
-
-#: ../rpm-qo.c:97
-#, fuzzy
-msgid "\t   --whatprovides <i> - query packages which provide <i> capability"
-msgstr "dotazovat balíèky poskytující schopnost <i>"
-
-#: ../rpm-qo.c:98
-#, fuzzy
-msgid "\t   --whatrequires <i> - query packages which require <i> capability"
-msgstr "dotazovat balíèky vy¾adující schopnost <i>"
-
-#: ../rpm-qo.c:99 ../rpm.c:320
-msgid "      Information selection options:"
-msgstr "      Mo¾nosti vybírání informací:"
-
-#: ../rpm-qo.c:100
-#, fuzzy
-msgid "        -i                - display package information"
-msgstr "                         balíèek1 ... balíèekN"
-
-#: ../rpm-qo.c:101
-#, fuzzy
-msgid "        -l                - display package file list"
-msgstr "                         balíèek1 ... balíèekN"
-
-#: ../rpm-qo.c:102
-#, fuzzy
-msgid "        -s                - show file states (implies -l)"
-msgstr "zobrazit stavy souborù (implikuje -l)"
-
-#: ../rpm-qo.c:103
-#, fuzzy
-msgid "        -d                - list only documentation files (implies -l)"
-msgstr "uvést pouze dokumentaèní soubory (implikuje -l)"
-
-#: ../rpm-qo.c:104
-#, fuzzy
-msgid "        -c                - list only configuration files (implies -l)"
-msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
-
-#: ../rpm-qo.c:105
-msgid ""
-"        --dump            - show all verifiable information for each file"
-msgstr ""
-
-#: ../rpm-qo.c:106
-#, fuzzy
-msgid "                            (must be used with -l, -c, or -d)"
-msgstr "--dump pro dotazy se musí pou¾ít s -l, -c nebo -d"
-
-#: ../rpm-qo.c:107
-#, fuzzy
-msgid "        --provides        - list capabilbities package provides"
-msgstr "uvést schopnosti poskytované balíèkem"
-
-#: ../rpm-qo.c:108 ../rpm.c:337
-msgid "        --requires"
-msgstr "        --requires"
-
-#: ../rpm-qo.c:109
-#, fuzzy
-msgid "        -R                - list package dependencies"
-msgstr "                         balíèek1 ... balíèekN"
-
-#: ../rpm-qo.c:110
-#, fuzzy
-msgid "        --scripts         - print the various [un]install scripts"
-msgstr "vytisknout rùzné [de]instalaèní skripty"
-
-#: ../rpm-qo.c:112
-#, fuzzy
-msgid ""
-"    --querytags         - list the tags that can be used in a query format"
-msgstr "uvést pøíznaky, které lze pou¾ít v dotazovacím formátu"
-
-#: ../rpm-qo.c:203
-#, fuzzy
-msgid "only one type of query may be performed at a time"
-msgstr "v daném okam¾iku lze provést jeden typ dotazu"
-
-#: ../rpm-qo.c:209 ../rpm-qo.c:310 ../rpm-qo.c:361 ../rpm.c:637 ../rpm.c:643
-#: ../rpm.c:650 ../rpm.c:656 ../rpm.c:665 ../rpm.c:672 ../rpm.c:718
-#: ../rpm.c:724 ../rpm.c:813 ../rpm.c:820 ../rpm.c:826 ../rpm.c:834
-#: ../rpm.c:840 ../rpm.c:848 ../rpm.c:881 ../rpm.c:927 ../rpm.c:933
-msgid "only one major mode may be specified"
-msgstr "specifikovat lze jen jeden hlavní re¾im"
-
-#: ../rpm-qo.c:255 ../rpm-qo.c:263 ../rpm-qo.c:270 ../rpm-qo.c:278
-#: ../rpm-qo.c:286 ../rpm-qo.c:294 ../rpm-qo.c:302 ../rpm-qo.c:319
-#: ../rpm-qo.c:327 ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770
-#: ../rpm.c:790 ../rpm.c:798 ../rpm.c:806
-msgid "one type of query/verify may be performed at a time"
-msgstr "v daném okam¾iku lze provést jeden typ dotazu nebo ovìøení"
-
-#: ../rpm-qo.c:368 ../rpm.c:945
-msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath zadána pro operaci, která nepou¾ívá databázi"
-
-#: ../rpm-qo.c:372 ../rpm.c:953 ../rpm.c:956
-msgid "unexpected query specifiers"
-msgstr "neoèekávané specifikátory dotazu"
-
-#: ../rpm-qo.c:376 ../rpm.c:960
-msgid "unexpected query source"
-msgstr "neoèekávaný zdroj dotazu"
-
-#: ../rpm-qo.c:379 ../rpm.c:963
-msgid "only installation and upgrading may be forced"
-msgstr "vynucena mù¾e být jen instalace a aktualizace"
-
-#: ../rpm-qo.c:382 ../rpm.c:975
-msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix se mù¾e pou¾ít jen pøi instalaci nových balíèkù"
-
-#: ../rpm-qo.c:385 ../rpm.c:981
-msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) se mù¾e specifikovat jen pøi instalaci balíèkù"
-
-#: ../rpm-qo.c:389 ../rpm.c:985
-msgid "--percent may only be specified during package installation"
-msgstr "--percent se mù¾e specifikovat jen pøi instalaci balíèkù"
-
-#: ../rpm-qo.c:393 ../rpm.c:989
-msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles se mù¾e specifikovat jen pøi instalaci balíèkù"
-
-#: ../rpm-qo.c:397 ../rpm.c:993
-msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs se mù¾e specifikovat jen pøi instalaci balíèkù"
-
-#: ../rpm-qo.c:401 ../rpm.c:997
-msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
-
-#: ../rpm-qo.c:405 ../rpm.c:1001
-msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
-
-#: ../rpm-qo.c:409 ../rpm.c:1005
-msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "specifikovat lze jen jeden z --excludedocs a --includedocs"
-
-#: ../rpm-qo.c:413 ../rpm.c:1009
-msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch se mù¾e specifikovat jen pøi instalaci balíèkù"
-
-#: ../rpm-qo.c:417 ../rpm.c:1013
-msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos se mù¾e specifikovat jen pøi instalaci balíèkù"
-
-#: ../rpm-qo.c:421
-#, fuzzy
-msgid ""
-"--noscripts may only be specified during package installation and "
-"uninstallation"
-msgstr ""
-"--noscripts se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
-"balíèkù"
-
-#: ../rpm-qo.c:426
-#, fuzzy
-msgid ""
-"--nodeps may only be specified during package installation, uninstallation, "
-"and verification"
-msgstr ""
-"--nodeps se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
-"balíèkù"
-
-#: ../rpm-qo.c:430 ../rpm.c:1043
-msgid "--nofiles may only be specified during package verification"
-msgstr "--nofiles se mù¾e specifikovat jen pøi verifikaci balíèkù"
-
-#: ../rpm-qo.c:435
-#, fuzzy
-msgid ""
-"--test may only be specified during package installation, uninstallation, "
-"and building"
-msgstr ""
-"--test se mù¾e specifikovat jen pøi instalaci, mazání nebo sestavování "
-"balíèkù"
-
-#: ../rpm-qo.c:440
-#, fuzzy
-msgid ""
-"--root (-r) may only be specified during installation, uninstallation, "
-"querying, and database rebuilds"
-msgstr ""
-"--root (-r) se mù¾e urèit jen pøi instalaci, mazání, dotazování a opìtných "
-"sestavování databází"
-
-#: ../rpm-qo.c:445
-#, fuzzy
-msgid "--clean may only be used during package building"
-msgstr "--sign lze pou¾ít jen pøi sestavování balíèkù"
-
-#: ../rpm-qo.c:448 ../rpm.c:1067
-msgid "--short-circuit may only be used during package building"
-msgstr "--short-circuit lze pou¾ít jen pøi sestavování balíèkù"
-
-#: ../rpm-qo.c:451
-#, fuzzy
-msgid "--short-circuit may only be used with -bc or -bi"
-msgstr "--short-circuit lze pou¾ít pouze s -bc, -bi, -tc nebo -ti"
-
-#: ../rpm-qo.c:455 ../rpm.c:1076
-msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage lze pou¾ít jen pøi aktualizacích"
-
-#: ../rpm-qo.c:458
-#, fuzzy
-msgid "--dump may only be used during queryies"
-msgstr "--dump lze pou¾ít jen pøi dotazování"
-
-#: ../rpm-qo.c:461 ../rpm.c:1082
-msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "--dump pro dotazy se musí pou¾ít s -l, -c nebo -d"
-
-#: ../rpm-qo.c:466 ../rpm.c:1087
-msgid ""
-"ftp options can only be used during package queries, installs, and upgrades"
-msgstr ""
-"volby ftp lze pou¾ít jen pøi dotazování, instalacích a aktualizacích balíèkù"
-
-#: ../rpm-qo.c:479 ../rpm.c:1159
-msgid "unexpected arguments to --querytags "
-msgstr "neoèekávané argumenty pro --querytags "
-
-#: ../rpm-qo.c:489 ../rpm.c:1328
-msgid "extra arguments given for query of all packages"
-msgstr "k dotazu na v¹echny balíèky zadány argumenty navíc"
-
-#: ../rpm-qo.c:507 ../rpm.c:1333
-msgid "no arguments given for query"
-msgstr "k dotazu nezadány ¾ádné argumenty"
-
-#: ../rpm.c:192
-msgid "Copyright (C) 1998 - Red Hat Software"
-msgstr "Copyright (c) 1998 - Red Hat Software"
 
 #: ../rpm.c:204
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
@@ -925,6 +542,15 @@ msgstr "                      [--badreloc] soubor1.rpm ... souborN.rpm"
 #: ../rpm.c:221
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+
+#: ../rpm.c:222
+msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
+msgstr ""
+"                      [--scripts] [--root <adresáø>] [--rcfile <soubor>]"
+
+#: ../rpm.c:223
+msgid "                        [--whatprovides] [--whatrequires] [--requires]"
+msgstr "                      [--whatprovides] [--whatrequires] [--requires]"
 
 #: ../rpm.c:224
 #, fuzzy
@@ -1047,6 +673,14 @@ msgstr "                         balíèek1 ... balíèekN"
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <soubor>] [--dbpath <adresáø>]"
 
+#: ../rpm.c:247
+msgid "       rpm {--querytags}"
+msgstr "       rpm {--querytags}"
+
+#: ../rpm.c:281
+msgid "usage:"
+msgstr "pou¾ití:"
+
 #: ../rpm.c:283
 msgid "print this message"
 msgstr "vytisknout tuto zprávu"
@@ -1054,6 +688,10 @@ msgstr "vytisknout tuto zprávu"
 #: ../rpm.c:285
 msgid "print the version of rpm being used"
 msgstr "vytisknout verzi pou¾ívaného rpm"
+
+#: ../rpm.c:286
+msgid "   all modes support the following arguments:"
+msgstr "   v¹echny re¾imy podporují následující argumenty:"
 
 #: ../rpm.c:287
 msgid "      --rcfile <file>     "
@@ -1093,12 +731,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "pou¾ít <adresáø> jako adresáø pro databázi"
 
 #: ../rpm.c:299
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:300
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "pou¾ít s jako hlavièkový formát (implikuje -i)"
 
 #: ../rpm.c:301
@@ -1108,7 +746,8 @@ msgstr ""
 "   instalovat, aktualizovat a dotazovat (s -p) k umo¾nìní pou¾ití prvkù URL"
 
 #: ../rpm.c:302
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   ftp místo názvù souborù i následujících mo¾ností:\n"
 
 #: ../rpm.c:303
@@ -1126,6 +765,10 @@ msgstr ""
 #: ../rpm.c:306
 msgid "port number of ftp server (or proxy)"
 msgstr "èíslo portu serveru ftp (nebo proxy)"
+
+#: ../rpm.c:307
+msgid "      Package specification options:"
+msgstr "      Mo¾nosti specifikace balíèku:"
 
 #: ../rpm.c:309
 msgid "query all packages"
@@ -1149,32 +792,37 @@ msgstr "dotazovat (nenainstalovaný) balíèek <souborbalíèku>"
 
 #: ../rpm.c:314
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "dotazovat balíèek vlastnící <soubor>"
 
 #: ../rpm.c:315
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "dotazovat balíèek vlastnící <soubor>"
 
 #: ../rpm.c:316
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "        --requires"
 
 #: ../rpm.c:317
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "dotazovat balíèky poskytující schopnost <i>"
 
 #: ../rpm.c:318
 #, fuzzy
-msgid "        --whatrequires <icap>"
+msgid "        --whatrequires <cap>"
 msgstr "        --requires"
 
 #: ../rpm.c:319
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "dotazovat balíèky vy¾adující schopnost <i>"
+
+#: ../rpm.c:320
+msgid "      Information selection options:"
+msgstr "      Mo¾nosti vybírání informací:"
 
 #: ../rpm.c:322
 msgid "display package information"
@@ -1212,6 +860,10 @@ msgstr ""
 msgid "list capabilities package provides"
 msgstr "uvést schopnosti poskytované balíèkem"
 
+#: ../rpm.c:337
+msgid "        --requires"
+msgstr "        --requires"
+
 #: ../rpm.c:339
 msgid "list package dependencies"
 msgstr "uvést závislosti balíèkù"
@@ -1226,7 +878,7 @@ msgstr ""
 
 #: ../rpm.c:347
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:348
@@ -1412,7 +1064,7 @@ msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:445
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:446
@@ -1461,8 +1113,9 @@ msgid "generate PGP signature"
 msgstr "generovat podpis PGP"
 
 #: ../rpm.c:467
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:468
 msgid "use <dir> as the build root"
@@ -1482,12 +1135,12 @@ msgstr "nespou¹tìt ¾ádné etapy"
 
 #: ../rpm.c:473
 #, fuzzy
-msgid "      --timecheck <secs>     "
+msgid "      --timecheck <secs>  "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:474
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "nastavit èasovou kontrolu na S sekund (0 ji deaktivuje)"
 
 #: ../rpm.c:476
@@ -1504,7 +1157,7 @@ msgstr ""
 
 #: ../rpm.c:478
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<etapa> <spec>      "
 
 #: ../rpm.c:479
@@ -1566,6 +1219,13 @@ msgstr "zajistìte, aby existovala platná databáze"
 msgid "rebuild database from existing database"
 msgstr "znovu sestavit databázi z existující databáze"
 
+#: ../rpm.c:637 ../rpm.c:643 ../rpm.c:650 ../rpm.c:656 ../rpm.c:665
+#: ../rpm.c:672 ../rpm.c:718 ../rpm.c:724 ../rpm.c:813 ../rpm.c:820
+#: ../rpm.c:826 ../rpm.c:834 ../rpm.c:840 ../rpm.c:848 ../rpm.c:881
+#: ../rpm.c:927 ../rpm.c:933
+msgid "only one major mode may be specified"
+msgstr "specifikovat lze jen jeden hlavní re¾im"
+
 #: ../rpm.c:658
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u a --uninstall se neschvalují a ji¾ dále nefungují.\n"
@@ -1584,6 +1244,11 @@ msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--tarbuild (-t) vy¾aduje jedno z písmen a,b,i,c,p,l jako jeho výhradní "
 "argument"
+
+#: ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770 ../rpm.c:790
+#: ../rpm.c:798 ../rpm.c:806
+msgid "one type of query/verify may be performed at a time"
+msgstr "v daném okam¾iku lze provést jeden typ dotazu nebo ovìøení"
 
 #: ../rpm.c:856
 msgid "arguments to --dbpath must begin with a /"
@@ -1609,9 +1274,25 @@ msgstr "pøemístìní musejí mít za znakem = znak /"
 msgid "Internal error in argument processing :-(\n"
 msgstr ""
 
+#: ../rpm.c:945
+msgid "--dbpath given for operation that does not use a database"
+msgstr "--dbpath zadána pro operaci, která nepou¾ívá databázi"
+
 #: ../rpm.c:950
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck lze pou¾ít jen pøi sestavování balíèkù"
+
+#: ../rpm.c:953 ../rpm.c:956
+msgid "unexpected query specifiers"
+msgstr "neoèekávané specifikátory dotazu"
+
+#: ../rpm.c:960
+msgid "unexpected query source"
+msgstr "neoèekávaný zdroj dotazu"
+
+#: ../rpm.c:963
+msgid "only installation and upgrading may be forced"
+msgstr "vynucena mù¾e být jen instalace a aktualizace"
 
 #: ../rpm.c:966
 msgid "files may only be relocated during package installation"
@@ -1625,9 +1306,49 @@ msgstr "pou¾ít lze jen jeden z --prefix nebo --relocate"
 msgid "--relocate may only be used when installing new packages"
 msgstr "--relocate se mù¾e pou¾ít jen pøi instalaci balíèkù"
 
+#: ../rpm.c:975
+msgid "--prefix may only be used when installing new packages"
+msgstr "--prefix se mù¾e pou¾ít jen pøi instalaci nových balíèkù"
+
 #: ../rpm.c:978
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumenty pro --prefix musejí zaèínat znakem /"
+
+#: ../rpm.c:981
+msgid "--hash (-h) may only be specified during package installation"
+msgstr "--hash (-h) se mù¾e specifikovat jen pøi instalaci balíèkù"
+
+#: ../rpm.c:985
+msgid "--percent may only be specified during package installation"
+msgstr "--percent se mù¾e specifikovat jen pøi instalaci balíèkù"
+
+#: ../rpm.c:989
+msgid "--replacefiles may only be specified during package installation"
+msgstr "--replacefiles se mù¾e specifikovat jen pøi instalaci balíèkù"
+
+#: ../rpm.c:993
+msgid "--replacepkgs may only be specified during package installation"
+msgstr "--replacepkgs se mù¾e specifikovat jen pøi instalaci balíèkù"
+
+#: ../rpm.c:997
+msgid "--excludedocs may only be specified during package installation"
+msgstr "--excludedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
+
+#: ../rpm.c:1001
+msgid "--includedocs may only be specified during package installation"
+msgstr "--includedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
+
+#: ../rpm.c:1005
+msgid "only one of --excludedocs and --includedocs may be specified"
+msgstr "specifikovat lze jen jeden z --excludedocs a --includedocs"
+
+#: ../rpm.c:1009
+msgid "--ignorearch may only be specified during package installation"
+msgstr "--ignorearch se mù¾e specifikovat jen pøi instalaci balíèkù"
+
+#: ../rpm.c:1013
+msgid "--ignoreos may only be specified during package installation"
+msgstr "--ignoreos se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: ../rpm.c:1017
 msgid "--allmatches may only be specified during package erasure"
@@ -1666,6 +1387,10 @@ msgstr ""
 "--nodeps se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
 "balíèkù"
 
+#: ../rpm.c:1043
+msgid "--nofiles may only be specified during package verification"
+msgstr "--nofiles se mù¾e specifikovat jen pøi verifikaci balíèkù"
+
 #: ../rpm.c:1048
 msgid ""
 "--test may only be specified during package installation, erasure, and "
@@ -1694,14 +1419,32 @@ msgstr "--clean lze pou¾ít pouze s -b nebo -t"
 msgid "--rmsource may only be used with -b and -t"
 msgstr "--rmsource lze pou¾ít pouze s -b nebo -t"
 
+#: ../rpm.c:1067
+msgid "--short-circuit may only be used during package building"
+msgstr "--short-circuit lze pou¾ít jen pøi sestavování balíèkù"
+
 #: ../rpm.c:1071
 #, fuzzy
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr "--short-circuit lze pou¾ít pouze s -bc, -bi, -tc nebo -ti"
 
+#: ../rpm.c:1076
+msgid "--oldpackage may only be used during upgrades"
+msgstr "--oldpackage lze pou¾ít jen pøi aktualizacích"
+
 #: ../rpm.c:1079
 msgid "--dump may only be used during queries"
 msgstr "--dump lze pou¾ít jen pøi dotazování"
+
+#: ../rpm.c:1082
+msgid "--dump of queries must be used with -l, -c, or -d"
+msgstr "--dump pro dotazy se musí pou¾ít s -l, -c nebo -d"
+
+#: ../rpm.c:1087
+msgid ""
+"ftp options can only be used during package queries, installs, and upgrades"
+msgstr ""
+"volby ftp lze pou¾ít jen pøi dotazování, instalacích a aktualizacích balíèkù"
 
 #: ../rpm.c:1094
 msgid "--nopgp may only be used during signature checking"
@@ -1729,6 +1472,10 @@ msgstr "--sign lze pou¾ít jen pøi sestavování balíèkù"
 #, fuzzy
 msgid "exec failed\n"
 msgstr "%s: Open selhal\n"
+
+#: ../rpm.c:1159
+msgid "unexpected arguments to --querytags "
+msgstr "neoèekávané argumenty pro --querytags "
 
 #: ../rpm.c:1170
 msgid "no packages given for signature check"
@@ -1758,18 +1505,17 @@ msgstr "pro deinstalaci nezadány ¾ádné balíèky"
 msgid "no packages given for install"
 msgstr "pro instalaci nezadány ¾ádné balíèky"
 
+#: ../rpm.c:1328
+msgid "extra arguments given for query of all packages"
+msgstr "k dotazu na v¹echny balíèky zadány argumenty navíc"
+
+#: ../rpm.c:1333
+msgid "no arguments given for query"
+msgstr "k dotazu nezadány ¾ádné argumenty"
+
 #: ../rpm.c:1350
 msgid "no arguments given for verify"
 msgstr "pro verifikaci nezadány ¾ádné argumenty"
-
-#: ../rpm2cpio.c:39
-msgid "argument is not an RPM package\n"
-msgstr ""
-
-#: ../rpm2cpio.c:42
-#, fuzzy
-msgid "error reading header from package\n"
-msgstr "chyba pøi hledání balíèku %s\n"
 
 #: ../url.c:47
 #, c-format
@@ -1813,6 +1559,59 @@ msgstr ""
 #: ../verify.c:215
 #, c-format
 msgid "%s is not an RPM\n"
+msgstr ""
+
+#: ../rpm2cpio.c:39
+msgid "argument is not an RPM package\n"
+msgstr ""
+
+#: ../rpm2cpio.c:42
+#, fuzzy
+msgid "error reading header from package\n"
+msgstr "chyba pøi hledání balíèku %s\n"
+
+#: ../convertdb.c:37
+#, fuzzy
+msgid "RPM database already exists"
+msgstr "doèasná databáze %s ji¾ existuje"
+
+#: ../convertdb.c:42
+msgid "Old db is missing"
+msgstr ""
+
+#: ../convertdb.c:53
+msgid "failed to create RPM database /var/lib/rpm"
+msgstr ""
+
+#: ../convertdb.c:59
+msgid "Old db is corrupt"
+msgstr ""
+
+#: ../convertdb.c:68
+#, c-format
+msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+msgstr ""
+
+#: ../convertdb.c:200
+msgid "rpmconvert: no arguments expected"
+msgstr ""
+
+#: ../convertdb.c:206
+msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+msgstr ""
+
+#: ../oldrpmdb.c:454
+#, c-format
+msgid "pulling %s from database\n"
+msgstr ""
+
+#: ../oldrpmdb.c:461
+#, fuzzy
+msgid "package not found in database"
+msgstr "balíèek %s nenalezen v %s"
+
+#: ../oldrpmdb.c:522
+msgid "no copyright!\n"
 msgstr ""
 
 #: ../build/build.c:96 ../build/pack.c:191
@@ -3407,6 +3206,174 @@ msgstr ""
 #: ../lib/verify.c:189
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Copyright (C) 1995 - Red Hat Software"
+#~ msgstr "Copyright (c) 1998 - Red Hat Software"
+
+#, fuzzy
+#~ msgid "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
+#~ msgstr "                      [--ftpproxy <hostitel>] [--ftpport <port>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
+#~ msgstr ""
+#~ "                      [--provides] [--dump] [--dbpath <adresáø>] "
+#~ "[--changelog]"
+
+#, fuzzy
+#~ msgid "   --help\t\t- print this message"
+#~ msgstr "vytisknout tuto zprávu"
+
+#, fuzzy
+#~ msgid "   --version\t- print the version of rpm being used"
+#~ msgstr "vytisknout verzi pou¾ívaného rpm"
+
+#, fuzzy
+#~ msgid "       -v\t\t      - be a little more verbose"
+#~ msgstr "o nìco popisnìj¹í re¾im"
+
+#, fuzzy
+#~ msgid "       -vv\t              - be incredibly verbose (for debugging)"
+#~ msgstr "velmi popisný re¾im (pro odlaïování)"
+
+#, fuzzy
+#~ msgid "   -q                   - query mode"
+#~ msgstr "                      [--nomd5] [cíle]"
+
+#, fuzzy
+#~ msgid "      --queryformat <s>   - use s as the header format (implies -i)"
+#~ msgstr "pou¾ít s jako hlavièkový formát (implikuje -i)"
+
+#, fuzzy
+#~ msgid "        -a                - query all packages"
+#~ msgstr "                         balíèek1 ... balíèekN"
+
+#, fuzzy
+#~ msgid "        -f <file>+        - query package owning <file>"
+#~ msgstr "dotazovat balíèek vlastnící <soubor>"
+
+#, fuzzy
+#~ msgid "        -F                - like -f, but read file names from stdin"
+#~ msgstr ""
+#~ "                      [--replacepkgs] [--replacefiles] [--root <adresáø>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
+#~ msgstr "dotazovat (nenainstalovaný) balíèek <souborbalíèku>"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -P                - like -p, but read package names from stdin"
+#~ msgstr "                         balíèek1 ... balíèekN"
+
+#, fuzzy
+#~ msgid ""
+#~ "\t   --whatprovides <i> - query packages which provide <i> capability"
+#~ msgstr "dotazovat balíèky poskytující schopnost <i>"
+
+#, fuzzy
+#~ msgid ""
+#~ "\t   --whatrequires <i> - query packages which require <i> capability"
+#~ msgstr "dotazovat balíèky vy¾adující schopnost <i>"
+
+#, fuzzy
+#~ msgid "        -i                - display package information"
+#~ msgstr "                         balíèek1 ... balíèekN"
+
+#, fuzzy
+#~ msgid "        -l                - display package file list"
+#~ msgstr "                         balíèek1 ... balíèekN"
+
+#, fuzzy
+#~ msgid "        -s                - show file states (implies -l)"
+#~ msgstr "zobrazit stavy souborù (implikuje -l)"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -d                - list only documentation files (implies -l)"
+#~ msgstr "uvést pouze dokumentaèní soubory (implikuje -l)"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -c                - list only configuration files (implies -l)"
+#~ msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
+
+#, fuzzy
+#~ msgid "                            (must be used with -l, -c, or -d)"
+#~ msgstr "--dump pro dotazy se musí pou¾ít s -l, -c nebo -d"
+
+#, fuzzy
+#~ msgid "        --provides        - list capabilbities package provides"
+#~ msgstr "uvést schopnosti poskytované balíèkem"
+
+#, fuzzy
+#~ msgid "        -R                - list package dependencies"
+#~ msgstr "                         balíèek1 ... balíèekN"
+
+#, fuzzy
+#~ msgid "        --scripts         - print the various [un]install scripts"
+#~ msgstr "vytisknout rùzné [de]instalaèní skripty"
+
+#, fuzzy
+#~ msgid ""
+#~ "    --querytags         - list the tags that can be used in a query format"
+#~ msgstr "uvést pøíznaky, které lze pou¾ít v dotazovacím formátu"
+
+#, fuzzy
+#~ msgid "only one type of query may be performed at a time"
+#~ msgstr "v daném okam¾iku lze provést jeden typ dotazu"
+
+#, fuzzy
+#~ msgid ""
+#~ "--noscripts may only be specified during package installation and "
+#~ "uninstallation"
+#~ msgstr ""
+#~ "--noscripts se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
+#~ "balíèkù"
+
+#, fuzzy
+#~ msgid ""
+#~ "--nodeps may only be specified during package installation, uninstallation, "
+#~ "and verification"
+#~ msgstr ""
+#~ "--nodeps se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
+#~ "balíèkù"
+
+#, fuzzy
+#~ msgid ""
+#~ "--test may only be specified during package installation, uninstallation, "
+#~ "and building"
+#~ msgstr ""
+#~ "--test se mù¾e specifikovat jen pøi instalaci, mazání nebo sestavování "
+#~ "balíèkù"
+
+#, fuzzy
+#~ msgid ""
+#~ "--root (-r) may only be specified during installation, uninstallation, "
+#~ "querying, and database rebuilds"
+#~ msgstr ""
+#~ "--root (-r) se mù¾e urèit jen pøi instalaci, mazání, dotazování a opìtných "
+#~ "sestavování databází"
+
+#, fuzzy
+#~ msgid "--clean may only be used during package building"
+#~ msgstr "--sign lze pou¾ít jen pøi sestavování balíèkù"
+
+#, fuzzy
+#~ msgid "--short-circuit may only be used with -bc or -bi"
+#~ msgstr "--short-circuit lze pou¾ít pouze s -bc, -bi, -tc nebo -ti"
+
+#, fuzzy
+#~ msgid "--dump may only be used during queryies"
+#~ msgstr "--dump lze pou¾ít jen pøi dotazování"
 
 #~ msgid "build the packages for architecture <arch>"
 #~ msgstr "sestavit balíèky pro architekturu <arch>"

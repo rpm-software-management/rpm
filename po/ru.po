@@ -1,8 +1,8 @@
-#: ../rpm-qo.c:81 ../rpm-qo.c:111 ../rpm.c:200 ../rpm.c:279
+#: ../rpm.c:200 ../rpm.c:279
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-2.5.3\n"
-"POT-Creation-Date: 1998-09-27 17:54-0400\n"
+"POT-Creation-Date: 1998-09-28 18:02-0400\n"
 "PO-Revision-Date: Tue Sep 15 14:17:00 EEST 1998\n"
 "Last-Translator: Serguei Koubouchine <ksi@ksi-linux.com>\n"
 "MIME-Version: 1.0\n"
@@ -111,36 +111,6 @@ msgstr " (ОТСУТСТВУЮТ КЛЮЧИ)"
 
 #: ../checksig.c:291
 msgid "OK"
-msgstr ""
-
-#: ../convertdb.c:37
-#, fuzzy
-msgid "RPM database already exists"
-msgstr "временная база данных %s уже существует"
-
-#: ../convertdb.c:42
-msgid "Old db is missing"
-msgstr ""
-
-#: ../convertdb.c:53
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr ""
-
-#: ../convertdb.c:59
-msgid "Old db is corrupt"
-msgstr ""
-
-#: ../convertdb.c:68
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr ""
-
-#: ../convertdb.c:200
-msgid "rpmconvert: no arguments expected"
-msgstr ""
-
-#: ../convertdb.c:206
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
 #: ../ftp.c:425
@@ -279,7 +249,7 @@ msgstr "установить пакет"
 msgid "counting packages to uninstall\n"
 msgstr "не заданы пакеты для удаления"
 
-#: ../install.c:321 ../query.c:516 ../verify.c:249
+#: ../install.c:321 ../query.c:520 ../verify.c:249
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -323,20 +293,6 @@ msgstr " нужен для %s-%s-%s\n"
 msgid " conflicts with %s-%s-%s\n"
 msgstr " конфликтует с %s-%s-%s\n"
 
-#: ../oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr ""
-
-#: ../oldrpmdb.c:461
-#, fuzzy
-msgid "package not found in database"
-msgstr "пакет %s не найден в %s"
-
-#: ../oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr ""
-
 #: ../query.c:28
 #, c-format
 msgid "error in format: %s\n"
@@ -346,493 +302,149 @@ msgstr "ошибка в формате: %s\n"
 msgid "(contains no files)"
 msgstr "(не содержит файлов)"
 
-#: ../query.c:117
+#: ../query.c:118
 msgid "normal        "
 msgstr ""
 
-#: ../query.c:119
+#: ../query.c:120
 msgid "replaced      "
 msgstr ""
 
-#: ../query.c:121
+#: ../query.c:122
 msgid "net shared    "
 msgstr ""
 
-#: ../query.c:123
+#: ../query.c:124
 #, fuzzy
 msgid "not installed "
 msgstr "пакет %s не установлен\n"
 
-#: ../query.c:125
+#: ../query.c:126
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(неизвестный тип)"
 
-#: ../query.c:129
+#: ../query.c:130
 msgid "(no state)    "
 msgstr ""
 
-#: ../query.c:145 ../query.c:174
+#: ../query.c:146 ../query.c:176
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../query.c:314
+#: ../query.c:318
 #, c-format
 msgid "querying record number %d\n"
 msgstr ""
 
-#: ../query.c:319 ../verify.c:138
+#: ../query.c:323 ../verify.c:138
 msgid "error: could not read database record\n"
 msgstr "ошибка: не могу прочесть запись базы данных\n"
 
-#: ../query.c:355 ../query.c:362 ../verify.c:194 ../verify.c:201
+#: ../query.c:359 ../query.c:366 ../verify.c:194 ../verify.c:201
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "ошибка открытия %s: %s\n"
 
-#: ../query.c:378
+#: ../query.c:382
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к SRPM в старом формате не поддерживаются\n"
 
-#: ../query.c:387
+#: ../query.c:391
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s не похож на пакет RPM...\n"
 
-#: ../query.c:391
+#: ../query.c:395
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: ../query.c:404 ../verify.c:178
+#: ../query.c:408 ../verify.c:178
 msgid "could not read database record!\n"
 msgstr "не могу прочесть запись базы данных!\n"
 
-#: ../query.c:415 ../verify.c:224
+#: ../query.c:419 ../verify.c:224
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: ../query.c:425
+#: ../query.c:429
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: ../query.c:435
+#: ../query.c:439
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: ../query.c:445
+#: ../query.c:449
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: ../query.c:463 ../query.c:469
+#: ../query.c:467 ../query.c:473
 msgid "maximum path length exceeded\n"
 msgstr "слишком длинный путь\n"
 
-#: ../query.c:481
+#: ../query.c:485
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: ../query.c:484 ../verify.c:238
+#: ../query.c:488 ../verify.c:238
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: ../query.c:497
+#: ../query.c:501
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неправильный номер пакета: %s\n"
 
-#: ../query.c:500
+#: ../query.c:504
 #, c-format
 msgid "showing package: %d\n"
 msgstr "показан пакет: %d\n"
 
-#: ../query.c:504
+#: ../query.c:508
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: ../query.c:519 ../verify.c:251
+#: ../query.c:523 ../verify.c:251
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "ошибка при поиске пакета %s\n"
 
-#: ../rpm-qo.c:42 ../rpm.c:177
+#: ../rpm.c:177
 #, c-format
 msgid "rpm: %s\n"
 msgstr ""
 
-#: ../rpm-qo.c:54 ../rpm.c:188
+#: ../rpm.c:188
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM версия %s\n"
 
-#: ../rpm-qo.c:58
-msgid "Copyright (C) 1995 - Red Hat Software"
+#: ../rpm.c:192
+msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr ""
 
-#: ../rpm-qo.c:59 ../rpm.c:193
+#: ../rpm.c:193
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
 msgstr "Может свободно распространяться на условиях GPL (GNU Public License)."
 
-#: ../rpm-qo.c:68 ../rpm.c:202
+#: ../rpm.c:202
 msgid "usage: rpm {--help}"
 msgstr ""
 "Использование:\n"
 "       rpm {--help}"
 
-#: ../rpm-qo.c:69 ../rpm.c:203
+#: ../rpm.c:203
 msgid "       rpm {--version}"
-msgstr ""
-
-#: ../rpm-qo.c:70
-msgid "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-msgstr ""
-
-#: ../rpm-qo.c:71 ../rpm.c:222
-msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr ""
-
-#: ../rpm-qo.c:72 ../rpm.c:223
-msgid "                        [--whatprovides] [--whatrequires] [--requires]"
-msgstr ""
-
-#: ../rpm-qo.c:73
-#, fuzzy
-msgid ""
-"                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-msgstr ""
-"                        [--justdb] [--notriggers] package1 ... packageN"
-
-#: ../rpm-qo.c:74
-#, fuzzy
-msgid ""
-"                        [--provides] [--dump] [--dbpath <dir>] [targets]"
-msgstr ""
-"                        [--justdb] [--notriggers] package1 ... packageN"
-
-#: ../rpm-qo.c:75 ../rpm.c:247
-msgid "       rpm {--querytags}"
-msgstr ""
-
-#: ../rpm-qo.c:83 ../rpm.c:281
-msgid "usage:"
-msgstr "использование:"
-
-#: ../rpm-qo.c:84
-#, fuzzy
-msgid "   --help\t\t- print this message"
-msgstr "вывести это сообщение"
-
-#: ../rpm-qo.c:85
-#, fuzzy
-msgid "   --version\t- print the version of rpm being used"
-msgstr "вывести версию используемого rpm"
-
-#: ../rpm-qo.c:86 ../rpm.c:286
-msgid "   all modes support the following arguments:"
-msgstr "   все режимы поддерживают следующие аргументы:"
-
-#: ../rpm-qo.c:87
-#, fuzzy
-msgid "       -v\t\t      - be a little more verbose"
-msgstr "быть немного разговорчивее"
-
-#: ../rpm-qo.c:88
-#, fuzzy
-msgid "       -vv\t              - be incredibly verbose (for debugging)"
-msgstr "быть ОЧЕНЬ разговорчивым (для отладки)"
-
-#: ../rpm-qo.c:89
-#, fuzzy
-msgid "   -q                   - query mode"
-msgstr ""
-"                        [--justdb] [--notriggers] package1 ... packageN"
-
-#: ../rpm-qo.c:90
-#, fuzzy
-msgid "      --queryformat <s>   - use s as the header format (implies -i)"
-msgstr "использовать s как формат хедера (подразумевает -i)"
-
-#: ../rpm-qo.c:91 ../rpm.c:307
-msgid "      Package specification options:"
-msgstr "      Опции спецификации пакета:"
-
-#: ../rpm-qo.c:92
-#, fuzzy
-msgid "        -a                - query all packages"
-msgstr ""
-"                        [--justdb] [--notriggers] package1 ... packageN"
-
-#: ../rpm-qo.c:93
-#, fuzzy
-msgid "        -f <file>+        - query package owning <file>"
-msgstr "найти пакет, которому принадлежит <file>"
-
-#: ../rpm-qo.c:94
-#, fuzzy
-msgid "        -F                - like -f, but read file names from stdin"
-msgstr ""
-"                        [--justdb] [--notriggers] package1 ... packageN"
-
-#: ../rpm-qo.c:95
-#, fuzzy
-msgid "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-msgstr "запросить (неустановленный) пакет <packagefile>"
-
-#: ../rpm-qo.c:96
-msgid "        -P                - like -p, but read package names from stdin"
-msgstr ""
-
-#: ../rpm-qo.c:97
-#, fuzzy
-msgid "\t   --whatprovides <i> - query packages which provide <i> capability"
-msgstr "найти пакеты, предоставляющие сервис <i>"
-
-#: ../rpm-qo.c:98
-#, fuzzy
-msgid "\t   --whatrequires <i> - query packages which require <i> capability"
-msgstr "найти пакеты, требующие сервиса <i>"
-
-#: ../rpm-qo.c:99 ../rpm.c:320
-msgid "      Information selection options:"
-msgstr "      Опции выбора информации:"
-
-#: ../rpm-qo.c:100
-#, fuzzy
-msgid "        -i                - display package information"
-msgstr "вывести информацию о пакете"
-
-#: ../rpm-qo.c:101
-#, fuzzy
-msgid "        -l                - display package file list"
-msgstr ""
-"                        [--justdb] [--notriggers] package1 ... packageN"
-
-#: ../rpm-qo.c:102
-#, fuzzy
-msgid "        -s                - show file states (implies -l)"
-msgstr "показать состояние файлов (подразумевает -l)"
-
-#: ../rpm-qo.c:103
-#, fuzzy
-msgid "        -d                - list only documentation files (implies -l)"
-msgstr "вывести только файлы документации (подразумевает -l)"
-
-#: ../rpm-qo.c:104
-#, fuzzy
-msgid "        -c                - list only configuration files (implies -l)"
-msgstr "вывести только конфигурационные файлы (подразумевает -l)"
-
-#: ../rpm-qo.c:105
-msgid ""
-"        --dump            - show all verifiable information for each file"
-msgstr ""
-
-#: ../rpm-qo.c:106
-#, fuzzy
-msgid "                            (must be used with -l, -c, or -d)"
-msgstr "опция --dump для запросов должна использоваться с -l, -c или -d"
-
-#: ../rpm-qo.c:107
-#, fuzzy
-msgid "        --provides        - list capabilbities package provides"
-msgstr "показать сервисы, предоставляемые пакетом"
-
-#: ../rpm-qo.c:108 ../rpm.c:337
-msgid "        --requires"
-msgstr ""
-
-#: ../rpm-qo.c:109
-#, fuzzy
-msgid "        -R                - list package dependencies"
-msgstr ""
-"                        [--justdb] [--notriggers] package1 ... packageN"
-
-#: ../rpm-qo.c:110
-#, fuzzy
-msgid "        --scripts         - print the various [un]install scripts"
-msgstr "вывести разнообразные [де]инсталляционные скрипты"
-
-#: ../rpm-qo.c:112
-#, fuzzy
-msgid ""
-"    --querytags         - list the tags that can be used in a query format"
-msgstr "вывести ключи, которые могут быть использованы в формате запроса"
-
-#: ../rpm-qo.c:203
-#, fuzzy
-msgid "only one type of query may be performed at a time"
-msgstr "за один раз может быть исполнен только один тип запроса"
-
-#: ../rpm-qo.c:209 ../rpm-qo.c:310 ../rpm-qo.c:361 ../rpm.c:637 ../rpm.c:643
-#: ../rpm.c:650 ../rpm.c:656 ../rpm.c:665 ../rpm.c:672 ../rpm.c:718
-#: ../rpm.c:724 ../rpm.c:813 ../rpm.c:820 ../rpm.c:826 ../rpm.c:834
-#: ../rpm.c:840 ../rpm.c:848 ../rpm.c:881 ../rpm.c:927 ../rpm.c:933
-msgid "only one major mode may be specified"
-msgstr "может быть указан только один из основных режимов"
-
-#: ../rpm-qo.c:255 ../rpm-qo.c:263 ../rpm-qo.c:270 ../rpm-qo.c:278
-#: ../rpm-qo.c:286 ../rpm-qo.c:294 ../rpm-qo.c:302 ../rpm-qo.c:319
-#: ../rpm-qo.c:327 ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770
-#: ../rpm.c:790 ../rpm.c:798 ../rpm.c:806
-msgid "one type of query/verify may be performed at a time"
-msgstr "за один раз может быть исполнен только один тип проверки или запроса"
-
-#: ../rpm-qo.c:368 ../rpm.c:945
-msgid "--dbpath given for operation that does not use a database"
-msgstr "опция --dbpath задана для операции, не использующей базу данных"
-
-#: ../rpm-qo.c:372 ../rpm.c:953 ../rpm.c:956
-msgid "unexpected query specifiers"
-msgstr "неожиданная спецификация запроса"
-
-#: ../rpm-qo.c:376 ../rpm.c:960
-msgid "unexpected query source"
-msgstr "неожиданный источник запроса"
-
-#: ../rpm-qo.c:379 ../rpm.c:963
-msgid "only installation and upgrading may be forced"
-msgstr "принудительными могут быть только инсталляция и апгрейд"
-
-#: ../rpm-qo.c:382 ../rpm.c:975
-msgid "--prefix may only be used when installing new packages"
-msgstr "опцию --prefix можно использовать только при инсталляции новых пакетов"
-
-#: ../rpm-qo.c:385 ../rpm.c:981
-msgid "--hash (-h) may only be specified during package installation"
-msgstr "опция --hash (-h) может быть указана только при инсталляции пакета"
-
-#: ../rpm-qo.c:389 ../rpm.c:985
-msgid "--percent may only be specified during package installation"
-msgstr "опция --percent может быть указана только при инсталляции пакета"
-
-#: ../rpm-qo.c:393 ../rpm.c:989
-msgid "--replacefiles may only be specified during package installation"
-msgstr "опция --replacefiles может быть указана только при инсталляции пакета"
-
-#: ../rpm-qo.c:397 ../rpm.c:993
-msgid "--replacepkgs may only be specified during package installation"
-msgstr "опция --replacepkgs может быть указана только при инсталляции пакета"
-
-#: ../rpm-qo.c:401 ../rpm.c:997
-msgid "--excludedocs may only be specified during package installation"
-msgstr "опция --excludedocs может быть указана только при инсталляции пакета"
-
-#: ../rpm-qo.c:405 ../rpm.c:1001
-msgid "--includedocs may only be specified during package installation"
-msgstr "опция --includedocs может быть указана только при инсталляции пакета"
-
-#: ../rpm-qo.c:409 ../rpm.c:1005
-msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr ""
-"может быть использована только одна из опций --excludedocs или --includedocs"
-
-#: ../rpm-qo.c:413 ../rpm.c:1009
-msgid "--ignorearch may only be specified during package installation"
-msgstr "опция --ignorearch может быть указана только при инсталляции пакета"
-
-#: ../rpm-qo.c:417 ../rpm.c:1013
-msgid "--ignoreos may only be specified during package installation"
-msgstr "опция --ignoreos может быть указана только при инсталляции пакета"
-
-#: ../rpm-qo.c:421
-#, fuzzy
-msgid ""
-"--noscripts may only be specified during package installation and "
-"uninstallation"
-msgstr ""
-"опция --noscripts может быть указана только при инсталляции, удалении и "
-"верификации пакета"
-
-#: ../rpm-qo.c:426
-#, fuzzy
-msgid ""
-"--nodeps may only be specified during package installation, uninstallation, "
-"and verification"
-msgstr ""
-"опция --nodeps может быть указана только при инсталляции, удалении и "
-"верификации пакета"
-
-#: ../rpm-qo.c:430 ../rpm.c:1043
-msgid "--nofiles may only be specified during package verification"
-msgstr "опция --nofiles может быть указана только при верификации пакета"
-
-#: ../rpm-qo.c:435
-#, fuzzy
-msgid ""
-"--test may only be specified during package installation, uninstallation, "
-"and building"
-msgstr ""
-"опция --test может быть указана только при инсталляции, удалении и сборке "
-"пакета"
-
-#: ../rpm-qo.c:440
-#, fuzzy
-msgid ""
-"--root (-r) may only be specified during installation, uninstallation, "
-"querying, and database rebuilds"
-msgstr ""
-"опция --root (-r) может быть указана только при инсталляции, удалении, "
-"запросах пакета и перестроении базы данных"
-
-#: ../rpm-qo.c:445
-#, fuzzy
-msgid "--clean may only be used during package building"
-msgstr "опция --sign может быть использована только при сборке пакетов"
-
-#: ../rpm-qo.c:448 ../rpm.c:1067
-msgid "--short-circuit may only be used during package building"
-msgstr ""
-"опция --short-circuit может быть использована только при сборке пакетов"
-
-#: ../rpm-qo.c:451
-#, fuzzy
-msgid "--short-circuit may only be used with -bc or -bi"
-msgstr ""
-"опция --short-circuit может быть использована только с -bc, -bi, -bs, -tc "
-"-ti или -ts"
-
-#: ../rpm-qo.c:455 ../rpm.c:1076
-msgid "--oldpackage may only be used during upgrades"
-msgstr "опция --oldpackage может быть использована только при апгрейдах"
-
-#: ../rpm-qo.c:458
-#, fuzzy
-msgid "--dump may only be used during queryies"
-msgstr "опция --dump может быть использована только при запросах"
-
-#: ../rpm-qo.c:461 ../rpm.c:1082
-msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "опция --dump для запросов должна использоваться с -l, -c или -d"
-
-#: ../rpm-qo.c:466 ../rpm.c:1087
-msgid ""
-"ftp options can only be used during package queries, installs, and upgrades"
-msgstr ""
-"опции ftp могут быть использованы только при запросах, установке и апгрейде "
-"пакетов"
-
-#: ../rpm-qo.c:479 ../rpm.c:1159
-msgid "unexpected arguments to --querytags "
-msgstr "неожиданные аргументы для --querytags "
-
-#: ../rpm-qo.c:489 ../rpm.c:1328
-msgid "extra arguments given for query of all packages"
-msgstr "в запросе ко всем пакетам заданы лишние аргументы"
-
-#: ../rpm-qo.c:507 ../rpm.c:1333
-msgid "no arguments given for query"
-msgstr "не заданы аргументы запроса"
-
-#: ../rpm.c:192
-msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr ""
 
 #: ../rpm.c:204
@@ -909,6 +521,14 @@ msgstr ""
 
 #: ../rpm.c:221
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+msgstr ""
+
+#: ../rpm.c:222
+msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
+msgstr ""
+
+#: ../rpm.c:223
+msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: ../rpm.c:224
@@ -1015,6 +635,14 @@ msgstr ""
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr ""
 
+#: ../rpm.c:247
+msgid "       rpm {--querytags}"
+msgstr ""
+
+#: ../rpm.c:281
+msgid "usage:"
+msgstr "использование:"
+
 #: ../rpm.c:283
 msgid "print this message"
 msgstr "вывести это сообщение"
@@ -1022,6 +650,10 @@ msgstr "вывести это сообщение"
 #: ../rpm.c:285
 msgid "print the version of rpm being used"
 msgstr "вывести версию используемого rpm"
+
+#: ../rpm.c:286
+msgid "   all modes support the following arguments:"
+msgstr "   все режимы поддерживают следующие аргументы:"
 
 #: ../rpm.c:287
 msgid "      --rcfile <file>     "
@@ -1060,12 +692,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "использовать <dir> как директорию для базы данных"
 
 #: ../rpm.c:299
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:300
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "использовать s как формат хедера (подразумевает -i)"
 
 #: ../rpm.c:301
@@ -1075,7 +707,8 @@ msgstr ""
 "   установка, апгрейд и запрос (с -p) допускает использование ftp URL вместо"
 
 #: ../rpm.c:302
-msgid "   of file names as well as the following options:\n"
+#, fuzzy
+msgid "   of file names as well as the following options:"
 msgstr "   имен файлов а также следующие опции:\n"
 
 #: ../rpm.c:303
@@ -1093,6 +726,10 @@ msgstr ""
 #: ../rpm.c:306
 msgid "port number of ftp server (or proxy)"
 msgstr "номер порта ftp-сервера (или proxy)"
+
+#: ../rpm.c:307
+msgid "      Package specification options:"
+msgstr "      Опции спецификации пакета:"
 
 #: ../rpm.c:309
 msgid "query all packages"
@@ -1116,30 +753,37 @@ msgstr "запросить (неустановленный) пакет <packagefile>"
 
 #: ../rpm.c:314
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "запросить пакеты с триггер-скриптами на пакет <package>"
 
 #: ../rpm.c:315
-msgid "query packages triggered by <package>"
+#, fuzzy
+msgid "query packages triggered by <pkg>"
 msgstr "запросить пакеты с триггер-скриптами на пакет <package>"
 
 #: ../rpm.c:316
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "запросить пакеты с триггер-скриптами на пакет <package>"
 
 #: ../rpm.c:317
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "найти пакеты, предоставляющие сервис <i>"
 
 #: ../rpm.c:318
-msgid "        --whatrequires <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatrequires <cap>"
+msgstr "запросить пакеты с триггер-скриптами на пакет <package>"
 
 #: ../rpm.c:319
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "найти пакеты, требующие сервиса <i>"
+
+#: ../rpm.c:320
+msgid "      Information selection options:"
+msgstr "      Опции выбора информации:"
 
 #: ../rpm.c:322
 msgid "display package information"
@@ -1177,6 +821,10 @@ msgstr ""
 msgid "list capabilities package provides"
 msgstr "показать сервисы, предоставляемые пакетом"
 
+#: ../rpm.c:337
+msgid "        --requires"
+msgstr ""
+
 #: ../rpm.c:339
 msgid "list package dependencies"
 msgstr "показать зависимости пакета"
@@ -1190,7 +838,7 @@ msgid "show the trigger scripts contained in the package"
 msgstr "показать триггер-скрипты, содержащиеся в пакете"
 
 #: ../rpm.c:347
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr ""
 
 #: ../rpm.c:348
@@ -1375,7 +1023,7 @@ msgid "    -b<stage> <spec>      "
 msgstr ""
 
 #: ../rpm.c:445
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr ""
 
 #: ../rpm.c:446
@@ -1425,7 +1073,7 @@ msgid "generate PGP signature"
 msgstr "генерировать PGP-подпись"
 
 #: ../rpm.c:467
-msgid "      --buildroot <dir>     "
+msgid "      --buildroot <dir>   "
 msgstr ""
 
 #: ../rpm.c:468
@@ -1445,12 +1093,12 @@ msgid "do not execute any stages"
 msgstr "не исполнять никаких этапов"
 
 #: ../rpm.c:473
-msgid "      --timecheck <secs>     "
+msgid "      --timecheck <secs>  "
 msgstr ""
 
 #: ../rpm.c:474
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "установить проверку времени в S секунд (0 отменяет ее)"
 
 #: ../rpm.c:476
@@ -1466,7 +1114,7 @@ msgstr ""
 "текстами, патчи и пиктограммы."
 
 #: ../rpm.c:478
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr ""
 
 #: ../rpm.c:479
@@ -1525,6 +1173,13 @@ msgstr "убедиться, что существует правильная база данных"
 msgid "rebuild database from existing database"
 msgstr "перестроить базу данных из существующей базы"
 
+#: ../rpm.c:637 ../rpm.c:643 ../rpm.c:650 ../rpm.c:656 ../rpm.c:665
+#: ../rpm.c:672 ../rpm.c:718 ../rpm.c:724 ../rpm.c:813 ../rpm.c:820
+#: ../rpm.c:826 ../rpm.c:834 ../rpm.c:840 ../rpm.c:848 ../rpm.c:881
+#: ../rpm.c:927 ../rpm.c:933
+msgid "only one major mode may be specified"
+msgstr "может быть указан только один из основных режимов"
+
 #: ../rpm.c:658
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "опции -u и --uninstall устарели и больше не работают.\n"
@@ -1542,6 +1197,11 @@ msgstr ""
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "опция --tarbuild (-t) требует a,b,i,c,p,l в качестве единственного аргумента"
+
+#: ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770 ../rpm.c:790
+#: ../rpm.c:798 ../rpm.c:806
+msgid "one type of query/verify may be performed at a time"
+msgstr "за один раз может быть исполнен только один тип проверки или запроса"
 
 #: ../rpm.c:856
 msgid "arguments to --dbpath must begin with a /"
@@ -1567,9 +1227,25 @@ msgstr "перемещения должны иметь / после ="
 msgid "Internal error in argument processing :-(\n"
 msgstr ""
 
+#: ../rpm.c:945
+msgid "--dbpath given for operation that does not use a database"
+msgstr "опция --dbpath задана для операции, не использующей базу данных"
+
 #: ../rpm.c:950
 msgid "--timecheck may only be used during package builds"
 msgstr "опция --timecheck может быть использована только при сборке пакетов"
+
+#: ../rpm.c:953 ../rpm.c:956
+msgid "unexpected query specifiers"
+msgstr "неожиданная спецификация запроса"
+
+#: ../rpm.c:960
+msgid "unexpected query source"
+msgstr "неожиданный источник запроса"
+
+#: ../rpm.c:963
+msgid "only installation and upgrading may be forced"
+msgstr "принудительными могут быть только инсталляция и апгрейд"
 
 #: ../rpm.c:966
 msgid "files may only be relocated during package installation"
@@ -1584,9 +1260,50 @@ msgid "--relocate may only be used when installing new packages"
 msgstr ""
 "опцию --relocate можно использовать только при инсталляции новых пакетов"
 
+#: ../rpm.c:975
+msgid "--prefix may only be used when installing new packages"
+msgstr "опцию --prefix можно использовать только при инсталляции новых пакетов"
+
 #: ../rpm.c:978
 msgid "arguments to --prefix must begin with a /"
 msgstr "аргументы для --prefix должны начинаться с /"
+
+#: ../rpm.c:981
+msgid "--hash (-h) may only be specified during package installation"
+msgstr "опция --hash (-h) может быть указана только при инсталляции пакета"
+
+#: ../rpm.c:985
+msgid "--percent may only be specified during package installation"
+msgstr "опция --percent может быть указана только при инсталляции пакета"
+
+#: ../rpm.c:989
+msgid "--replacefiles may only be specified during package installation"
+msgstr "опция --replacefiles может быть указана только при инсталляции пакета"
+
+#: ../rpm.c:993
+msgid "--replacepkgs may only be specified during package installation"
+msgstr "опция --replacepkgs может быть указана только при инсталляции пакета"
+
+#: ../rpm.c:997
+msgid "--excludedocs may only be specified during package installation"
+msgstr "опция --excludedocs может быть указана только при инсталляции пакета"
+
+#: ../rpm.c:1001
+msgid "--includedocs may only be specified during package installation"
+msgstr "опция --includedocs может быть указана только при инсталляции пакета"
+
+#: ../rpm.c:1005
+msgid "only one of --excludedocs and --includedocs may be specified"
+msgstr ""
+"может быть использована только одна из опций --excludedocs или --includedocs"
+
+#: ../rpm.c:1009
+msgid "--ignorearch may only be specified during package installation"
+msgstr "опция --ignorearch может быть указана только при инсталляции пакета"
+
+#: ../rpm.c:1013
+msgid "--ignoreos may only be specified during package installation"
+msgstr "опция --ignoreos может быть указана только при инсталляции пакета"
 
 #: ../rpm.c:1017
 msgid "--allmatches may only be specified during package erasure"
@@ -1625,6 +1342,10 @@ msgstr ""
 "опция --nodeps может быть указана только при инсталляции, удалении и "
 "верификации пакета"
 
+#: ../rpm.c:1043
+msgid "--nofiles may only be specified during package verification"
+msgstr "опция --nofiles может быть указана только при верификации пакета"
+
 #: ../rpm.c:1048
 msgid ""
 "--test may only be specified during package installation, erasure, and "
@@ -1653,15 +1374,35 @@ msgstr "опция --clean может быть использована только с -b или -t"
 msgid "--rmsource may only be used with -b and -t"
 msgstr "опция --rmsource может быть использована только с -b или -t"
 
+#: ../rpm.c:1067
+msgid "--short-circuit may only be used during package building"
+msgstr ""
+"опция --short-circuit может быть использована только при сборке пакетов"
+
 #: ../rpm.c:1071
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 "опция --short-circuit может быть использована только с -bc, -bi, -bs, -tc "
 "-ti или -ts"
 
+#: ../rpm.c:1076
+msgid "--oldpackage may only be used during upgrades"
+msgstr "опция --oldpackage может быть использована только при апгрейдах"
+
 #: ../rpm.c:1079
 msgid "--dump may only be used during queries"
 msgstr "опция --dump может быть использована только при запросах"
+
+#: ../rpm.c:1082
+msgid "--dump of queries must be used with -l, -c, or -d"
+msgstr "опция --dump для запросов должна использоваться с -l, -c или -d"
+
+#: ../rpm.c:1087
+msgid ""
+"ftp options can only be used during package queries, installs, and upgrades"
+msgstr ""
+"опции ftp могут быть использованы только при запросах, установке и апгрейде "
+"пакетов"
 
 #: ../rpm.c:1094
 msgid "--nopgp may only be used during signature checking"
@@ -1691,6 +1432,10 @@ msgstr "опция --sign может быть использована только при сборке пакетов"
 msgid "exec failed\n"
 msgstr "%s: Ошибка открытия\n"
 
+#: ../rpm.c:1159
+msgid "unexpected arguments to --querytags "
+msgstr "неожиданные аргументы для --querytags "
+
 #: ../rpm.c:1170
 msgid "no packages given for signature check"
 msgstr "не задан пакет для проверки подписи"
@@ -1719,18 +1464,17 @@ msgstr "не заданы пакеты для удаления"
 msgid "no packages given for install"
 msgstr "не заданы пакеты для инсталляции"
 
+#: ../rpm.c:1328
+msgid "extra arguments given for query of all packages"
+msgstr "в запросе ко всем пакетам заданы лишние аргументы"
+
+#: ../rpm.c:1333
+msgid "no arguments given for query"
+msgstr "не заданы аргументы запроса"
+
 #: ../rpm.c:1350
 msgid "no arguments given for verify"
 msgstr "не заданы аргументы для верификации"
-
-#: ../rpm2cpio.c:39
-msgid "argument is not an RPM package\n"
-msgstr ""
-
-#: ../rpm2cpio.c:42
-#, fuzzy
-msgid "error reading header from package\n"
-msgstr "ошибка поиска пакета %s\n"
 
 #: ../url.c:47
 #, c-format
@@ -1774,6 +1518,59 @@ msgstr ""
 #: ../verify.c:215
 #, c-format
 msgid "%s is not an RPM\n"
+msgstr ""
+
+#: ../rpm2cpio.c:39
+msgid "argument is not an RPM package\n"
+msgstr ""
+
+#: ../rpm2cpio.c:42
+#, fuzzy
+msgid "error reading header from package\n"
+msgstr "ошибка поиска пакета %s\n"
+
+#: ../convertdb.c:37
+#, fuzzy
+msgid "RPM database already exists"
+msgstr "временная база данных %s уже существует"
+
+#: ../convertdb.c:42
+msgid "Old db is missing"
+msgstr ""
+
+#: ../convertdb.c:53
+msgid "failed to create RPM database /var/lib/rpm"
+msgstr ""
+
+#: ../convertdb.c:59
+msgid "Old db is corrupt"
+msgstr ""
+
+#: ../convertdb.c:68
+#, c-format
+msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+msgstr ""
+
+#: ../convertdb.c:200
+msgid "rpmconvert: no arguments expected"
+msgstr ""
+
+#: ../convertdb.c:206
+msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+msgstr ""
+
+#: ../oldrpmdb.c:454
+#, c-format
+msgid "pulling %s from database\n"
+msgstr ""
+
+#: ../oldrpmdb.c:461
+#, fuzzy
+msgid "package not found in database"
+msgstr "пакет %s не найден в %s"
+
+#: ../oldrpmdb.c:522
+msgid "no copyright!\n"
 msgstr ""
 
 #: ../build/build.c:96 ../build/pack.c:191
@@ -3367,6 +3164,167 @@ msgstr ""
 #: ../lib/verify.c:189
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
+#~ msgstr ""
+#~ "                        [--justdb] [--notriggers] package1 ... packageN"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
+#~ msgstr ""
+#~ "                        [--justdb] [--notriggers] package1 ... packageN"
+
+#, fuzzy
+#~ msgid "   --help\t\t- print this message"
+#~ msgstr "вывести это сообщение"
+
+#, fuzzy
+#~ msgid "   --version\t- print the version of rpm being used"
+#~ msgstr "вывести версию используемого rpm"
+
+#, fuzzy
+#~ msgid "       -v\t\t      - be a little more verbose"
+#~ msgstr "быть немного разговорчивее"
+
+#, fuzzy
+#~ msgid "       -vv\t              - be incredibly verbose (for debugging)"
+#~ msgstr "быть ОЧЕНЬ разговорчивым (для отладки)"
+
+#, fuzzy
+#~ msgid "   -q                   - query mode"
+#~ msgstr ""
+#~ "                        [--justdb] [--notriggers] package1 ... packageN"
+
+#, fuzzy
+#~ msgid "      --queryformat <s>   - use s as the header format (implies -i)"
+#~ msgstr "использовать s как формат хедера (подразумевает -i)"
+
+#, fuzzy
+#~ msgid "        -a                - query all packages"
+#~ msgstr ""
+#~ "                        [--justdb] [--notriggers] package1 ... packageN"
+
+#, fuzzy
+#~ msgid "        -f <file>+        - query package owning <file>"
+#~ msgstr "найти пакет, которому принадлежит <file>"
+
+#, fuzzy
+#~ msgid "        -F                - like -f, but read file names from stdin"
+#~ msgstr ""
+#~ "                        [--justdb] [--notriggers] package1 ... packageN"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
+#~ msgstr "запросить (неустановленный) пакет <packagefile>"
+
+#, fuzzy
+#~ msgid ""
+#~ "\t   --whatprovides <i> - query packages which provide <i> capability"
+#~ msgstr "найти пакеты, предоставляющие сервис <i>"
+
+#, fuzzy
+#~ msgid ""
+#~ "\t   --whatrequires <i> - query packages which require <i> capability"
+#~ msgstr "найти пакеты, требующие сервиса <i>"
+
+#, fuzzy
+#~ msgid "        -i                - display package information"
+#~ msgstr "вывести информацию о пакете"
+
+#, fuzzy
+#~ msgid "        -l                - display package file list"
+#~ msgstr ""
+#~ "                        [--justdb] [--notriggers] package1 ... packageN"
+
+#, fuzzy
+#~ msgid "        -s                - show file states (implies -l)"
+#~ msgstr "показать состояние файлов (подразумевает -l)"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -d                - list only documentation files (implies -l)"
+#~ msgstr "вывести только файлы документации (подразумевает -l)"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -c                - list only configuration files (implies -l)"
+#~ msgstr "вывести только конфигурационные файлы (подразумевает -l)"
+
+#, fuzzy
+#~ msgid "                            (must be used with -l, -c, or -d)"
+#~ msgstr "опция --dump для запросов должна использоваться с -l, -c или -d"
+
+#, fuzzy
+#~ msgid "        --provides        - list capabilbities package provides"
+#~ msgstr "показать сервисы, предоставляемые пакетом"
+
+#, fuzzy
+#~ msgid "        -R                - list package dependencies"
+#~ msgstr ""
+#~ "                        [--justdb] [--notriggers] package1 ... packageN"
+
+#, fuzzy
+#~ msgid "        --scripts         - print the various [un]install scripts"
+#~ msgstr "вывести разнообразные [де]инсталляционные скрипты"
+
+#, fuzzy
+#~ msgid ""
+#~ "    --querytags         - list the tags that can be used in a query format"
+#~ msgstr "вывести ключи, которые могут быть использованы в формате запроса"
+
+#, fuzzy
+#~ msgid "only one type of query may be performed at a time"
+#~ msgstr "за один раз может быть исполнен только один тип запроса"
+
+#, fuzzy
+#~ msgid ""
+#~ "--noscripts may only be specified during package installation and "
+#~ "uninstallation"
+#~ msgstr ""
+#~ "опция --noscripts может быть указана только при инсталляции, удалении и "
+#~ "верификации пакета"
+
+#, fuzzy
+#~ msgid ""
+#~ "--nodeps may only be specified during package installation, uninstallation, "
+#~ "and verification"
+#~ msgstr ""
+#~ "опция --nodeps может быть указана только при инсталляции, удалении и "
+#~ "верификации пакета"
+
+#, fuzzy
+#~ msgid ""
+#~ "--test may only be specified during package installation, uninstallation, "
+#~ "and building"
+#~ msgstr ""
+#~ "опция --test может быть указана только при инсталляции, удалении и сборке "
+#~ "пакета"
+
+#, fuzzy
+#~ msgid ""
+#~ "--root (-r) may only be specified during installation, uninstallation, "
+#~ "querying, and database rebuilds"
+#~ msgstr ""
+#~ "опция --root (-r) может быть указана только при инсталляции, удалении, "
+#~ "запросах пакета и перестроении базы данных"
+
+#, fuzzy
+#~ msgid "--clean may only be used during package building"
+#~ msgstr "опция --sign может быть использована только при сборке пакетов"
+
+#, fuzzy
+#~ msgid "--short-circuit may only be used with -bc or -bi"
+#~ msgstr ""
+#~ "опция --short-circuit может быть использована только с -bc, -bi, -bs, -tc "
+#~ "-ti или -ts"
+
+#, fuzzy
+#~ msgid "--dump may only be used during queryies"
+#~ msgstr "опция --dump может быть использована только при запросах"
 
 #~ msgid "build the packages for architecture <arch>"
 #~ msgstr "собрать пакеты для архитектуры <arch>"

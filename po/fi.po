@@ -1,7 +1,7 @@
-#: ../rpm-qo.c:81 ../rpm-qo.c:111 ../rpm.c:200 ../rpm.c:279
+#: ../rpm.c:200 ../rpm.c:279
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-27 17:54-0400\n"
+"POT-Creation-Date: 1998-09-28 18:02-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -123,36 +123,6 @@ msgstr "(PUUTTUVAT AVAIMET)"
 
 #: ../checksig.c:291
 msgid "OK"
-msgstr ""
-
-#: ../convertdb.c:37
-#, fuzzy
-msgid "RPM database already exists"
-msgstr "v‰liaikainen tietokanta %s on jo olemassa"
-
-#: ../convertdb.c:42
-msgid "Old db is missing"
-msgstr ""
-
-#: ../convertdb.c:53
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr ""
-
-#: ../convertdb.c:59
-msgid "Old db is corrupt"
-msgstr ""
-
-#: ../convertdb.c:68
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr ""
-
-#: ../convertdb.c:200
-msgid "rpmconvert: no arguments expected"
-msgstr ""
-
-#: ../convertdb.c:206
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
 #: ../ftp.c:425
@@ -291,7 +261,7 @@ msgstr "asenna paketti"
 msgid "counting packages to uninstall\n"
 msgstr "poistolle ei m‰‰ritelty paketteja"
 
-#: ../install.c:321 ../query.c:516 ../verify.c:249
+#: ../install.c:321 ../query.c:520 ../verify.c:249
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -335,20 +305,6 @@ msgstr "vaatii %s-%s-%s\n"
 msgid " conflicts with %s-%s-%s\n"
 msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 
-#: ../oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr ""
-
-#: ../oldrpmdb.c:461
-#, fuzzy
-msgid "package not found in database"
-msgstr "paketti %s ei ole %s:ss‰"
-
-#: ../oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr ""
-
 #: ../query.c:28
 #, c-format
 msgid "error in format: %s\n"
@@ -358,485 +314,147 @@ msgstr "virhe formaatissa: %s\n"
 msgid "(contains no files)"
 msgstr "(ei tiedostoja)"
 
-#: ../query.c:117
+#: ../query.c:118
 msgid "normal        "
 msgstr ""
 
-#: ../query.c:119
+#: ../query.c:120
 msgid "replaced      "
 msgstr ""
 
-#: ../query.c:121
+#: ../query.c:122
 msgid "net shared    "
 msgstr ""
 
-#: ../query.c:123
+#: ../query.c:124
 #, fuzzy
 msgid "not installed "
 msgstr "paketti %s ei ole asennettu\n"
 
-#: ../query.c:125
+#: ../query.c:126
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(tuntematon tyyppi)"
 
-#: ../query.c:129
+#: ../query.c:130
 msgid "(no state)    "
 msgstr ""
 
-#: ../query.c:145 ../query.c:174
+#: ../query.c:146 ../query.c:176
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../query.c:314
+#: ../query.c:318
 #, c-format
 msgid "querying record number %d\n"
 msgstr ""
 
-#: ../query.c:319 ../verify.c:138
+#: ../query.c:323 ../verify.c:138
 msgid "error: could not read database record\n"
 msgstr "virhe: tietokannan tietuetta ei voinut lukea\n"
 
-#: ../query.c:355 ../query.c:362 ../verify.c:194 ../verify.c:201
+#: ../query.c:359 ../query.c:366 ../verify.c:194 ../verify.c:201
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: ../query.c:378
+#: ../query.c:382
 msgid "old format source packages cannot be queried\n"
 msgstr "vanhan formaatin l‰hdekoodipaketteja ei voi kysell‰\n"
 
-#: ../query.c:387
+#: ../query.c:391
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s ei vaikuta RPM-paketilta\n"
 
-#: ../query.c:391
+#: ../query.c:395
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: ../query.c:404 ../verify.c:178
+#: ../query.c:408 ../verify.c:178
 msgid "could not read database record!\n"
 msgstr "en voinut lukea tietokannan tietuetta!\n"
 
-#: ../query.c:415 ../verify.c:224
+#: ../query.c:419 ../verify.c:224
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: ../query.c:425
+#: ../query.c:429
 #, c-format
 msgid "no package provides %s\n"
 msgstr "mik‰‰n paketti ei tarjoa %s:a\n"
 
-#: ../query.c:435
+#: ../query.c:439
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: ../query.c:445
+#: ../query.c:449
 #, c-format
 msgid "no package requires %s\n"
 msgstr "mik‰‰n pakettie ei tarvitse %s:a\n"
 
-#: ../query.c:463 ../query.c:469
+#: ../query.c:467 ../query.c:473
 msgid "maximum path length exceeded\n"
 msgstr ""
 
-#: ../query.c:481
+#: ../query.c:485
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: ../query.c:484 ../verify.c:238
+#: ../query.c:488 ../verify.c:238
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: ../query.c:497
+#: ../query.c:501
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: ../query.c:500
+#: ../query.c:504
 #, c-format
 msgid "showing package: %d\n"
 msgstr "n‰yt‰n paketin: %d\n"
 
-#: ../query.c:504
+#: ../query.c:508
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: ../query.c:519 ../verify.c:251
+#: ../query.c:523 ../verify.c:251
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: ../rpm-qo.c:42 ../rpm.c:177
+#: ../rpm.c:177
 #, c-format
 msgid "rpm: %s\n"
 msgstr ""
 
-#: ../rpm-qo.c:54 ../rpm.c:188
+#: ../rpm.c:188
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM versio %s\n"
 
-#: ../rpm-qo.c:58
-msgid "Copyright (C) 1995 - Red Hat Software"
+#: ../rpm.c:192
+msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr ""
 
-#: ../rpm-qo.c:59 ../rpm.c:193
+#: ../rpm.c:193
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
 msgstr "T‰t‰ ohjelmaa voi vapaasti levitt‰‰ GNU Public Licence:n puittessa"
 
-#: ../rpm-qo.c:68 ../rpm.c:202
+#: ../rpm.c:202
 msgid "usage: rpm {--help}"
 msgstr "k‰yttˆ: rpm {--help}"
 
-#: ../rpm-qo.c:69 ../rpm.c:203
+#: ../rpm.c:203
 msgid "       rpm {--version}"
-msgstr ""
-
-#: ../rpm-qo.c:70
-msgid "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-msgstr ""
-
-#: ../rpm-qo.c:71 ../rpm.c:222
-msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr ""
-"                        [--scripts] [--root <hakem>] [--rcfile <tiedosto>]"
-
-#: ../rpm-qo.c:72 ../rpm.c:223
-msgid "                        [--whatprovides] [--whatrequires] [--requires]"
-msgstr ""
-
-#: ../rpm-qo.c:73
-#, fuzzy
-msgid ""
-"                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpproxy <kone>] [--ftpport <portti>]"
-
-#: ../rpm-qo.c:74
-#, fuzzy
-msgid ""
-"                        [--provides] [--dump] [--dbpath <dir>] [targets]"
-msgstr ""
-"                        [--provides] [--dump] [--dbpath <hakem>] "
-"[--changelog]"
-
-#: ../rpm-qo.c:75 ../rpm.c:247
-msgid "       rpm {--querytags}"
-msgstr ""
-
-#: ../rpm-qo.c:83 ../rpm.c:281
-msgid "usage:"
-msgstr "k‰yttˆ:"
-
-#: ../rpm-qo.c:84
-#, fuzzy
-msgid "   --help\t\t- print this message"
-msgstr "tulosta t‰m‰ viesti"
-
-#: ../rpm-qo.c:85
-#, fuzzy
-msgid "   --version\t- print the version of rpm being used"
-msgstr "tulosta k‰ytetyn rpm:n versio"
-
-#: ../rpm-qo.c:86 ../rpm.c:286
-msgid "   all modes support the following arguments:"
-msgstr "   kaikki moodit tukevat seuraavia parametrej‰"
-
-#: ../rpm-qo.c:87
-#, fuzzy
-msgid "       -v\t\t      - be a little more verbose"
-msgstr "tulosta enemm‰n viestej‰"
-
-#: ../rpm-qo.c:88
-#, fuzzy
-msgid "       -vv\t              - be incredibly verbose (for debugging)"
-msgstr "tulosta mahdollisimman paljon viestej‰ (vianetsint‰‰n)"
-
-#: ../rpm-qo.c:89
-#, fuzzy
-msgid "   -q                   - query mode"
-msgstr "                        [--nomd5] [kohteet]"
-
-#: ../rpm-qo.c:90
-#, fuzzy
-msgid "      --queryformat <s>   - use s as the header format (implies -i)"
-msgstr "k‰yt‰ s headerin formaatina (josta seuraa -i)"
-
-#: ../rpm-qo.c:91 ../rpm.c:307
-msgid "      Package specification options:"
-msgstr "      Paketin m‰‰rittelyparametrit:"
-
-#: ../rpm-qo.c:92
-#, fuzzy
-msgid "        -a                - query all packages"
-msgstr "                           paketti1 ... pakettiN"
-
-#: ../rpm-qo.c:93
-#, fuzzy
-msgid "        -f <file>+        - query package owning <file>"
-msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#: ../rpm-qo.c:94
-#, fuzzy
-msgid "        -F                - like -f, but read file names from stdin"
-msgstr ""
-"                        [--replacepkgs] [--replacefiles] [--root <hakem>]"
-
-#: ../rpm-qo.c:95
-#, fuzzy
-msgid "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-msgstr "kysele(asentamatonta) pakettia <pakettitiedosto>"
-
-#: ../rpm-qo.c:96
-#, fuzzy
-msgid "        -P                - like -p, but read package names from stdin"
-msgstr "                           paketti1 ... pakettiN"
-
-#: ../rpm-qo.c:97
-#, fuzzy
-msgid "\t   --whatprovides <i> - query packages which provide <i> capability"
-msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
-
-#: ../rpm-qo.c:98
-#, fuzzy
-msgid "\t   --whatrequires <i> - query packages which require <i> capability"
-msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
-
-#: ../rpm-qo.c:99 ../rpm.c:320
-msgid "      Information selection options:"
-msgstr "      Tietojen valintaparametrit:"
-
-#: ../rpm-qo.c:100
-#, fuzzy
-msgid "        -i                - display package information"
-msgstr "                           paketti1 ... pakettiN"
-
-#: ../rpm-qo.c:101
-#, fuzzy
-msgid "        -l                - display package file list"
-msgstr "                           paketti1 ... pakettiN"
-
-#: ../rpm-qo.c:102
-#, fuzzy
-msgid "        -s                - show file states (implies -l)"
-msgstr "n‰yt‰ tiedostojen tilat (josta seuraa -l)"
-
-#: ../rpm-qo.c:103
-#, fuzzy
-msgid "        -d                - list only documentation files (implies -l)"
-msgstr "listaa vain dokumettitiedostot (josta seuraa -l)"
-
-#: ../rpm-qo.c:104
-#, fuzzy
-msgid "        -c                - list only configuration files (implies -l)"
-msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
-
-#: ../rpm-qo.c:105
-msgid ""
-"        --dump            - show all verifiable information for each file"
-msgstr ""
-
-#: ../rpm-qo.c:106
-#, fuzzy
-msgid "                            (must be used with -l, -c, or -d)"
-msgstr "kyselyjen --dump on k‰ytett‰v‰ -l, -c, tai -d kanssa"
-
-#: ../rpm-qo.c:107
-#, fuzzy
-msgid "        --provides        - list capabilbities package provides"
-msgstr "luettele paketin tarjoamat ominaisuudet"
-
-#: ../rpm-qo.c:108 ../rpm.c:337
-msgid "        --requires"
-msgstr ""
-
-#: ../rpm-qo.c:109
-#, fuzzy
-msgid "        -R                - list package dependencies"
-msgstr "                           paketti1 ... pakettiN"
-
-#: ../rpm-qo.c:110
-#, fuzzy
-msgid "        --scripts         - print the various [un]install scripts"
-msgstr "tulosta erin‰iset asennus/poisto-skriptit"
-
-#: ../rpm-qo.c:112
-#, fuzzy
-msgid ""
-"    --querytags         - list the tags that can be used in a query format"
-msgstr "luettele nimiˆt, joita voidaan k‰ytt‰‰ kyselyn formaatissa"
-
-#: ../rpm-qo.c:203
-#, fuzzy
-msgid "only one type of query may be performed at a time"
-msgstr "yhden tyyppinen kysely voidaan suorittaa kerralla"
-
-#: ../rpm-qo.c:209 ../rpm-qo.c:310 ../rpm-qo.c:361 ../rpm.c:637 ../rpm.c:643
-#: ../rpm.c:650 ../rpm.c:656 ../rpm.c:665 ../rpm.c:672 ../rpm.c:718
-#: ../rpm.c:724 ../rpm.c:813 ../rpm.c:820 ../rpm.c:826 ../rpm.c:834
-#: ../rpm.c:840 ../rpm.c:848 ../rpm.c:881 ../rpm.c:927 ../rpm.c:933
-msgid "only one major mode may be specified"
-msgstr "vain yksi p‰‰moodi voidaan m‰‰ritell‰"
-
-#: ../rpm-qo.c:255 ../rpm-qo.c:263 ../rpm-qo.c:270 ../rpm-qo.c:278
-#: ../rpm-qo.c:286 ../rpm-qo.c:294 ../rpm-qo.c:302 ../rpm-qo.c:319
-#: ../rpm-qo.c:327 ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770
-#: ../rpm.c:790 ../rpm.c:798 ../rpm.c:806
-msgid "one type of query/verify may be performed at a time"
-msgstr "yhden tyyppinen kysely/tarkistus voidaan suorittaa kerralla"
-
-#: ../rpm-qo.c:368 ../rpm.c:945
-msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath parametri annettu toiminnolle, joka ei k‰yt‰ tietokantaa"
-
-#: ../rpm-qo.c:372 ../rpm.c:953 ../rpm.c:956
-msgid "unexpected query specifiers"
-msgstr "odottamattomia kyselyn parametrej‰"
-
-#: ../rpm-qo.c:376 ../rpm.c:960
-msgid "unexpected query source"
-msgstr "odottamaton kyselyn l‰hde"
-
-#: ../rpm-qo.c:379 ../rpm.c:963
-msgid "only installation and upgrading may be forced"
-msgstr "vain asennus tai p‰ivitys voidaan pakottaa"
-
-#: ../rpm-qo.c:382 ../rpm.c:975
-msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix: voidaan k‰ytt‰‰ vain uusia paketteja asennettaessa"
-
-#: ../rpm-qo.c:385 ../rpm.c:981
-msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h): voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:389 ../rpm.c:985
-msgid "--percent may only be specified during package installation"
-msgstr "--percent: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:393 ../rpm.c:989
-msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:397 ../rpm.c:993
-msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:401 ../rpm.c:997
-msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:405 ../rpm.c:1001
-msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:409 ../rpm.c:1005
-msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "vain toinen --excludedocs tai --includedocs voidaan antaa"
-
-#: ../rpm-qo.c:413 ../rpm.c:1009
-msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:417 ../rpm.c:1013
-msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:421
-#, fuzzy
-msgid ""
-"--noscripts may only be specified during package installation and "
-"uninstallation"
-msgstr ""
-"--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
-"tarkistettaessa"
-
-#: ../rpm-qo.c:426
-#, fuzzy
-msgid ""
-"--nodeps may only be specified during package installation, uninstallation, "
-"and verification"
-msgstr ""
-"--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
-"tarkistettaessa"
-
-#: ../rpm-qo.c:430 ../rpm.c:1043
-msgid "--nofiles may only be specified during package verification"
-msgstr "--nofiles: voidaan k‰ytt‰‰ vain paketteja tarkistettaessa"
-
-#: ../rpm-qo.c:435
-#, fuzzy
-msgid ""
-"--test may only be specified during package installation, uninstallation, "
-"and building"
-msgstr ""
-"--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja "
-"k‰‰nnett‰ess‰"
-
-#: ../rpm-qo.c:440
-#, fuzzy
-msgid ""
-"--root (-r) may only be specified during installation, uninstallation, "
-"querying, and database rebuilds"
-msgstr ""
-"--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, "
-"kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
-
-#: ../rpm-qo.c:445
-#, fuzzy
-msgid "--clean may only be used during package building"
-msgstr "--sign: voidaan k‰ytt‰‰ vain paketteja k‰‰nnett‰ess‰"
-
-#: ../rpm-qo.c:448 ../rpm.c:1067
-msgid "--short-circuit may only be used during package building"
-msgstr "--short-circuit: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#: ../rpm-qo.c:451
-#, fuzzy
-msgid "--short-circuit may only be used with -bc or -bi"
-msgstr "--short-circuit: voidaan k‰ytt‰‰ vain -bc, -bi, -tc tai -ti kanssa"
-
-#: ../rpm-qo.c:455 ../rpm.c:1076
-msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage: voidaan k‰ytt‰‰ vain paketteja p‰ivitett‰ess‰"
-
-#: ../rpm-qo.c:458
-#, fuzzy
-msgid "--dump may only be used during queryies"
-msgstr "--dump: voidaan k‰ytt‰‰ vain paketteja kyselt‰ess‰"
-
-#: ../rpm-qo.c:461 ../rpm.c:1082
-msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "kyselyjen --dump on k‰ytett‰v‰ -l, -c, tai -d kanssa"
-
-#: ../rpm-qo.c:466 ../rpm.c:1087
-msgid ""
-"ftp options can only be used during package queries, installs, and upgrades"
-msgstr ""
-"ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa ja "
-"p‰ivitett‰ess‰"
-
-#: ../rpm-qo.c:479 ../rpm.c:1159
-msgid "unexpected arguments to --querytags "
-msgstr "--querytags: odottamattomia parametrej‰"
-
-#: ../rpm-qo.c:489 ../rpm.c:1328
-msgid "extra arguments given for query of all packages"
-msgstr "pakettien kyselylle annettiin ylim‰‰r‰isi‰ parametrej‰"
-
-#: ../rpm-qo.c:507 ../rpm.c:1333
-msgid "no arguments given for query"
-msgstr "kyselylle ei annettu parametrej‰"
-
-#: ../rpm.c:192
-msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr ""
 
 #: ../rpm.c:204
@@ -923,6 +541,15 @@ msgstr "                        [--badreloc] tiedosto1.rpm ... tiedostoN.rpm"
 
 #: ../rpm.c:221
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+msgstr ""
+
+#: ../rpm.c:222
+msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
+msgstr ""
+"                        [--scripts] [--root <hakem>] [--rcfile <tiedosto>]"
+
+#: ../rpm.c:223
+msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: ../rpm.c:224
@@ -1049,6 +676,14 @@ msgstr "                           paketti1 ... pakettiN"
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <tiedosto>] [--dbpath <hakem>]"
 
+#: ../rpm.c:247
+msgid "       rpm {--querytags}"
+msgstr ""
+
+#: ../rpm.c:281
+msgid "usage:"
+msgstr "k‰yttˆ:"
+
 #: ../rpm.c:283
 msgid "print this message"
 msgstr "tulosta t‰m‰ viesti"
@@ -1056,6 +691,10 @@ msgstr "tulosta t‰m‰ viesti"
 #: ../rpm.c:285
 msgid "print the version of rpm being used"
 msgstr "tulosta k‰ytetyn rpm:n versio"
+
+#: ../rpm.c:286
+msgid "   all modes support the following arguments:"
+msgstr "   kaikki moodit tukevat seuraavia parametrej‰"
 
 #: ../rpm.c:287
 msgid "      --rcfile <file>     "
@@ -1095,12 +734,12 @@ msgid "use <dir> as the directory for the database"
 msgstr "kayt‰ <hakem> tietokannan hakemistona"
 
 #: ../rpm.c:299
-msgid "      --queryformat <qfmt>   "
+msgid "      --queryformat <qfmt>"
 msgstr ""
 
 #: ../rpm.c:300
 #, fuzzy
-msgid "use qfmt as the header format (implies -i)"
+msgid "use <qfmt> as the header format (implies -i)"
 msgstr "k‰yt‰ s headerin formaatina (josta seuraa -i)"
 
 #: ../rpm.c:301
@@ -1112,7 +751,7 @@ msgstr ""
 
 #: ../rpm.c:302
 #, fuzzy
-msgid "   of file names as well as the following options:\n"
+msgid "   of file names as well as the following options:"
 msgstr "   tiedostonimin‰, kuten myˆs seuraavia parametrej‰:\n"
 
 #: ../rpm.c:303
@@ -1130,6 +769,10 @@ msgstr ""
 #: ../rpm.c:306
 msgid "port number of ftp server (or proxy)"
 msgstr "ftp-palvelijan (tai proxyn) porttinumero"
+
+#: ../rpm.c:307
+msgid "      Package specification options:"
+msgstr "      Paketin m‰‰rittelyparametrit:"
 
 #: ../rpm.c:309
 msgid "query all packages"
@@ -1153,31 +796,37 @@ msgstr "kysele(asentamatonta) pakettia <pakettitiedosto>"
 
 #: ../rpm.c:314
 #, fuzzy
-msgid "        --triggeredby <package>"
+msgid "        --triggeredby <pkg>"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: ../rpm.c:315
 #, fuzzy
-msgid "query packages triggered by <package>"
+msgid "query packages triggered by <pkg>"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: ../rpm.c:316
-msgid "        --whatprovides <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatprovides <cap>"
+msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: ../rpm.c:317
 #, fuzzy
-msgid "query packages which provide <icap> capability"
+msgid "query packages which provide <cap> capability"
 msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
 
 #: ../rpm.c:318
-msgid "        --whatrequires <icap>"
-msgstr ""
+#, fuzzy
+msgid "        --whatrequires <cap>"
+msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: ../rpm.c:319
 #, fuzzy
-msgid "query packages which require <icap> capability"
+msgid "query packages which require <cap> capability"
 msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
+
+#: ../rpm.c:320
+msgid "      Information selection options:"
+msgstr "      Tietojen valintaparametrit:"
 
 #: ../rpm.c:322
 msgid "display package information"
@@ -1215,6 +864,10 @@ msgstr ""
 msgid "list capabilities package provides"
 msgstr "luettele paketin tarjoamat ominaisuudet"
 
+#: ../rpm.c:337
+msgid "        --requires"
+msgstr ""
+
 #: ../rpm.c:339
 msgid "list package dependencies"
 msgstr "listaa paketin riippuvuudet"
@@ -1229,7 +882,7 @@ msgstr ""
 
 #: ../rpm.c:347
 #, fuzzy
-msgid "    --pipe <cmd>        "
+msgid "    --pipe <cmd>          "
 msgstr "    -b<vaihe> <m‰‰rittely> "
 
 #: ../rpm.c:348
@@ -1415,7 +1068,7 @@ msgstr "    -b<vaihe> <m‰‰rittely> "
 
 #: ../rpm.c:445
 #, fuzzy
-msgid "    -t<stage> <tarball>      "
+msgid "    -t<stage> <tarball>   "
 msgstr "    -b<vaihe> <m‰‰rittely> "
 
 #: ../rpm.c:446
@@ -1464,8 +1117,9 @@ msgid "generate PGP signature"
 msgstr "generoi PGP-allekirjoitus"
 
 #: ../rpm.c:467
-msgid "      --buildroot <dir>     "
-msgstr ""
+#, fuzzy
+msgid "      --buildroot <dir>   "
+msgstr "    -b<vaihe> <m‰‰rittely> "
 
 #: ../rpm.c:468
 msgid "use <dir> as the build root"
@@ -1485,12 +1139,12 @@ msgstr "‰l‰ suorita mit‰‰n vaiheita"
 
 #: ../rpm.c:473
 #, fuzzy
-msgid "      --timecheck <secs>     "
+msgid "      --timecheck <secs>  "
 msgstr "    -b<vaihe> <m‰‰rittely> "
 
 #: ../rpm.c:474
 #, fuzzy
-msgid "set the time check to <secs> seconds (0 disables it)"
+msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "aseta aikatarkistus S sekunniksi (0 ohittaa)"
 
 #: ../rpm.c:476
@@ -1507,7 +1161,7 @@ msgstr ""
 
 #: ../rpm.c:478
 #, fuzzy
-msgid "    --rmsource <spec>   "
+msgid "    --rmsource <spec>     "
 msgstr "    -b<vaihe> <m‰‰rittely> "
 
 #: ../rpm.c:479
@@ -1569,6 +1223,13 @@ msgstr "tarkista, ett‰ kunnollinen tietokanta lˆytyy"
 msgid "rebuild database from existing database"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
+#: ../rpm.c:637 ../rpm.c:643 ../rpm.c:650 ../rpm.c:656 ../rpm.c:665
+#: ../rpm.c:672 ../rpm.c:718 ../rpm.c:724 ../rpm.c:813 ../rpm.c:820
+#: ../rpm.c:826 ../rpm.c:834 ../rpm.c:840 ../rpm.c:848 ../rpm.c:881
+#: ../rpm.c:927 ../rpm.c:933
+msgid "only one major mode may be specified"
+msgstr "vain yksi p‰‰moodi voidaan m‰‰ritell‰"
+
 #: ../rpm.c:658
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u ja --uninstall ovat vanhentuneet eiv‰tk‰ en‰‰ toimi.\n"
@@ -1585,6 +1246,11 @@ msgstr "--build (-b) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--tarbuild (-t) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
+
+#: ../rpm.c:747 ../rpm.c:754 ../rpm.c:762 ../rpm.c:770 ../rpm.c:790
+#: ../rpm.c:798 ../rpm.c:806
+msgid "one type of query/verify may be performed at a time"
+msgstr "yhden tyyppinen kysely/tarkistus voidaan suorittaa kerralla"
 
 #: ../rpm.c:856
 msgid "arguments to --dbpath must begin with a /"
@@ -1610,9 +1276,25 @@ msgstr "siirroissa pit‰‰ olla / =-merkin j‰lkeen"
 msgid "Internal error in argument processing :-(\n"
 msgstr ""
 
+#: ../rpm.c:945
+msgid "--dbpath given for operation that does not use a database"
+msgstr "--dbpath parametri annettu toiminnolle, joka ei k‰yt‰ tietokantaa"
+
 #: ../rpm.c:950
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck parametri‰ voidaan k‰ytt‰‰ vain paketteja koottaessa"
+
+#: ../rpm.c:953 ../rpm.c:956
+msgid "unexpected query specifiers"
+msgstr "odottamattomia kyselyn parametrej‰"
+
+#: ../rpm.c:960
+msgid "unexpected query source"
+msgstr "odottamaton kyselyn l‰hde"
+
+#: ../rpm.c:963
+msgid "only installation and upgrading may be forced"
+msgstr "vain asennus tai p‰ivitys voidaan pakottaa"
 
 #: ../rpm.c:966
 msgid "files may only be relocated during package installation"
@@ -1626,9 +1308,49 @@ msgstr "vain toinen --prefix tai --relocate voidaan antaa"
 msgid "--relocate may only be used when installing new packages"
 msgstr "--relocate: voidaan k‰ytt‰‰ vain uusia paketteja asennettaessa"
 
+#: ../rpm.c:975
+msgid "--prefix may only be used when installing new packages"
+msgstr "--prefix: voidaan k‰ytt‰‰ vain uusia paketteja asennettaessa"
+
 #: ../rpm.c:978
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix parametrien pit‰‰ alkaa /-merkill‰"
+
+#: ../rpm.c:981
+msgid "--hash (-h) may only be specified during package installation"
+msgstr "--hash (-h): voidaan k‰ytt‰‰ vain paketteja asennettaessa"
+
+#: ../rpm.c:985
+msgid "--percent may only be specified during package installation"
+msgstr "--percent: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
+
+#: ../rpm.c:989
+msgid "--replacefiles may only be specified during package installation"
+msgstr "--replacefiles: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
+
+#: ../rpm.c:993
+msgid "--replacepkgs may only be specified during package installation"
+msgstr "--replacepkgs: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
+
+#: ../rpm.c:997
+msgid "--excludedocs may only be specified during package installation"
+msgstr "--excludedocs: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
+
+#: ../rpm.c:1001
+msgid "--includedocs may only be specified during package installation"
+msgstr "--includedocs: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
+
+#: ../rpm.c:1005
+msgid "only one of --excludedocs and --includedocs may be specified"
+msgstr "vain toinen --excludedocs tai --includedocs voidaan antaa"
+
+#: ../rpm.c:1009
+msgid "--ignorearch may only be specified during package installation"
+msgstr "--ignorearch: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
+
+#: ../rpm.c:1013
+msgid "--ignoreos may only be specified during package installation"
+msgstr "--ignoreos: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
 
 #: ../rpm.c:1017
 msgid "--allmatches may only be specified during package erasure"
@@ -1668,6 +1390,10 @@ msgstr ""
 "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
 "tarkistettaessa"
 
+#: ../rpm.c:1043
+msgid "--nofiles may only be specified during package verification"
+msgstr "--nofiles: voidaan k‰ytt‰‰ vain paketteja tarkistettaessa"
+
 #: ../rpm.c:1048
 msgid ""
 "--test may only be specified during package installation, erasure, and "
@@ -1696,14 +1422,33 @@ msgstr "--clean: voidaan k‰ytt‰‰ vain -b ja -t kanssa"
 msgid "--rmsource may only be used with -b and -t"
 msgstr "--rmsource: voidaan k‰ytt‰‰ vain -b ja -t kanssa"
 
+#: ../rpm.c:1067
+msgid "--short-circuit may only be used during package building"
+msgstr "--short-circuit: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
+
 #: ../rpm.c:1071
 #, fuzzy
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr "--short-circuit: voidaan k‰ytt‰‰ vain -bc, -bi, -tc tai -ti kanssa"
 
+#: ../rpm.c:1076
+msgid "--oldpackage may only be used during upgrades"
+msgstr "--oldpackage: voidaan k‰ytt‰‰ vain paketteja p‰ivitett‰ess‰"
+
 #: ../rpm.c:1079
 msgid "--dump may only be used during queries"
 msgstr "--dump: voidaan k‰ytt‰‰ vain paketteja kyselt‰ess‰"
+
+#: ../rpm.c:1082
+msgid "--dump of queries must be used with -l, -c, or -d"
+msgstr "kyselyjen --dump on k‰ytett‰v‰ -l, -c, tai -d kanssa"
+
+#: ../rpm.c:1087
+msgid ""
+"ftp options can only be used during package queries, installs, and upgrades"
+msgstr ""
+"ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa ja "
+"p‰ivitett‰ess‰"
 
 #: ../rpm.c:1094
 msgid "--nopgp may only be used during signature checking"
@@ -1733,6 +1478,10 @@ msgstr "--sign: voidaan k‰ytt‰‰ vain paketteja k‰‰nnett‰ess‰"
 msgid "exec failed\n"
 msgstr "%s: avaus ei onnistunut\n"
 
+#: ../rpm.c:1159
+msgid "unexpected arguments to --querytags "
+msgstr "--querytags: odottamattomia parametrej‰"
+
 #: ../rpm.c:1170
 msgid "no packages given for signature check"
 msgstr "allekirjoituksen tarkistukselle ei m‰‰ritelty paketteja"
@@ -1761,18 +1510,17 @@ msgstr "poistolle ei m‰‰ritelty paketteja"
 msgid "no packages given for install"
 msgstr "asennukselle ei m‰‰ritelty paketteja"
 
+#: ../rpm.c:1328
+msgid "extra arguments given for query of all packages"
+msgstr "pakettien kyselylle annettiin ylim‰‰r‰isi‰ parametrej‰"
+
+#: ../rpm.c:1333
+msgid "no arguments given for query"
+msgstr "kyselylle ei annettu parametrej‰"
+
 #: ../rpm.c:1350
 msgid "no arguments given for verify"
 msgstr "tarkistukselle ei annettu parametrej‰"
-
-#: ../rpm2cpio.c:39
-msgid "argument is not an RPM package\n"
-msgstr ""
-
-#: ../rpm2cpio.c:42
-#, fuzzy
-msgid "error reading header from package\n"
-msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
 #: ../url.c:47
 #, c-format
@@ -1816,6 +1564,59 @@ msgstr ""
 #: ../verify.c:215
 #, c-format
 msgid "%s is not an RPM\n"
+msgstr ""
+
+#: ../rpm2cpio.c:39
+msgid "argument is not an RPM package\n"
+msgstr ""
+
+#: ../rpm2cpio.c:42
+#, fuzzy
+msgid "error reading header from package\n"
+msgstr "virhe etsitt‰ess‰ pakettia %s\n"
+
+#: ../convertdb.c:37
+#, fuzzy
+msgid "RPM database already exists"
+msgstr "v‰liaikainen tietokanta %s on jo olemassa"
+
+#: ../convertdb.c:42
+msgid "Old db is missing"
+msgstr ""
+
+#: ../convertdb.c:53
+msgid "failed to create RPM database /var/lib/rpm"
+msgstr ""
+
+#: ../convertdb.c:59
+msgid "Old db is corrupt"
+msgstr ""
+
+#: ../convertdb.c:68
+#, c-format
+msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+msgstr ""
+
+#: ../convertdb.c:200
+msgid "rpmconvert: no arguments expected"
+msgstr ""
+
+#: ../convertdb.c:206
+msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+msgstr ""
+
+#: ../oldrpmdb.c:454
+#, c-format
+msgid "pulling %s from database\n"
+msgstr ""
+
+#: ../oldrpmdb.c:461
+#, fuzzy
+msgid "package not found in database"
+msgstr "paketti %s ei ole %s:ss‰"
+
+#: ../oldrpmdb.c:522
+msgid "no copyright!\n"
 msgstr ""
 
 #: ../build/build.c:96 ../build/pack.c:191
@@ -3410,6 +3211,166 @@ msgstr ""
 #: ../lib/verify.c:189
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
+#~ msgstr "                        [--ftpproxy <kone>] [--ftpport <portti>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
+#~ msgstr ""
+#~ "                        [--provides] [--dump] [--dbpath <hakem>] "
+#~ "[--changelog]"
+
+#, fuzzy
+#~ msgid "   --help\t\t- print this message"
+#~ msgstr "tulosta t‰m‰ viesti"
+
+#, fuzzy
+#~ msgid "   --version\t- print the version of rpm being used"
+#~ msgstr "tulosta k‰ytetyn rpm:n versio"
+
+#, fuzzy
+#~ msgid "       -v\t\t      - be a little more verbose"
+#~ msgstr "tulosta enemm‰n viestej‰"
+
+#, fuzzy
+#~ msgid "       -vv\t              - be incredibly verbose (for debugging)"
+#~ msgstr "tulosta mahdollisimman paljon viestej‰ (vianetsint‰‰n)"
+
+#, fuzzy
+#~ msgid "   -q                   - query mode"
+#~ msgstr "                        [--nomd5] [kohteet]"
+
+#, fuzzy
+#~ msgid "      --queryformat <s>   - use s as the header format (implies -i)"
+#~ msgstr "k‰yt‰ s headerin formaatina (josta seuraa -i)"
+
+#, fuzzy
+#~ msgid "        -a                - query all packages"
+#~ msgstr "                           paketti1 ... pakettiN"
+
+#, fuzzy
+#~ msgid "        -f <file>+        - query package owning <file>"
+#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
+
+#, fuzzy
+#~ msgid "        -F                - like -f, but read file names from stdin"
+#~ msgstr ""
+#~ "                        [--replacepkgs] [--replacefiles] [--root <hakem>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
+#~ msgstr "kysele(asentamatonta) pakettia <pakettitiedosto>"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -P                - like -p, but read package names from stdin"
+#~ msgstr "                           paketti1 ... pakettiN"
+
+#, fuzzy
+#~ msgid ""
+#~ "\t   --whatprovides <i> - query packages which provide <i> capability"
+#~ msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
+
+#, fuzzy
+#~ msgid ""
+#~ "\t   --whatrequires <i> - query packages which require <i> capability"
+#~ msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
+
+#, fuzzy
+#~ msgid "        -i                - display package information"
+#~ msgstr "                           paketti1 ... pakettiN"
+
+#, fuzzy
+#~ msgid "        -l                - display package file list"
+#~ msgstr "                           paketti1 ... pakettiN"
+
+#, fuzzy
+#~ msgid "        -s                - show file states (implies -l)"
+#~ msgstr "n‰yt‰ tiedostojen tilat (josta seuraa -l)"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -d                - list only documentation files (implies -l)"
+#~ msgstr "listaa vain dokumettitiedostot (josta seuraa -l)"
+
+#, fuzzy
+#~ msgid ""
+#~ "        -c                - list only configuration files (implies -l)"
+#~ msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
+
+#, fuzzy
+#~ msgid "                            (must be used with -l, -c, or -d)"
+#~ msgstr "kyselyjen --dump on k‰ytett‰v‰ -l, -c, tai -d kanssa"
+
+#, fuzzy
+#~ msgid "        --provides        - list capabilbities package provides"
+#~ msgstr "luettele paketin tarjoamat ominaisuudet"
+
+#, fuzzy
+#~ msgid "        -R                - list package dependencies"
+#~ msgstr "                           paketti1 ... pakettiN"
+
+#, fuzzy
+#~ msgid "        --scripts         - print the various [un]install scripts"
+#~ msgstr "tulosta erin‰iset asennus/poisto-skriptit"
+
+#, fuzzy
+#~ msgid ""
+#~ "    --querytags         - list the tags that can be used in a query format"
+#~ msgstr "luettele nimiˆt, joita voidaan k‰ytt‰‰ kyselyn formaatissa"
+
+#, fuzzy
+#~ msgid "only one type of query may be performed at a time"
+#~ msgstr "yhden tyyppinen kysely voidaan suorittaa kerralla"
+
+#, fuzzy
+#~ msgid ""
+#~ "--noscripts may only be specified during package installation and "
+#~ "uninstallation"
+#~ msgstr ""
+#~ "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
+#~ "tarkistettaessa"
+
+#, fuzzy
+#~ msgid ""
+#~ "--nodeps may only be specified during package installation, uninstallation, "
+#~ "and verification"
+#~ msgstr ""
+#~ "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
+#~ "tarkistettaessa"
+
+#, fuzzy
+#~ msgid ""
+#~ "--test may only be specified during package installation, uninstallation, "
+#~ "and building"
+#~ msgstr ""
+#~ "--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja "
+#~ "k‰‰nnett‰ess‰"
+
+#, fuzzy
+#~ msgid ""
+#~ "--root (-r) may only be specified during installation, uninstallation, "
+#~ "querying, and database rebuilds"
+#~ msgstr ""
+#~ "--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, "
+#~ "kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
+
+#, fuzzy
+#~ msgid "--clean may only be used during package building"
+#~ msgstr "--sign: voidaan k‰ytt‰‰ vain paketteja k‰‰nnett‰ess‰"
+
+#, fuzzy
+#~ msgid "--short-circuit may only be used with -bc or -bi"
+#~ msgstr "--short-circuit: voidaan k‰ytt‰‰ vain -bc, -bi, -tc tai -ti kanssa"
+
+#, fuzzy
+#~ msgid "--dump may only be used during queryies"
+#~ msgstr "--dump: voidaan k‰ytt‰‰ vain paketteja kyselt‰ess‰"
 
 #~ msgid "build the packages for architecture <arch>"
 #~ msgstr "k‰‰nn‰ paketit arkkitehtuurille <arkk>"

@@ -15,9 +15,10 @@ NLSPACKAGE = rpm
 CATALOGS = cz.mo de.mo fi.mo fr.mo pt_BR.mo ru.mo sr.mo sv.mo tr.mo
 
 POTFILES  = \
-	../build.c ../checksig.c ../convertdb.c ../ftp.c \
-	../install.c ../oldrpmdb.c ../query.c ../rpm-qo.c \
-	../rpm.c ../rpm2cpio.c ../url.c ../verify.c	\
+	../build.c	../checksig.c	../ftp.c \
+	../install.c	../query.c	../rpm.c \
+	../url.c	../verify.c		\
+	../rpm2cpio.c	../convertdb.c	../oldrpmdb.c \
 	../build/build.c ../build/files.c ../build/misc.c ../build/myftw.c \
 	../build/names.c ../build/pack.c ../build/parseBuildInstallClean.c \
 	../build/parseChangelog.c ../build/parseDescription.c \
