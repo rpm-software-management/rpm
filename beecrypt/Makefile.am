@@ -1,9 +1,9 @@
 #
 # Makefile.am contains the top-level automake definitions
 #
-# Copyright (c) 2001, 2002 Virtual Unlimited B.V.
+#  Copyright (c) 2001, 2002, 2003 Virtual Unlimited B.V.
 #
-# Author: Bob Deblier <bob@virtualunlimited.com>
+# Author: Bob Deblier <bob.deblier@pandora.be>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

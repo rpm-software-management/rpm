@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 2003 Bob Deblier
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *

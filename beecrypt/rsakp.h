@@ -7,7 +7,7 @@
 /*
  * <conformance statement for IEEE P1363 needed here>
  *
- * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *

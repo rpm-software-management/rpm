@@ -1,6 +1,6 @@
 #! /bin/sh
-rm -f ltconfig ltmain.sh
+libtoolize --force --copy
 aclocal
 autoheader
-automake -a
+automake -a Makefile docs/Makefile gas/Makefile masm/Makefile mwerks/Makefile tests/Makefile
 autoconf

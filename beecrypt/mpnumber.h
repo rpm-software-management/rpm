@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 2003 Bob Deblier
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef _MP32NUMBER_H
-#define _MP32NUMBER_H
+#ifndef _MPNUMBER_H
+#define _MPNUMBER_H
 
 #include "types.h"
 

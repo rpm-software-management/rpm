@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2000 Virtual Unlimited B.V.
+ * Copyright (c) 2003 Bob Deblier
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef _MP32PRIME_H
-#define _MP32PRIME_H
+#ifndef _MPPRIME_H
+#define _MPPRIME_H
 
 #include "mpbarrett.h"
 

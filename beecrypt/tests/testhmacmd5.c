@@ -3,7 +3,7 @@
  *
  * Unit test program for HMAC-MD5; it tests all vectors specified by RFC 2202.
  *
- * Copyright (c) 2002 Bob Deblier
+ * Copyright (c) 2002, 2003 Bob Deblier
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

@@ -4,7 +4,7 @@
 # To be used with Microsoft's nmake utility;
 # Will need the Visual C Processor Pack installed.
 #
-# Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
+# Copyright (c) 2000, 2001, 2002, 2003 Virtual Unlimited B.V.
 #
 # Author: Bob Deblier <bob@virtualunlimited.com>
 #
@@ -39,8 +39,9 @@ LIBPATH="C:\Program Files\Microsoft Visual Studio\VC98\Lib"
 JAVAPATH="C:\j2sdk1.4.0\include"
 
 
+# To enable SSE2 optimization, add switch /DOPTIMIZE_SSE2 to ASFLAGS
 ASFLAGS=/nologo /c /coff /Gd
-CFLAGS=/nologo /TC /MT /GD /GM /Ox /G5 /I. # /ZI
+CFLAGS=/nologo /TC /MT /GM /Ox /G6 /I.
 LDFLAGS=/nologo /machine:IX86 /libpath:$(LIBPATH) $(LIBS) # /DEBUG
 RCFLAGS=/r /L 0x409 /FObeecrypt.res
 JAVAFLAGS=/DJAVAGLUE=1 /I$(JAVAPATH) /I$(JAVAPATH)\win32

@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 2003 Bob Deblier
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef _MP32BARRETT_H
-#define _MP32BARRETT_H
+#ifndef _MPBARRETT_H
+#define _MPBARRETT_H
 
 #include "beecrypt.h"
 #include "mpnumber.h"

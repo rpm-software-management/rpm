@@ -3,7 +3,7 @@
  *
  * Java compatible 64-bit timestamp, code
  *
- * Copyright (c) 1999, 2000, 2002 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000, 2002, 2003 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *

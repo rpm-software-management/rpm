@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 1999, 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 2003 Bob Deblier
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef _MP32OPT_H
-#define _MP32OPT_H
+#ifndef _MPOPT_H
+#define _MPOPT_H
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,14 +1,29 @@
-2.2.0:
+3.0.0pre:
+	- Modified the API so that all keys can be passed as arrays of bytes.
+	- Modified the API so that all key sizes are given in bits.
+	- Modified the multi-precision integer library to work better on 64-bit
+	  machines.
+	- Modified the assembly source generation mechanism, employing the m4
+	  macro processor.
+	- Added multi-precision integer vectorized assembler routines for
+	  Itanium.
+	- Added multi-precision integer assembler routines for PowerPC 64-bit.
+	- Added multi-precision integer assembler routines for Alpha.
+	- Added new benchmarking programs.
+
+2.3.0pre:
 	- Modified the header files so that the library now uses self-contained autoconf-generated configuration files; a program employing BeeCrypt can now use the symbols already tested and defined instead of having to regenerate them (thus also eliminating the risk of inconsistencies).
-        - Added the AES algorithm, with assembler routines for i586 and powerpc.
+	- Added the AES algorithm, with assembler routines for i586 and powerpc.
 	- Added the DSA signature algorithm.
-	- Added powerpc assembler routines for blowfish.
+	- Added PowerPC assembler routines for blowfish.
+	- Added Pentium4 SSE2 assembler multiplication routines.
 	- Fixed the RSA CRT algorithm.
 	- Fixed the gas/i386 mp32even and mp32odd routines.
 	- Fixed a bug in modular inverse computation; thanks to Jeff Johnson of RedHat for pointing this out.
 	- Fixed a bug in testing the result of a gcd operation in the mp32prndconone routine.
 	- Fixed an ugly bug in base64 decoding.
 	- Fixed compatibility with the latest automake & autoconf versions.
+	- Replaces CPU optimization mechanism in configure script.
 
 2.1.0:
 	- Added support for automake, autoheader and libtool, which should make compiling the library even easier.

@@ -1,11 +1,11 @@
 /** \ingroup MP_m
  * \file mp.c
  *
- * Multiprecision 2's complement integer routines for 32 bit cpu, code.
+ * Multiprecision integer routines.
  */
 
 /*
- * Copyright (c) 1997, 1998, 1999, 2000 Virtual Unlimited B.V.
+ * Copyright (c) 2002, 2003 Bob Deblier
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
