@@ -46,6 +46,8 @@
           glibc 2.2
 	- change popt exec alias in oreder to exec rpm children.
 	- split rpm into 5 pieces along major mode fault lines with popt glue.
+	- turn on new, more complete version of %%configure.
+	- add %%makeinstall analogue of new %%configure for autoconf packages.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
