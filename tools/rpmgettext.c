@@ -129,7 +129,7 @@ static const char *
 genSrpmFileName(Header h)
 {
     char *name, *version, *release, *sourcerpm;
-    char sfn[BUFSIZ], bfn[BUFSIZ];
+    char sfn[BUFSIZ];
 
     headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&name, NULL);
     headerGetEntry(h, RPMTAG_VERSION, NULL, (void **)&version, NULL);
@@ -171,15 +171,14 @@ hasLang(const char *onlylang, char **langs, char **s)
 /* ================================================================== */
 /* XXX stripped down gettext environment */
 
-#define	HAVE_LOCALE_H	1
-#include <libintl.h>
-#include <string.h>
-
 #define	xstrdup		strdup
 #define	xmalloc		malloc
 #define	xrealloc	realloc
 
+#if !defined(PARAMS)
 #define	PARAMS(_x)	_x
+#endif
+
 /* Length from which starting on warnings about too long strings are given.
    Several systems have limits for strings itself, more have problems with
    strings in their tools (important here: gencat).  1024 bytes is a
@@ -203,6 +202,7 @@ hasLang(const char *onlylang, char **langs, char **s)
 
 #define	_LIBGETTEXT_H	1	/* XXX WTFO? _LIBINTL_H is undef? */
 #undef	_			/* XXX WTFO? */
+
 #include "message.c"
 
 /* ================================================================== */
@@ -453,7 +453,7 @@ KW_t keywords[] = {
 	{ "domain",	6, 0 },
 	{ "msgid",	5, 0 },
 	{ "msgstr",	6, 1 },
-	NULL
+	{ NULL, 0, 0 }
 };
 
 #define	SKIPWHITE {while ((c = *se) && strchr("\b\f\n\r\t ", c)) se++;}
@@ -466,13 +466,12 @@ parsepofile(const char *file, message_list_ty **mlpp, string_list_ty **flpp)
     string_list_ty *flp;
     message_list_ty *mlp;
     message_ty *mp;
-    KW_t *kw;
-    char *lang;
-    char *buf, *s, *se, *t, *f, *fe, *g, *ge;
+    KW_t *kw = NULL;
+    char *lang = NULL;
+    char *buf, *s, *se, *t;
     size_t nb;
     int c, rc, tval;
     int state = 1;
-    int gotmsgstr = 0;
 
     DPRINTF(99, ("parsepofile(\"%s\",%p,%p)\n", file, mlpp, flpp));
 
@@ -514,6 +513,7 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 			case '~':	/* archival translations */
 				break;
 			case ':':	/* file cross reference */
+			{   char *f, *fe, *g, *ge;
 			    for (f = s+2; f < se; f = ge) {
 				while (*f && strchr(" \t", *f)) f++;
 				fe = f;
@@ -529,7 +529,8 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 				tval = getTagVal(g);
 				string_list_append_unique(flp, f);
 				message_comment_filepos(mp, f, tval);
-			    }	break;
+			    }
+			}	break;
 			case '.':	/* automatic comments */
 				if (*s == '#') {
 					s++;
@@ -539,14 +540,14 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 				message_comment_dot_append(mp, xstrdup(s));
 				break;
 			case ',':	/* flag... */
-				if (strstr (f, "fuzzy") != NULL)
+				if (strstr (s, "fuzzy") != NULL)
 					mp->is_fuzzy = 1;
-				mp->is_c_format = parse_c_format_description_string(f);
-				mp->do_wrap = parse_c_width_description_string(f);
+				mp->is_c_format = parse_c_format_description_string(s);
+				mp->do_wrap = parse_c_width_description_string(s);
 				break;
 			default:
 				/* XXX might want to fix and/or warn here */
-			case ' ':	/* flag... */
+			case ' ':	/* comment...*/
 				if (*s == '#') s++;
 				while (*s && strchr(" \t", *s)) s++;
 				message_comment_append(mp, xstrdup(s));
@@ -732,7 +733,6 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
     message_variant_ty *mvp;
     int *tp;
     char **langs;
-    char buf[BUFSIZ];
     
     DPRINTF(99, ("headerInject(%p,%p,%p)\n", h, poTags, mlp));
 
@@ -880,9 +880,6 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 {
 	string_list_ty *flp;
 	message_list_ty *mlp;
-	message_ty *mp;
-	lex_pos_ty *pp;
-	Header newh;
 	char fn[BUFSIZ], fni[BUFSIZ], fno[BUFSIZ];
 	int j, rc;
 
