@@ -908,6 +908,7 @@ static char *buildHost(void)
 int packageBinaries(Spec s, char *passPhrase)
 {
     char name[1024];
+    char *nametmp;
     char filename[1024];
     char sourcerpm[1024];
     char *icon;
@@ -968,19 +969,11 @@ int packageBinaries(Spec s, char *passPhrase)
 	}
 	
 	/* Figure out the name of this package */
-	if (pr->subname) {
-	    strcpy(name, s->name);
-	    strcat(name, "-");
-	    strcat(name, pr->subname);
-	} else if (pr->newname) {
-	    strcpy(name, pr->newname);
-	} else {
-	    strcpy(name, s->name);
+	if (!getEntry(pr->header, RPMTAG_NAME, NULL, (void *)&nametmp, NULL)) {
+	    error(RPMERR_INTERNAL, "Package has no name!");
+	    return RPMERR_INTERNAL;
 	}
-	strcat(name, "-");
-	strcat(name, packageVersion);
-	strcat(name, "-");
-	strcat(name, packageRelease);
+	sprintf(name, "%s-%s-%s", nametmp, packageVersion, packageRelease);
 
         message(MESS_VERBOSE, "Binary Packaging: %s\n", name);
        
