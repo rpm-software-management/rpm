@@ -21,6 +21,7 @@
 #define CPIO_MKNOD_FAILED	(-14  | CPIO_CHECK_ERRNO)
 #define CPIO_MKFIFO_FAILED	(-15  | CPIO_CHECK_ERRNO)
 #define CPIO_LINK_FAILED	(-16  | CPIO_CHECK_ERRNO)
+#define CPIO_READLINK_FAILED	(-17  | CPIO_CHECK_ERRNO)
 
 /* Don't think this behaves just like standard cpio. It's pretty close, but
    it has some behaviors which are more to RPM's liking. I tried to document
@@ -33,13 +34,14 @@
 
 struct cpioFileMapping {
     char * archivePath;
-    char * finalPath;
+    char * fsPath;
     mode_t finalMode;
     uid_t finalUid;
     gid_t finalGid;
     int mapFlags;
 };
 
+/* on cpio building, only "file" is filled in */
 struct cpioCallbackInfo {
     char * file;
     long fileSize;			/* total file size */
@@ -59,6 +61,9 @@ typedef void (*cpioCallback)(struct cpioCallbackInfo * filespec, void * data);
 int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings, 
 		       int numMappings, cpioCallback cb, void * cbData,
 		       char ** failedFile);
+int cpioBuildArchive(int fd, struct cpioFileMapping * mappings, 
+		     int numMappings, cpioCallback cb, void * cbData,
+		     char ** failedFile);
 
 /* This is designed to be qsort/bsearch compatible */
 int cpioFileMapCmp(const void * a, const void * b);
