@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-07 09:44-0400\n"
+"POT-Creation-Date: 2002-08-07 12:09-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1011,51 +1011,51 @@ msgstr "%d kaynak kodu numarasý yok\n"
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Kaynak kodu olmayan %s sunucudan indirilemedi: %s\n"
 
-#: build/parsePrep.c:304
+#: build/parsePrep.c:307
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup çözümlenirken hata: %s\n"
 
-#: build/parsePrep.c:319
+#: build/parsePrep.c:322
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "satýr %d: %%setup argumaný hatalý: %s\n"
 
-#: build/parsePrep.c:337
+#: build/parsePrep.c:340
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "satýr %d: %%setup seçeneði %s hatalý: %s\n"
 
-#: build/parsePrep.c:479
+#: build/parsePrep.c:482
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "satýr %d: %%patch -b'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:488
+#: build/parsePrep.c:491
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "satýr %d: %%patch -z'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:500
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:510
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'nin argümaný hatalý: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:517
 msgid "Too many patches!\n"
 msgstr "Yamalar çok fazla!\n"
 
-#: build/parsePrep.c:518
+#: build/parsePrep.c:521
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "satýr %d: %%patch argüman hatasý: %s\n"
 
-#: build/parsePrep.c:554
+#: build/parsePrep.c:557
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "satýr %d: %%prep saniye\n"
@@ -2248,7 +2248,7 @@ msgid "can't query %s: %s\n"
 msgstr "%s sorgulanamýyor: %s\n"
 
 #: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:420 lib/rpminstall.c:551
-#: lib/rpminstall.c:950 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/rpminstall.c:954 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -2560,7 +2560,7 @@ msgstr "%s dosyasýndan okuma hatalý\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s dosyasý RPM'nin daha yeni bir sürümünü gerektiriyor\n"
 
-#: lib/rpminstall.c:543 lib/rpminstall.c:806 tools/rpmgraph.c:156
+#: lib/rpminstall.c:543 lib/rpminstall.c:810 tools/rpmgraph.c:156
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s yüklenemedi\n"
@@ -2570,7 +2570,7 @@ msgstr "%s yüklenemedi\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d kaynak ve %d icra edilebilir paketi bulundu\n"
 
-#: lib/rpminstall.c:593 lib/rpminstall.c:759 lib/rpminstall.c:1152
+#: lib/rpminstall.c:593 lib/rpminstall.c:759 lib/rpminstall.c:1156
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2594,17 +2594,17 @@ msgstr "%s dosyasý açýlamadý: %s\n"
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
 
-#: lib/rpminstall.c:793
+#: lib/rpminstall.c:794
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/rpminstall.c:799
+#: lib/rpminstall.c:800
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s kuruluyor\n"
 
-#: lib/rpminstall.c:1146
+#: lib/rpminstall.c:1150
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

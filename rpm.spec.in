@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.74
+Release: 0.75
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -517,7 +517,7 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Wed Aug  7 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.74
+* Wed Aug  7 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.75
 - fix: src.rpm installs need fd pos at payload.
 
 * Tue Aug  6 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.73

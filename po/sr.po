@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-07 09:44-0400\n"
+"POT-Creation-Date: 2002-08-07 12:09-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -1007,51 +1007,51 @@ msgstr "(nije broj)"
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/parsePrep.c:304
+#: build/parsePrep.c:307
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:319
+#: build/parsePrep.c:322
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:337
+#: build/parsePrep.c:340
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:479
+#: build/parsePrep.c:482
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:488
+#: build/parsePrep.c:491
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:500
+#: build/parsePrep.c:503
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:510
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:517
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:518
+#: build/parsePrep.c:521
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePrep.c:554
+#: build/parsePrep.c:557
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -2276,7 +2276,7 @@ msgid "can't query %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
 #: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:420 lib/rpminstall.c:551
-#: lib/rpminstall.c:950 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/rpminstall.c:954 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
@@ -2587,7 +2587,7 @@ msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:543 lib/rpminstall.c:806 tools/rpmgraph.c:156
+#: lib/rpminstall.c:543 lib/rpminstall.c:810 tools/rpmgraph.c:156
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
@@ -2597,7 +2597,7 @@ msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/rpminstall.c:593 lib/rpminstall.c:759 lib/rpminstall.c:1152
+#: lib/rpminstall.c:593 lib/rpminstall.c:759 lib/rpminstall.c:1156
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2622,17 +2622,17 @@ msgstr "Ne mogu da otvorim datoteku %s: "
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-#: lib/rpminstall.c:793
+#: lib/rpminstall.c:794
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpminstall.c:799
+#: lib/rpminstall.c:800
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
 
-#: lib/rpminstall.c:1146
+#: lib/rpminstall.c:1150
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

@@ -49,8 +49,8 @@ static void printHash(const unsigned long amount, const unsigned long total)
     rpmcliHashesTotal = (isatty (STDOUT_FILENO) ? 44 : 50);
 
     if (rpmcliHashesCurrent != rpmcliHashesTotal) {
-	float pct = (total ? (((float) amount) / total) : 1);
-	hashesNeeded = rpmcliHashesTotal * pct;
+	float pct = (total ? (((float) amount) / total) : 1.0);
+	hashesNeeded = (rpmcliHashesTotal * pct) + 0.5;
 	while (hashesNeeded > rpmcliHashesCurrent) {
 	    if (isatty (STDOUT_FILENO)) {
 		int i;
@@ -58,7 +58,7 @@ static void printHash(const unsigned long amount, const unsigned long total)
 		    (void) putchar ('#');
 		for (; i < rpmcliHashesTotal; i++)
 		    (void) putchar (' ');
-		fprintf(stdout, "(%3d%%)", (int)(100 * pct));
+		fprintf(stdout, "(%3d%%)", (int)((100 * pct) + 0.5));
 		for (i = 0; i < (rpmcliHashesTotal + 6); i++)
 		    (void) putchar ('\b');
 	    } else
@@ -77,7 +77,7 @@ static void printHash(const unsigned long amount, const unsigned long total)
 		pct = (rpmcliProgressTotal
 		    ? (((float) rpmcliProgressCurrent) / rpmcliProgressTotal)
 		    : 1);
-		fprintf(stdout, " [%3d%%]", (int)(100 * pct));
+		fprintf(stdout, " [%3d%%]", (int)((100 * pct) + 0.5));
 	    }
 	    fprintf(stdout, "\n");
 	}
@@ -695,7 +695,7 @@ int rpmErase(rpmts ts,
     int numFailed = 0;
     int stopUninstall = 0;
     int numPackages = 0;
-    int vsflags, ovsflags;
+    rpmVSFlags vsflags, ovsflags;
     rpmps ps;
 
     if (argv == NULL) return 0;
@@ -788,6 +788,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
     FD_t fd;
     int rc;
 
+
     fd = Fopen(arg, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
@@ -799,8 +800,11 @@ int rpmInstallSource(rpmts ts, const char * arg,
 	fprintf(stdout, _("Installing %s\n"), arg);
 
     {
+	rpmVSFlags ovsflags;
+	ovsflags = rpmtsSetVSFlags(ts, (rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD));
 	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFilePtr, cookie);
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
+	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
     }
     if (rc != 0) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);

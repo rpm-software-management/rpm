@@ -164,6 +164,12 @@ static int cpioStrCmp(const void * a, const void * b)
     const char * afn = *(const char **)a;
     const char * bfn = *(const char **)b;
 
+    /* XXX Some 4+ year old rpm packages have basename only in payloads. */
+#ifdef	VERY_OLD_BUGGY_RPM_PACKAGES
+    if (strchr(afn, '/') == NULL)
+	bfn = strrchr(bfn, '/') + 1;
+#endif
+
     /* Match rpm-4.0 payloads with ./ prefixes. */
     if (afn[0] == '.' && afn[1] == '/')	afn += 2;
     if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
