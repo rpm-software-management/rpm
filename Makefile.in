@@ -1,6 +1,7 @@
 include Makefile.inc
 
 srcdir= @srcdir@
+VPATH = @srcdir@
 top_srcdir= @top_srcdir@
 
 INSTALL= @INSTALL@
@@ -18,8 +19,6 @@ CVSTAG = r$(subst .,-,$(VERSION))
 ################################### Leave this stuff alone
 
 ### These are variables meant to be exported
-
-VPATH = $(srcdir)
 
 BINDIR=$(prefix)/bin
 RPMBINDIR=$(subst usr/bin,bin,$(BINDIR))

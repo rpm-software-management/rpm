@@ -328,6 +328,7 @@ if test "$PO" = po; then
 fi
 
 AC_C_BIGENDIAN
+AC_C_INLINE
 
 dnl look for libc features
 PROVIDES_ERRNO=no

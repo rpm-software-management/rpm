@@ -67,8 +67,8 @@ char * oldhdrReadFromStream(int fd, struct oldrpmHeader * header) {
     header->spec = malloc(header->specLength);
     header->name = malloc(strlen(lit.labelstr) + 1);
     if (!header->spec || !header->name) {
-	header->spec ? free(header->spec) : 0;
-	header->name ? free(header->name) : 0;
+	if (header->spec) free(header->spec);
+	if (header->name) free(header->name);
 	return "out of memory";
     }
 
@@ -158,8 +158,8 @@ char * oldhdrReadFromFile(char * filename, struct oldrpmHeader * header) {
 void oldhdrFree(struct oldrpmHeader * header) {
     free(header->name);
     free(header->spec);
-    header->icon ? free(header->icon) : 0;
-    header->group ? free(header->group) : 0;
+    if (header->icon) free(header->icon);
+    if (header->group) free(header->group);
 }
 
 void oldhdrSpecFree(struct oldrpmHeaderSpec * spec) {
@@ -337,7 +337,7 @@ void infoFromFields(char ** fields, struct oldrpmFileInfo * fi) {
 
 void oldrpmfileFree(struct oldrpmFileInfo * fi) {
     free(fi->path);
-    fi->linkto ? free(fi->linkto) : 0;
+    if (fi->linkto) free(fi->linkto);
 }
 
 char * oldrpmfileToInfoStr(struct oldrpmFileInfo * fi) {

@@ -1,6 +1,6 @@
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
-VPATH = @srcdir
+VPATH = @srcdir@
 
 LIBOBJECTS = 	popt.o
 
@@ -27,7 +27,7 @@ ifeq ($(RANLIB),)
 RANLIB=ranlib
 endif
 
-ifeq (.depend,$(wildcard .depend-done))
+ifeq (.depend-done,$(wildcard .depend-done))
 TARGET=allprogs
 else
 TARGET=@TARGET@
@@ -37,7 +37,7 @@ $(LIBPOPT): $(LIBPOPT)($(LIBOBJECTS))
 	$(RANLIB) $@
 
 distclean: clean
-	rm -f Makefile .depend-done
+	rm -f Makefile .depend-done config.log config.status
 
 clean:
 	rm -f *.a *.o *~ $(PROGS) test.out tagtable.c

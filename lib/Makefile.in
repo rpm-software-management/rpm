@@ -1,5 +1,5 @@
 srcdir = @srcdir@
-VPATH = $(srcdir)
+VPATH = @srcdir@
 top_srcdir = @top_srcdir@
 
 LIBOBJECTS = 	header.o 	misc.o		messages.o 	\
