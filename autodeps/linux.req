@@ -7,12 +7,12 @@ ulimit -c 0
 
 filelist=`sed "s/['\"]/\\\&/g"`
 exelist=`echo $filelist | xargs -r file | fgrep executable | cut -d: -f1 `
-scriptlist=`echo $filelist | xargs -r file | egrep ":.*(perl|script)" | cut -d: -f1 `
+scriptlist=`echo $filelist | xargs -r file | egrep ":.*(perl |script )" | cut -d: -f1 `
 
 for f in $exelist; do
     ldd $f | awk '/=>/ { print $1 }'
 done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | sort -u
 
 for f in $scriptlist; do
-    head -1 $f | sed -e 's/^\#\!//' | cut -d" " -f1
+    head -1 $f | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1
 done | sort -u
