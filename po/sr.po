@@ -1,84 +1,53 @@
-# German messages for RPM
-# Revised by Karl Eichwalder <ke@SuSE.DE>, 1997-1998.
-#
-# Verbesserungen jeder Art willkommen!
-#
-# Status:
-#
-# 1998-08-04 11:00:36 MEST
-# Update für 2.5.2
-# -ke-
-#
-# 1997-10-12 18:08:57 MEST
-# Update für 2.4.8
-# -ke-
-#
-# 1997-07-20 16:13:20 CEST
-# Update für 2.4.3
-# -ke-
-#
-# 1997-06-27 08:19:09 MET DST
-# Update für 2.4.2
-# -ke-
-#
-# 1997-05-28 15:04:05 MET DST
-# Update für 2.4.1; Korrekturlesen weiterhin erwünscht!
-# -ke-
-#
-# 1997-05-08 20:34:01 MET DST
-# Neue Strings von 2.4BETA1 üs; die alten sollten überprüft werden ;-)
-# -ke-
-#
-# 1997-05-01 11:23:20 MET DST
-# Neue Strings von 2.4.Alpha2 übersetzt; die alten müssen noch überprüft werden.
-# -ke-
-#
-# ### sollte »query« nicht besser mit Abfrage üs werden (statt Anfrage)? -ke-
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 2.5.2\n"
 "POT-Creation-Date: 1999-12-20 10:35-0500\n"
-"PO-Revision-Date: 1998-08-03 18:02+02:00\n"
-"Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
-"Language-Team: German <de@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
-"Content-Transfer-Encoding: 8-bit\n"
+"Content-Type: text/plain; charset=\n"
+"Date: 1998-05-02 21:41:47-0400\n"
+"From: Erik Troan <ewt@lacrosse.redhat.com>\n"
+"Xgettext-Options: --default-domain=rpm --add-comments --keyword=_ "
+"--keyword=N_\n"
+"Files: /home/ewt/redhat/rpm/rpm.c /home/ewt/redhat/rpm/query.c "
+"/home/ewt/redhat/rpm/install.c /home/ewt/redhat/rpm/verify.c "
+"/home/ewt/redhat/rpm/checksig.c /home/ewt/redhat/rpm/url.c "
+"/home/ewt/redhat/rpm/ftp.c /home/ewt/redhat/rpm/lib/uninstall.c "
+"/home/ewt/redhat/rpm/lib/rpmdb.c /home/ewt/redhat/rpm/lib/signature.c "
+"/home/ewt/redhat/rpm/lib/dbindex.c /home/ewt/redhat/rpm/lib/depends.c "
+"/home/ewt/redhat/rpm/lib/formats.c /home/ewt/redhat/rpm/lib/fs.c "
+"/home/ewt/redhat/rpm/lib/header.c /home/ewt/redhat/rpm/lib/lookup.c "
+"/home/ewt/redhat/rpm/lib/rebuilddb.c /home/ewt/redhat/rpm/lib/messages.c "
+"/home/ewt/redhat/rpm/lib/package.c /home/ewt/redhat/rpm/lib/rpmlead.c "
+"/home/ewt/redhat/rpm/lib/rpmrc.c\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
-msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
+msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
 #: build.c:35
 #, fuzzy
 msgid "failed build dependencies:\n"
-msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
+msgstr "lo¹e meðuzavisnosti:\n"
 
-# , c-format
 #: build.c:64
 #, fuzzy, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
+msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
-# , c-format
 #: build.c:125 build.c:138
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen\n"
+msgstr "neuspelo otvaranje %s\n"
 
-# , c-format
 #. Give up
 #: build.c:146
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
-# , c-format
 #: build.c:174
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %s\n"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: build.c:212
 #, c-format
@@ -88,7 +57,7 @@ msgstr ""
 #: build.c:219
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
-msgstr "%s scheint kein RPM-Paket zu sein\n"
+msgstr "%s ne lièi na RPM paket\n"
 
 #. parse up the build operators
 #: build.c:279
@@ -99,7 +68,7 @@ msgstr ""
 #: build.c:294
 #, fuzzy, c-format
 msgid "Building for target %s\n"
-msgstr "Fehler beim Suchen nach Paket %s\n"
+msgstr "gre¹ka potrage za paketom %s\n"
 
 #: build.c:344
 msgid "buildroot already specified"
@@ -116,26 +85,26 @@ msgstr ""
 #: build.c:376
 #, fuzzy
 msgid "override build architecture"
-msgstr "Paket-Architektur nicht überprüfen"
+msgstr "nemoj proveravati arhitekturu paketa"
 
 #: build.c:378
 #, fuzzy
 msgid "override build operating system"
-msgstr "Paket-Betriebssystem nicht überprüfen"
+msgstr "nemoj proveravati operativni sistem za paket"
 
 #: build.c:380
 #, fuzzy
 msgid "override build root"
-msgstr "Benutze <VERZ> als Stammverzeichnis beim Erstellen"
+msgstr "koristi <dir> kao korenski katalog kod kreiranja"
 
 #: build.c:382 rpm.c:495
 msgid "remove build tree when done"
-msgstr "Erstellungsdateibaum nach Beendigung löschen"
+msgstr "ukloni stablo direktorijuma po zavr¹etku"
 
 #: build.c:384
 #, fuzzy
 msgid "do not execute any stages of the build"
-msgstr "Keine Stufen ausführen"
+msgstr "nemoj izvr¹iti nijednu fazu"
 
 #: build.c:386
 msgid "do not accept I18N msgstr's from specfile"
@@ -144,16 +113,16 @@ msgstr ""
 #: build.c:388
 #, fuzzy
 msgid "remove sources when done"
-msgstr "Quellen und spec-Dateien nach Beendigung löschen"
+msgstr "ukloni izvorne datoteke i datoteku specifikacije po zavr¹etku"
 
 #: build.c:390
 #, fuzzy
 msgid "remove specfile when done"
-msgstr "Quellen und spec-Dateien nach Beendigung löschen"
+msgstr "ukloni izvorne datoteke i datoteku specifikacije po zavr¹etku"
 
 #: build.c:392 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "Direkt zur angegeben Stufe springen (nur für c und i)"
+msgstr "idi pravo do odreðene faze (samo za k,i)"
 
 #: build.c:394
 msgid "override target platform"
@@ -166,7 +135,7 @@ msgstr ""
 #: convertdb.c:39
 #, fuzzy
 msgid "RPM database already exists"
-msgstr "die temporäre Datenbank %s existiert schon"
+msgstr "privremena baza podataka %s veæ postoji"
 
 #: convertdb.c:44
 msgid "Old db is missing"
@@ -201,7 +170,7 @@ msgstr ""
 #: oldrpmdb.c:461
 #, fuzzy
 msgid "package not found in database"
-msgstr "Paket %s in %s nicht gefunden"
+msgstr "paket %s nije naðen u %s"
 
 #: oldrpmdb.c:522
 msgid "no copyright!\n"
@@ -212,23 +181,22 @@ msgstr ""
 msgid "rpm: %s\n"
 msgstr ""
 
-# , c-format
 #: rpm.c:208
 #, c-format
 msgid "RPM version %s\n"
-msgstr "RPM Version %s\n"
+msgstr "RPM verzija %s\n"
 
 #: rpm.c:212
 msgid "Copyright (C) 1998 - Red Hat Software"
-msgstr "Copyright © 1998 - Red Hat Software"
+msgstr ""
 
 #: rpm.c:213
 msgid "This may be freely redistributed under the terms of the GNU GPL"
-msgstr "Dies darf unter den Bedingungen der »GNU GPL« frei verteilt werden"
+msgstr "Mo¾ete slobodno distribuirati dalje pod odredbama GNU GPL"
 
 #: rpm.c:221
 msgid "usage: rpm {--help}"
-msgstr "Benutzung: rpm {--help}"
+msgstr "kori¹æenje: {rpm --help}"
 
 #: rpm.c:222
 msgid "       rpm {--version}"
@@ -236,7 +204,7 @@ msgstr ""
 
 #: rpm.c:223
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
-msgstr "       rpm {--initdb}   [--dbpath <VERZ>]"
+msgstr ""
 
 #: rpm.c:224
 msgid ""
@@ -246,7 +214,6 @@ msgstr ""
 #: rpm.c:225
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
-"                        [--replacepkgs] [--replacefiles] [--root <VERZ>]"
 
 #: rpm.c:226
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
@@ -256,41 +223,36 @@ msgstr ""
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
-"                        [--rcfile <DATEI>] [--ignorearch] [--dbpath <VERZ>]"
 
 #: rpm.c:228
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
-"                        [--prefix <VERZ>] [--ignoreos] [--nodeps] "
-"[--allfiles]"
 
 #: rpm.c:229
 msgid ""
 "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
 msgstr ""
-"                        [--ftpproxy <RECHNER>] [--ftpport <PORT>] [--justdb]"
 
 #: rpm.c:230 rpm.c:239 rpm.c:248
 #, fuzzy
 msgid "                        [--httpproxy <host>] [--httpport <port>] "
-msgstr "                        [--ftpproxy <HOST>] [--ftpport <PORT>]"
+msgstr "\t\t\t   paket1 ...paketN"
 
 #: rpm.c:231 rpm.c:241
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
-msgstr "                        [--noorder] [--relocate <ALTPFAD>=<NEUPFAD>]"
+msgstr ""
 
 #: rpm.c:232
 #, fuzzy
 msgid ""
 "                        [--badreloc] [--notriggers] [--excludepath <path>]"
-msgstr ""
-"                        [--badreloc] [--notriggers] DATEI1.rpm ... DATEIn.rpm"
+msgstr "\t\t\t[--badreloc] datoteka1.rpm ... datotekaN.rpm"
 
 #: rpm.c:233
 #, fuzzy
 msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
-msgstr "                        [--badreloc] DATEI1.rpm ... DATEIn.rpm"
+msgstr "\t\t\t[--badreloc] datoteka1.rpm ... datotekaN.rpm"
 
 #: rpm.c:234
 msgid ""
@@ -299,39 +261,36 @@ msgstr ""
 
 #: rpm.c:235
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-msgstr "                        [--oldpackage] [--root <VERZ>] [--noscripts]"
+msgstr ""
 
 #: rpm.c:236
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
-"                        [--excludedocs] [--includedocs] [--rcfile <DATEI>]"
 
 #: rpm.c:237
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
-"                        [--ignorearch]  [--dbpath <dir>] [--prefix <VERZ>]"
 
 #: rpm.c:238
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpproxy <HOST>] [--ftpport <PORT>]"
+msgstr ""
 
 #: rpm.c:240
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 msgstr ""
-"                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
 #: rpm.c:242
 #, fuzzy
 msgid ""
 "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
-msgstr "                        [--nomd5] [ZIELE]"
+msgstr "\t\t\t   paket1 ...paketN"
 
 #: rpm.c:243
 #, fuzzy
 msgid "                        file1.rpm ... fileN.rpm"
-msgstr "                        [--badreloc] DATEI1.rpm ... DATEIn.rpm"
+msgstr "\t\t\t[--badreloc] datoteka1.rpm ... datotekaN.rpm"
 
 #: rpm.c:244
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
@@ -339,134 +298,122 @@ msgstr ""
 
 #: rpm.c:245
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr "                        [--scripts] [--root <VERZ>] [--rcfile <DATEI>]"
+msgstr ""
 
 #: rpm.c:246
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: rpm.c:247
-#, fuzzy
 msgid ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
 msgstr ""
-"                        [--ftpuseport] [--ftpproxy <HOST>] [--ftpport <PORT>]"
 
 #: rpm.c:249
-#, fuzzy
 msgid ""
 "                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
 msgstr ""
-"                        [--dbpath <VERZ>] [--nodeps] [--nofiles] "
-"[--noscripts]"
 
 #: rpm.c:250
 #, fuzzy
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-msgstr "                        [--nomd5] [ZIELE]"
+msgstr "\t\t\t   paket1 ...paketN"
 
 #: rpm.c:251
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-msgstr "       rpm {--verify -V -y} [-afpg] [--root <VERZ>] [--rcfile <DATEI>]"
+msgstr ""
 
 #: rpm.c:252
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
-"                        [--dbpath <VERZ>] [--nodeps] [--nofiles] "
-"[--noscripts]"
 
 #: rpm.c:253
 msgid "                        [--nomd5] [targets]"
-msgstr "                        [--nomd5] [ZIELE]"
+msgstr ""
 
 #: rpm.c:254
 msgid "       rpm {--setperms} [-afpg] [target]"
-msgstr "       rpm {--setperms} [-afpg] [ZIEL]"
+msgstr ""
 
 #: rpm.c:255
 msgid "       rpm {--setugids} [-afpg] [target]"
-msgstr "       rpm {--setugids} [-afpg] [ZIEL]"
+msgstr ""
 
 #: rpm.c:256
 #, fuzzy
 msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
-msgstr "                        [--badreloc] DATEI1.rpm ... DATEIn.rpm"
+msgstr "\t\t\t[--badreloc] datoteka1.rpm ... datotekaN.rpm"
 
 #: rpm.c:257
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
-"       rpm {--erase -e] [--root <VERZ>] [--noscripts] [--rcfile <DATEI>]"
 
 #: rpm.c:258
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-msgstr "                        [--dbpath <VERZ>] [--nodeps] [--allmatches]"
+msgstr ""
 
 #: rpm.c:259
+#, fuzzy
 msgid ""
 "                        [--justdb] [--notriggers] rpackage1 ... packageN"
-msgstr "                        [--justdb] [--notriggers] PAKET1 ... PAKETn"
+msgstr "\t\t\t   paket1 ...paketN"
 
 #: rpm.c:260
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
-"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
-"<DATEI>]"
 
 #: rpm.c:261
 #, fuzzy
 msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-msgstr ""
-"                        [--sign] [--test] [--timecheck <S>] [--buildos <BS>]"
+msgstr "\t\t\t   paket1 ...paketN"
 
 #: rpm.c:262
 #, fuzzy
 msgid "                        [--target=platform1[,platform2...]]"
-msgstr "                        [ZIELE]"
+msgstr "\t\t\t[--badreloc] datoteka1.rpm ... datotekaN.rpm"
 
 #: rpm.c:263
 #, fuzzy
 msgid "                        [--rmsource] [--rmspec] specfile"
-msgstr "                        [--buildarch <ARCH>] [--rmsource] SPEC-DATEI"
+msgstr "\t\t\t[--badreloc] datoteka1.rpm ... datotekaN.rpm"
 
 #: rpm.c:264
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-msgstr "       rpm {--rmsource} [--rcfile <DATAEI>] [-v] SPEC-DATEI"
+msgstr ""
 
 #: rpm.c:265
 msgid ""
 "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
-"       rpm {--rebuild} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
 
 #: rpm.c:266
 msgid ""
 "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
-"       rpm {--recompile} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
 
 #: rpm.c:267
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr "       rpm {--resign} [--rcfile <DATEI>] PAKET1 PAKET2 ... PAKETn"
+msgstr "\trpm {--resign} [--rcfile <datoteka>] paket1 paket2 ... paketN"
 
 #: rpm.c:268
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr "       rpm {--addsign} [--rcfile <DATEI>] PAKET1 PAKET2 ... PAKETn"
+msgstr "\trpm {--addsign} [--rcfile <datoteka>] paket1 paket2 ... paketN"
 
 #: rpm.c:269
 #, fuzzy
 msgid ""
 "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
-msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <DATEI>]"
+msgstr "\trpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <datoteka>]"
 
 #: rpm.c:270
 msgid "                           package1 ... packageN"
-msgstr "                           PAKET1 ... PAKETn"
+msgstr "\t\t\t   paket1 ...paketN"
 
 #: rpm.c:271
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "       rpm {--rebuilddb} [--rcfile <DATEI>] [--dbpath <VERZ>]"
+msgstr ""
 
 #: rpm.c:272
 msgid "       rpm {--querytags}"
@@ -474,19 +421,19 @@ msgstr ""
 
 #: rpm.c:306
 msgid "usage:"
-msgstr "Benutzung:"
+msgstr "kori¹æenje:"
 
 #: rpm.c:308
 msgid "print this message"
-msgstr "Gibt diesen Text aus"
+msgstr "¹tampaj ovu poruku"
 
 #: rpm.c:310
 msgid "print the version of rpm being used"
-msgstr "Die benutzte RPM-Version anzeigen"
+msgstr "napi¹i verziju rpm-a koja se koristi"
 
 #: rpm.c:311
 msgid "   all modes support the following arguments:"
-msgstr "   alle Modi unterstützen folgende Argumente:"
+msgstr "   svi re¾imi podr¾avaju sledeæe argumente:"
 
 #: rpm.c:312
 msgid "      --rcfile <file>     "
@@ -494,19 +441,19 @@ msgstr ""
 
 #: rpm.c:313
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-msgstr "<DATEI> anstelle von /etc/rpmrc und $HOME/.rpmrc benutzen"
+msgstr "koristi <datoteku> umesto /etc/rpmrc i $HOME/.rpmrc"
 
 #: rpm.c:315
 msgid "be a little more verbose"
-msgstr "Ausgabe etwas ausführlicher gestalten"
+msgstr "budi malko prièljiviji"
 
 #: rpm.c:317
 msgid "be incredibly verbose (for debugging)"
-msgstr "extrem ausführliche Ausgabe (um Programm-Fehler zu finden)"
+msgstr "budi neverovatno prièljiv (zbog nala¾enja gre¹aka)"
 
 #: rpm.c:319
 msgid "query mode"
-msgstr "Anfrage-Modus"
+msgstr "re¾im upita"
 
 #: rpm.c:320 rpm.c:382 rpm.c:446 rpm.c:474
 msgid "      --root <dir>        "
@@ -514,16 +461,16 @@ msgstr ""
 
 #: rpm.c:321 rpm.c:383 rpm.c:447 rpm.c:475 rpm.c:537
 msgid "use <dir> as the top level directory"
-msgstr "<VERZ> als Stammverzeichnis benutzen"
+msgstr "koristi <dir> kao direktorijum najvi¹eg nivoa"
 
 #: rpm.c:322 rpm.c:380 rpm.c:410 rpm.c:462 rpm.c:534
 #, fuzzy
 msgid "      --dbpath <dir>      "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:323 rpm.c:381 rpm.c:411 rpm.c:463 rpm.c:535
 msgid "use <dir> as the directory for the database"
-msgstr "<VERZ> als Datenbankverzeichnis benutzen"
+msgstr "koristi <dir> kao direktorijum baze podataka"
 
 #: rpm.c:324
 msgid "      --queryformat <qfmt>"
@@ -532,19 +479,18 @@ msgstr ""
 #: rpm.c:325
 #, fuzzy
 msgid "use <qfmt> as the header format (implies -i)"
-msgstr "S als Kopfzeilen-Format benutzen (impliziert -i)"
+msgstr "koristi s kao format zaglavlja (povlaèi -i)"
 
 #: rpm.c:326
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
-"   Installieren, Aktualisieren und Anfragen (mit -p) erlauben es, ftp-URLs"
+"   instaliranje, pobolj¹avanja i upit (sa -p) dozvoljavaju kori¹æenje URL-ova"
 
 #: rpm.c:327
 #, fuzzy
 msgid "   of file names as well as the following options:"
-msgstr ""
-"   anstelle von Dateinamen zu benutzen. Außerdem die folgenden Optionen:\n"
+msgstr "   na mestu imena datoteka kao i sledeæe opcije:\n"
 
 #: rpm.c:328
 msgid "      --ftpproxy <host>   "
@@ -552,7 +498,7 @@ msgstr ""
 
 #: rpm.c:329
 msgid "hostname or IP of ftp proxy"
-msgstr "Hostname oder IP des ftp-Proxys"
+msgstr "ime hosta ili IP ftp proxy-ja"
 
 #: rpm.c:330
 msgid "      --ftpport <port>    "
@@ -560,35 +506,35 @@ msgstr ""
 
 #: rpm.c:331
 msgid "port number of ftp server (or proxy)"
-msgstr "Portnummer des ftp-Servers (oder -Proxys)"
+msgstr "broj porta FTP servera (ili proxy)"
 
 #: rpm.c:332
 #, fuzzy
 msgid "      --httpproxy <host>   "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:333
 #, fuzzy
 msgid "hostname or IP of http proxy"
-msgstr "Hostname oder IP des ftp-Proxys"
+msgstr "ime hosta ili IP ftp proxy-ja"
 
 #: rpm.c:334
 #, fuzzy
 msgid "      --httpport <port>    "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:335
 #, fuzzy
 msgid "port number of http server (or proxy)"
-msgstr "Portnummer des ftp-Servers (oder -Proxys)"
+msgstr "broj porta FTP servera (ili proxy)"
 
 #: rpm.c:336
 msgid "      Package specification options:"
-msgstr "      Optionen der Paketauswahl:"
+msgstr "      Opcije odrednice paketa:"
 
 #: rpm.c:338
 msgid "query all packages"
-msgstr "Anfrage an alle Pakete"
+msgstr "upit nad svim paketima"
 
 #: rpm.c:339
 msgid "        -f <file>+        "
@@ -596,7 +542,7 @@ msgstr ""
 
 #: rpm.c:340
 msgid "query package owning <file>"
-msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: rpm.c:341
 msgid "        -p <packagefile>+ "
@@ -604,77 +550,77 @@ msgstr ""
 
 #: rpm.c:342
 msgid "query (uninstalled) package <packagefile>"
-msgstr "Anfrage nach (nicht installiertem) Paket <PAKET-DATEI>"
+msgstr "upit za (deinstaliran) paket <paketdatoteka>"
 
 #: rpm.c:343
 #, fuzzy
 msgid "        --triggeredby <pkg>"
-msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: rpm.c:344
 #, fuzzy
 msgid "query packages triggered by <pkg>"
-msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: rpm.c:345
 #, fuzzy
 msgid "        --whatprovides <cap>"
-msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: rpm.c:346
 #, fuzzy
 msgid "query packages which provide <cap> capability"
-msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
+msgstr "upit za pakete koji omoguæavaju <i> svojstvo"
 
 #: rpm.c:347
 #, fuzzy
 msgid "        --whatrequires <cap>"
-msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: rpm.c:348
 #, fuzzy
 msgid "query packages which require <cap> capability"
-msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
+msgstr "upit za pakete koji zahtevaju <i> svojstvo"
 
 #: rpm.c:349
 msgid "      Information selection options:"
-msgstr "      Optionen der Informationsauswahl:"
+msgstr "      Opcije za selekciju informacije:"
 
 #: rpm.c:351
 msgid "display package information"
-msgstr "Paketinformationen anzeigen"
+msgstr "prika¾i informacije o paketu"
 
 #: rpm.c:353
 msgid "display the package's change log"
-msgstr "Changelog des Pakets anzeigen"
+msgstr "prika¾i dnevnik promene paketa"
 
 #: rpm.c:355
 msgid "display package file list"
-msgstr "Dateiliste des Pakets anzeigen"
+msgstr "prika¾i listu datoteka u paketu"
 
 #: rpm.c:357
 msgid "show file states (implies -l)"
-msgstr "Status der Dateien anzeigen (impliziert -l)"
+msgstr "prika¾i stanja datoteka (povlaèi -i)"
 
 #: rpm.c:359
 msgid "list only documentation files (implies -l)"
-msgstr "Nur Dokumentationsdateien auflisten (impliziert -l)"
+msgstr "prika¾i samo datoteke iz dokumentacije (povlaèi -i)"
 
 #: rpm.c:361
 msgid "list only configuration files (implies -l)"
-msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
+msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
 
 #: rpm.c:363
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
 msgstr ""
-"Alle überprüfbaren Infos zu jeder Datei anzeigen (mit -l, -c oder -d "
-"benutzen!)"
+"poka¾i sve informacije koje se mogu proveriti za svaku datoteku (mora se "
+"koristiti sa -l, -c ili -d)"
 
 #: rpm.c:365
 msgid "list capabilities package provides"
-msgstr "Fähigkeiten des Pakets auflisten"
+msgstr "poka¾i koja svojstva donosi paket"
 
 #: rpm.c:366
 msgid "        --requires"
@@ -682,11 +628,11 @@ msgstr ""
 
 #: rpm.c:368
 msgid "list package dependencies"
-msgstr "Paket-Abhängigkeiten ausgeben"
+msgstr "poka¾i zavisnosti paketa"
 
 #: rpm.c:370
 msgid "print the various [un]install scripts"
-msgstr "Die diversen (De-)Installations-Skripte ausgeben"
+msgstr "ispi¹i razne skriptove za [de]instalaciju"
 
 #: rpm.c:372
 msgid "show the trigger scripts contained in the package"
@@ -695,67 +641,66 @@ msgstr ""
 #: rpm.c:376
 #, fuzzy
 msgid "    --pipe <cmd>          "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:377
 msgid "send stdout to <cmd>"
-msgstr "Standard-Ausgabe nach <BEFEHL> umleiten"
+msgstr "po¹alji standardni izlaz u <komandu>"
 
 #: rpm.c:379
+#, fuzzy
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr ""
-"Ein Paket mit denselben Paketspezifikations-Optionen wie bei -q überprüfen"
+"proveri instalaciju paketa koristeæi iste opcije za odreðenje paketa kao i -q"
 
 #: rpm.c:385 rpm.c:433 rpm.c:467
 msgid "do not verify package dependencies"
-msgstr "Dateiabhängigkeiten nicht überprüfen"
+msgstr "nemoj proveravati zavisnosti paketa"
 
 #: rpm.c:387
 msgid "do not verify file md5 checksums"
-msgstr "md5-Prüfsumme der Datei nicht überprüfen"
+msgstr "nemoj proveravati md5 kontrolne sume datoteke"
 
 #: rpm.c:389
 msgid "do not verify file attributes"
-msgstr "Dateiattribute nicht überprüfen"
+msgstr "nemoj proveravati atribute datoteke"
 
-# Was ist gemeint?
 #: rpm.c:392
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
-"Dateirechte gemäß deren in der Paketdatenbank setzen, wie wenn dieselben "
-"Paketspezifikationsoptionen wie bei -q benutzt würden"
+"postavi dozvole datoteke kao one u bazi podataka paketa koristeæi iste "
+"opcije za odreðenje datoteka kao i -q"
 
-# Was ist gemeint?
 #: rpm.c:395
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
-"Datei-Eigentümer und -Gruppe gemäß deren in der Paketdatenbank setzen, wie "
-"wenn dieselben Paketspezifikationsoptionen wie bei -q benutzt würden"
+"postavi vlasnika i grupu datoteke kao i one u bazi podataka paketa koristeæi "
+"iste opcije za odreðenje datoteka kao i -q"
 
 #: rpm.c:399
 #, fuzzy
 msgid "    --install <packagefile>"
-msgstr "Paket installieren"
+msgstr "instaliraj paket"
 
 #: rpm.c:400
 #, fuzzy
 msgid "    -i <packagefile>      "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:401
 msgid "install package"
-msgstr "Paket installieren"
+msgstr "instaliraj paket"
 
 #: rpm.c:402
 #, fuzzy
 msgid "      --excludepath <path>"
-msgstr "verschiebe Dateien von <alter_Pfad> nach <neuer_Pfad>"
+msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
 #: rpm.c:403
 msgid "skip files in path <path>"
@@ -764,15 +709,15 @@ msgstr ""
 #: rpm.c:404
 #, fuzzy
 msgid "      --relocate <oldpath>=<newpath>"
-msgstr "verschiebe Dateien von <alter_Pfad> nach <neuer_Pfad>"
+msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
 #: rpm.c:405
 msgid "relocate files from <oldpath> to <newpath>"
-msgstr "verschiebe Dateien von <alter_Pfad> nach <neuer_Pfad>"
+msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
 #: rpm.c:407
 msgid "relocate files even though the package doesn't allow it"
-msgstr "verschiebe Dateien, obglich das Paket es nicht erlaubt"
+msgstr "premesti datoteke èak iako paket to ne dozvoljava"
 
 #: rpm.c:408
 msgid "      --prefix <dir>      "
@@ -780,30 +725,28 @@ msgstr ""
 
 #: rpm.c:409
 msgid "relocate the package to <dir>, if relocatable"
-msgstr ""
-"Verschiebe das Paket, wenn es verschiebbar ist, in das Verzeichnis <VERZ>"
+msgstr "premesti paket u <dir>, ako se mo¾e premestiti"
 
 #: rpm.c:413
 msgid "do not install documentation"
-msgstr "Dokumentation nicht installieren"
+msgstr "nemoj da instalira¹ dokumentaciju"
 
 #: rpm.c:415
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr "Abkürzung für --replacepkgs --replacefiles"
+msgstr "skraæenica za --replacepkgs --replacefiles"
 
 #: rpm.c:418
 msgid "print hash marks as package installs (good with -v)"
-msgstr "Fortschrittsanzeige bei der Paketinstallation (gut zusammen mit -v)"
+msgstr "pi¹i he¹-znak (#) kako odmièe instaliranje paketa (dobro doðe sa -v)"
 
 #: rpm.c:420
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
-"alle Dateien installieren, auch die config-Dateien, die sonst übergangen "
-"würden"
+"instaliraj sve datoteke, èak i konfiguracije koje bi inaèe bile preskoèene"
 
 #: rpm.c:423
 msgid "don't verify package architecture"
-msgstr "Paket-Architektur nicht überprüfen"
+msgstr "nemoj proveravati arhitekturu paketa"
 
 #: rpm.c:425
 msgid "don't check disk space before installing"
@@ -811,44 +754,44 @@ msgstr ""
 
 #: rpm.c:427
 msgid "don't verify package operating system"
-msgstr "Paket-Betriebssystem nicht überprüfen"
+msgstr "nemoj proveravati operativni sistem za paket"
 
 #: rpm.c:429
 msgid "install documentation"
-msgstr "Dokumentation installieren"
+msgstr "instaliraj dokumentaciju"
 
 #: rpm.c:431 rpm.c:465
 msgid "update the database, but do not modify the filesystem"
-msgstr "Datenbank erneuern, aber das Dateisystem nicht verändern"
+msgstr "a¾uriraj bazu podataka, ali nemoj menjati fajl-sistem"
 
 #: rpm.c:435 rpm.c:469
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
-"Paket-Installation nicht neu sortieren, um den Abhängigkeiten zu genügen"
+"nemoj preurediti redosled instalacije paketa kako bi zadovoljio zavisnosti"
 
 #: rpm.c:437
 msgid "don't execute any installation scripts"
-msgstr "Keine Installations-Skripte ausführen"
+msgstr "nemoj izvr¹iti nijedan instalacioni skript"
 
 #: rpm.c:439 rpm.c:473
 msgid "don't execute any scripts triggered by this package"
-msgstr "kein Skript ausführen, das durch dieses Paket veranlasst wurde"
+msgstr ""
 
 #: rpm.c:441
 msgid "print percentages as package installs"
-msgstr "Prozentangabe bei der Paketinstallation ausgeben"
+msgstr "pi¹i procente instalacije paketa"
 
 #: rpm.c:443
 msgid "install even if the package replaces installed files"
-msgstr "Auch dann installieren, wenn das Paket installierte Dateien ersetzt"
+msgstr "instaliraj èak iako æe paket zameniti instalirane datoteke"
 
 #: rpm.c:445
 msgid "reinstall if the package is already present"
-msgstr "Neuinstallation, wenn das Paket schon vorhanden ist"
+msgstr "ponovo instaliraj ako je paket veæ prisutan"
 
 #: rpm.c:449
 msgid "don't install, but tell if it would work or not"
-msgstr "Nicht installieren - nur anzeigen, ob es funktionieren würde"
+msgstr "nemoj instalirati, ali reci da li æe da radi ili ne"
 
 #: rpm.c:451
 msgid "    --upgrade <packagefile>"
@@ -857,19 +800,18 @@ msgstr ""
 #: rpm.c:452
 #, fuzzy
 msgid "    -U <packagefile>      "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:453
 msgid "upgrade package (same options as --install, plus)"
-msgstr "Paket aktualisieren (dieselben Optionen wie --install, außerdem)"
+msgstr "a¾uriraj paket (iste opcije kao --install, plus)"
 
 #: rpm.c:455
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
-"Aktualisierung auf eine alte Version des Pakets (--force macht das bei "
-"Aktualisierungen automatisch)"
+"a¾uriraj na staru verziju paketa (--force kod a¾uriranja ovo radi automatski)"
 
 #: rpm.c:457
 msgid "    --erase <package>"
@@ -877,79 +819,75 @@ msgstr ""
 
 #: rpm.c:459
 msgid "erase (uninstall) package"
-msgstr "Paket löschen (deinstallieren)"
+msgstr "izbri¹i (deinstaliraj) paket"
 
 #: rpm.c:461
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"Alle Pakete entfernen, die mit <PAKET> übereinstimmen (normalerweise wird "
-"ein Fehler angezeigt, wenn <PAKET> mehrere Pakete bezeichnet)"
+"ukloni sve pakete koji odgovaraju <paketu> (normalno, javlja se gre¹ka ako "
+"<paket> oznaèava vi¹e paketa)"
 
 #: rpm.c:471
 msgid "do not execute any package specific scripts"
-msgstr "Keine paketspezifischen Skripte ausführen"
+msgstr "nemoj izvr¹iti nijedan skript iz paketa"
 
 #: rpm.c:477
 msgid "    -b<stage> <spec>      "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:478
 #, fuzzy
 msgid "    -t<stage> <tarball>   "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:479
 msgid "build package, where <stage> is one of:"
-msgstr "Paket erstellen, <STUFE> ist einer der Buchstaben:"
+msgstr "napravi paket, gde je <faza> jedna od:"
 
 #: rpm.c:481
 msgid "prep (unpack sources and apply patches)"
-msgstr "präparieren (Quellen entpacken und Patch-Dateien anwenden"
+msgstr "priprema (raspakuj izvorne datoteke i primeni zakrpe)"
 
-# , c-format
 #: rpm.c:483
 #, c-format
 msgid "list check (do some cursory checks on %files)"
-msgstr "kontrollieren (oberflächliche Überprüfung der %files)"
+msgstr "provera liste (mala provera na %files)"
 
 #: rpm.c:485
 msgid "compile (prep and compile)"
-msgstr "kompilieren (präparieren und kompilieren)"
+msgstr "kompilacija (priprema i kompilacija)"
 
 #: rpm.c:487
 msgid "install (prep, compile, install)"
-msgstr "installieren (präparieren, kompilieren, installieren)"
+msgstr "instalacija (priprema, kompilacija, instalacija)"
 
 #: rpm.c:489
 msgid "binary package (prep, compile, install, package)"
-msgstr ""
-"Binärpaket erstellen (präparieren, kompilieren, installieren und paketieren)"
+msgstr "binarni paket (priprema, kompilacija, instalacija, pakovanje)"
 
 #: rpm.c:491
 msgid "bin/src package (prep, compile, install, package)"
-msgstr ""
-"Binär- und Quellpaket erstellen (präparieren, kompilieren, installieren und "
-"Paketieren"
+msgstr "bin/src paket (priprema, kompilacija, instalacija, pakovanje)"
 
 #: rpm.c:497
 msgid "remove sources and spec file when done"
-msgstr "Quellen und spec-Dateien nach Beendigung löschen"
+msgstr "ukloni izvorne datoteke i datoteku specifikacije po zavr¹etku"
 
 #: rpm.c:499
 #, fuzzy
 msgid "generate PGP/GPG signature"
-msgstr "PGP-Signatur generieren"
+msgstr "napravi PGP potpis"
 
 #: rpm.c:500
 #, fuzzy
 msgid "      --buildroot <dir>   "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:501
 msgid "use <dir> as the build root"
-msgstr "Benutze <VERZ> als Stammverzeichnis beim Erstellen"
+msgstr "koristi <dir> kao korenski katalog kod kreiranja"
 
 #: rpm.c:502
 msgid "      --target=<platform>+"
@@ -961,17 +899,17 @@ msgstr ""
 
 #: rpm.c:505
 msgid "do not execute any stages"
-msgstr "Keine Stufen ausführen"
+msgstr "nemoj izvr¹iti nijednu fazu"
 
 #: rpm.c:506
 #, fuzzy
 msgid "      --timecheck <secs>  "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:507
 #, fuzzy
 msgid "set the time check to <secs> seconds (0 disables)"
-msgstr "Die Zeitüberprüfung auf S Sekunden setzen (mit 0 ausschalten)"
+msgstr "postavi vremensku proveru na S sekundi (0 je deaktivira)"
 
 #: rpm.c:509
 msgid "    --rebuild <src_pkg>   "
@@ -982,17 +920,17 @@ msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
-"Quellpaket installieren, Binarypaket erstellen und spec-Datei, Quellen, "
-"Patch-Dateien und Icons löschen"
+"instaliraj izvorni paket, napravi binarni paket i ukloni specifikaciju, "
+"izvorne datoteke, zakrpe i ikone."
 
 #: rpm.c:511
 #, fuzzy
 msgid "    --rmsource <spec>     "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:512
 msgid "remove sources and spec file"
-msgstr "lösche Quellen und spec-Datei"
+msgstr "ukloni izvorne datoteke i datoteku specifikacije"
 
 #: rpm.c:513
 msgid "    --recompile <src_pkg> "
@@ -1000,111 +938,107 @@ msgstr ""
 
 #: rpm.c:514
 msgid "like --rebuild, but don't build any package"
-msgstr "wie --rebuild aber kein Paket erstellen"
+msgstr "kao i --rebuild, samo nemoj praviti nikakav paket"
 
 #: rpm.c:515
 #, fuzzy
 msgid "    --resign <pkg>+       "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:516
 msgid "sign a package (discard current signature)"
-msgstr "Ein Paket signieren (die aktuelle Signature wird verworfen)"
+msgstr "potpi¹i paket (ukloni tekuæi potpis)"
 
 #: rpm.c:517
 #, fuzzy
 msgid "    --addsign <pkg>+      "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:518
 msgid "add a signature to a package"
-msgstr "Signatur einem Paket hinzufügen"
+msgstr "dodaj potpis u paket"
 
 #: rpm.c:520
 #, fuzzy
 msgid "    --checksig <pkg>+     "
-msgstr "    -b<STUFE> <SPEC>      "
+msgstr "    -b<faza> <spec>\t "
 
 #: rpm.c:521
 msgid "verify package signature"
-msgstr "Paketsignatur überprüfen"
+msgstr "proveri potpis u paketu"
 
 #: rpm.c:523
 msgid "skip any PGP signatures"
-msgstr "alle PGP-Signaturen überspringen"
+msgstr "preskoèi sve PGP potpise"
 
 #: rpm.c:525
 #, fuzzy
 msgid "skip any GPG signatures"
-msgstr "alle PGP-Signaturen überspringen"
+msgstr "preskoèi sve PGP potpise"
 
 #: rpm.c:527
 msgid "skip any MD5 signatures"
-msgstr "alle MD5-Signaturen überspringen"
+msgstr "preskoèi sve MD5 potpise"
 
 #: rpm.c:529
 msgid "list the tags that can be used in a query format"
-msgstr "Tags auflisten, die im Anfrageformat benutzt werden können"
+msgstr "ispi¹i tag-ove koji mogu biti kori¹æeni u formatu upita"
 
 #: rpm.c:531
 msgid "make sure a valid database exists"
-msgstr "Sicherstellen, daß eine gültige Datenbank vorhanden ist"
+msgstr "uveri se da postoji ispravna baza podataka"
 
 #: rpm.c:533
 msgid "rebuild database from existing database"
-msgstr "Datenbank aus der vorhandenen neu erstellen"
+msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
 #: rpm.c:682 rpm.c:688 rpm.c:695 rpm.c:701 rpm.c:710 rpm.c:717 rpm.c:764
 #: rpm.c:770 rpm.c:804 rpm.c:810 rpm.c:816 rpm.c:824 rpm.c:868 rpm.c:923
 #: rpm.c:930
 msgid "only one major mode may be specified"
-msgstr "Es darf nur ein Hauptmodus angegeben werden"
+msgstr "samo jedan glavni re¾im mo¾e biti naveden"
 
 #: rpm.c:703
 msgid "-u and --uninstall are deprecated and no longer work.\n"
-msgstr "-u und --uninstall sind veraltet und funktionieren nicht mehr.\n"
+msgstr "-u i --uninstall nisu vi¹e podr¾ani i ne rade vi¹e.\n"
 
 #: rpm.c:705
 msgid "Use -e or --erase instead.\n"
-msgstr "Benutzen Sie stattdessen -e oder --erase\n"
+msgstr "Koristite -e ili --erase.\n"
 
 #: rpm.c:721
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-msgstr ""
-"--build (-b) benötigt einen Buchstaben aus a,b,i,c,p,l als einziges Argument"
+msgstr "--build (-b) zahteva jedan od sledeæih podargumenata: a,b,i,c,p ili l"
 
 #: rpm.c:725
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
-"--tarbuild (-t) benötigt einen Buchstaben aus a,b,i,c,p,l als einziges "
-"Argument"
+"--tarbuild (-t) zahteva jedan od sledeæih podargumenata: a,b,c,i,p ili l"
 
 #: rpm.c:777 rpm.c:783 rpm.c:790 rpm.c:797 rpm.c:937
 msgid "one type of query/verify may be performed at a time"
-msgstr ""
-"Nur nur eine Art der Anfrage/Überprüfung kann pro Programmlauf durchgeführt "
-"werden"
+msgstr "samo jedan tip upita/provere mo¾e biti uraðen odjednom"
 
 #: rpm.c:834
 msgid "arguments to --dbpath must begin with a /"
-msgstr "Argumente zu --dbpath müssen mit einem / beginnen"
+msgstr "argumenti za --dbpath moraju poèeti znakom '/'"
 
 #: rpm.c:874
 msgid "relocations must begin with a /"
-msgstr "Verschiebungen müssen mit einem »/« beginnen"
+msgstr "preme¹tanja moraju poèeti znakom '/'"
 
 #: rpm.c:876
 msgid "relocations must contain a ="
-msgstr "Verschiebungen müssen ein »=« beinhalten"
+msgstr "preme¹tanja moraju imati znak ="
 
 #: rpm.c:879
 msgid "relocations must have a / following the ="
-msgstr "bei Verschiebungen muss ein »/« dem »=« folgen"
+msgstr "preme¹tanja moraju imati / praæeno sa ="
 
 #: rpm.c:888
 #, fuzzy
 msgid "exclude paths must begin with a /"
-msgstr "Verschiebungen müssen mit einem »/« beginnen"
+msgstr "preme¹tanja moraju poèeti znakom '/'"
 
 #: rpm.c:897
 #, c-format
@@ -1113,124 +1047,121 @@ msgstr ""
 
 #: rpm.c:948
 msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath wurde für eine Operation angeben, die keine Datenbank benutzt"
+msgstr "--dbpath je naveden za operaciju koja ne koristi bazu podataka"
 
 #: rpm.c:952
 msgid "--timecheck may only be used during package builds"
-msgstr "--clean darf nur während der Paketerstellung benutzt werden"
+msgstr "--timecheck se mo¾e koristiti samo kod kreiranja paketa"
 
 #: rpm.c:955
 #, fuzzy
 msgid "unexpected query flags"
-msgstr "Unerwartete Quelle der Anfrage"
+msgstr "neoèekivan izvor upita"
 
 #: rpm.c:958
 #, fuzzy
 msgid "unexpected query format"
-msgstr "Unerwartete Quelle der Anfrage"
+msgstr "neoèekivan izvor upita"
 
 #: rpm.c:961
 msgid "unexpected query source"
-msgstr "Unerwartete Quelle der Anfrage"
+msgstr "neoèekivan izvor upita"
 
 #: rpm.c:967
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
-msgstr "nur die Installation und Aktualisierung darf erzwungen werden"
+msgstr "samo instalacija i a¾uriranje mogu biti forsirane"
 
 #: rpm.c:970
 msgid "files may only be relocated during package installation"
-msgstr "Dateien können nur während der Paketinstallation verschoben werden"
+msgstr "datoteke mogu biti preme¹tene samo tokom instalacije paketa"
 
 #: rpm.c:973
 msgid "only one of --prefix or --relocate may be used"
-msgstr "nur eines der Argumente --prefix oder --relocate darf angegeben werden"
+msgstr "samo jedno mo¾ete koristiti: --prefix ili --relocate"
 
 #: rpm.c:976
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr "--relocate darf nur bei der Installation neuer Pakete benutzt werden"
+msgstr "--relocate mo¾ete koristiti samo kad instalirate novi paket"
 
 #: rpm.c:979
 msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix darf nur bei der Installation neuer Pakete benutzt werden"
+msgstr "--prefix mo¾ete koristiti samo kod instalacije novog paketa"
 
 #: rpm.c:982
 msgid "arguments to --prefix must begin with a /"
-msgstr "Argumente zu --prefix müssen mit einem / beginnen"
+msgstr "argumenti za --prefix moraju poèeti znakom /"
 
 #: rpm.c:985
 msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) darf nur während der Paketinstallation angegeben werden"
+msgstr "--hash (-h) mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:989
 msgid "--percent may only be specified during package installation"
-msgstr "--percent darf nur während der Paketinstallation angegeben werden"
+msgstr "--percent mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:993
 msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles darf nur während der Paketinstallation angegeben werden"
+msgstr "--replacefiles mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:997
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs darf nur während der Paketinstallation angegeben werden"
+msgstr "--replacepkgs mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:1001
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs darf nur während der Paketinstallation angegeben werden"
+msgstr "--excludecocs mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:1005
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs darf nur während der Paketinstallation angegeben werden"
+msgstr "--includecocs mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:1009
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr ""
-"nur eines der Argumente --excludedocs und --includedocs darf angegeben werden"
+msgstr "samo jedno mo¾ete da navedete: --excludedocs ili --includedocs"
 
 #: rpm.c:1013
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch darf nur während der Paketinstallation angegeben werden"
+msgstr "--ignorearch mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:1017
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
+msgstr "--ignoreos mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:1021
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
-msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
+msgstr "--ignoreos mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:1025
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches darf nur während der Paketdeinstallaiton angegeben werden"
+msgstr "--allmatches mo¾ete koristiti samo kod brisanja paketa"
 
 #: rpm.c:1029
 msgid "--allfiles may only be specified during package installation"
-msgstr "--allfiles darf nur während der Paketinstallation angegeben werden"
+msgstr "--allfiles mo¾ete koristiti samo kod instalacije paketa"
 
 #: rpm.c:1033
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr ""
-"--justdb kann nur während der Paketinstallation und -deinstallation "
-"angegeben werden"
+msgstr "--justdb mo¾ete koristiti samo kod instalacije i brisanja paketa"
 
 #: rpm.c:1038
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--noscripts darf nur während der Paketinstallation, -deinstallation und "
-"-überprüfung angegeben werden"
+"--noscripsts mo¾ete koristiti samo kod instalacije, uklanjanja ili provere "
+"paketa"
 
 #: rpm.c:1042
+#, fuzzy
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--notriggers darf nur während der Paketinstallation, -deinstallation und "
-"-überprüfung angegeben werden"
+"--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
 
 #: rpm.c:1046
 #, fuzzy
@@ -1238,63 +1169,60 @@ msgid ""
 "--nodeps may only be specified during package building, installation, "
 "erasure, and verification"
 msgstr ""
-"--nodeps darf nur während der Paketinstallation, -deinstallation und "
-"-überprüfung angegeben werden"
+"--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
 
 #: rpm.c:1050
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
-"--test darf nur während der Paketinstallation, -deinstallation und "
-"-erstellung angegeben werden"
+"--test mo¾ete koristiti samo kod instalacije, uklanjanja ili kreiranja paketa"
 
 #: rpm.c:1054
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
-"--root (-r) darf nur während der Paketinstallation, -deinstallation, "
-"-anfrage und Datenbankneuerstellungen angegeben werden"
+"--root (-r) mo¾ete navesti samo kod instalacije, uklanjanja, upita ili "
+"rekreiranja baze podataka"
 
 #: rpm.c:1066
 msgid "arguments to --root (-r) must begin with a /"
-msgstr "Argumente zu --root (-r) müssen mit einem / beginnen"
+msgstr "argumenti za --root (-r) moraju poèeti znakom /"
 
 #: rpm.c:1072
 msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage darf nur während Aktualisierungen benutzt werden"
+msgstr "--oldpackage se mo¾e koristiti samo tokom a¾uriranja paketa"
 
 #: rpm.c:1077
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
-"ftp-Optionen können nur während Paketanfragen, -installationen und "
-"-aktualisierungen benutzt werden"
+"opcije za FTP se mogu koristiti samo kod upita, instalacije ili a¾uriranja "
+"paketa"
 
 #: rpm.c:1083
 #, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr ""
-"ftp-Optionen können nur während Paketanfragen, -installationen und "
-"-aktualisierungen benutzt werden"
+"opcije za FTP se mogu koristiti samo kod upita, instalacije ili a¾uriranja "
+"paketa"
 
 #: rpm.c:1087
 msgid "--nopgp may only be used during signature checking"
-msgstr "--nopgp darf nur während der Signatur-Überprüfung benutzt werden"
+msgstr "--nopgp se mo¾e koristiti samo prilikom provere potpisa"
 
 #: rpm.c:1090
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
-msgstr "--nopgp darf nur während der Signatur-Überprüfung benutzt werden"
+msgstr "--nopgp se mo¾e koristiti samo prilikom provere potpisa"
 
 #: rpm.c:1093
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
-msgstr ""
-"--nopgp darf nur während der Signatur- und Paketüberprüfung angegeben werden"
+msgstr "--nopgp se mo¾e koristiti samo kod provere potpisa ili paketa"
 
 #: rpm.c:1121
 msgid "no files to sign\n"
@@ -1303,12 +1231,12 @@ msgstr ""
 #: rpm.c:1126
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: rpm.c:1141
 #, fuzzy
 msgid "pgp not found: "
-msgstr "Datei auf dem Server nicht gefunden"
+msgstr "Datoteka nije pronaðena na serveru"
 
 #: rpm.c:1145
 msgid "Enter pass phrase: "
@@ -1316,11 +1244,11 @@ msgstr ""
 
 #: rpm.c:1147
 msgid "Pass phrase check failed\n"
-msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
+msgstr "Neuspela provera lozinke\n"
 
 #: rpm.c:1150
 msgid "Pass phrase is good.\n"
-msgstr "Das Passwort ist richtig.\n"
+msgstr "Lozinka je dobra.\n"
 
 #: rpm.c:1155
 msgid "Invalid %%_signature spec in macro file.\n"
@@ -1328,66 +1256,66 @@ msgstr ""
 
 #: rpm.c:1161
 msgid "--sign may only be used during package building"
-msgstr "--sign darf nur während der Paketerstellung benutzt werden"
+msgstr "--sign se mo¾e koristiti samo kod kreiranja paketa"
 
 #: rpm.c:1176
 #, fuzzy
 msgid "exec failed\n"
-msgstr "%s: Öffnen fehlgeschlagen\n"
+msgstr "%s: Neuspelo otvaranje\n"
 
 #: rpm.c:1195
 msgid "unexpected arguments to --querytags "
-msgstr "Unerwartete Argumente zu --querytags "
+msgstr "neoèekivani argumenti za --querytags"
 
 #: rpm.c:1206
 msgid "no packages given for signature check"
-msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
+msgstr "nedostaje paket za proveru potpisa"
 
 #: rpm.c:1217
 msgid "no packages given for signing"
-msgstr "Es wurden keine Pakete für die Signatur angeben"
+msgstr "nedostaje paket za potpisivanje"
 
 #: rpm.c:1229
 msgid "no packages files given for rebuild"
-msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
+msgstr "nedosataje paket za rekreiranje"
 
 #: rpm.c:1292
 msgid "no spec files given for build"
-msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
+msgstr "nedostaje specifikacije za kreiranje"
 
 #: rpm.c:1294
 msgid "no tar files given for build"
-msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
+msgstr "nedostaju 'tar' datoteke za kreiranje"
 
 #: rpm.c:1310
 msgid "no packages given for uninstall"
-msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
+msgstr "neodstaje paket za deinstalaciju"
 
 #: rpm.c:1360
 msgid "no packages given for install"
-msgstr "Es wurden keine Pakete für die Installation angegeben"
+msgstr "nedostaje paket za instalaciju"
 
 #: rpm.c:1383
 msgid "extra arguments given for query of all packages"
-msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
+msgstr "suvi¹ni argumenti su navedeni za upit nad svim paketima"
 
 #: rpm.c:1388
 msgid "no arguments given for query"
-msgstr "Es wurden keine Argumente für die Anfrage angegeben"
+msgstr "nedostaju argumenti za upit"
 
 #: rpm.c:1405
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
-msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
+msgstr "suvi¹ni argumenti su navedeni za upit nad svim paketima"
 
 #: rpm.c:1409
 msgid "no arguments given for verify"
-msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
+msgstr "nedostaju argumenti za proveru"
 
 #: rpm2cpio.c:22
 #, fuzzy, c-format
 msgid "cannot open package: %s\n"
-msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
+msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
 #: rpm2cpio.c:32
 msgid "argument is not an RPM package\n"
@@ -1396,29 +1324,27 @@ msgstr ""
 #: rpm2cpio.c:36
 #, fuzzy
 msgid "error reading header from package\n"
-msgstr "Fehler beim Suchen nach Paket %s\n"
+msgstr "gre¹ka potrage za paketom %s\n"
 
 #: rpm2cpio.c:43
 #, fuzzy, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
-# , c-format
 #: build/build.c:105 build/pack.c:269
 #, fuzzy
 msgid "Unable to open temp file"
-msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
+msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
-# , c-format
 #: build/build.c:184
 #, fuzzy, c-format
 msgid "Executing(%s): %s\n"
-msgstr "Hole %s heraus\n"
+msgstr "Pribavljam %s\n"
 
 #: build/build.c:190
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s"
-msgstr "öffnen von %s fehlgeschlagen: %s\n"
+msgstr "neuspelo otvaranje %s: %s\n"
 
 #: build/build.c:198
 #, c-format
@@ -1428,22 +1354,22 @@ msgstr ""
 #: build/expression.c:207
 #, fuzzy
 msgid "syntax error while parsing =="
-msgstr "? im Ausdruck erwartet"
+msgstr "oèekivan znak ? u izrazu"
 
 #: build/expression.c:237
 #, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "? im Ausdruck erwartet"
+msgstr "oèekivan znak ? u izrazu"
 
 #: build/expression.c:246
 #, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "? im Ausdruck erwartet"
+msgstr "oèekivan znak ? u izrazu"
 
 #: build/expression.c:288
 #, fuzzy
 msgid "parse error in expression"
-msgstr "? im Ausdruck erwartet"
+msgstr "oèekivan znak ? u izrazu"
 
 #: build/expression.c:318
 msgid "unmatched ("
@@ -1481,7 +1407,7 @@ msgstr ""
 #: build/expression.c:645 build/expression.c:692
 #, fuzzy
 msgid "syntax error in expression"
-msgstr "? im Ausdruck erwartet"
+msgstr "oèekivan znak ? u izrazu"
 
 #: build/files.c:199
 #, c-format
@@ -1491,12 +1417,12 @@ msgstr ""
 #: build/files.c:243 build/files.c:325 build/files.c:488
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s"
-msgstr "fehlende { nach %{"
+msgstr "nedostaje { posle %"
 
 #: build/files.c:254 build/files.c:442 build/files.c:499
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s"
-msgstr "fehlender ':' bei %s:%d"
+msgstr "nedostaje ':' na %s:%d"
 
 #: build/files.c:292 build/files.c:467
 #, c-format
@@ -1508,17 +1434,15 @@ msgstr ""
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
-# , c-format
 #: build/files.c:379
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
-# , c-format
 #: build/files.c:389
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: build/files.c:401
 #, c-format
@@ -1541,54 +1465,50 @@ msgstr ""
 msgid "Only one arg for %%docdir"
 msgstr ""
 
-# , c-format
 #. We already got a file -- error
 #: build/files.c:661
 #, fuzzy, c-format
 msgid "Two files on one line: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: build/files.c:674
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s"
-msgstr "Verschiebungen müssen mit einem »/« beginnen"
+msgstr "preme¹tanja moraju poèeti znakom '/'"
 
 #: build/files.c:686
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-# , c-format
 #: build/files.c:772
 #, fuzzy, c-format
 msgid "File listed twice: %s"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: build/files.c:865
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-# , c-format
 #: build/files.c:945
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: build/files.c:955
 #, fuzzy, c-format
 msgid "File not found: %s"
-msgstr "Datei auf dem Server nicht gefunden"
+msgstr "Datoteka nije pronaðena na serveru"
 
 #: build/files.c:998
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-# , c-format
 #: build/files.c:1012
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: build/files.c:1086
 #, c-format
@@ -1598,7 +1518,7 @@ msgstr ""
 #: build/files.c:1154
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
-msgstr "Fehler: kann Datei %s nicht öffnen\n"
+msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
 #: build/files.c:1161 build/pack.c:481
 #, c-format
@@ -1614,40 +1534,37 @@ msgstr ""
 #: build/files.c:1559
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
-msgstr "Konnte pgp nicht durchführen"
+msgstr "Ne mogu da izvr¹im PGP"
 
 #: build/files.c:1564
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
-msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
+msgstr "Ne mogu da proèitam 'sigtarget'"
 
 #: build/files.c:1646
 #, fuzzy, c-format
 msgid "%s failed"
-msgstr "pgp fehlgeschlagen"
+msgstr "PGP omanuo"
 
-# , c-format
 #: build/files.c:1650
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
-msgstr "anlegen von %s fehlgeschlagen\n"
+msgstr "neuspelo kreiranje %s\n"
 
 #: build/files.c:1739
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-# , c-format
 #: build/files.c:1767 build/files.c:1776
 #, fuzzy, c-format
 msgid "Failed to find %s:"
-msgstr "anlegen von %s fehlgeschlagen\n"
+msgstr "neuspelo kreiranje %s\n"
 
-# , c-format
 #: build/files.c:1882
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: build/names.c:41 build/names.c:73
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
@@ -1670,79 +1587,71 @@ msgstr ""
 #: build/pack.c:149
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
-# , c-format
 #: build/pack.c:186
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
-# , c-format
 #: build/pack.c:196
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: build/pack.c:217
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
-msgstr "Fehler: %s scheint zu keinem RPM-Paket zu gehören\n"
+msgstr "gre¹ka: èini se da %s nije RPM paket\n"
 
 #: build/pack.c:223
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
-msgstr "Fehler beim Eintrag %s von %s"
+msgstr "gre¹ka kod uzimanja sloga %s iz %s"
 
 #: build/pack.c:281
 msgid "Bad CSA data"
 msgstr ""
 
-# , c-format
 #: build/pack.c:316
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen\n"
+msgstr "neuspelo otvaranje %s\n"
 
-# , c-format
 #: build/pack.c:348
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
-msgstr "Nicht möglich %s zu schreiben"
+msgstr "Ne mogu da upi¹em %s"
 
 #: build/pack.c:363
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
-msgstr "PGP-Signatur generieren"
+msgstr "napravi PGP potpis"
 
-# , c-format
 #: build/pack.c:379
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
-msgstr "Nicht möglich %s zu schreiben"
+msgstr "Ne mogu da upi¹em %s"
 
-# , c-format
 #: build/pack.c:389
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
-msgstr "Nicht möglich %s zu schreiben"
+msgstr "Ne mogu da upi¹em %s"
 
-# , c-format
 #: build/pack.c:399
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
-msgstr "Nicht möglich %s zu schreiben"
+msgstr "Ne mogu da upi¹em %s"
 
 #: build/pack.c:414
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-# , c-format
 #: build/pack.c:430
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: build/pack.c:449
 #, c-format
@@ -1752,27 +1661,27 @@ msgstr ""
 #: build/pack.c:456
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s"
-msgstr "lesen fehlgeschlagen: %s (%d)"
+msgstr "neuspelo èitanje: %s (%d)"
 
 #: build/pack.c:536
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s"
-msgstr "Fehler: kann Datei %s nicht öffnen\n"
+msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
 #: build/pack.c:543
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s"
-msgstr "Fehler: kann Datei %s nicht öffnen\n"
+msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
 #: build/pack.c:550
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s"
-msgstr "Fehler: kann Datei %s nicht öffnen\n"
+msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
 #: build/pack.c:557
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s"
-msgstr "Fehler: kann Datei %s nicht öffnen\n"
+msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
 #: build/pack.c:565
 #, c-format
@@ -1817,11 +1726,10 @@ msgstr ""
 msgid "line %d: Error parsing %%description: %s"
 msgstr ""
 
-# , c-format
 #: build/parseDescription.c:46 build/parseFiles.c:40 build/parseScript.c:168
 #, fuzzy, c-format
 msgid "line %d: Bad option %s: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: build/parseDescription.c:59 build/parseFiles.c:53 build/parseScript.c:181
 #, c-format
@@ -1831,7 +1739,7 @@ msgstr ""
 #: build/parseDescription.c:69 build/parseFiles.c:63 build/parseScript.c:191
 #, fuzzy, c-format
 msgid "line %d: Package does not exist: %s"
-msgstr "Paket %s wird nicht in %s aufgeführt"
+msgstr "paket %s nije naveden u %s"
 
 #: build/parseDescription.c:81
 #, c-format
@@ -1876,22 +1784,20 @@ msgstr ""
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-# , c-format
 #: build/parsePreamble.c:246
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
-msgstr "Nicht möglich %s zu schreiben"
+msgstr "Ne mogu da upi¹em %s"
 
-# , c-format
 #: build/parsePreamble.c:264
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
-msgstr "Nicht möglich %s zu schreiben"
+msgstr "Ne mogu da upi¹em %s"
 
 #: build/parsePreamble.c:277
 #, fuzzy, c-format
 msgid "Unknown icon type: %s"
-msgstr "(unbekannter Typ)"
+msgstr "(nepoznat tip)"
 
 #: build/parsePreamble.c:339
 #, c-format
@@ -1904,11 +1810,10 @@ msgstr ""
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-# , c-format
 #: build/parsePreamble.c:370 build/parsePreamble.c:377
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: build/parsePreamble.c:441 build/parseSpec.c:366
 #, c-format
@@ -1923,17 +1828,17 @@ msgstr ""
 #: build/parsePreamble.c:466
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s"
-msgstr "Verschiebungen müssen mit einem »/« beginnen"
+msgstr "preme¹tanja moraju poèeti znakom '/'"
 
 #: build/parsePreamble.c:478
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
-msgstr "ungültige Paket-Nummer: %s\n"
+msgstr "pogre¹an broj paketa: %s\n"
 
 #: build/parsePreamble.c:541
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
-msgstr "fehlende Architektur für %s bei %s:%d"
+msgstr "nedostaje arhitektura za %s na %s:%d"
 
 #: build/parsePreamble.c:551
 #, c-format
@@ -1943,7 +1848,7 @@ msgstr ""
 #: build/parsePreamble.c:689
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
-msgstr "      Optionen der Paketauswahl:"
+msgstr "      Opcije odrednice paketa:"
 
 #: build/parsePreamble.c:695
 #, c-format
@@ -1959,27 +1864,25 @@ msgstr ""
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
-# , c-format
 #: build/parsePrep.c:26
 #, fuzzy, c-format
 msgid "Bad source: %s: %s"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: build/parsePrep.c:53
 #, fuzzy, c-format
 msgid "No patch number %d"
-msgstr "(keine Zahl)"
+msgstr "(nije broj)"
 
 #: build/parsePrep.c:134
 #, c-format
 msgid "No source number %d"
 msgstr ""
 
-# , c-format
 #: build/parsePrep.c:153
 #, fuzzy, c-format
 msgid "Couldn't download nosource %s: %s"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: build/parsePrep.c:219
 msgid "Error parsing %%setup: %s"
@@ -2025,28 +1928,27 @@ msgstr ""
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
-msgstr "Verschiebungen müssen mit einem »/« beginnen"
+msgstr "preme¹tanja moraju poèeti znakom '/'"
 
 #: build/parseReqs.c:102
 #, fuzzy, c-format
 msgid "line %d: File name not permitted: %s"
-msgstr "Paket %s wird nicht in %s aufgeführt"
+msgstr "paket %s nije naveden u %s"
 
 #: build/parseReqs.c:134
 #, fuzzy, c-format
 msgid "line %d: Versioned file name not permitted: %s"
-msgstr "Paket %s wird nicht in %s aufgeführt"
+msgstr "paket %s nije naveden u %s"
 
 #: build/parseReqs.c:146
 #, fuzzy, c-format
 msgid "line %d: Version not permitted: %s"
-msgstr "Paket %s wird nicht in %s aufgeführt"
+msgstr "paket %s nije naveden u %s"
 
-# , c-format
 #: build/parseReqs.c:172
 #, fuzzy, c-format
 msgid "line %d: Version required: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: build/parseScript.c:136
 #, c-format
@@ -2068,18 +1970,16 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-# , c-format
 #: build/parseSpec.c:129
 #, fuzzy, c-format
 msgid "line %d: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
-# , c-format
 #. XXX Fstrerror
 #: build/parseSpec.c:179
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen\n"
+msgstr "neuspelo otvaranje %s\n"
 
 #: build/parseSpec.c:191
 msgid "Unclosed %%if"
@@ -2107,12 +2007,12 @@ msgstr ""
 #: build/parseSpec.c:461
 #, fuzzy
 msgid "No buildable architectures"
-msgstr "Paket-Architektur nicht überprüfen"
+msgstr "nemoj proveravati arhitekturu paketa"
 
 #: build/parseSpec.c:509
 #, fuzzy
 msgid "Package has no %%description: %s"
-msgstr "Paket %s wird nicht in %s aufgeführt"
+msgstr "paket %s nije naveden u %s"
 
 #: build/spec.c:31
 #, c-format
@@ -2122,7 +2022,7 @@ msgstr ""
 #: build/spec.c:237
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s"
-msgstr "ungültige Paket-Nummer: %s\n"
+msgstr "pogre¹an broj paketa: %s\n"
 
 #: build/spec.c:243
 #, c-format
@@ -2132,13 +2032,12 @@ msgstr ""
 #: build/spec.c:301
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
-msgstr "ungültige Paket-Nummer: %s\n"
+msgstr "pogre¹an broj paketa: %s\n"
 
-# , c-format
 #: lib/cpio.c:330
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: lib/cpio.c:336
 #, c-format
@@ -2153,7 +2052,7 @@ msgstr ""
 #: lib/cpio.c:992
 #, fuzzy, c-format
 msgid "(error 0x%x)"
-msgstr "Fehler: "
+msgstr "gre¹ka: "
 
 #: lib/cpio.c:995
 msgid "Bad magic"
@@ -2170,7 +2069,7 @@ msgstr ""
 #: lib/cpio.c:1015
 #, fuzzy
 msgid "Unknown file type"
-msgstr "(unbekannter Typ)"
+msgstr "(nepoznat tip)"
 
 #: lib/cpio.c:1016
 msgid "Missing hard link"
@@ -2179,33 +2078,32 @@ msgstr ""
 #: lib/cpio.c:1017
 #, fuzzy
 msgid "Internal error"
-msgstr "Fataler Fehler: "
+msgstr "fatalna gre¹ka: "
 
 #: lib/cpio.c:1026
 #, fuzzy
 msgid " failed - "
-msgstr "pgp fehlgeschlagen"
+msgstr "PGP omanuo"
 
 #: lib/dbindex.c:35
 #, fuzzy, c-format
 msgid "cannot open file %s: %s"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: lib/dbindex.c:87
 #, c-format
 msgid "error getting record %s from %s"
-msgstr "Fehler beim Eintrag %s von %s"
+msgstr "gre¹ka kod uzimanja sloga %s iz %s"
 
 #: lib/dbindex.c:114
 #, c-format
 msgid "error storing record %s into %s"
-msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
+msgstr "gre¹ka zapisivanja sloga %s u %s"
 
-# FIXME
 #: lib/dbindex.c:121
 #, c-format
 msgid "error removing record %s into %s"
-msgstr "Fehler beim Löschen des Eintrags %s nach %s"
+msgstr "gre¹ka uklanjanja sloga %s u %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:417
@@ -2232,7 +2130,7 @@ msgstr ""
 #: lib/depends.c:823
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
+msgstr "datoteka %s ne pripada nijednom paketu\n"
 
 #: lib/depends.c:840
 #, c-format
@@ -2257,7 +2155,7 @@ msgstr ""
 #: lib/depends.c:943
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
+msgstr "datoteka %s ne pripada nijednom paketu\n"
 
 #: lib/depends.c:956
 #, c-format
@@ -2273,23 +2171,23 @@ msgstr ""
 #: lib/depends.c:1014
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
-msgstr "Paket %s wird nicht in %s aufgeführt"
+msgstr "paket %s nije naveden u %s"
 
 #. conflicts exist.
 #: lib/depends.c:1076
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
-msgstr "Paket %s wird nicht in %s aufgeführt"
+msgstr "paket %s nije naveden u %s"
 
 #: lib/depends.c:1131 lib/depends.c:1430
 #, c-format
 msgid "cannot read header at %d for dependency check"
-msgstr "kann Kopfzeilen bei %d nicht lesen, um Abhängigkeiten zu prüfen"
+msgstr "ne mogu da proèitam zaglavlje na %s za proveru zavisnosti"
 
 #: lib/depends.c:1226
 #, c-format
 msgid "loop in prerequisite chain: %s"
-msgstr ""
+msgstr "petlja u lancu: %s"
 
 #: lib/falloc.c:124
 #, c-format
@@ -2304,28 +2202,26 @@ msgstr ""
 #: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
 #: lib/header.c:2189 lib/header.c:2206 lib/header.c:2226
 msgid "(not a number)"
-msgstr "(keine Zahl)"
+msgstr "(nije broj)"
 
 #: lib/fs.c:56
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
-msgstr ""
+msgstr "mntctl() nije vratio 'fugger' velièinu: %s"
 
-# , c-format
 #: lib/fs.c:91 lib/fs.c:261
 #, fuzzy, c-format
 msgid "failed to stat %s: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/fs.c:127
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-# , c-format
 #: lib/fs.c:132
 #, c-format
 msgid "failed to open %s: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/fs.c:283
 #, c-format
@@ -2350,72 +2246,70 @@ msgstr ""
 #: lib/header.c:1580
 #, c-format
 msgid "missing { after %"
-msgstr "fehlende { nach %{"
+msgstr "nedostaje { posle %"
 
 #: lib/header.c:1608
 msgid "missing } after %{"
-msgstr "fehlende } nach %{"
+msgstr "nedostaje } posle %"
 
-# »Tag« übersetzen??? -ke-
 #: lib/header.c:1620
 msgid "empty tag format"
-msgstr "leeres »Tag«-Format"
+msgstr "prazan 'tag' format'"
 
 #: lib/header.c:1630
 msgid "empty tag name"
-msgstr "leerer »Tag«-Name"
+msgstr "prazno ime tag-a"
 
 #: lib/header.c:1645
 msgid "unknown tag"
-msgstr "unbekannter »Tag«"
+msgstr "nepoznat tag"
 
 #: lib/header.c:1671
 msgid "] expected at end of array"
-msgstr "] am Ende des Arrays erwartet"
+msgstr "] oèekivano na kraju niza"
 
 #: lib/header.c:1687
 msgid "unexpected ]"
-msgstr "unerwartete ]"
+msgstr "neoèekivano ]"
 
 #: lib/header.c:1689
 msgid "unexpected }"
-msgstr "unerwartete }"
+msgstr "neoèekivano }"
 
 #: lib/header.c:1743
 msgid "? expected in expression"
-msgstr "? im Ausdruck erwartet"
+msgstr "oèekivan znak ? u izrazu"
 
 #: lib/header.c:1750
 #, fuzzy
 msgid "{ expected after ? in expression"
-msgstr "{ nach ? im Ausdruck erwartet"
+msgstr "{ oèekivano posle ? u izrazu"
 
 #: lib/header.c:1760 lib/header.c:1795
 msgid "} expected in expression"
-msgstr "} im Ausdruck erwartet"
+msgstr "} oèekivano u izrazu"
 
 #: lib/header.c:1768
 msgid ": expected following ? subexpression"
-msgstr ": nach ? Unterausdruck erwartet"
+msgstr "oèekivano : praæeno ? podizrazom"
 
 #: lib/header.c:1782
 #, fuzzy
 msgid "{ expected after : in expression"
-msgstr "{ nach : im Ausdruck erwartet"
+msgstr "{ oèekivano posle : u izrazu"
 
 #: lib/header.c:1803
 msgid "| expected at end of expression"
-msgstr "| am Ende des Ausdrucks erwartet"
+msgstr "| oèekivano na kraju izraza"
 
 #: lib/header.c:1972
 msgid "(unknown type)"
-msgstr "(unbekannter Typ)"
+msgstr "(nepoznat tip)"
 
-# , c-format
 #: lib/install.c:142 lib/uninstall.c:194
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/install.c:160
 #, c-format
@@ -2445,17 +2339,17 @@ msgstr ""
 #: lib/install.c:406
 #, fuzzy
 msgid "installing a source package\n"
-msgstr "Paket installieren"
+msgstr "instaliraj paket"
 
 #: lib/install.c:426
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: lib/install.c:432 lib/install.c:462
 #, fuzzy, c-format
 msgid "cannot write to %s"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: lib/install.c:436
 #, c-format
@@ -2465,18 +2359,17 @@ msgstr ""
 #: lib/install.c:456
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
-# , c-format
 #: lib/install.c:466
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/install.c:500 lib/install.c:528
 #, fuzzy
 msgid "source package contains no .spec file"
-msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: lib/install.c:550
 #, c-format
@@ -2486,17 +2379,16 @@ msgstr ""
 #: lib/install.c:552 lib/install.c:831 lib/uninstall.c:27
 #, c-format
 msgid "rename of %s to %s failed: %s"
-msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
+msgstr "preimenovanje %s u %s nije uspelo: %s"
 
 #: lib/install.c:643
 msgid "source package expected, binary found"
 msgstr ""
 
-# FIXME shared, besser: "mit anderen geteilte ..."
 #: lib/install.c:700
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
-msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
+msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
 #: lib/install.c:761
 msgid "stopping install as we're running --test\n"
@@ -2523,7 +2415,7 @@ msgstr ""
 #: lib/lookup.c:35
 #, c-format
 msgid "cannot read header at %d for lookup"
-msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
+msgstr "ne mogu da proèitam zaglavlje na %d za proveru"
 
 #: lib/macro.c:161
 #, c-format
@@ -2591,18 +2483,17 @@ msgstr ""
 #: lib/macro.c:1139
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
-msgstr "Paket %s in %s nicht gefunden"
+msgstr "paket %s nije naðen u %s"
 
 #: lib/macro.c:1220
 msgid "Target buffer overflow"
 msgstr ""
 
-# , c-format
 #. XXX Fstrerror
 #: lib/macro.c:1400 lib/macro.c:1406
 #, fuzzy, c-format
 msgid "File %s: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/macro.c:1409
 #, c-format
@@ -2611,15 +2502,15 @@ msgstr ""
 
 #: lib/messages.c:55
 msgid "warning: "
-msgstr "Warnung: "
+msgstr "upozorenje: "
 
 #: lib/messages.c:64
 msgid "error: "
-msgstr "Fehler: "
+msgstr "gre¹ka: "
 
 #: lib/messages.c:73
 msgid "fatal error: "
-msgstr "Fataler Fehler: "
+msgstr "fatalna gre¹ka: "
 
 #: lib/messages.c:82
 msgid "internal error (rpm bug?): "
@@ -2628,13 +2519,12 @@ msgstr ""
 #: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
 #, fuzzy, c-format
 msgid "error creating temporary file %s"
-msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-# , c-format
 #: lib/oldheader.c:301
 #, fuzzy, c-format
 msgid "bad file state: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/package.c:237
 msgid "package is a version one package!\n"
@@ -2656,40 +2546,37 @@ msgstr ""
 #: lib/package.c:316
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
-msgstr ""
-"Nur Pakete mit Hauptnummern <= 3 werden von dieser RPM-Version unterstützt"
+msgstr "samo paketi sa glavnim brojevima <= 3 su podr¾ani u ovoj verziji RPM-a"
 
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
-msgstr " wird von %s-%s-%s gebraucht\n"
+msgstr " je potreban paketu %s-%s-%s\n"
 
 #: lib/problems.c:46
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
-msgstr " steht im Konflikt mit %s-%s-%s\n"
+msgstr " se sudara sa %s-%s-%s\n"
 
-# FIXME shared, besser: "mit anderen geteilte ..."
 #: lib/problems.c:66
 #, fuzzy, c-format
 msgid "package %s-%s-%s is for a different architecture"
-msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
+msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-# FIXME shared, besser: "mit anderen geteilte ..."
 #: lib/problems.c:71
 #, fuzzy, c-format
 msgid "package %s-%s-%s is for a different operating system"
-msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
+msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
 #: lib/problems.c:76
 #, fuzzy, c-format
 msgid "package %s-%s-%s is already installed"
-msgstr "Paket %s ist nicht installiert\n"
+msgstr "paket %s nije instaliran\n"
 
 #: lib/problems.c:81
 #, fuzzy, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
-msgstr "Paket %s ist nicht installiert\n"
+msgstr "paket %s nije instaliran\n"
 
 #: lib/problems.c:86
 #, c-format
@@ -2700,13 +2587,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
-msgstr " steht im Konflikt mit %s-%s-%s\n"
+msgstr " se sudara sa %s-%s-%s\n"
 
-# FIXME shared, besser: "mit anderen geteilte ..."
 #: lib/problems.c:98
 #, fuzzy, c-format
 msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
-msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
+msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
 #: lib/problems.c:104
 #, c-format
@@ -2721,11 +2607,11 @@ msgstr ""
 #: lib/query.c:138
 #, c-format
 msgid "error in format: %s\n"
-msgstr "Fehler beim Format %s\n"
+msgstr "gre¹ka u formatu: %s\n"
 
 #: lib/query.c:181
 msgid "(contains no files)"
-msgstr "(beinhaltet keine Dateien)"
+msgstr "(nema datoteka)"
 
 #: lib/query.c:238
 msgid "normal        "
@@ -2738,7 +2624,7 @@ msgstr ""
 #: lib/query.c:242
 #, fuzzy
 msgid "not installed "
-msgstr "Paket %s ist nicht installiert\n"
+msgstr "paket %s nije instaliran\n"
 
 #: lib/query.c:244
 msgid "net shared    "
@@ -2747,7 +2633,7 @@ msgstr ""
 #: lib/query.c:246
 #, fuzzy, c-format
 msgid "(unknown %3d) "
-msgstr "(unbekannter Typ)"
+msgstr "(nepoznat tip)"
 
 #: lib/query.c:250
 msgid "(no state)    "
@@ -2764,153 +2650,151 @@ msgstr ""
 
 #: lib/query.c:425
 msgid "error: could not read database record\n"
-msgstr "Fehler: konnte Datenbank-Eintrag nicht lesen\n"
+msgstr "gre¹ka: neuspelo èitanje sloga baze podataka\n"
 
 #. XXX Fstrerror
 #: lib/query.c:471
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
-msgstr "öffnen von %s fehlgeschlagen: %s\n"
+msgstr "neuspelo otvaranje %s: %s\n"
 
 #: lib/query.c:489
 msgid "old format source packages cannot be queried\n"
-msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
+msgstr "Upit se ne mo¾e izvesti nad izvorni paketima u starom formatu\n"
 
 #: lib/query.c:498 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
-msgstr "%s scheint kein RPM-Paket zu sein\n"
+msgstr "%s ne lièi na RPM paket\n"
 
 #: lib/query.c:502
 #, c-format
 msgid "query of %s failed\n"
-msgstr "Anfrage von %s fehlgeschlagen\n"
+msgstr "upit nad %s neuspeo\n"
 
 #: lib/query.c:535
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr "Anfrage von %s fehlgeschlagen\n"
+msgstr "upit nad %s neuspeo\n"
 
 #: lib/query.c:560
 msgid "could not read database record!\n"
-msgstr "kann Datenbank-Eintrag nicht lesen!\n"
+msgstr "neuspelo èitanje sloga baze podataka!\n"
 
 #: lib/query.c:571
 #, c-format
 msgid "group %s does not contain any packages\n"
-msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
+msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
 #: lib/query.c:581
 #, c-format
 msgid "no package triggers %s\n"
-msgstr "kein Paket triggert %s\n"
+msgstr "nijedan paket ne aktivira %s\n"
 
 #: lib/query.c:591
 #, c-format
 msgid "no package requires %s\n"
-msgstr "kein Paket verlangt %s\n"
+msgstr "nijedan paket ne zahteva %s\n"
 
-# oder besser: ... listet %s auf? -ke-
 #: lib/query.c:602
 #, c-format
 msgid "no package provides %s\n"
-msgstr "kein Paket stellt %s bereit\n"
+msgstr "nijedan paket ne obezbeðuje %s\n"
 
-# , c-format
 #: lib/query.c:618
 #, fuzzy, c-format
 msgid "file %s: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/query.c:621
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
+msgstr "datoteka %s ne pripada nijednom paketu\n"
 
 #: lib/query.c:634
 #, c-format
 msgid "invalid package number: %s\n"
-msgstr "ungültige Paket-Nummer: %s\n"
+msgstr "pogre¹an broj paketa: %s\n"
 
 #: lib/query.c:637
 #, fuzzy, c-format
 msgid "package record number: %d\n"
-msgstr "ungültige Paket-Nummer: %s\n"
+msgstr "pogre¹an broj paketa: %s\n"
 
 #: lib/query.c:640
 #, c-format
 msgid "record %d could not be read\n"
-msgstr "Eintrag %d konnte nicht gelesen werden\n"
+msgstr "ne mogu da proèitam slog %d\n"
 
 #: lib/query.c:652 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
-msgstr "Paket %s ist nicht installiert\n"
+msgstr "paket %s nije instaliran\n"
 
 #: lib/query.c:655
 #, c-format
 msgid "error looking for package %s\n"
-msgstr "Fehler beim Suchen nach Paket %s\n"
+msgstr "gre¹ka kod potrage za paketom %s\n"
 
 #: lib/query.c:677
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
-msgstr "%s: Öffnen fehlgeschlagen\n"
+msgstr "%s: Neuspelo otvaranje\n"
 
 #: lib/query.c:736
 #, fuzzy
 msgid "query package owning file"
-msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: lib/query.c:738
 #, fuzzy
 msgid "query packages in group"
-msgstr "Paket hat keinen Namen"
+msgstr "paket nema imena"
 
 #: lib/query.c:740
 #, fuzzy
 msgid "query a package file"
-msgstr "Anfrage an alle Pakete"
+msgstr "upit nad svim paketima"
 
 #: lib/query.c:744
 #, fuzzy
 msgid "query a spec file"
-msgstr "Anfrage von %s fehlgeschlagen\n"
+msgstr "upit nad %s neuspeo\n"
 
 #: lib/query.c:746
 #, fuzzy
 msgid "query the pacakges triggered by the package"
-msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+msgstr "upit nad paketom koji ima <datoteku>"
 
 #: lib/query.c:748
 #, fuzzy
 msgid "query the packages which require a capability"
-msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
+msgstr "upit za pakete koji zahtevaju <i> svojstvo"
 
 #: lib/query.c:750
 #, fuzzy
 msgid "query the packages which provide a capability"
-msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
+msgstr "upit za pakete koji omoguæavaju <i> svojstvo"
 
 #: lib/query.c:789
 #, fuzzy
 msgid "list all configuration files"
-msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
+msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
 
 #: lib/query.c:791
 #, fuzzy
 msgid "list all documentation files"
-msgstr "Dokumentation installieren"
+msgstr "instaliraj dokumentaciju"
 
 #: lib/query.c:793
 #, fuzzy
 msgid "dump basic file information"
-msgstr "Paketinformationen anzeigen"
+msgstr "prika¾i informacije o paketu"
 
 #: lib/query.c:795
 #, fuzzy
 msgid "list files in package"
-msgstr "Paket installieren"
+msgstr "instaliraj paket"
 
 #: lib/query.c:799
 msgid "use the following query format"
@@ -2927,31 +2811,31 @@ msgstr ""
 #: lib/query.c:806
 #, fuzzy
 msgid "display a verbose file listing"
-msgstr "Dateiliste des Pakets anzeigen"
+msgstr "prika¾i listu datoteka u paketu"
 
 #: lib/rebuilddb.c:20
 #, fuzzy, c-format
 msgid "rebuilding database in rootdir %s\n"
-msgstr "Datenbank aus der vorhandenen neu erstellen"
+msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
-msgstr "»dbpath« ist nicht gesetzt"
+msgstr "dbpath nije odreðen"
 
 #: lib/rebuilddb.c:34
 #, c-format
 msgid "temporary database %s already exists"
-msgstr "die temporäre Datenbank %s existiert schon"
+msgstr "privremena baza podataka %s veæ postoji"
 
 #: lib/rebuilddb.c:38
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
-msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
 #: lib/rebuilddb.c:40
 #, c-format
 msgid "error creating directory %s: %s"
-msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
 #: lib/rebuilddb.c:44
 msgid "opening old database\n"
@@ -2964,13 +2848,12 @@ msgstr ""
 #: lib/rebuilddb.c:61 lib/rebuilddb.c:79
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
-msgstr ""
-"Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
+msgstr "slog broj %d u bazi podataka je neispravan -- preskaèem ga"
 
 #: lib/rebuilddb.c:73
 #, c-format
 msgid "cannot add record originally at %d"
-msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
+msgstr "ne mogu da dodam slog originalno na %d"
 
 #: lib/rebuilddb.c:92
 msgid "failed to rebuild database; original database remains in place\n"
@@ -2985,71 +2868,70 @@ msgstr ""
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-# , c-format
 #: lib/rebuilddb.c:108
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/rpmchecksig.c:31
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
-msgstr "%s: Öffnen fehlgeschlagen\n"
+msgstr "%s: Neuspelo otvaranje\n"
 
 #: lib/rpmchecksig.c:42
 #, fuzzy
 msgid "makeTempFile failed\n"
-msgstr "%s: Öffnen fehlgeschlagen\n"
+msgstr "%s: Neuspelo otvaranje\n"
 
 #: lib/rpmchecksig.c:74
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr "%s: »readLead« fehlgeschlagen\n"
+msgstr "%s: Neuspeo 'readLead'\n"
 
 #: lib/rpmchecksig.c:80
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
-msgstr "%s: »readLead« fehlgeschlagen\n"
+msgstr "%s: Neuspeo 'readLead'\n"
 
 #: lib/rpmchecksig.c:113 lib/rpmchecksig.c:243
 #, c-format
 msgid "%s: readLead failed\n"
-msgstr "%s: »readLead« fehlgeschlagen\n"
+msgstr "%s: Neuspeo 'readLead'\n"
 
 #: lib/rpmchecksig.c:118
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
-msgstr "%s: Kann v1.0-RPM nicht signieren\n"
+msgstr "%s: Ne mogu da potpi¹em v1.0 RPM\n"
 
 #: lib/rpmchecksig.c:122
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
-msgstr "%s: Kann v2.0-RPM nicht erneuert signieren\n"
+msgstr "%s: Ne mogu da ponovo potpi¹em v2.0 RPM\n"
 
 #: lib/rpmchecksig.c:130 lib/rpmchecksig.c:257
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
-msgstr "%s: »rpmReadSignature« fehlgeschlagen\n"
+msgstr "%s: Neuspelo 'rpmReadSignature'\n"
 
 #: lib/rpmchecksig.c:134 lib/rpmchecksig.c:262
 #, c-format
 msgid "%s: No signature available\n"
-msgstr "%s: Keine Signatur verfügbar\n"
+msgstr "%s: Potpis nije na raspolaganju\n"
 
 #: lib/rpmchecksig.c:167
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
-msgstr "%s: »readLead« fehlgeschlagen\n"
+msgstr "%s: Neuspeo 'readLead'\n"
 
 #: lib/rpmchecksig.c:173
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
-msgstr "%s: »rpmReadSignature« fehlgeschlagen\n"
+msgstr "%s: Neuspelo 'rpmReadSignature'\n"
 
 #: lib/rpmchecksig.c:249
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
-msgstr "%s: Keine Signatur verfügbar (v1.0 RPM)\n"
+msgstr "%s: Potpis nije na raspolaganju (RPM v1.0)\n"
 
 #: lib/rpmchecksig.c:412
 msgid "NOT OK"
@@ -3058,7 +2940,7 @@ msgstr ""
 #: lib/rpmchecksig.c:413 lib/rpmchecksig.c:427
 #, fuzzy
 msgid " (MISSING KEYS:"
-msgstr " (FEHLENDE SCHLüSSEL)"
+msgstr " (NEDOSTAJUÆI KLJUÈEVI)"
 
 #: lib/rpmchecksig.c:415 lib/rpmchecksig.c:429
 msgid ") "
@@ -3079,26 +2961,25 @@ msgstr ""
 #: lib/rpmdb.c:147
 #, fuzzy, c-format
 msgid "opening database mode 0x%x in %s\n"
-msgstr "Datenbank aus der vorhandenen neu erstellen"
+msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-# , c-format
 #: lib/rpmdb.c:157 lib/url.c:442
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/rpmdb.c:171 lib/rpmdb.c:179
 #, c-format
 msgid "cannot get %s lock on database"
-msgstr "kann %s lock für die Datenbank nicht bekommen"
+msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
 
 #: lib/rpmdb.c:172
 msgid "exclusive"
-msgstr "exklusiv"
+msgstr "ekskluzivno"
 
 #: lib/rpmdb.c:180
 msgid "shared"
-msgstr "geteilt"
+msgstr "deljeno"
 
 #: lib/rpmdb.c:211
 msgid ""
@@ -3109,21 +2990,21 @@ msgstr ""
 #: lib/rpmdb.c:469
 #, c-format
 msgid "package %s not listed in %s"
-msgstr "Paket %s wird nicht in %s aufgeführt"
+msgstr "paket %s nije naveden u %s"
 
 #: lib/rpmdb.c:480
 #, c-format
 msgid "package %s not found in %s"
-msgstr "Paket %s in %s nicht gefunden"
+msgstr "paket %s nije naðen u %s"
 
 #: lib/rpmdb.c:504 lib/uninstall.c:86
 #, c-format
 msgid "cannot read header at %d for uninstall"
-msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
+msgstr "ne mogu da proèitam zaglavlje na %d za deinstalaciju"
 
 #: lib/rpmdb.c:512
 msgid "package has no name"
-msgstr "Paket hat keinen Namen"
+msgstr "paket nema imena"
 
 #: lib/rpmdb.c:514
 msgid "removing name index\n"
@@ -3132,29 +3013,26 @@ msgstr ""
 #: lib/rpmdb.c:519
 #, fuzzy
 msgid "package has no group\n"
-msgstr "Paket hat keinen Namen"
+msgstr "paket nema imena"
 
 #: lib/rpmdb.c:521
 msgid "removing group index\n"
 msgstr ""
 
-# FIXME
 #: lib/rpmdb.c:528
 #, fuzzy, c-format
 msgid "removing provides index for %s\n"
-msgstr "Fehler beim Löschen des Eintrags %s nach %s"
+msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-# FIXME
 #: lib/rpmdb.c:543
 #, fuzzy, c-format
 msgid "removing requiredby index for %s\n"
-msgstr "Fehler beim Löschen des Eintrags %s nach %s"
+msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-# FIXME
 #: lib/rpmdb.c:555
 #, fuzzy, c-format
 msgid "removing trigger index for %s\n"
-msgstr "Fehler beim Löschen des Eintrags %s nach %s"
+msgstr "gre¹ka uklanjanja sloga %s u %s"
 
 #: lib/rpmdb.c:566
 #, c-format
@@ -3169,17 +3047,16 @@ msgstr ""
 #: lib/rpmdb.c:586
 #, fuzzy
 msgid "package has no files\n"
-msgstr "Paket hat keinen Namen"
+msgstr "paket nema imena"
 
-# reservieren???
 #: lib/rpmdb.c:692
 msgid "cannot allocate space for database"
-msgstr "kann keinen Platz für die Datenbank bekommen"
+msgstr "ne mogu da zauzmem prostor za bazu podataka"
 
 #: lib/rpmdb.c:751
 #, c-format
 msgid "cannot read header at %d for update"
-msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
+msgstr "ne mogu da proèitam zaglavlje na %d za a¾uriranje"
 
 #: lib/rpmdb.c:764
 msgid "header changed size!"
@@ -3188,28 +3065,27 @@ msgstr ""
 #: lib/rpminstall.c:126
 #, fuzzy
 msgid "counting packages to install\n"
-msgstr "Es wurden keine Pakete für die Installation angegeben"
+msgstr "nedostaje paket za instalaciju"
 
 #: lib/rpminstall.c:130
 #, fuzzy, c-format
 msgid "found %d packages\n"
-msgstr "Anfrage an alle Pakete"
+msgstr "upit nad svim paketima"
 
 #: lib/rpminstall.c:135
 #, fuzzy
 msgid "looking for packages to download\n"
-msgstr "Fehler beim Suchen nach Paket %s\n"
+msgstr "gre¹ka kod potrage za paketom %s\n"
 
 #: lib/rpminstall.c:150
 #, fuzzy, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
-msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
+msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 
-# , c-format
 #: lib/rpminstall.c:165
 #, c-format
 msgid "Retrieving %s\n"
-msgstr "Hole %s heraus\n"
+msgstr "Pribavljam %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
@@ -3221,7 +3097,7 @@ msgstr ""
 #: lib/rpminstall.c:179
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
-msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
+msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 
 #: lib/rpminstall.c:206
 #, c-format
@@ -3231,22 +3107,22 @@ msgstr ""
 #: lib/rpminstall.c:217 lib/rpminstall.c:360
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: lib/rpminstall.c:235 lib/rpminstall.c:512
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
-msgstr "Fehler: %s kann nicht installiert werden\n"
+msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
 
 #: lib/rpminstall.c:270
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
-msgstr "Paket %s ist nicht installiert\n"
+msgstr "paket %s nije instaliran\n"
 
 #: lib/rpminstall.c:289
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
-msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
 #: lib/rpminstall.c:294
 #, c-format
@@ -3256,41 +3132,40 @@ msgstr ""
 #: lib/rpminstall.c:311
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
-msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
+msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
 #: lib/rpminstall.c:322
 msgid "failed dependencies:\n"
-msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
+msgstr "lo¹e meðuzavisnosti:\n"
 
 #: lib/rpminstall.c:340
 #, fuzzy
 msgid "installing binary packages\n"
-msgstr "Paket installieren"
+msgstr "instaliraj paket"
 
 #: lib/rpminstall.c:439
 #, fuzzy, c-format
 msgid "searching for package %s\n"
-msgstr "Fehler beim Suchen nach Paket %s\n"
+msgstr "gre¹ka potrage za paketom %s\n"
 
 #: lib/rpminstall.c:448
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
-msgstr "\"%s\" bezeichnet mehrere Pakete\n"
+msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-# oder besser: "... verletzen" ?
 #: lib/rpminstall.c:474
 msgid "removing these packages would break dependencies:\n"
-msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
+msgstr "uklanjanje oviha paketa æe naru¹iti zavisnosti:\n"
 
 #: lib/rpminstall.c:501
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
-msgstr "Fehler: kann %s nicht öffnen\n"
+msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
 #: lib/rpminstall.c:507
 #, c-format
 msgid "Installing %s\n"
-msgstr "Installiere %s\n"
+msgstr "Instaliram %s\n"
 
 #: lib/rpmio.c:769
 msgid "Success"
@@ -3299,49 +3174,49 @@ msgstr ""
 #: lib/rpmio.c:772
 #, fuzzy
 msgid "Bad server response"
-msgstr "Nicht passende Antwort des FTP-Servers"
+msgstr "Lo¹ odgovor FTP servera"
 
 #: lib/rpmio.c:775
 #, fuzzy
 msgid "Server IO error"
-msgstr "FTP IO-Fehler"
+msgstr "Ulazno/izlazna FTP gre¹ka"
 
 #: lib/rpmio.c:778
 #, fuzzy
 msgid "Server timeout"
-msgstr "Timeout des FTP-Servers"
+msgstr "Tajm-aut FTP servera"
 
 #: lib/rpmio.c:781
 #, fuzzy
 msgid "Unable to lookup server host address"
-msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
+msgstr "Ne mogu da odredim host adresu FTP servera"
 
 #: lib/rpmio.c:784
 #, fuzzy
 msgid "Unable to lookup server host name"
-msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
+msgstr "Ne mogu da odredim ime FTP hosta"
 
 #: lib/rpmio.c:787
 #, fuzzy
 msgid "Failed to connect to server"
-msgstr "Verbindung zum FTP-Server fehlgeschlagen"
+msgstr "Ne mogu da se pove¾em sa FTP serverom"
 
 #: lib/rpmio.c:790
 #, fuzzy
 msgid "Failed to establish data connection to server"
-msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
+msgstr "Ne mogu da uspostavim vezu podataka sa FTP serverom"
 
 #: lib/rpmio.c:793
 msgid "IO error to local file"
-msgstr "IO-Fehler bei lokaler Datei"
+msgstr "Ulazno/izlazna gre¹ka kod lokalne datoteke"
 
 #: lib/rpmio.c:796
 msgid "Error setting remote server to passive mode"
-msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
+msgstr "Gre¹ka kod stavljanja udaljenog servera u pasivni re¾im"
 
 #: lib/rpmio.c:799
 msgid "File not found on server"
-msgstr "Datei auf dem Server nicht gefunden"
+msgstr "Datoteka nije pronaðena na serveru"
 
 #: lib/rpmio.c:802
 msgid "Abort in progress"
@@ -3350,7 +3225,7 @@ msgstr ""
 #: lib/rpmio.c:806
 #, fuzzy
 msgid "Unknown or unexpected error"
-msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
+msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
 
 #: lib/rpmio.c:1339
 #, c-format
@@ -3360,91 +3235,88 @@ msgstr ""
 #: lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)"
-msgstr "lesen fehlgeschlagen: %s (%d)"
+msgstr "neuspelo èitanje: %s (%d)"
 
 #: lib/rpmrc.c:144
 #, c-format
 msgid "missing second ':' at %s:%d"
-msgstr "fehlendes zweites ':' bei %s:%d"
+msgstr "nedostaje drugo ':' na %s:%d"
 
 #: lib/rpmrc.c:147
 #, c-format
 msgid "missing architecture name at %s:%d"
-msgstr "fehlender Name cer Architektur bei %s:%d"
+msgstr "nedostaje ime arhitekture na %s:%d"
 
 #: lib/rpmrc.c:307
 #, c-format
 msgid "Incomplete data line at %s:%d"
-msgstr "Unvollständige Datenzeile bei %s:%d"
+msgstr "Nepotpuna linija podataka na %s:%d"
 
 #: lib/rpmrc.c:311
 #, c-format
 msgid "Too many args in data line at %s:%d"
-msgstr "Zu viele Argumente in der Datenzeile bei %s:%d"
+msgstr "Premnogo argumenata u liniji podataka na %s:%d"
 
 #: lib/rpmrc.c:318
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
-msgstr "Unzureichende arch/os Zahl: %s (%s:%d)"
+msgstr "Lo¹ broj arhitekture/oper.sist.: %s (%s:%d)"
 
 #: lib/rpmrc.c:353
 #, c-format
 msgid "Incomplete default line at %s:%d"
-msgstr "Unvollständige Standardzeile bei %s:%d"
+msgstr "Nepotpuna podrazumevana linija na %s:%d"
 
 #: lib/rpmrc.c:358
 #, c-format
 msgid "Too many args in default line at %s:%d"
-msgstr "Zu viele Argumente in der Standardzeile bei %s:%d"
+msgstr "Premnogo argumenata u podrazumevanoj liniji na %s:%d"
 
 #: lib/rpmrc.c:547
 #, c-format
 msgid "Cannot expand %s"
 msgstr ""
 
-# , c-format
 #: lib/rpmrc.c:562
 #, c-format
 msgid "Unable to open %s for reading: %s."
-msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
+msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
-# , c-format
 #. XXX Feof(fd)
 #: lib/rpmrc.c:607
 #, c-format
 msgid "Failed to read %s: %s."
-msgstr "Lesen von %s fehlgeschlagen: %s."
+msgstr "Neuspelo èitanje %s: %s."
 
 #: lib/rpmrc.c:644
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
-msgstr "fehlender ':' bei %s:%d"
+msgstr "nedostaje ':' na %s:%d"
 
 #: lib/rpmrc.c:661 lib/rpmrc.c:735
 #, c-format
 msgid "missing argument for %s at %s:%d"
-msgstr "fehlendes Argument für %s bei %s:%d"
+msgstr "nedostaje argument za %s na %s:%d"
 
-# , c-format
 #: lib/rpmrc.c:678 lib/rpmrc.c:700
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
-msgstr "Öffnen von %s fehlgeschlagen: %s"
+msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/rpmrc.c:687
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s"
-msgstr "kann Datei %s nicht öffnen: "
+msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: lib/rpmrc.c:727
 #, c-format
 msgid "missing architecture for %s at %s:%d"
-msgstr "fehlende Architektur für %s bei %s:%d"
+msgstr "nedostaje arhitektura za %s na %s:%d"
 
 #: lib/rpmrc.c:794
 #, c-format
 msgid "bad option '%s' at %s:%d"
-msgstr "unzureichende Option '%s' bei %s:%d"
+msgstr "lo¹a opcija '%s' na %s:%d"
 
 #: lib/rpmrc.c:1162
 #, c-format
@@ -3477,21 +3349,21 @@ msgstr ""
 #: lib/signature.c:135
 #, fuzzy
 msgid "No signature\n"
-msgstr "%s: Keine Signatur verfügbar\n"
+msgstr "%s: Potpis nije na raspolaganju\n"
 
 #: lib/signature.c:138
 #, fuzzy
 msgid "Old PGP signature\n"
-msgstr "PGP-Signatur generieren"
+msgstr "napravi PGP potpis"
 
 #: lib/signature.c:150
 msgid "Old (internal-only) signature!  How did you get that!?"
-msgstr "Alte Signatur (nur intern)!  Wie bist du daran gekommen!?"
+msgstr "Stari (interni) potpis!  Odakle vam!?"
 
 #: lib/signature.c:154
 #, fuzzy
 msgid "New Header signature\n"
-msgstr "nicht möglich, die Signatur zu lesen"
+msgstr "ne mogu da proèitam potpis"
 
 #. 8-byte pad
 #: lib/signature.c:161 lib/signature.c:203
@@ -3507,17 +3379,17 @@ msgstr ""
 #: lib/signature.c:267
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)"
-msgstr "Konnte pgp nicht durchführen"
+msgstr "Ne mogu da izvr¹im PGP"
 
 #: lib/signature.c:278
 msgid "pgp failed"
-msgstr "pgp fehlgeschlagen"
+msgstr "PGP omanuo"
 
 #. PGP failed to write signature
 #. Just in case
 #: lib/signature.c:285
 msgid "pgp failed to write signature"
-msgstr "pgp fehlgeschlagen beim Schreiben der Signatur"
+msgstr "PGP nije uspeo da zapi¹e potpis"
 
 #: lib/signature.c:290
 #, c-format
@@ -3526,7 +3398,7 @@ msgstr ""
 
 #: lib/signature.c:301 lib/signature.c:378
 msgid "unable to read the signature"
-msgstr "nicht möglich, die Signatur zu lesen"
+msgstr "ne mogu da proèitam potpis"
 
 #: lib/signature.c:306
 #, c-format
@@ -3536,19 +3408,19 @@ msgstr ""
 #: lib/signature.c:344 lib/signature.c:687
 #, fuzzy
 msgid "Couldn't exec gpg"
-msgstr "Konnte pgp nicht durchführen"
+msgstr "Ne mogu da izvr¹im PGP"
 
 #: lib/signature.c:355
 #, fuzzy
 msgid "gpg failed"
-msgstr "pgp fehlgeschlagen"
+msgstr "PGP omanuo"
 
 #. GPG failed to write signature
 #. Just in case
 #: lib/signature.c:362
 #, fuzzy
 msgid "gpg failed to write signature"
-msgstr "pgp fehlgeschlagen beim Schreiben der Signatur"
+msgstr "PGP nije uspeo da zapi¹e potpis"
 
 #: lib/signature.c:367
 #, c-format
@@ -3563,30 +3435,30 @@ msgstr ""
 #: lib/signature.c:410
 #, fuzzy
 msgid "Generating signature using PGP.\n"
-msgstr "PGP-Signatur generieren"
+msgstr "napravi PGP potpis"
 
 #: lib/signature.c:416
 #, fuzzy
 msgid "Generating signature using GPG.\n"
-msgstr "PGP-Signatur generieren"
+msgstr "napravi PGP potpis"
 
 #: lib/signature.c:493 lib/signature.c:555
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
-msgstr "Konnte pgp nicht aufrufen.  Überspring die PGP-Checks mit --nopgp."
+msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
 #: lib/signature.c:553 lib/signature.c:626
 #, fuzzy
 msgid "exec failed!\n"
-msgstr "%s: Öffnen fehlgeschlagen\n"
+msgstr "%s: Neuspelo otvaranje\n"
 
 #: lib/signature.c:628
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
-msgstr "Konnte pgp nicht aufrufen.  Überspring die PGP-Checks mit --nopgp."
+msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
 #: lib/signature.c:716
 msgid "Couldn't exec pgp"
-msgstr "Konnte pgp nicht durchführen"
+msgstr "Ne mogu da izvr¹im PGP"
 
 #. @notreached@
 #. This case should have been screened out long ago.
@@ -3597,23 +3469,22 @@ msgstr ""
 #: lib/signature.c:753
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file"
-msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
+msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
 #: lib/signature.c:765
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file"
-msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
+msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-# , c-format
 #: lib/transaction.c:389
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
-msgstr "Hole %s heraus\n"
+msgstr "Pribavljam %s\n"
 
 #: lib/transaction.c:415 lib/transaction.c:499
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
-msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
 #: lib/transaction.c:420
 #, c-format
@@ -3623,7 +3494,7 @@ msgstr ""
 #: lib/transaction.c:492
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
-msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
 #: lib/transaction.c:643
 #, c-format
@@ -3633,22 +3504,22 @@ msgstr ""
 #: lib/uninstall.c:38
 #, c-format
 msgid "cannot remove %s - directory not empty"
-msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
+msgstr "ne mogu da uklonim %s - direktorijum nije prazan"
 
 #: lib/uninstall.c:41
 #, c-format
 msgid "rmdir of %s failed: %s"
-msgstr "Entfernen von %s fehlgeschlagen: %s"
+msgstr "neuspela komanda rmdir %s: %s"
 
 #: lib/uninstall.c:49
 #, c-format
 msgid "removal of %s failed: %s"
-msgstr "öffnen von %s fehlgeschlagen: %s"
+msgstr "uklanjanje %s nije uspelo: %s"
 
 #: lib/uninstall.c:98
 #, fuzzy, c-format
 msgid "cannot read packages named %s for uninstall"
-msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
+msgstr "ne mogu da proèitam zaglavlje na %d za deinstalaciju"
 
 #: lib/uninstall.c:131
 #, c-format
@@ -3665,7 +3536,7 @@ msgstr ""
 
 #: lib/uninstall.c:400
 msgid "execution of script failed"
-msgstr "Ausführung des Skripts fehlgeschlagen"
+msgstr "neuspelo izvr¹avanje skripta"
 
 #: lib/url.c:85
 #, c-format
@@ -3685,29 +3556,28 @@ msgstr ""
 #: lib/url.c:215
 #, c-format
 msgid "Password for %s@%s: "
-msgstr "Passworf für %s@%s: "
+msgstr "Lozinka za %s@%s: "
 
 #: lib/url.c:240 lib/url.c:266
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
-msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
+msgstr "gre¹ka: FTP port mora biti broj\n"
 
 #: lib/url.c:402
 #, fuzzy
 msgid "url port must be a number\n"
-msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
+msgstr "gre¹ka: FTP port mora biti broj\n"
 
-# , c-format
 #. XXX Fstrerror
 #: lib/url.c:459
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
-msgstr "anlegen von %s fehlgeschlagen\n"
+msgstr "neuspelo kreiranje %s\n"
 
 #: lib/verify.c:38
 #, fuzzy
 msgid "don't verify files in package"
-msgstr "Paket installieren"
+msgstr "instaliraj paket"
 
 #: lib/verify.c:213
 msgid "package lacks both user name and id lists (this should never happen)"
@@ -3720,324 +3590,297 @@ msgstr ""
 #: lib/verify.c:266
 #, fuzzy, c-format
 msgid "missing    %s\n"
-msgstr "fehlende { nach %{"
+msgstr "nedostaje { posle %"
 
 #: lib/verify.c:328
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
-msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
+msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
 
 #: lib/verify.c:376
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
-msgstr "%s: Öffnen fehlgeschlagen\n"
+msgstr "%s: Neuspelo otvaranje\n"
 
 #, fuzzy
 #~ msgid "File not found by glob: %s"
-#~ msgstr "Datei auf dem Server nicht gefunden"
+#~ msgstr "Datoteka nije pronaðena na serveru"
 
 #, fuzzy
 #~ msgid "cannot create %s"
-#~ msgstr "kann Datei %s nicht öffnen: "
+#~ msgstr "Ne mogu da otvorim datoteku %s: "
 
-# , c-format
 #, fuzzy
 #~ msgid "Unable to stat icon: %s"
-#~ msgstr "Nicht möglich %s zu schreiben"
+#~ msgstr "Ne mogu da upi¹em %s"
 
-# , c-format
 #~ msgid "failed to open %s\n"
-#~ msgstr "Öffnen von %s fehlgeschlagen\n"
+#~ msgstr "neuspelo otvaranje %s\n"
 
 #, fuzzy
 #~ msgid "%s: fdWrite failed: %s\n"
-#~ msgstr "%s: Öffnen fehlgeschlagen\n"
+#~ msgstr "%s: Neuspelo otvaranje\n"
 
 #, fuzzy
 #~ msgid "failed build prerequisites:\n"
-#~ msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
+#~ msgstr "lo¹e meðuzavisnosti:\n"
 
 #~ msgid "Couldn't read the header/archive"
-#~ msgstr "Konnte Kopfzeilen/Archiv nicht lesen"
+#~ msgstr "Ne mogu da proèitam zaglavlje/arhivu"
 
 #~ msgid "Couldn't write header/archive to temp file"
-#~ msgstr "Konnte Kopfzeilen/Archiv nicht in eine temporäre Datei schreiben"
+#~ msgstr "Ne mogu da upi¹em zaglavlje/arhivu u privremenu datoteku"
 
 #~ msgid "Couldn't read sigtarget"
-#~ msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
+#~ msgstr "Ne mogu da proèitam 'sigtarget'"
 
 #~ msgid "Couldn't write package"
-#~ msgstr "Konnte Paket nicht schreiben"
+#~ msgstr "Ne mogu da upi¹em paket"
 
-# , c-format
 #~ msgid "Unable to write %s"
-#~ msgstr "Nicht möglich %s zu schreiben"
+#~ msgstr "Ne mogu da upi¹em %s"
 
 #~ msgid "unexpected query specifiers"
-#~ msgstr "Unerwartete Angaben für die Anfrage"
+#~ msgstr "neoèekivani parametri upita"
 
 #~ msgid "--nofiles may only be specified during package verification"
-#~ msgstr "--nofiles darf nur während der Paketüberprüfung angegeben werden"
+#~ msgstr "--nofiles mo¾ete koristiti samo kod provere paketa"
 
 #~ msgid "--clean may only be used with -b and -t"
-#~ msgstr "--clean darf nur mit -b und -t benutzt werden"
+#~ msgstr "--clean se mo¾e koristiti samo sa -b ili -t"
 
 #~ msgid "--rmsource may only be used with -b and -t"
-#~ msgstr "--rmsource darf nur mit -b und -t benutzt werden"
+#~ msgstr "--rmsource se mo¾e koristiti samo sa -b ili -t"
 
 #~ msgid "--short-circuit may only be used during package building"
-#~ msgstr "--short-circuit darf nur während der Paketerstellung benutzt werden"
+#~ msgstr "--short-circuit se mo¾e koristiti samo tokom kreiranja paketa"
 
+#, fuzzy
 #~ msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
-#~ msgstr ""
-#~ "--short-circuit darf nur mit -bc, -bi, -bs, -tc -ti oder -ts benutzt werden"
+#~ msgstr "--short-circuit se mo¾e koristiti samo sa -bc, -bi, -tc ili -ti"
 
 #, fuzzy
 #~ msgid "pgp version 5 not found: "
-#~ msgstr "Datei auf dem Server nicht gefunden"
+#~ msgstr "Datoteka nije pronaðena na serveru"
 
 #~ msgid "showing package: %d\n"
-#~ msgstr "zeige Paket an: %d\n"
+#~ msgstr "prikazivanje paketa: %d\n"
 
 #, fuzzy
 #~ msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
-#~ msgstr "verschiebe Dateien von <alter_Pfad> nach <neuer_Pfad>"
+#~ msgstr "premesti datoteke iz <starog-puta> u <novi-put>"
 
 #~ msgid "error: cannot open file %s\n"
-#~ msgstr "Fehler: kann Datei %s nicht öffnen\n"
+#~ msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
 #~ msgid "error: %s does not appear to be a RPM package\n"
-#~ msgstr "Fehler: %s scheint zu keinem RPM-Paket zu gehören\n"
+#~ msgstr "gre¹ka: èini se da %s nije RPM paket\n"
 
 #, fuzzy
 #~ msgid "counting packages to uninstall\n"
-#~ msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
+#~ msgstr "neodstaje paket za deinstalaciju"
 
 #, fuzzy
 #~ msgid "found %d packages to uninstall\n"
-#~ msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
+#~ msgstr "neodstaje paket za deinstalaciju"
 
-# , c-format
 #, fuzzy
 #~ msgid "cpio failed on file %s: %d"
-#~ msgstr "Öffnen von %s fehlgeschlagen: %s"
+#~ msgstr "neuspelo otvaranje %s: %s"
 
 #, fuzzy
 #~ msgid "error %d reading header: %s\n"
-#~ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+#~ msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
 #, fuzzy
 #~ msgid "not installing %s -- linguas\n"
-#~ msgstr "Installiere %s\n"
+#~ msgstr "Instaliram %s\n"
 
 #, fuzzy
 #~ msgid "package %s is now obsolete and will be removed\n"
-#~ msgstr "Paket %s ist nicht installiert\n"
+#~ msgstr "paket %s nije instaliran\n"
 
-# FIXME shared, besser: "mit anderen geteilte ..."
 #~ msgid "package %s-%s-%s contain shared files\n"
-#~ msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
+#~ msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-# FIXME shared, besser: "mit anderen geteilte ..."
 #, fuzzy
 #~ msgid "package %s contains no files"
-#~ msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
+#~ msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-# , c-format
 #, fuzzy
 #~ msgid "file %s is shared\n"
-#~ msgstr "Öffnen von %s fehlgeschlagen: %s"
+#~ msgstr "neuspelo otvaranje %s: %s"
 
 #, fuzzy
 #~ msgid "no macroname for setenv %s:%d"
-#~ msgstr "fehlendes Argument für %s bei %s:%d"
+#~ msgstr "nedostaje argument za %s na %s:%d"
 
-# , c-format
 #, fuzzy
 #~ msgid "keeping %s\n"
-#~ msgstr "Hole %s heraus\n"
+#~ msgstr "Pribavljam %s\n"
 
 #~ msgid "one type of query may be performed at a time"
-#~ msgstr "Nur eine Art der Anfrage kann pro Programmlauf durchgeführt werden"
+#~ msgstr "jedna vrsta upita mo¾e biti uraðena odjednom"
 
 #~ msgid "--dump may only be used during queries"
-#~ msgstr "--dump darf nur während Anfragen benutzt werden"
+#~ msgstr "--dump se mo¾e koristiti samo kod upita"
 
 #~ msgid "--dump of queries must be used with -l, -c, or -d"
-#~ msgstr "--dump der Anfragen muß zusammen mit  -l, -c, or -d benutzt werden"
+#~ msgstr "--dump kod upita se mora koristiti sa -l, -c ili -d"
 
 #~ msgid "(none)"
-#~ msgstr "(kein)"
-
-#, fuzzy
-#~ msgid "Copyright (C) 1995 - Red Hat Software"
-#~ msgstr "Copyright © 1998 - Red Hat Software"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-#~ msgstr "                        [--ftpproxy <HOST>] [--ftpport <PORT>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
-#~ msgstr ""
-#~ "                        [--provides] [--dump] [--dbpath <VERZ>] [--changelog]"
+#~ msgstr "(ni¹ta, nijedan)"
 
 #, fuzzy
 #~ msgid "   --help\t\t- print this message"
-#~ msgstr "Gibt diesen Text aus"
+#~ msgstr "¹tampaj ovu poruku"
 
 #, fuzzy
 #~ msgid "   --version\t- print the version of rpm being used"
-#~ msgstr "Die benutzte RPM-Version anzeigen"
+#~ msgstr "napi¹i verziju rpm-a koja se koristi"
 
 #, fuzzy
 #~ msgid "       -v\t\t      - be a little more verbose"
-#~ msgstr "Ausgabe etwas ausführlicher gestalten"
+#~ msgstr "budi malko prièljiviji"
 
 #, fuzzy
 #~ msgid "       -vv\t              - be incredibly verbose (for debugging)"
-#~ msgstr "extrem ausführliche Ausgabe (um Programm-Fehler zu finden)"
+#~ msgstr "budi neverovatno prièljiv (zbog nala¾enja gre¹aka)"
 
 #, fuzzy
 #~ msgid "   -q                   - query mode"
-#~ msgstr "                        [--nomd5] [ZIELE]"
+#~ msgstr "\t\t\t[--badreloc] datoteka1.rpm ... datotekaN.rpm"
 
 #, fuzzy
 #~ msgid "      --queryformat <s>   - use s as the header format (implies -i)"
-#~ msgstr "S als Kopfzeilen-Format benutzen (impliziert -i)"
+#~ msgstr "koristi s kao format zaglavlja (povlaèi -i)"
 
 #, fuzzy
 #~ msgid "        -a                - query all packages"
-#~ msgstr "                           PAKET1 ... PAKETn"
+#~ msgstr "\t\t\t   paket1 ...paketN"
 
 #, fuzzy
 #~ msgid "        -f <file>+        - query package owning <file>"
-#~ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+#~ msgstr "upit nad paketom koji ima <datoteku>"
 
 #, fuzzy
 #~ msgid "        -F                - like -f, but read file names from stdin"
-#~ msgstr ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <VERZ>]"
+#~ msgstr "\t\t\t[--badreloc] datoteka1.rpm ... datotekaN.rpm"
 
 #, fuzzy
 #~ msgid ""
 #~ "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-#~ msgstr "Anfrage nach (nicht installiertem) Paket <PAKET-DATEI>"
+#~ msgstr "upit za (deinstaliran) paket <paketdatoteka>"
 
 #, fuzzy
 #~ msgid ""
 #~ "        -P                - like -p, but read package names from stdin"
-#~ msgstr "                           PAKET1 ... PAKETn"
+#~ msgstr "\t\t\t   paket1 ...paketN"
 
 #, fuzzy
 #~ msgid ""
 #~ "\t   --whatprovides <i> - query packages which provide <i> capability"
-#~ msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
+#~ msgstr "upit za pakete koji omoguæavaju <i> svojstvo"
 
 #, fuzzy
 #~ msgid ""
 #~ "\t   --whatrequires <i> - query packages which require <i> capability"
-#~ msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
+#~ msgstr "upit za pakete koji zahtevaju <i> svojstvo"
 
 #, fuzzy
 #~ msgid "        -i                - display package information"
-#~ msgstr "                           PAKET1 ... PAKETn"
+#~ msgstr "\t\t\t   paket1 ...paketN"
 
 #, fuzzy
 #~ msgid "        -l                - display package file list"
-#~ msgstr "                           PAKET1 ... PAKETn"
+#~ msgstr "\t\t\t   paket1 ...paketN"
 
 #, fuzzy
 #~ msgid "        -s                - show file states (implies -l)"
-#~ msgstr "Status der Dateien anzeigen (impliziert -l)"
+#~ msgstr "prika¾i stanja datoteka (povlaèi -i)"
 
 #, fuzzy
 #~ msgid ""
 #~ "        -d                - list only documentation files (implies -l)"
-#~ msgstr "Nur Dokumentationsdateien auflisten (impliziert -l)"
+#~ msgstr "prika¾i samo datoteke iz dokumentacije (povlaèi -i)"
 
 #, fuzzy
 #~ msgid ""
 #~ "        -c                - list only configuration files (implies -l)"
-#~ msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
+#~ msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
 
 #, fuzzy
 #~ msgid "                            (must be used with -l, -c, or -d)"
-#~ msgstr "--dump der Anfragen muß zusammen mit  -l, -c, or -d benutzt werden"
+#~ msgstr "--dump kod upita se mora koristiti sa -l, -c ili -d"
 
 #, fuzzy
 #~ msgid "        --provides        - list capabilbities package provides"
-#~ msgstr "Fähigkeiten des Pakets auflisten"
+#~ msgstr "poka¾i koja svojstva donosi paket"
 
 #, fuzzy
 #~ msgid "        -R                - list package dependencies"
-#~ msgstr "                           PAKET1 ... PAKETn"
+#~ msgstr "\t\t\t   paket1 ...paketN"
 
 #, fuzzy
 #~ msgid "        --scripts         - print the various [un]install scripts"
-#~ msgstr "Die diversen (De-)Installations-Skripte ausgeben"
+#~ msgstr "ispi¹i razne skriptove za [de]instalaciju"
 
 #, fuzzy
 #~ msgid ""
 #~ "    --querytags         - list the tags that can be used in a query format"
-#~ msgstr "Tags auflisten, die im Anfrageformat benutzt werden können"
+#~ msgstr "ispi¹i tag-ove koji mogu biti kori¹æeni u formatu upita"
 
 #, fuzzy
 #~ msgid "only one type of query may be performed at a time"
-#~ msgstr "Nur eine Art der Anfrage kann pro Programmlauf durchgeführt werden"
+#~ msgstr "jedna vrsta upita mo¾e biti uraðena odjednom"
 
 #, fuzzy
 #~ msgid ""
 #~ "--noscripts may only be specified during package installation and "
 #~ "uninstallation"
 #~ msgstr ""
-#~ "--noscripts darf nur während der Paketinstallation, -deinstallation und "
-#~ "-überprüfung angegeben werden"
+#~ "--noscripsts mo¾ete koristiti samo kod instalacije, uklanjanja ili provere "
+#~ "paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--nodeps may only be specified during package installation, uninstallation, "
 #~ "and verification"
 #~ msgstr ""
-#~ "--nodeps darf nur während der Paketinstallation, -deinstallation und "
-#~ "-überprüfung angegeben werden"
+#~ "--nodeps mo¾ete koristiti samo kod instalacije, uklanjanja ili provere paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--test may only be specified during package installation, uninstallation, "
 #~ "and building"
 #~ msgstr ""
-#~ "--test darf nur während der Paketinstallation, -deinstallation und "
-#~ "-erstellung angegeben werden"
+#~ "--test mo¾ete koristiti samo kod instalacije, uklanjanja ili kreiranja paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--root (-r) may only be specified during installation, uninstallation, "
 #~ "querying, and database rebuilds"
 #~ msgstr ""
-#~ "--root (-r) darf nur während der Paketinstallation, -deinstallation, "
-#~ "-anfrage und Datenbankneuerstellungen angegeben werden"
+#~ "--root (-r) mo¾ete navesti samo kod instalacije, uklanjanja, upita ili "
+#~ "rekreiranja baze podataka"
 
 #, fuzzy
 #~ msgid "--clean may only be used during package building"
-#~ msgstr "--sign darf nur während der Paketerstellung benutzt werden"
+#~ msgstr "--sign se mo¾e koristiti samo kod kreiranja paketa"
 
 #, fuzzy
 #~ msgid "--short-circuit may only be used with -bc or -bi"
-#~ msgstr ""
-#~ "--short-circuit darf nur mit -bc, -bi, -bs, -tc -ti oder -ts benutzt werden"
+#~ msgstr "--short-circuit se mo¾e koristiti samo sa -bc, -bi, -tc ili -ti"
 
 #, fuzzy
 #~ msgid "--dump may only be used during queryies"
-#~ msgstr "--dump darf nur während Anfragen benutzt werden"
+#~ msgstr "--dump se mo¾e koristiti samo kod upita"
 
 #~ msgid "build the packages for architecture <arch>"
-#~ msgstr "Erstelle die Pakete für die Architektur <ARCH>"
+#~ msgstr "napravi pakete za arhitekturu <arh>"
 
 #~ msgid "build the packages for ositecture <os>"
-#~ msgstr "Erstelle die Pakete für das Betriebssystem <BS>"
+#~ msgstr "napravi pakete za operativni sistem <os>"
 
 #~ msgid "cannot read database record at %d"
-#~ msgstr "kann Datenbank-Eintrag bei %d nicht lesen"
+#~ msgstr "ne mogu da proèitam slog baze podataka na %d"
