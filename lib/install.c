@@ -670,7 +670,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     rpmMessage(RPMMESS_DEBUG, _("installing a source package\n"));
 
     realSourceDir = rpmGetPath(rootdir, "/%{_sourcedir}", NULL);
-    realSourceDir = rpmGetPath(rootdir, "/%{_specdir}", NULL);
+    realSpecDir = rpmGetPath(rootdir, "/%{_specdir}", NULL);
 
     if (access(realSourceDir, W_OK)) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSourceDir);

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-06 15:57-0500\n"
+"POT-Creation-Date: 1999-01-06 19:42-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,7 +223,7 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: ../install.c:100
+#: ../install.c:99
 msgid "counting packages to install\n"
 msgstr ""
 
@@ -236,102 +236,99 @@ msgstr ""
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:124
+#: ../install.c:126
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:132
+#: ../install.c:133
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:136
+#: ../install.c:137
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:151
+#: ../install.c:152
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#. Build up the transaction set. As a special case, v1 source packages
-#. are installed right here, only because they don't have headers and
-#. would create all sorts of confusion later.
-#: ../install.c:156
-#, c-format
-msgid "opening database mode: 0%o\n"
-msgstr ""
-
-#: ../install.c:160 ../install.c:298
-#, c-format
-msgid "cannot open %s/packages.rpm\n"
-msgstr ""
-
-#: ../install.c:170
+#: ../install.c:160
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:182 ../lib/query.c:478
+#: ../install.c:171 ../lib/query.c:478
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:186 ../install.c:385
+#: ../install.c:176 ../install.c:197 ../install.c:406
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:203
+#: ../install.c:186
 #, c-format
-msgid "found %d source and %d binary packages\n"
+msgid "test install source rpm %s\n"
 msgstr ""
 
-#: ../install.c:213
-msgid "failed dependencies:\n"
-msgstr ""
-
-#: ../install.c:229
-msgid "installing binary packages\n"
-msgstr ""
-
-#: ../install.c:309 ../lib/query.c:614 ../verify.c:243
-#, c-format
-msgid "package %s is not installed\n"
-msgstr ""
-
-#: ../install.c:313
-#, c-format
-msgid "searching for package %s\n"
-msgstr ""
-
-#: ../install.c:322
-#, c-format
-msgid "\"%s\" specifies multiple packages\n"
-msgstr ""
-
-#: ../install.c:348
-msgid "removing these packages would break dependencies:\n"
-msgstr ""
-
-#: ../install.c:375
-#, c-format
-msgid "cannot open %s\n"
-msgstr ""
-
-#: ../install.c:380
+#: ../install.c:191 ../install.c:401
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: ../install.c:424
+#: ../install.c:204
+#, c-format
+msgid "opening database mode: 0%o\n"
+msgstr ""
+
+#: ../install.c:208 ../install.c:319
+#, c-format
+msgid "cannot open %s/packages.rpm\n"
+msgstr ""
+
+#: ../install.c:232
+msgid "failed dependencies:\n"
+msgstr ""
+
+#: ../install.c:248
+msgid "installing binary packages\n"
+msgstr ""
+
+#: ../install.c:330 ../lib/query.c:614 ../verify.c:243
+#, c-format
+msgid "package %s is not installed\n"
+msgstr ""
+
+#: ../install.c:334
+#, c-format
+msgid "searching for package %s\n"
+msgstr ""
+
+#: ../install.c:343
+#, c-format
+msgid "\"%s\" specifies multiple packages\n"
+msgstr ""
+
+#: ../install.c:369
+msgid "removing these packages would break dependencies:\n"
+msgstr ""
+
+#: ../install.c:396
+#, c-format
+msgid "cannot open %s\n"
+msgstr ""
+
+#: ../install.c:445
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:427
+#: ../install.c:448
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
