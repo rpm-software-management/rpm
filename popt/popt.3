@@ -269,8 +269,17 @@ two arguments specify the command-line arguments to parse. These are
 .RB "passed to the program's " main() " function. The " 
 .IR options " parameter points to the table of command-line options, "
 which was described in the previous section. The final parameter, 
-.IR flags ",is not currently used but should always be specified as 
-0 for compatibility with future versions of the popt library.
+.IR flags ,
+can take one of three values:
+.br
+.TS
+lfB lfB
+lfB lfR.
+Value	Description
+POPT_CONTEXT_NO_EXEC	Ignore exec expansions
+POPT_CONTEXT_KEEP_FIRST	Do not ignore argv[0]
+POPT_CONTEXT_POSIXMEHARDER	Options cannot follow arguments
+.TE
 .sp
 .RB "A " poptContext " keeps track of which options have already been "
 parsed and which remain, among other things. If a program wishes to 
