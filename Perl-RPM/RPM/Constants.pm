@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.7 2000/08/16 09:38:05 rjray Exp $
+#   $Id: Constants.pm,v 1.8 2000/08/17 09:22:10 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -27,7 +27,7 @@ use RPM;
 @ISA = qw(Exporter);
 
 $VERSION = '0.28';
-$revision = do { my @r=(q$Revision: 1.7 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.8 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE
@@ -192,6 +192,8 @@ $revision = do { my @r=(q$Revision: 1.7 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMTAG_INSTALLTIME
                 RPMTAG_INSTPREFIXES
                 RPMTAG_LICENSE
+                RPMTAG_NOPATCH
+                RPMTAG_NOSOURCE
                 RPMTAG_NAME
                 RPMTAG_OBSOLETEFLAGS
                 RPMTAG_OBSOLETENAME
@@ -387,7 +389,10 @@ elements in this array.
 
 =item RPMTAG_BUILDARCHS (@)
 
-Not documented yet.
+Not entirely sure. Appears from source code examples to be a list of those
+architectures for which a package should be built. All examples from the set
+of SRPMs in Red Hat Linux 6.2 only use this tag when the only value is
+C<noarch>.
 
 =item RPMTAG_BUILDHOST ($)
 
@@ -395,7 +400,8 @@ Name of the host the package was built on.
 
 =item RPMTAG_BUILDMACROS (@)
 
-Not documented yet.
+This does not seem to be used in the library. It may be present for future
+expansion use.
 
 =item RPMTAG_BUILDROOT ($)
 
@@ -557,8 +563,8 @@ stage. See the B<RPMVERIFY_*> constants below.
 
 =item RPMTAG_GIF ($)
 
-Not directly used by the B<rpm> library. Likely intended to hold a GIF
-image that external software could make use of. See C<RPMTAG_XPM> below.
+Similar to B<RPMTAG_ICON> defined below, with the restriction that the file
+specified should in fact be a GIF image.
 
 =item RPMTAG_GROUP ($)
 
@@ -569,8 +575,8 @@ one such slash, though more are possible (as is a top-level name).
 
 =item RPMTAG_ICON ($)
 
-Not directly used by the B<rpm> library. Likely intended to hold an image
-of some neutral format that external software could make use of.
+Specifies a file within a source-RPM (SRPM) that should be treated as an icon
+(of either GIF or XPM format), for potential use by GUI-based RPM tools.
 See C<RPMTAG_XPM> below and C<RPMTAG_GIF> above.
 
 =item RPMTAG_INSTALLTIME ($)
@@ -593,6 +599,17 @@ The license and/or restrictions under which the package is distributed.
 The name of the package. This is the first part of a triple used to uniquely
 identify a given package. It is used in conjunction with B<RPMTAG_VERSION>
 and B<RPMTAG_RELEASE>, in that order.
+
+=item RPMTAG_NOPATCH (@)
+
+=item RPMTAG_NOSOURCE (@)
+
+These are used to list elements that should not be included in the resulting
+SRPM when it is built from a spec-file. The lists provided by the B<SOURCE>
+and B<PATCH> tags provide all elements as itemized in the spec-file. However,
+if either of these tags are also present, then some elements may not actually
+exist in the package. Both of these refer to entries in the corresponding
+list of names by numberical index (starting at 0).
 
 =item RPMTAG_OBSOLETEFLAGS (@)
 
@@ -620,7 +637,8 @@ Name of the group/company/individual who built the package.
 
 A list of patch files (see L<patch>) that will be applied to the source tree
 when building the package from a source-RPM (SRPM). These files are part of
-the bundle in the SRPM.
+the bundle in the SRPM. All patch files listed in the original spec are listed
+here, even if some were excluded by the B<NOPATCH> tag defined earlier.
 
 =item RPMTAG_POSTIN (@)
 
@@ -645,7 +663,11 @@ B<RPMTAG_POSTINPROG>.
 
 =item RPMTAG_PREFIXES (@)
 
-Not documented yet.
+The list of directory prefixes under which files are (or will be) installed.
+This differs from the B<DIRNAMES> tag in that it is used to specify the parts
+of the filesystem affected. Thus, it is generally a shorter list and the
+elements are more basic (three directories under C</usr> in B<DIRNAMES> will
+only warrant a mention of C</usr> in this tag).
 
 =item RPMTAG_PREIN (@)
 
@@ -699,11 +721,12 @@ The version of B<rpm> used when bundling the package.
 
 Total size of the package, when existant as a disk file.
 
-=item RPMTAG_SOURCE ($)
+=item RPMTAG_SOURCE (@)
 
-An integer value that should be treated as a boolean, true (1) if the package
-is a source-RPM (SRPM) and false (0) if it is not. Generally, if it is not a
-source-RPM then this tag will simply not be present on the header.
+A list of the source files that are present in the SRPM package. All files
+listed here will be placed in the relevant C<SOURCES> directory when building
+from this SRPM. All source files listed in the original spec are listed here,
+even if some were excluded by the B<NOSOURCE> tag defined earlier.
 
 =item RPMTAG_SOURCERPM ($)
 
@@ -744,11 +767,13 @@ An alternate identifier for the company that created and provided the package.
 
 =item RPMTAG_VERIFYSCRIPT (@)
 
-Not documented yet.
+Scripts to be run during the verification stage. As with other script-providing
+tags, each array element contains one full script.
 
 =item RPMTAG_VERIFYSCRIPTPROG (@)
 
-Not documented yet.
+The program (and arguments) that is to be used in executing the verification
+scripts. If absent or empty, C</bin/sh> with no arguments is used.
 
 =item RPMTAG_VERSION ($)
 
@@ -757,8 +782,9 @@ B<RPMTAG_RELEASE>) of the triple used to uniquely identify packages.
 
 =item RPMTAG_XPM ($)
 
-Not directly used by the B<rpm> library. Likely intended to hold an XPM
-image that external software could make use of. See C<RPMTAG_GIF> above.
+The name of a file in the SRPM that may be used as an icon by a GUI-based
+tool. This differs from B<RPMTAG_ICON> above in that it implies that the file
+is specifically a XPM format image.
 
 =back
 
