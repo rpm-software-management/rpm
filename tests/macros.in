@@ -22,6 +22,7 @@
 %__chown                 %(which chown)
 %__gzip                  %(which gzip)
 %__install               %(which install)
+%__libtoolize            %(which libtoolize)
 %__make                  %(which make)
 %__mkdir                 %(which mkdir)
 %__patch                 %(which patch)
@@ -96,3 +97,22 @@
 %_target_cpu		%{_host_cpu)
 %_target_vendor		%{_host_vendor)
 %_target_os		%{_host_os)
+
+#==============================================================================
+# ---- specfile macros.
+#	Macro(s) here can be used reliably for reproducible builds.
+#	(Note: Above is the goal, below are the macros under development)
+#
+# The configure macro does the following:
+#
+#	optionally change to a subdirectory.
+#	attempt to update onfig.guess and config.sub.
+#	run configure with correct prefix, platform, and CFLAGS.
+#	optionally restore current directory.
+#
+%configure(C:)	\
+  %{C:%{-C:pushd %{-C*}}} \
+  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
+  CFLAGS="%{optflags}" ./configure %{_build} --prefix=%{_prefix} \
+  %{C:%{-C:popd }}
+
