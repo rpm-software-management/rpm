@@ -48,6 +48,12 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 	    message(MESS_DEBUG, "archvie offset is %d\n", 
 			oldLead->archiveOffset);
 	    lseek(fd, oldLead->archiveOffset, SEEK_SET);
+	    
+	    /* we can't put togeher a header for old format source packages,
+	       there just isn't enough information there. We'll return
+	       NULL <gulp> */
+
+	    *hdr = NULL;
 	} else {
 	    if (!readSignature(fd, lead.signature_type, NULL)) {
 	       return 2;
