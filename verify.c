@@ -144,6 +144,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
     struct urlContext context;
     char * arg;
     int isUrl;
+    char path[255];
 
     if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {
 	db = NULL;
@@ -212,6 +213,10 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		break;
 
 	      case VERIFY_PATH:
+		if (*arg != '/') {
+		    if (realpath(arg, path) != NULL)
+			arg = path;
+		}
 		if (rpmdbFindByFile(db, arg, &matches)) {
 		    fprintf(stderr, "file %s is not owned by any package\n", 
 				arg);
