@@ -241,6 +241,7 @@ static void execCommand(poptContext con) {
 #else
     ; /* Can't drop privileges */
 #endif
+#endif
 
     execvp(argv[0], argv);
 }
