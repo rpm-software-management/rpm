@@ -586,7 +586,7 @@ VFA_t virtualFileAttributes[] = {
 	{ "%noreplace",	RPMFILE_CONFIG|RPMFILE_NOREPLACE },
 #endif
 
-	NULL
+	{ NULL, 0 }
 };
 
 static int parseForSimple(Spec spec, Package pkg, char *buf,
@@ -594,7 +594,6 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 {
     char *s, *t;
     int res, specialDoc = 0;
-    char *name, *version;
     char specialDocBuf[BUFSIZ];
 
     specialDocBuf[0] = '\0';
@@ -1506,8 +1505,8 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	    appendStringBuf(readBuff, buf);
 	}
 
-	/* terminate on (non-blocking) error or EOF */
-    } while (!(bytes < 0 && errno != EAGAIN || bytes == 0));
+	/* terminate on (non-blocking) EOF or error */
+    } while (!(bytes == 0 || (bytes < 0 && errno != EAGAIN)));
 
     /* Clean up */
     if (toProg[1] >= 0)

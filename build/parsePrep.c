@@ -114,7 +114,7 @@ static char *doUntar(Spec spec, int c, int quietly)
 {
     static char buf[BUFSIZ];
     char file[BUFSIZ];
-    char *s, *taropts;
+    char *taropts;
     struct Source *sp;
     int compressed;
 
@@ -132,7 +132,7 @@ static char *doUntar(Spec spec, int c, int quietly)
     expandMacros(spec, spec->macros, file, sizeof(file));
     strcat(file, sp->source);
 
-    taropts = (rpmIsVerbose() && !quietly ? "-xvvf" : "-xf");
+    taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
 
     if (isCompressed(file, &compressed)) {
 	return NULL;

@@ -68,6 +68,7 @@ static void valueFree(Value v)
   }
 }
 
+#ifdef DEBUG_PARSER
 static void valueDump(Value v, FILE *fp)
 {
   if (v) {
@@ -78,6 +79,7 @@ static void valueDump(Value v, FILE *fp)
   } else
     fprintf(fp, "NULL\n");
 }
+#endif
 
 #define valueIsInteger(v) ((v)->type == VALUE_TYPE_INTEGER)
 #define valueIsString(v) ((v)->type == VALUE_TYPE_STRING)
@@ -325,6 +327,9 @@ static Value doPrimary(ParseState state)
 
     v = valueMakeInteger(! v->data.i);
     break;
+  default:
+    return NULL;
+    break;
   }
 
   DEBUG(valueDump(v, stdout));
@@ -462,7 +467,7 @@ static Value doRelational(ParseState state)
     }
 
     if (valueIsInteger(v1)) {
-      int i1 = v1->data.i, i2 = v2->data.i, r;
+      int i1 = v1->data.i, i2 = v2->data.i, r = 0;
       switch (op) {
       case TOK_EQ:
 	r = (i1 == i2);
@@ -482,11 +487,13 @@ static Value doRelational(ParseState state)
       case TOK_GE:
 	r = (i1 >= i2);
 	break;
+      default:
+	break;
       }
       valueFree(v1);
       v1 = valueMakeInteger(r);
     } else {
-      char *s1 = v1->data.s, *s2 = v2->data.s, r;
+      char *s1 = v1->data.s, *s2 = v2->data.s, r = 0;
       switch (op) {
       case TOK_EQ:
 	r = (strcmp(s1,s2) == 0);
@@ -505,6 +512,8 @@ static Value doRelational(ParseState state)
 	break;
       case TOK_GE:
 	r = (strcmp(s1,s2) >= 0);
+	break;
+      default:
 	break;
       }
       valueFree(v1);
@@ -565,7 +574,7 @@ static Value doLogical(ParseState state)
 int parseExpressionBoolean(Spec spec, char *expr)
 {
   struct _parseState state;
-  int result;
+  int result = -1;
   Value v;
 
   DEBUG(printf("parseExprBoolean(?, '%s')\n", expr));
@@ -598,6 +607,8 @@ int parseExpressionBoolean(Spec spec, char *expr)
   case VALUE_TYPE_STRING:
     result = v->data.s[0] != '\0';
     break;
+  default:
+    break;
   }
 
   free(state.str);
@@ -608,7 +619,7 @@ int parseExpressionBoolean(Spec spec, char *expr)
 char * parseExpressionString(Spec spec, char *expr)
 {
   struct _parseState state;
-  char *result;
+  char *result = NULL;
   Value v;
 
   DEBUG(printf("parseExprBoolean(?, '%s')\n", expr));
@@ -643,6 +654,8 @@ char * parseExpressionString(Spec spec, char *expr)
   }
   case VALUE_TYPE_STRING:
     result = strdup(v->data.s);
+    break;
+  default:
     break;
   }
 

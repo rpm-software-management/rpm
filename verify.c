@@ -186,6 +186,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 	while (*argv) {
 	    arg = *argv++;
 
+	    rc = 0;
 	    switch (source) {
 	      case VERIFY_RPM:
 		if (urlIsURL(arg)) {

@@ -1059,7 +1059,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
 	size_t bn, sn, en;
 
 	/* Set beginning/end pointers to previous data */
-	b = ee = entry->data;
+	b = be = e = ee = entry->data;
 	for (i = 0; i < table->info.count; i++) {
 	    if (i == langNum)
 		be = ee;

@@ -482,6 +482,7 @@ doUndefine(MacroContext *mc, const char *se)
 	return se;
 }
 
+#ifdef	DYING
 static void
 dumpME(const char *msg, MacroEntry *me)
 {
@@ -493,6 +494,7 @@ dumpME(const char *msg, MacroEntry *me)
 			me->name, me->name, me->prev);
 	fprintf(stderr, "\n");
 }
+#endif
 
 static void
 pushMacro(MacroEntry **mep, const char *n, const char *o, const char *b, int level)
@@ -555,7 +557,6 @@ freeArgs(MacroBuf *mb)
 static const char *
 grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
 {
-    const char *s = se;
     char buf[BUFSIZ], *b, *be;
     char aname[16];
     const char *opts, *o;

@@ -447,7 +447,6 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
 {
 
     char * canonarch, * canonos;
-    MacroEntry ** ME;
 
     rpmSetMachine(arch, os);
     if (!buildplatform) 

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-10-07 20:00-0400\n"
+"POT-Creation-Date: 1998-10-08 07:53-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -251,7 +251,7 @@ msgstr ""
 msgid "counting packages to uninstall\n"
 msgstr ""
 
-#: ../install.c:321 ../query.c:520 ../verify.c:249
+#: ../install.c:321 ../query.c:520 ../verify.c:250
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -342,7 +342,7 @@ msgstr ""
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../query.c:359 ../query.c:366 ../verify.c:194 ../verify.c:201
+#: ../query.c:359 ../query.c:366 ../verify.c:195 ../verify.c:202
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -365,7 +365,7 @@ msgstr ""
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../query.c:419 ../verify.c:224
+#: ../query.c:419 ../verify.c:225
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
@@ -394,7 +394,7 @@ msgstr ""
 msgid "file %s: %s\n"
 msgstr ""
 
-#: ../query.c:488 ../verify.c:238
+#: ../query.c:488 ../verify.c:239
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
@@ -414,7 +414,7 @@ msgstr ""
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: ../query.c:523 ../verify.c:251
+#: ../query.c:523 ../verify.c:252
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
@@ -1456,7 +1456,7 @@ msgstr ""
 msgid "verifying record number %d\n"
 msgstr ""
 
-#: ../verify.c:215
+#: ../verify.c:216
 #, c-format
 msgid "%s is not an RPM\n"
 msgstr ""
@@ -1530,48 +1530,48 @@ msgstr ""
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
-#: ../build/expression.c:188 ../build/expression.c:197
+#: ../build/expression.c:190 ../build/expression.c:199
 msgid "parse error in tokenizer"
 msgstr ""
 
-#: ../build/expression.c:239
+#: ../build/expression.c:241
 msgid "parse error in expression"
 msgstr ""
 
-#: ../build/expression.c:269
+#: ../build/expression.c:271
 msgid "unmatched ("
 msgstr ""
 
-#: ../build/expression.c:287
+#: ../build/expression.c:289
 msgid "undefined identifier"
 msgstr ""
 
-#: ../build/expression.c:306
+#: ../build/expression.c:308
 msgid "- only on numbers"
 msgstr ""
 
-#: ../build/expression.c:322
+#: ../build/expression.c:324
 msgid "! only on numbers"
 msgstr ""
 
-#: ../build/expression.c:358 ../build/expression.c:403
-#: ../build/expression.c:460 ../build/expression.c:543
+#: ../build/expression.c:363 ../build/expression.c:408
+#: ../build/expression.c:465 ../build/expression.c:552
 msgid "types must match"
 msgstr ""
 
-#: ../build/expression.c:371
+#: ../build/expression.c:376
 msgid "* / not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:419
+#: ../build/expression.c:424
 msgid "- not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:556
+#: ../build/expression.c:565
 msgid "&& and || not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:587 ../build/expression.c:630
+#: ../build/expression.c:596 ../build/expression.c:641
 msgid "syntax error in expression"
 msgstr ""
 
@@ -1625,121 +1625,121 @@ msgstr ""
 msgid "Only one entry in %%lang(): %s"
 msgstr ""
 
-#: ../build/files.c:610
+#: ../build/files.c:609
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: ../build/files.c:616
+#: ../build/files.c:615
 msgid "Only one arg for %%docdir"
 msgstr ""
 
-#: ../build/files.c:642
+#: ../build/files.c:641
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: ../build/files.c:655
+#: ../build/files.c:654
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:667
+#: ../build/files.c:666
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: ../build/files.c:749
+#: ../build/files.c:748
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:908
+#: ../build/files.c:907
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:918 ../build/files.c:1035
+#: ../build/files.c:917 ../build/files.c:1034
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:963
+#: ../build/files.c:962
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:968
+#: ../build/files.c:967
 #, c-format
 msgid "File %d: %s\n"
 msgstr ""
 
-#: ../build/files.c:1019
+#: ../build/files.c:1018
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1079
+#: ../build/files.c:1078
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1085 ../build/pack.c:381
+#: ../build/files.c:1084 ../build/pack.c:381
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1412 ../build/parsePrep.c:41
+#: ../build/files.c:1411 ../build/parsePrep.c:41
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1467
+#: ../build/files.c:1466
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1471
+#: ../build/files.c:1470
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1521
+#: ../build/files.c:1520
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1525
+#: ../build/files.c:1524
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1559
+#: ../build/files.c:1558
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1566
+#: ../build/files.c:1565
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1586
+#: ../build/files.c:1585
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1593
+#: ../build/files.c:1592
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1628
+#: ../build/files.c:1627
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1646
+#: ../build/files.c:1645
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1660
+#: ../build/files.c:1659
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1685
+#: ../build/files.c:1684
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -2619,43 +2619,43 @@ msgstr ""
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: ../lib/macro.c:547
+#: ../lib/macro.c:549
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: ../lib/macro.c:630
+#: ../lib/macro.c:631
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: ../lib/macro.c:792
+#: ../lib/macro.c:793
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: ../lib/macro.c:848 ../lib/macro.c:864
+#: ../lib/macro.c:849 ../lib/macro.c:865
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: ../lib/macro.c:893
+#: ../lib/macro.c:894
 msgid "Empty token"
 msgstr ""
 
-#: ../lib/macro.c:1015
+#: ../lib/macro.c:1016
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: ../lib/macro.c:1087
+#: ../lib/macro.c:1088
 msgid "Target buffer overflow"
 msgstr ""
 
-#: ../lib/macro.c:1201 ../lib/macro.c:1209
+#: ../lib/macro.c:1202 ../lib/macro.c:1210
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: ../lib/macro.c:1212
+#: ../lib/macro.c:1213
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -2898,57 +2898,57 @@ msgstr ""
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:544 ../lib/rpmrc.c:560
+#: ../lib/rpmrc.c:543 ../lib/rpmrc.c:559
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:604
+#: ../lib/rpmrc.c:603
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:635
+#: ../lib/rpmrc.c:634
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:651 ../lib/rpmrc.c:746
+#: ../lib/rpmrc.c:650 ../lib/rpmrc.c:745
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:681
+#: ../lib/rpmrc.c:680
 #, c-format
 msgid "no macroname for setenv %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:712
+#: ../lib/rpmrc.c:711
 #, c-format
 msgid "expansion failed at %s:d \"%s\""
 msgstr ""
 
-#: ../lib/rpmrc.c:718
+#: ../lib/rpmrc.c:717
 #, c-format
 msgid "cannot open %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:736
+#: ../lib/rpmrc.c:735
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:803
+#: ../lib/rpmrc.c:802
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:1168
+#: ../lib/rpmrc.c:1167
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: ../lib/rpmrc.c:1169
+#: ../lib/rpmrc.c:1168
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
