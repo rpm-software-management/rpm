@@ -1,0 +1,33 @@
+<!--$Id: macosx.so,v 11.12 2004/10/18 20:10:41 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Mac OS X</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for UNIX/POSIX systems</dl></h3></td>
+<td align=right><a href="../build_unix/linux.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Mac OS X</h3>
+<ol>
+<p><li><b>When trying to link multiple Berkeley DB language interfaces (for
+example, Tcl, C++, Java, Python) into a single process, I get "multiple
+definitions" errors from dyld.</b>
+<p>To fix this problem, set the environment variable MACOSX_DEPLOYMENT_TARGET
+to 10.3 (or your current version of OS X), and reconfigure and rebuild
+Berkeley DB from scratch.  See the OS X ld(1) and dyld(1) man pages for information
+about how OS X handles symbol namespaces, as well as undefined and
+multiply-defined symbols.</p>
+</ol>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/linux.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>
