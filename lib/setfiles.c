@@ -113,28 +113,27 @@ const char * const regex_chars = ".^$?*+|[({";
  * if there is no identifiable stem */
 static int get_stem_from_spec(const char * const buf)
 {
-	const char *tmp = strchr(buf + 1, '/');
-	const char *ind;
+    const char *tmp = strchr(buf + 1, '/');
+    const char *ind;
 
-	if (!tmp)
-		return 0;
+    if (!tmp)
+	return 0;
 
-	for(ind = buf + 1; ind < tmp; ind++)
-	{
-		if (strchr(regex_chars, (int)*ind))
-			return 0;
-	}
-	return tmp - buf;
+    for(ind = buf + 1; ind < tmp; ind++) {
+	if (strchr(regex_chars, (int)*ind))
+	    return 0;
+    }
+    return tmp - buf;
 }
 
 /* return the length of the text that is the stem of a file name */
 static int get_stem_from_file_name(const char * const buf)
 {
-	const char *tmp = strchr(buf + 1, '/');
+    const char *tmp = strchr(buf + 1, '/');
 
-	if (!tmp)
-		return 0;
-	return tmp - buf;
+    if (!tmp)
+	return 0;
+    return tmp - buf;
 }
 
 /* find the stem of a file spec, returns the index into stem_arr for a new
@@ -143,39 +142,39 @@ static int get_stem_from_file_name(const char * const buf)
  * point to the text AFTER the stem. */
 static int find_stem_from_spec(const char **buf)
 {
-	int i;
-	int stem_len = get_stem_from_spec(*buf);
+    int stem_len = get_stem_from_spec(*buf);
+    int i;
 
-	if (!stem_len)
-		return -1;
-	for(i = 0; i < num_stems; i++)
-	{
-		if (stem_len == stem_arr[i].len && !strncmp(*buf, stem_arr[i].buf, stem_len))
-		{
-			*buf += stem_len;
-			return i;
-		}
-	}
-	if (num_stems == alloc_stems)
-	{
-		alloc_stems = alloc_stems * 2 + 16;
-		stem_arr = realloc(stem_arr, sizeof(*stem_arr) * alloc_stems);
-		if (!stem_arr) {
-			fprintf(stderr, "Unable to grow stem array to %d entries:  out of memory.\n", alloc_stems);
-			exit(1);
-		}
-	}
-	stem_arr[num_stems].len = stem_len;
-	stem_arr[num_stems].buf = malloc(stem_len + 1);
-	if (!stem_arr[num_stems].buf) {
-		fprintf(stderr, "Unable to allocate new stem of length %d:  out of memory.\n", stem_len+1);
-		exit(1);
-	}
-	memcpy(stem_arr[num_stems].buf, *buf, stem_len);
-	stem_arr[num_stems].buf[stem_len] = '\0';
-	num_stems++;
+    if (!stem_len)
+	return -1;
+    for(i = 0; i < num_stems; i++) {
+	if (stem_len != stem_arr[i].len)
+	    continue;
+	if (strncmp(*buf, stem_arr[i].buf, stem_len))
+	    continue;
 	*buf += stem_len;
-	return num_stems - 1;
+	return i;
+    }
+
+    if (num_stems == alloc_stems) {
+	alloc_stems = alloc_stems * 2 + 16;
+	stem_arr = realloc(stem_arr, sizeof(*stem_arr) * alloc_stems);
+	if (!stem_arr) {
+	    fprintf(stderr, "Unable to grow stem array to %d entries:  out of memory.\n", alloc_stems);
+	    exit(1);
+	}
+    }
+    stem_arr[num_stems].len = stem_len;
+    stem_arr[num_stems].buf = malloc(stem_len + 1);
+    if (!stem_arr[num_stems].buf) {
+	fprintf(stderr, "Unable to allocate new stem of length %d:  out of memory.\n", stem_len+1);
+	exit(1);
+    }
+    memcpy(stem_arr[num_stems].buf, *buf, stem_len);
+    stem_arr[num_stems].buf[stem_len] = '\0';
+    num_stems++;
+    *buf += stem_len;
+    return num_stems - 1;
 }
 
 /* find the stem of a file name, returns the index into stem_arr (or -1 if
@@ -183,20 +182,19 @@ static int find_stem_from_spec(const char **buf)
  * too complex for us).  Makes buf point to the text AFTER the stem. */
 static int find_stem_from_file(const char **buf)
 {
-	int i;
-	int stem_len = get_stem_from_file_name(*buf);
+    int stem_len = get_stem_from_file_name(*buf);
+    int i;
 
-	if (!stem_len)
-		return -1;
-	for(i = 0; i < num_stems; i++)
-	{
-		if (stem_len == stem_arr[i].len && !strncmp(*buf, stem_arr[i].buf, stem_len))
-		{
-			*buf += stem_len;
-			return i;
-		}
-	}
-	return -1;
+    if (stem_len)
+    for(i = 0; i < num_stems; i++) {
+	if (stem_len != stem_arr[i].len)
+	    continue;
+	if (strncmp(*buf, stem_arr[i].buf, stem_len))
+	    continue;
+	*buf += stem_len;
+	return i;
+    }
+    return -1;
 }
 
 /*
@@ -239,79 +237,77 @@ static struct file_spec fl_head[HASH_BUCKETS];
  */
 static file_spec_t file_spec_add(ino_t ino, int specind, const char *file)
 {
-	file_spec_t prevfl;
-	file_spec_t fl;
-	int h, no_conflict, ret;
-	struct stat sb;
+    file_spec_t prevfl;
+    file_spec_t fl;
+    int h, no_conflict, ret;
+    struct stat sb;
 
-	h = (ino + (ino >> HASH_BITS)) & HASH_MASK;
-	for (prevfl = &fl_head[h], fl = fl_head[h].next; fl;
-	     prevfl = fl, fl = fl->next) {
-		if (ino == fl->ino) {
-			ret = lstat(fl->file, &sb);
-			if (ret < 0 || sb.st_ino != ino) {
-				fl->specind = specind;
-				free(fl->file);
-				fl->file = malloc(strlen(file) + 1);
-				if (!fl->file) {
-					fprintf(stderr,
-						"%s:  insufficient memory for file label entry for %s\n",
-						__progname, file);
-					return NULL;
-				}
-				strcpy(fl->file, file);
-				return fl;
-
-			}
-
-			no_conflict = (strcmp(spec_arr[fl->specind].context,spec_arr[specind].context) == 0);
-			if (no_conflict)
-				return fl;
-
-			fprintf(stderr,
-				"%s:  conflicting specifications for %s and %s, using %s.\n",
-				__progname, file, fl->file,
-				((specind > fl->specind) ? spec_arr[specind].
-				 context : spec_arr[fl->specind].context));
-			fl->specind =
-			    (specind >
-			     fl->specind) ? specind : fl->specind;
-			free(fl->file);
-			fl->file = malloc(strlen(file) + 1);
-			if (!fl->file) {
-				fprintf(stderr,
-					"%s:  insufficient memory for file label entry for %s\n",
-					__progname, file);
-				return NULL;
-			}
-			strcpy(fl->file, file);
-			return fl;
+    h = (ino + (ino >> HASH_BITS)) & HASH_MASK;
+    for (prevfl = &fl_head[h], fl = fl_head[h].next;
+	 fl != NULL;
+	 prevfl = fl, fl = fl->next)
+    {
+	if (ino == fl->ino) {
+	    ret = lstat(fl->file, &sb);
+	    if (ret < 0 || sb.st_ino != ino) {
+		fl->specind = specind;
+		free(fl->file);
+		fl->file = malloc(strlen(file) + 1);
+		if (!fl->file) {
+		    fprintf(stderr,
+			"%s:  insufficient memory for file label entry for %s\n",
+			__progname, file);
+		    return NULL;
 		}
+		strcpy(fl->file, file);
+		return fl;
+	    }
 
-		if (ino > fl->ino)
-			break;
-	}
+	    no_conflict = (strcmp(spec_arr[fl->specind].context,spec_arr[specind].context) == 0);
+	    if (no_conflict)
+		return fl;
 
-	fl = malloc(sizeof(*fl));
-	if (!fl) {
+	    fprintf(stderr,
+		"%s:  conflicting specifications for %s and %s, using %s.\n",
+		__progname, file, fl->file,
+		((specind > fl->specind) ? spec_arr[specind].
+		 context : spec_arr[fl->specind].context));
+	    fl->specind =
+		    (specind > fl->specind) ? specind : fl->specind;
+	    free(fl->file);
+	    fl->file = malloc(strlen(file) + 1);
+	    if (!fl->file) {
 		fprintf(stderr,
 			"%s:  insufficient memory for file label entry for %s\n",
 			__progname, file);
 		return NULL;
+	    }
+	    strcpy(fl->file, file);
+	    return fl;
 	}
-	fl->ino = ino;
-	fl->specind = specind;
-	fl->file = malloc(strlen(file) + 1);
-	if (!fl->file) {
-		fprintf(stderr,
-			"%s:  insufficient memory for file label entry for %s\n",
-			__progname, file);
-		return NULL;
-	}
-	strcpy(fl->file, file);
-	fl->next = prevfl->next;
-	prevfl->next = fl;
-	return fl;
+
+	if (ino > fl->ino)
+	    break;
+    }
+
+    fl = malloc(sizeof(*fl));
+    if (!fl) {
+	fprintf(stderr, "%s:  insufficient memory for file label entry for %s\n",
+		__progname, file);
+	return NULL;
+    }
+    fl->ino = ino;
+    fl->specind = specind;
+    fl->file = malloc(strlen(file) + 1);
+    if (!fl->file) {
+	fprintf(stderr, "%s:  insufficient memory for file label entry for %s\n",
+		__progname, file);
+	return NULL;
+    }
+    strcpy(fl->file, file);
+    fl->next = prevfl->next;
+    prevfl->next = fl;
+    return fl;
 }
 
 /*
@@ -319,26 +315,25 @@ static file_spec_t file_spec_add(ino_t ino, int specind, const char *file)
  */
 static void file_spec_eval(void)
 {
-	file_spec_t fl;
-	int h, used, nel, len, longest;
+    file_spec_t fl;
+    int h, used, nel, len, longest;
 
-	used = 0;
-	longest = 0;
-	nel = 0;
-	for (h = 0; h < HASH_BUCKETS; h++) {
-		len = 0;
-		for (fl = fl_head[h].next; fl; fl = fl->next) {
-			len++;
-		}
-		if (len)
-			used++;
-		if (len > longest)
-			longest = len;
-		nel += len;
+    used = 0;
+    longest = 0;
+    nel = 0;
+    for (h = 0; h < HASH_BUCKETS; h++) {
+	len = 0;
+	for (fl = fl_head[h].next; fl; fl = fl->next) {
+	    len++;
 	}
+	if (len)
+	    used++;
+	if (len > longest)
+	    longest = len;
+	nel += len;
+    }
 
-	QPRINTF
-	    ("%s:  hash table stats: %d elements, %d/%d buckets used, longest chain length %d\n",
+    QPRINTF ("%s:  hash table stats: %d elements, %d/%d buckets used, longest chain length %d\n",
 	     __progname, nel, used, HASH_BUCKETS, longest);
 }
 
@@ -348,89 +343,90 @@ static void file_spec_eval(void)
  */
 static void file_spec_destroy(void)
 {
-	file_spec_t fl;
-	file_spec_t tmp;
-	int h;
+    file_spec_t fl;
+    file_spec_t tmp;
+    int h;
 
-	for (h = 0; h < HASH_BUCKETS; h++) {
-		fl = fl_head[h].next;
-		while (fl) {
-			tmp = fl;
-			fl = fl->next;
-			free(tmp->file);
-			free(tmp);
-		}
-		fl_head[h].next = NULL;
+    for (h = 0; h < HASH_BUCKETS; h++) {
+	fl = fl_head[h].next;
+	while (fl) {
+	    tmp = fl;
+	    fl = fl->next;
+	    free(tmp->file);
+	    free(tmp);
 	}
+	fl_head[h].next = NULL;
+    }
 }
 
 
 static int match(const char *name, struct stat *sb)
 {
-	static char errbuf[255 + 1];
-	const char *fullname = name;
-	const char *buf = name;
-	int i, ret, file_stem;
+    static char errbuf[255 + 1];
+    const char *fullname = name;
+    const char *buf = name;
+    int i, ret, file_stem;
 
-	/* fullname will be the real file that gets labeled
-	 * name will be what is matched in the policy */
-	if (rootpath != NULL) {
-		if (0 != strncmp(rootpath, name, rootpathlen)) {
-			fprintf(stderr, "%s:  %s is not located in %s\n", 
-				__progname, name, rootpath);
-			return -1;
-		}
-		name += rootpathlen;
-		buf += rootpathlen;
+    /* fullname will be the real file that gets labeled
+     * name will be what is matched in the policy */
+    if (rootpath != NULL) {
+	if (strncmp(rootpath, name, rootpathlen) != 0) {
+	    fprintf(stderr, "%s:  %s is not located in %s\n", 
+			__progname, name, rootpath);
+	    return -1;
 	}
+	name += rootpathlen;
+	buf += rootpathlen;
+    }
 
-	ret = lstat(fullname, sb);
-	if (ret) {
-		fprintf(stderr, "%s:  unable to stat file %s\n", __progname,
-			fullname);
-		return -1;
-	}
+    ret = lstat(fullname, sb);
+    if (ret) {
+	fprintf(stderr, "%s:  unable to stat file %s\n", __progname, fullname);
+	return -1;
+    }
 
-	file_stem = find_stem_from_file(&buf);
+    file_stem = find_stem_from_file(&buf);
 
-	/* 
-	 * Check for matching specifications in reverse order, so that
-	 * the last matching specification is used.
-	 */
-	for (i = nspec - 1; i >= 0; i--)
-	{
-		/* if the spec in question matches no stem or has the same
-		 * stem as the file AND if the spec in question has no mode
-		 * specified or if the mode matches the file mode then we do
-		 * a regex check	*/
-		if ( (spec_arr[i].stem_id == -1 || spec_arr[i].stem_id == file_stem)
-		  && (!spec_arr[i].mode || ( (sb->st_mode & S_IFMT) == spec_arr[i].mode ) ) )
-		{
-			if (spec_arr[i].stem_id == -1)
-				ret = regexec(&spec_arr[i].regex, name, 0, NULL, 0);
-			else
-				ret = regexec(&spec_arr[i].regex, buf, 0, NULL, 0);
-			if (ret == 0)
-				break;
+    /* 
+     * Check for matching specifications in reverse order, so that
+     * the last matching specification is used.
+     */
+    for (i = nspec - 1; i >= 0; i--) {
+	spec_t sp;
 
-			if (ret == REG_NOMATCH)
-				continue;
-			/* else it's an error */
-			regerror(ret, &spec_arr[i].regex, errbuf, sizeof errbuf);
-			fprintf(stderr,
-				"%s:  unable to match %s against %s:  %s\n",
-				__progname, name, spec_arr[i].regex_str, errbuf);
-			return -1;
-		}
-	}
+	sp = spec_arr + i;
 
-	if (i < 0)
-		/* No matching specification. */
-		return -1;
+	/* if the spec in question matches no stem or has the same
+	 * stem as the file AND if the spec in question has no mode
+	 * specified or if the mode matches the file mode then we do
+	 * a regex check	*/
+	if (sp->stem_id != -1 && sp->stem_id != file_stem)
+	    continue;
+	if (sp->mode && (sb->st_mode & S_IFMT) != sp->mode)
+	    continue;
 
+	if (sp->stem_id == -1)
+	    ret = regexec(&sp->regex, name, 0, NULL, 0);
+	else
+	    ret = regexec(&sp->regex, buf, 0, NULL, 0);
+	if (ret == 0)
+	    break;
+
+	if (ret == REG_NOMATCH)
+	    continue;
+
+	/* else it's an error */
+	regerror(ret, &sp->regex, errbuf, sizeof errbuf);
+	fprintf(stderr, "%s:  unable to match %s against %s:  %s\n",
+		__progname, name, sp->regex_str, errbuf);
+	return -1;
+    }
+
+    /* Cound matches found. */
+    if (i >= 0)
 	spec_arr[i].matches++;
 
-	return i;
+    return i;
 }
 
 /* Used with qsort to sort specs from lowest to highest hasMetaChars value */
@@ -450,36 +446,34 @@ static int spec_compare(const void* specA, const void* specB)
  */
 static int nodups_specs(void)
 {
-	int ii, jj;
-	spec_t curr_spec;
+    int i, j;
 
-	for (ii = 0; ii < nspec; ii++) {
-		curr_spec = &spec_arr[ii];
-		for (jj = ii + 1; jj < nspec; jj++) { 
-				/* Check if same RE string */
-			if ((!strcmp(spec_arr[jj].regex_str, curr_spec->regex_str))
-									&&
-				(!spec_arr[jj].mode || !curr_spec->mode 
-				 || spec_arr[jj].mode == curr_spec->mode)) {
-				/* Same RE string found */
-				if (strcmp(spec_arr[jj].context, curr_spec->context)) {
-					/* If different contexts, give warning */
-					fprintf(stderr,
-					"ERROR: Multiple different specifications for %s  (%s and %s).\n",
-						curr_spec->regex_str, 
-						spec_arr[jj].context,
-						curr_spec->context);
-				}
-				else {
-					/* If same contexts give warning */
-					fprintf(stderr,
-					"WARNING: Multiple same specifications for %s.\n",
-						curr_spec->regex_str);
-				}
-			}
-		}
+    for (i = 0; i < nspec; i++) {
+	spec_t sip = spec_arr + i;
+	for (j = i + 1; j < nspec; j++) { 
+	    spec_t sjp = spec_arr + j;
+
+	    /* Check if same RE string */
+	    if (strcmp(sjp->regex_str, sip->regex_str))
+		continue;
+	    if (sjp->mode && sip->mode && sjp->mode != sip->mode)
+		continue;
+
+	    /* Same RE string found */
+	    if (strcmp(sjp->context, sip->context)) {
+		/* If different contexts, give warning */
+		fprintf(stderr,
+		"ERROR: Multiple different specifications for %s  (%s and %s).\n",
+			sip->regex_str, sjp->context, sip->context);
+	    } else {
+		/* If same contexts give warning */
+		fprintf(stderr,
+		"WARNING: Multiple same specifications for %s.\n",
+			sip->regex_str);
+	    }
 	}
-	return 0;
+    }
+    return 0;
 }
 
 static void usage(const char * const name, poptContext optCon)
@@ -494,42 +488,43 @@ static void usage(const char * const name, poptContext optCon)
 /* Determine if the regular expression specification has any meta characters. */
 static void spec_hasMetaChars(spec_t spec)
 {
-	char *c;
-	int len;
-	char *end;
+    char *c;
+    int len;
+    char *end;
 
-	c = spec->regex_str;
-	len = strlen(spec->regex_str);
-	end = c + len;
+    c = spec->regex_str;
+    len = strlen(spec->regex_str);
+    end = c + len;
 
-	spec->hasMetaChars = 0; 
+    spec->hasMetaChars = 0; 
 
-	/* Look at each character in the RE specification string for a 
-	 * meta character. Return when any meta character reached. */
-	while (c != end) {
-		switch(*c) {
-			case '.':
-			case '^':
-			case '$':
-			case '?':
-			case '*':
-			case '+':
-			case '|':
-			case '[':
-			case '(':
-			case '{':
-				spec->hasMetaChars = 1;
-				return;
-			case '\\':		/* skip the next character */
-				c++;
-				break;
-			default:
-				break;
+    /* Look at each character in the RE specification string for a 
+     * meta character. Return when any meta character reached. */
+    while (c != end) {
+	switch(*c) {
+	case '.':
+	case '^':
+	case '$':
+	case '?':
+	case '*':
+	case '+':
+	case '|':
+	case '[':
+	case '(':
+	case '{':
+	    spec->hasMetaChars = 1;
+	    return;
+	    break;
+	case '\\':		/* skip the next character */
+	    c++;
+	    break;
+	default:
+	    break;
 
-		}
-		c++;
 	}
-	return;
+	c++;
+    }
+    return;
 }
 
 /*
@@ -540,108 +535,110 @@ static void spec_hasMetaChars(spec_t spec)
 static int apply_spec(const char *file,
 		      const struct stat *sb_unused, int flag, struct FTW *s_unused)
 {
-	const char *my_file;
-	file_spec_t fl;
-	struct stat my_sb;
-	int i, ret;
-	char *context; 
+    const char *my_file;
+    file_spec_t fl;
+    struct stat my_sb;
+    int i, ret;
+    char *context; 
+    spec_t sp;
 
-	/* Skip the extra slash at the beginning, if present. */
-	if (file[0] == '/' && file[1] == '/')
-		my_file = &file[1];
-	else
-		my_file = file;
+    /* Skip the extra slash at the beginning, if present. */
+    if (file[0] == '/' && file[1] == '/')
+	my_file = &file[1];
+    else
+	my_file = file;
 
-	if (flag == FTW_DNR) {
-		fprintf(stderr, "%s:  unable to read directory %s\n",
-			__progname, my_file);
-		return 0;
-	}
-
-	i = match(my_file, &my_sb);
-	if (i < 0)
-		/* No matching specification. */
-		return 0;
-
-	/*
-	 * Try to add an association between this inode and
-	 * this specification.  If there is already an association
-	 * for this inode and it conflicts with this specification,
-	 * then use the last matching specification.
-	 */
-	if (add_assoc) {
-		fl = file_spec_add(my_sb.st_ino, i, my_file);
-		if (!fl)
-			/* Insufficient memory to proceed. */
-			return 1;
-
-		if (fl->specind != i)
-			/* There was already an association and it took precedence. */
-			return 0;
-	}
-
-	if (debug) {
-		if (spec_arr[i].type_str) {
-			printf("%s:  %s matched by (%s,%s,%s)\n", __progname,
-			       my_file, spec_arr[i].regex_str,
-			       spec_arr[i].type_str, spec_arr[i].context);
-		} else {
-			printf("%s:  %s matched by (%s,%s)\n", __progname,
-			       my_file, spec_arr[i].regex_str,
-			       spec_arr[i].context);
-		}
-	}
-
-	/* Get the current context of the file. */
-	ret = lgetfilecon(my_file, &context);
-	if (ret < 0) {
-		if (errno == ENODATA) {
-			context = malloc(10);
-			strcpy(context, "<<none>>");
-		} else {
-			perror(my_file);
-			fprintf(stderr, "%s:  unable to obtain attribute for file %s\n", 
-				__progname, my_file);
-			return -1;
-		}
-	}
-
-	/*
-	 * Do not relabel the file if the matching specification is 
-	 * <<none>> or the file is already labeled according to the 
-	 * specification.
-	 */
-	if ((strcmp(spec_arr[i].context, "<<none>>") == 0) || 
-	    (strcmp(context,spec_arr[i].context) == 0)) {
-		freecon(context);
-		return 0;
-	}
-
-	if (verbose) {
-		printf("%s:  relabeling %s from %s to %s\n", __progname,
-		       my_file, context, spec_arr[i].context);
-	}
-
-	freecon(context);
-
-	/*
-	 * Do not relabel the file if -n was used.
-	 */
-	if (!change)
-		return 0;
-
-	/*
-	 * Relabel the file to the specified context.
-	 */
-	ret = lsetfilecon(my_file, spec_arr[i].context);
-	if (ret) {
-		perror(my_file);
-		fprintf(stderr, "%s:  unable to relabel %s to %s\n",
-			__progname, my_file, spec_arr[i].context);
-		return 1;
-	}
-
+    if (flag == FTW_DNR) {
+	fprintf(stderr, "%s:  unable to read directory %s\n",
+		__progname, my_file);
 	return 0;
+    }
+
+    i = match(my_file, &my_sb);
+    if (i < 0)
+	/* No matching specification. */
+	return 0;
+    sp = spec_arr + i;
+
+    /*
+     * Try to add an association between this inode and
+     * this specification.  If there is already an association
+     * for this inode and it conflicts with this specification,
+     * then use the last matching specification.
+     */
+    if (add_assoc) {
+	fl = file_spec_add(my_sb.st_ino, i, my_file);
+	if (!fl)
+	    /* Insufficient memory to proceed. */
+	    return 1;
+
+	if (fl->specind != i)
+	    /* There was already an association and it took precedence. */
+	    return 0;
+    }
+
+    if (debug) {
+	if (sp->type_str) {
+	    printf("%s:  %s matched by (%s,%s,%s)\n", __progname,
+		       my_file, sp->regex_str,
+		       sp->type_str, sp->context);
+	} else {
+	    printf("%s:  %s matched by (%s,%s)\n", __progname,
+		       my_file, sp->regex_str, sp->context);
+	}
+    }
+
+    /* Get the current context of the file. */
+    ret = lgetfilecon(my_file, &context);
+    if (ret < 0) {
+	if (errno == ENODATA) {
+	    context = malloc(10);
+	    strcpy(context, "<<none>>");
+	} else {
+	    perror(my_file);
+	    fprintf(stderr, "%s:  unable to obtain attribute for file %s\n", 
+			__progname, my_file);
+	    return -1;
+	}
+    }
+
+    /*
+     * Do not relabel the file if the matching specification is 
+     * <<none>> or the file is already labeled according to the 
+     * specification.
+     */
+    if ((strcmp(sp->context, "<<none>>") == 0) || 
+	(strcmp(sp->context, context) == 0))
+    {
+	freecon(context);
+	return 0;
+    }
+
+    if (verbose) {
+	printf("%s:  relabeling %s from %s to %s\n", __progname,
+	       my_file, context, sp->context);
+    }
+
+    freecon(context);
+
+    /*
+     * Do not relabel the file if -n was used.
+     */
+    if (!change)
+	return 0;
+
+    /*
+     * Relabel the file to the specified context.
+     */
+    ret = lsetfilecon(my_file, sp->context);
+    if (ret) {
+	perror(my_file);
+	fprintf(stderr, "%s:  unable to relabel %s to %s\n",
+		__progname, my_file, sp->context);
+	return 1;
+    }
+
+    return 0;
 }
 
 static int nerr = 0;
@@ -660,8 +657,8 @@ int parseREContexts(const char *fn)
 {
     FILE * fp;
     char errbuf[255 + 1];
-    char line_buf[255 + 1];
-    char * buf_p;
+    char buf[255 + 1];
+    char * bp;
     char * regex;
     char * type;
     char * context;
@@ -686,30 +683,32 @@ int parseREContexts(const char *fn)
      * and fills in the spec array.
      */
     for (pass = 0; pass < 2; pass++) {
+	spec_t sp;
 	lineno = 0;
 	nspec = 0;
-	while (fgets(line_buf, sizeof line_buf, fp)) {
+	sp = spec_arr;
+	while (fgets(buf, sizeof buf, fp)) {
 	    lineno++;
-	    len = strlen(line_buf);
-	    if (line_buf[len - 1] != '\n') {
+	    len = strlen(buf);
+	    if (buf[len - 1] != '\n') {
 		fprintf(stderr,
 			"%s:  no newline on line number %d (only read %s)\n",
-			fn, lineno, line_buf);
+			fn, lineno, buf);
 		inc_err();
 		continue;
 	    }
-	    line_buf[len - 1] = 0;
-	    buf_p = line_buf;
-	    while (isspace(*buf_p))
-		buf_p++;
+	    buf[len - 1] = 0;
+	    bp = buf;
+	    while (isspace(*bp))
+		bp++;
 	    /* Skip comment lines and empty lines. */
-	    if (*buf_p == '#' || *buf_p == 0)
+	    if (*bp == '#' || *bp == 0)
 		continue;
-	    items = sscanf(line_buf, "%as %as %as", &regex, &type, &context);
+	    items = sscanf(buf, "%as %as %as", &regex, &type, &context);
 	    if (items < 2) {
 		fprintf(stderr,
 			"%s:  line number %d is missing fields (only read %s)\n",
-			fn, lineno, line_buf);
+			fn, lineno, buf);
 		inc_err();
 		if (items == 1)
 		    free(regex);
@@ -724,8 +723,8 @@ int parseREContexts(const char *fn)
 	    if (pass == 1) {
 		/* On the second pass, compile and store the specification in spec. */
 		const char *reg_buf = regex;
-		spec_arr[nspec].stem_id = find_stem_from_spec(&reg_buf);
-		spec_arr[nspec].regex_str = regex;
+		sp->stem_id = find_stem_from_spec(&reg_buf);
+		sp->regex_str = regex;
 
 		/* Anchor the regular expression. */
 		len = strlen(reg_buf);
@@ -739,10 +738,10 @@ int parseREContexts(const char *fn)
 		sprintf(anchored_regex, "^%s$", reg_buf);
 
 		/* Compile the regular expression. */
-		regerr = regcomp(&spec_arr[nspec].regex, anchored_regex,
+		regerr = regcomp(&sp->regex, anchored_regex,
 			    REG_EXTENDED | REG_NOSUB);
 		if (regerr < 0) {
-		    regerror(regerr, &spec_arr[nspec].regex,
+		    regerror(regerr, &sp->regex,
 				 errbuf, sizeof errbuf);
 		    fprintf(stderr,
 			"%s:  unable to compile regular expression %s on line number %d:  %s\n",
@@ -753,8 +752,8 @@ int parseREContexts(const char *fn)
 		free(anchored_regex);
 
 		/* Convert the type string to a mode format */
-		spec_arr[nspec].type_str = type;
-		spec_arr[nspec].mode = 0;
+		sp->type_str = type;
+		sp->mode = 0;
 		if (!type)
 		    goto skip_type;
 		len = strlen(type);
@@ -767,25 +766,25 @@ int parseREContexts(const char *fn)
 		}
 		switch (type[1]) {
 		case 'b':
-		    spec_arr[nspec].mode = S_IFBLK;
+		    sp->mode = S_IFBLK;
 		    break;
 		case 'c':
-		    spec_arr[nspec].mode = S_IFCHR;
+		    sp->mode = S_IFCHR;
 		    break;
 		case 'd':
-		    spec_arr[nspec].mode = S_IFDIR;
+		    sp->mode = S_IFDIR;
 		    break;
 		case 'p':
-		    spec_arr[nspec].mode = S_IFIFO;
+		    sp->mode = S_IFIFO;
 		    break;
 		case 'l':
-		    spec_arr[nspec].mode = S_IFLNK;
+		    sp->mode = S_IFLNK;
 		    break;
 		case 's':
-		    spec_arr[nspec].mode = S_IFSOCK;
+		    sp->mode = S_IFSOCK;
 		    break;
 		case '-':
-		    spec_arr[nspec].mode = S_IFREG;
+		    sp->mode = S_IFREG;
 		    break;
 		default:
 		    fprintf(stderr,
@@ -796,7 +795,7 @@ int parseREContexts(const char *fn)
 
 	      skip_type:
 
-		spec_arr[nspec].context = context;
+		sp->context = context;
 
 		if (strcmp(context, "<<none>>")) {
 		    if (security_check_context(context) < 0 && errno != ENOENT) {
@@ -809,7 +808,8 @@ int parseREContexts(const char *fn)
 
 		/* Determine if specification has 
 		 * any meta characters in the RE */
-		spec_hasMetaChars(&spec_arr[nspec]);
+		spec_hasMetaChars(sp);
+		sp++;
 	    }
 
 	    nspec++;
@@ -1001,16 +1001,19 @@ int main(int argc, char **argv)
 
     if (warn_no_match) {
 	for (i = 0; i < nspec; i++) {
-	    if (spec_arr[i].matches > 0)
+	    spec_t sp;
+
+	    sp = spec_arr + i;
+	    if (sp->matches > 0)
 		continue;
-	    if (spec_arr[i].type_str) {
+	    if (sp->type_str) {
 		printf("%s:  Warning!  No matches for (%s, %s, %s)\n",
-			 __progname, spec_arr[i].regex_str,
-			 spec_arr[i].type_str, spec_arr[i].context);
+			 __progname, sp->regex_str,
+			 sp->type_str, sp->context);
 	    } else {
 		printf("%s:  Warning!  No matches for (%s, %s)\n",
-			 __progname, spec_arr[i].regex_str,
-			 spec_arr[i].context);
+			 __progname, sp->regex_str,
+			 sp->context);
 	    }
 	}
     }
