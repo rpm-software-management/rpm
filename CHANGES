@@ -17,6 +17,8 @@
 	- add new fully recursive macro.c
 
 2.5.4 -> 2.5.5:
+	- remove 2 character language name assumption.
+        - add /usr/lib/rpm/find-lang.sh (W. L. Estes <wlestes@uncg.edu>)
 	- Makefile: don't use ln -sf.
 	- getOutputFrom(): fix race between last read on pipe and child death
 	  (exacerbated in 2.5.4).

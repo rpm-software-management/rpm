@@ -9,15 +9,15 @@ Copyright: GPL
 BuildRoot: /var/tmp/rpm-%{version}-root
 Conflicts: patch < 2.5
 
-%package devel
-Summary: Header files and libraries for programs that manipulate rpm packages
-Group: Development/Libraries
-
 %description
 RPM is a powerful package manager, which can be used to build, install, 
 query, verify, update, and uninstall individual software packages. A 
 package consists of an archive of files, and package information, including 
 name, version, and description.
+
+%package devel
+Summary: Header files and libraries for programs that manipulate rpm packages
+Group: Development/Libraries
 
 %description devel
 The RPM packaging system includes a C library that makes it easy to
@@ -52,6 +52,7 @@ rm -rf $RPM_BUILD_ROOT
 /bin/rpm --initdb
 
 %files
+%defattr(-,root,root)
 %doc RPM-PGP-KEY CHANGES groups
 %doc docs/*
 /bin/rpm
@@ -72,6 +73,6 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/locale/*/LC_MESSAGES/rpm.mo
 
 %files devel
+%defattr(-,root,root)
 /usr/include/rpm
 /usr/lib/librpm.a
-/usr/lib/librpmbuild.a
