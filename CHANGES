@@ -12,6 +12,7 @@
           strings plucked from i18n strings
 	- do not remove comments in scripts
 	- save/restore existing arch when done with buildarch
+	- copy the I18N table to the source header so i18n stuff works
 
 2.4.108 -> 2.4.109:
         - remove icons with --rmsource

@@ -143,6 +143,7 @@ int processSourceFiles(Spec spec)
 	  case RPMTAG_CHANGELOGNAME:
 	  case RPMTAG_CHANGELOGTEXT:
 	  case RPMTAG_URL:
+	  case HEADER_I18NTABLE:
 	    headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
 	    break;
 	  default:
