@@ -369,6 +369,7 @@ int packageBinaries(Spec s, char *passPhrase)
     char *release;
     char *vendor;
     char *dist;
+    char *packager;
     char *packageVersion, *packageRelease;
     char *prefix;
     int prefixLen;
@@ -398,6 +399,10 @@ int packageBinaries(Spec s, char *passPhrase)
     dist = NULL;
     if (!isEntry(s->packages->header, RPMTAG_DISTRIBUTION)) {
 	dist = getVar(RPMVAR_DISTRIBUTION);
+    }
+    packager = NULL;
+    if (!isEntry(s->packages->header, RPMTAG_PACKAGER)) {
+	packager = getVar(RPMVAR_PACKAGER);
     }
 
     /* Look through for each package */
@@ -482,6 +487,9 @@ int packageBinaries(Spec s, char *passPhrase)
 	}
 	if (dist) {
 	    addEntry(outHeader, RPMTAG_DISTRIBUTION, STRING_TYPE, dist, 1);
+	}
+	if (packager) {
+	    addEntry(outHeader, RPMTAG_PACKAGER, STRING_TYPE, packager, 1);
 	}
 	
 	/**** Process the file list ****/
