@@ -833,7 +833,9 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	    rdbuf = fsm->rdbuf;
 	    fsm->rdbuf = (char *) mapped;
 	    fsm->rdlen = nmapped = st->st_size;
+#if defined(MADV_DONTNEED)
 	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
+#endif
 	}
 #endif
 
@@ -861,6 +863,9 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 #if HAVE_MMAP
 	if (mapped != (void *)-1) {
 	    xx = msync(mapped, nmapped, MS_ASYNC);
+#if defined(MADV_DONTNEED)
+	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
+#endif
 	    /*@-noeffect@*/ xx = munmap(mapped, nmapped) /*@=noeffect@*/;
 	    fsm->rdbuf = rdbuf;
 	}
@@ -1248,6 +1253,12 @@ static int fsmStat(FSM_t fsm)
     return rc;
 }
 #endif
+
+#define	IS_DEV_LOG(_x)	\
+	((_x) != NULL && strlen(_x) >= (sizeof("/dev/log")-1) && \
+	!strncmp((_x), "/dev/log", sizeof("/dev/log")-1) && \
+	((_x)[sizeof("/dev/log")-1] == '\0' || \
+	 (_x)[sizeof("/dev/log")-1] == ';'))
 
 /*@-compmempass@*/
 int fsmStage(FSM_t fsm, fileStage stage)
@@ -1656,7 +1667,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmStage(fsm, FSM_MKNOD);
 	} else {
 	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-	    if (strncmp(fsm->path, "/dev/log;", sizeof("/dev/log;")-1))
+	    if (!IS_DEV_LOG(fsm->path))
 		rc = CPIOERR_UNKNOWN_FILETYPE;
 	}
 	if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
@@ -1780,9 +1791,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 
 	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
-	if (!S_ISSOCK(st->st_mode)
-	&&  strncmp(fsm->path, "/dev/log;", sizeof("/dev/log;")-1))
-	{
+	if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
 	    /* Rename temporary to final file name. */
 	    if (!S_ISDIR(st->st_mode) &&
 		(fsm->subdir || fsm->suffix || fsm->nsuffix))

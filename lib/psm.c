@@ -1539,6 +1539,13 @@ assert(psm->mi == NULL);
 			(psm->failedFile != NULL ? psm->failedFile : ""),
 			cpioStrerror(rc));
 		rc = RPMRC_FAIL;
+
+		/* XXX notify callback on error. */
+		psm->what = RPMCALLBACK_UNPACK_ERROR;
+		psm->amount = 0;
+		psm->total = 0;
+		xx = psmStage(psm, PSM_NOTIFY);
+
 		break;
 	    }
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
@@ -1728,6 +1735,12 @@ assert(psm->mi == NULL);
 	    else
 		rpmError(RPMERR_CPIO, _("%s failed: %s\n"),
 			psm->stepName, cpioStrerror(rc));
+
+	    /* XXX notify callback on error. */
+	    psm->what = RPMCALLBACK_CPIO_ERROR;
+	    psm->amount = 0;
+	    psm->total = 0;
+	    xx = psmStage(psm, PSM_NOTIFY);
 	}
 
 	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE))
