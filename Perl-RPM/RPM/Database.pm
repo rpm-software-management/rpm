@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Database.pm,v 1.4 2000/08/02 08:04:31 rjray Exp $
+#   $Id: Database.pm,v 1.5 2000/08/07 08:46:05 rjray Exp $
 #
 #   Description:    The RPM::Database class provides access to the RPM database
 #                   as a tied hash, whose keys are taken as the names of
@@ -17,7 +17,8 @@
 #                   CLEAR
 #                   DELETE
 #
-#   Libraries:      RPM::Header
+#   Libraries:      RPM
+#                   RPM::Header
 #
 #   Global Consts:  None.
 #
@@ -30,14 +31,14 @@ package RPM::Database;
 require 5.005;
 
 use strict;
-use vars qw($VERSION $revision);
-use subs qw(new);
+use vars qw($VERSION $revision %RPM);
+use subs qw(new import);
 
 require RPM;
 require RPM::Header;
 
 $VERSION = '0.27';
-$revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -48,6 +49,47 @@ sub new
 
     tie %hash, $class;
     return (tied %hash);
+}
+
+###############################################################################
+#
+#   Sub Name:       import
+#
+#   Description:    This lies in wait to see if someone actually tries to
+#                   import from this package. If they do, check that it is
+#                   allowed and do it if it is.
+#
+#                   At present, only "%RPM" is allowed. If that is the
+#                   requested export, then the hash is tied to the RPM
+#                   database (with no extra arguments) then exported to the
+#                   caller's namespace.
+#
+#   Arguments:      NAME      IN/OUT  TYPE      DESCRIPTION
+#                   $class    in      scalar    Name of this package
+#                   @args     in      list      Requested exports
+#
+#   Globals:        None.
+#
+#   Environment:    None.
+#
+#   Returns:        void context
+#
+###############################################################################
+sub import
+{
+    my ($class, @args) = @_;
+
+    # We only currently support one export: %RPM
+    my $arg = $args[0];
+    warn "$class: Unknown exports requested (@args)", return
+        unless ($arg eq '%RPM');
+
+    my $callpkg = caller(0);
+
+    no strict 'refs';
+
+    tie %RPM, "RPM::Database";
+    *{"${callpkg}::RPM"} = \%{"${class}::RPM"};
 }
 
 __END__
