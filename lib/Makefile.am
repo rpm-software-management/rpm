@@ -6,9 +6,7 @@ INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/popt \
-	@INCPATH@ \
-	-I/usr/include \
-	-I$(top_srcdir)/misc
+	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \

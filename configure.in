@@ -890,6 +890,9 @@ testdir="`pwd`/tests"
 dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")
 AC_SUBST(testdir)
 
+if test -n "$LIBOBJS"; then
+    INCPATH="$INCPATH -I\$(top_builddir)/misc"
+fi
 AC_SUBST(INCPATH)
 
 AC_SUBST(LIBS)

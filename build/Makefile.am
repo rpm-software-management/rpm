@@ -6,9 +6,7 @@ INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/popt \
-	@INCPATH@ \
-	-I/usr/include \
-	-I$(top_srcdir)/misc
+	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
