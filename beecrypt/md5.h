@@ -34,10 +34,16 @@
  */
 typedef struct
 {
-	uint32 h[4];
-	uint32 data[16];
-	uint64 length;
-	uint8  offset;
+	uint32_t h[4];
+	uint32_t data[16];
+	#if (MP_WBITS == 64)
+	mpw length[1];
+	#elif (MP_WBITS == 32)
+	mpw length[2];
+	#else
+	# error
+	#endif
+	short offset;
 } md5Param;
 
 #ifdef __cplusplus
@@ -69,7 +75,7 @@ int md5Reset   (md5Param* p)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int md5Update  (md5Param* p, const byte* data, int size)
+int md5Update  (md5Param* p, const byte* data, size_t size)
 	/*@modifies p @*/;
 /*@=exportlocal@*/
 
@@ -77,7 +83,7 @@ int md5Update  (md5Param* p, const byte* data, int size)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int md5Digest  (md5Param* p, /*@out@*/ uint32* data)
+int md5Digest  (md5Param* p, /*@out@*/ byte* data)
 	/*@modifies p, data @*/;
 /*@=exportlocal@*/
 
