@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.21 2001/04/27 09:07:08 rjray Exp $
+# $Id: Makefile.PL,v 1.22 2001/04/29 22:44:13 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -56,15 +56,16 @@ chomp($rpm_version = qx($rpm_binary --version));
 $rpm_version = (reverse split(/ /, $rpm_version))[0];
 @rpm_version = split(/\./, $rpm_version);
 push(@rpm_version, '0') unless (@rpm_version > 2);
-$rpm_version = join('', map { sprintf "%03d", $_ } @rpm_version);
-$rpm_version =~ s/^0*//;
+$rpm_version = sprintf '0x%02x'.'%02x'x$#rpm_version, @rpm_version;
 die "RPM version must be at least 3.0.4, due to I/O features not available
 prior to that version. Stopped"
-    unless ($rpm_version >= 3000004);
+    # The stringification is because Perl is still treating $rpm_version as a
+    # string
+    unless ($rpm_version >= "0x030004");
 # Starting with RPM 4.0, there are a number of subtle-but-significant changes
 $rpm_defines = "-DRPM_MAJOR=$rpm_version[0] -DRPM_MINOR=$rpm_version[1]" .
-    " -DRPM_PATCH=$rpm_version[2]";
-if ($rpm_version >= 4000000)
+    " -DRPM_PATCH=$rpm_version[2] -DRPM_VERSION=$rpm_version";
+if ($rpm_version >= "0x040000")
 {
     $rpm_libs = '-lrpm -lrpmio -lpopt';
 }
