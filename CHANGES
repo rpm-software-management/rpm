@@ -1,6 +1,8 @@
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
         - automatic shared lib provides now work with buildprefix
+	- fixed dependency checking during upgrades to work if the
+	  package wasn't previously installed
 
 2.1 -> 2.1.1:
 	- fixed -qi query format 
