@@ -11,10 +11,10 @@ static int addTriggerIndex(Package pkg, char *file, char *script, char *prog);
     static char *prog;
     static char *file;
     static struct poptOption optionsTable[] = {
-	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p' },
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n' },
-	{ NULL, 'f', POPT_ARG_STRING, &file, 'f' },
-	{ 0, 0, 0, 0, 0 }
+	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
+	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
+	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
+	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
 /* %trigger is a strange combination of %pre and Requires: behavior */

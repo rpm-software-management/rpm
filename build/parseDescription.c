@@ -11,9 +11,9 @@ extern int noLang;		/* XXX FIXME: pass as arg */
     static char *lang;
 
     static struct poptOption optionsTable[] = {
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n' },
-	{ NULL, 'l', POPT_ARG_STRING, &lang, 'l' },
-	{ 0, 0, 0, 0, 0 }
+	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
+	{ NULL, 'l', POPT_ARG_STRING, &lang, 'l',	NULL, NULL},
+	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
 int parseDescription(Spec spec)

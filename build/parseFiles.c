@@ -8,9 +8,9 @@
     static char *name;
     static char *file;
     static struct poptOption optionsTable[] = {
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n' },
-	{ NULL, 'f', POPT_ARG_STRING, &file, 'f' },
-	{ 0, 0, 0, 0, 0 }
+	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
+	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
+	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
 int parseFiles(Spec spec)

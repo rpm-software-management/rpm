@@ -33,32 +33,32 @@ struct poptOption rpmQuerySourcePoptTable[] = {
 		queryArgCallback, 0, NULL, NULL },
 	{ "file", 'f', 0, 0, 'f', "query package owning file", "FILE" },
 	{ "group", 'g', 0, 0, 'g', "query packages in group", "GROUP" },
-	{ "package", 'p', 0, 0, 'p', "query a package file" },
+	{ "package", 'p', 0, 0, 'p', "query a package file", NULL },
 	{ "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
 		"query the pacakges triggered by the package", "PACKAGE" },
 	{ "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
 		"query the packages which require a capability", "CAPABILITY" },
 	{ "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
 		"query the packages which provide a capability", "CAPABILITY" },
-	{ 0, 0, 0, 0, 0 }
+	{ 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
 struct poptOption rpmQueryPoptTable[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 		queryArgCallback, 0, NULL, NULL },
-	{ "configfiles", 'c', 0, 0, 'c', "list all configuration files" },
-	{ "docfiles", 'd', 0, 0, 'd', "list all documetnation files" },
-	{ "dump", '\0', 0, 0, POPT_DUMP, "dump basic file information" },
-	{ "list", 'l', 0, 0, 'l', "list files in package" },
+	{ "configfiles", 'c', 0, 0, 'c', "list all configuration files", NULL },
+	{ "docfiles", 'd', 0, 0, 'd', "list all documetnation files", NULL },
+	{ "dump", '\0', 0, 0, POPT_DUMP, "dump basic file information", NULL },
+	{ "list", 'l', 0, 0, 'l', "list files in package", NULL },
 	{ "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
-		POPT_QUERYFORMAT },
+		POPT_QUERYFORMAT, NULL, NULL },
 	{ "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
-		POPT_QUERYBYNUMBER },
+		POPT_QUERYBYNUMBER, NULL, NULL },
 	{ "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
 		"use the following query format", "QUERYFORMAT" },
-	{ "state", 's', 0, 0, 's', "display the states of the listed files" },
-	{ "verbose", 'v', 0, 0, 'v', "display a verbose filelisting" },
-	{ 0, 0, 0, 0, 0 }
+	{ "state", 's', 0, 0, 's', "display the states of the listed files", NULL },
+	{ "verbose", 'v', 0, 0, 'v', "display a verbose filelisting", NULL },
+	{ 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
 static void queryArgCallback(poptContext con, enum poptCallbackReason reason,

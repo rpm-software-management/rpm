@@ -460,11 +460,14 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 	close(pipes[0]);
 
 	if (errfd != NULL) {
-	    if (fdFileno(errfd) != STDERR_FILENO) dup2(fdFileno(errfd), STDERR_FILENO);
-	    if (fdFileno(out) != STDOUT_FILENO) dup2(fdFileno(out), STDOUT_FILENO);
+	    if (fdFileno(errfd) != STDERR_FILENO)
+		dup2(fdFileno(errfd), STDERR_FILENO);
+	    if (fdFileno(out) != STDOUT_FILENO)
+		dup2(fdFileno(out), STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (fdFileno(out) > STDERR_FILENO && out != errfd) fdClose (out); 
-	    if (fdFileno(errfd) > STDERR_FILENO) fdClose (errfd);
+	    if (fdFileno(out) > STDERR_FILENO && fdFileno(out) != fdFileno(errfd))		fdClose (out); 
+	    if (fdFileno(errfd) > STDERR_FILENO)
+		fdClose (errfd);
 	}
 
 	doputenv(SCRIPT_PATH);
@@ -474,7 +477,7 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 	    doputenv(prefixBuf);
 
 	    /* backwards compatibility */
-	    if (!i) {
+	    if (i == 0) {
 		sprintf(prefixBuf, "RPM_INSTALL_PREFIX=%s", prefixes[i]);
 		doputenv(prefixBuf);
 	    }

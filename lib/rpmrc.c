@@ -78,6 +78,7 @@ struct tableType {
     int canonsLength;
 };
 
+/*@-fullinitblock@*/
 static struct tableType tables[RPM_MACHTABLE_COUNT] = {
     { "arch", 1, 0 },
     { "os", 1, 0 },
@@ -136,6 +137,7 @@ static struct rpmOption optionTable[] = {
     { "topdir",			RPMVAR_TOPDIR,			0, 0,	1, 1 },
     { "vendor",			RPMVAR_VENDOR,			0, 0,	1, 1 },
 };
+/*@=fullinitblock@*/
 static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
 
 #define OS	0

@@ -838,7 +838,9 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
     struct cpioCallbackInfo cbinfo;
     struct cpioCrcPhysicalHeader hdr;
     struct stat sb;
+/*@-fullinitblock@*/
     struct hardLink hlinkList = { NULL };
+/*@=fullinitblock@*/
     struct hardLink * hlink, * parent;
 
     hlinkList.next = NULL;

@@ -10,7 +10,6 @@
 # not-yet normal parameters
 -boolops		# w->n
 -fixedformalarray
--fullinitblock
 -null
 -predboolint		# w->n
 -predboolothers		# w->n

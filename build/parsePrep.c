@@ -9,14 +9,14 @@
     static int createDir, quietly;
     static char * dirName;
     static struct poptOption optionsTable[] = {
-	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a' },
-	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b' },
-	    { NULL, 'c', 0, &createDir, 0 },
-	    { NULL, 'D', 0, &leaveDirs, 0 },
-	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0 },
-	    { NULL, 'T', 0, &skipDefaultAction, 0 },
-	    { NULL, 'q', 0, &quietly, 0 },
-	    { 0, 0, 0, 0, 0 }
+	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
+	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
+	    { NULL, 'c', 0, &createDir, 0,		NULL, NULL},
+	    { NULL, 'D', 0, &leaveDirs, 0,		NULL, NULL},
+	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0,	NULL, NULL},
+	    { NULL, 'T', 0, &skipDefaultAction, 0,	NULL, NULL},
+	    { NULL, 'q', 0, &quietly, 0,		NULL, NULL},
+	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
 #ifdef DYING
