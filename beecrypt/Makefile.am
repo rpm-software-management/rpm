@@ -36,7 +36,7 @@ AUTOMAKE_OPTIONS = gnu check-news no-dependencies
 
 LINT = splint
 
-SUBDIRS = docs gas masm mwerks tests
+SUBDIRS = docs gas masm mwerks python tests
 
 SUFFIXES = .s
 

@@ -669,5 +669,7 @@ AC_CONFIG_FILES([Makefile
                  gas/Makefile
                  masm/Makefile
                  mwerks/Makefile
+                 python/Makefile
+                 python/test/Makefile
                  tests/Makefile])
 AC_OUTPUT
