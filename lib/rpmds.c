@@ -198,13 +198,15 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     if (dspfx)	nb += strlen(dspfx) + 1;
 /*@-boundsread@*/
     if (ds->N[ds->i])	nb += strlen(ds->N[ds->i]);
-    if (ds->Flags[ds->i] & RPMSENSE_SENSEMASK) {
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (nb)	nb++;
 	if (ds->Flags[ds->i] & RPMSENSE_LESS)	nb++;
 	if (ds->Flags[ds->i] & RPMSENSE_GREATER) nb++;
 	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	nb++;
     }
-    if (ds->EVR[ds->i] && *ds->EVR[ds->i]) {
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
 	if (nb)	nb++;
 	nb += strlen(ds->EVR[ds->i]);
     }
@@ -218,13 +220,15 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     }
     if (ds->N[ds->i])
 	t = stpcpy(t, ds->N[ds->i]);
-    if (ds->Flags[ds->i] & RPMSENSE_SENSEMASK) {
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
 	if (t != tbuf)	*t++ = ' ';
 	if (ds->Flags[ds->i] & RPMSENSE_LESS)	*t++ = '<';
 	if (ds->Flags[ds->i] & RPMSENSE_GREATER) *t++ = '>';
 	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	*t++ = '=';
     }
-    if (ds->EVR[ds->i] && *ds->EVR[ds->i]) {
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
 	if (t != tbuf)	*t++ = ' ';
 	t = stpcpy(t, ds->EVR[ds->i]);
     }
@@ -565,6 +569,11 @@ static rpmds rpmdsDup(const rpmds ods)
 	: rpmdsDupArgv(ods->N, ods->Count) );
     ds->Nt = ods->Nt;
 
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullderef@*/
+assert(ds->EVR != NULL);
+assert(ds->Flags != NULL);
+
     nb = (ds->Count+1) * sizeof(*ds->EVR);
     ds->EVR = (ds->h != NULL
 	? memcpy(xmalloc(nb), ods->EVR, nb)
@@ -576,6 +585,7 @@ static rpmds rpmdsDup(const rpmds ods)
 	? ods->Flags
 	: memcpy(xmalloc(nb), ods->Flags, nb) );
     ds->Ft = ods->Ft;
+/*@=nullderef@*/
 
 /*@-compmempass@*/ /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
@@ -596,10 +606,14 @@ int rpmdsFind(rpmds ds, rpmds ods)
 	ds->i = (ds->l + ds->u) / 2;
 
 	comparison = strcmp(ods->N[ods->i], ds->N[ds->i]);
-	if (comparison == 0)
+
+	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullderef@*/
+	if (comparison == 0 && ods->EVR && ds->EVR)
 	    comparison = strcmp(ods->EVR[ods->i], ds->EVR[ds->i]);
-	if (comparison == 0)
+	if (comparison == 0 && ods->Flags && ds->Flags)
 	    comparison = (ods->Flags[ods->i] - ds->Flags[ds->i]);
+/*@=nullderef@*/
 
 	if (comparison < 0)
 	    ds->u = ds->i;
@@ -657,6 +671,11 @@ save = ods->i;
 	ds->N = _free(ds->N);
 	ds->N = N;
 	
+	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullderef@*/
+assert(ds->EVR != NULL);
+assert(ds->Flags != NULL);
+
 	for (j = ds->Count; j > ds->u; j--)
 	    ds->EVR[j] = ds->EVR[j-1];
 	ds->EVR[ds->u] = ods->EVR[ods->i];
@@ -672,6 +691,7 @@ save = ods->i;
 	Flags[ds->u] = ods->Flags[ods->i];
 	ds->Flags = _free(ds->Flags);
 	ds->Flags = Flags;
+/*@=nullderef@*/
 
 	ds->i = ds->Count;
 	ds->Count++;
@@ -748,6 +768,13 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	goto exit;
     }
 
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullderef@*/
+    if (!(A->EVR && A->Flags && B->EVR && B->Flags)) {
+	result = 1;
+	goto exit;
+    }
+
     /* Same name. If either A or B is an existence test, always overlap. */
     if (!((A->Flags[A->i] & RPMSENSE_SENSEMASK) && (B->Flags[B->i] & RPMSENSE_SENSEMASK))) {
 	result = 1;
@@ -805,6 +832,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	 ((A->Flags[A->i] & RPMSENSE_GREATER) && (B->Flags[B->i] & RPMSENSE_GREATER)))) {
 	result = 1;
     }
+/*@=nullderef@*/
 
 exit:
     if (_noisy_range_comparison_debug_message)
@@ -850,6 +878,10 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     int scareMem = 1;
     rpmds provides = NULL;
     int result = 0;
+
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (req->EVR == NULL || req->Flags == NULL)
+	return 1;
 
 /*@-boundsread@*/
     if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
@@ -906,6 +938,10 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     int_32 pkgFlags = RPMSENSE_EQUAL;
     rpmds pkg;
     int rc = 1;	/* XXX assume match, names already match here */
+
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (req->EVR == NULL || req->Flags == NULL)
+	return rc;
 
 /*@-boundsread@*/
     if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))

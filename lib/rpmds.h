@@ -35,9 +35,9 @@ struct rpmds_s {
     Header h;			/*!< Header for dependency set (or NULL) */
 /*@only@*/
     const char ** N;		/*!< Name. */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
-/*@only@*/
+/*@only@*/ /*@null@*/
     int_32 * Flags;		/*!< Flags identifying context/comparison. */
     rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */

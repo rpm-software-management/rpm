@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2002-12-28 20:04-0500\n"
+"POT-Creation-Date: 2002-12-29 12:52-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -2406,28 +2406,28 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:477 lib/rpmds.c:812
+#: lib/rpmds.c:481 lib/rpmds.c:840
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:477 lib/rpmds.c:812
+#: lib/rpmds.c:481 lib/rpmds.c:840
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:778
+#: lib/rpmds.c:805
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:811
+#: lib/rpmds.c:839
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:835
+#: lib/rpmds.c:863
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
