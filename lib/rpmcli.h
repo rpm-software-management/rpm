@@ -28,6 +28,12 @@ extern "C" {
 /*@unchecked@*/
 extern struct poptOption		rpmcliAllPoptTable[];
 
+/*@unchecked@*/
+extern int ftsOpts;
+
+/*@unchecked@*/
+extern struct poptOption		rpmcliFtsPoptTable[];
+
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * rpmcliPipeOutput;
 

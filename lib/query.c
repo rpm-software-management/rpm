@@ -414,10 +414,7 @@ static inline unsigned char nibble(char c)
 /*@-bounds@*/ /* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
-    const char ** av = NULL;
     int res = 0;
-    Header h;
-    int rc;
     const char * s;
     int i;
     int provides_checked = 0;
@@ -433,11 +430,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	res = rpmgiShowMatches(qva, ts);
 	break;
 
-    case RPMQV_SPECFILE:
-	res = ((qva->qva_specQuery != NULL)
-		? qva->qva_specQuery(ts, qva, arg) : 1);
-	break;
-
     case RPMQV_ALL:
 	res = rpmgiShowMatches(qva, ts);
 	break;
@@ -448,6 +440,11 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 
     case RPMQV_FTSWALK:
 	res = rpmgiShowMatches(qva, ts);
+	break;
+
+    case RPMQV_SPECFILE:
+	res = ((qva->qva_specQuery != NULL)
+		? qva->qva_specQuery(ts, qva, arg) : 1);
 	break;
 
     case RPMQV_GROUP:
@@ -678,7 +675,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 {
     int ec = 0;
-    int ftsOpts = 0;
 
     switch (qva->qva_source) {
     case RPMQV_ALL:
@@ -707,7 +703,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	break;
     case RPMQV_FTSWALK:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
-	if (ftsOpts == 0)	/* XXX always 0 */
+	if (ftsOpts == 0)
 	    ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */

@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmcli.h>
+#include <fts.h>
 
 #include "debug.h"
 
@@ -214,6 +215,30 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
     }
     /*@=branchstate@*/
 }
+
+/*@unchecked@*/
+int ftsOpts = 0;
+
+/*@unchecked@*/
+struct poptOption rpmcliFtsPoptTable[] = {
+ { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, FTS_COMFOLLOW,
+	N_("FTS_COMFOLLOW: follow command line symlinks"), NULL },
+ { "logical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_LOGICAL,
+	N_("FTS_LOGICAL: logical walk"), NULL },
+ { "nochdir", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOCHDIR,
+	N_("FTS_NOCHDIR: don't change directories"), NULL },
+ { "nostat", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOSTAT,
+	N_("FTS_NOSTAT: don't get stat info"), NULL },
+ { "physical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_PHYSICAL,
+	N_("FTS_PHYSICAL: physical walk"), NULL },
+ { "seedot", '\0', POPT_BIT_SET,	&ftsOpts, FTS_SEEDOT,
+	N_("FTS_SEEDOT: return dot and dot-dot"), NULL },
+ { "xdev", '\0', POPT_BIT_SET,		&ftsOpts, FTS_XDEV,
+	N_("FTS_XDEV: don't cross devices"), NULL },
+ { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
+	N_("FTS_WHITEOUT: return whiteout information"), NULL },
+   POPT_TABLEEND
+};
 
 /*@-bitwisesigned -compmempass @*/
 /*@unchecked@*/

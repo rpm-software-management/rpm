@@ -16,7 +16,6 @@ static const char * gitagstr = "packages";
 static const char * gikeystr = NULL;
 static rpmtransFlags transFlags = 0;
 static rpmgiFlags giflags = 0;
-static int ftsOpts = 0;
 
 static const char * queryFormat = NULL;
 static const char * defaultQueryFormat =
@@ -70,22 +69,9 @@ static struct poptOption optionsTable[] = {
  { "queryformat", '\0', POPT_ARG_STRING, &queryFormat, 0,
         N_("use the following query format"), "QUERYFORMAT" },
 
- { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, FTS_COMFOLLOW,
-	N_("follow command line symlinks"), NULL },
- { "logical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_LOGICAL,
-	N_("logical walk"), NULL },
- { "nochdir", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOCHDIR,
-	N_("don't change directories"), NULL },
- { "nostat", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOSTAT,
-	N_("don't get stat info"), NULL },
- { "physical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_PHYSICAL,
-	N_("physical walk"), NULL },
- { "seedot", '\0', POPT_BIT_SET,	&ftsOpts, FTS_SEEDOT,
-	N_("return dot and dot-dot"), NULL },
- { "xdev", '\0', POPT_BIT_SET,		&ftsOpts, FTS_XDEV,
-	N_("don't cross devices"), NULL },
- { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
-	N_("return whiteout information"), NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
+        N_("File tree walk options for fts(3):"),
+        NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
         N_("Common options for all rpm modes and executables:"),

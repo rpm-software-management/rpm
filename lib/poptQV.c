@@ -103,20 +103,23 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("rpm checksig mode"), NULL },
  { "file", 'f', 0, 0, 'f',
 	N_("query/verify package(s) owning file"), "FILE" },
- { "fileid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYFILEID,
-	N_("query/verify package(s) with file identifier"), "MD5" },
- { "ftswalk", 'W', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_FTSWALK,
-	N_("query/verify package(s) from TOP file tree walk"), "TOP" },
  { "group", 'g', 0, 0, 'g',
 	N_("query/verify package(s) in group"), "GROUP" },
- { "hdlist", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_HDLIST,
-	N_("query/verify package(s) from system hdlist"), "TOP" },
- { "hdrid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYHDRID,
-	N_("query/verify package(s) with header identifier"), "SHA1" },
  { "package", 'p', 0, 0, 'p',
 	N_("query/verify a package file"), NULL },
- { "pkgid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYPKGID,
+
+ { "ftswalk", 'W', 0, 0, POPT_FTSWALK,
+	N_("query/verify package(s) from TOP file tree walk"), "TOP" },
+ { "hdlist", 'H', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_HDLIST,
+	N_("query/verify package(s) from system HDLIST"), "HDLIST" },
+
+ { "pkgid", '\0', 0, 0, POPT_QUERYBYPKGID,
 	N_("query/verify package(s) with package identifier"), "MD5" },
+ { "hdrid", '\0', 0, 0, POPT_QUERYBYHDRID,
+	N_("query/verify package(s) with header identifier"), "SHA1" },
+ { "fileid", '\0', 0, 0, POPT_QUERYBYFILEID,
+	N_("query/verify package(s) with file identifier"), "MD5" },
+
  { "query", 'q', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'q',
 	N_("rpm query mode"), NULL },
  { "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYNUMBER,
@@ -125,7 +128,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query a spec file"), N_("<spec>") },
  { "tid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYTID,
 	N_("query/verify package(s) from install transaction"), "TID" },
- { "triggeredby", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_TRIGGEREDBY, 
+ { "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
 	N_("query the package(s) triggered by the package"), "PACKAGE" },
  { "verify", 'V', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
 	N_("rpm verify mode"), NULL },
@@ -133,6 +136,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
  { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
+
    POPT_TABLEEND
 };
 
