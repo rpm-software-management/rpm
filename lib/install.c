@@ -615,7 +615,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 	/* this would probably be a good place to check if disk space
 	   was used up - if so, we should return a different error */
 	rpmError(RPMERR_CPIO, _("unpacking of archive failed%s%s: %s"), 
-		(failedFile != NULL ? _(" on file") : ""),
+		(failedFile != NULL ? _(" on file ") : ""),
 		(failedFile != NULL ? failedFile : ""),
 		cpioStrerror(rc));
 	return 1;
