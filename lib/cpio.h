@@ -4,25 +4,26 @@
 #include <zlib.h>
 #include <sys/types.h>
 
-/* Note the "high" bit is set only if errno is valid */
+/* Note the CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
+   be positive numbers or this setting the high bit stuff is a bad idea. */
 #define CPIO_CHECK_ERRNO	0x80000000
-#define CPIO_READ_FAILED	(-1)
-#define CPIO_BAD_MAGIC		(-2			)
-#define CPIO_BAD_HEADER		(-3			)
-#define CPIO_OPEN_FAILED	(-4   | CPIO_CHECK_ERRNO)
-#define CPIO_CHMOD_FAILED	(-5   | CPIO_CHECK_ERRNO)
-#define CPIO_CHOWN_FAILED	(-6   | CPIO_CHECK_ERRNO)
-#define CPIO_WRITE_FAILED	(-7   | CPIO_CHECK_ERRNO)
-#define CPIO_UTIME_FAILED	(-8   | CPIO_CHECK_ERRNO)
-#define CPIO_UNLINK_FAILED	(-9   | CPIO_CHECK_ERRNO)
-#define CPIO_INTERNAL		(-10			)
-#define CPIO_SYMLINK_FAILED	(-11  | CPIO_CHECK_ERRNO)
-#define CPIO_STAT_FAILED	(-12  | CPIO_CHECK_ERRNO)
-#define CPIO_MKDIR_FAILED	(-13  | CPIO_CHECK_ERRNO)
-#define CPIO_MKNOD_FAILED	(-14  | CPIO_CHECK_ERRNO)
-#define CPIO_MKFIFO_FAILED	(-15  | CPIO_CHECK_ERRNO)
-#define CPIO_LINK_FAILED	(-16  | CPIO_CHECK_ERRNO)
-#define CPIO_READLINK_FAILED	(-17  | CPIO_CHECK_ERRNO)
+#define CPIO_READ_FAILED	(1)
+#define CPIO_BAD_MAGIC		(2			)
+#define CPIO_BAD_HEADER		(3			)
+#define CPIO_OPEN_FAILED	(4    | CPIO_CHECK_ERRNO)
+#define CPIO_CHMOD_FAILED	(5    | CPIO_CHECK_ERRNO)
+#define CPIO_CHOWN_FAILED	(6    | CPIO_CHECK_ERRNO)
+#define CPIO_WRITE_FAILED	(7    | CPIO_CHECK_ERRNO)
+#define CPIO_UTIME_FAILED	(8    | CPIO_CHECK_ERRNO)
+#define CPIO_UNLINK_FAILED	(9    | CPIO_CHECK_ERRNO)
+#define CPIO_INTERNAL		(10			)
+#define CPIO_SYMLINK_FAILED	(11   | CPIO_CHECK_ERRNO)
+#define CPIO_STAT_FAILED	(12   | CPIO_CHECK_ERRNO)
+#define CPIO_MKDIR_FAILED	(13   | CPIO_CHECK_ERRNO)
+#define CPIO_MKNOD_FAILED	(14   | CPIO_CHECK_ERRNO)
+#define CPIO_MKFIFO_FAILED	(15   | CPIO_CHECK_ERRNO)
+#define CPIO_LINK_FAILED	(16   | CPIO_CHECK_ERRNO)
+#define CPIO_READLINK_FAILED	(17   | CPIO_CHECK_ERRNO)
 
 /* Don't think this behaves just like standard cpio. It's pretty close, but
    it has some behaviors which are more to RPM's liking. I tried to document
