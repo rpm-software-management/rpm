@@ -137,7 +137,6 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 	    }
 
 	    switch(tag) {
-	    case RPMTAG_OBSOLETES:
 	    case RPMTAG_BUILDPREREQ:
 	    case RPMTAG_PREREQ:
 		rpmError(RPMERR_BADSPEC,

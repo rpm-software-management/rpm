@@ -194,180 +194,6 @@ static int intcmp(const void * a, const void *b)
     return 1;
 }
 
-rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root)
-{
-    rpmTransactionSet rpmdep;
-    int rootLength;
-
-    if (!root) root = "";
-
-    rpmdep = malloc(sizeof(*rpmdep));
-    rpmdep->db = db;
-    rpmdep->scriptFd = NULL;
-    rpmdep->numRemovedPackages = 0;
-    rpmdep->allocedRemovedPackages = 5;
-    rpmdep->removedPackages = malloc(sizeof(int) * 
-				     rpmdep->allocedRemovedPackages);
-
-    /* This canonicalizes the root */
-    rootLength = strlen(root);
-    if (root && root[rootLength] == '/') {
-	char * newRootdir;
-
-	newRootdir = alloca(rootLength + 2);
-	strcpy(newRootdir, root);
-	newRootdir[rootLength++] = '/';
-	newRootdir[rootLength] = '\0';
-	root = newRootdir;
-    }
-
-    rpmdep->root = strdup(root);
-
-    alCreate(&rpmdep->addedPackages);
-    alCreate(&rpmdep->availablePackages);
-
-    rpmdep->orderAlloced = 5;
-    rpmdep->orderCount = 0;
-    rpmdep->order = malloc(sizeof(*rpmdep->order) * rpmdep->orderAlloced);
-
-    return rpmdep;
-}
-
-static void removePackage(rpmTransactionSet rpmdep, int dboffset, int depends)
-{
-    if (rpmdep->numRemovedPackages == rpmdep->allocedRemovedPackages) {
-	rpmdep->allocedRemovedPackages += 5;
-	rpmdep->removedPackages = realloc(rpmdep->removedPackages,
-		sizeof(int *) * rpmdep->allocedRemovedPackages);
-    }
-
-    rpmdep->removedPackages[rpmdep->numRemovedPackages++] = dboffset;
-
-    if (rpmdep->orderCount == rpmdep->orderAlloced) {
-	rpmdep->orderAlloced += 5;
-	rpmdep->order = realloc(rpmdep->order, 
-		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
-    }
-
-    rpmdep->order[rpmdep->orderCount].type = TR_REMOVED;
-    rpmdep->order[rpmdep->orderCount].u.removed.dboffset = dboffset;
-    rpmdep->order[rpmdep->orderCount++].u.removed.dependsOnIndex = depends;
-}
-
-int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
-			const void * key, int upgrade, rpmRelocation * relocs)
-{
-    /* this is an install followed by uninstalls */
-    dbiIndexSet matches;
-    char * name;
-    int count, i, j;
-    char ** obsoletes;
-    int alNum;
-    int * caps;
-
-    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-    if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
-	return 1;
-
-    /* Make sure we've implemented all of the capabilities we need */
-    if (headerGetEntry(h, RPMTAG_CAPABILITY, NULL, (void **)&caps, &count)) {
-	if (count != 1 || *caps) {
-	    return 2;
-	}
-    }
-
-    /* FIXME: handling upgrades like this is *almost* okay. It doesn't
-       check to make sure we're upgrading to a newer version, and it
-       makes it difficult to generate a return code based on the number of
-       packages which failed. */
-   
-    if (rpmdep->orderCount == rpmdep->orderAlloced) {
-	rpmdep->orderAlloced += 5;
-	rpmdep->order = realloc(rpmdep->order, 
-		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
-    }
-    rpmdep->order[rpmdep->orderCount].type = TR_ADDED;
-    alNum = alAddPackage(&rpmdep->addedPackages, h, key, fd, relocs) - 
-    		rpmdep->addedPackages.list;
-    rpmdep->order[rpmdep->orderCount++].u.addedIndex = alNum;
-
-    if (!upgrade || rpmdep->db == NULL) return 0;
-
-    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, &count);
-
-    if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
-	Header h2;
-
-	for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	    h2 = rpmdbGetRecord(rpmdep->db, dbiIndexRecordOffset(matches, i));
-	    if (h2) {
-		if (rpmVersionCompare(h, h2)) {
-		    removePackage(rpmdep, dbiIndexRecordOffset(matches, i), 
-				  alNum);
-		}
-		headerFree(h2);
-	    }
-	}
-
-	dbiFreeIndexRecord(matches);
-    }
-
-    if (headerGetEntry(h, RPMTAG_OBSOLETES, NULL, (void **) &obsoletes, 
-			&count)) {
-	for (j = 0; j < count; j++) {
-	    if (!rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))  {
-		for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		    removePackage(rpmdep, dbiIndexRecordOffset(matches, i),
-				  alNum);
-		}
-
-		dbiFreeIndexRecord(matches);
-	    }
-	}
-
-	free(obsoletes);
-    }
-
-    return 0;
-}
-
-void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key)
-{
-    alAddPackage(&rpmdep->availablePackages, h, key, NULL, NULL);
-}
-
-void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset)
-{
-    removePackage(rpmdep, dboffset, -1);
-}
-
-void rpmtransFree(rpmTransactionSet rpmdep)
-{
-    alFree(&rpmdep->addedPackages);
-    alFree(&rpmdep->availablePackages);
-    free(rpmdep->removedPackages);
-    free(rpmdep->root);
-
-    free(rpmdep);
-}
-
-void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
-			 numConflicts)
-{
-    int i;
-
-    for (i = 0; i < numConflicts; i++) {
-	headerFree(conflicts[i].byHeader);
-	free(conflicts[i].byName);
-	free(conflicts[i].byVersion);
-	free(conflicts[i].byRelease);
-	free(conflicts[i].needsName);
-	free(conflicts[i].needsVersion);
-    }
-
-    free(conflicts);
-}
-
 static void parseEVR(char *evr, const char **ep, const char **vp, const char **rp)
 {
     const char *epoch = NULL;
@@ -557,6 +383,194 @@ static inline int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset,
     headerFree(h);
 
     return rc;
+}
+
+rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root)
+{
+    rpmTransactionSet rpmdep;
+    int rootLength;
+
+    if (!root) root = "";
+
+    rpmdep = malloc(sizeof(*rpmdep));
+    rpmdep->db = db;
+    rpmdep->scriptFd = NULL;
+    rpmdep->numRemovedPackages = 0;
+    rpmdep->allocedRemovedPackages = 5;
+    rpmdep->removedPackages = malloc(sizeof(int) * 
+				     rpmdep->allocedRemovedPackages);
+
+    /* This canonicalizes the root */
+    rootLength = strlen(root);
+    if (root && root[rootLength] == '/') {
+	char * newRootdir;
+
+	newRootdir = alloca(rootLength + 2);
+	strcpy(newRootdir, root);
+	newRootdir[rootLength++] = '/';
+	newRootdir[rootLength] = '\0';
+	root = newRootdir;
+    }
+
+    rpmdep->root = strdup(root);
+
+    alCreate(&rpmdep->addedPackages);
+    alCreate(&rpmdep->availablePackages);
+
+    rpmdep->orderAlloced = 5;
+    rpmdep->orderCount = 0;
+    rpmdep->order = malloc(sizeof(*rpmdep->order) * rpmdep->orderAlloced);
+
+    return rpmdep;
+}
+
+static void removePackage(rpmTransactionSet rpmdep, int dboffset, int depends)
+{
+    if (rpmdep->numRemovedPackages == rpmdep->allocedRemovedPackages) {
+	rpmdep->allocedRemovedPackages += 5;
+	rpmdep->removedPackages = realloc(rpmdep->removedPackages,
+		sizeof(int *) * rpmdep->allocedRemovedPackages);
+    }
+
+    rpmdep->removedPackages[rpmdep->numRemovedPackages++] = dboffset;
+
+    if (rpmdep->orderCount == rpmdep->orderAlloced) {
+	rpmdep->orderAlloced += 5;
+	rpmdep->order = realloc(rpmdep->order, 
+		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
+    }
+
+    rpmdep->order[rpmdep->orderCount].type = TR_REMOVED;
+    rpmdep->order[rpmdep->orderCount].u.removed.dboffset = dboffset;
+    rpmdep->order[rpmdep->orderCount++].u.removed.dependsOnIndex = depends;
+}
+
+int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
+			const void * key, int upgrade, rpmRelocation * relocs)
+{
+    /* this is an install followed by uninstalls */
+    dbiIndexSet matches;
+    char * name;
+    int count, i, j;
+    const char ** obsoletes;
+    int alNum;
+    int * caps;
+
+    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
+    if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
+	return 1;
+
+    /* Make sure we've implemented all of the capabilities we need */
+    if (headerGetEntry(h, RPMTAG_CAPABILITY, NULL, (void **)&caps, &count)) {
+	if (count != 1 || *caps) {
+	    return 2;
+	}
+    }
+
+    /* FIXME: handling upgrades like this is *almost* okay. It doesn't
+       check to make sure we're upgrading to a newer version, and it
+       makes it difficult to generate a return code based on the number of
+       packages which failed. */
+   
+    if (rpmdep->orderCount == rpmdep->orderAlloced) {
+	rpmdep->orderAlloced += 5;
+	rpmdep->order = realloc(rpmdep->order, 
+		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
+    }
+    rpmdep->order[rpmdep->orderCount].type = TR_ADDED;
+    alNum = alAddPackage(&rpmdep->addedPackages, h, key, fd, relocs) - 
+    		rpmdep->addedPackages.list;
+    rpmdep->order[rpmdep->orderCount++].u.addedIndex = alNum;
+
+    if (!upgrade || rpmdep->db == NULL) return 0;
+
+    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, &count);
+
+    if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
+	Header h2;
+
+	for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	    h2 = rpmdbGetRecord(rpmdep->db, dbiIndexRecordOffset(matches, i));
+	    if (h2 == NULL)
+		continue;
+	    if (rpmVersionCompare(h, h2))
+		removePackage(rpmdep, dbiIndexRecordOffset(matches, i), alNum);
+	    headerFree(h2);
+	}
+
+	dbiFreeIndexRecord(matches);
+    }
+
+    if (headerGetEntry(h, RPMTAG_OBSOLETENAME, NULL, (void **) &obsoletes, &count)) {
+	const char **obsoletesVersion, *obsV;
+	int *obsoletesFlags, obsF;
+
+	headerGetEntry(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletesFlags, NULL);
+	headerGetEntry(h, RPMTAG_OBSOLETEVERSION, NULL, (void **) &obsoletesVersion, NULL);
+
+	for (j = 0; j < count; j++) {
+	    if (rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))
+		continue;
+	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+		 if (bsearch(&recOffset,
+			rpmdep->removedPackages, rpmdep->numRemovedPackages,
+			sizeof(int), intcmp))
+		    continue;
+			
+		obsV = obsoletesVersion ? obsoletesVersion[j] : "";
+		obsF = obsoletesFlags ? obsoletesFlags[j] : 0;
+		if (dbrecMatchesDepFlags(rpmdep, recOffset,
+		      obsoletes[j], obsV, obsF, headerMatchesDepFlags)) {
+			removePackage(rpmdep, recOffset, alNum);
+		}
+	    }
+
+	    dbiFreeIndexRecord(matches);
+	}
+
+	if (obsoletesVersion) free(obsoletesVersion);
+	free(obsoletes);
+    }
+
+    return 0;
+}
+
+void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key)
+{
+    alAddPackage(&rpmdep->availablePackages, h, key, NULL, NULL);
+}
+
+void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset)
+{
+    removePackage(rpmdep, dboffset, -1);
+}
+
+void rpmtransFree(rpmTransactionSet rpmdep)
+{
+    alFree(&rpmdep->addedPackages);
+    alFree(&rpmdep->availablePackages);
+    free(rpmdep->removedPackages);
+    free(rpmdep->root);
+
+    free(rpmdep);
+}
+
+void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
+			 numConflicts)
+{
+    int i;
+
+    for (i = 0; i < numConflicts; i++) {
+	headerFree(conflicts[i].byHeader);
+	free(conflicts[i].byName);
+	free(conflicts[i].byVersion);
+	free(conflicts[i].byRelease);
+	free(conflicts[i].needsName);
+	free(conflicts[i].needsVersion);
+    }
+
+    free(conflicts);
 }
 
 static struct availablePackage * alSatisfiesDepend(struct availableList * al, 
