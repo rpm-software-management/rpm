@@ -173,6 +173,13 @@ extern "C" {
 /*@observer@*/ const char *const fileStageString(fileStage a);
 
 /**
+ * Return formatted string representation of file disposition.
+ * @param a		file dispostion
+ * @return		formatted string
+ */
+/*@observer@*/ const char *const fileActionString(fileAction a);
+
+/**
  * Create file state machine instance.
  * @return		file state machine data
  */

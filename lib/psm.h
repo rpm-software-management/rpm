@@ -148,7 +148,8 @@ struct psm_s {
 /*@dependent@*/ const char * pkgfn;	/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
-    int scriptArg;		/*!< No. of installed instances. */
+    int npkgs_installed;	/*!< No. of installed instances. */
+    int scriptArg;		/*!< Scriptlet package arg. */
     int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
@@ -182,13 +183,6 @@ void freeFi(TFI_t fi)
  * @return		formatted string
  */
 /*@observer@*/ const char *const fiTypeString(TFI_t fi);
-
-/**
- * Return formatted string representation of file disposition.
- * @param a		file dispostion
- * @return		formatted string
- */
-/*@observer@*/ const char *const fileActionString(fileAction a);
 
 /**
  * Package state machine driver.

@@ -1905,6 +1905,26 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n",
     return rc;
 }
 
+/*@obserever@*/ const char *const fileActionString(fileAction a)
+{
+    switch (a) {
+    case FA_UNKNOWN:	return "unknown";
+    case FA_CREATE:	return "create";
+    case FA_COPYOUT:	return "copyout";
+    case FA_COPYIN:	return "copyin";
+    case FA_BACKUP:	return "backup";
+    case FA_SAVE:	return "save";
+    case FA_SKIP:	return "skip";
+    case FA_ALTNAME:	return "altname";
+    case FA_ERASE:	return "erase";
+    case FA_SKIPNSTATE: return "skipnstate";
+    case FA_SKIPNETSHARED: return "skipnetshared";
+    case FA_SKIPMULTILIB: return "skipmultilib";
+    default:		return "???";
+    }
+    /*@notreached@*/
+}
+
 /*@observer@*/ const char *const fileStageString(fileStage a) {
     switch(a) {
     case FSM_UNKNOWN:	return "unknown";

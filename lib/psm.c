@@ -192,26 +192,6 @@ void freeFi(TFI_t fi)
     /*@noteached@*/
 }
 
-/*@obserever@*/ const char *const fileActionString(fileAction a)
-{
-    switch (a) {
-    case FA_UNKNOWN:	return "unknown";
-    case FA_CREATE:	return "create";
-    case FA_COPYOUT:	return "copyout";
-    case FA_COPYIN:	return "copyin";
-    case FA_BACKUP:	return "backup";
-    case FA_SAVE:	return "save";
-    case FA_SKIP:	return "skip";
-    case FA_ALTNAME:	return "altname";
-    case FA_ERASE:	return "erase";
-    case FA_SKIPNSTATE: return "skipnstate";
-    case FA_SKIPNETSHARED: return "skipnetshared";
-    case FA_SKIPMULTILIB: return "skipmultilib";
-    default:		return "???";
-    }
-    /*@notreached@*/
-}
-
 /**
  * Macros to be defined from per-header tag values.
  * @todo Should other macros be added from header when installing a package?
@@ -1011,14 +991,14 @@ static int runScript(PSM_t psm, Header h,
 
     if (waitpid(child, &status, 0) < 0) {
 	rpmError(RPMERR_SCRIPT,
-		 _("execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"),
+     _("execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"),
 		 sln, n, v, r, strerror (errno));
 	/* XXX what to do here? */
 	rc = RPMRC_OK;
     } else {
 	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	    rpmError(RPMERR_SCRIPT,
-		     _("execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"),
+     _("execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"),
 		     sln, n, v, r, WEXITSTATUS(status));
 	    rc = RPMRC_FAIL;
 	}
@@ -1043,7 +1023,6 @@ static int runScript(PSM_t psm, Header h,
  */
 static rpmRC runInstScript(PSM_t psm)
 {
-    const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = fi->hfd;
@@ -1053,9 +1032,6 @@ static rpmRC runInstScript(PSM_t psm)
     int_32 ptt, stt;
     const char * script;
     rpmRC rc = RPMRC_OK;
-
-    if (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS)
-	return rc;
 
     /*
      * headerGetEntry() sets the data pointer to NULL if the entry does
@@ -1073,6 +1049,7 @@ static rpmRC runInstScript(PSM_t psm)
 
     rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), programArgc, argv,
 		script, psm->scriptArg, -1);
+
     programArgv = hfd(programArgv, ptt);
     script = hfd(script, stt);
     return rc;
@@ -1329,17 +1306,19 @@ int psmStage(PSM_t psm, pkgStage stage)
 		psm->stepName, fi->name, fi->version, fi->release,
 		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
 
+	/*
+	 * When we run scripts, we pass an argument which is the number of 
+	 * versions of this package that will be installed when we are
+	 * finished.
+	 */
+	psm->npkgs_installed = rpmdbCountPackages(ts->rpmdb, fi->name);
+	if (psm->npkgs_installed < 0) {
+	    rc = RPMRC_FAIL;
+	    break;
+	}
+
 	if (psm->goal == PSM_PKGINSTALL) {
-	    /*
-	     * When we run scripts, we pass an argument which is the number of 
-	     * versions of this package that will be installed when we are
-	     * finished.
-	     */
-	    psm->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) + 1;
-	    if (psm->scriptArg < 1) {
-		rc = RPMRC_FAIL;
-		break;
-	    }
+	    psm->scriptArg = psm->npkgs_installed + 1;
 
 assert(psm->mi == NULL);
 	    psm->mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
@@ -1393,28 +1372,41 @@ assert(psm->mi == NULL);
 	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PSM_PKGERASE) {
-	    /*
-	     * When we run scripts, we pass an argument which is the number of 
-	     * versions of this package that will be installed when we are
-	     * finished.
-	     */
-	    psm->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) - 1;
-	    if (psm->scriptArg < 0) {
-		rc = RPMRC_FAIL;
-		break;
-	    }
+	    psm->scriptArg = psm->npkgs_installed - 1;
 	
 	    /* Retrieve installed header. */
 	    rc = psmStage(psm, PSM_RPMDB_LOAD);
-	    if (rc) break;
 	}
 	if (psm->goal == PSM_PKGSAVE) {
+	    psm->scriptArg = psm->npkgs_installed - 1;
+	
 	    /* Retrieve installed header. */
 	    rc = psmStage(psm, PSM_RPMDB_LOAD);
+
+	    /* Open output package for writing. */
+	    {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
+		const char * pkgbn =
+			headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
+
+		bfmt = _free(bfmt);
+		psm->pkgURL = rpmGenPath("%{?_repackage_root:%{_repackage_root}}",
+					 "%{?_repackage_dir:%{_repackage_dir}}",
+					pkgbn);
+		pkgbn = _free(pkgbn);
+		(void) urlPath(psm->pkgURL, &psm->pkgfn);
+		psm->fd = Fopen(psm->pkgfn, "w.ufdio");
+		if (psm->fd == NULL || Ferror(psm->fd)) {
+		    rc = RPMRC_FAIL;
+		    break;
+		}
+	    }
 	}
 	break;
     case PSM_PRE:
 	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
+
+	/* Change root directory if requested and not already done. */
+	rc = psmStage(psm, PSM_CHROOT_IN);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
@@ -1428,8 +1420,10 @@ assert(psm->mi == NULL);
 		break;
 	    }
 
+#ifdef	DYING
 	    /* Change root directory if requested and not already done. */
 	    (void) psmStage(psm, PSM_CHROOT_IN);
+#endif
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    psm->scriptTag = RPMTAG_PREUN;
@@ -1437,9 +1431,11 @@ assert(psm->mi == NULL);
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
 
+#ifdef	DYING
 	    /* Change root directory if requested and not already done. */
 	    rc = psmStage(psm, PSM_CHROOT_IN);
 	    if (rc) break;
+#endif
 
 	    rc = psmStage(psm, PSM_TRIGGERS);
 	    if (rc) break;
@@ -1459,24 +1455,6 @@ assert(psm->mi == NULL);
 		    uh = hfd(uh, uht);
 		} else {
 		    psm->oh = headerLink(fi->h);
-		}
-	    }
-
-	    /* Open output package for writing. */
-	    {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
-		const char * pkgbn =
-			headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
-
-		bfmt = _free(bfmt);
-		psm->pkgURL = rpmGenPath("%{?_repackage_root:%{_repackage_root}}",
-					 "%{?_repackage_dir:%{_repackage_dir}}",
-					pkgbn);
-		pkgbn = _free(pkgbn);
-		(void) urlPath(psm->pkgURL, &psm->pkgfn);
-		psm->fd = Fopen(psm->pkgfn, "w.ufdio");
-		if (psm->fd == NULL || Ferror(psm->fd)) {
-		    rc = RPMRC_FAIL;
-		    break;
 		}
 	    }
 
@@ -1527,12 +1505,15 @@ assert(psm->mi == NULL);
 	    rc = headerWrite(psm->fd, psm->oh, HEADER_MAGIC_YES);
 	    if (rc) break;
 
+#ifdef	DYING
 	    /* Change root directory if requested and not already done. */
 	    rc = psmStage(psm, PSM_CHROOT_IN);
+#endif
 	}
 	break;
     case PSM_PROCESS:
 	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
+
 	if (psm->goal == PSM_PKGINSTALL) {
 	    struct availablePackage * alp = fi->ap;
 
@@ -1618,11 +1599,14 @@ assert(psm->mi == NULL);
 	break;
     case PSM_POST:
 	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
+
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = time(NULL);
 
+#ifdef	DYING
 	    /* Restore root directory if changed. */
 	    (void) psmStage(psm, PSM_CHROOT_OUT);
+#endif
 
 	    if (fi->fc > 0 && fi->fstates)
 		headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
@@ -1690,10 +1674,16 @@ assert(psm->mi == NULL);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	}
+
+	/* Restore root directory if changed. */
+	(void) psmStage(psm, PSM_CHROOT_OUT);
 	break;
     case PSM_UNDO:
 	break;
     case PSM_FINI:
+	/* Restore root directory if changed. */
+	(void) psmStage(psm, PSM_CHROOT_OUT);
+
 	if (psm->fd) {
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    Fclose(psm->fd);
@@ -1705,9 +1695,6 @@ assert(psm->mi == NULL);
 	    if (!rc)
 		rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"), psm->pkgURL);
 	}
-
-	/* Restore root directory if changed. */
-	(void) psmStage(psm, PSM_CHROOT_OUT);
 
 	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE)) {
 	    headerFree(fi->h);
