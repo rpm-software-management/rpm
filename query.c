@@ -747,8 +747,6 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	break;
 
       case QUERY_DBOFFSET:
-
-      case QUERY_SPACKAGE:
 	recNumber = strtoul(arg, &end, 10);
 	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
 	    fprintf(stderr, "invalid package number: %s\n", arg);
@@ -766,6 +764,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 	break;
 
+      case QUERY_SPACKAGE:
       case QUERY_PACKAGE:
 	rc = findPackageByLabel(db, arg, &matches);
 	if (rc == 1) {
