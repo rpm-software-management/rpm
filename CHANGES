@@ -18,6 +18,7 @@
 	- fix: /dev/initctl has not MD5 segfault (#76718).
 	- rpm.8: gpg uses GNUPGHOME, not GPGPATH (#76691).
 	- add error message on glob failure (#76012).
+	- add _javadir/_javadocdir/_javaclasspath macros.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
