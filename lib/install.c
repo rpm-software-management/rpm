@@ -213,8 +213,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
-    int * oldVersions;
-    int * intptr;
+    int * toRemove = NULL;
+    int toRemoveAlloced = 1;
+    int * intptr = NULL;
     char * archivePrefix, * tmpPath;
     int scriptArg;
     int hasOthers = 0;
@@ -224,12 +225,10 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     int freeFileMem = 0;
     char * currDir = NULL, * tmpptr;
     int currDirLen;
+    char ** obsoletes;
 
     if (flags & RPMINSTALL_JUSTDB)
 	flags |= RPMINSTALL_NOSCRIPTS;
-
-    oldVersions = alloca(sizeof(int));
-    *oldVersions = 0;
 
     rc = rpmReadPackageHeader(fd, &h, &isSource, &major, &minor);
     if (rc) return rc;
@@ -314,15 +313,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     rpmMessage(RPMMESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
 		name, version, release, flags & RPMINSTALL_TEST);
 
-    rc = rpmdbFindPackage(db, name, &matches);
-    if (rc == -1) return 2;
-    if (rc) {
- 	scriptArg = 1;
-    } else {
-	hasOthers = 1;
-	scriptArg = matches.count + 1;
-    }
-
     /* This canonicalizes the root */
     if (rootdir && rootdir[rootLength] == '/') {
 	char * newRootdir;
@@ -334,7 +324,16 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	rootdir = newRootdir;
     }
 
-    if (flags & RPMINSTALL_UPGRADE && hasOthers) {
+    rc = rpmdbFindPackage(db, name, &matches);
+    if (rc == -1) return 2;
+    if (rc) {
+ 	scriptArg = 1;
+    } else {
+	hasOthers = 1;
+	scriptArg = matches.count + 1;
+    }
+
+    if (flags & RPMINSTALL_UPGRADE) {
 	/* 
 	   We need to get a list of all old version of this package. We let
 	   this install procede normally then, but:
@@ -345,10 +344,13 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	   Note if the version being installed is already installed, we don't
 	   put that in the list -- that situation is handled normally.
+
+	   We also need to handle packages which were made oboslete.
 	*/
 
-	if (!rc) {
-	    intptr = oldVersions = alloca((matches.count + 1) * sizeof(int));
+	if (hasOthers) {
+	    toRemoveAlloced = matches.count + 1;
+	    intptr = toRemove = malloc(toRemoveAlloced * sizeof(int));
 	    for (i = 0; i < matches.count; i++) {
 		if (matches.recs[i].recOffset != otherOffset) {
 		    if (!(flags & RPMINSTALL_UPGRADETOOLD)) 
@@ -360,12 +362,45 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		    *intptr++ = matches.recs[i].recOffset;
 		}
 	    }
-	    *intptr++ = 0;
-	}
-    }
 
-    if (hasOthers) 
+	    dbiFreeIndexRecord(matches);
+	}
+
+	if (!(flags & RPMINSTALL_KEEPOBSOLETE) &&
+	    headerGetEntry(h, RPMTAG_OBSOLETES, NULL, (void **) &obsoletes, 
+				&count)) {
+	    for (i = 0; i < count; i++) {
+		rc = rpmdbFindPackage(db, obsoletes[i], &matches);
+		if (rc == -1) return 2;
+		if (rc == 1) continue;		/* no matches */
+
+		rpmMessage(RPMMESS_DEBUG, "package %s is now obsolete and will"
+			   "be removed\n", obsoletes[i]);
+
+		toRemoveAlloced += matches.count;
+		j = toRemove ? intptr - toRemove : 0; 
+		toRemove = realloc(toRemove, toRemoveAlloced * sizeof(int));
+		intptr = toRemove + j;
+
+		for (j = 0; j < count; j++)
+		    *intptr++ = matches.recs[j].recOffset;
+
+		dbiFreeIndexRecord(matches);
+	    }
+
+	    free(obsoletes);
+	}
+
+	*intptr++ = 0;
+
+	/* this means we don't have to free the list */
+	intptr = alloca(toRemoveAlloced * sizeof(int));
+	memcpy(intptr, toRemove, toRemoveAlloced * sizeof(int));
+	free(toRemove);
+	toRemove = intptr;
+    } else if (hasOthers) {
 	dbiFreeIndexRecord(matches);
+    }
 
     if (rootdir) {
 	currDirLen = 50;
@@ -449,7 +484,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
 
 	rc = instHandleSharedFiles(db, otherOffset, files, fileCount, 
-				   oldVersions, &replacedList, flags);
+				   toRemove, &replacedList, flags);
 
 	if (rc) {
 	    if (rootdir) {
@@ -642,7 +677,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     if (flags & RPMINSTALL_UPGRADE) {
 	rpmMessage(RPMMESS_DEBUG, "removing old versions of package\n");
-	intptr = oldVersions;
+	intptr = toRemove;
 	while (*intptr) {
 	    rpmRemovePackage(rootdir, db, *intptr, 0);
 	    intptr++;

@@ -1,7 +1,9 @@
 2.4.7 -> 2.4.8:
 	- added noarch build compatibilities for ppc, m68k
 	- fixed some minor typos (Florian La Roche)
-	- added Obsoletes: tag
+	- added Obsoletes: tag, an upgrade removes packages which
+	  have been obsoleted
+	- updated rpmdepUpgradePackage() to deal with obsoletes tag
 
 2.4.6 -> 2.4.7:
 	- had some wrong month lengths in changelog date parsing

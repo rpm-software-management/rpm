@@ -253,13 +253,14 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
     /* this is an install followed by uninstalls */
     dbiIndexSet matches;
     char * name;
-    int count, type, i;
+    int count, i, j;
+    char ** obsoletes;
 
     alAddPackage(&rpmdep->addedPackages, h, key);
 
     if (!rpmdep->db) return;
 
-    headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
+    headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &name, &count);
 
     if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
 	for (i = 0; i < matches.count; i++) {
@@ -267,6 +268,21 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
 	}
 
 	dbiFreeIndexRecord(matches);
+    }
+
+    if (headerGetEntry(h, RPMTAG_OBSOLETES, NULL, (void *) &obsoletes, 
+			&count)) {
+	for (j = 0; j < count; j++) {
+	    if (!rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))  {
+		for (i = 0; i < matches.count; i++) {
+		    rpmdepRemovePackage(rpmdep, matches.recs[i].recOffset);
+		}
+
+		dbiFreeIndexRecord(matches);
+	    }
+	}
+
+	free(obsoletes);
     }
 }
 
