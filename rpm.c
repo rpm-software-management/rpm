@@ -93,7 +93,7 @@ static void printUsage(void) {
     puts(_("       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
     puts(_("                        [--nomd5] [targets]"));
-    puts(_("       rpm {--fixperms} [-afpg] [target]"));
+    puts(_("       rpm {--setperms} [-afpg] [target]"));
     puts(_("       rpm {--setugids} [-afpg] [target]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] package1 ... packageN"));
@@ -215,7 +215,7 @@ static void printHelp(void) {
     printHelpLine("      --nofiles           ",
 		  _("do not verify file attributes"));
     puts("");
-    printHelpLine("    --fixperms            ",
+    printHelpLine("    --setperms            ",
 		  _("set the file permissions to those in the package database"
 		    " using the same package specification options as -q"));
     printHelpLine("    --setugids            ",
