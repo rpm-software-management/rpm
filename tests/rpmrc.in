@@ -1,5 +1,4 @@
-
-# $Id: rpmrc.in,v 1.5 1999/09/29 23:26:09 jbj Exp $
+# $Id: rpmrc.in,v 1.6 1999/09/29 23:29:58 jbj Exp $
 #############################################################
 macrofiles:	@testdir@@MACROFILES@
 include:	@testdir@/../rpmrc

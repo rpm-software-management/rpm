@@ -1,4 +1,3 @@
-
 dnl configure.in for RPM
 dnl
 dnl Don't add checks for things we can't work around, unless those checks
