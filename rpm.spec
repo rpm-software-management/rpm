@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.51
+Release: 0.52
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -257,6 +257,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jul 12 2000 Jeff Johnson <jbj@redhat.com>
+- add S_ISLNK pre-transaction syscall test.
+
 * Tue Jul 11 2000 Jeff Johnson <jbj@redhat.com>
 - fix: legacy requires './' payload prefix to be omitted for rpm itself.
 - fix: remove verbose database +++/--- messages to conform to doco.

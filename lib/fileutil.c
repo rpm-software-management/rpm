@@ -16,6 +16,8 @@ static struct {
 #define	RPMSYSCALL_MV		2
     { "symlink",	2 }
 #define	RPMSYSCALL_SYMLINK	3
+    { "S_ISLNK",	1 }
+#define	RPMSYSCALL_ISLNK	4
 };
 int ncmds = sizeof(cmds)/sizeof(cmds[0]);
 
@@ -148,6 +150,17 @@ int rpmSyscall(const char * cmd, int noexec)
     case RPMSYSCALL_SYMLINK:	/* symlink */
 	rc = symlink(argv[1], argv[2]);
 	if (rc < 0) rc = errno;
+	break;
+    case RPMSYSCALL_ISLNK:	/* stat(2) with S_ISLNK */
+	if (stat(argv[1], &st) < 0) {
+	    if (rc == 0) rc = errno;
+	    goto exit;
+	}
+	if (S_ISLNK(st.st_mode)) {
+	    if (rc == 0) rc = EPERM;
+	    goto exit;
+	}
+	rc = 0;
 	break;
     default:
 	rc = EPERM;

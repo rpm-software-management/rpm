@@ -83,6 +83,7 @@
 	- fix: legacy requires './' payload prefix to be omitted for rpm itself.
 	- fix: remove verbose database +++/--- messages to conform to doco.
 	- compare versions if doing --freshen.
+	- add S_ISLNK pre-transaction syscall test.
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

@@ -1383,9 +1383,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 			_("executing pre-transaction syscall: \"%s\"\n"),
 			preTrans[j]);
 		    rc = rpmSyscall(preTrans[j], 0);
+#if 1
+		    if (rc) 	/* HACK HACK HACK */
+			break;
+#else
 		    if (rc != 0)
 			psAppend(probs, RPMPROB_BADPRETRANS, alp->key, alp->h,
 			    preTrans[j], NULL, rc);
+#endif
 		}
 		xfree(preTrans);
 		preTrans = NULL;
