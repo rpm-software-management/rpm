@@ -137,6 +137,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	strcat(s, release);
 
 	printf("%-28s", s);
+	fflush(stdout);
     }
 
     message(MESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
