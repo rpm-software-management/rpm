@@ -48,6 +48,16 @@ urlinfo *newUrlinfo(void)
     return u;
 }
 
+static int urlStrcmp(const char *str1, const char *str2)
+{
+    if (str1 && str2) {
+	return (strcmp(str1, str2));
+    } else
+	if (str1 != str2)
+	    return -1;
+    return 0;
+}
+    
 static void findUrlinfo(urlinfo **uret, int mustAsk)
 {
     urlinfo *u;
@@ -73,21 +83,18 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	 *    a) both items are not NULL and don't compare.
 	 *    b) either of the items is not NULL.
 	 */
-	if ((u->service && ou->service && strcmp(u->service, ou->service)) ||
-	    (u->service != ou->service))
-		continue;
-	if ((u->host && ou->host && strcmp(u->host, ou->host)) ||
-	    (u->host != ou->host))
-		continue;
-	if ((u->user && ou->user && strcmp(u->user, ou->user)) ||
-	    (u->user != ou->user))
-		continue;
-	if ((u->password && ou->password && strcmp(u->password, ou->password))||
-	    (u->password != ou->password))
-		continue;
-	if ((u->portstr && ou->portstr && strcmp(u->portstr, ou->portstr)) ||
-	    (u->portstr != ou->portstr))
-		continue;
+	if (urlStrcmp(u->service, ou->service))
+	    continue;
+	if (urlStrcmp(u->service, ou->service))
+	    continue;
+    	if (urlStrcmp(u->host, ou->host))
+	    continue;
+	if (urlStrcmp(u->user, ou->user))
+	    continue;
+	if (urlStrcmp(u->password, ou->password))
+	    continue;
+	if (urlStrcmp(u->portstr, ou->portstr))
+	    continue;
 	break;	/* Found item in cache */
     }
 
