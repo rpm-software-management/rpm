@@ -379,12 +379,11 @@ typedef enum rpmProblemType_e { RPMPROB_BADARCH,
  			      } rpmProblemType;
 
 typedef struct rpmProblem_s {
-    Header h;
+    Header h, altH;
     void * key;
     rpmProblemType type;
     int ignoreProblem;
     char * str1;
-    
 } rpmProblem;
 
 typedef struct rpmProblemSet_s {
