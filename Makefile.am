@@ -104,6 +104,7 @@ archive:
 	@mv /tmp/rpm /tmp/rpm-$(VERSION)
 	@rm /tmp/rpm-$(VERSION)/popt/popt.spec
 	@cd /tmp/rpm-$(VERSION); ./autogen.sh ; make depend; make distclean
+	@make -C /tmp/rpm-$(VERSION) depend distclean
 	@cd /tmp/rpm-$(VERSION); ./autogen.sh --noconfigure
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
 	@rm -rf /tmp/rpm-$(VERSION)

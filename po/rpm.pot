@@ -2,12 +2,12 @@
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: ../rpm.c:169 ../rpm.c:248
+#: ../rpm.c:171 ../rpm.c:252
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-17 19:10-0500\n"
+"POT-Creation-Date: 1999-01-19 12:43-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "override build root"
 msgstr ""
 
-#: ../build.c:266 ../rpm.c:431
+#: ../build.c:266 ../rpm.c:437
 msgid "remove build tree when done"
 msgstr ""
 
@@ -86,7 +86,7 @@ msgstr ""
 msgid "remove sources and specfile when done"
 msgstr ""
 
-#: ../build.c:274 ../rpm.c:429
+#: ../build.c:274 ../rpm.c:435
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
@@ -332,996 +332,1018 @@ msgstr ""
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: ../rpm.c:146
+#: ../rpm.c:148
 #, c-format
 msgid "rpm: %s\n"
 msgstr ""
 
-#: ../rpm.c:157
+#: ../rpm.c:159
 #, c-format
 msgid "RPM version %s\n"
 msgstr ""
 
-#: ../rpm.c:161
+#: ../rpm.c:163
 msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr ""
 
-#: ../rpm.c:162
+#: ../rpm.c:164
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
 msgstr ""
 
-#: ../rpm.c:171
+#: ../rpm.c:173
 msgid "usage: rpm {--help}"
 msgstr ""
 
-#: ../rpm.c:172
+#: ../rpm.c:174
 msgid "       rpm {--version}"
 msgstr ""
 
-#: ../rpm.c:173
+#: ../rpm.c:175
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
 msgstr ""
 
-#: ../rpm.c:174
+#: ../rpm.c:176
 msgid ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
-#: ../rpm.c:175
+#: ../rpm.c:177
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
 
-#: ../rpm.c:176
-msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
-msgstr ""
-
-#: ../rpm.c:177
-msgid ""
-"                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-msgstr ""
-
 #: ../rpm.c:178
-msgid ""
-"                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
+msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr ""
 
 #: ../rpm.c:179
 msgid ""
-"                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
+"                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 
-#: ../rpm.c:180 ../rpm.c:188
-msgid "                        [--noorder] [--relocate oldpath=newpath]"
+#: ../rpm.c:180
+msgid ""
+"                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
 
 #: ../rpm.c:181
 msgid ""
-"                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"
+"                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
 msgstr ""
 
-#: ../rpm.c:182
-msgid ""
-"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+#: ../rpm.c:182 ../rpm.c:191
+msgid "                        [--noorder] [--relocate oldpath=newpath]"
 msgstr ""
 
 #: ../rpm.c:183
-msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
+msgid ""
+"                        [--badreloc] [--notriggers] [--excludepath <path>]"
 msgstr ""
 
 #: ../rpm.c:184
-msgid ""
-"                        [--excludedocs] [--includedocs] [--rcfile <file>]"
+msgid "                        file1.rpm ... fileN.rpm"
 msgstr ""
 
 #: ../rpm.c:185
 msgid ""
-"                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
+"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
 #: ../rpm.c:186
-msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
+msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr ""
 
 #: ../rpm.c:187
-msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
+msgid ""
+"                        [--excludedocs] [--includedocs] [--rcfile <file>]"
+msgstr ""
+
+#: ../rpm.c:188
+msgid ""
+"                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
 
 #: ../rpm.c:189
-msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
+msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr ""
 
 #: ../rpm.c:190
-msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-msgstr ""
-
-#: ../rpm.c:191
-msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
+msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 msgstr ""
 
 #: ../rpm.c:192
-msgid "                        [--whatprovides] [--whatrequires] [--requires]"
+msgid ""
+"                        [--badreloc] [--excludepath <path>] file1.rpm ..."
 msgstr ""
 
 #: ../rpm.c:193
-msgid ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+msgid "                        fileN.rpm"
 msgstr ""
 
 #: ../rpm.c:194
-msgid ""
-"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
+msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr ""
 
 #: ../rpm.c:195
-msgid "                        [--changelog] [--dbpath <dir>] [targets]"
+msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr ""
 
 #: ../rpm.c:196
-msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
+msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: ../rpm.c:197
 msgid ""
-"                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
+"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
 msgstr ""
 
 #: ../rpm.c:198
-msgid "                        [--nomd5] [targets]"
+msgid ""
+"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
 msgstr ""
 
 #: ../rpm.c:199
-msgid "       rpm {--setperms} [-afpg] [target]"
+msgid "                        [--changelog] [--dbpath <dir>] [targets]"
 msgstr ""
 
 #: ../rpm.c:200
-msgid "       rpm {--setugids} [-afpg] [target]"
+msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr ""
 
 #: ../rpm.c:201
-msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
+msgid ""
+"                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
 
 #: ../rpm.c:202
-msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
+msgid "                        [--nomd5] [targets]"
 msgstr ""
 
 #: ../rpm.c:203
+msgid "       rpm {--setperms} [-afpg] [target]"
+msgstr ""
+
+#: ../rpm.c:204
+msgid "       rpm {--setugids} [-afpg] [target]"
+msgstr ""
+
+#: ../rpm.c:205
+msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
+msgstr ""
+
+#: ../rpm.c:206
+msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
+msgstr ""
+
+#: ../rpm.c:207
 msgid ""
 "                        [--justdb] [--notriggers] rpackage1 ... packageN"
 msgstr ""
 
-#: ../rpm.c:204
+#: ../rpm.c:208
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
 
-#: ../rpm.c:205
+#: ../rpm.c:209
 msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 msgstr ""
 
-#: ../rpm.c:206
+#: ../rpm.c:210
 msgid "                        [--target=platform1[,platform2...]]"
 msgstr ""
 
-#: ../rpm.c:207
+#: ../rpm.c:211
 msgid "                        [--rmsource] specfile"
 msgstr ""
 
-#: ../rpm.c:208
-msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-msgstr ""
-
-#: ../rpm.c:209
-msgid ""
-"       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr ""
-
-#: ../rpm.c:210
-msgid ""
-"       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr ""
-
-#: ../rpm.c:211
-msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr ""
-
 #: ../rpm.c:212
-msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
+msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
 msgstr ""
 
 #: ../rpm.c:213
 msgid ""
-"       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
+"       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 
 #: ../rpm.c:214
-msgid "                           package1 ... packageN"
+msgid ""
+"       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 
 #: ../rpm.c:215
-msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
+msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr ""
 
 #: ../rpm.c:216
+msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
+msgstr ""
+
+#: ../rpm.c:217
+msgid ""
+"       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
+msgstr ""
+
+#: ../rpm.c:218
+msgid "                           package1 ... packageN"
+msgstr ""
+
+#: ../rpm.c:219
+msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
+msgstr ""
+
+#: ../rpm.c:220
 msgid "       rpm {--querytags}"
 msgstr ""
 
-#: ../rpm.c:250
+#: ../rpm.c:254
 msgid "usage:"
 msgstr ""
 
-#: ../rpm.c:252
+#: ../rpm.c:256
 msgid "print this message"
 msgstr ""
 
-#: ../rpm.c:254
+#: ../rpm.c:258
 msgid "print the version of rpm being used"
 msgstr ""
 
-#: ../rpm.c:255
+#: ../rpm.c:259
 msgid "   all modes support the following arguments:"
 msgstr ""
 
-#: ../rpm.c:256
+#: ../rpm.c:260
 msgid "      --rcfile <file>     "
 msgstr ""
 
-#: ../rpm.c:257
+#: ../rpm.c:261
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr ""
 
-#: ../rpm.c:259
+#: ../rpm.c:263
 msgid "be a little more verbose"
 msgstr ""
 
-#: ../rpm.c:261
+#: ../rpm.c:265
 msgid "be incredibly verbose (for debugging)"
 msgstr ""
 
-#: ../rpm.c:263
+#: ../rpm.c:267
 msgid "query mode"
 msgstr ""
 
-#: ../rpm.c:264 ../rpm.c:322 ../rpm.c:382 ../rpm.c:410
+#: ../rpm.c:268 ../rpm.c:326 ../rpm.c:388 ../rpm.c:416
 msgid "      --root <dir>        "
 msgstr ""
 
-#: ../rpm.c:265 ../rpm.c:323 ../rpm.c:383 ../rpm.c:411 ../rpm.c:473
+#: ../rpm.c:269 ../rpm.c:327 ../rpm.c:389 ../rpm.c:417 ../rpm.c:479
 msgid "use <dir> as the top level directory"
 msgstr ""
 
-#: ../rpm.c:266 ../rpm.c:320 ../rpm.c:348 ../rpm.c:398 ../rpm.c:470
+#: ../rpm.c:270 ../rpm.c:324 ../rpm.c:354 ../rpm.c:404 ../rpm.c:476
 msgid "      --dbpath <dir>      "
 msgstr ""
 
-#: ../rpm.c:267 ../rpm.c:321 ../rpm.c:349 ../rpm.c:399 ../rpm.c:471
+#: ../rpm.c:271 ../rpm.c:325 ../rpm.c:355 ../rpm.c:405 ../rpm.c:477
 msgid "use <dir> as the directory for the database"
 msgstr ""
 
-#: ../rpm.c:268
+#: ../rpm.c:272
 msgid "      --queryformat <qfmt>"
 msgstr ""
 
-#: ../rpm.c:269
+#: ../rpm.c:273
 msgid "use <qfmt> as the header format (implies -i)"
 msgstr ""
 
-#: ../rpm.c:270
+#: ../rpm.c:274
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
 
-#: ../rpm.c:271
+#: ../rpm.c:275
 msgid "   of file names as well as the following options:"
 msgstr ""
 
-#: ../rpm.c:272
+#: ../rpm.c:276
 msgid "      --ftpproxy <host>   "
 msgstr ""
 
-#: ../rpm.c:273
+#: ../rpm.c:277
 msgid "hostname or IP of ftp proxy"
 msgstr ""
 
-#: ../rpm.c:274
+#: ../rpm.c:278
 msgid "      --ftpport <port>    "
 msgstr ""
 
-#: ../rpm.c:275
+#: ../rpm.c:279
 msgid "port number of ftp server (or proxy)"
 msgstr ""
 
-#: ../rpm.c:276
+#: ../rpm.c:280
 msgid "      Package specification options:"
 msgstr ""
 
-#: ../rpm.c:278
+#: ../rpm.c:282
 msgid "query all packages"
 msgstr ""
 
-#: ../rpm.c:279
+#: ../rpm.c:283
 msgid "        -f <file>+        "
 msgstr ""
 
-#: ../rpm.c:280
+#: ../rpm.c:284
 msgid "query package owning <file>"
 msgstr ""
 
-#: ../rpm.c:281
+#: ../rpm.c:285
 msgid "        -p <packagefile>+ "
 msgstr ""
 
-#: ../rpm.c:282
+#: ../rpm.c:286
 msgid "query (uninstalled) package <packagefile>"
 msgstr ""
 
-#: ../rpm.c:283
+#: ../rpm.c:287
 msgid "        --triggeredby <pkg>"
 msgstr ""
 
-#: ../rpm.c:284
+#: ../rpm.c:288
 msgid "query packages triggered by <pkg>"
 msgstr ""
 
-#: ../rpm.c:285
+#: ../rpm.c:289
 msgid "        --whatprovides <cap>"
 msgstr ""
 
-#: ../rpm.c:286
+#: ../rpm.c:290
 msgid "query packages which provide <cap> capability"
 msgstr ""
 
-#: ../rpm.c:287
+#: ../rpm.c:291
 msgid "        --whatrequires <cap>"
 msgstr ""
 
-#: ../rpm.c:288
+#: ../rpm.c:292
 msgid "query packages which require <cap> capability"
 msgstr ""
 
-#: ../rpm.c:289
+#: ../rpm.c:293
 msgid "      Information selection options:"
 msgstr ""
 
-#: ../rpm.c:291
+#: ../rpm.c:295
 msgid "display package information"
 msgstr ""
 
-#: ../rpm.c:293
+#: ../rpm.c:297
 msgid "display the package's change log"
 msgstr ""
 
-#: ../rpm.c:295
+#: ../rpm.c:299
 msgid "display package file list"
 msgstr ""
 
-#: ../rpm.c:297
+#: ../rpm.c:301
 msgid "show file states (implies -l)"
 msgstr ""
 
-#: ../rpm.c:299
+#: ../rpm.c:303
 msgid "list only documentation files (implies -l)"
 msgstr ""
 
-#: ../rpm.c:301
+#: ../rpm.c:305
 msgid "list only configuration files (implies -l)"
 msgstr ""
 
-#: ../rpm.c:303
+#: ../rpm.c:307
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
 msgstr ""
 
-#: ../rpm.c:305
+#: ../rpm.c:309
 msgid "list capabilities package provides"
 msgstr ""
 
-#: ../rpm.c:306
+#: ../rpm.c:310
 msgid "        --requires"
 msgstr ""
 
-#: ../rpm.c:308
+#: ../rpm.c:312
 msgid "list package dependencies"
 msgstr ""
 
-#: ../rpm.c:310
+#: ../rpm.c:314
 msgid "print the various [un]install scripts"
 msgstr ""
 
-#: ../rpm.c:312
+#: ../rpm.c:316
 msgid "show the trigger scripts contained in the package"
 msgstr ""
 
-#: ../rpm.c:316
+#: ../rpm.c:320
 msgid "    --pipe <cmd>          "
 msgstr ""
 
-#: ../rpm.c:317
+#: ../rpm.c:321
 msgid "send stdout to <cmd>"
 msgstr ""
 
-#: ../rpm.c:319
+#: ../rpm.c:323
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr ""
 
-#: ../rpm.c:325 ../rpm.c:369 ../rpm.c:403
+#: ../rpm.c:329 ../rpm.c:375 ../rpm.c:409
 msgid "do not verify package dependencies"
 msgstr ""
 
-#: ../rpm.c:327
+#: ../rpm.c:331
 msgid "do not verify file md5 checksums"
 msgstr ""
 
-#: ../rpm.c:329
+#: ../rpm.c:333
 msgid "do not verify file attributes"
 msgstr ""
 
-#: ../rpm.c:332
+#: ../rpm.c:336
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
 
-#: ../rpm.c:335
+#: ../rpm.c:339
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
 
-#: ../rpm.c:339
+#: ../rpm.c:343
 msgid "    --install <packagefile>"
 msgstr ""
 
-#: ../rpm.c:340
+#: ../rpm.c:344
 msgid "    -i <packagefile>      "
 msgstr ""
 
-#: ../rpm.c:341
+#: ../rpm.c:345
 msgid "install package"
 msgstr ""
 
-#: ../rpm.c:342
-msgid "      --relocate <oldpath>=<newpath>"
-msgstr ""
-
-#: ../rpm.c:343
-msgid "relocate files from <oldpath> to <newpath>"
-msgstr ""
-
-#: ../rpm.c:345
-msgid "relocate files even though the package doesn't allow it"
-msgstr ""
-
 #: ../rpm.c:346
-msgid "      --prefix <dir>      "
+msgid "      --excludepath <path>"
 msgstr ""
 
 #: ../rpm.c:347
-msgid "relocate the package to <dir>, if relocatable"
+msgid "skip files in path <path>"
+msgstr ""
+
+#: ../rpm.c:348
+msgid "      --relocate <oldpath>=<newpath>"
+msgstr ""
+
+#: ../rpm.c:349
+msgid "relocate files from <oldpath> to <newpath>"
 msgstr ""
 
 #: ../rpm.c:351
-msgid "do not install documentation"
+msgid "relocate files even though the package doesn't allow it"
+msgstr ""
+
+#: ../rpm.c:352
+msgid "      --prefix <dir>      "
 msgstr ""
 
 #: ../rpm.c:353
+msgid "relocate the package to <dir>, if relocatable"
+msgstr ""
+
+#: ../rpm.c:357
+msgid "do not install documentation"
+msgstr ""
+
+#: ../rpm.c:359
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr ""
 
-#: ../rpm.c:356
+#: ../rpm.c:362
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 
-#: ../rpm.c:358
+#: ../rpm.c:364
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 
-#: ../rpm.c:361
+#: ../rpm.c:367
 msgid "don't verify package architecture"
 msgstr ""
 
-#: ../rpm.c:363
+#: ../rpm.c:369
 msgid "don't verify package operating system"
 msgstr ""
 
-#: ../rpm.c:365
+#: ../rpm.c:371
 msgid "install documentation"
 msgstr ""
 
-#: ../rpm.c:367 ../rpm.c:401
+#: ../rpm.c:373 ../rpm.c:407
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 
-#: ../rpm.c:371 ../rpm.c:405
+#: ../rpm.c:377 ../rpm.c:411
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 
-#: ../rpm.c:373
+#: ../rpm.c:379
 msgid "don't execute any installation scripts"
 msgstr ""
 
-#: ../rpm.c:375 ../rpm.c:409
+#: ../rpm.c:381 ../rpm.c:415
 msgid "don't execute any scripts triggered by this package"
 msgstr ""
 
-#: ../rpm.c:377
+#: ../rpm.c:383
 msgid "print percentages as package installs"
 msgstr ""
 
-#: ../rpm.c:379
+#: ../rpm.c:385
 msgid "install even if the package replaces installed files"
 msgstr ""
 
-#: ../rpm.c:381
+#: ../rpm.c:387
 msgid "reinstall if the package is already present"
 msgstr ""
 
-#: ../rpm.c:385
+#: ../rpm.c:391
 msgid "don't install, but tell if it would work or not"
 msgstr ""
 
-#: ../rpm.c:387
+#: ../rpm.c:393
 msgid "    --upgrade <packagefile>"
 msgstr ""
 
-#: ../rpm.c:388
+#: ../rpm.c:394
 msgid "    -U <packagefile>      "
 msgstr ""
 
-#: ../rpm.c:389
+#: ../rpm.c:395
 msgid "upgrade package (same options as --install, plus)"
 msgstr ""
 
-#: ../rpm.c:391
+#: ../rpm.c:397
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
 
-#: ../rpm.c:393
+#: ../rpm.c:399
 msgid "    --erase <package>"
 msgstr ""
 
-#: ../rpm.c:395
+#: ../rpm.c:401
 msgid "erase (uninstall) package"
 msgstr ""
 
-#: ../rpm.c:397
+#: ../rpm.c:403
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
 
-#: ../rpm.c:407
+#: ../rpm.c:413
 msgid "do not execute any package specific scripts"
 msgstr ""
 
-#: ../rpm.c:413
+#: ../rpm.c:419
 msgid "    -b<stage> <spec>      "
 msgstr ""
 
-#: ../rpm.c:414
+#: ../rpm.c:420
 msgid "    -t<stage> <tarball>   "
 msgstr ""
 
-#: ../rpm.c:415
+#: ../rpm.c:421
 msgid "build package, where <stage> is one of:"
 msgstr ""
 
-#: ../rpm.c:417
+#: ../rpm.c:423
 msgid "prep (unpack sources and apply patches)"
 msgstr ""
 
-#: ../rpm.c:419
+#: ../rpm.c:425
 #, c-format
 msgid "list check (do some cursory checks on %files)"
 msgstr ""
 
-#: ../rpm.c:421
+#: ../rpm.c:427
 msgid "compile (prep and compile)"
 msgstr ""
 
-#: ../rpm.c:423
+#: ../rpm.c:429
 msgid "install (prep, compile, install)"
 msgstr ""
 
-#: ../rpm.c:425
+#: ../rpm.c:431
 msgid "binary package (prep, compile, install, package)"
 msgstr ""
 
-#: ../rpm.c:427
+#: ../rpm.c:433
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
 
-#: ../rpm.c:433
+#: ../rpm.c:439
 msgid "remove sources and spec file when done"
 msgstr ""
 
-#: ../rpm.c:435
+#: ../rpm.c:441
 msgid "generate PGP/GPG signature"
 msgstr ""
 
-#: ../rpm.c:436
+#: ../rpm.c:442
 msgid "      --buildroot <dir>   "
 msgstr ""
 
-#: ../rpm.c:437
+#: ../rpm.c:443
 msgid "use <dir> as the build root"
 msgstr ""
 
-#: ../rpm.c:438
+#: ../rpm.c:444
 msgid "      --target=<platform>+"
 msgstr ""
 
-#: ../rpm.c:439
+#: ../rpm.c:445
 msgid "build the packages for the build targets platform1...platformN."
 msgstr ""
 
-#: ../rpm.c:441
+#: ../rpm.c:447
 msgid "do not execute any stages"
 msgstr ""
 
-#: ../rpm.c:442
+#: ../rpm.c:448
 msgid "      --timecheck <secs>  "
 msgstr ""
 
-#: ../rpm.c:443
+#: ../rpm.c:449
 msgid "set the time check to <secs> seconds (0 disables)"
 msgstr ""
 
-#: ../rpm.c:445
+#: ../rpm.c:451
 msgid "    --rebuild <src_pkg>   "
 msgstr ""
 
-#: ../rpm.c:446
+#: ../rpm.c:452
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
 
-#: ../rpm.c:447
+#: ../rpm.c:453
 msgid "    --rmsource <spec>     "
 msgstr ""
 
-#: ../rpm.c:448
+#: ../rpm.c:454
 msgid "remove sources and spec file"
 msgstr ""
 
-#: ../rpm.c:449
+#: ../rpm.c:455
 msgid "    --recompile <src_pkg> "
 msgstr ""
 
-#: ../rpm.c:450
+#: ../rpm.c:456
 msgid "like --rebuild, but don't build any package"
 msgstr ""
 
-#: ../rpm.c:451
+#: ../rpm.c:457
 msgid "    --resign <pkg>+       "
 msgstr ""
 
-#: ../rpm.c:452
+#: ../rpm.c:458
 msgid "sign a package (discard current signature)"
 msgstr ""
 
-#: ../rpm.c:453
+#: ../rpm.c:459
 msgid "    --addsign <pkg>+      "
 msgstr ""
 
-#: ../rpm.c:454
+#: ../rpm.c:460
 msgid "add a signature to a package"
 msgstr ""
 
-#: ../rpm.c:456
+#: ../rpm.c:462
 msgid "    --checksig <pkg>+     "
 msgstr ""
 
-#: ../rpm.c:457
+#: ../rpm.c:463
 msgid "verify package signature"
 msgstr ""
 
-#: ../rpm.c:459
+#: ../rpm.c:465
 msgid "skip any PGP signatures"
 msgstr ""
 
-#: ../rpm.c:461
+#: ../rpm.c:467
 msgid "skip any GPG signatures"
 msgstr ""
 
-#: ../rpm.c:463
+#: ../rpm.c:469
 msgid "skip any MD5 signatures"
 msgstr ""
 
-#: ../rpm.c:465
+#: ../rpm.c:471
 msgid "list the tags that can be used in a query format"
 msgstr ""
 
-#: ../rpm.c:467
+#: ../rpm.c:473
 msgid "make sure a valid database exists"
 msgstr ""
 
-#: ../rpm.c:469
+#: ../rpm.c:475
 msgid "rebuild database from existing database"
 msgstr ""
 
-#: ../rpm.c:599 ../rpm.c:605 ../rpm.c:612 ../rpm.c:618 ../rpm.c:627
-#: ../rpm.c:634 ../rpm.c:681 ../rpm.c:687 ../rpm.c:751 ../rpm.c:759
-#: ../rpm.c:766 ../rpm.c:775 ../rpm.c:782 ../rpm.c:790 ../rpm.c:817
-#: ../rpm.c:859 ../rpm.c:866
+#: ../rpm.c:605 ../rpm.c:611 ../rpm.c:618 ../rpm.c:624 ../rpm.c:633
+#: ../rpm.c:640 ../rpm.c:687 ../rpm.c:693 ../rpm.c:757 ../rpm.c:765
+#: ../rpm.c:772 ../rpm.c:781 ../rpm.c:788 ../rpm.c:796 ../rpm.c:823
+#: ../rpm.c:875 ../rpm.c:882
 msgid "only one major mode may be specified"
 msgstr ""
 
-#: ../rpm.c:620
+#: ../rpm.c:626
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr ""
 
-#: ../rpm.c:622
+#: ../rpm.c:628
 msgid "Use -e or --erase instead.\n"
 msgstr ""
 
-#: ../rpm.c:638
+#: ../rpm.c:644
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 
-#: ../rpm.c:642
+#: ../rpm.c:648
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 
-#: ../rpm.c:694 ../rpm.c:701 ../rpm.c:709 ../rpm.c:717 ../rpm.c:727
-#: ../rpm.c:735 ../rpm.c:743 ../rpm.c:873
+#: ../rpm.c:700 ../rpm.c:707 ../rpm.c:715 ../rpm.c:723 ../rpm.c:733
+#: ../rpm.c:741 ../rpm.c:749 ../rpm.c:889
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 
-#: ../rpm.c:798
+#: ../rpm.c:804
 msgid "arguments to --dbpath must begin with a /"
 msgstr ""
 
-#: ../rpm.c:823
+#: ../rpm.c:829
 msgid "relocations must begin with a /"
 msgstr ""
 
-#: ../rpm.c:825
+#: ../rpm.c:831
 msgid "relocations must contain a ="
 msgstr ""
 
-#: ../rpm.c:828
+#: ../rpm.c:834
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: ../rpm.c:836
+#: ../rpm.c:843
+msgid "exclude paths must begin with a /"
+msgstr ""
+
+#: ../rpm.c:852
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: ../rpm.c:886
+#: ../rpm.c:902
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: ../rpm.c:891
+#: ../rpm.c:907
 msgid "--timecheck may only be used during package builds"
 msgstr ""
 
-#: ../rpm.c:894 ../rpm.c:897
+#: ../rpm.c:910 ../rpm.c:913
 msgid "unexpected query specifiers"
 msgstr ""
 
-#: ../rpm.c:901
+#: ../rpm.c:917
 msgid "unexpected query source"
 msgstr ""
 
-#: ../rpm.c:906
+#: ../rpm.c:922
 msgid "only installation, upgrading and rmsource may be forced"
 msgstr ""
 
-#: ../rpm.c:909
+#: ../rpm.c:925
 msgid "files may only be relocated during package installation"
 msgstr ""
 
-#: ../rpm.c:912
+#: ../rpm.c:928
 msgid "only one of --prefix or --relocate may be used"
 msgstr ""
 
-#: ../rpm.c:915
-msgid "--relocate may only be used when installing new packages"
+#: ../rpm.c:931
+msgid ""
+"--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 
-#: ../rpm.c:918
+#: ../rpm.c:934
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 
-#: ../rpm.c:921
+#: ../rpm.c:937
 msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
-#: ../rpm.c:924
+#: ../rpm.c:940
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:928
+#: ../rpm.c:944
 msgid "--percent may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:932
+#: ../rpm.c:948
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:936
+#: ../rpm.c:952
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:940
+#: ../rpm.c:956
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:944
+#: ../rpm.c:960
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:948
+#: ../rpm.c:964
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: ../rpm.c:952
+#: ../rpm.c:968
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:956
+#: ../rpm.c:972
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:960
+#: ../rpm.c:976
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: ../rpm.c:964
+#: ../rpm.c:980
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:968
+#: ../rpm.c:984
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
-#: ../rpm.c:973
+#: ../rpm.c:989
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
 
-#: ../rpm.c:977
+#: ../rpm.c:993
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
 
-#: ../rpm.c:982
+#: ../rpm.c:998
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
 
-#: ../rpm.c:986
+#: ../rpm.c:1002
 msgid "--nofiles may only be specified during package verification"
 msgstr ""
 
-#: ../rpm.c:991
+#: ../rpm.c:1007
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: ../rpm.c:996
+#: ../rpm.c:1012
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: ../rpm.c:1001
+#: ../rpm.c:1017
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: ../rpm.c:1005
+#: ../rpm.c:1021
 msgid "--clean may only be used with -b and -t"
 msgstr ""
 
-#: ../rpm.c:1008
+#: ../rpm.c:1024
 msgid "--rmsource may only be used with -b and -t"
 msgstr ""
 
-#: ../rpm.c:1011
+#: ../rpm.c:1027
 msgid "--short-circuit may only be used during package building"
 msgstr ""
 
-#: ../rpm.c:1015
+#: ../rpm.c:1031
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 
-#: ../rpm.c:1021
+#: ../rpm.c:1037
 msgid "--oldpackage may only be used during upgrades"
 msgstr ""
 
-#: ../rpm.c:1026
+#: ../rpm.c:1042
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 
-#: ../rpm.c:1033
+#: ../rpm.c:1049
 msgid "--nopgp may only be used during signature checking"
 msgstr ""
 
-#: ../rpm.c:1036
+#: ../rpm.c:1052
 msgid "--nogpg may only be used during signature checking"
 msgstr ""
 
-#: ../rpm.c:1039
+#: ../rpm.c:1055
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 
-#: ../rpm.c:1061
+#: ../rpm.c:1077
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: ../rpm.c:1075
+#: ../rpm.c:1091
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: ../rpm.c:1078
+#: ../rpm.c:1094
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: ../rpm.c:1090
+#: ../rpm.c:1106
 msgid "--sign may only be used during package building"
 msgstr ""
 
-#: ../rpm.c:1106
+#: ../rpm.c:1122
 msgid "exec failed\n"
 msgstr ""
 
-#: ../rpm.c:1125
+#: ../rpm.c:1141
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: ../rpm.c:1136
+#: ../rpm.c:1152
 msgid "no packages given for signature check"
 msgstr ""
 
-#: ../rpm.c:1144
+#: ../rpm.c:1160
 msgid "no packages given for signing"
 msgstr ""
 
-#: ../rpm.c:1153
+#: ../rpm.c:1169
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: ../rpm.c:1210
+#: ../rpm.c:1226
 msgid "no spec files given for build"
 msgstr ""
 
-#: ../rpm.c:1212
+#: ../rpm.c:1228
 msgid "no tar files given for build"
 msgstr ""
 
-#: ../rpm.c:1225
+#: ../rpm.c:1241
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: ../rpm.c:1270
+#: ../rpm.c:1286
 msgid "no packages given for install"
 msgstr ""
 
-#: ../rpm.c:1292
+#: ../rpm.c:1308
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: ../rpm.c:1298
+#: ../rpm.c:1314
 msgid "no arguments given for query"
 msgstr ""
 
-#: ../rpm.c:1316
+#: ../rpm.c:1332
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -2326,98 +2348,98 @@ msgstr ""
 msgid "source package expected, binary found"
 msgstr ""
 
-#: ../lib/install.c:170
+#: ../lib/install.c:171
 #, c-format
 msgid "not installing %s -- linguas\n"
 msgstr ""
 
-#: ../lib/install.c:175 ../lib/uninstall.c:111
+#: ../lib/install.c:176 ../lib/uninstall.c:111
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: ../lib/install.c:195
+#: ../lib/install.c:196
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:203
+#: ../lib/install.c:204
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:227
+#: ../lib/install.c:228
 msgid "instchangelog value in rpmrc should be a number, but isn't"
 msgstr ""
 
-#: ../lib/install.c:293
+#: ../lib/install.c:294
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: ../lib/install.c:350
+#: ../lib/install.c:351
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:355
+#: ../lib/install.c:356
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:385
+#: ../lib/install.c:386
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:415
+#: ../lib/install.c:422
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:419 ../lib/install.c:754 ../lib/uninstall.c:337
+#: ../lib/install.c:426 ../lib/install.c:761 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:502
+#: ../lib/install.c:509
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:610
+#: ../lib/install.c:617
 #, c-format
 msgid "unpacking of archive failed on file %s: %s"
 msgstr ""
 
-#: ../lib/install.c:648
+#: ../lib/install.c:655
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:654 ../lib/install.c:660
+#: ../lib/install.c:661 ../lib/install.c:667
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:665
+#: ../lib/install.c:672
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:666
+#: ../lib/install.c:673
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:699 ../lib/install.c:731
+#: ../lib/install.c:706 ../lib/install.c:738
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:752
+#: ../lib/install.c:759
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: ../lib/install.c:875
+#: ../lib/install.c:882
 #, c-format
 msgid "package %s-%s-%s (which is newer) is already installed"
 msgstr ""
