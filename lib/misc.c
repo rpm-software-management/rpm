@@ -139,3 +139,33 @@ void stripTrailingSlashes(char * str) {
 	chptr--;
     }
 }
+
+int doputenv(const char *str) {
+    char * a;
+    
+    /* FIXME: this leaks memory! */
+
+    a = malloc(strlen(str) + 1);
+    strcpy(a, str);
+
+    return putenv(a);
+}
+
+int dosetenv(const char *name, const char *value, int overwrite) {
+    int i;
+    char * a;
+
+    /* FIXME: this leaks memory! */
+
+    if (!overwrite && getenv(name)) return 0;
+
+    i = strlen(name) + strlen(value) + 2;
+    a = malloc(i);
+    if (!a) return 1;
+    
+    strcpy(a, name);
+    strcat(a, "=");
+    strcat(a, value);
+    
+    return putenv(a);
+}
