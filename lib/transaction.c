@@ -1037,16 +1037,16 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_DEFAULT,
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 				rpmteE(p));
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT,
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
 				rpmteV(p));
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 				rpmteR(p));
 	    if (tscolor) {
-		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT,
+		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
 				rpmteA(p));
-		xx = rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_DEFAULT,
+		xx = rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP,
 				rpmteO(p));
 	    }
 

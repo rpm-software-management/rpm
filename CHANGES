@@ -6,6 +6,9 @@
 	- don't use error string after gzclose (Dmitry V. Levin).
 	- only internal Berkeley db from now on.
 	- revive "make dist".
+	- fix: added index size wrong iff _transaction_color != 0/3 (#103865).
+	- fix: escape '+' in regex patterns through RPMMIRE_DEFAULT (#103851).
+	- RPMMIRE_DEFAULT is overkill, use RPMMIRE_STRCMP instead (#103851).
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

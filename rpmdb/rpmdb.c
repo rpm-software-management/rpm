@@ -1747,12 +1747,13 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 	nb = strlen(pattern) + sizeof("^$");
 
 	/* Find no. of bytes needed for pattern. */
-	/* periods are escaped, splats become '.*' */
+	/* periods and plusses are escaped, splats become '.*' */
 	c = '\0';
 	brackets = 0;
 	for (s = pattern; *s != '\0'; s++) {
 	    switch (*s) {
 	    case '.':
+	    case '+':
 	    case '*':
 		if (!brackets) nb++;
 		/*@switchbreak@*/ break;
@@ -1779,6 +1780,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 	for (s = pattern; *s != '\0'; s++, t++) {
 	    switch (*s) {
 	    case '.':
+	    case '+':
 		if (!brackets) *t++ = '\\';
 		/*@switchbreak@*/ break;
 	    case '*':

@@ -1210,16 +1210,16 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 assert(psm->mi == NULL);
 	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te), 0);
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_EPOCH, RPMMIRE_DEFAULT,
+	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 			rpmteE(psm->te));
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION, RPMMIRE_DEFAULT,
+	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
 			rpmteV(psm->te));
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
+	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 			rpmteR(psm->te));
 	    if (tscolor) {
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_ARCH, RPMMIRE_DEFAULT,
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
 			rpmteA(psm->te));
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_OS, RPMMIRE_DEFAULT,
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_OS, RPMMIRE_STRCMP,
 			rpmteO(psm->te));
 	    }
 
