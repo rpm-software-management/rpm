@@ -120,7 +120,7 @@ file_signextend(struct magic *m, uint32_t v)
 			break;
 		default:
 			file_magwarn("can't happen: m->type=%d\n", m->type);
-			return -1;
+			return ~0U;
 		}
 	return v;
 }

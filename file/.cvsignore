@@ -1,9 +1,3 @@
-*.lo
-*.la
-.deps
-.depend
-.depend-done
-.libs
 Makefile
 Makefile.in
 aclocal.m4
@@ -19,10 +13,8 @@ configure
 depcomp
 install-sh
 libtool
-listobjs
 ltconfig
 ltmain.sh
 missing
 stamp-h*
-file
 file-*.tar.gz

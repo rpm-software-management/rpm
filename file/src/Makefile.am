@@ -2,16 +2,12 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime magic.mime \
-	Localstuff Header
-
 BUILT_SOURCES = listobjs $(man_MANS)
-
-noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h \
-		file.h
 
 #pkgincdir =	@includedir@/fmagic
 #pkginc_HEADERS = file.h
+noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h \
+		file.h
 
 #usrlibdir = $(libdir)@MARK64@
 #usrlib_LTLIBRARIES = libfmagic.la
