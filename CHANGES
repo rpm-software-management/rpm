@@ -33,6 +33,7 @@
 	  changes needed to do this removed any lingering questions about
 	  the efficiency of the compat lookups for large tables or tables
 	  with loops -- it should all work fine)
+	- made -u (--uninstall) exit with an error and not do anything
 
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
