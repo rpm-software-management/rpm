@@ -27,7 +27,7 @@ FD_t bzdOpen(const char *pathname, const char *mode) {
 }
 
 FD_t bzdFdopen(FD_t fd, const char *mode) {
-    BZFILE *bzfile  = bzdopen(fdFileno(fd), mode);
+    BZFILE *bzfile  = bzdopen(Fileno(fd), mode);
     if (bzfile != NULL) {
 	fd->fd_fd = -1;
 	fd->fd_bzd = bzfile;
