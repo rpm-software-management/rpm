@@ -182,7 +182,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 
     /* We used to store the fileindexes as complete paths, rather then
        plain basenames. Let's see which version we are... */
-    if (!dbiGetFirstKey(db.fileIndex, &akey)) {
+    if (!justcheck && !dbiGetFirstKey(db.fileIndex, &akey)) {
 	if (strchr(akey, '/')) {
 	    rpmError(RPMERR_OLDDB, _("old format database is present; "
 			"use --rebuilddb to generate a new format database"));
