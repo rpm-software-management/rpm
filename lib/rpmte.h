@@ -389,18 +389,40 @@ int teiGetOc(teIterator tei)
  * @param tei		transaction element iterator
  * @return		NULL always
  */
-/*@null@*/
+/*@unused@*/ /*@null@*/
 teIterator teFreeIterator(/*@only@*//*@null@*/ teIterator tei)
 	/*@*/;
+
+/**
+ * Destroy transaction element iterator.
+ * @param tei		transaction element iterator
+ * @return		NULL always
+ */
+/*@null@*/
+teIterator XteFreeIterator(/*@only@*//*@null@*/ teIterator tei,
+		const char * fn, unsigned int ln)
+	/*@*/;
+#define	teFreeIterator(_tei)	XteFreeIterator(_tei, __FILE__, __LINE__)
 
 /**
  * Create transaction element iterator.
  * @param ts		transaction set
  * @return		transaction element iterator
  */
-/*@only@*/
+/*@unused@*/ /*@only@*/
 teIterator teInitIterator(rpmTransactionSet ts)
 	/*@modifies ts @*/;
+
+/**
+ * Create transaction element iterator.
+ * @param ts		transaction set
+ * @return		transaction element iterator
+ */
+/*@unused@*/ /*@only@*/
+teIterator XteInitIterator(rpmTransactionSet ts,
+		const char * fn, unsigned int ln)
+	/*@modifies ts @*/;
+#define	teInitIterator(_ts)	XteInitIterator(_ts, __FILE__, __LINE__)
 
 /**
  * Return next transaction element

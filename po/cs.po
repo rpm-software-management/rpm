@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-19 17:41-0500\n"
+"POT-Creation-Date: 2001-11-22 16:29-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1442,79 +1442,79 @@ msgstr "nemohu otevøít databázi balíèkù v %s\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/depends.c:569
+#: lib/depends.c:568
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:594
+#: lib/depends.c:593
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
-#: lib/depends.c:610
+#: lib/depends.c:609
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:631
+#: lib/depends.c:630
 #, fuzzy
 msgid "(db files)"
 msgstr "¹patný db soubor %s\n"
 
-#: lib/depends.c:643
+#: lib/depends.c:642
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:656
+#: lib/depends.c:655
 #, fuzzy
 msgid "(db package)"
 msgstr "¾ádné balíèky\n"
 
-#: lib/depends.c:695
+#: lib/depends.c:694
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) pøidáno do ke¹e závislostí.\n"
 
-#: lib/depends.c:697 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
 msgid "NO "
 msgstr "NE "
 
-#: lib/depends.c:697 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
 msgid "YES"
 msgstr "ANO"
 
-#: lib/depends.c:1034
+#: lib/depends.c:1033
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1302
+#: lib/depends.c:1301
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1396
+#: lib/depends.c:1395
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:1479
+#: lib/depends.c:1478
 msgid "========== successors only (presentation order)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1549
+#: lib/depends.c:1548
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1584
+#: lib/depends.c:1583
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1589
+#: lib/depends.c:1588
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2329,12 +2329,12 @@ msgstr "záznam %d nelze pøeèíst\n"
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: lib/rpmal.c:673
+#: lib/rpmal.c:674
 #, fuzzy
 msgid "(added files)"
 msgstr "¹patný db soubor %s\n"
 
-#: lib/rpmal.c:770
+#: lib/rpmal.c:771
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
@@ -2403,7 +2403,7 @@ msgid "OK"
 msgstr "OK"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:535
+#: lib/rpmds.c:539
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2412,13 +2412,13 @@ msgstr ""
 "Závislost \"B\" potøebuje období (pøedpokládáno stejné jako \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:565
+#: lib/rpmds.c:569
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:589
+#: lib/rpmds.c:593
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"

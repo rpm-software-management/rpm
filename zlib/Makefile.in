@@ -152,6 +152,9 @@ tags:
 depend:
 	makedepend -- $(CFLAGS) -- *.[ch]
 
+.PHONY: distdir
+distdir:
+
 lclint_files = $(OBJS:%.o=%.c)
 .PHONY: lclint
 lclint:

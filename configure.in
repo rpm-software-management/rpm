@@ -285,6 +285,21 @@ addlib() {
   esac
 }
 
+WITH_ZLIB_SUBDIR=
+WITH_ZLIB_INCLUDE=
+WITH_ZLIB_LIB=
+if test -d zlib ; then
+  WITH_ZLIB_SUBDIR=zlib
+  addlib \${top_builddir}/zlib
+  WITH_ZLIB_INCLUDE="-I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
+  INCPATH="$INCPATH -I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
+  WITH_ZLIB_LIB="\${top_builddir}/${WITH_ZLIB_SUBDIR}/libz.a"
+  AC_DEFINE(HAVE_GZSEEK)
+fi
+AC_SUBST(WITH_ZLIB_SUBDIR)
+AC_SUBST(WITH_ZLIB_INCLUDE)
+AC_SUBST(WITH_ZLIB_LIB)
+
 localdone=
 
 dirs=$prefix
@@ -467,6 +482,7 @@ dnl AmigaOS and IXEmul have a fork() dummy
 esac
 
 
+if test -z "${WITH_ZLIB_LIB}" ; then
 for zlib in z gz ; do
    AC_CHECK_LIB(${zlib}, gzread, 
 	[LIBS="$LIBS -l${zlib}"; break], 
@@ -478,6 +494,7 @@ done
 
 dnl zlib-1.0.4 has not gzseek
 AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK)])
+fi
 
 AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
    AC_CHECK_LIB(bz2, BZ2_bzread, [

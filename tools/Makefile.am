@@ -9,6 +9,7 @@ INCLUDES = \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt \
+	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
@@ -25,6 +26,7 @@ myLDADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
+	@WITH_ZLIB_LIB@ \
 	@INTLLIBS@
 
 LIBS =

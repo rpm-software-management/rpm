@@ -11,7 +11,9 @@ INCLUDES = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/beecrypt \
-	-I$(top_srcdir)/popt @INCPATH@
+	-I$(top_srcdir)/popt \
+	@WITH_ZLIB_INCLUDE@
+	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -19,7 +21,7 @@ pkginc_HEADERS = \
 	ugid.h
 noinst_HEADERS = rpmio_internal.h rpmpgp.h
 
-LIBS +=	-lrt -lpthread
+LIBS +=	@WITH_ZLIB_LIB@ -lrt -lpthread
 
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 

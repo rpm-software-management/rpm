@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-19 17:41-0500\n"
+"POT-Creation-Date: 2001-11-22 16:29-0500\n"
 
 #: build.c:36
 #, fuzzy
@@ -1588,77 +1588,77 @@ msgstr "No consegui abrir: %s\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/depends.c:569
+#: lib/depends.c:568
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:594
+#: lib/depends.c:593
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:610
+#: lib/depends.c:609
 msgid "(rpmlib provides)"
 msgstr ""
 
 # , c-format
-#: lib/depends.c:631
+#: lib/depends.c:630
 #, fuzzy
 msgid "(db files)"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/depends.c:643
+#: lib/depends.c:642
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:656
+#: lib/depends.c:655
 #, fuzzy
 msgid "(db package)"
 msgstr "pesquise todos os pacotes"
 
-#: lib/depends.c:695
+#: lib/depends.c:694
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:697 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:697 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
 msgid "YES"
 msgstr ""
 
 # , c-format
-#: lib/depends.c:1034
+#: lib/depends.c:1033
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "No consegui abrir: %s\n"
 
 #. Record all relations.
-#: lib/depends.c:1302
+#: lib/depends.c:1301
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1396
+#: lib/depends.c:1395
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1479
+#: lib/depends.c:1478
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1549
+#: lib/depends.c:1548
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1584
+#: lib/depends.c:1583
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1589
+#: lib/depends.c:1588
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2527,12 +2527,12 @@ msgid "package %s is not installed\n"
 msgstr "no foi passado pacote para instalao"
 
 # , c-format
-#: lib/rpmal.c:673
+#: lib/rpmal.c:674
 #, fuzzy
 msgid "(added files)"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmal.c:770
+#: lib/rpmal.c:771
 msgid "(added provide)"
 msgstr ""
 
@@ -2604,20 +2604,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:535
+#: lib/rpmds.c:539
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:565
+#: lib/rpmds.c:569
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:589
+#: lib/rpmds.c:593
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "no foi passado pacote para instalao"

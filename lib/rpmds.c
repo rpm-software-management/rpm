@@ -272,7 +272,9 @@ rpmDepSet dsThis(Header h, rpmTag tagN, int_32 Flags)
     ds->tagN = tagN;
     ds->Count = 1;
     ds->N = N;
+    ds->Nt = -1;	/* XXX to insure that hfd will free */
     ds->EVR = EVR;
+    ds->EVRt = -1;	/* XXX to insure that hfd will free */
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
     ds->i = 0;
     {	char pre[2];
@@ -316,7 +318,9 @@ rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     ds->Count = 1;
     /*@-assignexpose@*/
     ds->N = xmalloc(sizeof(*ds->N));		ds->N[0] = N;
+    ds->Nt = -1;	/* XXX to insure that hfd will free */
     ds->EVR = xmalloc(sizeof(*ds->EVR));	ds->EVR[0] = EVR;
+    ds->EVRt = -1;	/* XXX to insure that hfd will free */
     /*@=assignexpose@*/
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
     ds->i = 0;

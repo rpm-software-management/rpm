@@ -227,6 +227,7 @@ availableList alFree(availableList al)
     al->list = _free(al->list);
     al->alloced = 0;
     alFreeIndex(al);
+    al = _free(al);
     return NULL;
 }
 

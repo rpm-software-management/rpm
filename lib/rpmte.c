@@ -372,14 +372,18 @@ int teiGetOc(teIterator tei)
     return tei->ocsave;
 }
 
-teIterator teFreeIterator(/*@only@*//*@null@*/ teIterator tei)
+teIterator XteFreeIterator(/*@only@*//*@null@*/ teIterator tei,
+		const char * fn, unsigned int ln)
 {
     if (tei)
 	tei->ts = rpmtsUnlink(tei->ts, "tsIterator");
+if (_te_debug)
+fprintf(stderr, "*** tei %p -- %s:%d\n", tei, fn, ln);
     return _free(tei);
 }
 
-teIterator teInitIterator(rpmTransactionSet ts)
+teIterator XteInitIterator(rpmTransactionSet ts,
+		const char * fn, unsigned int ln)
 {
     teIterator tei = NULL;
 
@@ -388,6 +392,8 @@ teIterator teInitIterator(rpmTransactionSet ts)
     tei->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
     tei->oc = (tei->reverse ? (ts->orderCount - 1) : 0);
     tei->ocsave = tei->oc;
+if (_te_debug)
+fprintf(stderr, "*** tei %p ++ %s:%d\n", tei, fn, ln);
     return tei;
 }
 

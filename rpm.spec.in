@@ -588,3 +588,5 @@ fi
 - hybrid chainsaw/presentation ordering algorithm.
 - convert file md5sum's to binary on the fly, reducing memory footprint.
 - header handling moved to librpmdb to avoid linkage loops.
+- fix a couple dinky memory leaks.
+- build with an internal zlib for now.

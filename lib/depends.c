@@ -485,7 +485,6 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	if (ts->nrefs > 0)
 	    return NULL;
 
-	pi = teInitIterator(ts);
 	for (pi = teInitIterator(ts), oc = 0; (p = teNextIterator(pi)) != NULL; oc++) {
 /*@-type -unqualifiedtrans @*/
 	    ts->order[oc] = teFree(ts->order[oc]);

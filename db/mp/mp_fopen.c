@@ -300,7 +300,7 @@ __memp_fopen_int(dbmfp, mfp, path, flags, mode, pagesize, needlock)
 	dbmp = dbmfp->dbmp;
 	dbenv = dbmp->dbenv;
 	ret = 0;
-	rpath = NULL;
+	rpath = rpath_orig = NULL;
 
 	if (path == NULL)
 		last_pgno = 0;
