@@ -1,5 +1,9 @@
 #############################################################
 # Default values, often overridden in /etc/rpmrc
+#
+# This file *should not be modified*. Local customizations
+# belong in /etc/rpmrc, not here. This file will be replaced
+# whenever a new version of RPM is installed.
 
 dbpath:		@varprefix@/lib/rpm
 topdir:		@prefix@/src/redhat
