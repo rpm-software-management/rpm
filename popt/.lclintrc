@@ -26,12 +26,12 @@
 -exportfcn		# 25
 -globs			# 12 <ctype.h>
 -ifblock		# 202
--incondefs		# 37 <bits/{ipc,pthreadtypes}.h> heartburn
 -namechecks		# 206
 -ptrarith		# 43
 
 -mustdefine		# 10
 -shiftimplementation	# 120
+-sys-dir-errors
 
 -strictops		# 16
 -whileblock		# 10

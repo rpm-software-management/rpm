@@ -75,6 +75,7 @@ static void delTE(rpmte p)
 
 /**
  */
+/*@-bounds@*/
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
@@ -141,6 +142,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->relocs = NULL;
     }
 }
+/*@=bounds@*/
 
 rpmte rpmteFree(rpmte te)
 {

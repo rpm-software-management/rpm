@@ -1007,8 +1007,8 @@ int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
  * @return		0 on success
  */
 int rpmdbRebuild(/*@null@*/ const char * prefix)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Mergesort, same arguments as qsort(2).

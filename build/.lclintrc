@@ -11,7 +11,10 @@
 -unrecogcomments	# XXX ignore doxygen markings
 
 +strict			# lclint level
--includenest 16		# getting deep, sigh
+
+# --- in progress
+#+bounds		# 281
+#+boundswrite		# 132
 
 # --- +partial artifacts
 -declundef
@@ -33,25 +36,17 @@
 -fielduse		# 1 occurence <bits/sigset.h>
 -forblock		# tedious
 -ifblock		# tedious
--incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
--matchfields		# <bits/ipc.h> heartburn
 -namechecks		# tedious ANSI compliance checks
--numenummembers 1024	# RPMTAG has 138 members
--numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
 
 -compdestroy
 -mustdefine
--shiftimplementation
-#-shiftnegative
+-sys-dir-errors
 
 -strictops
--strictusereleased
--stringliterallen 4096	# redhat*PubKey's are big
 -whileblock		# tedious
 
 # --- not-yet at checks level
--ansi-reserved
 +enumint
 -mustfree
 -predboolptr
@@ -59,7 +54,6 @@
 
 # --- not-yet at standard level
 -boolops
--predboolint
 +boolint
 +charint
 +ignorequals

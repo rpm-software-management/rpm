@@ -21,6 +21,7 @@ const char * RPMVERSION = VERSION;
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
+/*@-bounds@*/
 char ** splitString(const char * str, int length, char sep)
 {
     const char * source;
@@ -56,6 +57,7 @@ char ** splitString(const char * str, int length, char sep)
 
     return list;
 }
+/*@=bounds@*/
 
 void freeSplitString(char ** list)
 {

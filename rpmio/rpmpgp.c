@@ -776,9 +776,9 @@ static const byte * pgpPrtSeckeyParams(/*@unused@*/ byte pubkey_algo,
 	    /*@innerbreak@*/ break;
 	case 0x03:
 	    pgpPrtVal(" iterated/salted ", pgpHashTbl, p[2]);
-	    /*@-shiftnegative@*/ /* FIX: unsigned cast */
+	    /*@-shiftnegative -shiftimplementation @*/ /* FIX: unsigned cast */
 	    i = (16 + (p[11] & 0xf)) << ((p[11] >> 4) + 6);
-	    /*@=shiftnegative@*/
+	    /*@=shiftnegative =shiftimplementation @*/
 	    pgpPrtHex("", p+3, 8);
 	    pgpPrtInt(" iter", i);
 	    p += 11;
@@ -1005,7 +1005,6 @@ struct pgpDig_s * pgpNewDig(void)
 }
 
 void pgpCleanDig(struct pgpDig_s * dig)
-	/*@modifies dig @*/
 {
     if (dig != NULL) {
 	int i;

@@ -32,13 +32,12 @@
 -fielduse		# 225 occurence <bits/sigset.h>
 -forblock		# tedious
 -ifblock		# tedious
--incondefs		# 93 <bits/{ipc,pthreadtypes}.h> heartburn
 -namechecks		# 1679
 -ptrarith		# 201
 
 -compdestroy		# 125
 -mustdefine		# 76
--shiftimplementation	# 296
+-sys-dir-errors
 
 -strictops		# 54
 -strictusereleased	# 3

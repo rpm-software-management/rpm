@@ -12,6 +12,10 @@
 
 +strict			# lclint level
 
+# --- in progress
+#+bounds		# 334
+#+boundswrite		# 152
+
 # --- +partial artifacts
 -declundef
 -exportheadervar
@@ -32,13 +36,12 @@
 -fielduse		# 72
 -forblock		# tedious
 -ifblock		# tedious
--incondefs		# 96 <bits/{ipc,pthreadtypes}.h> heartburn
--namechecks		# 1454 tedious ANSI compliance checks
+-namechecks		# 929 tedious ANSI compliance checks
 -ptrarith		# 104
 
 -compdestroy		# 21
 -mustdefine		# 34
--shiftimplementation	# ctype.h pain
+-sys-dir-errors
 
 -strictops		# 51
 -whileblock		# tedious

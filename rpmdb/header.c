@@ -2721,7 +2721,9 @@ static char * formatValue(sprintfTag tag, Header h,
 	if (((*vallenp) + need) >= (*allocedp)) {
 	    if ((*allocedp) <= need)
 		(*allocedp) += need;
+/*@-shiftimplementation@*/
 	    (*allocedp) <<= 1;
+/*@=shiftimplementation@*/
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
 	    (*valp) = xrealloc((*valp), (*allocedp)+1);	
 /*@=unqualifiedtrans@*/
@@ -2765,7 +2767,9 @@ static char * singleSprintf(Header h, sprintfToken token,
 	if (((*vallenp) + need) >= (*allocedp)) {
 	    if ((*allocedp) <= need)
 		(*allocedp) += need;
+/*@-shiftimplementation@*/
 	    (*allocedp) <<= 1;
+/*@=shiftimplementation@*/
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
 	    (*valp) = xrealloc((*valp), (*allocedp)+1);	
 /*@=unqualifiedtrans@*/
@@ -2797,7 +2801,9 @@ static char * singleSprintf(Header h, sprintfToken token,
 	if (((*vallenp) + need) >= (*allocedp)) {
 	    if ((*allocedp) <= need)
 		(*allocedp) += need;
+/*@-shiftimplementation@*/
 	    (*allocedp) <<= 1;
+/*@=shiftimplementation@*/
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
 	    (*valp) = xrealloc((*valp), (*allocedp)+1);	
 /*@=unqualifiedtrans@*/
@@ -2836,7 +2842,9 @@ static char * singleSprintf(Header h, sprintfToken token,
 	    if (((*vallenp) + need) >= (*allocedp)) {
 		if ((*allocedp) <= need)
 		    (*allocedp) += need;
+/*@-shiftimplementation@*/
 		(*allocedp) <<= 1;
+/*@=shiftimplementation@*/
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
 		(*valp) = xrealloc((*valp), (*allocedp)+1);	
 /*@=unqualifiedtrans@*/
@@ -2850,7 +2858,9 @@ static char * singleSprintf(Header h, sprintfToken token,
 	    if (((*vallenp) + need) >= (*allocedp)) {
 		if ((*allocedp) <= need)
 		    (*allocedp) += need;
+/*@-shiftimplementation@*/
 		(*allocedp) <<= 1;
+/*@=shiftimplementation@*/
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
 		(*valp) = xrealloc((*valp), (*allocedp)+1);	
 /*@=unqualifiedtrans@*/

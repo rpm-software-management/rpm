@@ -39,14 +39,18 @@ int _url_debug = 0;
 
 /**
  */
+/*@-incondefs@*/
 /*@unchecked@*/
 /*@only@*/ /*@null@*/
 urlinfo *_url_cache = NULL;
+/*@=incondefs@*/
 
 /**
  */
+/*@-incondefs@*/
 /*@unchecked@*/
 int _url_count = 0;
+/*@=incondefs@*/
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.

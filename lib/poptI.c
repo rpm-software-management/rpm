@@ -31,6 +31,7 @@ struct rpmInstallArguments_s rpmIArgs;
 
 /**
  */
+/*@-bounds@*/
 static void installArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg,
@@ -90,6 +91,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
     }
     /*@=branchstate@*/
 }
+/*@=bounds@*/
 
 /**
  */

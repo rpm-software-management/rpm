@@ -938,7 +938,7 @@ typedef enum pgpArmorKey_e {
     PGPARMORKEY_COMMENT		= 2, /*!< Comment: */
     PGPARMORKEY_MESSAGEID	= 3, /*!< MessageID: */
     PGPARMORKEY_HASH		= 4, /*!< Hash: */
-    PGPARMORKEY_CHARSET		= 5 /*!< Charset: */
+    PGPARMORKEY_CHARSET		= 5  /*!< Charset: */
 } pgpArmorKey;
 /*@=typeuse@*/
 
@@ -1201,7 +1201,7 @@ struct pgpDig_s * pgpNewDig(void)
 /**
  */
 void pgpCleanDig(/*@null@*/ struct pgpDig_s * dig)
-	/*@modifies *dig @*/;
+	/*@modifies dig @*/;
 
 /**
  */

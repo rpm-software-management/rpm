@@ -151,7 +151,7 @@ typedef struct poptItem_s {
  * Empty table marker to enable displaying popt alias/exec options.
  */
 /*@-exportvar@*/
-/*@observer@*/ /*@checked@*/
+/*@unchecked@*/ /*@observer@*/
 extern struct poptOption poptAliasOptions[];
 /*@=exportvar@*/
 #define POPT_AUTOALIAS { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptAliasOptions, \
@@ -161,7 +161,7 @@ extern struct poptOption poptAliasOptions[];
  * Auto help table options.
  */
 /*@-exportvar@*/
-/*@observer@*/ /*@checked@*/
+/*@unchecked@*/ /*@observer@*/
 extern struct poptOption poptHelpOptions[];
 /*@=exportvar@*/
 #define POPT_AUTOHELP { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptHelpOptions, \

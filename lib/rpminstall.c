@@ -216,6 +216,7 @@ struct rpmEIU {
 };
 
 /** @todo Generalize --freshen policies. */
+/*@-bounds@*/
 int rpmInstall(rpmts ts,
 		struct rpmInstallArguments_s * ia,
 		const char ** fileArgv)
@@ -630,6 +631,7 @@ exit:
 
     return eiu->numFailed;
 }
+/*@=bounds@*/
 
 int rpmErase(rpmts ts,
 		const struct rpmInstallArguments_s * ia,

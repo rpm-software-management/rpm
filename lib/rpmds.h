@@ -37,7 +37,8 @@ struct rpmds_s {
     int_32 * Flags;		/*!< Flags identifying context/comparison. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
-/*@refs@*/ int nrefs;		/*!< Reference count. */
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
 };
 #endif	/* _RPMDS_INTERNAL */
 
@@ -71,11 +72,12 @@ rpmds XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
  * @param msg
  * @return		new dependency set reference
  */
-/*@unused@*/
+/*@unused@*/ /*@newref@*/
 rpmds rpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg)
 	/*@modifies ds @*/;
 
 /** @todo Remove debugging entry from the ABI. */
+/*@newref@*/
 rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies ds @*/;

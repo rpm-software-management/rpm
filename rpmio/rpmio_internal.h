@@ -151,6 +151,7 @@ extern int _rpmio_debug;
 /*@=redecl@*/
 
 /*@-redecl@*/
+/*@unchecked@*/
 extern int _ftp_debug;
 /*@=redecl@*/
 

@@ -380,6 +380,7 @@ fileTypes whatis(uint_16 mode)
  * @param actions	file dispositions
  * @return		header with relocated files
  */
+/*@-bounds@*/
 static
 Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, fileAction * actions)
@@ -805,6 +806,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 
     return h;
 }
+/*@=bounds@*/
 
 rpmfi rpmfiFree(rpmfi fi, int freefimem)
 {

@@ -712,6 +712,7 @@ static int ensureOlder(rpmts ts,
 /**
  */
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
+/*@-bounds@*/
 static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
@@ -903,6 +904,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 #endif
     if (languages) freeSplitString((char **)languages);
 }
+/*@=bounds@*/
 /*@=mustmod@*/
 
 /**

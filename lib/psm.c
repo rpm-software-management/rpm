@@ -348,6 +348,7 @@ static int mergeFiles(rpmfi fi, Header h, Header newH)
  * @param psm		package state machine data
  * @return		0 always
  */
+/*@-bounds@*/
 static int markReplacedFiles(const PSM_t psm)
 	/*@globals fileSystem@*/
 	/*@modifies psm, fileSystem @*/
@@ -421,6 +422,7 @@ static int markReplacedFiles(const PSM_t psm)
 
     return 0;
 }
+/*@=bounds@*/
 
 /**
  * Create directory if it does not exist, make sure path is writable.

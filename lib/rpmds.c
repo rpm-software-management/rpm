@@ -453,7 +453,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds->Type ? ds->Type : "?Type?"),
     return i;
 }
 
-rpmds rpmdsInit(/*@returned@*/ /*@null@*/ rpmds ds)
+rpmds rpmdsInit(/*@null@*/ rpmds ds)
 	/*@modifies ds @*/
 {
     if (ds != NULL)

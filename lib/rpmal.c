@@ -370,6 +370,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
     return;
 }
 
+/*@-bounds@*/
 alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 		rpmds provides, rpmfi fi)
 {
@@ -507,6 +508,7 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 assert(((alNum)(alp - al->list)) == pkgNum);
     return ((alKey)(alp - al->list));
 }
+/*@=bounds@*/
 
 /**
  * Compare two available index entries by name (qsort/bsearch).

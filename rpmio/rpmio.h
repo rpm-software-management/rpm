@@ -357,11 +357,13 @@ int Unlink(const char * path)
 /**
  * readlink(2) clone.
  */
+/*@-incondefs@*/
 int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 	/*@globals errno, fileSystem @*/
 	/*@modifies *buf, errno, fileSystem @*/
 	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
 	/*@ensures result <= bufsiz @*/;
+/*@=incondefs@*/
 
 /**
  * stat(2) clone.
@@ -469,12 +471,14 @@ off_t	fdSize(FD_t fd)
 
 /**
  */
+/*@-incondefs@*/
 ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals errno, fileSystem @*/
 	/*@modifies *cookie, *buf, errno, fileSystem @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
 	/*@ensures maxRead(buf) >= count @*/ ;
 #define	fdRead(_fd, _buf, _count)	fdio->read((_fd), (_buf), (_count))
+/*@=incondefs@*/
 
 /**
  */

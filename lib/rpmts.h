@@ -525,7 +525,7 @@ int rpmtsSetNotifyCallback(rpmts ts,
  * Create an empty transaction set.
  * @return		new transaction set
  */
-/*@only@*/
+/*@newref@*/
 rpmts rpmtsCreate(void)
 	/*@*/;
 

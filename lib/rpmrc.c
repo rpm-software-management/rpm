@@ -781,6 +781,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 
 /**
  */
+/*@-bounds@*/
 static int rpmPlatform(const char * platform)
 	/*@globals nplatpat, platpat,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -882,6 +883,7 @@ exit:
 /*@=modobserver@*/
     return rc;
 }
+/*@=bounds@*/
 
 
 #	if defined(__linux__) && defined(__i386__)

@@ -192,6 +192,7 @@ static int sugcmp(const void * a, const void * b)       /*@*/
     return strcmp(astr, bstr);
 }
 
+/*@-bounds@*/
 int rpmtsSolve(rpmts ts, rpmds ds)
 {
     const char * errstr;
@@ -287,6 +288,7 @@ exit:
     return rc;
 /*@=nullstate@*/
 }
+/*@=bounds@*/
 
 int rpmtsAvailable(rpmts ts, const rpmds ds)
 {

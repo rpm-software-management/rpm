@@ -13,8 +13,8 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds
-#+boundswrite
+#+bounds		# 629
+#+boundswrite		# 317
 -redecl
 
 # --- +partial artifacts
@@ -28,7 +28,7 @@
 -varuse
 
 # --- not-yet at strict level
--bitwisesigned		# pita
+-bitwisesigned		# 255
 -elseifcomplete		# 95 occurences
 -exportconst		# 839 occurences
 -exportfcn
@@ -37,13 +37,12 @@
 -fielduse		# 1 occurence <bits/sigset.h>
 -forblock		# tedious
 -ifblock		# tedious
--incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
--namechecks		# tedious ANSI compliance checks
+-namechecks		# 1843 tedious ANSI compliance checks
 -ptrarith		# 164
 
 -compdestroy		# 66
 -mustdefine		# 66
--shiftimplementation	# 696
+-sys-dir-errors
 
 -strictops		# 46
 -whileblock		# 54

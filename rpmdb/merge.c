@@ -269,6 +269,7 @@ mergesort(void *base, size_t nmemb, size_t size,
 	    					goto EXPONENTIAL;
 	    				}
 	    		} else {
+/*@-shiftimplementation@*/
 EXPONENTIAL:	    		for (i = size; ; i <<= 1)
 	    				if ((p = (b + i)) >= t) {
 	    					if ((p = t - size) > b &&
@@ -300,6 +301,7 @@ FASTCASE:	    		while (i > size)
 	    				else
 	    					b = p;
 				/*@=infloopsuncon@*/
+/*@=shiftimplementation@*/
 COPY:	    			b = t;
 	    		}
 	    		i = size;
