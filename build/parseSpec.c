@@ -91,6 +91,16 @@ void handleComments(char *s)
     }
 }
 
+static void forceIncludeFile(Spec spec, const char * fileName)
+{
+    struct OpenFileInfo * ofi;
+
+    ofi = newOpenFileInfo();
+    ofi->fileName = strdup(fileName);
+    ofi->next = spec->fileStack;
+    spec->fileStack = ofi;
+}
+
 /* returns 0 - success */
 /*         1 - EOF     */
 /*        <0 - error   */
@@ -257,16 +267,6 @@ void closeSpec(Spec spec)
 	FREE(ofi->fileName);
 	free(ofi);
     }
-}
-
-void forceIncludeFile(Spec spec, const char * fileName)
-{
-    struct OpenFileInfo * ofi;
-
-    ofi = newOpenFileInfo();
-    ofi->fileName = strdup(fileName);
-    ofi->next = spec->fileStack;
-    spec->fileStack = ofi;
 }
 
 int noLang = 0;		/* XXX FIXME: pass as arg */
