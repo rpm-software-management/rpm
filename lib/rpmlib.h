@@ -108,7 +108,7 @@ extern const int rpmTagTableSize;
 #define REQUIRE_LESS            (1 << 1)
 #define REQUIRE_GREATER         (1 << 2)
 #define REQUIRE_EQUAL           (1 << 3)
-#define REQUIRE_PROVIDES        (1 << 4)
+#define REQUIRE_PROVIDES        (1 << 4)   /* only used internally by builds */
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
@@ -175,6 +175,21 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
 int rpmVerifyFile(char * prefix, Header h, int filenum, int * result);
+
+typedef struct rpmDependencyCheck * rpmDependencies;
+
+struct rpmDependencyConflict {
+    char * byName, * byVersion, * byRelease;
+    char * needsName, * needsVersion;
+    int needsFlags;
+} ;
+
+rpmDependencies rpmdepDependencies(rpmdb db); 	       /* db may be NULL */
+void rpmdepAddPackage(rpmDependencies rpmdep, Header h);
+void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset);
+int rpmdepCheck(rpmDependencies rpmdep, 
+		struct rpmDependencyConflict ** conflicts, int * numConflicts);
+void rpmdepDone(rpmDependencies rpmdep);
 
 int mdfile(char *fn, unsigned char *digest);
 
