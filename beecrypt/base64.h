@@ -35,13 +35,13 @@ extern "C" {
 /**
  */
 BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
-char*		b64enc(const memchunk* chunk)
+char* b64enc(const memchunk* chunk)
 	/*@*/;
 
 /**
  */
 BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk*	b64dec(const char* string)
+memchunk* b64dec(const char* string)
 	/*@*/;
 
 #ifdef __cplusplus

@@ -17,3 +17,6 @@ ltmain.sh
 *.lo
 stamp-h
 stamp-h.in
+beetest
+base64bug
+openpgp
