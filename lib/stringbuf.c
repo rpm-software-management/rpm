@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include "stringbuf.h"
 
 #define BUF_CHUNK 1024
