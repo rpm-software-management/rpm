@@ -5,7 +5,7 @@ bashit="/bin/bash2 --rpm-requires"
 # Make sure that this bash has the rpm-requires hack
 $bashit < /dev/null 2>&1 > /dev/null || exit $?
 
-prereqs="`cat | $bashit | sort | uniq | sed -e 's/^bash(//' -e 's/)$//'`"
+prereqs="`cat | $bashit | sort | uniq | sed -e 's/^bash(//' -e 's/)$//'`" -e 's/^executable(//' -e 's/)$//'`"
 [ -z "$prereqs" ] && exit 0
 
 for prereq in $prereqs
