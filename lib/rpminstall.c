@@ -915,6 +915,7 @@ int rpmRollback(rpmTransactionSet ts,
     IDT ip;
     int niids = 0;
     int rc = 0;
+    int i;
 
     if (argv != NULL && *argv != NULL) {
 	rc = -1;
@@ -1045,7 +1046,16 @@ int rpmRollback(rpmTransactionSet ts,
 	    rpmProblemSetPrint(stderr, probs);
 	    if (probs != NULL) rpmProblemSetFree(probs);
 	    probs = NULL;
+	}
+	if (rc)
 	    goto exit;
+
+	/* Clean up after successful rollback. */
+	for (i = 0; i < rtids->nidt; i++) {
+	    IDT rrp = rtids->idt + i;
+	    if (rrp->val.u32 != thistid)
+		continue;
+	    (void) unlink(rrp->key);
 	}
 
     } while (1);

@@ -1383,16 +1383,34 @@ assert(psm->mi == NULL);
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
 		    psm->oh = headerCopyLoad(uh);
 		    uh = hfd(uh, uht);
-		} else {
-		    psm->oh = headerLink(fi->h, "PSM_PKGSAVE_PRE)");
-		}
-	    }
+		} else
+		if (headerGetEntry(fi->h, RPMTAG_HEADERIMAGE, &uht, &uh, &uhc))
+		{
+		    HeaderIterator hi;
+		    int_32 tag, type, count;
+		    hPTR_t ptr;
+		    Header oh;
 
-	    /* Add remove transaction id to header. */
-	    if (psm->oh)
-	    {	int_32 tid = ts->id;
-		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
-			RPM_INT32_TYPE, &tid, 1);
+		    /* Load the original header from the blob. */
+		    oh = headerCopyLoad(uh);
+
+		    /* XXX this is headerCopy w/o headerReload() */
+		    psm->oh = headerNew();
+
+		    /*@-branchstate@*/
+		    for (hi = headerInitIterator(oh);
+		        headerNextIterator(hi, &tag, &type, &ptr, &count);
+		        ptr = headerFreeData((void *)ptr, type))
+		    {
+		        if (ptr) (void) headerAddEntry(psm->oh, tag, type, ptr, count);
+		    }
+		    hi = headerFreeIterator(hi);
+		    /*@=branchstate@*/
+
+		    headerFree(oh, NULL);
+		    uh = hfd(uh, uht);
+		} else
+		    break;	/* XXX shouldn't ever happen */
 	    }
 
 	    /* Retrieve type of payload compression. */
@@ -1412,7 +1430,7 @@ assert(psm->mi == NULL);
 
 		memset(&lead, 0, sizeof(lead));
 		/* XXX Set package version conditioned on noDirTokens. */
-		lead.major = 4;
+		lead.major = 3;
 		lead.minor = 0;
 		lead.type = RPMLEAD_BINARY;
 		lead.archnum = archnum;
@@ -1435,6 +1453,13 @@ assert(psm->mi == NULL);
 		rc = rpmWriteSignature(psm->fd, sig);
 		sig = rpmFreeSignature(sig);
 		if (rc) break;
+	    }
+
+	    /* Add remove transaction id to header. */
+	    if (psm->oh)
+	    {	int_32 tid = ts->id;
+		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
+			RPM_INT32_TYPE, &tid, 1);
 	    }
 
 	    /* Write the metadata section into the package. */

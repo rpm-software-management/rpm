@@ -122,12 +122,12 @@ static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
     rc = (((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size)
 	? RPMRC_BADSIZE : RPMRC_OK);
 
-    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
+    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_DEBUG),
 	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
 		(int)sizeof(struct rpmlead)+siglen+pad+datalen,
 		(int)sizeof(struct rpmlead), siglen, pad, datalen);
     /*@=sizeoftype@*/
-    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
+    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_DEBUG),
 	_("  Actual size: %12d\n"), (int)st.st_size);
 
     return rc;

@@ -47,8 +47,7 @@ enum modes {
 
     MODE_INSTALL	= (1 <<  1),
     MODE_ERASE		= (1 <<  2),
-    MODE_ROLLBACK	= (1 << 14),
-#define	MODES_IE (MODE_INSTALL | MODE_ERASE | MODE_ROLLBACK)
+#define	MODES_IE (MODE_INSTALL | MODE_ERASE)
 
     MODE_BUILD		= (1 <<  4),
     MODE_REBUILD	= (1 <<  5),
@@ -1032,19 +1031,19 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
-	if (!poptPeekArg(optCon))
-	    argerror(_("no packages given for erase"));
-
 	if (ia->noDeps) ia->eraseInterfaceFlags |= UNINSTALL_NODEPS;
 
-	ec = rpmErase(ts, (const char **)poptGetArgs(optCon), 
+	if (!poptPeekArg(optCon)) {
+	    if (ia->rbtid == 0)
+		argerror(_("no packages given for erase"));
+	    ec += rpmRollback(ts, ia, NULL);
+	} else {
+	    ec += rpmErase(ts, (const char **)poptGetArgs(optCon), 
 			 ia->transFlags, ia->eraseInterfaceFlags);
+	}
 	break;
 
     case MODE_INSTALL:
-
-	if (!poptPeekArg(optCon))
-	    argerror(_("no packages given for install"));
 
 	/* RPMTRANS_FLAG_BUILD_PROBS */
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
@@ -1074,15 +1073,17 @@ int main(int argc, const char ** argv)
 	}
 	/*@=branchstate@*/
 
-	/*@-compdef@*/ /* FIX: ia->relocations[0].newPath undefined */
-	ec += rpmInstall(ts, (const char **)poptGetArgs(optCon), 
-			ia->transFlags, ia->installInterfaceFlags, ia->probFilter,
-			ia->relocations);
+	if (!poptPeekArg(optCon)) {
+	    if (ia->rbtid == 0)
+		argerror(_("no packages given for install"));
+	    ec += rpmRollback(ts, ia, NULL);
+	} else {
+	    /*@-compdef@*/ /* FIX: ia->relocations[0].newPath undefined */
+	    ec += rpmInstall(ts, (const char **)poptGetArgs(optCon), 
+			ia->transFlags, ia->installInterfaceFlags,
+			ia->probFilter, ia->relocations);
+	}
 	/*@=compdef@*/
-	break;
-
-    case MODE_ROLLBACK:
-	ec += rpmRollback(ts, ia, (const char **)poptGetArgs(optCon));
 	break;
 
 #endif	/* IAM_RPMEIU */
@@ -1158,7 +1159,6 @@ int main(int argc, const char ** argv)
 #if !defined(IAM_RPMEIU)
     case MODE_INSTALL:
     case MODE_ERASE:
-    case MODE_ROLLBACK:
 #endif
     case MODE_UNKNOWN:
 	if (!showVersion && !help && !noUsageMsg) printUsage();

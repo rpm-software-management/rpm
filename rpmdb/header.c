@@ -13,7 +13,6 @@
 #define	__HEADER_PROTOTYPES__
 
 #include <header_internal.h>
-#define HSTATIC	static
 
 #include "debug.h"
 
@@ -98,7 +97,7 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
  * @param h		header
  * @return		referenced header instance
  */
-HSTATIC
+static
 Header XheaderLink(Header h, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
 	/*@modifies h @*/
@@ -118,7 +117,7 @@ fprintf(stderr, "--> h  %p ++ %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), 
  * @param h		header
  * @return		NULL always
  */
-HSTATIC /*@null@*/
+static /*@null@*/
 Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
 		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
@@ -136,7 +135,7 @@ fprintf(stderr, "--> h  %p -- %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), 
  * @param h		header
  * @return		NULL always
  */
-HSTATIC /*@null@*/
+static /*@null@*/
 Header XheaderFree(/*@killref@*/ /*@null@*/ Header h,
 		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
@@ -174,7 +173,7 @@ Header XheaderFree(/*@killref@*/ /*@null@*/ Header h,
  * Create new (empty) header instance.
  * @return		header
  */
-HSTATIC
+static
 Header headerNew(void)
 	/*@*/
 {
@@ -212,7 +211,7 @@ static int indexCmp(const void * avp, const void * bvp)	/*@*/
  * Sort tags in header.
  * @param h		header
  */
-HSTATIC
+static
 void headerSort(Header h)
 	/*@modifies h @*/
 {
@@ -245,7 +244,7 @@ static int offsetCmp(const void * avp, const void * bvp) /*@*/
  * Restore tags in header to original ordering.
  * @param h		header
  */
-HSTATIC
+static
 void headerUnsort(Header h)
 	/*@modifies h @*/
 {
@@ -258,7 +257,7 @@ void headerUnsort(Header h)
  * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
-HSTATIC
+static
 unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 	/*@modifies h @*/
 {
@@ -466,7 +465,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    tprev = dataStart;
 	    /* XXX HEADER_IMAGE tags don't include region sub-tag. */
 	    /*@-sizeoftype@*/
-	    if (ie.info.tag != HEADER_IMMUTABLE)
+	    if (ie.info.tag == HEADER_IMAGE)
 		tprev -= REGION_TAG_COUNT;
 	    /*@=sizeoftype@*/
 	}
@@ -510,33 +509,6 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 
     return dl;
 }
-
-#if 0
-static int headerDrips(const Header h)
-{
-    indexEntry entry; 
-    int i;
-
-    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
-	if (ENTRY_IS_REGION(entry)) {
-	    int rid = entry->info.offset;
-
-	    for (; i < h->indexUsed && entry->info.offset <= rid+1; i++, entry++) {
-		if (entry->info.offset <= rid)
-		    continue;
-	    }
-	    i--;
-	    entry--;
-	    continue;
-	}
-
-	/* Ignore deleted drips. */
-	if (entry->data == NULL || entry->length <= 0)
-	    continue;
-    }
-    return 0;
-}
-#endif
 
 /** \ingroup header
  */
@@ -793,7 +765,7 @@ errxit:
  * @param h		header (with pointers)
  * @return		on-disk header blob (i.e. with offsets)
  */
-HSTATIC /*@only@*/ /*@null@*/
+static /*@only@*/ /*@null@*/
 void * headerUnload(Header h)
 	/*@modifies h @*/
 {
@@ -857,7 +829,7 @@ indexEntry findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-HSTATIC
+static
 int headerRemoveEntry(Header h, int_32 tag)
 	/*@modifies h @*/
 {
@@ -901,7 +873,7 @@ int headerRemoveEntry(Header h, int_32 tag)
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
-HSTATIC /*@null@*/
+static /*@null@*/
 Header headerLoad(/*@kept@*/ void * uh)
 	/*@modifies uh @*/
 {
@@ -1085,7 +1057,7 @@ errxit:
  * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
-HSTATIC /*@null@*/
+static /*@null@*/
 Header headerReload(/*@only@*/ Header h, int tag)
 	/*@modifies h @*/
 {
@@ -1118,7 +1090,7 @@ Header headerReload(/*@only@*/ Header h, int tag)
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
-HSTATIC /*@null@*/
+static /*@null@*/
 Header headerCopyLoad(const void * uh)
 	/*@*/
 {
@@ -1153,7 +1125,7 @@ Header headerCopyLoad(const void * uh)
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
-HSTATIC /*@null@*/
+static /*@null@*/
 Header headerRead(FD_t fd, enum hMagic magicp)
 	/*@modifies fd @*/
 {
@@ -1186,8 +1158,8 @@ Header headerRead(FD_t fd, enum hMagic magicp)
 	reserved = block[i++];
     }
     
-    il = ntohl(block[i++]);
-    dl = ntohl(block[i++]);
+    il = ntohl(block[i]);	i++;
+    dl = ntohl(block[i]);	i++;
 
     /*@-sizeoftype@*/
     len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo)) + dl;
@@ -1228,7 +1200,7 @@ exit:
  * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
-HSTATIC
+static
 int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
 	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/
@@ -1269,7 +1241,7 @@ exit:
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerIsEntry(/*@null@*/Header h, int_32 tag)
 	/*@*/
 {
@@ -1301,7 +1273,12 @@ static int copyEntry(const indexEntry entry,
     if (p)
     switch (entry->info.type) {
     case RPM_BIN_TYPE:
-	/* XXX this only works for HEADER_IMMUTABLE */
+	/*
+	 * XXX This only works for
+	 * XXX 	"sealed" HEADER_IMMUTABLE/HEADER_SIGNATURES/HEADER_IMAGE.
+	 * XXX This will *not* work for unsealed legacy HEADER_IMAGE (i.e.
+	 * XXX a legacy header freshly read, but not yet unloaded to the rpmdb).
+	 */
 	if (ENTRY_IS_REGION(entry)) {
 	    int_32 * ei = ((int_32 *)entry->data) - 2;
 	    /*@-castexpose@*/
@@ -1312,17 +1289,26 @@ static int copyEntry(const indexEntry entry,
 	    int_32 ril = rdl/sizeof(*pe);
 
 	    /*@-sizeoftype@*/
-	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) +
-			entry->rdlen + REGION_TAG_COUNT;
+	    rdl = entry->rdlen;
+	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) + rdl;
+	    if (entry->info.tag == HEADER_IMAGE) {
+		ril -= 1;
+		pe += 1;
+	    } else {
+		count += REGION_TAG_COUNT;
+		rdl += REGION_TAG_COUNT;
+	    }
+
 	    *p = xmalloc(count);
 	    ei = (int_32 *) *p;
 	    ei[0] = htonl(ril);
-	    ei[1] = htonl(entry->rdlen + REGION_TAG_COUNT);
+	    ei[1] = htonl(rdl);
+
 	    /*@-castexpose@*/
 	    pe = (entryInfo) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
 	    /*@=castexpose@*/
-	    dataStart = (char *) memcpy(pe + ril, dataStart,
-					(entry->rdlen + REGION_TAG_COUNT));
+
+	    dataStart = (char *) memcpy(pe + ril, dataStart, rdl);
 	    /*@=sizeoftype@*/
 
 	    rc = regionSwab(NULL, ril, 0, pe, dataStart, 0);
@@ -1599,7 +1585,7 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
  * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ void ** p,
@@ -1621,7 +1607,7 @@ int headerGetEntry(Header h, int_32 tag,
  * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hPTR_t * p,
@@ -1724,7 +1710,7 @@ static void * grabData(int_32 type, hPTR_t p, int_32 c,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
 	/*@modifies h @*/
 {
@@ -1769,7 +1755,7 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerAppendEntry(Header h, int_32 tag, int_32 type,
 		const void * p, int_32 c)
 	/*@modifies h @*/
@@ -1816,7 +1802,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
 		const void * p, int_32 c)
 	/*@modifies h @*/
@@ -1846,7 +1832,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
  * @param lang		locale
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerAddI18NString(Header h, int_32 tag, const char * string,
 		const char * lang)
 	/*@modifies h @*/
@@ -1991,7 +1977,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerModifyEntry(Header h, int_32 tag, int_32 type,
 			const void * p, int_32 c)
 	/*@modifies h @*/
@@ -2889,7 +2875,7 @@ freeExtensionCache(const headerSprintfExtension extensions,
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
-HSTATIC /*@only@*/ /*@null@*/
+static /*@only@*/ /*@null@*/
 char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tbltags,
 		     const struct headerSprintfExtension_s * extensions,
@@ -3105,7 +3091,7 @@ const struct headerSprintfExtension_s headerDefaultFormats[] = {
  * @param headerTo	destination header
  * @param tagstocopy	array of tags that are copied
  */
-HSTATIC
+static
 void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	/*@modifies headerTo @*/
 {
@@ -3141,7 +3127,7 @@ struct headerIteratorS {
  * @param hi		header tag iterator
  * @return		NULL always
  */
-HSTATIC /*@null@*/
+static /*@null@*/
 HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
 	/*@modifies hi @*/
 {
@@ -3155,7 +3141,7 @@ HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
  * @param h		header
  * @return		header tag iterator
  */
-HSTATIC
+static
 HeaderIterator headerInitIterator(Header h)
 	/*@modifies h */
 {
@@ -3177,7 +3163,7 @@ HeaderIterator headerInitIterator(Header h)
  * @retval c		address of number of values
  * @return		1 on success, 0 on failure
  */
-HSTATIC
+static
 int headerNextIterator(HeaderIterator hi,
 		/*@null@*/ /*@out@*/ hTAG_t tag,
 		/*@null@*/ /*@out@*/ hTYP_t type,
@@ -3216,7 +3202,7 @@ int headerNextIterator(HeaderIterator hi,
  * @param h		header
  * @return		new header instance
  */
-HSTATIC /*@null@*/
+static /*@null@*/
 Header headerCopy(Header h)
 	/*@modifies h @*/
 {

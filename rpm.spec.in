@@ -627,3 +627,5 @@ fi
 - perl.req: don't mis-generate dependencies like perl(::path/to/foo.pl).
 - permit args to be hidden within %%__find_{requires,provides}.
 - a couple more perl.{prov,req} fiddles.
+- macro for %files, always include %defattr(), redhat config only.
+- fix: drop header region when writing repackaged legacy header.

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-02-01 10:09-0500\n"
+"POT-Creation-Date: 2002-02-02 17:37-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -78,353 +78,353 @@ msgstr ""
 msgid "cannot re-open payload: %s\n"
 msgstr ""
 
-#: rpmqv.c:109
+#: rpmqv.c:108
 msgid "print the version of rpm being used"
 msgstr ""
 
-#: rpmqv.c:112
+#: rpmqv.c:111
 msgid "provide less detailed output"
 msgstr ""
 
-#: rpmqv.c:114
+#: rpmqv.c:113
 msgid "provide more detailed output"
 msgstr ""
 
-#: rpmqv.c:116
+#: rpmqv.c:115
 msgid "define macro <name> with value <body>"
 msgstr ""
 
-#: rpmqv.c:117
+#: rpmqv.c:116
 msgid "'<name> <body>'"
 msgstr ""
 
-#: rpmqv.c:119
+#: rpmqv.c:118
 msgid "print macro expansion of <expr>+"
 msgstr ""
 
-#: rpmqv.c:120
+#: rpmqv.c:119
 msgid "<expr>+"
 msgstr ""
 
-#: rpmqv.c:122
+#: rpmqv.c:121
 msgid "send stdout to <cmd>"
 msgstr ""
 
-#: rpmqv.c:123
+#: rpmqv.c:122
 msgid "<cmd>"
 msgstr ""
 
-#: rpmqv.c:125
+#: rpmqv.c:124
 msgid "use <dir> as the top level directory"
 msgstr ""
 
-#: lib/poptI.c:210 rpmqv.c:126
+#: lib/poptI.c:210 rpmqv.c:125
 msgid "<dir>"
 msgstr ""
 
-#: rpmqv.c:128
+#: rpmqv.c:127
 msgid "read <file:...> instead of default macro file(s)"
 msgstr ""
 
-#: rpmqv.c:129 rpmqv.c:133 rpmqv.c:137
+#: rpmqv.c:128 rpmqv.c:132 rpmqv.c:136
 msgid "<file:...>"
 msgstr ""
 
-#: rpmqv.c:132 rpmqv.c:136
+#: rpmqv.c:131 rpmqv.c:135
 msgid "read <file:...> instead of default rpmrc file(s)"
 msgstr ""
 
-#: rpmqv.c:140
+#: rpmqv.c:139
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: rpmqv.c:145
+#: rpmqv.c:144
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: rpmqv.c:148
+#: rpmqv.c:147
 msgid "debug protocol data stream"
 msgstr ""
 
-#: rpmqv.c:150
+#: rpmqv.c:149
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: rpmqv.c:152
+#: rpmqv.c:151
 msgid "debug URL cache handling"
 msgstr ""
 
-#: rpmqv.c:172
+#: rpmqv.c:171
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:175
+#: rpmqv.c:174
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:181
+#: rpmqv.c:180
 msgid "Signature options:"
 msgstr ""
 
-#: rpmqv.c:187
+#: rpmqv.c:186
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:193
+#: rpmqv.c:192
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmqv.c:199
+#: rpmqv.c:198
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:204
+#: rpmqv.c:203
 msgid "Common options for all rpm modes:"
 msgstr ""
 
 #. @-modfilesys -globs @
-#: lib/poptI.c:27 rpmqv.c:221
+#: lib/poptI.c:27 rpmqv.c:220
 #, c-format
 msgid "%s: %s\n"
 msgstr ""
 
-#: rpmqv.c:229
+#: rpmqv.c:228
 #, c-format
 msgid "RPM version %s\n"
 msgstr ""
 
-#: rpmqv.c:236
+#: rpmqv.c:235
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr ""
 
-#: rpmqv.c:237
+#: rpmqv.c:236
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr ""
 
-#: rpmqv.c:249
+#: rpmqv.c:248
 #, c-format
 msgid "Usage: %s {--help}\n"
 msgstr ""
 
-#: rpmqv.c:589
+#: rpmqv.c:588
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
-#: rpmqv.c:590
+#: rpmqv.c:589
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr ""
 
-#: rpmqv.c:596
+#: rpmqv.c:595
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpmqv.c:637 rpmqv.c:643 rpmqv.c:649 rpmqv.c:687
+#: rpmqv.c:636 rpmqv.c:642 rpmqv.c:648 rpmqv.c:686
 msgid "only one major mode may be specified"
 msgstr ""
 
-#: rpmqv.c:666
+#: rpmqv.c:665
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 
-#: rpmqv.c:670
+#: rpmqv.c:669
 msgid "unexpected query flags"
 msgstr ""
 
-#: rpmqv.c:673
+#: rpmqv.c:672
 msgid "unexpected query format"
 msgstr ""
 
-#: rpmqv.c:676
+#: rpmqv.c:675
 msgid "unexpected query source"
 msgstr ""
 
-#: rpmqv.c:717
+#: rpmqv.c:716
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: rpmqv.c:723
+#: rpmqv.c:722
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 
-#: rpmqv.c:725
+#: rpmqv.c:724
 msgid "files may only be relocated during package installation"
 msgstr ""
 
-#: rpmqv.c:728
+#: rpmqv.c:727
 msgid "only one of --prefix or --relocate may be used"
 msgstr ""
 
-#: rpmqv.c:731
+#: rpmqv.c:730
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 
-#: rpmqv.c:734
+#: rpmqv.c:733
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 
-#: rpmqv.c:737
+#: rpmqv.c:736
 msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
-#: rpmqv.c:740
+#: rpmqv.c:739
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:744
+#: rpmqv.c:743
 msgid "--percent may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:749
+#: rpmqv.c:748
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:753
+#: rpmqv.c:752
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:757
+#: rpmqv.c:756
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:761
+#: rpmqv.c:760
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:765
+#: rpmqv.c:764
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: rpmqv.c:769
+#: rpmqv.c:768
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:773
+#: rpmqv.c:772
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:778
+#: rpmqv.c:777
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:782
+#: rpmqv.c:781
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: rpmqv.c:786
+#: rpmqv.c:785
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:791
+#: rpmqv.c:790
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:796
+#: rpmqv.c:795
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
 
-#: rpmqv.c:801
+#: rpmqv.c:800
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
 
-#: rpmqv.c:805
+#: rpmqv.c:804
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
 
-#: rpmqv.c:810
+#: rpmqv.c:809
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: rpmqv.c:815
+#: rpmqv.c:814
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: rpmqv.c:827
+#: rpmqv.c:826
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: rpmqv.c:851
+#: rpmqv.c:850
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpmqv.c:856
+#: rpmqv.c:855
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpmqv.c:875
+#: rpmqv.c:874
 msgid "pgp not found: "
 msgstr ""
 
-#: rpmqv.c:880
+#: rpmqv.c:879
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpmqv.c:882
+#: rpmqv.c:881
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: rpmqv.c:886
+#: rpmqv.c:885
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: rpmqv.c:891
+#: rpmqv.c:890
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpmqv.c:898
+#: rpmqv.c:897
 msgid "--sign may only be used during package building"
 msgstr ""
 
-#: rpmqv.c:915
+#: rpmqv.c:914
 msgid "exec failed\n"
 msgstr ""
 
-#: rpmqv.c:947
+#: rpmqv.c:946
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: rpmqv.c:1015
+#: rpmqv.c:1014
 msgid "no spec files given for build"
 msgstr ""
 
-#: rpmqv.c:1017
+#: rpmqv.c:1016
 msgid "no tar files given for build"
 msgstr ""
 
-#: rpmqv.c:1036
+#: rpmqv.c:1038
 msgid "no packages given for erase"
 msgstr ""
 
-#: rpmqv.c:1047
+#: rpmqv.c:1078
 msgid "no packages given for install"
 msgstr ""
 
-#: rpmqv.c:1093
+#: rpmqv.c:1094
 msgid "no arguments given for query"
 msgstr ""
 
-#: rpmqv.c:1106
+#: rpmqv.c:1107
 msgid "no arguments given for verify"
 msgstr ""
 
-#: rpmqv.c:1114
+#: rpmqv.c:1115
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpmqv.c:1130
+#: rpmqv.c:1131
 msgid "no arguments given"
 msgstr ""
 
@@ -815,7 +815,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:1426
+#: build/pack.c:603 lib/psm.c:1444
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -845,7 +845,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:683 lib/psm.c:1700
+#: build/pack.c:683 lib/psm.c:1725
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1497,7 +1497,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2965 rpmdb/header.c:2986 rpmdb/header.c:3008
+#: rpmdb/header.c:2951 rpmdb/header.c:2972 rpmdb/header.c:2994
 msgid "(not a number)"
 msgstr ""
 
@@ -2092,7 +2092,7 @@ msgid "is needed by"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/psm.c:247 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#: lib/psm.c:247 rpmdb/header.c:383 rpmdb/header_internal.c:161
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2140,31 +2140,31 @@ msgstr ""
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1468
+#: lib/psm.c:1493
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1477
+#: lib/psm.c:1502
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1519
+#: lib/psm.c:1544
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1520
+#: lib/psm.c:1545
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1708
+#: lib/psm.c:1733
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1711
+#: lib/psm.c:1736
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2431,7 +2431,7 @@ msgstr ""
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:521 lib/rpminstall.c:1029
+#: lib/rpminstall.c:521 lib/rpminstall.c:1030
 msgid "failed dependencies:\n"
 msgstr ""
 
@@ -2463,7 +2463,7 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1023
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2869,82 +2869,82 @@ msgstr ""
 
 #. This should not be allowed
 #. @-modfilesys@
-#: rpmdb/header.c:347
+#: rpmdb/header.c:346
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2222
+#: rpmdb/header.c:2208
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2252
+#: rpmdb/header.c:2238
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2266
+#: rpmdb/header.c:2252
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2280
+#: rpmdb/header.c:2266
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2297
+#: rpmdb/header.c:2283
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2324
+#: rpmdb/header.c:2310
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2342
+#: rpmdb/header.c:2328
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2346
+#: rpmdb/header.c:2332
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2412
+#: rpmdb/header.c:2398
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2421
+#: rpmdb/header.c:2407
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2434 rpmdb/header.c:2476
+#: rpmdb/header.c:2420 rpmdb/header.c:2462
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2444
+#: rpmdb/header.c:2430
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2461
+#: rpmdb/header.c:2447
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2486
+#: rpmdb/header.c:2472
 msgid "| expected at end of expression"
 msgstr ""
 
-#: rpmdb/header.c:2709
+#: rpmdb/header.c:2695
 msgid "(unknown type)"
 msgstr ""
 

@@ -39,7 +39,6 @@
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
   FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
-  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} ; \
   ./configure %{_target_platform} \\\
  	--prefix=%{_prefix} \\\
 	--exec-prefix=%{_exec_prefix} \\\
@@ -112,6 +111,11 @@
 @redhat@%_fixowner	[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
 @redhat@%_fixgroup	[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
 @redhat@%_fixperms	%{__chmod} -Rf @FIXPERMS@
+@redhat@#---------------------------------------------------------------------
+@redhat@#	Always use %defattr(-,root,root) in %files (added in rpm-4.0.4)
+@redhat@#
+@redhat@%files(n:f:)	%%files%{?-f: -f %{-f*}}%{?-n: -n %{-n*}} %{?1}\
+@redhat@%defattr(-,root,root,-)
 
 @mandrake@#---------------------------------------------------------------------
 @mandrake@#	Mandrake vendor specific macros
