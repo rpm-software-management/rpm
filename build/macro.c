@@ -239,6 +239,7 @@ void resetMacros(void)
 	free(macroTable[i].name);
 	free(macroTable[i].expansion);
     }
+    firstFree = 0;
 }
 
 void addMacro(char *name, char *expansion)
