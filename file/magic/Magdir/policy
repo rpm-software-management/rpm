@@ -1,0 +1,6 @@
+# SE Linux policy database
+0       lelong  0xf97cff8c      SE Linux policy
+>16     lelong  x               v%d
+>20     lelong  1 		MLS
+>24     lelong  x       	%d symbols
+>28     lelong  x       	%d ocons

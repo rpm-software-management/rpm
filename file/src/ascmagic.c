@@ -12,11 +12,6 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *    This product includes software developed by Ian F. Darwin and others.
- * 4. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
  *  
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -54,7 +49,7 @@
 #include "names.h"
 
 #ifndef	lint
-FILE_RCSID("@(#)$Id: ascmagic.c,v 1.40 2003/11/20 00:25:39 christos Exp $")
+FILE_RCSID("@(#)$Id: ascmagic.c,v 1.41 2004/09/11 19:15:57 christos Exp $")
 #endif	/* lint */
 
 typedef unsigned long unichar;
@@ -63,23 +58,17 @@ typedef unsigned long unichar;
 #define ISSPC(x) ((x) == ' ' || (x) == '\t' || (x) == '\r' || (x) == '\n' \
 		  || (x) == 0x85 || (x) == '\f')
 
-private int looks_ascii(const unsigned char *buf, size_t nbytes,
-    unichar *ubuf, size_t *ulen)
+private int looks_ascii(const unsigned char *buf, size_t nbytes, unichar *ubuf, size_t *ulen)
 	/*@modifies *ubuf, *ulen @*/;
-private int looks_utf8(const unsigned char *buf, size_t nbytes,
-    unichar *ubuf, size_t *ulen)
+private int looks_utf8(const unsigned char *buf, size_t nbytes, unichar *ubuf, size_t *ulen)
 	/*@modifies *ubuf, *ulen @*/;
-private int looks_unicode(const unsigned char *buf, size_t nbytes,
-    unichar *ubuf, size_t *ulen)
+private int looks_unicode(const unsigned char *buf, size_t nbytes, unichar *ubuf, size_t *ulen)
 	/*@modifies *ubuf, *ulen @*/;
-private int looks_latin1(const unsigned char *buf, size_t nbytes,
-    unichar *ubuf, size_t *ulen)
+private int looks_latin1(const unsigned char *buf, size_t nbytes, unichar *ubuf, size_t *ulen)
 	/*@modifies *ubuf, *ulen @*/;
-private int looks_extended(const unsigned char *buf, size_t nbytes,
-    unichar *ubuf, size_t *ulen)
+private int looks_extended(const unsigned char *buf, size_t nbytes, unichar *ubuf, size_t *ulen)
 	/*@modifies *ubuf, *ulen @*/;
-private void from_ebcdic(const unsigned char *buf, size_t nbytes,
-    unsigned char *out)
+private void from_ebcdic(const unsigned char *buf, size_t nbytes, unsigned char *out)
 	/*@modifies *out @*/;
 private int ascmatch(const unsigned char *s, const unichar *us, size_t ulen)
 	/*@*/;
@@ -673,6 +662,7 @@ private unsigned char ebcdic_to_ascii[] = {
  * cases for the NEL character can be taken out of the code.
  */
 
+/*@unchecked@*/ /*@observer@*/
 private unsigned char ebcdic_1047_to_8859[] = {
 0x00,0x01,0x02,0x03,0x9C,0x09,0x86,0x7F,0x97,0x8D,0x8E,0x0B,0x0C,0x0D,0x0E,0x0F,
 0x10,0x11,0x12,0x13,0x9D,0x0A,0x08,0x87,0x18,0x19,0x92,0x8F,0x1C,0x1D,0x1E,0x1F,

@@ -3,3 +3,9 @@
 # file(1) magic for revision control files
 # From Hendrik Scholz <hendrik@scholz.net>
 0   string /1\ :pserver:    cvs password text file
+
+
+# Subversion (SVN) dumps
+# Uwe Zeisberger <zeisberg@informatik.uni-freiburg.de>
+0       string  SVN-fs-dump-format-version:     Subversion dumpfile
+>28     string  >\0                             (version: %s)

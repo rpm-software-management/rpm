@@ -12,11 +12,6 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *    This product includes software developed by Ian F. Darwin and others.
- * 4. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
  *  
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -32,7 +27,7 @@
  */
 /*
  * file.h - definitions for file(1) program
- * @(#)$Id: file.h,v 1.61 2004/05/12 14:53:01 christos Exp $
+ * @(#)$Id: file.h,v 1.64 2004/11/20 23:50:12 christos Exp $
  */
 
 #ifndef __file_h__
@@ -113,6 +108,8 @@ struct magic {
 #define				FILE_BELDATE	15
 #define				FILE_LELDATE	16
 #define				FILE_REGEX	17
+#define				FILE_BESTRING16	18
+#define				FILE_LESTRING16	19
 
 #define				FILE_FORMAT_NAME	\
 /* 0 */ 			"invalid 0",		\
@@ -132,7 +129,9 @@ struct magic {
 /* 14 */ 			"ldate",		\
 /* 15 */ 			"beldate",		\
 /* 16 */ 			"leldate",		\
-/* 17 */ 			"regex",
+/* 17 */ 			"regex",		\
+/* 18 */			"bestring16",		\
+/* 19 */			"lestring16",
 
 #define	FILE_FMT_NUM	"cduxXi"
 #define FILE_FMT_STR	"s"	
@@ -155,7 +154,9 @@ struct magic {
 /* 14 */ 			FILE_FMT_STR,		\
 /* 15 */ 			FILE_FMT_STR,		\
 /* 16 */ 			FILE_FMT_STR,		\
-/* 17 */ 			FILE_FMT_STR,
+/* 17 */ 			FILE_FMT_STR,		\
+/* 18 */			FILE_FMT_STR,		\
+/* 19 */			FILE_FMT_STR,
 
 	/* Word 3 */
 	uint8_t in_op;		/* operator for indirection */
@@ -240,6 +241,8 @@ struct magic_set {
     int error;
     int flags;
     int haderr;
+    const char *file;
+    size_t line;
 };
 
 struct stat;
@@ -249,10 +252,9 @@ protected char *file_fmttime(uint32_t, int)
 protected int file_buffer(struct magic_set *ms, const void *, size_t)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ms, fileSystem, internalState @*/;
-protected int file_fsmagic(struct magic_set *ms, /*@null@*/ const char * fn, struct stat *sb)
+protected int file_fsmagic(struct magic_set *ms, /*@null@*/ const char *fn, struct stat *sb)
 	/*@modifies ms, sb @*/;
-protected int file_pipe2file(struct magic_set *ms, int fd, const void *startbuf,
-    size_t nbytes)
+protected int file_pipe2file(struct magic_set *ms, int fd, const void *startbuf, size_t nbytes)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies ms, errno, fileSystem, internalState @*/;
 protected int file_printf(struct magic_set *ms, const char *, ...)
@@ -279,7 +281,7 @@ protected struct mlist *file_apprentice(struct magic_set *ms, const char *, int)
 protected uint32_t file_signextend(struct magic_set *ms, struct magic *, uint32_t)
 	/*@globals fileSystem @*/
 	/*@modifies ms, fileSystem @*/;
-protected void file_delmagic(/*@only@*/ struct magic *p, int type, size_t entries)
+protected void file_delmagic(struct magic *p, int type, size_t entries)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/;
 protected void file_badread(struct magic_set *ms)
@@ -290,13 +292,13 @@ protected void file_oomem(struct magic_set *ms)
 	/*@modifies ms @*/;
 protected void file_error(struct magic_set *ms, int, const char *, ...)
 	/*@modifies ms @*/;
-protected void file_magwarn(const char *f, ...)
+protected void file_magwarn(struct magic_set *ms, const char *, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 protected void file_mdump(struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies m, fileSystem @*/;
-protected void file_showstr(FILE *fp, const char *s, size_t len)
+protected void file_showstr(FILE *fp, const char *, size_t)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/;
 protected size_t file_mbswidth(const char *)

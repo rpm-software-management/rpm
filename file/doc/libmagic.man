@@ -11,8 +11,6 @@
 .\" 2. Redistributions in binary form must reproduce the above copyright
 .\"    notice, this list of conditions and the following disclaimer in the
 .\"    documentation and/or other materials provided with the distribution.
-.\" 3. The name of the author may not be used to endorse or promote products
-.\"    derived from this software without specific prior written permission.
 .\" 
 .\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
 .\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -223,6 +221,6 @@ The compiled default magic database.
 .Xr file __CSECTION__ ,
 .Xr magic __FSECTION__ 
 .Sh AUTHORS
-Måns Rullgård Initial libmagic implementation,
+MÃ¥ns RullgÃ¥rd Initial libmagic implementation,
 and configuration.
 Christos Zoulas API cleanup, error code and allocation handling.

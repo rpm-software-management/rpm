@@ -184,14 +184,13 @@
 0	string		RIFF
 #					- WAVE format
 >8	string		WAVE		audio/x-wav
->8	string		AVI		video/x-msvideo
+>8	string/B	AVI		video/x-msvideo
 #
-0	belong		0x2e7261fd	application/x-realaudio
 >8 	string		CDRA		image/x-coreldraw
 
 
 # MPEG Layer 3 sound files
-0       beshort		&0xffe0		audio/mpeg
+0       beshort&0xfffe  =0xfffa         audio/mpeg
 #MP3 with ID3 tag
 0	string		ID3		audio/mpeg
 # Ogg/Vorbis
@@ -206,7 +205,7 @@
 0	string		/*\ XPM		image/x-xpm	7bit
 
 # 3DS (3d Studio files)
-16	beshort		0x3d3d		image/x-3ds
+#16	beshort		0x3d3d		image/x-3ds
 
 # this first will upset you if you're a PL/1 shop... (are there any left?)
 # in which case rm it; ascmagic will catch real C programs
@@ -290,10 +289,10 @@
 # because it tries to uncompress it to figure out what's inside.
 
 # standard unix compress
-0	string		\037\235	application/x-compress
+#0	string		\037\235	application/x-compress
 
 # gzip (GNU zip, not to be confused with [Info-ZIP/PKWARE] zip archiver)
-0       string          \037\213        application/x-gzip
+#0       string          \037\213        application/x-gzip
 
 0		string			PK\003\004		application/x-zip
 
@@ -394,19 +393,14 @@
 #
 # from Daniel Quinlan <quinlan@yggdrasil.com>
 #
-0	string		\<HEAD	text/html
-0	string		\<head	text/html
-0	string		\<TITLE	text/html
-0	string		\<title	text/html
-0       string          \<html	text/html
-0       string          \<HTML	text/html
+0	string/cB	\<!DOCTYPE\ html	text/html
+0	string/cb	\<head	text/html
+0	string/cb	\<title	text/html
+0       string/bc	\<html	text/html
 0	string		\<!--	text/html
-0	string		\<h1	text/html
-0	string		\<H1	text/html
-0	string		\<!doctype\ HTML	text/html
-0	string		\<!DOCTYPE\ HTML	text/html
-0	string		\<!doctype\ html	text/html
-0	string		\<!doctype\ HTML	text/html
+0	string/c	\<h1	text/html
+
+0	string		\<?xml			text/xml
 
 #------------------------------------------------------------------------------
 # images:  file(1) magic for image formats (see also "c-lang" for XPM bitmaps)
@@ -469,7 +463,7 @@
 0	beshort		0xffd8		image/jpeg
 
 # PC bitmaps (OS/2, Windoze BMP files)  (Greg Roelofs, newt@uchicago.edu)
-0	string		BM		image/bmp
+0	string		BM		image/x-ms-bmp
 #>14	byte		12		(OS/2 1.x format)
 #>14	byte		64		(OS/2 2.x format)
 #>14	byte		40		(Windows 3.x format)
@@ -588,20 +582,40 @@
 #
 # animation formats, originally from vax@ccwf.cc.utexas.edu (VaX#n8)
 #						MPEG file
-0	belong		0x000001b3			video/mpeg
-0	belong		0x000001ba			video/mpeg
+# MPEG sequences
+0	belong		   0x000001BA	  video/mpeg
+0	belong		   0x000001BB	  video/mpeg
+0	belong		   0x000001B0	  video/mp4v-es
+0	belong		   0x000001B5	  video/mp4v-es
+0	belong		   0x000001B3	  video/mpv
+0	belong&0xFF5FFF1F  0x47400010	  video/mp2t
 # FLI animation format
 0	leshort		0xAF11				video/fli
 # FLC animation format
 0	leshort		0xAF12				video/flc
-# AVI
->8	string		AVI\ 				video/avi
 #
 # SGI and Apple formats
-#
-0	string		MOVI				video/sgi
-4	string		moov				video/quicktime	moov
-4	string		mdat				video/quicktime	mdat
+# Added ISO mimes
+# Added ISO mimes
+0	string		MOVI	      video/sgi
+4	string		moov	      video/quicktime
+4	string		mdat	      video/quicktime
+4	string		wide	      video/quicktime
+4	string		skip	      video/quicktime
+4	string		free	      video/quicktime
+4	string		idsc	      image/x-quicktime
+4	string		idat	      image/x-quicktime
+4	string		pckg	      application/x-quicktime
+4	string/B	jP	      image/jp2
+4	string		ftyp	      application/octet-stream
+>8	string		isom	      video/mp4
+>8	string		mp41	      video/mp4
+>8	string		mp42	      video/mp4
+>8	string/B	jp2	      image/jp2
+>8	string		3gp	      video/3gpp
+>8	string		mmp4	      video/mp4
+>8	string/B	M4A	      audio/mp4
+>8	string/B	qt	      video/quicktime
 # The contributor claims:
 #   I couldn't find a real magic number for these, however, this
 #   -appears- to work.  Note that it might catch other files, too,
@@ -628,17 +642,17 @@
 #
 # Executables
 #
-0       string          \177ELF 
->4      byte            0
->4      byte            1
->4      byte            2
->5      byte            0
->5      byte            1
->>16    leshort         0
->>16    leshort         1               application/x-object
->>16    leshort         2               application/x-executable
->>16    leshort         3               application/x-sharedlib
->>16    leshort         4               application/x-coredump
+0	string		\177ELF 
+>16	leshort		0		application/octet-stream
+>16	leshort		1		application/x-object
+>16	leshort		2		application/x-executable
+>16	leshort		3		application/x-sharedlib
+>16	leshort		4		application/x-coredump
+>16	beshort		0		application/octet-stream
+>16	beshort		1		application/x-object
+>16	beshort		2		application/x-executable
+>16	beshort		3		application/x-sharedlib
+>16	beshort		4		application/x-coredump
 #
 # DOS
 0		string			MZ				application/x-dosexec
@@ -868,30 +882,6 @@
 # Microsoft Outlook's Transport Neutral Encapsulation Format (TNEF)
 0		lelong	0x223e9f78	application/ms-tnef
 
-
-#
-# QuickTime format
-# Contributer: Peter Breton
-#
-
-0	string		MOVI		video/quicktime
-4	string		moov		video/quicktime
-4	string		mdat		video/quicktime
-
-# Video Formate
-0       string          RIFF
-# AVI == Audio Video Interleave
->8      string          AVI\            
-#>0xbc   string         >\0             video/x-%s
-
->>0xbc  string          DIV3            video/x-DivX-3
->>0xbc  string          div3            video/x-divX-3
->>0xbc  string          DIV4            video/x-DivX-4
->>0x70  string          DX50            video/x-DIVX-5
->>0x70  string          MP4             video/x-MPEG-4
->>0xbc  string          DIVX            video/x-DivX
->8      string          WAVE            audio/x-wav
-
 # From: stephane.loeuillet@tiscali.f
 # http://www.djvuzone.org/
 0	string		AT&TFORM	image/x.djvu
@@ -903,5 +893,15 @@
 # 0x9445366139FA (V 3.80)
 # this is from source (http://www.adrift.org.uk/) and I have some taf
 # files, and checked them.
-#0       belong          0x3C423FC9
-#>4      belong          0x6A87C2CF application/x-adrift
+#0	belong	0x3C423FC9
+#>4	belong	0x6A87C2CF	application/x-adrift
+#0	string	\000\000\001\000	image/x-ico
+
+# Quark Xpress 3 Files:
+# (made the mimetype up) 
+0	string	\0\0MMXPR3\0	application/x-quark-xpress-3
+
+# Gnumeric spreadsheet
+# This entry is only semi-helpful, as Gnumeric compresses its files, so
+# they will ordinarily reported as "compressed", but at least -z helps
+39      string          =<gmr:Workbook           application/x-gnumeric

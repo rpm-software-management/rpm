@@ -12,11 +12,6 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *    This product includes software developed by Ian F. Darwin and others.
- * 4. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
  *  
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -44,27 +39,29 @@
 
 
 #ifndef	lint
-FILE_RCSID("@(#)$Id: softmagic.c,v 1.66 2004/07/24 20:38:56 christos Exp $")
+FILE_RCSID("@(#)$Id: softmagic.c,v 1.72 2004/11/24 17:38:25 christos Exp $")
 #endif	/* lint */
 
 private int match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
     const unsigned char *s, size_t nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies ms, magic, fileSystem @*/;
-private int mget(struct magic_set *ms, union VALUETYPE *p,
-    const unsigned char *s, struct magic *m, size_t nbytes)
+private int mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
+    struct magic *m, size_t nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies ms, p, m, fileSystem @*/;
 private int mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies ms, p, fileSystem @*/;
-private int32_t mprint(struct magic_set *ms, union VALUETYPE *p,
-    struct magic *m)
+private int32_t mprint(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies ms, p, fileSystem @*/;
 private void mdebug(uint32_t offset, const char *str, size_t len)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+private int mcopy(struct magic_set *ms, union VALUETYPE *p, int type, int indir,
+    const unsigned char *s, size_t offset, size_t nbytes)
+	/*@modifies ms, p @*/;
 private int mconvert(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 	/*@modifies ms, p @*/;
 private int check_mem(struct magic_set *ms, unsigned int level)
@@ -289,6 +286,8 @@ mprint(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 
   	case FILE_STRING:
   	case FILE_PSTRING:
+  	case FILE_BESTRING16:
+  	case FILE_LESTRING16:
 		if (m->reln == '=') {
 			if (file_printf(ms, m->desc, m->value.s) == -1)
 				return -1;
@@ -439,28 +438,30 @@ mconvert(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 			p->l = ~p->l;
 		return 1;
 	case FILE_STRING:
+	case FILE_BESTRING16:
+	case FILE_LESTRING16:
 		{
-			int n;
+			size_t len;
 
 			/* Null terminate and eat *trailing* return */
 			p->s[sizeof(p->s) - 1] = '\0';
-			n = strlen(p->s) - 1;
-			if (p->s[n] == '\n')
-				p->s[n] = '\0';
+			len = strlen(p->s);
+			if (len-- && p->s[len] == '\n')
+				p->s[len] = '\0';
 			return 1;
 		}
 	case FILE_PSTRING:
 		{
 			char *ptr1 = p->s, *ptr2 = ptr1 + 1;
-			unsigned int n = *p->s;
-			if (n >= sizeof(p->s))
-				n = sizeof(p->s) - 1;
-			while (n--)
+			size_t len = *p->s;
+			if (len >= sizeof(p->s))
+				len = sizeof(p->s) - 1;
+			while (len--)
 				*ptr1++ = *ptr2++;
 			*ptr1 = '\0';
-			n = strlen(p->s) - 1;
-			if (p->s[n] == '\n')
-				p->s[n] = '\0';
+			len = strlen(p->s);
+			if (len-- && p->s[len] == '\n')
+				p->s[len] = '\0';
 			return 1;
 		}
 	case FILE_BESHORT:
@@ -616,12 +617,10 @@ mdebug(uint32_t offset, const char *str, size_t len)
 }
 
 private int
-mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
-    struct magic *m, size_t nbytes)
+mcopy(struct magic_set *ms, union VALUETYPE *p, int type, int indir,
+    const unsigned char *s, size_t offset, size_t nbytes)
 {
-	uint32_t offset = m->offset;
-
-	if (m->type == FILE_REGEX) {
+	if (type == FILE_REGEX && indir == 0) {
 		/*
 		 * offset is interpreted as last line to search,
 		 * (starting at 1), not as bytes-from start-of-file
@@ -637,17 +636,58 @@ mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
 			last = b;
 		if (last != NULL)
 			*last = '\0';
-	} else if (offset + sizeof(union VALUETYPE) <= nbytes)
-		memcpy(p, s + offset, sizeof(union VALUETYPE));
-	else {
-		/*
-		 * the usefulness of padding with zeroes eludes me, it
-		 * might even cause problems
-		 */
-		memset(p, 0, sizeof(union VALUETYPE));
-		if (offset < nbytes)
-			memcpy(p, s + offset, nbytes - offset);
+		return 0;
 	}
+
+	if (indir == 0 && (type == FILE_BESTRING16 || type == FILE_LESTRING16))
+	{
+		const char *src = s + offset;
+		const char *esrc = s + nbytes;
+		char *dst = p->s, *edst = &p->s[sizeof(p->s) - 1];
+
+		if (type == FILE_BESTRING16)
+			src++;
+
+		for (;src < esrc; src++, dst++) {
+			if (dst < edst)
+				*dst = *src++;
+			else
+				break;
+			if (*dst == '\0')
+				*dst = ' ';
+		}
+		*edst = '\0';
+		return 0;
+	}
+
+	if (offset >= nbytes) {
+		(void)memset(p, '\0', sizeof(*p));
+		return 0;
+	}
+	if (nbytes - offset < sizeof(*p))
+		nbytes = nbytes - offset;
+	else
+		nbytes = sizeof(*p);
+
+	(void)memcpy(p, s + offset, nbytes);
+
+	/*
+	 * the usefulness of padding with zeroes eludes me, it
+	 * might even cause problems
+	 */
+	if (nbytes < sizeof(*p))
+		(void)memset(((char *)p) + nbytes, '\0', sizeof(*p) - nbytes);
+	return 0;
+}
+
+private int
+mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
+    struct magic *m, size_t nbytes)
+{
+	uint32_t offset = m->offset;
+
+	if (mcopy(ms, p, m->type, m->flag & INDIR, s, offset, nbytes) == -1)
+		return -1;
 
 	/* Verify we have enough data to match magic type */
 	switch (m->type) {
@@ -1035,11 +1075,8 @@ mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
 			break;
 		}
 
-		if (nbytes < sizeof(union VALUETYPE) ||
-		    nbytes - sizeof(union VALUETYPE) < offset)
-			return 0;
-
-		memcpy(p, s + offset, sizeof(union VALUETYPE));
+		if (mcopy(ms, p, m->type, 0, s, offset, nbytes) == -1)
+			return -1;
 
 		if ((ms->flags & MAGIC_DEBUG) != 0) {
 			mdebug(offset, (char *)(void *)p,
@@ -1088,6 +1125,8 @@ mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 		break;
 
 	case FILE_STRING:
+	case FILE_BESTRING16:
+	case FILE_LESTRING16:
 	case FILE_PSTRING:
 	{
 		/*
@@ -1147,8 +1186,8 @@ mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 			file_error(ms, 0, "regex error %d, (%s)", rc, errmsg);
 			return -1;
 		} else {
-			rc = regexec(&rx, p->buf, 0, 0, 0);
 /*@-immediatetrans -moduncon -noeffectuncon @*/	/* regfree annotate bogus only @*/
+			rc = regexec(&rx, p->buf, 0, 0, 0);
 			regfree(&rx);
 /*@=immediatetrans =moduncon =noeffectuncon @*/
 			free(p->buf);

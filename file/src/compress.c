@@ -12,11 +12,6 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *    This product includes software developed by Ian F. Darwin and others.
- * 4. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
  *  
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -55,7 +50,7 @@
 #endif
 
 #ifndef lint
-FILE_RCSID("@(#)$Id: compress.c,v 1.37 2004/07/24 21:00:56 christos Exp $")
+FILE_RCSID("@(#)$Id: compress.c,v 1.38 2004/09/11 19:15:57 christos Exp $")
 #endif
 
 
@@ -90,8 +85,8 @@ private ssize_t swrite(int fd, const void *buf, size_t n)
 	/*@*/;
 private ssize_t sread(int fd, void *buf, size_t n)
 	/*@modifies buf @*/;
-private size_t uncompressbuf(struct magic_set *ms, size_t method,
-    const unsigned char *old, unsigned char **newch, size_t n)
+private size_t uncompressbuf(struct magic_set *ms, size_t method, const unsigned char *old,
+    unsigned char **newch, size_t n)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ms, *newch, fileSystem, internalState @*/;
 #ifdef HAVE_LIBZ

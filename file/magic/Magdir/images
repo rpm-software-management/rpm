@@ -519,3 +519,12 @@
 # From: Tom Hilinski <tom.hilinski@comcast.net>
 # http://www.unidata.ucar.edu/packages/netcdf/
 0	string	CDF\001			netcdf file
+
+
+# The boot loaders syslinux and isolinux use a RLE based image format
+# called SLL16 to store splash screens.
+0	lelong		0x1413f33d	Syslinux SLL16 image data,
+>4	leshort		>0		%hd x
+>6	leshort		>0		%hd
+
+
