@@ -241,7 +241,10 @@ static int checkOwners(const char * urlfn)
 	    t = "%{_bzip2bin} -dc";
 	    break;
 	case COMPRESSED_ZIP:
-	    t = "%{_unzipbin}";
+	    if (rpmIsVerbose() && !quietly)
+		t = "%{_unzipbin}";
+	    else
+		t = "%{_unzipbin} -qq";
 	    needtar = 0;
 	    break;
 	}
