@@ -78,7 +78,7 @@ char * b64encode (const void * data, int ns)
  * @return		(malloc'd) base64 string
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-char * b64crc (const void * data, int ns)
+char * b64crc (const unsigned char * data, int ns)
 	/*@*/;
 
 /**

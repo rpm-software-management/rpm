@@ -328,7 +328,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 #define CRC24_INIT 0xb704ceL
 #define CRC24_POLY 0x1864cfbL
 
-char * b64crc (const void * data, int ns)
+char * b64crc (const unsigned char * data, int ns)
 {
     const unsigned char *s = data;
     uint32 crc = CRC24_INIT;

@@ -203,7 +203,7 @@ int ufdClose( /*@only@*/ void * cookie)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-/*@null@*/ const FDIO_t fdGetIo(FD_t fd)
+/*@null@*/ FDIO_t fdGetIo(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);

@@ -59,7 +59,7 @@ typedef enum pgpTag_e {
     PGPTAG_PRIVATE_60		= 60, /*!< Private or Experimental Values */
     PGPTAG_COMMENT		= 61, /*!< Comment */
     PGPTAG_PRIVATE_62		= 62, /*!< Private or Experimental Values */
-    PGPTAG_CONTROL		= 63, /*!< Control (GPG) */
+    PGPTAG_CONTROL		= 63 /*!< Control (GPG) */
 } pgpTag;
 
 /**
@@ -174,7 +174,7 @@ typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_EC		= 18,	/*!< Elliptic Curve */
     PGPPUBKEYALGO_ECDSA		= 19,	/*!< ECDSA */
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
-    PGPPUBKEYALGO_DH		= 21,	/*!< Diffie-Hellman (X9.42) */
+    PGPPUBKEYALGO_DH		= 21	/*!< Diffie-Hellman (X9.42) */
 } pgpPubkeyAlgo;
 /*@=typeuse@*/
 
@@ -451,7 +451,7 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_INTERNAL_107	= 107, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_108	= 108, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_109	= 109, /*!< internal or user-defined */
-    PGPSUBTYPE_INTERNAL_110	= 110, /*!< internal or user-defined */
+    PGPSUBTYPE_INTERNAL_110	= 110 /*!< internal or user-defined */
 } pgpSubType;
 /*@=typeuse@*/
 
@@ -921,7 +921,7 @@ typedef enum pgpArmor_e {
     PGPARMOR_SIGNED_MESSAGE	=  4, /*!< SIGNED MESSAGE */
     PGPARMOR_FILE		=  5, /*!< ARMORED FILE */
     PGPARMOR_PRIVKEY		=  6, /*!< PRIVATE KEY BLOCK */
-    PGPARMOR_SECKEY		=  7, /*!< SECRET KEY BLOCK */
+    PGPARMOR_SECKEY		=  7 /*!< SECRET KEY BLOCK */
 } pgpArmor;
 /*@=typeuse@*/
 
@@ -938,7 +938,7 @@ typedef enum pgpArmorKey_e {
     PGPARMORKEY_COMMENT		= 2, /*!< Comment: */
     PGPARMORKEY_MESSAGEID	= 3, /*!< MessageID: */
     PGPARMORKEY_HASH		= 4, /*!< Hash: */
-    PGPARMORKEY_CHARSET		= 5, /*!< Charset: */
+    PGPARMORKEY_CHARSET		= 5 /*!< Charset: */
 } pgpArmorKey;
 /*@=typeuse@*/
 
