@@ -14,7 +14,7 @@ AC_CANONICAL_HOST
 dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
-ALL_LINGUAS="cz de fi fr pt_BR ru sk sr sv tr"
+ALL_LINGUAS="cs de fi fr pt_BR ru sk sr sv tr"
 
 LIBOBJS=
 
@@ -87,6 +87,8 @@ else
 fi
 AC_MSG_RESULT($LDFLAGS_STATIC)
 
+dnl make sure we set a default for RPM.
+RPM=rpm.shared
 if test -n "$LDFLAGS_STATIC"
 then
   AC_CHECKING(if we can link dynamically and still access the services switch)
