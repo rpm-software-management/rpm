@@ -18,6 +18,7 @@
 #include "messages.h"
 #include "stringbuf.h"
 #include "var.h"
+#include "pack.h"
 
 struct Script {
     char *name;
@@ -121,7 +122,7 @@ int execPart(Spec s, char *sb, char *name)
 
 int execPrep(Spec s)
 {
-    /* XXX Expand macros here */
+    /* XXX Expand %setup and %patch macros here */
     return execPart(s, getStringBuf(s->prep), "%prep");
 }
 
@@ -144,14 +145,6 @@ int verifyList(Spec s)
 {
     return 0;
 }
-
-#define RPMBUILD_PREP        1
-#define RPMBUILD_BUILD      (1 << 1)
-#define RPMBUILD_INSTALL    (1 << 2)
-#define RPMBUILD_BINARY     (1 << 3)
-#define RPMBUILD_SOURCE     (1 << 4)
-#define RPMBUILD_CLEAN      (1 << 5)
-#define RPMBUILD_LIST       (1 << 6)
 
 int doBuild(Spec s, int flags)
 {
