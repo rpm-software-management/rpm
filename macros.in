@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.23 1999/04/20 18:21:08 jbj Exp $
+# $Id: macros.in,v 1.24 1999/04/20 22:45:52 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -200,12 +200,16 @@
 # The GNUconfigure macro does the following:
 #	update config.guess and config.sub.
 #	regenerate all autoconf/automake files
+#	optionally change to a directory (make the directory if requested).
 #	run configure with correct prefix, platform, and CFLAGS.
+#	optionally restore current directory.
 #
-%GNUconfigure	\
+%GNUconfigure(MC:)	\
   %{__libtoolize} --copy --force \
   %{__aclocal} \
   %{__autoheader} \
   %{__automake} \
   %{__autoconf} \
-  CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}
+  %{-C:_mydir="`pwd`"; %{-M; %{__mkdirp} %{-C*};} cd %{-C*}} \
+  CFLAGS="%{optflags}" %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} !*
+  %{-C:cd ${_mydir}; unset _mydir}

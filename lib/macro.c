@@ -617,8 +617,10 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
 	argc++;
     }
 
+#if 0	/* XXX this is shell syntax, macros need !* to be "the rest" */
     /* Add unexpanded args as macro */
     addMacro(mb->mc, "*", NULL, b, mb->depth);
+#endif
 
 #ifdef NOTYET
     /* XXX if macros can be passed as args ... */
@@ -658,7 +660,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
     optv[0] = me->name;
     optv[opte] = NULL;
 
-    /* ... and finally copy the options */
+    /* ... and finally define option macros. */
     optind = 0;
     optc = 0;
     optc++;	/* XXX count optv[0] */
@@ -683,14 +685,27 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
 	optc++;
     }
 
+    /* Add macro for each arg. Concatenate args for !* */
+    b = be;
     for (c = optind; c < argc; c++) {
 	sprintf(aname, "%d", (c - optind + 1));
 	addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
+
+	if (be > b) *be++ = ' ';
+	strcpy(be, argv[c]);
+	be += strlen(be);
+	*be = '\0';
+
 	optv[optc] = argv[c];
 	optc++;
     }
+
+    /* Add arg count as macro */
     sprintf(aname, "%d", (argc - optind + 1));
     addMacro(mb->mc, "#", NULL, aname, mb->depth);
+
+    /* Add unexpanded args as macro */
+    addMacro(mb->mc, "*", NULL, b, mb->depth);
 
     return se;
 }
@@ -1379,8 +1394,7 @@ rpmGetPath(const char *path, ...)
 
 #ifdef DEBUG_MACROS
 
-MacroContext mc = { NULL, 0, 0};
-char *macrofiles = "../macros";
+char *macrofiles = "../macros:./testmacros";
 char *testfile = "./test";
 
 int
@@ -1390,13 +1404,13 @@ main(int argc, char *argv[])
 	FILE *fp;
 	int x;
 
-	initMacros(&mc, macrofiles);
-	dumpMacroTable(&mc, NULL);
+	initMacros(NULL, macrofiles);
+	dumpMacroTable(NULL, NULL);
 
 	if ((fp = fopen(testfile, "r")) != NULL) {
 		while(fgets(buf, sizeof(buf), fp)) {
 			buf[strlen(buf)-1] = '\0';
-			x = expandMacros(NULL, &mc, buf, sizeof(buf));
+			x = expandMacros(NULL, NULL, buf, sizeof(buf));
 			fprintf(stderr, "%d->%s\n", x, buf);
 			memset(buf, 0, sizeof(buf));
 		}
@@ -1405,7 +1419,7 @@ main(int argc, char *argv[])
 
 	while(fgets(buf, sizeof(buf), stdin)) {
 		buf[strlen(buf)-1] = '\0';
-		x = expandMacros(NULL, &mc, buf, sizeof(buf));
+		x = expandMacros(NULL, NULL, buf, sizeof(buf));
 		fprintf(stderr, "%d->%s\n <-\n", x, buf);
 		memset(buf, 0, sizeof(buf));
 	}
