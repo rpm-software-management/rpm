@@ -111,10 +111,10 @@ static void freeAttrRec(AttrRec *ar) {
 }
 
 static void dupAttrRec(AttrRec *oar, AttrRec *nar) {
-    if (oar != nar) {
-	freeAttrRec(nar);
-	nar = oar;	/* structure assignment */
-    }
+    if (oar == nar)	/* XXX pathological paranoia */
+	return;
+    freeAttrRec(nar);
+    *nar = *oar;		/* structure assignment */
     if (nar->ar_fmodestr)
 	nar->ar_fmodestr = strdup(nar->ar_fmodestr);
     if (nar->ar_dmodestr)
@@ -124,6 +124,18 @@ static void dupAttrRec(AttrRec *oar, AttrRec *nar) {
     if (nar->ar_group)
 	nar->ar_group = strdup(nar->ar_group);
 }
+
+#if 0
+static void dumpAttrRec(const char *msg, AttrRec *ar) {
+    if (msg)
+	fprintf(stderr, "%s:\t", msg);
+    fprintf(stderr, "(%s, %s, %s, %s)\n",
+	ar->ar_fmodestr,
+	ar->ar_user,
+	ar->ar_group,
+	ar->ar_dmodestr);
+}
+#endif
 
 /* glob_pattern_p() taken from bash
  * Copyright (C) 1985, 1988, 1989 Free Software Foundation, Inc.
@@ -316,7 +328,7 @@ static int parseForVerify(char *buf, struct FileList *fl)
 		continue;
 	}
 	if (!strcmp(p, "not")) {
-	    not = 1;
+	    not ^= 1;
 	} else {
 	    rpmError(RPMERR_BADSPEC, _("Invalid %s token: %s"), name, p);
 	    fl->processingFailed = 1;
@@ -803,30 +815,30 @@ static void genCpioListAndHeader(struct FileList *fl,
 			       &(flp->gname), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
 			       &(flp->fl_mtime), 1);
-    if (sizeof(flp->fl_mode) != sizeof(uint_16)) {
+      if (sizeof(flp->fl_mode) != sizeof(uint_16)) {
 	uint_16 pmode = (uint_16)flp->fl_mode;
 	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(pmode), 1);
-    } else {
+      } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(flp->fl_mode), 1);
-    }
-    if (sizeof(flp->fl_rdev) != sizeof(uint_16)) {
+      }
+      if (sizeof(flp->fl_rdev) != sizeof(uint_16)) {
 	uint_16 prdev = (uint_16)flp->fl_rdev;
 	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(prdev), 1);
-    } else {
+      } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(flp->fl_rdev), 1);
-    }
-    if (sizeof(flp->fl_dev) != sizeof(uint_32)) {
+      }
+      if (sizeof(flp->fl_dev) != sizeof(uint_32)) {
 	uint_32 pdevice = (uint_32)flp->fl_dev;
 	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(pdevice), 1);
-    } else {
+      } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(flp->fl_dev), 1);
-    }
+      }
 	headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 			       &(flp->fl_ino), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
@@ -884,7 +896,6 @@ static void freeFileList(FileListRec *fileList, int count)
 
 static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 {
-    FileListRec *flp;
     char fileName[BUFSIZ];
     char diskName[BUFSIZ];
     struct stat statbuf;
@@ -980,13 +991,16 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 	fileGname = getGname(fileGid);
     }
 	
+#if 0	/* XXX this looks dumb to me */
     if (! (fileUname && fileGname)) {
 	rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskName);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
+#endif
     
-    rpmMessage(RPMMESS_DEBUG, _("File %d: %s\n"), fl->fileCount, fileName);
+    rpmMessage(RPMMESS_DEBUG, _("File %4d: 0%o %s.%s\t %s\n"), fl->fileCount,
+	fileMode, fileUname, fileGname, fileName);
 
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
@@ -995,30 +1009,31 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 			fl->fileListRecsAlloced * sizeof(*(fl->fileList)));
     }
 	    
-    flp = &fl->fileList[fl->fileListRecsUsed];
+    {	FileListRec * flp = &fl->fileList[fl->fileListRecsUsed];
 
-    flp->fl_st = *statp;	/* structure assignment */
-    flp->fl_mode = fileMode;
-    flp->fl_uid = fileUid;
-    flp->fl_gid = fileGid;
+	flp->fl_st = *statp;	/* structure assignment */
+	flp->fl_mode = fileMode;
+	flp->fl_uid = fileUid;
+	flp->fl_gid = fileGid;
 
-    flp->fileName = strdup(fileName);
-    flp->diskName = strdup(diskName);
-    flp->uname = fileUname;
-    flp->gname = fileGname;
+	flp->fileName = strdup(fileName);
+	flp->diskName = strdup(diskName);
+	flp->uname = fileUname;
+	flp->gname = fileGname;
 
-    if (fl->currentLang) {
-	flp->lang = strdup(fl->currentLang);
-    } else if (! parseForRegexLang(fileName, &lang)) {
-	flp->lang = strdup(lang);
-    } else {
-	flp->lang = strdup("");
+	if (fl->currentLang) {
+	    flp->lang = strdup(fl->currentLang);
+	} else if (! parseForRegexLang(fileName, &lang)) {
+	    flp->lang = strdup(lang);
+	} else {
+	    flp->lang = strdup("");
+	}
+
+	flp->flags = fl->currentFlags;
+	flp->verifyFlags = fl->currentVerifyFlags;
+
+	fl->totalFileSize += flp->fl_size;
     }
-
-    flp->flags = fl->currentFlags;
-    flp->verifyFlags = fl->currentVerifyFlags;
-
-    fl->totalFileSize += flp->fl_size;
 
     fl->fileListRecsUsed++;
     fl->fileCount++;
@@ -1075,28 +1090,24 @@ static int processPackageFiles(Spec spec, Package pkg,
     const char *fileName;
     char buf[BUFSIZ];
     FILE *f;
-
-    AttrRec specialDocAttrRec;
+    AttrRec specialDocAttrRec = empty_ar;	/* structure assignment */
     char *specialDoc = NULL;
     
-    specialDocAttrRec = empty_ar;
-
     pkg->cpioList = NULL;
     pkg->cpioCount = 0;
 
     if (pkg->fileFile) {
-	/* XXX FIXME: add %{_buildsubdir} and use rpmGetPath() */
-	strcpy(buf, "%{_builddir}/");
-	expandMacros(spec, spec->macros, buf, sizeof(buf));
-	if (spec->buildSubdir) {
-	    strcat(buf, spec->buildSubdir);
-	    strcat(buf, "/");
-	}
-	strcat(buf, pkg->fileFile);
+	const char *ffn;
 
-	if ((f = fopen(buf, "r")) == NULL) {
+	/* XXX FIXME: add %{_buildsubdir} and use rpmGetPath() */
+	ffn = rpmGetPath("%{_builddir}/",
+	    (spec->buildSubdir ? spec->buildSubdir : "") ,
+	    "/", pkg->fileFile, NULL);
+
+	if ((f = fopen(ffn, "r")) == NULL) {
 	    rpmError(RPMERR_BADFILENAME,
 		     _("Could not open %%files file: %s"), pkg->fileFile);
+	    FREE(ffn);
 	    return RPMERR_BADFILENAME;
 	}
 	while (fgets(buf, sizeof(buf), f)) {
@@ -1108,11 +1119,14 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    appendStringBuf(pkg->fileList, buf);
 	}
 	fclose(f);
+	FREE(ffn);
     }
     
     /* Init the file list structure */
     
-    fl.buildRoot = spec->buildRoot ? spec->buildRoot : "";
+    /* XXX spec->buildRoot == NULL, then strdup("") is returned */
+    fl.buildRoot = rpmGetPath(spec->buildRoot, NULL);
+
     if (headerGetEntry(pkg->header, RPMTAG_DEFAULTPREFIX,
 		       NULL, (void *)&fl.prefix, NULL)) {
 	fl.prefix = strdup(fl.prefix);
@@ -1218,6 +1232,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     }
     
     /* Clean up */
+    FREE(fl.buildRoot);
     FREE(fl.prefix);
 
     freeAttrRec(&fl.cur_ar);
