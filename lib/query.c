@@ -442,6 +442,14 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	res = rpmgiShowMatches(qva, ts);
 	break;
 
+    case RPMQV_HDLIST:
+	res = rpmgiShowMatches(qva, ts);
+	break;
+
+    case RPMQV_FTSWALK:
+	res = rpmgiShowMatches(qva, ts);
+	break;
+
     case RPMQV_GROUP:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
 	if (qva->qva_mi == NULL) {
@@ -670,11 +678,12 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 {
     int ec = 0;
+    int ftsOpts = 0;
 
     switch (qva->qva_source) {
     case RPMQV_ALL:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_PACKAGES, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0, RPMGI_NONE);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
 	/*@=nullpass@*/
@@ -682,7 +691,25 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	break;
     case RPMQV_RPM:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0, RPMGI_NONE);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
+	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	ec = rpmQueryVerify(qva, ts, NULL);
+	/*@=nullpass@*/
+	rpmtsEmpty(ts);
+	break;
+    case RPMQV_HDLIST:
+	qva->qva_gi = rpmgiNew(ts, RPMDBI_HDLIST, NULL, 0);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
+	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	ec = rpmQueryVerify(qva, ts, NULL);
+	/*@=nullpass@*/
+	rpmtsEmpty(ts);
+	break;
+    case RPMQV_FTSWALK:
+	qva->qva_gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
+	if (ftsOpts == 0)	/* XXX always 0 */
+	    ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, NULL);
 	/*@=nullpass@*/

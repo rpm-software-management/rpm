@@ -27,6 +27,8 @@ int specedit = 0;
 #define POPT_QUERYBYHDRID	-1008
 #define POPT_QUERYBYFILEID	-1009
 #define POPT_QUERYBYTID		-1010
+#define POPT_HDLIST		-1011
+#define POPT_FTSWALK		-1012
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
@@ -69,6 +71,10 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 				qva->qva_sourceCount++; break;
     case POPT_QUERYBYTID: qva->qva_source |= RPMQV_TID;
 				qva->qva_sourceCount++; break;
+    case POPT_HDLIST: qva->qva_source |= RPMQV_HDLIST;
+				qva->qva_sourceCount++; break;
+    case POPT_FTSWALK:qva->qva_source |= RPMQV_FTSWALK;
+				qva->qva_sourceCount++; break;
 
 /* XXX SPECFILE is not verify sources */
     case POPT_SPECFILE:
@@ -99,8 +105,12 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify package(s) owning file"), "FILE" },
  { "fileid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYFILEID,
 	N_("query/verify package(s) with file identifier"), "MD5" },
+ { "ftswalk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_FTSWALK,
+	N_("query/verify package(s) from TOP file tree walk"), "TOP" },
  { "group", 'g', 0, 0, 'g',
 	N_("query/verify package(s) in group"), "GROUP" },
+ { "hdlist", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_HDLIST,
+	N_("query/verify package(s) from system hdlist"), "TOP" },
  { "hdrid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYHDRID,
 	N_("query/verify package(s) with header identifier"), "SHA1" },
  { "package", 'p', 0, 0, 'p',

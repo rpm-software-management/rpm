@@ -471,19 +471,20 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 	}
 	if (gi->fd != NULL) {
 	    Header h = headerRead(gi->fd, HEADER_MAGIC_YES);
-	    if (h != NULL && !(gi->flags & RPMGI_NOHEADER))
-		gi->h = headerLink(h);
-	    sprintf(hnum, "%u", (unsigned)gi->i);
-	    rpmrc = RPMRC_OK;
-	    h = headerFree(h);
+	    if (h != NULL) {
+		if (!(gi->flags & RPMGI_NOHEADER))
+		    gi->h = headerLink(h);
+		sprintf(hnum, "%u", (unsigned)gi->i);
+		gi->hdrPath = rpmExpand("hdlist h# ", hnum, NULL);
+		rpmrc = RPMRC_OK;
+		h = headerFree(h);
+	    }
 	}
-
 	if (rpmrc != RPMRC_OK) {
 	    if (gi->fd != NULL) (void) Fclose(gi->fd);
 	    gi->fd = NULL;
 	    goto enditer;
 	}
-	gi->hdrPath = rpmExpand("hdlist h# ", hnum, NULL);
 	break;
     case RPMDBI_ARGLIST:
 	/* XXX gi->active initialize? */
