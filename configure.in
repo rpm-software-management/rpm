@@ -114,7 +114,20 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+AC_MSG_CHECKING(checking for /usr/ucblib...)
+if test -d /usr/local/lib ; then
+	LIBS="$LIBS -L/usr/local/lib"
+	
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+fi
+
 dnl Checks for libraries.
+
+AC_CHECK_FUNC(strcasecmp, [], [
+    AC_CHECK_LIB(ucb, strcasecmp, [LIBS="-lucb $LIBS"])
+])
 
 dnl
 dnl handle --disable-nls
@@ -162,10 +175,6 @@ AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
 (from the db package)]))
            )
-
-AC_CHECK_FUNC(ucb, [], [
-    AC_CHECK_LIB(ucb, strcasecmp, [LIBS="-lucb $LIBS"])
-])
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
 	MISCOBJS=fakefork.o])
