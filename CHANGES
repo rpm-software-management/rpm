@@ -4,6 +4,8 @@
 	- fix anomoly with %files -f <file> and %doc
 	- ignore config bit when it's set on directories (which allows
 	  users to replace directories with symlinks)
+	- don't set config bit on directories
+	- strip trailing slashes from files (during build)
 
 2.3.8 -> 2.3.9:
 	- reworked %setup to allow multiple -a and -b options, which
