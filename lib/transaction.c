@@ -11,12 +11,14 @@
 #include "misc.h"
 #include "rpmdb.h"
 
+#include <sys/vfs.h>
+
 struct fileInfo {
   /* for all packages */
     enum fileInfo_e { ADDED, REMOVED } type;
     enum fileActions * actions;
     fingerPrint * fps;
-    uint_32 * fflags;
+    uint_32 * fflags, * fsizes;
     const char ** fl;
     char ** fmd5s;
     uint_16 * fmodes;
@@ -26,15 +28,27 @@ struct fileInfo {
     char ** flinks;
     struct availablePackage * ap;
     struct sharedFileInfo * replaced;
+    uint_32 * replacedSizes;
   /* for REMOVED packages */
     unsigned int record;
     char * fstates;
 };
 
+struct diskspaceInfo {
+    dev_t dev;
+    unsigned long needed;		/* in blocks */
+    int block;
+    unsigned long avail;
+};
+
+/* argon thought a shift optimization here was a waste of time...  he's 
+   probably right :-( */
+#define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
+
 static rpmProblemSet psCreate(void);
 static void psAppend(rpmProblemSet probs, rpmProblemType type, 
 		     const void * key, Header h, const char * str1, 
-		     Header altHeader);
+		     Header altHeader, unsigned long ulong1);
 static int archOkay(Header h);
 static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
@@ -58,7 +72,7 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount);
 void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
-			   rpmProblemSet probs);
+			   rpmProblemSet probs, struct diskspaceInfo * dsl);
 static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
 		       const void * key);
 static void skipFiles(struct fileInfo * fi, int noDocs);
@@ -70,6 +84,9 @@ static void freeFi(struct fileInfo *fi)
 	}
 	if (fi->actions) {
 	    free(fi->actions); fi->actions = NULL;
+	}
+	if (fi->replacedSizes) {
+	    free(fi->replacedSizes); fi->actions = NULL;
 	}
 	if (fi->replaced) {
 	    free(fi->replaced); fi->replaced = NULL;
@@ -85,6 +102,9 @@ static void freeFi(struct fileInfo *fi)
 	}
 
 	if (fi->type == REMOVED) {
+	    if (fi->fsizes) {
+		free(fi->fsizes); fi->fsizes = NULL;
+	    }
 	    if (fi->fflags) {
 		free(fi->fflags); fi->fflags = NULL;
 	    }
@@ -142,8 +162,34 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int beingRemoved;
     char * currDir, * chptr;
     FD_t fd;
+    const char ** filesystems;
+    int filesystemCount;
+    struct diskspaceInfo * di = NULL;
 
     /* FIXME: what if the same package is included in ts twice? */
+
+    if (!(ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
+		!rpmGetFilesystemList(&filesystems, &filesystemCount)) {
+	struct statfs sfb;
+	struct stat sb;
+
+	di = alloca(sizeof(*di) * (filesystemCount + 1));
+
+	for (i = 0; (i < filesystemCount) && di; i++) {
+	    if (statfs(filesystems[i], &sfb)) {
+		di = NULL;
+	    } else {
+		di[i].block = sfb.f_bsize;
+		di[i].needed = 0;
+		di[i].avail = sfb.f_bavail;
+
+		stat(filesystems[i], &sb);
+		di[i].dev = sb.st_dev;
+	    }
+	}
+
+	if (di) di[i].block = 0;
+    }
 
     probs = psCreate();
     *newProbs = probs;
@@ -153,10 +199,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
     for (alp = al->list; (alp - al->list) < al->size; alp++) {
 	if (!archOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREARCH))
-	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL);
+	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL, 0);
 
 	if (!osOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREOS)) {
-	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL);
+	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL, 0);
 	}
 
         NOTIFY((alp->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
@@ -181,7 +227,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	} else if (!rc) {
 	    if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG))
 		psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL, 
-			 NULL);
+			 NULL, 0);
 	    dbiFreeIndexRecord(dbi);
 	}
 
@@ -250,6 +296,11 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 				(void *) &fi->fmodes, NULL);
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILEFLAGS, NULL, 
 				(void *) &fi->fflags, NULL);
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILESIZES, NULL, 
+				(void *) &fi->fsizes, NULL);
+
+	/* 0 makes for noops */
+	fi->replacedSizes = calloc(fi->fc, sizeof(*fi->replacedSizes));
 
 	skipFiles(fi, flags & RPMTRANS_FLAG_NODOCS);
 
@@ -282,6 +333,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    fi->fc = 0;
 	    continue;
 	}
+	headerGetEntry(fi->h, RPMTAG_FILESIZES, NULL, 
+				(void *) &fi->fsizes, NULL);
+	fi->fsizes = memcpy(malloc(fi->fc * sizeof(*fi->fsizes)),
+			    fi->fflags, fi->fc * sizeof(*fi->fflags));
 	headerGetEntry(fi->h, RPMTAG_FILEFLAGS, NULL, 
 				(void *) &fi->fflags, NULL);
 	fi->fflags = memcpy(malloc(fi->fc * sizeof(*fi->fflags)),
@@ -389,16 +444,25 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	free(sharedList);
 
 	handleOverlappedFiles(fi, ht, 
-	       (ignoreSet & RPMPROB_FILTER_REPLACENEWFILES) ? NULL : probs);
+	       (ignoreSet & RPMPROB_FILTER_REPLACENEWFILES) ? NULL : probs, di);
+
+	if (di) {
+	    for (i = 0; i < filesystemCount; i++) {
+		if (di[i].needed > di[i].avail) {
+		    psAppend(probs, RPMPROB_DISKSPACE, fi->ap->key, fi->ap->h,
+			     filesystems[i], NULL, 
+			     (di[i].needed - di[i].avail) * di[i].block);
+		}
+	    }
+	}
     }
+
     NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 6, flEntries, NULL, notifyData));
 
     chroot(".");
     chdir(currDir);
 
     htFree(ht);
-
-    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 7, al->size, NULL, notifyData));
 
     for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
 		alp++, fi++) {
@@ -411,8 +475,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    }
 	}
     }
-
-    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 7, al->size, NULL, notifyData));
 
     if ((flags & RPMTRANS_FLAG_BUILD_PROBS) || 
            (probs->numProblems && (!okProbs || psTrim(okProbs, probs)))) {
@@ -520,7 +582,8 @@ static rpmProblemSet psCreate(void) {
 }
 
 static void psAppend(rpmProblemSet probs, rpmProblemType type, 
-		     const void * key, Header h, const char * str1, Header altH) {
+		     const void * key, Header h, const char * str1, 
+		     Header altH, unsigned long ulong1) {
     if (probs->numProblems == probs->numProblemsAlloced) {
 	if (probs->numProblemsAlloced)
 	    probs->numProblemsAlloced *= 2;
@@ -533,6 +596,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
     probs->probs[probs->numProblems].type = type;
     probs->probs[probs->numProblems].key = key;
     probs->probs[probs->numProblems].h = headerLink(h);
+    probs->probs[probs->numProblems].ulong1 = ulong1;
     if (str1)
 	probs->probs[probs->numProblems].str1 = strdup(str1);
     else
@@ -658,7 +722,7 @@ static Header relocateFileList(struct availablePackage * alp,
 			    relocations[i].oldPath)) break;
 	    if (j == numValid && !allowBadRelocate) 
 		psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h, 
-			 relocations[i].oldPath, NULL);
+			 relocations[i].oldPath, NULL,0 );
 	}
     }
 
@@ -930,7 +994,7 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
     int i;
     char ** otherMd5s, ** otherLinks;
     char * otherStates;
-    uint_32 * otherFlags;
+    uint_32 * otherFlags, * otherSizes;
     uint_16 * otherModes;
     int otherFileNum;
     int fileNum;
@@ -949,6 +1013,8 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
 			    (void **) &otherModes, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
 			    (void **) &otherFlags, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_FILESIZES, NULL,
+			    (void **) &otherSizes, NULL);
 
     fi->replaced = malloc(sizeof(*fi->replaced) * sharedCount);
 
@@ -964,7 +1030,7 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
 			fi->flinks[fileNum])) {
 		if (reportConflicts)
 		    psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key, 
-			     fi->ap->h, fi->fl[fileNum], h);
+			     fi->ap->h, fi->fl[fileNum], h,0 );
 		if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			    & RPMFILE_CONFIG)
 		    fi->replaced[numReplaced++] = *shared;
@@ -982,6 +1048,8 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
 			fi->fflags[fileNum], 
 			!headerIsEntry(h, RPMTAG_RPMVERSION));
 	    }
+
+	    fi->replacedSizes[fileNum] = otherSizes[otherFileNum];
 	}
     }
 
@@ -1025,7 +1093,7 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 }
 
 void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
-			     rpmProblemSet probs) {
+			   rpmProblemSet probs, struct diskspaceInfo * dsl) {
     int i, j;
     struct fileInfo ** recs;
     int numRecs;
@@ -1033,10 +1101,19 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
     struct stat sb;
     char mdsum[50];
     int rc;
+    struct diskspaceInfo * ds = NULL;
+    uint_32 fixupSize = 0;
    
     for (i = 0; i < fi->fc; i++) {
 	if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
 	    continue;
+
+	if (dsl) {
+	    ds = dsl;
+	    while (ds->block && ds->dev != fi->fps[i].dev) ds++;
+	    if (!ds->block) ds = NULL;
+	    fixupSize = 0;
+	} 
 
 	htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
 
@@ -1078,8 +1155,10 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 			fi->fmd5s[i],
 			fi->flinks[i])) {
 		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap->key, 
-			 fi->ap->h, fi->fl[i], recs[otherPkgNum]->ap->h);
+			 fi->ap->h, fi->fl[i], recs[otherPkgNum]->ap->h, 0);
 	    }
+
+	    fixupSize = recs[otherPkgNum]->fsizes[otherFileNum];
 
 	    /* FIXME: is this right??? it locks us into the config
 	       file handling choice we already made, which may very
@@ -1104,6 +1183,34 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		}
 	    }
 	}
+
+	if (ds) {
+	    uint_32 s = BLOCK_ROUND(fi->fsizes[i], ds->block);
+
+	    switch (fi->actions[i]) {
+	      case FA_BACKUP:
+	      case FA_SAVE:
+	      case FA_ALTNAME:
+		ds->needed += s;
+		break;
+
+	      /* FIXME: If a two packages share a file (same md5sum), and 
+		 that file is being replaced on disk, will ds->needed get
+		 decremented twice? Quite probably! */
+	      case FA_CREATE:
+		ds->needed += s;
+		ds->needed -= BLOCK_ROUND(fi->replacedSizes[i], ds->block);
+		break;
+
+	      case FA_REMOVE:
+		ds->needed -= s;
+		break;
+
+	      default:
+	    }
+
+	    ds->needed -= fixupSize;
+	}
     }
 }
 
@@ -1120,7 +1227,7 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
 	rc = 0;
     else if (result > 0) {
 	rc = 1;
-	psAppend(probs, RPMPROB_OLDPACKAGE, key, new, NULL, old);
+	psAppend(probs, RPMPROB_OLDPACKAGE, key, new, NULL, old, 0);
     }
 
     headerFree(old);

@@ -63,6 +63,15 @@ char * rpmProblemString(rpmProblem prob) {
 			name, version, release);
 	break;
 
+      case RPMPROB_DISKSPACE:
+	sprintf(buf, _("installing package %s-%s-%s needs %d%c on the %s"
+		       " filesystem"), name, version, release, 
+		       prob.ulong1 > (1024*1024) ? prob.ulong1 / 1024 / 1024 :
+				prob.ulong1 / 1024,
+		       prob.ulong1 > (1024*1024) ? 'M' : 'k',
+		       prob.str1);
+	break;
+
       default:
 	sprintf(buf, _("unknown error %d encountered while manipulating "
 		"package %s-%s-%s"), prob.type, name, version, release);
@@ -92,6 +101,8 @@ void rpmProblemSetFilter(rpmProblemSet ps, int flags) {
 	    flag = RPMPROB_FILTER_REPLACEOLDFILES; break;
 	  case RPMPROB_OLDPACKAGE:
 	    flag = RPMPROB_FILTER_OLDPACKAGE; break;
+	  case RPMPROB_DISKSPACE:
+	    flag = RPMPROB_FILTER_DISKSPACE; break;
 	  default:
 	    flag = 0;
 	}
