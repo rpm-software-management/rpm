@@ -290,12 +290,21 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
     int child;
     int status;
     char upgradeArg[20];
+    char * installPrefix = NULL;
+    char * installPrefixEnv = NULL;
 
     sprintf(upgradeArg, "%d", arg);
 
     if (norunScripts) return 0;
-    
+
     if (getEntry(h, tag, &type, (void **) &script, &count)) {
+	if (getEntry(h, RPMTAG_INSTALLPREFIX, &type, (void **) &installPrefix,
+	    	     &count)) {
+	    installPrefixEnv = alloca(strlen(installPrefix) + 30);
+	    strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
+	    strcat(installPrefixEnv, installPrefix);
+	}
+
 	fn = tmpnam(NULL);
 	message(MESS_DEBUG, "script found - running from file %s\n", fn);
 	fd = open(fn, O_CREAT | O_RDWR);
@@ -309,8 +318,11 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	
 	/* run the script via /bin/sh - just feed the commands to the
 	   shell as stdin */
-	child = fork();
-	if (!child) {
+	if (!(child = fork())) {
+	    if (installPrefixEnv) {
+		putenv(installPrefixEnv);
+	    }
+
 	    lseek(fd, 0, SEEK_SET);
 	    close(0);
 	    dup2(fd, 0);
