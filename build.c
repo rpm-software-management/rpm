@@ -59,7 +59,8 @@ static int isSpecFile(const char *specfile)
     int count;
     int checking;
 
-    if (fdFileno((fd = ufdOpen(specfile, O_RDONLY, 0))) < 0) {
+    fd = ufdOpen(specfile, O_RDONLY, 0);
+    if (Ferror(fd)) {
 	/* XXX Fstrerror */
 	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
 	return 0;

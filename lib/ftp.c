@@ -442,12 +442,12 @@ static int copyData( /*@only@*/ FD_t sfd, FD_t tfd) {
     while (1) {
 	FD_ZERO(&emptySet);
 	FD_ZERO(&readSet);
-	FD_SET(fdFileno(sfd), &readSet);
+	FD_SET(Fileno(sfd), &readSet);
 
 	timeout.tv_sec = ftpTimeoutSecs;
 	timeout.tv_usec = 0;
     
-	rc = select(fdFileno(sfd) + 1, &readSet, &emptySet, &emptySet, &timeout);
+	rc = select(Fileno(sfd) + 1, &readSet, &emptySet, &emptySet, &timeout);
 	if (rc == 0) {
 	    rc = FTPERR_SERVER_TIMEOUT;
 	    break;
@@ -506,8 +506,8 @@ fprintf(stderr, "-> ABOR\n");
 	u->ftpControl = -1;
 	return FTPERR_SERVER_IO_ERROR;
     }
-    if (fdFileno(fd) >= 0) {
-	while(read(fdFileno(fd), buf, sizeof(buf)) > 0)
+    if (Fileno(fd) >= 0) {
+	while(read(Fileno(fd), buf, sizeof(buf)) > 0)
 	    ;
     }
 
@@ -518,7 +518,7 @@ fprintf(stderr, "-> ABOR\n");
     rc = ftpCheckResponse(u, NULL);
     ftpTimeoutSecs = tosecs;
 
-    if (fdFileno(fd) >= 0)
+    if (Fileno(fd) >= 0)
 	Fclose(fd);
     return 0;
 }
@@ -597,15 +597,14 @@ fprintf(stderr, "-> PASV\n");
 	return FTPERR_PASSIVE_ERROR;
 
     fd->fd_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    if (fdFileno(fd) < 0) {
+    if (Fileno(fd) < 0)
 	return FTPERR_FAILED_CONNECT;
-    }
 
     retrCommand = alloca(strlen(remotename) + 20);
     sprintf(retrCommand, "RETR %s\r\n", remotename);
     i = strlen(retrCommand);
    
-    while (connect(fdFileno(fd), (struct sockaddr *) &dataAddress, 
+    while (connect(Fileno(fd), (struct sockaddr *) &dataAddress, 
 	        sizeof(dataAddress)) < 0) {
 	if (errno == EINTR)
 	    continue;
@@ -641,7 +640,7 @@ int ftpGetFile(FD_t sfd, FD_t tfd)
     u = (urlinfo *)sfd->fd_url;
 
     /* XXX normally sfd = ufdOpen(...) and this code does not execute */
-    if (fdFileno(sfd) < 0 && (rc = ftpGetFileDesc(sfd)) < 0) {
+    if (Fileno(sfd) < 0 && (rc = ftpGetFileDesc(sfd)) < 0) {
 	Fclose(sfd);
 	return rc;
     }

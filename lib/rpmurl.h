@@ -62,13 +62,14 @@ int	ftpGetFileDesc(FD_t);
 int	ftpAbort( /*@only@*/ FD_t fd);
 int	ftpClose( /*@only@*/ FD_t fd);
 
-urltype	urlIsURL(const char * url);
-int 	urlSplit(const char *url, /*@out@*/ urlinfo **u);
 /*@only@*/ urlinfo	*newUrlinfo(void);
 void	freeUrlinfo( /*@only@*/ urlinfo *u);
+void	freeUrlinfoCache(void);
+
+urltype	urlIsURL(const char * url);
+int 	urlSplit(const char *url, /*@out@*/ urlinfo **u);
 
 int	urlGetFile(const char * url, const char * dest);
-void    urlInvalidateCache(const char * url);
 
 #ifdef __cplusplus
 }

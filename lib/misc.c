@@ -361,7 +361,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	if (fn)	xfree(fn);
 	fn = rpmGetPath(prefix, "%{_tmppath}/", tfn, NULL);
 	fd = fdOpen(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
-    } while (fdFileno(fd) < 0 && errno == EEXIST);
+    } while (Ferror(fd) && errno == EEXIST);
 
     if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
@@ -375,7 +375,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	return 1;
     }
 
-    fstat(fdFileno(fd), &sb2);
+    fstat(Fileno(fd), &sb2);
     if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
 	xfree(fn);
@@ -412,7 +412,6 @@ void compressFilelist(Header h) {
     const char ** baseNames;
     int fileCount;
     int i;
-    char * tail;
     int lastDir = -1;
     int lastLen = -1;
 
@@ -465,7 +464,7 @@ void compressFilelist(Header h) {
 
 /* this is pretty straight-forward. The only thing that even resembles a trick
    is getting all of this into a single xmalloc'd block */
-static void doBuildFileList(Header h, /*@out@*/ char *** fileListPtr, 
+static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			    /*@out@*/ int * fileCountPtr, int baseNameTag,
 			    int dirListTag, int dirIndexesTag) {
     int * dirList;
@@ -508,12 +507,14 @@ static void doBuildFileList(Header h, /*@out@*/ char *** fileListPtr,
     free(dirs);
 }
 
-void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
+void buildFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
+{
     doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_COMPFILELIST,
 		    RPMTAG_COMPDIRLIST, RPMTAG_COMPFILEDIRS);
 }
 
-void buildOrigFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
+void buildOrigFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
+{
     doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_ORIGCOMPFILELIST,
 		    RPMTAG_ORIGCOMPDIRLIST, RPMTAG_ORIGCOMPFILEDIRS);
 }

@@ -55,7 +55,7 @@ int faClose(faFile fa) {
 }
 
 int faFcntl(faFile fa, int op, void *lip) {
-    return fcntl(fdFileno(faFileno(fa)), op, lip);
+    return fcntl(Fileno(faFileno(fa)), op, lip);
 }
 
 static inline ssize_t faPRead(faFile fa, /*@out@*/void *buf, size_t count, off_t offset) {
@@ -80,7 +80,7 @@ faFile faOpen(const char * path, int flags, int perms)
 	return NULL;
 
     fa = ufdOpen(path, flags, perms);
-    if (fdFileno(faFileno(fa)) < 0)
+    if (Ferror(faFileno(fa)))
 	/* XXX Fstrerror */
 	return NULL;
 

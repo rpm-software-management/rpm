@@ -10,18 +10,18 @@ int timedRead(FD_t fd, void * bufptr, int length) {
     struct timeval tv;
     struct stat sb;
 
-    fstat(fdFileno(fd), &sb);
+    fstat(Fileno(fd), &sb);
     if (S_ISREG(sb.st_mode))
 	return Fread(buf, length, 1, fd);
 
     while  (total < length) {
 	FD_ZERO(&readSet);
-	FD_SET(fdFileno(fd), &readSet);
+	FD_SET(Fileno(fd), &readSet);
 
 	tv.tv_sec = 30;			/* FIXME: this should be configurable */
 	tv.tv_usec = 0;
 
-	if (select(fdFileno(fd) + 1, &readSet, NULL, NULL, &tv) != 1) 
+	if (select(Fileno(fd) + 1, &readSet, NULL, NULL, &tv) != 1) 
 	    return total;
 
 	bytesRead = Fread(buf + total, length - total, 1, fd);

@@ -836,7 +836,9 @@ rpmgettext(FD_t fd, const char *file, FILE *ofp)
 	    }
 	}
 
-	if (fdFileno(fd = fdOpen(fni, O_RDONLY, 0644)) < 0) {
+	fd = fdOpen(fni, O_RDONLY, 0644);
+	if (Ferror(fd)) {
+	    /* XXX Fstrerror */
 	    fprintf(stderr, _("rpmgettext: open %s: %s\n"), fni, strerror(errno));
 	    return 2;
 	}

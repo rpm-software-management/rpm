@@ -108,12 +108,12 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 
     if (!headerIsEntry(h, RPMTAG_COMPFILELIST)) return 0; 
 
-    buildFileList(h, (char ***) &mem->names, fileCountPtr);
+    buildFileList(h, &mem->names, fileCountPtr);
 
     if (headerIsEntry(h, RPMTAG_ORIGCOMPFILELIST)) {
-	buildOrigFileList(h, (char ***) &mem->cpioNames, fileCountPtr);
+	buildOrigFileList(h, &mem->cpioNames, fileCountPtr);
     } else {
-	buildFileList(h, (char ***) &mem->cpioNames, fileCountPtr);
+	buildFileList(h, &mem->cpioNames, fileCountPtr);
     }
 
     fileCount = *fileCountPtr;
@@ -342,7 +342,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 	(void)notify(h, RPMCALLBACK_INST_PROGRESS, 0, archiveSize, pkgKey, 
 	       notifyData);
 
-    cfd = gzdFdopen(fdDup(fdFileno(fd)), "r");
+    cfd = gzdFdopen(fdDup(Fileno(fd)), "r");
     rc = cpioInstallArchive(cfd, map, mappedFiles, 
 		    ((notify && archiveSize) || specFile) ? callback : NULL, 
 		    &info, &failedFile);

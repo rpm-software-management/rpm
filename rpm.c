@@ -1,6 +1,7 @@
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
+#include <rpmurl.h>
 
 #include "build.h"
 #include "install.h"
@@ -71,7 +72,7 @@ extern const char * rpmEVR;
 extern int rpmFLAGS;
 
 static struct rpmQVArguments rpmQVArgs;
-static struct rpmBuildArguments buildArgs;
+static struct rpmBuildArguments rpmBArgs;
 
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
@@ -146,7 +147,7 @@ static struct poptOption optionsTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmVerifyPoptTable, 0,		(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmBuildPoptTable, 0,		(void *) &buildArgs, NULL },
+		rpmBuildPoptTable, 0,		(void *) &rpmBArgs, NULL },
  { 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
@@ -503,6 +504,7 @@ int main(int argc, const char ** argv)
 {
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t *qva = &rpmQVArgs;
+    struct rpmBuildArguments *ba = &rpmBArgs;
     enum rpmQVSources QVSource = RPMQV_PACKAGE;
     int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
@@ -625,10 +627,10 @@ int main(int argc, const char ** argv)
 
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
     memset(qva, 0, sizeof(*qva));
-    if (buildArgs.buildRootOverride) xfree(buildArgs.buildRootOverride);
-    if (buildArgs.targets) free(buildArgs.targets);
-    memset(&buildArgs, 0, sizeof(buildArgs));
-    buildArgs.buildChar = ' ';
+    if (ba->buildRootOverride) xfree(ba->buildRootOverride);
+    if (ba->targets) free(ba->targets);
+    memset(ba, 0, sizeof(*ba));
+    ba->buildChar = ' ';
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
@@ -686,8 +688,8 @@ int main(int argc, const char ** argv)
 	    if (strlen(optArg) > 1) 
 		argerror(errString);
 
-	    buildArgs.buildChar = optArg[0];
-	    switch (buildArgs.buildChar) {
+	    ba->buildChar = optArg[0];
+	    switch (ba->buildChar) {
 	      case 'a':
 	      case 'b':
 	      case 'i':
@@ -860,10 +862,10 @@ int main(int argc, const char ** argv)
 	exit(EXIT_FAILURE);
     }
 
-    if ((buildArgs.buildAmount & RPMBUILD_RMSOURCE) && bigMode == MODE_UNKNOWN)
+    if ((ba->buildAmount & RPMBUILD_RMSOURCE) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
 
-    if ((buildArgs.buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
+    if ((ba->buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
     
     if (initdb) {
@@ -887,7 +889,7 @@ int main(int argc, const char ** argv)
 	QVSource = qva->qva_source;
     }
 
-    if (buildArgs.buildRootOverride && bigMode != MODE_BUILD &&
+    if (ba->buildRootOverride && bigMode != MODE_BUILD &&
 	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
 	argerror("--buildroot may only be used during package builds");
     }
@@ -913,8 +915,8 @@ int main(int argc, const char ** argv)
 	argerror(_("unexpected query source"));
 
     if (!(bigMode == MODE_INSTALL ||
-	 (bigMode==MODE_BUILD && (buildArgs.buildAmount & RPMBUILD_RMSOURCE))||
-	 (bigMode==MODE_BUILD && (buildArgs.buildAmount & RPMBUILD_RMSPEC))) 
+	 (bigMode==MODE_BUILD && (ba->buildAmount & RPMBUILD_RMSOURCE))||
+	 (bigMode==MODE_BUILD && (ba->buildAmount & RPMBUILD_RMSPEC))) 
 	&& force)
 	argerror(_("only installation, upgrading, rmsource and rmspec may be forced"));
 
@@ -1170,13 +1172,13 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages files given for rebuild"));
 
-	buildArgs.buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL;
+	ba->buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL;
 	if (bigMode == MODE_REBUILD) {
-	    buildArgs.buildAmount |= RPMBUILD_PACKAGEBINARY;
-	    buildArgs.buildAmount |= RPMBUILD_RMSOURCE;
-	    buildArgs.buildAmount |= RPMBUILD_RMSPEC;
-	    buildArgs.buildAmount |= RPMBUILD_CLEAN;
-	    buildArgs.buildAmount |= RPMBUILD_RMBUILD;
+	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
+	    ba->buildAmount |= RPMBUILD_RMSOURCE;
+	    ba->buildAmount |= RPMBUILD_RMSPEC;
+	    ba->buildAmount |= RPMBUILD_CLEAN;
+	    ba->buildAmount |= RPMBUILD_RMBUILD;
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
@@ -1184,7 +1186,7 @@ int main(int argc, const char ** argv)
 	    if (ec)
 		break;
 
-	    ec = build(specFile, &buildArgs, passPhrase, 0, cookie, rcfile, force, noDeps);
+	    ec = build(specFile, ba, passPhrase, 0, cookie, rcfile, force, noDeps);
 	    if (ec)
 		break;
 	    free(cookie);
@@ -1197,34 +1199,34 @@ int main(int argc, const char ** argv)
         if (rpmGetVerbosity() == RPMMESS_NORMAL)
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
        
-	switch (buildArgs.buildChar) {
+	switch (ba->buildChar) {
 	  /* these fallthroughs are intentional */
 	  case 'a':
-	    buildArgs.buildAmount |= RPMBUILD_PACKAGESOURCE;
+	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	    /*@fallthrough@*/
 	  case 'b':
-	    buildArgs.buildAmount |= RPMBUILD_PACKAGEBINARY;
-	    buildArgs.buildAmount |= RPMBUILD_CLEAN;
+	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
+	    ba->buildAmount |= RPMBUILD_CLEAN;
 	    /*@fallthrough@*/
 	  case 'i':
-	    buildArgs.buildAmount |= RPMBUILD_INSTALL;
-	    if ((buildArgs.buildChar == 'i') && buildArgs.shortCircuit)
+	    ba->buildAmount |= RPMBUILD_INSTALL;
+	    if ((ba->buildChar == 'i') && ba->shortCircuit)
 		break;
 	    /*@fallthrough@*/
 	  case 'c':
-	    buildArgs.buildAmount |= RPMBUILD_BUILD;
-	    if ((buildArgs.buildChar == 'c') && buildArgs.shortCircuit)
+	    ba->buildAmount |= RPMBUILD_BUILD;
+	    if ((ba->buildChar == 'c') && ba->shortCircuit)
 		break;
 	    /*@fallthrough@*/
 	  case 'p':
-	    buildArgs.buildAmount |= RPMBUILD_PREP;
+	    ba->buildAmount |= RPMBUILD_PREP;
 	    break;
 	    
 	  case 'l':
-	    buildArgs.buildAmount |= RPMBUILD_FILECHECK;
+	    ba->buildAmount |= RPMBUILD_FILECHECK;
 	    break;
 	  case 's':
-	    buildArgs.buildAmount |= RPMBUILD_PACKAGESOURCE;
+	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	    break;
 	}
 
@@ -1236,7 +1238,7 @@ int main(int argc, const char ** argv)
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
-	    ec = build(pkg, &buildArgs, passPhrase, bigMode == MODE_TARBUILD,
+	    ec = build(pkg, ba, passPhrase, bigMode == MODE_TARBUILD,
 			NULL, rcfile, force, noDeps);
 	    if (ec)
 		break;
@@ -1365,7 +1367,10 @@ int main(int argc, const char ** argv)
     /* keeps memory leak checkers quiet */
     freeNames();
     freeFilesystems();
+    freeUrlinfoCache();
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
+    if (ba->buildRootOverride) xfree(ba->buildRootOverride);
+    if (ba->targets) free(ba->targets);
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */

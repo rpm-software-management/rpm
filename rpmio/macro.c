@@ -25,7 +25,7 @@
 #define	_(x)	x
 #define	xfree(_p)	free((void *)_p)
 typedef	int FD_t;
-#define	fdFileno(_x)	(_x)
+#define	Ferror(_x)	(_x)
 #define	fdOpen		open
 #define	Fread(_b, _s, _n, _fd)	read(_fd, _b, _s)
 #define	Fclose(_fd)		close(_fd)
@@ -1341,7 +1341,9 @@ int isCompressed(const char *file, int *compressed)
 
     *compressed = COMPRESSED_NOT;
 
-    if (fdFileno(fd = fdOpen(file, O_RDONLY, 0)) < 0) {
+    fd = fdOpen(file, O_RDONLY, 0);
+    if (Ferror(fd)) {
+	/* XXX Fstrerror */
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(errno));
 	return 1;
     }

@@ -310,11 +310,11 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 
     if (errfd != NULL) {
 	if (rpmIsVerbose()) {
-	    out = fdDup(fdFileno(errfd));
+	    out = fdDup(Fileno(errfd));
 	} else {
 	    out = fdOpen("/dev/null", O_WRONLY, 0);
-	    if (fdFileno(out) < 0)
-		out = fdDup(fdFileno(errfd));
+	    if (Ferror(out))
+		out = fdDup(Fileno(errfd));
 	}
     } else {
 	out = fdDup(STDOUT_FILENO);
@@ -331,14 +331,14 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	close(pipes[0]);
 
 	if (errfd != NULL) {
-	    if (fdFileno(errfd) != STDERR_FILENO)
-		dup2(fdFileno(errfd), STDERR_FILENO);
-	    if (fdFileno(out) != STDOUT_FILENO)
-		dup2(fdFileno(out), STDOUT_FILENO);
+	    if (Fileno(errfd) != STDERR_FILENO)
+		dup2(Fileno(errfd), STDERR_FILENO);
+	    if (Fileno(out) != STDOUT_FILENO)
+		dup2(Fileno(out), STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (fdFileno(out) > STDERR_FILENO && fdFileno(out) != fdFileno(errfd))
+	    if (Fileno(out) > STDERR_FILENO && Fileno(out) != Fileno(errfd))
 		Fclose (out);
-	    if (fdFileno(errfd) > STDERR_FILENO)
+	    if (Fileno(errfd) > STDERR_FILENO)
 		Fclose (errfd);
 	}
 

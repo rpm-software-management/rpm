@@ -343,7 +343,7 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
     }
 
     ofd = fdOpen(hdr->path, O_CREAT | O_WRONLY, 0);
-    if (fdFileno(ofd) < 0) 
+    if (Ferror(ofd)) 
 	return CPIOERR_OPEN_FAILED;
 
     cbInfo.file = hdr->path;
@@ -747,12 +747,13 @@ static int writeFile(FD_t cfd, struct stat sb, struct cpioFileMapping * map,
 	size_t nmapped;
 #endif
 
-	if (fdFileno(datafd = fdOpen(map->fsPath, O_RDONLY, 0)) < 0)
+	datafd = fdOpen(map->fsPath, O_RDONLY, 0);
+	if (Ferror(datafd))
 	    return CPIOERR_OPEN_FAILED;
 
 #if HAVE_MMAP
 	nmapped = 0;
-	mapped = mmap(NULL, sb.st_size, PROT_READ, MAP_SHARED, fdFileno(datafd), 0);
+	mapped = mmap(NULL, sb.st_size, PROT_READ, MAP_SHARED, Fileno(datafd), 0);
 	if (mapped != (void *)-1) {
 	    b = (char *)mapped;
 	    nmapped = sb.st_size;

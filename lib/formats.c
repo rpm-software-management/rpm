@@ -208,7 +208,7 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
 	numFiles = 0;
 	filenames = NULL;
     } else {
-	buildFileList(h, (char ***) &filenames, &numFiles);
+	buildFileList(h, &filenames, &numFiles);
     }
 
     if (rpmGetFilesystemList(NULL, count)) {
@@ -339,10 +339,10 @@ static int filenamesTag(Header h, int_32 * type, /*@out@*/void ** data,
 			   int_32 * count, int * freeData) {
     *type = RPM_STRING_ARRAY_TYPE;
 
-    buildFileList(h, (char ***) data, count);
+    buildFileList(h, (const char ***) data, count);
     *freeData = 1;
 
-    *freeData = 0;
+    *freeData = 0;	/* XXX WTFO? */
 
     return 0; 
 }

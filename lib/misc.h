@@ -36,9 +36,9 @@ int makeTempFile(const char * prefix, /*@out@*/ const char ** fnptr,
 	/*@out@*/ FD_t * fdptr);
 char * currentDirectory(void);		/* result needs to be freed */
 void compressFilelist(Header h);
-void buildFileList(Header h, /*@out@*/ char *** fileListPtr, 
+void buildFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 		    /*@out@*/ int * fileCountPtr);
-void buildOrigFileList(Header h, /*@out@*/ char *** fileListPtr, 
+void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			/*@out@*/ int * fileCountPtr);
 
 #ifdef __cplusplus

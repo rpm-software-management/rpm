@@ -13,7 +13,22 @@
 
 #include <rpmurl.h>
 
-/*@access FD_t@*/
+typedef /*@owned@*/ urlinfo * urlinfop;
+/*@only@*/ /*@null@*/ static urlinfop *uCache = NULL;
+static int uCount = 0;
+
+urlinfo *newUrlinfo(void)
+{
+    urlinfo *u;
+    if ((u = xmalloc(sizeof(*u))) == NULL)
+	return NULL;
+    memset(u, 0, sizeof(*u));
+    u->proxyp = -1;
+    u->port = -1;
+    u->ftpControl = -1;
+    u->ftpGetFileDoneNeeded = 0;
+    return u;
+}
 
 void freeUrlinfo(urlinfo *u)
 {
@@ -32,26 +47,25 @@ void freeUrlinfo(urlinfo *u)
     FREE(u);
 }
 
-urlinfo *newUrlinfo(void)
+void freeUrlinfoCache(void)
 {
-    urlinfo *u;
-    if ((u = xmalloc(sizeof(*u))) == NULL)
-	return NULL;
-    memset(u, 0, sizeof(*u));
-    u->proxyp = -1;
-    u->port = -1;
-    u->ftpControl = -1;
-    u->ftpGetFileDoneNeeded = 0;
-    return u;
+    int i;
+    for (i = 0; i < uCount; i++) {
+	if (uCache[i])
+	    freeUrlinfo(uCache[i]);
+    }
+    if (uCache)
+	free(uCache);
+    uCache = NULL;
+    uCount = 0;
 }
 
 static int urlStrcmp(const char *str1, const char *str2)
 {
-    if (str1 && str2) {
+    if (str1 && str2)
 	return (strcmp(str1, str2));
-    } else
-	if (str1 != str2)
-	    return -1;
+    if (str1 != str2)
+	return -1;
     return 0;
 }
 
@@ -59,8 +73,6 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 {
     urlinfo *u;
     urlinfo **empty;
-    /*@only@*/static urlinfo **uCache = NULL;
-    static int uCount = 0;
     int i;
 
     if (uret == NULL)
@@ -76,6 +88,7 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 		empty = &uCache[i];
 	    continue;
 	}
+
 	/* Check for cache-miss condition. A cache miss is
 	 *    a) both items are not NULL and don't compare.
 	 *    b) either of the items is not NULL.
@@ -194,6 +207,30 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
     return;
 }
 
+static struct urlstring {
+    const char *leadin;
+    urltype	ret;
+} urlstrings[] = {
+    { "file://",	URL_IS_PATH },
+    { "ftp://",		URL_IS_FTP },
+    { "http://",	URL_IS_HTTP },
+    { "-",		URL_IS_DASH },
+    { NULL,		URL_IS_UNKNOWN }
+};
+
+urltype urlIsURL(const char * url)
+{
+    struct urlstring *us;
+
+    for (us = urlstrings; us->leadin != NULL; us++) {
+	if (strncmp(url, us->leadin, strlen(us->leadin)))
+	    continue;
+	return us->ret;
+    }
+
+    return URL_IS_UNKNOWN;
+}
+
 /*
  * Split URL into components. The URL can look like
  *	service://user:password@host:port/path
@@ -297,16 +334,20 @@ int urlGetFile(const char * url, const char * dest) {
     int rc;
     FD_t sfd = NULL;
     FD_t tfd = NULL;
+    urlinfo * sfu;
 
     sfd = ufdOpen(url, O_RDONLY, 0);
-    if (sfd == NULL || fdFileno(sfd) < 0) {
+    if (sfd == NULL || Ferror(sfd)) {
+	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to open %s\n"), url);
-	ufdClose(sfd);
+	Fclose(sfd);
 	return FTPERR_UNKNOWN;
     }
 
-    if (sfd->fd_url != NULL && dest == NULL) {
-	const char *fileName = ((urlinfo *)sfd->fd_url)->path;
+    sfu = ufdGetUrlinfo(sfd);
+
+    if (sfu != NULL && dest == NULL) {
+	const char *fileName = sfu->path;
 	if ((dest = strrchr(fileName, '/')) != NULL)
 	    dest++;
 	else
@@ -314,10 +355,11 @@ int urlGetFile(const char * url, const char * dest) {
     }
 
     tfd = fdOpen(dest, O_CREAT|O_WRONLY|O_TRUNC, 0600);
-    if (fdFileno(tfd) < 0) {
+    if (Ferror(tfd)) {
+	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);
 	Fclose(tfd);
-	ufdClose(sfd);
+	Fclose(sfd);
 	return FTPERR_UNKNOWN;
     }
 
@@ -325,18 +367,18 @@ int urlGetFile(const char * url, const char * dest) {
     case URL_IS_FTP:
 	if ((rc = ftpGetFile(sfd, tfd))) {
 	    unlink(dest);
-	    ufdClose(sfd);
+	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}
-	/* XXX fdClose(sfd) done by copyData */
+	/* XXX Fclose(sfd) done by copyData */
 	break;
     case URL_IS_HTTP:
     case URL_IS_PATH:
     case URL_IS_DASH:
 	if ((rc = httpGetFile(sfd, tfd))) {
 	    unlink(dest);
-	    ufdClose(sfd);
+	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}
-	/* XXX fdClose(sfd) done by copyData */
+	/* XXX Fclose(sfd) done by copyData */
 	break;
     case URL_IS_UNKNOWN:
     default:

@@ -459,16 +459,17 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
       {	FD_t fd;
 
 	fd = ufdOpen(arg, O_RDONLY, 0);
-	if (fdFileno(fd) < 0) {
+	if (Ferror(fd)) {
+	    /* XXX Fstrerror */
 	    fprintf(stderr, _("open of %s failed: %s\n"), arg,urlStrerror(arg));
-	    ufdClose(fd);
+	    Fclose(fd);
 	    retcode = 1;
 	    break;
 	}
 
 	retcode = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 
-	ufdClose(fd);
+	Fclose(fd);
 
 	switch (retcode) {
 	case 0:

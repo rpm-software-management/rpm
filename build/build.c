@@ -84,7 +84,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	    return RPMERR_SCRIPT;
     }
 #ifdef HAVE_FCHMOD
-    (void)fchmod(fdFileno(fd), 0600);
+    (void)fchmod(Fileno(fd), 0600);
 #endif
     f = fdFdopen(fd, "w");
     

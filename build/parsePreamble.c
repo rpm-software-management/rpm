@@ -246,7 +246,7 @@ static int readIcon(Header h, const char *file)
     *icon = '\0';
     fd = fdOpen(fn, O_RDONLY, 0);
     /* XXX Fstrerror */
-    /* XXX fdFileno check */
+    /* XXX Ferror check */
     nb = Fread(icon, statbuf.st_size, 1, fd);
     Fclose(fd);
     if (nb != statbuf.st_size) {

@@ -183,7 +183,9 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     int rc;
 
     if (fileName != NULL) {
-	if (fdFileno(fdi = fdOpen(fileName, O_RDONLY, 0644)) < 0) {
+	fdi = fdOpen(fileName, O_RDONLY, 0644);
+	if (Ferror(fdi)) {
+	    /* XXX Fstrerror */
 	    rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
 		strerror(errno));
 	    return RPMERR_BADMAGIC;
@@ -249,7 +251,7 @@ int writeRPM(Header h, const char *fileName, int type,
     Header sig;
     struct rpmlead lead;
 
-    if (fdFileno(csa->cpioFdIn) < 0) {
+    if (Fileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
 	/* Add a bogus archive size to the Header */
 	headerAddEntry(h, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
@@ -275,7 +277,7 @@ int writeRPM(Header h, const char *fileName, int type,
     } else { /* Write the archive and get the size */
 	if (csa->cpioList != NULL) {
 	    rc = cpio_gzip(fd, csa);
-	} else if (fdFileno(csa->cpioFdIn) >= 0) {
+	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
 	    rpmError(RPMERR_CREATE, _("Bad CSA data"));
@@ -290,7 +292,7 @@ int writeRPM(Header h, const char *fileName, int type,
     }
 
     /* Now set the real archive size in the Header */
-    if (fdFileno(csa->cpioFdIn) < 0) {
+    if (Fileno(csa->cpioFdIn) < 0) {
 	headerModifyEntry(h, RPMTAG_ARCHIVESIZE,
 		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
     }
@@ -310,7 +312,9 @@ int writeRPM(Header h, const char *fileName, int type,
     }
 
     /* Open the output file */
-    if (fdFileno(fd = fdOpen(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) {
+    fd = fdOpen(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    if (Ferror(fd)) {
+	/* XXX Fstrerror */
 	rpmError(RPMERR_CREATE, _("Could not open %s\n"), fileName);
 	unlink(sigtarget);
 	xfree(sigtarget);
@@ -323,7 +327,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	sprintf(buf, "%s-%s-%s", name, version, release);
     }
 
-    if (fdFileno(csa->cpioFdIn) < 0) {
+    if (Fileno(csa->cpioFdIn) < 0) {
 	rpmGetArchInfo(NULL, &archnum);
 	rpmGetOsInfo(NULL, &osnum);
     } else if (csa->lead != NULL) {	/* XXX FIXME: exorcize lead/arch/os */
@@ -412,7 +416,7 @@ static int cpio_bzip2(FD_t fdo, CSA_t *csa)
     int rc;
     const char *failedFile = NULL;
 
-    cfd = bzdFdopen(fdDup(fdFileno(fdo)), "w9");
+    cfd = bzdFdopen(fdDup(Fileno(fdo)), "w9");
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {
@@ -435,7 +439,7 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa)
     int rc;
     const char *failedFile = NULL;
 
-    cfd = gzdFdopen(fdDup(fdFileno(fdo)), "w9");
+    cfd = gzdFdopen(fdDup(Fileno(fdo)), "w9");
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {

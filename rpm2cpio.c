@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	fdi = ufdOpen(argv[1], O_RDONLY, 0644);
     }
 
-    if (fdFileno(fdi) < 0) {
+    if (Fileno(fdi) < 0) {
 	perror("cannot open package");
 	exit(EXIT_FAILURE);
     }

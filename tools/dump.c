@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
 	fdi = fdOpen(argv[1], O_RDONLY, 0644);
     }
 
-    if (fdFileno(fdi) < 0) {
+    if (Fileno(fdi) < 0) {
 	fprintf(stderr, _("cannot open %s: %s\n"), argv[1], strerror(errno));
 	exit(1);
     }

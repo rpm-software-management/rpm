@@ -28,6 +28,9 @@ int	Fseek	(FD_t fd, long int offset, int whence);
 int	Fclose	( /*@only@*/ FD_t fd);
 FILE *	Fopen	(const char *path, const char *fmode);
 
+int	Ferror	(FD_t fd);
+int	Fileno	(FD_t fd);
+
 #endif /* H_RPMIO */
 
 #ifndef H_RPMIO_F
@@ -41,7 +44,6 @@ int timedRead(FD_t fd, /*@out@*/void * bufptr, int length);
 
 extern /*@only@*/ /*@null@*/ FD_t fdNew(cookie_io_functions_t * iop);
 extern int fdValid(FD_t fd);
-extern int fdFileno(FD_t fd);
 
 extern /*@only@*/ /*@null@*/ FD_t fdOpen(const char *pathname, int flags, mode_t mode);
 extern /*@only@*/ /*@null@*/ FD_t fdDup(int fdno);
@@ -88,8 +90,10 @@ extern cookie_io_functions_t bzdio;
 #endif	/* HAVE_BZLIB_H */
 
 /*@only@*/ FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
-int	ufdClose( /*@only@*/ FD_t fd);
+/*@dependent@*/ void * ufdGetUrlinfo(FD_t fd);
 /*@observer@*/ const char *urlStrerror(const char *url);
+
+extern cookie_io_functions_t ufdio;
 
 #ifdef __cplusplus
 }

@@ -187,7 +187,8 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 
     for (filename = packages; *filename; filename++) {
 	fd = fdOpen(*filename, O_RDONLY, 0);
-	if (fdFileno(fd) < 0) {
+	if (Ferror(fd)) {
+	    /* XXX Fstrerror */
 	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), *filename);
 	    numFailed++;
 	    packages[i] = NULL;
@@ -328,7 +329,8 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
     if (numSourcePackages && !stopInstall) {
 	for (i = 0; i < numSourcePackages; i++) {
 	    fd = fdOpen(sourcePackages[i], O_RDONLY, 0);
-	    if (fdFileno(fd) < 0) {
+	    if (Ferror(fd)) {
+		/* XXX Fstrerror */
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), 
 			   sourcePackages[i]);
 		continue;
@@ -455,7 +457,7 @@ int rpmInstallSource(const char * rootdir, const char * arg, const char ** specF
     int rc;
 
     fd = ufdOpen(arg, O_RDONLY, 0);
-    if (fdFileno(fd) < 0) {
+    if (Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s\n"), arg);
 	Fclose(fd);

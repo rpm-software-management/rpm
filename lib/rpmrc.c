@@ -540,10 +540,11 @@ int rpmReadRC(const char * rcfiles)
 
 	/* Read another rcfile */
 	fd = fdOpen(fn, O_RDONLY, 0);
-	if (fdFileno(fd) < 0) {
+	if (Ferror(fd)) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 	    if (rcfiles == defrcfiles && myrcfiles != r)
 		continue;
+	    /* XXX Fstrerror */
 	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
 		 fn, strerror(errno));
 	    rc = 1;
@@ -579,7 +580,7 @@ static int doReadRC(FD_t fd, const char * filename)
     int rc;
 
   { struct stat sb;
-    fstat(fdFileno(fd), &sb);
+    fstat(Fileno(fd), &sb);
     next = alloca(sb.st_size + 2);
     if (Fread(next, sb.st_size, 1, fd) != sb.st_size) {
 	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,
@@ -654,7 +655,8 @@ static int doReadRC(FD_t fd, const char * filename)
 		}
 
 		fdinc = fdOpen(fn, O_RDONLY, 0);
-		if (fdFileno(fdinc) < 0) {
+		if (Ferror(fdinc)) {
+		    /* XXX Fstrerror */
 		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d"),
 			fn, filename, linenum);
 		    rc = 1;
@@ -825,7 +827,7 @@ static void defaultMachine(const char ** arch, const char ** os) {
            /* we are on ncr-sysv4 */
 	   char *prelid = NULL;
            FD_t fd = fdOpen("/etc/.relid", O_RDONLY, 0700);
-           if (fdFileno(fd) > 0) {
+           if (!Ferror(fd)) {
               chptr = (char *) xcalloc(1, 256);
               if (chptr != NULL) {
                  int irelid = Fread(chptr, 256, 1, fd);

@@ -218,7 +218,7 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
     hdr = hdrPtr ? hdrPtr : &hdrBlock;
     lead = leadPtr ? leadPtr : &leadBlock;
 
-    fstat(fdFileno(fd), &sb);
+    fstat(Fileno(fd), &sb);
     /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
     if (S_ISREG(sb.st_mode) && sb.st_size < sizeof(*lead)) return 1;
 
