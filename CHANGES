@@ -1,8 +1,16 @@
+2.94 -> 2.95
+	- fix: last update transaction set segfault bug in installer.
+	- improved checks for statfs (Tim Mooney).
+	- remove inconsistent use of __P((...)) throughout.
+	- non-static inline functions caused IRIX cc pain.
+	- CPIOERR_CHECK_ERRNO masking caused AIX cc warnings.
+
 2.93 -> 2.94
 	- fix: segfault while parsing target string.
 	- fix: os was not initialized with "--target i586".
 	- fix: --prefix resurrected.
 	- non-linux, non-gcc portability fixes (Tim Mooney).
+	- default to static libs only (remove implied support for shared libs).
 
 2.92 -> 2.93
 	- eliminate old rpmrc configuration syntax.

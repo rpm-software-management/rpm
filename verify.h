@@ -9,7 +9,7 @@
 #define VERIFY_MD5		(1 << 3)
 
 enum verifysources { VERIFY_PATH, VERIFY_PACKAGE, VERIFY_EVERY, VERIFY_RPM, 
-			VERIFY_GRP, };
+			VERIFY_GRP };
 
 int doVerify(const char * prefix, enum verifysources source, const char ** argv,
 	      int verifyFlags);

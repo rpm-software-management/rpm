@@ -29,39 +29,31 @@ typedef /*@abstract@*/ struct MacroContext {
 #define	RMIL_OLDSPEC	-1
 #define	RMIL_GLOBAL	0
 
-#ifndef	__P
-#ifdef __STDC__
-#define	__P(protos)	protos
-#else
-#define	__P(protos)	()
-#endif
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void	dumpMacroTable	__P((MacroContext *mc, FILE *f));
+void	dumpMacroTable	(MacroContext *mc, FILE *f);
 
 /* XXX this is used only in build/expression.c and will go away. */
-const char *getMacroBody __P((MacroContext *mc, const char *name));
+const char *getMacroBody (MacroContext *mc, const char *name);
 
-int	expandMacros	__P((void *spec, MacroContext *mc, char *sbuf, size_t sbuflen));
-void	addMacro	__P((MacroContext *mc, const char *n, const char *o, const char *b, int depth));
-void	delMacro	__P((MacroContext *mc, const char *n));
+int	expandMacros	(void *spec, MacroContext *mc, char *sbuf, size_t sbuflen);
+void	addMacro	(MacroContext *mc, const char *n, const char *o, const char *b, int depth);
+void	delMacro	(MacroContext *mc, const char *n);
 
-int	rpmDefineMacro	__P((MacroContext *mc, const char *macro, int level));
-void	initMacros	__P((MacroContext *mc, const char *macrofile));
-void	freeMacros	__P((MacroContext *mc));
+int	rpmDefineMacro	(MacroContext *mc, const char *macro, int level);
+void	initMacros	(MacroContext *mc, const char *macrofile);
+void	freeMacros	(MacroContext *mc);
 
 #define COMPRESSED_NOT   0
 #define COMPRESSED_OTHER 1
 #define COMPRESSED_BZIP2 2
-int	isCompressed	__P((const char *file, int *compressed));
+int	isCompressed	(const char *file, int *compressed);
 
-char *	rpmExpand	__P((const char *arg, ...));
-const char *rpmGetPath	__P((const char *path, ...));
-int	rpmExpandNumeric __P((const char *arg));
+char *	rpmExpand	(const char *arg, ...);
+const char *rpmGetPath	(const char *path, ...);
+int	rpmExpandNumeric (const char *arg);
 
 #ifdef __cplusplus
 }

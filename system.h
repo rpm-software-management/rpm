@@ -78,14 +78,6 @@ extern time_t timezone;
 #include <utime.h>
 #endif
 
-#ifndef __P
-#if defined (__GNUC__) || (defined (__STDC__) && __STDC__)
-#define __P(args) args
-#else
-#define __P(args) ()
-#endif  /* GCC.  */
-#endif  /* Not __P.  */
-
 /* Don't use bcopy!  Use memmove if source and destination may overlap,
    memcpy otherwise.  */
 
@@ -111,7 +103,7 @@ extern int errno;
 /*@=skipansiheaders@*/
 #undef getopt
 #else /* not STDC_HEADERS */
-char *getenv __P((const char *name));
+char *getenv (const char *name);
 #endif /* STDC_HEADERS */
 
 #ifdef HAVE_FCNTL_H

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-09 18:32-0400\n"
+"POT-Creation-Date: 1999-04-14 06:46-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2441,101 +2441,101 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: ../lib/install.c:100
+#: ../lib/install.c:95
 msgid "source package expected, binary found"
 msgstr ""
 
-#: ../lib/install.c:182 ../lib/uninstall.c:111
+#: ../lib/install.c:171 ../lib/uninstall.c:111
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: ../lib/install.c:199
+#: ../lib/install.c:188
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:207
+#: ../lib/install.c:196
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:234
+#: ../lib/install.c:223
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
-#: ../lib/install.c:302
+#: ../lib/install.c:291
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: ../lib/install.c:365
+#: ../lib/install.c:354
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:370
+#: ../lib/install.c:359
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:400
+#: ../lib/install.c:389
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:436
+#: ../lib/install.c:425
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:440 ../lib/install.c:806 ../lib/uninstall.c:337
+#: ../lib/install.c:429 ../lib/install.c:792 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:523
+#: ../lib/install.c:509
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:629
+#: ../lib/install.c:615
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:630
+#: ../lib/install.c:616
 msgid " on file "
 msgstr ""
 
-#: ../lib/install.c:670
+#: ../lib/install.c:656
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:681 ../lib/install.c:703
+#: ../lib/install.c:667 ../lib/install.c:689
 #, c-format
 msgid "cannot create %s"
 msgstr ""
 
-#: ../lib/install.c:688 ../lib/install.c:710
+#: ../lib/install.c:674 ../lib/install.c:696
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:692
+#: ../lib/install.c:678
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:714
+#: ../lib/install.c:700
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:747 ../lib/install.c:783
+#: ../lib/install.c:733 ../lib/install.c:769
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:804
+#: ../lib/install.c:790
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
@@ -3202,17 +3202,17 @@ msgstr ""
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/transaction.c:736
+#: ../lib/transaction.c:778
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:742
+#: ../lib/transaction.c:784
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:830
+#: ../lib/transaction.c:872
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

@@ -334,6 +334,10 @@ fi
 AC_SUBST(BUILD_RPMCONVERT)
 
 dnl statfs portability fiddles.
+dnl
+dnl We should really emulate/steal sections of the statfs and struct statfs
+dnl checks from GNU fileutils.
+dnl
 AC_CHECK_HEADERS(glob.h)
 AC_MSG_CHECKING(for struct statfs)
 dnl
@@ -386,6 +390,59 @@ dnl ...no luck.  Warn the user of impending doom.
 AC_MSG_WARN(not found)
 fi
 
+dnl
+dnl if we found the struct, see if it has the f_bavail member.  Some OSes
+dnl don't, including IRIX 6.5+
+dnl
+if test X$found_struct_statfs = Xyes ; then
+AC_MSG_CHECKING(for f_bavail member in struct statfs)
+AC_TRY_COMPILE([
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef STATFS_IN_SYS_VFS
+#include <sys/vfs.h>
+#elif STATFS_IN_SYS_MOUNT
+#include <sys/mouht.h>
+#elif STATFS_IN_SYS_STATFS
+#include <sys/statfs.h>
+#endif ],
+	[struct statfs sfs;
+	sfs.f_bavail = 0;],
+	[AC_MSG_RESULT(yes)
+	AC_DEFINE(STATFS_HAS_F_BAVAIL)],
+	[AC_MSG_RESULT(no)]
+)
+fi
+
+if test X$found_struct_statfs = Xyes ; then
+dnl
+dnl now check to see if we have the 4-argument variant of statfs()
+dnl this pretty much requires AC_TRY_RUN
+dnl
+AC_MSG_CHECKING([if statfs() requires 4 arguments])
+AC_TRY_RUN([
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef STATFS_IN_SYS_VFS
+#include <sys/vfs.h>
+#elif STATFS_IN_SYS_MOUNT
+#include <sys/mouht.h>
+#elif STATFS_IN_SYS_STATFS
+#include <sys/statfs.h>
+#endif
+main() {
+	struct statfs sfs;
+	exit (statfs(".", &sfs, sizeof(sfs), 0));
+}
+],
+	[AC_MSG_RESULT(yes)
+	AC_DEFINE(STAT_STATFS4)],
+	[AC_MSG_RESULT(no)],
+	[AC_MSG_RESULT(no)]
+)
+fi
 
 
 AC_C_INLINE

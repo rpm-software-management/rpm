@@ -34,11 +34,11 @@ struct faFooter {
     unsigned int isFree; 
 } ;
 
-inline FD_t faFileno(faFile fa) {
+FD_t faFileno(faFile fa) {
     return fa->fd;
 }
 
-inline off_t faLseek(faFile fa, off_t off, int op) {
+off_t faLseek(faFile fa, off_t off, int op) {
     return fdLseek(faFileno(fa), off, op);
 }
 

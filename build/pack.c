@@ -415,7 +415,7 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa) {
 
 static int cpio_copy(FD_t fdo, CSA_t *csa) {
     char buf[BUFSIZ];
-    size_t nb;
+    ssize_t nb;
 
     while((nb = fdRead(csa->cpioFdIn, buf, sizeof(buf))) > 0) {
 	if (fdWrite(fdo, buf, nb) != nb) {

@@ -123,6 +123,12 @@
 /* statfs in <sys/statfs.h> (for Irix 6.4 systems) */
 #undef STATFS_IN_SYS_STATFS
 
+/* define if struct statfs has the f_bavail member */
+#undef STATFS_HAS_F_BAVAIL
+
+/* define if the statfs() call takes 4 arguments */
+#undef STAT_STATFS4
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:

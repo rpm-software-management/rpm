@@ -43,6 +43,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "error.h"
 #include "libgettext.h"
 
+#ifndef HAVE_STPCPY
+/* we're using our version, so provide a prototype for stpcpy and stpncpy */
+extern char * stpcpy( char *dest, const char * src);
+extern char * stpncpy( char *dest, const char * src, size_t n);
+#endif
 
 /* Our regular abbreviation.  */
 #define _(str) gettext (str)

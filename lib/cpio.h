@@ -8,7 +8,7 @@
 
 /* Note the CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
    be positive numbers or this setting the high bit stuff is a bad idea. */
-#define CPIOERR_CHECK_ERRNO	0x80000000
+#define CPIOERR_CHECK_ERRNO	0x00008000
 
 #define CPIOERR_BAD_MAGIC	(2			)
 #define CPIOERR_BAD_HEADER	(3			)

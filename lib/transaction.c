@@ -182,12 +182,30 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	di = alloca(sizeof(*di) * (filesystemCount + 1));
 
 	for (i = 0; (i < filesystemCount) && di; i++) {
+#ifdef STAT_STATFS4
+/* this platform has the 4-argument version of the statfs call.  The last two
+ * should be the size of struct statfs and 0, respectively.  The 0 is the
+ * filesystem type, and is always 0 when statfs is called on a mounted
+ * filesystem, as we're doing.
+ */
+	    if (statfs(filesystems[i], &sfb, sizeof(sfb), 0)) {
+#else
 	    if (statfs(filesystems[i], &sfb)) {
+#endif
 		di = NULL;
 	    } else {
 		di[i].block = sfb.f_bsize;
 		di[i].needed = 0;
+#ifdef STATFS_HAS_F_BAVAIL
 		di[i].avail = sfb.f_bavail;
+#else
+/* FIXME: the statfs struct doesn't have a member to tell how many blocks are
+ * available for non-superusers.  f_blocks - f_bfree is probably too big, but
+ * it's about all we can do.
+ */
+		di[i].avail = sfb.f_blocks - sfb.f_bfree;
+#endif
+
 
 		stat(filesystems[i], &sb);
 		di[i].dev = sb.st_dev;
