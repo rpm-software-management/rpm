@@ -30,6 +30,7 @@
 #define GETOPT_QUERYBYNUMBER	1009
 #define GETOPT_DBPATH		1010
 #define GETOPT_PREFIX		1011
+#define GETOPT_TIMECHECK        1012
 
 char * version = VERSION;
 
@@ -89,7 +90,7 @@ void printUsage(void) {
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] package1 ... packageN"));
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
-    puts(_("                        [--sign] [--test] [--time-check <s>] specfile"));
+    puts(_("                        [--sign] [--test] [--timecheck <s>] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
@@ -187,7 +188,7 @@ void printHelp(void) {
     puts(_("      --sign            - generate PGP signature"));
     puts(_("      --buildroot <s>   - use s as the build root"));
     puts(_("      --test            - do not execute any stages"));
-    puts(_("      --time-check <s>  - set the time check to S seconds (0 disables it)"));
+    puts(_("      --timecheck <s>   - set the time check to S seconds (0 disables it)"));
     puts(_(""));
     puts(_("    --rebuild <source_package>"));
     puts(_("                        - install source package, build binary package,"));
@@ -267,6 +268,8 @@ int main(int argc, char ** argv) {
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
+    char *tce;
+    int timeCheck;
     int addSign = NEW_SIGNATURE;
     char * rcfile = NULL, * queryFormat = NULL, * prefix = NULL;
     char buildChar = ' ';
@@ -338,6 +341,7 @@ int main(int argc, char ** argv) {
 	    { "stdin-packages", 0, 0, 'P' },
 	    { "stdin-query", 0, 0, 'Q' },
 	    { "test", 0, &test, 0 },
+	    { "timecheck", 1, 0, GETOPT_TIMECHECK },
 	    { "upgrade", 0, 0, 'U' },
 	    { "uninstall", 0, 0, 'u' },
 	    { "verbose", 0, 0, 'v' },
@@ -667,6 +671,15 @@ int main(int argc, char ** argv) {
 	    verifySource = VERIFY_RPM;
 	    break;
 
+	  case GETOPT_TIMECHECK:
+	    tce = NULL;
+	    timeCheck = strtoul(optarg, &tce, 10);
+	    if ((*tce) || (tce == optarg) || (timeCheck == ULONG_MAX)) {
+		argerror("Argument to --timecheck must be integer");
+	    }
+	    setVar(RPMVAR_TIMECHECK, optarg);
+	    break;
+	    
 	  default:
 	    if (options[long_index].flag) {
 		*options[long_index].flag = 1;
