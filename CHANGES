@@ -120,6 +120,7 @@
 	- check for API/ABI creep, diddle up some compatibility.
 	- preliminary abstraction to support per-header methods.
 	- finalize per-header methods, accessing headerFoo through vector.
+	- make package ordering loop messages debug, not warning.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

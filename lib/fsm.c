@@ -551,10 +551,8 @@ int fsmMapPath(FSM_t fsm)
 	case FA_SKIP:
 	    break;
 	case FA_SKIPMULTILIB:	/* XXX RPMFILE_STATE_MULTILIB? */
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 	case FA_UNKNOWN:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 
 	case FA_COPYOUT:
@@ -598,7 +596,6 @@ assert(fi->type == TR_ADDED);
 	    assert(fi->type == TR_REMOVED);
 	    break;
 	default:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 	}
 
@@ -1912,7 +1909,6 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\trdnb %d\n",
 		cur, (fsm->wrbuf == fsm->wrb ? "wrbuf" : "mmap"),
 		(int)fsm->wrlen, (int)fsm->rdnb);
-if (fsm->rdnb != fsm->wrlen) fprintf(stderr, "*** short read, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrlen);
 	if (fsm->rdnb != fsm->wrlen || Ferror(fsm->cfd))
 	    rc = CPIOERR_READ_FAILED;
 	if (fsm->rdnb > 0)
@@ -1924,7 +1920,6 @@ if (fsm->rdnb != fsm->wrlen) fprintf(stderr, "*** short read, had %d, got %d\n",
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\twrnb %d\n",
 		cur, (fsm->rdbuf == fsm->rdb ? "rdbuf" : "mmap"),
 		(int)fsm->rdnb, (int)fsm->wrnb);
-if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrnb);
 	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->cfd))
 	    rc = CPIOERR_WRITE_FAILED;
 	if (fsm->wrnb > 0)
@@ -1948,7 +1943,6 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write, had %d, got %d\n",
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
 		cur, (int)fsm->rdlen, (int)fsm->rdnb);
-if (fsm->rdnb != fsm->rdlen) fprintf(stderr, "*** short read, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->rdlen);
 	if (fsm->rdnb != fsm->rdlen || Ferror(fsm->rfd))
 	    rc = CPIOERR_READ_FAILED;
 	break;
@@ -1977,7 +1971,6 @@ if (fsm->rdnb != fsm->rdlen) fprintf(stderr, "*** short read, had %d, got %d\n",
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
 		cur, (int)fsm->rdnb, (int)fsm->wrnb);
-if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrnb);
 	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->wfd))
 	    rc = CPIOERR_WRITE_FAILED;
 	break;

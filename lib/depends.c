@@ -1733,7 +1733,7 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	if (zap && !(p->requireFlags[j] & RPMSENSE_PREREQ)) {
-	    rpmMessage(RPMMESS_WARNING,
+	    rpmMessage(RPMMESS_DEBUG,
 			_("removing %s-%s-%s \"%s\" from tsort relations.\n"),
 			p->name, p->version, p->release, dp);
 	    p->tsi.tsi_count--;
@@ -1789,7 +1789,7 @@ static inline int addRelation( const rpmTransactionSet ts,
 #endif
 
     /* Avoid redundant relations. */
-    /* XXX FIXME: add control bit. */
+    /* XXX TODO: add control bit. */
     matchNum = q - ts->addedPackages.list;
     if (selected[matchNum] != 0)
 	return 0;
@@ -1979,7 +1979,7 @@ rescan:
 	    tsi->tsi_next = NULL;
 	    p = tsi->tsi_suc;
 	    if (p && (--p->tsi.tsi_count) <= 0) {
-		/* XXX FIXME: add control bit. */
+		/* XXX TODO: add control bit. */
 		p->tsi.tsi_suc = NULL;
 		/*@-nullstate@*/	/* FIX: q->tsi.tsi_u.suc may be NULL */
 		addQ(p, &q->tsi.tsi_suc, &r);
@@ -2043,7 +2043,7 @@ rescan:
 		p->tsi.tsi_pkg = NULL;
 
 		if (!printed) {
-		    rpmMessage(RPMMESS_WARNING, _("LOOP:\n"));
+		    rpmMessage(RPMMESS_DEBUG, _("LOOP:\n"));
 		    printed = 1;
 		}
 
@@ -2052,7 +2052,7 @@ rescan:
 
 		/* Print next member of loop. */
 		sprintf(buf, "%s-%s-%s", p->name, p->version, p->release);
-		rpmMessage(RPMMESS_WARNING, "    %-40s %s\n", buf,
+		rpmMessage(RPMMESS_DEBUG, "    %-40s %s\n", buf,
 			(dp ? dp : "not found!?!"));
 
 		dp = _free(dp);
@@ -2070,7 +2070,7 @@ rescan:
 	}
 
 	/* If a relation was eliminated, then continue sorting. */
-	/* XXX FIXME: add control bit. */
+	/* XXX TODO: add control bit. */
 	if (nzaps && nrescans-- > 0) {
 	    rpmMessage(RPMMESS_DEBUG, _("========== continuing tsort ...\n"));
 	    goto rescan;
