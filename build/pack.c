@@ -4,6 +4,7 @@
  */
 
 #include <stdlib.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/utsname.h>
@@ -53,7 +54,8 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize);
 static int writeMagic(int fd, char *name, unsigned short type,
 		      unsigned short sigtype);
 static int add_file(struct file_entry **festack, const char *name,
-		    int isdoc, int isconf, int isdir, int verify_flags);
+		    int isdoc, int isconf, int isdir, int verify_flags,
+		    char *Pmode, char *Uname, char *Gname);
 static int compare_fe(const void *ap, const void *bp);
 static int process_filelist(Header header, struct PackageRec *pr, StringBuf sb,
 			    int *size, char *name, char *version,
@@ -61,10 +63,14 @@ static int process_filelist(Header header, struct PackageRec *pr, StringBuf sb,
 static char *buildHost(void);
 static int add_file_aux(const char *file, struct stat *sb, int flag);
 static char *getUname(uid_t uid);
+static char *getUnameS(char *uname);
 static char *getGname(gid_t gid);
+static char *getGnameS(char *gname);
 static int glob_error(const char *foo, int bar);
 static int glob_pattern_p (char *pattern);
 static int parseForVerify(char *buf, int *verify_flags);
+static int parseForAttr(char *origbuf, char **currPmode,
+			char **currUname, char **currGname);
 
 static
 int generateRPM(char *name,       /* name-version-release         */
@@ -321,7 +327,7 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 	/* count may already be 0, but this is safer */
 	count = 0;
     }
-    
+
     writeBuff = newStringBuf();
     writeBytesLeft = 0;
     while (count--) {
@@ -440,17 +446,22 @@ static int isDoc(char *filename)
     return 0;
 }
 
+/* These should only be accessed by getUname() and getUnameS() */
+static uid_t uids[1024];
+static char *unames[1024];
+static int uid_used = 0;
+
+/*
+ * getUname() takes a uid, gets the username, and creates an entry in the
+ * table to hold a string containing the user name.
+ */
 static char *getUname(uid_t uid)
 {
-    static uid_t uids[1024];
-    static char *unames[1024];
-    static int used = 0;
-    
     struct passwd *pw;
     int x;
 
     x = 0;
-    while (x < used) {
+    while (x < uid_used) {
 	if (uids[x] == uid) {
 	    return unames[x];
 	}
@@ -465,7 +476,7 @@ static char *getUname(uid_t uid)
     
     pw = getpwuid(uid);
     uids[x] = uid;
-    used++;
+    uid_used++;
     if (pw) {
 	unames[x] = strdup(pw->pw_name);
     } else {
@@ -474,17 +485,57 @@ static char *getUname(uid_t uid)
     return unames[x];
 }
 
+/*
+ * getUnameS() takes a username, gets the uid, and creates an entry in the
+ * table to hold a string containing the user name.
+ */
+static char *getUnameS(char *uname)
+{
+    struct passwd *pw;
+    int x;
+
+    x = 0;
+    while (x < uid_used) {
+	if (!strcmp(unames[x],uname)) {
+	    return unames[x];
+	}
+	x++;
+    }
+
+    /* XXX - This is the other hard coded limit */
+    if (x == 1024) {
+	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in getUname()\n");
+	exit(RPMERR_INTERNAL);
+    }
+    
+    pw = getpwnam(uname);
+    uid_used++;
+    if (pw) {
+        uids[x] = pw->pw_uid;
+	unames[x] = strdup(pw->pw_name);
+    } else {
+        uids[x] = -1;
+	unames[x] = strdup(uname);
+    }
+    return unames[x];
+}
+
+/* These should only be accessed by getGname() and getGnameS() */
+static gid_t gids[1024];
+static char *gnames[1024];
+static int gid_used = 0;
+    
+/*
+ * getGname() takes a gid, gets the group name, and creates an entry in the
+ * table to hold a string containing the group name.
+ */
 static char *getGname(gid_t gid)
 {
-    static gid_t gids[1024];
-    static char *gnames[1024];
-    static int used = 0;
-    
     struct group *gr;
     int x;
 
     x = 0;
-    while (x < used) {
+    while (x < gid_used) {
 	if (gids[x] == gid) {
 	    return gnames[x];
 	}
@@ -499,11 +550,46 @@ static char *getGname(gid_t gid)
     
     gr = getgrgid(gid);
     gids[x] = gid;
-    used++;
+    gid_used++;
     if (gr) {
 	gnames[x] = strdup(gr->gr_name);
     } else {
 	gnames[x] = "";
+    }
+    return gnames[x];
+}
+
+/*
+ * getGnameS() takes a group name, gets the gid, and creates an entry in the
+ * table to hold a string containing the group name.
+ */
+static char *getGnameS(char *gname)
+{
+    struct group *gr;
+    int x;
+
+    x = 0;
+    while (x < gid_used) {
+	if (!strcmp(gnames[x], gname)) {
+	    return gnames[x];
+	}
+	x++;
+    }
+
+    /* XXX - This is the other hard coded limit */
+    if (x == 1024) {
+	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in getGname()\n");
+	exit(RPMERR_INTERNAL);
+    }
+    
+    gr = getgrnam(gname);
+    gid_used++;
+    if (gr) {
+    	gids[x] = gr->gr_gid;
+	gnames[x] = strdup(gr->gr_name);
+    } else {
+    	gids[x] = -1;
+	gnames[x] = strdup(gname);
     }
     return gnames[x];
 }
@@ -513,19 +599,27 @@ static int Gisdoc;
 static int Gisconf;
 static int Gverify_flags;
 static int Gcount;
+static char *GPmode;
+static char *GUname;
+static char *GGname;
 static struct file_entry **Gfestack;
 
 static int add_file(struct file_entry **festack, const char *name,
-		    int isdoc, int isconf, int isdir, int verify_flags)
+		    int isdoc, int isconf, int isdir, int verify_flags,
+		    char *Pmode, char *Uname, char *Gname)
 {
     struct file_entry *p;
     char fullname[1024];
+    int mode;
 
     /* Set these up for ftw() */
     Gfestack = festack;
     Gisdoc = isdoc;
     Gisconf = isconf;
     Gverify_flags = verify_flags;
+    GPmode = Pmode;
+    GUname = Uname;
+    GGname = Gname;
 
     p = malloc(sizeof(struct file_entry));
     strcpy(p->file, name);
@@ -540,13 +634,33 @@ static int add_file(struct file_entry **festack, const char *name,
     if (lstat(fullname, &p->statbuf)) {
 	return 0;
     }
-    p->uname = getUname(p->statbuf.st_uid);
-    p->gname = getGname(p->statbuf.st_gid);
 
+    /*
+     * If %attr() was specified, then use those values instead of
+     * what lstat() returned.
+     */
+    if (Pmode && strcmp(Pmode, "-")) {
+ 	sscanf(Pmode, "%o", &mode);
+ 	mode |= p->statbuf.st_mode & S_IFMT;
+ 	p->statbuf.st_mode = (unsigned short)mode;
+    }
+    
+    if (Uname && strcmp(Uname, "-")) {
+ 	p->uname = getUnameS(Uname);
+    } else {
+ 	p->uname = getUname(p->statbuf.st_uid);
+    }
+    
+    if (Gname && strcmp(Gname, "-")) {
+ 	p->gname = getGnameS(Gname);
+    } else {
+ 	p->gname = getGname(p->statbuf.st_gid);
+    }
+    
     if ((! isdir) && S_ISDIR(p->statbuf.st_mode)) {
-	/* This means we need to decend with ftw() */
+	/* This means we need to descend with ftw() */
 	Gcount = 0;
-
+	
 	/* We use our own ftw() call, because ftw() uses stat()    */
 	/* instead of lstat(), which causes it to follow symlinks! */
 	myftw(fullname, add_file_aux, 16);
@@ -576,7 +690,8 @@ static int add_file_aux(const char *file, struct stat *sb, int flag)
 
     /* The 1 will cause add_file() to *not* descend */
     /* directories -- ftw() is already doing it!    */
-    Gcount += add_file(Gfestack, name, Gisdoc, Gisconf, 1, Gverify_flags);
+    Gcount += add_file(Gfestack, name, Gisdoc, Gisconf, 1, Gverify_flags,
+			GPmode, GUname, GGname);
 
     return 0; /* for ftw() */
 }
@@ -627,6 +742,75 @@ static int glob_error(const char *foo, int bar)
     return 1;
 }
 
+static int parseForAttr(char *buf, char **currPmode,
+			char **currUname, char **currGname)
+{
+    char *p, *start, *end;
+    char ourbuf[1024];
+    int mode, x;
+
+    if (!(p = start = strstr(buf, "%attr"))) {
+	return 1;
+    }
+
+    *currPmode = *currUname = *currGname = NULL;
+
+    p += 5;
+    while (*p && (*p == ' ' || *p == '\t')) {
+	p++;
+    }
+
+    if (*p != '(') {
+	error(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
+	return 0;
+    }
+    p++;
+
+    end = p;
+    while (*end && *end != ')') {
+	end++;
+    }
+
+    if (! *end) {
+	error(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
+	return 0;
+    }
+
+    strncpy(ourbuf, p, end-p);
+    ourbuf[end-p] = '\0';
+
+    *currPmode = strtok(ourbuf, ", \n\t");
+    *currUname = strtok(NULL, ", \n\t");
+    *currGname = strtok(NULL, ", \n\t");
+
+    if (! (*currPmode && *currUname && *currGname)) {
+	error(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
+	*currPmode = *currUname = *currGname = NULL;
+	return 0;
+    }
+
+    /* Do a quick test on the mode argument */
+    if (strcmp(*currPmode, "-")) {
+	x = sscanf(*currPmode, "%o", &mode);
+	if ((x == 0) || (mode >> 12)) {
+	    error(RPMERR_BADSPEC, "Bad %%attr() mode spec: %s", buf);
+	    *currPmode = *currUname = *currGname = NULL;
+	    return 0;
+	}
+    }
+    
+    *currPmode = strdup(*currPmode);
+    *currUname = strdup(*currUname);
+    *currGname = strdup(*currGname);
+    
+    /* Set everything we just parsed to blank spaces */
+    while (start <= end) {
+	*start++ = ' ';
+    }
+
+    return 1;
+}
+
 static int parseForVerify(char *buf, int *verify_flags)
 {
     char *p, *start, *end;
@@ -638,7 +822,7 @@ static int parseForVerify(char *buf, int *verify_flags)
     }
 
     p += 7;
-    while (*p && *p == ' ' && *p == '\t') {
+    while (*p && (*p == ' ' || *p == '\t')) {
 	p++;
     }
 
@@ -709,6 +893,9 @@ static int process_filelist(Header header, struct PackageRec *pr,
     struct file_entry *fes, *fest;
     struct file_entry **file_entry_array;
     int isdoc, isconf, isdir, verify_flags;
+    char *currPmode=NULL;	/* hold info from %attr() */
+    char *currUname=NULL;	/* hold info from %attr() */
+    char *currGname=NULL;	/* hold info from %attr() */
     char *filename, *s;
     char *str;
     int count = 0;
@@ -747,6 +934,18 @@ static int process_filelist(Header header, struct PackageRec *pr,
 	special_doc = 0;
 	isconf = 0;
 	isdir = 0;
+	if (currPmode) {
+	    free (currPmode);
+	    currPmode = NULL;
+	}
+	if (currUname) {
+	    free (currUname);
+	    currUname = NULL;
+	}
+	if (currGname) {
+	    free (currGname);
+	    currGname = NULL;
+	}
 	verify_flags = VERIFY_ALL;
 	filename = NULL;
 
@@ -755,6 +954,11 @@ static int process_filelist(Header header, struct PackageRec *pr,
 	    return(RPMERR_BADSPEC);
 	}
 	
+	/* Next parse for for %attr() */
+	if (!parseForAttr(buf, &currPmode, &currUname, &currGname)) {
+	    return(RPMERR_BADSPEC);
+	}
+
 	s = strtok(buf, " \t\n");
 	while (s) {
 	    if (!strcmp(s, "%docdir")) {
@@ -828,13 +1032,14 @@ static int process_filelist(Header header, struct PackageRec *pr,
 		while (x < glob_result.gl_pathc) {
 		    int offset = strlen(getVar(RPMVAR_ROOT) ? : "");
 		    c += add_file(&fes, &(glob_result.gl_pathv[x][offset]),
-				  isdoc, isconf, isdir, verify_flags);
+				  isdoc, isconf, isdir, verify_flags,
+				  currPmode, currUname, currGname);
 		    x++;
 		}
 		globfree(&glob_result);
 	    } else {
-	        c = add_file(&fes, filename, isdoc, isconf,
-			     isdir, verify_flags);
+	        c = add_file(&fes, filename, isdoc, isconf, isdir,
+			     verify_flags, currPmode, currUname, currGname);
 	    }
 	} else {
 	    /* Source package are the simple case */
