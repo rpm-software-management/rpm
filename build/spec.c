@@ -584,8 +584,8 @@ static int read_line(FILE *f, char *line)
     } while (! (gotline && read_level->reading));
     
     r = line + (strlen(line)) - 1;
-    if (*r == '\n') {
-        *r = '\0';
+    while (isspace(*r)) {
+        *(r--) = '\0';
     }
     return 1;
 }
