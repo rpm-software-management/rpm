@@ -54,7 +54,4 @@ struct PackageRec {
     struct PackageRec *next;
 };
 
-int addReqProv(struct PackageRec *p, int flags, char *name, char *version);
-int addReqProvHeaderEntry(Header h, struct PackageRec *p);
-
 #endif _SPECP_H_
