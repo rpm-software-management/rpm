@@ -259,7 +259,7 @@ static void printHelpLine(char * prefix, char * help) {
     int lineLength = 79 - indentLength;
     int helpLength = strlen(help);
     char * ch;
-    char format[10];
+    char format[64];
 
     fprintf(stdout, "%s - ", prefix);
 
