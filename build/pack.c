@@ -490,7 +490,9 @@ int packageBinaries(Spec s, char *passPhrase)
 	cpioFileList = newStringBuf();
 	while (count--) {
 	    file = *farray++;
-	    file++;  /* Skip leading "/" */
+	    while (*file == '/') {
+		file++;  /* Skip leading "/" */
+	    }
 	    appendLineStringBuf(cpioFileList, file);
 	}
 	
