@@ -137,3 +137,4 @@ buildarch_compat: sparc: noarch
 buildarch_compat: alpha: noarch
 buildarch_compat: m68k: noarch
 buildarch_compat: ppc: noarch
+buildarch_compat: mips: noarch
