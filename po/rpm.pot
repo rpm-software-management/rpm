@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-22 07:13-0500\n"
+"POT-Creation-Date: 2000-02-22 15:34-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2101,7 +2101,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
-#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
+#: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
 msgid "(not a number)"
 msgstr ""
 

@@ -138,9 +138,7 @@ fi
 /usr/lib/librpm.so.*
 /usr/lib/librpmbuild.so.*
 
-/usr/lib/rpm/brp-compress
-/usr/lib/rpm/brp-strip
-/usr/lib/rpm/brp-strip-comment-note
+/usr/lib/rpm/brp-*
 /usr/lib/rpm/config.guess
 /usr/lib/rpm/config.sub
 /usr/lib/rpm/convertrpmrc.sh

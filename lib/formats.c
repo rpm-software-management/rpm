@@ -58,8 +58,8 @@ static char * permsString(int mode)
 }
 
 static char * triggertypeFormat(int_32 type, const void * data, 
-	/*@unused@*/char * formatPrefix, /*@unused@*/int padding,
-	/*@unused@*/int element)
+	/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
+	/*@unused@*/ int element)
 {
     const int_32 * item = data;
     char * val;
@@ -76,7 +76,7 @@ static char * triggertypeFormat(int_32 type, const void * data,
 }
 
 static char * permsFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
+		char * formatPrefix, int padding, /*@unused@*/ int element)
 {
     char * val;
     char * buf;
@@ -95,7 +95,7 @@ static char * permsFormat(int_32 type, const void * data,
 }
 
 static char * fflagsFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
+		char * formatPrefix, int padding, /*@unused@*/ int element)
 {
     char * val;
     char buf[15];
@@ -127,7 +127,7 @@ static char * fflagsFormat(int_32 type, const void * data,
 }
 
 static char * depflagsFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
+		char * formatPrefix, int padding, /*@unused@*/ int element)
 {
     char * val;
     char buf[10];
@@ -153,8 +153,9 @@ static char * depflagsFormat(int_32 type, const void * data,
     return val;
 }
 
-static int fsnamesTag( /*@unused@*/ Header h, int_32 * type, void ** data,
-	int_32 * count, int * freeData)
+static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
 {
     const char ** list;
 
@@ -170,8 +171,9 @@ static int fsnamesTag( /*@unused@*/ Header h, int_32 * type, void ** data,
     return 0; 
 }
 
-static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData)
+static int instprefixTag(Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
 {
     char ** array;
 
@@ -180,7 +182,7 @@ static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
 	return 0;
     } else if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) &array, 
 			      count)) {
-	*((char **) data) = xstrdup(array[0]);
+	*data = xstrdup(array[0]);
 	*freeData = 1;
 	*type = RPM_STRING_TYPE;
 	free(array);
@@ -190,8 +192,9 @@ static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
     return 1;
 }
 
-static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData)
+static int fssizesTag(Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
 {
     const char ** filenames;
     int_32 * filesizes;
@@ -231,8 +234,9 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     return 0;
 }
 
-static int triggercondsTag(Header h, /*@out@*/int_32 * type, /*@out@*/void ** data, 
-			   /*@out@*/int_32 * count, /*@out@*/int * freeData)
+static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
 {
     int_32 * indices, * flags;
     char ** names, ** versions;
@@ -291,8 +295,9 @@ static int triggercondsTag(Header h, /*@out@*/int_32 * type, /*@out@*/void ** da
     return 0;
 }
 
-static int triggertypeTag(Header h, int_32 * type, /*@out@*/void ** data, 
-			   int_32 * count, int * freeData)
+static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
 {
     int_32 * indices, * flags;
     char ** conds, ** s;
@@ -331,8 +336,9 @@ static int triggertypeTag(Header h, int_32 * type, /*@out@*/void ** data,
     return 0;
 }
 
-static int filenamesTag(Header h, int_32 * type, /*@out@*/void ** data, 
-			   int_32 * count, int * freeData)
+static int filenamesTag(Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
 
@@ -346,9 +352,10 @@ static int filenamesTag(Header h, int_32 * type, /*@out@*/void ** data,
 
 /* I18N look aside diversions */
 
+#define	ENABLE_I18N_LOOKASIDE
 #ifdef	ENABLE_I18N_LOOKASIDE
 static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
-	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 {
 #ifdef	NOTYET
@@ -397,25 +404,34 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 
     rc = headerGetEntry(h, tag, type, data, count);
 
-    return (rc ? 0 : 1);
+    if (rc) {
+	data = xstrdup(*data);
+	*freeData = 1;
+	return 0;
+    }
+
+    *freeData = 0;
+    *data = NULL;
+    *count = 0;
+    return 1;
 }
 
 static int summaryTag(Header h, /*@out@*/ int_32 * type,
-	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
 
 static int descriptionTag(Header h, /*@out@*/ int_32 * type,
-	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
 
 static int groupTag(Header h, /*@out@*/ int_32 * type,
-	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);

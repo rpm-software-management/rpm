@@ -53,7 +53,7 @@ typedef char * (*headerTagFormatFunction)(int_32 type, const void * data,
 					  char * formatPrefix,
 					  int padding, int element);
 /* This is allowed to fail, which indicates the tag doesn't exist */
-typedef int (*headerTagTagFunction)(Header h, int_32 * type, void ** data,
+typedef int (*headerTagTagFunction)(Header h, int_32 * type, const void ** data,
 				       int_32 * count, int * freeData);
 
 struct headerSprintfExtension {

@@ -2133,7 +2133,8 @@ char * headerSprintf(Header h, const char * origFmt,
     char * fmtString;
     struct sprintfToken * format;
     int numTokens;
-    char * answer, * piece;
+    char * answer;
+    const char * piece;
     int answerLength;
     int answerAlloced;
     int pieceLength;
@@ -2168,7 +2169,7 @@ char * headerSprintf(Header h, const char * origFmt,
 
 	    strcat(answer, piece);
 	    answerLength += pieceLength;
-	    free(piece);
+	    free((void *)piece);
 	}
     }
 
