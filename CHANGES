@@ -178,6 +178,7 @@
 	- add methods to make signature handling opaque wrto rpmts.
 	- verify signatures/digests retrieved through rpmdbNextIterator().
 	- imbue %ghost with missingok attribute with --verify (#68933).
+	- fix: segfault if given a text file as 2nd arg to -Uvh (#69508).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

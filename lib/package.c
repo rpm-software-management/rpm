@@ -551,7 +551,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     byte buf[8*BUFSIZ];
     ssize_t count;
     struct rpmlead * l = alloca(sizeof(*l));
-    Header sigh;
+    Header sigh = NULL;
     int_32 sigtag;
     int_32 sigtype;
     const void * sig;
