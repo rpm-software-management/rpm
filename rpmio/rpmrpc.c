@@ -20,6 +20,9 @@
 /*@access FD_t @*/
 /*@access urlinfo @*/
 
+/*@unchecked@*/
+extern int noNeon;
+
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
@@ -1260,9 +1263,10 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
 	return ftpStat(path, st);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
-	return davStat(path, st);
-	/*@notreached@*/ break;
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTP:
+	if (!noNeon)
+	    return davStat(path, st);
+	/*@fallthrough@*/	/* WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1288,9 +1292,10 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
 	return ftpLstat(path, st);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
-	return davLstat(path, st);
-	/*@notreached@*/ break;
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTP:
+	if (!noNeon)
+	    return davLstat(path, st);
+	/*@fallthrough@*/	/* WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1412,6 +1417,13 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
 /*@=castfcnptr@*/
     switch (ut) {
     case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+	if (noNeon) {		/* XXX WRONG WRONG WRONG */
+	    flags &= ~GLOB_TILDE;
+	    pattern = lpath;
+	    break;
+	}
+	/*@fallthrough@*/
     case URL_IS_FTP:
 /*@-type@*/
 	pglob->gl_closedir = Closedir;
@@ -1423,9 +1435,6 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
 	flags |= GLOB_ALTDIRFUNC;
 	flags &= ~GLOB_TILDE;
 	break;
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
-	flags &= ~GLOB_TILDE;
-	/*@fallthrough@*/
     case URL_IS_PATH:
 	pattern = lpath;
 	/*@fallthrough@*/
@@ -1457,10 +1466,11 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
     case URL_IS_FTP:
 	return ftpOpendir(path);
 	/*@notreached@*/ break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-	return davOpendir(path);
-	/*@notreached@*/ break;
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:	
+    case URL_IS_HTTP:
+	if (!noNeon)
+	    return davOpendir(path);
+	/*@fallthrough@*/	/* WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/

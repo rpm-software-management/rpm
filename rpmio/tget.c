@@ -9,6 +9,8 @@
 
 static int _debug = 0;
 
+extern int noNeon;
+
 #define	HTTPSPATH	"https://wellfleet.jbj.org/test.txt"
 #define	HTTPPATH	"http://wellfleet.jbj.org/test.txt"
 #define	FTPPATH		"ftp://wellfleet.jbj.org/test.txt"
@@ -38,6 +40,8 @@ static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
+ { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
+	N_("disable use of libneon for HTTP"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
@@ -70,7 +74,7 @@ main(int argc, const char *argv[])
 
 _av_debug = -1;
 _ftp_debug = -1;
-_dav_debug = -1;
+_dav_debug = 1;
 #if 0
     readFile(dirpath);
 #endif
@@ -79,12 +83,12 @@ _dav_debug = -1;
     readFile(ftppath);
     readFile(ftppath);
 #endif
-#if 0
+#if 1
     readFile(httppath);
     readFile(httppath);
     readFile(httppath);
 #endif
-#if 1
+#if 0
     readFile(httpspath);
     readFile(httpspath);
     readFile(httpspath);

@@ -83,7 +83,7 @@ assert(u == ne_get_session_private(sess, "urlinfo"));
     u->current = current;
     u->total = total;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davProgress(%p,0x%x:0x%x) sess %p u %p\n", userdata, (unsigned int)current, (unsigned int)total, sess, u);
 }
 
@@ -116,7 +116,7 @@ typedef enum {
 
     u->connstatus = connstatus;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davNotify(%p,%d,%p) sess %p u %p %s\n", userdata, connstatus, info, sess, u, connstates[ (connstatus < 4 ? connstatus : 4)]);
 
 }
@@ -140,7 +140,7 @@ assert(sess != NULL);
     private = ne_get_session_private(sess, id);
 assert(u == private);
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davCreateRequest(%p,%p,%s,%s) %s:%p\n", req, userdata, method, uri, id, private);
 }
 
@@ -160,10 +160,10 @@ assert(u == ne_get_session_private(sess, "urlinfo"));
 
     fd = ne_get_request_private(req, id);
 
-if (_dav_debug) {
+if (_dav_debug < 0)
 fprintf(stderr, "*** davPreSend(%p,%p,%p) sess %p %s %p\n", req, userdata, buf, sess, id, fd);
+if (_dav_debug)
 fprintf(stderr, "-> %s\n", buf->data);
-}
 
 }
 
@@ -183,7 +183,7 @@ assert(u == ne_get_session_private(sess, "urlinfo"));
 
     fd = ne_get_request_private(req, id);
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davPostSend(%p,%p,%p) sess %p %s %p %s\n", req, userdata, status, sess, id, fd, ne_get_error(sess));
     return NE_OK;
 }
@@ -204,7 +204,7 @@ assert(u == ne_get_session_private(sess, "urlinfo"));
 
     fd = ne_get_request_private(req, id);
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davDestroyRequest(%p,%p) sess %p %s %p\n", req, userdata, sess, id, fd);
 }
 
@@ -224,7 +224,7 @@ assert(sess != NULL);
     private = ne_get_session_private(sess, id);
 assert(u == private);
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davDestroySession(%p) sess %p %s %p\n", userdata, sess, id, private);
 }
 
@@ -234,7 +234,7 @@ davVerifyCert(void *userdata, int failures, const ne_ssl_certificate *cert)
 {
     const char *hostname = userdata;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davVerifyCert(%p,%d,%p) %s\n", userdata, failures, cert, hostname);
 
     return 0;	/* HACK: trust all server certificates. */
@@ -252,13 +252,14 @@ static int davInit(const char * url, urlinfo * uret)
 	return -1;	/* XXX error returns needed. */
 /*@=globs@*/
 
-   if (u->urltype == URL_IS_HTTPS && u->url != NULL && u->sess == NULL) {
+    if ((u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS)
+     && u->url != NULL && u->sess == NULL)
+    {
 	ne_server_capabilities * capabilities;
 
 	/* HACK: oneshots should be done Somewhere Else Instead. */
 /*@-noeffect@*/
-	xx = (_dav_debug ? NE_DBG_HTTP : 0);
-	xx = 0;	/* HACK */
+	xx = ((_dav_debug < 0) ? NE_DBG_HTTP : 0);
 	ne_debug_init(stderr, xx);		/* XXX oneshot? */
 /*@=noeffect@*/
 	xx = ne_sock_init();			/* XXX oneshot? */
@@ -535,12 +536,12 @@ static void fetch_results(void *userdata, const char *uri,
 
     newres = ne_propset_private(set);
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "==> %s in uri %s\n", path, ctx->uri);
     
     if (ne_path_compare(ctx->uri, path) == 0 && !ctx->include_target) {
 	/* This is the target URI */
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "==> %s skipping target resource.\n", path);
 	/* Free the private structure. */
 	free(newres);
@@ -678,7 +679,7 @@ static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
 /*@=nullpass@*/
 
 	xx = argvAdd(&ctx->av, val);
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 	NE_FREE(val);
 
@@ -783,7 +784,7 @@ static int my_result(const char * msg, int ret, FILE * fp)
 	/*@*/
 {
     /* HACK: don't print unless debugging. */
-    if (_dav_debug == 0)
+    if (_dav_debug >= 0)
 	return ret;
     if (fp == NULL)
 	fp = stderr;
@@ -817,7 +818,7 @@ static void davAcceptRanges(void * userdata, const char * value)
 {
     urlinfo u = userdata;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, value);
     if (!strcmp(value, "bytes"))
 	u->httpHasRange = 1;
@@ -837,7 +838,7 @@ static void davContentLength(void * userdata, const char * value)
 {
     FD_t ctrl = userdata;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** fd %p Content-Length: %s\n", ctrl, value);
    ctrl->contentLength = strtoll(value, NULL, 10);
 }
@@ -846,7 +847,7 @@ static void davConnection(void * userdata, const char * value)
 {
     FD_t ctrl = userdata;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, value);
     if (!strcasecmp(value, "close"))
 	ctrl->persist = 0;
@@ -862,13 +863,8 @@ int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
 
     rc = ne_begin_request(ctrl->req);
     rc = my_result("ne_begin_req(ctrl->req)", rc, NULL);
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davResp(%p,%p,%p) sess %p req %p rc %d\n", u, ctrl, str, u->sess, ctrl->req, rc);
-
-#ifdef	NOTYET
-if (_ftp_debug)
-fprintf(stderr, "<- %s", resp);
-#endif
 
     /* HACK: stupid error impedence matching. */
     switch (rc) {
@@ -902,7 +898,7 @@ assert(ctrl != NULL);
     u = ctrl->url;
     URLSANE(u);
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davReq(%p,%s,\"%s\") entry sess %p req %p\n", ctrl, httpCmd, httpArg, u->sess, ctrl->req);
 
     /* HACK: handle proxy host and port here. */
@@ -953,7 +949,7 @@ fprintf(stderr, "-> %s", req);
     if (rc)
 	goto errxit;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davReq(%p,%s,\"%s\") exit sess %p req %p rc %d\n", ctrl, httpCmd, httpArg, u->sess, ctrl->req, rc);
 
     ctrl = fdLink(ctrl, "open data (davReq)");
@@ -978,7 +974,7 @@ FD_t davOpen(const char * url, /*@unused@*/ int flags,
     assert(!(flags & O_RDWR));
 #endif
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
     rc = davInit(url, &u);
     if (rc || u == NULL || u->sess == NULL)
@@ -1003,7 +999,7 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
 	fd->contentLength = fd->bytesRemain = -1;
 	fd->url = urlLink(u, "url (davOpen)");
 	fd = fdLink(fd, "grab data (davOpen)");
-assert(urlType == URL_IS_HTTPS);
+assert(urlType == URL_IS_HTTPS || urlType == URL_IS_HTTP);
 	fd->urlType = urlType;	/* URL_IS_HTTPS */
     }
 
@@ -1024,7 +1020,7 @@ ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
     rc = ne_read_response_block(fd->req, buf, count);
 
-if (_dav_debug) {
+if (_dav_debug < 0) {
 fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, (unsigned)rc);
 #ifdef	DYING
 hexdump(buf, rc);
@@ -1040,7 +1036,7 @@ ssize_t davWrite(void * cookie, const char * buf, size_t count)
     FD_t fd = cookie;
     return ne_read_response_block(fd->req, buf, count);
 #else
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davWrite(%p,%p,0x%x)\n", cookie, buf, count);
     return -1;
 #endif
@@ -1048,7 +1044,7 @@ fprintf(stderr, "*** davWrite(%p,%p,0x%x)\n", cookie, buf, count);
 
 int davSeek(void * cookie, _libio_pos_t pos, int whence)
 {
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davSeek(%p,pos,%d)\n", cookie, whence);
     return -1;
 }
@@ -1065,7 +1061,7 @@ assert(fd->req != NULL);
     ne_request_destroy(fd->req);
     fd->req = NULL;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davClose(%p) rc %d\n", fd, rc);
     return rc;
 }
@@ -1179,7 +1175,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
     if (st->st_ino == 0)
 	st->st_ino = dav_st_ino++;
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 exit:
     ctx = fetch_destroy_context(ctx);
@@ -1224,7 +1220,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
     if (st->st_ino == 0)
 	st->st_ino = dav_st_ino++;
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
 exit:
     ctx = fetch_destroy_context(ctx);
@@ -1239,7 +1235,7 @@ static int davReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 {
     int rc;
     rc = davNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davReadlink(%s) rc %d\n", path, rc);
     return rc;
 }
@@ -1375,7 +1371,7 @@ int davClosedir(/*@only@*/ DIR * dir)
 {
     DAVDIR avdir = (DAVDIR)dir;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davClosedir(%p)\n", avdir);
 
 #if defined(HAVE_PTHREAD_H)
@@ -1429,7 +1425,7 @@ struct dirent * davReaddir(DIR * dir)
 /*@=type@*/
 
     strncpy(dp->d_name, av[i], sizeof(dp->d_name));
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
     
     return dp;
@@ -1448,7 +1444,7 @@ DIR * davOpendir(const char * path)
     int ac, nac;
     int rc;
 
-if (_dav_debug)
+if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     /* Load DAV collection into argv. */

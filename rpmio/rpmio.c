@@ -94,6 +94,9 @@ int noLibio = 0;
 int noLibio = 1;
 #endif
 
+/*@unchecked@*/
+int noNeon = 0;
+
 #define TIMEOUT_SECS 60
 
 /**
@@ -460,10 +463,9 @@ static int fdClose( /*@only@*/ void * cookie)
 
     fdstat_enter(fd, FDSTAT_CLOSE);
     /* HACK: flimsy wiring for davClose */
-    if (fd->req != NULL) {
+    if (fd->req != NULL)
 	rc = davClose(fd);
-assert(fd->req == NULL);
-    } else
+    else
 	rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
@@ -514,6 +516,10 @@ int fdWritable(FD_t fd, int secs)
     FD_ZERO(&wrfds);
 #endif
 	
+    /* HACK: flimsy wiring for davWrite */
+    if (fd->req != NULL)
+	return 1;
+
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
 	
@@ -1416,10 +1422,6 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 	    }
 	}
     }
-#ifdef	NOTYET
-    if (u->urltype == URL_IS_HTTPS) {
-    }
-#endif
 
 /*@-boundswrite@*/
     if (uret != NULL)
@@ -2064,8 +2066,8 @@ static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 	fd->contentLength = fd->bytesRemain = -1;
 	fd->url = urlLink(u, "url (httpOpen)");
 	fd = fdLink(fd, "grab data (httpOpen)");
-	fd->urlType = URL_IS_HTTP;
-	/* XXX URL_IS_HTTPS */
+assert(u->urltype == URL_IS_HTTP);
+	fd->urlType = u->urltype;
     }
 
 exit:
@@ -2115,6 +2117,8 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	}
 	break;
     case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+      if (!noNeon) {
 	fd = davOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
 	    break;
@@ -2134,8 +2138,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
 		?  fd->wr_chunked : 0);
 	}
-	break;
-    case URL_IS_HTTP:
+      } else {
 	fd = httpOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
 	    break;
@@ -2155,6 +2158,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
 		?  fd->wr_chunked : 0);
 	}
+      }
 	break;
     case URL_IS_DASH:
 	assert(!(flags & O_RDWR));
