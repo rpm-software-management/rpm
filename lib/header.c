@@ -738,7 +738,7 @@ static void copyData(int_32 type, void * dstPtr, void * srcPtr, int_32 c,
 	src = (char **) srcPtr;
 	dst = dstPtr;
 	while (i--) {
-	    len = strlen(*src) + 1;
+	    len = *src ? strlen(*src) + 1 : 0;
 	    memcpy(dst, *src, len);
 	    dst += len;
 	    src++;
