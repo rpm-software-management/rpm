@@ -273,6 +273,11 @@ The following options may also be used:
 .IP "\fB\-\-short\-circuit\fP"
 Skip straight to specified stage (ie, skip all stages leading up
 to the specified stage).  Only valid with \fB\-bc\fP and \fB\-bi\fP.
+.IP "\fB\-\-timecheck\fP"
+Set the "timecheck" age (0 to disable).  This value can also
+be set in rpmrc with "timecheck:".  The timecheck value expresses,
+in seconds, the maximum age of a file being packaged.  Warnings
+will be printed for all files beyond the timecheck age.
 .IP "\fB\-\-clean\fP"
 Remove the build tree after the packages are made.
 .IP "\fB\-\-test\fP"
