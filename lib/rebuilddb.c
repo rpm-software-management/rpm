@@ -26,7 +26,7 @@ int rpmdbRebuild(char * rootdir) {
     }
 
     newdbpath = alloca(strlen(dbpath) + 50 + strlen(rootdir));
-    sprintf(newdbpath, "%s/%s/rebuilddb.%d", rootdir, dbpath, getpid());
+    sprintf(newdbpath, "%s/%s/rebuilddb.%d", rootdir, dbpath, (int) getpid());
 
     if (!access(newdbpath, F_OK)) {
 	error(RPMERR_MKDIR, "temporary database %s already exists",
@@ -39,7 +39,7 @@ int rpmdbRebuild(char * rootdir) {
 	      newdbpath, strerror(errno));
     }
 
-    sprintf(newdbpath, "%s/rebuilddb.%d", dbpath, getpid());
+    sprintf(newdbpath, "%s/rebuilddb.%d", dbpath, (int) getpid());
 
     message(MESS_DEBUG, "opening old database\n");
     if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 0)) {
