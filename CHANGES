@@ -1,3 +1,9 @@
+2.2.11 -> 2.3:
+	- replaced putenv/setenv which calls which malloc() buffer -- these
+	  are memory leaks, but the functions are only used between a fork()
+	  and exec() so it doesn't matter
+	- created directroies are stamped with mtime from the file list
+
 2.2.10 -> 2.2.11:
 	- fixed some include file problems for FreeBSD
 	- fixed find-provides script for Linux (silly typo)
