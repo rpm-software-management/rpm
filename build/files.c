@@ -58,7 +58,7 @@ typedef struct FileListRec_s {
 #define	fl_dev	fl_st.st_dev
 #define	fl_ino	fl_st.st_ino
 #define	fl_mode	fl_st.st_mode
-#define	fl_nlink fl_st.st_nlink	/* unused */
+#define	fl_nlink fl_st.st_nlink
 #define	fl_uid	fl_st.st_uid
 #define	fl_gid	fl_st.st_gid
 #define	fl_rdev	fl_st.st_rdev
@@ -103,6 +103,11 @@ typedef struct FileList_s {
 
     int passedSpecialDoc;
     int isSpecialDoc;
+
+    int noGlob;
+    unsigned devtype;
+    unsigned devmajor;
+    int devminor;
     
     int isDir;
     int inFtw;
@@ -382,6 +387,102 @@ static int parseForVerify(char * buf, FileList fl)
 #define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
 
 /**
+ * Parse %dev from file manifest.
+ * @param fl		package file tree walk data
+ */
+static int parseForDev(char * buf, FileList fl)
+	/*@modifies buf, fl->processingFailed,
+		fl->noGlob, fl->devtype, fl->devmajor, fl->devminor @*/
+{
+    const char * name;
+    const char * errstr = NULL;
+    char *p, *pe, *q;
+    int rc = RPMERR_BADSPEC;	/* assume error */
+
+    if ((p = strstr(buf, (name = "%dev"))) == NULL)
+	return 0;
+
+    for (pe = p; (pe-p) < strlen(name); pe++)
+	*pe = ' ';
+    SKIPSPACE(pe);
+
+    if (*pe != '(') {
+	errstr = "'('";
+	goto exit;
+    }
+
+    /* Bracket %dev args */
+    *pe++ = ' ';
+    for (p = pe; *pe && *pe != ')'; pe++)
+	{};
+    if (*pe != ')') {
+	errstr = "')'";
+	goto exit;
+    }
+
+    /* Localize. Erase parsed string */
+    q = alloca((pe-p) + 1);
+    strncpy(q, p, pe-p);
+    q[pe-p] = '\0';
+    while (p <= pe)
+	*p++ = ' ';
+
+    p = q; SKIPWHITE(p);
+    pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
+    if (*p == 'b')
+	fl->devtype = 'b';
+    else if (*p == 'c')
+	fl->devtype = 'c';
+    else {
+	errstr = "devtype";
+	goto exit;
+    }
+
+    p = pe; SKIPWHITE(p);
+    pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
+    for (pe = p; *pe && xisdigit(*pe); pe++)
+	{} ;
+    if (*pe == '\0') {
+	fl->devmajor = atoi(p);
+	if (!(fl->devmajor >= 0 && fl->devmajor < 256)) {
+	    errstr = "devmajor";
+	    goto exit;
+	}
+	pe++;
+    } else {
+	errstr = "devmajor";
+	goto exit;
+    }
+
+    p = pe; SKIPWHITE(p);
+    pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
+    for (pe = p; *pe && xisdigit(*pe); pe++)
+	{} ;
+    if (*pe == '\0') {
+	fl->devminor = atoi(p);
+	if (!(fl->devminor >= 0 && fl->devminor < 256)) {
+	    errstr = "devminor";
+	    goto exit;
+	}
+	pe++;
+    } else {
+	errstr = "devminor";
+	goto exit;
+    }
+
+    fl->noGlob = 1;
+
+    rc = 0;
+
+exit:
+    if (rc) {
+	rpmError(RPMERR_BADSPEC, _("Missing %s in %s %s\n"), errstr, name, p);
+	fl->processingFailed = 1;
+    }
+    return rc;
+}
+
+/**
  * Parse %attr and %defattr from file manifest.
  * @param fl		package file tree walk data
  */
@@ -390,8 +491,8 @@ static int parseForAttr(char * buf, FileList fl)
 		fl->cur_ar, fl->def_ar,
 		fl->currentSpecdFlags, fl->defSpecdFlags @*/
 {
-    char *p, *pe, *q;
     const char *name;
+    char *p, *pe, *q;
     int x;
     struct AttrRec_s arbuf;
     AttrRec ar = &arbuf, ret_ar;
@@ -1275,8 +1376,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	fi->fgids[i] = getGidS(flp->gname);
 	if (fi->fuids[i] == (uid_t)-1) fi->fuids[i] = 0;
 	if (fi->fgids[i] == (gid_t)-1) fi->fgids[i] = 0;
-	fi->fmapflags[i] =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+	fi->fmapflags[i] = CPIO_MAP_PATH |
+		CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	if (isSrc)
 	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
 	if (flp->flags & RPMFILE_MULTILIB_MASK)
@@ -1363,7 +1464,21 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
 
     if (statp == NULL) {
 	statp = &statbuf;
-	if (Lstat(diskURL, statp)) {
+	memset(statp, 0, sizeof(*statp));
+	if (fl->devtype) {
+	    time_t now = time(NULL);
+
+	    /* XXX hack up a stat structure for a %dev(...) directive. */
+	    statp->st_nlink = 1;
+	    statp->st_rdev =
+		((fl->devmajor & 0xff) << 8) | (fl->devminor & 0xff);
+	    statp->st_dev = statp->st_rdev;
+	    statp->st_mode = (fl->devtype == 'b' ? S_IFBLK : S_IFCHR);
+	    statp->st_mode |= (fl->cur_ar.ar_fmode & 0777);
+	    statp->st_atime = now;
+	    statp->st_mtime = now;
+	    statp->st_ctime = now;
+	} else if (Lstat(diskURL, statp)) {
 	    rpmError(RPMERR_BADSPEC, _("File not found: %s\n"), diskURL);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
@@ -1430,6 +1545,7 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
     }
 	    
     {	FileListRec flp = &fl->fileList[fl->fileListRecsUsed];
+	int i;
 
 	flp->fl_st = *statp;	/* structure assignment */
 	flp->fl_mode = fileMode;
@@ -1442,9 +1558,8 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
 	flp->gname = fileGname;
 
 	if (fl->currentLangs && fl->nLangs > 0) {
-	    char *ncl;
+	    char * ncl;
 	    size_t nl = 0;
-	    int i;
 	    
 	    for (i = 0; i < fl->nLangs; i++)
 		nl += strlen(fl->currentLangs[i]) + 1;
@@ -1472,7 +1587,27 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
 	    && !parseForRegexMultiLib(fileURL))
 	    flp->flags |= multiLib;
 
-	fl->totalFileSize += flp->fl_size;
+
+	/* Hard links need be counted only once. */
+	if (S_ISREG(flp->fl_mode) && flp->fl_nlink > 1) {
+	    FileListRec ilp;
+	    for (i = 0;  i < fl->fileListRecsUsed; i++) {
+		ilp = fl->fileList + i;
+		if (!S_ISREG(ilp->fl_mode))
+		    continue;
+		if (flp->fl_nlink != ilp->fl_nlink)
+		    continue;
+		if (flp->fl_ino != ilp->fl_ino)
+		    continue;
+		if (flp->fl_dev != ilp->fl_dev)
+		    continue;
+		break;
+	    }
+	} else
+	    i = fl->fileListRecsUsed;
+
+	if (S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed)
+	    fl->totalFileSize += flp->fl_size;
     }
 
     fl->fileListRecsUsed++;
@@ -1521,6 +1656,13 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	const char ** argv = NULL;
 	int argc = 0;
 	int i;
+
+	if (fl->noGlob) {
+	    rpmError(RPMERR_BADSPEC, _("Glob not permitted: %s\n"),
+			diskURL);
+	    rc = 1;
+	    goto exit;
+	}
 
 	rc = rpmGlob(diskURL, &argc, &argv);
 	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
@@ -1608,6 +1750,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     }
     
     /* Init the file list structure */
+    memset(&fl, 0, sizeof(fl));
 
     /* XXX spec->buildRootURL == NULL, then xstrdup("") is returned */
     fl.buildRootURL = rpmGenPath(spec->rootURL, spec->buildRootURL, NULL);
@@ -1629,6 +1772,11 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.currentFlags = 0;
     fl.currentVerifyFlags = 0;
     
+    fl.noGlob = 0;
+    fl.devtype = 0;
+    fl.devmajor = 0;
+    fl.devminor = 0;
+
     nullAttrRec(&fl.cur_ar);
     nullAttrRec(&fl.def_ar);
 
@@ -1677,6 +1825,11 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.currentVerifyFlags = fl.defVerifyFlags;
 	fl.isSpecialDoc = 0;
 
+	fl.noGlob = 0;
+ 	fl.devtype = 0;
+ 	fl.devmajor = 0;
+ 	fl.devminor = 0;
+
 	/* XXX should reset to %deflang value */
 	if (fl.currentLangs) {
 	    int i;
@@ -1694,6 +1847,8 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (parseForVerify(buf, &fl))
 	    continue;
 	if (parseForAttr(buf, &fl))
+	    continue;
+	if (parseForDev(buf, &fl))
 	    continue;
 	if (parseForConfig(buf, &fl))
 	    continue;
@@ -1730,6 +1885,11 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
 	fl.currentVerifyFlags = 0;
+
+	fl.noGlob = 0;
+ 	fl.devtype = 0;
+ 	fl.devmajor = 0;
+ 	fl.devminor = 0;
 
 	/* XXX should reset to %deflang value */
 	if (fl.currentLangs) {

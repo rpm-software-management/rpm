@@ -124,15 +124,21 @@ static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
     int nlink = 0;
 
     /* XXX rpm-3.3.12 has not RPMTAG_FILEINODES */
-    if (!(fileRdevList && fileInodeList && nfiles > 0))
+    if (!(fileRdevList[xfile] != 0 && fileRdevList &&
+		fileInodeList[xfile] != 0 && fileInodeList && nfiles > 0))
 	return 1;
     while (nfiles-- > 0) {
+	if (fileRdevList[nfiles] == 0)
+	    continue;
 	if (fileRdevList[nfiles] != fileRdevList[xfile])
+	    continue;
+	if (fileInodeList[nfiles] == 0)
 	    continue;
 	if (fileInodeList[nfiles] != fileInodeList[xfile])
 	    continue;
 	nlink++;
     }
+    if (nlink == 0) nlink = 1;
     return nlink;
 }
 

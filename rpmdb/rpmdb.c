@@ -1200,9 +1200,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     }
 
     if (rc == 0)	/* success */
-	/*@-nullpass@*/
 	rc = dbiIndexSetCount(matches);
-	/*@=nullpass@*/
     else if (rc > 0)	/* error */
 	rpmError(RPMERR_DBCORRUPT, _("error(%d) counting packages\n"), rc);
     else		/* not found */
@@ -2143,7 +2141,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
 	    rc = rpmdbFindByFile(rpmdb, keyp, &set);
 	} else {
 	    xx = dbiCopen(dbi, &dbcursor, 0);
-	    /*@-nullpass@*/	/* LCL: kep != NULL here. */
+	    /*@-nullpass@*/	/* LCL: keyp != NULL here. */
 	    rc = dbiSearch(dbi, dbcursor, keyp, keylen, &set);
 	    /*@=nullpass@*/
 	    xx = dbiCclose(dbi, dbcursor, 0);
@@ -2192,9 +2190,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     mi->mi_re = NULL;
     mi->mi_version = NULL;
     mi->mi_release = NULL;
-    /*@-nullret@*/
     return mi;
-    /*@=nullret@*/
 }
 
 /**
@@ -2499,7 +2495,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	    memcpy(&hdrNum, datap, sizeof(hdrNum));
 	++hdrNum;
 	if (rc == 0 && datap) {
-	    /*@-refcounttrans@*/
+	    /*@-refcounttrans@*/	/* FIX: datap aliases h */
 	    memcpy(datap, &hdrNum, sizeof(hdrNum));
 	    /*@=refcounttrans@*/
 	} else {

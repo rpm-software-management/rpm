@@ -631,6 +631,12 @@ int fsmMapAttrs(FSM_t fsm)
 
 	if (fsm->mapFlags & CPIO_MAP_MODE)
 	    st->st_mode = (st->st_mode & S_IFMT) | (finalMode & ~S_IFMT);
+	if (fsm->mapFlags & CPIO_MAP_TYPE) {
+	    st->st_mode = (st->st_mode & ~S_IFMT) | (finalMode & S_IFMT);
+	    if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
+	    && st->st_nlink == 0)
+		st->st_nlink = 1;
+	}
 	if (fsm->mapFlags & CPIO_MAP_UID)
 	    st->st_uid = finalUid;
 	if (fsm->mapFlags & CPIO_MAP_GID)
