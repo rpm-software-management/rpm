@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.15
+Release: 0.16
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -163,9 +163,9 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 mkdir -p $RPM_BUILD_ROOT/var/spool/repackage
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
 for dbi in \
-	Basenames Conflictname Dirnames Group Installtid Name Providename \
-	Provideversion Removetid Requirename Requireversion Triggername \
-	Sigmd5 Sha1header Filemd5s Packages \
+	Basenames Conflictname Dirnames Group Installtid Name Packages \
+	Providename Provideversion Requirename Requireversion Triggername \
+	Filemd5s Pubkeys Sha1header Sigmd5 \
 	__db.001 __db.002 __db.003 __db.004 __db.005 __db.006 __db.007 \
 	__db.008 __db.009
 do
@@ -179,12 +179,12 @@ gzip -9n apidocs/man/man*/* || :
 %endif
 
 # XXX FIXME: hack to get libraries in the right place
-if [ ! -d $RPM_BUILD_ROOT/%{__prefix}/%{_lib} ]; then
-  mkdir -p $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
-  mv $RPM_BUILD_ROOT/usr/lib/*so*  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
-  mv $RPM_BUILD_ROOT/usr/lib/*.a  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
-  mv $RPM_BUILD_ROOT/usr/lib/*.la  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
-fi
+#if [ ! -d $RPM_BUILD_ROOT/%{__prefix}/%{_lib} ]; then
+#  mkdir -p $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
+#  mv $RPM_BUILD_ROOT/usr/lib/*so*  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
+#  mv $RPM_BUILD_ROOT/usr/lib/*.a  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
+#  mv $RPM_BUILD_ROOT/usr/lib/*.la  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
+#fi
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
@@ -273,24 +273,7 @@ exit 0
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
 
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
-%rpmdbattr	/var/lib/rpm/Basenames
-%rpmdbattr	/var/lib/rpm/Conflictname
-%rpmdbattr	/var/lib/rpm/__db.0*
-%rpmdbattr	/var/lib/rpm/Dirnames
-%rpmdbattr	/var/lib/rpm/Filemd5s
-%rpmdbattr	/var/lib/rpm/Group
-%rpmdbattr	/var/lib/rpm/Installtid
-%rpmdbattr	/var/lib/rpm/Name
-%rpmdbattr	/var/lib/rpm/Packages
-%rpmdbattr	/var/lib/rpm/Providename
-%rpmdbattr	/var/lib/rpm/Provideversion
-%rpmdbattr	/var/lib/rpm/Removetid
-%rpmdbattr	/var/lib/rpm/Requirename
-%rpmdbattr	/var/lib/rpm/Requireversion
-%rpmdbattr	/var/lib/rpm/Sigmd5
-%rpmdbattr	/var/lib/rpm/Sha1header
-%rpmdbattr	/var/lib/rpm/Triggername
-
+%rpmdbattr	/var/lib/rpm/*
 %endif
 
 %rpmattr	%{__prefix}/bin/rpm2cpio
@@ -501,6 +484,7 @@ exit 0
 - move libfmagic to librpmio.
 - use libtool-1.4.3, autoconf-2.56.
 - add explicit -L/lib64 -L/usr/lib64 for libtool mode=relink on x86_64.
+- use usrlib_LTLIBRARIES to install directly in /usr/lib64 instead.
 
 * Sat Nov 30 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.14
 - upgrade to elfutils-0.63.

@@ -44,7 +44,8 @@ BEECRYPT_OBJECTS = aes.lo aesopt.lo base64.lo beecrypt.lo blockmode.lo blockpad.
 
 BEECRYPT_JAVA_OBJECTS = javaglue.lo
 
-lib_LTLIBRARIES = libbeecrypt.la
+usrlibdir = $(libdir)@MARK64@
+usrlib_LTLIBRARIES = libbeecrypt.la
 
 libbeecrypt_la_SOURCES = aes.c base64.c beecrypt.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c dsa.c elgamal.c endianness.c entropy.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c javaglue.c md5.c memchunk.c mp32.c mp32barrett.c mp32number.c mp32prime.c mtprng.c rsa.c rsakp.c rsapk.c sha1.c sha256.c timestamp.c
 

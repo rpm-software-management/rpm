@@ -51,6 +51,13 @@ else
 fi
 AC_SUBST(TARGET)
 
+dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
+MARK64=
+case "${target_cpu}" in
+x86_64*)        MARK64=64 ;;
+esac
+AC_SUBST(MARK64)
+
 AC_CHECK_HEADERS(alloca.h float.h libintl.h mcheck.h unistd.h)
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then

@@ -20,12 +20,7 @@ EXTRA_DIST =	rpminject.c rpmsort.c hashtab.h
 EXTRA_PROGRAMS = rpminject rpmsort
 
 LDADD = \
-	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la \
-	@WITH_LIBELF_LIB@ \
 	@INTLLIBS@
 
 noinst_PROGRAMS = \
@@ -39,13 +34,15 @@ bin_PROGRAMS =	rpmgraph
 convertdb1_SOURCES =	convertdb1.c
 
 debugedit_SOURCES =	debugedit.c hashtab.c
+
 javadeps_SOURCES =	javadeps.c
 
 rpmcache_SOURCES =	rpmcache.c
 #rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmdeps_SOURCES =	rpmdeps.c
-#rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@ $(top_builddir)/file/libfmagic.la
+rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
+#rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmgraph_SOURCES =	rpmgraph.c
 #rpmgraph_LDFLAGS =	@LDFLAGS_STATIC@

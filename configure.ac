@@ -1105,13 +1105,12 @@ else
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
 
-dnl XXX hack in explicit -L/lib64 -L/usr/lib64 on x86_64
-HACK_LIBTOOLPATH=
-case "${build_cpu}" in
-x86_64*)	HACK_LIBTOOLPATH="-L/lib64 -L/usr/lib64" ;;
+dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
+MARK64=
+case "${target_cpu}" in
+x86_64*)	MARK64=64 ;;
 esac
-AC_SUBST(HACK_LIBTOOLPATH)
-
+AC_SUBST(MARK64)
 
 dnl Determine the canonical arch-vendor-os for the build machine
 case "${build_cpu}" in

@@ -25,23 +25,26 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h rpmhash.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
-mylibpaths = \
-	-L$(top_builddir)/lib \
-	-L$(top_builddir)/rpmio \
-	-L$(top_builddir)/popt
+#mylibpaths = \
+#	-L$(top_builddir)/lib \
+#	-L$(top_builddir)/rpmio \
+#	-L$(top_builddir)/popt
 
-mylibs = -lrpm -lrpmio -lpopt @WITH_LIBELF_LIB@ @LIBS@ @INTLLIBS@ @LIBMISC@
+#mylibs = -lrpm -lrpmio -lpopt @WITH_LIBELF_LIB@ @LIBS@ @INTLLIBS@ @LIBMISC@
+mylibs = librpmdb.la
+
 LIBS =
 
 DB3LOBJS = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
 
-lib_LTLIBRARIES = librpmdb.la
+usrlibdir = $(libdir)@MARK64@
+usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
-librpmdb_la_LDFLAGS = -release @VERSION@ @HACK_LIBTOOLPATH@ $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la @WITH_LIBELF_LIB@ @libdb3@
+librpmdb_la_LDFLAGS = -release @VERSION@ $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la @WITH_LIBELF_LIB@ @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
 
@@ -49,8 +52,8 @@ librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
 dbconfig.c: db.h
 
 # XXX Add internal libtool dependence
-install-data-local:
-	@cd $(DESTDIR)/$(libdir) && \
+install-data-local: install-usrlibLTLIBRARIES
+	@cd $(DESTDIR)/$(usrlibdir) && \
 	sed -e "s|^dependency_libs='|& -lrpmio-@VERSION@|" < librpmdb.la > .librpmdb.la && \
 	mv .librpmdb.la librpmdb.la
 

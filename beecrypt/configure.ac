@@ -463,6 +463,13 @@ fi
 # Checks for symbol names (used in the assembler symbol names)
 AH_TEMPLATE([LEADING_UNDERSCORE],[Define to 1 if your system compiles object names with leading underscores])
 
+dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
+MARK64=
+case "${target_cpu}" in
+x86_64*)        MARK64=64 ;;
+esac
+AC_SUBST(MARK64)
+
 case $target_os in
   cygwin* | darwin*)
     AC_DEFINE([LEADING_UNDERSCORE])

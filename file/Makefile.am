@@ -10,11 +10,12 @@ BUILT_SOURCES = listobjs $(man_MANS) magic magic.mgc magic.mime.mgc
 noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h \
 		file.h
 
-pkgincdir =	@includedir@/fmagic
+#pkgincdir =	@includedir@/fmagic
 #pkginc_HEADERS = file.h
 
+#usrlibdir = $(libdir)@MARK64@
+#usrlib_LTLIBRARIES = libfmagic.la
 
-#lib_LTLIBRARIES = libfmagic.la
 noinst_LTLIBRARIES = libfmagic.la
 
 libfmagic_la_SOURCES = \

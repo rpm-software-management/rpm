@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 EXTRA_DIST = algorithm.txt ChangeLog Doxyfile FAQ INDEX README \
 	zlib.3 zlib.spec \
 	amiga/* contrib/* msdos/* nt/* os2/*
@@ -33,9 +35,9 @@ zlib.lcd: Makefile.am ${libz_la_SOURCES} ${noinst_HEADERS}
 sources:
 	@echo $(libz_la_SOURCES:%=zlib/%)
 
-.PHONY: lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(libz_la_SOURCES)
+.PHONY: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(libz_la_SOURCES)
 
 .PHONY: doxygen
 doxygen apidocs: Doxyfile

@@ -25,7 +25,12 @@ main(int argc, char *argv[])
 	exit (1);
     }
 
-    if ((rc = db->open(db, dbfile, NULL, DB_UNKNOWN, DB_RDONLY, 0664)) != 0) {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+    rc = db->open(db, txnid, dbfile, NULL, DB_UNKNOWN, DB_RDONLY, 0664);
+#else
+    rc = db->open(db, dbfile, NULL, DB_UNKNOWN, DB_RDONLY, 0664);
+#endif
+    if (rc != 0) {
 	db->err(db, rc, "db->open");
 	if (!ec) ec = rc;
 	goto err;

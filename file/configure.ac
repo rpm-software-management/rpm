@@ -60,6 +60,13 @@ if test "$ac_cv_prog_gcc" = yes; then
 fi
 export CFLAGS
 
+dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
+MARK64=
+case "${target_cpu}" in
+x86_64*)	MARK64=64 ;;
+esac
+AC_SUBST(MARK64)
+
 dnl Checks for headers
 AC_HEADER_STDC
 AC_HEADER_STDINT

@@ -30,7 +30,8 @@ mylibpaths = \
 mylibs = -lrpm -lrpmdb -lrpmio -lpopt @WITH_LIBELF_LIB@ @LIBS@ @INTLLIBS@ @LIBMISC@
 LIBS =
 
-lib_LTLIBRARIES = librpm.la
+usrlibdir = $(libdir)@MARK64@
+usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	manifest.c misc.c package.c \
@@ -39,11 +40,11 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c
-librpm_la_LDFLAGS = -release @VERSION@ @HACK_LIBTOOLPATH@ $(top_builddir)/rpmdb/librpmdb.la
+librpm_la_LDFLAGS = -release @VERSION@ $(top_builddir)/rpmdb/librpmdb.la
 
 # XXX Add internal libtool dependence
-install-data-local:
-	@cd $(DESTDIR)/$(libdir) && \
+install-data-local: install-usrlibLTLIBRARIES
+	@cd $(DESTDIR)/$(usrlibdir) && \
 	sed -e "s|^dependency_libs='|& -lrpmdb-@VERSION@ -lrpmio-@VERSION@ -lpopt|" < librpm.la > .librpm.la && \
 	mv .librpm.la librpm.la
 
