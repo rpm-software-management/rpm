@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.74 $
+# $Revision: 1.75 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-03-09 10:42-0500\n"
+"POT-Creation-Date: 2000-03-09 13:14-0500\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3119,59 +3119,59 @@ msgstr "kan inte öppna %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:787
 msgid "Success"
 msgstr "Lyckades"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:790
 msgid "Bad server response"
 msgstr "Konstigt svar från server"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:793
 msgid "Server IO error"
 msgstr "IO-fel mot server"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:796
 msgid "Server timeout"
 msgstr "Förbindelsen med servern dog ut (timeout)"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:799
 msgid "Unable to lookup server host address"
 msgstr "Kunde inte slå upp serverns adress"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:802
 msgid "Unable to lookup server host name"
 msgstr "Kunde inte slå upp serverns namn"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:805
 msgid "Failed to connect to server"
 msgstr "Misslyckades med att kontakta servern"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:808
 msgid "Failed to establish data connection to server"
 msgstr "Misslyckades med att etablera en dataförbindelse till servern"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:811
 msgid "IO error to local file"
 msgstr "IO-fel mot lokal fil"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:814
 msgid "Error setting remote server to passive mode"
 msgstr "Fel när den fjärrservern sattes i passivt läge"
 
-#: lib/rpmio.c:814
+#: lib/rpmio.c:817
 msgid "File not found on server"
 msgstr "Filen fanns inte på servern"
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:820
 msgid "Abort in progress"
 msgstr "Avbruten under gång"
 
-#: lib/rpmio.c:821
+#: lib/rpmio.c:824
 msgid "Unknown or unexpected error"
 msgstr "Okänt eller oväntat fel"
 
-#: lib/rpmio.c:1354
+#: lib/rpmio.c:1357
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "loggar in på %s som %s, lösenord %s\n"

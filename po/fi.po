@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-03-09 10:42-0500\n"
+"POT-Creation-Date: 2000-03-09 13:14-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -3233,67 +3233,67 @@ msgstr "virhe: en voi avata %s\n"
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:787
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:790
 #, fuzzy
 msgid "Bad server response"
 msgstr "Virheellinen FTP-palvelijan vastaus"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:793
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP:n IO-virhe"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:796
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP-palvelimen timeout"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:799
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP-palvelimen osoitetta ei löytynyt"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:802
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP-palvelimen nimeä ei löytynyt"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:805
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "En saanut yhteyttä FTP-palvelijaan"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:808
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "En saanut data-yhteyttä FTP-palvelijaan"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:811
 msgid "IO error to local file"
 msgstr "Paikallisen tiedoston IO-virhe"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:814
 msgid "Error setting remote server to passive mode"
 msgstr "Virhe asetettaessa palvelinta passiiviin moodiin"
 
-#: lib/rpmio.c:814
+#: lib/rpmio.c:817
 msgid "File not found on server"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:820
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:821
+#: lib/rpmio.c:824
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP:n tuntematon tai odottamaton virhe"
 
-#: lib/rpmio.c:1354
+#: lib/rpmio.c:1357
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
