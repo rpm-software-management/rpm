@@ -651,6 +651,10 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	    continue;
 	}
 
+	/* Ignore deleted drips. */
+	if (entry->data == NULL || entry->length <= 0)
+	    continue;
+
 	/* Alignment */
 	type = entry->info.type;
 	if (typeSizes[type] > 1) {
@@ -684,6 +688,9 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 char *t;
 	int count;
 	int rdlen;
+
+	if (entry->data == NULL || entry->length <= 0)
+	    continue;
 
 t = te;
 	pe->tag = htonl(entry->info.tag);
@@ -742,6 +749,10 @@ t = te;
 	    pe += ril;
 	    continue;
 	}
+
+	/* Ignore deleted drips. */
+	if (entry->data == NULL || entry->length <= 0)
+	    continue;
 
 	/* Alignment */
 	type = entry->info.type;
@@ -1704,12 +1715,15 @@ int headerRemoveEntry(Header h, int_32 tag)
 
     /* Free data for tags being removed. */
     for (first = entry; first < last; first++) {
+	void * data;
 	if (first->info.tag != tag)
 	    break;
+	data = first->data;
+	first->data = NULL;
+	first->length = 0;
 	if (ENTRY_IN_REGION(first))
 	    continue;
-	free(first->data);
-	first->data = NULL;
+	free(data);
     }
 
     ne = (first - entry);

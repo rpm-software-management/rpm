@@ -1831,7 +1831,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		rpmdbFreeIterator(mi);
 	    }
 
-	    if (removeBinaryPackage(ts, offset, dbh, dbh, fi->actions))
+	    if (removeBinaryPackage(ts, offset, dbh, NULL, fi->actions))
 		ourrc++;
 
 	    headerFree(dbh);

@@ -312,6 +312,11 @@ fi
 %changelog
 * Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
 - bump popt version.
+- fix: (transaction.c) assume file state normal if tag is missing.
+- fix: failed signature read headerFree segfault.
+- fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.
+- fix: segfault on build path, ignore deleted drips.
+- fix: synthesized callbacks for removed packages have not a pkgkey.
 
 * Tue Dec 12 2000 Jeff Johnson <jbj@redhat.com>
 - bail on header regions.

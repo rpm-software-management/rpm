@@ -65,6 +65,7 @@
 		info.
 	- change dependency loop message to RPMMESS_WARNING to use stderr, not
 		stdout.
+	- fix: segfault on build path, ignore deleted drips.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
