@@ -591,24 +591,6 @@ static int installArchive(PSM_t psm, int allFiles)
     rc = psmStage(psm, PSM_RPMIO_FLAGS);
 #endif
 
-#ifdef	DYING
-    {
-	psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
-
-	rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
-			psm->cfd, NULL, &psm->failedFile);
-	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	Fclose(psm->cfd);
-	psm->cfd = NULL;
-	(void) fsmTeardown(fi->fsm);
-
-	if (!rc && ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT) {
-	    rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
-			NULL, NULL, &psm->failedFile);
-	    (void) fsmTeardown(fi->fsm);
-	}
-    }
-#else
     psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
     rc = psmStage(psm, PSM_PKGINSTALL);
     saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -616,7 +598,6 @@ static int installArchive(PSM_t psm, int allFiles)
     psm->cfd = NULL;
     if (!rc)
 	rc = psmStage(psm, PSM_PKGCOMMIT);
-#endif
 
     if (rc) {
 	/*
@@ -1422,7 +1403,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	fi->actions = NULL;
 
 	/* XXX failedFile? */
-	rc = fsmSetup(fi->fsm, FSM_PKGSAVE, ts, fi, psm->cfd, NULL, NULL);
+	rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd, NULL, NULL);
 	(void) fsmTeardown(fi->fsm);
 
 	fi->action = action;
@@ -1672,14 +1653,9 @@ psm->stepName = " install";
 	    goto exit;
     }
 
-#ifdef	DYING
-    if (rpmdbAdd(ts->rpmdb, ts->id, fi->h))
-	goto exit;
-#else
     rc = psmStage(psm, PSM_RPMDB_ADD);
     if (rc)
 	goto exit;
-#endif
 
     psm->scriptTag = RPMTAG_POSTIN;
     psm->progTag = RPMTAG_POSTINPROG;
@@ -1734,29 +1710,11 @@ assert(fi->type == TR_REMOVED);
 	goto exit;
     }
 
-#ifndef	DYING
-    {	rpmdbMatchIterator mi = NULL;
-	Header h;
-
-	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
-				&fi->record, sizeof(fi->record));
-
-	h = rpmdbNextIterator(mi);
-	if (h == NULL) {
-	    rpmdbFreeIterator(mi);
-	    rc = 2;
-	    goto exit;
-	}
-	fi->h = headerLink(h);
-	rpmdbFreeIterator(mi);
-    }
-#else
     rc = psmStage(psm, PSM_RPMDB_LOAD);
     if (rc) {
 	rc = 2;
 	goto exit;
     }
-#endif
 
     psm->scriptTag = RPMTAG_PREUN;
     psm->progTag = RPMTAG_PREUNPROG;
@@ -1823,13 +1781,8 @@ exit:
     /* Restore root directory if changed. */
     (void) psmStage(psm, PSM_CHROOT_OUT);
 
-#ifndef	DYING
-    if (!rc && !(ts->transFlags & RPMTRANS_FLAG_TEST))
-	rpmdbRemove(ts->rpmdb, ts->id, fi->record);
-#else
     if (!rc)
 	(void) psmStage(psm, PSM_RPMDB_REMOVE);
-#endif
 
     if (fi->h) {
 	headerFree(fi->h);
@@ -1857,29 +1810,11 @@ psm->stepName = "    save";
 
 assert(fi->type == TR_REMOVED);
     /* Retrieve installed header. */
-#ifdef	DYING
-    {	rpmdbMatchIterator mi = NULL;
-	Header h;
-
-	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
-				&fi->record, sizeof(fi->record));
-
-	h = rpmdbNextIterator(mi);
-	if (h == NULL) {
-	    rpmdbFreeIterator(mi);
-	    rc = 2;
-	    goto exit;
-	}
-	fi->h = headerLink(h);
-	rpmdbFreeIterator(mi);
-    }
-#else
     rc = psmStage(psm, PSM_RPMDB_LOAD);
     if (rc) {
 	rc = 2;
 	goto exit;
     }
-#endif
 
     /* Regenerate original header. */
     {	void * uh = NULL;
@@ -1979,29 +1914,6 @@ assert(fi->type == TR_REMOVED);
     (void) psmStage(psm, PSM_CHROOT_IN);
 
     /* Write the payload into the package. */
-#ifdef	DYING
-    {
-	fileAction * actions = fi->actions;
-	fileAction action = fi->action;
-
-	fi->action = FA_COPYOUT;
-	fi->actions = NULL;
-
-	Fflush(fd);
-	psm->cfd = Fdopen(fdDup(Fileno(fd)), psm->rpmio_flags);
-
-	/* XXX failedFile? */
-	rc = fsmSetup(fi->fsm, FSM_PKGSAVE, ts, fi, psm->cfd, NULL, NULL);
-	(void) fsmTeardown(fi->fsm);
-
-	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	Fclose(psm->cfd);
-	psm->cfd = NULL;
-	errno = saveerrno;
-	fi->action = action;
-	fi->actions = actions;
-    }
-#else
     Fflush(fd);
     psm->cfd = Fdopen(fdDup(Fileno(fd)), psm->rpmio_flags);
     rc = psmStage(psm, PSM_PKGSAVE);
@@ -2009,7 +1921,6 @@ assert(fi->type == TR_REMOVED);
     Fclose(psm->cfd);
     errno = saveerrno;
     psm->cfd = NULL;
-#endif
 
 exit:
     /* Restore root directory if changed. */

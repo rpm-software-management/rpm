@@ -1153,7 +1153,6 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		break;
 	}
 	break;
-    case FSM_PKGSAVE:
     case FSM_PKGBUILD:
 	while (1) {
 
@@ -1915,7 +1914,6 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n",
     case FSM_PKGBUILD:	return "pkgbuild";
     case FSM_PKGCOMMIT:	return "pkgcommit";
     case FSM_PKGUNDO:	return "pkgundo";
-    case FSM_PKGSAVE:	return "pkgsave";
 
     case FSM_CREATE:	return "create";
     case FSM_INIT:	return "init";
