@@ -98,5 +98,5 @@ fi
 /usr/lib/librpm.*
 /usr/lib/librpmbuild.*
 %ifos linux
-/usr/lib/python1.5/site-packages/rpmmodules.so
+/usr/lib/python1.5/site-packages/rpmmodule.so
 %endif
