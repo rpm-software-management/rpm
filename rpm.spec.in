@@ -462,6 +462,8 @@ exit 0
 * Wed Jan  1 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.49
 - add rpmts/rpmte/rpmfi/rpmds element colors.
 - ignore items not in our rainbow (i.e. colors are functional).
+- fix: dependency helpers now rate limited at 10ms, not 1s.
+- add per-arch canonical color, only x86_64 enabled for now.
 
 * Sun Dec 29 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.46
 - don't segfault with packages produced by rpm-2.93 (#80618).

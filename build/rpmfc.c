@@ -121,7 +121,6 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
 
 	done = 0;
 top:
-	/* XXX the select is mainly a timer since all I/O is non-blocking */
 	FD_ZERO(&ibits);
 	FD_ZERO(&obits);
 	if (fromProg[0] >= 0) {
@@ -130,8 +129,9 @@ top:
 	if (toProg[1] >= 0) {
 	    FD_SET(toProg[1], &obits);
 	}
-	tv.tv_sec = 1;
-	tv.tv_usec = 0;
+	/* XXX values set to limit spinning with perl doing ~100 forks/sec. */
+	tv.tv_sec = 0;
+	tv.tv_usec = 10000;
 	nfd = ((fromProg[0] > toProg[1]) ? fromProg[0] : toProg[1]);
 	if ((rc = select(nfd, &ibits, &obits, NULL, &tv)) < 0) {
 	    if (errno == EINTR)
@@ -1469,9 +1469,16 @@ assert(EVR != NULL);
     p = (const void **) argiData(fc->fcolor);
     c = argiCount(fc->fcolor);
 assert(ac == c);
-    if (p != NULL && c > 0)
+    if (p != NULL && c > 0) {
+	int_32 * fcolors = (int_32 *)p;
+	int i;
+
+	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
+	for (i = 0; i < c; i++)
+	    fcolors[i] &= 0x0f;
 	xx = headerAddEntry(pkg->header, RPMTAG_FILECOLORS, RPM_INT32_TYPE,
 			p, c);
+    }
 
     /* Add classes(#classes) */
     p = (const void **) argvData(fc->cdict);

@@ -1124,23 +1124,23 @@ AC_SUBST(MARK64)
 
 dnl Determine the canonical arch-vendor-os for the build machine
 case "${build_cpu}" in
-*86)		RPMCANONARCH=i386 ;;
-x86_64*)	RPMCANONARCH=x86_64 ;;
-alpha*)		RPMCANONARCH=alpha ;;
-sparc*)		RPMCANONARCH=sparc ;;
-ia64*)		RPMCANONARCH=ia64 ;;
-s390x*)		RPMCANONARCH=s390x ;;
-s390*)		RPMCANONARCH=s390 ;;
-powerpc64*|ppc64*)	RPMCANONARCH=ppc64 ;;
-powerpc*|ppc*)	RPMCANONARCH=ppc ;;
-armv3l*)	RPMCANONARCH=armv3l ;;
-armv4l*)	RPMCANONARCH=armv4l ;;
-armv4b*)	RPMCANONARCH=armv4b ;;
-arm*)		RPMCANONARCH="${build_cpu}" ;;
-mipsel*)	RPMCANONARCH=mipsel ;;
-mips*)		RPMCANONARCH=mips ;;
-m68k*)		RPMCANONARCH=m68k ;;
-*)		RPMCANONARCH=unknown ;;
+*86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
+x86_64*)	RPMCANONCOLOR=3; RPMCANONARCH=x86_64 ;;
+alpha*)		RPMCANONCOLOR=0; RPMCANONARCH=alpha ;;
+sparc*)		RPMCANONCOLOR=0; RPMCANONARCH=sparc ;;
+ia64*)		RPMCANONCOLOR=0; RPMCANONARCH=ia64 ;;
+s390x*)		RPMCANONCOLOR=0; RPMCANONARCH=s390x ;;
+s390*)		RPMCANONCOLOR=0; RPMCANONARCH=s390 ;;
+powerpc64*|ppc64*)	RPMCANONCOLOR=0; RPMCANONARCH=ppc64 ;;
+powerpc*|ppc*)	RPMCANONCOLOR=0; RPMCANONARCH=ppc ;;
+armv3l*)	RPMCANONCOLOR=0; RPMCANONARCH=armv3l ;;
+armv4l*)	RPMCANONCOLOR=0; RPMCANONARCH=armv4l ;;
+armv4b*)	RPMCANONCOLOR=0; RPMCANONARCH=armv4b ;;
+arm*)		RPMCANONCOLOR=0; RPMCANONARCH="${build_cpu}" ;;
+mipsel*)	RPMCANONCOLOR=0; RPMCANONARCH=mipsel ;;
+mips*)		RPMCANONCOLOR=0; RPMCANONARCH=mips ;;
+m68k*)		RPMCANONCOLOR=0; RPMCANONARCH=m68k ;;
+*)		RPMCANONCOLOR=0; RPMCANONARCH=unknown ;;
 esac
 case "${build_os_noversion}" in
 mint)		RPMCANONARCH=m68kmint ;;
@@ -1157,6 +1157,7 @@ unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog)
 	;;
 esac
 RPMCANONOS="$build_os_noversion"
+AC_SUBST(RPMCANONCOLOR)
 AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)

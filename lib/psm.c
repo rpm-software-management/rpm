@@ -1526,13 +1526,13 @@ psm->te->h = headerLink(fi->h);
 
 /* XXX insure that trigger index is opened before entering chroot. */
 #ifdef	NOTYET
-{ static int oneshot = 0;
-  dbiIndex dbi;
-  if (!oneshot) {
-    dbi = dbiOpen(rpmtsGetRdb(ts), RPMTAG_TRIGGERNAME, 0);
-    oneshot++;
-  }
-}
+ { static int oneshot = 0;
+   dbiIndex dbi;
+   if (!oneshot) {
+     dbi = dbiOpen(rpmtsGetRdb(ts), RPMTAG_TRIGGERNAME, 0);
+     oneshot++;
+   }
+ }
 #endif
 
 	/* Change root directory if requested and not already done. */
@@ -1845,6 +1845,7 @@ psm->te->h = headerLink(fi->h);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = (int_32) time(NULL);
+	    int_32 tscolor = rpmtsColor(ts);
 	    int fc = rpmfiFC(fi);
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */
@@ -1854,6 +1855,9 @@ psm->te->h = headerLink(fi->h);
 
 	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
+
+	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
+				&tscolor, 1);
 
 	    /*
 	     * If this package has already been installed, remove it from

@@ -365,9 +365,7 @@ typedef enum rpmTag_e {
     RPMTAG_PAYLOADFORMAT	= 1124,
     RPMTAG_PAYLOADCOMPRESSOR	= 1125,
     RPMTAG_PAYLOADFLAGS		= 1126,
-/*@-enummemuse@*/
-    RPMTAG_MULTILIBMASK		= 1127, /*!< internal - obsolete */
-/*@=enummemuse@*/
+    RPMTAG_INSTALLCOLOR		= 1127, /*!< transaction color when installed */
     RPMTAG_INSTALLTID		= 1128,
     RPMTAG_REMOVETID		= 1129,
 /*@-enummemuse@*/
