@@ -23,9 +23,19 @@ int main(int argc, char **argv)
     readSignature(fd, lead.signature_type, (void **) &sig);
     switch (lead.signature_type) {
     case RPMSIG_NONE:
+	fprintf(stderr, "No signature available.\n");
 	break;
     case RPMSIG_PGP262_1024:
 	write(1, sig, 152);
+	break;
+    case RPMSIG_MD5:
+	write(1, sig, 16);
+	break;
+    case RPMSIG_MD5_PGP:
+	break;
+    default:
+	fprintf(stderr, "Unknown signature type: %d\n", lead.signature_type);
+	exit(1);
     }
     
     return 0;
