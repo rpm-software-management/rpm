@@ -4,18 +4,16 @@ PROGS = build
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 DEBUG = -g
-OPTS = 
+OPTS = -O2
 CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib
 LDFLAGS = $(DEBUG) -Llib
 LOADLIBES = -lrpm
-EFENCE = #-lefence
 
 all: make-subdirs $(OBJS) $(PROGS)
 	
 make-subdirs:
 	for d in $(SUBDIRS); do \
-		(cd $$d; $(MAKE) CFLAGS="$(CFLAGS)" OPTS="$(OPTS)" \
-		 WARNINGS="$(WARNINGS)" EFENCE=$(EFENCE)) ;\
+		(cd $$d; $(MAKE)) ;\
 	done
 
 build: build.o spec.o
