@@ -384,11 +384,9 @@ int pkgActions(const rpmTransactionSet ts, TFI_t fi)
 	if (fi->actions[i] & FA_DONE)
 	    continue;
 
-#if 0
 	rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
 			fi->dnl[fi->dil[i]], fi->bnl[i],
 		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
-#endif
 
 	ext = NULL;
 
