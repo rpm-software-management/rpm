@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.59 2000/05/31 03:35:51 msw Exp $
+# $Id: macros.in,v 1.60 2000/05/31 04:57:13 msw Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -511,21 +511,21 @@ FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
 	--infodir=%{_infodir}
 #------------------------------------------------------------------------------
 # The make install analogue of %configure:
-%makeinstall { \\\
-   make install \\\
-	prefix=%{?buildroot:%{buildroot}}%{_prefix} \\\
-	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \\\
-	bindir=%{?buildroot:%{buildroot}}%{_bindir} \\\
-	sbindir=%{?buildroot:%{buildroot}}%{_sbindir} \\\
-	sysconfdir=%{?buildroot:%{buildroot}}%{_sysconfdir} \\\
-	datadir=%{?buildroot:%{buildroot}}%{_datadir} \\\
-	includedir=%{?buildroot:%{buildroot}}%{_includedir} \\\
-	libdir=%{?buildroot:%{buildroot}}%{_libdir} \\\
-	libexecdir=%{?buildroot:%{buildroot}}%{_libexecdir} \\\
-	localstatedir=%{?buildroot:%{buildroot}}%{_localstatedir} \\\
-	sharedstatedir=%{?buildroot:%{buildroot}}%{_sharedstatedir} \\\
-	mandir=%{?buildroot:%{buildroot}}%{_mandir} \\\
-	infodir=%{?buildroot:%{buildroot}}%{_infodir} \\\
+%makeinstall { \
+   make install \
+	prefix=%{?buildroot:%{buildroot}}%{_prefix} \
+	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \
+	bindir=%{?buildroot:%{buildroot}}%{_bindir} \
+	sbindir=%{?buildroot:%{buildroot}}%{_sbindir} \
+	sysconfdir=%{?buildroot:%{buildroot}}%{_sysconfdir} \
+	datadir=%{?buildroot:%{buildroot}}%{_datadir} \
+	includedir=%{?buildroot:%{buildroot}}%{_includedir} \
+	libdir=%{?buildroot:%{buildroot}}%{_libdir} \
+	libexecdir=%{?buildroot:%{buildroot}}%{_libexecdir} \
+	localstatedir=%{?buildroot:%{buildroot}}%{_localstatedir} \
+	sharedstatedir=%{?buildroot:%{buildroot}}%{_sharedstatedir} \
+	mandir=%{?buildroot:%{buildroot}}%{_mandir} \
+	infodir=%{?buildroot:%{buildroot}}%{_infodir} \
    }
 
 #------------------------------------------------------------------------------
