@@ -315,6 +315,101 @@ rewriteBinaryRPM(char *fni, char *fno)
 }
 
 /* ================================================================== */
+#define	xstrdup		strdup
+#define	xmalloc		malloc
+#define	xrealloc	realloc
+#define	PARAMS(_x)	_x
+
+#include "str-list.c"
+
+#include "rpmpo.h"
+
+message_ty *
+message_alloc (msgid)
+     char *msgid;
+{
+  message_ty *mp;
+
+  mp = xmalloc (sizeof (message_ty));
+  mp->msgid = msgid;
+  mp->comment = NULL;
+  mp->comment_dot = NULL;
+  mp->filepos_count = 0;
+  mp->filepos = NULL;
+  mp->variant_count = 0;
+  mp->variant = NULL;
+  mp->used = 0;
+  mp->obsolete = 0;
+  mp->is_fuzzy = 0;
+  mp->is_c_format = undecided;
+  mp->do_wrap = undecided;
+  return mp;
+}
+
+void
+message_free (mp)
+     message_ty *mp;
+{
+  size_t j;
+
+  if (mp->comment != NULL)
+    string_list_free (mp->comment);
+  if (mp->comment_dot != NULL)
+    string_list_free (mp->comment_dot);
+  free ((char *) mp->msgid);
+  for (j = 0; j < mp->variant_count; ++j)
+    free ((char *) mp->variant[j].msgstr);
+  if (mp->variant != NULL)
+    free (mp->variant);
+  for (j = 0; j < mp->filepos_count; ++j)
+    free ((char *) mp->filepos[j].file_name);
+  if (mp->filepos != NULL)
+    free (mp->filepos);
+  free (mp);
+}
+
+message_list_ty *
+message_list_alloc ()
+{
+  message_list_ty *mlp;
+
+  mlp = xmalloc (sizeof (message_list_ty));
+  mlp->nitems = 0;
+  mlp->nitems_max = 0;
+  mlp->item = 0;
+  return mlp;
+}
+
+void
+message_list_append (mlp, mp)
+     message_list_ty *mlp;
+     message_ty *mp;
+{
+  if (mlp->nitems >= mlp->nitems_max)
+    {
+      size_t nbytes;
+
+      mlp->nitems_max = mlp->nitems_max * 2 + 4;
+      nbytes = mlp->nitems_max * sizeof (message_ty *);
+      mlp->item = xrealloc (mlp->item, nbytes);
+    }
+  mlp->item[mlp->nitems++] = mp;
+}
+
+void
+message_list_free (mlp)
+     message_list_ty *mlp;
+{
+  size_t j;
+
+  for (j = 0; j < mlp->nitems; ++j)
+    message_free (mlp->item[j]);
+  if (mlp->item)
+    free (mlp->item);
+  free (mlp);
+}
+
+/* ================================================================== */
 
 static int
 slurp(const char *file, char **ibufp, size_t *nbp)
@@ -363,17 +458,15 @@ slurp(const char *file, char **ibufp, size_t *nbp)
 typedef struct {
 	char *name;
 	int len;
+	int haslang;
 } KW_t;
 
 KW_t keywords[] = {
-	{ "domain", 6 },
-	{ "msgid", 5 },
-	{ "msgstr", 6 },
+	{ "domain",	6, 0 },
+	{ "msgid",	5, 0 },
+	{ "msgstr",	6, 1 },
 	NULL
 };
-
-#define	SKIPWHITE {while ((c = *se) && strchr("\b\f\n\r\t ", c)) se++;}
-#define	NEXTLINE  {state = 0; if (!(se = strchr(se, '\n'))) se = s + strlen(s);}
 
 static char *
 matchchar(const char *p, char pl, char pr)
@@ -398,9 +491,13 @@ matchchar(const char *p, char pl, char pr)
 	return NULL;
 }
 
+#define	SKIPWHITE {while ((c = *se) && strchr("\b\f\n\r\t ", c)) se++;}
+#define	NEXTLINE  {state = 0; while ((c = *se) && c != '\n') se++; if (c == '\n') se++;}
+
 static int
-parsepofile(const char *file)
+parsepofile(const char *file, message_list_ty **mlpp)
 {
+    message_list_ty *mlp;
     KW_t *kw;
     char *buf, *s, *se;
     size_t nb;
@@ -411,6 +508,7 @@ fprintf(stderr, "================ %s\n", file);
     if ((rc = slurp(file, &buf, &nb)) != 0)
 	return rc;
 
+    mlp = message_list_alloc();
     s = buf;
     while ((c = *s) != '\0') {
 	se = s;
@@ -421,13 +519,18 @@ fprintf(stderr, "================ %s\n", file);
 		break;
 	case 1:		/* comment "domain" "msgid" "msgstr" */
 		SKIPWHITE;
-		if (!isalpha(c)) {
-			if (c != '#')
-				fprintf(stderr, "non-alpha char at \"%.20s\"\n", se);
+		s = se;
+		if (!(isalpha(c) || c == '#')) {
+			fprintf(stderr, "non-alpha char at \"%.20s\"\n", se);
 			NEXTLINE;
 			break;
 		}
-		for (kw = keywords; kw->name; kw++) {
+		if (c == '#') {
+			NEXTLINE;
+	/* === s:se has comment */
+			break;
+		}
+		for (kw = keywords; kw->name != NULL; kw++) {
 			if (!strncmp(s, kw->name, kw->len)) {
 				se += kw->len;
 				break;
@@ -438,20 +541,24 @@ fprintf(stderr, "================ %s\n", file);
 			NEXTLINE;
 			break;
 		}
+	/* === s:se has keyword */
 
 		SKIPWHITE;
 		s = se;
-		if (*se == '(') {
-			if ((se = strchr(se, ')')) == NULL) {
+		if (kw->haslang && *se == '(') {
+			while ((c = *se) && c != ')') se++;
+			if (c != ')') {
 				fprintf(stderr, "unclosed paren at \"%.20s\"\n", s);
 				se = s;
 				NEXTLINE;
 				break;
 			}
+			s++;	/* skip ( */
+	/* === s:se has lang */
 			se++;	/* skip ) */
 		}
+
 		SKIPWHITE;
-		s = se;
 		if (*se != '"') {
 			fprintf(stderr, "missing string at \"%.20s\"\n", s);
 			se = s;
@@ -461,25 +568,35 @@ fprintf(stderr, "================ %s\n", file);
 		state = 2;
 		break;
 	case 2:		/* "...." */
+		SKIPWHITE;
 		if (c != '"') {
 			fprintf(stderr, "not a string at \"%.20s\"\n", s);
 			NEXTLINE;
 			break;
 		}
-		s++;	/* skip open quote */
-		if ((se = matchchar(s, c, c)) == NULL) {
-			fprintf(stderr, "missing close %c at \"%.20s\"\n", c, s);
-			NEXTLINE;
-			break;
-		}
-		se++;	/* skip close quote */
-		SKIPWHITE;
-		if (c != '"')
-			state = 0;
+		s = se;
+		do {
+			s++;	/* skip open quote */
+			if ((se = matchchar(s, c, c)) == NULL) {
+				fprintf(stderr, "missing close %c at \"%.20s\"\n", c, s);
+				se = s;
+				NEXTLINE;
+				break;
+			}
+	/* === s:se has next part of string */
+			se++;	/* skip close quote */
+			SKIPWHITE;
+		} while (c == '"');
+		state = 0;
 		break;
 	}
 	s = se;
     }
+
+    if (mlpp)
+	*mlpp = mlp;
+    else
+	message_list_free(mlp);
 
     FREE(buf);
     return rc;
@@ -584,7 +701,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 static int
 rpmchktext(int fd, const char *file, FILE *ofp)
 {
-	return parsepofile(file);
+	return parsepofile(file, NULL);
 }
 
 int
