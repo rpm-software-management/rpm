@@ -1,0 +1,27 @@
+2002-03-22  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* codeset.m4: Upgrade to gettext-0.11.
+	* gettext.m4: Upgrade to gettext-0.11.
+	* glibc21.m4: Upgrade to gettext-0.11.
+	* iconv.m4: Upgrade to gettext-0.11.
+	* isc-posix.m4: Upgrade to gettext-0.11.
+	* lcmessage.m4: Upgrade to gettext-0.11.
+	* lib-ld.m4: Upgrade to gettext-0.11.
+	* lib-link.m4: Upgrade to gettext-0.11.
+	* lib-prefix.m4: Upgrade to gettext-0.11.
+	* progtest.m4: Upgrade to gettext-0.11.
+
+2002-03-22  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* codeset.m4: Upgrade to gettext-0.11.
+	* gettext.m4: Upgrade to gettext-0.11.
+	* glibc21.m4: Upgrade to gettext-0.11.
+	* iconv.m4: Upgrade to gettext-0.11.
+	* isc-posix.m4: New file, from gettext-0.11.
+	* lcmessage.m4: Upgrade to gettext-0.11.
+	* lib-ld.m4: Upgrade to gettext-0.11.
+	* lib-link.m4: Upgrade to gettext-0.11.
+	* lib-prefix.m4: Upgrade to gettext-0.11.
+	* progtest.m4: Upgrade to gettext-0.11.
+	* Makefile.am (EXTRA_DIST): Add the new files.
+

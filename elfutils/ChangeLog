@@ -1,0 +1,8 @@
+2002-03-22  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (SUBDIRS): Remove intl.
+	(EXTRA_DIST): Add config.rpath.
+
+2000-08-25  Ulrich Drepper  <drepper@redhat.com>
+
+	* The beginning.

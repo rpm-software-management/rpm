@@ -1,0 +1,16 @@
+2002-03-22  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* boldquot.sed: New file, from gettext-0.11.
+	* en@boldquot.header: New file, from gettext-0.11.
+	* en@quot.header: New file, from gettext-0.11.
+	* insert-header.sin: New file, from gettext-0.11.
+	* quot.sed: New file, from gettext-0.11.
+	* Rules-quot: New file, from gettext-0.11.
+
+2001-04-27  gettextize  <bug-gnu-utils@gnu.org>
+
+	* Makefile.in.in: Upgrade to gettext-0.10.37.
+	* cat-id-tbl.c: Remove file.
+	* stamp-cat-id: Remove file.
+
+Translations for programs.

@@ -1,0 +1,16 @@
+# List of files which containing translatable strings.
+# Copyright (C) 2000 Red Hat, Inc.
+
+# Library sources
+libebl/eblclosebackend.c
+libebl/eblopenbackend.c
+libebl/eblstrtab.c
+libebl/i386_destr.c
+libebl/i386_init.c
+libebl/i386_symbol.c
+libebl/mips_destr.c
+libebl/mips_init.c
+libebl/mips_symbol.c
+libebl/sh_destr.c
+libebl/sh_init.c
+libebl/sh_symbol.c

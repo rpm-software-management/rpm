@@ -1,0 +1,124 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-06-20 15:01-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: libdwarf/dwarf_errmsg.c:30
+msgid "no error"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:31
+msgid "invalid access mode"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:32
+msgid "no regular file"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:33
+msgid "I/O error"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:34
+msgid "out of memory"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:35
+msgid "file is not an ELF file"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:36
+msgid "getehdr call failed"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:37
+msgid "invalid ELF file"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:38
+msgid "invalid DWARF debugging information"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:39
+msgid "no DWARF debugging information available"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:40
+msgid "no compilation unit"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:41
+msgid "first die is no compile unit die"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:42
+msgid "invalid offset"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:43
+msgid "invalid reference form"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:44
+msgid "no reference form"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:45
+msgid "no address form"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:46
+msgid "no flag form"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:47
+msgid "no constant form"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:48
+msgid "no block form"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:49
+msgid "no string form"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:50
+msgid "wrong attribute code"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:51
+msgid "no data form"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:52
+msgid ".debug_line section missing"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:53
+msgid "version mismatch"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:54
+msgid "invalid directory index"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:55
+msgid "invalid address"
+msgstr ""
+
+#: libdwarf/dwarf_errmsg.c:63
+msgid "unknown error"
+msgstr ""
