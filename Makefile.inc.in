@@ -7,9 +7,9 @@ libdir= $(prefix)/lib
 AR = ar
 RANLIB = @RANLIB@
 OPTS = @DEFS@
-LIBRPMRC_FILENAME=$(libdir)/rpmrc
-LIBRPMALIAS_FILENAME=$(libdir)/rpmpopt
-RPMNLSDIR=$(prefix)/share/locale
+LIBRPMRC_FILENAME=@sysconfdir@/rpmrc
+LIBRPMALIAS_FILENAME=@sysconfdir@/rpmpopt
+RPMNLSDIR=@datadir@/locale
 RPMNLSPACKAGE=rpm
 CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
 	-I$(topdir)/lib -I$(topdir)/misc -Wall -Wstrict-prototypes \
@@ -18,6 +18,6 @@ CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
 	-DVERSION=\"$(VERSION)\" 
 LDFLAGS = @LDFLAGS@ @LIBS@ -Llib -Lbuild -Lmisc -L$(topdir)/lib \
 		-L$(topdir)/build -L$(topdir)/misc
-VERSION = 2.3.11
+VERSION = 2.4
 CC = @CC@
 

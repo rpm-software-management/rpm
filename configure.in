@@ -151,8 +151,8 @@ else
     echo "user specificed no gettext; will not build i18n support"
 fi
 
-AC_CHECK_FUNC(gethostname, [], [
-    AC_CHECK_LIB(nsl, gethostname, [LIBS="-lnsl $LIBS"])
+AC_CHECK_FUNC(gethostbyname, [], [
+    AC_CHECK_LIB(nsl, gethostbyname, [LIBS="-lnsl $LIBS"])
 ])
 AC_CHECK_FUNC(socket, [], [
     AC_CHECK_LIB(socket, socket, [LIBS="-lsocket $LIBS"])
@@ -162,6 +162,10 @@ AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
 (from the db package)]))
            )
+
+AC_CHECK_FUNC(ucb, [], [
+    AC_CHECK_LIB(ucb, strcasecmp, [LIBS="-lucb $LIBS"])
+])
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
 	MISCOBJS=fakefork.o])
@@ -250,12 +254,16 @@ if test "x$tmpdir" = "x"; then
     fi
 fi
 
-if echo "$build" | grep solaris >/dev/null ; then
+if echo "$build" | egrep 'solaris|hpux10' >/dev/null ; then
 	# Solaris needs -ldl to use -lnsl, and it can't build static
 	# binaries if you use -ldl
-	echo "hacking things up for solaris"
-	LIBDL=-ldl
 	RPM=rpm.shared
+	if echo "$build" | grep solaris >/dev/null; then
+		echo "hacking things up for solaris"
+		LIBDL=-ldl
+	else
+		echo "hacking things up for hpux"
+	fi
 else
 	RPM=rpm
 fi

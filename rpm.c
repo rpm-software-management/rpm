@@ -141,7 +141,7 @@ static void printHelpLine(char * prefix, char * help) {
 static void printHelp(void) {
     printVersion();
     printBanner();
-    puts(_(""));
+    puts("");
 
     puts(_("usage:"));
     printHelpLine("   --help                 ", 
@@ -280,7 +280,7 @@ static void printHelp(void) {
 		  _("do not execute any package specific scripts"));
     printHelpLine("      --root <dir>        ",
 		  _("use <dir> as the top level directory"));
-    puts(_(""));
+    puts("");
     puts(_("    -b<stage> <spec>      "));
     printHelpLine("    -t<stage> <tarball>      ",
 		  _("build package, where <stage> is one of:"));

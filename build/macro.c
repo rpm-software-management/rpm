@@ -111,7 +111,7 @@ static int parseMacro(char *p, char **macro, char **next)
     }
     
     if (*p == '{') {
-	*next = index(p, '}');
+	*next = strchr(p, '}');
 	if (! *next) {
 	    /* unterminated */
 	    rpmError(RPMERR_BADSPEC, "Unterminated {: %s\n", p);

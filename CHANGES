@@ -1,3 +1,23 @@
+2.3.11 -> 2.4:
+	- changed LIBRPMRC_FILENAME, LIBRPMALIAS_FILENAME, RPMNLSDIR
+	  directories to @sysconfdir@, @sysconfdir@, and @datadir@ to
+	  better conform with autoconf
+	- set RPM_INSTALL_PREFIX environment variable when running 
+	  verify scripts
+	- beginnings of SCO support (though I suspect it will take one
+	  or two more iterations to get it right)
+	- switched to CVS and updated some Makefile rules
+	- look for gethostbyname() instead of gethostname() in -nsl
+	  (this could break some things)
+	- added check for strcasecmp() in -lucb on systems which don't
+	  have strcasecmp() in libc
+	- don't build -static on hpux10
+	- don't try and NLS empty strings
+	- changed index() call to strchr() in macro code
+	- include <time.h> in build/spec.c for various platforms
+	- added update-po rule to po/Makefile.in
+	- updated de.po (thanks to Karl Eichwalder)
+
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output
 	- fix handling of source files with bad owners/groups

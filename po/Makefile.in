@@ -7,6 +7,10 @@ INSTALL= @INSTALL@
 INSTALL_PROGRAM= @INSTALL_PROGRAM@
 INSTALL_DATA= @INSTALL_DATA@
 
+MSGMERGE = msgmerge
+
+NLSPACKAGE = rpm
+
 CATALOGS = sv.mo fr.mo de.mo
 
 POTFILES  = $(srcdir)/../rpm.c
@@ -21,6 +25,23 @@ $(NLSPACKAGE).pot: $(POTFILES)
 	else \
 	    mv $(NLSPACKAGE).po $(NLSPACKAGE).pot; \
 	fi
+
+
+update-po: Makefile
+	$(MAKE) $(NLSPACKAGE).pot
+	catalogs='$(CATALOGS)'; \
+	for cat in $$catalogs; do \
+		lang=`echo $$cat | sed 's/.mo//'`; \
+		mv $$lang.po $$lang.old.po; \
+		echo "$$lang:"; \
+		if $(MSGMERGE) $$lang.old.po $(NLSPACKAGE).pot -o $$lang.po; then \
+		rm -f $$lang.old.po; \
+	else \
+    		echo "msgmerge for $$cat failed!"; \
+		rm -f $$lang.po; \
+		mv $$lang.old.po $$lang.po; \
+	fi; \
+	done
 
 clean:
 	rm -f *mo $(NLSPACKAGE).pot

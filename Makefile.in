@@ -12,7 +12,7 @@ installprefix=$(ROOT)
 
 #LIBEFENCE = -lefence
 
-RCSVERSION = $(subst .,-,$(VERSION))
+CVSTAG = $(subst .,-,$(VERSION))
 
 ################################### Leave this stuff alone
 
@@ -35,7 +35,7 @@ INSTSUBDIRS = lib @PO@
 OTHERSUBDIRS = docs autodeps
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o @GETTEXTSTUB@
 PROGS = @RPM@ rpm2cpio
-LOADLIBES = -lbuild -lrpm -lmisc @LIBS@ @LIBINTL@ @LIBDL@
+LOADLIBES = -lbuild $(topdir)/lib/librpm.a -lmisc @LIBS@ @LIBINTL@ @LIBDL@
 
 SOURCES = $(subst .o,.c,$(OBJS))
 
@@ -150,23 +150,14 @@ depend:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 
-co:
-	co RCS/*,v
-	for d in $(SUBDIRS) $(OTHERSUBDIRS); do \
-		(cd $$d; co RCS/*,v) ;\
-	done
-
 noconfig:
 	find . -name "Makefile" -exec rm {} \; 
 	rm -f *gz *rpm config.*
 
-rcstag:
-	rcs -q -N$(RCSVERSION): RCS/*,v
-	for d in $(SUBDIRS) $(OTHERSUBDIRS); do \
-		(cd $$d; rcs -q -N$(RCSVERSION): RCS/*,v) ;\
-	done
+cvstag:
+	cvs tag $(CVSTAG) .
 
-archive: rcstag
+archive: cvstag
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
 	@echo "maybe someday Erik will get around to making that automatic."
@@ -177,7 +168,7 @@ archive: rcstag
 	@cd /tmp/rpm-$(VERSION); \
 	    make distclean; \
 	    rm -f *.tar.gz; \
-	    find . -name "RCS" -exec rm {} \;
+	    rm -rf CVS; \
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
 	@rm -rf /tmp/rpm-$(VERSION)
 	@cp /tmp/rpm-$(VERSION).tar.gz .

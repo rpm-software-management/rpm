@@ -204,6 +204,7 @@ int rpmVerifyScript(char * root, Header h, int err) {
     char * fn;
     char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
     int status;
+    char * installPrefixEnv = NULL;
 
     if (!headerGetEntry(h, RPMTAG_VERIFYSCRIPT, NULL, (void **) &script, 
 			NULL)) {
@@ -235,7 +236,18 @@ int rpmVerifyScript(char * root, Header h, int err) {
     write(fd, script, strlen(script));
     lseek(fd, 0, SEEK_SET);
 
+    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &type, (void **) &installPrefix,
+		 &count)) {
+	installPrefixEnv = alloca(strlen(installPrefix) + 30);
+	strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
+	strcat(installPrefixEnv, installPrefix);
+    }
+
     if (!fork()) {
+	if (installPrefixEnv) {
+	    doputenv(installPrefixEnv);
+	}
+
 	dup2(fd, 0);
 	close(fd);
 
