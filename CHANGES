@@ -4,6 +4,7 @@
 	  (thanks Kristof Depraetere)
 	- spec file sanity: no - chars in version or release,
 	  must be a regular file :-)
+	- version specifications for requirements can use "-<release number>"
 
 2.2.2 -> 2.2.3:
 	- fixed script file md5 checking when files are in a root
