@@ -442,18 +442,12 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	cfd = fdLink(cfd, "persist (installArchive");
 
 	rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi, cfd, NULL, &failedFile);
-#ifdef	DYING
-	rc = cpioInstallArchive(fi->fsm);
-#endif
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	Fclose(cfd);
 	(void) fsmTeardown(fi->fsm);
 
 	if (!rc && ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT) {
 	    rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi, NULL, NULL, &failedFile);
-#ifdef	DYING
-	    rc = cpioInstallArchive(fi->fsm);
-#endif
 	    (void) fsmTeardown(fi->fsm);
 	}
     }
@@ -833,23 +827,6 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
 
 	setFileOwners(fi);
-
-#ifdef	DYING
-	rc = pkgActions(ts, fi, FSM_COMMIT);
-	if (rc)
-	    goto exit;
-#else
-    {	int i;
-
-	for (i = 0; i < fi->fc; i++) {
-	    if (fi->actions && fi->actions[i] == FA_CREATE)
-		continue;
-    rpmMessage(RPMMESS_DEBUG, _("     file: %s%s action: %s\n"),
-		fi->dnl[fi->dil[i]], fi->bnl[i],
-		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
-	}
-    }
-#endif
 
 	rc = installArchive(ts, fi, 0);
 

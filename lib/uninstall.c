@@ -82,9 +82,6 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 		pkgKey, ts->notifyData);
 
 	rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi, NULL, NULL, &failedFile);
-#ifdef	DYING
-	rc = cpioInstallArchive(fi->fsm);
-#endif
 	(void) fsmTeardown(fi->fsm);
 
 	if (ts->notify)

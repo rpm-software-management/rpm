@@ -32,11 +32,11 @@ typedef enum fileStage_e {
     FSM_UNDO	=  5,
     FSM_FINI	=  6,
 
-    FSM_PKGINSTALL	=  7,
-    FSM_PKGERASE	=  8,
-    FSM_PKGBUILD	=  9,
-    FSM_PKGCOMMIT	= 10,
-    FSM_PKGUNDO		= 11,
+    FSM_PKGINSTALL	= _fd(7),
+    FSM_PKGERASE	= _fd(8),
+    FSM_PKGBUILD	= _fd(9),
+    FSM_PKGCOMMIT	= _fd(10),
+    FSM_PKGUNDO		= _fd(11),
 
     FSM_CREATE	=  _fd(17),
     FSM_MAP	=  _fd(18),

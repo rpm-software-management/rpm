@@ -506,29 +506,6 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     return ret;
 }
 
-/** \ingroup payload
- * Cpio archive header information.
- * @todo Add support for tar (soon) and ar (eventually) archive formats.
- */
-struct cpioCrcPhysicalHeader {
-    char magic[6];
-    char inode[8];
-    char mode[8];
-    char uid[8];
-    char gid[8];
-    char nlink[8];
-    char mtime[8];
-    char filesize[8];
-    char devMajor[8];
-    char devMinor[8];
-    char rdevMajor[8];
-    char rdevMinor[8];
-    char namesize[8];
-    char checksum[8];			/* ignored !! */
-};
-
-#define	PHYS_HDR_SIZE	110		/*!< Don't depend on sizeof(struct) */
-
 #define GET_NUM_FIELD(phys, log) \
 	log = strntoul(phys, &end, 16, sizeof(phys)); \
 	if (*end) return CPIOERR_BAD_HEADER;
@@ -536,7 +513,7 @@ struct cpioCrcPhysicalHeader {
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	memcpy(phys, space, 8);
 
-static int cpioTrailerWrite(FSM_t fsm)
+int cpioTrailerWrite(FSM_t fsm)
 {
     struct cpioCrcPhysicalHeader * hdr =
 	(struct cpioCrcPhysicalHeader *)fsm->rdbuf;
@@ -562,12 +539,7 @@ static int cpioTrailerWrite(FSM_t fsm)
     return rc;
 }
 
-/**
- * Write cpio header.
- * @retval fsm		file path and stat info
- * @return		0 on success
- */
-static int cpioHeaderWrite(FSM_t fsm, struct stat * st)
+int cpioHeaderWrite(FSM_t fsm, struct stat * st)
 {
     struct cpioCrcPhysicalHeader * hdr = (struct cpioCrcPhysicalHeader *)fsm->rdbuf;
     char field[64];
@@ -603,12 +575,7 @@ static int cpioHeaderWrite(FSM_t fsm, struct stat * st)
     return rc;
 }
 
-/**
- * Read cpio heasder.
- * @retval fsm		file path and stat info
- * @return		0 on success
- */
-static int cpioHeaderRead(FSM_t fsm, struct stat * st)
+int cpioHeaderRead(FSM_t fsm, struct stat * st)
 	/*@modifies fsm, *st @*/
 {
     struct cpioCrcPhysicalHeader hdr;
@@ -755,8 +722,6 @@ int fsmMapPath(FSM_t fsm)
 
 	switch (fsm->action) {
 	case FA_SKIP:
-if (_fsm_debug && !(fsm->goal == FSM_PKGERASE || fsm->goal == FSM_PKGCOMMIT))
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 	case FA_SKIPMULTILIB:	/* XXX RPMFILE_STATE_MULTILIB? */
 fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
@@ -778,8 +743,6 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    break;
 
 	case FA_SKIPNETSHARED:
-if (_fsm_debug)
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    if (fi->type == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
 	    break;
@@ -797,8 +760,6 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    break;
 
 	case FA_ALTNAME:
-if (_fsm_debug)
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    assert(fi->type == TR_ADDED);
 	    fsm->nsuffix = SUFFIX_RPMNEW;
 	    break;
@@ -809,7 +770,6 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
 	case FA_ERASE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    assert(fi->type == TR_REMOVED);
 	    break;
 	default:
@@ -870,11 +830,11 @@ static int expandRegular(FSM_t fsm)
     int left = st->st_size;
     int rc = 0;
 
-if (st->st_size == 0) fprintf(stderr, "*** zero %s\n", fsm->path);
     rc = fsmStage(fsm, FSM_WOPEN);
     if (rc)
 	goto exit;
 
+    /* XXX md5sum's will break on repackaging that includes modified files. */
     fmd5sum = fsm->fmd5sum;
 
     /* XXX This doesn't support brokenEndian checks. */
@@ -1299,10 +1259,11 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->li = NULL;
 	errno = 0;	/* XXX get rid of EBADF */
 
-#ifdef	NOTYET
 	/* Detect and create directories not explicitly in package. */
-	rc = fsmStage(fsm, FSM_MKDIRS);
-#endif
+	if (fsm->goal == FSM_PKGINSTALL) {
+	    rc = fsmStage(fsm, FSM_MKDIRS);
+	    if (!rc) fsm->mkdirsdone = 1;
+	}
 
 	break;
     case FSM_INIT:
@@ -1316,11 +1277,13 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->nsuffix = NULL;
 
 	if (fsm->goal == FSM_PKGINSTALL) {
+#ifdef	DYING
 	    /* Detect and create directories not explicitly in package. */
 	    if (!fsm->mkdirsdone) {
 		rc = fsmStage(fsm, FSM_MKDIRS);
 		fsm->mkdirsdone = 1;
 	    }
+#endif
 
 	    /* Read next header from payload, checking for end-of-payload. */
 	    rc = fsmStage(fsm, FSM_NEXT);
@@ -2095,106 +2058,6 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n",
     }
     return rc;
 }
-
-#ifdef	DYING
-/** @todo Verify payload MD5 sum. */
-int cpioInstallArchive(FSM_t fsm)
-{
-    int rc = 0;
-
-#ifdef	NOTYET
-    char * md5sum = NULL;
-
-    fdInitMD5(cfd, 0);
-#endif
-
-    while (1) {
-
-	/* Clean fsm, free'ing memory. Read next archive header. */
-	rc = fsmStage(fsm, FSM_INIT);
-
-	/* Exit on end-of-payload. */
-	if (rc == CPIOERR_HDR_TRAILER) {
-	    rc = 0;
-	    break;
-	}
-	if (fsm->goal == FSM_PKGINSTALL) {
-	    if (rc) {
-		fsm->postpone = 1;
-		(void) fsmStage(fsm, FSM_UNDO);
-		goto exit;
-	    }
-
-	    /* Extract file from archive. */
-	    rc = fsmStage(fsm, FSM_PROCESS);
-	    if (rc) {
-		(void) fsmStage(fsm, FSM_UNDO);
-		goto exit;
-	    }
-
-	    /* Notify on success. */
-	    (void) fsmStage(fsm, FSM_NOTIFY);
-	}
-
-	if (fsmStage(fsm, FSM_FINI))
-	    break;
-
-    }
-
-#ifdef	NOTYET
-    fdFiniMD5(fsm->cfd, (void **)&md5sum, NULL, 1);
-
-    if (md5sum)
-	free(md5sum);
-#endif
-
-    rc = fsmStage(fsm, FSM_DESTROY);
-
-exit:
-    return rc;
-}
-#endif
-
-#ifdef	DYING
-int cpioBuildArchive(FSM_t fsm)
-{
-    size_t pos = fdGetCpioPos(fsm->cfd);
-    int rc = 0;
-
-    while (1) {
-
-	rc = fsmStage(fsm, FSM_INIT);
-
-	if (rc == CPIOERR_HDR_TRAILER) {
-	    rc = 0;
-	    break;
-	}
-	if (rc) {
-	    fsm->postpone = 1;
-	    (void) fsmStage(fsm, FSM_UNDO);
-	    goto exit;
-	}
-
-	rc = fsmStage(fsm, FSM_PROCESS);
-	if (rc) {
-	    (void) fsmStage(fsm, FSM_UNDO);
-	    goto exit;
-	}
-	(void) fsmStage(fsm, FSM_FINI);
-    }
-
-    if (!rc)
-	rc = fsmStage(fsm, FSM_TRAILER);
-
-    if (!rc && fsm->archiveSize)
-	*fsm->archiveSize = (fdGetCpioPos(fsm->cfd) - pos);
-
-    rc = fsmStage(fsm, FSM_DESTROY);
-
-exit:
-    return rc;
-}
-#endif
 
 const char *const cpioStrerror(int rc)
 {

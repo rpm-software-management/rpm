@@ -65,36 +65,53 @@ typedef enum cpioMapFlags_e {
     CPIO_MULTILIB		= (1 << 31) /* internal, only for building. */
 } cpioMapFlags;
 
+/** \ingroup payload
+ * Cpio archive header information.
+ */
+struct cpioCrcPhysicalHeader {
+    char magic[6];
+    char inode[8];
+    char mode[8];
+    char uid[8];
+    char gid[8];
+    char nlink[8];
+    char mtime[8];
+    char filesize[8];
+    char devMajor[8];
+    char devMinor[8];
+    char rdevMajor[8];
+    char rdevMinor[8];
+    char namesize[8];
+    char checksum[8];			/* ignored !! */
+};
+
+#define	PHYS_HDR_SIZE	110		/*!< Don't depend on sizeof(struct) */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef	DYING
-/** \ingroup payload
- * The RPM internal equivalent of the command line "cpio -i".
- *
- * If no mappings are passed, this installs everything! If one is passed
- * it should be sorted, and only files included in the map are installed.
- * Files are installed relative to the current directory unless a mapping
- * is given which specifies an absolute directory. The mode mapping is only
- * used for the permission bits, not for the file type. The owner/group
- * mappings are ignored for the non-root user.
- *
- * @param fsm		file state machine data
+/**
+ * Write cpio trailer.
+ * @retval fsm		file path and stat info
  * @return		0 on success
  */
-int cpioInstallArchive(FSM_t fsm)
-	/*@modifies fileSystem, fsm @*/;
+int cpioTrailerWrite(FSM_t fsm);
 
-/** \ingroup payload
- * The RPM internal equivalent of the command line "cpio -o".
- *
- * @param fsm		file state machine data
+/**
+ * Write cpio header.
+ * @retval fsm		file path and stat info
  * @return		0 on success
  */
-int cpioBuildArchive(FSM_t fsm)
-	/*@modifies fileSystem, fsm @*/;
-#endif
+int cpioHeaderWrite(FSM_t fsm, struct stat * st);
+
+/**
+ * Read cpio header.
+ * @retval fsm		file path and stat info
+ * @return		0 on success
+ */
+int cpioHeaderRead(FSM_t fsm, struct stat * st)
+	/*@modifies fsm, *st @*/;
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.
