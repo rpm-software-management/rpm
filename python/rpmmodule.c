@@ -10,6 +10,7 @@
 #define PyObject_HEAD   int _PyObjectHead;
 #endif
 
+#include <rpmio_internal.h>
 #include <rpmcli.h>	/* XXX for rpmCheckSig */
 #include <rpmdb.h>
 
@@ -20,6 +21,7 @@
 
 #include "header-py.h"
 #include "rpmal-py.h"
+#include "rpmbc-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
@@ -379,6 +381,9 @@ void initrpm(void)
     Py_INCREF(&rpmal_Type);
     PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
 
+    Py_INCREF(&rpmbc_Type);
+    PyModule_AddObject(m, "bc", (PyObject *) &rpmbc_Type);
+
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
 
@@ -402,6 +407,7 @@ void initrpm(void)
 #else
     hdr_Type.ob_type = &PyType_Type;
     rpmal_Type.ob_type = &PyType_Type;
+    rpmbc_Type.ob_type = &PyType_Type;
     rpmds_Type.ob_type = &PyType_Type;
     rpmfd_Type.ob_type = &PyType_Type;
     rpmfi_Type.ob_type = &PyType_Type;

@@ -19,8 +19,8 @@ INCLUDES = -I. \
 	@INCPATH@
 
 noinst_HEADERS = hash.h header-py.h \
-	rpmal-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfi-py.h rpmmi-py.h \
-	rpmrc-py.h rpmte-py.h rpmts-py.h \
+	rpmal-py.h rpmbc-py.c rpmds-py.h rpmdb-py.h rpmfd-py.h \
+	rpmfi-py.h rpmmi-py.h rpmrc-py.h rpmte-py.h rpmts-py.h \
 	upgrade.h
 
 mylibs= \
@@ -51,8 +51,8 @@ poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c header-py.c \
-	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
-	rpmrc-py.c rpmte-py.c rpmts-py.c
+	rpmal-py.c rpmbc-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c \
+	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c
 
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
