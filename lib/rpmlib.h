@@ -905,6 +905,16 @@ typedef enum rpmtransFlags_e {
 } rpmtransFlags;
 
 /** \ingroup rpmtrans
+ * Return copy of rpmlib internal provides.
+ * @retval		address of array of rpmlib internal provide names
+ * @retval		address of array of rpmlib internal provide flags
+ * @retval		address of array of rpmlib internal provide versions
+ * @return		no. of entries
+ */
+int rpmGetRpmlibProvides(/*@out@*/ const char ***provNames,
+	/*@out@*/ int **provFlags, /*@out@*/ const char ***provVersions) /*@*/;
+
+/** \ingroup rpmtrans
  * Compare two versioned dependency ranges, looking for overlap.
  * @param AName		1st dependncy name string
  * @param AEVR		1st dependency [epoch:]version[-release] string

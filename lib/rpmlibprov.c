@@ -52,3 +52,34 @@ int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
     }
     return rc;
 }
+
+int rpmGetRpmlibProvides(const char ***provNames, int **provFlags,
+                         const char ***provVersions)
+{
+    char **names, **versions;
+    int *flags;
+    int n = 0;
+    
+    while (rpmlibProvides[n++].featureName != NULL)
+        ;
+
+    names = xmalloc(sizeof(*names) * n);
+    versions = xmalloc(sizeof(*versions) * n);
+    flags = xmalloc(sizeof(*flags) * n);
+    
+    n = 0;
+    while (rpmlibProvides[n].featureName != NULL) {
+        names[n] = rpmlibProvides[n].featureName;
+        flags[n] = rpmlibProvides[n].featureFlags;
+        versions[n] = rpmlibProvides[n].featureEVR;
+        n++;
+    }
+    
+    names[n] = NULL;
+    versions[n] = NULL;
+    
+    *provNames = names;
+    *provFlags = flags;
+    *provVersions = versions;
+    return n;
+}
