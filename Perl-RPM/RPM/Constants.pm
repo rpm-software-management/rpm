@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.9 2000/08/18 08:23:43 rjray Exp $
+#   $Id: Constants.pm,v 1.10 2000/08/25 15:21:34 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -27,7 +27,7 @@ use RPM;
 @ISA = qw(Exporter);
 
 $VERSION = '0.28';
-$revision = do { my @r=(q$Revision: 1.9 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.10 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE
@@ -1239,6 +1239,16 @@ The following tags may be imported via the B<:rpmfile> specifier. They are
 used to express various characteristics of files in the archive, based on the
 value from B<RPMTAG_FILEFLAGS> that corresponds to a given file.
 
+=over
+
+=item RPMFILE_CONFIG
+
+Not documented yet.
+
+=item RPMFILE_DOC
+
+Not documented yet.
+
 =item RPMFILE_DONOTUSE
 
 Not documented yet.
@@ -1349,14 +1359,6 @@ Not documented yet.
 Not documented yet.
 
 =item QUERY_FOR_STATE
-
-Not documented yet.
-
-=item RPMFILE_CONFIG
-
-Not documented yet.
-
-=item RPMFILE_DOC
 
 Not documented yet.
 
