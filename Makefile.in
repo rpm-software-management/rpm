@@ -59,7 +59,7 @@ install:
 	install -s -m 755 -o 0 -g 0 rpm $(BINDIR)
 	install -s -m 755 -o 0 -g 0 rpmconvert $(BINDIR)
 	install -m 644 -o 0 -g 0 rpm.8 $(MANDIR)
-	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install
+	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
 
 clean:
 	for d in $(SUBDIRS); do \
