@@ -336,7 +336,7 @@ int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
     int fd;
     int ran;
     char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
-    struct stat sb;
+    struct stat sb, sb2;
 
     if (!prefix) prefix = "";
 
@@ -356,6 +356,17 @@ int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
     }
 
     if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
+	return 1;
+    }
+
+    if (sb.st_nlink != 1) {
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
+	return 1;
+    }
+
+    fstat(fd, &sb2);
+    if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
 	return 1;
     }
