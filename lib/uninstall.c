@@ -73,7 +73,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     int i;
     int fileCount;
     const char * name, * version, * release;
-    const char ** baseNameList;
+    const char ** baseNames;
     int type;
     int scriptArg;
     int rc = 0;
@@ -132,7 +132,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 		flags & RPMTRANS_FLAG_TEST);
 
     if (!(flags & RPMTRANS_FLAG_JUSTDB) &&
-	headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseNameList, 
+	headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseNames, 
 	               &fileCount)) {
 	const char ** fileMd5List;
 	uint_32 * fileFlagsList;
@@ -153,7 +153,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	    size_t fnlen;
 
 	    for (i = 0; i < fileCount; i++) {
-		fnlen = strlen(baseNameList[i]) + 
+		fnlen = strlen(baseNames[i]) + 
 			strlen(dirNames[dirIndexes[i]]);
 		if (fnlen > fnbuffersize)
 		    fnbuffersize = fnlen;
@@ -189,7 +189,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	    } else {
 		strcpy(fnbuffer, dirName);
 	    }
-	    strcat(fnbuffer, baseNameList[i]);
+	    strcat(fnbuffer, baseNames[i]);
 
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
 			fnbuffer, fileActionString(actions[i]));
@@ -199,7 +199,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 			   actions[i]);
 	}
 
-	free(baseNameList);
+	free(baseNames);
 	free(dirNames);
 	free(fileMd5List);
     }

@@ -8,15 +8,16 @@
 
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
 
-char ** splitString(const char * str, int length, char sep) {
+char ** splitString(const char * str, int length, char sep)
+{
     const char * source;
     char * s, * dest;
     char ** list;
     int i;
     int fields;
-   
+
     s = xmalloc(length + 1);
-    
+
     fields = 1;
     for (source = str, dest = s, i = 0; i < length; i++, source++, dest++) {
 	*dest = *source;
@@ -43,12 +44,14 @@ char ** splitString(const char * str, int length, char sep) {
     return list;
 }
 
-void freeSplitString(char ** list) {
+void freeSplitString(char ** list)
+{
     free(list[0]);
     free(list);
 }
 
-int rpmfileexists(const char * urlfn) {
+int rpmfileexists(const char * urlfn)
+{
     const char *fn;
     int urltype = urlPath(urlfn, &fn);
     struct stat buf;
@@ -80,13 +83,14 @@ int rpmfileexists(const char * urlfn) {
 /* return 1: a is newer than b */
 /*        0: a and b are the same version */
 /*       -1: b is newer than a */
-int rpmvercmp(const char * a, const char * b) {
+int rpmvercmp(const char * a, const char * b)
+{
     char oldch1, oldch2;
     char * str1, * str2;
     char * one, * two;
     int rc;
     int isnum;
-    
+
     /* easy comparison to see if versions are identical */
     if (!strcmp(a, b)) return 0;
 
@@ -119,7 +123,7 @@ int rpmvercmp(const char * a, const char * b) {
 	    while (*str2 && isalpha(*str2)) str2++;
 	    isnum = 0;
 	}
-		
+
 	/* save character at the end of the alpha or numeric segment */
 	/* so that they can be restored after the comparison */
 	oldch1 = *str1;
@@ -136,7 +140,7 @@ int rpmvercmp(const char * a, const char * b) {
 	    /* this used to be done by converting the digit segments */
 	    /* to ints using atoi() - it's changed because long  */
 	    /* digit segments can overflow an int - this should fix that. */
-	  
+
 	    /* throw away any leading zeros - it's a number, right? */
 	    while (*one == '0') one++;
 	    while (*two == '0') two++;
@@ -152,7 +156,7 @@ int rpmvercmp(const char * a, const char * b) {
 	/* compare */
 	rc = strcmp(one, two);
 	if (rc) return rc;
-	
+
 	/* restore character that was replaced by null above */
 	*str1 = oldch1;
 	one = str1;
@@ -169,7 +173,8 @@ int rpmvercmp(const char * a, const char * b) {
     if (!*one) return -1; else return 1;
 }
 
-void stripTrailingSlashes(char * str) {
+void stripTrailingSlashes(char * str)
+{
     char * chptr;
 
     chptr = str + strlen(str) - 1;
@@ -179,9 +184,10 @@ void stripTrailingSlashes(char * str) {
     }
 }
 
-int doputenv(const char *str) {
+int doputenv(const char *str)
+{
     char * a;
-    
+
     /* FIXME: this leaks memory! */
 
     a = xmalloc(strlen(str) + 1);
@@ -190,7 +196,8 @@ int doputenv(const char *str) {
     return putenv(a);
 }
 
-int dosetenv(const char *name, const char *value, int overwrite) {
+int dosetenv(const char *name, const char *value, int overwrite)
+{
     int i;
     char * a;
 
@@ -201,11 +208,11 @@ int dosetenv(const char *name, const char *value, int overwrite) {
     i = strlen(name) + strlen(value) + 2;
     a = xmalloc(i);
     if (!a) return 1;
-    
+
     strcpy(a, name);
     strcat(a, "=");
     strcat(a, value);
-    
+
     return putenv(a);
 }
 
@@ -216,7 +223,8 @@ int dosetenv(const char *name, const char *value, int overwrite) {
    is looked up via getpw() and getgr() functions.  If this performs
    too poorly I'll have to implement it properly :-( */
 
-int unameToUid(const char * thisUname, uid_t * uid) {
+int unameToUid(const char * thisUname, uid_t * uid)
+{
     /*@only@*/ static char * lastUname = NULL;
     static int lastUnameLen = 0;
     static int lastUnameAlloced;
@@ -233,7 +241,7 @@ int unameToUid(const char * thisUname, uid_t * uid) {
     }
 
     thisUnameLen = strlen(thisUname);
-    if (!lastUname || thisUnameLen != lastUnameLen || 
+    if (!lastUname || thisUnameLen != lastUnameLen ||
 	strcmp(thisUname, lastUname)) {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
@@ -256,7 +264,8 @@ int unameToUid(const char * thisUname, uid_t * uid) {
     return 0;
 }
 
-int gnameToGid(const char * thisGname, gid_t * gid) {
+int gnameToGid(const char * thisGname, gid_t * gid)
+{
     /*@only@*/ static char * lastGname = NULL;
     static int lastGnameLen = 0;
     static int lastGnameAlloced;
@@ -271,9 +280,9 @@ int gnameToGid(const char * thisGname, gid_t * gid) {
 	*gid = 0;
 	return 0;
     }
-   
+
     thisGnameLen = strlen(thisGname);
-    if (!lastGname || thisGnameLen != lastGnameLen || 
+    if (!lastGname || thisGnameLen != lastGnameLen ||
 	strcmp(thisGname, lastGname)) {
 	if (lastGnameAlloced < thisGnameLen + 1) {
 	    lastGnameAlloced = thisGnameLen + 10;
@@ -295,7 +304,8 @@ int gnameToGid(const char * thisGname, gid_t * gid) {
     return 0;
 }
 
-char * uidToUname(uid_t uid) {
+char * uidToUname(uid_t uid)
+{
     static int lastUid = -1;
     /*@only@*/ static char * lastUname = NULL;
     static int lastUnameLen = 0;
@@ -325,7 +335,8 @@ char * uidToUname(uid_t uid) {
     }
 }
 
-char * gidToGname(gid_t gid) {
+char * gidToGname(gid_t gid)
+{
     static int lastGid = -1;
     /*@only@*/ static char * lastGname = NULL;
     static int lastGnameLen = 0;
@@ -355,11 +366,12 @@ char * gidToGname(gid_t gid) {
     }
 }
 
-int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
+int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
+{
     const char * tempfn = NULL;
     const char * tfn = NULL;
     int temput;
-    FD_t fd;
+    FD_t fd = NULL;
     int ran;
 
     if (!prefix) prefix = "";
@@ -368,7 +380,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
     srand(time(NULL));
     ran = rand() % 100000;
 
-     /* maybe this should use link/stat? */
+    /* maybe this should use link/stat? */
 
     do {
 	char tfnbuf[64];
@@ -395,6 +407,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	}
 
 	fd = Fopen(tempfn, "w+x.ufdio");
+	/* XXX FIXME: errno may not be correct for ufdio */
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 
     if (fd == NULL || Ferror(fd))
@@ -439,7 +452,8 @@ errxit:
     return 1;
 }
 
-char * currentDirectory(void) {
+char * currentDirectory(void)
+{
     int currDirLen;
     char * currDir;
 
@@ -453,116 +467,148 @@ char * currentDirectory(void) {
     return currDir;
 }
 
-void compressFilelist(Header h) {
-    const char ** files;
-    const char ** dirList;
-    int * compDirList;
+int _noDirTokens = 1;
+
+void compressFilelist(Header h)
+{
+    const char ** fileNames;
+    const char ** dirNames;
     const char ** baseNames;
-    int fileCount;
+    int_32 * dirIndexes;
+    int count;
     int i;
-    int lastDir = -1;
+    int dirIndex = -1;
     int lastLen = -1;
 
-    /* This assumes thie file list is already sorted, and begins with a
-       single '/'. That assumption isn't critical, but it makes things go
-       a bit faster. */
+    /*
+     * This assumes the file list is already sorted, and begins with a
+     * single '/'. That assumption isn't critical, but it makes things go
+     * a bit faster.
+     */
 
-    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &files,
-			&fileCount)) 
-	/* no file list */
-	return;
+    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL,
+			(void **) &fileNames, &count))
+	return;		/* no file list */
 
-    if (files[0][0] != '/') {
+    dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
+    baseNames = alloca(sizeof(*dirNames) * count);
+    dirIndexes = alloca(sizeof(*dirIndexes) * count);
+
+    if (fileNames[0][0] != '/') {
 	/* HACK. Source RPM, so just do things differently */
-	free(files);
-	return;
+	dirIndex = 0;
+	dirNames[dirIndex] = "";
+	for (i = 0; i < count; i++) {
+	    dirIndexes[i] = dirIndex;
+	    baseNames[i] = fileNames[i];
+	}
+	goto exit;
     }
 
-    dirList = alloca(sizeof(*dirList) * fileCount);	/* worst case */
-    baseNames = alloca(sizeof(*dirList) * fileCount); 
-    compDirList = alloca(sizeof(*compDirList) * fileCount); 
+    for (i = 0; i < count; i++) {
+	char *baseName = strrchr(fileNames[i], '/') + 1;
+	int len = baseName - fileNames[i];
 
-    for (i = 0; i < fileCount; i++) {
-	char *tail = strrchr(files[i], '/') + 1;
-	
-	if (lastDir < 0 || (lastLen != (tail - files[i])) ||
-		strncmp(dirList[lastDir], files[i], tail - files[i])) {
-	    char *s = alloca(tail - files[i] + 1);
-	    memcpy(s, files[i], tail - files[i]);
-	    s[tail - files[i]] = '\0';
-	    dirList[++lastDir] = s;
-	    lastLen = tail - files[i];
-	} 
+	if (dirIndex < 0 || lastLen != len ||
+		strncmp(dirNames[dirIndex], fileNames[i], len)) {
+	    char *s = alloca(len + 1);
+	    memcpy(s, fileNames[i], len);
+	    s[len] = '\0';
+	    dirNames[++dirIndex] = s;
+	    lastLen = len;
+	}
 
-	compDirList[i] = lastDir;
-	baseNames[i] = tail;
+	dirIndexes[i] = dirIndex;
+	baseNames[i] = baseName;
     }
 
-    headerAddEntry(h, RPMTAG_COMPDIRLIST, RPM_STRING_ARRAY_TYPE, dirList, 
-		   lastDir + 1);
-    headerAddEntry(h, RPMTAG_COMPFILEDIRS, RPM_INT32_TYPE, compDirList, 
-		   fileCount);
-    headerAddEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE, baseNames, 
-		   fileCount);
+exit:
+    headerAddEntry(h, RPMTAG_COMPDIRLIST, RPM_STRING_ARRAY_TYPE,
+			dirNames, dirIndex + 1);
+    headerAddEntry(h, RPMTAG_COMPFILEDIRS, RPM_INT32_TYPE,
+			dirIndexes, count);
+    headerAddEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE,
+			baseNames, count);
 
-    free(files);
+    xfree(fileNames);
 
     headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
 }
 
-/* this is pretty straight-forward. The only thing that even resembles a trick
-   is getting all of this into a single xmalloc'd block */
-static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr, 
+/*
+ * This is pretty straight-forward. The only thing that even resembles a trick
+ * is getting all of this into a single xmalloc'd block.
+ */
+static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 			    /*@out@*/ int * fileCountPtr, int baseNameTag,
-			    int dirListTag, int dirIndexesTag) {
-    int * dirList;
-    const char ** dirs;
-    const char ** tails;
+			    int dirNameTag, int dirIndexesTag)
+{
+    const char ** baseNames;
+    const char ** dirNames;
+    int * dirIndexes;
     int count;
-    const char ** fileList;
+    const char ** fileNames;
     int size;
     char * data;
     int i;
 
-    if (!headerGetEntry(h, baseNameTag, NULL, (void **) &tails,
-			&count)) 
-	/* no file list */
+    if (!headerGetEntry(h, baseNameTag, NULL, (void **) &baseNames, &count)) {
+	*fileListPtr = NULL;
+	*fileCountPtr = 0;
+	return;		/* no file list */
+    }
+
+    headerGetEntry(h, dirNameTag, NULL, (void **) &dirNames, NULL);
+    headerGetEntry(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
+
+    size = sizeof(*fileNames) * count;
+    for (i = 0; i < count; i++)
+	size += strlen(baseNames[i]) + strlen(dirNames[dirIndexes[i]]) + 1;
+
+    fileNames = xmalloc(size);
+    data = ((char *) fileNames) + (sizeof(*fileNames) * count);
+    for (i = 0; i < count; i++) {
+	fileNames[i] = data;
+	data = stpcpy( stpcpy(data, dirNames[dirIndexes[i]]), baseNames[i]);
+	*data++ = '\0';
+    }
+    xfree(baseNames);
+    xfree(dirNames);
+
+    *fileListPtr = fileNames;
+    *fileCountPtr = count;
+}
+
+void expandFilelist(Header h)
+{
+    const char ** fileNames = NULL;
+    int count = 0;
+
+    doBuildFileList(h, &fileNames, &count, RPMTAG_COMPFILELIST,
+			RPMTAG_COMPDIRLIST, RPMTAG_COMPFILEDIRS);
+
+    if (fileNames == NULL || count <= 0)
 	return;
 
-    headerGetEntry(h, dirListTag, NULL, (void **) &dirs,
-			&count); 
-    headerGetEntry(h, dirIndexesTag, NULL, (void **) &dirList,
-			&count); 
+    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+			fileNames, count);
 
-    size = sizeof(*fileList) * count;
-    for (i = 0; i < count; i++) {
-	size += strlen(tails[i]) + strlen(dirs[dirList[i]]) + 1;
-    }
+    xfree(fileNames);
 
-    fileList = xmalloc(size);
-    data = ((char *) fileList) + (sizeof(*fileList) * count);
-
-    for (i = 0; i < count; i++) {
-        fileList[i] = data;
-	strcpy(data, dirs[dirList[i]]);
-	strcat(data, tails[i]);
-	data += strlen(tails[i]) + strlen(dirs[dirList[i]]) + 1;
-    }
-
-    *fileListPtr = fileList;
-    *fileCountPtr = count;
-    free(tails);
-    free(dirs);
+    headerRemoveEntry(h, RPMTAG_COMPFILELIST);
+    headerRemoveEntry(h, RPMTAG_COMPDIRLIST);
+    headerRemoveEntry(h, RPMTAG_COMPFILEDIRS);
 }
+
 
 void buildFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
 {
-    doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_COMPFILELIST,
-		    RPMTAG_COMPDIRLIST, RPMTAG_COMPFILEDIRS);
+    doBuildFileList(h, fileListPtr, fileCountPtr,RPMTAG_COMPFILELIST,
+			RPMTAG_COMPDIRLIST, RPMTAG_COMPFILEDIRS);
 }
 
 void buildOrigFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
 {
     doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_ORIGCOMPFILELIST,
-		    RPMTAG_ORIGCOMPDIRLIST, RPMTAG_ORIGCOMPFILEDIRS);
+			RPMTAG_ORIGCOMPDIRLIST, RPMTAG_ORIGCOMPFILEDIRS);
 }

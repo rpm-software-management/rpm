@@ -16,6 +16,8 @@
 /*@access dbiIndexSet@*/
 /*@access dbiIndexRecord@*/
 
+extern int _noDirTokens;
+
 const char *rpmdb_filenames[] = {
     "packages.rpm",
     "nameindex.rpm",
@@ -290,10 +292,10 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
     return fadNextOffset(db->pkgs, lastOffset);
 }
 
-static Header doGetRecord(rpmdb db, unsigned int offset, int pristine) {
+static Header doGetRecord(rpmdb db, unsigned int offset, int pristine)
+{
     Header h;
-    char ** fileList;
-    char ** newList;
+    const char ** fileNames;
     int fileCount = 0;
     int i;
 
@@ -311,28 +313,30 @@ static Header doGetRecord(rpmdb db, unsigned int offset, int pristine) {
        we're dealing with a package that has just the compressed file name
        list */
     if (!headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
-			   (void **) &fileList, &fileCount)) return h;
+			   (void **) &fileNames, &fileCount)) return h;
 
     for (i = 0; i < fileCount; i++) 
-	if (*fileList[i] != '/') break;
+	if (*fileNames[i] != '/') break;
 
     if (i == fileCount) {
-	free(fileList);
-    } else {
-	/* bad header -- let's clean it up */
-	newList = alloca(sizeof(*newList) * fileCount);
+	free(fileNames);
+    } else {	/* bad header -- let's clean it up */
+	const char ** newFileNames = alloca(sizeof(*newFileNames) * fileCount);
 	for (i = 0; i < fileCount; i++) {
-	    newList[i] = alloca(strlen(fileList[i]) + 2);
-	    if (*fileList[i] == '/')
-		strcpy(newList[i], fileList[i]);
-	    else
-		sprintf(newList[i], "/%s", fileList[i]);
+	    char * newFileName = alloca(strlen(fileNames[i]) + 2);
+	    if (*fileNames[i] != '/') {
+		newFileName[0] = '/';
+		newFileName[1] = '\0';
+	    } else
+		newFileName[0] = '\0';
+	    strcat(newFileName, fileNames[i]);
+	    newFileNames[i] = newFileName;
 	}
 
-	free(fileList);
+	free(fileNames);
 
 	headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, 
-			  newList, fileCount);
+			  newFileNames, fileCount);
     }
 
     /* The file list was moved to a more compressed format which not
@@ -351,26 +355,23 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset)
 
 int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 {
-    const char * basename;
+    const char * baseName;
     fingerPrint fp1, fp2;
     dbiIndexSet allMatches;
     int i, rc, num;
     Header h;
-    char ** baseNames, ** dirNames;
-    int_32 * dirIndexes;
-    char * otherFile;
     fingerPrintCache fpc;
 
     fpc = fpCacheCreate(20);
     fp1 = fpLookup(fpc, filespec, 0);
 
-    basename = strrchr(filespec, '/');
-    if (!basename) 
-	basename = filespec;
+    baseName = strrchr(filespec, '/');
+    if (baseName == NULL) 
+	baseName = filespec;
     else
-	basename++;
+	baseName++;
 
-    rc = dbiSearchIndex(db->fileIndex, basename, &allMatches);
+    rc = dbiSearchIndex(db->fileIndex, baseName, &allMatches);
     if (rc) {
 	fpCacheFree(fpc);
 	return rc;
@@ -379,6 +380,10 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     *matches = dbiCreateIndexRecord();
     i = 0;
     while (i < allMatches.count) {
+	const char ** baseNames, ** dirNames;
+	int_32 * dirIndexes;
+	char * otherFile;
+
 	if ((h = rpmdbGetRecord(db, allMatches.recs[i].recOffset)) == NULL) {
 	    i++;
 	    continue;
@@ -485,7 +490,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
     int type;
     unsigned int count;
     dbiIndexRecord rec;
-    char ** baseFileNames, ** providesList, ** requiredbyList;
+    char ** baseNames, ** providesList, ** requiredbyList;
     char ** conflictList, ** triggerList;
     int i;
 
@@ -564,17 +569,17 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	free(conflictList);
     }
 
-    if (headerGetEntry(h, RPMTAG_COMPFILELIST, &type, (void **) &baseFileNames, 
+    if (headerGetEntry(h, RPMTAG_COMPFILELIST, &type, (void **) &baseNames, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
 	    rpmMessage(RPMMESS_DEBUG, _("removing file index for %s\n"), 
-			baseFileNames[i]);
+			baseNames[i]);
 	    /* structure assignment */
 	    rec = dbiReturnIndexRecordInstance(offset, i);
-	    removeIndexEntry(db->fileIndex, baseFileNames[i], rec, tolerant, 
+	    removeIndexEntry(db->fileIndex, baseNames[i], rec, tolerant, 
 			     "file index");
 	}
-	free(baseFileNames);
+	free(baseNames);
     } else {
 	rpmMessage(RPMMESS_DEBUG, _("package has no files\n"));
     }
@@ -618,7 +623,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 {
     unsigned int dboffset;
     unsigned int i, j;
-    const char ** baseFileNames;
+    const char ** baseNames;
     const char ** providesList;
     const char ** requiredbyList;
     const char ** conflictList;
@@ -636,8 +641,27 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     if (!group) group = "Unknown";
 
     count = 0;
+
     headerGetEntry(dbentry, RPMTAG_COMPFILELIST, &type, (void **) 
-		    &baseFileNames, &count);
+		    &baseNames, &count);
+
+    if (_noDirTokens) {
+	const char ** newBaseNames;
+	char * data;
+	int len;
+	len = count * sizeof(*baseNames);
+	for (i = 0; i < count; i++)
+	    len += strlen(baseNames[i]) + 1;
+	newBaseNames = xmalloc(len);
+	data = (char *) newBaseNames + count;
+	for (i = 0; i < count; i++) {
+	    newBaseNames[i] = data;
+	    data = stpcpy(data, baseNames[i]);
+	    *data++ = '\0';
+	}
+	expandFilelist(dbentry);
+    }
+
     headerGetEntry(dbentry, RPMTAG_PROVIDENAME, &type, (void **) &providesList, 
 	           &providesCount);
     headerGetEntry(dbentry, RPMTAG_REQUIRENAME, &type, 
@@ -688,7 +712,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 	rc += addIndexEntry(db->providesIndex, providesList[i], dboffset, 0);
 
     for (i = 0; i < count; i++) {
-	rc += addIndexEntry(db->fileIndex, baseFileNames[i], dboffset, i);
+	rc += addIndexEntry(db->fileIndex, baseNames[i], dboffset, i);
     }
 
     dbiSyncIndex(db->nameIndex);
@@ -705,7 +729,7 @@ exit:
     if (providesCount) free(providesList);
     if (conflictCount) free(conflictList);
     if (triggerCount) free(triggerList);
-    if (count) free(baseFileNames);
+    if (count) free(baseNames);
 
     return rc;
 }
@@ -725,6 +749,9 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
 
     oldSize = headerSizeof(oldHeader, HEADER_MAGIC_NO);
     headerFree(oldHeader);
+
+    if (_noDirTokens)
+	expandFilelist(newHeader);
 
     if (oldSize != headerSizeof(newHeader, HEADER_MAGIC_NO)) {
 	rpmMessage(RPMMESS_DEBUG, _("header changed size!"));
@@ -844,15 +871,15 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     int_32 * dirIndexes, * fullDirIndexes;
     fingerPrintCache fpc;
 
-    /* this may be worth batching by basename, but probably not as
-       basenames are quite unique as it is */
+    /* this may be worth batching by baseName, but probably not as
+       baseNames are quite unique as it is */
 
     intMatches = xcalloc(intMatchesAlloced, sizeof(*intMatches));
 
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
 	dbiIndexSet matches;
-	switch (dbiSearchIndex(db->fileIndex, fpList[i].basename, &matches)) {
+	switch (dbiSearchIndex(db->fileIndex, fpList[i].baseName, &matches)) {
 	default:
 	    break;
 	case 2:

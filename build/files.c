@@ -944,7 +944,7 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
      *
      */
     {	const char *fileName;
-	int ut = urlPath(fileURL, &fileName);
+	(void) urlPath(fileURL, &fileName);
 	if (fl->buildRootURL && strcmp(fl->buildRootURL, "/"))
 	    fileURL += strlen(fl->buildRootURL);
     }

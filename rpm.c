@@ -93,6 +93,7 @@ static int showrc;
 static int signIt;
 static int test;
 extern int _url_debug;
+extern int _noDirTokens;
 
 static int showVersion;
 extern const char * rpmNAME;
@@ -114,6 +115,7 @@ static struct poptOption optionsTable[] = {
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
  { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
  { "define", '\0', POPT_ARG_STRING, &noUsageMsg, GETOPT_DEFINEMACRO,NULL, NULL},
+ { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
  { "eval", '\0', POPT_ARG_STRING, &noUsageMsg, GETOPT_EVALMACRO, NULL, NULL},
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
@@ -136,6 +138,7 @@ static struct poptOption optionsTable[] = {
  { "install", '\0', 0, 0, GETOPT_INSTALL,	NULL, NULL},
  { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
+ { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,	NULL, NULL},
  { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},
  { "nolibio", '\0', 0, &noLibio, 0,		NULL, NULL},
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},

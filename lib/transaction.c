@@ -259,7 +259,7 @@ static Header relocateFileList(struct availablePackage * alp,
     rpmRelocation * rawRelocations = alp->relocs;
     rpmRelocation * relocations = NULL;
     const char ** validRelocations;
-    char ** baseFileNames, ** dirNames;
+    char ** baseNames, ** dirNames;
     int_32 * dirIndexes;
     int_32 * newDirIndexes;
     int_32 fileCount, dirCount;
@@ -365,7 +365,7 @@ static Header relocateFileList(struct availablePackage * alp,
      * backwards so that /usr/local relocations take precedence over /usr 
      * ones. */
 
-    headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseFileNames, 
+    headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseNames, 
 		   &fileCount);
     headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &dirIndexes, NULL);
     headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirNames, 
@@ -384,7 +384,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	if (skipDirList[dirIndexes[i]]) {
 	    actions[i] = FA_SKIPNSTATE;
 	    rpmMessage(RPMMESS_DEBUG, _("excluding file %s%s\n"), 
-		       dirNames[dirIndexes[i]], baseFileNames[i]);
+		       dirNames[dirIndexes[i]], baseNames[i]);
 	    continue;
 	} 
 
@@ -393,13 +393,13 @@ static Header relocateFileList(struct availablePackage * alp,
 	   list. XXX FIXME: Would a bsearch of the (already sorted) 
 	   relocation list be a good idea? */
 
-	len = strlen(dirNames[dirIndexes[i]]) + strlen(baseFileNames[i]) + 1;
+	len = strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
 	if (len >= fileAlloced) {
 	    fileAlloced = len * 2;
 	    filespec = xrealloc(filespec, fileAlloced);
 	}
 	strcpy(filespec, dirNames[dirIndexes[i]]);
-	strcat(filespec, baseFileNames[i]);
+	strcat(filespec, baseNames[i]);
 
 	for (j = numRelocations - 1; j >= 0; j--)
 	    if (!strcmp(relocations[j].oldPath, filespec)) break;
@@ -428,9 +428,9 @@ static Header relocateFileList(struct availablePackage * alp,
 	*chptr++ = '\0';
 
 	/* filespec is the new path, and chptr is the new basename */
-	if (strcmp(baseFileNames[i], chptr)) {
-	    baseFileNames[i] = alloca(strlen(chptr) + 1);
-	    strcpy(baseFileNames[i], chptr);
+	if (strcmp(baseNames[i], chptr)) {
+	    baseNames[i] = alloca(strlen(chptr) + 1);
+	    strcpy(baseNames[i], chptr);
 	}
 
 	/* Does this directory already exist in the directory list? */
@@ -518,14 +518,14 @@ static Header relocateFileList(struct availablePackage * alp,
 	headerAddEntry(h, RPMTAG_ORIGCOMPDIRLIST, t, p, c);
 
 	headerModifyEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE,
-			  baseFileNames, fileCount);
+			  baseNames, fileCount);
 	headerModifyEntry(h, RPMTAG_COMPFILEDIRS, RPM_STRING_ARRAY_TYPE,
 			  dirIndexes, fileCount);
 	headerModifyEntry(h, RPMTAG_COMPDIRLIST, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
     }
 
-    free(baseFileNames);
+    free(baseNames);
     free(dirNames);
     if (filespec) free(filespec);
     free(skipDirList);

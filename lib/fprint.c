@@ -90,18 +90,18 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 	}
 
         if (fp.entry) {
-	    fp.subdir = dirName + (end - buf);
-	    if (fp.subdir[0] == '/' && fp.subdir[1] != '\0')
-		fp.subdir++;
+	    fp.subDir = dirName + (end - buf);
+	    if (fp.subDir[0] == '/' && fp.subDir[1] != '\0')
+		fp.subDir++;
 	    else
-		fp.subdir = "";
-	    if (!scareMemory && fp.subdir != NULL)
-		fp.subdir = xstrdup(fp.subdir);	/* XXX memory leak, but how
+		fp.subDir = "";
+	    if (!scareMemory && fp.subDir != NULL)
+		fp.subDir = xstrdup(fp.subDir);	/* XXX memory leak, but how
 						   do we know we can free it? 
 						   Using the (new) cache would
 						   work if hash tables allowed
 						   traversal. */
-	    fp.basename = baseName;
+	    fp.baseName = baseName;
 	    return fp;
 	}
 
@@ -139,7 +139,7 @@ unsigned int fpHashFunction(const void * key)
     const char * chptr;
 
     ch = 0;
-    chptr = fp->basename;
+    chptr = fp->baseName;
     while (*chptr) ch ^= *chptr++;
 
     hash |= ((unsigned)ch) << 24;
@@ -168,8 +168,8 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 	   redoing all of this work */
 	if (i > 0 && dirIndexes[i - 1] == dirIndexes[i]) {
 	    fpList[i].entry = fpList[i - 1].entry;
-	    fpList[i].subdir = fpList[i - 1].subdir;
-	    fpList[i].basename = baseNames[i];
+	    fpList[i].subDir = fpList[i - 1].subDir;
+	    fpList[i].baseName = baseNames[i];
 	} else {
 	    fpList[i] = doLookup(cache, dirNames[dirIndexes[i]], baseNames[i],
 				 1);

@@ -17,6 +17,8 @@ static int addFileToArrayTag(Spec spec, char *file, Header h, int tag);
 static int cpio_doio(FD_t fdo, CSA_t *csa, const char * fmode);
 static int cpio_copy(FD_t fdo, CSA_t *csa);
 
+extern int _noDirTokens;
+
 static inline int genSourceRpmName(Spec spec)
 {
     if (spec->sourceRpmName == NULL) {
@@ -253,7 +255,7 @@ int writeRPM(Header h, const char *fileName, int type,
 		&csa->cpioArchiveSize, 1);
     }
 
-    compressFilelist(h);
+    if (!_noDirTokens) compressFilelist(h);
 
     /* Create and add the cookie */
     if (cookie) {

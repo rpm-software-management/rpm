@@ -8,7 +8,7 @@ struct availablePackage {
     /*@owned@*/ const char ** provides;
     /*@owned@*/ const char ** providesEVR;
     /*@dependent@*/ int * provideFlags;
-    /*@owned@*/ const char ** baseFileNames;
+    /*@owned@*/ const char ** baseNames;
     /*@dependent@*/ const char * name;
     /*@dependent@*/ const char * version;
     /*@dependent@*/ const char * release;
@@ -29,7 +29,7 @@ struct availableIndexEntry {
 
 struct fileIndexEntry {
     /*@owned@*/ struct availablePackage * package;
-    /*@dependent@*/ const char * basename;
+    /*@dependent@*/ const char * baseName;
 } ;
 
 struct dirInfo {

@@ -20,17 +20,17 @@ typedef struct fprintCache_s {
 
 typedef struct fingerprint_s {
     const struct fprintCacheEntry_s * entry;
-    const char * subdir;
-    const char * basename;
+    const char * subDir;
+    const char * baseName;
 } fingerPrint;
 
 /* only if !scarceMemory */
-#define fpFree(a) free((void *)(a).basename)
+#define fpFree(a) free((void *)(a).baseName)
 
 #define FP_EQUAL(a, b) ((&(a) == &(b)) || \
 			       (((a).entry == (b).entry) && \
-			        !strcmp((a).subdir, (b).subdir) && \
-			        !strcmp((a).basename, (b).basename)))
+			        !strcmp((a).subDir, (b).subDir) && \
+			        !strcmp((a).baseName, (b).baseName)))
 
 #ifdef __cplusplus
 extern "C" {

@@ -44,9 +44,9 @@ struct poptOption rpmVerifyPoptTable[] = {
 int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result, 
 		  int omitMask)
 {
-    char ** baseNameList, ** md5List, ** linktoList, ** dirNameList;
+    char ** baseNames, ** md5List, ** linktoList, ** dirNames;
     int_32 * verifyFlags, flags;
-    int_32 * sizeList, * mtimeList, * dirIndexList;
+    int_32 * sizeList, * mtimeList, * dirIndexes;
     unsigned short * modeList, * rdevList;
     char * fileStatesList;
     char * filespec;
@@ -90,18 +90,18 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
 	flags = RPMVERIFY_ALL;
     }
 
-    headerGetEntry(h, RPMTAG_COMPFILELIST, &type, (void **) &baseNameList, 
+    headerGetEntry(h, RPMTAG_COMPFILELIST, &type, (void **) &baseNames, 
 		   &count);
-    headerGetEntry(h, RPMTAG_COMPFILEDIRS, &type, (void **) &dirIndexList, 
+    headerGetEntry(h, RPMTAG_COMPFILEDIRS, &type, (void **) &dirIndexes, 
 		   NULL);
-    headerGetEntry(h, RPMTAG_COMPDIRLIST, &type, (void **) &dirNameList, NULL);
+    headerGetEntry(h, RPMTAG_COMPDIRLIST, &type, (void **) &dirNames, NULL);
 
-    filespec = alloca(strlen(dirNameList[dirIndexList[filenum]]) + 
-		      strlen(baseNameList[filenum]) + strlen(prefix) + 5);
-    sprintf(filespec, "%s/%s%s", prefix, dirNameList[dirIndexList[filenum]],
-		baseNameList[filenum]);
-    free(baseNameList);
-    free(dirNameList);
+    filespec = alloca(strlen(dirNames[dirIndexes[filenum]]) + 
+		      strlen(baseNames[filenum]) + strlen(prefix) + 5);
+    sprintf(filespec, "%s/%s%s", prefix, dirNames[dirIndexes[filenum]],
+		baseNames[filenum]);
+    free(baseNames);
+    free(dirNames);
     
     *result = 0;
 
@@ -247,7 +247,7 @@ int rpmVerifyScript(const char * root, Header h, FD_t err)
 /* ======================================================================== */
 static int verifyHeader(QVA_t *qva, Header h)
 {
-    const char ** fileList;
+    const char ** fileNames;
     int count;
     int verifyResult;
     int i, ec, rc;
@@ -259,11 +259,11 @@ static int verifyHeader(QVA_t *qva, Header h)
 
     if (headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL) &&
 	headerIsEntry(h, RPMTAG_COMPFILELIST)) {
-	buildFileList(h, &fileList, &count);
+	buildFileList(h, &fileNames, &count);
 
 	for (i = 0; i < count; i++) {
 	    if ((rc = rpmVerifyFile(qva->qva_prefix, h, i, &verifyResult, omitMask)) != 0) {
-		fprintf(stdout, _("missing    %s\n"), fileList[i]);
+		fprintf(stdout, _("missing    %s\n"), fileNames[i]);
 	    } else {
 		const char * size, * md5, * link, * mtime, * mode;
 		const char * group, * user, * rdev;
@@ -299,13 +299,13 @@ static int verifyHeader(QVA_t *qva, Header h)
 		fprintf(stdout, "%s%s%s%s%s%s%s%s %c %s\n",
 		       size, mode, md5, rdev, link, user, group, mtime, 
 		       fileFlagsList[i] & RPMFILE_CONFIG ? 'c' : ' ', 
-		       fileList[i]);
+		       fileNames[i]);
 	    }
 	    if (rc)
 		ec = rc;
 	}
 	
-	free(fileList);
+	free(fileNames);
     }
     return ec;
 }

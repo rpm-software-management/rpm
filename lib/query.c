@@ -153,7 +153,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
     const char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
-    const char ** dirList, ** baseNameList;
+    const char ** dirNames, ** baseNames;
     const char ** fileMD5List;
     const char * fileStatesList;
     const char ** fileOwnerList = NULL;
@@ -164,7 +164,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
     int_32 * fileGIDList = NULL;
     uint_16 * fileModeList;
     uint_16 * fileRdevList;
-    int_32 * dirIndexList;
+    int_32 * dirIndexes;
     int i;
 
     headerNVR(h, &name, &version, &release);
@@ -177,7 +177,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 
 	if (queryFlags & QUERY_FOR_LIST) {
 	    if (!headerGetEntry(h, RPMTAG_COMPFILELIST, &type, 
-				(void **) &baseNameList, &count)) {
+				(void **) &baseNames, &count)) {
 		fputs(_("(contains no files)"), fp);
 		fputs("\n", fp);
 	    } else {
@@ -186,9 +186,9 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 		    fileStatesList = NULL;
 		}
 		headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL,
-			 (void **) &dirList, NULL);
+			 (void **) &dirNames, NULL);
 		headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, 
-			 (void **) &dirIndexList, NULL);
+			 (void **) &dirIndexes, NULL);
 		headerGetEntry(h, RPMTAG_FILEFLAGS, &type, 
 			 (void **) &fileFlagsList, &count);
 		headerGetEntry(h, RPMTAG_FILESIZES, &type, 
@@ -253,7 +253,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 
 			if (queryFlags & QUERY_FOR_DUMPFILES) {
 			    fprintf(fp, "%s%s %d %d %s 0%o ", 
-				   dirList[dirIndexList[i]], baseNameList[i],
+				   dirNames[dirIndexes[i]], baseNames[i],
 				   fileSizeList[i], fileMTimeList[i],
 				   fileMD5List[i], fileModeList[i]);
 
@@ -279,16 +279,16 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 				fprintf(fp, "X\n");
 
 			} else if (!rpmIsVerbose()) {
-			    fputs(dirList[dirIndexList[i]], fp);
-			    fputs(baseNameList[i], fp);
+			    fputs(dirNames[dirIndexes[i]], fp);
+			    fputs(baseNames[i], fp);
 			    fputs("\n", fp);
 			} else {
 			    char * filespec;
 
-			    filespec = xmalloc(strlen(dirList[dirIndexList[i]])
-					      + strlen(baseNameList[i]) + 1);
-			    strcpy(filespec, dirList[dirIndexList[i]]);
-			    strcat(filespec, baseNameList[i]);
+			    filespec = xmalloc(strlen(dirNames[dirIndexes[i]])
+					      + strlen(baseNames[i]) + 1);
+			    strcpy(filespec, dirNames[dirIndexes[i]]);
+			    strcat(filespec, baseNames[i]);
 					
 			    if (fileOwnerList && fileGroupList) {
 				printFileInfo(fp, filespec, fileSizeList[i],
@@ -314,8 +314,8 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 		    }
 		}
 	    
-		free(dirList);
-		free(baseNameList);
+		free(dirNames);
+		free(baseNames);
 		free(fileLinktoList);
 		free(fileMD5List);
 		if (fileOwnerList) free(fileOwnerList);

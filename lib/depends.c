@@ -106,8 +106,8 @@ static void alFree( /*@only@*/ struct availableList * al)
 	    free(al->list[i].provides);
 	if (al->list[i].providesEVR)
 	    free(al->list[i].providesEVR);
-	if (al->list[i].baseFileNames)
-	    free(al->list[i].baseFileNames);
+	if (al->list[i].baseNames)
+	    free(al->list[i].baseNames);
 	headerFree(al->list[i].h);
 
 	if (al->list[i].relocs) {
@@ -149,7 +149,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     rpmRelocation * r;
     int i;
     int_32 * fileDirIndex;
-    char ** dirList;
+    const char ** dirNames;
     int numDirs, dirNum;
     int * dirMapping;
     struct dirInfo dirNeedle;
@@ -186,12 +186,12 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     }
 
     if (!headerGetEntryMinMemory(h, RPMTAG_COMPFILELIST, NULL, (void **) 
-				 &p->baseFileNames, &p->filesCount)) {
+				 &p->baseNames, &p->filesCount)) {
 	p->filesCount = 0;
-	p->baseFileNames = NULL;
+	p->baseNames = NULL;
     } else {
         headerGetEntryMinMemory(h, RPMTAG_COMPDIRLIST, NULL, (void **) 
-				 &dirList, &numDirs);
+				 &dirNames, &numDirs);
         headerGetEntryMinMemory(h, RPMTAG_COMPFILEDIRS, NULL, (void **) 
 				 &fileDirIndex, NULL);
 
@@ -206,13 +206,13 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	origNumDirs = al->numDirs;
 
 	for (dirNum = 0; dirNum < numDirs; dirNum++) {
-	    dirNeedle.dirName = dirList[dirNum];
+	    dirNeedle.dirName = (char *) dirNames[dirNum];
 	    dirMatch = bsearch(&dirNeedle, al->dirs, origNumDirs,
 			       sizeof(dirNeedle), dirInfoCompare);
 	    if (dirMatch) {
 		dirMapping[dirNum] = dirMatch - al->dirs;
 	    } else {
-		al->dirs[al->numDirs].dirName = xstrdup(dirList[dirNum]);
+		al->dirs[al->numDirs].dirName = xstrdup(dirNames[dirNum]);
 		al->dirs[al->numDirs].files = NULL;
 		al->dirs[al->numDirs].numFiles = 0;
 		al->dirs[al->numDirs].dirNum = al->numDirs;
@@ -224,7 +224,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	if (origNumDirs + al->numDirs)
 	    qsort(al->dirs, al->numDirs, sizeof(dirNeedle), dirInfoCompare);
 
-	free(dirList);
+	free(dirNames);
 
 	first = 0;
 	while (first < p->filesCount) {
@@ -239,8 +239,8 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 		sizeof(*dirMatch->files) * 
 		    (dirMatch->numFiles + last - first + 1));
 	    for (fileNum = first; fileNum <= last; fileNum++) {
-		dirMatch->files[dirMatch->numFiles].basename =
-		    p->baseFileNames[fileNum];
+		dirMatch->files[dirMatch->numFiles].baseName =
+		    p->baseNames[fileNum];
 		dirMatch->files[dirMatch->numFiles].package = p;
 		dirMatch->numFiles++;
 	    }
@@ -715,8 +715,8 @@ void rpmtransFree(rpmTransactionSet rpmdep)
     free(rpmdep);
 }
 
-void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
-			 numConflicts)
+void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
+			int numConflicts)
 {
     int i;
 
@@ -734,29 +734,32 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 
 /*@dependent@*/ /*@null@*/ static struct availablePackage *
 alFileSatisfiesDepend(struct availableList * al, const char * keyType,
-			const char *fileName)
+			const char * fileName)
 {
     int i;
-    char * file = xstrdup(fileName);
-    char * chptr = strrchr(file, '/');
-    char * base;
+    const char * dirName;
+    const char * baseName;
     struct dirInfo dirNeedle;
     struct dirInfo * dirMatch;
 
-    chptr++;
-    *chptr = '\0';
+    {	char * chptr = xstrdup(fileName);
+	dirName = chptr;
+	chptr = strrchr(chptr, '/');
+	chptr++;
+	*chptr = '\0';
+    }
 
-    dirNeedle.dirName = file;
+    dirNeedle.dirName = (char *) dirName;
     dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
 		       sizeof(dirNeedle), dirInfoCompare);
-    free(file);
+    xfree(dirName);
     if (!dirMatch) return NULL;
 
-    base = strrchr(fileName, '/') + 1;
+    baseName = strrchr(fileName, '/') + 1;
 
     /* XXX FIXME: these file lists should be sorted and bsearched */
     for (i = 0; i < dirMatch->numFiles; i++) {
-	if (!strcmp(dirMatch->files[i].basename, base)) {
+	if (!strcmp(dirMatch->files[i].baseName, baseName)) {
 	    if (keyType)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added file "
 			    "list.\n"), keyType, fileName);
@@ -1355,7 +1358,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 {
     struct availablePackage * p;
     int i, j;
-    const char ** baseFileNames, ** dirList;
+    const char ** baseNames, ** dirNames;
     int_32 * dirIndexes;
     int fileCount;
     int rc;
@@ -1439,21 +1442,21 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	}
 
 	if (headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, 
-			   (void **) &baseFileNames, &fileCount)) {
+			   (void **) &baseNames, &fileCount)) {
 	    headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, 
-			    (void **) &dirList, NULL);
+			    (void **) &dirNames, NULL);
 	    headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, 
 			    (void **) &dirIndexes, NULL);
 	    rc = 0;
 	    for (j = 0; j < fileCount; j++) {
-		len = strlen(baseFileNames[j]) + 1 + 
-		      strlen(dirList[dirIndexes[j]]);
+		len = strlen(baseNames[j]) + 1 + 
+		      strlen(dirNames[dirIndexes[j]]);
 		if (len > fileAlloced) {
 		    fileAlloced = len * 2;
 		    filespec = xrealloc(filespec, fileAlloced);
 		}
-		strcpy(filespec, dirList[dirIndexes[j]]);
-		strcat(filespec, baseFileNames[j]);
+		strcpy(filespec, dirNames[dirIndexes[j]]);
+		strcat(filespec, baseNames[j]);
 		/* Erasing: check filename against requiredby matches. */
 		if (checkDependentPackages(rpmdep, &ps, filespec)) {
 		    rc = 1;
@@ -1461,8 +1464,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 		}
 	    }
 
-	    free(baseFileNames);
-	    free(dirList);
+	    free(baseNames);
+	    free(dirNames);
 	    if (rc) goto exit;
 	}
 
