@@ -358,6 +358,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     NOTIFY((NULL, RPMCALLBACK_TRANS_START, 6, flEntries, NULL, notifyData));
 
     for (fi = flList; (fi - flList) < flEntries; fi++) {
+	int k, ro;
+	int knownBad;
+
 	NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
 	       NULL, notifyData));
 
@@ -369,8 +372,22 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    numShared += matches[i].count;
 
 	shared = sharedList = malloc(sizeof(*sharedList) * (numShared + 1));
+	knownBad = 0;
 	for (i = 0; i < fi->fc; i++) {
+	    /* Take care not to mark files as replaced in packages that will
+	       have been removed before we got here. */
 	    for (j = 0; j < matches[i].count; j++) {
+		ro = matches[i].recs[j].recOffset;
+		if (ro == knownBad) continue;
+		for (k = 0; k < ts->orderCount; k++) {
+		    if (ts->order[k].type == TR_REMOVED &&
+			ts->order[k].u.removed.dboffset == ro) break;
+		}
+		if (k < ts->orderCount) {
+		    knownBad = ro;
+		    continue;
+		}
+
 		shared->pkgFileNum = i;
 		shared->otherPkg = matches[i].recs[j].recOffset;
 		shared->otherFileNum = matches[i].recs[j].fileNumber;
@@ -378,6 +395,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    }
 	    dbiFreeIndexRecord(matches[i]);
 	}
+	numShared = shared - sharedList;
 	shared->otherPkg = -1;
 	free(matches);
 
