@@ -372,8 +372,8 @@ Executes the "%prep" stage from the spec file.  Normally this
 involves unpacking the sources and applying any patches.
 .IP "\fB\-bl\fP"
 Do a "list check".  The "%files" section from the spec file
-is macro expanded, and checks are made to insure the files
-exist.
+is macro expanded, and checks are made to verify that each file
+exists.
 .IP "\fB\-bc\fP"
 Do the "%build" stage from the spec file (after doing the prep stage).
 This generally involves the equivalent of a "make".
