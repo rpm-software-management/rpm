@@ -11,8 +11,20 @@ LANG=
 # directories
 
 for f in `find $RPM_BUILD_ROOT{,/usr,/usr/X11R6}/lib -maxdepth 1 -type f -o -type l 2>/dev/null`; do
-	if objdump -h $f 2>/dev/null | grep ':[ 	]*file format elf64-sparc$' >/dev/null 2>&1; then
+	ff=$f
+	while [ -L $ff ]; do
+		l=`ls -l $ff | awk '{ print $11 }'`
+		case $l in
+		/*) ff=$RPM_BUILD_ROOT$l ;;
+		*) ff=`dirname $ff`/$l ;;
+		esac
+	done
+	if file $ff 2>/dev/null | grep ': ELF 64-bit .SB' | grep -v ': ELF 64-bit .SB executable' > /dev/null; then
 		files="$files $f"
+	elif file $ff 2>/dev/null | grep 'ar archive' > /dev/null; then
+		if objdump -h $ff 2>/dev/null | grep ':[        ]*file format elf64-sparc' > /dev/null; then
+			files="$files $f"
+		fi
 	fi
 done
 for f in $files; do

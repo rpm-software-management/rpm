@@ -58,6 +58,9 @@ for SUBST in $SUBSTS ; do
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
 
+  [ "$ARCH" = sparc ] && ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/sparcv9-${OS}
+  [ "$ARCH" = sparc ] && ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/sparcv9-${VENDOR}-${OS}
+
 done
 
 ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}

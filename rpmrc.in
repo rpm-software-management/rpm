@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.20 2000/05/01 17:50:35 jbj Exp $
+# $Id: rpmrc.in,v 2.21 2000/06/01 00:54:36 jbj Exp $
 
 #############################################################
 
@@ -8,11 +8,13 @@
 # Values for RPM_OPT_FLAGS for various platforms
 
 optflags: i386 -O2 -m486 -fno-strength-reduce
+optflags: i686 -O2 -march=i686
+optflags: athlon -O2 -march=athlon
 optflags: ia64 -O2
 optflags: alpha -O2
-optflags: sparc -O2
-optflags: sparcv9 -O2 -mv8 -mtune=ultrasparc
-optflags: sparc64 -O2
+optflags: sparc -O2 -m32 -mtune=ultrasparc
+optflags: sparcv9 -O2 -m32 -mcpu=ultrasparc
+optflags: sparc64 -O2 -m64 -mcpu=ultrasparc
 optflags: m68k -O2 -fomit-frame-pointer
 optflags: ppc -O2 -fsigned-char
 optflags: parisc -O2 -mpa-risc-1-0
@@ -35,6 +37,7 @@ optflags: hades -O2 -fomit-frame-pointer
 #############################################################
 # Canonical arch names and numbers
 
+arch_canon:	athlon:	athlon	1
 arch_canon:	i986:	i986	1
 arch_canon:	i886:	i886	1
 arch_canon:	i786:	i786	1
@@ -118,6 +121,7 @@ buildarchtranslate: osfmach3_i386: i386
 
 buildarchtranslate: ia64: ia64
 
+buildarchtranslate: athlon: i386
 buildarchtranslate: i986: i386
 buildarchtranslate: i886: i386
 buildarchtranslate: i786: i386
@@ -151,6 +155,7 @@ arch_compat: alpha: axp noarch
 
 arch_compat: ia64: noarch
 
+arch_compat: athlon: i686
 arch_compat: i986: i886
 arch_compat: i886: i786
 arch_compat: i786: i686
@@ -232,6 +237,7 @@ os_compat: TOS: FreeMiNT MiNT mint
 
 buildarch_compat: ia64: noarch
 
+buildarch_compat: athlon: i686
 buildarch_compat: i986: i886
 buildarch_compat: i886: i786
 buildarch_compat: i786: i686
