@@ -1890,13 +1890,13 @@ int ufdClose( /*@only@*/ void * cookie)
 	    }
 
 	    /*
-	     * Normal FTP has 4 refs on the data fd:
+	     * Non-error FTP has 4 refs on the data fd:
 	     *	"persist data (ufdOpen FTP)"		rpmio.c:888
 	     *	"grab data (ufdOpen FTP)"		rpmio.c:892
 	     *	"open data (ftpReq)"			ftp.c:633
 	     *	"fopencookie"				rpmio.c:1507
 	     *
-	     * Normal FTP has 5 refs on the ctrl fd:
+	     * Non-error FTP has 5 refs on the ctrl fd:
 	     *	"persist ctrl"				url.c:176
 	     *	"grab ctrl (urlConnect FTP)"		rpmio.c:404
 	     *	"open ctrl"				ftp.c:504
@@ -1941,19 +1941,12 @@ int ufdClose( /*@only@*/ void * cookie)
 if (_ftp_debug)
 fprintf(stderr, "-> \r\n");
 		(void) fdWrite(fd, "\r\n", sizeof("\r\n")-1);
-		/* HACK: flimsy wiring for davClose */
+		/* HACK: flimsy wiring for davWrite */
 		if (!strcmp(u->scheme, "https"))
 		    rc = davResp(u, fd, NULL);
 		else
 		    rc = httpResp(u, fd, NULL);
 	    }
-
-	    if (fd == u->ctrl)
-		fd = u->ctrl = fdFree(fd, "open data (ufdClose HTTP persist ctrl)");
-	    else if (fd == u->data)
-		fd = u->data = fdFree(fd, "open data (ufdClose HTTP persist data)");
-	    else
-		fd = fdFree(fd, "open data (ufdClose HTTP)");
 
 	    /*
 	     * HTTP has 4 (or 5 if persistent malloc) refs on the fd:
@@ -1964,6 +1957,13 @@ fprintf(stderr, "-> \r\n");
 	     *	"open data (httpReq)"			ftp.c:435
 	     */
 
+	    if (fd == u->ctrl)
+		fd = u->ctrl = fdFree(fd, "open data (ufdClose HTTP persist ctrl)");
+	    else if (fd == u->data)
+		fd = u->data = fdFree(fd, "open data (ufdClose HTTP persist data)");
+	    else
+		fd = fdFree(fd, "open data (ufdClose HTTP)");
+
 	    /* XXX if not using libio, lose the fp from fpio */
 	    {   FILE * fp;
 		/*@+voidabstract -nullpass@*/
@@ -1973,15 +1973,14 @@ fprintf(stderr, "-> \r\n");
 		/*@=voidabstract =nullpass@*/
 	    }
 
-	    if (fd->persist && u->httpVersion &&
-		(fd == u->ctrl || fd == u->data) && fd->bytesRemain == 0) {
-		fd->contentLength = fd->bytesRemain = -1;
-		if (!strcmp(u->scheme, "http"))
-		    return 0;
-		/* HACK: flimsy wiring for davClose */
-	    } else {
-		fd->contentLength = fd->bytesRemain = -1;
-	    }
+	    /* If content remains, then don't persist. */
+	    if (fd->bytesRemain > 0)
+		fd->persist = 0;
+	    fd->contentLength = fd->bytesRemain = -1;
+
+	    /* If persisting, then Fclose will juggle refcounts. */
+	    if (fd->persist && (fd == u->ctrl || fd == u->data))
+		return 0;
 	}
     }
     return fdClose(fd);
@@ -2775,6 +2774,8 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 		fd->fps[fd->nfps-1].fp == fp &&
 		(fd->fps[fd->nfps-1].fdno >= 0 || fd->req != NULL))
 	    {
+		int hadreqpersist = (fd->req != NULL);
+
 		if (fp)
 		    rc = fflush(fp);
 		fd->nfps--;
@@ -2784,10 +2785,22 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 /*@-usereleased@*/
 		if (fdGetFdno(fd) >= 0)
 		    break;
+		if (!fd->persist)
+		    hadreqpersist = 0;
 		fdSetFp(fd, NULL);
 		fd->nfps++;
-		if (fp)
-		    rc = fclose(fp);
+		if (fp) {
+		    /* HACK: flimsy Keepalive wiring. */
+		    if (hadreqpersist) {
+			fd->nfps--;
+			fdSetFp(fd, fp);
+			(void) fdClose(fd);
+			fdSetFp(fd, NULL);
+			fd->nfps++;
+			(void) fdClose(fd);
+		    } else
+			rc = fclose(fp);
+		}
 		fdPop(fd);
 		if (noLibio)
 		    fdSetFp(fd, NULL);

@@ -258,6 +258,7 @@ static int davInit(const char * url, urlinfo * uret)
 	/* HACK: oneshots should be done Somewhere Else Instead. */
 /*@-noeffect@*/
 	xx = (_dav_debug ? NE_DBG_HTTP : 0);
+	xx = 0;	/* HACK */
 	ne_debug_init(stderr, xx);		/* XXX oneshot? */
 /*@=noeffect@*/
 	xx = ne_sock_init();			/* XXX oneshot? */
@@ -796,6 +797,7 @@ static int my_result(const char * msg, int ret, FILE * fp)
     return ret;
 }
 
+#ifdef	DYING
 static void hexdump(unsigned char * buf, ssize_t len)
 	/*@*/
 {
@@ -809,6 +811,7 @@ static void hexdump(unsigned char * buf, ssize_t len)
     }
     fprintf(stderr, "\n");
 }
+#endif
 
 static void davAcceptRanges(void * userdata, const char * value)
 {
@@ -1023,7 +1026,9 @@ ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
 if (_dav_debug) {
 fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, (unsigned)rc);
+#ifdef	DYING
 hexdump(buf, rc);
+#endif
     }
 
     return rc;

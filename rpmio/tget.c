@@ -73,14 +73,22 @@ _ftp_debug = -1;
 _dav_debug = -1;
 #if 0
     readFile(dirpath);
+#endif
+#if 0
     readFile(ftppath);
+    readFile(ftppath);
+    readFile(ftppath);
+#endif
+#if 0
     readFile(httppath);
     readFile(httppath);
     readFile(httppath);
 #endif
+#if 1
     readFile(httpspath);
     readFile(httpspath);
     readFile(httpspath);
+#endif
 
 /*@i@*/ urlFreeCache();
 
