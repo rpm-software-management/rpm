@@ -437,7 +437,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     }
     /*@=sizeoftype@*/
 
-    dbi->dbi_byteswapped = 0;	/* -1 unknown, 0 native order, 1 alien order */
+    dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
 
     if (!dbi->dbi_use_dbenv) {		/* db3 dbenv is always used now. */
 	dbi->dbi_use_dbenv = 1;

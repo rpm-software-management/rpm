@@ -2200,9 +2200,15 @@ top:
 
 	/* Don't bother re-checking a previously read header. */
 	if (mi->mi_db->db_bits) {
-	    pbm_set * set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-			&mi->mi_db->db_nbits, mi->mi_offset);
-	    if (PBM_ISSET(mi->mi_offset, set))
+	    pbm_set * set;
+union _dbswap mi_offset;
+
+memcpy(&mi_offset.ui, &mi->mi_offset, sizeof(mi_offset.ui));
+if (dbiByteSwapped(dbi) == 1)
+    _DBSWAP(mi_offset);
+	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
+			&mi->mi_db->db_nbits, mi_offset.ui);
+	    if (PBM_ISSET(mi_offset.ui, set))
 		rpmrc = RPMRC_OK;
 	}
 
@@ -2220,9 +2226,15 @@ top:
 
 	    /* Mark header checked. */
 	    if (mi->mi_db && mi->mi_db->db_bits && rpmrc == RPMRC_OK) {
-		pbm_set * set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-			&mi->mi_db->db_nbits, mi->mi_offset);
-		PBM_SET(mi->mi_offset, set);
+		pbm_set * set;
+union _dbswap mi_offset;
+
+memcpy(&mi_offset.ui, &mi->mi_offset, sizeof(mi_offset.ui));
+if (dbiByteSwapped(dbi) == 1)
+    _DBSWAP(mi_offset);
+		set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
+			&mi->mi_db->db_nbits, mi_offset.ui);
+		PBM_SET(mi_offset.ui, set);
 	    }
 
 	    /* Skip damaged and inconsistent headers. */
