@@ -978,4 +978,5 @@ int doRmSource(Spec s)
 	package = package->next;
     }
     
+    return 0;
 }
