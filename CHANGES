@@ -13,6 +13,11 @@
 	  sources/specs directory to exist outside of the root -- fixed
 	- modified toplevel Makefile to run dependency generation only
 	  against referenced sources
+	- array size mismatches in --qf should send error to stderr
+	- tried to make the locale stuff a bit more portable (again)
+	- reworked the owner/group setting on installs to be more generic
+	  (in preperation for getting rid of cpio)
+	- made verify verify owner and groups by name rather then by id
 
 2.3.3 -> 2.3.4:
 	- %changelog processing
