@@ -15,10 +15,49 @@ extern int _rpmts_debug;
 extern int _fps_debug;
 /*@=exportlocal@*/
 
-#define	_RPMTS_VSF_NODIGESTS		(1 << 0)
-#define	_RPMTS_VSF_NOSIGNATURES		(1 << 1)
-#define	_RPMTS_VSF_VERIFY_LEGACY	(1 << 2)
-#define	_RPMTS_VSF_NOHDRCHK		(1 << 3)
+/**
+ * Bit(s) to control digest and signature verification.
+ */
+typedef enum rpmVSFlags_e {
+    RPMVSF_DEFAULT	= 0,
+    RPMVSF_NOHDRCHK	= (1 <<  0),
+    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
+    /* bit(s) 2-7 unused */
+    RPMVSF_NOSHA1HEADER	= (1 <<  8),
+    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
+    RPMVSF_NODSAHEADER	= (1 << 10),
+    RPMVSF_NORSAHEADER	= (1 << 11),	/* unimplemented */
+    /* bit(s) 12-15 unused */
+    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
+    RPMVSF_NOMD5	= (1 << 17),
+    RPMVSF_NODSA	= (1 << 18),
+    RPMVSF_NORSA	= (1 << 19)
+    /* bit(s) 16-31 unused */
+} rpmVSFlags;
+
+#define	_RPMVSF_NODIGESTS	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 )
+
+#define	_RPMVSF_NOSIGNATURES	\
+  ( RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER |	\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
+
+#define	_RPMVSF_NOHEADER	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER )
+
+#define	_RPMVSF_NOPAYLOAD	\
+  ( RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 |		\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
 
 #if defined(_RPMTS_INTERNAL)
 
@@ -131,7 +170,7 @@ struct rpmts_s {
     int delta;			/*!< Delta for reallocation. */
     int_32 tid;			/*!< Transaction id. */
 
-    int vsflags;		/*!< Signature/digest verification flags. */
+    rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
@@ -392,7 +431,7 @@ rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
  * @param ts		transaction set
  * @return		verify signatures flags
  */
-int rpmtsVerifySigFlags(rpmts ts)
+rpmVSFlags rpmtsVSFlags(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -401,7 +440,7 @@ int rpmtsVerifySigFlags(rpmts ts)
  * @param vsflags	new verify signatures flags
  * @return		previous value
  */
-int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
+rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

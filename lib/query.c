@@ -920,7 +920,7 @@ restart:
 int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 {
     const char * arg;
-    int vsflags, ovsflags;
+    rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
     if (qva->qva_showPackage == NULL)
@@ -928,14 +928,13 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
     if (qva->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMVSF_NODIGESTS;
     if (qva->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+	vsflags |= _RPMVSF_NOSIGNATURES;
     if (qva->qva_flags & VERIFY_HDRCHK)
-	vsflags |= _RPMTS_VSF_NOHDRCHK;
-    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
+	vsflags |= RPMVSF_NOHDRCHK;
 
-    ovsflags = rpmtsSetVerifySigFlags(ts, vsflags);
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
     if (qva->qva_source == RPMQV_ALL) {
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
@@ -949,7 +948,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 	}
 /*@=boundsread@*/
     }
-    vsflags = rpmtsSetVerifySigFlags(ts, ovsflags);
+    vsflags = rpmtsSetVSFlags(ts, ovsflags);
 
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;

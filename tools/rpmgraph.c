@@ -17,7 +17,7 @@
 static int noDeps = 1;
 static int noChainsaw = 0;
 
-static int vsflags = _RPMTS_VSF_VERIFY_LEGACY;
+static rpmVSFlags vsflags = 0;
 
 static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
 	/*@*/
@@ -61,7 +61,7 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
     Header h;
     rpmRC rpmrc;
     int rc = 0;
-    int xx;
+    rpmVSFlags ovsflags;
     int i;
 
     if (fileArgv == NULL)
@@ -73,10 +73,10 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
     (void) rpmtsSetFlags(ts, tsflags);
 
     if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMVSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
-    xx = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
+	vsflags |= _RPMVSF_NOSIGNATURES;
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     /* Build fully globbed list of arguments in argv[argc]. */
     for (fnp = fileArgv; *fnp; fnp++) {
@@ -135,9 +135,9 @@ restart:
 	}
 
 	/* Read the header, verifying signatures (if present). */
-	xx = rpmtsSetVerifySigFlags(ts, vsflags);
+	ovsflags = rpmtsSetVSFlags(ts, vsflags);
 	rpmrc = rpmReadPackageFile(ts, fd, *fnp, &h);
-	xx = rpmtsSetVerifySigFlags(ts, xx);
+	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
 	Fclose(fd);
 	fd = NULL;
 
@@ -272,7 +272,7 @@ exit:
 static struct poptOption optionsTable[] = {
  { "check", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noDeps, 0,
 	N_("don't verify package dependencies"), NULL },
- { "nolegacy", '\0', POPT_BIT_CLR,	&vsflags, _RPMTS_VSF_VERIFY_LEGACY,
+ { "nolegacy", '\0', POPT_BIT_SET,	&vsflags, RPMVSF_NEEDPAYLOAD,
         N_("don't verify header+payload signature"), NULL },
 
  { "nochainsaw", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noChainsaw, 0,
@@ -301,12 +301,12 @@ main(int argc, char *const argv[])
 
     ts = rpmtsCreate();
     if (rpmcliQueryFlags & VERIFY_DIGEST)
-	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMVSF_NODIGESTS;
     if (rpmcliQueryFlags & VERIFY_SIGNATURE)
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+	vsflags |= _RPMVSF_NOSIGNATURES;
     if (rpmcliQueryFlags & VERIFY_HDRCHK)
-	vsflags |= _RPMTS_VSF_NOHDRCHK;
-    (void) rpmtsSetVerifySigFlags(ts, vsflags);
+	vsflags |= RPMVSF_NOHDRCHK;
+    (void) rpmtsSetVSFlags(ts, vsflags);
 
     ec = rpmGraph(ts, ia, poptGetArgs(optCon));
 

@@ -1414,10 +1414,14 @@ rpmMessage(RPMMESS_DEBUG, _("install/erase %d elements\n"), rpmtsNElements(ts));
 				rpmteKey(p), ts->notifyData);
 		/*@=noeffectuncon@*/
 		if (rpmteFd(p) != NULL) {
+		    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
+		    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
 		    rpmRC rpmrc;
 
+		    ovsflags = rpmtsSetVSFlags(ts, vsflags);
 		    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
 				rpmteNEVR(p), &p->h);
+		    vsflags = rpmtsSetVSFlags(ts, ovsflags);
 
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon@*/ /* FIX: notify annotations */

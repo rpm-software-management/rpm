@@ -31,13 +31,13 @@ int main(int argc, char **argv)
     fdo = fdDup(STDOUT_FILENO);
 
     {	rpmts ts = rpmtsCreate();
-	int vsflags = 0;
+	rpmVSFlags vsflags = 0;
 
 	/* XXX retain the ageless behavior of rpm2cpio */
-        vsflags |= _RPMTS_VSF_NODIGESTS;
-        vsflags |= _RPMTS_VSF_NOSIGNATURES;
-        vsflags |= _RPMTS_VSF_NOHDRCHK;
-	(void) rpmtsSetVerifySigFlags(ts, vsflags);
+        vsflags |= _RPMVSF_NODIGESTS;
+        vsflags |= _RPMVSF_NOSIGNATURES;
+        vsflags |= RPMVSF_NOHDRCHK;
+	(void) rpmtsSetVSFlags(ts, vsflags);
 
 	/*@-mustmod@*/      /* LCL: segfault */
 	rc = rpmReadPackageFile(ts, fdi, "rpm2cpio", &h);

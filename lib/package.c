@@ -308,7 +308,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
     const void * sig = NULL;
     const char * b;
-    int vsflags = rpmtsVerifySigFlags(ts);
+    rpmVSFlags vsflags = rpmtsVSFlags(ts);
     int siglen = 0;
     int blen;
     size_t nb;
@@ -367,7 +367,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
 	switch (entry->info.tag) {
 	case RPMTAG_SHA1HEADER:
-	    if (vsflags & _RPMTS_VSF_NODIGESTS)
+	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		/*@switchbreak@*/ break;
 	    blen = 0;
 /*@-boundsread@*/
@@ -390,7 +390,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 	case RPMTAG_RSAHEADER:
 #endif
 	case RPMTAG_DSAHEADER:
-	    if (vsflags & _RPMTS_VSF_NOSIGNATURES)
+	    if (vsflags & RPMVSF_NODSAHEADER)
 		/*@switchbreak@*/ break;
 	    if (entry->info.type != RPM_BIN_TYPE)
 		goto exit;
@@ -564,7 +564,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     int_32 siglen;
     Header h = NULL;
     int hmagic;
-    int vsflags;
+    rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     int i;
@@ -614,42 +614,34 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 	goto exit;
     }
 
+#define	_chk(_mask)	(sigtag == 0 && !(vsflags & (_mask)))
+
     /* Figger the most effective available signature. */
     sigtag = 0;
-    vsflags = rpmtsVerifySigFlags(ts);
-    if (vsflags & _RPMTS_VSF_VERIFY_LEGACY) {
-	if (sigtag == 0 && !(vsflags & _RPMTS_VSF_NOSIGNATURES)) {
-	    if (headerIsEntry(sigh, RPMSIGTAG_DSA))
-		sigtag = RPMSIGTAG_DSA;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
-		sigtag = RPMSIGTAG_RSA;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_GPG)) {
-		sigtag = RPMSIGTAG_GPG;
-		fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-	    } else if (headerIsEntry(sigh, RPMSIGTAG_PGP)) {
-		sigtag = RPMSIGTAG_PGP;
-		fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-	    }
-	}
-	if (sigtag == 0 && !(vsflags & _RPMTS_VSF_NODIGESTS)) {
-	    if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
-		sigtag = RPMSIGTAG_SHA1;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_MD5)) {
-		sigtag = RPMSIGTAG_MD5;
-		fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-	    }
-	}
-    } else {
-	if (sigtag == 0 && !(vsflags & _RPMTS_VSF_NOSIGNATURES)) {
-	    if (headerIsEntry(sigh, RPMSIGTAG_DSA))
-		sigtag = RPMSIGTAG_DSA;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
-		sigtag = RPMSIGTAG_RSA;
-	}
-	if (sigtag == 0 && !(vsflags & _RPMTS_VSF_NODIGESTS)) {
-	    if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
-		sigtag = RPMSIGTAG_SHA1;
-	}
+    vsflags = rpmtsVSFlags(ts);
+    if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_DSA))
+	sigtag = RPMSIGTAG_DSA;
+    if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_RSA))
+	sigtag = RPMSIGTAG_RSA;
+    if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD) &&
+	headerIsEntry(sigh, RPMSIGTAG_GPG))
+    {
+	sigtag = RPMSIGTAG_GPG;
+	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+    }
+    if (_chk(RPMVSF_NORSA|RPMVSF_NEEDPAYLOAD) &&
+	headerIsEntry(sigh, RPMSIGTAG_PGP))
+    {
+	sigtag = RPMSIGTAG_PGP;
+	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+    }
+    if (_chk(RPMVSF_NOSHA1HEADER) && headerIsEntry(sigh, RPMSIGTAG_SHA1))
+	sigtag = RPMSIGTAG_SHA1;
+    if (_chk(RPMVSF_NOMD5|RPMVSF_NEEDPAYLOAD) &&
+	headerIsEntry(sigh, RPMSIGTAG_MD5))
+    {
+	sigtag = RPMSIGTAG_MD5;
+	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
     }
 
     /* Read the metadata, computing digest(s) on the fly. */

@@ -146,7 +146,7 @@ int rpmtsInitDB(rpmts ts, int dbmode)
 int rpmtsRebuildDB(rpmts ts)
 {
     int rc;
-    if (!(ts->vsflags & _RPMTS_VSF_NOHDRCHK))
+    if (!(ts->vsflags & RPMVSF_NOHDRCHK))
 	rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
     else
 	rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
@@ -165,7 +165,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
 	return NULL;
     mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
-    if (mi && !(ts->vsflags & _RPMTS_VSF_NOHDRCHK))
+    if (mi && !(ts->vsflags & RPMVSF_NOHDRCHK))
 	(void) rpmdbSetHdrChk(mi, ts, headerCheck);
     return mi;
 }
@@ -557,22 +557,22 @@ rpmts rpmtsFree(rpmts ts)
     return NULL;
 }
 
-int rpmtsVerifySigFlags(rpmts ts)
+rpmVSFlags rpmtsVSFlags(rpmts ts)
 {
-    int ret = 0;
+    rpmVSFlags vsflags = 0;
     if (ts != NULL)
-	ret = ts->vsflags;
-    return ret;
+	vsflags = ts->vsflags;
+    return vsflags;
 }
 
-int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
+rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
 {
-    int ret = 0;
+    rpmVSFlags ovsflags = 0;
     if (ts != NULL) {
-	ret = ts->vsflags;
+	ovsflags = ts->vsflags;
 	ts->vsflags = vsflags;
     }
-    return ret;
+    return ovsflags;
 }
 
 const char * rpmtsRootDir(rpmts ts)

@@ -282,7 +282,7 @@ int rpmInstall(rpmts ts,
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
-    int vsflags, ovsflags;
+    rpmVSFlags vsflags, ovsflags, tvsflags;
     int ac = 0;
     int rc;
     int xx;
@@ -301,13 +301,12 @@ int rpmInstall(rpmts ts,
     else
 	vsflags = rpmExpandNumeric("%{?_vsflags_install}");
     if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMVSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+	vsflags |= _RPMVSF_NOSIGNATURES;
     if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= _RPMTS_VSF_NOHDRCHK;
-    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
-    ovsflags = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
+	vsflags |= RPMVSF_NOHDRCHK;
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     {	int notifyFlags;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -429,9 +428,9 @@ restart:
 	}
 
 	/* Read the header, verifying signatures (if present). */
-	xx = rpmtsSetVerifySigFlags(ts, vsflags);
+	tvsflags = rpmtsSetVSFlags(ts, vsflags);
 	eiu->rpmrc = rpmReadPackageFile(ts, eiu->fd, *eiu->fnp, &eiu->h);
-	xx = rpmtsSetVerifySigFlags(ts, xx);
+	tvsflags = rpmtsSetVSFlags(ts, tvsflags);
 
 	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
 
@@ -703,13 +702,12 @@ int rpmErase(rpmts ts,
 
     vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
     if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMVSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+	vsflags |= _RPMVSF_NOSIGNATURES;
     if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= _RPMTS_VSF_NOHDRCHK;
-    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
-    ovsflags = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
+	vsflags |= RPMVSF_NOHDRCHK;
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
@@ -1025,13 +1023,13 @@ int rpmRollback(rpmts ts,
 
     vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
     if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMVSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+	vsflags |= _RPMVSF_NOSIGNATURES;
     if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= _RPMTS_VSF_NOHDRCHK;
-    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
-    ovsflags = rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
+	vsflags |= RPMVSF_NOHDRCHK;
+    vsflags |= RPMVSF_NEEDPAYLOAD;	/* XXX no legacy signatures */
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 

@@ -623,9 +623,10 @@ int main(int argc, const char ** argv)
 	break;
 
     case MODE_REBUILDDB:
-    {   int vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
-	(void)rpmtsSetVerifySigFlags(ts, (vsflags & ~_RPMTS_VSF_VERIFY_LEGACY));
+    {   rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
+	rpmVSFlags ovsflags = rpmtsSetVSFlags(ts, vsflags);
 	ec = rpmtsRebuildDB(ts);
+	vsflags = rpmtsSetVSFlags(ts, ovsflags);
     }	break;
     case MODE_VERIFYDB:
 	ec = rpmtsVerifyDB(ts);

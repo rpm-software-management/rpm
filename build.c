@@ -298,16 +298,16 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
     char * targets = ba->targets;
 #define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
     int cleanFlags = ba->buildAmount & buildCleanMask;
-    int vsflags, ovsflags;
+    rpmVSFlags vsflags, ovsflags;
 
     vsflags = rpmExpandNumeric("%{_vsflags_build}");
     if (ba->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMVSF_NODIGESTS;
     if (ba->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+	vsflags |= _RPMVSF_NOSIGNATURES;
     if (ba->qva_flags & VERIFY_HDRCHK)
-	vsflags |= _RPMTS_VSF_NOHDRCHK;
-    ovsflags = rpmtsSetVerifySigFlags(ts, vsflags);
+	vsflags |= RPMVSF_NOHDRCHK;
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     if (targets == NULL) {
 	rc =  buildForTarget(ts, arg, ba);
@@ -342,7 +342,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
     }
 
 exit:
-    vsflags = rpmtsSetVerifySigFlags(ts, ovsflags);
+    vsflags = rpmtsSetVSFlags(ts, ovsflags);
     /* Restore original configuration. */
     rpmFreeMacros(NULL);
     (void) rpmReadConfigFiles(rcfile, NULL);

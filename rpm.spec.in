@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.71
+Release: 0.73
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -528,6 +528,7 @@ fi
 - python: the death of rpm.headerFromPackage(), use ts.hdrFromFdno().
 - python: permit direct ts.dbMatch() python iterations.
 - python: the death of rpm.checksig(), use ts.hdrFromFdno() instead.
+- add bitmask for precise control of signature/digest verification.
 
 * Sun Aug  4 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.68
 - resurrect --rollback.

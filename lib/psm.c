@@ -1867,7 +1867,7 @@ assert(psm->mi == NULL);
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h == NULL)	break;	/* XXX can't happen */
-	if (!(rpmtsVerifySigFlags(ts) & _RPMTS_VSF_NOHDRCHK))
+	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
 	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
 				ts, headerCheck);
 	else

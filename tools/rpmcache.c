@@ -508,10 +508,10 @@ static void initGlobs(/*@unused@*/ rpmts ts, const char ** argv)
     }
 }
 
-static int vsflags = _RPMTS_VSF_VERIFY_LEGACY;
+static rpmVSFlags vsflags = 0;
 
 static struct poptOption optionsTable[] = {
- { "nolegacy", '\0', POPT_BIT_CLR,      &vsflags, _RPMTS_VSF_VERIFY_LEGACY,
+ { "nolegacy", '\0', POPT_BIT_SET,      &vsflags, RPMVSF_NEEDPAYLOAD,
 	N_("don't verify header+payload signature"), NULL },
 
  { "nocache", '\0', POPT_ARG_VAL,   &noCache, -1,
@@ -583,12 +583,12 @@ main(int argc, char *const argv[])
     ts = rpmtsCreate();
 
     if (rpmcliQueryFlags & VERIFY_DIGEST)
-	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMVSF_NODIGESTS;
     if (rpmcliQueryFlags & VERIFY_SIGNATURE)
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+	vsflags |= _RPMVSF_NOSIGNATURES;
     if (rpmcliQueryFlags & VERIFY_HDRCHK)
-	vsflags |= _RPMTS_VSF_NOHDRCHK;
-    (void) rpmtsSetVerifySigFlags(ts, vsflags);
+	vsflags |= RPMVSF_NOHDRCHK;
+    (void) rpmtsSetVSFlags(ts, vsflags);
 
     {   int_32 tid = (int_32) time(NULL);
 	(void) rpmtsSetTid(ts, tid);

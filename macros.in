@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: /usr/lib/rpm/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.117 2002/08/02 21:52:01 jbj Exp $
+# $Id: macros.in,v 1.118 2002/08/06 01:41:46 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -555,17 +555,11 @@
 %_repackage_root	%{nil}
 
 #	Verify digest/signature flags for various rpm modes:
-#	     1	--nodigest	if set, don't check digest
-#	     2	--nosignature	if set, don't check signature
-#	     4	--nolegacy	if set, check header+payload (if possible)
-#	     8	--nohdrchk	if set, don't check rpmdb headers
+#	     1	--nohdrchk	if set, don't check rpmdb headers
 #
-#	The checking overhead is ~10ms per header for digests/signatures;
-#	each header from the database is checked only when first encountered.
-#
-#	For example, the value 6 (=4+2) disables legacy digest/signature
-#	checking, disables signature checking, but attempts digest checking,
-#	also when retrieving headers from the database.
+#	The checking overhead is ~11ms per header for digests/signatures;
+#	each header from the database is checked only when first encountered
+#	for each database open.
 #
 #	Note: the %_vsflags_erase applies to --upgrade/--freshen modes as
 #	well as --erase.
@@ -573,7 +567,7 @@
 %_vsflags_build		0
 %_vsflags_erase		0
 %_vsflags_install	0
-%_vsflags_query		8
+%_vsflags_query		1
 %_vsflags_rebuilddb	0
 %_vsflags_up2date	0
 %_vsflags_verify	0

@@ -38,13 +38,20 @@ static int _rpmts_debug = 0;
  * instantiated by the TransactionSet function in the rpm module.
  *
  * The TransactionSet function takes two optional arguments. The first
- * argument is the root path. The second is the verify signature flags,
- * the sum of the following flags:
+ * argument is the root path. The second is the verify signature disable flags,
+ * a set of the following bits:
  *
- * -    1  --nodigest      if set, don't check digest.
- * -    2  --nosignature   if set, don't check signature.
- * -    4  --nolegacy      if set, check header+payload (if possible).
- * -    8  --nohdrchk      if set, don't check rpmdb headers.
+ * -    rpm.RPMVSF_NOHDRCHK	if set, don't check rpmdb headers
+ * -    rpm.RPMVSF_NEEDPAYLOAD	if not set, check header+payload (if possible)
+ * -	rpm.RPMVSF_NOSHA1HEADER	if set, don't check header SHA1 digest
+ * -	rpm.RPMVSF_NODSAHEADER	if set, don't check header DSA signature
+ * -	rpm.RPMVSF_NOMD5	if set, don't check header+payload MD5 digest
+ * -	rpm.RPMVSF_NODSA	if set, don't check header+payload DSA signature
+ * -	rpm.RPMVSF_NORSA	if set, don't check header+payload RSA signature
+ *
+ * For convenience, there are the following masks:
+ * -    rpm._RPMVSF_NODIGESTS		if set, don't check digest(s).
+ * -    rpm._RPMVSF_NOSIGNATURES	if set, don't check signature(s).
  *
  * A rpm.ts object has the following methods:
  *
@@ -711,20 +718,20 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 /** \ingroup python
  */
 static PyObject *
-rpmts_SetVerifySigFlags(rpmtsObject * s, PyObject * args)
+rpmts_SetVSFlags(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    int vsflags;
+    rpmVSFlags vsflags;
 
 if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_SetVerifySigFlags(%p) ts %p\n", s, s->ts);
+fprintf(stderr, "*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "i:SetVerifySigFlags", &vsflags)) return NULL;
+    if (!PyArg_ParseTuple(args, "i:SetVSFlags", &vsflags)) return NULL;
 
     /* XXX FIXME: value check on vsflags. */
 
-    return Py_BuildValue("i", rpmtsSetVerifySigFlags(s->ts, vsflags));
+    return Py_BuildValue("i", rpmtsSetVSFlags(s->ts, vsflags));
 }
 
 /** \ingroup python
@@ -1047,13 +1054,18 @@ static struct PyMethodDef rpmts_methods[] = {
 - Read a package header from a file descriptor.\n" },
  {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS,
 	NULL },
- {"setVerifySigFlags",(PyCFunction) rpmts_SetVerifySigFlags,	METH_VARARGS,
-"ts.setVerifySigFlags(vsflags) -> ovsflags\n\
+ {"setVSFlags",(PyCFunction) rpmts_SetVSFlags,	METH_VARARGS,
+"ts.setVSFlags(vsflags) -> ovsflags\n\
 - Set signature verification flags. Values for vsflags are:\n\
-	1  --nodigest		if set, don't check digest\n\
-	2  --nosignature	if set, don't check signature\n\
-	4  (none)		if set, check header+payload (if possible)\n\
-	8  --nohdrchk		if set, don't check rpmdb headers\n" },
+    rpm.RPMVSF_NOHDRCHK      if set, don't check rpmdb headers\n\
+    rpm.RPMVSF_NEEDPAYLOAD   if not set, check header+payload (if possible)\n\
+    rpm.RPMVSF_NOSHA1HEADER  if set, don't check header SHA1 digest\n\
+    rpm.RPMVSF_NODSAHEADER   if set, don't check header DSA signature\n\
+    rpm.RPMVSF_NOMD5         if set, don't check header+payload MD5 digest\n\
+    rpm.RPMVSF_NODSA         if set, don't check header+payload DSA signature\n\
+    rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\
+    rpm._RPMVSF_NODIGESTS    if set, don't check digest(s)\n\
+    rpm._RPMVSF_NOSIGNATURES if set, don't check signature(s)\n" },
  {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
 	NULL },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS,
@@ -1188,7 +1200,7 @@ rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args)
 
     o->ts = rpmtsCreate();
     (void) rpmtsSetRootDir(o->ts, rootDir);
-    (void) rpmtsSetVerifySigFlags(o->ts, vsflags);
+    (void) rpmtsSetVSFlags(o->ts, vsflags);
 
     o->keyList = PyList_New(0);
     o->scriptFd = NULL;

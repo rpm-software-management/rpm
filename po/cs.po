@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-05 15:45-0400\n"
+"POT-Creation-Date: 2002-08-05 21:40-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -310,36 +310,36 @@ msgstr "--sign mù¾e být pou¾it jen pøi sestavování balíèkù"
 msgid "exec failed\n"
 msgstr "spu¹tìní selhalo\n"
 
-#: rpmqv.c:644
+#: rpmqv.c:645
 msgid "no packages files given for rebuild"
 msgstr "ke znovusestavení nezadány ¾ádné balíèky"
 
-#: rpmqv.c:712
+#: rpmqv.c:713
 msgid "no spec files given for build"
 msgstr "pro sestavení nezadány ¾ádné spec soubory"
 
-#: rpmqv.c:714
+#: rpmqv.c:715
 msgid "no tar files given for build"
 msgstr "pro sestavení nezadány ¾ádné tar soubory"
 
-#: rpmqv.c:736
+#: rpmqv.c:737
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: rpmqv.c:776
+#: rpmqv.c:777
 msgid "no packages given for install"
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: rpmqv.c:792
+#: rpmqv.c:793
 msgid "no arguments given for query"
 msgstr "k dotazu nezadány ¾ádné parametry"
 
-#: rpmqv.c:805
+#: rpmqv.c:806
 msgid "no arguments given for verify"
 msgstr "pro kontrolu nezadány ¾ádné balíèky"
 
-#: rpmqv.c:822
+#: rpmqv.c:823
 #, fuzzy
 msgid "no arguments given"
 msgstr "k dotazu nezadány ¾ádné parametry"
@@ -1555,8 +1555,8 @@ msgstr "nemohu zapsat do %%%s %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/package.c:442 lib/package.c:482 lib/package.c:693 lib/package.c:717
-#: lib/package.c:747 lib/rpmchecksig.c:767
+#: lib/package.c:442 lib/package.c:482 lib/package.c:685 lib/package.c:709
+#: lib/package.c:739 lib/rpmchecksig.c:767
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
@@ -1580,12 +1580,12 @@ msgstr "%s: readLead selhalo\n"
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:659 lib/rpmchecksig.c:586
+#: lib/package.c:651 lib/rpmchecksig.c:586
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/package.c:759 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
+#: lib/package.c:751 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
@@ -2229,8 +2229,8 @@ msgstr "balíèek nemá vlastníka souboru ani seznamy id\n"
 msgid "can't query %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:421 lib/rpminstall.c:552
-#: lib/rpminstall.c:952 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:420 lib/rpminstall.c:551
+#: lib/rpminstall.c:950 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
@@ -2244,7 +2244,7 @@ msgstr "dotaz na %s se nezdaøil\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "nelze provést dotaz na zdrojové balíèky starého formátu\n"
 
-#: lib/query.c:609 lib/rpminstall.c:565
+#: lib/query.c:609 lib/rpminstall.c:564
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
@@ -2313,7 +2313,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %u nelze pøeèíst\n"
 
-#: lib/query.c:907 lib/rpminstall.c:733
+#: lib/query.c:907 lib/rpminstall.c:731
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2511,84 +2511,84 @@ msgstr ""
 msgid "Upgrading packages..."
 msgstr "aktualizace balíèku"
 
-#: lib/rpminstall.c:368
+#: lib/rpminstall.c:367
 #, fuzzy, c-format
 msgid "Retrieving %s\n"
 msgstr "RPM verze %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:381
+#: lib/rpminstall.c:380
 #, fuzzy, c-format
 msgid " ... as %s\n"
 msgstr "%s ulo¾eno jako %s\n"
 
-#: lib/rpminstall.c:385
+#: lib/rpminstall.c:384
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:476
+#: lib/rpminstall.c:475
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:525
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/rpminstall.c:532
+#: lib/rpminstall.c:531
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:544 lib/rpminstall.c:808 tools/rpmgraph.c:156
+#: lib/rpminstall.c:543 lib/rpminstall.c:806 tools/rpmgraph.c:156
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "neinstalován  "
 
-#: lib/rpminstall.c:580
+#: lib/rpminstall.c:579
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "vytvoøení zdrojového a binárního balíèku z <tar_soubor>"
 
-#: lib/rpminstall.c:594 lib/rpminstall.c:761 lib/rpminstall.c:1154
+#: lib/rpminstall.c:593 lib/rpminstall.c:759 lib/rpminstall.c:1152
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: lib/rpminstall.c:601 tools/rpmgraph.c:208
+#: lib/rpminstall.c:600 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:631
+#: lib/rpminstall.c:630
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "nainstalovat balíèek"
 
-#: lib/rpminstall.c:655
+#: lib/rpminstall.c:654
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:736
+#: lib/rpminstall.c:734
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s\n"
 
-#: lib/rpminstall.c:795
+#: lib/rpminstall.c:793
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:801
+#: lib/rpminstall.c:799
 #, fuzzy, c-format
 msgid "Installing %s\n"
 msgstr "øádek: %s\n"
 
-#: lib/rpminstall.c:1148
+#: lib/rpminstall.c:1146
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
