@@ -95,7 +95,8 @@ static struct dataEntry * archDataTable = NULL;
 static struct dataEntry * osDataTable = NULL;
 
 static int optionCompare(const void * a, const void * b) {
-    return strcmp(((struct option *) a)->name, ((struct option *) b)->name);
+    return strcasecmp(((struct option *) a)->name,
+		      ((struct option *) b)->name);
 }
 
 /* returns the score for this architecture */
@@ -342,26 +343,26 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	message(MESS_DEBUG, "got var '%s' arg '%s'\n", start, chptr);
 
 	/* these are options that don't just get stuffed in a VAR somewhere */
-	if (!strcmp(start, "arch_compat")) {
+	if (!strcasecmp(start, "arch_compat")) {
 	    if (readWhat != READ_TABLES) continue;
 	    if (addArchCompats(chptr, fn, linenum))
 		return 1;
-	} else if (!strcmp(start, "arch_data")) {
+	} else if (!strcasecmp(start, "arch_data")) {
 	    if (readWhat != READ_TABLES) continue;
 	    if (addData(&archDataTable, &archDataTableLen,
 			chptr, fn, linenum))
 		return 1;
-	} else if (!strcmp(start, "os_data")) {
+	} else if (!strcasecmp(start, "os_data")) {
 	    if (readWhat != READ_TABLES) continue;
 	    if (addData(&osDataTable, &osDataTableLen,
 			chptr, fn, linenum))
 		return 1;
-	} else if (!strcmp(start, "buildarchtranslate")) {
+	} else if (!strcasecmp(start, "buildarchtranslate")) {
 	    if (readWhat != READ_TABLES) continue;
 	    if (addDefault(&archDefaultTable, &archDefaultTableLen,
 			   chptr, fn, linenum))
 		return 1;
-	} else if (!strcmp(start, "buildostranslate")) {
+	} else if (!strcasecmp(start, "buildostranslate")) {
 	    if (readWhat != READ_TABLES) continue;
 	    if (addDefault(&osDefaultTable, &osDefaultTableLen,
 			   chptr, fn, linenum))
