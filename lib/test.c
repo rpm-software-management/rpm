@@ -1,6 +1,8 @@
 #include "header.h"
 #include "rpmlib.h"
 
+#include <string.h>
+
 void main(int argc, char ** argv)
 {
   Header h;
