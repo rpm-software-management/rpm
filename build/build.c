@@ -117,6 +117,17 @@ struct Script *openScript(Spec spec, int builddir, char *name)
 	fprintf(script->file, "cd %s\n\n", build_subdir);
     }
 
+    /* We do a litte sanity check here just to make sure we do not wipe */
+    /* the system by accident...                                        */
+    if (rpmGetVar(RPMVAR_BUILDROOT)) {
+	fprintf(script->file, "if [ -z \"$RPM_BUILD_ROOT\" -o \"$RPM_BUILD_ROOT\" = \"/\" ]; then\n");
+	fprintf(script->file, "  echo\n");
+	fprintf(script->file, "  echo 'Warning: Spec contains BuildRoot: tag that is either empty or is set to \"/\"'\n");
+	fprintf(script->file, "  echo\n");
+	fprintf(script->file, "  exit 1\n");
+	fprintf(script->file, "fi\n");
+    }
+    
     return script;
 }
 
