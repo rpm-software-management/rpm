@@ -196,12 +196,14 @@ int build(char * arg, int buildAmount, char *passPhrase) {
     fclose(f);
     if (s) {
 	if (verifySpec(s)) {
+	    /* For now, warn and try to continue */
 	    res = 1;
-	} else {
-	    if (doBuild(s, buildAmount, passPhrase)) {
-		fprintf(stderr, _("Build failed.\n"));
-		res = 1;
-	    }
+	    fprintf(stderr, "\n%cSpec file check failed -- tell Marc\n\n", 7);
+	    sleep(1);
+	}
+	if (doBuild(s, buildAmount, passPhrase)) {
+	    fprintf(stderr, _("Build failed.\n"));
+	    res = 1;
 	}
         freeSpec(s);
     } else {
