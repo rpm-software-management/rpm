@@ -22,7 +22,7 @@ char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_RESIGN,
-	     MODE_UNKNOWN };
+	     MODE_RECOMPILE, MODE_UNKNOWN };
 
 static void argerror(char * desc);
 
@@ -67,6 +67,7 @@ void printUsage(void) {
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]"));
     puts(_("                        [--sign] [--test] [--time-check <s>] specfile"));
     puts(_("       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"));
+    puts(_("       rpm {--recompile} [-v] source1.rpm source2.rpm ... sourceN.rpm"));
     puts(_("       rpm {--where} package1 package2 ... packageN"));
     puts(_("       rpm {--resign} package1 package2 ... packageN"));
     puts(_("       rpm {--checksig} package1 package2 ... packageN"));
@@ -144,6 +145,8 @@ void printHelp(void) {
     puts(_("    --rebuild <source_package>"));
     puts(_("                        - install source package, build binary package,"));
     puts(_("                          and remove spec file, sources, patches, and icons."));
+    puts(_("    --recompile <source_package>"));
+    puts(_("                        - like --rebuild, but don't package"));
     puts(_("    -K"));
     puts(_("    --resign <pkg>+    - sign a package"));
     puts(_("    --checksig <pkg>+  - verify PGP signature"));
@@ -238,6 +241,7 @@ int main(int argc, char ** argv) {
 	    { "percent", 0, &showPercents, 0 },
 	    { "query", 0, 0, 'q' },
 	    { "quiet", 0, &quiet, 0 },
+	    { "recompile", 0, 0, 0 },
 	    { "rebuild", 0, 0, 0 },
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
@@ -472,8 +476,12 @@ int main(int argc, char ** argv) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
 		    argerror(_("only one major mode may be specified"));
 		bigMode = MODE_REBUILD;
+	    } else if (!strcmp(options[long_index].name, "recompile")) {
+		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
+		    argerror(_("only one major mode may be specified"));
+		bigMode = MODE_RECOMPILE;
 	    } else if (!strcmp(options[long_index].name, "resign")) {
-		if (bigMode != MODE_UNKNOWN)
+		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		    argerror(_("only one major mode may be specified"));
 		bigMode = MODE_RESIGN;
 		signIt = 1;
@@ -570,16 +578,20 @@ int main(int argc, char ** argv) {
 	exit(doReSign(passPhrase, argv + optind));
 	
       case MODE_REBUILD:
+      case MODE_RECOMPILE:
         if (getVerbosity() == MESS_NORMAL)
 	    setVerbosity(MESS_VERBOSE);
 
         if (optind == argc) 
 	    argerror(_("no packages files given for rebuild"));
 
-	while (optind < argc) {
-	    buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL |
-			  RPMBUILD_BINARY | RPMBUILD_SWEEP | RPMBUILD_RMSOURCE;
+	buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL |
+	    RPMBUILD_SWEEP | RPMBUILD_RMSOURCE;
+	if (bigMode == MODE_REBUILD) {
+	    buildAmount |= RPMBUILD_BINARY;
+	}
 
+	while (optind < argc) {
 	    if (doSourceInstall("/", argv[optind++], &specFile))
 		exit(-1);
 
