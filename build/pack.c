@@ -50,20 +50,15 @@ static int writeMagic(Spec s, struct PackageRec *pr,
 {
     struct rpmlead lead;
 
-    lead.magic[0] = RPMLEAD_MAGIC0;
-    lead.magic[1] = RPMLEAD_MAGIC1;
-    lead.magic[2] = RPMLEAD_MAGIC2;
-    lead.magic[3] = RPMLEAD_MAGIC3;
-
     lead.major = 2;
     lead.minor = 0;
-    lead.type = htons(type);
-    lead.archnum = htons(getArchNum());
-    lead.osnum = htons(getOsNum());
-    lead.signature_type = htons(RPMLEAD_SIGNONE);
+    lead.type = type;
+    lead.archnum = getArchNum();
+    lead.osnum = getOsNum();
+    lead.signature_type = RPMLEAD_SIGNONE;
     strncpy(lead.name, name, sizeof(lead.name));
 
-    write(fd, &lead, sizeof(lead));
+    writeLead(fd, &lead);
 
     return 0;
 }
