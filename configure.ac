@@ -413,6 +413,9 @@ WITH_BEECRYPT_LIB=
 AC_CHECK_HEADER([beecrypt/beecrypt.h], [
 	AC_CHECK_LIB(beecrypt, mpfprintln, [
 	    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the `beecrypt' library (-lbeecrypt).])
+	    AC_CHECK_HEADER([beecrypt/api.h], [
+		AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
+		])
 	    WITH_BEECRYPT_INCLUDE="-I/usr/include/beecrypt"
 	    WITH_BEECRYPT_LIB="-lbeecrypt"
 	])

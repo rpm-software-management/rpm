@@ -1226,7 +1226,12 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 	goto exit;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
-    if (rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c))
+#if HAVE_BEECRYPT_API_H
+    xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->rsahm, &dig->c);
+#else
+    xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
+#endif
+    if (xx)
 	res = RPMRC_OK;
     else
 	res = RPMRC_FAIL;

@@ -9,7 +9,12 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
+#if HAVE_BEECRYPT_API_H
+#include <api.h>
+#else
 #include <beecrypt.api.h>
+#endif
+
 #include <rpmpgp.h>
 #include <rpmsw.h>
 
