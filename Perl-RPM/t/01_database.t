@@ -38,6 +38,15 @@ else
     die "Not enough testable data in your RPM database, stopped";
 }
 
+$skip_kernel = 1;
+if ($test_pack eq 'kernel')
+{
+    $skip_kernel = 0;
+    @kernel_matches =
+        `rpm -qf /sbin/installkernel --queryformat "\%{NAME}\\n"`;
+    chomp(@kernel_matches);
+}
+
 tie %DB, "RPM::Database" or print "not ";
 print "ok $count\n"; $count++;
 
@@ -105,13 +114,26 @@ for (keys %$rpm) { delete $tmp_packs{$_} }
 print "not " if (keys %tmp_packs);
 print "ok $count\n"; $count++;
 
-@matches = $rpm->find_by_file('/sbin/installkernel');
-# There should be exactly one match:
-print "not " unless (@matches == 1);
-print "ok $count\n"; $count++;
+#
+# These two tests must be skipped if kernel is not an rpm package entry
+#
+if ($skip_kernel)
+{
+    print "ok $count # Skipped: test data missing\n"; $count++;
+    print "ok $count # Skipped: test data missing\n"; $count++;
+}
+else
+{
+    @matches = $rpm->find_by_file('/sbin/installkernel');
+    # There should be exactly one match:
+    print "not " unless (@matches == @kernel_matches);
+    print "ok $count\n"; $count++;
 
-print "not " unless ($matches[0]->{name} eq 'kernel');
-print "ok $count\n"; $count++;
+    $_ = $_->{name} for (@matches);
+    print "not " unless (join(':', sort @matches) eq
+                         join(':', sort @kernel_matches));
+    print "ok $count\n"; $count++;
+}
 
 # There may be more than one package that depends on $test_pack
 @matches = $rpm->find_what_requires($test_pack);

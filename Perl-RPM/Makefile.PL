@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.19 2001/03/08 06:12:32 rjray Exp $
+# $Id: Makefile.PL,v 1.20 2001/03/11 08:55:55 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -213,6 +213,7 @@ Summary: Perl bindings to the rpmlib API
 Name: SPEC_DISTNAME
 Version: SPEC_VERSION
 Release: SPEC_RELEASE
+Epoch: 1
 Vendor: Randy J. Ray
 Copyright: Artistic
 Group: Applications/CPAN
