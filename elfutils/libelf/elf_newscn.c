@@ -121,6 +121,7 @@ elf_newscn (Elf *elf)
 
   result->elf = elf;
   result->shdr_flags = ELF_F_DIRTY | ELF_F_MALLOCED;
+  result->list = elf->state.elf.scns_last;
 
   /* Initialize the data part.  */
   result->data_read = 1;

@@ -1,3 +1,6 @@
+/* Needed for libelf */
+#define _FILE_OFFSET_BITS 64
+
 #include "system.h"
 
 #include <elf.h>
@@ -32,16 +35,8 @@ copy_to_file(Elf *elf, Elf *out_elf)
 
   /* copy elf header: */
   gelf_newehdr(out_elf, ehdr.e_ident[EI_CLASS]);
-  gelf_update_ehdr(out_elf, &ehdr);
-
-  /* Copy program headers: */
-  gelf_newphdr(out_elf, ehdr.e_phnum);
-
-  for (i = 0; i < ehdr.e_phnum; i++)
-    {
-      gelf_getphdr (elf, i, &phdr);
-      gelf_update_phdr(out_elf, i, &phdr);
-    }
+  ehdr.e_phnum = 0;
+  gelf_update_ehdr (out_elf, &ehdr);
 
   section = NULL;
   while ((section = elf_nextscn(elf, section)) != NULL)
@@ -108,7 +103,7 @@ strip_to_file(Elf *elf, Elf *out_elf, DebugLink *debuglink)
   for (i = 0; i < ehdr.e_phnum; i++)
     {
       gelf_getphdr (elf, i, &phdr);
-      gelf_update_phdr(out_elf, i, &phdr);
+      gelf_update_phdr (out_elf, i, &phdr);
     }
 
   /* Copy section headers */
@@ -156,7 +151,7 @@ strip_to_file(Elf *elf, Elf *out_elf, DebugLink *debuglink)
 		  memcpy (out_data->d_buf, data->d_buf, data->d_size);
 		  strcpy (out_data->d_buf + data->d_size, DEBUGLINKNAME);
 
-		  section_header.sh_size += out_data->d_size;
+		  section_header.sh_size = MAX (section_header.sh_size, out_data->d_off + out_data->d_size);
 		  changed_offsets = 1;
 		  debuglink_name = data->d_size;
 		}
@@ -231,10 +226,12 @@ copy_debuginfo_to_file(Elf *elf, Elf *out_elf)
   GElf_Shdr section_header;
   GElf_Shdr out_section_header;
   Elf_Data *data, *out_data;
+  GElf_Phdr phdr;
   unsigned char *section_strtab;
   int keep_section;
   UnstripInfo *info;
   int unstripinfo_name = 0;
+  int i;
 
   info = malloc (sizeof (UnstripInfo));
   
@@ -308,25 +305,25 @@ copy_debuginfo_to_file(Elf *elf, Elf *out_elf)
 	    {
 	      out_data = elf_newdata(out_section);
 	      
-	      out_data->d_buf = data->d_buf;
-	      out_data->d_type = data->d_type;
-	      out_data->d_size = data->d_size;
+	      if (ehdr.e_shstrndx == elf_ndxscn(section))
+		{
+		  out_data->d_size = data->d_size + strlen (UNSTRIPINFONAME) + 1;
+		  out_data->d_buf = malloc (out_data->d_size);
+		  memcpy (out_data->d_buf, data->d_buf, data->d_size);
+		  strcpy (out_data->d_buf + data->d_size, UNSTRIPINFONAME);
+
+		  unstripinfo_name = data->d_size;
+		}
+	      else
+		{
+		  out_data->d_buf = data->d_buf;
+		  out_data->d_size = data->d_size;
+		}
 	      out_data->d_off = data->d_off;
+	      out_data->d_type = data->d_type;
 	      out_data->d_align = section_header.sh_addralign;
 	      out_data->d_version = data->d_version;
-	      last_offset = out_data->d_off + out_data->d_size;
-	    }
-	  /* Add ".debuglink" to section header strtab */
-	  if (ehdr.e_shstrndx == elf_ndxscn(section))
-	    {
-	      out_data = elf_newdata(out_section);
 	      
-	      out_data->d_size = strlen (UNSTRIPINFONAME) + 1;
-	      out_data->d_buf = UNSTRIPINFONAME;
-	      out_data->d_off = last_offset;
-	      out_data->d_align = 0;
-	      
-	      unstripinfo_name = out_data->d_off;
 	    }
 	}
       else if (keep_all_section_headers)
@@ -476,7 +473,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  out_elf = elf_begin (out, ELF_C_WRITE, NULL);
+  out_elf = elf_begin (out, ELF_C_WRITE_MMAP, NULL);
   if (out_elf == NULL)
     {
       fprintf (stderr, "Failed to elf_begin output file: %s\n", debugname);
@@ -485,7 +482,11 @@ main (int argc, char *argv[])
 
   copy_debuginfo_to_file (elf, out_elf);
 
-  elf_update (out_elf, ELF_C_WRITE);
+  if (elf_update (out_elf, ELF_C_WRITE) < 0)
+    {
+      fprintf (stderr, "Failed to write debug file: %s\n", elf_errmsg (elf_errno()));
+      exit (1);
+    }
   elf_end (out_elf);
   close (out);
   
@@ -514,7 +515,11 @@ main (int argc, char *argv[])
 
   strip_to_file (elf, out_elf, debuglink);
 
-  elf_update (out_elf, ELF_C_WRITE);
+  if (elf_update (out_elf, ELF_C_WRITE) < 0)
+    {
+      fprintf (stderr, "Failed to write stripped file: %s\n", elf_errmsg (elf_errno()));
+      exit (1);
+    }
   elf_end (out_elf);
   close (out);        
   

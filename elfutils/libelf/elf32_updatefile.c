@@ -257,19 +257,19 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
    on the stack.  */
 #define MAX_TMPBUF	32768
 
-
 /* Helper function to write out fill bytes.  */
 static int
 fill (int fd, off_t pos, size_t len, char *fillbuf, size_t *filledp)
 	/*@modifies fillbuf, filledp @*/
 {
   size_t filled = *filledp;
+  size_t fill_len = MIN (len, FILLBUFSIZE);
 
-  if (unlikely (len > filled) && filled < FILLBUFSIZE)
+  if (unlikely (fill_len > filled) && (filled < FILLBUFSIZE))
     {
       /* Initialize a few more bytes.  */
-      memset (fillbuf + filled, __libelf_fill_byte, len - filled);
-      *filledp = filled = len;
+      memset (fillbuf + filled, __libelf_fill_byte, fill_len - filled);
+      *filledp = filled = fill_len;
     }
 
   do
@@ -353,7 +353,8 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 	  == elf_typesize (LIBELFBITS, ELF_T_PHDR, 1));
 
   /* Write out the program header table.  */
-  if ((elf->state.ELFW(elf,LIBELFBITS).phdr_flags | elf->flags) & ELF_F_DIRTY)
+  if (elf->state.ELFW(elf,LIBELFBITS).phdr != NULL
+      && (elf->state.ELFW(elf,LIBELFBITS).phdr_flags | elf->flags) & ELF_F_DIRTY)
     {
       ElfW2(LIBELFBITS,Phdr) tmp_phdr;
       ElfW2(LIBELFBITS,Phdr) *out_phdr = elf->state.ELFW(elf,LIBELFBITS).phdr;
@@ -539,8 +540,8 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 	}
       while ((list = list->next) != NULL);
 
-
-      assert (shdr_data == &shdr_data_begin[shnum]);
+      if (change_bo || elf->state.ELFW(elf,LIBELFBITS).shdr == NULL)
+	assert (shdr_data == &shdr_data_begin[shnum]);
 
       /* Write out the section header table.  */
       if (shdr_flags & ELF_F_DIRTY

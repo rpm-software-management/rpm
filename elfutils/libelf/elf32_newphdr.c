@@ -86,7 +86,8 @@ elfw2(LIBELFBITS,newphdr) (Elf *elf, size_t count)
 
       result = NULL;
     }
-  else if (elf->state.ELFW(elf,LIBELFBITS).ehdr->e_phnum != count)
+  else if (elf->state.ELFW(elf,LIBELFBITS).ehdr->e_phnum != count ||
+	   elf->state.ELFW(elf,LIBELFBITS).phdr == NULL)
     {
       /* Allocate a new program header with the appropriate number of
 	 elements.  */

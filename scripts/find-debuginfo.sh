@@ -2,10 +2,14 @@
 #find-debuginfo.sh - automagically generate debug info and file list
 #for inclusion in an rpm spec file.
 
-LISTFILE=debugfiles.list
-SOURCEFILE=debugsources.list
+if [ -z "$1" ] ; then BUILDDIR="."
+else BUILDDIR=$1
+fi
 
-touch .debug_saved_mode
+LISTFILE=$BUILDDIR/debugfiles.list
+SOURCEFILE=$BUILDDIR/debugsources.list
+
+touch $BUILDDIR/.debug_saved_mode
 echo -n > $SOURCEFILE
 
 # Strip ELF binaries
@@ -16,16 +20,16 @@ for f in `find $RPM_BUILD_ROOT -type f \( -perm -0100 -or -perm -0010 -or -perm 
 	mkdir -p ${OUTPUTDIR}
 	echo extracting debug info from $f
 	#save old mode
-	chmod --reference=$f .debug_saved_mode
+	chmod --reference=$f $BUILDDIR/.debug_saved_mode
 	#make sure we have write perms
 	chmod u+w $f
 	/usr/lib/rpm/debugedit -b $RPM_BUILD_DIR -d /usr/src/debug -l $SOURCEFILE $f
-	chmod --reference=.debug_saved_mode $f
+	chmod --reference=$BUILDDIR/.debug_saved_mode $f
 	/usr/lib/rpm/striptofile -g -u -o $OUTPUTDIR $f || :
 done
 
 mkdir -p ${RPM_BUILD_ROOT}/usr/src/debug
-(DIR=`pwd`; cd $RPM_BUILD_DIR; LANG=C sort $DIR/$SOURCEFILE -z -u | cpio -pd0m ${RPM_BUILD_ROOT}/usr/src/debug)
+cat $SOURCEFILE | (cd $RPM_BUILD_DIR; LANG=C sort -z -u | cpio -pd0m ${RPM_BUILD_ROOT}/usr/src/debug)
 # stupid cpio creates new directories in mode 0700, fixup
 find ${RPM_BUILD_ROOT}/usr/src/debug -type d -print0 | xargs -0 chmod a+rx
 
