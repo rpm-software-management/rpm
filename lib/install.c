@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <grp.h>
+#include <misc.h>
 #include <pwd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,16 +10,18 @@
 #include <sys/stat.h>		/* needed for mkdir(2) prototype! */
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 #include <zlib.h>
 
 #include "header.h"
 #include "install.h"
+#include "md5.h"
 #include "package.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
 
-enum instActions { CREATE, BACKUP, SAVE };
+enum instActions { CREATE, BACKUP, KEEP, SAVE };
 
 struct fileToInstall {
     char * fileName;
@@ -38,7 +41,7 @@ static int createDirectories(char * prefix, char ** fileList, int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int fileCount, 
-			         enum instActions * instActions);
+				 enum instActions * instActions, int flags);
 static int fileCompare(const void * one, const void * two);
 
 /* 0 success */
@@ -48,19 +51,29 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		      notifyFunction notify) {
     int rc, isSource;
     char * name, * version, * release;
-    Header h;
+    Header h, h2;
     int fileCount, type;
     char ** fileList;
     char ** fileOwners, ** fileGroups, ** fileMd5s;
     uint_32 * fileFlagsList;
     uint_32 * fileSizesList;
+    int_32 installTime;
     char * fileStatesList;
     struct fileToInstall * files;
-    enum instActions * instActions;
+    enum instActions * instActions = NULL;
     int i;
+    int archiveFileCount = 0;
+    int installFile = 0;
+    char * ext = NULL, * newpath;
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
+
+    /* we make a copy of the header here so we have one which we can add
+       entries to */
+    h2 = copyHeader(h);
+    freeHeader(h);
+    h = h2;
 
     getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
@@ -82,13 +95,23 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	memset(instActions, CREATE, sizeof(instActions));
 
 	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
-	getEntry(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, 
-		 &fileCount);
 	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
 		 &fileCount);
 
-	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, 
-				   fileCount, instActions);
+	/* check for any config files that already exist. If they do, plan
+	   on making a backup copy. If that's not the right thing to do
+	   instHandleSharedFiles() below will take care of the problem */
+	for (i = 0; i < fileCount; i++) {
+	    if (fileFlagsList[i] & RPMFILE_CONFIG) {
+		if (exists(fileList[i])) {
+		    message(MESS_DEBUG, "%s exists - backing up", fileList[i]);
+		    instActions[i] = BACKUP;
+		}
+	    }
+	}
+
+	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileCount, 
+					instActions, flags);
 
 	free(fileMd5s);
 	if (rc) {
@@ -122,12 +145,54 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
 	files = alloca(sizeof(struct fileToInstall) * fileCount);
 	for (i = 0; i < fileCount; i++) {
-	    files[i].fileName = fileList[i] + 1; /* +1 cuts off leading / */
-	    files[i].size = fileSizesList[i];
+	    switch (instActions[i]) {
+	      case BACKUP:
+		ext = ".rpmorig";
+		installFile = 1;
+		break;
+
+	      case SAVE:
+		ext = ".rpmsave";
+		installFile = 1;
+		break;
+
+	      case CREATE:
+		installFile = 1;
+		ext = NULL;
+		break;
+
+	      case KEEP:
+		installFile = 0;
+		ext = NULL;
+		break;
+	    }
+
+	    if (ext) {
+		newpath = malloc(strlen(fileList[i]) + 20);
+		strcpy(newpath, fileList[i]);
+		strcat(newpath, ext);
+		message(MESS_WARNING, "%s saved as %s\n", fileList[i], newpath);
+		/* XXX this message is a bad idea - it'll make glint more
+		   difficult */
+
+		if (rename(fileList[i], newpath)) {
+		    error(RPMERR_RENAME, "rename of %s to %s failed:\n",
+			  fileList[i], newpath, strerror(errno));
+		    return 1;
+		}
+	    }
+
+	    if (installFile) {
+ 		/* +1 cuts off leading / */
+
+		files[archiveFileCount].fileName = fileList[i] + 1;
+		files[archiveFileCount].size = fileSizesList[i];
+		archiveFileCount++;
+	    }
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(prefix, fd, files, fileCount, notify)) {
+	if (installArchive(prefix, fd, files, archiveFileCount, notify)) {
 	    freeHeader(h);
 	    free(fileList);
 	    return 2;
@@ -149,17 +214,26 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	    free(fileOwners);
 	}
 	free(fileList);
-    }
 
-    message(MESS_DEBUG, "running postinstall script (if any)\n");
+	fileStatesList = malloc(sizeof(char) * fileCount);
+	memset(fileStatesList, RPMFILE_STATE_NORMAL, fileCount);
+	addEntry(h, RPMTAG_FILESTATES, CHAR_TYPE, fileStatesList, fileCount);
 
-    if (runScript(prefix, h, RPMTAG_POSTIN)) {
-	return 1;
+	installTime = time(NULL);
+	addEntry(h, RPMTAG_INSTALLTIME, INT32_TYPE, &installTime, 1);
     }
 
     if (rpmdbAdd(db, h)) {
 	freeHeader(h);
 	return 2;
+    }
+
+    /* we need to figure out which files have been replaced XXX */
+
+    message(MESS_DEBUG, "running postinstall script (if any)\n");
+
+    if (runScript(prefix, h, RPMTAG_POSTIN)) {
+	return 1;
     }
 
     return 0;
@@ -182,16 +256,44 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     char * cpioBinary;
     int needSecondPipe;
     char line[1024];
-    int i;
+    int j;
+    int i = 0;
     unsigned long totalSize = 0;
     unsigned long sizeInstalled = 0;
     struct fileToInstall fileInstalled;
     struct fileToInstall * file;
     char * chptr;
+    char ** args;
 
     /* fd should be a gzipped cpio archive */
 
     needSecondPipe = (notify != NULL);
+    
+    if (access("/bin/cpio",  X_OK))  {
+	if (access("/usr/bin/cpio",  X_OK))  {
+	    error(RPMERR_CPIO, "cpio cannot be found in /bin or /usr/sbin");
+	    return 1;
+	} else 
+	    cpioBinary = "/usr/bin/cpio";
+    } else
+	cpioBinary = "/bin/cpio";
+
+    args = alloca(sizeof(char *) * (fileCount + 10));
+
+    args[i++] = cpioBinary;
+    args[i++] = "--extract";
+    args[i++] = "--unconditional";
+    args[i++] = "--preserve-modification-time";
+    args[i++] = "--make-directories";
+    args[i++] = "--quiet";
+
+    if (needSecondPipe)
+	args[i++] = "--verbose";
+
+    for (j = 0; j < fileCount; j++)
+	args[i++] = files[j].fileName;
+
+    args[i++] = NULL;
     
     stream = gzdopen(fd, "r");
     pipe(p);
@@ -202,15 +304,6 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	    totalSize += files[i].size;
 	qsort(files, fileCount, sizeof(struct fileToInstall), fileCompare);
     }
-
-    if (access("/bin/cpio",  X_OK))  {
-	if (access("/usr/bin/cpio",  X_OK))  {
-	    error(RPMERR_CPIO, "cpio cannot be found in /bin or /usr/sbin");
-	    return 1;
-	} else 
-	    cpioBinary = "/usr/bin/cpio";
-    } else
-	cpioBinary = "/bin/cpio";
 
     oldhandler = signal(SIGPIPE, SIG_IGN);
 
@@ -228,14 +321,9 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	    close(2);      	    /* stderr will go to a pipe instead */
 	    dup2(statusPipe[1], 2);
 	    close(statusPipe[1]);
-	    execl(cpioBinary, cpioBinary, "--extract", "--verbose",
-		  "--unconditional", "--preserve-modification-time",
-		  "--make-directories", "--quiet", NULL);
-	} else {
-	    execl(cpioBinary, cpioBinary, "--extract", "--unconditional", 
-		  "--preserve-modification-time", "--make-directories", 
-		  "--quiet", NULL);
 	}
+
+	execv(args[0], args);
 
 	exit(-1);
     }
@@ -255,7 +343,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 
 	if (needSecondPipe) {
 	    bytes = read(statusPipe[0], line, sizeof(line));
-	    while (bytes != -1) {
+	    while (bytes > 0) {
 		fileInstalled.fileName = line;
 
 		while ((chptr = (strchr(fileInstalled.fileName, '\n')))) {
@@ -291,7 +379,8 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	return 1;
     }
 
-    notify(totalSize, totalSize);
+    if (notify)
+	notify(totalSize, totalSize);
 
     return 0;
 }
@@ -417,15 +506,14 @@ static int setFileOwner(char * prefix, char * file, char * owner,
 }
 
 /* This could be more efficient. A brute force tokenization and mkdir's
-   seems like horrible overkill. I did make it know better then trying 
-   to create the same direc though. That should make it perform adequatally 
-   thanks to the sorted filelist.
+   seems like horrible overkill. I did make it know better then trying to 
+   create the same directory sintrg twice in a row though. That should make it 
+   perform adequatally thanks to the sorted filelist.
 
    This could create directories that should be symlinks :-( RPM building
    should probably resolve symlinks in paths.
 
-   This creates directories whose permissions are modified by the current
-   umask... I'm not sure how this should act */
+   This creates directories which are always 0755, despite the current umask */
 
 static int createDirectories(char * prefix, char ** fileList, int fileCount) {
     int i;
@@ -507,6 +595,8 @@ static int mkdirIfNone(char * directory, mode_t perms) {
     rc = mkdir(directory, perms);
     if (!rc || errno == EEXIST) return 0;
 
+    chmod(directory, perms);  /* this should not be modified by the umask */
+
     error(RPMERR_MKDIR, "failed to create %s - %s\n", directory, 
 	  strerror(errno));
 
@@ -518,7 +608,7 @@ static int mkdirIfNone(char * directory, mode_t perms) {
 
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int fileCount, 
-			         enum instActions * instActions) {
+			         enum instActions * instActions, int flags) {
     struct sharedFile * sharedList;
     int sharedCount;
     int i, type;
@@ -527,7 +617,9 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
     int secFileCount;
     char ** secFileMd5List, ** secFileList;
     char * secFileStatesList;
+    uint_32 * secFileFlagsList;
     char * name, * version, * release;
+    char currentMd5[33];
     int rc = 0;
 
     if (findSharedFiles(db, 0, fileList, fileCount, &sharedList, 
@@ -576,10 +668,73 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 		     (void **) &secFileStatesList, &secFileCount);
 	    getEntry(sech, RPMTAG_FILEMD5S, &type, 
 		     (void **) &secFileMd5List, &secFileCount);
+	    getEntry(sech, RPMTAG_FILEFLAGS, &type, 
+		     (void **) &secFileFlagsList, &secFileCount);
 
 	    freeHeader(sech);
 	}
 
+	message(MESS_DEBUG, "file %s is shared\n", 
+		secFileList[sharedList[i].secFileNumber]);
+
+	if (!(flags & INSTALL_REPLACEFILES)) {
+	    error(RPMERR_PKGINSTALLED, "%s conflicts with file from %s",
+		  fileList[sharedList[i].mainFileNumber],
+		  name, version, release);
+	    rc = 1;
+	}
+
+	/* if this instance of the shared file is already recorded as
+	   replaced, just forget about it */
+	if (secFileStatesList[sharedList[i].secFileNumber] == 
+		RPMFILE_STATE_REPLACED) {
+	    message(MESS_DEBUG, "	old version already replaced\n");
+	    continue;
+	}
+
+	/* All of this md5 stuff is nice, but it needs to know about
+	   symlink comparisons as well :-( */
+
+	/* if this is a config file, we need to be carefull here */
+	if (secFileFlagsList[sharedList[i].secFileNumber] & RPMFILE_CONFIG) {
+	    if (!strcmp(fileMd5List[sharedList[i].mainFileNumber], 
+		        secFileMd5List[sharedList[i].secFileNumber])) {
+
+		/* the file is the same in both the old package and the
+		   new one, save the one that is currently installed */
+
+		message(MESS_DEBUG, "	old == new, keeping installed "
+			"version\n");
+		instActions[sharedList[i].mainFileNumber] = KEEP;
+	    } else {
+		if (mdfile(fileList[sharedList[i].mainFileNumber], 
+				currentMd5)) {
+		    /* assume the file has been removed, don't freak */
+		    message(MESS_DEBUG, "	file not present - creating");
+		    instActions[sharedList[i].mainFileNumber] = CREATE;
+		} else if (!strcmp(secFileMd5List[sharedList[i].secFileNumber],
+			           currentMd5)) {
+		    /* this config file has never been modified, so 
+		       just replace it */
+		    message(MESS_DEBUG, "	old == current, replacing "
+			    "with new version\n");
+		    instActions[sharedList[i].mainFileNumber] = CREATE;
+		} else {
+		    /* the config file on the disk has been modified, but
+		       the ones in the two packages are different. It would
+		       be nice if RPM was smart enough to at least try and
+		       merge the difference ala CVS, but... */
+		    message(MESS_DEBUG, "	files changed to much - "
+			    "backing up");
+		    
+		    message(MESS_WARNING, "%s will be saved as %s.rpmsave\n",
+			fileList[sharedList[i].mainFileNumber], 
+			fileList[sharedList[i].mainFileNumber]);
+
+		    instActions[sharedList[i].mainFileNumber] = SAVE;
+		}
+	    }
+	}
     }
 
     if (secOffset) {
