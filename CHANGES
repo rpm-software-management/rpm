@@ -30,6 +30,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
+	- check arch only on RPMBUILD_{PREP,BUILD,INSTALL,PACKAGEBINARY}.
 	- configure.in: set default value for RPM. (Tim Mooney)
 	- add new Epoch: keyword just like Serial:.
 	- update Russian translation w man pages.

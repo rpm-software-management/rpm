@@ -129,7 +129,7 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
     }
 
 #define	_anyarch(_f)	\
-(((_f)&(RPMBUILD_PACKAGESOURCE|RPMBUILD_PACKAGEBINARY)) == RPMBUILD_PACKAGESOURCE)
+(((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
     if (parseSpec(&spec, specfile, buildRoot, 0, passPhrase, cookie,
 	_anyarch(buildAmount))) {
 	    return 1;
