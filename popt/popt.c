@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
 #include <unistd.h>
 
 #if HAVE_ALLOCA_H
@@ -467,8 +466,8 @@ int poptReadConfigFile(poptContext con, char * fn) {
     fileLength = lseek(fd, 0, SEEK_END);
     lseek(fd, 0, 0);
 
-    file = mmap(NULL, fileLength, PROT_READ, MAP_PRIVATE, fd, 0);
-    if (file == (void *) -1) {
+    file = alloca(fileLength + 1);
+    if ((fd = read(fd, file, fileLength)) != fileLength) {
 	rc = errno;
 	close(fd);
 	errno = rc;
