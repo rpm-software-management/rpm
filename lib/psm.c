@@ -551,55 +551,6 @@ static int markReplacedFiles(PSM_t psm)
 }
 
 /**
- * Setup payload map and install payload archive.
- *
- * @todo Add endian tag so that srpm MD5 sums can be verified when installed.
- *
- * @param psm		package state machine data
- * @param allFiles	install all files?
- * @return		0 on success
- */
-static int installArchive(PSM_t psm, int allFiles)
-{
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
-    int rc;
-
-    if (allFiles) {
-	/* install all files */
-    } else if (fi->fc == 0) {
-	/* no files to install */
-	return 0;
-    }
-
-    rc = psmStage(psm, PSM_PROCESS);
-
-    if (!rc)
-	rc = psmStage(psm, PSM_COMMIT);
-
-    if (rc) {
-	/*
-	 * This would probably be a good place to check if disk space
-	 * was used up - if so, we should return a different error.
-	 */
-	rpmError(RPMERR_CPIO, _("unpacking of archive failed%s%s: %s\n"),
-		(psm->failedFile != NULL ? _(" on file ") : ""),
-		(psm->failedFile != NULL ? psm->failedFile : ""),
-		cpioStrerror(rc));
-	rc = 1;
-    } else {
-	if (ts && ts->notify) {
-	    unsigned int archiveSize = (fi->archiveSize ? fi->archiveSize : 100);
-	    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
-			archiveSize, archiveSize,
-			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
-	}
-    }
-
-    return rc;
-}
-
-/**
  */
 static rpmRC chkdir (const char * dpath, const char * dname)
 {
@@ -702,7 +653,7 @@ static rpmRC installSources(const rpmTransactionSet ts, TFI_t fi,
 	specFile = t;
     } else {
 	rpmError(RPMERR_NOSPEC, _("source package contains no .spec file\n"));
-	rc = 2;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -712,7 +663,7 @@ static rpmRC installSources(const rpmTransactionSet ts, TFI_t fi,
 	psm->ts = ts;
 	psm->fi = fi;
 
-	rc = installArchive(psm, 1);
+	rc = psmStage(psm, PSM_PROCESS);
 
 	(void) psmStage(psm, PSM_FINI);
     }
@@ -908,7 +859,7 @@ static int runScript(PSM_t psm, Header h,
     int i;
     int freePrefixes = 0;
     FD_t out;
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
     const char *n, *v, *r;
 
     if (!progArgv && !script)
@@ -1063,13 +1014,13 @@ static int runScript(PSM_t psm, Header h,
 		 _("execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"),
 		 sln, n, v, r, strerror (errno));
 	/* XXX what to do here? */
-	rc = 0;
+	rc = RPMRC_OK;
     } else {
 	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	    rpmError(RPMERR_SCRIPT,
 		     _("execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"),
 		     sln, n, v, r, WEXITSTATUS(status));
-	    rc = 1;
+	    rc = RPMRC_FAIL;
 	}
     }
 
@@ -1088,9 +1039,9 @@ static int runScript(PSM_t psm, Header h,
 /**
  * Retrieve and run scriptlet from header.
  * @param psm		package state machine data
- * @return		0 on success
+ * @return		rpmRC return code
  */
-static int runInstScript(PSM_t psm)
+static rpmRC runInstScript(PSM_t psm)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1101,10 +1052,10 @@ static int runInstScript(PSM_t psm)
     const char ** argv;
     int_32 ptt, stt;
     const char * script;
-    int rc;
+    rpmRC rc = RPMRC_OK;
 
     if (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS)
-	return 0;
+	return rc;
 
     /*
      * headerGetEntry() sets the data pointer to NULL if the entry does
@@ -1152,7 +1103,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
     const char * triggerPackageName;
     const char * sourceName;
     int numTriggers;
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
     int i;
     int skip;
 
@@ -1202,7 +1153,8 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 
 	    arg1 = rpmdbCountPackages(ts->rpmdb, triggerPackageName);
 	    if (arg1 < 0) {
-		rc = 1;	/* XXX W2DO? same as "execution of script failed" */
+		/* XXX W2DO? same as "execution of script failed" */
+		rc = RPMRC_FAIL;
 	    } else {
 		arg1 += psm->countCorrection;
 		index = triggerIndices[i];
@@ -1243,7 +1195,7 @@ static int runTriggers(PSM_t psm)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     int numPackage;
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
 
     numPackage = rpmdbCountPackages(ts->rpmdb, fi->name) + psm->countCorrection;
     if (numPackage < 0)
@@ -1283,7 +1235,7 @@ static int runImmedTriggers(PSM_t psm)
     int_32 tnt, tit;
     int numTriggerIndices;
     char * triggersRun;
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
 
     if (!hge(fi->h, RPMTAG_TRIGGERNAME, &tnt,
 			(void **) &triggerNames, &numTriggers))
@@ -1324,7 +1276,7 @@ int psmStage(PSM_t psm, pkgStage stage)
     TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
     HFD_t hfd = fi->hfd;
-    int rc = psm->rc;
+    rpmRC rc = psm->rc;
     int saveerrno;
 
     switch (stage) {
@@ -1342,24 +1294,22 @@ int psmStage(PSM_t psm, pkgStage stage)
 	     */
 	    psm->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) + 1;
 	    if (psm->scriptArg < 1) {
-		rc = 1;
+		rc = RPMRC_FAIL;
 		break;
 	    }
 
-	    {	rpmdbMatchIterator mi;
-		Header oh;
-
-		mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
-		rpmdbSetIteratorVersion(mi, fi->version);
-		rpmdbSetIteratorRelease(mi, fi->release);
-		while ((oh = rpmdbNextIterator(mi))) {
-		    fi->record = rpmdbGetIteratorOffset(mi);
-		    psm->oh = (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
-			? headerCopy(oh) : NULL;
-		    break;
-		}
-		rpmdbFreeIterator(mi);
+	    psm->mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
+	    rpmdbSetIteratorVersion(psm->mi, fi->version);
+	    rpmdbSetIteratorRelease(psm->mi, fi->release);
+	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
+		fi->record = rpmdbGetIteratorOffset(psm->mi);
+		psm->oh = (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
+			? headerCopy(psm->oh) : NULL;
+		break;
 	    }
+	    rpmdbFreeIterator(psm->mi);
+	    psm->mi = NULL;
+	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    /*
@@ -1369,7 +1319,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	     */
 	    psm->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) - 1;
 	    if (psm->scriptArg < 0) {
-		rc = 1;
+		rc = RPMRC_FAIL;
 		break;
 	    }
 	
@@ -1442,7 +1392,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 		(void) urlPath(psm->pkgURL, &psm->pkgfn);
 		psm->fd = Fopen(psm->pkgfn, "w.ufdio");
 		if (psm->fd == NULL || Ferror(psm->fd)) {
-		    rc = 1;
+		    rc = RPMRC_FAIL;
 		    break;
 		}
 	    }
@@ -1478,7 +1428,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 		if (rc) {
 		    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
 			 Fstrerror(psm->fd));
-		    rc = 1;
+		    rc = RPMRC_FAIL;
 		    break;
 		}
 	    }
@@ -1502,6 +1452,11 @@ int psmStage(PSM_t psm, pkgStage stage)
 	if (psm->goal == PSM_PKGINSTALL) {
 	    struct availablePackage * alp = fi->ap;
 
+	    if (fi->fc <= 0)				break;
+	    if (ts->transFlags & RPMTRANS_FLAG_JUSTDB)	break;
+
+	    rc = setFileOwners(fi);
+
 	    /* Retrieve type of payload compression. */
 	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
 
@@ -1515,6 +1470,26 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    Fclose(psm->cfd);
 	    psm->cfd = NULL;
 	    errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
+
+	    if (!rc)
+		rc = psmStage(psm, PSM_COMMIT);
+
+	    if (rc) {
+		rpmError(RPMERR_CPIO,
+			_("unpacking of archive failed%s%s: %s\n"),
+			(psm->failedFile != NULL ? _(" on file ") : ""),
+			(psm->failedFile != NULL ? psm->failedFile : ""),
+			cpioStrerror(rc));
+		rc = RPMRC_FAIL;
+		break;
+	    }
+	    if (ts && ts->notify) {
+		unsigned int archiveSize =
+				(fi->archiveSize ? fi->archiveSize : 100);
+		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
+				archiveSize, archiveSize,
+				(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+	    }
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    const void * pkgKey = NULL;
@@ -1627,6 +1602,8 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    if (rc) break;
 
 	    rc = psmStage(psm, PSM_RPMDB_REMOVE);
+	}
+	if (psm->goal == PSM_PKGSAVE) {
 	}
 	break;
     case PSM_UNDO:
@@ -1742,7 +1719,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    t = stpcpy(t, ".gzdio");
 	if (!strcmp(payload_compressor, "bzip2"))
 	    t = stpcpy(t, ".bzdio");
-	rc = 0;
+	rc = RPMRC_OK;
     }	break;
 
     case PSM_RPMDB_LOAD:
@@ -1783,7 +1760,7 @@ int installBinaryPackage(PSM_t psm)
     TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
     int ec = 2;		/* assume error return */
-    int rc;
+    rpmRC rc = RPMRC_OK;
 
 psm->goal = PSM_PKGINSTALL;
 psm->stepName = "  install";
@@ -1835,15 +1812,9 @@ psm->stepName = "  install";
     if (rc)
 	goto exit;
 
-    if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
-
-	rc = setFileOwners(fi);
-
-	rc = installArchive(psm, 0);
-
-	if (rc)
-	    goto exit;
-    }
+    rc = psmStage(psm, PSM_PROCESS);
+    if (rc)
+	goto exit;
 
     rc = psmStage(psm, PSM_POST);
     if (rc)
@@ -1859,7 +1830,7 @@ exit:
 
 int removeBinaryPackage(PSM_t psm)
 {
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
 
 psm->goal = PSM_PKGERASE;
 psm->stepName = "    erase";
@@ -1887,7 +1858,7 @@ exit:
 
 int repackage(PSM_t psm)
 {
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
 
 psm->goal = PSM_PKGSAVE;
 psm->stepName = "repackage";
@@ -1903,6 +1874,12 @@ psm->stepName = "repackage";
 
     /* Write the payload into the package. */
     rc = psmStage(psm, PSM_PROCESS);
+    if (rc)
+	goto exit;
+
+    rc = psmStage(psm, PSM_POST);
+    if (rc)
+	goto exit;
 
 exit:
     (void) psmStage(psm, PSM_FINI);

@@ -140,6 +140,7 @@ struct psm_s {
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage/multilib header. */
+    rpmdbMatchIterator mi;
 /*@observer@*/ const char * stepName;
 /*@owned@*/ const char * rpmio_flags;
 /*@owned@*/ const char * failedFile;
@@ -151,7 +152,7 @@ struct psm_s {
     int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
-    int rc;
+    rpmRC rc;
     pkgStage goal;
     pkgStage stage;
 };

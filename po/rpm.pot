@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-02 10:56-0500\n"
+"POT-Creation-Date: 2001-03-02 12:08-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1479
+#: build/pack.c:484 lib/psm.c:1429
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1644
+#: build/pack.c:566 lib/psm.c:1621
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2889,62 +2889,58 @@ msgstr ""
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#.
-#. * This would probably be a good place to check if disk space
-#. * was used up - if so, we should return a different error.
-#.
-#: lib/psm.c:585
-#, c-format
-msgid "unpacking of archive failed%s%s: %s\n"
-msgstr ""
-
-#: lib/psm.c:586
-msgid " on file "
-msgstr ""
-
-#: lib/psm.c:626
+#: lib/psm.c:577
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/psm.c:632
+#: lib/psm.c:583
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/psm.c:654
+#: lib/psm.c:605
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/psm.c:704
+#: lib/psm.c:655
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:793
+#: lib/psm.c:744
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1063
+#: lib/psm.c:1014
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1070
+#: lib/psm.c:1021
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1334
+#: lib/psm.c:1286
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1392
+#: lib/psm.c:1342
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1718
+#: lib/psm.c:1479
+#, c-format
+msgid "unpacking of archive failed%s%s: %s\n"
+msgstr ""
+
+#: lib/psm.c:1480
+msgid " on file "
+msgstr ""
+
+#: lib/psm.c:1695
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
