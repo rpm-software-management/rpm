@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-06-11 16:37-0400\n"
+"POT-Creation-Date: 2000-06-12 14:49-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2755,7 +2755,7 @@ msgstr "| oèakávené na konci výrazu"
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
-#: lib/install.c:148 lib/uninstall.c:185
+#: lib/install.c:148 lib/uninstall.c:188
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   súbor: akcia %s: %s\n"
@@ -3340,12 +3340,12 @@ msgstr ")"
 msgid "OK"
 msgstr "V PORIADKU"
 
-#: lib/rpmdb.c:93
+#: lib/rpmdb.c:94
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:226
+#: lib/rpmdb.c:227
 msgid ""
 "\n"
 "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
@@ -3355,12 +3355,12 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:259
+#: lib/rpmdb.c:260
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpmdb.c:267
+#: lib/rpmdb.c:268
 msgid ""
 "\n"
 "--> The database is in db%d format, not the suggested db%d format.\n"
@@ -3371,7 +3371,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:280
+#: lib/rpmdb.c:281
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the database is db%d format.\n"
@@ -3381,26 +3381,26 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:345
+#: lib/rpmdb.c:346
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: lib/rpmdb.c:463
+#: lib/rpmdb.c:464
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: lib/rpmdb.c:472
+#: lib/rpmdb.c:473
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: lib/rpmdb.c:695 lib/rpmdb.c:2198
+#: lib/rpmdb.c:696 lib/rpmdb.c:2201
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: lib/rpmdb.c:794
+#: lib/rpmdb.c:795
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -3409,116 +3409,116 @@ msgstr ""
 "databázy v novom formáte"
 
 #. error
-#: lib/rpmdb.c:1004
+#: lib/rpmdb.c:1005
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: lib/rpmdb.c:1062 lib/rpmdb.c:1573 lib/uninstall.c:90
+#: lib/rpmdb.c:1063 lib/rpmdb.c:1576 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: lib/rpmdb.c:1625
+#: lib/rpmdb.c:1628
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstraòuje sa záznam z databázy\n"
 
-#: lib/rpmdb.c:1636
+#: lib/rpmdb.c:1639
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:1645
+#: lib/rpmdb.c:1648
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:1652 lib/rpmdb.c:1873
+#: lib/rpmdb.c:1655 lib/rpmdb.c:1876
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1785
+#: lib/rpmdb.c:1788
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: lib/rpmdb.c:1841
+#: lib/rpmdb.c:1844
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1857
+#: lib/rpmdb.c:1860
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:1866
+#: lib/rpmdb.c:1869
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2226
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rpmdb.c:2227
+#: lib/rpmdb.c:2230
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rpmdb.c:2233
+#: lib/rpmdb.c:2236
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2235
+#: lib/rpmdb.c:2238
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rpmdb.c:2242
+#: lib/rpmdb.c:2245
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rpmdb.c:2251
+#: lib/rpmdb.c:2254
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rpmdb.c:2274
+#: lib/rpmdb.c:2277
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rpmdb.c:2306
+#: lib/rpmdb.c:2309
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rpmdb.c:2324
+#: lib/rpmdb.c:2327
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rpmdb.c:2332
+#: lib/rpmdb.c:2335
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2337
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2347
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2346
+#: lib/rpmdb.c:2349
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
@@ -3894,16 +3894,16 @@ msgstr "rmdir %s zlyhalo: %s"
 msgid "removal of %s failed: %s"
 msgstr "odstránenie %s zlyhalo: %s"
 
-#: lib/uninstall.c:131
+#: lib/uninstall.c:134
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "budú sa odstraòova» súbory test = %d\n"
 
-#: lib/uninstall.c:199
+#: lib/uninstall.c:202
 msgid "running postuninstall script (if any)\n"
 msgstr "vykonávajú sa postdein¹talaèné skripty (ak existujú)\n"
 
-#: lib/uninstall.c:390
+#: lib/uninstall.c:395
 msgid "execution of script failed"
 msgstr "vykonanie skriptu zlyhalo"
 

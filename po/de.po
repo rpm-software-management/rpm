@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-06-11 16:37-0400\n"
+"POT-Creation-Date: 2000-06-12 14:49-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2876,7 +2876,7 @@ msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
 # , c-format
-#: lib/install.c:148 lib/uninstall.c:185
+#: lib/install.c:148 lib/uninstall.c:188
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -3485,12 +3485,12 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:93
+#: lib/rpmdb.c:94
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:226
+#: lib/rpmdb.c:227
 msgid ""
 "\n"
 "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
@@ -3500,12 +3500,12 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:259
+#: lib/rpmdb.c:260
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/rpmdb.c:267
+#: lib/rpmdb.c:268
 msgid ""
 "\n"
 "--> The database is in db%d format, not the suggested db%d format.\n"
@@ -3516,7 +3516,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:280
+#: lib/rpmdb.c:281
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the database is db%d format.\n"
@@ -3526,146 +3526,146 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:345
+#: lib/rpmdb.c:346
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "Fehler beim Eintrag %s von %s"
 
-#: lib/rpmdb.c:463
+#: lib/rpmdb.c:464
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s"
 msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:472
+#: lib/rpmdb.c:473
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:695 lib/rpmdb.c:2198
+#: lib/rpmdb.c:696 lib/rpmdb.c:2201
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: lib/rpmdb.c:794
+#: lib/rpmdb.c:795
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:1004
+#: lib/rpmdb.c:1005
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/rpmdb.c:1062 lib/rpmdb.c:1573 lib/uninstall.c:90
+#: lib/rpmdb.c:1063 lib/rpmdb.c:1576 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
-#: lib/rpmdb.c:1625
+#: lib/rpmdb.c:1628
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
 # FIXME
-#: lib/rpmdb.c:1636
+#: lib/rpmdb.c:1639
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:1645
+#: lib/rpmdb.c:1648
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:1652 lib/rpmdb.c:1873
+#: lib/rpmdb.c:1655 lib/rpmdb.c:1876
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1785
+#: lib/rpmdb.c:1788
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/rpmdb.c:1841
+#: lib/rpmdb.c:1844
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1857
+#: lib/rpmdb.c:1860
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1866
+#: lib/rpmdb.c:1869
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2226
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rpmdb.c:2227
+#: lib/rpmdb.c:2230
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: lib/rpmdb.c:2233
+#: lib/rpmdb.c:2236
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpmdb.c:2235
+#: lib/rpmdb.c:2238
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpmdb.c:2242
+#: lib/rpmdb.c:2245
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rpmdb.c:2251
+#: lib/rpmdb.c:2254
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rpmdb.c:2274
+#: lib/rpmdb.c:2277
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: lib/rpmdb.c:2306
+#: lib/rpmdb.c:2309
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: lib/rpmdb.c:2324
+#: lib/rpmdb.c:2327
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2332
+#: lib/rpmdb.c:2335
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2337
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2347
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
 # , c-format
-#: lib/rpmdb.c:2346
+#: lib/rpmdb.c:2349
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -4060,16 +4060,16 @@ msgstr "Entfernen von %s fehlgeschlagen: %s"
 msgid "removal of %s failed: %s"
 msgstr "öffnen von %s fehlgeschlagen: %s"
 
-#: lib/uninstall.c:131
+#: lib/uninstall.c:134
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:199
+#: lib/uninstall.c:202
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:390
+#: lib/uninstall.c:395
 msgid "execution of script failed"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 

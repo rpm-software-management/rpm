@@ -56,6 +56,8 @@
 	- require db3 in default configuration.
 	- create rpmio directory for librpmio.
 	- make librpmio standalone.
+	- fix: avoid clobbering db cursor in removeBinaryPackage.
+	- expose cursors in dbi interfaces, remove internal cursors.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
