@@ -365,40 +365,92 @@ typedef void * (*rpmCallbackFunction)(const Header h,
 
 void	urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount);
 
+/**
+ * @param dbp	address of rpm database
+ */
 int rpmdbOpen (const char * root, /*@out@*/ rpmdb * dbp, int mode, int perms);
     /* 0 on error */
 int rpmdbInit(const char * root, int perms);
     /* nonzero on error */
+/**
+ * @param db		rpm database
+ */
 void rpmdbClose ( /*@only@*/ rpmdb db);
 /* Databases like this should only have rpmdb*RecNum and rpmdbGetRecord
    used on them. Anything else could fail! */
-int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * rpmdbp);
+/**
+ * @param dbp		address of rpm database
+ */
+int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * dbp);
 
+/**
+ * @param db		rpm database
+ */
 int rpmdbFirstRecNum(rpmdb db);
+/**
+ * @param db		rpm database
+ * @return		0 at end, -1 on error
+ */
 int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
-    /* 0 at end, -1 on error */
 
+/**
+ * @param db		rpm database
+ */
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindByFile(rpmdb db, const char * filespec,
 	/*@out@*/ dbiIndexSet * matches);
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindByGroup(rpmdb db, const char * group,
 	/*@out@*/ dbiIndexSet * matches);
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindPackage(rpmdb db, const char * name,
 	/*@out@*/ dbiIndexSet * matches);
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindByProvides(rpmdb db, const char * provides,
 	/*@out@*/ dbiIndexSet * matches);
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindByRequiredBy(rpmdb db, const char * requires,
 	/*@out@*/ dbiIndexSet * matches);
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindByConflicts(rpmdb db, const char * conflicts,
 	/*@out@*/ dbiIndexSet * matches);
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindByTriggeredBy(rpmdb db, const char * package,
 	/*@out@*/ dbiIndexSet * matches);
 
 /* these are just convenience functions */
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindByLabel(rpmdb db, const char * label,
 	/*@out@*/ dbiIndexSet * matches);
+/**
+ * @param db		rpm database
+ */
 int rpmdbFindByHeader(rpmdb db, Header h,
 	/*@out@*/ dbiIndexSet * matches);
+/**
+ * Return number of instances of package in rpm database.
+ * @param db		rpm database
+ * @param name		rpm package name
+ * @return		number of instances of package in database
+ */
+int rpmdbCountPackages(rpmdb db, const char *name);
 
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
@@ -434,6 +486,9 @@ struct rpmDependencyConflict {
 } ;
 
 /* db may be NULL, but don't do things which require the database! */
+/**
+ * @param db		rpm database
+ */
 /*@only@*/ rpmTransactionSet rpmtransCreateSet( /*@only@*/ rpmdb db,
 	const char * rootdir);
 
@@ -737,7 +792,13 @@ struct rpmQVArguments {
 };
 typedef	struct rpmQVArguments QVA_t;
 
+/**
+ * @param db		rpm database
+ */
 typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
+/**
+ * @param db		rpm database
+ */
 int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage);
 
 #define QUERY_FOR_LIST		(1 << 1)
@@ -751,9 +812,15 @@ extern int specedit;
 extern struct poptOption rpmQueryPoptTable[];
 
 void rpmDisplayQueryTags(FILE * f);
+/**
+ * @param db		rpm database
+ */
 int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	rpmdb db, QVF_t showPackage);
 
+/**
+ * @param db		rpm database
+ */
 int showQueryPackage(QVA_t *qva, rpmdb db, Header h);
 int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg);
 
@@ -764,6 +831,9 @@ int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg);
 
 extern struct poptOption rpmVerifyPoptTable[];
 
+/**
+ * @param db		rpm database
+ */
 int showVerifyPackage(QVA_t *qva, /*@only@*/ rpmdb db, Header h);
 int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 

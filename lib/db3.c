@@ -465,6 +465,17 @@ static int db3GetFirstKey(dbiIndex dbi, const char ** keyp)
     return rc;
 }
 
+union _dbswap {
+    unsigned int ui;
+    unsigned char uc[4];
+};
+
+#define	_DBSWAP(_a) \
+  { unsigned char _b, *_c = (_a).uc; \
+    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
+    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+  }
+
 static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
 {
     DBT key, data;
@@ -496,6 +507,7 @@ static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
 #endif
 
     if (rc == 0 && set) {
+	int _dbbyteswapped = db->get_byteswapped(db);
 	DBIR_t dbir = data.data;
 	int i;
 
@@ -505,9 +517,16 @@ static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
 
 	/* Convert to database internal format */
 	for (i = 0; i < (*set)->count; i++) {
-	    /* XXX TODO: swab data */
-	    (*set)->recs[i].recOffset = dbir[i].recOffset;
-	    (*set)->recs[i].fileNumber = dbir[i].fileNumber;
+	    union _dbswap recOffset, fileNumber;
+
+	    recOffset.ui = dbir[i].recOffset;
+	    fileNumber.ui = dbir[i].fileNumber;
+	    if (_dbbyteswapped) {
+		_DBSWAP(recOffset);
+		_DBSWAP(fileNumber);
+	    }
+	    (*set)->recs[i].recOffset = recOffset.ui;
+	    (*set)->recs[i].fileNumber = fileNumber.ui;
 	    (*set)->recs[i].fpNum = 0;
 	    (*set)->recs[i].dbNum = 0;
 	}
@@ -532,14 +551,22 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
     if (set->count) {
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
+	int _dbbyteswapped = db->get_byteswapped(db);
 	DBIR_t dbir = alloca(set->count * sizeof(*dbir));
 	int i;
 
 	/* Convert to database internal format */
 	for (i = 0; i < set->count; i++) {
-	    /* XXX TODO: swab data */
-	    dbir[i].recOffset = set->recs[i].recOffset;
-	    dbir[i].fileNumber = set->recs[i].fileNumber;
+	    union _dbswap recOffset, fileNumber;
+
+	    recOffset.ui = set->recs[i].recOffset;
+	    fileNumber.ui = set->recs[i].fileNumber;
+	    if (_dbbyteswapped) {
+		_DBSWAP(recOffset);
+		_DBSWAP(fileNumber);
+	    }
+	    dbir[i].recOffset = recOffset.ui;
+	    dbir[i].fileNumber = fileNumber.ui;
 	}
 	
 #if defined(__USE_DB3)

@@ -710,6 +710,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s files test = %d\n"),
 		name, version, release, flags & RPMTRANS_FLAG_TEST);
 
+#ifdef	DYING
     rc = rpmdbFindPackage(db, name, &matches);
     switch (rc) {
     case -1:
@@ -727,6 +728,13 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	dbiFreeIndexSet(matches);
 	matches = NULL;
     }
+#else
+    if ((scriptArg = rpmdbCountPackages(db, name)) < 0) {
+	rc = 2;
+	goto exit;
+    }
+    scriptArg += 1;
+#endif
 
     if (!rpmdbFindByHeader(db, h, &matches))
 	otherOffset = dbiIndexRecordOffset(matches, 0);

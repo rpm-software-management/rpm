@@ -100,6 +100,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
      * When we run scripts, we pass an argument which is the number of 
      * versions of this package that will be installed when we are finished.
      */
+#ifdef	DYING
     {	dbiIndexSet matches;
 	if (rpmdbFindPackage(db, name, &matches)) {
 	    rpmError(RPMERR_DBCORRUPT, _("cannot read packages named %s for uninstall"),
@@ -111,6 +112,13 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	scriptArg = dbiIndexSetCount(matches) - 1;
 	dbiFreeIndexSet(matches);
     }
+#else
+    if ((scriptArg = rpmdbCountPackages(db, name)) < 0) {
+	rc = 1;
+	goto exit;
+    }
+    scriptArg -= 1;
+#endif
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
@@ -452,7 +460,6 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
     int numTriggers;
     int rc = 0;
     int i;
-    int index;
     int skip;
 
     if (!headerGetEntry(triggeredH, RPMTAG_TRIGGERNAME, NULL, 
@@ -469,7 +476,6 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 		   (void **) &triggerEVR, NULL);
 
     for (i = 0; i < numTriggers; i++) {
-	dbiIndexSet matches;
 
 	if (!(triggerFlags[i] & sense)) continue;
 	if (strcmp(triggerNames[i], sourceName)) continue;
@@ -499,7 +505,10 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	headerGetEntry(triggeredH, RPMTAG_NAME, NULL, 
 		       (void **) &triggerPackageName, NULL);
 
-	matches = NULL;
+#ifdef	DYING
+    {	dbiIndexSet matches = NULL;
+	int index;
+
 	rpmdbFindPackage(db, triggerPackageName, &matches);
 
 	index = triggerIndices[i];
@@ -515,6 +524,25 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	    dbiFreeIndexSet(matches);
 	    matches = NULL;
 	}
+    }
+#else
+	{   int arg1;
+	    int index;
+
+	    if ((arg1 = rpmdbCountPackages(db, triggerPackageName)) < 0) {
+		rc = 1;	/* XXX W2DO? same as "execution of script failed" */
+	    } else {
+		arg1 += arg1correction;
+		index = triggerIndices[i];
+		if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
+		    rc = runScript(triggeredH, root, 1, triggerProgs + index,
+			    triggerScripts[index], 
+			    arg1, arg2, scriptFd);
+		    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
+		}
+	    }
+	}
+#endif
 	free(triggerScripts);
 	free(triggerProgs);
 
@@ -550,6 +578,7 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 	goto exit;
     }
 
+#ifdef	DYING
     {	dbiIndexSet otherMatches = NULL;
 	rpmdbFindPackage(db, packageName, &otherMatches);
 	if (otherMatches) {
@@ -558,6 +587,13 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 	} else
 	    numPackage = 0;
     }
+#else
+    numPackage = rpmdbCountPackages(db, packageName);
+    if (numPackage < 0) {
+	rc = 1;
+	goto exit;
+    }
+#endif
 
     rc = 0;
     for (i = 0; i < dbiIndexSetCount(matches); i++) {
@@ -586,7 +622,7 @@ exit:
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		     int countCorrection, FD_t scriptFd)
 {
-    dbiIndexSet matches;
+    dbiIndexSet matches = NULL;
     int rc = 0;
     char ** triggerNames;
     int numTriggers;
@@ -603,7 +639,6 @@ int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
     triggersRun = alloca(sizeof(*triggersRun) * i);
     memset(triggersRun, 0, sizeof(*triggersRun) * i);
 
-    matches = NULL;
     for (i = 0; i < numTriggers; i++) {
 
 	if (matches) {

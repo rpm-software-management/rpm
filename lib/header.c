@@ -14,7 +14,6 @@
 #define	ntohs(_x)	(_x)
 #define	htonl(_x)	(_x)
 #define	htons(_x)	(_x)
-/*@-observertrans@*/	/* XXX FIXME */
 #else
 #include <netinet/in.h>
 #endif	/* __LCLINT__ */

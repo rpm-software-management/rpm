@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-04-06 10:45-0400\n"
+"POT-Creation-Date: 2000-04-07 11:56-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2105,69 +2105,69 @@ msgstr ""
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr "dbrecMatchesDepFlags() odczyt nag³ówka nie powiód³ siê"
 
-#: lib/depends.c:792
+#: lib/depends.c:795
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:831
+#: lib/depends.c:834
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:848
+#: lib/depends.c:851
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:879
+#: lib/depends.c:882
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:906
+#: lib/depends.c:909
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:931
+#: lib/depends.c:934
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:959
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:973
+#: lib/depends.c:976
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:983
+#: lib/depends.c:986
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1035
+#: lib/depends.c:1038
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1097
+#: lib/depends.c:1100
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "pakiet %s jest w konflikcie: %s\n"
 
-#: lib/depends.c:1152 lib/depends.c:1447
+#: lib/depends.c:1155 lib/depends.c:1450
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "nie mo¿na odczytaæ nag³ówka %d dla sprawdzenia zale¿no¶ci"
 
-#: lib/depends.c:1243
+#: lib/depends.c:1246
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2183,7 +2183,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
-#: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
+#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -2212,82 +2212,82 @@ msgid "file %s is on an unknown device"
 msgstr "plik %s jest na nieznanym urz±dzeniu"
 
 #. This should not be allowed
-#: lib/header.c:220
+#: lib/header.c:219
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
 
-#: lib/header.c:251 lib/header.c:814
+#: lib/header.c:250 lib/header.c:813
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ danych %d nie jest obs³ugiwany\n"
 
-#: lib/header.c:1173
+#: lib/header.c:1172
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "B³edny licznik dla headerAddEntry(): %d\n"
 
-#: lib/header.c:1582
+#: lib/header.c:1581
 #, c-format
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: lib/header.c:1610
+#: lib/header.c:1609
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: lib/header.c:1622
+#: lib/header.c:1621
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: lib/header.c:1632
+#: lib/header.c:1631
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: lib/header.c:1647
+#: lib/header.c:1646
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: lib/header.c:1673
+#: lib/header.c:1672
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: lib/header.c:1689
+#: lib/header.c:1688
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: lib/header.c:1691
+#: lib/header.c:1690
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: lib/header.c:1745
+#: lib/header.c:1744
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: lib/header.c:1752
+#: lib/header.c:1751
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: lib/header.c:1762 lib/header.c:1797
+#: lib/header.c:1761 lib/header.c:1796
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: lib/header.c:1770
+#: lib/header.c:1769
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: lib/header.c:1784
+#: lib/header.c:1783
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: lib/header.c:1805
+#: lib/header.c:1804
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: lib/header.c:1973
+#: lib/header.c:1972
 msgid "(unknown type)"
 msgstr "(nieznany typ)"
 
-#: lib/install.c:146 lib/uninstall.c:192
+#: lib/install.c:146 lib/uninstall.c:200
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   plik: %s akcja: %s\n"
@@ -2355,7 +2355,7 @@ msgstr "pakiet ¼ród³owy nie zawiera pliku .spec"
 msgid "renaming %s to %s\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: lib/install.c:562 lib/install.c:846 lib/uninstall.c:31
+#: lib/install.c:562 lib/install.c:854 lib/uninstall.c:31
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "zmiana nazwy z %s na %s nie powiod³a sie: %s"
@@ -2369,25 +2369,25 @@ msgstr "spodziewany pakiet ¼ród³owy a nie binarny"
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "pakiet: %s-%s-%s test plików = %d\n"
 
-#: lib/install.c:776
+#: lib/install.c:784
 msgid "stopping install as we're running --test\n"
 msgstr "przebieg testowy - instalacja zatrzymana\n"
 
-#: lib/install.c:781
+#: lib/install.c:789
 msgid "running preinstall script (if any)\n"
 msgstr "uruchamianie skryptu preinstall (je¶li istnieje)\n"
 
-#: lib/install.c:806
+#: lib/install.c:814
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "ostrze¿enie: %s utworzony jako %s"
 
-#: lib/install.c:842
+#: lib/install.c:850
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "ostrze¿enie: %s zapisany jako %s"
 
-#: lib/install.c:916
+#: lib/install.c:924
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "uruchamianie skryptu postinstall (je¶li istnieje)\n"
@@ -2787,7 +2787,7 @@ msgstr "wy¶wietl status pokazywanych plików"
 msgid "display a verbose file listing"
 msgstr "wy¶wietl wiêcej informacji o plikach z listy"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:294
+#: lib/rebuilddb.c:34 lib/rpmdb.c:295
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
@@ -2943,30 +2943,30 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmdb.c:190
+#: lib/rpmdb.c:192
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: lib/rpmdb.c:202 lib/url.c:445
+#: lib/rpmdb.c:204 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
 
-#: lib/rpmdb.c:216 lib/rpmdb.c:224
+#: lib/rpmdb.c:218 lib/rpmdb.c:226
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: lib/rpmdb.c:217
+#: lib/rpmdb.c:219
 msgid "exclusive"
 msgstr ""
 
-#: lib/rpmdb.c:225
+#: lib/rpmdb.c:227
 msgid "shared"
 msgstr ""
 
-#: lib/rpmdb.c:267
+#: lib/rpmdb.c:268
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2974,66 +2974,72 @@ msgstr ""
 "baza danych jest w starym formacie; u¿yj --rebuilddb aby wygenerowaæ bazê  w "
 "nowym formacie"
 
+#. error
 #: lib/rpmdb.c:554
+#, fuzzy, c-format
+msgid "cannot retrieve package \"%s\" from db"
+msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
+
+#: lib/rpmdb.c:583
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "pakiet %s nie znaleziony w %s"
 
-#: lib/rpmdb.c:563
+#: lib/rpmdb.c:592
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "pakiet %s nie znaleziony w %s"
 
-#: lib/rpmdb.c:581
+#: lib/rpmdb.c:610
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla poszukiwania"
 
-#: lib/rpmdb.c:609
+#: lib/rpmdb.c:638
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "usuwanie wpisu w bazie\n"
 
-#: lib/rpmdb.c:615
+#: lib/rpmdb.c:644
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "usuwanie indeksu grupy\n"
 
-#: lib/rpmdb.c:623
+#: lib/rpmdb.c:652
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "usuwanie indeksu nazw\n"
 
-#: lib/rpmdb.c:627 lib/rpmdb.c:812
+#: lib/rpmdb.c:656 lib/rpmdb.c:841
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:745
+#: lib/rpmdb.c:774
 msgid "cannot allocate space for database"
 msgstr "nie mo¿na alokowaæ przestrzeni dla bazy danych"
 
-#: lib/rpmdb.c:789
+#: lib/rpmdb.c:818
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:801
+#: lib/rpmdb.c:830
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: lib/rpmdb.c:808
+#: lib/rpmdb.c:837
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:866
+#: lib/rpmdb.c:895
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla uaktualnienia"
 
-#: lib/rpmdb.c:879
+#: lib/rpmdb.c:908
 msgid "header changed size!"
 msgstr "nag³ówek zmieni³ swój rozmiar!"
 
@@ -3475,25 +3481,25 @@ msgstr "skasowanie %s nie powiod³o siê: %s"
 msgid "cannot read header at %d for uninstall"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla deinstalacji"
 
-#: lib/uninstall.c:105
+#: lib/uninstall.c:106
 #, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr "nie mo¿na odczytaæ pakietów nazwanych %s dla zdeinstalowania"
 
-#: lib/uninstall.c:138
+#: lib/uninstall.c:146
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "usunie pliki test = %d\n"
 
-#: lib/uninstall.c:206
+#: lib/uninstall.c:214
 msgid "running postuninstall script (if any)\n"
 msgstr "uruchamianie skryptu postinstalacyjnego (je¦li istnieje)\n"
 
-#: lib/uninstall.c:220
+#: lib/uninstall.c:228
 msgid "removing database entry\n"
 msgstr "usuwanie wpisu w bazie\n"
 
-#: lib/uninstall.c:404
+#: lib/uninstall.c:412
 msgid "execution of script failed"
 msgstr "wykonanie skryptu nie powiod³o siê"
 

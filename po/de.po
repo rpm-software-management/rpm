@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-04-06 10:45-0400\n"
+"POT-Creation-Date: 2000-04-07 11:56-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2249,69 +2249,69 @@ msgstr ""
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:792
+#: lib/depends.c:795
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:831
+#: lib/depends.c:834
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:848
+#: lib/depends.c:851
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:879
+#: lib/depends.c:882
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:906
+#: lib/depends.c:909
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:931
+#: lib/depends.c:934
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:959
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:973
+#: lib/depends.c:976
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:983
+#: lib/depends.c:986
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1035
+#: lib/depends.c:1038
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:1097
+#: lib/depends.c:1100
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/depends.c:1152 lib/depends.c:1447
+#: lib/depends.c:1155 lib/depends.c:1450
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Abhängigkeiten zu prüfen"
 
-#: lib/depends.c:1243
+#: lib/depends.c:1246
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2327,7 +2327,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
-#: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
+#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
 msgid "(not a number)"
 msgstr "(keine Zahl)"
 
@@ -2358,86 +2358,86 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:220
+#: lib/header.c:219
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:251 lib/header.c:814
+#: lib/header.c:250 lib/header.c:813
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1173
+#: lib/header.c:1172
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1582
+#: lib/header.c:1581
 #, c-format
 msgid "missing { after %"
 msgstr "fehlende { nach %{"
 
-#: lib/header.c:1610
+#: lib/header.c:1609
 msgid "missing } after %{"
 msgstr "fehlende } nach %{"
 
 # »Tag« übersetzen??? -ke-
-#: lib/header.c:1622
+#: lib/header.c:1621
 msgid "empty tag format"
 msgstr "leeres »Tag«-Format"
 
-#: lib/header.c:1632
+#: lib/header.c:1631
 msgid "empty tag name"
 msgstr "leerer »Tag«-Name"
 
-#: lib/header.c:1647
+#: lib/header.c:1646
 msgid "unknown tag"
 msgstr "unbekannter »Tag«"
 
-#: lib/header.c:1673
+#: lib/header.c:1672
 msgid "] expected at end of array"
 msgstr "] am Ende des Arrays erwartet"
 
-#: lib/header.c:1689
+#: lib/header.c:1688
 msgid "unexpected ]"
 msgstr "unerwartete ]"
 
-#: lib/header.c:1691
+#: lib/header.c:1690
 msgid "unexpected }"
 msgstr "unerwartete }"
 
-#: lib/header.c:1745
+#: lib/header.c:1744
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: lib/header.c:1752
+#: lib/header.c:1751
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ nach ? im Ausdruck erwartet"
 
-#: lib/header.c:1762 lib/header.c:1797
+#: lib/header.c:1761 lib/header.c:1796
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
-#: lib/header.c:1770
+#: lib/header.c:1769
 msgid ": expected following ? subexpression"
 msgstr ": nach ? Unterausdruck erwartet"
 
-#: lib/header.c:1784
+#: lib/header.c:1783
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ nach : im Ausdruck erwartet"
 
-#: lib/header.c:1805
+#: lib/header.c:1804
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
-#: lib/header.c:1973
+#: lib/header.c:1972
 msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
 # , c-format
-#: lib/install.c:146 lib/uninstall.c:192
+#: lib/install.c:146 lib/uninstall.c:200
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -2508,7 +2508,7 @@ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:562 lib/install.c:846 lib/uninstall.c:31
+#: lib/install.c:562 lib/install.c:854 lib/uninstall.c:31
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
@@ -2523,25 +2523,25 @@ msgstr ""
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/install.c:776
+#: lib/install.c:784
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:781
+#: lib/install.c:789
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:806
+#: lib/install.c:814
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:842
+#: lib/install.c:850
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:916
+#: lib/install.c:924
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2960,7 +2960,7 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "Dateiliste des Pakets anzeigen"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:294
+#: lib/rebuilddb.c:34 lib/rpmdb.c:295
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
@@ -3120,99 +3120,105 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:190
+#: lib/rpmdb.c:192
 #, fuzzy, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
 # , c-format
-#: lib/rpmdb.c:202 lib/url.c:445
+#: lib/rpmdb.c:204 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/rpmdb.c:216 lib/rpmdb.c:224
+#: lib/rpmdb.c:218 lib/rpmdb.c:226
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: lib/rpmdb.c:217
+#: lib/rpmdb.c:219
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: lib/rpmdb.c:225
+#: lib/rpmdb.c:227
 msgid "shared"
 msgstr "geteilt"
 
-#: lib/rpmdb.c:267
+#: lib/rpmdb.c:268
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
+#. error
 #: lib/rpmdb.c:554
+#, fuzzy, c-format
+msgid "cannot retrieve package \"%s\" from db"
+msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
+
+#: lib/rpmdb.c:583
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:563
+#: lib/rpmdb.c:592
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:581
+#: lib/rpmdb.c:610
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
-#: lib/rpmdb.c:609
+#: lib/rpmdb.c:638
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
 # FIXME
-#: lib/rpmdb.c:615
+#: lib/rpmdb.c:644
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:623
+#: lib/rpmdb.c:652
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:627 lib/rpmdb.c:812
+#: lib/rpmdb.c:656 lib/rpmdb.c:841
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
 # reservieren???
-#: lib/rpmdb.c:745
+#: lib/rpmdb.c:774
 msgid "cannot allocate space for database"
 msgstr "kann keinen Platz für die Datenbank bekommen"
 
-#: lib/rpmdb.c:789
+#: lib/rpmdb.c:818
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:801
+#: lib/rpmdb.c:830
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:808
+#: lib/rpmdb.c:837
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:866
+#: lib/rpmdb.c:895
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
 
-#: lib/rpmdb.c:879
+#: lib/rpmdb.c:908
 msgid "header changed size!"
 msgstr ""
 
@@ -3681,25 +3687,25 @@ msgstr "öffnen von %s fehlgeschlagen: %s"
 msgid "cannot read header at %d for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
-#: lib/uninstall.c:105
+#: lib/uninstall.c:106
 #, fuzzy, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
-#: lib/uninstall.c:138
+#: lib/uninstall.c:146
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:206
+#: lib/uninstall.c:214
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:220
+#: lib/uninstall.c:228
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:404
+#: lib/uninstall.c:412
 msgid "execution of script failed"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 

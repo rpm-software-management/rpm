@@ -18,19 +18,23 @@ extern "C" {
 #endif
 
 /**
+ * @param dbp		address of rpm database
  */
-int openDatabase(const char * prefix, const char * dbpath, /*@out@*/rpmdb *rpmdbp, int mode,
-		 int perms, int flags);
+int openDatabase(const char * prefix, const char * dbpath, /*@out@*/rpmdb *dbp,
+		int mode, int perms, int flags);
 
 /**
+ * @param db		rpm database
  */
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 
 /**
+ * @param db		rpm database
  */
 int rpmdbAdd(rpmdb db, Header dbentry);
 
 /**
+ * @param db		rpm database
  */
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
 
@@ -43,7 +47,7 @@ void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath);
 int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath);
 
 /**
- * matchList must be preallocated!!!
+ * @param db		rpm database
  */
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, /*@out@*/dbiIndexSet * matchList, 
 		    int numItems);

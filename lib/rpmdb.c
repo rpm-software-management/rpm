@@ -145,8 +145,8 @@ static /*@only@*/ rpmdb newRpmdb(void)
     return db;
 }
 
-int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mode, 
-		 int perms, int flags)
+int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
+		int mode, int perms, int flags)
 {
     char * filename;
     rpmdb db;
@@ -156,6 +156,8 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     int minimal = flags & RPMDB_FLAG_MINIMAL;
     const char * akey;
 
+    if (dbp)
+	*dbp = NULL;
     if (mode & O_WRONLY) 
 	return 1;
 
@@ -246,9 +248,8 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	    switch (dbix) {
 	    case 1:
 		if (minimal) {
-		    *rpmdbp = xmalloc(sizeof(struct rpmdb_s));
-		    if (rpmdbp)
-			*rpmdbp = db;	/* structure assignment */
+		    if (dbp)
+			*dbp = db;
 		    else
 			rpmdbClose(db);
 		    return 0;
@@ -276,15 +277,15 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	}
     }
 
-    if (rc || justcheck || rpmdbp == NULL)
+    if (!(rc || justcheck || dbp == NULL))
+	*dbp = db;
+    else
 	rpmdbClose(db);
-     else
-	*rpmdbp = db;
 
-     return rc;
+    return rc;
 }
 
-static int doRpmdbOpen (const char * prefix, /*@out@*/ rpmdb * rpmdbp,
+static int doRpmdbOpen (const char * prefix, /*@out@*/ rpmdb * dbp,
 			int mode, int perms, int flags)
 {
     const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
@@ -294,21 +295,21 @@ static int doRpmdbOpen (const char * prefix, /*@out@*/ rpmdb * rpmdbp,
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
 	rc = 1;
     } else
-    	rc = openDatabase(prefix, dbpath, rpmdbp, mode, perms, flags);
+    	rc = openDatabase(prefix, dbpath, dbp, mode, perms, flags);
     xfree(dbpath);
     return rc;
 }
 
 /* XXX called from python/upgrade.c */
-int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
+int rpmdbOpenForTraversal(const char * prefix, rpmdb * dbp)
 {
-    return doRpmdbOpen(prefix, rpmdbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
+    return doRpmdbOpen(prefix, dbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
 }
 
 /* XXX called from python/rpmmodule.c */
-int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms)
+int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
-    return doRpmdbOpen(prefix, rpmdbp, mode, perms, 0);
+    return doRpmdbOpen(prefix, dbp, mode, perms, 0);
 }
 
 int rpmdbInit (const char * prefix, int perms)
@@ -538,6 +539,34 @@ int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches) {
 
 int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
     return dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, matches);
+}
+
+int rpmdbCountPackages(rpmdb db, const char * name)
+{
+    dbiIndexSet matches = NULL;
+    int rc;
+
+    rc = dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, matches);
+
+    switch (rc) {
+    default:
+    case -1:		/* error */
+	rpmError(RPMERR_DBCORRUPT, _("cannot retrieve package \"%s\" from db"),
+                name);
+	rc = -1;
+	break;
+    case 1:		/* not found */
+	rc = 0;
+	break;
+    case 0:		/* success */
+	rc = dbiIndexSetCount(matches);
+	break;
+    }
+
+    if (matches)
+	dbiFreeIndexSet(matches);
+
+    return rc;
 }
 
 static void removeIndexEntry(dbiIndex dbi, const char * key, dbiIndexRecord rec,
