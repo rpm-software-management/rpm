@@ -606,7 +606,16 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-/** @todo Add/use per-rpmdb verify_on_close. */
+/*
+ * XXX Doing a db->del followed by a db->put for the same record
+ * causes the nelem/page count to go awry, causing db->verify failure.
+ * Turn off the message for now.
+ */
+
+/*@-redecl -exportheadervar@*/
+extern int db_hash_nelem_debug;
+/*@=redecl =exportheadervar@*/
+
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@modifies dbi, fileSystem @*/
 {
@@ -676,6 +685,19 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rc = db_env_create(&dbenv, 0);
 	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
 	if (rc || dbenv == NULL) goto exit;
+
+	dbenv->set_errcall(dbenv, rpmdb->db_errcall);
+	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
+	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
+ /*	dbenv->set_paniccall(???) */
+	(void) dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
+		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
+	(void) dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
+		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
+	(void) dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
+		(dbi->dbi_verbose & DB_VERB_RECOVERY));
+	(void) dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
+		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	if (dbi->dbi_tmpdir) {
 	    const char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);

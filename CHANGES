@@ -210,6 +210,10 @@
 	- python: add hiesenbug patch.
 	- add legacy (compile only) wrappers for fdFileno et al.
 	- add -D_REENTRANT (note rpmlib is still not thread safe).
+	- fix: segfault on headerFree given malicious data.
+	- fix: don't verify hash page nelem.
+	- better error messages for verification failures.
+	- include directory /usr/lib/rpm in rpm package.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

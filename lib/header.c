@@ -92,6 +92,7 @@ Header headerNew()
     /*@-assignexpose@*/
     h->hv = *hdrVec;		/* structure assignment */
     /*@=assignexpose@*/
+    h->blob = NULL;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
     h->flags = HEADERFLAG_SORTED;
@@ -118,8 +119,8 @@ Header headerFree(Header h)
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
 		    int_32 * ei = entry->data;
-		    ei -= 2; /* XXX HACK: adjust to beginning of header. */
-		    ei = _free(ei);
+		    if ((ei - 2) == h->blob) h->blob = _free(h->blob);
+		    entry->data = NULL;
 		}
 	    } else if (!ENTRY_IN_REGION(entry)) {
 		entry->data = _free(entry->data);
@@ -763,6 +764,7 @@ Header headerLoad(void * uh)
     /*@-assignexpose@*/
     h->hv = *hdrVec;		/* structure assignment */
     /*@=assignexpose@*/
+    h->blob = uh;
     h->indexAlloced = il + 1;
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));

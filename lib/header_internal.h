@@ -33,7 +33,8 @@ struct entryInfo {
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
 #define	REGION_TAG_COUNT	sizeof(struct entryInfo)
 
-#define	ENTRY_IS_REGION(_e)     ((_e)->info.tag < HEADER_I18NTABLE)
+#define	ENTRY_IS_REGION(_e) \
+	(((_e)->info.tag >= HEADER_IMAGE) && ((_e)->info.tag < HEADER_REGIONS))
 #define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
 
 /** \ingroup header
@@ -52,6 +53,7 @@ struct indexEntry {
  */
 struct headerToken {
 /*@unused@*/ struct HV_s hv;	/*!< Header public methods. */
+    void * blob;		/*!< Header region blob. */
 /*@owned@*/ indexEntry index;	/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */

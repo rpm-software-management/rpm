@@ -338,6 +338,7 @@ fi
 %{__prefix}/lib/librpmio-@VERSION@.so
 %{__prefix}/lib/librpmbuild-@VERSION@.so
 
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
 %rpmattr	%{__prefix}/lib/rpm/config.guess
 %rpmattr	%{__prefix}/lib/rpm/config.sub
 %rpmattr	%{__prefix}/lib/rpm/convertrpmrc.sh
