@@ -451,7 +451,7 @@ static char *do_patch(Spec spec, int c, int strip, char *db,
 
     if (isCompressed(file)) {
 	sprintf(buf,
-		"echo \"Patch #%d:\"\n"
+		"echo \"Patch #%s:\"\n"
 		"%s -dc %s | patch -p%d %s -s\n"
 		"if [ $? -ne 0 ]; then\n"
 		"  exit $?\n"
