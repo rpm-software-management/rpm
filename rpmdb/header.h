@@ -86,17 +86,6 @@
 extern "C" {
 #endif
 
-#if defined(__alpha__) || defined(__alpha)
-typedef long int int_64;
-typedef int int_32;
-typedef short int int_16;
-typedef char int_8;
-
-typedef unsigned int uint_32;
-typedef unsigned short uint_16;
-
-#else
-
 #if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
 typedef long long int int_64;
 #endif
@@ -104,9 +93,12 @@ typedef int int_32;
 typedef short int int_16;
 typedef char int_8;
 
+#if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
+typedef unsigned long long int uint_64;
+#endif
 typedef unsigned int uint_32;
 typedef unsigned short uint_16;
-#endif
+typedef unsigned char uint_8;
 
 /*@-redef@*/	/* LCL: no clue */
 /** \ingroup header

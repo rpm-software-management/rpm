@@ -239,7 +239,7 @@ int headerIsEntry(/*@null@*/ Header h, int_32 tag)
 /** \ingroup header
  * Free data allocated when retrieved from header.
  * @param h		header
- * @param data		address of data (or NULL)
+ * @param data		pointer to tag value(s)
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
@@ -259,9 +259,9 @@ int headerIsEntry(/*@null@*/ Header h, int_32 tag)
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		pointer to tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
@@ -281,9 +281,9 @@ int headerGetEntry(Header h, int_32 tag,
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		pointer to tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
@@ -484,10 +484,10 @@ HeaderIterator headerInitIterator(Header h)
 /** \ingroup header
  * Return next tag from header.
  * @param hi		header tag iterator
- * @retval tag		address of tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
+ * @retval *tag		tag
+ * @retval *type	tag value data type
+ * @retval *p		pointer to tag value(s)
+ * @retval *c		number of values
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline

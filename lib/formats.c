@@ -138,76 +138,6 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 }
 
 /**
- * Wrap tag data in simple header xml markup.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix
- * @param padding
- * @param element	(unused)
- * @return		formatted string
- */
-static /*@only@*/ char * xmlFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding,
-		/*@unused@*/ int element)
-	/*@modifies formatPrefix @*/
-{
-    const char * xtag;
-    size_t nb;
-    char * val;
-    char * s = NULL;
-    char * t, * te;
-    long anint = 0;
-
-    switch (type) {
-    case RPM_I18NSTRING_TYPE:
-    case RPM_STRING_TYPE:
-	s = data;
-	xtag = "string";
-	break;
-    case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
-	anint = *((int_8 *) data);
-	break;
-    case RPM_INT16_TYPE:
-	anint = *((int_16 *) data);
-	break;
-    case RPM_INT32_TYPE:
-	anint = *((int_32 *) data);
-	break;
-    case RPM_NULL_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
-    case RPM_BIN_TYPE:
-    default:
-	return xstrdup(_("(invalid type)"));
-	/*@notreached@*/ break;
-    }
-
-    if (s == NULL) {
-	int slen = 32;
-	s = memset(alloca(slen+1), 0, slen+1);
-	snprintf(s, slen, "%ld", anint);
-	xtag = "integer";
-    }
-
-    nb = 2 * strlen(xtag) + sizeof("<></>") + strlen(s);
-
-    te = t = alloca(nb);
-    te = stpcpy( stpcpy( stpcpy(te, "<"), xtag), ">");
-    te = stpcpy(te, s);
-    te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
-
-    nb += padding;
-    val = xmalloc(nb+1);
-/*@-boundswrite@*/
-    strcat(formatPrefix, "s");
-/*@=boundswrite@*/
-    snprintf(val, nb, formatPrefix, t);
-    val[nb] = '\0';
-
-    return val;
-}
-
-/**
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param type		tag type
@@ -302,6 +232,83 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	}
 /*@=boundswrite@*/
     }
+
+    return val;
+}
+
+/**
+ * Wrap tag data in simple header xml markup.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * xmlFormat(int_32 type, const void * data, 
+		char * formatPrefix, int padding,
+		/*@unused@*/ int element)
+	/*@modifies formatPrefix @*/
+{
+    const char * xtag = NULL;
+    size_t nb;
+    char * val;
+    const char * s = NULL;
+    char * t, * te;
+    unsigned long anint = 0;
+
+    switch (type) {
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_TYPE:
+	s = data;
+	xtag = "string";
+	break;
+    case RPM_BIN_TYPE:
+	s = base64Format(type, data, formatPrefix, padding, element);
+	xtag = "base64";
+	break;
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+	anint = *((uint_8 *) data);
+	break;
+    case RPM_INT16_TYPE:
+	anint = *((uint_16 *) data);
+	break;
+    case RPM_INT32_TYPE:
+	anint = *((uint_32 *) data);
+	break;
+    case RPM_NULL_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    default:
+	return xstrdup(_("(invalid xml type)"));
+	/*@notreached@*/ break;
+    }
+
+    if (s == NULL) {
+	int tlen = 32;
+	t = memset(alloca(tlen+1), 0, tlen+1);
+	snprintf(t, tlen, "%lu", anint);
+	s = t;
+	xtag = "integer";
+    }
+
+    nb = 2 * strlen(xtag) + sizeof("\t<></>") + strlen(s);
+    te = t = alloca(nb);
+    te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
+    te = stpcpy(te, s);
+    te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
+
+    /* XXX s was malloc'd */
+    if (!strcmp(xtag, "base64"))
+	s = _free(s);
+
+    nb += padding;
+    val = xmalloc(nb+1);
+/*@-boundswrite@*/
+    strcat(formatPrefix, "s");
+/*@=boundswrite@*/
+    snprintf(val, nb, formatPrefix, t);
+    val[nb] = '\0';
 
     return val;
 }
