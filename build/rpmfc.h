@@ -22,18 +22,21 @@ enum FCOLOR_e {
     RPMFC_EXECUTABLE		= (1 <<  2),
     RPMFC_SCRIPT		= (1 <<  3),
     RPMFC_TEXT			= (1 <<  4),
+    RPMFC_DOCUMENT		= (1 <<  5),
 
     RPMFC_DIRECTORY		= (1 <<  8),
-    RPMFC_LIBRARY		= (1 <<  9),
-    RPMFC_DOCUMENT		= (1 << 10),
+    RPMFC_SYMLINK		= (1 <<  9),
+    RPMFC_DEVICE		= (1 << 10),
 
     RPMFC_STATIC		= (1 << 16),
-    RPMFC_NOTSTRIPPED		= (1 << 18),
-    RPMFC_COMPRESSED		= (1 << 19),
+    RPMFC_NOTSTRIPPED		= (1 << 17),
+    RPMFC_COMPRESSED		= (1 << 18),
 
-    RPMFC_SYMLINK		= (1 << 24),
+    RPMFC_LIBRARY		= (1 << 24),
     RPMFC_ARCHIVE		= (1 << 25),
     RPMFC_FONT			= (1 << 26),
+    RPMFC_IMAGE			= (1 << 27),
+    RPMFC_MANPAGE		= (1 << 28),
 
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),

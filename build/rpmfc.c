@@ -11,36 +11,40 @@
  */
 /*@unchecked@*/ /*@observer@*/
 static struct fclassTokens_s fclassTokens[] = {
-  { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },
-  { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
-  { "executable",		RPMFC_EXECUTABLE },
-  { "script",			RPMFC_SCRIPT },
-  { "text",			RPMFC_TEXT },
-  { "document",			RPMFC_DOCUMENT },
-
   { "directory",		RPMFC_DIRECTORY|RPMFC_INCLUDE },
 
-  { "statically linked",	RPMFC_STATIC },
-  { "not stripped",		RPMFC_NOTSTRIPPED },
-  { "compressed",		RPMFC_COMPRESSED },
-  { "font",			RPMFC_FONT },
+  { " shared object",		RPMFC_LIBRARY },
+  { " executable",		RPMFC_EXECUTABLE },
+  { " statically linked",	RPMFC_STATIC },
+  { " not stripped",		RPMFC_NOTSTRIPPED },
+  { " archive",			RPMFC_ARCHIVE },
+
+  { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },
+  { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
+
+  { " script",			RPMFC_SCRIPT },
+  { " text",			RPMFC_TEXT },
+  { " document",		RPMFC_DOCUMENT },
+
+  { " compressed",		RPMFC_COMPRESSED },
+
+  { "troff or preprocessor input",		RPMFC_MANPAGE },
 
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
-  { " font",			RPMFC_FONT|RPMFC_INCLUDE },
-  { " Font",			RPMFC_FONT|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
   { "tar archive",		RPMFC_ARCHIVE|RPMFC_INCLUDE },
   { "cpio archive",		RPMFC_ARCHIVE|RPMFC_INCLUDE },
   { "RPM v3",			RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
-  { "shell script",		RPMFC_SCRIPT|RPMFC_INCLUDE },
-  { "awk script",		RPMFC_SCRIPT|RPMFC_INCLUDE },
-  { "perl script",		RPMFC_SCRIPT|RPMFC_INCLUDE },
-  { "python script",		RPMFC_SCRIPT|RPMFC_INCLUDE },
+  { " image",			RPMFC_IMAGE|RPMFC_INCLUDE },
+  { " font",			RPMFC_FONT|RPMFC_INCLUDE },
+  { " Font",			RPMFC_FONT|RPMFC_INCLUDE },
 
-  { "python compiled",		RPMFC_SCRIPT|RPMFC_INCLUDE },
-  { "PHP script",		RPMFC_SCRIPT|RPMFC_INCLUDE },
+  { " commands",		RPMFC_SCRIPT|RPMFC_INCLUDE },
+  { " script",			RPMFC_SCRIPT|RPMFC_INCLUDE },
+
+  { "python compiled",		RPMFC_WHITE|RPMFC_INCLUDE },
 
   { "empty",			RPMFC_WHITE|RPMFC_INCLUDE },
 
@@ -58,6 +62,8 @@ static struct fclassTokens_s fclassTokens[] = {
   { "ISO-8859 text",		RPMFC_WHITE|RPMFC_INCLUDE },
 
   { "symbolic link to",		RPMFC_SYMLINK },
+  { "socket",			RPMFC_DEVICE },
+  { "special",			RPMFC_DEVICE },
 
   { "ASCII",			RPMFC_WHITE },
   { "ISO-8859",			RPMFC_WHITE },
@@ -72,7 +78,6 @@ static struct fclassTokens_s fclassTokens[] = {
   { "format",			RPMFC_WHITE },
   { "message",			RPMFC_WHITE },
   { "program",			RPMFC_WHITE },
-  { "text",			RPMFC_WHITE },
 
   { "broken symbolic link to ",	RPMFC_WHITE|RPMFC_ERROR },
   { "can't read",		RPMFC_WHITE|RPMFC_ERROR },
@@ -85,7 +90,7 @@ static struct fclassTokens_s fclassTokens[] = {
 
 /*@unchecked@*/
 static int fcolorIgnore =
-    (RPMFC_ELF32|RPMFC_ELF64|RPMFC_DIRECTORY|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_FONT|RPMFC_SCRIPT|RPMFC_WHITE);
+    (RPMFC_ELF32|RPMFC_ELF64|RPMFC_DIRECTORY|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_FONT|RPMFC_SCRIPT|RPMFC_IMAGE|RPMFC_WHITE);
 
 int fclassColoring(const char * fmstr)
 {
