@@ -517,7 +517,7 @@ static int makePGPSignature(const char * file, int_32 * sigTagp,
     /* Parse the signature, change signature tag as appropriate. */
     dig = pgpNewDig();
 
-    (void) pgpPrtPkts(*pktp, *pktlenp, dig, 1);
+    (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
     sigp = &dig->signature;
 
     dig = pgpFreeDig(dig);
@@ -645,7 +645,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     /* Parse the signature, change signature tag as appropriate. */
     dig = pgpNewDig();
 
-    (void) pgpPrtPkts(*pktp, *pktlenp, dig, 1);
+    (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
     sigp = &dig->signature;
 
     switch (*sigTagp) {
