@@ -270,8 +270,7 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
     fcntl(outpipe[0], F_SETFL, O_NONBLOCK);
     fcntl(inpipe[1], F_SETFL, O_NONBLOCK);
 
-    /* XXX - Unfortunately, this only does default (level 6) comrpession */
-    zFile = gzdopen(fd, "w");
+    zFile = gzdopen(fd, "w9");
 
     if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
 	/* count may already be 0, but this is safer */
