@@ -36,7 +36,7 @@ SUBDIRS = misc lib build tools @PO@
 INSTSUBDIRS = lib @PO@
 OTHERSUBDIRS = docs autodeps
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o @GETTEXTSTUB@
-PROGS = @RPMSTATIC@ rpm.shared rpm2cpio
+PROGS = @RPM@ rpm2cpio
 LOADLIBES = -lbuild -lrpm @LIBMISC@ @LIBS@ @ZLIB@ @LIBINTL@ @LIBSOCKET@ @LIBDL@
 
 ifeq (.depend,$(wildcard .depend))
