@@ -10,6 +10,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
+	-I$(top_srcdir)/file/src \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
