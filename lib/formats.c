@@ -350,12 +350,19 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     }
 /*@=branchstate@*/
 
-    nb = 2 * strlen(xtag) + sizeof("\t<></>") + xmlstrlen(s);
-    te = t = alloca(nb);
-    te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
-    te = xmlstrcpy(te, s);
-    te += strlen(te);
-    te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
+    nb = xmlstrlen(s);
+    if (nb == 0) {
+	nb += strlen(xtag) + sizeof("\t</>");
+	te = t = alloca(nb);
+	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), "/>");
+    } else {
+	nb += 2 * strlen(xtag) + sizeof("\t<></>");
+	te = t = alloca(nb);
+	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
+	te = xmlstrcpy(te, s);
+	te += strlen(te);
+	te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
+    }
 
     /* XXX s was malloc'd */
 /*@-branchstate@*/

@@ -12,6 +12,7 @@
 	- add 'requires' and 'conflicts' tag aliases.
 	- python: return ds, not tuple, for ds iteration.
 	- python: permit integer keys to ts.dbMatch().
+	- xml: use <foo/> markup for empty tags.
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).
