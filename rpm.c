@@ -30,7 +30,7 @@ void printHelp(void);
 void printVersion(void);
 void printBanner(void);
 void printUsage(void);
-void build(char * arg, int buildAmount, char *passPhrase);
+int build(char * arg, int buildAmount, char *passPhrase);
 
 void printVersion(void) {
     printf("RPM version %s\n", version);
@@ -139,10 +139,11 @@ void printHelp(void) {
     puts("    --check-sig <pkg>+  - verify PGP signature");
 }
 
-void build(char * arg, int buildAmount, char *passPhrase) {
+int build(char * arg, int buildAmount, char *passPhrase) {
     FILE *f;
     Spec s;
     char * specfile;
+    int res = 0;
 
     if (arg[0] == '/') {
 	specfile = arg;
@@ -154,22 +155,29 @@ void build(char * arg, int buildAmount, char *passPhrase) {
 	strcat(specfile, arg);
     }
 
-    f = fopen(specfile, "r");
+    if (!(f = fopen(specfile, "r"))) {
+	fprintf(stderr, "unable to open: %s\n", specfile);
+	return 1;
+    }
     s = parseSpec(f, specfile);
     fclose(f);
     if (s) {
 	if (doBuild(s, buildAmount, passPhrase)) {
 	    fprintf(stderr, "Build failed.\n");
+	    res = 1;
 	}
         freeSpec(s);
     } else {
 	/* Spec parse failed -- could be Exclude: Exclusive: */
+	res = 1;
 	if (errCode() == RPMERR_BADARCH) {
 	    fprintf(stderr, "%s doesn't build on this architecture\n", arg);
 	} else {
 	    fprintf(stderr, "Build failed.\n");
 	}
     }
+
+    return res;
 }
 
 int main(int argc, char ** argv) {
@@ -506,7 +514,9 @@ int main(int argc, char ** argv) {
 	    if (doSourceInstall("/", argv[optind++], &specFile))
 		exit(-1);
 
-	    build(specFile, buildAmount, passPhrase);
+	    if (build(specFile, buildAmount, passPhrase)) {
+		exit(-1);
+	    }
 	}
 	break;
 
@@ -521,7 +531,9 @@ int main(int argc, char ** argv) {
 	    argerror("no spec files given for build");
 
 	while (optind < argc) 
-	    build(argv[optind++], buildAmount, passPhrase);
+	    if (build(argv[optind++], buildAmount, passPhrase)) {
+		exit(-1);
+	    }
 	break;
 
       case MODE_UNINSTALL:
