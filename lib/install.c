@@ -100,8 +100,11 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     int length;
     char * s;
     dbIndexSet matches;
-    int * oldVersions = { 0 };
+    int * oldVersions;
     int * intptr;
+
+    oldVersions = alloca(sizeof(int));
+    *oldVersions = 0;
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
