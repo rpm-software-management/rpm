@@ -184,6 +184,7 @@
 	- add yellowdog as vendor.
 	- python: remove the old initdb/rebuilddb methods, use ts.fooDB().
 	- python: 1st crack at backport to 1.5.2.
+	- popt: fix --usage (#62234).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

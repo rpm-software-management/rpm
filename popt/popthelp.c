@@ -521,24 +521,26 @@ static int singleOptionUsage(FILE * fp, int cursor,
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
-    int len = 3;
+    int len = 4;
     char shortStr[2] = { '\0', '\0' };
     const char * item = shortStr;
     const char * argDescrip = getArgDescrip(opt, translation_domain);
 
-fprintf(stderr, "*** singleOptionUsage(%p,%d,%p,%p)\n", fp, cursor, opt, translation_domain);
-    if (opt->shortName!= '\0' ) {
-	if (!(opt->argInfo & POPT_ARG_MASK)) 
-	    return cursor;	/* we did these already */
+    if (opt->shortName != '\0' && opt->longName != NULL) {
+	len += 2;
+	if (!(opt->argInfo & POPT_ARGFLAG_ONEDASH)) len++;
+	len += strlen(opt->longName);
+    } else if (opt->shortName != '\0') {
 	len++;
 	shortStr[0] = opt->shortName;
 	shortStr[1] = '\0';
     } else if (opt->longName) {
-	len += 1 + strlen(opt->longName);
+	len += strlen(opt->longName);
+	if (!(opt->argInfo & POPT_ARGFLAG_ONEDASH)) len++;
 	item = opt->longName;
     }
 
-    if (len == 3) return cursor;
+    if (len == 4) return cursor;
 
     if (argDescrip) 
 	len += strlen(argDescrip) + 1;
@@ -548,11 +550,19 @@ fprintf(stderr, "*** singleOptionUsage(%p,%d,%p,%p)\n", fp, cursor, opt, transla
 	cursor = 7;
     } 
 
-    fprintf(fp, " [-%s%s%s%s]",
-	((opt->shortName || (opt->argInfo & POPT_ARGFLAG_ONEDASH)) ? "" : "-"),
-	item,
-	(argDescrip ? (opt->shortName != '\0' ? " " : "=") : ""),
-	(argDescrip ? argDescrip : ""));
+    if (opt->shortName && opt->longName) {
+	fprintf(fp, " [-%c|-%s%s%s%s]",
+	    opt->shortName, ((opt->argInfo & POPT_ARGFLAG_ONEDASH) ? "" : "-"),
+	    opt->longName,
+	    (argDescrip ? " " : ""),
+	    (argDescrip ? argDescrip : ""));
+    } else {
+	fprintf(fp, " [-%s%s%s%s]",
+	    ((opt->shortName || (opt->argInfo & POPT_ARGFLAG_ONEDASH)) ? "" : "-"),
+	    item,
+	    (argDescrip ? (opt->shortName != '\0' ? " " : "=") : ""),
+	    (argDescrip ? argDescrip : ""));
+    }
 
     return cursor + len + 1;
 }
@@ -603,7 +613,6 @@ static int singleTableUsage(poptContext con, FILE * fp,
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
-fprintf(stderr, "*** singleTableUsage(%p,%p,%d,%p,%p)\n", con, fp, cursor, opt, translation_domain);
     /*@-branchstate@*/		/* FIX: W2DO? */
     if (opt != NULL)
     for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
