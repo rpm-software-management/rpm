@@ -4,7 +4,8 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.11 2000/08/02 08:05:00 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.12 2000/08/06 08:57:09 rjray Exp $";
+static int scalar_tag(pTHX_ SV *, int);
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -47,7 +48,8 @@ static SV* ikey2sv(pTHX_ int key)
 }
 
 /* This creates a header data-field from the passed-in data */
-static AV* rpmhdr_create(pTHX_ const char* data, int type, int size)
+static SV* rpmhdr_create(pTHX_ const char* data, int type, int size,
+                         int scalar)
 {
     char urk[2];
     AV* new_list;
@@ -62,7 +64,7 @@ static AV* rpmhdr_create(pTHX_ const char* data, int type, int size)
     */
     if (type == RPM_NULL_TYPE)
     {
-        return new_list;
+        return newSVsv(&PL_sv_undef);
     }
     else if (type == RPM_BIN_TYPE)
     {
@@ -170,7 +172,12 @@ static AV* rpmhdr_create(pTHX_ const char* data, int type, int size)
         }
     }
 
-    return new_list;
+    if (scalar)
+        new_item = newSVsv(*(av_fetch(new_list, 0, FALSE)));
+    else
+        new_item = newRV((SV *)new_list);
+
+    return new_item;
 }
 
 /* These three are for reading the header data from external sources */
@@ -277,7 +284,7 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
     return TIEHASH;
 }
 
-AV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
+SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
                  const char* data_in, int type_in, int size_in)
 {
     const char* name;  /* For the actual name out of (SV *)key */
@@ -285,12 +292,11 @@ AV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
     char* uc_name;     /* UC'd version of name                 */
     RPM_Header* hdr;   /* Pointer to C-level struct            */
     SV** svp;
-    SV* ret_undef;
-    AV* FETCH;
-    int i;
+    SV* FETCH;
+    int i, tag_by_num;
+    char errmsg[256];
 
-    FETCH = newAV();
-    av_store(FETCH, 0, newSVsv(&PL_sv_undef));
+    FETCH = newSVsv(&PL_sv_undef);
 
     header_from_object_ret(svp, hdr, self, FETCH);
 
@@ -303,13 +309,22 @@ AV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
         uc_name[i] = toUPPER(name[i]);
     uc_name[i] = '\0';
 
+    /* Get the #define value for the tag from the hash made at boot */
+    if (! (tag_by_num = tag2num(aTHX_ uc_name)))
+    {
+        snprintf(errmsg, 256, "RPM::Header::FETCH: unknown tag '%s'", uc_name);
+        rpm_error(aTHX_ RPMERR_BADARG, errmsg);
+        Safefree(uc_name);
+        return FETCH;
+    }
+
     /* Check the three keys that are cached directly on the struct itself: */
     if (! strcmp(uc_name, "NAME"))
-        av_store(FETCH, 0, newSVpv((char *)hdr->name, 0));
+        FETCH = newSVpv((char *)hdr->name, 0);
     else if (! strcmp(uc_name, "VERSION"))
-        av_store(FETCH, 0, newSVpv((char *)hdr->version, 0));
+        FETCH = newSVpv((char *)hdr->version, 0);
     else if (! strcmp(uc_name, "RELEASE"))
-        av_store(FETCH, 0, newSVpv((char *)hdr->release, 0));
+        FETCH = newSVpv((char *)hdr->release, 0);
     else
     {
         /* If it wasn't one of those three, then we have to explicitly fetch
@@ -317,53 +332,49 @@ AV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
         hv_fetch_nomg(svp, self, uc_name, namelen, FALSE);
         if (svp && SvOK(*svp))
         {
-            av_undef(FETCH);
-            FETCH = (AV *)SvRV(*svp);
+            FETCH = newSVsv(*svp);
+            if (SvROK(FETCH))
+                FETCH = SvRV(FETCH);
         }
         else if (data_in)
         {
             /* In some cases (particarly the iterators) we could be called
                with the data already available, but not hashed just yet. */
-            AV* new_item = rpmhdr_create(aTHX_ data_in, type_in, size_in);
+            SV* new_item = rpmhdr_create(aTHX_ data_in, type_in, size_in,
+                                         scalar_tag(aTHX_ Nullsv, tag_by_num));
 
-            hv_store_nomg(self, uc_name, namelen, newRV_noinc((SV *)new_item),
+            hv_store_nomg(self, uc_name, namelen, newRV((SV *)new_item),
                           FALSE);
             hv_store_nomg(self, strcat(uc_name, "_t"), (namelen + 2),
                           newSViv(type_in), FALSE);
-            av_undef(FETCH);
+
             FETCH = new_item;
         }
         else
         {
-            AV* new_item;
+            SV* new_item;
             char* new_item_p;
             int new_item_type;
-            int tag_by_num;
             int size;
             char urk[2];
-
-            /* Get the #define value for the tag from the hash made at boot */
-            if (! (tag_by_num = tag2num(aTHX_ uc_name)))
-            {
-                /* Later we need to set some sort of error message */
-                Safefree(uc_name);
-                return FETCH;
-            }
 
             /* Pull the tag by the int value we now have */
             if (! headerGetEntry(hdr->hdr, tag_by_num,
                                  &new_item_type, (void **)&new_item_p, &size))
             {
+                snprintf(errmsg, 256,
+                         "RPM::Header::FETCH: no tag '%s' in header", uc_name);
+                rpm_error(aTHX_ RPMERR_BADARG, errmsg);
                 Safefree(uc_name);
                 return FETCH;
             }
-            new_item = rpmhdr_create(aTHX_ new_item_p, new_item_type, size);
+            new_item = rpmhdr_create(aTHX_ new_item_p, new_item_type, size,
+                                     scalar_tag(aTHX_ Nullsv, tag_by_num));
 
-            hv_store_nomg(self, uc_name, namelen, newRV_noinc((SV *)new_item),
+            hv_store_nomg(self, uc_name, namelen, newRV((SV *)new_item),
                           FALSE);
             hv_store_nomg(self, strcat(uc_name, "_t"), (namelen + 2),
                           newSViv(new_item_type), FALSE);
-            av_undef(FETCH);
             FETCH = new_item;
         }
     }
@@ -376,15 +387,17 @@ AV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
   Store the data in "value" both in the header and in the hash associated
   with "self".
 */
-int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
+int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, SV* value)
 {
     SV** svp;
     const char* name;
     char* uc_name;
+    char errmsg[256];
     STRLEN namelen;
-    int size, i;
+    int size, i, is_scalar;
     I32 num_ent, data_type, data_key;
     void* data;
+    AV* a_value = Nullav;
     RPM_Header* hdr;
 
     header_from_object_ret(svp, hdr, self, 0);
@@ -403,40 +416,137 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
     /* Get the numerical tag value for this name. If none exists, this means
        that there is no such tag, which is an error in this case */
     if (! (num_ent = tag2num(aTHX_ uc_name)))
+    {
+        snprintf(errmsg, 256, "RPM::Header::STORE: No such tag '%s'", uc_name);
+        rpm_error(aTHX_ RPMERR_BADARG, errmsg);
         return 0;
+    }
+    is_scalar = scalar_tag(Nullsv, num_ent);
+    if (SvROK(value))
+    {
+        /*
+          This is complicated. We have to allow for straight-in AV*, or a
+          single-pair HV* that provides the type indexing the data. Then
+          we get to decide if the data part needs to be promoted to an AV*.
+        */
+        if (SvTYPE(SvRV(value)) == SVt_PVHV)
+        {
+            HE* iter;
+            SV* key;
+            SV* new_value;
+            HV* hv_value = (HV *)SvRV(value);
+
+            /* There should be exactly one key */
+            if (hv_iterinit(hv_value) != 1)
+            {
+                snprintf(errmsg, 256,
+                         "RPM::Header::STORE: Hash reference passed in for "
+                         "tag '%s' has invalid content", uc_name);
+                rpm_error(aTHX_ RPMERR_BADARG, errmsg);
+                return 0;
+            }
+            iter = hv_iternext(hv_value);
+            key = HeSVKEY(iter);
+            new_value = HeVAL(iter);
+            if (! (SvIOK(key) && (data_type = SvIV(key))))
+            {
+                snprintf(errmsg, 256,
+                         "RPM::Header::STORE: Hash reference key passed in "
+                         "for tag '%s' is invalid", uc_name);
+                rpm_error(aTHX_ RPMERR_BADARG, errmsg);
+                return 0;
+            }
+            /* Clear this for later sanity-check */
+            value = Nullsv;
+            /* Now let's look at new_value */
+            if (SvROK(new_value))
+            {
+                if (SvTYPE(SvRV(new_value)) == SVt_PVAV)
+                    a_value = (AV *)SvRV(new_value);
+                else
+                    /* Hope for the best... */
+                    value = SvRV(new_value);
+            }
+            else
+                value = new_value;
+        }
+        else if (SvTYPE(SvRV(value)) == SVt_PVAV)
+        {
+            /*
+              If they passed a straight-through AV*, de-ref it and mark type
+              to be filled in later
+            */
+            a_value = (AV *)SvRV(value);
+            data_type = -1;
+            value = Nullsv;
+        }
+        else
+        {
+            /* De-reference it and hope it passes muster as a scalar */
+            value = SvRV(value);
+        }
+    }
+
+    /* The only way value will still be set is if nothing else matched */
+    if (value != Nullsv)
+    {
+        /*
+          The case-block below is already set up to handle data in a manner
+          transparent to the quantity or type. We can fake this with a_value
+          and not worry again until actually storing on the hash table for
+          self.
+        */
+        a_value = newAV();
+        av_store(a_value, 0, value);
+        /* Mark type for later setting */
+        data_type = -1;
+    }
+    size = av_len(a_value) + 1;
 
     /*
       Setting/STORE-ing means do the following:
 
       1. Confirm that data adheres to type (mostly check against int types)
-      2. Create the blob in **data
+      2. Create the blob in **data (based on is_scalar)
       3. Store to the header struct
-      4. Store the AV* on the hash
+      4. Store the SV* on the hash
     */
 
-    /* How many elements being passed? */
-    size = av_len(value) + 1;
-    /* This will permanently concat "_t" to uc_name. But we'll craftily
-       manipulate that later on with namelen. */
-    hv_fetch_nomg(svp, self, strcat(uc_name, "_t"), (namelen + 2), FALSE);
-    /* This should NOT happen, but I prefer caution: */
-    if (! (svp && SvOK(*svp)))
-        return 0;
-    data_type = SvIV(*svp);
-    SvREFCNT_dec(*svp);
+    if (data_type == -1)
+    {
+        /* This will permanently concat "_t" to uc_name. But we'll craftily
+           manipulate that later on with namelen. */
+        hv_fetch_nomg(svp, self, strcat(uc_name, "_t"), (namelen + 2), FALSE);
+        if (! (svp && SvOK(*svp)))
+        {
+            /*
+              If NAME_t does not exist, then this has not been fetched
+              previously, and worse, we don't really know what the type is
+              supposed to be. So we state in the docs that the default is
+              RPM_STRING_TYPE.
+            */
+            data_type = RPM_STRING_TYPE;
+        }
+        else
+        {
+            data_type = SvIV(*svp);
+            SvREFCNT_dec(*svp);
+        }
+    }
 
     if (data_type == RPM_INT8_TYPE ||
         data_type == RPM_INT16_TYPE ||
         data_type == RPM_INT32_TYPE)
     {
         /* Cycle over the array and verify that all elements are valid IVs */
-        for (i = 0; i <= size; i++)
+        for (i = 0; i < size; i++)
         {
-            svp = av_fetch(value, i, FALSE);
+            svp = av_fetch(a_value, i, FALSE);
             if (! (SvOK(*svp) && SvIOK(*svp)))
             {
                 rpm_error(aTHX_ RPMERR_BADARG,
-                          "Non-integer value passed for integer-type tag");
+                          "RPM::Header::STORE: Non-integer value passed for "
+                          "integer-type tag");
                 return 0;
             }
         }
@@ -457,7 +567,7 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
         {
             char* data_p;
 
-            svp = av_fetch(value, 0, FALSE);
+            svp = av_fetch(a_value, 0, FALSE);
             if (svp && SvPOK(*svp))
                 data_p = SvPV(*svp, size);
             else
@@ -482,7 +592,7 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
                    efficient way, but it made the rest of things a lot
                    cleaner. To be safe, only take the initial character from
                    each SV. */
-                svp = av_fetch(value, i, FALSE);
+                svp = av_fetch(a_value, i, FALSE);
                 if (svp && SvPOK(*svp))
                 {
                     str_sv = SvPV(*svp, len);
@@ -503,7 +613,7 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
 
             for (i = 0; i < size; i++)
             {
-                svp = av_fetch(value, i, FALSE);
+                svp = av_fetch(a_value, i, FALSE);
                 if (svp && SvIOK(*svp))
                     *(data_p[i]) = (I8)SvIV(*svp);
                 else
@@ -521,7 +631,7 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
 
             for (i = 0; i < size; i++)
             {
-                svp = av_fetch(value, i, FALSE);
+                svp = av_fetch(a_value, i, FALSE);
                 if (svp && SvIOK(*svp))
                     *(data_p[i]) = (I16)SvIV(*svp);
                 else
@@ -539,7 +649,7 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
 
             for (i = 0; i < size; i++)
             {
-                svp = av_fetch(value, i, FALSE);
+                svp = av_fetch(a_value, i, FALSE);
                 if (svp && SvIOK(*svp))
                     *(data_p[i]) = SvIV(*svp);
                 else
@@ -561,7 +671,7 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
             if (data_type == RPM_STRING_TYPE && size == 1)
             {
                 /* Special case for exactly one RPM_STRING_TYPE */
-                svp = av_fetch(value, 0, FALSE);
+                svp = av_fetch(a_value, 0, FALSE);
                 if (svp && SvPOK(*svp))
                 {
                     str_sv = SvPV(*svp, len);
@@ -579,7 +689,7 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
 
                 for (i = 0; i < size; i++)
                 {
-                    svp = av_fetch(value, i, FALSE);
+                    svp = av_fetch(a_value, i, FALSE);
                     if (svp && SvPOK(*svp))
                     {
                         str_sv = SvPV(*svp, len);
@@ -606,7 +716,9 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
     /* Store the new data */
     headerAddEntry(hdr->hdr, num_ent, data_type, data, size);
     /* Store on the hash */
-    hv_store_nomg(self, uc_name, namelen, newRV_noinc((SV *)value), FALSE);
+    hv_store_nomg(self, uc_name, namelen,
+                  (is_scalar) ? newSVsv(value) : newRV_noinc((SV *)a_value),
+                  FALSE);
 
     return 1;
 }
@@ -695,7 +807,7 @@ int rpmhdr_EXISTS(pTHX_ RPM__Header self, SV* key)
     return (headerIsEntry(hdr->hdr, tag_by_num));
 }
 
-int rpmhdr_FIRSTKEY(pTHX_ RPM__Header self, SV** key, AV** value)
+int rpmhdr_FIRSTKEY(pTHX_ RPM__Header self, SV** key, SV** value)
 {
     SV** svp;
     RPM_Header* hdr;
@@ -728,7 +840,7 @@ int rpmhdr_FIRSTKEY(pTHX_ RPM__Header self, SV** key, AV** value)
 }
 
 int rpmhdr_NEXTKEY(pTHX_ RPM__Header self, SV* key,
-                   SV** nextkey, AV** nextvalue)
+                   SV** nextkey, SV** nextvalue)
 {
     SV** svp;
     RPM_Header* hdr;
@@ -822,7 +934,7 @@ int rpmhdr_tagtype(pTHX_ RPM__Header self, SV* key)
            key that holds the type isn't available, either. */
 
         /* Do a plain fetch (that is, leave magic on) to populate the other */
-        AV* sub_fetch = rpmhdr_FETCH(aTHX_ self, key, Nullch, 0, 0);
+        SV* sub_fetch = rpmhdr_FETCH(aTHX_ self, key, Nullch, 0, 0);
 
         if (sub_fetch)
         {
@@ -911,47 +1023,9 @@ int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
   one that returns a scalar (yields a true return value) or one that returns
   an array reference (yields a false value).
 */
-int rpmhdr_scalar_tag(pTHX_ SV* self, SV* tag)
+static int scalar_tag(pTHX_ SV* self, int tag_value)
 {
-    int tag_value;
-
     /* self is passed in as SV*, and unused, because this is a class method */
-    if (SvPOK(tag))
-    {
-        const char* name;
-        int i, namelen;
-        char* uc_name;
-
-        name = sv2key(aTHX_ tag);
-        if (! (name && (namelen = strlen(name))))
-            return 0;
-
-        uc_name = safemalloc(namelen + 1);
-        for (i = 0; i < namelen; i++)
-            uc_name[i] = toUPPER(name[i]);
-        uc_name[i] = '\0';
-        if (! (tag_value = tag2num(aTHX_ uc_name)))
-        {
-            char errmsg[256];
-
-            snprintf(errmsg, 256,
-                     "RPM::Header::scalar_tag: unknown tag %s", uc_name);
-            rpm_error(aTHX_ RPMERR_BADARG, errmsg);
-            Safefree(uc_name);
-            return 0;
-        }
-    }
-    else if (SvIOK(tag))
-    {
-        tag_value = SvIV(tag);
-    }
-    else
-    {
-        rpm_error(aTHX_ RPMERR_BADARG,
-                  "RPM::Header::scalar_tag: argument must be string or int");
-        return 0;
-    }
-
     switch (tag_value)
     {
       case RPMTAG_ARCH:
@@ -996,6 +1070,7 @@ int rpmhdr_scalar_tag(pTHX_ SV* self, SV* tag)
     /* not reached */
 }
 
+
 MODULE = RPM::Header    PACKAGE = RPM::Header           PREFIX = rpmhdr_
 
 
@@ -1010,7 +1085,7 @@ rpmhdr_TIEHASH(class, source=NULL, flags=0)
     OUTPUT:
     RETVAL
 
-AV*
+SV*
 rpmhdr_FETCH(self, key)
     RPM::Header self;
     SV* key;
@@ -1029,19 +1104,9 @@ rpmhdr_STORE(self, key, value)
     PREINIT:
     AV* avalue;
     CODE:
-    {
-        if (sv_isa(value, "AVPtr"))
-            avalue = (AV *)SvRV(value);
-        else
-        {
-            avalue = newAV();
-            av_store(avalue, 0, value);
-        }
-
-        RETVAL = rpmhdr_STORE(aTHX_ self, key, avalue);
-    }
+    RETVAL = rpmhdr_STORE(aTHX_ self, key, value);
     OUTPUT:
-        RETVAL
+    RETVAL
 
 int
 rpmhdr_DELETE(self, key)
@@ -1063,7 +1128,7 @@ rpmhdr_CLEAR(self)
         RETVAL = 0;
     }
     OUTPUT:
-        RETVAL
+    RETVAL
 
 int
 rpmhdr_EXISTS(self, key)
@@ -1081,17 +1146,17 @@ rpmhdr_FIRSTKEY(self)
     PROTOTYPE: $
     PREINIT:
     SV* key;
-    AV* value;
+    SV* value;
     int i;
     PPCODE:
     {
         if (! rpmhdr_FIRSTKEY(aTHX_ self, &key, &value))
         {
             key = newSVsv(&PL_sv_undef);
-            value = newAV();
+            value = newSVsv(&PL_sv_undef);
         }
 
-        XPUSHs(sv_2mortal(newRV((SV *)value)));
+        XPUSHs(sv_2mortal(newSVsv(value)));
         XPUSHs(sv_2mortal(newSVsv(key)));
     }
 
@@ -1102,17 +1167,17 @@ rpmhdr_NEXTKEY(self, key=NULL)
     PROTOTYPE: $;$
     PREINIT:
     SV* nextkey;
-    AV* nextvalue;
+    SV* nextvalue;
     int i;
     PPCODE:
     {
         if (! rpmhdr_NEXTKEY(aTHX_ self, key, &nextkey, &nextvalue))
         {
             nextkey = newSVsv(&PL_sv_undef);
-            nextvalue = newAV();
+            nextvalue = newSVsv(&PL_sv_undef);
         }
 
-        XPUSHs(sv_2mortal(newRV((SV *)nextvalue)));
+        XPUSHs(sv_2mortal(newSVsv(nextvalue)));
         XPUSHs(sv_2mortal(newSVsv(nextkey)));
     }
 
@@ -1160,7 +1225,7 @@ rpmhdr_write(self, gv, magicp=0)
         RETVAL = rpmhdr_write(aTHX_ self, gv, flag);
     }
     OUTPUT:
-        RETVAL
+    RETVAL
 
 int
 rpmhdr_is_source(self)
@@ -1206,6 +1271,55 @@ rpmhdr_scalar_tag(self, tag)
     SV* tag;
     PROTOTYPE: $$
     CODE:
-    RETVAL = rpmhdr_scalar_tag(aTHX_ self, tag);
+    int tag_value;
+
+    if (SvPOK(tag))
+    {
+        const char* name;
+        int i, namelen;
+        char* uc_name;
+
+        /*
+          A matter of explanation:
+
+          By doing this bit here, I can let the real scalar_tag take an
+          integer argument directly. That means I can call it all over the
+          place in here, without the overhead of the SV-to-int conversion
+          below. Only use from outside of the XS code pays that penalty.
+        */
+        name = sv2key(aTHX_ tag);
+        if (! (name && (namelen = strlen(name))))
+            RETVAL = 0;
+        else
+        {
+            uc_name = safemalloc(namelen + 1);
+            for (i = 0; i < namelen; i++)
+                uc_name[i] = toUPPER(name[i]);
+            uc_name[i] = '\0';
+            if (! (tag_value = tag2num(aTHX_ uc_name)))
+            {
+                char errmsg[256];
+
+                snprintf(errmsg, 256,
+                         "RPM::Header::scalar_tag: unknown tag %s", uc_name);
+                rpm_error(aTHX_ RPMERR_BADARG, errmsg);
+                Safefree(uc_name);
+                RETVAL = 0;
+            }
+
+            RETVAL = scalar_tag(aTHX_ self, tag_value);
+        }
+    }
+    else if (SvIOK(tag))
+    {
+        tag_value = SvIV(tag);
+        RETVAL = scalar_tag(aTHX_ self, tag_value);
+    }
+    else
+    {
+        rpm_error(aTHX_ RPMERR_BADARG,
+                  "RPM::Header::scalar_tag: argument must be string or int");
+        RETVAL = 0;
+    }
     OUTPUT:
     RETVAL
