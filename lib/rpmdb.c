@@ -60,9 +60,12 @@ struct _dbiIndex rpmdbi[] = {
     { "releaseindex.rpm", RPMTAG_RELEASE, 1*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { "dirindex.rpm", RPMTAG_DIRNAMES, 1*sizeof(int_32),
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { NULL }
 #define	RPMDBI_MIN		0
-#define	RPMDBI_MAX		11
+#define	RPMDBI_MAX		12
 };
 
 /**
@@ -311,15 +314,15 @@ static int dbiOpenIndex(rpmdb rpmdb, int dbix)
     case 2:
     case 1:
     case 0:
-	if (mydbvecs[dbi->dbi_major] != NULL) {
-	    errno = 0;
-	    rc = (*mydbvecs[dbi->dbi_major]->open) (dbi);
-	    if (rc == 0) {
-		dbi->dbi_vec = mydbvecs[dbi->dbi_major];
-		break;
-	    }
+	if (mydbvecs[dbi->dbi_major] == NULL)
+	   rc = 1;
+	   break;
 	}
-	/*@fallthrough@*/
+	errno = 0;
+	rc = (*mydbvecs[dbi->dbi_major]->open) (dbi);
+	if (rc == 0)
+	    dbi->dbi_vec = mydbvecs[dbi->dbi_major];
+	break;
     case -1:
 	dbi->dbi_major = 4;
 	while (dbi->dbi_major-- > 0) {
@@ -339,7 +342,7 @@ fprintf(stderr, "*** loop db%d rc %d errno %d %s\n", dbi->dbi_major, rc, errno, 
 		fprintf(stderr, "*** FIXME: <message about how to convert db>\n");
 		fprintf(stderr, _("\n\
 --> Please run \"rpm --rebuilddb\" as root to convert your database from\n\
-    db1 to db2 on-disk format.\n\
+    db1 to db3 on-disk format.\n\
 \n\
 "));
 		dbi->dbi_major--;	/* XXX don't bother with db_185 */
@@ -470,6 +473,12 @@ static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
 		int mode, int perms, int flags)
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
+    static int _initialized = 0;
+
+    if (!_initialized) {
+	_useDbiMajor = rpmExpandNumeric("%{_old_db_api}");
+	_initialized = 1;
+    }
 
     *db = dbTemplate;	/* structure assignment */
 

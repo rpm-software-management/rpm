@@ -8,6 +8,7 @@ static int __do_dbcursor_rmw = 0;
 
 #include <rpmlib.h>
 #include <rpmmacro.h>
+#include <rpmurl.h>	/* XXX urlPath proto */
 
 #include "rpmdb.h"
 /*@access dbiIndex@*/
@@ -247,8 +248,6 @@ static int db_fini(dbiIndex dbi)
     DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
 #if defined(__USE_DB3)
     char **dbconfig = NULL;
-    char * dbhome;
-    char * dbfile;
     int rc;
 
     if (dbenv == NULL) {
@@ -256,21 +255,20 @@ static int db_fini(dbiIndex dbi)
 	return 0;
     }
 
-    dbhome = alloca(strlen(dbi->dbi_file) + 1);
-    strcpy(dbhome, dbi->dbi_file);
-    dbfile = strrchr(dbhome, '/');
-    if (dbfile)
-	    *dbfile++ = '\0';
-    else
-	    dbfile = dbhome;
-
     rc = dbenv->close(dbenv, 0);
     rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
 
     if (__do_dbenv_remove < 0)
 	__do_dbenv_remove = rpmExpandNumeric("%{_db3_dbenv_remove}");
     if (__do_dbenv_remove) {
+	rpmdb rpmdb = dbi->dbi_rpmdb;
+	const char * urlfn;
+	const char * dbhome;
 	int xx;
+
+	urlfn = rpmGenPath(rpmdb->db_root, rpmdb->db_home, NULL);
+	(void) urlPath(urlfn, &dbhome);
+    
 	xx = db_env_create(&dbenv, 0);
 	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
 	xx = dbenv->remove(dbenv, dbhome, dbconfig, 0);
@@ -867,22 +865,21 @@ static int db3open(dbiIndex dbi)
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
     DB * db = NULL;
-    char * dbhome;
-    char * dbfile;
-    u_int32_t dbflags;
     DB_ENV * dbenv = NULL;
     DB_TXN * txnid = NULL;
+    u_int32_t dbflags;
+    const char * urlfn;
+    const char * dbhome;
+    const char * dbfile = "packages.db3";
+    const char * dbsubfile;
 
-    dbhome = alloca(strlen(dbi->dbi_file) + 1);
-    strcpy(dbhome, dbi->dbi_file);
-    dbfile = strrchr(dbhome, '/');
-    if (dbfile)
-	*dbfile++ = '\0';
-    else
-	dbfile = dbhome;
-
-    dbflags = (	!(dbi->dbi_mode & O_RDWR) ? DB_RDONLY :
-		((dbi->dbi_mode & O_CREAT) ? DB_CREATE : 0));
+    urlfn = rpmGenPath(rpmdb->db_root, rpmdb->db_home, NULL);
+    (void) urlPath(urlfn, &dbhome);
+    dbsubfile = (dbi->dbi_rpmtag ? tagName(dbi->dbi_rpmtag) : "Packages"),
+    
+    dbflags = 0;
+    if (!dbi->dbi_mode & O_RDWR) dbflags |= DB_RDONLY;
+    if ( dbi->dbi_mode & O_CREAT) dbflags |= DB_CREATE;
 
     rc = db_init(dbi, dbhome, dbflags, &dbenv);
     dbi->dbi_dbinfo = NULL;
@@ -925,14 +922,8 @@ static int db3open(dbiIndex dbi)
 		rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
 	    }
 	    dbi->dbi_dbinfo = NULL;
-#ifndef	DYING	/* XXX FIXME */
-	    rc = db->open(db, "packages.db3", dbfile,
+	    rc = db->open(db, dbfile, dbsubfile,
 		    dbi_to_dbtype(dbi->dbi_type), dbflags, dbi->dbi_perms);
-#else
-	    rc = db->open(db, "packages.db3",
-		    (dbi->dbi_rpmtag ? tagName(dbi->dbi_rpmtag) : "Packages"),
-		    dbi_to_dbtype(dbi->dbi_type), dbflags, dbi->dbi_perms);
-#endif
 	    rc = cvtdberr(dbi, "db->open", rc, _debug);
 
 	    __use_cursors = rpmExpandNumeric("%{_db3_use_cursors}");

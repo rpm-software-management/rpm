@@ -828,12 +828,11 @@ void providePackageNVR(Header h)
     int_32 * epoch;
     const char *pEVR;
     char *p;
-    int pFlags = RPMSENSE_EQUAL;
+    int_32 pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
     int_32 * provideFlags = NULL;
     int providesCount;
-    int type;
     int i;
     int bingo = 1;
 
@@ -843,26 +842,38 @@ void providePackageNVR(Header h)
     *p = '\0';
     if (headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
-	while (*p++)
-	    ;
+	while (*p)
+	    p++;
     }
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
     /*
      * Rpm prior to 3.0.3 does not have versioned provides.
-     * If no provides version info is available, then just add.
+     * If no provides at all are available, we can just add.
      */
-    if (!headerGetEntry(h, RPMTAG_PROVIDEVERSION, &type,
-		(void **) &providesEVR, &providesCount))
-	goto exit;
-
-    headerGetEntry(h, RPMTAG_PROVIDEFLAGS, &type,
-	(void **) &provideFlags, &providesCount);
-
-    if (!headerGetEntry(h, RPMTAG_PROVIDENAME, &type,
+    if (!headerGetEntry(h, RPMTAG_PROVIDENAME, NULL,
 		(void **) &provides, &providesCount)) {
 	goto exit;
     }
+
+    /*
+     * Otherwise, fill in entries on legacy packages.
+     */
+    if (!headerGetEntry(h, RPMTAG_PROVIDEVERSION, NULL,
+		(void **) &providesEVR, NULL)) {
+	for (i = 0; i < providesCount; i++) {
+	    char * vdummy = "";
+	    int_32 fdummy = RPMSENSE_ANY;
+	    headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+			&vdummy, 1);
+	    headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+			&fdummy, 1);
+	}
+	goto exit;
+    }
+
+    headerGetEntry(h, RPMTAG_PROVIDEFLAGS, NULL,
+	(void **) &provideFlags, NULL);
 
     for (i = 0; i < providesCount; i++) {
 	if (!(provideFlags[i] == RPMSENSE_EQUAL &&

@@ -23,11 +23,12 @@ int rpmdbRebuild(const char * rootdir)
     int failed = 0;
     int rc = 0;
     int _filterDbDups;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
-    int _preferDbiMajor;
+    int _old_db_api;
+    int _new_db_api;
 
     _filterDbDups = rpmExpandNumeric("%{_filterdbdups}");
-    _preferDbiMajor = rpmExpandNumeric("%{_preferdb}");
-fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups, _preferDbiMajor);
+    _old_db_api = rpmExpandNumeric("%{_old_db_api}");
+    _new_db_api = rpmExpandNumeric("%{_new_db_api}");
 
     tfn = rpmGetPath("%{_dbpath}", NULL);
     if (!(tfn && tfn[0] != '%')) {
@@ -74,11 +75,7 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 	goto exit;
     }
 
-#if 0
-    _useDbiMajor = ((_preferDbiMajor >= 0) ? (_preferDbiMajor & 0x03) : -1);
-#else
-    _useDbiMajor = -1;
-#endif
+    _useDbiMajor = ((_old_db_api >= 0) ? (_old_db_api & 0x03) : -1);
     rpmMessage(RPMMESS_DEBUG, _("opening old database with dbi_major %d\n"),
 		_useDbiMajor);
     if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 
@@ -87,7 +84,7 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 	goto exit;
     }
 
-    _useDbiMajor = ((_preferDbiMajor >= 0) ? (_preferDbiMajor & 0x03) : -1);
+    _useDbiMajor = ((_new_db_api >= 0) ? (_new_db_api & 0x03) : -1);
     rpmMessage(RPMMESS_DEBUG, _("opening new database with dbi_major %d\n"),
 		_useDbiMajor);
     if (openDatabase(rootdir, newdbpath, &newdb, O_RDWR | O_CREAT, 0644, 0)) {

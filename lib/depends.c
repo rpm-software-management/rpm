@@ -66,8 +66,8 @@ static /*@only@*/ const char *buildEVR(int_32 *e, const char *v, const char *r)
     *p = '\0';
     if (e) {
 	sprintf(p, "%d:", *e);
-	while (*p++)
-	    ;
+	while (*p)
+	    p++;
     }
     (void) stpcpy( stpcpy( stpcpy(p, v) , "-") , r);
     return pEVR;
@@ -535,8 +535,8 @@ int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, in
     *p = '\0';
     if (headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
-	while (*p++)
-	    ;
+	while (*p)
+	    p++;
     }
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
@@ -832,8 +832,8 @@ alFileSatisfiesDepend(struct availableList * al,
 	*t = '\0';
 	if (p->epoch) {
 	    sprintf(t, "%d:", *p->epoch);
-	    while (*t++)
-		;
+	    while (*t)
+		t++;
 	}
 	(void) stpcpy( stpcpy( stpcpy(t, p->version) , "-") , p->release);
 	rc = rangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
