@@ -21,10 +21,6 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
-rpmts tsFromTs(rpmtsObject * ts);
-
-rpmtsObject * rpmts_New(rpmts ts);
-
 rpmtsObject * rpmts_Create(PyObject * s, PyObject * args);
 
 #endif

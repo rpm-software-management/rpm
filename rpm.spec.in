@@ -1,4 +1,4 @@
-%define	with_python_subpackage	0%{nil}
+%define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@%{nil}
 %define	with_python_version	@WITH_PYTHON_VERSION@%{nil}
 %define with_perl_subpackage	0
 %define	with_bzip2		@WITH_BZIP2@%{nil}
@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.15
+Release: 0.16
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -515,6 +515,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu May 23 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.16
+- add rpmds/rpmfi/rpmts methods to bindings.
+
 * Sun May 19 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.15
 - Grand Renaming of rpm data types.
 - fix: synthesize unpacking progress callbacks for packages w/o files.

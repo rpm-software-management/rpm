@@ -14,7 +14,7 @@ extern PyTypeObject rpmfi_Type;
 
 rpmfi fiFromFi(rpmfiObject * fi);
 
-rpmfiObject * rpmfi_New(rpmfi fi);
+rpmfiObject * rpmfi_Wrap(rpmfi fi);
 
 rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args);
 

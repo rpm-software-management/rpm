@@ -265,7 +265,7 @@ rpmds dsFromDs(rpmdsObject * s)
 }
 
 rpmdsObject *
-rpmds_New(rpmds ds)
+rpmds_Wrap(rpmds ds)
 {
     rpmdsObject *s = PyObject_NEW(rpmdsObject, &rpmds_Type);
     if (s == NULL)
@@ -284,7 +284,7 @@ rpmds_Single(PyObject * s, PyObject * args)
 
     if (!PyArg_ParseTuple(args, "is|si", &tagN, &N, &EVR, &Flags))
 	return NULL;
-    return rpmds_New( rpmdsSingle(tagN, N, EVR, Flags) );
+    return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
 }
 
 rpmdsObject *
@@ -296,7 +296,7 @@ hdr_dsFromHeader(PyObject * s, PyObject * args)
 
     if (!PyArg_ParseTuple(args, "O!|i", &hdr_Type, &ho, &tagN))
 	return NULL;
-    return rpmds_New( rpmdsNew(hdrGetHeader(ho), tagN, scareMem) );
+    return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, scareMem) );
 }
 
 rpmdsObject *
@@ -308,5 +308,5 @@ hdr_dsOfHeader(PyObject * s, PyObject * args)
 
     if (!PyArg_ParseTuple(args, "O!", &hdr_Type, &ho))
 	return NULL;
-    return rpmds_New( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
+    return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
 }

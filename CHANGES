@@ -115,6 +115,7 @@
 	- opaque (well mostly) rpmTransactionSet using methods.
 	- Grand Renaming of rpm data types.
 	- fix: synthesize unpacking progress callbacks for packages w/o files.
+	- add rpmds/rpmfi/rpmts methods to bindings.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -354,7 +354,7 @@ rpmfi fiFromFi(rpmfiObject * s)
 }
 
 rpmfiObject *
-rpmfi_New(rpmfi fi)
+rpmfi_Wrap(rpmfi fi)
 {
     rpmfiObject *s = PyObject_NEW(rpmfiObject, &rpmfi_Type);
     if (s == NULL)
@@ -370,5 +370,5 @@ hdr_fiFromHeader(PyObject * s, PyObject * args)
 
     if (!PyArg_ParseTuple(args, "O!", &hdr_Type, &ho))
 	return NULL;
-    return rpmfi_New( rpmfiNew(NULL, NULL, hdrGetHeader(ho), RPMTAG_BASENAMES, 0) );
+    return rpmfi_Wrap( rpmfiNew(NULL, NULL, hdrGetHeader(ho), RPMTAG_BASENAMES, 0) );
 }
