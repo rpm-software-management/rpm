@@ -196,6 +196,7 @@ int intcmp(const void * a, const void *b) {
 
 rpmTransactionSet rpmtransCreateSet(rpmdb db, char * root) {
     rpmTransactionSet rpmdep;
+    int rootLength;
 
     rpmdep = malloc(sizeof(*rpmdep));
     rpmdep->db = db;
@@ -203,6 +204,19 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, char * root) {
     rpmdep->allocedRemovedPackages = 5;
     rpmdep->removedPackages = malloc(sizeof(int) * 
 				     rpmdep->allocedRemovedPackages);
+
+    /* This canonicalizes the root */
+    rootLength = strlen(root);
+    if (root && root[rootLength] == '/') {
+	char * newRootdir;
+
+	newRootdir = alloca(rootLength + 2);
+	strcpy(newRootdir, root);
+	newRootdir[rootLength++] = '/';
+	newRootdir[rootLength] = '\0';
+	root = newRootdir;
+    }
+
     rpmdep->root = strdup(root);
 
     alCreate(&rpmdep->addedPackages);
