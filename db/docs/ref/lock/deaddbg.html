@@ -1,0 +1,141 @@
+<!--Id: deaddbg.so,v 10.3 2002/06/19 19:23:05 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Deadlock debugging</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Locking Subsystem</dl></h3></td>
+<td align=right><a href="../../ref/lock/timeout.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/lock/page.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Deadlock debugging</h1>
+<p>An occasional debugging problem in Berkeley DB applications is unresolvable
+deadlock.  The output of the <b>-Co</b> flags of the <a href="../../utility/db_stat.html">db_stat</a>
+utility can be used to detect and debug these problems.  The following
+is a typical example of the output of this utility:
+<p><blockquote><pre>Locks grouped by object
+Locker    Mode    Count   Status      ----------- Object ----------
+       1  READ         1  HELD        a.db                handle   0
+80000004  WRITE        1  HELD        a.db                page     3</pre></blockquote>
+<p>In this example, we have opened a database and stored a single key/data
+pair in it.  Because we have a database handle open, we have a read lock
+on that database handle.  The database handle lock is the read lock
+labelled <i>handle</i>.  (We can normally ignore handle locks for
+the purposes of database debugging, as they will only conflict with
+other handle operations, for example, an attempt to remove the database
+will block because we are holding the handle locked, but reading and
+writing the database will not conflict with the handle lock.)
+<p>It is important to note that locker IDs are 32-bit unsigned integers,
+and are divided into two name spaces.  Locker IDs with the high bit set
+(that is, values 80000000 or higher), are locker IDs associated with
+transactions.  Locker IDs without the high bit set are locker IDs that
+are not associated with a transaction.  Locker IDs associated with
+transactions map one-to-one with the transaction, that is, a transaction
+never has more than a single locker ID, and all of the locks acquired
+by the transaction will be acquired on behalf of the same locker ID.
+<p>We also hold a write lock on the database page where we stored the new
+key/data pair.  The page lock is labeled <i>page</i> and is on page
+number 3.  If we were to put an additional key/data pair in the
+database, we would see the following output:
+<p><blockquote><pre>Locks grouped by object
+Locker    Mode    Count   Status      ----------- Object ----------
+80000004  WRITE        2  HELD        a.db                page     3
+       1  READ         1  HELD        a.db                handle   0</pre></blockquote>
+<p>That is, we have acquired a second reference count to page number 3, but
+have not acquired any new locks.  If we add an entry to a different page
+in the database, we would acquire additional locks:
+<p><blockquote><pre>Locks grouped by object
+Locker    Mode    Count   Status      ----------- Object ----------
+       1  READ         1  HELD        a.db                handle   0
+80000004  WRITE        2  HELD        a.db                page     3
+80000004  WRITE        1  HELD        a.db                page     2</pre></blockquote>
+<p>Here's a simple example of one lock blocking another one:
+<p><blockquote><pre>Locks grouped by object
+Locker    Mode    Count   Status      ----------- Object ----------
+80000004  WRITE        1  HELD        a.db                page     2
+80000005  WRITE        1  WAIT        a.db                page     2
+       1  READ         1  HELD        a.db                handle   0
+80000004  READ         1  HELD        a.db                page     1</pre></blockquote>
+<p>In this example, there are two different transactional lockers (80000004 and
+80000005).  Locker 80000004 is holding a write lock on page 2, and
+locker 80000005 is waiting for a write lock on page 2.  This is not a
+deadlock, because locker 80000004 is not blocked on anything.
+Presumably, the thread of control using locker 80000004 will proceed,
+eventually release its write lock on page 2, at which point the thread
+of control using locker 80000005 can also proceed, acquiring a write
+lock on page 2.
+<p>If lockers 80000004 and 80000005 are not in different threads of
+control, the result would be <i>self deadlock</i>.  Self deadlock
+is not a true deadlock, and won't be detected by the Berkeley DB deadlock
+detector.  It's not a true deadlock because, if work could continue to
+be done on behalf of locker 80000004, then the lock would eventually be
+released, and locker 80000005 could acquire the lock and itself proceed.
+So, the key element is that the thread of control holding the lock
+cannot proceed because it the same thread as is blocked waiting on the
+lock.
+<p>Here's an example of three transactions reaching true deadlock.  First,
+three different threads of control opened the database, acquiring three
+database handle read locks.
+<p><blockquote><pre>Locks grouped by object
+Locker    Mode    Count   Status      ----------- Object ----------
+       1  READ         1  HELD        a.db                handle   0
+       3  READ         1  HELD        a.db                handle   0
+       5  READ         1  HELD        a.db                handle   0</pre></blockquote>
+<p>The three threads then each began a transaction, and put a key/data pair
+on a different page:
+<p><blockquote><pre>Locks grouped by object
+Locker    Mode    Count   Status      ----------- Object ----------
+80000008  WRITE        1  HELD        a.db                page     4
+       1  READ         1  HELD        a.db                handle   0
+       3  READ         1  HELD        a.db                handle   0
+       5  READ         1  HELD        a.db                handle   0
+80000006  READ         1  HELD        a.db                page     1
+80000007  READ         1  HELD        a.db                page     1
+80000008  READ         1  HELD        a.db                page     1
+80000006  WRITE        1  HELD        a.db                page     2
+80000007  WRITE        1  HELD        a.db                page     3</pre></blockquote>
+<p>The thread using locker 80000006 put a new key/data pair on page 2, the
+thread using locker 80000007, on page 3, and the thread using locker
+80000008 on page 4.  Because the database is a 2-level Btree, the tree
+was searched, and so each transaction acquired a read lock on the Btree
+root page (page 1) as part of this operation.
+<p>The three threads then each attempted to put a second key/data pair on
+a page currently locked by another thread.  The thread using locker
+80000006 tried to put a key/data pair on page 3, the thread using locker
+80000007 on page 4, and the thread using locker 80000008 on page 2:
+<p><blockquote><pre>Locks grouped by object
+Locker    Mode    Count   Status      ----------- Object ----------
+80000008  WRITE        1  HELD        a.db                page     4
+80000007  WRITE        1  WAIT        a.db                page     4
+       1  READ         1  HELD        a.db                handle   0
+       3  READ         1  HELD        a.db                handle   0
+       5  READ         1  HELD        a.db                handle   0
+80000006  READ         2  HELD        a.db                page     1
+80000007  READ         2  HELD        a.db                page     1
+80000008  READ         2  HELD        a.db                page     1
+80000006  WRITE        1  HELD        a.db                page     2
+80000008  WRITE        1  WAIT        a.db                page     2
+80000007  WRITE        1  HELD        a.db                page     3
+80000006  WRITE        1  WAIT        a.db                page     3</pre></blockquote>
+<p>Now, each of the threads of control are blocked, waiting on a different
+thread of control.
+The thread using locker 80000007 is blocked by
+the thread using locker 80000008, due to the lock on page 4.
+The thread using locker 80000008 is blocked by
+the thread using locker 80000006, due to the lock on page 2.
+And the thread using locker 80000006 is blocked by
+the thread using locker 80000007, due to the lock on page 3.
+Since none of the threads of control can make
+progress, one of them will have to be killed in order to resolve the
+deadlock.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/lock/timeout.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/lock/page.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

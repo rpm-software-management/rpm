@@ -1,0 +1,121 @@
+<!--Id: xml_declare.so,v 10.8 2002/08/07 15:14:58 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: XmlContainer.declareIndex</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>XmlContainer.declareIndex</h1>
+</td>
+<td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+import com.sleepycat.dbxml.*;
+<p>
+public void declareIndex(DbTxn txnid,
+    String node, String index, int flags)
+    throws XmlException;
+</pre></h3>
+<h1>Description</h1>
+<p>The XmlContainer.declareIndex method declares the indexing required for a
+particular node. The node may be an element or attribute.
+<p>The <b>node</b> parameter provides the name of the node
+to be indexed. Attribute node names are prefixed with the '@' character
+to distinguish them from element node names. For example, within the
+following XML document fragment the element name is 'fruit', and the
+attribute name is '@color',
+"&lt;fruit color='red'&gt;apple&lt;/fruit&gt;".
+<p>A fully qualified node name is a node name that includes its full
+namespace specification. In the following fragment from the
+<a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/">W3C XML Namespaces specification</a>, the fully qualified name of
+the "price units" element is "http://ecommerce.org/schema:price units":
+<p><blockquote><pre>&lt;x xmlns:edi='http://ecommerce.org/schema'&gt;
+    &lt;!-- the 'price' element's namespace is http://ecommerce.org/schema --&gt;
+    &lt;edi:price units='Euro'&gt;32.18&lt;/edi:price&gt;
+&lt;/x&gt;</pre></blockquote>
+<p>The index string is a comma separated list of one or more of the
+following indexing strategy names:
+<p><ul type=disc>
+<li>none-none-none-none
+<li>node-element-presence
+<li>node-attribute-presence
+<li>node-element-equality-string
+<li>node-element-equality-number
+<li>node-element-substring-string
+<li>node-attribute-equality-string
+<li>node-attribute-equality-number
+<li>node-attribute-substring-string
+<li>edge-element-presence
+<li>edge-attribute-presence
+<li>edge-element-equality-string
+<li>edge-element-equality-number
+<li>edge-element-substring-string
+<li>edge-attribute-equality-string
+<li>edge-attribute-equality-number
+<li>edge-attribute-substring-string
+</ul>
+<p>Indices may only be declared for empty containers. Once documents have
+been added to a container the indexing specification for the container
+may not be changed.
+<p>If the operation is to be transaction-protected, the <b>txnid</b>
+parameter is a transaction handle returned from <a href="../api_java/txn_begin.html">DbEnv.txn_begin</a>;
+otherwise, null.
+<p>The <b>flags</b> parameter is currently unused, and must be set to 0.
+<p>The XmlContainer.declareIndex method throws an exception that encapsulates a non-zero error value on
+failure.
+<h1>Errors</h1>
+<p>The XmlContainer.declareIndex method may fail and throw an UNREF==xmlexception_class
+exception with the following exception code:
+<p><dl compact>
+<p><dt>CONTAINER_NOT_EMPTY<dd>Indexes may only be declared for empty containers.
+</dl>
+<p><dl compact>
+<p><dt>CONTAINER_CLOSED<dd>Indexes may only be declared on open containers.
+</dl>
+<p><dl compact>
+<p><dt>DATABASE_ERROR<dd>An error occurred in an underlying Berkeley DB database.
+UNREF==xml_getdberror method returns the error code for the error.
+</dl>
+<p>The XmlContainer.declareIndex method may fail and throw an exception for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the XmlContainer.declareIndex method may fail and
+throw a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>Class</h1>
+<a href="../api_java/xmlcontainer_class.html">XmlContainer</a>, <a href="../api_java/xmldocument_class.html">XmlDocument</a>, <a href="../api_java/xmlquery_class.html">XmlQueryContext</a>
+<h1>See Also</h1>
+<a href="../api_java/xml_close.html">XmlContainer.close</a>,
+<a href="../api_java/xml_declare.html">XmlContainer.declareIndex</a>,
+<a href="../api_java/xml_del.html">XmlContainer.deleteDocument</a>,
+<a href="../api_java/xml_get.html">XmlContainer.getDocument</a>,
+<a href="../api_java/xml_getname.html">XmlContainer.getName</a>,
+<a href="../api_java/xml_open.html">XmlContainer.open</a>,
+<a href="../api_java/xml_put.html">XmlContainer.putDocument</a>
+and
+<a href="../api_java/xml_xpath.html">XmlContainer.queryWithXPath</a>.
+<p>
+<a href="../api_java/xmldoc_getattr.html">XmlDocument.getAttributeValue</a>,
+<a href="../api_java/xmldoc_getcont.html">XmlDocument.getContent</a>,
+<a href="../api_java/xmldoc_getid.html">XmlDocument.getID</a>,
+<a href="../api_java/xmldoc_getname.html">XmlDocument.getName</a>,
+<a href="../api_java/xmldoc_gettype.html">XmlDocument.getType</a>,
+<a href="../api_java/xmldoc_setcont.html">XmlDocument.setContent</a>,
+<a href="../api_java/xmldoc_setname.html">XmlDocument.setName</a>,
+and
+<a href="../api_java/xmldoc_settype.html">XmlDocument.setType</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

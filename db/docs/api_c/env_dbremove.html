@@ -1,0 +1,121 @@
+<!--Id: env_dbremove.so,v 10.31 2002/08/02 18:41:14 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;dbremove</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_ENV-&gt;dbremove</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;dbremove(DB_ENV *dbenv, DB_TXN *txnid,
+    const char *file, const char *database, u_int32_t flags);
+</pre></h3>
+<h1>Description</h1>
+<p>The DB_ENV-&gt;dbremove function removes the database specified by the
+<b>file</b> and <b>database</b> arguments.  If no <b>database</b> is
+specified, the underlying file represented by <b>file</b> is removed,
+incidentally removing all databases that it contained.
+<p>Applications should never remove databases with open <a href="../api_c/db_create.html">DB</a> handles,
+or in the case of removing a file, when any database in the file has an
+open handle.  For example, some architectures do not permit the removal
+of files with open system handles.  On these architectures, attempts to
+remove databases currently in use by any thread of control in the system
+will fail.
+<p>If the operation is to be transaction-protected, the <b>txnid</b>
+parameter is a transaction handle returned from <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>;
+otherwise, NULL.
+<p>The <b>flags</b> value must be set to 0 or
+the following value:
+<p><dl compact>
+<p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DB_ENV-&gt;dbremove call within a transaction.  If the call succeeds,
+changes made by the operation will be recoverable.  If the call fails,
+the operation will have made no changes.
+</dl>
+<p>The DB_ENV-&gt;dbremove function returns a non-zero error value on failure and 0 on success.
+<h1>Environment Variables</h1>
+<p><dl compact>
+<p><dt>DB_HOME<dd>The 
+environment variable <b>DB_HOME</b> may be used as the path of the
+database environment home.
+<p>DB_ENV-&gt;dbremove is affected by any database directory specified using the
+<a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> function, or by setting the "set_data_dir" string
+in the environment's <b>DB_CONFIG</b> file.
+</dl>
+<h1>Errors</h1>
+<p>The DB_ENV-&gt;dbremove function may fail and return a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>DB_LOCK_DEADLOCK<dd>The operation was selected to resolve a deadlock.
+</dl>
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p>A database in the file is currently open.
+<p>Called before <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called.
+</dl>
+<p>The DB_ENV-&gt;dbremove function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
+If a catastrophic error has occurred, the DB_ENV-&gt;dbremove function may fail and
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>See Also</h1>
+<a href="../api_c/env_create.html">db_env_create</a>,
+<a href="../api_c/env_close.html">DB_ENV-&gt;close</a>,
+<a href="../api_c/env_dbremove.html">DB_ENV-&gt;dbremove</a>,
+<a href="../api_c/env_dbrename.html">DB_ENV-&gt;dbrename</a>,
+<a href="../api_c/env_err.html">DB_ENV-&gt;err</a>,
+<a href="../api_c/env_err.html">DB_ENV-&gt;errx</a>,
+<a href="../api_c/env_open.html">DB_ENV-&gt;open</a>,
+<a href="../api_c/env_remove.html">DB_ENV-&gt;remove</a>,
+<a href="../api_c/env_set_alloc.html">DB_ENV-&gt;set_alloc</a>,
+<a href="../api_c/env_set_app_dispatch.html">DB_ENV-&gt;set_app_dispatch</a>,
+<a href="../api_c/env_set_cachesize.html">DB_ENV-&gt;set_cachesize</a>,
+<a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a>,
+<a href="../api_c/env_set_encrypt.html">DB_ENV-&gt;set_encrypt</a>,
+<a href="../api_c/env_set_errcall.html">DB_ENV-&gt;set_errcall</a>,
+<a href="../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a>,
+<a href="../api_c/env_set_errpfx.html">DB_ENV-&gt;set_errpfx</a>,
+<a href="../api_c/env_set_feedback.html">DB_ENV-&gt;set_feedback</a>,
+<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a>,
+<a href="../api_c/env_set_lg_bsize.html">DB_ENV-&gt;set_lg_bsize</a>,
+<a href="../api_c/env_set_lg_dir.html">DB_ENV-&gt;set_lg_dir</a>,
+<a href="../api_c/env_set_lg_max.html">DB_ENV-&gt;set_lg_max</a>,
+<a href="../api_c/env_set_lg_regionmax.html">DB_ENV-&gt;set_lg_regionmax</a>,
+<a href="../api_c/env_set_lk_conflicts.html">DB_ENV-&gt;set_lk_conflicts</a>,
+<a href="../api_c/env_set_lk_detect.html">DB_ENV-&gt;set_lk_detect</a>,
+<a href="../api_c/env_set_lk_max_lockers.html">DB_ENV-&gt;set_lk_max_lockers</a>,
+<a href="../api_c/env_set_lk_max_locks.html">DB_ENV-&gt;set_lk_max_locks</a>,
+<a href="../api_c/env_set_lk_max_objects.html">DB_ENV-&gt;set_lk_max_objects</a>,
+<a href="../api_c/env_set_mp_mmapsize.html">DB_ENV-&gt;set_mp_mmapsize</a>,
+<a href="../api_c/env_set_paniccall.html">DB_ENV-&gt;set_paniccall</a>,
+<a href="../api_c/env_set_rpc_server.html">DB_ENV-&gt;set_rpc_server</a>,
+<a href="../api_c/env_set_shm_key.html">DB_ENV-&gt;set_shm_key</a>,
+<a href="../api_c/env_set_tas_spins.html">DB_ENV-&gt;set_tas_spins</a>,
+<a href="../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a>,
+<a href="../api_c/env_set_tmp_dir.html">DB_ENV-&gt;set_tmp_dir</a>,
+<a href="../api_c/env_set_tx_max.html">DB_ENV-&gt;set_tx_max</a>,
+<a href="../api_c/env_set_tx_timestamp.html">DB_ENV-&gt;set_tx_timestamp</a>,
+<a href="../api_c/env_set_verbose.html">DB_ENV-&gt;set_verbose</a>,
+<a href="../api_c/env_strerror.html">db_strerror</a>
+and
+<a href="../api_c/env_version.html">db_version</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

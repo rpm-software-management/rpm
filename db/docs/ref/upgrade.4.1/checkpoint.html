@@ -1,0 +1,30 @@
+<!--Id: checkpoint.so,v 1.4 2002/08/12 21:12:06 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.1: DB_CHECKPOINT, DB_CURLSN</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../../ref/upgrade.4.1/log_stat.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.1/incomplete.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Release 4.1: DB_CHECKPOINT, DB_CURLSN</h1>
+<p>The DB_CHECKPOINT flag has been removed from the <a href="../../api_c/logc_get.html">DB_LOGC-&gt;get</a> and
+<a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a> functions.  It is very unlikely application programs used this
+flag.  If your application used this flag, please contact Sleepycat
+Software support for help in upgrading.
+<p>The DB_CURLSN flag has been removed from the <a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a> function.  It is
+very unlikely application programs used this flag.  If your application
+used this flag, please contact Sleepycat Software support for help in
+upgrading.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/upgrade.4.1/log_stat.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.1/incomplete.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

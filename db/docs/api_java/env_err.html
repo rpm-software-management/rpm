@@ -1,0 +1,108 @@
+<!--Id: env_err.so,v 10.20 2002/06/24 14:49:16 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv.err</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbEnv.err</h1>
+</td>
+<td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+import com.sleepycat.db.*;
+<p>
+public void err(int errcode, String message)
+<p>
+public void errx(String message)
+</pre></h3>
+<h1>Description</h1>
+<p>The DbEnv.err, DbEnv.errx,  <a href="../api_java/db_err.html">Db.err</a> and
+<a href="../api_java/db_err.html">Db.errx</a> methods provide error-messaging functionality for
+applications written using the Berkeley DB library.
+<p>The DbEnv.err method constructs an error message consisting of the
+following elements:
+<p><blockquote><p><dl compact>
+<p><dt>An optional prefix string<dd>If no error callback method has been set using the
+<a href="../api_java/env_set_errcall.html">DbEnv.set_errcall</a> method, any prefix string specified using the
+<a href="../api_java/env_set_errpfx.html">DbEnv.set_errpfx</a> method, followed by two separating characters: a colon
+and a &lt;space&gt; character.
+<p><dt>The supplied message string <b>message</b>.<dd>
+<p><dt>A separator<dd>Two separating characters: a colon and a &lt;space&gt; character.
+<p><dt>A standard error string<dd>The standard system or Berkeley DB library error string associated with the
+<b>error</b> value, as returned by the <a href="../api_java/env_strerror.html">DbEnv.strerror</a> method.
+</dl>
+</blockquote>
+<p>This constructed error message is then handled as follows:
+<p><blockquote>
+<p>If an error callback method has been set (see <a href="../api_java/db_set_errcall.html">Db.set_errcall</a>
+and <a href="../api_java/env_set_errcall.html">DbEnv.set_errcall</a>), that method is called with two
+arguments: any prefix string specified (see <a href="../api_java/db_set_errpfx.html">Db.set_errpfx</a> and
+<a href="../api_java/env_set_errpfx.html">DbEnv.set_errpfx</a>) and the error message.
+<p>If a OutputStream has been set
+(see <a href="../api_java/env_set_error_stream.html">DbEnv.set_error_stream</a>), the error message is written to that
+stream.
+<p>If none of these output options has been configured, the error message
+is written to System.err, the standard
+error output stream.</blockquote>
+<p>The DbEnv.errx and <a href="../api_java/db_err.html">Db.errx</a> methods perform identically to the
+DbEnv.err and <a href="../api_java/db_err.html">Db.err</a> methods, except that they do not append
+the final separator characters and standard error string to the error
+message.
+<h1>Class</h1>
+<a href="../api_java/dbenv_class.html">DbEnv</a>
+<h1>See Also</h1>
+<a href="../api_java/env_close.html">DbEnv.close</a>,
+<a href="../api_java/env_dbremove.html">DbEnv.dbremove</a>,
+<a href="../api_java/env_dbrename.html">DbEnv.dbrename</a>,
+<a href="../api_java/env_err.html">DbEnv.err</a>,
+<a href="../api_java/env_err.html">DbEnv.errx</a>,
+<a href="../api_java/env_version.html">DbEnv.get_version_string</a>,
+<a href="../api_java/env_open.html">DbEnv.open</a>,
+<a href="../api_java/env_remove.html">DbEnv.remove</a>,
+<a href="../api_java/env_set_app_dispatch.html">DbEnv.set_app_dispatch</a>,
+<a href="../api_java/env_set_cachesize.html">DbEnv.set_cachesize</a>,
+<a href="../api_java/env_set_data_dir.html">DbEnv.set_data_dir</a>,
+<a href="../api_java/env_set_encrypt.html">DbEnv.set_encrypt</a>,
+<a href="../api_java/env_set_errcall.html">DbEnv.set_errcall</a>,
+<a href="../api_java/env_set_error_stream.html">DbEnv.set_error_stream</a>,
+<a href="../api_java/env_set_errpfx.html">DbEnv.set_errpfx</a>,
+<a href="../api_java/env_set_feedback.html">DbEnv.set_feedback</a>,
+<a href="../api_java/env_set_flags.html">DbEnv.set_flags</a>,
+<a href="../api_java/env_set_lg_bsize.html">DbEnv.set_lg_bsize</a>,
+<a href="../api_java/env_set_lg_dir.html">DbEnv.set_lg_dir</a>,
+<a href="../api_java/env_set_lg_max.html">DbEnv.set_lg_max</a>,
+<a href="../api_java/env_set_lg_regionmax.html">DbEnv.set_lg_regionmax</a>,
+<a href="../api_java/env_set_lk_conflicts.html">DbEnv.set_lk_conflicts</a>,
+<a href="../api_java/env_set_lk_detect.html">DbEnv.set_lk_detect</a>,
+<a href="../api_java/env_set_lk_max_lockers.html">DbEnv.set_lk_max_lockers</a>,
+<a href="../api_java/env_set_lk_max_locks.html">DbEnv.set_lk_max_locks</a>,
+<a href="../api_java/env_set_lk_max_objects.html">DbEnv.set_lk_max_objects</a>,
+<a href="../api_java/env_set_mp_mmapsize.html">DbEnv.set_mp_mmapsize</a>,
+<a href="../api_java/env_set_rpc_server.html">DbEnv.set_rpc_server</a>,
+<a href="../api_java/env_set_shm_key.html">DbEnv.set_shm_key</a>,
+<a href="../api_java/env_set_tas_spins.html">DbEnv.set_tas_spins</a>,
+<a href="../api_java/env_set_timeout.html">DbEnv.set_timeout</a>,
+<a href="../api_java/env_set_tmp_dir.html">DbEnv.set_tmp_dir</a>,
+<a href="../api_java/env_set_tx_max.html">DbEnv.set_tx_max</a>,
+<a href="../api_java/env_set_tx_timestamp.html">DbEnv.set_tx_timestamp</a>,
+<a href="../api_java/env_set_verbose.html">DbEnv.set_verbose</a>
+and
+<a href="../api_java/env_strerror.html">DbEnv.strerror</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

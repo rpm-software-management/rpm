@@ -1,0 +1,30 @@
+<!--Id: incomplete.so,v 1.5 2002/07/05 12:31:23 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.1: DB_INCOMPLETE</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../../ref/upgrade.4.1/checkpoint.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.1/memp_sync.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Release 4.1: DB_INCOMPLETE</h1>
+<p>The DB_INCOMPLETE error has been removed from the 4.1 release, and is
+no longer returned by the Berkeley DB library.   Applications no longer need
+to check for this error return, as the underlying Berkeley DB interfaces that
+could historically fail to checkpoint or flush the cache and return this
+error can no longer fail for that reason.  Applications should remove
+all uses of DB_INCOMPLETE.
+<p>Additionally, the <a href="../../api_java/txn_checkpoint.html">DbEnv.txn_checkpoint</a> and <a href="../../api_java/db_sync.html">Db.sync</a>
+methods have been changed from returning int to returning void.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/upgrade.4.1/checkpoint.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.1/memp_sync.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

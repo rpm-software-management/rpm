@@ -1,0 +1,65 @@
+<!--Id: xmlxpe_get.so,v 10.1 2002/06/25 17:17:40 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: XPathExpression.getXPathQuery</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>XPathExpression.getXPathQuery</h1>
+</td>
+<td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+import com.sleepycat.dbxml.*;
+<p>
+public String getXPathQuery()
+    throws XmlException;
+</pre></h3>
+<h1>Description</h1>
+<p>The XPathExpression.getXPathQuery method returns the Xpath query as a string.
+<p>The XPathExpression.getXPathQuery method throws an exception that encapsulates a non-zero error value on
+failure.
+<h1>Errors</h1>
+<p>The XPathExpression.getXPathQuery method may fail and throw an exception for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the XPathExpression.getXPathQuery method may fail and
+throw a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>Class</h1>
+<a href="../api_java/xmlcontainer_class.html">XmlContainer</a>, <a href="../api_java/xmldocument_class.html">XmlDocument</a>, <a href="../api_java/xmlquery_class.html">XmlQueryContext</a>
+<h1>See Also</h1>
+<a href="../api_java/xml_close.html">XmlContainer.close</a>,
+<a href="../api_java/xml_declare.html">XmlContainer.declareIndex</a>,
+<a href="../api_java/xml_del.html">XmlContainer.deleteDocument</a>,
+<a href="../api_java/xml_get.html">XmlContainer.getDocument</a>,
+<a href="../api_java/xml_getname.html">XmlContainer.getName</a>,
+<a href="../api_java/xml_open.html">XmlContainer.open</a>,
+<a href="../api_java/xml_put.html">XmlContainer.putDocument</a>
+and
+<a href="../api_java/xml_xpath.html">XmlContainer.queryWithXPath</a>.
+<p>
+<a href="../api_java/xmldoc_getattr.html">XmlDocument.getAttributeValue</a>,
+<a href="../api_java/xmldoc_getcont.html">XmlDocument.getContent</a>,
+<a href="../api_java/xmldoc_getid.html">XmlDocument.getID</a>,
+<a href="../api_java/xmldoc_getname.html">XmlDocument.getName</a>,
+<a href="../api_java/xmldoc_gettype.html">XmlDocument.getType</a>,
+<a href="../api_java/xmldoc_setcont.html">XmlDocument.setContent</a>,
+<a href="../api_java/xmldoc_setname.html">XmlDocument.setName</a>,
+and
+<a href="../api_java/xmldoc_settype.html">XmlDocument.setType</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

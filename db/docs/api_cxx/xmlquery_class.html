@@ -1,0 +1,74 @@
+<!--Id: xmlquery_class.so,v 1.9 2002/07/29 04:20:27 mjc Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: XmlQueryContext</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>XmlQueryContext</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;DbXml.hpp&gt;
+<p>
+class DbXml::XmlQueryContext {
+public:
+	XmlQueryContext();
+	XmlQueryContext(const XmlQueryContext &);
+	~XmlQueryContext();
+	XmlQueryContext &operator = (const XmlQueryContext &)
+	...
+};
+</pre></h3>
+<h1>Description</h1>
+<p>An XmlQueryContext is the context within which a query is
+performed against an <a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a>.  This context includes a
+namespace mapping, variable bindings, and flags that determine how the
+query result set should be determined and returned to the caller.
+<p>The XPath syntax permits expressions to refer to namespace prefixes,
+but not to define them. The XmlQueryContext class provides
+namespace management methods so the caller may manage the namespace
+prefix to URI mapping.  The XPath syntax also permits expressions to
+refer to variables, but not to define them. The XmlQueryContext class
+provides methods so the caller may manage the variable to value
+bindings.
+<h1>Class</h1>
+<a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a>, <a href="../api_cxx/xmldocument_class.html">XmlDocument</a>, <a href="../api_cxx/xmlquery_class.html">XmlQueryContext</a>
+<h1>See Also</h1>
+<a href="../api_cxx/xml_close.html">XmlContainer::close</a>,
+<a href="../api_cxx/xml_declare.html">XmlContainer::declareIndex</a>,
+<a href="../api_cxx/xml_del.html">XmlContainer::deleteDocument</a>,
+<a href="../api_cxx/xml_get.html">XmlContainer::getDocument</a>,
+<a href="../api_cxx/xml_getname.html">XmlContainer::getName</a>,
+<a href="../api_cxx/xml_open.html">XmlContainer::open</a>,
+<a href="../api_cxx/xml_put.html">XmlContainer::putDocument</a>
+and
+<a href="../api_cxx/xml_xpath.html">XmlContainer::queryWithXPath</a>.
+<p>
+<a href="../api_cxx/xmldoc_getattr.html">XmlDocument::getAttributeValue</a>,
+<a href="../api_cxx/xmldoc_getcont.html">XmlDocument::getContent</a>,
+<a href="../api_cxx/xmldoc_getid.html">XmlDocument::getID</a>,
+<a href="../api_cxx/xmldoc_getname.html">XmlDocument::getName</a>,
+<a href="../api_cxx/xmldoc_gettype.html">XmlDocument::getType</a>,
+<a href="../api_cxx/xmldoc_setcont.html">XmlDocument::setContent</a>,
+<a href="../api_cxx/xmldoc_setname.html">XmlDocument::setName</a>,
+and
+<a href="../api_cxx/xmldoc_settype.html">XmlDocument::setType</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

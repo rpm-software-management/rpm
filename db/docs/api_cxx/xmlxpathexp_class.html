@@ -1,0 +1,67 @@
+<!--Id: xmlxpathexp_class.so,v 1.3 2002/07/29 04:20:28 mjc Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: XPathExpression</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>XPathExpression</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;DbXml.hpp&gt;
+<p>
+class DbXml::XPathExpression {
+public:
+	XPathExpression ()
+	virtual ~XPathExpression ()
+	XPathExpression (const XPathExpression &)
+	XPathExpression & operator= (const XPathExpression &)
+	...
+};
+</pre></h3>
+<h1>Description</h1>
+<p>An XPathExpression represents a parsed XPath expression.  They
+are created with <a href="../api_cxx/xml_xparse.html">XmlContainer::parseXPathExpression</a> and evaluated with <a href="../api_cxx/xml_xpath.html">XmlContainer::queryWithXPath</a>.
+<p>Parsed XPath expressions are useful as the cost of the expression
+parsing and optimization can be amortized over many evaluations.
+<h1>Class</h1>
+<a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a>, <a href="../api_cxx/xmldocument_class.html">XmlDocument</a>, <a href="../api_cxx/xmlquery_class.html">XmlQueryContext</a>
+<h1>See Also</h1>
+<a href="../api_cxx/xml_close.html">XmlContainer::close</a>,
+<a href="../api_cxx/xml_declare.html">XmlContainer::declareIndex</a>,
+<a href="../api_cxx/xml_del.html">XmlContainer::deleteDocument</a>,
+<a href="../api_cxx/xml_get.html">XmlContainer::getDocument</a>,
+<a href="../api_cxx/xml_getname.html">XmlContainer::getName</a>,
+<a href="../api_cxx/xml_open.html">XmlContainer::open</a>,
+<a href="../api_cxx/xml_put.html">XmlContainer::putDocument</a>
+and
+<a href="../api_cxx/xml_xpath.html">XmlContainer::queryWithXPath</a>.
+<p>
+<a href="../api_cxx/xmldoc_getattr.html">XmlDocument::getAttributeValue</a>,
+<a href="../api_cxx/xmldoc_getcont.html">XmlDocument::getContent</a>,
+<a href="../api_cxx/xmldoc_getid.html">XmlDocument::getID</a>,
+<a href="../api_cxx/xmldoc_getname.html">XmlDocument::getName</a>,
+<a href="../api_cxx/xmldoc_gettype.html">XmlDocument::getType</a>,
+<a href="../api_cxx/xmldoc_setcont.html">XmlDocument::setContent</a>,
+<a href="../api_cxx/xmldoc_setname.html">XmlDocument::setName</a>,
+and
+<a href="../api_cxx/xmldoc_settype.html">XmlDocument::setType</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

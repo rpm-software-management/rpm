@@ -1,0 +1,45 @@
+#!/bin/sh -
+#	Id: s_crypto,v 11.2 2002/03/26 23:07:52 bostic Exp 
+
+# Remove crypto from the DB source tree.
+
+d=..
+
+t=/tmp/__db_a
+trap 'rm -f $t ; exit 0' 0
+trap 'rm -f $t ; exit 1' 1 2 3 13 15
+
+if ! test -d $d/crypto; then
+	echo "s_crypto: no crypto sources found in the source tree."
+	exit 1
+fi
+
+# Remove the crypto.
+rm -rf $d/crypto			# Remove the crypto.
+
+# Win/32.
+(echo '/#define.HAVE_CRYPTO/' &&
+ echo 'c' &&
+ echo '/* #undef HAVE_CRYPTO */'
+ echo '.' &&
+ echo 'w' &&
+ echo 'q') | ed $d/build_win32/db_config.h
+
+(echo '1,$s/^\(^crypto[^	]*	*\)\(.*\)/\1skip/' &&
+ echo 'w' &&
+ echo 'q') | ed ./srcfiles.in
+
+ sh ./s_win32
+ sh ./s_win32_dsp
+
+# VxWorks
+(echo '/#define.HAVE_CRYPTO/' &&
+ echo 'c' &&
+ echo '/* #undef HAVE_CRYPTO */'
+ echo '.' &&
+ echo 'w' &&
+ echo 'q') | ed $d/build_vxworks/db_config.h
+
+ cp vx_2.0/filelist $t
+ sed '/^crypto/d' < $t > vx_2.0/filelist
+ sh ./s_vxworks

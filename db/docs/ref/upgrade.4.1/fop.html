@@ -1,0 +1,128 @@
+<!--Id: fop.so,v 1.7 2002/05/09 20:34:20 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.1: DB-&gt;associate, DB-&gt;open, DB-&gt;remove, DB-&gt;rename</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../../ref/upgrade.4.1/excl.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.1/log_register.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Release 4.1: DB-&gt;associate, DB-&gt;open, DB-&gt;remove, DB-&gt;rename</h1>
+<p>Historic releases of Berkeley DB transaction-protected the <a href="../../api_c/db_open.html">DB-&gt;open</a>,
+<a href="../../api_c/db_remove.html">DB-&gt;remove</a> and <a href="../../api_c/db_rename.html">DB-&gt;rename</a> functions, but did it in an implicit
+way, that is, applications did not specify the <a href="../../api_c/txn_begin.html">DB_TXN</a> handles
+associated with the operations.  This approach had a number of problems,
+the most significant of which was there was no way to group operations
+that included database creation, removal or rename.  For example,
+applications wanting to maintain a list of the databases in an
+environment in a well-known database had no way to update the well-known
+database and create a database within a single transaction, and so there
+was no way to guarantee the list of databases was correct for the
+environment after system or application failure. Another example might
+be the creation of both a primary database and a database intended to
+serve as a secondary index, where again there was no way to group the
+creation of both databases in a single atomic operation.
+<p>In the 4.1 release of Berkeley DB, this is no longer the case.  The
+<a href="../../api_c/db_open.html">DB-&gt;open</a> and <a href="../../api_c/db_associate.html">DB-&gt;associate</a> functions now take a <a href="../../api_c/txn_begin.html">DB_TXN</a>
+handle returned by <a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a> as an optional argument.  New
+<a href="../../api_c/env_dbremove.html">DB_ENV-&gt;dbremove</a> and <a href="../../api_c/env_dbrename.html">DB_ENV-&gt;dbrename</a> functions taking a
+<a href="../../api_c/txn_begin.html">DB_TXN</a> handle as an optional argument have been added.
+<p>To upgrade, applications must add a <a href="../../api_c/txn_begin.html">DB_TXN</a> parameter in the
+appropriate location for the <a href="../../api_c/db_open.html">DB-&gt;open</a> function calls, and the
+<a href="../../api_c/db_associate.html">DB-&gt;associate</a> function calls (in both cases, the second argument for
+the C API, the first for the C++ or Java APIs).
+<p>Applications wanting to transaction-protect their <a href="../../api_c/db_open.html">DB-&gt;open</a> and
+<a href="../../api_c/db_associate.html">DB-&gt;associate</a> method calls can add a NULL <a href="../../api_c/txn_begin.html">DB_TXN</a>
+argument and specify the <a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag to the two calls,
+which wraps the operation in an internal Berkeley DB transaction.
+Applications wanting to transaction-protect the remove and rename
+operations must rewrite their calls to the <a href="../../api_c/db_remove.html">DB-&gt;remove</a> and
+<a href="../../api_c/db_rename.html">DB-&gt;rename</a> functions to be, instead, calls to the new
+<a href="../../api_c/env_dbremove.html">DB_ENV-&gt;dbremove</a> and <a href="../../api_c/env_dbrename.html">DB_ENV-&gt;dbrename</a> functions.  Applications not
+wanting to transaction-protect any of the operations can add a NULL
+argument to their <a href="../../api_c/db_open.html">DB-&gt;open</a> and <a href="../../api_c/db_associate.html">DB-&gt;associate</a> function calls and
+require no further changes.
+<p>For example, an application currently opening and closing a database as
+follows:
+<p><blockquote><pre>DB *dbp;
+DB_ENV *dbenv;
+int ret;
+<p>
+if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	goto err_handler;
+<p>
+if ((ret = dbp-&gt;open(dbp, "file", NULL, DB_BTREE, DB_CREATE, 0664)) != 0) {
+	(void)dbp-&gt;close(dbp);
+	goto err_handler;
+}</pre></blockquote>
+<p>could transaction-protect the <a href="../../api_c/db_open.html">DB-&gt;open</a> call as follows:
+<p><blockquote><pre>DB *dbp;
+DB_ENV *dbenv;
+int ret;
+<p>
+if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	goto err_handler;
+<p>
+if ((ret = dbp-&gt;open(dbp,
+    NULL, "file", NULL, DB_BTREE, DB_CREATE | DB_AUTO_COMMIT, 0664)) != 0) {
+	(void)dbp-&gt;close(dbp);
+	goto err_handler;
+}</pre></blockquote>
+<p>An application currently removing a database as follows:
+<p><blockquote><pre>DB *dbp;
+DB_ENV *dbenv;
+int ret;
+<p>
+if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	goto err_handler;
+<p>
+if ((ret = dbp-&gt;remove(dbp, "file", NULL, 0)) != 0)
+	goto err_handler;</pre></blockquote>
+<p>could transaction-protect the database removal as follows:
+<p><blockquote><pre>DB *dbp;
+DB_ENV *dbenv;
+int ret;
+<p>
+if ((ret =
+    dbenv-&gt;dbremove(dbenv, NULL, "file", NULL, DB_AUTO_COMMIT)) != 0)
+	goto err_handler;</pre></blockquote>
+<p>An application currently renaming a database as follows:
+<p><blockquote><pre>DB *dbp;
+DB_ENV *dbenv;
+int ret;
+<p>
+if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	goto err_handler;
+<p>
+if ((ret = dbp-&gt;rename(dbp, "file", NULL, "newname", 0)) != 0)
+	goto err_handler;</pre></blockquote>
+<p>could transaction-protect the database renaming as follows:
+<p><blockquote><pre>DB *dbp;
+DB_ENV *dbenv;
+int ret;
+<p>
+if ((ret = dbenv-&gt;dbrename(
+    dbenv, NULL, "file", NULL, "newname", DB_AUTO_COMMIT)) != 0)
+	goto err_handler;</pre></blockquote>
+<p>These examples are the simplest possible translation, and will result in
+behavior matching that of previous releases.  For further discussion on
+how to transaction-protect <a href="../../api_c/db_open.html">DB-&gt;open</a> function calls, see
+<a href="../../ref/transapp/data_open.html">Opening the databases</a>.
+<p><a href="../../api_c/db_create.html">DB</a> handles that will later be used for transaction-protected
+operations must be opened within a transaction.  Specifying a
+transaction handle to operations using handles not opened within a
+transaction will return an error.  Similarly, not specifying a
+transaction handle to operations using handles that were opened within
+a transaction will also return an error.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/upgrade.4.1/excl.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.1/log_register.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!--Id: faq.so,v 1.1 2002/06/17 18:38:43 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: RPC FAQ</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>RPC Client/Server</dl></h3></td>
+<td align=right><a href="../../ref/rpc/server.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/java/conf.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>RPC FAQ</h1>
+<p><ol>
+<p><li><b>I get the <a href="../../api_c/env_set_rpc_server.html#DB_NOSERVER">DB_NOSERVER</a> error back from a
+<a href="../../api_c/env_set_rpc_server.html">DB_ENV-&gt;set_rpc_server</a> call that is using the default client
+timeout value.</b>
+<p>Some systems have a default RPC client timeout value that is too small,
+and the client times out the request before the server has a chance to
+process and reply.  If you get this error, try explicitly setting the
+client timeout value.
+</ol>
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rpc/server.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/java/conf.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

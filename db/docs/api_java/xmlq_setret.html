@@ -1,0 +1,86 @@
+<!--Id: xmlq_setret.so,v 10.4 2002/06/24 14:49:41 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: XmlQueryContext.setReturnType</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>XmlQueryContext.setReturnType</h1>
+</td>
+<td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+import com.sleepycat.dbxml.*;
+<p>
+public void setReturnType(ReturnType type)
+    throws XmlException;
+</pre></h3>
+<h1>Description</h1>
+<p>The XmlQueryContext.setReturnType method sets the query return type.  The query can
+return candidate documents, result documents, or result values. A
+candidate document is a document that may match the XPath expression,
+a result document is a document that does match the XPath expression,
+and a result value is the result of executing the XPath expression
+against the result document.
+<p>For some expressions it might be known that the candidate set is in fact
+equivalent to the result set. For these expressions there is no need to
+pass the candidate documents through a filter to eliminate false
+positives. The query processor can detect some expressions of this
+nature, but not all. The user application may know better, or may want
+to do its own false positive elimination.
+<p>The <b>type</b> must be set to one of the following values:
+<p><dl compact>
+<p><dt>Db.Db.XmlQueryContext::CandidateDocuments<dd>Return documents that may match the XPath expression.
+<p><dt>Db.Db.XmlQueryContext::ResultDocuments<dd>Return documents that match the XPath expression.
+<p><dt>Db.Db.XmlQueryContext::ResultValues<dd>Project the XPath expression over the matching document.
+</dl>
+<p>The XmlQueryContext.setReturnType method throws an exception that encapsulates a non-zero error value on
+failure.
+<h1>Errors</h1>
+<p>The XmlQueryContext.setReturnType method may fail and throw an exception encapsulating a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+</dl>
+<p>The XmlQueryContext.setReturnType method may fail and throw an exception for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the XmlQueryContext.setReturnType method may fail and
+throw a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>Class</h1>
+<a href="../api_java/xmlcontainer_class.html">XmlContainer</a>, <a href="../api_java/xmldocument_class.html">XmlDocument</a>, <a href="../api_java/xmlquery_class.html">XmlQueryContext</a>
+<h1>See Also</h1>
+<a href="../api_java/xml_close.html">XmlContainer.close</a>,
+<a href="../api_java/xml_declare.html">XmlContainer.declareIndex</a>,
+<a href="../api_java/xml_del.html">XmlContainer.deleteDocument</a>,
+<a href="../api_java/xml_get.html">XmlContainer.getDocument</a>,
+<a href="../api_java/xml_getname.html">XmlContainer.getName</a>,
+<a href="../api_java/xml_open.html">XmlContainer.open</a>,
+<a href="../api_java/xml_put.html">XmlContainer.putDocument</a>
+and
+<a href="../api_java/xml_xpath.html">XmlContainer.queryWithXPath</a>.
+<p>
+<a href="../api_java/xmldoc_getattr.html">XmlDocument.getAttributeValue</a>,
+<a href="../api_java/xmldoc_getcont.html">XmlDocument.getContent</a>,
+<a href="../api_java/xmldoc_getid.html">XmlDocument.getID</a>,
+<a href="../api_java/xmldoc_getname.html">XmlDocument.getName</a>,
+<a href="../api_java/xmldoc_gettype.html">XmlDocument.getType</a>,
+<a href="../api_java/xmldoc_setcont.html">XmlDocument.setContent</a>,
+<a href="../api_java/xmldoc_setname.html">XmlDocument.setName</a>,
+and
+<a href="../api_java/xmldoc_settype.html">XmlDocument.setType</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

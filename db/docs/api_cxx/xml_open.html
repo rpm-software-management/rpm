@@ -1,0 +1,145 @@
+<!--Id: xml_open.so,v 10.5 2002/07/30 16:57:43 merrells Exp -->
+<!--Id: m4.db_open,v 10.2 2002/06/20 03:47:44 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: XmlContainer::open</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>XmlContainer::open</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;DbXml.hpp&gt;
+<p>
+void
+XmlContainer::open(DbTxn *txnid,
+    u_int32_t flags, int mode);
+</pre></h3>
+<h1>Description</h1>
+<p>The XmlContainer::open method opens the <a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a>
+for both reading and writing. The container name, passed
+through the constructor, is used as the base name for a set of
+underlying Berkeley DB databases that are used to back the
+container.
+
+<p>The XmlContainer::open method may only be called on a closed
+container. A container is in the closed state after construction,
+and after the <a href="../api_cxx/xml_close.html">XmlContainer::close</a> method has been called. Note
+that it is allowable to re-open a container after it has been
+closed.
+
+<p>An open <a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a> must be closed, by calling the
+<a href="../api_cxx/xml_close.html">XmlContainer::close</a> method, before the <a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a>
+object is destroyed. Otherwise the underlying database
+resources will not be released.
+<p>If the operation is to be transaction-protected (other than by specifying
+the DB_AUTO_COMMIT flag), the <b>txnid</b> parameter is a
+transaction handle returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.
+<p>The <b>flags</b> and <b>mode</b> arguments specify how files will be opened
+and/or created if they do not already exist.
+<p>The <b>flags</b> value must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one or
+more of the following values:
+<p><dl compact>
+<p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the XmlContainer::open call within a transaction.  If the call succeeds,
+the open operation will be recoverable.  If the call fails, no container will
+have been created.
+<p><dt><a name="DB_CREATE">DB_CREATE</a><dd>Create the container.  If the container does not already exist and the DB_CREATE
+flag is not specified, the XmlContainer::open will fail.
+<p><dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Support dirty reads; that is, read operations on the container may request the
+return of modified but not yet committed data.
+<p><dt><a name="DB_EXCL">DB_EXCL</a><dd>Return an error if the container already exists.  The <a href="../api_cxx/db_open.html#DB_EXCL">DB_EXCL</a> flag is
+only meaningful when specified with the <a href="../api_cxx/env_open.html#DB_CREATE">DB_CREATE</a> flag.
+<p><dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Do not map this container into process memory (see the description of the
+<a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a> method for further information).
+<p><dt><a name="DB_RDONLY">DB_RDONLY</a><dd>Open the container for reading only.  Any attempt to modify items in the container
+will fail, regardless of the actual permissions of any underlying files.
+<p><dt><a name="DB_THREAD">DB_THREAD</a><dd>Cause the <a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a> handle returned by XmlContainer::open to be
+<i>free-threaded</i>; that is, usable by multiple threads within a
+single address space.
+</dl>
+<p>On UNIX systems or in IEEE/ANSI Std 1003.1 (POSIX) environments, all files created by
+the container open are created with mode <b>mode</b> (as described in <b>chmod</b>(2)) and modified by the process' umask value at the time of creation
+(see <b>umask</b>(2)).  If <b>mode</b> is 0, the container open will use a default
+mode of readable and writable by both owner and group.  On Windows
+systems, the mode argument is ignored. The group ownership of created
+files is based on the system and directory defaults, and is not further
+specified by Berkeley DB.
+<p>Calling XmlContainer::open is a reasonably expensive operation, and maintaining
+a set of open containers will normally be preferable to repeatedly opening
+and closing the container for each new query.
+<p>The XmlContainer::open method throws an exception that encapsulates a non-zero error value on
+failure.
+If XmlContainer::open fails, the <a href="../api_cxx/xml_close.html">XmlContainer::close</a> method should be called to discard the
+<a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a> handle.
+<h1>Environment Variables</h1>
+<p><dl compact>
+<p><dt>DB_HOME<dd>If a <b>dbenv</b> argument to <a href="../api_c/db_create.html">db_create</a> was specified, the
+environment variable <b>DB_HOME</b> may be used as the path of the
+database environment home.
+<p>XmlContainer::open is affected by any database directory specified using the
+<a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a> method, or by setting the "set_data_dir" string
+in the environment's <b>DB_CONFIG</b> file.
+</dl>
+<p><dl compact>
+<p><dt>TMPDIR<dd>If the <b>file</b> and <b>dbenv</b> arguments to XmlContainer::open are
+NULL, the environment variable <b>TMPDIR</b> may be used as a
+directory in which to create temporary backing files
+</dl>
+<h1>Errors</h1>
+<p>The XmlContainer::open method may fail and throw an exception encapsulating a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt><a name="DB_OLD_VERSION">DB_OLD_VERSION</a><dd>The container cannot be opened without being first upgraded.
+<p><dt>EEXIST<dd>DB_CREATE and DB_EXCL were specified and the container exists.
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p>
+The <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a> flag was specified and fast mutexes are not
+available for this architecture.
+<p>The <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a> flag was specified to XmlContainer::open, but was not
+specified to the <a href="../api_cxx/env_open.html">DbEnv::open</a> call for the environment in which the
+<a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a> handle was created.
+</dl>
+<p>The XmlContainer::open method may fail and throw an exception for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the XmlContainer::open method may fail and
+throw a <a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>Class</h1>
+<a href="../api_cxx/xmlcontainer_class.html">XmlContainer</a>, <a href="../api_cxx/xmldocument_class.html">XmlDocument</a>, <a href="../api_cxx/xmlquery_class.html">XmlQueryContext</a>
+<h1>See Also</h1>
+<a href="../api_cxx/xml_close.html">XmlContainer::close</a>,
+<a href="../api_cxx/xml_declare.html">XmlContainer::declareIndex</a>,
+<a href="../api_cxx/xml_del.html">XmlContainer::deleteDocument</a>,
+<a href="../api_cxx/xml_get.html">XmlContainer::getDocument</a>,
+<a href="../api_cxx/xml_getname.html">XmlContainer::getName</a>,
+<a href="../api_cxx/xml_open.html">XmlContainer::open</a>,
+<a href="../api_cxx/xml_put.html">XmlContainer::putDocument</a>
+and
+<a href="../api_cxx/xml_xpath.html">XmlContainer::queryWithXPath</a>.
+<p>
+<a href="../api_cxx/xmldoc_getattr.html">XmlDocument::getAttributeValue</a>,
+<a href="../api_cxx/xmldoc_getcont.html">XmlDocument::getContent</a>,
+<a href="../api_cxx/xmldoc_getid.html">XmlDocument::getID</a>,
+<a href="../api_cxx/xmldoc_getname.html">XmlDocument::getName</a>,
+<a href="../api_cxx/xmldoc_gettype.html">XmlDocument::getType</a>,
+<a href="../api_cxx/xmldoc_setcont.html">XmlDocument::setContent</a>,
+<a href="../api_cxx/xmldoc_setname.html">XmlDocument::setName</a>,
+and
+<a href="../api_cxx/xmldoc_settype.html">XmlDocument::setType</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

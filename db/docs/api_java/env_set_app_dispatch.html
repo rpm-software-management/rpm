@@ -1,0 +1,117 @@
+<!--Id: env_set_app_dispatch.so,v 10.36 2002/06/24 14:49:17 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv.set_app_dispatch</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbEnv.set_app_dispatch</h1>
+</td>
+<td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+import com.sleepycat.db.*;
+<p>
+public interface DbTxnRecover
+{
+    public abstract int
+      tx_recover(DbEnv dbenv, Dbt log_rec, DbLsn lsn, int op);
+}
+public class DbEnv
+{
+    public void set_app_dispatch(DbTxnRecover tx_recover)
+	throws DbException;
+    ...
+}
+</pre></h3>
+<h1>Description</h1>
+<p>Set the application's method to be called during transaction abort
+and recovery.  This method must return 0 on success and either
+<b>errno</b> or a value outside of the Berkeley DB error name space on
+failure.  It takes four arguments:
+<p><dl compact>
+<p><dt>dbenv  <dd>A Berkeley DB environment.
+<p><dt>log_rec<dd>A log record.
+<p><dt>lsn<dd>A log sequence number.
+<p><dt>op<dd>One of the following values:
+<p><dl compact>
+<p><dt><a name="Db.DB_TXN_BACKWARD_ROLL">Db.DB_TXN_BACKWARD_ROLL</a><dd>The log is being read backward to determine which transactions have been
+committed and to abort those operations that were not; undo the operation
+described by the log record.
+<p><dt><a name="Db.DB_TXN_FORWARD_ROLL">Db.DB_TXN_FORWARD_ROLL</a><dd>The log is being played forward; redo the operation described by the log
+record.
+<p><dt><a name="Db.DB_TXN_ABORT">Db.DB_TXN_ABORT</a><dd>The log is being read backward during a transaction abort; undo the
+operation described by the log record.
+<p><dt><a name="Db.DB_TXN_APPLY">Db.DB_TXN_APPLY</a><dd>The log is being applied on a replica site; redo the operation
+described by the log record.
+<p><dt><a name="Db.DB_TXN_PRINT">Db.DB_TXN_PRINT</a><dd>The log is being printed for debugging purposes; print the contents of
+this log record in the desired format.
+</dl>
+</dl>
+<p>The Db.DB_TXN_FORWARD_ROLL and Db.DB_TXN_APPLY operations
+frequently imply the same actions, redoing changes that appear in the
+log record, although if a recovery function is to be used on a
+replication client where reads may be taking place concurrently with
+the processing of incoming messages, Db.DB_TXN_APPLY operations
+should also perform appropriate locking.  The macro DB_REDO(op) checks
+that the operation is one of Db.DB_TXN_FORWARD_ROLL or
+Db.DB_TXN_APPLY, and should be used in the recovery code to refer
+to the conditions under which operations should be redone. Similarly,
+the macro DB_UNDO(op) checks if the operation is one of
+Db.DB_TXN_BACKWARD_ROLL or Db.DB_TXN_ABORT.
+<p>The DbEnv.set_app_dispatch method configures operations performed using the specified
+<a href="../api_java/dbenv_class.html">DbEnv</a> handle, not all operations performed on the underlying
+database environment.
+<p>The DbEnv.set_app_dispatch interface may not be called after the <a href="../api_java/env_open.html">DbEnv.open</a>
+interface is called.
+If the database environment already exists when
+<a href="../api_java/env_open.html">DbEnv.open</a> is called, the information specified to DbEnv.set_app_dispatch
+must be consistent with the existing environment or corruption can
+occur.
+<p>The DbEnv.set_app_dispatch method throws an exception that encapsulates a non-zero error value on
+failure.
+<h1>Errors</h1>
+<p>The DbEnv.set_app_dispatch method may fail and throw an exception encapsulating a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p>Called after <a href="../api_java/env_open.html">DbEnv.open</a> was called.
+</dl>
+<p>The DbEnv.set_app_dispatch method may fail and throw an exception for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the DbEnv.set_app_dispatch method may fail and
+throw a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>Class</h1>
+<a href="../api_java/dbenv_class.html">DbEnv</a>, <a href="../api_java/txn_class.html">DbTxn</a>
+<h1>See Also</h1>
+<a href="../api_java/env_set_tx_max.html">DbEnv.set_tx_max</a>,
+<a href="../api_java/env_set_tx_timestamp.html">DbEnv.set_tx_timestamp</a>,
+<a href="../api_java/txn_begin.html">DbEnv.txn_begin</a>,
+<a href="../api_java/txn_checkpoint.html">DbEnv.txn_checkpoint</a>,
+<a href="../api_java/txn_recover.html">DbEnv.txn_recover</a>
+and
+<a href="../api_java/txn_stat.html">DbEnv.txn_stat</a>.
+<p>
+<a href="../api_java/txn_abort.html">DbTxn.abort</a>,
+<a href="../api_java/txn_commit.html">DbTxn.commit</a>,
+<a href="../api_java/txn_discard.html">DbTxn.discard</a>,
+<a href="../api_java/txn_id.html">DbTxn.id</a>,
+<a href="../api_java/txn_prepare.html">DbTxn.prepare</a>
+and
+<a href="../api_java/txn_set_timeout.html">DbTxn.set_timeout</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!--Id: xml_close.so,v 10.5 2002/07/30 16:57:43 merrells Exp -->
+<!--Id: m4.db_close,v 10.1 2002/06/19 19:31:15 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: XmlContainer.close</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>XmlContainer.close</h1>
+</td>
+<td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+import com.sleepycat.dbxml.*;
+<p>
+public void close(int flags)
+    throws XmlException;
+</pre></h3>
+<h1>Description</h1>
+<p>The XmlContainer.close method closes the specified container.
+
+<p>The <a href="../api_java/xmlcontainer_class.html">XmlContainer</a> must be in the open state for the
+call to succeed. The container is only open after a successful
+call to the <a href="../api_java/xml_open.html">XmlContainer.open</a> method. Note that it is allowable
+to re-open a container after it has been closed.
+
+<p><dl compact>
+
+<p><dt><a name="Db.DB_NOSYNC">Db.DB_NOSYNC</a><dd>Do not flush cached information to disk.  The <a href="../api_java/db_close.html#DB_NOSYNC">Db.DB_NOSYNC</a> flag is
+a dangerous option.  It should be set only if the application is doing
+logging (with transactions) so that the database is recoverable after
+a system or application crash, or if the database is always generated
+from scratch after any system or application crash.
+<p><b>It is important to understand that flushing cached information to disk
+only minimizes the window of opportunity for corrupted data.</b> Although
+unlikely, it is possible for database corruption to happen if a system
+or application crash occurs while writing data to the database.  To
+ensure that database corruption never occurs, applications must either:
+use transactions and logging with automatic recovery; use logging and
+application-specific recovery; or edit a copy of the database, and once
+all applications using the database have successfully called
+UNREF==xm_close, atomically replace the original database with the
+updated copy.
+
+</dl>
+<p>When multiple threads are using the <a href="../api_java/xmlcontainer_class.html">XmlContainer</a> concurrently,
+only a single thread may call the XmlContainer.close method.
+<h1>Class</h1>
+<a href="../api_java/xmlcontainer_class.html">XmlContainer</a>, <a href="../api_java/xmldocument_class.html">XmlDocument</a>, <a href="../api_java/xmlquery_class.html">XmlQueryContext</a>
+<h1>See Also</h1>
+<a href="../api_java/xml_close.html">XmlContainer.close</a>,
+<a href="../api_java/xml_declare.html">XmlContainer.declareIndex</a>,
+<a href="../api_java/xml_del.html">XmlContainer.deleteDocument</a>,
+<a href="../api_java/xml_get.html">XmlContainer.getDocument</a>,
+<a href="../api_java/xml_getname.html">XmlContainer.getName</a>,
+<a href="../api_java/xml_open.html">XmlContainer.open</a>,
+<a href="../api_java/xml_put.html">XmlContainer.putDocument</a>
+and
+<a href="../api_java/xml_xpath.html">XmlContainer.queryWithXPath</a>.
+<p>
+<a href="../api_java/xmldoc_getattr.html">XmlDocument.getAttributeValue</a>,
+<a href="../api_java/xmldoc_getcont.html">XmlDocument.getContent</a>,
+<a href="../api_java/xmldoc_getid.html">XmlDocument.getID</a>,
+<a href="../api_java/xmldoc_getname.html">XmlDocument.getName</a>,
+<a href="../api_java/xmldoc_gettype.html">XmlDocument.getType</a>,
+<a href="../api_java/xmldoc_setcont.html">XmlDocument.setContent</a>,
+<a href="../api_java/xmldoc_setname.html">XmlDocument.setName</a>,
+and
+<a href="../api_java/xmldoc_settype.html">XmlDocument.setType</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>
