@@ -8,6 +8,7 @@
 	- freePrefixes wasn't initialized in runScript()
 	- fix typo in %triggerpostun generation
 	- include icons in source packages
+	- do not remove comments in scripts
 
 2.4.108 -> 2.4.109:
         - remove icons with --rmsource

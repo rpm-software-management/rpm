@@ -29,14 +29,14 @@ int parseChangelog(Spec spec)
     sb = newStringBuf();
     
     /* There are no options to %changelog */
-    if (readLine(spec, STRIP_NOTHING) > 0) {
+    if (readLine(spec, STRIP_COMMENTS) > 0) {
 	freeStringBuf(sb);
 	return PART_NONE;
     }
     
     while (! (nextPart = isPart(spec->line))) {
 	appendStringBuf(sb, spec->line);
-	if (readLine(spec, STRIP_NOTHING) > 0) {
+	if (readLine(spec, STRIP_COMMENTS) > 0) {
 	    nextPart = PART_NONE;
 	    break;
 	}

@@ -91,7 +91,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, fullName, 1);
     }
 
-    if (readLine(spec, STRIP_TRAILINGSPACE) > 0) {
+    if (readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS) > 0) {
 	nextPart = PART_NONE;
     } else {
 	while (! (nextPart = isPart(spec->line))) {
@@ -111,7 +111,7 @@ int parsePreamble(Spec spec, int initialPackage)
 		    return PART_BUILDARCHITECTURES;
 		}
 	    }
-	    if (readLine(spec, STRIP_TRAILINGSPACE) > 0) {
+	    if (readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS) > 0) {
 		nextPart = PART_NONE;
 		break;
 	    }

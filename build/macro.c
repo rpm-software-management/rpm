@@ -45,16 +45,6 @@ int expandMacros(struct MacroContext *mc, char *buf)
 	return 0;
     }
 
-    /* Check if commented out */
-    first = buf;
-    while (*first && isspace(*first)) {
-	first++;
-    }
-    if (*first == '#') {
-	buf[0] = '\0';
-	return 0;
-    }
-    
     copyFrom = buf;
     copyTo = bufA;
 

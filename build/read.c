@@ -7,6 +7,7 @@
 #include "messages.h"
 #include "macro.h"
 #include "misc.h"
+#include "read.h"
 
 static int matchTok(char *token, char *line);
 
@@ -14,9 +15,17 @@ static int matchTok(char *token, char *line);
 /*         1 - EOF     */
 /*        <0 - error   */
 
+void handleComments(char *s)
+{
+    SKIPSPACE(s);
+    if (*s == '#') {
+	*s = '\0';
+    }
+}
+
 int readLine(Spec spec, int strip)
 {
-    char *from, *to, *last, *s, *arch, *os;
+    char *from, *to, *first, *last, *s, *arch, *os;
     int match;
     char ch;
     struct ReadLevelEntry *rl;
@@ -58,7 +67,11 @@ int readLine(Spec spec, int strip)
     *to = '\0';
     spec->readPtr = from;
     
-    if (strip) {
+    if (strip & STRIP_COMMENTS) {
+	handleComments(spec->line);
+    }
+    
+    if (strip & STRIP_TRAILINGSPACE) {
 	*last = '\0';
     }
 

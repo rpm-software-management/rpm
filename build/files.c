@@ -321,6 +321,7 @@ static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
 	    return RPMERR_BADFILENAME;
 	}
 	while (fgets(buf, sizeof(buf), f)) {
+	    handleComments(buf);
 	    expandMacros(&spec->macros, buf);
 	    appendStringBuf(pkg->fileList, buf);
 	}
