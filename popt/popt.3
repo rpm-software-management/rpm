@@ -68,10 +68,12 @@ consists of a - character followed by a single alphanumeric character.
 A 
 .BR "long option" ,
 common in GNU utilities, consists of two - characters followed by a
-string made up of letters, numbers and hyphens.  Either type of option
-may be followed by an argument.  A space separates a short option from
-its arguments; either a space or an = separates a long option from an
-argument. 
+string made up of letters, numbers and hyphens.  Long options are
+optionally allowed to begin with a single -, primarily to allow command-line
+compatibility between popt applications and X toolkit applications.
+Either type of option may be followed by an argument.  A space separates a 
+short option from its arguments; either a space or an = separates a long 
+option from an argument. 
 .sp
 The popt library is highly portable and should work on any POSIX 
 platform.  The latest version is always available from: 
@@ -125,6 +127,11 @@ The rest of the valid values are shown in the following table:
 .BR POPT_ARG_LONG "   A long integer is expected       long"
 .sp
 .fi
+If \fIargInfo\fR value is logically or'd with \fBPOPT_ARGFLAG_ONEDASH\fR,
+the long argument may be given with a single - instead of two. For example,
+if \fB--longopt\fR is an option with \fBPOPT_ARGFLAG_ONEDASH\fR, is
+specified, \fB-longopt\fR is accepted as well.
+.sp
 .RI "The next element, " arg ", allows popt to automatically update "
 .RI "program variables when the option is used. If " arg " is " 
 .BR NULL ", it is ignored and popt takes no special action. " 
@@ -346,6 +353,10 @@ without modifying the list.
 All the leftover arguments are returned in a manner identical to 
 .IR argv ".  The final element in the returned array points to "
 .BR NULL ", indicating the end of the arguments.
+.sp
+.SS "5. AUTOMATIC HELP MESSAGES"
+The \fBpopt\fR library can automatically generate help messages which
+describe the options a program accepts. 
 .PP 
 .SH "ERROR HANDLING"
 All of the popt functions that can return errors return integers. 

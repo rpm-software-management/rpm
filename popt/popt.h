@@ -20,6 +20,9 @@
 					   callback data to pass */
 #define POPT_ARG_MASK		0x0000FFFF
 #define POPT_ARGFLAG_ONEDASH	0x80000000  /* allow -longoption */
+#define POPT_ARGFLAG_DOC_HIDDEN 0x40000000  /* don't show in help/usage */
+#define POPT_CBFLAG_PRE		0x80000000  /* call the callback before parse */
+#define POPT_CBFLAG_POST	0x40000000  /* call the callback after parse */
 
 #define POPT_ERROR_NOARG	-10
 #define POPT_ERROR_BADOPT	-11
@@ -62,7 +65,11 @@ typedef struct poptContext_s * poptContext;
 typedef struct poptOption * poptOption;
 
 #define POPT_CB_USE_INCLUDE_DATA	((void *) -1)
+enum poptCallbackReason { POPT_CALLBACK_REASON_PRE, 
+			  POPT_CALLBACK_REASON_POST,
+			  POPT_CALLBACK_REASON_OPTION };
 typedef void (*poptCallbackType)(poptContext con, 
+				 enum poptCallbackReason reason,
 			         const struct poptOption * opt,
 				 const char * arg, void * data);
 

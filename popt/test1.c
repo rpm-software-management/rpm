@@ -7,7 +7,8 @@
 
 #include "popt.h"
 
-void option_callback(poptContext con, const struct poptOption * opt, 
+void option_callback(poptContext con, enum poptCallbackReason reason,
+		     const struct poptOption * opt, 
 		     char * arg, void * data) {
     fprintf(stdout, "callback: %c %s %s ", opt->val, (char *) data, arg);    
 }
@@ -41,6 +42,8 @@ int main(int argc, char ** argv) {
 	{ "arg3", '3', POPT_ARG_INT, &arg3, 0, "A third argument", "ANARG" },
 	{ "shortoption", '\0', POPT_ARGFLAG_ONEDASH, &shortopt, 0,
 		"Needs a single -", NULL },
+	{ "hidden", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, NULL, 0, 
+		"This shouldn't show up", NULL },
 	{ "unused", '\0', POPT_ARG_STRING, NULL, 0, 
 	    "Unused option for help testing", "UNUSED" },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreArgs, 0, NULL },

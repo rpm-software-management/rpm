@@ -41,6 +41,25 @@ void poptSetExecPath(poptContext con, const char * path, int allowAbsolute) {
     con->execAbsolute = allowAbsolute;
 }
 
+static void invokeCallbacks(poptContext con, const struct poptOption * table,
+			    int post) {
+    const struct poptOption * opt = table;
+    poptCallbackType cb;
+    
+    while (opt->longName || opt->shortName || opt->arg) {
+	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
+	    invokeCallbacks(con, opt->arg, post);
+	} else if (((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK) &&
+		   ((!post && (opt->argInfo & POPT_CBFLAG_PRE)) ||
+		    ( post && (opt->argInfo & POPT_CBFLAG_POST)))) {
+	    cb = opt->arg;
+	    cb(con, post ? POPT_CALLBACK_REASON_POST : POPT_CALLBACK_REASON_PRE,
+	       NULL, NULL, opt->descrip);
+	}
+	opt++;
+    }
+}
+
 poptContext poptGetContext(char * name, int argc, char ** argv, 
 			   const struct poptOption * options, int flags) {
     poptContext con = malloc(sizeof(*con));
@@ -66,6 +85,8 @@ poptContext poptGetContext(char * name, int argc, char ** argv,
     
     if (name)
 	con->appName = strcpy(malloc(strlen(name) + 1), name);
+
+    invokeCallbacks(con, con->options, 0);
 
     return con;
 }
@@ -264,6 +285,7 @@ int poptGetNextOpt(poptContext con) {
 		&& con->os > con->optionStack)
 	    con->os--;
 	if (!con->os->nextCharArg && con->os->next == con->os->argc) {
+	    invokeCallbacks(con, con->options, 1);
 	    if (con->doExec) execCommand(con);
 	    return -1;
 	}
@@ -391,7 +413,7 @@ int poptGetNextOpt(poptContext con) {
 	}
 
 	if (cb)
-	    cb(con, opt, con->os->nextArg, cbData);
+	    cb(con, POPT_CALLBACK_REASON_OPTION, opt, con->os->nextArg, cbData);
 	else if (opt->val) 
 	    done = 1;
 

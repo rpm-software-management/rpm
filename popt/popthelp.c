@@ -14,7 +14,8 @@
 #include "popt.h"
 #include "poptint.h"
 
-static void displayArgs(poptContext con, struct poptOption * key, 
+static void displayArgs(poptContext con, enum poptCallbackReason foo, 
+			struct poptOption * key, 
 			const char * arg, void * data) {
     if (key->shortName== '?')
 	poptPrintHelp(con, stderr, 0);
@@ -94,7 +95,8 @@ static int maxArgWidth(const struct poptOption * opt) {
     while (opt->longName || opt->shortName || opt->arg) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    this = maxArgWidth(opt->arg);
-	} else {
+	    if (this > max) max = this;
+	} else if (!(opt->argInfo & POPT_ARGFLAG_DOC_HIDDEN)) {
 	    this = opt->shortName ? 2 : 0;
 	    if (opt->longName) {
 		if (this) this += 2;
@@ -104,9 +106,8 @@ static int maxArgWidth(const struct poptOption * opt) {
 	    s = getArgDescrip(opt);
 	    if (s)
 		this += strlen(s) + 1;
+	    if (this > max) max = this;
 	}
-
-	if (this > max) max = this;
 
 	opt++;
     }
@@ -120,7 +121,8 @@ static void singleTableHelp(FILE * f, const struct poptOption * table,
 
     opt = table;
     while (opt->longName || opt->shortName || opt->arg) {
-	if (opt->longName || opt->shortName)
+	if ((opt->longName || opt->shortName) && 
+	    !(opt->argInfo & POPT_ARGFLAG_DOC_HIDDEN))
 	    singleOptionHelp(f, left, opt);
 	opt++;
     }
@@ -204,7 +206,8 @@ int singleTableUsage(FILE * f, int cursor, const struct poptOption * table) {
     
     opt = table;
     while (opt->longName || opt->shortName || opt->arg) {
-	if (opt->longName || opt->shortName)
+	if ((opt->longName || opt->shortName) && 
+	    !(opt->argInfo & POPT_ARGFLAG_DOC_HIDDEN))
 	    cursor = singleOptionUsage(f, cursor, opt);
 	else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) 
 	    cursor = singleTableUsage(f, cursor, opt->arg);
