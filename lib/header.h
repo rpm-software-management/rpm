@@ -28,9 +28,9 @@ typedef unsigned int uint_32;
 typedef struct headerToken *Header;
 
 /* read and write a header from a file */
-Header readHeader(FILE *f);
+Header readHeader(int fd);
 Header mmapHeader(int fd, long offset);
-void writeHeader(FILE *f, Header h);
+void writeHeader(int fd, Header h);
 
 /* load and unload a header from a chunk of memory */
 Header loadHeader(void *p);

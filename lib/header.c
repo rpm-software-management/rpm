@@ -4,10 +4,12 @@
  */
 
 #include <asm/byteorder.h>
-#include <sys/mman.h>
 #include <ctype.h>
-#include <string.h>
 #include <malloc.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
 #include "header.h"
 
 #define INDEX_MALLOC_SIZE 8
@@ -37,23 +39,23 @@ struct indexEntry {
 
 /********************************************************************/
 
-void writeHeader(FILE *f, Header h)
+void writeHeader(int fd, Header h)
 {
   int_32 l;
 
   /* First write out the length of the index (count of index entries) */
   l = htonl(h->entries_used);
-  fwrite(&l, sizeof(l), 1, f);
+  write(fd, &l, sizeof(l));
 
   /* And the length of the data (number of bytes) */
   l = htonl(h->data_used);
-  fwrite(&l, sizeof(l), 1, f);
+  write(fd, &l, sizeof(l));
 
   /* Now write the index */
-  fwrite(h->index, sizeof(struct indexEntry), h->entries_used, f);
+  write(fd, h->index, sizeof(struct indexEntry) * h->entries_used);
 
   /* Finally write the data */
-  fwrite(h->data, h->data_used, 1, f);
+  write(fd, h->data, h->data_used);
 }
 
 Header mmapHeader(int fd, long offset)
@@ -90,7 +92,7 @@ Header mmapHeader(int fd, long offset)
   return h;
 }
 
-Header readHeader(FILE *f)
+Header readHeader(int fd)
 {
   int_32 il, dl;
 
@@ -98,24 +100,24 @@ Header readHeader(FILE *f)
     malloc(sizeof(struct headerToken));
 
   /* First read the index length (count of index entries) */
-  fread(&il, sizeof(il), 1, f);
+  read(fd, &il, sizeof(il));
   il = ntohl(il);
 
   /* Then read the data length (number of bytes) */
-  fread(&dl, sizeof(dl), 1, f);
+  read(fd, &dl, sizeof(dl));
   dl = ntohl(dl);
 
   /* Next read the index */
   h->index = malloc(il * sizeof(struct indexEntry));
   h->entries_malloced = il;
   h->entries_used = il;
-  fread(h->index, sizeof(struct indexEntry), il, f);
+  read(fd, h->index, sizeof(struct indexEntry) * il);
 
   /* Finally, read the data */
   h->data = malloc(dl);
   h->data_malloced = dl;
   h->data_used = dl;
-  fread(h->data, dl, 1, f);
+  read(fd, h->data, dl);
 
   h->mutable = 0;
   
