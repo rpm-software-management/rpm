@@ -651,7 +651,7 @@ static int writeFile(int fd, struct stat sb, struct cpioFileMapping * map,
     if (map->mapFlags & CPIO_MAP_GID)
 	sb.st_gid = map->finalGid;
 
-    if (!writeData) {
+    if (!writeData || S_ISDIR(sb.st_mode)) {
 	sb.st_size = 0;
     } else if (S_ISLNK(sb.st_mode)) {
 	/* While linux puts the size of a symlink in the st_size field,
@@ -788,11 +788,18 @@ int cpioBuildArchive(int fd, struct cpioFileMapping * mappings,
     struct hardLink hlinkList = { NULL };
     struct hardLink * hlink, * parent;
 
+    hlinkList.next = NULL;
+
     for (i = 0; i < numMappings; i++) {
-	if (lstat(mappings[i].fsPath, &sb)) 
+	if (mappings[i].mapFlags & CPIO_FOLLOW_SYMLINKS)
+	    rc = stat(mappings[i].fsPath, &sb);
+	else
+	    rc = lstat(mappings[i].fsPath, &sb);
+
+	if (rc)
 	    return CPIO_STAT_FAILED;
 
-	if (sb.st_nlink > 1) {
+	if (!S_ISDIR(sb.st_mode) && sb.st_nlink > 1) {
 	    hlink = hlinkList.next;
 	    while (hlink && 
 		   (hlink->dev != sb.st_dev || hlink->inode != sb.st_ino))

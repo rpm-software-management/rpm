@@ -27,10 +27,11 @@
    it has some behaviors which are more to RPM's liking. I tried to document
    them inline in cpio.c, but I may have missed some. */
 
-#define CPIO_MAP_PATH	(1 << 0)
-#define CPIO_MAP_MODE	(1 << 1)
-#define CPIO_MAP_UID	(1 << 2)
-#define CPIO_MAP_GID	(1 << 3)
+#define CPIO_MAP_PATH		(1 << 0)
+#define CPIO_MAP_MODE		(1 << 1)
+#define CPIO_MAP_UID		(1 << 2)
+#define CPIO_MAP_GID		(1 << 3)
+#define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
 
 struct cpioFileMapping {
     char * archivePath;

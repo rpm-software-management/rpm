@@ -213,7 +213,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     numMappings = 0;
     while (chptr && *chptr) {
 	cpioList[numMappings].fsPath = chptr;
-	cpioList[numMappings++].mapFlags = 0;
+	cpioList[numMappings++].mapFlags = tempdir ? CPIO_FOLLOW_SYMLINKS : 0;
 	chptr = strchr(chptr, '\n');
 	if (chptr) *chptr++ = '\0';
     }
@@ -276,7 +276,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     }
 
     if (rc) {
-	rpmError(RPMERR_CPIO, "cpio failed");
+	rpmError(RPMERR_CPIO, "cpio failed: %d", rc);
 	return 1;
     }
 
