@@ -193,7 +193,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMVAR_PACKAGER                 28
 #define RPMVAR_FTPPROXY                 29
 #define RPMVAR_TMPPATH                  30
-#define RPMVAR_CPIOBIN                  31
+/* #define RPMVAR_CPIOBIN                  31 -- No longer used */
 #define RPMVAR_FTPPORT			32
 #define RPMVAR_NETSHAREDPATH		33
 #define RPMVAR_DEFAULTDOCDIR		34

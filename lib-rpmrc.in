@@ -4,7 +4,6 @@
 dbpath:		@varprefix@/lib/rpm
 topdir:		@prefix@/src/redhat
 tmppath:	@tmpdir@
-cpiobin:	@CPIOBIN@
 gzipbin:	@GZIPBIN@
 defaultdocdir:  @prefix@/doc
 fixperms:	@FIXPERMS@

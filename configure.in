@@ -47,29 +47,6 @@ AC_PROG_RANLIB
 AC_CHECK_TOOL(AR, ar, :)
 
 if test "$cross_compiling" != "yes"; then
-    AC_MSG_CHECKING(GNU cpio...)
-    if test -z "$CPIOBIN"; then
-	    oldifs="$IFS"
-	    IFS=:
-	    for n in $PATH:/opt/gnu/bin; do
-		    if test -f $n/cpio; then
-			    $n/cpio --quiet -o < /dev/null >/dev/null 2>/dev/null
-			    if test "$?" = "0"; then
-				    CPIOBIN="$n/cpio";
-			    fi
-		    fi
-	    done
-	    IFS="$oldifs"
-    fi
-
-    if test -z "$CPIOBIN"; then
-	    AC_MSG_RESULT(no)
-	    AC_MSG_WARN(RPM will not work without GNU cpio 2.4.2 or later.)
-	    CPIOBIN="cpio"
-    else
-	    AC_MSG_RESULT(yes)
-    fi
-
     AC_MSG_CHECKING(GNU gzip...)
     if test -z "$GZIPBIN"; then
 	    oldifs="$IFS"
@@ -77,6 +54,7 @@ if test "$cross_compiling" != "yes"; then
 	    for n in $PATH:/opt/gnu/bin; do
 		    if test -f $n/gzip; then
 			    GZIPBIN="$n/gzip";
+			    break
 		    fi
 	    done
 	    IFS="$oldifs"
@@ -403,7 +381,6 @@ AC_SUBST(LIBDL)
 AC_SUBST(PO)
 AC_SUBST(GETTEXTSTUB)
 AC_SUBST(RPM)
-AC_SUBST(CPIOBIN)
 AC_SUBST(GZIPBIN)
 AC_SUBST(FIXPERMS)
 
