@@ -34,7 +34,7 @@ static rpmlock *rpmlock_new(const char *rootdir)
 	if (lock) {
 		mode_t oldmask = umask(022);
 		char *path = (char *)malloc(strlen(rootdir)+
-					    strlen(RPMLOCK_FILE)+1);
+					    strlen(RPMLOCK_FILE)+2);
 		if (!path) {
 			free(lock);
 			return NULL;
