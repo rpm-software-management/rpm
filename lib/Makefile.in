@@ -1,7 +1,7 @@
 LIBS = -lgdbm #-lefence
 
 LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o falloc.o \
-	     convertdb.o oldrpmfile.o
+	     convertdb.o oldrpmfile.o var.o
 LIBRPM = librpm.a
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
