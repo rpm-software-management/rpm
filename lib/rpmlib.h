@@ -236,97 +236,97 @@ typedef enum rpmTag_e {
 /* the md5 sum was broken *twice* on big endian machines */
 /* XXX 2nd underscore prevents tagTable generation */
     RPMTAG_SIG_BASE		= HEADER_SIGBASE,
-    RPMTAG_SIGSIZE		= RPMTAG_SIG_BASE+1,
+    RPMTAG_SIGSIZE		= RPMTAG_SIG_BASE+1,	/* i */
     RPMTAG_SIGLEMD5_1		= RPMTAG_SIG_BASE+2,	/*!< internal - obsolete */
-    RPMTAG_SIGPGP		= RPMTAG_SIG_BASE+3,
+    RPMTAG_SIGPGP		= RPMTAG_SIG_BASE+3,	/* x */
     RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,	/*!< internal - obsolete */
-    RPMTAG_SIGMD5	        = RPMTAG_SIG_BASE+5,
-#define	RPMTAG_PKGID	RPMTAG_SIGMD5
-    RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,
+    RPMTAG_SIGMD5	        = RPMTAG_SIG_BASE+5,	/* x */
+#define	RPMTAG_PKGID	RPMTAG_SIGMD5			/* x */
+    RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,	/* x */
     RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/*!< internal - obsolete */
 
     RPMTAG_BADSHA1_1		= RPMTAG_SIG_BASE+8,	/*!< internal - obsolete */
     RPMTAG_BADSHA1_2		= RPMTAG_SIG_BASE+9,	/*!< internal - obsolete */
-    RPMTAG_PUBKEYS		= RPMTAG_SIG_BASE+10,
-    RPMTAG_DSAHEADER		= RPMTAG_SIG_BASE+11,
-    RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,
-    RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+13,
-#define	RPMTAG_HDRID	RPMTAG_SHA1HEADER
+    RPMTAG_PUBKEYS		= RPMTAG_SIG_BASE+10,	/* s[] */
+    RPMTAG_DSAHEADER		= RPMTAG_SIG_BASE+11,	/* x */
+    RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,	/* x */
+    RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+13,	/* s */
+#define	RPMTAG_HDRID	RPMTAG_SHA1HEADER	/* s */
 
-    RPMTAG_NAME  		= 1000,
-#define	RPMTAG_N	RPMTAG_NAME
-    RPMTAG_VERSION		= 1001,
-#define	RPMTAG_V	RPMTAG_VERSION
-    RPMTAG_RELEASE		= 1002,
-#define	RPMTAG_R	RPMTAG_RELEASE
-    RPMTAG_EPOCH   		= 1003,
-#define	RPMTAG_E	RPMTAG_EPOCH
-#define	RPMTAG_SERIAL	RPMTAG_EPOCH	/* backward comaptibility */
-    RPMTAG_SUMMARY		= 1004,
-    RPMTAG_DESCRIPTION		= 1005,
-    RPMTAG_BUILDTIME		= 1006,
-    RPMTAG_BUILDHOST		= 1007,
-    RPMTAG_INSTALLTIME		= 1008,
-    RPMTAG_SIZE			= 1009,
-    RPMTAG_DISTRIBUTION		= 1010,
-    RPMTAG_VENDOR		= 1011,
-    RPMTAG_GIF			= 1012,
-    RPMTAG_XPM			= 1013,
-    RPMTAG_LICENSE		= 1014,
-#define	RPMTAG_COPYRIGHT RPMTAG_LICENSE	/* backward comaptibility */
-    RPMTAG_PACKAGER		= 1015,
-    RPMTAG_GROUP		= 1016,
+    RPMTAG_NAME  		= 1000,	/* s */
+#define	RPMTAG_N	RPMTAG_NAME	/* s */
+    RPMTAG_VERSION		= 1001,	/* s */
+#define	RPMTAG_V	RPMTAG_VERSION	/* s */
+    RPMTAG_RELEASE		= 1002,	/* s */
+#define	RPMTAG_R	RPMTAG_RELEASE	/* s */
+    RPMTAG_EPOCH   		= 1003,	/* i */
+#define	RPMTAG_E	RPMTAG_EPOCH	/* i */
+#define	RPMTAG_SERIAL	RPMTAG_EPOCH	/* i backward comaptibility */
+    RPMTAG_SUMMARY		= 1004,	/* s{} */
+    RPMTAG_DESCRIPTION		= 1005,	/* s{} */
+    RPMTAG_BUILDTIME		= 1006,	/* i */
+    RPMTAG_BUILDHOST		= 1007,	/* s */
+    RPMTAG_INSTALLTIME		= 1008,	/* i */
+    RPMTAG_SIZE			= 1009,	/* i */
+    RPMTAG_DISTRIBUTION		= 1010,	/* s */
+    RPMTAG_VENDOR		= 1011,	/* s */
+    RPMTAG_GIF			= 1012,	/* x */
+    RPMTAG_XPM			= 1013,	/* x */
+    RPMTAG_LICENSE		= 1014,	/* s */
+#define	RPMTAG_COPYRIGHT RPMTAG_LICENSE	/* s backward comaptibility */
+    RPMTAG_PACKAGER		= 1015,	/* s */
+    RPMTAG_GROUP		= 1016,	/* s{} */
 /*@-enummemuse@*/
-    RPMTAG_CHANGELOG		= 1017, /*!< internal */
+    RPMTAG_CHANGELOG		= 1017, /*!< s[] internal */
 /*@=enummemuse@*/
-    RPMTAG_SOURCE		= 1018,
-    RPMTAG_PATCH		= 1019,
-    RPMTAG_URL			= 1020,
-    RPMTAG_OS			= 1021,
-    RPMTAG_ARCH			= 1022,
-    RPMTAG_PREIN		= 1023,
-    RPMTAG_POSTIN		= 1024,
-    RPMTAG_PREUN		= 1025,
-    RPMTAG_POSTUN		= 1026,
-    RPMTAG_OLDFILENAMES		= 1027, /* obsolete */
-    RPMTAG_FILESIZES		= 1028,
-    RPMTAG_FILESTATES		= 1029,
-    RPMTAG_FILEMODES		= 1030,
+    RPMTAG_SOURCE		= 1018,	/* s[] */
+    RPMTAG_PATCH		= 1019,	/* s[] */
+    RPMTAG_URL			= 1020,	/* s */
+    RPMTAG_OS			= 1021,	/* s legacy used int */
+    RPMTAG_ARCH			= 1022,	/* s legacy used int */
+    RPMTAG_PREIN		= 1023,	/* s */
+    RPMTAG_POSTIN		= 1024,	/* s */
+    RPMTAG_PREUN		= 1025,	/* s */
+    RPMTAG_POSTUN		= 1026,	/* s */
+    RPMTAG_OLDFILENAMES		= 1027, /* s[] obsolete */
+    RPMTAG_FILESIZES		= 1028,	/* i */
+    RPMTAG_FILESTATES		= 1029, /* c */
+    RPMTAG_FILEMODES		= 1030,	/* h */
     RPMTAG_FILEUIDS		= 1031, /*!< internal */
     RPMTAG_FILEGIDS		= 1032, /*!< internal */
-    RPMTAG_FILERDEVS		= 1033,
-    RPMTAG_FILEMTIMES		= 1034,
-    RPMTAG_FILEMD5S		= 1035,
-    RPMTAG_FILELINKTOS		= 1036,
-    RPMTAG_FILEFLAGS		= 1037,
+    RPMTAG_FILERDEVS		= 1033,	/* h */
+    RPMTAG_FILEMTIMES		= 1034, /* i */
+    RPMTAG_FILEMD5S		= 1035,	/* s[] */
+    RPMTAG_FILELINKTOS		= 1036,	/* s[] */
+    RPMTAG_FILEFLAGS		= 1037,	/* i */
 /*@-enummemuse@*/
     RPMTAG_ROOT			= 1038, /*!< internal - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_FILEUSERNAME		= 1039,
-    RPMTAG_FILEGROUPNAME	= 1040,
+    RPMTAG_FILEUSERNAME		= 1039,	/* s[] */
+    RPMTAG_FILEGROUPNAME	= 1040,	/* s[] */
 /*@-enummemuse@*/
     RPMTAG_EXCLUDE		= 1041, /*!< internal - obsolete */
     RPMTAG_EXCLUSIVE		= 1042, /*!< internal - obsolete */
 /*@=enummemuse@*/
     RPMTAG_ICON			= 1043,
-    RPMTAG_SOURCERPM		= 1044,
-    RPMTAG_FILEVERIFYFLAGS	= 1045,
-    RPMTAG_ARCHIVESIZE		= 1046,
-    RPMTAG_PROVIDENAME		= 1047,
-#define	RPMTAG_PROVIDES RPMTAG_PROVIDENAME
-#define	RPMTAG_P	RPMTAG_PROVIDENAME
-    RPMTAG_REQUIREFLAGS		= 1048,
-    RPMTAG_REQUIRENAME		= 1049,
-#define	RPMTAG_REQUIRES RPMTAG_REQUIRENAME
-#define	RPMTAG_D	RPMTAG_REQUIRENAME
-    RPMTAG_REQUIREVERSION	= 1050,
+    RPMTAG_SOURCERPM		= 1044,	/* s */
+    RPMTAG_FILEVERIFYFLAGS	= 1045,	/* i */
+    RPMTAG_ARCHIVESIZE		= 1046,	/* i */
+    RPMTAG_PROVIDENAME		= 1047,	/* s[] */
+#define	RPMTAG_PROVIDES RPMTAG_PROVIDENAME	/* s[] */
+#define	RPMTAG_P	RPMTAG_PROVIDENAME	/* s[] */
+    RPMTAG_REQUIREFLAGS		= 1048,	/* i */
+    RPMTAG_REQUIRENAME		= 1049,	/* s[] */
+#define	RPMTAG_REQUIRES RPMTAG_REQUIRENAME	/* s[] */
+#define	RPMTAG_D	RPMTAG_REQUIRENAME	/* s[] */
+    RPMTAG_REQUIREVERSION	= 1050,	/* s[] */
     RPMTAG_NOSOURCE		= 1051, /*!< internal */
     RPMTAG_NOPATCH		= 1052, /*!< internal */
-    RPMTAG_CONFLICTFLAGS	= 1053,
-    RPMTAG_CONFLICTNAME		= 1054,
-#define	RPMTAG_CONFLICTS RPMTAG_CONFLICTNAME
-#define	RPMTAG_C	RPMTAG_CONFLICTNAME
-    RPMTAG_CONFLICTVERSION	= 1055,
+    RPMTAG_CONFLICTFLAGS	= 1053, /* i */
+    RPMTAG_CONFLICTNAME		= 1054,	/* s[] */
+#define	RPMTAG_CONFLICTS RPMTAG_CONFLICTNAME	/* s[] */
+#define	RPMTAG_C	RPMTAG_CONFLICTNAME	/* s[] */
+    RPMTAG_CONFLICTVERSION	= 1055,	/* s[] */
     RPMTAG_DEFAULTPREFIX	= 1056, /*!< internal - deprecated */
     RPMTAG_BUILDROOT		= 1057, /*!< internal */
     RPMTAG_INSTALLPREFIX	= 1058, /*!< internal - deprecated */
@@ -335,37 +335,37 @@ typedef enum rpmTag_e {
     RPMTAG_EXCLUSIVEARCH	= 1061,
     RPMTAG_EXCLUSIVEOS		= 1062,
     RPMTAG_AUTOREQPROV		= 1063, /*!< internal */
-    RPMTAG_RPMVERSION		= 1064,
-    RPMTAG_TRIGGERSCRIPTS	= 1065,
-    RPMTAG_TRIGGERNAME		= 1066,
-    RPMTAG_TRIGGERVERSION	= 1067,
-    RPMTAG_TRIGGERFLAGS		= 1068,
-    RPMTAG_TRIGGERINDEX		= 1069,
-    RPMTAG_VERIFYSCRIPT		= 1079,
-    RPMTAG_CHANGELOGTIME	= 1080,
-    RPMTAG_CHANGELOGNAME	= 1081,
-    RPMTAG_CHANGELOGTEXT	= 1082,
+    RPMTAG_RPMVERSION		= 1064,	/* s */
+    RPMTAG_TRIGGERSCRIPTS	= 1065,	/* s[] */
+    RPMTAG_TRIGGERNAME		= 1066,	/* s[] */
+    RPMTAG_TRIGGERVERSION	= 1067,	/* s[] */
+    RPMTAG_TRIGGERFLAGS		= 1068,	/* i */
+    RPMTAG_TRIGGERINDEX		= 1069,	/* i */
+    RPMTAG_VERIFYSCRIPT		= 1079,	/* s */
+    RPMTAG_CHANGELOGTIME	= 1080,	/* i */
+    RPMTAG_CHANGELOGNAME	= 1081,	/* s[] */
+    RPMTAG_CHANGELOGTEXT	= 1082,	/* s[] */
 /*@-enummemuse@*/
     RPMTAG_BROKENMD5		= 1083, /*!< internal - obsolete */
 /*@=enummemuse@*/
     RPMTAG_PREREQ		= 1084, /*!< internal */
-    RPMTAG_PREINPROG		= 1085,
-    RPMTAG_POSTINPROG		= 1086,
-    RPMTAG_PREUNPROG		= 1087,
-    RPMTAG_POSTUNPROG		= 1088,
+    RPMTAG_PREINPROG		= 1085,	/* s */
+    RPMTAG_POSTINPROG		= 1086,	/* s */
+    RPMTAG_PREUNPROG		= 1087,	/* s */
+    RPMTAG_POSTUNPROG		= 1088,	/* s */
     RPMTAG_BUILDARCHS		= 1089,
-    RPMTAG_OBSOLETENAME		= 1090,
-#define	RPMTAG_OBSOLETES RPMTAG_OBSOLETENAME
-#define	RPMTAG_O	RPMTAG_OBSOLETENAME
-    RPMTAG_VERIFYSCRIPTPROG	= 1091,
-    RPMTAG_TRIGGERSCRIPTPROG	= 1092,
+    RPMTAG_OBSOLETENAME		= 1090,	/* s[] */
+#define	RPMTAG_OBSOLETES RPMTAG_OBSOLETENAME	/* s[] */
+#define	RPMTAG_O	RPMTAG_OBSOLETENAME	/* s[] */
+    RPMTAG_VERIFYSCRIPTPROG	= 1091,	/* s */
+    RPMTAG_TRIGGERSCRIPTPROG	= 1092,	/* s */
     RPMTAG_DOCDIR		= 1093, /*!< internal */
-    RPMTAG_COOKIE		= 1094,
-    RPMTAG_FILEDEVICES		= 1095,
-    RPMTAG_FILEINODES		= 1096,
-    RPMTAG_FILELANGS		= 1097,
-    RPMTAG_PREFIXES		= 1098,
-    RPMTAG_INSTPREFIXES		= 1099,
+    RPMTAG_COOKIE		= 1094,	/* s */
+    RPMTAG_FILEDEVICES		= 1095,	/* i */
+    RPMTAG_FILEINODES		= 1096,	/* i */
+    RPMTAG_FILELANGS		= 1097,	/* s[] */
+    RPMTAG_PREFIXES		= 1098,	/* s[] */
+    RPMTAG_INSTPREFIXES		= 1099,	/* s[] */
     RPMTAG_TRIGGERIN		= 1100, /*!< internal */
     RPMTAG_TRIGGERUN		= 1101, /*!< internal */
     RPMTAG_TRIGGERPOSTUN	= 1102, /*!< internal */
@@ -374,7 +374,7 @@ typedef enum rpmTag_e {
 /*@-enummemuse@*/
     RPMTAG_CAPABILITY		= 1105, /*!< internal - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_SOURCEPACKAGE	= 1106, /*!< src.rpm header marker */
+    RPMTAG_SOURCEPACKAGE	= 1106, /*!< i src.rpm header marker */
 /*@-enummemuse@*/
     RPMTAG_OLDORIGFILENAMES	= 1107, /*!< internal - obsolete */
 /*@=enummemuse@*/
@@ -384,51 +384,51 @@ typedef enum rpmTag_e {
 /*@-enummemuse@*/
     RPMTAG_BUILDMACROS		= 1111, /*!< internal - unused */
 /*@=enummemuse@*/
-    RPMTAG_PROVIDEFLAGS		= 1112,
-    RPMTAG_PROVIDEVERSION	= 1113,
-    RPMTAG_OBSOLETEFLAGS	= 1114,
-    RPMTAG_OBSOLETEVERSION	= 1115,
-    RPMTAG_DIRINDEXES		= 1116,
-    RPMTAG_BASENAMES		= 1117,
-    RPMTAG_DIRNAMES		= 1118,
+    RPMTAG_PROVIDEFLAGS		= 1112,	/* i */
+    RPMTAG_PROVIDEVERSION	= 1113,	/* s[] */
+    RPMTAG_OBSOLETEFLAGS	= 1114,	/* i */
+    RPMTAG_OBSOLETEVERSION	= 1115,	/* s[] */
+    RPMTAG_DIRINDEXES		= 1116,	/* i */
+    RPMTAG_BASENAMES		= 1117,	/* s[] */
+    RPMTAG_DIRNAMES		= 1118,	/* s[] */
     RPMTAG_ORIGDIRINDEXES	= 1119, /*!< internal */
     RPMTAG_ORIGBASENAMES	= 1120, /*!< internal */
     RPMTAG_ORIGDIRNAMES		= 1121, /*!< internal */
-    RPMTAG_OPTFLAGS		= 1122,
-    RPMTAG_DISTURL		= 1123,
-    RPMTAG_PAYLOADFORMAT	= 1124,
-    RPMTAG_PAYLOADCOMPRESSOR	= 1125,
-    RPMTAG_PAYLOADFLAGS		= 1126,
-    RPMTAG_INSTALLCOLOR		= 1127, /*!< transaction color when installed */
-    RPMTAG_INSTALLTID		= 1128,
-    RPMTAG_REMOVETID		= 1129,
+    RPMTAG_OPTFLAGS		= 1122,	/* s */
+    RPMTAG_DISTURL		= 1123,	/* s */
+    RPMTAG_PAYLOADFORMAT	= 1124,	/* s */
+    RPMTAG_PAYLOADCOMPRESSOR	= 1125,	/* s */
+    RPMTAG_PAYLOADFLAGS		= 1126,	/* s */
+    RPMTAG_INSTALLCOLOR		= 1127, /*!< i transaction color when installed */
+    RPMTAG_INSTALLTID		= 1128,	/* i */
+    RPMTAG_REMOVETID		= 1129,	/* i */
 /*@-enummemuse@*/
     RPMTAG_SHA1RHN		= 1130, /*!< internal - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_RHNPLATFORM		= 1131,
-    RPMTAG_PLATFORM		= 1132,
+    RPMTAG_RHNPLATFORM		= 1131,	/* s */
+    RPMTAG_PLATFORM		= 1132,	/* s */
     RPMTAG_PATCHESNAME		= 1133, /*!< placeholder (SuSE) */
     RPMTAG_PATCHESFLAGS		= 1134, /*!< placeholder (SuSE) */
     RPMTAG_PATCHESVERSION	= 1135, /*!< placeholder (SuSE) */
-    RPMTAG_CACHECTIME		= 1136,
-    RPMTAG_CACHEPKGPATH		= 1137,
-    RPMTAG_CACHEPKGSIZE		= 1138,
-    RPMTAG_CACHEPKGMTIME	= 1139,
-    RPMTAG_FILECOLORS		= 1140,
-    RPMTAG_FILECLASS		= 1141,
-    RPMTAG_CLASSDICT		= 1142,
-    RPMTAG_FILEDEPENDSX		= 1143,
-    RPMTAG_FILEDEPENDSN		= 1144,
-    RPMTAG_DEPENDSDICT		= 1145,
-    RPMTAG_SOURCEPKGID		= 1146,
-    RPMTAG_FILECONTEXTS		= 1147,
-    RPMTAG_FSCONTEXTS		= 1148,	/*!< extension */
-    RPMTAG_RECONTEXTS		= 1149,	/*!< extension */
-    RPMTAG_POLICIES		= 1150,	/*!< selinux *.te policy file. */
-    RPMTAG_PRETRANS		= 1151,
-    RPMTAG_POSTTRANS		= 1152,
-    RPMTAG_PRETRANSPROG		= 1153,
-    RPMTAG_POSTTRANSPROG	= 1154,
+    RPMTAG_CACHECTIME		= 1136,	/* i */
+    RPMTAG_CACHEPKGPATH		= 1137,	/* s */
+    RPMTAG_CACHEPKGSIZE		= 1138,	/* i */
+    RPMTAG_CACHEPKGMTIME	= 1139,	/* i */
+    RPMTAG_FILECOLORS		= 1140,	/* i */
+    RPMTAG_FILECLASS		= 1141,	/* i */
+    RPMTAG_CLASSDICT		= 1142,	/* s[] */
+    RPMTAG_FILEDEPENDSX		= 1143,	/* i */
+    RPMTAG_FILEDEPENDSN		= 1144,	/* i */
+    RPMTAG_DEPENDSDICT		= 1145,	/* s[] */
+    RPMTAG_SOURCEPKGID		= 1146,	/* s */
+    RPMTAG_FILECONTEXTS		= 1147,	/* s[] */
+    RPMTAG_FSCONTEXTS		= 1148,	/*!< s[] extension */
+    RPMTAG_RECONTEXTS		= 1149,	/*!< s[] extension */
+    RPMTAG_POLICIES		= 1150,	/*!< s[] selinux *.te policy file. */
+    RPMTAG_PRETRANS		= 1151,	/* s */
+    RPMTAG_POSTTRANS		= 1152,	/* s */
+    RPMTAG_PRETRANSPROG		= 1153,	/* s */
+    RPMTAG_POSTTRANSPROG	= 1154,	/* s */
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/
