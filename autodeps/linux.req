@@ -25,3 +25,17 @@ for f in $scriptlist; do
 	head -1 $f | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1
     fi
 done | sort -u
+
+for f in $liblist $exelist ; do
+    objdump -p $f | awk '
+	BEGIN { START=0; LIBNAME=""; }
+	/Version References:/ { START=1; }
+	/required from/ && (START==1) {
+	    sub(/:/, "", $3);
+	    LIBNAME=$3;
+	}
+	(START==1) && (LIBNAME!="") && ($4!="") { print LIBNAME "(" $4 ")"; }
+	/^$/ { START=0; }
+    '
+done
+

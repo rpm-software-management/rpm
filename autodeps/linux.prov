@@ -11,6 +11,16 @@ for f in $filelist; do
     if [ "$soname" != "" ]; then
         if [ ! -L $f ]; then
             echo $soname
+	    objdump -p $f | awk '
+		BEGIN { START=0 ; }
+		/Version definitions:/ { START=1; }
+		/^[0-9]/ && (START==1) { print $4; }
+		/^$/ { START=0; }
+	    ' | \
+		grep -v $soname | \
+		while read symbol ; do
+		    echo "$soname($symbol)"
+		done
 	fi
     else
 	echo ${f##*/}
