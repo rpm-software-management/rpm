@@ -1,0 +1,35 @@
+.\" rpm2cpio - Converts Red Hat Package (RPM) to cpio archive
+.TH rpm 8 "15 Sept 1995" "Red Hat Software" "Red Hat Commercial Linux"
+.\"0 .SH NAME
+.SH 名前
+.\"0 rpm2cpio \- Converts Red Hat Packge (RPM) to cpio archive
+rpm2cpio \- Red Hat Package (RPM)形式から cpio アーカイブ形式への変換
+.\"0 .SH SYNOPSIS
+.SH 書式
+\fBrpm2cpio\fP [filename] 
+.\"0 .SH DESCRIPTION
+.SH 説明
+.\"0 \fBrpm2cpio\fP converts the .rpm file specified as it's sole argument
+.\"0 to a cpio archive on standard out. If no argument is given, a rpm stream
+.\"0 is read from standard in.
+\fBrpm2cpio\fPは引数で指定された .rpmファイルを cpio アーカイブ形式に
+変換し標準出力に出力する。引数が与えられ無い場合、標準入力から読み込む。
+
+.br
+.I "\fBrpm2cpio rpm-1.1-1.i386.rpm\fP"
+.br
+.I "\fBrpm2cpio < glint-1.0-1.i386.rpm\fP"
+
+.\"0 .SH SEE ALSO
+.SH 関連項目
+.IR glint (8) ,
+.IR rpm (8)
+.\"0 .SH AUTHOR
+.SH 著者
+.nf
+Erik Troan <ewt@redhat.com>
+.fi
+.SH 翻訳者
+.nf
+神田  充 <kanda@nn.iij4u.or.jp>
+.fi

@@ -31,6 +31,7 @@
 	- fix: add ufdSeek.
 	- build popt (with libpopt.so*) as a sub-package of rpm.
 	- split python bindings into a separate sub-package of rpm.
+	- add ja translation and man pages (Kanda Mitsuru kanda@nn.iij4u.or.jp).
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

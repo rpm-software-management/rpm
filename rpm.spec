@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.24
+Release: 0.25
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -42,7 +42,8 @@ will manipulate RPM packages and databases.
 %package python
 Summary: Python bindings for applications which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: popt
+BuildRequires: popt >= 1.5
+Requires: popt >= 1.5
 Requires: python >= 1.5.2
 
 %description python

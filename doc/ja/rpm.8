@@ -1,0 +1,933 @@
+.\" rpm - Red Hat Package Manager 
+.\"0 Japanese translaton $Id: rpm.8,v 1.1 1999/12/30 18:26:14 jbj Exp $
+.\"0 [対訳表]
+.\"0 freshen: 最新版化
+.\"0 query: 問い合わせ
+.\"0 verify: 検証
+.\"0 update: 更新
+.\"0 configuration: 設定
+.\"0
+.TH rpm 8 "22 December 1998" "Red Hat Software" "Red Hat Linux"
+.\"0 .SH NAME
+.SH 名前
+.\"0 rpm \- Red Hat Package Manager
+rpm \- Red Hat パッケージマネージャ
+.\"0 .SH SYNOPSIS
+.SH 書式
+\fBrpm\fP [options] 
+.\"0 .SH DESCRIPTION
+.SH 説明
+.\"0 \fBrpm\fP is a powerful \fIpackage manager\fP, which can be used to
+.\"0 build, install, query, verify, update, and uninstall individual
+.\"0 software packages.  A \fIpackage\fP consists of an archive of files,
+.\"0 and package information, including name, version, and description.
+\fBrpm\fPは強力な\fIパッケージマネージャ\fPである。
+個々のソフトウエアパッケージの作成、インストール、問い合わせ、検証、
+アップグレード及びアンインストールを行うことが出来る。
+\fIパッケージ\fRはファイルのアーカイブとパッケージ情報とから構成されている。
+パッケージ情報には名称、バージョン及び説明が含まれている。
+
+.\"0 One of the following basic modes must be selected:
+.\"0 \fIInitialize Database\fP, \fIRebuild Database\fP, \fIBuild Package\fP, 
+.\"0 \fIRecompile Package\fP, \fIBuild Package from Tarball\fP, 
+.\"0 \fIQuery\fP, \fIShow Querytags\fP, \fIInstall\fP, \fIFreshen\fP, 
+.\"0 \fIUninstall\fP, \fIVerify\fP, \fISignature Check\fP, \fIResign\fP, 
+.\"0 \fIAdd Signature\fP, \fIset owners and groups\fR and \fIShow
+.\"0 Configuration\fP.
+以下の基本モードのうちの1つを選択しなければならい:
+\fIデータベースの初期化\fp、\fIデータベース再構築\fP、\fIパッケージの作成\fP、
+\fIパッケージの再コンパイル\fP、\fItar ボールからのパッケージの作成\fP、
+\fI問い合わせ\fP、\fI問い合わせタグの表示\fP、\fIインストール\fP、\fI最新版化\fP、
+\fIアンインストール\fP、\fI検証\fP、\fI署名検査\fP、\fI再署名\fP、
+\fI署名追加\fP、\fIオーナーとグループの設定\fP、\fI設定の表示\fP。
+
+
+ 
+ 
+.\"0 Database maintenance:
+データベースメンテナンス:
+.br
+.I "\fB    rpm \-i [\-\-initdb]\fP"
+.br
+.I "\fB    rpm \-i [\-\-rebuilddb]\fP"
+ 
+.\"0 Building:
+作成:
+.br
+.I "\fB    rpm [\-b|t] [package_spec]+\fP"
+.br
+.I "\fB    rpm [\-\-rebuild] [sourcerpm]+\fP"
+.br
+.I "\fB    rpm [\-\-tarbuild] [tarredsource]+\fP"
+.br
+ 
+.\"0 Querying:
+問い合わせ:
+.br
+.I "\fB    rpm [\-\-query] [queryoptions]\fP"
+.br
+.I "\fB    rpm [\-\-querytags]\fP"
+.br
+ 
+.\"0 Maintaining installed packages:
+インストールパッケージのメンテナンス:
+.br
+.I "\fB    rpm [\-\-install] [installoptions] [package_file]+\fP"
+.br
+.I "\fB    rpm [\-\-freshen|\-F] [installoptions] [package_file]+\fP"
+.br
+.I "\fB    rpm [\-\-uninstall|\-e] [uninstalloptions] [package]+\fP"
+.br
+.I "\fB    rpm [\-\-verify|\-V] [verifyoptions] [package]+\fP"
+.br
+ 
+.\"0 Signatures:
+署名:
+.br
+.I "\fB    rpm [\-\-verify|\-V] [verifyoptions] [package]+\fP"
+.br
+.I "\fB    rpm [\-\-resign] [package_file]+\fP"
+.br
+.I "\fB    rpm [\-\-addsign] [package_file]+\fP"
+.br
+ 
+.\"0 Miscellaneous:
+その他:
+.br
+.I "\fB    rpm [\-\-showrc]\fP"
+.br
+.I "\fB    rpm [\-\-setperms] [package]+\fP"
+.br
+.I "\fB    rpm [\-\-setgids] [package]+\fP"
+.br
+
+
+.\"0 .SH GENERAL OPTIONS
+.SH 一般オプション
+.\"0 These options can be used in all the different modes.
+これらのオプションは全てのモードで共通に用いることが出来る。
+.IP "\fB\-vv\fP"
+.\"0 Print lots of ugly debugging information.
+詳細なデバッグ情報を沢山出力する。
+.IP "\fB\-\-quiet\fP"
+.\"0 Print as little as possible \- normally only error messages will be
+.\"0 displayed.
+表示量を出来るだけ少なくする \- 通常はエラーメッセージのみ表示される。
+.IP "\fB\-\-help\fP"
+.\"0 Print a longer usage message then normal.
+使用法を通常よりも長く表示する。
+.IP "\fB\-\-version\fP"
+.\"0 Print a single line containing the version number of \fBrpm\fP being used.
+使用中の \fBrpm\fI のバージョン番号を含む 1 行を表示する。
+.IP "\fB\-\-rcfile \fI<filelist>\fP"
+.\"0 Each of the files in the colon separated \fI<filelist>\fP is read
+.\"0 sequentially by \fBrpm\fP for configuration information.
+.\"0 The default \fI<filelist>\fP is \fB/usr/lib/rpm/rpmrc:/etc/rpmrc:~/.rpmrc\fP.
+.\"0 Only the first file in the list must exist, and tildes will be expanded to
+.\"0 the value of \fB$HOME\fP.
+コロンで区切られた \fI<filelist>\fP の各ファイルは設定情報用に \fBrpm\fP に
+よって順に読みこまれる。
+デフォルトの \fI<filelist>\fP は \fB/usr/lib/rpm/rpmrc:/etc/rpmrc:~/.rpmrc\fP
+である。
+リストの先頭のファイルは必ず存在しなければならない、またチルダは \fB$HOME\fP 
+に展開される。
+.IP "\fB\-\-root \fI<dir>\fP"
+.\"0 Use the system rooted at \fI<dir>\fP for all operations.  Note that
+.\"0 this means the database will be read or modified under \fI<dir>\fP and
+.\"0 any \fIpre\fP or \fIpost\fP scripts are run after a chroot() to \fI<dir>\fP.
+全ての操作において、\fI<dir>\fP を最上位ディレクトリとして用いる。
+\fI<dir>\fP 以下のデータベースを読み込む又は変更すること及び、
+\fIpre\fP 又は \fIpost\fP スクリプトは \fI<dir>\fP に chroot() してから
+実行されることに注意。
+.IP "\fB\-\-dbpath \fI<path>\fP"
+.\"0 Use RPM database in \fI<path>\fP.
+<path>にある RPM データベースを用いる。
+.IP "\fB\-\-justdb\fP"
+.\"0 Update only the database, not the filesystem.
+データベースのみを更新し、ファイルシステムはしない。
+.IP "\fB\-\-ftpproxy \fI<host>\fP, \fB\-\-httpproxy \fI<host>\fP"
+.\"0 Use \fI<host>\fP as an FTP or HTTP proxy host.
+.\"0 See \fBFTP/HTTP OPTIONS\fP.
+FTP もしくは HTTP プロキシホストとして \fI<host>\fP を使用する。
+\fBFTP/HTTP オプション\fP を参照のこと。
+.IP "\fB\-\-ftpport \fI<port>\fP, \fB\-\-httpport \fI<port>\fP"
+.\"0 Use \fI<port>\fP as the FTP or HTTP port on the proxy host.
+.\"0 See \fBFTP/HTTP OPTIONS\fP.
+FTP もしくは HTTP ポートとして \fI<port>\fP を用いる。
+\fBFTP/HTTP オプション\fPを参照のこと。
+.IP "\fB\-\-pipe \fI<cmd>\fP"
+.\"0 Pipes the output of \fBrpm\fP to the command \fI<cmd>\fP.
+\fBrpm\fP の出力を \fI<cmd>\fP にパイプする。
+
+.\"0 .SH INSTALL AND UPGRADE OPTIONS
+.SH インストール及びアップグレードオプション
+.\"0 The general form of an rpm install command is
+rpm インストールコマンドの一般的な書式は以下の通りである。
+.PP
+ 	\fBrpm \-i [install\-options] \fI<package_file>+\fP
+.PP
+.\"0 This installs a new package.
+このコマンドにより新規パッケージがインストールされる。
+.\"0 The general form of an rpm upgrade command is
+rpm アップグレードコマンドの一般的な書式は以下の通りである。
+.PP
+ 	\fBrpm \-U [install\-options] \fI<package_file>+\fP
+.PP
+.\"0 This upgrades or installs the package currently installed to the version
+.\"0 in the new RPM.  This is the same as install, except all other version of
+.\"0 the package are removed from the system. 
+このコマンドにより、現在インストールされているパッケージは、新しい RPM
+中のものにアップグレードされる。
+そのパッケージの、他の全てのバージョンをシステムから削除する事以外は
+インストールと同じである。
+.PP
+ 	\fBrpm [\-F|--freshen] [install\-options] \fI<package_file>+\fP
+.PP
+.\"0 This will upgrade packages, but only if an earlier version currently
+.\"0 exists.
+以前のバージョンがインストールされているときのみパッケージをアップグレードする。
+
+
+.\"0 The \fI<package_file>\fP may be specified as an ftp or http URL, in which case
+.\"0 the package will be downloaded before being installed. See \fBFTP/HTTP
+.\"0 OPTIONS\fP for information on RPM's built-in ftp and http support.
+\fI<package_file>\fP は ftp もしくは http スタイルの URL で指定する事もでき、
+その場合はインストールに先立ってパッケージをダウンロードする。
+RPM に組み込まれた ftp と http 機能に関する情報は、\fBFTP/HTTP オプション\fP
+を参照の事。
+.PP
+.IP "\fB\-\-force\fP"
+.\"0 Same as using \fB\-\-replacepkgs\fP, \fB\-\-replacefiles\fP, and 
+.\"0 \fB\-\-oldpackage\fP.
+\fB\-\-replacepkgs\fP と \fB\-\-replacefiles\fP と \fB\-\-oldpackage\fP 
+とを指定した場合に同じ。
+.IP "\fB\-h\fP, \fB\-\-hash\fP"
+.\"0 Print 50 hash marks as the package archive is unpacked.  Use
+.\"0 with \fB\-v\fP for a nice display.
+パッケージアーカイブを解凍する際に50個のハッシュマーク(#)を表示する。
+綺麗な表示にするため、\fB-v\fPと一緒に指定しなさい。
+.IP "\fB\-\-oldpackage\fP"
+.\"0 Allow an upgrade to replace a newer package with an older one.
+新しいパッケージを古いもので置き換えることを許す。
+.IP "\fB\-\-percent\fP"
+.\"0 Print percentages as files are unpacked from the package archive. This
+.\"0 is intended to make RPM easy to run from other tools.
+パッケージアーカイブからファイルを解凍する際にパーセンテージを表示する。
+RPM を他のツールから簡単に起動できる様にするためのオプションである。
+.IP "\fB\-\-replacefiles\fP"
+.\"0 Install the packages even if they replace files from other, already
+.\"0 installed, packages.
+インストール済みの他のパッケージに含まれるファイルを置き換えてしまう場合
+でも、インストールを強行する。
+.IP "\fB\-\-replacepkgs\fP"
+.\"0 Install the packages even if some of them are already installed on this
+.\"0 system.
+インストールしようとしているパッケージのいくつかは既にインストール済み
+である場合でもインストールを強行する。
+.IP "\fB\-\-allfiles\fP"
+.\"0 Installs or upgrades all the missingok files in the package, regardless if
+.\"0 they exist.
+パッケージ中の全ての(missingok)ファイルを、それが実際に存在しようとしまいと
+インストール又はアップグレードする。
+.IP "\fB\-\-nodeps\fP"
+.\"0 Don't do a dependency check before installing or upgrading a package.
+パッケージのインストール又はアップグレードの前に依存性検査を行なわない。
+.IP "\fB\-\-noscripts\fP"
+.\"0 Don't execute the preinstall or postinstall scripts.
+プレインストールスクリプトもしくはポストインストールスクリプトを実行しない。
+.IP "\fB\-\-notriggers\fP"
+.\"0 Don't execute scripts which are triggered by the installation of this package.
+このパッケージのインストールによってトリガーされるスクリプトを実行しない。
+.IP "\fB\-\-ignoresize\fP"
+.\"0 Don't check mount file systems for sufficient disk space before installing this package.
+このパッケージをインストールする前にマウントされたファイルシステムに十分な
+ディスクスペースがあるか検査しない。
+.IP "\fB\-\-excludepath \fI<path>\fP"
+.\"0 Don't install files whose name begins with \fI<path>\fP.
+\fI<path>\fP で始まるパスを持つファイルをインストールしない。
+.IP "\fB\-\-excludedocs\fP"
+.\"0 Don't install any files which are marked as documentation (which includes
+.\"0 man pages and texinfo documents).
+文書ファイルの印を付けられたファイルは(manページ及び
+texinfo文書を含めて)いかなるものもインストールしない。
+.IP "\fB\-\-includedocs\fP"
+.\"0 Install documentation files. This is the default behavior.
+文書ファイルをインストールする。これはデフォルトの動作である。
+.IP "\fB\-\-test\fP"
+.\"0 Do not install the package, simply check for and report potential
+.\"0 conflicts.
+パッケージのインストールは行わず検査のみを行ない、
+コンフリクトの可能性がある場合は報告する。
+.IP "\fB\-\-ignorearch\fP"
+.\"0 This allows installation or upgrading even if the architectures of the
+.\"0 binary RPM and host don't match.
+このオプションを指定すると、バイナリ RPM のアーキテクチャがホストのものと
+一致していなくてもパッケージをインストール又はアップグレードを許可する。
+.IP "\fB\-\-ignoreos\fP"
+.\"0 This allows installation or upgrading even if the operating systems of the
+.\"0 binary RPM and host don't match.
+このオプションを指定すると、バイナリRPMのオペレーティング・システムが
+ホストのものと一致していなくてもパッケージをインストール又はアップグレード
+を許可する。
+.IP "\fB\-\-prefix \fI<path>\fP"
+.\"0 This sets the installation prefix to \fI<path>\fP for relocatable packages.
+再配置可能なパッケージに対して、インストール・パス接頭辞を \fI<path>\fP に設定する。
+.IP "\fB\-\-relocate \fI<oldpath>\fB=\fI<newpath>\fP"
+.\"0 For relocatable packages, translates the files that would be put in
+.\"0 \fI<oldpath>\fP to \fI<newpath>\fP.
+再配置可能なパッケージに対して、\fI<oldpath>\fP から \fI<newpath>\fP に
+再配置する。
+.IP "\fB\-\-badreloc\fP"
+.\"0 To be used in conjunction with \-\-relocate, this forces the relocation
+.\"0 even if the package isn't relocatable.
+\-\-relocate と共に用いられる、これはもしパッケージが再配置可能でなく
+ても強制的に再配置する。
+.IP "\fB\-\-noorder\fP"
+.\"0 Don't reorder the packages for an install. The list of packages would
+.\"0 normally be reordered to satisfy dependancies.
+インストールのために順序変えを行なわない。パッケージのリストは通常依存
+性を満たすように順序変えが行なわれる。
+
+
+.\"0 .SH QUERY OPTIONS
+.SH 問い合わせオプション
+.\"0 The general form of an rpm query command is
+rpmを用いた問い合わせコマンドの一般形は以下のようになる。
+.PP
+ 	\fBrpm \-q [query\-options]\fP
+.PP
+.\"0 You may specify the format that package information should be printed 
+.\"0 in. To do this, you use the \fB[\-\-queryformat|\-qf]\fP option, followed
+.\"0 by the format string.
+パッケージ情報を表示する書式を指定することもできる。
+その為には、\fB\-\-queryformat\fP オプションに書式文字列を続けて指定する。
+
+.\"0 Query formats are modifed versions of the standard \fBprintf(3)\fP
+.\"0 formatting. The format is made up of static strings (which may include
+.\"0 standard C character escapes for newlines, tabs, and other special
+.\"0 characters) and \fBprintf(3)\fP type formatters. As \fBrpm\fP
+.\"0 already knows the type to print, the type specifier must be
+.\"0 omitted however, and replaced by the name of the header tag to
+.\"0 be printed, enclosed by \fB{}\fP characters. The 
+.\"0 \fBRPMTAG_\fP portion of the tag name may be omitted.
+問い合わせ用の書式は標準の \fBprintf(3)\fP 書式を改変したものである。
+書式は静的文字列(改行、タブその他の特殊記号に対するCの標準的なエスケープ
+文字列を含んでも良い)と \fBprintf(3)\fP 的な書式指定子からなる。
+しかし、\fBrpm\fP は表示されるものの型を知っているので、型指定子は
+省略し、また表示されるべきヘッダータグを \fB{}\fP 文字で囲んだもので
+置き換えなくてはならない。
+タグ名の\fBRPMTAG_\fP部分は省略可である。
+
+.\"0 Alternate output formats may be requested by following the tag with
+.\"0 \fB:\fItypetag\fR. Currently, the following types are supported: \fBoctal\fR,
+.\"0 \fBdate\fR, \fBshescape\fR, \fBperms\fR, \fBfflags\fR, and \fBdepflags\fR.
+タグ名の後に \fB:\fItypetag\fR を指定することによって、出力書式を変える
+ことも出来る。
+現在は以下の種類をサポートしている: \fBoctal\fR、
+\fBdate\fR、\fBshescape\fR、\fBperms\fR、\fBfflags\fR、\fBdepflags\fR。
+
+.\"0 For example, to print only the names of the packages queried, you
+.\"0 could use \fB%{NAME}\fP as the format string. To print the packages
+.\"0 name and distribution information in two columns, you could use
+.\"0 \fB%\-30{NAME}%{DISTRIBUTION}\fP.
+例えば、問い合わせを受けたパッケージの名前のみを表示するには、
+書式文字列として \fB%{NAME}\fP とすればよい。
+パッケージ名と配布(DISTRIBUTION)情報を 2 カラムで表示するには、
+\fB%\-30{NAME}%{DISTRIBUTION}\fP と指定すればよい。
+
+.\"0 \fBrpm\fP will print a list of all of the tags it knows about when
+.\"0 it is invoked with the \fB\-\-querytags\fP argument.
+\fB\-\-querytags\fP 引数を付けて起動された際は、\fBrpm\fP の知っている
+一連のタグが全て表示される。
+
+.\"0 There are two subsets of options for querying: package selection, and
+.\"0 information selection.
+問い合わせ用オプションは 2 種類に分類できる:
+パッケージ選択オプションと情報選択オプションである。
+
+.\"0 Package selection options:
+パッケージ選択オプション:
+.br
+.IP "\fB\fI<package_name>\fP"
+.\"0 Query installed package named \fI<package_name>\fP.
+既にインストール済の \fB\fI<package_name>\fP というパッケージの問い合わせを行う。
+.IP "\fB\-a\fP, \fB\-\-all\fP"
+.\"0 Query all installed packages
+インストールされている全パッケージの問い合わせを行う。
+.IP "\fB\-\-whatrequires \fI<capability>\fP"
+.\"0 Query all packages that requires \fI<capability>\fP for proper functioning.
+正常に機能するためには \fI<capability>\fP を必要とする全てのパッケージ
+を問い合わせる。
+.IP "\fB\-\-whatprovides \fI<virtual>\fP"
+.\"0 Query all packages that provide the \fI<virtual>\fP capability.
+\fI<virtual>\fP の機能を提供する全てのパッケージを問い合わせる。
+.IP "\fB\-f \fI<file>\fP, \fB\-\-file \fI<file>\fP"
+.\"0 Query package owning \fI<file>\fP.
+\fI<file>\fP の持ち主であるパッケージについて問い合わせる。
+.IP "\fB\-g \fI<group>\fP, \fB\-\-group \fI<group>\fP"
+.\"0 Query packages with the group of \fI<group>\fP.
+\fI<group>\fP のグループであるパッケージについて問い合わせる。
+.IP "\fB\-p \fI<package_file>\fP"
+.\"0 Query an (uninstalled) package \fI<package_file>\fP. 
+.\"0 The \fI<package_file>\fP may be specified as an ftp or http style URL, in which case
+.\"0 the package header will be downloaded and queried. See \fBFTP/HTTP
+.\"0 OPTIONS\fP for information on RPM's built-in ftp and http client support.
+(インストールされていない) \fI<package_file>\fP について問い合わせる。
+\fI<package_file>\fP  は ftp/http スタイルの URL で指定する事もでき、
+その場合はパッケージのヘッダをダウンロードして問い合わせる。
+RPM に組み込まれた ftp/http クライアントサポートに関する情報は 
+\fBFTP オプション\fP を参照の事。
+.IP "\fB\-\-specfile \fI<specfile>\fP"
+.\"0 Parse and query \fI<specfile>\fP as if it were a package. Although not all
+.\"0 the information (e.g. file lists) is available, this type of query permits
+.\"0 rpm to be used to extract information from spec files without having to
+.\"0 write a specfile parser.
+パッケージだとして \fI<specfile>\fP を構文解析し問い合せる。
+全ての情報(ファイルリストなど)が利用できるわけではないので、このタイプ
+の問い合わせは rpm が spec ファイルパーサに書きこませずに spec ファイ
+ルから情報を取りだすのに使用される。
+.IP "\fB\-\-querybynumber \fI<num>\fP"
+.\"0 Query the \fI<num>\fPth database entry directly; this is helpful for debugging 
+.\"0 purposes.
+直接 \fI<num>\fP のデータベースエントリに問い合わせる; デバッグ用に有用。
+.IP "\fB\-\-triggeredby \fI<pkg>\fP"
+.\"0 Query packages that are triggered by packages \fI<pkg>\fP.
+パッケージ \fII<pkg>\fP によってトリガーされるパッケージについて問い合わせる。
+
+.P
+.\"0 Information selection options:
+情報選択オプション:
+.br
+.IP "\fB\-i\fP"
+.\"0 Display package information, including name, version, and description. This
+.\"0 uses the \fB\-\-queryformat\fP if one was specified.
+名前、バージョン及び説明を含むパッケージ情報を表示する。
+\fB\-\-queryformat\fP を指定した場合はそれを用いる。
+.IP "\fB\-R\fP, \fB\-\-requires\fP"
+.\"0 List packages on which this package depends.
+このパッケージが依存しているパッケージを表示する。
+.IP "\fB\-\-provides\fP"
+.\"0 List capabilities this package provides.
+このパッケージが提供するもの(ライブラリなど)を表示する。
+.\"0 .IP "\fB\-\-changelog\fP"
+.\"0 Display change information for the package.
+パッケージの変更履歴を表示する。
+.IP "\fB\-l\fP, \fB\-\-list\fP"
+.\"0 List files in package.
+パッケージに含まれるファイルを表示する。
+.IP "\fB\-s\fP, \fB\-\-state\fP"
+.\"0 Display the \fIstates\fP of files in the package (implies \fB\-l\fP).  
+.\"0 The state of each file is
+.\"0 either \fInormal\fP, \fInot installed\fP, or \fIreplaced\fP.
+パッケージに含まれるファイルの \fI状態\fP を表示する。
+(\fB\-l\fP の動作も同時に行われる。)
+各ファイルの状態は \fI通常(normal)\fP、\fIインストールされていない(not installed)\fP 
+又は \fI置き換えられている(replaced)\fP のいずれかである。
+.IP "\fB\-d\fP, \fB\-\-docfiles\fP"
+.\"0 List only documentation files (implies \fB\-l\fP).  
+文書ファイルのみを表示する(\fB\-l\fP の働きを含む)。
+.IP "\fB\-c\fP, \fB\-\-configfiles\fP"
+.\"0 List only configuration files (implies \fB\-l\fP).  
+設定ファイルのみを表示する(\fB\-l\fP の働きを含む)。
+.IP "\fB\-\-scripts\fP"
+.\"0 List the package specific shell scripts that are used as part of the 
+.\"0 installation and uninstallation processes, if there are any.
+インストール及びアンインストールの際に用いられるパッケージ固有の
+シェルスクリプトが存在するなら表示する。
+.IP "\fB\-\-triggers\fP, \fB\-\-triggerscripts\fP"
+.\"0 Display the trigger scripts, if any, which are contained in the package.
+もしパッケージ中にトリガースクリプトが含まれるなら、それを表示する。
+.IP "\fB\-\-dump\fP"
+.\"0 Dump file information as follows: path size mtime md5sum mode
+.\"0 owner group isconfig isdoc rdev symlink. This must be used with
+.\"0 at least one of \fB\-l\fP, \fB\-c\fP, \fB\-d\fP.
+以下のような情報をダンプする。
+path size mtime md5sum mode owner group isconfig isdoc rdev symlink。
+このオプションは少なくとも \fB\-l\fP、\fB\-c\fP 又は \fB\-d\fP のいずれか
+とともに用いなくてはならない。
+.IP "\fB\-\-last\fP"
+.\"0 Orders the package listing by install time such that the latest packages
+.\"0 are at the top.
+インストールされた時刻が最も最新のパッケージが先頭になるように並べる。
+.IP "\fB\-\-filesbypkg\fP"
+.\"0 This lists all the files in each package.
+各パッケージ中の全ファイルを一覧表にする。
+.IP "\fB\-\-triggerscripts\fP"
+.\"0 Shows all the trigger scripts for the selected packages.
+選択されたパッケージの全てのトリガースクリプトを表示する。
+
+.\"0 .SH VERIFY OPTIONS
+.SH 検証オプション
+.\"0 The general form of an rpm verify command is
+rpm検証コマンドの一般的な形式は以下の通りである。
+.PP
+ 	\fBrpm \-V|\-y|\-\-verify [verify\-options]\fP
+.PP
+.\"0 Verifying a package compares information about the installed
+.\"0 files in the package with information about the files taken from the
+.\"0 original package and stored in the rpm database.  Among other things,
+.\"0 verifying compares the size, MD5 sum, permissions, type, owner and group
+.\"0 of each file.  Any discrepencies are displayed.  The package specification
+.\"0 options are the same as for package querying.
+パッケージ検証の際は、インストールされているファイルの情報を、
+オリジナルのパッケージから抽出し RPM データベースに保存されているものと
+比較する。
+中でも、各ファイルのサイズ、MD5和、許可属性、種類、所有者及びグループ
+の比較を行なう。
+差異があった場合は表示される。
+パッケージ指定オプションはパッケージ問い合わせのものと同じである。
+
+.\"0 Files that were not installed from the package, for example documentation
+.\"0 files excluded on installation using the "\fB\-\-excludedocs\fP" option,
+.\"0 will be silently ignored.
+パッケージ中に含まれるがインストールされていないファイル、
+例えばインストール時に "\fB\-\-excludedocs\fP" オプションを用いたので
+インストールされなかった文書ファイルは無視される。
+
+.\"0 Options that can be used in verify mode:
+検証モードで使用できるオプションは以下の通りである。
+
+.IP "\fB\-\-nofiles\fP"
+.\"0 Ignores missing files when verifying.
+検証中に見つからないファイルを無視する。
+.IP "\fB\-\-nomd5\fP"
+.\"0 Ignores MD5 checksum errors when verifying.
+検証中に MD5 和のエラーを無視する。
+.IP "\fB\-\-nopgp\fP"
+.\"0 Ignores PGP checking errors when verifying.
+検証中に PGP 署名エラーを無視する。
+.\"0.IP "\fB\-\-nofiles\fP"  .\"(2度目!)
+.\"0 Ignores missing files when verifying. 
+
+
+.\"0 The format of the output is a string of 8 characters, a possible "\fBc\fP"
+.\"0 denoting a configuration file, and then the file name.  Each of the 8
+.\"0 characters denotes the result of a comparison of one attribute of the file
+.\"0 to the value of that attribute recorded in the RPM database.  A 
+.\"0 single "\fB.\fP" (period) means the test passed.  The following characters 
+.\"0 denote failure of certain tests:
+出力は、まず8文字の文字列、ついで設定ファイルの場合は "\fBc\fP"、
+最後にファイル名という書式で表示される。
+8つの文字それぞれは、各々のファイル属性を RPM データベース中に記録されている
+ものと比較した結果を表している。
+"\fB.\fP" が表示された場合はテストをパスした事をあらわす。
+以下の文字が表示された場合はあるテストに失敗したことを示している。
+
+.IP "\fB5\fP"
+.\"0 MD5 sum
+MD5和
+.IP "\fBS\fP"
+.\"0 File size
+ファイルサイズ
+.IP "\fBL\fP"
+.\"0 Symlink
+シンボリックリンク
+.IP "\fBT\fP"
+.\"0 Mtime
+改変時間
+.IP "\fBD\fP"
+.\"0 Device
+デバイス
+.IP "\fBU\fP"
+.\"0 User
+ユーザ
+.IP "\fBG\fP"
+.\"0 Group
+グループ
+.IP "\fBM\fP"
+.\"0 Mode (includes permissions and file type)
+モード(許可属性とファイルの種類を含む)
+
+.\"0 .SH SIGNATURE CHECKING
+.SH 署名検査
+.\"0 The general form of an rpm signature check command is
+rpm 署名検査コマンドの一般形は以下の通りである。
+.PP
+ 	\fBrpm \-\-checksig \fI<package_file>+\fP
+.PP
+.\"0 This checks the PGP signature of package \fI<package_file>\fP to ensure
+.\"0 its integrity and origin.
+このコマンドはパッケージ \fI<package_file>\fP 中に組み込まれた PGP 署名を検査し、
+その完全性及び作成元を確かめる。
+.\"0 PGP configuration information is read from configuration files.
+PGP の設定情報は設定ファイルから読み込まれる。
+.\"0 See the section on PGP SIGNATURES for details.
+詳細は PGP 署名に関する節を参照のこと。
+
+.\"0 .SH UNINSTALL OPTIONS
+.SH アンインストールオプション
+.\"0 The general form of an rpm uninstall command is
+rpm アンインストールコマンドの一般形は以下の通りである。
+.PP
+ 	\fB    rpm \-e \fI<package_name>+\fP
+.PP
+.IP "\fB\-\-allmatches\fP"
+.\"0 Remove all versions of the package which match \fI<package_name>\fR. Normally
+.\"0 an error is issued if \fI<package_name>\fR matches multiple packages.
+\fI<package_name>\fR と符合するパッケージの全バージョンを削除する。
+\fI<package_name>\fR が複数のパッケージと符合した場合は
+通常エラーが表示される。
+.IP "\fB\-\-noscripts\fP"
+.\"0 Don't execute the preuninstall or postuninstall scripts.
+プレ(ポスト)アンインストールスクリプトを実行しない。
+.IP "\fB\-\-notriggers\fP"
+.\"0 Don't execute scripts which are triggered by the removal of this package.
+このパッケージの削除によってトリガーされるスクリプトを実行しない。
+.IP "\fB\-\-nodeps\fP"
+.\"0 Don't check dependencies before uninstalling the packages.
+アンインストール前の依存性の検査を行わない。
+.IP "\fB\-\-test\fP"
+.\"0 Don't really uninstall anything, just go through the motions.  Useful in
+.\"0 conjunction with the \fB\-vv\fP option.
+実際には何もアンインストールせず、アンインストールしているふりをする。
+\fB\-vv\fP オプションと共に使用すると有用。
+
+.\"0 .SH BUILD OPTIONS
+.SH 作成オプション
+.\"0 The general form of an rpm build command is
+rpm 作成コマンドの一般形は以下の通りである。
+.PP
+     \fBrpm \-[b|t]\fIO\fP [build\-options] \fI<package_spec>+\fP
+.PP
+.\"0 The argument used is \fB-b\fR if a spec file is being used to build the package
+.\"0 and \fB-t\fR if \fBRPM\fR should look inside of a gzipped (or compressed) tar
+.\"0 file for the spec file to use. After the first argument, the next argument
+.\"0 (\fIO\fR) specifies the stages of building and packaging to be done and
+.\"0 is one of:
+用いる引数は、spec ファイルを用いてパッケージを作成する場合には \fB-b\fR、
+\fBRPM\fR が使用する spec ファイルが gzip (又は compress)された tar ファイル中
+にある場合は \fB-t\fR である。
+第一引数の後ろに、次の引数(\fIO\fR)として、行なうべき作成及びパッケージング
+の過程を表す以下のいずれかを指定する:
+
+.IP "\fB\-bp\fP"
+.\"0 Executes the "%prep" stage from the spec file.  Normally this
+.\"0 involves unpacking the sources and applying any patches.
+spec ファイルの "%prep" 過程を実行する。
+通常はソースの展開やパッチをあてる等を行なう。
+.IP "\fB\-bl\fP"
+.\"0 Do a "list check".  The "%files" section from the spec file
+.\"0 is macro expanded, and checks are made to verify that each file
+.\"0 exists.
+"リスト検査"を行う。
+spec ファイルの "%files" セクションをマクロを展開し、各ファイルが検証する。
+.IP "\fB\-bc\fP"
+.\"0 Do the "%build" stage from the spec file (after doing the prep stage).
+.\"0 This generally involves the equivalent of a "make".
+spec ファイルの(prep 過程を行った後に) "%build" 過程を実行する。
+通常は "make" に相当する作業が行われる。
+.IP "\fB\-bi\fP"
+.\"0 Do the "%install" stage from the spec file (after doing the prep
+.\"0 and build stages).  This generally involves the equivalent of a
+.\"0 "make install".
+spec ファイルの(prep 及び build 過程を行った後に) "%install" 過程を実行する。
+通常は "make install" に相当する作業が行われる。
+.IP "\fB\-bb\fP"
+.\"0 Build a binary package (after doing the prep, build, and install stages).
+(prep、build 及び install の各過程を終えた後に)バイナリパッケージを作成する。
+.IP "\fB\-bs\fP"
+.\"0 Build just the source package (after doing the prep, build, and install
+.\"0 stages).
+(prep、build 及び install の各過程を終えた後に)ソースパッケージのみを
+作成する。
+.IP "\fB\-ba\fP"
+.\"0 Build binary and source packages (after doing the prep, build, and 
+.\"0 install stages).
+(prep、build 及び install の各過程を終えた後に)バイナリ及びソースパッケージ
+を作成する。
+.PP
+.\"0 The following options may also be used:
+以下のオプションを指定することもできる。
+.IP "\fB\-\-short\-circuit\fP"
+.\"0 Skip straight to specified stage (ie, skip all stages leading up
+.\"0 to the specified stage).  Only valid with \fB\-bc\fP and \fB\-bi\fP.
+指定した過程までスキップする(即ち、指定した過程に至る全ての過程を
+スキップする)。
+.IP "\fB\-\-timecheck\fP"
+.\"0 Set the "timecheck" age (0 to disable).  This value can also
+.\"0 be configured by defining the macro "_timecheck". The timecheck
+.\"0 value expresses, in seconds, the maximum age of a file being packaged.
+.\"0 Warnings will be printed for all files beyond the timecheck age.
+"timecheck" 期限を設定する(無効にするには 0 を指定する)。
+その値は "_timecheck" マクロを定義することによって設定することも出来る。
+timechek 値はパッケージされるファイルの最長有効期限を秒単位で表したものである。
+timechek 期限を過ぎたファイルには警告が表示される。
+.IP "\fB\-\-clean\fP"
+.\"0 Remove the build tree after the packages are made.
+パッケージを作成した後に作成ツリーを削除する。
+.IP "\fB\-\-rmsource\fP"
+.\"0 Remove the sources and spec file after the build (may also be
+.\"0 used standalone, eg. "\fBrpm \-\-rmsource foo.spec\fP").
+build の後にソースと spec ファイルを削除する。
+(単独でも使用される、例: "\fBrpm \-\-rmsource foo.spec\fP")
+.IP "\fB\-\-test\fP"
+.\"0 Do not execute any build stages.
+.\"0 Useful for testing out spec files.
+build 過程を全く行わない。
+spec ファイルをテストするのに有用。
+.IP "\fB\-\-sign\fP"
+.\"0 Embed a PGP signature in the package.  This signature can be used
+.\"0 to verify the integrity and the origin of the package.  See the
+.\"0 section on PGP SIGNATURES for configuration details.
+パッケージ中にPGP署名を埋め込む。
+この署名はパッケージの完全性及び作成元を確認するために用いることが出来る。
+設定の詳細については PGP 署名に関する節を参照のこと。
+.IP "\fB\-\-buildroot \fI<dir>\fP"
+.\"0 When building the package, override the BuildRoot tag with directory
+パッケージを作成する時、BuildRoot タグのディレクトリを 
+\fI<dir>\fP で上書きする。
+.IP "\fB\-\-target \fI<platform>\fP"
+.\"0 When building the package, interpret \fI<platform>\fP as \fBarch-vendor-os\fP
+.\"0 and set the macros \fB_target\fP, \fB_target_arch\fP and \fB_target_os\fP
+.\"0 accordingly.
+パッケージを作成する時、\fI<platform>\fP を \fBarch-vendor-os\fP として解釈し、
+マクロ \fB_target\fP、\fB_target_arch\fP、\fB_target_os\fP を設定する。
+.IP "\fB\-\-buildarch \fI<arch>\fP"
+.\"0 When building the package, set the architecture to \fI<arch>\fP. This option
+.\"0 has been obsoleted by \fB\-\-target\fI in RPM 3.0.
+パッケージを作成する時、アーキテクチャを \fI<arch>\fP に設定る。
+このオプションは RPM 3.0 において \fB\-\-target\fI に置き換えられ旧式のものになった。
+.IP "\fB\-\-buildos \fI<os>\fP"
+.\"0 When building the package, set the architecture to \fI<os>\fP. This option
+.\"0 has been obsoleted by \fB\-\-target\fI in RPM 3.0.
+パッケージを作成する時、アーキテクチャを \fI<os>\fP に設定する。
+このオプションは RPM 3.0 において \fB\-\-target\fI に置き換えられ旧式のものになった。
+
+
+.\"0 .SH REBUILD AND RECOMPILE OPTIONS
+.SH 再作成及びリコンパイルオプション
+
+.\"0 There are two other ways to invoke building with rpm:
+rpm を起動するにはその他に2通りの方法がある。
+
+.I "\fBrpm \-\-recompile \fI<source_package_file>+\fP"
+
+.I "\fBrpm \-\-rebuild \fI<source_package_file>+\fP"
+
+.\"0 When invoked this way, \fBrpm\fP installs the named source package, and does
+.\"0 a prep, compile and install.  In addition, \fB\-\-rebuild\fP builds a new
+.\"0 binary package. When the build has completed, the build directory is
+.\"0 removed (as in \fB\-\-clean\fP) and the the sources and spec file for
+.\"0 the package are removed.
+この様に起動された場合、\fBrpm\fP は指定されたソースパッケージをインストールし、
+prep、コンパイル及びインストールを実行する。
+更に \fB\-\-rebuild\fP を指定した場合は、新たにバイナリパッケージを作成する。
+作成が完了したときは、(\fB\-\-clean\fP の場合と同様)作成ディレクトリ、
+及びそのパッケージのソースと spec ファイルが削除される。
+
+.\"0 .SH SIGNING AN EXISTING RPM
+.SH 既存のRPMへの署名
+
+.I "\fBrpm \-\-resign \fI<binary_package_file>+\fP"
+
+.\"0 This option generates and inserts new signatures for the listed packages.
+.\"0 Any existing signatures are removed.
+このオプションは、指定されたパッケージに新たに署名を作成して挿入する。
+既存の署名は全て削除される。
+
+.I "\fBrpm \-\-addsign \fI<binary_package_file>+\fP"
+
+.\"0 This option generates and appends new signatures for the listed packages
+.\"0 to those that already exist.
+このオプションは指定されたパッケージに対しすでに署名されていても新しい署
+名を生成して添付する。
+
+.\"0.SH PGP SIGNATURES
+.SH PGP 署名
+
+.\"0 In order to use the signature feature RPM must be configured to run PGP,
+.\"0 and it must be able to find a public key ring with RPM public keys in it.
+.\"0 By default, RPM uses the PGP defaults to find the keyrings (honoring PGPPATH).
+.\"0 If your key rings are not located where PGP expects them to be,
+.\"0 you will need to configure the macro
+署名機能を使用するために RPM は PGP を実行できるように設定されていなけ
+ればならず、また RPM 公開鍵がある公開鍵束を見つけることが可能でなくて
+はならない。RPM は見つかった PGP 鍵束をデフォルトとして使う(honoring PGPPATH)。
+もし鍵束が PGP が期待している場所に無ければ、使用する PGP 鍵束の場所を マクロ
+.IP "\fB_pgp_path\fP"
+.\"0 to be the location of the PGP key rings to use.
+.PP
+で設定する必要がある。
+
+.\"0 If you want to be able to sign packages you create yourself, you also
+.\"0 need to create your own public and secret key pair (see the PGP manual).
+自分で作成したパッケージに署名出来る様にしたい場合は、自分自身の公開暗号鍵
+及び秘密鍵の対を作る必要がある(PGP のマニュアルを参照)。
+.\"0 You will also need to configure the macros
+同様にマクロ
+.\"0 
+.IP "\fB_signature\fP"
+.PP
+を設定する必要があるかもしれない。
+.\"0 The signature type.  Right now only pgp is supported.
+
+署名の種類は、現在のところ pgp のみがサポートされている。
+(訳者注: PRM-2.90 からは GnuPG も)
+.IP "\fB_pgp_name\fP"
+.\"0 The name of the "user" whose key you wish to use to sign your packages.
+.PP
+パッケージに署名する為に用いたい鍵の持ち主の "user" 名。
+
+
+.\"0 When building packages you then add \-\-sign to the command line.
+.\"0 You will be prompted for your pass phrase, and your package will
+.\"0 be built and signed.
+パッケージ作成時は、コマンドラインオプションに \-\-sign をつけ加える。
+そうすると、パスフレーズの入力を促されパッケージが作成されて署名がなされる。
+
+.\"0 For example, to be able to use PGP to sign packages as the user
+.\"0 \fp"John Doe <jdoe@foo.com>"\fP from the key rings located in
+.\"0 \fB/etc/rpm/.pgp\fP using the executable \fB/usr/bin/pgp\fP you would include
+例えば、実行ファイル \fB/usr/bn/pgp\fP を使用し、
+/etc/rpm/.pgp に存在する鍵束からユーザ \fp"John Doe<jdoe@foo.com>"\fP として 
+パッケージに署名 に PGP を使用するようにするためにはマクロ設定ファイル中に
+
+.I "\fB%_signature pgp\fP"
+
+.I "\fB%_pgp_name /etc/rpm/.pgp\fP"
+ 
+.I "\fB%_pgp_name John Doe <jdoe@foo.com>\fP"
+ 
+.I "\fB%_pgpbin /usr/bin/pgp\fP"
+
+.\"0 in a macro configuration file. Use \fB/etc/rpm/macros\fP for per-system
+.\"0 configuration and \fB~/.rpmmacros\fP for per-user configuration.
+を含めるようにする。システム毎の設定は \fB/etc/rpm/macros\fP を使用し、
+ユーザ毎の設定は \fB~/.rpmmacros\fP を使用しなさい。
+
+.\"0 .SH REBUILD DATABASE OPTIONS
+.SH データベース再構築オプション
+
+.\"0 The general form of an rpm rebuild database command is
+rpm データベースの再構築コマンドの一般形は以下の通りである。
+.PP
+ 	\fBrpm \-\-rebuilddb\fP
+.PP
+
+.\"0 To rebuild a new database, do:
+新しいデータベースを再構築するには、以下のようにする。
+.PP
+ 	\fBrpm \-\-initdb\fP
+.PP
+
+.\"0 The only options for these modes are \fB-\-dbpath\fP and
+.\"0 \fB-\-root\fP.
+これらのモードのオプションは \fB-\-dbpath\fP と \fB-\-root\fP のみ
+である。
+
+.\"0 .SH SHOWRC 
+.SH SHOWRC 
+
+.\"0 Running 
+
+.PP
+ 	\fBrpm \-\-showrc\fP
+ 
+.PP
+.\"0 shows the values RPM will use for all of the options that may be set
+.\"0 in \fIrpmrc\fP files.
+というコマンドを実行すると、\fIrpmrc\fP ファイル中で設定できる
+全てのオプションの現在の値を表示する。
+
+.\"0 .SH FTP/HTTP OPTIONS
+.SH FTP/HTTP オプション
+
+.\"0 RPM includes simple FTP and HTTP clients to simplify installing and querying
+.\"0 packages which are available over the internet. Package files for install,
+.\"0 upgrade, and query operations may be specified as an ftp or http style URL:
+RPMには、インターネット上に置かれているパッケージのインストール又は問い合わせ
+が出来るように、簡単な FTP と HTTP クライアント機能が組み込まれている。
+インストール、アップグレード及び問い合わせ操作を行なうパッケージを
+次のような ftp もしくは http スタイルの URL で指定する事が出来る:
+
+.PP
+ 	\fBftp://<user>:<password>@hostname:<port>/path/to/package.rpm\fP
+.PP
+.\"0 If the \fB:password\fP portion is omitted, the password will be prompted
+.\"0 for (once per user/hostname pair). If both the user and password are
+.\"0 omitted, anonymous ftp is used. In all cases passive (PASV) ftp transfers are
+.\"0 used.
+\fB:<password>\fP の部分を省略した場合は(ユーザ/ホスト名の組毎に一度ずつ)
+パスワードの入力を促される。
+ユーザ及びパスワードとも省略した場合は、匿名 ftp を用いる。
+いずれの場合も受動(PASV) ftp 転送が用いられる。
+
+.\"0 RPM allows the following options to be used with ftp URLs:
+ftp の URL とともに以下のようなオプションを用いる事も出来る。
+
+.IP "\fB\--ftpproxy \fI<hostname>\fP"
+.\"0 The host \fI<hostname>\fP will be used as a proxy server for all ftp
+.\"0 transfers, which allows users to ftp through firewall machines which
+.\"0 use proxy systems.
+.\"0 This option may also be specified by configuring the macro \fB_ftpproxy\fP.
+ホスト \fI<hostname>\fP は全ての ftp 転送用のプロキシサーバとして使用
+される。これによって、プロキシシステムを使用したファイヤーウォールマシ
+ンを通して ftp を行なう事が出来る。
+このオプションは マクロ \fB_ftpproxy\fP で設定する事も出来る。
+
+.IP "\fB\--ftpport \fI<port>\fP"
+.\"0 The TCP \fI<port>\fP  number to use for the ftp connection on the proxy
+.\"0 ftp server instead of the default port.
+.\"0 This option may also be specified by configuring the macro \fB_ftpport\fP.
+プロキシ ftp サーバの ftp コネクション用を使用するため TCP \fI<port>\fP 番号を
+デフォルトのポートの代りに使用する。
+このオプションはマクロ \fI_ftpport\fP を設定することによっても指定できる。
+.PP
+
+.\"0 RPM allows the following options to be used with http URLs:
+RPM は http URL と共に以下のオプションが使用できる。
+
+.IP "\fB\--httpproxy \fI<hostname>\fP"
+.\"0 The host \fI<hostname>\fP will be used as a proxy server for all http
+.\"0 transfers.
+.\"0 This option may also be specified by configuring the macro \fB_httpproxy\fP.
+ホスト \fI<hostname>\fP は全ての http 転送用のプロキシサーバとして使用される。
+このオプションはマクロ \fB_httpproxy\fP を設定することによっても指定できる。
+
+.IP "\fB\--httpport \fI<port>\fP"
+.\"0 The TCP \fI<port>\fP  number to use for the http connection on the proxy
+.\"0 http server instead of the default port.
+.\"0 This option may also be specified by configuring the macro \fB_httpport\fP.
+プロキシ http サーバの http コネクション用を使用するため TCP \fI<port>\fP 番号を
+デフォルトのポートの代りに使用する。
+このオプションはマクロ \fI_httpport\fP を設定することによっても指定できる。
+.PP
+
+.\"0.SH FILES
+.SH ファイル
+.nf
+/usr/lib/rpm/rpmrc
+/etc/rpmrc
+~/.rpmrc
+/usr/lib/rpm/macros
+/etc/rpm/macros
+~/.rpmmacros
+/var/lib/rpm/conflictsindex.rpm
+/var/lib/rpm/fileindex.rpm
+/var/lib/rpm/groupindex.rpm
+/var/lib/rpm/nameindex.rpm
+/var/lib/rpm/packages.rpm
+/var/lib/rpm/providesindex.rpm
+/var/lib/rpm/requiredby.rpm
+/var/lib/rpm/triggerindex.rpm
+/tmp/rpm*
+.fi
+.El
+.\"0 .SH SEE ALSO
+.SH 関連項目
+.IR glint (8) ,
+.IR rpm2cpio (8) ,
+.B http://www.rpm.org/
+.nf
+.\"0 .SH AUTHORS
+.SH 著者
+.nf
+Marc Ewing <marc@redhat.com>
+Jeff Johnson <jbj@redhat.com>
+Erik Troan <ewt@redhat.com>
+.fi
+.SH 翻訳者
+.nf
+.\"0 古高和禎 <furutaka@Flux.tokai.jaeri.go.jp> .\" original 
+神田  充 <kanda@nn.iij4u.or.jp>
+.fi
