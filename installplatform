@@ -18,6 +18,7 @@ RPM="rpm --rcfile $TEMPRC"
 ARCH="$($RPM --eval '%{_arch}')"
 VENDOR="$($RPM --eval '%{_vendor}')"
 OS="$($RPM --eval '%{_os}')"
+TARGET="$($RPM --eval '%{_target}')"
 
 PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}"
 
@@ -29,5 +30,7 @@ RPMRC_OPTFLAGS="$(echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g')"
 cat $PLATFORM |
     sed	-e s,\\\$\{,\%\{_, \
 	-e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," > ${PPD}/macros
+
+ln -sf ${PPD} ${TARGET}
 
 rm $TEMPRC
