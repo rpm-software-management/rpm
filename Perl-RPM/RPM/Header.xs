@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.17 2000/10/05 04:48:59 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.18 2000/10/08 10:06:58 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -231,7 +231,6 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
 {
     char* fname;
     int fname_len;
-    SV* val;
     RPM__Header TIEHASH;
     RPM_Header* hdr_struct; /* Use this to store the actual C-level data */
 
