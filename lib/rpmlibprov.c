@@ -42,7 +42,7 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 
 void rpmShowRpmlibProvides(FILE * fp)
 {
-    const struct rpmlibProvides * rlp;
+    const struct rpmlibProvides_s * rlp;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
 	fprintf(fp, "    %s", rlp->featureName);
@@ -57,7 +57,7 @@ void rpmShowRpmlibProvides(FILE * fp)
 int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
 	int keyFlags)
 {
-    const struct rpmlibProvides * rlp;
+    const struct rpmlibProvides_s * rlp;
     int rc = 0;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
