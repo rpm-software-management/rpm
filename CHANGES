@@ -225,6 +225,7 @@
 	- python: permit direct ts.dbMatch() python iterations.
 	- python: the death of rpm.checksig(), use ts.hdrFromFdno() instead.
 	- add bitmask for precise control of signature/digest verification.
+	- python: bindings to import pubkeys and display openpgp packets.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

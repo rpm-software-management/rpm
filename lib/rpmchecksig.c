@@ -135,7 +135,7 @@ exit:
  * @retval signid	signer fingerprint
  * @return		0 on success
  */
-static int getSignid(Header sig, int sigtag, byte * signid)
+static int getSignid(Header sig, int sigtag, unsigned char * signid)
 	/*@globals fileSystem @*/
 	/*@modifies *signid, fileSystem @*/
 {
@@ -284,7 +284,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
 	/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
-	    byte oldsignid[8], newsignid[8];
+	    unsigned char oldsignid[8], newsignid[8];
 
 	    /* Grab the old signature fingerprint (if any) */
 	    memset(oldsignid, 0, sizeof(oldsignid));
@@ -393,24 +393,8 @@ exit:
     return res;
 }
 
-/** \ingroup rpmcli
- * Import public key(s).
- * @todo Implicit --update policy for gpg-pubkey headers.
- * @param ts		transaction set
- * @param qva		mode flags and parameters
- * @param argv		array of pubkey file names (NULL terminated)
- * @return		0 on success
- */
-static int rpmImportPubkey(const rpmts ts,
-		/*@unused@*/ QVA_t qva,
-		/*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
 {
-    const char * fn;
-    int res = 0;
     const char * afmt = "%{pubkeys:armor}";
     const char * group = "Public Keys";
     const char * license = "pubkey";
@@ -419,144 +403,177 @@ static int rpmImportPubkey(const rpmts ts,
     int_32 zero = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;
-    int rc, xx;
+    const char * d = NULL;
+    const char * enc = NULL;
+    const char * n = NULL;
+    const char * u = NULL;
+    const char * v = NULL;
+    const char * r = NULL;
+    const char * evr = NULL;
+    Header h = NULL;
+    int rc = 1;		/* assume failure */
+    char * t;
+    int xx;
 
-    if (argv == NULL) return res;
-
+    if (pkt == NULL || pktlen <= 0)
+	return -1;
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
 	return -1;
 
+    if ((enc = b64encode(pkt, pktlen)) == NULL)
+	goto exit;
+
+    dig = pgpNewDig();
+
+    /* Build header elements. */
+    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
+    pubp = &dig->pubkey;
+
+/*@-boundswrite@*/
+    v = t = xmalloc(16+1);
+    t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
+
+    r = t = xmalloc(8+1);
+    t = stpcpy(t, pgpHexStr(pubp->time, sizeof(pubp->time)));
+
+    n = t = xmalloc(sizeof("gpg()")+8);
+    t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
+
+    /*@-nullpass@*/ /* FIX: pubp->userid may be NULL */
+    u = t = xmalloc(sizeof("gpg()")+strlen(pubp->userid));
+    t = stpcpy( stpcpy( stpcpy(t, "gpg("), pubp->userid), ")");
+    /*@=nullpass@*/
+
+    evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
+    t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
+    t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
+/*@=boundswrite@*/
+
+    /* Check for pre-existing header. */
+
+    /* Build pubkey header. */
+    h = headerNew();
+
+    xx = headerAddOrAppendEntry(h, RPMTAG_PUBKEYS,
+			RPM_STRING_ARRAY_TYPE, &enc, 1);
+
+    d = headerSprintf(h, afmt, rpmTagTable, rpmHeaderFormats, NULL);
+    if (d == NULL)
+	goto exit;
+
+    xx = headerAddEntry(h, RPMTAG_NAME, RPM_STRING_TYPE, "gpg-pubkey", 1);
+    xx = headerAddEntry(h, RPMTAG_VERSION, RPM_STRING_TYPE, v+8, 1);
+    xx = headerAddEntry(h, RPMTAG_RELEASE, RPM_STRING_TYPE, r, 1);
+    xx = headerAddEntry(h, RPMTAG_DESCRIPTION, RPM_STRING_TYPE, d, 1);
+    xx = headerAddEntry(h, RPMTAG_GROUP, RPM_STRING_TYPE, group, 1);
+    xx = headerAddEntry(h, RPMTAG_LICENSE, RPM_STRING_TYPE, license, 1);
+    xx = headerAddEntry(h, RPMTAG_SUMMARY, RPM_STRING_TYPE, u, 1);
+
+    xx = headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &zero, 1);
+
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME,
+			RPM_STRING_ARRAY_TYPE, &u, 1);
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION,
+			RPM_STRING_ARRAY_TYPE, &evr, 1);
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS,
+			RPM_INT32_TYPE, &pflags, 1);
+
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME,
+			RPM_STRING_ARRAY_TYPE, &n, 1);
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION,
+			RPM_STRING_ARRAY_TYPE, &evr, 1);
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS,
+			RPM_INT32_TYPE, &pflags, 1);
+
+    xx = headerAddEntry(h, RPMTAG_RPMVERSION, RPM_STRING_TYPE, RPMVERSION, 1);
+
+    /* XXX W2DO: tag value inheirited from parent? */
+    xx = headerAddEntry(h, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildhost, 1);
+    {   int_32 tid = rpmtsGetTid(ts);
+	xx = headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &tid, 1);
+	/* XXX W2DO: tag value inheirited from parent? */
+	xx = headerAddEntry(h, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &tid, 1);
+    }
+
+#ifdef	NOTYET
+    /* XXX W2DO: tag value inheirited from parent? */
+    xx = headerAddEntry(h, RPMTAG_SOURCERPM, RPM_STRING_TYPE, fn, 1);
+#endif
+
+    /* Add header to database. */
+    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
+    if (xx != 0)
+	goto exit;
+
+exit:
+    /* Clean up. */
+    h = headerFree(h);
+    dig = pgpFreeDig(dig);
+    n = _free(n);
+    u = _free(u);
+    v = _free(v);
+    r = _free(r);
+    evr = _free(evr);
+    enc = _free(enc);
+    d = _free(d);
+    
+    return rc;
+}
+
+/** \ingroup rpmcli
+ * Import public key(s).
+ * @todo Implicit --update policy for gpg-pubkey headers.
+ * @param ts		transaction set
+ * @param qva		mode flags and parameters
+ * @param argv		array of pubkey file names (NULL terminated)
+ * @return		0 on success
+ */
+static int rpmcliImportPubkeys(const rpmts ts,
+		/*@unused@*/ QVA_t qva,
+		/*@null@*/ const char ** argv)
+	/*@globals RPMVERSION, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    const char * fn;
+    const unsigned char * pkt = NULL;
+    ssize_t pktlen = 0;
+    int res = 0;
+    int rc;
+
+    if (argv == NULL) return res;
+
     /*@-branchstate@*/
 /*@-boundsread@*/
-    while ((fn = *argv++) != NULL)
+    while ((fn = *argv++) != NULL) {
 /*@=boundsread@*/
-    {
-	const char * d = NULL;
-	const char * enc = NULL;
-	const char * n = NULL;
-	const char * u = NULL;
-	const char * v = NULL;
-	const char * r = NULL;
-	const char * evr = NULL;
-	const byte * pkt = NULL;
-	char * t;
-	ssize_t pktlen = 0;
-	Header h = NULL;
+
+	pkt = _free(pkt);
 
 	/* Read pgp packet. */
 	if ((rc =  pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
 	    rpmError(RPMERR_IMPORT, _("%s: import read failed.\n"), fn);
 	    res++;
-	    goto bottom;
+	    continue;
 	}
 	if (rc != PGPARMOR_PUBKEY) {
 	    rpmError(RPMERR_IMPORT, _("%s: not an armored public key.\n"), fn);
 	    res++;
-	    goto bottom;
+	    continue;
 	}
-	if ((enc = b64encode(pkt, pktlen)) == NULL) {
-	    rpmError(RPMERR_IMPORT, _("%s: base64 encode failed.\n"), fn);
+
+	/* Import pubkey packet(s). */
+	if ((rc =  rpmcliImportPubkey(ts, pkt, pktlen)) != 0) {
+	    rpmError(RPMERR_IMPORT, _("%s: import failed.\n"), fn);
 	    res++;
-	    goto bottom;
+	    continue;
 	}
 
-	dig = pgpNewDig();
-
-	/* Build header elements. */
-	(void) pgpPrtPkts(pkt, pktlen, dig, 0);
-	pubp = &dig->pubkey;
-
-/*@-boundswrite@*/
-	v = t = xmalloc(16+1);
-	t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
-
-	r = t = xmalloc(8+1);
-	t = stpcpy(t, pgpHexStr(pubp->time, sizeof(pubp->time)));
-
-	n = t = xmalloc(sizeof("gpg()")+8);
-	t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
-
-	/*@-nullpass@*/ /* FIX: pubp->userid may be NULL */
-	u = t = xmalloc(sizeof("gpg()")+strlen(pubp->userid));
-	t = stpcpy( stpcpy( stpcpy(t, "gpg("), pubp->userid), ")");
-	/*@=nullpass@*/
-
-	evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
-	t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
-	t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
-/*@=boundswrite@*/
-
-	/* Check for pre-existing header. */
-
-	/* Build pubkey header. */
-	h = headerNew();
-
-	xx = headerAddOrAppendEntry(h, RPMTAG_PUBKEYS,
-			RPM_STRING_ARRAY_TYPE, &enc, 1);
-
-	d = headerSprintf(h, afmt, rpmTagTable, rpmHeaderFormats, NULL);
-	if (d == NULL) {
-	    res++;
-	    goto bottom;
-	}
-
-	xx = headerAddEntry(h, RPMTAG_NAME, RPM_STRING_TYPE, "gpg-pubkey", 1);
-	xx = headerAddEntry(h, RPMTAG_VERSION, RPM_STRING_TYPE, v+8, 1);
-	xx = headerAddEntry(h, RPMTAG_RELEASE, RPM_STRING_TYPE, r, 1);
-	xx = headerAddEntry(h, RPMTAG_DESCRIPTION, RPM_STRING_TYPE, d, 1);
-	xx = headerAddEntry(h, RPMTAG_GROUP, RPM_STRING_TYPE, group, 1);
-	xx = headerAddEntry(h, RPMTAG_LICENSE, RPM_STRING_TYPE, license, 1);
-	xx = headerAddEntry(h, RPMTAG_SUMMARY, RPM_STRING_TYPE, u, 1);
-
-	xx = headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &zero, 1);
-
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME,
-			RPM_STRING_ARRAY_TYPE, &u, 1);
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION,
-			RPM_STRING_ARRAY_TYPE, &evr, 1);
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS,
-			RPM_INT32_TYPE, &pflags, 1);
-
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME,
-			RPM_STRING_ARRAY_TYPE, &n, 1);
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION,
-			RPM_STRING_ARRAY_TYPE, &evr, 1);
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS,
-			RPM_INT32_TYPE, &pflags, 1);
-
-	xx = headerAddEntry(h, RPMTAG_RPMVERSION, RPM_STRING_TYPE, RPMVERSION, 1);
-
-	/* XXX W2DO: tag value inheirited from parent? */
-	xx = headerAddEntry(h, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildhost, 1);
-	{   int_32 tid = rpmtsGetTid(ts);
-	    xx = headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &tid, 1);
-	    /* XXX W2DO: tag value inheirited from parent? */
-	    xx = headerAddEntry(h, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &tid, 1);
-	}
-
-#ifdef	NOTYET
-	/* XXX W2DO: tag value inheirited from parent? */
-	xx = headerAddEntry(h, RPMTAG_SOURCERPM, RPM_STRING_TYPE, fn, 1);
-#endif
-
-	/* Add header to database. */
-	xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
-
-bottom:
-	/* Clean up. */
-	h = headerFree(h);
-	dig = pgpFreeDig(dig);
-	pkt = _free(pkt);
-	n = _free(n);
-	u = _free(u);
-	v = _free(v);
-	r = _free(r);
-	evr = _free(evr);
-	enc = _free(enc);
-	d = _free(d);
     }
     /*@=branchstate@*/
     
+    pkt = _free(pkt);
     return res;
 }
 
@@ -572,7 +589,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
-    byte buf[4*BUFSIZ];
+    unsigned char buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
     int i;
@@ -973,7 +990,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
     case RPMSIGN_CHK_SIGNATURE:
 	break;
     case RPMSIGN_IMPORT_PUBKEY:
-	return rpmImportPubkey(ts, qva, argv);
+	return rpmcliImportPubkeys(ts, qva, argv);
 	/*@notreached@*/ break;
     case RPMSIGN_NEW_SIGNATURE:
     case RPMSIGN_ADD_SIGNATURE:

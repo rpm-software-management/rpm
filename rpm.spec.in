@@ -517,7 +517,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Mon Aug  5 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.71
+* Tue Aug  6 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.73
+- python: bindings to import pubkeys and display openpgp packets.
+
+* Mon Aug  5 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.72
 - python: bare bones rollback bindings.
 - python: enable threads on callbacks and longish rpmlib calls.
 - python: expose RPMTAG_SOURCEPACKAGE to identify source headers.

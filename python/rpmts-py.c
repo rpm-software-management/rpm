@@ -11,6 +11,7 @@
 #endif
 
 #include <rpmcli.h>
+#include <rpmpgp.h>
 
 #include "header-py.h"
 #include "rpmdb-py.h"
@@ -737,6 +738,70 @@ fprintf(stderr, "*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
 /** \ingroup python
  */
 static PyObject *
+rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
+{
+    PyObject * blob;
+    unsigned char * pkt;
+    unsigned int pktlen;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, "O:PgpPrtPkts", &blob)) return NULL;
+    if (blob == Py_None) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+    if (!PyString_Check(blob)) {
+	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
+	return NULL;
+    }
+    pkt = PyString_AsString(blob);
+    pktlen = PyString_Size(blob);
+
+    (void) pgpPrtPkts(pkt, pktlen, NULL, 1);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
+{
+    PyObject * blob;
+    unsigned char * pkt;
+    unsigned int pktlen;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, "O:PgpImportPubkey", &blob)) return NULL;
+    if (blob == Py_None) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+    if (!PyString_Check(blob)) {
+	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
+	return NULL;
+    }
+    pkt = PyString_AsString(blob);
+    pktlen = PyString_Size(blob);
+
+    (void) rpmcliImportPubkey(s->ts, pkt, pktlen);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
 rpmts_GetKeys(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
@@ -746,7 +811,7 @@ rpmts_GetKeys(rpmtsObject * s, PyObject * args)
     PyObject *tuple;
 
 if (_rpmts_debug)
-fprintf(stderr, "*** GetKeys(%p) ts %p\n", s, s->ts);
+fprintf(stderr, "*** rpmts_GetKeys(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":GetKeys")) return NULL;
 
@@ -1066,6 +1131,10 @@ static struct PyMethodDef rpmts_methods[] = {
     rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\
     rpm._RPMVSF_NODIGESTS    if set, don't check digest(s)\n\
     rpm._RPMVSF_NOSIGNATURES if set, don't check signature(s)\n" },
+ {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS,
+	NULL },
+ {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS,
+	NULL },
  {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
 	NULL },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS,

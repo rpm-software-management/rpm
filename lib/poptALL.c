@@ -233,7 +233,7 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("use ROOT as top level directory"),
 	N_("ROOT") },
 
- { "querytags", '\0', 0, 0, 'Q',
+ { "querytags", '\0', 0, 0, POPT_QUERYTAGS,
         N_("display known query tags"), NULL },
  { "showrc", '\0', 0, NULL, POPT_SHOWRC,
 	N_("display final rpmrc and macro configuration"), NULL },

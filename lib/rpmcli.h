@@ -696,6 +696,21 @@ extern struct poptOption rpmDatabasePoptTable[];
 /*@{*/
 
 /** \ingroup rpmcli
+ * Import public key packet(s).
+ * @todo Implicit --update policy for gpg-pubkey headers.
+ * @param ts		transaction set
+ * @param pkt		pgp pubkey packet(s)
+ * @param pktlen	pgp pubkey length
+ * @return		0 on success
+ */
+int rpmcliImportPubkey(const rpmts ts,
+		const unsigned char * pkt, ssize_t pktlen)
+	/*@globals RPMVERSION, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
  * Bit(s) to control rpmReSign() operation.
  */
 /*@-typeuse@*/
