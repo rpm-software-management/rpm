@@ -38,24 +38,36 @@ void compressFilelist(Header h)
 	/*@modifies h @*/;
 
 /**
- * Convert (dirname,basename,dirindex) tags to absolute path tag.
+ * Retrieve file names from header.
+ *
+ * The representation of file names in package headers changed in rpm-4.0.
+ * Originally, file names were stored as an array of absolute paths.
+ * In rpm-4.0, file names are stored as separate arrays of dirname's and
+ * basename's, * with a dirname index to associate the correct dirname
+ * with each basname.
+ *
+ * This function is used to retrieve file names independent of how the
+ * file names are represented in the package header.
+ * 
+ * @param h		header
+ * @param tagN		RPMTAG_BASENAMES | PMTAG_ORIGBASENAMES
+ * @retval *fnp		array of file names
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildFNames(Header h, rpmTag tagN,
+		/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
+	/*@modifies *fnp, *fcp @*/;
+
+/**
+ * Convert (dirname,basename,dirindex) tags to absolute path tags.
  * @param h		header
  */
 void expandFilelist(Header h)
 	/*@modifies h @*/;
 
 /**
- * @param h		header
- * @retval fileListPtr	list of files
- * @retval fileCountPtr	number of files
- */
-void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
-			/*@out@*/ int * fileCountPtr)
-	/*@modifies *fileListPtr, *fileCountPtr @*/;
-
-/**
  * Retrofit a Provides: name = version-release dependency into legacy
- * packages.
+ * package headers.
  * @param h		header
  */
 void providePackageNVR(Header h)

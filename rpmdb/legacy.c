@@ -348,14 +348,8 @@ exit:
 }
 /*@=bounds@*/
 
-/*
- * This is pretty straight-forward. The only thing that even resembles a trick
- * is getting all of this into a single xmalloc'd block.
- */
-static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
-			    /*@out@*/ int * fileCountPtr, rpmTag baseNameTag,
-			    rpmTag dirNameTag, rpmTag dirIndexesTag)
-	/*@modifies *fileListPtr, *fileCountPtr @*/
+void rpmfiBuildFNames(Header h, rpmTag tagN,
+	/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -365,13 +359,23 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
     int count;
     const char ** fileNames;
     int size;
+    rpmTag dirNameTag = 0;
+    rpmTag dirIndexesTag = 0;
     rpmTagType bnt, dnt;
-    char * data;
+    char * t;
     int i, xx;
 
-    if (!hge(h, baseNameTag, &bnt, (void **) &baseNames, &count)) {
-	if (fileListPtr) *fileListPtr = NULL;
-	if (fileCountPtr) *fileCountPtr = 0;
+    if (tagN == RPMTAG_BASENAMES) {
+	dirNameTag = RPMTAG_DIRNAMES;
+	dirIndexesTag = RPMTAG_DIRINDEXES;
+    } else if (tagN == RPMTAG_ORIGBASENAMES) {
+	dirNameTag = RPMTAG_ORIGDIRNAMES;
+	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
+    }
+
+    if (!hge(h, tagN, &bnt, (void **) &baseNames, &count)) {
+	if (fnp) *fnp = NULL;
+	if (fcp) *fcp = 0;
 	return;		/* no file list */
     }
 
@@ -383,24 +387,24 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 	size += strlen(baseNames[i]) + strlen(dirNames[dirIndexes[i]]) + 1;
 
     fileNames = xmalloc(size);
-    data = ((char *) fileNames) + (sizeof(*fileNames) * count);
+    t = ((char *) fileNames) + (sizeof(*fileNames) * count);
     /*@-branchstate@*/
     for (i = 0; i < count; i++) {
-	fileNames[i] = data;
-	data = stpcpy( stpcpy(data, dirNames[dirIndexes[i]]), baseNames[i]);
-	*data++ = '\0';
+	fileNames[i] = t;
+	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
+	*t++ = '\0';
     }
     /*@=branchstate@*/
     baseNames = hfd(baseNames, bnt);
     dirNames = hfd(dirNames, dnt);
 
     /*@-branchstate@*/
-    if (fileListPtr)
-	*fileListPtr = fileNames;
+    if (fnp)
+	*fnp = fileNames;
     else
 	fileNames = _free(fileNames);
     /*@=branchstate@*/
-    if (fileCountPtr) *fileCountPtr = count;
+    if (fcp) *fcp = count;
 }
 
 void expandFilelist(Header h)
@@ -413,8 +417,7 @@ void expandFilelist(Header h)
 
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
-	doBuildFileList(h, &fileNames, &count, RPMTAG_BASENAMES,
-			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
+	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
 	if (fileNames == NULL || count <= 0)
 	    return;
 	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
@@ -426,19 +429,6 @@ void expandFilelist(Header h)
     xx = hre(h, RPMTAG_DIRNAMES);
     xx = hre(h, RPMTAG_BASENAMES);
     xx = hre(h, RPMTAG_DIRINDEXES);
-}
-
-
-void rpmBuildFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
-{
-    doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_BASENAMES,
-			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
-}
-
-void buildOrigFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
-{
-    doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_ORIGBASENAMES,
-			RPMTAG_ORIGDIRNAMES, RPMTAG_ORIGDIRINDEXES);
 }
 
 /*

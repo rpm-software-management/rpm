@@ -215,7 +215,7 @@ static void mungeFilelist(Header h)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
 	compressFilelist(h);
     
-    rpmBuildFileList(h, &fileNames, &count);
+    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
 
     if (fileNames == NULL || count <= 0)
 	return;

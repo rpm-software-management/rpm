@@ -430,6 +430,33 @@ rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
 	/*@modifies ts, h, fileSystem @*/;
 
 /**
+ * Retrieve file classes from header.
+ *
+ * This function is used to retrieve file classes from the header.
+ * 
+ * @param h		header
+ * @retval *fclassp	array of file classes
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildFClasses(Header h,
+		/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
+	/*@modifies *fclassp, *fcp @*/;
+
+/**
+ * Retrieve per-file dependencies from header.
+ *
+ * This function is used to retrieve per-file dependencies from the header.
+ * 
+ * @param h		header
+ * @param tagN		RPMTAG_PROVIDENAME | RPMTAG_REQUIRENAME
+ * @retval *fdepsp	array of file dependencies
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildFDeps(Header h, rpmTag tagN,
+		/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
+	/*@modifies *fdepsp, *fcp @*/;
+
+/**
  * Return file type from mode_t.
  * @param mode		file mode bits (from header)
  * @return		file type

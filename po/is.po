@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-18 11:10-0500\n"
+"POT-Creation-Date: 2002-12-18 17:51-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -1381,24 +1381,24 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:387
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:398
 #: rpmdb/header.c:3237 rpmdb/header.c:3260 rpmdb/header.c:3284
 msgid "(not a number)"
 msgstr ""
 
-#: lib/formats.c:161
+#: lib/formats.c:172
 msgid "(not base64)"
 msgstr ""
 
-#: lib/formats.c:171
+#: lib/formats.c:182
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:237 lib/formats.c:286
+#: lib/formats.c:248 lib/formats.c:297
 msgid "(not a blob)"
 msgstr ""
 
-#: lib/formats.c:311
+#: lib/formats.c:322
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "búa til undirskrift"
@@ -2450,36 +2450,36 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/rpmfi.c:603
+#: lib/rpmfi.c:605
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:607
+#: lib/rpmfi.c:609
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:610
+#: lib/rpmfi.c:612
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:680
+#: lib/rpmfi.c:682
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/rpmfi.c:746
+#: lib/rpmfi.c:748
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "lína %d: %s\n"
 
-#: lib/rpmfi.c:756
+#: lib/rpmfi.c:758
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:835
+#: lib/rpmfi.c:837
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%5d færa %s -> %s\n"

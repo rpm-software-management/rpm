@@ -11,6 +11,8 @@
 #include "cpio.h"	/* XXX CPIO_FOO */
 #include "fsm.h"	/* XXX newFSM() */
 
+#include "rpmds.h"
+
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
@@ -1141,3 +1143,179 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
     /*@=compdef =nullstate@*/
 }
+
+void rpmfiBuildFClasses(Header h,
+	/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char ** cdict;
+    const int_32 * fcdictx;
+    int_32 ncdict, nfcdictx;
+    const char ** av;
+    int_32 ac = 0;
+    size_t nb;
+    rpmTagType fct, cdt;
+    char * t;
+    int i, j, xx;
+
+    if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) NULL, &ac) || ac == 0) {
+	if (fclassp) *fclassp = NULL;
+	if (fcp) *fcp = 0;
+	return;		/* no file list */
+    }
+
+    fcdictx = NULL;
+    nfcdictx = 0;
+    xx = hge(h, RPMTAG_FILECLASS, &fct, (void **) &fcdictx, &nfcdictx);
+    cdict = NULL;
+    ncdict = 0;
+    xx = hge(h, RPMTAG_CLASSDICT, &cdt, (void **) &cdict, &ncdict);
+
+    nb = (ac + 1) * sizeof(*av);
+    for (i = 0; i < ac; i++) {
+	if (fcdictx != NULL && cdict != NULL) {
+	    j = fcdictx[i];
+assert(j < ncdict);
+	    nb += strlen(cdict[j]);
+	}
+	nb += 1;
+    }
+
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    /*@-branchstate@*/
+    for (i = 0; i < ac; i++) {
+	av[i] = t;
+	if (fcdictx != NULL && cdict != NULL) {
+	    j = fcdictx[i];
+	    t = stpcpy(t, cdict[j]);
+	}
+	*t++ = '\0';
+    }
+    av[ac] = NULL;
+    /*@=branchstate@*/
+
+    cdict = hfd(cdict, cdt);
+    fcdictx = hfd(fcdictx, fct);
+
+    /*@-branchstate@*/
+    if (fclassp)
+	*fclassp = av;
+    else
+	av = _free(av);
+    /*@=branchstate@*/
+    if (fcp) *fcp = ac;
+}
+
+void rpmfiBuildFDeps(Header h, rpmTag tagN,
+	/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    int scareMem = 1;
+    char deptype = 'R';
+    char mydt;
+    rpmds ds;
+    const char * DNEVR;
+    const int_32 * ddict;
+    const int_32 * fddictx;
+    const int_32 * fddictn;
+    int_32 nddict, nfddictx, nfddictn;
+    const char ** av;
+    int_32 ac = 0;
+    size_t nb;
+    rpmTagType ddt, fxt, fnt;
+    char * t;
+    int dx, ndx, i, ix, xx;
+
+    if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) NULL, &ac) || ac == 0) {
+	if (fdepsp) *fdepsp = NULL;
+	if (fcp) *fcp = 0;
+	return;		/* no file list */
+    }
+
+    if (tagN == RPMTAG_PROVIDENAME)
+	deptype = 'P';
+    else if (tagN == RPMTAG_REQUIRENAME)
+	deptype = 'R';
+    ds = rpmdsNew(h, tagN, scareMem);
+
+    fddictn = NULL;
+    nfddictn = 0;
+    xx = hge(h, RPMTAG_FILEDEPENDSN, &fnt, (void **) &fddictn, &nfddictn);
+    fddictx = NULL;
+    nfddictx = 0;
+    xx = hge(h, RPMTAG_FILEDEPENDSX, &fxt, (void **) &fddictx, &nfddictx);
+    ddict = NULL;
+    nddict = 0;
+    xx = hge(h, RPMTAG_DEPENDSDICT, &ddt, (void **) &ddict, &nddict);
+
+    nb = (ac + 1) * sizeof(*av);
+    for (i = 0; i < ac; i++) {
+	if (fddictx != NULL && fddictn != NULL) {
+	    dx = fddictx[i];
+	    ndx = fddictn[i];
+	    if (ddict != NULL)
+	    while (ndx-- > 0) {
+		ix = ddict[dx++];
+		mydt = ((ix >> 24) & 0xff);
+		if (mydt != deptype)
+		    continue;
+		ix &= 0x00ffffff;
+		(void) rpmdsSetIx(ds, ix-1);
+		if (rpmdsNext(ds) < 0)
+		    continue;
+		DNEVR = rpmdsDNEVR(ds) + 2;
+		if (DNEVR != NULL)
+		    nb += strlen(DNEVR+2) + 1;
+	    }
+	}
+	nb += 1;
+    }
+
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    /*@-branchstate@*/
+    for (i = 0; i < ac; i++) {
+	av[i] = t;
+	if (fddictx != NULL && fddictn != NULL) {
+	    dx = fddictx[i];
+	    ndx = fddictn[i];
+	    if (ddict != NULL)
+	    while (ndx-- > 0) {
+		ix = ddict[dx++];
+		mydt = ((ix >> 24) & 0xff);
+		if (mydt != deptype)
+		    continue;
+		ix &= 0x00ffffff;
+		(void) rpmdsSetIx(ds, ix-1);
+		if (rpmdsNext(ds) < 0)
+		    continue;
+		DNEVR = rpmdsDNEVR(ds) + 2;
+		if (DNEVR != NULL) {
+		    t = stpcpy(t, DNEVR+2);
+		    *t++ = ' ';
+		    *t = '\0';
+		}
+	    }
+	}
+	*t++ = '\0';
+    }
+    av[ac] = NULL;
+    /*@=branchstate@*/
+
+    ddict = hfd(ddict, ddt);
+    fddictx = hfd(fddictx, fxt);
+    fddictn = hfd(fddictn, fnt);
+    ds = rpmdsFree(ds);
+
+    /*@-branchstate@*/
+    if (fdepsp)
+	*fdepsp = av;
+    else
+	av = _free(av);
+    /*@=branchstate@*/
+    if (fcp) *fcp = ac;
+}
+

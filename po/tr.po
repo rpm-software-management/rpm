@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-18 11:10-0500\n"
+"POT-Creation-Date: 2002-12-18 17:51-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1424,26 +1424,26 @@ msgstr "========== tsort sürüyor ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:387
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:398
 #: rpmdb/header.c:3237 rpmdb/header.c:3260 rpmdb/header.c:3284
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
-#: lib/formats.c:161
+#: lib/formats.c:172
 #, fuzzy
 msgid "(not base64)"
 msgstr "(bir sayý deðil)"
 
-#: lib/formats.c:171
+#: lib/formats.c:182
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:237 lib/formats.c:286
+#: lib/formats.c:248 lib/formats.c:297
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(bir sayý deðil)"
 
-#: lib/formats.c:311
+#: lib/formats.c:322
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "tüm PGP imzalarýný atlar"
@@ -2521,36 +2521,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
-#: lib/rpmfi.c:603
+#: lib/rpmfi.c:605
 msgid "========== relocations\n"
 msgstr "========== yeniden konumlama\n"
 
-#: lib/rpmfi.c:607
+#: lib/rpmfi.c:609
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d %s'i dýþlýyor\n"
 
-#: lib/rpmfi.c:610
+#: lib/rpmfi.c:612
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d yeniden konumlandýrýlýyor: %s -> %s\n"
 
-#: lib/rpmfi.c:680
+#: lib/rpmfi.c:682
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "multilib dosya yolu dýþlanýyor %s%s\n"
 
-#: lib/rpmfi.c:746
+#: lib/rpmfi.c:748
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s dýþlanýyor\n"
 
-#: lib/rpmfi.c:756
+#: lib/rpmfi.c:758
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s %s'e konumlanýyor\n"
 
-#: lib/rpmfi.c:835
+#: lib/rpmfi.c:837
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizini %s de yeniden konumlanýyor\n"

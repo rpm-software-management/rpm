@@ -14,7 +14,7 @@ const char * RPMVERSION = VERSION;
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 #include <rpmlib.h>
-
+#include "legacy.h"
 #include "misc.h"
 #include "debug.h"
 
@@ -403,7 +403,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
     case RPMTAG_OLDFILENAMES:
     {	const char ** fl = NULL;
 	int count;
-	rpmBuildFileList(h, &fl, &count);
+	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fl, &count);
 	if (count > 0) {
 	    *p = fl;
 	    if (c)	*c = count;

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-12-18 11:10-0500\n"
+"POT-Creation-Date: 2002-12-18 17:51-0500\n"
 "PO-Revision-Date: 2002-08-19 22:26+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1393,24 +1393,24 @@ msgstr "========== fortsätter med tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
 
-#: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:387
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:398
 #: rpmdb/header.c:3237 rpmdb/header.c:3260 rpmdb/header.c:3284
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
-#: lib/formats.c:161
+#: lib/formats.c:172
 msgid "(not base64)"
 msgstr "(inte base64)"
 
-#: lib/formats.c:171
+#: lib/formats.c:182
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: lib/formats.c:237 lib/formats.c:286
+#: lib/formats.c:248 lib/formats.c:297
 msgid "(not a blob)"
 msgstr "(inte en klick)"
 
-#: lib/formats.c:311
+#: lib/formats.c:322
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 
@@ -2456,36 +2456,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"
 
-#: lib/rpmfi.c:603
+#: lib/rpmfi.c:605
 msgid "========== relocations\n"
 msgstr "========== omflyttningar\n"
 
-#: lib/rpmfi.c:607
+#: lib/rpmfi.c:609
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d utesluter  %s\n"
 
-#: lib/rpmfi.c:610
+#: lib/rpmfi.c:612
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d flyttar om %s -> %s\n"
 
-#: lib/rpmfi.c:680
+#: lib/rpmfi.c:682
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "hoppar över multilib-sökväg %s%s\n"
 
-#: lib/rpmfi.c:746
+#: lib/rpmfi.c:748
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "hoppar över %s %s\n"
 
-#: lib/rpmfi.c:756
+#: lib/rpmfi.c:758
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "flyttar %s till %s\n"
 
-#: lib/rpmfi.c:835
+#: lib/rpmfi.c:837
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"

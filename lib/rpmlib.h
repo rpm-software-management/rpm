@@ -139,23 +139,6 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	/*@modifies h @*/;
 
 /** \ingroup header
- * Retrieve file names from header.
- * The representation of file names in package headers changed in rpm-4.0.
- * Originally, file names were stored as an array of paths. In rpm-4.0,
- * file names are stored as separate arrays of dirname's and basename's,
- * with a dirname index to associate the correct dirname with each basname.
- * This function is used to retrieve file names independent of how the
- * file names are represented in the package header.
- * 
- * @param h		header
- * @retval fileListPtr	address of array of file names
- * @retval fileCountPtr	address of number of files
- */
-void rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr, 
-		/*@out@*/ int * fileCountPtr)
-	/*@modifies *fileListPtr, *fileCountPtr @*/;
-
-/** \ingroup header
  * Retrieve tag info from header.
  * This is a "dressed" entry to headerGetEntry to do:
  *	1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.

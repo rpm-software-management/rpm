@@ -6,8 +6,13 @@
 #include "rpmio_internal.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
+
+#include <rpmfi.h>
+
+#include "legacy.h"
 #include "manifest.h"
 #include "misc.h"
+
 #include "debug.h"
 
 /*@access pgpDig @*/
@@ -32,10 +37,16 @@ static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
 
     if (type != RPM_INT32_TYPE)
 	val = xstrdup(_("(not a number)"));
+    else if (*item & RPMSENSE_TRIGGERPREIN)
+	val = xstrdup("prein");
     else if (*item & RPMSENSE_TRIGGERIN)
 	val = xstrdup("in");
-    else
+    else if (*item & RPMSENSE_TRIGGERUN)
 	val = xstrdup("un");
+    else if (*item & RPMSENSE_TRIGGERPOSTUN)
+	val = xstrdup("postun");
+    else
+	val = xstrdup("");
     return val;
 }
 
@@ -412,10 +423,10 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 /**
  * Retrieve mounted file system paths.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
@@ -444,10 +455,10 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
 /**
  * Retrieve install prefixes.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
@@ -482,10 +493,10 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 /**
  * Retrieve mounted file system space.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
@@ -509,7 +520,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	numFiles = 0;
 	filenames = NULL;
     } else {
-	rpmBuildFileList(h, &filenames, &numFiles);
+	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &filenames, &numFiles);
     }
 
 /*@-boundswrite@*/
@@ -542,10 +553,10 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 /**
  * Retrieve trigger info.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 /*@-bounds@*/	/* LCL: segfault */
@@ -619,10 +630,10 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 /**
  * Retrieve trigger type info.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
@@ -659,12 +670,16 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 	    if (indices[j] != i)
 		/*@innercontinue@*/ continue;
 
-	    if (flags[j] & RPMSENSE_TRIGGERIN)
+	    if (flags[j] & RPMSENSE_TRIGGERPREIN)
+		conds[i] = xstrdup("prein");
+	    else if (flags[j] & RPMSENSE_TRIGGERIN)
 		conds[i] = xstrdup("in");
 	    else if (flags[j] & RPMSENSE_TRIGGERUN)
 		conds[i] = xstrdup("un");
-	    else
+	    else if (flags[j] & RPMSENSE_TRIGGERPOSTUN)
 		conds[i] = xstrdup("postun");
+	    else
+		conds[i] = xstrdup("");
 	    /*@innerbreak@*/ break;
 	}
     }
@@ -675,10 +690,10 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 /**
  * Retrieve file paths.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
@@ -690,11 +705,77 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
 {
     *type = RPM_STRING_ARRAY_TYPE;
 
-    rpmBuildFileList(h, (const char ***) data, count);
+    rpmfiBuildFNames(h, RPMTAG_BASENAMES, (const char ***) data, count);
     *freeData = 1;
 
     *freeData = 0;	/* XXX WTFO? */
 
+    return 0; 
+}
+
+/**
+ * Retrieve file classes.
+ * @param h		header
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
+ * @return		0 on success
+ */
+static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+{
+    *type = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFClasses(h, (const char ***) data, count);
+    *freeData = 1;
+    return 0; 
+}
+
+/**
+ * Retrieve file provides.
+ * @param h		header
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
+ * @return		0 on success
+ */
+static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+{
+    *type = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, (const char ***) data, count);
+    *freeData = 1;
+    return 0; 
+}
+
+/**
+ * Retrieve file requires.
+ * @param h		header
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
+ * @return		0 on success
+ */
+static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+{
+    *type = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, (const char ***) data, count);
+    *freeData = 1;
     return 0; 
 }
 
@@ -708,17 +789,16 @@ int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
 static const char * language = "LANGUAGE";
 
 /*@observer@*/ /*@unchecked@*/
-static const char * _macro_i18ndomains =
-		"%{?_i18ndomains:%{_i18ndomains}}";
+static const char * _macro_i18ndomains = "%{?_i18ndomains}";
 
 /**
  * Retrieve i18n text.
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
@@ -805,10 +885,10 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 /**
  * Retrieve summary text.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
@@ -825,10 +905,10 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
 /**
  * Retrieve description text.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
@@ -845,10 +925,10 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 /**
  * Retrieve group text.
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freeData	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value pointer
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
 static int groupTag(Header h, /*@out@*/ rpmTagType * type,
@@ -864,23 +944,26 @@ static int groupTag(Header h, /*@out@*/ rpmTagType * type,
 
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
-    { HEADER_EXT_TAG, "RPMTAG_GROUP", { groupTag } },
-    { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION", { descriptionTag } },
-    { HEADER_EXT_TAG, "RPMTAG_SUMMARY", { summaryTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILENAMES", { filenamesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },
-    { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS", { triggercondsTag } },
-    { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE", { triggertypeTag } },
-    { HEADER_EXT_FORMAT, "armor", { armorFormat } },
-    { HEADER_EXT_FORMAT, "base64", { base64Format } },
-    { HEADER_EXT_FORMAT, "pgpsig", { pgpsigFormat } },
-    { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
-    { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
-    { HEADER_EXT_FORMAT, "perms", { permsFormat } },
-    { HEADER_EXT_FORMAT, "permissions", { permsFormat } },
-    { HEADER_EXT_FORMAT, "triggertype", { triggertypeFormat } },
-    { HEADER_EXT_MORE, NULL, { (void *) headerDefaultFormats } }
+    { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
+    { HEADER_EXT_TAG, "RPMTAG_SUMMARY",		{ summaryTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILECLASS",	{ fileclassTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filenamesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILEPROVIDE",	{ fileprovideTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILEREQUIRE",	{ filerequireTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FSSIZES",		{ fssizesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FSNAMES",		{ fsnamesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX",	{ instprefixTag } },
+    { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
+    { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
+    { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
+    { HEADER_EXT_FORMAT, "pgpsig",		{ pgpsigFormat } },
+    { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },
+    { HEADER_EXT_FORMAT, "fflags",		{ fflagsFormat } },
+    { HEADER_EXT_FORMAT, "perms",		{ permsFormat } },
+    { HEADER_EXT_FORMAT, "permissions",		{ permsFormat } },
+    { HEADER_EXT_FORMAT, "triggertype",		{ triggertypeFormat } },
+    { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
 } ;
 /*@=type@*/

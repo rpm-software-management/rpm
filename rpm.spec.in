@@ -463,6 +463,7 @@ exit 0
 %changelog
 * Wed Dec 18 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.29nptl
 - popt aliases for -U et al to achieve dynamic link with nptl.
+- add --file{class,provide,require} popt aliases and header extensions
 
 * Tue Dec 17 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.28nptl
 - re-enable CDB locking, removing "private" from %%__dbi_cdb macro.

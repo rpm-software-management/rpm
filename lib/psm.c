@@ -30,7 +30,7 @@
 
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
-#include "legacy.h"		/* XXX buildOrigFileList() */
+#include "legacy.h"		/* XXX rpmfiBuildFNames() */
 #include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
 #include "misc.h"		/* XXX stripTrailingChar() */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
@@ -525,7 +525,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     i = fi->fc;
 
     if (fi->h != NULL) {	/* XXX can't happen */
-	rpmBuildFileList(fi->h, &fi->apath, NULL);
+	rpmfiBuildFNames(fi->h, RPMTAG_BASENAMES, &fi->apath, NULL);
 
 	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
 	    for (i = 0; i < fi->fc; i++)
@@ -1670,9 +1670,9 @@ assert(psm->mi == NULL);
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	
 	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
-		buildOrigFileList(fi->h, &fi->apath, NULL);
+		rpmfiBuildFNames(fi->h, RPMTAG_ORIGBASENAMES, &fi->apath, NULL);
 	    else
-		rpmBuildFileList(fi->h, &fi->apath, NULL);
+		rpmfiBuildFNames(fi->h, RPMTAG_BASENAMES, &fi->apath, NULL);
 	
 	    if (fi->fuser == NULL)
 		xx = hge(fi->h, RPMTAG_FILEUSERNAME, NULL,

@@ -12,7 +12,7 @@
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
-#include "legacy.h"	/* XXX providePackageNVR() and compressFileList() */
+#include "legacy.h"	/* XXX legacyRetrofit() */
 #include "rpmlead.h"
 
 #include "header_internal.h"	/* XXX headerCheck */
