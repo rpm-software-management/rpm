@@ -15,6 +15,9 @@ typedef struct rpmsig_s * rpmsig;
 
 typedef struct rpmsqElem * rpmsq;
 
+typedef void (*rpmsqAction_t) (int signum, siginfo_t *info, void *context)
+	/*@*/;
+
 /*@-redecl@*/
 /*@unchecked@*/
 extern int _rpmsq_debug;
@@ -30,6 +33,7 @@ struct rpmsqElem {
     volatile pid_t reaped;	/*!< Reaped waitpid(3) return. */
     volatile int status;	/*!< Reaped waitpid(3) status. */
     int reaper;			/*!< Register SIGCHLD handler? */
+    int pipes[2];
     void * id;			/*!< Blocking thread id (pthread_t). */
     pthread_mutex_t mutex;
     pthread_cond_t cond;
@@ -58,17 +62,17 @@ int rpmsqRemove(/*@null@*/ void * elem)
 
 /**
  */
-void rpmsqHandler(int signum)
+void rpmsqAction(int signum, siginfo_t * info, void * context)
 	/*@globals rpmsqCaught, fileSystem @*/
 	/*@modifies rpmsqCaught, fileSystem @*/;
 
 /**
  * Enable or disable a signal handler.
  * @param signum	signal to enable (or disable if negative)
- * @param handler	signal handler (or NULL to use rpmsqHandler())
+ * @param handler	sa_sigaction handler (or NULL to use rpmsqHandler())
  * @return		no. of refs, -1 on error
  */
-int rpmsqEnable(int signum, /*@null@*/ sighandler_t handler)
+int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 	/*@globals rpmsqCaught, fileSystem, internalState @*/
 	/*@modifies rpmsqCaught, fileSystem, internalState @*/;
 
@@ -89,6 +93,16 @@ pid_t rpmsqFork(rpmsq sq)
 pid_t rpmsqWait(rpmsq sq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sq, fileSystem, internalState @*/;
+
+/**
+ * Call a function in a thread synchronously.
+ * @param start		function
+ * @param arg		function argument
+ * @return		0 on success
+ */
+int rpmsqThread(void * (*start) (void * arg), void * arg)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Execute a command, returning its status.

@@ -188,6 +188,7 @@ struct fsm_s {
     fileAction action;		/*!< File disposition. */
     fileStage goal;		/*!< Package state machine goal. */
     fileStage stage;		/*!< External file stage. */
+    fileStage nstage;		/*!< Next file stage. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
 };
@@ -290,6 +291,9 @@ int fsmMapAttrs(FSM_t fsm)
 	/*@modifies fsm @*/;
 /*@=exportlocal@*/
 
+int fsmNext(FSM_t fsm, fileStage nstage)
+	/*@modifies fsm @*/;
+
 /**
  * File state machine driver.
  * @param fsm		file state machine data
@@ -299,6 +303,8 @@ int fsmMapAttrs(FSM_t fsm)
 int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies fsm, errno, fileSystem, internalState @*/;
+
+#define	fsmUNSAFE	fsmStage
 
 #ifdef __cplusplus
 }

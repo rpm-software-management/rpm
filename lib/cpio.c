@@ -77,14 +77,14 @@ int cpioTrailerWrite(FSM_t fsm)
 
     /* XXX DWRITE uses rdnb for I/O length. */
     fsm->rdnb = PHYS_HDR_SIZE + sizeof(CPIO_TRAILER);
-    rc = fsmStage(fsm, FSM_DWRITE);
+    rc = fsmNext(fsm, FSM_DWRITE);
 
     /*
      * GNU cpio pads to 512 bytes here, but we don't. This may matter for
      * tape device(s) and/or concatenated cpio archives. <shrug>
      */
     if (!rc)
-	rc = fsmStage(fsm, FSM_PAD);
+	rc = fsmNext(fsm, FSM_PAD);
 
     return rc;
 }
@@ -119,11 +119,11 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
 
     /* XXX DWRITE uses rdnb for I/O length. */
     fsm->rdnb = PHYS_HDR_SIZE + len;
-    rc = fsmStage(fsm, FSM_DWRITE);
+    rc = fsmNext(fsm, FSM_DWRITE);
     if (!rc && fsm->rdnb != fsm->wrnb)
 	rc = CPIOERR_WRITE_FAILED;
     if (!rc)
-	rc = fsmStage(fsm, FSM_PAD);
+	rc = fsmNext(fsm, FSM_PAD);
     return rc;
 }
 
@@ -137,7 +137,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     int rc = 0;
 
     fsm->wrlen = PHYS_HDR_SIZE;
-    rc = fsmStage(fsm, FSM_DREAD);
+    rc = fsmNext(fsm, FSM_DREAD);
     if (!rc && fsm->rdnb != fsm->wrlen)
 	rc = CPIOERR_READ_FAILED;
     if (rc) return rc;
@@ -175,7 +175,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
 
     {	char * t = xmalloc(nameSize + 1);
 	fsm->wrlen = nameSize;
-	rc = fsmStage(fsm, FSM_DREAD);
+	rc = fsmNext(fsm, FSM_DREAD);
 	if (!rc && fsm->rdnb != fsm->wrlen)
 	    rc = CPIOERR_BAD_HEADER;
 	if (rc) {

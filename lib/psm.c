@@ -531,9 +531,6 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (progArgv == NULL && script == NULL)
 	return rc;
 
-    psm->sq.child = 0;
-    psm->sq.reaped = 0;
-    psm->sq.status = 0;
     psm->sq.reaper = 1;
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
@@ -723,10 +720,6 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"),
 			psm->stepName, sln, n, v, r,
 			argv[0], (unsigned)getpid());
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Exec: %s \"%s\"\n", sln, argv[0]);
-/*@=modfilesys@*/
 	    unsetenv("MALLOC_CHECK_");
 	    xx = execv(argv[0], (char *const *)argv);
 	    break;
@@ -1135,6 +1128,20 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
     return rpmpsmLink(psm, msg);
 }
 
+static void * rpmpsmThread(void * arg)
+	/*@modifies psm @*/
+{
+    rpmpsm psm = arg;
+    return ((void *) rpmpsmStage(psm, psm->nstage));
+}
+
+static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
+	/*@modifies psm @*/
+{
+    psm->nstage = nstage;
+    return rpmsqThread(rpmpsmThread, psm);
+}
+
 /**
  * @todo Packages w/o files never get a callback, hence don't get displayed
  * on install with -v.
@@ -1241,7 +1248,7 @@ assert(psm->mi == NULL);
 	    psm->scriptArg = psm->npkgs_installed - 1;
 	
 	    /* Retrieve installed header. */
-	    rc = rpmpsmStage(psm, PSM_RPMDB_LOAD);
+	    rc = rpmpsmNext(psm, PSM_RPMDB_LOAD);
 if (rc == RPMRC_OK)
 if (psm->te)
 psm->te->h = headerLink(fi->h);
@@ -1281,7 +1288,7 @@ psm->te->h = headerLink(fi->h);
 #endif
 
 	/* Change root directory if requested and not already done. */
-	rc = rpmpsmStage(psm, PSM_CHROOT_IN);
+	rc = rpmpsmNext(psm, PSM_CHROOT_IN);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
@@ -1292,7 +1299,7 @@ psm->te->h = headerLink(fi->h);
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
-		rc = rpmpsmStage(psm, PSM_SCRIPT);
+		rc = rpmpsmNext(psm, PSM_SCRIPT);
 		if (rc != RPMRC_OK) {
 		    rpmError(RPMERR_SCRIPT,
 			_("%s: %s scriptlet failed (%d), skipping %s\n"),
@@ -1311,16 +1318,16 @@ psm->te->h = headerLink(fi->h);
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmStage(psm, PSM_IMMED_TRIGGERS);
+		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmStage(psm, PSM_TRIGGERS);
+		rc = rpmpsmNext(psm, PSM_TRIGGERS);
 		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
-		rc = rpmpsmStage(psm, PSM_SCRIPT);
+		rc = rpmpsmNext(psm, PSM_SCRIPT);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    int noArchiveSize = 0;
@@ -1366,7 +1373,7 @@ psm->te->h = headerLink(fi->h);
 
 	    /* Retrieve type of payload compression. */
 	    /*@-nullstate@*/	/* FIX: psm->oh may be NULL */
-	    rc = rpmpsmStage(psm, PSM_RPMIO_FLAGS);
+	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
 	    /*@=nullstate@*/
 
 	    /* Write the lead section into the package. */
@@ -1470,7 +1477,7 @@ psm->te->h = headerLink(fi->h);
 	    }
 
 	    /* Retrieve type of payload compression. */
-	    rc = rpmpsmStage(psm, PSM_RPMIO_FLAGS);
+	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
 
 	    if (rpmteFd(fi->te) == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
@@ -1497,13 +1504,13 @@ psm->te->h = headerLink(fi->h);
 	    /*@=mods@*/
 
 	    if (!rc)
-		rc = rpmpsmStage(psm, PSM_COMMIT);
+		rc = rpmpsmNext(psm, PSM_COMMIT);
 
 	    /* XXX make sure progress is closed out */
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
 	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
 	    psm->total = psm->amount;
-	    xx = rpmpsmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (rc) {
 		rpmError(RPMERR_CPIO,
@@ -1517,7 +1524,7 @@ psm->te->h = headerLink(fi->h);
 		psm->what = RPMCALLBACK_UNPACK_ERROR;
 		psm->amount = 0;
 		psm->total = 0;
-		xx = rpmpsmStage(psm, PSM_NOTIFY);
+		xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 		break;
 	    }
@@ -1532,7 +1539,7 @@ psm->te->h = headerLink(fi->h);
 	    psm->what = RPMCALLBACK_UNINST_START;
 	    psm->amount = fc;		/* XXX W2DO? looks wrong. */
 	    psm->total = fc;
-	    xx = rpmpsmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi,
 			NULL, NULL, &psm->failedFile);
@@ -1541,7 +1548,7 @@ psm->te->h = headerLink(fi->h);
 	    psm->what = RPMCALLBACK_UNINST_STOP;
 	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
 	    psm->total = fc;
-	    xx = rpmpsmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	}
 	if (psm->goal == PSM_PKGSAVE) {
@@ -1579,7 +1586,7 @@ psm->te->h = headerLink(fi->h);
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
 	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
 	    psm->total = psm->amount;
-	    xx = rpmpsmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    fi->action = action;
 	    fi->actions = actions;
@@ -1608,11 +1615,11 @@ psm->te->h = headerLink(fi->h);
 	     * the database before adding the new one.
 	     */
 	    if (fi->record && !(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
-		rc = rpmpsmStage(psm, PSM_RPMDB_REMOVE);
+		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 		if (rc) break;
 	    }
 
-	    rc = rpmpsmStage(psm, PSM_RPMDB_ADD);
+	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
 	    if (rc) break;
 
 	    psm->scriptTag = RPMTAG_POSTIN;
@@ -1621,16 +1628,16 @@ psm->te->h = headerLink(fi->h);
 	    psm->countCorrection = 0;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
-		rc = rpmpsmStage(psm, PSM_SCRIPT);
+		rc = rpmpsmNext(psm, PSM_SCRIPT);
 		if (rc) break;
 	    }
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmStage(psm, PSM_TRIGGERS);
+		rc = rpmpsmNext(psm, PSM_TRIGGERS);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmStage(psm, PSM_IMMED_TRIGGERS);
+		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
 		if (rc) break;
 	    }
 
@@ -1646,30 +1653,30 @@ psm->te->h = headerLink(fi->h);
 	    psm->countCorrection = -1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
-		rc = rpmpsmStage(psm, PSM_SCRIPT);
+		rc = rpmpsmNext(psm, PSM_SCRIPT);
 		/* XXX WTFO? postun failures don't cause erasure failure. */
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmStage(psm, PSM_TRIGGERS);
+		rc = rpmpsmNext(psm, PSM_TRIGGERS);
 		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
-		rc = rpmpsmStage(psm, PSM_RPMDB_REMOVE);
+		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	}
 
 	/* Restore root directory if changed. */
-	xx = rpmpsmStage(psm, PSM_CHROOT_OUT);
+	xx = rpmpsmNext(psm, PSM_CHROOT_OUT);
 	break;
     case PSM_UNDO:
 	break;
     case PSM_FINI:
 	/* Restore root directory if changed. */
-	xx = rpmpsmStage(psm, PSM_CHROOT_OUT);
+	xx = rpmpsmNext(psm, PSM_CHROOT_OUT);
 
 	if (psm->fd != NULL) {
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1701,7 +1708,7 @@ psm->te->h = headerLink(fi->h);
 	    psm->amount = 0;
 	    psm->total = 0;
 	    /*@-nullstate@*/ /* FIX: psm->fd may be NULL. */
-	    xx = rpmpsmStage(psm, PSM_NOTIFY);
+	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 	    /*@=nullstate@*/
 	}
 
@@ -1734,11 +1741,11 @@ psm->te->h = headerFree(psm->te->h);
 	psm->rc = RPMRC_OK;
 	psm->stepName = pkgStageString(stage);
 
-	rc = rpmpsmStage(psm, PSM_INIT);
-	if (!rc) rc = rpmpsmStage(psm, PSM_PRE);
-	if (!rc) rc = rpmpsmStage(psm, PSM_PROCESS);
-	if (!rc) rc = rpmpsmStage(psm, PSM_POST);
-	xx = rpmpsmStage(psm, PSM_FINI);
+	rc = rpmpsmNext(psm, PSM_INIT);
+	if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
+	if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
+	if (!rc) rc = rpmpsmNext(psm, PSM_POST);
+	xx = rpmpsmNext(psm, PSM_FINI);
 	break;
     case PSM_PKGCOMMIT:
 	break;

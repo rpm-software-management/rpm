@@ -99,7 +99,8 @@ struct rpmpsm_s {
     rpmRC rc;
     pkgStage goal;
 /*@unused@*/
-    pkgStage stage;
+    pkgStage stage;		/*!< Current psm stage. */
+    pkgStage nstage;		/*!< Next psm stage. */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
