@@ -61,12 +61,7 @@ ebl_dynamic_tag_name (ebl, tag, buf, len)
 	      "POSFLAG_1", "SYMINSZ", "SYMINENT"
 	    };
 
-#if defined(__x86_64__)
-	  int ix = tag - DT_GNU_PRELINKED;
-	  res = valrntags[ix];
-#else
 	  res = valrntags[tag - DT_GNU_PRELINKED];
-#endif
 	}
       else if (tag >= DT_GNU_CONFLICT && tag <= DT_SYMINFO)
 	{
@@ -76,12 +71,7 @@ ebl_dynamic_tag_name (ebl, tag, buf, len)
 	      "PLTPAD", "MOVETAB", "SYMINFO"
 	    };
 
-#if defined(__x86_64__)
-	  int ix = tag - DT_GNU_CONFLICT;
-	  res = addrrntags[ix];
-#else
 	  res = addrrntags[tag - DT_GNU_CONFLICT];
-#endif
 	}
       else if (tag >= DT_RELACOUNT && tag <= DT_VERNEEDNUM)
 	{
@@ -91,12 +81,7 @@ ebl_dynamic_tag_name (ebl, tag, buf, len)
 	      "VERNEED", "VERNEEDNUM"
 	    };
 
-#if defined(__x86_64__)
-	  int ix = tag - DT_RELACOUNT;
-	  res = suntags[ix];
-#else
 	  res = suntags[tag - DT_RELACOUNT];
-#endif
 	}
       else if (tag == DT_AUXILIARY)
 	res = "AUXILIARY";
