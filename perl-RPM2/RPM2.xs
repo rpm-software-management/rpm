@@ -280,6 +280,7 @@ _create_transaction(vsflags)
 	int vsflags
     PREINIT:
 	rpmts ret;
+	SV *h_sv;
     PPCODE:
 	/* Looking at librpm, it does not look like this ever
 	   returns error (though maybe it should).
@@ -290,8 +291,6 @@ _create_transaction(vsflags)
 	rpmtsSetVSFlags(ret, vsflags);
 
 	/* Convert and throw the results on the stack */	
-	SV *h_sv;
-
 	EXTEND(SP, 1);
 
 	h_sv = sv_newmortal();
@@ -366,6 +365,7 @@ _iterator_next(i)
 	rpmdbMatchIterator i
     PREINIT:
 	Header       ret;
+        SV *         h_sv;
 	unsigned int offset;
     PPCODE:
 	ret = rpmdbNextIterator(i);
@@ -377,7 +377,6 @@ _iterator_next(i)
 		offset = 0;
 	
 	EXTEND(SP, 2);
-        SV *         h_sv;
 	h_sv = sv_newmortal();
 	sv_setref_pv(h_sv, "RPM2::C::Header", (void *)ret);
 	PUSHs(h_sv);

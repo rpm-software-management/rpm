@@ -3,8 +3,8 @@ rpmdb			O_OBJECT_rpmdb
 rpmdbMatchIterator	O_OBJECT_rpmmi
 Header                  O_OBJECT_header
 rpmts			O_OBJECT_rpmts
-rpmprobFilterFlags	O_OBJECT_rpmprob_filter_flags
-rpmElementType		O_OBJECT_rpm_element_type
+rpmprobFilterFlags	T_IV
+rpmElementType		T_IV
 
 INPUT
 O_OBJECT_rpmdb
@@ -39,12 +39,6 @@ O_OBJECT_rpmts
         XSRETURN_UNDEF;
     }
 
-O_OBJECT_rpmprob_filter_flags
-	$var = ($type) SvIV($arg);
-
-O_OBJECT_rpm_element_type
-	$var = ($type) SvIV($arg);
-
 OUTPUT
 O_OBJECT_rpmdb
         sv_setref_pv( $arg, "RPM2::C::DB", (void*)$var );
@@ -54,7 +48,3 @@ O_OBJECT_header
         sv_setref_pv( $arg, "RPM2::C::Header", (void*)$var );
 O_OBJECT_rpmts
         sv_setref_pv( $arg, "RPM2::C::Transaction", (void*)$var );
-O_OBJECT_rpmprob_filter_flags
-	sv_setiv($arg, (IV)$var);
-O_OBJECT_rpm_element_type
-	sv_setiv($arg, (IV)$var);
