@@ -1,6 +1,17 @@
+#ifdef HAVE_MACHINE_TYPES_H
+# include <machine/types.h>
+#endif
+
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
+#ifdef HAVE_NETINET_IN_SYSTM_H
+# include <netinet/in_systm.h>
+#endif
+
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <alloca.h>
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <errno.h>
@@ -11,12 +22,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #define TIMEOUT_SECS 60
 #define BUFFER_SIZE 4096
+
+#ifndef IPPORT_FTP
+# define IPPORT_FTP 21
+#endif
 
 #include "ftp.h"
 
