@@ -33,6 +33,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 #endif
 
 #include <rpmcli.h>
+#include <rpmpgp.h>
 
 #include "rpmdb.h"
 #include "fprint.h"
@@ -61,6 +62,38 @@ static int _db_filter_dups = 0;
 /*@globstate@*/ /*@null@*/ int * dbiTags = NULL;
 /*@unchecked@*/
 int dbiTagsMax = 0;
+
+/**
+ * Convert hex to binary nibble.
+ * @param c		hex character
+ * @return		binary nibble
+ */
+static inline unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (c - 'A') + 10;
+    if (c >= 'a' && c <= 'f')
+	return (c - 'a') + 10;
+    return 0;
+}
+
+/**
+ * Check key for printable characters.
+ * @param ptr		key value pointer
+ * @param len		key value length
+ * @return		1 if only ASCII, 0 otherwise.
+ */
+static int printable(const void * ptr, size_t len)	/*@*/
+{
+    const char * s = ptr;
+    int i;
+    for (i = 0; i < len; i++, s++)
+	if (!(*s >= ' ' && *s <= '~')) return 0;
+    return 1;
+}
 
 /**
  * Return dbi index used for rpm tag.
@@ -209,15 +242,6 @@ fprintf(stderr, "--- RMW %s\n", tagName(dbi->dbi_rpmtag));
     return (*dbi->dbi_vec->cclose) (dbi, dbcursor, flags);
 }
 
-static int printable(const void * ptr, size_t len)	/*@*/
-{
-    const char * s = ptr;
-    int i;
-    for (i = 0; i < len; i++, s++)
-	if (!(*s >= ' ' && *s <= '~')) return 0;
-    return 1;
-}
-
 INLINE int dbiDel(dbiIndex dbi, DBC * dbcursor,
 	const void * keyp, size_t keylen, unsigned int flags)
 {
@@ -257,13 +281,24 @@ if (_debug < 0 || dbi->dbi_debug) {
  char keyval[64];
  keyval[0] = '\0';
  if (keypp && *keypp && keylenp) {
-  if (*keylenp <= sizeof(int) && !printable(*keypp, *keylenp)) {
+  if (printable(*keypp, *keylenp)) {
+    kvp = *keypp;
+  } else if (*keylenp <= sizeof(int)) {
     int keyint = 0;
     memcpy(&keyint, *keypp, sizeof(keyint));
     sprintf(keyval, "#%d", keyint);
     kvp = keyval;
   } else {
-    kvp = *keypp;
+    static const char hex[] = "0123456789abcdef";
+    const byte * s = *keypp;
+    char * t = keyval;
+    int i;
+    for (i = 0; i < *keylenp && t < (keyval+sizeof(keyval)-2); i++) {
+      *t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
+      *t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
+    }
+    *t = '\0';
+    kvp = keyval;
   }
  } else
    kvp = keyval;
@@ -298,13 +333,24 @@ if (_debug < 0 || dbi->dbi_debug) {
  char keyval[64];
  keyval[0] = '\0';
  if (keyp) {
-  if (keylen == sizeof(int) && !printable(keyp, keylen)) {
+  if (printable(keyp, keylen)) {
+    kvp = keyp;
+  } else if (keylen <= sizeof(int)) {
     int keyint = 0;
     memcpy(&keyint, keyp, sizeof(keyint));
     sprintf(keyval, "#%d", keyint);
     kvp = keyval;
   } else {
-    kvp = keyp;
+    static const char hex[] = "0123456789abcdef";
+    const byte * s = keyp;
+    char * t = keyval;
+    int i;
+    for (i = 0; i < keylen && t < (keyval+sizeof(keyval)-2); i++) {
+      *t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
+      *t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
+    }
+    *t = '\0';
+    kvp = keyval;
   }
  } else
    kvp = keyval;
@@ -2457,7 +2503,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 	    int rpmcnt = 0;
 	    int rpmtag;
 	    int xx;
-	    int i;
+	    int i, j;
 
 	    dbi = NULL;
 	    rpmtag = dbiTags[dbix];
@@ -2506,6 +2552,17 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 		const void * valp;
 		size_t vallen;
 		int stringvalued;
+		byte bin[32];
+
+		switch (dbi->dbi_rpmtag) {
+		case RPMTAG_FILEMD5S:
+		    /* Filter out empty MD5 strings. */
+		    if (!(rpmvals[i] && *rpmvals[i] != '\0'))
+			/*@innercontinue@*/ continue;
+		    /*@switchbreak@*/ break;
+		default:
+		    /*@switchbreak@*/ break;
+		}
 
 		/* Identify value pointer and length. */
 		stringvalued = 0;
@@ -2533,6 +2590,36 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 		    rpmcnt = 1;		/* XXX break out of loop. */
 		    /*@fallthrough@*/
 		case RPM_STRING_ARRAY_TYPE:
+		    /* Convert from hex to binary. */
+		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
+			const char * s;
+			byte * t;
+
+			s = rpmvals[i];
+			t = bin;
+			for (j = 0; j < 16; j++, t++, s += 2)
+			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
+			valp = bin;
+			vallen = 16;
+			/*@switchbreak@*/ break;
+		    }
+		    /* Extract the pubkey id from the base64 blob. */
+		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
+			pgpDig dig = pgpNewDig();
+			const byte * pkt;
+			ssize_t pktlen;
+
+			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
+			    continue;
+			(void) pgpPrtPkts(pkt, pktlen, dig, 0);
+			memcpy(bin, dig->pubkey.signid, 8);
+			pkt = _free(pkt);
+			dig = _free(dig);
+			valp = bin;
+			vallen = 8;
+			/*@switchbreak@*/ break;
+		    }
+		    /*@fallthrough@*/
 		default:
 		    vallen = strlen(rpmvals[i]);
 		    valp = rpmvals[i];
@@ -2812,17 +2899,25 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 		const void * valp;
 		size_t vallen;
 		int stringvalued;
+		byte bin[32];
 
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
 		 * included the tagNum only for files.
 		 */
+		rec->tagNum = i;
 		switch (dbi->dbi_rpmtag) {
+		case RPMTAG_PUBKEYS:
+		    /*@switchbreak@*/ break;
+		case RPMTAG_FILEMD5S:
+		    /* Filter out empty MD5 strings. */
+		    if (!(rpmvals[i] && *rpmvals[i] != '\0'))
+			/*@innercontinue@*/ continue;
+		    /*@switchbreak@*/ break;
 		case RPMTAG_REQUIRENAME:
 		    /* Filter out install prerequisites. */
 		    if (requireFlags && isInstallPreReq(requireFlags[i]))
 			/*@innercontinue@*/ continue;
-		    rec->tagNum = i;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_TRIGGERNAME:
 		    if (i) {	/* don't add duplicates */
@@ -2833,10 +2928,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 			if (j < i)
 			    /*@innercontinue@*/ continue;
 		    }
-		    rec->tagNum = i;
 		    /*@switchbreak@*/ break;
 		default:
-		    rec->tagNum = i;
 		    /*@switchbreak@*/ break;
 		}
 
@@ -2866,6 +2959,36 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 		    rpmcnt = 1;		/* XXX break out of loop. */
 		    /*@fallthrough@*/
 		case RPM_STRING_ARRAY_TYPE:
+		    /* Convert from hex to binary. */
+		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
+			const char * s;
+			byte * t;
+
+			s = rpmvals[i];
+			t = bin;
+			for (j = 0; j < 16; j++, t++, s += 2)
+			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
+			valp = bin;
+			vallen = 16;
+			/*@switchbreak@*/ break;
+		    }
+		    /* Extract the pubkey id from the base64 blob. */
+		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
+			pgpDig dig = pgpNewDig();
+			const byte * pkt;
+			ssize_t pktlen;
+
+			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
+			    continue;
+			(void) pgpPrtPkts(pkt, pktlen, dig, 0);
+			memcpy(bin, dig->pubkey.signid, 8);
+			pkt = _free(pkt);
+			dig = _free(dig);
+			valp = bin;
+			vallen = 8;
+			/*@switchbreak@*/ break;
+		    }
+		    /*@fallthrough@*/
 		default:
 		    valp = rpmvals[i];
 		    vallen = strlen(rpmvals[i]);

@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2001
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -38,7 +38,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: hash_dup.c,v 11.49 2000/12/21 21:54:35 margo Exp $";
+static const char revid[] = "Id: hash_dup.c,v 11.65 2001/08/13 19:11:37 bostic Exp ";
 #endif /* not lint */
 
 /*
@@ -66,8 +66,11 @@ static const char revid[] = "$Id: hash_dup.c,v 11.49 2000/12/21 21:54:35 margo E
 #include "btree.h"
 #include "txn.h"
 
+static int __ham_c_chgpg __P((DBC *,
+    db_pgno_t, u_int32_t, db_pgno_t, u_int32_t));
 static int __ham_check_move __P((DBC *, u_int32_t));
 static int __ham_dcursor __P((DBC *, db_pgno_t, u_int32_t));
+static int __ham_move_offpage __P((DBC *, PAGE *, u_int32_t, db_pgno_t));
 
 /*
  * Called from hash_access to add a duplicate key. nval is the new
@@ -92,13 +95,15 @@ __ham_add_dup(dbc, nval, flags, pgnop)
 	db_pgno_t *pgnop;
 {
 	DB *dbp;
-	HASH_CURSOR *hcp;
 	DBT pval, tmp_val;
+	DB_MPOOLFILE *mpf;
+	HASH_CURSOR *hcp;
 	u_int32_t add_bytes, new_size;
 	int cmp, ret;
 	u_int8_t *hk;
 
 	dbp = dbc->dbp;
+	mpf = dbp->mpf;
 	hcp = (HASH_CURSOR *)dbc->internal;
 
 	DB_ASSERT(flags != DB_CURRENT);
@@ -148,8 +153,8 @@ __ham_add_dup(dbc, nval, flags, pgnop)
 			pval.size = LEN_HDATA(hcp->page, dbp->pgsize,
 			    hcp->indx);
 			if ((ret = __ham_make_dup(dbp->dbenv,
-			    &pval, &tmp_val, &dbc->rdata.data,
-			    &dbc->rdata.ulen)) != 0 || (ret =
+			    &pval, &tmp_val, &dbc->my_rdata.data,
+			    &dbc->my_rdata.ulen)) != 0 || (ret =
 			    __ham_replpair(dbc, &tmp_val, 1)) != 0)
 				return (ret);
 			hk = H_PAIRDATA(hcp->page, hcp->indx);
@@ -167,7 +172,7 @@ __ham_add_dup(dbc, nval, flags, pgnop)
 
 		/* Now make the new entry a duplicate. */
 		if ((ret = __ham_make_dup(dbp->dbenv, nval,
-		    &tmp_val, &dbc->rdata.data, &dbc->rdata.ulen)) != 0)
+		    &tmp_val, &dbc->my_rdata.data, &dbc->my_rdata.ulen)) != 0)
 			return (ret);
 
 		tmp_val.dlen = 0;
@@ -176,7 +181,8 @@ __ham_add_dup(dbc, nval, flags, pgnop)
 		case DB_KEYLAST:
 		case DB_NODUPDATA:
 			if (dbp->dup_compare != NULL) {
-				__ham_dsearch(dbc, nval, &tmp_val.doff, &cmp);
+				__ham_dsearch(dbc,
+				    nval, &tmp_val.doff, &cmp, flags);
 
 				/* dup dups are not supported w/ sorted dups */
 				if (cmp == 0)
@@ -203,8 +209,7 @@ __ham_add_dup(dbc, nval, flags, pgnop)
 		/* Add the duplicate. */
 		ret = __ham_replpair(dbc, &tmp_val, 0);
 		if (ret == 0)
-			ret = memp_fset(dbp->mpf, hcp->page, DB_MPOOL_DIRTY);
-
+			ret = mpf->set(mpf, hcp->page, DB_MPOOL_DIRTY);
 		if (ret != 0)
 			return (ret);
 
@@ -245,19 +250,21 @@ int
 __ham_dup_convert(dbc)
 	DBC *dbc;
 {
+	BOVERFLOW bo;
 	DB *dbp;
 	DBC **hcs;
-	DB_LSN lsn;
-	PAGE *dp;
-	HASH_CURSOR *hcp;
-	BOVERFLOW bo;
 	DBT dbt;
+	DB_LSN lsn;
+	DB_MPOOLFILE *mpf;
+	HASH_CURSOR *hcp;
 	HOFFPAGE ho;
+	PAGE *dp;
 	db_indx_t i, len, off;
 	int c, ret, t_ret;
 	u_int8_t *p, *pend;
 
 	dbp = dbc->dbp;
+	mpf = dbp->mpf;
 	hcp = (HASH_CURSOR *)dbc->internal;
 
 	/*
@@ -274,7 +281,7 @@ __ham_dup_convert(dbc)
 	 */
 	if ((ret = __ham_get_clist(dbp,
 	    PGNO(hcp->page), (u_int32_t)hcp->indx, &hcs)) != 0)
-		return (ret);
+		goto err;
 
 	/*
 	 * Now put the duplicates onto the new page.
@@ -301,12 +308,11 @@ __ham_dup_convert(dbc)
 		dbt.data = &bo;
 
 		ret = __db_pitem(dbc, dp, 0, dbt.size, &dbt, NULL);
-
 finish:		if (ret == 0) {
-			memp_fset(dbp->mpf, dp, DB_MPOOL_DIRTY);
-			/*
-			 * Update any other cursors
-			 */
+			if ((ret = mpf->set(mpf, dp, DB_MPOOL_DIRTY)) != 0)
+				break;
+
+			/* Update any other cursors. */
 			if (hcs != NULL && DB_LOGGING(dbc)
 			     && IS_SUBTRANSACTION(dbc->txn)) {
 				if ((ret = __ham_chgpg_log(dbp->dbenv,
@@ -319,10 +325,8 @@ finish:		if (ret == 0) {
 				if ((ret = __ham_dcursor(hcs[c],
 				    PGNO(dp), 0)) != 0)
 					break;
-
 		}
 		break;
-
 	case H_DUPLICATE:
 		p = HKEYDATA_DATA(H_PAIRDATA(hcp->page, hcp->indx));
 		pend = p +
@@ -344,39 +348,49 @@ finish:		if (ret == 0) {
 			if ((ret = __db_pitem(dbc, dp,
 			    i, BKEYDATA_SIZE(dbt.size), NULL, &dbt)) != 0)
 				break;
-			/*
-			 * Update any other cursors
-			 */
+
+			/* Update any other cursors */
+			if (hcs != NULL && DB_LOGGING(dbc)
+			     && IS_SUBTRANSACTION(dbc->txn)) {
+				if ((ret = __ham_chgpg_log(dbp->dbenv,
+				    dbc->txn, &lsn, 0, dbp->log_fileid,
+				    DB_HAM_DUP, PGNO(hcp->page),
+				    PGNO(dp), hcp->indx, i)) != 0)
+					break;
+			}
 			for (c = 0; hcs != NULL && hcs[c] != NULL; c++)
 				if (((HASH_CURSOR *)(hcs[c]->internal))->dup_off
 				    == off && (ret = __ham_dcursor(hcs[c],
 				    PGNO(dp), i)) != 0)
-					goto out;
+					goto err;
 			off += len + 2 * sizeof(db_indx_t);
 		}
-out:		break;
-
+		break;
 	default:
-		ret = __db_pgfmt(dbp, (u_long)hcp->pgno);
+		ret = __db_pgfmt(dbp->dbenv, (u_long)hcp->pgno);
 		break;
 	}
-	if (ret == 0) {
-		/*
-		 * Now attach this to the source page in place of
-		 * the old duplicate item.
-		 */
-		__ham_move_offpage(dbc, hcp->page,
+
+	/*
+	 * Now attach this to the source page in place of the old duplicate
+	 * item.
+	 */
+	if (ret == 0)
+		ret = __ham_move_offpage(dbc, hcp->page,
 		    (u_int32_t)H_DATAINDEX(hcp->indx), PGNO(dp));
 
-		ret = memp_fset(dbp->mpf, hcp->page, DB_MPOOL_DIRTY);
-		if ((t_ret = memp_fput(dbp->mpf, dp, DB_MPOOL_DIRTY)) != 0)
-			ret = t_ret;
+err:	if (ret == 0)
+		ret = mpf->set(mpf, hcp->page, DB_MPOOL_DIRTY);
+
+	if ((t_ret =
+	    mpf->put(mpf, dp, ret == 0 ? DB_MPOOL_DIRTY : 0)) != 0 && ret == 0)
+		ret = t_ret;
+
+	if (ret == 0)
 		hcp->dup_tlen = hcp->dup_off = hcp->dup_len = 0;
-	} else
-		(void)__db_free(dbc, dp);
 
 	if (hcs != NULL)
-		__os_free(hcs, 0);
+		__os_free(dbp->dbenv, hcs, 0);
 
 	return (ret);
 }
@@ -444,9 +458,10 @@ __ham_check_move(dbc, add_len)
 	u_int32_t add_len;
 {
 	DB *dbp;
-	HASH_CURSOR *hcp;
 	DBT k, d;
 	DB_LSN new_lsn;
+	DB_MPOOLFILE *mpf;
+	HASH_CURSOR *hcp;
 	PAGE *next_pagep;
 	db_pgno_t next_pgno;
 	u_int32_t new_datalen, old_len, rectype;
@@ -454,6 +469,7 @@ __ham_check_move(dbc, add_len)
 	int ret;
 
 	dbp = dbc->dbp;
+	mpf = dbp->mpf;
 	hcp = (HASH_CURSOR *)dbc->internal;
 
 	hk = H_PAIRDATA(hcp->page, hcp->indx);
@@ -500,10 +516,10 @@ __ham_check_move(dbc, add_len)
 	for (next_pgno = NEXT_PGNO(hcp->page); next_pgno != PGNO_INVALID;
 	    next_pgno = NEXT_PGNO(next_pagep)) {
 		if (next_pagep != NULL &&
-		    (ret = memp_fput(dbp->mpf, next_pagep, 0)) != 0)
+		    (ret = mpf->put(mpf, next_pagep, 0)) != 0)
 			return (ret);
 
-		if ((ret = memp_fget(dbp->mpf,
+		if ((ret = mpf->get(mpf,
 		    &next_pgno, DB_MPOOL_CREATE, &next_pagep)) != 0)
 			return (ret);
 
@@ -519,7 +535,7 @@ __ham_check_move(dbc, add_len)
 	/* Add new page at the end of the chain. */
 	if (P_FREESPACE(next_pagep) < new_datalen && (ret =
 	    __ham_add_ovflpage(dbc, next_pagep, 1, &next_pagep)) != 0) {
-		(void)memp_fput(dbp->mpf, next_pagep, 0);
+		(void)mpf->put(mpf, next_pagep, 0);
 		return (ret);
 	}
 
@@ -557,13 +573,14 @@ __ham_check_move(dbc, add_len)
 		    dbp->log_fileid, PGNO(next_pagep),
 		    (u_int32_t)NUM_ENT(next_pagep), &LSN(next_pagep),
 		    &k, &d)) != 0) {
-			(void)memp_fput(dbp->mpf, next_pagep, 0);
+			(void)mpf->put(mpf, next_pagep, 0);
 			return (ret);
 		}
+	} else
+		LSN_NOT_LOGGED(new_lsn);
 
-		/* Move lsn onto page. */
-		LSN(next_pagep) = new_lsn;	/* Structure assignment. */
-	}
+	/* Move lsn onto page. */
+	LSN(next_pagep) = new_lsn;	/* Structure assignment. */
 
 	__ham_copy_item(dbp->pgsize,
 	    hcp->page, H_KEYINDEX(hcp->indx), next_pagep);
@@ -581,7 +598,7 @@ __ham_check_move(dbc, add_len)
 	 * Note that __ham_del_pair should dirty the page we're moving
 	 * the items from, so we need only dirty the new page ourselves.
 	 */
-	if ((ret = memp_fset(dbp->mpf, next_pagep, DB_MPOOL_DIRTY)) != 0)
+	if ((ret = mpf->set(mpf, next_pagep, DB_MPOOL_DIRTY)) != 0)
 		goto out;
 
 	/* Update all cursors that used to point to this item. */
@@ -596,12 +613,17 @@ __ham_check_move(dbc, add_len)
 	 * __ham_del_pair decremented nelem.  This is incorrect;  we
 	 * manually copied the element elsewhere, so the total number
 	 * of elements hasn't changed.  Increment it again.
+	 *
+	 * !!!
+	 * Note that we still have the metadata page pinned, and
+	 * __ham_del_pair dirtied it, so we don't need to set the dirty
+	 * flag again.
 	 */
 	if (!STD_LOCKING(dbc))
 		hcp->hdr->nelem++;
 
 out:
-	(void)memp_fput(dbp->mpf, hcp->page, DB_MPOOL_DIRTY);
+	(void)mpf->put(mpf, hcp->page, DB_MPOOL_DIRTY);
 	hcp->page = next_pagep;
 	hcp->pgno = PGNO(hcp->page);
 	hcp->indx = NUM_ENT(hcp->page) - 2;
@@ -620,9 +642,8 @@ out:
  * This is really just a special case of __onpage_replace; we should
  * probably combine them.
  *
- * PUBLIC: void __ham_move_offpage __P((DBC *, PAGE *, u_int32_t, db_pgno_t));
  */
-void
+static int
 __ham_move_offpage(dbc, pagep, ndx, pgno)
 	DBC *dbc;
 	PAGE *pagep;
@@ -630,32 +651,34 @@ __ham_move_offpage(dbc, pagep, ndx, pgno)
 	db_pgno_t pgno;
 {
 	DB *dbp;
-	HASH_CURSOR *hcp;
 	DBT new_dbt;
 	DBT old_dbt;
 	HOFFDUP od;
 	db_indx_t i;
 	int32_t shrink;
 	u_int8_t *src;
+	int ret;
 
 	dbp = dbc->dbp;
-	hcp = (HASH_CURSOR *)dbc->internal;
 	od.type = H_OFFDUP;
 	UMRW_SET(od.unused[0]);
 	UMRW_SET(od.unused[1]);
 	UMRW_SET(od.unused[2]);
 	od.pgno = pgno;
+	ret = 0;
 
 	if (DB_LOGGING(dbc)) {
 		new_dbt.data = &od;
 		new_dbt.size = HOFFDUP_SIZE;
 		old_dbt.data = P_ENTRY(pagep, ndx);
 		old_dbt.size = LEN_HITEM(pagep, dbp->pgsize, ndx);
-		(void)__ham_replace_log(dbp->dbenv,
+		if ((ret = __ham_replace_log(dbp->dbenv,
 		    dbc->txn, &LSN(pagep), 0, dbp->log_fileid,
 		    PGNO(pagep), (u_int32_t)ndx, &LSN(pagep), -1,
-		    &old_dbt, &new_dbt, 0);
-	}
+		    &old_dbt, &new_dbt, 0)) != 0)
+			return (ret);
+	} else
+		LSN_NOT_LOGGED(LSN(pagep));
 
 	shrink = LEN_HITEM(pagep, dbp->pgsize, ndx) - HOFFDUP_SIZE;
 
@@ -672,6 +695,7 @@ __ham_move_offpage(dbc, pagep, ndx, pgno)
 
 	/* Now copy the offdup entry onto the page. */
 	memcpy(P_ENTRY(pagep, ndx), &od, HOFFDUP_SIZE);
+	return (ret);
 }
 
 /*
@@ -679,13 +703,14 @@ __ham_move_offpage(dbc, pagep, ndx, pgno)
  *	Locate a particular duplicate in a duplicate set.  Make sure that
  *	we exit with the cursor set appropriately.
  *
- * PUBLIC: void __ham_dsearch __P((DBC *, DBT *, u_int32_t *, int *));
+ * PUBLIC: void __ham_dsearch
+ * PUBLIC:     __P((DBC *, DBT *, u_int32_t *, int *, u_int32_t));
  */
 void
-__ham_dsearch(dbc, dbt, offp, cmpp)
+__ham_dsearch(dbc, dbt, offp, cmpp, flags)
 	DBC *dbc;
 	DBT *dbt;
-	u_int32_t *offp;
+	u_int32_t *offp, flags;
 	int *cmpp;
 {
 	DB *dbp;
@@ -697,10 +722,7 @@ __ham_dsearch(dbc, dbt, offp, cmpp)
 
 	dbp = dbc->dbp;
 	hcp = (HASH_CURSOR *)dbc->internal;
-	if (dbp->dup_compare == NULL)
-		func = __bam_defcmp;
-	else
-		func = dbp->dup_compare;
+	func = dbp->dup_compare == NULL ? __bam_defcmp : dbp->dup_compare;
 
 	i = F_ISSET(hcp, H_CONTINUE) ? hcp->dup_off: 0;
 	data = HKEYDATA_DATA(H_PAIRDATA(hcp->page, hcp->indx)) + i;
@@ -710,12 +732,26 @@ __ham_dsearch(dbc, dbt, offp, cmpp)
 		data += sizeof(db_indx_t);
 		cur.data = data;
 		cur.size = (u_int32_t)len;
+
+		/*
+		 * If we find an exact match, we're done.  If in a sorted
+		 * duplicate set and the item is larger than our test item,
+		 * we're done.  In the latter case, if permitting partial
+		 * matches, it's not a failure.
+		 */
 		*cmpp = func(dbp, dbt, &cur);
-		if (*cmpp == 0 || (*cmpp < 0 && dbp->dup_compare != NULL))
+		if (*cmpp == 0)
 			break;
+		if (*cmpp < 0 && dbp->dup_compare != NULL) {
+			if (flags == DB_GET_BOTH_RANGE)
+				*cmpp = 0;
+			break;
+		}
+
 		i += len + 2 * sizeof(db_indx_t);
 		data += len + sizeof(db_indx_t);
 	}
+
 	*offp = i;
 	hcp->dup_off = i;
 	hcp->dup_len = len;
@@ -727,29 +763,22 @@ __ham_dsearch(dbc, dbt, offp, cmpp)
  * __ham_cprint --
  *	Display the current cursor list.
  *
- * PUBLIC: int __ham_cprint __P((DB *));
+ * PUBLIC: void __ham_cprint __P((DBC *));
  */
-int
-__ham_cprint(dbp)
-	DB *dbp;
+void
+__ham_cprint(dbc)
+	DBC *dbc;
 {
 	HASH_CURSOR *cp;
-	DBC *dbc;
 
-	MUTEX_THREAD_LOCK(dbp->dbenv, dbp->mutexp);
-	for (dbc = TAILQ_FIRST(&dbp->active_queue);
-	    dbc != NULL; dbc = TAILQ_NEXT(dbc, links)) {
-		cp = (HASH_CURSOR *)dbc->internal;
-		fprintf(stderr, "%#0lx->%#0lx: page: %lu index: %lu",
-		    P_TO_ULONG(dbc), P_TO_ULONG(cp), (u_long)cp->pgno,
-		    (u_long)cp->indx);
-		if (F_ISSET(cp, H_DELETED))
-			fprintf(stderr, " (deleted)");
-		fprintf(stderr, "\n");
-	}
-	MUTEX_THREAD_UNLOCK(dbp->dbenv, dbp->mutexp);
+	cp = (HASH_CURSOR *)dbc->internal;
 
-	return (0);
+	fprintf(stderr, "%#0lx->%#0lx: page: %lu index: %lu",
+	    P_TO_ULONG(dbc), P_TO_ULONG(cp), (u_long)cp->pgno,
+	    (u_long)cp->indx);
+	if (F_ISSET(cp, H_DELETED))
+		fprintf(stderr, " (deleted)");
+	fprintf(stderr, "\n");
 }
 #endif /* DEBUG */
 
@@ -801,5 +830,77 @@ __ham_dcursor(dbc, pgno, indx)
 	/* Stack the cursors and reset the initial cursor's index. */
 	hcp->opd = dbc_nopd;
 
+	return (0);
+}
+
+/*
+ * __ham_c_chgpg --
+ *	Adjust the cursors after moving an item to a new page.  We only
+ *	move cursors that are pointing at this one item and are not
+ *	deleted;  since we only touch non-deleted cursors, and since
+ *	(by definition) no item existed at the pgno/indx we're moving the
+ *	item to, we're guaranteed that all the cursors we affect here or
+ *	on abort really do refer to this one item.
+ */
+static int
+__ham_c_chgpg(dbc, old_pgno, old_index, new_pgno, new_index)
+	DBC *dbc;
+	db_pgno_t old_pgno, new_pgno;
+	u_int32_t old_index, new_index;
+{
+	DB *dbp, *ldbp;
+	DB_ENV *dbenv;
+	DB_LSN lsn;
+	DB_TXN *my_txn;
+	DBC *cp;
+	HASH_CURSOR *hcp;
+	int found, ret;
+
+	dbp = dbc->dbp;
+	dbenv = dbp->dbenv;
+
+	my_txn = IS_SUBTRANSACTION(dbc->txn) ? dbc->txn : NULL;
+	found = 0;
+
+	MUTEX_THREAD_LOCK(dbenv, dbenv->dblist_mutexp);
+	for (ldbp = __dblist_get(dbenv, dbp->adj_fileid);
+	    ldbp != NULL && ldbp->adj_fileid == dbp->adj_fileid;
+	    ldbp = LIST_NEXT(ldbp, dblistlinks)) {
+		MUTEX_THREAD_LOCK(dbenv, dbp->mutexp);
+		for (cp = TAILQ_FIRST(&ldbp->active_queue); cp != NULL;
+		    cp = TAILQ_NEXT(cp, links)) {
+			if (cp == dbc || cp->dbtype != DB_HASH)
+				continue;
+
+			hcp = (HASH_CURSOR *)cp->internal;
+
+			/*
+			 * If a cursor is deleted, it doesn't refer to this
+			 * item--it just happens to have the same indx, but
+			 * it points to a former neighbor.  Don't move it.
+			 */
+			if (F_ISSET(hcp, H_DELETED))
+				continue;
+
+			if (hcp->pgno == old_pgno) {
+				if (hcp->indx == old_index) {
+					hcp->pgno = new_pgno;
+					hcp->indx = new_index;
+				} else
+					continue;
+				if (my_txn != NULL && cp->txn != my_txn)
+					found = 1;
+			}
+		}
+		MUTEX_THREAD_UNLOCK(dbenv, dbp->mutexp);
+	}
+	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
+
+	if (found != 0 && DB_LOGGING(dbc)) {
+		if ((ret = __ham_chgpg_log(dbenv,
+		     my_txn, &lsn, 0, dbp->log_fileid, DB_HAM_CHGPG,
+		     old_pgno, new_pgno, old_index, new_index)) != 0)
+			return (ret);
+	}
 	return (0);
 }

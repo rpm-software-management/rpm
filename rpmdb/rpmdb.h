@@ -519,7 +519,6 @@ char * db1basename(int rpmtag)
 
 /** \ingroup rpmdb
  */
-/*@unused@*/
 unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
 	/*@*/;
 

@@ -507,11 +507,11 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
     if (i < 0) {
 	if (datap) *datap = NULL;
 	if (lenp) *lenp = 0;
-	return;
-    } else if (i == imax)
-	fd->ndigests = imax - 1;
-    else
-	fd->ndigests = imax;
+    }
+
+    fd->ndigests = imax;
+    if (i < imax)
+	fd->ndigests++;		/* convert index to count */
 }
 
 /*@-shadow@*/

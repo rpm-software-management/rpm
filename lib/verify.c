@@ -572,10 +572,12 @@ int rpmcliVerify(rpmTransactionSet ts, QVA_t qva, const char ** argv)
         qva->qva_showPackage = showVerifyPackage;
 
     switch (qva->qva_source) {
+#ifdef	DYING
     case RPMQV_RPM:
 	if (!(qva->qva_flags & VERIFY_DEPS))
 	    break;
 	/*@fallthrough@*/
+#endif
     default:
 	if (rpmtsOpenDB(ts, O_RDONLY))
 	    return 1;	/* XXX W2DO? */

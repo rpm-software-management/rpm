@@ -410,12 +410,14 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     h = headerLink(*hdrp, "writeRPM xfer");
     *hdrp = headerFree(*hdrp, "writeRPM xfer");
 
+#ifdef	DYING
     if (Fileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
 	/* Add a bogus archive size to the Header */
 	(void) headerAddEntry(h, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
 		&csa->cpioArchiveSize, 1);
     }
+#endif
 
     /* Binary packages now have explicit Provides: name = version-release. */
     if (type == RPMLEAD_BINARY)
@@ -480,10 +482,12 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	goto exit;
     }
 
+    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
 	rpmError(RPMERR_NOSPACE, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
+	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
 	if (csa->cpioList != NULL) {
 	    rc = cpio_doio(fd, h, csa, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
@@ -498,6 +502,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     if (rc)
 	goto exit;
 
+#ifdef	DYING
     /*
      * Set the actual archive size, and rewrite the header.
      * This used to be done using headerModifyEntry(), but now that headers
@@ -529,6 +534,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
     (void) Fflush(fd);
     fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
+#endif
 
     (void) Fclose(fd);
     fd = NULL;
@@ -542,14 +548,20 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     sig = rpmNewSignature();
     (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
     (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
+
     if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
 	(void) rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
     }
     
     if (sha1) {
-	(void) headerAddEntry(sig, RPMTAG_SHA1HEADER, RPM_STRING_TYPE, sha1, 1);
+	(void) headerAddEntry(sig, RPMSIGTAG_SHA1, RPM_STRING_TYPE, sha1, 1);
 	sha1 = _free(sha1);
+    }
+
+    {	int_32 payloadSize = csa->cpioArchiveSize;
+	(void) headerAddEntry(sig, RPMSIGTAG_PAYLOADSIZE, RPM_INT32_TYPE,
+			&payloadSize, 1);
     }
 
     /* Reallocate the signature into one contiguous region. */
@@ -621,6 +633,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
 
     /* Add signatures to header, and write header into the package. */
+    /* XXX header+payload digests/signatures might be checked again here. */
     {	Header nh = headerRead(ifd, HEADER_MAGIC_YES);
 
 	if (nh == NULL) {

@@ -228,6 +228,7 @@ typedef enum rpmTag_e {
 /*@=enummemuse@*/
     RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+9,
     RPMTAG_PUBKEYS		= RPMTAG_SIG_BASE+10,
+    RPMTAG_DSAHEADER		= RPMTAG_SIG_BASE+11,
 
     RPMTAG_NAME  		= 1000,
     RPMTAG_VERSION		= 1001,
@@ -773,9 +774,9 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 	/*@modifies mi, fileSystem @*/;
 
 /** \ingroup rpmdb
- * Return join key for current position of rpm database iterator.
+ * Return header join key for current position of rpm database iterator.
  * @param mi		rpm database iterator
- * @return		current join key
+ * @return		current header join key
  */
 unsigned int rpmdbGetIteratorOffset(/*@null@*/ rpmdbMatchIterator mi)
 	/*@*/;
@@ -1780,12 +1781,16 @@ typedef enum rpmEraseInterfaceFlags_e {
 enum rpmtagSignature {
     RPMSIGTAG_SIZE	= 1000,	/*!< Header+Payload size in bytes. */
 /* the md5 sum was broken *twice* on big endian machines */
-    RPMSIGTAG_LEMD5_1	= 1001,	/*!< Broken MD5, take 1 */
+    RPMSIGTAG_LEMD5_1	= 1001,	/*!< Broken MD5, take 1 @deprecated legacy. */
     RPMSIGTAG_PGP	= 1002,	/*!< PGP 2.6.3 signature. */
-    RPMSIGTAG_LEMD5_2	= 1003,	/*!< Broken MD5, take 2 */
+    RPMSIGTAG_LEMD5_2	= 1003,	/*!< Broken MD5, take 2 @deprecated legacy. */
     RPMSIGTAG_MD5	= 1004,	/*!< MD5 signature. */
     RPMSIGTAG_GPG	= 1005, /*!< GnuPG signature. */
     RPMSIGTAG_PGP5	= 1006,	/*!< PGP5 signature @deprecated legacy. */
+    RPMSIGTAG_PAYLOADSIZE = 1007,
+				/*!< uncompressed payload size in bytes. */
+    RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< sha1 header digest. */
+    RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< DSA header signature. */
 };
 
 /**

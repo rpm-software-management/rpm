@@ -2,7 +2,7 @@
 %define	with_python_version	2.2%{nil}
 %define with_perl_subpackage	1
 %define	with_bzip2		1%{nil}
-%define	with_apidocs		1%{nil}
+%define	with_apidocs		0%{nil}
 %define with_internal_db	1%{nil}
 %define strip_binaries		1
 
@@ -479,7 +479,7 @@ fi
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
-%doc apidocs
+%doc 
 %endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a
@@ -647,3 +647,11 @@ fi
 - add cpanflute2, another perl.req fiddle.
 - make peace with gcc-3.1, remove compiler cruft.
 - make peace with automake et al in 8.0, ugh.
+- add payload uncompressed size to signature to avoid rewriting header.
+- drill header sha1 into signature parallel to header+payload md5.
+- mandatory "most effective" signature check on query/verify/install.
+- don't bother adding empty filemd's to index.
+- add Pubkey index, using signer id as binary key.
+- display pubkeys in hex when debugging db access.
+- retrieve pubkey(s) from rpmdb, not from detached signature file.
+- reapply Berkeley DB patch #4491.

@@ -7,6 +7,7 @@
 #include "rpmio_internal.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
+#include "rpmdb.h"
 
 #include "depends.h"
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
@@ -483,6 +484,10 @@ int rpmAddSignature(Header h, const char * file, int_32 sigTag,
 	if (ret == 0)
 	    (void) headerAddEntry(h, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
+    case RPMSIGTAG_DSA:		/* XXX UNIMPLEMENTED */
+	break;
+    case RPMSIGTAG_SHA1:	/* XXX UNIMPLEMENTED */
+	break;
     }
 
     return ret;
@@ -523,6 +528,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	(void) dup2(passPhrasePipe[0], 3);
 
 	switch (sigTag) {
+	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_GPG:
 	{   const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 
@@ -597,6 +603,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
     int aok;
 
     switch (sigTag) {
+    case RPMSIGTAG_DSA:
     case RPMSIGTAG_GPG:
       { const char *name = rpmExpand("%{?_gpg_name}", NULL);
 	aok = (name && *name != '\0');
@@ -662,21 +669,31 @@ verifySizeSignature(const rpmTransactionSet ts, /*@out@*/ char * t)
     *t = '\0';
     t = stpcpy(t, _("Header+Payload size: "));
 
-/*@-nullpass -nullderef@*/ /* FIX: ts->{sig,dig} can be NULL */
+    if (ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;
+	t = stpcpy(t, rpmSigString(res));
+	goto exit;
+    }
+
+/*@=nullpass =nullderef@*/ /* FIX: ts->{sig,dig} can be NULL */
     memcpy(&size, ts->sig, sizeof(size));
 
     /*@-type@*/
     /*@-nullderef@*/ /* FIX: ts->dig can be NULL */
     if (size != ts->dig->nbytes) {
 	res = RPMSIG_BAD;
-	sprintf(t, "BAD Expected(%d) != (%d)\n", size, ts->dig->nbytes);
+	t = stpcpy(t, rpmSigString(res));
+	sprintf(t, " Expected(%d) != (%d)\n", size, ts->dig->nbytes);
     } else {
 	res = RPMSIG_OK;
-	sprintf(t, "OK (%d)\n", ts->dig->nbytes);
+	t = stpcpy(t, rpmSigString(res));
+	sprintf(t, " (%d)", ts->dig->nbytes);
     }
     /*@=type@*/
 /*@=nullpass =nullderef@*/
 
+exit:
+    t = stpcpy(t, "\n");
     return res;
 }
 
@@ -691,7 +708,13 @@ verifyMD5Signature(const rpmTransactionSet ts, /*@out@*/ char * t)
     *t = '\0';
     t = stpcpy(t, _("MD5 digest: "));
 
-/*@-nullpass -nullderef@*/ /* FIX: ts->{sig,dig} can be NULL */
+    if (ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;
+	t = stpcpy(t, rpmSigString(res));
+	goto exit;
+    }
+
+/*@=nullpass =nullderef@*/ /* FIX: ts->{sig,dig} can be NULL */
     /*@-type@*/
     (void) rpmDigestFinal(rpmDigestDup(ts->dig->md5ctx),
 		(void **)&md5sum, &md5len, 0);
@@ -699,21 +722,172 @@ verifyMD5Signature(const rpmTransactionSet ts, /*@out@*/ char * t)
 
     if (md5len != ts->siglen || memcmp(md5sum, ts->sig, md5len)) {
 	res = RPMSIG_BAD;
-	t = stpcpy(t, "BAD Expected(");
+	t = stpcpy(t, rpmSigString(res));
+	t = stpcpy(t, " Expected(");
 	(void) pgpHexCvt(t, ts->sig, ts->siglen);
 	t += strlen(t);
 	t = stpcpy(t, ") != (");
     } else {
 	res = RPMSIG_OK;
-	t = stpcpy(t, "OK (");
+	t = stpcpy(t, rpmSigString(res));
+	t = stpcpy(t, " (");
     }
 /*@=nullpass =nullderef@*/
     (void) pgpHexCvt(t, md5sum, md5len);
     t += strlen(t);
-    t = stpcpy(t, ")\n");
+    t = stpcpy(t, ")");
 
+exit:
     md5sum = _free(md5sum);
+    t = stpcpy(t, "\n");
+    return res;
+}
 
+static rpmVerifySignatureReturn
+verifySHA1Signature(const rpmTransactionSet ts, /*@out@*/ char * t)
+	/*@modifies *t @*/
+{
+    rpmVerifySignatureReturn res;
+    const char * sha1 = NULL;
+
+    *t = '\0';
+    t = stpcpy(t, _("SHA1 header digest: "));
+
+    if (ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;
+	t = stpcpy(t, rpmSigString(res));
+	goto exit;
+    }
+
+    /*@-type@*/
+    (void) rpmDigestFinal(rpmDigestDup(ts->dig->sha1ctx),
+		(void **)&sha1, NULL, 1);
+    /*@=type@*/
+
+    if (sha1 == NULL || strlen(sha1) != strlen(ts->sig)) {
+	res = RPMSIG_BAD;
+	t = stpcpy(t, rpmSigString(res));
+	t = stpcpy(t, " Expected(");
+	t = stpcpy(t, ts->sig);
+	t = stpcpy(t, ") != (");
+    } else {
+	res = RPMSIG_OK;
+	t = stpcpy(t, rpmSigString(res));
+	t = stpcpy(t, " (");
+    }
+    if (sha1)
+	t = stpcpy(t, sha1);
+    t = stpcpy(t, ")");
+
+exit:
+    sha1 = _free(sha1);
+    t = stpcpy(t, "\n");
+    return res;
+}
+
+/**
+ * Retrieve pubkey from rpm database.
+ * @param ts		rpm transaction
+ * @return		RPMSIG_OK on success, RPMSIG_NOKEY if not found
+ */
+static rpmVerifySignatureReturn
+rpmtsFindPubkey(rpmTransactionSet ts)
+	/*@modifies ts */
+{
+    struct pgpDigParams_s * sigp = NULL;
+    rpmVerifySignatureReturn res;
+    /*@unchecked@*/ /*@only@*/ static const byte * pkpkt = NULL;
+    /*@unchecked@*/ static size_t pkpktlen = 0;
+    /*@unchecked@*/ static byte pksignid[8];
+    int xx;
+
+    if (ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;
+	goto exit;
+    }
+    sigp = &ts->dig->signature;
+
+    /*@-globs -internalglobs -mods -modfilesys@*/
+    if (pkpkt == NULL || memcmp(sigp->signid, pksignid, sizeof(pksignid))) {
+	int ix = -1;
+	rpmdbMatchIterator mi;
+	Header h;
+
+	pkpkt = _free(pkpkt);
+	pkpktlen = 0;
+	memset(pksignid, 0, sizeof(pksignid));
+
+	(void) rpmtsOpenDB(ts, ts->dbmode);
+
+	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    const char ** pubkeys;
+	    int_32 pt, pc;
+
+	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
+		continue;
+	    ix = rpmdbGetIteratorFileNum(mi);
+	    if (ix >= pc
+	    || b64decode(pubkeys[ix], (void **) &pkpkt, &pkpktlen))
+		ix = -1;
+	    pubkeys = headerFreeData(pubkeys, pt);
+	    break;
+	}
+	mi = rpmdbFreeIterator(mi);
+
+	if (ix < 0 || pkpkt == NULL) {
+	    res = RPMSIG_NOKEY;
+	    goto exit;
+	}
+
+	/* Make sure the pkt can be parsed, print info if debugging. */
+	if (pgpPrtPkts(pkpkt, pkpktlen, NULL, 0)) {
+	    res = RPMSIG_NOKEY;
+	    goto exit;
+	}
+
+	/* XXX Verify the pubkey signature. */
+
+	/* Packet looks good, save the signer id. */
+	memcpy(pksignid, sigp->signid, sizeof(pksignid));
+    }
+
+#ifdef	NOTNOW
+    {
+	if (pkpkt == NULL) {
+	    const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
+	    if (pgpReadPkts(pkfn, &pkpkt, &pkpktlen) != PGPARMOR_PUBKEY) {
+		pkfn = _free(pkfn);
+		res = RPMSIG_NOKEY;
+		goto exit;
+	    }
+	    pkfn = _free(pkfn);
+	}
+    }
+#endif
+
+    rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %s\n",
+    	(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
+    	(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
+	pgpHexStr(sigp->signid, sizeof(sigp->signid)));
+
+    /* Retrieve parameters from pubkey packet(s). */
+    xx = pgpPrtPkts(pkpkt, pkpktlen, ts->dig, 0);
+    /*@=globs =internalglobs =mods =modfilesys@*/
+
+    /* Make sure we have the correct public key. */
+    if (ts->dig->signature.pubkey_algo == ts->dig->pubkey.pubkey_algo
+#ifdef	NOTYET
+     && ts->dig->signature.hash_algo == ts->dig->pubkey.hash_algo
+#endif
+     &&	!memcmp(ts->dig->signature.signid, ts->dig->pubkey.signid, 8))
+	res = RPMSIG_OK;
+    else
+	res = RPMSIG_NOKEY;
+
+    /* XXX Verify the signature signature. */
+
+exit:
     return res;
 }
 
@@ -721,22 +895,33 @@ static rpmVerifySignatureReturn
 verifyPGPSignature(rpmTransactionSet ts, /*@out@*/ char * t)
 	/*@modifies ts, *t */
 {
-/*@-nullpass -nullderef@*/ /* FIX: ts->{sig,dig} can be NULL */
+    struct pgpDigParams_s * sigp = NULL;
     rpmVerifySignatureReturn res;
-    struct pgpDigParams_s * digp = &ts->dig->signature;
-    /*@unchecked@*/ static const byte * pgppk = NULL;
-    /*@unchecked@*/ static size_t pgppklen = 0;
     int xx;
 
     *t = '\0';
     t = stpcpy(t, _("V3 RSA/MD5 signature: "));
 
+    if (ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;
+	goto exit;
+    }
+    sigp = &ts->dig->signature;
+
     /* XXX sanity check on ts->sigtag and signature agreement. */
+    if (!(ts->sigtag == RPMSIGTAG_PGP
+    	&& sigp->pubkey_algo == PGPPUBKEYALGO_RSA
+    	&& sigp->hash_algo == PGPHASHALGO_MD5))
+    {
+	res = RPMSIG_NOKEY;
+	goto exit;
+    }
 
     /*@-type@*/ /* FIX: cast? */
     {	DIGEST_CTX ctx = rpmDigestDup(ts->dig->md5ctx);
 
-	xx = rpmDigestUpdate(ctx, digp->hash, digp->hashlen);
+	if (sigp->hash != NULL)
+	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 	xx = rpmDigestFinal(ctx, (void **)&ts->dig->md5, &ts->dig->md5len, 1);
 
 	/* XXX compare leading 16 bits of digest for quick check. */
@@ -763,46 +948,25 @@ verifyPGPSignature(rpmTransactionSet ts, /*@out@*/ char * t)
 	hexstr = _free(hexstr);
     }
 
-    /* XXX retrieve by keyid from signature. */
-
-    /*@-globs -internalglobs -mods -modfilesys@*/
-    if (pgppk == NULL) {
-	const char * pkfn = rpmExpand("%{_pgp_pubkey}", NULL);
-	if (pgpReadPkts(pkfn, &pgppk, &pgppklen) != PGPARMOR_PUBKEY) {
-	    pkfn = _free(pkfn);
-	    res = RPMSIG_NOKEY;
-	    goto exit;
-	}
-	rpmMessage(RPMMESS_DEBUG,
-		"========== PGP RSA/MD5 pubkey %s\n", pkfn);
-	xx = pgpPrtPkts(pgppk, pgppklen, NULL, rpmIsDebug());
-	pkfn = _free(pkfn);
-    }
-
-    /* Retrieve parameters from pubkey packet(s). */
-    xx = pgpPrtPkts(pgppk, pgppklen, ts->dig, 0);
-    /*@=globs =internalglobs =mods =modfilesys@*/
-
-    /* Make sure we have the correct public key. */
-    if (ts->dig->signature.pubkey_algo != ts->dig->pubkey.pubkey_algo
-     || memcmp(ts->dig->signature.signid, ts->dig->pubkey.signid, 8))
-    {
-	res = RPMSIG_NOKEY;
+    /* Retrieve the matching public key. */
+    res = rpmtsFindPubkey(ts);
+    if (res != RPMSIG_OK)
 	goto exit;
-    }
 
     /*@-type@*/
-    if (!rsavrfy(&ts->dig->rsa_pk, &ts->dig->rsahm, &ts->dig->c))
-	res = RPMSIG_BAD;
-    else
+    if (rsavrfy(&ts->dig->rsa_pk, &ts->dig->rsahm, &ts->dig->c))
 	res = RPMSIG_OK;
+    else
+	res = RPMSIG_BAD;
     /*@=type@*/
-/*@=nullpass =nullderef@*/
 
 exit:
-    t = stpcpy( stpcpy(t, rpmSigString(res)), ", key ID ");
-    (void) pgpHexCvt(t, digp->signid+4, sizeof(digp->signid)-4);
-    t += strlen(t);
+    t = stpcpy(t, rpmSigString(res));
+    if (sigp != NULL) {
+	t = stpcpy(t, ", key ID ");
+	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);
+	t += strlen(t);
+    }
     t = stpcpy(t, "\n");
     return res;
 }
@@ -811,71 +975,61 @@ static rpmVerifySignatureReturn
 verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t)
 	/*@modifies ts, *t @*/
 {
-/*@-nullpass -nullderef@*/ /* FIX: ts->{sig,dig} can be NULL */
+    struct pgpDigParams_s * sigp = NULL;
     rpmVerifySignatureReturn res;
-    struct pgpDigParams_s * digp = &ts->dig->signature;
-    /*@unchecked@*/ static const byte * gpgpk = NULL;
-    /*@unchecked@*/ static size_t gpgpklen = 0;
     int xx;
 
     *t = '\0';
     t = stpcpy(t, _("V3 DSA signature: "));
 
+    if (ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;
+	goto exit;
+    }
+    sigp = &ts->dig->signature;
+
     /* XXX sanity check on ts->sigtag and signature agreement. */
-
-    /*@-type@*/ /* FIX: cast? */
-    {	DIGEST_CTX ctx = rpmDigestDup(ts->dig->sha1ctx);
-
-	xx = rpmDigestUpdate(ctx, digp->hash, digp->hashlen);
-	xx = rpmDigestFinal(ctx, (void **)&ts->dig->sha1, &ts->dig->sha1len, 1);
-
-	mp32nzero(&ts->dig->hm);	mp32nsethex(&ts->dig->hm, ts->dig->sha1);
-    }
-    /*@=type@*/
-
-    /* XXX retrieve by keyid from signature. */
-
-    /*@-globs -internalglobs -mods -modfilesys@*/
-    if (gpgpk == NULL) {
-	const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
-	int printing = 0;	/* XXX was rpmIsDebug() */
-
-	if (pgpReadPkts(pkfn, &gpgpk, &gpgpklen) != PGPARMOR_PUBKEY) {
-	    pkfn = _free(pkfn);
-	    res = RPMSIG_NOKEY;
-	    goto exit;
-	}
-	rpmMessage(RPMMESS_DEBUG,
-		"========== GPG DSA pubkey %s\n", pkfn);
-	xx = pgpPrtPkts(gpgpk, gpgpklen, NULL, printing);
-	pkfn = _free(pkfn);
-    }
-
-    /* Retrieve parameters from pubkey packet(s). */
-    xx = pgpPrtPkts(gpgpk, gpgpklen, ts->dig, 0);
-    /*@=globs =internalglobs =mods =modfilesys@*/
-
-    /* Make sure we have the correct public key. */
-    if (ts->dig->signature.pubkey_algo != ts->dig->pubkey.pubkey_algo
-     || memcmp(ts->dig->signature.signid, ts->dig->pubkey.signid, 8))
+    if (!((ts->sigtag == RPMSIGTAG_GPG || ts->sigtag == RPMSIGTAG_DSA)
+    	&& sigp->pubkey_algo == PGPPUBKEYALGO_DSA
+    	&& sigp->hash_algo == PGPHASHALGO_SHA1))
     {
 	res = RPMSIG_NOKEY;
 	goto exit;
     }
 
-    /*@-type@*/
-    if (!dsavrfy(&ts->dig->p, &ts->dig->q, &ts->dig->g,
-		&ts->dig->hm, &ts->dig->y, &ts->dig->r, &ts->dig->s))
-	res = RPMSIG_BAD;
-    else
-	res = RPMSIG_OK;
+    /*@-type@*/ /* FIX: cast? */
+    {	DIGEST_CTX ctx = rpmDigestDup(ts->dig->sha1ctx);
+
+	if (sigp->hash != NULL)
+	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+	xx = rpmDigestFinal(ctx, (void **)&ts->dig->sha1, &ts->dig->sha1len, 1);
+
+	/* XXX compare leading 16 bits of digest for quick check. */
+
+	mp32nzero(&ts->dig->hm);	mp32nsethex(&ts->dig->hm, ts->dig->sha1);
+    }
     /*@=type@*/
-/*@=nullpass =nullderef@*/
+
+    /* Retrieve the matching public key. */
+    res = rpmtsFindPubkey(ts);
+    if (res != RPMSIG_OK)
+	goto exit;
+
+    /*@-type@*/
+    if (dsavrfy(&ts->dig->p, &ts->dig->q, &ts->dig->g,
+		&ts->dig->hm, &ts->dig->y, &ts->dig->r, &ts->dig->s))
+	res = RPMSIG_OK;
+    else
+	res = RPMSIG_BAD;
+    /*@=type@*/
 
 exit:
-    t = stpcpy( stpcpy(t, rpmSigString(res)), ", key ID ");
-    (void) pgpHexCvt(t, digp->signid+4, sizeof(digp->signid)-4);
-    t += strlen(t);
+    t = stpcpy(t, rpmSigString(res));
+    if (sigp != NULL) {
+	t = stpcpy(t, ", key ID ");
+	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);
+	t += strlen(t);
+    }
     t = stpcpy(t, "\n");
     return res;
 }
@@ -897,10 +1051,14 @@ rpmVerifySignature(const rpmTransactionSet ts, char * result)
     case RPMSIGTAG_MD5:
 	res = verifyMD5Signature(ts, result);
 	break;
+    case RPMSIGTAG_SHA1:
+	res = verifySHA1Signature(ts, result);
+	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	res = verifyPGPSignature(ts, result);
 	break;
+    case RPMSIGTAG_DSA:
     case RPMSIGTAG_GPG:
 	res = verifyGPGSignature(ts, result);
 	break;

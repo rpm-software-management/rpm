@@ -21,6 +21,8 @@
 /*@access FD_t @*/
 /*@access pgpDig @*/
 
+/**
+ */
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
 	/*@globals rpmGlobalMacroContext,
@@ -78,6 +80,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 }
 
 /**
+ * Copy header+payload, calculating digest(s) on the fly.
  */
 static int copyFile(FD_t *sfdp, const char **sfnp,
 		FD_t *tfdp, const char **tfnp)
@@ -158,11 +161,11 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	}
 	switch (l->major) {
 	case 1:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't sign v1.0 RPM\n"), rpm);
+	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't sign v1 packaging\n"), rpm);
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 2:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't re-sign v2.0 RPM\n"), rpm);
+	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't re-sign v2 packaging\n"), rpm);
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
@@ -202,18 +205,25 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	    }
 
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
+#ifdef	NOTNOW
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_SHA1);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
+
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP5);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_GPG);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
+#endif
 	}
 
-	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0)
+	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
+	    (void) headerRemoveEntry(sig, sigtype);
 	    (void) rpmAddSignature(sig, sigtarget, sigtype, qva->passPhrase);
+	}
 
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
@@ -466,7 +476,6 @@ static int readFile(FD_t fd, int_32 sigtag, const char * fn, pgpDig dig)
 	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
 	goto exit;
     }
-    dig->nbytes += count;
 
     /*@-type@*/ /* FIX: cast? */
     for (i = fd->ndigests - 1; i >= 0; i--) {
@@ -546,14 +555,20 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	}
 
 	/* Grab a hint of what needs doing to avoid duplication. */
-	if (headerIsEntry(sig, RPMSIGTAG_GPG))
+	if (headerIsEntry(sig, RPMSIGTAG_DSA))
+	    sigtag = RPMSIGTAG_DSA;
+	else if (headerIsEntry(sig, RPMSIGTAG_GPG))
 	    sigtag = RPMSIGTAG_GPG;
 	else if (headerIsEntry(sig, RPMSIGTAG_PGP))
 	    sigtag = RPMSIGTAG_PGP;
 	else if (headerIsEntry(sig, RPMSIGTAG_MD5))
 	    sigtag = RPMSIGTAG_MD5;
+#ifdef	NOTYET
+	else if (headerIsEntry(sig, RPMSIGTAG_SHA1))
+	    sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
+#endif
 	else
-	    sigtag = 0;	/* XXX never happens */
+	    sigtag = 0;			/* XXX never happens */
 
 	ts->dig = pgpNewDig();
 
@@ -589,6 +604,7 @@ if (rpmIsDebug())
 fprintf(stderr, "========================= Package RSA Signature\n");
 		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
 		/*@switchbreak@*/ break;
+	    case RPMSIGTAG_DSA:
 	    case RPMSIGTAG_GPG:
 		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
 		     continue;
@@ -603,11 +619,17 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 		     continue;
 		/*
 		 * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
-		 * than the legacy -- now unsupported -- legacy md5 breakage.
+		 * than the -- now unsupported -- legacy md5 breakage.
 		 */
 		if (sigtag == RPMSIGTAG_PGP)
 		    continue;
 		/*@switchbreak@*/ break;
+	    case RPMSIGTAG_SHA1:
+#ifdef	NOTYET
+		if (!(qva->qva_flags & VERIFY_DIGEST)) 
+		     continue;
+		/*@switchbreak@*/ break;
+#endif
 	    default:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
@@ -662,6 +684,7 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 			    /*@innerbreak@*/ break;
 			}
 			/*@switchbreak@*/ break;
+		    case RPMSIGTAG_DSA:
 		    case RPMSIGTAG_GPG:
 			/* Do not consider this a failure */
 			switch (res3) {
@@ -703,6 +726,7 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 		    case RPMSIGTAG_PGP:
 			b = stpcpy(b, "pgp ");
 			/*@switchbreak@*/ break;
+		    case RPMSIGTAG_DSA:
 		    case RPMSIGTAG_GPG:
 			b = stpcpy(b, "gpg ");
 			/*@switchbreak@*/ break;

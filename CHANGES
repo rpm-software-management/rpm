@@ -81,6 +81,13 @@
 	- splint fiddles.
 	- make peace with gcc-3.1, remove compiler cruft.
 	- make peace with automake et al in 8.0, ugh.
+	- add payload uncompressed size to signature to avoid rewriting header.
+	- drill header sha1 into signature parallel to header+payload md5.
+	- mandatory "most effective" signature check on query/verify/install.
+	- don't bother adding empty filemd's to index.
+	- add Pubkey index, using signer id as binary key.
+	- display pubkeys in hex when debugging db access.
+	- retrieve pubkey(s) from rpmdb, not from detached signature file.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
@@ -127,6 +134,7 @@
 	- query/verify by install transaction id.
 	- rpm-4.0.4 release candidate.
 	- add cpanflute2, another perl.req fiddle.
+	- reapply Berkeley DB patch #4491.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

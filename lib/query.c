@@ -974,7 +974,9 @@ int rpmcliQuery(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 	qva->qva_showPackage = showQueryPackage;
 
     switch (qva->qva_source) {
+#ifdef	DYING
     case RPMQV_RPM:
+#endif
     case RPMQV_SPECFILE:
 	break;
     default:
