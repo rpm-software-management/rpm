@@ -123,7 +123,7 @@ distclean:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 	rm -f *.a *.o core *~ $(PROGS) rpm.shared
-	rm -f .depend Makefile config.h config.cache config.status config.log
+	rm -f .depend Makefile Makefile.inc config.h config.cache config.status config.log
 
 
 .PHONY:		depend
