@@ -377,6 +377,8 @@ static void printHelp(void) {
 		    "otherwise be skipped"));
     printHelpLine(  "      --ignorearch        ",
 		  _("don't verify package architecture"));
+    printHelpLine(  "      --ignoresize        ",
+		  _("don't check disk space before installing"));
     printHelpLine(  "      --ignoreos          ",
 		  _("don't verify package operating system"));
     printHelpLine(  "      --includedocs       ",
