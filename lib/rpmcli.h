@@ -727,9 +727,9 @@ extern struct poptOption rpmDatabasePoptTable[];
  * @param ts		transaction set
  * @param pkt		pgp pubkey packet(s)
  * @param pktlen	pgp pubkey length
- * @return		0 on success
+ * @return		RPMRC_OK/RPMRC_FAIL
  */
-int rpmcliImportPubkey(const rpmts ts,
+rpmRC rpmcliImportPubkey(const rpmts ts,
 		const unsigned char * pkt, ssize_t pktlen)
 	/*@globals RPMVERSION, rpmGlobalMacroContext,
 		fileSystem, internalState @*/

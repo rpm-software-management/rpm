@@ -402,8 +402,10 @@ exit:
     return res;
 }
 
-int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
+rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
 {
+    static unsigned char zeros[] =
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     const char * afmt = "%{pubkeys:armor}";
     const char * group = "Public Keys";
     const char * license = "pubkey";
@@ -420,14 +422,14 @@ int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen
     const char * r = NULL;
     const char * evr = NULL;
     Header h = NULL;
-    int rc = 1;		/* assume failure */
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char * t;
     int xx;
 
     if (pkt == NULL || pktlen <= 0)
-	return -1;
+	return RPMRC_FAIL;
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
-	return -1;
+	return RPMRC_FAIL;
 
     if ((enc = b64encode(pkt, pktlen)) == NULL)
 	goto exit;
@@ -437,6 +439,11 @@ int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen
     /* Build header elements. */
     (void) pgpPrtPkts(pkt, pktlen, dig, 0);
     pubp = &dig->pubkey;
+
+    if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
+     || !memcmp(pubp->time, zeros, sizeof(pubp->time))
+     || pubp->userid == NULL)
+	goto exit;
 
 /*@-boundswrite@*/
     v = t = xmalloc(16+1);
@@ -510,9 +517,10 @@ int rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen
 #endif
 
     /* Add header to database. */
-    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
+    xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
     if (xx != 0)
 	goto exit;
+    rc = RPMRC_OK;
 
 exit:
     /* Clean up. */
@@ -549,6 +557,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
     const unsigned char * pkt = NULL;
     ssize_t pktlen = 0;
     int res = 0;
+    rpmRC rpmrc;
     int rc;
 
     if (argv == NULL) return res;
@@ -574,7 +583,7 @@ rpmtsClean(ts);
 	}
 
 	/* Import pubkey packet(s). */
-	if ((rc = rpmcliImportPubkey(ts, pkt, pktlen)) != 0) {
+	if ((rpmrc = rpmcliImportPubkey(ts, pkt, pktlen)) != RPMRC_OK) {
 	    rpmError(RPMERR_IMPORT, _("%s: import failed.\n"), fn);
 	    res++;
 	    continue;
