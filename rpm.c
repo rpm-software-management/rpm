@@ -22,7 +22,7 @@ char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_RESIGN,
-	     MODE_RECOMPILE, MODE_UNKNOWN };
+	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_UNKNOWN };
 
 static void argerror(char * desc);
 
@@ -73,6 +73,7 @@ void printUsage(void) {
     puts(_("       rpm {--where} package1 package2 ... packageN"));
     puts(_("       rpm {--resign} package1 package2 ... packageN"));
     puts(_("       rpm {--checksig} package1 package2 ... packageN"));
+    puts(_("       rpm {--querytags}"));
 }
 
 void printHelp(void) {
@@ -83,8 +84,9 @@ void printHelp(void) {
     puts(_("usage:"));
     puts(_("   --help		- print this message"));
     puts(_("   --version		- print the version of rpm being used"));
-    puts(_("    -q                  - query mode"));
-    puts(_("      --root <dir>	- use <dir> as the top level directory"));
+    puts(_("   -q                   - query mode"));
+    puts(_("      --root <dir>        - use <dir> as the top level directory"));
+    puts(_("      --queryformat <s>   - use s as the header format (implies -i)"));
     puts(_("      Package specification options:"));
     puts(_("        -a                - query all packages"));
     puts(_("        -f <file>+        - query package owning <file>"));
@@ -110,7 +112,7 @@ void printHelp(void) {
     puts(_("       -h"));
     puts(_("      --hash            - print hash marks as package installs (good with -v)"));
     puts(_("      --percent         - print percentages as package installs"));
-    puts(_("      --replacepkgs      - reinstall if the package is already present"));
+    puts(_("      --replacepkgs     - reinstall if the package is already present"));
     puts(_("      --replacefiles    - install even if the package replaces installed files"));
     puts(_("      --force           - short hand for --replacepkgs --replacefiles"));
     puts(_("      --test            - don't install, but tell if it would work or not"));
@@ -152,8 +154,9 @@ void printHelp(void) {
     puts(_("    --recompile <source_package>"));
     puts(_("                        - like --rebuild, but don't package"));
     puts(_("    -K"));
-    puts(_("    --resign <pkg>+    - sign a package"));
-    puts(_("    --checksig <pkg>+  - verify PGP signature"));
+    puts(_("    --resign <pkg>+     - sign a package"));
+    puts(_("    --checksig <pkg>+   - verify PGP signature"));
+    puts(_("    --querytags         - list the tags that can be used in a query format"));
 }
 
 int build(char * arg, int buildAmount, char *passPhrase) {
@@ -221,6 +224,7 @@ int main(int argc, char ** argv) {
     int signIt = 0;
     int shortCircuit = 0;
     int badOption = 0;
+    int queryTags = 0;
     int excldocs = 0;
     int incldocs = 0;
     char * queryFormat = NULL;
@@ -229,6 +233,7 @@ int main(int argc, char ** argv) {
     char * specFile;
     char *passPhrase = "";
     char * smallArgv[2] = { NULL, NULL };
+    int ec = 0;
     struct option options[] = {
 	    { "all", 0, 0, 'a' },
 	    { "build", 1, 0, 'b' },
@@ -251,7 +256,8 @@ int main(int argc, char ** argv) {
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
 	    { "query", 0, 0, 'q' },
-	    { "queryformat", 1, 0, 0},
+	    { "queryformat", 1, 0, 0 },
+	    { "querytags", 0, &queryTags, 0 },
 	    { "quiet", 0, &quiet, 0 },
 	    { "recompile", 0, 0, 0 },
 	    { "rebuild", 0, 0, 0 },
@@ -282,7 +288,7 @@ int main(int argc, char ** argv) {
     textdomain(NLSPACKAGE);
 
     if (readConfigFiles())  /* reading this early makes it easy to override */
-	exit(-1);
+	exit(1);
 
     while (1) {
 	long_index = 0;
@@ -512,6 +518,12 @@ int main(int argc, char ** argv) {
     if (badOption)
 	exit(1);
 
+    if (queryTags)
+	if (bigMode != MODE_UNKNOWN) 
+	    argerror(_("only one major mode may be specified"));
+	else
+	    bigMode = MODE_QUERYTAGS;
+
     if (bigMode != MODE_QUERY && queryFor) 
 	argerror(_("unexpected query specifiers"));
 
@@ -599,7 +611,14 @@ int main(int argc, char ** argv) {
     switch (bigMode) {
       case MODE_UNKNOWN:
 	if (!version && !help) printUsage();
-	exit(0);
+	break;
+
+      case MODE_QUERYTAGS:
+	if (argc != 2)
+	    argerror(_("unexpected arguments to --querytags "));
+
+	queryPrintTags();
+	break;
 
       case MODE_CHECKSIG:
 	if (optind == argc) 
@@ -627,10 +646,10 @@ int main(int argc, char ** argv) {
 
 	while (optind < argc) {
 	    if (doSourceInstall("/", argv[optind++], &specFile))
-		exit(-1);
+		exit(1);
 
 	    if (build(specFile, buildAmount, passPhrase)) {
-		exit(-1);
+		exit(1);
 	    }
 	}
 	break;
@@ -670,7 +689,7 @@ int main(int argc, char ** argv) {
 
 	while (optind < argc) 
 	    if (build(argv[optind++], buildAmount, passPhrase)) {
-		exit(-1);
+		exit(1);
 	    }
 	break;
 
@@ -702,12 +721,16 @@ int main(int argc, char ** argv) {
 	    argerror(_("no packages given for install"));
 
 	while (optind < argc) 
-	    doInstall(prefix, argv[optind++], installFlags, interfaceFlags);
+	    ec += doInstall(prefix, argv[optind++], installFlags, 
+			    interfaceFlags);
 	break;
 
       case MODE_QUERY:
 	if (querySource == QUERY_ALL) {
-	    doQuery(prefix, QUERY_ALL, queryFor, NULL, queryFormat);
+	    if (optind != argc) 
+		argerror(_("extra arguments given for query of all packages"));
+
+	    ec = doQuery(prefix, QUERY_ALL, queryFor, NULL, queryFormat);
 	} else if (querySource == QUERY_SPATH || 
                    querySource == QUERY_SPACKAGE ||
 		   querySource == QUERY_SRPM) {
@@ -718,14 +741,15 @@ int main(int argc, char ** argv) {
 		i = strlen(buffer) - 1;
 		if (buffer[i] == '\n') buffer[i] = 0;
 		if (strlen(buffer)) 
-		    doQuery(prefix, querySource, queryFor, buffer, queryFormat);
+		    ec += doQuery(prefix, querySource, queryFor, buffer, 
+				  queryFormat);
 	    }
 	} else {
 	    if (optind == argc) 
 		argerror(_("no arguments given for query"));
 	    while (optind < argc) 
-		doQuery(prefix, querySource, queryFor, argv[optind++], 
-			queryFormat);
+		ec = doQuery(prefix, querySource, queryFor, argv[optind++], 
+			     queryFormat);
 	}
 	break;
 
@@ -753,5 +777,5 @@ int main(int argc, char ** argv) {
 	break;
     }
 
-    return 0;
+    return ec;
 }
