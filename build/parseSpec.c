@@ -312,6 +312,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
     if (buildRoot) {
 	spec->gotBuildRoot = 1;
 	spec->buildRoot = strdup(buildRoot);
+	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->inBuildArchitectures = inBuildArch;
