@@ -3,6 +3,13 @@
 
 /* This is the *only* module users of rpmlib should need to include */
 
+#include <db.h>
+
+/* it shouldn't need these :-( */
+#include "dbindex.h"
+#include "falloc.h"
+#include "header.h"
+
 /* these tags are for both the database and packages */
 /* none of these can be 0 !!                         */
 
@@ -51,5 +58,24 @@
 /* these can be ORed together */
 #define RPMFILE_CONFIG			1
 #define RPMFILE_DOC			2
+
+struct rpmdb {
+    faFile pkgs;
+    dbIndex * nameIndex, * fileIndex, * groupIndex;
+};
+
+int rpmdbOpen (char * prefix, struct rpmdb *rpmdb, int mode, int perms);
+    /* 0 on error */
+int rpmdbCreate (struct rpmdb *rpmdb, int mode, int perms);
+    /* this fails if any part of the db already exists */
+void rpmdbClose (struct rpmdb *rpmdb);
+
+unsigned int rpmdbFirstRecNum(struct rpmdb * rpmdb);
+unsigned int rpmdbNextRecNum(struct rpmdb * rpmdb, unsigned int lastOffset);  
+    /* 0 at end */
+
+Header rpmdbGetRecord(struct rpmdb * rpmdb, unsigned int offset);
+int rpmdbFindByFile(struct rpmdb * rpmdb, char * filespec, 
+		    dbIndexSet * matches);
 
 #endif
