@@ -364,7 +364,6 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 	    set->recs[i].hdrNum = hdrNum.ui;
 	    set->recs[i].tagNum = tagNum.ui;
 	    set->recs[i].fpNum = 0;
-	    set->recs[i].dbNum = 0;
 	}
 	break;
     case 1*sizeof(int_32):
@@ -379,7 +378,6 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 	    set->recs[i].hdrNum = hdrNum.ui;
 	    set->recs[i].tagNum = 0;
 	    set->recs[i].fpNum = 0;
-	    set->recs[i].dbNum = 0;
 	}
 	break;
     }

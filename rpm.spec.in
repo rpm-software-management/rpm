@@ -6,9 +6,6 @@
 %define with_internal_db	@WITH_INTERNAL_DB@%{nil}
 %define strip_binaries		1
 
-# XXX enable at your own risk, CDB access to rpmdb isn't cooked yet.
-%define	enable_cdb		create cdb
-
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
 
@@ -194,9 +191,6 @@ install -m 644 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
-E_O_F
-cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.cdb
-%{?enable_cdb:%%__dbi_cdb	%{enable_cdb}}
 E_O_F
 
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
