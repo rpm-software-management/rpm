@@ -55,8 +55,9 @@ int rpmdbFindByLabel(rpmdb db, const char * arg, dbiIndexSet * matches) {
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
-int findMatches(rpmdb db, char * name, char * version, char * release,
-		       dbiIndexSet * matches) {
+int findMatches(rpmdb db, const char * name, const char * version,
+			const char * release, dbiIndexSet * matches)
+{
     int gotMatches;
     int rc;
     int i;

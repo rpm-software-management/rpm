@@ -11,8 +11,6 @@ void stripTrailingSlashes(char * str);
 int rpmfileexists(const char * filespec);
 
 int rpmvercmp(const char * one, const char * two);
-int findMatches(rpmdb db, const char * name, const char * version, const char * release,
-		       dbiIndexSet * matches);
 
 /* these are like the normal functions, but they malloc() the space which
    is needed */

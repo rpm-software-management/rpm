@@ -3,8 +3,7 @@
 
 #include "rpmlib.h"
 
-int findMatches(rpmdb db, char * name, char * version, char * release,
-		       dbiIndexSet * matches);
-
+int findMatches(rpmdb db, const char * name, const char * version,
+	const char * release, dbiIndexSet * matches);
 
 #endif

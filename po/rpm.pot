@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-06 11:47-0500\n"
+"POT-Creation-Date: 1999-01-06 13:15-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,35 +223,35 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: ../install.c:98
+#: ../install.c:100
 msgid "counting packages to install\n"
 msgstr ""
 
-#: ../install.c:102
+#: ../install.c:104
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: ../install.c:111
+#: ../install.c:113
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:122
+#: ../install.c:124
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:130
+#: ../install.c:132
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:134
+#: ../install.c:136
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:149
+#: ../install.c:151
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
@@ -259,79 +259,79 @@ msgstr ""
 #. Build up the transaction set. As a special case, v1 source packages
 #. are installed right here, only because they don't have headers and
 #. would create all sorts of confusion later.
-#: ../install.c:154
+#: ../install.c:156
 #, c-format
 msgid "opening database mode: 0%o\n"
 msgstr ""
 
-#: ../install.c:158 ../install.c:296
+#: ../install.c:160 ../install.c:298
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: ../install.c:168
+#: ../install.c:170
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:180 ../lib/query.c:478
+#: ../install.c:182 ../lib/query.c:478
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:184 ../install.c:383
+#: ../install.c:186 ../install.c:385
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:201
+#: ../install.c:203
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: ../install.c:211
+#: ../install.c:213
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:227
+#: ../install.c:229
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:307 ../lib/query.c:614 ../verify.c:243
+#: ../install.c:309 ../lib/query.c:614 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:311
+#: ../install.c:313
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: ../install.c:320
+#: ../install.c:322
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:346
+#: ../install.c:348
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:373
+#: ../install.c:375
 #, c-format
 msgid "cannot open %s\n"
 msgstr ""
 
-#: ../install.c:378
+#: ../install.c:380
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: ../install.c:422
+#: ../install.c:424
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:425
+#: ../install.c:427
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -2176,31 +2176,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:363 ../lib/depends.c:522
+#: ../lib/depends.c:365 ../lib/depends.c:524
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:428
+#: ../lib/depends.c:430
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:615
+#: ../lib/depends.c:617
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:658
+#: ../lib/depends.c:660
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:758
+#: ../lib/depends.c:760
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:810
+#: ../lib/depends.c:812
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2417,7 +2417,7 @@ msgstr ""
 msgid "package %s-%s-%s (which is newer) is already installed"
 msgstr ""
 
-#: ../lib/lookup.c:81
+#: ../lib/lookup.c:83
 #, c-format
 msgid "cannot read header at %d for lookup"
 msgstr ""
