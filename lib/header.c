@@ -644,6 +644,8 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     char *sp;
     int x;
 
+    if (!p) return isEntry(h, tag);
+
     /* First find the tag */
     index = findEntry(h, tag);
     if (! index) {
