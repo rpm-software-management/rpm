@@ -54,7 +54,6 @@ static int checkOwners(const char *urlfn)
  * @param removeEmpties	include -E?
  * @return		expanded %patch macro (NULL on error)
  */
- */
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
 {
@@ -144,7 +143,6 @@ static int checkOwners(const char *urlfn)
  * @param c		source index
  * @param quietly	should -vv be omitted from tar?
  * @return		expanded %setup macro (NULL on error)
- */
  */
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
 {

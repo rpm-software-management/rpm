@@ -7,10 +7,11 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h
-noinst_HEADERS = rpmio_internal.h ugid.h
+noinst_HEADERS = base64.h rpmio_internal.h ugid.h
 
 lib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c md5.c \
+librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c \
+	base64.c md5.c \
 	ugid.c rpmmalloc.c rpmlog.c
 
 # XXX Add internal libtool dependence
@@ -27,3 +28,5 @@ lclint:
 trpmio: librpmio.la trpmio.o
 	$(LINK) -o $@ trpmio.o librpmio.la $(top_builddir)/popt/libpopt.la
 
+tkey: librpmio.la tkey.o
+	$(LINK) -o $@ tkey.o librpmio.la $(top_builddir)/popt/libpopt.la

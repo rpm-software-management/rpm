@@ -322,6 +322,8 @@ INPUT                  = \
 	./lib/transaction.c \
 	./lib/uninstall.c \
 	./lib/verify.c \
+	./rpmio/base64.c \
+	./rpmio/base64.h \
 	./rpmio/macro.c \
 	./rpmio/md5.c \
 	./rpmio/rpmlog.c \

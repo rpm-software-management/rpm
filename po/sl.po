@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.101 2000/10/24 13:46:55 jbj Exp $
+# $Id: sl.po,v 1.102 2000/10/26 15:32:14 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-10-24 09:32-0400\n"
+"POT-Creation-Date: 2000-10-26 11:14-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1844,7 +1844,7 @@ msgstr "vrstica: %s"
 msgid "Bad file: %s: %s"
 msgstr "Okvarjena datoteka: %s: %s"
 
-#: build/files.c:1583 build/parsePrep.c:35
+#: build/files.c:1583 build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Okvarjen lastnik/skupina: %s"
@@ -2191,63 +2191,63 @@ msgstr "vrstica %d: Neznana znaèka: %s"
 msgid "Spec file can't use BuildRoot"
 msgstr "Datoteka spec ne more uporabiti BuildRoot"
 
-#: build/parsePrep.c:31
+#: build/parsePrep.c:36
 #, c-format
 msgid "Bad source: %s: %s"
 msgstr "Okvarjen izvor: %s: %s"
 
-#: build/parsePrep.c:58
+#: build/parsePrep.c:73
 #, c-format
 msgid "No patch number %d"
 msgstr "Krparija ¹t. %d manjka"
 
-#: build/parsePrep.c:140
+#: build/parsePrep.c:162
 #, c-format
 msgid "No source number %d"
 msgstr "Izvorna koda ¹t. %d manjka"
 
-#: build/parsePrep.c:159
+#: build/parsePrep.c:181
 #, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "Ni mo¾no nalo¾iti nosource %s: %s"
 
-#: build/parsePrep.c:225
+#: build/parsePrep.c:254
 msgid "Error parsing %%setup: %s"
 msgstr "Napaka pri razèlembi %%setup: %s"
 
-#: build/parsePrep.c:240
+#: build/parsePrep.c:269
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr "vrstica %d: Okvarjen argument za %%setup %c: %s"
 
-#: build/parsePrep.c:258
+#: build/parsePrep.c:287
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr "vrstica %d: Okvarjena izbira %%setup %s: %s"
 
-#: build/parsePrep.c:385
+#: build/parsePrep.c:420
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr "vrstica %d: Manjkajoè argument za %%patch -b: %s"
 
-#: build/parsePrep.c:393
+#: build/parsePrep.c:428
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr "vrstica %d: Manjkajoè argument za %%patch -z: %s"
 
-#: build/parsePrep.c:405
+#: build/parsePrep.c:440
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr "vrstica %d: Manjkajoè argument za %%patch -p: %s"
 
-#: build/parsePrep.c:411
+#: build/parsePrep.c:446
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr "vrstica %d: Okvarjen argument za %%patch -p: %s"
 
-#: build/parsePrep.c:418
+#: build/parsePrep.c:453
 msgid "Too many patches!"
 msgstr "Preveè krparij!"
 
-#: build/parsePrep.c:422
+#: build/parsePrep.c:457
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "vrstica %d: Okvarjen argument za %%patch: %s"
 
-#: build/parsePrep.c:458
+#: build/parsePrep.c:493
 msgid "line %d: second %%prep"
 msgstr "vrstica %d: drugi %%prep"
 

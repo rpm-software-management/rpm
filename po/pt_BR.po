@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-10-24 09:32-0400\n"
+msgstr "POT-Creation-Date: 2000-10-26 11:14-0400\n"
 
 #: build.c:25 lib/rpminstall.c:460
 #, c-format
@@ -1944,7 +1944,7 @@ msgstr ""
 msgid "Bad file: %s: %s"
 msgstr "Não consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:1583 build/parsePrep.c:35
+#: build/files.c:1583 build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
@@ -2309,64 +2309,64 @@ msgid "Spec file can't use BuildRoot"
 msgstr ""
 
 # , c-format
-#: build/parsePrep.c:31
+#: build/parsePrep.c:36
 #, fuzzy, c-format
 msgid "Bad source: %s: %s"
 msgstr "Não consegui ler o arquivo spec de %s\n"
 
-#: build/parsePrep.c:58
+#: build/parsePrep.c:73
 #, c-format
 msgid "No patch number %d"
 msgstr ""
 
-#: build/parsePrep.c:140
+#: build/parsePrep.c:162
 #, c-format
 msgid "No source number %d"
 msgstr ""
 
 # , c-format
-#: build/parsePrep.c:159
+#: build/parsePrep.c:181
 #, fuzzy, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "Não consegui ler o arquivo spec de %s\n"
 
-#: build/parsePrep.c:225
+#: build/parsePrep.c:254
 msgid "Error parsing %%setup: %s"
 msgstr ""
 
-#: build/parsePrep.c:240
+#: build/parsePrep.c:269
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr ""
 
-#: build/parsePrep.c:258
+#: build/parsePrep.c:287
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: build/parsePrep.c:385
+#: build/parsePrep.c:420
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: build/parsePrep.c:393
+#: build/parsePrep.c:428
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: build/parsePrep.c:405
+#: build/parsePrep.c:440
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:411
+#: build/parsePrep.c:446
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:418
+#: build/parsePrep.c:453
 msgid "Too many patches!"
 msgstr ""
 
-#: build/parsePrep.c:422
+#: build/parsePrep.c:457
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: build/parsePrep.c:458
+#: build/parsePrep.c:493
 msgid "line %d: second %%prep"
 msgstr ""
 

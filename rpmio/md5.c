@@ -1,5 +1,5 @@
 /** \ingroup signature
- * \file rpmio/md5hash.c
+ * \file rpmio/md5.c
  *
  * This code implements the MD5 message-digest algorithm.
  * The algorithm is due to Ron Rivest.  This code was
@@ -54,6 +54,7 @@ static union _mendian { int i; char b[4]; } *_endian = (union _mendian *)&_ie;
  * The core of the MD5 algorithm.
  * This alters an existing MD5 hash to reflect the addition of 16 longwords
  * of new data.
+ * @param private	MD5 private data
  */
 static void
 MD5Transform(void * private)
