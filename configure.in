@@ -33,7 +33,7 @@ if test -z "$CPIOBIN"; then
 	IFS=:
 	for n in $PATH:/opt/gnu/bin; do
 		if test -f $n/cpio; then
-			$n/cpio --quiet >/dev/null 2>/dev/null
+			$n/cpio --quiet -o < /dev/null >/dev/null 2>/dev/null
 			if test "$?" = "0"; then
 				CPIOBIN="$n/cpio";
 			fi
