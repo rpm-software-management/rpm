@@ -183,8 +183,11 @@ int build(const char *arg, int buildAmount, const char *passPhrase,
 
     printf("Building target platforms: %s\n", targets);
 
-    for (t = targets; (te = strchr(t, ',')) != NULL; t = te) {
-	char *target = alloca(te-t+1);
+    for (t = targets; *t != '\0'; t = te) {
+	char *target;
+	if ((te = strchr(t, ',')) == NULL)
+	    te = t + strlen(t);
+	target = alloca(te-t+1);
 	strncpy(target, t, (te-t));
 	target[te-t] = '\0';
 	printf("Building for target %s\n", target);
