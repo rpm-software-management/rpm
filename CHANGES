@@ -108,6 +108,7 @@
 		scripts to /usr/lib/rpm <arjanv@redhat.com> (#44581).
 	- rpmdb iterator selectors permit default/strcmp/regex/glob matching.
 	- rpmdb iterator selectors permit negative matches.
+	- alpha: don't add "()(64bit)" dependency markers.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

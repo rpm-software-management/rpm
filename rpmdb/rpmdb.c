@@ -1563,9 +1563,9 @@ static int mireCmp(const void * a, const void * b)
  * @param pattern	pattern to duplicate
  * @return		duplicated pattern
  */
-static /*@only*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
+static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 			const char * pattern)
-	/*@*/
+	/*@modifies *modep @*/
 {
     const char * s;
     char * pat;
@@ -1668,7 +1668,9 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	pattern++;
     }
 
+    /*@-mods@*/		/* FIX: WTFO? */
     allpat = mireDup(tag, &mode, pattern);
+    /*@=mods@*/
 
     if (mode == RPMMIRE_DEFAULT)
 	mode = defmode;
@@ -1686,7 +1688,6 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	    (void) regerror(rc, preg, msg, sizeof(msg)-1);
 	    msg[sizeof(msg)-1] = '\0';
 	    rpmError(RPMERR_REGCOMP, "%s: regcomp failed: %s\n", allpat, msg);
-	    goto exit;
 	}
 	break;
     case RPMMIRE_GLOB:
@@ -1694,7 +1695,18 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	break;
     default:
 	rc = -1;
-	goto exit;
+	break;
+    }
+
+    if (rc) {
+	/*@=kepttrans@*/	/* FIX: mire has kept values */
+	allpat = _free(allpat);
+	if (preg) {
+	    regfree(preg);
+	    preg = _free(preg);
+	}
+	/*@=kepttrans@*/
+	return rc;
     }
 
     mi->mi_re = xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
@@ -1712,17 +1724,6 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 
     (void) qsort(mi->mi_re, mi->mi_nre, sizeof(*mi->mi_re), mireCmp);
 
-exit:
-    if (rc) {
-	/*@=kepttrans@*/	/* FIX: mire has kept values */
-	allpat = _free(allpat);
-	if (preg) {
-	    regfree(preg);
-	    preg = _free(preg);
-	}
-	/*@=kepttrans@*/
-	mire = _free(mire);
-    }
     return rc;
 }
 

@@ -7,9 +7,16 @@ filelist=`sed "s/['\"]/\\\&/g"`
 
 solist=$(echo $filelist | grep "\\.so" | grep -v "^/lib/ld.so" | \
 	xargs file -L 2>/dev/null | grep "ELF.*shared object" | cut -d: -f1)
-perllist=$(echo $filelist | grep "\\.pm")
+perllist=$(echo $filelist | grep '\.pm$')
 pythonlist=
 tcllist=
+
+#
+# --- Alpha does not mark 64bit dependencies
+case `uname -m` in
+  alpha*)	mark64="" ;;
+  *)		mark64="()(64bit)" ;;
+esac
 
 #
 # --- Library sonames and weak symbol versions (from glibc).
@@ -17,7 +24,7 @@ for f in $solist; do
     soname=$(objdump -p $f | awk '/SONAME/ {print $2}')
 
     lib64=`if file -L $f 2>/dev/null | \
-	grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+	grep "ELF 64-bit" >/dev/null; then echo "$mark64"; fi`
     if [ "$soname" != "" ]; then
 	if [ ! -L $f ]; then
 	    echo $soname$lib64

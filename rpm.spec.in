@@ -334,7 +334,9 @@ fi
 %rpmattr	%{__prefix}/bin/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs
+%rpmattr	%{__prefix}/lib/rpm/config.site
 %rpmattr	%{__prefix}/lib/rpm/cpanflute
+%rpmattr	%{__prefix}/lib/rpm/cross-build
 %rpmattr	%{__prefix}/lib/rpm/find-lang.sh
 %rpmattr	%{__prefix}/lib/rpm/find-prov.pl
 %rpmattr	%{__prefix}/lib/rpm/find-provides
