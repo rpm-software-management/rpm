@@ -72,6 +72,7 @@ struct sprintfTag {
     int extNum;
     int_32 tag;
     int justOne;
+    int arrayCount;
     char * format;
     char * type;
     int pad;
@@ -1131,6 +1132,7 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    format[currToken].u.tag.format = start;
 	    format[currToken].u.tag.pad = 0;
 	    format[currToken].u.tag.justOne = 0;
+	    format[currToken].u.tag.arrayCount = 0;
 
 	    chptr = start;
 	    while (*chptr && *chptr != '{') chptr++;
@@ -1153,6 +1155,10 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
 
 	    if (*start == '=') {
 		format[currToken].u.tag.justOne = 1;
+		start++;
+	    } else if (*start == '#') {
+		format[currToken].u.tag.justOne = 1;
+		format[currToken].u.tag.arrayCount = 1;
 		start++;
 	    }
 
@@ -1307,6 +1313,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     char * val = NULL;
     char ** strarray;
     int mayfree = 0;
+    int countBuf;
     headerTagFormatFunction tagtype = NULL;
     const struct headerSprintfExtension * ext;
 
@@ -1325,6 +1332,15 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	}
 
 	mayfree = 1;
+    }
+
+    if (tag->arrayCount) {
+	if (type == RPM_STRING_ARRAY_TYPE) free(data);
+
+	countBuf = count;
+	data = &countBuf;
+	count = 1;
+	type = RPM_INT32_TYPE;
     }
 
     strcpy(buf, "%");
@@ -1436,13 +1452,14 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 
       case PTOK_TAG:
 	val = formatValue(&token->u.tag, h, extensions, extCache,
-			  token->u.tag.justOne ? 1 : element);
+			  token->u.tag.justOne ? 0 : element);
 	break;
 
       case PTOK_ARRAY:
 	numElements = -1;
 	for (i = 0; i < token->u.array.numTokens; i++) {
 	    if (token->u.array.format[i].type != PTOK_TAG ||
+		token->u.array.format[i].u.tag.arrayCount ||
 		token->u.array.format[i].u.tag.justOne) continue;
 
 	    if (token->u.array.format[i].u.tag.ext) {
