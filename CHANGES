@@ -72,6 +72,7 @@
 	- header handling moved to librpmdb to avoid linkage loops.
 	- fix a couple dinky memory leaks.
 	- build with an internal zlib for now.
+	- protect brp-compress against /bin/ls output ambiguity (#56656,#56336).
 
 4.0.3 -> 4.0.4:
 

@@ -48,7 +48,7 @@ do
 
     for f in `find $d -type l`
     do
-	l=`ls -l $f | awk '{ print $11 }' | sed -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
+	l=`ls -l $f | sed -e 's/.* -> //' -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
 	rm -f $f
 	b=`echo $f | sed -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
 	ln -sf $l$COMPRESS_EXT $b$COMPRESS_EXT
