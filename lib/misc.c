@@ -193,7 +193,8 @@ uid_t unameToUid(char * thisUname) {
     }
 
     thisUnameLen = strlen(thisUname);
-    if (thisUnameLen != lastUnameLen || strcmp(thisUname, lastUname)) {
+    if (!lastUname || thisUnameLen != lastUnameLen || 
+	strcmp(thisUname, lastUname)) {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
 	    lastUname = realloc(lastUname, lastUnameAlloced);
@@ -226,7 +227,8 @@ uid_t gnameToGid(char * thisGname) {
     }
    
     thisGnameLen = strlen(thisGname);
-    if (thisGnameLen != lastGnameLen || strcmp(thisGname, lastGname)) {
+    if (!lastGname || thisGnameLen != lastGnameLen || 
+	strcmp(thisGname, lastGname)) {
 	if (lastGnameAlloced < thisGnameLen + 1) {
 	    lastGnameAlloced = thisGnameLen + 10;
 	    lastGname = realloc(lastGname, lastGnameAlloced);
@@ -252,7 +254,7 @@ char * uidToUname(uid_t uid) {
     struct passwd * pwent;
     int len;
 
-    if (uid == -1) {
+    if (uid == (uid_t) -1) {
 	lastUid = -1;
 	return NULL;
     } else if (uid == lastUid) {
@@ -280,7 +282,7 @@ char * gidToGname(gid_t gid) {
     struct group * grent;
     int len;
 
-    if (gid == -1) {
+    if (gid == (uid_t) -1) {
 	lastGid = -1;
 	return NULL;
     } else if (gid == lastGid) {
