@@ -5,12 +5,13 @@ dnl failing causes the script to bomb out with a message. If we can't fix
 dnl it, why check it?
 
 AC_INIT(rpm.c)
-AM_CONFIG_HEADER(config.h)
-AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
+AC_CANONICAL_SYSTEM
 
 AM_INIT_AUTOMAKE(rpm, 2.90)
+AM_CONFIG_HEADER(config.h)
 
-AC_CANONICAL_SYSTEM
+AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
+
 dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
@@ -18,9 +19,8 @@ ALL_LINGUAS="cs de fi fr pt_BR ru sk sr sv tr"
 
 LIBOBJS=
 
-dnl YYY AC_CANONICAL_SYSTEM
-
 dnl Checks for programs.
+AC_ARG_PROGRAM
 AC_PROG_CC
 if test "$ac_cv_prog_gcc" = yes; then
     CFLAGS="$CFLAGS -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
