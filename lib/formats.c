@@ -121,6 +121,8 @@ static char * fflagsFormat(int_32 type, const void * data,
 	    strcat(buf, "m");
 	if (anint & RPMFILE_NOREPLACE)
 	    strcat(buf, "n");
+	if (anint & RPMFILE_GHOST)
+	    strcat(buf, "g");
 
 	val = malloc(5 + padding);
 	strcat(formatPrefix, "s");
