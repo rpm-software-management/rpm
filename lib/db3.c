@@ -1036,7 +1036,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 		nb = strlen(dbhome);
 		if (dbfile)	nb += 1 + strlen(dbfile);
-		dbfullpath = t = alloca(nb);
+		dbfullpath = t = alloca(nb + 1);
 
 		t = stpcpy(t, dbhome);
 		if (dbfile)

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.40 2000/05/10 15:36:30 jbj Exp $
+# $Id: sl.po,v 1.41 2000/05/12 23:30:29 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-05-10 11:32-0400\n"
+"POT-Creation-Date: 2000-05-12 19:24-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -969,8 +969,8 @@ msgid "rebuild database from existing database"
 msgstr "ponovno izgradi zbirko iz obstojeèe"
 
 #: rpm.c:689 rpm.c:695 rpm.c:702 rpm.c:708 rpm.c:717 rpm.c:724 rpm.c:771
-#: rpm.c:777 rpm.c:811 rpm.c:817 rpm.c:823 rpm.c:831 rpm.c:875 rpm.c:930
-#: rpm.c:937
+#: rpm.c:777 rpm.c:811 rpm.c:817 rpm.c:823 rpm.c:831 rpm.c:877 rpm.c:932
+#: rpm.c:939
 msgid "only one major mode may be specified"
 msgstr "samo en glavni naèin sme biti izbran"
 
@@ -990,7 +990,7 @@ msgstr "--build (-b) zahteva enega od a,b,i,c,p,l kot svoj edini argument"
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr "--tarbuild (-t) zahteva enega od a,b,i,c,p,l kot svoj edini argument"
 
-#: rpm.c:784 rpm.c:790 rpm.c:797 rpm.c:804 rpm.c:944
+#: rpm.c:784 rpm.c:790 rpm.c:797 rpm.c:804 rpm.c:946
 msgid "one type of query/verify may be performed at a time"
 msgstr "samo en tip poizvedbe/preverjanja naenkrat je mo¾en"
 
@@ -998,126 +998,126 @@ msgstr "samo en tip poizvedbe/preverjanja naenkrat je mo¾en"
 msgid "arguments to --dbpath must begin with a /"
 msgstr "argumenti --dbpath se morajo zakljuèiti z /"
 
-#: rpm.c:881
+#: rpm.c:883
 msgid "relocations must begin with a /"
 msgstr "prestavitve se morajo zaèeti z /"
 
-#: rpm.c:883
+#: rpm.c:885
 msgid "relocations must contain a ="
 msgstr "prestavitve morajo vsebovati ="
 
-#: rpm.c:886
+#: rpm.c:888
 msgid "relocations must have a / following the ="
 msgstr "prestavitve morajo imeti /, ki sledi ="
 
-#: rpm.c:895
+#: rpm.c:897
 msgid "exclude paths must begin with a /"
 msgstr "poti, ki jih preskoèimo, se morajo zaèeti z /"
 
-#: rpm.c:904
+#: rpm.c:906
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Interna napake pri obdelavi argumentov (%d)\n"
 
-#: rpm.c:955
+#: rpm.c:957
 msgid "--dbpath given for operation that does not use a database"
 msgstr "podani --dbpath ne uporablja podatkovne zbirke"
 
-#: rpm.c:959
+#: rpm.c:961
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck smemo podati samo pri izgradnji paketa"
 
-#: rpm.c:962
+#: rpm.c:964
 msgid "unexpected query flags"
 msgstr "neprièakovane zastavice pri poizvedbi"
 
-#: rpm.c:965
+#: rpm.c:967
 msgid "unexpected query format"
 msgstr "neprièakovana oblika poizvedbe"
 
-#: rpm.c:968
+#: rpm.c:970
 msgid "unexpected query source"
 msgstr "neprièakovan izvor poizvedbe"
 
-#: rpm.c:974
+#: rpm.c:976
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "--force smemo podati samo pri --install --upgrade, --rmsource in --rmspec"
 
-#: rpm.c:977
+#: rpm.c:979
 msgid "files may only be relocated during package installation"
 msgstr "datoteke lahko prestavimo samo pri namestitvi paketa"
 
-#: rpm.c:980
+#: rpm.c:982
 msgid "only one of --prefix or --relocate may be used"
 msgstr "izbiri --prefix in --relocate se izkljuèujeta"
 
-#: rpm.c:983
+#: rpm.c:985
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "izbiri --relocate in --excludepath lahko uporabimo samo pri namestitvi"
 
-#: rpm.c:986
+#: rpm.c:988
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix smemo uporabiti samo pri namestitvi"
 
-#: rpm.c:989
+#: rpm.c:991
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumenti izbire --prefix se morajo zaèeti z /"
 
-#: rpm.c:992
+#: rpm.c:994
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:996
+#: rpm.c:998
 msgid "--percent may only be specified during package installation"
 msgstr "--percent smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1000
+#: rpm.c:1002
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1004
+#: rpm.c:1006
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1008
+#: rpm.c:1010
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1012
+#: rpm.c:1014
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1016
+#: rpm.c:1018
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "izbiri --excludedocs in --includedocs se izkljuèujeta"
 
-#: rpm.c:1020
+#: rpm.c:1022
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1024
+#: rpm.c:1026
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1028
+#: rpm.c:1030
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1032
+#: rpm.c:1034
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches smemo podati samo ob odstranitvi paketa"
 
-#: rpm.c:1036
+#: rpm.c:1038
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles smemo podati samo ob namestitvi paketa"
 
-#: rpm.c:1040
+#: rpm.c:1042
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb smemo podati samo ob namestitvi ali odstranitvi paketa"
 
-#: rpm.c:1045
+#: rpm.c:1047
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -1125,7 +1125,7 @@ msgstr ""
 "--noscripts smemo podati samo ob namestitvi, odstranitvi ali preverjanju "
 "paketa"
 
-#: rpm.c:1049
+#: rpm.c:1051
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
@@ -1133,7 +1133,7 @@ msgstr ""
 "--notriggers smemo podati samo ob namestitvi, odstranitvi ali preverjanju "
 "paketa"
 
-#: rpm.c:1053
+#: rpm.c:1055
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1141,14 +1141,14 @@ msgstr ""
 "--nodeps smemo podati samo ob izgradnji, vnovièni izgradnji, prevajanju, "
 "namestitvi, odstranitvi ali preverjanju paketa"
 
-#: rpm.c:1058
+#: rpm.c:1060
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test smemo podati samo ob namestitvi, odstranitvi ali izgradnji paketa"
 
-#: rpm.c:1062
+#: rpm.c:1064
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1156,120 +1156,120 @@ msgstr ""
 "--root (-r) smemo podati samo ob namestitvi, odstranitvi poizvedbi ali "
 "vnovièni izgradnji paketa"
 
-#: rpm.c:1074
+#: rpm.c:1076
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenti izbire --root (-r) se morajo zaèeti z /"
 
-#: rpm.c:1080
+#: rpm.c:1082
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage smemo podati samo ob nadgradnji"
 
-#: rpm.c:1085
+#: rpm.c:1087
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr "izbire za ftp smemo podati samo ob poizvedbi, namestitvi in nadgradnji"
 
-#: rpm.c:1091
+#: rpm.c:1093
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "izbire za http smemo podati samo ob poizvedbi, namestitvi in nadgradnji"
 
-#: rpm.c:1095
+#: rpm.c:1097
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp smemo podati samo ob preverjanju podpisa"
 
-#: rpm.c:1098
+#: rpm.c:1100
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg smemo podati samo ob preverjanju podpisa"
 
-#: rpm.c:1101
+#: rpm.c:1103
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 smemo podati samo ob preverjanju podpisa ali paketa"
 
-#: rpm.c:1129
+#: rpm.c:1131
 msgid "no files to sign\n"
 msgstr "datoteka za podpis manjka\n"
 
-#: rpm.c:1134
+#: rpm.c:1136
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "dostop do datoteke %s ni mo¾en\n"
 
-#: rpm.c:1149
+#: rpm.c:1151
 msgid "pgp not found: "
 msgstr "pgp manjka: "
 
-#: rpm.c:1153
+#: rpm.c:1155
 msgid "Enter pass phrase: "
 msgstr "Vnesite pristopno geslo: "
 
-#: rpm.c:1155
+#: rpm.c:1157
 msgid "Pass phrase check failed\n"
 msgstr "Preverjanje pristopnega gesla neuspe¹no\n"
 
-#: rpm.c:1158
+#: rpm.c:1160
 msgid "Pass phrase is good.\n"
 msgstr "Pristopno geslo je pravo.\n"
 
-#: rpm.c:1163
+#: rpm.c:1165
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Neveljaven %%_signature v makrodatoteki.\n"
 
-#: rpm.c:1169
+#: rpm.c:1171
 msgid "--sign may only be used during package building"
 msgstr "--sign smemo podati samo ob izgradnji paketa"
 
-#: rpm.c:1184
+#: rpm.c:1186
 msgid "exec failed\n"
 msgstr "exec neuspe¹en\n"
 
-#: rpm.c:1203
+#: rpm.c:1205
 msgid "unexpected arguments to --querytags "
 msgstr "neprièakovani argumenti za --querytags "
 
-#: rpm.c:1214
+#: rpm.c:1216
 msgid "no packages given for signature check"
 msgstr "paketi za preverjanje podpisa niso navedeni"
 
-#: rpm.c:1225
+#: rpm.c:1227
 msgid "no packages given for signing"
 msgstr "paketi za podpisovanje niso navedeni"
 
-#: rpm.c:1237
+#: rpm.c:1239
 msgid "no packages files given for rebuild"
 msgstr "paketi za vnovièno izgradnjo niso navedeni"
 
-#: rpm.c:1300
+#: rpm.c:1302
 msgid "no spec files given for build"
 msgstr "datoteka spec za izgradnjo manjka"
 
-#: rpm.c:1302
+#: rpm.c:1304
 msgid "no tar files given for build"
 msgstr "arhiv tar za izgradnjo manjka"
 
-#: rpm.c:1318
+#: rpm.c:1320
 msgid "no packages given for uninstall"
 msgstr "paketi za odstranitev niso navedeni"
 
-#: rpm.c:1368
+#: rpm.c:1370
 msgid "no packages given for install"
 msgstr "paketi za namestitev niso navedeni"
 
-#: rpm.c:1391
+#: rpm.c:1393
 msgid "extra arguments given for query of all packages"
 msgstr "pri poizvedbi paketov so podani odveèni argumenti"
 
-#: rpm.c:1396
+#: rpm.c:1398
 msgid "no arguments given for query"
 msgstr "argumenti za poizvedbo niso podani"
 
-#: rpm.c:1413
+#: rpm.c:1415
 msgid "extra arguments given for verify of all packages"
 msgstr "pri preverjanju paketov so podani odveèni argumenti"
 
-#: rpm.c:1417
+#: rpm.c:1419
 msgid "no arguments given for verify"
 msgstr "argumenti za preverjanje niso podani"
 
@@ -2375,107 +2375,107 @@ msgstr "| prièakovan na koncu izraza"
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
-#: lib/install.c:145 lib/uninstall.c:185
+#: lib/install.c:148 lib/uninstall.c:185
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr " datoteka: %s akcija: %s\n"
 
-#: lib/install.c:164
+#: lib/install.c:167
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr "uporabnik %s ne obstaja - uporabljamo root"
 
-#: lib/install.c:172
+#: lib/install.c:175
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr "skupina %s ne obstaja - uporabljamo root"
 
-#: lib/install.c:201
+#: lib/install.c:204
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr "vrednost %%instchangelog v makrodatoteki bi morala biti ¹tevilo, pa ni"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:365
+#: lib/install.c:368
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "razpakiranje arhiva neuspe¹no%s%s: %s"
 
-#: lib/install.c:366
+#: lib/install.c:369
 msgid " on file "
 msgstr " pri datoteki "
 
-#: lib/install.c:410
+#: lib/install.c:413
 msgid "installing a source package\n"
 msgstr "name¹èanje izvornega paketa\n"
 
-#: lib/install.c:430
+#: lib/install.c:433
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "ni mo¾no ustvariti izvornega imenika %s"
 
-#: lib/install.c:436 lib/install.c:466
+#: lib/install.c:439 lib/install.c:469
 #, c-format
 msgid "cannot write to %s"
 msgstr "ni mo¾no pisanje na %s"
 
-#: lib/install.c:440
+#: lib/install.c:443
 #, c-format
 msgid "sources in: %s\n"
 msgstr "izvori v: %s\n"
 
-#: lib/install.c:460
+#: lib/install.c:463
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "ni mo¾no ustvariti imenika z doloèili spec %s"
 
-#: lib/install.c:470
+#: lib/install.c:473
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "datoteka spec v: %s\n"
 
-#: lib/install.c:504 lib/install.c:532
+#: lib/install.c:507 lib/install.c:535
 msgid "source package contains no .spec file"
 msgstr "izvorni paket ne vsebuje datoteke .spec"
 
-#: lib/install.c:554
+#: lib/install.c:557
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/install.c:556 lib/install.c:830 lib/uninstall.c:28
+#: lib/install.c:559 lib/install.c:833 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "preimenovanje %s v %s neuspe¹no: %s"
 
-#: lib/install.c:647
+#: lib/install.c:650
 msgid "source package expected, binary found"
 msgstr "prièakovan izvorni paket, najden binarni"
 
-#: lib/install.c:702
+#: lib/install.c:705
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/install.c:760
+#: lib/install.c:763
 msgid "stopping install as we're running --test\n"
 msgstr "ustavljamo namestitev ker teèemo kot --test\n"
 
-#: lib/install.c:765
+#: lib/install.c:768
 msgid "running preinstall script (if any)\n"
 msgstr "poganjamo prednamestitvene skripte (èe obstajajo)\n"
 
-#: lib/install.c:790
+#: lib/install.c:793
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/install.c:826
+#: lib/install.c:829
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/install.c:899
+#: lib/install.c:902
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjamo ponamestitvene skripte (èe obstajajo)\n"
 

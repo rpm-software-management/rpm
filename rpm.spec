@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.16
+Release: 0.17
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -236,6 +236,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Fri May 12 2000 Jeff Johnson <jbj@redhat.com>
+- fix stupid mistakes (alpha segfaults).
+
 * Wed May 10 2000 Jeff Johnson <jbj@redhat.com>
 - include RPM-GPG-KEY in file manifest.
 - simplify --last popt alias, date like -qi (bjerrick@easystreet.com).

@@ -156,7 +156,7 @@ fprintf(stderr, "--- RMW %s (%s:%u)\n", tagName(dbi->dbi_rpmtag), f, l);
 
 inline int dbiDel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags) {
 if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "    %s Del key (%p,%d) %s\n", tagName(dbi->dbi_rpmtag), keyp, keylen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? keyp : ""));
+fprintf(stderr, "    %s Del key (%p,%ld) %s\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""));
     return (*dbi->dbi_vec->cdel) (dbi, keyp, keylen, flags);
 }
 
@@ -167,8 +167,8 @@ inline int dbiGet(dbiIndex dbi, void ** keypp, size_t * keylenp,
 if (_debug < 0 || dbi->dbi_debug) {
 int dataval = 0xdeadbeef;
 if (rc == 0 && datapp && *datapp) memcpy(&dataval, *datapp, sizeof(dataval));
-fprintf(stderr, "    %s Get key (%p,%d) data (%p,%d) %s %x\n", tagName(dbi->dbi_rpmtag), *keypp, *keylenp, *datapp, *datalenp,
-(dbi->dbi_rpmtag != RPMDBI_PACKAGES ? *keypp : ""), dataval);
+fprintf(stderr, "    %s Get key (%p,%ld) data (%p,%ld) %s %x\n", tagName(dbi->dbi_rpmtag), *keypp, (long)*keylenp, *datapp, (long)*datalenp,
+(dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)*keypp : ""), dataval);
 }
     return rc;
 }
@@ -178,7 +178,7 @@ inline int dbiPut(dbiIndex dbi, const void * keyp, size_t keylen,
 if (_debug < 0 || dbi->dbi_debug) {
 int dataval = 0xdeadbeef;
 if (datap) memcpy(&dataval, datap, sizeof(dataval));
-fprintf(stderr, "    %s Put key (%p,%d) data (%p,%d) %s %x\n", tagName(dbi->dbi_rpmtag), keyp, keylen, datap, datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? keyp : ""), dataval);
+fprintf(stderr, "    %s Put key (%p,%ld) data (%p,%ld) %s %x\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), dataval);
 }
     return (*dbi->dbi_vec->cput) (dbi, keyp, keylen, datap, datalen, flags);
 }

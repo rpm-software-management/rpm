@@ -54,7 +54,10 @@ static struct tagMacro {
 static int rpmInstallLoadMacros(Header h)
 {
     struct tagMacro *tagm;
-    const char *body;
+    union {
+	const char * ptr;
+	int_32 i32;
+    } body;
     char numbuf[32];
     int type;
 
@@ -63,11 +66,11 @@ static int rpmInstallLoadMacros(Header h)
 	    continue;
 	switch (type) {
 	case RPM_INT32_TYPE:
-	    sprintf(numbuf, "%d", ((int_32)body));
-	    body = numbuf;
-	    /*@fallthrough@*/
+	    sprintf(numbuf, "%d", body.i32);
+	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
+	    break;
 	case RPM_STRING_TYPE:
-	    addMacro(NULL, tagm->macroname, NULL, body, -1);
+	    addMacro(NULL, tagm->macroname, NULL, body.ptr, -1);
 	    break;
 	}
     }
