@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
     readLead(fd, &lead);
     readSignature(fd, lead.signature_type, (void **) &sig);
-    res = verifySignature(fd, lead.signature_type, sig, result);
+    res = verifySignature(fd, lead.signature_type, sig, result, 1);
     printf("%s", result);
     if (res) {
 	printf("Signature OK.\n");
