@@ -233,28 +233,31 @@ unsigned int faFirstOffset(faFile fa) {
 unsigned int faNextOffset(faFile fa, unsigned int lastOffset) {
     struct faBlock block;
     int offset;
-    int useBlock;
 
     if (lastOffset) {
 	offset = lastOffset - sizeof(block);
-	useBlock = 0;
     } else {
 	offset = sizeof(struct faFileHeader);
-	useBlock = 1;
     }
 
-    block.isFree = 1;
-    while (offset < fa->fileSize && block.isFree) {
+    if (offset >= fa->fileSize) return 0;
+
+    lseek(fa->fd, offset, SEEK_SET);
+    if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) {
+	return 0;
+    }
+    if (!lastOffset && !block.isFree) return (offset + sizeof(block));
+
+    do {
+	offset += sizeof(block) + block.size;
+
 	lseek(fa->fd, offset, SEEK_SET);
 	if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) {
 	    return 0;
 	}
 
-	if (useBlock && !block.isFree) break;
-	useBlock = 1;
-
-	offset += sizeof(block) + block.size;
-    }
+	if (!block.isFree) break;
+    } while (offset < fa->fileSize && block.isFree);
 
     if (offset < fa->fileSize)
 	return (offset + sizeof(block));
