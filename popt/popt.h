@@ -62,7 +62,9 @@ extern struct poptOption poptHelpOptions[];
 			0, "Help options", NULL },
 
 typedef struct poptContext_s * poptContext;
+#ifndef __cplusplus
 typedef struct poptOption * poptOption;
+#endif
 
 #define POPT_CB_USE_INCLUDE_DATA	((void *) -1)
 enum poptCallbackReason { POPT_CALLBACK_REASON_PRE, 
