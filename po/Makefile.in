@@ -1,0 +1,26 @@
+CATALOGS = se.mo
+
+POTFILES  = ../rpm.c
+
+all: $(NLSPACKAGE).pot $(CATALOGS)
+
+$(NLSPACKAGE).pot: $(POTFILES)
+	xgettext --default-domain=$(NLSPACKAGE) \
+       	  --add-comments --keyword=_ --keyword=N_ $(POTFILES)
+	if cmp -s $(NLSPACKAGE).po $(NLSPACKAGE).pot; then \
+	    rm -f $(NLSPACKAGE).po; \
+	else \
+	    mv $(NLSPACKAGE).po $(NLSPACKAGE).pot; \
+	fi
+
+install:
+	install -m 755 -o 0 -g 0 -d $(NLSDIR)
+	for n in $(CATALOGS); do \
+	    l=`basename $$n .mo`; \
+	    install -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l; \
+	    install -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l/LC_MESSAGES; \
+	    install -m 644 -o 0 -g 0 $$n $(NLSDIR)/$$l/LC_MESSAGES/rpm.mo; \
+	done
+
+se.mo:	se.po
+	msgfmt -o $@ $<
