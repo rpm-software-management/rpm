@@ -111,6 +111,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_TRIGGERSCRIPTPROGS       1092
 #define RPMTAG_DOCDIR                   1093 /* internal */
 #define RPMTAG_COOKIE                   1094
+#define RPMTAG_FILEDEVICES              1095
+#define RPMTAG_FILEINODES               1096
+#define RPMTAG_FILELANGS                1097
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 
