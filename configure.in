@@ -21,7 +21,7 @@ AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 
-AC_MSG_CHECKING(checking for POSIX chmod...)
+AC_MSG_CHECKING(POSIX chmod...)
 touch foo.chmodtest
 chmod 744 foo.chmodtest
 chmod +X foo.chmodtest 2>/dev/null
@@ -47,7 +47,7 @@ AC_PROG_RANLIB
 AC_CHECK_TOOL(AR, ar, :)
 
 if test "$cross_compiling" != "yes"; then
-    AC_MSG_CHECKING(checking for GNU cpio...)
+    AC_MSG_CHECKING(GNU cpio...)
     if test -z "$CPIOBIN"; then
 	    oldifs="$IFS"
 	    IFS=:
@@ -70,7 +70,7 @@ if test "$cross_compiling" != "yes"; then
 	    AC_MSG_RESULT(yes)
     fi
 
-    AC_MSG_CHECKING(checking for GNU gzip...)
+    AC_MSG_CHECKING(GNU gzip...)
     if test -z "$GZIPBIN"; then
 	    oldifs="$IFS"
 	    IFS=:
@@ -94,26 +94,24 @@ fi
 topdir=`pwd`
 
 if test $prefix != "/usr" -a $prefix != "/usr/local"; then
-	echo $ac_n "checking for $prefix/lib... $ac_c"
+	AC_MSG_CHECKING("$prefix/lib... $ac_c")
 	if test -d $prefix/lib ; then
-	       LIBS="$LIBS -L$prefix/lib"
-	       
-	       echo "yes"
+		LIBS="$LIBS -L$prefix/lib"
+		AC_MSG_RESULT(yes)
 	else
-	       echo "no"
+		AC_MSG_RESULT(no)
 	fi
 
 	echo $ac_n "checking for $prefix/include... $ac_c"
 	if test -d $prefix/include ; then
-	       INCPATH="$INCPATH -I$prefix/include"
-	       
-	       echo "yes"
+		INCPATH="$INCPATH -I$prefix/include"
+		AC_MSG_RESULT(yes)
 	else
-	       echo "no"
+		AC_MSG_RESULT(no)
 	fi
 fi
 
-AC_MSG_CHECKING(checking for /usr/local/lib...)
+AC_MSG_CHECKING(/usr/local/lib...)
 if test -d /usr/local/lib ; then
 	LIBS="$LIBS -L/usr/local/lib"
 	
@@ -122,7 +120,7 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-AC_MSG_CHECKING(checking for /usr/local/include...)
+AC_MSG_CHECKING(/usr/local/include...)
 if test -d /usr/local/include ; then
 	INCPATH="$INCPATH -I/usr/local/include"
 	AC_MSG_RESULT(yes)
@@ -130,7 +128,7 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-AC_MSG_CHECKING(checking for /usr/ucblib...)
+AC_MSG_CHECKING(/usr/ucblib...)
 if test -d /usr/ucblib ; then
 	LIBS="$LIBS -L/usr/ucblib"
 	
