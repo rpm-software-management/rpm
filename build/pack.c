@@ -407,8 +407,13 @@ int packageBinaries(Spec s, char *passPhrase)
 	}
 	if (! *prefix) {
 	    prefix = NULL;
+	    prefixLen = 0;
+	} else {
+	    prefixLen = strlen(prefix);
 	}
-	prefixLen = strlen(prefix);
+    } else {
+	prefix = NULL;
+	prefixLen = 0;
     }
     
     /* Look through for each package */
@@ -496,7 +501,7 @@ int packageBinaries(Spec s, char *passPhrase)
 	}
 	
 	/**** Process the file list ****/
-	
+
 	if (process_filelist(outHeader, pr, pr->filelist, &size, nametmp,
 			     packageVersion, packageRelease, RPMLEAD_BINARY,
 			     prefix)) {
