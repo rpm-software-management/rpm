@@ -6,9 +6,9 @@
 ulimit -c 0
 
 filelist=`sed "s/['\"]/\\\&/g"`
-exelist=`echo $filelist | xargs -r file | fgrep executable | cut -d: -f1 `
+exelist=`echo $filelist | xargs -r file | grep ":.*executable" | cut -d: -f1 `
 scriptlist=`echo $filelist | xargs -r file | egrep ":.* (commands|script) " | cut -d: -f1 `
-liblist=`echo $filelist | xargs -r file | grep "shared object" | cut -d : -f1 `
+liblist=`echo $filelist | xargs -r file | grep ":.*shared object" | cut -d : -f1 `
 
 for f in $exelist; do
     if [ -x $f ]; then
