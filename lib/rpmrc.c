@@ -112,7 +112,7 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 			const char *fn, int lineNum);
 static void freeRpmVar(struct rpmvarValue * orig);
-static void rpmSetVarArch(int var, char * val, char * arch);
+static void rpmSetVarArch(int var, const char * val, const char * arch);
 static struct canonEntry *lookupInCanonTable(char *name,
 					   struct canonEntry *table,
 					   int tableLen);
@@ -595,13 +595,11 @@ int rpmReadRC(const char * rcfiles)
     return rc;
 }
 
-static int doReadRC(FD_t fd, const char * filename) {
-    char buf[BUFSIZ];
-    char * start, * chptr, * next, * rest;
+static int doReadRC(FD_t fd, const char * filename)
+{
+    char *s, *se, *next;
     int linenum = 0;
     struct rpmOption searchOption, * option;
-    int i;
-    int gotit;
     int rc;
 
   { struct stat sb;
@@ -619,137 +617,154 @@ static int doReadRC(FD_t fd, const char * filename) {
     while (*next) {
 	linenum++;
 
-	chptr = start = next;
-	while (*chptr != '\n') chptr++;
+	se = s = next;
+	while (*se && *se != '\n') se++;
+	if (*se) *se++ = '\0';
+	next = se;
 
-	*chptr = '\0';
-	next = chptr + 1;
-
-	while (isspace(*start)) start++;
+	while (*s && isspace(*s)) s++;
 
 	/* we used to allow comments to begin anywhere, but not anymore */
-	if (*start == '#' || !*start) continue;
+	if (*s == '#' || *s == '\0') continue;
 
-	chptr = start;
-	while (!isspace(*chptr) && *chptr != ':' && *chptr) chptr++;
+	se = s;
+	while (*se && !isspace(*se) && *se != ':') se++;
 
-	if (isspace(*chptr)) {
-	    *chptr++ = '\0';
-	    while (isspace(*chptr) && *chptr != ':' && *chptr) chptr++;
+	if (isspace(*se)) {
+	    *se++ = '\0';
+	    while (*se && isspace(*se) && *se != ':') se++;
 	}
 
-	if (*chptr != ':') {
+	if (*se != ':') {
 	    rpmError(RPMERR_RPMRC, _("missing ':' at %s:%d"),
 		     filename, linenum);
 	    return 1;
 	}
+	*se++ = '\0';
+	while (*se && isspace(*se)) se++;
 
-	*chptr++ = '\0';
-
-	searchOption.name = start;
+	/* Find keyword in table */
+	searchOption.name = s;
 	option = bsearch(&searchOption, optionTable, optionTableSize,
 			 sizeof(struct rpmOption), optionCompare);
 
-	if (option) {
-	    start = chptr;
-	    while (isspace(*start) && *start) start++;
+	if (option) {	/* For configuration variables  ... */
+	    const char *arch, *val, *fn;
 
-	    if (! *start) {
+	    arch = val = fn = NULL;
+	    if (*se == '\0') {
 		rpmError(RPMERR_RPMRC, _("missing argument for %s at %s:%d"),
 		      option->name, filename, linenum);
 		return 1;
 	    }
 
 	    switch (option->var) {
-
 	    case RPMVAR_INCLUDE:
 	      {	FD_t fdinc;
 
+		s = se;
+		while (*se && !isspace(*se)) se++;
+		if (*se) *se++ = '\0';
+
 		rpmRebuildTargetVars(NULL, NULL);
 
-		strcpy(buf, start);
-		if (expandMacros(NULL, NULL, buf, sizeof(buf))) {
+		fn = rpmGetPath(s, NULL);
+		if (fn == NULL || *fn == '\0') {
 		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
-			option->name, filename, linenum, start);
+			option->name, filename, linenum, s);
+		    if (fn) xfree(fn);
 		    return 1;
 		}
 
-		if (fdFileno(fdinc = fdOpen(buf, O_RDONLY, 0)) < 0) {
+		fdinc = fdOpen(fn, O_RDONLY, 0);
+		if (fdFileno(fdinc) < 0) {
 		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d"),
-			buf, filename, linenum);
-			return 1;
+			fn, filename, linenum);
+		    rc = 1;
+		} else {
+		    rc = doReadRC(fdinc, fn);
+		    fdClose(fdinc);
 		}
-		rc = doReadRC(fdinc, buf);
-		fdClose(fdinc);
+		if (fn) xfree(fn);
 		if (rc) return rc;
+		continue;	/* XXX don't save include value as var/macro */
 	      }	break;
 	    case RPMVAR_MACROFILES:
-		buf[0] = '\0';
-		strncat(buf, start, sizeof(buf) - strlen(buf));
-		if (expandMacros(NULL, NULL, buf, sizeof(buf))) {
+		fn = rpmGetPath(se, NULL);
+		if (fn == NULL || *fn == '\0') {
 		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
-			option->name, filename, linenum, start);
+			option->name, filename, linenum, fn);
+		    if (fn) xfree(fn);
 		    return 1;
 		}
-		start = buf;
+		se = (char *)fn;
 		break;
+	    case RPMVAR_PROVIDES:
+	      {	char *t;
+		s = rpmGetVar(RPMVAR_PROVIDES);
+		fn = t = malloc(strlen(s) + strlen(se) + 2);
+		while (*s) *t++ = *s++;
+		*t++ = ' ';
+		while (*se) *t++ = *se++;
+		*t++ = '\0';
+		se = (char *)fn;
+	      }	break;
 	    default:
 		break;
 	    }
 
-	    chptr = start;
 	    if (option->archSpecific) {
-		while (!isspace(*chptr) && *chptr) chptr++;
-
-		if (!*chptr) {
+		arch = se;
+		while (*se && !isspace(*se)) se++;
+		if (*se == '\0') {
 		    rpmError(RPMERR_RPMRC,
 				_("missing architecture for %s at %s:%d"),
 			  	option->name, filename, linenum);
 		    return 1;
 		}
-
-		*chptr++ = '\0';
-
-		while (isspace(*chptr) && *chptr) chptr++;
-		if (!*chptr) {
+		*se++ = '\0';
+		while (*se && isspace(*se)) se++;
+		if (*se == '\0') {
 		    rpmError(RPMERR_RPMRC,
 				_("missing argument for %s at %s:%d"),
 			  	option->name, filename, linenum);
 		    return 1;
 		}
-		if (option->macroize && !strcmp(start, current[ARCH])) {
-		    char *s = buf;
-		    if (option->localize)
-			*s++ = '_';
-		    strcpy(s, option->name);
-		    addMacro(NULL, buf, NULL, chptr, RMIL_RPMRC);
-		}
-	    } else {
-		start = NULL;	/* no arch */
-		/* XXX for now only non-arch values can get macroized */
-		if (option->macroize) {
-		    char *s = buf;
-		    if (option->localize)
-			*s++ = '_';
-		    strcpy(s, option->name);
-		    addMacro(NULL, buf, NULL, chptr, RMIL_RPMRC);
-		}
 	    }
-	    rpmSetVarArch(option->var, chptr, start);
-	} else {
+	
+	    val = se;
+
+	    /* Only add macros if appropriate for this arch */
+	    if (option->macroize &&
+	      (arch == NULL || !strcmp(arch, current[ARCH]))) {
+		char *n, *name;
+		n = name = malloc(strlen(option->name)+2);
+		if (option->localize)
+		    *n++ = '_';
+		strcpy(n, option->name);
+		addMacro(NULL, name, NULL, val, RMIL_RPMRC);
+		free(name);
+	    }
+	    rpmSetVarArch(option->var, val, arch);
+	    if (fn) xfree(fn);
+
+	} else {	/* For arch/os compatibilty tables ... */
+	    int gotit;
+	    int i;
+
 	    gotit = 0;
 
 	    for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
-		if (!strncmp(tables[i].key, start, strlen(tables[i].key)))
+		if (!strncmp(tables[i].key, s, strlen(tables[i].key)))
 		    break;
 	    }
 
 	    if (i < RPM_MACHTABLE_COUNT) {
-		rest = start + strlen(tables[i].key);
+		char *rest = s + strlen(tables[i].key);
 		if (*rest == '_') rest++;
 
 		if (!strcmp(rest, "compat")) {
-		    if (machCompatCacheAdd(chptr, filename, linenum,
+		    if (machCompatCacheAdd(se, filename, linenum,
 						&tables[i].cache))
 			return 1;
 		    gotit = 1;
@@ -757,13 +772,13 @@ static int doReadRC(FD_t fd, const char * filename) {
 			   !strcmp(rest, "translate")) {
 		    if (addDefault(&tables[i].defaults,
 				   &tables[i].defaultsLength,
-				   chptr, filename, linenum))
+				   se, filename, linenum))
 			return 1;
 		    gotit = 1;
 		} else if (tables[i].hasCanon &&
 			   !strcmp(rest, "canon")) {
 		    if (addCanon(&tables[i].canons, &tables[i].canonsLength,
-				 chptr, filename, linenum))
+				 se, filename, linenum))
 			return 1;
 		    gotit = 1;
 		}
@@ -771,7 +786,7 @@ static int doReadRC(FD_t fd, const char * filename) {
 
 	    if (!gotit) {
 		rpmError(RPMERR_RPMRC, _("bad option '%s' at %s:%d"),
-			    start, filename, linenum);
+			    s, filename, linenum);
 	    }
 	}
     }
@@ -977,7 +992,7 @@ void rpmSetVar(int var, const char *val) {
     values[var].value = (val ? strdup(val) : NULL);
 }
 
-static void rpmSetVarArch(int var, char * val, char * arch) {
+static void rpmSetVarArch(int var, const char * val, const char * arch) {
     struct rpmvarValue * next = values + var;
 
     if (next->value) {
