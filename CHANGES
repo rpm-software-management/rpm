@@ -1,5 +1,4 @@
 2.3.6 -> 2.3.7:
-	- no longer put file uid/gid in header
 	- fixed nasty memory link in -Va
 	- configure checks for -lnsl explicitly rather then linking it
 	  to -lsocket (for NCR SysVR4)
