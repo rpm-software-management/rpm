@@ -315,8 +315,8 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
     headerGetEntry(h, RPMTAG_FILELINKTOS, NULL, (void **) &mem->links, NULL);
-    languages = NULL;
-    headerGetEntry(h, RPMTAG_FILELANGS, NULL, (void **) &fileLangs, NULL);
+    if (!headerGetEntry(h, RPMTAG_FILELANGS, NULL, (void **) &fileLangs, NULL))
+	fileLangs = NULL;
 
     if ((chptr = getenv("LINGUAS"))) {
 	languages = splitString(chptr, strlen(chptr), ':');
@@ -346,6 +346,9 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	    }
 	}
     }
+
+    if (fileLangs) free(fileLangs);
+    if (languages) freeSplitString(languages);
 
     return 0;
 }
@@ -418,6 +421,9 @@ static void trimChangelog(Header h) {
 		      numToKeep);
     headerModifyEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE, texts, 
 		      numToKeep);
+
+    free(names);
+    free(texts);
 }
 
 /* 0 success */
@@ -721,7 +727,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 	    }
 	}
 
-	if (netsharedPaths) free(netsharedPaths);
+	if (netsharedPaths) freeSplitString(netsharedPaths);
 
 	rc = instHandleSharedFiles(db, otherOffset, files, fileCount, 
 				   toRemove, &replacedList, flags);
@@ -1015,6 +1021,7 @@ static int installArchive(int fd, struct fileInfo * files,
 			    ((notify && archiveSize) || specFile) ? 
 				callback : NULL, 
 			    &info, &failedFile);
+    gzclose(stream);
 
     if (rc) {
 	/* this would probably be a good place to check if disk space

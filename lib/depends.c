@@ -867,6 +867,9 @@ static int addOrderedPack(rpmDependencies rpmdep,
 		if (rc) return 1;
 	    }
 	}
+
+	free(requires);
+	free(requiresVersion);
     }
 
     /* whew -- add this package */
