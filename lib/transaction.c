@@ -77,10 +77,6 @@ struct diskspaceInfo {
    probably right :-( */
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
-#ifdef	DYING
-#define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
-#endif
-
 /**
  */
 static /*@null@*/ void * freeFl(rpmTransactionSet ts,
@@ -198,75 +194,6 @@ static int osOkay(Header h)
 
     return 1;
 }
-
-#ifdef	DYING
-void rpmProblemSetFree(rpmProblemSet tsprobs)
-{
-    int i;
-
-    for (i = 0; i < tsprobs->numProblems; i++) {
-	rpmProblem p = tsprobs->probs + i;
-	p->h = headerFree(p->h);
-	p->pkgNEVR = _free(p->pkgNEVR);
-	p->altNEVR = _free(p->altNEVR);
-	p->str1 = _free(p->str1);
-    }
-    free(tsprobs);
-}
-
-/**
- * Filter a problem set.
- * As the problem sets are generated in an order solely dependent
- * on the ordering of the packages in the transaction, and that
- * ordering can't be changed, the problem sets must be parallel to
- * one another. Additionally, the filter set must be a subset of the
- * target set, given the operations available on transaction set.
- * This is good, as it lets us perform this trim in linear time, rather
- * then logarithmic or quadratic.
- *
- * @param tsprobs	transaction problem set
- * @param filter	filter
- * @return		0 no problems, 1 if problems remain
- */
-static int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
-	/*@modifies tsprobs @*/
-{
-    rpmProblem t = tsprobs->probs;
-    rpmProblem f = filter->probs;
-    int gotProblems = 0;
-
-    /*@-branchstate@*/
-    while ((f - filter->probs) < filter->numProblems) {
-	if (!f->ignoreProblem) {
-	    f++;
-	    continue;
-	}
-	while ((t - tsprobs->probs) < tsprobs->numProblems) {
-	    /*@-nullpass@*/	/* LCL: looks good to me */
-	    if (f->h == t->h && f->type == t->type && t->key == f->key &&
-		     XSTRCMP(f->str1, t->str1))
-		/*@innerbreak@*/ break;
-	    /*@=nullpass@*/
-	    t++;
-	    gotProblems = 1;
-	}
-
-	if ((t - tsprobs->probs) == tsprobs->numProblems) {
-	    /* this can't happen ;-) let's be sane if it doesn though */
-	    break;
-	}
-
-	t->ignoreProblem = f->ignoreProblem;
-	t++, f++;
-    }
-    /*@=branchstate@*/
-
-    if ((t - tsprobs->probs) < tsprobs->numProblems)
-	gotProblems = 1;
-
-    return gotProblems;
-}
-#endif	/* DYING */
 
 /**
  */

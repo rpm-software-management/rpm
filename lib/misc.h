@@ -6,14 +6,6 @@
  *
  */
 
-#ifdef	DYING
-#include <unistd.h>
-#include <sys/types.h>
-
-#include "header.h"
-#include "ugid.h"
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -173,23 +173,6 @@ struct psm_s {
 extern "C" {
 #endif
 
-#ifdef	DYING
-/**
- * Create problem set.
- */
-/*@only@*/ rpmProblemSet rpmProblemSetCreate(void)
-	/*@*/;
-
-/**
- * Append problem to set.
- */
-void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
-		const availablePackage alp,
-		const char * dn, const char * bn,
-		Header altH, unsigned long ulong1)
-	/*@modifies tsprobs, alp @*/;
-#endif	/* DYING */
-
 /**
  * Return file type from mode_t.
  * @param mode		file mode bits (from header)
