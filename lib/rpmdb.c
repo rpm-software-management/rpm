@@ -546,7 +546,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     dbiIndexSet matches = NULL;
     int rc;
 
-    rc = dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, matches);
+    rc = dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, &matches);
 
     switch (rc) {
     default:
