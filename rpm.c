@@ -222,7 +222,9 @@ int build(char *arg, int buildAmount, char *passPhrase, char *prefixOverride) {
 	if (verifySpec(s)) {
 	    /* For now, warn and try to continue */
 	    res = 1;
-	    fprintf(stderr, "\n%cSpec file check failed -- tell Marc\n\n", 7);
+	    fprintf(stderr, "\n%cSpec file check failed!!\n", 7);
+	    fprintf(stderr,
+		    "Tell rpm-list@redhat.com if this is incorrect.\n\n");
 	    sleep(1);
 	}
 	if (doBuild(s, buildAmount, passPhrase)) {
