@@ -653,7 +653,8 @@ const char *const rpmfiTypeString(rpmfi fi)
 static
 Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, fileAction * actions)
-	/*@modifies ts, fi, origH, actions @*/
+	/*@globals h_errno, rpmGlobalMacroContext @*/
+	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext @*/
 {
     rpmte p = rpmtsRelocateElement(ts);
     HGE_t hge = fi->hge;
@@ -884,7 +885,7 @@ assert(fn != NULL);		/* XXX can't happen */
 if (fColors != NULL) {
 /* XXX pkgs may not have unique dirNames, so color all dirNames that match. */
 for (j = 0; j < dirCount; j++) {
-if (strcmp(dirNames[dirIndexes[i]], dirNames[j])) continue;
+if (strcmp(dirNames[dirIndexes[i]], dirNames[j])) /*@innercontinue@*/ continue;
 dColors[j] |= fColors[i];
 }
 }

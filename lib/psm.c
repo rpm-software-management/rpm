@@ -2169,7 +2169,7 @@ assert(psm->mi == NULL);
 		 * score entry.
 		 */
 		rpmMessage(RPMMESS_DEBUG,
-		    _("Attempting to mark %s as installed in score board(%p).\n"),
+		    _("Attempting to mark %s as installed in score board(%u).\n"),
 		    rpmteN(psm->te), (unsigned) score);
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
 		if (se != NULL) se->installed = 1;
