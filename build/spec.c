@@ -52,6 +52,8 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 static void free_reqprov(struct ReqProv *p);
 static int noSourcePatch(Spec s, char *line, int_32 tag);
 
+static void addListEntry(Header h, int_32 tag, char *line);
+
 /**********************************************************************/
 /*                                                                    */
 /* Source and patch structure creation/deletion/lookup                */
@@ -639,6 +641,10 @@ struct preamble_line {
     {RPMTAG_PATCH,         0, "patch"},
     {RPMTAG_NOSOURCE,      0, "nosource"},
     {RPMTAG_NOPATCH,       0, "nopatch"},
+    {RPMTAG_EXCLUDEARCH,   0, "excludearch"},
+    {RPMTAG_EXCLUSIVEARCH, 0, "exclusivearch"},
+    {RPMTAG_EXCLUDEOS,     0, "excludeos"},
+    {RPMTAG_EXCLUSIVEOS,   0, "exclusiveos"},
     {RPMTAG_EXCLUDE,       0, "exclude"},
     {RPMTAG_EXCLUSIVE,     0, "exclusive"},
     {RPMTAG_ICON,          0, "icon"},
@@ -646,7 +652,7 @@ struct preamble_line {
     {RPMTAG_REQUIREFLAGS,  0, "requires"},
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
     {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
-    {RPMTAG_BUILDROOT,   0, "buildroot"},
+    {RPMTAG_BUILDROOT,     0, "buildroot"},
     {0, 0, 0}
 };
 
@@ -739,6 +745,27 @@ static char *chop_line(char *s)
     return p;
 }
 #endif
+
+static void addListEntry(Header h, int_32 tag, char *line)
+{
+    int argc;
+    char **argv;
+    char **argvs;
+    char *s;
+
+    argvs = argv = malloc(strlen(line) * sizeof(char *));
+    argc = 0;
+    while (s = strtok(line, " \t")) {
+	*argv = s;
+	argc++;
+	argv++;
+	line = NULL;
+    }
+    if (argc) {
+	addEntry(h, tag, STRING_ARRAY_TYPE, argvs, argc);
+    }
+    free(argv);
+}
 
 static void parseForDocFiles(struct PackageRec *package, char *line)
 {
@@ -969,6 +996,9 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	        switch (tag) {
 		  case RPMTAG_EXCLUDE:
 		  case RPMTAG_EXCLUSIVE:
+		      message(MESS_WARNING,
+			      "Exclude/Exclusive are depricated.\n"
+			      "Use ExcludeArch/ExclusiveArch instead.\n");
 		      sprintf(buf2, "%s %s",
 			      (tag == RPMTAG_EXCLUDE) ? "%ifarch" : "%ifnarch",
 			      s);
@@ -976,7 +1006,31 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 			  error(RPMERR_BADARCH, "Arch mismatch!");
 			  return NULL;
 		      }
+		      addListEntry(cur_package->header,
+				   (tag == RPMTAG_EXCLUDE) ?
+				   RPMTAG_EXCLUDEARCH : RPMTAG_EXCLUSIVEARCH,
+				   s);
 		      break;
+		  case RPMTAG_EXCLUDEARCH:	
+		  case RPMTAG_EXCLUSIVEARCH:
+		    sprintf(buf2, "%s %s", (tag == RPMTAG_EXCLUDEARCH) ?
+			    "%ifarch" : "%ifnarch",  s);
+		    if (match_arch(buf2)) {
+			error(RPMERR_BADARCH, "Arch mismatch!");
+			return NULL;
+		    }
+		    addListEntry(cur_package->header, tag, s);
+		    break;
+		  case RPMTAG_EXCLUDEOS:
+		  case RPMTAG_EXCLUSIVEOS:
+		    sprintf(buf2, "%s %s", (tag == RPMTAG_EXCLUDEOS) ?
+			    "%ifos" : "%ifnos",  s);
+		    if (match_arch(buf2)) {
+			error(RPMERR_BADOS, "OS mismatch!");
+			return NULL;
+		    }
+		    addListEntry(cur_package->header, tag, s);
+		    break;
 		  case RPMTAG_NAME:
 		    s1 = s;
 		    while (*s1 && *s1 != ' ' && *s1 != '\t') s1++;
