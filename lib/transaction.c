@@ -3,6 +3,7 @@
 #include "rpmlib.h"
 
 #include "depends.h"
+#include "fprint.h"
 #include "hash.h"
 #include "install.h"
 #include "misc.h"
@@ -16,6 +17,7 @@ struct fileInfo {
     Header h;
     enum fileInfo_e { ADDED, REMOVED } action;
     char ** fl, ** fmd5s;
+    fingerPrint * fps;
     int fc;
 };
 
@@ -27,7 +29,6 @@ static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
 			       rpmProblemSet probs);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
-static void aggregateFileList(struct fileInfo * info, hashTable ht);
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
@@ -91,20 +92,23 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
     flList = alloca(sizeof(*flList) * (al->size + ts->numRemovedPackages));
 
-    ht = htCreate(totalFileCount * 2);
-    numPackages = 0;
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+    ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
+    fi = flList;
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++, fi++) {
 	if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL, 
-				     (void *) &flList[numPackages].fl, 
-				     &flList[numPackages].fc))
+				     (void *) &fi->fl, &fi->fc))
 	    continue;
 	headerGetEntryMinMemory(alp->h, RPMTAG_FILEMD5S, NULL, 
-				(void *) &flList[numPackages].fmd5s, NULL);
+				(void *) &fi->fmd5s, NULL);
 
-	flList[numPackages].h = alp->h;
-	flList[numPackages].action = ADDED;
-	aggregateFileList(flList + numPackages, ht);
-	numPackages++;
+	fi->h = alp->h;
+	fi->action = ADDED;
+        fi->fps = alloca(fi->fc * sizeof(*fi->fps));
+
+	for (i = 0; i < fi->fc; i++) {
+	    fi->fps[i] = fpLookup(fi->fl[i], 1);
+	    htAddEntry(ht, fi->fps + i, fi);
+	}
     }
 	
 /* FIXME 
@@ -116,10 +120,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     }
 */
 
-    numPackages = 0;
-    fateList = alloca(totalFileCount * sizeof(*fateList));
-    fates = htCreate(totalFileCount * 2);
-    numFates = 0;
 
 #if 0
     /* We build this list to reduce database i/o, while still allowing
@@ -134,14 +134,19 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     }
 #endif
 
+    fateList = alloca(totalFileCount * sizeof(*fateList));
+    fates = htCreate(totalFileCount * 2, sizeof(fingerPrint), fpHashFunction, 
+		     fpEqual);
+    numFates = 0;
+    numPackages = 0;
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
 	if (alp->h != flList[numPackages].h) continue;
 	fi = flList + numPackages;
 
 	for (i = 0; i < fi->fc; i++) {
-	    if (htHasEntry(fates, fi->fl[i])) continue;
+	    if (htHasEntry(fates, &fi->fps[i])) continue;
 
-	    htGetEntry(ht, fi->fl[i], (void ***) &recs, &numRecs);
+	    htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
 	    /* note that &recs[0] must equal fi! */
 	    for (j = numRecs - 1; j > 0 && (recs[j]->action != ADDED); 
 		 winner--);
@@ -149,12 +154,12 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
 	    for (winnerFileNum = 0; winnerFileNum < winner->fc; 
 			winnerFileNum++)
-	    	if (!strcmp(fi->fl[i], recs[j]->fl[winnerFileNum])) break;
+	    	if (FP_EQUAL(fi->fps[i], recs[j]->fps[winnerFileNum])) break;
 
 	    for (j = 0; recs[j] != winner; j++) {
 		/* FIXME: there are more efficient searches in the world... */
 		for (fileNum = 0; fileNum < recs[j]->fc; fileNum++)
-		    if (!strcmp(fi->fl[i], recs[j]->fl[fileNum])) break;
+		    if (FP_EQUAL(fi->fps[i], recs[j]->fps[fileNum])) break;
 
 		if (strcmp(winner->fmd5s[winnerFileNum], 
 			   recs[j]->fmd5s[fileNum])) {
@@ -166,19 +171,24 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
 	    fateList[numFates].action = KEEP;
 	    fateList[numFates].winner = alp->h;
-	    htAddEntry(fates, fi->fl[i], fateList + numFates);
+	    htAddEntry(fates, fi->fps + i, fateList + numFates);
 	    numFates++;
 	}
 
 	numPackages++;
     }
 
+    htFree(ht);
+
     if (probs->numProblems && (!okProbs || psTrim(okProbs, probs))) {
+	htFree(fates);
 	*newProbs = probs;
 	for (i = 0; i < al->size; i++)
 	    headerFree(hdrs[i]);
 	return al->size + ts->numRemovedPackages;
     }
+
+    htFree(fates);
 
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
 	if (installBinaryPackage(ts->root, ts->db, al->list[pkgNum].fd, 
@@ -450,19 +460,3 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target) {
 
     return gotProblems;
 }
-
-/* this really shouldn't be able to fail <gulp> */
-static void aggregateFileList(struct fileInfo * info, hashTable ht) {
-    char ** fl;
-    int fc, i;
-
-    if (!headerGetEntryMinMemory(info->h, RPMTAG_FILENAMES, NULL, (void *) &fl,
-				 &fc))
-	return;
-
-    for (i = 0; i < fc; i++) 
-	htAddEntry(ht, fl[i], info);
-
-    free(fl);
-}
-
