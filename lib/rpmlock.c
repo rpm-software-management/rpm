@@ -1,21 +1,21 @@
 
 #include "system.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-
 #include <rpmlib.h>
+#include <rpmmacro.h>
 
 #include "rpmts.h"
-
 #include "rpmlock.h"
+
+#include "debug.h"
 
 /* Internal interface */
 
-#define RPMLOCK_FILE "/var/lock/rpm/transaction"
+#define RPMLOCK_PATH "/var/lock/rpm/transaction"
+/*@unchecked@*/ /*@observer@*/
+static const char * rpmlock_path_default = "%{?_rpmlock_path}";
+/*@unchecked@*/
+static const char * rpmlock_path = NULL;
 
 /*@observer@*/ /*@unchecked@*/
 static const char * _rpmlock_file = RPMLOCK_FILE;
@@ -37,14 +37,23 @@ static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
 	/*@modifies fileSystem @*/
 {
 	rpmlock lock = (rpmlock) malloc(sizeof(*lock));
-	if (lock) {
+
+	/* XXX oneshot to determine path for fcntl lock. */
+	if (rpmlock_path == NULL) {
+	    char * t = rpmExpand(rpmlock_path_default, NULL);
+	    if (t == NULL || *t == '\0' || *t == '%')
+		t = RPMLOCK_PATH;
+	    rpmlock_path = xstrdup(t);
+	    t = _free(t);
+	}
+	if (lock != NULL) {
 		mode_t oldmask = umask(022);
-		lock->fd = open(RPMLOCK_FILE, O_RDWR|O_CREAT, 0644);
+		lock->fd = open(rpmlock_path, O_RDWR|O_CREAT, 0644);
 		(void) umask(oldmask);
 
 /*@-branchstate@*/
 		if (lock->fd == -1) {
-			lock->fd = open(RPMLOCK_FILE, O_RDONLY);
+			lock->fd = open(rpmlock_path, O_RDONLY);
 			if (lock->fd == -1) {
 				free(lock);
 				lock = NULL;
@@ -128,14 +137,14 @@ void *rpmtsAcquireLock(rpmts ts)
 	lock = rpmlock_new(rootDir);
 /*@-branchstate@*/
 	if (!lock) {
-		rpmMessage(RPMMESS_ERROR, _("can't create transaction lock\n"));
+		rpmMessage(RPMMESS_ERROR, _("can't create transaction lock on %s\n"), rpmlock_path);
 	} else if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
 		if (lock->openmode & RPMLOCK_WRITE)
 			rpmMessage(RPMMESS_WARNING,
-				   _("waiting for transaction lock\n"));
+				   _("waiting for transaction lock on %s\n"), rpmlock_path);
 		if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
 			rpmMessage(RPMMESS_ERROR,
-				   _("can't create transaction lock\n"));
+				   _("can't create transaction lock on %s\n"), rpmlock_path);
 			rpmlock_free(lock);
 			lock = NULL;
 		}

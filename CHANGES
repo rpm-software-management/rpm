@@ -64,6 +64,8 @@
 	- fix: segfault on --verifydb (#138589).
 	- sparcv8: optflags changed to -mtune=ultrasparc (#140420).
 	- port to internal file-4.10 libmagic rather than libfmagic.
+	- move global /var/lock/rpm/transaction to dbpath.
+	- permit fcntl path to be configured through rpmlock_path macro.
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.
