@@ -1,0 +1,171 @@
+#! /usr/bin/ksh
+
+# Original Author: Ralph Goers(rgoer@Candle.Com)
+# Borrowed heavily from Tim Mooney's HP version.
+# This file is distributed under the terms of the GNU General Public License
+#
+# find-requires is part of RPM, the RedHat Package Manager.  find-requires
+# reads a list of full pathnames (in a package) on stdin, and outputs all
+# shared libraries the package requires to run correctly.
+#
+
+find_req_power ()
+{
+   # On AIX Power, use `dump -H' to find the library dependencies 
+   # for an executable
+   #
+   # Example dump output:
+   #
+   #$dump -H /usr/bin/dump
+   #
+   #/usr/bin/dump:
+   #
+   #                        ***Loader Section***
+   #                      Loader Header Information
+   #VERSION#         #SYMtableENT     #RELOCent        LENidSTR
+   #0x00000001       0x00000021       0x0000006c       0x0000002f
+   #
+   ##IMPfilID        OFFidSTR         LENstrTBL        OFFstrTBL
+   #0x00000002       0x00000848       0x00000049       0x00000877
+   #
+   #
+   #                        ***Import File Strings***
+   #INDEX  PATH                          BASE                MEMBER
+   #0      /usr/lib:/lib:/usr/lpp/xlC/lib
+   #1                                    libc.a              shr.o
+   
+   #
+   #
+
+   while read f
+    do
+     # Find the required symbols in executables and the required shells in 
+     # scripts
+     LANG=C /usr/bin/file $f | /usr/bin/grep -q -e ":.*shell script" 
+
+     if [ $? -ne 0 ]  # Use dump to examine executables
+     then
+        LANG=C /usr/bin/dump -H $f 2>/dev/null | awk '
+   
+		#
+		# Since this entire awk script is enclosed in single quotes,
+		# you need to be careful to not use single quotes, even in awk
+		# comments, if you modify this script.
+		#
+
+        BEGIN {
+            in_shlib_list = 0;
+            in_file_strings = 0;
+            FS = " ";
+            RS = "\n";
+        }
+
+        in_shlib_list == 1 && /^$/ {
+            in_shlib_list = 0;
+            in_file_strings = 0;
+        }
+
+        in_shlib_list == 1 {
+            pos = index($2, "/")
+            numfields = split($0, fields, " ")
+
+            if (pos == 0)  {
+              namevar = 2
+            }
+            else {
+              namevar = 3
+            }
+            if (namevar < numfields) {
+              printf("%s(%s)\n", fields[namevar], fields[namevar+1])
+            }
+            else {
+	      if ((fields[namevar] != ".") && (fields[namevar] != "..")) {
+                  print fields[namevar]
+	      }
+            }
+        }
+
+        in_file_strings == 1 && $1 == "0" {
+            in_shlib_list = 1
+        }
+
+        /\*Import File Strings\*/ {
+            in_file_strings = 1
+        }
+      ' # end of awk
+     else # shell scripts
+        if [ -x $f ]; then 
+            /usr/bin/head -1 $f | /usr/bin/sed -e 's/^\#\![   ]*//' | /usr/bin/cut -d" " -f1
+        fi
+     fi
+    done | sort -u
+}
+
+find_req_ia64 ()
+{
+   # On AIX IA64, use `dump -Lv' to find the library dependencies 
+   # for an executable
+   #
+   # Example dump output:
+   #
+   #$dump -Lv /usr/bin/dump
+   #
+   #   
+   #/usr/bin/dump:
+   #
+   #		****  DYNAMIC SECTION INFORMATION ****
+   #[INDEX]   Tag         Value
+   #
+   #.dynamic:
+   #[1]       NEEDED      libC.so.1
+   #[2]       NEEDED      libelf.so
+   #[3]       NEEDED      /usr/lib/ia64l32/libc.so.1
+   #[4]       INIT        0x1001d6c0
+   #[5]       FINI        0x1001d700
+   #[6]       HASH        0x1000011c
+   #[7]       STRTAB      0x10000914
+   #[8]       SYMTAB      0x10000364
+   #[9]       STRSZ       0x3dd
+   #[10]      SYMENT      0x10
+   #[11]      PLTGOT      0x20018994
+   #[12]      PLT_RESERVE 0x20018a00
+   #[13]      PLTSZ       0x1c0
+   #[14]      PLTREL      REL
+   #[15]      JMPREL      0x100024bc
+   #[16]      REL         0x10000cf4
+   #[17]      RELSZ       0x17c8
+   #[18]      RELENT      0x8
+   #
+   #
+
+   while read f
+   do
+     # Find the required symbols in executables and the required shells in 
+     # scripts
+     LANG=C /usr/bin/file $f | /usr/bin/grep -q -e ":.*shell script" 
+
+     if [ $? -ne 0 ]  # Use dump to examine executables
+     then
+           LANG=C /usr/bin/dump -Lv $f 2>/dev/null | \
+	   awk '$2=="NEEDED" {print $3}' | xargs -i basename {}
+   
+     else  # Extract the exec module from shell scripts
+           if [ -x $f ]; then
+               head -1 $f | sed -e 's/^\#\![   ]*//' | cut -d" " -f1
+           fi
+     fi
+   done | sort -u
+}
+
+machinetype=`uname -m`
+if [[ $machinetype = "ia64" ]]
+then
+   /usr/bin/sed "s/['\"]/\\\&/g" | LANG=C /usr/bin/xargs /usr/bin/file | \
+      /usr/bin/grep -e ":.*executable" -e ":.*archive" -e ":.*shell script" | /usr/bin/cut -d: -f1 |
+   find_req_ia64
+else
+   /usr/bin/sed "s/['\"]/\\\&/g" | LANG=C /usr/bin/xargs /usr/bin/file | \
+      /usr/bin/grep -e ":.*executable" -e ":.*archive" -e ":.*shell script" | /usr/bin/cut -d: -f1 |
+   find_req_power
+fi
+

@@ -1,0 +1,78 @@
+#! /usr/bin/ksh
+
+# Original Author: Ralph Goers(rgoer@Candle.Com)
+# Borrowed heavily from Tim Mooney's HP version.
+# This file is distributed under the terms of the GNU General Public License
+#
+# find-requires is part of RPM, the RedHat Package Manager.  find-requires
+# reads a list of full pathnames (in a package) on stdin, and outputs all
+# shared libraries the package requires to run correctly.
+#
+
+find_prov_ia64()
+{
+   # On AIX for IA64, use the file command to find shared modules
+   #
+   # Example file output:
+   #
+   #$file /usr/lib/ia64l32/libc.so
+   #/usr/lib/ia64l32/libc.so:     ELF 32-bit LSB version 1 AIX shared obj IA-64
+   # 
+   #
+   #
+   
+   # Search for shared objects - the file command on AIX for IA64 reports 
+   # shared objects
+   sed -e "s/['\"]/\\\&/g" -e "s/$/\//g" | LANG=C xargs file | grep -e ":.*shared obj" | cut -d: -f1 | sed "s/\/$//g" | xargs -i basename {} | sort -u
+}
+
+find_prov_power()
+{
+   #
+   # Example dump output:
+   #
+   #$dump -H /usr/bin/dump
+   #
+   #/usr/bin/dump:
+   #
+   #                        ***Loader Section***
+   #                      Loader Header Information
+   #VERSION#         #SYMtableENT     #RELOCent        LENidSTR
+   #0x00000001       0x00000021       0x0000006c       0x0000002f
+   #
+   ##IMPfilID        OFFidSTR         LENstrTBL        OFFstrTBL
+   #0x00000002       0x00000848       0x00000049       0x00000877
+   #
+   #
+   #                        ***Import File Strings***
+   #INDEX  PATH                          BASE                MEMBER
+   #0      /usr/lib:/lib:/usr/lpp/xlC/lib
+   #1                                    libc.a              shr.o
+   
+   #
+   #
+   
+   # Search executables, archives, and symlinks to those types for shared
+   # objects
+   sed -e "s/['\"]/\\\&/g" -e "s/$/\//g" | LANG=C xargs file | grep -e ":.*executable" -e ":.*archive" | cut -d: -f1 | sed "s/\/$//g" |
+   
+   # Use the verbose version of dump to find the sharable objects 
+   while read f
+   do
+           LANG=C /usr/bin/dump -ov $f/ 2>/dev/null | egrep "^Flags.*SHROBJ|:$" |
+   	awk 'match($1,":$") { member=$1 }
+   	!match($1,":$") {print member} '
+   done | sed -e 's/:$//' -e 's/\/\[/\(/g' -e 's/\]/)/g' | xargs -i basename {} | 
+   sort -u
+}
+
+PATH=/usr/bin
+
+machinetype=`uname -m`
+if [[ $machinetype = "ia64" ]]
+then
+   find_prov_ia64
+else
+   find_prov_power
+fi
+
