@@ -308,11 +308,11 @@ int httpOpen(urlinfo *u)
     if ((sock = tcpConnect(host, port)) < 0)
 	return sock;
 
-    len = strlen(path) + sizeof("GET  HTTP 1.0\r\n\r\n");
+    len = strlen(path) + sizeof("GET  HTTP/1.0\r\n\r\n");
     buf = alloca(len);
     strcpy(buf, "GET ");
     strcat(buf, path);
-    strcat(buf, " HTTP 1.0\r\n");
+    strcat(buf, " HTTP/1.0\r\n");
     strcat(buf, "\r\n");
 
     if (write(sock, buf, len) != len) {
