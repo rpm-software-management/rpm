@@ -842,5 +842,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c) {
     grabData(type, entry->data + entry->length, c, &length);
     entry->length += length;
 
+    entry->info.count += c;
+
     return 0;
 }
