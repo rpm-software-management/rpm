@@ -125,7 +125,7 @@ static rpmProblemSet psCreate(void)
 {
     rpmProblemSet probs;
 
-    probs = xmalloc(sizeof(*probs));	/* XXX memory leak */
+    probs = xcalloc(1, sizeof(*probs));	/* XXX memory leak */
     probs->numProblems = probs->numProblemsAlloced = 0;
     probs->probs = NULL;
 
@@ -136,7 +136,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 		const struct availablePackage * alp,
 		const char * dn, const char *bn,
 		Header altH, unsigned long ulong1)
-	/*@modifies probs, alp @*/
+	/*@modifies *probs, alp @*/
 {
     rpmProblem p;
     char *t;
@@ -150,50 +150,51 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 			probs->numProblemsAlloced * sizeof(*probs->probs));
     }
 
-    p = probs->probs + probs->numProblems++;
+    p = probs->probs + probs->numProblems;
+    probs->numProblems++;
+    memset(p, 0, sizeof(*p));
     p->type = type;
     /*@-assignexpose@*/
     p->key = alp->key;
     /*@=assignexpose@*/
     p->ulong1 = ulong1;
     p->ignoreProblem = 0;
+    p->str1 = NULL;
+    p->h = NULL;
+    p->pkgNEVR = NULL;
+    p->altNEVR = NULL;
 
     if (dn || bn) {
 	p->str1 =
-	    t = xmalloc((dn ? strlen(dn) : 0) + (bn ? strlen(bn) : 0) + 1);
+	    t = xcalloc(1, (dn ? strlen(dn) : 0) + (bn ? strlen(bn) : 0) + 1);
 	if (dn) t = stpcpy(t, dn);
 	if (bn) t = stpcpy(t, bn);
-    } else
-	p->str1 = NULL;
+    }
 
     if (alp) {
 	p->h = headerLink(alp->h);
 	p->pkgNEVR =
-	    t = xmalloc(strlen(alp->name) +
-			strlen(alp->version) +
-			strlen(alp->release) + sizeof("--"));
+	    t = xcalloc(1, strlen(alp->name) +
+			   strlen(alp->version) +
+			   strlen(alp->release) + sizeof("--"));
 	t = stpcpy(t, alp->name);
 	t = stpcpy(t, "-");
 	t = stpcpy(t, alp->version);
 	t = stpcpy(t, "-");
 	t = stpcpy(t, alp->release);
-    } else {
-	p->h = NULL;
-	p->pkgNEVR = NULL;
     }
 
     if (altH) {
 	const char * n, * v, * r;
 	(void) headerNVR(altH, &n, &v, &r);
 	p->altNEVR =
-	    t = xmalloc(strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
+	    t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
 	t = stpcpy(t, n);
 	t = stpcpy(t, "-");
 	t = stpcpy(t, v);
 	t = stpcpy(t, "-");
 	t = stpcpy(t, r);
-    } else
-	p->altNEVR = NULL;
+    }
 }
 
 static int archOkay(Header h)
@@ -1576,7 +1577,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	struct stat sb;
 
 	ts->di = _free(ts->di);
-	dip = ts->di = xcalloc(sizeof(*ts->di), ts->filesystemCount + 1);
+	dip = ts->di = xcalloc((ts->filesystemCount + 1), sizeof(*ts->di));
 
 	for (i = 0; (i < ts->filesystemCount) && dip; i++) {
 #if STATFS_IN_SYS_STATVFS
@@ -1822,7 +1823,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	if (fi->fc == 0) continue;
 
 	/* Extract file info for all files in this package from the database. */
-	matches = xcalloc(sizeof(*matches), fi->fc);
+	matches = xcalloc(fi->fc, sizeof(*matches));
 	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fi->fc))
 	    return 1;	/* XXX WTFO? */
 
@@ -1831,7 +1832,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    numShared += dbiIndexSetCount(matches[i]);
 
 	/* Build sorted file info list for this package. */
-	shared = sharedList = xmalloc((numShared + 1) * sizeof(*sharedList));
+	shared = sharedList = xcalloc((numShared + 1), sizeof(*sharedList));
 	for (i = 0; i < fi->fc; i++) {
 	    /*
 	     * Take care not to mark files as replaced in packages that will

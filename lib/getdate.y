@@ -72,9 +72,9 @@
 */
 struct timeb {
     time_t		time;		/* Seconds since the epoch	*/
-    unsigned short	millitm;	/* Field not used		*/
+/*@unused@*/ unsigned short millitm;	/* Field not used		*/
     short		timezone;	/* Minutes west of GMT		*/
-    short		dstflag;	/* Field not used		*/
+/*@unused@*/ short	dstflag;	/* Field not used		*/
 };
 #endif /* defined(HAVE_SYS_TIMEB_H) */
 
@@ -113,7 +113,9 @@ extern struct tm	*gmtime();
 extern struct tm	*localtime();
 #endif
 
+/*@-exportheader@*/
 extern time_t get_date(char * p, struct timeb * now);
+/*@=exportheader@*/
 
 #define yyparse getdate_yyparse
 #define yylex getdate_yylex
@@ -590,7 +592,7 @@ static TABLE const MilitaryTable[] = {
 
 /* ARGSUSED */
 static int
-yyerror(const char * s)
+yyerror(/*@unused@*/ const char * s)
 {
   return 0;
 }

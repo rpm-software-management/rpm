@@ -91,8 +91,8 @@ struct extensionCache {
 
 /** \ingroup header
  */
-/*@-fielduse@*/
 typedef /*@abstract@*/ struct sprintfToken * sprintfToken;
+/*@-fielduse@*/
 struct sprintfToken {
     enum {
 	PTOK_NONE = 0,

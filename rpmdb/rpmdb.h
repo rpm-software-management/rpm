@@ -513,7 +513,7 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
  * @param db		rpm database
  */
 int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint * fpList,
-		/*@out@*/dbiIndexSet * matchList, int numItems)
+		/*@out@*/ dbiIndexSet * matchList, int numItems)
 	/*@modifies db, *matchList @*/;
 
 /** \ingroup dbi

@@ -1,16 +1,27 @@
+#define	ENABLE_BEECRYPT	1
+
 #include "system.h"
 #include "rpmio_internal.h"
 #include "popt.h"
+#ifdef	ENABLE_BEECRYPT
+#define	BEEDLLAPI
+typedef unsigned char byte;
+#include "beecrypt.h"
+#include "md5.h"
+#include "fips180.h"
+#include "sha256.h"
+#endif
 #include "debug.h"
+
 
 static rpmDigestFlags flags = RPMDIGEST_MD5;
 extern int _rpmio_debug;
 
 static int fips = 0;
 
-const char * adigest = "a9993e364706816aba3e25717850c26c9cd0d89d";
-const char * bdigest = "84983e441c3bd26ebaae4aa1f95129e5e54670f1";
-const char * cdigest = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
+const char * FIPSAdigest = "a9993e364706816aba3e25717850c26c9cd0d89d";
+const char * FIPSBdigest = "84983e441c3bd26ebaae4aa1f95129e5e54670f1";
+const char * FIPSCdigest = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 
 static struct poptOption optionsTable[] = {
  { "md5", '\0', POPT_BIT_SET, 	&flags, RPMDIGEST_MD5,	NULL, NULL },
@@ -45,6 +56,14 @@ main(int argc, const char *argv[])
     int rc;
     char appendix;
     int i;
+#ifdef	ENABLE_BEECRYPT
+    sha1Param sparam;
+    md5Param mparam;
+    uint32 bdigest[5];
+
+    memset(&sparam, 0, sizeof(sparam));
+    memset(&mparam, 0, sizeof(mparam));
+#endif
 
     optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     while ((rc = poptGetNextOpt(optCon)) > 0)
@@ -55,6 +74,9 @@ main(int argc, const char *argv[])
     if (fips) {
 	flags &= ~RPMDIGEST_MD5;
 	flags |= RPMDIGEST_SHA1;
+#ifdef	ENABLE_BEECRYPT
+	(void) sha1Reset(&sparam);
+#endif
 	ctx = rpmDigestInit(flags);
 	ifn = NULL;
 	appendix = ' ';
@@ -62,26 +84,39 @@ main(int argc, const char *argv[])
 	switch (fips) {
 	case 1:
 	    ifn = "abc";
+#ifdef	ENABLE_BEECRYPT
+	    (void) sha1Update(&sparam, (const unsigned char*) ifn, strlen(ifn));
+#endif
 	    rpmDigestUpdate(ctx, ifn, strlen(ifn));
-	    sdigest = adigest;
+	    sdigest = FIPSAdigest;
 	    appendix = 'A';
 	    break;
 	case 2:
 	    ifn = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+#ifdef	ENABLE_BEECRYPT
+	    (void) sha1Update(&sparam, (const unsigned char*) ifn, strlen(ifn));
+#endif
 	    rpmDigestUpdate(ctx, ifn, strlen(ifn));
-	    sdigest = bdigest;
+	    sdigest = FIPSBdigest;
 	    appendix = 'B';
 	    break;
 	case 3:
 	    ifn = "aaaaaaaaaaa ...";
-	    for (i = 0; i < 1000000; i++)
+	    for (i = 0; i < 1000000; i++) {
+#ifdef	ENABLE_BEECRYPT
+		(void) sha1Update(&sparam, (const unsigned char*) ifn, 1);
+#endif
 		rpmDigestUpdate(ctx, ifn, 1);
-	    sdigest = cdigest;
+	    }
+	    sdigest = FIPSCdigest;
 	    appendix = 'C';
 	    break;
 	}
 	if (ifn == NULL)
 	    return 1;
+#ifdef	ENABLE_BEECRYPT
+	(void) sha1Digest(&sparam, bdigest);
+#endif
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
 
 	if (digest) {
@@ -89,6 +124,11 @@ main(int argc, const char *argv[])
 	    fflush(stdout);
 	    free((void *)digest);
 	}
+#ifdef	ENABLE_BEECRYPT
+	for (i = 0; i < 5; i++)
+	    fprintf(stdout, "%08x", bdigest[i]);
+	fprintf(stdout, "     BeeCrypt\n");
+#endif
 	if (sdigest) {
 	    fprintf(stdout, "%s     FIPS PUB 180-1 Appendix %c\n", sdigest,
 		appendix);
@@ -145,9 +185,19 @@ main(int argc, const char *argv[])
 	odigest = NULL;
 	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ofd, reverse) : fdInitMD5(ofd, reverse);
 
+#ifdef	ENABLE_BEECRYPT
+	(flags & RPMDIGEST_SHA1)
+	    ? (void) sha1Reset(&sparam)
+	    : (void) md5Reset(&mparam);
+#endif
 	ctx = rpmDigestInit(flags);
 
 	while ((nb = Fread(buf, 1, sizeof(buf), ifd)) > 0) {
+#ifdef	ENABLE_BEECRYPT
+	    (flags & RPMDIGEST_SHA1)
+		? (void) sha1Update(&sparam, (const unsigned char*) buf, nb)
+		: (void) md5Update(&mparam, (const unsigned char*) buf, nb);
+#endif
 	    rpmDigestUpdate(ctx, buf, nb);
 	    (void) Fwrite(buf, 1, nb, ofd);
 	}
@@ -163,10 +213,22 @@ main(int argc, const char *argv[])
 	    : fdFiniMD5(ofd, (void **)&odigest, NULL, asAscii);
 	Fclose(ofd);
 
+#ifdef	ENABLE_BEECRYPT
+	(flags & RPMDIGEST_SHA1)
+	    ? (void) sha1Digest(&sparam, bdigest)
+	    : (void) md5Digest(&mparam, bdigest);
+#endif
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
 
 	if (digest) {
 	    fprintf(stdout, "%s     %s\n", digest, ifn);
+#ifdef	ENABLE_BEECRYPT
+	    {   int imax = (flags & RPMDIGEST_SHA1) ? 5 : 4;
+		for (i = 0; i < imax; i++)
+		    fprintf(stdout, "%08x", bdigest[i]);
+	    }
+	    fprintf(stdout, "     BeeCrypt\n");
+#endif
 	    fflush(stdout);
 	    free((void *)digest);
 	}

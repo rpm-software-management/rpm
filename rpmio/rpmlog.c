@@ -30,7 +30,7 @@ static /*@only@*/ /*@null@*/ rpmlogRec recs = NULL;
  * @retval		NULL always
  */
 /*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies p@*/
 {
     if (p != NULL)	free((void *)p);
     return NULL;
@@ -109,7 +109,7 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
     return ocb;
 }
 
-/*@-readonlytrans@*/	/* FIX: double indeirection. */
+/*@-readonlytrans@*/	/* FIX: double indirection. */
 /*@observer@*/ static char *rpmlogMsgPrefix[] = {
     N_("fatal error: "),/*!< RPMLOG_EMERG */
     N_("fatal error: "),/*!< RPMLOG_ALERT */
@@ -152,10 +152,10 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     while (1) {
 	va_list apc;
 	/*@-sysunrecog -usedef@*/ va_copy(apc, ap); /*@=sysunrecog =usedef@*/
-	/*@-unrecog@*/ nb = vsnprintf(msgbuf, msgnb, fmt, apc); /*@=unrecog@*/
+	nb = vsnprintf(msgbuf, msgnb, fmt, apc);
 	if (nb > -1 && nb < msgnb)
 	    break;
-	if (nb > -1)		/* glibc 2.1 */
+	if (nb > -1)		/* glibc 2.1 (and later) */
 	    msgnb = nb+1;
 	else			/* glibc 2.0 */
 	    msgnb *= 2;

@@ -676,10 +676,8 @@ int rpmInstallSource(const char * rootdir, const char * arg,
 	fprintf(stdout, _("Installing %s\n"), arg);
 
     {
-	/*@-mayaliasunique@*/
 	rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL,
 				 cookie);
-	/*@=mayaliasunique@*/
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
     }
     if (rc != 0) {

@@ -37,7 +37,7 @@ extern "C" {
  * @return		NULL always
  */
 /*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p)
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 	/*@modifies p @*/
 {
     if (p != NULL)	free((void *)p);

@@ -600,10 +600,6 @@ exit:
     return result;
 }
 
-/*@-typeuse@*/
-typedef int (*dbrecMatch_t) (Header h, const char *reqName, const char * reqEVR, int reqFlags);
-/*@=typeuse@*/
-
 static int rangeMatchesDepFlags (Header h,
 		const char * reqName, const char * reqEVR, int reqFlags)
 	/*@*/
@@ -962,12 +958,12 @@ alAllFileSatisfiesDepend(const availableList al,
 		const char * keyType, const char * fileName)
 	/*@*/
 {
-    int i, found;
+    int i, found = 0;
     const char * dirName;
     const char * baseName;
     struct dirInfo_s dirNeedle;
     dirInfo dirMatch;
-    struct availablePackage ** ret;
+    struct availablePackage ** ret = NULL;
 
     /* Solaris 2.6 bsearch sucks down on this. */
     if (al->numDirs == 0 || al->dirs == NULL || al->list == NULL)
@@ -985,18 +981,16 @@ alAllFileSatisfiesDepend(const availableList al,
     dirNeedle.dirNameLen = strlen(dirName);
     dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
 		       sizeof(dirNeedle), dirInfoCompare);
-    if (dirMatch == NULL) {
-	dirName = _free(dirName);
-	return NULL;
-    }
+    if (dirMatch == NULL)
+	goto exit;
 
     /* rewind to the first match */
     while (dirMatch > al->dirs && dirInfoCompare(dirMatch-1, &dirNeedle) == 0)
 	dirMatch--;
 
-    /*@-nullptrarith@*/		/* FIX: fileName NULL ??? */
-    baseName = strrchr(fileName, '/') + 1;
-    /*@=nullptrarith@*/
+    if ((baseName = strrchr(fileName, '/')) == NULL)
+	goto exit;
+    baseName++;
 
     for (found = 0, ret = NULL;
 	 dirMatch <= al->dirs + al->numDirs &&
@@ -1028,6 +1022,7 @@ alAllFileSatisfiesDepend(const availableList al,
 	}
     }
 
+exit:
     dirName = _free(dirName);
     /*@-mods@*/		/* FIX: al->list might be modified. */
     if (ret)
@@ -2100,7 +2095,7 @@ rescan:
      * the new package. This would be easier if we could sort the
      * addedPackages array, but we store indexes into it in various places.
      */
-    orderList = xmalloc(npkgs * sizeof(*orderList));
+    orderList = xcalloc(npkgs, sizeof(*orderList));
     for (i = 0, j = 0; i < ts->orderCount; i++) {
 	if (ts->order[i].type == TR_ADDED) {
 	    orderList[j].alIndex = ts->order[i].u.addedIndex;
@@ -2112,7 +2107,7 @@ rescan:
 
     qsort(orderList, npkgs, sizeof(*orderList), orderListIndexCmp);
 
-    newOrder = xmalloc(ts->orderCount * sizeof(*newOrder));
+    newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
     for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
 	struct orderListIndex * needle, key;
 

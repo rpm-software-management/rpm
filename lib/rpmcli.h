@@ -320,6 +320,7 @@ struct rpmInstallArguments_s {
 /**
  * A rollback transaction id element.
  */
+/*@-fielduse@*/
 typedef /*@abstract@*/ struct IDT_s {
     unsigned int instance;	/*!< installed package transaction id. */
 /*@owned@*/ /*@null@*/ const char * key; /*! removed package file name. */
@@ -328,6 +329,7 @@ typedef /*@abstract@*/ struct IDT_s {
 	int_32 i32;		/*!< install/remove transaction id */
     } val;
 } * IDT;
+/*@=fielduse@*/
 
 /**
  * A rollback transaction id index.

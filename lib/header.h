@@ -180,6 +180,7 @@ typedef int (*headerTagTagFunction) (Header h,
  * Define header tag output formats.
  */
 typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
+/*@-fielduse@*/	/* LCL: confused by union? */
 struct headerSprintfExtension_s {
     enum headerSprintfExtenstionType type;	/*!< Type of extension. */
 /*@observer@*/ /*@null@*/ const char * name;	/*!< Name of extension. */
@@ -190,6 +191,7 @@ struct headerSprintfExtension_s {
 	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
     } u;
 };
+/*@=fielduse@*/
 
 /** \ingroup header
  * Supported default header tag output formats.

@@ -38,7 +38,7 @@
 extern time_t timezone;
 #endif
 
-#ifdef	__LCLINT__
+#if defined(__LCLINT__)
 typedef	unsigned int u_int32_t;
 typedef	unsigned short u_int16_t;
 typedef	unsigned char u_int8_t;
@@ -89,13 +89,15 @@ char *memchr ();
 
 #if !defined(HAVE_STPCPY) || defined(__LCLINT__)
 /*@-declundef@*/
-char * stpcpy(char * dest, const char * src)	/*@modifies *dest @*/;
+char * stpcpy(/*@out@*/ char * dest, const char * src)
+	/*@modifies *dest @*/;
 /*@=declundef@*/
 #endif
 
 #if !defined(HAVE_STPNCPY) || defined(__LCLINT__)
 /*@-declundef@*/
-char * stpncpy(char * dest, const char * src, size_t n)	/*@modifies *dest @*/;
+char * stpncpy(/*@out@*/ char * dest, const char * src, size_t n)
+	/*@modifies *dest @*/;
 /*@=declundef@*/
 #endif
 
@@ -212,26 +214,45 @@ char *alloca ();
 #endif
 
 /*@-declundef@*/
-/*@mayexit@*/ /*@only@*/ void * xmalloc (size_t size)			/*@*/;
-/*@mayexit@*/ /*@only@*/ void * xcalloc (size_t nmemb, size_t size)	/*@*/;
-/*@mayexit@*/ /*@only@*/ void * xrealloc (/*@only@*//*@null@*/ void * ptr,
-					size_t size) /*@*/;
-/*@mayexit@*/ /*@only@*/ char * xstrdup (const char *str)		/*@*/;
+/**
+ */
+/*@mayexit@*/ /*@only@*/ /*@out@*/ void * xmalloc (size_t size)
+	/*@*/;
+
+/**
+ */
+/*@mayexit@*/ /*@only@*/ void * xcalloc (size_t nmemb, size_t size)
+	/*@*/;
+
+/**
+ * @todo Annotate ptr with returned/out.
+ */
+/*@mayexit@*/ /*@only@*/ void * xrealloc (/*@null@*/ /*@only@*/ void * ptr,
+					size_t size)
+	/*@modifies *ptr @*/;
+
+/**
+ */
+/*@mayexit@*/ /*@only@*/ char * xstrdup (const char *str)
+	/*@*/;
 /*@=declundef@*/
-/*@unused@*/ /*@exits@*/ /*@only@*/ void * vmefail(size_t size);
+
+/**
+ */
+/*@unused@*/ /*@exits@*/ /*@only@*/ void * vmefail(size_t size)
+	/*@*/;
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>
-#endif
-
 
 /* Memory allocation via macro defs to get meaningful locations from mtrace() */
-#if HAVE_MCHECK_H && defined(__GNUC__)
+#if defined(__GNUC__)
 #define	xmalloc(_size) 		(malloc(_size) ? : vmefail(_size))
 #define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail(_size))
 #define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail(_size))
 #define	xstrdup(_str)	(strcpy((malloc(strlen(_str)+1) ? : vmefail(strlen(_str)+1)), (_str)))
-#endif	/* HAVE_MCHECK_H && defined(__GNUC__) */
+#endif	/* defined(__GNUC__) */
+#endif	/* HAVE_MCHECK_H */
 
 /* Retrofit glibc __progname */
 #if defined __GLIBC__ && __GLIBC__ >= 2
@@ -249,9 +270,7 @@ char *alloca ();
 const char *__progname;
 
 #if HAVE_NETDB_H
-#ifndef __LCLINT__
 #include <netdb.h>
-#endif	/* __LCLINT__ */
 #endif
 
 #if HAVE_PWD_H
@@ -329,9 +348,7 @@ extern void unsetenv(const char *name);
 
 #if HAVE_SYS_SOCKET_H
 #include <sys/types.h>
-#ifndef	__LCLINT__
 #include <sys/socket.h>
-#endif	/* __LCLINT__ */
 #endif
 
 #if HAVE_SYS_SELECT_H

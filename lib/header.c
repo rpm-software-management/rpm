@@ -79,7 +79,7 @@ HV_t hdrVec;	/* forward reference */
  * @return		NULL always
  */
 /*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies *p @*/
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
 {
     if (p != NULL)	free((void *)p);
     return NULL;
@@ -1054,8 +1054,10 @@ indexEntry findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
 	return entry;
 
     last = h->index + h->indexUsed;
+    /*@-usereleased@*/ /* FIX: entry2 = entry. Code looks bogus as well. */
     while (entry2->info.tag == tag && entry2->info.type != type &&
 	   entry2 < last) entry2++;
+    /*@=usereleased@*/
 
     if (entry->info.tag == tag && entry->info.type == type)
 	return entry;

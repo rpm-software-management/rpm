@@ -356,14 +356,10 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 			    if (tempKey) {
 			      if (res3 == RPMSIG_NOKEY) {
 				strcat(missingKeys, " PGP#");
-				/*@-compdef@*/
 				strncat(missingKeys, tempKey + offset, 8);
-				/*@=compdef@*/
 			      } else {
 			        strcat(untrustedKeys, " PGP#");
-				/*@-compdef@*/
 				strncat(untrustedKeys, tempKey + offset, 8);
-				/*@=compdef@*/
 			      }
 			    }
 			}   break;
@@ -381,9 +377,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 			    strcat(missingKeys, " GPG#");
 			    tempKey = strstr(result, "key ID");
 			    if (tempKey)
-				/*@-compdef@*/
 				strncat(missingKeys, tempKey+7, 8);
-				/*@=compdef@*/
 			    break;
 			default:
 			    strcat(buffer, "GPG ");

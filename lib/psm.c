@@ -227,7 +227,7 @@ void freeFi(TFI_t fi)
 
     fi->h = headerFree(fi->h);
 
-    /*@-nullstate@*/
+    /*@-nullstate@*/ /* FIX: fi->{name,version,release,actions,...,h} NULL */
     return;
     /*@=nullstate@*/
 }
@@ -365,7 +365,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	switch (type) {
 	case RPM_CHAR_TYPE:
 	case RPM_INT8_TYPE:
-	    newdata = xmalloc(fc * sizeof(int_8));
+	    newdata = xcalloc(fc, sizeof(int_8));
 	    for (j = 0, k = 0; j < count; j++)
 		if (actions[j] != FA_SKIPMULTILIB)
 			((int_8 *) newdata)[k++] = ((int_8 *) data)[j];
@@ -373,7 +373,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    free (newdata);
 	    break;
 	case RPM_INT16_TYPE:
-	    newdata = xmalloc(fc * sizeof(int_16));
+	    newdata = xcalloc(fc, sizeof(int_16));
 	    for (j = 0, k = 0; j < count; j++)
 		if (actions[j] != FA_SKIPMULTILIB)
 		    ((int_16 *) newdata)[k++] = ((int_16 *) data)[j];
@@ -381,7 +381,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    free (newdata);
 	    break;
 	case RPM_INT32_TYPE:
-	    newdata = xmalloc(fc * sizeof(int_32));
+	    newdata = xcalloc(fc, sizeof(int_32));
 	    for (j = 0, k = 0; j < count; j++)
 		if (actions[j] != FA_SKIPMULTILIB)
 		    ((int_32 *) newdata)[k++] = ((int_32 *) data)[j];
@@ -389,7 +389,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    free (newdata);
 	    break;
 	case RPM_STRING_ARRAY_TYPE:
-	    newdata = xmalloc(fc * sizeof(char *));
+	    newdata = xcalloc(fc, sizeof(char *));
 	    for (j = 0, k = 0; j < count; j++)
 		if (actions[j] != FA_SKIPMULTILIB)
 		    ((char **) newdata)[k++] = ((char **) data)[j];
@@ -413,7 +413,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
     for (i = 0; i < dirNamesCount; i++)
 	dirNames[i] = ((char **) data)[i];
     dirCount = dirNamesCount;
-    newdata = xmalloc(fc * sizeof(int_32));
+    newdata = xcalloc(fc, sizeof(int_32));
     for (i = 0, k = 0; i < count; i++) {
 	if (actions[i] == FA_SKIPMULTILIB)
 	    continue;

@@ -19,16 +19,14 @@
 
 #if !(HAVE_MCHECK_H && defined(__GNUC__)) && !defined(__LCLINT__)
 
-/*@only@*/ void * xmalloc (size_t size)
+/*@out@*/ /*@only@*/ void * xmalloc (size_t size)
 {
     register void *value;
     if (size == 0) size++;
     value = malloc (size);
     if (value == 0)
 	value = vmefail(size);
-    /*@-compdef@*/
     return value;
-    /*@=compdef@*/
 }
 
 /*@only@*/ void * xcalloc (size_t nmemb, size_t size)

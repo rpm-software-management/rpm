@@ -624,7 +624,7 @@ static int hdrNumCmp(const void * one, const void * two)
  */
 static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
 	int nrecs, size_t recsize, int sortset)
-	/*@modifies set @*/
+	/*@modifies *set @*/
 {
     const char * rptr = recs;
     size_t rlen = (recsize < sizeof(*(set->recs)))
@@ -633,11 +633,13 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
     if (set == NULL || recs == NULL || nrecs <= 0 || recsize == 0)
 	return 1;
 
+#ifdef	DYING
     if (set->count == 0)
 	set->recs = xmalloc(nrecs * sizeof(*(set->recs)));
     else
-	set->recs = xrealloc(set->recs,
-				(set->count + nrecs) * sizeof(*(set->recs)));
+#endif
+    set->recs = xrealloc(set->recs,
+			(set->count + nrecs) * sizeof(*(set->recs)));
 
     memset(set->recs + set->count, 0, nrecs * sizeof(*(set->recs)));
 
@@ -652,7 +654,9 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
     if (set->count > 1 && sortset)
 	qsort(set->recs, set->count, sizeof(*(set->recs)), hdrNumCmp);
 
+    /*@-compmempass@*/ /* FIX: set->recs.{hdrNum,tagNum,fpNum,dbNum} undef */
     return 0;
+    /*@=compmempass@*/
 }
 
 /**
@@ -1485,9 +1489,9 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	mire->pattern = _free(mire->pattern);
 	if (mire->preg != NULL) {
 	    regfree(mire->preg);
-	    /*@+voidabstract@*/
+	    /*@+voidabstract -usereleased @*/ /* FIX: ??? */
 	    mire->preg = _free(mire->preg);
-	    /*@=voidabstract@*/
+	    /*@=voidabstract =usereleased @*/
 	}
     }
     mi->mi_re = _free(mi->mi_re);
@@ -1728,7 +1732,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	allpat = _free(allpat);
 	if (preg) {
 	    regfree(preg);
-	    /*@+voidabstract@*/
+	    /*@+voidabstract -usereleased @*/ /* FIX: ??? */
 	    preg = _free(preg);
 	    /*@=voidabstract@*/
 	}

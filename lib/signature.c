@@ -201,11 +201,9 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	break;
     }
 
-    if (rc == 0 && headerp)
-	/*@-nullderef@*/
+    if (headerp && rc == 0)
 	*headerp = h;
-	/*@=nullderef@*/
-    else if (h)
+    else
 	h = headerFree(h);
 
     return rc;

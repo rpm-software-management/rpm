@@ -26,11 +26,10 @@ static int addTriggerIndex(Package pkg, const char *file,
 	list = list->next;
     }
 
-    if (last) {
+    if (last)
 	index = last->index + 1;
-    }
 
-    tfe = xmalloc(sizeof(*tfe));
+    tfe = xcalloc(1, sizeof(*tfe));
 
     tfe->fileName = (file) ? xstrdup(file) : NULL;
     tfe->script = (script && *script != '\0') ? xstrdup(script) : NULL;
@@ -38,11 +37,10 @@ static int addTriggerIndex(Package pkg, const char *file,
     tfe->index = index;
     tfe->next = NULL;
 
-    if (last) {
+    if (last)
 	last->next = tfe;
-    } else {
+    else
 	pkg->triggerFiles = tfe;
-    }
 
     return index;
 }

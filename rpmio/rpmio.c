@@ -5,15 +5,6 @@
 #include "system.h"
 #include <stdarg.h>
 
-#ifdef	__LCLINT__
-/*@-incondefs@*/
-typedef	unsigned int		uint32_t;
-/*@=incondefs@*/
-#define	INADDR_ANY		((uint32_t) 0x00000000)
-#define	IPPROTO_IP		0
-
-#else	/* __LCLINT__ */
-
 #if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
 #endif
@@ -29,8 +20,6 @@ typedef	unsigned int		uint32_t;
 #if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
-
-#endif	/* __LCLINT__ */
 
 #if !defined(HAVE_HERRNO) && defined(__hpux) /* XXX HP-UX w/o -D_XOPEN_SOURCE needs */
 extern int h_errno;
@@ -106,7 +95,7 @@ int _rpmio_debug = 0;
  * @retval		NULL always
  */
 /*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p)
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 	/*@modifies p@*/
 {
     if (p != NULL)	free((void *)p);
@@ -676,12 +665,15 @@ static int mygethostbyname(const char * host,
 }
 #endif
 
+/*@-compdef@*/	/* FIX: address->s_addr undefined. */
 static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 	/*@modifies *address, fileSystem @*/
 {
     if (xisdigit(host[0])) {
-	if (! /*@-unrecog@*/ inet_aton(host, address) /*@=unrecog@*/ )
+	/*@-unrecog@*/
+	if (!inet_aton(host, address))
 	    return FTPERR_BAD_HOST_ADDR;
+	/*@=unrecog@*/
     } else {
 	if (mygethostbyname(host, address)) {
 	    errno = /*@-unrecog@*/ h_errno /*@=unrecog@*/;
@@ -691,6 +683,7 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
     
     return 0;
 }
+/*@=compdef@*/
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
 	/*@modifies ctrl, fileSystem @*/

@@ -11,6 +11,7 @@
 /** \ingroup rpmdep
  * Dependncy ordering information.
  */
+/*@-fielduse@*/	/* LCL: confused by union? */
 struct tsortInfo {
     union {
 	int	count;
@@ -23,6 +24,7 @@ struct tsortInfo {
     int		tsi_reqx;
     int		tsi_qcnt;
 } ;
+/*@=fielduse@*/
 
 /** \ingroup rpmdep
  * Info about a single package to be installed.
@@ -107,6 +109,7 @@ typedef /*@abstract@*/ struct availableList_s {
 /** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.
  */
+/*@-fielduse@*/	/* LCL: confused by union? */
 struct transactionElement {
     enum rpmTransactionType {
 	TR_ADDED,	/*!< Package will be installed. */
@@ -120,6 +123,7 @@ struct transactionElement {
 	} removed;
     } u;
 } ;
+/*@=fielduse@*/
 
 /** \ingroup rpmdep
  * The set of packages to be installed/removed atomically.

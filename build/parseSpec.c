@@ -469,7 +469,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 
 	    closeSpec(spec);
 
-	    spec->BASpecs = xmalloc(spec->BACount * sizeof(Spec));
+	    spec->BASpecs = xcalloc(spec->BACount, sizeof(Spec));
 	    index = 0;
 	    if (spec->BANames != NULL)
 	    for (x = 0; x < spec->BACount; x++) {
@@ -484,6 +484,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 #else
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 #endif
+		spec->BASpecs[index] = NULL;
 		if (parseSpec(&(spec->BASpecs[index]),
 				  specFile, spec->rootURL, buildRootURL, 1,
 				  passPhrase, cookie, anyarch, force))

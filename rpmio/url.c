@@ -4,9 +4,7 @@
 
 #include "system.h"
 
-#if !defined(__LCLINT__)
 #include <netinet/in.h>
-#endif	/* __LCLINT__ */
 
 #include <rpmmacro.h>
 #include <rpmmessages.h>

@@ -1,4 +1,4 @@
--I. -I./build -I./lib -I./rpmdb -I./rpmio -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I./build -I./lib -I./rpmdb -I./rpmio -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT
 
 #+partial
 #+forcehints
@@ -15,29 +15,29 @@
 +checks			# lclint level
 
 # --- lclint-3.0.0.15 is pickier than lclint-2.5r
-#-formatconst
+-usedef			# 296 occurences in 3.0.0.15
+#-formatconst		# new in 3.0.0.15
+#-unsignedcompare	# new in 3.0.0.15
+#-multithreaded		# new in 3.0.0.15
+#-bufferoverflowhigh	# new in 3.0.0.15
+#-superuser		# new in 3.0.0.15
+#-portability		# new in 3.0.0.15
 #-compdef
 #-nullstate
--usedef			# 296 occurences wtfo?
-#-unsignedcompare
 #-compmempass
-#-multithreaded
-#-nullderef		# 6 occurences in getdate.y
+#-nullderef
 #-nullpass
 #-unrecog
-#-portability
-#-readonlytrans		# 128 occurences in getdate.y
+#-readonlytrans	
 #-noparams
--usereleased		# 3 occurences wtfo?
+#-usereleased
 #-firstcase
 #-shadow
-#-bufferoverflowhigh
-#-superuser
 #-retvalint
 #-incondefs
 #-nullptrarith
 #-fcnuse
--fielduse		# noisy in 3.0.0.15
+#-fielduse
 #-varuse
 #-exportlocal
 #-exportheadervar
@@ -81,7 +81,7 @@
 #+ifblock
 #+noeffectuncon		# 228 occurences
 +topuse
-#+unusedspecial
++unusedspecial
 +oldstyle
 #+sys-dir-errors	# 749
 #controlnestdepth 15
@@ -96,7 +96,7 @@
 -ansi-reserved		# goofy
 -infloopsuncon		# goofy
 
--proto-param-match	# 59 occurences
+-proto-param-match	# 51 occurences
 
 # don't-bother-me-yet parameters
 -branchstate		# painful

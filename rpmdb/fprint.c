@@ -151,7 +151,9 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    fp.baseName = baseName;
 	    if (!scareMemory && fp.subDir != NULL)
 		fp.subDir = xstrdup(fp.subDir);
+	/*@-compdef@*/ /* FIX: fp.entry.{dirName,dev,ino,isFake} undef @*/
 	    return fp;
+	/*@=compdef@*/
 	}
 
         /* stat of '/' just failed! */
@@ -168,7 +170,9 @@ static fingerPrint doLookup(fingerPrintCache cache,
 
     /*@notreached@*/
 
+    /*@-compdef@*/ /* FIX: fp.entry.{dirName,dev,ino,isFake} undef @*/
     /*@-nullret@*/ return fp; /*@=nullret@*/	/* LCL: can't happen. */
+    /*@=compdef@*/
 }
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 

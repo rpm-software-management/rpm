@@ -43,8 +43,10 @@ tkey: librpmio.la tkey.o
 	$(LINK) -o $@ tkey.o librpmio.la $(top_builddir)/popt/libpopt.la
 
 tdigest.o: tdigest.c
+	 $(CC) $(DEFS) -I/usr/include/beecrypt $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -o $@ -c tdigest.c 
+
 tdigest: librpmio.la tdigest.o
-	$(LINK) @LDFLAGS_STATIC@ -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la -lbeecrypt
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 

@@ -4,9 +4,7 @@
 
 #include "system.h"
 
-#if !defined(__LCLINT__)
 #include <netinet/in.h>
-#endif	/* __LCLINT__ */
 
 #include <rpmlib.h>
 
@@ -19,7 +17,6 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 
-/*@-mods@*/
 void headerMergeLegacySigs(Header h, const Header sig)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
@@ -28,7 +25,9 @@ void headerMergeLegacySigs(Header h, const Header sig)
     int_32 tag, type, count;
     const void * ptr;
 
+    /*@-mods@*/ /* FIX: undocumented modification of sig */
     for (hi = headerInitIterator(sig);
+    /*@=mods@*/
         headerNextIterator(hi, &tag, &type, &ptr, &count);
         ptr = hfd(ptr, type))
     {
@@ -60,7 +59,9 @@ Header headerRegenSigHeader(const Header h)
     int_32 tag, stag, type, count;
     const void * ptr;
 
+    /*@-mods@*/ /* FIX: undocumented modification of h */
     for (hi = headerInitIterator(h);
+    /*@=mods@*/
         headerNextIterator(hi, &tag, &type, &ptr, &count);
         ptr = hfd(ptr, type))
     {
@@ -85,7 +86,6 @@ Header headerRegenSigHeader(const Header h)
     hi = headerFreeIterator(hi);
     return sig;
 }
-/*@=mods@*/
 
 /**
  * Retrieve package components from file handle.
@@ -232,7 +232,7 @@ rpmRC rpmReadPackageHeader(FD_t fd, Header * hdrp, int * isSource, int * major,
     }
    
     if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
-    /*@-mods@*/
+    /*@-mods@*/	/* FIX: undocumented modification */
     if (major) *major = lead.major;
     if (minor) *minor = lead.minor;
     /*@=mods@*/

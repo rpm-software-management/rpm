@@ -29,7 +29,7 @@ struct StringBufRec {
  * @return		NULL always
  */
 /*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies *p @*/
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
 {
     if (p != NULL)	free((void *)p);
     return NULL;
@@ -93,7 +93,7 @@ void appendStringBufAux(StringBuf sb, const char *s, int nl)
 	sb->tail = sb->buf + (sb->allocated - sb->free);
     }
     
-    /*@-mayaliasunique@*/
+    /*@-mayaliasunique@*/ /* FIX: shrug */
     strcpy(sb->tail, s);
     /*@=mayaliasunique@*/
     sb->tail += l;

@@ -63,19 +63,17 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
     if (fsm) {
 	int nb;
 	char * t;
-	/*@-nullpass@*/		/* LCL: subdir/suffix != NULL */
 	nb = strlen(fsm->dirName) +
-	    (st && subdir && !S_ISDIR(st->st_mode) ? strlen(subdir) : 0) +
-	    (st && suffix && !S_ISDIR(st->st_mode) ? strlen(suffix) : 0) +
+	    (st && !S_ISDIR(st->st_mode) ? (subdir ? strlen(subdir) : 0) : 0) +
+	    (st && !S_ISDIR(st->st_mode) ? (suffix ? strlen(suffix) : 0) : 0) +
 	    strlen(fsm->baseName) + 1;
 	s = t = xmalloc(nb);
 	t = stpcpy(t, fsm->dirName);
-	if (st && subdir && !S_ISDIR(st->st_mode))
-	    t = stpcpy(t, subdir);
+	if (st && !S_ISDIR(st->st_mode))
+	    if (subdir) t = stpcpy(t, subdir);
 	t = stpcpy(t, fsm->baseName);
-	if (st && suffix && !S_ISDIR(st->st_mode))
-	    t = stpcpy(t, suffix);
-	/*@=nullpass@*/
+	if (st && !S_ISDIR(st->st_mode))
+	    if (suffix) t = stpcpy(t, suffix);
     }
     return s;
 }
@@ -331,7 +329,6 @@ static /*@observer@*/ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
  * @param fsm		file state machine data
  * @return		Is chain only partially filled?
  */
-/*@-compmempass@*/
 static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->links, fsm->ix, fsm->sb, fsm->goal, fsm->nsuffix @*/
 	/*@defines fsm->li @*/
@@ -413,7 +410,6 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
     return rc;
     /*@=nullstate@*/
 }
-/*@=compmempass@*/
 
 /** \ingroup payload
  * Destroy set of hard links.
@@ -1000,7 +996,6 @@ static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
  * @param fsm		file state machine data
  * @return		0 on success
  */
-/*@-compdef@*/
 static int fsmRmdirs(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->dnlx, fsm->ldn, fsm->rdbuf, fsm->iter @*/
 	/*@modifies fsm, fileSystem @*/
@@ -1037,7 +1032,7 @@ static int fsmRmdirs(/*@special@*/ FSM_t fsm)
 	    if (rc)
 		/*@innerbreak@*/ break;
 	    te--;
-	} while ((te - dn) > fsm->dnlx[dc]);
+	} while ((te - fsm->path) > fsm->dnlx[dc]);
     }
     dnli = dnlFreeIterator(dnli);
     /*@=observertrans =dependenttrans@*/
@@ -1045,7 +1040,6 @@ static int fsmRmdirs(/*@special@*/ FSM_t fsm)
     fsm->path = path;
     return rc;
 }
-/*@=compdef@*/
 
 /**
  * Create (if necessary) directories not explicitly included in package.
@@ -1458,7 +1452,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	fsm->postpone = XFA_SKIPPING(fsm->action);
 	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
-	    /*@-evalorder@*/
+	    /*@-evalorder@*/ /* FIX: saveHardLink can modify fsm */
 	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1)
 		fsm->postpone = saveHardLink(fsm);
 	    /*@=evalorder@*/

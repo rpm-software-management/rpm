@@ -105,7 +105,7 @@ Package newPackage(Spec spec)
     Package p;
     Package pp;
 
-    p = xmalloc(sizeof(*p));
+    p = xcalloc(1, sizeof(*p));
 
     p->header = headerNew();
     p->icon = NULL;

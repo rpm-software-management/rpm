@@ -142,17 +142,29 @@ extern int _rpmio_debug;
 extern "C" {
 #endif
 
+/** \ingroup rpmio
+ */
 int fdFgets(FD_t fd, char * buf, size_t len)
 	/*@modifies *buf, fd, fileSystem @*/;
 
+/** \ingroup rpmio
+ */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
                 /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
 	/*@modifies *uret, fileSystem @*/;
+
+/** \ingroup rpmio
+ */
 int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	/*@modifies data, fileSystem @*/;
+
+/** \ingroup rpmio
+ */
 int ftpCmd(const char * cmd, const char * url, const char * arg2)
 	/*@modifies fileSystem @*/;
 
+/** \ingroup rpmio
+ */
 int ufdClose( /*@only@*/ void * cookie)
 	/*@modified cookie, fileSystem @*/;
 
@@ -183,25 +195,23 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-/*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd)
+/*@exposed@*/ /*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
-    /*@+voidabstract -retexpose@*/
+    /*@+voidabstract@*/
     return ((FILE *)fd->fps[fd->nfps].fp);
-    /*@=voidabstract =retexpose@*/
+    /*@=voidabstract@*/
 }
 
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-/*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd)
+/*@exposed@*/ /*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
-    /*@-retexpose@*/
     return fd->fps[fd->nfps].fp;
-    /*@=retexpose@*/
 }
 
 /** \ingroup rpmio

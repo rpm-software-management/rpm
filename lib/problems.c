@@ -90,7 +90,7 @@ void printDepProblems(FILE * fp,
 
 #if !defined(HAVE_VSNPRINTF) || defined(__LCLINT__)
 /*@-shadow -bufferoverflowhigh @*/
-static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
+static inline int vsnprintf(/*@out@*/ char * buf, /*@unused@*/ int nb,
 	const char * fmt, va_list ap)
 {
     return vsprintf(buf, fmt, ap);
@@ -98,7 +98,7 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 /*@=shadow =bufferoverflowhigh @*/
 #endif
 #if !defined(HAVE_SNPRINTF) || defined(__LCLINT__)
-static inline int snprintf(char * buf, int nb, const char * fmt, ...)
+static inline int snprintf(/*@out@*/ char * buf, int nb, const char * fmt, ...)
 {
     va_list ap;
     int rc;

@@ -8,9 +8,7 @@
 # include <machine/types.h>
 #endif
 
-#if !defined(__LCLINT__)
 #include <netinet/in.h>
-#endif	/* __LCLINT__ */
 
 #include <rpmlib.h>
 

@@ -1033,7 +1033,8 @@ int main(int argc, const char ** argv)
 	    ia->relocations = xmalloc(2 * sizeof(*ia->relocations));
 	    ia->relocations[0].oldPath = NULL;   /* special case magic */
 	    ia->relocations[0].newPath = ia->prefix;
-	    ia->relocations[1].oldPath = ia->relocations[1].newPath = NULL;
+	    ia->relocations[1].oldPath = NULL;
+	    ia->relocations[1].newPath = NULL;
 	} else if (ia->relocations) {
 	    ia->relocations = xrealloc(ia->relocations, 
 			sizeof(*ia->relocations) * (ia->numRelocations + 1));
