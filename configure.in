@@ -1,0 +1,46 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(rpm.c)
+
+dnl Checks for programs.
+AC_PROG_GCC_TRADITIONAL
+AC_PROG_INSTALL
+AC_PROG_CPP
+AC_PROG_RANLIB
+
+dnl Checks for libraries.
+AC_CHECK_LIB(intl, gettext, [], AC_MSG_WARN([sorry this package needs libintl.a (from the gettext package)]))
+AC_CHECK_LIB(gdbm, dbminit, [], AC_MSG_WARN([sorry this package needs libgdbm.a (from the gdbm package)]))
+AC_CHECK_LIB(db, dbopen)
+
+ZLIB=
+for zlib in z gz ; do
+   AC_CHECK_LIB(${zlib}, gzread, 
+	[ZLIB="-l${zlib}"; break], 
+	[if test ${zlib} = gz; then 
+	    AC_MSG_WARN([sorry this package needs libz.a or libgz.a (from the zlib package)]) 
+	 fi]
+	       )
+done
+AC_SUBST(ZLIB)
+
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(sys/socket.h ftw.h getopt.h \
+  regex.h regexp.h endian.h machine/endian.h asm/byteorder.h malloc.h)
+
+dnl Checks for library functions.
+AC_FUNC_ALLOCA
+AC_CHECK_FUNC(vfork)
+AC_CHECK_FUNCS(S_ISSOCK S_ISFIFO)
+AC_CHECK_FUNC(realpath, REALPATH='', REALPATH='realpath.o' LIBMISC='-lmisc')
+AC_CHECK_FUNC(ftw, FTW='', FTW='ftw.o' LIBMISC='-lmisc')
+AC_CHECK_FUNC(getopt_long, GETOPT='' GETOPT1='', GETOPT='getopt.o' GETOPT1='getopt1.o' LIBMISC='-lmisc')
+
+AC_SUBST(REALPATH)
+AC_SUBST(FTW)
+AC_SUBST(GETOPT)
+AC_SUBST(GETOPT1)
+AC_SUBST(LIBMISC)
+
+AC_OUTPUT(Makefile lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
