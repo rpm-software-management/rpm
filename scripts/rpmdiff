@@ -1,5 +1,4 @@
-
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 
 # rpmdiff - a program for comparing two rpm files for differences.
 # Written by Ken Estes, Mail.com.
@@ -385,7 +384,7 @@ sub set_static_vars {
   
   $NUM_DIFFERENCES = 0;
 
-  $RCS_REVISION = ' $Revision: 1.1 $ ';
+  $RCS_REVISION = ' $Revision: 1.2 $ ';
   
   # set a known path.
  

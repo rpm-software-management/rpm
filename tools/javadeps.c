@@ -1,5 +1,3 @@
-
-
 /* 
    Simple progam for pullng all the referenced java classes out of a
    class file.  Java files are supposed to be platform independent, so
@@ -214,7 +212,7 @@ usage (void)
 	 "assumed to be zero. \n\n"
 	 "");
   printf("EXAMPLES (Java Keywords): \n\n"
-	 "\t public static final String REVISION = \"$Revision: 2.3 $\";\n"
+	 "\t public static final String REVISION = \"$Revision: 2.4 $\";\n"
 	 "\t public static final String EPOCH = \"4\";\n"
 	 "\t public static final String REQUIRES = \"RPM_Requires: "
 	 "java(gnu.regexp.RE) java(com.ibm.site.util.Options)>=1.5\";\n"
