@@ -25,10 +25,10 @@ argv[] arrays using shell-like rules.
 
 %prep
 %setup
-./configure --prefix=/usr
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
 
 %build
-make CFLAGS="$RPM_OPT_FLAGS"
+make
 
 %install
 make PREFIX=$RPM_BUILD_ROOT install
