@@ -8,7 +8,7 @@ destdir="`dirname $destdir`"
 # ../../rpm --rcfile ../../tests//usr/lib/rpm/rpmrc -i -vv --nodeps --prefix=/home/devel/jbj/src/rpm/tests/hello-test/../usr ../usr/src/redhat/RPMS/sparc/hello-1.0-1.sparc.rpm
 #
 
-$rpm -i -vv --nodeps --prefix="`pwd`/../usr" $myrpm | \
+$rpm -i -vv --nodeps --relocate /usr="`pwd`/../usr" $myrpm | \
 	sed -e "s,$destdir,,g" > $0.out
 
 diff $0.out $0.exp || exit 1
