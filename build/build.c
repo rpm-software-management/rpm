@@ -4,7 +4,6 @@
 
 #ifdef	DYING
 static void doRmSource(Spec spec);
-static int writeVars(Spec spec, FILE *f);
 #endif
 
 static void doRmSource(Spec spec)
@@ -46,57 +45,7 @@ static void doRmSource(Spec spec)
  * The _preScript string is expanded to export values to a script environment.
  */
 
-static char *_preScriptEnvironment = 
-	"RPM_SOURCE_DIR=\"%{_sourcedir}\"\n"
-	"RPM_BUILD_DIR=\"%{_builddir}\"\n"
-	"RPM_OPT_FLAGS=\"%{optflags}\"\n"
-	"RPM_ARCH=\"%{arch}\"\n"
-	"RPM_OS=\"%{os}\"\n"
-	"export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\n"
-	"RPM_DOC_DIR=\"%{_docdir}\"\n"
-	"export RPM_DOC_DIR\n"
-	"RPM_PACKAGE_NAME=\"%{name}\"\n"
-	"RPM_PACKAGE_VERSION=\"%{version}\"\n"
-	"RPM_PACKAGE_RELEASE=\"%{release}\"\n"
-	"export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\n"
-;
-
-static int writeVars(Spec spec, FILE *f)
-{
-    char *s;
-    char buf[BUFSIZ];
-
-    strcpy(buf, _preScriptEnvironment);
-    expandMacros(spec, spec->macros, buf, sizeof(buf));
-    strcat(buf, "\n");
-    fputs(buf, f);
-    
-    if (spec->buildRoot) {
-	fprintf(f, "RPM_BUILD_ROOT=\"%s\"\n", spec->buildRoot);
-	fprintf(f, "export RPM_BUILD_ROOT\n");
-	/* This could really be checked internally */
-	fprintf(f, "if [ -z \"$RPM_BUILD_ROOT\" -o -z \"`echo $RPM_BUILD_ROOT | sed -e 's#/##g'`\" ]; then\n");
-	fprintf(f, "  echo 'Warning: Spec contains BuildRoot: tag that is either empty or is set to \"/\"'\n");
-	fprintf(f, "  exit 1\n");
-	fprintf(f, "fi\n");
-    }
-
-#if DEAD
-    headerGetEntry(spec->packages->header, RPMTAG_NAME,
-		   NULL, (void **)&s, NULL);
-    fprintf(f, "RPM_PACKAGE_NAME=\"%s\"\n", s);
-    headerGetEntry(spec->packages->header, RPMTAG_VERSION,
-		   NULL, (void **)&s, NULL);
-    fprintf(f, "RPM_PACKAGE_VERSION=\"%s\"\n", s);
-    headerGetEntry(spec->packages->header, RPMTAG_RELEASE,
-		   NULL, (void **)&s, NULL);
-    fprintf(f, "RPM_PACKAGE_RELEASE=\"%s\"\n", s);
-    fprintf(f, "export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION "
-	    "RPM_PACKAGE_RELEASE\n");
-#endif
-    
-    return 0;
-}
+static char *_preScriptEnvironment = "%{_preScriptEnvironment}";
 
 static char *_preScriptChdir = 
 	"umask 022\n"
@@ -111,6 +60,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     int pid;
     int status;
     char *buildShell;
+    char buf[BUFSIZ];
     
     switch (what) {
       case RPMBUILD_PREP:
@@ -139,27 +89,24 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 	return 0;
     }
     
-    if (makeTempFile(NULL, &scriptName, &fd)) {
-	rpmError(RPMERR_SCRIPT, "Unable to open temp file");
-	return RPMERR_SCRIPT;
-    }
-    f = fdopen(fd, "w");
-    
-    if (writeVars(spec, f)) {
-	fclose(f);
-	unlink(scriptName);
-	FREE(scriptName);
-	return RPMERR_SCRIPT;
+    if (makeTempFile(NULL, &scriptName, &fd) ||
+	fchmod(fd, 0600) < 0 ||
+	(f = fdopen(fd, "w")) == NULL) {
+	    rpmError(RPMERR_SCRIPT, "Unable to open temp file");
+	    return RPMERR_SCRIPT;
     }
     
+    strcpy(buf, _preScriptEnvironment);
+    expandMacros(spec, spec->macros, buf, sizeof(buf));
+    strcat(buf, "\n");
+    fputs(buf, f);
+
     fprintf(f, rpmIsVerbose() ? "set -x\n\n" : "exec > /dev/null\n\n");
 
 /* XXX umask 022; cd %{_builddir} */
-  { char buf[BUFSIZ];
     strcpy(buf, _preScriptChdir);
     expandMacros(spec, spec->macros, buf, sizeof(buf));
     fputs(buf, f);
-  }
 
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir) {
@@ -176,7 +123,6 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     fprintf(f, "\nexit 0\n");
     
     fclose(f);
-    chmod(scriptName, 0600);
 
     if (test) {
 	FREE(scriptName);
@@ -197,7 +143,9 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     if (! WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SCRIPT, "Bad exit status from %s (%s)",
 		 scriptName, name);
+#if HACK
 	unlink(scriptName);
+#endif
 	FREE(scriptName);
 	return RPMERR_SCRIPT;
     }

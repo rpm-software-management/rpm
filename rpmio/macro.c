@@ -784,6 +784,7 @@ expandMacro(MacroBuf *mb)
     int rc = 0;
     int negate;
     int grab;
+    int chkexist;
 
     if (++mb->depth > max_macro_depth) {
 	rpmError(RPMERR_BADSPEC, "Recursion depth(%d) greater than max(%d)",
@@ -815,11 +816,18 @@ expandMacro(MacroBuf *mb)
 		t = mb->t;	/* save expansion pointer for printExpand */
 	negate = 0;
 	grab = 0;
+	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
-		while (*s == '!') {
-			negate = (++negate % 2);
-			s++;
+		while (strchr("!?", *s) != NULL) {
+			switch(*s++) {
+			case '!':
+				negate = (++negate % 2);
+				break;
+			case '?':
+				chkexist++;
+				break;
+			}
 		}
 		f = se = s;
 		if (*se == '-')
@@ -857,9 +865,15 @@ expandMacro(MacroBuf *mb)
 		}
 		f = ++s;/* skip { */
 		se++;	/* skip } */
-		while (*f == '!') {
-			negate = (++negate % 2);
-			f++;
+		while (strchr("!?", *f) != NULL) {
+			switch(*f++) {
+			case '!':
+				negate = (++negate % 2);
+				break;
+			case '?':
+				chkexist++;
+				break;
+			}
 		}
 		for (fe = f; (c = *fe) && !strchr(":}", c);)
 			fe++;
@@ -966,6 +980,23 @@ expandMacro(MacroBuf *mb)
 		continue;
 	}
 
+	/* XXX Special processing for macro existence */
+	if (chkexist) {
+		if ((me == NULL && !negate) ||	/* Without -f, skip %{?f...} */
+		    (me != NULL && negate)) {	/* With -f, skip %{!?f...} */
+			s = se;
+			continue;
+		}
+		if (g && g < ge) {		/* Expand X in %{?f:X} */
+			rc = expandT(mb, g, gn);
+		} else
+		if (me->body && *me->body) {	/* Expand %{?f}/%{?f*} */
+			rc = expandT(mb, me->body, strlen(me->body));
+		}
+		s = se;
+		continue;
+	}
+	
 	if (me == NULL) {	/* leave unknown %... as is */
 #ifndef HACK
 #if DEAD

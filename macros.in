@@ -53,3 +53,25 @@
 %_topdir		%{_usrsrc}/redhat
 %optflags		-O2
 
+#==============================================================================
+# ---- script environment macros.
+#	Macro(s) that establish the environment for running a script.
+#
+%_preScriptEnvironment	\
+	RPM_SOURCE_DIR=\"%{_sourcedir}\"\
+	RPM_BUILD_DIR=\"%{_builddir}\"\
+	RPM_OPT_FLAGS=\"%{optflags}\"\
+	RPM_ARCH=\"%{arch}\"\
+	RPM_OS=\"%{os}\"\
+	export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
+	RPM_DOC_DIR=\"%{_docdir}\"\
+	export RPM_DOC_DIR\
+	RPM_PACKAGE_NAME=\"%{name}\"\
+	RPM_PACKAGE_VERSION=\"%{version}\"\
+	RPM_PACKAGE_RELEASE=\"%{release}\"\
+	export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
+	%{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\
+	export RPM_BUILD_ROOT\
+	}
+
+#==============================================================================
