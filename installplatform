@@ -23,11 +23,11 @@ target="`$RPM --eval '%{_target}'`"
 
 case "$arch" in
   i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_' ;;
-  sparc*) SUBSTS='s_sparc64_sparc_ s_sparc\([^6]\)_sparc64\1_' ;;
+  sparc*) SUBSTS='s_sparc64_sparc_ s_sparc\([^6]\|$\)_sparc64\1_' ;;
   *) SUBSTS=y___ ;;
 esac
 
-for SUBST in $SUBSTS 's_^[^-]*-_noarch-_' ; do
+for SUBST in $SUBSTS ; do
   ARCH=`echo $arch | sed -e $SUBST`
   TARGET_PLATFORM=`echo $target_platform | sed -e $SUBST`
   TARGET=`echo $target | sed -e $SUBST`
@@ -59,5 +59,7 @@ for SUBST in $SUBSTS 's_^[^-]*-_noarch-_' ; do
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
 
 done
+
+ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
 
 rm $TEMPRC
