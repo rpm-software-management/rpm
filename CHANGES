@@ -20,6 +20,8 @@
 	- fix: parameterized macro segfault (Jakub Bogusz <qboosh@pld.org.pl>).
 	- fix: i18n tags in rpm-2.5.x had wrong offset/length (#33478).
 	- fix: AIX has sizeof(uint_16) != sizeof(mode_t) verify cast needed.
+	- fix: --relocate missing trailing slash (#28874,#25876).
+	- fix: --excludedoc shouldn't create empty doc dir (#14531).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

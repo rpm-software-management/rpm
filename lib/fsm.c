@@ -527,7 +527,6 @@ assert(fi->type == TR_ADDED);
 	    break;
 
 	case FA_SKIPNSTATE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    if (fi->type == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
 	    break;
