@@ -69,13 +69,20 @@ typedef struct CFD {
 #define	cpioFp	_cfdu._cfdu_fp
 	/*@owned@*/FD_t	_cfdu_gzfd;
 #define	cpioGzFd	_cfdu._cfdu_gzfd
+#if ENABLE_BZIP2_PAYLOAD
+	/*@owned@*/FD_t	_cfdu_bzfd;
+#define	cpioBzFd	_cfdu._cfdu_bzfd
+#endif
     } _cfdu;
     int		cpioPos;
     enum cpioIoType {
 	cpioIoTypeDebug,
 	cpioIoTypeFd,
 	cpioIoTypeFp,
-	cpioIoTypeGzFd
+	cpioIoTypeGzFd,
+#if ENABLE_BZIP2_PAYLOAD
+	cpioIoTypeBzFd,
+#endif
     } cpioIoType;
 } CFD_t;
 

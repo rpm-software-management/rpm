@@ -2,8 +2,6 @@
 
 #include "rpmbuild.h"
 
-#include "popt/popt.h"
-
 extern int noLang;		/* XXX FIXME: pass as arg */
 
 /* These have to be global scope to make up for *stupid* compilers */

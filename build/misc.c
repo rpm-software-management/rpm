@@ -2,8 +2,6 @@
 
 #include "rpmbuild.h"
 
-#include "popt/popt.h"
-
 int parseNum(const char *line, int *res)
 {
     char *s1;

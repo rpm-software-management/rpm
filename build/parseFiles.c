@@ -2,8 +2,6 @@
 
 #include "rpmbuild.h"
 
-#include "popt/popt.h"
-
 /* These have to be global scope to make up for *stupid* compilers */
     static char *name;
     static char *file;

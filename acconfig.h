@@ -138,6 +138,9 @@
 /* define if experimental support rpm-4.0 packages is desired */
 #undef ENABLE_V4_PACKAGES
 
+/* define if experimental support for packages with bzip2 payloads is desired */
+#undef ENABLE_BZIP2_PAYLOAD
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:

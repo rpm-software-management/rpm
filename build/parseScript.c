@@ -2,8 +2,6 @@
 
 #include "rpmbuild.h"
 
-#include "popt/popt.h"
-
 static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
 {
     struct TriggerFileEntry *new;

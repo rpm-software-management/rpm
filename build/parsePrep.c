@@ -2,8 +2,6 @@
 
 #include "rpmbuild.h"
 
-#include "popt/popt.h"
-
 /* These have to be global to make up for stupid compilers */
     static int leaveDirs, skipDefaultAction;
     static int createDir, quietly;

@@ -13,6 +13,10 @@ static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb);
 static int addFileToTag(Spec spec, char *file, Header h, int tag);
 static int addFileToArrayTag(Spec spec, char *file, Header h, int tag);
 
+#if	ENABLE_BZIP2_PAYLOAD
+static int cpio_bzip2(FD_t fdo, CSA_t *csa);
+#endif	/* ENABLE_BZIP2_PAYLOAD */
+
 static int cpio_gzip(FD_t fdo, CSA_t *csa);
 static int cpio_copy(FD_t fdo, CSA_t *csa);
 
@@ -372,6 +376,31 @@ int writeRPM(Header h, const char *fileName, int type,
 
     return 0;
 }
+
+#if ENABLE_BZIP2_PAYLOAD
+static int cpio_bzip2(FD_t fdo, CSA_t *csa)
+{
+    CFD_t *cfd = &csa->cpioCfd;
+    int rc;
+    const char *failedFile = NULL;
+
+    cfd->cpioIoType = cpioIoTypeBzFd;
+    cfd->cpioBzFd = bzdFdopen(fdDup(fdFileno(fdo)), "w9");
+    rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
+			  &csa->cpioArchiveSize, &failedFile);
+    if (rc) {
+	rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s"),
+		failedFile, cpioStrerror(rc));
+      rc = 1;
+    }
+
+    bzdClose(cfd->cpioBzFd);
+    if (failedFile)
+	xfree(failedFile);
+
+    return rc;
+}
+#endif	/* ENABLE_BZIP2_PAYLOAD */
 
 static int cpio_gzip(FD_t fdo, CSA_t *csa)
 {

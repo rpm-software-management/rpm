@@ -258,6 +258,15 @@ AC_ARG_ENABLE(v4-packages,
 AC_MSG_RESULT($with_v4_packages)
 test "$with_v4_packages" = yes && AC_DEFINE(ENABLE_V4_PACKAGES)
 
+### use option --enable-bzip2-payload to turn on support for packages with bzip2 payloads
+AC_MSG_CHECKING(if you want support for packages with bzip2 payloads)
+AC_ARG_ENABLE(bzip2-payload,
+        [  --enable-bzip2-payload[=no]   [experimental] support for packages with bzip2 paylaods],
+        [with_bzip2_payload=$enableval],
+        [with_bzip2_payload=no])
+AC_MSG_RESULT($with_bzip2_payload)
+test "$with_bzip2_payload" = yes && AC_DEFINE(ENABLE_BZIP2_PAYLOAD)
+
 dnl Checks for libraries.
 
 AC_CHECK_FUNC(strcasecmp, [], [

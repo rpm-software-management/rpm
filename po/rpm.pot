@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-19 11:24-0400\n"
+"POT-Creation-Date: 1999-09-20 09:21-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1224,7 +1224,7 @@ msgstr ""
 msgid "error reading header from package\n"
 msgstr ""
 
-#: ../build/build.c:83 ../build/pack.c:240
+#: ../build/build.c:83 ../build/pack.c:244
 msgid "Unable to open temp file"
 msgstr ""
 
@@ -1401,12 +1401,12 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1147 ../build/pack.c:436
+#: ../build/files.c:1147 ../build/pack.c:465
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1469 ../build/parsePrep.c:31
+#: ../build/files.c:1469 ../build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
@@ -1459,101 +1459,101 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: ../build/pack.c:127
+#: ../build/pack.c:131
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:160
+#: ../build/pack.c:164
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:170
+#: ../build/pack.c:174
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:190
+#: ../build/pack.c:194
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: ../build/pack.c:196
+#: ../build/pack.c:200
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: ../build/pack.c:251
+#: ../build/pack.c:255
 msgid "Bad CSA data"
 msgstr ""
 
-#: ../build/pack.c:282
+#: ../build/pack.c:286
 #, c-format
 msgid "Could not open %s\n"
 msgstr ""
 
-#: ../build/pack.c:314 ../build/pack.c:356
+#: ../build/pack.c:318 ../build/pack.c:360
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: ../build/pack.c:329
+#: ../build/pack.c:333
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: ../build/pack.c:346
+#: ../build/pack.c:350
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr ""
 
-#: ../build/pack.c:371
+#: ../build/pack.c:375
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: ../build/pack.c:387
+#: ../build/pack.c:392 ../build/pack.c:416
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:406
+#: ../build/pack.c:435
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:413
+#: ../build/pack.c:442
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:492
+#: ../build/pack.c:521
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:499
+#: ../build/pack.c:528
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:506
+#: ../build/pack.c:535
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:513
+#: ../build/pack.c:542
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:521
+#: ../build/pack.c:550
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:537
+#: ../build/pack.c:566
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -1587,208 +1587,208 @@ msgstr ""
 msgid "no description in %%changelog"
 msgstr ""
 
-#: ../build/parseDescription.c:35
+#: ../build/parseDescription.c:33
 msgid "line %d: Error parsing %%description: %s"
 msgstr ""
 
-#: ../build/parseDescription.c:48 ../build/parseFiles.c:42
-#: ../build/parseScript.c:170
+#: ../build/parseDescription.c:46 ../build/parseFiles.c:40
+#: ../build/parseScript.c:168
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr ""
 
-#: ../build/parseDescription.c:62 ../build/parseFiles.c:56
-#: ../build/parseScript.c:184
+#: ../build/parseDescription.c:60 ../build/parseFiles.c:54
+#: ../build/parseScript.c:182
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr ""
 
-#: ../build/parseDescription.c:72 ../build/parseFiles.c:66
-#: ../build/parseScript.c:194
+#: ../build/parseDescription.c:70 ../build/parseFiles.c:64
+#: ../build/parseScript.c:192
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr ""
 
-#: ../build/parseDescription.c:84
+#: ../build/parseDescription.c:82
 #, c-format
 msgid "line %d: Second description"
 msgstr ""
 
-#: ../build/parseFiles.c:29
+#: ../build/parseFiles.c:27
 msgid "line %d: Error parsing %%files: %s"
 msgstr ""
 
-#: ../build/parseFiles.c:74
+#: ../build/parseFiles.c:72
 msgid "line %d: Second %%files list"
 msgstr ""
 
-#: ../build/parsePreamble.c:143
+#: ../build/parsePreamble.c:141
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:148
+#: ../build/parsePreamble.c:146
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:153
+#: ../build/parsePreamble.c:151
 #, c-format
 msgid "OS is excluded: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:158
+#: ../build/parsePreamble.c:156
 #, c-format
 msgid "OS is not included: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:172
+#: ../build/parsePreamble.c:170
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:194
+#: ../build/parsePreamble.c:192
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:241
+#: ../build/parsePreamble.c:239
 #, c-format
 msgid "Unable to stat icon: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:252
+#: ../build/parsePreamble.c:250
 #, c-format
 msgid "Unable to read icon: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:262
+#: ../build/parsePreamble.c:260
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:325
+#: ../build/parsePreamble.c:323
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: ../build/parsePreamble.c:333
+#: ../build/parsePreamble.c:331
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:356 ../build/parsePreamble.c:363
+#: ../build/parsePreamble.c:354 ../build/parsePreamble.c:361
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:401
+#: ../build/parsePreamble.c:399
 #, c-format
 msgid "line %d: BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:414
+#: ../build/parsePreamble.c:412
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:426
+#: ../build/parsePreamble.c:424
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:438
+#: ../build/parsePreamble.c:436
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:501
+#: ../build/parsePreamble.c:499
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:511
+#: ../build/parsePreamble.c:509
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: ../build/parsePreamble.c:658
+#: ../build/parsePreamble.c:656
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:664
+#: ../build/parsePreamble.c:662
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:691
+#: ../build/parsePreamble.c:689
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:716
+#: ../build/parsePreamble.c:714
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
-#: ../build/parsePrep.c:27
+#: ../build/parsePrep.c:25
 #, c-format
 msgid "Bad source: %s: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:53
+#: ../build/parsePrep.c:51
 #, c-format
 msgid "No patch number %d"
 msgstr ""
 
-#: ../build/parsePrep.c:119
+#: ../build/parsePrep.c:117
 #, c-format
 msgid "No source number %d"
 msgstr ""
 
-#: ../build/parsePrep.c:138
+#: ../build/parsePrep.c:136
 #, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:193
+#: ../build/parsePrep.c:191
 msgid "Error parsing %%setup: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:208
+#: ../build/parsePrep.c:206
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:229
+#: ../build/parsePrep.c:227
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:353
+#: ../build/parsePrep.c:351
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:361
+#: ../build/parsePrep.c:359
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:373
+#: ../build/parsePrep.c:371
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:379
+#: ../build/parsePrep.c:377
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:386
+#: ../build/parsePrep.c:384
 msgid "Too many patches!"
 msgstr ""
 
-#: ../build/parsePrep.c:390
+#: ../build/parsePrep.c:388
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: ../build/parsePrep.c:426
+#: ../build/parsePrep.c:424
 msgid "line %d: second %%prep"
 msgstr ""
 
@@ -1818,22 +1818,22 @@ msgstr ""
 msgid "line %d: Version required: %s"
 msgstr ""
 
-#: ../build/parseScript.c:138
+#: ../build/parseScript.c:136
 #, c-format
 msgid "line %d: triggers must have --: %s"
 msgstr ""
 
-#: ../build/parseScript.c:148 ../build/parseScript.c:212
+#: ../build/parseScript.c:146 ../build/parseScript.c:210
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr ""
 
-#: ../build/parseScript.c:158
+#: ../build/parseScript.c:156
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr ""
 
-#: ../build/parseScript.c:203
+#: ../build/parseScript.c:201
 #, c-format
 msgid "line %d: Second %s"
 msgstr ""
@@ -1904,51 +1904,51 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:375
+#: ../lib/cpio.c:385
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:381
+#: ../lib/cpio.c:391
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:572
+#: ../lib/cpio.c:582
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:1034
+#: ../lib/cpio.c:1044
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: ../lib/cpio.c:1037
+#: ../lib/cpio.c:1047
 msgid "Bad magic"
 msgstr ""
 
-#: ../lib/cpio.c:1038
+#: ../lib/cpio.c:1048
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: ../lib/cpio.c:1056
+#: ../lib/cpio.c:1066
 msgid "Header size too big"
 msgstr ""
 
-#: ../lib/cpio.c:1057
+#: ../lib/cpio.c:1067
 msgid "Unknown file type"
 msgstr ""
 
-#: ../lib/cpio.c:1058
+#: ../lib/cpio.c:1068
 msgid "Missing hard link"
 msgstr ""
 
-#: ../lib/cpio.c:1059
+#: ../lib/cpio.c:1069
 msgid "Internal error"
 msgstr ""
 
-#: ../lib/cpio.c:1068
+#: ../lib/cpio.c:1078
 msgid " failed - "
 msgstr ""
 
@@ -1972,33 +1972,33 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:455
+#: ../lib/depends.c:456
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:722
+#: ../lib/depends.c:731
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: ../lib/depends.c:861
+#: ../lib/depends.c:870
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: ../lib/depends.c:923
+#: ../lib/depends.c:932
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:978 ../lib/depends.c:1285
+#: ../lib/depends.c:987 ../lib/depends.c:1294
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:1073
+#: ../lib/depends.c:1082
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""

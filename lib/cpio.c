@@ -82,6 +82,11 @@ static inline off_t saferead(CFD_t *cfd, /*@out@*/void * vbuf, size_t amount)
 	case cpioIoTypeGzFd:
 		nb = gzdRead(cfd->cpioGzFd, buf, amount);
 		break;
+#if ENABLE_BZIP2_PAYLOAD
+	case cpioIoTypeBzFd:
+		nb = bzdRead(cfd->cpioBzFd, buf, amount);
+		break;
+#endif
 	}
 	if (nb <= 0)
 		return nb;
@@ -140,6 +145,11 @@ static inline off_t safewrite(CFD_t *cfd, const void * vbuf, size_t amount)
 	case cpioIoTypeGzFd:
 		nb = gzdWrite(cfd->cpioGzFd, buf, amount);
 		break;
+#if ENABLE_BZIP2_PAYLOAD
+	case cpioIoTypeBzFd:
+		nb = bzdWrite(cfd->cpioBzFd, buf, amount);
+		break;
+#endif
 	}
 	if (nb <= 0)
 		return nb;

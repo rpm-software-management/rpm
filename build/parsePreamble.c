@@ -2,8 +2,6 @@
 
 #include "rpmbuild.h"
 
-#include "popt/popt.h"
-
 static int_32 copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
