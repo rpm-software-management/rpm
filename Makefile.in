@@ -9,7 +9,7 @@ LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
 AR = ar r
 RANLIB = ranlib
 
-VERSION=2.0g
+VERSION=2.0h
 
 prefix=$(ROOT)/usr
 
