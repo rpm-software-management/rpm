@@ -81,8 +81,9 @@ struct SpecStruct {
 
     /*@owned@*/ struct OpenFileInfo *fileStack;
     char lbuf[BUFSIZ];
-    char *line;
+    char nextpeekc;
     char *nextline;
+    char *line;
     int lineNum;
 
     /*@only@*/ struct ReadLevelEntry *readStack;

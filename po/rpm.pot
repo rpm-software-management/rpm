@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-19 14:32-0400\n"
+"POT-Creation-Date: 1999-07-19 17:14-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1861,49 +1861,49 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-#: ../build/parseSpec.c:119
+#: ../build/parseSpec.c:120
 #, c-format
 msgid "line %d: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:159
+#: ../build/parseSpec.c:166
 #, c-format
 msgid "Unable to open: %s\n"
 msgstr ""
 
-#: ../build/parseSpec.c:171
+#: ../build/parseSpec.c:178
 msgid "Unclosed %%if"
 msgstr ""
 
-#: ../build/parseSpec.c:230
+#: ../build/parseSpec.c:237
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: ../build/parseSpec.c:238
+#: ../build/parseSpec.c:245
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: ../build/parseSpec.c:249
+#: ../build/parseSpec.c:256
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: ../build/parseSpec.c:263 ../build/parseSpec.c:272
+#: ../build/parseSpec.c:270 ../build/parseSpec.c:279
 msgid "malformed %%include statement"
 msgstr ""
 
-#: ../build/parseSpec.c:353
+#: ../build/parseSpec.c:360
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:436
+#: ../build/parseSpec.c:443
 msgid "No buildable architectures"
 msgstr ""
 
-#: ../build/parseSpec.c:481
+#: ../build/parseSpec.c:488
 msgid "Package has no %%description: %s"
 msgstr ""
 

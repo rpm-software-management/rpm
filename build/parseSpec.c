@@ -108,10 +108,11 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
 	char *from, *to;
-	to = last = spec->nextline = spec->lbuf;
+	to = last = spec->lbuf;
 	from = ofi->readPtr;
-	while ((ch = *from) && ch != '\n')
-	    *to++ = *from++;
+	ch = ' ';
+	while (*from && ch != '\n')
+	    ch = *to++ = *from++;
 	*to++ = '\0';
 	ofi->readPtr = from;
 
@@ -119,17 +120,23 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 		rpmError(RPMERR_BADSPEC, _("line %d: %s"), spec->lineNum, spec->lbuf);
 		return RPMERR_BADSPEC;
 	}
+	spec->nextline = spec->lbuf;
     }
 
     /* Find next line in expanded line buffer */
-    spec->line = spec->nextline;
-    while ((ch = *spec->nextline) && ch != '\n') {
-	spec->nextline++;
+    spec->line = last = spec->nextline;
+    if (spec->line != spec->lbuf)
+	*spec->line = spec->nextpeekc;
+    ch = ' ';
+    while (*spec->nextline && ch != '\n') {
+	ch = *spec->nextline++;
 	if (!isspace(ch))
 	    last = spec->nextline;
     }
-    if (ch == '\n')
-	*spec->nextline++ = '\0';
+    if (*spec->nextline) {
+	spec->nextpeekc = *spec->nextline;
+	*spec->nextline = '\0';
+    }
     
     if (strip & STRIP_COMMENTS)
 	handleComments(spec->line);
