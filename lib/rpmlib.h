@@ -77,6 +77,8 @@ extern const int rpmTagTableSize;
 #define RPMTAG_REQUIREFLAGS             1048
 #define RPMTAG_REQUIRENAME              1049
 #define RPMTAG_REQUIREVERSION           1050
+#define RPMTAG_NOSOURCE                 1051
+#define RPMTAG_NOPATCH                  1052
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
