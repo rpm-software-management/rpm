@@ -68,8 +68,10 @@ for f in $scriptlist; do
 done
 [ -n "$interplist" ] && { echo "$interplist" | tr [:blank:] \\n | sort -u ; }
 
+
 #
 # --- Weak symbol versions (from glibc).
+[ -n "$mark64" ] && mark64="(64bit)"
 for f in $liblist $exelist ; do
     [ -r $f ] || continue
     lib64=`if file -L $f 2>/dev/null | \
@@ -81,7 +83,7 @@ for f in $liblist $exelist ; do
 	    sub(/:/, "", $3);
 	    LIBNAME=$3;
 	}
-	(START==1) && (LIBNAME!="") && ($4~/^GLIBC_*/) {
+	(START==1) && (LIBNAME!="") && ($4!="") && ($4~/^GLIBC_*/) {
 	    print LIBNAME "(" $4 ")'$lib64'";
 	}
 	/^$/ { START=0; }

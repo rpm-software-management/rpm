@@ -516,8 +516,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 	/*@modifies *result, fileSystem @*/
 {
     int pid, status, outpipe[2];
-    FD_t sfd;
-/*@observer@*/ const char * sigfile;
+/*@only@*/ /*@null@*/ const char * sigfile = NULL;
     byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
@@ -540,6 +539,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 	res = RPMSIG_BAD;
 
     /* Write out the signature */
+#ifdef	DYING
   { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);
     sigfile = tempnam(tmppath, "rpmsig");
     tmppath = _free(tmppath);
@@ -549,6 +549,17 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 	(void) Fwrite(sig, sizeof(char), count, sfd);
 	(void) Fclose(sfd);
     }
+#else
+    {	FD_t sfd;
+	if (!makeTempFile(NULL, &sigfile, &sfd)) {
+	    (void) Fwrite(sig, sizeof(char), count, sfd);
+	    (void) Fclose(sfd);
+	    sfd = NULL;
+	}
+    }
+#endif
+    if (sigfile == NULL)
+	return RPMSIG_BAD;
 
     /* Now run PGP */
     outpipe[0] = outpipe[1] = 0;
@@ -620,6 +631,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 
     (void) waitpid(pid, &status, 0);
     if (sigfile) (void) unlink(sigfile);
+    sigfile = _free(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
@@ -633,13 +645,13 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
 	/*@modifies *result, fileSystem @*/
 {
     int pid, status, outpipe[2];
-    FD_t sfd;
-    char *sigfile;
+/*@only@*/ /*@null@*/ const char * sigfile = NULL;
     byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
   
     /* Write out the signature */
+#ifdef	DYING
   { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);
     sigfile = tempnam(tmppath, "rpmsig");
     tmppath = _free(tmppath);
@@ -649,6 +661,17 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
 	(void) Fwrite(sig, sizeof(char), count, sfd);
 	(void) Fclose(sfd);
     }
+#else
+    {	FD_t sfd;
+	if (!makeTempFile(NULL, &sigfile, &sfd)) {
+	    (void) Fwrite(sig, sizeof(char), count, sfd);
+	    (void) Fclose(sfd);
+	    sfd = NULL;
+	}
+    }
+#endif
+    if (sigfile == NULL)
+	return RPMSIG_BAD;
 
     /* Now run GPG */
     outpipe[0] = outpipe[1] = 0;
@@ -688,6 +711,7 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
   
     (void) waitpid(pid, &status, 0);
     if (sigfile) (void) unlink(sigfile);
+    sigfile = _free(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
