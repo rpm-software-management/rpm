@@ -14,6 +14,13 @@
 -includenest 16		# getting deep, sigh
 
 # --- not yet
+#-loopswitchbreak
+#-casebreak
+#-switchswitchbreak
+#-looploopbreak
+#-looploopcontinue
+#-unreachable
+
 -noparams
 -oldstyle
 -castfcnptr
@@ -50,17 +57,18 @@
 -nullassign
 -evalorderuncon
 -immediatetrans
--looploopcontinue
 -evalorder
 -type
--loopswitchbreak
--casebreak
--switchswitchbreak
 -unsignedcompare
--looploopbreak
 -nullderef
 -exportheader
 -modobserveruncon
+
+-sysunrecog
+-unrecog
+-retvalother
+-nullptrarith
+-noeffect
 
 # --- +partial artifacts
 -declundef
