@@ -111,6 +111,8 @@ static int getFilesystemList(void)
     int nextMount = 0;
 #   endif
 
+    rpmMessage(RPMMESS_DEBUG, _("getting list of mounted filesystems\n"));
+
 #   if GETMNTENT_ONE || GETMNTENT_TWO
 	mtab = fopen(MOUNTED, "r");
 	if (!mtab) {
