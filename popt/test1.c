@@ -3,8 +3,9 @@
 
 #include "popt.h"
 
-void option_callback(poptContext con, int key, char * arg, void * data) {
-    printf("callback: %s %s ", (char *) data, arg);    
+void option_callback(poptContext con, const struct poptOption * opt, 
+		     char * arg, void * data) {
+    printf("callback: %c %s %s ", opt->val, (char *) data, arg);    
 }
 
 int main(int argc, char ** argv) {
@@ -19,8 +20,8 @@ int main(int argc, char ** argv) {
     int usage = 0;
     struct poptOption callbackArgs[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK, option_callback, 0, "sampledata" },
-	{ "cb", 'c', POPT_ARG_STRING, NULL, 0, "Test argument callbacks" },
-	{ "long", '\0', 0, NULL, 0, "Unused option for help testing" },
+	{ "cb", 'c', POPT_ARG_STRING, NULL, 'c', "Test argument callbacks" },
+	{ "long", '\0', 0, NULL, 'l', "Unused option for help testing" },
 	{ NULL, '\0', 0, NULL, 0 } 
     };
     struct poptOption moreArgs[] = {
