@@ -7,7 +7,7 @@ Makefile
 Makefile.in
 aclocal.m4
 apidocs
-autom4te-*
+autom4te*
 config.cache
 config.guess
 config.h

@@ -4,6 +4,7 @@
 Makefile
 Makefile.in
 convertdb1
+debugedit
 dump
 dumpdb
 javadeps

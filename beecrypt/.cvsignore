@@ -9,7 +9,7 @@ aclocal.m4
 missing
 mkinstalldirs
 apidocs
-autom4te-*.cache
+autom4te*
 beecrypt.spec
 beecrypt-*.tar.gz
 config.h
