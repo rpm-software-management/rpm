@@ -26,6 +26,7 @@ TODO:
 #include "rpmlib.h"
 #include "stringbuf.h"
 #include "misc.h"
+#include "reqprov.h"
 
 #define LINE_BUF_SIZE 1024
 #define FREE(x) { if (x) free(x); }
@@ -44,9 +45,10 @@ static int lookup_package(Spec s, struct PackageRec **pr,
 static void dumpPackage(struct PackageRec *p, FILE *f);
 static void parseForDocFiles(struct PackageRec *package, char *line);
 
+
 static int parseProvides(struct PackageRec *p, char *line);
 static int parseRequires(struct PackageRec *p, char *line);
-void free_reqprov(struct ReqProv *p);
+static void free_reqprov(struct ReqProv *p);
 
 /**********************************************************************/
 /*                                                                    */
@@ -191,42 +193,20 @@ char *getFullSource(Spec s, int ispatch, int num)
 /*                                                                    */
 /**********************************************************************/
 
-int addReqProv(struct PackageRec *p, int flags,
-	      char *name, char *version)
+static void free_reqprov(struct ReqProv *p)
 {
-    struct ReqProv *rd;
-
-    rd = (struct ReqProv *)malloc(sizeof(*rd));
-    rd->flags = flags;
-    rd->name = strdup(name);
-    rd->version = version ? strdup(version) : NULL;
-    rd->next = p->reqprov;
-    p->reqprov = rd;
-
-    if (flags & REQUIRE_PROVIDES) {
-	message(MESS_DEBUG, "Adding provide: %s\n", name);
-	p->numProv++;
-    } else {
-	message(MESS_DEBUG, "Adding require: %s\n", name);
-	p->numReq++;
-    }
-
-    return 0;
-}
-
-static int parseProvides(struct PackageRec *p, char *line)
-{
-    char *prov;
-    int flags = REQUIRE_PROVIDES;
+    struct ReqProv *s;
     
-    while ((prov = strtok(line, " ,\t\n"))) {
-	addReqProv(p, flags, prov, NULL);
-	line = NULL;
+    while (p) {
+	s = p;
+	p = p->next;
+	FREE(s->name);
+	FREE(s->version);
+	free(s);
     }
-    return 0;
 }
 
-struct ReqComp {
+static struct ReqComp {
     char *token;
     int flags;
 } ReqComparisons[] = {
@@ -257,7 +237,7 @@ static int parseRequires(struct PackageRec *p, char *line)
     struct ReqComp *rc;
 
     while (req || (req = strtok(line, " ,\t\n"))) {
-	flags = 0;
+	flags = REQUIRE_ANY;
 	if ((version = strtok(NULL, " ,\t\n"))) {
 	    rc = ReqComparisons;
 	    while (rc->token && strcmp(version, rc->token)) {
@@ -287,22 +267,15 @@ static int parseRequires(struct PackageRec *p, char *line)
     return 0;
 }
 
-void free_reqprov(struct ReqProv *p)
+static int parseProvides(struct PackageRec *p, char *line)
 {
-    struct ReqProv *s;
+    char *prov;
+    int flags = REQUIRE_PROVIDES;
     
-    while (p) {
-	s = p;
-	p = p->next;
-	FREE(s->name);
-	FREE(s->version);
-	free(s);
+    while ((prov = strtok(line, " ,\t\n"))) {
+	addReqProv(p, flags, prov, NULL);
+	line = NULL;
     }
-}
-
-int addReqProvHeaderEntry(Header h, struct PackageRec *p)
-{
-    message(MESS_DEBUG, "provides: %d\nrequires: %d\n", p->numProv, p->numReq);
     return 0;
 }
 
