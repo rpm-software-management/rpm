@@ -5,6 +5,7 @@
 	- make %doc obey --test
 	- unlink before writing .rpms
 	- librpm.c: added headerGzRead()/headerGzWrite()
+	- set bzip2path via lib-rpmrc/configure (Toshio Kuratomi)
 
 2.4.109 -> 2.5:
 	- fixed return code bug in build code
