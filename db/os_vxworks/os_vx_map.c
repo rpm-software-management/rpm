@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2001
+ * Copyright (c) 1998-2002
  *	Sleepycat Software.  All rights reserved.
  *
  * This code is derived from software contributed to Sleepycat Software by
@@ -11,7 +11,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_vx_map.c,v 1.17 2001/07/31 19:30:36 sue Exp ";
+static const char revid[] = "Id: os_vx_map.c,v 1.21 2002/03/06 19:36:58 margo Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -20,7 +20,6 @@ static const char revid[] = "Id: os_vx_map.c,v 1.17 2001/07/31 19:30:36 sue Exp 
 #endif
 
 #include "db_int.h"
-#include "common_ext.h"
 
 /*
  * DB uses memory-mapped files for two things:
@@ -243,17 +242,17 @@ __os_segdata_destroy(dbenv)
 	for (i = 0; i < __os_segdata_size; i++) {
 		p = &__os_segdata[i];
 		if (p->name != NULL) {
-			__os_freestr(dbenv, p->name);
+			__os_free(dbenv, p->name);
 			p->name = NULL;
 		}
 		if (p->segment != NULL) {
-			__os_free(dbenv, p->segment, p->size);
+			__os_free(dbenv, p->segment);
 			p->segment = NULL;
 		}
 		p->size = 0;
 	}
 
-	__os_free(dbenv, __os_segdata, __os_segdata_size * sizeof(os_segdata_t));
+	__os_free(dbenv, __os_segdata);
 	__os_segdata = NULL;
 	__os_segdata_size = 0;
 	DB_END_SINGLE_THREAD;
@@ -285,7 +284,7 @@ __os_segdata_allocate(dbenv, name, infop, rp)
 	if ((ret = __os_calloc(dbenv, 1, rp->size, &p->segment)) != 0)
 		return (ret);
 	if ((ret = __os_strdup(dbenv, name, &p->name)) != 0) {
-		__os_free(dbenv, p->segment, rp->size);
+		__os_free(dbenv, p->segment);
 		p->segment = NULL;
 		return (ret);
 	}
@@ -425,11 +424,11 @@ __os_segdata_release(dbenv, rp, is_locked)
 		DB_BEGIN_SINGLE_THREAD;
 	p = &__os_segdata[rp->segid];
 	if (p->name != NULL) {
-		__os_freestr(dbenv, p->name);
+		__os_free(dbenv, p->name);
 		p->name = NULL;
 	}
 	if (p->segment != NULL) {
-		__os_free(dbenv, p->segment, p->size);
+		__os_free(dbenv, p->segment);
 		p->segment = NULL;
 	}
 	p->size = 0;

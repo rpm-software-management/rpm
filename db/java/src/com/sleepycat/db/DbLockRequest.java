@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2001
+ * Copyright (c) 1997-2002
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: DbLockRequest.java,v 11.2 2001/10/05 02:36:06 bostic Exp 
+ * Id: DbLockRequest.java,v 11.4 2002/01/16 07:45:24 mjc Exp 
  */
 
 package com.sleepycat.db;
@@ -59,8 +59,9 @@ public class DbLockRequest
         this.lock = lock;
     }
 
-    private int op;
-    private int mode;
+    private /* db_lockop_t */ int op;
+    private /* db_lockmode_t */ int mode;
+    private /* db_timeout_t */ int timeout;
     private Dbt obj;
     private DbLock lock;
 }

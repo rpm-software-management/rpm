@@ -1,6 +1,7 @@
-<!--Id: logc_class.so,v 1.1 2001/09/28 15:09:37 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: logc_class.so,v 1.3 2002/06/27 19:10:06 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbLogc</title>
@@ -30,24 +31,24 @@ which provides cursor support for log files.
 sequential access to the records stored in log files.  Cursors are
 created by calling the <a href="../api_java/log_cursor.html">DbEnv.log_cursor</a> method which returns a  DbLogc object.
 <h1>Class</h1>
-<a href="../api_java/dbenv_class.html">DbEnv</a>
+<a href="../api_java/dbenv_class.html">DbEnv</a>, <a href="../api_java/logc_class.html">DbLogc</a>
 <h1>See Also</h1>
+<a href="../api_java/log_archive.html">DbEnv.log_archive</a>,
+<a href="../api_java/log_file.html">DbEnv.log_file</a>,
+<a href="../api_java/log_flush.html">DbEnv.log_flush</a>,
+<a href="../api_java/log_put.html">DbEnv.log_put</a>,
+<a href="../api_java/log_stat.html">DbEnv.log_stat</a>,
 <a href="../api_java/env_set_lg_bsize.html">DbEnv.set_lg_bsize</a>,
 <a href="../api_java/env_set_lg_dir.html">DbEnv.set_lg_dir</a>,
 <a href="../api_java/env_set_lg_max.html">DbEnv.set_lg_max</a>,
 <a href="../api_java/env_set_lg_regionmax.html">DbEnv.set_lg_regionmax</a>,
-<a href="../api_java/log_archive.html">DbEnv.log_archive</a>,
-<a href="../api_java/log_compare.html">DbEnv.log_compare</a>,
-<a href="../api_java/log_cursor.html">DbEnv.log_cursor</a>,
-<a href="../api_java/log_file.html">DbEnv.log_file</a>,
-<a href="../api_java/log_flush.html">DbEnv.log_flush</a>,
-<a href="../api_java/log_put.html">DbEnv.log_put</a>,
-<a href="../api_java/log_register.html">DbEnv.log_register</a>,
-<a href="../api_java/log_stat.html">DbEnv.log_stat</a>,
-<a href="../api_java/log_unregister.html">DbEnv.log_unregister</a>,
-<a href="../api_java/logc_close.html">DbLogc.logc_close</a>
 and
-<a href="../api_java/logc_get.html">DbLogc.logc_get</a>.
+<a href="../api_java/log_compare.html">DbEnv.log_compare</a>.
+<p>
+<a href="../api_java/log_cursor.html">DbEnv.log_cursor</a>,
+<a href="../api_java/logc_close.html">DbLogc.close</a>
+and
+<a href="../api_java/logc_get.html">DbLogc.get</a>.
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

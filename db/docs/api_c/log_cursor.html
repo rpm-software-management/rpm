@@ -1,6 +1,7 @@
-<!--Id: log_cursor.so,v 10.2 2001/10/22 15:24:33 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: log_cursor.so,v 10.3 2002/06/24 14:49:24 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;log_cursor</title>
@@ -36,34 +37,37 @@ creates a log cursor and copies a pointer to it into the memory to which
 <p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
 </dl>
 <p>The DB_ENV-&gt;log_cursor function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_ENV-&gt;log_cursor function may fail and return
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+If a catastrophic error has occurred, the DB_ENV-&gt;log_cursor function may fail and
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>See Also</h1>
 <a href="../api_c/db_create.html">db_create</a>,
+<a href="../api_c/db_set_alloc.html">DB-&gt;set_alloc</a>,
 <a href="../api_c/db_associate.html">DB-&gt;associate</a>,
 <a href="../api_c/db_close.html">DB-&gt;close</a>,
 <a href="../api_c/db_cursor.html">DB-&gt;cursor</a>,
 <a href="../api_c/db_del.html">DB-&gt;del</a>,
-<a href="../api_c/db_err.html">DB-&gt;err</a>, <a href="../api_c/db_err.html">DB-&gt;errx</a>
+<a href="../api_c/db_err.html">DB-&gt;err</a>,
+<a href="../api_c/db_err.html">DB-&gt;errx</a>,
 <a href="../api_c/db_fd.html">DB-&gt;fd</a>,
 <a href="../api_c/db_get.html">DB-&gt;get</a>,
-<a href="../api_c/db_get.html">DB-&gt;pget</a>,
 <a href="../api_c/db_get_byteswapped.html">DB-&gt;get_byteswapped</a>,
 <a href="../api_c/db_get_type.html">DB-&gt;get_type</a>,
 <a href="../api_c/db_join.html">DB-&gt;join</a>,
 <a href="../api_c/db_key_range.html">DB-&gt;key_range</a>,
 <a href="../api_c/db_open.html">DB-&gt;open</a>,
+<a href="../api_c/db_get.html">DB-&gt;pget</a>,
 <a href="../api_c/db_put.html">DB-&gt;put</a>,
 <a href="../api_c/db_remove.html">DB-&gt;remove</a>,
 <a href="../api_c/db_rename.html">DB-&gt;rename</a>,
-<a href="../api_c/db_set_alloc.html">DB-&gt;set_alloc</a>,
 <a href="../api_c/db_set_append_recno.html">DB-&gt;set_append_recno</a>,
 <a href="../api_c/db_set_bt_compare.html">DB-&gt;set_bt_compare</a>,
 <a href="../api_c/db_set_bt_minkey.html">DB-&gt;set_bt_minkey</a>,
 <a href="../api_c/db_set_bt_prefix.html">DB-&gt;set_bt_prefix</a>,
+<a href="../api_c/db_set_cache_priority.html">DB-&gt;set_cache_priority</a>,
 <a href="../api_c/db_set_cachesize.html">DB-&gt;set_cachesize</a>,
 <a href="../api_c/db_set_dup_compare.html">DB-&gt;set_dup_compare</a>,
+<a href="../api_c/db_set_encrypt.html">DB-&gt;set_encrypt</a>,
 <a href="../api_c/db_set_errcall.html">DB-&gt;set_errcall</a>,
 <a href="../api_c/db_set_errfile.html">DB-&gt;set_errfile</a>,
 <a href="../api_c/db_set_errpfx.html">DB-&gt;set_errpfx</a>,
@@ -83,7 +87,7 @@ in the same way.
 <a href="../api_c/db_stat.html">DB-&gt;stat</a>,
 <a href="../api_c/db_sync.html">DB-&gt;sync</a>,
 <a href="../api_c/db_truncate.html">DB-&gt;truncate</a>,
-<a href="../api_c/db_upgrade.html">DB-&gt;upgrade</a>,
+<a href="../api_c/db_upgrade.html">DB-&gt;upgrade</a>
 and
 <a href="../api_c/db_verify.html">DB-&gt;verify</a>.
 </tt>

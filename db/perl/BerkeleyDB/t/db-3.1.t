@@ -22,7 +22,7 @@ BEGIN
     }
 }     
 
-print "1..25\n";
+print "1..35\n";
 
 my $Dfile = "dbhash.tmp";
 my $Dfile2 = "dbhash2.tmp";
@@ -121,3 +121,79 @@ umask(0) ;
     untie %hash ;
 
 }
+
+{
+    # rename
+
+    my $lex = new LexFile $Dfile ;
+  
+    ok 26, my $db1 = new BerkeleyDB::Hash -Filename => $Dfile, 
+				        -Subname  => "fred" ,
+				        -Flags    => DB_CREATE ;
+
+    ok 27, my $db2 = new BerkeleyDB::Btree -Filename => $Dfile, 
+				        -Subname  => "joe" ,
+				        -Flags    => DB_CREATE ;
+
+    # Add a k/v pair
+    my %data = qw(
+    			red	sky
+			blue	sea
+			black	heart
+			yellow	belley
+			green	grass
+    		) ;
+
+    ok 28, addData($db1, %data) ;
+    ok 29, addData($db2, %data) ;
+
+    undef $db1 ;
+    undef $db2 ;
+
+    # now rename 
+    ok 30, BerkeleyDB::db_rename(-Filename => $Dfile, 
+                              -Subname => "fred",
+                              -Newname => "harry") == 0;
+  
+    ok 31, my $db3 = new BerkeleyDB::Hash -Filename => $Dfile, 
+				        -Subname  => "harry" ;
+
+}
+
+{
+    # verify
+
+    my $lex = new LexFile $Dfile, $Dfile2 ;
+  
+    ok 32, my $db1 = new BerkeleyDB::Hash -Filename => $Dfile, 
+				        -Subname  => "fred" ,
+				        -Flags    => DB_CREATE ;
+
+    # Add a k/v pair
+    my %data = qw(
+    			red	sky
+			blue	sea
+			black	heart
+			yellow	belley
+			green	grass
+    		) ;
+
+    ok 33, addData($db1, %data) ;
+
+    undef $db1 ;
+
+    # now verify 
+    ok 34, BerkeleyDB::db_verify(-Filename => $Dfile, 
+                              -Subname => "fred",
+                              ) == 0;
+
+    # now verify & dump
+    ok 35, BerkeleyDB::db_verify(-Filename => $Dfile, 
+                              -Subname => "fred",
+                              -Outfile => $Dfile2,
+                              ) == 0;
+  
+}
+
+# db_remove with env
+

@@ -12,7 +12,7 @@ BEGIN {
 use BerkeleyDB; 
 use t::util ;
 
-print "1..13\n";
+print "1..15\n";
 
 my $Dfile = "dbhash.tmp";
 my $home = "./fred" ;
@@ -20,7 +20,7 @@ my $home = "./fred" ;
 umask(0);
 
 {
-    # let object destroction kill everything
+    # let object destruction kill everything
 
     my $lex = new LexFile $Dfile ;
     my %hash ;
@@ -36,6 +36,9 @@ umask(0);
 					       	-Env 	   => $env,
 					    	-Txn	   => $txn  ;
 
+    ok 5, $txn->txn_commit() == 0 ;
+    ok 6, $txn = $env->txn_begin() ;
+    $db1->Txn($txn);
     
     # create some data
     my %data =  (
@@ -48,31 +51,31 @@ umask(0);
     while (my ($k, $v) = each %data) {
         $ret += $db1->db_put($k, $v) ;
     }
-    ok 5, $ret == 0 ;
+    ok 7, $ret == 0 ;
 
     # should be able to see all the records
 
-    ok 6, my $cursor = $db1->db_cursor() ;
+    ok 8, my $cursor = $db1->db_cursor() ;
     my ($k, $v) = ("", "") ;
     my $count = 0 ;
     # sequence forwards
     while ($cursor->c_get($k, $v, DB_NEXT) == 0) {
         ++ $count ;
     }
-    ok 7, $count == 3 ;
+    ok 9, $count == 3 ;
     undef $cursor ;
 
     # now abort the transaction
-    ok 8, $txn->txn_abort() == 0 ;
+    ok 10, $txn->txn_abort() == 0 ;
 
     # there shouldn't be any records in the database
     $count = 0 ;
     # sequence forwards
-    ok 9, $cursor = $db1->db_cursor() ;
+    ok 11, $cursor = $db1->db_cursor() ;
     while ($cursor->c_get($k, $v, DB_NEXT) == 0) {
         ++ $count ;
     }
-    ok 10, $count == 0 ;
+    ok 12, $count == 0 ;
 
     #undef $txn ;
     #undef $cursor ;
@@ -81,21 +84,22 @@ umask(0);
     #untie %hash ;
 
 }
+
 {
     my $lex = new LexFile $Dfile ;
     my %hash ;
     my $cursor ;
     my ($k, $v) = ("", "") ;
-    ok 11, my $db1 = tie %hash, 'BerkeleyDB::Hash', 
+    ok 13, my $db1 = tie %hash, 'BerkeleyDB::Hash', 
 		-Filename	=> $Dfile,
                	-Flags		=> DB_CREATE ;
     my $count = 0 ;
     # sequence forwards
-    ok 12, $cursor = $db1->db_cursor() ;
+    ok 14, $cursor = $db1->db_cursor() ;
     while ($cursor->c_get($k, $v, DB_NEXT) == 0) {
         ++ $count ;
     }
-    ok 13, $count == 0 ;
+    ok 15, $count == 0 ;
 }
 
 

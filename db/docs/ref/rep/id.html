@@ -1,6 +1,7 @@
-<!--Id: id.so,v 1.5 2001/11/05 17:24:27 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: id.so,v 1.6 2002/05/09 20:38:15 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Replication environment IDs</title>
@@ -21,8 +22,8 @@ each database environment can assign local identifiers to members of
 the replication group as it encounters them.  For example, given three
 sites: A, B and C, site A might assign the identifiers 1 and 2 to sites
 B and C respectively, while site B might assign the identifiers 301 and
-302 to sites A and C respectively.  Note, it is not wrong to have global
-identifiers, of course, it is just not necessary.
+302 to sites A and C respectively.  Note that it is not wrong to have
+global identifiers, it is just not a requirement.
 <p>It is the responsibility of the application to label each incoming
 replication message passed to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function with the appropriate
 identifier.  Subsequently, Berkeley DB will label outgoing messages to the

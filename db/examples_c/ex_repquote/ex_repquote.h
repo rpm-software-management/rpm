@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_repquote.h,v 1.24 2001/10/28 15:45:39 bostic Exp 
+ * Id: ex_repquote.h,v 1.27 2002/04/23 04:27:50 krinsky Exp 
  */
 
 #ifndef _EX_REPQUOTE_H_
@@ -15,7 +15,7 @@
 typedef struct {
 	char *host;		/* Host name. */
 	u_int32_t port;		/* Port on which to connect to this site. */
-} site_t;
+} repsite_t;
 
 /* Globals */
 extern int master_eid;
@@ -27,18 +27,18 @@ struct __machtab;	typedef struct __machtab machtab_t;
 /* Arguments for the connect_all thread. */
 typedef struct {
 	DB_ENV *dbenv;
-	char *progname;
-	char *home;
+	const char *progname;
+	const char *home;
 	machtab_t *machtab;
-	site_t *sites;
+	repsite_t *sites;
 	int nsites;
 } all_args;
 
 /* Arguments for the connect_loop thread. */
 typedef struct {
 	DB_ENV *dbenv;
-	char * home;
-	char * progname;
+	const char * home;
+	const char * progname;
 	machtab_t *machtab;
 	int port;
 } connect_args;
@@ -49,13 +49,13 @@ typedef struct {
 
 void *connect_all __P((void *args));
 void *connect_thread __P((void *args));
-int doclient __P((DB_ENV *, char *, machtab_t *));
-int domaster __P((DB_ENV *, char *));
-int get_accepted_socket __P((char *, int));
-int get_connected_socket __P((machtab_t *, char *, char *, int, int *, int *));
+int doclient __P((DB_ENV *, const char *, machtab_t *));
+int domaster __P((DB_ENV *, const char *));
+int get_accepted_socket __P((const char *, int));
+int get_connected_socket __P((machtab_t *, const char *, const char *, int, int *, int *));
 int get_next_message __P((int, DBT *, DBT *));
-int listen_socket_init __P((char *, int));
-int listen_socket_accept __P((machtab_t *, char *, int, int *));
+int listen_socket_init __P((const char *, int));
+int listen_socket_accept __P((machtab_t *, const char *, int, int *));
 int machtab_getinfo __P((machtab_t *, int, u_int32_t *, int *));
 int machtab_init __P((machtab_t **, int, int));
 void machtab_parm __P((machtab_t *, int *, int *, u_int32_t *));

@@ -1,6 +1,7 @@
-<!--Id: lock_id_free.so,v 10.2 2001/10/22 15:24:32 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: lock_id_free.so,v 10.4 2002/06/24 14:49:23 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;lock_id_free</title>
@@ -34,9 +35,9 @@ DB_ENV-&gt;lock_id function.
 <p>The locker ID is invalid or locks are still held by this locker ID.
 </dl>
 <p>The DB_ENV-&gt;lock_id_free function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_ENV-&gt;lock_id_free function may fail and return
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+If a catastrophic error has occurred, the DB_ENV-&gt;lock_id_free function may fail and
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>See Also</h1>
 <a href="../api_c/env_set_lk_conflicts.html">DB_ENV-&gt;set_lk_conflicts</a>,
 <a href="../api_c/env_set_lk_detect.html">DB_ENV-&gt;set_lk_detect</a>,
@@ -48,7 +49,7 @@ in the same way.
 <a href="../api_c/lock_id.html">DB_ENV-&gt;lock_id</a>,
 <a href="../api_c/lock_id_free.html">DB_ENV-&gt;lock_id_free</a>,
 <a href="../api_c/lock_put.html">DB_ENV-&gt;lock_put</a>,
-<a href="../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a>,
+<a href="../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a>
 and
 <a href="../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a>.
 </tt>

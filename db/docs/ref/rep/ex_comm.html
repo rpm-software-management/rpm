@@ -1,6 +1,7 @@
-<!--Id: ex_comm.so,v 1.5 2001/11/18 15:32:21 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: ex_comm.so,v 1.6 2002/06/24 14:50:48 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Ex_repquote: a TCP/IP based communication infrastructure</title>
@@ -76,7 +77,7 @@ quote_send(dbenv, control, rec, eid, flags)
 <p>
 	machtab = (machtab_t *)dbenv-&gt;app_private;
 <p>
-	/* 
+	/*
 	 * If this is a broadcast, call a separate function to
 	 * iterate through the table of environment (a/k/a
 	 * machine) IDs and call quote_send_one on each.
@@ -113,7 +114,7 @@ quote_send(dbenv, control, rec, eid, flags)
 	return (ret);
 }
 <p>
-static int
+int
 quote_send_broadcast(machtab, rec, control, flags)
 	machtab_t *machtab;
 	const DBT *rec, *control;

@@ -1,6 +1,7 @@
-<!--Id: log_cursor.so,v 10.2 2001/10/22 15:24:33 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: log_cursor.so,v 10.3 2002/06/24 14:49:24 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::log_cursor</title>
@@ -37,36 +38,39 @@ encapsulates a non-zero error value on failure, and returns 0 on success.
 <p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
 </dl>
 <p>The DbEnv::log_cursor method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
-If a catastrophic error has occurred, the DbEnv::log_cursor method may fail and either
-return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw an exception encapsulating
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+If a catastrophic error has occurred, the DbEnv::log_cursor method may fail and
+either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw a
+<a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>Class</h1>
 <a href="../api_cxx/db_class.html">Db</a>
 <h1>See Also</h1>
+<a href="../api_cxx/db_set_alloc.html">Db::set_alloc</a>,
 <a href="../api_cxx/db_associate.html">Db::associate</a>,
 <a href="../api_cxx/db_close.html">Db::close</a>,
 <a href="../api_cxx/db_cursor.html">Db::cursor</a>,
 <a href="../api_cxx/db_del.html">Db::del</a>,
-<a href="../api_cxx/db_err.html">Db::err</a>, <a href="../api_cxx/db_err.html">Db::errx</a>
+<a href="../api_cxx/db_err.html">Db::err</a>,
+<a href="../api_cxx/db_err.html">Db::errx</a>,
 <a href="../api_cxx/db_fd.html">Db::fd</a>,
 <a href="../api_cxx/db_get.html">Db::get</a>,
-<a href="../api_cxx/db_get.html">Db::pget</a>,
 <a href="../api_cxx/db_get_byteswapped.html">Db::get_byteswapped</a>,
 <a href="../api_cxx/db_get_type.html">Db::get_type</a>,
 <a href="../api_cxx/db_join.html">Db::join</a>,
 <a href="../api_cxx/db_key_range.html">Db::key_range</a>,
 <a href="../api_cxx/db_open.html">Db::open</a>,
+<a href="../api_cxx/db_get.html">Db::pget</a>,
 <a href="../api_cxx/db_put.html">Db::put</a>,
 <a href="../api_cxx/db_remove.html">Db::remove</a>,
 <a href="../api_cxx/db_rename.html">Db::rename</a>,
-<a href="../api_cxx/db_set_alloc.html">Db::set_alloc</a>,
 <a href="../api_cxx/db_set_append_recno.html">Db::set_append_recno</a>,
 <a href="../api_cxx/db_set_bt_compare.html">Db::set_bt_compare</a>,
 <a href="../api_cxx/db_set_bt_minkey.html">Db::set_bt_minkey</a>,
 <a href="../api_cxx/db_set_bt_prefix.html">Db::set_bt_prefix</a>,
+<a href="../api_cxx/db_set_cache_priority.html">Db::set_cache_priority</a>,
 <a href="../api_cxx/db_set_cachesize.html">Db::set_cachesize</a>,
 <a href="../api_cxx/db_set_dup_compare.html">Db::set_dup_compare</a>,
+<a href="../api_cxx/db_set_encrypt.html">Db::set_encrypt</a>,
 <a href="../api_cxx/db_set_errcall.html">Db::set_errcall</a>,
 <a href="../api_cxx/db_set_errfile.html">Db::set_errfile</a>,
 <a href="../api_cxx/db_set_errpfx.html">Db::set_errpfx</a>,
@@ -86,7 +90,7 @@ in the same way.
 <a href="../api_cxx/db_stat.html">Db::stat</a>,
 <a href="../api_cxx/db_sync.html">Db::sync</a>,
 <a href="../api_cxx/db_truncate.html">Db::truncate</a>,
-<a href="../api_cxx/db_upgrade.html">Db::upgrade</a>,
+<a href="../api_cxx/db_upgrade.html">Db::upgrade</a>
 and
 <a href="../api_cxx/db_verify.html">Db::verify</a>.
 </tt>

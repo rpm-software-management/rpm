@@ -1,6 +1,7 @@
-<!--Id: rep_transport.so,v 1.4 2001/10/26 23:51:06 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: rep_transport.so,v 1.7 2002/06/24 14:49:30 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_rep_transport</title>
@@ -51,7 +52,7 @@ The special identifier DB_EID_BROADCAST indicates that a message
 should be broadcast to every environment in the replication group.  The
 application may use a true broadcast protocol, or may send the message
 in sequence to each machine with which it is in communication.
-<p><dt>flag<dd>
+<p><dt>flags<dd>
 <p>The <b>flags</b> value must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one or
 more of the following values:
 <p><dl compact>
@@ -70,17 +71,21 @@ otherwise, any error from the <b>send</b> interface will be ignored.
 <p>It may sometimes be useful to pass application-specific data to the
 <b>send</b> interface; see <a href="../ref/env/faq.html">Environment
 FAQ</a> for a discussion on how to do this.
-<p>The <b>flags</b> parameter is currently unused, and must be set to 0.
+<p>The DB_ENV-&gt;set_rep_transport function configures operations performed using the specified
+<a href="../api_c/env_create.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.
+<p>The DB_ENV-&gt;set_rep_transport interface may be called at any time during the life of
+the application.
 <p>The DB_ENV-&gt;set_rep_transport function returns a non-zero error value on failure and 0 on success.
 <h1>Errors</h1>
 <p>The DB_ENV-&gt;set_rep_transport function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_ENV-&gt;set_rep_transport function may fail and return
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+If a catastrophic error has occurred, the DB_ENV-&gt;set_rep_transport function may fail and
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>See Also</h1>
 <a href="../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>,
 <a href="../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>,
-<a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>,
+<a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>
 and
 <a href="../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>.
 </tt>

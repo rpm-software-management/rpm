@@ -1,13 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2001
+ * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  */
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: java_DbLogc.c,v 11.2 2001/10/02 01:33:40 bostic Exp ";
+static const char revid[] = "Id: java_DbLogc.c,v 11.6 2002/07/02 12:03:03 mjc Exp ";
 #endif /* not lint */
 
 #include <jni.h>
@@ -46,7 +46,8 @@ JNIEXPORT jint JNICALL Java_com_sleepycat_db_DbLogc_get
 	LOCKED_DBT ldata;
 	OpKind dataop;
 
-	/* Depending on flags, the user may be supplying the key,
+	/*
+	 * Depending on flags, the user may be supplying the key,
 	 * or else we may have to retrieve it.
 	 */
 	err = 0;
@@ -54,7 +55,7 @@ JNIEXPORT jint JNICALL Java_com_sleepycat_db_DbLogc_get
 
 	dblogc = get_DB_LOGC(jnienv, jthis);
 	dblsn = get_DB_LSN(jnienv, lsn);
-	if (locked_dbt_get(&ldata, jnienv, data, dataop) != 0)
+	if (locked_dbt_get(&ldata, jnienv, dblogc->dbenv, data, dataop) != 0)
 		goto out1;
 
 	if (!verify_non_null(jnienv, dblogc))
@@ -63,17 +64,18 @@ JNIEXPORT jint JNICALL Java_com_sleepycat_db_DbLogc_get
 	for (retry = 0; retry < 3; retry++) {
 		err = dblogc->get(dblogc, dblsn, &ldata.javainfo->dbt, flags);
 
-		/* If we failed due to lack of memory in our DBT arrays,
+		/*
+		 * If we failed due to lack of memory in our DBT arrays,
 		 * retry.
 		 */
 		if (err != ENOMEM)
 			break;
-		if (!locked_dbt_realloc(&ldata, jnienv))
+		if (!locked_dbt_realloc(&ldata, jnienv, dblogc->dbenv))
 			break;
 	}
  out1:
-	locked_dbt_put(&ldata, jnienv);
-	if (err != 0 && err != DB_NOTFOUND) {
+	locked_dbt_put(&ldata, jnienv, dblogc->dbenv);
+	if (!DB_RETOK_LGGET(err)) {
 		if (verify_dbt(jnienv, err, &ldata))
 			verify_return(jnienv, err, 0);
 	}
@@ -83,7 +85,8 @@ JNIEXPORT jint JNICALL Java_com_sleepycat_db_DbLogc_get
 JNIEXPORT void JNICALL Java_com_sleepycat_db_DbLogc_finalize
   (JNIEnv *jnienv, jobject jthis)
 {
-	/* Free any data related to DB_LOGC here.
+	/*
+	 * Free any data related to DB_LOGC here.
 	 * If we ever have java-only data embedded in the DB_LOGC
 	 * and need to do this, we'll have to track DbLogc's
 	 * according to which DbEnv owns them, just as

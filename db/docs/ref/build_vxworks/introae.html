@@ -1,6 +1,7 @@
-<!--Id: introae.so,v 1.4 2001/11/05 21:05:19 sue Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: introae.so,v 1.6 2002/03/26 15:20:29 sue Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Building for VxWorks AE</title>
@@ -25,7 +26,7 @@ all component files are named <i>component.wpj</i>.
 <p><table border=1 align=center>
 <tr><th>File</th><th>Description</th></tr>
 <tr>    <td align=left>Berkeley DB/</td>    <td align=left>Berkeley DB component directory</td>    </tr>
-<tr>    <td align=left>demo/demo</td>    <td align=left><a href="../../ref/build_vxworks/notes.html">Demo program</a> component directory</td>    </tr>
+<tr>    <td align=left>dbdemo/dbdemo</td>    <td align=left><a href="../../ref/build_vxworks/notes.html">Demo program</a> component directory</td>    </tr>
 <tr>    <td align=left>db_*/db_*</td>    <td align=left><a href="../../ref/build_vxworks/notes.html">Support utilities</a> component directories</td>    </tr>
 </table>
 <h3>Building With Tornado 3.1</h3>
@@ -114,9 +115,6 @@ macro, which is the Berkeley DB subdirectory of <i>build_vxworks</i>.
 Then, click OK.  The typical addition of include
 directories will look like:
 <p><blockquote><pre>-I$(PRJ_DIR)/.. -I$(PRJ_DIR)/../../include -I$(PRJ_DIR)/../../include_auto</pre></blockquote>
-<p>If the architecture for this new build has the most significant byte
-first, you also need to edit the <i>db_config.h</i> file in the
-build directory and define <b>WORDS_BIGENDIAN</b>.
 <p>To build and download the Berkeley DB downloadable application for the first time
 requires several steps: 
 <p><ol>

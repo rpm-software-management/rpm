@@ -1,6 +1,7 @@
-<!--Id: trans.so,v 1.5 2001/11/05 17:24:27 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: trans.so,v 1.6 2002/05/11 18:00:23 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Transactional guarantees</title>
@@ -57,34 +58,34 @@ of the <b>send</b> interface returning failure is to flush the local
 database environment's log as necessary to ensure that any information
 critical to database integrity is not lost.  Because this flush is an
 expensive operation in terms of database performance, applications will
-want to avoid returning an error from the <b>send</b> interface, unless
-it is absolutely necessary.
+want to avoid returning an error from the <b>send</b> interface, if at
+all possible:
 <p>First, there is no reason for the <b>send</b> interface to ever return
 failure unless the <a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag is specified.  Messages
 without that flag do not make visible changes to databases, and
 therefore the application's <b>send</b> interface can return success
-to Berkeley DB immediately after it has sent the message (or even simply
-copied the message to its local memory).
+to Berkeley DB for such messages as soon as the message has been sent or even
+just copied to local memory.
 <p>Further, unless the master's database environment has been configured
 to not synchronously flush the log on transaction commit, there is no
 reason for the <b>send</b> interface to ever return failure, as any
 information critical to database integrity has already been flushed to
 the local log before <b>send</b> was called.  Again, the <b>send</b>
 interface should return success to Berkeley DB as soon as possible.  However,
-in such cases, in order to avoid potential loss of information after
-the master database environment fails, the master database environment
+in this case, in order to avoid potential loss of information after the
+master database environment fails, the master database environment
 should be recovered before holding an election, as only the master
 database environment is guaranteed to have the most up-to-date logs.
 <p>To sum up, the only reason for the <b>send</b> interface to return
 failure is when the master database environment has been configured to
 not synchronously flush the log on transaction commit, the
-<a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag is specified, and the <b>send</b>
-interface was unable to determine that some number of clients have
-received the current message (and all messages preceding the current
-message).  How many clients should receive the message before the
-<b>send</b> interface can return success is an application choice, and,
-in fact, may not depend as much on a specific number of clients
-reporting success as one or more geographically distributed clients.
+<a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag is specified for the message, and the
+<b>send</b> interface was unable to determine that some number of
+clients have received the current message (and all messages preceding
+the current message).  How many clients should receive the message
+before the <b>send</b> interface can return success is an application
+choice (and may not depend as much on a specific number of clients
+reporting success as one or more geographically distributed clients).
 <p>Of course, it is important to ensure that the replicated master and
 client environments are truly independent of each other.  For example,
 it does not help matters that a client has acknowledged receipt of a

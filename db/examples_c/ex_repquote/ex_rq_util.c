@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_util.c,v 1.14 2001/10/28 15:45:39 bostic Exp 
+ * Id: ex_rq_util.c,v 1.20 2002/08/06 05:39:04 bostic Exp 
  */
 
 #include <sys/types.h>
@@ -20,8 +20,8 @@
 
 #include "ex_repquote.h"
 
-static int connect_site __P((DB_ENV *, machtab_t *, char *,
-   site_t *, int *, int *));
+static int connect_site __P((DB_ENV *, machtab_t *, const char *,
+   repsite_t *, int *, int *));
 void * elect_thread __P((void *));
 
 typedef struct {
@@ -31,8 +31,8 @@ typedef struct {
 
 typedef struct {
 	DB_ENV *dbenv;
-	char *progname;
-	char *home;
+	const char *progname;
+	const char *home;
 	int fd;
 	u_int32_t eid;
 	machtab_t *tab;
@@ -49,14 +49,14 @@ hm_loop(args)
 {
 	DB_ENV *dbenv;
 	DBT rec, control;
-	char *c, *home, *progname;
+	const char *c, *home, *progname;
 	int fd, eid, n, newm;
 	int open, pri, r, ret, t_ret, tmpid;
 	elect_args *ea;
 	hm_loop_args *ha;
 	machtab_t *tab;
 	pthread_t elect_thr;
-	site_t self;
+	repsite_t self;
 	u_int32_t timeout;
 	void *status;
 
@@ -182,7 +182,7 @@ hm_loop(args)
 		case 0:
 			break;
 		default:
-			dbenv->err(dbenv, r, "DBENV->rep_process_message");
+			dbenv->err(dbenv, r, "DB_ENV->rep_process_message");
 			break;
 		}
 	}
@@ -207,8 +207,7 @@ connect_thread(args)
 	void *args;
 {
 	DB_ENV *dbenv;
-	char *home;
-	char *progname;
+	const char *home, *progname;
 	int fd, i, eid, ns, port, ret;
 	hm_loop_args *ha;
 	connect_args *cargs;
@@ -279,11 +278,11 @@ connect_all(args)
 {
 	DB_ENV *dbenv;
 	all_args *aa;
-	char *home, *progname;
+	const char *home, *progname;
 	hm_loop_args *ha;
 	int failed, i, eid, nsites, open, ret, *success;
 	machtab_t *machtab;
-	site_t *sites;
+	repsite_t *sites;
 
 	ha = NULL;
 	aa = (all_args *)args;
@@ -295,7 +294,9 @@ connect_all(args)
 	sites = aa->sites;
 
 	ret = 0;
-	if ((success = calloc(nsites, sizeof(int))) == NULL) {
+
+	/* Some implementations of calloc are sad about alloc'ing 0 things. */
+	if ((success = calloc(nsites > 0 ? nsites : 1, sizeof(int))) == NULL) {
 		dbenv->err(dbenv, errno, "connect_all");
 		ret = 1;
 		goto err;
@@ -339,8 +340,8 @@ int
 connect_site(dbenv, machtab, progname, site, is_open, eidp)
 	DB_ENV *dbenv;
 	machtab_t *machtab;
-	char *progname;
-	site_t *site;
+	const char *progname;
+	repsite_t *site;
 	int *is_open;
 	int *eidp;
 {

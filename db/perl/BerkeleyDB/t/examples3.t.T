@@ -10,7 +10,7 @@ BEGIN {
 }
 
 use BerkeleyDB; 
-use File::Path qw(rmtree);
+use t::util;
 
 BEGIN 
 {
@@ -22,87 +22,6 @@ BEGIN
 
 
 print "1..2\n";
-
-my $FA = 0 ;
-
-{
-    sub try::TIEARRAY { bless [], "try" }
-    sub try::FETCHSIZE { $FA = 1 }
-    $FA = 0 ;
-    my @a ; 
-    tie @a, 'try' ;
-    my $a = @a ;
-}
-
-{
-    package LexFile ;
-
-    sub new
-    {
-	my $self = shift ;
-	unlink @_ ;
- 	bless [ @_ ], $self ;
-    }
-
-    sub DESTROY
-    {
-	my $self = shift ;
-	unlink @{ $self } ;
-    }
-}
-
-
-sub ok
-{
-    my $no = shift ;
-    my $result = shift ;
- 
-    print "not " unless $result ;
-    print "ok $no\n" ;
-}
-
-{
-    package Redirect ;
-    use Symbol ;
-
-    sub new
-    {
-        my $class = shift ;
-        my $filename = shift ;
-	my $fh = gensym ;
-	open ($fh, ">$filename") || die "Cannot open $filename: $!" ;
-	my $real_stdout = select($fh) ;
-	return bless [$fh, $real_stdout ] ;
-
-    }
-    sub DESTROY
-    {
-        my $self = shift ;
-	close $self->[0] ;
-	select($self->[1]) ;
-    }
-}
-
-sub docat
-{
-    my $file = shift;
-    local $/ = undef;
-    open(CAT,$file) || die "Cannot open $file:$!";
-    my $result = <CAT> || "" ;
-    close(CAT);
-    return $result;
-}
-
-sub docat_del
-{ 
-    my $file = shift;
-    local $/ = undef;
-    open(CAT,$file) || die "Cannot open $file: $!";
-    my $result = <CAT> || "" ;
-    close(CAT);
-    unlink $file ;
-    return $result;
-}   
 
 my $Dfile = "dbhash.tmp";
 my $Dfile2 = "dbhash2.tmp";

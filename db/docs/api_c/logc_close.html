@@ -1,6 +1,7 @@
-<!--Id: logc_close.so,v 10.4 2001/10/22 15:24:35 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: logc_close.so,v 10.5 2002/06/24 14:49:25 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_LOGC-&gt;close</title>
@@ -37,23 +38,23 @@ used again.
 <p>The cursor was previously closed.
 </dl>
 <p>The DB_LOGC-&gt;close function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_LOGC-&gt;close function may fail and return
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+If a catastrophic error has occurred, the DB_LOGC-&gt;close function may fail and
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>See Also</h1>
+<a href="../api_c/log_archive.html">DB_ENV-&gt;log_archive</a>,
+<a href="../api_c/log_file.html">DB_ENV-&gt;log_file</a>,
+<a href="../api_c/log_flush.html">DB_ENV-&gt;log_flush</a>,
+<a href="../api_c/log_put.html">DB_ENV-&gt;log_put</a>,
+<a href="../api_c/log_stat.html">DB_ENV-&gt;log_stat</a>,
 <a href="../api_c/env_set_lg_bsize.html">DB_ENV-&gt;set_lg_bsize</a>,
 <a href="../api_c/env_set_lg_dir.html">DB_ENV-&gt;set_lg_dir</a>,
 <a href="../api_c/env_set_lg_max.html">DB_ENV-&gt;set_lg_max</a>,
 <a href="../api_c/env_set_lg_regionmax.html">DB_ENV-&gt;set_lg_regionmax</a>,
-<a href="../api_c/log_archive.html">DB_ENV-&gt;log_archive</a>,
-<a href="../api_c/log_compare.html">log_compare</a>,
+and
+<a href="../api_c/log_compare.html">log_compare</a>.
+<p>
 <a href="../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a>,
-<a href="../api_c/log_file.html">DB_ENV-&gt;log_file</a>,
-<a href="../api_c/log_flush.html">DB_ENV-&gt;log_flush</a>,
-<a href="../api_c/log_put.html">DB_ENV-&gt;log_put</a>,
-<a href="../api_c/log_register.html">DB_ENV-&gt;log_register</a>,
-<a href="../api_c/log_stat.html">DB_ENV-&gt;log_stat</a>,
-<a href="../api_c/log_unregister.html">DB_ENV-&gt;log_unregister</a>,
 <a href="../api_c/logc_close.html">DB_LOGC-&gt;close</a>
 and
 <a href="../api_c/logc_get.html">DB_LOGC-&gt;get</a>.

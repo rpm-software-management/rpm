@@ -10,7 +10,7 @@ BEGIN {
 }
 
 use BerkeleyDB; 
-use t::util ;
+use t::util;
 
 BEGIN 
 {

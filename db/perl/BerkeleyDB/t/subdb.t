@@ -232,6 +232,7 @@ umask(0) ;
     ok 38, $status == DB_NOTFOUND ;
     ok 39, @dbnames == 0 ;
     undef $db ;
+    undef $cursor ;
 
     ok 40, -e $Dfile ;
     ok 41, BerkeleyDB::db_remove(-Filename => $Dfile)  == 0 ;

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_client.c,v 1.25 2001/11/18 01:29:07 margo Exp 
+ * Id: ex_rq_client.c,v 1.29 2002/01/23 15:33:19 bostic Exp 
  */
 
 #include <sys/types.h>
@@ -27,7 +27,7 @@ static void *display_loop __P((void *));
 static int print_stocks __P((DBC *));
 
 typedef struct {
-	char *progname;
+	const char *progname;
 	DB_ENV *dbenv;
 } disploop_args;
 
@@ -39,7 +39,7 @@ typedef struct {
 int
 doclient(dbenv, progname, machtab)
 	DB_ENV *dbenv;
-	char *progname;
+	const char *progname;
 	machtab_t *machtab;
 {
 	checkloop_args cargs;
@@ -135,7 +135,7 @@ display_loop(args)
 	DB *dbp;
 	DB_ENV *dbenv;
 	DBC *dbc;
-	char *progname;
+	const char *progname;
 	disploop_args *dargs;
 	int ret, rval;
 
@@ -157,7 +157,7 @@ display_loop(args)
 				return ((void *)EXIT_FAILURE);
 			}
 
-			if ((ret = dbp->open(dbp,
+			if ((ret = dbp->open(dbp, NULL,
 			    DATABASE, NULL, DB_BTREE, DB_RDONLY, 0)) != 0) {
 				if (ret == ENOENT) {
 					printf(

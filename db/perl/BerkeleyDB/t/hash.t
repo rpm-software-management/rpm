@@ -14,7 +14,7 @@ BEGIN {
 use BerkeleyDB; 
 use t::util ;
 
-print "1..210\n";
+print "1..212\n";
 
 my $Dfile = "dbhash.tmp";
 my $Dfile2 = "dbhash2.tmp";
@@ -447,6 +447,9 @@ umask(0) ;
 					    	-Txn	   => $txn  ;
 
     
+    ok 150, $txn->txn_commit() == 0 ;
+    ok 151, $txn = $env->txn_begin() ;
+    $db1->Txn($txn);
     # create some data
     my %data =  (
 		"red"	=> "boat",
@@ -458,31 +461,31 @@ umask(0) ;
     while (my ($k, $v) = each %data) {
         $ret += $db1->db_put($k, $v) ;
     }
-    ok 150, $ret == 0 ;
+    ok 152, $ret == 0 ;
 
     # should be able to see all the records
 
-    ok 151, my $cursor = $db1->db_cursor() ;
+    ok 153, my $cursor = $db1->db_cursor() ;
     my ($k, $v) = ("", "") ;
     my $count = 0 ;
     # sequence forwards
     while ($cursor->c_get($k, $v, DB_NEXT) == 0) {
         ++ $count ;
     }
-    ok 152, $count == 3 ;
+    ok 154, $count == 3 ;
     undef $cursor ;
 
     # now abort the transaction
-    ok 153, $txn->txn_abort() == 0 ;
+    ok 155, $txn->txn_abort() == 0 ;
 
     # there shouldn't be any records in the database
     $count = 0 ;
     # sequence forwards
-    ok 154, $cursor = $db1->db_cursor() ;
+    ok 156, $cursor = $db1->db_cursor() ;
     while ($cursor->c_get($k, $v, DB_NEXT) == 0) {
         ++ $count ;
     }
-    ok 155, $count == 0 ;
+    ok 157, $count == 0 ;
 
     undef $txn ;
     undef $cursor ;
@@ -497,7 +500,7 @@ umask(0) ;
 
     my $lex = new LexFile $Dfile ;
     my %hash ;
-    ok 156, my $db = tie %hash, 'BerkeleyDB::Hash', -Filename => $Dfile,
+    ok 158, my $db = tie %hash, 'BerkeleyDB::Hash', -Filename => $Dfile,
 				      -Property  => DB_DUP,
                                       -Flags    => DB_CREATE ;
 
@@ -508,36 +511,36 @@ umask(0) ;
     $hash{'Wall'} = 'Brick' ;
     $hash{'mouse'} = 'mickey' ;
 
-    ok 157, keys %hash == 6 ;
+    ok 159, keys %hash == 6 ;
 
     # create a cursor
-    ok 158, my $cursor = $db->db_cursor() ;
+    ok 160, my $cursor = $db->db_cursor() ;
 
     my $key = "Wall" ;
     my $value ;
-    ok 159, $cursor->c_get($key, $value, DB_SET) == 0 ;
-    ok 160, $key eq "Wall" && $value eq "Larry" ;
-    ok 161, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
-    ok 162, $key eq "Wall" && $value eq "Stone" ;
+    ok 161, $cursor->c_get($key, $value, DB_SET) == 0 ;
+    ok 162, $key eq "Wall" && $value eq "Larry" ;
     ok 163, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
-    ok 164, $key eq "Wall" && $value eq "Brick" ;
+    ok 164, $key eq "Wall" && $value eq "Stone" ;
     ok 165, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
     ok 166, $key eq "Wall" && $value eq "Brick" ;
+    ok 167, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
+    ok 168, $key eq "Wall" && $value eq "Brick" ;
 
     #my $ref = $db->db_stat() ; 
     #ok 143, $ref->{bt_flags} | DB_DUP ;
 
     # test DB_DUP_NEXT
     my ($k, $v) = ("Wall", "") ;
-    ok 167, $cursor->c_get($k, $v, DB_SET) == 0 ;
-    ok 168, $k eq "Wall" && $v eq "Larry" ;
-    ok 169, $cursor->c_get($k, $v, DB_NEXT_DUP) == 0 ;
-    ok 170, $k eq "Wall" && $v eq "Stone" ;
+    ok 169, $cursor->c_get($k, $v, DB_SET) == 0 ;
+    ok 170, $k eq "Wall" && $v eq "Larry" ;
     ok 171, $cursor->c_get($k, $v, DB_NEXT_DUP) == 0 ;
-    ok 172, $k eq "Wall" && $v eq "Brick" ;
+    ok 172, $k eq "Wall" && $v eq "Stone" ;
     ok 173, $cursor->c_get($k, $v, DB_NEXT_DUP) == 0 ;
     ok 174, $k eq "Wall" && $v eq "Brick" ;
-    ok 175, $cursor->c_get($k, $v, DB_NEXT_DUP) == DB_NOTFOUND ;
+    ok 175, $cursor->c_get($k, $v, DB_NEXT_DUP) == 0 ;
+    ok 176, $k eq "Wall" && $v eq "Brick" ;
+    ok 177, $cursor->c_get($k, $v, DB_NEXT_DUP) == DB_NOTFOUND ;
     
 
     undef $db ;
@@ -554,12 +557,12 @@ umask(0) ;
     my @Keys   = qw( 0123 9 12 -1234 9 987654321 9 def  ) ; 
     my @Values = qw( 1    11 3   dd   x abc      2 0    ) ; 
 
-    ok 176, tie %h, "BerkeleyDB::Hash", -Filename => $Dfile, 
+    ok 178, tie %h, "BerkeleyDB::Hash", -Filename => $Dfile, 
 				     -DupCompare   => sub { $_[0] cmp $_[1] },
 				     -Property  => DB_DUP|DB_DUPSORT,
 				     -Flags    => DB_CREATE ;
 
-    ok 177, tie %g, 'BerkeleyDB::Hash', -Filename => $Dfile2, 
+    ok 179, tie %g, 'BerkeleyDB::Hash', -Filename => $Dfile2, 
 				     -DupCompare   => sub { $_[0] <=> $_[1] },
 				     -Property  => DB_DUP|DB_DUPSORT,
 				     -Flags    => DB_CREATE ;
@@ -571,23 +574,23 @@ umask(0) ;
         $g{$_} = $value ;
     }
 
-    ok 178, my $cursor = (tied %h)->db_cursor() ;
+    ok 180, my $cursor = (tied %h)->db_cursor() ;
     $key = 9 ; $value = "";
-    ok 179, $cursor->c_get($key, $value, DB_SET) == 0 ;
-    ok 180, $key == 9 && $value eq 11 ;
-    ok 181, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
-    ok 182, $key == 9 && $value == 2 ;
+    ok 181, $cursor->c_get($key, $value, DB_SET) == 0 ;
+    ok 182, $key == 9 && $value eq 11 ;
     ok 183, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
-    ok 184, $key == 9 && $value eq "x" ;
+    ok 184, $key == 9 && $value == 2 ;
+    ok 185, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
+    ok 186, $key == 9 && $value eq "x" ;
 
     $cursor = (tied %g)->db_cursor() ;
     $key = 9 ;
-    ok 185, $cursor->c_get($key, $value, DB_SET) == 0 ;
-    ok 186, $key == 9 && $value eq "x" ;
-    ok 187, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
-    ok 188, $key == 9 && $value == 2 ;
+    ok 187, $cursor->c_get($key, $value, DB_SET) == 0 ;
+    ok 188, $key == 9 && $value eq "x" ;
     ok 189, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
-    ok 190, $key == 9 && $value  == 11 ;
+    ok 190, $key == 9 && $value == 2 ;
+    ok 191, $cursor->c_get($key, $value, DB_NEXT) == 0 ;
+    ok 192, $key == 9 && $value  == 11 ;
 
 
 }
@@ -597,7 +600,7 @@ umask(0) ;
     my $lex = new LexFile $Dfile;
     my %hh ;
 
-    ok 191, my $YY = tie %hh, "BerkeleyDB::Hash", -Filename => $Dfile, 
+    ok 193, my $YY = tie %hh, "BerkeleyDB::Hash", -Filename => $Dfile, 
 				     -DupCompare   => sub { $_[0] cmp $_[1] },
 				     -Property  => DB_DUP,
 				     -Flags    => DB_CREATE ;
@@ -609,34 +612,34 @@ umask(0) ;
     $hh{'mouse'} = 'mickey' ;
     
     # first work in scalar context
-    ok 192, scalar $YY->get_dup('Unknown') == 0 ;
-    ok 193, scalar $YY->get_dup('Smith') == 1 ;
-    ok 194, scalar $YY->get_dup('Wall') == 3 ;
+    ok 194, scalar $YY->get_dup('Unknown') == 0 ;
+    ok 195, scalar $YY->get_dup('Smith') == 1 ;
+    ok 196, scalar $YY->get_dup('Wall') == 3 ;
     
     # now in list context
     my @unknown = $YY->get_dup('Unknown') ;
-    ok 195, "@unknown" eq "" ;
+    ok 197, "@unknown" eq "" ;
     
     my @smith = $YY->get_dup('Smith') ;
-    ok 196, "@smith" eq "John" ;
+    ok 198, "@smith" eq "John" ;
     
     {
         my @wall = $YY->get_dup('Wall') ;
         my %wall ;
         @wall{@wall} = @wall ;
-        ok 197, (@wall == 3 && $wall{'Larry'} 
+        ok 199, (@wall == 3 && $wall{'Larry'} 
 			&& $wall{'Stone'} && $wall{'Brick'});
     }
     
     # hash
     my %unknown = $YY->get_dup('Unknown', 1) ;
-    ok 198, keys %unknown == 0 ;
+    ok 200, keys %unknown == 0 ;
     
     my %smith = $YY->get_dup('Smith', 1) ;
-    ok 199, keys %smith == 1 && $smith{'John'} ;
+    ok 201, keys %smith == 1 && $smith{'John'} ;
     
     my %wall = $YY->get_dup('Wall', 1) ;
-    ok 200, keys %wall == 3 && $wall{'Larry'} == 1 && $wall{'Stone'} == 1 
+    ok 202, keys %wall == 3 && $wall{'Larry'} == 1 && $wall{'Stone'} == 1 
     		&& $wall{'Brick'} == 1 ;
     
     undef $YY ;
@@ -692,7 +695,7 @@ EOM
 
     BEGIN { push @INC, '.'; }    
     eval 'use SubDB ; ';
-    main::ok 201, $@ eq "" ;
+    main::ok 203, $@ eq "" ;
     my %h ;
     my $X ;
     eval '
@@ -701,24 +704,24 @@ EOM
 			-Mode => 0640 );
 	' ;
 
-    main::ok 202, $@ eq "" ;
+    main::ok 204, $@ eq "" ;
 
     my $ret = eval '$h{"fred"} = 3 ; return $h{"fred"} ' ;
-    main::ok 203, $@ eq "" ;
-    main::ok 204, $ret == 7 ;
+    main::ok 205, $@ eq "" ;
+    main::ok 206, $ret == 7 ;
 
     my $value = 0;
     $ret = eval '$X->db_put("joe", 4) ; $X->db_get("joe", $value) ; return $value' ;
-    main::ok 205, $@ eq "" ;
-    main::ok 206, $ret == 10 ;
+    main::ok 207, $@ eq "" ;
+    main::ok 208, $ret == 10 ;
 
     $ret = eval ' DB_NEXT eq main::DB_NEXT ' ;
-    main::ok 207, $@ eq ""  ;
-    main::ok 208, $ret == 1 ;
+    main::ok 209, $@ eq ""  ;
+    main::ok 210, $ret == 1 ;
 
     $ret = eval '$X->A_new_method("joe") ' ;
-    main::ok 209, $@ eq "" ;
-    main::ok 210, $ret eq "[[10]]" ;
+    main::ok 211, $@ eq "" ;
+    main::ok 212, $ret eq "[[10]]" ;
 
     unlink "SubDB.pm", "dbhash.tmp" ;
 

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_net.c,v 1.30 2001/11/18 01:29:07 margo Exp 
+ * Id: ex_rq_net.c,v 1.37 2002/08/06 05:39:04 bostic Exp 
  */
 
 #include <sys/types.h>
@@ -17,7 +17,6 @@
 #include <errno.h>
 #include <netdb.h>
 #include <pthread.h>
-#include <queue.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,12 +24,12 @@
 #include <unistd.h>
 
 #include <db.h>
+#include <dbinc/queue.h>		/* !!!: for the LIST_XXX macros. */
 
-#include "mutex.h"
-#include "rep.h"
 #include "ex_repquote.h"
 
 int machtab_add __P((machtab_t *, int, u_int32_t, int, int *));
+ssize_t readn __P((int, void *, size_t));
 
 /*
  * This file defines the communication infrastructure for the ex_repquote
@@ -269,7 +268,7 @@ machtab_parm(machtab, nump, prip, timeoutp)
  */
 int
 listen_socket_init(progname, port)
-	char *progname;
+	const char *progname;
 	int port;
 {
 	int s;
@@ -308,11 +307,11 @@ err:	fprintf(stderr, "%s: %s", progname, strerror(errno));
 int
 listen_socket_accept(machtab, progname, s, eidp)
 	machtab_t *machtab;
-	char *progname;
+	const char *progname;
 	int s, *eidp;
 {
 	struct sockaddr_in si;
-	socklen_t si_len;
+	int si_len;
 	int host, ns, port, ret;
 
 	COMPQUIET(progname, NULL);
@@ -342,12 +341,12 @@ err:	close(ns);
  */
 int
 get_accepted_socket(progname, port)
-	char *progname;
+	const char *progname;
 	int port;
 {
 	struct protoent *proto;
 	struct sockaddr_in si;
-	socklen_t si_len;
+	int si_len;
 	int s, ns;
 
 	if ((proto = getprotobyname("tcp")) == NULL)
@@ -389,7 +388,7 @@ err:	fprintf(stderr, "%s: %s", progname, strerror(errno));
 int
 get_connected_socket(machtab, progname, remotehost, port, is_open, eidp)
 	machtab_t *machtab;
-	char *progname, *remotehost;
+	const char *progname, *remotehost;
 	int port, *is_open, *eidp;
 {
 	int ret, s;
@@ -441,7 +440,7 @@ get_connected_socket(machtab, progname, remotehost, port, is_open, eidp)
  *	Read a single message from the specified file descriptor, and
  * return it in the format used by rep functions (two DBTs and a type).
  *
- * This function is called in a loop by both clients and masters, and 
+ * This function is called in a loop by both clients and masters, and
  * the resulting DBTs are manually dispatched to DB_ENV->rep_process_message().
  */
 int
@@ -449,7 +448,7 @@ get_next_message(fd, rec, control)
 	int fd;
 	DBT *rec, *control;
 {
-	size_t nr, nleft;
+	size_t nr;
 	u_int32_t rsize, csize;
 	u_int8_t *recbuf, *controlbuf;
 
@@ -463,7 +462,7 @@ get_next_message(fd, rec, control)
 	 */
 
 	/* Read rec->size. */
-	nr = read(fd, &rsize, 4);
+	nr = readn(fd, &rsize, 4);
 	if (nr != 4)
 		return (1);
 
@@ -471,15 +470,8 @@ get_next_message(fd, rec, control)
 	if (rsize > 0) {
 		if (rec->size < rsize)
 			rec->data = realloc(rec->data, rsize);
-		nleft = rsize;
 		recbuf = rec->data;
-		while (nleft > 0) {
-			nr = read(fd, recbuf, nleft);
-			if (nr <= 0)
-				return (1);
-			nleft -= nr;
-			recbuf += nr;
-		}
+		nr = readn(fd, recbuf, rsize);
 	} else {
 		if (rec->data != NULL)
 			free(rec->data);
@@ -488,7 +480,7 @@ get_next_message(fd, rec, control)
 	rec->size = rsize;
 
 	/* Read control->size. */
-	nr = read(fd, &csize, 4);
+	nr = readn(fd, &csize, 4);
 	if (nr != 4)
 		return (1);
 
@@ -497,7 +489,7 @@ get_next_message(fd, rec, control)
 		controlbuf = control->data;
 		if (control->size < csize)
 			controlbuf = realloc(controlbuf, csize);
-		nr = read(fd, controlbuf, csize);
+		nr = readn(fd, controlbuf, csize);
 		if (nr != csize)
 			return (1);
 	} else {
@@ -508,10 +500,44 @@ get_next_message(fd, rec, control)
 	control->data = controlbuf;
 	control->size = csize;
 
-fprintf(stderr, "%lx Received %d\n", (long)pthread_self(),
-((REP_CONTROL *)controlbuf)->rectype );
-
 	return (0);
+}
+
+/*
+ * readn --
+ *     Read a full n characters from a file descriptor, unless we get an error
+ * or EOF.
+ */
+ssize_t
+readn(fd, vptr, n)
+	int fd;
+	void *vptr;
+	size_t n;
+{
+	size_t nleft;
+	ssize_t nread;
+	char *ptr;
+
+	ptr = vptr;
+	nleft = n;
+	while (nleft > 0) {
+		if ( (nread = read(fd, ptr, nleft)) < 0) {
+			/*
+			 * Call read() again on interrupted system call;
+			 * on other errors, bail.
+			 */
+			if (errno == EINTR)
+				nread = 0;
+			else
+				return (-1);
+		} else if (nread == 0)
+			break;  /* EOF */
+
+		nleft -= nread;
+		ptr   += nread;
+	}
+
+	return (n - nleft);
 }
 
 /*
@@ -662,7 +688,5 @@ quote_send_one(rec, control, fd, flags)
 		if (nw != (ssize_t)control->size)
 			return (DB_REP_UNAVAIL);
 	}
-fprintf(stderr, "%lx Sent %d\n", (long)pthread_self(),
-((REP_CONTROL *)control->data)->rectype );
 	return (0);
 }

@@ -1,6 +1,7 @@
-<!--Id: app.so,v 1.3 2001/10/25 21:17:51 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: app.so,v 1.5 2002/07/13 18:09:09 margo Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Building replicated applications</title>
@@ -16,10 +17,11 @@
 <h1 align=center>Building replicated applications</h1>
 <p>The simplest way to build a replicated Berkeley DB application is to first
 build (and debug!) the transactional version of the same application.
-Then, add a thin replication layer to the application.  Highly available
+Then, add a thin replication layer to the application.  All highly available
 applications use the following additional four Berkeley DB methods:
 <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>, <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> and
-<a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>:
+<a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> and may also use the configuration method
+<a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a>:
 <p><dl compact>
 <p><dt><a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a><dd>The <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function configures the replication system's
 communications infrastructure.
@@ -34,13 +36,14 @@ protocol for dealing with lost messages), and permitting new clients to
 join an active replication group.
 <p><dt><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a><dd>The <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function causes the replication group to elect a new
 master; it is called whenever contact with the master is lost.
+<p><dt><a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a><dd>The <a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a> imposes an upper bound on the amount of data
+that will be sent in response to a single call to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>.
 </dl>
 <p>To add replication to a Berkeley DB application, application initialization
-must be changed, and some new code, the application's communications
-infrastructure, must be written.  The application initialization changes
-are relatively simple, but the communications infrastructure code is
-fairly complex.
-<p>During application initialization, the application must perform two
+must be changed and the application's communications infrastructure must
+be written.  The application initialization changes are relatively
+simple, but the communications infrastructure code can be complex.
+<p>During application initialization, the application performs two
 additional tasks: first, it must provide Berkeley DB information about its
 communications infrastructure, and second, it must start the Berkeley DB
 replication system.  Generally, a replicated application will do normal
@@ -58,6 +61,20 @@ application.
 master, or the declaration of the local environment as the master.  If
 a master has not been discovered after a reasonable amount of time,
 the application should call <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> to call for an election.
+<p>In the case of multiple processes accessing a replicated environment,
+all of the threads of control expecting to modify databases in the
+environment or process replication messages must call the
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function.  Note that not all processes running in replicated
+environments need to call <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> or <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.
+Read-only processes running in a master environment do not need to be
+configured for replication in any way.  Processes running in a client
+environment are read-only by definition, and so do not need to be
+configured for replication either (although, in the case of clients that
+may become masters, it is usually simplest to configure for replication
+on process startup rather than trying to reconfigure when the client
+becomes a master).  Obviously, at least one thread of control on each
+client must be configured for replication as messages must be passed
+between the master and the client.
 <p>Databases are generally opened read-write on both clients and masters
 in order to simplify upgrading replication clients to be masters.  (If
 databases are opened read-only on clients, and the client is then

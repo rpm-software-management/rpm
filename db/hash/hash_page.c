@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2001
+ * Copyright (c) 1996-2002
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -43,23 +43,14 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: hash_page.c,v 11.74 2001/10/20 20:10:01 bostic Exp ";
+static const char revid[] = "Id: hash_page.c,v 11.85 2002/08/06 06:11:27 bostic Exp ";
 #endif /* not lint */
 
 /*
  * PACKAGE:  hashing
  *
  * DESCRIPTION:
- *      Page manipulation for hashing package.
- *
- * ROUTINES:
- *
- * External
- *      __get_page
- *      __add_ovflpage
- *      __overflow_page
- * Internal
- *      open_temp
+ *	Page manipulation for hashing package.
  */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -69,11 +60,10 @@ static const char revid[] = "Id: hash_page.c,v 11.74 2001/10/20 20:10:01 bostic 
 #endif
 
 #include "db_int.h"
-#include "db_page.h"
-#include "db_shash.h"
-#include "hash.h"
-#include "lock.h"
-#include "txn.h"
+#include "dbinc/db_page.h"
+#include "dbinc/db_shash.h"
+#include "dbinc/hash.h"
+#include "dbinc/lock.h"
 
 static int __ham_c_delpg
     __P((DBC *, db_pgno_t, db_pgno_t, u_int32_t, db_ham_mode, u_int32_t *));
@@ -107,15 +97,15 @@ __ham_item(dbc, mode, pgnop)
 
 recheck:
 	/* Check if we are looking for space in which to insert an item. */
-	if (hcp->seek_size && hcp->seek_found_page == PGNO_INVALID
-	    && hcp->seek_size < P_FREESPACE(hcp->page))
+	if (hcp->seek_size && hcp->seek_found_page == PGNO_INVALID &&
+	    hcp->seek_size < P_FREESPACE(dbp, hcp->page))
 		hcp->seek_found_page = hcp->pgno;
 
 	/* Check for off-page duplicates. */
 	if (hcp->indx < NUM_ENT(hcp->page) &&
-	    HPAGE_TYPE(hcp->page, H_DATAINDEX(hcp->indx)) == H_OFFDUP) {
+	    HPAGE_TYPE(dbp, hcp->page, H_DATAINDEX(hcp->indx)) == H_OFFDUP) {
 		memcpy(pgnop,
-		    HOFFDUP_PGNO(H_PAIRDATA(hcp->page, hcp->indx)),
+		    HOFFDUP_PGNO(H_PAIRDATA(dbp, hcp->page, hcp->indx)),
 		    sizeof(db_pgno_t));
 		F_SET(hcp, H_OK);
 		return (0);
@@ -129,7 +119,7 @@ recheck:
 		 * pointer to be the beginning of the datum.
 		 */
 		memcpy(&hcp->dup_len,
-		    HKEYDATA_DATA(H_PAIRDATA(hcp->page, hcp->indx)) +
+		    HKEYDATA_DATA(H_PAIRDATA(dbp, hcp->page, hcp->indx)) +
 		    hcp->dup_off, sizeof(db_indx_t));
 
 	if (hcp->indx >= (db_indx_t)NUM_ENT(hcp->page)) {
@@ -269,11 +259,13 @@ __ham_item_prev(dbc, mode, pgnop)
 	db_lockmode_t mode;
 	db_pgno_t *pgnop;
 {
+	DB *dbp;
 	HASH_CURSOR *hcp;
 	db_pgno_t next_pgno;
 	int ret;
 
 	hcp = (HASH_CURSOR *)dbc->internal;
+	dbp = dbc->dbp;
 
 	/*
 	 * There are 5 cases for backing up in a hash file.
@@ -295,9 +287,10 @@ __ham_item_prev(dbc, mode, pgnop)
 	 * to handle backing up through keys.
 	 */
 	if (!F_ISSET(hcp, H_NEXT_NODUP) && F_ISSET(hcp, H_ISDUP)) {
-		if (HPAGE_TYPE(hcp->page, H_DATAINDEX(hcp->indx)) == H_OFFDUP) {
+		if (HPAGE_TYPE(dbp, hcp->page, H_DATAINDEX(hcp->indx)) ==
+		    H_OFFDUP) {
 			memcpy(pgnop,
-			    HOFFDUP_PGNO(H_PAIRDATA(hcp->page, hcp->indx)),
+			    HOFFDUP_PGNO(H_PAIRDATA(dbp, hcp->page, hcp->indx)),
 			    sizeof(db_pgno_t));
 			F_SET(hcp, H_OK);
 			return (0);
@@ -306,7 +299,7 @@ __ham_item_prev(dbc, mode, pgnop)
 		/* Duplicates are on-page. */
 		if (hcp->dup_off != 0) {
 			memcpy(&hcp->dup_len, HKEYDATA_DATA(
-			    H_PAIRDATA(hcp->page, hcp->indx))
+			    H_PAIRDATA(dbp, hcp->page, hcp->indx))
 			    + hcp->dup_off - sizeof(db_indx_t),
 			    sizeof(db_indx_t));
 			hcp->dup_off -=
@@ -400,7 +393,7 @@ __ham_item_next(dbc, mode, pgnop)
 	if (F_ISSET(hcp, H_DELETED)) {
 		if (hcp->indx != NDX_INVALID &&
 		    F_ISSET(hcp, H_ISDUP) &&
-		    HPAGE_TYPE(hcp->page, H_DATAINDEX(hcp->indx))
+		    HPAGE_TYPE(dbc->dbp, hcp->page, H_DATAINDEX(hcp->indx))
 			== H_DUPLICATE && hcp->dup_tlen == hcp->dup_off) {
 			if (F_ISSET(hcp, H_DUPONLY)) {
 				F_CLR(hcp, H_OK);
@@ -451,7 +444,7 @@ __ham_item_next(dbc, mode, pgnop)
 }
 
 /*
- * PUBLIC: void __ham_putitem __P((PAGE *p, const DBT *, int));
+ * PUBLIC: void __ham_putitem __P((DB *, PAGE *p, const DBT *, int));
  *
  * This is a little bit sleazy in that we're overloading the meaning
  * of the H_OFFPAGE type here.  When we recover deletes, we have the
@@ -460,24 +453,27 @@ __ham_item_next(dbc, mode, pgnop)
  * an H_KEYDATA around it.
  */
 void
-__ham_putitem(p, dbt, type)
+__ham_putitem(dbp, p, dbt, type)
+	DB *dbp;
 	PAGE *p;
 	const DBT *dbt;
 	int type;
 {
 	u_int16_t n, off;
+	db_indx_t *inp;
 
 	n = NUM_ENT(p);
+	inp = P_INP(dbp, p);
 
 	/* Put the item element on the page. */
 	if (type == H_OFFPAGE) {
 		off = HOFFSET(p) - dbt->size;
-		HOFFSET(p) = p->inp[n] = off;
-		memcpy(P_ENTRY(p, n), dbt->data, dbt->size);
+		HOFFSET(p) = inp[n] = off;
+		memcpy(P_ENTRY(dbp, p, n), dbt->data, dbt->size);
 	} else {
 		off = HOFFSET(p) - HKEYDATA_SIZE(dbt->size);
-		HOFFSET(p) = p->inp[n] = off;
-		PUT_HKEYDATA(P_ENTRY(p, n), dbt->data, dbt->size, type);
+		HOFFSET(p) = inp[n] = off;
+		PUT_HKEYDATA(P_ENTRY(dbp, p, n), dbt->data, dbt->size, type);
 	}
 
 	/* Adjust page info. */
@@ -485,8 +481,8 @@ __ham_putitem(p, dbt, type)
 }
 
 /*
- * PUBLIC: void __ham_reputpair
- * PUBLIC:    __P((PAGE *p, u_int32_t, u_int32_t, const DBT *, const DBT *));
+ * PUBLIC: void __ham_reputpair  __P((DB *, PAGE *,
+ * PUBLIC:    u_int32_t, const DBT *, const DBT *));
  *
  * This is a special case to restore a key/data pair to its original
  * location during recovery.  We are guaranteed that the pair fits
@@ -494,17 +490,21 @@ __ham_putitem(p, dbt, type)
  * the last pair, the normal insert works).
  */
 void
-__ham_reputpair(p, psize, ndx, key, data)
+__ham_reputpair(dbp, p, ndx, key, data)
+	DB *dbp;
 	PAGE *p;
-	u_int32_t psize, ndx;
+	u_int32_t ndx;
 	const DBT *key, *data;
 {
-	db_indx_t i, movebytes, newbytes;
+	db_indx_t i, *inp, movebytes, newbytes;
+	size_t psize;
 	u_int8_t *from;
 
+	psize = dbp->pgsize;
+	inp = P_INP(dbp, p);
 	/* First shuffle the existing items up on the page.  */
-	movebytes =
-	    (ndx == 0 ? psize : p->inp[H_DATAINDEX(ndx - 2)]) - HOFFSET(p);
+	movebytes = (db_indx_t)(
+	    (ndx == 0 ? psize : inp[H_DATAINDEX(ndx - 2)]) - HOFFSET(p));
 	newbytes = key->size + data->size;
 	from = (u_int8_t *)p + HOFFSET(p);
 	memmove(from - newbytes, from, movebytes);
@@ -515,17 +515,17 @@ __ham_reputpair(p, psize, ndx, key, data)
 	 * we are dealing with index 0 (db_indx_t's are unsigned).
 	 */
 	for (i = NUM_ENT(p) - 1; ; i-- ) {
-		p->inp[i + 2] = p->inp[i] - newbytes;
+		inp[i + 2] = inp[i] - newbytes;
 		if (i == H_KEYINDEX(ndx))
 			break;
 	}
 
 	/* Put the key and data on the page. */
-	p->inp[H_KEYINDEX(ndx)] =
-	    (ndx == 0 ? psize : p->inp[H_DATAINDEX(ndx - 2)]) - key->size;
-	p->inp[H_DATAINDEX(ndx)] = p->inp[H_KEYINDEX(ndx)] - data->size;
-	memcpy(P_ENTRY(p, H_KEYINDEX(ndx)), key->data, key->size);
-	memcpy(P_ENTRY(p, H_DATAINDEX(ndx)), data->data, data->size);
+	inp[H_KEYINDEX(ndx)] = (db_indx_t)(
+	    (ndx == 0 ? psize : inp[H_DATAINDEX(ndx - 2)]) - key->size);
+	inp[H_DATAINDEX(ndx)] = inp[H_KEYINDEX(ndx)] - data->size;
+	memcpy(P_ENTRY(dbp, p, H_KEYINDEX(ndx)), key->data, key->size);
+	memcpy(P_ENTRY(dbp, p, H_DATAINDEX(ndx)), data->data, data->size);
 
 	/* Adjust page info. */
 	HOFFSET(p) -= newbytes;
@@ -573,17 +573,17 @@ __ham_del_pair(dbc, reclaim_page)
 	 * entry referring to the big item.
 	 */
 	ret = 0;
-	if (HPAGE_PTYPE(H_PAIRKEY(p, ndx)) == H_OFFPAGE) {
-		memcpy(&pgno, HOFFPAGE_PGNO(P_ENTRY(p, H_KEYINDEX(ndx))),
+	if (HPAGE_PTYPE(H_PAIRKEY(dbp, p, ndx)) == H_OFFPAGE) {
+		memcpy(&pgno, HOFFPAGE_PGNO(P_ENTRY(dbp, p, H_KEYINDEX(ndx))),
 		    sizeof(db_pgno_t));
 		ret = __db_doff(dbc, pgno);
 	}
 
 	if (ret == 0)
-		switch (HPAGE_PTYPE(H_PAIRDATA(p, ndx))) {
+		switch (HPAGE_PTYPE(H_PAIRDATA(dbp, p, ndx))) {
 		case H_OFFPAGE:
 			memcpy(&pgno,
-			    HOFFPAGE_PGNO(P_ENTRY(p, H_DATAINDEX(ndx))),
+			    HOFFPAGE_PGNO(P_ENTRY(dbp, p, H_DATAINDEX(ndx))),
 			    sizeof(db_pgno_t));
 			ret = __db_doff(dbc, pgno);
 			break;
@@ -602,15 +602,14 @@ __ham_del_pair(dbc, reclaim_page)
 		return (ret);
 
 	/* Now log the delete off this page. */
-	if (DB_LOGGING(dbc)) {
-		key_dbt.data = P_ENTRY(p, H_KEYINDEX(ndx));
-		key_dbt.size = LEN_HITEM(p, dbp->pgsize, H_KEYINDEX(ndx));
-		data_dbt.data = P_ENTRY(p, H_DATAINDEX(ndx));
-		data_dbt.size = LEN_HITEM(p, dbp->pgsize, H_DATAINDEX(ndx));
+	if (DBC_LOGGING(dbc)) {
+		key_dbt.data = P_ENTRY(dbp, p, H_KEYINDEX(ndx));
+		key_dbt.size = LEN_HITEM(dbp, p, dbp->pgsize, H_KEYINDEX(ndx));
+		data_dbt.data = P_ENTRY(dbp, p, H_DATAINDEX(ndx));
+		data_dbt.size = LEN_HITEM(dbp, p, dbp->pgsize, H_DATAINDEX(ndx));
 
-		if ((ret = __ham_insdel_log(dbenv,
-		    dbc->txn, &new_lsn, 0, DELPAIR,
-		    dbp->log_fileid, PGNO(p), (u_int32_t)ndx,
+		if ((ret = __ham_insdel_log(dbp,
+		    dbc->txn, &new_lsn, 0, DELPAIR, PGNO(p), (u_int32_t)ndx,
 		    &LSN(p), &key_dbt, &data_dbt)) != 0)
 			return (ret);
 	} else
@@ -674,11 +673,11 @@ __ham_del_pair(dbc, reclaim_page)
 		    mpf->get(mpf, &NEXT_PGNO(n_pagep), 0, &nn_pagep)) != 0)
 			goto err;
 
-		if (DB_LOGGING(dbc)) {
+		if (DBC_LOGGING(dbc)) {
 			key_dbt.data = n_pagep;
 			key_dbt.size = dbp->pgsize;
-			if ((ret = __ham_copypage_log(dbenv,
-			    dbc->txn, &new_lsn, 0, dbp->log_fileid, PGNO(p),
+			if ((ret = __ham_copypage_log(dbp,
+			    dbc->txn, &new_lsn, 0, PGNO(p),
 			    &LSN(p), PGNO(n_pagep), &LSN(n_pagep),
 			    NEXT_PGNO(n_pagep),
 			    nn_pagep == NULL ? NULL : &LSN(nn_pagep),
@@ -748,10 +747,9 @@ __ham_del_pair(dbc, reclaim_page)
 		if (n_pagep != NULL)
 			PREV_PGNO(n_pagep) = PGNO(p_pagep);
 
-		if (DB_LOGGING(dbc)) {
-			if ((ret = __ham_newpage_log(dbenv,
-			    dbc->txn, &new_lsn, 0, DELOVFL,
-			    dbp->log_fileid, PREV_PGNO(p), &LSN(p_pagep),
+		if (DBC_LOGGING(dbc)) {
+			if ((ret = __ham_newpage_log(dbp, dbc->txn,
+			    &new_lsn, 0, DELOVFL, PREV_PGNO(p), &LSN(p_pagep),
 			    PGNO(p), &LSN(p), NEXT_PGNO(p), n_lsn)) != 0)
 				goto err;
 		} else
@@ -866,20 +864,21 @@ __ham_replpair(dbc, dbt, make_dup)
 	 */
 	change = dbt->size - dbt->dlen;
 
-	hk = H_PAIRDATA(hcp->page, hcp->indx);
+	hk = H_PAIRDATA(dbp, hcp->page, hcp->indx);
 	is_big = HPAGE_PTYPE(hk) == H_OFFPAGE;
 
 	if (is_big)
 		memcpy(&len, HOFFPAGE_TLEN(hk), sizeof(u_int32_t));
 	else
-		len = LEN_HKEYDATA(hcp->page,
+		len = LEN_HKEYDATA(dbp, hcp->page,
 		    dbp->pgsize, H_DATAINDEX(hcp->indx));
 
 	beyond_eor = dbt->doff + dbt->dlen > len;
 	if (beyond_eor)
 		change += dbt->doff + dbt->dlen - len;
 
-	if (change > (int32_t)P_FREESPACE(hcp->page) || beyond_eor || is_big) {
+	if (change > (int32_t)P_FREESPACE(dbp, hcp->page) ||
+	    beyond_eor || is_big) {
 		/*
 		 * Case 3 -- two subcases.
 		 * A. This is not really a partial operation, but an overwrite.
@@ -917,14 +916,14 @@ __ham_replpair(dbc, dbt, make_dup)
 
 			/* Now we can delete the item. */
 			if ((ret = __ham_del_pair(dbc, 0)) != 0) {
-				__os_free(dbp->dbenv, memp, memsize);
+				__os_free(dbp->dbenv, memp);
 				goto err;
 			}
 
 			/* Now shift old data around to make room for new. */
 			if (change > 0) {
-				 if ((ret = __os_realloc(dbp->dbenv,
-				     tdata.size + change, &tdata.data)) != 0)
+				if ((ret = __os_realloc(dbp->dbenv,
+				    tdata.size + change, &tdata.data)) != 0)
 					return (ret);
 				memp = tdata.data;
 				memsize = tdata.size + change;
@@ -945,7 +944,7 @@ __ham_replpair(dbc, dbt, make_dup)
 
 			/* Now add the pair. */
 			ret = __ham_add_el(dbc, &tmp, &tdata, type);
-			__os_free(dbp->dbenv, memp, memsize);
+			__os_free(dbp->dbenv, memp);
 		}
 		F_SET(hcp, dup_flag);
 err:		return (ret);
@@ -955,7 +954,7 @@ err:		return (ret);
 	 * Set up pointer into existing data. Do it before the log
 	 * message so we can use it inside of the log setup.
 	 */
-	beg = HKEYDATA_DATA(H_PAIRDATA(hcp->page, hcp->indx));
+	beg = HKEYDATA_DATA(H_PAIRDATA(dbp, hcp->page, hcp->indx));
 	beg += dbt->doff;
 
 	/*
@@ -963,11 +962,11 @@ err:		return (ret);
 	 * all the parameters here.  Then log the call before moving
 	 * anything around.
 	 */
-	if (DB_LOGGING(dbc)) {
+	if (DBC_LOGGING(dbc)) {
 		old_dbt.data = beg;
 		old_dbt.size = dbt->dlen;
-		if ((ret = __ham_replace_log(dbp->dbenv,
-		    dbc->txn, &new_lsn, 0, dbp->log_fileid, PGNO(hcp->page),
+		if ((ret = __ham_replace_log(dbp,
+		    dbc->txn, &new_lsn, 0, PGNO(hcp->page),
 		    (u_int32_t)H_DATAINDEX(hcp->indx), &LSN(hcp->page),
 		    (u_int32_t)dbt->doff, &old_dbt, dbt, make_dup)) != 0)
 			return (ret);
@@ -977,8 +976,8 @@ err:		return (ret);
 
 	LSN(hcp->page) = new_lsn;	/* Structure assignment. */
 
-	__ham_onpage_replace(hcp->page, dbp->pgsize,
-	    (u_int32_t)H_DATAINDEX(hcp->indx), (int32_t)dbt->doff, change, dbt);
+	__ham_onpage_replace(dbp, hcp->page, (u_int32_t)H_DATAINDEX(hcp->indx),
+	    (int32_t)dbt->doff, change, dbt);
 
 	return (0);
 }
@@ -994,34 +993,41 @@ err:		return (ret);
  * off: Offset at which we are beginning the replacement.
  * change: the number of bytes (+ or -) that the element is growing/shrinking.
  * dbt: the new data that gets written at beg.
- * PUBLIC: void __ham_onpage_replace __P((PAGE *, size_t, u_int32_t, int32_t,
- * PUBLIC:     int32_t,  DBT *));
+ *
+ * PUBLIC: void __ham_onpage_replace __P((DB *, PAGE *, u_int32_t,
+ * PUBLIC:     int32_t, int32_t,  DBT *));
  */
 void
-__ham_onpage_replace(pagep, pgsize, ndx, off, change, dbt)
+__ham_onpage_replace(dbp, pagep, ndx, off, change, dbt)
+	DB *dbp;
 	PAGE *pagep;
-	size_t pgsize;
 	u_int32_t ndx;
 	int32_t off;
 	int32_t change;
 	DBT *dbt;
 {
-	db_indx_t i;
+	db_indx_t i, *inp;
 	int32_t len;
+	size_t pgsize;
 	u_int8_t *src, *dest;
 	int zero_me;
 
+	pgsize = dbp->pgsize;
+	inp = P_INP(dbp, pagep);
 	if (change != 0) {
 		zero_me = 0;
 		src = (u_int8_t *)(pagep) + HOFFSET(pagep);
 		if (off < 0)
-			len = pagep->inp[ndx] - HOFFSET(pagep);
-		else if ((u_int32_t)off >= LEN_HKEYDATA(pagep, pgsize, ndx)) {
-			len = HKEYDATA_DATA(P_ENTRY(pagep, ndx)) +
-			    LEN_HKEYDATA(pagep, pgsize, ndx) - src;
+			len = inp[ndx] - HOFFSET(pagep);
+		else if ((u_int32_t)off >=
+		    LEN_HKEYDATA(dbp, pagep, pgsize, ndx)) {
+			len = (int32_t)(HKEYDATA_DATA(P_ENTRY(dbp, pagep, ndx))
+			    + LEN_HKEYDATA(dbp, pagep, pgsize, ndx) - src);
 			zero_me = 1;
 		} else
-			len = (HKEYDATA_DATA(P_ENTRY(pagep, ndx)) + off) - src;
+			len = (int32_t)(
+			    (HKEYDATA_DATA(P_ENTRY(dbp, pagep, ndx)) + off) -
+			    src);
 		dest = src - change;
 		memmove(dest, src, len);
 		if (zero_me)
@@ -1029,14 +1035,14 @@ __ham_onpage_replace(pagep, pgsize, ndx, off, change, dbt)
 
 		/* Now update the indices. */
 		for (i = ndx; i < NUM_ENT(pagep); i++)
-			pagep->inp[i] -= change;
+			inp[i] -= change;
 		HOFFSET(pagep) -= change;
 	}
 	if (off >= 0)
-		memcpy(HKEYDATA_DATA(P_ENTRY(pagep, ndx)) + off,
+		memcpy(HKEYDATA_DATA(P_ENTRY(dbp, pagep, ndx)) + off,
 		    dbt->data, dbt->size);
 	else
-		memcpy(P_ENTRY(pagep, ndx), dbt->data, dbt->size);
+		memcpy(P_ENTRY(dbp, pagep, ndx), dbt->data, dbt->size);
 }
 
 /*
@@ -1088,11 +1094,11 @@ __ham_split_page(dbc, obucket, nbucket)
 	temp_pagep = hcp->split_buf;
 	memcpy(temp_pagep, old_pagep, dbp->pgsize);
 
-	if (DB_LOGGING(dbc)) {
+	if (DBC_LOGGING(dbc)) {
 		page_dbt.size = dbp->pgsize;
 		page_dbt.data = old_pagep;
-		if ((ret = __ham_splitdata_log(dbenv,
-		    dbc->txn, &new_lsn, 0, dbp->log_fileid, SPLITOLD,
+		if ((ret = __ham_splitdata_log(dbp,
+		    dbc->txn, &new_lsn, 0, SPLITOLD,
 		    PGNO(old_pagep), &page_dbt, &LSN(old_pagep))) != 0)
 			goto err;
 	} else
@@ -1125,19 +1131,18 @@ __ham_split_page(dbc, obucket, nbucket)
 			 * Figure out how many bytes we need on the new
 			 * page to store the key/data pair.
 			 */
-			len = LEN_HITEM(temp_pagep, dbp->pgsize,
+			len = LEN_HITEM(dbp, temp_pagep, dbp->pgsize,
 			    H_DATAINDEX(n)) +
-			    LEN_HITEM(temp_pagep, dbp->pgsize,
+			    LEN_HITEM(dbp, temp_pagep, dbp->pgsize,
 			    H_KEYINDEX(n)) +
 			    2 * sizeof(db_indx_t);
 
-			if (P_FREESPACE(*pp) < len) {
-				if (DB_LOGGING(dbc)) {
+			if (P_FREESPACE(dbp, *pp) < len) {
+				if (DBC_LOGGING(dbc)) {
 					page_dbt.size = dbp->pgsize;
 					page_dbt.data = *pp;
-					if ((ret = __ham_splitdata_log(
-					    dbenv, dbc->txn,
-					    &new_lsn, 0, dbp->log_fileid,
+					if ((ret = __ham_splitdata_log(dbp,
+					    dbc->txn, &new_lsn, 0,
 					    SPLITNEW, PGNO(*pp), &page_dbt,
 					    &LSN(*pp))) != 0)
 						goto err;
@@ -1155,28 +1160,25 @@ __ham_split_page(dbc, obucket, nbucket)
 				for (i = 0; carray[i] != NULL; i++) {
 					cp =
 					    (HASH_CURSOR *)carray[i]->internal;
-					if (cp->pgno == PGNO(temp_pagep)
-					    && cp->indx == n) {
+					if (cp->pgno == PGNO(temp_pagep) &&
+					    cp->indx == n) {
 						cp->pgno = PGNO(*pp);
 						cp->indx = NUM_ENT(*pp);
 						found = 1;
 					}
 				}
-				if (found && DB_LOGGING(dbc)
-				    && IS_SUBTRANSACTION(dbc->txn)) {
+				if (found && DBC_LOGGING(dbc) &&
+				    IS_SUBTRANSACTION(dbc->txn)) {
 					if ((ret =
-					    __ham_chgpg_log(dbp->dbenv,
+					    __ham_chgpg_log(dbp,
 					    dbc->txn, &new_lsn, 0,
-					    dbp->log_fileid,
 					    DB_HAM_SPLIT, PGNO(temp_pagep),
 					    PGNO(*pp), n, NUM_ENT(*pp))) != 0)
 						goto err;
 				}
 			}
-			__ham_copy_item(dbp->pgsize,
-			    temp_pagep, H_KEYINDEX(n), *pp);
-			__ham_copy_item(dbp->pgsize,
-			    temp_pagep, H_DATAINDEX(n), *pp);
+			__ham_copy_item(dbp, temp_pagep, H_KEYINDEX(n), *pp);
+			__ham_copy_item(dbp, temp_pagep, H_DATAINDEX(n), *pp);
 		}
 		next_pgno = NEXT_PGNO(temp_pagep);
 
@@ -1194,11 +1196,11 @@ __ham_split_page(dbc, obucket, nbucket)
 			goto err;
 
 		if (temp_pagep != NULL) {
-			if (DB_LOGGING(dbc)) {
+			if (DBC_LOGGING(dbc)) {
 				page_dbt.size = dbp->pgsize;
 				page_dbt.data = temp_pagep;
-				if ((ret = __ham_splitdata_log(dbenv,
-				    dbc->txn, &new_lsn, 0, dbp->log_fileid,
+				if ((ret = __ham_splitdata_log(dbp,
+				    dbc->txn, &new_lsn, 0,
 				    SPLITOLD, PGNO(temp_pagep),
 				    &page_dbt, &LSN(temp_pagep))) != 0)
 					goto err;
@@ -1208,11 +1210,11 @@ __ham_split_page(dbc, obucket, nbucket)
 		}
 
 		if (carray != NULL)	/* We never knew its size. */
-			__os_free(dbp->dbenv, carray, 0);
+			__os_free(dbp->dbenv, carray);
 		carray = NULL;
 	}
 	if (big_buf != NULL)
-		__os_free(dbenv, big_buf, big_len);
+		__os_free(dbenv, big_buf);
 
 	/*
 	 * If the original bucket spanned multiple pages, then we've got
@@ -1228,18 +1230,18 @@ __ham_split_page(dbc, obucket, nbucket)
 	/*
 	 * Write new buckets out.
 	 */
-	if (DB_LOGGING(dbc)) {
+	if (DBC_LOGGING(dbc)) {
 		page_dbt.size = dbp->pgsize;
 		page_dbt.data = old_pagep;
-		if ((ret = __ham_splitdata_log(dbenv, dbc->txn, &new_lsn, 0,
-		    dbp->log_fileid, SPLITNEW, PGNO(old_pagep), &page_dbt,
+		if ((ret = __ham_splitdata_log(dbp, dbc->txn,
+		    &new_lsn, 0, SPLITNEW, PGNO(old_pagep), &page_dbt,
 		    &LSN(old_pagep))) != 0)
 			goto err;
 		LSN(old_pagep) = new_lsn;
 
 		page_dbt.data = new_pagep;
-		if ((ret = __ham_splitdata_log(dbenv, dbc->txn, &new_lsn, 0,
-		    dbp->log_fileid, SPLITNEW, PGNO(new_pagep), &page_dbt,
+		if ((ret = __ham_splitdata_log(dbp, dbc->txn, &new_lsn, 0,
+		    SPLITNEW, PGNO(new_pagep), &page_dbt,
 		    &LSN(new_pagep))) != 0)
 			goto err;
 		LSN(new_pagep) = new_lsn;
@@ -1264,7 +1266,7 @@ err:		if (old_pagep != NULL)
 	if (LOCK_ISSET(block))
 		__TLPUT(dbc, block);
 	if (carray != NULL)		/* We never knew its size. */
-		__os_free(dbp->dbenv, carray, 0);
+		__os_free(dbp->dbenv, carray);
 	return (ret);
 }
 
@@ -1324,7 +1326,7 @@ __ham_add_el(dbc, key, val, type)
 		 * anyway.  Check if it's a bigpair that fits or a regular
 		 * pair that fits.
 		 */
-		if (P_FREESPACE(hcp->page) >= pairsize)
+		if (P_FREESPACE(dbp, hcp->page) >= pairsize)
 			break;
 		next_pgno = NEXT_PGNO(hcp->page);
 		if ((ret = __ham_next_cpage(dbc, next_pgno, 0)) != 0)
@@ -1334,7 +1336,7 @@ __ham_add_el(dbc, key, val, type)
 	/*
 	 * Check if we need to allocate a new page.
 	 */
-	if (P_FREESPACE(hcp->page) < pairsize) {
+	if (P_FREESPACE(dbp, hcp->page) < pairsize) {
 		do_expand = 1;
 		if ((ret = __ham_add_ovflpage(dbc,
 		    (PAGE *)hcp->page, 1, (PAGE **)&hcp->page)) != 0)
@@ -1381,7 +1383,7 @@ __ham_add_el(dbc, key, val, type)
 		data_type = type;
 	}
 
-	if (DB_LOGGING(dbc)) {
+	if (DBC_LOGGING(dbc)) {
 		rectype = PUTPAIR;
 		if (is_databig)
 			rectype |= PAIR_DATAMASK;
@@ -1390,10 +1392,9 @@ __ham_add_el(dbc, key, val, type)
 		if (type == H_DUPLICATE)
 			rectype |= PAIR_DUPMASK;
 
-		if ((ret = __ham_insdel_log(dbp->dbenv, dbc->txn, &new_lsn, 0,
-		    rectype, dbp->log_fileid, PGNO(hcp->page),
-		    (u_int32_t)NUM_ENT(hcp->page), &LSN(hcp->page), pkey,
-		    pdata)) != 0)
+		if ((ret = __ham_insdel_log(dbp, dbc->txn, &new_lsn, 0,
+		    rectype, PGNO(hcp->page), (u_int32_t)NUM_ENT(hcp->page),
+		    &LSN(hcp->page), pkey, pdata)) != 0)
 			return (ret);
 	} else
 		LSN_NOT_LOGGED(new_lsn);
@@ -1401,8 +1402,8 @@ __ham_add_el(dbc, key, val, type)
 	/* Move lsn onto page. */
 	LSN(hcp->page) = new_lsn;	/* Structure assignment. */
 
-	__ham_putitem(hcp->page, pkey, key_type);
-	__ham_putitem(hcp->page, pdata, data_type);
+	__ham_putitem(dbp, hcp->page, pkey, key_type);
+	__ham_putitem(dbp, hcp->page, pdata, data_type);
 
 	/*
 	 * For splits, we are going to update item_info's page number
@@ -1435,28 +1436,32 @@ __ham_add_el(dbc, key, val, type)
  * H_DUPLICATE, H_OFFDUP).  Since we log splits at a high level, we
  * do not need to do any logging here.
  *
- * PUBLIC: void __ham_copy_item __P((size_t, PAGE *, u_int32_t, PAGE *));
+ * PUBLIC: void __ham_copy_item __P((DB *, PAGE *, u_int32_t, PAGE *));
  */
 void
-__ham_copy_item(pgsize, src_page, src_ndx, dest_page)
-	size_t pgsize;
+__ham_copy_item(dbp, src_page, src_ndx, dest_page)
+	DB *dbp;
 	PAGE *src_page;
 	u_int32_t src_ndx;
 	PAGE *dest_page;
 {
 	u_int32_t len;
+	size_t pgsize;
 	void *src, *dest;
+	db_indx_t *inp;
 
+	pgsize = dbp->pgsize;
+	inp = P_INP(dbp, dest_page);
 	/*
 	 * Copy the key and data entries onto this new page.
 	 */
-	src = P_ENTRY(src_page, src_ndx);
+	src = P_ENTRY(dbp, src_page, src_ndx);
 
 	/* Set up space on dest. */
-	len = LEN_HITEM(src_page, pgsize, src_ndx);
+	len = (u_int32_t)LEN_HITEM(dbp, src_page, pgsize, src_ndx);
 	HOFFSET(dest_page) -= len;
-	dest_page->inp[NUM_ENT(dest_page)] = HOFFSET(dest_page);
-	dest = P_ENTRY(dest_page, NUM_ENT(dest_page));
+	inp[NUM_ENT(dest_page)] = HOFFSET(dest_page);
+	dest = P_ENTRY(dbp, dest_page, NUM_ENT(dest_page));
 	NUM_ENT(dest_page)++;
 
 	memcpy(dest, src, len);
@@ -1465,8 +1470,8 @@ __ham_copy_item(pgsize, src_page, src_ndx, dest_page)
 /*
  *
  * Returns:
- *      pointer on success
- *      NULL on error
+ *	pointer on success
+ *	NULL on error
  *
  * PUBLIC: int __ham_add_ovflpage __P((DBC *, PAGE *, int, PAGE **));
  */
@@ -1489,9 +1494,9 @@ __ham_add_ovflpage(dbc, pagep, release, pp)
 	if ((ret = __db_new(dbc, P_HASH, &new_pagep)) != 0)
 		return (ret);
 
-	if (DB_LOGGING(dbc)) {
-		if ((ret = __ham_newpage_log(dbp->dbenv, dbc->txn, &new_lsn, 0,
-		    PUTOVFL, dbp->log_fileid, PGNO(pagep), &LSN(pagep),
+	if (DBC_LOGGING(dbc)) {
+		if ((ret = __ham_newpage_log(dbp, dbc->txn, &new_lsn, 0,
+		    PUTOVFL, PGNO(pagep), &LSN(pagep),
 		    PGNO(new_pagep), &LSN(new_pagep), PGNO_INVALID, NULL)) != 0)
 			return (ret);
 	} else
@@ -1668,15 +1673,16 @@ __ham_dpair(dbp, p, indx)
 	PAGE *p;
 	u_int32_t indx;
 {
-	db_indx_t delta, n;
+	db_indx_t delta, n, *inp;
 	u_int8_t *dest, *src;
 
+	inp = P_INP(dbp, p);
 	/*
 	 * Compute "delta", the amount we have to shift all of the
 	 * offsets.  To find the delta, we just need to calculate
 	 * the size of the pair of elements we are removing.
 	 */
-	delta = H_PAIRSIZE(p, dbp->pgsize, indx);
+	delta = H_PAIRSIZE(dbp, p, dbp->pgsize, indx);
 
 	/*
 	 * The hard case: we want to remove something other than
@@ -1695,7 +1701,7 @@ __ham_dpair(dbp, p, indx)
 		 * be an overlapping copy, so we have to use memmove.
 		 */
 		dest = src + delta;
-		memmove(dest, src, p->inp[H_DATAINDEX(indx)] - HOFFSET(p));
+		memmove(dest, src, inp[H_DATAINDEX(indx)] - HOFFSET(p));
 	}
 
 	/* Adjust page metadata. */
@@ -1704,7 +1710,7 @@ __ham_dpair(dbp, p, indx)
 
 	/* Adjust the offsets. */
 	for (n = (db_indx_t)indx; n < (db_indx_t)(NUM_ENT(p)); n++)
-		p->inp[n] = p->inp[n + 2] + delta;
+		inp[n] = inp[n + 2] + delta;
 
 }
 
@@ -1846,13 +1852,11 @@ __ham_c_delpg(dbc, old_pgno, new_pgno, num_ent, op, orderp)
 	}
 	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
 
-	if (found != 0 && DB_LOGGING(dbc)) {
-		if ((ret = __ham_chgpg_log(dbenv,
-		     my_txn, &lsn, 0, dbp->log_fileid, op,
-		     old_pgno, new_pgno, indx, order)) != 0)
+	if (found != 0 && DBC_LOGGING(dbc)) {
+		if ((ret = __ham_chgpg_log(dbp, my_txn, &lsn, 0, op,
+		    old_pgno, new_pgno, indx, order)) != 0)
 			return (ret);
 	}
 	*orderp = order;
 	return (0);
 }
-

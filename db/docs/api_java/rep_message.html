@@ -1,6 +1,7 @@
-<!--Id: rep_message.so,v 1.4 2001/10/25 20:15:23 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: rep_message.so,v 1.9 2002/07/02 15:22:24 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv.rep_process_message</title>
@@ -21,7 +22,11 @@
 <h3><pre>
 import com.sleepycat.db.*;
 <p>
-public void rep_process_message(Dbt *control, Dbt *rec, int *envid)
+public static class RepProcessMessage {
+	public int envid;
+}
+public int rep_process_message(
+    Dbt control, Dbt rec, DbEnv.RepProcessMessage envid)
     throws DbException;
 </pre></h3>
 <h1>Description</h1>
@@ -39,38 +44,44 @@ information).
 processed using the same <a href="../api_java/dbenv_class.html">DbEnv</a> handle.  It is not required that
 a single thread of control process all messages, only that all threads
 of control processing messages use the same handle.
-<p>The DbEnv.rep_process_message method may return one of several special conditions:
-<p><dl compact>
-<p><dt><a name="Db.DB_REP_DUPMASTER">Db.DB_REP_DUPMASTER</a><dd>The replication group has more than one master; the application should
-reconfigure itself as a client by calling the <a href="../api_java/rep_start.html">DbEnv.rep_start</a> method, and
-then call for an election by calling <a href="../api_java/rep_elect.html">DbEnv.rep_elect</a>.
-<p><dt><a name="Db.DB_REP_HOLDELECTION">Db.DB_REP_HOLDELECTION</a><dd>An election is needed, the application should call for an election by
-calling <a href="../api_java/rep_elect.html">DbEnv.rep_elect</a>.
-<p><dt><a name="Db.DB_REP_NEWMASTER">Db.DB_REP_NEWMASTER</a><dd>A new master has been elected.  The memory location referenced by the
-<b>envid</b> parameter contains the environment ID of the new master.
-If the recipient of this error return has been made master, it is the
-application's responsibility to begin acting as the master environment.
-<p><dt><a name="Db.DB_REP_NEWSITE">Db.DB_REP_NEWSITE</a><dd>The system received contact information from a new environment.  The
-<b>rec</b> parameter contains the opaque data specified in the
+<p>
+If a new master has been elected, the DbEnv.rep_process_message method will return Db.DB_REP_NEWMASTER.
+The <b>envid</b> parameter contains the environment ID of the new
+master.  If the recipient of this error return has been made master, it
+is the application's responsibility to begin acting as the master
+environment.
+<p>
+If the system received contact information from a new environment, the DbEnv.rep_process_message method will return Db.DB_REP_NEWSITE.
+The <b>rec</b> parameter contains the opaque data specified in the
 <b>cdata</b> parameter to the <a href="../api_java/rep_start.html">DbEnv.rep_start</a>.  The application
 should take whatever action is needed to establish a communication
 channel with this new environment.
-<p><dt><a name="Db.DB_REP_OUTDATED">Db.DB_REP_OUTDATED</a><dd>The current environment's logs are too far out of date with respect to
-the master to be automatically synchronized.  The application should
-copy over a hot backup of the environment, run recovery, and restart
-the client.
-</dl>
-<p>Otherwise, the DbEnv.rep_process_message method throws an exception that encapsulates a non-zero error value on
+<p>
+If the replication group has more than one master, the DbEnv.rep_process_message method throws an exception that encapsulates Db.DB_REP_DUPMASTER.
+The application should reconfigure itself as a client by calling the
+<a href="../api_java/rep_start.html">DbEnv.rep_start</a> method, and then call for an election by calling
+<a href="../api_java/rep_elect.html">DbEnv.rep_elect</a>.
+<p>
+If an election is needed, the DbEnv.rep_process_message method throws an exception that encapsulates Db.DB_REP_HOLDELECTION.
+The application should call for an election by
+calling <a href="../api_java/rep_elect.html">DbEnv.rep_elect</a>.
+<p>
+If the current environment's logs are too far out of date with respect
+to the master to be automatically synchronized, the DbEnv.rep_process_message method throws an exception that encapsulates Db.DB_REP_OUTDATED. The
+application should copy over a hot backup of the environment, run
+recovery, and restart the client.
+<p>
+Otherwise, the DbEnv.rep_process_message method throws an exception that encapsulates a non-zero error value on
 failure.
 <h1>Errors</h1>
 <p>The DbEnv.rep_process_message method may fail and throw an exception for errors specified for other Berkeley DB and C library or system methods.
-If a catastrophic error has occurred, the DbEnv.rep_process_message method may fail and throw
-a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>, in which case all subsequent Berkeley DB calls
-will fail in the same way.
+If a catastrophic error has occurred, the DbEnv.rep_process_message method may fail and
+throw a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>See Also</h1>
 <a href="../api_java/rep_start.html">DbEnv.rep_start</a>,
 <a href="../api_java/rep_elect.html">DbEnv.rep_elect</a>,
-<a href="../api_java/rep_message.html">DbEnv.rep_process_message</a>,
+<a href="../api_java/rep_message.html">DbEnv.rep_process_message</a>
 and
 <a href="../api_java/rep_transport.html">DbEnv.set_rep_transport</a>.
 </tt>

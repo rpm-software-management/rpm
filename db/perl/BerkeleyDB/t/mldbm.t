@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+use strict ;
+
 BEGIN 
 {
     if ($] < 5.005) {
@@ -28,34 +30,35 @@ use t::util ;
 print "1..12\n";
 
 {
-package BTREE ;
-
-use BerkeleyDB ;
-use MLDBM qw(BerkeleyDB::Btree) ; 
-use Data::Dumper;
-
-$filename = 'testmldbm' ;
-
-unlink $filename ;
-$MLDBM::UseDB = "BerkeleyDB::Btree" ;
-$db = tie %o, MLDBM, -Filename => $filename,
-		     -Flags    => DB_CREATE
-		or die $!;
-::ok 1, $db ;
-::ok 2, $db->type() == DB_BTREE ;
-
-$c = [\'c'];
-$b = {};
-$a = [1, $b, $c];
-$b->{a} = $a;
-$b->{b} = $a->[1];
-$b->{c} = $a->[2];
-@o{qw(a b c)} = ($a, $b, $c);
-$o{d} = "{once upon a time}";
-$o{e} = 1024;
-$o{f} = 1024.1024;
-$first = Data::Dumper->new([@o{qw(a b c)}], [qw(a b c)])->Quotekeys(0)->Dump;
-$second = <<'EOT';
+    package BTREE ;
+    
+    use BerkeleyDB ;
+    use MLDBM qw(BerkeleyDB::Btree) ; 
+    use Data::Dumper;
+    
+    my $filename = "";
+    my $lex = new LexFile $filename;
+    
+    $MLDBM::UseDB = "BerkeleyDB::Btree" ;
+    my %o ;
+    my $db = tie %o, 'MLDBM', -Filename => $filename,
+    		     -Flags    => DB_CREATE
+    		or die $!;
+    ::ok 1, $db ;
+    ::ok 2, $db->type() == DB_BTREE ;
+    
+    my $c = [\'c'];
+    my $b = {};
+    my $a = [1, $b, $c];
+    $b->{a} = $a;
+    $b->{b} = $a->[1];
+    $b->{c} = $a->[2];
+    @o{qw(a b c)} = ($a, $b, $c);
+    $o{d} = "{once upon a time}";
+    $o{e} = 1024;
+    $o{f} = 1024.1024;
+    my $first = Data::Dumper->new([@o{qw(a b c)}], [qw(a b c)])->Quotekeys(0)->Dump;
+    my $second = <<'EOT';
 $a = [
        1,
        {
@@ -82,46 +85,47 @@ $c = [
        \'c'
      ];
 EOT
-
-::ok 3, $first eq $second ;
-::ok 4, $o{d} eq "{once upon a time}" ;
-::ok 5, $o{e} == 1024 ;
-::ok 6, $o{f} eq 1024.1024 ;
-
-unlink $filename ;
+    
+    ::ok 3, $first eq $second ;
+    ::ok 4, $o{d} eq "{once upon a time}" ;
+    ::ok 5, $o{e} == 1024 ;
+    ::ok 6, $o{f} eq 1024.1024 ;
+    
 }
 
 {
 
-package HASH ;
+    package HASH ;
 
-use BerkeleyDB ;
-use MLDBM qw(BerkeleyDB::Hash) ; 
-use Data::Dumper;
+    use BerkeleyDB ;
+    use MLDBM qw(BerkeleyDB::Hash) ; 
+    use Data::Dumper;
 
-$filename = 'testmldbm' ;
+    my $filename = "";
+    my $lex = new LexFile $filename;
 
-unlink $filename ;
-$MLDBM::UseDB = "BerkeleyDB::Hash" ;
-$db = tie %o, MLDBM, -Filename => $filename,
-		     -Flags    => DB_CREATE
-		or die $!;
-::ok 7, $db ;
-::ok 8, $db->type() == DB_HASH ;
+    unlink $filename ;
+    $MLDBM::UseDB = "BerkeleyDB::Hash" ;
+    my %o ;
+    my $db = tie %o, 'MLDBM', -Filename => $filename,
+		         -Flags    => DB_CREATE
+		    or die $!;
+    ::ok 7, $db ;
+    ::ok 8, $db->type() == DB_HASH ;
 
 
-$c = [\'c'];
-$b = {};
-$a = [1, $b, $c];
-$b->{a} = $a;
-$b->{b} = $a->[1];
-$b->{c} = $a->[2];
-@o{qw(a b c)} = ($a, $b, $c);
-$o{d} = "{once upon a time}";
-$o{e} = 1024;
-$o{f} = 1024.1024;
-$first = Data::Dumper->new([@o{qw(a b c)}], [qw(a b c)])->Quotekeys(0)->Dump;
-$second = <<'EOT';
+    my $c = [\'c'];
+    my $b = {};
+    my $a = [1, $b, $c];
+    $b->{a} = $a;
+    $b->{b} = $a->[1];
+    $b->{c} = $a->[2];
+    @o{qw(a b c)} = ($a, $b, $c);
+    $o{d} = "{once upon a time}";
+    $o{e} = 1024;
+    $o{f} = 1024.1024;
+    my $first = Data::Dumper->new([@o{qw(a b c)}], [qw(a b c)])->Quotekeys(0)->Dump;
+    my $second = <<'EOT';
 $a = [
        1,
        {
@@ -149,11 +153,9 @@ $c = [
      ];
 EOT
 
-::ok 9, $first eq $second ;
-::ok 10, $o{d} eq "{once upon a time}" ;
-::ok 11, $o{e} == 1024 ;
-::ok 12, $o{f} eq 1024.1024 ;
-
-unlink $filename ;
+    ::ok 9, $first eq $second ;
+    ::ok 10, $o{d} eq "{once upon a time}" ;
+    ::ok 11, $o{e} == 1024 ;
+    ::ok 12, $o{f} eq 1024.1024 ;
 
 }

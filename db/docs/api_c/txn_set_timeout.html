@@ -1,6 +1,7 @@
-<!--Id: txn_set_timeout.so,v 10.3 2001/10/22 15:24:39 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: txn_set_timeout.so,v 10.6 2002/06/24 14:49:36 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_TXN-&gt;set_timeout</title>
@@ -46,6 +47,11 @@ is performed, the accuracy of the timeout depends on how often deadlock
 detection is performed.
 <p>Timeout values may be specified for the database environment as a whole.
 See <a href="../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a> and for more information.
+<p>The DB_TXN-&gt;set_timeout function configures operations performed on the underlying
+transaction, not only operations performed using the specified
+<a href="../api_c/txn_begin.html">DB_TXN</a> handle.
+<p>The DB_TXN-&gt;set_timeout interface may be called at any time during the life of
+the application.
 <p>The DB_TXN-&gt;set_timeout function returns a non-zero error value on failure and 0 on success.
 <h1>Errors</h1>
 <p>The DB_TXN-&gt;set_timeout function may fail and return a non-zero error for the following conditions:
@@ -53,24 +59,25 @@ See <a href="../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a> and for m
 <p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
 </dl>
 <p>The DB_TXN-&gt;set_timeout function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_TXN-&gt;set_timeout function may fail and return
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+If a catastrophic error has occurred, the DB_TXN-&gt;set_timeout function may fail and
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>See Also</h1>
 <a href="../api_c/env_set_tx_max.html">DB_ENV-&gt;set_tx_max</a>,
-<a href="../api_c/env_set_tx_recover.html">DB_ENV-&gt;set_tx_recover</a>,
 <a href="../api_c/env_set_tx_timestamp.html">DB_ENV-&gt;set_tx_timestamp</a>,
-<a href="../api_c/txn_abort.html">DB_TXN-&gt;abort</a>,
 <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>,
 <a href="../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a>,
+<a href="../api_c/txn_recover.html">DB_ENV-&gt;txn_recover</a>
+and
+<a href="../api_c/txn_stat.html">DB_ENV-&gt;txn_stat</a>.
+<p>
+<a href="../api_c/txn_abort.html">DB_TXN-&gt;abort</a>,
 <a href="../api_c/txn_commit.html">DB_TXN-&gt;commit</a>,
 <a href="../api_c/txn_discard.html">DB_TXN-&gt;discard</a>,
 <a href="../api_c/txn_id.html">DB_TXN-&gt;id</a>,
-<a href="../api_c/txn_prepare.html">DB_TXN-&gt;prepare</a>,
-<a href="../api_c/txn_recover.html">DB_ENV-&gt;txn_recover</a>,
-<a href="../api_c/txn_set_timeout.html">DB_TXN-&gt;set_timeout</a>
+<a href="../api_c/txn_prepare.html">DB_TXN-&gt;prepare</a>
 and
-<a href="../api_c/txn_stat.html">DB_ENV-&gt;txn_stat</a>.
+<a href="../api_c/txn_set_timeout.html">DB_TXN-&gt;set_timeout</a>.
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

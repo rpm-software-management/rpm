@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: DbRepTransport.java,v 11.1 2001/10/04 04:59:15 krinsky Exp 
+ * Id: DbRepTransport.java,v 11.2 2002/01/11 15:52:40 bostic Exp 
  */
 
 package com.sleepycat.db;

@@ -1,6 +1,7 @@
-<!--Id: env_set_timeout.so,v 10.3 2001/10/22 15:24:31 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: env_set_timeout.so,v 10.6 2002/06/24 14:49:21 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::set_timeout</title>
@@ -59,44 +60,61 @@ detection is performed.
 <p>Timeout values specified for the database environment may be overridden
 on a per-lock or per-transaction basis.  See <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> and
 <a href="../api_cxx/txn_set_timeout.html">DbTxn::set_timeout</a> for more information.
-<p>The DbEnv::set_timeout interface may be used only to configure Berkeley DB before
-the <a href="../api_cxx/env_open.html">DbEnv::open</a> interface is called.
+<p>The DbEnv::set_timeout method configures a database environment, not only operations
+performed using the specified <a href="../api_cxx/dbenv_class.html">DbEnv</a> handle.
+<p>The DbEnv::set_timeout interface may be called at any time during the life of
+the application.
 <p>The DbEnv::set_timeout method either returns a non-zero error value or throws an exception that
 encapsulates a non-zero error value on failure, and returns 0 on success.
 <h1>Errors</h1>
 <p>The DbEnv::set_timeout method may fail and throw an exception or return a non-zero error for the following conditions:
 <p><dl compact>
 <p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
-<p>Called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called.
 </dl>
 <p>The DbEnv::set_timeout method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
-If a catastrophic error has occurred, the DbEnv::set_timeout method may fail and either
-return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw an exception encapsulating
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+If a catastrophic error has occurred, the DbEnv::set_timeout method may fail and
+either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw a
+<a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>Class</h1>
 <a href="../api_cxx/dbenv_class.html">DbEnv</a>
 <h1>See Also</h1>
 <a href="../api_cxx/env_close.html">DbEnv::close</a>,
-<a href="../api_cxx/env_err.html">DbEnv::err</a>, <a href="../api_cxx/env_err.html">DbEnv::errx</a>
+<a href="../api_cxx/env_dbremove.html">DbEnv::dbremove</a>,
+<a href="../api_cxx/env_dbrename.html">DbEnv::dbrename</a>,
+<a href="../api_cxx/env_err.html">DbEnv::err</a>,
+<a href="../api_cxx/env_err.html">DbEnv::errx</a>,
 <a href="../api_cxx/env_open.html">DbEnv::open</a>,
 <a href="../api_cxx/env_remove.html">DbEnv::remove</a>,
 <a href="../api_cxx/env_set_alloc.html">DbEnv::set_alloc</a>,
+<a href="../api_cxx/env_set_app_dispatch.html">DbEnv::set_app_dispatch</a>,
 <a href="../api_cxx/env_set_cachesize.html">DbEnv::set_cachesize</a>,
 <a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a>,
+<a href="../api_cxx/env_set_encrypt.html">DbEnv::set_encrypt</a>,
 <a href="../api_cxx/env_set_errcall.html">DbEnv::set_errcall</a>,
 <a href="../api_cxx/env_set_errfile.html">DbEnv::set_errfile</a>,
 <a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a>,
 <a href="../api_cxx/env_set_errpfx.html">DbEnv::set_errpfx</a>,
 <a href="../api_cxx/env_set_feedback.html">DbEnv::set_feedback</a>,
 <a href="../api_cxx/env_set_flags.html">DbEnv::set_flags</a>,
+<a href="../api_cxx/env_set_lg_bsize.html">DbEnv::set_lg_bsize</a>,
+<a href="../api_cxx/env_set_lg_dir.html">DbEnv::set_lg_dir</a>,
+<a href="../api_cxx/env_set_lg_max.html">DbEnv::set_lg_max</a>,
+<a href="../api_cxx/env_set_lg_regionmax.html">DbEnv::set_lg_regionmax</a>,
+<a href="../api_cxx/env_set_lk_conflicts.html">DbEnv::set_lk_conflicts</a>,
+<a href="../api_cxx/env_set_lk_detect.html">DbEnv::set_lk_detect</a>,
+<a href="../api_cxx/env_set_lk_max_lockers.html">DbEnv::set_lk_max_lockers</a>,
+<a href="../api_cxx/env_set_lk_max_locks.html">DbEnv::set_lk_max_locks</a>,
+<a href="../api_cxx/env_set_lk_max_objects.html">DbEnv::set_lk_max_objects</a>,
+<a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a>,
 <a href="../api_cxx/env_set_paniccall.html">DbEnv::set_paniccall</a>,
-<a href="../api_cxx/env_set_rec_init.html">DbEnv::set_recovery_init</a>,
 <a href="../api_cxx/env_set_rpc_server.html">DbEnv::set_rpc_server</a>,
 <a href="../api_cxx/env_set_shm_key.html">DbEnv::set_shm_key</a>,
 <a href="../api_cxx/env_set_tas_spins.html">DbEnv::set_tas_spins</a>,
-<a href="../api_cxx/env_set_tmp_dir.html">DbEnv::set_tmp_dir</a>,
 <a href="../api_cxx/env_set_timeout.html">DbEnv::set_timeout</a>,
+<a href="../api_cxx/env_set_tmp_dir.html">DbEnv::set_tmp_dir</a>,
+<a href="../api_cxx/env_set_tx_max.html">DbEnv::set_tx_max</a>,
+<a href="../api_cxx/env_set_tx_timestamp.html">DbEnv::set_tx_timestamp</a>,
 <a href="../api_cxx/env_set_verbose.html">DbEnv::set_verbose</a>,
 <a href="../api_cxx/env_strerror.html">DbEnv::strerror</a>
 and

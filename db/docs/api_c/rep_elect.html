@@ -1,6 +1,7 @@
-<!--Id: rep_elect.so,v 1.4 2001/10/26 13:57:00 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: rep_elect.so,v 1.6 2002/06/24 14:49:30 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;rep_elect</title>
@@ -64,13 +65,13 @@ incoming messages is necessary to successfully complete an election.
 <p><dt>DB_REP_UNAVAIL<dd>The replication group was unable to elect a master.
 </dl>
 <p>The DB_ENV-&gt;rep_elect function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_ENV-&gt;rep_elect function may fail and return
-<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
-in the same way.
+If a catastrophic error has occurred, the DB_ENV-&gt;rep_elect function may fail and
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
+in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>See Also</h1>
 <a href="../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>,
 <a href="../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>,
-<a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>,
+<a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>
 and
 <a href="../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>.
 </tt>

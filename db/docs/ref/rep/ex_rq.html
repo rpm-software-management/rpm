@@ -1,6 +1,7 @@
-<!--Id: ex_rq.so,v 1.3 2001/11/18 15:17:23 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: ex_rq.so,v 1.4 2002/06/24 14:50:48 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Ex_repquote: putting it all together</title>
@@ -53,7 +54,7 @@ addition to the normal functionality of any database application).
 infrastructure is initialized, the application signals that it is ready
 for replication and joins a replication group by calling
 <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>:
-<pre><p><blockquote>if (whoami == MASTER) {	
+<pre><p><blockquote>if (whoami == MASTER) {
 	if ((ret = dbenv-&gt;rep_start(dbenv, NULL, DB_REP_MASTER)) != 0) {
 		/* Complain and exit on error. */
 	}
@@ -94,7 +95,7 @@ DBT rec, control;	/* Structures encapsulating a received message. */
 elect_args *ea;		/* Parameters to the elect thread. */
 machtab_t *tab;		/* The environment ID to fd mapping table. */
 pthread_t elect_thr;	/* Election thread spawned. */
-site_t self;		/* My host and port identification. */
+repsite_t self;		/* My host and port identification. */
 int eid;		/* Environment from whom I am receiving messages. */
 int fd;			/* FD on which I am receiving messages. */
 int master_eid;		/* Global indicating the current master eid. */
@@ -136,8 +137,8 @@ for (ret = 0; ret == 0;) {
 			break;
 <p>
 		master_eid = DB_EID_INVALID;
-		/* 
-		 * In ex_repquote, the environment ID table stores 
+		/*
+		 * In ex_repquote, the environment ID table stores
 		 * election parameters.
 		 */
 		machtab_parm(tab, &n, &pri, &timeout);

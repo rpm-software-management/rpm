@@ -5,7 +5,9 @@ package main ;
 use strict ;
 use BerkeleyDB ;
 use File::Path qw(rmtree);
-use vars qw(%DB_errors) ;
+use vars qw(%DB_errors $FA) ;
+
+$| = 1;
 
 %DB_errors = (
     'DB_INCOMPLETE'	=> "DB_INCOMPLETE: Sync was unable to complete",
@@ -18,20 +20,46 @@ use vars qw(%DB_errors) ;
     'DB_RUNRECOVERY'	=> "DB_RUNRECOVERY: Fatal error, run database recovery",
 ) ;
 
+# full tied array support started in Perl 5.004_57
+# just double check.
+$FA = 0 ;
+{
+    sub try::TIEARRAY { bless [], "try" }
+    sub try::FETCHSIZE { $FA = 1 }
+    my @a ; 
+    tie @a, 'try' ;
+    my $a = @a ;
+}
+
 {
     package LexFile ;
+
+    use vars qw( $basename @files ) ;
+    $basename = "db0000" ;
 
     sub new
     {
 	my $self = shift ;
-	unlink @_ ;
- 	bless [ @_ ], $self ;
+        #my @files = () ;
+        foreach (@_)
+        {
+            $_ = $basename ;
+            unlink $basename ;
+            push @files, $basename ;
+            ++ $basename ;
+        }
+ 	bless [ @files ], $self ;
     }
 
     sub DESTROY
     {
 	my $self = shift ;
-	unlink @{ $self } ;
+	#unlink @{ $self } ;
+    }
+
+    END
+    {
+        foreach (@files) { unlink $_ }
     }
 }
 
@@ -40,6 +68,8 @@ use vars qw(%DB_errors) ;
     package LexDir ;
 
     use File::Path qw(rmtree);
+
+    use vars qw( $basename %dirs ) ;
 
     sub new
     {
@@ -56,8 +86,18 @@ use vars qw(%DB_errors) ;
     sub DESTROY 
     {
         my $self = shift ;
-        rmtree $self->[0] ;
+        my $dir = $self->[0];
+        #rmtree $dir;
+        $dirs{$dir} ++ ;
     }
+
+    END
+    {
+        foreach (keys %dirs) {
+            rmtree $_ if -d $_ ;
+        }
+    }
+
 }
 
 {

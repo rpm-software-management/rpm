@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_main.c,v 1.18 2001/11/18 01:29:07 margo Exp 
+ * Id: ex_rq_main.c,v 1.23 2002/08/06 05:39:03 bostic Exp 
  */
 
 #include <sys/types.h>
@@ -26,8 +26,9 @@
 int master_eid;
 char *myaddr;
 
-static int env_init __P((char *, char *, DB_ENV **, machtab_t *, u_int32_t));
-static void usage __P((char *));
+static int env_init __P((const char *, const char *, DB_ENV **, machtab_t *,
+    u_int32_t));
+static void usage __P((const char *));
 
 int
 main(argc, argv)
@@ -43,10 +44,11 @@ main(argc, argv)
 	connect_args ca;
 	machtab_t *machtab;
 	pthread_t all_thr, conn_thr;
-	site_t site, *sitep, self, *selfp;
+	repsite_t site, *sitep, self, *selfp;
 	struct sigaction sigact;
 	int maxsites, nsites, ret, priority, totalsites;
-	char *c, ch, *home, *progname;
+	char *c, ch;
+	const char *home, *progname;
 	void *astatus, *cstatus;
 
 	master_eid = DB_EID_INVALID;
@@ -101,7 +103,7 @@ main(argc, argv)
 			if (sitep == NULL || nsites >= maxsites) {
 				maxsites = maxsites == 0 ? 10 : 2 * maxsites;
 				if ((sitep = realloc(sitep,
-				    maxsites * sizeof(site_t))) == NULL) {
+				    maxsites * sizeof(repsite_t))) == NULL) {
 					fprintf(stderr, "System error %s\n",
 					    strerror(errno));
 					goto err;
@@ -250,9 +252,9 @@ err:	if (machtab != NULL)
  */
 static void
 usage(progname)
-	char *progname;
+	const char *progname;
 {
-	fprintf(stderr, "usage: %s ", progname); 
+	fprintf(stderr, "usage: %s ", progname);
 	fprintf(stderr, "[-CM][-h home][-o host:port][-m host:port]%s",
 	    "[-n nsites][-p priority]\n");
 	exit(EXIT_FAILURE);
@@ -261,7 +263,7 @@ usage(progname)
 /* Open and configure an environment.  */
 int
 env_init(progname, home, dbenvp, machtab, flags)
-	char *progname, *home;
+	const char *progname, *home;
 	DB_ENV **dbenvp;
 	machtab_t *machtab;
 	u_int32_t flags;
@@ -284,7 +286,7 @@ env_init(progname, home, dbenvp, machtab, flags)
 	}
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, prefix);
-	(void)dbenv->set_verbose(dbenv, DB_VERB_REPLICATION, 1);
+	/* (void)dbenv->set_verbose(dbenv, DB_VERB_REPLICATION, 1); */
 	(void)dbenv->set_cachesize(dbenv, 0, CACHESIZE, 0);
 	/* (void)dbenv->set_flags(dbenv, DB_TXN_NOSYNC, 1); */
 
@@ -299,4 +301,3 @@ env_init(progname, home, dbenvp, machtab, flags)
 	*dbenvp = dbenv;
 	return (ret);
 }
-

@@ -1,6 +1,7 @@
-<!--Id: faq.so,v 1.5 2001/11/17 16:59:33 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: faq.so,v 1.6 2002/05/09 20:38:15 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Replication FAQ</title>
@@ -49,6 +50,47 @@ for the message.  This will likely require a global numbering scheme,
 however, as the Berkeley DB library has to be able to send specific log
 records to clients apart from the general broadcast of new log records
 intended for all members of a replication group.
+<p><li><b>Does every one of my threads of control on the master have to
+set up its own connection to every client?  And, does every one of my
+threads of control on the client have to set up its own connection to
+every master?</b>
+<p>This is not always necessary.  In the Berkeley DB replication model, any
+thread of control which modifies a database in the master environment
+must be prepared to send a message to the client environments, and any
+thread of control which delivers a message to a client environment must
+be prepared to send a message to the master.  There are many ways in
+which these requirements can be satisfied.
+<p>The simplest case is probably a single, multithreaded process running
+on the master and clients.  The process running on the master would
+require a single write connection to each client and a single read
+connection from each client.  A process running on each client would
+require a single read connection from the master and a single write
+connection to the master.  Threads running in these processes on the
+master and clients would use the same network connections to pass
+messages back and forth.
+<p>A common complication is when there are multiple processes running on
+the master and clients.  A straight-forward solution is to increase the
+numbers of connections on the master -- each process running on the
+master has its own write connection to each client.  However, this
+requires only one additional connection for each possible client in the
+master process.  The master environment still requires only a single
+read connection from each client (this can be done by allocating a
+separate thread of control which does nothing other than receive client
+messages and forward them into the database).  Similarly, each client
+still only requires a single thread of control that receives master
+messages and forwards them into the database, and which also takes
+database messages and forwards them back to the master.  This model
+requires the networking infrastructure support many-to-one
+writers-to-readers, of course.
+<p>If the number of network connections is a problem in the multiprocess
+model, and inter-process communication on the system is inexpensive
+enough, an alternative is have a single process which communicates
+between the master the each client, and whenever a process'
+<b>send</b> function is called, the process passes the message to the
+communications process which is responsible for forwarding the message
+to the appropriate client.  Alternatively, a broadcast mechanism will
+simplify the entire networking infrastructure, as processes will likely
+no longer have to maintain their own specific network connections.
 <p><li><b>Can I use replication to replicate just the database
 environment's log files?</b>
 <p>Yes.  If the <a href="../../api_c/rep_start.html#DB_REP_LOGSONLY">DB_REP_LOGSONLY</a> flag is specified to

@@ -2,17 +2,16 @@
  * #include <pthread.h>
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_master.c,v 1.16 2001/10/26 19:19:43 margo Exp 
+ * Id: ex_rq_master.c,v 1.22 2002/08/06 05:39:03 bostic Exp 
  */
 
 #include <sys/types.h>
 
 #include <errno.h>
 #include <pthread.h>
-#include <queue.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,7 +28,7 @@ static void *master_loop __P((void *));
 int
 domaster(dbenv, progname)
 	DB_ENV *dbenv;
-	char *progname;
+	const char *progname;
 {
 	int ret, t_ret;
 	pthread_t interface_thr;
@@ -84,9 +83,17 @@ master_loop(dbenvv)
 		if ((ret = db_create(&dbp, dbenv, 0)) != 0)
 			return ((void *)ret);
 
-		if ((ret = dbp->open(dbp, DATABASE,
+		if ((ret = dbenv->txn_begin(dbenv, NULL, &txn, 0)) != 0)
+			goto err;
+		if ((ret = dbp->open(dbp, txn, DATABASE,
 		    NULL, DB_BTREE, DB_CREATE /* | DB_THREAD */, 0)) != 0)
 			goto err;
+		ret = txn->commit(txn, 0);
+		txn = NULL;
+		if (ret != 0) {
+			dbp = NULL;
+			goto err;
+		}
 
 #ifdef NOTDEF
 	} else {
@@ -156,4 +163,3 @@ err:	if (txn != NULL)
 
 	return ((void *)ret);
 }
-

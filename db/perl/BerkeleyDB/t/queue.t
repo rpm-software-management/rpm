@@ -22,7 +22,7 @@ BEGIN
     }
 }    
 
-print "1..197\n";
+print "1..201\n";
 
 sub fillout
 {
@@ -209,17 +209,6 @@ umask(0) ;
  
 {
     # Tied Array interface
-
-    # full tied array support started in Perl 5.004_57
-    # just double check.
-    my $FA = 0 ;
-    {
-        sub try::TIEARRAY { bless [], "try" }
-        sub try::FETCHSIZE { $FA = 1 }
-        my @a ; 
-        tie @a, 'try' ;
-        my $a = @a ;
-    }
 
     my $lex = new LexFile $Dfile ;
     my @array ;
@@ -545,6 +534,10 @@ umask(0) ;
 				-Pad      => " " ;
 
     
+    ok 173, $txn->txn_commit() == 0 ;
+    ok 174, $txn = $env->txn_begin() ;
+    $db1->Txn($txn);
+
     # create some data
     my @data =  (
 		"boat",
@@ -557,31 +550,31 @@ umask(0) ;
     for ($i = 0 ; $i < @data ; ++$i) {
         $ret += $db1->db_put($i, $data[$i]) ;
     }
-    ok 173, $ret == 0 ;
+    ok 175, $ret == 0 ;
 
     # should be able to see all the records
 
-    ok 174, my $cursor = $db1->db_cursor() ;
+    ok 176, my $cursor = $db1->db_cursor() ;
     my ($k, $v) = (0, "") ;
     my $count = 0 ;
     # sequence forwards
     while ($cursor->c_get($k, $v, DB_NEXT) == 0) {
         ++ $count ;
     }
-    ok 175, $count == 3 ;
+    ok 177, $count == 3 ;
     undef $cursor ;
 
     # now abort the transaction
-    ok 176, $txn->txn_abort() == 0 ;
+    ok 178, $txn->txn_abort() == 0 ;
 
     # there shouldn't be any records in the database
     $count = 0 ;
     # sequence forwards
-    ok 177, $cursor = $db1->db_cursor() ;
+    ok 179, $cursor = $db1->db_cursor() ;
     while ($cursor->c_get($k, $v, DB_NEXT) == 0) {
         ++ $count ;
     }
-    ok 178, $count == 0 ;
+    ok 180, $count == 0 ;
 
     undef $txn ;
     undef $cursor ;
@@ -599,7 +592,7 @@ umask(0) ;
     my @array ;
     my ($k, $v) ;
     my $rec_len = 7 ;
-    ok 179, my $db = new BerkeleyDB::Queue -Filename 	=> $Dfile, 
+    ok 181, my $db = new BerkeleyDB::Queue -Filename 	=> $Dfile, 
 				     	   -Flags    	=> DB_CREATE,
 					   -Pagesize	=> 4 * 1024,
 				           -Len       => $rec_len,
@@ -607,8 +600,8 @@ umask(0) ;
 					;
 
     my $ref = $db->db_stat() ; 
-    ok 180, $ref->{$recs} == 0;
-    ok 181, $ref->{'qs_pagesize'} == 4 * 1024;
+    ok 182, $ref->{$recs} == 0;
+    ok 183, $ref->{'qs_pagesize'} == 4 * 1024;
 
     # create some data
     my @data =  (
@@ -622,10 +615,10 @@ umask(0) ;
     for ($i = $db->ArrayOffset ; @data ; ++$i) {
         $ret += $db->db_put($i, shift @data) ;
     }
-    ok 182, $ret == 0 ;
+    ok 184, $ret == 0 ;
 
     $ref = $db->db_stat() ; 
-    ok 183, $ref->{$recs} == 3;
+    ok 185, $ref->{$recs} == 3;
 }
 
 {
@@ -676,12 +669,12 @@ EOM
 
     BEGIN { push @INC, '.'; }    
     eval 'use SubDB ; ';
-    main::ok 184, $@ eq "" ;
+    main::ok 186, $@ eq "" ;
     my @h ;
     my $X ;
     my $rec_len = 34 ;
     eval '
-	$X = tie(@h, "SubDB", -Filename => "dbbtree.tmp", 
+	$X = tie(@h, "SubDB", -Filename => "dbqueue.tmp", 
 			-Flags => DB_CREATE,
 			-Mode => 0640 ,
 	                -Len       => $rec_len,
@@ -689,26 +682,28 @@ EOM
 			);		   
 	' ;
 
-    main::ok 185, $@ eq "" ;
+    main::ok 187, $@ eq "" ;
 
     my $ret = eval '$h[1] = 3 ; return $h[1] ' ;
-    main::ok 186, $@ eq "" ;
-    main::ok 187, $ret == 7 ;
+    main::ok 188, $@ eq "" ;
+    main::ok 189, $ret == 7 ;
 
     my $value = 0;
     $ret = eval '$X->db_put(1, 4) ; $X->db_get(1, $value) ; return $value' ;
-    main::ok 188, $@ eq "" ;
-    main::ok 189, $ret == 10 ;
+    main::ok 190, $@ eq "" ;
+    main::ok 191, $ret == 10 ;
 
     $ret = eval ' DB_NEXT eq main::DB_NEXT ' ;
-    main::ok 190, $@ eq ""  ;
-    main::ok 191, $ret == 1 ;
+    main::ok 192, $@ eq ""  ;
+    main::ok 193, $ret == 1 ;
 
     $ret = eval '$X->A_new_method(1) ' ;
-    main::ok 192, $@ eq "" ;
-    main::ok 193, $ret eq "[[10]]" ;
+    main::ok 194, $@ eq "" ;
+    main::ok 195, $ret eq "[[10]]" ;
 
-    unlink "SubDB.pm", "dbbtree.tmp" ;
+    undef $X ;
+    untie @h ;
+    unlink "SubDB.pm", "dbqueue.tmp" ;
 
 }
 
@@ -719,7 +714,7 @@ EOM
     my @array ;
     my $value ;
     my $rec_len = 21 ;
-    ok 194, my $db = tie @array, 'BerkeleyDB::Queue', 
+    ok 196, my $db = tie @array, 'BerkeleyDB::Queue', 
 					-Filename  => $Dfile,
                                        	-Flags     => DB_CREATE ,
 	                		-Len       => $rec_len,
@@ -730,12 +725,34 @@ EOM
     $array[3] = "ghi" ;
 
     my $k = 0 ;
-    ok 195, $db->db_put($k, "fred", DB_APPEND) == 0 ;
-    ok 196, $k == 4 ;
-    ok 197, $array[4] eq fillout("fred", $rec_len) ;
+    ok 197, $db->db_put($k, "fred", DB_APPEND) == 0 ;
+    ok 198, $k == 4 ;
+    ok 199, $array[4] eq fillout("fred", $rec_len) ;
 
     undef $db ;
     untie @array ;
+}
+
+{
+    # 23 Sept 2001 -- push into an empty array
+    my $lex = new LexFile $Dfile ;
+    my @array ;
+    my $db ;
+    my $rec_len = 21 ;
+    ok 200, $db = tie @array, 'BerkeleyDB::Queue', 
+                                      	       	-Flags  => DB_CREATE ,
+				    	        -ArrayBase => 0,
+	                		        -Len       => $rec_len,
+	                		        -Pad       => " " ,
+						-Filename => $Dfile ;
+    $FA ? push @array, "first"
+        : $db->push("first") ;
+
+    ok 201, ($FA ? pop @array : $db->pop()) eq fillout("first", $rec_len) ;
+
+    undef $db;
+    untie @array ;
+
 }
 
 __END__

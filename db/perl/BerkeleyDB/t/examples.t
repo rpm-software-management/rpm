@@ -10,20 +10,9 @@ BEGIN {
 }
 
 use BerkeleyDB; 
-use t::util ;
+use t::util;
 
 print "1..7\n";
-
-my $FA = 0 ;
-
-{
-    sub try::TIEARRAY { bless [], "try" }
-    sub try::FETCHSIZE { $FA = 1 }
-    $FA = 0 ;
-    my @a ; 
-    tie @a, 'try' ;
-    my $a = @a ;
-}
 
 my $Dfile = "dbhash.tmp";
 my $Dfile2 = "dbhash2.tmp";

@@ -1,6 +1,7 @@
-<!--Id: faq.so,v 10.3 2001/10/13 19:56:25 bostic Exp -->
-<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--Id: faq.so,v 10.5 2002/05/14 15:01:45 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Transaction FAQ</title>
@@ -66,18 +67,14 @@ database will first be referenced in the log.  If we copy the database
 first, then we can also know that any inconsistency in the database will
 be described in the log files, and so we know that we can fix everything
 up during recovery.
-<p><li><b>Why happens if my database page size isn't the same size as the
-block size used by the system for filesystem I/O?</b>
-<p>Berkeley DB does not do checksums across database pages, it relies on bytes
-found in a single part of each database page to decide during recovery
-if a page needs to be modified or if the page is correct and no changes
-are required.  If the operating system wrote a large page in two parts,
-or the underlying hardware could fail in some way so that those bytes
-were written, but the rest of the page was not, then it would be
-possible for recovery to not correctly update the page.  This is an
-unlikely failure scenario, but a possible one.
-<p>See <a href="../../ref/transapp/reclimit.html">Berkeley DB recoverability</a>
-for more detailed information.
+<p><li><b>How can I move a database from one transactional environment
+into another?</b>
+<p>Because database pages contain references to log records, databases
+cannot be simply moved into different database environments.  To move
+a database into a different environment, dump and reload the database
+before moving it.  If the database is too large to dump and reload, the
+database may be prepared in place by setting the first eight bytes of
+each page in the file to 0.
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>

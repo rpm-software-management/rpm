@@ -1,13 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2001
+ * Copyright (c) 1996-2002
  *	Sleepycat Software.  All rights reserved.
  */
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: log.c,v 11.73 2001/11/16 16:29:33 bostic Exp ";
+static const char revid[] = "Id: log.c,v 11.110 2002/08/13 17:51:13 sue Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -20,14 +20,15 @@ static const char revid[] = "Id: log.c,v 11.73 2001/11/16 16:29:33 bostic Exp ";
 #endif
 
 #include "db_int.h"
-#include "log.h"
-#include "db_dispatch.h"
-#include "txn.h"
-#include "txn_auto.h"
+#include "dbinc/crypto.h"
+#include "dbinc/hmac.h"
+#include "dbinc/log.h"
+#include "dbinc/txn.h"
 
 static int __log_init __P((DB_ENV *, DB_LOG *));
 static int __log_recover __P((DB_LOG *));
 static size_t __log_region_size __P((DB_ENV *));
+static int __log_zero __P((DB_ENV *, DB_LSN *, DB_LSN *));
 
 /*
  * __log_open --
@@ -72,15 +73,10 @@ __log_open(dbenv)
 	 * If the region is threaded, then we have to lock both the handles
 	 * and the region, and we need to allocate a mutex for that purpose.
 	 */
-	if (F_ISSET(dbenv, DB_ENV_THREAD)) {
-		if ((ret = __db_mutex_alloc(
-		    dbenv, &dblp->reginfo, 1, &dblp->mutexp)) != 0)
-			goto err;
-		if ((ret = __db_shmutex_init(dbenv, dblp->mutexp, 0,
-		    MUTEX_THREAD, &dblp->reginfo,
-		    (REGMAINT *)R_ADDR(&dblp->reginfo, lp->maint_off))) != 0)
-			goto err;
-	}
+	if (F_ISSET(dbenv, DB_ENV_THREAD) &&
+	    (ret = __db_mutex_setup(dbenv, &dblp->reginfo, &dblp->mutexp,
+	    MUTEX_ALLOC | MUTEX_NO_RLOCK)) != 0)
+		goto err;
 
 	/* Initialize the rest of the structure. */
 	dblp->bufp = R_ADDR(&dblp->reginfo, lp->buffer_off);
@@ -89,13 +85,36 @@ __log_open(dbenv)
 	 * Set the handle -- we may be about to run recovery, which allocates
 	 * log cursors.  Log cursors require logging be already configured,
 	 * and the handle being set is what demonstrates that.
+	 *
+	 * If we created the region, run recovery.  If that fails, make sure
+	 * we reset the log handle before cleaning up, otherwise we will try
+	 * and clean up again in the mainline DB_ENV initialization code.
 	 */
 	dbenv->lg_handle = dblp;
 
-	/* If we created the region, run recovery. */
-	if (F_ISSET(&dblp->reginfo, REGION_CREATE))
-		if ((ret = __log_recover(dblp)) != 0)
+	if (F_ISSET(&dblp->reginfo, REGION_CREATE)) {
+		if ((ret = __log_recover(dblp)) != 0) {
+			dbenv->lg_handle = NULL;
 			goto err;
+		}
+
+		/*
+		 * We first take the log file size from the environment, if
+		 * specified.  If that wasn't set, recovery may have set it
+		 * from the persistent information in a log file header.  If
+		 * that didn't set it either, we default.
+		 */
+		if (lp->log_size == 0)
+			lp->log_size = lp->log_nsize = LG_MAX_DEFAULT;
+	} else {
+		/*
+		 * A process joining the region may have reset the log file
+		 * size, too.  If so, it only affects the next log file we
+		 * create.
+		 */
+		 if (dbenv->lg_size != 0)
+			lp->log_nsize = dbenv->lg_size;
+	}
 
 	R_UNLOCK(dbenv, &dblp->reginfo);
 	return (0);
@@ -110,7 +129,7 @@ err:	if (dblp->reginfo.addr != NULL) {
 	if (dblp->mutexp != NULL)
 		__db_mutex_free(dbenv, &dblp->reginfo, dblp->mutexp);
 
-	__os_free(dbenv, dblp, sizeof(*dblp));
+	__os_free(dbenv, dblp);
 
 	return (ret);
 }
@@ -124,10 +143,11 @@ __log_init(dbenv, dblp)
 	DB_ENV *dbenv;
 	DB_LOG *dblp;
 {
+	DB_MUTEX *flush_mutexp;
 	LOG *region;
 	int ret;
 	void *p;
-#ifdef  MUTEX_SYSTEM_RESOURCES
+#ifdef  HAVE_MUTEX_SYSTEM_RESOURCES
 	u_int8_t *addr;
 #endif
 
@@ -139,11 +159,10 @@ __log_init(dbenv, dblp)
 	region = dblp->reginfo.primary;
 	memset(region, 0, sizeof(*region));
 
-	region->persist.lg_max = dbenv->lg_max;
-	region->persist.magic = DB_LOGMAGIC;
-	region->persist.version = DB_LOGVERSION;
-	region->persist.mode = dbenv->db_mode;
+	region->fid_max = 0;
 	SH_TAILQ_INIT(&region->fq);
+	region->free_fid_stack = INVALID_ROFF;
+	region->free_fids = region->free_fids_alloced = 0;
 
 	/* Initialize LOG LSNs. */
 	INIT_LSN(region->lsn);
@@ -157,8 +176,15 @@ __log_init(dbenv, dblp)
 	 */
 	ZERO_LSN(region->waiting_lsn);
 
-#ifdef  MUTEX_SYSTEM_RESOURCES
-	/* Allocate room for the txn maintenance info and initialize it. */
+	/*
+	 * Log makes note of the fact that it ran into a checkpoint on
+	 * startup if it did so, as a recovery optimization.  A zero
+	 * LSN signifies that it hasn't found one [yet].
+	 */
+	ZERO_LSN(region->cached_ckp_lsn);
+
+#ifdef  HAVE_MUTEX_SYSTEM_RESOURCES
+	/* Allocate room for the log maintenance info and initialize it. */
 	if ((ret = __db_shalloc(dblp->reginfo.addr,
 	    sizeof(REGMAINT) + LG_MAINT_SIZE, 0, &addr)) != 0)
 		goto mem_err;
@@ -166,10 +192,22 @@ __log_init(dbenv, dblp)
 	region->maint_off = R_OFFSET(&dblp->reginfo, addr);
 #endif
 
-	if ((ret = __db_shmutex_init(dbenv, &region->flush, 0,
-	    0, &dblp->reginfo,
-	    (REGMAINT *)R_ADDR(&dblp->reginfo, region->maint_off))) != 0)
+	if ((ret = __db_mutex_setup(dbenv, &dblp->reginfo, &region->fq_mutex,
+	    MUTEX_NO_RLOCK)) != 0)
 		return (ret);
+
+	/*
+	 * We must create a place for the flush mutex separately; mutexes have
+	 * to be aligned to MUTEX_ALIGN, and the only way to guarantee that is
+	 * to make sure they're at the beginning of a shalloc'ed chunk.
+	 */
+	if ((ret = __db_shalloc(dblp->reginfo.addr,
+	    sizeof(DB_MUTEX), MUTEX_ALIGN, &flush_mutexp)) != 0)
+		goto mem_err;
+	if ((ret = __db_mutex_setup(dbenv, &dblp->reginfo, flush_mutexp,
+	    MUTEX_NO_RLOCK)) != 0)
+		return (ret);
+	region->flush_mutex_off = R_OFFSET(&dblp->reginfo, flush_mutexp);
 
 	/* Initialize the buffer. */
 	if ((ret =
@@ -179,11 +217,21 @@ mem_err:	__db_err(dbenv, "Unable to allocate memory for the log buffer");
 	}
 	region->buffer_size = dbenv->lg_bsize;
 	region->buffer_off = R_OFFSET(&dblp->reginfo, p);
+	region->log_size = region->log_nsize = dbenv->lg_size;
 
 	/* Initialize the commit Queue. */
 	SH_TAILQ_INIT(&region->free_commits);
 	SH_TAILQ_INIT(&region->commits);
 	region->ncommit = 0;
+
+	/*
+	 * Fill in the log's persistent header.  Don't fill in the log file
+	 * sizes, as they may change at any time and so have to be filled in
+	 * as each log file is created.
+	 */
+	region->persist.magic = DB_LOGMAGIC;
+	region->persist.version = DB_LOGVERSION;
+	region->persist.mode = (u_int32_t)dbenv->db_mode;
 
 	return (0);
 }
@@ -201,11 +249,12 @@ __log_recover(dblp)
 	DB_LOGC *logc;
 	DB_LSN lsn;
 	LOG *lp;
-	int cnt, found_checkpoint, ret;
-	u_int32_t chk;
+	u_int32_t cnt, rectype;
+	int ret;
 	logfile_validity status;
 
 	logc = NULL;
+	dbenv = dblp->dbenv;
 	lp = dblp->reginfo.primary;
 
 	/*
@@ -219,8 +268,9 @@ __log_recover(dblp)
 
 	/*
 	 * If the last file is an old version, readable or no, start a new
-	 * file.  Don't bother finding checkpoints;  if we didn't take a
-	 * checkpoint right before upgrading, the user screwed up anyway.
+	 * file.  Don't bother finding the end of the last log file;
+	 * we assume that it's valid in its entirety, since the user
+	 * should have shut down cleanly or run recovery before upgrading.
 	 */
 	if (status == DB_LV_OLD_READABLE || status == DB_LV_OLD_UNREADABLE) {
 		lp->lsn.file = lp->s_lsn.file = cnt + 1;
@@ -244,7 +294,6 @@ __log_recover(dblp)
 	 * Allocate a cursor and set it to the first record.  This shouldn't
 	 * fail, leave error messages on.
 	 */
-	dbenv = dblp->dbenv;
 	if ((ret = dbenv->log_cursor(dbenv, &logc, 0)) != 0)
 		return (ret);
 	F_SET(logc, DB_LOG_LOCKED);
@@ -253,19 +302,21 @@ __log_recover(dblp)
 		goto err;
 
 	/*
-	 * Read to the end of the file, looking for checkpoints.  This will
-	 * fail at some point, so turn off error messages.
+	 * Read to the end of the file.  This may fail at some point, so
+	 * turn off error messages.
 	 */
 	F_SET(logc, DB_LOG_SILENT_ERR);
-	found_checkpoint = 0;
 	while (logc->get(logc, &lsn, &dbt, DB_NEXT) == 0) {
 		if (dbt.size < sizeof(u_int32_t))
 			continue;
-		memcpy(&chk, dbt.data, sizeof(u_int32_t));
-		if (chk == DB_txn_ckp) {
-			lp->chkpt_lsn = lsn;
-			found_checkpoint = 1;
-		}
+		memcpy(&rectype, dbt.data, sizeof(u_int32_t));
+		if (rectype == DB___txn_ckp)
+			/*
+			 * If we happen to run into a checkpoint, cache its
+			 * LSN so that the transaction system doesn't have
+			 * to walk this log file again looking for it.
+			 */
+			lp->cached_ckp_lsn = lsn;
 	}
 	F_CLR(logc, DB_LOG_SILENT_ERR);
 
@@ -284,43 +335,9 @@ __log_recover(dblp)
 	lp->b_off = 0;
 	lp->w_off = lp->lsn.offset;
 
-	/*
-	 * It's possible that we didn't find a checkpoint because there wasn't
-	 * one in the last log file.  Start searching.
-	 */
-	if (!found_checkpoint && cnt > 1) {
-		lsn.file = cnt;
-		lsn.offset = 0;
-
-		/* Set the cursor; shouldn't fail, leave error messages on. */
-		if ((ret = logc->get(logc, &lsn, &dbt, DB_SET)) != 0)
-			goto err;
-
-		/*
-		 * Read to the end of the file, looking for checkpoints.  This
-		 * can fail if there are no checkpoints in any log file, so we
-		 * turn off error messages.
-		 */
-		F_SET(logc, DB_LOG_SILENT_ERR);
-		while (logc->get(logc, &lsn, &dbt, DB_PREV) == 0) {
-			if (dbt.size < sizeof(u_int32_t))
-				continue;
-			memcpy(&chk, dbt.data, sizeof(u_int32_t));
-			if (chk == DB_txn_ckp) {
-				lp->chkpt_lsn = lsn;
-				found_checkpoint = 1;
-				break;
-			}
-		}
-		F_CLR(logc, DB_LOG_SILENT_ERR);
-	}
-
-	/* If we never find a checkpoint, that's okay, just 0 it out. */
-	if (!found_checkpoint)
-skipsearch:	ZERO_LSN(lp->chkpt_lsn);
-
-	if (FLD_ISSET(dblp->dbenv->verbose, DB_VERB_RECOVERY))
-		__db_err(dblp->dbenv,
+skipsearch:
+	if (FLD_ISSET(dbenv->verbose, DB_VERB_RECOVERY))
+		__db_err(dbenv,
 		    "Finding last valid log LSN: file: %lu offset %lu",
 		    (u_long)lp->lsn.file, (u_long)lp->lsn.offset);
 
@@ -336,20 +353,23 @@ err:	if (logc != NULL)
  * the number of the first readable log file, else it will contain the number
  * of the last log file (which may be too old to read).
  *
- * PUBLIC: int __log_find __P((DB_LOG *, int, int *, logfile_validity *));
+ * PUBLIC: int __log_find __P((DB_LOG *, int, u_int32_t *, logfile_validity *));
  */
 int
 __log_find(dblp, find_first, valp, statusp)
 	DB_LOG *dblp;
-	int find_first, *valp;
+	int find_first;
+	u_int32_t *valp;
 	logfile_validity *statusp;
 {
-	char *c, **names, *p, *q, savech;
-	const char *dir;
-	int cnt, fcnt, ret;
+	DB_ENV *dbenv;
 	logfile_validity logval_status, status;
 	u_int32_t clv, logval;
+	int cnt, fcnt, ret;
+	const char *dir;
+	char *c, **names, *p, *q, savech;
 
+	dbenv = dblp->dbenv;
 	logval_status = status = DB_LV_NONEXISTENT;
 
 	/* Return a value of 0 as the log file number on failure. */
@@ -368,7 +388,7 @@ __log_find(dblp, find_first, valp, statusp)
 	}
 
 	/* Get the list of file names. */
-	ret = __os_dirlist(dblp->dbenv, dir, &names, &fcnt);
+	ret = __os_dirlist(dbenv, dir, &names, &fcnt);
 
 	/*
 	 * !!!
@@ -380,8 +400,8 @@ __log_find(dblp, find_first, valp, statusp)
 		*q = savech;
 
 	if (ret != 0) {
-		__db_err(dblp->dbenv, "%s: %s", dir, db_strerror(ret));
-		__os_freestr(dblp->dbenv, p);
+		__db_err(dbenv, "%s: %s", dir, db_strerror(ret));
+		__os_free(dbenv, p);
 		return (ret);
 	}
 
@@ -405,73 +425,78 @@ __log_find(dblp, find_first, valp, statusp)
 		 * log file name won't fit.
 		 */
 		clv = atol(names[cnt] + (sizeof(LFPREFIX) - 1));
+
+		/*
+		 * If searching for the first log file, we want to return the
+		 * oldest log file we can read, or, if no readable log files
+		 * exist, the newest log file we can't read (the crossover
+		 * point between the old and new versions of the log file).
+		 *
+		 * If we're searching for the last log file, we want to return
+		 * the newest log file, period.
+		 *
+		 * Readable log files should never preceede unreadable log
+		 * files, that would mean the admin seriously screwed up.
+		 */
 		if (find_first) {
-			if (logval != 0 && clv > logval)
+			if (logval != 0 &&
+			    status != DB_LV_OLD_UNREADABLE && clv > logval)
 				continue;
 		} else
 			if (logval != 0 && clv < logval)
 				continue;
 
-		/*
-		 * Take note of whether the log file logval is
-		 * an old version or incompletely initialized.
-		 */
 		if ((ret = __log_valid(dblp, clv, 1, &status)) != 0) {
-			__db_err(dblp->dbenv, "Invalid log file: %s: %s",
+			__db_err(dbenv, "Invalid log file: %s: %s",
 			    names[cnt], db_strerror(ret));
 			goto err;
 		}
 		switch (status) {
-		case DB_LV_INCOMPLETE:
-			/*
-			 * It's acceptable for the last log file to
-			 * have been incompletely initialized--it's possible
-			 * to create a log file but not write anything to it,
-			 * and recovery needs to gracefully handle this.
-			 *
-			 * Just ignore it;  we don't want to return this
-			 * as a valid log file.
-			 */
-			break;
 		case DB_LV_NONEXISTENT:
-			/* Should never happen. */
+			/* __log_valid never returns DB_LV_NONEXISTENT. */
 			DB_ASSERT(0);
 			break;
-		case DB_LV_NORMAL:
-		case DB_LV_OLD_READABLE:
-			logval = clv;
-			logval_status = status;
+		case DB_LV_INCOMPLETE:
+			/*
+			 * The last log file may not have been initialized --
+			 * it's possible to create a log file but not write
+			 * anything to it.  If performing recovery (that is,
+			 * if find_first isn't set), ignore the file, it's
+			 * not interesting.  If we're searching for the first
+			 * log record, return the file (assuming we don't find
+			 * something better), as the "real" first log record
+			 * is likely to be in the log buffer, and we want to
+			 * set the file LSN for our return.
+			 */
+			if (find_first)
+				goto found;
 			break;
 		case DB_LV_OLD_UNREADABLE:
 			/*
-			 * Continue;  we want the oldest valid log,
-			 * and clv is too old to be useful.  We don't
-			 * want it to supplant logval if we're looking for
-			 * the oldest valid log, but we do want to return
-			 * it if it's the last log file--we want the very
-			 * last file number, so that our caller can
-			 * start a new file after it.
-			 *
-			 * The code here assumes that there will never
-			 * be a too-old log that's preceded by a log
-			 * of the current version, but in order to
-			 * attain that state of affairs the user
-			 * would have had to really seriously screw
-			 * up;  I think we can safely assume this won't
-			 * happen.
+			 * If we're searching for the first log file, then we
+			 * only want this file if we don't yet have a file or
+			 * already have an unreadable file and this one is
+			 * newer than that one.  If we're searching for the
+			 * last log file, we always want this file because we
+			 * wouldn't be here if it wasn't newer than our current
+			 * choice.
 			 */
-			if (!find_first) {
-				logval = clv;
-				logval_status = status;
-			}
+			if (!find_first || logval == 0 ||
+			    (status == DB_LV_OLD_UNREADABLE && clv > logval))
+				goto found;
+			break;
+		case DB_LV_NORMAL:
+		case DB_LV_OLD_READABLE:
+found:			logval = clv;
+			logval_status = status;
 			break;
 		}
 	}
 
 	*valp = logval;
 
-err:	__os_dirfree(dblp->dbenv, names, fcnt);
-	__os_freestr(dblp->dbenv, p);
+err:	__os_dirfree(dbenv, names, fcnt);
+	__os_free(dbenv, p);
 	*statusp = logval_status;
 
 	return (ret);
@@ -494,30 +519,48 @@ __log_valid(dblp, number, set_persist, statusp)
 	int set_persist;
 	logfile_validity *statusp;
 {
+	DB_CIPHER *db_cipher;
+	DB_ENV *dbenv;
 	DB_FH fh;
+	HDR *hdr;
 	LOG *region;
-	LOGP persist;
-	char *fname;
-	int ret;
+	LOGP *persist;
 	logfile_validity status;
-	size_t nw;
+	size_t hdrsize, nw, recsize;
+	int is_hmac, need_free, ret;
+	u_int8_t *tmp;
+	char *fname;
 
+	dbenv = dblp->dbenv;
+	db_cipher = dbenv->crypto_handle;
+	persist = NULL;
 	status = DB_LV_NORMAL;
 
 	/* Try to open the log file. */
 	if ((ret = __log_name(dblp,
 	    number, &fname, &fh, DB_OSO_RDONLY | DB_OSO_SEQ)) != 0) {
-		__os_freestr(dblp->dbenv, fname);
+		__os_free(dbenv, fname);
 		return (ret);
 	}
 
+	need_free = 0;
+	hdrsize = HDR_NORMAL_SZ;
+	is_hmac = 0;
+	recsize = sizeof(LOGP);
+	if (CRYPTO_ON(dbenv)) {
+		hdrsize = HDR_CRYPTO_SZ;
+		recsize = sizeof(LOGP);
+		recsize += db_cipher->adj_size(recsize);
+		is_hmac = 1;
+	}
+	if ((ret = __os_calloc(dbenv, 1, recsize + hdrsize, &tmp)) != 0)
+		return (ret);
+	need_free = 1;
+	hdr = (HDR *)tmp;
+	persist = (LOGP *)(tmp + hdrsize);
 	/* Try to read the header. */
-	if ((ret =
-	    __os_seek(dblp->dbenv,
-	    &fh, 0, 0, sizeof(HDR), 0, DB_OS_SEEK_SET)) != 0 ||
-	    (ret =
-	    __os_read(dblp->dbenv, &fh, &persist, sizeof(LOGP), &nw)) != 0 ||
-	    nw != sizeof(LOGP)) {
+	if ((ret = __os_read(dbenv, &fh, tmp, recsize + hdrsize, &nw)) != 0 ||
+	    nw != recsize + hdrsize) {
 		if (ret == 0)
 			status = DB_LV_INCOMPLETE;
 		else
@@ -525,19 +568,63 @@ __log_valid(dblp, number, set_persist, statusp)
 			 * The error was a fatal read error, not just an
 			 * incompletely initialized log file.
 			 */
-			__db_err(dblp->dbenv, "Ignoring log file: %s: %s",
+			__db_err(dbenv, "Ignoring log file: %s: %s",
 			    fname, db_strerror(ret));
 
-		(void)__os_closehandle(&fh);
+		(void)__os_closehandle(dbenv, &fh);
 		goto err;
 	}
-	(void)__os_closehandle(&fh);
+	(void)__os_closehandle(dbenv, &fh);
+
+	/*
+	 * Now we have to validate the persistent record.  We have
+	 * several scenarios we have to deal with:
+	 *
+	 * 1.  User has crypto turned on:
+	 *	- They're reading an old, unencrypted log file
+	 *	  .  We will fail the record size match check below.
+	 *	- They're reading a current, unencrypted log file
+	 *	  .  We will fail the record size match check below.
+	 *	- They're reading an old, encrypted log file [NOT YET]
+	 *	  .  After decryption we'll fail the version check.  [NOT YET]
+	 *	- They're reading a current, encrypted log file
+	 *	  .  We should proceed as usual.
+	 * 2.  User has crypto turned off:
+	 *	- They're reading an old, unencrypted log file
+	 *	  .  We will fail the version check.
+	 *	- They're reading a current, unencrypted log file
+	 *	  .  We should proceed as usual.
+	 *	- They're reading an old, encrypted log file [NOT YET]
+	 *	  .  We'll fail the magic number check (it is encrypted).
+	 *	- They're reading a current, encrypted log file
+	 *	  .  We'll fail the magic number check (it is encrypted).
+	 */
+	if (CRYPTO_ON(dbenv)) {
+		/*
+		 * If we are trying to decrypt an unencrypted log
+		 * we can only detect that by having an unreasonable
+		 * data length for our persistent data.
+		 */
+		if ((hdr->len - hdrsize) != sizeof(LOGP)) {
+			__db_err(dbenv, "log record size mismatch");
+			goto err;
+		}
+		/* Check the checksum and decrypt. */
+		if ((ret = __db_check_chksum(dbenv, db_cipher, &hdr->chksum[0],
+		    (u_int8_t *)persist, hdr->len - hdrsize, is_hmac)) != 0) {
+			__db_err(dbenv, "log record checksum mismatch");
+			goto err;
+		}
+		if ((ret = db_cipher->decrypt(dbenv, db_cipher->data,
+		    &hdr->iv[0], (u_int8_t *)persist, hdr->len - hdrsize)) != 0)
+			goto err;
+	}
 
 	/* Validate the header. */
-	if (persist.magic != DB_LOGMAGIC) {
-		__db_err(dblp->dbenv,
+	if (persist->magic != DB_LOGMAGIC) {
+		__db_err(dbenv,
 		    "Ignoring log file: %s: magic number %lx, not %lx",
-		    fname, (u_long)persist.magic, (u_long)DB_LOGMAGIC);
+		    fname, (u_long)persist->magic, (u_long)DB_LOGMAGIC);
 		ret = EINVAL;
 		goto err;
 	}
@@ -547,35 +634,60 @@ __log_valid(dblp, number, set_persist, statusp)
 	 * belongs to an unreadable or readable old version;  leave it
 	 * alone if and only if the log file version is the current one.
 	 */
-	if (persist.version > DB_LOGVERSION) {
+	if (persist->version > DB_LOGVERSION) {
 		/* This is a fatal error--the log file is newer than DB. */
-		__db_err(dblp->dbenv,
+		__db_err(dbenv,
 		    "Ignoring log file: %s: unsupported log version %lu",
-		    fname, (u_long)persist.version);
+		    fname, (u_long)persist->version);
 		ret = EINVAL;
 		goto err;
-	} else if (persist.version < DB_LOGOLDVER) {
+	} else if (persist->version < DB_LOGOLDVER) {
 		status = DB_LV_OLD_UNREADABLE;
 		/*
 		 * We don't want to set persistent info based on an
 		 * unreadable region, so jump to "err".
 		 */
 		goto err;
-	} else if (persist.version < DB_LOGVERSION)
+	} else if (persist->version < DB_LOGVERSION)
 		status = DB_LV_OLD_READABLE;
 
 	/*
-	 * If the log is thus far readable and we're doing system
-	 * initialization, set the region's persistent information
-	 * based on the headers.
+	 * Only if we have a current log do we verify the checksum.
+	 * We could not check the checksum before checking the magic
+	 * and version because old log hdrs have the length and checksum
+	 * in a different location.
+	 */
+	if (!CRYPTO_ON(dbenv) && ((ret = __db_check_chksum(dbenv,
+	    db_cipher, &hdr->chksum[0], (u_int8_t *)persist,
+	    hdr->len - hdrsize, is_hmac)) != 0)) {
+		__db_err(dbenv, "log record checksum mismatch");
+		goto err;
+	}
+
+	/*
+	 * If the log is readable so far and we're doing system initialization,
+	 * set the region's persistent information based on the headers.
+	 *
+	 * Always set the current log file size.  Only set the next log file's
+	 * size if the application hasn't set it already.
+	 *
+	 * XXX
+	 * Always use the persistent header's mode, regardless of what was set
+	 * in the current environment.  We've always done it this way, but it's
+	 * probably a bug -- I can't think of a way not-changing the mode would
+	 * be a problem, though.
 	 */
 	if (set_persist) {
 		region = dblp->reginfo.primary;
-		region->persist.lg_max = persist.lg_max;
-		region->persist.mode = persist.mode;
+		region->log_size = persist->log_size;
+		if (region->log_nsize == 0)
+			region->log_nsize = persist->log_size;
+		region->persist.mode = persist->mode;
 	}
 
-err:	__os_freestr(dblp->dbenv, fname);
+err:	__os_free(dbenv, fname);
+	if (need_free)
+		__os_free(dbenv, tmp);
 	*statusp = status;
 	return (ret);
 }
@@ -598,24 +710,25 @@ __log_dbenv_refresh(dbenv)
 
 	/* We may have opened files as part of XA; if so, close them. */
 	F_SET(dblp, DBLOG_RECOVER);
-	__log_close_files(dbenv);
+	ret = __dbreg_close_files(dbenv);
 
 	/* Discard the per-thread lock. */
 	if (dblp->mutexp != NULL)
 		__db_mutex_free(dbenv, &dblp->reginfo, dblp->mutexp);
 
 	/* Detach from the region. */
-	ret = __db_r_detach(dbenv, &dblp->reginfo, 0);
+	if ((t_ret =
+	    __db_r_detach(dbenv, &dblp->reginfo, 0)) != 0 && ret == 0)
+		ret = t_ret;
 
 	/* Close open files, release allocated memory. */
 	if (F_ISSET(&dblp->lfh, DB_FH_VALID) &&
-	    (t_ret = __os_closehandle(&dblp->lfh)) != 0 && ret == 0)
+	    (t_ret = __os_closehandle(dbenv, &dblp->lfh)) != 0 && ret == 0)
 		ret = t_ret;
 	if (dblp->dbentry != NULL)
-		__os_free(dbenv, dblp->dbentry,
-		    (dblp->dbentry_cnt * sizeof(DB_ENTRY)));
+		__os_free(dbenv, dblp->dbentry);
 
-	__os_free(dbenv, dblp, sizeof(*dblp));
+	__os_free(dbenv, dblp);
 
 	dbenv->lg_handle = NULL;
 	return (ret);
@@ -663,7 +776,7 @@ __log_stat(dbenv, statp, flags)
 	stats->st_version = region->persist.version;
 	stats->st_mode = region->persist.mode;
 	stats->st_lg_bsize = region->buffer_size;
-	stats->st_lg_max = region->persist.lg_max;
+	stats->st_lg_size = region->log_nsize;
 
 	stats->st_region_wait = dblp->reginfo.rp->mutex.mutex_set_wait;
 	stats->st_region_nowait = dblp->reginfo.rp->mutex.mutex_set_nowait;
@@ -685,24 +798,25 @@ __log_stat(dbenv, statp, flags)
 }
 
 /*
- * __log_lastckp --
- *	Return the current chkpt_lsn, so that we can store it in
- *	the transaction region and keep the chain of checkpoints
- *	unbroken across environment recreates.
+ * __log_get_cached_ckp_lsn --
+ *	Retrieve any last checkpoint LSN that we may have found on startup.
  *
- * PUBLIC: int __log_lastckp __P((DB_ENV *, DB_LSN *));
+ * PUBLIC: void __log_get_cached_ckp_lsn __P((DB_ENV *, DB_LSN *));
  */
-int
-__log_lastckp(dbenv, lsnp)
+void
+__log_get_cached_ckp_lsn(dbenv, ckp_lsnp)
 	DB_ENV *dbenv;
-	DB_LSN *lsnp;
+	DB_LSN *ckp_lsnp;
 {
+	DB_LOG *dblp;
 	LOG *lp;
 
-	lp = (LOG *)(((DB_LOG *)dbenv->lg_handle)->reginfo.primary);
+	dblp = (DB_LOG *)dbenv->lg_handle;
+	lp = (LOG *)dblp->reginfo.primary;
 
-	*lsnp = lp->chkpt_lsn;
-	return (0);
+	R_LOCK(dbenv, &dblp->reginfo);
+	*ckp_lsnp = lp->cached_ckp_lsn;
+	R_UNLOCK(dbenv, &dblp->reginfo);
 }
 
 /*
@@ -720,7 +834,7 @@ __log_region_size(dbenv)
 	size_t s;
 
 	s = dbenv->lg_regionmax + dbenv->lg_bsize;
-#ifdef MUTEX_SYSTEM_RESOURCES
+#ifdef HAVE_MUTEX_SYSTEM_RESOURCES
 	if (F_ISSET(dbenv, DB_ENV_THREAD))
 		s += sizeof(REGMAINT) + LG_MAINT_SIZE;
 #endif
@@ -764,6 +878,7 @@ __log_vtruncate(dbenv, lsn, ckplsn)
 	DB_FH fh;
 	DB_LOG *dblp;
 	DB_LOGC *logc;
+	DB_LSN end_lsn;
 	LOG *lp;
 	u_int32_t bytes, c_len;
 	int fn, ret, t_ret;
@@ -785,10 +900,10 @@ __log_vtruncate(dbenv, lsn, ckplsn)
 	lp = (LOG *)dblp->reginfo.primary;
 
 	R_LOCK(dbenv, &dblp->reginfo);
+	end_lsn = lp->lsn;
 	lp->lsn = *lsn;
 	lp->len = c_len;
 	lp->lsn.offset += lp->len;
-	lp->chkpt_lsn = *ckplsn;
 
 	/*
 	 * I am going to assume that the number of bytes written since
@@ -797,9 +912,9 @@ __log_vtruncate(dbenv, lsn, ckplsn)
 	DB_ASSERT(lp->lsn.file >= ckplsn->file);
 	bytes = 0;
 	if (ckplsn->file != lp->lsn.file) {
-		bytes = lp->persist.lg_max - ckplsn->offset;
+		bytes = lp->log_size - ckplsn->offset;
 		if (lp->lsn.file > ckplsn->file + 1)
-			bytes += lp->persist.lg_max *
+			bytes += lp->log_size *
 			    (lp->lsn.file - ckplsn->file - 1);
 		bytes += lp->lsn.offset;
 	} else
@@ -816,12 +931,13 @@ __log_vtruncate(dbenv, lsn, ckplsn)
 		lp->s_lsn = lp->lsn;
 
 	/*
-	 * If the new end of log is in the middle of the
-	 * buffer, don't change the w_off.  If the new end
-	 * is before the w_off then reset w_off to the new
+	 * If the new end of log is in the middle of the buffer,
+	 * don't change the w_off or f_lsn.  If the new end is
+	 * before the w_off then reset w_off and f_lsn to the new
 	 * end of log.
 	 */
 	if (lp->w_off >= lp->lsn.offset) {
+		lp->f_lsn = lp->lsn;
 		lp->w_off = lp->lsn.offset;
 		lp->b_off = 0;
 	} else
@@ -829,18 +945,25 @@ __log_vtruncate(dbenv, lsn, ckplsn)
 
 	ZERO_LSN(lp->waiting_lsn);
 	lp->ready_lsn = lp->lsn;
-	lp->f_lsn = lp->lsn;
+	lp->wait_recs = 0;
+	lp->rcvd_recs = 0;
 
 	/* Now throw away any extra log files that we have around. */
 	for (fn = lp->lsn.file + 1;; fn++) {
 		if (__log_name(dblp, fn, &fname, &fh, DB_OSO_RDONLY) != 0)
 			break;
-		(void)__os_closehandle(&fh);
-		if ((ret = __os_unlink(dbenv, fname)) != 0)
-			break;
-		__os_freestr(dbenv, fname);
+		(void)__os_closehandle(dbenv, &fh);
+		ret = __os_unlink(dbenv, fname);
+		__os_free(dbenv, fname);
+		if (ret != 0)
+			goto err;
 	}
-	R_UNLOCK(dbenv, &dblp->reginfo);
+
+	/* Truncate the log to the new point. */
+	if ((ret = __log_zero(dbenv, &lp->lsn, &end_lsn)) != 0)
+		goto err;
+
+err:	R_UNLOCK(dbenv, &dblp->reginfo);
 	return (ret);
 }
 
@@ -852,7 +975,7 @@ __log_vtruncate(dbenv, lsn, ckplsn)
  * lower-numbered than the current logs, the we return *outdatedp non
  * zero, else we return it 0.
  *
- * PUBLIC:  int __log_is_outdated __P((DB_ENV *dbenv,
+ * PUBLIC: int __log_is_outdated __P((DB_ENV *dbenv,
  * PUBLIC:     u_int32_t fnum, int *outdatedp));
  */
 int
@@ -889,6 +1012,71 @@ __log_is_outdated(dbenv, fnum, outdatedp)
 
 	if (cfile > fnum)
 		*outdatedp = 1;
-out:	__os_freestr(dbenv, name);
+out:	__os_free(dbenv, name);
 	return (ret);
+}
+
+/*
+ * __log_zero --
+ *	Zero out the tail of a log after a truncate.
+ */
+static int
+__log_zero(dbenv, from_lsn, to_lsn)
+	DB_ENV *dbenv;
+	DB_LSN *from_lsn, *to_lsn;
+{
+	char *lname;
+	DB_LOG *dblp;
+	LOG *lp;
+	int ret;
+	size_t nbytes, len, nw;
+	u_int8_t buf[4096];
+	u_int32_t mbytes, bytes;
+
+	dblp = dbenv->lg_handle;
+	lp = (LOG *)dblp->reginfo.primary;
+	lname = NULL;
+
+	if (dblp->lfname != lp->lsn.file) {
+		if (F_ISSET(&dblp->lfh, DB_FH_VALID))
+			(void)__os_closehandle(dbenv, &dblp->lfh);
+		dblp->lfname = lp->lsn.file;
+	}
+
+	if (from_lsn->file != to_lsn->file) {
+		/* We removed some log files; have to 0 to end of file. */
+		if (!F_ISSET(&dblp->lfh, DB_FH_VALID) && (ret =
+		    __log_name(dblp, dblp->lfname, &lname, &dblp->lfh, 0)) != 0)
+			return (ret);
+		if ((ret = __os_ioinfo(dbenv,
+		    NULL, &dblp->lfh, &mbytes, &bytes, NULL)) != 0)
+			goto err;
+		len = mbytes * MEGABYTE + bytes - from_lsn->offset;
+	} else if (to_lsn->offset <= from_lsn->offset)
+		return (0);
+	else
+		len = to_lsn->offset = from_lsn->offset;
+
+	memset(buf, 0, sizeof(buf));
+
+	/* Initialize the write position. */
+	if (!F_ISSET(&dblp->lfh, DB_FH_VALID) &&
+	    (ret = __log_name(dblp, dblp->lfname, &lname, &dblp->lfh, 0)) != 0)
+		goto err;
+
+	if ((ret = __os_seek(dbenv,
+	    &dblp->lfh, 0, 0, from_lsn->offset, 0, DB_OS_SEEK_SET)) != 0)
+		return (ret);
+
+	while (len > 0) {
+		nbytes = len > sizeof(buf) ? sizeof(buf) : len;
+		if ((ret =
+		    __os_write(dbenv, &dblp->lfh, buf, nbytes, &nw)) != 0)
+			return (ret);
+		len -= nbytes;
+	}
+err:	if (lname != NULL)
+		__os_free(dbenv, lname);
+
+	return (0);
 }

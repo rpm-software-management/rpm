@@ -28,15 +28,20 @@ dnl Note: This macro can work with the autoconf M4 macros for Java programs.
 dnl This particular macro is not part of the original set of macros.
 dnl
 dnl @author Don Anderson <dda@sleepycat.com>
-dnl @version Id: ac_jni_include_dirs.ac,v 1.5 2001/09/17 18:48:28 bostic Exp 
+dnl @version Id: ac_jni_include_dirs.ac,v 1.7 2002/02/11 14:00:50 bostic Exp 
 dnl
 AC_DEFUN(AC_JNI_INCLUDE_DIR,[
 
 JNI_INCLUDE_DIRS=""
 
 test "x$JAVAC" = x && AC_MSG_ERROR(['$JAVAC' undefined])
-AC_PATH_PROG(_ACJNI_JAVAC, $JAVAC, no)
-test "x$_ACJNI_JAVAC" = xno && AC_MSG_ERROR([$JAVAC could not be found in path])
+AC_PATH_PROG(_ACJNI_JAVAC, $JAVAC, $JAVAC)
+test ! -x "$_ACJNI_JAVAC" && AC_MSG_ERROR([$JAVAC could not be found in path])
+AC_MSG_CHECKING(absolute path of $JAVAC)
+case "$_ACJNI_JAVAC" in
+/*)	AC_MSG_RESULT($_ACJNI_JAVAC);;
+*)	AC_MSG_ERROR([$_ACJNI_JAVAC is not an absolute path name]);;
+esac
 
 _ACJNI_FOLLOW_SYMLINKS("$_ACJNI_JAVAC")
 _JTOPDIR=`echo "$_ACJNI_FOLLOWED" | sed -e 's://*:/:g' -e 's:/[[^/]]*$::'`

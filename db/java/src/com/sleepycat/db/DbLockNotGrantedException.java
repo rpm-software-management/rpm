@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2001
+ * Copyright (c) 1997-2002
  *      Sleepycat Software.  All rights reserved.
  *
- * Id: DbLockNotGrantedException.java,v 11.2 2001/10/05 02:36:06 bostic Exp 
+ * Id: DbLockNotGrantedException.java,v 11.3 2002/01/11 15:52:36 bostic Exp 
  */
 
 package com.sleepycat.db;
