@@ -681,6 +681,7 @@ static int writeFile(FSM_t fsm, int writeData)
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     size_t pos = fdGetCpioPos(fsm->cfd);
+    char * symbuf = NULL;
     int left;
     int rc;
 
@@ -696,6 +697,7 @@ static int writeFile(FSM_t fsm, int writeData)
 	rc = fsmStage(fsm, FSM_READLINK);
 	if (rc) goto exit;
 	st->st_size = fsm->rdnb;
+	symbuf = alloca_strdup(fsm->rdbuf);	/* XXX save readlink return. */
     }
 
     if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
@@ -767,6 +769,8 @@ static int writeFile(FSM_t fsm, int writeData)
 
     } else if (writeData && S_ISLNK(st->st_mode)) {
 	/* XXX DWRITE uses rdnb for I/O length. */
+	strcpy(fsm->rdbuf, symbuf);	/* XXX restore readlink buffer. */
+	fsm->rdnb = strlen(symbuf);
 	rc = fsmStage(fsm, FSM_DWRITE);
 	if (rc) goto exit;
     }
