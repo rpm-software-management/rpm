@@ -13,6 +13,9 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
+#ifndef	IPPORT_FTP
+#define	IPPORT_FTP	21
+#endif
 #ifndef	IPPORT_HTTP
 #define	IPPORT_HTTP	80
 #endif
