@@ -1274,7 +1274,9 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
+/*@-compdef@*/
     rpmts ts = fsmGetTs(fsm);
+/*@=compdef@*/
     rpmsx sx = rpmtsREContext(ts);
 
     fsm->path = NULL;
