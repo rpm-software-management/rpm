@@ -57,7 +57,7 @@ int convertDB(void) {
     unlink("/var/lib/rpm/packageindex.rpm");
     unlink("/var/lib/rpm/fileindex.rpm");
 
-    if (!rpmdbOpen("", &db, O_RDWR | O_EXCL | O_CREAT, 0644)) {
+    if (rpmdbOpen("", &db, O_RDWR | O_EXCL | O_CREAT, 0644)) {
 	error(RPMERR_DBOPEN, "failed to create RPM database /var/lib/rpm");
 	return 0;
     }

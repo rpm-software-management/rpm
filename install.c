@@ -57,7 +57,7 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
     else
 	fn = NULL;
 	
-    if (!rpmdbOpen(prefix, &db, mode | O_CREAT, 0644)) {
+    if (rpmdbOpen(prefix, &db, mode | O_CREAT, 0644)) {
 	fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", 
 		    prefix);
 	exit(1);
@@ -106,7 +106,7 @@ void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
     else
 	mode = O_RDWR | O_EXCL;
 	
-    if (!rpmdbOpen(prefix, &db, mode, 0644)) {
+    if (rpmdbOpen(prefix, &db, mode, 0644)) {
 	fprintf(stderr, "cannot open %s/var/lib/rpm/packages.rpm\n", prefix);
 	exit(1);
     }
