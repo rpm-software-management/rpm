@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include "rpmlib.h"
+#include "rpmmacro.h"
 
 struct fsinfo {
     char * mntPoint;
@@ -197,7 +198,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
     char * buf, * dirName;
     char * chptr;
     int maxLen;
-    char * lastDir;
+    char * lastDir, * sourceDir;
     int lastfs = 0;
     int lastDev = -1;		/* I hope nobody uses -1 for a st_dev */
     struct stat sb;
@@ -219,15 +220,22 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
     dirName = alloca(maxLen + 1);
     *lastDir = '\0';
 
+    sourceDir = rpmGetPath("", "/%{_sourcedir}", NULL);
+
     /* cut off last filename */
     for (i = 0; i < numFiles; i++) {
-	strcpy(buf, fileList[i]);
-	chptr = buf + strlen(buf) - 1;
-	while (*chptr != '/') chptr--;
-	if (chptr == buf)
-	    buf[1] = '\0';
-	else
-	    *chptr-- = '\0';
+	if (*fileList[i] == '/') {
+	    strcpy(buf, fileList[i]);
+	    chptr = buf + strlen(buf) - 1;
+	    while (*chptr != '/') chptr--;
+	    if (chptr == buf)
+		buf[1] = '\0';
+	    else
+		*chptr-- = '\0';
+	} else {
+	    /* this should only happen for source packages (gulp) */
+	    buf = sourceDir;
+	}
 
 	if (strcmp(lastDir, buf)) {
 	    strcpy(dirName, buf);
@@ -268,6 +276,8 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	strcpy(lastDir, buf);
 	usages[lastfs] += fssizes[i];
     }
+
+    if (sourceDir) free(sourceDir);
 
     *usagesPtr = usages;
 
