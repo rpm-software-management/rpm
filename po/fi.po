@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-23 15:56-0400\n"
+"POT-Creation-Date: 2002-10-23 16:38-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -1490,46 +1490,46 @@ msgstr "en voinut avata %s: %s"
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:339
+#: lib/fsm.c:340
 msgid "========== Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:341
+#: lib/fsm.c:342
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fsm.c:1242
+#: lib/fsm.c:1245
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1540
+#: lib/fsm.c:1543
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1669 lib/fsm.c:1805
+#: lib/fsm.c:1672 lib/fsm.c:1808
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/fsm.c:1831
+#: lib/fsm.c:1834
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "en voi poistaa %s -hakemisto ei ole tyhjä"
 
-#: lib/fsm.c:1837
+#: lib/fsm.c:1840
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s:n rmdir epäonnistui: %s"
 
-#: lib/fsm.c:1847
+#: lib/fsm.c:1850
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/fsm.c:1867
+#: lib/fsm.c:1870
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "

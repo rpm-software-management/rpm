@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-23 15:56-0400\n"
+"POT-Creation-Date: 2002-10-23 16:38-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1483,47 +1483,47 @@ msgstr "%s açýlamadý: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "%s dosyasýnýn bulunduðu aygýt anlaþýlamadý\n"
 
-#: lib/fsm.c:339
+#: lib/fsm.c:340
 #, fuzzy
 msgid "========== Directories not explictly included in package:\n"
 msgstr "========= Pakette bulunmayan dizinler:\n"
 
-#: lib/fsm.c:341
+#: lib/fsm.c:342
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1242
+#: lib/fsm.c:1245
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%s dizin %04o izinleriyle oluþturuldu.\n"
 
-#: lib/fsm.c:1540
+#: lib/fsm.c:1543
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1669 lib/fsm.c:1805
+#: lib/fsm.c:1672 lib/fsm.c:1808
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s %s olarak kaydedildi\n"
 
-#: lib/fsm.c:1831
+#: lib/fsm.c:1834
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boþ deðil\n"
 
-#: lib/fsm.c:1837
+#: lib/fsm.c:1840
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi baþarýsýz: %s\n"
 
-#: lib/fsm.c:1847
+#: lib/fsm.c:1850
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s / %s bað kaldýrýlamadý: %s\n"
 
-#: lib/fsm.c:1867
+#: lib/fsm.c:1870
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluþturuldu\n"

@@ -73,7 +73,12 @@ ebl_section_type_name (ebl, section, buf, len)
 	      KNOWNSTYPE (GNU_verneed),
 	      KNOWNSTYPE (GNU_versym)
 	    };
+#if defined(__x86_64__)
+	  int ix = section - SHT_LOSUNW;
+	  res = sunwtypes[ix];
+#else
 	  res = sunwtypes[section - SHT_LOSUNW];
+#endif
 	}
       else
 	{

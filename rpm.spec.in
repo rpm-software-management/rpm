@@ -481,6 +481,7 @@ exit 0
 %changelog
 * Wed Oct 23 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.4
 - resurrect genhdlist "greased lightning" pathway for now.
+- elfutils: avoid gcc-3.2 ICE on x86_64 for now.
 
 * Fri Oct 18 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.2
 - add debug sub-package patch.

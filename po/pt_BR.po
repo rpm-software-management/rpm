@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-23 15:56-0400\n"
+"POT-Creation-Date: 2002-10-23 16:38-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
@@ -1608,50 +1608,50 @@ msgstr "No consegui abrir: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:339
+#: lib/fsm.c:340
 msgid "========== Directories not explictly included in package:\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:341
+#: lib/fsm.c:342
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/fsm.c:1242
+#: lib/fsm.c:1245
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1540
+#: lib/fsm.c:1543
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:1669 lib/fsm.c:1805
+#: lib/fsm.c:1672 lib/fsm.c:1808
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/fsm.c:1831
+#: lib/fsm.c:1834
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/fsm.c:1837
+#: lib/fsm.c:1840
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/fsm.c:1847
+#: lib/fsm.c:1850
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: lib/fsm.c:1867
+#: lib/fsm.c:1870
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "No consegui abrir: %s\n"
