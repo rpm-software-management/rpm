@@ -232,6 +232,10 @@ int rpmdbFindByProvides(rpmdb db, char * provides, dbiIndexSet * matches);
 int rpmdbFindByRequiredBy(rpmdb db, char * requires, dbiIndexSet * matches);
 int rpmdbFindByConflicts(rpmdb db, char * conflicts, dbiIndexSet * matches);
 
+/* these are just convience functions */
+int rpmdbFindByLabel(rpmdb db, char * label, dbiIndexSet * matches);
+int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
+
 int rpmInstallSourcePackage(char * root, int fd, char ** specFile,
 			    rpmNotifyFunction notify, char * labelFormat);
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 

@@ -317,7 +317,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     j = 0;
     numPackages = 0;
     for (arg = argv; *arg; arg++) {
-	rc = findPackageByLabel(db, *arg, &matches);
+	rc = rpmdbFindByLabel(db, *arg, &matches);
 	if (rc == 1) {
 	    fprintf(stderr, _("package %s is not installed\n"), *arg);
 	    numFailed++;

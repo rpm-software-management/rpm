@@ -229,7 +229,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		break;
 
 	      case VERIFY_PACKAGE:
-		rc = findPackageByLabel(db, arg, &matches);
+		rc = rpmdbFindByLabel(db, arg, &matches);
 		if (rc == 1) 
 		    fprintf(stderr, _("package %s is not installed\n"), arg);
 		else if (rc == 2) {

@@ -9,7 +9,7 @@ LIBOBJECTS = 	header.o 	misc.o		messages.o 	\
 		uninstall.o	oldheader.o	install.o	\
 		signature.o	verify.o	rebuilddb.o	\
 		tread.o 	cpio.o		formats.o	\
-		fs.o
+		fs.o		lookup.o
 
 SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS))) 
 TAGTABLE = tagtable.o
