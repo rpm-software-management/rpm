@@ -158,7 +158,7 @@ int cpioFileMapCmp(const void * a, const void * b) {
 }
 
 /* This could trash files in the path! I'm not sure that's a good thing */
-static int createDirectory(char * path) {
+static int createDirectory(char * path, mode_t perms) {
     struct stat sb;
     int dounlink;
 
@@ -186,6 +186,9 @@ static int createDirectory(char * path) {
 
     if (mkdir(path, 000))
 	return CPIO_MKDIR_FAILED;
+
+    if (chmod(path, perms))
+	return CPIO_CHMOD_FAILED;
 
     return 0;
 }
@@ -241,12 +244,12 @@ static int checkDirectory(char * filename) {
     for (chptr = buf + 1; *chptr; chptr++) {
 	if (*chptr == '/') {
 	    *chptr = '\0';
-	    rc = createDirectory(buf);
+	    rc = createDirectory(buf, 0755);
 	    *chptr = '/';
 	    if (rc) return rc;
 	}
     }
-    rc = createDirectory(buf);
+    rc = createDirectory(buf, 0755);
 
     return rc;
 }
@@ -479,7 +482,7 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 		    if (S_ISREG(ch.mode))
 			rc = expandRegular(&fd, &ch, cb, cbData);
 		    else if (S_ISDIR(ch.mode))
-			rc = createDirectory(ch.path);
+			rc = createDirectory(ch.path, 000);
 		    else if (S_ISLNK(ch.mode))
 			rc = expandSymlink(&fd, &ch);
 		    else if (S_ISFIFO(ch.mode))
