@@ -964,6 +964,12 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    else /* Solaris 2.x: n.x.x becomes n-3.x.x */
 		sprintf(un.sysname, "solaris%1d%s", atoi(un.release)-3,
 			un.release+1+(atoi(un.release)/10));
+
+	    /* Solaris on Intel hardware reports i86pc instead of i386
+	     * (at least on 2.6 and 2.8)
+	     */
+	    if (!strcmp(un.machine, "i86pc"))
+		sprintf(un.machine, "i386");
 	}
 	else if (!strcmp(un.sysname, "HP-UX"))
 	    /*make un.sysname look like hpux9.05 for example*/
