@@ -2289,9 +2289,14 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
 
     if (PyArg_ParseTuple(args, "si", &filename, &flags)) {
 	const char *av[2];
+	struct rpmSignArguments_s ka;
 	av[0] = filename;
 	av[1] = NULL;
-	rc = rpmCheckSig(flags, av);
+	ka.addSign = RPMSIGN_CHK_SIGNATURE;
+	ka.checksigFlags = flags;
+	ka.sign = 0;
+	ka.passPhrase = NULL;
+	rc = rpmCheckSig(&ka, av);
     }
     return Py_BuildValue("i", rc);
 }

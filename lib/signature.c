@@ -420,7 +420,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 }
 
 int rpmAddSignature(Header h, const char * file, int_32 sigTag,
-		const char *passPhrase)
+		const char * passPhrase)
 {
     struct stat st;
     int_32 size;
@@ -682,7 +682,7 @@ verifyPGPSignature(/*@unused@*/ const char * fn,
     /*@-globs -internalglobs -mods -modfilesys@*/
     if (pgppk == NULL) {
 	const char * pkfn = rpmExpand("%{_pgp_pubkey}", NULL);
-	if (pgpReadPkts(pkfn, &pgppk, &pgppklen)) {
+	if (pgpReadPkts(pkfn, &pgppk, &pgppklen) != PGPARMOR_PUBKEY) {
 	    res = RPMSIG_NOKEY;
 	    t = stpcpy( stpcpy( stpcpy(t, "NOKEY ("), pkfn), ")\n");
 	    pkfn = _free(pkfn);
@@ -694,24 +694,20 @@ verifyPGPSignature(/*@unused@*/ const char * fn,
 	pkfn = _free(pkfn);
     }
 
-    /* XXX sanity check on pubkey and signature agreement. */
-
-#ifdef	NOTYET
-    {	pgpPktSigV3 dsig = dig->signature.v3;
-	pgpPktKeyV3 dpk  = dig->pubkey.v3;
-	
-	if (dsig->pubkey_algo != dpk->pubkey_algo) {
-	    res = RPMSIG_NOKEY;
-	    t = stpcpy(t, "NOKEY\n");
-	    return res;
-	}
-    }
-#endif
-
+    /* Retrieve parameters from pubkey packet(s). */
     /*@-nullpass@*/
     xx = pgpPrtPkts(pgppk, pgppklen, dig, 0);
     /*@=nullpass@*/
     /*@=globs =internalglobs =mods =modfilesys@*/
+
+    /* Make sure we have the correct public key. */
+    if (dig->signature.pubkey_algo != dig->pubkey.pubkey_algo
+     || memcmp(dig->signature.signid, dig->pubkey.signid, 8))
+    {
+	res = RPMSIG_NOKEY;
+	t = stpcpy(t, "NOKEY\n");
+	return res;
+    }
 
     /*@-type@*/
     if (!rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c)) {
@@ -746,7 +742,7 @@ verifyGPGSignature(/*@unused@*/ const char * fn,
     /*@-globs -internalglobs -mods -modfilesys@*/
     if (gpgpk == NULL) {
 	const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
-	if (pgpReadPkts(pkfn, &gpgpk, &gpgpklen)) {
+	if (pgpReadPkts(pkfn, &gpgpk, &gpgpklen) != PGPARMOR_PUBKEY) {
 	    res = RPMSIG_NOKEY;
 	    t = stpcpy( stpcpy( stpcpy(t, "NOKEY ("), pkfn), ")\n");
 	    pkfn = _free(pkfn);
@@ -758,24 +754,20 @@ verifyGPGSignature(/*@unused@*/ const char * fn,
 	pkfn = _free(pkfn);
     }
 
-    /* XXX sanity check on pubkey and signature agreement. */
-
-#ifdef	NOTYET
-    {	pgpPktSigV3 dsig = dig->signature.v3;
-	pgpPktKeyV4 dpk  = dig->pubkey.v4;
-	
-	if (dsig->pubkey_algo != dpk->pubkey_algo) {
-	    res = RPMSIG_NOKEY;
-	    t = stpcpy(t, "NOKEY\n");
-	    return res;
-	}
-    }
-#endif
-
+    /* Retrieve parameters from pubkey packet(s). */
     /*@-nullpass@*/
     xx = pgpPrtPkts(gpgpk, gpgpklen, dig, 0);
     /*@=nullpass@*/
     /*@=globs =internalglobs =mods =modfilesys@*/
+
+    /* Make sure we have the correct public key. */
+    if (dig->signature.pubkey_algo != dig->pubkey.pubkey_algo
+     || memcmp(dig->signature.signid, dig->pubkey.signid, 8))
+    {
+	res = RPMSIG_NOKEY;
+	t = stpcpy(t, "NOKEY\n");
+	return res;
+    }
 
     /*@-type@*/
     if (!dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm, &dig->y, &dig->r, &dig->s)) {

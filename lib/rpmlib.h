@@ -28,6 +28,9 @@ extern struct MacroContext_s * rpmGlobalMacroContext;
 
 /*@checked@*/
 extern struct MacroContext_s * rpmCLIMacroContext;
+
+/*@observer@*/ /*@unchecked@*/
+extern const char * RPMVERSION;
 /*@=redecl@*/
 
 #ifdef __cplusplus
@@ -227,6 +230,7 @@ typedef enum rpmTag_e {
     RPMTAG_BADSHA1HEADER	= RPMTAG_SIG_BASE+8,	/*!< internal */
 /*@=enummemuse@*/
     RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+9,
+    RPMTAG_PUBKEYS		= RPMTAG_SIG_BASE+10,
 
     RPMTAG_NAME  		= 1000,
     RPMTAG_VERSION		= 1001,
@@ -448,9 +452,9 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_CLEAN = (1 << 23),	/*!< %clean build dependency. */
     RPMSENSE_RPMLIB	= ((1 << 24) | RPMSENSE_PREREQ), /*!< rpmlib(feature) dependency. */
 /*@-enummemuse@*/
-    RPMSENSE_TRIGGERPREIN = (1 << 25)	/*!< @todo Implement %triggerprein. */
+    RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< @todo Implement %triggerprein. */
 /*@=enummemuse@*/
-
+    RPMSENSE_KEYRING	= (1 << 26)
 } rpmsenseFlags;
 
 #define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */
@@ -473,11 +477,12 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_BUILD | \
     RPMSENSE_SCRIPT_INSTALL | \
     RPMSENSE_SCRIPT_CLEAN | \
-    RPMSENSE_RPMLIB )
+    RPMSENSE_RPMLIB | \
+    RPMSENSE_KEYRING )
 
 #define	_notpre(_x)		((_x) & ~RPMSENSE_PREREQ)
 #define	_INSTALL_ONLY_MASK \
-    _notpre(RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_POST|RPMSENSE_RPMLIB)
+    _notpre(RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_POST|RPMSENSE_RPMLIB|RPMSENSE_KEYRING)
 #define	_ERASE_ONLY_MASK  \
     _notpre(RPMSENSE_SCRIPT_PREUN|RPMSENSE_SCRIPT_POSTUN)
 
@@ -1140,7 +1145,7 @@ rpmRC rpmInstallSourcePackage(/*@null@*/ const char * rootDir, FD_t fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
 			/*@null@*/ rpmCallbackFunction notify,
 			/*@null@*/ rpmCallbackData notifyData,
-			/*@null@*/ /*@out@*/ char ** cookie)
+			/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies fd, *specFilePtr, *cookie, rpmGlobalMacroContext,

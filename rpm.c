@@ -588,7 +588,7 @@ int main(int argc, const char ** argv)
     rpmEraseInterfaceFlags eraseInterfaceFlags = UNINSTALL_NONE;
     int verifyFlags;
     int checksigFlags = 0;
-    rpmResignFlags addSign = RESIGN_NEW_SIGNATURE;
+    rpmSignFlags addSign = RESIGN_NEW_SIGNATURE;
     char * passPhrase = "";
     const char * optArg;
     pid_t pipeChild = 0;

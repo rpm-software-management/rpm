@@ -10,64 +10,35 @@
 #include "debug.h"
 
 struct rpmSignArguments_s rpmKArgs =
-	{ RESIGN_NONE, CHECKSIG_ALL, 0, NULL };
-
-#define	POPT_ADDSIGN		1005
-#define	POPT_RESIGN		1006
-
-/**
- */
-static void signArgCallback( /*@unused@*/ poptContext con,
-		/*@unused@*/ enum poptCallbackReason reason,
-		const struct poptOption * opt, /*@unused@*/ const char * arg,
-		/*@unused@*/ const void * data)
-	/*@globals rpmKArgs @*/
-	/*@modifies rpmKArgs @*/
-{
-    struct rpmSignArguments_s * rka = &rpmKArgs;
-
-    switch (opt->val) {
-    case 'K':
-	rka->addSign = RESIGN_CHK_SIGNATURE;
-	rka->sign = 0;
-	break;
-
-    case POPT_RESIGN:
-	rka->addSign = RESIGN_NEW_SIGNATURE;
-	rka->sign = 1;
-	break;
-
-    case POPT_ADDSIGN:
-	rka->addSign = RESIGN_ADD_SIGNATURE;
-	rka->sign = 1;
-	break;
-    }
-}
+	{ RPMSIGN_NONE, CHECKSIG_ALL, 0, NULL };
 
 /**
  */
 /*@unchecked@*/
 struct poptOption rpmSignPoptTable[] = {
+#ifdef	DYING
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	signArgCallback, 0, NULL, NULL },
 /*@=type@*/
- { "addsign", '\0', 0, 0, POPT_ADDSIGN,
+#endif
+ { "addsign", '\0', POPT_ARG_VAL, &rpmKArgs.addSign, RPMSIGN_ADD_SIGNATURE,
 	N_("add a signature to a package"), NULL },
- { "resign", '\0', 0, 0, POPT_RESIGN,
+ { "checksig", 'K', POPT_ARG_VAL, &rpmKArgs.addSign, RPMSIGN_CHK_SIGNATURE,
+	N_("verify package signature"), NULL },
+ { "import", 'K', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmKArgs.addSign, RPMSIGN_IMPORT_PUBKEY,
+	N_("verify package signature"), NULL },
+ { "resign", '\0', POPT_ARG_VAL, &rpmKArgs.addSign, RPMSIGN_NEW_SIGNATURE,
 	N_("sign a package (discard current signature)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmKArgs.sign, 0,
 	N_("generate signature"), NULL },
- { "checksig", 'K', 0, 0, 'K',
-	N_("verify package signature"), NULL },
- { "nogpg", '\0', POPT_BIT_CLR,
-	&rpmKArgs.checksigFlags, CHECKSIG_GPG,
+ { "nogpg", '\0', POPT_BIT_CLR, &rpmKArgs.checksigFlags, CHECKSIG_GPG,
 	N_("skip any GPG signatures"), NULL },
  { "nopgp", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmKArgs.checksigFlags, CHECKSIG_PGP,
 	N_("skip any PGP signatures"), NULL },
- { "nomd5", '\0', POPT_BIT_CLR,
-	&rpmKArgs.checksigFlags, CHECKSIG_MD5,
+ { "nomd5", '\0', POPT_BIT_CLR, &rpmKArgs.checksigFlags, CHECKSIG_MD5,
 	N_("do not verify file md5 checksums"), NULL },
 
    POPT_TABLEEND

@@ -1182,7 +1182,7 @@ static rpmRC chkdir (const char * dpath, const char * dname)
 rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 			const char ** specFilePtr,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
-			char ** cookie)
+			const char ** cookie)
 {
     rpmdb rpmdb = NULL;
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);

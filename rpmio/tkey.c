@@ -10,7 +10,7 @@ static int _debug = 0;
 #include "rpmpgp.h"
 #include "debug.h"
 
-static int doit(const char *sig, rpmDigest dig, int printing)
+static int doit(const char *sig, pgpDig dig, int printing)
 {
     const char *s, *t;
     unsigned char * dec;
@@ -103,11 +103,11 @@ nP3dWWJnp0Pnbor7pIob4Dk=
 int
 main (int argc, char *argv[])
 {
-    rpmDigest dig = alloca(sizeof(*dig));
+    pgpDig dig;
     int printing = 1;
     int rc;
 
-    memset(dig, 0, sizeof(*dig));
+    dig = pgpNewDig();
 
     mp32bzero(&dig->p);	mp32bsethex(&dig->p, fips_p);
     mp32bzero(&dig->q);	mp32bsethex(&dig->q, fips_q);
@@ -144,13 +144,13 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
     {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	pgpPktSigV3 dsig = dig->signature.v3;
+	struct pgpDigParams_s * dsig = &dig->signature;
 	const char * digest = NULL;
 	size_t digestlen = 0;
 	const char * txt = "abc";
 	
 	rpmDigestUpdate(ctx, txt, strlen(txt));
-	rpmDigestUpdate(ctx, &dsig->sigtype, dsig->hashlen);
+	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
 	mp32nzero(&dig->hm);mp32nsethex(&dig->hm, digest);
@@ -176,6 +176,8 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
     mp32nfree(&dig->hm);
     mp32nfree(&dig->r);
     mp32nfree(&dig->s);
+
+    dig = pgpFreeDig(dig);
 
     return rc;
 }

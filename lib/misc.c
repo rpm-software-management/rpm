@@ -18,45 +18,8 @@ static int _debug = 0;
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
-#ifdef	DYING
-int domd5(const char * fn, unsigned char * digest, int asAscii)
-{
-    int rc;
-
-    FD_t fd = Fopen(fn, "r.ufdio");
-    unsigned char buf[BUFSIZ];
-    unsigned char * md5sum = NULL;
-    size_t md5len;
-
-    if (fd == NULL || Ferror(fd)) {
-	if (fd)
-	    (void) Fclose(fd);
-	return 1;
-    }
-
-    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-
-    while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
-	{};
-    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, asAscii);
-
-    if (Ferror(fd))
-	rc = 1;
-    (void) Fclose(fd);
-
-    if (!rc)
-	memcpy(digest, md5sum, md5len);
-    md5sum = _free(md5sum);
-
-    return rc;
-}
-#endif
-
-/*@-exportheadervar@*/
 /* just to put a marker in librpm.a */
-/*@unchecked@*/
-/*@unused@*/ /*@observer@*/ char * RPMVERSION = VERSION;
-/*@=exportheadervar@*/
+const char * RPMVERSION = VERSION;
 
 char ** splitString(const char * str, int length, char sep)
 {

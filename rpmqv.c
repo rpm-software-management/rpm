@@ -455,7 +455,7 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMK
     memset(ka, 0, sizeof(*ka));
-    ka->addSign = RESIGN_NONE;
+    ka->addSign = RPMSIGN_NONE;
     ka->checksigFlags = CHECKSIG_ALL;
 #endif
 
@@ -706,16 +706,19 @@ int main(int argc, const char ** argv)
 #ifdef	IAM_RPMK
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_K)) {
 	switch (ka->addSign) {
-	case RESIGN_NONE:
+	case RPMSIGN_NONE:
+	    ka->sign = 0;
 	    break;
-	case RESIGN_CHK_SIGNATURE:
+	case RPMSIGN_IMPORT_PUBKEY:
+	case RPMSIGN_CHK_SIGNATURE:
 	    bigMode = MODE_CHECKSIG;
+	    ka->sign = 0;
 	    break;
-	case RESIGN_ADD_SIGNATURE:
-	case RESIGN_NEW_SIGNATURE:
+	case RPMSIGN_ADD_SIGNATURE:
+	case RPMSIGN_NEW_SIGNATURE:
 	    bigMode = MODE_RESIGN;
+	    ka->sign = 1;
 	    break;
-
 	}
   }
 #endif	/* IAM_RPMK */
@@ -849,7 +852,8 @@ int main(int argc, const char ** argv)
     /*@-branchstate@*/
     {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
-	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD) {
+	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD)
+	{
 	    const char ** av;
 	    struct stat sb;
 	    int errors = 0;
@@ -962,18 +966,16 @@ int main(int argc, const char ** argv)
 
 	while ((pkg = poptGetArg(optCon))) {
 	    const char * specFile = NULL;
-	    char * cookie = NULL;
 
-	    ec = rpmInstallSource("", pkg, &specFile, &cookie);
-	    if (ec)
-		/*@loopbreak@*/ break;
-
-	    ba->rootdir = rootdir;
-	    ec = build(specFile, ba, passPhrase, cookie, rcfile);
-	    free(cookie);
-	    cookie = NULL;
-	    free((void *)specFile);
-	    specFile = NULL;
+	    ba->cookie = NULL;
+	    ec = rpmInstallSource("", pkg, &specFile, &ba->cookie);
+	    if (ec == 0) {
+		ba->rootdir = rootdir;
+		ba->passPhrase = passPhrase;
+		ec = build(specFile, ba, rcfile);
+	    }
+	    ba->cookie = _free(ba->cookie);
+	    specFile = _free(specFile);
 
 	    if (ec)
 		/*@loopbreak@*/ break;
@@ -1025,7 +1027,9 @@ int main(int argc, const char ** argv)
 
 	while ((pkg = poptGetArg(optCon))) {
 	    ba->rootdir = rootdir;
-	    ec = build(pkg, ba, passPhrase, NULL, rcfile);
+	    ba->passPhrase = passPhrase;
+	    ba->cookie = NULL;
+	    ec = build(pkg, ba, rcfile);
 	    if (ec)
 		/*@loopbreak@*/ break;
 	    rpmFreeMacros(NULL);
@@ -1147,8 +1151,7 @@ int main(int argc, const char ** argv)
     case MODE_CHECKSIG:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signature check"));
-	ec = rpmCheckSig(ka->checksigFlags,
-			(const char **)poptGetArgs(optCon));
+	ec = rpmCheckSig(ka, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	break;
@@ -1156,8 +1159,8 @@ int main(int argc, const char ** argv)
     case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signing"));
-	ec = rpmReSign(ka->addSign, passPhrase,
-			(const char **)poptGetArgs(optCon));
+	ka->passPhrase = passPhrase;
+	ec = rpmReSign(ka, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	break;

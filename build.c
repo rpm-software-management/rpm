@@ -105,12 +105,13 @@ static int isSpecFile(const char * specfile)
 
 /**
  */
-static int buildForTarget(const char * arg, BTA_t ba,
-		const char * passPhrase, char * cookie)
+static int buildForTarget(const char * arg, BTA_t ba)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    const char * passPhrase = ba->passPhrase;
+    char * cookie = ba->cookie;
     int buildAmount = ba->buildAmount;
     const char * buildRootURL = NULL;
     const char * specFile;
@@ -295,8 +296,7 @@ exit:
     return rc;
 }
 
-int build(const char * arg, BTA_t ba,
-	const char * passPhrase, char * cookie, const char * rcfile)
+int build(const char * arg, BTA_t ba, const char * rcfile)
 {
     char *t, *te;
     int rc = 0;
@@ -305,7 +305,7 @@ int build(const char * arg, BTA_t ba,
     int cleanFlags = ba->buildAmount & buildCleanMask;
 
     if (targets == NULL) {
-	rc =  buildForTarget(arg, ba, passPhrase, cookie);
+	rc =  buildForTarget(arg, ba);
 	goto exit;
     }
 
@@ -331,7 +331,7 @@ int build(const char * arg, BTA_t ba,
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
 	(void) rpmReadConfigFiles(rcfile, target);
-	rc = buildForTarget(arg, ba, passPhrase, cookie);
+	rc = buildForTarget(arg, ba);
 	if (rc)
 	    break;
     }

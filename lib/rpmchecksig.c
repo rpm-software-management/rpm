@@ -9,11 +9,14 @@
 #include <rpmcli.h>
 #include "rpmpgp.h"
 
+#include "depends.h"
+
 #include "rpmlead.h"
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
+/*@access rpmTransactionSet @*/
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX compared with NULL */
 /*@access DIGEST_CTX @*/	/* XXX compared with NULL */
@@ -116,7 +119,7 @@ exit:
     return rc;
 }
 
-int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
+int rpmReSign(struct rpmSignArguments_s * ka, const char ** argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -175,15 +178,15 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Generate the new signatures */
-	if (flags != RESIGN_ADD_SIGNATURE) {
+	if (ka->addSign != RPMSIGN_ADD_SIGNATURE) {
 	    sig = rpmFreeSignature(sig);
 	    sig = rpmNewSignature();
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, ka->passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, ka->passPhrase);
 	}
 
 	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0)
-	    (void) rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, sigtype, ka->passPhrase);
 
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
@@ -311,7 +314,166 @@ exit:
     return rc;
 }
 
-int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
+/** \ingroup rpmcli
+ * Import public keys.
+ * @param ka            mode flags and parameters
+ * @param argv          array of pubkey file names (NULL terminated)
+ * @return              0 on success
+ */
+static int rpmImportPubkey(/*@unused@*/ struct rpmSignArguments_s * ka,
+		/*@null@*/ const char ** argv)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    const char * rootDir = "/";
+    rpmdb db = NULL;
+    rpmTransactionSet ts;
+
+    const char * fn;
+    int res = 0;
+    const char * afmt = "%{pubkeys:armor}";
+    const char * group = "Public Keys";
+    const char * license = "pubkey";
+    const char * buildhost = "localhost";
+    int32 pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
+    int32 zero = 0;
+    pgpDig dig = NULL;
+    struct pgpDigParams_s *digp = NULL;
+    int rc, xx;
+
+    if (argv == NULL) return res;
+
+    db = NULL;
+    if ((rc = rpmdbOpen(rootDir, &db, O_RDWR, 0644)) != 0)
+	return -1;
+
+    ts = rpmtransCreateSet(db, rootDir);
+    ts->id = (int_32) time(NULL);
+
+    /*@-branchstate@*/
+    while ((fn = *argv++) != NULL) {
+	const char * d = NULL;
+	const char * enc = NULL;
+	const char * n = NULL;
+	const char * u = NULL;
+	const char * v = NULL;
+	const char * r = NULL;
+	const char * evr = NULL;
+	const byte * pkt = NULL;
+	char * t;
+	ssize_t pktlen = 0;
+	Header h = NULL;
+
+	/* Read pgp packet. */
+	if ((rc =  pgpReadPkts(fn, &pkt, &pktlen)) <= 0
+	 ||  rc != PGPARMOR_PUBKEY
+	 || (enc = b64encode(pkt, pktlen)) == NULL)
+	{
+	    res++;
+	    goto bottom;
+	}
+
+	dig = pgpNewDig();
+
+	/* Build header elements. */
+	(void) pgpPrtPkts(pkt, pktlen, dig, 0);
+	digp = &dig->pubkey;
+
+	v = t = xmalloc(16+1);
+	t = stpcpy(t, pgpHexStr(digp->signid, sizeof(digp->signid)));
+
+	r = t = xmalloc(8+1);
+	t = stpcpy(t, pgpHexStr(digp->time, sizeof(digp->time)));
+
+	n = t = xmalloc(sizeof("gpg()")+8);
+	t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
+
+	/*@-nullpass@*/ /* FIX: digp->userid may be NULL */
+	u = t = xmalloc(sizeof("gpg()")+strlen(digp->userid));
+	t = stpcpy( stpcpy( stpcpy(t, "gpg("), digp->userid), ")");
+	/*@=nullpass@*/
+
+	evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
+	t = stpcpy(t, (digp->version == 4 ? "4:" : "3:"));
+	t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
+
+	/* Check for pre-existing header. */
+
+	/* Build pubkey header. */
+	h = headerNew();
+
+	xx = headerAddOrAppendEntry(h, RPMTAG_PUBKEYS,
+			RPM_STRING_ARRAY_TYPE, &enc, 1);
+
+	d = headerSprintf(h, afmt, rpmTagTable, rpmHeaderFormats, NULL);
+	if (d == NULL) {
+	    res++;
+	    goto bottom;
+	}
+
+	xx = headerAddEntry(h, RPMTAG_NAME, RPM_STRING_TYPE, "gpg-pubkey", 1);
+	xx = headerAddEntry(h, RPMTAG_VERSION, RPM_STRING_TYPE, v+8, 1);
+	xx = headerAddEntry(h, RPMTAG_RELEASE, RPM_STRING_TYPE, r, 1);
+	xx = headerAddEntry(h, RPMTAG_DESCRIPTION, RPM_STRING_TYPE, d, 1);
+	xx = headerAddEntry(h, RPMTAG_GROUP, RPM_STRING_TYPE, group, 1);
+	xx = headerAddEntry(h, RPMTAG_LICENSE, RPM_STRING_TYPE, license, 1);
+	xx = headerAddEntry(h, RPMTAG_SUMMARY, RPM_STRING_TYPE, u, 1);
+
+	xx = headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &zero, 1);
+
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME,
+			RPM_STRING_ARRAY_TYPE, &u, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION,
+			RPM_STRING_ARRAY_TYPE, &evr, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS,
+			RPM_INT32_TYPE, &pflags, 1);
+
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME,
+			RPM_STRING_ARRAY_TYPE, &n, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION,
+			RPM_STRING_ARRAY_TYPE, &evr, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS,
+			RPM_INT32_TYPE, &pflags, 1);
+
+	xx = headerAddEntry(h, RPMTAG_RPMVERSION, RPM_STRING_TYPE, RPMVERSION, 1);
+
+	/* XXX W2DO: tag value inheirited from parent? */
+	xx = headerAddEntry(h, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildhost, 1);
+
+	xx = headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &ts->id, 1);
+	
+	/* XXX W2DO: tag value inheirited from parent? */
+	xx = headerAddEntry(h, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &ts->id, 1);
+
+#ifdef	NOTYET
+	/* XXX W2DO: tag value inheirited from parent? */
+	xx = headerAddEntry(h, RPMTAG_SOURCERPM, RPM_STRING_TYPE, fn, 1);
+#endif
+
+	/* Add header to database. */
+	xx = rpmdbAdd(ts->rpmdb, ts->id, h);
+
+bottom:
+	/* Clean up. */
+	h = headerFree(h);
+	dig = pgpFreeDig(dig);
+	pkt = _free(pkt);
+	n = _free(n);
+	u = _free(u);
+	v = _free(v);
+	r = _free(r);
+	evr = _free(evr);
+	enc = _free(enc);
+	d = _free(d);
+    }
+    /*@=branchstate@*/
+    
+    ts = rpmtransFree(ts);
+
+    return res;
+}
+
+int rpmCheckSig(struct rpmSignArguments_s * ka, const char ** argv)
 {
     FD_t fd = NULL;
     int res2, res3;
@@ -329,6 +491,22 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     int xx;
     pgpDig dig = NULL;
     rpmRC rc;
+
+    switch (ka->addSign) {
+    case RPMSIGN_CHK_SIGNATURE:
+	break;
+    case RPMSIGN_IMPORT_PUBKEY:
+	return rpmImportPubkey(ka, argv);
+	/*@notreached@*/ break;
+    case RPMSIGN_NEW_SIGNATURE:
+    case RPMSIGN_ADD_SIGNATURE:
+	return rpmReSign(ka, argv);
+	/*@notreached@*/ break;
+    case RPMSIGN_NONE:
+    default:
+	return -1;
+	/*@notreached@*/ break;
+    }
 
     if (argv == NULL) return res;
 
@@ -392,7 +570,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    switch (tag) {
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
-		if (!(flags & CHECKSIG_PGP)) 
+		if (!(ka->checksigFlags & CHECKSIG_PGP)) 
 		     /*@innercontinue@*/ continue;
 if (rpmIsDebug())
 fprintf(stderr, "========================= Package RSA Signature\n");
@@ -400,9 +578,9 @@ fprintf(stderr, "========================= Package RSA Signature\n");
     /*@-type@*/ /* FIX: cast? */
 	    /*@-nullpass@*/ /* FIX: dig->md5ctx may be null */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->md5ctx);
-		pgpPktSigV3 dsig = dig->signature.v3;
+		struct pgpDigParams_s * dsig = &dig->signature;
 
-		xx = rpmDigestUpdate(ctx, &dsig->sigtype, dsig->hashlen);
+		xx = rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
 		xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
 
 		/* XXX compare leading 16 bits of digest for quick check. */
@@ -433,7 +611,7 @@ fprintf(stderr, "========================= Package RSA Signature\n");
 	    }
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
-		if (!(flags & CHECKSIG_GPG)) 
+		if (!(ka->checksigFlags & CHECKSIG_GPG)) 
 		     /*@innercontinue@*/ continue;
 if (rpmIsDebug())
 fprintf(stderr, "========================= Package DSA Signature\n");
@@ -441,8 +619,9 @@ fprintf(stderr, "========================= Package DSA Signature\n");
     /*@-type@*/ /* FIX: cast? */
 	    /*@-nullpass@*/ /* FIX: dig->sha1ctx may be null */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->sha1ctx);
-		pgpPktSigV3 dsig = dig->signature.v3;
-		xx = rpmDigestUpdate(ctx, &dsig->sigtype, dsig->hashlen);
+		struct pgpDigParams_s * dsig = &dig->signature;
+
+		xx = rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
 		xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 		mp32nzero(&dig->hm);	mp32nsethex(&dig->hm, dig->sha1);
 	    }
@@ -453,7 +632,7 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
 	    case RPMSIGTAG_MD5:
-		if (!(flags & CHECKSIG_MD5)) 
+		if (!(ka->checksigFlags & CHECKSIG_MD5)) 
 		     /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    default:

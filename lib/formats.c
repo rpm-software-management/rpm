@@ -10,10 +10,6 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@-exportheadervar@*/
-extern const char * RPMVERSION;
-/*@=exportheadervar@*/
-
 /**
  * @param type		tag type
  * @param data		tag value
@@ -123,52 +119,76 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 		/*@unused@*/ char * formatPrefix, int padding, int element)
 	/*@*/
 {
+    const char * enc;
+    const char * s;
+    char * t;
     char * val;
+    int atype;
+    int lc, ns, nt;
 
-    if (type != RPM_BIN_TYPE) {
-	val = xstrdup(_("(not a blob)"));
-    } else {
-	const char * enc;
-	char * t;
-	int lc;
-	int nt = ((element + 2) / 3) * 4;
+    switch (type) {
+    case RPM_BIN_TYPE:
+	s = data;
+	ns = element;
+	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
+	break;
+    case RPM_STRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+	enc = data;
+	if (b64decode(enc, (void **)&s, &ns))
+	    return xstrdup(_("(not base64)"));
+	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
+	break;
+    case RPM_NULL_TYPE:
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+    case RPM_INT16_TYPE:
+    case RPM_INT32_TYPE:
+    case RPM_I18NSTRING_TYPE:
+    default:
+	return xstrdup(_("(invalid type)"));
+	/*@notreached@*/ break;
+    }
 
-	/*@-globs@*/
-	/* Add additional bytes necessary for eol string(s). */
-	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
-	    lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
-        if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
-            ++lc;
-	    nt += lc * strlen(b64encode_eolstr);
-	}
-	/*@=globs@*/
+    nt = ((ns + 2) / 3) * 4;
+    /*@-globs@*/
+    /* Add additional bytes necessary for eol string(s). */
+    if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
+       if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
+        ++lc;
+	nt += lc * strlen(b64encode_eolstr);
+    }
+    /*@=globs@*/
 
-	nt += 512;	/* XXX slop for armor and crc */
+    nt += 512;	/* XXX slop for armor and crc */
 
-	val = t = xmalloc(nt + padding + 1);
+    val = t = xmalloc(nt + padding + 1);
+    *t = '\0';
+    t = stpcpy(t, "-----BEGIN PGP ");
+    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
+    /*@-globs@*/
+    t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), RPMVERSION);
+    /*@=globs@*/
+    t = stpcpy(t, " (beecrypt-2.2.0)\n\n");
 
-	*t = '\0';
-	t = stpcpy(t, "-----BEGIN PGP ");
-	t = stpcpy(t, pgpValStr(pgpArmorTbl, PGPARMOR_SIGNATURE));
-	/*@-globs@*/
-	t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), RPMVERSION);
-	/*@=globs@*/
-	t = stpcpy(t, " (beecrypt-2.2.0)\n\n");
-
-	if ((enc = b64encode(data, element)) != NULL) {
+    if ((enc = b64encode(s, ns)) != NULL) {
+	t = stpcpy(t, enc);
+	enc = _free(enc);
+	if ((enc = b64crc(s, ns)) != NULL) {
+	    *t++ = '=';
 	    t = stpcpy(t, enc);
 	    enc = _free(enc);
-	    if ((enc = b64crc(data, element)) != NULL) {
-		*t++ = '=';
-		t = stpcpy(t, enc);
-		enc = _free(enc);
-	    }
 	}
-	
-	t = stpcpy(t, "-----END PGP ");
-	t = stpcpy(t, pgpValStr(pgpArmorTbl, PGPARMOR_SIGNATURE));
-	t = stpcpy(t, "-----\n");
     }
+	
+    t = stpcpy(t, "-----END PGP ");
+    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
+    t = stpcpy(t, "-----\n");
+
+    /*@-branchstate@*/
+    if (s != data) s = _free(s);
+    /*@=branchstate@*/
 
     return val;
 }

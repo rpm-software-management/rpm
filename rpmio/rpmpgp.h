@@ -11,10 +11,11 @@
  */
 
 #include "base64.h"
-#include "rsapk.h"
-#include "rsa.h"
 #include "dsa.h"
+#include "endianness.h"
 #include "mp32.h"
+#include "rsa.h"
+#include "rsapk.h"
 
 /**
  */
@@ -911,13 +912,15 @@ union pgpPktPre_u {
  */
 /*@-typeuse@*/
 typedef enum pgpArmor_e {
-    PGPARMOR_MESSAGE		= 1, /*!< MESSAGE */
-    PGPARMOR_PUBKEY		= 2, /*!< PUBLIC KEY BLOCK */
-    PGPARMOR_SIGNATURE		= 3, /*!< SIGNATURE */
-    PGPARMOR_SIGNED_MESSAGE	= 4, /*!< SIGNED MESSAGE */
-    PGPARMOR_FILE		= 5, /*!< ARMORED FILE */
-    PGPARMOR_PRIVKEY		= 6, /*!< PRIVATE KEY BLOCK */
-    PGPARMOR_SECKEY		= 7, /*!< SECRET KEY BLOCK */
+    PGPARMOR_ERROR		= -1,
+    PGPARMOR_NONE		=  0,
+    PGPARMOR_MESSAGE		=  1, /*!< MESSAGE */
+    PGPARMOR_PUBKEY		=  2, /*!< PUBLIC KEY BLOCK */
+    PGPARMOR_SIGNATURE		=  3, /*!< SIGNATURE */
+    PGPARMOR_SIGNED_MESSAGE	=  4, /*!< SIGNED MESSAGE */
+    PGPARMOR_FILE		=  5, /*!< ARMORED FILE */
+    PGPARMOR_PRIVKEY		=  6, /*!< PRIVATE KEY BLOCK */
+    PGPARMOR_SECKEY		=  7, /*!< SECRET KEY BLOCK */
 } pgpArmor;
 /*@=typeuse@*/
 
@@ -945,16 +948,30 @@ extern struct pgpValTbl_s pgpArmorKeyTbl[];
 
 /**
  */
-struct pgpDig_s {
-    union {
-	struct pgpPktSigV3_s * v3;
-	struct pgpPktSigV4_s * v4;
-    } signature;
+struct pgpDigParams_s {
+/*@only@*/ /*@null@*/
+    const char * userid;
+/*@only@*/ /*@null@*/
+    const byte * hash;
+    const char * params[4];
+    byte tag;
 
-    union {
-	struct pgpPktKeyV3_s * v3;
-	struct pgpPktKeyV4_s * v4;
-    } pubkey;
+    byte version;       /*!< version number. */
+    byte time[4];       /*!< time that the key was created. */
+    byte pubkey_algo;   /*!< public key algorithm. */
+
+    byte hash_algo;
+    byte sigtype;
+    byte hashlen;
+    byte signhash16[2];
+    byte signid[8];
+};
+
+/**
+ */
+struct pgpDig_s {
+    struct pgpDigParams_s signature;
+    struct pgpDigParams_s pubkey;
 
     size_t nbytes;			/*!< No. bytes of plain text. */
 
@@ -965,9 +982,6 @@ struct pgpDig_s {
 /*@only@*/ /*@null@*/ DIGEST_CTX md5ctx;/*!< (rsa) md5 hash context. */
 /*@only@*/ /*@null@*/ void * md5;	/*!< (rsa) V3 signature hash. */
     size_t md5len;			/*!< (rsa) V3 signature hash length. */
-
-/*@only@*/ /*@null@*/ byte * hash_data;	/*!< V4 signature hash data. */
-    int hash_datalen;			/*!< V4 signature hash data length. */
 
     /* DSA parameters. */
     mp32barrett p;
@@ -1086,18 +1100,6 @@ const char * pgpMpiStr(const byte *p)
 /**
  */
 /*@unused@*/ static inline /*@observer@*/
-const char * pgpMpiHex(const byte *p)
-	/*@*/
-{
-    static char prbuf[2048];
-    char *t = prbuf;
-    t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
-    return prbuf;
-}
-
-/**
- */
-/*@unused@*/ static inline /*@observer@*/
 const char * pgpValStr(pgpValTbl vs, byte val)
 	/*@*/
 {
@@ -1131,37 +1133,13 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
 
 /**
  */
-int pgpPrtSigV3(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- */
 int pgpPrtSubType(const byte *h, unsigned int hlen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtSigV4(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- */
 int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- */
-int pgpPrtKeyV3(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- */
-int pgpPrtKeyV4(pgpTag tag, const byte *h, unsigned int hlen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
@@ -1185,7 +1163,7 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 
 /**
  */
-int pgpPrtPkt(const byte *p)
+int pgpPrtPkt(const byte *pkt)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
@@ -1198,7 +1176,7 @@ int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpDig_s *dig, int pr
 
 /**
  */
-int pgpReadPkts(const char * fn,
+pgpArmor pgpReadPkts(const char * fn,
 		/*@out@*/ const byte ** pkt, /*@out@*/ size_t * pktlen)
 	/*@globals fileSystem @*/
 	/*@modifies *pkt, *pktlen, fileSystem @*/;

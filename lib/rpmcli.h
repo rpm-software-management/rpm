@@ -31,6 +31,10 @@ struct rpmBuildArguments_s {
     int buildAmount;		/*!< Bit(s) to control operation. */
 /*@null@*/ const char * buildRootOverride; /*!< from --buildroot */
 /*@null@*/ char * targets;	/*!< Target platform(s), comma separated. */
+/*@observer@*/
+    const char * passPhrase;	/*!< Pass phrase. */
+/*@only@*/ /*@null@*/
+    const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
     int force;			/*!< from --force */
     int noBuild;		/*!< from --nobuild */
     int noDeps;			/*!< from --nodeps */
@@ -336,7 +340,7 @@ int rpmInstall(/*@null@*/ const char * rootdir,
  */
 int rpmInstallSource(const char * rootdir, const char * arg,
 		/*@null@*/ /*@out@*/ const char ** specFile,
-		/*@null@*/ /*@out@*/ char ** cookie)
+		/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
 	/*@modifies *specFile, *cookie, rpmGlobalMacroContext,
@@ -518,49 +522,25 @@ typedef enum rpmCheckSigFlags_e {
 #define	CHECKSIG_ALL	(CHECKSIG_PGP|CHECKSIG_MD5|CHECKSIG_GPG)
 
 /** \ingroup rpmcli
- * Check elements in signature header.
- * @param flags		bit(s) to enable signature checks
- * @param argv		array of package file names (NULL terminated)
- * @return		0 on success
- */
-int rpmCheckSig(rpmCheckSigFlags flags, /*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
-/** \ingroup rpmcli
  * Bit(s) to control rpmReSign() operation.
  */
-typedef enum rpmResignFlags_e {
-    RESIGN_NONE = 0,
-    RESIGN_CHK_SIGNATURE = 1,	/*!< from --checksig */
-    RESIGN_NEW_SIGNATURE,	/*!< from --resign */
-    RESIGN_ADD_SIGNATURE	/*!< from --addsign */
-} rpmResignFlags;
-
-/** \ingroup rpmcli
- * Create/modify elements in signature header.
- * @param flags		type of signature operation
- * @param passPhrase
- * @param argv		array of package file names (NULL terminated)
- * @return		0 on success
- */
-int rpmReSign(rpmResignFlags flags, char * passPhrase,
-		/*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext,
-		fileSystem, internalState  @*/;
+typedef enum rpmSignFlags_e {
+    RPMSIGN_NONE		= 0,
+    RPMSIGN_CHK_SIGNATURE	= 1,	/*!< from --checksig */
+    RPMSIGN_NEW_SIGNATURE	= 2,	/*!< from --resign */
+    RPMSIGN_ADD_SIGNATURE	= 3,	/*!< from --addsign */
+    RPMSIGN_IMPORT_PUBKEY	= 4,	/*!< from --import */
+} rpmSignFlags;
 
 /** \ingroup rpmcli
  * Describe signature command line request.
  */
 struct rpmSignArguments_s {
-    rpmResignFlags addSign;	/*!< from --checksig/--resign/--addsign */
+    rpmSignFlags addSign;	/*!< from --checksig/--resign/--addsign */
     rpmCheckSigFlags checksigFlags;	/*!< bits to control --checksig */
     int sign;			/*!< Is a passphrase needed? */
-/*@unused@*/ char * passPhrase;
+/*@observer@*/
+    const char * passPhrase;	/*!< Pass phrase. */
 };
 
 /** \ingroup rpmcli
@@ -572,6 +552,30 @@ extern struct rpmSignArguments_s rpmKArgs;
  */
 /*@unchecked@*/
 extern struct poptOption rpmSignPoptTable[];
+
+/** \ingroup rpmcli
+ * Check elements in signature header.
+ * @param ka		mode flags and parameters
+ * @param argv		array of package file names (NULL terminated)
+ * @return		0 on success
+ */
+int rpmCheckSig(struct rpmSignArguments_s * ka, /*@null@*/ const char ** argv)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
+ * Create/modify elements in signature header.
+ * @param ka		mode flags and parameters
+ * @param argv		array of package file names (NULL terminated)
+ * @return		0 on success
+ */
+int rpmReSign(struct rpmSignArguments_s * ka, /*@null@*/ const char ** argv)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState  @*/;
 
 /*@}*/
 

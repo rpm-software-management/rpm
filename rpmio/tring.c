@@ -1,10 +1,9 @@
 #include "system.h"
 #include "rpmio_internal.h"
-#include "misc.h"
 #include "popt.h"
 #include "debug.h"
 
-static int printing = 0;
+static int printing = 1;
 static int _debug = 0;
 
 static struct poptOption optionsTable[] = {
@@ -19,21 +18,27 @@ int
 main (int argc, const char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
-    rpmDigest dig;
+    pgpDig dig;
     const byte * pkt = NULL;
     ssize_t pktlen;
     const char ** args;
     const char * fn;
-    int rc = 0;
+    int rc, ec = 0;
 
     while ((rc = poptGetNextOpt(optCon)) > 0)
 	;
 
     if ((args = poptGetArgs(optCon)) != NULL)
     while ((fn = *args++) != NULL) {
-	rc = pgpReadPkts(fn, &pkt, &pktlen);
-	if (rc || pkt == NULL || pktlen <= 0)
+	pgpArmor pa;
+	pa = pgpReadPkts(fn, &pkt, &pktlen);
+	if (pa == PGPARMOR_ERROR
+	 || pa == PGPARMOR_NONE
+	 || pkt == NULL || pktlen <= 0)
+	{
+	    ec++;
 	    continue;
+	}
 
 fprintf(stderr, "===================== %s\n", fn);
 	dig = xcalloc(1, sizeof(*dig));
@@ -44,5 +49,5 @@ fprintf(stderr, "===================== %s\n", fn);
 	dig = NULL;
     }
 
-    return rc;
+    return ec;
 }

@@ -680,7 +680,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 }
 
 int rpmInstallSource(const char * rootdir, const char * arg,
-		const char ** specFile, char ** cookie)
+		const char ** specFile, const char ** cookie)
 {
     FD_t fd;
     int rc;
