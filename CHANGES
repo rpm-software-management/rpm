@@ -1,0 +1,123 @@
+2.0.4 -> 2.0.5:
+	- added support for generic querying
+	- added --querytags option
+	- updated man page for above two
+	- short-circuit got added before 2.0.5, but I don't know when
+	- query and installs should now return 0 on success and nonzero
+	  otherwise (rpm -i should return the number of packages that
+	  failed actually)
+
+2.0.3 -> 2.0.4:
+	- added support for PowerPC, and OSF mklinux ports
+	- added --resign
+	- added --recompile
+	- added verbose error messages from Tyson Sawyer
+	- rpmconvert won't overwrite an existing database
+	- won't core dump querying old format source packages
+	- freed minor memory leak
+	- more descriptive error messages during build
+	- added support for not installing documentation
+
+2.0.2 -> 2.0.3:
+	- added support for 686, 786, 886, 986
+
+2.0.1 -> 2.0.2:
+	- fixed ftp.c to return an error code when select timeouts
+	- added basic NLS support, along with a Sweedish message catalog
+	  (thanks to Michael Nyquist)
+
+2.0 -> 2.0.1:
+	- hashing and percentages no longer SIGFPE on 0 byte packages
+	- when an ftp fails, install.c no longer tries to install the package
+	- uses /var/tmp rather then /usr/tmp during for ftp space
+	- added debugging messages to ftp.c
+	- fixed some mistakes in the PGP section of the man page
+	- added mdfile prototype to rpmlib.h - the Python module wants this
+	- fixed struct oldrpmlead to align properly on the alpha
+
+2.0	- everything done :-)
+
+2.0b -> 2.0c:
+	- an incredible number of changes - I won't bother trying to 
+	  list them
+
+2.0a -> 2.0b:
+	- moved build stuff to main rpm command, though --rebuild is still
+	  not supported
+	- install should work, although replaced files are not marked as
+	  replaced
+	- %doc macro fixed
+	- --percent, --hash work for installs
+	- converted databases and packages get the file list in the correct
+	  order now
+	- none of this is well tested
+	- rpms are output to proper dirs (which are always arch sensitive)
+	- basic rpmrc functions are implemented, full parsing is present
+	- changed error messages for missing files to include full path
+	- fixed detection of Alpha's
+
+1.4.6 -> 2.0a:
+	- completely rewritten in C
+	- verification missing
+	- build functionality not in main rpm, in rpmbuild instead
+	  (this will be corrected)
+	- an awful lot is still missing - this is an ALPHA release
+
+1.4.5 -> 1.4.6:
+	- fixed rpmq problem with packages w/o groups (old RPM's would do this)
+	- fixed uninstalling with --root 
+
+1.4.4 -> 1.4.5:
+	- added support for mips processors
+	- added support for osf1 and irix os's
+
+1.4.3 -> 1.4.4:
+	- fixed bug in arch detection code which caused i386 failure
+
+1.4.2 -> 1.4.3:
+	- added tokens for SPARC, MIPS, PowerPC, and 680x0 architectures
+        - fixed sparc arch, added arch sanity check
+
+1.4.1 -> 1.4.2:
+	- added --root to man page, usage, and help messages
+	- added a " " to the "Creating directory" debug message in install.pl
+	- make --rebuild fail on binary packages
+	- don't output prep/build/install sections if there aren't any
+
+1.4 -> 1.4.1:
+	- fixed man page
+	- updated corruption messages to not mention --rebuild
+	- added RPM_PACKAGE_VERSION and RPM_PACKAGE_RELEASE variables
+	  at build time
+	- no longer allows installing binary packages across architectures
+	- fixed handling of symlinks marked as config files
+
+1.3.2 -> 1.4:
+	- make -v the default when using -b and --rebuild
+	- added %postbuild as an alias for %clean
+	- added gendiff
+	- added groups file installed in /usr/lib/rhs/rpm
+	- made usage message different and more concise then the --help message
+	- added --version option
+	- updated man page
+	- changed C build tree for concurrent building on multiple architectures
+
+1.3.1 -> 1.3.2:
+	- add -b option to %patch
+	- fixed install/chroot temp file deleting
+
+1.3 -> 1.3.1:
+	- fixed bug when doing md5 of erased config file during rpm -u
+	- fixed spec file searching
+
+1.2 -> 1.3:
+	- added --search and --where options
+	- multiarchitecture support
+	- added --rebuild option
+	- started C rewrite - rpmq (query options only)
+
+1.1 -> 1.2:
+	- preuninstalls weren't getting handled properly
+	- Alpha architecture is now recognized and builds are allowed
+	- the database open is checked for success before continuing
+	- rpm -b? checks the SPEC files for package names given as args
