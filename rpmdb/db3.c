@@ -570,7 +570,7 @@ static int db3byteswapped(dbiIndex dbi)	/*@*/
 
     if (db != NULL) {
 #if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11
-	int isswapped;
+	int isswapped = 0;
 	rc = db->get_byteswapped(db, &isswapped);
 	if (rc == 0)
 	    rc = isswapped;
@@ -1050,7 +1050,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
 #if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11
-		    DBTYPE dbi_type;
+		    DBTYPE dbi_type = DB_UNKNOWN;
 		    xx = db->get_type(db, &dbi_type);
 		    if (xx == 0)
 			dbi->dbi_type = dbi_type;

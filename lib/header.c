@@ -1590,7 +1590,11 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	    entry->data = xrealloc(entry->data, entry->length + length);
 
 	memset(((char *)entry->data) + entry->length, '\0', ghosts);
+#if 0
 	strcpy(((char *)entry->data) + entry->length + ghosts, string);
+#else
+	memmove(((char *)entry->data) + entry->length + ghosts, string, strlen(string)+1);
+#endif
 
 	entry->length += length;
 	entry->info.count = langNum + 1;

@@ -23,12 +23,15 @@
 /*@access FSM_t @*/		/* compared with NULL */
 /*@access PSM_t @*/		/* compared with NULL */
 /*@access FD_t @*/		/* compared with NULL */
+/*@access rpmdb @*/		/* compared with NULL */
 
 /*@-redecl@*/
 extern int _fsm_debug;
 /*@=redecl@*/
 
+/*@-redecl -declundef -exportheadervar@*/
 extern const char * chroot_prefix;
+/*@=redecl =declundef =exportheadervar@*/
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -1857,8 +1860,10 @@ assert(psm->mi == NULL);
 	    rc = chroot(ts->rootDir);
 	    /*@=unrecog@*/
 	    psm->chrootDone = ts->chrootDone = 1;
-	    if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
+	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 1;
+	    /*@-onlytrans@*/
 	    chroot_prefix = ts->rootDir;
+	    /*@=onlytrans@*/
 	}
 	break;
     case PSM_CHROOT_OUT:
@@ -1868,7 +1873,7 @@ assert(psm->mi == NULL);
 	    rc = chroot(".");
 	    /*@=unrecog@*/
 	    psm->chrootDone = ts->chrootDone = 0;
-	    if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
+	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 0;
 	    chroot_prefix = NULL;
 	    (void) chdir(ts->currDir);
 	}

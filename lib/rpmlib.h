@@ -706,7 +706,7 @@ int rpmdbOpenAll (/*@null@*/ rpmdb db)
  * @param name		rpm package name
  * @return		number of instances
  */
-int rpmdbCountPackages(rpmdb db, const char * name)
+int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
 	/*@modifies db @*/;
 
 /** \ingroup rpmdb
@@ -876,7 +876,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @param h		header
  * @return		0 on success
  */
-int rpmdbAdd(rpmdb db, int iid, Header h)
+int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h)
 	/*@modifies db, h, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -886,7 +886,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
  * @param offset	location in Packages dbi
  * @return		0 on success
  */
-int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int offset)
+int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int offset)
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb

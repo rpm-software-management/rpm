@@ -1181,6 +1181,9 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     int rc = -1;
     int xx;
 
+    if (db == NULL)
+	return 0;
+
     /* XXX
      * There's a segfault here with CDB access, let's treat the symptom
      * while diagnosing the disease.
@@ -2234,6 +2237,9 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
     Header h;
     sigset_t signalMask;
 
+    if (rpmdb == NULL)
+	return 0;
+
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
 	h = rpmdbNextIterator(mi);
@@ -2447,6 +2453,9 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     unsigned int hdrNum = 0;
     int rc = 0;
     int xx;
+
+    if (rpmdb == NULL)
+	return 0;
 
     if (iid != 0 && iid != -1) {
 	int_32 tid = iid;

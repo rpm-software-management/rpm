@@ -14,7 +14,9 @@
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 #include "rpmdb.h"
 
+/*@-redecl -exportheadervar@*/
 extern const char * chroot_prefix;
+/*@=redecl =exportheadervar@*/
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
@@ -1770,7 +1772,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
 	ts->chrootDone = 1;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
+	/*@-onlytrans@*/
 	chroot_prefix = ts->rootDir;
+	/*@=onlytrans@*/
     }
 
     ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
