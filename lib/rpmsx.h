@@ -23,8 +23,9 @@ extern int _rpmsx_debug;
 extern int _rpmsx_nopromote;
 /*@=exportlocal@*/
 
-typedef struct rpmsxp_s * rpmsxp;
 typedef struct rpmsx_s * rpmsx;
+typedef struct rpmsxp_s * rpmsxp;
+typedef struct rpmsxs_s * rpmsxs;
 
 #if defined(_RPMSX_INTERNAL)
 /**
@@ -39,10 +40,19 @@ struct rpmsxp_s {
     const char * context;	/*!< Security context. */
 /*@only@*/ /*@null@*/
     regex_t * preg;		/*!< Compiled regex. */
-    mode_t mode;		/*!< File type. */
+    mode_t fmode;		/*!< File type. */
     int matches;
     int hasMetaChars;
-    int stem_id;
+    int fstem;			/*!< Stem id. */
+};
+
+/**
+ * File/pattern stem.
+ */
+struct rpmsxs_s {
+/*@only@*/ /*@null@*/
+    const char * stem;
+    int len;
 };
 
 /**
@@ -51,8 +61,11 @@ struct rpmsxp_s {
 struct rpmsx_s {
 /*@only@*/ /*@null@*/
     rpmsxp sxp;			/*!< File context patterns. */
-    int Count;			/*!< No. of elements */
-    int i;			/*!< Current element index. */
+    int Count;			/*!< No. of file context patterns. */
+    int i;			/*!< Current pattern index. */
+    rpmsxs sxs;			/*!< File stems. */
+    int nsxs;			/*!< No. of file stems. */
+    int maxsxs;			/*!< No. of allocated file stems. */
     int reverse;		/*!< Reverse traversal? */
     int nrefs;			/*!< Reference count. */
 };
@@ -190,6 +203,24 @@ extern regex_t * rpmsxRE(/*@null@*/ const rpmsx sx)
 	/*@*/;
 
 /**
+ * Return current file mode.
+ * @param sx		security context patterns
+ * @return		current file mode, 0 on invalid
+ */
+/*@observer@*/ /*@null@*/
+extern mode_t rpmsxFMode(/*@null@*/ const rpmsx sx)
+	/*@*/;
+
+/**
+ * Return current file stem.
+ * @param sx		security context patterns
+ * @return		current file stem, -1 on invalid
+ */
+/*@observer@*/ /*@null@*/
+extern int rpmsxFStem(/*@null@*/ const rpmsx sx)
+	/*@*/;
+
+/**
  * Return next security context patterns iterator index.
  * @param sx		security context patterns
  * @return		security context patterns iterator index, -1 on termination
@@ -206,6 +237,17 @@ int rpmsxNext(/*@null@*/ rpmsx sx)
 /*@null@*/
 rpmsx rpmsxInit(/*@null@*/ rpmsx sx, int reverse)
 	/*@modifies sx @*/;
+
+/**
+ * Find file security context from path and type.
+ * @param sx		security context patterns
+ * @param fn		file path
+ * @param fmode		file mode
+ * @return		file security context
+ */
+/*@null@*/
+const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
+	/*@*/;
 
 #ifdef __cplusplus
 }

@@ -634,6 +634,7 @@ int parseREContexts(const char *fn)
     int lineno;
     int pass;
     int regerr;
+    spec_t sp;
 
     if ((fp = fopen(fn, "r")) == NULL) {
 	perror(fn);
@@ -649,8 +650,6 @@ int parseREContexts(const char *fn)
      * and fills in the spec array.
      */
     for (pass = 0; pass < 2; pass++) {
-	spec_t sp;
-
 	lineno = 0;
 	nspec = 0;
 	sp = spec_arr;
@@ -884,15 +883,17 @@ int main(int argc, char **argv)
     av = poptGetArgs(optCon);
     if (use_stdin) {
 	add_assoc = 0;
-	/* Cannot mix with pathname arguments. */
-	if (av[0] != NULL)
+	/* Check exactly 1 arg */
+	if (av == NULL || !(av[0] != NULL && av[1] == NULL)) {
 	    usage(__progname, optCon);
+	}
     } else {
-	if (av[0] == NULL || av[1] == NULL)
+	/* Check at least 2 args */
+	if (av == NULL || !(av[0] != NULL && av[1] != NULL))
 	    usage(__progname, optCon);
     }
 
-	/* Parse the specification file. */
+    /* Parse the specification file. */
     if (parseREContexts(*av) != 0) {
 	perror(*av);
 	goto exit;

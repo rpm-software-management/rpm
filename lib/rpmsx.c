@@ -13,6 +13,165 @@
 /*@unchecked@*/
 int _rpmsx_debug = 0;
 
+/**
+ */
+static int rpmsxpCompare(const void* A, const void* B)
+	/*@*/
+{
+    rpmsxp sxpA = (rpmsxp) A;
+    rpmsxp sxpB = (rpmsxp) B;
+    return (sxpB->hasMetaChars - sxpA->hasMetaChars);
+}
+
+/**
+ * Sort the specifications with most general first.
+ * @param sx		security context patterns
+ */
+static void rpmsxSort(rpmsx sx)
+	/*@modifies sx @*/
+{
+    qsort(sx->sxp, sx->Count, sizeof(*sx->sxp), rpmsxpCompare);
+}
+
+/* Determine if the regular expression specification has any meta characters. */
+static void rpmsxpHasMetaChars(rpmsxp sxp)
+	/*@modifies sxp @*/
+{
+    const char * s = sxp->pattern;
+    size_t ns = strlen(s);
+    const char * se = s + ns;
+
+    sxp->hasMetaChars = 0; 
+
+    /* Look at each character in the RE specification string for a 
+     * meta character. Return when any meta character reached. */
+    while (s != se) {
+	switch(*s) {
+	case '.':
+	case '^':
+	case '$':
+	case '?':
+	case '*':
+	case '+':
+	case '|':
+	case '[':
+	case '(':
+	case '{':
+	    sxp->hasMetaChars = 1;
+	    return;
+	    break;
+	case '\\':		/* skip the next character */
+	    s++;
+	    break;
+	default:
+	    break;
+
+	}
+	s++;
+    }
+    return;
+}
+
+/**
+ * Return the length of the text that can be considered the stem.
+ * @return		stem length, 0 if no identifiable stem
+ */
+static size_t rpmsxsPStem(const char * const buf)
+	/*@*/
+{
+    static const char * const regex_chars = ".^$?*+|[({";
+    const char * tmp = strchr(buf + 1, '/');
+    const char * ind;
+
+    if (!tmp)
+	return 0;
+
+    for (ind = buf + 1; ind < tmp; ind++) {
+	if (strchr(regex_chars, (int)*ind))
+	    return 0;
+    }
+    return tmp - buf;
+}
+
+/**
+ * Return the length of the text that is the stem of a file name.
+ * @return		stem length, 0 if no identifiable stem
+ */
+static size_t rpmsxsFStem(const char * const buf)
+	/*@*/
+{
+    const char * tmp = strchr(buf + 1, '/');
+
+    if (!tmp)
+	return 0;
+    return tmp - buf;
+}
+
+/**
+ * Find (or create) the stem of a file spec.
+ * Error iff a file in the root directory or a regex that is too complex.
+ *
+ * @retval *bpp		ptr to text after stem.
+ * @return		stem index, -1 on error
+ */
+static int rpmsxAdd(rpmsx sx, const char ** bpp)
+	/*@modifies sx, *bpp @*/
+{
+    size_t stem_len = rpmsxsPStem(*bpp);
+    rpmsxs sxs;
+    int i;
+
+    if (!stem_len)
+	return -1;
+    for (i = 0; i < sx->nsxs; i++) {
+	sxs = sx->sxs + i;
+	if (stem_len != sxs->len)
+	    continue;
+	if (strncmp(*bpp, sxs->stem, stem_len))
+	    continue;
+	*bpp += stem_len;
+	return i;
+    }
+
+    if (sx->nsxs == sx->maxsxs) {
+	sx->maxsxs = sx->maxsxs * 2 + 16;
+	sx->sxs = xrealloc(sx->sxs, sizeof(*sx->sxs) * sx->maxsxs);
+    }
+    sxs = sx->sxs + sx->nsxs;
+    sxs->len = stem_len;
+    sxs->stem = strndup(*bpp, stem_len);
+    sx->nsxs++;
+    *bpp += stem_len;
+    return sx->nsxs - 1;
+}
+
+/**
+ * Find the stem of a file name.
+ * Error iff a file in the root directory or a regex that is too complex.
+ *
+ * @retval *bpp		ptr to text after stem.
+ * @return		stem index, -1 on error
+ */
+static int rpmsxFind(const rpmsx sx, const char ** bpp)
+	/*@modifies *bpp @*/
+{
+    size_t stem_len = rpmsxsFStem(*bpp);
+    rpmsxs sxs;
+    int i;
+
+    if (stem_len)
+    for (i = 0; i < sx->nsxs; i++) {
+	sxs = sx->sxs + i;
+	if (stem_len != sxs->len)
+	    continue;
+	if (strncmp(*bpp, sxs->stem, stem_len))
+	    continue;
+	*bpp += stem_len;
+	return i;
+    }
+    return -1;
+}
+
 rpmsx XrpmsxUnlink(rpmsx sx, const char * msg, const char * fn, unsigned ln)
 {
     if (sx == NULL) return NULL;
@@ -62,9 +221,15 @@ fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
 	regfree(sxp->preg);
 	sxp->preg = _free(sxp->preg);
     }
-    /*@=branchstate@*/
-
     sx->sxp = _free(sx->sxp);
+
+    if (sx->nsxs > 0)
+    for (i = 0; i < sx->nsxs; i++) {
+	rpmsxs sxs = sx->sxs + i;
+	sxs->stem = _free(sxs->stem);
+    }
+    sx->sxs = _free(sx->sxs);
+    /*@=branchstate@*/
 
     (void) rpmsxUnlink(sx, __func__);
     /*@-refcounttrans -usereleased@*/
@@ -74,51 +239,6 @@ fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
     sx = _free(sx);
     /*@=refcounttrans =usereleased@*/
     return NULL;
-}
-
-static int rpmsxpCompare(const void* A, const void* B)
-{
-    rpmsxp sxpA = (rpmsxp) A;
-    rpmsxp sxpB = (rpmsxp) B;
-    return (sxpA->hasMetaChars - sxpB->hasMetaChars);
-}
-
-/* Determine if the regular expression specification has any meta characters. */
-static void rpmsxpHasMetaChars(rpmsxp sxp)
-{
-    const char * s = sxp->pattern;
-    size_t ns = strlen(s);
-    const char * se = s + ns;
-
-    sxp->hasMetaChars = 0; 
-
-    /* Look at each character in the RE specification string for a 
-     * meta character. Return when any meta character reached. */
-    while (s != se) {
-	switch(*s) {
-	case '.':
-	case '^':
-	case '$':
-	case '?':
-	case '*':
-	case '+':
-	case '|':
-	case '[':
-	case '(':
-	case '{':
-	    sxp->hasMetaChars = 1;
-	    return;
-	    break;
-	case '\\':		/* skip the next character */
-	    s++;
-	    break;
-	default:
-	    break;
-
-	}
-	s++;
-    }
-    return;
 }
 
 /**
@@ -131,6 +251,7 @@ static void rpmsxpHasMetaChars(rpmsxp sxp)
  * @return		0 on success
  */
 static int rpmsxpCheckNoDupes(const rpmsx sx)
+	/*@*/
 {
     int i, j;
     int rc = 0;
@@ -143,7 +264,7 @@ static int rpmsxpCheckNoDupes(const rpmsx sx)
 	    /* Check if same RE string */
 	    if (strcmp(sxpj->pattern, sxpi->pattern))
 		continue;
-	    if (sxpj->mode && sxpi->mode && sxpj->mode != sxpi->mode)
+	    if (sxpj->fmode && sxpi->fmode && sxpj->fmode != sxpi->fmode)
 		continue;
 
 	    /* Same RE string found */
@@ -167,7 +288,7 @@ static int rpmsxpCheckNoDupes(const rpmsx sx)
 static int nerr;
 #define	inc_err()	nerr++
 
-int rpmsxParse(rpmsx sx, const char *fn)
+int rpmsxParse(rpmsx sx, const char * fn)
 {
     FILE * fp;
     char errbuf[255 + 1];
@@ -240,14 +361,10 @@ int rpmsxParse(rpmsx sx, const char *fn)
 		type = 0;
 	    }
 
+	    /* On pass 2, compile and store the specification. */
 	    if (pass == 1) {
-		/* On the second pass, compile and store the specification in spec. */
-		const char *reg_buf = regex;
-#ifdef	NOTYET
-		sxp->stem_id = find_stem_from_spec(&reg_buf);
-#else
-		sxp->stem_id = -1;
-#endif
+		const char * reg_buf = regex;
+		sxp->fstem = rpmsxAdd(sx, &reg_buf);
 		sxp->pattern = regex;
 
 		/* Anchor the regular expression. */
@@ -271,7 +388,7 @@ int rpmsxParse(rpmsx sx, const char *fn)
 
 		/* Convert the type string to a mode format */
 		sxp->type = type;
-		sxp->mode = 0;
+		sxp->fmode = 0;
 		if (!type)
 		    goto skip_type;
 		len = strlen(type);
@@ -283,27 +400,13 @@ int rpmsxParse(rpmsx sx, const char *fn)
 		    goto skip_type;
 		}
 		switch (type[1]) {
-		case 'b':
-		    sxp->mode = S_IFBLK;
-		    break;
-		case 'c':
-		    sxp->mode = S_IFCHR;
-		    break;
-		case 'd':
-		    sxp->mode = S_IFDIR;
-		    break;
-		case 'p':
-		    sxp->mode = S_IFIFO;
-		    break;
-		case 'l':
-		    sxp->mode = S_IFLNK;
-		    break;
-		case 's':
-		    sxp->mode = S_IFSOCK;
-		    break;
-		case '-':
-		    sxp->mode = S_IFREG;
-		    break;
+		case 'b':	sxp->fmode = S_IFBLK;	break;
+		case 'c':	sxp->fmode = S_IFCHR;	break;
+		case 'd':	sxp->fmode = S_IFDIR;	break;
+		case 'p':	sxp->fmode = S_IFIFO;	break;
+		case 'l':	sxp->fmode = S_IFLNK;	break;
+		case 's':	sxp->fmode = S_IFSOCK;	break;
+		case '-':	sxp->fmode = S_IFREG;	break;
 		default:
 		    fprintf(stderr,
 			_("%s:  invalid type specifier %s on line number %d\n"),
@@ -352,7 +455,7 @@ int rpmsxParse(rpmsx sx, const char *fn)
     fclose(fp);
 
     /* Sort the specifications with most general first */
-    qsort(sx->sxp, sx->Count, sizeof(*sx->sxp), rpmsxpCompare);
+    rpmsxSort(sx);
 
     /* Verify no exact duplicates */
     if (rpmsxpCheckNoDupes(sx) != 0)
@@ -366,9 +469,13 @@ rpmsx rpmsxNew(const char * fn)
     rpmsx sx;
 
     sx = xcalloc(1, sizeof(*sx));
+    sx->sxp = NULL;
     sx->Count = 0;
     sx->i = -1;
-    sx->sxp = NULL;
+    sx->sxs = NULL;
+    sx->nsxs = 0;
+    sx->maxsxs = 0;
+    sx->reverse = 0;
 
     (void) rpmsxLink(sx, __func__);
 
@@ -435,6 +542,24 @@ regex_t * rpmsxRE(const rpmsx sx)
     return preg;
 }
 
+mode_t rpmsxFMode(const rpmsx sx)
+{
+    mode_t fmode = 0;
+
+    if (sx != NULL && sx->i >= 0 && sx->i < sx->Count)
+	fmode = (sx->sxp + sx->i)->fmode;
+    return fmode;
+}
+
+int rpmsxFStem(const rpmsx sx)
+{
+    int fstem = -1;
+
+    if (sx != NULL && sx->i >= 0 && sx->i < sx->Count)
+	fstem = (sx->sxp + sx->i)->fstem;
+    return fstem;
+}
+
 int rpmsxNext(/*@null@*/ rpmsx sx)
 	/*@modifies sx @*/
 {
@@ -479,13 +604,49 @@ rpmsx rpmsxInit(/*@null@*/ rpmsx sx, int reverse)
     /*@=refcounttrans@*/
 }
 
-const char * rpmsxApply(rpmsx sx, const char * fn)
+const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 {
-   const char * context = NULL;
+    const char * context = NULL;
+    const char * myfn = fn;
+    int fstem = rpmsxFind(sx, &myfn);
+    int i;
 
     sx = rpmsxInit(sx, 1);
     if (sx != NULL)
-    while (rpmsxNext(sx) >= 0) {
+    while ((i = rpmsxNext(sx)) >= 0) {
+	regex_t * preg;
+	mode_t sxfmode;
+	int sxfstem;
+	int ret;
+
+	sxfstem = rpmsxFStem(sx);
+	if (sxfstem != -1 && sxfstem != fstem)
+	    continue;
+
+	sxfmode = rpmsxFMode(sx);
+	if (sxfmode && (fmode & S_IFMT) != sxfmode)
+	    continue;
+
+	preg = rpmsxRE(sx);
+	if (preg == NULL)
+	    continue;
+
+	ret = regexec(preg, (sxfstem == -1 ? fn : myfn), 0, NULL, 0);
+	switch (ret) {
+	case REG_NOMATCH:
+	    continue;
+	    /*@notreaached@*/ break;
+	case 0:
+	    context = rpmsxContext(sx);
+	    break;
+	default:
+	  { static char errbuf[255 + 1];
+	    regerror(ret, preg, errbuf, sizeof errbuf);
+	    fprintf(stderr, "unable to match %s against %s:  %s\n",
+                fn, rpmsxPattern(sx), errbuf);
+	  } break;
+	}
+	break;
     }
 
     return context;
