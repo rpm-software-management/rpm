@@ -314,7 +314,7 @@ static int dbiOpenIndex(rpmdb rpmdb, int dbix)
     case 2:
     case 1:
     case 0:
-	if (mydbvecs[dbi->dbi_major] == NULL)
+	if (mydbvecs[dbi->dbi_major] == NULL) {
 	   rc = 1;
 	   break;
 	}

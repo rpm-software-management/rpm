@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-04-20 20:21-0400\n"
+msgstr "POT-Creation-Date: 2000-04-20 20:24-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:425
 #, c-format
