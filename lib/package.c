@@ -41,7 +41,8 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
     oldLead = (struct oldrpmlead *) lead;
 
     fstat(fd, &sb);
-    if (sb.st_size < 4) return 1;
+    /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
+    if (S_ISREG(sb.st_mode) && sb.st_size < 4) return 1;
 
     if (readLead(fd, lead)) {
 	return 2;

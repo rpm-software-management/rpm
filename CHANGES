@@ -3,6 +3,7 @@
 	- fixed error messages displayed when opening the database
 	  fails during package installation and removal
 	- query format of the form '[A%{}]' would drop the static string
+	- fixed fix in 2.4.9 for empty packages which broke -qip on ftp URL's
 
 2.4.10 -> 2.4.11:
 	- HAVE_SYS_SOCKET_H was mistakingly MACHINE_SYS_SOCKET_H in
