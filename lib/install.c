@@ -119,14 +119,15 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     char * chptr;
     char ** languages, ** lang;
 
-    if (!headerGetEntry(h, RPMTAG_ORIGFILENAMES, NULL, (void **) &mem->names, 
+    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
 		        fileCountPtr))
-	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
-		           fileCountPtr);
+	return 0;
+
     if (!headerGetEntry(h, RPMTAG_ORIGFILENAMES, NULL, 
 			(void **) &mem->cpioNames, NULL))
 	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->cpioNames, 
 		           fileCountPtr);
+    headerRemoveEntry(h, RPMTAG_ORIGFILENAMES);
 
     fileCount = *fileCountPtr;
 
