@@ -65,8 +65,7 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
  * sets to reduce errors. In general, installs/upgrades are done before
  * strict removals, and prerequisite ordering is done on installs/upgrades.
  */
-typedef /*@abstract@*/ /*@refcounted@*/
-struct rpmts_s * rpmts;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 
 /** \ingroup rpmtrans
  * An added/available package retrieval key.
@@ -855,7 +854,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 /** \ingroup rpmtrans
  * Bit(s) to control rpmtsRun() operation.
  */
-typedef enum rpmtsFlags_e {
+typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NONE		= 0,
     RPMTRANS_FLAG_TEST		= (1 <<  0),	/*!< from --test */
     RPMTRANS_FLAG_BUILD_PROBS	= (1 <<  1),	/*!< @todo Document. */
@@ -899,7 +898,7 @@ typedef enum rpmtsFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOSUGGESTS	= (1 << 28)	/*!< from --nosuggests */
-} rpmtsFlags;
+} rpmtransFlags;
 
 #define	_noTransScripts		\
   ( RPMTRANS_FLAG_NOPRE |	\

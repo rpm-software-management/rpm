@@ -1,21 +1,36 @@
 #ifndef H_RPMTE
 #define H_RPMTE
 
-/** \ingroup rpmdep rpmtrans
+/** \ingroup rpmts rpmte
  * \file lib/rpmte.h
  * Structures used for an "rpmte" transaction element.
  */
 
+/**
+ * Transaction element ordering chain linkage.
+ */
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 
+/**
+ * Transaction element iterator.
+ */
 typedef /*@abstract@*/ struct rpmtei_s *		rpmtei;
+
+/** \ingroup rpmte
+ * Transaction element type.
+ */
+typedef enum rpmElementType_e {
+    TR_ADDED		= (1 << 0),	/*!< Package will be installed. */
+    TR_REMOVED		= (1 << 1)	/*!< Package will be removed. */
+} rpmElementType;
 
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _te_debug;
 /*@=exportlocal@*/
 
-/** \ingroup rpmdep
+#if	defined(_RPMTE_INTERNAL)
+/** \ingroup rpmte
  * Dependncy ordering information.
  */
 /*@-fielduse@*/	/* LCL: confused by union? */
@@ -36,18 +51,11 @@ struct tsortInfo_s {
 };
 /*@=fielduse@*/
 
-/** \ingroup rpmdep
- */
-typedef enum rpmTransactionType_e {
-    TR_ADDED		= (1 << 0),	/*!< Package will be installed. */
-    TR_REMOVED		= (1 << 1)	/*!< Package will be removed. */
-} rpmTransactionType;
-
-/** \ingroup rpmdep
+/** \ingroup rpmte
  * A single package instance to be installed/removed atomically.
  */
 struct rpmte_s {
-    rpmTransactionType type;	/*!< Package disposition (installed/removed). */
+    rpmElementType type;	/*!< Package disposition (installed/removed). */
 
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Package header. */
@@ -121,6 +129,8 @@ struct rpmtei_s {
     int oc;		/*!< iterator index. */
 };
 
+#endif	/* _RPMTE_INTERNAL */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -146,7 +156,7 @@ rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
  * @return		new transaction element
  */
 /*@only@*/ /*@null@*/
-rpmte rpmteNew(const rpmts ts, Header h, rpmTransactionType type,
+rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs,
 		int dboffset,
@@ -158,7 +168,7 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmTransactionType type,
  * @param te		transaction element
  * @return		type
  */
-rpmTransactionType rpmteType(rpmte te)
+rpmElementType rpmteType(rpmte te)
 	/*@*/;
 
 /**
@@ -488,7 +498,7 @@ rpmtei XrpmteiInit(rpmts ts,
  * @return		next transaction element of type, NULL on termination
  */
 /*@dependent@*/ /*@null@*/
-rpmte rpmteiNext(rpmtei tei, rpmTransactionType type)
+rpmte rpmteiNext(rpmtei tei, rpmElementType type)
         /*@modifies tei @*/;
 
 #ifdef __cplusplus

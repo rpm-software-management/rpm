@@ -6,6 +6,7 @@
  * Structure(s) used for dependency tag sets.
  */
 
+#if defined(_RPMDS_INTERNAL)
 /**
  * A package dependency set.
  */
@@ -31,6 +32,7 @@ struct rpmds_s {
     int_32 Count;		/*!< No. of elements */
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 };
+#endif	/* _RPMDS_INTERNAL */
 
 #ifdef __cplusplus
 extern "C" {

@@ -11,6 +11,8 @@
 
 #include "rpmdb.h"
 #include "rpmps.h"
+
+#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
 #include "rpmlead.h"

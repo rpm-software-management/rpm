@@ -12,8 +12,14 @@
 #include "rpmps.h"
 
 #include "rpmds.h"
+
+#define	_RPMFI_INTERNAL
 #include "rpmfi.h"
+
+#define	_RPMTE_INTERNAL
 #include "rpmte.h"
+
+#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
 #include "rpmdb.h"
@@ -92,7 +98,7 @@ static fileAction decideFileFate(const rpmts ts,
 	 * The file doesn't exist on the disk. Create it unless the new
 	 * package has marked it as missingok, or allfiles is requested.
 	 */
-	if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_ALLFILES)
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES)
 	 && (newFlags & RPMFILE_MISSINGOK))
 	{
 	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
@@ -588,7 +594,7 @@ assert(otherFi->actions[otherFileNum] != FA_UNKNOWN);
 
 assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
-	    if ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
+	    if ((rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES)
 	     && filecmp(otherFi, fi))
 	    {
 		rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
@@ -709,7 +715,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
 {
-    int noDocs = (rpmtsGetFlags(ts) & RPMTRANS_FLAG_NODOCS);
+    int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
     const char ** languages;
     const char * dn, * bn;
@@ -912,9 +918,9 @@ rpmfi rpmteiGetFi(const rpmtei tei)
 
     if (tei != NULL && tei->ocsave != -1) {
 	/*@-type -abstract@*/ /* FIX: rpmte not opaque */
-	rpmte te = tei->ts->order[tei->ocsave];
+	rpmte te = rpmtsElement(tei->ts, tei->ocsave);
 	/*@-assignexpose@*/
-	if ((fi = te->fi) != NULL)
+	if (te != NULL && (fi = te->fi) != NULL)
 	    fi->te = te;
 	/*@=assignexpose@*/
 	/*@=type =abstract@*/
@@ -945,14 +951,14 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* FIXME: what if the same package is included in ts twice? */
 
-    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
-	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | _noTransScripts | _noTransTriggers));
-    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
-	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | _noTransTriggers));
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
 
     /* XXX MULTILIB is broken, as packages can and do execute /sbin/ldconfig. */
-    if (rpmtsGetFlags(ts) & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
-	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | _noTransScripts | _noTransTriggers));
+    if (rpmtsFlags(ts) & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
 
     ts->probs = rpmpsFree(ts->probs);
     ts->probs = rpmpsCreate();
@@ -994,21 +1000,21 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	if (!(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
 	    if (!archOkay(rpmteA(p)))
 		rpmpsAppend(ps, RPMPROB_BADARCH,
 			rpmteNEVR(p), rpmteKey(p),
 			rpmteA(p), NULL,
 			NULL, 0);
 
-	if (!(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREOS))
 	    if (!osOkay(rpmteO(p)))
 		rpmpsAppend(ps, RPMPROB_BADOS,
 			rpmteNEVR(p), rpmteKey(p),
 			rpmteO(p), NULL,
 			NULL, 0);
 
-	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL)
@@ -1017,7 +1023,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	}
 
 	/* XXX multilib should not display "already installed" problems */
-	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !rpmteMultiLib(p)) {
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG) && !rpmteMultiLib(p)) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT,
 				rpmteV(p));
@@ -1095,7 +1101,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     pi = rpmteiFree(pi);
 
     if (!rpmtsGetChrootDone(ts)) {
-	const char * rootDir = rpmtsGetRootDir(ts);
+	const char * rootDir = rpmtsRootDir(ts);
 	xx = chdir("/");
 	/*@-superuser -noeffect @*/
 	if (rootDir != NULL)
@@ -1232,7 +1238,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    switch (rpmteType(p)) {
 	    case TR_ADDED:
 		xx = handleInstInstalledFiles(ts, p, fi, shared, nexti - i,
-	!(beingRemoved || (ts->ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)));
+	!(beingRemoved || (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES)));
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
 		if (!beingRemoved)
@@ -1291,7 +1297,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * If unfiltered problems exist, free memory and return.
      */
-    if ((rpmtsGetFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS)
+    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS)
      || (ts->probs->numProblems &&
 		(okProbs != NULL || rpmpsTrim(ts->probs, okProbs)))
        )
@@ -1304,7 +1310,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * Save removed files before erasing.
      */
-    if (rpmtsGetFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
+    if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
 	pi = rpmteiInit(ts);
 	while ((p = rpmteiNext(pi, 0)) != NULL) {
 	    fi = rpmteiGetFi(pi);
@@ -1312,7 +1318,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
-		if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
+		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
 		    /*@switchbreak@*/ break;
 		psm->te = p;
 		psm->fi = rpmfiLink(fi, "tsRepackage");
@@ -1334,7 +1340,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /*@-branchstate@*/ /* FIX: fi reload needs work */
     while ((p = rpmteiNext(pi, 0)) != NULL) {
 	alKey pkgKey;
-	Header h;
 	int gotfd;
 
 	gotfd = 0;
@@ -1349,7 +1354,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    pkgKey = rpmteAddedKey(p);
 
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s\n", rpmteNEVR(p));
-	    h = NULL;
+	    p->h = NULL;
 	    /*@-type@*/ /* FIX: rpmte not opaque */
 	    {
 		/*@-noeffectuncon@*/ /* FIX: notify annotations */
@@ -1360,7 +1365,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		    rpmRC rpmrc;
 
 		    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
-				"rpmtsRun", &h);
+				"rpmtsRun", &p->h);
 
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon@*/ /* FIX: notify annotations */
@@ -1389,7 +1394,7 @@ fi->actions = NULL;
 fi->magic = RPMFIMAGIC;
 fi->te = p;
 fi->record = 0;
-		    (void) rpmfiNew(ts, fi, h, RPMTAG_BASENAMES, 1);
+		    (void) rpmfiNew(ts, fi, p->h, RPMTAG_BASENAMES, 1);
 		    psm->fi = rpmfiLink(fi, "tsInstall");
 fi->fstates = _free(fi->fstates);
 fi->fstates = fstates;
@@ -1399,9 +1404,9 @@ fi->actions = actions;
 
 		}
 		if (rpmteMultiLib(p))
-		    (void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | RPMTRANS_FLAG_MULTILIB));
+		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_MULTILIB));
 		else
-		    (void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) & ~RPMTRANS_FLAG_MULTILIB));
+		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) & ~RPMTRANS_FLAG_MULTILIB));
 
 		if (psmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;
@@ -1413,7 +1418,7 @@ fi->actions = actions;
 		lastKey = pkgKey;
 	    }
 
-	    h = headerFree(h, "TR_ADDED h free");
+	    p->h = headerFree(p->h, "TR_ADDED h free");
 
 	    if (gotfd) {
 		/*@-noeffectuncon @*/ /* FIX: check rc */

@@ -14,6 +14,12 @@
 extern int _ts_debug;
 /*@=exportlocal@*/
 
+#define	_RPMTS_VSF_NODIGESTS		(1 << 0)
+#define	_RPMTS_VSF_NOSIGNATURES		(1 << 1)
+#define	_RPMTS_VSF_VERIFY_LEGACY	(1 << 2)
+
+#if defined(_RPMTS_INTERNAL)
+
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _cacheDependsRC;
@@ -55,7 +61,7 @@ typedef enum tsStage_e {
  * The set of packages to be installed/removed atomically.
  */
 struct rpmts_s {
-    rpmtsFlags transFlags;	/*!< Bit(s) to control operation. */
+    rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
 
 /*@null@*/
@@ -122,9 +128,6 @@ struct rpmts_s {
     int nodigests;		/*!< Verify digests? */
     int nosignatures;		/*!< Verify signatures? */
     int vsflags;		/*!< Signature verification flags. */
-#define	_RPMTS_VSF_NODIGESTS		(1 << 0)
-#define	_RPMTS_VSF_NOSIGNATURES		(1 << 1)
-#define	_RPMTS_VSF_VERIFY_LEGACY	(1 << 2)
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
@@ -144,6 +147,7 @@ struct rpmts_s {
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 
 };
+#endif	/* _RPMTS_INTERNAL */
 
 #ifdef __cplusplus
 extern "C" {
@@ -326,7 +330,7 @@ int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
  * @return		transaction rootDir
  */
 /*@observer@*/ /*@null@*/
-const char * rpmtsGetRootDir(rpmts ts)
+const char * rpmtsRootDir(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -445,12 +449,51 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 	/*@modifies ts @*/;
 
+/**
+ * Perform transaction progress notify callback.
+ * @param ts		transaction set
+ * @param te		current transaction element
+ * @param what		type of call back
+ * @param amount	current value
+ * @param total		final value
+ * @return		callback dependent pointer
+ */
+/*@null@*/
+void * rpmtsNotify(rpmts ts, rpmte te,
+                rpmCallbackType what, unsigned long amount, unsigned long total)
+	/*@*/;
+
+/**
+ * Return number of (ordered) transaction set elements.
+ * @param ts		transaction set
+ * @return		no. of transaction set elements
+ */
+int rpmtsNElements(rpmts ts)
+	/*@*/;
+
+/**
+ * Return (ordered) transaction set element.
+ * @param ts		transaction set
+ * @param ix		transaction element index
+ * @return		transaction element
+ */
+rpmte rpmtsElement(rpmts ts, int ix)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get problem ignore bit mask, i.e. bits to filter encountered problems.
+ * @param ts		transaction set
+ * @return		ignore bit mask
+ */
+rpmprobFilterFlags rpmtsFilterFlags(rpmts ts)
+	/*@*/;
+
 /** \ingroup rpmts
  * Get transaction flags, i.e. bits that control rpmtsRun().
  * @param ts		transaction set
  * @return		transaction flags
  */
-rpmtsFlags rpmtsGetFlags(rpmts ts)
+rpmtransFlags rpmtsFlags(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -459,7 +502,7 @@ rpmtsFlags rpmtsGetFlags(rpmts ts)
  * @param transFlags	new transaction flags
  * @return		previous transaction flags
  */
-rpmtsFlags rpmtsSetFlags(rpmts ts, rpmtsFlags transFlags)
+rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

@@ -6,6 +6,7 @@
  * Structure(s) used for file info tag sets.
  */
 
+#if defined(_RPMFI_INTERNAL)
 /**
  */
 typedef struct sharedFileInfo_s *		sharedFileInfo;
@@ -133,6 +134,8 @@ struct rpmfi_s {
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 
+#endif	/* _RPMFI_INTERNAL */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -170,15 +173,6 @@ rpmfi XrpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies fi @*/;
 #define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
-
-/**
- * Retrieve key from transaction element file info.
- * @param fi		transaction element file info
- * @return		transaction element file info key
- */
-/*@exposed@*/ /*@dependent@*/ /*@null@*/
-fnpyKey rpmfiKey(rpmfi fi)
-	/*@*/;
 
 /**
  * Return file count from file info set.

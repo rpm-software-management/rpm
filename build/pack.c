@@ -14,6 +14,7 @@
 #include "fsm.h"
 #include "psm.h"
 
+#define	_RPMFI_INTERNAL		/* XXX fi->fsm */
 #include "rpmfi.h"
 #include "rpmts.h"
 

@@ -14,7 +14,11 @@
 #include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmal.h"
+
+#define	_RPMTE_INTERNAL		/* XXX te->h */
 #include "rpmte.h"
+
+#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
@@ -411,13 +415,9 @@ int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
     return ret;
 }
 
-const char * rpmtsGetRootDir(rpmts ts)
+const char * rpmtsRootDir(rpmts ts)
 {
-    const char * rootDir = NULL;
-    if (ts != NULL) {
-	rootDir = ts->rootDir;
-    }
-    return rootDir;
+    return (ts != NULL ? ts->rootDir : NULL);
 }
 
 void rpmtsSetRootDir(rpmts ts, const char * rootDir)
@@ -548,7 +548,7 @@ int rpmtsInitDSI(const rpmts ts)
     int rc;
     int i;
 
-    if (ts->ignoreSet & RPMPROB_FILTER_DISKSPACE)
+    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
 	return 0;
 
     rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
@@ -702,18 +702,56 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     ps = rpmpsFree(ps);
 }
 
-rpmtsFlags rpmtsGetFlags(rpmts ts)
+void * rpmtsNotify(rpmts ts, rpmte te,
+		rpmCallbackType what, unsigned long amount, unsigned long total)
 {
-    rpmtsFlags otransFlags = 0;
-    if (ts != NULL) {
-	otransFlags = ts->transFlags;
+    void * ptr = NULL;
+    if (ts && ts->notify && te) {
+assert(!(te->type == TR_ADDED && te->h == NULL));
+	/*@-type@*/ /* FIX: cast? */
+	/*@-noeffectuncon @*/ /* FIX: check rc */
+	ptr = ts->notify(te->h, what, amount, total,
+			rpmteKey(te), ts->notifyData);
+	/*@=noeffectuncon @*/
+	/*@=type@*/
     }
-    return otransFlags;
+    return ptr;
 }
 
-rpmtsFlags rpmtsSetFlags(rpmts ts, rpmtsFlags transFlags)
+int rpmtsNElements(rpmts ts)
 {
-    rpmtsFlags otransFlags = 0;
+    int nelements = 0;
+    if (ts != NULL && ts->order != NULL) {
+	nelements = ts->orderCount;
+    }
+    return nelements;
+}
+
+rpmte rpmtsElement(rpmts ts, int ix)
+{
+    rpmte te = NULL;
+    if (ts != NULL && ts->order != NULL) {
+	if (ix >= 0 && ix < ts->orderCount)
+	    te = ts->order[ix];
+    }
+    /*@-compdef@*/
+    return te;
+    /*@=compdef@*/
+}
+
+rpmprobFilterFlags rpmtsFilterFlags(rpmts ts)
+{
+    return (ts != NULL ? ts->ignoreSet : 0);
+}
+
+rpmtransFlags rpmtsFlags(rpmts ts)
+{
+    return (ts != NULL ? ts->transFlags : 0);
+}
+
+rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
+{
+    rpmtransFlags otransFlags = 0;
     if (ts != NULL) {
 	otransFlags = ts->transFlags;
 	ts->transFlags = transFlags;

@@ -84,10 +84,12 @@ void printDepProblems(FILE * fp, /*@null@*/ const rpmps ps)
  * @param prob		rpm problem
  * @return		formatted string (malloc'd)
  */
+/*@-exportlocal@*/
 /*@-redecl@*/	/* LCL: is confused. */
 /*@only@*/ extern const char * rpmProblemString(const rpmProblem prob)
 	/*@*/;
 /*@=redecl@*/
+/*@=exportlocal@*/
 
 /**
  * Unreference a problem set instance.
@@ -101,11 +103,13 @@ rpmps rpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmps ps,
 	/*@modifies ps @*/;
 
 /** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
 /*@null@*/
 rpmps XrpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmps ps,
 		const char * msg, const char * fn, unsigned ln)
 	/*@modifies ps @*/;
 #define	rpmpsUnlink(_ps, _msg)	XrpmpsUnlink(_ps, _msg, __FILE__, __LINE__)
+/*@=exportlocal@*/
 
 /**
  * Reference a problem set instance.
@@ -144,9 +148,11 @@ rpmps rpmpsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmps ps)
  * @param fp		file handle
  * @param prob		rpm problem
  */
+/*@-exportlocal@*/
 void rpmProblemPrint(FILE *fp, rpmProblem prob)
 	/*@globals fileSystem @*/
 	/*@modifies prob, *fp, fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Print problems to file handle.

@@ -17,8 +17,14 @@
 #include <rpmurl.h>
 
 #include "rpmal.h"
+
+#define	_RPMDS_INTERNAL		/* XXX trigger->i */
 #include "rpmds.h"
+
+#define _RPMFI_INTERNAL
 #include "rpmfi.h"
+
+#define	_RPMTE_INTERNAL
 #include "rpmte.h"
 #include "rpmts.h"
 
@@ -498,9 +504,12 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-/*@-assignexpose -type@*/
-    fi->te = ts->order[0];
-/*@=assignexpose =type@*/
+/*@-onlytrans@*/	/* FIX: te reference */
+    fi->te = rpmtsElement(ts, 0);
+/*@=onlytrans@*/
+/*@-nullpass@*/		/* FIX fi->h may be null */
+    fi->te->h = headerLink(fi->h, "fi->te->h");
+/*@=nullpass@*/
     fi->te->fd = fdLink(fd, "installSourcePackage");
     hge = fi->hge;
     hfd = fi->hfd;
@@ -561,14 +570,14 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    _sourcedir = rpmGenPath(rpmtsGetRootDir(ts), "%{_sourcedir}", "");
+    _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
     rc = chkdir(_sourcedir, "sourcedir");
     if (rc) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
-    _specdir = rpmGenPath(rpmtsGetRootDir(ts), "%{_specdir}", "");
+    _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
     rc = chkdir(_specdir, "specdir");
     if (rc) {
 	rc = RPMRC_FAIL;
@@ -627,6 +636,7 @@ exit:
 
     /*@-branchstate@*/
     if (fi) {
+	fi->te->h = headerFree(fi->te->h, "fi->te->h");
 	if (fi->te->fd)
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
@@ -749,7 +759,7 @@ static int runScript(PSM_t psm, Header h,
     prefixBuf = alloca(maxPrefixLength + 50);
 
     if (script) {
-	const char * rootDir = rpmtsGetRootDir(ts);
+	const char * rootDir = rpmtsRootDir(ts);
 	FD_t fd;
 
 	/*@-branchstate@*/
@@ -861,7 +871,7 @@ static int runScript(PSM_t psm, Header h,
 	    }
 	}
 
-	rootDir = rpmtsGetRootDir(ts);
+	rootDir = rpmtsRootDir(ts);
 	if (rootDir  != NULL)	/* XXX can't happen */
 	switch(urlIsURL(rootDir)) {
 	case URL_IS_PATH:
@@ -1237,7 +1247,7 @@ int psmStage(PSM_t psm, pkgStage stage)
     case PSM_INIT:
 	rpmMessage(RPMMESS_DEBUG, _("%s: %s has %d files, test = %d\n"),
 		psm->stepName, rpmteNEVR(psm->te),
-		rpmfiFC(fi), (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST));
+		rpmfiFC(fi), (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST));
 
 	/*
 	 * When we run scripts, we pass an argument which is the number of 
@@ -1264,7 +1274,7 @@ assert(psm->mi == NULL);
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
-		if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_MULTILIB)
+		if (rpmtsFlags(ts) & RPMTRANS_FLAG_MULTILIB)
 		    psm->oh = headerCopy(psm->oh);
 		else
 		    psm->oh = NULL;
@@ -1279,7 +1289,7 @@ assert(psm->mi == NULL);
 		memset(fi->fstates, RPMFILE_STATE_NORMAL, fc);
 	    }
 
-	    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
+	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 	    if (fc <= 0)				break;
 	
 	    /*
@@ -1316,6 +1326,8 @@ assert(psm->mi == NULL);
 	
 	    /* Retrieve installed header. */
 	    rc = psmStage(psm, PSM_RPMDB_LOAD);
+if (rc == 0)
+psm->te->h = headerLink(fi->h, "psm->te->h");
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    /* Open output package for writing. */
@@ -1338,7 +1350,7 @@ assert(psm->mi == NULL);
 	}
 	break;
     case PSM_PRE:
-	if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	/* Change root directory if requested and not already done. */
 	rc = psmStage(psm, PSM_CHROOT_IN);
@@ -1347,11 +1359,11 @@ assert(psm->mi == NULL);
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->progTag = RPMTAG_PREINPROG;
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
 		/* XXX FIXME: implement %triggerprein. */
 	    }
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
 		rc = psmStage(psm, PSM_SCRIPT);
 		if (rc) {
 		    rpmError(RPMERR_SCRIPT,
@@ -1369,7 +1381,7 @@ assert(psm->mi == NULL);
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 		/* Run triggers in other package(s) this package sets off. */
 		rc = psmStage(psm, PSM_TRIGGERS);
 		if (rc) break;
@@ -1379,7 +1391,7 @@ assert(psm->mi == NULL);
 		if (rc) break;
 	    }
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOPREUN))
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
 		rc = psmStage(psm, PSM_SCRIPT);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
@@ -1475,21 +1487,23 @@ assert(psm->mi == NULL);
 	}
 	break;
     case PSM_PROCESS:
-	if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int i;
 
-	    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
-#ifdef	DYING
-	    if (fi->fc <= 0)				break;
-	    for (i = 0; i < fi->fc; i++)
-#else
-	    if (rpmfiFC(fi) <= 0)			break;
+	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
+
+	    /* XXX Synthesize callbacks for packages with no files. */
+	    if (rpmfiFC(fi) <= 0) {
+		void * ptr;
+		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_START, 0, 100);
+		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
+		break;
+	    }
+
 	    (void) rpmfiInit(fi, 0);
-	    while ((i = rpmfiNext(fi)) >= 0)
-#endif
-	    {
+	    while ((i = rpmfiNext(fi)) >= 0) {
 		uid_t uid;
 		gid_t gid;
 
@@ -1570,8 +1584,8 @@ assert(psm->mi == NULL);
 	if (psm->goal == PSM_PKGERASE) {
 	    int fc = rpmfiFC(fi);
 
-	    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
-	    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_APPLYONLY)	break;
+	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
+	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)	break;
 	    if (fc <= 0)				break;
 
 	    psm->what = RPMCALLBACK_UNINST_START;
@@ -1625,7 +1639,7 @@ assert(psm->mi == NULL);
 	}
 	break;
     case PSM_POST:
-	if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = (int_32) time(NULL);
@@ -1639,7 +1653,7 @@ assert(psm->mi == NULL);
 	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
 
-	    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_MULTILIB) {
+	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_MULTILIB) {
 		uint_32 multiLib, * newMultiLib, * p;
 
 		if (hge(fi->h, RPMTAG_MULTILIBS, NULL,
@@ -1661,7 +1675,7 @@ assert(psm->mi == NULL);
 	     * If this package has already been installed, remove it from
 	     * the database before adding the new one.
 	     */
-	    if (fi->record && !(rpmtsGetFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
+	    if (fi->record && !(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
 		rc = psmStage(psm, PSM_RPMDB_REMOVE);
 		if (rc) break;
 	    }
@@ -1674,11 +1688,11 @@ assert(psm->mi == NULL);
 	    psm->sense = RPMSENSE_TRIGGERIN;
 	    psm->countCorrection = 0;
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
 		rc = psmStage(psm, PSM_SCRIPT);
 		if (rc) break;
 	    }
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 		/* Run triggers in other package(s) this package sets off. */
 		rc = psmStage(psm, PSM_TRIGGERS);
 		if (rc) break;
@@ -1688,7 +1702,7 @@ assert(psm->mi == NULL);
 		if (rc) break;
 	    }
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
 		rc = markReplacedFiles(psm);
 
 	}
@@ -1699,18 +1713,18 @@ assert(psm->mi == NULL);
 	    psm->sense = RPMSENSE_TRIGGERPOSTUN;
 	    psm->countCorrection = -1;
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
 		rc = psmStage(psm, PSM_SCRIPT);
 		/* XXX WTFO? postun failures don't cause erasure failure. */
 	    }
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
 		/* Run triggers in other package(s) this package sets off. */
 		rc = psmStage(psm, PSM_TRIGGERS);
 		if (rc) break;
 	    }
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
 		rc = psmStage(psm, PSM_RPMDB_REMOVE);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
@@ -1759,8 +1773,12 @@ assert(psm->mi == NULL);
 	    /*@=nullstate@*/
 	}
 
-	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE))
-	    fi->h = headerFree(fi->h, "PSM_PKGSAVE_POST fi->h");
+	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
+if (psm->te->h)
+psm->te->h = headerFree(psm->te->h, "psm->te->h");
+	    if (fi->h)
+		fi->h = headerFree(fi->h, "PSM_PKGSAVE_POST fi->h");
+ 	}
 	psm->oh = headerFree(psm->oh, "PSM_PKGSAVE_POST psm->oh");
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
@@ -1793,20 +1811,14 @@ assert(psm->mi == NULL);
     case PSM_CREATE:
 	break;
     case PSM_NOTIFY:
-/*@-type@*/
-	if (ts && ts->notify) {
-	    /*@-noeffectuncon @*/ /* FIX: check rc */
-	    (void) ts->notify(fi->h, psm->what, psm->amount, psm->total,
-				rpmteKey(psm->te), ts->notifyData);
-	    /*@=noeffectuncon @*/
-	}
-/*@=type@*/
-	break;
+    {	void * ptr;
+	ptr = rpmtsNotify(ts, psm->te, psm->what, psm->amount, psm->total);
+    }	break;
     case PSM_DESTROY:
 	break;
     case PSM_COMMIT:
-	if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
-	if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
 
 	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
 			NULL, NULL, &psm->failedFile);
@@ -1814,7 +1826,7 @@ assert(psm->mi == NULL);
 	break;
 
     case PSM_CHROOT_IN:
-    {	const char * rootDir = rpmtsGetRootDir(ts);
+    {	const char * rootDir = rpmtsRootDir(ts);
 	/* Change root directory if requested and not already done. */
 	if (rootDir != NULL && !rpmtsGetChrootDone(ts) && !psm->chrootDone) {
 	    static int _loaded = 0;
@@ -1896,12 +1908,12 @@ fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
 	rc = (fi->h ? RPMRC_OK : RPMRC_FAIL);
 	break;
     case PSM_RPMDB_ADD:
-	if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h != NULL)	/* XXX can't happen */
 	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h);
 	break;
     case PSM_RPMDB_REMOVE:
-	if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record);
 	break;
 

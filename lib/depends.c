@@ -14,7 +14,11 @@
 #include "rpmal.h"
 #include "rpmds.h"
 #include "rpmfi.h"
+
+#define	_RPMTE_INTERNAL
 #include "rpmte.h"
+
+#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
 #include "debug.h"
@@ -482,7 +486,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
     /*
      * Search for an unsatisfied dependency.
      */
-    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOSUGGESTS) && ts->solve != NULL)
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGESTS) && ts->solve != NULL)
 	xx = (*ts->solve) (ts, dep);
 
 unsatisfied:
@@ -1142,7 +1146,7 @@ int rpmtsOrder(rpmts ts)
     int_32 Flags;
 
 #ifdef	DYING
-    int chainsaw = rpmtsGetFlags(ts) & RPMTRANS_FLAG_CHAINSAW;
+    int chainsaw = rpmtsFlags(ts) & RPMTRANS_FLAG_CHAINSAW;
 #else
     int chainsaw = 1;
 #endif

@@ -13,7 +13,10 @@
 #include "cpio.h"	/* XXX CPIO_FOO */
 #include "fsm.h"	/* XXX newFSM() */
 
+#define	_RPMFI_INTERNAL
 #include "rpmfi.h"
+
+#define	_RPMTE_INTERNAL	/* relocations */
 #include "rpmte.h"
 #include "rpmts.h"
 
@@ -23,7 +26,6 @@
 
 /*@access rpmfi @*/
 /*@access rpmte @*/
-/*@access rpmts @*/	/* XXX for ts->ignoreSet */
 
 /*@unchecked@*/
 static int _fi_debug = 0;
@@ -48,11 +50,6 @@ if (_fi_debug && msg != NULL)
 fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
-}
-
-fnpyKey rpmfiKey(rpmfi fi)
-{
-    return (fi != NULL ? rpmteKey(fi->te) : NULL);
 }
 
 int rpmfiFC(rpmfi fi)
@@ -394,7 +391,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     HME_t hme = fi->hme;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
-    int allowBadRelocate = (ts->ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
+    int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation * relocations = NULL;
     int numRelocations;
     const char ** validRelocations;
@@ -490,7 +487,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	    if (j == numValid && !allowBadRelocate && actions) {
 		rpmps ps = rpmtsGetProblems(ts);
 		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
-			p->NEVR, p->key,
+			rpmteNEVR(p), rpmteKey(p),
 			relocations[i].oldPath, NULL, NULL, 0);
 		ps = rpmpsFree(ps);
 	    }
@@ -601,7 +598,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	 * If only adding libraries of different arch into an already
 	 * installed package, skip all other files.
 	 */
-	if (p->multiLib && !isFileMULTILIB((fFlags[i]))) {
+	if (rpmteMultiLib(p) && !isFileMULTILIB((fFlags[i]))) {
 	    if (actions) {
 		actions[i] = FA_SKIPMULTILIB;
 		rpmMessage(RPMMESS_DEBUG, _("excluding multilib path %s%s\n"), 
@@ -1028,7 +1025,7 @@ if (fi->actions == NULL)
 
     if (ts != NULL)
     if (fi != NULL)
-    if (fi->te != NULL && fi->te->type == TR_ADDED) {
+    if (fi->te != NULL && rpmteType(fi->te) == TR_ADDED) {
 	Header foo;
 /* XXX DYING */
 if (fi->actions == NULL)

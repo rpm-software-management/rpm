@@ -8,6 +8,10 @@
 
 typedef /*@abstract@*/ struct availableList_s *		availableList;
 
+#ifdef __cplusplus
+{
+#endif
+
 /**
  * Initialize available packckages, items, and directory list.
  * @param delta		no. of entries to add on each realloc

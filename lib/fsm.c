@@ -15,6 +15,7 @@
 #include "psm.h"	/* XXX fiTypeString */
 #include "rpmerr.h"
 
+#define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 #include "rpmte.h"
 #include "rpmts.h"
@@ -126,7 +127,7 @@ mapInitIterator(rpmts ts, rpmfi fi)
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = rpmtsLink(ts, "mapIterator");
     iter->fi = rpmfiLink(fi, "mapIterator");
-    iter->reverse = (fi->te->type == TR_REMOVED && fi->action != FA_COPYOUT);
+    iter->reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
     return iter;
@@ -503,14 +504,9 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     fsm->iter = mapInitIterator(ts, fi);
 
     if (fsm->goal == FSM_PKGINSTALL) {
-	if (ts && ts->notify) {
-	    /*@-type@*/ /* FIX: cast? */
-	    /*@-noeffectuncon @*/ /* FIX: check rc */
-	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
-			rpmfiKey(fi), ts->notifyData);
-	    /*@=noeffectuncon @*/
-	    /*@=type@*/
-	}
+	void * ptr;
+	ptr = rpmtsNotify(ts, fi->te,
+			RPMCALLBACK_INST_START, 0, fi->archiveSize);
     }
 
     /*@-assignexpose@*/
@@ -595,22 +591,22 @@ int fsmMapPath(FSM_t fsm)
 	    break;
 	case FA_COPYIN:
 	case FA_CREATE:
-assert(fi->te->type == TR_ADDED);
+assert(rpmteType(fi->te) == TR_ADDED);
 	    break;
 
 	case FA_SKIPNSTATE:
-	    if (fi->fstates && fi->te->type == TR_ADDED)
+	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
 	    break;
 
 	case FA_SKIPNETSHARED:
-	    if (fi->fstates && fi->te->type == TR_ADDED)
+	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
 	    break;
 
 	case FA_BACKUP:
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-	    switch (fi->te->type) {
+	    switch (rpmteType(fi->te)) {
 	    case TR_ADDED:
 		fsm->osuffix = SUFFIX_RPMORIG;
 		/*@innerbreak@*/ break;
@@ -621,18 +617,18 @@ assert(fi->te->type == TR_ADDED);
 	    break;
 
 	case FA_ALTNAME:
-assert(fi->te->type == TR_ADDED);
+assert(rpmteType(fi->te) == TR_ADDED);
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		fsm->nsuffix = SUFFIX_RPMNEW;
 	    break;
 
 	case FA_SAVE:
-assert(fi->te->type == TR_ADDED);
+assert(rpmteType(fi->te) == TR_ADDED);
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
 	case FA_ERASE:
-	    assert(fi->te->type == TR_REMOVED);
+	    assert(rpmteType(fi->te) == TR_REMOVED);
 	    /*
 	     * XXX TODO: %ghost probably shouldn't be removed, but that changes
 	     * legacy rpm behavior.
@@ -689,7 +685,7 @@ int fsmMapAttrs(FSM_t fsm)
 
 	{   rpmts ts = fsmGetTs(fsm);
 
-	    if (ts != NULL && !(ts->transFlags & RPMTRANS_FLAG_NOMD5)) {
+	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
 		fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
 		fsm->md5sum = (fi->md5s ? (fi->md5s + (16 * i)) : NULL);
 	    } else {
@@ -896,15 +892,9 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 
     {	const rpmts ts = fsmGetTs(fsm);
 	rpmfi fi = fsmGetFi(fsm);
-	if (ts && ts->notify && fi) {
-	    size_t size = (fdGetCpioPos(fsm->cfd) - pos);
-	    /*@-type@*/ /* FIX: cast? */
-	    /*@-noeffectuncon @*/ /* FIX: check rc */
-	    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS, size, size,
-			rpmfiKey(fi), ts->notifyData);
-	    /*@=noeffectuncon @*/
-	    /*@=type@*/
-	}
+	size_t size = (fdGetCpioPos(fsm->cfd) - pos);
+	void * ptr;
+	ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS, size, size);
     }
 
     rc = 0;
@@ -1435,7 +1425,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_CREATE:
 	{   rpmts ts = fsmGetTs(fsm);
 #define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
-	    fsm->commit = ((ts && (ts->transFlags & _tsmask) &&
+	    fsm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
 			fsm->goal != FSM_PKGCOMMIT) ? 0 : 1);
 #undef _tsmask
 	}
@@ -1696,15 +1686,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	    rpmts ts = fsmGetTs(fsm);
 	    rpmfi fi = fsmGetFi(fsm);
-	    if (ts && ts->notify && fi) {
-		/*@-type@*/ /* FIX: cast? */
-		/*@-noeffectuncon @*/ /* FIX: check rc */
-		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
-			fdGetCpioPos(fsm->cfd), fi->archiveSize,
-			rpmfiKey(fi), ts->notifyData);
-		/*@=noeffectuncon @*/
-		/*@=type@*/
-	    }
+	    void * ptr;
+	    ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,
+			fdGetCpioPos(fsm->cfd), fi->archiveSize);
 	}
 	break;
     case FSM_UNDO:

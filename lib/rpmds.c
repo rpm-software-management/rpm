@@ -5,6 +5,8 @@
 
 #include <rpmlib.h>
 #include "rpmps.h"
+
+#define	_RPMDS_INTERNAL
 #include "rpmds.h"
 
 #include "debug.h"

@@ -432,7 +432,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
  * Describe database command line requests.
  */
 struct rpmInstallArguments_s {
-    rpmtsFlags transFlags;
+    rpmtransFlags transFlags;
     rpmprobFilterFlags probFilter;
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;

@@ -523,6 +523,7 @@ fi
 %changelog
 * Sun May 19 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.15
 - Grand Renaming of rpm data types.
+- fix: synthesize unpacking progress callbacks for packages w/o files.
 
 * Thu May 16 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.14
 - opaque (well mostly) rpmTransactionSet using methods.

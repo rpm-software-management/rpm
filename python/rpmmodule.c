@@ -20,7 +20,9 @@
 
 #include "rpmdb.h"
 #include "rpmps.h"
-#include "rpmts.h"	/* XXX for ts->rpmdb */
+
+#define	_RPMTS_INTERNAL	/* XXX for ts->rdb */
+#include "rpmts.h"
 
 #include "legacy.h"
 #include "misc.h"

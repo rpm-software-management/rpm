@@ -39,7 +39,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     struct stat sb;
 
     /* Prepend the path to root (if specified). */
-    rootDir = rpmtsGetRootDir(ts);
+    rootDir = rpmtsRootDir(ts);
     if (rootDir && *rootDir != '\0'
      && !(rootDir[0] == '/' && rootDir[1] == '\0'))
     {

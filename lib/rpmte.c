@@ -11,6 +11,8 @@
 
 #include "rpmds.h"
 #include "rpmfi.h"
+
+#define	_RPMTE_INTERNAL
 #include "rpmte.h"
 #include "rpmts.h"
 
@@ -65,9 +67,7 @@ static void delTE(rpmte p)
 
     p->h = headerFree(p->h, "delTE");
 
-    /*@-abstract@*/
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */
-    /*@=abstract@*/
     /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
     return;
     /*@=nullstate@*/
@@ -102,13 +102,13 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
-    /*@-branchstate@*/
+/*@-branchstate@*/
     if (ep) {
 	p->epoch = xmalloc(20);
 	sprintf(p->epoch, "%d", *ep);
     } else
 	p->epoch = NULL;
-    /*@=branchstate@*/
+/*@=branchstate@*/
 
     p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
@@ -153,7 +153,7 @@ rpmte rpmteFree(rpmte te)
 }
 
 rpmte rpmteNew(const rpmts ts, Header h,
-		rpmTransactionType type,
+		rpmElementType type,
 		fnpyKey key,
 		rpmRelocation * relocs,
 		int dboffset,
@@ -176,7 +176,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
     return te;
 }
 
-rpmTransactionType rpmteType(rpmte te)
+rpmElementType rpmteType(rpmte te)
 {
     return (te != NULL ? te->type : -1);
 }
@@ -279,14 +279,14 @@ rpmte rpmteParent(rpmte te)
 rpmte rpmteSetParent(rpmte te, rpmte pte)
 {
     rpmte opte = NULL;
-    /*@-branchstate@*/
+/*@-branchstate@*/
     if (te != NULL) {
 	opte = te->parent;
 	/*@-assignexpose -temptrans@*/
 	te->parent = pte;
 	/*@=assignexpose =temptrans@*/
     }
-    /*@=branchstate@*/
+/*@=branchstate@*/
     return opte;
 }
 
@@ -442,8 +442,8 @@ rpmtei XrpmteiInit(rpmts ts, const char * fn, unsigned int ln)
 
     tei = xcalloc(1, sizeof(*tei));
     tei->ts = rpmtsLink(ts, "rpmtei");
-    tei->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
-    tei->oc = (tei->reverse ? (ts->orderCount - 1) : 0);
+    tei->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
+    tei->oc = (tei->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tei->ocsave = tei->oc;
 /*@-modfilesys@*/
 if (_te_debug)
@@ -458,37 +458,35 @@ fprintf(stderr, "*** tei %p ++ %s:%d\n", tei, fn, ln);
  * @return		transaction element, NULL on termination
  */
 static /*@dependent@*/ /*@null@*/
-rpmte teNextIterator(rpmtei tei)
+rpmte rpmteiNextIterator(rpmtei tei)
 	/*@modifies tei @*/
 {
     rpmte te = NULL;
     int oc = -1;
 
-    if (tei == NULL || tei->ts == NULL || tei->ts->order == NULL)
+    if (tei == NULL || tei->ts == NULL || rpmtsNElements(tei->ts) <= 0)
 	return te;
 
     if (tei->reverse) {
 	if (tei->oc >= 0)			oc = tei->oc--;
     } else {
-    	if (tei->oc < tei->ts->orderCount)	oc = tei->oc++;
+    	if (tei->oc < rpmtsNElements(tei->ts))	oc = tei->oc++;
     }
     tei->ocsave = oc;
-    /*@-abstract @*/
+/*@-branchstate@*/
     if (oc != -1)
-	te = tei->ts->order[oc];
-    /*@=abstract @*/
-    /*@-compdef -usereleased@*/ /* FIX: ts->order may be released */
+	te = rpmtsElement(tei->ts, oc);
+/*@=branchstate@*/
     return te;
-    /*@=compdef =usereleased@*/
 }
 
-rpmte rpmteiNext(rpmtei tei, rpmTransactionType type)
+rpmte rpmteiNext(rpmtei tei, rpmElementType type)
 {
-    rpmte p;
+    rpmte te;
 
-    while ((p = teNextIterator(tei)) != NULL) {
-	if (type == 0 || (p->type & type) != 0)
+    while ((te = rpmteiNextIterator(tei)) != NULL) {
+	if (type == 0 || (te->type & type) != 0)
 	    break;
     }
-    return p;
+    return te;
 }

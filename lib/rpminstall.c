@@ -8,6 +8,8 @@
 
 #include "rpmdb.h"
 #include "rpmps.h"
+
+#define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
 #include "rpmts.h"
 
 #include "manifest.h"
@@ -246,7 +248,7 @@ int rpmInstall(rpmts ts,
 	vsflags |= _RPMTS_VSF_NOSIGNATURES;
     vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
 
-    ts->dbmode = (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)
+    ts->dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_CREAT);
 
     {	int notifyFlags;
@@ -308,7 +310,7 @@ restart:
 		fprintf(stdout, _("Retrieving %s\n"), fileURL);
 
 	    {	char tfnbuf[64];
-		const char * rootDir = rpmtsGetRootDir(ts);
+		const char * rootDir = rpmtsRootDir(ts);
 		if (!(rootDir && * rootDir))
 		    rootDir = "";
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
@@ -603,7 +605,7 @@ restart:
 		continue;
 	    }
 
-	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 		eiu->rpmrc = rpmInstallSourcePackage(ts, eiu->fd, NULL, NULL);
 		if (eiu->rpmrc != RPMRC_OK) eiu->numFailed++;
 	    }
@@ -654,7 +656,7 @@ int rpmErase(rpmts ts,
     ts->goal = TSM_ERASE;
 
     /* XXX W2DO? O_EXCL??? */
-    ts->dbmode = (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)
+    ts->dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_EXCL);
 
     (void) rpmtsOpenDB(ts, ts->dbmode);
@@ -704,7 +706,7 @@ int rpmErase(rpmts ts,
     }
 
     if (!stopUninstall) {
-	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | RPMTRANS_FLAG_REVERSE));
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
 	numFailed += rpmtsRun(ts, NULL, 0);
 	ps = rpmtsGetProblems(ts);
 	ps = rpmpsFree(ps);

@@ -7,14 +7,13 @@
 #include <rpmlib.h>
 
 #include "rpmps.h"
-#include "rpmts.h"
 
 #include "misc.h"
 #include "debug.h"
 
-/*@access fnpyKey@*/
-/*@access rpmProblem@*/
-/*@access rpmProblemSet@*/
+/*@access fnpyKey @*/
+/*@access rpmProblem @*/
+/*@access rpmps @*/
 
 /*@unchecked@*/
 static int _ps_debug = 0;

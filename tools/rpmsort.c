@@ -68,7 +68,7 @@ do_tsort(const char *fileArgv[])
 
     ts = rpmtsCreate();
     if (!noChainsaw)
-	ts->transFlags = RPMTRANS_FLAG_CHAINSAW;
+	(void) rpmtsSetFlags(ts, rpmtsFlags(ts) | RPMTRANS_FLAG_CHAINSAW);
 
     rc = rpmtsOpenDB(ts, O_RDONLY);
     if (rc) {
@@ -230,11 +230,11 @@ restart:
     if (rc)
 	goto exit;
 
-    {	rpmds requires;
-	rpmtei pi; rpmte p;
-	rpmtei qi; rpmte q;
+    {	rpmtei pi;
+	rpmte p;
+	rpmte q;
 	unsigned char * selected =
-			alloca(sizeof(*selected) * (ts->orderCount + 1));
+			alloca(sizeof(*selected) * (rpmtsNElements(ts) + 1));
 	int oType = TR_ADDED;
 
 fprintf(stdout, "digraph XXX {\n");
@@ -254,112 +254,6 @@ fprintf(stdout, "  { rank=max ; \"%s\" }\n", rpmteN(p));
 	    }
 	}
 	pi = rpmteiFree(pi);
-
-#ifdef	NOTNOW
-fprintf(stdout, "//===== Relations:\n");
-	pi = rpmteiInit(ts);
-	while ((p = rpmteiNext(pi, oType)) != NULL) {
-	    int printed;
-
-	    if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) == NULL)
-		continue;
-
-	    memset(selected, 0, sizeof(*selected) * ts->orderCount);
-	    selected[rpmteiGetOc(pi)] = 1;
-	    printed = 0;
-
-	    requires = rpmdsInit(requires);
-	    while (rpmdsNext(requires) >= 0) {
-		int_32 Flags;
-		const char * qName;
-		fnpyKey key;
-		alKey pkgKey;
-		int i;
-
-		Flags = rpmdsFlags(requires);
-
-		switch (rpmteType(p)) {
-		case TR_REMOVED:
-		    /* Skip if not %preun/%postun requires or legacy prereq. */
-		    if (isInstallPreReq(Flags)
-#ifdef	NOTYET
-		     || !( isErasePreReq(Flags)
-		        || isLegacyPreReq(Flags) )
-#endif
-		        )
-		        /*@innercontinue@*/ continue;
-		    /*@switchbreak@*/ break;
-		case TR_ADDED:
-		    /* Skip if not %pre/%post requires or legacy prereq. */
-		    if (isErasePreReq(Flags)
-#ifdef	NOTYET
-		     || !( isInstallPreReq(Flags)
-		        || isLegacyPreReq(Flags) )
-#endif
-		        )
-		        /*@innercontinue@*/ continue;
-		    /*@switchbreak@*/ break;
-		}
-
-		if ((qName = rpmdsN(requires)) == NULL)
-		    continue;	/* XXX can't happen */
-		if (!strncmp(qName, "rpmlib(", sizeof("rpmlib(")-1))
-		    continue;
-
-		pkgKey = RPMAL_NOMATCH;
-		key = alSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
-		if (pkgKey == RPMAL_NOMATCH)
-		    continue;
-
-		for (qi = rpmteiInit(ts), i = 0;
-		     (q = rpmteiNext(qi, 0)) != NULL; i++)
-		{
-		    if (rpmteType(q) == TR_REMOVED)
-			continue;
-		    if (pkgKey == rpmteAddedKey(q))
-			break;
-		}
-		qi = rpmteiFree(qi);
-
-		if (q == NULL || i == ts->orderCount)
-		    continue;
-		if (selected[i] != 0)
-		    continue;
-		selected[i] = 1;
-
-		if (rpmteTree(p) == rpmteTree(q)) {
-		    int pdepth = rpmteDepth(p);
-		    int qdepth = rpmteDepth(q);
-
-#if 0
-		    if (pdepth == qdepth)
-			continue;
-		    if (pdepth < qdepth) {
-			if ((qdepth - pdepth) > 1)	continue;
-			if (!strcmp(rpmteN(q), "glibc"))	continue;
-			if (!strcmp(rpmteN(q), "bash"))	continue;
-		    }
-#endif
-		    if (pdepth > qdepth) {
-			if (!strcmp(rpmteN(q), "glibc"))	continue;
-			if (!strcmp(rpmteN(q), "bash"))		continue;
-			if (!strcmp(rpmteN(q), "info"))		continue;
-			if (!strcmp(rpmteN(q), "mktemp"))	continue;
-		    }
-		}
-
-if (!printed) {
-fprintf(stdout, "// %s\n", rpmteN(p));
-printed = 1;
-}
-fprintf(stdout, "//\t%s (0x%x)\n", rpmdsNewDNEVR(identifyDepend(Flags), requires), Flags);
-fprintf(stdout, "\t\"%s\" -> \"%s\"\n", rpmteN(p), rpmteN(q));
-
-	    }
-
-	}
-	pi = rpmteiFree(pi);
-#endif	/* NOTNOW */
 
 fprintf(stdout, "}\n");
 

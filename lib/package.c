@@ -10,6 +10,8 @@
 #include <rpmlib.h>
 
 #include "rpmps.h"
+
+#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
