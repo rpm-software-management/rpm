@@ -13,6 +13,7 @@
 #include <limits.h>
 
 #include "build.h"
+#include "files.h"
 #include "header.h"
 #include "spec.h"
 #include "specP.h"
@@ -639,6 +640,9 @@ int execInstall(Spec s, int test)
     if ((res = execPart(s, getStringBuf(s->install), "%install", 1, test))) {
 	return res;
     }
+    if ((res = finish_filelists(s))) {
+	return res;
+    }
     return execPart(s, getStringBuf(s->doc), "special doc", 1, test);
 }
 
@@ -649,6 +653,11 @@ int execClean(Spec s)
 
 int verifyList(Spec s)
 {
+    int res;
+
+    if ((res = finish_filelists(s))) {
+	return res;
+    }
     return packageBinaries(s, NULL, PACK_NOPACKAGE);
 }
 
