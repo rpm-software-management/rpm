@@ -109,7 +109,7 @@ void printHelp(void) {
     puts(_("   all modes support the following arguments"));
     puts(_("      --rcfile <file>     - use <file> instead of /etc/rpmrc and $HOME/.rpmrc"));
     puts(_("       -v		      - be a little more verbose"));
-    puts(_("       -vv		      - be incredible verbose (for debugging)"));
+    puts(_("       -vv	              - be incredibly verbose (for debugging)"));
     puts(_("   -q                   - query mode"));
     puts(_("      --root <dir>        - use <dir> as the top level directory"));
     puts(_("      --dbpath <dir>      - use <dir> as the directory for the database"));
@@ -145,7 +145,7 @@ void printHelp(void) {
     puts(_("    --install <packagefile>"));
     puts(_("    -i <packagefile>	- install package"));
     puts(_("       -h"));
-    puts(_("	  --prefix <dir>    - relocate the package to <dir>, if relocateable"));
+    puts(_("	  --prefix <dir>    - relocate the package to <dir>, if relocatable"));
     puts(_("      --dbpath <dir>    - use <dir> as the directory for the database"));
     puts(_("      --hash            - print hash marks as package installs (good with -v)"));
     puts(_("      --percent         - print percentages as package installs"));
