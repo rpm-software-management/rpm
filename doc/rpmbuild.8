@@ -3,28 +3,38 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "RPMBUILD" "8" "06 June 2001" "Red Hat, Inc." "Red Hat Linux"
+.TH "RPMBUILD" "8" "09 June 2002" "Red Hat, Inc." "Red Hat Linux"
 .SH NAME
 rpmbuild \- Build RPM Package(s)
 .SH SYNOPSIS
 .SS "BUILDING PACKAGES:"
 .PP
 
+
 \fBrpmbuild\fR {\fB-ba|-bb|-bp|-bc|-bi|-bl|-bs\fR} [\fBrpmbuild-options\fR] \fB\fISPECFILE\fB\fR\fI ...\fR
 
+
+
 \fBrpmbuild\fR {\fB-ta|-tb|-tp|-tc|-ti|-tl|-ts\fR} [\fBrpmbuild-options\fR] \fB\fITARBALL\fB\fR\fI ...\fR
+
+
 
 \fBrpmbuild\fR {\fB--rebuild|--recompile\fR} \fB\fISOURCEPKG\fB\fR\fI ...\fR
 
 .SS "MISCELLANEOUS:"
 .PP
 
-\fBrpmbuild\fR {\fB--showrc\fR}
+
+\fBrpmbuild\fR \fB--showrc\fR
+
 .SS "RPMBUILD-OPTIONS"
 .PP
 
-\fB[--buildroot \fIDIRECTORY\fB] [--clean] [--nobuild] [--rmsource] [--rmspec]
-[--short-circuit] [--sign] [--target \fIPLATFORM\fB]\fR
+
+ [\fB--buildroot \fIDIRECTORY\fB\fR] [\fB--clean\fR] [\fB--nobuild\fR]
+ [\fB--rmsource\fR] [\fB--rmspec\fR] [\fB--short-circuit\fR] [\fB--sign\fR]
+ [\fB--target \fIPLATFORM\fB\fR]
+
 .SH "DESCRIPTION"
 .PP
 \fBrpmbuild\fR is used to build both binary and source software packages.
@@ -72,7 +82,7 @@ information.
 Only the first file in the list must exist, and tildes will be
 expanded to the value of \fB$HOME\fR.
 The default \fIFILELIST\fR is
-\fI/usr/lib/rpm/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
+\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI~/.rpmrc\fR.
 .TP
 \fB--pipe \fICMD\fB\fR
 Pipes the output of \fBrpm\fR to the command \fICMD\fR.
@@ -82,18 +92,22 @@ Use the database in \fIDIRECTORY\fR rathen
 than the default path \fI/var/lib/rpm\fR
 .TP
 \fB--root \fIDIRECTORY\fB\fR
-Use the system rooted at \fIDIRECTORY\fR for all operations.
-Note that this means the database will be read or modified under
-\fIDIRECTORY\fR and any
-\fB%pre\fR or
-\fB%post\fR
-scriptlet(s) are run after a chroot(2) to
+Use the file system tree rooted at \fIDIRECTORY\fR for all operations.
+Note that this means the database within
+\fIDIRECTORY\fR
+will be used for dependency checks and any scriptlet(s) (e.g.
+\fB%post\fR if installing, or
+\fB%prep\fR if building, a package)
+will be run after a chroot(2) to
 \fIDIRECTORY\fR.
 .SS "BUILD OPTIONS"
 .PP
 The general form of an rpm build command is 
 .PP
-\fBrpmbuild\fR {\fB-b\fISTAGE\fB|-t\fISTAGE\fB\fR} [\fBrpmbuild-options\fR] \fB\fIFILE\fB\fR\fI ...\fR
+
+\fBrpmbuild\fR \fB-b\fISTAGE\fB|-t\fISTAGE\fB\fR [ \fB     rpmbuild-options
+\fR ] \fB\fIFILE\fB\fR\fI ...\fR
+
 .PP
 The argument used is \fB-b\fR if a spec file is being
 used to build the package and \fB-t\fR if \fBrpmbuild\fR
@@ -159,7 +173,9 @@ and \fB-bi\fR.
 \fB--sign\fR
 Embed a GPG signature in the package. This signature can be used
 to verify the integrity and the origin of the package.  See the
-section on GPG SIGNATURES for configuration details.
+section on GPG SIGNATURES in
+\fBrpm\fR(8)
+for configuration details.
 .TP
 \fB--target \fIPLATFORM\fB\fR
 When building the package, interpret \fIPLATFORM\fR
@@ -172,7 +188,9 @@ accordingly.
 .PP
 There are two other ways to invoke building with rpm:
 .PP
-\fBrpmbuild\fR {\fB--rebuild|--recompile\fR} \fB\fISOURCEPKG\fB\fR\fI ...\fR
+
+\fBrpmbuild\fR \fB--rebuild|--recompile\fR \fB\fISOURCEPKG\fB\fR\fI ...\fR
+
 .PP
 When invoked this way, \fBrpmbuild\fR installs the named source
 package, and does a prep, compile and install.  In addition,
@@ -184,7 +202,9 @@ the package are removed.
 .PP
 The command
 .PP
+
 \fBrpmbuild\fR \fB--showrc\fR
+
 .PP
 shows the values \fBrpmbuild\fR will use for all of the
 options are currently set in
@@ -194,51 +214,47 @@ configuration file(s).
 .SH "FILES"
 .PP
 
+.nf
 \fI/usr/lib/rpm/rpmrc\fR
-
+\fI/usr/lib/rpm/redhat/rpmrc\fR
 \fI/etc/rpmrc\fR
-
 \fI~/.rpmrc\fR
+.fi
 
+.nf
 \fI/usr/lib/rpm/macros\fR
-
+\fI/usr/lib/rpm/redhat/macros\fR
 \fI/etc/rpm/macros\fR
-
 \fI~/.rpmmacros\fR
+.fi
 
+.nf
 \fI/var/lib/rpm/Conflictname\fR
-
 \fI/var/lib/rpm/Basenames\fR
-
 \fI/var/lib/rpm/Group\fR
-
 \fI/var/lib/rpm/Name\fR
-
 \fI/var/lib/rpm/Packages\fR
-
 \fI/var/lib/rpm/Providename\fR
-
 \fI/var/lib/rpm/Requirename\fR
-
 \fI/var/lib/rpm/Triggername\fR
+.fi
 
 \fI/var/tmp/rpm*\fR
 .SH "SEE ALSO"
 
+.nf
 \fBpopt\fR(3),
-
 \fBrpm2cpio\fR(8),
-
 \fBgendiff\fR(1),
-
 \fBrpm\fR(8),
+.fi
 
-\fB http://www.rpm.org/ <URL:http://www.rpm.org/>
+\fBhttp://www.rpm.org/ <URL:http://www.rpm.org/>
 \fR
 .SH "AUTHORS"
 
+.nf
 Marc Ewing <marc@redhat.com>
-
 Jeff Johnson <jbj@redhat.com>
-
 Erik Troan <ewt@redhat.com>
+.fi
