@@ -607,7 +607,7 @@ int main(int argc, char ** argv) {
 		 "and uninstallation"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
-	bigMode != MODE_QUERY   && prefix[1])
+	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && prefix[1])
 	argerror(_("--root (-r) may only be specified during "
 		 "installation, uninstallation, and querying"));
 
