@@ -890,8 +890,9 @@ AC_SUBST(LIBS)
 
 AC_SUBST(RPM)
 
-# XXX Propagate -lucb to popt ...
-export LIBS INCPATH CONFIG_SITE
+dnl XXX this causes popt to depend on zlib et al
+dnl # XXX Propagate -lucb to popt ...
+dnl export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt)
 AC_OUTPUT([Makefile rpmrc macros lib/Makefile

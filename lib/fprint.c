@@ -100,7 +100,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    fp.subDir = dirName + (end - buf);
 	    if (fp.subDir[0] == '/' && fp.subDir[1] != '\0')
 		fp.subDir++;
-	    else
+	    if (fp.subDir[0] == '\0')
 		fp.subDir = NULL;
 	    fp.baseName = baseName;
 	    if (!scareMemory && fp.subDir != NULL)
