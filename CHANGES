@@ -6,6 +6,7 @@
 	- freshen.sh: detect when all packages are up to date (Ian Macdonald).
 	- fix: typo in error message (#6858).
 	- add/update dependency scripts (Ken Estes).
+	- use directory tokens internally to reduce memory usage.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
