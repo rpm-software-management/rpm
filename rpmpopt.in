@@ -14,19 +14,19 @@
 
 rpm	alias --scripts --qf '\
 %|PREIN?{preinstall scriptlet\
-%|PREINPROG?{ (through %{PREINPROG})}|:\n%{PREIN}\n}:\
+%|PREINPROG?{ (using %{PREINPROG})}|:\n%{PREIN}\n}:\
 {%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
 \
 %|POSTIN?{postinstall scriptlet\
-%|POSTINPROG?{ (through %{POSTINPROG})}|:\n%{POSTIN}\n}:\
+%|POSTINPROG?{ (using %{POSTINPROG})}|:\n%{POSTIN}\n}:\
 {%|POSTINPROG?{postinstall program: %{POSTINPROG}\n}|}|\
 \
 %|PREUN?{preuninstall scriptlet\
-%|PREUNPROG?{ (through %{PREUNPROG})}|:\n%{PREUN}\n}:\
+%|PREUNPROG?{ (using %{PREUNPROG})}|:\n%{PREUN}\n}:\
 {%|PREUNPROG?{preuninstall program: %{PREUNPROG}\n}|}|\
 \
 %|POSTUN?{postuninstall scriptlet\
-%|POSTUNPROG?{ (through %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
+%|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
 \
 %|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
@@ -74,7 +74,7 @@ rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGE
 	--POPTdesc=$"list change logs for this package"
 
 rpm	alias --triggerscripts --qf '\
-[trigger%{TRIGGERTYPE} script (through %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
+[trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'
 rpm	alias --triggers --triggerscripts \
 	--POPTdesc=$"list trigger scriptlets from package(s)"
@@ -291,19 +291,19 @@ rpmq	alias --httpproxy	--define '_httpproxy !#:+'
 
 rpmq	alias --scripts --qf '\
 %|PREIN?{preinstall scriptlet\
-%|PREINPROG?{ (through %{PREINPROG})}|:\n%{PREIN}\n}:\
+%|PREINPROG?{ (using %{PREINPROG})}|:\n%{PREIN}\n}:\
 {%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
 \
 %|POSTIN?{postinstall scriptlet\
-%|POSTINPROG?{ (through %{POSTINPROG})}|:\n%{POSTIN}\n}:\
+%|POSTINPROG?{ (using %{POSTINPROG})}|:\n%{POSTIN}\n}:\
 {%|POSTINPROG?{postinstall program: %{POSTINPROG}\n}|}|\
 \
 %|PREUN?{preuninstall scriptlet\
-%|PREUNPROG?{ (through %{PREUNPROG})}|:\n%{PREUN}\n}:\
+%|PREUNPROG?{ (using %{PREUNPROG})}|:\n%{PREUN}\n}:\
 {%|PREUNPROG?{preuninstall program: %{PREUNPROG}\n}|}|\
 \
 %|POSTUN?{postuninstall scriptlet\
-%|POSTUNPROG?{ (through %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
+%|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
 \
 %|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
@@ -342,7 +342,7 @@ rpmq	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANG
 	--POPTdesc=$"list change logs for this package"
 
 rpmq	alias --triggerscripts --qf '\
-[trigger%{TRIGGERTYPE} script (through %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
+[trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'
 rpmq	alias --triggers --triggerscripts \
 	--POPTdesc=$"list trigger scriptlets from package(s)"
@@ -377,19 +377,19 @@ rpmquery	alias --httpproxy	--define '_httpproxy !#:+'
 
 rpmquery	alias --scripts --qf '\
 %|PREIN?{preinstall scriptlet\
-%|PREINPROG?{ (through %{PREINPROG})}|:\n%{PREIN}\n}:\
+%|PREINPROG?{ (using %{PREINPROG})}|:\n%{PREIN}\n}:\
 {%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
 \
 %|POSTIN?{postinstall scriptlet\
-%|POSTINPROG?{ (through %{POSTINPROG})}|:\n%{POSTIN}\n}:\
+%|POSTINPROG?{ (using %{POSTINPROG})}|:\n%{POSTIN}\n}:\
 {%|POSTINPROG?{postinstall program: %{POSTINPROG}\n}|}|\
 \
 %|PREUN?{preuninstall scriptlet\
-%|PREUNPROG?{ (through %{PREUNPROG})}|:\n%{PREUN}\n}:\
+%|PREUNPROG?{ (using %{PREUNPROG})}|:\n%{PREUN}\n}:\
 {%|PREUNPROG?{preuninstall program: %{PREUNPROG}\n}|}|\
 \
 %|POSTUN?{postuninstall scriptlet\
-%|POSTUNPROG?{ (through %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
+%|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
 \
 %|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
@@ -427,7 +427,7 @@ rpmquery	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{C
 	--POPTdesc=$"list change logs for this package"
 
 rpmquery	alias --triggerscripts --qf '\
-[trigger%{TRIGGERTYPE} script (through %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
+[trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'
 rpmquery	alias --triggers --triggerscripts \
 	--POPTdesc=$"list trigger scriptlets from package(s)"
