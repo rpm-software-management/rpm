@@ -1,6 +1,6 @@
 
 """
-File-like objects that read from or write to a rpmdb record.
+File-like objects that read from or write to a bsddb record.
 
 This implements (nearly) all stdio methods.
 

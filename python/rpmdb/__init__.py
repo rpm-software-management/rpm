@@ -33,20 +33,22 @@
 #----------------------------------------------------------------------
 
 
-"""
-This package initialization module provides a compatibility interface
-that should enable rpmdb to be a near drop-in replacement for the original
-old bsddb module.  The functions and classes provided here are all
-wrappers around the new functionality provided in the rpmdb.db module.
-
-People interested in the more advanced capabilites of Berkeley DB 3.x
-should use the rpmdb.db module directly.
+"""Support for BerkeleyDB 3.1 through 4.1.
 """
 
-import _rpmdb as _db
-__version__ = _db.__version__
+try:
+    import _rpmdb
+except ImportError:
+    # Remove ourselves from sys.modules
+    import sys
+    del sys.modules[__name__]
+    raise
 
-error = _db.DBError  # So rpmdb.error will mean something...
+# bsddb3 calls it db, but provide _db for backwards compatibility
+db = _db = _rpmdb
+__version__ = db.__version__
+
+error = db.DBError  # So bsddb.error will mean something...
 
 #----------------------------------------------------------------------
 
@@ -150,14 +152,14 @@ def hashopen(file, flag='c', mode=0666, pgsize=None, ffactor=None, nelem=None,
             cachesize=None, lorder=None, hflags=0):
 
     flags = _checkflag(flag)
-    d = _db.DB()
+    d = db.DB()
     d.set_flags(hflags)
     if cachesize is not None: d.set_cachesize(0, cachesize)
     if pgsize is not None:    d.set_pagesize(pgsize)
     if lorder is not None:    d.set_lorder(lorder)
     if ffactor is not None:   d.set_h_ffactor(ffactor)
     if nelem is not None:     d.set_h_nelem(nelem)
-    d.open(file, _db.DB_HASH, flags, mode)
+    d.open(file, db.DB_HASH, flags, mode)
     return _DBWithCursor(d)
 
 #----------------------------------------------------------------------
@@ -167,14 +169,14 @@ def btopen(file, flag='c', mode=0666,
             pgsize=None, lorder=None):
 
     flags = _checkflag(flag)
-    d = _db.DB()
+    d = db.DB()
     if cachesize is not None: d.set_cachesize(0, cachesize)
     if pgsize is not None: d.set_pagesize(pgsize)
     if lorder is not None: d.set_lorder(lorder)
     d.set_flags(btflags)
     if minkeypage is not None: d.set_bt_minkey(minkeypage)
     if maxkeypage is not None: d.set_bt_maxkey(maxkeypage)
-    d.open(file, _db.DB_BTREE, flags, mode)
+    d.open(file, db.DB_BTREE, flags, mode)
     return _DBWithCursor(d)
 
 #----------------------------------------------------------------------
@@ -185,7 +187,7 @@ def rnopen(file, flag='c', mode=0666,
             rlen=None, delim=None, source=None, pad=None):
 
     flags = _checkflag(flag)
-    d = _db.DB()
+    d = db.DB()
     if cachesize is not None: d.set_cachesize(0, cachesize)
     if pgsize is not None: d.set_pagesize(pgsize)
     if lorder is not None: d.set_lorder(lorder)
@@ -194,7 +196,7 @@ def rnopen(file, flag='c', mode=0666,
     if rlen is not None: d.set_re_len(rlen)
     if source is not None: d.set_re_source(source)
     if pad is not None: d.set_re_pad(pad)
-    d.open(file, _db.DB_RECNO, flags, mode)
+    d.open(file, db.DB_RECNO, flags, mode)
     return _DBWithCursor(d)
 
 #----------------------------------------------------------------------
@@ -202,18 +204,18 @@ def rnopen(file, flag='c', mode=0666,
 
 def _checkflag(flag):
     if flag == 'r':
-        flags = _db.DB_RDONLY
+        flags = db.DB_RDONLY
     elif flag == 'rw':
         flags = 0
     elif flag == 'w':
-        flags =  _db.DB_CREATE
+        flags =  db.DB_CREATE
     elif flag == 'c':
-        flags =  _db.DB_CREATE
+        flags =  db.DB_CREATE
     elif flag == 'n':
-        flags = _db.DB_CREATE | _db.DB_TRUNCATE
+        flags = db.DB_CREATE | db.DB_TRUNCATE
     else:
         raise error, "flags should be one of 'r', 'w', 'c' or 'n'"
-    return flags | _db.DB_THREAD
+    return flags | db.DB_THREAD
 
 #----------------------------------------------------------------------
 
@@ -229,7 +231,7 @@ try:
     import thread
     del thread
 except ImportError:
-    _db.DB_THREAD = 0
+    db.DB_THREAD = 0
 
 
 #----------------------------------------------------------------------

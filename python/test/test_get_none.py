@@ -88,11 +88,9 @@ class GetReturnsNoneTestCase(unittest.TestCase):
 
 #----------------------------------------------------------------------
 
-def suite():
+def test_suite():
     return unittest.makeSuite(GetReturnsNoneTestCase)
 
 
 if __name__ == '__main__':
-    unittest.main( defaultTest='suite' )
-
-
+    unittest.main(defaultTest='test_suite')

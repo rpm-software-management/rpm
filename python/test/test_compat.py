@@ -4,14 +4,13 @@ regression test suite.
 """
 
 import sys, os, string
-from rpmdb import hashopen, btopen, rnopen
 import rpmdb
 import unittest
 import tempfile
 
 from test_all import verbose
 
-
+from rpmdb import db, hashopen, btopen, rnopen
 
 class CompatibilityTestCase(unittest.TestCase):
     def setUp(self):
@@ -126,7 +125,7 @@ class CompatibilityTestCase(unittest.TestCase):
                 if verbose: print "truth test: true"
             else:
                 if verbose: print "truth test: false"
-        except rpmdb.error:
+        except db.DBError:
             pass
         else:
             self.fail("Exception expected")
@@ -159,11 +158,9 @@ class CompatibilityTestCase(unittest.TestCase):
 #----------------------------------------------------------------------
 
 
-def suite():
+def test_suite():
     return unittest.makeSuite(CompatibilityTestCase)
 
 
 if __name__ == '__main__':
-    unittest.main( defaultTest='suite' )
-
-
+    unittest.main(defaultTest='test_suite')

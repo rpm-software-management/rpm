@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/bin/env python
 #------------------------------------------------------------------------
 #           Copyright (c) 1997-2001 by Total Control Software
 #                         All Rights Reserved
@@ -23,14 +23,18 @@
 #
 #------------------------------------------------------------------------
 
-"""
-Manage shelves of pickled objects using rpmdb database files for the
+"""Manage shelves of pickled objects using rpmdb database files for the
 storage.
 """
 
 #------------------------------------------------------------------------
 
 import cPickle
+try:
+    from UserDict import DictMixin
+except ImportError:
+    # DictMixin is new in Python 2.3
+    class DictMixin: pass
 from rpmdb import db
 
 #------------------------------------------------------------------------
@@ -71,9 +75,8 @@ def open(filename, flags=db.DB_CREATE, mode=0660, filetype=db.DB_HASH,
 
 #---------------------------------------------------------------------------
 
-class DBShelf:
-    """
-    A shelf to hold pickled objects, built upon a rpmdb DB object.  It
+class DBShelf(DictMixin):
+    """A shelf to hold pickled objects, built upon a rpmdb DB object.  It
     automatically pickles/unpickles data objects going to/from the DB.
     """
     def __init__(self, dbenv=None):
@@ -86,7 +89,9 @@ class DBShelf:
 
 
     def __getattr__(self, name):
-        """Many methods we can just pass through to the DB object.  (See below)"""
+        """Many methods we can just pass through to the DB object.
+        (See below)
+        """
         return getattr(self.db, name)
 
 
@@ -286,6 +291,3 @@ class DBShelfCursor:
 
 
 #---------------------------------------------------------------------------
-
-
-

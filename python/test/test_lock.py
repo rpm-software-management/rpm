@@ -68,22 +68,37 @@ class LockingTestCase(unittest.TestCase):
             print "Running %s.test02_threaded..." % self.__class__.__name__
 
         threads = []
-        threads.append(Thread(target = self.theThread, args=(5, db.DB_LOCK_WRITE)))
-        threads.append(Thread(target = self.theThread, args=(1, db.DB_LOCK_READ)))
-        threads.append(Thread(target = self.theThread, args=(1, db.DB_LOCK_READ)))
-        threads.append(Thread(target = self.theThread, args=(1, db.DB_LOCK_WRITE)))
-        threads.append(Thread(target = self.theThread, args=(1, db.DB_LOCK_READ)))
-        threads.append(Thread(target = self.theThread, args=(1, db.DB_LOCK_READ)))
-        threads.append(Thread(target = self.theThread, args=(1, db.DB_LOCK_WRITE)))
-        threads.append(Thread(target = self.theThread, args=(1, db.DB_LOCK_WRITE)))
-        threads.append(Thread(target = self.theThread, args=(1, db.DB_LOCK_WRITE)))
+        threads.append(Thread(target = self.theThread,
+                              args=(5, db.DB_LOCK_WRITE)))
+        threads.append(Thread(target = self.theThread,
+                              args=(1, db.DB_LOCK_READ)))
+        threads.append(Thread(target = self.theThread,
+                              args=(1, db.DB_LOCK_READ)))
+        threads.append(Thread(target = self.theThread,
+                              args=(1, db.DB_LOCK_WRITE)))
+        threads.append(Thread(target = self.theThread,
+                              args=(1, db.DB_LOCK_READ)))
+        threads.append(Thread(target = self.theThread,
+                              args=(1, db.DB_LOCK_READ)))
+        threads.append(Thread(target = self.theThread,
+                              args=(1, db.DB_LOCK_WRITE)))
+        threads.append(Thread(target = self.theThread,
+                              args=(1, db.DB_LOCK_WRITE)))
+        threads.append(Thread(target = self.theThread,
+                              args=(1, db.DB_LOCK_WRITE)))
 
         for t in threads:
             t.start()
         for t in threads:
             t.join()
 
-
+    def test03_set_timeout(self):
+        # test that the set_timeout call works
+        if hasattr(self.env, 'set_timeout'):
+            self.env.set_timeout(0, db.DB_SET_LOCK_TIMEOUT)
+            self.env.set_timeout(0, db.DB_SET_TXN_TIMEOUT)
+            self.env.set_timeout(123456, db.DB_SET_LOCK_TIMEOUT)
+            self.env.set_timeout(7890123, db.DB_SET_TXN_TIMEOUT)
 
     def theThread(self, sleepTime, lockType):
         name = currentThread().getName()
@@ -109,16 +124,16 @@ class LockingTestCase(unittest.TestCase):
 
 #----------------------------------------------------------------------
 
-def suite():
-    theSuite = unittest.TestSuite()
+def test_suite():
+    suite = unittest.TestSuite()
 
     if have_threads:
-        theSuite.addTest(unittest.makeSuite(LockingTestCase))
+        suite.addTest(unittest.makeSuite(LockingTestCase))
     else:
-        theSuite.addTest(unittest.makeSuite(LockingTestCase, 'test01'))
+        suite.addTest(unittest.makeSuite(LockingTestCase, 'test01'))
 
-    return theSuite
+    return suite
 
 
 if __name__ == '__main__':
-    unittest.main( defaultTest='suite' )
+    unittest.main(defaultTest='test_suite')
