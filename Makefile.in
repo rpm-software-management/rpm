@@ -26,7 +26,6 @@ MANDIR=$(prefix)/man/man8
 LIBDIR=$(prefix)/lib
 INCDIR=$(prefix)/include/rpm
 ETCDIR=$(ROOT)/etc
-PGPDIR=$(LIBDIR)/rpm
 NLSDIR=$(prefix)/lib/locale
 NLSPACKAGE=rpm
 
@@ -90,12 +89,9 @@ install: all
 	if [ ! -f $(ETCDIR)/rpmrc ]; then \
 		install -m 644 -o 0 -g 0 rpmrc $(ETCDIR)/rpmrc; \
 	fi
+	install -m 644 -o 0 -g 0 usr.lib.rpmrc $(LIBDIR)/rpmrc
 	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
 	(cd po; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
-	#install -m 755 -o 0 -g 0 -d $(PGPDIR)
-	#install -m 600 pubring.pgp $(PGPDIR)
-	#install -m 444 RPM-PGP-KEY $(PGPDIR)
-	#touch $(PGPDIR)/config.txt
 
 clean:
 	for d in $(SUBDIRS); do \
