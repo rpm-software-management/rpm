@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.29 (seventh alpha)
+Version 0.291 (eighth alpha)
 
 
 WHAT IS IT
@@ -49,10 +49,9 @@ There is now a mailing list for Perl-RPM. For details, see:
 
 CHANGES
 
-This is the seventh release. The only change of note in this release is
-compatibility with version 4.0 of RPM. Additionally, some flags to the
-C compiler to work with the gcc that is distributed with Red Hat Linux
-7. This version has been tested on both 6.2 and 7 systems.
+This is the eighth release. For detailed changes, see the file ChangeLog.
+This release fixes a thread-safing bug in RPM/Header.xs and introduces RPM
+packaging of the distribution itself.
 
 
 LICENSE
