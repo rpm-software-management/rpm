@@ -1913,10 +1913,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		cur, (fsm->wrbuf == fsm->wrb ? "wrbuf" : "mmap"),
 		(int)fsm->wrlen, (int)fsm->rdnb);
 if (fsm->rdnb != fsm->wrlen) fprintf(stderr, "*** short read, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrlen);
-#ifdef	NOTYET
-	if (Ferror(fsm->rfd))
+	if (fsm->rdnb != fsm->wrlen || Ferror(fsm->cfd))
 	    rc = CPIOERR_READ_FAILED;
-#endif
 	if (fsm->rdnb > 0)
 	    fdSetCpioPos(fsm->cfd, fdGetCpioPos(fsm->cfd) + fsm->rdnb);
 	break;
@@ -1927,10 +1925,8 @@ if (fsm->rdnb != fsm->wrlen) fprintf(stderr, "*** short read, had %d, got %d\n",
 		cur, (fsm->rdbuf == fsm->rdb ? "rdbuf" : "mmap"),
 		(int)fsm->rdnb, (int)fsm->wrnb);
 if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrnb);
-#ifdef	NOTYET
-	if (Ferror(fsm->wfd))
+	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->cfd))
 	    rc = CPIOERR_WRITE_FAILED;
-#endif
 	if (fsm->wrnb > 0)
 	    fdSetCpioPos(fsm->cfd, fdGetCpioPos(fsm->cfd) + fsm->wrnb);
 	break;
@@ -1953,10 +1949,8 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write, had %d, got %d\n",
 	    rpmMessage(RPMMESS_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
 		cur, (int)fsm->rdlen, (int)fsm->rdnb);
 if (fsm->rdnb != fsm->rdlen) fprintf(stderr, "*** short read, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->rdlen);
-#ifdef	NOTYET
-	if (Ferror(fsm->rfd))
+	if (fsm->rdnb != fsm->rdlen || Ferror(fsm->rfd))
 	    rc = CPIOERR_READ_FAILED;
-#endif
 	break;
     case FSM_RCLOSE:
 	if (fsm->rfd) {
@@ -1984,10 +1978,8 @@ if (fsm->rdnb != fsm->rdlen) fprintf(stderr, "*** short read, had %d, got %d\n",
 	    rpmMessage(RPMMESS_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
 		cur, (int)fsm->rdnb, (int)fsm->wrnb);
 if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrnb);
-#ifdef	NOTYET
-	if (Ferror(fsm->wfd))
+	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->wfd))
 	    rc = CPIOERR_WRITE_FAILED;
-#endif
 	break;
     case FSM_WCLOSE:
 	if (fsm->wfd) {

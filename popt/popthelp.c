@@ -81,18 +81,22 @@ getArgDescrip(const struct poptOption * opt,
 
 static /*@only@*/ /*@null@*/ char * singleOptionDefaultValue(int lineLength,
 		const struct poptOption * opt,
-		/*@null@*/ const char *translation_domain)
+		/*@-paramuse@*/	/* FIX: i18n macros disable with lclint */
+		/*@null@*/ const char * translation_domain)
+		/*@=paramuse@*/
 	/*@*/
 {
     const char * defstr = D_(translation_domain, "default");
-    char * l = malloc(4*lineLength + 1);
-    char * le = l;
+    char * le = malloc(4*lineLength + 1);
+    char * l = le;
 
-    if (l == NULL) return l;	/* XXX can't happen */
+    if (l == NULL) return NULL;	/* XXX can't happen */
+    *le = '\0';
     *le++ = '(';
     le = stpcpy(le, defstr);
     *le++ = ':';
     *le++ = ' ';
+    if (opt->arg)	/* XXX programmer error */
     switch (opt->argInfo & POPT_ARG_MASK) {
     case POPT_ARG_VAL:
     case POPT_ARG_INT:
@@ -128,7 +132,7 @@ static /*@only@*/ /*@null@*/ char * singleOptionDefaultValue(int lineLength,
     default:
 	l = _free(l);
 	return NULL;
-	break;
+	/*@notreached@*/ break;
     }
     *le++ = ')';
     *le = '\0';
@@ -138,7 +142,7 @@ static /*@only@*/ /*@null@*/ char * singleOptionDefaultValue(int lineLength,
 
 static void singleOptionHelp(FILE * fp, int maxLeftCol, 
 		const struct poptOption * opt,
-		/*@null@*/ const char *translation_domain)
+		/*@null@*/ const char * translation_domain)
 	/*@modifies *fp, fileSystem @*/
 {
     int indentLength = maxLeftCol + 5;
@@ -180,9 +184,13 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 	if (opt->argInfo & POPT_ARGFLAG_SHOW_DEFAULT) {
 	    defs = singleOptionDefaultValue(lineLength, opt, translation_domain);
 	    if (defs) {
-		char * t = malloc(strlen(help) + strlen(defs) + sizeof(" "));
+		char * t = malloc((help ? strlen(help) : 0) +
+				strlen(defs) + sizeof(" "));
 		if (t) {
-		    (void) stpcpy( stpcpy( stpcpy(t, help), " "), defs);
+		    char * te = t;
+		    *te = '\0';
+		    if (help) te = stpcpy(te, help);
+		    (void) stpcpy( stpcpy( te, " "), defs);
 		    defs = _free(defs);
 		}
 		defs = t;

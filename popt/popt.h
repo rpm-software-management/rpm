@@ -110,6 +110,7 @@ extern "C" {
 #define POPT_CONTEXT_NO_EXEC	(1 << 0)  /*!< ignore exec expansions */
 #define POPT_CONTEXT_KEEP_FIRST	(1 << 1)  /*!< pay attention to argv[0] */
 #define POPT_CONTEXT_POSIXMEHARDER (1 << 2) /*!< options can't follow args */
+#define POPT_CONTEXT_ARG_OPTS	(1 << 4) /*!< return args as options with value 0 */
 /*@}*/
 
 /** \ingroup popt

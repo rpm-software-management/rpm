@@ -675,10 +675,14 @@ int poptGetNextOpt(poptContext con)
 		return POPT_ERROR_BADOPT;
 
 	    if (con->restLeftover || *origOptString != '-') {
-		if (con->leftovers != NULL)	/* XXX can't happen */
-		con->leftovers[con->numLeftovers++] = origOptString;
 		if (con->flags & POPT_CONTEXT_POSIXMEHARDER)
 		    con->restLeftover = 1;
+		if (con->flags & POPT_CONTEXT_ARG_OPTS) {
+		    con->os->nextArg = xstrdup(origOptString);
+		    return 0;
+		}
+		if (con->leftovers != NULL)	/* XXX can't happen */
+		    con->leftovers[con->numLeftovers++] = origOptString;
 		continue;
 	    }
 
@@ -793,10 +797,11 @@ int poptGetNextOpt(poptContext con)
 		    cleanOSE(con->os--);
 		}
 		if (con->os->next == con->os->argc) {
-		    if (opt->argInfo & POPT_ARGFLAG_OPTIONAL)
-			con->os->nextArg = NULL;
-		    else
+		    if (!(opt->argInfo & POPT_ARGFLAG_OPTIONAL))
+			/*@-compdef@*/	/* FIX: con->os->argv not defined */
 			return POPT_ERROR_NOARG;
+			/*@=compdef@*/
+		    con->os->nextArg = NULL;
 		} else {
 
 		    /*

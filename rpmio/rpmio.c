@@ -2796,10 +2796,12 @@ int Ferror(FD_t fd)
 	    ec = ferror(fdGetFILE(fd));
 	    /*@=voidabstract =nullpass@*/
 	} else if (fps->io == gzdio) {
-	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	    ec = (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
+	    i--;	/* XXX fdio under gzdio always has fdno == -1 */
 #if HAVE_BZLIB_H
 	} else if (fps->io == bzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	    i--;	/* XXX fdio under bzdio always has fdno == -1 */
 #endif
 	} else {
 	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */

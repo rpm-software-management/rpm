@@ -114,6 +114,9 @@
 	    %post -p "/sbin/ldconfig -n /usr/lib"
 	  incompatibilities.
 	- popt: add POPT_ARGFLAG_SHOW_DEFAULT to display initial values(#32558).
+	- popt: add POPT_CONTEXT_ARG_OPTS for all opts to return 1 (#30912).
+	- fix: fsm reads/writes now return error on partial I/O.
+	- fix: Ferror returned spurious error for gzdio/bzdio.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
