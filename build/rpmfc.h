@@ -161,10 +161,11 @@ rpmfc rpmfcNew(void)
  * Build file class dictionary and mappings.
  * @param fc		file classifier
  * @param argv		files to classify
+ * @param fmode		files mode_t array (or NULL)
  * @return		0 on success
  */
 /*@-exportlocal@*/
-int rpmfcClassify(rpmfc fc, ARGV_t argv)
+int rpmfcClassify(rpmfc fc, ARGV_t argv, /*@null@*/ int16_t * fmode)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fc, fileSystem, internalState @*/;
 /*@=exportlocal@*/

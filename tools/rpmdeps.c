@@ -88,7 +88,7 @@ char buf[BUFSIZ];
 
     /* Build file class dictionary. */
     fc = rpmfcNew();
-    xx = rpmfcClassify(fc, av);
+    xx = rpmfcClassify(fc, av, NULL);
 
     /* Build file/package dependency dictionary. */
     xx = rpmfcApply(fc);

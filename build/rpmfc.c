@@ -1164,7 +1164,7 @@ assert(dix >= 0);
     return 0;
 }
 
-int rpmfcClassify(rpmfc fc, ARGV_t argv)
+int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
 {
     ARGV_t fcav = NULL;
     ARGV_t dav;
@@ -1208,24 +1208,36 @@ assert(xx != -1);	/* XXX figger a proper return path. */
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
+	int_16 mode = (fmode ? fmode[fc->ix] : 0);
+	char dbuf[1024];
 
 	s = argv[fc->ix];
 assert(s != NULL);
 	slen = strlen(s);
 
-	/* XXX all files with extension ".pm" are perl modules for now. */
+	switch (mode & S_IFMT) {
+	case S_IFCHR:	ftype = "character special";	break;
+	case S_IFBLK:	ftype = "block special";	break;
+	case S_IFIFO:	ftype = "fifo (named pipe)";	break;
+	case S_IFSOCK:	ftype = "socket";		break;
+	case S_IFDIR:
+	case S_IFLNK:
+	case S_IFREG:
+	default:
+	    /* XXX all files with extension ".pm" are perl modules for now. */
 /*@-branchstate@*/
-	if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
-	    ftype = "Perl5 module source text";
-	/* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
-	else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
-	    ftype = "";
-	else {
-	    ftype = magic_file(ms, s);
+	    if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
+		ftype = "Perl5 module source text";
+	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
+	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
+		ftype = "";
+	    else
+		ftype = magic_file(ms, s);
+
 	    if (ftype == NULL) {
 		xx = RPMERR_EXEC;
-		rpmError(xx, _("magic_file(ms, \"%s\") failed: %s\n"),
-			s, magic_error(ms));
+		rpmError(xx, _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
+			s, mode, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
 	    }
 	}
@@ -1477,6 +1489,7 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     rpmds ds;
     int flags = 0x2;	/* XXX no filtering, !scareMem */
     ARGV_t av;
+    int_16 * fmode;
     int ac = rpmfiFC(fi);
     const void ** p;
     char buf[BUFSIZ];
@@ -1505,6 +1518,7 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 
     /* Extract absolute file paths in argv format. */
     av = xcalloc(ac+1, sizeof(*av));
+    fmode = xcalloc(ac+1, sizeof(*fmode));
 
 /*@-boundswrite@*/
     genConfigDeps = 0;
@@ -1518,6 +1532,7 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 	genConfigDeps |= (fileAttrs & RPMFILE_CONFIG);
 
 	av[c] = xstrdup(rpmfiFN(fi));
+	fmode[c] = rpmfiFMode(fi);
     }
     av[ac] = NULL;
 /*@=boundswrite@*/
@@ -1574,7 +1589,7 @@ assert(EVR != NULL);
     }
 
     /* Build file class dictionary. */
-    xx = rpmfcClassify(fc, av);
+    xx = rpmfcClassify(fc, av, fmode);
 
     /* Build file/package dependency dictionary. */
     xx = rpmfcApply(fc);
@@ -1680,6 +1695,7 @@ rpmfcPrint(msg, fc, NULL);
 }
 
     /* Clean up. */
+    fmode = _free(fmode);
     fc = rpmfcFree(fc);
     av = argvFree(av);
 
