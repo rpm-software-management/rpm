@@ -379,6 +379,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	strcpy(currDir, tmpptr);
 	free(tmpptr);
 
+	/* this loads all of the name services libraries, in case we
+	   don't have access to them in the chroot() */
+	getpwnam("root");
+	endpwent();
+
 	chdir("/");
 	chroot(rootdir);
     }
