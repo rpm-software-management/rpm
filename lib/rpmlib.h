@@ -106,6 +106,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_PREUNPROG                1087
 #define RPMTAG_POSTUNPROG               1088
 #define RPMTAG_BUILDARCHS               1089
+#define RPMTAG_OBSOLETES                1090 /* internal */
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 
@@ -157,6 +158,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMSENSE_PROVIDES        (1 << 4) /* only used internally by builds */
 #define RPMSENSE_CONFLICTS       (1 << 5) /* only used internally by builds */
 #define RPMSENSE_PREREQ          (1 << 6)
+#define RPMSENSE_OBSOLETES       (1 << 7)
 #define RPMSENSE_SENSEMASK       15       /* Mask to get senses, ie serial, */
                                           /* less, greater, equal.          */
 

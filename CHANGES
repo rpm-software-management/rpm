@@ -1,6 +1,7 @@
 2.4.7 -> 2.4.8:
 	- added noarch build compatibilities for ppc, m68k
 	- fixed some minor typos (Florian La Roche)
+	- added Obsoletes: tag
 
 2.4.6 -> 2.4.7:
 	- had some wrong month lengths in changelog date parsing

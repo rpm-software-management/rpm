@@ -79,6 +79,9 @@ int addReqProv(struct PackageRec *p, int flags,
     } else if (flags & RPMSENSE_PREREQ) {
 	rpmMessage(RPMMESS_DEBUG, "Adding prereq: %s\n", name);
 	p->numPreReq++;
+    } else if (flags & RPMSENSE_OBSOLETES) {
+	rpmMessage(RPMMESS_DEBUG, "Adding obsoletes: %s\n", name);
+	p->numPreReq++;
     } else {	
 	rpmMessage(RPMMESS_DEBUG, "Adding require: %s\n", name);
 	p->numReq++;
@@ -370,7 +373,8 @@ int processReqProv(Header h, struct PackageRec *p)
 		*namePtr++ = rd->name;
 		*versionPtr++ = rd->version ? rd->version : "";
 		*flagPtr++ = (rd->flags & RPMSENSE_SENSEMASK) |
-		    (rd->flags & RPMSENSE_PREREQ);
+		    (rd->flags & RPMSENSE_PREREQ) |
+		    (rd->flags & RPMSENSE_OBSOLETES);
 	    }
 	    rd = rd->next;
 	}

@@ -310,6 +310,9 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 	  case RPMTAG_PREREQ:
 	    flags = RPMSENSE_PREREQ;
 	    break;
+	  case RPMTAG_OBSOLETES:
+	    flags = RPMSENSE_OBSOLETES;
+	    break;
 	  default:
 	    flags = RPMSENSE_ANY;
 	    break;
@@ -317,6 +320,11 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 	if (flag == RPMTAG_CONFLICTFLAGS && req[0] == '/') {
 	    rpmError(RPMERR_BADSPEC,
 		     "No file names in Conflicts: %s", req);
+	    return RPMERR_BADSPEC;
+	}
+	if (flag == RPMTAG_OBSOLETES && req[0] == '/') {
+	    rpmError(RPMERR_BADSPEC,
+		     "No file names in Obsoletes: %s", req);
 	    return RPMERR_BADSPEC;
 	}
 	if ((version = strtok(NULL, " ,\t\n"))) {
@@ -333,6 +341,11 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 		if (flag == RPMTAG_PREREQ) {
 		    rpmError(RPMERR_BADSPEC,
 			     "No versions in PreReq: %s", req);
+		    return RPMERR_BADSPEC;
+		}
+		if (flag == RPMTAG_OBSOLETES) {
+		    rpmError(RPMERR_BADSPEC,
+			     "No versions in Obsoletes: %s", req);
 		    return RPMERR_BADSPEC;
 		}
 		/* read a version */
@@ -869,6 +882,7 @@ struct preamble_line {
     {RPMTAG_REQUIREFLAGS,  0, "requires"},
     {RPMTAG_PREREQ,        0, "prereq"},
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
+    {RPMTAG_OBSOLETES,     0, "obsoletes"},
     {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
     {RPMTAG_BUILDROOT,     0, "buildroot"},
     {RPMTAG_BUILDARCHS,    0, "buildarchitectures"},
@@ -1525,6 +1539,7 @@ Spec parseSpecAux(FILE *f, char *specfile, char *buildRootOverride,
 		  case RPMTAG_REQUIREFLAGS:
 		  case RPMTAG_CONFLICTFLAGS:
 		  case RPMTAG_PREREQ:
+		  case RPMTAG_OBSOLETES:
 		      if (parseRequiresConflicts(cur_package, s, tag)) {
 			  return NULL;
 		      }
