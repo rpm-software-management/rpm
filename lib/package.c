@@ -155,6 +155,8 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 int rpmReadPackageInfo(FD_t fd, Header * sigp, Header * hdrp)
 {
     int rc = readPackageHeaders(fd, NULL, sigp, hdrp);
+    if (rc)
+	return rc;
     if (hdrp && *hdrp && sigp && *sigp)
 	headerMergeLegacySigs(*hdrp, *sigp);
     return rc;
