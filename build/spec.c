@@ -549,6 +549,9 @@ static int dateToTimet(const char * datestr, time_t * secs)
     /* day */
     if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
 
+    /* make this noon so the day is always right (as we make this UTC) */
+    time.tm_hour = 12;
+
     time.tm_mday = strtol(chptr, &chptr, 10);
     if (*chptr) return -1;
     if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) return -1;
