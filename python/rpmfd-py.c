@@ -316,7 +316,7 @@ PyTypeObject rpmfd_Type = {
 	(initproc) rpmfd_init,		/* tp_init */
 	(allocfunc) rpmfd_alloc,	/* tp_alloc */
 	(newfunc) rpmfd_new,		/* tp_new */
-	(freefunc) rpmfd_free,		/* tp_free */
+	rpmfd_free,			/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };
