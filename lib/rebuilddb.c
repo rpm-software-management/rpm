@@ -26,8 +26,9 @@ int rpmdbRebuild(const char * rootdir)
 	rc = 1;
 	goto exit;
     }
-    rootdbpath = rpmGetPath(rootdir, tfn, NULL);
-    dbpath = rootdbpath + strlen(rootdir);
+    dbpath = rootdbpath = rpmGetPath(rootdir, tfn, NULL);
+    if (!(rootdir[0] == '/' && rootdir[1] == '\0'))
+	dbpath += strlen(rootdir);
     xfree(tfn);
 
     tfn = rpmGetPath("%{_rebuilddbpath}", NULL);
@@ -41,8 +42,9 @@ int rpmdbRebuild(const char * rootdir)
 	tfn = t;
 	nocleanup = 0;
     }
-    newrootdbpath = rpmGetPath(rootdir, tfn, NULL);
-    newdbpath = newrootdbpath + strlen(rootdir);
+    newdbpath = newrootdbpath = rpmGetPath(rootdir, tfn, NULL);
+    if (!(rootdir[0] == '/' && rootdir[1] == '\0'))
+	newdbpath += strlen(rootdir);
     xfree(tfn);
 
     rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),

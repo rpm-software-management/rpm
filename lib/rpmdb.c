@@ -143,10 +143,13 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	break;
     }
     strcat(filename, dbpath);
+    rpmCleanPath(filename);
 
     rpmMessage(RPMMESS_DEBUG, _("opening database mode 0x%x in %s\n"),
 	mode, filename);
 
+    if (filename[strlen(filename)-1] != '/')
+	strcat(filename, "/");
     strcat(filename, "packages.rpm");
 
     db = newRpmdb();

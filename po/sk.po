@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-01-17 13:07-0500\n"
+"POT-Creation-Date: 2000-01-24 08:20-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2770,62 +2770,62 @@ msgstr "zobrazii» stav daných súborov"
 msgid "display a verbose file listing"
 msgstr "zobrazi» podrobný zoznam súborov balíka"
 
-#: lib/rebuilddb.c:24 lib/rpmdb.c:249
+#: lib/rebuilddb.c:25 lib/rpmdb.c:252
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: lib/rebuilddb.c:47
+#: lib/rebuilddb.c:50
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:54
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rebuilddb.c:55
+#: lib/rebuilddb.c:60
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rebuilddb.c:57
+#: lib/rebuilddb.c:62
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rebuilddb.c:61
+#: lib/rebuilddb.c:68
 msgid "opening old database\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:75
 msgid "opening new database\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rebuilddb.c:78 lib/rebuilddb.c:96
+#: lib/rebuilddb.c:85 lib/rebuilddb.c:103
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rebuilddb.c:90
+#: lib/rebuilddb.c:97
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rebuilddb.c:109
+#: lib/rebuilddb.c:116
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rebuilddb.c:117
+#: lib/rebuilddb.c:124
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rebuilddb.c:119
+#: lib/rebuilddb.c:126
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rebuilddb.c:125
+#: lib/rebuilddb.c:132
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
@@ -2914,30 +2914,30 @@ msgstr ")"
 msgid "OK"
 msgstr "V PORIADKU"
 
-#: lib/rpmdb.c:147
+#: lib/rpmdb.c:148
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/rpmdb.c:157 lib/url.c:442
+#: lib/rpmdb.c:160 lib/url.c:442
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/rpmdb.c:171 lib/rpmdb.c:179
+#: lib/rpmdb.c:174 lib/rpmdb.c:182
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: lib/rpmdb.c:172
+#: lib/rpmdb.c:175
 msgid "exclusive"
 msgstr "výhradný"
 
-#: lib/rpmdb.c:180
+#: lib/rpmdb.c:183
 msgid "shared"
 msgstr "zdieµaný"
 
-#: lib/rpmdb.c:211
+#: lib/rpmdb.c:214
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2945,76 +2945,76 @@ msgstr ""
 "existuje databáza v starom formáte; pou¾ite --rebuilddb pre vytvorenie "
 "databázy v novom formáte"
 
-#: lib/rpmdb.c:470
+#: lib/rpmdb.c:473
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "balík %s nie je uvedený v %s"
 
-#: lib/rpmdb.c:481
+#: lib/rpmdb.c:484
 #, c-format
 msgid "package %s not found in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:505 lib/uninstall.c:87
+#: lib/rpmdb.c:508 lib/uninstall.c:87
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre odin¹talovanie"
 
-#: lib/rpmdb.c:513
+#: lib/rpmdb.c:516
 msgid "package has no name"
 msgstr "balík nemá meno"
 
-#: lib/rpmdb.c:515
+#: lib/rpmdb.c:518
 msgid "removing name index\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:520
+#: lib/rpmdb.c:523
 msgid "package has no group\n"
 msgstr "balík nemá skupinu\n"
 
-#: lib/rpmdb.c:522
+#: lib/rpmdb.c:525
 msgid "removing group index\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:529
+#: lib/rpmdb.c:532
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr "odstraòuje sa index poskytovaných vlastností pre %s\n"
 
-#: lib/rpmdb.c:544
+#: lib/rpmdb.c:547
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr "odstraòuje sa index po¾iadaviek pre %s\n"
 
-#: lib/rpmdb.c:556
+#: lib/rpmdb.c:559
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr "odstraòuje sa index triggerov pre %s\n"
 
-#: lib/rpmdb.c:567
+#: lib/rpmdb.c:570
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr "odstraòuje sa index kolízií pre %s\n"
 
-#: lib/rpmdb.c:578
+#: lib/rpmdb.c:581
 #, c-format
 msgid "removing file index for %s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/rpmdb.c:587
+#: lib/rpmdb.c:590
 msgid "package has no files\n"
 msgstr "balík neobsahuje ¾iadne súbory\n"
 
-#: lib/rpmdb.c:693
+#: lib/rpmdb.c:696
 msgid "cannot allocate space for database"
 msgstr "nie je mo¾né prideli» miesto pre databázu"
 
-#: lib/rpmdb.c:752
+#: lib/rpmdb.c:755
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre úpravu"
 
-#: lib/rpmdb.c:765
+#: lib/rpmdb.c:768
 msgid "header changed size!"
 msgstr "zmenila sa veµkos» hlavièky!"
 
