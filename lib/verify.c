@@ -54,7 +54,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	    *t = '\0';
 	}
 	t = stpcpy(t, fn);
-	fn = t;
+	fn = tb;
     }
 /*@=bounds@*/
 

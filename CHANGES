@@ -203,6 +203,7 @@
 	- python: methods to disable all new features for benchmarking.
 	- preserve rpmdb file attributes across --rebuilddb (#70367).
 	- fix: identify athlon with 3DNOWEXT as "athlon", not "i786" (#70539).
+	- fix: repair --root with --verify (#70527).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
