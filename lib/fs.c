@@ -149,6 +149,7 @@ static int getFilesystemList(void) {
 	    free(filesystems);
 
 	    filesystems = NULL;
+	    return 1;
 	}
 
 	if (num == numAlloced) {
