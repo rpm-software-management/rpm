@@ -1,8 +1,13 @@
+#include "config.h"
+#ifdef HAVE_GLOB_H
+#  include <glob.h>
+#else
+#  include "misc-glob.h"
+#endif
+
 #include <string.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include <glob.h>
-#include <time.h>
 
 #include "spec.h"
 #include "package.h"
@@ -919,7 +924,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 		appendLineStringBuf(pkg->specialDoc, buf);
 		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
 		appendLineStringBuf(pkg->specialDoc, "rm -rf $DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, "mkdir -p $DOCDIR");
+		appendLineStringBuf(pkg->specialDoc, MKDIR_P " $DOCDIR");
 
 		*fileName = buf;
 		fl->passedSpecialDoc = 1;

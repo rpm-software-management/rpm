@@ -1,5 +1,5 @@
+#include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 
 #include "header.h"
 #include "read.h"
@@ -10,21 +10,25 @@
 #include "stringbuf.h"
 #include "popt/popt.h"
 
-int parseFiles(Spec spec)
-{
-    int nextPart;
-    Package pkg;
-    char *name = NULL;
-    char *file = NULL;
-    int rc, argc;
-    char arg, **argv = NULL;
-    int flag = PART_SUBNAME;
-    poptContext optCon = NULL;
-    struct poptOption optionsTable[] = {
+/* These have to be global scope to make up for *stupid* compilers */
+    static char *name;
+    static char *file;
+    static struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n' },
 	{ NULL, 'f', POPT_ARG_STRING, &file, 'f' },
 	{ 0, 0, 0, 0, 0 }
     };
+
+int parseFiles(Spec spec)
+{
+    int nextPart;
+    Package pkg;
+    int rc, argc;
+    char arg, **argv = NULL;
+    int flag = PART_SUBNAME;
+    poptContext optCon = NULL;
+
+    name = file = NULL;
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, "line %d: Error parsing %%files: %s",

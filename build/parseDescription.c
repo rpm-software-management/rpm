@@ -1,4 +1,4 @@
-#include <malloc.h>
+#include <stdlib.h>
 
 #include "spec.h"
 #include "header.h"
@@ -9,22 +9,28 @@
 #include "package.h"
 #include "popt/popt.h"
 
+/* These have to be global scope to make up for *stupid* compilers */
+    static char *name;
+    static char *lang;
+
+    static struct poptOption optionsTable[] = {
+	{ NULL, 'n', POPT_ARG_STRING, &name, 'n' },
+	{ NULL, 'l', POPT_ARG_STRING, &lang, 'l' },
+	{ 0, 0, 0, 0, 0 }
+    };
+
 int parseDescription(Spec spec)
 {
     int nextPart;
     StringBuf sb;
-    char *name = NULL;
-    char *lang = RPMBUILD_DEFAULT_LANG;
     int flag = PART_SUBNAME;
     Package pkg;
     int rc, argc;
     char arg, **argv = NULL;
     poptContext optCon = NULL;
-    struct poptOption optionsTable[] = {
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n' },
-	{ NULL, 'l', POPT_ARG_STRING, &lang, 'l' },
-	{ 0, 0, 0, 0, 0 }
-    };
+
+    name = NULL;
+    lang = RPMBUILD_DEFAULT_LANG;
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, "line %d: Error parsing %%description: %s",

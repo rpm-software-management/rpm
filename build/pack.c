@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <time.h>
+#include <stdlib.h>
 
 #include "spec.h"
 #include "header.h"

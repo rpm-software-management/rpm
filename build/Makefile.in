@@ -1,4 +1,5 @@
 srcdir = @srcdir@
+top_srcdir = @top_srcdir@
 VPATH = $(srcdir)
 
 LIBOBJECTS = \
@@ -16,11 +17,7 @@ LOADLIBES = -lrpm -lz ../popt/libpopt.a $(LIBEFENCE)
 
 include ../Makefile.inc
 
-ifeq (.depend,$(wildcard .depend))
 TARGET=everything
-else
-TARGET=depend everything
-endif
 
 all: $(TARGET)
 
@@ -40,10 +37,12 @@ clean:
 	rm -f *.a *.o *~ $(PROGS)
 
 distclean: clean
-	rm -f .depend Makefile
+	rm -f Makefile
 
 depend:
-	$(CPP) $(CFLAGS) -M $(srcdir)/*.c > .depend
+	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
+	$(CPP) $(CFLAGS) -MM $(srcdir)/*.c | \
+	    sed s+$$topdir_path+$(top_srcdir)+g > .depend
 
 ifeq (.depend,$(wildcard .depend))
 include .depend

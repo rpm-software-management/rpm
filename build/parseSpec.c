@@ -1,7 +1,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #include "header.h"
 #include "rpmlib.h"

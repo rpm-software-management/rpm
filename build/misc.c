@@ -1,12 +1,16 @@
-#include <string.h>
+#include "config.h"
+
+#if HAVE_STRING_H
+#  include <string.h>
+#endif
+
 #include <stdlib.h>
 #include <ctype.h>
 #include <signal.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <sys/types.h>
 
 #include "misc.h"
 #include "spec.h"

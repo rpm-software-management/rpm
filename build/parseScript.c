@@ -13,6 +13,17 @@
 /* Define this to be 1 to turn on -p "<prog> <args>..." ability */
 #define USE_PROG_STRING_ARRAY 0
 
+/* these have to be globab because of stupid compilers */
+    static char *name;
+    static char *prog;
+    static char *file;
+    static struct poptOption optionsTable[] = {
+	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p' },
+	{ NULL, 'n', POPT_ARG_STRING, &name, 'n' },
+	{ NULL, 'f', POPT_ARG_STRING, &file, 'f' },
+	{ 0, 0, 0, 0, 0 }
+    };
+
 int parseScript(Spec spec, int parsePart)
 {
     /* There are a few options to scripts: */
@@ -23,9 +34,6 @@ int parseScript(Spec spec, int parsePart)
     /*  -f <file>                          */
 
     char *p;
-    char *name = NULL;
-    char *prog = "/bin/sh";
-    char *file = NULL;
     char **progArgv = NULL;
     int progArgc;
     char *partname = NULL;
@@ -35,16 +43,14 @@ int parseScript(Spec spec, int parsePart)
     Package pkg;
     StringBuf sb;
     int nextPart;
+
+    char *name = NULL;
+    char *prog = "/bin/sh";
+    char *file = NULL;
     
     int rc, argc;
     char arg, **argv = NULL;
     poptContext optCon = NULL;
-    struct poptOption optionsTable[] = {
-	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p' },
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n' },
-	{ NULL, 'f', POPT_ARG_STRING, &file, 'f' },
-	{ 0, 0, 0, 0, 0 }
-    };
     
     switch (parsePart) {
       case PART_PRE:

@@ -1,3 +1,9 @@
+#include "config.h"
+
+#ifdef HAVE_ALLOCA_A
+#include <alloca.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>

@@ -4,7 +4,7 @@
 #include "rpmlib.h"
 #include "files.h"
 
-#include <malloc.h>
+#include <stdlib.h>
 
 int lookupPackage(Spec spec, char *name, int flag, Package *pkg)
 {

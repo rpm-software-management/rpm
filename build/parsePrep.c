@@ -2,7 +2,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <errno.h>
 
 #include "spec.h"
@@ -14,6 +14,21 @@
 #include "names.h"
 #include "misc.h"
 #include "config.h"
+
+/* These have to be global to make up for stupid compilers */
+    static int leaveDirs, skipDefaultAction;
+    static int createDir, quietly;
+    static char * dirName;
+    static struct poptOption optionsTable[] = {
+	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a' },
+	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b' },
+	    { NULL, 'c', 0, &createDir, 0 },
+	    { NULL, 'D', 0, &leaveDirs, 0 },
+	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0 },
+	    { NULL, 'T', 0, &skipDefaultAction, 0 },
+	    { NULL, 'q', 0, &quietly, 0 },
+	    { 0, 0, 0, 0, 0 }
+    };
 
 static int doSetupMacro(Spec spec, char *line);
 static int doPatchMacro(Spec spec, char *line);
@@ -82,9 +97,6 @@ int parsePrep(Spec spec)
 static int doSetupMacro(Spec spec, char *line)
 {
     char *version, *name;
-    int leaveDirs = 0, skipDefaultAction = 0;
-    int createDir = 0, quietly = 0;
-    char * dirName = NULL;
     char buf[BUFSIZ];
     StringBuf before;
     StringBuf after;
@@ -96,16 +108,10 @@ static int doSetupMacro(Spec spec, char *line)
     char * chptr;
     int rc;
     int num;
-    struct poptOption optionsTable[] = {
-	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a' },
-	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b' },
-	    { NULL, 'c', 0, &createDir, 0 },
-	    { NULL, 'D', 0, &leaveDirs, 0 },
-	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0 },
-	    { NULL, 'T', 0, &skipDefaultAction, 0 },
-	    { NULL, 'q', 0, &quietly, 0 },
-	    { 0, 0, 0, 0, 0 }
-    };
+
+    leaveDirs = skipDefaultAction = 0;
+    createDir = quietly = 0;
+    dirName = NULL;
 
     if ((rc = poptParseArgvString(line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, "Error parsing %%setup: %s",
@@ -181,7 +187,7 @@ static int doSetupMacro(Spec spec, char *line)
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	sprintf(buf, "mkdir -p %s\ncd %s",
+	sprintf(buf, MKDIR_P " %s\ncd %s",
 		spec->buildSubdir, spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
     }
@@ -217,7 +223,7 @@ static int doSetupMacro(Spec spec, char *line)
     /* clean up permissions etc */
     if (!geteuid()) {
 	appendLineStringBuf(spec->prep, "chown -R root .");
-	appendLineStringBuf(spec->prep, "chgrp -R root .");
+	appendLineStringBuf(spec->prep, "chgrp -R " ROOT_GROUP " .");
     }
 
     if (rpmGetVar(RPMVAR_FIXPERMS)) {

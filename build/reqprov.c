@@ -1,6 +1,7 @@
 /* reqprov.c -- require/provide handling */
 
-#include <malloc.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "spec.h"
 #include "reqprov.h"
