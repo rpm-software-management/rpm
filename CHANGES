@@ -1,6 +1,7 @@
 2.93 -> 2.94
 	- fix: segfault while parsing target string.
 	- fix: os was not initialized with "--target i586".
+	- fix: --prefix resurrected.
 
 2.92 -> 2.93
 	- eliminate old rpmrc configuration syntax.
