@@ -15,7 +15,7 @@ EXTRA_DIST = getdate.y
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	header.h hdrinline.h hdrproto.h \
+	header.h hdrinline.h \
 	misc.h rpmcli.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h fsm.h header_internal.h \

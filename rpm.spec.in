@@ -523,3 +523,4 @@ fi
 - proof-of-concept PGP/RSA verification for legacy signatures.
 - ratchet up to lclint "strict" level.
 - upgrade to db-4.0.7.
+- use only header methods, routines are now static.

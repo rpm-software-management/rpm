@@ -699,9 +699,7 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
     return NULL;
 }
 
-#if defined(__HEADER_PROTOTYPES__)
-#include <hdrproto.h>
-#else
+#if !defined(__HEADER_PROTOTYPES__)
 #include <hdrinline.h>
 #endif
 

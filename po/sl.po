@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.164 2001/10/15 17:53:57 jbj Exp $
+# $Id: sl.po,v 1.165 2001/10/15 21:07:14 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-15 13:39-0400\n"
+"POT-Creation-Date: 2001-10-15 17:04-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2275,7 +2275,7 @@ msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:160
-#: lib/header.c:2653 lib/header.c:2674 lib/header.c:2696
+#: lib/header.c:2862 lib/header.c:2883 lib/header.c:2905
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -2359,89 +2359,89 @@ msgstr "opozorilo: %s ustvarjen kot %s"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:267
+#: lib/header.c:308
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "¹tevec grabData() RPM_STRING_TYPE mora biti 1.\n"
 
 #. @-modfilesys@
-#: lib/header.c:304 lib/header_internal.c:159 lib/psm.c:405
+#: lib/header.c:345 lib/header_internal.c:159 lib/psm.c:405
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Tip podatkov %d ni podprt\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1952
+#: lib/header.c:2148
 #, c-format
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1982
+#: lib/header.c:2178
 msgid "missing } after %{"
 msgstr "manjkajoèi } za %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1996
+#: lib/header.c:2192
 msgid "empty tag format"
 msgstr "oblika znaèke manjka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2010
+#: lib/header.c:2206
 msgid "empty tag name"
 msgstr "ime znaèke manjka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2027
+#: lib/header.c:2223
 msgid "unknown tag"
 msgstr "neznana znaèka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2054
+#: lib/header.c:2250
 msgid "] expected at end of array"
 msgstr "na koncu polja je prièakovan ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2072
+#: lib/header.c:2268
 msgid "unexpected ]"
 msgstr "neprièakovan ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2076
+#: lib/header.c:2272
 msgid "unexpected }"
 msgstr "neprièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2142
+#: lib/header.c:2338
 msgid "? expected in expression"
 msgstr "v izrazu je prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2151
+#: lib/header.c:2347
 msgid "{ expected after ? in expression"
 msgstr "v izrazu je za { prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2164 lib/header.c:2206
+#: lib/header.c:2360 lib/header.c:2402
 msgid "} expected in expression"
 msgstr "v izrazu je prièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2174
+#: lib/header.c:2370
 msgid ": expected following ? subexpression"
 msgstr "za podizrazom ? je prièakovano :"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2191
+#: lib/header.c:2387
 msgid "{ expected after : in expression"
 msgstr "v izrazu je za : prièakovan {"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2216
+#: lib/header.c:2412
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
-#: lib/header.c:2412
+#: lib/header.c:2608
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
@@ -3332,98 +3332,98 @@ msgstr "Name¹èanje %s\n"
 msgid "read failed: %s (%d)\n"
 msgstr "branje je bilo neuspe¹no: %s (%d)"
 
-#: lib/rpmrc.c:188
+#: lib/rpmrc.c:187
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "manjka drugi ,:` v %s:%d"
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:190
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "manjkajoèe ime arhitekture v %s:%d"
 
-#: lib/rpmrc.c:345
+#: lib/rpmrc.c:344
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Nepopolna podatkovna vrstica v %s:%d"
 
-#: lib/rpmrc.c:350
+#: lib/rpmrc.c:349
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Preveè argumentov v podatkovni vrstici v %s:%d"
 
-#: lib/rpmrc.c:358
+#: lib/rpmrc.c:357
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Okvarjena ¹tevilka arh./op.sist.: %s (%s:%d)"
 
-#: lib/rpmrc.c:395
+#: lib/rpmrc.c:394
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Nepopolna privzeta vrstica v %s:%d"
 
-#: lib/rpmrc.c:400
+#: lib/rpmrc.c:399
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Preveè argumentov v privzeti vrstici v %s:%d"
 
-#: lib/rpmrc.c:616
+#: lib/rpmrc.c:615
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Ni mo¾no raz¹iriti %s"
 
-#: lib/rpmrc.c:621
+#: lib/rpmrc.c:620
 #, fuzzy, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Ni mo¾no prebrati %s, HOME je prevelik."
 
-#: lib/rpmrc.c:638
+#: lib/rpmrc.c:637
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s ni mo¾no odpreti za branje: %s."
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:692
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Neuspe¹no branje %s: %s."
 
-#: lib/rpmrc.c:728
+#: lib/rpmrc.c:730
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "manjkajoèi ,:` (najden 0x%02x) v %s:%d"
 
-#: lib/rpmrc.c:745 lib/rpmrc.c:819
+#: lib/rpmrc.c:747 lib/rpmrc.c:821
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "manjkajoèi argument za %s v %s:%d"
 
-#: lib/rpmrc.c:762 lib/rpmrc.c:784
+#: lib/rpmrc.c:764 lib/rpmrc.c:786
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "raz¹iritev %s je bila neuspe¹na v %s:%d \"%s\""
 
-#: lib/rpmrc.c:771
+#: lib/rpmrc.c:773
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "ni mo¾no odpreti %s v %s:%d: %s"
 
-#: lib/rpmrc.c:811
+#: lib/rpmrc.c:813
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "manjkajoèa arhitektura za %s v %s:%d"
 
-#: lib/rpmrc.c:878
+#: lib/rpmrc.c:880
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "nepravilna izbira ,%s` v %s:%d"
 
-#: lib/rpmrc.c:1477
+#: lib/rpmrc.c:1484
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznan sistem: %s\n"
 
-#: lib/rpmrc.c:1478
+#: lib/rpmrc.c:1485
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Prosimo, pi¹ite na rpm-list@redhat.com\n"
 
@@ -3558,47 +3558,47 @@ msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/transaction.c:472
+#: lib/transaction.c:475
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:476
+#: lib/transaction.c:479
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je izkljuèen: %s"
 
-#: lib/transaction.c:479
+#: lib/transaction.c:482
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/transaction.c:549
+#: lib/transaction.c:552
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/transaction.c:613
+#: lib/transaction.c:618
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/transaction.c:623
+#: lib/transaction.c:628
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/transaction.c:702
+#: lib/transaction.c:707
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "premiokanje imenika %s v %s\n"
 
-#: lib/transaction.c:846
+#: lib/transaction.c:853
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
 #. @innercontinue@
-#: lib/transaction.c:1460
+#: lib/transaction.c:1473
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "izkljuèevanje imenika %s\n"
@@ -3776,42 +3776,42 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:130
+#: rpmdb/rpmdb.c:129
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: neprepoznano ime znaèke: \"%s\" prezrto\n"
 
-#: rpmdb/rpmdb.c:382
+#: rpmdb/rpmdb.c:381
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "ni mo¾no odpreti kazala %s z uporabo db%d - %s (%d)"
 
-#: rpmdb/rpmdb.c:402
+#: rpmdb/rpmdb.c:401
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "ni mo¾no odpreti kazala %s:"
 
-#: rpmdb/rpmdb.c:494
+#: rpmdb/rpmdb.c:493
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "napaka(%d) pri branju zapisov \"%s\" iz kazala %s"
 
-#: rpmdb/rpmdb.c:623
+#: rpmdb/rpmdb.c:624
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "napaka(%d) pri pisanju zapisa %s v %s"
 
-#: rpmdb/rpmdb.c:633
+#: rpmdb/rpmdb.c:634
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "napaka(%d) pri brisanju zapisa %s iz %s"
 
-#: rpmdb/rpmdb.c:886
+#: rpmdb/rpmdb.c:887
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath ni nastavljena"
 
-#: rpmdb/rpmdb.c:1019
+#: rpmdb/rpmdb.c:1020
 #, fuzzy
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
@@ -3820,117 +3820,117 @@ msgstr ""
 "da bi staro obliko zbirke podatkov pretvorili v novo po¾enite --rebuilddb"
 
 #. error
-#: rpmdb/rpmdb.c:1255
+#: rpmdb/rpmdb.c:1258
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "napaka(%d) pri ¹tetju paketov"
 
-#: rpmdb/rpmdb.c:2022 rpmdb/rpmdb.c:3210
+#: rpmdb/rpmdb.c:2033 rpmdb/rpmdb.c:3241
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: rpmdb/rpmdb.c:2073
+#: rpmdb/rpmdb.c:2086
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2340
+#: rpmdb/rpmdb.c:2353
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ni mo¾no prebrati glave pri 0x%x"
 
-#: rpmdb/rpmdb.c:2409
+#: rpmdb/rpmdb.c:2424
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstranjevanje \"%s\" iz kazala %s.\n"
 
-#: rpmdb/rpmdb.c:2418
+#: rpmdb/rpmdb.c:2433
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstranjevanje %d vnosov iz kazala %s\n"
 
-#: rpmdb/rpmdb.c:2614
+#: rpmdb/rpmdb.c:2633
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "napaka(%d) pri iskanju paketa %s\n"
 
-#: rpmdb/rpmdb.c:2692
+#: rpmdb/rpmdb.c:2713
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "dodajanje \"%s\" v kazalo %s.\n"
 
-#: rpmdb/rpmdb.c:2703
+#: rpmdb/rpmdb.c:2724
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "dodajanje %d vnosov v kazalo %s.\n"
 
-#: rpmdb/rpmdb.c:3098
+#: rpmdb/rpmdb.c:3127
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3129
+#: rpmdb/rpmdb.c:3160
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
-#: rpmdb/rpmdb.c:3156
+#: rpmdb/rpmdb.c:3187
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
-#: rpmdb/rpmdb.c:3160
+#: rpmdb/rpmdb.c:3191
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "zaèasna podatkovna zbirka %s ¾e obstaja"
 
-#: rpmdb/rpmdb.c:3166
+#: rpmdb/rpmdb.c:3197
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ustvarjanje imenika: %s\n"
 
-#: rpmdb/rpmdb.c:3168
+#: rpmdb/rpmdb.c:3199
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ustvarjanje imenika: %s\n"
 
-#: rpmdb/rpmdb.c:3175
+#: rpmdb/rpmdb.c:3206
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "odpiranje stare podatkovne zbirke\n"
 
-#: rpmdb/rpmdb.c:3186
+#: rpmdb/rpmdb.c:3217
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "odpiramo nove podatkovne zbirke z dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3250
+#: rpmdb/rpmdb.c:3281
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: rpmdb/rpmdb.c:3268
+#: rpmdb/rpmdb.c:3299
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke je bila neuspe¹na; stara ostaja na\n"
 "istem mestu\n"
 
-#: rpmdb/rpmdb.c:3276
+#: rpmdb/rpmdb.c:3307
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo je bila neuspe¹na!\n"
 
-#: rpmdb/rpmdb.c:3278
+#: rpmdb/rpmdb.c:3309
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "poskus povrnitve z nadomestitvijo datotek v %s z datotekami v %s"
 
-#: rpmdb/rpmdb.c:3288
+#: rpmdb/rpmdb.c:3319
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "odstranjevanje imenika: %s\n"
 
-#: rpmdb/rpmdb.c:3290
+#: rpmdb/rpmdb.c:3321
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
@@ -4027,61 +4027,61 @@ msgstr "Datoteka %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"
 
-#: rpmio/rpmio.c:632
+#: rpmio/rpmio.c:631
 msgid "Success"
 msgstr "Uspeh"
 
-#: rpmio/rpmio.c:635
+#: rpmio/rpmio.c:634
 msgid "Bad server response"
 msgstr "Nepravilen odziv stre¾nika"
 
-#: rpmio/rpmio.c:638
+#: rpmio/rpmio.c:637
 #, fuzzy
 msgid "Server I/O error"
 msgstr "V/I napaka na stre¾niku"
 
-#: rpmio/rpmio.c:641
+#: rpmio/rpmio.c:640
 msgid "Server timeout"
 msgstr "Èas odziva stre¾nika je potekel"
 
-#: rpmio/rpmio.c:644
+#: rpmio/rpmio.c:643
 msgid "Unable to lookup server host address"
 msgstr "Naslov stre¾nika ni ugotovljiv"
 
-#: rpmio/rpmio.c:647
+#: rpmio/rpmio.c:646
 msgid "Unable to lookup server host name"
 msgstr "Ime stre¾nika ni bilo ugotovljivo"
 
-#: rpmio/rpmio.c:650
+#: rpmio/rpmio.c:649
 msgid "Failed to connect to server"
 msgstr "Neuspe¹en poskus prikljuèitve na stre¾nik"
 
-#: rpmio/rpmio.c:653
+#: rpmio/rpmio.c:652
 msgid "Failed to establish data connection to server"
 msgstr "Neuspe¹na vzpostavitev podatkovne povezave s stre¾nikom"
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:655
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "V/I napaka na lokalni datoteki"
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:658
 msgid "Error setting remote server to passive mode"
 msgstr "Napaka pri nastavitvi oddaljenega stre¾nika v pasivni naèin"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:661
 msgid "File not found on server"
 msgstr "Datoteke ni mo¾no najti na stre¾niku"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:664
 msgid "Abort in progress"
 msgstr "Prekinitev v teku"
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:668
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: rpmio/rpmio.c:1320
+#: rpmio/rpmio.c:1331
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"
