@@ -61,7 +61,7 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
 			      HEADER_MAGIC : NO_HEADER_MAGIC);
 	    if (! *hdr) return 2;
 	} else {
-	    error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 2 are"
+	    error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 3 are"
 		    " supported by this version of RPM");
 	    return 2;
 	} 
