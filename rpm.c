@@ -1046,7 +1046,7 @@ int main(int argc, char ** argv) {
 	argerror(_("--short-circuit may only be used during package building"));
 
     if (shortCircuit && (buildChar != 'c') && (buildChar != 'i')
-		     && (buildChar !=' s')) {
+		     && (buildChar != 's')) {
 	argerror(_("--short-circuit may only be used with -bc, -bi, -bs, -tc "
 			"-ti, or -ts"));
     }
