@@ -199,6 +199,7 @@
 	- db3: increase mpool and cachesize, compile w/o --enable-debug.
 	- configurable (default off) build failure if missing %%doc files (PLD).
 	- configurable (default off) build failure iff unpackaged files (PLD).
+	- change from default off to default on.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
