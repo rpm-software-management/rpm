@@ -77,6 +77,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	if (indextag)
 	    xx = hge(h, indextag, NULL, (void **) &indexes, NULL);
 
+/*@-boundsread@*/
 	while (len > 0) {
 	    len--;
 	    if (strcmp(names[len], depName))
@@ -97,6 +98,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
 	    break;
 	}
+/*@=boundsread@*/
 	names = hfd(names, dnt);
 	versions = hfd(versions, dvt);
 	if (duplicate)

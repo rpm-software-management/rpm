@@ -111,8 +111,10 @@ static int dbiTagToDbix(int rpmtag)
 
     if (dbiTags != NULL)
     for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+/*@-boundsread@*/
 	if (rpmtag == dbiTags[dbix])
 	    return dbix;
+/*@=boundsread@*/
     }
     return -1;
 }
@@ -120,6 +122,7 @@ static int dbiTagToDbix(int rpmtag)
 /**
  * Initialize database (index, tag) tuple from configuration.
  */
+/*@-bounds@*/
 static void dbiTagsInit(void)
 	/*@globals rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
 	/*@modifies rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
@@ -176,6 +179,7 @@ static void dbiTagsInit(void)
 
     dbiTagStr = _free(dbiTagStr);
 }
+/*@=bounds@*/
 
 /*@-redecl@*/
 #define	DB1vec		NULL
@@ -195,6 +199,7 @@ static struct _dbiVec *mydbvecs[] = {
 };
 /*@=nullassign@*/
 
+/*@-bounds@*/
 dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 {
     int dbix;
@@ -297,6 +302,7 @@ exit:
     return dbi;
 /*@=compdef =nullstate@*/
 }
+/*@=bounds@*/
 
 /**
  * Create and initialize item for index database set.
@@ -351,6 +357,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
     set->count = data->size / dbi->dbi_jlen;
     set->recs = xmalloc(set->count * sizeof(*(set->recs)));
 
+/*@-boundswrite@*/
     switch (dbi->dbi_jlen) {
     default:
     case 2*sizeof(int_32):
@@ -361,10 +368,12 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 	    sdbir += sizeof(hdrNum.ui);
 	    memcpy(&tagNum.ui, sdbir, sizeof(tagNum.ui));
 	    sdbir += sizeof(tagNum.ui);
+/*@-boundsread@*/
 	    if (_dbbyteswapped) {
 		_DBSWAP(hdrNum);
 		_DBSWAP(tagNum);
 	    }
+/*@=boundsread@*/
 	    set->recs[i].hdrNum = hdrNum.ui;
 	    set->recs[i].tagNum = tagNum.ui;
 	    set->recs[i].fpNum = 0;
@@ -376,9 +385,11 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 
 	    memcpy(&hdrNum.ui, sdbir, sizeof(hdrNum.ui));
 	    sdbir += sizeof(hdrNum.ui);
+/*@-boundsread@*/
 	    if (_dbbyteswapped) {
 		_DBSWAP(hdrNum);
 	    }
+/*@=boundsread@*/
 	    set->recs[i].hdrNum = hdrNum.ui;
 	    set->recs[i].tagNum = 0;
 	    set->recs[i].fpNum = 0;
@@ -386,6 +397,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 	break;
     }
     *setp = set;
+/*@=boundswrite@*/
 /*@-compdef@*/
     return 0;
 /*@=compdef@*/
@@ -398,6 +410,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
  * @param set		index set
  * @return		0 on success
  */
+/*@-bounds@*/
 static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 	/*@modifies *data @*/
 {
@@ -454,6 +467,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     return 0;
 /*@=compdef@*/
 }
+/*@=bounds@*/
 
 /* XXX assumes hdrNum is first int in dbiIndexItem */
 static int hdrNumCmp(const void * one, const void * two)
@@ -472,6 +486,7 @@ static int hdrNumCmp(const void * one, const void * two)
  * @param sortset	should resulting set be sorted?
  * @return		0 success, 1 failure (bad args)
  */
+/*@-bounds@*/ /* LCL: segfault */
 static int dbiAppendSet(dbiIndexSet set, const void * recs,
 	int nrecs, size_t recsize, int sortset)
 	/*@modifies *set @*/
@@ -501,6 +516,7 @@ static int dbiAppendSet(dbiIndexSet set, const void * recs,
 
     return 0;
 }
+/*@=bounds@*/
 
 /**
  * Remove element(s) from set of index database items.

@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /*@-sysunrecog -noeffectuncon -nullpass -sizeoftype -unrecog -usereleased @*/
 /*@-compdef -compmempass -dependenttrans -retalias @*/
 /*-
@@ -1186,3 +1187,4 @@ bail:
 }
 /*@=compdef =compmempass =dependenttrans =retalias @*/
 /*@=sysunrecog =noeffectuncon =nullpass =sizeoftype =unrecog =usereleased @*/
+/*@=boundsread@*/

@@ -65,8 +65,10 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
     if (fdno < 0)
 	return fdno;
 
+/*@-boundsread@*/
     if (!(cmd && *cmd))
 	return fdno;
+/*@=boundsread@*/
 
 #if HAVE_LIBELF_GELF_H && HAVE_LIBELF
  {  Elf *elf = NULL;

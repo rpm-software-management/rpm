@@ -65,6 +65,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     FD_t cfd;
     int rc, ec;
 
+/*@-boundsread@*/
     {	const char *fmode = rpmExpand(fmodeMacro, NULL);
 	if (!(fmode && fmode[0] == 'w'))
 	    fmode = xstrdup("w9.gzdio");
@@ -74,6 +75,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 	/*@=nullpass@*/
 	fmode = _free(fmode);
     }
+/*@=boundsread@*/
     if (cfd == NULL)
 	return 1;
 

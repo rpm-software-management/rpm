@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup rpmts
  * \file lib/transaction.c
  */
@@ -83,6 +82,7 @@ static int sharedCmp(const void * one, const void * two)
 
 /**
  */
+/*@-boundsread@*/
 static fileAction decideFileFate(const rpmts ts,
 		const rpmfi ofi, rpmfi nfi)
 	/*@globals fileSystem @*/
@@ -177,9 +177,11 @@ static fileAction decideFileFate(const rpmts ts,
      */
     return save;
 }
+/*@=boundsread@*/
 
 /**
  */
+/*@-boundsread@*/
 static int filecmp(rpmfi afi, rpmfi bfi)
 	/*@*/
 {
@@ -210,6 +212,7 @@ static int filecmp(rpmfi afi, rpmfi bfi)
 
     return 0;
 }
+/*@=boundsread@*/
 
 /**
  */
@@ -1483,4 +1486,3 @@ fi->actions = actions;
 	return 0;
     /*@=nullstate@*/
 }
-/*@=boundsread@*/

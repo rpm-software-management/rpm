@@ -53,6 +53,7 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
  * @param scareMemory
  * @return pointer to the finger print associated with a file path.
  */
+/*@-bounds@*/ /* LCL: segfault */
 static fingerPrint doLookup(fingerPrintCache cache,
 		const char * dirName, const char * baseName, int scareMemory)
 	/*@modifies cache @*/
@@ -181,6 +182,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
     /*@-nullret@*/ return fp; /*@=nullret@*/	/* LCL: can't happen. */
     /*@=compdef@*/
 }
+/*@=bounds@*/
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
 			const char * baseName, int scareMemory)
@@ -197,7 +199,9 @@ unsigned int fpHashFunction(const void * key)
 
     ch = 0;
     chptr = fp->baseName;
+/*@-boundsread@*/
     while (*chptr != '\0') ch ^= *chptr++;
+/*@=boundsread@*/
 
     hash |= ((unsigned)ch) << 24;
     hash |= (((((unsigned)fp->entry->dev) >> 8) ^ fp->entry->dev) & 0xFF) << 16;
@@ -206,6 +210,7 @@ unsigned int fpHashFunction(const void * key)
     return hash;
 }
 
+/*@-boundsread@*/
 int fpEqual(const void * key1, const void * key2)
 {
     const fingerPrint *k1 = key1;
@@ -223,7 +228,9 @@ int fpEqual(const void * key1, const void * key2)
     return 1;
 
 }
+/*@=boundsread@*/
 
+/*@-bounds@*/
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
 		  const char ** baseNames, const int * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
@@ -243,6 +250,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 	}
     }
 }
+/*@=bounds@*/
 
 #ifdef	UNUSED
 /**

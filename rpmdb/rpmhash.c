@@ -47,7 +47,9 @@ hashBucket findEntry(hashTable ht, const void * key)
 
     /*@-modunconnomods@*/
     hash = ht->fn(key) % ht->numBuckets;
+/*@-boundsread@*/
     b = ht->buckets[hash];
+/*@=boundsread@*/
 
     while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
@@ -72,10 +74,12 @@ unsigned int hashFunctionString(const void * string)
     const char * chp = string;
 
     len = strlen(string);
+/*@-boundsread@*/
     for (i = 0; i < len; i++, chp++) {
 	xorValue ^= *chp;
 	sum += *chp;
     }
+/*@=boundsread@*/
 
     return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
 }
@@ -138,7 +142,9 @@ hashTable htFree(hashTable ht)
     int i;
 
     for (i = 0; i < ht->numBuckets; i++) {
+/*@-boundsread@*/
 	b = ht->buckets[i];
+/*@=boundsread@*/
 	if (b == NULL)
 	    continue;
 /*@-boundswrite@*/

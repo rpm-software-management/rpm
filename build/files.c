@@ -276,11 +276,13 @@ static void timeCheck(int tc, Header h)
     x = hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
     x = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
     
+/*@-boundsread@*/
     for (x = 0; x < count; x++) {
 	if ((currentTime - mtime[x]) > tc)
 	    rpmMessage(RPMMESS_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
     }
     files = hfd(files, fnt);
+/*@=boundsread@*/
 }
 
 /**

@@ -208,6 +208,7 @@ static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag
     return NULL;
 }
 
+/*@-boundsread@*/
 int parseNoSource(Spec spec, const char * field, int tag)
 {
     const char *f, *fe;
@@ -251,6 +252,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
 
     return 0;
 }
+/*@=boundsread@*/
 
 /*@-boundswrite@*/
 int addSource(Spec spec, Package pkg, const char *field, int tag)

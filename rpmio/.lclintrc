@@ -13,8 +13,7 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds		# 334
-+boundswrite		# 152
++bounds
 
 # --- +partial artifacts
 -declundef

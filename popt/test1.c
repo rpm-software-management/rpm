@@ -254,6 +254,7 @@ int main(int argc, const char ** argv)
     if (singleDash)
 	fprintf(stdout, " -");
 
+/*@-boundsread@*/
     rest = poptGetArgs(optCon);
     if (rest) {
 	fprintf(stdout, " rest:");
@@ -262,6 +263,7 @@ int main(int argc, const char ** argv)
 	    rest++;
 	}
     }
+/*@=boundsread@*/
 
     fprintf(stdout, "\n");
 

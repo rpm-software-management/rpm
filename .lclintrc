@@ -13,8 +13,8 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds
-+boundswrite
++bounds
+#+boundswrite
 +slovak-fcns
 -redecl
 

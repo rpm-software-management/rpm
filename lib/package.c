@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup header
  * \file lib/package.c
  */
@@ -169,8 +168,10 @@ static int rpmtsStashKeyid(rpmts ts)
 
     if (keyids != NULL)
     for (i = 0; i < nkeyids; i++) {
+/*@-boundsread@*/
 	if (keyid == keyids[i])
 	    return 1;
+/*@=boundsread@*/
     }
 
     keyids = xrealloc(keyids, (nkeyids + 1) * sizeof(*keyids));
@@ -216,11 +217,13 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 	goto exit;
     }
 
+/*@-boundsread@*/
     if (l->magic[0] != RPMLEAD_MAGIC0 || l->magic[1] != RPMLEAD_MAGIC1
      || l->magic[2] != RPMLEAD_MAGIC2 || l->magic[3] != RPMLEAD_MAGIC3) {
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
+/*@=boundsread@*/
 
     switch (l->major) {
     case 1:
@@ -469,4 +472,3 @@ exit:
     sig = rpmFreeSignature(sig);
     return rc;
 }
-/*@=boundsread@*/

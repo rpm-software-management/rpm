@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup payload
  * \file lib/fsm.c
  * File state machine to handle a payload from a package.
@@ -161,6 +160,7 @@ static int mapNextIterator(/*@null@*/ void * a)
 
 /** \ingroup payload
  */
+/*@-boundsread@*/
 static int cpioStrCmp(const void * a, const void * b)
 	/*@*/
 {
@@ -177,6 +177,7 @@ static int cpioStrCmp(const void * a, const void * b)
 
     return strcmp(afn, bfn);
 }
+/*@=boundsread@*/
 
 /** \ingroup payload
  * Locate archive path in file info.
@@ -184,6 +185,7 @@ static int cpioStrCmp(const void * a, const void * b)
  * @param fsmPath	archive path
  * @return		index into file info, -1 if archive path was not found
  */
+/*@-boundsread@*/
 static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
 	/*@modifies iter @*/
 {
@@ -207,6 +209,7 @@ static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
     }
     return ix;
 }
+/*@=boundsread@*/
 
 /** \ingroup payload
  * Directory name iterator.
@@ -256,6 +259,7 @@ static inline int dnlIndex(const DNLI_t dnli)
  * @param reverse	traverse directory names in reverse order?
  * @return		directory name iterator
  */
+/*@-boundsread@*/
 /*@-usereleased@*/
 static /*@only@*/ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 		int reverse)
@@ -338,12 +342,14 @@ static /*@only@*/ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
     return dnli;
 }
 /*@=usereleased@*/
+/*@=boundsread@*/
 
 /** \ingroup payload
  * Return next directory name (from file info).
  * @param dnli		directory name iterator
  * @return		next directory name
  */
+/*@-boundsread@*/
 static /*@observer@*/ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
 	/*@modifies dnli @*/
 {
@@ -366,12 +372,14 @@ static /*@observer@*/ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
     }
     return dn;
 }
+/*@=boundsread@*/
 
 /** \ingroup payload
  * Save hard link in chain.
  * @param fsm		file state machine data
  * @return		Is chain only partially filled?
  */
+/*@-boundsread@*/
 static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->links, fsm->ix, fsm->sb, fsm->goal, fsm->nsuffix @*/
 	/*@defines fsm->li @*/
@@ -460,6 +468,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
     rc = fsmStage(fsm, FSM_MAP);
     return rc;
 }
+/*@=boundsread@*/
 
 /** \ingroup payload
  * Destroy set of hard links.
@@ -588,6 +597,7 @@ int fsmMapPath(FSM_t fsm)
     i = fsm->ix;
     if (fi && i >= 0 && i < fi->fc) {
 
+/*@-boundsread@*/
 	fsm->astriplen = fi->astriplen;
 	fsm->action = (fi->actions ? fi->actions[i] : fi->action);
 	fsm->fflags = (fi->fflags ? fi->fflags[i] : fi->flags);
@@ -596,6 +606,7 @@ int fsmMapPath(FSM_t fsm)
 	/* src rpms have simple base name in payload. */
 	fsm->dirName = fi->dnl[fi->dil[i]];
 	fsm->baseName = fi->bnl[i];
+/*@=boundsread@*/
 
 /*@-boundswrite@*/
 	switch (fsm->action) {
@@ -985,6 +996,7 @@ static int writeLinkedFile(/*@special@*/ FSM_t fsm)
  * @param fsm		file state machine data
  * @return		0 on success
  */
+/*@-boundsread@*/
 static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->opath, fsm->nsuffix, fsm->ix, fsm->li @*/
 	/*@globals fileSystem@*/
@@ -1042,6 +1054,7 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
     fsm->opath = opath;
     return ec;
 }
+/*@=boundsread@*/
 
 /** \ingroup payload
  * Commit hard linked file set atomically.
@@ -1296,6 +1309,7 @@ static int fsmStat(FSM_t fsm)
 	((_x)[sizeof("/dev/log")-1] == '\0' || \
 	 (_x)[sizeof("/dev/log")-1] == ';'))
 
+/*@-boundsread@*/
 /*@-compmempass@*/
 int fsmStage(FSM_t fsm, fileStage stage)
 {
@@ -2253,6 +2267,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     return rc;
 }
 /*@=compmempass@*/
+/*@=boundsread@*/
 
 /*@obserever@*/ const char *const fileActionString(fileAction a)
 {
@@ -2338,4 +2353,3 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     }
     /*@noteached@*/
 }
-/*@=boundsread@*/

@@ -248,10 +248,11 @@ struct dbOption rdbOptions[] = {
  { "q_extentsize", 0,POPT_ARG_INT,	&db3dbi.dbi_q_extentsize, 0,
 	NULL, NULL },
 
- { NULL, 0,0, NULL, 0, NULL, NULL }
+    POPT_TABLEEND
 };
 /*@=compmempass =immediatetrans =exportlocal =exportheadervar@*/
 
+/*@-boundswrite@*/
 static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong)
 	/*@modifies opt->arg @*/
 {
@@ -277,7 +278,9 @@ static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong)
     }
     return 0;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 static int dbSaveInt(const struct dbOption * opt, int argInfo, long aLong)
 	/*@modifies opt->arg @*/
 {
@@ -303,6 +306,7 @@ static int dbSaveInt(const struct dbOption * opt, int argInfo, long aLong)
     }
     return 0;
 }
+/*@=boundswrite@*/
 
 dbiIndex db3Free(dbiIndex dbi)
 {
@@ -326,6 +330,7 @@ dbiIndex db3Free(dbiIndex dbi)
 static const char *db3_config_default =
     "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:mp_size=512Kb:pagesize=512:perms=0644";
 
+/*@-bounds@*/
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
@@ -510,7 +515,9 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     return dbi;
     /*@=globstate@*/
 }
+/*@=bounds@*/
 
+/*@-boundswrite@*/
 const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
     static char buf[256];
@@ -545,5 +552,6 @@ const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
     }
     return buf;
 }
+/*@=boundswrite@*/
 
 #endif

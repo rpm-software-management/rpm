@@ -185,8 +185,10 @@ int_32 *const getBuildTime(void)
 {
     static int_32 buildTime[1];
 
+/*@-boundsread@*/
     if (buildTime[0] == 0)
 	buildTime[0] = (int_32) time(NULL);
+/*@=boundsread@*/
     return buildTime;
 }
 

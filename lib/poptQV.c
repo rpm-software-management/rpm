@@ -1,4 +1,3 @@
-/*@-bounds@*/
 /** \ingroup rpmcli
  * \file lib/poptQV.c
  *  Popt tables for query/verify modes.
@@ -161,7 +160,9 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 	    if (qf) {
 		int len = strlen(qf) + strlen(arg) + 1;
 		qf = xrealloc(qf, len);
+/*@-boundswrite@*/
 		strcat(qf, arg);
+/*@=boundswrite@*/
 	    } else {
 		qf = xmalloc(strlen(arg) + 1);
 		strcpy(qf, arg);
@@ -313,4 +314,3 @@ struct poptOption rpmSignPoptTable[] = {
 
    POPT_TABLEEND
 };
-/*@=bounds@*/

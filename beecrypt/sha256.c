@@ -83,6 +83,7 @@ int sha256Reset(register sha256Param *p)
 	d += temp
 
 #ifndef ASM_SHA256PROCESS
+/*@-boundsread@*/
 void sha256Process(register sha256Param *p)
 {
 	register uint32 a, b, c, d, e, f, g, h, temp;
@@ -187,6 +188,7 @@ void sha256Process(register sha256Param *p)
 	p->h[6] += g;
 	p->h[7] += h;
 }
+/*@=boundsread@*/
 #endif
 
 /*@-boundswrite@*/

@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup rpmrc rpmio
  * \file rpmio/macro.c
  */
@@ -2043,3 +2044,4 @@ main(int argc, char *argv[])
 }
 #endif	/* EVAL_MACROS */
 #endif	/* DEBUG_MACROS */
+/*@=boundsread@*/

@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup rpmts
  * \file lib/depends.c
  */
@@ -65,7 +64,8 @@ int rpmFLAGS = RPMSENSE_EQUAL;
  * @param b		2nd instance address
  * @return		result of comparison
  */
-static int intcmp(const void * a, const void * b)	/*@*/
+static int intcmp(const void * a, const void * b)
+	/*@requires maxRead(a) == 0 /\ maxRead(b) == 0 @*/
 {
     const int * aptr = a;
     const int * bptr = b;
@@ -253,6 +253,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    goto exit;
     }
 
+/*@-boundsread@*/
     {	rpmdbMatchIterator mi;
 	Header h2;
 
@@ -276,6 +277,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	}
 	mi = rpmdbFreeIterator(mi);
     }
+/*@=boundsread@*/
 
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
@@ -318,21 +320,6 @@ exit:
     pi = rpmtsiFree(pi);
     return ec;
 }
-
-#ifdef	DYING
-void rpmtsAvailablePackage(rpmts ts, Header h, fnpyKey key)
-{
-    int scareMem = 0;
-    rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    rpmfi fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
-
-    /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    (void) rpmalAdd(&ts->availablePackages, RPMAL_NOMATCH, key,
-		provides, fi);
-    fi = rpmfiFree(fi, 1);
-    provides = rpmdsFree(provides);
-}
-#endif
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
@@ -427,10 +414,12 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
 	/*@-observertrans -mayaliasunique@*/
 	while ((start = strstr(rcProvidesString, Name))) {
 	/*@=observertrans =mayaliasunique@*/
+/*@-boundsread@*/
 	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
 		rpmdsNotify(dep, _("(rpmrc provides)"), rc);
 		goto exit;
 	    }
+/*@=boundsread@*/
 	    rcProvidesString = start + 1;
 	}
     }
@@ -456,6 +445,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
 
     /* XXX only the installer does not have the database open here. */
     if (rpmtsGetRdb(ts) != NULL) {
+/*@-boundsread@*/
 	if (Name[0] == '/') {
 	    /* depFlags better be 0! */
 
@@ -471,6 +461,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	}
+/*@=boundsread@*/
 
 	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
 	(void) rpmdbPruneIterator(mi,
@@ -503,8 +494,10 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
     /*
      * Search for an unsatisfied dependency.
      */
+/*@-boundsread@*/
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST) && ts->solve != NULL)
 	xx = (*ts->solve) (ts, dep);
+/*@=boundsread@*/
 
 unsatisfied:
     rc = 1;	/* dependency is unsatisfied */
@@ -800,6 +793,7 @@ static void freeBadDeps(void)
  * @param q	predecessor element (i.e. with Provides: )
  * @return	1 if dependency is to be ignored.
  */
+/*@-boundsread@*/
 static int ignoreDep(const rpmte p, const rpmte q)
 	/*@globals badDeps, badDepsInitialized @*/
 	/*@modifies badDeps, badDepsInitialized @*/
@@ -852,6 +846,7 @@ static int ignoreDep(const rpmte p, const rpmte q)
     return 0;
     /*@=compdef@*/
 }
+/*@=boundsread@*/
 
 /**
  * Recursively mark all nodes with their predecessors.
@@ -1051,8 +1046,10 @@ fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, rpmteN(q), ts->orde
 
     /* Avoid redundant relations. */
     /* XXX TODO: add control bit. */
+/*@-boundsread@*/
     if (selected[i] != 0)
 	return 0;
+/*@=boundsread@*/
 /*@-boundswrite@*/
     selected[i] = 1;
 /*@=boundswrite@*/
@@ -1816,4 +1813,3 @@ exit:
     /*@=branchstate@*/
     return rc;
 }
-/*@=boundsread@*/

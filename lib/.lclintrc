@@ -13,6 +13,7 @@
 +strict			# lclint level
 
 # --- in progress
++bounds
 +slovak-fcns
 -redecl
 

@@ -13,8 +13,7 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds		# 416
-+boundswrite		# 169
++bounds
 
 # --- not-yet at strict level
 -exportconst		# 4

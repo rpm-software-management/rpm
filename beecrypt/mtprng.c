@@ -53,6 +53,7 @@ const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (rando
 
 /**
  */
+/*@-boundsread@*/
 static void mtprngReload(mtprngParam* mp)
 	/*@modifies mp @*/
 {
@@ -71,6 +72,7 @@ static void mtprngReload(mtprngParam* mp)
     mp->left = N;
     mp->nextw = mp->state;
 }
+/*@=boundsread@*/
 
 int mtprngSetup(mtprngParam* mp)
 {

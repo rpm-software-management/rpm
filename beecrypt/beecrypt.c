@@ -99,6 +99,7 @@ const entropySource* entropySourceGet(int index)
 	return entropySourceList+index;
 }
 
+/*@-boundsread@*/
 const entropySource* entropySourceFind(const char* name)
 {
 	register int index;
@@ -110,6 +111,7 @@ const entropySource* entropySourceFind(const char* name)
 	}
 	return (const entropySource*) 0;
 }
+/*@=boundsread@*/
 
 const entropySource* entropySourceDefault()
 {
@@ -123,6 +125,7 @@ const entropySource* entropySourceDefault()
 		return (const entropySource*) 0;
 }
 
+/*@-boundsread@*/
 int entropyGatherNext(uint32* data, int size)
 {
 	const char* selection = getenv("BEECRYPT_ENTROPY");
@@ -146,6 +149,7 @@ int entropyGatherNext(uint32* data, int size)
 	}
 	return -1;
 }
+/*@=boundsread@*/
 
 /*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
@@ -173,6 +177,7 @@ const randomGenerator* randomGeneratorGet(int index)
 	/*@=compmempass@*/
 }
 
+/*@-boundsread@*/
 const randomGenerator* randomGeneratorFind(const char* name)
 {
 	register int index;
@@ -186,6 +191,7 @@ const randomGenerator* randomGeneratorFind(const char* name)
 	}
 	return (const randomGenerator*) 0;
 }
+/*@=boundsread@*/
 
 const randomGenerator* randomGeneratorDefault()
 {
@@ -290,6 +296,7 @@ const hashFunction* hashFunctionGet(int index)
 	/*@=compmempass@*/
 }
 
+/*@-boundsread@*/
 const hashFunction* hashFunctionFind(const char* name)
 {
 	register int index;
@@ -303,6 +310,7 @@ const hashFunction* hashFunctionFind(const char* name)
 	}
 	return (const hashFunction*) 0;
 }
+/*@=boundsread@*/
 
 int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
 {
@@ -508,6 +516,7 @@ const keyedHashFunction* keyedHashFunctionGet(int index)
 	/*@=compmempass@*/
 }
 
+/*@-boundsread@*/
 const keyedHashFunction* keyedHashFunctionFind(const char* name)
 {
 	register int index;
@@ -521,6 +530,7 @@ const keyedHashFunction* keyedHashFunctionFind(const char* name)
 	}
 	return (const keyedHashFunction*) 0;
 }
+/*@=boundsread@*/
 
 int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHashFunction* mac)
 {
@@ -747,6 +757,7 @@ const blockCipher* blockCipherGet(int index)
 	/*@=compmempass@*/
 }
 
+/*@-boundsread@*/
 const blockCipher* blockCipherFind(const char* name)
 {
 	register int index;
@@ -761,6 +772,7 @@ const blockCipher* blockCipherFind(const char* name)
 
 	return (const blockCipher*) 0;
 }
+/*@=boundsread@*/
 
 int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
 {

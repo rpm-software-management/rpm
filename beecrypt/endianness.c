@@ -555,7 +555,9 @@ int writeInts(const javaint* i, FILE* ofp, int count)
 	register int total = 0;
 	while (count-- > 0)
 	{
+/*@-boundsread@*/
 		register int rc = writeInt(*(i++), ofp);
+/*@=boundsread@*/
 		if (rc < 0)
 			break;
 		total += rc;
@@ -572,7 +574,9 @@ int writeChars(const javachar* c, FILE* ofp, int count)
 	register int total = 0;
 	while (count-- > 0)
 	{
+/*@-boundsread@*/
 		register int rc = writeChar(*(c++), ofp);
+/*@=boundsread@*/
 		if (rc < 0)
 			break;
 		total += rc;

@@ -139,8 +139,11 @@ urltype	urlIsURL(const char * url)
  * @retval pathp	pointer to path component of url
  * @return		type of url
  */
+/*@-incondefs@*/
 urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)
+	/*@ensures maxSet(*pathp) == 0 /\ maxRead(*pathp) == 0 @*/
 	/*@modifies *pathp @*/;
+/*@=incondefs@*/
 
 /**
  * Parse URL string into a control structure.

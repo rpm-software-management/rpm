@@ -325,6 +325,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     }
 
     helpLength = strlen(help);
+/*@-boundsread@*/
     while (helpLength > lineLength) {
 	const char * ch;
 	char format[10];
@@ -343,6 +344,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 	while (isspace(*help) && *help) help++;
 	helpLength = strlen(help);
     }
+/*@=boundsread@*/
 
     if (helpLength) fprintf(fp, "%s\n", help);
 
@@ -479,9 +481,11 @@ static int showHelpIntro(poptContext con, FILE * fp)
 
     fprintf(fp, POPT_("Usage:"));
     if (!(con->flags & POPT_CONTEXT_KEEP_FIRST)) {
+/*@-boundsread@*/
 	/*@-nullderef@*/	/* LCL: wazzup? */
 	fn = con->optionStack->argv[0];
 	/*@=nullderef@*/
+/*@=boundsread@*/
 	if (fn == NULL) return len;
 	if (strchr(fn, '/')) fn = strrchr(fn, '/') + 1;
 	fprintf(fp, " %s", fn);

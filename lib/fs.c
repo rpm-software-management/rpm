@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /*@-mods@*/
 /**
  * \file lib/fs.c
@@ -174,7 +173,9 @@ static int getFilesystemList(void)
 	    /*@-modunconnomods -moduncon @*/
 	    our_mntent * itemptr = getmntent(mtab);
 	    if (!itemptr) break;
+/*@-boundsread@*/
 	    item = *itemptr;	/* structure assignment */
+/*@=boundsread@*/
 	    mntdir = item.our_mntdir;
 #if defined(MNTOPT_RO)
 	    /*@-compdef@*/
@@ -270,10 +271,12 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
     sourceDir = rpmGetPath("%{_sourcedir}", NULL);
 
     maxLen = strlen(sourceDir);
+/*@-boundsread@*/
     for (i = 0; i < numFiles; i++) {
 	len = strlen(fileList[i]);
 	if (maxLen < len) maxLen = len;
     }
+/*@=boundsread@*/
     
 /*@-boundswrite@*/
     buf = alloca(maxLen + 1);
@@ -355,4 +358,3 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 }
 /*@=usereleased =onlytrans@*/
 /*@=mods@*/
-/*@=boundsread@*/

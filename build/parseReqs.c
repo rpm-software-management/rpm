@@ -88,6 +88,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	break;
     }
 
+/*@-boundsread@*/
     for (r = field; *r != '\0'; r = re) {
 	SKIPWHITE(r);
 	if (*r == '\0')
@@ -190,6 +191,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	version = _free(version);
 
     }
+/*@=boundsread@*/
 
     return 0;
 }

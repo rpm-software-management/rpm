@@ -711,7 +711,9 @@ int parseExpressionBoolean(Spec spec, const char *expr)
     result = v->data.i != 0;
     break;
   case VALUE_TYPE_STRING:
+/*@-boundsread@*/
     result = v->data.s[0] != '\0';
+/*@=boundsread@*/
     break;
   default:
     break;

@@ -52,20 +52,25 @@ void mp32fill(register uint32 xsize, register uint32* xdata, register uint32 val
 #endif
 
 #ifndef ASM_MP32ODD
+/*@-boundsread@*/
 int mp32odd(register uint32 xsize, register const uint32* xdata)
 {
 	return (xdata[xsize-1] & 0x1);
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32EVEN
+/*@-boundsread@*/
 int mp32even(register uint32 xsize, register const uint32* xdata)
 {
 	return !(xdata[xsize-1] & 0x1);
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32Z
+/*@-boundsread@*/
 int mp32z(register uint32 xsize, register const uint32* xdata)
 {
 	while (xsize--)
@@ -73,9 +78,11 @@ int mp32z(register uint32 xsize, register const uint32* xdata)
 			return 0;
 	return 1;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32NZ
+/*@-boundsread@*/
 int mp32nz(register uint32 xsize, register const uint32* xdata)
 {
 	while (xsize--)
@@ -83,9 +90,11 @@ int mp32nz(register uint32 xsize, register const uint32* xdata)
 			return 1;
 	return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32EQ
+/*@-boundsread@*/
 int mp32eq(register uint32 size, register const uint32* xdata, register const uint32* ydata)
 {
 	while (size--)
@@ -101,6 +110,7 @@ int mp32eq(register uint32 size, register const uint32* xdata, register const ui
 
 	return 1;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32EQX
@@ -122,6 +132,7 @@ int mp32eqx(register uint32 xsize, register const uint32* xdata, register uint32
 #endif
 
 #ifndef ASM_MP32NE
+/*@-boundsread@*/
 int mp32ne(register uint32 size, register const uint32* xdata, register const uint32* ydata)
 {
 	while (size--)
@@ -137,6 +148,7 @@ int mp32ne(register uint32 size, register const uint32* xdata, register const ui
 
 	return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32NEX
@@ -158,6 +170,7 @@ int mp32nex(register uint32 xsize, register const uint32* xdata, register uint32
 #endif
 
 #ifndef ASM_MP32GT
+/*@-boundsread@*/
 int mp32gt(register uint32 size, register const uint32* xdata, register const uint32* ydata)
 {
 	while (size--)
@@ -170,6 +183,7 @@ int mp32gt(register uint32 size, register const uint32* xdata, register const ui
 	}
 	return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32GTX
@@ -191,6 +205,7 @@ int mp32gtx(register uint32 xsize, register const uint32* xdata, register uint32
 #endif
 
 #ifndef ASM_MP32LT
+/*@-boundsread@*/
 int mp32lt(register uint32 size, register const uint32* xdata, register const uint32* ydata)
 {
 	while (size--)
@@ -203,6 +218,7 @@ int mp32lt(register uint32 size, register const uint32* xdata, register const ui
 	}
 	return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32LTX
@@ -224,6 +240,7 @@ int mp32ltx(register uint32 xsize, register const uint32* xdata, register uint32
 #endif
 
 #ifndef ASM_MP32GE
+/*@-boundsread@*/
 int mp32ge(register uint32 size, register const uint32* xdata, register const uint32* ydata)
 {
 	while (size--)
@@ -236,9 +253,11 @@ int mp32ge(register uint32 size, register const uint32* xdata, register const ui
 	}
 	return 1;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32GEX
+/*@-boundsread@*/
 int mp32gex(register uint32 xsize, register const uint32* xdata, register uint32 ysize, register const uint32* ydata)
 {
 	if (xsize > ysize)
@@ -254,9 +273,11 @@ int mp32gex(register uint32 xsize, register const uint32* xdata, register uint32
 	else
 		return mp32ge(xsize, xdata, ydata);
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32LE
+/*@-boundsread@*/
 int mp32le(register uint32 size, register const uint32* xdata, register const uint32* ydata)
 {
 	while (size--)
@@ -269,9 +290,11 @@ int mp32le(register uint32 size, register const uint32* xdata, register const ui
 	}
 	return 1;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32LEX
+/*@-boundsread@*/
 int mp32lex(register uint32 xsize, register const uint32* xdata, register uint32 ysize, register const uint32* ydata)
 {
 	if (xsize > ysize)
@@ -287,10 +310,12 @@ int mp32lex(register uint32 xsize, register const uint32* xdata, register uint32
 	else
 		return mp32le(xsize, xdata, ydata);
 }
+/*@=boundsread@*/
 #endif
 
 
 #ifndef ASM_MP32ISONE
+/*@-boundsread@*/
 int mp32isone(register uint32 xsize, register const uint32* xdata)
 {
 	xdata += xsize;
@@ -303,9 +328,11 @@ int mp32isone(register uint32 xsize, register const uint32* xdata)
 	}
 	return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32ISTWO
+/*@-boundsread@*/
 int mp32istwo(register uint32 xsize, register const uint32* xdata)
 {
 	xdata += xsize;
@@ -318,9 +345,11 @@ int mp32istwo(register uint32 xsize, register const uint32* xdata)
 	}
 	return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32EQMONE
+/*@-boundsread@*/
 int mp32eqmone(register uint32 size, register const uint32* xdata, register const uint32* ydata)
 {
     xdata += size;
@@ -335,9 +364,11 @@ int mp32eqmone(register uint32 size, register const uint32* xdata, register cons
     }
     return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32LEONE
+/*@-boundsread@*/
 int mp32leone(register uint32 xsize, register const uint32* xdata)
 {
 	xdata += xsize;
@@ -351,47 +382,60 @@ int mp32leone(register uint32 xsize, register const uint32* xdata)
 		return 1;
 	}
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32MSBSET
 int mp32msbset(/*@unused@*/ register uint32 xsize, register const uint32* xdata)
 {
+/*@-boundsread@*/
 	return ((*xdata) & 0x80000000);
+/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MP32LSBSET
 int mp32lsbset(register uint32 xsize, register const uint32* xdata)
 {
+/*@-boundsread@*/
     return xdata[xsize-1] & 0x1;
+/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MP32SETMSB
 void mp32setmsb(/*@unused@*/ register uint32 xsize, register uint32* xdata)
 {
+/*@-boundsread@*/
 	*xdata |= 0x80000000;
+/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MP32SETLSB
 void mp32setlsb(register uint32 xsize, register uint32* xdata)
 {
+/*@-boundsread@*/
 	xdata[xsize-1] |= 0x00000001;
+/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MP32CLRMSB
 void mp32clrmsb(/*@unused@*/ register uint32 xsize, register uint32* xdata)
 {
+/*@-boundsread@*/
 	*xdata &= 0x7fffffff;
+/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MP32CLRLSB
 void mp32clrlsb(register uint32 xsize, register uint32* xdata)
 {
+/*@-boundsread@*/
     xdata[xsize-1] &= 0xfffffffe;
+/*@=boundsread@*/
 }
 #endif
 
@@ -401,7 +445,9 @@ void mp32xor(register uint32 size, register uint32* xdata, register const uint32
 	do
 	{
 		--size;
+/*@-boundsread@*/
 		xdata[size] ^= ydata[size];
+/*@=boundsread@*/
 	} while (size);
 }
 #endif
@@ -737,8 +783,10 @@ uint32 mp32size(register uint32 xsize, register const uint32* xdata)
 {
 	while (xsize)
 	{
+/*@-boundsread@*/
 		if (*xdata)
 			return xsize;
+/*@=boundsread@*/
 		xdata++;
 		xsize--;
 	}
@@ -784,8 +832,10 @@ void mp32divtwo(register uint32 xsize, register uint32* xdata)
 void mp32sdivtwo(register uint32 xsize, register uint32* xdata)
 {
 	mp32divtwo(xsize, xdata);
+/*@-boundsread@*/
 	if (*xdata & 0x40000000)
 		*xdata |= 0x80000000;
+/*@=boundsread@*/
 }
 #endif
 
@@ -816,7 +866,9 @@ uint32 mp32mszcnt(register uint32 xsize, register const uint32* xdata)
 
 	while (i < xsize)
 	{
+/*@-boundsread@*/
 		register uint32 temp = xdata[i++];
+/*@=boundsread@*/
 		if (temp)
 		{
 			while (!(temp & 0x80000000))
@@ -840,7 +892,9 @@ uint32 mp32lszcnt(register uint32 xsize, register const uint32* xdata)
 
 	while (xsize--)
 	{
+/*@-boundsread@*/
 		register uint32 temp = xdata[xsize];
+/*@=boundsread@*/
 		if (temp)
 		{
 			while (!(temp & 0x1))
@@ -1238,6 +1292,7 @@ void mp32unpack(uint32 size, uint8* bytes, const uint32* bits)
 */
 
 #ifndef ASM_MP32PRINT
+/*@-boundsread@*/
 void mp32print(register FILE * fp, register uint32 xsize, register const uint32* xdata)
 {
 	if (xdata == NULL)
@@ -1248,9 +1303,11 @@ void mp32print(register FILE * fp, register uint32 xsize, register const uint32*
 		fprintf(fp, "%08x", *(xdata++));
 	(void) fflush(fp);
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MP32PRINTLN
+/*@-boundsread@*/
 void mp32println(register FILE * fp, register uint32 xsize, register const uint32* xdata)
 {
 	if (xdata == NULL)
@@ -1262,4 +1319,5 @@ void mp32println(register FILE * fp, register uint32 xsize, register const uint3
 	fprintf(fp, "\n");
 	(void) fflush(fp);
 }
+/*@=boundsread@*/
 #endif

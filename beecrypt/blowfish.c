@@ -328,6 +328,7 @@ static const blockMode blowfishModes[2] =
 const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 8, 64, 448, 32, (blockCipherSetup) blowfishSetup, (blockCipherSetIV) blowfishSetIV, (blockCipherEncrypt) blowfishEncrypt, (blockCipherDecrypt) blowfishDecrypt, blowfishModes };
 /*@=sizeoftype@*/
 
+/*@-boundsread@*/
 int blowfishSetup(blowfishParam* bp, const uint32* key, int keybits, /*@unused@*/ cipherOperation op)
 {
 	if (((keybits & 7) == 0) && (keybits >= 64) && (keybits <= 448))
@@ -388,8 +389,10 @@ int blowfishSetup(blowfishParam* bp, const uint32* key, int keybits, /*@unused@*
 	}
 	return -1;
 }
+/*@=boundsread@*/
 
 #ifndef ASM_BLOWFISHSETIV
+/*@-boundsread@*/
 int blowfishSetIV(blowfishParam* bp, const uint32* iv)
 {
 	if (iv)
@@ -405,6 +408,7 @@ int blowfishSetIV(blowfishParam* bp, const uint32* iv)
 
 	return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #ifndef ASM_BLOWFISHENCRYPT
@@ -545,6 +549,7 @@ int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 #endif
 
 #ifndef ASM_BLOWFISHCBCDECRYPT
+/*@-boundsread@*/
 int blowfishCBCDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 {
 	if (count > 0)
@@ -617,4 +622,5 @@ int blowfishCBCDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 	}
 	return 0;
 }
+/*@=boundsread@*/
 #endif

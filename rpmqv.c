@@ -279,6 +279,7 @@ static void printUsage(void)
 
 }
 
+/*@-bounds@*/ /* LCL: segfault */
 /*@-mods@*/ /* FIX: shrug */
 #if !defined(__GLIBC__) && !defined(__LCLINT__)
 int main(int argc, const char ** argv, /*@unused@*/ char ** envp)
@@ -1237,3 +1238,4 @@ exit:
     /*@=globstate@*/
 }
 /*@=mods@*/
+/*@=bounds@*/

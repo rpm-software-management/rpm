@@ -743,6 +743,7 @@ static int mygethostbyname(const char * host,
 }
 #endif
 
+/*@-boundsread@*/
 /*@-compdef@*/	/* FIX: address->s_addr undefined. */
 static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 	/*@globals errno @*/
@@ -765,6 +766,7 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
     return 0;
 }
 /*@=compdef@*/
+/*@=boundsread@*/
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
 	/*@globals fileSystem @*/
@@ -1302,10 +1304,12 @@ int ufdCopy(FD_t sfd, FD_t tfd)
     int notifier = -1;
 
     if (urlNotify) {
+/*@-boundsread@*/
 	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		0, 0, NULL, urlNotifyData);
 	/*@=noeffectuncon @*/
+/*@=boundsread@*/
     }
     
     while (1) {
@@ -1329,10 +1333,12 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	if (urlNotify && urlNotifyCount > 0) {
 	    int n = itemsCopied/urlNotifyCount;
 	    if (n != notifier) {
+/*@-boundsread@*/
 		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)(*urlNotify) (NULL, RPMCALLBACK_INST_PROGRESS,
 			itemsCopied, 0, NULL, urlNotifyData);
 		/*@=noeffectuncon @*/
+/*@=boundsread@*/
 		notifier = n;
 	    }
 	}
@@ -1344,10 +1350,12 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 /*@=modfilesys@*/
 
     if (urlNotify) {
+/*@-boundsread@*/
 	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		itemsCopied, itemsCopied, NULL, urlNotifyData);
 	/*@=noeffectuncon @*/
+/*@=boundsread@*/
     }
     
     return rc;
@@ -2150,7 +2158,9 @@ static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
 
     FDSANE(fd);
     for (i = fd->nfps; i >= 0; i--) {
+/*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[i];
+/*@=boundsread@*/
 	if (fps->io != gzdio)
 	    continue;
 	rc = fps->fp;
@@ -2407,7 +2417,9 @@ static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
 
     FDSANE(fd);
     for (i = fd->nfps; i >= 0; i--) {
+/*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[i];
+/*@=boundsread@*/
 	if (fps->io != bzdio)
 	    continue;
 	rc = fps->fp;
@@ -2655,9 +2667,11 @@ DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigne
 /*@=modfilesys@*/
 
     if (fdGetIo(fd) == fpio) {
+/*@-boundsread@*/
 	/*@+voidabstract -nullpass@*/
 	rc = fwrite(buf, size, nmemb, fdGetFILE(fd));
 	/*@=voidabstract =nullpass@*/
+/*@=boundsread@*/
 	return rc;
     }
 
@@ -2715,7 +2729,9 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
     fd = fdLink(fd, "Fclose");
     /*@-branchstate@*/
     while (fd->nfps >= 0) {
+/*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[fd->nfps];
+/*@=boundsread@*/
 	
 	if (fps->io == fpio) {
 	    FILE *fp;
@@ -2981,6 +2997,7 @@ FD_t Fopen(const char *path, const char *fmode)
     if (path == NULL || fmode == NULL)
 	return NULL;
 
+    stdio[0] = '\0';
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, &flags);
     if (stdio[0] == '\0')
 	return NULL;
@@ -3073,7 +3090,9 @@ int Ferror(FD_t fd)
 
     if (fd == NULL) return -1;
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
+/*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[i];
+/*@=boundsread@*/
 	int ec;
 	
 	if (fps->io == fpio) {
@@ -3107,7 +3126,9 @@ int Fileno(FD_t fd)
     int i, rc = -1;
 
     for (i = fd->nfps ; rc == -1 && i >= 0; i--) {
+/*@-boundsread@*/
 	rc = fd->fps[i].fdno;
+/*@=boundsread@*/
     }
 /*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));

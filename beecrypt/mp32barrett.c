@@ -562,6 +562,7 @@ static byte mp32bslide_postsq[16] =
  * mp32bpowmod_w
  * needs workspace of 4*size+2 words
  */
+/*@-boundsread@*/
 void mp32bpowmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 psize, const uint32* pdata, uint32* result, uint32* wksp)
 {
 	/*
@@ -599,7 +600,9 @@ void mp32bpowmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 		/*@=nullpass@*/
 	}
 }
+/*@=boundsread@*/
 
+/*@-boundsread@*/
 void mp32bpowmodsld_w(const mp32barrett* b, const uint32* slide, uint32 psize, const uint32* pdata, uint32* result, uint32* wksp)
 {
 	/*
@@ -698,11 +701,13 @@ void mp32bpowmodsld_w(const mp32barrett* b, const uint32* slide, uint32 psize, c
 	}	
 	/*@=charindex@*/
 }
+/*@=boundsread@*/
 
 /**
  * mp32btwopowmod_w
  *  needs workspace of (4*size+2) words
  */
+/*@-boundsread@*/
 void mp32btwopowmod_w(const mp32barrett* b, uint32 psize, const uint32* pdata, uint32* result, uint32* wksp)
 {
 	/*
@@ -765,6 +770,7 @@ void mp32btwopowmod_w(const mp32barrett* b, uint32 psize, const uint32* pdata, u
 		}
 	}
 }
+/*@=boundsread@*/
 
 #ifdef	DYING
 /**
@@ -930,6 +936,7 @@ static int _debug = 0;
 /**
  *  Computes the inverse (modulo b) of x, and returns 1 if x was invertible.
  */
+/*@-boundsread@*/
 int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
 {
 	uint32  ysize = b->size+1;
@@ -1133,12 +1140,14 @@ fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
 
 	return 1;
 }
+/*@=boundsread@*/
 
 #endif
 
 /**
  * needs workspace of (7*size+2) words
  */
+/*@-boundsread@*/
 int mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* rc, int t, uint32* wksp)
 {
 	/*
@@ -1188,6 +1197,7 @@ int mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* rc, int t, uint3
 
 	return 0;
 }
+/*@=boundsread@*/
 
 void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, mp32number* result)
 {

@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup rpmcli
  * \file lib/poptALL.c
  *  Popt tables for all rpm modes.
@@ -224,10 +223,10 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 /*@=globs =mods@*/
 
 #if !defined(__LCLINT__)
-    (void)setlocale(LC_ALL, "" );
+    (void) setlocale(LC_ALL, "" );
 
-    (void)bindtextdomain(PACKAGE, LOCALEDIR);
-    (void)textdomain(PACKAGE);
+    (void) bindtextdomain(PACKAGE, LOCALEDIR);
+    (void) textdomain(PACKAGE);
 #endif
 
     rpmSetVerbosity(RPMMESS_NORMAL);
@@ -280,5 +279,3 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     return optCon;
 }
 /*@=globstate@*/
-
-/*@=boundsread@*/

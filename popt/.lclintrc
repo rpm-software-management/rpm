@@ -13,8 +13,7 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds		# 56
-+boundswrite		# 40
++bounds
 
 # --- +partial artifacts
 -exportlocal		# 14

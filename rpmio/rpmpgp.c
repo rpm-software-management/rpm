@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup rpmio signature
  * \file rpmio/rpmpgp.c
  * Routines to handle RFC-2440 detached signatures.
@@ -1241,3 +1242,4 @@ exit:
     return ec;
 }
 /*@=boundswrite@*/
+/*@=boundsread@*/

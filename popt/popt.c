@@ -335,8 +335,10 @@ static int handleAlias(/*@special@*/ poptContext con,
     if ((con->os - con->optionStack + 1) == POPT_OPTION_DEPTH)
 	return POPT_ERROR_OPTSTOODEEP;
 
+/*@-boundsread@*/
     if (nextCharArg && *nextCharArg)
 	con->os->nextCharArg = nextCharArg;
+/*@=boundsread@*/
 
     con->os++;
     con->os->next = 0;

@@ -334,6 +334,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 #define CRC24_INIT 0xb704ceL
 #define CRC24_POLY 0x1864cfbL
 
+/*@-boundsread@*/
 char * b64crc (const unsigned char * data, int ns)
 {
     const unsigned char *s = data;
@@ -359,6 +360,7 @@ char * b64crc (const unsigned char * data, int ns)
     ns = 3;
     return b64encode(data, ns);
 }
+/*@=boundsread@*/
 /*@=internalglobs =modfilesys @*/
 
 const char * b64decode_whitespace = B64DECODE_WHITESPACE;

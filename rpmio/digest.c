@@ -35,6 +35,7 @@ struct DIGEST_CTX_s {
 	/*@modifies param, digest @*/;	/*!< Digest finish. */
 };
 
+/*@-boundsread@*/
 DIGEST_CTX
 rpmDigestDup(DIGEST_CTX octx)
 {
@@ -42,6 +43,7 @@ rpmDigestDup(DIGEST_CTX octx)
     nctx->param = memcpy(xcalloc(1, nctx->paramlen), octx->param, nctx->paramlen);
     return nctx;
 }
+/*@=boundsread@*/
 
 DIGEST_CTX
 rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
@@ -88,7 +90,9 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	/*@notreached@*/ break;
     }
 
+/*@-boundsread@*/
     xx = (*ctx->Reset) (ctx->param);
+/*@=boundsread@*/
 
 DPRINTF((stderr, "*** Init(%x) ctx %p param %p\n", flags, ctx, ctx->param));
     return ctx;

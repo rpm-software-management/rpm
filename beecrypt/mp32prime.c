@@ -1052,6 +1052,7 @@ int mp32ptrials(uint32 bits)
 
 /**
  */
+/*@-boundsread@*/
 static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGeneratorContext* rc)
 	/*@modifies p @*/
 {
@@ -1075,11 +1076,13 @@ static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGener
 		p->modl[size] |= (((uint32)0xffffffff) >> (32 - lsbset));
 	/*@=shiftnegative@*/
 }
+/*@=boundsread@*/
 
 /**
  * mp32psppdiv_w
  *  needs workspace of (3*size) words
  */
+/*@-boundsread@*/
 static int mp32psppdiv_w(const mp32barrett* p, /*@out@*/ uint32* wksp)
 	/*@globals mp32spprod @*/
 	/*@modifies wksp @*/
@@ -1101,6 +1104,7 @@ static int mp32psppdiv_w(const mp32barrett* p, /*@out@*/ uint32* wksp)
 
 	return mp32isone(size, wksp);
 }
+/*@=boundsread@*/
 
 /**
  * mp32pmilrabtwo_w

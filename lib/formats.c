@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup header
  * \file lib/formats.c
  */
@@ -21,8 +20,9 @@
  * @return		formatted string
  */
 static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data, 
-	/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
-	/*@unused@*/ int element)	/*@*/
+		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
+		/*@unused@*/ int element)
+	/*@requires maxRead(data) >= 0 @*/
 {
     const int_32 * item = data;
     char * val;
@@ -45,26 +45,27 @@ static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * formatPrefix,
-	int padding, /*@unused@*/ int element)
-		/*@modifies formatPrefix @*/
+static /*@only@*/ char * permsFormat(int_32 type, const void * data,
+		char * formatPrefix, int padding, /*@unused@*/ int element)
+	/*@modifies formatPrefix @*/
+	/*@requires maxRead(data) >= 0 @*/
 {
     char * val;
     char * buf;
 
-/*@-boundswrite@*/
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(15 + padding);
+/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
+/*@=boundswrite@*/
 	buf = rpmPermsString(*((int_32 *) data));
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
 	buf = _free(buf);
     }
-/*@=boundswrite@*/
 
     return val;
 }
@@ -79,18 +80,19 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * form
  * @return		formatted string
  */
 static /*@only@*/ char * fflagsFormat(int_32 type, const void * data, 
-	char * formatPrefix, int padding, /*@unused@*/ int element)
-		/*@modifies formatPrefix @*/
+		char * formatPrefix, int padding, /*@unused@*/ int element)
+	/*@modifies formatPrefix @*/
+	/*@requires maxRead(data) >= 0 @*/
 {
     char * val;
     char buf[15];
     int anint = *((int_32 *) data);
 
-/*@-boundswrite@*/
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	buf[0] = '\0';
+/*@-boundswrite@*/
 	if (anint & RPMFILE_DOC)
 	    strcat(buf, "d");
 	if (anint & RPMFILE_CONFIG)
@@ -107,14 +109,16 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 	    strcat(buf, "l");
 	if (anint & RPMFILE_README)
 	    strcat(buf, "r");
+/*@=boundswrite@*/
 
 	val = xmalloc(5 + padding);
+/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
+/*@=boundswrite@*/
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
     }
-/*@=boundswrite@*/
 
     return val;
 }
@@ -223,7 +227,6 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 {
     char * val;
 
-/*@-boundswrite@*/
     if (type != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
@@ -232,6 +235,7 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	int lc;
 	int nt = ((element + 2) / 3) * 4;
 
+/*@-boundswrite@*/
 	/*@-globs@*/
 	/* Add additional bytes necessary for eol string(s). */
 	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
@@ -249,8 +253,8 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	    t = stpcpy(t, enc);
 	    enc = _free(enc);
 	}
-    }
 /*@=boundswrite@*/
+    }
 
     return val;
 }
@@ -289,33 +293,36 @@ static /*@only@*/ char * pgppktFormat(int_32 type, const void * data,
  * @return		formatted string
  */
 static /*@only@*/ char * depflagsFormat(int_32 type, const void * data, 
-	char * formatPrefix, int padding, /*@unused@*/ int element)
-		/*@modifies formatPrefix @*/
+		char * formatPrefix, int padding, /*@unused@*/ int element)
+	/*@modifies formatPrefix @*/
+	/*@requires maxRead(data) >= 0 @*/
 {
     char * val;
     char buf[10];
     int anint = *((int_32 *) data);
 
-/*@-boundswrite@*/
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	buf[0] = '\0';
 
+/*@-boundswrite@*/
 	if (anint & RPMSENSE_LESS) 
 	    strcat(buf, "<");
 	if (anint & RPMSENSE_GREATER)
 	    strcat(buf, ">");
 	if (anint & RPMSENSE_EQUAL)
 	    strcat(buf, "=");
+/*@=boundswrite@*/
 
 	val = xmalloc(5 + padding);
+/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
+/*@=boundswrite@*/
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
     }
-/*@=boundswrite@*/
 
     return val;
 }
@@ -335,19 +342,21 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *type, *data, *count, *freeData,
 		fileSystem, internalState @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     const char ** list;
 
+/*@-boundswrite@*/
     if (rpmGetFilesystemList(&list, count)) {
 	return 1;
     }
+/*@=boundswrite@*/
 
-/*@-boundswrite@*/
     *type = RPM_STRING_ARRAY_TYPE;
     *((const char ***) data) = list;
 
     *freeData = 0;
-/*@=boundswrite@*/
 
     return 0; 
 }
@@ -362,28 +371,30 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
  * @return		0 on success
  */
 static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
-	/*@null@*/ /*@out@*/ const void ** data,
-	/*@null@*/ /*@out@*/ int_32 * count,
-	/*@null@*/ /*@out@*/ int * freeData)
-		/*@modifies *type, *data, *freeData @*/
+		/*@null@*/ /*@out@*/ const void ** data,
+		/*@null@*/ /*@out@*/ int_32 * count,
+		/*@null@*/ /*@out@*/ int * freeData)
+	/*@modifies *type, *data, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmTagType ipt;
     char ** array;
 
-/*@-boundswrite@*/
     if (hge(h, RPMTAG_INSTALLPREFIX, type, (void **)data, count)) {
 	if (freeData) *freeData = 0;
 	return 0;
     } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &array, count)) {
+/*@-boundsread@*/
 	if (data) *data = xstrdup(array[0]);
+/*@=boundsread@*/
 	if (freeData) *freeData = 1;
 	if (type) *type = RPM_STRING_TYPE;
 	array = hfd(array, ipt);
 	return 0;
     }
-/*@=boundswrite@*/
 
     return 1;
 }
@@ -404,6 +415,8 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 		fileSystem, internalState @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
@@ -419,11 +432,12 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	rpmBuildFileList(h, &filenames, &numFiles);
     }
 
+/*@-boundswrite@*/
     if (rpmGetFilesystemList(NULL, count)) {
 	return 1;
     }
+/*@=boundswrite@*/
 
-/*@-boundswrite@*/
     *type = RPM_INT32_TYPE;
     *freeData = 1;
 
@@ -434,11 +448,12 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	return 0;
     }
 
+/*@-boundswrite@*/
     if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
 	return 1;
+/*@=boundswrite@*/
 
     *data = usages;
-/*@=boundswrite@*/
 
     filenames = _free(filenames);
 
@@ -454,11 +469,13 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval freeData	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-/*@-bounds@*/
+/*@-bounds@*/	/* LCL: segfault */
 static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -529,11 +546,12 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval freeData	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-/*@-bounds@*/
 static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -574,7 +592,6 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 
     return 0;
 }
-/*@=bounds@*/
 
 /**
  * Retrieve file paths.
@@ -586,18 +603,18 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
  * @return		0 on success
  */
 static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     *type = RPM_STRING_ARRAY_TYPE;
 
     rpmBuildFileList(h, (const char ***) data, count);
-/*@-boundswrite@*/
     *freeData = 1;
 
     *freeData = 0;	/* XXX WTFO? */
-/*@=boundswrite@*/
 
     return 0; 
 }
@@ -630,17 +647,17 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
 
-/*@-boundswrite@*/
     *type = RPM_STRING_TYPE;
     *data = NULL;
     *count = 0;
     *freeData = 0;
-/*@=boundswrite@*/
 
     if (dstring && *dstring) {
 	char *domain, *de;
@@ -679,14 +696,12 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	    unsetenv(language);
 /*@i@*/	++_nl_msg_cat_cntr;
 
-/*@-boundswrite@*/
 	if (domain && msgid) {
 	    *data = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
 	    *data = xstrdup(*data);	/* XXX xstrdup has side effects. */
 	    *count = 1;
 	    *freeData = 1;
 	}
-/*@=boundswrite@*/
 	dstring = _free(dstring);
 	if (*data)
 	    return 0;
@@ -696,7 +711,6 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 
     rc = hge(h, tag, type, (void **)data, count);
 
-/*@-boundswrite@*/
     if (rc && (*data) != NULL) {
 	*data = xstrdup(*data);
 	*freeData = 1;
@@ -706,7 +720,6 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
     *freeData = 0;
     *data = NULL;
     *count = 0;
-/*@=boundswrite@*/
     return 1;
 }
 
@@ -724,6 +737,8 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
@@ -742,6 +757,8 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
@@ -760,6 +777,8 @@ static int groupTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
@@ -788,4 +807,3 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_MORE, NULL, { (void *) headerDefaultFormats } }
 } ;
 /*@=type@*/
-/*@=boundsread@*/

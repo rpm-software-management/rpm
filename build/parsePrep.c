@@ -418,12 +418,14 @@ static int doSetupMacro(Spec spec, char *line)
 
 	for (fm = fixmacs; *fm; fm++) {
 	    const char *fix;
+/*@-boundsread@*/
 	    /*@-nullpass@*/
 	    fix = rpmExpand(*fm, " .", NULL);
 	    /*@=nullpass@*/
 	    if (fix && *fix != '%')
 		appendLineStringBuf(spec->prep, fix);
 	    fix = _free(fix);
+/*@=boundsread@*/
 	}
     }
     
@@ -584,6 +586,7 @@ int parsePrep(Spec spec)
     /*@-usereleased@*/
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
+/*@-boundsread@*/
 	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, *lines);
 	} else if (! strncmp(*lines, "%patch", sizeof("%patch")-1)) {
@@ -591,6 +594,7 @@ int parsePrep(Spec spec)
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
+/*@=boundsread@*/
 	if (res && !spec->force) {
 	    freeSplitString(saveLines);
 	    sb = freeStringBuf(sb);

@@ -1011,10 +1011,14 @@ void freeFilesystems(void)
  * @retval num			address of number of file systems (or NULL)
  * @return			0 on success, 1 on error
  */
+/*@-incondefs@*/
 int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
 		/*@null@*/ /*@out@*/ int * num)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies *listptr, *num, fileSystem, internalState @*/;
+	/*@modifies *listptr, *num, fileSystem, internalState @*/
+	/*@requires maxSet(listptr) >= 0 /\ maxSet(num) >= 0 @*/
+	/*@ensures maxRead(num) == 0 @*/;
+/*@=incondefs@*/
 
 /**
  * Determine per-file system usage for a list of files.
@@ -1025,13 +1029,18 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
  * @param flags			(unused)
  * @return			0 on success, 1 on error
  */
+/*@-incondefs@*/
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
 		int numFiles, /*@null@*/ /*@out@*/ uint_32 ** usagesPtr,
 		int flags)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies *usagesPtr, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+		fileSystem, internalState @*/
+	/*@requires maxSet(fileList) >= 0 /\ maxSet(fssizes) == 0
+		/\ maxSet(usagesPtr) >= 0 @*/
+	/*@ensures maxRead(usagesPtr) == 0 @*/;
+/*@=incondefs@*/
 
 /* ==================================================================== */
 /** \name RPMEIU */

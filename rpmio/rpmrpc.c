@@ -297,6 +297,7 @@ vfs_split_text (char *p)
 }
 /*@=boundswrite@*/
 
+/*@-boundsread@*/
 static int
 is_num (int idx)
 	/*@*/
@@ -305,7 +306,9 @@ is_num (int idx)
 	return 0;
     return 1;
 }
+/*@=boundsread@*/
 
+/*@-boundsread@*/
 static int
 is_dos_date(/*@null@*/ const char *str)
 	/*@*/
@@ -315,6 +318,7 @@ is_dos_date(/*@null@*/ const char *str)
 	return 1;
     return 0;
 }
+/*@=boundsread@*/
 
 static int
 is_week (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
@@ -1251,8 +1255,10 @@ static struct dirent * ftpReaddir(DIR * dir)
     dt = (char *) (av + (ac + 1));
     i = dir->offset + 1;
 
+/*@-boundsread@*/
     if (i < 0 || i >= ac || av[i] == NULL)
 	return NULL;
+/*@=boundsread@*/
 
     dir->offset = i;
 
@@ -1260,7 +1266,9 @@ static struct dirent * ftpReaddir(DIR * dir)
     dp->d_ino = i + 1;		/* W2DO? */
     dp->d_off = 0;		/* W2DO? */
     dp->d_reclen = 0;		/* W2DO? */
+/*@-boundsread@*/
     dp->d_type = dt[i];
+/*@=boundsread@*/
 
     strncpy(dp->d_name, av[i], sizeof(dp->d_name));
 /*@+voidabstract@*/

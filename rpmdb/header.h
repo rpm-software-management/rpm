@@ -137,7 +137,7 @@ struct headerTagTableEntry_s {
 
 /** \ingroup header
  */
-enum headerSprintfExtenstionType {
+enum headerSprintfExtensionType {
     HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
     HEADER_EXT_FORMAT,		/*!< headerTagFormatFunction() extension */
     HEADER_EXT_MORE,		/*!< Chain to next table. */
@@ -158,7 +158,9 @@ enum headerSprintfExtenstionType {
  */
 typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
 				const void * data, char * formatPrefix,
-				int padding, int element);
+				int padding, int element)
+	/*@requires maxSet(data) >= 0 @*/;
+
 /** \ingroup header
  * HEADER_EXT_FORMAT format function prototype.
  * This is allowed to fail, which indicates the tag doesn't exist.
@@ -174,14 +176,16 @@ typedef int (*headerTagTagFunction) (Header h,
 		/*@null@*/ /*@out@*/ hTYP_t type,
 		/*@null@*/ /*@out@*/ hPTR_t * data,
 		/*@null@*/ /*@out@*/ hCNT_t count,
-		/*@null@*/ /*@out@*/ int * freeData);
+		/*@null@*/ /*@out@*/ int * freeData)
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/;
 
 /** \ingroup header
  * Define header tag output formats.
  */
 typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
 struct headerSprintfExtension_s {
-    enum headerSprintfExtenstionType type;	/*!< Type of extension. */
+    enum headerSprintfExtensionType type;	/*!< Type of extension. */
 /*@observer@*/ /*@null@*/
     const char * name;				/*!< Name of extension. */
     union {
@@ -205,8 +209,8 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
  * Include calculation for 8 bytes of (magic, 0)?
  */
 enum hMagic {
-	HEADER_MAGIC_NO		= 0,
-	HEADER_MAGIC_YES	= 1
+    HEADER_MAGIC_NO		= 0,
+    HEADER_MAGIC_YES		= 1
 };
 
 /** \ingroup header
@@ -237,11 +241,11 @@ typedef enum rpmTagType_e {
  */
 /*@-enummemuse -typeuse @*/
 typedef enum rpmSubTagType_e {
-	RPM_REGION_TYPE		= -10,
-	RPM_BIN_ARRAY_TYPE	= -11,
+    RPM_REGION_TYPE		= -10,
+    RPM_BIN_ARRAY_TYPE		= -11,
   /*!<@todo Implement, kinda like RPM_STRING_ARRAY_TYPE for known (but variable)
 	length binary data. */
-	RPM_XREF_TYPE		= -12
+    RPM_XREF_TYPE		= -12
   /*!<@todo Implement, intent is to to carry a (???,tagNum,valNum) cross
 	reference to retrieve data from other tags. */
 } rpmSubTagType;
@@ -408,7 +412,7 @@ typedef
  * @return		header (or NULL on error)
  */
 typedef
-/*@null@*/ Header (*HDRhdrread) (FD_t fd, enum hMagic magicp)
+/*@null@*/ Header (*HDRread) (FD_t fd, enum hMagic magicp)
 	/*@modifies fd @*/;
 
 /** \ingroup header
@@ -419,7 +423,7 @@ typedef
  * @return		0 on success, 1 on error
  */
 typedef
-int (*HDRhdrwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+int (*HDRwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
 	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/;
 
@@ -598,7 +602,7 @@ int (*HDRremove) (Header h, int_32 tag)
  * @return		formatted output string (malloc'ed)
  */
 typedef
-/*@only@*/ char * (*HDRhdrsprintf) (Header h, const char * fmt,
+/*@only@*/ char * (*HDRsprintf) (Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tags,
 		     const struct headerSprintfExtension_s * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
@@ -666,8 +670,8 @@ struct HV_s {
     HDRcopy	hdrcopy;
     HDRload	hdrload;
     HDRcopyload	hdrcopyload;
-    HDRhdrread	hdrread;
-    HDRhdrwrite	hdrwrite;
+    HDRread	hdrread;
+    HDRwrite	hdrwrite;
     HDRisentry	hdrisentry;
     HDRfreetag	hdrfreetag;
     HDRget	hdrget;
@@ -678,7 +682,7 @@ struct HV_s {
     HDRaddi18n	hdraddi18n;
     HDRmodify	hdrmodify;
     HDRremove	hdrremove;
-    HDRhdrsprintf hdrsprintf;
+    HDRsprintf	hdrsprintf;
     HDRcopytags	hdrcopytags;
     HDRfreeiter	hdrfreeiter;
     HDRinititer	hdrinititer;

@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup rpmio
  * \file rpmio/rpmlog.c
  */
@@ -261,3 +262,4 @@ rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
 {
     return rpmlogSetCallback(cb);
 }
+/*@=boundsread@*/

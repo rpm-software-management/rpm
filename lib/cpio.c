@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup payload
  * \file lib/cpio.c
  *  Handle cpio payloads within rpm packages.
@@ -55,7 +54,9 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
 	if ( (end - phys) != sizeof(phys) ) return CPIOERR_BAD_HEADER;
 #define SET_NUM_FIELD(phys, val, space) \
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
-	memcpy(phys, space, 8);
+	/*@-boundsread@*/ \
+	memcpy(phys, space, 8) \
+	/*@=boundsread@*/
 
 int cpioTrailerWrite(FSM_t fsm)
 {
@@ -249,4 +250,3 @@ const char *const cpioStrerror(int rc)
     /*@=branchstate@*/
     return msg;
 }
-/*@=boundsread@*/

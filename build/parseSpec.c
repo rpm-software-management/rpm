@@ -55,14 +55,18 @@ rpmParseState isPart(const char *line)
 {
     struct PartRec *p;
 
+/*@-boundsread@*/
     if (partList[0].len == 0)
 	initParts(partList);
+/*@=boundsread@*/
     
     for (p = partList; p->token != NULL; p++) {
 	char c;
 	if (xstrncasecmp(line, p->token, p->len))
 	    continue;
+/*@-boundsread@*/
 	c = *(line + p->len);
+/*@=boundsread@*/
 	if (c == '\0' || xisspace(c))
 	    break;
     }
@@ -79,6 +83,7 @@ static int matchTok(const char *token, const char *line)
     size_t toklen = strlen(token);
     int rc = 0;
 
+/*@-boundsread@*/
     while ( *(b = be) != '\0' ) {
 	SKIPSPACE(b);
 	be = b;
@@ -90,6 +95,7 @@ static int matchTok(const char *token, const char *line)
 	rc = 1;
 	break;
     }
+/*@=boundsread@*/
 
     return rc;
 }

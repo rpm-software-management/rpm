@@ -85,9 +85,11 @@ static int isSpecFile(const char * specfile)
 	case ':':
 	    checking = 0;
 	    /*@switchbreak@*/ break;
+/*@-boundsread@*/
 	default:
 	    if (checking && !(isprint(*s) || isspace(*s))) return 0;
 	    /*@switchbreak@*/ break;
+/*@=boundsread@*/
 	}
     }
     return 1;

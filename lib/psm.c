@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup rpmts payload
  * \file lib/psm.c
  * Package state machine to handle a package from a transaction set.
@@ -68,10 +67,12 @@ int rpmVersionCompare(Header first, Header second)
     else if (!epochOne && epochTwo)
 	return -1;
     else if (epochOne && epochTwo) {
+/*@-boundsread@*/
 	if (*epochOne < *epochTwo)
 	    return -1;
 	else if (*epochOne > *epochTwo)
 	    return 1;
+/*@=boundsread@*/
     }
 
     rc = headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
@@ -139,7 +140,9 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
 	    continue;
 	switch (type) {
 	case RPM_INT32_TYPE:
+/*@-boundsread@*/
 	    sprintf(numbuf, "%d", *body.i32p);
+/*@=boundsread@*/
 	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_TYPE:
@@ -1932,4 +1935,3 @@ fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
     /*@=nullstate@*/
 }
 /*@=nullpass@*/
-/*@=boundsread@*/

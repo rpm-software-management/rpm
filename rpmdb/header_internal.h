@@ -151,11 +151,14 @@ extern "C" {
  * @return		1 on success, 0 on failure
  */
 /*@-exportlocal@*/
+/*@-incondefs@*/
 int headerGetRawEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hPTR_t * p, 
 			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/;
+	/*@modifies *type, *p, *c @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/;
+/*@=incondefs@*/
 /*@=exportlocal@*/
 
 /** \ingroup header

@@ -350,6 +350,7 @@ urltype urlIsURL(const char * url)
 {
     struct urlstring *us;
 
+/*@-boundsread@*/
     if (url && *url) {
 	for (us = urlstrings; us->leadin != NULL; us++) {
 	    if (strncmp(url, us->leadin, strlen(us->leadin)))
@@ -357,6 +358,7 @@ urltype urlIsURL(const char * url)
 	    return us->ret;
 	}
     }
+/*@=boundsread@*/
 
     return URL_IS_UNKNOWN;
 }
@@ -403,7 +405,7 @@ urltype urlPath(const char * url, const char ** pathp)
  * Split URL into components. The URL can look like
  *	service://user:password@host:port/path
  */
-/*@-boundswrite@*/
+/*@-bounds@*/
 /*@-modfilesys@*/
 int urlSplit(const char * url, urlinfo *uret)
 {
@@ -500,7 +502,7 @@ int urlSplit(const char * url, urlinfo *uret)
     return 0;
 }
 /*@=modfilesys@*/
-/*@=boundswrite@*/
+/*@=bounds@*/
 
 int urlGetFile(const char * url, const char * dest)
 {

@@ -184,11 +184,13 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     
 if (_build_debug)
 fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
+/*@-boundsread@*/
     if (buildDirURL && buildDirURL[0] != '/' &&
 	(urlSplit(buildDirURL, &u) != 0)) {
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }
+/*@=boundsread@*/
     if (u != NULL) {
 	switch (u->urltype) {
 	case URL_IS_FTP:
@@ -214,7 +216,9 @@ fprintf(stderr, "*** addMacros\n");
 	/*@-mods@*/
 	errno = 0;
 	/*@=mods@*/
+/*@-boundsread@*/
 	(void) execvp(argv[0], (char *const *)argv);
+/*@=boundsread@*/
 
 	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
@@ -271,12 +275,14 @@ int buildSpec(Spec spec, int what, int test)
 	/* packaging on the first run, and skip RMSOURCE altogether */
 	if (spec->BASpecs != NULL)
 	for (x = 0; x < spec->BACount; x++) {
+/*@-boundsread@*/
 	    if ((rc = buildSpec(spec->BASpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
 				test))) {
 		goto exit;
 	    }
+/*@=boundsread@*/
 	}
     } else {
 	if ((what & RPMBUILD_PREP) &&

@@ -72,6 +72,7 @@ int md5Reset(register md5Param* p)
 	a += b;
 
 #ifndef ASM_MD5PROCESS
+/*@-boundsread@*/
 void md5Process(md5Param* p)
 {
 	register uint32 a,b,c,d;
@@ -166,6 +167,7 @@ void md5Process(md5Param* p)
 	p->h[2] += c;
 	p->h[3] += d;
 }
+/*@=boundsread@*/
 #endif
 
 /*@-boundswrite@*/

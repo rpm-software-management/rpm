@@ -46,6 +46,7 @@ memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
 }
 /*@=boundswrite@*/
 
+/*@-boundsread@*/
 memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 {
 	if (tmp)
@@ -73,6 +74,7 @@ memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 	return tmp;
 	/*@=temptrans@*/
 }
+/*@=boundsread@*/
 
 /*@-boundswrite@*/
 memchunk* pkcs5PadCopy(int blockbytes, const memchunk* src)

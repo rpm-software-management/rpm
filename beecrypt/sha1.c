@@ -75,6 +75,7 @@ int sha1Reset(register sha1Param *p)
 	b = ROTR32(b, 2)
 
 #ifndef ASM_SHA1PROCESS
+/*@-boundsread@*/
 void sha1Process(register sha1Param *p)
 {
 	register uint32 a, b, c, d, e;
@@ -194,6 +195,7 @@ void sha1Process(register sha1Param *p)
 	p->h[3] += d;
 	p->h[4] += e;
 }
+/*@=boundsread@*/
 #endif
 
 /*@-boundswrite@*/

@@ -185,11 +185,13 @@ static inline char * findLastChar(char * s)
 {
     char *res = s;
 
+/*@-boundsread@*/
     while (*s != '\0') {
 	if (! xisspace(*s))
 	    res = s;
 	s++;
     }
+/*@=boundsread@*/
 
     /*@-temptrans -retalias@*/
     return res;
@@ -209,11 +211,13 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 
     if (!hge(h, tag, &type, (void **)&names, &count))
 	return -1;
+/*@-boundsread@*/
     while (count--) {
 	if (!xstrcasecmp(names[count], name))
 	    break;
     }
     names = hfd(names, type);
+/*@=boundsread@*/
     return (count >= 0 ? 1 : 0);
 }
 
@@ -269,6 +273,7 @@ static int checkForRequired(Header h, const char * NVR)
     int res = 0;
     rpmTag * p;
 
+/*@-boundsread@*/
     for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
 	    rpmError(RPMERR_BADSPEC,
@@ -277,6 +282,7 @@ static int checkForRequired(Header h, const char * NVR)
 	    res = 1;
 	}
     }
+/*@=boundsread@*/
 
     return res;
 }
@@ -333,10 +339,12 @@ static void fillOutMainPackage(Header h)
 
     for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
 	if (!headerIsEntry(h, ot->ot_tag)) {
+/*@-boundsread@*/
 	    const char *val = rpmExpand(ot->ot_mac, NULL);
 	    if (val && *val != '%')
 		(void) headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
 	    val = _free(val);
+/*@=boundsread@*/
 	}
     }
 }

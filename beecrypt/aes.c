@@ -889,6 +889,7 @@ int aesSetup(aesParam* ap, const uint32* key, int keybits, cipherOperation op)
 /*@=boundswrite@*/
 
 #ifndef ASM_AESSETIV
+/*@-boundsread@*/
 int aesSetIV(aesParam* ap, const uint32* iv)
 {
 	if (iv)
@@ -908,6 +909,7 @@ int aesSetIV(aesParam* ap, const uint32* iv)
 
 	return 0;
 }
+/*@=boundsread@*/
 #endif
 
 #define etfs(i) \
@@ -1266,6 +1268,7 @@ int aesCBCEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
 #endif
 
 #ifndef ASM_AESCBCDECRYPT
+/*@-boundsread@*/
 int aesCBCDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
 {
 	if (count > 0)
@@ -1356,4 +1359,5 @@ int aesCBCDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
 	}
 	return 0;
 }
+/*@=boundsread@*/
 #endif
