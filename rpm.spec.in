@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.86
+Release: 0.87
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -418,6 +418,7 @@ fi
 #%rpmattr	%{__prefix}/lib/rpm/cpanflute
 #%rpmattr	%{__prefix}/lib/rpm/cpanflute2
 %rpmattr	%{__prefix}/lib/rpm/cross-build
+%rpmattr	%{__prefix}/lib/rpm/find-debuginfo.sh
 %rpmattr	%{__prefix}/lib/rpm/find-lang.sh
 %rpmattr	%{__prefix}/lib/rpm/find-prov.pl
 %rpmattr	%{__prefix}/lib/rpm/find-provides
@@ -441,8 +442,10 @@ fi
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
 #%rpmattr	%{__prefix}/lib/rpm/rpmdiff
 #%rpmattr	%{__prefix}/lib/rpm/rpmdiff.cgi
+%rpmattr	%{__prefix}/lib/rpm/striptofile
 %rpmattr	%{__prefix}/lib/rpm/trpm
 %rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
+%rpmattr	%{__prefix}/lib/rpm/unstripfile
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
@@ -521,6 +524,7 @@ fi
 %changelog
 * Thu Aug 21 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.87
 - fix: don't stop if db1 database is currently in /var/lib/rpm (#72224).
+- add a macro to create a sub-package with debugging symbols.
 
 * Wed Aug 21 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.86
 - fix: region trailer offset sanity check wrong (#71996).

@@ -9,6 +9,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt \
+	@WITH_LIBELF_INCLUDE@ \
 	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
@@ -30,7 +31,7 @@ noinst_PROGRAMS = \
 	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = javadeps rpmcache
+pkgbin_PROGRAMS = javadeps rpmcache striptofile unstripfile
 
 bin_PROGRAMS =	rpmgraph
 
@@ -47,5 +48,9 @@ rpminject_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmsort_SOURCES =	rpmsort.c
 rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
+
+striptofile_SOURCES =	striptofile.c sections.c utils.c
+
+unstripfile_SOURCES =	unstripfile.c sections.c utils.c
 
 $(PROGRAMS): $(LDADD)

@@ -367,6 +367,7 @@ AC_CHECK_HEADER([libelf/gelf.h], [
 	AC_CHECK_FUNC(gelf_getdyn, [],
 	    AC_CHECK_LIB(elf, gelf_getdyn)
 	)
+	WITH_LIBELF_LIB="-lelf"
     ], [
 	if test -d libelf ; then
 	    AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])

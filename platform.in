@@ -53,12 +53,13 @@
 %__arch_install_post   @ARCH_INSTALL_POST@
 
 %__os_install_post    \
-    @prefix@/lib/rpm/brp-compress \
-    @prefix@/lib/rpm/brp-strip \
-    @prefix@/lib/rpm/brp-strip-comment-note \
+    @RPMCONFIGDIR@/brp-compress \
+    @RPMCONFIGDIR@/brp-strip \
+    @RPMCONFIGDIR@/brp-strip-comment-note \
 %{nil}
 
 %__spec_install_post\
+    %{?__debug_package:%{__debug_install_post}}\
     %{__arch_install_post}\
     %{__os_install_post}\
 %{nil}
@@ -97,7 +98,7 @@
 @mandrake@# XXX A copy of brp-mandrake, please. I'd suggest break down by
 @mandrake@#     functionality rather than vendor <shrug>.
 @mandrake@%__os_install_post    \
-@mandrake@    /usr/lib/rpm/brp-mandrake \
+@mandrake@    @RPMCONFIGDIR@/brp-mandrake \
 @mandrake@%{nil}
 @mandrake@
 @mandrake@# make
