@@ -7,8 +7,8 @@ use ExtUtils::MakeMaker;
          RPM/Database.xs    RPM/Database.c
          RPM/Error.xs       RPM/Error.c
          RPM/Header.xs      RPM/Header.c
+         RPM/Package.xs     RPM/Package.c
         );
-#         RPM/Package.xs     RPM/Package.c
 
 @OBJECT = values %XS;
 for (@OBJECT)
