@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -161,8 +161,8 @@ msgid "files may only be relocated during package installation"
 msgstr "tiedostoja voidaan siirt‰‰ toiselle polulle vain asennettaessa"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "vain toinen --prefix tai --relocate voidaan antaa"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 #, fuzzy
@@ -3878,6 +3878,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "vain toinen --prefix tai --relocate voidaan antaa"
 
 #, fuzzy
 #~ msgid "Couldn't exec %s: %s\n"

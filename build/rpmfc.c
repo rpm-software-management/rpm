@@ -697,9 +697,7 @@ static int rpmfcELF(rpmfc fc)
 			s = elf_strptr(elf, shdr->sh_link, aux->vda_name);
 			if (s == NULL)
 			    /*@innerbreak@*/ break;
-			/* XXX Ick, but what's a girl to do. */
-			if (!strncmp("ld-", s, 3) || !strncmp("lib", s, 3))
-			{
+			if (def->vd_flags & VER_FLG_BASE) {
 			    soname = _free(soname);
 			    soname = xstrdup(s);
 			    auxoffset += aux->vda_next;

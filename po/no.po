@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -159,8 +159,8 @@ msgid "files may only be relocated during package installation"
 msgstr "filer kan kun omplasseres under pakkeinstallasjon"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "kune en av --prefix eller --relocate kan brukes"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 msgid ""
@@ -3773,6 +3773,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "kune en av --prefix eller --relocate kan brukes"
 
 #~ msgid "Couldn't exec %s: %s\n"
 #~ msgstr "Kunne ikke kjøre %s: %s\n"

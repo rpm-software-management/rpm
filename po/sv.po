@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 2002-08-19 22:26+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -156,8 +156,8 @@ msgid "files may only be relocated during package installation"
 msgstr "filer kan relokeras endast under paketinstallation"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "enbart en av --prefix eller --relocate kan användas"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 msgid ""
@@ -3750,6 +3750,9 @@ msgstr "använd databas i KATALOG"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "enbart en av --prefix eller --relocate kan användas"
 
 #~ msgid "Couldn't exec %s: %s\n"
 #~ msgstr "Kunde inte köra %s: %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -159,8 +159,8 @@ msgid "files may only be relocated during package installation"
 msgstr "datoteke mogu biti preme¹tene samo tokom instalacije paketa"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "samo jedno mo¾ete koristiti: --prefix ili --relocate"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 #, fuzzy
@@ -3869,6 +3869,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "samo jedno mo¾ete koristiti: --prefix ili --relocate"
 
 #, fuzzy
 #~ msgid "Couldn't exec %s: %s\n"

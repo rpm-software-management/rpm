@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -161,8 +161,8 @@ msgstr ""
 "os ficheiros só podem ser mudados de sítio durante a instalação do pacote"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "só uma das opções --prefix ou --relocate pode ser usada"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 msgid ""
@@ -3812,6 +3812,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "só uma das opções --prefix ou --relocate pode ser usada"
 
 #~ msgid "Couldn't exec %s: %s\n"
 #~ msgstr "Não consegui executar o %s: %s\n"

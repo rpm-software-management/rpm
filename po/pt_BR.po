@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
@@ -178,9 +178,8 @@ msgid "files may only be relocated during package installation"
 msgstr "--percent somente pode ser especificado durante instalaes de pacotes"
 
 #: rpmqv.c:424
-#, fuzzy
-msgid "only one of --prefix or --relocate may be used"
-msgstr "somente um entre --excludedocs e --includedocs pode ser especificado"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 #, fuzzy
@@ -4098,6 +4097,11 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr ""
+#~ "somente um entre --excludedocs e --includedocs pode ser especificado"
 
 # , c-format
 #, fuzzy

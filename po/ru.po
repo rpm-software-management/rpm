@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -160,9 +160,8 @@ msgid "files may only be relocated during package installation"
 msgstr "файлы могут быть перемещены только при установке пакета"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
+msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
-"может быть использован только один из вариантов --prefix или --relocate"
 
 #: rpmqv.c:427
 msgid ""
@@ -3776,6 +3775,10 @@ msgstr "использовать базу данных в КАТАЛОГЕ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr ""
+#~ "может быть использован только один из вариантов --prefix или --relocate"
 
 #~ msgid "Couldn't exec %s: %s\n"
 #~ msgstr "Невозможно выполнить %s: %s\n"

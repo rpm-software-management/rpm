@@ -37,6 +37,9 @@ FILE_RCSID("@(#)Id: file.c,v 1.66 2002/07/03 19:00:41 christos Exp ")
 /*@unchecked@*/
 extern fmagic global_fmagic;
 
+/*@unchecked@*/ /*@observer@*/
+extern const char * default_magicfile;
+
 #ifdef S_IFLNK
 # define USAGE  "Usage: %s [-bciknsvzL] [-f namefile] [-m magicfiles] file...\n"
 #else
@@ -48,10 +51,6 @@ static char *apptypeName = NULL;
 int os2_apptype (const char *fn, char *buf, int nb);
 #endif /* __EMX__ */
 
-#ifndef MAGIC
-# define MAGIC "/etc/magic"
-#endif
-
 #ifndef MAXPATHLEN
 #define	MAXPATHLEN	512
 #endif
@@ -59,9 +58,6 @@ int os2_apptype (const char *fn, char *buf, int nb);
 			/* Global command-line options 		*/
 /*@unchecked@*/
 static	int	nobuffer = 0;   /* Do not buffer stdout */
-
-/*@unchecked@*/ /*@observer@*/
-static const char *default_magicfile = MAGIC;
 
 /*@unchecked@*/
 char *progname;		/* used throughout 			*/

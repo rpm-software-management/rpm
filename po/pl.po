@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -166,8 +166,8 @@ msgid "files may only be relocated during package installation"
 msgstr "przesuwania plików mo¿na dokonaæ tylko w trakcie instalacji"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "nie mo¿na jednocze¶nie u¿yæ --prefix i --relocate"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 msgid ""
@@ -3873,6 +3873,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "nie mo¿na jednocze¶nie u¿yæ --prefix i --relocate"
 
 #, fuzzy
 #~ msgid "Couldn't exec %s: %s\n"

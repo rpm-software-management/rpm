@@ -25,6 +25,8 @@
 	- apply patches 1-6 to db-4.1.24.
 	- resurrect availablePackages one more time.
 	- fix: option conflict error message (#77373).
+	- add AC_SYS_LARGFILE throughout.
+	- statically link rpmdeps against (internal) libfmagic.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

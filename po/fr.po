@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,9 +167,8 @@ msgstr ""
 "--replacefiles ne peut tre spcifi que lors de l'installation d'un package"
 
 #: rpmqv.c:424
-#, fuzzy
-msgid "only one of --prefix or --relocate may be used"
-msgstr "un seul mode majeur peut tre spcifi"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 #, fuzzy
@@ -3904,6 +3903,10 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "un seul mode majeur peut tre spcifi"
 
 #, fuzzy
 #~ msgid "Couldn't exec %s: %s\n"

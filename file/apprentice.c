@@ -65,6 +65,13 @@ FILE_RCSID("@(#)Id: apprentice.c,v 1.49 2002/07/03 19:00:41 christos Exp ")
 /*@unchecked@*/
 static int maxmagic = 0;
 
+#ifndef MAGIC
+# define MAGIC "/etc/magic"
+#endif
+
+/*@unchecked@*/ /*@observer@*/
+const char *default_magicfile = MAGIC;
+
 /*
  * extend the sign bit if the comparison is to be signed
  */

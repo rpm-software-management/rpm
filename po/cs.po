@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -161,8 +161,8 @@ msgid "files may only be relocated during package installation"
 msgstr "soubory mohou být pøemístìny jen pøi instalaci balíèkù"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "pou¾ít lze jen jeden z parametrù --prefix nebo --relocate"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 msgid ""
@@ -3818,6 +3818,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "pou¾ít lze jen jeden z parametrù --prefix nebo --relocate"
 
 #~ msgid "Couldn't exec %s: %s\n"
 #~ msgstr "Nemohu spustit %s: %s\n"

@@ -267,7 +267,7 @@ fmagicF(fmagic fm, int zfl)
 int
 fmagicProcess(fmagic fm, const char *fn, int wid)
 {
-	static  const char stdname[] = "standard input";
+	static const char stdname[] = "standard input";
 	char match = '\0';
 	int ret = 0;
 

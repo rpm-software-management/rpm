@@ -7,6 +7,7 @@ AM_INIT_AUTOMAKE(zlib, 1.1.4)
 dnl Check for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
+AC_SYS_LARGEFILE
 
 CFLAGS="-DHAS_snprintf -DHAS_snprintf"
 if test "$ac_cv_prog_gcc" = yes; then

@@ -11,6 +11,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_LIBDWARF_INCLUDE@ \
+	-I$(top_srcdir)/file \
 	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
@@ -45,7 +46,7 @@ rpmcache_SOURCES =	rpmcache.c
 #rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmdeps_SOURCES =	rpmdeps.c
-rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@
+rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@ $(top_builddir)/file/libfmagic.la
 
 rpmgraph_SOURCES =	rpmgraph.c
 #rpmgraph_LDFLAGS =	@LDFLAGS_STATIC@

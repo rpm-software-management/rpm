@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -159,8 +159,8 @@ msgid "files may only be relocated during package installation"
 msgstr "패키지 설치시에만 파일을 재배치할 수 있습니다"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "--prefix 또는 --relocate 옵션 중 하나만 사용할 수 있습니다"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 msgid ""
@@ -3807,6 +3807,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "--prefix 또는 --relocate 옵션 중 하나만 사용할 수 있습니다"
 
 #~ msgid "Couldn't exec %s: %s\n"
 #~ msgstr "%s(을)를 실행할 수 없음: %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-13 13:20-0500\n"
+"POT-Creation-Date: 2002-11-19 13:41-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -163,8 +163,8 @@ msgstr ""
 "dosyalar sadece paket kurulumu sýrasýnda yeni yerlerine yerleþtirilebilir"
 
 #: rpmqv.c:424
-msgid "only one of --prefix or --relocate may be used"
-msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
+msgid "cannot use --prefix with --relocate or --excludepath"
+msgstr ""
 
 #: rpmqv.c:427
 msgid ""
@@ -3823,6 +3823,9 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "only one of --prefix or --relocate may be used"
+#~ msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
 
 #~ msgid "Couldn't exec %s: %s\n"
 #~ msgstr "%s icra edilemedi: %s\n"

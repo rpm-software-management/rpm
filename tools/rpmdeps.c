@@ -3,10 +3,23 @@
 #include <rpmbuild.h>
 #include <argv.h>
 #include <rpmfc.h>
+#include "file.h"
 
 #include "debug.h"
 
+/*@unchecked@*/
+extern fmagic global_fmagic;
+
+/*@unchecked@*//*@observer@*/
+extern const char * default_magicfile;
+
+/*@unchecked@*/
+char *progname;
+
+/*@unchecked@*/
 static int print_provides;
+
+/*@unchecked@*/
 static int print_requires;
 
 static struct poptOption optionsTable[] = {
@@ -31,11 +44,7 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *const argv[])
 {
-    static const char * av_file[] = { "%{?__file_z_n}", NULL };
     poptContext optCon;
-    StringBuf sb_stdin = NULL;
-    StringBuf sb_stdout;
-    int failnonzero = 1;
     ARGV_t xav;
     ARGV_t av = NULL;
     rpmfc fc;
@@ -43,6 +52,18 @@ main(int argc, char *const argv[])
     int ec = 1;
     int xx;
 char buf[BUFSIZ];
+fmagic fm = global_fmagic;
+StringBuf sb_stdout;
+int action = 0;
+int wid = 1;
+int i;
+
+/*@-modobserver@*/
+    if ((progname = strrchr(argv[0], '/')) != NULL)
+	progname++;
+    else
+	progname = argv[0];
+/*@=modobserver@*/
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
@@ -53,7 +74,6 @@ char buf[BUFSIZ];
 
     if (ac == 0) {
 	char * b, * be;
-	sb_stdin = newStringBuf();
 	av = NULL;
 	while ((b = fgets(buf, sizeof(buf), stdin)) != NULL) {
 	    buf[sizeof(buf)-1] = '\0';
@@ -61,31 +81,29 @@ char buf[BUFSIZ];
 	    while (strchr("\r\n", *be) != NULL)
 		*be-- = '\0';
 	    xx = argvAdd(&av, b);
-	    appendLineStringBuf(sb_stdin, b);
 	}
 	ac = argvCount(av);
     }
-	
-    xav = NULL;
-    xx = argvAppend(&xav, av_file);
 
-    sb_stdout = NULL;
-    if (sb_stdin != NULL) {
-fprintf(stderr, "========\n%s\n==========\n", getStringBuf(sb_stdin));
-	xx = rpmfcExec(xav, sb_stdin, &sb_stdout, failnonzero);
-	xx = argvAppend(&xav, av);
-    } else {
-	xx = argvAppend(&xav, av);
-	xx = rpmfcExec(xav, sb_stdin, &sb_stdout, failnonzero);
+    xx = argvSort(av, NULL);
+
+    /* Output of file(1) in sb_stdout. */
+    sb_stdout = newStringBuf();
+    fm->magicfile = default_magicfile;
+    /* XXX TODO fm->flags = ??? */
+
+    xx = fmagicSetup(fm, fm->magicfile, action);
+
+    for (i = 0; i < ac; i++) {
+	fm->obp = fm->obuf;
+	*fm->obp = '\0';
+	fm->nob = sizeof(fm->obuf);
+	xx = fmagicProcess(fm, av[i], wid);
+	appendLineStringBuf(sb_stdout, fm->obuf);
     }
-    sb_stdin = freeStringBuf(sb_stdin);
-
-    xav = argvFree(xav);
 
     xx = argvSplit(&xav, getStringBuf(sb_stdout), "\n");
     sb_stdout = freeStringBuf(sb_stdout);
-
-    xx = argvSort(xav, NULL);
 
     /* Build file class dictionary. */
     fc = rpmfcNew();
