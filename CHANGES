@@ -1,7 +1,6 @@
 2.0.12 -> 2.1:
-        - added --requiredby and --provides queries
-	- added --deps query
-	- added Provides: to default output of -qi
+        - added --requires, --whatrequires, --provides and 
+	  --whatprovides queries
 	- using a string array tag in a queryformat results in every
 	  item in the string being printed out with spaces in between
 	  (though this behaviour will probably go away shortly)
@@ -21,6 +20,10 @@
 	  as a result, -K will always tell you something
 	- --nopgp (with -K) to skip PGP check, just do MD5
 	- allow '#' comments in preamble and %files section
+	- fixed -qsv to print both the states and the file information	
+	- added --dump option to query to print all file attributes
+	- installs with --root use the /etc/passwd and /etc/group from
+	  the target directory
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
