@@ -1149,12 +1149,12 @@ msgstr "Использование: %s {--help}\n"
 #: rpmqv.c:288
 #, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
-msgstr "       rpm {--initdb}   [--dbpath <каталог>]"
+msgstr "       %s {--initdb}   [--dbpath <каталог>]\n"
 
 #: rpmqv.c:289
 #, c-format
 msgid "       %s {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]\n"
-msgstr "       rpm {--rebuilddb} [--rcfile <файл>] [--dbpath <каталог>]"
+msgstr "       %s {--rebuilddb} [--rcfile <файл>] [--dbpath <каталог>]\n"
 
 #: rpmqv.c:293
 #, c-format
@@ -1683,23 +1683,23 @@ msgstr "строка: %s"
 #: build/files.c:1565
 #, c-format
 msgid "Bad file: %s: %s"
-msgstr "файл %s: %s\n"
+msgstr "Неверный файл %s: %s"
 
 #: build/files.c:1577 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
-msgstr "Неверная пара хозяин/группа: %s"
+msgstr "Неверная пара владелец/группа: %s"
 
 #. XXX this error message is probably not seen.
 #: build/files.c:1632
 #, c-format
 msgid "Couldn't exec %s: %s"
-msgstr "Не могу исполнить %s"
+msgstr "Не могу выполнить %s: %s"
 
 #: build/files.c:1637
 #, c-format
 msgid "Couldn't fork %s: %s"
-msgstr "Не могу форкнуть %s"
+msgstr "Не могу форкнуть %s: %s"
 
 #: build/files.c:1719
 #, c-format
@@ -2427,7 +2427,7 @@ msgstr ""
 #: lib/db3.c:1102
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
-msgstr "не могу получить %s доступ к базе данных"
+msgstr ""
 
 #: lib/db3.c:1109
 #, c-format
@@ -2689,15 +2689,15 @@ msgstr "подставить секции i18n из следующего каталога"
 
 #: lib/poptBT.c:116
 msgid "build source and binary package from spec file"
-msgstr "найдено %d исходных и %d бинарных пакетов\n"
+msgstr ""
 
 #: lib/poptBT.c:118
 msgid "build binary package from spec file"
-msgstr "исходный пакет не содержит файла .spec"
+msgstr ""
 
 #: lib/poptBT.c:120
 msgid "build source package from spec file"
-msgstr "исходный пакет не содержит файла .spec"
+msgstr ""
 
 #: lib/poptBT.c:123
 msgid "build through %%prep stage from tar ball"
@@ -2717,7 +2717,7 @@ msgstr ""
 
 #: lib/poptBT.c:131
 msgid "build source and binary package from tar ball"
-msgstr "найдено %d исходных и %d бинарных пакетов\n"
+msgstr ""
 
 #: lib/poptBT.c:133
 msgid "build binary package from tar ball"
@@ -2729,19 +2729,19 @@ msgstr ""
 
 #: lib/poptBT.c:138
 msgid "build binary package from source package"
-msgstr "binary package (исполнить %prep, %build, %install и создать RPM)"
+msgstr ""
 
 #: lib/poptBT.c:140
 msgid "build through %%install stage from source package"
-msgstr "устанавливаю исходный пакет\n"
+msgstr ""
 
 #: lib/poptBT.c:143
 msgid "override build root"
-msgstr "переопределить build root"
+msgstr ""
 
 #: lib/poptBT.c:147
 msgid "do not execute any stages of the build"
-msgstr "не исполнять никаких этапов сборки"
+msgstr ""
 
 #: lib/poptBT.c:149
 msgid "do not accept I18N msgstr's from specfile"
@@ -3123,7 +3123,7 @@ msgstr "не могу открыть %s на %s:%d"
 #: lib/rpmdb.c:293
 #, c-format
 msgid "cannot open %s index"
-msgstr "не могу открыть %s\n"
+msgstr "не могу открыть индекс %s"
 
 #: lib/rpmdb.c:308
 #, c-format
@@ -3187,7 +3187,7 @@ msgstr ""
 #: lib/rpmdb.c:1077
 #, c-format
 msgid "error(%d) counting packages"
-msgstr "ошибка при поиске пакета %s\n"
+msgstr ""
 
 #: lib/rpmdb.c:1136 lib/rpmdb.c:1663 lib/uninstall.c:97
 #, c-format
@@ -3212,7 +3212,7 @@ msgstr "удаляю индекс имен\n"
 #: lib/rpmdb.c:1878
 #, c-format
 msgid "error(%d) allocating new package instance"
-msgstr "ошибка при поиске пакета %s\n"
+msgstr ""
 
 #: lib/rpmdb.c:1935
 #, c-format
@@ -3335,7 +3335,7 @@ msgstr "получено %d пакетов\n"
 #: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, c-format
 msgid "cannot open file %s: %s\n"
-msgstr "не могу открыть файл %s: %s"
+msgstr "невозможно открыть файл %s: %s\n"
 
 #: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, c-format
