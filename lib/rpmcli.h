@@ -177,6 +177,7 @@ int showQueryPackage(QVA_t qva, rpmdb db, Header h)
 
 /** \ingroup rpmcli
  * Display package information.
+ * @todo hack: RPMQV_ALL can pass char ** arglist = NULL, not char * arg. Union?
  * @param qva		parsed query/verify options
  * @param source	type of source to query
  * @param arg		name of source to query

@@ -943,10 +943,15 @@ int main(int argc, const char ** argv)
 
 	qva->qva_prefix = rootdir;
 	if (qva->qva_source == RPMQV_ALL) {
+#ifdef	DYING
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for query of all packages"));
-
-	    ec = rpmQuery(qva, RPMQV_ALL, NULL);
+#else
+	    const char ** av = poptGetArgs(optCon);
+#endif
+	    /*@-nullpass@*/	/* FIX: av can be NULL */
+	    ec = rpmQuery(qva, RPMQV_ALL, (const char *) av);
+	    /*@=nullpass@*/
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));

@@ -11,6 +11,8 @@ static int _debug = 0;
 #include <signal.h>
 #include <sys/signal.h>
 
+#include <regex.h>
+
 #include <rpmcli.h>
 
 #include "rpmdb.h"
@@ -714,34 +716,22 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
 /**
  * Disable all signals, returning previous signal mask.
  */
-static void blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
+static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
 	/*@modifies *oldMask, internalState @*/
 {
     sigset_t newMask;
 
-#ifdef DYING
-    /* XXX HACK (disabled) permit ^C aborts for now ... */
-    if (!(db && db->db_api == 4))
-#endif
-    {
-	(void) sigfillset(&newMask);		/* block all signals */
-	(void) sigprocmask(SIG_BLOCK, &newMask, oldMask);
-    }
+    (void) sigfillset(&newMask);		/* block all signals */
+    return sigprocmask(SIG_BLOCK, &newMask, oldMask);
 }
 
 /**
  * Restore signal mask.
  */
-static void unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
+static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
 	/*@modifies internalState @*/
 {
-#ifdef	DYING
-    /* XXX HACK (disabled) permit ^C aborts for now ... */
-    if (!(db && db->db_api == 4))
-#endif
-    {
-	(void) sigprocmask(SIG_SETMASK, oldMask, NULL);
-    }
+    return sigprocmask(SIG_SETMASK, oldMask, NULL);
 }
 
 #define	_DB_ROOT	"/"
@@ -1202,6 +1192,16 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
+/**
+ * Attempt partial matches on name[-version[-release]] strings.
+ * @param dbi		index database handle (always RPMTAG_NAME)
+ * @param dbcursor	index database cursor
+ * @param name		package name
+ * @param version	package version (can be a regex pattern)
+ * @param release	package release (can be a regex pattern)
+ * @retval matches	set of header instances that match
+ * @return 		0 on match, 1 on no match, 2 on error
+ */
 static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		const char * name,
 		/*@null@*/ const char * version,
@@ -1230,40 +1230,34 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
     /* make sure the version and releases match */
     for (i = 0; i < dbiIndexSetCount(*matches); i++) {
 	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
-	int goodRelease, goodVersion;
-	const char * pkgVersion;
-	const char * pkgRelease;
 	Header h;
 
 	if (recoff == 0)
 	    continue;
 
-    {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(dbi->dbi_rpmdb, RPMDBI_PACKAGES, &recoff, sizeof(recoff));
-	h = rpmdbNextIterator(mi);
-	if (h)
-	    h = headerLink(h);
-	mi = rpmdbFreeIterator(mi);
-    }
+	{   rpmdbMatchIterator mi;
+	    mi = rpmdbInitIterator(dbi->dbi_rpmdb,
+			RPMDBI_PACKAGES, &recoff, sizeof(recoff));
 
-	if (h == NULL) {
-	    rpmError(RPMERR_DBCORRUPT, _("%s: cannot read header at 0x%x\n"),
-		"findMatches", recoff);
-	    rc = 2;
-	    goto exit;
+	    /* Set iterator selectors for version/release if available. */
+	    if (version && rpmdbSetIteratorRE(mi, RPMTAG_VERSION, version)) {
+		rc = 2;
+		goto exit;
+	    }
+	    if (release && rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, release)) {
+		rc = 2;
+		goto exit;
+	    }
+
+	    h = rpmdbNextIterator(mi);
+	    if (h)
+		h = headerLink(h);
+	    mi = rpmdbFreeIterator(mi);
 	}
 
-	(void) headerNVR(h, NULL, &pkgVersion, &pkgRelease);
-	    
-	goodRelease = goodVersion = 1;
-
-	if (release && strcmp(release, pkgRelease)) goodRelease = 0;
-	if (version && strcmp(version, pkgVersion)) goodVersion = 0;
-
-	if (goodRelease && goodVersion) {
-	    /* structure assignment */
+	if (h)	/* structure assignment */
 	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
-	} else 
+	else
 	    (*matches)->recs[i].hdrNum = 0;
 
 	h = headerFree(h);
@@ -1272,13 +1266,12 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
     if (gotMatches) {
 	(*matches)->count = gotMatches;
 	rc = 0;
-    } else {
+    } else
 	rc = 1;
-    }
 
 exit:
     if (rc && matches && *matches) {
-	/*@-unqualifiedtrans@*/
+	/*@-unqualifiedtrans@*/		/* FIX: double indirection */
 	*matches = dbiFreeIndexSet(*matches);
 	/*@=unqualifiedtrans@*/
     }
@@ -1287,11 +1280,14 @@ exit:
 
 /**
  * Lookup by name, name-version, and finally by name-version-release.
- * @param dbi		index database handle (always RPMDBI_PACKAGES)
+ * Both version and release can be regex patterns.
+ * @todo Name must be an exact match, as name is a db key.
+ * @todo N-V-R split needs to be made RE aware, i.e. '[0-9]' is split badly.
+ * @param dbi		index database handle (always RPMTAG_NAME)
  * @param dbcursor	index database cursor
- * @param arg
- * @param matches
- * @return 		0 on success, 1 on no mtches, 2 on error
+ * @param arg		name[-version[-release]] string
+ * @retval matches	set of header instances that match
+ * @return 		0 on match, 1 on no match, 2 on error
  */
 static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
@@ -1365,14 +1361,22 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
     uhlen = headerSizeof(h, HEADER_MAGIC_NO);
     uh = headerUnload(h);
     if (uh) {
-	blockSignals(dbi->dbi_rpmdb, &signalMask);
+	(void) blockSignals(dbi->dbi_rpmdb, &signalMask);
 	rc = dbiPut(dbi, dbcursor, &offset, sizeof(offset), uh, uhlen, pflags);
 	xx = dbiSync(dbi, 0);
-	unblockSignals(dbi->dbi_rpmdb, &signalMask);
+	(void) unblockSignals(dbi->dbi_rpmdb, &signalMask);
 	uh = _free(uh);
     }
     return rc;
 }
+
+typedef struct miRE_s {
+    rpmTag		tag;		/*!< header tag */
+/*@only@*/ const char *	pattern;	/*!< regular expression */
+    int			cflags;		/*!< compile flags */
+/*@only@*/ regex_t *	preg;		/*!< compiled pattern buffer */
+    int			eflags;		/*!< match flags */
+} * miRE;
 
 struct _rpmdbMatchIterator {
 /*@only@*/ const void *	mi_keyp;
@@ -1392,14 +1396,17 @@ struct _rpmdbMatchIterator {
     unsigned int	mi_filenum;
     unsigned int	mi_fpnum;
     unsigned int	mi_dbnum;
-/*@only@*//*@null@*/ const char *	mi_version;
-/*@only@*//*@null@*/ const char *	mi_release;
+    int			mi_nre;
+/*@only@*//*@null@*/ miRE mi_re;
+/*@only@*//*@null@*/ const char * mi_version;
+/*@only@*//*@null@*/ const char * mi_release;
 };
 
 rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi = NULL;
     int xx;
+    int i;
 
     if (mi == NULL)
 	return mi;
@@ -1416,6 +1423,17 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	    xx = dbiCclose(dbi, dbi->dbi_rmw, 0);
 	dbi->dbi_rmw = NULL;
     }
+
+    if (mi->mi_re != NULL)
+    for (i = 0; i < mi->mi_nre; i++) {
+	miRE mire = mi->mi_re + i;
+	mire->pattern = _free(mire->pattern);
+	if (mire->preg != NULL) {
+	    regfree(mire->preg);
+	    mire->preg = _free(mire->preg);
+	}
+    }
+    mi->mi_re = _free(mi->mi_re);
 
     mi->mi_release = _free(mi->mi_release);
     mi->mi_version = _free(mi->mi_version);
@@ -1454,18 +1472,198 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
     return mi->mi_set->count;
 }
 
-void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release) {
-    if (mi == NULL)
-	return;
-    mi->mi_release = _free(mi->mi_release);
-    mi->mi_release = (release ? xstrdup(release) : NULL);
+/**
+ * Return pattern match.
+ * @param mi		rpm database iterator
+ * @return		0 if pattern matches
+ */
+static int miregexec(miRE mire, const char * val)
+	/*@*/
+{
+    int rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
+
+    if (rc && rc != REG_NOMATCH) {
+	char msg[256];
+	(void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
+	msg[sizeof(msg)-1] = '\0';
+	rpmError(RPMERR_REGEXEC, "%s: regexec failed: %s\n", mire->pattern, msg);
+    }
+    return rc;
 }
 
-void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version) {
-    if (mi == NULL)
-	return;
-    mi->mi_version = _free(mi->mi_version);
-    mi->mi_version = (version ? xstrdup(version) : NULL);
+/**
+ * Compare iterator selctors by rpm tag (qsort/bsearch).
+ * @param a		1st iterator selector
+ * @param b		2nd iterator selector
+ * @return		result of comparison
+ */
+static int mireCmp(const void * a, const void * b)
+{
+    const miRE mireA = (const miRE) a;
+    const miRE mireB = (const miRE) b;
+    return (mireA->tag - mireB->tag);
+}
+
+int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag, const char * pattern)
+{
+    const char * allpat = NULL;
+    regex_t * preg = NULL;
+    miRE mire = NULL;
+    int cflags = (REG_EXTENDED | REG_NOSUB);
+    int eflags = 0;
+    int rc = 0;
+
+    if (mi == NULL || pattern == NULL)
+	return rc;
+
+    {	int nb = strlen(pattern);
+	char * t = xmalloc(nb + sizeof("^.$"));
+	allpat = t;
+	if (pattern[0] != '^') *t++ = '^';
+
+	/* XXX let's fix a common error with RE's */
+	if (pattern[0] == '*') *t++ = '.';
+
+	t = stpcpy(t, pattern);
+	if (pattern[nb-1] != '$') *t++ = '$';
+	*t = '\0';
+    }
+    preg = xcalloc(1, sizeof(*preg));
+    rc = regcomp(preg, allpat, cflags);
+    if (rc) {
+	char msg[256];
+	(void) regerror(rc, preg, msg, sizeof(msg)-1);
+	msg[sizeof(msg)-1] = '\0';
+	rpmError(RPMERR_REGCOMP, "%s: regcomp failed: %s\n", allpat, msg);
+	goto exit;
+    }
+
+    mi->mi_re = xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
+    mire = mi->mi_re + mi->mi_nre;
+    mi->mi_nre++;
+    
+    mire->tag = tag;
+    mire->pattern = allpat;
+    mire->cflags = cflags;
+    mire->preg = preg;
+    mire->eflags = eflags;
+
+    (void) qsort(mi->mi_re, mi->mi_nre, sizeof(*mi->mi_re), mireCmp);
+
+exit:
+    if (rc) {
+	/*@-kepttrans@*/	/* FIX: mire has kept values */
+	allpat = _free(allpat);
+	regfree(preg);
+	preg = _free(preg);
+	/*@=kepttrans@*/
+    }
+    return rc;
+}
+
+/**
+ * Return iterator selector match.
+ * @param mi		rpm database iterator
+ * @return		1 if header should be skipped
+ */
+static int mireSkip (const rpmdbMatchIterator mi)
+	/*@*/
+{
+
+    HGE_t hge = (HGE_t) headerGetEntryMinMemory;
+    HFD_t hfd = (HFD_t) headerFreeData;
+    union {
+	void * ptr;
+	const char ** argv;
+	const char * str;
+	int_32 * i32p;
+	int_16 * i16p;
+	int_8 * i8p;
+    } u;
+    char numbuf[32];
+    rpmTagType t;
+    int_32 c;
+    miRE mire;
+    int ntags = 0;
+    int nmatches = 0;
+    int i, j;
+
+    if (mi->mi_h == NULL)	/* XXX can't happen */
+	return 0;
+
+    /*
+     * Apply tag tests, implictly "||" for multiple patterns/values of a
+     * single tag, implictly "&&" between multiple tag patterns.
+     */
+    if ((mire = mi->mi_re) != NULL)
+    for (i = 0; i < mi->mi_nre; i++, mire++) {
+	int anymatch;
+
+	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c))
+	    continue;
+
+	anymatch = 0;		/* no matches yet */
+	while (1) {
+	    switch (t) {
+	    case RPM_CHAR_TYPE:
+	    case RPM_INT8_TYPE:
+		sprintf(numbuf, "%d", (int) *u.i8p);
+		if (!miregexec(mire, numbuf))
+		    anymatch++;
+		break;
+	    case RPM_INT16_TYPE:
+		sprintf(numbuf, "%d", (int) *u.i16p);
+		if (!miregexec(mire, numbuf))
+		    anymatch++;
+		break;
+	    case RPM_INT32_TYPE:
+		sprintf(numbuf, "%d", (int) *u.i32p);
+		if (!miregexec(mire, numbuf))
+		    anymatch++;
+		break;
+	    case RPM_STRING_TYPE:
+		if (!miregexec(mire, u.str))
+		    anymatch++;
+		break;
+	    case RPM_I18NSTRING_TYPE:
+	    case RPM_STRING_ARRAY_TYPE:
+		for (j = 0; j < c; j++) {
+		    if (miregexec(mire, u.argv[j]))
+			continue;
+		    anymatch++;
+		    /*@innerbreak@*/ break;
+		}
+		break;
+	    case RPM_NULL_TYPE:
+	    case RPM_BIN_TYPE:
+	    default:
+		break;
+	    }
+	    if ((i+1) < mi->mi_nre && mire[0].tag == mire[1].tag) {
+		i++;
+		mire++;
+		continue;
+	    }
+	    /*@innerbreak@*/ break;
+	}
+
+	u.ptr = hfd(u.ptr, t);
+
+	ntags++;
+	if (anymatch)
+	    nmatches++;
+    }
+
+    return (ntags == nmatches ? 0 : 1);
+
+}
+
+int rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release) {
+    return rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, release);
+}
+
+int rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version) {
+    return rpmdbSetIteratorRE(mi, RPMTAG_VERSION, version);
 }
 
 int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite) {
@@ -1590,18 +1788,14 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 	goto top;
     }
 
-    if (mi->mi_release) {
-	const char * release;
-	(void) headerNVR(mi->mi_h, NULL, NULL, &release);
-	if (mi->mi_release && strcmp(mi->mi_release, release))
+    /*
+     * Skip this header if iterator selector (if any) doesn't match.
+     */
+    if (mireSkip(mi)) {
+	/* XXX hack, can't restart with Packages locked on single instance. */
+	if (mi->mi_set || mi->mi_keyp == NULL)
 	    goto top;
-    }
-
-    if (mi->mi_version) {
-	const char * version;
-	(void) headerNVR(mi->mi_h, NULL, &version, NULL);
-	if (mi->mi_version && strcmp(mi->mi_version, version))
-	    goto top;
+	return NULL;
     }
 
     mi->mi_prevoffset = mi->mi_offset;
@@ -1792,6 +1986,8 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     mi->mi_filenum = 0;
     mi->mi_fpnum = 0;
     mi->mi_dbnum = 0;
+    mi->mi_nre = 0;
+    mi->mi_re = NULL;
     mi->mi_version = NULL;
     mi->mi_release = NULL;
     /*@-nullret@*/
@@ -1867,7 +2063,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	rpmMessage(RPMMESS_DEBUG, "  --- %10u %s-%s-%s\n", hdrNum, n, v, r);
     }
 
-    blockSignals(rpmdb, &signalMask);
+    (void) blockSignals(rpmdb, &signalMask);
 
     {	int dbix;
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
@@ -1991,7 +2187,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	rec = _free(rec);
     }
 
-    unblockSignals(rpmdb, &signalMask);
+    (void) unblockSignals(rpmdb, &signalMask);
 
     h = headerFree(h);
 
@@ -2071,7 +2267,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     if (_noDirTokens)
 	expandFilelist(h);
 
-    blockSignals(rpmdb, &signalMask);
+    (void) blockSignals(rpmdb, &signalMask);
 
     {
 	unsigned int firstkey = 0;
@@ -2294,7 +2490,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     }
 
 exit:
-    unblockSignals(rpmdb, &signalMask);
+    (void) unblockSignals(rpmdb, &signalMask);
 
     return rc;
 }
@@ -2715,8 +2911,13 @@ int rpmdbRebuild(const char * rootdir)
 		/*@-shadow@*/
 		{   rpmdbMatchIterator mi;
 		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);
-		    rpmdbSetIteratorVersion(mi, version);
-		    rpmdbSetIteratorRelease(mi, release);
+#ifdef	DYING
+		    (void) rpmdbSetIteratorVersion(mi, version);
+		    (void) rpmdbSetIteratorRelease(mi, release);
+#else
+		    (void) rpmdbSetIteratorRE(mi, RPMTAG_VERSION, version);
+		    (void) rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, release);
+#endif
 		    while (rpmdbNextIterator(mi)) {
 			skip = 1;
 			/*@innerbreak@*/ break;

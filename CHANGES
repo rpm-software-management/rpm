@@ -98,6 +98,10 @@
 	- remove rpmrc Provides: Yet Again, use virtual packages.
 	- dump cursor debugging wrappers.
 	- rpm --verify can disable rpmFileAttr checks.
+	- add rpmdbSetIteratorRE() for regex matching in database iterators.
+	- permit rpm -qa to take RE args applied to name tag.
+	- permit dbiFindMatches() to use version/release patterns.
+	- eliminate all uses of rpmdbSetIterator{Version,Release}.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

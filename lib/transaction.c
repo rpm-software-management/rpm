@@ -1650,8 +1650,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !alp->multiLib) {
 	    rpmdbMatchIterator mi;
 	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
-	    rpmdbSetIteratorVersion(mi, alp->version);
-	    rpmdbSetIteratorRelease(mi, alp->release);
+#ifdef	DYING
+	    (void) rpmdbSetIteratorVersion(mi, alp->version);
+	    (void) rpmdbSetIteratorRelease(mi, alp->release);
+#else
+	    (void) rpmdbSetIteratorRE(mi, RPMTAG_VERSION, alp->version);
+	    (void) rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, alp->release);
+#endif
 	    while (rpmdbNextIterator(mi) != NULL) {
 		psAppend(ts->probs, RPMPROB_PKG_INSTALLED, alp,
 			NULL, NULL, NULL, 0);

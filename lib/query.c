@@ -497,12 +497,12 @@ int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
     int rc;
     int isSource;
     int retcode = 0;
+    const char ** av = NULL;
     char * end = NULL;
 
     switch (source) {
     case RPMQV_RPM:
     {	int ac = 0;
-	const char ** av = NULL;
 	const char * fileURL = NULL;
 	rpmRC rpmrc;
 	int i;
@@ -632,7 +632,15 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no packages\n"));
 	    retcode = 1;
 	} else {
-	    retcode = showMatches(qva, mi, showPackage);
+	    for (av = (const char **) arg; av && *av; av++) {
+		if (!rpmdbSetIteratorRE(mi, RPMTAG_NAME, *av))
+		    continue;
+		mi = rpmdbFreeIterator(mi);
+		retcode = 1;
+		/*@loopbreak@*/ break;
+	    }
+	    if (!retcode)
+		retcode = showMatches(qva, mi, showPackage);
 	}
 	break;
 

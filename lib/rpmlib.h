@@ -763,22 +763,39 @@ int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
 	/*@modifies mi, hdrNums @*/;
 
 /** \ingroup rpmdb
- * Modify iterator to filter out headers that do not match version.
- * @todo Replace with a more general mechanism using RE's on tag content.
+ * Add regular expression to iterator selector.
  * @param mi		rpm database iterator
- * @param version	version to check for
+ * @param tag		rpm tag
+ * @param pattern	regex pattern to match
+ * @return		0 on success
  */
-void rpmdbSetIteratorVersion(/*@null@*/ rpmdbMatchIterator mi,
+int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
+		/*@null@*/ const char * pattern)
+	/*@modifies mi @*/;
+
+/** \ingroup rpmdb
+ * Modify iterator to filter out headers that do not match version.
+ * @deprecated Use rpmdbSetIteratorRE(mi, RPMTAG_VERSION, version) instead.
+ * @todo Eliminate from API.
+ * @param mi		rpm database iterator
+ * @param version	version to match (can be a regex pattern)
+ * @return		0 on success
+ */
+/*@unused@*/
+int rpmdbSetIteratorVersion(/*@null@*/ rpmdbMatchIterator mi,
 		/*@null@*/ const char * version)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Modify iterator to filter out headers that do not match release.
- * @todo Replace with a more general mechanism using RE's on tag content.
+ * @deprecated Use rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, release) instead.
+ * @todo Eliminate from API.
  * @param mi		rpm database iterator
- * @param release	release to check for
+ * @param release	release to match (can be a regex pattern)
+ * @return		0 on success
  */
-void rpmdbSetIteratorRelease(/*@null@*/ rpmdbMatchIterator mi,
+/*@unused@*/
+int rpmdbSetIteratorRelease(/*@null@*/ rpmdbMatchIterator mi,
 		/*@null@*/ const char * release)
 	/*@modifies mi @*/;
 

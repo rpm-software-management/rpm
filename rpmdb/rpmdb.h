@@ -286,7 +286,7 @@ struct _dbiIndex {
     unsigned int	dbi_q_extentsize;
 
 /*@kept@*/ rpmdb	dbi_rpmdb;
-    int		dbi_rpmtag;		/*!< rpm tag used for index */
+    rpmTag	dbi_rpmtag;		/*!< rpm tag used for index */
     int		dbi_jlen;		/*!< size of join key */
 
     unsigned int dbi_lastoffset;	/*!< db1 with falloc.c needs this */

@@ -1332,8 +1332,13 @@ int psmStage(PSM_t psm, pkgStage stage)
 
 assert(psm->mi == NULL);
 	    psm->mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
-	    rpmdbSetIteratorVersion(psm->mi, fi->version);
-	    rpmdbSetIteratorRelease(psm->mi, fi->release);
+#ifdef	DYING
+	    (void) rpmdbSetIteratorVersion(psm->mi, fi->version);
+	    (void) rpmdbSetIteratorRelease(psm->mi, fi->release);
+#else
+	    (void) rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION, fi->version);
+	    (void) rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, fi->release);
+#endif
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
 		if (ts->transFlags & RPMTRANS_FLAG_MULTILIB)

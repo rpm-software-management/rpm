@@ -121,6 +121,8 @@ typedef enum rpmerrCode_e {
     RPMERR_MANIFEST	= _nm(138), /*!< %s: read manifest failed: %s */
     RPMERR_BADHEADER	= _em(139), /*!< */
     RPMERR_FSEEK	= _em(140), /*!< %s: Fseek failed: %s */
+    RPMERR_REGCOMP	= _em(141), /*!< %s: regcomp failed: %s */
+    RPMERR_REGEXEC	= _em(142), /*!< %s: regexec failed: %s */
 
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
     RPMERR_SIGGEN	= _em(201), /*!< Error generating signature */
