@@ -10,9 +10,9 @@ build, install, query, verify, update, and uninstall individual
 software packages.  A \fIpackage\fP consists of an archive of files,
 and package information, including name, version, and description.
 
-There are five basic modes of operation, and each takes a different
+There are six basic modes of operation, and each takes a different
 set of options.  They are \fIbuild\fP, \fIinstall\fP, \fIquery\fP,
-\fIverify\fP, \FIsignature check\fP, and \fIuninstall\fP.
+\fIverify\fP, \fIsignature check\fP, and \fIuninstall\fP.
 
 .I "\fBrpm \-i [install\-options] <package_file>+\fP"
 .br
@@ -72,8 +72,7 @@ Don't execute the preuninstall or postuninstall scripts.
 .IP "\fB\-\-nodeps\fP"
 Don't check dependencies before uninstalling the packages.
 .IP "\fB\-\-test\fP"
-Don't really uninstall anything, just go through the motions. This is
-designed primarily for testing and should normally be used with the
+Don't really uninstall anything, just go through the motions. 
 \fB\-vv\fP option.
 
 .SH BUILD OPTIONS
@@ -107,7 +106,7 @@ install stages).
 The following options may also be used:
 .IP "\fB\-\-short\-circuit\fP"
 Skip straight to specified stage (ie, skip all stages leading up
-to the specified stage).  Only valid for \fB\-bc\fP and \fB\-bi\fP.
+to the specified stage).  Only valid with \fB\-bc\fP and \fB\-bi\fP.
 .IP "\fB\-\-clean\fP"
 Remove the build tree after the packages are made.
 .IP "\fB\-\-test\fP"
@@ -120,17 +119,17 @@ section on PGP SIGNATURES for /etc/rpmrc details.
 
 .SH QUERY OPTIONS
 
-You may specify the format that the header portion should be printed 
-in. To do this, you use the "\fB\--queryformat\fP" option, followed by 
+You may specify the format that package information should be printed 
+in. To do this, you use the \fB\--queryformat\fP option, followed by 
 the format string.
 
 Query formats are modifed versions of the standard \fBprintf(3)\fP
 formatting. The format is made up of static strings (which may include
 standard C character escapes for newlines, tabs, and other special
-characters) and the \fBprintf(3)\fP type formatters. As \fBrpm\fP
+characters) and \fBprintf(3)\fP type formatters. As \fBrpm\fP
 already knows the type to print, the type specifier must be
 omitted however, and replaced by the name of the header tag to
-be printed, which is enclosed by \fB{}\fP characters. The 
+be printed, enclosed by \fB{}\fP characters. The 
 \fBRPMTAG_\fP portion of the tag name may be omitted, and the
 tag name may be preceded by a \fB-\fP to format the tag as
 a date if possible.
@@ -141,7 +140,7 @@ name and distribution information in two columns, you could use
 \fB%-30{NAME}%{DISTRIBUTION}\fP.
 
 \fBrpm\fP will print a list of all of the tags it knows about when
-it is invoked with the \fB--querytags\fP argument and nothing else.
+it is invoked with the \fB--querytags\fP argument.
 
 There are two subsets of options for querying: package selection, and
 information selection.
@@ -164,18 +163,22 @@ Like \fB\-f\fP but read file names from stdin.
 Query an (uninstalled) package \fI<package_file>\fP.
 .IP "\fB\-P\fP"
 Like \fB\-p\fP but read package file names from stdin.
-.br
+
+.P
 Information selection options:
 .br
 .IP "\fB\-i\fP"
-Display package information, including name, version, and description.
+Display package information, including name, version, and description. This
+uses the \fB--queryformat\fP if one was specified.
 .IP "\fB\-R\fP"
 List packages this one depends on (same as \fB--requires\fP).
+.IP "\fB\--provides\fP"
+List capabilities this package provides.
 .IP "\fB\-l\fP"
 List files in package.
 .IP "\fB\-s\fP"
-Display \fIstates\fP of file in package (implies \fB\-l\fP).  
-The state of each package is
+Display the \fIstates\fP of files in the package (implies \fB\-l\fP).  
+The state of each file is
 either \fInormal\fP, \fInot installed\fP, or \fIreplaced\fP.
 .IP "\fB\-d\fP"
 List only documentation files (implies \fB\-l\fP).  
@@ -197,12 +200,12 @@ verifying compares the size, MD5 sum, permissions, type, owner and group
 of each file.  Any discrepencies are displayed.  The package specification
 options are the same as for package querying.
 
-The format of the output is a string of 8 characters, an optional "\fBc\fP"
+The format of the output is a string of 8 characters, a possible "\fBc\fP"
 denoting a configuration file, and then the file name.  Each of the 8
-characters denotes the result of a comparison of one aspect of the file
-to that aspect as recorded in the RPM database.  A single "\fB.\fP" (period)
-means the test passed.  The following characters denote failure of certain
-tests:
+characters denotes the result of a comparison of one attribute of the file
+to the value of that attribute recorded in the RPM database.  A 
+single "\fB.\fP" (period) means the test passed.  The following characters 
+denote failure of certain tests:
 
 .IP "\fB5\fP"
 MD5 sum
@@ -236,8 +239,10 @@ There are two other ways to invoke rpm:
 .I "\fBrpm \-\-rebuild <source_package_file>+\fP"
 
 When invoked this way, rpm installs the named source package, and does
-a prep, compile and install.  In addition, \-\-rebuild builds a new
-binary package.
+a prep, compile and install.  In addition, \fB\-\-rebuild\fP builds a new
+binary package. When the build has completed, the build directory is
+removed (as in \fB\-\-clean\fP) and the the sources and spec file for
+the package are removed.
 
 .SH SIGNING AN EXISTING RPM
 
@@ -304,7 +309,7 @@ be built and signed.
 .SH SEE ALSO
 .IR glint (8) ,
 .IR rpm2cpio (8) ,
-.B http://www.redhat.com/redhat/support/docs/HOWTO/RPM-HOWTO
+.B http://www.redhat.com/rpm
 .nf
 .SH AUTHORS
 .nf
