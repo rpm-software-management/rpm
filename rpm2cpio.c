@@ -8,6 +8,15 @@
 #include "lib/package.h"
 #include "rpmlib.h"
 
+char *zlib_err [] = {
+   "No",
+   "Unix",
+   "Data",
+   "Memory",
+   "Buffer",
+   "Version"
+};
+
 int main(int argc, char **argv)
 {
     int fd;
@@ -39,9 +48,18 @@ int main(int argc, char **argv)
 
     stream = gzdopen(fd, "r");
 
-    while ((ct = gzread(stream, &buffer, 1024))) {
+    while ((ct = gzread(stream, &buffer, 1024)) > 0) {
 	write(1, &buffer, ct);
     }
-    
+    if (ct < 0){
+        int zerror;
+       
+        gzerror (stream, &zerror);
+        if (zerror == Z_ERRNO){
+	    perror ("While uncompressing");
+	    return 1;
+	}
+        fprintf (stderr, "rpm2cpio: zlib: %s error\n", zlib_err [-zerror]);
+    }
     return 0;
 }
