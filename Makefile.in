@@ -164,6 +164,8 @@ archive: cvstag
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
 	@echo "maybe someday Erik will get around to making that automatic."
+	@echo
+	@echo "This is version $(VERSION)."
 	@sleep 5
 	@rm -rf /tmp/rpm-$(VERSION)
 	@mkdir /tmp/rpm-$(VERSION)
