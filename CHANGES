@@ -61,6 +61,7 @@
 	- fix: removed files fingerprint memory leak.
 	- fix: resurrect allfiles flag from rpm-2.5.x.
 	- fix: version compares compatible with epoch-less requires/conflicts.
+	- fix: rpm-2.5.1 had file list w/o leading / fix.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

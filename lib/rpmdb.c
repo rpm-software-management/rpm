@@ -296,11 +296,55 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
     return faNextOffset(db->pkgs, lastOffset);
 }
 
-Header rpmdbGetRecord(rpmdb db, unsigned int offset)
-{
+static Header doGetRecord(rpmdb db, unsigned int offset, int pristine) {
+    Header h;
+    char ** fileList;
+    char ** newList;
+    int fileCount = 0;
+    int i;
+
     (void)faLseek(db->pkgs, offset, SEEK_SET);
 
-    return headerRead(faFileno(db->pkgs), HEADER_MAGIC_NO);
+    h = headerRead(faFileno(db->pkgs), HEADER_MAGIC_NO);
+
+    if (pristine) return h;
+
+    /* the RPM used to buildmuch of RH 5.1 could produce packages whose
+       file lists did not have leading /'s. Now is a good time to fix
+       that */
+
+    if (!headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL, 
+			   (void **) &fileList, &fileCount)) return h;
+
+    for (i = 0; i < fileCount; i++) 
+	if (*fileList[i] != '/') break;
+
+    if (i == fileCount) {
+	free(fileList);
+	return h;
+    }
+
+    /* bad header -- let's clean it up */
+    newList = alloca(sizeof(*newList) * fileCount);
+    for (i = 0; i < fileCount; i++) {
+	newList[i] = alloca(strlen(fileList[i]) + 2);
+	if (*fileList[i] == '/')
+	    strcpy(newList[i], fileList[i]);
+	else
+	    sprintf(newList[i], "/%s", fileList[i]);
+    }
+
+    free(fileList);
+
+    headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
+		      newList, fileCount);
+
+    return h;
+}
+
+Header rpmdbGetRecord(rpmdb db, unsigned int offset)
+{
+    return doGetRecord(db, offset, 0);
 }
 
 int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
@@ -662,7 +706,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
     int oldSize;
     int rc = 0;
 
-    oldHeader = rpmdbGetRecord(db, offset);
+    oldHeader = doGetRecord(db, offset, 1);
     if (oldHeader == NULL) {
 	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for update"),
 		offset);
