@@ -235,7 +235,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
     Header sig;
     HeaderIterator sigIter;
     int_32 tag, type, count;
-    void *ptr;
+    const void * ptr;
     int res = 0;
 
     while ((rpm = *argv++) != NULL) {

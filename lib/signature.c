@@ -27,7 +27,9 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 
-typedef int (*md5func)(const char * fn, /*@out@*/unsigned char * digest);
+typedef	unsigned char byte;
+
+typedef int (*md5func)(const char * fn, /*@out@*/ byte * digest);
 
 int rpmLookupSignatureType(int action)
 {
@@ -124,7 +126,7 @@ static int checkSize(FD_t fd, int size, int sigsize)
 
 int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 {
-    unsigned char buf[2048];
+    byte buf[2048];
     int sigSize, pad;
     int_32 type, count;
     int_32 *archSize;
@@ -188,7 +190,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 int rpmWriteSignature(FD_t fd, Header header)
 {
     int sigSize, pad;
-    unsigned char buf[8];
+    byte buf[8];
     int rc = 0;
     
     rc = headerWrite(fd, header, HEADER_MAGIC_YES);
@@ -387,7 +389,7 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
 {
     struct stat statbuf;
     int_32 size;
-    unsigned char buf[16];
+    byte buf[16];
     void *sig;
     int ret = -1;
     
@@ -441,10 +443,10 @@ verifySizeSignature(const char *datafile, int_32 size, char *result)
 #define	X(_x)	(unsigned)((_x) & 0xff)
 
 static rpmVerifySignatureReturn
-verifyMD5Signature(const char *datafile, unsigned char *sig, 
+verifyMD5Signature(const char *datafile, const byte *sig, 
 			      char *result, md5func fn)
 {
-    unsigned char md5sum[16];
+    byte md5sum[16];
 
     fn(datafile, md5sum);
     if (memcmp(md5sum, sig, 16)) {
@@ -475,12 +477,12 @@ verifyMD5Signature(const char *datafile, unsigned char *sig,
 }
 
 static rpmVerifySignatureReturn
-verifyPGPSignature(const char *datafile, void *sig, int count, char *result)
+verifyPGPSignature(const char *datafile, const void * sig, int count, char *result)
 {
     int pid, status, outpipe[2];
     FD_t sfd;
     char *sigfile;
-    unsigned char buf[BUFSIZ];
+    byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
     const char *path;
@@ -587,12 +589,12 @@ verifyPGPSignature(const char *datafile, void *sig, int count, char *result)
 }
 
 static rpmVerifySignatureReturn
-verifyGPGSignature(const char *datafile, void *sig, int count, char *result)
+verifyGPGSignature(const char *datafile, const void * sig, int count, char *result)
 {
     int pid, status, outpipe[2];
     FD_t sfd;
     char *sigfile;
-    unsigned char buf[8192];
+    byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
   
@@ -784,7 +786,7 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
 }
 
 rpmVerifySignatureReturn
-rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
+rpmVerifySignature(const char *file, int_32 sigTag, const void * sig, int count,
 		    char *result)
 {
     switch (sigTag) {
