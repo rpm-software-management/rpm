@@ -91,14 +91,14 @@ const char * rpmProblemString(rpmProblem prob)
     const char * altName = NULL, * altVersion = NULL, * altRelease = NULL;
     char * buf;
 
-    headerNVR(prob.h, &name, &version, &release);
+    headerNVR(prob->h, &name, &version, &release);
 
-    if (prob.altH)
-	headerNVR(prob.altH, &altName, &altVersion, &altRelease);
+    if (prob->altH)
+	headerNVR(prob->altH, &altName, &altVersion, &altRelease);
 
     buf = xmalloc(strlen(name) + strlen(version) + strlen(release) + 400);
 
-    switch (prob.type) {
+    switch (prob->type) {
       case RPMPROB_BADARCH:
 	sprintf(buf, _("package %s-%s-%s is for a different architecture"), 
 		name, version, release);
@@ -116,18 +116,18 @@ const char * rpmProblemString(rpmProblem prob)
 
       case RPMPROB_BADRELOCATE:
 	sprintf(buf, _("path %s is not relocateable for package %s-%s-%s"),
-		prob.str1, name, version, release);
+		prob->str1, name, version, release);
 	break;
 
       case RPMPROB_NEW_FILE_CONFLICT:
 	sprintf(buf, _("file %s conflicts between attemped installs of "
-		       "%s-%s-%s and %s-%s-%s"), prob.str1, name, version, 
+		       "%s-%s-%s and %s-%s-%s"), prob->str1, name, version, 
 		release, altName, altVersion, altRelease);
 	break;
 
       case RPMPROB_FILE_CONFLICT:
 	sprintf(buf, _("file %s from install of %s-%s-%s conflicts with "
-		       "file from package %s-%s-%s"), prob.str1, name, version, 
+		       "file from package %s-%s-%s"), prob->str1, name, version, 
 		release, altName, altVersion, altRelease);
 	break;
 
@@ -140,24 +140,24 @@ const char * rpmProblemString(rpmProblem prob)
       case RPMPROB_DISKSPACE:
 	sprintf(buf, _("installing package %s-%s-%s needs %ld%cb on the %s"
 		       " filesystem"), name, version, release, 
-			prob.ulong1 > (1024*1024)
-			    ? (prob.ulong1 + 1024 * 1024 - 1) / (1024 * 1024)
-			    : (prob.ulong1 + 1023) / 1024,
-			prob.ulong1 > (1024*1024) ? 'M' : 'K',
-			prob.str1);
+			prob->ulong1 > (1024*1024)
+			    ? (prob->ulong1 + 1024 * 1024 - 1) / (1024 * 1024)
+			    : (prob->ulong1 + 1023) / 1024,
+			prob->ulong1 > (1024*1024) ? 'M' : 'K',
+			prob->str1);
 	break;
 
       case RPMPROB_BADPRETRANS:
 	sprintf(buf, _("package %s-%s-%s pre-transaction syscall(s): %s failed: %s"),
 			name, version, release, 
-			prob.str1, strerror(prob.ulong1));
+			prob->str1, strerror(prob->ulong1));
 	break;
 
       case RPMPROB_REQUIRES:
       case RPMPROB_CONFLICT:
       default:
 	sprintf(buf, _("unknown error %d encountered while manipulating "
-		"package %s-%s-%s"), prob.type, name, version, release);
+		"package %s-%s-%s"), prob->type, name, version, release);
 	break;
     }
 
@@ -182,7 +182,8 @@ void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)
 	fp = stderr;
 
     for (i = 0; i < probs->numProblems; i++) {
-	if (!probs->probs[i].ignoreProblem)
-	    rpmProblemPrint(fp, probs->probs[i]);
+	rpmProblem myprob = probs->probs + i;
+	if (!myprob->ignoreProblem)
+	    rpmProblemPrint(fp, myprob);
     }
 }

@@ -19,12 +19,12 @@ static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 /**
  * Remove (or rename) file according to file disposition.
  * @param file		file
- * @param flags
+ * @param fileAttrs	file attributes (from package header)
  * @param mode		file type
  * @param action	file disposition
  * @return
  */
-static int removeFile(const char * file, unsigned int flags, short mode, 
+static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode, 
 		      enum fileActions action)
 {
     int rc = 0;
@@ -63,7 +63,7 @@ static int removeFile(const char * file, unsigned int flags, short mode,
 	    }
 	} else {
 	    if (unlink(file)) {
-		if (errno != ENOENT || !(flags & RPMFILE_MISSINGOK)) {
+		if (errno != ENOENT || !(fileAttrs & RPMFILE_MISSINGOK)) {
 		    rpmError(RPMERR_UNLINK, 
 			      _("removal of %s failed: %s"),
 				file, strerror(errno));
@@ -87,10 +87,10 @@ static int removeFile(const char * file, unsigned int flags, short mode,
 }
 
 int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
-			Header h,
-			int flags, rpmCallbackFunction notify,
-			void * notifyData, const void * pkgKey,
-			enum fileActions * actions, FD_t scriptFd)
+			Header h, rpmtransFlags transFlags,
+			rpmCallbackFunction notify, rpmCallbackData notifyData,
+			const void * pkgKey, enum fileActions * actions,
+			FD_t scriptFd)
 {
     const char * name, * version, * release;
     const char ** baseNames;
@@ -99,8 +99,8 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
     int fileCount;
     int i;
 
-    if (flags & RPMTRANS_FLAG_JUSTDB)
-	flags |= RPMTRANS_FLAG_NOSCRIPTS;
+    if (transFlags & RPMTRANS_FLAG_JUSTDB)
+	transFlags |= RPMTRANS_FLAG_NOSCRIPTS;
 
     headerNVR(h, &name, &version, &release);
 
@@ -112,7 +112,7 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 	return 1;
     scriptArg -= 1;
 
-    if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
+    if (!(transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
 	if (runImmedTriggers(rootdir, rpmdb, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
@@ -123,17 +123,17 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 	    return 1;
     }
 
-    if (!(flags & RPMTRANS_FLAG_TEST)) {
+    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
 	rc = runInstScript(rootdir, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg,
-		          (flags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd);
+		          (transFlags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd);
 	if (rc)
 	    return 1;
     }
     
     rpmMessage(RPMMESS_DEBUG, _("will remove files test = %d\n"), 
-		flags & RPMTRANS_FLAG_TEST);
+		transFlags & RPMTRANS_FLAG_TEST);
 
-    if (!(flags & RPMTRANS_FLAG_JUSTDB) &&
+    if (!(transFlags & RPMTRANS_FLAG_JUSTDB) &&
 	headerGetEntry(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, 
 	               &fileCount)) {
 	const char ** fileMd5List;
@@ -193,7 +193,7 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
 			fileName, fileActionString(actions[i]));
 
-	    if (!(flags & RPMTRANS_FLAG_TEST)) {
+	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
 		if (notify) {
 		    (void)notify(h, RPMCALLBACK_UNINST_PROGRESS,
 			i, actions[i], fileName, notifyData);
@@ -213,14 +213,14 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 	free(fileMd5List);
     }
 
-    if (!(flags & RPMTRANS_FLAG_TEST)) {
+    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
 	rpmMessage(RPMMESS_DEBUG, _("running postuninstall script (if any)\n"));
 	rc = runInstScript(rootdir, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
-			scriptArg, (flags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd);
+			scriptArg, (transFlags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd);
 	/* XXX postun failures are not cause for erasure failure. */
     }
 
-    if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
+    if (!(transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal. */
 	rc = runTriggers(rootdir, rpmdb, RPMSENSE_TRIGGERPOSTUN, h,
 			-1, scriptFd);
@@ -228,7 +228,7 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 	    return 2;
     }
 
-    if (!(flags & RPMTRANS_FLAG_TEST))
+    if (!(transFlags & RPMTRANS_FLAG_TEST))
 	rpmdbRemove(rpmdb, offset);
 
     return 0;

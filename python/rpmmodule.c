@@ -1729,10 +1729,11 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
 
     list = PyList_New(0);
     for (i = 0; i < probs->numProblems; i++) {
-	prob = Py_BuildValue("s(isi)", rpmProblemString(probs->probs[i]),
-			     probs->probs[i].type,
-			     probs->probs[i].str1,
-			     probs->probs[i].ulong1);
+	rpmProblem myprob = probs->probs + i;
+	prob = Py_BuildValue("s(isi)", rpmProblemString(myprob),
+			     myprob->type,
+			     myprob->str1,
+			     myprob->ulong1);
 	PyList_Append(list, prob);
 	Py_DECREF(prob);
     }

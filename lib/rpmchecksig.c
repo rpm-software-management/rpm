@@ -92,7 +92,7 @@ exit:
     return rc;
 }
 
-int rpmReSign(enum rpmKtype add, char *passPhrase, const char **argv)
+int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -146,7 +146,7 @@ int rpmReSign(enum rpmKtype add, char *passPhrase, const char **argv)
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Generate the new signatures */
-	if (add != RPMK_ADD_SIGNATURE) {
+	if (add != RESIGN_ADD_SIGNATURE) {
 	    rpmFreeSignature(sig);
 	    sig = rpmNewSignature();
 	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
@@ -217,7 +217,7 @@ exit:
     return rc;
 }
 
-int rpmCheckSig(int flags, const char **argv)
+int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;

@@ -271,9 +271,13 @@ struct rpmdb_s {
 
 /* for RPM's internal use only */
 
-#define RPMDB_FLAG_JUSTCHECK	(1 << 0)
-#define RPMDB_FLAG_MINIMAL	(1 << 1)
-#define	RPMDB_FLAG_CHROOT	(1 << 2)
+/** \ingroup rpmdb
+ */
+enum rpmdbFlags {
+	RPMDB_FLAG_JUSTCHECK	= (1 << 0),
+	RPMDB_FLAG_MINIMAL	= (1 << 1),
+	RPMDB_FLAG_CHROOT	= (1 << 2)
+};
 
 #ifdef __cplusplus
 extern "C" {

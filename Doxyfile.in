@@ -50,7 +50,7 @@ EXTRACT_ALL            = YES
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class 
 # will be included in the documentation. 
 
-EXTRACT_PRIVATE        = YES
+EXTRACT_PRIVATE        = NO
 
 # If the EXTRACT_STATIC tag is set to YES all static members of a file 
 # will be included in the documentation. 
@@ -348,17 +348,13 @@ INPUT                  = \
 	./popt/poptparse.c \
 	./tools/dump.c \
 	./tools/dumpdb.c \
-	./tools/fstrcmp.c \
 	./tools/javadeps.c \
-	./tools/message.c \
 	./tools/rpmarchive.c \
 	./tools/rpmchecksig.c \
-	./tools/rpmgettext.c \
 	./tools/rpmheader.c \
 	./tools/rpminject.c \
 	./tools/rpmlead.c \
-	./tools/rpmsignature.c \
-	./tools/str-list.c
+	./tools/rpmsignature.c
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

@@ -97,9 +97,11 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
     return rc;
 }	
 
-int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags, 
-	      int interfaceFlags, int probFilter, 
-	      rpmRelocation * relocations)
+int rpmInstall(const char * rootdir, const char ** fileArgv,
+		rpmtransFlags transFlags, 
+		rpmInstallInterfaceFlags interfaceFlags,
+		rpmprobFilterFlags probFilter, 
+		rpmRelocation * relocations)
 {
     rpmdb db = NULL;
     FD_t fd;
@@ -212,10 +214,11 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 
     rpmMessage(RPMMESS_DEBUG, _("retrieved %d packages\n"), numTmpPkgs);
 
-    /* Build up the transaction set. As a special case, v1 source packages
-       are installed right here, only because they don't have headers and
-       would create all sorts of confusion later. */
-
+    /**
+     * Build up the transaction set. As a special case, v1 source packages
+     * are installed right here, only because they don't have headers and
+     * would create all sorts of confusion later.
+     */
     for (fileURL = pkgURL; *fileURL; fileURL++) {
 	const char * fileName;
 	(void) urlPath(*fileURL, &fileName);
@@ -429,8 +432,9 @@ errxit:
     return numPkgs;
 }
 
-int rpmErase(const char * rootdir, const char ** argv, int transFlags,
-		 int interfaceFlags)
+int rpmErase(const char * rootdir, const char ** argv,
+		rpmtransFlags transFlags, 
+		rpmEraseInterfaceFlags interfaceFlags)
 {
     rpmdb db;
     int mode;
@@ -511,8 +515,8 @@ int rpmErase(const char * rootdir, const char ** argv, int transFlags,
     return numFailed;
 }
 
-int rpmInstallSource(const char * rootdir, const char * arg, const char ** specFile,
-		    char ** cookie)
+int rpmInstallSource(const char * rootdir, const char * arg,
+		const char ** specFile, char ** cookie)
 {
     FD_t fd;
     int rc;

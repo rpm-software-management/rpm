@@ -28,6 +28,8 @@
  */
 /** \defgroup	db3	DB3.
  */
+/** \defgroup	rpmrpc	RPMRPC.
+ */
 /** \defgroup	rpmio	RPMIO.
  */
 /** \defgroup	popt	POPT.

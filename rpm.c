@@ -536,7 +536,7 @@ int main(int argc, const char ** argv)
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int verifyFlags;
     int checksigFlags = 0;
-    enum rpmKtype addSign = RPMK_NEW_SIGNATURE;
+    rpmResignFlags addSign = RESIGN_NEW_SIGNATURE;
     char * passPhrase = "";
     const char * optArg;
     pid_t pipeChild = 0;
@@ -721,7 +721,7 @@ int main(int argc, const char ** argv)
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RESIGN;
-	    addSign = RPMK_NEW_SIGNATURE;
+	    addSign = RESIGN_NEW_SIGNATURE;
 	    signIt = 1;
 	    break;
 
@@ -729,7 +729,7 @@ int main(int argc, const char ** argv)
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RESIGN;
-	    addSign = RPMK_ADD_SIGNATURE;
+	    addSign = RESIGN_ADD_SIGNATURE;
 	    signIt = 1;
 	    break;
 

@@ -21,7 +21,7 @@ struct callbackInfo {
     rpmCallbackFunction notify;
     const char ** specFilePtr;
     Header h;
-    void * notifyData;
+    rpmCallbackData notifyData;
     const void * pkgKey;
 };
 
@@ -523,10 +523,10 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
 /**
  * @param h		header
  */
-static int installArchive(FD_t fd, struct fileInfo * files,
-			  int fileCount, rpmCallbackFunction notify,
-			  void * notifyData, const void * pkgKey, Header h,
-			  /*@out@*/const char ** specFile, int archiveSize)
+static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
+			rpmCallbackFunction notify, rpmCallbackData notifyData,
+			const void * pkgKey, Header h,
+			/*@out@*/ const char ** specFile, int archiveSize)
 {
     int rc, i;
     struct cpioFileMapping * map = NULL;
@@ -635,8 +635,8 @@ static int installArchive(FD_t fd, struct fileInfo * files,
  * @return		0 on success, 1 on bad magic, 2 on error
  */
 static int installSources(Header h, const char * rootdir, FD_t fd,
-			  const char ** specFilePtr, rpmCallbackFunction notify,
-			  void * notifyData)
+			const char ** specFilePtr,
+			rpmCallbackFunction notify, rpmCallbackData notifyData)
 {
     const char * specFile = NULL;
     int specFileIndex = -1;
@@ -878,8 +878,9 @@ const char *const fileActionString(enum fileActions a)
 }
 
 int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
-			    const char ** specFile, rpmCallbackFunction notify,
-			    void * notifyData, char ** cookie)
+			const char ** specFile,
+			rpmCallbackFunction notify, rpmCallbackData notifyData,
+			char ** cookie)
 {
     int rc, isSource;
     Header h;
@@ -911,10 +912,10 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
 }
 
 int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
-		         int flags, rpmCallbackFunction notify,
-			 void * notifyData, const void * pkgKey,
-			 enum fileActions * actions,
-			 struct sharedFileInfo * sharedList, FD_t scriptFd)
+			rpmtransFlags transFlags,
+			rpmCallbackFunction notify, rpmCallbackData notifyData,
+			const void * pkgKey, enum fileActions * actions,
+			struct sharedFileInfo * sharedList, FD_t scriptFd)
 {
     int rc;
     const char * name, * version, * release;
@@ -931,13 +932,13 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     char * currDir = NULL;
 
     /* XXX this looks broke, as libraries may need /sbin/ldconfig for example */
-    if (flags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
-	flags |= RPMTRANS_FLAG_NOSCRIPTS;
+    if (transFlags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
+	transFlags |= RPMTRANS_FLAG_NOSCRIPTS;
 
     headerNVR(h, &name, &version, &release);
 
     rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s files test = %d\n"),
-		name, version, release, flags & RPMTRANS_FLAG_TEST);
+		name, version, release, transFlags & RPMTRANS_FLAG_TEST);
 
     if ((scriptArg = rpmdbCountPackages(db, name)) < 0) {
 	rc = 2;
@@ -951,7 +952,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	rpmdbSetIteratorRelease(mi, release);
 	while ((oldH = rpmdbNextIterator(mi))) {
 	    otherOffset = rpmdbGetIteratorOffset(mi);
-	    oldH = (flags & RPMTRANS_FLAG_MULTILIB)
+	    oldH = (transFlags & RPMTRANS_FLAG_MULTILIB)
 		? headerCopy(oldH) : NULL;
 	    break;
 	}
@@ -974,7 +975,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	/*@-unrecog@*/ chroot(rootdir); /*@=unrecog@*/
     }
 
-    if (!(flags & RPMTRANS_FLAG_JUSTDB) && headerIsEntry(h, RPMTAG_BASENAMES)) {
+    if (!(transFlags & RPMTRANS_FLAG_JUSTDB) && headerIsEntry(h, RPMTAG_BASENAMES)) {
 	const char * defaultPrefix;
 	/* old format relocateable packages need the entire default
 	   prefix stripped to form the cpio list, while all other packages
@@ -995,7 +996,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	files = NULL;
     }
 
-    if (flags & RPMTRANS_FLAG_TEST) {
+    if (transFlags & RPMTRANS_FLAG_TEST) {
 	rpmMessage(RPMMESS_DEBUG, _("stopping install as we're running --test\n"));
 	rc = 0;
 	goto exit;
@@ -1003,7 +1004,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
     rpmMessage(RPMMESS_DEBUG, _("running preinstall script (if any)\n"));
     if (runInstScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg,
-		      flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
+		      transFlags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
 	rc = 2;
 	goto exit;
     }
@@ -1104,7 +1105,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	free(fileStates);
 	if (fileMem) freeFileMemory(fileMem);
 	fileMem = NULL;
-    } else if (flags & RPMTRANS_FLAG_JUSTDB) {
+    } else if (transFlags & RPMTRANS_FLAG_JUSTDB) {
 	if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount)) {
 	    fileStates = xmalloc(sizeof(*fileStates) * fileCount);
 	    memset(fileStates, RPMFILE_STATE_NORMAL, fileCount);
@@ -1131,7 +1132,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     if (otherOffset)
         rpmdbRemove(db, otherOffset);
 
-    if (flags & RPMTRANS_FLAG_MULTILIB) {
+    if (transFlags & RPMTRANS_FLAG_MULTILIB) {
 	uint_32 multiLib, * newMultiLib, * p;
 
 	if (headerGetEntry(h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib,
@@ -1154,12 +1155,12 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     rpmMessage(RPMMESS_DEBUG, _("running postinstall scripts (if any)\n"));
 
     if (runInstScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
-		      (flags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd)) {
+		      (transFlags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd)) {
 	rc = 2;
 	goto exit;
     }
 
-    if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
+    if (!(transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run triggers this package sets off */
 	if (runTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0, scriptFd)) {
 	    rc = 2;

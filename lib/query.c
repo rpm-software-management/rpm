@@ -458,19 +458,18 @@ int showMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
     return ec;
 }
 
-/*
- * XXX Eliminate linkage loop into librpmbuild.a
- */
 /**
+ * @todo Eliminate linkage loop into librpmbuild.a
  */
 int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 		const char *buildRoot, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force) = NULL;
 /**
+ * @todo Eliminate linkage loop into librpmbuild.a
  */
 void	(*freeSpecVec) (Spec spec) = NULL;
 
-int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
+int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	rpmdb rpmdb, QVF_t showPackage)
 {
     rpmdbMatchIterator mi = NULL;
@@ -710,7 +709,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
     return retcode;
 }
 
-int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg)
+int rpmQuery(QVA_t *qva, rpmQVSources source, const char * arg)
 {
     rpmdb rpmdb = NULL;
     int rc;

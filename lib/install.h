@@ -62,15 +62,15 @@ int runInstScript(const char * prefix, Header h, int scriptTag, int progTag,
 int runTriggers(const char * root, rpmdb rpmdb, int sense, Header h,
 		int countCorrection, FD_t scriptFd);
 
-/* while this looks for triggers in h which are set off by things in the db
-   database to calculate arguments to the trigger */
 /**
+ * Run triggers from header that are fired by the database.
  * @param root		path to top of install tree
  * @param rpmdb		rpm database
- * @param sense
+ * @param sense		@todo Document.
  * @param h		header
- * @param countCorrection
- * @param scriptFd
+ * @param countCorrection	@todo Document.
+ * @param scriptFd	@todo Document.
+ * @return		@todo Document.
  */
 int runImmedTriggers(const char * root, rpmdb rpmdb, int sense, Header h,
 		int countCorrection, FD_t scriptFd);
@@ -88,19 +88,19 @@ int runImmedTriggers(const char * root, rpmdb rpmdb, int sense, Header h,
  * @param rpmdb		rpm database
  * @param fd		package file handle
  * @param h		package header
- * @param flags		transaction flags
+ * @param transFlags	transaction flags
  * @param notify	progress callback
  * @param notifyData	progress callback private data
  * @param pkgKey	package private data
  * @param actions	array of file dispositions
  * @param sharedList	header instances of packages that share files
- * @param scriptFd
+ * @param scriptFd	@todo Document.
  * @return		0 on success, 1 on bad magic, 2 on error
  */
 int installBinaryPackage(const char * rootdir, rpmdb rpmdb, FD_t fd, Header h,
-		int flags, rpmCallbackFunction notify, 
-		void * notifyData, const void * pkgKey, 
-		enum fileActions * actions,
+		rpmtransFlags transFlags,
+		rpmCallbackFunction notify, rpmCallbackData notifyData,
+		const void * pkgKey, enum fileActions * actions,
 		struct sharedFileInfo * sharedList, FD_t scriptFd);
 
 /**
@@ -110,19 +110,18 @@ int installBinaryPackage(const char * rootdir, rpmdb rpmdb, FD_t fd, Header h,
  * @param fd		package file handle
  * @param offset	header instance in rpm database
  * @param h		package header
- * @param flags		transaction flags
+ * @param transFlags	transaction flags
  * @param notify	progress callback
  * @param notifyData	progress callback private data
  * @param pkgKey	package private data
  * @param actions	array of file dispositions
- * @param scriptFd
+ * @param scriptFd	@todo Document.
  * @return
  */
 int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
-		Header h,
-		int flags, rpmCallbackFunction notify, 
-		void * notifyData, const void * pkgKey, 
-		enum fileActions * actions,
+		Header h, rpmtransFlags flags,
+		rpmCallbackFunction notify, rpmCallbackData notifyData,
+		const void * pkgKey, enum fileActions * actions,
 		FD_t scriptFd);
 
 #ifdef __cplusplus

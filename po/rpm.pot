@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-08-27 20:56-0400\n"
+"POT-Creation-Date: 2000-08-29 16:42-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: build.c:25 lib/rpminstall.c:455
+#: build.c:25 lib/rpminstall.c:458
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
@@ -2554,39 +2554,39 @@ msgstr ""
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:803 lib/install.c:1070 lib/uninstall.c:40
+#: lib/install.c:803 lib/install.c:1071 lib/uninstall.c:40
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:892
+#: lib/install.c:893
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:939
+#: lib/install.c:940
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:999
+#: lib/install.c:1000
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:1004
+#: lib/install.c:1005
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1029
+#: lib/install.c:1030
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1066
+#: lib/install.c:1067
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1154
+#: lib/install.c:1155
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2877,80 +2877,80 @@ msgid "can't query %s: %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/query.c:497
+#: lib/query.c:496
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:515
+#: lib/query.c:514
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:524 lib/rpminstall.c:238
+#: lib/query.c:523 lib/rpminstall.c:240
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:528
+#: lib/query.c:527
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:561
+#: lib/query.c:560
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:584
+#: lib/query.c:583
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:594
+#: lib/query.c:593
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:604
+#: lib/query.c:603
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:614
+#: lib/query.c:613
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:625
+#: lib/query.c:624
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:655
+#: lib/query.c:654
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:658
+#: lib/query.c:657
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:684
+#: lib/query.c:683
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:687
+#: lib/query.c:686
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:691
+#: lib/query.c:690
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:702 lib/rpminstall.c:468
+#: lib/query.c:701 lib/rpminstall.c:471
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3227,104 +3227,104 @@ msgstr ""
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:133
+#: lib/rpminstall.c:134
 msgid "counting packages to install\n"
 msgstr ""
 
-#: lib/rpminstall.c:137
+#: lib/rpminstall.c:138
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:142
+#: lib/rpminstall.c:143
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: lib/rpminstall.c:157
+#: lib/rpminstall.c:158
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr ""
 
-#: lib/rpminstall.c:172
+#: lib/rpminstall.c:173
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:182
+#: lib/rpminstall.c:183
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:187
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:214
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:224 lib/rpminstall.c:393
+#: lib/rpminstall.c:226 lib/rpminstall.c:395
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:242 lib/rpminstall.c:533
+#: lib/rpminstall.c:244 lib/rpminstall.c:536
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:257
+#: lib/rpminstall.c:259
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:277
+#: lib/rpminstall.c:279
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:324
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:327
+#: lib/rpminstall.c:329
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:344
+#: lib/rpminstall.c:346
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:355
+#: lib/rpminstall.c:357
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:373
+#: lib/rpminstall.c:375
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:471
+#: lib/rpminstall.c:474
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:494
+#: lib/rpminstall.c:497
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:522
+#: lib/rpminstall.c:525
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:528
+#: lib/rpminstall.c:531
 #, c-format
 msgid "Installing %s\n"
 msgstr ""

@@ -584,7 +584,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
      * This is good, as it lets us perform this trim in linear time, rather
      * then logarithmic or quadratic.
      */
-    rpmProblem * f, * t;
+    rpmProblem f, t;
     int gotProblems = 0;
 
     f = filter->probs;
@@ -657,7 +657,7 @@ static enum fileActions decideFileFate(const char * dirName,
 			const char * baseName, short dbMode,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
-			int brokenMd5, int transFlags)
+			int brokenMd5, rpmtransFlags transFlags)
 {
     char buffer[1024];
     const char * dbAttr, * newAttr;
@@ -770,7 +770,8 @@ static int filecmp(short mode1, const char * md51, const char * link1,
 static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount, int reportConflicts,
-				    rpmProblemSet probs, int transFlags)
+				    rpmProblemSet probs,
+				    rpmtransFlags transFlags)
 {
     Header h;
     int i;
@@ -1214,11 +1215,10 @@ static void skipFiles(TFI_t * fi, int noDocs)
 
 #define	NOTIFY(_x)	if (notify) (void) notify _x
 
-/* Return -1 on error, > 0 if newProbs is set, 0 if everything happened */
-
-int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
-		       void * notifyData, rpmProblemSet okProbs,
-		       rpmProblemSet * newProbs, int transFlags, int ignoreSet)
+int rpmRunTransactions(	rpmTransactionSet ts,
+			rpmCallbackFunction notify, rpmCallbackData notifyData,
+			rpmProblemSet okProbs, rpmProblemSet * newProbs,
+			rpmtransFlags transFlags, rpmprobFilterFlags ignoreSet)
 {
     int i, j;
     int rc, ourrc = 0;

@@ -655,8 +655,8 @@ int main(int argc, const char ** argv)
 #endif
 
 #if defined(IAM_RPMK)
-    enum rpmKtype addSign = RPMK_NEW_SIGNATURE;
-    int checksigFlags = 0;
+    rpmResignFlags addSign = RESIGN_NEW_SIGNATURE;
+    rpmCheckSigFlags checksigFlags = CHECKSIG_NONE;
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
@@ -887,7 +887,7 @@ int main(int argc, const char ** argv)
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RESIGN;
-	    addSign = RPMK_NEW_SIGNATURE;
+	    addSign = RESIGN_NEW_SIGNATURE;
 	    signIt = 1;
 	    break;
 
@@ -895,7 +895,7 @@ int main(int argc, const char ** argv)
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_RESIGN;
-	    addSign = RPMK_ADD_SIGNATURE;
+	    addSign = RESIGN_ADD_SIGNATURE;
 	    signIt = 1;
 	    break;
 #endif	/* IAM_RPMK */

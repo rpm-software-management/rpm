@@ -349,7 +349,6 @@ static int verifyDependencies(/*@only@*/ rpmdb rpmdb, Header h) {
     return 0;
 }
 
-/** */
 int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
 {
     int ec, rc;
@@ -369,8 +368,7 @@ int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
     return ec;
 }
 
-/** */
-int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg)
+int rpmVerify(QVA_t *qva, rpmQVSources source, const char *arg)
 {
     rpmdb rpmdb = NULL;
     int rc;

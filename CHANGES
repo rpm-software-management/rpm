@@ -3,7 +3,8 @@
 	- rip out rpm{get,put}text, use getpo.sh and specspo instead.
 	- rip out rpmrc configuration.
 	- consistent return for all signature verification.
-	- use enum for signature header tags.
+	- use enums for almost all rpmlib #define's.
+	- API: change rpmProblem typedef to pass by reference, not value.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
@@ -103,6 +104,7 @@
 	- add callbacks on package erasure.
 	- fix: preserve cpio errno when using Fclose with libio.
 	- fix: initialize sigs everywhere in python header object.
+	- translate rpm.8 man page (Peter Ivanyi <ivanyi@internet.sk>).
 
 3.0.4 -> 3.0.5
 	- configure.in fiddles for BSD systems (Patrick Schoo).

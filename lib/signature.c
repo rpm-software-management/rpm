@@ -423,7 +423,7 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
     return ret;
 }
 
-static enum rpmVerifySignatureReturn
+static rpmVerifySignatureReturn
 verifySizeSignature(const char *datafile, int_32 size, char *result)
 {
     struct stat statbuf;
@@ -442,7 +442,7 @@ verifySizeSignature(const char *datafile, int_32 size, char *result)
 
 #define	X(_x)	(unsigned)((_x) & 0xff)
 
-static enum rpmVerifySignatureReturn
+static rpmVerifySignatureReturn
 verifyMD5Signature(const char *datafile, unsigned char *sig, 
 			      char *result, md5func fn)
 {
@@ -476,7 +476,7 @@ verifyMD5Signature(const char *datafile, unsigned char *sig,
     return RPMSIG_OK;
 }
 
-static enum rpmVerifySignatureReturn
+static rpmVerifySignatureReturn
 verifyPGPSignature(const char *datafile, void *sig, int count, char *result)
 {
     int pid, status, outpipe[2];
@@ -588,7 +588,7 @@ verifyPGPSignature(const char *datafile, void *sig, int count, char *result)
     return res;
 }
 
-static enum rpmVerifySignatureReturn
+static rpmVerifySignatureReturn
 verifyGPGSignature(const char *datafile, void *sig, int count, char *result)
 {
     int pid, status, outpipe[2];
@@ -785,7 +785,7 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
     return pass;
 }
 
-enum rpmVerifySignatureReturn
+rpmVerifySignatureReturn
 rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 		    char *result)
 {

@@ -208,6 +208,7 @@ fi
 %{__prefix}%{__share}/man/man[18]/*.[18]*
 %lang(pl) %{__prefix}%{__share}/man/pl/man[18]/*.[18]*
 %lang(ru) %{__prefix}%{__share}/man/ru/man[18]/*.[18]*
+%lang(sk) %{__prefix}%{__share}/man/sk/man[18]/*.[18]*
 
 %files build
 %defattr(-,root,root)
