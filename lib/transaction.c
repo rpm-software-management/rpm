@@ -636,6 +636,8 @@ assert(otherFi != NULL);
 	    }
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
+	    /* XXX avoid md5 on sparse /var/log/lastlog file. */
+	    if (strcmp(fn, "/var/log/lastlog"))
 	    {	char md5sum[50];
 		const unsigned char * MD5 = rpmfiMD5(fi);
 		if (!domd5(fn, md5sum, 0, NULL) && memcmp(MD5, md5sum, 16)) {

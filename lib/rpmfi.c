@@ -592,6 +592,8 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      */
     if (dbWhat == REG) {
 	const unsigned char * omd5, * nmd5;
+	/* XXX avoid md5 on sparse /var/log/lastlog file. */
+	if (strcmp(fn, "/var/log/lastlog"))
 	if (domd5(fn, buffer, 0, NULL))
 	    return FA_CREATE;	/* assume file has been removed */
 	omd5 = rpmfiMD5(ofi);
