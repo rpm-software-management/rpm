@@ -22,3 +22,8 @@ librpmbuild_la_SOURCES = \
 .PHONY:	lclint
 lclint:
 	lclint ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES}
+
+.PHONY:	genhtml
+genhtml:
+	doc++ -d html -f -H -S build.c expression.c
+#	doc++ -A -d html -f -H -S ${pkginc_HEADERS} ${librpmbuild_la_SOURCES}
