@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-12 19:00-0400\n"
+"POT-Creation-Date: 2000-07-13 19:28-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2417,49 +2417,49 @@ msgstr ""
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:992
-#, c-format
-msgid "%s: %-45s YES (db files)\n"
-msgstr ""
-
-#: lib/depends.c:1005
-#, c-format
-msgid "%s: %-45s YES (db provides)\n"
-msgstr ""
-
-#: lib/depends.c:1019
-#, fuzzy, c-format
-msgid "%s: %-45s YES (db packages)\n"
-msgstr "datoteka %s ne pripada nijednom paketu\n"
-
-#: lib/depends.c:1035
+#: lib/depends.c:985
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:1046
+#: lib/depends.c:1005
+#, c-format
+msgid "%s: %-45s YES (db files)\n"
+msgstr ""
+
+#: lib/depends.c:1018
+#, c-format
+msgid "%s: %-45s YES (db provides)\n"
+msgstr ""
+
+#: lib/depends.c:1032
+#, fuzzy, c-format
+msgid "%s: %-45s YES (db packages)\n"
+msgstr "datoteka %s ne pripada nijednom paketu\n"
+
+#: lib/depends.c:1047
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1067
+#: lib/depends.c:1068
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1121
+#: lib/depends.c:1122
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s nije naveden u %s"
 
 #. conflicts exist.
-#: lib/depends.c:1188
+#: lib/depends.c:1189
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: lib/depends.c:1314
+#: lib/depends.c:1315
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "petlja u lancu: %s"

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-12 19:00-0400\n"
+"POT-Creation-Date: 2000-07-13 19:28-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2407,49 +2407,49 @@ msgstr ""
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:992
-#, c-format
-msgid "%s: %-45s YES (db files)\n"
-msgstr ""
-
-#: lib/depends.c:1005
-#, c-format
-msgid "%s: %-45s YES (db provides)\n"
-msgstr ""
-
-#: lib/depends.c:1019
-#, fuzzy, c-format
-msgid "%s: %-45s YES (db packages)\n"
-msgstr "файл %s не принадлежит ни одному из пакетов\n"
-
-#: lib/depends.c:1035
+#: lib/depends.c:985
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/depends.c:1046
+#: lib/depends.c:1005
+#, c-format
+msgid "%s: %-45s YES (db files)\n"
+msgstr ""
+
+#: lib/depends.c:1018
+#, c-format
+msgid "%s: %-45s YES (db provides)\n"
+msgstr ""
+
+#: lib/depends.c:1032
+#, fuzzy, c-format
+msgid "%s: %-45s YES (db packages)\n"
+msgstr "файл %s не принадлежит ни одному из пакетов\n"
+
+#: lib/depends.c:1047
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1067
+#: lib/depends.c:1068
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1121
+#: lib/depends.c:1122
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1188
+#: lib/depends.c:1189
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1314
+#: lib/depends.c:1315
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "замкнутый цикл в цепочке требований для установки: %s"

@@ -84,6 +84,8 @@
 	- fix: remove verbose database +++/--- messages to conform to doco.
 	- compare versions if doing --freshen.
 	- add S_ISLNK pre-transaction syscall test.
+	- fix: initialize pretransaction argv (segfault).
+	- fix: check rpmlib features w/o database (and check earlier as well).
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

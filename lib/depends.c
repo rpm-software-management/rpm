@@ -975,6 +975,19 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     }
   }
 
+    /*
+     * New features in rpm packaging implicitly add versioned dependencies
+     * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
+     * Check those dependencies now.
+     */
+     if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
+	if (rpmCheckRpmlibProvides(keyName, keyEVR, keyFlags)) {
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib provides)\n"),
+			keyType, keyDepend+2);
+	    goto exit;
+	}
+    }
+
     if (alSatisfiesDepend(&rpmdep->addedPackages, keyType, keyDepend, keyName, keyEVR, keyFlags)) {
 	goto exit;
     }
@@ -1025,18 +1038,6 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	rpmdbFreeIterator(mi);
 #endif
 
-	/*
-	 * New features in rpm packaging implicitly add versioned dependencies
-	 * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
-	 * Check those dependencies now.
-	 */
-	if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
-	    if (rpmCheckRpmlibProvides(keyName, keyEVR, keyFlags)) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib provides)\n"),
-			keyType, keyDepend+2);
-		goto exit;
-	    }
-	}
     }
 
     if (suggestion)

@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-07-12 19:00-0400\n"
+msgstr "POT-Creation-Date: 2000-07-13 19:28-0400\n"
 
 #: build.c:25 lib/rpminstall.c:451
 #, c-format
@@ -2521,49 +2521,49 @@ msgstr ""
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:992
-#, c-format
-msgid "%s: %-45s YES (db files)\n"
-msgstr ""
-
-#: lib/depends.c:1005
-#, c-format
-msgid "%s: %-45s YES (db provides)\n"
-msgstr ""
-
-#: lib/depends.c:1019
-#, c-format
-msgid "%s: %-45s YES (db packages)\n"
-msgstr ""
-
-#: lib/depends.c:1035
+#: lib/depends.c:985
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1046
+#: lib/depends.c:1005
+#, c-format
+msgid "%s: %-45s YES (db files)\n"
+msgstr ""
+
+#: lib/depends.c:1018
+#, c-format
+msgid "%s: %-45s YES (db provides)\n"
+msgstr ""
+
+#: lib/depends.c:1032
+#, c-format
+msgid "%s: %-45s YES (db packages)\n"
+msgstr ""
+
+#: lib/depends.c:1047
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1067
+#: lib/depends.c:1068
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1121
+#: lib/depends.c:1122
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "não foi passado pacote para instalação"
 
 #. conflicts exist.
-#: lib/depends.c:1188
+#: lib/depends.c:1189
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/depends.c:1314
+#: lib/depends.c:1315
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""

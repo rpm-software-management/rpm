@@ -23,7 +23,7 @@ int ncmds = sizeof(cmds)/sizeof(cmds[0]);
 
 int rpmSyscall(const char * cmd, int noexec)
 {
-    const char ** argv;
+    const char ** argv = NULL;
     int argc;
     struct stat st;
     int i, j;
