@@ -34,6 +34,7 @@
 	- remove noNeon runtime switch, http through neon only.
 	- remove http put to be able to build against upstream neon.
 	- bump soname into libfoo-4.4.so everywhere.
+	- sparcv8: optflags changed to -mtune=ultrasparc (#140420).
 
 4.3.2 -> 4.3.3:
 	- bump micro version.
