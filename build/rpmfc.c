@@ -272,10 +272,10 @@ static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
 }
 
 static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
-		/*@null@*/ rpmds this)
+		/*@null@*/ rpmds ds)
 	/*@modifies buf @*/
 {
-    int_32 tagN = rpmdsTagN(this);
+    int_32 tagN = rpmdsTagN(ds);
     char deptype = 'X';
 
 /*@-boundswrite@*/
@@ -290,9 +290,9 @@ static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
 	break;
     }
 /*@-nullpass@*/
-    if (this != NULL)
+    if (ds != NULL)
 	sprintf(buf, "%08d%c %s %s 0x%08x", ix, deptype,
-		rpmdsN(this), rpmdsEVR(this), rpmdsFlags(this));
+		rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
 /*@=nullpass@*/
     return buf;
 };
@@ -314,7 +314,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     StringBuf sb_stdout = NULL;
     StringBuf sb_stdin;
     const char *av[2];
-    rpmds * depsp, this;
+    rpmds * depsp, ds;
     const char * N;
     const char * EVR;
     int_32 Flags, dsContext, tagN;
@@ -392,23 +392,23 @@ assert(EVR != NULL);
 
 	    /* Add tracking dependency for versioned Provides: */
 	    if (!fc->tracked && deptype == 'P' && *EVR != '\0') {
-		this = rpmdsSingle(RPMTAG_REQUIRENAME,
+		ds = rpmdsSingle(RPMTAG_REQUIRENAME,
 			"rpmlib(VersionedDependencies)", "3.0.3-1",
 			RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL));
-		xx = rpmdsMerge(&fc->requires, this);
-		this = rpmdsFree(this);
+		xx = rpmdsMerge(&fc->requires, ds);
+		ds = rpmdsFree(ds);
 		fc->tracked = 1;
 	    }
 
-	    this = rpmdsSingle(tagN, N, EVR, Flags);
+	    ds = rpmdsSingle(tagN, N, EVR, Flags);
 
 	    /* Add to package dependencies. */
-	    xx = rpmdsMerge(depsp, this);
+	    xx = rpmdsMerge(depsp, ds);
 
 	    /* Add to file dependencies. */
-	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, this));
+	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
 
-	    this = rpmdsFree(this);
+	    ds = rpmdsFree(ds);
 	}
 
 	pav = argvFree(pav);
@@ -635,7 +635,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 {
     const char * fn = fc->fn[fc->ix];
     const char * bn;
-    rpmds this;
+    rpmds ds;
     char buf[BUFSIZ];
     FILE * fp;
     char * s, * se;
@@ -681,13 +681,13 @@ static int rpmfcSCRIPT(rpmfc fc)
 	se++;
 
 	/* Add to package requires. */
-	this = rpmdsSingle(RPMTAG_REQUIRENAME, s, "", RPMSENSE_FIND_REQUIRES);
-	xx = rpmdsMerge(&fc->requires, this);
+	ds = rpmdsSingle(RPMTAG_REQUIRENAME, s, "", RPMSENSE_FIND_REQUIRES);
+	xx = rpmdsMerge(&fc->requires, ds);
 
 	/* Add to file requires. */
-	xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(se, fc->ix, this));
+	xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(se, fc->ix, ds));
 
-	this = rpmdsFree(this);
+	ds = rpmdsFree(ds);
 
 	/* Set color based on interpreter name. */
 	bn = basename(s);
@@ -739,7 +739,7 @@ static int rpmfcELF(rpmfc fc)
     unsigned char deptype;
     struct stat sb, * st = &sb;
     const char * soname = NULL;
-    rpmds * depsp, this;
+    rpmds * depsp, ds;
     int_32 tagN, dsContext;
     char * t;
     int xx;
@@ -817,15 +817,15 @@ static int rpmfcELF(rpmfc fc)
 			    t++;
 
 			    /* Add to package provides. */
-			    this = rpmdsSingle(RPMTAG_PROVIDES,
+			    ds = rpmdsSingle(RPMTAG_PROVIDES,
 					buf, "", RPMSENSE_FIND_PROVIDES);
-			    xx = rpmdsMerge(&fc->provides, this);
+			    xx = rpmdsMerge(&fc->provides, ds);
 
 			    /* Add to file dependencies. */
 			    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, this));
+					rpmfcFileDep(t, fc->ix, ds));
 
-			    this = rpmdsFree(this);
+			    ds = rpmdsFree(ds);
 			}
 			auxoffset += aux->vda_next;
 		    }
@@ -873,14 +873,14 @@ static int rpmfcELF(rpmfc fc)
 			    t++;
 
 			    /* Add to package dependencies. */
-			    this = rpmdsSingle(RPMTAG_REQUIRENAME,
+			    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
 					buf, "", RPMSENSE_FIND_REQUIRES);
-			    xx = rpmdsMerge(&fc->requires, this);
+			    xx = rpmdsMerge(&fc->requires, ds);
 
 			    /* Add to file dependencies. */
 			    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, this));
-			    this = rpmdsFree(this);
+					rpmfcFileDep(t, fc->ix, ds));
+			    ds = rpmdsFree(ds);
 			}
 			auxoffset += aux->vna_next;
 		    }
@@ -938,14 +938,14 @@ assert(s != NULL);
 		    t++;
 
 		    /* Add to package dependencies. */
-		    this = rpmdsSingle(tagN, buf, "", dsContext);
-		    xx = rpmdsMerge(depsp, this);
+		    ds = rpmdsSingle(tagN, buf, "", dsContext);
+		    xx = rpmdsMerge(depsp, ds);
 
 		    /* Add to file dependencies. */
 		    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, this));
+					rpmfcFileDep(t, fc->ix, ds));
 
-		    this = rpmdsFree(this);
+		    ds = rpmdsFree(ds);
 		}
 	    }
 	    /*@switchbreak@*/ break;
@@ -981,7 +981,7 @@ int rpmfcApply(rpmfc fc)
 {
     const char * s;
     char * se;
-    rpmds this;
+    rpmds ds;
     const char * N;
     const char * EVR;
     int_32 Flags;
@@ -1031,14 +1031,14 @@ assert(se != NULL);
 	default:
 	    /*@switchbreak@*/ break;
 	case 'P':	
-	    this = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
-	    dix = rpmdsFind(fc->provides, this);
-	    this = rpmdsFree(this);
+	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
+	    dix = rpmdsFind(fc->provides, ds);
+	    ds = rpmdsFree(ds);
 	    /*@switchbreak@*/ break;
 	case 'R':
-	    this = rpmdsSingle(RPMTAG_REQUIRENAME, N, EVR, Flags);
-	    dix = rpmdsFind(fc->requires, this);
-	    this = rpmdsFree(this);
+	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, N, EVR, Flags);
+	    dix = rpmdsFind(fc->requires, ds);
+	    ds = rpmdsFree(ds);
 	    /*@switchbreak@*/ break;
 	}
 
@@ -1397,7 +1397,8 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 	    N = rpmdsN(pkg->ds);
 	    EVR = rpmdsEVR(pkg->ds);
 	    sprintf(buf, "config(%s)", N);
-	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR, RPMSENSE_EQUAL);
+	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR,
+			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    xx = rpmdsMerge(&fc->provides, ds);
 	    ds = rpmdsFree(ds);
 	}
@@ -1416,7 +1417,8 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 	    N = rpmdsN(pkg->ds);
 	    EVR = rpmdsEVR(pkg->ds);
 	    sprintf(buf, "config(%s)", N);
-	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR, RPMSENSE_EQUAL);
+	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR,
+			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    xx = rpmdsMerge(&fc->requires, ds);
 	    ds = rpmdsFree(ds);
 	}

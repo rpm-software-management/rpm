@@ -15,7 +15,7 @@ INCLUDES = -I. \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	fts.h \
+	argv.h fts.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	ugid.h
 noinst_HEADERS = rpmio_internal.h
@@ -24,7 +24,8 @@ BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = digest.c fts.c macro.c \
+librpmio_la_SOURCES = \
+	argv.c digest.c fts.c macro.c \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -release @VERSION@ \

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-24 02:13-0500\n"
+"POT-Creation-Date: 2002-12-24 02:38-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3198,30 +3198,30 @@ msgstr "usuwanie indeksu plików dla %s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:968
+#: rpmdb/db3.c:969
 #, c-format
-msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1071
+#: rpmdb/db3.c:1073
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1314
+#: rpmdb/db3.c:1316
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"

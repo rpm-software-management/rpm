@@ -151,6 +151,7 @@ extern "C" {
 /**
  * Unreference a file info set instance.
  * @param fi		file info set
+ * @param msg
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
@@ -158,7 +159,13 @@ rpmfi rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 		/*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 
-/** @todo Remove debugging entry from the ABI. */
+/** @todo Remove debugging entry from the ABI.
+ * @param fi		file info set
+ * @param msg
+ * @param fn
+ * @param ln
+ * @return		NULL always
+ */
 /*@-exportlocal@*/
 /*@null@*/
 rpmfi XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
@@ -170,13 +177,20 @@ rpmfi XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 /**
  * Reference a file info set instance.
  * @param fi		file info set
+ * @param msg
  * @return		new file info set reference
  */
 /*@unused@*/
 rpmfi rpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 
-/** @todo Remove debugging entry from the ABI. */
+/** @todo Remove debugging entry from the ABI.
+ * @param fi		file info set
+ * @param msg
+ * @param fn
+ * @param ln
+ * @return		NULL always
+ */
 rpmfi XrpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies fi @*/;
@@ -228,7 +242,7 @@ int rpmfiDX(/*@null@*/ rpmfi fi)
 /**
  * Set current directory index in file info set.
  * @param fi		file info set
- * @param fx		new directory index
+ * @param dx		new directory index
  * @return		current directory index
  */
 int rpmfiSetDX(/*@null@*/ rpmfi fi, int dx)

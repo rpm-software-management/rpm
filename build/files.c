@@ -324,7 +324,7 @@ VFA_t verifyAttrs[] = {
 
 /**
  * Parse %verify and %defverify from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -422,7 +422,7 @@ static int parseForVerify(char * buf, FileList fl)
 
 /**
  * Parse %dev from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -524,7 +524,7 @@ exit:
 
 /**
  * Parse %attr and %defattr from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -657,7 +657,7 @@ static int parseForAttr(char * buf, FileList fl)
 
 /**
  * Parse %config from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -673,6 +673,7 @@ static int parseForConfig(char * buf, FileList fl)
 
     fl->currentFlags |= RPMFILE_CONFIG;
 
+    /* Erase "%config" token. */
     for (pe = p; (pe-p) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
@@ -690,7 +691,7 @@ static int parseForConfig(char * buf, FileList fl)
 	return RPMERR_BADSPEC;
     }
 
-    /* Localize. Erase parsed string */
+    /* Localize. Erase parsed string. */
     q = alloca((pe-p) + 1);
     strncpy(q, p, pe-p);
     q[pe-p] = '\0';
@@ -732,7 +733,7 @@ static int langCmp(const void * ap, const void * bp)
 
 /**
  * Parse %lang from file manifest.
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @return		0 on success
  */
@@ -882,13 +883,14 @@ VFA_t virtualFileAttributes[] = {
 	{ "%exclude",	0,	RPMFILE_EXCLUDE },
 	{ "%readme",	0,	RPMFILE_README },
 	{ "%license",	0,	RPMFILE_LICENSE },
+	{ "%pubkey",	0,	RPMFILE_PUBKEY },
 
 #if WHY_NOT
-	{ "%spec",	RPMFILE_SPEC },
-	{ "%config",	RPMFILE_CONFIG },
-	{ "%donotuse",	RPMFILE_DONOTUSE },	/* XXX WTFO? */
-	{ "%missingok",	RPMFILE_CONFIG|RPMFILE_MISSINGOK },
-	{ "%noreplace",	RPMFILE_CONFIG|RPMFILE_NOREPLACE },
+	{ "%icon",	0,	RPMFILE_ICON },
+	{ "%spec",	0,	RPMFILE_SPEC },
+	{ "%config",	0,	RPMFILE_CONFIG },
+	{ "%missingok",	0,	RPMFILE_CONFIG|RPMFILE_MISSINGOK },
+	{ "%noreplace",	0,	RPMFILE_CONFIG|RPMFILE_NOREPLACE },
 #endif
 
 	{ NULL, 0, 0 }
@@ -899,7 +901,7 @@ VFA_t virtualFileAttributes[] = {
  * Parse simple attributes (e.g. %dir) from file manifest.
  * @param spec
  * @param pkg
- * @param buf
+ * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @retval fileName
  * @return		0 on success
@@ -977,7 +979,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		specialDoc = 1;
 		strcat(specialDocBuf, " ");
 		strcat(specialDocBuf, s);
-	    } else {
+	    } else if (!(fl->currentFlags & (RPMFILE_PUBKEY|RPMFILE_ICON))) {
 		/* not in %doc, does not begin with / -- error */
 		rpmError(RPMERR_BADSPEC,
 		    _("File must begin with \"/\": %s\n"), s);

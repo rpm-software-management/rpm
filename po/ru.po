@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-24 02:13-0500\n"
+"POT-Creation-Date: 2002-12-24 02:38-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3096,30 +3096,30 @@ msgstr "закрыт индекс базы данных %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "проверен индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:968
+#: rpmdb/db3.c:969
 #, c-format
-msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1071
+#: rpmdb/db3.c:1073
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "shared"
 msgstr "разделяемый"
 
-#: rpmdb/db3.c:1314
+#: rpmdb/db3.c:1316
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"

@@ -1,8 +1,8 @@
 #ifndef _H_ARGV_
 #define	_H_ARGV_
 
-/** \ingroup rpmbuild
- * \file build/argv.h
+/** \ingroup rpmio
+ * \file rpmio/argv.h
  */
 
 typedef	const char * ARGstr_t;
@@ -95,6 +95,8 @@ int argvCmp(const void * a, const void * b)
 /**
  * Sort an argv array.
  * @param argv		argv array
+ * @param compar	strcmp-like comparison function, or NULL for argvCmp()
+ * @return		0 always
  */
 int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
 	/*@modifies *argv @*/;
@@ -102,6 +104,9 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
 /**
  * Find an element in an argv array.
  * @param argv		argv array
+ * @param val		string to find
+ * @param compar	strcmp-like comparison function, or NULL for argvCmp()
+ * @return		found string (NULL on failure)
  */
 /*@dependent@*/ /*@null@*/
 ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
@@ -111,7 +116,7 @@ ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
 /**
  * Add an int to an argi array.
  * @retval *argip	argi array
- * @parm ix		argi array index (or -1 to append)
+ * @param ix		argi array index (or -1 to append)
  * @param val		int arg to add
  * @return		0 always
  */
@@ -137,8 +142,11 @@ int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
 	/*@modifies *argvp @*/;
 
 /**
- * Splint a string into an argv array.
+ * Split a string into an argv array.
  * @retval *argvp	argv array
+ * @param str		string arg to split
+ * @param seps		seperator characters
+ * @return		0 always
  */
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 	/*@modifies *argvp @*/;

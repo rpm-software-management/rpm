@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-12-24 02:13-0500\n"
+"POT-Creation-Date: 2002-12-24 02:38-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3129,30 +3129,30 @@ msgstr "닫힌    db 인덱스      %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "검증된  db 인덱스      %s/%s\n"
 
-#: rpmdb/db3.c:968
+#: rpmdb/db3.c:969
 #, c-format
-msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1071
+#: rpmdb/db3.c:1073
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "여는중  db 인덱스      %s/%s %s 모드=0x%x\n"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "exclusive"
 msgstr "폐쇄적(exclusive)"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "shared"
 msgstr "공유됨"
 
-#: rpmdb/db3.c:1314
+#: rpmdb/db3.c:1316
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "잠금된  db 인덱스      %s/%s\n"

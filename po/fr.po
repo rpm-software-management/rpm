@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-24 02:13-0500\n"
+"POT-Creation-Date: 2002-12-24 02:38-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3231,30 +3231,30 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/db3.c:968
+#: rpmdb/db3.c:969
 #, c-format
-msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1071
+#: rpmdb/db3.c:1073
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1314
+#: rpmdb/db3.c:1316
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "impossible d'ouvrir: %s\n"

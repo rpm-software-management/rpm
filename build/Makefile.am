@@ -16,13 +16,13 @@ INCLUDES = -I. \
 LIBS =
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = argv.h rpmbuild.h rpmfc.h rpmfile.h rpmspec.h
+pkginc_HEADERS = rpmbuild.h rpmfc.h rpmfile.h rpmspec.h
 noinst_HEADERS = buildio.h
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \
-	argv.c build.c expression.c files.c misc.c names.c pack.c \
+	build.c expression.c files.c misc.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c

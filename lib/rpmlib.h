@@ -412,19 +412,18 @@ typedef	enum rpmfileAttrs_e {
 /*@-enummemuse@*/
     RPMFILE_NONE	= 0,
 /*@=enummemuse@*/
-    RPMFILE_CONFIG	= (1 << 0),	/*!< from %%config */
-    RPMFILE_DOC		= (1 << 1),	/*!< from %%doc */
-/*@-enummemuse@*/
-    RPMFILE_DONOTUSE	= (1 << 2),	/*!< @todo (unimplemented) from %donotuse. */
-/*@=enummemuse@*/
-    RPMFILE_MISSINGOK	= (1 << 3),	/*!< from %%config(missingok) */
-    RPMFILE_NOREPLACE	= (1 << 4),	/*!< from %%config(noreplace) */
-    RPMFILE_SPECFILE	= (1 << 5),	/*!< @todo (unnecessary) marks 1st file in srpm. */
-    RPMFILE_GHOST	= (1 << 6),	/*!< from %%ghost */
-    RPMFILE_LICENSE	= (1 << 7),	/*!< from %%license */
-    RPMFILE_README	= (1 << 8),	/*!< from %%readme */
-    RPMFILE_EXCLUDE	= (1 << 9),	/*!< from %%exclude */
-    RPMFILE_UNPATCHED	= (1 << 10)	/*!< placeholder (SuSE) */
+    RPMFILE_CONFIG	= (1 <<  0),	/*!< from %%config */
+    RPMFILE_DOC		= (1 <<  1),	/*!< from %%doc */
+    RPMFILE_ICON	= (1 <<  2),	/*!< from %%donotuse. */
+    RPMFILE_MISSINGOK	= (1 <<  3),	/*!< from %%config(missingok) */
+    RPMFILE_NOREPLACE	= (1 <<  4),	/*!< from %%config(noreplace) */
+    RPMFILE_SPECFILE	= (1 <<  5),	/*!< @todo (unnecessary) marks 1st file in srpm. */
+    RPMFILE_GHOST	= (1 <<  6),	/*!< from %%ghost */
+    RPMFILE_LICENSE	= (1 <<  7),	/*!< from %%license */
+    RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
+    RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude */
+    RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
+    RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
 } rpmfileAttrs;
 #define	RPMFILE_MULTILIB_SHIFT		12
 #define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
@@ -472,7 +471,8 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< @todo Implement %triggerprein. */
 /*@=enummemuse@*/
     RPMSENSE_KEYRING	= (1 << 26),
-    RPMSENSE_PATCHES	= (1 << 27)
+    RPMSENSE_PATCHES	= (1 << 27),
+    RPMSENSE_CONFIG	= (1 << 28)
 } rpmsenseFlags;
 
 #define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */
@@ -946,7 +946,8 @@ typedef enum rpmtransFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< from --nosuggest */
-    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29)
+    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */
+    RPMTRANS_FLAG_NOCONFIGS	= (1 << 30)	/*!< from --noconfigs */
 } rpmtransFlags;
 
 #define	_noTransScripts		\

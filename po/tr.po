@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-24 02:13-0500\n"
+"POT-Creation-Date: 2002-12-24 02:38-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3152,30 +3152,30 @@ msgstr "kapandý      db endeks %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "doðrulandý    db endeks %s/%s\n"
 
-#: rpmdb/db3.c:968
+#: rpmdb/db3.c:969
 #, c-format
-msgid "\tunshared posix mutexes found(%d), adding DB_PRIVATE\n"
+msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1071
+#: rpmdb/db3.c:1073
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1308
+#: rpmdb/db3.c:1310
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "exclusive"
 msgstr "baðdaþýk"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1312
 msgid "shared"
 msgstr "paylaþýmlý"
 
-#: rpmdb/db3.c:1314
+#: rpmdb/db3.c:1316
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"

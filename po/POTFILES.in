@@ -64,6 +64,7 @@ rpmdb/poptDB.c
 rpmdb/rpmdb.c
 rpmdb/rpmhash.c
 rpmdb/tagname.c
+rpmio/argv.c
 rpmio/digest.c
 rpmio/fts.c
 rpmio/macro.c
@@ -75,4 +76,5 @@ rpmio/rpmrpc.c
 rpmio/ugid.c
 rpmio/url.c
 tools/rpmcache.c
+tools/rpmdeps.c
 tools/rpmgraph.c

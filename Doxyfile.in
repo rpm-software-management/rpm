@@ -413,6 +413,8 @@ INPUT                  = \
 	@top_srcdir@/build/poptBT.c \
 	@top_srcdir@/build/reqprov.c \
 	@top_srcdir@/build/rpmbuild.h \
+	@top_srcdir@/build/rpmfc.c \
+	@top_srcdir@/build/rpmfc.h \
 	@top_srcdir@/build/rpmspec.h \
 	@top_srcdir@/build/spec.c \
 	@top_srcdir@/doc/manual/builddependencies \
@@ -429,6 +431,16 @@ INPUT                  = \
 	@top_srcdir@/doc/manual/spec \
 	@top_srcdir@/doc/manual/triggers \
 	@top_srcdir@/doc/manual/tsort \
+	@top_srcdir@/file/apprentice.c \
+	@top_srcdir@/file/ascmagic.c \
+	@top_srcdir@/file/compress.c \
+	@top_srcdir@/file/file.c \
+	@top_srcdir@/file/file.h \
+	@top_srcdir@/file/fsmagic.c \
+	@top_srcdir@/file/print.c \
+	@top_srcdir@/file/readelf.c \
+	@top_srcdir@/file/readelf.h \
+	@top_srcdir@/file/softmagic.c \
 	@top_srcdir@/lib/cpio.c \
 	@top_srcdir@/lib/cpio.h \
 	@top_srcdir@/lib/depends.c \
@@ -450,9 +462,11 @@ INPUT                  = \
 	@top_srcdir@/lib/rpmal.c \
 	@top_srcdir@/lib/rpmal.h \
 	@top_srcdir@/lib/rpmchecksig.c \
+	@top_srcdir@/lib/rpmcli.h \
 	@top_srcdir@/lib/rpmds.c \
 	@top_srcdir@/lib/rpmds.h \
-	@top_srcdir@/lib/rpmcli.h \
+	@top_srcdir@/lib/rpmfi.c \
+	@top_srcdir@/lib/rpmfi.h \
 	@top_srcdir@/lib/rpminstall.c \
 	@top_srcdir@/lib/rpmlead.c \
 	@top_srcdir@/lib/rpmlead.h \
@@ -492,6 +506,8 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/rpmdb.h \
 	@top_srcdir@/rpmdb/tagname.c \
 	@top_srcdir@/rpmdb/tagtbl.c \
+	@top_srcdir@/rpmio/argv.c \
+	@top_srcdir@/rpmio/argv.h \
 	@top_srcdir@/rpmio/digest.c \
 	@top_srcdir@/rpmio/fts.c \
 	@top_srcdir@/rpmio/fts.h \
@@ -529,6 +545,8 @@ INPUT                  = \
 	@top_srcdir@/python/header-py.h \
 	@top_srcdir@/python/rpmal-py.c \
 	@top_srcdir@/python/rpmal-py.h \
+	@top_srcdir@/python/rpmbc-py.c \
+	@top_srcdir@/python/rpmbc-py.h \
 	@top_srcdir@/python/rpmdb-py.c \
 	@top_srcdir@/python/rpmdb-py.h \
 	@top_srcdir@/python/rpmds-py.c \
@@ -537,6 +555,8 @@ INPUT                  = \
 	@top_srcdir@/python/rpmfd-py.h \
 	@top_srcdir@/python/rpmfi-py.c \
 	@top_srcdir@/python/rpmfi-py.h \
+	@top_srcdir@/python/rpmfts-py.c \
+	@top_srcdir@/python/rpmfts-py.h \
 	@top_srcdir@/python/rpmmi-py.c \
 	@top_srcdir@/python/rpmmi-py.h \
 	@top_srcdir@/python/rpmmodule.c \
@@ -553,11 +573,43 @@ INPUT                  = \
 	@top_srcdir@/tools/javadeps.c \
 	@top_srcdir@/tools/rpmarchive.c \
 	@top_srcdir@/tools/rpmcache.c \
+	@top_srcdir@/tools/rpmdeps.c \
 	@top_srcdir@/tools/rpmgraph.c \
 	@top_srcdir@/tools/rpmheader.c \
 	@top_srcdir@/tools/rpminject.c \
 	@top_srcdir@/tools/rpmlead.c \
-	@top_srcdir@/tools/rpmsignature.c
+	@top_srcdir@/tools/rpmsignature.c \
+	@top_srcdir@/zlib/adler32.c \
+	@top_srcdir@/zlib/crc32.c \
+	@top_srcdir@/zlib/crc32.h \
+	@top_srcdir@/zlib/deflate.c \
+	@top_srcdir@/zlib/deflate.h \
+	@top_srcdir@/zlib/gzio.c \
+	@top_srcdir@/zlib/infblock.c \
+	@top_srcdir@/zlib/infblock.h \
+	@top_srcdir@/zlib/infcodes.c \
+	@top_srcdir@/zlib/infcodes.h \
+	@top_srcdir@/zlib/inffast.c \
+	@top_srcdir@/zlib/inffast.h \
+	@top_srcdir@/zlib/inffixed.h \
+	@top_srcdir@/zlib/inflate.c \
+	@top_srcdir@/zlib/inftrees.c \
+	@top_srcdir@/zlib/inftrees.h \
+	@top_srcdir@/zlib/infutil.c \
+	@top_srcdir@/zlib/infutil.h \
+	@top_srcdir@/zlib/maketree.c \
+	@top_srcdir@/zlib/minigzip.c \
+	@top_srcdir@/zlib/trees.c \
+	@top_srcdir@/zlib/trees.h \
+	@top_srcdir@/zlib/uncompr.c \
+	@top_srcdir@/zlib/zconf.h \
+	@top_srcdir@/zlib/zlib.h \
+	@top_srcdir@/zlib/zutil.c \
+	@top_srcdir@/zlib/zutil.h
+
+
+# XX file name collision here
+#	@top_srcdir@/zlib/compress.c
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

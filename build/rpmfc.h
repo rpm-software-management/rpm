@@ -98,6 +98,11 @@ extern "C" {
 #endif
 
 /**
+ * Return helper output.
+ * @param av		helper argv (with possible macros)
+ * @param sb_stdin	helper input
+ * @retval *sb_stdoutp	helper output
+ * @param failnonzero	IS non-zero helper exit status a failure?
  */
 int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
 		int failnonzero)
@@ -106,6 +111,9 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
 		fileSystem, internalState @*/;
 
 /**
+ * Return file color given file(1) string.
+ * @param fmstr		file(1) string
+ * @return		file color
  */
 /*@-exportlocal@*/
 int rpmfcColoring(const char * fmstr)
@@ -113,10 +121,14 @@ int rpmfcColoring(const char * fmstr)
 /*@=exportlocal@*/
 
 /**
+ * Print results of file classification.
+ * @todo Remove debugging routine.
+ * @param msg		message prefix (NULL for none)
  * @param fc		file classifier
+ * @param fp		output file handle (NULL for stderr)
  */
 /*@-exportlocal@*/
-void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
+void rpmfcPrint(/*@null@*/ const char * msg, rpmfc fc, /*@null@*/ FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fc, fileSystem @*/;
 /*@=exportlocal@*/

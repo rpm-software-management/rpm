@@ -722,6 +722,9 @@ static int ensureOlder(rpmts ts,
 }
 
 /**
+ * Skip any files that do not match install policies.
+ * @param ts		transaction set
+ * @param fi		file info set
  */
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
 /*@-bounds@*/
@@ -729,6 +732,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
 {
+    int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
     const char ** languages;
@@ -851,6 +855,15 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 		fi->actions[i] = FA_SKIPNSTATE;
 		continue;
 	    }
+	}
+
+	/*
+	 * Skip config files if requested.
+	 */
+	if (noConfigs && (rpmfiFFlags(fi) & RPMFILE_CONFIG)) {
+	    drc[ix]--;	dff[ix] = 1;
+	    fi->actions[i] = FA_SKIPNSTATE;
+	    continue;
 	}
 
 	/*
