@@ -241,8 +241,8 @@ dnl
 
 ### use option --disable-v1-packages to turn off support for rpm-1.x packages
 AC_MSG_CHECKING(if you want support for rpm-1.0 packages)
-AC_ARG_ENABLE(v1-packages,,
-        [  --disable-v1-packages     disable support for rpm-1.x packages],
+AC_ARG_ENABLE(v1-packages,
+        [  --disable-v1-packages[=no]   disable support for rpm-1.x packages],
         [with_v1_packages=$enableval],
         [with_v1_packages=yes])
 AC_MSG_RESULT($with_v1_packages)
@@ -251,7 +251,7 @@ test "$with_v1_packages" = yes && AC_DEFINE(ENABLE_V1_PACKAGES)
 ### use option --enable-v4-packages to turn on support for rpm-4.x packages
 AC_MSG_CHECKING(if you want experimental rpm-4.0 packages)
 AC_ARG_ENABLE(v4-packages,
-        [  --enable-v4-packages      compile with support for rpm-4.x packages],
+        [  --enable-v4-packages[=no]    [experimental] support for rpm-4.x packages],
         [with_v4_packages=$enableval],
         [with_v4_packages=no])
 AC_MSG_RESULT($with_v4_packages)
