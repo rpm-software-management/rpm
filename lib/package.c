@@ -231,7 +231,7 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 	return 1;
     }
 
-    switch(lead->major) {
+    switch (lead->major) {
 #if defined(ENABLE_V1_PACKAGES)
     case 1:
 	rpmMessage(RPMMESS_DEBUG, _("package is a version one package!\n"));
@@ -265,6 +265,7 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 
     case 2:
     case 3:
+    case 4:
 	if (rpmReadSignature(fd, sigs, lead->signature_type)) {
 	   return 2;
 	}
@@ -302,14 +303,16 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 	   only saves memory (nice), but gives fingerprinting a nice, fat
 	   speed boost (very nice). Go ahead and convert old headers to
 	   the new style (this is a noop for new headers) */
-	compressFilelist(*hdr);
+	if (lead->major < 4) {
+	    compressFilelist(*hdr);
+	}
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
         if (lead->type == RPMLEAD_SOURCE) {
 	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
 	    	headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
 				&true, 1);
-	} else {
+	} else if (lead->major < 4) {
     /* Retrofit "Provide: name = EVR" for binary packages. */
 	    providePackageNVR(*hdr);
 	}

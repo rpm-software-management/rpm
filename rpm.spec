@@ -1,6 +1,6 @@
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 3.1
+%define version 4.0
 Version: %{version}
 Release: 0.22
 Group: System Environment/Base
@@ -242,6 +242,10 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue May 30 2000 Jeff Johnson <jbj@redhat.com>
+- mark packaging with version 4 to reflect filename/provide changes.
+- change next version from 3.1 to 4.0 to reflect package format change.
+
 * Wed May 26 2000 Jeff Johnson <jbj@redhat.com>
 - change popt exec alias in oreder to exec rpm children.
 - split rpm into 5 pieces along major mode fault lines with popt glue.

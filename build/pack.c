@@ -11,7 +11,7 @@
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 
-#define RPM_MAJOR_NUMBER 3
+#define RPM_MAJOR_NUMBER 4
 
 extern int _noDirTokens;
 
