@@ -3,7 +3,7 @@ VPATH = $(srcdir)
 
 include $(srcdir)/../Makefile.inc
 
-LIBOBJECTS = @MISCOBJS@ dummy.o
+LIBOBJECTS = @MISCOBJS@ popt.o
 LIBMISC = libmisc.a
 
 # -----------------------------------------------------------------------
