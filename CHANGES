@@ -35,6 +35,8 @@
 	  with loops -- it should all work fine)
 	- made -u (--uninstall) exit with an error and not do anything
 	- added --ignoreos
+	- fixed error message given when a file is missing
+	- fixed hashing when multiple packages are being modified
 
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
