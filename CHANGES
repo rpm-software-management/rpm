@@ -10,20 +10,20 @@
 	- aggregate system includes into system.h.
 	- rearrange functions to minimize exported routines in librpmbuild API.
 	- generalize cpio I/O to eliminate pipe to exec'd gzip on install.
-	- finish planting /usr/lib/rpm (remove compatibility symlinks)
-	- add new fully recursive macro.c
 	- add {init,add,expand}Macro args everywhere (new macro.c compatibility)
-	- create /usr/lib/rpm directory and move rpmrc et al there
+	- add new fully recursive macro.c
 
 2.5.3 -> 2.5.4:
+	- restore backward compatible rpmrc/rpmpopt symlinks.
 	- update pt_BR translations (Arnaldo Carvalho de Melo).
 	- permit --{buildroot,timecheck,test,sign} with -tX (Toshio Kuratomi).
 	- fix database rebuilds with triggers (Steve Sanberg).
 	- diagnostic message if unreadable/short source or patch file.
 	- eliminate redundant close in provide/require processing.
 	- solaris portability patch resurrection (Steve Sanberg).
-	- add %license/%readme virtual file attributes
-        - align "Build Host:" with other fields
+	- permit autogen.sh to work on non "prefix=/usr" hosts.
+	- add %license/%readme virtual file attributes.
+        - align "Build Host:" with other fields.
 
 2.5.2 -> 2.5.3:
 	- copy changelog tags to sub-packages just before packaging.
@@ -32,7 +32,7 @@
 	- fix infinite recursion on non-ERANGE return from getcwd() during
 	  install (Matt Wilson).
 	- rm .depend for multiple builds in same tree (Will Partain)
-	- add special case code for "/" in %files.
+	- addFile: fix special case of "/" in %files.
 	- better query semantics with symlinks (Tim Mooney)
 	- build.c: fix incorrect check for successful open
 	- allow %define with leading whitespace
@@ -47,6 +47,8 @@
 	- fixed --triggers alias (Michael Andres)
 	- added :hex query format
 	- fixed --querytags to display virtual tags
+?????	- added --triggers and --triggered by to man page, help, and usage
+?????	- added support for epochs
 
 2.5.1 -> 2.5.2:
 	- added -bs to build just a source package

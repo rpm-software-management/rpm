@@ -63,6 +63,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/man/man8/rpm.8
 /usr/man/man8/rpm2cpio.8
 /usr/lib/rpm
+/usr/lib/rpmrc
+/usr/lib/rpmpopt
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS

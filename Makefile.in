@@ -138,6 +138,8 @@ install: all
 	$(INSTALL_DATA) -m 644 $(topdir)/macros $(installprefix)/$(RPMCONFIGDIR)/macros
 	$(INSTALL_DATA) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(RPMCONFIGDIR)/rpmrc
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(RPMCONFIGDIR)/rpmpopt
+	ln -sf $(RPMCONFIGDIR)/rpmrc $(installprefix)/$(LIBDIR)/rpmrc
+	ln -sf $(RPMCONFIGDIR)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	(cd build; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	for d in $(INSTSUBDIRS); do \
