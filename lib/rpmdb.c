@@ -41,11 +41,6 @@ struct rpmdb_s {
     dbiIndex * requiredbyIndex, * conflictsIndex, * triggerIndex;
 };
 
-struct intMatch {
-    dbiIndexRecord rec;
-    int fpNum;
-};
-
 static sigset_t signalMask;
 
 static void blockSignals(void)
@@ -61,19 +56,8 @@ static void unblockSignals(void)
     sigprocmask(SIG_SETMASK, &signalMask, NULL);
 }
 
-static int intMatchCmp(const void * one, const void * two) {
-    const struct intMatch * a = one;
-    const struct intMatch * b = two;
-
-    if (a->rec.recOffset < b->rec.recOffset)
-	return -1;
-    else if (a->rec.recOffset > b->rec.recOffset)
-	return 1;
-
-    return 0;
-}
-
-int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp) {
+int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
+{
     const char * dbpath;
 
     dbpath = rpmGetPath("%{_dbpath}", NULL);
@@ -90,7 +74,8 @@ int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp) {
     return 0;
 }
 
-int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms) {
+int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms)
+{
     const char * dbpath;
     int rc;
 
@@ -105,7 +90,8 @@ int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     return rc;
 }
 
-int rpmdbInit (const char * prefix, int perms) {
+int rpmdbInit (const char * prefix, int perms)
+{
     rpmdb db;
     const char * dbpath;
     int rc;
@@ -123,13 +109,13 @@ int rpmdbInit (const char * prefix, int perms) {
 }
 
 static int openDbFile(const char * prefix, const char * dbpath, const char * shortName, 
-		      int justCheck, int perms, dbiIndex ** db, DBTYPE type){
-    char * filename = alloca(strlen(prefix) + strlen(dbpath) + 
-			     strlen(shortName) + 20);
+		      int justCheck, int perms, dbiIndex ** db, DBTYPE type)
+{
+    int len = (prefix ? strlen(prefix) : 0) + strlen(dbpath) + strlen(shortName) + 1;
+    char * filename = alloca(len);
 
-    if (!prefix) prefix="";
-
-    strcpy(filename, prefix); 
+    *filename = '\0';
+    if (prefix && *prefix) strcat(filename, prefix); 
     strcat(filename, dbpath);
     strcat(filename, shortName);
 
@@ -144,7 +130,8 @@ static int openDbFile(const char * prefix, const char * dbpath, const char * sho
 }
 
 int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mode, 
-		 int perms, int flags) {
+		 int perms, int flags)
+{
     char * filename;
     struct rpmdb_s db;
     int i, rc;
@@ -276,7 +263,8 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     return 0;
 }
 
-void rpmdbClose (rpmdb db) {
+void rpmdbClose (rpmdb db)
+{
     if (db->pkgs != NULL) faClose(db->pkgs);
     if (db->fileIndex) dbiCloseIndex(db->fileIndex);
     if (db->groupIndex) dbiCloseIndex(db->groupIndex);
@@ -297,13 +285,15 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
     return faNextOffset(db->pkgs, lastOffset);
 }
 
-Header rpmdbGetRecord(rpmdb db, unsigned int offset) {
+Header rpmdbGetRecord(rpmdb db, unsigned int offset)
+{
     (void)faLseek(db->pkgs, offset, SEEK_SET);
 
     return headerRead(faFileno(db->pkgs), HEADER_MAGIC_NO);
 }
 
-int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
+{
     const char * basename;
     fingerPrint fp1, fp2;
     dbiIndexSet allMatches;
@@ -382,7 +372,8 @@ int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
 }
 
 static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
-		             int tolerant, char * idxName) {
+		             int tolerant, char * idxName)
+{
     int rc;
     dbiIndexSet matches;
     
@@ -409,7 +400,8 @@ static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
     }
 }
 
-int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
+int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
+{
     Header h;
     char * name, * group;
     int type;
@@ -529,8 +521,9 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     return 0;
 }
 
-static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
-		         unsigned int fileNumber) {
+static int addIndexEntry(dbiIndex *idx, const char *index, unsigned int offset,
+		         unsigned int fileNumber)
+{
     dbiIndexSet set;
     dbiIndexRecord irec;   
     int rc;
@@ -550,20 +543,21 @@ static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
     return 0;
 }
 
-int rpmdbAdd(rpmdb db, Header dbentry) {
+int rpmdbAdd(rpmdb db, Header dbentry)
+{
     unsigned int dboffset;
     unsigned int i, j;
-    char ** fileList;
-    char ** providesList;
-    char ** requiredbyList;
-    char ** conflictList;
-    char ** triggerList;
-    char * name, * group;
+    const char ** fileList;
+    const char ** providesList;
+    const char ** requiredbyList;
+    const char ** conflictList;
+    const char ** triggerList;
+    const char * name;
+    const char * group;
     int count = 0, providesCount = 0, requiredbyCount = 0, conflictCount = 0;
     int triggerCount = 0;
     int type;
     int rc = 0;
-    char * basename;
 
     headerGetEntry(dbentry, RPMTAG_NAME, &type, (void **) &name, &count);
     headerGetEntry(dbentry, RPMTAG_GROUP, &type, (void **) &group, &count);
@@ -624,6 +618,7 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	rc += addIndexEntry(db->providesIndex, providesList[i], dboffset, 0);
 
     for (i = 0; i < count; i++) {
+	const char * basename;
 	basename = strrchr(fileList[i], '/');
 	if (!basename) 
 	    basename = fileList[i];
@@ -651,7 +646,8 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     return rc;
 }
 
-int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
+int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
+{
     Header oldHeader;
     int oldSize;
 
@@ -685,7 +681,8 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
     return 0;
 }
 
-void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath) { 
+void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath)
+{ 
     int i;
     const char **rpmdbfnp;
     char * filename;
@@ -711,7 +708,8 @@ void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath) {
 
 }
 
-int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath) {
+int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath)
+{
     int i;
     const char **rpmdbfnp;
     char * ofilename, * nfilename;
@@ -747,33 +745,50 @@ int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char *
     return rc;
 }
 
+struct intMatch {
+    dbiIndexRecord rec;
+    int fpNum;
+};
+
+static int intMatchCmp(const void * one, const void * two)
+{
+    const struct intMatch * a = one;
+    const struct intMatch * b = two;
+
+    if (a->rec.recOffset < b->rec.recOffset)
+	return -1;
+    else if (a->rec.recOffset > b->rec.recOffset)
+	return 1;
+
+    return 0;
+}
+
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
-		    int numItems) {
-    struct intMatch * intMatches, * im;
+		    int numItems)
+{
+    int numIntMatches = 0;
+    int intMatchesAlloced = numItems;
+    struct intMatch * intMatches;
     int i, j;
-    dbiIndexSet matches;
-    int intMatchesAlloced, numIntMatches;
     int start, end;
-    int num, rc;
-    const char ** fullfl, **fl;
-    int_32 fc;
-    fingerPrint * fps;
-    Header h;
+    int num;
 
     /* this may be worth batching by basename, but probably not as
        basenames are quite unique as it is */
 
-    intMatchesAlloced = numItems;
-    numIntMatches = 0;
-    im = intMatches = malloc(sizeof(*intMatches) * intMatchesAlloced);
+    intMatches = malloc(sizeof(*intMatches) * intMatchesAlloced);
 
-    for (i = 0; i < numItems; i++, im++) {
-        rc = dbiSearchIndex(db->fileIndex, fpList[i].basename, &matches);
-	if (rc == 2) {
-	    im = intMatches;
+    /* Gather all matches from the database */
+    for (i = 0; i < numItems; i++) {
+	dbiIndexSet matches;
+	switch (dbiSearchIndex(db->fileIndex, fpList[i].basename, &matches)) {
+	default:
+	    break;
+	case 2:
 	    free(intMatches);
 	    return 1;
-	} else if (!rc) {
+	    break;
+	case 0:
 	    if ((numIntMatches + matches.count) >= intMatchesAlloced) {
 		intMatchesAlloced += matches.count;
 		intMatchesAlloced += intMatchesAlloced / 5;
@@ -787,6 +802,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    }
 
 	    dbiFreeIndexRecord(matches);
+	    break;
 	}
     }
 
@@ -796,32 +812,44 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     for (i = 0; i < numItems; i++)
 	matchList[i] = dbiCreateIndexRecord();
 
-    start = 0;
-    while (start < numIntMatches) {
-	im = intMatches + start;
-	end = start + 1;
-	while (end < numIntMatches && 
-	    (im->rec.recOffset == intMatches[end].rec.recOffset))
-	    end++;
+    /* For each set of files matched in a package ... */
+    for (start = 0; start < numIntMatches; start = end) {
+	struct intMatch * im;
+	Header h;
+	fingerPrint * fps;
 
+	im = intMatches + start;
+
+	/* Find the end of the set of files matched in this package. */
+	for (end = start + 1; end < numIntMatches; end++) {
+	    if (im->rec.recOffset != intMatches[end].rec.recOffset)
+		break;
+	}
 	num = end - start;
+
+	/* Compute fingerprints for each file match in this package */
 	h = rpmdbGetRecord(db, im->rec.recOffset);
 	if (!h) {
 	    free(intMatches);
 	    return 1;
 	}
 
-	headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL, 
+	{   const char ** fullfl, **fl;
+	    int_32 fc;
+	   
+	    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL, 
 				(void **) &fullfl, &fc);
 
-	fl = malloc(sizeof(*fl) * num);
-	for (i = 0; i < num; i++)
-	    fl[i] = fullfl[im[i].rec.fileNumber];
-	free(fullfl);
-	fps = malloc(sizeof(*fps) * num);
-	fpLookupList(fl, fps, num, 1);
-	free(fl);
+	    fl = malloc(sizeof(*fl) * num);
+	    for (i = 0; i < num; i++)
+		fl[i] = fullfl[im[i].rec.fileNumber];
+	    free(fullfl);
+	    fps = malloc(sizeof(*fps) * num);
+	    fpLookupList(fl, fps, num, 1);
+	    free(fl);
+	}
 
+	/* Add (recnum,filenum) to list for fingerprint matches */
 	for (i = 0; i < num; i++) {
 	    j = im[i].fpNum;
 	    if (FP_EQUAL(fps[i], fpList[j]))
@@ -832,7 +860,6 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
 	free(fps);
 
-	start = end;
     }
 
     free(intMatches);
