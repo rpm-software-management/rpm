@@ -40,7 +40,7 @@ enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 				char * newLink);
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify,
-			  char ** installArchive);
+			  char ** installArchive, char * tmpPath);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
 				   char * release, int * recOffset, int flags);
 static int setFileOwnerships(char * rootdir, char ** fileList, 
@@ -116,7 +116,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     dbIndexSet matches;
     int * oldVersions;
     int * intptr;
-    char * archivePrefix;
+    char * archivePrefix, * tmpPath;
     int scriptArg;
     int relocationSize = 1;		/* strip at least first / for cpio */
 
@@ -409,9 +409,16 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		fileStatesList[i] = RPMFILE_STATE_NOTINSTALLED;
 	}
 
+	if (rootdir) {
+	    tmpPath = alloca(strlen(rootdir) + 15);
+	    strcpy(tmpPath, rootdir);
+	    strcat(tmpPath, "/var/tmp");
+	} else
+	    tmpPath = "/var/tmp";
+
 	/* the file pointer for fd is pointing at the cpio archive */
 	if (installArchive(archivePrefix, fd, files, archiveFileCount, notify, 
-			   NULL)) {
+			   NULL, tmpPath)) {
 	    freeHeader(h);
 	    free(fileList);
 	    if (replacedList) free(replacedList);
@@ -486,7 +493,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify, 
-			  char ** specFile) {
+			  char ** specFile, char * tmpPath) {
     gzFile stream;
     char buf[BLOCKSIZE];
     pid_t child;
@@ -505,9 +512,8 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     unsigned long sizeInstalled = 0;
     struct fileToInstall fileInstalled;
     struct fileToInstall * file;
-    char * chptr;
+    char * chptr, * filelist;
     char ** args;
-    char filelist[40] = { '\0' };
     FILE * f;
     int len;
     int childDead = 0;
@@ -538,8 +544,10 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
        too much argv/env stuff */
 
     if (fileCount > 500) {
-	message(MESS_DEBUG, "using a /tmp filelist\n");
-	sprintf(filelist, "/tmp/rpm-cpiofilelist.%d.tmp", getpid());
+	filelist = alloca(strlen(tmpPath) + 40);
+
+	message(MESS_DEBUG, "using a %s filelist\n", tmpPath);
+	sprintf(filelist, "%s/rpm-cpiofilelist.%d.tmp", tmpPath, getpid());
 	f = fopen(filelist, "w");
 	if (!f) {
 	    error(RPMERR_CREATE, "failed to create %s: %s", filelist,
@@ -568,6 +576,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	args[i++] = "--pattern-file";
 	args[i++] = filelist;
     } else {
+	filelist = NULL;
 	for (j = 0; j < fileCount; j++)
 	    args[i++] = files[j].fileName;
     }
@@ -636,9 +645,9 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 		/* the sooner we erase this, the better. less chance
 		   of leaving it sitting around after a SIGINT
 		   (or SIGSEGV!) */
-		if (filelist[0]) {
+		if (filelist) {
 		    unlink(filelist);
-		    filelist[0] = '\0';
+		    filelist = NULL;
 		}
 
 		fileInstalled.fileName = line;
@@ -686,7 +695,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     signal(SIGPIPE, oldhandler);
     waitpid(child, &status, 0);
 
-    if (filelist[0]) {
+    if (filelist) {
 	unlink(filelist);
     }
 
@@ -1234,6 +1243,7 @@ static int installSources(char * rootdir, int fd, char ** specFilePtr) {
     char * sourceDir, * specDir;
     char * realSourceDir, * realSpecDir;
     char * instSpecFile, * correctSpecFile;
+    char * tmpPath;
 
     message(MESS_DEBUG, "installing a source package\n");
 
@@ -1253,7 +1263,14 @@ static int installSources(char * rootdir, int fd, char ** specFilePtr) {
     message(MESS_DEBUG, "sources in: %s\n", realSourceDir);
     message(MESS_DEBUG, "spec file in: %s\n", realSpecDir);
 
-    if (installArchive(realSourceDir, fd, NULL, 0, NULL, &specFile)) {
+    if (rootdir) {
+	tmpPath = alloca(strlen(rootdir) + 15);
+	strcpy(tmpPath, rootdir);
+	strcat(tmpPath, "/var/tmp");
+    } else
+	tmpPath = "/var/tmp";
+
+    if (installArchive(realSourceDir, fd, NULL, 0, NULL, &specFile, tmpPath)) {
 	return 1;
     }
 
