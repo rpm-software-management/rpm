@@ -16,7 +16,7 @@
  */
 typedef	enum rpmRC_e {
     RPMRC_OK		= 0,
-    RPMRC_BADMAGIC	= 1,
+    RPMRC_NOTFOUND	= 1,
     RPMRC_FAIL		= 2,
     RPMRC_BADSIZE	= 3,
     RPMRC_SHORTREAD	= 4

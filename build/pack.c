@@ -333,7 +333,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     }
 
     switch (rc) {
-    case RPMRC_BADMAGIC:
+    case RPMRC_NOTFOUND:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
 		(fileName ? fileName : "<stdin>"));
 	return RPMERR_BADMAGIC;

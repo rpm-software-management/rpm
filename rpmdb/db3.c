@@ -300,9 +300,7 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-#ifdef	DYING
-/*@unused@*/
-static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
+static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 		unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcp, fileSystem @*/
@@ -316,7 +314,6 @@ static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
     return rc;
     /*@=nullstate @*/
 }
-#endif
 
 static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 		unsigned int flags)
@@ -416,31 +413,46 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
+    int _printit;
     int rc;
 
     assert(db != NULL);
     if (dbcursor == NULL) {
-	int _printit;
-
 	/* XXX duplicates require cursors. */
 	rc = db->get(db, dbi->dbi_txnid, key, data, 0);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->get", rc, _printit);
     } else {
-	int _printit;
-
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
 	rc = dbcursor->c_get(dbcursor, key, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
-
     }
 
-    /*@-compmempass -nullstate@*/
     return rc;
-    /*@=compmempass =nullstate@*/
+}
+
+static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
+		DBT * data, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, *key, *data, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int _printit;
+    int rc;
+
+    assert(db != NULL);
+    assert(dbcursor != NULL);
+
+    /* XXX db3 does DB_FIRST on uninitialized cursor */
+    rc = dbcursor->c_pget(dbcursor, key, pkey, data, flags);
+    /* XXX DB_NOTFOUND can be returned */
+    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
+    rc = cvtdberr(dbi, "dbcursor->c_pget", rc, _printit);
+
+    return rc;
 }
 
 static int db3ccount(dbiIndex dbi, DBC * dbcursor,
@@ -503,6 +515,38 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     rc = db->stat(db, &dbi->dbi_stats, NULL, flags);
 #endif
     rc = cvtdberr(dbi, "db->stat", rc, _debug);
+    return rc;
+}
+
+static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
+		int (*callback)(DB *, const DBT *, const DBT *, DBT *),
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    DB * secondary = dbisecondary->dbi_db;
+    int rc;
+
+/*@-moduncon@*/ /* FIX: annotate db3 methods */
+    rc = db->associate(db, secondary, callback, flags);
+/*@=moduncon@*/
+    rc = cvtdberr(dbi, "db->associate", rc, _debug);
+    return rc;
+}
+
+static int db3join(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    int rc;
+
+/*@-moduncon@*/ /* FIX: annotate db3 methods */
+    rc = db->join(db, curslist, dbcp, flags);
+/*@=moduncon@*/
+    rc = cvtdberr(dbi, "db->join", rc, _debug);
     return rc;
 }
 
@@ -652,7 +696,7 @@ exit:
 }
 /*@=moduncon@*/
 
-static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
 	/*@modifies *dbip, fileSystem @*/
@@ -1100,8 +1144,9 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 /*@observer@*/ /*@unchecked@*/
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db3open, db3close, db3sync, db3copen, db3cclose, db3cdel, db3cget, db3cput,
-    db3ccount, db3byteswapped, db3stat
+    db3open, db3close, db3sync, db3associate, db3join,
+    db3copen, db3cclose, db3cdup, db3cdel, db3cget, db3cpget, db3cput, db3ccount,
+    db3byteswapped, db3stat
 };
 /*@=exportheadervar@*/
 /*@=type@*/

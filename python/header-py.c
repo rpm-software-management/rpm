@@ -799,7 +799,7 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
 	isSource = headerIsEntry(header, RPMTAG_SOURCEPACKAGE);
 	break;
 
-    case RPMRC_BADMAGIC:
+    case RPMRC_NOTFOUND:
 	Py_INCREF(Py_None);
 	h = (hdrObject *) Py_None;
 	break;

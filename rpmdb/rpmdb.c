@@ -1,4 +1,4 @@
-/*@-sizeoftype @*/
+/*@-compmempass -sizeoftype @*/
 /** \ingroup rpmdb dbi
  * \file rpmdb/rpmdb.c
  */
@@ -503,7 +503,7 @@ assert(key->size != 0);
  * @param flags		update flags
  * @return		0 success, 1 not found
  */
-/*@-compmempass -mustmod@*/
+/*@-mustmod@*/
 static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		int flags)
 	/*@globals fileSystem @*/
@@ -535,7 +535,7 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
     return rc;
 }
-/*@=compmempass =mustmod@*/
+/*@=mustmod@*/
 
 /* XXX assumes hdrNum is first int in dbiIndexItem */
 static int hdrNumCmp(const void * one, const void * two)
@@ -581,9 +581,7 @@ static int dbiAppendSet(dbiIndexSet set, const void * recs,
     if (set->count > 1 && sortset)
 	qsort(set->recs, set->count, sizeof(*(set->recs)), hdrNumCmp);
 
-    /*@-compmempass@*/ /* FIX: set->recs.{hdrNum,tagNum,fpNum,dbNum} undef */
     return 0;
-    /*@=compmempass@*/
 }
 
 /**
@@ -1018,12 +1016,10 @@ int rpmdbVerify(const char * prefix)
 /*@=globs@*/
 
 static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
-			/*@out@*/ dbiIndexSet * matches)
+		DBT * key, DBT * data, /*@out@*/ dbiIndexSet * matches)
 	/*@globals fileSystem @*/
 	/*@modifies db, *matches, fileSystem @*/
 {
-DBT * key = alloca(sizeof(*key));
-DBT * data = alloca(sizeof(*data));
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char * dirName;
@@ -1217,25 +1213,25 @@ xx = dbt2set(dbi, data, &matches);
  * Attempt partial matches on name[-version[-release]] strings.
  * @param dbi		index database handle (always RPMTAG_NAME)
  * @param dbcursor	index database cursor
+ * @param key		search key/length
+ * @param data		search data/length
  * @param name		package name
  * @param version	package version (can be a pattern)
  * @param release	package release (can be a pattern)
  * @retval matches	set of header instances that match
- * @return 		0 on match, 1 on no match, 2 on error
+ * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
+static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
+		DBT * key, DBT * data,
 		const char * name,
 		/*@null@*/ const char * version,
 		/*@null@*/ const char * release,
 		/*@out@*/ dbiIndexSet * matches)
 	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcursor, *matches, fileSystem @*/
+	/*@modifies dbi, *dbcursor, *key, *data, *matches, fileSystem @*/
 {
-DBT * key = alloca(sizeof(*key));
-DBT * data = alloca(sizeof(*data));
-    int gotMatches;
+    int gotMatches = 0;
     int rc;
-int xx;
     int i;
 
 memset(key, 0, sizeof(*key));
@@ -1244,74 +1240,63 @@ key->size = strlen(name);
 memset(data, 0, sizeof(*data));
     rc = dbiSearch(dbi, dbcursor, key, data, DB_SET);
 if (rc == 0)
-xx = dbt2set(dbi, data, matches);
+rc = dbt2set(dbi, data, matches);
 
     if (rc != 0) {
-	rc = ((rc == -1) ? 2 : 1);
+	rc = ((rc == -1) ? RPMRC_FAIL : RPMRC_NOTFOUND);
 	goto exit;
     }
 
     if (version == NULL && release == NULL) {
-	rc = 0;
+	rc = RPMRC_OK;
 	goto exit;
     }
-
-    gotMatches = 0;
 
     /* Make sure the version and release match. */
     /*@-branchstate@*/
     for (i = 0; i < dbiIndexSetCount(*matches); i++) {
 	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
+	rpmdbMatchIterator mi;
 	Header h;
 
 	if (recoff == 0)
 	    continue;
 
-	{   rpmdbMatchIterator mi;
-	    mi = rpmdbInitIterator(dbi->dbi_rpmdb,
+	mi = rpmdbInitIterator(dbi->dbi_rpmdb,
 			RPMDBI_PACKAGES, &recoff, sizeof(recoff));
 
-	    /* Set iterator selectors for version/release if available. */
-	    if (version &&
-		rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version))
-	    {
-		rc = 2;
-		goto exit;
-	    }
-	    if (release &&
-		rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release))
-	    {
-		rc = 2;
-		goto exit;
-	    }
-
-	    h = rpmdbNextIterator(mi);
-	    if (h)
-		h = headerLink(h, "dbiFindMatches");
-	    mi = rpmdbFreeIterator(mi);
+	/* Set iterator selectors for version/release if available. */
+	if (version &&
+	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version))
+	{
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+	if (release &&
+	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release))
+	{
+	    rc = RPMRC_FAIL;
+	    goto exit;
 	}
 
-	if (h)	/* structure assignment */
+	h = rpmdbNextIterator(mi);
+	if (h)
 	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
 	else
 	    (*matches)->recs[i].hdrNum = 0;
-
-	h = headerFree(h, "dbiFindMatches");
+	mi = rpmdbFreeIterator(mi);
     }
     /*@=branchstate@*/
 
     if (gotMatches) {
 	(*matches)->count = gotMatches;
-	rc = 0;
+	rc = RPMRC_OK;
     } else
-	rc = 1;
+	rc = RPMRC_NOTFOUND;
 
 exit:
-    if (rc && matches && *matches) {
-	/*@-unqualifiedtrans@*/		/* FIX: double indirection */
+    if (rc && matches && *matches)
 	*matches = dbiFreeIndexSet(*matches);
-	/*@=unqualifiedtrans@*/
-    }
     return rc;
 }
 
@@ -1323,9 +1308,9 @@ exit:
  * @param dbcursor	index database cursor
  * @param arg		name[-version[-release]] string
  * @retval matches	set of header instances that match
- * @return 		0 on match, 1 on no match, 2 on error
+ * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
+static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcursor, *matches, fileSystem @*/
@@ -1335,13 +1320,13 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
     char * s;
     char c;
     int brackets;
-    int rc;
+    rpmRC rc;
  
-    if (arg == NULL || strlen(arg) == 0) return 1;
+    if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
 
     /* did they give us just a name? */
-    rc = dbiFindMatches(dbi, dbcursor, arg, NULL, NULL, matches);
-    if (rc != 1) return rc;
+    rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
+    if (rc != RPMRC_NOTFOUND) return rc;
 
     /*@-unqualifiedtrans@*/
     *matches = dbiFreeIndexSet(*matches);
@@ -1368,11 +1353,11 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
     }
 
     /*@-nullstate@*/	/* FIX: *matches may be NULL. */
-    if (s == localarg) return 1;
+    if (s == localarg) return RPMRC_NOTFOUND;
 
     *s = '\0';
-    rc = dbiFindMatches(dbi, dbcursor, localarg, s + 1, NULL, matches);
-    if (rc != 1) return rc;
+    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, NULL, matches);
+    if (rc != RPMRC_NOTFOUND) return rc;
 
     /*@-unqualifiedtrans@*/
     *matches = dbiFreeIndexSet(*matches);
@@ -1398,10 +1383,10 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
 	    break;
     }
 
-    if (s == localarg) return 1;
+    if (s == localarg) return RPMRC_NOTFOUND;
 
     *s = '\0';
-    return dbiFindMatches(dbi, dbcursor, localarg, s + 1, release, matches);
+    return dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
     /*@=nullstate@*/
 }
 
@@ -1951,7 +1936,6 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi,
     return rpmdbNextIterator(mi);
 }
 
-/*@-compmempass@*/
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;
@@ -2111,7 +2095,6 @@ exit:
     /*@-compdef -usereleased@*/ return mi->mi_h; /*@=compdef =usereleased@*/
     /*@=retexpose =retalias@*/
 }
-/*@=compmempass@*/
 
 static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi @*/
@@ -2236,11 +2219,11 @@ DBT * data = alloca(sizeof(*data));
 	if (isLabel) {
 	    /* XXX HACK to get rpmdbFindByLabel out of the API */
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
-	    rc = dbiFindByLabel(dbi, dbcursor, keyp, &set);
+	    rc = dbiFindByLabel(dbi, dbcursor, key, data, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 	} else if (rpmtag == RPMTAG_BASENAMES) {
-	    rc = rpmdbFindByFile(db, keyp, &set);
+	    rc = rpmdbFindByFile(db, keyp, key, data, &set);
 	} else {
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
@@ -2643,9 +2626,7 @@ DBT * data = alloca(sizeof(*data));
 	memset(data, 0, sizeof(*data));
 /*@i@*/	data->data = datap;
 	data->size = datalen;
-/*@-compmempass@*/
 	rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
-/*@=compmempass@*/
 	keyp = key->data;
 	keylen = key->size;
 	datap = data->data;
@@ -2673,9 +2654,7 @@ DBT * data = alloca(sizeof(*data));
 /*@=kepttrans@*/
 	data->size = datalen;
 
-/*@-compmempass@*/
 	rc = dbiPut(dbi, dbcursor, key, data, 0);
-/*@=compmempass@*/
 	xx = dbiSync(dbi, 0);
 
 	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
@@ -2982,9 +2961,7 @@ key->data = (void *) fpList[i].baseName;
 key->size = strlen((char *)key->data);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
-	/*@-compmempass@*/
 	xx = rpmdbGrowIterator(mi, key, i);
-	/*@=compmempass@*/
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
     }
 
@@ -3461,4 +3438,4 @@ exit:
 }
 /*@=globs@*/
 /*@=mods@*/
-/*@=sizeoftype @*/
+/*@=compmempass =sizeoftype @*/

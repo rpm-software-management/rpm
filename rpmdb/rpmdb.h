@@ -54,7 +54,7 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*open) (rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbip, fileSystem @*/;
 
 /** \ingroup dbi
@@ -64,7 +64,7 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*close) (/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/;
 
 /** \ingroup dbi
@@ -74,20 +74,47 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*sync) (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+
+/** \ingroup dbi
+ * Associate secondary database with primary.
+ * @param dbi		index database handle
+ * @param dbisecondary	secondary index database handle
+ * @param callback	create secondary key from primary (NULL if DB_RDONLY)
+ * @param flags		DB_CREATE or 0
+ * @return		0 on success
+ */
+    int (*associate) (dbiIndex dbi, dbiIndex dbisecondary,
+                int (*callback) (DB *, const DBT *, const DBT *, DBT *),
+                unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/;
+
+/** \ingroup dbi
+ * Return join cursor for list of cursors.
+ * @param dbi		index database handle
+ * @param curslist	NULL terminated list of database cursors
+ * @retval dbcp		address of join database cursor
+ * @param flags		DB_JOIN_NOSORT or 0
+ * @return		0 on success
+ */
+    int (*join) (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
+                unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, *dbcp, fileSystem @*/;
 
 /** \ingroup dbi
  * Open database cursor.
  * @param dbi		index database handle
  * @param txnid		database transaction handle
- * @retval dbcp		address of database cursor
- * @param flags		(unused)
+ * @retval dbcp		address of new database cursor
+ * @param dbiflags	DB_WRITECURSOR or 0
  * @return		0 on success
  */
     int (*copen) (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
-			/*@out@*/ DBC ** dbcp, unsigned int flags)
-	/*@globals fileSystem@*/
+			/*@out@*/ DBC ** dbcp, unsigned int dbiflags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *txnid, *dbcp, fileSystem @*/;
 
 /** \ingroup dbi
@@ -98,8 +125,21 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*cclose) (dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcursor, fileSystem @*/;
+
+/** \ingroup dbi
+ * Duplicate a database cursor.
+ * @param dbi		index database handle
+ * @param dbcursor	database cursor
+ * @retval dbcp		address of new database cursor
+ * @param flags		DB_POSITION for same position, 0 for uninitialized
+ * @return		0 on success
+ */
+    int (*cdup) (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
+		unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, *dbcp, fileSystem @*/;
 
 /** \ingroup dbi
  * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
@@ -112,7 +152,7 @@ struct _dbiVec {
  */
     int (*cdel) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 			unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
@@ -126,8 +166,23 @@ struct _dbiVec {
  */
     int (*cget) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 			unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/;
+
+/** \ingroup dbi
+ * Retrieve (key,data) pair using dbcursor->c_pget.
+ * @param dbi		index database handle
+ * @param dbcursor	database cursor
+ * @param key		secondary retrieve key value/length/flags
+ * @param pkey		primary retrieve key value/length/flags
+ * @param data		primary retrieve data value/length/flags
+ * @param flags		DB_NEXT, DB_SET, or 0
+ * @return		0 on success
+ */
+    int (*cpget) (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
+		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/;
 
 /** \ingroup dbi
  * Store (key,data) pair using db->put or dbcursor->c_put.
@@ -140,7 +195,7 @@ struct _dbiVec {
  */
     int (*cput) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 			unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
@@ -154,7 +209,7 @@ struct _dbiVec {
     int (*ccount) (dbiIndex dbi, DBC * dbcursor,
 			/*@out@*/ unsigned int * countp,
 			unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
 /** \ingroup dbi
@@ -163,8 +218,8 @@ struct _dbiVec {
  * @return		0 no
  */
     int (*byteswapped) (dbiIndex dbi)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /** \ingroup dbi
  * Save statistics in database handle.
@@ -173,7 +228,7 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*stat) (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/;
 
 };
@@ -226,7 +281,7 @@ struct _dbiIndex {
     int	dbi_lorder;
 /*@unused@*/
     void (*db_errcall) (const char *db_errpfx, char *buffer)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@unused@*/ /*@shared@*/
     FILE *	dbi_errfile;
@@ -250,7 +305,7 @@ struct _dbiIndex {
 #if 0
     int	(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec,
 				DB_LSN *lsnp, int redo, void *info)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 #endif
 	/* dbinfo parameters */
@@ -409,7 +464,7 @@ extern const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 /*@unused@*/ static inline
 int dbiCopen(dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 		/*@out@*/ DBC ** dbcp, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
     return (*dbi->dbi_vec->copen) (dbi, txnid, dbcp, flags);
@@ -424,10 +479,26 @@ int dbiCopen(dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
  */
 /*@unused@*/ static inline
 int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcursor, fileSystem @*/
 {
     return (*dbi->dbi_vec->cclose) (dbi, dbcursor, flags);
+}
+
+/** \ingroup dbi
+ * Duplicate a database cursor.
+ * @param dbi		index database handle
+ * @param dbcursor	database cursor
+ * @retval dbcp		address of new database cursor
+ * @param flags		DB_POSITION for same position, 0 for uninitialized
+ * @return		0 on success
+ */
+/*@unused@*/ static inline
+int dbiCdup(dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
+		unsigned int flags)
+	/*@modifies dbi, *dbcp @*/
+{
+    return (*dbi->dbi_vec->cdup) (dbi, dbcursor, dbcp, flags);
 }
 
 /** \ingroup dbi
@@ -442,7 +513,7 @@ int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
 /*@unused@*/ static inline
 int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
     assert(key->size > 0);
@@ -461,11 +532,31 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 /*@unused@*/ static inline
 int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
     assert((flags == DB_NEXT) || key->size > 0);
     return (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
+}
+
+/** \ingroup dbi
+ * Retrieve (key,data) pair using dbcursor->c_pget.
+ * @param dbi		index database handle
+ * @param dbcursor	database cursor (NULL will use db->get)
+ * @param key		secondary retrieve key value/length/flags
+ * @param pkey		primary retrieve key value/length/flags
+ * @param data		primary retrieve data value/length/flags
+ * @param flags		DB_NEXT, DB_SET, or 0
+ * @return		0 on success
+ */
+/*@unused@*/ static inline
+int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
+		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
+{
+    assert((flags == DB_NEXT) || key->size > 0);
+    return (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
 }
 
 /** \ingroup dbi
@@ -480,7 +571,7 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 /*@unused@*/ static inline
 int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, fileSystem @*/
 {
     assert(key->size > 0);
@@ -498,7 +589,7 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 /*@unused@*/ static inline
 int dbiCount(dbiIndex dbi, DBC * dbcursor, /*@out@*/ unsigned int * countp,
 		unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
     return (*dbi->dbi_vec->ccount) (dbi, dbcursor, countp, flags);
@@ -512,7 +603,7 @@ int dbiCount(dbiIndex dbi, DBC * dbcursor, /*@out@*/ unsigned int * countp,
  */
 /*@unused@*/ static inline
 int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     dbi->dbi_verify_on_close = 1;
@@ -527,7 +618,7 @@ int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
  */
 /*@unused@*/ static inline
 int dbiClose(/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     return (*dbi->dbi_vec->close) (dbi, flags);
@@ -541,10 +632,45 @@ int dbiClose(/*@only@*/ dbiIndex dbi, unsigned int flags)
  */
 /*@unused@*/ static inline
 int dbiSync (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     return (*dbi->dbi_vec->sync) (dbi, flags);
+}
+
+/** \ingroup dbi
+ * Associate secondary database with primary.
+ * @param dbi		index database handle
+ * @param dbisecondary	secondary index database handle
+ * @param callback	create secondary key from primary (NULL if DB_RDONLY)
+ * @param flags		DB_CREATE or 0
+ * @return		0 on success
+ */
+/*@unused@*/ static inline
+int dbiAssociate(dbiIndex dbi, dbiIndex dbisecondary,
+                int (*callback) (DB *, const DBT *, const DBT *, DBT *),
+                unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    return (*dbi->dbi_vec->associate) (dbi, dbisecondary, callback, flags);
+}
+
+/** \ingroup dbi
+ * Return join cursor for list of cursors.
+ * @param dbi		index database handle
+ * @param curslist	NULL terminated list of database cursors
+ * @retval dbcp		address of join database cursor
+ * @param flags		DB_JOIN_NOSORT or 0
+ * @return		0 on success
+ */
+/*@unused@*/ static inline
+int dbiJoin(dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
+                unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, *dbcp, fileSystem @*/
+{
+    return (*dbi->dbi_vec->join) (dbi, curslist, dbcp, flags);
 }
 
 /** \ingroup dbi

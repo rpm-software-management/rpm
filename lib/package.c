@@ -172,7 +172,7 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
     if (l->magic[0] != RPMLEAD_MAGIC0 || l->magic[1] != RPMLEAD_MAGIC1
      || l->magic[2] != RPMLEAD_MAGIC2 || l->magic[3] != RPMLEAD_MAGIC3) {
 	rpmError(RPMERR_READLEAD, _("%s: bad magic\n"), fn);
-	rc = RPMRC_BADMAGIC;
+	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
 

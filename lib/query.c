@@ -632,7 +632,7 @@ restart:
 
 	    (void) Fclose(fd);
 
-	    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADMAGIC)) {
+	    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_NOTFOUND)) {
 		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
 		res = 1;
 		/*@loopbreak@*/ break;

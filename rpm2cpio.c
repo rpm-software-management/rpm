@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     case RPMRC_BADSIZE:
     case RPMRC_OK:
 	break;
-    case RPMRC_BADMAGIC:
+    case RPMRC_NOTFOUND:
 	fprintf(stderr, _("argument is not an RPM package\n"));
 	exit(EXIT_FAILURE);
 	break;

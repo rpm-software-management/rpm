@@ -482,7 +482,7 @@ restart:
 	    continue;
 	}
 
-	if (eiu->rpmrc != RPMRC_BADMAGIC) {
+	if (eiu->rpmrc != RPMRC_NOTFOUND) {
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *eiu->fnp);
 	    eiu->numFailed++; *eiu->fnp = NULL;
 	    break;
