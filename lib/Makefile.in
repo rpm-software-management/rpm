@@ -1,21 +1,11 @@
-LIBS = -lgdbm -ldb 
-
 LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o falloc.o \
 	     convertdb.o oldrpmfile.o var.o md5.o md5sum.o dbindex.o \
 	     rpmdb.o stringbuf.o
 LIBRPM = librpm.a
-
-WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
-DEBUG = -g
-OPTS = -O2
+LOADLIBES = -lrpm -lgdbm -ldb $(LIBEFENCE)
+PROGS = test dump dumpdb
 
 # -----------------------------------------------------------------------
-
-AR = ar r
-RANLIB = ranlib
-
-CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS)
-LDFLAGS = $(DEBUG) $(LIBS)
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=allprogs
@@ -25,29 +15,20 @@ endif
 
 all: $(TARGET)
 
-allprogs: test dump dumpdb
-
-test: test.c librpm.a
-	$(CC) $(DEBUG) -o $@ test.c librpm.a $(LIBS)
-
-dump: dump.c librpm.a
-	$(CC) $(DEBUG) -o $@ dump.c librpm.a $(LIBS)
-
-dumpdb: dumpdb.c librpm.a
-	$(CC) $(DEBUG) -o $@ dumpdb.c librpm.a $(LIBS)
+allprogs: $(LIBRPM) $(PROGS)
 
 $(LIBRPM): $(LIBOBJECTS) 
 	$(AR) $@ $(LIBOBJECTS)
 	$(RANLIB) $@
 
 clean:
-	rm -f *.a *.o *~ $(ALL) test.out
+	rm -f *.a *.o *~ $(PROGS) test.out
 
 squeaky: clean
 	rm -f depend
 
 depend:
-	gcc -M *.c > .depend
+	$(CPP) $(CFLAGS) -M *.c > .depend
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
