@@ -2380,6 +2380,9 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
     if (mi->mi_set == NULL) {
 	mi->mi_set = set;
     } else {
+#if 0
+fprintf(stderr, "+++ %d = %d + %d\t\"%s\"\n", (mi->mi_set->count + set->count), mi->mi_set->count, set->count, ((char *)key->data));
+#endif
 	mi->mi_set->recs = xrealloc(mi->mi_set->recs,
 		(mi->mi_set->count + set->count) * sizeof(*(mi->mi_set->recs)));
 	memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
@@ -3258,6 +3261,38 @@ exit:
     return ret;
 }
 
+#define _skip(_dn)	{ sizeof(_dn)-1, (_dn) }
+
+/*@unchecked@*/ /*@observer@*/
+static struct skipDir_s {
+    int dnlen;
+/*@observer@*/ /*@null@*/
+    const char * dn;
+} skipDirs[] = {
+    _skip("/usr/share/zoneinfo"),
+    _skip("/usr/share/locale"),
+    _skip("/usr/share/i18n"),
+    _skip("/usr/lib/locale"),
+    { 0, NULL }
+};
+
+static int skipDir(const char * dn)
+	/*@*/
+{
+    struct skipDir_s * sd = skipDirs;;
+    int dnlen;
+
+    dnlen = strlen(dn);
+    for (sd = skipDirs; sd->dn != NULL; sd++) {
+	if (dnlen < sd->dnlen)
+	    continue;
+	if (strncmp(dn, sd->dn, sd->dnlen))
+	    continue;
+	return 1;
+    }
+    return 0;
+}
+
 /* XXX transaction.c */
 /*@-compmempass@*/
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
@@ -3284,16 +3319,20 @@ data = &mi->mi_data;
     /* Gather all installed headers with matching basename's. */
     for (i = 0; i < numItems; i++) {
 
+/*@-boundswrite@*/
+	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
+/*@=boundswrite@*/
+
 /*@-boundsread -dependenttrans@*/
 key->data = (void *) fpList[i].baseName;
 /*@=boundsread =dependenttrans@*/
 key->size = strlen((char *)key->data);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
+	if (skipDir(fpList[i].entry->dirName))
+	    continue;
+
 	xx = rpmdbGrowIterator(mi, i);
-/*@-boundswrite@*/
-	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
-/*@=boundswrite@*/
 
     }
 

@@ -365,7 +365,7 @@ rpmts_Order(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    int xx;
+    int rc;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Order(%p) ts %p\n", s, s->ts);
@@ -373,11 +373,10 @@ fprintf(stderr, "*** rpmts_Order(%p) ts %p\n", s, s->ts);
     if (!PyArg_ParseTuple(args, ":Order")) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
-    xx = rpmtsOrder(s->ts);
+    rc = rpmtsOrder(s->ts);
     Py_END_ALLOW_THREADS
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup python
@@ -419,6 +418,7 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
     Py_END_ALLOW_THREADS
 
     if (idtx == NULL || idtx->nidt <= 0) {
+	Py_INCREF(Py_None);
 	result = Py_None;
     } else {
 	PyObject * tuple;
@@ -462,6 +462,7 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
     Py_END_ALLOW_THREADS
 
     if (idtx->nidt <= 0) {
+	Py_INCREF(Py_None);
 	result = Py_None;
     } else {
 	PyObject * tuple;
@@ -497,7 +498,7 @@ rpmts_Rollback(rpmtsObject * s, PyObject * args)
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "u:Rollback", &rbtid)) return NULL;
+    if (!PyArg_ParseTuple(args, "i:Rollback", &rbtid)) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     memset(ia, 0, sizeof(*ia));
@@ -514,8 +515,7 @@ fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
     transFlags = rpmtsSetFlags(s->ts, transFlags);
     Py_END_ALLOW_THREADS
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup python
@@ -525,7 +525,6 @@ rpmts_OpenDB(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    int xx;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
@@ -534,10 +533,8 @@ fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
 
     if (s->ts->dbmode == -1)
 	s->ts->dbmode = O_RDONLY;
-    xx = rpmtsOpenDB(s->ts, s->ts->dbmode);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rpmtsOpenDB(s->ts, s->ts->dbmode));
 }
 
 /** \ingroup python
@@ -547,18 +544,17 @@ rpmts_CloseDB(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    int xx;
+    int rc;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":CloseDB")) return NULL;
 
-    xx = rpmtsCloseDB(s->ts);
+    rc = rpmtsCloseDB(s->ts);
     s->ts->dbmode = -1;		/* XXX disable lazy opens */
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup python
@@ -568,18 +564,18 @@ rpmts_InitDB(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    int xx;
+    int rc;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_InitDB(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":InitDB")) return NULL;
 
-    xx = rpmtsInitDB(s->ts, O_RDONLY);
-    xx = rpmtsCloseDB(s->ts);
+    rc = rpmtsInitDB(s->ts, O_RDONLY);
+    if (rc == 0)
+	rc = rpmtsCloseDB(s->ts);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup python
@@ -589,7 +585,7 @@ rpmts_RebuildDB(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    int xx;
+    int rc;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_RebuildDB(%p) ts %p\n", s, s->ts);
@@ -597,11 +593,10 @@ fprintf(stderr, "*** rpmts_RebuildDB(%p) ts %p\n", s, s->ts);
     if (!PyArg_ParseTuple(args, ":RebuildDB")) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
-    xx = rpmtsRebuildDB(s->ts);
+    rc = rpmtsRebuildDB(s->ts);
     Py_END_ALLOW_THREADS
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup python
@@ -611,7 +606,7 @@ rpmts_VerifyDB(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    int xx;
+    int rc;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
@@ -619,11 +614,10 @@ fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
     if (!PyArg_ParseTuple(args, ":VerifyDB")) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
-    xx = rpmtsVerifyDB(s->ts);
+    rc = rpmtsVerifyDB(s->ts);
     Py_END_ALLOW_THREADS
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup python
@@ -745,6 +739,7 @@ rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args)
     PyObject * blob;
     unsigned char * pkt;
     unsigned int pktlen;
+    int rc;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
@@ -761,10 +756,9 @@ fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
     pkt = PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
-    (void) pgpPrtPkts(pkt, pktlen, NULL, 1);
+    rc = pgpPrtPkts(pkt, pktlen, NULL, 1);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup python
@@ -777,6 +771,7 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args)
     PyObject * blob;
     unsigned char * pkt;
     unsigned int pktlen;
+    int rc;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
@@ -793,10 +788,9 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
     pkt = PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
-    (void) rpmcliImportPubkey(s->ts, pkt, pktlen);
+    rc = rpmcliImportPubkey(s->ts, pkt, pktlen);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup python

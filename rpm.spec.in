@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.75
+Release: 0.76
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -517,6 +517,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Aug  8 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.76
+- python: add return codes for rollbacks and fooDB methods.
+- avoid generating fingerprints for locale/zoneinfo sub-directories.
+
 * Wed Aug  7 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.75
 - fix: src.rpm installs need fd pos at payload.
 
