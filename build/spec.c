@@ -8,8 +8,8 @@ TODO:
 
 . strip blank lines, leading/trailing spaces in %preamble
 . multiline descriptions (general backslash processing ?)
-. %exclude
 . %doc globbing
+. should be able to drop the -n in non-%package parts
 
 ******************************/
 
@@ -190,6 +190,7 @@ static struct PackageRec *new_packagerec(void)
 
     p->subname = NULL;
     p->newname = NULL;
+    p->icon = NULL;
     p->header = newHeader();
     p->filelist = newStringBuf();
     p->files = -1;  /* -1 means no %files, thus no package */
@@ -204,6 +205,7 @@ void free_packagerec(struct PackageRec *p)
     freeStringBuf(p->filelist);
     FREE(p->subname);
     FREE(p->newname);
+    FREE(p->icon);
     if (p->next) {
         free_packagerec(p->next);
     }
@@ -213,6 +215,7 @@ void free_packagerec(struct PackageRec *p)
 void freeSpec(Spec s)
 {
     FREE(s->name);
+    FREE(s->specfile);
     freeSources(s);
     freeStringBuf(s->prep);
     freeStringBuf(s->build);
@@ -424,6 +427,9 @@ struct preamble_line {
     {RPMTAG_ROOT,         0, "root"},
     {RPMTAG_SOURCE,       0, "source"},
     {RPMTAG_PATCH,        0, "patch"},
+    {RPMTAG_EXCLUDE,      0, "exclude"},
+    {RPMTAG_EXCLUSIVE,    0, "exclusive"},
+    {RPMTAG_ICON,         0, "icon"},
     {0, 0, 0}
 };
 
@@ -510,9 +516,10 @@ char *chop_line(char *s)
 /*                                                                    */
 /**********************************************************************/
 
-Spec parseSpec(FILE *f)
+Spec parseSpec(FILE *f, char *specfile)
 {
     char buf[LINE_BUF_SIZE]; /* read buffer          */
+    char buf2[LINE_BUF_SIZE];
     char *line;              /* "parsed" read buffer */
     
     int x, tag, cur_part, t1;
@@ -524,6 +531,7 @@ Spec parseSpec(FILE *f)
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
 
     spec->name = NULL;
+    spec->specfile = specfile;
     spec->sources = NULL;
     spec->prep = newStringBuf();
     spec->build = newStringBuf();
@@ -630,6 +638,16 @@ Spec parseSpec(FILE *f)
 	  case PREAMBLE_PART:
 	    if ((tag = find_preamble_line(line, &s))) {
 	        switch (tag) {
+		  case RPMTAG_EXCLUDE:
+		  case RPMTAG_EXCLUSIVE:
+		      sprintf(buf2, "%s %s",
+			      (tag == RPMTAG_EXCLUDE) ? "%ifarch" : "%ifnarch",
+			      s);
+		      if (match_arch(buf2)) {
+			  error(RPMERR_BADARCH, "Arch mismatch!");
+			  return NULL;
+		      }
+		      break;
 		  case RPMTAG_NAME:
 		    if (!spec->name) {
 			spec->name = strdup(s);
@@ -651,6 +669,9 @@ Spec parseSpec(FILE *f)
 		      /* special case */
 		      message(MESS_DEBUG, "Got root: %s\n", s);
 		      setVar(RPMVAR_ROOT, s);
+		      break;
+		  case RPMTAG_ICON:
+		      cur_package->icon = strdup(s);
 		      break;
 		  case RPMTAG_SOURCE:
 		  case RPMTAG_PATCH:
