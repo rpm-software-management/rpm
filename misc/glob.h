@@ -25,7 +25,7 @@ extern "C"
 #endif
 
 #undef	__ptr_t
-#if defined (__cplusplus) || (defined (__STDC__) && __STDC__)
+#if defined (__cplusplus) || defined (__STDC__)
 #undef	__P
 #define	__P(protos)	protos
 #define	__ptr_t	void *
