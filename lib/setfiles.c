@@ -53,19 +53,17 @@
  * specification other than <<none>>.
  */
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <ctype.h>
+#include "system.h"
+
 #include <regex.h>
 #include <sys/vfs.h>
 #define __USE_XOPEN_EXTENDED 1	/* nftw */
 #include <ftw.h>
-#include <limits.h>
+
 #include <selinux/selinux.h>
+#include <popt.h>
+
+#include "debug.h"
 
 static int add_assoc = 1;
 
@@ -83,35 +81,29 @@ static char *rootpath = NULL;
 static int rootpathlen = 0;
 
 /*
- * Program name and error message buffer.
- */
-static char *progname;
-static char errbuf[255 + 1];
-
-/*
  * A file security context specification.
  */
 typedef struct spec {
-	char *regex_str;	/* regular expession string for diagnostic messages */
-	char *type_str;		/* type string for diagnostic messages */
-	char *context;		/* context string */
-	regex_t regex;		/* compiled regular expression */
-	mode_t mode;		/* mode format value */
-	int matches;		/* number of matching pathnames */
-	int hasMetaChars; 	/* indicates whether the RE has 
-				   any meta characters.  
-				   0 = no meta chars 
-				   1 = has one or more meta chars */
-	int stem_id;		/* indicates which of the stem-compression
-				 * items it matches */
-} spec_t;
+    char *regex_str;	/* regular expession string for diagnostic messages */
+    char *type_str;	/* type string for diagnostic messages */
+    char *context;	/* context string */
+    regex_t regex;	/* compiled regular expression */
+    mode_t mode;	/* mode format value */
+    int matches;	/* number of matching pathnames */
+    int hasMetaChars; 	/* indicates whether the RE has 
+			   any meta characters.  
+			   0 = no meta chars 
+			   1 = has one or more meta chars */
+    int stem_id;	/* indicates which of the stem-compression
+			   items it matches */
+} * spec_t;
 
 typedef struct stem {
 	char *buf;
 	int len;
-} stem_t;
+} * stem_t;
 
-stem_t *stem_arr = NULL;
+stem_t stem_arr = NULL;
 int num_stems = 0;
 int alloc_stems = 0;
 
@@ -124,12 +116,12 @@ static int get_stem_from_spec(const char * const buf)
 	const char *tmp = strchr(buf + 1, '/');
 	const char *ind;
 
-	if(!tmp)
+	if (!tmp)
 		return 0;
 
 	for(ind = buf + 1; ind < tmp; ind++)
 	{
-		if(strchr(regex_chars, (int)*ind))
+		if (strchr(regex_chars, (int)*ind))
 			return 0;
 	}
 	return tmp - buf;
@@ -140,7 +132,7 @@ static int get_stem_from_file_name(const char * const buf)
 {
 	const char *tmp = strchr(buf + 1, '/');
 
-	if(!tmp)
+	if (!tmp)
 		return 0;
 	return tmp - buf;
 }
@@ -154,28 +146,28 @@ static int find_stem_from_spec(const char **buf)
 	int i;
 	int stem_len = get_stem_from_spec(*buf);
 
-	if(!stem_len)
+	if (!stem_len)
 		return -1;
 	for(i = 0; i < num_stems; i++)
 	{
-		if(stem_len == stem_arr[i].len && !strncmp(*buf, stem_arr[i].buf, stem_len))
+		if (stem_len == stem_arr[i].len && !strncmp(*buf, stem_arr[i].buf, stem_len))
 		{
 			*buf += stem_len;
 			return i;
 		}
 	}
-	if(num_stems == alloc_stems)
+	if (num_stems == alloc_stems)
 	{
 		alloc_stems = alloc_stems * 2 + 16;
-		stem_arr = realloc(stem_arr, sizeof(stem_t) * alloc_stems);
-		if(!stem_arr) {
+		stem_arr = realloc(stem_arr, sizeof(*stem_arr) * alloc_stems);
+		if (!stem_arr) {
 			fprintf(stderr, "Unable to grow stem array to %d entries:  out of memory.\n", alloc_stems);
 			exit(1);
 		}
 	}
 	stem_arr[num_stems].len = stem_len;
 	stem_arr[num_stems].buf = malloc(stem_len + 1);
-	if(!stem_arr[num_stems].buf) {
+	if (!stem_arr[num_stems].buf) {
 		fprintf(stderr, "Unable to allocate new stem of length %d:  out of memory.\n", stem_len+1);
 		exit(1);
 	}
@@ -194,11 +186,11 @@ static int find_stem_from_file(const char **buf)
 	int i;
 	int stem_len = get_stem_from_file_name(*buf);
 
-	if(!stem_len)
+	if (!stem_len)
 		return -1;
 	for(i = 0; i < num_stems; i++)
 	{
-		if(stem_len == stem_arr[i].len && !strncmp(*buf, stem_arr[i].buf, stem_len))
+		if (stem_len == stem_arr[i].len && !strncmp(*buf, stem_arr[i].buf, stem_len))
 		{
 			*buf += stem_len;
 			return i;
@@ -212,19 +204,20 @@ static int find_stem_from_file(const char **buf)
  * same order as in the specification file.
  * Sorting occurs based on hasMetaChars
  */
-static spec_t *spec_arr;
+static spec_t spec_arr;
 static int nspec;
 
 /*
  * An association between an inode and a 
  * specification.  
  */
-typedef struct file_spec {
-	ino_t ino;		/* inode number */
-	int specind;		/* index of specification in spec */
-	char *file;		/* full pathname for diagnostic messages about conflicts */
-	struct file_spec *next;	/* next association in hash bucket chain */
-} file_spec_t;
+typedef struct file_spec * file_spec_t;
+struct file_spec {
+    ino_t ino;		/* inode number */
+    int specind;	/* index of specification in spec */
+    char *file;		/* full pathname for diagnostic messages about conflicts */
+    file_spec_t next;	/* next association in hash bucket chain */
+};
 
 /*
  * The hash table of associations, hashed by inode number.
@@ -235,7 +228,7 @@ typedef struct file_spec {
 #define HASH_BITS 16
 #define HASH_BUCKETS (1 << HASH_BITS)
 #define HASH_MASK (HASH_BUCKETS-1)
-static file_spec_t fl_head[HASH_BUCKETS];
+static struct file_spec fl_head[HASH_BUCKETS];
 
 /*
  * Try to add an association between an inode and
@@ -244,9 +237,10 @@ static file_spec_t fl_head[HASH_BUCKETS];
  * then use the specification that occurs later in the
  * specification array.
  */
-static file_spec_t *file_spec_add(ino_t ino, int specind, const char *file)
+static file_spec_t file_spec_add(ino_t ino, int specind, const char *file)
 {
-	file_spec_t *prevfl, *fl;
+	file_spec_t prevfl;
+	file_spec_t fl;
 	int h, no_conflict, ret;
 	struct stat sb;
 
@@ -262,7 +256,7 @@ static file_spec_t *file_spec_add(ino_t ino, int specind, const char *file)
 				if (!fl->file) {
 					fprintf(stderr,
 						"%s:  insufficient memory for file label entry for %s\n",
-						progname, file);
+						__progname, file);
 					return NULL;
 				}
 				strcpy(fl->file, file);
@@ -276,7 +270,7 @@ static file_spec_t *file_spec_add(ino_t ino, int specind, const char *file)
 
 			fprintf(stderr,
 				"%s:  conflicting specifications for %s and %s, using %s.\n",
-				progname, file, fl->file,
+				__progname, file, fl->file,
 				((specind > fl->specind) ? spec_arr[specind].
 				 context : spec_arr[fl->specind].context));
 			fl->specind =
@@ -287,7 +281,7 @@ static file_spec_t *file_spec_add(ino_t ino, int specind, const char *file)
 			if (!fl->file) {
 				fprintf(stderr,
 					"%s:  insufficient memory for file label entry for %s\n",
-					progname, file);
+					__progname, file);
 				return NULL;
 			}
 			strcpy(fl->file, file);
@@ -298,11 +292,11 @@ static file_spec_t *file_spec_add(ino_t ino, int specind, const char *file)
 			break;
 	}
 
-	fl = malloc(sizeof(file_spec_t));
+	fl = malloc(sizeof(*fl));
 	if (!fl) {
 		fprintf(stderr,
 			"%s:  insufficient memory for file label entry for %s\n",
-			progname, file);
+			__progname, file);
 		return NULL;
 	}
 	fl->ino = ino;
@@ -311,7 +305,7 @@ static file_spec_t *file_spec_add(ino_t ino, int specind, const char *file)
 	if (!fl->file) {
 		fprintf(stderr,
 			"%s:  insufficient memory for file label entry for %s\n",
-			progname, file);
+			__progname, file);
 		return NULL;
 	}
 	strcpy(fl->file, file);
@@ -325,7 +319,7 @@ static file_spec_t *file_spec_add(ino_t ino, int specind, const char *file)
  */
 static void file_spec_eval(void)
 {
-	file_spec_t *fl;
+	file_spec_t fl;
 	int h, used, nel, len, longest;
 
 	used = 0;
@@ -345,7 +339,7 @@ static void file_spec_eval(void)
 
 	QPRINTF
 	    ("%s:  hash table stats: %d elements, %d/%d buckets used, longest chain length %d\n",
-	     progname, nel, used, HASH_BUCKETS, longest);
+	     __progname, nel, used, HASH_BUCKETS, longest);
 }
 
 
@@ -354,7 +348,8 @@ static void file_spec_eval(void)
  */
 static void file_spec_destroy(void)
 {
-	file_spec_t *fl, *tmp;
+	file_spec_t fl;
+	file_spec_t tmp;
 	int h;
 
 	for (h = 0; h < HASH_BUCKETS; h++) {
@@ -372,16 +367,17 @@ static void file_spec_destroy(void)
 
 static int match(const char *name, struct stat *sb)
 {
-	int i, ret, file_stem;
+	static char errbuf[255 + 1];
 	const char *fullname = name;
 	const char *buf = name;
+	int i, ret, file_stem;
 
 	/* fullname will be the real file that gets labeled
 	 * name will be what is matched in the policy */
-	if (NULL != rootpath) {
+	if (rootpath != NULL) {
 		if (0 != strncmp(rootpath, name, rootpathlen)) {
 			fprintf(stderr, "%s:  %s is not located in %s\n", 
-				progname, name, rootpath);
+				__progname, name, rootpath);
 			return -1;
 		}
 		name += rootpathlen;
@@ -390,7 +386,7 @@ static int match(const char *name, struct stat *sb)
 
 	ret = lstat(fullname, sb);
 	if (ret) {
-		fprintf(stderr, "%s:  unable to stat file %s\n", progname,
+		fprintf(stderr, "%s:  unable to stat file %s\n", __progname,
 			fullname);
 		return -1;
 	}
@@ -407,10 +403,10 @@ static int match(const char *name, struct stat *sb)
 		 * stem as the file AND if the spec in question has no mode
 		 * specified or if the mode matches the file mode then we do
 		 * a regex check	*/
-		if( (spec_arr[i].stem_id == -1 || spec_arr[i].stem_id == file_stem)
+		if ( (spec_arr[i].stem_id == -1 || spec_arr[i].stem_id == file_stem)
 		  && (!spec_arr[i].mode || ( (sb->st_mode & S_IFMT) == spec_arr[i].mode ) ) )
 		{
-			if(spec_arr[i].stem_id == -1)
+			if (spec_arr[i].stem_id == -1)
 				ret = regexec(&spec_arr[i].regex, name, 0, NULL, 0);
 			else
 				ret = regexec(&spec_arr[i].regex, buf, 0, NULL, 0);
@@ -423,7 +419,7 @@ static int match(const char *name, struct stat *sb)
 			regerror(ret, &spec_arr[i].regex, errbuf, sizeof errbuf);
 			fprintf(stderr,
 				"%s:  unable to match %s against %s:  %s\n",
-				progname, name, spec_arr[i].regex_str, errbuf);
+				__progname, name, spec_arr[i].regex_str, errbuf);
 			return -1;
 		}
 	}
@@ -440,10 +436,10 @@ static int match(const char *name, struct stat *sb)
 /* Used with qsort to sort specs from lowest to highest hasMetaChars value */
 static int spec_compare(const void* specA, const void* specB)
 {
-	return(
-		((const struct spec *)specB)->hasMetaChars -
-		((const struct spec *)specA)->hasMetaChars
-		); 
+    return (
+	((const spec_t)specB)->hasMetaChars -
+	((const spec_t)specA)->hasMetaChars
+	); 
 }
 
 /*
@@ -455,7 +451,7 @@ static int spec_compare(const void* specA, const void* specB)
 static int nodups_specs(void)
 {
 	int ii, jj;
-	struct spec *curr_spec;
+	spec_t curr_spec;
 
 	for (ii = 0; ii < nspec; ii++) {
 		curr_spec = &spec_arr[ii];
@@ -486,16 +482,17 @@ static int nodups_specs(void)
 	return 0;
 }
 
-static void usage(const char * const name)
+static void usage(const char * const name, poptContext optCon)
 {
 	fprintf(stderr,
 		"usage:  %s [-dnqvW] spec_file pathname...\n"
 		"usage:  %s -s [-dnqvW] spec_file\n", name, name);
+	poptPrintUsage(optCon, stderr, 0);
 	exit(1);
 }
 
 /* Determine if the regular expression specification has any meta characters. */
-static void spec_hasMetaChars(struct spec *spec)
+static void spec_hasMetaChars(spec_t spec)
 {
 	char *c;
 	int len;
@@ -535,8 +532,6 @@ static void spec_hasMetaChars(struct spec *spec)
 	return;
 }
 
-#define SZ 255
-
 /*
  * Apply the last matching specification to a file.
  * This function is called by nftw on each file during
@@ -546,7 +541,7 @@ static int apply_spec(const char *file,
 		      const struct stat *sb_unused, int flag, struct FTW *s_unused)
 {
 	const char *my_file;
-	file_spec_t *fl;
+	file_spec_t fl;
 	struct stat my_sb;
 	int i, ret;
 	char *context; 
@@ -559,7 +554,7 @@ static int apply_spec(const char *file,
 
 	if (flag == FTW_DNR) {
 		fprintf(stderr, "%s:  unable to read directory %s\n",
-			progname, my_file);
+			__progname, my_file);
 		return 0;
 	}
 
@@ -587,11 +582,11 @@ static int apply_spec(const char *file,
 
 	if (debug) {
 		if (spec_arr[i].type_str) {
-			printf("%s:  %s matched by (%s,%s,%s)\n", progname,
+			printf("%s:  %s matched by (%s,%s,%s)\n", __progname,
 			       my_file, spec_arr[i].regex_str,
 			       spec_arr[i].type_str, spec_arr[i].context);
 		} else {
-			printf("%s:  %s matched by (%s,%s)\n", progname,
+			printf("%s:  %s matched by (%s,%s)\n", __progname,
 			       my_file, spec_arr[i].regex_str,
 			       spec_arr[i].context);
 		}
@@ -606,7 +601,7 @@ static int apply_spec(const char *file,
 		} else {
 			perror(my_file);
 			fprintf(stderr, "%s:  unable to obtain attribute for file %s\n", 
-				progname, my_file);
+				__progname, my_file);
 			return -1;
 		}
 	}
@@ -623,7 +618,7 @@ static int apply_spec(const char *file,
 	}
 
 	if (verbose) {
-		printf("%s:  relabeling %s from %s to %s\n", progname,
+		printf("%s:  relabeling %s from %s to %s\n", __progname,
 		       my_file, context, spec_arr[i].context);
 	}
 
@@ -642,29 +637,11 @@ static int apply_spec(const char *file,
 	if (ret) {
 		perror(my_file);
 		fprintf(stderr, "%s:  unable to relabel %s to %s\n",
-			progname, my_file, spec_arr[i].context);
+			__progname, my_file, spec_arr[i].context);
 		return 1;
 	}
 
 	return 0;
-}
-
-static void set_rootpath(const char *arg)
-{
-	int len;
-
-	rootpath = strdup(arg);
-	if (NULL == rootpath) {
-		fprintf(stderr, "%s:  insufficient memory for rootpath\n", 
-			progname);
-		exit(1);
-	}
-
-	/* trim trailing /, if present */
-	len = strlen(rootpath);
-	while ('/' == rootpath[len - 1])
-		rootpath[--len] = 0;
-	rootpathlen = len;
 }
 
 static int nerr = 0;
@@ -672,7 +649,7 @@ static int nerr = 0;
 static void inc_err(void)
 {
     nerr++;
-    if(nerr > 9 && !debug) {
+    if (nerr > 9 && !debug) {
 	fprintf(stderr, "Exiting after 10 errors.\n");
 	exit(1);
     }
@@ -682,6 +659,7 @@ static
 int parseREContexts(const char *fn)
 {
     FILE * fp;
+    char errbuf[255 + 1];
     char line_buf[255 + 1];
     char * buf_p;
     char * regex;
@@ -761,8 +739,7 @@ int parseREContexts(const char *fn)
 		sprintf(anchored_regex, "^%s$", reg_buf);
 
 		/* Compile the regular expression. */
-		regerr = regcomp(&spec_arr[nspec].regex,
-			    anchored_regex,
+		regerr = regcomp(&spec_arr[nspec].regex, anchored_regex,
 			    REG_EXTENDED | REG_NOSUB);
 		if (regerr < 0) {
 		    regerror(regerr, &spec_arr[nspec].regex,
@@ -851,19 +828,19 @@ int parseREContexts(const char *fn)
 	    QPRINTF("%s:  read %d specifications\n", fn, nspec);
 	    if (nspec == 0)
 		return 0;
-	    if ((spec_arr = malloc(sizeof(spec_t) * nspec)) == NULL) {
+	    if ((spec_arr = malloc(sizeof(*spec_arr) * nspec)) == NULL) {
 		fprintf(stderr, "%s:  insufficient memory for specifications\n",
 			fn);
 		return -1;
 	    }
-	    memset(spec_arr, 0, sizeof(spec_t) * nspec);
+	    memset(spec_arr, 0, sizeof(*spec_arr) * nspec);
 	    rewind(fp);
 	}
     }
     fclose(fp);
 
     /* Sort the specifications with most general first */
-    qsort(spec_arr, nspec, sizeof(struct spec), spec_compare);
+    qsort(spec_arr, nspec, sizeof(*spec_arr), spec_compare);
 
     /* Verify no exact duplicates */
     if (nodups_specs() != 0)
@@ -871,151 +848,184 @@ int parseREContexts(const char *fn)
     return 0;
 }
 
+static struct poptOption optionsTable[] = {
+ { "debug", 'd', POPT_ARG_VAL, &debug, 1,
+        N_("show what specification matched each file"), NULL },
+ { "nochange", 'n', POPT_ARG_VAL, &change, 0,
+        N_("do not change any file labels"), NULL },
+ { "quiet", 'q', POPT_ARG_VAL, &quiet, 1,
+        N_("be quiet (suppress non-error output)"), NULL },
+ { "root", 'r', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &rootpath, 0,
+        N_("use an alternate root path"), N_("ROOT") },
+ { "stdin", 's', POPT_ARG_VAL, &use_stdin, 1,
+        N_("use stdin for a list of files instead of searching a partition"), NULL },
+ { "verbose", 'v', POPT_ARG_VAL, &warn_no_match, 1,
+        N_("show changes in file labels"), NULL },
+ { "warn", 'W', POPT_ARG_VAL, &warn_no_match, 1,
+        N_("warn about entries that have no matching file"), NULL },
+
+   POPT_AUTOHELP
+   POPT_TABLEEND
+};
+
 int main(int argc, char **argv)
 {
-	int opt, i;
+    poptContext optCon;
+    const char ** av;
+    const char * arg;
+    int ec = EXIT_FAILURE;	/* assume failure. */
+    int rc;
+    int i;
 
-	/* Process any options. */
-	while ((opt = getopt(argc, argv, "dnqrsvW")) > 0) {
-		switch (opt) {
-		case 'd':
-			debug = 1;
-			break;
-		case 'n':
-			change = 0;
-			break;
-		case 'q':
-			quiet = 1;
-			break;
-		case 'r':
-			if (optind + 1 >= argc) {
-				fprintf(stderr, "usage:  %s -r rootpath\n", 
-					argv[0]);
-				exit(1);
-			}
-			if (NULL != rootpath) {
-				fprintf(stderr, 
-					"%s: only one -r can be specified\n", 
-					argv[0]);
-				exit(1);
-			}
-			set_rootpath(argv[optind++]);
-			break;
-		case 's':
-			use_stdin = 1;
-			add_assoc = 0;
-			break;
-		case 'v':
-			verbose = 1;
-			break;
-		case 'W':
-			warn_no_match = 1;
-			break;
-		case '?':
-			usage(argv[0]);
-		}
-	}
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    /*@-noeffect@*/
+    mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=noeffect@*/
+#endif
 
-	if (use_stdin) {
-		if (optind != (argc - 1)) {
-			/* Cannot mix with pathname arguments. */
-			usage(argv[0]);
-		}
-	} else {
-		if (optind > (argc - 2))
-			usage(argv[0]);
-	}
+    setprogname(argv[0]);       /* Retrofit glibc __progname */
+    /* XXX glibc churn sanity */
+    if (__progname == NULL) {
+	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
+	else __progname = argv[0];
+    }
+                                                                                
+    (void) setlocale(LC_ALL, "" );
+    (void) bindtextdomain(PACKAGE, LOCALEDIR);
+    (void) textdomain(PACKAGE);
+
+    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
+
+    /* Process all options, whine if unknown. */
+    while ((rc = poptGetNextOpt(optCon)) > 0) {
+	switch (rc) {
+	default:
+/*@-nullpass@*/
+	    fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+		__progname, rc);
+/*@=nullpass@*/
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+        }
+    }
+
+    if (rc < -1) {
+/*@-nullpass@*/
+	fprintf(stderr, "%s: %s: %s\n", __progname,
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+		poptStrerror(rc));
+/*@=nullpass@*/
+	goto exit;
+    }
+
+    /* trim trailing /, if present */
+    if (rootpath != NULL) {
+	rootpathlen = strlen(rootpath);
+	while (rootpath[rootpathlen - 1] == '/')
+	    rootpath[--rootpathlen] = 0;
+    }
+
+    av = poptGetArgs(optCon);
+    if (use_stdin) {
+	add_assoc = 0;
+	/* Cannot mix with pathname arguments. */
+	if (av[0] != NULL)
+	    usage(__progname, optCon);
+    } else {
+	if (av[0] == NULL || av[1] == NULL)
+	    usage(__progname, optCon);
+    }
 
 	/* Parse the specification file. */
-	if (parseREContexts(argv[optind]) != 0) {
-		perror(argv[optind]);
-		exit(1);
+    if (parseREContexts(*av) != 0) {
+	perror(*av);
+	goto exit;
+    }
+    av++;
+
+    /*
+     * Apply the specifications to the file systems.
+     */
+    if (use_stdin) {
+	char buf[PATH_MAX];
+	struct stat sb;
+	int flag;
+
+	while(fgets(buf, sizeof(buf), stdin)) {
+	    strtok(buf, "\n");
+	    if (buf[0] == '\n')
+		continue;
+	    if (stat(buf, &sb)) {
+		fprintf(stderr, "File \"%s\" not found.\n", buf);
+		continue;
+	    }
+	    switch(sb.st_mode) {
+	    case S_IFDIR:
+		flag = FTW_D;
+		break;
+	    case S_IFLNK:
+		flag = FTW_SL;
+		break;
+	    default:
+		flag = FTW_F;
+		break;
+	    }
+	    apply_spec(buf, &sb, flag, NULL);
 	}
-	optind++;
+    }
+    else while ((arg = *av++) != NULL)
+    {
+	if (rootpath != NULL) {
+	    QPRINTF("%s:  labeling files, pretending %s is /\n",
+			__progname, rootpath);
+	}
+
+	QPRINTF("%s:  labeling files under %s\n", __progname, arg);
+		
+	/* Walk the file tree, calling apply_spec on each file. */
+	if (nftw(arg, apply_spec, 1024, FTW_PHYS | FTW_MOUNT)) {
+	    fprintf(stderr, "%s:  error while labeling files under %s\n",
+			__progname, arg);
+	    goto exit;
+	}
 
 	/*
-	 * Apply the specifications to the file systems.
+	 * Evaluate the association hash table distribution for the
+	 * directory tree just traversed.
 	 */
-	progname = argv[0];
-	if(use_stdin)
-	{
-		char buf[PATH_MAX];
-		while(fgets(buf, sizeof(buf), stdin))
-		{
-			struct stat sb;
-			strtok(buf, "\n");
-			if(buf[0] != '\n')
-			{
-				if(stat(buf, &sb))
-					fprintf(stderr, "File \"%s\" not found.\n", buf);
-				else
-				{
-					int flag;
-					switch(sb.st_mode)
-					{
-					case S_IFDIR:
-						flag = FTW_D;
-					break;
-					case S_IFLNK:
-						flag = FTW_SL;
-					break;
-					default:
-						flag = FTW_F;
-					}
-					apply_spec(buf, &sb, flag, NULL);
-				}
-			}
-		}
+	file_spec_eval();
+
+	/* Reset the association hash table for the next directory tree. */
+	file_spec_destroy();
+    }
+
+    if (warn_no_match) {
+	for (i = 0; i < nspec; i++) {
+	    if (spec_arr[i].matches > 0)
+		continue;
+	    if (spec_arr[i].type_str) {
+		printf("%s:  Warning!  No matches for (%s, %s, %s)\n",
+			 __progname, spec_arr[i].regex_str,
+			 spec_arr[i].type_str, spec_arr[i].context);
+	    } else {
+		printf("%s:  Warning!  No matches for (%s, %s)\n",
+			 __progname, spec_arr[i].regex_str,
+			 spec_arr[i].context);
+	    }
 	}
-	else for (; optind < argc; optind++)
-	{
-		if (NULL != rootpath) {
-			QPRINTF("%s:  labeling files, pretending %s is /\n",
-				argv[0], rootpath);
-		}
+    }
 
-		QPRINTF("%s:  labeling files under %s\n", argv[0],
-			argv[optind]);
-		
-		/* Walk the file tree, calling apply_spec on each file. */
-		if (nftw
-		    (argv[optind], apply_spec, 1024,
-		     FTW_PHYS | FTW_MOUNT)) {
-			fprintf(stderr,
-				"%s:  error while labeling files under %s\n",
-				argv[0], argv[optind]);
-			exit(1);
-		}
+    QPRINTF("%s:  Done.\n", __progname);
+    ec = 0;
 
-		/*
-		 * Evaluate the association hash table distribution for the
-		 * directory tree just traversed.
-		 */
-		file_spec_eval();
+exit:
+    optCon = poptFreeContext(optCon);
 
-		/* Reset the association hash table for the next directory tree. */
-		file_spec_destroy();
-	}
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    /*@-noeffect@*/
+    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=noeffect@*/
+#endif
 
-	if (warn_no_match) {
-		for (i = 0; i < nspec; i++) {
-			if (spec_arr[i].matches == 0) {
-				if (spec_arr[i].type_str) {
-					printf
-						("%s:  Warning!  No matches for (%s, %s, %s)\n",
-						 argv[0], spec_arr[i].regex_str,
-						 spec_arr[i].type_str, spec_arr[i].context);
-				} else {
-					printf
-						("%s:  Warning!  No matches for (%s, %s)\n",
-						 argv[0], spec_arr[i].regex_str,
-						 spec_arr[i].context);
-				}
-			}
-		}
-	}
-
-	QPRINTF("%s:  Done.\n", argv[0]);
-
-	exit(0);
+    return ec;
 }

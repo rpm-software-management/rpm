@@ -79,7 +79,7 @@ BUILT_SOURCES = getdate.c # rpmlib.lcd
 
 noinst_PROGRAMS = setfiles
 setfiles_SOURCES =	setfiles.c
-setfiles_LDFLAGS =	@LDFLAGS_STATIC@ -lselinux # ./librpm.la
+setfiles_LDFLAGS =	@LDFLAGS_STATIC@ -lselinux $(top_builddir)/popt/libpopt.la # ./librpm.la
 
 rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
