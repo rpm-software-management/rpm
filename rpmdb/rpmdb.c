@@ -2451,7 +2451,8 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     if (iid != 0 && iid != -1) {
 	int_32 tid = iid;
 	(void) headerRemoveEntry(h, RPMTAG_REMOVETID);
-	(void) headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
+	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
+	   (void) headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
     }
 
     /*

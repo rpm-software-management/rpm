@@ -159,7 +159,7 @@ int_32 *const getBuildTime(void)
     static int_32 buildTime[1];
 
     if (buildTime[0] == 0)
-	buildTime[0] = time(NULL);
+	buildTime[0] = (int_32) time(NULL);
     return buildTime;
 }
 

@@ -1670,7 +1670,7 @@ assert(psm->mi == NULL);
 	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    int_32 installTime = time(NULL);
+	    int_32 installTime = (int_32) time(NULL);
 
 	    if (fi->fstates != NULL && fi->fc > 0)
 		(void) headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,

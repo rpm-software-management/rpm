@@ -200,6 +200,8 @@
 	- add support for mips (#49283).
 	- add __as, _build_arch, and __cxx macros (#36662, #36663, #49280).
 	- detailed build package error messages.
+	- fix: i18n tags not terminated correctly with NUL (#50304).
+	- add explicit casts to work around a s390 compiler problem.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

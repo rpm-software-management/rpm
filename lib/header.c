@@ -327,7 +327,9 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
     char * tprev = NULL;
     char * t = NULL;
     int tdel, tl = dl;
+    struct indexEntry ieprev;
 
+    memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
 	struct indexEntry ie;
 	int_32 type;
@@ -355,13 +357,16 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    diff = typeSizes[type] - (dl % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
 		dl += diff;
+		if (ieprev.info.type == RPM_I18NSTRING_TYPE)
+		    ieprev.length += diff;
 	    }
 	}
 	tdel = (tprev ? (t - tprev) : 0);
-	dl += ie.length;
-	tl += tdel;
+	if (ieprev.info.type == RPM_I18NSTRING_TYPE)
+	    tdel = ieprev.length;
+
 	tprev = (ie.info.tag < HEADER_I18NTABLE)
-		? dataStart : t;
+		? (dataStart - REGION_TAG_COUNT) : t;
 
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
@@ -381,6 +386,11 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    t += ie.length;
 	    break;
 	}
+
+	dl += ie.length;
+	tl += tdel;
+	ieprev = ie;	/* structure assignment */
+
     }
     tdel = (tprev ? (t - tprev) : 0);
     tl += tdel;
@@ -769,10 +779,8 @@ Header headerLoad(void * uh)
 	/*@=assignexpose@*/
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
-#if !defined(MANDRAKE_LOCALE_PACKAGE_DEBUG)
 	if (rdlen != dl)
 	    goto errxit;
-#endif
 	entry->rdlen = rdlen;
 	entry++;
 	h->indexUsed++;
@@ -1582,7 +1590,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	    entry->data = xrealloc(entry->data, entry->length + length);
 
 	memset(((char *)entry->data) + entry->length, '\0', ghosts);
-	memmove(((char *)entry->data) + entry->length + ghosts, string, strlen(string));
+	strcpy(((char *)entry->data) + entry->length + ghosts, string);
 
 	entry->length += length;
 	entry->info.count = langNum + 1;

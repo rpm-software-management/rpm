@@ -1558,7 +1558,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     ts->currDir = currentDirectory();
     ts->chrootDone = 0;
     if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
-    ts->id = time(NULL);
+    ts->id = (int_32) time(NULL);
 
     memset(psm, 0, sizeof(*psm));
     /*@-assignexpose@*/
