@@ -33,9 +33,9 @@ void doInstall(char * prefix, char * arg, int test, int installFlags) {
 	return;
     }
 
-    rc = rpmInstallPackage(prefix, db, fd, test);
+    rc = rpmInstallPackage(prefix, db, fd, installFlags, test);
     if (rc == 1) {
-	fprintf(stderr, "error: %s is not a RPM package\n", arg);
+	fprintf(stderr, "error: %s cannot be installed\n", arg);
     }
 
     close(fd);
