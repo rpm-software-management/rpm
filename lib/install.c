@@ -37,7 +37,7 @@ int filecmp(short mode1, char * md51, char * link1,
 	      short mode2, char * md52, char * link2);
 enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 				char * dbLink, short newMode, char * newMd5,
-				char * newLink);
+				char * newLink, int brokenMd5);
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify,
 			  char ** installArchive, char * tmpPath,
@@ -546,6 +546,8 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     int len;
     int childDead = 0;
 
+    if (!fileCount) return 0;
+
     /* fd should be a gzipped cpio archive */
 
     message(MESS_DEBUG, "installing archive into %s\n", prefix);
@@ -1022,12 +1024,12 @@ int filecmp(short mode1, char * md51, char * link1,
 
 enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 				char * dbLink, short newMode, char * newMd5,
-				char * newLink) {
+				char * newLink, int brokenMd5) {
     char buffer[1024];
     char * dbAttr, * newAttr;
     enum fileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
-    int i;
+    int i, rc;
 
     if (lstat(filespec, &sb)) {
 	/* the file doesn't exist on the disk - might as well make it */
@@ -1055,7 +1057,12 @@ enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
     }
 
     if (dbWhat == REG) {
-	if (mdfile(filespec, buffer)) {
+	if (brokenMd5)
+	    rc = mdfileBroken(filespec, buffer);
+	else
+	    rc = mdfile(filespec, buffer);
+
+	if (rc) {
 	    /* assume the file has been removed, don't freak */
 	    message(MESS_DEBUG, "	file not present - creating");
 	    return CREATE;
@@ -1074,7 +1081,7 @@ enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 	newAttr = newLink;
      }
 
-    /* this order matters - we'd prefer to CREATE the file is at all 
+    /* this order matters - we'd prefer to CREATE the file if at all 
        possible in case something else (like the timestamp) has changed */
 
     if (!strcmp(dbAttr, buffer)) {
@@ -1245,7 +1252,8 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 			       secFileModesList[secNum],
 			       secFileMd5List[secNum], secFileLinksList[secNum],
 			       fileModesList[mainNum], fileMd5List[mainNum],
-			       fileLinkList[mainNum]);
+			       fileLinkList[mainNum], 
+			       !isEntry(sech, RPMTAG_RPMVERSION));
 	}
     }
 
