@@ -123,7 +123,7 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	
 	execvp(argv[0], argv);
 	rpmError(RPMERR_EXEC, "Couldn't exec %s", argv[0]);
-	exit(RPMERR_EXEC);
+	_exit(RPMERR_EXEC);
     }
     if (progPID < 0) {
 	rpmError(RPMERR_FORK, "Couldn't fork %s", argv[0]);

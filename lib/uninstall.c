@@ -362,7 +362,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 		execl("/bin/sh", "/bin/sh", "-x", "-s", upgradeArg, NULL);
 	    else
 		execl("/bin/sh", "/bin/sh", "-s", upgradeArg, NULL);
-	    exit(-1);
+	    _exit(-1);
 	}
 	close(fd);
 	waitpid(child, &status, 0);

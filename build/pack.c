@@ -223,7 +223,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	if (prefix) {
 	    if (chdir(prefix)) {
 		rpmError(RPMERR_EXEC, "Couldn't chdir to %s", prefix);
-		exit(RPMERR_EXEC);
+		_exit(RPMERR_EXEC);
 	    }
 	}
 
@@ -232,7 +232,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	       (tempdir) ? "-LH" : "-H",
 	       "crc", NULL);
 	rpmError(RPMERR_EXEC, "Couldn't exec cpio");
-	exit(RPMERR_EXEC);
+	_exit(RPMERR_EXEC);
     }
     if (cpioPID < 0) {
 	rpmError(RPMERR_FORK, "Couldn't fork cpio");
@@ -256,7 +256,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 
 	execlp("gzip", "gzip", "-c9fn", NULL);
 	rpmError(RPMERR_EXEC, "Couldn't exec gzip");
-	exit(RPMERR_EXEC);
+	_exit(RPMERR_EXEC);
     }
     if (gzipPID < 0) {
 	rpmError(RPMERR_FORK, "Couldn't fork gzip");

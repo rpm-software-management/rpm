@@ -128,7 +128,7 @@ int execScript(struct Script *script)
     if (!(pid = fork())) {
 	execl(script->name, script->name, NULL);
 	rpmError(RPMERR_SCRIPT, "Exec failed");
-	exit(RPMERR_SCRIPT);
+	_exit(RPMERR_SCRIPT);
     }
     wait(&status);
     if (! WIFEXITED(status) || WEXITSTATUS(status)) {

@@ -213,7 +213,7 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
 	       name, "-sb", file, sigfile,
 	       NULL);
 	rpmError(RPMERR_EXEC, "Couldn't exec pgp");
-	exit(RPMERR_EXEC);
+	_exit(RPMERR_EXEC);
     }
 
     fpipe = fdopen(inpipe[1], "w");
@@ -385,7 +385,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
 	       NULL);
 	printf("exec failed!\n");
 	rpmError(RPMERR_EXEC, "Could not run pgp.  Use --nopgp to skip PGP checks.");
-	exit(RPMERR_EXEC);
+	_exit(RPMERR_EXEC);
     }
 
     close(outpipe[1]);
@@ -468,7 +468,7 @@ static int checkPassPhrase(char *passPhrase)
 	       name, "-sf",
 	       NULL);
 	rpmError(RPMERR_EXEC, "Couldn't exec pgp");
-	exit(RPMERR_EXEC);
+	_exit(RPMERR_EXEC);
     }
 
     fpipe = fdopen(passPhrasePipe[1], "w");
