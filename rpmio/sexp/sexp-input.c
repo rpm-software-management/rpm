@@ -8,6 +8,9 @@
 #include "sexp.h"
 
 /*@access sexpInputStream @*/
+
+/*@access sexpList @*/
+/*@access sexpString @*/
 /*@access sexpObject @*/
 
 /**************************************/
@@ -256,7 +259,7 @@ void scanToken(sexpInputStream is, sexpSimpleString ss)
 sexpObject scanToEOF(sexpInputStream is)
 {
   sexpSimpleString ss = newSimpleString();
-  sexpString *s = newSexpString();
+  sexpString s = newSexpString();
   setSexpStringString(s,ss);
   skipWhiteSpace(is);
   while (is->nextChar != EOF)
@@ -465,9 +468,9 @@ sexpSimpleString scanSimpleString(sexpInputStream is)
 /* scanString(is)
  * Reads and returns a string [presentationhint]string from input stream.
  */
-sexpString *scanString(sexpInputStream is)
+sexpString scanString(sexpInputStream is)
 {
-  sexpString *s;
+  sexpString s;
   sexpSimpleString ss;
   s = newSexpString();
   if (is->nextChar == '[')
@@ -488,8 +491,8 @@ sexpString *scanString(sexpInputStream is)
 /* scanList(is)
  * Read and return a sexpList from the input stream.
  */
-sexpList *scanList(sexpInputStream is)
-{ sexpList *list;
+sexpList scanList(sexpInputStream is)
+{ sexpList list;
   sexpObject object;
   skipChar(is,'(');
   skipWhiteSpace(is);

@@ -18,49 +18,56 @@
 
 #define DEFAULTLINELENGTH 75
 
-typedef unsigned char octet;
-
 /* TYPES OF OBJECTS */
 #define SEXP_STRING 1
 #define SEXP_LIST   2
 
+typedef unsigned char octet;
+
+typedef /*@abstract@*/ struct sexpSimpleString_s * sexpSimpleString;
+typedef /*@abstract@*/ struct sexpString_s * sexpString;
+typedef /*@abstract@*/ struct sexpList_s * sexpList;
+typedef /*@abstract@*/ union sexpObject_u * sexpObject;
+
+typedef /*@abstract@*/ struct sexpInputStream_s * sexpInputStream;
+typedef /*@abstract@*/ struct sexpOutputStream_s * sexpOutputStream;
+
 /* sexpSimpleString */
-typedef /*@abstract@*/ struct sexp_simplestring { 
+struct sexpSimpleString_s { 
   long int length;
   long int allocatedLength;
 /*@null@*/
   octet *string;
-} * sexpSimpleString;
+};
 
 /* sexpString */
-typedef struct sexp_string {
+struct sexpString_s {
   int type;
 /*@null@*/
   sexpSimpleString presentationHint;
 /*@null@*/
   sexpSimpleString string;
-} sexpString;
+};
 
 /* sexpObject */
-typedef /*@abstract@*/ union sexpObject_u * sexpObject;
 
 /* sexpList */
 /* If first is NULL, then rest must also be NULL; this is empty list */
-typedef struct sexp_list {  
-  char type;
+struct sexpList_s {  
+    int type;
 /*@null@*/
-  sexpObject first;
+    sexpObject first;
 /*@null@*/
-  struct sexp_list  *rest;
-} sexpList;
+    sexpList rest;
+};
 
 /* sexpObject */
 /* so we can have a pointer to something of either type */
 union sexpObject_u {
 /*@unused@*/
-  sexpString string;
+  struct sexpString_s string;
 /*@unused@*/
-  sexpList list;
+  struct sexpList_s list;
 };
 
 /* sexpIter */
@@ -68,7 +75,7 @@ union sexpObject_u {
 /* In this implementation, it is the same as a list */
 typedef /*@abstract@*/ sexpList * sexpIter;
 
-typedef /*@abstract@*/ struct sexpInputStream_s {
+struct sexpInputStream_s {
   int nextChar;        /* character currently being scanned */
   int byteSize;        /* 4 or 6 or 8 == currently scanning mode */
   int bits;            /* Bits waiting to be used */
@@ -77,9 +84,9 @@ typedef /*@abstract@*/ struct sexpInputStream_s {
   int count;           /* number of 8-bit characters output by getChar */
 /*@shared@*/ /*@relnull@*/
   FILE *inputFile;     /* where to get input, if not stdin */
-} * sexpInputStream;
+};
 
-typedef /*@abstract@*/ struct sexpOutputStream_s {
+struct sexpOutputStream_s {
   long int column;          /* column where next character will go */
   long int maxcolumn;       /* max usable column, or -1 if no maximum */
   long int indent;          /* current indentation level (starts at 0) */
@@ -93,7 +100,7 @@ typedef /*@abstract@*/ struct sexpOutputStream_s {
   int mode;                 /* BASE64, ADVANCED, or CANONICAL */
 /*@shared@*/ /*@relnull@*/
   FILE *outputFile;         /* where to put output, if not stdout */
-} * sexpOutputStream;
+};
 
 /* Function prototypes */
 
@@ -122,31 +129,31 @@ sexpSimpleString reallocateSimpleString(sexpSimpleString ss)
 void appendCharToSimpleString(int c, sexpSimpleString ss)
 	/*@globals fileSystem @*/
 	/*@modifies ss, fileSystem @*/;
-sexpString *newSexpString(void)
+sexpString newSexpString(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-/*@null@*/
-sexpSimpleString sexpStringPresentationHint(sexpString *s)
+/*@exposed@*/ /*@null@*/
+sexpSimpleString sexpStringPresentationHint(sexpString s)
 	/*@*/;
-void setSexpStringPresentationHint(sexpString *s, sexpSimpleString ss)
+void setSexpStringPresentationHint(sexpString s, sexpSimpleString ss)
 	/*@modifies s @*/;
-void setSexpStringString(sexpString *s, sexpSimpleString ss)
+void setSexpStringString(sexpString s, sexpSimpleString ss)
 	/*@modifies s @*/;
-/*@null@*/
-sexpSimpleString sexpStringString(sexpString *s)
+/*@exposed@*/ /*@null@*/
+sexpSimpleString sexpStringString(sexpString s)
 	/*@*/;
-void closeSexpString(sexpString *s)
+void closeSexpString(sexpString s)
 	/*@*/;
-sexpList *newSexpList(void)
+sexpList newSexpList(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-void sexpAddSexpListObject(sexpList *list, sexpObject object)
+void sexpAddSexpListObject(sexpList list, sexpObject object)
 	/*@globals fileSystem @*/
 	/*@modifies list, fileSystem @*/;
-void closeSexpList(sexpList *list)
+void closeSexpList(sexpList list)
 	/*@*/;
 /*@observer@*/
-sexpIter sexpListIter(sexpList *list)
+sexpIter sexpListIter(sexpList list)
 	/*@*/;
 /*@exposed@*/ /*@observer@*/ /*@null@*/
 sexpIter sexpIterNext(sexpIter iter)
@@ -213,10 +220,10 @@ void scanBase64String(sexpInputStream is, sexpSimpleString ss, long int length)
 sexpSimpleString scanSimpleString(sexpInputStream is)
 	/*@globals fileSystem @*/
 	/*@modifies is, fileSystem @*/;
-sexpString *scanString(sexpInputStream is)
+sexpString scanString(sexpInputStream is)
 	/*@globals fileSystem @*/
 	/*@modifies is, fileSystem @*/;
-sexpList *scanList(sexpInputStream is)
+sexpList scanList(sexpInputStream is)
 	/*@globals fileSystem @*/
 	/*@modifies is, fileSystem @*/;
 sexpObject scanObject(sexpInputStream is)
@@ -244,10 +251,10 @@ void printDecimal(sexpOutputStream os, long int n)
 void canonicalPrintVerbatimSimpleString(sexpOutputStream os, sexpSimpleString ss)
 	/*@globals fileSystem @*/
 	/*@modifies os, fileSystem @*/;
-void canonicalPrintString(sexpOutputStream os, sexpString *s)
+void canonicalPrintString(sexpOutputStream os, sexpString s)
 	/*@globals fileSystem @*/
 	/*@modifies os, fileSystem @*/;
-void canonicalPrintList(sexpOutputStream os, sexpList *list)
+void canonicalPrintList(sexpOutputStream os, sexpList list)
 	/*@globals fileSystem @*/
 	/*@modifies os, fileSystem @*/;
 void canonicalPrintObject(sexpOutputStream os, sexpObject object)
@@ -286,18 +293,18 @@ int advancedLengthSimpleStringQuotedString(sexpSimpleString ss)
 void advancedPrintSimpleString(sexpOutputStream os, sexpSimpleString ss)
 	/*@globals fileSystem @*/
 	/*@modifies os, fileSystem @*/;
-void advancedPrintString(sexpOutputStream os, sexpString *s)
+void advancedPrintString(sexpOutputStream os, sexpString s)
 	/*@globals fileSystem @*/
 	/*@modifies os, fileSystem @*/;
 int advancedLengthSimpleStringBase64(sexpSimpleString ss)
 	/*@*/;
 int advancedLengthSimpleString(sexpOutputStream os, sexpSimpleString ss)
 	/*@*/;
-int advancedLengthString(sexpOutputStream os, sexpString *s)
+int advancedLengthString(sexpOutputStream os, sexpString s)
 	/*@*/;
-int advancedLengthList(sexpOutputStream os, sexpList *list)
+int advancedLengthList(sexpOutputStream os, sexpList list)
 	/*@*/;
-void advancedPrintList(sexpOutputStream os, sexpList *list)
+void advancedPrintList(sexpOutputStream os, sexpList list)
 	/*@globals fileSystem @*/
 	/*@modifies os, fileSystem @*/;
 void advancedPrintObject(sexpOutputStream os, sexpObject object)

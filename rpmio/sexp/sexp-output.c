@@ -9,6 +9,9 @@
 
 /*@access sexpOutputStream @*/
 /*@access sexpSimpleString @*/
+
+/*@access sexpList @*/
+/*@access sexpString @*/
 /*@access sexpObject @*/
 
 /*@unchecked@*/ /*@observer@*/
@@ -183,7 +186,7 @@ void canonicalPrintVerbatimSimpleString(sexpOutputStream os, sexpSimpleString ss
 /* canonicalPrintString(os,s)
  * Prints out sexp string s onto output stream os
  */
-void canonicalPrintString(sexpOutputStream os, sexpString *s)
+void canonicalPrintString(sexpOutputStream os, sexpString s)
 {
   sexpSimpleString ph = sexpStringPresentationHint(s);
   sexpSimpleString ss;
@@ -203,7 +206,7 @@ void canonicalPrintString(sexpOutputStream os, sexpString *s)
 /* canonicalPrintList(os,list)
  * Prints out the list "list" onto output stream os
  */
-void canonicalPrintList(sexpOutputStream os, sexpList *list)
+void canonicalPrintList(sexpOutputStream os, sexpList list)
 { sexpIter iter;
   sexpObject object;
   varPutChar(os,'(');
@@ -224,9 +227,9 @@ void canonicalPrintList(sexpOutputStream os, sexpList *list)
 void canonicalPrintObject(sexpOutputStream os, sexpObject object)
 {
   if (isObjectString(object))
-    canonicalPrintString(os,(sexpString *)object);
+    canonicalPrintString(os,(sexpString)object);
   else if (isObjectList(object))
-    canonicalPrintList(os,(sexpList *)object);
+    canonicalPrintList(os,(sexpList)object);
   else ErrorMessage(ERROR,"NULL object can't be printed.");
 }
 
@@ -449,7 +452,7 @@ void advancedPrintSimpleString(sexpOutputStream os, sexpSimpleString ss)
 /* advancedPrintString(os,s)
  * Prints out sexp string s onto output stream os
  */
-void advancedPrintString(sexpOutputStream os, sexpString *s)
+void advancedPrintString(sexpOutputStream os, sexpString s)
 {
     sexpSimpleString ph = sexpStringPresentationHint(s);
     sexpSimpleString ss = sexpStringString(s);
@@ -491,7 +494,7 @@ int advancedLengthSimpleString(sexpOutputStream os, sexpSimpleString ss)
 /* advancedLengthString(os,s)
  * Returns length of printed image of string s
  */
-int advancedLengthString(sexpOutputStream os, sexpString *s)
+int advancedLengthString(sexpOutputStream os, sexpString s)
 {
     sexpSimpleString ph = sexpStringPresentationHint(s);
     sexpSimpleString ss = sexpStringString(s);
@@ -507,7 +510,7 @@ int advancedLengthString(sexpOutputStream os, sexpString *s)
 /* advancedLengthList(os,list)
  * Returns length of printed image of list given as iterator
  */
-int advancedLengthList(sexpOutputStream os, sexpList *list)
+int advancedLengthList(sexpOutputStream os, sexpList list)
 { int len = 1;                       /* for left paren */
   sexpIter iter;
   sexpObject object;
@@ -516,10 +519,10 @@ int advancedLengthList(sexpOutputStream os, sexpList *list)
     { object = sexpIterObject(iter);
       if (object != NULL)
 	{ if (isObjectString(object))
-	    len += advancedLengthString(os,((sexpString *)object));
+	    len += advancedLengthString(os,((sexpString)object));
 	  /* else */
 	  if (isObjectList(object))
-	    len += advancedLengthList(os,((sexpList *)object));
+	    len += advancedLengthList(os,((sexpList)object));
 	  len++;                     /* for space after item */
 	}
       iter = sexpIterNext(iter);
@@ -534,7 +537,7 @@ int advancedLengthList(sexpOutputStream os, sexpList *list)
  * written out in "vertical" mode, with items of the list starting in
  * the same column on successive lines.
  */
-void advancedPrintList(sexpOutputStream os, sexpList *list)
+void advancedPrintList(sexpOutputStream os, sexpList list)
 { int vertical = FALSE;
   int firstelement = TRUE;
   sexpIter iter;
@@ -570,9 +573,9 @@ void advancedPrintObject(sexpOutputStream os, sexpObject object)
   if (os->maxcolumn>0 && os->column>os->maxcolumn-4)
     os->newLine(os,ADVANCED);
   if (isObjectString(object))
-    advancedPrintString(os,(sexpString *)object);
+    advancedPrintString(os,(sexpString)object);
   else if (isObjectList(object))
-    advancedPrintList(os,(sexpList *)object);
+    advancedPrintList(os,(sexpList)object);
   else
     ErrorMessage(ERROR,"NULL object can't be printed.");
 }

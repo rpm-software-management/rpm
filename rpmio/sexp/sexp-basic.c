@@ -12,6 +12,9 @@
 
 /*@access sexpIter @*/
 /*@access sexpSimpleString @*/
+
+/*@access sexpList @*/
+/*@access sexpString @*/
 /*@access sexpObject @*/
 
 /******************/
@@ -146,10 +149,10 @@ void appendCharToSimpleString(int c, sexpSimpleString ss)
  * Creates and initializes a new sexpString object.
  * Both the presentation hint and the string are initialized to NULL.
  */
-sexpString *newSexpString(void)
+sexpString newSexpString(void)
 {
-  sexpString *s;
-  s = (sexpString *) sexpAlloc(sizeof(*s));
+  sexpString s;
+  s = (sexpString) sexpAlloc(sizeof(*s));
   s->type = SEXP_STRING;
   s->presentationHint = NULL;
   s->string = NULL;
@@ -159,31 +162,39 @@ sexpString *newSexpString(void)
 /* sexpStringPresentationHint()
  * returns presentation hint field of the string
  */
-sexpSimpleString sexpStringPresentationHint(sexpString *s)
+sexpSimpleString sexpStringPresentationHint(sexpString s)
 { return s->presentationHint; }
 
 /* setSexpStringPresentationHint()
  * assigns the presentation hint field of the string
  */
-void setSexpStringPresentationHint(sexpString *s, sexpSimpleString ss)
-{ s->presentationHint = ss; }
+void setSexpStringPresentationHint(sexpString s, sexpSimpleString ss)
+{
+/*@-assignexpose@*/
+    s->presentationHint = ss;
+/*@=assignexpose@*/
+}
 
 /* setSexpStringString()
  * assigns the string field of the string
  */
-void setSexpStringString(sexpString *s, sexpSimpleString ss)
-{ s->string = ss; }
+void setSexpStringString(sexpString s, sexpSimpleString ss)
+{
+/*@-assignexpose@*/
+    s->string = ss;
+/*@=assignexpose@*/
+}
 
 /* sexpStringString()
  * returns the string field of the string
  */
-sexpSimpleString sexpStringString(sexpString *s)
+sexpSimpleString sexpStringString(sexpString s)
 { return s->string; }
 
 /* closeSexpString()
  * finish up string computations after created
  */
-void closeSexpString(/*@unused@*/ sexpString *s)
+void closeSexpString(/*@unused@*/ sexpString s)
 { ; }  /* do nothing in this implementation */
 
 /**************************/
@@ -195,10 +206,10 @@ void closeSexpString(/*@unused@*/ sexpString *s)
  * Both the first and rest fields are initialized to NULL, which is
  * SEXP's representation of an empty list.
  */
-sexpList *newSexpList(void)
+sexpList newSexpList(void)
 {
-  sexpList *list;
-  list = (sexpList *) sexpAlloc(sizeof(*list));
+  sexpList list;
+  list = (sexpList) sexpAlloc(sizeof(*list));
   list->type = SEXP_LIST;
   list->first = NULL;
   list->rest = NULL;
@@ -208,25 +219,30 @@ sexpList *newSexpList(void)
 /* sexpAddSexpListObject()
  * add object to end of list
  */
-void sexpAddSexpListObject(sexpList *list, sexpObject object)
+void sexpAddSexpListObject(sexpList list, sexpObject object)
 {
-  if (list->first == NULL)
-    list->first = object;
-  else {
-    while (list->rest != NULL)
-      list = list->rest;
-    list->rest = newSexpList();
+    if (list->first == NULL) {
+/*@-assignexpose@*/
+	list->first = object;
+/*@=assignexpose@*/
+    } else {
+	while (list->rest != NULL)
+	    list = list->rest;
+	list->rest = newSexpList();
 /*@-branchstate@*/
-    if ((list = list->rest) != NULL)
-      list->first = object;
+	if ((list = list->rest) != NULL) {
+/*@-assignexpose@*/
+	    list->first = object;
+/*@=assignexpose@*/
+	}
 /*@=branchstate@*/
-  }
+    }
 }
 
 /* closeSexpList()
  * finish off a list that has just been input
  */
-void closeSexpList(/*@unused@*/ sexpList *list)
+void closeSexpList(/*@unused@*/ sexpList list)
 { ; } /* nothing in this implementation */
 
 /* Iteration on lists.
@@ -237,7 +253,7 @@ void closeSexpList(/*@unused@*/ sexpList *list)
 /* sexpListIter()
  * return the iterator for going over a list
  */
-sexpIter sexpListIter(sexpList *list)
+sexpIter sexpListIter(sexpList list)
 {
 /*@-castexpose@*/
     return (sexpIter)list;
@@ -249,7 +265,7 @@ sexpIter sexpListIter(sexpList *list)
  */
 sexpIter sexpIterNext(sexpIter iter)
 { if (iter == NULL) return NULL;
-  return (sexpIter)(((sexpList *)iter)->rest);
+  return (sexpIter)(((sexpList)iter)->rest);
 }
 
 /* sexpIterObject ()
@@ -257,7 +273,7 @@ sexpIter sexpIterNext(sexpIter iter)
  */
 sexpObject sexpIterObject(sexpIter iter)
 { if (iter == NULL) return NULL;
-  return ((sexpList *)iter)->first;
+  return ((sexpList)iter)->first;
 }
 
 /****************************/
@@ -265,11 +281,11 @@ sexpObject sexpIterObject(sexpIter iter)
 /****************************/
 
 int isObjectString(sexpObject object)
-{ if (((sexpString *)object)->type == SEXP_STRING) return TRUE;
+{ if (((sexpString)object)->type == SEXP_STRING) return TRUE;
   else                                             return FALSE;
 }
 
 int isObjectList(sexpObject object)
-{ if (((sexpList *)object)->type == SEXP_LIST) return TRUE;
+{ if (((sexpList)object)->type == SEXP_LIST) return TRUE;
   else                                         return FALSE;
 }
