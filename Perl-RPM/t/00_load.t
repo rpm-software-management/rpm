@@ -2,7 +2,8 @@
 
 # Verify that the indivual modules will load
 
-@MODULES = qw(RPM RPM::Constants RPM::Database RPM::Header);
+@MODULES = qw(RPM RPM::Constants RPM::Database RPM::Header RPM::Error
+              RPM::Package);
 
 printf "1..%d\n", scalar(@MODULES);
 
