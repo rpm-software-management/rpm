@@ -77,6 +77,10 @@ BUILT_SOURCES = getdate.c # rpmlib.lcd
 #tds_SOURCES =	tds.c
 #tds_LDFLAGS =	@LDFLAGS_STATIC@ ./librpm.la
 
+noinst_PROGRAMS = setfiles
+setfiles_SOURCES =	setfiles.c
+setfiles_LDFLAGS =	@LDFLAGS_STATIC@ -lselinux # ./librpm.la
+
 rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
 
