@@ -97,6 +97,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.6 -> 2.5.7:
+	- permit 0x1b in specfile sanity check.
 	- increase timeout in tread from 5 to 30 secs for slow links.
 	- rename file before unlinking to avoid EBUSY failures.
 	- headerGetEntry now returns count=0 if tag not found (Chris Blizzard).
