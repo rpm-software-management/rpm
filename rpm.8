@@ -11,13 +11,9 @@ software packages.  A \fIpackage\fP consists of an archive of files,
 and package information, including name, version, and description.
 
 There are six basic modes of operation, and each takes a different
-set of options.  They are \fIBuild\fP, \fIInstall\fP, \fIQuery\fP,
-\fIVerify\fP, \fISignature check\fP, and \fIUninstall\fP.
+set of options.  They are \fIInstall\fP, \fIQuery\fP,
+\fIVerify\fP, \fISignature check\fP, \fIUninstall\fP, \fIBuild\fP.
 
-Build mode:
-.br
-.I "\fB    rpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
-.br
 Install mode:
 .br
 .I "\fB    rpm \-i [install\-options] <package_file>+\fP"
@@ -37,6 +33,10 @@ Signature Check mode:
 Uninstall mode:
 .br
 .I "\fB    rpm \-e <package_name>+\fP"
+Build mode:
+.br
+.I "\fB    rpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
+.br
 
 .SH GENERAL OPTIONS
 These options can be used in all the different modes.
@@ -57,8 +57,11 @@ Use \fB<file>\fP instead of \fB/etc/rpmrc\fP and \fB$HOME/.rpmrc\fP.
 .IP "\fB\-\-root <dir>\fP"
 Use the directory given as top level directory for all operations.
 
-
 .SH INSTALL OPTIONS
+The general form of an rpm install command is
+.PP
+	\fBrpm \-i [install\-options] <package_file>+\fP
+.PP
 .IP "\fB\-\-force\fP"
 Same as using both \-\-replacepkgs, \-\-replacefiles, and 
 \-\-oldpackage.
@@ -98,59 +101,13 @@ Upgrade the package currently installed to the version in the new RPM.
 This is the same as install, except all other version of the package
 are removed from the system.
 
-.SH UNINSTALL OPTIONS
-.IP "\fB\-\-noscripts\fP"
-Don't execute the preuninstall or postuninstall scripts.
-.IP "\fB\-\-nodeps\fP"
-Don't check dependencies before uninstalling the packages.
-.IP "\fB\-\-test\fP"
-Don't really uninstall anything, just go through the motions. 
-\fB\-vv\fP option.
 
-.SH BUILD OPTIONS
-The general form of a rpm build command is
-.PP
-    \fBrpm \-b\fIO\fP [build\-options] <package_spec>+\fP
-.PP
-where \fB\-b\fIO\fR specifies the stages of building and
-packaging to be done and is one of:
-
-.IP "\fB\-bp\fP"
-Executes the "%prep" stage from the spec file.  Normally this
-involves unpacking the sources and applying any patches.
-.IP "\fB\-bl\fP"
-Do a "list check".  The "%files" section from the spec file
-is macro expanded, and checks are made to insure the files
-exist.
-.IP "\fB\-bc\fP"
-Do the "%build" stage from the spec file (after doing the prep stage).
-This generally involves the equivalent of a "make".
-.IP "\fB\-bi\fP"
-Do the "%install" stage from the spec file (after doing the prep
-and build stages).  This generally involves the equivalent of a
-"make install".
-.IP "\fB\-bb\fP"
-Build a binary package (after doing the prep, build, and install stages).
-.IP "\fB\-ba\fP"
-Build binary and source packages (after doing the prep, build, and 
-install stages).
-.PP
-The following options may also be used:
-.IP "\fB\-\-short\-circuit\fP"
-Skip straight to specified stage (ie, skip all stages leading up
-to the specified stage).  Only valid with \fB\-bc\fP and \fB\-bi\fP.
-.IP "\fB\-\-clean\fP"
-Remove the build tree after the packages are made.
-.IP "\fB\-\-test\fP"
-Do not execute any build stages.
-Useful for testing out spec files.
-.IP "\fB\-\-sign\fP"
-Embed a PGP signature in the package.  This signature can be used
-to verify the integrity and the origin of the package.  See the
-section on PGP SIGNATURES for /etc/rpmrc details.
 
 .SH QUERY OPTIONS
-
+The general form of an rpm query command is
+.PP
+	\fBrpm \-q [query\-options]\fP
+.PP
 You may specify the format that package information should be printed 
 in. To do this, you use the \fB\-\-queryformat\fP option, followed by 
 the format string.
@@ -225,6 +182,10 @@ owner group isconfig isdoc rdev symlink. This must be used with
 at least one of \fB\-l\fP, \fB\-c\fP, \fB\-d\fP.
 
 .SH VERIFY OPTIONS
+The general form of an rpm verify command is
+.PP
+	\fBrpm \-V|\-y|\-\-verify [verify\-options]\fP
+.PP
 Verifying a package compares information about the installed
 files in the package with information about the files taken from the
 original package and stored in the rpm database.  Among other things,
@@ -257,10 +218,69 @@ Group
 Mode (includes permissions and file type)
 
 .SH SIGNATURE CHECKING
+The general form of an rpm signature check command is
+.PP
+	\fBrpm \-\-checksig <package_file>+\fP
+.PP
 This checks the PGP signature built into a package to ensure the integrity
 and the origin of the package.
 PGP configuration information is read from /etc/rpmrc.
 See the section on PGP SIGNATURES for details.
+
+.SH UNINSTALL OPTIONS
+The general form of an rpm uninstall command is
+.PP
+	\fB    rpm \-e <package_name>+\fP
+.PP
+.IP "\fB\-\-noscripts\fP"
+Don't execute the preuninstall or postuninstall scripts.
+.IP "\fB\-\-nodeps\fP"
+Don't check dependencies before uninstalling the packages.
+.IP "\fB\-\-test\fP"
+Don't really uninstall anything, just go through the motions. 
+\fB\-vv\fP option.
+
+.SH BUILD OPTIONS
+The general form of an rpm build command is
+.PP
+    \fBrpm \-b\fIO\fP [build\-options] <package_spec>+\fP
+.PP
+where \fB\-b\fIO\fR specifies the stages of building and
+packaging to be done and is one of:
+
+.IP "\fB\-bp\fP"
+Executes the "%prep" stage from the spec file.  Normally this
+involves unpacking the sources and applying any patches.
+.IP "\fB\-bl\fP"
+Do a "list check".  The "%files" section from the spec file
+is macro expanded, and checks are made to insure the files
+exist.
+.IP "\fB\-bc\fP"
+Do the "%build" stage from the spec file (after doing the prep stage).
+This generally involves the equivalent of a "make".
+.IP "\fB\-bi\fP"
+Do the "%install" stage from the spec file (after doing the prep
+and build stages).  This generally involves the equivalent of a
+"make install".
+.IP "\fB\-bb\fP"
+Build a binary package (after doing the prep, build, and install stages).
+.IP "\fB\-ba\fP"
+Build binary and source packages (after doing the prep, build, and 
+install stages).
+.PP
+The following options may also be used:
+.IP "\fB\-\-short\-circuit\fP"
+Skip straight to specified stage (ie, skip all stages leading up
+to the specified stage).  Only valid with \fB\-bc\fP and \fB\-bi\fP.
+.IP "\fB\-\-clean\fP"
+Remove the build tree after the packages are made.
+.IP "\fB\-\-test\fP"
+Do not execute any build stages.
+Useful for testing out spec files.
+.IP "\fB\-\-sign\fP"
+Embed a PGP signature in the package.  This signature can be used
+to verify the integrity and the origin of the package.  See the
+section on PGP SIGNATURES for /etc/rpmrc details.
 
 .SH REBUILD AND RECOMPILE OPTIONS
 
@@ -282,7 +302,6 @@ the package are removed.
 
 This option generates and inserts new signatures for the listed packages.
 Any existing signatures are removed.
-
 
 .SH PGP SIGNATURES
 
