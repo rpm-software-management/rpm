@@ -341,7 +341,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     }
 
     /* Run postun triggers which are set off by this package's removal */
-    if (runTriggers(rootdir, db, RPMSENSE_TRIGGERPOSTUN, h, 0)) {
+    if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, 0)) {
 	return 2;
     }
 
