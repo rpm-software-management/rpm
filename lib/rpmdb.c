@@ -45,7 +45,6 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     db.nameIndex = openDBIndex(filename, mode, 0644);
     if (!db.nameIndex) {
 	faClose(db.pkgs);
-	error(RPMERR_DBOPEN, "failed to open %s\n", filename);
 	return 0;
     }
     
@@ -55,7 +54,6 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     if (!db.fileIndex) {
 	faClose(db.pkgs);
 	closeDBIndex(db.nameIndex);
-	error(RPMERR_DBOPEN, "failed to open %s\n", filename);
 	return 0;
     }
     
@@ -65,8 +63,6 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     if (!db.groupIndex) {
 	faClose(db.pkgs);
 	closeDBIndex(db.nameIndex);
-	closeDBIndex(db.fileIndex);
-	error(RPMERR_DBOPEN, "failed to open %s\n", filename);
 	return 0;
     }
 
