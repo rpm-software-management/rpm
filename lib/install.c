@@ -53,7 +53,8 @@ static int setFileOwnerships(char * rootdir, char ** fileList,
 			     int_16 * fileModes, 
 			     enum instActions * instActions, int fileCount);
 static int setFileOwner(char * file, char * owner, char * group, int_16 mode);
-static int createDirectories(char ** fileList, int fileCount);
+static int createDirectories(char ** fileList, uint_32 * modesList, 
+			     int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int_16 * fileModeList,
@@ -130,6 +131,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     int rootLength = strlen(rootdir);
     char ** rootedFileList = NULL;
     char ** finalFileList = NULL;
+    char ** mkdirFileList = NULL;
+    int mkdirFileCount = 0;
+    uint_32 * mkdirModesList;
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
@@ -375,6 +379,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	files = alloca(sizeof(struct fileToInstall) * fileCount);
 	finalFileList = alloca(sizeof(char *) * fileCount);
+	mkdirFileList = alloca(sizeof(char *) * fileCount);
+	mkdirModesList = alloca(sizeof(*mkdirModesList) * fileCount);
 	for (i = 0; i < fileCount; i++) {
 	    switch (instActions[i]) {
 	      case BACKUP:
@@ -434,11 +440,20 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		files[archiveFileCount].size = fileSizesList[i];
 
 
-		/* finalFileList lists what files are installed and where
-		   *after* any relocations have been done */
-		finalFileList[archiveFileCount] = rootedFileList[i];
+		/* both of these list what files need to be installed and 
+		   where they end up *after* any relocations have been done 
+		   the mkdir list includes direcories though, while the final
+		   list does *not -- we don't let cpio expand directories as
+		   it has a bad habit of replacing symlinks with directories
+		   when we'd rather it didn't */
+		mkdirFileList[mkdirFileCount] = rootedFileList[i];
+		mkdirModesList[mkdirFileCount] = fileModesList[i];
+		mkdirFileCount++;
 
-		archiveFileCount++;
+		if (!S_ISDIR(fileModesList[i])) {
+		    finalFileList[archiveFileCount] = rootedFileList[i];
+		    archiveFileCount++;
+		}
 	    }
 	}
 
@@ -453,7 +468,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		      &count))
 	    archiveSizePtr = NULL;
 
-	if (createDirectories(finalFileList, archiveFileCount)) {
+	if (createDirectories(mkdirFileList, mkdirModesList, mkdirFileCount)) {
 	    headerFree(h);
 	    free(fileList);
 	    if (replacedList) free(replacedList);
@@ -936,15 +951,16 @@ static int setFileOwner(char * file, char * owner, char * group,
 
 /* This could be more efficient. A brute force tokenization and mkdir's
    seems like horrible overkill. I did make it know better then trying to 
-   create the same directory sintrg twice in a row though. That should make it 
+   create the same directory string twice in a row though. That should make it 
    perform adequatally thanks to the sorted filelist.
 
    This could create directories that should be symlinks :-( RPM building
-   should probably resolve symlinks in paths.
+   should probably resolve symlinks in paths. 
 
    This creates directories which are always 0755, despite the current umask */
 
-static int createDirectories(char ** fileList, int fileCount) {
+static int createDirectories(char ** fileList, uint_32 * modesList, 
+			     int fileCount) {
     int i;
     char * lastDirectory;
     char * buffer;
@@ -976,30 +992,38 @@ static int createDirectories(char ** fileList, int fileCount) {
 
 	*chptr = '\0';			/* buffer is now just directories */
 
-	if (!strcmp(buffer, lastDirectory)) continue;
-	
-	for (chptr = buffer + 1; *chptr; chptr++) {
-	    if (*chptr == '/') {
-		if (*(chptr -1) != '/') {
-		    *chptr = '\0';
-		    if (mkdirIfNone(buffer, 0755)) {
-			free(lastDirectory);
-			free(buffer);
-			return 1;
+	if (strcmp(buffer, lastDirectory)) {
+	    for (chptr = buffer + 1; *chptr; chptr++) {
+		if (*chptr == '/') {
+		    if (*(chptr -1) != '/') {
+			*chptr = '\0';
+			if (mkdirIfNone(buffer, 0755)) {
+			    free(lastDirectory);
+			    free(buffer);
+			    return 1;
+			}
+			*chptr = '/';
 		    }
-		    *chptr = '/';
 		}
 	    }
-	}
 
-	if (mkdirIfNone(buffer, 0755)) {
+	    if (mkdirIfNone(buffer, 0755)) {
+		free(lastDirectory);
+		free(buffer);
+		return 1;
+	    }
+
 	    free(lastDirectory);
-	    free(buffer);
-	    return 1;
+	    lastDirectory = strdup(buffer);
 	}
 
-	free(lastDirectory);
-	lastDirectory = strdup(buffer);
+	if (S_ISDIR(modesList[i])) {
+	    if (mkdirIfNone(fileList[i], 0755)) {
+		free(lastDirectory);
+		free(buffer);
+		return 1;
+	    }
+	}
     }
 
     free(lastDirectory);
