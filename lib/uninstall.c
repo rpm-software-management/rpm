@@ -178,7 +178,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     Header h;
     int i;
     int fileCount;
-    char * rmmess, * name;
+    char * rmmess, * name, * version, * release;
     char * fnbuffer = NULL;
     dbIndexSet matches;
     int fnbuffersize = 0;
@@ -198,9 +198,11 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	return 1;
     }
 
+    getEntry(h, RPMTAG_NAME, &type, (void **) &name,  &count);
+    getEntry(h, RPMTAG_VERSION, &type, (void **) &version,  &count);
+    getEntry(h, RPMTAG_RELEASE, &type, (void **) &release,  &count);
     /* when we run scripts, we pass an argument which is the number of 
        versions of this package that will be installed when we are finished */
-    getEntry(h, RPMTAG_NAME, &type, (void **) &name,  &count);
     if (rpmdbFindPackage(db, name, &matches)) {
 	error(RPMERR_DBCORRUPT, "cannot read packages named %s for uninstall",
 	      name);
@@ -214,6 +216,9 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	rmmess = "would remove";
     } else {
 	rmmess = "removing";
+	if (isVerbose()) {
+	    printf("Removing %s-%s-%s\n", name, version, release);
+	}
     }
 
     message(MESS_DEBUG, "running preuninstall script (if any)\n");
