@@ -1199,8 +1199,8 @@ int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, mpw* result, mpw
 
 			if ((full && mpodd(sizep, adata)) || mpodd(sizep, bdata))
 			{
-				if (full) mpaddx(sizep, adata, size, xdata);
-				mpsubx(sizep, bdata, size, ndata);
+				if (full) (void) mpaddx(sizep, adata, size, xdata);
+				(void) mpsubx(sizep, bdata, size, ndata);
 			}
 
 			if (full) mpsdivtwo(sizep, adata);
@@ -1212,8 +1212,8 @@ int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, mpw* result, mpw
 
 			if ((full && mpodd(sizep, cdata)) || mpodd(sizep, ddata))
 			{
-				if (full) mpaddx(sizep, cdata, size, xdata);
-				mpsubx(sizep, ddata, size, ndata);
+				if (full) (void) mpaddx(sizep, cdata, size, xdata);
+				(void) mpsubx(sizep, ddata, size, ndata);
 			}
 
 			if (full) mpsdivtwo(sizep, cdata);
@@ -1221,15 +1221,15 @@ int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, mpw* result, mpw
 		}
 		if (mpge(sizep, udata, vdata))
 		{
-			mpsub(sizep, udata, vdata);
-			if (full) mpsub(sizep, adata, cdata);
-			mpsub(sizep, bdata, ddata);
+			(void) mpsub(sizep, udata, vdata);
+			if (full) (void) mpsub(sizep, adata, cdata);
+			(void) mpsub(sizep, bdata, ddata);
 		}
 		else
 		{
-			mpsub(sizep, vdata, udata);
-			if (full) mpsub(sizep, cdata, adata);
-			mpsub(sizep, ddata, bdata);
+			(void) mpsub(sizep, vdata, udata);
+			if (full) (void) mpsub(sizep, cdata, adata);
+			(void) mpsub(sizep, ddata, bdata);
 		}
 		if (mpz(sizep, udata))
 		{       

@@ -118,7 +118,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 		/*@-usedef@*/	/* psubone/qsubone are set */
 		/* compute phi = (p-1)*(q-1) */
 		mpmul(temp, pqsize, psubone.modl, pqsize, qsubone.modl);
-		mpbset(&phi, nsize, temp);
+		mpnset(&phi, nsize, temp);
 
 		/* compute d = inv(e) mod phi */
 		(void) mpninv(&kp->d, &kp->e, &phi);

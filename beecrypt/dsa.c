@@ -150,7 +150,9 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
 	mpsetx(qsize, qtemp+qsize, s->size, s->data);
 
 	/* compute w = inv(s) mod q */
+/*@-compdef@*/ /* FIX: mpsetx annotations, qtemp[qsize] is defined */
 	if (mpextgcd_w(qsize, qtemp+qsize, q->modl, qtemp, qwksp))
+/*@=compdef@*/
 	{
 		/* compute u1 = h(m)*w mod q */
 		mpbmulmod_w(q, hm->size, hm->data, qsize, qtemp, qtemp+qsize, qwksp);

@@ -580,9 +580,11 @@ void mpdivtwo (size_t size, mpw* data)
 
 /**
  */
+/*@-exportlocal@*/
 BEECRYPTAPI
 void mpsdivtwo(size_t size, mpw* data)
 	/*@modifies data @*/;
+/*@=exportlocal@*/
 
 /**
  * This function performs a multi-precision multiply-setup.
@@ -652,7 +654,7 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, /*@out@*/ mpw* res
 /**
  */
 BEECRYPTAPI
-int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ydata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
+int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
@@ -704,10 +706,12 @@ void mpfprint(/*@null@*/ FILE * f, size_t size, /*@null@*/ const mpw* data)
 
 /**
  */
+/*@-exportlocal@*/
 BEECRYPTAPI
 void mpfprintln(/*@null@*/ FILE * f, size_t size, /*@null@*/ const mpw* data)
 	/*@globals fileSystem @*/
 	/*@modifies *f, fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  */
