@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.55
+Release: 0.56
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -148,7 +148,7 @@ fi
 
 %files
 %defattr(-,root,root)
-%doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/*
+%doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
 /bin/rpm
 %dir /etc/rpm
 %{__prefix}/bin/rpm2cpio
@@ -159,22 +159,16 @@ fi
 %{__prefix}/lib/librpmio.so.*
 %{__prefix}/lib/librpmbuild.so.*
 
-%{__prefix}/lib/rpm/brp-*
 %{__prefix}/lib/rpm/config.guess
 %{__prefix}/lib/rpm/config.sub
 %{__prefix}/lib/rpm/convertrpmrc.sh
-%{__prefix}/lib/rpm/find-prov.pl
-%{__prefix}/lib/rpm/find-provides
-%{__prefix}/lib/rpm/find-req.pl
-%{__prefix}/lib/rpm/find-requires
 %{__prefix}/lib/rpm/macros
 %{__prefix}/lib/rpm/mkinstalldirs
 %{__prefix}/lib/rpm/rpmdb
 %{__prefix}/lib/rpm/rpm[eiukqv]
 %{__prefix}/lib/rpm/rpmpopt*
 %{__prefix}/lib/rpm/rpmrc
-%{__prefix}/lib/rpm/vpkg-provides.sh
-%{__prefix}/lib/rpm/vpkg-provides2.sh
+
 %ifarch i386 i486 i586 i686
 %{__prefix}/lib/rpm/i[3456]86*
 %endif
@@ -206,10 +200,15 @@ fi
 %files build
 %defattr(-,root,root)
 %{__prefix}/bin/rpm[bt]
+%{__prefix}/lib/rpm/brp-*
 %{__prefix}/lib/rpm/check-prereqs
 %{__prefix}/lib/rpm/cpanflute
 %{__prefix}/lib/rpm/find-lang.sh
+%{__prefix}/lib/rpm/find-prov.pl
+%{__prefix}/lib/rpm/find-provides
 %{__prefix}/lib/rpm/find-provides.perl
+%{__prefix}/lib/rpm/find-req.pl
+%{__prefix}/lib/rpm/find-requires
 %{__prefix}/lib/rpm/find-requires.perl
 %{__prefix}/lib/rpm/get_magic.pl
 %{__prefix}/lib/rpm/getpo.sh
@@ -224,6 +223,8 @@ fi
 %{__prefix}/lib/rpm/rpmgettext
 %{__prefix}/lib/rpm/rpmputtext
 %{__prefix}/lib/rpm/u_pkg.sh
+%{__prefix}/lib/rpm/vpkg-provides.sh
+%{__prefix}/lib/rpm/vpkg-provides2.sh
 
 %ifos linux
 %files python
@@ -257,6 +258,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jul 18 2000 Jeff Johnson <jbj@redhat.com>
+- rebuild against glibc-2.1.91-14.
+- add /usr/kerberos/man to brp-compress.
+
 * Mon Jul 17 2000 Jeff Johnson <jbj@redhat.com>
 - first release candidate.
 
