@@ -612,3 +612,4 @@ fi
 - permit gpg/pgp/pgp5 execs to be reconfigured.
 - fix: signing multiple times dinna work, discard immutable region.
 - remove poptmodule.so for separate packaging.
+- permit subset installs for %lang colored hardlink file sets.

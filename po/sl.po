@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.219 2002/01/10 19:17:26 jbj Exp $
+# $Id: sl.po,v 1.220 2002/01/11 23:03:46 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-10 14:14-0500\n"
+"POT-Creation-Date: 2002-01-11 17:48-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -613,98 +613,98 @@ msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Posebnih %%doc ni mo¾no me¹ati z ostalimi oblikami: %s"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1144
+#: build/files.c:1113
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Datoteka je navedena dvakrat: %s"
 
-#: build/files.c:1291
+#: build/files.c:1260
 #, fuzzy, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
-#: build/files.c:1506
+#: build/files.c:1475
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Datoteka se ne ujema s predpono (%s): %s"
 
-#: build/files.c:1530
+#: build/files.c:1499
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:1573 build/files.c:2185 build/parsePrep.c:50
+#: build/files.c:1542 build/files.c:2156 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Neobstojeè lastnik/skupina: %s\n"
 
-#: build/files.c:1585
+#: build/files.c:1554
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Datoteka: %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1689
+#: build/files.c:1658
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:1712
+#: build/files.c:1681
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "vrstica %d: Razlièica ni dovoljena: %s"
 
-#: build/files.c:1727
+#: build/files.c:1696
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1789
+#: build/files.c:1758
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1800 build/pack.c:146
+#: build/files.c:1769 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "vrstica: %s"
 
-#: build/files.c:2173
+#: build/files.c:2144
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Po¹kodovana datoteka: %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2247
+#: build/files.c:2218
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Ni mo¾no izvesti %s: %s"
 
-#: build/files.c:2252
+#: build/files.c:2223
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Vejitev %s ni mo¾na: %s"
 
-#: build/files.c:2336
+#: build/files.c:2307
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s neuspe¹en"
 
-#: build/files.c:2340
+#: build/files.c:2311
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "pisanje podatkov v %s je bilo neuspe¹no"
 
-#: build/files.c:2476
+#: build/files.c:2447
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: build/files.c:2502 build/files.c:2516
+#: build/files.c:2473 build/files.c:2487
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:2637
+#: build/files.c:2608
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"
@@ -1606,37 +1606,37 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr "vrstica %d: %s"
 
-#: lib/fsm.c:1180
+#: lib/fsm.c:1183
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1461
+#: lib/fsm.c:1464
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1582 lib/fsm.c:1710
+#: lib/fsm.c:1585 lib/fsm.c:1713
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/fsm.c:1736
+#: lib/fsm.c:1739
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "ni mo¾no odstraniti %s - imenik ni prazen"
 
-#: lib/fsm.c:1742
+#: lib/fsm.c:1745
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "odstranitev imenika %s je bila neuspe¹na: %s"
 
-#: lib/fsm.c:1752
+#: lib/fsm.c:1755
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: lib/fsm.c:1771
+#: lib/fsm.c:1774
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "opozorilo: %s ustvarjen kot %s"

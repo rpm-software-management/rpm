@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-10 14:14-0500\n"
+"POT-Creation-Date: 2002-01-11 17:48-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -602,98 +602,98 @@ msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Özel %%doc ile diðer formlar karýþtýrýlamaz: %s\n"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1144
+#: build/files.c:1113
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1291
+#: build/files.c:1260
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bað BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1506
+#: build/files.c:1475
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1530
+#: build/files.c:1499
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1573 build/files.c:2185 build/parsePrep.c:50
+#: build/files.c:1542 build/files.c:2156 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
 
-#: build/files.c:1585
+#: build/files.c:1554
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Dosya %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1689
+#: build/files.c:1658
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:1712
+#: build/files.c:1681
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
 
-#: build/files.c:1727
+#: build/files.c:1696
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
 
-#: build/files.c:1789
+#: build/files.c:1758
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 
-#: build/files.c:1800 build/pack.c:146
+#: build/files.c:1769 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
 
-#: build/files.c:2173
+#: build/files.c:2144
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalý: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2247
+#: build/files.c:2218
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: build/files.c:2252
+#: build/files.c:2223
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s ayrýlamadý: %s\n"
 
-#: build/files.c:2336
+#: build/files.c:2307
 #, c-format
 msgid "%s failed\n"
 msgstr "%s baþarýsýz\n"
 
-#: build/files.c:2340
+#: build/files.c:2311
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "tüm veri %s içine yazýlamadý\n"
 
-#: build/files.c:2476
+#: build/files.c:2447
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s aranýyor: (%s kullanarak)...\n"
 
-#: build/files.c:2502 build/files.c:2516
+#: build/files.c:2473 build/files.c:2487
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s bulunamadý:\n"
 
-#: build/files.c:2637
+#: build/files.c:2608
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Ýþlenen dosyalar: %s-%s-%s\n"
@@ -1589,37 +1589,37 @@ msgstr "========= Pakette bulunmayan dizinler:\n"
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1180
+#: lib/fsm.c:1183
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%s dizin %04o izinleriyle oluþturuldu.\n"
 
-#: lib/fsm.c:1461
+#: lib/fsm.c:1464
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1582 lib/fsm.c:1710
+#: lib/fsm.c:1585 lib/fsm.c:1713
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s %s olarak kaydedildi\n"
 
-#: lib/fsm.c:1736
+#: lib/fsm.c:1739
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boþ deðil\n"
 
-#: lib/fsm.c:1742
+#: lib/fsm.c:1745
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi baþarýsýz: %s\n"
 
-#: lib/fsm.c:1752
+#: lib/fsm.c:1755
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s / %s bað kaldýrýlamadý: %s\n"
 
-#: lib/fsm.c:1771
+#: lib/fsm.c:1774
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluþturuldu\n"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-10 14:14-0500\n"
+"POT-Creation-Date: 2002-01-11 17:48-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -636,98 +636,98 @@ msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1144
+#: build/files.c:1113
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1291
+#: build/files.c:1260
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1506
+#: build/files.c:1475
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1530
+#: build/files.c:1499
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1573 build/files.c:2185 build/parsePrep.c:50
+#: build/files.c:1542 build/files.c:2156 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1585
+#: build/files.c:1554
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1689
+#: build/files.c:1658
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/files.c:1712
+#: build/files.c:1681
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1727
+#: build/files.c:1696
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1789
+#: build/files.c:1758
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1800 build/pack.c:146
+#: build/files.c:1769 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2173
+#: build/files.c:2144
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2247
+#: build/files.c:2218
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2252
+#: build/files.c:2223
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2336
+#: build/files.c:2307
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "La construction a chou.\n"
 
-#: build/files.c:2340
+#: build/files.c:2311
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2476
+#: build/files.c:2447
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2502 build/files.c:2516
+#: build/files.c:2473 build/files.c:2487
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2637
+#: build/files.c:2608
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1626,37 +1626,37 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1180
+#: lib/fsm.c:1183
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1461
+#: lib/fsm.c:1464
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1582 lib/fsm.c:1710
+#: lib/fsm.c:1585 lib/fsm.c:1713
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1736
+#: lib/fsm.c:1739
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1742
+#: lib/fsm.c:1745
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1752
+#: lib/fsm.c:1755
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1771
+#: lib/fsm.c:1774
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "impossible d'ouvrir: %s\n"

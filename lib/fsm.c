@@ -439,7 +439,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
  * Destroy set of hard links.
  * @param li		set of hard links
  */
-static /*@null@*/ void * freeHardLink(/*@only@*/ /*@null@*/ struct hardLink * li)
+static /*@null@*/ void * freeHardLink(/*@only@*/ /*@null@*/ struct hardLink_s * li)
 	/*@modifies li @*/
 {
     if (li) {
@@ -969,11 +969,13 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
     /*@-branchstate@*/
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->filex[i] < 0) continue;
-	if (i == fsm->li->createdPath) continue;
+	if (fsm->li->createdPath == i) continue;
 
 	fsm->ix = fsm->li->filex[i];
 	fsm->path = _free(fsm->path);
 	rc = fsmStage(fsm, FSM_MAP);
+	if (XFA_SKIPPING(fsm->action)) continue;
+
 	rc = fsmStage(fsm, FSM_VERIFY);
 	if (!rc) continue;
 	if (rc != CPIOERR_LSTAT_FAILED) break;
@@ -1031,7 +1033,8 @@ static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
 	if (fsm->li->filex[i] < 0) continue;
 	fsm->ix = fsm->li->filex[i];
 	rc = fsmStage(fsm, FSM_MAP);
-	rc = fsmStage(fsm, FSM_COMMIT);
+	if (!XFA_SKIPPING(fsm->action))
+	    rc = fsmStage(fsm, FSM_COMMIT);
 	fsm->path = _free(fsm->path);
 	fsm->li->filex[i] = -1;
     }
@@ -1541,7 +1544,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	if (fsm->goal == FSM_PKGBUILD) {
 	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
-		struct hardLink * li, * prev;
+		struct hardLink_s * li, * prev;
 
 if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = writeLinkedFile(fsm);
@@ -2191,11 +2194,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     switch(a) {
     case FSM_UNKNOWN:	return "unknown";
 
-    case FSM_PKGINSTALL:return "pkginstall";
-    case FSM_PKGERASE:	return "pkgerase";
-    case FSM_PKGBUILD:	return "pkgbuild";
-    case FSM_PKGCOMMIT:	return "pkgcommit";
-    case FSM_PKGUNDO:	return "pkgundo";
+    case FSM_PKGINSTALL:return "INSTALL";
+    case FSM_PKGERASE:	return "ERASE";
+    case FSM_PKGBUILD:	return "BUILD";
+    case FSM_PKGCOMMIT:	return "COMMIT";
+    case FSM_PKGUNDO:	return "UNDO";
 
     case FSM_CREATE:	return "create";
     case FSM_INIT:	return "init";

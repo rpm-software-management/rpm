@@ -1030,11 +1030,12 @@ static int isDoc(FileList fl, const char * fileName)	/*@*/
 
 /**
  * Verify that file attributes scope over hardlinks correctly.
- * @todo only %lang for now, finish other attributes later.
+ * If partial hardlink sets are possible, then add tracking dependency.
  * @param fl		package file tree walk data
+ * @return		1 if partial hardlink sets can exist, 0 otherwise.
  */
-static void checkHardLinks(FileList fl)
-	/*@modifies fl->fileList->flags, fl->fileList->langs @*/
+static int checkHardLinks(FileList fl)
+	/*@*/
 {
     char nlangs[BUFSIZ];
     FileListRec ilp, jlp;
@@ -1062,42 +1063,10 @@ static void checkHardLinks(FileList fl)
 		/*@innercontinue@*/ continue;
 	    if (ilp->fl_dev != jlp->fl_dev)
 		/*@innercontinue@*/ continue;
-	    if (!strcmp(ilp->langs, jlp->langs)) {
-		jlp->flags |= RPMFILE_SPECFILE;
-		/*@innercontinue@*/ continue;
-	    }
-	    if (te == nlangs)
-		te = stpcpy(te, ilp->langs);
-	    *te++ = '|';
-	    te = stpcpy(te, jlp->langs);
-	}
-
-	/* Are locales distributed over hard links correctly? */
-	if (te == nlangs)
-	    continue;
-
-	ilp->langs = _free(ilp->langs);
-	ilp->langs = xstrdup(nlangs);
-	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
-	    jlp = fl->fileList + j;
-	    if (!S_ISREG(jlp->fl_mode))
-		/*@innercontinue@*/ continue;
-	    if (ilp->fl_nlink != jlp->fl_nlink)
-		/*@innercontinue@*/ continue;
-	    if (ilp->fl_ino != jlp->fl_ino)
-		/*@innercontinue@*/ continue;
-	    if (ilp->fl_dev != jlp->fl_dev)
-		/*@innercontinue@*/ continue;
-	    jlp->flags |= RPMFILE_SPECFILE;
-	    jlp->langs = _free(jlp->langs);
-	    jlp->langs = xstrdup(nlangs);
+	    return 1;
 	}
     }
-
-    for (i = 0;  i < fl->fileListRecsUsed; i++) {
-	ilp = fl->fileList + i;
-	ilp->flags &= ~RPMFILE_SPECFILE;
-    }
+    return 0;
 }
 
 /**
@@ -1976,7 +1945,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 	goto exit;
 
     /* Verify that file attributes scope over hardlinks correctly. */
-    checkHardLinks(&fl);
+    if (checkHardLinks(&fl))
+	(void) rpmlibNeedsFeature(pkg->header,
+			"PartialHardlinkSets", "4.0.4-1");
 
     genCpioListAndHeader(&fl, (TFI_t *)&pkg->cpioList, pkg->header, 0);
 
