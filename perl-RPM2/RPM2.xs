@@ -1,8 +1,10 @@
+#include <stdio.h>
 #include "rpmlib.h"
 #include "rpmcli.h"
 
 #ifdef RPM2_RPM41
 #include "rpmts.h"
+#include "rpmte.h"
 #endif
 
 #include "header.h"
@@ -16,6 +18,113 @@
 #if !defined(RPM2_RPM41) && !defined(RPM2_RPM40)
 #error Must define one of RPM2_RPM41 or RPM2_RPM40; perhaps Makefile.PL could not guess your RPM API version?
 #endif
+
+/* Chip, this is somewhat stripped down from the default callback used by
+   the rpmcli.  It has to be here to insure that we open the pkg again. 
+   If we don't do this we get segfaults.  I also, kept the updating of some
+   of the rpmcli static vars, but I may not have needed to do this.
+
+   Also, we probably want to give a nice interface such that we could allow
+   users of RPM2 to do their own callback, but that will have to come later.
+*/
+void * _null_callback(
+	const void * arg, 
+	const rpmCallbackType what, 
+	const unsigned long amount, 
+	const unsigned long total, 
+	fnpyKey key, 
+	rpmCallbackData data)
+{
+	Header h = (Header) arg;
+	char * s;
+	int flags = (int) ((long)data);
+	void * rc = NULL;
+	const char * filename = (const char *)key;
+	static FD_t fd = NULL;
+	int xx;
+
+	/* Code stolen from rpminstall.c and modified */
+	switch(what) {
+		case RPMCALLBACK_INST_OPEN_FILE:
+	 		if (filename == NULL || filename[0] == '\0')
+			     return NULL;
+			fd = Fopen(filename, "r.ufdio");
+			/* FIX: still necessary? */
+			if (fd == NULL || Ferror(fd)) {
+				fprintf(stderr, "open of %s failed!\n", filename);
+				if (fd != NULL) {
+					xx = Fclose(fd);
+					fd = NULL;
+				}
+			} else
+				fd = fdLink(fd, "persist (showProgress)");
+			return (void *)fd;
+	 		break;
+
+	case RPMCALLBACK_INST_CLOSE_FILE:
+		/* FIX: still necessary? */
+		fd = fdFree(fd, "persist (showProgress)");
+		if (fd != NULL) {
+			xx = Fclose(fd);
+			fd = NULL;
+		}
+		break;
+
+	case RPMCALLBACK_INST_START:
+		rpmcliHashesCurrent = 0;
+		if (h == NULL || !(flags & INSTALL_LABEL))
+			break;
+		break;
+
+	case RPMCALLBACK_TRANS_PROGRESS:
+	case RPMCALLBACK_INST_PROGRESS:
+		break;
+
+	case RPMCALLBACK_TRANS_START:
+		rpmcliHashesCurrent = 0;
+		rpmcliProgressTotal = 1;
+		rpmcliProgressCurrent = 0;
+		break;
+
+	case RPMCALLBACK_TRANS_STOP:
+		rpmcliProgressTotal = rpmcliPackagesTotal;
+		rpmcliProgressCurrent = 0;
+		break;
+
+	case RPMCALLBACK_REPACKAGE_START:
+		rpmcliHashesCurrent = 0;
+		rpmcliProgressTotal = total;
+		rpmcliProgressCurrent = 0;
+		break;
+
+	case RPMCALLBACK_REPACKAGE_PROGRESS:
+		break;
+
+	case RPMCALLBACK_REPACKAGE_STOP:
+		rpmcliProgressTotal = total;
+		rpmcliProgressCurrent = total;
+		rpmcliProgressTotal = rpmcliPackagesTotal;
+		rpmcliProgressCurrent = 0;
+		break;
+
+	case RPMCALLBACK_UNINST_PROGRESS:
+		break;
+	case RPMCALLBACK_UNINST_START:
+		break;
+	case RPMCALLBACK_UNINST_STOP:
+		break;
+	case RPMCALLBACK_UNPACK_ERROR:
+		break;
+	case RPMCALLBACK_CPIO_ERROR:
+		break;
+	case RPMCALLBACK_UNKNOWN:
+		break;
+	default:
+		break;
+	}
+	
+	return rc;	
+}
 
 void
 _populate_header_tags(HV *href)
@@ -65,6 +174,8 @@ BOOT:
 	REGISTER_CONSTANT(_RPMVSF_NOSIGNATURES);
 	REGISTER_CONSTANT(_RPMVSF_NOHEADER);
 	REGISTER_CONSTANT(_RPMVSF_NOPAYLOAD);
+	REGISTER_CONSTANT(TR_ADDED);
+	REGISTER_CONSTANT(TR_REMOVED);
 #endif
     }
 
@@ -164,6 +275,30 @@ _read_package_info(fp, vsflags)
 	ts = rpmtsFree(ts);
 #endif
 
+void
+_create_transaction(vsflags)
+	int vsflags
+    PREINIT:
+	rpmts ret;
+    PPCODE:
+	/* Looking at librpm, it does not look like this ever
+	   returns error (though maybe it should).
+	*/
+	ret = rpmtsCreate();
+
+	/* Should I save the old vsflags aside? */
+	rpmtsSetVSFlags(ret, vsflags);
+
+	/* Convert and throw the results on the stack */	
+	SV *h_sv;
+
+	EXTEND(SP, 1);
+
+	h_sv = sv_newmortal();
+	sv_setref_pv(h_sv, "RPM2::C::Transaction", (void *)ret);
+
+	PUSHs(h_sv);
+
 rpmdb
 _open_rpm_db(for_write)
 	int   for_write
@@ -208,14 +343,23 @@ Header
 _iterator_next(i)
 	rpmdbMatchIterator i
     PREINIT:
-	Header ret;
-    CODE:
+	Header       ret;
+	unsigned int offset;
+    PPCODE:
 	ret = rpmdbNextIterator(i);
 	if (ret)
 		headerLink(ret);
-	RETVAL = ret;
-    OUTPUT:
-	RETVAL
+	if(ret != NULL) 
+		offset = rpmdbGetIteratorOffset(i);
+	else
+		offset = 0;
+	
+	EXTEND(SP, 2);
+        SV *         h_sv;
+	h_sv = sv_newmortal();
+	sv_setref_pv(h_sv, "RPM2::C::Header", (void *)ret);
+	PUSHs(h_sv);
+	PUSHs(sv_2mortal(newSViv(offset)));
 
 void
 DESTROY(i)
@@ -315,3 +459,139 @@ _header_sprintf(h, format)
 	s =  headerSprintf(h, format, rpmTagTable, rpmHeaderFormats, NULL);
 	PUSHs(sv_2mortal(newSVpv((char *)s, 0)));
 	s = _free(s);
+
+
+MODULE = RPM2		PACKAGE = RPM2::C::Transaction
+
+void
+DESTROY(t)
+	rpmts t
+    CODE:
+	t = rpmtsFree(t);
+
+# XXX:  Add relocations some day. 
+int
+_add_install(t, h, fn, upgrade)
+	rpmts  t
+	Header h
+	char * fn
+	int    upgrade
+    PREINIT:
+	rpmRC rc = 0;
+    CODE:
+	rc = rpmtsAddInstallElement(t, h, (fnpyKey) fn, upgrade, NULL);
+	RETVAL = (rc == RPMRC_OK) ? 1 : 0;
+    OUTPUT:
+	RETVAL	
+
+int
+_add_delete(t, h, offset)
+	rpmts        t
+	Header       h
+	unsigned int offset
+    PREINIT:
+	rpmRC rc = 0;
+    CODE:
+	rc = rpmtsAddEraseElement(t, h, offset);
+	RETVAL = (rc == RPMRC_OK) ? 1 : 0;
+    OUTPUT:
+	RETVAL	
+
+int
+_element_count(t)
+	rpmts t
+PREINIT:
+	int ret;
+CODE:
+	ret    = rpmtsNElements(t);
+	RETVAL = ret;
+OUTPUT:
+	RETVAL
+
+int
+_close_db(t)
+	rpmts t
+PREINIT:
+	int ret;
+CODE:
+	ret    = rpmtsCloseDB(t);
+	RETVAL = (ret == 0) ? 1 : 0;
+OUTPUT:
+	RETVAL
+
+int
+_check(t)
+	rpmts t
+PREINIT:
+	int ret;
+CODE:
+	ret    = rpmtsCheck(t);
+	RETVAL = (ret == 0) ? 1 : 0;
+OUTPUT:
+	RETVAL
+
+int
+_order(t)
+	rpmts t
+PREINIT:
+	int ret;
+CODE:
+	ret    = rpmtsOrder(t);
+	/* XXX:  May want to do something different here.  It actually
+	         returns the number of non-ordered elements...maybe we
+	         want this?
+	*/
+	RETVAL = (ret == 0) ? 1 : 0;
+OUTPUT:
+	RETVAL
+
+void
+_elements(t, type)
+	rpmts t;
+	rpmElementType type;
+PREINIT:
+	rpmtsi       i;
+	rpmte        te;
+	const char * NEVR;
+PPCODE:
+	i = rpmtsiInit(t);
+	if(i == NULL) {
+		printf("Did not get a thing!\n");
+		return;	
+	} else {
+		while((te = rpmtsiNext(i, type)) != NULL) {
+			NEVR = rpmteNEVR(te);
+			XPUSHs(sv_2mortal(newSVpv(NEVR,	0)));
+		}
+		i = rpmtsiFree(i);
+	}
+
+int
+_run(t, ok_probs, prob_filter)
+	rpmts t
+	rpmprobFilterFlags prob_filter 
+    PREINIT:
+	int i;
+	rpmProblem p;
+	int ret;
+    CODE:
+	/* Make sure we could run this transactions */
+	ret = rpmtsCheck(t);
+	if (ret != 0) {
+		RETVAL = 0;
+		return;
+	}
+	ret = rpmtsOrder(t);
+	if (ret != 0) {
+		RETVAL = 0;
+		return;
+	}
+
+	/* XXX:  Should support callbacks eventually */
+	(void) rpmtsSetNotifyCallback(t, _null_callback, (void *) ((long)0));
+	ret    = rpmtsRun(t, NULL, prob_filter);
+	RETVAL = (ret == 0) ? 1 : 0;
+    OUTPUT:
+	RETVAL
+
+

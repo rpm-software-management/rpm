@@ -105,6 +105,7 @@ my $other_rpm_dir = "/usr/lib/rpmdb/i386-redhat-linux/redhat";
 if (-d $other_rpm_dir) {
   my $db2 = RPM2->open_rpm_db(-path => $other_rpm_dir);
   ok(defined $db2);
+  $db2 = undef;
 }
 else {
   print "Install the rpmdb-redhat package to test two simultaneous open databases\n";
@@ -120,3 +121,64 @@ ok(RPM2->expand_macro("%rpm2_test_macro") eq "%rpm2_test_macro");
 ok(RPM2->rpm_api_version == 4.1 or RPM2->rpm_api_version == 4.0);
 ok(RPM2->rpm_api_version == 4.0 or RPM2->vsf_nosha1 == 65536);
 
+#
+# Clean up before transaction tests (close the database
+$db  = undef;
+$i   = undef;
+
+# 
+# Transaction tests.
+my $t = RPM2->create_transaction();
+ok(ref($t) eq 'RPM2::Transaction');
+ok(ref($t) eq 'RPM2::Transaction');
+$pkg = RPM2->open_package("test-rpm-1.0-1.noarch.rpm");
+# Make sure we still can open packages.
+ok($pkg);
+# Add package to transaction
+ok($t->add_install($pkg));
+# Check element count
+ok($t->element_count() == 1);
+# Test depedency checks
+ok($t->check());
+# Order the transaction...see if we get our one transaction.
+ok($t->order());
+my @rpms = $t->elements();
+ok($rpms[0] eq  $pkg->as_nvre());
+ok(scalar(@rpms) == 1);
+# Install package
+ok($t->run());
+$t = undef;
+
+#
+# See if we can find the rpm in the database now...
+$db = RPM2->open_rpm_db();
+ok(defined $db);
+@pkg = ();
+$i = $db->find_by_name_iter("test-rpm");
+ok($i);
+while (my $pkg = $i->next) {
+  push @pkg, $pkg;
+}
+ok(scalar(@pkg) == 1);
+$i  = undef;
+$db = undef;
+
+#
+# OK, lets remove that rpm with a new transaction
+my $t = RPM2->create_transaction();
+ok(ref($t) eq 'RPM2::Transaction');
+# We need to find the package we installed, and try to erase it
+ok($t->add_erase($pkg[0]));
+# Check element count
+ok($t->element_count() == 1);
+# Test depedency checks
+ok($t->check());
+# Order the transaction...see if we get our one transaction.
+ok($t->order());
+#my @rpms = $t->elements();
+ok($rpms[0] eq  $pkg->as_nvre());
+ok(scalar(@rpms) == 1);
+# Install package
+ok($t->run());
+# Test closing the database
+ok($t->close_db());

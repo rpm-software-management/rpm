@@ -1,3 +1,8 @@
+0.63  2003-03-16 cturner
+	* add support for install/erase from James Olin Oden; experimental but looks solid.  API may change.
+
+	* Fix sort bug found by James Olin Oden
+
 0.62  2003-03-16 cturner
 	* fix a few rpmlib 4.0.4/perl 5.6.x issues
 
