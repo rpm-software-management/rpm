@@ -188,6 +188,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	block.size = size;
 	block.isFree = 0;
 
+        lseek(fa->fd, newBlock, SEEK_SET);
 	if (write(fa->fd, &block, sizeof(block)) != sizeof(block)) {
 	    free(space);	
 	    return 0;
