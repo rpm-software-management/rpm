@@ -119,7 +119,7 @@ capabilities.
 # XXX work around a (possible) compiler problem on ia64
 %ifarch ia64
 RPM_OPT_FLAGS="-O0"
-#endif
+%endif
 
 %ifos linux
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man'
