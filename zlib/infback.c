@@ -424,8 +424,8 @@ int ZEXPORT inflateBack(z_stream FAR *strm, in_func in, void FAR *in_desc, out_f
                 }
             }
 
-	    /* handle error breaks in while */
-	    if (state->mode == BAD) break;
+            /* handle error breaks in while */
+            if (state->mode == BAD) break;
 
             /* build code tables */
             state->next = state->codes;
