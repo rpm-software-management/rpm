@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-29 19:06-0400\n"
+"POT-Creation-Date: 2002-07-29 19:10-0400\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -51,12 +51,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "Fil %s ser ikke ut til å være en spec-fil.\n"
 
 #. parse up the build operators
-#: build.c:320
+#: build.c:319
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformene: %s\n"
 
-#: build.c:335
+#: build.c:334
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger for mål %s\n"

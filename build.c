@@ -307,7 +307,6 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	vsflags |= _RPMTS_VSF_NOSIGNATURES;
     if (ba->qva_flags & VERIFY_HDRCHK)
 	vsflags |= _RPMTS_VSF_NOHDRCHK;
-fprintf(stderr, "*** vsflags 0x%x qva_flags 0x%x\n", vsflags, ba->qva_flags);
     ovsflags = rpmtsSetVerifySigFlags(ts, vsflags);
 
     if (targets == NULL) {

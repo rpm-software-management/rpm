@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-29 19:06-0400\n"
+"POT-Creation-Date: 2002-07-29 19:10-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -51,12 +51,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "Nezdá se, ¾e by %s byl spec soubor.\n"
 
 #. parse up the build operators
-#: build.c:320
+#: build.c:319
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Sestavuji cílové platformy: %s\n"
 
-#: build.c:335
+#: build.c:334
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Sestavuji pro cíl %s\n"
