@@ -633,5 +633,9 @@ int doBuild(Spec s, int flags)
 	doSweep(s);
     }
 
+    if (flags & RPMBUILD_RMSOURCE) {
+	doRmSource(s);
+    }
+
     return 0;
 }

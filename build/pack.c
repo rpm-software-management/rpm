@@ -945,3 +945,37 @@ int packageSource(Spec s)
     
     return 0;
 }
+
+/****************** Source Removal ********************/
+
+int doRmSource(Spec s)
+{
+    char filename[1024];
+    struct sources *source;
+    struct PackageRec *package;
+
+    /* spec file */
+    sprintf(filename, "%s%s", getVar(RPMVAR_SPECDIR),
+	    strrchr(s->specfile, '/'));
+    unlink(filename);
+
+    /* sources and patches */
+    source = s->sources;
+    while (source) {
+	sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR), source->source);
+	unlink(filename);
+	source = source->next;
+    }
+
+    /* icons */
+    package = s->packages;
+    while (package) {
+	if (package->icon) {
+	    sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR),
+		    package->icon);
+	    unlink(filename);
+	}
+	package = package->next;
+    }
+    
+}

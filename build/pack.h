@@ -6,5 +6,6 @@
 void markBuildTime(void);
 int packageBinaries(Spec s);
 int packageSource(Spec s);
+int doRmSource(Spec s);
 
 #endif _PACK_H_
