@@ -994,6 +994,14 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
+#else
+    /* Default user/group to builder's user/group */
+    if (fileUname == NULL) {
+	fileUname = getUname(getuid());
+    }
+    if (fileGname == NULL) {
+	fileGname = getGname(getgid());
+    }
 #endif
     
     rpmMessage(RPMMESS_DEBUG, _("File %4d: 0%o %s.%s\t %s\n"), fl->fileCount,

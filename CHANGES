@@ -4,6 +4,7 @@
 	- fix: segfault from double close on ftpGetFileDesc ftpAbort path.
 	- fix: don't add header if signature generation failed (Carlo Wood).
 	- more DU 4.0D fiddles (Shing-Gene Yung).
+	- fix: segfault from unknown uid/gid -- use builder's uid/gid instead.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.
@@ -12,7 +13,7 @@
 	- fix: with --target=i686, pass macro %_arch=i386.
 	- fix: rpm --target=arch ... resurrected.
 	- fix: rpm -q --specfile --specedit now works even with BuildArch:.
-	- fix: recursive strtok's is a no-no.
+	- fix: nested strtok's is a no-no.
 	- added disk space checking
 
 2.90 -> 2.91
