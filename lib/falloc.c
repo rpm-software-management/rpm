@@ -316,6 +316,15 @@ void faFree(faFile fa, unsigned int offset) {
     if (read(fa->fd, &header, sizeof(header)) != sizeof(header))
 	return;
 
+    header.isFree = 1;
+    footer.isFree = 1;
+
+    lseek(fa->fd, offset, SEEK_SET);
+    write(fa->fd, &header, sizeof(header));
+
+    lseek(fa->fd, footerOffset, SEEK_SET);
+    write(fa->fd, &footer, sizeof(footer));
+
     return;
 }
 
