@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.23 2001/05/15 07:57:34 rjray Exp $
+# $Id: Makefile.PL,v 1.24 2001/06/20 05:15:46 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -65,13 +65,22 @@ prior to that version. Stopped"
 # Starting with RPM 4.0, there are a number of subtle-but-significant changes
 $rpm_defines = "-DRPM_MAJOR=$rpm_version[0] -DRPM_MINOR=$rpm_version[1]" .
     " -DRPM_PATCH=$rpm_version[2] -DRPM_VERSION=$rpm_version";
-if ($rpm_version >= "0x040000")
+
+# XXX rpm-4.0.3 has an internal copy of db-3.3.4 in -lrpmdb
+if ($rpm_version >= "0x040003")
 {
-    $rpm_libs = '-lrpm -lrpmio -lpopt';
+    $rpm_libs = '-lrpm -lrpmdb -lrpmio -lpopt';
 }
 else
 {
+  if ($rpm_version >= "0x040000")
+  {
+    $rpm_libs = '-lrpm -lrpmio -lpopt';
+  }
+  else
+  {
     $rpm_libs = '-lrpm -lpopt';
+  }
 }
 
 # Check for needed header files

@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.14 2001/02/27 07:34:00 rjray Exp $
+ * $Id: RPM.h,v 1.15 2001/06/20 05:15:46 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -38,6 +38,11 @@
 
 #ifndef newSVpvn
 #    define newSVpvn(a,b)       newSVpv(a,b)
+#endif
+
+/* XXX Certain constants moved in rpm-4.0.3 to a developing CLI API */
+#if RPM_MAJOR >= 4 && RPM_MINOR >= 0 && RPM_PATCH >= 3
+#include <rpm/rpmcli.h>
 #endif
 
 #include <rpm/rpmlib.h>
