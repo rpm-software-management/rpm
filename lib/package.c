@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <netinet/in.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -19,10 +20,9 @@ static int readOldHeader(int fd, Header * hdr, int * isSource);
 /* 2 = error */
 int pkgReadHeader(int fd, Header * hdr, int * isSource) {
     struct rpmlead lead;
+    struct oldrpmlead * oldLead = (struct oldrpmlead *) &lead;
 
-    if (read(fd, &lead, sizeof(lead)) != sizeof(lead)) {
-	error(RPMERR_READERROR, "read failed: %s (%d)", strerror(errno), 
-	      errno);
+    if (readLead(fd, &lead)) {
 	return 2;
     }
    
@@ -34,16 +34,27 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 
     *isSource = lead.type == RPMLEAD_SOURCE;
 
-    if (lead.major == 1) {
-	readOldHeader(fd, hdr, isSource);
-    } else if (lead.major == 2) {
-	*hdr = readHeader(fd);
-	if (! *hdr) return 2;
+    if (*isSource) {
+	if (lead.major == 1) {
+	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
+	    lseek(fd, oldLead->archiveOffset, SEEK_SET);
+	} else {
+	    *hdr = readHeader(fd);
+	    if (! *hdr) return 2;
+	    freeHeader(*hdr);
+	}
     } else {
-	error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 2 are"
-		" supported by this version of RPM");
-	return 2;
-    } 
+	if (lead.major == 1) {
+	    readOldHeader(fd, hdr, isSource);
+	} else if (lead.major == 2) {
+	    *hdr = readHeader(fd);
+	    if (! *hdr) return 2;
+	} else {
+	    error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 2 are"
+		    " supported by this version of RPM");
+	    return 2;
+	} 
+    }
 
     return 0;
 }

@@ -29,7 +29,8 @@ struct fileToInstall {
 } ;
 
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
-			  int fileCount, notifyFunction notify);
+			  int fileCount, notifyFunction notify,
+			  char ** installArchive);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
 				   char * release, int flags);
 static int setFileOwnerships(char * prefix, char ** fileList, 
@@ -44,6 +45,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 				 enum instActions * instActions, 
 				 char ** prefixedFileList, int flags);
 static int fileCompare(const void * one, const void * two);
+static int installSources(char * prefix, int fd);
 
 /* 0 success */
 /* 1 bad magic */
@@ -71,6 +73,23 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
+
+    if (isSource) {
+	/* We deal with source packages pretty badly. They should end
+	   up in the database, and we should be smarter about installing
+	   them. Old source packages are broken though, and this hack
+	   is the easiest way. It's to bad the notify stuff doesn't work
+	   though  */
+
+	message(MESS_DEBUG, "installing a source package\n");
+
+	if (flags & INSTALL_TEST) {
+	    message(MESS_DEBUG, "stopping install as we're running --test\n");
+	    return 0;
+	}
+
+	return installSources(prefix, fd);
+    }
 
     /* we make a copy of the header here so we have one which we can add
        entries to */
@@ -209,7 +228,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(prefix, fd, files, archiveFileCount, notify)) {
+	if (installArchive(prefix, fd, files, archiveFileCount, notify, NULL)) {
 	    freeHeader(h);
 	    free(fileList);
 	    return 2;
@@ -259,7 +278,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 #define BLOCKSIZE 1024
 
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
-			  int fileCount, notifyFunction notify) {
+			  int fileCount, notifyFunction notify, 
+			  char ** specFile) {
     gzFile stream;
     char buf[BLOCKSIZE];
     pid_t child;
@@ -281,10 +301,13 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     struct fileToInstall * file;
     char * chptr;
     char ** args;
+    int len;
 
     /* fd should be a gzipped cpio archive */
 
-    needSecondPipe = (notify != NULL);
+    needSecondPipe = (notify != NULL) || specFile;
+
+    if (specFile) *specFile = NULL;
     
     if (access("/bin/cpio",  X_OK))  {
 	if (access("/usr/bin/cpio",  X_OK))  {
@@ -306,6 +329,8 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 
     if (needSecondPipe)
 	args[i++] = "--verbose";
+
+    /* note - if fileCount == 0, all files get installed */
 
     for (j = 0; j < fileCount; j++)
 	args[i++] = files[j].fileName;
@@ -368,11 +393,27 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 
 		    message(MESS_DEBUG, "file \"%s\" complete\n", line);
 
-		    file = bsearch(&fileInstalled, files, fileCount, 
-				   sizeof(struct fileToInstall), fileCompare);
-		    if (file) {
-			sizeInstalled += file->size;
-			notify(sizeInstalled, totalSize);
+		    if (notify) {
+			file = bsearch(&fileInstalled, files, fileCount, 
+				       sizeof(struct fileToInstall), 
+				       fileCompare);
+			if (file) {
+			    sizeInstalled += file->size;
+			    notify(sizeInstalled, totalSize);
+			}
+		    }
+
+		    if (specFile) {
+			len = strlen(fileInstalled.fileName);
+			if (fileInstalled.fileName[len - 1] == 'c' &&
+			    fileInstalled.fileName[len - 2] == 'e' &&
+			    fileInstalled.fileName[len - 3] == 'p' &&
+			    fileInstalled.fileName[len - 4] == 's' &&
+			    fileInstalled.fileName[len - 5] == '.') {
+
+			    if (*specFile) free(*specFile);
+			    *specFile = strdup(fileInstalled.fileName);
+			}
 		    }
 		 
 		    fileInstalled.fileName = chptr + 1;
@@ -772,4 +813,58 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 static int fileCompare(const void * one, const void * two) {
     return strcmp(((struct fileToInstall *) one)->fileName,
 		  ((struct fileToInstall *) two)->fileName);
+}
+
+
+static int installSources(char * prefix, int fd) {
+    char * specFile;
+    char * sourceDir, * specDir;
+    char * realSourceDir, * realSpecDir;
+    char * instSpecFile, * correctSpecFile;
+
+    sourceDir = getVar(RPMVAR_SOURCEDIR);
+    specDir = getVar(RPMVAR_SPECDIR);
+
+    realSourceDir = alloca(strlen(prefix) + strlen(sourceDir) + 2);
+    strcpy(realSourceDir, prefix);
+    strcat(realSourceDir, "/");
+    strcat(realSourceDir, sourceDir);
+
+    realSpecDir = alloca(strlen(prefix) + strlen(specDir) + 2);
+    strcpy(realSpecDir, prefix);
+    strcat(realSpecDir, "/");
+    strcat(realSpecDir, specDir);
+
+    message(MESS_DEBUG, "sources in: %s\n", realSourceDir);
+    message(MESS_DEBUG, "spec file in: %s\n", realSpecDir);
+
+    if (installArchive(realSourceDir, fd, NULL, 0, NULL, &specFile)) {
+	return 1;
+    }
+
+    if (!specFile) {
+	error(RPMERR_NOSPEC, "source package contains no .spec file\n");
+	return 1;
+    }
+
+    /* This logic doesn't work is realSpecDir and realSourceDir are on
+       different filesystems XXX */
+    instSpecFile = alloca(strlen(realSourceDir) + strlen(specFile) + 2);
+    strcpy(instSpecFile, realSourceDir);
+    strcat(instSpecFile, "/");
+    strcat(instSpecFile, specFile);
+
+    correctSpecFile = alloca(strlen(realSpecDir) + strlen(specFile) + 2);
+    strcpy(correctSpecFile, realSpecDir);
+    strcat(correctSpecFile, "/");
+    strcat(correctSpecFile, specFile);
+
+    message(MESS_DEBUG, "renaming %s to %s\n", instSpecFile, correctSpecFile);
+    if (rename(instSpecFile, correctSpecFile)) {
+	error(RPMERR_RENAME, "rename of %s to %s failed: %s\n",
+		instSpecFile, correctSpecFile, strerror(errno));
+	return 1;
+    }
+
+    return 0;
 }
