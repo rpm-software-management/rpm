@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "misc.h"
+#include "miscfn.h"
 #include "rpmlib.h"
 #include "messages.h"
 
