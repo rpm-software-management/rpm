@@ -18,6 +18,8 @@
 	- fix: set fcontext for "mkdir -p" directories not in packages.
 	- fix: setfiles (aka rpmsx.c) dinna handle patterns correctly.
 	- establish rpm_script_t before scriptlet exec.
+	- python: add patch to rpm-4_3 to initialize RE contexts.
+	- fix: only first "mkdir -p" directory had context set.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

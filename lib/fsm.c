@@ -1359,7 +1359,6 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	    if (rc)
 		/*@innerbreak@*/ break;
 	}
-	sx = rpmsxFree(sx);
 	if (rc) break;
 
 	/* Save last validated path. */
@@ -1376,6 +1375,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
     }
 /*@=boundswrite@*/
     dnli = dnlFreeIterator(dnli);
+    sx = rpmsxFree(sx);
     /*@=observertrans =dependenttrans@*/
 
     fsm->path = path;
