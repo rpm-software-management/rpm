@@ -23,7 +23,6 @@ struct archEquiv {
 
 /* this *must* be kept in alphabetical order */
 struct option optionTable[] = {
-    { "arch_sensitive",		RPMVAR_ARCHSENSITIVE,		0 },
     { "build_arch",	        RPMVAR_BUILDARCH,	        0 },
     { "builddir",		RPMVAR_BUILDDIR,		0 },
     { "buildprefix",            RPMVAR_BUILDPREFIX,             0 },
@@ -259,7 +258,6 @@ static int readRpmrc(FILE * f, char * fn, int readArchSpecific) {
 }
 
 static void setDefaults(void) {
-    setVar(RPMVAR_ARCHSENSITIVE, "1");
     setVar(RPMVAR_TOPDIR, "/usr/src");
     setVar(RPMVAR_DOCDIR, "/usr/doc");
     setVar(RPMVAR_OPTFLAGS, "-O2");

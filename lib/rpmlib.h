@@ -137,7 +137,7 @@ extern const int rpmTagTableSize;
 #define RPMVAR_ROOT          		6
 #define RPMVAR_RPMDIR        		7
 #define RPMVAR_SRPMDIR       		8
-#define RPMVAR_ARCHSENSITIVE 		9
+/* #define RPMVAR_ARCHSENSITIVE 	9  -- No longer used */
 #define RPMVAR_REQUIREDISTRIBUTION	10
 /* #define RPMVAR_REQUIREGROUP		11 -- No longer used */
 #define RPMVAR_REQUIREVENDOR		12
