@@ -54,7 +54,7 @@ struct Script *openScript(Spec spec, int builddir, char *name)
 	exit(RPMERR_INTERNAL);
     }
     
-    script->name = tempnam("/usr/tmp", "rpmbuild");
+    script->name = tempnam("/var/tmp", "rpmbuild");
     script->file = fopen(script->name, "w");
 
     /* Prepare the script */

@@ -48,7 +48,7 @@ int doReSign(char *passPhrase, char **argv)
 	}
 
 	/* Write the rest to a temp file */
-	sigtarget = tempnam("/usr/tmp", "rpmbuild");
+	sigtarget = tempnam("/var/tmp", "rpmbuild");
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {

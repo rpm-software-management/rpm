@@ -103,7 +103,7 @@ int generateRPM(char *name,       /* name-version-release         */
     }
 
     /* Write the archive to a temp file so we can get the size */
-    archiveTemp = tempnam("/usr/tmp", "rpmbuild");
+    archiveTemp = tempnam("/var/tmp", "rpmbuild");
     fd = open(archiveTemp, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     if (cpio_gzip(header, fd, stempdir, &archiveSize)) {
 	close(fd);
@@ -116,7 +116,7 @@ int generateRPM(char *name,       /* name-version-release         */
     addEntry(header, RPMTAG_ARCHIVESIZE, INT32_TYPE, &archiveSize, 1);
     
     /* Now write the header and append the archive */
-    sigtarget = tempnam("/usr/tmp", "rpmbuild");
+    sigtarget = tempnam("/var/tmp", "rpmbuild");
     fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     writeHeader(fd, header);
     ifd = open(archiveTemp, O_RDONLY, 0644);
@@ -1171,7 +1171,7 @@ int packageSource(Spec s, char *passPhrase)
 
     /**** Create links for all the sources ****/
     
-    tempdir = tempnam("/usr/tmp", "rpmbuild");
+    tempdir = tempnam("/var/tmp", "rpmbuild");
     mkdir(tempdir, 0700);
 
     filelist = newStringBuf();

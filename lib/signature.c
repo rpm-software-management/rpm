@@ -239,13 +239,13 @@ static int verifyPGPSignature(int fd, void *sig, char *result)
     FILE *file;
 
     /* Write out the signature */
-    sigfile = tempnam("/usr/tmp", "rpmsig");
+    sigfile = tempnam("/var/tmp", "rpmsig");
     sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     write(sfd, sig, 152);
     close(sfd);
 
     /* Write out the data */
-    datafile = tempnam("/usr/tmp", "rpmsig");
+    datafile = tempnam("/var/tmp", "rpmsig");
     sfd = open(datafile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     while((count = read(fd, buf, 8192)) > 0) {
 	write(sfd, buf, count);
