@@ -5,6 +5,7 @@
 	- autoreqprov flag was being ignored during builds
 	- add autoreq: and autoprov:
 	- missed a few unlink() when scripts failed
+	- freePrefixes wasn't initialized in runScript()
 
 2.4.108 -> 2.4.109:
         - remove icons with --rmsource
