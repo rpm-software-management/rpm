@@ -308,6 +308,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     int mappedFiles = 0;
     const char * failedFile = NULL;
     struct callbackInfo info;
+    char * rpmio_flags;
     FD_t cfd;
     int urltype;
 
@@ -354,8 +355,23 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 	(void)notify(h, RPMCALLBACK_INST_PROGRESS, 0, archiveSize, pkgKey,
 	       notifyData);
 
+    /* Retrieve type of payload compression. */
+    {	const char * payload_compressor = NULL;
+	char * t;
+
+	if (!headerGetEntry(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
+			    (void **) &payload_compressor, NULL))
+	    payload_compressor = "gzip";
+	rpmio_flags = t = alloca(sizeof("r.gzdio"));
+	*t++ = 'r';
+	if (!strcmp(payload_compressor, "gzip"))
+	    t = stpcpy(t, ".gzdio");
+	if (!strcmp(payload_compressor, "bzip2"))
+	    t = stpcpy(t, ".bzdio");
+    }
+
     (void) Fflush(fd);
-    cfd = Fdopen(fdDup(Fileno(fd)), "r.gzdio");
+    cfd = Fdopen(fdDup(Fileno(fd)), rpmio_flags);
     rc = cpioInstallArchive(cfd, map, mappedFiles,
 		    ((notify && archiveSize) || specFile) ? callback : NULL,
 		    &info, &failedFile);

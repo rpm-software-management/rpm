@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-22 19:02-0400\n"
+"POT-Creation-Date: 2000-06-22 21:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1143,20 +1143,20 @@ msgstr ""
 msgid "no arguments given for verify"
 msgstr ""
 
-#: rpm2cpio.c:22
+#: rpm2cpio.c:23
 #, c-format
 msgid "cannot open package: %s\n"
 msgstr ""
 
-#: rpm2cpio.c:32
+#: rpm2cpio.c:33
 msgid "argument is not an RPM package\n"
 msgstr ""
 
-#: rpm2cpio.c:36
+#: rpm2cpio.c:37
 msgid "error reading header from package\n"
 msgstr ""
 
-#: rpm2cpio.c:43
+#: rpm2cpio.c:59
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr ""
@@ -1489,7 +1489,7 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:110 build/pack.c:315
+#: build/build.c:110 build/pack.c:349
 msgid "Unable to open temp file."
 msgstr ""
 
@@ -1805,51 +1805,51 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:327
+#: build/pack.c:361
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:362
+#: build/pack.c:397
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:394
+#: build/pack.c:429
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:409
+#: build/pack.c:444
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:425
+#: build/pack.c:460
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:435
+#: build/pack.c:470
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:445
+#: build/pack.c:480
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr ""
 
-#: build/pack.c:460
+#: build/pack.c:495
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:529
+#: build/pack.c:564
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:546
+#: build/pack.c:581
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -2101,12 +2101,7 @@ msgstr ""
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr ""
 
-#: build/parseReqs.c:151
-#, c-format
-msgid "line %d: Version not permitted: %s"
-msgstr ""
-
-#: build/parseReqs.c:177
+#: build/parseReqs.c:170
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr ""
@@ -2595,86 +2590,86 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:368
+#: lib/install.c:384
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:369
+#: lib/install.c:385
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:413
+#: lib/install.c:429
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:433
+#: lib/install.c:449
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr ""
 
-#: lib/install.c:439 lib/install.c:469
+#: lib/install.c:455 lib/install.c:485
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:443
+#: lib/install.c:459
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:463
+#: lib/install.c:479
 #, c-format
 msgid "cannot create specdir %s"
 msgstr ""
 
-#: lib/install.c:473
+#: lib/install.c:489
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:507 lib/install.c:535
+#: lib/install.c:523 lib/install.c:551
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:557
+#: lib/install.c:573
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:559 lib/install.c:833 lib/uninstall.c:28
+#: lib/install.c:575 lib/install.c:849 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:650
+#: lib/install.c:666
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:705
+#: lib/install.c:721
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:763
+#: lib/install.c:779
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:768
+#: lib/install.c:784
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:793
+#: lib/install.c:809
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:829
+#: lib/install.c:845
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:902
+#: lib/install.c:918
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 

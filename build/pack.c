@@ -285,6 +285,8 @@ int writeRPM(Header h, const char *fileName, int type,
     int rc, count, sigtype;
     int archnum, osnum;
     const char *sigtarget;
+    const char * rpmio_flags = NULL;
+    char *s;
     char buf[BUFSIZ];
     Header sig;
     struct rpmlead lead;
@@ -303,6 +305,38 @@ int writeRPM(Header h, const char *fileName, int type,
 
     providePackageNVR(h);
 
+    /* Save payload information */
+    switch(type) {
+    case RPMLEAD_SOURCE:
+	rpmio_flags = rpmExpand("%{?_source_payload:%{_source_payload}}", NULL);
+	break;
+    case RPMLEAD_BINARY:
+	rpmio_flags = rpmExpand("%{?_binary_payload:%{_binary_payload}}", NULL);
+	break;
+    }
+    if (!(rpmio_flags && *rpmio_flags)) {
+	if (rpmio_flags) xfree(rpmio_flags);
+	rpmio_flags = xstrdup("w9.gzdio");
+    }
+    s = strchr(rpmio_flags, '.');
+    if (s) {
+	headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE, "cpio", 1);
+	if (s[1] == 'g' && s[2] == 'z')
+	    headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
+		"gzip", 1);
+	if (s[1] == 'b' && s[2] == 'z') {
+	    headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
+		"bzip2", 1);
+	    /* Add prereq on rpm version that understands bzip2 payloads */
+	    /* XXX 1st arg is unused */
+	    addReqProv(NULL, h,
+			RPMSENSE_PREREQ|(RPMSENSE_GREATER|RPMSENSE_EQUAL),
+			"rpm", "3.0.5", 0);
+	}
+	(void) stpncpy(buf, rpmio_flags+1, (s - rpmio_flags - 1));
+	headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf, 1);
+    }
+
     /* Create and add the cookie */
     if (cookie) {
 	sprintf(buf, "%s %d", buildHost(), (int) time(NULL));
@@ -320,7 +354,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	rc = RPMERR_NOSPACE;
     } else { /* Write the archive and get the size */
 	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, csa, "%{_payload_compression}");
+	    rc = cpio_doio(fd, csa, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
@@ -328,6 +362,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	    rc = RPMERR_BADARG;
 	}
     }
+    if (rpmio_flags) xfree(rpmio_flags);
 
     if (rc != 0) {
 	Fclose(fd);

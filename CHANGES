@@ -85,6 +85,8 @@
 	- uname on i370 has s390 as arch (#11456).
 	- python: initdb binding (Dan Burcaw <dburcaw@terraplex.com>).
 	- internalize --freshen (Gordon Messmer <yinyang@eburg.com>).
+	- support for separate source/binary compression policy.
+	- support for bzip payloads.
 
 
 3.0.3 -> 3.0.4

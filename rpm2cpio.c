@@ -8,6 +8,7 @@ int main(int argc, char **argv)
 {
     FD_t fdi, fdo;
     Header h;
+    char * rpmio_flags;
     int rc, isSource;
     FD_t gzdi;
     
@@ -38,7 +39,22 @@ int main(int argc, char **argv)
 	break;
     }
 
-    gzdi = Fdopen(fdi, "r.gzdio");	/* XXX gzdi == fdi */
+    /* Retrieve type of payload compression. */
+    {	const char * payload_compressor = NULL;
+	char * t;
+
+	if (!headerGetEntry(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
+			    (void **) &payload_compressor, NULL))
+	    payload_compressor = "gzip";
+	rpmio_flags = t = alloca(sizeof("r.gzdio"));
+	*t++ = 'r';
+	if (!strcmp(payload_compressor, "gzip"))
+	    t = stpcpy(t, ".gzdio");
+	if (!strcmp(payload_compressor, "bzip2"))
+	    t = stpcpy(t, ".bzdio");
+    }
+
+    gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
     if (gzdi == NULL || Ferror(gzdi)) {
 	fprintf(stderr, _("cannot re-open payload: %s\n"), Fstrerror(gzdi));
 	exit(EXIT_FAILURE);
