@@ -8,7 +8,5 @@ int execBuild(Spec s);
 int execInstall(Spec s);
 int execClean(Spec s);
 int verifyList(Spec s);
-int packageBinaries(Spec s);
-int packageSource(Spec s);
 
 #endif _BUILD_H_
