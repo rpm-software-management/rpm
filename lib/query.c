@@ -358,6 +358,22 @@ void rpmDisplayQueryTags(FILE * fp)
     }
 }
 
+static int rpmgiShowMatches(QVA_t qva, rpmts ts)
+{
+    rpmgi gi = qva->qva_gi;
+    int ec = 0;
+
+    while (rpmgiNext(gi) == RPMRC_OK) {
+	int rc;
+
+	if ((rc = qva->qva_showPackage(qva, ts, rpmgiHeader(gi))) != 0)
+	    ec = rc;
+	if (qva->qva_source == RPMQV_DBOFFSET)
+	    break;
+    }
+    return ec;
+}
+
 int rpmcliShowMatches(QVA_t qva, rpmts ts)
 {
     Header h;
@@ -515,46 +531,7 @@ restart:
 	break;
 
     case RPMQV_ALL:
-	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
-	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO, _("no packages\n"));
-	    res = 1;
-	} else {
-	    if (arg != NULL)
-	    for (av = (const char **) arg; *av != NULL; av++) {
-		int tag = RPMTAG_NAME;
-		const char * pat;
-		char * a, * ae;
-
-		pat = a = xstrdup(*av);
-		tag = RPMTAG_NAME;
-
-		/* Parse for "tag=pattern" args. */
-		if ((ae = strchr(a, '=')) != NULL) {
-		    *ae++ = '\0';
-		    tag = tagValue(a);
-		    if (tag < 0) {
-			rpmError(RPMERR_QUERYINFO,
-				_("unknown tag: \"%s\"\n"), a);
-			res = 1;
-		    }
-		    pat = ae;
-		}
-
-		if (!res)
-		    res = rpmdbSetIteratorRE(qva->qva_mi, tag, RPMMIRE_DEFAULT, pat);
-		a = _free(a);
-
-		if (res == 0)
-		    continue;
-
-		qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
-		res = 1;
-		/*@loopbreak@*/ break;
-	    }
-	    if (!res)
-		res = rpmcliShowMatches(qva, ts);
-	}
+	res = rpmgiShowMatches(qva, ts);
 	break;
 
     case RPMQV_GROUP:
@@ -784,24 +761,21 @@ restart:
 
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 {
-    int gitag = RPMDBI_ARGLIST;
-    int gikey = NULL;
-    int gikeylen = 0;
-    int ftsOpts = 0;
-    rpmgiFlags giflags = RPMGI_NOGLOB|RPMGI_NOHEADER;
     int ec = 0;
-
-    qva->qva_gi = rpmgiNew(ts, gitag, gikey, gikeylen);
-    qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giflags);
 
     switch (qva->qva_source) {
     case RPMQV_ALL:
+	qva->qva_gi = rpmgiNew(ts, RPMDBI_PACKAGES, NULL, 0);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0, RPMGI_NONE);
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
 	/*@=nullpass@*/
 	rpmtsEmpty(ts);
 	break;
     default:
+	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0,
+				(RPMGI_NOGLOB|RPMGI_NOHEADER));
 	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
 	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));
 	    rpmtsEmpty(ts);

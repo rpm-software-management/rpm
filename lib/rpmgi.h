@@ -20,6 +20,7 @@ extern int _rpmgi_debug;
 /**
  */
 typedef enum rpmgiFlags_e {
+    RPMGI_NONE		= 0,
     RPMGI_TSADD		= (1 << 0),
     RPMGI_TSORDER	= (1 << 1),
     RPMGI_NOGLOB	= (1 << 2),
