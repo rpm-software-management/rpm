@@ -98,7 +98,7 @@ install: all
 	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(MANDIR)
 	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(ETCDIR)
 	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(LIBDIR)
-	if [ -f rpm ]; then \
+	if [ -x ./rpm ]; then \
 	    $(INSTALL) -s -m 755 -o 0 -g 0 rpm $(installprefix)/$(RPMBINDIR); \
 	else \
 	    $(INSTALL) -s -m 755 -o 0 -g 0 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
