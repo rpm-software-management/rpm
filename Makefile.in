@@ -1,5 +1,5 @@
 SUBDIRS = lib
-OBJS = spec.o stringbuf.o build.o
+OBJS = spec.o stringbuf.o build.o pack.o
 PROGS = rpm
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
