@@ -608,6 +608,8 @@ static int readConfigFilesAux(char *file, int readWhat)
 int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
 {
     int rc = 0;
+    int tc;
+    char *tcs, *tcse;
     
     setDefaults();
     
@@ -632,6 +634,16 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
     archosFindEquivs(&archCache, &archEquivTable, getArchName());
     archosFindEquivs(&osCache, &osEquivTable, getOsName());
 
+    /* Do some checking */
+    if ((tcs = getVar(RPMVAR_TIMECHECK))) {
+	tcse = NULL;
+	tc = strtoul(tcs, &tcse, 10);
+	if ((*tcse) || (tcse == tcs) || (tc == ULONG_MAX)) {
+	    error(RPMERR_RPMRC, "Bad arg to timecheck: %s", tcs);
+	    return(RPMERR_RPMRC);
+	}
+    }
+    
     return 0;
 }
 
