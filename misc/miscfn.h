@@ -50,4 +50,8 @@ extern void *myrealloc(void *, size_t);
 #include <sys/socket.h>
 #endif
 
+#if HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
 #endif
