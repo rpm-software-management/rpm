@@ -16,6 +16,7 @@ prefix=@prefix@
 LIBS=$(prefix)/lib
 INCLUDE=$(prefix)/include
 CPP=@CPP@
+LDFLAGS=@LIBS@
 TESTCASES=test1
 
 VERSION=$(shell awk '/define version/ { print $$3 }' popt.spec)
