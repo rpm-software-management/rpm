@@ -71,14 +71,6 @@ struct _dbiVec {
     int (*sync) (dbiIndex dbi, unsigned int flags);
 
 /**
- * Return first index database key.
- * @param dbi	index database handle
- * @param key	address of first key
- * @return	0 success - fails if rec is not found
- */
-    int (*GetFirstKey) (dbiIndex dbi, const char ** keyp);
-
-/**
  * Return items that match criteria.
  * @param dbi	index database handle
  * @param str	search key
@@ -101,21 +93,19 @@ struct _dbiVec {
  * @param dbi	index database handle
  * @param keyp	key data
  * @param keylen key data length
- * @param use_cursor open cursor for access?
  */
-    int (*del) (dbiIndex dbi, void * keyp, size_t keylen, int use_cursor);
+    int (*del) (dbiIndex dbi, void * keyp, size_t keylen);
 
 /**
  * Retrieve item using db->get.
  * @param dbi	index database handle
- * @param keyp	address of key data
- * @param keylen address of key data length
+ * @param keyp	key data
+ * @param keylen key data length
  * @param datap	address of data pointer
  * @param datalen address of data length
- * @param use_cursor open cursor for access?
  */
-    int (*get) (dbiIndex dbi, void ** keyp, size_t * keylen,
-			void ** datap, size_t * datalen, int use_cursor);
+    int (*get) (dbiIndex dbi, void * keyp, size_t keylen,
+			void ** datap, size_t * datalen);
 
 /**
  * Save item using db->put.
@@ -124,10 +114,32 @@ struct _dbiVec {
  * @param keylen key data length
  * @param datap	data pointer
  * @param datalen data length
- * @param use_cursor open cursor for access?
  */
     int (*put) (dbiIndex dbi, void * keyp, size_t keylen,
-			void * datap, size_t datalen, int use_cursor);
+			void * datap, size_t datalen);
+
+/**
+ */
+    int (*copen) (dbiIndex dbi);
+
+/**
+ */
+    int (*cclose) (dbiIndex dbi);
+
+/**
+ */
+    int (*join) (dbiIndex dbi);
+
+/**
+ * Retrieve item using dbcursor->c_get.
+ * @param dbi	index database handle
+ * @param keyp	address of key data
+ * @param keylen address of key data length
+ * @param datap	address of data pointer
+ * @param datalen address of data length
+ */
+    int (*cget) (dbiIndex dbi, void ** keyp, size_t * keylen,
+			void ** datap, size_t * datalen);
 
 };
 
@@ -142,14 +154,15 @@ struct _dbiIndex {
     int dbi_flags;			/*<! flags to use on open */
     int dbi_perms;			/*<! file permission to use on open */
     int dbi_major;			/*<! Berkeley db version major */
+    unsigned int dbi_lastoffset;
 
     const char * dbi_file;		/*<! name of index database */
     void * dbi_db;			/*<! Berkeley db[123] handle */
     void * dbi_dbenv;
     void * dbi_dbinfo;
+    void * dbi_dbjoin;
     void * dbi_dbcursor;
-    const void * dbi_openinfo;
-    const void * dbi_stat;
+    void * dbi_pkgs;
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
 };
 
@@ -220,12 +233,20 @@ int dbiAppendIndexRecord( /*@out@*/ dbiIndexSet set, dbiIndexRecord rec);
 int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec);
 
 /**
- * Return first index database key.
+ * Return next index database key.
  * @param dbi	index database handle
- * @param key	address of first key
+ * @param keyp	address of first key
+ * @param keylenp address of first key size
  * @return	0 success - fails if rec is not found
  */
-int dbiGetFirstKey(dbiIndex dbi, /*@out@*/ const char ** key);
+int dbiGetNextKey(dbiIndex dbi, /*@out@*/ void ** keyp, size_t * keylenp);
+
+/**
+ * Close cursor (if any);
+ * @param dbi	index database handle
+ * @return	0 success
+ */
+int dbiFreeCursor(dbiIndex dbi);
 
 /**
  * Create and initialize element of index database set.

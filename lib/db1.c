@@ -90,52 +90,6 @@ errxit:
 }
 #endif
 
-static int db1close(dbiIndex dbi, unsigned int flags) {
-    DB * db = GetDB(dbi);
-    int rc;
-
-#if defined(__USE_DB2)
-    DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
-    DB_INFO * dbinfo = (DB_INFO *)dbi->dbi_dbinfo;
-    DBC * dbcursor = (DBC *)dbi->dbi_cursor;
-
-    if (dbcursor) {
-	dbcursor->c_close(dbcursor)
-	dbi->dbi_cursor = NULL;
-    }
-
-    rc = db->close(db, 0);
-    dbi->dbi_db = NULL;
-
-    if (dbinfo) {
-	free(dbinfo);
-	dbi->dbi_dbinfo = NULL;
-    }
-    if (dbenv) {
-	(void) db_appexit(dbenv);
-	free(dbenv);
-	dbi->dbi_dbenv = NULL;
-    }
-#else
-    rc = db->close(db);
-#endif
-
-    switch (rc) {
-    default:
-    case RET_ERROR:	/* -1 */
-	rc = -1;
-	break;
-    case RET_SPECIAL:	/* 1 */
-	rc = 1;
-	break;
-    case RET_SUCCESS:	/* 0 */
-	rc = 0;
-	break;
-    }
-
-    return rc;
-}
-
 static int db1sync(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
     int rc;
@@ -156,53 +110,6 @@ static int db1sync(dbiIndex dbi, unsigned int flags) {
 	break;
     case RET_SUCCESS:	/* 0 */
 	rc = 0;
-	break;
-    }
-
-    return rc;
-}
-
-static int db1GetFirstKey(dbiIndex dbi, const char ** keyp) {
-    DBT key, data;
-    DB * db;
-    int rc;
-
-    if (dbi == NULL || dbi->dbi_db == NULL)
-	return 1;
-
-    db = GetDB(dbi);
-    _mymemset(&key, 0, sizeof(key));
-    _mymemset(&data, 0, sizeof(data));
-
-    key.data = NULL;
-    key.size = 0;
-
-#if defined(__USE_DB2)
-    {	DBC * dbcursor = NULL;
-	rc = dbp->cursor(dbp, NULL, &dbcursor, 0);
-	if (rc == 0)
-	    rc = dbc->c_get(dbcp, &key, &data, DB_FIRST)
-	if (dbcursor)
-	    dbcp->c_close(dbcursor)
-    }
-#else
-    rc = db->seq(db, &key, &data, R_FIRST);
-#endif
-
-    switch (rc) {
-    default:
-    case RET_ERROR:	/* -1 */
-    case RET_SPECIAL:	/* 1 */
-	rc = 1;
-	break;
-    case RET_SUCCESS:	/* 0 */
-	rc = 0;
-	if (keyp) {
-    	    char *k = xmalloc(key.size + 1);
-	    memcpy(k, key.data, key.size);
-	    k[key.size] = '\0';
-	    *keyp = k;
-	}
 	break;
     }
 
@@ -327,7 +234,87 @@ static int db1UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
 }
 /*@=compmempass@*/
 
-static int db1del(dbiIndex dbi, void * keyp, size_t keylen, int use_cursor)
+static int db1copen(dbiIndex dbi) {
+    int rc = 0;
+#if defined(__USE_DB2)
+    {	DBC * dbcursor = NULL;
+	rc = dbp->cursor(dbp, NULL, &dbcursor, 0);
+	if (rc == 0)
+	    dbi->dbi_dbcursor = dbcursor;
+    }
+#endif
+    dbi->dbi_lastoffset = 0;
+    return rc;
+}
+
+static int db1cclose(dbiIndex dbi) {
+    int rc = 0;
+#if defined(__USE_DB2)
+#endif
+    dbi->dbi_lastoffset = 0;
+    return rc;
+}
+
+static int db1join(dbiIndex dbi) {
+    int rc = 1;
+    return rc;
+}
+
+static int db1cget(dbiIndex dbi, void ** keyp, size_t * keylen,
+                void ** datap, size_t * datalen)
+{
+    DBT key, data;
+    DB * db;
+    int rc;
+
+    if (dbi == NULL || dbi->dbi_db == NULL)
+	return 1;
+
+    db = GetDB(dbi);
+    _mymemset(&key, 0, sizeof(key));
+    _mymemset(&data, 0, sizeof(data));
+
+    key.data = NULL;
+    key.size = 0;
+
+#if defined(__USE_DB2)
+    {	DBC * dbcursor;
+
+	if ((dbcursor = dbi->dbi_dbcursor) == NULL) {
+	    rc = db2copen(dbi);
+	    if (rc)
+		return rc;
+	    dbcursor = dbi->dbi_dbcursor;
+	}
+
+	rc = dbcursor->c_get(dbcursor, &key, &data,
+			(dbi->dbi_lastoffset++ ? DB_NEXT : DB_FIRST));
+	if (rc == DB_NOTFOUND)
+	    db2cclose(dbcursor)
+    }
+#else
+    rc = db->seq(db, &key, &data, (dbi->dbi_lastoffset++ ? R_NEXT : R_FIRST));
+
+    switch (rc) {
+    default:
+    case RET_ERROR:	/* -1 */
+    case RET_SPECIAL:	/* 1 */
+	rc = 1;
+	if (keyp)
+	    *keyp = NULL;
+	break;
+    case RET_SUCCESS:	/* 0 */
+	rc = 0;
+	if (keyp)
+	    *keyp = key.data;
+	break;
+    }
+#endif
+
+    return rc;
+}
+
+static int db1del(dbiIndex dbi, void * keyp, size_t keylen)
 {
     DBT key;
     DB * db = GetDB(dbi);
@@ -345,7 +332,7 @@ static int db1del(dbiIndex dbi, void * keyp, size_t keylen, int use_cursor)
 }
 
 static int db1get(dbiIndex dbi, void * keyp, size_t keylen,
-		void ** datap, size_t * datalen, int use_cursor)
+		void ** datap, size_t * datalen)
 {
     DBT key, data;
     DB * db = GetDB(dbi);
@@ -373,7 +360,7 @@ static int db1get(dbiIndex dbi, void * keyp, size_t keylen,
 }
 
 static int db1put(dbiIndex dbi, void * keyp, size_t keylen,
-		void * datap, size_t datalen, int use_cursor)
+		void * datap, size_t datalen)
 {
     DBT key, data;
     DB * db = GetDB(dbi);
@@ -389,6 +376,52 @@ static int db1put(dbiIndex dbi, void * keyp, size_t keylen,
 
     rc = db->put(db, &key, &data, 0);
     rc = cvtdberr(dbi, "db->put", rc, _debug);
+
+    return rc;
+}
+
+static int db1close(dbiIndex dbi, unsigned int flags) {
+    DB * db = GetDB(dbi);
+    int rc;
+
+#if defined(__USE_DB2)
+    DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
+    DB_INFO * dbinfo = (DB_INFO *)dbi->dbi_dbinfo;
+    DBC * dbcursor = (DBC *)dbi->dbi_cursor;
+
+    if (dbcursor) {
+	dbcursor->c_close(dbcursor)
+	dbi->dbi_cursor = NULL;
+    }
+
+    rc = db->close(db, 0);
+    dbi->dbi_db = NULL;
+
+    if (dbinfo) {
+	free(dbinfo);
+	dbi->dbi_dbinfo = NULL;
+    }
+    if (dbenv) {
+	(void) db_appexit(dbenv);
+	free(dbenv);
+	dbi->dbi_dbenv = NULL;
+    }
+#else
+    rc = db->close(db);
+#endif
+
+    switch (rc) {
+    default:
+    case RET_ERROR:	/* -1 */
+	rc = -1;
+	break;
+    case RET_SPECIAL:	/* 1 */
+	rc = 1;
+	break;
+    case RET_SUCCESS:	/* 0 */
+	rc = 0;
+	break;
+    }
 
     return rc;
 }
@@ -417,8 +450,9 @@ static int db1open(dbiIndex dbi)
     if (rc)
 	dbi->dbi_db = NULL;
 #else
+    void * dbopeninfo = NULL;
     dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_flags, dbi->dbi_perms,
-		dbi_to_dbtype(dbi->dbi_type), dbi->dbi_openinfo);
+		dbi_to_dbtype(dbi->dbi_type), dbopeninfo);
 #endif
 
     if (dbi->dbi_db) {
@@ -433,8 +467,8 @@ fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbi->dbi_file);
 
 struct _dbiVec db1vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db1open, db1close, db1sync, db1GetFirstKey, db1SearchIndex, db1UpdateIndex,
-    db1del, db1get, db1put
+    db1open, db1close, db1sync, db1SearchIndex, db1UpdateIndex,
+    db1del, db1get, db1put, db1copen, db1cclose, db1join, db1cget
 };
 
 #endif	/* HABE_DB_185_H */

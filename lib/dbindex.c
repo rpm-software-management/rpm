@@ -86,7 +86,7 @@ static void freeDBI( /*@only@*/ /*@null@*/ dbiIndex dbi) {
     }
 }
 
-int _useDbiMajor = -1;		/* XXX shared with rebuilddb.c */
+int _useDbiMajor = 3;		/* XXX shared with rebuilddb.c/rpmdb.c */
 
 static struct _dbiVec *mydbvecs[] = {
     DB0vec, DB1vec, DB2vec, DB3vec, NULL
@@ -176,13 +176,24 @@ int dbiSyncIndex(dbiIndex dbi) {
     return rc;
 }
 
-int dbiGetFirstKey(dbiIndex dbi, const char ** keyp) {
+int dbiGetNextKey(dbiIndex dbi, void ** keyp, size_t * keylenp) {
     int rc;
 
     if (dbi == NULL)
 	return 1;
 
-    rc = (*dbi->dbi_vec->GetFirstKey) (dbi, keyp);
+    rc = (*dbi->dbi_vec->cget) (dbi, keyp, keylenp, NULL, NULL);
+
+    return rc;
+}
+
+int dbiFreeCursor(dbiIndex dbi) {
+    int rc;
+
+    if (dbi == NULL)
+	return 1;
+
+    rc = (*dbi->dbi_vec->cclose) (dbi);
     return rc;
 }
 

@@ -232,50 +232,6 @@ errxit:
 }
 #endif	/* __USE_DB2 || __USE_DB3 */
 
-static int db2close(dbiIndex dbi, unsigned int flags)
-{
-    DB * db = GetDB(dbi);
-    int rc = 0, xx;
-
-#if defined(__USE_DB2) || defined(__USE_DB3)
-
-    if (dbi->dbi_dbcursor) {
-	DBC * dbcursor = (DBC *)dbi->dbi_dbcursor;
-	xx = dbcursor->c_close(dbcursor);
-	xx = cvtdberr(dbi, "dbcursor->c_close", xx, _debug);
-	dbi->dbi_dbcursor = NULL;
-    }
-
-    if (db) {
-	rc = db->close(db, 0);
-	rc = cvtdberr(dbi, "db->close", rc, _debug);
-	db = dbi->dbi_db = NULL;
-    }
-
-    if (dbi->dbi_dbinfo) {
-	free(dbi->dbi_dbinfo);
-	dbi->dbi_dbinfo = NULL;
-    }
-    if (dbi->dbi_dbenv) {
-	DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
-#if defined(__USE_DB3)
-	xx = dbenv->close(dbenv, 0);
-	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
-#else
-	xx = db_appexit(dbenv);
-	xx = cvtdberr(dbi, "db_appexit", xx, _debug);
-	free(dbi->dbi_dbenv);
-#endif
-	dbi->dbi_dbenv = NULL;
-    }
-#else
-    rc = db->close(db);
-#endif
-    dbi->dbi_db = NULL;
-
-    return rc;
-}
-
 static int db2sync(dbiIndex dbi, unsigned int flags)
 {
     DB * db = GetDB(dbi);
@@ -287,55 +243,6 @@ static int db2sync(dbiIndex dbi, unsigned int flags)
 #else
     rc = db->sync(db, flags);
 #endif
-
-    return rc;
-}
-
-static int db2GetFirstKey(dbiIndex dbi, const char ** keyp)
-{
-    DBT key, data;
-    DB * db;
-    int _printit;
-    int rc, xx;
-
-    if (dbi == NULL || dbi->dbi_db == NULL)
-	return 1;
-
-    db = GetDB(dbi);
-    _mymemset(&key, 0, sizeof(key));
-    _mymemset(&data, 0, sizeof(data));
-
-    key.data = NULL;
-    key.size = 0;
-
-#if defined(__USE_DB2) || defined(__USE_DB3)
-    {	DBC * dbcursor = NULL;
-#if defined(__USE_DB3)
-	rc = db->cursor(db, NULL, &dbcursor, 0);
-#else
-	rc = db->cursor(db, NULL, &dbcursor);
-#endif
-	rc = cvtdberr(dbi, "db->cursor", rc, _debug);
-	if (rc == 0) {
-	    rc = dbcursor->c_get(dbcursor, &key, &data, DB_FIRST);
-	    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
-	    rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
-	}
-	if (dbcursor) {
-	    xx = dbcursor->c_close(dbcursor);
-	    xx = cvtdberr(dbi, "dbcursor->c_close", xx, _debug);
-	}
-    }
-#else
-    rc = db->seq(db, &key, &data, R_FIRST);
-#endif
-
-    if (rc == 0 && keyp) {
-    	char *k = xmalloc(key.size + 1);
-	memcpy(k, key.data, key.size);
-	k[key.size] = '\0';
-	*keyp = k;
-    }
 
     return rc;
 }
@@ -433,7 +340,113 @@ static int db2UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 }
 /*@=compmempass@*/
 
-static int db2del(dbiIndex dbi, void * keyp, size_t keylen, int use_cursor)
+static int db2copen(dbiIndex dbi) {
+    DBC * dbcursor;
+    int rc = 0;
+
+    if ((dbcursor = dbi->dbi_dbcursor) == NULL) {
+	DB * db = GetDB(dbi);
+	DB_TXN * txnid = NULL;
+
+#if defined(__USE_DB3)
+	rc = db->cursor(db, txnid, &dbcursor, 0);
+#else
+	rc = db->cursor(db, txnid, &dbcursor);
+#endif
+	rc = cvtdberr(dbi, "db->cursor", rc, _debug);
+	if (rc == 0)
+	    dbi->dbi_dbcursor = dbcursor;
+    }
+    dbi->dbi_lastoffset = 0;
+    return rc;
+}
+
+static int db2cclose(dbiIndex dbi) {
+    DBC * dbcursor;
+    int rc = 0;
+
+    if ((dbcursor = dbi->dbi_dbcursor) != NULL) {
+	rc = dbcursor->c_close(dbcursor);
+	rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
+	dbi->dbi_dbcursor = NULL;
+    }
+    dbi->dbi_lastoffset = 0;
+    return rc;
+}
+
+static int db2join(dbiIndex dbi) {
+    int rc = 1;
+    return rc;
+}
+
+static int db2cget(dbiIndex dbi, void ** keyp, size_t * keylen,
+                void ** datap, size_t * datalen)
+{
+    DBT key, data;
+    DB * db;
+    int rc;
+
+    if (dbi == NULL || dbi->dbi_db == NULL)
+	return 1;
+
+    db = GetDB(dbi);
+    _mymemset(&key, 0, sizeof(key));
+    _mymemset(&data, 0, sizeof(data));
+
+    key.data = NULL;
+    key.size = 0;
+
+#if defined(__USE_DB2)
+    {	DBC * dbcursor;
+	int xx;
+
+	if ((dbcursor = dbi->dbi_dbcursor) == NULL) {
+	    rc = db2copen(dbi);
+	    if (rc)
+		return rc;
+	    dbcursor = dbi->dbi_dbcursor;
+	}
+
+	/* XXX W2DO? db2 does DB_FIRST on uninitialized cursor ??? */
+	rc = dbcursor->c_get(dbcursor, &key, &data,
+			(dbi->dbi_lastoffset++ ? DB_NEXT : DB_FIRST));
+	if (rc == DB_NOTFOUND)
+	    xx = db2cclose(dbi);
+	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _debug);
+
+	if (rc == 0) {
+	    if (keyp)
+		*keyp = key.data;
+	    if (keylen)
+		*keylen = key.size;
+	    if (datap)
+		*datap = data.data;
+	    if (datalen)
+		*datalen = data.size;
+	}
+    }
+#else
+    rc = db->seq(db, &key, &data, (dbi->dbi_lastoffset++ ? R_NEXT : R_FIRST));
+
+    switch (rc) {
+    default:
+    case RET_ERROR:	/* -1 */
+    case RET_SPECIAL:	/* 1 */
+	rc = 1;
+	if (keyp)
+	    *keyp = NULL;
+	break;
+    case RET_SUCCESS:	/* 0 */
+	rc = 0;
+	if (keyp)
+	    *keyp = key.data;
+	break;
+    }
+#endif
+
+    return rc;
+}
+static int db2del(dbiIndex dbi, void * keyp, size_t keylen)
 {
     DB_TXN * txnid = NULL;
     DBT key;
@@ -452,7 +465,7 @@ static int db2del(dbiIndex dbi, void * keyp, size_t keylen, int use_cursor)
 }
 
 static int db2get(dbiIndex dbi, void * keyp, size_t keylen,
-		void ** datap, size_t * datalen, int use_cursor)
+		void ** datap, size_t * datalen)
 {
     DB_TXN * txnid = NULL;
     DBT key, data;
@@ -481,7 +494,7 @@ static int db2get(dbiIndex dbi, void * keyp, size_t keylen,
 }
 
 static int db2put(dbiIndex dbi, void * keyp, size_t keylen,
-		void * datap, size_t datalen, int use_cursor)
+		void * datap, size_t datalen)
 {
     DB_TXN * txnid = NULL;
     DBT key, data;
@@ -498,6 +511,50 @@ static int db2put(dbiIndex dbi, void * keyp, size_t keylen,
 
     rc = db->put(db, txnid, &key, &data, 0);
     rc = cvtdberr(dbi, "db->get", rc, _debug);
+
+    return rc;
+}
+
+static int db2close(dbiIndex dbi, unsigned int flags)
+{
+    DB * db = GetDB(dbi);
+    int rc = 0, xx;
+
+#if defined(__USE_DB2) || defined(__USE_DB3)
+
+    if (dbi->dbi_dbcursor) {
+	DBC * dbcursor = (DBC *)dbi->dbi_dbcursor;
+	xx = dbcursor->c_close(dbcursor);
+	xx = cvtdberr(dbi, "dbcursor->c_close", xx, _debug);
+	dbi->dbi_dbcursor = NULL;
+    }
+
+    if (db) {
+	rc = db->close(db, 0);
+	rc = cvtdberr(dbi, "db->close", rc, _debug);
+	db = dbi->dbi_db = NULL;
+    }
+
+    if (dbi->dbi_dbinfo) {
+	free(dbi->dbi_dbinfo);
+	dbi->dbi_dbinfo = NULL;
+    }
+    if (dbi->dbi_dbenv) {
+	DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
+#if defined(__USE_DB3)
+	xx = dbenv->close(dbenv, 0);
+	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
+#else
+	xx = db_appexit(dbenv);
+	xx = cvtdberr(dbi, "db_appexit", xx, _debug);
+	free(dbi->dbi_dbenv);
+#endif
+	dbi->dbi_dbenv = NULL;
+    }
+#else
+    rc = db->close(db);
+#endif
+    dbi->dbi_db = NULL;
 
     return rc;
 }
@@ -552,8 +609,9 @@ static int db2open(dbiIndex dbi)
     dbi->dbi_dbinfo = dbinfo;
 
 #else
+    void * dbopeninfo = NULL;
     dbi->dbi_db = dbopen(dbfile, dbi->dbi_flags, dbi->dbi_perms,
-		dbi_to_dbtype(dbi->dbi_type), dbi->dbi_openinfo);
+		dbi_to_dbtype(dbi->dbi_type), dbopeninfo);
 #endif	/* __USE_DB2 || __USE_DB3 */
 
     if (rc == 0 && dbi->dbi_db != NULL) {
@@ -568,8 +626,8 @@ fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbfile);
 
 struct _dbiVec db2vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db2open, db2close, db2sync, db2GetFirstKey, db2SearchIndex, db2UpdateIndex,
-    db2del, db2get, db2put
+    db2open, db2close, db2sync, db2SearchIndex, db2UpdateIndex,
+    db2del, db2get, db2put, db2copen, db2cclose, db2join, db2cget
 };
 
 #endif	/* DB_VERSION_MAJOR == 2 */

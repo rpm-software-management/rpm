@@ -160,7 +160,7 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 	if (rpmdbMoveDatabase(rootdir, newdbpath, dbpath)) {
 	    rpmMessage(RPMMESS_ERROR, _("failed to replace old database with new "
 			"database!\n"));
-	    rpmMessage(RPMMESS_ERROR, _("replaces files in %s with files from %s "
+	    rpmMessage(RPMMESS_ERROR, _("replace files in %s with files from %s "
 			"to recover"), dbpath, newdbpath);
 	    rc = 1;
 	    goto exit;
