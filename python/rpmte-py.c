@@ -150,8 +150,40 @@ static PyObject *
 rpmte_AddedKey(rpmteObject * s, PyObject * args)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Degree")) return NULL;
-    return Py_BuildValue("i", rpmteDegree(s->te));
+    if (!PyArg_ParseTuple(args, ":AddedKey")) return NULL;
+    return Py_BuildValue("i", rpmteAddedKey(s->te));
+}
+
+static PyObject *
+rpmte_DependsOnKey(rpmteObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":DependsOnKey")) return NULL;
+    return Py_BuildValue("i", rpmteDependsOnKey(s->te));
+}
+
+static PyObject *
+rpmte_DBOffset(rpmteObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":DBOffset")) return NULL;
+    return Py_BuildValue("i", rpmteDBOffset(s->te));
+}
+
+static PyObject *
+rpmte_Key(rpmteObject * s, PyObject * args)
+	/*@*/
+{
+    PyObject * Key;
+
+    if (!PyArg_ParseTuple(args, ":Key")) return NULL;
+    /* XXX how to insure this is a PyObject??? */
+    Key = (PyObject *) rpmteKey(s->te);
+    if (Key == NULL) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+    return Key;
 }
 
 static PyObject *
@@ -249,6 +281,12 @@ static struct PyMethodDef rpmte_methods[] = {
     {"Degree",	(PyCFunction)rpmte_Degree,	METH_VARARGS,
         NULL},
     {"AddedKey",(PyCFunction)rpmte_AddedKey,	METH_VARARGS,
+        NULL},
+    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_VARARGS,
+        NULL},
+    {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_VARARGS,
+        NULL},
+    {"Key",	(PyCFunction)rpmte_Key,	METH_VARARGS,
         NULL},
     {"DS",	(PyCFunction)rpmte_DS,		METH_VARARGS,
 "te.DS(TagN) -> DS\n\
