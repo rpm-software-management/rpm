@@ -302,11 +302,10 @@ int writeRPM(Header h, const char *fileName, int type,
     if (_noDirTokens)
 	expandFilelist(h);
     else {
+	compressFilelist(h);
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	if (type == RPMLEAD_BINARY) {
-	    compressFilelist(h);
+	if (type == RPMLEAD_BINARY)
 	    rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
-	}
     }
 
     /* Binary packages now have explicit Provides: name = version-release. */

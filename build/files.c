@@ -1416,28 +1416,28 @@ void initSourceHeader(Spec spec)
 	    ? xfree(ptr), NULL : NULL))
     {
 	switch (tag) {
-	  case RPMTAG_NAME:
-	  case RPMTAG_VERSION:
-	  case RPMTAG_RELEASE:
-	  case RPMTAG_EPOCH:
-	  case RPMTAG_SUMMARY:
-	  case RPMTAG_DESCRIPTION:
-	  case RPMTAG_PACKAGER:
-	  case RPMTAG_DISTRIBUTION:
-	  case RPMTAG_DISTURL:
-	  case RPMTAG_VENDOR:
-	  case RPMTAG_LICENSE:
-	  case RPMTAG_GROUP:
-	  case RPMTAG_OS:
-	  case RPMTAG_ARCH:
-	  case RPMTAG_CHANGELOGTIME:
-	  case RPMTAG_CHANGELOGNAME:
-	  case RPMTAG_CHANGELOGTEXT:
-	  case RPMTAG_URL:
-	  case HEADER_I18NTABLE:
+	case RPMTAG_NAME:
+	case RPMTAG_VERSION:
+	case RPMTAG_RELEASE:
+	case RPMTAG_EPOCH:
+	case RPMTAG_SUMMARY:
+	case RPMTAG_DESCRIPTION:
+	case RPMTAG_PACKAGER:
+	case RPMTAG_DISTRIBUTION:
+	case RPMTAG_DISTURL:
+	case RPMTAG_VENDOR:
+	case RPMTAG_LICENSE:
+	case RPMTAG_GROUP:
+	case RPMTAG_OS:
+	case RPMTAG_ARCH:
+	case RPMTAG_CHANGELOGTIME:
+	case RPMTAG_CHANGELOGNAME:
+	case RPMTAG_CHANGELOGTEXT:
+	case RPMTAG_URL:
+	case HEADER_I18NTABLE:
 	    headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
 	    break;
-	  default:
+	default:
 	    /* do not copy */
 	    break;
 	}

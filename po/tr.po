@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-07-10 22:04-0400\n"
+"POT-Creation-Date: 2000-07-10 23:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1650,7 +1650,7 @@ msgstr "oluþturma için gerekli spec dosyasý belirtilmedi"
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirttilmedi"
 
-#: build/build.c:110 build/pack.c:355
+#: build/build.c:110 build/pack.c:354
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "%s okuma eriþimi için açýlamadý:%s."
@@ -1973,52 +1973,52 @@ msgstr "hata: %s herhangi bir RPM pakedine ait görünmüyor\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
-#: build/pack.c:367
+#: build/pack.c:366
 msgid "Bad CSA data"
 msgstr ""
 
 # , c-format
-#: build/pack.c:403
+#: build/pack.c:402
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s 'ye eriþimde hata oluþtu\n"
 
-#: build/pack.c:435
+#: build/pack.c:434
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:450
+#: build/pack.c:449
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "PGP-imzasý yaratýr"
 
-#: build/pack.c:466
+#: build/pack.c:465
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:476
+#: build/pack.c:475
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:486
+#: build/pack.c:485
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:501
+#: build/pack.c:500
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:565
+#: build/pack.c:564
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:582
+#: build/pack.c:581
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s dosyasý açýlamýyor: "

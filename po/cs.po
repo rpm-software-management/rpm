@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-07-10 22:04-0400\n"
+"POT-Creation-Date: 2000-07-10 23:38-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -1621,7 +1621,7 @@ msgstr "pro sestavení nezadány ¾ádné soubory .spec"
 msgid "no tar files given for build"
 msgstr "pro sestavení nezadány ¾ádné soubory tar"
 
-#: build/build.c:110 build/pack.c:355
+#: build/build.c:110 build/pack.c:354
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Nelze otevøít %s pro ètení: %s."
@@ -1944,51 +1944,51 @@ msgstr "%s není typu RPM\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "chyba pøi vytváøení adresáøe %s: %s"
 
-#: build/pack.c:367
+#: build/pack.c:366
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:403
+#: build/pack.c:402
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "nelze otevøít %s\n"
 
-#: build/pack.c:435
+#: build/pack.c:434
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "Nelze zapsat %s"
 
-#: build/pack.c:450
+#: build/pack.c:449
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Probíhá generování podpisu: %d\n"
 
-#: build/pack.c:466
+#: build/pack.c:465
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Nelze zapsat %s"
 
-#: build/pack.c:476
+#: build/pack.c:475
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Nelze zapsat %s"
 
-#: build/pack.c:486
+#: build/pack.c:485
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Nelze zapsat %s"
 
-#: build/pack.c:501
+#: build/pack.c:500
 #, fuzzy, c-format
 msgid "Wrote: %s\n"
 msgstr "rpm: %s\n"
 
-#: build/pack.c:565
+#: build/pack.c:564
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:582
+#: build/pack.c:581
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nelze otevøít soubor %s: "

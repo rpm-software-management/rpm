@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-10 22:04-0400\n"
+"POT-Creation-Date: 2000-07-10 23:38-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1653,7 +1653,7 @@ msgstr "käännökselle ei annettu määrittelytiedostoja"
 msgid "no tar files given for build"
 msgstr "käännökselle ei määritelty tar-tiedostoja"
 
-#: build/build.c:110 build/pack.c:355
+#: build/build.c:110 build/pack.c:354
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "En voi avata %s luettavaksi: %s."
@@ -1976,51 +1976,51 @@ msgstr "virhe: %s ei vaikuta RPM paketilta\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "virhe luettaessa tietuetta %s %s:stä"
 
-#: build/pack.c:367
+#: build/pack.c:366
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:403
+#: build/pack.c:402
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus epäonnistui\n"
 
-#: build/pack.c:435
+#: build/pack.c:434
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:450
+#: build/pack.c:449
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "generoi PGP-allekirjoitus"
 
-#: build/pack.c:466
+#: build/pack.c:465
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:476
+#: build/pack.c:475
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:486
+#: build/pack.c:485
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:501
+#: build/pack.c:500
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:565
+#: build/pack.c:564
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:582
+#: build/pack.c:581
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "

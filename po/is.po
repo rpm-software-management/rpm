@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 1.0\n"
-"POT-Creation-Date: 2000-07-10 22:04-0400\n"
+"POT-Creation-Date: 2000-07-10 23:38-0400\n"
 "PO-Revision-Date: 2000-06-16 02:20+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -1458,7 +1458,7 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:110 build/pack.c:355
+#: build/build.c:110 build/pack.c:354
 msgid "Unable to open temp file."
 msgstr ""
 
@@ -1774,51 +1774,51 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:367
+#: build/pack.c:366
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:403
+#: build/pack.c:402
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:435
+#: build/pack.c:434
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:450
+#: build/pack.c:449
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:466
+#: build/pack.c:465
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:476
+#: build/pack.c:475
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:486
+#: build/pack.c:485
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr ""
 
-#: build/pack.c:501
+#: build/pack.c:500
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:565
+#: build/pack.c:564
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:582
+#: build/pack.c:581
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
