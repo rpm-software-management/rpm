@@ -1,3 +1,6 @@
+2.3.6 -> 2.3.7:
+	- no longer put file uid/gid in header
+
 2.3.5 -> 2.3.6:
 	- -Vf uses realpath() now
 	- -Vp lets you use --ftpproxy, --ftpport
