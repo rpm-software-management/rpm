@@ -26,12 +26,17 @@ struct option optionTable[] = {
     { "docdir",			RPMVAR_DOCDIR,			0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1 },
+    { "pgp_name",               RPMVAR_PGP_NAME,                0 },
+    { "pgp_path",               RPMVAR_PGP_PATH,                0 },
+    { "pgp_pubring",            RPMVAR_PGP_PUBRING,             0 },
+    { "pgp_secring",            RPMVAR_PGP_SECRING,             0 },
     { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0 },
     { "require_group",		RPMVAR_REQUIREGROUP,		0 },
     { "require_icon",		RPMVAR_REQUIREICON,		0 },
     { "require_vendor",		RPMVAR_REQUIREVENDOR,		0 },
     { "root",			RPMVAR_ROOT,			0 },
     { "rpmdir",			RPMVAR_RPMDIR,			0 },
+    { "signature",		RPMVAR_SIGTYPE,			0 },
     { "sourcedir",		RPMVAR_SOURCEDIR,		0 },
     { "specdir",		RPMVAR_SPECDIR,			0 },
     { "srcrpmdir",		RPMVAR_SRPMDIR,			0 },
@@ -162,6 +167,10 @@ static void setDefaults(void) {
     setVar(RPMVAR_TOPDIR, "/usr/src");
     setVar(RPMVAR_DOCDIR, "/usr/doc");
     setVar(RPMVAR_OPTFLAGS, "-O2");
+    setVar(RPMVAR_SIGTYPE, "none");
+    setVar(RPMVAR_PGP_PATH, "/usr/lib/rpm");
+    setVar(RPMVAR_PGP_PUBRING, "/usr/lib/rpm/pubring.pgp");
+    setVar(RPMVAR_PGP_SECRING, "/usr/lib/rpm/secring.pgp");
 }
 
 int readConfigFiles(void) {
