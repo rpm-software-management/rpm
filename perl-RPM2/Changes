@@ -1,3 +1,6 @@
+0.62  2003-03-16 cturner
+	* fix a few rpmlib 4.0.4/perl 5.6.x issues
+
 0.61  2003-03-10 cturner
 	* test release for CPAN
 
