@@ -36,9 +36,30 @@ static int writeRPM(Header header, char *fileName, int type,
 static int cpio_gzip(int fd, struct cpioFileMapping *cpioList,
 		     int cpioCount, int *archiveSize);
 
-int packageSources(Spec spec)
+static int genSourceRpmName(Spec spec)
 {
     char *name, *version, *release;
+    char fileName[BUFSIZ];
+
+    if (spec->sourceRpmName) {
+	return 0;
+    }
+    
+    headerGetEntry(spec->packages->header, RPMTAG_NAME,
+		   NULL, (void **)&name, NULL);
+    headerGetEntry(spec->packages->header, RPMTAG_VERSION,
+		   NULL, (void **)&version, NULL);
+    headerGetEntry(spec->packages->header, RPMTAG_RELEASE,
+		   NULL, (void **)&release, NULL);
+    sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
+	    spec->noSource ? "no" : "");
+    spec->sourceRpmName = strdup(fileName);
+
+    return 0;
+}
+
+int packageSources(Spec spec)
+{
     char fileName[BUFSIZ];
     HeaderIterator iter;
     int_32 tag, count;
@@ -52,15 +73,7 @@ int packageSources(Spec spec)
     headerAddEntry(spec->sourceHeader, RPMTAG_BUILDTIME,
 		   RPM_INT32_TYPE, getBuildTime(), 1);
 
-    headerGetEntry(spec->sourceHeader, RPMTAG_NAME,
-		   NULL, (void **)&name, NULL);
-    headerGetEntry(spec->sourceHeader, RPMTAG_VERSION,
-		   NULL, (void **)&version, NULL);
-    headerGetEntry(spec->sourceHeader, RPMTAG_RELEASE,
-		   NULL, (void **)&release, NULL);
-    sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
-	    spec->noSource ? "no" : "");
-    spec->sourceRpmName = strdup(fileName);
+    genSourceRpmName(spec);
     sprintf(fileName, "%s/%s", rpmGetVar(RPMVAR_SRPMDIR), spec->sourceRpmName);
 
     /* Add the build restrictions */
@@ -116,9 +129,10 @@ int packageBinaries(Spec spec)
 		       RPM_STRING_TYPE, buildHost(), 1);
 	headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
+
+	genSourceRpmName(spec);
 	headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
-		       spec->sourceRpmName ?
-		       spec->sourceRpmName : "(unknown)", 1);
+		       spec->sourceRpmName, 1);
 	
 	binFormat = rpmGetVar(RPMVAR_RPMFILENAME);
 	binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
