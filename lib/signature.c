@@ -1240,7 +1240,7 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
 #if HAVE_BEECRYPT_API_H
-    xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->rsahm, &dig->c);
+    xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
 #else
     xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
 #endif
