@@ -145,31 +145,31 @@ Package newPackage(Spec spec)
     return p;
 }
 
-Package freePackage(Package p)
+Package freePackage(Package pkg)
 {
-    if (p == NULL) return NULL;
+    if (pkg == NULL) return NULL;
     
-    p->preInFile = _free(p->preInFile);
-    p->postInFile = _free(p->postInFile);
-    p->preUnFile = _free(p->preUnFile);
-    p->postUnFile = _free(p->postUnFile);
-    p->verifyFile = _free(p->verifyFile);
+    pkg->preInFile = _free(pkg->preInFile);
+    pkg->postInFile = _free(pkg->postInFile);
+    pkg->preUnFile = _free(pkg->preUnFile);
+    pkg->postUnFile = _free(pkg->postUnFile);
+    pkg->verifyFile = _free(pkg->verifyFile);
 
-    p->header = headerFree(p->header);
-    p->fileList = freeStringBuf(p->fileList);
-    p->fileFile = _free(p->fileFile);
-    if (p->cpioList) {
-	TFI_t fi = p->cpioList;
-	p->cpioList = NULL;
+    pkg->header = headerFree(pkg->header);
+    pkg->fileList = freeStringBuf(pkg->fileList);
+    pkg->fileFile = _free(pkg->fileFile);
+    if (pkg->cpioList) {
+	TFI_t fi = pkg->cpioList;
+	pkg->cpioList = NULL;
 	freeFi(fi);
 	fi = _free(fi);
     }
 
-    p->specialDoc = freeStringBuf(p->specialDoc);
-    p->icon = freeSources(p->icon);
-    p->triggerFiles = freeTriggerFiles(p->triggerFiles);
+    pkg->specialDoc = freeStringBuf(pkg->specialDoc);
+    pkg->icon = freeSources(pkg->icon);
+    pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
 
-    p = _free(p);
+    pkg = _free(pkg);
     return NULL;
 }
 
@@ -253,6 +253,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     int num = 0;
 
     buf[0] = '\0';
+    /*@-branchstate@*/
     switch (tag) {
       case RPMTAG_SOURCE:
 	flag = RPMBUILD_ISSOURCE;
@@ -269,6 +270,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 	fieldp = NULL;
 	break;
     }
+    /*@=branchstate@*/
 
     /* Get the number */
     if (tag != RPMTAG_ICON) {
@@ -341,12 +343,14 @@ static inline /*@only@*/ /*@null@*/ speclines newSl(void)
 	/*@*/
 {
     speclines sl = NULL;
+    /*@-branchstate@*/
     if (specedit) {
 	sl = xmalloc(sizeof(*sl));
 	sl->sl_lines = NULL;
 	sl->sl_nalloc = 0;
 	sl->sl_nlines = 0;
     }
+    /*@=branchstate@*/
     return sl;
 }
 
@@ -371,12 +375,14 @@ static inline /*@only@*/ /*@null@*/ spectags newSt(void)
 	/*@*/
 {
     spectags st = NULL;
+    /*@-branchstate@*/
     if (specedit) {
 	st = xmalloc(sizeof(*st));
 	st->st_t = NULL;
 	st->st_nalloc = 0;
 	st->st_ntags = 0;
     }
+    /*@=branchstate@*/
     return st;
 }
 

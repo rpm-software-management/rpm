@@ -56,8 +56,10 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
     depFlags = (depFlags & (RPMSENSE_SENSEMASK | RPMSENSE_MULTILIB)) | extra;
 
+    /*@-branchstate@*/
     if (depEVR == NULL)
 	depEVR = "";
+    /*@=branchstate@*/
     
     /* Check for duplicate dependencies. */
     if (hge(h, nametag, &dnt, (void **) &names, &len)) {

@@ -94,7 +94,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 			mp32prnd_w(&r, rgc, pqsize, mp32ptrials(pqsize << 5), &kp->e, temp);
 			/*@=globs@*/
 
-			/*@-usedef@*/ /* r is set */
+			/*@-usedef -branchstate @*/ /* r is set */
 			if (mp32le(pqsize, kp->p.modl, r.modl))
 			{
 				mp32bfree(&kp->q);
@@ -115,7 +115,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 				mp32bfree(&r);
 				newn = 0;
 			}
-			/*@=usedef@*/
+			/*@=usedef =branchstate @*/
 		}
 
 		mp32bset(&kp->n, nsize, temp);

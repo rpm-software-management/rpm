@@ -90,20 +90,26 @@ int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
         versions[n] = rpmlibProvides[n].featureEVR;
     }
     
+    /*@-branchstate@*/
     if (provNames)
 	*provNames = names;
     else
 	names = _free(names);
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if (provFlags)
 	*provFlags = flags;
     else
 	flags = _free(flags);
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if (provVersions)
 	*provVersions = versions;
     else
 	versions = _free(versions);
+    /*@=branchstate@*/
 
     /*@-compmempass@*/ /* FIX: rpmlibProvides[] reachable */
     return n;

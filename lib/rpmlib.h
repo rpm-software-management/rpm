@@ -543,8 +543,8 @@ enum rpm_machtable_e {
  */
 int rpmReadConfigFiles(/*@null@*/ const char * file,
 		/*@null@*/ const char * target)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
  * Read rpmrc (and macro) configuration file(s).
@@ -552,8 +552,8 @@ int rpmReadConfigFiles(/*@null@*/ const char * file,
  * @return		0 on succes
  */
 int rpmReadRC(/*@null@*/ const char * rcfiles)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState  @*/;
 
 /** \ingroup rpmrc
  * Return current arch name and/or number.
@@ -597,8 +597,8 @@ int rpmMachineScore(int type, const char * name)
  * @return		0 always
  */
 int rpmShowRC(FILE * fp)
-	/*@globals fileSystem@*/
-	/*@modifies *fp, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *fp, fileSystem, internalState  @*/;
 
 /** \ingroup rpmrc
  * @deprecated Use addMacro to set _target_* macros.
@@ -608,7 +608,7 @@ int rpmShowRC(FILE * fp)
  * @param osTable
  */
 void rpmSetTables(int archTable, int osTable)
-	/*@globals fileSystem, internalState@*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
@@ -622,7 +622,7 @@ void rpmSetTables(int archTable, int osTable)
  * @param os		os name (or NULL)
  */
 void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os)
-	/*@globals fileSystem, internalState@*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
@@ -643,7 +643,7 @@ void rpmGetMachine( /*@null@*/ /*@out@*/ const char **arch,
  * @todo Eliminate from API.
  */
 void rpmFreeRpmrc(void)
-	/*@globals internalState@*/
+	/*@globals internalState @*/
 	/*@modifies internalState @*/;
 
 /*@}*/
@@ -669,51 +669,51 @@ extern int dbiTagsMax;
 
 /** \ingroup rpmdb
  * Open rpm database.
- * @param root		path to top of install tree
+ * @param prefix	path to top of install tree
  * @retval dbp		address of rpm database
  * @param mode		open(2) flags:  O_RDWR or O_RDONLY (O_CREAT also)
  * @param perms		database permissions
  * @return		0 on success
  */
-int rpmdbOpen (/*@null@*/ const char * root, /*@null@*/ /*@out@*/ rpmdb * dbp,
+int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
 		int mode, int perms)
 	/*@globals fileSystem@*/
 	/*@modifies *dbp, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Initialize database.
- * @param root		path to top of install tree
+ * @param prefix	path to top of install tree
  * @param perms		database permissions
  * @return		0 on success
  */
-int rpmdbInit(/*@null@*/ const char * root, int perms)
+int rpmdbInit(/*@null@*/ const char * prefix, int perms)
 	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Verify database components.
- * @param root		path to top of install tree
+ * @param prefix	path to top of install tree
  * @return		0 on success
  */
-int rpmdbVerify(/*@null@*/ const char * root)
+int rpmdbVerify(/*@null@*/ const char * prefix)
 	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Close all database indices and free rpmdb.
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @return		0 on success
  */
-int rpmdbClose (/*@only@*/ /*@null@*/ rpmdb rpmdb)
+int rpmdbClose (/*@only@*/ /*@null@*/ rpmdb db)
 	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Sync all database indices.
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @return		0 on success
  */
-int rpmdbSync (/*@null@*/ rpmdb rpmdb)
+int rpmdbSync (/*@null@*/ rpmdb db)
 	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 
@@ -895,7 +895,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
 			/*@kept@*/ /*@null@*/ rpmdb db, int rpmtag,
-			/*@null@*/ const void * key, size_t keylen)
+			/*@null@*/ const void * keyp, size_t keylen)
 	/*@globals fileSystem@*/
 	/*@modifies db, fileSystem @*/;
 
@@ -914,18 +914,19 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h)
  * Remove package header from rpm database and indices.
  * @param db		rpm database
  * @param rid		remove transaction id (rid = 0 or -1 to skip)
- * @param offset	location in Packages dbi
+ * @param hdrNum	package instance number in database
  * @return		0 on success
  */
-int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int offset)
+int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 	/*@globals fileSystem@*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.
- * @param root		path to top of install tree
+ * @param prefix	path to top of install tree
+ * @return		0 on success
  */
-int rpmdbRebuild(/*@null@*/ const char * root)
+int rpmdbRebuild(/*@null@*/ const char * prefix)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
@@ -1231,12 +1232,12 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
 
 /** \ingroup rpmtrans
  * Create an empty transaction set.
- * @param rpmdb		rpm database (may be NULL if database is not accessed)
+ * @param db		rpm database (may be NULL if database is not accessed)
  * @param rootdir	path to top of install tree
  * @return		transaction set
  */
 /*@only@*/ rpmTransactionSet rpmtransCreateSet(
-		/*@null@*/ /*@kept@*/ rpmdb rpmdb,
+		/*@null@*/ /*@kept@*/ rpmdb db,
 		/*@null@*/ const char * rootDir)
 	/*@*/;
 

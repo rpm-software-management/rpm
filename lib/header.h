@@ -396,7 +396,7 @@ typedef
  */
 typedef
 /*@null@*/ Header (*HDRhdrread) (FD_t fd, enum hMagic magicp)
-	/*@modifies fd, fileSystem @*/;
+	/*@modifies fd @*/;
 
 /** \ingroup header
  * Write (with unload) header to file handle.
@@ -407,6 +407,7 @@ typedef
  */
 typedef
 int (*HDRhdrwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/;
 
 /** \ingroup header

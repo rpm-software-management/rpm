@@ -169,6 +169,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	  }
 	}
 
+	/*@-branchstate@*/
 	if (flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
 		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s\n"),
@@ -181,6 +182,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	    re = ve;	/* ==> next token after version string starts here */
 	} else
 	    version = NULL;
+	/*@=branchstate@*/
 
 	(void) addReqProv(spec, h, flags, req, version, index);
 

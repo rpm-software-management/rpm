@@ -333,10 +333,12 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 	/*@notreached@*/ break;
     }
 
+    /*@-branchstate@*/
     if (specp)
 	*specp = spec;
     else
 	spec = freeSpec(spec);
+    /*@=branchstate@*/
 
     if (csa != NULL)
 	csa->cpioFdIn = fdi;
@@ -408,6 +410,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	providePackageNVR(h);
 
     /* Save payload information */
+    /*@-branchstate@*/
     switch(type) {
     case RPMLEAD_SOURCE:
 	rpmio_flags = rpmExpand("%{?_source_payload:%{_source_payload}}", NULL);
@@ -416,6 +419,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rpmio_flags = rpmExpand("%{?_binary_payload:%{_binary_payload}}", NULL);
 	break;
     }
+    /*@=branchstate@*/
     if (!(rpmio_flags && *rpmio_flags)) {
 	rpmio_flags = _free(rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");

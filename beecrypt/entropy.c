@@ -416,7 +416,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		return -1;
 	}
 
-	/*@-infloops -infloopsuncon@*/
+	/*@-infloops -infloopsuncon -branchstate @*/
 	while (randombits)
 	{
 		#if WIN32
@@ -581,7 +581,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			/*@notreached@*/ /*@switchbreak@*/ break;
 		}
 	}
-	/*@=infloops =infloopsuncon@*/
+	/*@=infloops =infloopsuncon =branchstate @*/
 
 	#if WIN32
 	waveInStop(wavein);
@@ -1014,6 +1014,7 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
 	#endif
 
+	/*@-branchstate@*/
 	while (bytesize)
 	{
 		#if ENABLE_AIO
@@ -1089,6 +1090,7 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 		bytedata += rc;
 		bytesize -= rc;
 	}
+	/*@=branchstate@*/
 	return 0;
 }
 #endif

@@ -65,12 +65,12 @@ void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
  * @param spec		cookie (unused)
  * @param mc		macro context (NULL uses global context).
  * @retval sbuf		input macro to expand, output expansion
- * @param sbuflen	size of buffer
+ * @param slen		size of buffer
  * @return		0 on success
  */
 int	expandMacros	(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
 				/*@in@*/ /*@out@*/ char * sbuf,
-				size_t sbuflen)
+				size_t slen)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
 	/*@modifies *sbuf, rpmGlobalMacroContext, fileSystem @*/;
@@ -187,17 +187,17 @@ const char * rpmGetPath	(/*@null@*/ const char * path, ...)
 /**
  * Merge 3 args into path, any or all of which may be a url.
  * The leading part of the first URL encountered is used
- * for the result, other URL's are discarded, permitting
- * a primitive form of inheiritance.
- * @param root		root URL (often path to chroot, or NULL)
- * @param mdir		directory URL (often a directory, or NULL)
- * @param file		file URL (often a file, or NULL)
+ * for the result, other URL prefixes are discarded, permitting
+ * a primitive form of URL inheiritance.
+ * @param urlroot	root URL (often path to chroot, or NULL)
+ * @param urlmdir	directory URL (often a directory, or NULL)
+ * @param urlfile	file URL (often a file, or NULL)
  * @return		expanded, merged, canonicalized path (malloc'ed)
  */
 /*@-redecl@*/
-const char * rpmGenPath	(/*@null@*/ const char * root,
-			/*@null@*/ const char * mdir,
-			/*@null@*/ const char * file)
+const char * rpmGenPath	(/*@null@*/ const char * urlroot,
+			/*@null@*/ const char * urlmdir,
+			/*@null@*/ const char * urlfile)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 /*@=redecl@*/

@@ -337,10 +337,12 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
     sourceDir = _free(sourceDir);
 
+    /*@-branchstate@*/
     if (usagesPtr)
 	*usagesPtr = usages;
     else
 	usages = _free(usages);
+    /*@=branchstate@*/
 
     return 0;
 }

@@ -181,6 +181,7 @@ int mtprngNext(mtprngParam* mp, uint32* data, int size)
 		#  endif
 		# endif
 		#endif
+		/*@-branchstate@*/
 		while (size--)
 		{
 			if (mp->left == 0)
@@ -194,6 +195,7 @@ int mtprngNext(mtprngParam* mp, uint32* data, int size)
 			mp->left--;
 			*(data++) = tmp;
 		}
+		/*@=branchstate@*/
 		#ifdef _REENTRANT
 		# if WIN32
 		if (!ReleaseMutex(mp->lock))

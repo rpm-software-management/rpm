@@ -106,7 +106,9 @@ int rpmfileexists(const char * urlfn)
     int urltype = urlPath(urlfn, &fn);
     struct stat buf;
 
+    /*@-branchstate@*/
     if (*fn == '\0') fn = "/";
+    /*@=branchstate@*/
     switch (urltype) {
     case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
@@ -152,6 +154,7 @@ int dosetenv(const char * name, const char * value, int overwrite)
 }
 
 static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     char * d, * de;
@@ -210,9 +213,12 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     FD_t fd = NULL;
     int ran;
 
+    /*@-branchstate@*/
     if (!prefix) prefix = "";
+    /*@=branchstate@*/
 
     /* Create the temp directory if it doesn't already exist. */
+    /*@-branchstate@*/
     if (!_initialized) {
 	_initialized = 1;
 	/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
@@ -221,6 +227,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	if (rpmMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
 	    goto errxit;
     }
+    /*@=branchstate@*/
 
     /* XXX should probably use mkstemp here */
     srand(time(NULL));
@@ -286,10 +293,12 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	break;
     }
 
+    /*@-branchstate@*/
     if (fnptr)
 	*fnptr = tempfn;
     else 
 	tempfn = _free(tempfn);
+    /*@=branchstate@*/
     *fdptr = fd;
 
     return 0;
@@ -373,6 +382,7 @@ void compressFilelist(Header h)
 	goto exit;
     }
 
+    /*@-branchstate@*/
     for (i = 0; i < count; i++) {
 	const char ** needle;
 	char savechar;
@@ -399,6 +409,7 @@ void compressFilelist(Header h)
 	*baseName = savechar;
 	baseNames[i] = baseName;
     }
+    /*@=branchstate@*/
 
 exit:
     if (count > 0) {
@@ -458,10 +469,12 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
     baseNames = hfd(baseNames, bnt);
     dirNames = hfd(dirNames, dnt);
 
+    /*@-branchstate@*/
     if (fileListPtr)
 	*fileListPtr = fileNames;
     else
 	fileNames = _free(fileNames);
+    /*@=branchstate@*/
     if (fileCountPtr) *fileCountPtr = count;
 }
 
@@ -472,6 +485,7 @@ void expandFilelist(Header h)
     const char ** fileNames = NULL;
     int count = 0;
 
+    /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
 	doBuildFileList(h, &fileNames, &count, RPMTAG_BASENAMES,
 			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
@@ -481,6 +495,7 @@ void expandFilelist(Header h)
 			fileNames, count);
 	fileNames = _free(fileNames);
     }
+    /*@=branchstate@*/
 
     (void) hre(h, RPMTAG_DIRNAMES);
     (void) hre(h, RPMTAG_BASENAMES);
@@ -603,10 +618,12 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 if (_debug)
 fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", (int)maxb, (int)nb, (int)nb, av[j], globURL, globURL);
 	
+	/*@-branchstate@*/
 	if (argc == 0)
 	    argv = xmalloc((gl.gl_pathc+1) * sizeof(*argv));
 	else if (gl.gl_pathc > 0)
 	    argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
+	/*@=branchstate@*/
 	for (i = 0; i < gl.gl_pathc; i++) {
 	    const char * globFile = &(gl.gl_pathv[i][0]);
 	    if (globRoot > globURL && globRoot[-1] == '/')

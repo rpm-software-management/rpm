@@ -1,3 +1,4 @@
+/*@-branchstate@*/
 /** \ingroup rpmdb dbi
  * \file rpmdb/rpmdb.c
  */
@@ -84,7 +85,7 @@ static int dbiTagToDbix(int rpmtag)
  * Initialize database (index, tag) tuple from configuration.
  */
 static void dbiTagsInit(void)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
 	/*@modifies dbiTags, dbiTagsMax @*/
 {
 /*@observer@*/ static const char * const _dbiTagStr_default =
@@ -854,7 +855,7 @@ static /*@only@*/ /*@null@*/
 rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals _db_filter_dups, rpmGlobalMacroContext,
 		fileSystem @*/
 	/*@modifies _db_filter_dups, fileSystem @*/
 {
@@ -900,7 +901,8 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
 		int mode, int perms, int flags)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
 	/*@modifies *dbp, fileSystem @*/
 {
     rpmdb db;
@@ -1100,6 +1102,7 @@ int rpmdbVerify(const char * prefix)
 
 static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 			/*@out@*/ dbiIndexSet * matches)
+	/*@globals fileSystem @*/
 	/*@modifies db, *matches, fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -1277,6 +1280,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ const char * version,
 		/*@null@*/ const char * release,
 		/*@out@*/ dbiIndexSet * matches)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcursor, *matches, fileSystem @*/
 {
     int gotMatches;
@@ -1364,6 +1368,7 @@ exit:
  */
 static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcursor, *matches, fileSystem @*/
 {
     const char * release;
@@ -2176,7 +2181,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
     return 0;
 }
 
-rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int rpmtag,
 	const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;
@@ -2185,7 +2190,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     const void * mi_keyp = NULL;
     int isLabel = 0;
 
-    if (rpmdb == NULL)
+    if (db == NULL)
 	return NULL;
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
     switch (rpmtag) {
@@ -2195,7 +2200,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
 	break;
     }
 
-    dbi = dbiOpen(rpmdb, rpmtag, 0);
+    dbi = dbiOpen(db, rpmtag, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -2221,7 +2226,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 	} else if (rpmtag == RPMTAG_BASENAMES) {
-	    rc = rpmdbFindByFile(rpmdb, keyp, &set);
+	    rc = rpmdbFindByFile(db, keyp, &set);
 	} else {
 	    xx = dbiCopen(dbi, &dbcursor, 0);
 	    /*@-nullpass@*/	/* LCL: keyp != NULL here. */
@@ -2252,7 +2257,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     mi->mi_keylen = keylen;
 
     /*@-assignexpose@*/
-    mi->mi_rpmdb = rpmdb;
+    mi->mi_rpmdb = db;
     /*@=assignexpose@*/
     mi->mi_rpmtag = rpmtag;
 
@@ -2313,18 +2318,18 @@ static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
 }
 
 /* XXX install.c uninstall.c */
-int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
+int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     Header h;
     sigset_t signalMask;
 
-    if (rpmdb == NULL)
+    if (db == NULL)
 	return 0;
 
     {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
+	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
 	h = rpmdbNextIterator(mi);
 	if (h)
 	    h = headerLink(h);
@@ -2350,7 +2355,7 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 	rpmMessage(RPMMESS_DEBUG, "  --- %10u %s-%s-%s\n", hdrNum, n, v, r);
     }
 
-    (void) blockSignals(rpmdb, &signalMask);
+    (void) blockSignals(db, &signalMask);
 
     {	int dbix;
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
@@ -2379,7 +2384,7 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
-	      dbi = dbiOpen(rpmdb, rpmtag, 0);
+	      dbi = dbiOpen(db, rpmtag, 0);
 	      if (dbi != NULL) {
 		xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
 		xx = dbiDel(dbi, dbcursor, &hdrNum, sizeof(hdrNum), 0);
@@ -2395,7 +2400,7 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 	    if (!hge(h, rpmtag, &rpmtype, (void **) &rpmvals, &rpmcnt))
 		continue;
 
-	  dbi = dbiOpen(rpmdb, rpmtag, 0);
+	  dbi = dbiOpen(db, rpmtag, 0);
 	  if (dbi != NULL) {
 	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
 
@@ -2474,7 +2479,7 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 	rec = _free(rec);
     }
 
-    (void) unblockSignals(rpmdb, &signalMask);
+    (void) unblockSignals(db, &signalMask);
 
     h = headerFree(h);
 
@@ -2522,7 +2527,7 @@ static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor,
 }
 
 /* XXX install.c */
-int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
+int rpmdbAdd(rpmdb db, int iid, Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -2538,7 +2543,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     int rc = 0;
     int xx;
 
-    if (rpmdb == NULL)
+    if (db == NULL)
 	return 0;
 
     if (iid != 0 && iid != -1) {
@@ -2559,7 +2564,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     if (_noDirTokens)
 	expandFilelist(h);
 
-    (void) blockSignals(rpmdb, &signalMask);
+    (void) blockSignals(db, &signalMask);
 
     {
 	unsigned int firstkey = 0;
@@ -2569,7 +2574,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	void * datap = NULL;
 	size_t datalen = 0;
 
-      dbi = dbiOpen(rpmdb, RPMDBI_PACKAGES, 0);
+      dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
       if (dbi != NULL) {
 
 	/* XXX db0: hack to pass sizeof header to fadAlloc */
@@ -2639,7 +2644,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
-	      dbi = dbiOpen(rpmdb, rpmtag, 0);
+	      dbi = dbiOpen(db, rpmtag, 0);
 	      if (dbi != NULL) {
 		xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
 		xx = dbiUpdateRecord(dbi, dbcursor, hdrNum, h);
@@ -2679,7 +2684,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		rpmcnt = 1;
 	    }
 
-	  dbi = dbiOpen(rpmdb, rpmtag, 0);
+	  dbi = dbiOpen(db, rpmtag, 0);
 	  if (dbi != NULL) {
 
 	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
@@ -2782,13 +2787,13 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     }
 
 exit:
-    (void) unblockSignals(rpmdb, &signalMask);
+    (void) unblockSignals(db, &signalMask);
 
     return rc;
 }
 
 /* XXX transaction.c */
-int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList, 
+int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
 		    int numItems)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -2798,9 +2803,9 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
     Header h;
     int i;
 
-    if (rpmdb == NULL) return 0;
+    if (db == NULL) return 0;
 
-    mi = rpmdbInitIterator(rpmdb, RPMTAG_BASENAMES, NULL, 0);
+    mi = rpmdbInitIterator(db, RPMTAG_BASENAMES, NULL, 0);
 
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
@@ -2906,7 +2911,7 @@ char * db1basename (int rpmtag)
     return xstrdup(base);
 }
 
-static int rpmdbRemoveDatabase(const char * rootdir,
+static int rpmdbRemoveDatabase(const char * prefix,
 		const char * dbpath, int _dbapi)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -2924,21 +2929,21 @@ static int rpmdbRemoveDatabase(const char * rootdir,
 	dbpath = filename;
     }
     
-    filename = alloca(strlen(rootdir) + strlen(dbpath) + 40);
+    filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
 
     switch (_dbapi) {
     case 3:
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
 	    const char * base = tagName(dbiTags[i]);
-	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
+	    sprintf(filename, "%s/%s/%s", prefix, dbpath, base);
 	    (void)rpmCleanPath(filename);
 	    if (!rpmfileexists(filename))
 		continue;
 	    xx = unlink(filename);
 	}
 	for (i = 0; i < 16; i++) {
-	    sprintf(filename, "%s/%s/__db.%03d", rootdir, dbpath, i);
+	    sprintf(filename, "%s/%s/__db.%03d", prefix, dbpath, i);
 	    (void)rpmCleanPath(filename);
 	    if (!rpmfileexists(filename))
 		continue;
@@ -2951,7 +2956,7 @@ static int rpmdbRemoveDatabase(const char * rootdir,
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
 	    const char * base = db1basename(dbiTags[i]);
-	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
+	    sprintf(filename, "%s/%s/%s", prefix, dbpath, base);
 	    (void)rpmCleanPath(filename);
 	    if (!rpmfileexists(filename))
 		continue;
@@ -2961,14 +2966,14 @@ static int rpmdbRemoveDatabase(const char * rootdir,
 	break;
     }
 
-    sprintf(filename, "%s/%s", rootdir, dbpath);
+    sprintf(filename, "%s/%s", prefix, dbpath);
     (void)rpmCleanPath(filename);
     xx = rmdir(filename);
 
     return 0;
 }
 
-static int rpmdbMoveDatabase(const char * rootdir,
+static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
 		const char * newdbpath, int _newdbapi)
 	/*@globals fileSystem @*/
@@ -2997,8 +3002,8 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	newdbpath = nfilename;
     }
     
-    ofilename = alloca(strlen(rootdir) + strlen(olddbpath) + 40);
-    nfilename = alloca(strlen(rootdir) + strlen(newdbpath) + 40);
+    ofilename = alloca(strlen(prefix) + strlen(olddbpath) + 40);
+    nfilename = alloca(strlen(prefix) + strlen(newdbpath) + 40);
 
     switch (_olddbapi) {
     case 3:
@@ -3020,22 +3025,22 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	    }
 
 	    base = tagName(rpmtag);
-	    sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, base);
+	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
 	    (void)rpmCleanPath(ofilename);
 	    if (!rpmfileexists(ofilename))
 		continue;
-	    sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, base);
+	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
 	    (void)rpmCleanPath(nfilename);
 	    if ((xx = Rename(ofilename, nfilename)) != 0)
 		rc = 1;
 	}
 	for (i = 0; i < 16; i++) {
-	    sprintf(ofilename, "%s/%s/__db.%03d", rootdir, olddbpath, i);
+	    sprintf(ofilename, "%s/%s/__db.%03d", prefix, olddbpath, i);
 	    (void)rpmCleanPath(ofilename);
 	    if (!rpmfileexists(ofilename))
 		continue;
 	    xx = unlink(ofilename);
-	    sprintf(nfilename, "%s/%s/__db.%03d", rootdir, newdbpath, i);
+	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
 	    (void)rpmCleanPath(nfilename);
 #ifdef	DYING
 	    if ((xx = Rename(ofilename, nfilename)) != 0)
@@ -3066,11 +3071,11 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	    }
 
 	    base = db1basename(rpmtag);
-	    sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, base);
+	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
 	    (void)rpmCleanPath(ofilename);
 	    if (!rpmfileexists(ofilename))
 		continue;
-	    sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, base);
+	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
 	    (void)rpmCleanPath(nfilename);
 	    if ((xx = Rename(ofilename, nfilename)) != 0)
 		rc = 1;
@@ -3081,7 +3086,7 @@ static int rpmdbMoveDatabase(const char * rootdir,
     if (rc || _olddbapi == _newdbapi)
 	return rc;
 
-    rc = rpmdbRemoveDatabase(rootdir, newdbpath, _newdbapi);
+    rc = rpmdbRemoveDatabase(prefix, newdbpath, _newdbapi);
 
 
     /* Remove /etc/rpm/macros.db1 configuration file if db3 rebuilt. */
@@ -3096,7 +3101,7 @@ static int rpmdbMoveDatabase(const char * rootdir,
 }
 
 /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
-int rpmdbRebuild(const char * rootdir)
+int rpmdbRebuild(const char * prefix)
 {
     rpmdb olddb;
     const char * dbpath = NULL;
@@ -3112,7 +3117,7 @@ int rpmdbRebuild(const char * rootdir)
     int _dbapi;
     int _dbapi_rebuild;
 
-    if (rootdir == NULL) rootdir = "/";
+    if (prefix == NULL) prefix = "/";
 
     _dbapi = rpmExpandNumeric("%{_dbapi}");
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
@@ -3125,9 +3130,9 @@ int rpmdbRebuild(const char * rootdir)
 	rc = 1;
 	goto exit;
     }
-    dbpath = rootdbpath = rpmGetPath(rootdir, tfn, NULL);
-    if (!(rootdir[0] == '/' && rootdir[1] == '\0'))
-	dbpath += strlen(rootdir);
+    dbpath = rootdbpath = rpmGetPath(prefix, tfn, NULL);
+    if (!(prefix[0] == '/' && prefix[1] == '\0'))
+	dbpath += strlen(prefix);
     tfn = _free(tfn);
 
     /*@-nullpass@*/
@@ -3143,9 +3148,9 @@ int rpmdbRebuild(const char * rootdir)
 	tfn = t;
 	nocleanup = 0;
     }
-    newdbpath = newrootdbpath = rpmGetPath(rootdir, tfn, NULL);
-    if (!(rootdir[0] == '/' && rootdir[1] == '\0'))
-	newdbpath += strlen(rootdir);
+    newdbpath = newrootdbpath = rpmGetPath(prefix, tfn, NULL);
+    if (!(prefix[0] == '/' && prefix[1] == '\0'))
+	newdbpath += strlen(prefix);
     tfn = _free(tfn);
 
     rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
@@ -3170,7 +3175,7 @@ int rpmdbRebuild(const char * rootdir)
     rpmMessage(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
 		_dbapi);
     _rebuildinprogress = 1;
-    if (openDatabase(rootdir, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
+    if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
 	goto exit;
@@ -3181,7 +3186,7 @@ int rpmdbRebuild(const char * rootdir)
     rpmMessage(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
-    if (openDatabase(rootdir, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
+    if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
@@ -3263,11 +3268,11 @@ int rpmdbRebuild(const char * rootdir)
 	rpmMessage(RPMMESS_NORMAL, _("failed to rebuild database: original database "
 		"remains in place\n"));
 
-	xx = rpmdbRemoveDatabase(rootdir, newdbpath, _dbapi_rebuild);
+	xx = rpmdbRemoveDatabase(prefix, newdbpath, _dbapi_rebuild);
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {
-	if (rpmdbMoveDatabase(rootdir, newdbpath, _dbapi_rebuild, dbpath, _dbapi)) {
+	if (rpmdbMoveDatabase(prefix, newdbpath, _dbapi_rebuild, dbpath, _dbapi)) {
 	    rpmMessage(RPMMESS_ERROR, _("failed to replace old database with new "
 			"database!\n"));
 	    rpmMessage(RPMMESS_ERROR, _("replace files in %s with files from %s "
@@ -3291,3 +3296,4 @@ exit:
     return rc;
 }
 /*@=globs@*/
+/*@=branchstate@*/

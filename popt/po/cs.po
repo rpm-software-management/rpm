@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 13:39-0400\n"
 "PO-Revision-Date: 2001-07-24 00:03+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -13,48 +13,48 @@ msgstr ""
 msgid "unknown errno"
 msgstr "neznámé èíslo chyby"
 
-#: popt.c:900
+#: popt.c:903
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "volba (%d) není v popt implementována\n"
 
-#: popt.c:1111
+#: popt.c:1114
 msgid "missing argument"
 msgstr "chybí argument"
 
-#: popt.c:1113
+#: popt.c:1116
 msgid "unknown option"
 msgstr "neznámá volba"
 
-#: popt.c:1115
+#: popt.c:1118
 msgid "mutually exclusive logical operations requested"
 msgstr "po¾adovány vzájemnì výluèné logické operace"
 
-#: popt.c:1117
+#: popt.c:1120
 msgid "opt->arg should not be NULL"
 msgstr "opt->arg nesmí být NULL"
 
-#: popt.c:1119
+#: popt.c:1122
 msgid "aliases nested too deeply"
 msgstr "aliasy vnoøené pøíli¹ hluboko"
 
-#: popt.c:1121
+#: popt.c:1124
 msgid "error in parameter quoting"
 msgstr "chyba v quotování parametrù"
 
-#: popt.c:1123
+#: popt.c:1126
 msgid "invalid numeric value"
 msgstr "chybná numerická hodnota"
 
-#: popt.c:1125
+#: popt.c:1128
 msgid "number too large or too small"
 msgstr "èíslo je pøíli¹ velké nebo pøíli¹ malé"
 
-#: popt.c:1127
+#: popt.c:1130
 msgid "memory allocation failed"
 msgstr "selhala alokace pamìti"
 
-#: popt.c:1131
+#: popt.c:1134
 msgid "unknown error"
 msgstr "neznámá chyba"
 
@@ -102,10 +102,10 @@ msgstr "DOUBLE"
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:454
+#: popthelp.c:456
 msgid "Usage:"
 msgstr "Pou¾ití:"
 
-#: popthelp.c:476
+#: popthelp.c:478
 msgid "[OPTION...]"
 msgstr "[VOLBY...]"

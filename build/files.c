@@ -254,7 +254,9 @@ static char *strtokWithQuotes(char *s, char *delim)
 
 /**
  */
-static void timeCheck(int tc, Header h)	/*@modifies internalState @*/
+static void timeCheck(int tc, Header h)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -943,6 +945,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    res = 1;
 	}
 
+	/*@-branchstate@*/
 	if (*s != '/') {
 	    if (fl->currentFlags & RPMFILE_DOC) {
 		specialDoc = 1;
@@ -958,6 +961,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	} else {
 	    *fileName = s;
 	}
+	/*@=branchstate@*/
     }
 
     if (specialDoc) {
@@ -1400,10 +1404,12 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    fi->fmapflags[i] |= CPIO_MULTILIB;
 
     }
+    /*@-branchstate@*/
     if (cpioList)
 	*cpioList = fi;
     else
 	fi = _free(fi);
+    /*@=branchstate@*/
   }
 }
 
@@ -1460,8 +1466,10 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
     }
 
     /* XXX make sure '/' can be packaged also */
+    /*@-branchstate@*/
     if (*fileURL == '\0')
 	fileURL = "/";
+    /*@=branchstate@*/
 
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
@@ -1686,6 +1694,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	    goto exit;
 	}
 
+	/*@-branchstate@*/
 	rc = rpmGlob(diskURL, &argc, &argv);
 	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
 	    for (i = 0; i < argc; i++) {
@@ -1698,6 +1707,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 			diskURL);
 	    rc = 1;
 	}
+	/*@=branchstate@*/
     } else {
 	rc = addFile(fl, diskURL, NULL);
     }
@@ -1887,6 +1897,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fileName == NULL)
 	    continue;
 
+	/*@-branchstate@*/
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
 	    specialDoc = _free(specialDoc);
@@ -1897,6 +1908,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    (void) processBinaryFile(pkg, &fl, fileName);
 	    /*@=nullstate@*/
 	}
+	/*@=branchstate@*/
     }
 
     /* Now process special doc, if there is one */
@@ -1980,6 +1992,7 @@ void initSourceHeader(Spec spec)
 
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
+    /*@-branchstate@*/
     for (hi = headerInitIterator(spec->packages->header);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
@@ -2013,8 +2026,10 @@ void initSourceHeader(Spec spec)
 	}
     }
     hi = headerFreeIterator(hi);
+    /*@=branchstate@*/
 
     /* Add the build restrictions */
+    /*@-branchstate@*/
     for (hi = headerInitIterator(spec->buildRestrictions);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
@@ -2023,6 +2038,7 @@ void initSourceHeader(Spec spec)
 	    (void) headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
     }
     hi = headerFreeIterator(hi);
+    /*@=branchstate@*/
 
     if (spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,

@@ -220,6 +220,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 	    *le++ = '[';
 
 	/* Choose type of output */
+	/*@-branchstate@*/
 	if (opt->argInfo & POPT_ARGFLAG_SHOW_DEFAULT) {
 	    defs = singleOptionDefaultValue(lineLength, opt, translation_domain);
 	    if (defs) {
@@ -238,6 +239,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 		defs = t;
 	    }
 	}
+	/*@=branchstate@*/
 
 	if (opt->argDescrip == NULL) {
 	    switch (opt->argInfo & POPT_ARG_MASK) {

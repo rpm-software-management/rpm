@@ -348,6 +348,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     }
 
     /* Parse the options for the database element(s). */
+    /*@-branchstate@*/
     if (dbOpts && *dbOpts && *dbOpts != '%') {
 	char *o, *oe;
 	char *p, *pe;
@@ -457,6 +458,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	    }
 	}
     }
+    /*@=branchstate@*/
 
     dbOpts = _free(dbOpts);
 

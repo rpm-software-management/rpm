@@ -505,7 +505,9 @@ static void parseEVR(char * evr,
 	epoch = evr;
 	*s++ = '\0';
 	version = s;
+	/*@-branchstate@*/
 	if (*epoch == '\0') epoch = "0";
+	/*@=branchstate@*/
     } else {
 	epoch = NULL;	/* XXX disable epoch compare if missing */
 	version = evr;
@@ -688,19 +690,21 @@ int headerMatchesDepFlags(Header h,
     return rpmRangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
 }
 
-rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
+rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
 {
     rpmTransactionSet ts;
     int rootLen;
 
+    /*@-branchstate@*/
     if (!rootDir) rootDir = "";
+    /*@=branchstate@*/
 
     ts = xcalloc(1, sizeof(*ts));
     ts->filesystemCount = 0;
     ts->filesystems = NULL;
     ts->di = NULL;
     /*@-assignexpose@*/
-    ts->rpmdb = rpmdb;
+    ts->rpmdb = db;
     /*@=assignexpose@*/
     ts->scriptFd = NULL;
     ts->id = 0;
@@ -823,8 +827,10 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     		ts->addedPackages.list;
     ts->order[ts->orderCount++].u.addedIndex = alNum;
 
+    /*@-branchstate@*/
     if (!upgrade || ts->rpmdb == NULL)
 	return 0;
+    /*@=branchstate@*/
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
@@ -837,6 +843,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 
 	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, name, 0);
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
+	    /*@-branchstate@*/
 	    if (rpmVersionCompare(h, h2))
 		(void) removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 	    else {
@@ -851,6 +858,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		    ts->addedPackages.list[alNum].multiLib = multiLibMask;
 		}
 	    }
+	    /*@=branchstate@*/
 	}
 	mi = rpmdbFreeIterator(mi);
     }
@@ -884,12 +892,14 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		 * Rpm prior to 3.0.3 does not have versioned obsoletes.
 		 * If no obsoletes version info is available, match all names.
 		 */
+		/*@-branchstate@*/
 		if (obsoletesEVR == NULL ||
 		    headerMatchesDepFlags(h2,
 			obsoletes[j], obsoletesEVR[j], obsoletesFlags[j]))
 		{
 		    (void) removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 		}
+		/*@=branchstate@*/
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	  }
@@ -1133,11 +1143,13 @@ alAllSatisfiesDepend(const availableList al,
 	    /*@switchbreak@*/ break;
 	}
 
+	/*@-branchstate@*/
 	if (rc) {
 	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
 		ret[found++] = p;
 	}
+	/*@=branchstate@*/
     }
 
     if (ret)
@@ -1677,6 +1689,7 @@ static int ignoreDep(const struct availablePackage * p,
  */
 static void markLoop(/*@special@*/ struct tsortInfo * tsi,
 		struct availablePackage * q)
+	/*@globals internalState @*/
 	/*@uses tsi @*/
 	/*@modifies internalState @*/
 {
@@ -1755,6 +1768,7 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 	/*
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
+	/*@-branchstate@*/
 	if (zap && !(p->requireFlags[j] & RPMSENSE_PREREQ)) {
 	    rpmMessage(RPMMESS_DEBUG,
 			_("removing %s-%s-%s \"%s\" from tsort relations.\n"),
@@ -1769,6 +1783,7 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 	    if (zap)
 		zap--;
 	}
+	/*@=branchstate@*/
 	/* XXX Note: the loop traverses "not found", get out now! */
 	break;
     }
@@ -2047,6 +2062,7 @@ rescan:
 
 	/* T11. Print all dependency loops. */
 	if ((r = ts->addedPackages.list) != NULL)
+	/*@-branchstate@*/
 	for (i = 0; i < npkgs; i++, r++) {
 	    int printed;
 
@@ -2093,6 +2109,7 @@ rescan:
 		p->tsi.tsi_reqx = 0;
 	    }
 	}
+	/*@=branchstate@*/
 
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
@@ -2251,6 +2268,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     /*
      * Look at the removed packages and make sure they aren't critical.
      */
+    /*@-branchstate@*/
     if (ts->numRemovedPackages > 0) {
       mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
       (void) rpmdbAppendIterator(mi,
@@ -2330,6 +2348,7 @@ int rpmdepCheck(rpmTransactionSet ts,
       }
       mi = rpmdbFreeIterator(mi);
     }
+    /*@=branchstate@*/
 
     if (ps->num) {
 	*conflicts = ps->problems;
@@ -2342,7 +2361,9 @@ exit:
     mi = rpmdbFreeIterator(mi);
     ps->problems = _free(ps->problems);
     ps = _free(ps);
+    /*@-branchstate@*/
     if (_cacheDependsRC)
 	(void) rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
+    /*@=branchstate@*/
     return rc;
 }

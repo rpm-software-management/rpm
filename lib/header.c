@@ -740,6 +740,7 @@ Header headerCopy(Header h)
     int_32 tag, type, count;
     hPTR_t ptr;
    
+    /*@-branchstate@*/
     for (hi = headerInitIterator(h);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData((void *)ptr, type))
@@ -747,6 +748,7 @@ Header headerCopy(Header h)
 	if (ptr) (void) headerAddEntry(nh, tag, type, ptr, count);
     }
     hi = headerFreeIterator(hi);
+    /*@=branchstate@*/
 
     return headerReload(nh, HEADER_IMAGE);
 }
@@ -930,13 +932,17 @@ Header headerCopyLoad(const void * uh)
     Header h = NULL;
 
     /* Sanity checks on header intro. */
+    /*@-branchstate@*/
     if (!(hdrchkTags(il) || hdrchkData(dl)) && pvlen < headerMaxbytes) {
 	nuh = memcpy(xmalloc(pvlen), uh, pvlen);
 	if ((h = headerLoad(nuh)) != NULL)
 	    h->flags |= HEADERFLAG_ALLOCATED;
     }
+    /*@=branchstate@*/
+    /*@-branchstate@*/
     if (h == NULL)
 	nuh = _free(nuh);
+    /*@=branchstate@*/
     return h;
 }
 
@@ -1587,7 +1593,9 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 
     if (!table)
 	return 0;
+    /*@-branchstate@*/
     if (!lang) lang = "C";
+    /*@=branchstate@*/
 
     {	const char * l = table->data;
 	for (langNum = 0; langNum < table->info.count; langNum++) {
@@ -1701,10 +1709,12 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, hPTR_t p, int_32 c)
     entry->info.type = type;
     entry->data = grabData(type, p, c, &entry->length);
 
+    /*@-branchstate@*/
     if (ENTRY_IN_REGION(entry)) {
 	entry->info.offset = 0;
     } else
 	oldData = _free(oldData);
+    /*@=branchstate@*/
 
     return 1;
 }
@@ -2278,6 +2288,7 @@ static char * formatValue(sprintfTag tag, Header h,
     headerSprintfExtension ext;
 
     memset(buf, 0, sizeof(buf));
+    /*@-branchstate@*/
     if (tag->ext) {
 	if (getExtension(h, tag->ext, &type, &data, &count, 
 			 extCache + tag->extNum))
@@ -2295,6 +2306,7 @@ static char * formatValue(sprintfTag tag, Header h,
 
 	mayfree = 1;
     }
+    /*@=branchstate@*/
 
     if (tag->arrayCount) {
 	/*@-observertrans -modobserver@*/
@@ -2326,6 +2338,7 @@ static char * formatValue(sprintfTag tag, Header h,
 	}
     }
     
+    /*@-branchstate@*/
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
 	strarray = (const char **)data;
@@ -2399,6 +2412,7 @@ static char * formatValue(sprintfTag tag, Header h,
 	val = xstrdup(_("(unknown type)"));
 	break;
     }
+    /*@=branchstate@*/
 
     return val;
 }
@@ -2566,13 +2580,13 @@ freeExtensionCache(const headerSprintfExtension extensions,
 }
 
 char * headerSprintf(Header h, const char * fmt, 
-		const struct headerTagTableEntry_s * tabletags,
+		const struct headerTagTableEntry_s * tbltags,
 		const struct headerSprintfExtension_s * extensions,
 		errmsg_t * errmsg)
 {
     /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
     headerSprintfExtension exts = (headerSprintfExtension) extensions;
-    headerTagTableEntry tags = (headerTagTableEntry) tabletags;
+    headerTagTableEntry tags = (headerTagTableEntry) tbltags;
     /*@=castexpose@*/
     char * fmtString;
     sprintfToken format;

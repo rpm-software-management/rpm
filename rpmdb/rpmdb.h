@@ -365,7 +365,7 @@ extern "C" {
  * @param rpmdb		rpm database
  */
 /*@only@*/ /*@null@*/ dbiIndex db3New(/*@keep@*/ rpmdb rpmdb, int rpmtag)
-	/*@global rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup db3
@@ -401,9 +401,9 @@ extern "C" {
 
 /** \ingroup dbi
  * @param dbi		index database handle
- * @param dbiflags	DBI_WRITECURSOR or DBI_ITERATOR
+ * @param flags		DBI_WRITECURSOR, DBI_ITERATOR or 0
  */
-int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int dbiflags)
+int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
 	/*@globals fileSystem@*/
 	/*@modifies dbi, *dbcp, fileSystem @*/;
 

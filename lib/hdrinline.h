@@ -178,7 +178,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  */
 /*@unused@*/ static inline
 /*@null@*/ Header headerRead(FD_t fd, enum hMagic magicp)
-	/*@modifies fd, fileSystem @*/
+	/*@modifies fd @*/
 {
     return hdrVec->hdrread(fd, magicp);
 }
@@ -192,7 +192,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  */
 /*@unused@*/ static inline
 int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
-	/*@modifies fd, h, fileSystem @*/
+	/*@modifies fd, h @*/
 {
     /*@-abstract@*/
     if (h == NULL) return 0;
@@ -406,19 +406,19 @@ int headerRemoveEntry(Header h, int_32 tag)
  *
  * @param h		header
  * @param fmt		format to use
- * @param tags		array of tag name/value pairs
+ * @param tbltags	array of tag name/value pairs
  * @param extensions	chained table of formatting extensions.
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 /*@unused@*/ static inline
 /*@only@*/ char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tags,
+		     const struct headerTagTableEntry_s * tbltags,
 		     const struct headerSprintfExtension_s * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/
 {
-    return (h2hv(h)->hdrsprintf) (h, fmt, tags, extensions, errmsg);
+    return (h2hv(h)->hdrsprintf) (h, fmt, tbltags, extensions, errmsg);
 }
 
 /** \ingroup header

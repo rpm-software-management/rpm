@@ -181,6 +181,7 @@ const char *const cpioStrerror(int rc)
     int l, myerrno = errno;
 
     strcpy(msg, "cpio: ");
+    /*@-branchstate@*/
     switch (rc) {
     default:
 	s = msg + strlen(msg);
@@ -216,17 +217,20 @@ const char *const cpioStrerror(int rc)
     case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
     }
+    /*@=branchstate@*/
 
     l = sizeof(msg) - strlen(msg) - 1;
     if (s != NULL) {
 	if (l > 0) strncat(msg, s, l);
 	l -= strlen(s);
     }
+    /*@-branchstate@*/
     if ((rc & CPIOERR_CHECK_ERRNO) && myerrno) {
 	s = _(" failed - ");
 	if (l > 0) strncat(msg, s, l);
 	l -= strlen(s);
 	if (l > 0) strncat(msg, strerror(myerrno), l);
     }
+    /*@=branchstate@*/
     return msg;
 }

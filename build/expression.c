@@ -332,6 +332,7 @@ static Value doPrimary(ParseState state)
 
   DEBUG(printf("doPrimary()\n"));
 
+  /*@-branchstate@*/
   switch (state->nextToken) {
   case TOK_OPEN_P:
     if (rdToken(state))
@@ -394,6 +395,7 @@ static Value doPrimary(ParseState state)
     return NULL;
     /*@notreached@*/ break;
   }
+  /*@=branchstate@*/
 
   DEBUG(valueDump("doPrimary:", v, stdout));
   return v;
@@ -414,6 +416,7 @@ static Value doMultiplyDivide(ParseState state)
   if (v1 == NULL)
     return NULL;
 
+  /*@-branchstate@*/
   while (state->nextToken == TOK_MULTIPLY
 	 || state->nextToken == TOK_DIVIDE) {
     int op = state->nextToken;
@@ -445,6 +448,7 @@ static Value doMultiplyDivide(ParseState state)
       return NULL;
     }
   }
+  /*@=branchstate@*/
 
   if (v2) valueFree(v2);
   return v1;
@@ -465,6 +469,7 @@ static Value doAddSubtract(ParseState state)
   if (v1 == NULL)
     return NULL;
 
+  /*@-branchstate@*/
   while (state->nextToken == TOK_ADD || state->nextToken == TOK_MINUS) {
     int op = state->nextToken;
 
@@ -505,6 +510,7 @@ static Value doAddSubtract(ParseState state)
       v1 = valueMakeString(copy);
     }
   }
+  /*@=branchstate@*/
 
   if (v2) valueFree(v2);
   return v1;
@@ -525,6 +531,7 @@ static Value doRelational(ParseState state)
   if (v1 == NULL)
     return NULL;
 
+  /*@-branchstate@*/
   while (state->nextToken >= TOK_EQ && state->nextToken <= TOK_GE) {
     int op = state->nextToken;
 
@@ -598,6 +605,7 @@ static Value doRelational(ParseState state)
       v1 = valueMakeInteger(r);
     }
   }
+  /*@=branchstate@*/
 
   if (v2) valueFree(v2);
   return v1;
@@ -618,6 +626,7 @@ static Value doLogical(ParseState state)
   if (v1 == NULL)
     return NULL;
 
+  /*@-branchstate@*/
   while (state->nextToken == TOK_LOGICAL_AND
 	 || state->nextToken == TOK_LOGICAL_OR) {
     int op = state->nextToken;
@@ -649,6 +658,7 @@ static Value doLogical(ParseState state)
       return NULL;
     }
   }
+  /*@=branchstate@*/
 
   if (v2) valueFree(v2);
   return v1;
@@ -732,6 +742,7 @@ char * parseExpressionString(Spec spec, const char *expr)
 
   DEBUG(valueDump("parseExprString:", v, stdout));
 
+  /*@-branchstate@*/
   switch (v->type) {
   case VALUE_TYPE_INTEGER: {
     char buf[128];
@@ -744,6 +755,7 @@ char * parseExpressionString(Spec spec, const char *expr)
   default:
     break;
   }
+  /*@=branchstate@*/
 
   state.str = _free(state.str);
   valueFree(v);

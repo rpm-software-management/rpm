@@ -71,9 +71,11 @@ static fingerPrint doLookup(fingerPrintCache cache,
     cdnl = strlen(cleanDirName);
 
     if (*cleanDirName == '/') {
+	/*@-branchstate@*/
 	if (!scareMemory)
 	    cleanDirName =
 		rpmCleanPath(strcpy(alloca(cdnl+1), dirName));
+	/*@=branchstate@*/
     } else {
 	scareMemory = 0;	/* XXX causes memory leak */
 
@@ -86,6 +88,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
 	dir[0] = '\0';
+	/*@-branchstate@*/
 	if (realpath(".", dir) != NULL) {
 	    end = dir + strlen(dir);
 	    if (end[-1] != '/')	*end++ = '/';
@@ -98,6 +101,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    cleanDirName = dir;
 	    cdnl = end - dir;
 	}
+	/*@=branchstate@*/
     }
     fp.entry = NULL;
     fp.subDir = NULL;

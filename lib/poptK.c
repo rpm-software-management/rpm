@@ -21,6 +21,7 @@ static void signArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, /*@unused@*/ const char * arg,
 		/*@unused@*/ const void * data)
+	/*@globals rpmKArgs @*/
 	/*@modifies rpmKArgs @*/
 {
     struct rpmSignArguments_s * rka = &rpmKArgs;

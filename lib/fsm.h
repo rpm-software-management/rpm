@@ -212,6 +212,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
+	/*@globals fileSystem @*/
 	/*@modifies fsm, *archiveSize, *failedFile, fileSystem  @*/;
 
 /**
@@ -262,6 +263,7 @@ int fsmMapAttrs(FSM_t fsm)
  * @return		0 on success
  */
 int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
+	/*@globals fileSystem @*/
 	/*@modifies fsm, fileSystem @*/;
 
 #ifdef __cplusplus

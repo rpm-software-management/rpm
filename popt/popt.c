@@ -52,6 +52,7 @@ void poptSetExecPath(poptContext con, const char * path, int allowAbsolute)
 }
 
 static void invokeCallbacksPRE(poptContext con, const struct poptOption * opt)
+	/*@globals internalState@*/
 	/*@modifies internalState@*/
 {
     if (opt != NULL)
@@ -74,6 +75,7 @@ static void invokeCallbacksPRE(poptContext con, const struct poptOption * opt)
 }
 
 static void invokeCallbacksPOST(poptContext con, const struct poptOption * opt)
+	/*@globals internalState@*/
 	/*@modifies internalState@*/
 {
     if (opt != NULL)
@@ -99,6 +101,7 @@ static void invokeCallbacksOPTION(poptContext con,
 				  const struct poptOption * opt,
 				  const struct poptOption * myOpt,
 				  /*@null@*/ const void * myData, int shorty)
+	/*@globals internalState@*/
 	/*@modifies internalState@*/
 {
     const struct poptOption * cbopt = NULL;
@@ -341,7 +344,7 @@ static int handleAlias(/*@special@*/ poptContext con,
 }
 
 static int execCommand(poptContext con)
-    /*@modifies fileSystem @*/
+    /*@*/
 {
     poptItem item = con->doExec;
     const char ** argv;
@@ -1032,20 +1035,20 @@ poptContext poptFreeContext(poptContext con)
     return con;
 }
 
-int poptAddAlias(poptContext con, struct poptAlias newAlias,
+int poptAddAlias(poptContext con, struct poptAlias alias,
 		/*@unused@*/ int flags)
 {
     poptItem item = alloca(sizeof(*item));
     memset(item, 0, sizeof(*item));
-    item->option.longName = newAlias.longName;
-    item->option.shortName = newAlias.shortName;
+    item->option.longName = alias.longName;
+    item->option.shortName = alias.shortName;
     item->option.argInfo = POPT_ARGFLAG_DOC_HIDDEN;
     item->option.arg = 0;
     item->option.val = 0;
     item->option.descrip = NULL;
     item->option.argDescrip = NULL;
-    item->argc = newAlias.argc;
-    item->argv = newAlias.argv;
+    item->argc = alias.argc;
+    item->argv = alias.argv;
     return poptAddItem(con, item, 0);
 }
 

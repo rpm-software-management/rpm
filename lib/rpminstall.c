@@ -31,6 +31,7 @@ static int progressCurrent = 0;
 /**
  */
 static void printHash(const unsigned long amount, const unsigned long total)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int hashesNeeded;
@@ -74,6 +75,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 			const unsigned long total,
 			/*@null@*/ const void * pkgKey,
 			/*@null@*/ void * data)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     /*@-castexpose@*/
@@ -220,6 +222,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     }
 
     /* Build fully globbed list of arguments in argv[argc]. */
+    /*@-branchstate@*/
     /*@-temptrans@*/
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
     /*@=temptrans@*/
@@ -232,6 +235,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	eiu->argc += ac;
 	eiu->argv[eiu->argc] = NULL;
     }
+    /*@=branchstate@*/
     av = _free(av);	ac = 0;
 
 restart:
@@ -496,6 +500,7 @@ restart:
 	    stopInstall = 1;
 	}
 
+	/*@-branchstate@*/
 	if (!stopInstall && conflicts) {
 	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
@@ -503,6 +508,7 @@ restart:
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
+	/*@=branchstate@*/
     }
 
     if (eiu->numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
@@ -641,6 +647,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	    stopUninstall = 1;
 	}
 
+	/*@-branchstate@*/
 	if (!stopUninstall && conflicts) {
 	    rpmMessage(RPMMESS_ERROR, _("removing these packages would break "
 			      "dependencies:\n"));
@@ -649,6 +656,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}
+	/*@=branchstate@*/
     }
 
     if (!stopUninstall) {
@@ -767,6 +775,7 @@ IDTX IDTXload(rpmdb db, rpmTag tag)
     HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
 
+    /*@-branchstate@*/
     mi = rpmdbInitIterator(db, tag, NULL, 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmTagType type = RPM_NULL_TYPE;
@@ -798,6 +807,7 @@ IDTX IDTXload(rpmdb db, rpmTag tag)
 	idtx->nidt++;
     }
     mi = rpmdbFreeIterator(mi);
+    /*@=branchstate@*/
 
     return IDTXsort(idtx);
 }
@@ -841,6 +851,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	}
 
 	tidp = NULL;
+	/*@-branchstate@*/
 	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp) {
 
 	    idtx = IDTXgrow(idtx, 1);
@@ -859,6 +870,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	    }
 	    idtx->nidt++;
 	}
+	/*@=branchstate@*/
 
 	h = headerFree(h);
 	(void) Fclose(fd);

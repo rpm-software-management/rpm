@@ -108,6 +108,7 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
 	digest[i] = swapu32(digest[i]);
 
     /* Return final digest. */
+    /*@-branchstate@*/
     if (!asAscii) {
 	if (lenp) *lenp = ctx->digestlen;
 	if (datap) {
@@ -128,6 +129,7 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
 	    *t = '\0';
 	}
     }
+    /*@=branchstate@*/
     if (digest) {
 	memset(digest, 0, ctx->digestlen);	/* In case it's sensitive */
 	free(digest);

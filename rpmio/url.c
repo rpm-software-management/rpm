@@ -96,11 +96,13 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
+	/*@-branchstate@*/
 	if (fp) {
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->ctrl);
 	} else if (fdio->_fileno(u->ctrl) >= 0)
 	    fdio->close(u->ctrl);
+	/*@=branchstate@*/
 #else
 	(void) Fclose(u->ctrl);
 #endif
@@ -354,6 +356,7 @@ urltype urlPath(const char * url, const char ** pathp)
 
     path = url;
     urltype = urlIsURL(url);
+    /*@-branchstate@*/
     switch (urltype) {
     case URL_IS_FTP:
 	url += sizeof("ftp://") - 1;
@@ -373,6 +376,7 @@ urltype urlPath(const char * url, const char ** pathp)
 	path = "";
 	break;
     }
+    /*@=branchstate@*/
     if (pathp)
 	/*@-observertrans@*/
 	*pathp = path;

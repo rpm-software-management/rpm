@@ -24,6 +24,7 @@
 #if defined(__LCLINT__)
 /*@-superuser -declundef -incondefs @*/	/* LCL: modifies clause missing */
 extern int chroot (const char *__path)
+	/*@globals errno, systemState @*/
 	/*@modifies errno, systemState @*/;
 /*@=superuser =declundef =incondefs @*/
 #endif
@@ -113,6 +114,7 @@ extern int errno;
 #if defined(__LCLINT__)
 /*@-declundef -incondefs @*/	/* LCL: modifies clause missing */
 extern char * realpath (const char * file_name, /*@out@*/ char * resolved_name)
+	/*@globals errno, fileSystem @*/
 	/*@requires maxSet(resolved_name) >=  (PATH_MAX - 1); @*/
 	/*@modifies *resolved_name, errno, fileSystem @*/;
 /*@=declundef =incondefs @*/
@@ -166,8 +168,8 @@ char *realpath(const char *path, char resolved_path []);
 
 #if defined(__LCLINT__)
 /*@-declundef -incondefs @*/ /* LCL: missing annotation */
-/*@only@*/ void * alloca (size_t size)
-	/*@ensures MaxSet(result) == (size - 1) @*/
+/*@only@*/ void * alloca (size_t __size)
+	/*@ensures MaxSet(result) == (__size - 1) @*/
 	/*@*/;
 /*@=declundef =incondefs @*/
 #endif
@@ -231,6 +233,7 @@ char *alloca ();
 /**
  */
 /*@mayexit@*/ /*@only@*/ /*@out@*/ void * xmalloc (size_t size)
+	/*@globals errno @*/
 	/*@ensures MaxSet(result) == (size - 1) @*/
 	/*@modifies errno @*/;
 
@@ -435,6 +438,7 @@ typedef /*@concrete@*/ struct
 extern int glob (const char *pattern, int flags,
                       int (*errfunc) (const char *, int),
                       /*@out@*/ glob_t *pglob)
+	/*@globals errno, fileSystem @*/
 	/*@modifies *pglob, errno, fileSystem @*/;
 	/* XXX only annotation is a white lie */
 extern void globfree (/*@only@*/ glob_t *pglob)

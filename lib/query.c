@@ -147,7 +147,7 @@ static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
     return nlink;
 }
 
-int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
+int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb db, Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -192,6 +192,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
     if (queryFormat) {
 	const char * str = queryHeader(h, queryFormat);
 	nonewline = 1;
+	/*@-branchstate@*/
 	if (str) {
 	    size_t tb = (te - t);
 	    size_t sb = strlen(str);
@@ -205,6 +206,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	    /*@=usereleased@*/
 	    str = _free(str);
 	}
+	/*@=branchstate@*/
     }
 
     if (!(queryFlags & QUERY_FOR_LIST))
@@ -402,6 +404,7 @@ exit:
  */
 static void
 printNewSpecfile(Spec spec)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     Header h;
@@ -413,6 +416,7 @@ printNewSpecfile(Spec spec)
     if (sl == NULL || st == NULL)
 	return;
 
+    /*@-branchstate@*/
     for (i = 0; i < st->st_ntags; i++) {
 	spectag t = st->st_t + i;
 	const char * tn = tagName(t->t_tag);
@@ -487,6 +491,7 @@ printNewSpecfile(Spec spec)
 	    /*@switchbreak@*/ break;
 	}
     }
+    /*@=branchstate@*/
     msgstr = _free(msgstr);
 
     for (i = 0; i < sl->sl_nlines; i++) {
@@ -556,7 +561,7 @@ int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 /*@=redecl@*/
 
 int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
-	rpmdb rpmdb, QVF_t showPackage)
+	rpmdb db, QVF_t showPackage)
 {
     rpmdbMatchIterator mi = NULL;
     Header h;
@@ -566,6 +571,7 @@ int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
     const char ** av = NULL;
     char * end = NULL;
 
+    /*@-branchstate@*/
     switch (source) {
     case RPMQV_RPM:
     {	int ac = 0;
@@ -613,7 +619,7 @@ restart:
 
 	    /* Query a package file. */
 	    if (rpmrc == RPMRC_OK) {
-		retcode = showPackage(qva, rpmdb, h);
+		retcode = showPackage(qva, db, h);
 		h = headerFree(h);
 		continue;
 	    }
@@ -693,7 +699,7 @@ restart:
 
     case RPMQV_ALL:
 	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, NULL, 0);
+	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
 	if (mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no packages\n"));
 	    retcode = 1;
@@ -711,7 +717,7 @@ restart:
 	break;
 
     case RPMQV_GROUP:
-	mi = rpmdbInitIterator(rpmdb, RPMTAG_GROUP, arg, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_GROUP, arg, 0);
 	if (mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO,
 		_("group %s does not contain any packages\n"), arg);
@@ -722,7 +728,7 @@ restart:
 	break;
 
     case RPMQV_TRIGGEREDBY:
-	mi = rpmdbInitIterator(rpmdb, RPMTAG_TRIGGERNAME, arg, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_TRIGGERNAME, arg, 0);
 	if (mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package triggers %s\n"), arg);
 	    retcode = 1;
@@ -732,7 +738,7 @@ restart:
 	break;
 
     case RPMQV_WHATREQUIRES:
-	mi = rpmdbInitIterator(rpmdb, RPMTAG_REQUIRENAME, arg, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_REQUIRENAME, arg, 0);
 	if (mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package requires %s\n"), arg);
 	    retcode = 1;
@@ -743,7 +749,7 @@ restart:
 
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/') {
-	    mi = rpmdbInitIterator(rpmdb, RPMTAG_PROVIDENAME, arg, 0);
+	    mi = rpmdbInitIterator(db, RPMTAG_PROVIDENAME, arg, 0);
 	    if (mi == NULL) {
 		rpmError(RPMERR_QUERYINFO, _("no package provides %s\n"), arg);
 		retcode = 1;
@@ -774,7 +780,7 @@ restart:
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);
 
-	mi = rpmdbInitIterator(rpmdb, RPMTAG_BASENAMES, fn, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_BASENAMES, fn, 0);
 	if (mi == NULL) {
 	    int myerrno = 0;
 	    if (access(fn, F_OK) != 0)
@@ -817,7 +823,7 @@ restart:
 	}
 	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
 	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
+	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (mi == NULL) {
 	    rpmError(RPMERR_QUERY,
 		_("record %u could not be read\n"), recOffset);
@@ -829,7 +835,7 @@ restart:
 
     case RPMQV_PACKAGE:
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
-	mi = rpmdbInitIterator(rpmdb, RPMDBI_LABEL, arg, 0);
+	mi = rpmdbInitIterator(db, RPMDBI_LABEL, arg, 0);
 	if (mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    retcode = 1;
@@ -838,13 +844,14 @@ restart:
 	}
 	break;
     }
+    /*@=branchstate@*/
    
     return retcode;
 }
 
 int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
 {
-    rpmdb rpmdb = NULL;
+    rpmdb db = NULL;
     int rc;
 
     switch (source) {
@@ -852,15 +859,15 @@ int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
     case RPMQV_SPECFILE:
 	break;
     default:
-	if (rpmdbOpen(qva->qva_prefix, &rpmdb, O_RDONLY, 0644))
+	if (rpmdbOpen(qva->qva_prefix, &db, O_RDONLY, 0644))
 	    return 1;
 	break;
     }
 
-    rc = rpmQueryVerify(qva, source, arg, rpmdb, showQueryPackage);
+    rc = rpmQueryVerify(qva, source, arg, db, showQueryPackage);
 
-    if (rpmdb != NULL)
-	(void) rpmdbClose(rpmdb);
+    if (db != NULL)
+	(void) rpmdbClose(db);
 
     return rc;
 }

@@ -1078,7 +1078,7 @@ int pgpPrtPkt(const byte *p)
 
 /**
  */
-int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s *rpmdig, int printing)
+int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s *dig, int printing)
 	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
 

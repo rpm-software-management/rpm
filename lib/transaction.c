@@ -1,3 +1,4 @@
+/*@-branchstate@*/
 /** \ingroup rpmtrans
  * \file lib/transaction.c
  */
@@ -23,11 +24,11 @@ extern const char * chroot_prefix;
 /*@-incondefs@*/
 # include <sys/statvfs.h>
 #if defined(__LCLINT__)
-/*@-declundef -exportheader @*/ /* LCL: missing annotation */
+/*@-declundef -exportheader -protoparammatch @*/ /* LCL: missing annotation */
 extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 	/*@globals fileSystem@*/
 	/*@modifies *buf, fileSystem @*/;
-/*@=declundef =exportheader @*/
+/*@=declundef =exportheader =protoparammatch @*/
 /*@=incondefs@*/
 #endif
 #else
@@ -2141,3 +2142,4 @@ assert(alp == fi->ap);
 	return 0;
     /*@=nullstate@*/
 }
+/*@=branchstate@*/

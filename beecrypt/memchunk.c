@@ -74,6 +74,7 @@ void memchunkFree(memchunk* m)
 
 memchunk* memchunkResize(memchunk* m, int size)
 {
+	/*@-branchstate@*/
 	if (m)
 	{
 		if (m->data)
@@ -91,6 +92,7 @@ memchunk* memchunkResize(memchunk* m, int size)
 			m->size = size;
 			/*@=nullderef@*/
 	}
+	/*@=branchstate@*/
 
 	/*@-nullret -compdef @*/	/* LCL: m->data might be NULL */
 	return m;

@@ -206,7 +206,7 @@ int rpmlogSetMask (int mask)
 /**
  * Generate a log message using FMT string and option arguments.
  */
-/*@mayexit@*/ /*@printflike@*/ void rpmlog (int pri, const char *fmt, ...)
+/*@mayexit@*/ /*@printflike@*/ void rpmlog (int code, const char *fmt, ...)
 	/*@*/;
 
 /*@-exportlocal@*/

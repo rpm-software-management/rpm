@@ -100,6 +100,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  * @return		0 on success, 1 on error
  */
 int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/;
 
 /** \ingroup header
@@ -117,7 +118,7 @@ int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
  * @return		header (or NULL on error)
  */
 /*@null@*/ Header headerRead(FD_t fd, enum hMagic magicp)
-	/*@modifies fd, fileSystem @*/;
+	/*@modifies fd @*/;
 
 /** \ingroup header
  * Check if tag is in header.
@@ -271,13 +272,13 @@ int headerRemoveEntry(Header h, int_32 tag)
  *
  * @param h		header
  * @param fmt		format to use
- * @param tags		array of tag name/value pairs
+ * @param tbltags	array of tag name/value pairs
  * @param extensions	chained table of formatting extensions.
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 /*@only@*/ char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tags,
+		     const struct headerTagTableEntry_s * tbltags,
 		     const struct headerSprintfExtension_s * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/;

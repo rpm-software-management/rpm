@@ -15,6 +15,6 @@
  * @return		(malloc'd) absolute path to executable (or NULL)
  */
 /*@null@*/ const char * findProgramPath(/*@null@*/ const char * argv0)
-	/*@modifies fileSystem @*/;
+	/*@*/;
 
 #endif

@@ -91,7 +91,9 @@ void loadFi(Header h, TFI_t fi)
     fi->hre = (HRE_t) headerRemoveEntry;
     fi->hfd = hfd = headerFreeData;
 
+    /*@-branchstate@*/
     if (h && fi->h == NULL)	fi->h = headerLink(h);
+    /*@=branchstate@*/
 
     /* Duplicate name-version-release so that headers can be free'd. */
     rc = hge(fi->h, RPMTAG_NAME, NULL, (void **) &fi->name, NULL);
@@ -891,10 +893,12 @@ static int runScript(PSM_t psm, Header h,
 
     if (script) {
 	FD_t fd;
+	/*@-branchstate@*/
 	if (makeTempFile((!ts->chrootDone ? ts->rootDir : "/"), &fn, &fd)) {
 	    if (freePrefixes) free(prefixes);
 	    return 1;
 	}
+	/*@=branchstate@*/
 
 	if (rpmIsDebug() &&
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
@@ -954,6 +958,7 @@ static int runScript(PSM_t psm, Header h,
 	(void) dup2(pipes[0], STDIN_FILENO);
 	(void) close(pipes[0]);
 
+	/*@-branchstate@*/
 	if (ts->scriptFd != NULL) {
 	    int sfdno = Fileno(ts->scriptFd);
 	    int ofdno = Fileno(out);
@@ -969,17 +974,21 @@ static int runScript(PSM_t psm, Header h,
 		(void) Fclose (ts->scriptFd);
 	    }
 	}
+	/*@=branchstate@*/
 
+	/*@-branchstate@*/
 	{   const char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
 	    const char *path = SCRIPT_PATH;
 
 	    if (ipath && ipath[5] != '%')
 		path = ipath;
+
 	    (void) doputenv(path);
 	    /*@-modobserver@*/
 	    ipath = _free(ipath);
 	    /*@=modobserver@*/
 	}
+	/*@=branchstate@*/
 
 	for (i = 0; i < numPrefixes; i++) {
 	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
@@ -1034,11 +1043,13 @@ static int runScript(PSM_t psm, Header h,
 
     (void) Fclose(out);	/* XXX dup'd STDOUT_FILENO */
     
+    /*@-branchstate@*/
     if (script) {
 	if (!rpmIsDebug())
 	    (void) unlink(fn);
 	fn = _free(fn);
     }
+    /*@=branchstate@*/
 
     return rc;
 }
@@ -1070,12 +1081,14 @@ static rpmRC runInstScript(PSM_t psm)
     (void) hge(fi->h, psm->progTag, &ptt, (void **) &programArgv, &programArgc);
     (void) hge(fi->h, psm->scriptTag, &stt, (void **) &script, NULL);
 
+    /*@-branchstate@*/
     if (programArgv && ptt == RPM_STRING_TYPE) {
 	argv = alloca(sizeof(char *));
 	*argv = (const char *) programArgv;
     } else {
 	argv = (const char **) programArgv;
     }
+    /*@=branchstate@*/
 
     rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), programArgc, argv,
 		script, psm->scriptArg, -1);
@@ -1348,6 +1361,7 @@ int psmStage(PSM_t psm, pkgStage stage)
     rpmRC rc = psm->rc;
     int saveerrno;
 
+    /*@-branchstate@*/
     switch (stage) {
     case PSM_UNKNOWN:
 	break;
@@ -1965,6 +1979,7 @@ fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
     default:
 	break;
     }
+    /*@=branchstate@*/
 
     /*@-nullstate@*/	/* FIX: psm->oh and psm->fi->h may be NULL. */
     return rc;

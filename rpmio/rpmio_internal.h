@@ -159,27 +159,32 @@ extern "C" {
 /** \ingroup rpmio
  */
 int fdFgets(FD_t fd, char * buf, size_t len)
+	/*@globals fileSystem @*/
 	/*@modifies *buf, fd, fileSystem @*/;
 
 /** \ingroup rpmio
  */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
                 /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
+	/*@globals fileSystem @*/
 	/*@modifies *uret, fileSystem @*/;
 
 /** \ingroup rpmio
  */
 int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
+	/*@globals fileSystem @*/
 	/*@modifies data, fileSystem @*/;
 
 /** \ingroup rpmio
  */
 int ftpCmd(const char * cmd, const char * url, const char * arg2)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmio
  */
 int ufdClose( /*@only@*/ void * cookie)
+	/*@globals fileSystem @*/
 	/*@modifies cookie, fileSystem @*/;
 
 /** \ingroup rpmio
@@ -355,6 +360,7 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
  */
 /*@unused@*/ static inline
 void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     int opx;

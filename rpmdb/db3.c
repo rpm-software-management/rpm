@@ -73,7 +73,9 @@ struct dbiBStats_s {
 };
 /*@=fielduse@*/
 
+/*@-globuse@*/	/* FIX: rpmError not annotated yet. */
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc = 0;
@@ -93,10 +95,12 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 
     return rc;
 }
+/*@=globuse@*/
 
 static int db_fini(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -149,7 +153,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile,
 		/*@out@*/ DB_ENV ** dbenvp)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
 	/*@modifies dbi, *dbenvp, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -282,6 +287,7 @@ errxit:
 /*@=moduncon@*/
 
 static int db3sync(dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -297,6 +303,7 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
 }
 
 static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc;
@@ -308,6 +315,7 @@ static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
 
 /*@unused@*/ static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 		u_int32_t flags)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcp, fileSystem @*/
 {
     int rc;
@@ -320,6 +328,7 @@ static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
 
 static int db3c_get(dbiIndex dbi, DBC * dbcursor,
 		DBT * key, DBT * data, u_int32_t flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int _printit;
@@ -343,6 +352,7 @@ static int db3c_get(dbiIndex dbi, DBC * dbcursor,
 
 static int db3c_put(dbiIndex dbi, DBC * dbcursor,
 		DBT * key, DBT * data, u_int32_t flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc;
@@ -354,6 +364,7 @@ static int db3c_put(dbiIndex dbi, DBC * dbcursor,
 }
 
 static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int rc;
@@ -367,6 +378,7 @@ static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
 
 static inline int db3c_open(dbiIndex dbi, /*@null@*/ /*@out@*/ DBC ** dbcp,
 		int dbiflags)
+	/*@globals fileSystem @*/
 	/*@modifies *dbcp, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -390,6 +402,7 @@ static inline int db3c_open(dbiIndex dbi, /*@null@*/ /*@out@*/ DBC ** dbcp,
 
 static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 		unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     int rc = 0;
@@ -401,8 +414,10 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
     if (!dbi->dbi_use_cursors)
 	return 0;
 
+    /*@-branchstate@*/
     if (dbcursor == NULL)
 	dbcursor = dbi->dbi_rmw;
+    /*@=branchstate@*/
     if (dbcursor) {
 	if (dbcursor == dbi->dbi_rmw)
 	    dbi->dbi_rmw = NULL;
@@ -413,6 +428,7 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 
 static int db3copen(dbiIndex dbi,
 		/*@null@*/ /*@out@*/ DBC ** dbcp, unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
     DBC * dbcursor;
@@ -442,6 +458,7 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen,
 		const void * datap, size_t datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -472,6 +489,7 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor,
 static int db3cdel(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -507,6 +525,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ void ** keyp, /*@null@*/ size_t * keylen,
 		/*@null@*/ void ** datap, /*@null@*/ size_t * datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies *keyp, *keylen, *datap, *datalen, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -557,6 +576,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 static int db3ccount(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ /*@out@*/ unsigned int * countp,
 		/*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies *countp, fileSystem @*/
 {
     db_recno_t count = 0;
@@ -592,6 +612,7 @@ static int db3byteswapped(dbiIndex dbi)	/*@*/
 }
 
 static int db3stat(dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
@@ -617,7 +638,8 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 
 /*@-moduncon@*/
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -754,7 +776,8 @@ exit:
 /*@=moduncon@*/
 
 static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem @*/
 	/*@modifies *dbip, fileSystem @*/
 {
     /*@-nestedextern@*/

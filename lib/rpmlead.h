@@ -19,7 +19,7 @@ extern "C" {
  * @return		0 on success, 1 on error
  */
 int writeLead(FD_t fd, const struct rpmlead *lead)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup lead
@@ -29,7 +29,7 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
  * @return		0 on success, 1 on error
  */
 int readLead(FD_t fd, /*@out@*/ struct rpmlead *lead)
-	/*@modifies fd, *lead, fileSystem @*/;
+	/*@modifies fd, *lead @*/;
 
 #ifdef __cplusplus
 }

@@ -383,7 +383,7 @@ void fadFree(FD_t fd, unsigned int offset)
 }
 
 static int fadSanity(FD_t fd, int offset, const struct faHeader * fh, int printit)
-	/*@modifies fileSystem @*/
+	/*@*/
 {
     int rc = 0;
 
@@ -426,13 +426,13 @@ int fadFirstOffset(FD_t fd)
     return fadNextOffset(fd, 0);
 }
 
-int fadNextOffset(FD_t fd, unsigned int lastOffset)
+int fadNextOffset(FD_t fd, unsigned int lastoff)
 {
     struct faHeader header;
     int offset;
 
-    offset = (lastOffset)
-	? (lastOffset - sizeof(header))
+    offset = (lastoff)
+	? (lastoff - sizeof(header))
 	: sizeof(struct faFileHeader);
 
     if (offset >= fadGetFileSize(fd))
@@ -442,7 +442,7 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
     if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	return 0;
 
-    if (!lastOffset && header.isFree == 0)
+    if (!lastoff && header.isFree == 0)
 	return (offset + sizeof(header));
 
     /*
@@ -476,7 +476,7 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
 
     /* Sanity check this to make sure we're not going in loops */
     offset += sizeof(header);
-    if (offset <= lastOffset)
+    if (offset <= lastoff)
 	return 0;	/* XXX used to return -1 */
 
     return offset;

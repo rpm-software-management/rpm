@@ -100,6 +100,7 @@ int parseScript(Spec spec, int parsePart)
     prog = "/bin/sh";
     file = NULL;
     
+    /*@-branchstate@*/
     switch (parsePart) {
       case PART_PRE:
 	tag = RPMTAG_PREIN;
@@ -153,6 +154,7 @@ int parseScript(Spec spec, int parsePart)
 	partname = "%triggerpostun";
 	break;
     }
+    /*@=branchstate@*/
 
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
 	/* break line into two */

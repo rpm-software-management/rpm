@@ -28,6 +28,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, /*@unused@*/ const char * arg, 
 		/*@unused@*/ const void * data)
+	/*@globals rpmQVArgs @*/
 	/*@modifies rpmQVArgs @*/
 {
     QVA_t qva = &rpmQVArgs;
@@ -106,6 +107,7 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 		/*@unused@*/enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg, 
 		/*@unused@*/ const void * data)
+	/*@globals rpmQVArgs @*/
 	/*@modifies rpmQVArgs @*/
 {
     QVA_t qva = &rpmQVArgs;
@@ -127,6 +129,7 @@ static void queryArgCallback(/*@unused@*/poptContext con,
     case POPT_QUERYFORMAT:
 	if (arg) {
 	    char * qf = (char *)qva->qva_queryFormat;
+	    /*@-branchstate@*/
 	    if (qf) {
 		int len = strlen(qf) + strlen(arg) + 1;
 		qf = xrealloc(qf, len);
@@ -135,6 +138,7 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 		qf = xmalloc(strlen(arg) + 1);
 		strcpy(qf, arg);
 	    }
+	    /*@=branchstate@*/
 	    qva->qva_queryFormat = qf;
 	}
 	break;

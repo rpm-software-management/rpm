@@ -142,6 +142,7 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 /*@-compmempass@*/ /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
 /*@-nullstate@*/ /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)
+	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
     int pri = RPMLOG_PRI(code);
@@ -174,6 +175,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     msg = msgbuf;
 
     /* Save copy of all messages at warning (or below == "more important"). */
+    /*@-branchstate@*/
     if (pri <= RPMLOG_WARNING) {
 
 	if (recs == NULL)
@@ -192,6 +194,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	    return;	/* XXX Preserve legacy rpmError behavior. */
 	}
     }
+    /*@=branchstate@*/
 
     /* rpmMessage behavior */
 

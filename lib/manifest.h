@@ -25,6 +25,7 @@ char * rpmPermsString(int mode)
  * @retval argvPtr		args themselves
  */
 int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
+	/*@globals fileSystem @*/
 	/*@modifies fd, *argcPtr, *argvPtr, fileSystem @*/;
 
 #ifdef __cplusplus

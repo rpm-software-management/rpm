@@ -357,12 +357,15 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
     int j;
 
     /* Find hard link set. */
+    /*@-branchstate@*/
     for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
 	if (fsm->li->sb.st_ino == st->st_ino && fsm->li->sb.st_dev == st->st_dev)
 	    break;
     }
+    /*@=branchstate@*/
 
     /* New hard link encountered, add new link to set. */
+    /*@-branchstate@*/
     if (fsm->li == NULL) {
 	fsm->li = xcalloc(1, sizeof(*fsm->li));
 	fsm->li->next = NULL;
@@ -385,6 +388,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@=kepttrans@*/
 	fsm->links = fsm->li;
     }
+    /*@=branchstate@*/
 
     if (fsm->goal == FSM_PKGBUILD) --fsm->li->linksLeft;
     fsm->li->filex[fsm->li->linksLeft] = fsm->ix;
@@ -451,11 +455,13 @@ FSM_t freeFSM(FSM_t fsm)
 {
     if (fsm) {
 	fsm->path = _free(fsm->path);
+	/*@-branchstate@*/
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
 	    fsm->li = freeHardLink(fsm->li);
 	}
+	/*@=branchstate@*/
 	fsm->dnlx = _free(fsm->dnlx);
 	fsm->ldn = _free(fsm->ldn);
 	fsm->iter = mapFreeIterator(fsm->iter);
@@ -673,6 +679,7 @@ int fsmMapAttrs(FSM_t fsm)
  */
 static int expandRegular(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->sb @*/
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/
 {
     const char * fmd5sum;
@@ -736,6 +743,7 @@ exit:
  */
 static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	/*@uses fsm->path, fsm->opath, fsm->sb, fsm->osb, fsm->cfd @*/
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/
 {
     const char * path = fsm->path;
@@ -749,6 +757,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 
     st->st_size = (writeData ? ost->st_size : 0);
 
+    /*@-branchstate@*/
     if (S_ISDIR(st->st_mode)) {
 	st->st_size = 0;
     } else if (S_ISLNK(st->st_mode)) {
@@ -762,6 +771,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	st->st_size = fsm->rdnb;
 	symbuf = alloca_strdup(fsm->rdbuf);	/* XXX save readlink return. */
     }
+    /*@=branchstate@*/
 
     if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
 	int nb = strlen(fsm->dirName) + strlen(fsm->baseName) + sizeof(".");
@@ -871,6 +881,7 @@ exit:
  */
 static int writeLinkedFile(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->nsuffix, fsm->ix, fsm->li, fsm->failedFile @*/
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/
 {
     const char * path = fsm->path;
@@ -915,6 +926,7 @@ static int writeLinkedFile(/*@special@*/ FSM_t fsm)
  */
 static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->opath, fsm->nsuffix, fsm->ix, fsm->li @*/
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/
 {
     const char * path = fsm->path;
@@ -934,6 +946,7 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
     rc = fsmStage(fsm, FSM_MAP);
     fsm->opath = fsm->path;
     fsm->path = NULL;
+    /*@-branchstate@*/
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->filex[i] < 0) continue;
 	if (i == fsm->li->createdPath) continue;
@@ -954,6 +967,7 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 
 	fsm->li->linksLeft--;
     }
+    /*@=branchstate@*/
     fsm->path = _free(fsm->path);
     fsm->opath = _free(fsm->opath);
 
@@ -972,6 +986,7 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->nsuffix, fsm->ix, fsm->sb,
 		fsm->li, fsm->links @*/
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/
 {
     const char * path = fsm->path;
@@ -985,10 +1000,12 @@ static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
     fsm->nsuffix = NULL;
     fsm->ix = -1;
 
+    /*@-branchstate@*/
     for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
 	if (fsm->li->sb.st_ino == st->st_ino && fsm->li->sb.st_dev == st->st_dev)
 	    break;
     }
+    /*@=branchstate@*/
 
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->filex[i] < 0) continue;
@@ -1012,6 +1029,7 @@ static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
  */
 static int fsmRmdirs(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->dnlx, fsm->ldn, fsm->rdbuf, fsm->iter @*/
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/
 {
     const char * path = fsm->path;
@@ -1066,6 +1084,7 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->sb, fsm->osb, fsm->rdbuf, fsm->iter,
 		fsm->ldn, fsm->ldnlen, fsm->ldnalloc @*/
 	/*@defines fsm->dnlx, fsm->ldn @*/
+	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/
 {
     struct stat * st = &fsm->sb;
@@ -1237,6 +1256,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     }
 #undef	_fafilter
 
+    /*@-branchstate@*/
     switch (stage) {
     case FSM_UNKNOWN:
 	break;
@@ -2103,6 +2123,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     default:
 	break;
     }
+    /*@=branchstate@*/
 
     if (!(stage & FSM_INTERNAL)) {
 	fsm->rc = (rc == CPIOERR_HDR_TRAILER ? 0 : rc);

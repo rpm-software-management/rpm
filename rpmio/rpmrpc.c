@@ -274,6 +274,7 @@ static int   column_ptr [MAXCOLS]; /* Index from 0 to the starting positions of 
 
 static int
 vfs_split_text (char *p)
+	/*@globals columns, column_ptr @*/
 	/*@modifies *p, columns, column_ptr @*/
 {
     char *original = p;
@@ -839,12 +840,14 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	break;
     default:
 	urldn = alloca_strdup(url);
+	/*@-branchstate@*/
 	if ((bn = strrchr(urldn, '/')) == NULL)
 	    return -2;
 	else if (bn == path)
 	    bn = ".";
 	else
 	    *bn++ = '\0';
+	/*@=branchstate@*/
 	nbn = strlen(bn);
 
 	rc = ftpChdir(urldn);		/* XXX don't care about CWD */
@@ -1149,23 +1152,23 @@ fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
     return access(path, amode);
 }
 
-int Glob(const char *path, int flags,
+int Glob(const char *pattern, int flags,
 	int errfunc(const char * epath, int eerrno), glob_t *pglob)
 {
     const char * lpath;
-    int ut = urlPath(path, &lpath);
+    int ut = urlPath(pattern, &lpath);
 
 /*@-castfcnptr@*/
 if (_rpmio_debug)
-fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", path, (unsigned)flags, (void *)errfunc, pglob);
+fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)errfunc, pglob);
 /*@=castfcnptr@*/
     switch (ut) {
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
-	return ftpGlob(path, flags, errfunc, pglob);
+	return ftpGlob(pattern, flags, errfunc, pglob);
 	/*@notreached@*/ break;
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
-	path = lpath;
+	pattern = lpath;
 	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
@@ -1174,17 +1177,19 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", path, (unsigned)flags, (void *)errf
 	return -2;
 	/*@notreached@*/ break;
     }
-    return glob(path, flags, errfunc, pglob);
+    return glob(pattern, flags, errfunc, pglob);
 }
 
 void Globfree(glob_t *pglob)
 {
 if (_rpmio_debug)
 fprintf(stderr, "*** Globfree(%p)\n", pglob);
+    /*@-branchstate@*/
     if (pglob->gl_offs == -1) /* XXX HACK HACK HACK */
 	ftpGlobfree(pglob);
     else
 	globfree(pglob);
+    /*@=branchstate@*/
 }
 
 DIR * Opendir(const char * path)

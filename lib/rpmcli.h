@@ -527,12 +527,12 @@ typedef enum rpmResignFlags_e {
 
 /** \ingroup rpmcli
  * Create/modify elements in signature header.
- * @param add		type of signature operation
+ * @param flags		type of signature operation
  * @param passPhrase
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmReSign(rpmResignFlags add, char * passPhrase,
+int rpmReSign(rpmResignFlags flags, char * passPhrase,
 		/*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/

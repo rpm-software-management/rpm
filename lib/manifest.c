@@ -105,8 +105,10 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	appendStringBuf(sb, s);
     }
 
+    /*@-branchstate@*/
     if (s == NULL)		/* XXX always true */
 	s = getStringBuf(sb);
+    /*@=branchstate@*/
 
     if (!(s && *s)) {
 	rc = 1;
@@ -148,12 +150,14 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	*argcPtr = ac;
 
 exit:
+    /*@-branchstate@*/
     if (argvPtr == NULL || (rc != 0 && av)) {
 	if (av)
 	for (i = 0; i < ac; i++)
 	    /*@-unqualifiedtrans@*/av[i] = _free(av[i]); /*@=unqualifiedtrans@*/
 	/*@-dependenttrans@*/ av = _free(av); /*@=dependenttrans@*/
     }
+    /*@=branchstate@*/
     sb = freeStringBuf(sb);
     /*@-nullstate@*/
     return rc;

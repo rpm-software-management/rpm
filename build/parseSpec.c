@@ -188,6 +188,7 @@ int readLine(Spec spec, int strip)
 
 retry:
     /* Make sure the current file is open */
+    /*@-branchstate@*/
     if (ofi->fd == NULL) {
 	ofi->fd = Fopen(ofi->fileName, "r.fpio");
 	if (ofi->fd == NULL || Ferror(ofi->fd)) {
@@ -198,6 +199,7 @@ retry:
 	}
 	spec->lineNum = ofi->lineNum = 0;
     }
+    /*@=branchstate@*/
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
@@ -394,7 +396,9 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
     if (buildRootURL) {
 	const char * buildRoot;
 	(void) urlPath(buildRootURL, &buildRoot);
+	/*@-branchstate@*/
 	if (*buildRoot == '\0') buildRoot = "/";
+	/*@=branchstate@*/
 	if (!strcmp(buildRoot, "/")) {
             rpmError(RPMERR_BADSPEC,
                      _("BuildRoot can not be \"/\": %s\n"), buildRootURL);
@@ -528,12 +532,14 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	     * further problem that the macro context, particularly
 	     * %{_target_cpu}, disagrees with the info in the header.
 	     */
+	    /*@-branchstate@*/
 	    if (spec->BACount >= 1) {
 		Spec nspec = spec->BASpecs[0];
 		spec->BASpecs = _free(spec->BASpecs);
 		spec = freeSpec(spec);
 		spec = nspec;
 	    }
+	    /*@=branchstate@*/
 
 	    *specp = spec;
 	    return 0;

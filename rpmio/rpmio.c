@@ -1,3 +1,4 @@
+/*@-branchstate@*/
 /** \ingroup rpmio
  * \file rpmio/rpmio.c
  */
@@ -1600,7 +1601,7 @@ void * ufdGetUrlinfo(FD_t fd)
 
 /* =============================================================== */
 static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
-	/*@globals fileSystem @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
@@ -3018,3 +3019,4 @@ static struct FDIO_s fpio_s = {
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
 FDIO_t fpio = /*@-compmempass@*/ &fpio_s /*@=compmempass@*/ ;
+/*@=branchstate@*/

@@ -262,9 +262,9 @@ int Fclose( /*@killref@*/ FD_t fd)
 
 /**
  */
-/*@null@*/ FD_t	Fdopen(FD_t fd, const char * fmode)
+/*@null@*/ FD_t	Fdopen(FD_t ofd, const char * fmode)
 	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/;
+	/*@modifies ofd, fileSystem @*/;
 
 /**
  * fopen(3) clone.
@@ -414,7 +414,7 @@ void Globfree( /*@only@*/ glob_t * pglob)
 /**
  * opendir(3) clone.
  */
-/*@null@*/ DIR * Opendir(const char * name)
+/*@null@*/ DIR * Opendir(const char * path)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 

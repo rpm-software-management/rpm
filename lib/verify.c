@@ -278,8 +278,8 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
  */
 int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
 {
-    rpmdb rpmdb = NULL;
-    rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
+    rpmdb db = NULL;
+    rpmTransactionSet ts = rpmtransCreateSet(db, rootDir);
     TFI_t fi = xcalloc(1, sizeof(*fi));
     struct psm_s psmbuf;
     PSM_t psm = &psmbuf;
@@ -462,11 +462,11 @@ exit:
 
 /**
  * Check installed package dependencies for problems.
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @param h		header
  * @return		0 no problems, 1 problems found
  */
-static int verifyDependencies(rpmdb rpmdb, Header h)
+static int verifyDependencies(rpmdb db, Header h)
 	/*@globals fileSystem@*/
 	/*@modifies h, fileSystem @*/
 {
@@ -476,12 +476,13 @@ static int verifyDependencies(rpmdb rpmdb, Header h)
     int rc = 0;		/* assume no problems */
     int i;
 
-    ts = rpmtransCreateSet(rpmdb, NULL);
+    ts = rpmtransCreateSet(db, NULL);
     (void) rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
 
     (void) rpmdepCheck(ts, &conflicts, &numConflicts);
     ts = rpmtransFree(ts);
 
+    /*@-branchstate@*/
     if (numConflicts) {
 	const char *n, *v, *r;
 	char * t, * te;
@@ -520,10 +521,11 @@ static int verifyDependencies(rpmdb rpmdb, Header h)
 	}
 	rc = 1;
     }
+    /*@=branchstate@*/
     return rc;
 }
 
-int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
+int showVerifyPackage(QVA_t qva, rpmdb db, Header h)
 {
     const char * prefix = (qva->qva_prefix ? qva->qva_prefix : "");
     int ec = 0;
@@ -540,7 +542,7 @@ int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
 	}
     }
     if (qva->qva_flags & VERIFY_DEPS) {
-	if ((rc = verifyDependencies(rpmdb, h)) != 0)
+	if ((rc = verifyDependencies(db, h)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
@@ -559,7 +561,7 @@ int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
 
 int rpmVerify(QVA_t qva, rpmQVSources source, const char * arg)
 {
-    rpmdb rpmdb = NULL;
+    rpmdb db = NULL;
     int rc;
 
     switch (source) {
@@ -568,15 +570,15 @@ int rpmVerify(QVA_t qva, rpmQVSources source, const char * arg)
 	    break;
 	/*@fallthrough@*/
     default:
-	if ((rc = rpmdbOpen(qva->qva_prefix, &rpmdb, O_RDONLY, 0644)) != 0)
+	if ((rc = rpmdbOpen(qva->qva_prefix, &db, O_RDONLY, 0644)) != 0)
 	    return 1;
 	break;
     }
 
-    rc = rpmQueryVerify(qva, source, arg, rpmdb, showVerifyPackage);
+    rc = rpmQueryVerify(qva, source, arg, db, showVerifyPackage);
 
-    if (rpmdb != NULL)
-	(void) rpmdbClose(rpmdb);
+    if (db != NULL)
+	(void) rpmdbClose(db);
 
     return rc;
 }

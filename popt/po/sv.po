@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 13:39-0400\n"
 "PO-Revision-Date: 2001-07-12 22:26+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -13,48 +13,48 @@ msgstr ""
 msgid "unknown errno"
 msgstr "okänt felnummer"
 
-#: popt.c:900
+#: popt.c:903
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "flaggtypen (%d) är inte implementerad i popt\n"
 
-#: popt.c:1111
+#: popt.c:1114
 msgid "missing argument"
 msgstr "argument saknas"
 
-#: popt.c:1113
+#: popt.c:1116
 msgid "unknown option"
 msgstr "okänd flagga"
 
-#: popt.c:1115
+#: popt.c:1118
 msgid "mutually exclusive logical operations requested"
 msgstr "ömsesidigt uteslutande logiska operationer begärdes"
 
-#: popt.c:1117
+#: popt.c:1120
 msgid "opt->arg should not be NULL"
 msgstr "opt->arg får inte vara NULL"
 
-#: popt.c:1119
+#: popt.c:1122
 msgid "aliases nested too deeply"
 msgstr "alias är nästlade för djupt"
 
-#: popt.c:1121
+#: popt.c:1124
 msgid "error in parameter quoting"
 msgstr "fel i parametercitering"
 
-#: popt.c:1123
+#: popt.c:1126
 msgid "invalid numeric value"
 msgstr "ogiltigt numeriskt värde"
 
-#: popt.c:1125
+#: popt.c:1128
 msgid "number too large or too small"
 msgstr "talet för stort eller för litet"
 
-#: popt.c:1127
+#: popt.c:1130
 msgid "memory allocation failed"
 msgstr "minnesallokering misslyckades"
 
-#: popt.c:1131
+#: popt.c:1134
 msgid "unknown error"
 msgstr "okänt fel"
 
@@ -102,10 +102,10 @@ msgstr "DUBBEL"
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:454
+#: popthelp.c:456
 msgid "Usage:"
 msgstr "Användning:"
 
-#: popthelp.c:476
+#: popthelp.c:478
 msgid "[OPTION...]"
 msgstr "[FLAGGA...]"

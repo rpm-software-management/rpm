@@ -548,7 +548,9 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 
 		buildRootURL = _free(buildRootURL);
 		(void) urlPath(specURL, (const char **)&field);
+		/*@-branchstate@*/
 		if (*field == '\0') field = "/";
+		/*@=branchstate@*/
 		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
 		spec->buildRootURL = buildRootURL;
 		field = (char *) buildRootURL;
@@ -559,7 +561,9 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	}
 	buildRootURL = rpmGenPath(NULL, spec->buildRootURL, NULL);
 	(void) urlPath(buildRootURL, &buildRoot);
+	/*@-branchstate@*/
 	if (*buildRoot == '\0') buildRoot = "/";
+	/*@=branchstate@*/
 	if (!strcmp(buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("BuildRoot can not be \"/\": %s\n"), spec->buildRootURL);
@@ -757,6 +761,7 @@ static struct PreambleRec_s preambleList[] = {
 /**
  */
 static inline void initPreambleList(void)
+	/*@globals preambleList @*/
 	/*@modifies preambleList @*/
 {
     PreambleRec p;

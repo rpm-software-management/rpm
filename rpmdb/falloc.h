@@ -39,6 +39,7 @@ extern "C" {
 /** \ingroup db1
  */
 /*@null@*/ FD_t	fadOpen(const char * path, int flags, mode_t perms)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup db1
@@ -46,18 +47,21 @@ extern "C" {
  * @return		0 on failure
  */
 unsigned int fadAlloc(FD_t fd, unsigned int size)
+	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup db1
  * @param fd		file handle
  */
 void fadFree(FD_t fd, unsigned int offset)
+	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup db1
  * @param fd		file handle
  */
 int fadFirstOffset(FD_t fd)
+	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup db1
@@ -65,6 +69,7 @@ int fadFirstOffset(FD_t fd)
  * @return		next offset, 0 to terminate
  */
 int fadNextOffset(FD_t fd, unsigned int lastoff)
+	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 
 #ifdef __cplusplus

@@ -103,6 +103,7 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
     while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
 
+    /*@-branchstate@*/
     if (b == NULL) {
 	b = xmalloc(sizeof(*b));
 	if (ht->keySize) {
@@ -117,6 +118,7 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 	b->data = NULL;
 	ht->buckets[hash] = b;
     }
+    /*@=branchstate@*/
 
     b->data = xrealloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
     b->data[b->dataCount++] = data;
@@ -129,14 +131,18 @@ void htFree(hashTable ht)
 
     for (i = 0; i < ht->numBuckets; i++) {
 	b = ht->buckets[i];
+	/*@-branchstate@*/
 	if (ht->keySize && b) free((void *)b->key);
+	/*@=branchstate@*/
 	while (b) {
 	    n = b->next;
+	    /*@-branchstate@*/
 	    if (b->data) {
 		if (ht->freeData)
 		    *b->data = _free(*b->data);
 		b->data = _free(b->data);
 	    }
+	    /*@=branchstate@*/
 	    b = _free(b);
 	    b = n;
 	}

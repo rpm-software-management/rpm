@@ -43,12 +43,14 @@ static int checkSpec(Header h)
     rc = rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
 
     rc = rpmdepCheck(ts, &conflicts, &numConflicts);
+    /*@-branchstate@*/
     if (rc == 0 && conflicts) {
 	rpmMessage(RPMMESS_ERROR, _("failed build dependencies:\n"));
 	printDepProblems(stderr, conflicts, numConflicts);
 	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	rc = 1;
     }
+    /*@=branchstate@*/
 
     ts = rpmtransFree(ts);
     if (db != NULL)
@@ -122,8 +124,10 @@ static int buildForTarget(const char * arg, BTA_t ba,
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 #endif
 
+    /*@-branchstate@*/
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
+    /*@=branchstate@*/
 
     if (ba->buildMode == 't') {
 	FILE *fp;

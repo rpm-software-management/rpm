@@ -285,11 +285,11 @@ int parsePrep(Spec spec)
  * @param field		text to parse (e.g. "foo < 0:1.2-3, bar = 5:6.7")
  * @param tag		tag, identifies type of dependency
  * @param index		(0 always)
- * @param flags		dependency flags already known from context
+ * @param tagflags	dependency flags already known from context
  * @return		0 on success, RPMERR_BADSPEC on failure
  */
 int parseRCPOT(Spec spec, Package pkg, const char * field, int tag, int index,
-	       rpmsenseFlags flags)
+	       rpmsenseFlags tagflags)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
@@ -390,8 +390,8 @@ int lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
  * @return		0 always
  */
 int addReqProv(/*@unused@*/Spec spec, Header h,
-		rpmsenseFlags flag, const char * depName, const char * depEVR,
-		int index)
+		rpmsenseFlags depFlags, const char * depName,
+		const char * depEVR, int index)
 	/*@modifies h @*/;
 
 /** \ingroup rpmbuild
@@ -445,8 +445,8 @@ int processSourceFiles(Spec spec)
  * Parse spec file into spec control structure.
  * @retval specp	spec file control structure
  * @param specFile
- * @param rootdir
- * @param buildRoot
+ * @param rootURL
+ * @param buildRootURL
  * @param recursing	parse is recursive?
  * @param passPhrase
  * @param cookie
@@ -455,8 +455,8 @@ int processSourceFiles(Spec spec)
  * @return
  */
 int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
-		/*@null@*/ const char * rootdir,
-		/*@null@*/ const char * buildRoot,
+		/*@null@*/ const char * rootURL,
+		/*@null@*/ const char * buildRootURL,
 		int recursing,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,

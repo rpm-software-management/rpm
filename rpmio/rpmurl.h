@@ -124,11 +124,11 @@ urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)
 /**
  * Parse URL string into a control structure.
  * @param url		url string
- * @retval u		address of new control instance pointer
+ * @retval uret		address of new control instance pointer
  * @return		0 on success, -1 on error
  */
-int urlSplit(const char * url, /*@out@*/ urlinfo * u)
-	/*@modifies *u @*/;
+int urlSplit(const char * url, /*@out@*/ urlinfo * uret)
+	/*@modifies *uret @*/;
 
 /**
  * Copy data from URL to local file.

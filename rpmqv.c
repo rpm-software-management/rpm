@@ -232,7 +232,7 @@ long _stksize = 64 * 1024L;
 #endif
 
 /*@exits@*/ static void argerror(const char * desc)
-	/*@globals __assert_program_name @*/
+	/*@globals __assert_program_name, fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     fprintf(stderr, _("%s: %s\n"), __progname, desc);
@@ -240,12 +240,14 @@ long _stksize = 64 * 1024L;
 }
 
 static void printVersion(void)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     fprintf(stdout, _("RPM version %s\n"), rpmEVR);
 }
 
 static void printBanner(void)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     (void) puts(_("Copyright (C) 1998-2000 - Red Hat, Inc."));
@@ -253,7 +255,7 @@ static void printBanner(void)
 }
 
 static void printUsage(void)
-	/*@globals __assert_program_name @*/
+	/*@globals __assert_program_name, fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     FILE * fp = stdout;
@@ -843,7 +845,9 @@ int main(int argc, const char ** argv)
 #if defined(IAM_RPMK)
     || ka->sign
 #endif
-    ) {
+    )
+    /*@-branchstate@*/
+    {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD) {
 	    const char ** av;
@@ -904,6 +908,7 @@ int main(int argc, const char ** argv)
     	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
         (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }
+    /*@=branchstate@*/
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
     if (pipeOutput) {
@@ -1058,6 +1063,7 @@ int main(int argc, const char ** argv)
 	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
+	/*@-branchstate@*/
 	if (ia->prefix) {
 	    ia->relocations = xmalloc(2 * sizeof(*ia->relocations));
 	    ia->relocations[0].oldPath = NULL;   /* special case magic */
@@ -1070,6 +1076,7 @@ int main(int argc, const char ** argv)
 	    ia->relocations[ia->numRelocations].oldPath = NULL;
 	    ia->relocations[ia->numRelocations].newPath = NULL;
 	}
+	/*@=branchstate@*/
 
 	/*@-compdef@*/ /* FIX: ia->relocations[0].newPath undefined */
 	ec += rpmInstall(rootdir, (const char **)poptGetArgs(optCon), 

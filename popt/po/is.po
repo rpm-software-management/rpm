@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 13:39-0400\n"
 "PO-Revision-Date: 2001-06-08 01:35+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -13,48 +13,48 @@ msgstr ""
 msgid "unknown errno"
 msgstr "óþekkt villunúmer"
 
-#: popt.c:900
+#: popt.c:903
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "rofagerðin (%d) er ekki studd í popt\n"
 
-#: popt.c:1111
+#: popt.c:1114
 msgid "missing argument"
 msgstr "vantar viðfang"
 
-#: popt.c:1113
+#: popt.c:1116
 msgid "unknown option"
 msgstr "óþekktur rofi"
 
-#: popt.c:1115
+#: popt.c:1118
 msgid "mutually exclusive logical operations requested"
 msgstr "beðið um rofa sem slökkva hvor á öðrum"
 
-#: popt.c:1117
+#: popt.c:1120
 msgid "opt->arg should not be NULL"
 msgstr "opt->arg ætti ekki að vera NULL"
 
-#: popt.c:1119
+#: popt.c:1122
 msgid "aliases nested too deeply"
 msgstr "alíasar of flóknir"
 
-#: popt.c:1121
+#: popt.c:1124
 msgid "error in parameter quoting"
 msgstr "villa í viðföngum (gæsalappir og svo frv.)"
 
-#: popt.c:1123
+#: popt.c:1126
 msgid "invalid numeric value"
 msgstr "ógilt tölulegt gildi"
 
-#: popt.c:1125
+#: popt.c:1128
 msgid "number too large or too small"
 msgstr "talan of stór eða smá"
 
-#: popt.c:1127
+#: popt.c:1130
 msgid "memory allocation failed"
 msgstr "ekki tókst að taka frá minni"
 
-#: popt.c:1131
+#: popt.c:1134
 msgid "unknown error"
 msgstr "óþekkt villa"
 
@@ -102,10 +102,10 @@ msgstr "DOUBLE"
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:454
+#: popthelp.c:456
 msgid "Usage:"
 msgstr "Notkun:"
 
-#: popthelp.c:476
+#: popthelp.c:478
 msgid "[OPTION...]"
 msgstr "[ROFI...]"

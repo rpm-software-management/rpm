@@ -134,6 +134,7 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
     rpmRC rc;
     
     tmprpm[0] = '\0';
+    /*@-branchstate@*/
     if (argv)
     while ((rpm = *argv++) != NULL) {
 
@@ -228,6 +229,7 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	(void) rename(trpm, rpm);
 	tmprpm[0] = '\0';
     }
+    /*@=branchstate@*/
 
     res = 0;
 
@@ -279,6 +281,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 
     memset(dig, 0, sizeof(*dig));
 
+    /*@-branchstate@*/
     while ((pkgfn = *argv++) != NULL) {
 
 	if (manageFile(&fd, &pkgfn, O_RDONLY, 0)) {
@@ -565,6 +568,7 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 	mp32nfree(&dig->c);
 	mp32nfree(&dig->rsahm);
     }
+    /*@=branchstate@*/
 
     dig->sha1ctx = _free(dig->sha1ctx);
     dig->sha1 = _free(dig->sha1);

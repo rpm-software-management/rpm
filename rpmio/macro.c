@@ -1,3 +1,4 @@
+/*@-branchstate@*/
 /** \ingroup rpmrc rpmio
  * \file rpmio/macro.c
  */
@@ -83,7 +84,7 @@ typedef /*@abstract@*/ struct MacroBuf_s {
 
 static int expandMacro(MacroBuf mb)
 	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+		fileSystem @*/
 	/*@modifies mb, fileSystem @*/;
 
 /*@-exportlocal -exportheadervar@*/
@@ -268,6 +269,7 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
  */
 /*@dependent@*/ static char *
 rdcl(char * buf, size_t size, FD_t fd, int escapes)
+	/*@globals fileSystem @*/
 	/*@modifies buf, fileSystem @*/
 {
     char *q = buf;
@@ -336,6 +338,7 @@ matchchar(const char * p, char pl, char pr)
  */
 static void
 printMacro(MacroBuf mb, const char * s, const char * se)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     const char *senl;
@@ -379,6 +382,7 @@ printMacro(MacroBuf mb, const char * s, const char * se)
  */
 static void
 printExpansion(MacroBuf mb, const char * t, const char * te)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     const char *ellipsis;
@@ -706,6 +710,7 @@ doUndefine(MacroContext mc, const char * se)
 #ifdef	DYING
 static void
 dumpME(const char * msg, MacroEntry me)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     if (msg)
@@ -1415,13 +1420,13 @@ expandMacro(MacroBuf mb)
 /* =============================================================== */
 
 int
-expandMacros(void * spec, MacroContext mc, char * s, size_t slen)
+expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
 {
     MacroBuf mb = alloca(sizeof(*mb));
     char *tbuf;
     int rc;
 
-    if (s == NULL || slen == 0)
+    if (sbuf == NULL || slen == 0)
 	return 0;
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
@@ -1429,7 +1434,7 @@ expandMacros(void * spec, MacroContext mc, char * s, size_t slen)
     memset(tbuf, 0, (slen + 1));
 
     /*@-temptrans -assignexpose@*/
-    mb->s = s;
+    mb->s = sbuf;
     /*@=temptrans =assignexpose@*/
     mb->t = tbuf;
     mb->nb = slen;
@@ -1448,7 +1453,7 @@ expandMacros(void * spec, MacroContext mc, char * s, size_t slen)
 	rpmError(RPMERR_BADSPEC, _("Target buffer overflow\n"));
 
     tbuf[slen] = '\0';	/* XXX just in case */
-    strncpy(s, tbuf, (slen - mb->nb + 1));
+    strncpy(sbuf, tbuf, (slen - mb->nb + 1));
 
     return rc;
 }
@@ -1983,3 +1988,4 @@ main(int argc, char *argv[])
 }
 #endif	/* EVAL_MACROS */
 #endif	/* DEBUG_MACROS */
+/*@=branchstate@*/

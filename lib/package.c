@@ -190,6 +190,7 @@ static rpmRC readPackageHeaders(FD_t fd,
 	 * careful. This fixup makes queries give the new values though,
 	 * which is quite handy.
 	 */
+	/*@-branchstate@*/
 	if (headerGetEntry(*hdr, RPMTAG_DEFAULTPREFIX, NULL,
 			   (void **) &defaultPrefix, NULL))
 	{
@@ -198,6 +199,7 @@ static rpmRC readPackageHeaders(FD_t fd,
 	    (void) headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 			   &defaultPrefix, 1); 
 	}
+	/*@=branchstate@*/
 
 	/*
 	 * The file list was moved to a more compressed format which not
