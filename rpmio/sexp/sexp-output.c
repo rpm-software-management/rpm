@@ -14,6 +14,22 @@
 /*@access sexpString @*/
 /*@access sexpObject @*/
 
+struct sexpOutputStream_s {
+    long int column;          /* column where next character will go */
+    long int maxcolumn;       /* max usable column, or -1 if no maximum */
+    long int indent;          /* current indentation level (starts at 0) */
+    void (*putChar)();        /* output a character */
+    void (*newLine)();        /* go to next line (and indent) */
+    int byteSize;             /* 4 or 6 or 8 depending on output mode */
+    int bits;                 /* bits waiting to go out */
+    int nBits;                /* number of bits waiting to go out */
+    long int base64Count;     /* number of hex or base64 chars printed 
+			         this region */
+    int mode;                 /* ADVANCED, BASE64, or CANONICAL */
+/*@shared@*/ /*@relnull@*/
+    FILE *outputFile;         /* where to put output, if not stdout */
+};
+
 /*@unchecked@*/ /*@observer@*/
 static char *hexDigits = "0123456789ABCDEF";
 
@@ -122,26 +138,44 @@ void newLine(sexpOutputStream os, int mode)
       os->putChar(os,' ');
 }
 
-/* newSexpOutputStream()
+void sexpOFnewLine(sexpOutputStream os, int mode)
+{
+    os->newLine(os, mode);
+}
+
+void sexpOFwidth(sexpOutputStream os, int width)
+{
+    if (width >= 0)
+	os->maxcolumn = width;
+}
+
+/* sexpOFopen()
  * Creates and initializes new sexpOutputStream object.
  */
-sexpOutputStream newSexpOutputStream(void)
+sexpOutputStream sexpOFopen(const char * ofn, const char * fmode)
 {
-  sexpOutputStream os;
-  os = (sexpOutputStream) sexpAlloc(sizeof(*os));
-  os->column = 0;
-  os->maxcolumn = DEFAULTLINELENGTH;
-  os->indent = 0;
-  os->putChar = putChar;
-  os->newLine = newLine;
-  os->byteSize = 8;
-  os->bits = 0;
-  os->nBits = 0;
+    sexpOutputStream os;
+    os = (sexpOutputStream) sexpAlloc(sizeof(*os));
+    os->column = 0;
+    os->maxcolumn = DEFAULTLINELENGTH;
+    os->indent = 0;
+    os->putChar = putChar;
+    os->newLine = newLine;
+    os->byteSize = 8;
+    os->bits = 0;
+    os->nBits = 0;
+    os->mode = CANONICAL;
+
+    if (ofn == NULL) {
 /*@-assignexpose@*/
-  os->outputFile = stdout;
+	os->outputFile = stdout;
 /*@=assignexpose@*/
-  os->mode = CANONICAL;
-  return os;
+    } else {
+	os->outputFile = fopen(ofn, fmode);
+	if (os->outputFile == NULL)
+	    ErrorMessage(ERROR, "Can't open output file %s.", ofn);
+    }
+    return os;
 }
 
 /*******************/

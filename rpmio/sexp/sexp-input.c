@@ -229,7 +229,7 @@ void sexpIFpoke(sexpInputStream is, int c)
  * (Prefixes stream with one blank, and initializes stream
  *  so that it reads from standard input.)
  */
-sexpInputStream newSexpInputStream(const char * ifn, const char * fmode)
+sexpInputStream sexpIFopen(const char * ifn, const char * fmode)
 {
     sexpInputStream is;
     is = (sexpInputStream) sexpAlloc(sizeof(*is));

@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 
     initializeCharacterTables();
     initializeMemory();
-    os = newSexpOutputStream();
+
     /* process switches */
     if (argc>1)
 	swa = swb = swc = swp = sws = swx = swl = FALSE;
@@ -131,16 +131,10 @@ int main(int argc, char **argv)
 	goto exit;
     }
 
-    is = newSexpInputStream(ifn, "r");
+    is = sexpIFopen(ifn, "r");
 
-    if (ofn != NULL) {
-	os->outputFile = fopen(ofn, "w");
-	if (os->outputFile == NULL)
-	    ErrorMessage(ERROR, "Can't open output file %s.", ofn);
-    }
-    if (width >= 0) {
-	os->maxcolumn = width;
-    }
+    os = sexpOFopen(ofn, "w");
+    sexpOFwidth(os, width);
 
     if (swa == FALSE && swb == FALSE && swc == FALSE)
 	swc = TRUE;  /* must have some output format! */
@@ -166,7 +160,7 @@ int main(int argc, char **argv)
 	if (swc) {
 	    if (swp) {
 		fprintf(stdout, "Canonical output:"); (void) fflush(stdout);
-		os->newLine(os, ADVANCED);
+		sexpOFnewLine(os, ADVANCED);
 	    }
 	    canonicalPrintObject(os, object);
 	    if (!swl) { fprintf(stdout, "\n"); (void) fflush(stdout); }
@@ -175,7 +169,7 @@ int main(int argc, char **argv)
 	if (swb) {
 	    if (swp) {
 		fprintf(stdout, "Base64 (of canonical) output:"); (void) fflush(stdout);
-		os->newLine(os, ADVANCED);
+		sexpOFnewLine(os, ADVANCED);
 	    }
 	    base64PrintWholeObject(os, object);
 	    if (!swl) { fprintf(stdout, "\n"); (void) fflush(stdout); }
@@ -184,7 +178,7 @@ int main(int argc, char **argv)
 	if (swa) {
 	    if (swp) {
 		fprintf(stdout, "Advanced transport output:"); (void) fflush(stdout);
-		os->newLine(os, ADVANCED);
+		sexpOFnewLine(os, ADVANCED);
 	    }
 	    advancedPrintObject(os,object);
 	    if (!swl) { fprintf(stdout, "\n"); (void) fflush(stdout); }

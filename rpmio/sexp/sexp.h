@@ -75,22 +75,6 @@ union sexpObject_u {
 /* In this implementation, it is the same as a list */
 typedef /*@abstract@*/ sexpList * sexpIter;
 
-struct sexpOutputStream_s {
-  long int column;          /* column where next character will go */
-  long int maxcolumn;       /* max usable column, or -1 if no maximum */
-  long int indent;          /* current indentation level (starts at 0) */
-  void (*putChar)();        /* output a character */
-  void (*newLine)();        /* go to next line (and indent) */
-  int byteSize;             /* 4 or 6 or 8 depending on output mode */
-  int bits;                 /* bits waiting to go out */
-  int nBits;                /* number of bits waiting to go out */
-  long int base64Count;     /* number of hex or base64 chars printed 
-			       this region */
-  int mode;                 /* BASE64, ADVANCED, or CANONICAL */
-/*@shared@*/ /*@relnull@*/
-  FILE *outputFile;         /* where to put output, if not stdout */
-};
-
 /* Function prototypes */
 
 /* sexp-basic */
@@ -189,7 +173,7 @@ int sexpIFeof(sexpInputStream is)
 	/*@*/;
 void sexpIFpoke(sexpInputStream is, int c)
 	/*@modifies is @*/;
-sexpInputStream newSexpInputStream(/*@null@*/ const char * ifn, const char * fmode)
+sexpInputStream sexpIFopen(/*@null@*/ const char * ifn, const char * fmode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 void skipWhiteSpace(sexpInputStream is)
@@ -244,9 +228,15 @@ void flushOutput(sexpOutputStream os)
 	/*@modifies os @*/;
 void newLine(sexpOutputStream os, int mode)
 	/*@modifies os @*/;
-sexpOutputStream newSexpOutputStream(void)
+
+void sexpOFnewLine(sexpOutputStream os, int mode)
+	/*@modifies os @*/;
+void sexpOFwidth(sexpOutputStream os, int width)
+	/*@modifies os @*/;
+sexpOutputStream sexpOFopen(/*@null@*/ const char * ofn, const char * fmode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+
 void printDecimal(sexpOutputStream os, long int n)
 	/*@modifies os @*/;
 void canonicalPrintVerbatimSimpleString(sexpOutputStream os, sexpSimpleString ss)
