@@ -6,7 +6,7 @@
 fingerPrintCache fpCacheCreate(int sizeHint) {
     fingerPrintCache fpc;
 
-    fpc = malloc(sizeof(*fpc));
+    fpc = xmalloc(sizeof(*fpc));
     fpc->ht = htCreate(sizeHint * 2, sizeof(char *), hashFunctionString,
 		       hashEqualityString);
     return fpc;
@@ -75,15 +75,15 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 	if ((cacheHit = cacheContainsDirectory(cache, *buf ? buf : "/"))) {
 	    fp.entry = cacheHit;
 	} else if (!stat(*buf ? buf : "/", &sb)) {
-	    newEntry = malloc(sizeof(*fp.entry));
+	    newEntry = xmalloc(sizeof(*fp.entry));
 	    newEntry->ino = sb.st_ino;
 	    newEntry->dev = sb.st_dev;
 	    newEntry->isFake = 0;
-	    newEntry->dirName = strdup(*buf ? buf : "/");	    
+	    newEntry->dirName = xstrdup(*buf ? buf : "/");	    
 	    fp.entry = newEntry;
 
 	    /* XXX FIXME: memory leak */
-	    htAddEntry(cache->ht, strdup(*buf ? buf : "/"), fp.entry);
+	    htAddEntry(cache->ht, xstrdup(*buf ? buf : "/"), fp.entry);
 	}
 
         if (fp.entry) {

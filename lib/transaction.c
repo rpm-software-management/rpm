@@ -448,7 +448,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    int k;
 
 	    haveRelocatedFile = 1;
-	    newDirList = malloc(sizeof(*newDirList) * (dirCount + 1));
+	    newDirList = xmalloc(sizeof(*newDirList) * (dirCount + 1));
 	    for (k = 0; k < dirCount; k++) {
 		newDirList[k] = alloca(strlen(dirNames[k]) + 1);
 		strcpy(newDirList[k], dirNames[k]);
@@ -456,7 +456,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    free(dirNames);
 	    dirNames = newDirList;
 	} else {
-	    dirNames = realloc(dirNames, 
+	    dirNames = xrealloc(dirNames, 
 			       sizeof(*dirNames) * (dirCount + 1));
 	}
 
