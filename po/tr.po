@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-11 13:27-0500\n"
+"POT-Creation-Date: 2005-02-12 17:25-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3176,13 +3176,13 @@ msgid "mounted filesystems:\n"
 msgstr "baðlý dosya sistemlerinin listesi alýnýyor\n"
 
 #: lib/rpmts.c:1223
-msgid "    i    dev bsize       bavail       iavail mount point\n"
+msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
 #: lib/rpmts.c:1279
-#, c-format
-msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgstr "Dosya %4d: %07o %s.%s\t %s\n"
 
 #: lib/rpmts.c:1616
 #, c-format
@@ -3637,45 +3637,45 @@ msgstr "kapandý      db ortamý %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "silindi       db ortamý %s/%s\n"
 
-#: rpmdb/db3.c:296
+#: rpmdb/db3.c:298
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "açýlýyor      db ortamý %s/%s %s\n"
 
-#: rpmdb/db3.c:792
+#: rpmdb/db3.c:794
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kapandý      db endeks %s/%s\n"
 
-#: rpmdb/db3.c:861
+#: rpmdb/db3.c:863
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "doðrulandý    db endeks %s/%s\n"
 
-#: rpmdb/db3.c:999
+#: rpmdb/db3.c:1002
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1103
+#: rpmdb/db3.c:1107
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1341
+#: rpmdb/db3.c:1345
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "exclusive"
 msgstr "baðdaþýk"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "shared"
 msgstr "paylaþýmlý"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1351
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"

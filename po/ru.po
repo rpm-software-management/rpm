@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-11 13:27-0500\n"
+"POT-Creation-Date: 2005-02-12 17:25-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3133,13 +3133,13 @@ msgid "mounted filesystems:\n"
 msgstr "строится список смонтированных файловых систем\n"
 
 #: lib/rpmts.c:1223
-msgid "    i    dev bsize       bavail       iavail mount point\n"
+msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
 #: lib/rpmts.c:1279
-#, c-format
-msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgstr "Файл%5d: %07o %s.%s\t %s\n"
 
 #: lib/rpmts.c:1616
 #, c-format
@@ -3590,45 +3590,45 @@ msgstr "закрыто окружение базы данных %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "удалено окружение базы данных %s/%s\n"
 
-#: rpmdb/db3.c:296
+#: rpmdb/db3.c:298
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "открывается окружение базы данных %s/%s %s\n"
 
-#: rpmdb/db3.c:792
+#: rpmdb/db3.c:794
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "закрыт индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:861
+#: rpmdb/db3.c:863
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "проверен индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:999
+#: rpmdb/db3.c:1002
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1103
+#: rpmdb/db3.c:1107
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1341
+#: rpmdb/db3.c:1345
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "shared"
 msgstr "разделяемый"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1351
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"

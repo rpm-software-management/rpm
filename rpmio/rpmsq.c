@@ -206,7 +206,7 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 	    sq->child = 0;
 	    sq->reaped = 0;
 	    sq->status = 0;
-	    sq->reaper = 1;
+	    sq->reaper = 0;
 /*@-bounds@*/
 	    sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/

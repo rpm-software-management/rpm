@@ -327,7 +327,7 @@ localdone=
 
 dirs=$prefix
 if test "$cross_compiling" != "yes"; then
-  dirs="$dirs /usr/local"
+  dirs="$dirs /opt/local /usr/local"
 fi
 for dir in $dirs
 do
@@ -378,7 +378,7 @@ dnl
 dnl Checks for libraries.
 
 #=================
-# Check for beecrypt library. Prefer external, otherwise internal.
+# Check for libelf library. Prefer external, otherwise internal.
 WITH_ELFUTILS_SUBDIR=
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-11 13:27-0500\n"
+"POT-Creation-Date: 2005-02-12 17:25-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -3187,12 +3187,12 @@ msgid "mounted filesystems:\n"
 msgstr "systèmes de fichiers montés:\n"
 
 #: lib/rpmts.c:1223
-msgid "    i    dev bsize       bavail       iavail mount point\n"
+msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
 #: lib/rpmts.c:1279
-#, c-format
-msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
+#, fuzzy, c-format
+msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
 #: lib/rpmts.c:1616
@@ -3648,47 +3648,47 @@ msgstr "fermeture  db environnement %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "enlèvement db environnement %s/%s\n"
 
-#: rpmdb/db3.c:296
+#: rpmdb/db3.c:298
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "ouverture  db environnement %s/%s %s\n"
 
-#: rpmdb/db3.c:792
+#: rpmdb/db3.c:794
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "fermeture     index db    %s/%s\n"
 
-#: rpmdb/db3.c:861
+#: rpmdb/db3.c:863
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "vérif.     db index       %s/%s\n"
 
-#: rpmdb/db3.c:999
+#: rpmdb/db3.c:1002
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 "trouvés(%d) mutex posix non-partagés, rajout de DB_PRIVATE, utilisation des "
 "verrous fcntl\n"
 
-#: rpmdb/db3.c:1103
+#: rpmdb/db3.c:1107
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "ouverture     index db    %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1341
+#: rpmdb/db3.c:1345
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "impossible d'avoir le verrou %s sur %s/%s\n"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "exclusive"
 msgstr "exclusif"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "shared"
 msgstr "partagé"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1351
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "verrouillage  index db    %s/%s\n"

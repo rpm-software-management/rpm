@@ -30,8 +30,9 @@ esac
 [ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" && exit 1
 [ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" # && exit 1
 
+myopts=
 if [ X"$@" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
-    export myprefix=/opt/local
+    export myopts="--prefix=/usr --disable-nls"
     export CPPFLAGS="-I${myprefix}/include"
 fi
 
@@ -80,5 +81,5 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
     fi
     ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} "$@"
 else
-    ./configure --prefix=${myprefix} "$@"
+    ./configure ${myopts} "$@"
 fi

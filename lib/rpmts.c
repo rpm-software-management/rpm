@@ -1220,7 +1220,7 @@ int rpmtsInitDSI(const rpmts ts)
 
     rpmMessage(RPMMESS_DEBUG, _("mounted filesystems:\n"));
     rpmMessage(RPMMESS_DEBUG,
-	_("    i    dev bsize       bavail       iavail mount point\n"));
+	_("    i        dev    bsize       bavail       iavail mount point\n"));
 
     rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
     if (rc || ts->filesystems == NULL || ts->filesystemCount <= 0)
@@ -1276,7 +1276,7 @@ int rpmtsInitDSI(const rpmts ts)
 	/* XXX Avoid FAT and other file systems that have not inodes. */
 	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
-	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%04x %5u %12ld %12ld %s\n"),
+	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s\n"),
 		i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
 		(signed long) dsi->bavail, (signed long) dsi->iavail,
 		ts->filesystems[i]);

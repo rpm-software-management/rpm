@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-11 13:27-0500\n"
+"POT-Creation-Date: 2005-02-12 17:25-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -3408,13 +3408,14 @@ msgid "mounted filesystems:\n"
 msgstr ""
 
 #: lib/rpmts.c:1223
-msgid "    i    dev bsize       bavail       iavail mount point\n"
+msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
+# , c-format
 #: lib/rpmts.c:1279
-#, c-format
-msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
+msgstr "No consegui ler o arquivo spec de %s\n"
 
 #: lib/rpmts.c:1616
 #, c-format
@@ -3883,45 +3884,45 @@ msgstr ""
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:296
+#: rpmdb/db3.c:298
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:792
+#: rpmdb/db3.c:794
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:861
+#: rpmdb/db3.c:863
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:999
+#: rpmdb/db3.c:1002
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1103
+#: rpmdb/db3.c:1107
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:1341
+#: rpmdb/db3.c:1345
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1351
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"

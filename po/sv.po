@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-11 13:27-0500\n"
+"POT-Creation-Date: 2005-02-12 17:25-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3117,12 +3117,13 @@ msgid "mounted filesystems:\n"
 msgstr "monterade filsystem:\n"
 
 #: lib/rpmts.c:1223
-msgid "    i    dev bsize       bavail       iavail mount point\n"
+#, fuzzy
+msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i  enhet bstrl       btillg       itillg monteringspunkt\n"
 
 #: lib/rpmts.c:1279
-#, c-format
-msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
+#, fuzzy, c-format
+msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
 #: lib/rpmts.c:1616
@@ -3576,46 +3577,46 @@ msgstr "stängde     db-miljö %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "tog bort    db-miljö %s/%s\n"
 
-#: rpmdb/db3.c:296
+#: rpmdb/db3.c:298
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "öppnar      db-miljö %s/%s %s\n"
 
-#: rpmdb/db3.c:792
+#: rpmdb/db3.c:794
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "stängde     db-index %s/%s\n"
 
-#: rpmdb/db3.c:861
+#: rpmdb/db3.c:863
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "verifierade db-index %s/%s\n"
 
-#: rpmdb/db3.c:999
+#: rpmdb/db3.c:1002
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 "odelad posix-mutex funna(%d), lägger till DB_PRIVATE, använder fcntl-lås\n"
 
-#: rpmdb/db3.c:1103
+#: rpmdb/db3.c:1107
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"
 
-#: rpmdb/db3.c:1341
+#: rpmdb/db3.c:1345
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1347
 msgid "shared"
 msgstr "delat"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1351
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste       db-index %s/%s\n"
