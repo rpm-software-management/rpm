@@ -539,12 +539,30 @@ static void genCpioListAndHeader(struct FileList *fl,
 			       &(p->gname), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
 			       &(p->mtime), 1);
+    if (sizeof(p->mode) != sizeof(uint_16)) {
+	uint_16 pmode = (uint_16)p->mode;
+	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
+			       &(pmode), 1);
+    } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(p->mode), 1);
+    }
+    if (sizeof(p->rdev) != sizeof(uint_16)) {
+	uint_16 prdev = (uint_16)p->rdev;
+	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
+			       &(prdev), 1);
+    } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(p->rdev), 1);
+    }
+    if (sizeof(p->device) != sizeof(uint_32)) {
+	uint_32 pdevice = (uint_32)p->device;
+	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
+			       &(pdevice), 1);
+    } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(p->device), 1);
+    }
 	headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 			       &(p->inode), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
