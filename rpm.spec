@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.9
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Dec 27 2000 Jeff Johnson <jbj@redhat.com>
+- use malloc'ed buffer for large queries.
+
 * Tue Dec 26 2000 Jeff Johnson <jbj@redhat.com>
 - send query/verify output through rpmlog().
 - resurrect rpmErrorSetCallback() and rpmErrorString().
