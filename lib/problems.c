@@ -8,10 +8,19 @@
 char * rpmProblemString(rpmProblem prob) {
     char * name, * version, * release;
     char * buf;
+    char * altName, * altVersion, * altRelease;
 
     headerGetEntry(prob.h, RPMTAG_NAME, NULL, (void **) &name, NULL);
     headerGetEntry(prob.h, RPMTAG_VERSION, NULL, (void **) &version, NULL);
     headerGetEntry(prob.h, RPMTAG_RELEASE, NULL, (void **) &release, NULL);
+
+    if (prob.altH) {
+	headerGetEntry(prob.altH, RPMTAG_NAME, NULL, (void **) &altName, NULL);
+	headerGetEntry(prob.altH, RPMTAG_VERSION, NULL, (void **) &altVersion, 
+		       NULL);
+	headerGetEntry(prob.altH, RPMTAG_RELEASE, NULL, (void **) &altRelease, 
+		       NULL);
+    }
 
     buf = malloc(strlen(name) + strlen(version) + strlen(release) + 400);
 
@@ -38,14 +47,14 @@ char * rpmProblemString(rpmProblem prob) {
 
       case RPMPROB_NEW_FILE_CONFLICT:
 	sprintf(buf, _("file %s conflicts between attemped installs of "
-		       "%s-%s-%s and FIXME"), prob.str1, name, version, 
-		release);
+		       "%s-%s-%s and %s-%s-%s"), prob.str1, name, version, 
+		release, altName, altVersion, altRelease);
 	break;
 
       case RPMPROB_FILE_CONFLICT:
 	sprintf(buf, _("file %s from install of %s-%s-%s conflicts with "
-		       "file from package FIXME"), prob.str1, name, version, 
-		release);
+		       "file from package %s-%s-%s"), prob.str1, name, version, 
+		release, altName, altVersion, altRelease);
 	break;
 
       default:
