@@ -1,6 +1,10 @@
 #ifndef _STRINGBUF_H_
 #define _STRINGBUF_H_
 
+/** \file lib/stringbuf.h
+ *
+ */
+
 typedef /*@abstract@*/ struct StringBufRec *StringBuf;
 
 #ifdef __cplusplus

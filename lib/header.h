@@ -1,12 +1,14 @@
-/* RPM - Copyright (C) 1995 Red Hat Software
+#ifndef H_HEADER
+#define H_HEADER
+
+/** \file lib/header.h
  *
- * header.h - routines for managing rpm tagged structures
  */
+
+/* RPM - Copyright (C) 1995 Red Hat Software */
 
 /* WARNING: 1 means success, 0 means failure (yes, this is backwards) */
 
-#ifndef H_HEADER
-#define H_HEADER
 #include <stdio.h>
 #include <zlib.h>
 
@@ -39,134 +41,377 @@ typedef unsigned short uint_16;
 typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken *Header;
 typedef /*@abstract@*/ struct headerIteratorS *HeaderIterator;
 
+/** \ingroup header
+ * Associate tag names with numeric values.
+ */
 struct headerTagTableEntry {
-    const char * name;
-    int val;
+    const char * name;		/*!< Tag name. */
+    int val;			/*!< Tag numeric value. */
 };
 
-enum headerSprintfExtenstionType { HEADER_EXT_LAST = 0, HEADER_EXT_FORMAT,
-				   HEADER_EXT_MORE, HEADER_EXT_TAG };
+/** \ingroup header
+ */
+enum headerSprintfExtenstionType {
+	HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
+	HEADER_EXT_FORMAT,	/*!< headerTagFormatFunction() extension */
+	HEADER_EXT_MORE,	/*!< Chain to next table. */
+	HEADER_EXT_TAG		/*!< headerTagTagFunction() extension */
+};
 
-/* This will only ever be passed RPM_TYPE_INT32 or RPM_TYPE_STRING to
-   help keep things simple */
-typedef char * (*headerTagFormatFunction)(int_32 type, const void * data,
-					  char * formatPrefix,
-					  int padding, int element);
-/* This is allowed to fail, which indicates the tag doesn't exist */
+/** \ingroup header
+ * HEADER_EXT_TAG format function prototype.
+ * This will only ever be passed RPM_TYPE_INT32 or RPM_TYPE_STRING to
+ * help keep things simple
+ *
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element
+ * @return		formatted string
+ */
+typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
+				const void * data, char * formatPrefix,
+				int padding, int element);
+/** \ingroup header
+ * HEADER_EXT_FORMAT format function prototype.
+ * This is allowed to fail, which indicates the tag doesn't exist.
+ *
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 typedef int (*headerTagTagFunction)(Header h, int_32 * type, const void ** data,
 				       int_32 * count, int * freeData);
 
+/** \ingroup header
+ * Define header tag output formats.
+ */
 struct headerSprintfExtension {
-    enum headerSprintfExtenstionType type;
-    char * name;
+    enum headerSprintfExtenstionType type;	/*!< Type of extension. */
+    char * name;				/*!< Name of extension. */
     union {
-	void * generic;
-	headerTagFormatFunction formatFunction;
-	headerTagTagFunction tagFunction;
-	struct headerSprintfExtension * more;
+	void * generic;				/*!< Private extension. */
+	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
+	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
+	struct headerSprintfExtension * more;	/*!< Chained table extension. */
     } u;
 };
 
-/* This defines some basic conversions all header users would probably like
-   to have */
+/** \ingroup header
+ * Supported default header tag output formats.
+ */
 extern const struct headerSprintfExtension headerDefaultFormats[];
 
-/* read and write a header from a file */
-Header headerRead(FD_t fd, int magicp);
-int headerWrite(FD_t fd, Header h, int magicp);
-Header headerGzRead(FD_t fd, int magicp);
-int headerGzWrite(FD_t fd, Header h, int magicp);
-unsigned int headerSizeof(Header h, int magicp);
+/** \ingroup header
+ * Read (and load) header from file handle.
+ * @param fd		file handle
+ * @param magicp
+ * @return		header
+ */
+Header headerRead(FD_t fd, int magicp)	/*@modifies fd @*/;
+
+/** \ingroup header
+ * Write (with unload) header to file handle.
+ * @param fd		file handle
+ * @param h		header
+ * @param magicp
+ * @return
+ */
+int headerWrite(FD_t fd, Header h, int magicp)	/*@modifies fd, h @*/;
+
+/** \ingroup header
+ * Return size of on-disk header representation in bytes.
+ */
+unsigned int headerSizeof(Header h, int magicp)
+	/*@modifies h @*/;
 
 #define HEADER_MAGIC_NO   0
 #define HEADER_MAGIC_YES  1
 
-/* load and unload a header from a chunk of memory */
-Header headerLoad(void *p);
-void *headerUnload(Header h);
+/** \ingroup header
+ * Convert header to in-memory representation.
+ * @param p		on-disk header (with offsets)
+ * @return		header (with pointers)
+ */
+Header headerLoad(void *p)	/*@*/;
 
-Header headerNew(void);
+/** \ingroup header
+ * Convert header to on-disk representation.
+ * @param h		header (with pointers)
+ * @return		on-disk header (with offsets)
+ */
+void *headerUnload(Header h)
+	/*@modifes h @*/;
+
+/** \ingroup header
+ * Create new (empty) header instance.
+ * @return		header
+ */
+Header headerNew(void)	/*@*/;
+
+/** \ingroup header
+ * Reference a header instance.
+ * @param h		header
+ * @return		referenced header instance
+ */
+Header headerLink(Header h)	/*@modifies h @*/;
+
+/** \ingroup header
+ * Dereference a header instance.
+ * @param h		header
+ */
 void headerFree( /*@killref@*/ Header h);
 
-/* dump a header to a file, in human readable format */
+/** \ingroup header
+ * Return header reference count.
+ * @param h		header
+ * @return		no. of references
+ */
+int headerUsageCount(Header h)	/*@*/;
+
+/** \ingroup header
+ * Dump a header in human readable format (for debugging).
+ * @param h		header
+ * @param flags		0 or HEADER_DUMP_LINLINE
+ * @param tags		array of tag name/value pairs
+ */
 void headerDump(Header h, FILE *f, int flags,
 		const struct headerTagTableEntry * tags);
-
-/* the returned string must be free()d */
-char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry * tags,
-		     const struct headerSprintfExtension * extentions,
-		     /*@out@*/ const char ** error);
-
 #define HEADER_DUMP_INLINE   1
 
-/* Duplicate tags are okay, but only defined for iteration (with the
-   exceptions noted below). While you are allowed to add i18n string
-   arrays through this function, you probably don't mean to. See
-   headerAddI18NString() instead */
-int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c);
-/* if there are multiple entries with this tag, the first one gets replaced */
-int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+typedef /*@observer@*/ const char * errmsg_t;
 
-/* Return array of lang names */
-char **headerGetLangs(Header h);
+/** \ingroup header
+ * Return formatted output string from header tags.
+ * The returned string must be free()d.
+ *
+ * @param h		header
+ * @param fmt		format to use
+ * @param tags		array of tag name/value pairs
+ * @param extentions	chained table of formatting extensions.
+ * @retval errmsg	error message (if any)
+ * @return		formatted output string (malloc'ed)
+ */
+/*@only@*/ char * headerSprintf(Header h, const char * fmt,
+		     const struct headerTagTableEntry * tags,
+		     const struct headerSprintfExtension * extentions,
+		     /*@out@*/ errmsg_t * errmsg)
+	/*@modifies h, *errmsg @*/;
 
-/* A NULL lang is interpreted as the C locale.  Here are the rules:
+/** \ingroup header
+ * Add tag to header.
+ * Duplicate tags are okay, but only defined for iteration (with the
+ * exceptions noted below). While you are allowed to add i18n string
+ * arrays through this function, you probably don't mean to. See
+ * headerAddI18NString() instead.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		pointer to tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
+int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
+	/*@modifies h @*/;
 
-	1) If the tag isn't in the Header, it's added with the passed string
-	   as a version.
-	2) If the tag occurs multiple times in entry, which tag is affected
-	   by the operation is undefined.
-	2) If the tag is in the header w/ this language, the entry is
-	   *replaced* (like headerModifyEntry()).
+/** \ingroup header
+ * Modify tag in header.
+ * If there are multiple entries with this tag, the first one gets replaced.
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		pointer to tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
+int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
+	/*@modifies h @*/;
 
-   This function is intended to just "do the right thing". If you need
-   more fine grained control use headerAddEntry() and headerModifyEntry()
-   but be careful!
-*/
+/** \ingroup header
+ * Return array of locales found in header.
+ * @param h		header
+ * @return		array of locales
+ */
+char ** headerGetLangs(Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Add locale specific tag to header.
+ * A NULL lang is interpreted as the C locale.  Here are the rules:
+ *
+ *	1) If the tag isn't in the Header, it's added with the passed string
+ *	   as a version.
+ *	2) If the tag occurs multiple times in entry, which tag is affected
+ *	   by the operation is undefined.
+ *	2) If the tag is in the header w/ this language, the entry is
+ *	   *replaced* (like headerModifyEntry()).
+ *
+ * This function is intended to just "do the right thing". If you need
+ * more fine grained control use headerAddEntry() and headerModifyEntry().
+ *
+ * @param h		header
+ * @param tag		tag
+ * @param string	tag value
+ * @param lang		locale
+ * @return		1 on success, 0 on failure
+ */
 int headerAddI18NString(Header h, int_32 tag, const char * string,
-	const char * lang);
+	const char * lang)
+	/*@modifies h @*/;
 
-/* Appends item p to entry w/ tag and type as passed. Won't work on
-   RPM_STRING_TYPE. Any pointers from headerGetEntry() for this entry
-   are invalid after this call has been made! */
-int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c);
+/** \ingroup header
+ * Append element to tag array in header.
+ * Appends item p to entry w/ tag and type as passed. Won't work on
+ * RPM_STRING_TYPE. Any pointers from headerGetEntry() for this entry
+ * are invalid after this call has been made!
+ *
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		pointer to tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
+int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Add or append element to tag array in header.
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		pointer to tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
 int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
-			   void * p, int_32 c);
+			   void * p, int_32 c)
+		/*@modifies h @*/;
 
-/* Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements w/
-   RPM_I18NSTRING_TYPE equivalent enreies are translated (if HEADER_I18NTABLE
-   entry is present). */
+/** \ingroup header
+ * Retrieve tag value.
+ * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
+ * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
+ * entry is present).
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval type		address of tag value data type
+ * @retval p		address of pointer to tag value(s)
+ * @retval c		address of number of values
+ * @return		1 on success, 0 on failure
+ */
 int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
-	/*@out@*/ void **p, /*@out@*/int_32 *c);
+	/*@out@*/ void **p, /*@out@*/int_32 *c)
+		/*@modifies h, *type, *p, *c @*/;
 
-/* This gets an entry, and uses as little extra RAM as possible to represent
-   it (this is only an issue for RPM_STRING_ARRAY_TYPE. */
+/** \ingroup header
+ * Retrieve tag value using header internal array.
+ * Get an entry using as little extra RAM as possible to return the tag value.
+ * This is only an issue for RPM_STRING_ARRAY_TYPE.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval type		address of tag value data type
+ * @retval p		address of pointer to tag value(s)
+ * @retval c		address of number of values
+ * @return		1 on success, 0 on failure
+ */
 int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type,
-	/*@out@*/ void **p, /*@out@*/ int_32 *c);
+	/*@out@*/ void **p, /*@out@*/ int_32 *c)
+		/*@modifies h, *type, *p, *c @*/;
 
-/* If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
-   match. */
+/** \ingroup header
+ * Retrieve tag value with type match.
+ * If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
+ * match.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval type		address of tag value data type
+ * @retval p		address of pointer to tag value(s)
+ * @retval c		address of number of values
+ * @return		1 on success, 0 on failure
+ */
 int headerGetRawEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
-	/*@out@*/ void **p, /*@out@*/ int_32 *c);
+	/*@out@*/ void **p, /*@out@*/ int_32 *c)
+		/*@modifies h, *type, *p, *c @*/;
 
-int headerIsEntry(Header h, int_32 tag);
-/* removes all entries of type tag from the header, returns 1 if none were
-   found */
-int headerRemoveEntry(Header h, int_32 tag);
+/** \ingroup header
+ * Check if tag is in header.
+ * @param h		header
+ * @return		1 on success, 0 on failure
+ */
+int headerIsEntry(Header h, int_32 tag)
+	/*@modifies h @*/;
 
-HeaderIterator headerInitIterator(Header h);
+/** \ingroup header
+ * Delete tag in header.
+ * Removes all entries of type tag from the header, returns 1 if none were
+ * found.
+ *
+ * @param h		header
+ * @return		0 on success, 1 on failure (INCONSISTENT)
+ */
+int headerRemoveEntry(Header h, int_32 tag)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Create header tag iterator.
+ * @param h		header
+ * @return		header tag iterator
+ */
+HeaderIterator headerInitIterator(Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return next tag from header.
+ * @param iter		header tag iterator
+ * @retval tag		address of tag
+ * @retval type		address of tag value data type
+ * @retval p		address of pointer to tag value(s)
+ * @retval c		address of number of values
+ * @return		1 on success, 0 on failure
+ */
 int headerNextIterator(HeaderIterator iter,
 	/*@out@*/ int_32 *tag, /*@out@*/ int_32 *type, /*@out@*/ void **p,
-	/*@out@*/ int_32 *c);
+	/*@out@*/ int_32 *c)
+		/*@modifies iter, *tag, *type, *p, *c @*/;
+
+/** \ingroup header
+ * Destroy header tag iterator.
+ * @param iter		header tag iterator
+ */
 void headerFreeIterator( /*@only@*/ HeaderIterator iter);
 
-Header headerCopy(Header h);
-void headerSort(Header h);
-Header headerLink(Header h);
-int headerUsageCount(Header h);
+/** \ingroup header
+ * Duplicate a header.
+ * @param h		header
+ * @return		new header instance
+ */
+Header headerCopy(Header h)
+	/*@modifies h @*/;
 
-void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy);
+/** \ingroup header
+ * Sort tags in header.
+ * @param h		header
+ */
+void headerSort(Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Duplicate tag values from one header into another.
+ * @param headerFrom		source header
+ * @param headerTo		destination header
+ * @param tagstocopy		array of tags that are copied
+ */
+void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy)
+	/*@modifies headerFrom, headerTo @*/;
 
 /* Entry Types */
 

@@ -1,5 +1,9 @@
 #include "system.h"
 
+/**
+ * \file lib/fileutil.c
+ */
+
 #include <rpmlib.h>
 
 #include "misc.h"

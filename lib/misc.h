@@ -1,6 +1,10 @@
 #ifndef H_MISC
 #define H_MISC
 
+/** \file lib/misc.h
+ *
+ */
+
 #include <unistd.h>
 #include <sys/types.h>
 

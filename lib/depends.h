@@ -1,6 +1,10 @@
 #ifndef H_DEPENDS
 #define H_DEPENDS
 
+/** \file lib/depends.h
+ *
+ */
+
 #include <header.h>
 
 /**

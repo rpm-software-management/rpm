@@ -1,3 +1,7 @@
+/** \ingroup signature
+ * \file lib/signature.c
+ */
+
 /* signature.c - RPM signature functions */
 
 /* NOTES

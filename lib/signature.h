@@ -1,7 +1,9 @@
 #ifndef H_SIGNATURE
 #define	H_SIGNATURE
 
-/* signature.h - generate and verify signatures */
+/** \file lib/signature.h
+ * Generate and verify signatures.
+ */
 
 #include <header.h>
 

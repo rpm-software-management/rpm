@@ -1,3 +1,7 @@
+/** \ingroup rpmio
+ * \file lib/tufdio.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>

@@ -1,3 +1,7 @@
+/** \ingroup rpmcli
+ * \file lib/query.c
+ */
+
 #include "system.h"
 
 #ifndef PATH_MAX

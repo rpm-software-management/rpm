@@ -1,6 +1,10 @@
 #ifndef _H_RPMLEAD
 #define _H_RPMLEAD
 
+/** \file lib/rpmlead.h
+ *
+ */
+
 #include <rpmlib.h>
 
 /* Other definitions went to rpmlib.h */

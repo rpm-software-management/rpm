@@ -1,3 +1,7 @@
+/** \ingroup rpmdep
+ * \file lib/rpmlibprov.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>

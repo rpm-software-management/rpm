@@ -1,3 +1,7 @@
+/**
+ * \file lib/poptQV.c
+ *  Popt tables for query/verify modes.
+ */
 #include "system.h"
 
 #include "rpmbuild.h"

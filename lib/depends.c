@@ -1,5 +1,9 @@
 #include "system.h"
 
+/** \ingroup rpmdep
+ * \file lib/depends.c
+ */
+
 #include <rpmlib.h>
 
 #include "depends.h"

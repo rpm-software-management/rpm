@@ -1,5 +1,9 @@
 #include "system.h"
 
+/** \ingroup header
+ * \file lib/formats.c
+ */
+
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 #include "misc.h"

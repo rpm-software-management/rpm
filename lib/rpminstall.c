@@ -1,3 +1,7 @@
+/** \ingroup rpmcli
+ * \file lib/rpminstall.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>

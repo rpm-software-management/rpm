@@ -1,5 +1,9 @@
 #include "system.h"
 
+/**
+ * \file lib/fs.c
+ */
+
 #include <rpmlib.h>
 #include <rpmmacro.h>
 

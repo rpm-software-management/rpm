@@ -1,3 +1,7 @@
+/** \ingroup rpmcli
+ * \file lib/verify.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>

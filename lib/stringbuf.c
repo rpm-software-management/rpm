@@ -1,3 +1,7 @@
+/**
+ * \file lib/stringbuf.c
+ */
+
 #include "system.h"
 
 #include "stringbuf.h"

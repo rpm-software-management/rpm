@@ -1,3 +1,7 @@
+/** \ingroup rpmtrans payload
+ * \file lib/uninstall.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>
@@ -157,7 +161,7 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 		if (fnlen > fnmaxlen)
 		    fnmaxlen = fnlen;
 	}
-	fnmaxlen += rootdir + sizeof("/");	/* XXX one byte too many */
+	fnmaxlen += rdlen + sizeof("/");	/* XXX one byte too many */
 
 	fileName = alloca(fnmaxlen);
 

@@ -1,3 +1,7 @@
+/** \ingroup rpmtrans payload
+ * \file lib/install.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>

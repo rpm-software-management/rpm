@@ -1,3 +1,7 @@
+/**
+ * \file lib/stubs.c
+ */
+
 /* XXX Portable shared libraries require rpmlib to contain these functions. */
 
 #include "system.h"

@@ -1,5 +1,9 @@
 #include "system.h"
 
+/**
+ * \file lib/fprint.c
+ */
+
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmCleanPath */
 

@@ -1,6 +1,6 @@
-/*
- * md5sum.c	- Generate/check MD5 Message Digests
- *
+/** \ingroup signature.c
+ * \file lib/md5sum.c
+ * Generate/check MD5 Message Digests.
  * Compile and link with md5.c.  If you don't have getopt() in your library
  * also include getopt.c.  For MSDOS you can also link with the wildcard
  * initialization function (wildargs.obj for Turbo C and setargv.obj for MSC)

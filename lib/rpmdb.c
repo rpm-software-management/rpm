@@ -1,3 +1,7 @@
+/** \ingroup rpmdb dbi
+ * \file lib/rpmdb.c
+ */
+
 #include "system.h"
 
 static int _debug = 0;

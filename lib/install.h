@@ -1,6 +1,10 @@
 #ifndef H_INSTALL
 #define H_INSTALL
 
+/** \file lib/install.h
+ *
+ */
+
 #include <rpmlib.h>
 
 /**

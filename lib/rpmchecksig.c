@@ -1,4 +1,7 @@
-/* checksig.c: verify the signature of an RPM */
+/** \ingroup rpmcli
+ * \file lib/rpmchecksig.c
+ * Verify the signature of a package.
+ */
 
 #include "system.h"
 

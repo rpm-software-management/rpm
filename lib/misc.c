@@ -1,3 +1,7 @@
+/**
+ * \file lib/misc.c
+ */
+
 #include "system.h"
 
 static int _debug = 0;

@@ -1,3 +1,7 @@
+/**
+ * \file lib/problems.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>

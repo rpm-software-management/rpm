@@ -1,21 +1,26 @@
 #include "system.h"
 
+/** \ingroup rpmio db1
+ * \file lib/falloc.c
+ * 
+ * The entire file space is thus divided into blocks with a "struct fablock"
+ * at the header of each. The size fields doubly link this block list.
+ *
+ * There is an additional free list weaved through the block list, which 
+ * keeps new allocations fast.
+ *
+ * Much of this was inspired by Knuth vol 1.
+ *
+ */
+
 #include <rpmio_internal.h>
 #include "falloc.h"
 
+/** \ingroup db1
+ */
 #define FA_MAGIC      0x02050920
 
-/* 
-   The entire file space is thus divided into blocks with a "struct fablock"
-   at the header of each. The size fields doubly link this block list.
-
-   There is an additional free list weaved through the block list, which 
-   keeps new allocations fast.
-
-   Much of this was inspired by Knuth vol 1.
- */
-
-struct faFileHeader{
+struct faFileHeader {
     unsigned int magic;
     unsigned int firstFree;
 };

@@ -1,6 +1,10 @@
 #ifndef _H_OLDRPMDB
 #define _H_OLDRPMDB
 
+/** \file lib/oldrpmdb.h
+ *
+ */
+
 #include <gdbm.h>
 
 #include <oldheader.h>

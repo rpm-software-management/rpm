@@ -1,3 +1,7 @@
+/** \ingroup lead
+ * \file lib/rpmlead.c
+ */
+
 #include "system.h"
 
 #if HAVE_MACHINE_TYPES_H

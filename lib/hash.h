@@ -2,7 +2,7 @@
 #define H_HASH
 
 /** \file lib/hash.h
- * Hash table implemenation
+ * Hash table implemenation.
  */
 
 typedef struct hashTable_s * hashTable;

@@ -1,6 +1,10 @@
 #ifndef MD5_H
 #define MD5_H
 
+/** \file lib/md5.h
+ *
+ */
+
 #include <sys/types.h>
 
 typedef unsigned int uint32;

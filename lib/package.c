@@ -1,3 +1,7 @@
+/** \ingroup header
+ * \file lib/package.c
+ */
+
 #include "system.h"
 
 #ifdef	__LCLINT__
