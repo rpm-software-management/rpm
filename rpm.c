@@ -7,6 +7,7 @@
 #include "install.h"
 #include "lib/rpmerr.h"
 #include "lib/messages.h"
+#include "lib/signature.h"
 #include "query.h"
 #include "verify.h"
 #include "rpmlib.h"
@@ -28,7 +29,7 @@ void printHelp(void);
 void printVersion(void);
 void printBanner(void);
 void printUsage(void);
-void build(char * arg, int buildAmount);
+void build(char * arg, int buildAmount, char *passPhrase);
 
 void printVersion(void) {
     printf("RPM version %s\n", version);
@@ -133,11 +134,11 @@ void printHelp(void) {
     puts("                          and remove spec file, sources, patches, and icons.");
 }
 
-void build(char * arg, int buildAmount) {
+void build(char * arg, int buildAmount, char *passPhrase) {
     FILE *f;
     Spec s;
     char * specfile;
-    
+
     if (arg[0] == '/') {
 	specfile = arg;
     } else {
@@ -152,7 +153,7 @@ void build(char * arg, int buildAmount) {
     s = parseSpec(f, specfile);
     fclose(f);
     if (s) {
-	if (doBuild(s, buildAmount)) {
+	if (doBuild(s, buildAmount, passPhrase)) {
 	    fprintf(stderr, "Build failed.\n");
 	}
         freeSpec(s);
@@ -186,8 +187,10 @@ int main(int argc, char ** argv) {
     int interfaceFlags = 0;
     int buildAmount = 0;
     int clean = 0;
+    int signIt = 0;
     char * prefix = "/";
     char * specFile;
+    char *passPhrase = "";
     struct option options[] = {
 	    { "all", 0, 0, 'a' },
 	    { "build", 1, 0, 'b' },
@@ -210,6 +213,7 @@ int main(int argc, char ** argv) {
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
 	    { "root", 1, 0, 'r' },
+	    { "sign", 0, &signIt, 0 },
 	    { "state", 0, 0, 's' },
 	    { "stdin-files", 0, 0, 'F' },
 	    { "stdin-group", 0, 0, 'G' },
@@ -438,6 +442,19 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_BUILD && clean) 
 	argerror("--clean may only be used during package building");
 
+    if (signIt) {
+        if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD) {
+            if ((optind != argc) && (sigLookupType() == RPMSIG_PGP262_1024)) {
+	        passPhrase = strdup(getPassPhrase("Enter pass phrase:"));
+	    }
+	} else {
+	    argerror("--sign may only be used during package building");
+	}
+    } else {
+        /* Override any rpmrc setting */
+        setVar(RPMVAR_SIGTYPE, "none");
+    }
+	
     switch (bigMode) {
       case MODE_UNKNOWN:
 	if (!version && !help) printUsage();
@@ -457,7 +474,7 @@ int main(int argc, char ** argv) {
 	    if (doSourceInstall("/", argv[optind++], &specFile))
 		exit(-1);
 
-	    build(specFile, buildAmount);
+	    build(specFile, buildAmount, passPhrase);
 	}
 	break;
 
@@ -472,7 +489,7 @@ int main(int argc, char ** argv) {
 	    argerror("no spec files given for build");
 
 	while (optind < argc) 
-	    build(argv[optind++], buildAmount);
+	    build(argv[optind++], buildAmount, passPhrase);
 	break;
 
       case MODE_UNINSTALL:
