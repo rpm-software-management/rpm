@@ -20,6 +20,36 @@ struct problemsSet_s {
 } ;
 
 /**
+ */
+typedef /*@abstract@*/ struct rpmFNSet_s *		rpmFNSet;
+
+/**
+ * A package filename set.
+ */
+struct rpmFNSet_s {
+    int i;			/*!< File index. */
+
+/*@observer@*/
+    const char * Type;		/*!< Tag name. */
+
+    rpmTag tagN;		/*!< Header tag. */
+/*@refcounted@*/ /*@null@*/
+    Header h;			/*!< Header for file name set (or NULL) */
+
+/*@only@*/ /*@null@*/
+    const char ** BN;		/*!< File base name. */
+/*@only@*/ /*@null@*/
+    const int_32 * DI;		/*!< File directory index. */
+/*@only@*/ /*@null@*/
+    const uint_32 * Flags;	/*!< File flags. */
+/*@only@*/ /*@null@*/
+    const char ** DN;		/*!< Directory name. */
+    int_32 DCount;		/*!< No. of directories. */
+    rpmTagType BNt, DIt, Ft, DNt;	/*!< Tag data types. */
+    int_32 Count;		/*!< No. of files. */
+};
+
+/**
  * A package dependency set.
  */
 struct rpmDepSet_s {
@@ -33,6 +63,7 @@ struct rpmDepSet_s {
     rpmTag tagN;		/*!< Header tag. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
+
 /*@only@*/
     const char ** N;		/*!< Name. */
 /*@only@*/
@@ -40,7 +71,7 @@ struct rpmDepSet_s {
 /*@only@*/
     const int_32 * Flags;	/*!< Flags identifying context/comparison. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
-    int Count;			/*!< No. of elements */
+    int_32 Count;		/*!< No. of elements */
 };
 
 #ifdef __cplusplus
@@ -48,7 +79,26 @@ extern "C" {
 #endif
 
 /**
- * Destroy a new dependency set.
+ * Destroy a file name set.
+ * @param ds		file name set
+ * @return		NULL always
+ */
+/*@only@*/ /*@null@*/
+rpmFNSet fnsFree(/*@only@*/ /*@null@*/ rpmFNSet fns)
+	/*@modifies fns@*/;
+/**
+ * Create and load a file name set.
+ * @param h		header
+ * @param tagN		RPMTAG_BASENAMES
+ * @param scareMem	Use pointers to refcounted header memory?
+ * @return		new file name set
+ */
+/*@only@*/ /*@null@*/
+rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
+	/*@modifies h @*/;
+
+/**
+ * Destroy a dependency set.
  * @param ds		dependency set
  * @return		NULL always
  */

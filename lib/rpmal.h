@@ -30,6 +30,7 @@ int alGetMultiLib(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
 #endif
 
+#ifndef	DYING
 /**
  * Return available package files count.
  * @param al		available list
@@ -38,6 +39,7 @@ int alGetMultiLib(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
  */
 int alGetFilesCount(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
+#endif
 
 /**
  * Return available package provides.

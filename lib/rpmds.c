@@ -12,6 +12,91 @@
 /*@access problemsSet @*/
 
 /*@access alKey@*/
+
+/*@access rpmFNSet @*/
+
+/*@unchecked@*/
+static int _fns_debug = 0;
+
+rpmFNSet fnsFree(rpmFNSet fns)
+{
+    HFD_t hfd = headerFreeData;
+
+    if (fns == NULL)
+	return NULL;
+
+/*@-modfilesystem@*/
+if (_fns_debug)
+fprintf(stderr, "*** fns %p -- %s[%d]\n", fns, fns->Type, fns->Count);
+/*@=modfilesystem@*/
+
+    /*@-branchstate@*/
+    if (fns->Count > 0) {
+	fns->DN = hfd(fns->DN, fns->DNt);
+	fns->BN = hfd(fns->BN, fns->BNt);
+	/*@-evalorder@*/
+	fns->DI =
+		(fns->h != NULL ? hfd(fns->DI, fns->DIt) : _free(fns->DI));
+	fns->Flags =
+		(fns->h != NULL ? hfd(fns->Flags, fns->Ft) : _free(fns->Flags));
+	/*@=evalorder@*/
+	fns->h = headerFree(fns->h, "fnsFree");
+    }
+    /*@=branchstate@*/
+
+    memset(fns, 0, sizeof(*fns));		/* XXX trash and burn */
+    fns = _free(fns);
+    return NULL;
+}
+
+rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
+{
+    HGE_t hge =
+	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
+    rpmFNSet fns = NULL;
+    const char * Type;
+    rpmTag tagBN, tagDI, tagF, tagDN;
+
+    if (tagN == RPMTAG_BASENAMES) {
+	Type = "Files";
+	tagBN = tagN;
+	tagDI = RPMTAG_DIRINDEXES;
+	tagF = RPMTAG_FILEFLAGS;
+	tagDN = RPMTAG_DIRNAMES;
+    } else
+	goto exit;
+
+    fns = xcalloc(1, sizeof(*fns));
+    fns->i = -1;
+
+    fns->Type = Type;
+
+    fns->tagN = tagN;
+    fns->h = (scareMem ? headerLink(h, "fnsNew") : NULL);
+    if (hge(h, tagBN, &fns->BNt, (void **) &fns->BN, &fns->Count)) {
+	int xx;
+	xx = hge(h, tagDN, &fns->DNt, (void **) &fns->DN, &fns->DCount);
+	xx = hge(h, tagDI, &fns->DIt, (void **) &fns->DI, NULL);
+	if (!scareMem && fns->DI != NULL)
+	    fns->DI = memcpy(xmalloc(fns->Count * sizeof(*fns->DI)),
+                                fns->DI, fns->Count * sizeof(*fns->DI));
+	xx = hge(h, tagF, &fns->Ft, (void **) &fns->Flags, NULL);
+	if (!scareMem && fns->Flags != NULL)
+	    fns->Flags = memcpy(xmalloc(fns->Count * sizeof(*fns->Flags)),
+                                fns->Flags, fns->Count * sizeof(*fns->Flags));
+    } else
+	fns->h = headerFree(fns->h, "fnsNew");
+
+exit:
+
+/*@-modfilesystem@*/
+if (_fns_debug)
+fprintf(stderr, "*** fns %p ++ %s[%d]\n", fns, fns->Type, fns->Count);
+/*@=modfilesystem@*/
+
+    return fns;
+}
+
 /*@access rpmDepSet @*/
 
 /*@unchecked@*/
@@ -21,6 +106,9 @@ rpmDepSet dsFree(rpmDepSet ds)
 {
     HFD_t hfd = headerFreeData;
     rpmTag tagEVR, tagF;
+
+    if (ds == NULL)
+	return NULL;
 
 /*@-modfilesystem@*/
 if (_ds_debug)
@@ -117,7 +205,7 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
 	xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
-                                ds->Flags, ds->Count* sizeof(*ds->Flags));
+                                ds->Flags, ds->Count * sizeof(*ds->Flags));
     } else
 	ds->h = headerFree(ds->h, "dsNew");
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-04 22:42-0500\n"
+"POT-Creation-Date: 2001-11-05 08:53-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1459,44 +1459,44 @@ msgstr ""
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:317 lib/rpmds.c:472
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:317 lib/rpmds.c:472
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1114
+#: lib/depends.c:1103
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1366
+#: lib/depends.c:1343
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1440
+#: lib/depends.c:1417
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1515
+#: lib/depends.c:1492
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1576
+#: lib/depends.c:1553
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1611
+#: lib/depends.c:1588
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1616
+#: lib/depends.c:1593
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2398,11 +2398,11 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:677
+#: lib/rpmal.c:718
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:780
+#: lib/rpmal.c:821
 msgid "(added provide)"
 msgstr ""
 
@@ -2470,20 +2470,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:354
+#: lib/rpmds.c:442
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:383
+#: lib/rpmds.c:471
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:409
+#: lib/rpmds.c:497
 #, c-format
 msgid "package %s-%s-%s has unsatisfied %s: %s\n"
 msgstr ""

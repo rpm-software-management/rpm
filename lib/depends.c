@@ -819,23 +819,12 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 
 	    suggestedPkgs = NULL;
 
-#ifdef DYING
-	    /*@-branchstate -mods -type@*/ /* FIX: hack to disable noise */
-#endif
+	    /*@-branchstate@*/
 	    if (ts->availablePackages != NULL) {
-#ifdef	DYING
-		const char * Type = requires->Type;
-		requires->Type = NULL;
-#endif
 		suggestedPkgs =
 			alAllSatisfiesDepend(ts->availablePackages, requires);
-#ifdef	DYING
-		requires->Type = Type;
-#endif
 	    }
-#ifdef	DYING
-	    /*@=branchstate =mods =type@*/
-#endif
+	    /*@=branchstate@*/
 
 	    dsProblem(psp, h, requires, suggestedPkgs);
 
@@ -1170,19 +1159,7 @@ static inline int addRelation(rpmTransactionSet ts,
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
 	return 0;
 
-#ifdef	DYING
-    /*@-mods -type@*/	/* FIX: hack to disable noise */
-    {	const char * Type = requires->Type;
-	requires->Type = NULL;
-#endif
-
-	pkgKey = alSatisfiesDepend(ts->addedPackages, requires);
-
-#ifdef	DYING
-	requires->Type = Type;
-    }
-    /*@=mods =type@*/
-#endif
+    pkgKey = alSatisfiesDepend(ts->addedPackages, requires);
 
 if (_te_debug)
 fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
