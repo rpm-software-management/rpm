@@ -22,6 +22,7 @@
 #include "lib/messages.h"
 #include "lib/signature.h"
 #include "misc/popt.h"
+#include "miscfn.h"
 #include "query.h"
 #include "rpmlib.h"
 #include "verify.h"

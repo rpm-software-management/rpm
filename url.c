@@ -13,6 +13,7 @@
 
 #include "ftp.h"
 #include "messages.h"
+#include "miscfn.h"
 #include "rpmlib.h"
 #include "url.h"
 
