@@ -145,12 +145,14 @@ int doReSign(int add, char *passPhrase, char **argv)
 int doCheckSig(int flags, char **argv)
 {
     FD_t fd, ofd;
-    int res, res2, res3, missingKeys;
+    int res, res2, res3;
     struct rpmlead lead;
     char *rpm;
     char result[1024];
     const char * sigtarget;
     unsigned char buffer[8192];
+    unsigned char missingKeys[7164];
+    char *tempKey;
     Header sig;
     HeaderIterator sigIter;
     int_32 tag, type, count;
@@ -209,7 +211,7 @@ int doCheckSig(int flags, char **argv)
 
 	sigIter = headerInitIterator(sig);
 	res2 = 0;
-	missingKeys = 0;
+	missingKeys[0] = '\0';
 	if (rpmIsVerbose()) {
 	    sprintf(buffer, "%s:\n", rpm);
 	} else {
@@ -247,7 +249,9 @@ int doCheckSig(int flags, char **argv)
 			if (res3 == RPMSIG_NOKEY) {
 			    /* Do not consider this a failure */
 			    strcat(buffer, "(PGP) ");
-			    missingKeys = 1;
+			    strcat(missingKeys, " PGP#");
+			    tempKey = strstr(result, "Key ID");
+			    strncat(missingKeys, tempKey+7, 8);
 			} else {
 			    strcat(buffer, "PGP ");
 			    res2 = 1;
@@ -257,7 +261,9 @@ int doCheckSig(int flags, char **argv)
 			if (res3 == RPMSIG_NOKEY) {
 			    /* Do not consider this a failure */
 			    strcat(buffer, "(GPG) ");
-			    missingKeys = 1;
+			    strcat(missingKeys, " GPG#");
+			    tempKey = strstr(result, "key ID");
+			    strncat(missingKeys, tempKey+7, 8);
 			} else {
 			    strcat(buffer, "GPG ");
 			    res2 = 1;
@@ -302,15 +308,20 @@ int doCheckSig(int flags, char **argv)
 	    if (rpmIsVerbose()) {
 		fprintf(stderr, "%s", (char *)buffer);
 	    } else {
-		fprintf(stderr, "%s%s%s\n", (char *)buffer, _("NOT OK"),
-			missingKeys ? _(" (MISSING KEYS)") : "");
+		fprintf(stderr, "%s%s%s%s%s\n", (char *)buffer, _("NOT OK"),
+			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
+			(char *)missingKeys,
+			(missingKeys[0] != '\0') ? _(")") : "");
+
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
 		fprintf(stdout, "%s", (char *)buffer);
 	    } else {
-		fprintf(stdout, "%s%s%s\n", (char *)buffer, _("OK"),
-		       missingKeys ? _(" (MISSING KEYS)") : "");
+		fprintf(stdout, "%s%s%s%s%s\n", (char *)buffer, _("OK"),
+			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
+			(char *)missingKeys,
+			(missingKeys[0] != '\0') ? _(")") : "");
 	    }
 	}
     }

@@ -1,4 +1,5 @@
 2.5.x -> 2.90
+	- identify missing keys by type (Toshio Kuratomi).
 	- package install/removal much smarter about symlinks
 	- redid install/remove API to allow transaction semantics
 	- support for GPG (Toshio Kuratomi <badger@prtr-13.ucsc.edu>)

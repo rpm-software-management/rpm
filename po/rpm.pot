@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-13 14:17-0500\n"
+"POT-Creation-Date: 1999-01-17 19:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,12 +98,12 @@ msgstr ""
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
-#: ../checksig.c:27 ../checksig.c:163
+#: ../checksig.c:27 ../checksig.c:165
 #, c-format
 msgid "%s: Open failed\n"
 msgstr ""
 
-#: ../checksig.c:31 ../checksig.c:168
+#: ../checksig.c:31 ../checksig.c:170
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
@@ -118,12 +118,12 @@ msgstr ""
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: ../checksig.c:43 ../checksig.c:178
+#: ../checksig.c:43 ../checksig.c:180
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: ../checksig.c:56 ../checksig.c:192
+#: ../checksig.c:56 ../checksig.c:194
 msgid "Couldn't read the header/archive"
 msgstr ""
 
@@ -144,30 +144,34 @@ msgstr ""
 msgid "Couldn't write package"
 msgstr ""
 
-#: ../checksig.c:173
+#: ../checksig.c:175
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: ../checksig.c:183
+#: ../checksig.c:185
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: ../checksig.c:199
+#: ../checksig.c:201
 #, c-format
 msgid "Unable to write %s"
 msgstr ""
 
-#: ../checksig.c:305
+#: ../checksig.c:311
 msgid "NOT OK"
 msgstr ""
 
-#: ../checksig.c:306 ../checksig.c:313
-msgid " (MISSING KEYS)"
+#: ../checksig.c:312 ../checksig.c:322
+msgid " (MISSING KEYS:"
 msgstr ""
 
-#: ../checksig.c:312
+#: ../checksig.c:314 ../checksig.c:324
+msgid ")"
+msgstr ""
+
+#: ../checksig.c:321
 msgid "OK"
 msgstr ""
 
@@ -1511,172 +1515,172 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr ""
 
-#: ../build/files.c:230
+#: ../build/files.c:234
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: ../build/files.c:275 ../build/files.c:287 ../build/files.c:356
-#: ../build/files.c:368 ../build/files.c:394
+#: ../build/files.c:279 ../build/files.c:291 ../build/files.c:360
+#: ../build/files.c:372 ../build/files.c:398
 #, c-format
 msgid "Bad %s() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:317
+#: ../build/files.c:321
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: ../build/files.c:379
+#: ../build/files.c:383
 msgid "No files after %%defattr(): %s"
 msgstr ""
 
-#: ../build/files.c:404
+#: ../build/files.c:408
 #, c-format
 msgid "Bad %s() mode spec: %s"
 msgstr ""
 
-#: ../build/files.c:416
+#: ../build/files.c:420
 #, c-format
 msgid "Bad %s() dirmode spec: %s"
 msgstr ""
 
-#: ../build/files.c:467
+#: ../build/files.c:471
 msgid "Bad %%config() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:485
+#: ../build/files.c:489
 msgid "Invalid %%config token: %s"
 msgstr ""
 
-#: ../build/files.c:508 ../build/files.c:520 ../build/files.c:533
+#: ../build/files.c:512 ../build/files.c:524 ../build/files.c:537
 msgid "Bad %%lang() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:539
+#: ../build/files.c:543
 msgid "%%lang() entries are 2 characters: %s"
 msgstr ""
 
-#: ../build/files.c:545
+#: ../build/files.c:549
 msgid "Only one entry in %%lang(): %s"
 msgstr ""
 
-#: ../build/files.c:627
+#: ../build/files.c:631
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: ../build/files.c:633
+#: ../build/files.c:637
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: ../build/files.c:658
+#: ../build/files.c:662
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: ../build/files.c:671
+#: ../build/files.c:675
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:683
+#: ../build/files.c:687
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: ../build/files.c:761
+#: ../build/files.c:775
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:914
+#: ../build/files.c:928
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:924 ../build/files.c:1039
+#: ../build/files.c:938 ../build/files.c:1053
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:970
+#: ../build/files.c:984
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:975
+#: ../build/files.c:989
 #, c-format
 msgid "File %d: %s\n"
 msgstr ""
 
-#: ../build/files.c:1023
+#: ../build/files.c:1037
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1085
+#: ../build/files.c:1099
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1091 ../build/pack.c:448
+#: ../build/files.c:1105 ../build/pack.c:448
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1355 ../build/parsePrep.c:40
+#: ../build/files.c:1369 ../build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1409
+#: ../build/files.c:1423
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1413
+#: ../build/files.c:1427
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1463
+#: ../build/files.c:1477
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1467
+#: ../build/files.c:1481
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1501
+#: ../build/files.c:1515
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1508
+#: ../build/files.c:1522
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1527
+#: ../build/files.c:1541
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1534
+#: ../build/files.c:1548
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1568
+#: ../build/files.c:1582
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1583
+#: ../build/files.c:1597
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1595
+#: ../build/files.c:1609
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1619
+#: ../build/files.c:1633
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -2128,32 +2132,32 @@ msgstr ""
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:953
+#: ../lib/cpio.c:983
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: ../lib/cpio.c:956
+#: ../lib/cpio.c:986
 msgid "Bad magic"
 msgstr ""
 
-#: ../lib/cpio.c:957
+#: ../lib/cpio.c:987
 msgid "Bad header"
 msgstr ""
 
-#: ../lib/cpio.c:975
+#: ../lib/cpio.c:1005
 msgid "Internal error"
 msgstr ""
 
-#: ../lib/cpio.c:976
+#: ../lib/cpio.c:1006
 msgid "Header size too big"
 msgstr ""
 
-#: ../lib/cpio.c:977
+#: ../lib/cpio.c:1007
 msgid "Unknown file type"
 msgstr ""
 
-#: ../lib/cpio.c:986
+#: ../lib/cpio.c:1016
 msgid " failed - "
 msgstr ""
 
@@ -2369,7 +2373,7 @@ msgstr ""
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:419 ../lib/install.c:754 ../lib/uninstall.c:338
+#: ../lib/install.c:419 ../lib/install.c:754 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -3094,21 +3098,21 @@ msgstr ""
 msgid "removing database entry\n"
 msgstr ""
 
-#: ../lib/uninstall.c:290
+#: ../lib/uninstall.c:289
 msgid "execution of script failed"
 msgstr ""
 
-#: ../lib/uninstall.c:349
+#: ../lib/uninstall.c:348
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr ""
 
-#: ../lib/uninstall.c:352
+#: ../lib/uninstall.c:351
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr ""
 
-#: ../lib/uninstall.c:360
+#: ../lib/uninstall.c:359
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr ""
