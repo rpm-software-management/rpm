@@ -97,6 +97,7 @@ extern const int rpmTagTableSize;
 #define RPMTAG_TRIGGERVERSION           1067
 #define RPMTAG_TRIGGERFLAGS             1068
 #define RPMTAG_TRIGGERINDEX             1069
+#define RPMTAG_VERIFYSCRIPT             1079
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
@@ -104,8 +105,9 @@ extern const int rpmTagTableSize;
 #define RPMFILE_STATE_NETSHARED		3
 
 /* these can be ORed together */
-#define RPMFILE_CONFIG			1
-#define RPMFILE_DOC			2
+#define RPMFILE_CONFIG			(1 << 0)
+#define RPMFILE_DOC			(1 << 1)
+#define RPMFILE_SPECFILE                (1 << 2)
 
 #define INSTALL_REPLACEPKG	(1 << 0)
 #define INSTALL_REPLACEFILES	(1 << 1)
