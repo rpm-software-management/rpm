@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: kcmkpanel\n"
+"POT-Creation-Date: 1999-05-31 18:09-0400\n"
+"PO-Revision-Date: 1999-11-11 05:04+0800\n"
+"Last-Translator: Dillion Chen <dillon.chen@turbolinux.com.cn>\n"
+"Language-Team: TLDN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=gb2312\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../popthelp.c:35
+msgid "Show this help message"
+msgstr "显示这条帮助信息"
+
+#: ../popthelp.c:36
+msgid "Display brief usage message"
+msgstr "显示简短使用信息"
