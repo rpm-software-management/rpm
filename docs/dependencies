@@ -108,3 +108,13 @@ Similarly, running --whatprovides <item> queries all of the packages that
 provide the <item> virtual package. Note that querying for package that 
 provides "python" will not return anything, as python is a package, not
 a virtual package.
+
+Verifying Dependencies
+----------------------
+
+As of RPM 2.2.2, -V (aka -y, --verify) verifies package dependencies
+by default. You can tell rpm to ignore dependencies during system
+verification with the --nodeps. If you want RPM to verify just dependencies
+and not file attributes (including file existence), use the --nofiles
+flag. Note that "rpm -Va --nofiles --nodeps" will not verify anything at
+all, nor generate an error message.
