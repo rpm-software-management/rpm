@@ -84,6 +84,7 @@ extern const int rpmTagTableSize;
 #define RPMTAG_CONFLICTVERSION          1055
 #define RPMTAG_DEFAULTPREFIX            1056
 #define RPMTAG_BUILDPREFIX              1057
+#define RPMTAG_INSTALLPREFIX		1058
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
@@ -154,7 +155,8 @@ extern const int rpmTagTableSize;
 #define RPMVAR_BUILDARCH                24
 #define RPMVAR_OS                       25
 #define RPMVAR_BUILDPREFIX              26
-#define RPMVAR_LASTVAR	                27 /* IMPORTANT to keep right! */
+#define RPMVAR_DBPATH                   27
+#define RPMVAR_LASTVAR	                28 /* IMPORTANT to keep right! */
 
 char *getVar(int var);
 int getBooleanVar(int var);
@@ -186,8 +188,8 @@ int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches);
 
 int rpmArchScore(char * arch);
 int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile);
-int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
-		      notifyFunction notify, char * labelFormat);
+int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
+		     int flags, notifyFunction notify, char * labelFormat);
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
