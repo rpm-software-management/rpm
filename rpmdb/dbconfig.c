@@ -25,6 +25,9 @@ struct _dbiIndex db3dbi;
 /*@unchecked@*/
 static int dbi_use_cursors;
 
+/*@unchecked@*/
+static int dbi_tear_down;
+
 /*@-compmempass -immediatetrans -exportlocal -exportheadervar@*/
 /** \ingroup db3
  */
@@ -128,7 +131,7 @@ struct poptOption rdbOptions[] = {
 
  { "verify",	0,POPT_ARG_NONE,	&db3dbi.dbi_verify_on_close, 0,
 	NULL, NULL },
- { "teardown",	0,POPT_ARG_NONE,	&db3dbi.dbi_tear_down, 0,
+ { "teardown",	0,POPT_ARG_NONE,	&dbi_tear_down, 0,
 	NULL, NULL },
  { "usecursors",0,POPT_ARG_NONE,	&dbi_use_cursors, 0,
 	NULL, NULL },
@@ -429,9 +432,8 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     if (!dbi->dbi_use_dbenv) {		/* db3 dbenv is always used now. */
 	dbi->dbi_use_dbenv = 1;
 	dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
-	dbi->dbi_mp_mmapsize = 8 * 1024 * 1024;
-	dbi->dbi_mp_size = 512 * 1024;
-	dbi->dbi_tear_down = 1;
+	dbi->dbi_mp_mmapsize = 16 * 1024 * 1024;
+	dbi->dbi_mp_size = 1 * 1024 * 1024;
     }
 
     if ((dbi->dbi_bt_flags | dbi->dbi_h_flags) & DB_DUP)

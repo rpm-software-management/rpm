@@ -294,7 +294,6 @@ struct _dbiIndex {
     int	dbi_api;		/*!< Berkeley API type */
 
     int	dbi_verify_on_close;
-    int	dbi_tear_down;		/*!< tear down dbenv on close */
     int	dbi_use_dbenv;		/*!< use db environment? */
     int	dbi_permit_dups;	/*!< permit duplicate entries? */
     int	dbi_no_fsync;		/*!< no-op fsync for db */
@@ -840,8 +839,8 @@ rpmdb XrpmdbLink (rpmdb db, const char * msg,
  */
 int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
 		int mode, int perms)
-	/*@globals fileSystem @*/
-	/*@modifies *dbp, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *dbp, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Initialize database.
@@ -850,8 +849,8 @@ int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
  * @return		0 on success
  */
 int rpmdbInit(/*@null@*/ const char * prefix, int perms)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Verify database components.
@@ -859,8 +858,8 @@ int rpmdbInit(/*@null@*/ const char * prefix, int perms)
  * @return		0 on success
  */
 int rpmdbVerify(/*@null@*/ const char * prefix)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Close a single database index.

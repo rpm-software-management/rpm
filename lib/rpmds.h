@@ -234,8 +234,8 @@ int rpmdsNoPromote(/*@null@*/ const rpmds ds)
  * @param ds		dependency set
  * @return		previous "Don't promote Epoch:" flag
  */
-int rpmdsSetNoPromote(/*@null@*/ const rpmds ds, int nopromote)
-	/*@*/;
+int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
+	/*@modifies ds @*/;
 
 /**
  * Notify of results of dependency match.

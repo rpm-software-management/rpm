@@ -185,7 +185,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 	rpmMessage(RPMMESS_DEBUG, _("closed   db environment %s/%s\n"),
 			dbhome, dbfile);
 
-    if (rpmdb->db_remove_env || dbi->dbi_tear_down) {
+    if (rpmdb->db_remove_env) {
 	int xx;
 
 	/*@-moduncon@*/ /* FIX: annotate db3 methods */

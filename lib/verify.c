@@ -436,10 +436,13 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 
 	if (qva->qva_flags & VERIFY_DEPS) {
 	    int save_noise = _rpmds_unspecified_epoch_noise;
-	    _rpmds_unspecified_epoch_noise = 1;
+/*@-mods@*/
+	    if (rpmIsVerbose())
+		_rpmds_unspecified_epoch_noise = 1;
 	    if ((rc = verifyDependencies(qva, ts, h)) != 0)
 		ec = rc;
 	    _rpmds_unspecified_epoch_noise = save_noise;
+/*@=mods@*/
 	}
 	if (qva->qva_flags & VERIFY_FILES) {
 	    if ((rc = verifyHeader(qva, ts, fi)) != 0)

@@ -96,7 +96,9 @@ typedef struct AttrRec_s {
 static int multiLib = 0;	/* MULTILIB */
 
 /* list of files */
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static StringBuf check_fileList = NULL;
+/*@unchecked@*/
 static int check_fileListLen = 0;
 
 /**
@@ -1509,11 +1511,13 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 /*@-boundswrite@*/
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals check_fileList, check_fileListLen, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
-		rpmGlobalMacroContext, fileSystem, internalState  @*/
+		check_fileList, check_fileListLen, rpmGlobalMacroContext,
+		fileSystem, internalState  @*/
 {
     const char *fileURL = diskURL;
     struct stat statbuf;
@@ -1643,7 +1647,7 @@ static int addFile(FileList fl, const char * diskURL,
 #endif
 
     /* S_XXX macro must be consistent with type in find call at check-files script */
-    if (S_ISREG(fileMode)) {
+    if (check_fileList && S_ISREG(fileMode)) {
       appendStringBuf(check_fileList, diskURL);
       appendStringBuf(check_fileList, "\n");
       check_fileListLen += strlen(diskURL) + 1;
@@ -2557,6 +2561,7 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 	}
 
 	/* Get the script name (and possible args) to run */
+/*@-branchstate@*/
 	if (dm->argv[0] != NULL) {
 	    const char ** av;
 
@@ -2577,6 +2582,7 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 	    }
 	    av = _free(av);
 	}
+/*@=branchstate@*/
 
 	if (myargv[0] == NULL)
 	    continue;
@@ -2742,6 +2748,8 @@ static void printDeps(Header h)
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
 static int checkFiles(StringBuf fileList, int fileListLen)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     StringBuf readBuf = NULL;
     const char * s = NULL;
@@ -2784,13 +2792,16 @@ static int checkFiles(StringBuf fileList, int fileListLen)
     }
     
 exit:
-    freeStringBuf(readBuf);
+    readBuf = freeStringBuf(readBuf);
     s = _free(s);
     av = _free(av);
     return rc;
 }
 
+/*@-incondefs@*/
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
+	/*@globals check_fileList, check_fileListLen @*/
+	/*@modifies check_fileList, check_fileListLen @*/
 {
     Package pkg;
     int res = 0;
@@ -2835,7 +2846,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	    res = 1;
     }
     
-    freeStringBuf(check_fileList);
+    check_fileList = freeStringBuf(check_fileList);
     
     return res;
 }
+/*@=incondefs@*/

@@ -747,9 +747,9 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
 	if (!ia->incldocs) {
-	    if (ia->transFlags & RPMTRANS_FLAG_NODOCS)
+	    if (ia->transFlags & RPMTRANS_FLAG_NODOCS) {
 		;
-	    else if (rpmExpandNumeric("%{_excludedocs}"))
+	    } else if (rpmExpandNumeric("%{_excludedocs}"))
 		ia->transFlags |= RPMTRANS_FLAG_NODOCS;
 	}
 

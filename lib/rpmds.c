@@ -23,7 +23,9 @@ int _rpmds_debug = 0;
 int _rpmds_nopromote = 1;
 
 /*@unchecked@*/
+/*@-exportheadervar@*/
 int _rpmds_unspecified_epoch_noise = 0;
+/*@=exportheadervar@*/
 
 rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
@@ -452,7 +454,7 @@ int rpmdsNoPromote(const rpmds ds)
     return nopromote;
 }
 
-int rpmdsSetNoPromote(const rpmds ds, int nopromote)
+int rpmdsSetNoPromote(rpmds ds, int nopromote)
 {
     int onopromote = 0;
 

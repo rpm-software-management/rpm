@@ -128,12 +128,12 @@ struct poptOption rpmQVSourcePoptTable[] = {
 
 /* ========== Query specific popt args */
 
-static void queryArgCallback(/*@unused@*/poptContext con,
+static void queryArgCallback(poptContext con,
 		/*@unused@*/enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg, 
 		/*@unused@*/ const void * data)
 	/*@globals rpmQVKArgs @*/
-	/*@modifies rpmQVKArgs @*/
+	/*@modifies con, rpmQVKArgs @*/
 {
     QVA_t qva = &rpmQVKArgs;
 

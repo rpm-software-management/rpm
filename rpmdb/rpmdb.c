@@ -632,13 +632,13 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
 static sigset_t caught;
 
 /* forward ref */
-static void handler(int signum)
-	/*@globals caught @*/
-	/*@modifies caught @*/;
+static void handler(int signum);
 
 /**
  */
-struct sigtbl_s {
+/*@unchecked@*/
+/*@-fullinitblock@*/
+static struct sigtbl_s {
     int signum;
     int active;
     struct sigaction act;
@@ -650,11 +650,14 @@ struct sigtbl_s {
     { SIGQUIT,	0, { {handler} } },
     { -1,	0, { {NULL}    } },
 };
+/*@=fullinitblock@*/
 
 /**
  */
+/*@-incondefs@*/
 static void handler(int signum)
-	/*@*/
+	/*@globals caught, satbl @*/
+	/*@modifies caught @*/
 {
     struct sigtbl_s * tbl;
 
@@ -663,17 +666,18 @@ static void handler(int signum)
 	    continue;
 	if (!tbl->active)
 	    continue;
-	sigaddset(&caught, signum);
+	(void) sigaddset(&caught, signum);
 	break;
     }
 }
+/*@=incondefs@*/
 
 /**
  * Enable all signal handlers
  */
 static int enableSignals(void)
 	/*@globals caught, satbl, fileSystem @*/
-	/*@modifies *oldMask, caught, satbl, fileSystem @*/
+	/*@modifies caught, satbl, fileSystem @*/
 {
     struct sigtbl_s * tbl;
     sigset_t newMask, oldMask;
@@ -685,22 +689,23 @@ static int enableSignals(void)
     for(tbl = satbl; tbl->signum >= 0; tbl++) {
 	if (tbl->active++ > 0)
 	    continue;
-	sigdelset(&caught, tbl->signum);
+	(void) sigdelset(&caught, tbl->signum);
 	rc = sigaction(tbl->signum, &tbl->act, &tbl->oact);
 	if (rc) break;
     }
     return sigprocmask(SIG_SETMASK, &oldMask, NULL);
 }
 
-rpmdb dbrock;
+/*@unchecked@*/
+static rpmdb dbrock;
 
 /**
  * Check for signals.
  */
 /*@mayexit@*/
 static int checkSignals(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals dbrock, satbl, fileSystem @*/
+	/*@modifies dbrock, fileSystem @*/
 {
     struct sigtbl_s * tbl;
     sigset_t newMask, oldMask;
@@ -718,11 +723,13 @@ static int checkSignals(void)
     if (terminate) {
 	rpmdb db;
 	rpmMessage(RPMMESS_WARNING, "Exiting on signal ...\n");
+/*@-newreftrans@*/
 	while ((db = dbrock) != NULL) {
-	    dbrock = db->db_next;
+/*@i@*/	    dbrock = db->db_next;
 	    db->db_next = NULL;
 	    (void) rpmdbClose(db);
 	}
+/*@=newreftrans@*/
 	exit(EXIT_FAILURE);
     }
     return sigprocmask(SIG_SETMASK, &oldMask, NULL);
@@ -732,8 +739,8 @@ static int checkSignals(void)
  * Disable all signal handlers
  */
 static int disableSignals(void)
-	/*@globals caught, fileSystem @*/
-	/*@modifies db, caught, fileSystem @*/
+	/*@globals satbl, fileSystem @*/
+	/*@modifies satbl, fileSystem @*/
 {
     struct sigtbl_s * tbl;
     sigset_t newMask, oldMask;
@@ -755,9 +762,9 @@ static int disableSignals(void)
 /**
  * Block all signals, returning previous signal mask.
  */
-static int blockSignals(rpmdb db, /*@out@*/ sigset_t * oldMask)
-	/*@globals caught, satbl, fileSystem @*/
-	/*@modifies *oldMask, caught, satbl, fileSystem @*/
+static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
+	/*@globals satbl, fileSystem @*/
+	/*@modifies *oldMask, satbl, fileSystem @*/
 {
     struct sigtbl_s * tbl;
     sigset_t newMask;
@@ -776,11 +783,11 @@ static int blockSignals(rpmdb db, /*@out@*/ sigset_t * oldMask)
  * Restore signal mask.
  */
 /*@mayexit@*/
-static int unblockSignals(rpmdb db, sigset_t * oldMask)
-	/*@globals caught, fileSystem @*/
-	/*@modifies db, caught, fileSystem @*/
+static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
+	/*@globals dbrock, fileSystem @*/
+	/*@modifies dbrock, fileSystem @*/
 {
-    checkSignals();
+    (void) checkSignals();
     return sigprocmask(SIG_SETMASK, oldMask, NULL);
 }
 
@@ -844,7 +851,10 @@ int rpmdbCloseDBI(rpmdb db, int rpmtag)
 }
 
 /* XXX query.c, rpminstall.c, verify.c */
+/*@-incondefs@*/
 int rpmdbClose(rpmdb db)
+	/*@globals dbrock @*/
+	/*@modifies dbrock @*/
 {
     rpmdb * prev, next;
     int dbix;
@@ -876,13 +886,15 @@ int rpmdbClose(rpmdb db)
     db->db_bits = PBM_FREE(db->db_bits);
     db->_dbi = _free(db->_dbi);
 
+/*@-newreftrans@*/
     prev = &dbrock;
     while ((next = *prev) != NULL && next != db)
 	prev = &next->db_next;
     if (next) {
-	*prev = next->db_next;
+/*@i@*/	*prev = next->db_next;
 	next->db_next = NULL;
     }
+/*@=newreftrans@*/
 
     /*@-refcounttrans@*/ db = _free(db); /*@=refcounttrans@*/
     /*@=usereleased@*/
@@ -891,6 +903,7 @@ exit:
     (void) disableSignals();
     return rc;
 }
+/*@=incondefs@*/
 
 int rpmdbSync(rpmdb db)
 {
@@ -966,9 +979,9 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
 		int mode, int perms, int flags)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
-	/*@modifies *dbp, fileSystem @*/
+	/*@globals dbrock, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies dbrock, *dbp, fileSystem, internalState @*/
 	/*@requires maxSet(dbp) >= 0 @*/
 {
     rpmdb db;
@@ -1088,9 +1101,11 @@ exit:
     if (rc || justCheck || dbp == NULL)
 	xx = rpmdbClose(db);
     else {
-	db->db_next = dbrock;
+/*@-assignexpose -newreftrans@*/
+/*@i@*/	db->db_next = dbrock;
 	dbrock = db;
-	*dbp = db;
+/*@i@*/	*dbp = db;
+/*@=assignexpose =newreftrans@*/
     }
 
     return rc;
@@ -1741,7 +1756,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_db = rpmdbUnlink(mi->mi_db, "matchIterator");
     mi = _free(mi);
 
-    checkSignals();
+    (void) checkSignals();
 
     return mi;
 }
@@ -2470,7 +2485,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     if (db == NULL)
 	return NULL;
 
-    checkSignals();
+    (void) checkSignals();
 
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
     if (rpmtag == RPMDBI_LABEL) {
