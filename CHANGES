@@ -74,6 +74,7 @@
 	- fix: set DB_PRIVATE, not DB_ENV_PRIVATE, if unshared posix mutexes.
 	- remove useless kernel/glibc dependencies (#79872).
 	- add matching "config(N) = EVR"  dependencies iff %%config is found.
+	- add %%pubkey attribute to read armored pubkey files into header.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

@@ -1231,6 +1231,16 @@ pgpArmor pgpReadPkts(const char * fn,
 	/*@modifies *pkt, *pktlen, fileSystem, internalState @*/;
 
 /**
+ * Wrap a OpenPGP packets in ascii armor for transport.
+ * @param atype		type of armor
+ * @param s		binary pkt data
+ * @param ns		binary pkt data length
+ * @return		formatted string
+ */
+char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
+	/*@*/;
+
+/**
  * Create a container for parsed OpenPGP packates.
  * @return		container
  */

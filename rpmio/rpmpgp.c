@@ -1273,4 +1273,54 @@ exit:
     return ec;
 }
 /*@=boundswrite@*/
+
+char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
+{
+    const char * enc;
+    char * t;
+    size_t nt;
+    char * val;
+    int lc;
+
+    nt = ((ns + 2) / 3) * 4;
+    /*@-globs@*/
+    /* Add additional bytes necessary for eol string(s). */
+    if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
+       if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
+        ++lc;
+	nt += lc * strlen(b64encode_eolstr);
+    }
+    /*@=globs@*/
+
+    nt += 512;	/* XXX slop for armor and crc */
+
+/*@-boundswrite@*/
+    val = t = xmalloc(nt + 1);
+    *t = '\0';
+    t = stpcpy(t, "-----BEGIN PGP ");
+    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
+    /*@-globs@*/
+    t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), VERSION);
+    /*@=globs@*/
+    t = stpcpy(t, " (beecrypt-2.2.0)\n\n");
+
+    if ((enc = b64encode(s, ns)) != NULL) {
+	t = stpcpy(t, enc);
+	enc = _free(enc);
+	if ((enc = b64crc(s, ns)) != NULL) {
+	    *t++ = '=';
+	    t = stpcpy(t, enc);
+	    enc = _free(enc);
+	}
+    }
+	
+    t = stpcpy(t, "-----END PGP ");
+    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
+    t = stpcpy(t, "-----\n");
+/*@=boundswrite@*/
+
+    return val;
+}
+
 /*@=boundsread@*/

@@ -152,12 +152,15 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 	/*@*/
 {
     const char * enc;
-    const char * s;
+    const unsigned char * s;
+    size_t ns;
+    int atype;
+#ifdef	DYING
     char * t;
     char * val;
-    int atype;
-    size_t ns, nt;
+    size_t nt;
     int lc;
+#endif
 
     switch (type) {
     case RPM_BIN_TYPE:
@@ -183,6 +186,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 	/*@notreached@*/ break;
     }
 
+#ifdef	DYING
     nt = ((ns + 2) / 3) * 4;
     /*@-globs@*/
     /* Add additional bytes necessary for eol string(s). */
@@ -226,6 +230,9 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     /*@=branchstate@*/
 
     return val;
+#else
+    return pgpArmorWrap(atype, s, ns);
+#endif
 }
 
 /**

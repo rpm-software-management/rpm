@@ -903,7 +903,7 @@ VFA_t virtualFileAttributes[] = {
  * @param pkg
  * @param buf		current spec file line
  * @param fl		package file tree walk data
- * @retval fileName
+ * @retval *fileName	file name
  * @return		0 on success
  */
 /*@-boundswrite@*/
@@ -979,7 +979,9 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		specialDoc = 1;
 		strcat(specialDocBuf, " ");
 		strcat(specialDocBuf, s);
-	    } else if (!(fl->currentFlags & (RPMFILE_PUBKEY|RPMFILE_ICON))) {
+	    } else if (fl->currentFlags & (RPMFILE_PUBKEY|RPMFILE_ICON)) {
+		*fileName = s;
+	    } else {
 		/* not in %doc, does not begin with / -- error */
 		rpmError(RPMERR_BADSPEC,
 		    _("File must begin with \"/\": %s\n"), s);
@@ -1726,6 +1728,56 @@ static int recurseDir(FileList fl, const char * diskURL)
 }
 
 /**
+ * Add a pubkey to a binary package.
+ * @param pkg
+ * @param fl		package file tree walk data
+ * @param fileURL	path to file, relative is builddir, absolute buildroot.
+ * @return		0 on success
+ */
+static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
+	/*@*/
+{
+    const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
+    const char * fn = NULL;
+    const char * apkt = NULL;
+    const unsigned char * pkt = NULL;
+    ssize_t pktlen = 0;
+    int rc = 1;
+    int xx;
+
+    (void) urlPath(fileURL, &fn);
+     if (*fn == '/')
+	fn = rpmGenPath(fl->buildRootURL, NULL, fn);
+     else
+	fn = rpmGenPath(buildURL, NULL, fn);
+
+    if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
+	rpmError(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
+	goto exit;
+    }
+    if (rc != PGPARMOR_PUBKEY) {
+	rpmError(RPMERR_BADSPEC, _("%s: not an armored public key.\n"), fn);
+	goto exit;
+    }
+
+    apkt = pgpArmorWrap(PGPARMOR_PUBKEY, pkt, pktlen);
+    xx = headerAddOrAppendEntry(pkg->header, RPMTAG_PUBKEYS,
+		RPM_STRING_ARRAY_TYPE, &apkt, 1);
+
+    rc = 0;
+
+exit:
+    apkt = _free(apkt);
+    pkt = _free(pkt);
+    fn = _free(fn);
+    if (rc) {
+	fl->processingFailed = 1;
+	rc = RPMERR_BADSPEC;
+    }
+    return rc;
+}
+
+/**
  * Add a file to a binary package.
  * @param pkg
  * @param fl		package file tree walk data
@@ -1989,10 +2041,12 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    specialDoc = _free(specialDoc);
 	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
+	} else if (fl.currentFlags & RPMFILE_PUBKEY) {
+	    (void) processPubkeyFile(pkg, &fl, fileName);
 	} else {
-	    /*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
+/*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
 	    (void) processBinaryFile(pkg, &fl, fileName);
-	    /*@=nullstate@*/
+/*@=nullstate@*/
 	}
 	/*@=branchstate@*/
     }
