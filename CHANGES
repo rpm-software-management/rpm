@@ -1,4 +1,7 @@
+2.91 -> 2.92
+
 2.90 -> 2.91
+	- fix: memory leaks in rpmRunTransactions plugged.
 	- fix: build of packages w/o BuildRoot segfault.
 	- permit substitution of I18N strings from PO meta-catalogues.
 	- add callbacks for installer updates while doing URL xfers.

@@ -61,6 +61,45 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
 		       const void * key);
 static void skipFiles(struct fileInfo * fi, int noDocs);
 
+static void freeFi(struct fileInfo *fi)
+{
+	if (fi->h) {
+	    headerFree(fi->h); fi->h = NULL;
+	}
+	if (fi->actions) {
+	    free(fi->actions); fi->actions = NULL;
+	}
+	if (fi->replaced) {
+	    free(fi->replaced); fi->replaced = NULL;
+	}
+	if (fi->fl) {
+	    free(fi->fl); fi->fl = NULL;
+	}
+	if (fi->flinks) {
+	    free(fi->flinks); fi->flinks = NULL;
+	}
+	if (fi->fmd5s) {
+	    free(fi->fmd5s); fi->fmd5s = NULL;
+	}
+}
+
+static void freeFl(rpmTransactionSet ts, struct fileInfo *flList)
+{
+    struct availableList * al = &ts->addedPackages;
+    struct availablePackage * alp;
+    struct fileInfo *fi;
+    int i;
+
+    for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
+			alp++, fi++) {
+	freeFi(fi);
+    }
+
+    for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
+	freeFi(fi);
+    }
+}
+
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
 #define	NOTIFY(_x)	if (notify) notify _x
@@ -145,6 +184,7 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 2, ts->numRemovedPackages,
 	    if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, NULL, 
 			       &fileCount))
 		totalFileCount += fileCount;
+	    headerFree(h);	/* XXX ==> LEAK */
 	}
 
 NOTIFY((h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
@@ -231,6 +271,9 @@ NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
 				(void *) &fi->fflags, NULL);
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL, 
 				(void *) &fi->fmd5s, NULL);
+
+	fi->flinks = NULL;	/* XXX FIXME W2DO? */
+
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMODES, NULL, 
 				(void *) &fi->fmodes, NULL);
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILESTATES, NULL, 
@@ -332,10 +375,10 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 7, al->size, NULL, notifyData));
     for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
 		alp++, fi++) {
 	if (fi->fc) {
-	    free(fi->fl);
+	    free(fi->fl); fi->fl = NULL;
 	    if (fi->type == ADDED) {
-		free(fi->fmd5s);
-		free(fi->flinks);
+		free(fi->fmd5s); fi->fmd5s = NULL;
+		free(fi->flinks); fi->flinks = NULL;
 	    }
 	}
     }
@@ -349,19 +392,13 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 8, al->size, NULL, notifyData));
 
 	for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
 			alp++, fi++) {
-	    if (fi->fc) {
+	    if (fi->fc)
 		headerFree(hdrs[alp - al->list]);
-		free(fi->actions);
-		fi->actions = NULL;
-	    }
-/* XXX FIXME: This smells like a memory leak. */
-	    if (fi->actions) {
-		free(fi->actions);
-		fi->actions = NULL;
-	    }
+	    freeFi(fi); /* XXX ==> LEAK */
 	}
 
 NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 8, al->size, NULL, notifyData));
+	freeFl(ts, flList);	/* XXX ==> LEAK */
 	return al->size + ts->numRemovedPackages;
     }
 
@@ -405,21 +442,12 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 9, al->size, NULL, notifyData));
 
 	headerFree(hdrs[alp - al->list]);
 
-/* XXX FIXME: This smells like a memory leak. */
-	if (fi->actions) {
-	    free(fi->actions);
-	    fi->actions = NULL;
-	}
-
-/* XXX FIXME: This smells like a memory leak. */
-	if (fi->replaced) {
-	    free(fi->replaced);
-	    fi->replaced = NULL;
-	}
-
 	if (!alp->fd && fd)
 	    notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key, 
 		   notifyData);
+
+	freeFi(fi); /* XXX ==> LEAK */
+
     }
 NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 9, al->size, NULL, notifyData));
 
@@ -437,19 +465,13 @@ NOTIFY((fi->h, RPMCALLBACK_UNINST_PROGRESS, i, ts->numRemovedPackages,
 
 	    ourrc++;
 
-/* XXX FIXME: This smells like a memory leak. */
-	if (fi->actions) {
-	    free(fi->actions);
-	    fi->actions = NULL;
-	}
-/* XXX FIXME: This smells like a memory leak. */
-	if (fi->replaced) {
-	    free(fi->replaced);
-	    fi->replaced = NULL;
-	}
+	freeFi(fi);	/* XXX ==> LEAK */
+
     }
 NOTIFY((NULL, RPMCALLBACK_UNINST_STOP, 0, ts->numRemovedPackages,
     NULL, notifyData));
+
+    freeFl(ts, flList);	/* XXX ==> LEAK */
 
     if (ourrc) 
     	return -1;

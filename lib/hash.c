@@ -94,6 +94,7 @@ void htFree(hashTable ht) {
 	if (ht->keySize && b) free(b->key);
 	while (b) {
 	    n = b->next;
+	    if (b->data) free(b->data);		/* XXX ==> LEAK */
 	    free(b);
 	    b = n;
 	}

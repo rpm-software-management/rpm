@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-02-24 23:55-0500\n"
+"POT-Creation-Date: 1999-02-28 13:34-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1427,26 +1427,26 @@ msgstr ""
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: ../url.c:145 ../url.c:167
+#: ../url.c:146 ../url.c:168
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: ../url.c:249
+#: ../url.c:250
 msgid "url port must be a number\n"
 msgstr ""
 
-#: ../url.c:285
+#: ../url.c:286
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:168 ../url.c:396
+#: ../lib/rpmdb.c:168 ../url.c:397
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: ../url.c:411
+#: ../url.c:412
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""
@@ -2961,57 +2961,57 @@ msgstr ""
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:624
+#: ../lib/rpmrc.c:627
 #, c-format
 msgid "Cannot expand %s"
 msgstr ""
 
-#: ../lib/rpmrc.c:639
+#: ../lib/rpmrc.c:642
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:673
+#: ../lib/rpmrc.c:676
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:704
+#: ../lib/rpmrc.c:707
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:720 ../lib/rpmrc.c:768
+#: ../lib/rpmrc.c:723 ../lib/rpmrc.c:771
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:734
+#: ../lib/rpmrc.c:737
 #, c-format
 msgid "expansion failed at %s:d \"%s\""
 msgstr ""
 
-#: ../lib/rpmrc.c:740
+#: ../lib/rpmrc.c:743
 #, c-format
 msgid "cannot open %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:758
+#: ../lib/rpmrc.c:761
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:825
+#: ../lib/rpmrc.c:828
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:1183
+#: ../lib/rpmrc.c:1186
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: ../lib/rpmrc.c:1184
+#: ../lib/rpmrc.c:1187
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3137,17 +3137,17 @@ msgstr ""
 msgid "Invalid signature spec in rc file"
 msgstr ""
 
-#: ../lib/transaction.c:662
+#: ../lib/transaction.c:695
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:668
+#: ../lib/transaction.c:701
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:756
+#: ../lib/transaction.c:789
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
