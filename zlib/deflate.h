@@ -8,7 +8,7 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* @(#) $Id: deflate.h,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/* @(#) $Id: deflate.h,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
 
 #ifndef _DEFLATE_H
 #define _DEFLATE_H
@@ -233,7 +233,7 @@ typedef struct internal_state {
     uInt matches;       /* number of string matches in current block */
     int last_eob_len;   /* bit length of EOB code for last block */
 
-#ifdef DEBUG
+#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
     ulg compressed_len; /* total bit length of compressed file mod 2^32 */
     ulg bits_sent;      /* bit length of compressed data sent mod 2^32 */
 #endif
@@ -246,6 +246,13 @@ typedef struct internal_state {
     /* Number of valid bits in bi_buf.  All bits above the last valid bit
      * are always zero.
      */
+
+#if defined(WITH_RSYNC_PAD)
+    /* rsync params */
+    ulg rsync_chunk_end;
+    ulg rsync_sum;
+    int rsync_win;
+#endif
 
 } FAR deflate_state;
 
@@ -271,7 +278,7 @@ void _tr_init         OF((deflate_state *s))
 int  _tr_tally        OF((deflate_state *s, unsigned dist, unsigned lc))
 	/*@modifies *s @*/;
 void _tr_flush_block  OF((deflate_state *s, charf *buf, ulg stored_len,
-			  int eof))
+			  int pad, int eof))
 	/*@modifies *s @*/;
 void _tr_align        OF((deflate_state *s))
 	/*@modifies *s @*/;

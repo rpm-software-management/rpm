@@ -3,10 +3,11 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: zconf.h,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/* @(#) $Id: zconf.h,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
 
 #ifndef _ZCONF_H
 #define _ZCONF_H
+/*@-constuse -typeuse@*/
 
 /*
  * If you *really* need a unique prefix for all types and library functions,
@@ -279,4 +280,5 @@ typedef uLong FAR uLongf;
 #   pragma map(inflate_trees_free,"INTRFR")
 #endif
 
+/*@=constuse =typeuse@*/
 #endif /* _ZCONF_H */

@@ -47,7 +47,7 @@
  *
  */
 
-/* @(#) $Id: deflate.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/* @(#) $Id: deflate.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
 
 #include "deflate.h"
 
@@ -125,6 +125,19 @@ local  void check_match OF((deflate_state *s, IPos start, IPos match,
 /* Minimum amount of lookahead, except at the end of the input file.
  * See deflate.c for comments about the MIN_MATCH+1.
  */
+
+#if defined(WITH_RSYNC_PAD)
+local int rsync = 0;
+/* Perform rsync padding? */
+
+#ifndef	RSYNC_WIN
+#   define RSYNC_WIN 4096
+#endif
+/* Size of rsync window, must be < MAX_DIST */
+
+#define	RSYNC_SUM_MATCH(s)	(((s)->rsync_sum % (s)->rsync_win) == 0)
+/* Whether window sum matches magic value */
+#endif
 
 /* Values for max_lazy_match, good_match and max_chain_length, depending on
  * the desired pack level (0..9). The values given below have been tuned to
@@ -695,6 +708,13 @@ local void lm_init (deflate_state *s)
 #ifdef ASMV
     match_init(); /* initialize the asm code */
 #endif
+
+#if defined(WITH_RSYNC_PAD)
+    /* rsync params */
+    s->rsync_chunk_end = 0xFFFFFFFFUL;
+    s->rsync_sum = 0;
+    s->rsync_win = RSYNC_WIN;
+#endif
 }
 
 /* ===========================================================================
@@ -971,6 +991,11 @@ local void fill_window(deflate_state *s)
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (long) wsize;
 
+#if defined(WITH_RSYNC_PAD)
+	    if (s->rsync_chunk_end != 0xFFFFFFFFUL)
+		s->rsync_chunk_end -= wsize;
+#endif
+
             /* Slide the hash table (could be avoided with 32 bit values
                at the expense of memory usage). We slide even when level == 0
                to keep the hash table consistent if we switch back to level > 0
@@ -1030,6 +1055,42 @@ local void fill_window(deflate_state *s)
     } while (s->lookahead < MIN_LOOKAHEAD && s->strm->avail_in != 0);
 }
 
+#if defined(WITH_RSYNC_PAD)
+local void rsync_roll(deflate_state *s, unsigned num)
+{
+    unsigned start = s->strstart;
+    unsigned i;
+
+    if (start < s->rsync_win) {
+	/* before window fills. */
+	for (i = start; i < s->rsync_win; i++) {
+	    if (i == start + num) return;
+	    s->rsync_sum += (ulg)s->window[i];
+	}
+	num -= (s->rsync_win - start);
+	start = s->rsync_win;
+    }
+
+    /* buffer after window full */
+    for (i = start; i < start+num; i++) {
+	/* New character in */
+	s->rsync_sum += (ulg)s->window[i];
+	/* Old character out */
+	s->rsync_sum -= (ulg)s->window[i - s->rsync_win];
+	if (s->rsync_chunk_end == 0xFFFFFFFFUL && RSYNC_SUM_MATCH(s))
+	    s->rsync_chunk_end = i;
+    }
+}
+
+/* ===========================================================================
+ * Set rsync_chunk_end if window sum matches magic value.
+ */
+#define RSYNC_ROLL(s, num) \
+   do { if (rsync) rsync_roll((s), (num)); } while(0)
+#else	/* WITH_RSYNC_PAD */
+#define RSYNC_ROLL(s, num)
+#endif	/* WITH_RSYNC_PAD */
+
 /* ===========================================================================
  * Flush the current block, with given end-of-file flag.
  * IN assertion: strstart is set to the end of the current match.
@@ -1039,6 +1100,7 @@ local void fill_window(deflate_state *s)
                    (charf *)&s->window[(unsigned)s->block_start] : \
                    (charf *)Z_NULL), \
 		(ulg)((long)s->strstart - s->block_start), \
+		bflush-1, \
 		(eof)); \
    s->block_start = s->strstart; \
    flush_pending(s->strm); \
@@ -1067,6 +1129,11 @@ local block_state deflate_stored(deflate_state *s, int flush)
      */
     ulg max_block_size = 0xffff;
     ulg max_start;
+#if defined(WITH_RSYNC_PAD)
+    int bflush = (rsync ? 2 : 1);
+#else
+    int bflush = 1;
+#endif
 
     if (max_block_size > s->pending_buf_size - 5) {
         max_block_size = s->pending_buf_size - 5;
@@ -1087,6 +1154,7 @@ local block_state deflate_stored(deflate_state *s, int flush)
         }
 	Assert(s->block_start >= 0L, "block gone");
 
+	RSYNC_ROLL(s, s->lookahead);
 	s->strstart += s->lookahead;
 	s->lookahead = 0;
 
@@ -1163,6 +1231,7 @@ local block_state deflate_fast(deflate_state *s, int flush)
 
             s->lookahead -= s->match_length;
 
+	    RSYNC_ROLL(s, s->match_length);
             /* Insert new strings in the hash table only if the match length
              * is not too large. This saves time but degrades compression.
              */
@@ -1196,9 +1265,16 @@ local block_state deflate_fast(deflate_state *s, int flush)
             /* No match, output a literal byte */
             Tracevv((stderr,"%c", s->window[s->strstart]));
             _tr_tally_lit (s, s->window[s->strstart], bflush);
+	    RSYNC_ROLL(s, 1);
             s->lookahead--;
             s->strstart++; 
         }
+#if defined(WITH_RSYNC_PAD)
+	if (rsync && s->strstart > s->rsync_chunk_end) {
+	    s->rsync_chunk_end = 0xFFFFFFFFUL;
+	    bflush = 2;
+	}
+#endif
         if (bflush) FLUSH_BLOCK(s, 0);
     }
     FLUSH_BLOCK(s, flush == Z_FINISH);
@@ -1282,6 +1358,7 @@ local block_state deflate_slow(deflate_state *s, int flush)
              */
             s->lookahead -= s->prev_length-1;
             s->prev_length -= 2;
+	    RSYNC_ROLL(s, s->prev_length+1);
             do {
                 if (++s->strstart <= max_insert) {
                     INSERT_STRING(s, s->strstart, hash_head);
@@ -1291,7 +1368,13 @@ local block_state deflate_slow(deflate_state *s, int flush)
             s->match_length = MIN_MATCH-1;
             s->strstart++;
 
-            if (bflush) FLUSH_BLOCK(s, 0);
+#if defined(WITH_RSYNC_PAD)
+	    if (rsync && s->strstart > s->rsync_chunk_end) {
+		s->rsync_chunk_end = 0xFFFFFFFFUL;
+		bflush = 2;
+	    }
+#endif
+	    if (bflush) FLUSH_BLOCK(s, 0);
 
         } else if (s->match_available) {
             /* If there was no match at the previous position, output a
@@ -1300,9 +1383,16 @@ local block_state deflate_slow(deflate_state *s, int flush)
              */
             Tracevv((stderr,"%c", s->window[s->strstart-1]));
 	    _tr_tally_lit(s, s->window[s->strstart-1], bflush);
+#if defined(WITH_RSYNC_PAD)
+	    if (rsync && s->strstart > s->rsync_chunk_end) {
+		s->rsync_chunk_end = 0xFFFFFFFFUL;
+		bflush = 2;
+	    }
+#endif
 	    if (bflush) {
-                FLUSH_BLOCK_ONLY(s, 0);
-            }
+		FLUSH_BLOCK_ONLY(s, 0);
+	    }
+	    RSYNC_ROLL(s, 1);
             s->strstart++;
             s->lookahead--;
             if (s->strm->avail_out == 0) return need_more;
@@ -1310,7 +1400,16 @@ local block_state deflate_slow(deflate_state *s, int flush)
             /* There is no previous match to compare with, wait for
              * the next step to decide.
              */
+#if defined(WITH_RSYNC_PAD)
+	    if (rsync && s->strstart > s->rsync_chunk_end) {
+		/* Reset huffman tree */
+		s->rsync_chunk_end = 0xFFFFFFFFUL;
+		bflush = 2;
+		FLUSH_BLOCK(s, 0);
+	    }
+#endif
             s->match_available = 1;
+	    RSYNC_ROLL(s, 1);
             s->strstart++;
             s->lookahead--;
         }

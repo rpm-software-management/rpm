@@ -29,7 +29,7 @@
  *          Addison-Wesley, 1983. ISBN 0-201-06672-6.
  */
 
-/* @(#) $Id: trees.c,v 1.2 2001/11/21 22:01:55 jbj Exp $ */
+/* @(#) $Id: trees.c,v 1.3 2001/11/22 21:12:46 jbj Exp $ */
 
 /* #define GEN_TREES_H */
 
@@ -416,7 +416,7 @@ void _tr_init(deflate_state *s)
     s->bi_buf = 0;
     s->bi_valid = 0;
     s->last_eob_len = 8; /* enough lookahead for inflate */
-#ifdef DEBUG
+#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
     s->compressed_len = 0L;
     s->bits_sent = 0L;
 #endif
@@ -902,7 +902,7 @@ local void send_all_trees(deflate_state *s, int lcodes, int dcodes, int blcodes)
 void _tr_stored_block(deflate_state *s, charf *buf, ulg stored_len, int eof)
 {
     send_bits(s, (STORED_BLOCK<<1)+eof, 3);  /* send block type */
-#ifdef DEBUG
+#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
     s->compressed_len = (s->compressed_len + 3 + 7) & (ulg)~7L;
     s->compressed_len += (stored_len + 4) << 3;
 #endif
@@ -924,7 +924,7 @@ void _tr_align(deflate_state *s)
 {
     send_bits(s, STATIC_TREES<<1, 3);
     send_code(s, END_BLOCK, static_ltree);
-#ifdef DEBUG
+#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
     s->compressed_len += 10L; /* 3 for block type, 7 for EOB */
 #endif
     bi_flush(s);
@@ -936,7 +936,7 @@ void _tr_align(deflate_state *s)
     if (1 + s->last_eob_len + 10 - s->bi_valid < 9) {
         send_bits(s, STATIC_TREES<<1, 3);
         send_code(s, END_BLOCK, static_ltree);
-#ifdef DEBUG
+#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
         s->compressed_len += 10L;
 #endif
         bi_flush(s);
@@ -951,9 +951,11 @@ void _tr_align(deflate_state *s)
  * @param s
  * @param buf		input block, of NULL if too old
  * @param stored_len	length of input block
+ * @param pad		true if block is to be rsync padded
  * @param eof		true if this is the last block for a file
  */
-void _tr_flush_block(deflate_state *s, charf *buf, ulg stored_len, int eof)
+void _tr_flush_block(deflate_state *s, charf *buf, ulg stored_len,
+		int pad, int eof)
 {
     ulg opt_lenb, static_lenb; /* opt_len and static_len in bytes */
     int max_blindex = 0;  /* index of last bit length code of non zero freq */
@@ -1017,7 +1019,7 @@ void _tr_flush_block(deflate_state *s, charf *buf, ulg stored_len, int eof)
 #endif
         send_bits(s, (STATIC_TREES<<1)+eof, 3);
         compress_block(s, (ct_data *)static_ltree, (ct_data *)static_dtree);
-#ifdef DEBUG
+#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
         s->compressed_len += 3 + s->static_len;
 #endif
     } else {
@@ -1025,7 +1027,7 @@ void _tr_flush_block(deflate_state *s, charf *buf, ulg stored_len, int eof)
         send_all_trees(s, s->l_desc.max_code+1, s->d_desc.max_code+1,
                        max_blindex+1);
         compress_block(s, (ct_data *)s->dyn_ltree, (ct_data *)s->dyn_dtree);
-#ifdef DEBUG
+#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
         s->compressed_len += 3 + s->opt_len;
 #endif
     }
@@ -1037,10 +1039,17 @@ void _tr_flush_block(deflate_state *s, charf *buf, ulg stored_len, int eof)
 
     if (eof) {
         bi_windup(s);
-#ifdef DEBUG
+#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
         s->compressed_len += 7;  /* align on byte boundary */
 #endif
     }
+#if defined(WITH_RSYNC_PAD)
+    else if (pad && (s->compressed_len % 8) != 0) {
+        send_bits(s, (STORED_BLOCK<<1)+eof, 3);  /* send block type */
+        s->compressed_len = (s->compressed_len + 3 + 7) & ~7L;
+        copy_block(s, buf, 0, 1); /* with header */
+    }
+#endif
     Tracev((stderr,"\ncomprlen %lu(%lu) ", s->compressed_len>>3,
            s->compressed_len-7*eof));
 }

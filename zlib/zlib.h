@@ -30,6 +30,7 @@
 
 #ifndef _ZLIB_H
 #define _ZLIB_H
+/*@-declundef -fcnuse @*/
 
 #include "zconf.h"
 
@@ -950,4 +951,5 @@ ZEXTERN const uLongf * ZEXPORT get_crc_table    OF((void))
 }
 #endif
 
+/*@=declundef =fcnuse @*/
 #endif /* _ZLIB_H */
