@@ -42,6 +42,12 @@ char * rpmProblemString(rpmProblem prob) {
 		release);
 	break;
 
+      case RPMPROB_FILE_CONFLICT:
+	sprintf(buf, _("file %s from install of %s-%s-%s conflicts with "
+		       "file from package FIXME"), prob.str1, name, version, 
+		release);
+	break;
+
       default:
 	sprintf(buf, _("unknown error %d encountered while manipulating "
 		"package %s-%s-%s"), prob.type, name, version, release);
