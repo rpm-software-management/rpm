@@ -222,7 +222,11 @@ static void execCommand(poptContext con) {
 
     argv[pos++] = NULL;
 
-    setreuid(getuid(), getuid());
+#ifdef __hpux
+    setresuid(getuid(), getuid(),-1);
+#else
+    setreuid(getuid(), getuid()); /*hlauer: not portable to hpux9.01 */
+#endif
 
     execvp(argv[0], argv);
 }
