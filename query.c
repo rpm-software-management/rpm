@@ -114,8 +114,10 @@ static void printHeader(Header h, int queryFlags) {
 		 &count)) {
 		puts("(contains no files)");
 	    } else {
-		getEntry(h, RPMTAG_FILESTATES, &type, 
-			 (void **) &fileStatesList, &count);
+		if (!getEntry(h, RPMTAG_FILESTATES, &type, 
+			 (void **) &fileStatesList, &count)) {
+		    fileStatesList = NULL;
+		}
 		getEntry(h, RPMTAG_FILEFLAGS, &type, 
 			 (void **) &fileFlagsList, &count);
 		getEntry(h, RPMTAG_FILESIZES, &type, 
@@ -148,13 +150,17 @@ static void printHeader(Header h, int queryFlags) {
 			if (!isVerbose()) {
 			    prefix ? fputs(prefix, stdout) : 0;
 			    if (queryFlags & QUERY_FOR_STATE) {
-				switch (fileStatesList[i]) {
-				  case RPMFILE_STATE_NORMAL:
-				    fputs("normal   ", stdout); break;
-				  case RPMFILE_STATE_REPLACED:
-				    fputs("replaced ", stdout); break;
-				  default:
-				    fputs("unknown  ", stdout);
+				if (fileStatesList) {
+				    switch (fileStatesList[i]) {
+				      case RPMFILE_STATE_NORMAL:
+					fputs("normal   ", stdout); break;
+				      case RPMFILE_STATE_REPLACED:
+					fputs("replaced   ", stdout); break;
+				      default:
+					fputs("unknown    ", stdout);
+				    }
+				} else {
+				    fputs("(no state) ", stdout);
 				}
 			    }
 			    
