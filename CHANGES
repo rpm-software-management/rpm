@@ -14,6 +14,7 @@
 	- set file states for --justdb packages to "not installed"
 	- handle missing file states properly in -e code
 	- install time wasn missing for --justdb packages
+	- missing parameter in an rpmError() caused segfault
 
 2.4.109 -> 2.5:
 	- fixed return code bug in build code

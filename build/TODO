@@ -1,3 +1,11 @@
+>I just found an odd little bug in rpm 2.5, when  there is something like
+>
+>%doc readme
+>
+>in the %files list, then if readme doesn't exit, rpm will just put an empty
+>doc directory in the package.
+
+
 option to %setup to *not* do chown/chgrp/chmod
 
 > Most of my spec files have empty Distribution: and Vendor: tag because I

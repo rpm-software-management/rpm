@@ -131,7 +131,7 @@ int parseScript(Spec spec, int parsePart)
 	    if (prog[0] != '/') {
 		rpmError(RPMERR_BADSPEC,
 			 "line %d: script program must begin "
-			 "with \'/\': %s", prog);
+			 "with \'/\': %s", spec->lineNum, prog);
 		FREE(argv);
 		poptFreeContext(optCon);
 		return RPMERR_BADSPEC;
