@@ -141,7 +141,7 @@ extern const int rpmTagTableSize;
 #define REQUIRE_SENSEMASK       15         /* Mask to get senses */
 
 #define TRIGGER_ON              (1 << 16)
-#define TROGGER_OFF             (1 << 17)
+#define TRIGGER_OFF             (1 << 17)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
