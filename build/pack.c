@@ -756,7 +756,8 @@ int packageBinaries(Spec s)
 	    return 1;
 	}
 	
-	sprintf(filename, "%s.%s.rpm", name, getArchName());
+	sprintf(filename, "%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
+		name, getArchName());
 	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	if (writeMagic(s, fd, name, RPMLEAD_BINARY)) {
 	    return 1;
@@ -880,7 +881,8 @@ int packageSource(Spec s)
 	return RPMERR_BADSPEC;
     }
 
-    sprintf(filename, "%s-%s-%s.src.rpm", s->name, version, release);
+    sprintf(filename, "%s/%s-%s-%s.src.rpm", getVar(RPMVAR_SRPMDIR),
+	    s->name, version, release);
     fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     if (writeMagic(s, fd, s->name, RPMLEAD_SOURCE)) {
 	return 1;
