@@ -15,10 +15,6 @@
 #include "misc-glob.h"
 #endif
 
-#if ! HAVE_REALPATH
-char *realpath(char *path, char resolved_path[]);
-#endif
-
 #if ! HAVE_S_IFSOCK
 #define S_IFSOCK (0)
 #endif
