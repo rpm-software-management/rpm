@@ -5,6 +5,7 @@
 #include <fcntl.h>
 
 #include "rpmlead.h"
+#include "signature.h"
 #include "header.h"
 
 int main(int argc, char **argv)
@@ -20,6 +21,7 @@ int main(int argc, char **argv)
     }
 
     readLead(fd, &lead);
+    readSignature(fd, lead.signature_type, NULL);
     hd = readHeader(fd);
     writeHeader(1, hd);
     
