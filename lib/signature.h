@@ -17,3 +17,6 @@ int verifySignature(int fd, short sig_type, void *sig, char *result);
 
 /* Return type of signature in effect for building */
 unsigned short sigLookupType(void);
+
+/* Utility to read a pass phrase from the user */
+char *getPassPhrase(char *prompt);
