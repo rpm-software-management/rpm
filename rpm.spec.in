@@ -170,7 +170,7 @@ make
 
 %if %{with_perl_subpackage}
 { cd Perl-RPM
-  CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL
+  CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL RPM_BUILD=1
   export SUBDIR="%{_builddir}/%{buildsubdir}"
   make INC="-I. -I$SUBDIR/lib -I$SUBDIR/rpmdb -I$SUBDIR/rpmio -I$SUBDIR/popt" \
     LDDLFLAGS="-shared -L$SUBDIR/lib/.libs -L$SUBDIR/rpmdb/.libs -L$SUBDIR/rpmio/.libs -L$SUBDIR/popt/.libs" %{?_smp_mflags}
