@@ -141,9 +141,11 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 		        fileCountPtr))
 	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
 		           fileCountPtr);
+    if (!headerGetEntry(h, RPMTAG_ORIGFILENAMES, NULL, 
+			(void **) &mem->cpioNames, NULL))
+	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->cpioNames, 
+		           fileCountPtr);
 
-    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->cpioNames, 
-		   fileCountPtr);
     fileCount = *fileCountPtr;
 
     files = *filesPtr = mem->files = malloc(sizeof(*mem->files) * fileCount);
@@ -287,7 +289,6 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
     dbiIndexSet matches;
     char * tmpPath;
     int scriptArg;
-    int hasOthers = 0;
     int stripSize = 1;		/* strip at least first / for cpio */
     uint_32 * archiveSizePtr;
     struct fileMemory fileMem;
@@ -322,7 +323,6 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
     if (rc) {
  	scriptArg = 1;
     } else {
-	hasOthers = 1;
 	scriptArg = dbiIndexSetCount(matches) + 1;
     }
 
@@ -352,27 +352,14 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
 	char ** netsharedPaths;
 	char ** nsp;
 
-	/* RPM used to allow only "fully relocateable packages", which
-	   were done by making the paths in cpio archive relative to the
-	   relocation point (as RPM just exec()d cpio then). If this is
-	   such a package, undo this and build a proper relocation entry
-	   for it. In any case, we still have to strip the leading / from
-	   the filename to get the one in the cpio archive, as they are
-	   always stored as relative paths */
-	   
+	/* old format relocateable packages need the entire default
+	   prefix stripped to form the cpio list, while all other packages 
+	   need the leading / stripped */
 	if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (void *)
 				  &defaultPrefix, NULL)) {
-	    /* a trailing '/' in the defaultPrefix would confuse us */
-	    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), 
-				   defaultPrefix);
-	    stripTrailingSlashes(defaultPrefix);
 	    stripSize = strlen(defaultPrefix) + 1;
-
-	    headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
-			   &defaultPrefix, 1); 
 	} else {
 	    stripSize = 1;
-	    defaultPrefix = NULL;
 	}
 
 	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize)) {
