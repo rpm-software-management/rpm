@@ -122,16 +122,14 @@ msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <poèítaè>] [--ftpport <port>]"
 
 #: rpm.c:211 rpm.c:230 rpmqv.c:299 rpmqv.c:308 rpmqv.c:324
-#, fuzzy
 msgid "                        [--httpproxy <host>] [--httpport <port>]"
-msgstr "                        [--ftpproxy <poèítaè>] [--ftpport <port>]"
+msgstr "                        [--httpproxy <poèítaè>] [--httpport <port>]"
 
 #: rpm.c:212 rpmqv.c:300
-#, fuzzy
 msgid ""
 "                        [--justdb] [--noorder] [--relocate oldpath=newpath]"
 msgstr ""
-"                        [--noorder] [--relocate stará_cesta=nová_cesta]"
+"                        [--justdb] [--noorder] [--relocate stará_cesta=nová]"
 
 #: rpm.c:213 rpmqv.c:301
 msgid ""
@@ -202,15 +200,12 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:228 rpmqv.c:322
-#, fuzzy
 msgid "                        [--triggeredby]"
-msgstr "                        [--nomd5] [cíle]"
+msgstr "                        [--triggeredby]"
 
 #: rpm.c:231 rpmqv.c:325
-#, fuzzy
 msgid "                        [--provides] [--triggers] [--dump]"
-msgstr ""
-"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
+msgstr "                        [--provides] [--triggers] [--dump]"
 
 #: rpm.c:232 rpmqv.c:326
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
@@ -3121,14 +3116,14 @@ msgstr ""
 "\n"
 
 #: lib/rpmdb.c:273
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s index using db%d - %s (%d)"
-msgstr "nemohu otevøít soubor %s na %s:%d: %s"
+msgstr "nemohu otevøít index %s pøi pou¾ívání db%d - %s (%d)"
 
 #: lib/rpmdb.c:293
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s index"
-msgstr "dbiOpen: nemohu otevøít index %s"
+msgstr "nemohu otevøít index %s"
 
 #: lib/rpmdb.c:308
 #, c-format
@@ -3227,10 +3222,10 @@ msgstr "odstraòuji 0 %s polo¾ek.\n"
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
-#: lib/rpmdb.c:1736
-#, fuzzy, c-format
+#: lib/rpmdb.c:1728
+#, c-format
 msgid "removing %d entries from %s index.\n"
-msgstr "odstraòuji %d polo¾ek z indexu %s:\n"
+msgstr "odstraòuji %d polo¾ek z indexu %s.\n"
 
 #: lib/rpmdb.c:1878
 #, c-format
@@ -3247,10 +3242,10 @@ msgstr "pøidávám 0 %s polo¾ek.\n"
 msgid "adding \"%s\" to %s index.\n"
 msgstr "pøidávám \"%s\" do indexu %s\n"
 
-#: lib/rpmdb.c:1960
-#, fuzzy, c-format
+#: lib/rpmdb.c:1952
+#, c-format
 msgid "adding %d entries to %s index.\n"
-msgstr "pøidávám %d polo¾ek do indexu %s:\n"
+msgstr "pøidávám %d polo¾ek do indexu %s.\n"
 
 #: lib/rpmdb.c:2318
 #, c-format
@@ -3933,13 +3928,3 @@ msgstr "nemohu otevøít %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
-
-#~ msgid ""
-#~ "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
-#~ msgstr ""
-#~ "                        [--ftpproxy <poèítaè>] [--ftpport <port>] [--justdb]"
-
-#~ msgid ""
-#~ "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
-#~ msgstr ""
-#~ "                        [--triggeredby] [--ftpuseport] [--ftpproxy <poèítaè>]"
