@@ -1,6 +1,6 @@
 #include "system.h"
 
-static int _debug = -1;	/* XXX if < 0 debugging, > 0 unusual error returns */
+static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <db3/db.h>
 
@@ -586,8 +586,11 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     int rc;
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
+    int _printit;
     rc = db->sync(db, flags);
-    rc = cvtdberr(dbi, "db->sync", rc, _debug);
+    /* XXX DB_INCOMPLETE is returned occaisionally with multiple access. */
+    _printit = (rc == DB_INCOMPLETE ? 0 : _debug);
+    rc = cvtdberr(dbi, "db->sync", rc, _printit);
 #else	/* __USE_DB2 || __USE_DB3 */
     rc = db->sync(db, flags);
 #endif	/* __USE_DB2 || __USE_DB3 */
@@ -621,7 +624,9 @@ static int db3c_get(dbiIndex dbi, DBC * dbcursor,
     int rmw;
 
 #ifdef	NOTYET
-    if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+    if ((dbi->dbi_eflags & DB_INIT_CDB) &&
+		!(dbi->dbi_oflags & DB_RDONLY) &&
+		!(dbi->dbi_mode & O_RDWR))
 	rmw = DB_RMW;
     else
 #endif
@@ -640,6 +645,7 @@ static int db3c_put(dbiIndex dbi, DBC * dbcursor,
     int rc;
 
     rc = dbcursor->c_put(dbcursor, key, data, flags);
+
     rc = cvtdberr(dbi, "dbcursor->c_put", rc, _debug);
     return rc;
 }
@@ -661,7 +667,9 @@ static inline int db3c_open(dbiIndex dbi, DBC ** dbcp)
     int rc;
 
 #if defined(__USE_DB3)
-    if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+    if ((dbi->dbi_eflags & DB_INIT_CDB) &&
+		!(dbi->dbi_oflags & DB_RDONLY) &&
+		!(dbi->dbi_mode & O_RDWR))
 	flags = DB_WRITECURSOR;
     else
 	flags = 0;
@@ -935,20 +943,21 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     }
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
-    if (dbi->dbi_mode & O_RDWR) {
-	if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
-    } else
-	oflags |= DB_RDONLY;
+#if 0	/* XXX rpmdb: illegal flag combination specified to DB->open */
+    if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
+#endif
+    if(!(dbi->dbi_mode & O_RDWR)) oflags |= DB_RDONLY;
     if ( dbi->dbi_mode & O_CREAT) oflags |= DB_CREATE;
     if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
 
     rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
     dbi->dbi_dbinfo = NULL;
 
+    if (dbfile)
+	rpmMessage(RPMMESS_DEBUG, _("opening db index       %s/%s(%s) %s mode=0x%x\n"),
+		dbhome, dbfile, dbsubfile, prDbiOpenFlags(oflags, 0), dbi->dbi_mode);
+
     if (rc == 0) {
-	if (dbfile)
-	    rpmMessage(RPMMESS_DEBUG, _("opening db index       %s/%s(%s) %s\n"),
-		dbhome, dbfile, dbsubfile, prDbiOpenFlags(oflags, 0));
 #if defined(__USE_DB3)
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);

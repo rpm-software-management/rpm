@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-04-27 08:36-0400\n"
+"POT-Creation-Date: 2000-04-28 11:08-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2103,78 +2103,93 @@ msgstr ""
 msgid "%s: %s satisfied by Depends cache.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:898
+#: lib/depends.c:899
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:926
+#: lib/depends.c:927
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:944
+#: lib/depends.c:945
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:962
+#: lib/depends.c:963
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:975
+#: lib/depends.c:976
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:985
+#: lib/depends.c:986
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
+#: lib/depends.c:997
+#, fuzzy, c-format
+msgid "%s: (%s, %d) added to Depends cache.\n"
+msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
+
 #. requirements are not satisfied.
-#: lib/depends.c:1037
+#: lib/depends.c:1044
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1099
+#: lib/depends.c:1106
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/depends.c:1229
+#: lib/depends.c:1236
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "sluèka v re»azi po¾iadaviek: %s"
 
-#: lib/db0.c:394
+#: lib/db0.c:385
+#, c-format
+msgid "closed  db file        %s\n"
+msgstr ""
+
+#: lib/db0.c:388
+#, fuzzy, c-format
+msgid "removed db file        %s\n"
+msgstr "odstraòuje sa index súborov pre %s\n"
+
+#: lib/db0.c:417
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "chybný stav súboru: %s"
 
-#: lib/db0.c:403
-#, c-format
-msgid "opening database mode 0x%x in %s\n"
+#: lib/db0.c:422
+#, fuzzy, c-format
+msgid "opening db file        %s mode 0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/db0.c:408 lib/url.c:445
+#: lib/db0.c:431 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/db0.c:420
+#: lib/db0.c:443
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: lib/db0.c:421
+#: lib/db0.c:444
 msgid "exclusive"
 msgstr "výhradný"
 
-#: lib/db0.c:421
+#: lib/db0.c:444
 msgid "shared"
 msgstr "zdieµaný"
 
@@ -2213,14 +2228,14 @@ msgstr ""
 msgid "opening db environment %s/%s(%s) %s\n"
 msgstr ""
 
-#: lib/db3.c:872
+#: lib/db3.c:880
 #, c-format
 msgid "closed  db index       %s/%s(%s)\n"
 msgstr ""
 
-#: lib/db3.c:950
+#: lib/db3.c:957
 #, c-format
-msgid "opening db index       %s/%s(%s) %s\n"
+msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
 msgstr ""
 
 #: lib/falloc.c:135
@@ -2902,12 +2917,12 @@ msgstr ")"
 msgid "OK"
 msgstr "V PORIADKU"
 
-#: lib/rpmdb.c:92
+#: lib/rpmdb.c:94
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:210
+#: lib/rpmdb.c:220
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2915,31 +2930,31 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:225
+#: lib/rpmdb.c:235
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpmdb.c:279
+#: lib/rpmdb.c:289
 #, fuzzy, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: lib/rpmdb.c:396
+#: lib/rpmdb.c:406
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: lib/rpmdb.c:405
+#: lib/rpmdb.c:415
 #, fuzzy, c-format
 msgid "error removing record %s from %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: lib/rpmdb.c:591 lib/rpmdb.c:1979
+#: lib/rpmdb.c:603 lib/rpmdb.c:2047
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: lib/rpmdb.c:669
+#: lib/rpmdb.c:692
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2948,125 +2963,125 @@ msgstr ""
 "databázy v novom formáte"
 
 #. error
-#: lib/rpmdb.c:860
+#: lib/rpmdb.c:894
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmdb.c:926 lib/rpmdb.c:1395 lib/uninstall.c:90
+#: lib/rpmdb.c:960 lib/rpmdb.c:1476 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: lib/rpmdb.c:1350
+#: lib/rpmdb.c:1431
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:1358
+#: lib/rpmdb.c:1439
 #, fuzzy, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:1429
+#: lib/rpmdb.c:1519
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstraòuje sa záznam z databázy\n"
 
-#: lib/rpmdb.c:1436
+#: lib/rpmdb.c:1528
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:1444
+#: lib/rpmdb.c:1536
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:1448
+#: lib/rpmdb.c:1540
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1624
+#: lib/rpmdb.c:1687
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "nie je mo¾né prideli» miesto pre databázu"
 
-#: lib/rpmdb.c:1671
+#: lib/rpmdb.c:1735
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1684
+#: lib/rpmdb.c:1751
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:1691
+#: lib/rpmdb.c:1758
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1695
+#: lib/rpmdb.c:1762
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2004
+#: lib/rpmdb.c:2072
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rpmdb.c:2008
+#: lib/rpmdb.c:2076
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rpmdb.c:2014
+#: lib/rpmdb.c:2082
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2016
+#: lib/rpmdb.c:2084
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rpmdb.c:2023
+#: lib/rpmdb.c:2091
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rpmdb.c:2032
+#: lib/rpmdb.c:2100
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rpmdb.c:2054
+#: lib/rpmdb.c:2122
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rpmdb.c:2086
+#: lib/rpmdb.c:2154
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rpmdb.c:2104
+#: lib/rpmdb.c:2172
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rpmdb.c:2112
+#: lib/rpmdb.c:2180
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rpmdb.c:2114
+#: lib/rpmdb.c:2182
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rpmdb.c:2120
+#: lib/rpmdb.c:2188
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
@@ -3650,9 +3665,6 @@ msgstr "rpmQuery: rpmdbOpen() zlyhalo\n"
 
 #~ msgid "removing conflict index for %s\n"
 #~ msgstr "odstraòuje sa index kolízií pre %s\n"
-
-#~ msgid "removing file index for %s\n"
-#~ msgstr "odstraòuje sa index súborov pre %s\n"
 
 #~ msgid "package has no files\n"
 #~ msgstr "balík neobsahuje ¾iadne súbory\n"

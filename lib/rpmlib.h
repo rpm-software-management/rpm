@@ -425,6 +425,9 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified);
  * @return		NULL on end of iteration.
  */
 Header rpmdbNextIterator(rpmdbMatchIterator mi);
+Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l);
+#define	rpmdbNextIterator(_a) \
+	XrpmdbNextIterator(_a, __FILE__, __LINE__)
 
 /**
  * Return database iterator.

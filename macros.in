@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.54 2000/04/25 19:41:37 jbj Exp $
+# $Id: macros.in,v 1.55 2000/04/28 15:14:47 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -243,14 +243,15 @@
 #   teardown	Should the DB3 environment be removed after use (experimental)?
 #   usecursors	Should DB3 cursors be used in get/put/del (experimental)?
 #
-%__dbi_flags		mpool
+%__dbi_flags		mpool:nommap
 %__dbi_type		hash
 %__dbi_perms		perms=0644
 %__dbi_major		db%{_dbapi}
 %__dbi_other		usecursors
 %__dbi_verbose		verbose
 %__dbi_mp_mmapsize	mp_mmapsize=16Mb
-%__dbi_mp_size		mp_size=2Mb
+%__dbi_mp_size		mp_size=4Mb
+%__dbi_pagesize		pagesize=16Kb
 
 # This is a colon (or white space) separated list of tokens for Berkeley
 # dbi configuration.
@@ -263,10 +264,14 @@
   %{__dbi_verbose}\
   %{__dbi_mp_mmapsize}\
   %{__dbi_mp_size}\
+  %{__dbi_pagesize}\
 %{nil}
 
+# Depends is a per-transaction cache of known dependency resolutions.
+%_dbi_config_Depends	%{_dbi_config}:private:temporary
+
 # This is the list of tags for which indices will be built.
-%_dbi_indices	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername
+%_dbi_indices	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Depends
 
 #==============================================================================
 # ---- per-platform macros.

@@ -80,9 +80,16 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 
 static int db0sync(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
-    int rc;
+    int rc = 0;
 
-    rc = db->sync(db, flags);
+    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
+	int fdno = Fileno(dbi->dbi_pkgs);
+	if (fdno >= 0)
+	    rc = fsync(fdno);
+    }
+
+    if (db)
+	rc = db->sync(db, flags);
 
     switch (rc) {
     default:
@@ -198,7 +205,7 @@ static int db0cget(dbiIndex dbi, void ** keyp, size_t * keylen,
     if (datap)		data.data = *datap;
     if (datalen)	data.size = *datalen;
 
-    if (dbi->dbi_rpmtag == 0) {
+    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	unsigned int offset;
 	unsigned int newSize;
 
@@ -274,7 +281,7 @@ static int db0cdel(dbiIndex dbi, const void * keyp, size_t keylen,
 {
     int rc = 0;
 
-    if (dbi->dbi_rpmtag == 0) {
+    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	unsigned int offset;
 	memcpy(&offset, keyp, sizeof(offset));
 	fadFree(dbi->dbi_pkgs, offset);
@@ -307,7 +314,7 @@ static int db0cput(dbiIndex dbi, const void * keyp, size_t keylen,
     data.data = (void *)datap;
     data.size = datalen;
 
-    if (dbi->dbi_rpmtag == 0) {
+    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	unsigned int offset;
 
 	memcpy(&offset, key.data, sizeof(offset));
@@ -331,6 +338,7 @@ static int db0cput(dbiIndex dbi, const void * keyp, size_t keylen,
 	}
     } else {
 	DB * db = GetDB(dbi);
+	int xx;
 
 	rc = db->put(db, &key, &data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
@@ -341,15 +349,19 @@ static int db0cput(dbiIndex dbi, const void * keyp, size_t keylen,
 
 static int db0close(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
+    rpmdb rpmdb = dbi->dbi_rpmdb;
+    const char * base = db0basename(dbi->dbi_rpmtag);
+    const char * urlfn = rpmGenPath(rpmdb->db_root, rpmdb->db_home, base);
+    const char * fn;
     int rc = 0;
 
-    if (dbi->dbi_rpmtag == 0) {
+    (void) urlPath(urlfn, &fn);
+
+    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	FD_t pkgs;
 	if ((pkgs = dbi->dbi_pkgs) != NULL)
 	    Fclose(pkgs);
 	dbi->dbi_pkgs = NULL;
-	db3Free(dbi);
-	return 0;
     }
 
     if (db) {
@@ -370,11 +382,22 @@ static int db0close(dbiIndex dbi, unsigned int flags) {
 	break;
     }
 
+    rpmMessage(RPMMESS_DEBUG, _("closed  db file        %s\n"), urlfn);
+    /* Remove temporary databases */
+    if (dbi->dbi_temporary) {
+	rpmMessage(RPMMESS_DEBUG, _("removed db file        %s\n"), urlfn);
+	(void) unlink(fn);
+    }
+
     db3Free(dbi);
+    if (base)
+	xfree(base);
+    if (urlfn)
+	xfree(urlfn);
     return rc;
 }
 
-static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip, unsigned int flags)
+static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 {
     const char * base = NULL;
     const char * urlfn = NULL;
@@ -396,12 +419,12 @@ static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip, unsigned int flags)
 	goto exit;
     }
 
-    if (dbi->dbi_rpmtag == 0) {
+    rpmMessage(RPMMESS_DEBUG, _("opening db file        %s mode 0x%x\n"),
+		urlfn, dbi->dbi_mode);
+
+    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	struct flock l;
 	FD_t pkgs;
-
-	rpmMessage(RPMMESS_DEBUG, _("opening database mode 0x%x in %s\n"),
-		dbi->dbi_mode, fn);
 
 	pkgs = fadOpen(fn, dbi->dbi_mode, dbi->dbi_perms);
 	if (Ferror(pkgs)) {
@@ -435,8 +458,6 @@ exit:
     if (rc == 0 && dbip) {
 	rc = 0;
 	*dbip = dbi;
-if (_debug < 0)
-fprintf(stderr, "*** db%dopen: rpmtag %d dbi %p %s\n", dbi->dbi_major, rpmtag, dbi, urlfn);
     } else {
 	rc = 1;
 	db3Free(dbi);

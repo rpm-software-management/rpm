@@ -854,7 +854,7 @@ alFileSatisfiesDepend(struct availableList * al,
 	}
 	if (keyType && keyDepend && rc)
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added "
-			"provide.\n"), keyType, keyDepend);
+			"provide.\n"), keyType, keyDepend+2);
     	break;
     }
 
@@ -878,13 +878,14 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 
     if (suggestion) *suggestion = NULL;
 
-    {	mi =  rpmdbInitIterator(rpmdep->db, RPMDBI_DEPENDS, keyDepend, 0);
+    {	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_DEPENDS, keyDepend, 0);
 	if (mi) {
 	    rc = rpmdbGetIteratorOffset(mi);
 	    rpmdbFreeIterator(mi);
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by Depends cache.\n"), keyType, keyDepend+2);
 	    return rc;
 	}
+	rpmdbFreeIterator(mi);
     }
 
   { const char * rcProvidesString;
@@ -987,8 +988,14 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 
 exit:
     {	dbiIndex dbi;
-	if ((dbi = dbiOpen(rpmdep->db, 1, 0)) != NULL)
-	    (void) dbiPut(dbi, keyDepend, 0, &rc, sizeof(rc), 0);
+	if ((dbi = dbiOpen(rpmdep->db, RPMDBI_DEPENDS, 0)) != NULL) {
+	    int xx;
+	    xx = dbiCopen(dbi, NULL, 0);
+	    xx = dbiPut(dbi, keyDepend, strlen(keyDepend), &rc, sizeof(rc), 0);
+	    xx = dbiCclose(dbi, NULL, 0);
+	    if (xx == 0)
+		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %d) added to Depends cache.\n"), keyType, keyDepend, rc);
+	}
     }
     return rc;
 }
@@ -1496,9 +1503,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    }
 	}
 
-	rpmdbFreeIterator(mi);
-	mi = NULL;
     }
+    rpmdbFreeIterator(mi);
 
     if (!ps.num) {
 	free(ps.problems);

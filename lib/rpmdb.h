@@ -284,11 +284,17 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags);
  * @param flags		(unused)
  */
 int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags);
+int XdbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags, const char *f, unsigned int l);
+#define	dbiCopen(_a,_b,_c) \
+	XdbiCopen(_a, _b, _c, __FILE__, __LINE__)
 
 /**
  * @param flags		(unused)
  */
 int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags);
+int XdbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags, const char *f, unsigned int l);
+#define	dbiCclose(_a,_b,_c) \
+	XdbiCclose(_a, _b, _c, __FILE__, __LINE__)
 
 /**
  * Delete (key,data) pair(s) from index database.

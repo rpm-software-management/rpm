@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.12
+Release: 0.13
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,6 +219,14 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Fri Apr 28 2000 Jeff Johnson <jbj@redhat.com>
+- Filter DB_INCOMPLETE on db->sync, it's usually harmless.
+- Add per-transaction cache of resolved dependencies (aka Depends).
+- Do lazy dbi{Open,Close} throughout.
+- Attempt fine grained dbi cursors throughout.
+- fix: free iterator *after* loop, not during.
+- fix: Depends needed keylen in dbiPut, rpmdbFreeIterator after use.
+
 * Thu Apr 27 2000 Jeff Johnson <jbj@redhat.com>
 - API: replace rpmdbUpdateRecord with rpmdbSetIteratorModified.
 - API: replace rpmdbFindByLabel with RPMDBI_LABEL iteration.
