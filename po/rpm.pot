@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-24 19:05-0400\n"
+"POT-Creation-Date: 1999-09-25 20:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2886,76 +2886,76 @@ msgid ""
 "database"
 msgstr ""
 
-#: ../lib/rpmdb.c:395
+#: ../lib/rpmdb.c:439
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:406
+#: ../lib/rpmdb.c:450
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:431 ../lib/uninstall.c:85
+#: ../lib/rpmdb.c:475 ../lib/uninstall.c:85
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: ../lib/rpmdb.c:439
+#: ../lib/rpmdb.c:483
 msgid "package has no name"
 msgstr ""
 
-#: ../lib/rpmdb.c:441
+#: ../lib/rpmdb.c:485
 msgid "removing name index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:446
+#: ../lib/rpmdb.c:490
 msgid "package has no group\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:448
+#: ../lib/rpmdb.c:492
 msgid "removing group index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:455
+#: ../lib/rpmdb.c:499
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:470
+#: ../lib/rpmdb.c:514
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:482
+#: ../lib/rpmdb.c:526
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:493
+#: ../lib/rpmdb.c:537
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:510
+#: ../lib/rpmdb.c:554
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:519
+#: ../lib/rpmdb.c:563
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:601
+#: ../lib/rpmdb.c:645
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: ../lib/rpmdb.c:667
+#: ../lib/rpmdb.c:711
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: ../lib/rpmdb.c:676
+#: ../lib/rpmdb.c:720
 msgid "header changed size!"
 msgstr ""
 
