@@ -10,7 +10,7 @@ my $MainDir = '/tmp/cpan';
 
 # set default options, then get options
 my %options=();
-$options{'email'}=(getpwuid($<))[0] . "\@" . hostname();
+$options{'email'}=(getpwuid($<))[0] . "\@redhat.com" ;
 GetOptions(\%options, "email=s", "n=s", "create") || exit 1;
 
 my $InputFile = $ARGV[0];
@@ -52,7 +52,7 @@ open (FILE, "> $MainDir/$filename");
 print FILE "Summary: $clm_name module for perl $class
 Name: perl-$clm_name
 Version: $clm_version
-Release: 2
+Release: 6
 Copyright: distributable
 Group: Applications/CPAN
 Source0: $clm_name-$clm_version.tar.gz
@@ -157,11 +157,14 @@ macrofiles: /usr/lib/rpm/macros:$MainDir/macros
 
 sub get_changelog {
   # generate the changelog entry from available system info
+	my ($name);
 
+	$name = (getpwuid($<))[6];
+	$name = (split(",", $name))[0];
   return ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")[(localtime)[6]] . " " .
     ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[(localtime)[4]] . " " .
     (localtime)[3] . " " . (1900+(localtime)[5]) . " " .
-    (getpwuid($<))[6] . " <" . $options{'email'} . ">";
+		$name . " <" . $options{'email'} . ">";
 }
 
