@@ -96,6 +96,16 @@ static void verifyDependencies(rpmdb db, Header h) {
     }
 }
 
+static void verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
+    if (verifyFlags & VERIFY_DEPS)
+	verifyDependencies(db, h);
+    if (verifyFlags & VERIFY_FILES)
+	verifyHeader(root, h);
+    if (verifyFlags & VERIFY_SCRIPT) {
+	rpmVerifyScript(root, h, 1);
+    }
+}
+
 static void verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 			  int verifyFlags) {
     int i;
@@ -110,10 +120,7 @@ static void verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 	    if (!h) {
 		fprintf(stderr, "error: could not read database record\n");
 	    } else {
-		if (verifyFlags & VERIFY_DEPS)
-		    verifyDependencies(db, h);
-		if (verifyFlags & VERIFY_FILES)
-		    verifyHeader(prefix, h);
+		verifyPackage(prefix, db, h, verifyFlags);
 		headerFree(h);
 	    }
 	}
@@ -148,10 +155,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		fprintf(stderr, "could not read database record!\n");
 		exit(1);
 	    }
-	    if (verifyFlags & VERIFY_DEPS)
-		verifyDependencies(db, h);
-	    if (verifyFlags & VERIFY_FILES)
-		verifyHeader(prefix, h);
+	    verifyPackage(prefix, db, h, verifyFlags);
 	    headerFree(h);
 	    offset = rpmdbNextRecNum(db, offset);
 	}
@@ -171,10 +175,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		    close(fd);
 		    switch (rc) {
 			case 0:
-			    if (verifyFlags & VERIFY_DEPS)
-				verifyDependencies(db, h);
-			    if (verifyFlags & VERIFY_FILES)
-				verifyHeader(prefix, h);
+			    verifyPackage(prefix, db, h, verifyFlags);
 			    headerFree(h);
 			    break;
 			case 1:
