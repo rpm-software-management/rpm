@@ -64,7 +64,7 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
     int_16 * fileModesList;
     int_16 * fileRDevsList;
     char * fileStatesList;
-    int i;
+    int i, j;
 
     lseek(fd, 0, SEEK_SET);
     if (oldhdrReadFromStream(fd, &oldheader)) {
@@ -117,27 +117,29 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
 	fileRDevsList = malloc(sizeof(int_16) * spec.fileCount);
 	fileStatesList = malloc(sizeof(char) * spec.fileCount);
 
-	for (i = 0; i < spec.fileCount; i++) {
-	    fileList[i] = spec.files[i].path;
-	    fileMD5List[i] = spec.files[i].md5;
-	    fileSizeList[i] = spec.files[i].size;
-	    fileUIDList[i] = spec.files[i].uid;
-	    fileGIDList[i] = spec.files[i].gid;
-	    fileMtimesList[i] = spec.files[i].mtime;
-	    fileModesList[i] = spec.files[i].mode;
-	    fileRDevsList[i] = spec.files[i].rdev;
-	    fileStatesList[i] = spec.files[i].state;
+	/* old packages were reverse sorted, new ones are forward sorted */
+	j = spec.fileCount - 1;
+	for (i = 0; i < spec.fileCount; i++, j--) {
+	    fileList[j] = spec.files[i].path;
+	    fileMD5List[j] = spec.files[i].md5;
+	    fileSizeList[j] = spec.files[i].size;
+	    fileUIDList[j] = spec.files[i].uid;
+	    fileGIDList[j] = spec.files[i].gid;
+	    fileMtimesList[j] = spec.files[i].mtime;
+	    fileModesList[j] = spec.files[i].mode;
+	    fileRDevsList[j] = spec.files[i].rdev;
+	    fileStatesList[j] = spec.files[i].state;
 
 	    if (spec.files[i].linkto)
-		fileLinktoList[i] = spec.files[i].linkto;
+		fileLinktoList[j] = spec.files[i].linkto;
 	    else
-		fileLinktoList[i] = "";
+		fileLinktoList[j] = "";
 	    
-	    fileFlagsList[i] = 0;
+	    fileFlagsList[j] = 0;
 	    if (spec.files[i].isdoc) 
-		fileFlagsList[i] |= RPMFILE_DOC;
+		fileFlagsList[j] |= RPMFILE_DOC;
 	    if (spec.files[i].isconf)
-		fileFlagsList[i] |= RPMFILE_CONFIG;
+		fileFlagsList[j] |= RPMFILE_CONFIG;
 	}
 
 	addEntry(dbentry, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, fileList, 
