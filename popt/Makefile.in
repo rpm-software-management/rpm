@@ -2,7 +2,7 @@ srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 
-LIBOBJECTS = 	popt.o	findme.o
+LIBOBJECTS = 	popt.o findme.o poptparse.o poptconfig.o popthelp.o
 
 SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS)))
 LIBPOPT = libpopt.a

@@ -1,12 +1,19 @@
 #ifndef H_POPT
 #define H_POPT
 
+#include <stdio.h>			/* for FILE * */
+
 #define POPT_OPTION_DEPTH	10
 
 #define POPT_ARG_NONE		0
 #define POPT_ARG_STRING		1
 #define POPT_ARG_INT		2
 #define POPT_ARG_LONG		3
+#define POPT_ARG_INCLUDE_TABLE	4	/* arg points to table */
+#define POPT_ARG_CALLBACK	5	/* table-wide callback... must be
+					   set first in table; arg points 
+					   to callback, descrip points to 
+					   callback data to pass */
 
 #define POPT_ERROR_NOARG	-10
 #define POPT_ERROR_BADOPT	-11
@@ -22,6 +29,7 @@
 /* poptGetContext() flags */
 #define POPT_CONTEXT_NO_EXEC	(1 << 0)  /* ignore exec expansions */
 #define POPT_CONTEXT_KEEP_FIRST	(1 << 1)  /* pay attention to argv[0] */
+#define POPT_CONTEXT_POSIXMEHARDER (1 << 2) /* options can't follow args */
 
 struct poptOption {
     const char * longName;	/* may be NULL */
@@ -29,6 +37,8 @@ struct poptOption {
     int argInfo;
     void * arg;			/* depends on argInfo */
     int val;			/* 0 means don't return, just update flag */
+    char * descrip;		/* description for autohelp -- may be NULL */
+    char * argDescrip;		/* argument description for autohelp */
 };
 
 struct poptAlias {
@@ -38,7 +48,15 @@ struct poptAlias {
     char ** argv;		/* must be free()able */
 };
 
+extern struct poptOption poptHelpOptions[];
+#define POPT_AUTOHELP { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptHelpOptions, \
+			0, "Help options", NULL },
+
 typedef struct poptContext_s * poptContext;
+typedef struct poptOption * poptOption;
+
+typedef void (*poptCallbackType)(poptContext con, int key, const char * arg, 
+				 void * data);
 
 poptContext poptGetContext(char * name, int argc, char ** argv, 
 			   const struct poptOption * options, int flags);
@@ -66,5 +84,8 @@ int poptReadDefaultConfig(poptContext con, int useEnv);
 int poptParseArgvString(char * s, int * argcPtr, char *** argvPtr);
 const char * poptStrerror(const int error);
 void poptSetExecPath(poptContext con, const char * path, int allowAbsolute);
+void poptPrintHelp(poptContext con, FILE * f, int flags);
+void poptPrintUsage(poptContext con, FILE * f, int flags);
+void poptSetOtherOptionHelp(poptContext con, const char * text);
 
 #endif
