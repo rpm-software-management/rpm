@@ -93,7 +93,7 @@ static void alCreate(struct availableList * al) {
 
     al->index.index = NULL;
     alFreeIndex(al);
-};
+}
 
 static void alFreeIndex(struct availableList * al) {
     if (al->index.size) {
@@ -189,7 +189,7 @@ static void alMakeIndex(struct availableList * al) {
 	    }
 	}
 
-	qsort(ai->index, ai->size, sizeof(*ai->index), (void *) indexcmp);
+	qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
     }
 }
 
@@ -202,7 +202,7 @@ struct availablePackage * alSatisfiesDepend(struct availableList * al,
 
     needle.entry = reqName;
     match = bsearch(&needle, al->index.index, al->index.size,
-		    sizeof(*al->index.index), (void *) indexcmp);
+		    sizeof(*al->index.index), indexcmp);
  
     if (!match) return NULL;
     if (match->type != IET_NAME) return match->package;
@@ -213,7 +213,7 @@ struct availablePackage * alSatisfiesDepend(struct availableList * al,
     return NULL;
 }
 
-int indexcmp(const void * a, const void *b) {
+static int indexcmp(const void * a, const void *b) {
     const struct availableIndexEntry * aptr = a;
     const struct availableIndexEntry * bptr = b;
 

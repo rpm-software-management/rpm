@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <utime.h>
 
@@ -109,7 +109,7 @@ static inline off_t safewrite(int fd, void * vbuf, size_t amount) {
     return 0; 
 }
 
-static inline int padoutfd(int fd, int * where, int modulo) {
+static inline int padoutfd(int fd, size_t * where, int modulo) {
     static int buf[10] = { '\0', '\0', '\0', '\0', '\0', 
 			   '\0', '\0', '\0', '\0', '\0' };
     int amount;
@@ -228,8 +228,10 @@ static int createDirectory(char * path, mode_t perms) {
 
 static int setInfo(struct cpioHeader * hdr) {
     int rc = 0;
-    struct utimbuf stamp = { hdr->mtime, hdr->mtime };
+    struct utimbuf stamp;
 
+    stamp.actime = hdr->mtime; 
+    stamp.modtime = hdr->mtime;
 
     if (!S_ISLNK(hdr->mode)) {
 	if (!getuid() && chown(hdr->path, hdr->uid, hdr->gid))
@@ -239,10 +241,10 @@ static int setInfo(struct cpioHeader * hdr) {
 	if (!rc && utime(hdr->path, &stamp))
 	    rc = CPIO_UTIME_FAILED;
     } else {
-	#if ! CHOWN_FOLLOWS_SYMLINK
+#       if ! CHOWN_FOLLOWS_SYMLINK
 	    if (!getuid() && !rc && lchown(hdr->path, hdr->uid, hdr->gid))
 		rc = CPIO_CHOWN_FAILED;
-	#endif
+#       endif
     }
 
     return rc;

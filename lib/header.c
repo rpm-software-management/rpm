@@ -1005,7 +1005,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
 	memcpy(buf, entry->data, length);
 	strcpy(buf + length, string);
 	i = strlen(chptr + length) + 1;
-	memcpy(buf + strlen(string) + 1, entry->data + length + i, 
+	memcpy(buf + strlen(string) + 1, ((char *) entry->data) + length + i, 
 		entry->length - length - i);
 
 	free(entry->data);
@@ -1075,7 +1075,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c) {
     entry->data = realloc(entry->data, entry->length + length);
     memcpy(((char *) entry->data) + entry->length, p, length);
 
-    copyData(type, entry->data + entry->length, p, c, length);
+    copyData(type, ((char *) entry->data) + entry->length, p, c, length);
 
     entry->length += length;
 

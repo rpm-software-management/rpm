@@ -1,5 +1,6 @@
 srcdir = @srcdir@
 VPATH = $(srcdir)
+top_srcdir = @top_srcdir@
 
 LIBOBJECTS = 	header.o 	misc.o		messages.o 	\
 		rpmerr.o 	falloc.o 			\
@@ -24,11 +25,7 @@ INSTALL_DATA= @INSTALL_DATA@
 
 include ../Makefile.inc
 
-ifeq (.depend,$(wildcard .depend))
 TARGET=allprogs
-else
-TARGET=depend allprogs
-endif
 
 all: $(TARGET)
 
@@ -58,13 +55,13 @@ tagtable.c: rpmlib.h
 	echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry) - 1;' >> tagtable.c
 
 install:
-	$(INSTALL) -m 644 $(srcdir)/rpmlib.h $(INCDIR)
-	$(INSTALL) -m 644 $(srcdir)/dbindex.h $(INCDIR)
-	$(INSTALL) -m 644 $(srcdir)/header.h $(INCDIR)
-	$(INSTALL) -m 644 librpm.a $(LIBDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/rpmlib.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/dbindex.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/header.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 librpm.a $(LIBDIR)
 
 distclean: clean
-	rm -f .depend Makefile	
+	rm -f Makefile	
 
 clean:
 	rm -f *.a *.o *~ $(PROGS) test.out tagtable.c
@@ -73,7 +70,9 @@ squeaky: clean
 	rm -f depend
 
 depend:
-	$(CPP) $(CFLAGS) -M $(SOURCES) > .depend
+	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
+	    $(CPP) $(CFLAGS) -MM $(SOURCES) | \
+		sed s+$$topdir_path+$(top_srcdir)+g > .depend
 
 ifeq (.depend,$(wildcard .depend))
 include .depend

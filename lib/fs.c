@@ -113,43 +113,43 @@ static int getFilesystemList(void) {
     struct stat sb;
     int i;
     char * mntdir;
-    #if GETMNTENT_ONE || GETMNTENT_TWO
+#   if GETMNTENT_ONE || GETMNTENT_TWO
     our_mntent item, * itemptr;
     FILE * mtab;
-    #elif HAVE_GETMNTINFO_R
+#   elif HAVE_GETMNTINFO_R
     struct statfs * mounts = NULL;
     int mntCount = 0, bufSize = 0, flags = MNT_NOWAIT;
     int nextMount = 0;
-    #endif
+#   endif
 
-    #if GETMNTENT_ONE || GETMNTENT_TWO
+#   if GETMNTENT_ONE || GETMNTENT_TWO
 	mtab = fopen(MOUNTED, "r");
 	if (!mtab) {
 	    rpmError(RPMERR_MTAB, _("failed to open %s: %s"), MOUNTED, 
 		     strerror(errno));
 	    return 1;
 	}
-    #elif HAVE_GETMNTINFO_R
+#   elif HAVE_GETMNTINFO_R
 	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
-    #endif
+#   endif
 
     filesystems = malloc(sizeof(*filesystems) * (numAlloced + 1));
 
     while (1) {
-	#if GETMNTENT_ONE
+#	if GETMNTENT_ONE
 	    /* this is Linux */
 	    itemptr = getmntent(mtab);
 	    if (!itemptr) break;
 	    item = *itemptr;
 	    mntdir = item.our_mntdir;
-	#elif GETMNTENT_TWO
+#	elif GETMNTENT_TWO
 	    /* Solaris, maybe others */
 	    if (getmntent(mtab, &item)) break;
 	    mntdir = item.our_mntdir;
-	#elif HAVE_GETMNTINFO_R
+#	elif HAVE_GETMNTINFO_R
 	    if (nextMount == mntCount) break;
 	    mntdir = mounts[nextMount++].f_mntonname;
-	#endif
+#	endif
 
 	if (stat(mntdir, &sb)) {
 	    rpmError(RPMERR_STAT, "failed to stat %s: %s", mntdir,
@@ -172,11 +172,11 @@ static int getFilesystemList(void) {
 	filesystems[num++].mntPoint = strdup(mntdir);
     }
 
-    #if GETMNTENT_ONE || GETMNTENT_TWO
+#   if GETMNTENT_ONE || GETMNTENT_TWO
 	fclose(mtab);
-    #elif HAVE_GETMNTINFO_R
+#   elif HAVE_GETMNTINFO_R
 	free(mounts);
-    #endif
+#   endif
 
     filesystems[num].mntPoint = NULL;
 

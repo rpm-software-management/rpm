@@ -50,15 +50,15 @@ void MD5Init(struct MD5Context *ctx, int brokenEndian)
     ctx->bits[0] = 0;
     ctx->bits[1] = 0;
 
-    #ifdef WORDS_BIGENDIAN
+#   ifdef WORDS_BIGENDIAN
 	if (brokenEndian) {
 	    ctx->doByteReverse = 0;
 	} else {
 	    ctx->doByteReverse = 1;
 	}
-    #else
+#   else
 	ctx->doByteReverse = 0;
-    #endif
+#   endif
 }
 
 /*

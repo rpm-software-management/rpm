@@ -312,7 +312,7 @@ static void machCacheEntryVisit(struct machCache * cache,
     for (i = 0; i < entry->count; i++) {
 	machCacheEntryVisit(cache, table, entry->equivs[i], distance + 1);
     }
-};
+}
 
 static void machFindEquivs(struct machCache * cache, 
 			     struct machEquivTable * table,
@@ -686,45 +686,45 @@ static void defaultMachine(char ** arch, char ** os) {
 	while (*chptr++)
 	    if (*chptr == '/') *chptr = '-';
 
-	#if defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL)
+#	if defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL)
 	    /* little endian */
 	    strcpy(un.machine, "mipsel");
-	#elif defined(__MIPSEB__) || defined(__MIPSEB) || defined(_MIPSEB)
+#	elif defined(__MIPSEB__) || defined(__MIPSEB) || defined(_MIPSEB)
 	   /* big endian */
 		strcpy(un.machine, "mipseb");
-	#endif
+#	endif
 
 	#if defined(__hpux) && defined(_SC_CPU_VERSION)
 	{
 	    int cpu_version = sysconf(_SC_CPU_VERSION);
 
-	    #if defined(CPU_HP_MC68020)
+#	    if defined(CPU_HP_MC68020)
 		if (cpu_version == CPU_HP_MC68020)
 		    strcpy(un.machine, "m68k");
-	    #endif
-	    #if defined(CPU_HP_MC68030)
+#	    endif
+#	    if defined(CPU_HP_MC68030)
 		if (cpu_version == CPU_HP_MC68030)
 		    strcpy(un.machine, "m68k");
-	    #endif
-	    #if defined(CPU_HP_MC68040)
+#	    endif
+#	    if defined(CPU_HP_MC68040)
 		if (cpu_version == CPU_HP_MC68040)
 		    strcpy(un.machine, "m68k");
-	    #endif
+#	    endif
 
-	    #if defined(CPU_PA_RISC1_0)
+#	    if defined(CPU_PA_RISC1_0)
 		if (cpu_version == CPU_PA_RISC1_0)
 		    strcpy(un.machine, "parisc");
-	    #endif
-	    #if defined(CPU_PA_RISC1_1)
+#	    endif
+#	    if defined(CPU_PA_RISC1_1)
 		if (cpu_version == CPU_PA_RISC1_1)
 		    strcpy(un.machine, "parisc");
-	    #endif
-	    #if defined(CPU_PA_RISC1_2)
+#	    endif
+#	    if defined(CPU_PA_RISC1_2)
 		if (cpu_version == CPU_PA_RISC1_2)
 		    strcpy(un.machine, "parisc");
-	    #endif
+#	    endif
 	}
-	#endif
+#	endif
 
 	/* the uname() result goes through the arch_canon table */
 	canon = lookupInCanonTable(un.machine,
