@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.30
+Release: 0.31
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -136,9 +136,9 @@ fi
 %dir /usr/src/redhat/RPMS
 /usr/src/redhat/RPMS/*
 /usr/share/locale/*/LC_MESSAGES/rpm.mo
-/usr/man/man8/*.8
-%lang(pl) /usr/man/pl/man8/*
-%lang(ru) /usr/man/ru/man8/*
+/usr/man/man[18]/*.[18]*
+%lang(pl) /usr/man/pl/man[18]/*.[18]*
+%lang(ru) /usr/man/ru/man[18]/*.[18]*
 
 %ifos linux
 %files python
@@ -160,7 +160,7 @@ fi
 %defattr(-,root,root)
 /usr/lib/libpopt.so.*
 /usr/share/locale/*/LC_MESSAGES/popt.mo
-/usr/man/man3/popt.3
+/usr/man/man3/popt.3*
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort now.
 /usr/lib/libpopt.a

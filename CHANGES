@@ -36,6 +36,7 @@
 	- fix: manageFile needs to and with O_WRONLY(=1), not O_RDONLY(=0).
 	- fix: resurrect failed glob error message during build.
 	- add several BuildRoot FTW policies.
+	- add manpage for gendiff (pbrown@redhat.com).
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
