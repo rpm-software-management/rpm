@@ -910,8 +910,7 @@ int rpmdbInit (const char * prefix, int perms)
     return rc;
 }
 
-#ifndef	DYING_NOTYET
-/* XXX install.c, query.c, transaction.c, uninstall.c */
+#ifdef	DYING
 static Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
 {
     dbiIndex dbi;
@@ -992,7 +991,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	unsigned int prevoff;
 	Header h;
 
-#ifndef	DYING_NOTYET
+#ifdef	DYING
 	h = rpmdbGetRecord(rpmdb, offset);
 #else
 	{   rpmdbMatchIterator mi;
@@ -1125,11 +1124,11 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 	if (recoff == 0)
 	    continue;
 
-#ifndef	DYING_NOTYET
+#ifdef	DYING
 	h = rpmdbGetRecord(dbi->dbi_rpmdb, recoff);
 #else
     {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &recoff, sizeof(recoff));
+	mi = rpmdbInitIterator(dbi->dbi_rpmdb, RPMDBI_PACKAGES, &recoff, sizeof(recoff));
 	h = rpmdbNextIterator(mi);
 	if (h)
 	    h = headerLink(h);
@@ -1659,7 +1658,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
     Header h;
     sigset_t signalMask;
 
-#ifndef	DYING_NOTYET
+#ifdef	DYING
     h = rpmdbGetRecord(rpmdb, hdrNum);
 #else
   { rpmdbMatchIterator mi;
