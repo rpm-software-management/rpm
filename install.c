@@ -235,6 +235,8 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 		stopInstall = 1;
 	    }
 
+	    rpmdepDone(rpmdep);
+
 	    if (!stopInstall && conflicts) {
 		fprintf(stderr, "failed dependencies:\n");
 		printDepProblems(stderr, conflicts, numConflicts);
@@ -255,6 +257,9 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 
     for (i = 0; i < numTmpPackages; i++)
 	unlink(tmpPackages[i]);
+
+    for (i = 0; i < numBinaryPackages; i++) 
+	freeHeader(binaryHeaders[i]);
 
     if (db) rpmdbClose(db);
 
@@ -335,6 +340,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	    numFailed = numPackages;
 	    stopUninstall = 1;
 	}
+
+	rpmdepDone(rpmdep);
 
 	if (!stopUninstall && conflicts) {
 	    fprintf(stderr, "removing these packages would break "
