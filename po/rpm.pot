@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-12-02 14:48-0500\n"
+"POT-Creation-Date: 1998-12-03 11:36-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,47 +171,47 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: ../ftp.c:429
+#: ../ftp.c:458
 msgid "Bad FTP server response"
 msgstr ""
 
-#: ../ftp.c:432
+#: ../ftp.c:461
 msgid "FTP IO error"
 msgstr ""
 
-#: ../ftp.c:435
+#: ../ftp.c:464
 msgid "FTP server timeout"
 msgstr ""
 
-#: ../ftp.c:438
+#: ../ftp.c:467
 msgid "Unable to lookup FTP server host address"
 msgstr ""
 
-#: ../ftp.c:441
+#: ../ftp.c:470
 msgid "Unable to lookup FTP server host name"
 msgstr ""
 
-#: ../ftp.c:444
+#: ../ftp.c:473
 msgid "Failed to connect to FTP server"
 msgstr ""
 
-#: ../ftp.c:447
+#: ../ftp.c:476
 msgid "Failed to establish data connection to FTP server"
 msgstr ""
 
-#: ../ftp.c:450
+#: ../ftp.c:479
 msgid "IO error to local file"
 msgstr ""
 
-#: ../ftp.c:453
+#: ../ftp.c:482
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: ../ftp.c:456
+#: ../ftp.c:485
 msgid "File not found on server"
 msgstr ""
 
-#: ../ftp.c:460
+#: ../ftp.c:489
 msgid "FTP Unknown or unexpected error"
 msgstr ""
 
@@ -1326,26 +1326,30 @@ msgstr ""
 msgid "no arguments given for verify"
 msgstr ""
 
-#: ../url.c:51
+#: ../url.c:82
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: ../url.c:117 ../url.c:235
+#: ../url.c:96 ../url.c:299
 #, c-format
 msgid "getting %s via anonymous ftp\n"
 msgstr ""
 
-#: ../url.c:124
+#: ../url.c:101
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../url.c:135
+#: ../url.c:119
 msgid "error: ftpport must be a number\n"
 msgstr ""
 
-#: ../url.c:241
+#: ../url.c:201
+msgid "error: url port must be a number\n"
+msgstr ""
+
+#: ../url.c:305
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""
@@ -2456,7 +2460,7 @@ msgstr ""
 msgid "\tfiles changed too much - backing up\n"
 msgstr ""
 
-#: ../lib/install.c:1252 ../lib/rpmdb.c:309 ../lib/uninstall.c:118
+#: ../lib/install.c:1252 ../lib/rpmdb.c:318 ../lib/uninstall.c:118
 #: ../lib/uninstall.c:218
 #, c-format
 msgid "cannot read header at %d for uninstall"
@@ -2850,126 +2854,126 @@ msgstr ""
 msgid "opening old database\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:43
+#: ../lib/rebuilddb.c:44
 msgid "opening new database\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:52 ../lib/rebuilddb.c:70
+#: ../lib/rebuilddb.c:53 ../lib/rebuilddb.c:71
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr ""
 
-#: ../lib/rebuilddb.c:64
+#: ../lib/rebuilddb.c:65
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: ../lib/rebuilddb.c:81
+#: ../lib/rebuilddb.c:82
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:88
+#: ../lib/rebuilddb.c:89
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:90
+#: ../lib/rebuilddb.c:91
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: ../lib/rebuilddb.c:95
+#: ../lib/rebuilddb.c:96
 #, c-format
 msgid "failed to remove %s: %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:112
+#: ../lib/rpmdb.c:115
 #, c-format
 msgid "opening database in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:121
+#: ../lib/rpmdb.c:124
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:134 ../lib/rpmdb.c:141
+#: ../lib/rpmdb.c:137 ../lib/rpmdb.c:144
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: ../lib/rpmdb.c:135
+#: ../lib/rpmdb.c:138
 msgid "exclusive"
 msgstr ""
 
-#: ../lib/rpmdb.c:142
+#: ../lib/rpmdb.c:145
 msgid "shared"
 msgstr ""
 
-#: ../lib/rpmdb.c:275
+#: ../lib/rpmdb.c:284
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:286
+#: ../lib/rpmdb.c:295
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:317
+#: ../lib/rpmdb.c:326
 msgid "package has no name"
 msgstr ""
 
-#: ../lib/rpmdb.c:319
+#: ../lib/rpmdb.c:328
 msgid "removing name index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:324
+#: ../lib/rpmdb.c:333
 msgid "package has no group\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:326
+#: ../lib/rpmdb.c:335
 msgid "removing group index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:333
+#: ../lib/rpmdb.c:342
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:348
+#: ../lib/rpmdb.c:357
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:360
+#: ../lib/rpmdb.c:369
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:371
+#: ../lib/rpmdb.c:380
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:382
+#: ../lib/rpmdb.c:391
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:390
+#: ../lib/rpmdb.c:399
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:462
+#: ../lib/rpmdb.c:471
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: ../lib/rpmdb.c:526
+#: ../lib/rpmdb.c:535
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: ../lib/rpmdb.c:535
+#: ../lib/rpmdb.c:544
 msgid "header changed size!"
 msgstr ""
 

@@ -15,7 +15,9 @@ const char * ftpStrerror(int ftpErrno);
 #define FTPERR_FILE_NOT_FOUND        -10
 #define FTPERR_UNKNOWN               -100
 
-int ftpOpen(char * host, char * name, char * password, char * proxy, int port);
+int httpOpen(urlinfo *u);
+
+int ftpOpen(urlinfo *u);
 int ftpGetFile(int sock, char * remotename, FD_t dest);
 int ftpGetFileDesc(int sock, char * remotename);
 int ftpGetFileDone(int sock);

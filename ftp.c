@@ -45,6 +45,7 @@ int inet_aton(const char *cp, struct in_addr *inp);
 #include "dns.h"
 #endif
 
+#include "url.h"
 #include "ftp.h"
 
 static int ftpCheckResponse(int sock, char ** str);
@@ -144,7 +145,6 @@ int ftpCommand(int sock, char * command, ...) {
     int len;
     char * s;
     char * buf;
-    int rc;
 
     va_start(ap, command);
     len = strlen(command) + 2;
@@ -176,10 +176,7 @@ int ftpCommand(int sock, char * command, ...) {
         return FTPERR_SERVER_IO_ERROR;
     }
 
-    if ((rc = ftpCheckResponse(sock, NULL)))
-	return rc;
-
-    return 0;
+    return ftpCheckResponse(sock, NULL);
 }
 
 #if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
@@ -209,23 +206,75 @@ static int getHostAddress(const char * host, struct in_addr * address) {
     return 0;
 }
 
-int ftpOpen(char * host, char * name, char * password, char * proxy,
-	    int port) {
-    static int sock;
-    /*static char * lastHost = NULL;*/
-    struct in_addr serverAddress;
-    struct sockaddr_in destPort;
-    struct passwd * pw;
-    char * buf;
+static int tcpConnect(const char *host, int port)
+{
+    int sock;
+    struct sockaddr_in sin;
+
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons(port);
+    if ((sock = getHostAddress(host, &sin.sin_addr)) < 0)
+	return sock;
+
+    if ((sock = socket(sin.sin_family, SOCK_STREAM, IPPROTO_IP)) < 0)
+        return FTPERR_FAILED_CONNECT;
+
+    if (connect(sock, (struct sockaddr *) &sin, sizeof(sin))) {
+	close(sock);
+        return FTPERR_FAILED_CONNECT;
+    }
+    return sock;
+}
+
+int httpOpen(urlinfo *u)
+{
+    int sock;
+    char *host;
+    int port;
+    char *buf;
+    size_t len;
+
+    if (u == NULL || ((host = u->host) == NULL))
+	return FTPERR_BAD_HOSTNAME;
+
+    if ((port = u->port) < 0) port = 80;
+
+    if ((sock = tcpConnect(host, port)) < 0)
+	return sock;
+
+    len = strlen(u->path) + sizeof("GET \r\n");
+    buf = alloca(len);
+    strcpy(buf, "GET ");
+    strcat(buf, u->path);
+    strcat(buf, "\r\n");
+    if (write(sock, buf, len) != len) {
+	close(sock);
+	return FTPERR_SERVER_IO_ERROR;
+    }
+
+    return sock;
+}
+
+int ftpOpen(urlinfo *u)
+{
+    char * host;
+    char * user;
+    char * password;
+    int port;
+    int sock;
     int rc;
 
-    if (port < 0) port = IPPORT_FTP;
+    if (u == NULL || ((host = u->host) == NULL))
+	return FTPERR_BAD_HOSTNAME;
 
-    if (!name)
-	name = "anonymous";
+    if ((port = u->port) < 0) port = IPPORT_FTP;
 
-    if (!password) {
+    if ((user = u->user) == NULL)
+	user = "anonymous";
+
+    if ((password = u->password) == NULL) {
 	if (getuid()) {
+	    struct passwd * pw;
 	    pw = getpwuid(getuid());
 	    password = alloca(strlen(pw->pw_name) + 2);
 	    strcpy(password, pw->pw_name);
@@ -235,28 +284,8 @@ int ftpOpen(char * host, char * name, char * password, char * proxy,
 	}
     }
 
-    if (proxy) {
-	buf = alloca(strlen(name) + strlen(host) + 5);
-	sprintf(buf, "%s@%s", name, host);
-	name = buf;
-	host = proxy;
-    }
-
-    if ((rc = getHostAddress(host, &serverAddress))) return rc;
-
-    sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    if (sock < 0) {
-        return FTPERR_FAILED_CONNECT;
-    }
-
-    destPort.sin_family = AF_INET;
-    destPort.sin_port = htons(port);
-    destPort.sin_addr = serverAddress;
-
-    if (connect(sock, (struct sockaddr *) &destPort, sizeof(destPort))) {
-	close(sock);
-        return FTPERR_FAILED_CONNECT;
-    }
+    if ((sock = tcpConnect(host, port)) < 0)
+	return sock;
 
     /* ftpCheckResponse() assumes the socket is nonblocking */
     if (fcntl(sock, F_SETFL, O_NONBLOCK)) {
@@ -268,7 +297,7 @@ int ftpOpen(char * host, char * name, char * password, char * proxy,
         return rc;     
     }
 
-    if ((rc = ftpCommand(sock, "USER", name, NULL))) {
+    if ((rc = ftpCommand(sock, "USER", user, NULL))) {
 	close(sock);
 	return rc;
     }
