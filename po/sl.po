@@ -1,13 +1,13 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.1 2000/02/17 21:00:08 jbj Exp $
+# $Id: sl.po,v 1.2 2000/02/17 21:49:52 jbj Exp $
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 3.0.3\n"
-"POT-Creation-Date: 2000-02-17 15:48-0500\n"
-"PO-Revision-Date: 2000-02-12 15:29+01:00\n"
+"Project-Id-Version: rpm 3.0.4\n"
+"POT-Creation-Date: 2000-02-17 16:41-0500\n"
+"PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -24,9 +24,9 @@ msgid "failed build dependencies:\n"
 msgstr "izdelava soodvisnosti neuspe¹na:\n"
 
 #: build.c:64
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr "Datoteke spec ni mo¾no odpreti: %s\n"
+msgstr "Datoteke spec %s ni mo¾no odpreti: %s\n"
 
 #: build.c:128 build.c:141
 #, c-format
@@ -377,9 +377,8 @@ msgid "                        [--target=platform1[,platform2...]]"
 msgstr "                        [--target=okolje1[,okolje2...]]"
 
 #: rpm.c:263
-#, fuzzy
 msgid "                        [--rmsource] [--rmspec] specfile"
-msgstr "                        [--rmsource] datoteka_spec"
+msgstr "                        [--rmsource] [--rmspec] datoteka_spec"
 
 #: rpm.c:264
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
@@ -1135,13 +1134,12 @@ msgstr ""
 "paketa"
 
 #: rpm.c:1046
-#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
-"--nodeps smemo podati samo ob izgradnji, namestitvi, odstranitvi ali "
-"preverjanju paketa"
+"--nodeps smemo podati samo ob izgradnji, vnovièni izgradnji, prevajanju, "
+"namestitvi, odstranitvi ali preverjanju paketa"
 
 #: rpm.c:1051
 msgid ""
@@ -1276,9 +1274,9 @@ msgid "no arguments given for verify"
 msgstr "argumenti za preverjanje niso podani"
 
 #: rpm2cpio.c:22
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open package: %s\n"
-msgstr "datoteke %s/packages.rpm ni mo¾no odpreti\n"
+msgstr "paketa ni mo¾no odpreti: %s\n"
 
 #: rpm2cpio.c:32
 msgid "argument is not an RPM package\n"
@@ -1289,23 +1287,23 @@ msgid "error reading header from package\n"
 msgstr "napaka pri branju glave paketa\n"
 
 #: rpm2cpio.c:43
-#, fuzzy, c-format
+#, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr "ni mo¾no odpreti datoteke %s\n"
+msgstr "ni mo¾no vnoviè odpreti (payload): %s\n"
 
 #: build/build.c:110 build/pack.c:312
 msgid "Unable to open temp file"
 msgstr "Zaèasne datoteke ni mo¾no odpreti"
 
 #: build/build.c:189
-#, fuzzy, c-format
+#, c-format
 msgid "Executing(%s): %s\n"
-msgstr "Izvajamo: %s\n"
+msgstr "Izvajamo(%s): %s\n"
 
 #: build/build.c:195
-#, fuzzy, c-format
+#, c-format
 msgid "Exec of %s failed (%s): %s"
-msgstr "Izvajanje %s neuspe¹no (%s)"
+msgstr "Izvajanje %s neuspe¹no (%s): %s"
 
 #: build/build.c:203
 #, c-format
@@ -1444,7 +1442,7 @@ msgstr "Datoteka je navedena dvakrat: %s"
 #: build/files.c:872
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
-msgstr ""
+msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
 #: build/files.c:952
 #, c-format
@@ -1476,58 +1474,57 @@ msgstr "Datoteki manjka uvodni \"/\": %s"
 msgid "File not found by glob: %s"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1164
-#, fuzzy
+#: build/files.c:1169
 msgid "Could not open %%files file %s: %s"
-msgstr "Datoteke iz %%files ni mo¾no odpreti: %s"
+msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1171 build/pack.c:99
+#: build/files.c:1176 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "vrstica: %s"
 
-#: build/files.c:1499
-#, fuzzy, c-format
+#: build/files.c:1504
+#, c-format
 msgid "Bad file: %s: %s"
-msgstr "datoteka %s: %s\n"
+msgstr "Okvarjena datoteka: %s: %s"
 
-#: build/files.c:1511 build/parsePrep.c:34
+#: build/files.c:1516 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Okvarjen lastnik/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1566
+#: build/files.c:1571
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Ni mo¾no izvesti %s: %s"
 
-#: build/files.c:1571
+#: build/files.c:1576
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Vejitev %s ni mo¾na: %s"
 
-#: build/files.c:1653
+#: build/files.c:1658
 #, c-format
 msgid "%s failed"
 msgstr "%s neuspe¹en"
 
-#: build/files.c:1657
+#: build/files.c:1662
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "pisanje podatkov na %s neuspe¹no"
 
-#: build/files.c:1747
+#: build/files.c:1752
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "I¹èemo  %s: (z uporabo %s)...\n"
 
-#: build/files.c:1775 build/files.c:1784
+#: build/files.c:1780 build/files.c:1789
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:1891
+#: build/files.c:1896
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdelujemo datoteke: %s-%s-%s\n"
@@ -1615,9 +1612,9 @@ msgid "Bad CSA data"
 msgstr "Okvarjeni podatki CSA"
 
 #: build/pack.c:359
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s: %s\n"
-msgstr "Ni mo¾no odpreti %s\n"
+msgstr "Ni mo¾no odpreti %s: %s\n"
 
 #: build/pack.c:391
 #, c-format
@@ -1630,19 +1627,19 @@ msgid "Generating signature: %d\n"
 msgstr "Izdelujemo podpis: %d\n"
 
 #: build/pack.c:422
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sigtarget %s: %s"
-msgstr "Ciljni podpis ni berljiv: %s"
+msgstr "Ciljnega podpisa %s ni mo¾no odpreti: %s"
 
 #: build/pack.c:432
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read sigtarget %s: %s"
-msgstr "Ciljni podpis ni berljiv: %s"
+msgstr "Ciljni podpis %s ni berljiv: %s"
 
 #: build/pack.c:442
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write package %s: %s"
-msgstr "Ni mo¾no zapisati paketa: %s"
+msgstr "Ni mo¾no zapisati paketa %s: %s"
 
 #: build/pack.c:457
 #, c-format
@@ -1692,7 +1689,7 @@ msgstr "opis v %%changelog manjka"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%description: %s"
 
-#: build/parseDescription.c:51 build/parseFiles.c:45 build/parseScript.c:173
+#: build/parseDescription.c:51 build/parseFiles.c:46 build/parseScript.c:173
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "vrstica %d: Okvarjena izbira %s: %s"
@@ -1702,7 +1699,7 @@ msgstr "vrstica %d: Okvarjena izbira %s: %s"
 msgid "line %d: Too many names: %s"
 msgstr "vrstica %d: Preveè imen: %s"
 
-#: build/parseDescription.c:74 build/parseFiles.c:68 build/parseScript.c:196
+#: build/parseDescription.c:74 build/parseFiles.c:67 build/parseScript.c:196
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "vrstica %d: Paket ne obstaja: %s"
@@ -1716,7 +1713,7 @@ msgstr "vrstica %d: Drugi opis"
 msgid "line %d: Error parsing %%files: %s"
 msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%Files: %s"
 
-#: build/parseFiles.c:76
+#: build/parseFiles.c:74
 msgid "line %d: Second %%files list"
 msgstr "vrstica %d: Drugi seznam %%Files"
 
@@ -1751,14 +1748,14 @@ msgid "Duplicate %s entries in package: %s"
 msgstr "Podvojeni vnosi %s v paketu: %s"
 
 #: build/parsePreamble.c:250
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open icon %s: %s"
-msgstr "Ikone ni mo¾no prebrati: %s"
+msgstr "Ikone %s ni mo¾no odpreti: %s"
 
 #: build/parsePreamble.c:268
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read icon %s: %s"
-msgstr "Ikone ni mo¾no prebrati: %s"
+msgstr "Ikone %s ni mo¾no prebrati: %s"
 
 #: build/parsePreamble.c:281
 #, c-format
@@ -1782,9 +1779,9 @@ msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
 #: build/parsePreamble.c:446 build/parseSpec.c:375
-#, fuzzy, c-format
+#, c-format
 msgid "BuildRoot can not be \"/\": %s"
-msgstr "vrstica %d: BuildRoot ne more biti \"/\": %s"
+msgstr "BuildRoot ne more biti \"/\": %s"
 
 #: build/parsePreamble.c:459
 #, c-format
@@ -1945,9 +1942,9 @@ msgstr "vrstica %d: %s"
 
 #. XXX Fstrerror
 #: build/parseSpec.c:186
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s: %s\n"
-msgstr "Ni mo¾no odpreti: %s\n"
+msgstr "Ni mo¾no odpreti %s: %s\n"
 
 #: build/parseSpec.c:198
 msgid "Unclosed %%if"
@@ -2308,9 +2305,9 @@ msgid "installing a source package\n"
 msgstr "name¹èanje izvornega paketa\n"
 
 #: lib/install.c:426
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create sourcedir %s"
-msgstr "ni mo¾no ustvariti %s: %s"
+msgstr "ni mo¾no ustvariti izvornega imenika %s"
 
 #: lib/install.c:432 lib/install.c:462
 #, c-format
@@ -2323,9 +2320,9 @@ msgid "sources in: %s\n"
 msgstr "izvori v: %s\n"
 
 #: lib/install.c:456
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create specdir %s"
-msgstr "ni mo¾no ustvariti %s: %s"
+msgstr "ni mo¾no ustvariti imenika z doloèili spec %s"
 
 #: lib/install.c:466
 #, c-format
@@ -2555,7 +2552,7 @@ msgstr ""
 "datoteka %s name¹èena z %s-%s-%s je v sporu z datoteko iz paketa %s-%s-%s"
 
 #: lib/problems.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "paket %s-%s-%s (ki je novej¹i kot %s-%s-%s) je ¾e name¹èen"
 
@@ -2769,9 +2766,9 @@ msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
 #: lib/rebuilddb.c:51
-#, fuzzy, c-format
+#, c-format
 msgid "rebuilding database %s into %s\n"
-msgstr "ponovna izgradnja podatkovne zbirke v korenu %s\n"
+msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
 #: lib/rebuilddb.c:55
 #, c-format
@@ -2799,12 +2796,12 @@ msgstr "odpiramo novo podatkovno zbirko\n"
 #: lib/rebuilddb.c:86
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
-msgstr "zapis ¹t. %d v podatkovni zbirki je okvarjen -- preskakujemo"
+msgstr "zapis ¹t. %d v zbirki je okvarjen -- preskakujemo"
 
 #: lib/rebuilddb.c:104
 #, c-format
 msgid "duplicated database entry: %s-%s-%s -- skipping."
-msgstr ""
+msgstr "podvojen zapis v zbirki: %s-%s-%s -- preskakujemo"
 
 #: lib/rebuilddb.c:113
 #, c-format
@@ -2812,9 +2809,9 @@ msgid "cannot add record originally at %d"
 msgstr "zapisa ni mo¾no dodati na %d"
 
 #: lib/rebuilddb.c:119
-#, fuzzy, c-format
+#, c-format
 msgid "record number %d in database is bad -- skipping."
-msgstr "zapis ¹t. %d v podatkovni zbirki je okvarjen -- preskakujemo"
+msgstr "zapis ¹t. %d v zbirki je okvarjen -- preskakujemo."
 
 #: lib/rebuilddb.c:132
 msgid "failed to rebuild database; original database remains in place\n"
@@ -2836,23 +2833,23 @@ msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
 
 #: lib/rpmchecksig.c:31
-#, fuzzy, c-format
+#, c-format
 msgid "%s: open failed: %s\n"
-msgstr "%s: fdOpen neuspe¹en: %s\n"
+msgstr "%s: odpiranje neuspe¹no: %s\n"
 
 #: lib/rpmchecksig.c:42
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile neuspe¹en\n"
 
 #: lib/rpmchecksig.c:74
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr "%s: writeLead neuspe¹en: %s\n"
+msgstr "%s: pisanje Fwrite neuspe¹no: %s\n"
 
 #: lib/rpmchecksig.c:80
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Fread failed: %s\n"
-msgstr "%s: fdRead neuspe¹en: %s\n"
+msgstr "%s: branje Fread neuspe¹no: %s\n"
 
 #: lib/rpmchecksig.c:113 lib/rpmchecksig.c:243
 #, c-format
@@ -2885,9 +2882,9 @@ msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead neuspe¹en: %s\n"
 
 #: lib/rpmchecksig.c:173
-#, fuzzy, c-format
+#, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
-msgstr "%s: rpmWriteSignature neuspe¹en\n"
+msgstr "%s: rpmWriteSignature neuspe¹no: %s\n"
 
 #: lib/rpmchecksig.c:249
 #, c-format
@@ -2924,9 +2921,9 @@ msgid "opening database mode 0x%x in %s\n"
 msgstr "odpiramo datoteko z naèinom 0x%x v %s\n"
 
 #: lib/rpmdb.c:160 lib/url.c:442
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open %s: %s\n"
-msgstr "neuspe¹no odpiranje %s: %s"
+msgstr "neuspe¹no odpiranje %s: %s\n"
 
 #: lib/rpmdb.c:174 lib/rpmdb.c:182
 #, c-format
@@ -3034,9 +3031,9 @@ msgid "looking for packages to download\n"
 msgstr "iskanje paketov za prenos po omre¾ju\n"
 
 #: lib/rpminstall.c:150
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
-msgstr "preskakujemo %s - prenos neuspe¹en - %s\n"
+msgstr "preskakujemo %s - rpmGlob neuspe¹en(%d)\n"
 
 #: lib/rpminstall.c:165
 #, c-format
@@ -3061,9 +3058,9 @@ msgid "retrieved %d packages\n"
 msgstr "prenesli smo %d paketov\n"
 
 #: lib/rpminstall.c:217 lib/rpminstall.c:360
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open file %s: %s\n"
-msgstr "ni mo¾no odpreti datoteke %s: %s"
+msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
 #: lib/rpminstall.c:235 lib/rpminstall.c:512
 #, c-format
@@ -3113,9 +3110,9 @@ msgid "removing these packages would break dependencies:\n"
 msgstr "odstranitev teh paketov bi podrla soodvisnosti:\n"
 
 #: lib/rpminstall.c:501
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s: %s\n"
-msgstr "ni mo¾no odpreti %s\n"
+msgstr "ni mo¾no odpreti %s: %s\n"
 
 #: lib/rpminstall.c:507
 #, c-format
@@ -3236,9 +3233,9 @@ msgid "Failed to read %s: %s."
 msgstr "Neuspe¹no branje %s: %s."
 
 #: lib/rpmrc.c:644
-#, fuzzy, c-format
+#, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
-msgstr "manjkajoèi ,:` v %s:%d"
+msgstr "manjkajoèi ,:` (najden 0x%02x) v %s:%d"
 
 #: lib/rpmrc.c:661 lib/rpmrc.c:735
 #, c-format
@@ -3251,9 +3248,9 @@ msgid "%s expansion failed at %s:%d \"%s\""
 msgstr "izraz %s neuspe¹en v %s:%d \"%s\""
 
 #: lib/rpmrc.c:687
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s at %s:%d: %s"
-msgstr "ni mo¾no odpreti %s v %s:%d"
+msgstr "ni mo¾no odpreti %s v %s:%d: %s"
 
 #: lib/rpmrc.c:727
 #, c-format
@@ -3412,14 +3409,14 @@ msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
 #: lib/transaction.c:389
-#, fuzzy, c-format
+#, c-format
 msgid "excluding file %s%s\n"
-msgstr "izkljuèujemo %s\n"
+msgstr "izkljuèujemo datoteko %s%s\n"
 
 #: lib/transaction.c:415 lib/transaction.c:499
-#, fuzzy, c-format
+#, c-format
 msgid "excluding directory %s\n"
-msgstr "ustvarjamo imenik: %s\n"
+msgstr "izkljuèujemo imenik %s\n"
 
 #: lib/transaction.c:420
 #, c-format
@@ -3427,9 +3424,9 @@ msgid "relocating %s to %s\n"
 msgstr "prestavljamo %s v %s\n"
 
 #: lib/transaction.c:492
-#, fuzzy, c-format
+#, c-format
 msgid "relocating directory %s to %s\n"
-msgstr "prestavljamo %s v %s\n"
+msgstr "prestavljamo imenik %s v %s\n"
 
 #: lib/transaction.c:643
 #, c-format
@@ -3476,17 +3473,17 @@ msgstr "skript se ni uspe¹no izvedel"
 #: lib/url.c:85
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr ""
+msgstr "opozorilo: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
 #: lib/url.c:102
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr ""
+msgstr "opozorilo: u %p data %p nrefs != 0 (%s %s)\n"
 
 #: lib/url.c:129
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr ""
+msgstr "opozorilo: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
 #: lib/url.c:215
 #, c-format
@@ -3504,9 +3501,9 @@ msgstr "vrata URL morajo biti ¹tevilka\n"
 
 #. XXX Fstrerror
 #: lib/url.c:459
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create %s: %s\n"
-msgstr "neuspe¹no ustvarjanje %s\n"
+msgstr "neuspe¹no ustvarjanje %s: %s\n"
 
 #: lib/verify.c:39
 msgid "don't verify files in package"
