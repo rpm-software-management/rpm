@@ -33,7 +33,7 @@
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ae0[256] = {
+const uint32 _ae0[256] = {
     0xc66363a5, 0xf87c7c84, 0xee777799, 0xf67b7b8d,
     0xfff2f20d, 0xd66b6bbd, 0xde6f6fb1, 0x91c5c554,
     0x60303050, 0x02010103, 0xce6767a9, 0x562b2b7d,
@@ -103,7 +103,7 @@ static const uint32 _ae0[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ae1[256] = {
+const uint32 _ae1[256] = {
     0xa5c66363, 0x84f87c7c, 0x99ee7777, 0x8df67b7b,
     0x0dfff2f2, 0xbdd66b6b, 0xb1de6f6f, 0x5491c5c5,
     0x50603030, 0x03020101, 0xa9ce6767, 0x7d562b2b,
@@ -173,7 +173,7 @@ static const uint32 _ae1[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ae2[256] = {
+const uint32 _ae2[256] = {
     0x63a5c663, 0x7c84f87c, 0x7799ee77, 0x7b8df67b,
     0xf20dfff2, 0x6bbdd66b, 0x6fb1de6f, 0xc55491c5,
     0x30506030, 0x01030201, 0x67a9ce67, 0x2b7d562b,
@@ -243,7 +243,7 @@ static const uint32 _ae2[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ae3[256] = {
+const uint32 _ae3[256] = {
     0x6363a5c6, 0x7c7c84f8, 0x777799ee, 0x7b7b8df6,
     0xf2f20dff, 0x6b6bbdd6, 0x6f6fb1de, 0xc5c55491,
     0x30305060, 0x01010302, 0x6767a9ce, 0x2b2b7d56,
@@ -313,7 +313,7 @@ static const uint32 _ae3[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ae4[256] = {
+const uint32 _ae4[256] = {
     0x63636363, 0x7c7c7c7c, 0x77777777, 0x7b7b7b7b,
     0xf2f2f2f2, 0x6b6b6b6b, 0x6f6f6f6f, 0xc5c5c5c5,
     0x30303030, 0x01010101, 0x67676767, 0x2b2b2b2b,
@@ -383,7 +383,7 @@ static const uint32 _ae4[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ad0[256] = {
+const uint32 _ad0[256] = {
     0x51f4a750, 0x7e416553, 0x1a17a4c3, 0x3a275e96,
     0x3bab6bcb, 0x1f9d45f1, 0xacfa58ab, 0x4be30393,
     0x2030fa55, 0xad766df6, 0x88cc7691, 0xf5024c25,
@@ -453,7 +453,7 @@ static const uint32 _ad0[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ad1[256] = {
+const uint32 _ad1[256] = {
     0x5051f4a7, 0x537e4165, 0xc31a17a4, 0x963a275e,
     0xcb3bab6b, 0xf11f9d45, 0xabacfa58, 0x934be303,
     0x552030fa, 0xf6ad766d, 0x9188cc76, 0x25f5024c,
@@ -523,7 +523,7 @@ static const uint32 _ad1[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ad2[256] = {
+const uint32 _ad2[256] = {
     0xa75051f4, 0x65537e41, 0xa4c31a17, 0x5e963a27,
     0x6bcb3bab, 0x45f11f9d, 0x58abacfa, 0x03934be3,
     0xfa552030, 0x6df6ad76, 0x769188cc, 0x4c25f502,
@@ -593,7 +593,7 @@ static const uint32 _ad2[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ad3[256] = {
+const uint32 _ad3[256] = {
     0xf4a75051, 0x4165537e, 0x17a4c31a, 0x275e963a,
     0xab6bcb3b, 0x9d45f11f, 0xfa58abac, 0xe303934b,
     0x30fa5520, 0x766df6ad, 0xcc769188, 0x024c25f5,
@@ -663,7 +663,7 @@ static const uint32 _ad3[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _ad4[256] = {
+const uint32 _ad4[256] = {
     0x52525252, 0x09090909, 0x6a6a6a6a, 0xd5d5d5d5,
     0x30303030, 0x36363636, 0xa5a5a5a5, 0x38383838,
     0xbfbfbfbf, 0x40404040, 0xa3a3a3a3, 0x9e9e9e9e,
