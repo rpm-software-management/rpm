@@ -18,7 +18,8 @@
 #include "rpmerr.h"
 #include "misc.h"
 
-static void parseFileForProv(char *f, struct PackageRec *p);
+static StringBuf getOutputFrom(char *dir, char *argv[],
+			       char *writePtr, int writeBytesLeft);
 
 /*************************************************************/
 /*                                                           */
@@ -88,153 +89,68 @@ int addReqProv(struct PackageRec *p, int flags,
 /*                                                           */
 /*************************************************************/
 
-static void parseFileForProv(char *f, struct PackageRec *p)
+static StringBuf getOutputFrom(char *dir, char *argv[],
+			       char *writePtr, int writeBytesLeft)
 {
-    char soname[1024];
-    char command[2048];
-    char *s;
-    FILE *pipe;
-    int len;
-
-    s = f + strlen(f) - 1;
-    while (*s != '/') {
-	s--;
-    }
-    s++;
-    
-    if (strstr(s, ".so")) {
-	sprintf(command,
-		"objdump --raw %s%s --section=.dynstr 2> /dev/null |"
-		"tr '\\0' '\\n' | tail -1",
-		getVar(RPMVAR_ROOT) ? getVar(RPMVAR_ROOT) : "", f);
-	pipe = popen(command, "r");
-	soname[0] = '\0';
-	fgets(soname, sizeof(soname)-1, pipe);
-	pclose(pipe);
-	/* length 1 lines are empty */
-	if ((len = strlen(soname)) > 1) {
-	    soname[len-1] = '\0';
-	    if (strcmp(soname, "_end")) {
-		addReqProv(p, REQUIRE_PROVIDES, soname, NULL);
-	    } else {
-		/* _end means no embedded soname */
-		addReqProv(p, REQUIRE_PROVIDES, s, NULL);
-	    }
-	}
-    }
-}
-
-int generateAutoReqProv(Header header, struct PackageRec *p)
-{
-    char **f, **fsave, *s, *tok;
-    int count;
-    int lddPID;
-    int lddDead;
-    int toLdd[2];
-    int fromLdd[2];
-    int_16 *modes;
-
-    StringBuf writeBuff;
+    int progPID;
+    int progDead;
+    int toProg[2];
+    int fromProg[2];
+    int status;
+    void *oldhandler;
+    int bytesWritten;
     StringBuf readBuff;
-    char *writePtr;
-    int writeBytesLeft, bytesWritten;
-
     int bytes;
     unsigned char buf[8193];
 
-    int status;
-    void *oldhandler;
-
-    message(MESS_VERBOSE, "Finding dependencies...\n");
-
-    pipe(toLdd);
-    pipe(fromLdd);
-    
     oldhandler = signal(SIGPIPE, SIG_IGN);
 
-    if (!(lddPID = fork())) {
+    pipe(toProg);
+    pipe(fromProg);
+    
+    if (!(progPID = fork())) {
 	close(0);
 	close(1);
-	close(toLdd[1]);
-	close(fromLdd[0]);
+	close(toProg[1]);
+	close(fromProg[0]);
 	
-	dup2(toLdd[0], 0);   /* Make stdin the in pipe */
-	dup2(fromLdd[1], 1); /* Make stdout the out pipe */
-	close(2);            /* Toss stderr */
+	dup2(toProg[0], 0);   /* Make stdin the in pipe */
+	dup2(fromProg[1], 1); /* Make stdout the out pipe */
+	close(2);             /* Toss stderr */
 
-	if (getVar(RPMVAR_ROOT)) {
-	    if (chdir(getVar(RPMVAR_ROOT))) {
-		error(RPMERR_EXEC, "Couldn't chdir to %s",
-		      getVar(RPMVAR_ROOT));
-		exit(RPMERR_EXEC);
-	    }
-	} else {
-	    chdir("/");
-	}
-
-	execlp("xargs", "xargs", "-0", "ldd", NULL);
-	error(RPMERR_EXEC, "Couldn't exec ldd");
+	chdir(dir);
+	
+	execvp(argv[0], argv);
+	error(RPMERR_EXEC, "Couldn't exec %s", argv[0]);
 	exit(RPMERR_EXEC);
     }
-    if (lddPID < 0) {
-	error(RPMERR_FORK, "Couldn't fork ldd (xargs)");
-	return RPMERR_FORK;
+    if (progPID < 0) {
+	error(RPMERR_FORK, "Couldn't fork %s", argv[0]);
+	return NULL;
     }
 
-    close(toLdd[0]);
-    close(fromLdd[1]);
+    close(toProg[0]);
+    close(fromProg[1]);
 
-    /* Do not block reading or writing from/to ldd. */
-    fcntl(fromLdd[0], F_SETFL, O_NONBLOCK);
-    fcntl(toLdd[1], F_SETFL, O_NONBLOCK);
-
-    if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
-	/* count may already be 0, but this is safer */
-	count = 0;
-	fsave = NULL;
-    } else {
-	fsave = f;
-	getEntry(header, RPMTAG_FILEMODES, NULL, (void **) &modes, NULL);
-    }
-
-    readBuff = newStringBuf();
+    /* Do not block reading or writing from/to prog. */
+    fcntl(fromProg[0], F_SETFL, O_NONBLOCK);
+    fcntl(toProg[1], F_SETFL, O_NONBLOCK);
     
-    writeBuff = newStringBuf();
-    writeBytesLeft = 0;
-    while (count--) {
-        s = *f++;
-	if (S_ISREG(*modes++)) {
-	    /* We skip the leading "/" (already normalized) */
-	    writeBytesLeft += strlen(s);
-	    appendLineStringBuf(writeBuff, s + 1);
-	    parseFileForProv(s, p);
-	}
-    }
-    if (fsave) {
-	free(fsave);
-    }
-    writePtr = getStringBuf(writeBuff);
-    s = writePtr;
-    while (*s) {
-	if (*s == '\n') {
-	    *s = '\0';
-	}
-	s++;
-    }
-   
-    lddDead = 0;
+    readBuff = newStringBuf();
+
+    progDead = 0;
     do {
-	if (waitpid(lddPID, &status, WNOHANG)) {
-	    lddDead = 1;
+	if (waitpid(progPID, &status, WNOHANG)) {
+	    progDead = 1;
 	}
 
-	/* Write some stuff to the ldd process if possible */
+	/* Write some stuff to the process if possible */
         if (writeBytesLeft) {
 	    if ((bytesWritten =
-		  write(toLdd[1], writePtr,
+		  write(toProg[1], writePtr,
 		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
 	        if (errno != EAGAIN) {
-		    perror("generateAutoReqProv");
+		    perror("getOutputFrom()");
 	            exit(1);
 		}
 	        bytesWritten = 0;
@@ -242,40 +158,131 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 	    writeBytesLeft -= bytesWritten;
 	    writePtr += bytesWritten;
 	} else {
-	    close(toLdd[1]);
+	    close(toProg[1]);
 	}
 	
-	/* Read any data from ldd */
-	bytes = read(fromLdd[0], buf, sizeof(buf)-1);
+	/* Read any data from prog */
+	bytes = read(fromProg[0], buf, sizeof(buf)-1);
 	while (bytes > 0) {
 	    buf[bytes] = '\0';
 	    appendStringBuf(readBuff, buf);
-	    bytes = read(fromLdd[0], buf, sizeof(buf)-1);
+	    bytes = read(fromProg[0], buf, sizeof(buf)-1);
 	}
 
-	/* terminate when ldd dies */
-    } while (!lddDead);
+	/* terminate when prog dies */
+    } while (!progDead);
 
-    close(toLdd[1]);
-    close(fromLdd[0]);
-    
+    close(toProg[1]);
+    close(fromProg[0]);
     signal(SIGPIPE, oldhandler);
 
     if (writeBytesLeft) {
-	error(RPMERR_EXEC, "failed to write all data to ldd");
-	return 1;
+	error(RPMERR_EXEC, "failed to write all data to %s", argv[0]);
+	return NULL;
     }
-    waitpid(lddPID, &status, 0);
+    waitpid(progPID, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	error(RPMERR_EXEC, "ldd failed");
-	return 1;
+	error(RPMERR_EXEC, "%s failed", argv[0]);
+	return NULL;
     }
 
-    freeStringBuf(writeBuff);
+    return readBuff;
+}
+
+int generateAutoReqProv(Header header, struct PackageRec *p)
+{
+    char **f, **fsave, *s, *tok;
+    int count;
+    int_16 *modes;
+
+    StringBuf writeBuff;
+    StringBuf readBuff;
+    char *writePtr;
+    int writeBytes;
+    char dir[1024];
+    char *argv[8];
+
+    message(MESS_VERBOSE, "Finding dependencies...\n");
+
+    /*** Get root directory ***/
+    
+    if (getVar(RPMVAR_ROOT)) {
+	strcpy(dir, getVar(RPMVAR_ROOT));
+    } else {
+	strcpy(dir, "/");
+    }
+
+    /*** Generate File List ***/
+    
+    if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
+	return 0;
+    }
+    if (!count) {
+	return 0;
+    }
+    fsave = f;
+    getEntry(header, RPMTAG_FILEMODES, NULL, (void **) &modes, NULL);
+
+    writeBuff = newStringBuf();
+    writeBytes = 0;
+    while (count--) {
+        s = *f++;
+	if (S_ISREG(*modes++)) {
+	    /* We skip the leading "/" (already normalized) */
+	    writeBytes += strlen(s);
+	    appendLineStringBuf(writeBuff, s + 1);
+	}
+    }
+    if (fsave) {
+	free(fsave);
+    }
+    writePtr = getStringBuf(writeBuff);
+
+    /*** Do Provides ***/
+    
+    argv[0] = "find-provides";
+    argv[1] = NULL;
+    readBuff = getOutputFrom(dir, argv, writePtr, writeBytes);
+    if (!readBuff) {
+	error(RPMERR_EXEC, "Failed to find provides");
+	exit(1);
+    }
+    
     s = getStringBuf(readBuff);
     f = fsave = splitString(s, strlen(s), '\n');
     freeStringBuf(readBuff);
+    while (*f) {
+	if (**f) {
+	    addReqProv(p, REQUIRE_PROVIDES, *f, NULL);
+	}
+	f++;
+    }
+    free(fsave);
 
+    /*** Do Requires ***/
+    
+    /* Separate args by null for xargs (forget why) */
+    s = writePtr;
+    while (*s) {
+	if (*s == '\n') {
+	    *s = '\0';
+	}
+	s++;
+    }
+
+    argv[0] = "xargs";
+    argv[1] = "-0";
+    argv[2] = "ldd";
+    argv[3] = NULL;
+    readBuff = getOutputFrom(dir, argv, writePtr, writeBytes);
+    if (!readBuff) {
+	error(RPMERR_EXEC, "Failed to find requires");
+	exit(1);
+    }
+
+    s = getStringBuf(readBuff);
+    f = fsave = splitString(s, strlen(s), '\n');
+    freeStringBuf(readBuff);
     while (*f) {
 	s = *f;
 	if (isspace(*s) && strstr(s, "=>")) {
@@ -295,8 +302,12 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 
 	f++;
     }
-    
     free(fsave);
+
+    /*** Clean Up ***/
+
+    freeStringBuf(writeBuff);
+
     return 0;
 }
 
