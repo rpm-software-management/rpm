@@ -1,6 +1,7 @@
 2.2.5 -> 2.2.6:
 	- added --rebuilddb to rebuild database, updated man page
 	- fix fd leak in md5sum
+	- fixed group cache bug
 
 2.2.4 -> 2.2.5:
 	- if rename() for moving .spec file from SOURCES to SPECS fails,
