@@ -17,6 +17,7 @@ Here's what we do
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "header.h"
 #include "spec.h"
@@ -159,6 +160,7 @@ int verifySpec(Spec s)
     struct PackageRec *pr;
     struct packageFieldsRec *fields;
     char name[1024];
+    char *val;
     
     if (EMPTY(s->name)) {
 	OOPS("No Name field");
@@ -182,6 +184,20 @@ int verifySpec(Spec s)
 	if (checkHeaderTags(pr->header, fields)) {
 	    res = 1;
 	}
+
+	val = NULL;
+	getEntry(pr->header, RPMTAG_VERSION, NULL, (void *) &val, NULL);
+	if (val && strchr(val, '-')) {
+	    error(RPMERR_BADSPEC, "Illegal '-' char in version: %s\n", val);
+	    res = 1;
+	}
+	val = NULL;
+	getEntry(pr->header, RPMTAG_RELEASE, NULL, (void *) &val, NULL);
+	if (val && strchr(val, '-')) {
+	    error(RPMERR_BADSPEC, "Illegal '-' char in release: %s\n", val);
+	    res = 1;
+	}
+	
 	pr = pr->next;
 	fields = subpackageFields;
     }
