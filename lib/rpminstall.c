@@ -108,7 +108,6 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
     Header h;
     int isSource;
     rpmTransactionSet rpmdep = NULL;
-    struct rpmDependencyConflict * conflicts;
     int numConflicts;
     int stopInstall = 0;
     size_t nb;
@@ -277,6 +276,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		numSourcePackages, numBinaryPackages);
 
     if (numBinaryPackages && !(interfaceFlags & INSTALL_NODEPS)) {
+	struct rpmDependencyConflict * conflicts;
 	if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
 	    numFailed = numPackages;
 	    stopInstall = 1;

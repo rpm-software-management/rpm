@@ -4,13 +4,13 @@
 #include <rpmmacro.h>
 
 struct fsinfo {
-    char * mntPoint;
+    /*@only@*/ const char * mntPoint;
     dev_t dev;
 };
 
-static struct fsinfo * filesystems;
-static const char ** fsnames;
-static int numFilesystems;
+/*@only@*/ /*@null@*/ static struct fsinfo * filesystems = NULL;
+/*@only@*/ /*@null@*/ static const char ** fsnames = NULL;
+static int numFilesystems = 0;
 
 #if HAVE_MNTCTL
 
@@ -75,12 +75,12 @@ static int getFilesystemList(void)
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), fsnames[i],
 			strerror(errno));
 
-	    for (i = 0; i < num; i++)
-		free(filesystems[i].mntPoint);
 	    free(filesystems);
-	    free(fsnames);
-
 	    filesystems = NULL;
+	    for (i = 0; i < num; i++)
+		free(fsnames[i]);
+	    free(fsnames);
+	    fsnames = NULL;
 	}
 	
 	filesystems[i].dev = sb.st_dev;
@@ -125,6 +125,7 @@ static int getFilesystemList(void)
 #   endif
 
     filesystems = malloc(sizeof(*filesystems) * (numAlloced + 1));
+    memset(filesystems, 0, sizeof(*filesystems) * (numAlloced + 1));
 
     while (1) {
 #	if GETMNTENT_ONE
@@ -147,7 +148,7 @@ static int getFilesystemList(void)
 			strerror(errno));
 
 	    for (i = 0; i < num; i++)
-		free(filesystems[i].mntPoint);
+		xfree(filesystems[i].mntPoint);
 	    free(filesystems);
 
 	    filesystems = NULL;
@@ -161,7 +162,8 @@ static int getFilesystemList(void)
 	}
 
 	filesystems[num].dev = sb.st_dev;
-	filesystems[num++].mntPoint = strdup(mntdir);
+	filesystems[num].mntPoint = strdup(mntdir);
+	num++;
     }
 
 #   if GETMNTENT_ONE || GETMNTENT_TWO
@@ -170,6 +172,7 @@ static int getFilesystemList(void)
 	free(mounts);
 #   endif
 
+    filesystems[num].dev = 0;
     filesystems[num].mntPoint = NULL;
 
     fsnames = malloc(sizeof(*fsnames) * (num + 1));
@@ -196,7 +199,7 @@ int rpmGetFilesystemList(const char *** listptr, int * num)
 }
 
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles,
-			  uint_32 ** usagesPtr, int flags)
+			  uint_32 ** usagesPtr, /*@unused@*/int flags)
 {
     int_32 * usages;
     int i, len, j;

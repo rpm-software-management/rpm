@@ -18,7 +18,16 @@ extern int h_errno;
 #define	ntohs(_x)	(_x)
 #define	htonl(_x)	(_x)
 #define	htons(_x)	(_x)
-#else
+typedef	unsigned int		uint32_t;
+#define	INADDR_ANY		((uint32_t) 0x00000000)
+#define	IPPROTO_IP		0
+#define	IAC	255		/* interpret as command: */
+#define	IP	244		/* interrupt process--permanently */
+#define	DM	242		/* data mark--for connect. cleaning */
+extern int h_errno;
+
+#else	/* __LCLINT__ */
+
 #if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
 #endif
@@ -36,6 +45,8 @@ extern int h_errno;
 
 #include <rpmlib.h>
 #include <rpmio.h>
+
+/*@access FD_t@*/
 
 #if !defined(HAVE_INET_ATON)
 int inet_aton(const char *cp, struct in_addr *inp);
@@ -63,8 +74,8 @@ static int ftpDebug = 0;
 static int ftpTimeoutSecs = TIMEOUT_SECS;
 static int httpTimeoutSecs = TIMEOUT_SECS;
 
-static rpmCallbackFunction	urlNotify = NULL;
-static void *			urlNotifyData = NULL;
+/*@null@*/ static rpmCallbackFunction	urlNotify = NULL;
+/*@null@*/ static void *	urlNotifyData = NULL;
 static int			urlNotifyCount = -1;
 
 void urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount) {
@@ -73,7 +84,7 @@ void urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCoun
     urlNotifyCount = (notifyCount >= 0) ? notifyCount : 4096;
 }
 
-static int checkResponse(int fd, int secs, int *ecp, char ** str) {
+static int checkResponse(int fd, int secs, int *ecp, /*@out@*/char ** str) {
     static char buf[BUFFER_SIZE + 1];
     int bufLength = 0; 
     fd_set emptySet, readSet;
@@ -180,17 +191,17 @@ fprintf(stderr, "<- %s\n", buf);
     return rc;
 }
 
-static int ftpCheckResponse(urlinfo *u, char ** str) {
+static int ftpCheckResponse(urlinfo *u, /*@out@*/char ** str) {
     int ec = 0;
     int rc =  checkResponse(u->ftpControl, ftpTimeoutSecs, &ec, str);
 
     switch (ec) {
     case 550:
 	return FTPERR_FILE_NOT_FOUND;
-	break;
+	/*@notreached@*/ break;
     case 552:
 	return FTPERR_NIC_ABORT_IN_PROGRESS;
-	break;
+	/*@notreached@*/ break;
     default:
 	if (ec >= 400 && ec <= 599)
 	    return FTPERR_BAD_SERVER_RESPONSE;
@@ -244,7 +255,7 @@ fprintf(stderr, "-> %s", buf);
 static int mygethostbyname(const char * host, struct in_addr * address) {
     struct hostent * hostinfo;
 
-    hostinfo = gethostbyname(host);
+    hostinfo = /*@-unrecog@*/ gethostbyname(host) /*@=unrecog@*/;
     if (!hostinfo) return 1;
 
     memcpy(address, hostinfo->h_addr_list[0], sizeof(*address));
@@ -254,7 +265,7 @@ static int mygethostbyname(const char * host, struct in_addr * address) {
 
 static int getHostAddress(const char * host, struct in_addr * address) {
     if (isdigit(host[0])) {
-      if (!inet_aton(host, address)) {
+      if (! /*@-unrecog@*/ inet_aton(host, address) /*@=unrecog@*/ ) {
 	  return FTPERR_BAD_HOST_ADDR;
       }
     } else {
@@ -298,7 +309,7 @@ static int tcpConnect(const char *host, int port)
     }
 
 if (ftpDebug)
-fprintf(stderr,"++ connect %s:%d on fd %d\n", inet_ntoa(sin.sin_addr), ntohs(sin.sin_port), sock);
+fprintf(stderr,"++ connect %s:%d on fd %d\n", /*@-unrecog@*/ inet_ntoa(sin.sin_addr) /*@=unrecog@*/ , ntohs(sin.sin_port), sock);
 
     return sock;
 }
@@ -414,17 +425,17 @@ errxit:
     return rc;
 }
 
-static int copyData(FD_t sfd, FD_t tfd) {
+static int copyData(/*@only@*/FD_t sfd, FD_t tfd) {
     char buf[BUFFER_SIZE];
     fd_set emptySet, readSet;
     struct timeval timeout;
     int bytesRead;
     int bytesCopied = 0;
-    int rc;
+    int rc = 0;
     int notifier = -1;
 
     if (urlNotify) {
-	(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
+	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		0, 0, NULL, urlNotifyData);
     }
     
@@ -459,7 +470,7 @@ static int copyData(FD_t sfd, FD_t tfd) {
 	if (urlNotify && urlNotifyCount > 0) {
 	    int n = bytesCopied/urlNotifyCount;
 	    if (n != notifier) {
-		(*urlNotify) (NULL, RPMCALLBACK_INST_PROGRESS,
+		(void)(*urlNotify) (NULL, RPMCALLBACK_INST_PROGRESS,
 			bytesCopied, 0, NULL, urlNotifyData);
 		notifier = n;
 	    }
@@ -470,7 +481,7 @@ if (ftpDebug)
 fprintf(stderr, "++ copied %d bytes: %s\n", bytesCopied, ftpStrerror(rc));
 
     if (urlNotify) {
-	(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
+	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		bytesCopied, bytesCopied, NULL, urlNotifyData);
     }
     
@@ -487,9 +498,9 @@ int ftpAbort(FD_t fd) {
 if (ftpDebug)
 fprintf(stderr, "-> ABOR\n");
 
-    sprintf(buf, "%c%c%c", IAC, IP, IAC);
-    send(u->ftpControl, buf, 3, MSG_OOB);
-    sprintf(buf, "%cABOR\r\n", DM);
+    sprintf(buf, "%c%c%c", (char)IAC, (char)IP, (char)IAC);
+    (void)send(u->ftpControl, buf, 3, MSG_OOB);
+    sprintf(buf, "%cABOR\r\n",(char) DM);
     if (write(u->ftpControl, buf, 7) != 7) {
 	close(u->ftpControl);
 	u->ftpControl = -1;
@@ -575,7 +586,7 @@ fprintf(stderr, "-> PASV\n");
     if (sscanf(chptr, "%d,%d", &i, &j) != 2) {
 	return FTPERR_PASSIVE_ERROR;
     }
-    dataAddress.sin_port = htons((i << 8) + j);
+    dataAddress.sin_port = htons((((unsigned)i) << 8) + j);
 
     chptr = passReply;
     while (*chptr++) {

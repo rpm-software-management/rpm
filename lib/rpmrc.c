@@ -104,7 +104,7 @@ static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 static struct rpmvarValue values[RPMVAR_NUM];
 
 /* prototypes */
-static void defaultMachine(char ** arch, char ** os);
+static void defaultMachine(/*@out@*/char ** arch, /*@out@*/char ** os);
 static int doReadRC(FD_t fd, const char * filename);
 static int optionCompare(const void * a, const void * b);
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
@@ -1126,7 +1126,7 @@ static void rebuildCompatTables(int type, char * name) {
 		   name);
 }
 
-static void getMachineInfo(int type, char ** name, int * num) {
+static void getMachineInfo(int type, /*@out@*/char ** name, /*@out@*/int * num) {
     struct canonEntry * canon;
     int which = currTables[type];
 
