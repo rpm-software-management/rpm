@@ -17,7 +17,7 @@ RANLIB = ranlib
 SUBDIRS = lib build
 OBJS = query.o install.o 
 PROGS = rpm rpmlead rpmheader rpmarchive 
-LOADLIBES = -lbuild -lrpm -ldb $(LIBEFENCE)
+LOADLIBES = -lbuild -lrpm -ldb -lgz $(LIBEFENCE)
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
