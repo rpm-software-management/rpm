@@ -346,7 +346,7 @@ int doUninstall(char * prefix, char ** argv, int uninstallFlags,
 	for (i = 0; i < numPackages; i++) {
 	    message(MESS_DEBUG, "uninstalling record number %d\n",
 			packageOffsets[i]);
-	    rpmRemovePackage(prefix, db, packageOffsets[i], 0, uninstallFlags);
+	    rpmRemovePackage(prefix, db, packageOffsets[i], uninstallFlags);
 	}
     }
 
