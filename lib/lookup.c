@@ -108,6 +108,8 @@ static int findMatches(rpmdb db, char * name, char * version, char * release,
 		gotMatches = 1;
 	    else 
 		matches->recs[i].recOffset = 0;
+
+	    headerFree(h);
 	}
     }
 
