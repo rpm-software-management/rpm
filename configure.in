@@ -46,12 +46,9 @@ AC_PROG_RANLIB
 
 AC_CHECK_TOOL(AR, ar, :)
 
-if test "$cross_compiling" = "no"; then
-    dnl Don't bother checking these if we're cross compiling
-   
-    dnl Hope for the best
-    CPIOBIN="cpio"
-else
+CPIOBIN="cpio"
+GZIPBIN="gzip"
+if test "$cross_compiling" != "yes"; then
     AC_MSG_CHECKING(checking for GNU cpio...)
     if test -z "$CPIOBIN"; then
 	    oldifs="$IFS"
@@ -69,7 +66,26 @@ else
 
     if test -z "$CPIOBIN"; then
 	    AC_MSG_RESULT(no)
-	    AC_MSG_ERROR(RPM will not work without GNU cpio 2.4.2 or later.)
+	    AC_MSG_WARN(RPM will not work without GNU cpio 2.4.2 or later.)
+    else
+	    AC_MSG_RESULT(yes)
+    fi
+
+    AC_MSG_CHECKING(checking for GNU gzip...)
+    if test -z "$GZIPBIN"; then
+	    oldifs="$IFS"
+	    IFS=:
+	    for n in $PATH:/opt/gnu/bin; do
+		    if test -f $n/gzip; then
+			    GZIPBIN="$n/gzip";
+		    fi
+	    done
+	    IFS="$oldifs"
+    fi
+
+    if test -z "$GZIPBIN"; then
+	    AC_MSG_RESULT(no)
+	    AC_MSG_WARN(RPM will not work without GNU gzip.)
     else
 	    AC_MSG_RESULT(yes)
     fi
@@ -115,8 +131,8 @@ else
 fi
 
 AC_MSG_CHECKING(checking for /usr/ucblib...)
-if test -d /usr/local/lib ; then
-	LIBS="$LIBS -L/usr/local/lib"
+if test -d /usr/ucblib ; then
+	LIBS="$LIBS -L/usr/ucblib"
 	
 	AC_MSG_RESULT(yes)
 else
@@ -164,8 +180,8 @@ else
     echo "user specificed no gettext; will not build i18n support"
 fi
 
-AC_CHECK_FUNC(gethostbyname, [], [
-    AC_CHECK_LIB(nsl, gethostbyname, [LIBS="-lnsl $LIBS"])
+AC_CHECK_FUNC(getdomainname, [], [
+    AC_CHECK_LIB(nsl, getdomainname, [LIBS="-lnsl $LIBS"])
 ])
 AC_CHECK_FUNC(socket, [], [
     AC_CHECK_LIB(socket, socket, [LIBS="-lsocket $LIBS"])
@@ -214,7 +230,7 @@ AC_C_BIGENDIAN
 
 dnl look for libc features
 PROVIDES_ERRNO=no
-AC_MSG_CHECKING(checking if <netdb.h> defines h_errno...)
+AC_MSG_CHECKING(if <netdb.h> defines h_errno...)
 AC_TRY_LINK([#include <netdb.h>],printf("%d",h_errno),PROVIDES_ERRNO=yes)
 AC_MSG_RESULT($PROVIDES_ERRNO)
 if test $PROVIDES_ERRNO = yes; then
@@ -223,28 +239,28 @@ fi
 
 dnl If a system doesn't have S_IFSOCK, define it as 0 which will
 dnl make S_ISSOCK always return false (nice, eh?)
-AC_MSG_CHECKING(checking if <sys/stat.h> defines S_IFSOCK...)
+AC_MSG_CHECKING(if <sys/stat.h> defines S_IFSOCK...)
 AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_IFSOCK),
 	HAS_S_IFSOCK=yes,HAS_S_IFSOCK=no)
 AC_MSG_RESULT($HAS_S_IFSOCK)
-if test $HAS_S_ISLNK=yes; then
+if test $HAS_S_IFSOCK = yes; then
 	AC_DEFINE(HAVE_S_IFSOCK)
 fi
 
 dnl Some Unix's are missing S_ISLNK, S_ISSOCK
-AC_MSG_CHECKING(checking if <sys/stat.h> defines S_ISLNK...)
+AC_MSG_CHECKING(if <sys/stat.h> defines S_ISLNK...)
 AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISLNK(0755)),
 	HAS_S_ISLNK=yes,HAS_S_ISLNK=no)
 AC_MSG_RESULT($HAS_S_ISLNK)
-if test $HAS_S_ISLNK=yes; then
+if test $HAS_S_ISLNK = yes; then
 	AC_DEFINE(HAVE_S_ISLNK)
 fi
 
-AC_MSG_CHECKING(checking if <sys/stat.h> defines S_ISSOCK...)
+AC_MSG_CHECKING(if <sys/stat.h> defines S_ISSOCK...)
 AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISSOCK(0755)),
 	HAS_S_ISSOCK=yes,HAS_S_ISSOCK=no)
 AC_MSG_RESULT($HAS_S_ISSOCK)
-if test $HAS_S_ISSOCK=yes; then
+if test $HAS_S_ISSOCK = yes; then
 	AC_DEFINE(HAVE_S_ISSOCK)
 fi
 
@@ -323,6 +339,7 @@ AC_SUBST(PO)
 AC_SUBST(GETTEXTSTUB)
 AC_SUBST(RPM)
 AC_SUBST(CPIOBIN)
+AC_SUBST(GZIPBIN)
 AC_SUBST(FIXPERMS)
 
 AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
