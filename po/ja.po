@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-07-09 11:09-0400\n"
+"POT-Creation-Date: 2000-07-09 19:10-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -127,7 +127,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.85 2000/07/09 15:17:12 jbj Exp $
+# $Id: ja.po,v 1.86 2000/07/09 23:22:59 jbj Exp $
 #: rpm.c:178 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -920,7 +920,7 @@ msgid "    --checksig <pkg>+"
 msgstr ""
 
 #: rpm.c:508
-msgid "    -K <pkg>+           "
+msgid "    -K <pkg>+             "
 msgstr ""
 
 #: rpm.c:509 rpmqv.c:616
@@ -1408,7 +1408,7 @@ msgid "query/verify all packages"
 msgstr "全てのパッケージについて問い合わせます"
 
 #: rpmqv.c:433
-msgid "     -f <file>+          "
+msgid "     -f <file>+           "
 msgstr ""
 
 #: rpmqv.c:434
@@ -1417,8 +1417,9 @@ msgid "query/verify package owning <file>"
 msgstr "<file> を所有しているパッケージを問い合わせます"
 
 #: rpmqv.c:435
-msgid "     -p <packagefile>+   "
-msgstr ""
+#, fuzzy
+msgid "     -p <packagefile>+    "
+msgstr "パッケージファイルについて問い合わせます"
 
 #: rpmqv.c:436
 #, fuzzy
@@ -1429,7 +1430,7 @@ msgstr ""
 
 #: rpmqv.c:437
 #, fuzzy
-msgid "     --triggeredby <pkg> "
+msgid "     --triggeredby <pkg>  "
 msgstr "<pkg> によってトリガーされるパッケージを問い合わせます"
 
 #: rpmqv.c:438
@@ -1616,7 +1617,7 @@ msgstr "作成のための spec ファイルがありません"
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
-#: build/build.c:110 build/pack.c:349
+#: build/build.c:110 build/pack.c:350
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "一時ファイルをオープンできません"
@@ -1769,93 +1770,93 @@ msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s"
 msgid "File listed twice: %s"
 msgstr "ファイルが2回表記されています: %s"
 
-#: build/files.c:913
+#: build/files.c:917
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:998
+#: build/files.c:1006
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:1008
+#: build/files.c:1016
 #, c-format
 msgid "File not found: %s"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1051
+#: build/files.c:1059
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:1065
+#: build/files.c:1071
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1139
+#: build/files.c:1145
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1168
+#: build/files.c:1174
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1221
+#: build/files.c:1227
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1228 build/pack.c:100
+#: build/files.c:1234 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1555
+#: build/files.c:1561
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1567 build/parsePrep.c:34
+#: build/files.c:1573 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1622
+#: build/files.c:1628
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1627
+#: build/files.c:1633
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1709
+#: build/files.c:1715
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1713
+#: build/files.c:1719
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1809
+#: build/files.c:1815
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1837 build/files.c:1847
+#: build/files.c:1843 build/files.c:1853
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:1957
+#: build/files.c:1963
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -1938,51 +1939,51 @@ msgstr "readRPM: %s は RPM パッケージではありません\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からのヘッダの読み込み\n"
 
-#: build/pack.c:361
+#: build/pack.c:362
 msgid "Bad CSA data"
 msgstr "不正な CSA データ"
 
-#: build/pack.c:397
+#: build/pack.c:398
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:429
+#: build/pack.c:430
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:444
+#: build/pack.c:445
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の生成中: %d\n"
 
-#: build/pack.c:460
+#: build/pack.c:461
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:470
+#: build/pack.c:471
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:480
+#: build/pack.c:481
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:495
+#: build/pack.c:496
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:564
+#: build/pack.c:560
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:581
+#: build/pack.c:577
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -2329,53 +2330,53 @@ msgstr "%d 行目: 不正な no%s 番号: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "%d 行目: 不正な %s 番号: %s\n"
 
-#: lib/cpio.c:358
+#: lib/cpio.c:361
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "%s を %s にする名前の変更ができません: %s\n"
 
-#: lib/cpio.c:364
+#: lib/cpio.c:367
 #, fuzzy, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/cpio.c:608
+#: lib/cpio.c:611
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1069
+#: lib/cpio.c:1072
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "(エラー 0x%x)"
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1075
 msgid "Bad magic"
 msgstr "不正なマジック"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1076
 msgid "Bad/unreadable  header"
 msgstr "不正な/不可読なヘッダ"
 
-#: lib/cpio.c:1091
+#: lib/cpio.c:1094
 msgid "Header size too big"
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/cpio.c:1092
+#: lib/cpio.c:1095
 #, fuzzy
 msgid "Unknown file type"
 msgstr "不明なファイルタイプ"
 
-#: lib/cpio.c:1093
+#: lib/cpio.c:1096
 msgid "Missing hard link"
 msgstr "ハードリンクが見つかりません"
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1097
 #, fuzzy
 msgid "Internal error"
 msgstr "内部エラー"
 
-#: lib/cpio.c:1103
+#: lib/cpio.c:1106
 #, fuzzy
 msgid " failed - "
 msgstr "失敗 - "
@@ -2395,79 +2396,79 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:844
+#: lib/depends.c:836
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
 
-#: lib/depends.c:893
+#: lib/depends.c:885
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added package)\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
-#: lib/depends.c:897
+#: lib/depends.c:889
 #, c-format
 msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
 msgstr ""
 
-#: lib/depends.c:916
+#: lib/depends.c:908
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s は provide に加えることによって満されます。\n"
 
-#: lib/depends.c:960
+#: lib/depends.c:952
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:977
+#: lib/depends.c:969
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1000
+#: lib/depends.c:992
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1013
+#: lib/depends.c:1005
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:1027
+#: lib/depends.c:1019
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db packages)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:1044
+#: lib/depends.c:1036
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib version)\n"
 msgstr "%s: %s は rpmlib のバージョンによって満されています。\n"
 
-#: lib/depends.c:1055
+#: lib/depends.c:1047
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1076
+#: lib/depends.c:1068
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1130
-#, c-format
-msgid "package %s require not satisfied: %s\n"
+#: lib/depends.c:1122
+#, fuzzy, c-format
+msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1197
+#: lib/depends.c:1189
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1324
+#: lib/depends.c:1315
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "prerequisite チェーンのループ: %s"
@@ -2616,7 +2617,7 @@ msgstr ""
 "詳細な情報が取得できます。\n"
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
-#: lib/header.c:2190 lib/header.c:2206 lib/header.c:2225
+#: lib/header.c:2092 lib/header.c:2108 lib/header.c:2127
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -2649,74 +2650,74 @@ msgstr "ファイル %s は不明なデバイスです"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
-#: lib/header.c:250 lib/header.c:815 lib/install.c:323
+#: lib/header.c:250 lib/header.c:721 lib/install.c:323
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
 
-#: lib/header.c:1174
+#: lib/header.c:1078
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "headerAddEntry() の不正なカウント: %d\n"
 
-#: lib/header.c:1583
+#: lib/header.c:1485
 #, c-format
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
-#: lib/header.c:1611
+#: lib/header.c:1513
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
-#: lib/header.c:1623
+#: lib/header.c:1525
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
-#: lib/header.c:1633
+#: lib/header.c:1535
 msgid "empty tag name"
 msgstr "空のタグ名"
 
-#: lib/header.c:1648
+#: lib/header.c:1550
 msgid "unknown tag"
 msgstr "不明なタグ"
 
-#: lib/header.c:1674
+#: lib/header.c:1575
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
-#: lib/header.c:1690
+#: lib/header.c:1591
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
-#: lib/header.c:1692
+#: lib/header.c:1593
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
-#: lib/header.c:1746
+#: lib/header.c:1648
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
-#: lib/header.c:1753
+#: lib/header.c:1655
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
-#: lib/header.c:1763 lib/header.c:1798
+#: lib/header.c:1666 lib/header.c:1701
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
-#: lib/header.c:1771
+#: lib/header.c:1674
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
-#: lib/header.c:1785
+#: lib/header.c:1688
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
-#: lib/header.c:1806
+#: lib/header.c:1709
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
-#: lib/header.c:1974
+#: lib/header.c:1874
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
@@ -3219,32 +3220,32 @@ msgstr "%s を必要とするパッケージは存在しません\n"
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:637
+#: lib/query.c:651
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:640
+#: lib/query.c:654
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:665
+#: lib/query.c:680
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:683
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:672
+#: lib/query.c:687
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:683 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:448
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"

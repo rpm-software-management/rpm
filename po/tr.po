@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-07-09 11:09-0400\n"
+"POT-Creation-Date: 2000-07-09 19:10-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -959,7 +959,7 @@ msgstr "    -b<adým> <spec>      "
 
 #: rpm.c:508
 #, fuzzy
-msgid "    -K <pkg>+           "
+msgid "    -K <pkg>+             "
 msgstr "    -b<adým> <spec>      "
 
 #: rpm.c:509 rpmqv.c:616
@@ -1465,7 +1465,7 @@ msgstr "Tüm paketleri sorgulama"
 
 #: rpmqv.c:433
 #, fuzzy
-msgid "     -f <file>+          "
+msgid "     -f <file>+           "
 msgstr "    -b<adým> <spec>      "
 
 #: rpmqv.c:434
@@ -1475,7 +1475,7 @@ msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
 #: rpmqv.c:435
 #, fuzzy
-msgid "     -p <packagefile>+   "
+msgid "     -p <packagefile>+    "
 msgstr "    -b<adým> <spec>      "
 
 #: rpmqv.c:436
@@ -1485,7 +1485,7 @@ msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
 
 #: rpmqv.c:437
 #, fuzzy
-msgid "     --triggeredby <pkg> "
+msgid "     --triggeredby <pkg>  "
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
 #: rpmqv.c:438
@@ -1681,7 +1681,7 @@ msgstr "oluþturma için gerekli spec dosyasý belirtilmedi"
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirttilmedi"
 
-#: build/build.c:110 build/pack.c:349
+#: build/build.c:110 build/pack.c:350
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "%s okuma eriþimi için açýlamadý:%s."
@@ -1835,93 +1835,93 @@ msgstr ""
 msgid "File listed twice: %s"
 msgstr "%s okunamadý: %s"
 
-#: build/files.c:913
+#: build/files.c:917
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:998
+#: build/files.c:1006
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "%s okunamadý: %s"
 
-#: build/files.c:1008
+#: build/files.c:1016
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: build/files.c:1051
+#: build/files.c:1059
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1065
+#: build/files.c:1071
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: build/files.c:1139
+#: build/files.c:1145
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1168
+#: build/files.c:1174
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: build/files.c:1221
+#: build/files.c:1227
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "hata: %s dosyasý okunamadý\n"
 
-#: build/files.c:1228 build/pack.c:100
+#: build/files.c:1234 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1555
+#: build/files.c:1561
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "%s açýlamadý: %s"
 
-#: build/files.c:1567 build/parsePrep.c:34
+#: build/files.c:1573 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1622
+#: build/files.c:1628
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "PGP çalýþtýrýlamadý"
 
-#: build/files.c:1627
+#: build/files.c:1633
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Ýmza hedefi 'sigtarget' okunamadý"
 
-#: build/files.c:1709
+#: build/files.c:1715
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "PGP hata verdi"
 
-#: build/files.c:1713
+#: build/files.c:1719
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s yaratýlamýyor\n"
 
-#: build/files.c:1809
+#: build/files.c:1815
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1837 build/files.c:1847
+#: build/files.c:1843 build/files.c:1853
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s yaratýlamýyor\n"
 
-#: build/files.c:1957
+#: build/files.c:1963
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "%s açýlamadý: %s"
@@ -2004,52 +2004,52 @@ msgstr "hata: %s herhangi bir RPM pakedine ait görünmüyor\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
-#: build/pack.c:361
+#: build/pack.c:362
 msgid "Bad CSA data"
 msgstr ""
 
 # , c-format
-#: build/pack.c:397
+#: build/pack.c:398
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s 'ye eriþimde hata oluþtu\n"
 
-#: build/pack.c:429
+#: build/pack.c:430
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:444
+#: build/pack.c:445
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "PGP-imzasý yaratýr"
 
-#: build/pack.c:460
+#: build/pack.c:461
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:470
+#: build/pack.c:471
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:480
+#: build/pack.c:481
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:495
+#: build/pack.c:496
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:564
+#: build/pack.c:560
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:581
+#: build/pack.c:577
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s dosyasý açýlamýyor: "
@@ -2396,53 +2396,53 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: lib/cpio.c:358
+#: lib/cpio.c:361
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "%s okunamadý: %s"
 
-#: lib/cpio.c:364
+#: lib/cpio.c:367
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:608
+#: lib/cpio.c:611
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1069
+#: lib/cpio.c:1072
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "hata: "
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1075
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1076
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1091
+#: lib/cpio.c:1094
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1092
+#: lib/cpio.c:1095
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(bilinmeyen tip)"
 
-#: lib/cpio.c:1093
+#: lib/cpio.c:1096
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1097
 #, fuzzy
 msgid "Internal error"
 msgstr "ölümcül hata: "
 
-#: lib/cpio.c:1103
+#: lib/cpio.c:1106
 #, fuzzy
 msgid " failed - "
 msgstr "PGP hata verdi"
@@ -2460,79 +2460,79 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:844
+#: lib/depends.c:836
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:893
+#: lib/depends.c:885
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added package)\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/depends.c:897
+#: lib/depends.c:889
 #, c-format
 msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
 msgstr ""
 
-#: lib/depends.c:916
+#: lib/depends.c:908
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:960
+#: lib/depends.c:952
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:977
+#: lib/depends.c:969
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1000
+#: lib/depends.c:992
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1013
+#: lib/depends.c:1005
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1027
+#: lib/depends.c:1019
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db packages)\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/depends.c:1044
+#: lib/depends.c:1036
 #, c-format
 msgid "%s: %-45s YES (rpmlib version)\n"
 msgstr ""
 
-#: lib/depends.c:1055
+#: lib/depends.c:1047
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1076
+#: lib/depends.c:1068
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1130
+#: lib/depends.c:1122
 #, fuzzy, c-format
-msgid "package %s require not satisfied: %s\n"
+msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
 #. conflicts exist.
-#: lib/depends.c:1197
+#: lib/depends.c:1189
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: lib/depends.c:1324
+#: lib/depends.c:1315
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "gerekenler zincirinde döngü: %s"
@@ -2676,7 +2676,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
-#: lib/header.c:2190 lib/header.c:2206 lib/header.c:2225
+#: lib/header.c:2092 lib/header.c:2108 lib/header.c:2127
 msgid "(not a number)"
 msgstr "(üye deðil)"
 
@@ -2709,76 +2709,76 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:250 lib/header.c:815 lib/install.c:323
+#: lib/header.c:250 lib/header.c:721 lib/install.c:323
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1174
+#: lib/header.c:1078
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1583
+#: lib/header.c:1485
 #, c-format
 msgid "missing { after %"
 msgstr "% den sonra eksik {"
 
-#: lib/header.c:1611
+#: lib/header.c:1513
 msgid "missing } after %{"
 msgstr "%{ den sonra eksik }"
 
-#: lib/header.c:1623
+#: lib/header.c:1525
 msgid "empty tag format"
 msgstr "boþ tag tanýmlamasý"
 
-#: lib/header.c:1633
+#: lib/header.c:1535
 msgid "empty tag name"
 msgstr "boþ tag ismi"
 
-#: lib/header.c:1648
+#: lib/header.c:1550
 msgid "unknown tag"
 msgstr "bilinmeyen tag"
 
-#: lib/header.c:1674
+#: lib/header.c:1575
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] bekleniyordu"
 
-#: lib/header.c:1690
+#: lib/header.c:1591
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
-#: lib/header.c:1692
+#: lib/header.c:1593
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
-#: lib/header.c:1746
+#: lib/header.c:1648
 msgid "? expected in expression"
 msgstr "dizi içerisinde ? bekleniyordu"
 
-#: lib/header.c:1753
+#: lib/header.c:1655
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "dizi içerisinde ? den sonra { bekleniyordu"
 
-#: lib/header.c:1763 lib/header.c:1798
+#: lib/header.c:1666 lib/header.c:1701
 msgid "} expected in expression"
 msgstr "dizi içerisinde } bekleniyordu"
 
-#: lib/header.c:1771
+#: lib/header.c:1674
 msgid ": expected following ? subexpression"
 msgstr "? altdizisinden sonra : bekleniyordu"
 
-#: lib/header.c:1785
+#: lib/header.c:1688
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "dizide : den sonra { bekleniyordu"
 
-#: lib/header.c:1806
+#: lib/header.c:1709
 msgid "| expected at end of expression"
 msgstr "dizinin sonunda | bekleniyordu"
 
-#: lib/header.c:1974
+#: lib/header.c:1874
 msgid "(unknown type)"
 msgstr "(bilinmeyen tip)"
 
@@ -3274,32 +3274,32 @@ msgstr "hiç bir paket %s gerektirmiyor\n"
 msgid "no package provides %s\n"
 msgstr "hiç bir paket  %s saðlamýyor\n"
 
-#: lib/query.c:637
+#: lib/query.c:651
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/query.c:640
+#: lib/query.c:654
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/query.c:665
+#: lib/query.c:680
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:683
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: lib/query.c:672
+#: lib/query.c:687
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "%d numaralý kayýt okunamadý\n"
 
-#: lib/query.c:683 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:448
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s pakedi yüklenmemiþ\n"
@@ -4217,6 +4217,10 @@ msgstr "hata: ftpport bir sayý olmalý\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s yaratýlamýyor\n"
+
+#, fuzzy
+#~ msgid "    -K <pkg>+           "
+#~ msgstr "    -b<adým> <spec>      "
 
 #, fuzzy
 #~ msgid "line %d: Version not permitted: %s"

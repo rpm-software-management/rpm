@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-09 11:09-0400\n"
+"POT-Creation-Date: 2000-07-09 19:10-0400\n"
 "PO-Revision-Date: 2000-06-22 23:35+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -876,8 +876,9 @@ msgid "    --checksig <pkg>+"
 msgstr "    --checksig <pkt>+"
 
 #: rpm.c:508
-msgid "    -K <pkg>+           "
-msgstr "    -K <pkt>+           "
+#, fuzzy
+msgid "    -K <pkg>+             "
+msgstr "   -K <pkt>+             "
 
 #: rpm.c:509 rpmqv.c:616
 msgid "verify package signature"
@@ -1356,7 +1357,8 @@ msgid "query/verify all packages"
 msgstr "fråga om/verifiera alla paket"
 
 #: rpmqv.c:433
-msgid "     -f <file>+          "
+#, fuzzy
+msgid "     -f <file>+           "
 msgstr "     -f <fil>+           "
 
 #: rpmqv.c:434
@@ -1364,7 +1366,8 @@ msgid "query/verify package owning <file>"
 msgstr "fråga om/verifiera paket som äger <fil>"
 
 #: rpmqv.c:435
-msgid "     -p <packagefile>+   "
+#, fuzzy
+msgid "     -p <packagefile>+    "
 msgstr "     -p <paketfil>+      "
 
 #: rpmqv.c:436
@@ -1372,7 +1375,8 @@ msgid "query/verify (uninstalled) package <packagefile>"
 msgstr "fråga om/verifiera (oinstallerat) paket <paketfil>"
 
 #: rpmqv.c:437
-msgid "     --triggeredby <pkg> "
+#, fuzzy
+msgid "     --triggeredby <pkg>  "
 msgstr "     --triggeredby <pkt> "
 
 #: rpmqv.c:438
@@ -1537,7 +1541,7 @@ msgstr "ingen spec-filer angivna för tillverkning"
 msgid "no tar files given for build"
 msgstr "inga tar-filer angivna för tillverkning"
 
-#: build/build.c:110 build/pack.c:349
+#: build/build.c:110 build/pack.c:350
 msgid "Unable to open temp file."
 msgstr "Kan inte öppna temporär fil."
 
@@ -1685,92 +1689,92 @@ msgstr "Kan inte blanda special %%doc med andra former: %s"
 msgid "File listed twice: %s"
 msgstr "Filen uppräknad två gånger: %s"
 
-#: build/files.c:913
+#: build/files.c:917
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr "Symbolisk länk pekar på BuildRoot: %s -> %s"
 
-#: build/files.c:998
+#: build/files.c:1006
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Filen matchar inte prefixet (%s): %s"
 
-#: build/files.c:1008
+#: build/files.c:1016
 #, c-format
 msgid "File not found: %s"
 msgstr "Filen hittades inte: %s"
 
-#: build/files.c:1051
+#: build/files.c:1059
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
 
-#: build/files.c:1065
+#: build/files.c:1071
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1139
+#: build/files.c:1145
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Filen behöver inledande \"/\": %s"
 
-#: build/files.c:1168
+#: build/files.c:1174
 #, c-format
 msgid "File not found by glob: %s"
 msgstr "Ingen file hittades vid matchningen: %s"
 
-#: build/files.c:1221
+#: build/files.c:1227
 msgid "Could not open %%files file %s: %s"
 msgstr "Kunde inte öppna %%files-fil %s: %s"
 
-#: build/files.c:1228 build/pack.c:100
+#: build/files.c:1234 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr "rad: %s"
 
-#: build/files.c:1555
+#: build/files.c:1561
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "Felaktig fil: %s: %s"
 
-#: build/files.c:1567 build/parsePrep.c:34
+#: build/files.c:1573 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Felaktig ägare/grupp: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1622
+#: build/files.c:1628
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Kunde inte köra %s: %s"
 
-#: build/files.c:1627
+#: build/files.c:1633
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Kunde inte grena %s: %s"
 
-#: build/files.c:1709
+#: build/files.c:1715
 #, c-format
 msgid "%s failed"
 msgstr "%s misslyckades"
 
-#: build/files.c:1713
+#: build/files.c:1719
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "kunde inte skriva all data till %s"
 
-#: build/files.c:1809
+#: build/files.c:1815
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Letar upp %s: (använder %s)...\n"
 
-#: build/files.c:1837 build/files.c:1847
+#: build/files.c:1843 build/files.c:1853
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Misslyckades hitta %s:"
 
-#: build/files.c:1957
+#: build/files.c:1963
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"
@@ -1853,51 +1857,51 @@ msgstr "readRPM: %s är inte ett RPM-paket\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: läser huvud från %s\n"
 
-#: build/pack.c:361
+#: build/pack.c:362
 msgid "Bad CSA data"
 msgstr "Felaktig CSA-data"
 
-#: build/pack.c:397
+#: build/pack.c:398
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:429
+#: build/pack.c:430
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Kunde inte skriva paket: %s"
 
-#: build/pack.c:444
+#: build/pack.c:445
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererar signatur: %d\n"
 
-#: build/pack.c:460
+#: build/pack.c:461
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Kan inte läsa signaturen %s: %s"
 
-#: build/pack.c:470
+#: build/pack.c:471
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Kan inte läsa signaturen %s: %s"
 
-#: build/pack.c:480
+#: build/pack.c:481
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Kan inte skriva paket %s: %s"
 
-#: build/pack.c:495
+#: build/pack.c:496
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:564
+#: build/pack.c:560
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:581
+#: build/pack.c:577
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
@@ -2241,51 +2245,51 @@ msgstr "rad %d: Felaktigt no%s-tal: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "rad %d: Felaktigt %s-tal: %s\n"
 
-#: lib/cpio.c:358
+#: lib/cpio.c:361
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "kan inte flytta %s till %s: %s\n"
 
-#: lib/cpio.c:364
+#: lib/cpio.c:367
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "kan inte ta bort %s: %s\n"
 
-#: lib/cpio.c:608
+#: lib/cpio.c:611
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1069
+#: lib/cpio.c:1072
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(fel 0x%x)"
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1075
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1076
 msgid "Bad/unreadable  header"
 msgstr "Felaktigt/oläsbart huvud"
 
-#: lib/cpio.c:1091
+#: lib/cpio.c:1094
 msgid "Header size too big"
 msgstr "Huvudstorlek för stor"
 
-#: lib/cpio.c:1092
+#: lib/cpio.c:1095
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: lib/cpio.c:1093
+#: lib/cpio.c:1096
 msgid "Missing hard link"
 msgstr "Saknad hårdlänk"
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1097
 msgid "Internal error"
 msgstr "Internt fel"
 
-#: lib/cpio.c:1103
+#: lib/cpio.c:1106
 msgid " failed - "
 msgstr " misslyckades - "
 
@@ -2304,79 +2308,79 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:844
+#: lib/depends.c:836
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s JA (lade till filer)\n"
 
-#: lib/depends.c:893
+#: lib/depends.c:885
 #, c-format
 msgid "%s: %-45s YES (added package)\n"
 msgstr "%s: %-45s JA (lade till paket)\n"
 
-#: lib/depends.c:897
+#: lib/depends.c:889
 #, c-format
 msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
 msgstr "%s: %-45s JA (lade till paket, BORDE INTE HÄNDA)\n"
 
-#: lib/depends.c:916
+#: lib/depends.c:908
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s JA (lade till tillhandahållande)\n"
 
-#: lib/depends.c:960
+#: lib/depends.c:952
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr "%s: %-45s %-3s (cachad)\n"
 
-#: lib/depends.c:977
+#: lib/depends.c:969
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
-#: lib/depends.c:1000
+#: lib/depends.c:992
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:1013
+#: lib/depends.c:1005
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db tillhandahållande)\n"
 
-#: lib/depends.c:1027
+#: lib/depends.c:1019
 #, c-format
 msgid "%s: %-45s YES (db packages)\n"
 msgstr "%s: %-45s JA (db-paket)\n"
 
-#: lib/depends.c:1044
+#: lib/depends.c:1036
 #, c-format
 msgid "%s: %-45s YES (rpmlib version)\n"
 msgstr "%s: %45s JA (rpmlib-version)\n"
 
-#: lib/depends.c:1055
+#: lib/depends.c:1047
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1076
+#: lib/depends.c:1068
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1130
-#, c-format
-msgid "package %s require not satisfied: %s\n"
+#: lib/depends.c:1122
+#, fuzzy, c-format
+msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1197
+#: lib/depends.c:1189
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1324
+#: lib/depends.c:1315
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "cirkularitet i kedja av förutsättningar: %s"
@@ -2525,7 +2529,7 @@ msgstr ""
 "problemet.\n"
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
-#: lib/header.c:2190 lib/header.c:2206 lib/header.c:2225
+#: lib/header.c:2092 lib/header.c:2108 lib/header.c:2127
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -2558,74 +2562,74 @@ msgstr "filen %s är på en okänd enhet"
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
 
-#: lib/header.c:250 lib/header.c:815 lib/install.c:323
+#: lib/header.c:250 lib/header.c:721 lib/install.c:323
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatyp %d stöds inte\n"
 
-#: lib/header.c:1174
+#: lib/header.c:1078
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Felaktigt antal till headerAddEntry(): %d\n"
 
-#: lib/header.c:1583
+#: lib/header.c:1485
 #, c-format
 msgid "missing { after %"
 msgstr "{ fattas efter %"
 
-#: lib/header.c:1611
+#: lib/header.c:1513
 msgid "missing } after %{"
 msgstr "} fattas efter %{"
 
-#: lib/header.c:1623
+#: lib/header.c:1525
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: lib/header.c:1633
+#: lib/header.c:1535
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: lib/header.c:1648
+#: lib/header.c:1550
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: lib/header.c:1674
+#: lib/header.c:1575
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: lib/header.c:1690
+#: lib/header.c:1591
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: lib/header.c:1692
+#: lib/header.c:1593
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: lib/header.c:1746
+#: lib/header.c:1648
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: lib/header.c:1753
+#: lib/header.c:1655
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: lib/header.c:1763 lib/header.c:1798
+#: lib/header.c:1666 lib/header.c:1701
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: lib/header.c:1771
+#: lib/header.c:1674
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: lib/header.c:1785
+#: lib/header.c:1688
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: lib/header.c:1806
+#: lib/header.c:1709
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: lib/header.c:1974
+#: lib/header.c:1874
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
@@ -3089,32 +3093,32 @@ msgstr "inget paket behöver %s\n"
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:637
+#: lib/query.c:651
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:640
+#: lib/query.c:654
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "fil %s ägs inte av något paket\n"
 
-#: lib/query.c:665
+#: lib/query.c:680
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:683
 #, c-format
 msgid "package record number: %u\n"
 msgstr "paketpost nummer: %u\n"
 
-#: lib/query.c:672
+#: lib/query.c:687
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:683 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:448
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -4038,6 +4042,9 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
+
+#~ msgid "    -K <pkg>+           "
+#~ msgstr "    -K <pkt>+           "
 
 #~ msgid "line %d: Version not permitted: %s"
 #~ msgstr "rad %d: Version inte tillåten: %s"
