@@ -2,6 +2,9 @@
 	- Ripped out header internals and redid them. Any compatibility 
 	  problems this causes are *bugs* as it should be completley 
 	  transparent. If this works the devil better buy some Prestone (TM).
+	- Use "cp -pr" instead of "cp -ar" for %doc expansion
+	- use <string.h> instead of (non standard) <strings.h> in some places
+	- look for non-POSIX (broken) chmod
 
 2.3.1 -> 2.3.2:
 	- fixed bug in new rpmVersionCompare() which made it worse then
