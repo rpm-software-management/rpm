@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-05-31 07:50-0400\n"
+msgstr "POT-Creation-Date: 2000-05-31 13:32-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:422
 #, c-format
