@@ -280,7 +280,7 @@ sub set_static_vars {
 		      'tag_name' => 'BUILDTIME',
 		     },
 	     1027 => {
-		     'tag_name' => 'FILENAMES',
+		     'tag_name' => 'OLDFILENAMES',
 		     },
 	     1028 => {
 		     'tag_name' => 'FILESIZES',
@@ -415,7 +415,7 @@ sub set_static_vars {
   
   $NUM_DIFFERENCES = 0;
 
-  $RCS_REVISION = ' $Revision: 1.4 $ ';
+  $RCS_REVISION = ' $Revision: 1.5 $ ';
   
   # set a known path.
  
@@ -682,7 +682,7 @@ sub parse_rpm_headers {
       }
       
       push @{$out->{$tag}}, $value;
-      if ($RPMTAG->{$tag}->{"tag_name"} eq 'FILENAMES') {
+      if ($RPMTAG->{$tag}->{"tag_name"} eq 'OLDFILENAMES') {
 	$out->{'name2index'}->{$value} = $j;
       }
     } # foreach $j
