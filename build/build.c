@@ -350,7 +350,12 @@ static int doSetupMacro(Spec spec, StringBuf sb, char *line)
 	appendLineStringBuf(sb, "chown -R root .");
 	appendLineStringBuf(sb, "chgrp -R root .");
     }
-    appendLineStringBuf(sb, "chmod -R a+rX,g-w,o-w .");
+
+    if (rpmGetVar(RPMVAR_FIXPERMS)) {
+	appendStringBuf(sb, "chmod -R ");
+	appendStringBuf(sb, rpmGetVar(RPMVAR_FIXPERMS));
+	appendLineStringBuf(sb, " .");
+    }
     
     return 0;
 }
