@@ -52,6 +52,8 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 static int fileCompare(const void * one, const void * two);
 static int installSources(char * prefix, int fd, char ** specFilePtr);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
+static int ensureOlder(rpmdb db, char * name, char * newVersion, 
+		       char * newRelease, int dbOffset);
 
 /* 0 success */
 /* 1 bad magic */
@@ -166,8 +168,13 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	if (!rc) {
 	    intptr = oldVersions = alloca((matches.count + 1) * sizeof(int));
 	    for (i = 0; i < matches.count; i++) {
-		if (matches.recs[i].recOffset != otherOffset)
+		if (matches.recs[i].recOffset != otherOffset) {
+		    if (!(flags & INSTALL_UPGRADETOOLD)) 
+			if (ensureOlder(db, name, version, release, 
+					matches.recs[i].recOffset)) 
+			    return 1;
 		    *intptr++ = matches.recs[i].recOffset;
+		}
 	    }
 	    *intptr++ = 0;
 	}
@@ -1079,4 +1086,39 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
     }
 
     return 0;
+}
+
+static int ensureOlder(rpmdb db, char * name, char * newVersion, 
+		       char * newRelease, int dbOffset) {
+    Header h;
+    char * oldVersion, * oldRelease;
+    int rc, result;
+    int type, count;
+
+    h = rpmdbGetRecord(db, dbOffset);
+    if (!h) return 1;
+
+    getEntry(h, RPMTAG_VERSION, &type, (void **) &oldVersion, &count);
+    getEntry(h, RPMTAG_RELEASE, &type, (void **) &oldRelease, &count);
+
+    result = vercmp(oldVersion, newVersion);
+    if (result < 0)
+	rc = 0;
+    else if (result > 0) 
+	rc = 1;
+    else {
+	result = vercmp(oldRelease, newRelease);
+	if (result < 0)
+	    rc = 0;
+	else
+	    rc = 1;
+    }
+
+    if (rc) 
+	error(RPMERR_OLDPACKAGE, "package %s-%s-%s (which is newer) is already"
+		" installed", name, oldVersion, oldRelease);
+
+    freeHeader(h);
+
+    return rc;
 }
