@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-02 21:54-0500\n"
+"POT-Creation-Date: 2002-12-03 20:58-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
@@ -2463,7 +2463,7 @@ msgid "can't query %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 #: lib/query.c:569 lib/query.c:616 lib/rpminstall.c:123 lib/rpminstall.c:458
-#: lib/rpminstall.c:589 lib/rpminstall.c:1002 lib/rpmts.c:441
+#: lib/rpminstall.c:589 lib/rpminstall.c:1005 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2839,7 +2839,7 @@ msgstr ""
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1227
+#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1230
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2876,7 +2876,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1221
+#: lib/rpminstall.c:1224
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-12-02 21:54-0500\n"
+"POT-Creation-Date: 2002-12-03 20:58-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -2278,7 +2278,7 @@ msgid "can't query %s: %s\n"
 msgstr "não consigo pesquisar o %s: %s\n"
 
 #: lib/query.c:569 lib/query.c:616 lib/rpminstall.c:123 lib/rpminstall.c:458
-#: lib/rpminstall.c:589 lib/rpminstall.c:1002 lib/rpmts.c:441
+#: lib/rpminstall.c:589 lib/rpminstall.c:1005 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2612,7 +2612,7 @@ msgstr "o %s precisa duma versão mais recente do RPM\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "encontrados %d pacotes com código-fonte e %d binários\n"
 
-#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1227
+#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1230
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2646,7 +2646,7 @@ msgstr "não consigo aceder ao %s: %s\n"
 msgid "Installing %s\n"
 msgstr "A instalar o %s\n"
 
-#: lib/rpminstall.c:1221
+#: lib/rpminstall.c:1224
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

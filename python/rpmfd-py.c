@@ -179,7 +179,7 @@ static char rpmfd_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmfd_Type = {
-	PyObject_HEAD_INIT(NULL)
+	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
 	"rpm.fd",			/* tp_name */
 	sizeof(rpmfdObject),		/* tp_size */

@@ -585,7 +585,7 @@ static char hdr_doc[] =
  */
 /*@unchecked@*/ /*@observer@*/
 PyTypeObject hdr_Type = {
-	PyObject_HEAD_INIT(NULL)
+	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
 	"rpm.hdr",			/* tp_name */
 	sizeof(hdrObject),		/* tp_size */

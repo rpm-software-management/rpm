@@ -156,17 +156,32 @@ rpmds_Next(rpmdsObject * s, PyObject *args)
     return result;
 }
 
-#ifdef	NOTYET
+static PyObject *
+rpmds_SetNoPromote(rpmdsObject * s, PyObject * args)
+	/*@*/
+{
+    int nopromote;
+
+    if (!PyArg_ParseTuple(args, "i:SetNoPromote", &nopromote))
+	return NULL;
+    return Py_BuildValue("i", rpmdsSetNoPromote(s->ds, nopromote));
+}
+
 static PyObject *
 rpmds_Notify(rpmdsObject * s, PyObject * args)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Notify"))
+    const char * where;
+    int rc;
+
+    if (!PyArg_ParseTuple(args, "si:Notify", &where, &rc))
 	return NULL;
+    rpmdsNotify(s->ds, where, rc);
     Py_INCREF(Py_None);
     return Py_None;
 }
 
+#ifdef	NOTYET
 static PyObject *
 rpmds_Problem(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -200,9 +215,11 @@ static struct PyMethodDef rpmds_methods[] = {
  {"next",	(PyCFunction)rpmds_Next,	METH_VARARGS,
 "ds.next() -> (N, EVR, Flags)\n\
 - Retrieve next dependency triple.\n" }, 
-#ifdef	NOTYET
+ {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS,
+	NULL},
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS,
 	NULL},
+#ifdef	NOTYET
  {"Problem",	(PyCFunction)rpmds_Problem,	METH_VARARGS,
 	NULL},
 #endif

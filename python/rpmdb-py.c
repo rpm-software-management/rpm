@@ -229,7 +229,7 @@ static char rpmdb_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmdb_Type = {
-	PyObject_HEAD_INIT(NULL)
+	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
 	"rpm.db",			/* tp_name */
 	sizeof(rpmdbObject),		/* tp_size */

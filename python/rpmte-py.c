@@ -26,10 +26,11 @@
  *
  * Elements of a transaction set are accessible after being added. Each
  * element carries descriptive information about the added element as well
- * as a file info set and dependency sets for each of the 4 typeof dependency.
+ * as a file info set and dependency sets for each of the 4 types of dependency.
  *
  * The rpmte class contains the following methods:
  *
+ * - te.Type()	Return transaction element type (TR_ADDED|TR_REMOVED).
  * - te.N()	Return package name.
  * - te.E()	Return package epoch.
  * - te.V()	Return package version.
@@ -41,7 +42,12 @@
  * - te.Depth()	Return the level in the dependency tree (after ordering).
  * - te.Npreds() Return the number of package prerequisites (after ordering).
  * - te.Degree() Return the parent's degree + 1.
- * - te.AddedKey() Return the packages associated key.
+ * - te.Parent() Return the parent element index.
+ * - te.Tree()	Return the root dependency tree index.
+ * - te.AddedKey() Return the added package index (TR_ADDED).
+ * - te.DependsOnKey() Return the package index for the added package (TR_REMOVED).
+ * - te.DBOffset() Return the Packages database instance number (TR_REMOVED)
+ * - te.Key()	Return the associated opaque key, i.e. 2nd arg ts.addInstall().
  * - te.DS(tag)	Return package dependency set.
  * @param tag	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'
  * - te.FI(tag)	Return package file info set.
@@ -56,6 +62,14 @@ rpmte_Debug(/*@unused@*/ rpmteObject * s, /*@unused@*/ PyObject * args)
     if (!PyArg_ParseTuple(args, "i", &_rpmte_debug)) return NULL;
     Py_INCREF(Py_None);
     return Py_None;
+}
+
+static PyObject *
+rpmte_TEType(rpmteObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":TEType")) return NULL;
+    return Py_BuildValue("i", rpmteType(s->te));
 }
 
 static PyObject *
@@ -144,6 +158,22 @@ rpmte_Degree(rpmteObject * s, PyObject * args)
 {
     if (!PyArg_ParseTuple(args, ":Degree")) return NULL;
     return Py_BuildValue("i", rpmteDegree(s->te));
+}
+
+static PyObject *
+rpmte_Parent(rpmteObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":Parent")) return NULL;
+    return Py_BuildValue("i", rpmteParent(s->te));
+}
+
+static PyObject *
+rpmte_Tree(rpmteObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":Tree")) return NULL;
+    return Py_BuildValue("i", rpmteTree(s->te));
 }
 
 static PyObject *
@@ -251,6 +281,9 @@ rpmte_FI(rpmteObject * s, PyObject * args)
 static struct PyMethodDef rpmte_methods[] = {
     {"Debug",	(PyCFunction)rpmte_Debug,	METH_VARARGS,
         NULL},
+    {"Type",	(PyCFunction)rpmte_TEType,	METH_VARARGS,
+"te.Type() -> Type\n\
+- Return element type (rpm.TR_ADDED | rpm.TR_REMOVED).\n" },
     {"N",	(PyCFunction)rpmte_N,		METH_VARARGS,
 "te.N() -> N\n\
 - Return element name.\n" },
@@ -280,6 +313,10 @@ static struct PyMethodDef rpmte_methods[] = {
         NULL},
     {"Degree",	(PyCFunction)rpmte_Degree,	METH_VARARGS,
         NULL},
+    {"Parent",	(PyCFunction)rpmte_Parent,	METH_VARARGS,
+        NULL},
+    {"Tree",	(PyCFunction)rpmte_Tree,	METH_VARARGS,
+        NULL},
     {"AddedKey",(PyCFunction)rpmte_AddedKey,	METH_VARARGS,
         NULL},
     {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_VARARGS,
@@ -301,6 +338,23 @@ static struct PyMethodDef rpmte_methods[] = {
 
 /* ---------- */
 
+static int
+rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ int flags)
+        /*@globals fileSystem @*/
+        /*@modifies s, fp, fileSystem @*/
+{
+    const char * tstr;
+    if (!(s && s->te))
+	return -1;
+    switch (rpmteType(s->te)) {
+    case TR_ADDED:	tstr = "++";	break;
+    case TR_REMOVED:	tstr = "--";	break;
+    default:		tstr = "??";	break;
+    }
+    fprintf(fp, "%s %s %s", tstr, rpmteNEVR(s->te), rpmteA(s->te));
+    return 0;
+}
+
 /** \ingroup python
  */
 static PyObject * rpmte_getattr(rpmteObject * o, char * name)
@@ -319,13 +373,13 @@ static char rpmte_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmte_Type = {
-	PyObject_HEAD_INIT(NULL)
+	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
 	"rpm.te",			/* tp_name */
 	sizeof(rpmteObject),		/* tp_size */
 	0,				/* tp_itemsize */
 	(destructor)0,		 	/* tp_dealloc */
-	0,				/* tp_print */
+	(printfunc) rpmte_print,	/* tp_print */
 	(getattrfunc) rpmte_getattr, 	/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	0,				/* tp_compare */

@@ -936,6 +936,9 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 rpmMessage(RPMMESS_DEBUG, "IDTXload(%p, %d)\n", ts, tag);
     /*@-branchstate@*/
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
+#ifdef	NOTYET
+    (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
+#endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmTagType type = RPM_NULL_TYPE;
 	int_32 count = 0;

@@ -576,6 +576,9 @@ void initrpm(void)
     REGISTER_ENUM(_RPMVSF_NOHEADER);
     REGISTER_ENUM(_RPMVSF_NOPAYLOAD);
 
+    REGISTER_ENUM(TR_ADDED);
+    REGISTER_ENUM(TR_REMOVED);
+
     PyDict_SetItemString(d, "RPMAL_NOMATCH", o=PyInt_FromLong( (long)RPMAL_NOMATCH ));
     Py_DECREF(o);
 }

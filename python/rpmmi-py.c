@@ -230,7 +230,7 @@ static char rpmmi_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmmi_Type = {
-	PyObject_HEAD_INIT(NULL)
+	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
 	"rpm.mi",			/* tp_name */
 	sizeof(rpmmiObject),		/* tp_size */

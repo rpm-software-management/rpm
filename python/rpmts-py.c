@@ -235,9 +235,8 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
 	rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
 
     /* This should increment the usage count for me */
-    if (key) {
+    if (key)
 	PyList_Append(s->keyList, key);
-    }
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -375,7 +374,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     cbInfo._save = PyEval_SaveThread();
 
     /* XXX resurrect availablePackages one more time ... */
-    rpmalMakeIndex(&s->ts->availablePackages);
+    rpmalMakeIndex(s->ts->availablePackages);
 
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);
@@ -1088,9 +1087,8 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     rc = rpmtsRun(s->ts, NULL, s->ignoreSet);
     ps = rpmtsProblems(s->ts);
 
-    if (cbInfo.cb) {
+    if (cbInfo.cb)
 	(void) rpmtsSetNotifyCallback(s->ts, NULL, NULL);
-    }
 
     PyEval_RestoreThread(cbInfo._save);
 
@@ -1252,13 +1250,17 @@ static struct PyMethodDef rpmts_methods[] = {
 - Set control bit(s) for ignoring problems found by ts.run().\n\
   Note: This method replaces the 2nd argument to the old ts.run()\n" },
  {"run",	(PyCFunction) rpmts_Run,	METH_VARARGS,
-	NULL },
+"ts.run(callback, data) -> (problems)\n\
+- Run a transaction set, returning list of problems found.\n\
+  Note: The callback may not be None.\n" },
  {"clean",	(PyCFunction) rpmts_Clean,	METH_VARARGS,
 	NULL },
  {"IDTXload",	(PyCFunction) rpmts_IDTXload,	METH_VARARGS,
-	NULL },
+"ts.IDTXload() -> ((tid,hdr,instance)+)\n\
+- Return list of installed packages reverse sorted by transaction id.\n" },
  {"IDTXglob",	(PyCFunction) rpmts_IDTXglob,	METH_VARARGS,
-	NULL },
+"ts.IDTXglob() -> ((tid,hdr,instance)+)\n\
+- Return list of removed packages reverse sorted by transaction id.\n" },
  {"rollback",	(PyCFunction) rpmts_Rollback,	METH_VARARGS,
 	NULL },
  {"openDB",	(PyCFunction) rpmts_OpenDB,	METH_VARARGS,
@@ -1372,7 +1374,7 @@ static char rpmts_doc[] =
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmts_Type = {
-	PyObject_HEAD_INIT(NULL)
+	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
 	"rpm.ts",			/* tp_name */
 	sizeof(rpmtsObject),		/* tp_size */
