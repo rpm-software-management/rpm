@@ -1,9 +1,5 @@
-/**
- * \file trees.h
- * Header created automatically with -DGEN_TREES_H
- */
+/* header created automatically with -DGEN_TREES_H */
 
-/*@observer@*/ /*@unchecked@*/
 local const ct_data static_ltree[L_CODES+2] = {
 {{ 12},{  8}}, {{140},{  8}}, {{ 76},{  8}}, {{204},{  8}}, {{ 44},{  8}},
 {{172},{  8}}, {{108},{  8}}, {{236},{  8}}, {{ 28},{  8}}, {{156},{  8}},
@@ -65,7 +61,6 @@ local const ct_data static_ltree[L_CODES+2] = {
 {{163},{  8}}, {{ 99},{  8}}, {{227},{  8}}
 };
 
-/*@observer@*/ /*@unchecked@*/
 local const ct_data static_dtree[D_CODES] = {
 {{ 0},{ 5}}, {{16},{ 5}}, {{ 8},{ 5}}, {{24},{ 5}}, {{ 4},{ 5}},
 {{20},{ 5}}, {{12},{ 5}}, {{28},{ 5}}, {{ 2},{ 5}}, {{18},{ 5}},
@@ -75,7 +70,6 @@ local const ct_data static_dtree[D_CODES] = {
 {{19},{ 5}}, {{11},{ 5}}, {{27},{ 5}}, {{ 7},{ 5}}, {{23},{ 5}}
 };
 
-/*@observer@*/ /*@unchecked@*/
 const uch _dist_code[DIST_CODE_LEN] = {
  0,  1,  2,  3,  4,  4,  5,  5,  6,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  8,
  8,  8,  8,  8,  9,  9,  9,  9,  9,  9,  9,  9, 10, 10, 10, 10, 10, 10, 10, 10,
@@ -105,7 +99,6 @@ const uch _dist_code[DIST_CODE_LEN] = {
 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29
 };
 
-/*@observer@*/ /*@unchecked@*/
 const uch _length_code[MAX_MATCH-MIN_MATCH+1]= {
  0,  1,  2,  3,  4,  5,  6,  7,  8,  8,  9,  9, 10, 10, 11, 11, 12, 12, 12, 12,
 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16,
@@ -122,13 +115,11 @@ const uch _length_code[MAX_MATCH-MIN_MATCH+1]= {
 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 28
 };
 
-/*@observer@*/ /*@unchecked@*/
 local const int base_length[LENGTH_CODES] = {
 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56,
 64, 80, 96, 112, 128, 160, 192, 224, 0
 };
 
-/*@observer@*/ /*@unchecked@*/
 local const int base_dist[D_CODES] = {
     0,     1,     2,     3,     4,     6,     8,    12,    16,    24,
    32,    48,    64,    96,   128,   192,   256,   384,   512,   768,

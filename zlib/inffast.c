@@ -14,18 +14,15 @@
 #include "infcodes.h"
 #include "infutil.h"
 #include "inffast.h"
-#include "crc32.h"
 
-/*@access z_streamp@*/
+struct inflate_codes_state {int dummy;}; /* for buggy compilers */
 
 /* simplify the use of the inflate_huft type with some defines */
 #define exop word.what.Exop
 #define bits word.what.Bits
 
 /* macros for bit input with no checking and for returning unused bytes */
-#define GRABBITS(j) {\
-	if (k+8 < (j)) { b |= NEXTSHORT << k; k += 16; } \
-	if (k<(j)){b|=((uLong)NEXTBYTE)<<k;k+=8;}}
+#define GRABBITS(j) {while(k<(j)){b|=((uLong)NEXTBYTE)<<k;k+=8;}}
 #define UNGRAB {c=z->avail_in-n;c=(k>>3)<c?k>>3:c;n+=c;p-=c;k-=c<<3;}
 
 /* Called with number of bytes left to write in window at least 258
@@ -33,12 +30,9 @@
    at least ten.  The ten bytes are six bytes for the longest length/
    distance pair plus four bytes for overloading the bit buffer. */
 
-int inflate_fast(inflate_blocks_statef *s, z_streamp z)
+int inflate_fast(uInt bl, uInt bd, inflate_huft * tl, inflate_huft * td,
+		inflate_blocks_statef * s, z_streamp z)
 {
-inflate_codes_statef *sc = s->sub.decode.codes;
-uInt bl = sc->lbits, bd = sc->dbits;
-inflate_huft *tl = sc->ltree;
-inflate_huft *td = sc->dtree; /* need separate declaration for Borland C++ */
   inflate_huft *t;      /* temporary pointer */
   uInt e;               /* extra bits or operation */
   uLong b;              /* bit buffer */
@@ -52,17 +46,10 @@ inflate_huft *td = sc->dtree; /* need separate declaration for Borland C++ */
   uInt c;               /* bytes to copy */
   uInt d;               /* distance back to copy from */
   Bytef *r;             /* copy source pointer */
-int ret;
 
   /* load input, output, bit values */
   LOAD
 
-#if defined(__i386__)
-/*@-unrecog@*/
-  PREFETCH(p);
-  PREFETCH(p+32);
-/*@=unrecog@*/
-#endif
   /* initialize masks */
   ml = inflate_mask[bl];
   md = inflate_mask[bd];
@@ -70,11 +57,6 @@ int ret;
   /* do until not enough input or output space for fast loop */
   do {                          /* assume called with m >= 258 && n >= 10 */
     /* get literal/length code */
-#if defined(__i386__)
-/*@-unrecog@*/
-    PREFETCH(p+64);
-/*@=unrecog@*/
-#endif
     GRABBITS(20)                /* max bits for literal/length code */
     if ((e = (t = tl + ((uInt)b & ml))->exop) == 0)
     {
@@ -82,7 +64,8 @@ int ret;
       Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
                 "inflate:         * literal '%c'\n" :
                 "inflate:         * literal 0x%02x\n", t->base));
-      OUTBYTE((Byte)t->base);
+      *q++ = (Byte)t->base;
+      m--;
       continue;
     }
     do {
@@ -111,32 +94,23 @@ int ret;
 
             /* do the copy */
             m -= c;
-#if 1	/* { */
-	    r = q - d;
-	    if (r < s->window)		/* wrap if needed */
-	    {
-	      do {
-		r += s->end - s->window;	/* force pointer in window */
-	      } while (r < s->window);		/* covers invalid distances */
-	      e = s->end - r;
-	      if (c > e)
+            r = q - d;
+            if (r < s->window)                  /* wrap if needed */
+            {
+              do {
+                r += s->end - s->window;        /* force pointer in window */
+              } while (r < s->window);          /* covers invalid distances */
+              e = s->end - r;
+              if (c > e)
               {
-                c -= e;			/* wrapped copy */
-#ifdef __i386__
-		{   int delta = (int)q - (int)r;
-		    if (delta <= 0 || delta > 3) {
-			quickmemcpy(q, r, e);
-			q += e;
-			e = 0;
-			goto rest;
-		    }
-		}
-#endif
+                c -= e;                         /* wrapped copy */
                 do {
                     *q++ = *r++;
                 } while (--e);
-rest:
                 r = s->window;
+                do {
+                    *q++ = *r++;
+                } while (--c);
               }
               else                              /* normal copy */
               {
@@ -155,81 +129,56 @@ rest:
                 *q++ = *r++;
               } while (--c);
             }
-#ifdef __i386__
-	    {	int delta = (int)q - (int)r;
-		if (delta <= 0 || delta > 3) {
-		    quickmemcpy(q, r, c);
-		    q += c;
-		    r += c;
-		    c = 0;
-		    break;
-		}
-	    }
-#endif
-#endif	/* } */
-            /*@innerbreak@*/ break;
+            break;
           }
           else if ((e & 64) == 0)
           {
             t += t->base;
             e = (t += ((uInt)b & inflate_mask[e]))->exop;
-		/*@innercontinue@*/ continue;
           }
           else
-		goto inv_dist_code;
+          {
+            z->msg = (char*)"invalid distance code";
+            UNGRAB
+            UPDATE
+            return Z_DATA_ERROR;
+          }
         } while (1);
-/*@-unreachable@*/
-        /*@innerbreak@*/ break;
-/*@=unreachable@*/
+        break;
       }
-if (!(e & 64)) {
-
+      if ((e & 64) == 0)
+      {
         t += t->base;
-        if ((e = (t += ((uInt)b & inflate_mask[e]))->exop) != 0)
-		/*@innercontinue@*/ continue;
-        DUMPBITS(t->bits)
-        Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
-                  "inflate:         * literal '%c'\n" :
-                  "inflate:         * literal 0x%02x\n", t->base));
-        *q++ = (Byte)t->base;
-        m--;
-        /*@innerbreak@*/ break;
-} else
-{ uInt temp = e & 96;
-      if (temp == 96)
-	goto stream_end;
-      if (temp == 64)
-	goto data_error;
-}
+        if ((e = (t += ((uInt)b & inflate_mask[e]))->exop) == 0)
+        {
+          DUMPBITS(t->bits)
+          Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
+                    "inflate:         * literal '%c'\n" :
+                    "inflate:         * literal 0x%02x\n", t->base));
+          *q++ = (Byte)t->base;
+          m--;
+          break;
+        }
+      }
+      else if (e & 32)
+      {
+        Tracevv((stderr, "inflate:         * end of block\n"));
+        UNGRAB
+        UPDATE
+        return Z_STREAM_END;
+      }
+      else
+      {
+        z->msg = (char*)"invalid literal/length code";
+        UNGRAB
+        UPDATE
+        return Z_DATA_ERROR;
+      }
     } while (1);
   } while (m >= 258 && n >= 10);
 
   /* not enough input or output--restore pointers and return */
-  ret = Z_OK;
-
-ungrab:
-        UNGRAB
-        UPDATE
-	return ret;
-
-data_error:
-      {
-        z->msg = "invalid literal/length code";
-        ret = Z_DATA_ERROR;
-	goto ungrab;
-      }
-
-stream_end:
-      {
-        Tracevv((stderr, "inflate:         * end of block\n"));
-        ret = Z_STREAM_END;
-	goto ungrab;
-      }
-
-inv_dist_code:
-          {
-            z->msg = "invalid distance code";
-            ret = Z_DATA_ERROR;
-	    goto ungrab;
-          }
+  UNGRAB
+  UPDATE
+  return Z_OK;
 }

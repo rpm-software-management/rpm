@@ -6,15 +6,17 @@ EXTRA_DIST = algorithm.txt ChangeLog Doxyfile FAQ INDEX README \
 
 BUILT_SOURCES = Doxyfile
 
+# crc32.h
 noinst_HEADERS = \
-	crc32.h deflate.h infblock.h infcodes.h inffast.h inffixed.h \
+	deflate.h infblock.h infcodes.h inffast.h inffixed.h \
 	inftrees.h infutil.h trees.h zconf.h zlib.h zutil.h
 
 noinst_LTLIBRARIES = libz.la
 
 libz_la_SOURCES = \
-	adler32.c compress.c crc32.c gzio.c uncompr.c deflate.c trees.c \
-	zutil.c inflate.c infblock.c inftrees.c infutil.c inffast.c
+	adler32.c compress.c crc32.c deflate.c gzio.c \
+	infblock.c infcodes.c inffast.c inflate.c inftrees.c infutil.c \
+	trees.c uncompr.c zutil.c
 
 noinst_PROGRAMS = example minigzip
 

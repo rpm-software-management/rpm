@@ -1,21 +1,18 @@
-/* @(#) $Id: zutil.c,v 1.4 2002/02/10 16:50:06 jbj Exp $ */
-/*
+/* zutil.c -- target dependent utility functions for the compression library
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/**
- * \file zutil.c
- * Target dependent utility functions for the compression library.
- */
+/* @(#) $Id$ */
 
 #include "zutil.h"
+
+struct internal_state      {int dummy;}; /* for buggy compilers */
 
 #ifndef STDC
 extern void exit OF((int));
 #endif
 
-/*@observer@*/ /*@readonly@*/
 const char *z_errmsg[10] = {
 "need dictionary",     /* Z_NEED_DICT       2  */
 "stream end",          /* Z_STREAM_END      1  */
@@ -41,7 +38,7 @@ const char * ZEXPORT zlibVersion(void)
 #  endif
 int z_verbose = verbose;
 
-void z_error (char *m)
+void z_error (char * m)
 {
     fprintf(stderr, "%s\n", m);
     exit(1);
@@ -51,17 +48,15 @@ void z_error (char *m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-/*@-compmempass@*/
 const char * ZEXPORT zError(int err)
 {
     return ERR_MSG(err);
 }
-/*@=compmempass@*/
 
 
 #ifndef HAVE_MEMCPY
 
-void zmemcpy(Bytef *dest, const Bytef *source, uInt len)
+void zmemcpy(Bytef * dest, const Bytef * source, uInt len)
 {
     if (len == 0) return;
     do {
@@ -69,7 +64,7 @@ void zmemcpy(Bytef *dest, const Bytef *source, uInt len)
     } while (--len != 0);
 }
 
-int zmemcmp(const Bytef *s1, const Bytef *s2, uInt len)
+int zmemcmp(const Bytef * s1, const Bytef * s2, uInt len)
 {
     uInt j;
 
@@ -79,7 +74,7 @@ int zmemcmp(const Bytef *s1, const Bytef *s2, uInt len)
     return 0;
 }
 
-void zmemzero(Bytef *dest, uInt len)
+void zmemzero(Bytef * dest, uInt len)
 {
     if (len == 0) return;
     do {
@@ -112,7 +107,7 @@ typedef struct ptr_table_s {
 } ptr_table;
 
 local ptr_table table[MAX_PTR];
-/*!< This table is used to remember the original form of pointers
+/* This table is used to remember the original form of pointers
  * to large buffers (64K). Such pointers are normalized with a zero offset.
  * Since MSDOS is not a preemptive multitasking OS, this table is not
  * protected from concurrent access. This hack doesn't work anyway on

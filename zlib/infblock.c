@@ -14,16 +14,15 @@
 #include "infcodes.h"
 #include "infutil.h"
 
-//#include "infutil.c"
-#include "inffast.h"
-
 /*@access z_streamp@*/
+
+struct inflate_codes_state {int dummy;}; /* for buggy compilers */
 
 /* simplify the use of the inflate_huft type with some defines */
 #define exop word.what.Exop
 #define bits word.what.Bits
 
-/* Table for deflate from PKZIP's appnote.txt. */
+/** Table for deflate from PKZIP's appnote.txt. */
 /*@observer@*/ /*@unchecked@*/
 local const uInt border[] = { /* Order of the bit length code lengths */
         16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
@@ -74,18 +73,14 @@ local const uInt border[] = { /* Order of the bit length code lengths */
  */
 
 
-void inflate_blocks_reset(inflate_blocks_statef *s, z_streamp z, uLongf *c)
+void inflate_blocks_reset(inflate_blocks_statef * s, z_streamp z, uLongf * c)
 {
   if (c != Z_NULL)
     *c = s->check;
   if (s->mode == BTREE || s->mode == DTREE)
     ZFREE(z, s->sub.trees.blens);
-  if (s->mode == CODES) {
-/*@-noeffect@*/
+  if (s->mode == CODES)
     inflate_codes_free(s->sub.decode.codes, z);
-/*@=noeffect@*/
-    s->sub.decode.codes = NULL;
-  }
   s->mode = TYPE;
   s->bitk = 0;
   s->bitb = 0;
@@ -96,7 +91,7 @@ void inflate_blocks_reset(inflate_blocks_statef *s, z_streamp z, uLongf *c)
 }
 
 
-inflate_blocks_statef *inflate_blocks_new(z_streamp z, check_func c, uInt w)
+inflate_blocks_statef * inflate_blocks_new(z_streamp z, check_func c, uInt w)
 {
   inflate_blocks_statef *s;
 
@@ -124,8 +119,7 @@ inflate_blocks_statef *inflate_blocks_new(z_streamp z, check_func c, uInt w)
 }
 
 
-/*@-compmempass@*/
-int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
+int inflate_blocks(inflate_blocks_statef * s, z_streamp z, int r)
 {
   uInt t;               /* temporary storage */
   uLong b;              /* bit buffer */
@@ -154,7 +148,7 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
           t = k & 7;                    /* go to byte boundary */
           DUMPBITS(t)
           s->mode = LENS;               /* get length of stored block */
-          /*@innerbreak@*/ break;
+          break;
         case 1:                         /* fixed */
           Tracev((stderr, "inflate:     fixed codes block%s\n",
                  s->last ? " (last)" : ""));
@@ -167,47 +161,43 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
             if (s->sub.decode.codes == Z_NULL)
             {
               r = Z_MEM_ERROR;
-              goto leave;
+              LEAVE
             }
           }
           DUMPBITS(3)
           s->mode = CODES;
-          /*@innerbreak@*/ break;
+          break;
         case 2:                         /* dynamic */
           Tracev((stderr, "inflate:     dynamic codes block%s\n",
                  s->last ? " (last)" : ""));
           DUMPBITS(3)
           s->mode = TABLE;
-          /*@innerbreak@*/ break;
+          break;
         case 3:                         /* illegal */
           DUMPBITS(3)
-/*@-type@*/
           s->mode = BAD;
-/*@=type@*/
-          z->msg = "invalid block type";
+          z->msg = (char*)"invalid block type";
           r = Z_DATA_ERROR;
-          goto leave;
+          LEAVE
       }
-      /*@switchbreak@*/ break;
+      break;
     case LENS:
       NEEDBITS(32)
       if ((((~b) >> 16) & 0xffff) != (b & 0xffff))
       {
-/*@-type@*/
         s->mode = BAD;
-/*@=type@*/
-        z->msg = "invalid stored block lengths";
+        z->msg = (char*)"invalid stored block lengths";
         r = Z_DATA_ERROR;
-        goto leave;
+        LEAVE
       }
       s->sub.left = (uInt)b & 0xffff;
       b = k = 0;                      /* dump bits */
       Tracev((stderr, "inflate:       stored length %u\n", s->sub.left));
       s->mode = s->sub.left ? STORED : (s->last ? DRY : TYPE);
-      /*@switchbreak@*/ break;
+      break;
     case STORED:
       if (n == 0)
-        goto leave;
+        LEAVE
       NEEDOUT
       t = s->sub.left;
       if (t > n) t = n;
@@ -216,37 +206,34 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
       p += t;  n -= t;
       q += t;  m -= t;
       if ((s->sub.left -= t) != 0)
-        /*@switchbreak@*/ break;
+        break;
       Tracev((stderr, "inflate:       stored end, %lu total out\n",
               z->total_out + (q >= s->read ? q - s->read :
               (s->end - s->read) + (q - s->window))));
       s->mode = s->last ? DRY : TYPE;
-      /*@switchbreak@*/ break;
+      break;
     case TABLE:
       NEEDBITS(14)
       s->sub.trees.table = t = (uInt)b & 0x3fff;
 #ifndef PKZIP_BUG_WORKAROUND
       if ((t & 0x1f) > 29 || ((t >> 5) & 0x1f) > 29)
       {
-/*@-type@*/
         s->mode = BAD;
-/*@=type@*/
-        z->msg = "too many length or distance symbols";
+        z->msg = (char*)"too many length or distance symbols";
         r = Z_DATA_ERROR;
-        goto leave;
+        LEAVE
       }
 #endif
       t = 258 + (t & 0x1f) + ((t >> 5) & 0x1f);
       if ((s->sub.trees.blens = (uIntf*)ZALLOC(z, t, sizeof(uInt))) == Z_NULL)
       {
         r = Z_MEM_ERROR;
-        goto leave;
+        LEAVE
       }
       DUMPBITS(14)
       s->sub.trees.index = 0;
       Tracev((stderr, "inflate:       table sizes ok\n"));
       s->mode = BTREE;
-      /*@fallthrough@*/
     case BTREE:
       while (s->sub.trees.index < 4 + (s->sub.trees.table >> 10))
       {
@@ -262,18 +249,16 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
       if (t != Z_OK)
       {
         r = t;
-        if (r == Z_DATA_ERROR) {
-	  ZFREE(z, s->sub.trees.blens);
-/*@-type@*/
+        if (r == Z_DATA_ERROR)
+        {
+          ZFREE(z, s->sub.trees.blens);
           s->mode = BAD;
-/*@=type@*/
-	}
-        goto leave;
+        }
+        LEAVE
       }
       s->sub.trees.index = 0;
       Tracev((stderr, "inflate:       bits tree ok\n"));
       s->mode = DTREE;
-      /*@fallthrough@*/
     case DTREE:
       while (t = s->sub.trees.table,
              s->sub.trees.index < 258 + (t & 0x1f) + ((t >> 5) & 0x1f))
@@ -305,12 +290,10 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
               (c == 16 && i < 1))
           {
             ZFREE(z, s->sub.trees.blens);
-/*@-type@*/
             s->mode = BAD;
-/*@=type@*/
-            z->msg = "invalid bit length repeat";
+            z->msg = (char*)"invalid bit length repeat";
             r = Z_DATA_ERROR;
-            goto leave;
+            LEAVE
           }
           c = c == 16 ? s->sub.trees.blens[i - 1] : 0;
           do {
@@ -333,36 +316,30 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
                                   s->hufts, z);
         if (t != Z_OK)
         {
-          if (t == (uInt)Z_DATA_ERROR) {
-	    ZFREE(z, s->sub.trees.blens);
-/*@-type@*/
+          if (t == (uInt)Z_DATA_ERROR)
+          {
+            ZFREE(z, s->sub.trees.blens);
             s->mode = BAD;
-/*@=type@*/
-	  }
+          }
           r = t;
-          goto leave;
+          LEAVE
         }
-	ZFREE(z, s->sub.trees.blens);
         Tracev((stderr, "inflate:       trees ok\n"));
         if ((c = inflate_codes_new(bl, bd, tl, td, z)) == Z_NULL)
         {
           r = Z_MEM_ERROR;
-          goto leave;
+          LEAVE
         }
         s->sub.decode.codes = c;
       }
       ZFREE(z, s->sub.trees.blens);
       s->mode = CODES;
-      /*@fallthrough@*/
     case CODES:
       UPDATE
       if ((r = inflate_codes(s, z, r)) != Z_STREAM_END)
         return inflate_flush(s, z, r);
       r = Z_OK;
-/*@-noeffect@*/
       inflate_codes_free(s->sub.decode.codes, z);
-/*@=noeffect@*/
-      s->sub.decode.codes = NULL;
       LOAD
       Tracev((stderr, "inflate:       codes end, %lu total out\n",
               z->total_out + (q >= s->read ? q - s->read :
@@ -370,36 +347,28 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
       if (!s->last)
       {
         s->mode = TYPE;
-        /*@switchbreak@*/ break;
+        break;
       }
       s->mode = DRY;
-      /*@fallthrough@*/
     case DRY:
       FLUSH
       if (s->read != s->write)
-        goto leave;
-/*@-type@*/
+        LEAVE
       s->mode = DONE;
-/*@=type@*/
-      /*@fallthrough@*/
     case DONE:
       r = Z_STREAM_END;
-      goto leave;
+      LEAVE
     case BAD:
       r = Z_DATA_ERROR;
-      goto leave;
+      LEAVE
     default:
       r = Z_STREAM_ERROR;
-      goto leave;
+      LEAVE
   }
-
-leave:
-	LEAVE
 }
-/*@=compmempass@*/
 
 
-int inflate_blocks_free(inflate_blocks_statef *s, z_streamp z)
+int inflate_blocks_free(inflate_blocks_statef * s, z_streamp z)
 {
   inflate_blocks_reset(s, z, Z_NULL);
   ZFREE(z, s->window);
@@ -410,11 +379,9 @@ int inflate_blocks_free(inflate_blocks_statef *s, z_streamp z)
 }
 
 
-void inflate_set_dictionary(inflate_blocks_statef *s, const Bytef *d, uInt n)
+void inflate_set_dictionary(inflate_blocks_statef * s, const Bytef * d, uInt n)
 {
-/*@-mayaliasunique@*/ /* FIX: d may alias s->window */
   zmemcpy(s->window, d, n);
-/*@=mayaliasunique@*/
   s->read = s->write = s->window + n;
 }
 
@@ -423,222 +390,7 @@ void inflate_set_dictionary(inflate_blocks_statef *s, const Bytef *d, uInt n)
  * by Z_SYNC_FLUSH or Z_FULL_FLUSH. 
  * IN assertion: s != Z_NULL
  */
-int inflate_blocks_sync_point(inflate_blocks_statef *s)
+int inflate_blocks_sync_point(inflate_blocks_statef * s)
 {
   return s->mode == LENS;
-}
-
-/*********************************infcodes.c*********************/
-
-/* infcodes.c -- process literals and length/distance pairs
- * Copyright (C) 1995-1998 Mark Adler
- * For conditions of distribution and use, see copyright notice in zlib.h 
- */
-
-
-/* simplify the use of the inflate_huft type with some defines */
-#define exop word.what.Exop
-#define bits word.what.Bits
-
-
-inflate_codes_statef *inflate_codes_new(uInt bl, uInt bd, inflate_huft *tl, inflate_huft *td, z_streamp z)
-{
-  inflate_codes_statef *c;
-
-  if ((c = (inflate_codes_statef *)
-       ZALLOC(z,1,sizeof(struct inflate_codes_state))) != Z_NULL)
-  {
-    c->mode = START;
-    c->lbits = (Byte)bl;
-    c->dbits = (Byte)bd;
-    c->ltree = tl;
-    c->dtree = td;
-    Tracev((stderr, "inflate:       codes new\n"));
-  }
-  return c;
-}
-
-
-/*@-compmempass@*/
-int inflate_codes(inflate_blocks_statef *s, z_streamp z, int r)
-{
-  uInt j;               /* temporary storage */
-  inflate_huft *t;      /* temporary pointer */
-  uInt e;               /* extra bits or operation */
-  uLong b;              /* bit buffer */
-  uInt k;               /* bits in bit buffer */
-  Bytef *p;             /* input data pointer */
-  uInt n;               /* bytes available there */
-  Bytef *q;             /* output window write pointer */
-  uInt m;               /* bytes to end of window or read pointer */
-  Bytef *f;             /* pointer to copy strings from */
-  inflate_codes_statef *c = s->sub.decode.codes;  /* codes state */
-
-  /* copy input/output information to locals (UPDATE macro restores) */
-  LOAD
-
-  /* process input and output based on current state */
-  while (1) switch (c->mode)
-  {             /* waiting for "i:"=input, "o:"=output, "x:"=nothing */
-    case START:         /* x: set up for LEN */
-#ifndef SLOW
-/*@-branchstate@*/
-      if (m >= 258 && n >= 10)
-      {
-        UPDATE
-        r = inflate_fast(/*c->lbits, c->dbits, c->ltree, c->dtree,*/ s, z);
-        LOAD
-        if (r != Z_OK)
-        {
-          c->mode = r == Z_STREAM_END ? WASH : BADCODE;
-          /*@switchbreak@*/ break;
-        }
-      }
-/*@=branchstate@*/
-#endif /* !SLOW */
-      c->sub.code.need = c->lbits;
-      c->sub.code.tree = c->ltree;
-      c->mode = LEN;
-      /*@fallthrough@*/
-    case LEN:           /* i: get length/literal/eob next */
-      j = c->sub.code.need;
-      NEEDBITS(j)
-      t = c->sub.code.tree + ((uInt)b & inflate_mask[j]);
-      DUMPBITS(t->bits)
-      e = (uInt)(t->exop);
-      if (e == 0)               /* literal */
-      {
-        c->sub.lit = t->base;
-        Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
-                 "inflate:         literal '%c'\n" :
-                 "inflate:         literal 0x%02x\n", t->base));
-        c->mode = LIT;
-        /*@switchbreak@*/ break;
-      }
-      if (e & 16)               /* length */
-      {
-        c->sub.copy.get = e & 15;
-        c->len = t->base;
-        c->mode = LENEXT;
-        /*@switchbreak@*/ break;
-      }
-      if ((e & 64) == 0)        /* next table */
-      {
-        c->sub.code.need = e;
-        c->sub.code.tree = t + t->base;
-        /*@switchbreak@*/ break;
-      }
-      if (e & 32)               /* end of block */
-      {
-        Tracevv((stderr, "inflate:         end of block\n"));
-        c->mode = WASH;
-        /*@switchbreak@*/ break;
-      }
-      c->mode = BADCODE;        /* invalid code */
-      z->msg = "invalid literal/length code";
-      r = Z_DATA_ERROR;
-      goto leave;
-    case LENEXT:        /* i: getting length extra (have base) */
-      j = c->sub.copy.get;
-      NEEDBITS(j)
-      c->len += (uInt)b & inflate_mask[j];
-      DUMPBITS(j)
-      c->sub.code.need = c->dbits;
-      c->sub.code.tree = c->dtree;
-      Tracevv((stderr, "inflate:         length %u\n", c->len));
-      c->mode = DIST;
-      /*@fallthrough@*/
-    case DIST:          /* i: get distance next */
-      j = c->sub.code.need;
-      NEEDBITS(j)
-      t = c->sub.code.tree + ((uInt)b & inflate_mask[j]);
-      DUMPBITS(t->bits)
-      e = (uInt)(t->exop);
-      if (e & 16)               /* distance */
-      {
-        c->sub.copy.get = e & 15;
-        c->sub.copy.dist = t->base;
-        c->mode = DISTEXT;
-        /*@switchbreak@*/ break;
-      }
-      if ((e & 64) == 0)        /* next table */
-      {
-        c->sub.code.need = e;
-        c->sub.code.tree = t + t->base;
-        /*@switchbreak@*/ break;
-      }
-      c->mode = BADCODE;        /* invalid code */
-      z->msg = "invalid distance code";
-      r = Z_DATA_ERROR;
-      goto leave;
-    case DISTEXT:       /* i: getting distance extra */
-      j = c->sub.copy.get;
-      NEEDBITS(j)
-      c->sub.copy.dist += (uInt)b & inflate_mask[j];
-      DUMPBITS(j)
-      Tracevv((stderr, "inflate:         distance %u\n", c->sub.copy.dist));
-      c->mode = COPY;
-      /*@fallthrough@*/
-    case COPY:          /* o: copying bytes in window, waiting for space */
-#ifndef __TURBOC__ /* Turbo C bug for following expression */
-      f = (uInt)(q - s->window) < c->sub.copy.dist ?
-          s->end - (c->sub.copy.dist - (q - s->window)) :
-          q - c->sub.copy.dist;
-#else
-      f = q - c->sub.copy.dist;
-      if ((uInt)(q - s->window) < c->sub.copy.dist)
-        f = s->end - (c->sub.copy.dist - (uInt)(q - s->window));
-#endif
-      while (c->len)
-      {
-        NEEDOUT
-        OUTBYTE(*f++)
-        if (f == s->end)
-          f = s->window;
-        c->len--;
-      }
-      c->mode = START;
-      /*@switchbreak@*/ break;
-    case LIT:           /* o: got literal, waiting for output space */
-      NEEDOUT
-      OUTBYTE(c->sub.lit)
-      c->mode = START;
-      /*@switchbreak@*/ break;
-    case WASH:          /* o: got eob, possibly more output */
-      if (k > 7)        /* return unused byte, if any */
-      {
-        Assert(k < 16, "inflate_codes grabbed too many bytes")
-        k -= 8;
-        n++;
-        p--;            /* can always return one */
-      }
-      FLUSH
-      if (s->read != s->write)
-        goto leave;
-      c->mode = END;
-      /*@fallthrough@*/
-    case END:
-      r = Z_STREAM_END;
-      goto leave;
-    case BADCODE:       /* x: got error */
-      r = Z_DATA_ERROR;
-      goto leave;
-    default:
-      r = Z_STREAM_ERROR;
-      goto leave;
-  }
-#ifdef NEED_DUMMY_RETURN
-  return Z_STREAM_ERROR;  /* Some dumb compilers complain without this */
-#endif
-
-leave:
-	LEAVE
-}
-/*@=compmempass@*/
-
-
-void inflate_codes_free(inflate_codes_statef *c, z_streamp z)
-{
-  ZFREE(z, c);
-  Tracev((stderr, "inflate:       codes free\n"));
 }

@@ -1,4 +1,3 @@
-/* @(#) $Id: compress.c,v 1.4 2002/02/10 16:50:06 jbj Exp $ */
 /*
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -10,11 +9,10 @@
  */
 
 #include "zlib.h"
-#include "zutil.h"	/* XXX for zmemzero() */
 
 /*@access z_streamp@*/
 
-/* ========================================================================= */
+/* ========================================================================== */
 /**
  * Compresses the source buffer into the destination buffer. The level
  * parameter has the same meaning as in deflateInit.  sourceLen is the byte
@@ -26,12 +24,12 @@
  * memory, Z_BUF_ERROR if there was not enough room in the output buffer,
  * Z_STREAM_ERROR if the level parameter is invalid.
  */
-int ZEXPORT compress2 (Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen, int level)
+int ZEXPORT compress2 (Bytef * dest, uLongf * destLen, const Bytef * source,
+		uLong sourceLen, int level)
 {
     z_stream stream;
     int err;
 
-    zmemzero(&stream, sizeof(stream));
     stream.next_in = (Bytef*)source;
     stream.avail_in = (uInt)sourceLen;
 #ifdef MAXSEG_64K
@@ -42,9 +40,9 @@ int ZEXPORT compress2 (Bytef *dest, uLongf *destLen, const Bytef *source, uLong 
     stream.avail_out = (uInt)*destLen;
     if ((uLong)stream.avail_out != *destLen) return Z_BUF_ERROR;
 
-    stream.zalloc = (alloc_func)NULL;
-    stream.zfree = (free_func)NULL;
-    stream.opaque = (voidpf)NULL;
+    stream.zalloc = (alloc_func)0;
+    stream.zfree = (free_func)0;
+    stream.opaque = (voidpf)0;
 
     err = deflateInit(&stream, level);
     if (err != Z_OK) return err;
@@ -60,8 +58,9 @@ int ZEXPORT compress2 (Bytef *dest, uLongf *destLen, const Bytef *source, uLong 
     return err;
 }
 
-/* ========================================================================= */
-int ZEXPORT compress (Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen)
+/* ========================================================================== */
+int ZEXPORT compress (Bytef * dest, uLongf * destLen, const Bytef * source,
+		uLong sourceLen)
 {
     return compress2(dest, destLen, source, sourceLen, Z_DEFAULT_COMPRESSION);
 }

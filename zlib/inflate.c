@@ -7,30 +7,31 @@
  * \file inflate.c
  * zlib interface to inflate modules.
  */
+
 #include "zutil.h"
 #include "infblock.h"
 
 /*@access z_streamp@*/
+struct inflate_blocks_state {int dummy;}; /* for buggy compilers */
 
 typedef enum {
-      METHOD,	/*!< waiting for method byte */
-      FLAG,	/*!< waiting for flag byte */
-      DICT4,	/*!< four dictionary check bytes to go */
-      DICT3,	/*!< three dictionary check bytes to go */
-      DICT2,	/*!< two dictionary check bytes to go */
-      DICT1,	/*!< one dictionary check byte to go */
-      DICT0,	/*!< waiting for inflateSetDictionary */
-      BLOCKS,	/*!< decompressing blocks */
-      CHECK4,	/*!< four check bytes to go */
-      CHECK3,	/*!< three check bytes to go */
-      CHECK2,	/*!< two check bytes to go */
-      CHECK1,	/*!< one check byte to go */
-      DONE,	/*!< finished check, done */
-      BAD	/*!< got an error--stay here */
-} inflate_mode;
+      METHOD,   /*!< waiting for method byte */
+      FLAG,     /*!< waiting for flag byte */
+      DICT4,    /*!< four dictionary check bytes to go */
+      DICT3,    /*!< three dictionary check bytes to go */
+      DICT2,    /*!< two dictionary check bytes to go */
+      DICT1,    /*!< one dictionary check byte to go */
+      DICT0,    /*!< waiting for inflateSetDictionary */
+      BLOCKS,   /*!< decompressing blocks */
+      CHECK4,   /*!< four check bytes to go */
+      CHECK3,   /*!< three check bytes to go */
+      CHECK2,   /*!< two check bytes to go */
+      CHECK1,   /*!< one check byte to go */
+      DONE,     /*!< finished check, done */
+      BAD}      /*!< got an error--stay here */
+inflate_mode;
 
 /** inflate private state */
-/*@-redef@*/ /* FIX: deflate.h has duplicate */
 struct internal_state {
 
   /* mode */
@@ -53,7 +54,6 @@ struct internal_state {
     *blocks;            /*!< current inflate_blocks state */
 
 };
-/*@=redef@*/
 
 
 int ZEXPORT inflateReset(z_streamp z)
@@ -73,12 +73,8 @@ int ZEXPORT inflateEnd(z_streamp z)
 {
   if (z == Z_NULL || z->state == Z_NULL || z->zfree == Z_NULL)
     return Z_STREAM_ERROR;
-/*@-usereleased@*/
-/*@-compdef@*/ /* FIX: z->state->blocks may be undefined */
   if (z->state->blocks != Z_NULL)
     inflate_blocks_free(z->state->blocks, z);
-/*@=compdef@*/
-/*@=usereleased@*/
   ZFREE(z, z->state);
   z->state = Z_NULL;
   Tracev((stderr, "inflate: end\n"));
@@ -86,7 +82,8 @@ int ZEXPORT inflateEnd(z_streamp z)
 }
 
 
-int ZEXPORT inflateInit2_(z_streamp z, int w, const char *version, int stream_size)
+int ZEXPORT inflateInit2_(z_streamp z, int w, const char * version,
+		int stream_size)
 {
   if (version == Z_NULL || version[0] != ZLIB_VERSION[0] ||
       stream_size != sizeof(z_stream))
@@ -124,7 +121,6 @@ int ZEXPORT inflateInit2_(z_streamp z, int w, const char *version, int stream_si
   z->state->wbits = (uInt)w;
 
   /* create inflate_blocks state */
-/*@-evalorder -type@*/
   if ((z->state->blocks =
       inflate_blocks_new(z, z->state->nowrap ? Z_NULL : adler32, (uInt)1 << w))
       == Z_NULL)
@@ -132,7 +128,6 @@ int ZEXPORT inflateInit2_(z_streamp z, int w, const char *version, int stream_si
     inflateEnd(z);
     return Z_MEM_ERROR;
   }
-/*@=evalorder =type@*/
   Tracev((stderr, "inflate: allocated\n"));
 
   /* reset state */
@@ -141,23 +136,22 @@ int ZEXPORT inflateInit2_(z_streamp z, int w, const char *version, int stream_si
 }
 
 
-int ZEXPORT inflateInit_(z_streamp z, const char *version, int stream_size)
+int ZEXPORT inflateInit_(z_streamp z, const char * version, int stream_size)
 {
   return inflateInit2_(z, DEF_WBITS, version, stream_size);
 }
 
 
-#define NEEDBYTE {if(z->avail_in==0)goto out_NEEDBYTE;r=f;}
-#define NEXTBYTE (z->avail_in--,/*z->total_in++,*/ *z->next_in++)
+#define NEEDBYTE {if(z->avail_in==0)return r;r=f;}
+#define NEXTBYTE (z->avail_in--,z->total_in++,*z->next_in++)
 
 int ZEXPORT inflate(z_streamp z, int f)
 {
   int r;
   uInt b;
-#if 0
+
   if (z == Z_NULL || z->state == Z_NULL || z->next_in == Z_NULL)
     return Z_STREAM_ERROR;
-#endif
   f = f == Z_FINISH ? Z_BUF_ERROR : Z_OK;
   r = Z_BUF_ERROR;
   while (1) switch (z->state->mode)
@@ -167,52 +161,47 @@ int ZEXPORT inflate(z_streamp z, int f)
       if (((z->state->sub.method = NEXTBYTE) & 0xf) != Z_DEFLATED)
       {
         z->state->mode = BAD;
-        z->msg = "unknown compression method";
+        z->msg = (char*)"unknown compression method";
         z->state->sub.marker = 5;       /* can't try inflateSync */
-        /*@switchbreak@*/ break;
+        break;
       }
       if ((z->state->sub.method >> 4) + 8 > z->state->wbits)
       {
         z->state->mode = BAD;
-        z->msg = "invalid window size";
+        z->msg = (char*)"invalid window size";
         z->state->sub.marker = 5;       /* can't try inflateSync */
-        /*@switchbreak@*/ break;
+        break;
       }
       z->state->mode = FLAG;
-      /*@fallthrough@*/
     case FLAG:
       NEEDBYTE
       b = NEXTBYTE;
       if (((z->state->sub.method << 8) + b) % 31)
       {
         z->state->mode = BAD;
-        z->msg = "incorrect header check";
+        z->msg = (char*)"incorrect header check";
         z->state->sub.marker = 5;       /* can't try inflateSync */
-        /*@switchbreak@*/ break;
+        break;
       }
       Tracev((stderr, "inflate: zlib header ok\n"));
       if (!(b & PRESET_DICT))
       {
         z->state->mode = BLOCKS;
-        /*@switchbreak@*/ break;
+        break;
       }
       z->state->mode = DICT4;
-      /*@fallthrough@*/
     case DICT4:
       NEEDBYTE
       z->state->sub.check.need = (uLong)NEXTBYTE << 24;
       z->state->mode = DICT3;
-      /*@fallthrough@*/
     case DICT3:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE << 16;
       z->state->mode = DICT2;
-      /*@fallthrough@*/
     case DICT2:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE << 8;
       z->state->mode = DICT1;
-      /*@fallthrough@*/
     case DICT1:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE;
@@ -221,7 +210,7 @@ int ZEXPORT inflate(z_streamp z, int f)
       return Z_NEED_DICT;
     case DICT0:
       z->state->mode = BAD;
-      z->msg = "need dictionary";
+      z->msg = (char*)"need dictionary";
       z->state->sub.marker = 0;       /* can try inflateSync */
       return Z_STREAM_ERROR;
     case BLOCKS:
@@ -230,7 +219,7 @@ int ZEXPORT inflate(z_streamp z, int f)
       {
         z->state->mode = BAD;
         z->state->sub.marker = 0;       /* can try inflateSync */
-        /*@switchbreak@*/ break;
+        break;
       }
       if (r == Z_OK)
         r = f;
@@ -241,25 +230,21 @@ int ZEXPORT inflate(z_streamp z, int f)
       if (z->state->nowrap)
       {
         z->state->mode = DONE;
-        /*@switchbreak@*/ break;
+        break;
       }
       z->state->mode = CHECK4;
-      /*@fallthrough@*/
     case CHECK4:
       NEEDBYTE
       z->state->sub.check.need = (uLong)NEXTBYTE << 24;
       z->state->mode = CHECK3;
-      /*@fallthrough@*/
     case CHECK3:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE << 16;
       z->state->mode = CHECK2;
-      /*@fallthrough@*/
     case CHECK2:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE << 8;
       z->state->mode = CHECK1;
-      /*@fallthrough@*/
     case CHECK1:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE;
@@ -267,13 +252,12 @@ int ZEXPORT inflate(z_streamp z, int f)
       if (z->state->sub.check.was != z->state->sub.check.need)
       {
         z->state->mode = BAD;
-        z->msg = "incorrect data check";
+        z->msg = (char*)"incorrect data check";
         z->state->sub.marker = 5;       /* can't try inflateSync */
-        /*@switchbreak@*/ break;
+        break;
       }
       Tracev((stderr, "inflate: zlib check ok\n"));
       z->state->mode = DONE;
-      /*@fallthrough@*/
     case DONE:
       return Z_STREAM_END;
     case BAD:
@@ -284,13 +268,11 @@ int ZEXPORT inflate(z_streamp z, int f)
 #ifdef NEED_DUMMY_RETURN
   return Z_STREAM_ERROR;  /* Some dumb compilers complain without this */
 #endif
-
-out_NEEDBYTE:
-	return r;
 }
 
 
-int ZEXPORT inflateSetDictionary(z_streamp z, const Bytef *dictionary, uInt dictLength)
+int ZEXPORT inflateSetDictionary(z_streamp z, const Bytef * dictionary,
+		uInt  dictLength)
 {
   uInt length = dictLength;
 
@@ -311,7 +293,6 @@ int ZEXPORT inflateSetDictionary(z_streamp z, const Bytef *dictionary, uInt dict
 }
 
 
-/*@-compmempass@*/
 int ZEXPORT inflateSync(z_streamp z)
 {
   uInt n;       /* number of bytes to look at */
@@ -360,7 +341,6 @@ int ZEXPORT inflateSync(z_streamp z)
   z->state->mode = BLOCKS;
   return Z_OK;
 }
-/*@=compmempass@*/
 
 
 /**

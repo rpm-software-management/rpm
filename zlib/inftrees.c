@@ -1,93 +1,91 @@
-/*
+/* inftrees.c -- generate Huffman trees for efficient decoding
  * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
- */
-
-/**
- * \file inftrees.c
- * Generate Huffman trees for efficient decoding.
- *
- * Huffman code decoding is performed using a multi-level table lookup.
- * The fastest way to decode is to simply build a lookup table whose
- * size is determined by the longest code.  However, the time it takes
- * to build this table can also be a factor if the data being decoded
- * is not very long.  The most common codes are necessarily the
- * shortest codes, so those codes dominate the decoding time, and hence
- * the speed.  The idea is you can have a shorter table that decodes the
- * shorter, more probable codes, and then point to subsidiary tables for
- * the longer codes.  The time it costs to decode the longer codes is
- * then traded against the time it takes to make longer tables.
- *
- * This results of this trade are in the variables lbits and dbits
- * below.  lbits is the number of bits the first level table for literal/
- * length codes can decode in one step, and dbits is the same thing for
- * the distance codes.  Subsequent tables are also less than or equal to
- * those sizes.  These values may be adjusted either when all of the
- * codes are shorter than that, in which case the longest code length in
- * bits is used, or when the shortest code is *longer* than the requested
- * table size, in which case the length of the shortest code in bits is
- * used.
- *
- * There are two different values for the two tables, since they code a
- * different number of possibilities each.  The literal/length table
- * codes 286 possible values, or in a flat code, a little over eight
- * bits.  The distance table codes 30 possible values, or a little less
- * than five bits, flat.  The optimum values for speed end up being
- * about one bit more than those, so lbits is 8+1 and dbits is 5+1.
- * The optimum values may differ though from machine to machine, and
- * possibly even between compilers.  Your mileage may vary.
  */
 
 #include "zutil.h"
 #include "inftrees.h"
 
-/*@access z_streamp@*/
-
 #if !defined(BUILDFIXED) && !defined(STDC)
 #  define BUILDFIXED   /* non ANSI compilers may not accept inffixed.h */
 #endif
 
-/**
- * If you use the zlib library in a product, an acknowledgment is welcome
- * in the documentation of your product. If for some reason you cannot
- * include such an acknowledgment, I would appreciate that you keep this
- * copyright string in the executable of your product.
- */
-/*@-exportheadervar@*/
-/*@unused@*/ /*@observer@*/
 const char inflate_copyright[] =
    " inflate 1.1.4 Copyright 1995-2002 Mark Adler ";
-/*@=exportheadervar@*/
+/*
+  If you use the zlib library in a product, an acknowledgment is welcome
+  in the documentation of your product. If for some reason you cannot
+  include such an acknowledgment, I would appreciate that you keep this
+  copyright string in the executable of your product.
+ */
+struct internal_state  {int dummy;}; /* for buggy compilers */
 
 /* simplify the use of the inflate_huft type with some defines */
 #define exop word.what.Exop
 #define bits word.what.Bits
 
-local int huft_build(uIntf *b, uInt n, uInt s, /*@null@*/ const uIntf *d,
-		/*@null@*/ const uIntf *e, /*@out@*/ inflate_huft * FAR *t,
-		uIntf *m, inflate_huft *hp, uInt *hn, uIntf *v)
-	/*@modifies *t, *m, *hp, *hn, *v @*/;
+
+local int huft_build OF((
+    uIntf *,            /* code lengths in bits */
+    uInt,               /* number of codes */
+    uInt,               /* number of "simple" codes */
+    const uIntf *,      /* list of base values for non-simple codes */
+    const uIntf *,      /* list of extra bits for non-simple codes */
+    inflate_huft * FAR*,/* result: starting table */
+    uIntf *,            /* maximum lookup bits (returns actual) */
+    inflate_huft *,     /* space for trees */
+    uInt *,             /* hufts used in space */
+    uIntf * ));         /* space for values */
 
 /* Tables for deflate from PKZIP's appnote.txt. */
-/*@observer@*/ /*@unchecked@*/
 local const uInt cplens[31] = { /* Copy lengths for literal codes 257..285 */
         3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
         35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0};
         /* see note #13 above about 258 */
-/*@observer@*/ /*@unchecked@*/
 local const uInt cplext[31] = { /* Extra bits for literal codes 257..285 */
         0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
         3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 112, 112}; /* 112==invalid */
-/*@observer@*/ /*@unchecked@*/
 local const uInt cpdist[30] = { /* Copy offsets for distance codes 0..29 */
         1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
         257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
         8193, 12289, 16385, 24577};
-/*@observer@*/ /*@unchecked@*/
 local const uInt cpdext[30] = { /* Extra bits for distance codes */
         0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
         7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
         12, 12, 13, 13};
+
+/*
+   Huffman code decoding is performed using a multi-level table lookup.
+   The fastest way to decode is to simply build a lookup table whose
+   size is determined by the longest code.  However, the time it takes
+   to build this table can also be a factor if the data being decoded
+   is not very long.  The most common codes are necessarily the
+   shortest codes, so those codes dominate the decoding time, and hence
+   the speed.  The idea is you can have a shorter table that decodes the
+   shorter, more probable codes, and then point to subsidiary tables for
+   the longer codes.  The time it costs to decode the longer codes is
+   then traded against the time it takes to make longer tables.
+
+   This results of this trade are in the variables lbits and dbits
+   below.  lbits is the number of bits the first level table for literal/
+   length codes can decode in one step, and dbits is the same thing for
+   the distance codes.  Subsequent tables are also less than or equal to
+   those sizes.  These values may be adjusted either when all of the
+   codes are shorter than that, in which case the longest code length in
+   bits is used, or when the shortest code is *longer* than the requested
+   table size, in which case the length of the shortest code in bits is
+   used.
+
+   There are two different values for the two tables, since they code a
+   different number of possibilities each.  The literal/length table
+   codes 286 possible values, or in a flat code, a little over eight
+   bits.  The distance table codes 30 possible values, or a little less
+   than five bits, flat.  The optimum values for speed end up being
+   about one bit more than those, so lbits is 8+1 and dbits is 5+1.
+   The optimum values may differ though from machine to machine, and
+   possibly even between compilers.  Your mileage may vary.
+ */
+
 
 /* If BMAX needs to be larger than 16, then h and x[] should be uLong. */
 #define BMAX 15         /* maximum bit length of any code */
@@ -96,7 +94,7 @@ local const uInt cpdext[30] = { /* Extra bits for distance codes */
  * Given a list of code lengths and a maximum table size, make a set of
  * tables to decode that set of codes.  Return Z_OK on success, Z_BUF_ERROR
  * if the given code set is incomplete (the tables are still built in this
- * case), or Z_DATA_ERROR if the input is invalid. */
+ * case), or Z_DATA_ERROR if the input is invalid.
  *
  * @param b		code lengths in bits (all assumed <= BMAX)
  * @param n		number of codes (assumed <= 288)
@@ -109,10 +107,9 @@ local const uInt cpdext[30] = { /* Extra bits for distance codes */
  * @param hn		hufts used in space
  * @param v		working area: values in order of bit length
  */
-local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
-		const uIntf *e, inflate_huft * FAR *t, uIntf *m,
-		inflate_huft *hp, uInt *hn, uIntf *v)
-	/*@modifies *t, *m, *hp, *hn, *v @*/
+local int huft_build(uIntf * b, uInt n, uInt s, const uIntf * d,
+		const uIntf * e, inflate_huft * FAR * t,
+		uIntf * m, inflate_huft * hp, uInt * hn, uIntf * v)
 {
 
   uInt a;                       /* counter for codes of length k */
@@ -172,13 +169,11 @@ local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
 
 
   /* Adjust last length count to fill out codes, if needed */
-/*@-unsignedcompare@*/
   for (y = 1 << j; j < i; j++, y <<= 1)
     if ((y -= c[j]) < 0)
       return Z_DATA_ERROR;
   if ((y -= c[i]) < 0)
     return Z_DATA_ERROR;
-/*@=unsignedcompare@*/
   c[i] += y;
 
 
@@ -232,7 +227,7 @@ local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
             while (++j < z)     /* try smaller tables up to z bits */
             {
               if ((f <<= 1) <= *++xp)
-                /*@innerbreak@*/ break; /* enough codes to use up j bits */
+                break;          /* enough codes to use up j bits */
               f -= *xp;         /* else deduct codes from patterns */
             }
         }
@@ -269,20 +264,14 @@ local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
       }
       else
       {
-/*@-nullderef@*/ /* FIX: d and e might be NULL */
         r.exop = (Byte)(e[*p - s] + 16 + 64);/* non-simple--look up in lists */
         r.base = d[*p++ - s];
-/*@=nullderef@*/
       }
 
       /* fill code-like entries with r */
       f = 1 << (k - w);
-/*@-nullderef@*/ /* FIX: q might be NULL */
-/*@-compdef@*/ /* FIX: r.base may be undefined */
       for (j = i >> w; j < z; j += f)
         q[j] = r;
-/*@=compdef@*/
-/*@=nullderef@*/
 
       /* backwards increment the k-bit code i */
       for (j = 1 << (k - 1); i & j; j >>= 1)
@@ -313,8 +302,8 @@ local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
  * @param hp		space for trees
  * @param z		for messages
  */
-int inflate_trees_bits( uIntf *c, uIntf *bb, inflate_huft * FAR *tb,
-		inflate_huft *hp, z_streamp z)
+int inflate_trees_bits(uIntf * c, uIntf * bb, inflate_huft * FAR * tb,
+		inflate_huft * hp, z_streamp z)
 {
   int r;
   uInt hn = 0;          /* hufts used in space */
@@ -325,10 +314,10 @@ int inflate_trees_bits( uIntf *c, uIntf *bb, inflate_huft * FAR *tb,
   r = huft_build(c, 19, 19, (uIntf*)Z_NULL, (uIntf*)Z_NULL,
                  tb, bb, hp, &hn, v);
   if (r == Z_DATA_ERROR)
-    z->msg = "oversubscribed dynamic bit lengths tree";
+    z->msg = (char*)"oversubscribed dynamic bit lengths tree";
   else if (r == Z_BUF_ERROR || *bb == 0)
   {
-    z->msg = "incomplete dynamic bit lengths tree";
+    z->msg = (char*)"incomplete dynamic bit lengths tree";
     r = Z_DATA_ERROR;
   }
   ZFREE(z, v);
@@ -337,7 +326,6 @@ int inflate_trees_bits( uIntf *c, uIntf *bb, inflate_huft * FAR *tb,
 
 
 /**
- * @param nl		number of literal/length codes
  * @param nd		number of distance codes
  * @param c		that many (total) code lengths
  * @param bl		literal desired/actual bit depth
@@ -347,9 +335,9 @@ int inflate_trees_bits( uIntf *c, uIntf *bb, inflate_huft * FAR *tb,
  * @param hp		space for trees
  * @param z		for messages
  */
-int inflate_trees_dynamic( uInt nl, uInt nd, uIntf *c, uIntf *bl,
-		uIntf *bd, inflate_huft * FAR *tl, inflate_huft * FAR *td,
-		inflate_huft *hp, z_streamp z)
+int inflate_trees_dynamic(uInt nl, uInt nd, uIntf * c, uIntf * bl, uIntf * bd,
+		inflate_huft * FAR * tl, inflate_huft * FAR * td,
+		inflate_huft * hp, z_streamp z)
 {
   int r;
   uInt hn = 0;          /* hufts used in space */
@@ -364,10 +352,10 @@ int inflate_trees_dynamic( uInt nl, uInt nd, uIntf *c, uIntf *bl,
   if (r != Z_OK || *bl == 0)
   {
     if (r == Z_DATA_ERROR)
-      z->msg = "oversubscribed literal/length tree";
+      z->msg = (char*)"oversubscribed literal/length tree";
     else if (r != Z_MEM_ERROR)
     {
-      z->msg = "incomplete literal/length tree";
+      z->msg = (char*)"incomplete literal/length tree";
       r = Z_DATA_ERROR;
     }
     ZFREE(z, v);
@@ -379,18 +367,18 @@ int inflate_trees_dynamic( uInt nl, uInt nd, uIntf *c, uIntf *bl,
   if (r != Z_OK || (*bd == 0 && nl > 257))
   {
     if (r == Z_DATA_ERROR)
-      z->msg = "oversubscribed distance tree";
+      z->msg = (char*)"oversubscribed distance tree";
     else if (r == Z_BUF_ERROR) {
 #ifdef PKZIP_BUG_WORKAROUND
       r = Z_OK;
     }
 #else
-      z->msg = "incomplete distance tree";
+      z->msg = (char*)"incomplete distance tree";
       r = Z_DATA_ERROR;
     }
     else if (r != Z_MEM_ERROR)
     {
-      z->msg = "empty distance tree with lengths";
+      z->msg = (char*)"empty distance tree with lengths";
       r = Z_DATA_ERROR;
     }
     ZFREE(z, v);
@@ -425,8 +413,8 @@ local inflate_huft *fixed_td;
  * @param td		distance tree result
  * @param z		for memory allocation
  */
-int inflate_trees_fixed( uIntf *bl, uIntf *bd, inflate_huft * FAR *tl,
-		inflate_huft * FAR *td, /*@unused@*/ z_streamp z)
+int inflate_trees_fixed(uIntf * bl, uIntf * bd, inflate_huft * FAR * tl,
+		inflate_huft * FAR * td, z_streamp z)
 {
 #ifdef BUILDFIXED
   /* build fixed tables if not already */

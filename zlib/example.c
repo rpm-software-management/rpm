@@ -1,4 +1,3 @@
-/* @(#) $Id: example.c,v 1.2 2001/12/27 21:00:18 jbj Exp $ */
 /*
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -62,9 +61,8 @@ int  main               OF((int argc, char *argv[]));
 /* ===========================================================================
  * Test compress() and uncompress()
  */
-void test_compress(compr, comprLen, uncompr, uncomprLen)
-    Byte *compr, *uncompr;
-    uLong comprLen, uncomprLen;
+void test_compress(Byte * compr, uLong comprLen,
+		Byte * uncompr, uLong uncomprLen)
 {
     int err;
     uLong len = strlen(hello)+1;
@@ -88,11 +86,8 @@ void test_compress(compr, comprLen, uncompr, uncomprLen)
 /* ===========================================================================
  * Test read/write of .gz files
  */
-void test_gzio(out, in, uncompr, uncomprLen)
-    const char *out; /* compressed output file */
-    const char *in;  /* compressed input file */
-    Byte *uncompr;
-    int  uncomprLen;
+void test_gzio(const char * out, const char * in, Byte * uncompr,
+		int uncomprLen)
 {
     int err;
     int len = strlen(hello)+1;
@@ -165,9 +160,7 @@ void test_gzio(out, in, uncompr, uncomprLen)
 /* ===========================================================================
  * Test deflate() with small buffers
  */
-void test_deflate(compr, comprLen)
-    Byte *compr;
-    uLong comprLen;
+void test_deflate(Byte * compr, uLong comprLen)
 {
     z_stream c_stream; /* compression stream */
     int err;
@@ -203,9 +196,8 @@ void test_deflate(compr, comprLen)
 /* ===========================================================================
  * Test inflate() with small buffers
  */
-void test_inflate(compr, comprLen, uncompr, uncomprLen)
-    Byte *compr, *uncompr;
-    uLong comprLen, uncomprLen;
+void test_inflate(Byte * compr, uLong comprLen,
+		Byte * uncompr, uLong uncomprLen)
 {
     int err;
     z_stream d_stream; /* decompression stream */
@@ -244,9 +236,8 @@ void test_inflate(compr, comprLen, uncompr, uncomprLen)
 /* ===========================================================================
  * Test deflate() with large buffers and dynamic change of compression level
  */
-void test_large_deflate(compr, comprLen, uncompr, uncomprLen)
-    Byte *compr, *uncompr;
-    uLong comprLen, uncomprLen;
+void test_large_deflate(Byte * compr, uLong comprLen,
+		Byte * uncompr, uLong uncomprLen)
 {
     z_stream c_stream; /* compression stream */
     int err;
@@ -299,9 +290,8 @@ void test_large_deflate(compr, comprLen, uncompr, uncomprLen)
 /* ===========================================================================
  * Test inflate() with large buffers
  */
-void test_large_inflate(compr, comprLen, uncompr, uncomprLen)
-    Byte *compr, *uncompr;
-    uLong comprLen, uncomprLen;
+void test_large_inflate(Byte * compr, uLong comprLen,
+		Byte * uncompr, uLong uncomprLen)
 {
     int err;
     z_stream d_stream; /* decompression stream */
@@ -340,9 +330,7 @@ void test_large_inflate(compr, comprLen, uncompr, uncomprLen)
 /* ===========================================================================
  * Test deflate() with full flush
  */
-void test_flush(compr, comprLen)
-    Byte *compr;
-    uLong *comprLen;
+void test_flush(Byte * compr, uLong * comprLen)
 {
     z_stream c_stream; /* compression stream */
     int err;
@@ -378,9 +366,7 @@ void test_flush(compr, comprLen)
 /* ===========================================================================
  * Test inflateSync()
  */
-void test_sync(compr, comprLen, uncompr, uncomprLen)
-    Byte *compr, *uncompr;
-    uLong comprLen, uncomprLen;
+void test_sync(Byte * compr, uLong comprLen, Byte * uncompr, uLong uncomprLen)
 {
     int err;
     z_stream d_stream; /* decompression stream */
@@ -422,9 +408,7 @@ void test_sync(compr, comprLen, uncompr, uncomprLen)
 /* ===========================================================================
  * Test deflate() with preset dictionary
  */
-void test_dict_deflate(compr, comprLen)
-    Byte *compr;
-    uLong comprLen;
+void test_dict_deflate(Byte * compr, uLong comprLen)
 {
     z_stream c_stream; /* compression stream */
     int err;
@@ -459,9 +443,8 @@ void test_dict_deflate(compr, comprLen)
 /* ===========================================================================
  * Test inflate() with a preset dictionary
  */
-void test_dict_inflate(compr, comprLen, uncompr, uncomprLen)
-    Byte *compr, *uncompr;
-    uLong comprLen, uncomprLen;
+void test_dict_inflate(Byte * compr, uLong comprLen,
+		Byte * uncompr, uLong uncomprLen)
 {
     int err;
     z_stream d_stream; /* decompression stream */
@@ -510,9 +493,7 @@ void test_dict_inflate(compr, comprLen, uncompr, uncomprLen)
  * Usage:  example [output.gz  [input.gz]]
  */
 
-int main(argc, argv)
-    int argc;
-    char *argv[];
+int main(int argc, char * argv[])
 {
     Byte *compr, *uncompr;
     uLong comprLen = 10000*sizeof(int); /* don't overflow on MSDOS */

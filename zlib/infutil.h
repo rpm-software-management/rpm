@@ -17,19 +17,17 @@
 #define _INFUTIL_H
 
 typedef enum {
-      TYPE,	/*!< get type bits (3, including end bit) */
-      LENS,	/*!< get lengths for stored */
-      STORED,	/*!< processing stored block */
-      TABLE,	/*!< get table lengths */
-      BTREE,	/*!< get bit lengths tree for a dynamic block */
-      DTREE,	/*!< get length, distance trees for a dynamic block */
-      CODES,	/*!< processing fixed or dynamic block */
-      DRY,	/*!< output remaining window bytes */
-/*@-redef@*/ /* FIX: inflate .c has duplicates */
-      DONE,	/*!< finished last block, done */
-      BAD	/*!< got a data error--stuck here */
-/*@=redef@*/
-} inflate_block_mode;
+      TYPE,     /*!< get type bits (3, including end bit) */
+      LENS,     /*!< get lengths for stored */
+      STORED,   /*!< processing stored block */
+      TABLE,    /*!< get table lengths */
+      BTREE,    /*!< get bit lengths tree for a dynamic block */
+      DTREE,    /*!< get length, distance trees for a dynamic block */
+      CODES,    /*!< processing fixed or dynamic block */
+      DRY,      /*!< output remaining window bytes */
+      DONE,     /*!< finished last block, done */
+      BAD}      /*!< got a data error--stuck here */
+inflate_block_mode;
 
 /* inflate blocks semi-private state */
 struct inflate_blocks_state {
@@ -57,17 +55,11 @@ struct inflate_blocks_state {
   /* mode independent information */
   uInt bitk;            /*!< bits in bit buffer */
   uLong bitb;           /*!< bit buffer */
-/*@only@*/
   inflate_huft *hufts;  /*!< single malloc for tree space */
-/*@owned@*/
   Bytef *window;        /*!< sliding window */
-/*@dependent@*/
   Bytef *end;           /*!< one byte after sliding window */
-/*@dependent@*/
   Bytef *read;          /*!< window read pointer */
-/*@dependent@*/
   Bytef *write;         /*!< window write pointer */
-/*@null@*/
   check_func checkfn;   /*!< check function */
   uLong check;          /*!< check on output */
 
@@ -85,11 +77,6 @@ struct inflate_blocks_state {
 #define LOADIN {p=z->next_in;n=z->avail_in;b=s->bitb;k=s->bitk;}
 #define NEEDBYTE {if(n)r=Z_OK;else LEAVE}
 #define NEXTBYTE (n--,*p++)
-#ifdef __i386__
-#define NEXTSHORT (n-=2, p+=2, (uLong)((unsigned short *)p)[-1])
-#else
-#define NEXTSHORT (n-=2, p+=2, (uLong)p[-2] | ((uLong)p[-1] << 8))
-#endif
 #define NEEDBITS(j) {while(k<(j)){NEEDBYTE;b|=((uLong)NEXTBYTE)<<k;k+=8;}}
 #define DUMPBITS(j) {b>>=(j);k-=(j);}
 /*   output bytes */
@@ -102,18 +89,16 @@ struct inflate_blocks_state {
 /*   load local pointers */
 #define LOAD {LOADIN LOADOUT}
 
-/* masks for lower bits (size given to avoid silly warnings with Visual C++) */
+/** masks for lower bits (size given to avoid silly warnings with Visual C++) */
 /*@unchecked@*/
 extern uInt inflate_mask[17];
 
-/* copy as much as possible from the sliding window to the output area */
-int inflate_flush OF((
-    inflate_blocks_statef *s,
+/** copy as much as possible from the sliding window to the output area */
+extern int inflate_flush OF((
+    inflate_blocks_statef * s,
     z_streamp z,
-    int r))
-#if defined(__i386__)
-      __attribute__((regparm(3)))
-#endif
-	/*@modifies s, z @*/;
+    int r));
+
+struct internal_state      {int dummy;}; /* for buggy compilers */
 
 #endif

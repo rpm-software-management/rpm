@@ -1,4 +1,3 @@
-/* @(#) $Id: deflate.h,v 1.5 2002/02/10 16:50:06 jbj Exp $ */
 /*
  * Copyright (C) 1995-2002 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -47,7 +46,7 @@
 #define INIT_STATE    42
 #define BUSY_STATE   113
 #define FINISH_STATE 666
-/* Stream status */
+/*!< Stream status */
 
 
 /** Data structure describing a single value and its code string. */
@@ -84,13 +83,10 @@ typedef unsigned IPos;
  */
 
 typedef struct internal_state {
-/*@dependent@*/
     z_streamp strm;      /*!< pointer back to this zlib stream */
     int   status;        /*!< as the name implies */
-/*@owned@*/
     Bytef *pending_buf;  /*!< output still pending */
     ulg   pending_buf_size; /*!< size of pending_buf */
-/*@dependent@*/
     Bytef *pending_out;  /*!< next pending byte to output to the stream */
     int   pending;       /*!< nb of bytes in the pending buffer */
     int   noheader;      /*!< suppress zlib header and adler32 */
@@ -104,12 +100,11 @@ typedef struct internal_state {
     uInt  w_bits;        /*!< log2(w_size)  (8..16) */
     uInt  w_mask;        /*!< w_size - 1 */
 
-/*@owned@*/
     Bytef *window;
-    /*!< Sliding window. Input bytes are read into the second half of the
-     * window, and move to the first half later to keep a dictionary of at
-     * least wSize bytes. With this organization, matches are limited to a
-     * distance of wSize-MAX_MATCH bytes, but this ensures that IO is always
+    /*!< Sliding window. Input bytes are read into the second half of the window,
+     * and move to the first half later to keep a dictionary of at least wSize
+     * bytes. With this organization, matches are limited to a distance of
+     * wSize-MAX_MATCH bytes, but this ensures that IO is always
      * performed with a length multiple of the block size. Also, it limits
      * the window size to 64K, which is quite useful on MSDOS.
      * To do: use the user input buffer as sliding window.
@@ -120,14 +115,12 @@ typedef struct internal_state {
      * is directly used as sliding window.
      */
 
-/*@owned@*/
     Posf *prev;
     /*!< Link to older string with same hash index. To limit the size of this
      * array to 64K, this link is maintained only for the last 32K strings.
      * An index in this array is thus a window index modulo 32K.
      */
 
-/*@owned@*/
     Posf *head; /*!< Heads of the hash chains or NIL. */
 
     uInt  ins_h;          /*!< hash index of string to be inserted */
@@ -155,8 +148,8 @@ typedef struct internal_state {
     uInt lookahead;              /*!< number of valid bytes ahead in window */
 
     uInt prev_length;
-    /*!< Length of the best match at previous step. Matches not greater than
-     * this are discarded. This is used in the lazy match evaluation.
+    /*!< Length of the best match at previous step. Matches not greater than this
+     * are discarded. This is used in the lazy match evaluation.
      */
 
     uInt max_chain_length;
@@ -186,11 +179,8 @@ typedef struct internal_state {
 
                 /* used by trees.c: */
     /* Didn't use ct_data typedef below to supress compiler warning */
-/*@only@*/
     struct ct_data_s dyn_ltree[HEAP_SIZE];   /*!< literal and length tree */
-/*@only@*/
     struct ct_data_s dyn_dtree[2*D_CODES+1]; /*!< distance tree */
-/*@only@*/
     struct ct_data_s bl_tree[2*BL_CODES+1];  /*!< Huffman tree for bit lengths */
 
     struct tree_desc_s l_desc;               /*!< desc. for literal tree */
@@ -203,7 +193,7 @@ typedef struct internal_state {
     int heap[2*L_CODES+1];      /*!< heap used to build the Huffman trees */
     int heap_len;               /*!< number of elements in the heap */
     int heap_max;               /*!< element of largest frequency */
-    /* The sons of heap[n] are heap[2*n] and heap[2*n+1]. heap[0] is not used.
+    /*!< The sons of heap[n] are heap[2*n] and heap[2*n+1]. heap[0] is not used.
      * The same heap array is used to build all trees.
      */
 
@@ -211,7 +201,6 @@ typedef struct internal_state {
     /*!< Depth of each subtree used as tie breaker for trees of equal frequency
      */
 
-/*@dependent@*/
     uchf *l_buf;          /*!< buffer for literals or lengths */
 
     uInt  lit_bufsize;
@@ -247,7 +236,7 @@ typedef struct internal_state {
     uInt matches;       /*!< number of string matches in current block */
     int last_eob_len;   /*!< bit length of EOB code for last block */
 
-#if defined(WITH_RSYNC_PAD) || defined(DEBUG)
+#ifdef DEBUG
     ulg compressed_len; /*!< total bit length of compressed file mod 2^32 */
     ulg bits_sent;      /*!< bit length of compressed data sent mod 2^32 */
 #endif
@@ -261,13 +250,6 @@ typedef struct internal_state {
      * are always zero.
      */
 
-#if defined(WITH_RSYNC_PAD)
-    /* rsync params */
-    ulg rsync_chunk_end;
-    ulg rsync_sum;
-    int rsync_win;
-#endif
-
 } FAR deflate_state;
 
 /**
@@ -278,7 +260,7 @@ typedef struct internal_state {
 
 
 #define MIN_LOOKAHEAD (MAX_MATCH+MIN_MATCH+1)
-/*!< Minimum amount of lookahead, except at the end of the input file.
+/* Minimum amount of lookahead, except at the end of the input file.
  * See deflate.c for comments about the MIN_MATCH+1.
  */
 
@@ -293,12 +275,12 @@ void _tr_init         OF((deflate_state *s))
 int  _tr_tally        OF((deflate_state *s, unsigned dist, unsigned lc))
 	/*@modifies *s @*/;
 void _tr_flush_block  OF((deflate_state *s, charf *buf, ulg stored_len,
-			  int pad, int eof))
+			  int eof))
 	/*@modifies *s @*/;
 void _tr_align        OF((deflate_state *s))
 	/*@modifies *s @*/;
-void _tr_stored_block OF((deflate_state *s, /*@null@*/ charf *buf,
-			  ulg stored_len, int eof))
+void _tr_stored_block OF((deflate_state *s, charf *buf, ulg stored_len,
+                          int eof))
 	/*@modifies *s @*/;
 
 #define d_code(dist) \

@@ -1,4 +1,3 @@
-/* @(#) $Id: deflate.c,v 1.5 2002/02/10 16:50:06 jbj Exp $ */
 /*
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -8,6 +7,7 @@
  * \file deflate.c
  * Compress data using the deflation algorithm.
  */
+
 /*
  *  ALGORITHM
  *
@@ -51,7 +51,6 @@
  *         Data Compression with Finite Windows, Comm.ACM, 32,4 (1989) 490-595
  *
  */
-
 
 #include "deflate.h"
 
@@ -103,10 +102,10 @@ local int read_buf        OF((z_streamp strm, Bytef *buf, unsigned size))
       void match_init OF((void))	/* asm code initialization */
 	/*@*/;
       uInt longest_match  OF((deflate_state *s, IPos cur_match))
-	/*@modifies s @*/;
+	/*@modifies *s @*/;
 #else
 local uInt longest_match  OF((deflate_state *s, IPos cur_match))
-	/*@modifies s @*/;
+	/*@modifies *s @*/;
 #endif
 
 #ifdef DEBUG
@@ -134,20 +133,6 @@ local  void check_match OF((deflate_state *s, IPos start, IPos match,
 /* Minimum amount of lookahead, except at the end of the input file.
  * See deflate.c for comments about the MIN_MATCH+1.
  */
-
-#if defined(WITH_RSYNC_PAD)
-/*@unchecked@*/
-local int rsync = 0;
-/* Perform rsync padding? */
-
-#ifndef	RSYNC_WIN
-#   define RSYNC_WIN 4096
-#endif
-/* Size of rsync window, must be < MAX_DIST */
-
-#define	RSYNC_SUM_MATCH(s)	(((s)->rsync_sum % (s)->rsync_win) == 0)
-/* Whether window sum matches magic value */
-#endif
 
 /**
  * Values for max_lazy_match, good_match and max_chain_length, depending on
@@ -185,6 +170,8 @@ local const config configuration_table[10] = {
 
 #define EQUAL 0
 /* result of memcmp for equal strings */
+
+struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
 
 /* ========================================================================= */
 /**
@@ -229,7 +216,8 @@ local const config configuration_table[10] = {
     zmemzero((Bytef *)s->head, (unsigned)(s->hash_size-1)*sizeof(*s->head));
 
 /* ========================================================================= */
-int ZEXPORT deflateInit_(z_streamp strm, int level, const char *version, int stream_size)
+int ZEXPORT deflateInit_(z_streamp strm, int level, const char * version,
+		int stream_size)
 {
     return deflateInit2_(strm, level, Z_DEFLATED, MAX_WBITS, DEF_MEM_LEVEL,
 			 Z_DEFAULT_STRATEGY, version, stream_size);
@@ -237,8 +225,9 @@ int ZEXPORT deflateInit_(z_streamp strm, int level, const char *version, int str
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateInit2_(z_streamp strm, int level, int method, int windowBits, int memLevel, int strategy,
-		  const char *version, int stream_size)
+int ZEXPORT deflateInit2_(z_streamp strm, int level, int method,
+		int windowBits, int memLevel, int strategy,
+		const char * version, int stream_size)
 {
     deflate_state *s;
     int noheader = 0;
@@ -304,9 +293,7 @@ int ZEXPORT deflateInit2_(z_streamp strm, int level, int method, int windowBits,
 
     if (s->window == Z_NULL || s->prev == Z_NULL || s->head == Z_NULL ||
         s->pending_buf == Z_NULL) {
-/*@-assignexpose@*/
         strm->msg = (char*)ERR_MSG(Z_MEM_ERROR);
-/*@=assignexpose@*/
         deflateEnd (strm);
         return Z_MEM_ERROR;
     }
@@ -321,7 +308,8 @@ int ZEXPORT deflateInit2_(z_streamp strm, int level, int method, int windowBits,
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateSetDictionary (z_streamp strm, const Bytef *dictionary, uInt dictLength)
+int ZEXPORT deflateSetDictionary (z_streamp strm, const Bytef * dictionary,
+		uInt dictLength)
 {
     deflate_state *s;
     uInt length = dictLength;
@@ -341,9 +329,7 @@ int ZEXPORT deflateSetDictionary (z_streamp strm, const Bytef *dictionary, uInt 
 	dictionary += dictLength - length; /* use the tail of the dictionary */
 #endif
     }
-/*@-mayaliasunique@*/ /* FIX: dictionary may alias s->window */
     zmemcpy(s->window, dictionary, length);
-/*@=mayaliasunique@*/
     s->strstart = length;
     s->block_start = (long)length;
 
@@ -390,7 +376,6 @@ int ZEXPORT deflateReset (z_streamp strm)
 }
 
 /* ========================================================================= */
-/*@-compmempass@*/
 int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
 {
     deflate_state *s;
@@ -422,7 +407,6 @@ int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
     s->strategy = strategy;
     return err;
 }
-/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
@@ -430,7 +414,7 @@ int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
  * IN assertion: the stream state is correct and there is enough room in
  * pending_buf.
  */
-local void putShortMSB (deflate_state *s, uInt b)
+local void putShortMSB (deflate_state * s, uInt b)
 {
     put_byte(s, (Byte)(b >> 8));
     put_byte(s, (Byte)(b & 0xff));
@@ -462,7 +446,6 @@ local void flush_pending(z_streamp strm)
 }
 
 /* ========================================================================= */
-/*@-compmempass@*/
 int ZEXPORT deflate (z_streamp strm, int flush)
 {
     int old_flush; /* value of flush param for previous deflate call */
@@ -477,15 +460,9 @@ int ZEXPORT deflate (z_streamp strm, int flush)
     if (strm->next_out == Z_NULL ||
         (strm->next_in == Z_NULL && strm->avail_in != 0) ||
 	(s->status == FINISH_STATE && flush != Z_FINISH)) {
-/*@-assignexpose@*/
         ERR_RETURN(strm, Z_STREAM_ERROR);
-/*@=assignexpose@*/
     }
-/*@-mods@*/
-/*@-assignexpose@*/
     if (strm->avail_out == 0) ERR_RETURN(strm, Z_BUF_ERROR);
-/*@=assignexpose@*/
-/*@=mods@*/
 
     s->strm = strm; /* just in case */
     old_flush = s->last_flush;
@@ -533,20 +510,12 @@ int ZEXPORT deflate (z_streamp strm, int flush)
      */
     } else if (strm->avail_in == 0 && flush <= old_flush &&
 	       flush != Z_FINISH) {
-/*@-mods@*/
-/*@-assignexpose@*/
         ERR_RETURN(strm, Z_BUF_ERROR);
-/*@=assignexpose@*/
-/*@=mods@*/
     }
 
     /* User must not provide more input after the first FINISH: */
     if (s->status == FINISH_STATE && strm->avail_in != 0) {
-/*@-mods@*/
-/*@-assignexpose@*/
         ERR_RETURN(strm, Z_BUF_ERROR);
-/*@=assignexpose@*/
-/*@=mods@*/
     }
 
     /* Start a new block or continue the current one.
@@ -607,7 +576,6 @@ int ZEXPORT deflate (z_streamp strm, int flush)
     s->noheader = -1; /* write the trailer only once! */
     return s->pending != 0 ? Z_OK : Z_STREAM_END;
 }
-/*@=compmempass@*/
 
 /* ========================================================================= */
 int ZEXPORT deflateEnd (z_streamp strm)
@@ -640,7 +608,6 @@ int ZEXPORT deflateEnd (z_streamp strm)
  * To simplify the source, this is not supported for 16-bit MSDOS (which
  * doesn't have enough memory anyway to duplicate compression states).
  */
-/*@-compmempass@*/
 int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
 {
 #ifdef MAXSEG_64K
@@ -657,18 +624,12 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
 
     ss = source->state;
 
-/*@-assignexpose@*/
     *dest = *source;	/* structure assignment */
-/*@=assignexpose@*/
 
     ds = (deflate_state *) ZALLOC(dest, 1, sizeof(deflate_state));
-/*@-usereleased -compdef@*/ /* FIX: structure copy above? @*/
     if (ds == Z_NULL) return Z_MEM_ERROR;
-/*@=usereleased =compdef@*/
     dest->state = (struct internal_state FAR *) ds;
-/*@-usereleased -compdef@*/ /* FIX: structure copy above? @*/
-    *ds = *ss;		/* structure assignment */
-/*@=usereleased =compdef@*/
+    *ds = *ss;
     ds->strm = dest;
 
     ds->window = (Bytef *) ZALLOC(dest, ds->w_size, 2*sizeof(Byte));
@@ -680,9 +641,7 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
     if (ds->window == Z_NULL || ds->prev == Z_NULL || ds->head == Z_NULL ||
         ds->pending_buf == Z_NULL) {
         deflateEnd (dest);
-/*@-usereleased -compdef@*/ /* FIX: structure copy above? @*/
         return Z_MEM_ERROR;
-/*@=usereleased =compdef@*/
     }
     /* following zmemcpy do not work for 16-bit MSDOS */
     zmemcpy(ds->window, ss->window, ds->w_size * 2 * sizeof(Byte));
@@ -698,12 +657,9 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
     ds->d_desc.dyn_tree = ds->dyn_dtree;
     ds->bl_desc.dyn_tree = ds->bl_tree;
 
-/*@-usereleased -compdef@*/ /* FIX: structure copy above? @*/
     return Z_OK;
-/*@=usereleased =compdef@*/
 #endif
 }
-/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
@@ -713,7 +669,7 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
  * allocating a large strm->next_in buffer and copying from it.
  * (See also flush_pending()).
  */
-local int read_buf(z_streamp strm, Bytef *buf, unsigned size)
+local int read_buf(z_streamp strm, Bytef * buf, unsigned size)
 {
     unsigned len = strm->avail_in;
 
@@ -736,8 +692,7 @@ local int read_buf(z_streamp strm, Bytef *buf, unsigned size)
 /**
  * Initialize the "longest match" routines for a new zlib stream
  */
-/*@-compmempass@*/
-local void lm_init (deflate_state *s)
+local void lm_init (deflate_state * s)
 {
     s->window_size = (ulg)2L*s->w_size;
 
@@ -759,15 +714,7 @@ local void lm_init (deflate_state *s)
 #ifdef ASMV
     match_init(); /* initialize the asm code */
 #endif
-
-#if defined(WITH_RSYNC_PAD)
-    /* rsync params */
-    s->rsync_chunk_end = 0xFFFFFFFFUL;
-    s->rsync_sum = 0;
-    s->rsync_win = RSYNC_WIN;
-#endif
 }
-/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
@@ -784,7 +731,7 @@ local void lm_init (deflate_state *s)
  * match.S. The code will be functionally equivalent.
  */
 #ifndef FASTEST
-local uInt longest_match(deflate_state *s, IPos cur_match)
+local uInt longest_match(deflate_state * s, IPos cur_match)
 {
     unsigned chain_length = s->max_chain_length;/* max hash chain length */
     register Bytef *scan = s->window + s->strstart; /* current string */
@@ -924,7 +871,7 @@ local uInt longest_match(deflate_state *s, IPos cur_match)
 /* ---------------------------------------------------------------------------
  * Optimized version for level == 1 only
  */
-local uInt longest_match(deflate_state *s, IPos cur_match)
+local uInt longest_match(deflate_state * s, IPos cur_match)
 {
     register Bytef *scan = s->window + s->strstart; /* current string */
     register Bytef *match;                       /* matched string */
@@ -982,7 +929,7 @@ local uInt longest_match(deflate_state *s, IPos cur_match)
 /**
  * Check that the match at match_start is indeed a match.
  */
-local void check_match(deflate_state *s, IPos start, IPos match, int length)
+local void check_match(deflate_state * s, IPos start, IPos match, int length)
 {
     /* check that the match is indeed a match */
     if (zmemcmp(s->window + match,
@@ -1014,7 +961,7 @@ local void check_match(deflate_state *s, IPos start, IPos match, int length)
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-local void fill_window(deflate_state *s)
+local void fill_window(deflate_state * s)
 {
     register unsigned n, m;
     register Posf *p;
@@ -1039,17 +986,10 @@ local void fill_window(deflate_state *s)
          */
         } else if (s->strstart >= wsize+MAX_DIST(s)) {
 
-/*@-aliasunique@*/
             zmemcpy(s->window, s->window+wsize, (unsigned)wsize);
-/*@=aliasunique@*/
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (long) wsize;
-
-#if defined(WITH_RSYNC_PAD)
-	    if (s->rsync_chunk_end != 0xFFFFFFFFUL)
-		s->rsync_chunk_end -= wsize;
-#endif
 
             /* Slide the hash table (could be avoided with 32 bit values
                at the expense of memory usage). We slide even when level == 0
@@ -1110,44 +1050,6 @@ local void fill_window(deflate_state *s)
     } while (s->lookahead < MIN_LOOKAHEAD && s->strm->avail_in != 0);
 }
 
-#if defined(WITH_RSYNC_PAD)
-local void rsync_roll(deflate_state *s, unsigned num)
-	/*@modifies *s @*/
-{
-    unsigned start = s->strstart;
-    unsigned i;
-
-    if (start < s->rsync_win) {
-	/* before window fills. */
-	for (i = start; i < s->rsync_win; i++) {
-	    if (i == start + num) return;
-	    s->rsync_sum += (ulg)s->window[i];
-	}
-	num -= (s->rsync_win - start);
-	start = s->rsync_win;
-    }
-
-    /* buffer after window full */
-    for (i = start; i < start+num; i++) {
-	/* New character in */
-	s->rsync_sum += (ulg)s->window[i];
-	/* Old character out */
-	s->rsync_sum -= (ulg)s->window[i - s->rsync_win];
-	if (s->rsync_chunk_end == 0xFFFFFFFFUL && RSYNC_SUM_MATCH(s))
-	    s->rsync_chunk_end = i;
-    }
-}
-
-/* ========================================================================= */
-/**
- * Set rsync_chunk_end if window sum matches magic value.
- */
-#define RSYNC_ROLL(s, num) \
-   do { if (rsync) rsync_roll((s), (num)); } while(0)
-#else	/* WITH_RSYNC_PAD */
-#define RSYNC_ROLL(s, num)
-#endif	/* WITH_RSYNC_PAD */
-
 /* ========================================================================= */
 /**
  * Flush the current block, with given end-of-file flag.
@@ -1158,7 +1060,6 @@ local void rsync_roll(deflate_state *s, unsigned num)
                    (charf *)&s->window[(unsigned)s->block_start] : \
                    (charf *)Z_NULL), \
 		(ulg)((long)s->strstart - s->block_start), \
-		bflush-1, \
 		(eof)); \
    s->block_start = s->strstart; \
    flush_pending(s->strm); \
@@ -1181,18 +1082,13 @@ local void rsync_roll(deflate_state *s, unsigned num)
  * NOTE: this function should be optimized to avoid extra copying from
  * window to pending_buf.
  */
-local block_state deflate_stored(deflate_state *s, int flush)
+local block_state deflate_stored(deflate_state * s, int flush)
 {
     /* Stored blocks are limited to 0xffff bytes, pending_buf is limited
      * to pending_buf_size, and each stored block has a 5 byte header:
      */
     ulg max_block_size = 0xffff;
     ulg max_start;
-#if defined(WITH_RSYNC_PAD)
-    int bflush = (rsync ? 2 : 1);
-#else
-    int bflush = 1;
-#endif
 
     if (max_block_size > s->pending_buf_size - 5) {
         max_block_size = s->pending_buf_size - 5;
@@ -1213,7 +1109,6 @@ local block_state deflate_stored(deflate_state *s, int flush)
         }
 	Assert(s->block_start >= 0L, "block gone");
 
-	RSYNC_ROLL(s, s->lookahead);
 	s->strstart += s->lookahead;
 	s->lookahead = 0;
 
@@ -1244,11 +1139,10 @@ local block_state deflate_stored(deflate_state *s, int flush)
  * new strings in the dictionary only for unmatched strings or for short
  * matches. It is used only for the fast compression options.
  */
-/*@-compmempass@*/
-local block_state deflate_fast(deflate_state *s, int flush)
+local block_state deflate_fast(deflate_state * s, int flush)
 {
     IPos hash_head = NIL; /* head of the hash chain */
-    int bflush = 0;	/* set if current block must be flushed */
+    int bflush;           /* set if current block must be flushed */
 
     for (;;) {
         /* Make sure that we always have enough lookahead, except
@@ -1280,7 +1174,7 @@ local block_state deflate_fast(deflate_state *s, int flush)
              * of the string with itself at the start of the input file).
              */
             if (s->strategy != Z_HUFFMAN_ONLY) {
-/*@i@*/		s->match_length = longest_match (s, hash_head);
+                s->match_length = longest_match (s, hash_head);
             }
             /* longest_match() sets match_start */
         }
@@ -1292,7 +1186,6 @@ local block_state deflate_fast(deflate_state *s, int flush)
 
             s->lookahead -= s->match_length;
 
-	    RSYNC_ROLL(s, s->match_length);
             /* Insert new strings in the hash table only if the match length
              * is not too large. This saves time but degrades compression.
              */
@@ -1326,22 +1219,14 @@ local block_state deflate_fast(deflate_state *s, int flush)
             /* No match, output a literal byte */
             Tracevv((stderr,"%c", s->window[s->strstart]));
             _tr_tally_lit (s, s->window[s->strstart], bflush);
-	    RSYNC_ROLL(s, 1);
             s->lookahead--;
             s->strstart++; 
         }
-#if defined(WITH_RSYNC_PAD)
-	if (rsync && s->strstart > s->rsync_chunk_end) {
-	    s->rsync_chunk_end = 0xFFFFFFFFUL;
-	    bflush = 2;
-	}
-#endif
         if (bflush) FLUSH_BLOCK(s, 0);
     }
     FLUSH_BLOCK(s, flush == Z_FINISH);
     return flush == Z_FINISH ? finish_done : block_done;
 }
-/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
@@ -1349,11 +1234,10 @@ local block_state deflate_fast(deflate_state *s, int flush)
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.
  */
-/*@-compmempass@*/
-local block_state deflate_slow(deflate_state *s, int flush)
+local block_state deflate_slow(deflate_state * s, int flush)
 {
     IPos hash_head = NIL;    /* head of hash chain */
-    int bflush = 0;	/* set if current block must be flushed */
+    int bflush;              /* set if current block must be flushed */
 
     /* Process the input block. */
     for (;;) {
@@ -1389,7 +1273,7 @@ local block_state deflate_slow(deflate_state *s, int flush)
              * of the string with itself at the start of the input file).
              */
             if (s->strategy != Z_HUFFMAN_ONLY) {
-/*@i@*/		s->match_length = longest_match (s, hash_head);
+                s->match_length = longest_match (s, hash_head);
             }
             /* longest_match() sets match_start */
 
@@ -1422,7 +1306,6 @@ local block_state deflate_slow(deflate_state *s, int flush)
              */
             s->lookahead -= s->prev_length-1;
             s->prev_length -= 2;
-	    RSYNC_ROLL(s, s->prev_length+1);
             do {
                 if (++s->strstart <= max_insert) {
                     INSERT_STRING(s, s->strstart, hash_head);
@@ -1432,13 +1315,7 @@ local block_state deflate_slow(deflate_state *s, int flush)
             s->match_length = MIN_MATCH-1;
             s->strstart++;
 
-#if defined(WITH_RSYNC_PAD)
-	    if (rsync && s->strstart > s->rsync_chunk_end) {
-		s->rsync_chunk_end = 0xFFFFFFFFUL;
-		bflush = 2;
-	    }
-#endif
-	    if (bflush) FLUSH_BLOCK(s, 0);
+            if (bflush) FLUSH_BLOCK(s, 0);
 
         } else if (s->match_available) {
             /* If there was no match at the previous position, output a
@@ -1447,16 +1324,9 @@ local block_state deflate_slow(deflate_state *s, int flush)
              */
             Tracevv((stderr,"%c", s->window[s->strstart-1]));
 	    _tr_tally_lit(s, s->window[s->strstart-1], bflush);
-#if defined(WITH_RSYNC_PAD)
-	    if (rsync && s->strstart > s->rsync_chunk_end) {
-		s->rsync_chunk_end = 0xFFFFFFFFUL;
-		bflush = 2;
-	    }
-#endif
 	    if (bflush) {
-		FLUSH_BLOCK_ONLY(s, 0);
-	    }
-	    RSYNC_ROLL(s, 1);
+                FLUSH_BLOCK_ONLY(s, 0);
+            }
             s->strstart++;
             s->lookahead--;
             if (s->strm->avail_out == 0) return need_more;
@@ -1464,16 +1334,7 @@ local block_state deflate_slow(deflate_state *s, int flush)
             /* There is no previous match to compare with, wait for
              * the next step to decide.
              */
-#if defined(WITH_RSYNC_PAD)
-	    if (rsync && s->strstart > s->rsync_chunk_end) {
-		/* Reset huffman tree */
-		s->rsync_chunk_end = 0xFFFFFFFFUL;
-		bflush = 2;
-		FLUSH_BLOCK(s, 0);
-	    }
-#endif
             s->match_available = 1;
-	    RSYNC_ROLL(s, 1);
             s->strstart++;
             s->lookahead--;
         }
@@ -1487,4 +1348,3 @@ local block_state deflate_slow(deflate_state *s, int flush)
     FLUSH_BLOCK(s, flush == Z_FINISH);
     return flush == Z_FINISH ? finish_done : block_done;
 }
-/*@=compmempass@*/

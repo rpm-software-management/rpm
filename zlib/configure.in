@@ -1,6 +1,6 @@
 AC_INIT(gzio.c)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(zlib, 1.1.3)
+AM_INIT_AUTOMAKE(zlib, 1.1.4)
 
 dnl Check for programs.
 AC_PROG_CC

@@ -1,23 +1,15 @@
-/*
+/* inflate_util.c -- data and routines common to blocks and codes
  * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/**
- * \file infutil.c
- * Data and routines common to blocks and codes.
- */
-#if 1
 #include "zutil.h"
 #include "infblock.h"
 #include "inftrees.h"
 #include "infcodes.h"
 #include "infutil.h"
-#endif
 
-#include "crc32.h"
-
-/*@access z_streamp@*/
+struct inflate_codes_state {int dummy;}; /* for buggy compilers */
 
 /* And'ing with mask[n] masks the lower n bits */
 uInt inflate_mask[17] = {
@@ -27,10 +19,8 @@ uInt inflate_mask[17] = {
 };
 
 
-/**
- * Copy as much as possible from the sliding window to the output area.
- */
-int inflate_flush(inflate_blocks_statef *s, z_streamp z, int r)
+/* copy as much as possible from the sliding window to the output area */
+int inflate_flush(inflate_blocks_statef * s, z_streamp z, int r)
 {
   uInt n;
   Bytef *p;
@@ -50,25 +40,11 @@ int inflate_flush(inflate_blocks_statef *s, z_streamp z, int r)
   z->total_out += n;
 
   /* update check information */
-/*@-moduncon@*/
-#if defined(__i386__)
-  if (s->checkfn == Z_NULL)
-    z->crc = partial_crc32_copy(z->crc, q, n, p);
-  else if (s->checkfn != Z_NULL) {
-    z->adler = s->check = (*s->checkfn)(s->check, q, n);
-/*@=moduncon@*/
-
-    /* copy as far as end of window */
-    zmemcpy(p, q, n);
-  }
-#else
   if (s->checkfn != Z_NULL)
     z->adler = s->check = (*s->checkfn)(s->check, q, n);
 
   /* copy as far as end of window */
   zmemcpy(p, q, n);
-#endif
-
   p += n;
   q += n;
 
@@ -90,28 +66,11 @@ int inflate_flush(inflate_blocks_statef *s, z_streamp z, int r)
     z->total_out += n;
 
     /* update check information */
-#if defined(__i386__)
-/*@-moduncon@*/
-    if (!s->checkfn)
-	z->crc = partial_crc32_copy(z->crc, q, n, p);
-    else if (s->checkfn != Z_NULL) {
-      z->adler = s->check = (*s->checkfn)(s->check, q, n);
-/*@=moduncon@*/
-      /* copy */
-/*@-aliasunique@*/
-      zmemcpy(p, q, n);
-/*@=aliasunique@*/
-    }
-#else
     if (s->checkfn != Z_NULL)
       z->adler = s->check = (*s->checkfn)(s->check, q, n);
 
     /* copy */
-/*@-aliasunique@*/
     zmemcpy(p, q, n);
-/*@=aliasunique@*/
-#endif
-
     p += n;
     q += n;
   }

@@ -1,17 +1,12 @@
-/* @(#) $Id: zconf.h,v 1.4 2001/12/27 21:00:18 jbj Exp $ */
-/*
+/* zconf.h -- configuration of the zlib compression library
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/**
- * \file zconf.h
- * Configuration of the zlib compression library.
- */
+/* @(#) $Id$ */
 
 #ifndef _ZCONF_H
 #define _ZCONF_H
-/*@-constuse -typeuse@*/
 
 /*
  * If you *really* need a unique prefix for all types and library functions,
@@ -134,9 +129,6 @@
 */
 
                         /* Type declarations */
-#ifdef	__LCLINT__
-#    define OF(args)  args
-#endif
 
 #ifndef OF /* function prototypes */
 #  ifdef STDC
@@ -284,5 +276,4 @@ typedef uLong FAR uLongf;
 #   pragma map(inflate_trees_free,"INTRFR")
 #endif
 
-/*@=constuse =typeuse@*/
 #endif /* _ZCONF_H */

@@ -1,17 +1,14 @@
-/* @(#) $Id: zutil.h,v 1.5 2002/02/10 16:50:06 jbj Exp $ */
-/*
+/* zutil.h -- internal interface and configuration of the compression library
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/**
- * \file zutil.h
- * Internal interface and configuration of the compression library.
- */
 /* WARNING: this file should *not* be used by applications. It is
    part of the implementation of the compression library and is
    subject to change. Applications should only use zlib.h.
  */
+
+/* @(#) $Id$ */
 
 #ifndef _Z_UTIL_H
 #define _Z_UTIL_H
@@ -40,7 +37,6 @@ typedef unsigned short ush;
 typedef ush FAR ushf;
 typedef unsigned long  ulg;
 
-/*@observer@*/ /*@unchecked@*/
 extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
 
@@ -180,11 +176,7 @@ extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define zmemcmp _fmemcmp
 #    define zmemzero(dest, len) _fmemset(dest, 0, len)
 #  else
-#ifdef __i386__
-#define zmemcpy(to,from,n)	quickmemcpy(to, from, n)
-#else
 #    define zmemcpy memcpy
-#endif
 #    define zmemcmp memcmp
 #    define zmemzero(dest, len) memset(dest, 0, len)
 #  endif
@@ -216,49 +208,13 @@ extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 
 
 typedef uLong (ZEXPORT *check_func) OF((uLong check, const Bytef *buf,
-				       uInt len))
-	/*@*/;
-/*@only@*/ /*@null@*/
-voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size))
-	/*@*/;
-void   zcfree  OF((voidpf opaque, /*@only@*/ voidpf ptr))
-	/*@modifies ptr @*/;
+				       uInt len));
+voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size));
+void   zcfree  OF((voidpf opaque, voidpf ptr));
 
 #define ZALLOC(strm, items, size) \
            (*((strm)->zalloc))((strm)->opaque, (items), (size))
 #define ZFREE(strm, addr)  (*((strm)->zfree))((strm)->opaque, (voidpf)(addr))
 #define TRY_FREE(s, p) {if (p) ZFREE(s, p);}
 
-#ifdef __i386__
-/* This function comes from Linus Torvalds' memcpy:
- *              NO Copyright (C) 1991, 1992 Linus Torvalds,
- *              consider these trivial functions to be PD.
- */
-#define quickmemcpy(to, from, n) \
-do { \
-int d0, d1, d2; \
-__asm__ __volatile__( \
-	"cld\n" \
-        "rep ; movsl\n\t" \
-        "testb $2,%b4\n\t" \
-        "je 1f\n\t" \
-        "movsw\n" \
-        "1:\ttestb $1,%b4\n\t" \
-        "je 2f\n\t" \
-        "movsb\n" \
-        "2:" \
-        : "=&c" (d0), "=&D" (d1), "=&S" (d2) \
-        :"0" (n/4), "q" (n),"1" ((long) to),"2" ((long) from) \
-        : "memory"); \
-} while(0)
-#else
-static __inline__ void quickmemcpy(void *_to, const void *_from, long n)
-	/*@*/
-{
-	const char *from = _from;
-	char *to = _to;
-	while (n-- > 0)
-		*to++ = *from++;
-}
-#endif
 #endif /* _Z_UTIL_H */

@@ -1,4 +1,3 @@
-/* @(#) $Id: crc32.c,v 1.6 2002/02/10 16:50:06 jbj Exp $ */
 /*@-globs@*/
 /*
  * Copyright (C) 1995-2002 Mark Adler
@@ -11,8 +10,6 @@
  */
 
 #include "zlib.h"
-
-#include "crc32.h"
 
 #define local static
 
@@ -49,7 +46,7 @@ local void make_crc_table OF((void))
  * The table is simply the CRC of all possible eight bit values.  This is all
  * the information needed to generate CRC's on data a byte at a time for all
  * combinations of CRC register values and incoming bytes.
- */
+*/
 local void make_crc_table(void)
 {
   uLong c;
@@ -76,7 +73,7 @@ local void make_crc_table(void)
 /* ========================================================================
  * Table of CRC-32's of all single-byte values (made by make_crc_table)
  */
-/*local*/ const uLongf crc_table[256] = {
+local const uLongf crc_table[256] = {
   0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
   0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
   0xe0d5e91eL, 0x97d2d988L, 0x09b64c2bL, 0x7eb17cbdL, 0xe7b82d07L,
@@ -143,39 +140,12 @@ const uLongf * ZEXPORT get_crc_table(void)
   return (const uLongf *)crc_table;
 }
 
-#if defined(__i386__)
-
-uLong partial_crc32_copy(uLong crc, const Bytef *buf, uInt len, Bytef *dst)
-{
-/*@-sysunrecog@*/
-	return __partial_crc32(crc, buf, len, 1, dst);
-/*@=sysunrecog@*/
-}
-
-extern uLong partial_crc32(uLong crc, const Bytef *buf, uInt len)
-{
-/*@-sysunrecog@*/
-	return __partial_crc32(crc, buf, len, 0, 0);
-/*@=sysunrecog@*/
-}
-
-uLong ZEXPORT crc32(uLong crc, const Bytef *buf, uInt len)
-{
-	if (buf != Z_NULL)
-/*@-sysunrecog@*/
-		return __partial_crc32(crc ^ 0xffffffffL, buf, len, 0, 0) ^ 0xffffffffL;
-/*@=sysunrecog@*/
-	return 0L;
-}
-
-#else	/* !__i386__ */
-
 /* ========================================================================= */
 #define DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
 #define DO2(buf)  DO1(buf); DO1(buf);
 #define DO4(buf)  DO2(buf); DO2(buf);
 #define DO8(buf)  DO4(buf); DO4(buf);
- 
+
 /* ========================================================================= */
 uLong ZEXPORT crc32(uLong crc, const Bytef * buf, uInt len)
 {
@@ -194,7 +164,5 @@ uLong ZEXPORT crc32(uLong crc, const Bytef * buf, uInt len)
       DO1(buf);
     } while (--len);
     return crc ^ 0xffffffffL;
- }
-
-#endif	/* !__i386__ */
+}
 /*@=globs@*/

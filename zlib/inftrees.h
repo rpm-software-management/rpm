@@ -7,6 +7,7 @@
  * \file inftrees.h
  * Header to use inftrees.c.
  */
+
 /* WARNING: this file should *not* be used by applications. It is
    part of the implementation of the compression library and is
    subject to change. Applications should only use zlib.h.
@@ -24,7 +25,7 @@ struct inflate_huft_s {
       Byte Bits;        /*!< number of bits in this code or subcode */
     } what;
     uInt pad;           /*!< pad structure to a power of 2 (4 bytes for */
-  } word;               /*!< 16-bit, 8 bytes for 32-bit int's) */
+  } word;               /*!<  16-bit, 8 bytes for 32-bit int's) */
   uInt base;            /*!< literal, length base, distance base,
                            or table offset */
 };
@@ -39,35 +40,26 @@ struct inflate_huft_s {
 #define MANY 1440
 
 extern int inflate_trees_bits OF((
-    uIntf *c,			/* 19 code lengths */
-    uIntf *bb,			/* bits tree desired/actual depth */
-    inflate_huft * FAR *tb,	/* bits tree result */
-    inflate_huft *hp,		/* space for trees */
-    z_streamp z))		/* for messages */
-	/*@modifies *bb, *tb, *hp, z @*/;
+    uIntf * c,                  /* 19 code lengths */
+    uIntf * bb,                 /* bits tree desired/actual depth */
+    inflate_huft * FAR * tb,    /* bits tree result */
+    inflate_huft * hp,          /* space for trees */
+    z_streamp z));              /* for messages */
 
 extern int inflate_trees_dynamic OF((
-    uInt nl,			/* number of literal/length codes */
-    uInt nd,			/* number of distance codes */
-    uIntf *c,			/* that many (total) code lengths */
-    uIntf *bl,			/* literal desired/actual bit depth */
-    uIntf *bd,			/* distance desired/actual bit depth */
-/*@out@*/
-    inflate_huft * FAR *tl,	/* literal/length tree result */
-/*@out@*/
-    inflate_huft * FAR *td,	/* distance tree result */
-    inflate_huft *hp,		/* space for trees */
-    z_streamp z))		/* for messages */
-	/*@modifies *bl, *bd, *tl, *td, *hp, z @*/;
+    uInt nl,                    /* number of literal/length codes */
+    uInt nd,                    /* number of distance codes */
+    uIntf * c,                  /* that many (total) code lengths */
+    uIntf * bl,                 /* literal desired/actual bit depth */
+    uIntf * bd,                 /* distance desired/actual bit depth */
+    inflate_huft * FAR * tl,    /* literal/length tree result */
+    inflate_huft * FAR * td,    /* distance tree result */
+    inflate_huft * hp,          /* space for trees */
+    z_streamp z));              /* for messages */
 
 extern int inflate_trees_fixed OF((
-/*@out@*/
-    uIntf *bl,			/* literal desired/actual bit depth */
-/*@out@*/
-    uIntf *bd,			/* distance desired/actual bit depth */
-/*@out@*/
-    inflate_huft * FAR *tl,	/* literal/length tree result */
-/*@out@*/
-    inflate_huft * FAR *td,	/* distance tree result */
-    z_streamp z))		/* for memory allocation */
-	/*@modifies *bl, *bd, *tl, *td, z @*/;
+    uIntf * bl,                 /* literal desired/actual bit depth */
+    uIntf * bd,                 /* distance desired/actual bit depth */
+    inflate_huft * FAR * tl,    /* literal/length tree result */
+    inflate_huft * FAR * td,    /* distance tree result */
+    z_streamp z));              /* for memory allocation */
