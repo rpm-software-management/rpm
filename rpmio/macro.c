@@ -1494,9 +1494,12 @@ char *rpmCleanPath(char * path)
 	    if (t == path && s[1] == '\0') {
 		break;
 	    }
-	    /* Trim leading ./ , embedded ./ , trailing /. */
-	    if ((t == path || t[-1] == '/') && (s[1] == '/' || s[1] == '\0')) {
-/*fprintf(stderr, "*** Trim leading ./ , embedded ./ , trailing /.\n"); */
+#if 0	/* Trim leading ./ , embedded ./ , trailing /. */
+	    if ((t == path || t[-1] == '/') && (s[1] == '/' || s[1] == '\0'))
+#else	/* Trim embedded ./ , trailing /. */
+	    if ((t[-1] == '/' && s[1] == '\0') || (t != path && s[1] == '/'))
+#endif
+	    {
 		s++;
 		continue;
 	    }
