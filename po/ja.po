@@ -1,0 +1,3646 @@
+# rpm message catalog
+# Kanda Mitsru <kanda@nn.iij4u.or.jp>
+# rpm message catalog
+# Kanda Mitsru <kanda@nn.iij4u.or.jp>
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: rpm-3.0.4\n"
+"POT-Creation-Date: 1999-12-23 12:49-0500\n"
+"PO-Revision-Date: 1999-12-01 22:49 +JST\n"
+"Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
+"Language-Team: JRPM <jrpm@linux.or.jp>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=EUC-JP\n"
+"Content-Transfer-Encoding: EUC-JP\n"
+
+#: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
+#, fuzzy, c-format
+msgid "cannot open %s/packages.rpm\n"
+msgstr "%s/packages.rpm ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó\n"
+
+#: build.c:35
+#, fuzzy
+msgid "failed build dependencies:\n"
+msgstr "°ÍÂ¸À­¤Î·çÇ¡:\n"
+
+#: build.c:64
+#, fuzzy, c-format
+msgid "Unable to open spec file %s: %s\n"
+msgstr "spec ¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó: %s\n"
+
+#: build.c:125 build.c:138
+#, c-format
+msgid "Failed to open tar pipe: %s\n"
+msgstr "tar ¥Ñ¥¤¥×¤Î¥ª¡¼¥×¥ó¤Ë¼ºÇÔ: %s\n"
+
+#. Give up
+#: build.c:146
+#, c-format
+msgid "Failed to read spec file from %s\n"
+msgstr "%s ¤«¤é spec ¥Õ¥¡¥¤¥ë¤ÎÆÉ¤ß¹þ¤ß¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: build.c:174
+#, c-format
+msgid "Failed to rename %s to %s: %s\n"
+msgstr "%s ¤ò %s ¤Ë¤¹¤ëÌ¾Á°¤ÎÊÑ¹¹¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s\n"
+
+#: build.c:212
+#, c-format
+msgid "File is not a regular file: %s\n"
+msgstr "ÉáÄÌ¤Î¥Õ¥¡¥¤¥ë¤Ç¤Ï¤¢¤ê¤Þ¤»¤ó: %s\n"
+
+#: build.c:219
+#, fuzzy, c-format
+msgid "File %s does not appear to be a specfile.\n"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤Ï ¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ë¤Ç¤Ï¤Ê¤¤¤è¤¦¤Ç¤¹¡£\n"
+
+#. parse up the build operators
+#: build.c:279
+#, c-format
+msgid "Building target platforms: %s\n"
+msgstr "ºîÀ®Ãæ¥¿¡¼¥²¥Ã¥È¥×¥é¥Ã¥È¥Õ¥©¡¼¥à: %s\n"
+
+#: build.c:294
+#, fuzzy, c-format
+msgid "Building for target %s\n"
+msgstr "¥¿¡¼¥²¥Ã¥È %s ÍÑ¤ËºîÀ®Ãæ\n"
+
+#: build.c:344
+msgid "buildroot already specified"
+msgstr "¥Ó¥ë¥É¥ë¡¼¥È¤Ï¤¹¤Ç¤Ë»ØÄê¤µ¤ì¤Æ¤¤¤Þ¤¹"
+
+#: build.c:351
+msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
+msgstr ""
+"--buildarch ¤Ïµì¼°¤Ë¤Ê¤ê¤Þ¤·¤¿¡£Âå¤ê¤Ë --target "
+"¥ª¥×¥·¥ç¥ó¤ò»ÈÍÑ¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
+
+#: build.c:355
+msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
+msgstr ""
+"--buildos ¤Ïµì¼°¤Ë¤Ê¤ê¤Þ¤·¤¿¡£ Âå¤ê¤Ë --target "
+"¥ª¥×¥·¥ç¥ó¤ò»ÈÍÑ¤·¤Æ¤¯¤À¤µ¤¤¡£\n"
+
+#: build.c:376
+#, fuzzy
+msgid "override build architecture"
+msgstr "ºîÀ®ÂÐ¾Ý¥¢¡¼¥­¥Æ¥¯¥Á¥ã¤ò¾å½ñ¤­¤·¤Þ¤¹"
+
+#: build.c:378
+#, fuzzy
+msgid "override build operating system"
+msgstr "ºîÀ®ÂÐ¾ÝOS¤ò¾å½ñ¤­¤·¤Þ¤¹"
+
+#: build.c:380
+#, fuzzy
+msgid "override build root"
+msgstr "¥Ó¥ë¥É¥ë¡¼¥È¤ò¾å½ñ¤­¤·¤Þ¤¹"
+
+#: build.c:382 rpm.c:495
+msgid "remove build tree when done"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¥ó¥°¸åºîÀ®¥Ä¥ê¡¼¤òºï½ü¤·¤Þ¤¹"
+
+#: build.c:384
+#, fuzzy
+msgid "do not execute any stages of the build"
+msgstr "ºîÀ®¤¹¤ë¤¿¤á¤Î¤É¤ÎÃÊ³¬¤â¼Â¹Ô¤·¤Þ¤»¤ó"
+
+#: build.c:386
+msgid "do not accept I18N msgstr's from specfile"
+msgstr "¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ë¤«¤é I18N ¤Ê msgstr ¤ò¼õ¤±Æþ¤ì¤Þ¤»¤ó"
+
+#: build.c:388
+#, fuzzy
+msgid "remove sources when done"
+msgstr "½ªÎ»¸å¥½¡¼¥¹¤òºï½ü¤·¤Þ¤¹"
+
+#: build.c:390
+#, fuzzy
+msgid "remove specfile when done"
+msgstr "½ªÎ»¸å¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ë¤òºï½ü¤·¤Þ¤¹"
+
+#: build.c:392 rpm.c:493
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "»ØÄê¤·¤¿²áÄø¤Þ¤Ç¥¹¥­¥Ã¥×¤·¤Þ¤¹ (c¡¢i ¤Ç¤Î¤ßÍ­¸ú)"
+
+#: build.c:394
+msgid "override target platform"
+msgstr "¥¿¡¼¥²¥Ã¥È¥×¥é¥Ã¥È¥Õ¥©¡¼¥à¤ò¾å½ñ¤­¤·¤Þ¤¹"
+
+#: build.c:396
+msgid "lookup I18N strings in specfile catalog"
+msgstr "¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ë¥«¥¿¥í¥°Ãæ¤Î I18N Ê¸»úÎó¤òÃµ¤·¤Æ¤¤¤Þ¤¹"
+
+#: convertdb.c:39
+#, fuzzy
+msgid "RPM database already exists"
+msgstr "RPM ¥Ç¡¼¥¿¥Ù¡¼¥¹¤Ï¤¹¤Ç¤ËÂ¸ºß¤·¤Æ¤¤¤Þ¤¹"
+
+#: convertdb.c:44
+msgid "Old db is missing"
+msgstr "¸Å¤¤ db ¤¬¸«Åö¤¿¤ê¤Þ¤»¤ó"
+
+#: convertdb.c:55
+msgid "failed to create RPM database /var/lib/rpm"
+msgstr "/var/lib/rpm ¤Ë RPM ¥Ç¡¼¥¿¥Ù¡¼¥¹¤òºîÀ®¤¹¤ë¤Î¤Ë¼ºÇÔ¤·¤Þ¤·¤¿"
+
+#: convertdb.c:61
+msgid "Old db is corrupt"
+msgstr "¸Å¤¤ db ¤¬²õ¤ì¤Æ¤¤¤Þ¤¹"
+
+#: convertdb.c:70
+#, c-format
+msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+msgstr "oldrpmdbGetPackageInfo ¤Î¼ºÇÔ &olddb = %p olddb.packages = %p\n"
+
+#: convertdb.c:204
+msgid "rpmconvert: no arguments expected"
+msgstr "rpmconvert: °ú¿ô¤Ï¤³¤³¤ËÍè¤Þ¤»¤ó"
+
+#: convertdb.c:210
+msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+msgstr "rpmconvert 1.0 - /var/lib/rpm Ãæ¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹¤ÎÊÑ´¹Ãæ\n"
+
+#: oldrpmdb.c:454
+#, fuzzy, c-format
+msgid "pulling %s from database\n"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¤«¤é %s ¤ò°ú¤­½Ð¤·¤Æ¤¤¤Þ¤¹\n"
+
+#: oldrpmdb.c:461
+#, fuzzy
+msgid "package not found in database"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ï¥Ç¡¼¥¿¥Ù¡¼¥¹Ãæ¤Ë¸«¤Ä¤«¤ê¤Þ¤»¤ó"
+
+#: oldrpmdb.c:522
+msgid "no copyright!\n"
+msgstr "copyright ¤¬¤¢¤ê¤Þ¤»¤ó!\n"
+
+# rpm-2.5.5
+# Ìõ¸ìÂÐ±þ
+# query[Ìä¤¤¹ç¤ï¤»]
+# retrieve[¼èÆÀ]
+# dependency[°ÍÂ¸À­]
+# trigger[¥È¥ê¥¬¡¼]
+# verbose[¾éÄ¹]
+# capabitiy[µ¡Ç½]
+# check[¸¡ºº]
+# verify[¸¡¾Ú]
+# exclusive[ÁêÈ¿]
+# shared[¶¦Í­]
+# build[ºîÀ®]
+# rebuild[ºÆºîÀ®]
+# build root [BuildRoot]
+# net share [¥Í¥Ã¥È¶¦Í­]
+# reloate [ºÆÇÛÃÖ/°ÜÆ°¤¹¤ë]
+# $Id: ja.po,v 1.1 1999/12/30 18:29:50 jbj Exp $
+#: rpm.c:197
+#, c-format
+msgid "rpm: %s\n"
+msgstr ""
+
+#: rpm.c:208
+#, c-format
+msgid "RPM version %s\n"
+msgstr "RPM ¥Ð¡¼¥¸¥ç¥ó %s\n"
+
+#: rpm.c:212
+msgid "Copyright (C) 1998 - Red Hat Software"
+msgstr ""
+"Ãøºî¸¢ (C) 1998 - Red Hat Software\n"
+"ËÝÌõ¼Ô ¿ÀÅÄ ½¼ <kanda@nn.iij4u.or.jp>\n"
+"¸íÌõÅù¤Ï¿ÀÅÄ¤Þ¤Ç"
+
+#: rpm.c:213
+#, fuzzy
+msgid "This may be freely redistributed under the terms of the GNU GPL"
+msgstr "GNU°ìÈÌ¸øÍ­»ÈÍÑµöÂú½ñ¤Î²¼¤Ç¼«Í³¤ËÇÛÉÛ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:221
+msgid "usage: rpm {--help}"
+msgstr "»ÈÍÑË¡: rpm {--help}"
+
+#: rpm.c:222
+msgid "       rpm {--version}"
+msgstr ""
+
+#: rpm.c:223
+msgid "       rpm {--initdb}   [--dbpath <dir>]"
+msgstr ""
+
+#: rpm.c:224
+msgid ""
+"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgstr ""
+
+#: rpm.c:225
+msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
+msgstr ""
+
+#: rpm.c:226
+msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
+msgstr ""
+
+#: rpm.c:227
+msgid ""
+"                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
+msgstr ""
+
+#: rpm.c:228
+msgid ""
+"                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
+msgstr ""
+
+#: rpm.c:229
+msgid ""
+"                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
+msgstr ""
+
+#: rpm.c:230 rpm.c:239 rpm.c:248
+msgid "                        [--httpproxy <host>] [--httpport <port>] "
+msgstr ""
+
+#: rpm.c:231 rpm.c:241
+msgid "                        [--noorder] [--relocate oldpath=newpath]"
+msgstr ""
+
+#: rpm.c:232
+msgid ""
+"                        [--badreloc] [--notriggers] [--excludepath <path>]"
+msgstr ""
+
+#: rpm.c:233
+msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
+msgstr ""
+
+#: rpm.c:234
+msgid ""
+"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgstr ""
+
+#: rpm.c:235
+msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
+msgstr ""
+
+#: rpm.c:236
+msgid ""
+"                        [--excludedocs] [--includedocs] [--rcfile <file>]"
+msgstr ""
+
+#: rpm.c:237
+msgid ""
+"                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
+msgstr ""
+
+#: rpm.c:238
+msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
+msgstr ""
+
+#: rpm.c:240
+msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
+msgstr ""
+
+#: rpm.c:242
+msgid ""
+"                        [--badreloc] [--excludepath <path>] [--ignoresize]"
+msgstr ""
+
+#: rpm.c:243
+msgid "                        file1.rpm ... fileN.rpm"
+msgstr ""
+
+#: rpm.c:244
+msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+msgstr ""
+
+#: rpm.c:245
+msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
+msgstr ""
+
+#: rpm.c:246
+msgid "                        [--whatprovides] [--whatrequires] [--requires]"
+msgstr ""
+
+#: rpm.c:247
+msgid ""
+"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+msgstr ""
+
+#: rpm.c:249
+msgid ""
+"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
+msgstr ""
+
+#: rpm.c:250
+msgid "                        [--changelog] [--dbpath <dir>] [targets]"
+msgstr ""
+
+#: rpm.c:251
+msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
+msgstr ""
+
+#: rpm.c:252
+msgid ""
+"                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
+msgstr ""
+
+#: rpm.c:253
+msgid "                        [--nomd5] [targets]"
+msgstr ""
+
+#: rpm.c:254
+msgid "       rpm {--setperms} [-afpg] [target]"
+msgstr ""
+
+#: rpm.c:255
+msgid "       rpm {--setugids} [-afpg] [target]"
+msgstr ""
+
+#: rpm.c:256
+msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
+msgstr ""
+
+#: rpm.c:257
+msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
+msgstr ""
+
+#: rpm.c:258
+msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
+msgstr ""
+
+#: rpm.c:259
+msgid ""
+"                        [--justdb] [--notriggers] rpackage1 ... packageN"
+msgstr ""
+
+#: rpm.c:260
+msgid ""
+"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
+msgstr ""
+
+#: rpm.c:261
+msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
+msgstr ""
+
+#: rpm.c:262
+msgid "                        [--target=platform1[,platform2...]]"
+msgstr ""
+
+#: rpm.c:263
+msgid "                        [--rmsource] [--rmspec] specfile"
+msgstr ""
+
+#: rpm.c:264
+msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
+msgstr ""
+
+#: rpm.c:265
+msgid ""
+"       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgstr ""
+
+#: rpm.c:266
+msgid ""
+"       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgstr ""
+
+#: rpm.c:267
+msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
+msgstr ""
+
+#: rpm.c:268
+msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
+msgstr ""
+
+#: rpm.c:269
+msgid ""
+"       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
+msgstr ""
+
+#: rpm.c:270
+msgid "                           package1 ... packageN"
+msgstr ""
+
+#: rpm.c:271
+msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
+msgstr ""
+
+#: rpm.c:272
+msgid "       rpm {--querytags}"
+msgstr ""
+
+#: rpm.c:306
+msgid "usage:"
+msgstr "»ÈÍÑË¡:"
+
+#: rpm.c:308
+msgid "print this message"
+msgstr "¤³¤Î¥á¥Ã¥»¡¼¥¸¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:310
+msgid "print the version of rpm being used"
+msgstr "»ÈÍÑ¤·¤Æ¤¤¤ë rpm ¤Î¥Ð¡¼¥¸¥ç¥ó¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:311
+msgid "   all modes support the following arguments:"
+msgstr "   °Ê²¼¤Î°ú¿ô¤Ï¤¹¤Ù¤Æ¤Î¥â¡¼¥É¤Ç»ÈÍÑ¤Ç¤­¤Þ¤¹:"
+
+#: rpm.c:312
+msgid "      --rcfile <file>     "
+msgstr ""
+
+#: rpm.c:313
+msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
+msgstr "/etc/rpmrc ¤È $HOME/.rpmrc ¤ÎÂå¤ê¤Ë <file> ¤ò»ÈÍÑ¤·¤Þ¤¹"
+
+#: rpm.c:315
+msgid "be a little more verbose"
+msgstr "¤â¤¦¾¯¤·¾ðÊóÉ½¼¨¤òÁý¤ä¤·¤Þ¤¹"
+
+#: rpm.c:317
+msgid "be incredibly verbose (for debugging)"
+msgstr "½½Ê¬¤Ë¾ðÊóÉ½¼¨¤òÁý¤ä¤·¤Þ¤¹(¥Ç¥Ð¥Ã¥°ÍÑ)"
+
+#: rpm.c:319
+msgid "query mode"
+msgstr "Ìä¤¤¹ç¤ï¤»¥â¡¼¥É"
+
+#: rpm.c:320 rpm.c:382 rpm.c:446 rpm.c:474
+msgid "      --root <dir>        "
+msgstr ""
+
+#: rpm.c:321 rpm.c:383 rpm.c:447 rpm.c:475 rpm.c:537
+msgid "use <dir> as the top level directory"
+msgstr "¥È¥Ã¥×¥Ç¥£¥ì¥¯¥È¥ê¤È¤·¤Æ <dir> ¤ò»ÈÍÑ¤·¤Þ¤¹"
+
+#: rpm.c:322 rpm.c:380 rpm.c:410 rpm.c:462 rpm.c:534
+msgid "      --dbpath <dir>      "
+msgstr ""
+
+#: rpm.c:323 rpm.c:381 rpm.c:411 rpm.c:463 rpm.c:535
+msgid "use <dir> as the directory for the database"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹ÍÑ¤Î¥Ç¥£¥ì¥¯¥È¥ê¤È¤·¤Æ <dir> ¤òÍÑ¤¤¤Þ¤¹"
+
+#: rpm.c:324
+msgid "      --queryformat <qfmt>"
+msgstr ""
+
+#: rpm.c:325
+msgid "use <qfmt> as the header format (implies -i)"
+msgstr "¥Ø¥Ã¥À¥Õ¥©¡¼¥Þ¥Ã¥È¤È¤·¤Æ <qfmt> ¤ò»ÈÍÑ¤·¤Þ¤¹ (-i ¤ÎÆ¯¤­¤ò´Þ¤ß¤Þ¤¹)"
+
+#: rpm.c:326
+msgid ""
+"   install, upgrade and query (with -p) allow ftp URL's to be used in place"
+msgstr "¥Õ¥¡¥¤¥ëÌ¾¤È°Ê²¼¤Î¥ª¥×¥·¥ç¥ó¤ÎÂå¤ê¤Ë ftp URL ¤ò»È¤¨¤ë¤è¤¦(-p ¤òÍÑ¤¤¤Æ)"
+
+#: rpm.c:327
+msgid "   of file names as well as the following options:"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë¡¢¥¢¥Ã¥×¥°¥ì¡¼¥É¡¢Ìä¤¤¹ç¤ï¤»¤·¤Þ¤¹:"
+
+#: rpm.c:328
+msgid "      --ftpproxy <host>   "
+msgstr ""
+
+#: rpm.c:329
+msgid "hostname or IP of ftp proxy"
+msgstr "ftp ¥×¥í¥­¥·¤Î¥Û¥¹¥ÈÌ¾¤â¤·¤¯¤Ï IP"
+
+#: rpm.c:330
+msgid "      --ftpport <port>    "
+msgstr ""
+
+#: rpm.c:331
+msgid "port number of ftp server (or proxy)"
+msgstr "ftp (¤â¤·¤¯¤Ï¥×¥í¥­¥·)¥µ¡¼¥Ð¤Î¥Ý¡¼¥ÈÈÖ¹æ"
+
+#: rpm.c:332
+msgid "      --httpproxy <host>   "
+msgstr ""
+
+#: rpm.c:333
+#, fuzzy
+msgid "hostname or IP of http proxy"
+msgstr "http ¥×¥í¥­¥·¤Î¥Û¥¹¥ÈÌ¾¤â¤·¤¯¤Ï IP"
+
+#: rpm.c:334
+msgid "      --httpport <port>    "
+msgstr ""
+
+#: rpm.c:335
+#, fuzzy
+msgid "port number of http server (or proxy)"
+msgstr "http (¤â¤·¤¯¤Ï¥×¥í¥­¥·)¥µ¡¼¥Ð¤Î¥Ý¡¼¥ÈÈÖ¹æ"
+
+#: rpm.c:336
+msgid "      Package specification options:"
+msgstr "      ¥Ñ¥Ã¥±¡¼¥¸»ØÄê¥ª¥×¥·¥ç¥ó:"
+
+#: rpm.c:338
+msgid "query all packages"
+msgstr "Á´¤Æ¤Î¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ä¤¤¤ÆÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: rpm.c:339
+msgid "        -f <file>+        "
+msgstr ""
+
+#: rpm.c:340
+msgid "query package owning <file>"
+msgstr "<file> ¤ò½êÍ­¤·¤Æ¤¤¤ë¥Ñ¥Ã¥±¡¼¥¸¤òÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: rpm.c:341
+msgid "        -p <packagefile>+ "
+msgstr ""
+
+#: rpm.c:342
+msgid "query (uninstalled) package <packagefile>"
+msgstr ""
+"(Ì¤¥¤¥ó¥¹¥È¡¼¥ë)¥Ñ¥Ã¥±¡¼¥¸ <packagefile> ¤ò\n"
+"Ìä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: rpm.c:343
+msgid "        --triggeredby <pkg>"
+msgstr ""
+
+#: rpm.c:344
+msgid "query packages triggered by <pkg>"
+msgstr "<pkg> ¤Ë¤è¤Ã¤Æ¥È¥ê¥¬¡¼¤µ¤ì¤ë¥Ñ¥Ã¥±¡¼¥¸¤òÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: rpm.c:345
+msgid "        --whatprovides <cap>"
+msgstr ""
+
+#: rpm.c:346
+msgid "query packages which provide <cap> capability"
+msgstr "<cap> ¤òÄó¶¡¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ä¤¤¤ÆÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: rpm.c:347
+msgid "        --whatrequires <cap>"
+msgstr ""
+
+#: rpm.c:348
+msgid "query packages which require <cap> capability"
+msgstr ""
+"<cap> ¤Îµ¡Ç½¤òÉ¬Í×¤È¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ä¤¤¤Æ\n"
+"Ìä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: rpm.c:349
+msgid "      Information selection options:"
+msgstr "      ¾ðÊóÁªÂò¥ª¥×¥·¥ç¥ó:"
+
+#: rpm.c:351
+msgid "display package information"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¾ðÊó¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:353
+msgid "display the package's change log"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤ÎÊÑ¹¹ÍúÎò¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:355
+msgid "display package file list"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë´Þ¤Þ¤ì¤ë¥Õ¥¡¥¤¥ë¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:357
+msgid "show file states (implies -l)"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë´Þ¤Þ¤ì¤ë¥Õ¥¡¥¤¥ë¤Î¾õÂÖ¤òÉ½¼¨¤·¤Þ¤¹(-l ¤ÎÆ¯¤­¤ò´Þ¤ß¤Þ¤¹)"
+
+#: rpm.c:359
+msgid "list only documentation files (implies -l)"
+msgstr ""
+"¥Ñ¥Ã¥±¡¼¥¸¤Ë´Þ¤Þ¤ì¤ëÊ¸½ñ¥Õ¥¡¥¤¥ë¤Î¤ß¤Î¾õÂÖ¤òÉ½¼¨¤·¤Þ¤¹(-l ¤ÎÆ¯¤­¤ò´Þ¤ß¤Þ¤¹)"
+
+#: rpm.c:361
+msgid "list only configuration files (implies -l)"
+msgstr "ÀßÄê¥Õ¥¡¥¤¥ë¤Î¤ß¤òÉ½¼¨¤·¤Þ¤¹(-l ¤ÎÆ¯¤­¤ò´Þ¤ß¤Þ¤¹)"
+
+#: rpm.c:363
+msgid ""
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
+msgstr ""
+"¸Ä¡¹¤Î¥Õ¥¡¥¤¥ë¤Î¸¡¾Ú²ÄÇ½¤ÊÁ´¾ðÊó¤òÉ½¼¨¤·¤Þ¤¹(-l¡¢\n"
+"-c¡¢-d ¤Î¤¤¤º¤ì¤«¤È¶¦¤ËÍÑ¤¤¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó)"
+
+#: rpm.c:365
+msgid "list capabilities package provides"
+msgstr "¤³¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬Äó¶¡¤¹¤ëµ¡Ç½¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:366
+msgid "        --requires"
+msgstr ""
+
+#: rpm.c:368
+msgid "list package dependencies"
+msgstr "°ÍÂ¸¤·¤Æ¤¤¤ë¥Ñ¥Ã¥±¡¼¥¸Ì¾¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:370
+msgid "print the various [un]install scripts"
+msgstr "[¥¢¥ó]¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¥¹¥¯¥ê¥×¥È¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:372
+msgid "show the trigger scripts contained in the package"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë´Þ¤Þ¤ì¤ë¥È¥ê¥¬¡¼¥¹¥¯¥ê¥×¥È¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:376
+msgid "    --pipe <cmd>          "
+msgstr ""
+
+#: rpm.c:377
+msgid "send stdout to <cmd>"
+msgstr "É¸½à½ÐÎÏ¤ò <cmd> ¤Ø¥Ñ¥¤¥×¤·¤Þ¤¹"
+
+#: rpm.c:379
+msgid ""
+"verify a package installation using the same same package specification "
+"options as -q"
+msgstr ""
+"-q ¤ÈÆ±ÍÍ¤ËÆ±¤¸¥Ñ¥Ã¥±¡¼¥¸»ØÄê¥ª¥×¥·¥ç¥ó¤ò¼è¤ê\n"
+"¥¤¥ó¥¹¥È¡¼¥ë¤Î¾õ¶·¤ò¸¡¾Ú¤·¤Þ¤¹"
+
+#: rpm.c:385 rpm.c:433 rpm.c:467
+msgid "do not verify package dependencies"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Î°ÍÂ¸´Ø·¸¤Î¸¡¾Ú¤ò¤·¤Þ¤»¤ó"
+
+#: rpm.c:387
+msgid "do not verify file md5 checksums"
+msgstr "¥Õ¥¡¥¤¥ë¤Î md5 ¥Á¥§¥Ã¥¯¥µ¥à¤Î¸¡¾Ú¤ò¤·¤Þ¤»¤ó"
+
+#: rpm.c:389
+msgid "do not verify file attributes"
+msgstr "¥Õ¥¡¥¤¥ëÂ°À­¤Î¸¡¾Ú¤ò¤·¤Þ¤»¤ó"
+
+#: rpm.c:392
+msgid ""
+"set the file permissions to those in the package database using the same "
+"package specification options as -q"
+msgstr ""
+"-q ¤ÈÆ±ÍÍ¤ËÆ±¤¸¥Ñ¥Ã¥±¡¼¥¸»ØÄê¥ª¥×¥·¥ç¥ó¤ò¼è¤ê\n"
+"¥Ç¡¼¥¿¥Ù¡¼¥¹Ãæ¤Îµö²ÄÂ°À­¤ËÀßÄê¤·¤Þ¤¹"
+
+#: rpm.c:395
+msgid ""
+"set the file owner and group to those in the package database using the same "
+"package specification options as -q"
+msgstr ""
+"-q ¤ÈÆ±ÍÍ¤ËÆ±¤¸¥Ñ¥Ã¥±¡¼¥¸»ØÄê¥ª¥×¥·¥ç¥ó¤ò¼è¤ê\n"
+"¥Ç¡¼¥¿¥Ù¡¼¥¹Ãæ¤Î½êÍ­¼Ô¤È¥°¥ë¡¼¥×¤ËÀßÄê¤·¤Þ¤¹"
+
+#: rpm.c:399
+msgid "    --install <packagefile>"
+msgstr ""
+
+#: rpm.c:400
+msgid "    -i <packagefile>      "
+msgstr ""
+
+#: rpm.c:401
+msgid "install package"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤·¤Þ¤¹"
+
+#: rpm.c:402
+msgid "      --excludepath <path>"
+msgstr ""
+
+#: rpm.c:403
+#, fuzzy
+msgid "skip files in path <path>"
+msgstr "¥Ñ¥¹ <path> Ãæ¤Î¥Õ¥¡¥¤¥ë¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹"
+
+#: rpm.c:404
+msgid "      --relocate <oldpath>=<newpath>"
+msgstr ""
+
+#: rpm.c:405
+msgid "relocate files from <oldpath> to <newpath>"
+msgstr "<oldpath> ¤«¤é <newpath> ¤Ë¥Õ¥¡¥¤¥ë¤òºÆÇÛÃÖ¤µ¤»¤Þ¤¹"
+
+#: rpm.c:407
+msgid "relocate files even though the package doesn't allow it"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤¬¶Ø»ß¤·¤Æ¤¤¤Þ¤¹¤¬¥Õ¥¡¥¤¥ë¤òºÆÇÛÃÖ¤·¤Þ¤¹"
+
+#: rpm.c:408
+msgid "      --prefix <dir>      "
+msgstr ""
+
+#: rpm.c:409
+msgid "relocate the package to <dir>, if relocatable"
+msgstr ""
+"ºÆÇÛÃÖ²ÄÇ½¤Ê¥Ñ¥Ã¥±¡¼¥¸¤ËÂÐ¤·¡¢¥¤¥ó¥¹¥È¡¼¥ë¥Ñ¥¹\n"
+"ÀÜÆ¬¼­¤ò <dir> ¤ËÀßÄê¤·¤Þ¤¹"
+
+#: rpm.c:413
+msgid "do not install documentation"
+msgstr "¥É¥­¥å¥á¥ó¥È¤ò¥¤¥ó¥¹¥È¡¼¥ë¤·¤Þ¤»¤ó"
+
+#: rpm.c:415
+msgid "short hand for --replacepkgs --replacefiles"
+msgstr "--replacepkgs ¤È --replacefiles ¤òÃ»½Ì¤·¤¿¤â¤Î"
+
+#: rpm.c:418
+msgid "print hash marks as package installs (good with -v)"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ëºÝ¤Ë '#' ¤ÇÉ½¼¨¤·¤Þ¤¹(-v ¤ò»ÈÍÑ¤¹¤ë¤ÈÎÉ¤¤)"
+
+#: rpm.c:420
+msgid "install all files, even configurations which might otherwise be skipped"
+msgstr "ÀßÄê¤ò¥¹¥­¥Ã¥×¤·¡¢Á´¥Õ¥¡¥¤¥ë¤ò¥¤¥ó¥¹¥È¡¼¥ë¤·¤Þ¤¹"
+
+#: rpm.c:423
+msgid "don't verify package architecture"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤ÎÂÐ¾Ý¥¢¡¼¥­¥Æ¥¯¥Á¥ã¤Î¸¡¾Ú¤ò¤·¤Þ¤»¤ó"
+
+#: rpm.c:425
+msgid "don't check disk space before installing"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ëÁ°¤Ë¥Ç¥£¥¹¥¯¤ÎÍÆÎÌ¥Á¥§¥Ã¥¯¤ò¤·¤Þ¤»¤ó"
+
+#: rpm.c:427
+msgid "don't verify package operating system"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ÂÐ¾ÝOS¤Î¸¡¾Ú¤ò¤·¤Þ¤»¤ó"
+
+#: rpm.c:429
+msgid "install documentation"
+msgstr "¥É¥­¥å¥á¥ó¥È¤ò¥¤¥ó¥¹¥È¡¼¥ë¤·¤Þ¤¹"
+
+#: rpm.c:431 rpm.c:465
+msgid "update the database, but do not modify the filesystem"
+msgstr ""
+"¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò¹¹¿·¤·¤Þ¤¹¤¬¡¢\n"
+"¥Õ¥¡¥¤¥ë¥·¥¹¥Æ¥à¤ÎÊÑ¹¹¤·¤Þ¤»¤ó"
+
+#: rpm.c:435 rpm.c:469
+msgid "do not reorder package installation to satisfy dependencies"
+msgstr ""
+"°ÍÂ¸À­¤òËþ¤¿¤¹¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤Î\n"
+"¥¤¥ó¥¹¥È¡¼¥ë¤òÍ×µá¤·¤Þ¤»¤ó"
+
+#: rpm.c:437
+msgid "don't execute any installation scripts"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë¥¹¥¯¥ê¥×¥È¤ò¼Â¹Ô¤·¤Þ¤»¤ó"
+
+#: rpm.c:439 rpm.c:473
+msgid "don't execute any scripts triggered by this package"
+msgstr ""
+"¤³¤Î¥Ñ¥Ã¥±¡¼¥¸¤Ë¤è¤Ã¤Æ¥È¥ê¥¬¡¼¤µ¤ì¤ë¥¹¥¯¥ê¥×¥È¤ò\n"
+"¼Â¹Ô¤·¤Þ¤»¤ó"
+
+#: rpm.c:441
+msgid "print percentages as package installs"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ëºÝ¤Ë '%' ¤ÇÉ½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:443
+msgid "install even if the package replaces installed files"
+msgstr ""
+"¥¤¥ó¥¹¥È¡¼¥ë»þ¤ËÃÖ¤­´¹¤¨¤é¤ì¤ë¥Õ¥¡¥¤¥ë¤¬\n"
+"¤¢¤Ã¤Æ¤â¥¤¥ó¥¹¥È¡¼¥ë¤·¤Þ¤¹"
+
+#: rpm.c:445
+msgid "reinstall if the package is already present"
+msgstr "´û¤ËÂ¸ºß¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤Ç¤âºÆ¥¤¥ó¥¹¥È¡¼¥ë¤·¤Þ¤¹"
+
+#: rpm.c:449
+msgid "don't install, but tell if it would work or not"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤»¤º¤Ë¡¢¥Æ¥¹¥È¤Î¤ß¹Ô¤¤¤Þ¤¹"
+
+#: rpm.c:451
+msgid "    --upgrade <packagefile>"
+msgstr ""
+
+#: rpm.c:452
+msgid "    -U <packagefile>      "
+msgstr ""
+
+#: rpm.c:453
+msgid "upgrade package (same options as --install, plus)"
+msgstr ""
+"¥Ñ¥Ã¥±¡¼¥¸¤ò¥¢¥Ã¥×¥°¥ì¡¼¥É¤·¤Þ¤¹(--install "
+"¤È´ö¤Ä¤«¤Î¥ª¥×¥·¥ç¥ó¤òÉÕ¤±Â­¤·¤¿¤â¤Î)"
+
+#: rpm.c:455
+msgid ""
+"upgrade to an old version of the package (--force on upgrades does this "
+"automatically)"
+msgstr ""
+"¸Å¤¤¥Ð¡¼¥¸¥ç¥ó¤Î¥Ñ¥Ã¥±¡¼¥¸¤Ë¥¢¥Ã¥×¥°¥ì¡¼¥É¤·¤Þ¤¹\n"
+"(¥¢¥Ã¥×¥°¥ì¡¼¥É»þ¤Î --force ¤Ï¤³¤ì¤ò¼«Æ°Åª¤Ë¹Ô¤¤¤Þ¤¹)"
+
+#: rpm.c:457
+msgid "    --erase <package>"
+msgstr ""
+
+#: rpm.c:459
+msgid "erase (uninstall) package"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤òºï½ü(¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë)¤·¤Þ¤¹"
+
+#: rpm.c:461
+msgid ""
+"remove all packages which match <package> (normally an error is generated if "
+"<package> specified multiple packages)"
+msgstr ""
+"<package> ¤È°ìÃ×¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸Á´¤Æ¤òºï½ü¤·¤Þ¤¹(°ìÈÌ\n"
+"\t\t\t      Åª¤ËÊ£¿ô¤Î¥Ñ¥Ã¥±¡¼¥¸¤ò»ØÄê¤¹¤ë¤È¥¨¥é¡¼¤Ë¤Ê¤ê¤Þ¤¹)"
+
+#: rpm.c:471
+msgid "do not execute any package specific scripts"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸»ØÄê¤Î¥¹¥¯¥ê¥×¥È¤ò¼Â¹Ô¤·¤Þ¤»¤ó"
+
+#: rpm.c:477
+msgid "    -b<stage> <spec>      "
+msgstr ""
+
+#: rpm.c:478
+msgid "    -t<stage> <tarball>   "
+msgstr ""
+
+#: rpm.c:479
+msgid "build package, where <stage> is one of:"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤òºîÀ®¤·¤Þ¤¹¡¢<stage> ¤Ï°Ê²¼¤Î¤¦¤Á¤Ò¤È¤Ä¤Ç¤¹:"
+
+#: rpm.c:481
+msgid "prep (unpack sources and apply patches)"
+msgstr "prep (¥½¡¼¥¹¤òÅ¸³«¤·¥Ñ¥Ã¥Á¤òÅö¤Æ¤Þ¤¹)"
+
+#: rpm.c:483
+#, c-format
+msgid "list check (do some cursory checks on %files)"
+msgstr "¥ê¥¹¥È¸¡ºº (%files ¥»¥¯¥·¥ç¥ó¤ÎÂç¤Þ¤«¤Ê¥Á¥§¥Ã¥¯)"
+
+#: rpm.c:485
+msgid "compile (prep and compile)"
+msgstr "¥³¥ó¥Ñ¥¤¥ë (prep¡¢compile)"
+
+#: rpm.c:487
+msgid "install (prep, compile, install)"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë (prep¡¢compile¡¢install)"
+
+#: rpm.c:489
+msgid "binary package (prep, compile, install, package)"
+msgstr "¥Ð¥¤¥Ê¥ê¤ò¥Ñ¥Ã¥±¡¼¥¸²½ (prep¡¢compile¡¢install¡¢package)"
+
+#: rpm.c:491
+msgid "bin/src package (prep, compile, install, package)"
+msgstr "¥Ð¥¤¥Ê¥ê/¥½¡¼¥¹¤ò¥Ñ¥Ã¥±¡¼¥¸²½ (prep¡¢compile¡¢install¡¢package)"
+
+#: rpm.c:497
+msgid "remove sources and spec file when done"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸²½¸å¥½¡¼¥¹¥Õ¥¡¥¤¥ë¤È spec ¥Õ¥¡¥¤¥ë¤òºï½ü¤·¤Þ¤¹"
+
+#: rpm.c:499
+#, fuzzy
+msgid "generate PGP/GPG signature"
+msgstr "PGP/GPG ½ðÌ¾¤òÀ¸À®¤·¤Þ¤¹"
+
+#: rpm.c:500
+msgid "      --buildroot <dir>   "
+msgstr ""
+
+#: rpm.c:501
+msgid "use <dir> as the build root"
+msgstr "BuildRoot ¤È¤·¤Æ <dir> ¤òÍÑ¤¤¤Þ¤¹"
+
+#: rpm.c:502
+msgid "      --target=<platform>+"
+msgstr ""
+
+#: rpm.c:503
+msgid "build the packages for the build targets platform1...platformN."
+msgstr ""
+
+#: rpm.c:505
+msgid "do not execute any stages"
+msgstr "¤É¤ÎÃÊ³¬¤â¼Â¹Ô¤·¤Þ¤»¤ó"
+
+#: rpm.c:506
+msgid "      --timecheck <secs>  "
+msgstr ""
+
+#: rpm.c:507
+msgid "set the time check to <secs> seconds (0 disables)"
+msgstr "¥¿¥¤¥à¥Á¥§¥Ã¥¯´ü¸Â¤òÀßÄê¤·¤Þ¤¹(0¤ÇÌµ¸ú)"
+
+#: rpm.c:509
+msgid "    --rebuild <src_pkg>   "
+msgstr ""
+
+#: rpm.c:510
+msgid ""
+"install source package, build binary package and remove spec file, sources, "
+"patches, and icons."
+msgstr ""
+"¥½¡¼¥¹¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤·¡¢¥Ð¥¤¥Ê¥ê¥Ñ¥Ã¥±¡¼\n"
+"\t\t\t     ¥¸¤òºîÀ®¤·¡¢spec¥Õ¥¡¥¤¥ë¡¢¥½¡¼¥¹¥Õ¥¡¥¤¥ë¡¢¥Ñ¥Ã¥Á¡¢¥¢¥¤¥³\n"
+"\t\t\t     ¥ó¤òºï½ü¤·¤Þ¤¹"
+
+#: rpm.c:511
+msgid "    --rmsource <spec>     "
+msgstr ""
+
+#: rpm.c:512
+msgid "remove sources and spec file"
+msgstr "¥½¡¼¥¹¥Õ¥¡¥¤¥ë¤È spec ¥Õ¥¡¥¤¥ë¤òºï½ü¤·¤Þ¤¹"
+
+#: rpm.c:513
+msgid "    --recompile <src_pkg> "
+msgstr ""
+
+#: rpm.c:514
+msgid "like --rebuild, but don't build any package"
+msgstr "--rebuild ¤Ë»÷¤Æ¤¤¤Þ¤¹¤¬¡¢¥Ñ¥Ã¥±¡¼¥¸¤òºîÀ®¤·¤Þ¤»¤ó"
+
+#: rpm.c:515
+msgid "    --resign <pkg>+       "
+msgstr ""
+
+#: rpm.c:516
+msgid "sign a package (discard current signature)"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë½ðÌ¾¤·¤Þ¤¹(¸½ºß¤Î½ðÌ¾¤Ï¼Î¤Æ¤é¤ì¤Þ¤¹)"
+
+#: rpm.c:517
+msgid "    --addsign <pkg>+      "
+msgstr ""
+
+#: rpm.c:518
+msgid "add a signature to a package"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë½ðÌ¾¤òÄÉ²Ã¤·¤Þ¤¹"
+
+#: rpm.c:520
+msgid "    --checksig <pkg>+     "
+msgstr ""
+
+#: rpm.c:521
+msgid "verify package signature"
+msgstr "½ðÌ¾¤Î¸¡¾Ú¤ò¤·¤Þ¤¹"
+
+#: rpm.c:523
+msgid "skip any PGP signatures"
+msgstr "PGP ½ðÌ¾¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹"
+
+#: rpm.c:525
+#, fuzzy
+msgid "skip any GPG signatures"
+msgstr "GPG ½ðÌ¾¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹"
+
+#: rpm.c:527
+msgid "skip any MD5 signatures"
+msgstr "MD5 ½ðÌ¾¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹"
+
+#: rpm.c:529
+msgid "list the tags that can be used in a query format"
+msgstr ""
+"Ìä¤¤¹ç¤ï¤»¥Õ¥©¡¼¥Þ¥Ã¥ÈÃæ¤ËÍÑ¤¤¤é¤ìÆÀ¤ë¥¿¥°¤ò\n"
+"\t\t\t      É½¼¨¤·¤Þ¤¹"
+
+#: rpm.c:531
+msgid "make sure a valid database exists"
+msgstr "Í­¸ú¤Ê¥Ç¡¼¥¿¥Ù¡¼¥¹¤¬Â¸ºß¤¹¤ë¤³¤È¤ò³Î¤«¤á¤Þ¤¹"
+
+#: rpm.c:533
+msgid "rebuild database from existing database"
+msgstr "´ûÂ¸¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹¤«¤é¥Ç¡¼¥¿¥Ù¡¼¥¹¤òºÆ¹½ÃÛ¤·¤Þ¤¹"
+
+#: rpm.c:682 rpm.c:688 rpm.c:695 rpm.c:701 rpm.c:710 rpm.c:717 rpm.c:764
+#: rpm.c:770 rpm.c:804 rpm.c:810 rpm.c:816 rpm.c:824 rpm.c:868 rpm.c:923
+#: rpm.c:930
+msgid "only one major mode may be specified"
+msgstr "°ì¤Ä¤Î¥á¥¸¥ã¡¼¥â¡¼¥É¤Î¤ß¤ò»ØÄê¤·¤Æ¤¯¤À¤µ¤¤"
+
+#: rpm.c:703
+msgid "-u and --uninstall are deprecated and no longer work.\n"
+msgstr "-u ¤È --uninstall ¤Ï¤â¤Ï¤äÆ°ºî¤·¤Þ¤»¤ó\n"
+
+#: rpm.c:705
+msgid "Use -e or --erase instead.\n"
+msgstr "-e ¤« --erase ¤ò»È¤Ã¤Æ¤¯¤À¤µ¤¤\n"
+
+#: rpm.c:721
+msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
+msgstr "--build (-b) ¤Ï a¡¢b¡¢i¡¢c¡¢p¡¢l ¤Î¤É¤ì¤«°ì¤Ä¤Î°ú¿ô¤òÉ¬Í×¤È¤·¤Þ¤¹"
+
+#: rpm.c:725
+msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
+msgstr "--tarbuild (-t) ¤Ï a¡¢b¡¢i¡¢c¡¢p¡¢l ¤Î¤É¤ì¤«°ì¤Ä¤Î°ú¿ô¤òÉ¬Í×¤È¤·¤Þ¤¹"
+
+#: rpm.c:777 rpm.c:783 rpm.c:790 rpm.c:797 rpm.c:937
+msgid "one type of query/verify may be performed at a time"
+msgstr "Ìä¤¤¹ç¤ï¤»/¸¡¾Ú¤Ï°ìÅÙ¤Ë°ì¤Ä¤·¤«¼Â¹Ô¤Ç¤­¤Þ¤»¤ó"
+
+#: rpm.c:834
+msgid "arguments to --dbpath must begin with a /"
+msgstr "--dbpath ¤Î°ú¿ô¤Ï / ¤«¤é»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: rpm.c:874
+msgid "relocations must begin with a /"
+msgstr "ºÆÇÛÃÖ¤Ï / ¤«¤é»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: rpm.c:876
+msgid "relocations must contain a ="
+msgstr "ºÆÇÛÃÖ¤Ï = ¤ò´Þ¤ó¤Ç¤¤¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: rpm.c:879
+msgid "relocations must have a / following the ="
+msgstr "ºÆÇÛÃÖ¤Ï = ¤Î¼¡¤Ë / ¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: rpm.c:888
+#, fuzzy
+msgid "exclude paths must begin with a /"
+msgstr "½ü³°¤¹¤ë¥Ñ¥¹¤Ï / ¤«¤é»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: rpm.c:897
+#, fuzzy, c-format
+msgid "Internal error in argument processing (%d) :-(\n"
+msgstr "°ú¿ô½èÍý(%d)¤Ç¤ÎÆâÉô¥¨¥é¡¼ :-(\n"
+
+#: rpm.c:948
+msgid "--dbpath given for operation that does not use a database"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò»ÈÍÑ¤·¤Ê¤¤¤Î¤Ë --dbpath ¤¬Í¿¤¨¤é¤ì¤Æ¤¤¤Þ¤¹"
+
+#: rpm.c:952
+msgid "--timecheck may only be used during package builds"
+msgstr "--timecheck ¤Ï¥Ñ¥Ã¥±¡¼¥¸ºîÀ®»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:955
+#, fuzzy
+msgid "unexpected query flags"
+msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥Õ¥é¥°"
+
+#: rpm.c:958
+#, fuzzy
+msgid "unexpected query format"
+msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥Õ¥©¡¼¥Þ¥Ã¥È"
+
+#: rpm.c:961
+msgid "unexpected query source"
+msgstr "Í½´ü¤»¤ÌÌä¤¤¹ç¤ï¤»¤Î¥½¡¼¥¹"
+
+#: rpm.c:967
+#, fuzzy
+msgid "only installation, upgrading, rmsource and rmspec may be forced"
+msgstr ""
+"¥¤¥ó¥¹¥È¡¼¥ë¡¢¥¢¥Ã¥×¥°¥ì¡¼¥É¡¢¥½¡¼¥¹ºï½ü¡¢¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ëºï½ü»þ¤Î¤ß¶¯À©¤Ç¤­¤"
+"Þ¤¹"
+
+#: rpm.c:970
+msgid "files may only be relocated during package installation"
+msgstr "¥Õ¥¡¥¤¥ë¤Ï¥Ñ¥Ã¥±¡¼¥¸¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ßºÆÇÛÃÖ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:973
+msgid "only one of --prefix or --relocate may be used"
+msgstr "--prefix ¤â¤·¤¯¤Ï --relocate ¤Î¤¤¤º¤ì¤«¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:976
+#, fuzzy
+msgid ""
+"--relocate and --excludepath may only be used when installing new packages"
+msgstr ""
+"--relocate ¤È --excludepath "
+"¤Ï¿·¤·¤¤¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¤È¤­¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:979
+msgid "--prefix may only be used when installing new packages"
+msgstr "--prefix ¤Ï¿·µ¬¤Ë¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¤È¤­¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:982
+msgid "arguments to --prefix must begin with a /"
+msgstr "--prefix ¤Ø¤Î°ú¿ô¤Ï / ¤«¤é»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: rpm.c:985
+msgid "--hash (-h) may only be specified during package installation"
+msgstr "--hash (-h) ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:989
+msgid "--percent may only be specified during package installation"
+msgstr "--percent ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:993
+msgid "--replacefiles may only be specified during package installation"
+msgstr "--replacefiles ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:997
+msgid "--replacepkgs may only be specified during package installation"
+msgstr "--replacepkgs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1001
+msgid "--excludedocs may only be specified during package installation"
+msgstr "--excludedocs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1005
+msgid "--includedocs may only be specified during package installation"
+msgstr "--includedocs ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1009
+msgid "only one of --excludedocs and --includedocs may be specified"
+msgstr "--excludedocs ¤È --includedocs ¤Ï¤É¤Á¤é¤«°ìÊý¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1013
+msgid "--ignorearch may only be specified during package installation"
+msgstr "--ignorearch ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1017
+msgid "--ignoreos may only be specified during package installation"
+msgstr "-ignoreos ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1021
+#, fuzzy
+msgid "--ignoresize may only be specified during package installation"
+msgstr "-ignoresize ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1025
+msgid "--allmatches may only be specified during package erasure"
+msgstr "--allmatches ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Îºï½ü»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1029
+msgid "--allfiles may only be specified during package installation"
+msgstr "--allfiles ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1033
+msgid "--justdb may only be specified during package installation and erasure"
+msgstr "--justdb ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1038
+msgid ""
+"--noscripts may only be specified during package installation, erasure, and "
+"verification"
+msgstr "--noscripts ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢¸¡¾Ú»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1042
+msgid ""
+"--notriggers may only be specified during package installation, erasure, and "
+"verification"
+msgstr "--notriggers ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢¸¡¾Ú»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1046
+#, fuzzy
+msgid ""
+"--nodeps may only be specified during package building, installation, "
+"erasure, and verification"
+msgstr ""
+"--nodeps ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤ÎºîÀ®¡¢¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢¸¡¾Ú»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1050
+msgid ""
+"--test may only be specified during package installation, erasure, and "
+"building"
+msgstr "--test ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢ºîÀ®»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1054
+msgid ""
+"--root (-r) may only be specified during installation, erasure, querying, "
+"and database rebuilds"
+msgstr ""
+"--root (-r) "
+"¤Ï¥¤¥ó¥¹¥È¡¼¥ë¡¢ºï½ü¡¢Ìä¤¤¹ç¤ï¤»¡¢¥Ç¡¼¥¿¥Ù¡¼¥¹ºÆ¹½ÃÛ»þ¤Î¤ß»ØÄê¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1066
+msgid "arguments to --root (-r) must begin with a /"
+msgstr "--root (-r) ¤Î°ú¿ô¤Ï / ¤«¤é»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1072
+msgid "--oldpackage may only be used during upgrades"
+msgstr "--oldpackage ¤Ï¥¢¥Ã¥×¥°¥ì¡¼¥É»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1077
+msgid ""
+"ftp options can only be used during package queries, installs, and upgrades"
+msgstr ""
+"ftp "
+"¥ª¥×¥·¥ç¥ó¤Ï¥Ñ¥Ã¥±¡¼¥¸¤ÎÌä¤¤¹ç¤ï¤»¡¢¥¤¥ó¥¹¥È¡¼¥ë¡¢¥¢¥Ã¥×¥°¥ì¡¼¥É»þ¤Î¤ß»ÈÍÑ¤Ç¤"
+"­¤Þ¤¹"
+
+#: rpm.c:1083
+#, fuzzy
+msgid ""
+"http options can only be used during package queries, installs, and upgrades"
+msgstr ""
+"http "
+"¥ª¥×¥·¥ç¥ó¤Ï¥Ñ¥Ã¥±¡¼¥¸¤ÎÌä¤¤¹ç¤ï¤»¡¢¥¤¥ó¥¹¥È¡¼¥ë¡¢¥¢¥Ã¥×¥°¥ì¡¼¥É»þ¤Î¤ß»ÈÍÑ¤Ç¤"
+"­¤Þ¤¹\n"
+
+#: rpm.c:1087
+msgid "--nopgp may only be used during signature checking"
+msgstr "--nopgp ¤Ï½ðÌ¾¸¡ºº»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1090
+#, fuzzy
+msgid "--nogpg may only be used during signature checking"
+msgstr "--nogpg ¤Ï½ðÌ¾¸¡ºº»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1093
+#, fuzzy
+msgid ""
+"--nomd5 may only be used during signature checking and package verification"
+msgstr "--nomd5 ¤Ï½ðÌ¾¸¡ºº¤È¥Ñ¥Ã¥±¡¼¥¸¸¡¾Ú»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1121
+msgid "no files to sign\n"
+msgstr "½ðÌ¾¤¹¤ë¤¿¤á¤Î¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó\n"
+
+#: rpm.c:1126
+#, fuzzy, c-format
+msgid "cannot access file %s\n"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤Ë¥¢¥¯¥»¥¹¤Ç¤­¤Þ¤»¤ó\n"
+
+#: rpm.c:1141
+#, fuzzy
+msgid "pgp not found: "
+msgstr "pgp ¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó: "
+
+#: rpm.c:1145
+msgid "Enter pass phrase: "
+msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¤òÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤: "
+
+#: rpm.c:1147
+msgid "Pass phrase check failed\n"
+msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¥Á¥§¥Ã¥¯¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: rpm.c:1150
+msgid "Pass phrase is good.\n"
+msgstr "¥Ñ¥¹¥Õ¥ì¡¼¥º¤ÏÀµ¾ï¤Ç¤¹¡¥\n"
+
+#: rpm.c:1155
+msgid "Invalid %%_signature spec in macro file.\n"
+msgstr "¥Þ¥¯¥í¥Õ¥¡¥¤¥ëÃæ¤ÎÌµ¸ú¤Ê %%_signature ¡£\n"
+
+#: rpm.c:1161
+msgid "--sign may only be used during package building"
+msgstr "--sign ¤Ï¥Ñ¥Ã¥±¡¼¥¸ºîÀ®»þ¤Î¤ß»ÈÍÑ¤Ç¤­¤Þ¤¹"
+
+#: rpm.c:1176
+msgid "exec failed\n"
+msgstr "¼Â¹Ô¼ºÇÔ\n"
+
+#: rpm.c:1195
+msgid "unexpected arguments to --querytags "
+msgstr "--querytags ¤Î°ú¿ô¤¬´Ö°ã¤Ã¤Æ¤¤¤Þ¤¹"
+
+#: rpm.c:1206
+msgid "no packages given for signature check"
+msgstr "½ðÌ¾¸¡ºº¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1217
+msgid "no packages given for signing"
+msgstr "½ðÌ¾¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1229
+msgid "no packages files given for rebuild"
+msgstr "ºÆºîÀ®¤¹¤ë¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1292
+msgid "no spec files given for build"
+msgstr "ºîÀ®¤Î¤¿¤á¤Î spec ¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1294
+msgid "no tar files given for build"
+msgstr "ºîÀ®(build)¤Î¤¿¤á¤Î tar ¥Õ¥¡¥¤¥ë¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1310
+msgid "no packages given for uninstall"
+msgstr "¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1360
+msgid "no packages given for install"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤Î¤¿¤á¤Î¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1383
+msgid "extra arguments given for query of all packages"
+msgstr "Á´¥Ñ¥Ã¥±¡¼¥¸¤ÎÌä¤¤¹ç¤ï¤»¤Î¤¿¤á¤ËÍ¾Ê¬¤Ê°ú¿ô¤¬¤¢¤ê¤Þ¤¹"
+
+#: rpm.c:1388
+msgid "no arguments given for query"
+msgstr "Ìä¤¤¹ç¤ï¤»¤Î¤¿¤á¤Î°ú¿ô¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm.c:1405
+#, fuzzy
+msgid "extra arguments given for verify of all packages"
+msgstr "Á´¥Ñ¥Ã¥±¡¼¥¸¤Î¸¡¾Ú¤Î¤¿¤á¤ËÍ¾Ê¬¤Ê°ú¿ô¤¬¤¢¤ê¤Þ¤¹"
+
+#: rpm.c:1409
+msgid "no arguments given for verify"
+msgstr "¸¡¾Ú¤Î¤¿¤á¤Î°ú¿ô¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: rpm2cpio.c:22
+#, fuzzy, c-format
+msgid "cannot open package: %s\n"
+msgstr "%s/packages.rpm ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó\n"
+
+#: rpm2cpio.c:32
+#, fuzzy
+msgid "argument is not an RPM package\n"
+msgstr "°ú¿ô¤Ï RPM ¥Ñ¥Ã¥±¡¼¥¸¤Ç¤Ï¤¢¤ê¤Þ¤»¤ó\n"
+
+#: rpm2cpio.c:36
+#, fuzzy
+msgid "error reading header from package\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤«¤é¥Ø¥Ã¥À¤ÎÆÉ¤ß¹þ¤ß¤Î¥¨¥é¡¼\n"
+
+#: rpm2cpio.c:43
+#, fuzzy, c-format
+msgid "cannot re-open payload: %s\n"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó"
+
+#: build/build.c:105 build/pack.c:269
+msgid "Unable to open temp file"
+msgstr "°ì»þ¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó"
+
+#: build/build.c:184
+#, fuzzy, c-format
+msgid "Executing(%s): %s\n"
+msgstr "¼Â¹ÔÃæ: %s\n"
+
+#: build/build.c:190
+#, fuzzy, c-format
+msgid "Exec of %s failed (%s): %s"
+msgstr "%s ¤Î¼Â¹Ô¤Ë¼ºÇÔ (%s)"
+
+#: build/build.c:198
+#, c-format
+msgid "Bad exit status from %s (%s)"
+msgstr "%s ¤ÎÉÔÀµ¤Ê½ªÎ»¥¹¥Æ¡¼¥¿¥¹ (%s)"
+
+#: build/expression.c:207
+msgid "syntax error while parsing =="
+msgstr "¹½Ê¸²òÀÏÃæ¤ÎÊ¸Ë¡¥¨¥é¡¼ =="
+
+#: build/expression.c:237
+msgid "syntax error while parsing &&"
+msgstr "¹½Ê¸²òÀÏÃæ¤ÎÊ¸Ë¡¥¨¥é¡¼ &&"
+
+#: build/expression.c:246
+msgid "syntax error while parsing ||"
+msgstr "¹½Ê¸²òÀÏÃæ¤ÎÊ¸Ë¡¥¨¥é¡¼ ||"
+
+#: build/expression.c:288
+#, fuzzy
+msgid "parse error in expression"
+msgstr "¼°Ãæ¤Ç¹½Ê¸²òÀÏ¥¨¥é¡¼"
+
+#: build/expression.c:318
+msgid "unmatched ("
+msgstr "°ìÃ×¤·¤Ê¤¤ ("
+
+#: build/expression.c:336
+#, fuzzy
+msgid "undefined identifier"
+msgstr "ÄêµÁ¤µ¤ì¤Æ¤¤¤Ê¤¤¼±ÊÌ»Ò"
+
+#: build/expression.c:355
+msgid "- only on numbers"
+msgstr "- ¿ô¤Î¤ß"
+
+#: build/expression.c:371
+msgid "! only on numbers"
+msgstr "! ¿ô¤Î¤ß"
+
+#: build/expression.c:410 build/expression.c:455 build/expression.c:512
+#: build/expression.c:599
+msgid "types must match"
+msgstr "·¿¤Ï°ìÃ×¤·¤Æ¤¤¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: build/expression.c:423
+msgid "* / not suported for strings"
+msgstr "* / ¤ÏÊ¸»úÎóÍÑ¤Ë¥µ¥Ý¡¼¥È¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
+
+#: build/expression.c:471
+msgid "- not suported for strings"
+msgstr "- ¤ÏÊ¸»úÎóÍÑ¤Ë¥µ¥Ý¡¼¥È¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
+
+#: build/expression.c:612
+msgid "&& and || not suported for strings"
+msgstr "&& ¤È || ¤ÏÊ¸»úÎóÍÑ¤Ë¥µ¥Ý¡¼¥È¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
+
+#: build/expression.c:645 build/expression.c:692
+#, fuzzy
+msgid "syntax error in expression"
+msgstr "¼°Ãæ¤ÇÊ¸Ë¡¥¨¥é¡¼"
+
+#: build/files.c:199
+#, c-format
+msgid "TIMECHECK failure: %s\n"
+msgstr "TIMECHECK ¼ºÇÔ: %s\n"
+
+#: build/files.c:243 build/files.c:325 build/files.c:488
+#, fuzzy, c-format
+msgid "Missing '(' in %s %s"
+msgstr "%s %s ¤Ç '('¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó"
+
+#: build/files.c:254 build/files.c:442 build/files.c:499
+#, fuzzy, c-format
+msgid "Missing ')' in %s(%s"
+msgstr "')' ¤¬¤¢¤ê¤Þ¤»¤ó %s(%s "
+
+#: build/files.c:292 build/files.c:467
+#, c-format
+msgid "Invalid %s token: %s"
+msgstr "Ìµ¸ú¤Ê %s ¤Î¥È¡¼¥¯¥ó: %s"
+
+#: build/files.c:341
+#, c-format
+msgid "Non-white space follows %s(): %s"
+msgstr "%s() ¤ËÂ³¤¯¶õÇò¤¬¤¢¤ê¤Þ¤»¤ó: %s"
+
+#: build/files.c:379
+#, fuzzy, c-format
+msgid "Bad syntax: %s(%s)"
+msgstr "ÉÔÀµ¤ÊÊ¸Ë¡: %s(%s)"
+
+#: build/files.c:389
+#, fuzzy, c-format
+msgid "Bad mode spec: %s(%s)"
+msgstr "ÉÔÀµ¤Ê¥â¡¼¥É¥¹¥Ú¥Ã¥¯: %s(%s)"
+
+#: build/files.c:401
+#, fuzzy, c-format
+msgid "Bad dirmode spec: %s(%s)"
+msgstr "ÉÔÀµ¤Ê¥Ç¥£¥ì¥¯¥È¥ê¥â¡¼¥É¥¹¥Ú¥Ã¥¯: %s(%s)"
+
+#: build/files.c:525
+#, fuzzy
+msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
+msgstr "°Û¾ï¤Ê¥í¥«¡¼¥ëÄ¹: \"%.*s\"  %%lang(%s)"
+
+#: build/files.c:535
+msgid "Duplicate locale %.*s in %%lang(%s)"
+msgstr "Ê£¿ô¤Î¥í¥«¡¼¥ë %.*s %%lang(%s)"
+
+#: build/files.c:630
+msgid "Hit limit for %%docdir"
+msgstr "%%docdir ¤Î¸Â³¦¤ËÃ£¤·¤Þ¤·¤¿"
+
+#: build/files.c:636
+msgid "Only one arg for %%docdir"
+msgstr "%%docdir ¤Î°ú¿ô¤Ï1¤Ä¤Î¤ß¤Ç¤¹"
+
+#. We already got a file -- error
+#: build/files.c:661
+#, c-format
+msgid "Two files on one line: %s"
+msgstr "1¹Ô¤Ë2¤Ä¤Î¥Õ¥¡¥¤¥ë: %s"
+
+#: build/files.c:674
+#, c-format
+msgid "File must begin with \"/\": %s"
+msgstr "¥Õ¥¡¥¤¥ë¤Ï \"/\" ¤«¤é»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó: %s"
+
+#: build/files.c:686
+msgid "Can't mix special %%doc with other forms: %s"
+msgstr "Â¾¤Î¥Õ¥©¡¼¥à¤ÇÆÃÊÌ¤Ê %%doc ¤òº®¤¼¤ë¤³¤È¤Ï¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: build/files.c:772
+#, c-format
+msgid "File listed twice: %s"
+msgstr "¥Õ¥¡¥¤¥ë¤¬2²óÉ½µ­¤µ¤ì¤Æ¤¤¤Þ¤¹: %s"
+
+#: build/files.c:865
+#, c-format
+msgid "Symlink points to BuildRoot: %s -> %s"
+msgstr ""
+
+#: build/files.c:945
+#, c-format
+msgid "File doesn't match prefix (%s): %s"
+msgstr "¥Õ¥¡¥¤¥ë¤Ï prefix (%s) ¤È°ìÃ×¤·¤Þ¤»¤ó: %s"
+
+#: build/files.c:955
+#, c-format
+msgid "File not found: %s"
+msgstr "¥Õ¥¡¥¤¥ë¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó: %s"
+
+#: build/files.c:998
+#, c-format
+msgid "Bad owner/group: %s\n"
+msgstr "ÉÔÀµ¤Ê½êÍ­¼Ô/¥°¥ë¡¼¥×: %s\n"
+
+#: build/files.c:1012
+#, fuzzy, c-format
+msgid "File %4d: %07o %s.%s\t %s\n"
+msgstr "¥Õ¥¡¥¤¥ë %4d: %07o %s.%s\t %s\n"
+
+#: build/files.c:1086
+#, c-format
+msgid "File needs leading \"/\": %s"
+msgstr "¥Õ¥¡¥¤¥ë¤ÏÀèÆ¬¤Ë \"/\" ¤¬É¬Í×¤Ç¤¹: %s"
+
+#: build/files.c:1154
+#, fuzzy
+msgid "Could not open %%files file %s: %s"
+msgstr "%%files ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: build/files.c:1161 build/pack.c:481
+#, c-format
+msgid "line: %s"
+msgstr "¹ÔÌÜ: %s"
+
+#: build/files.c:1495 build/parsePrep.c:30
+#, c-format
+msgid "Bad owner/group: %s"
+msgstr "ÉÔÀµ¤Ê½êÍ­¼Ô/¥°¥ë¡¼¥×: %s"
+
+#. XXX this error message is probably not seen.
+#: build/files.c:1550
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s"
+msgstr "%s ¤ò¼Â¹Ô¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/files.c:1555
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s"
+msgstr "%s ¤ò fork ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/files.c:1637
+#, c-format
+msgid "%s failed"
+msgstr "%s ¼ºÇÔ"
+
+#: build/files.c:1641
+#, c-format
+msgid "failed to write all data to %s"
+msgstr "Á´¤Æ¤Î¥Ç¡¼¥¿¤ò %s ¤Ë½ñ¤¯¤³¤È¤Ë¼ºÇÔ¤·¤Þ¤·¤¿"
+
+#: build/files.c:1730
+#, fuzzy, c-format
+msgid "Finding  %s: (using %s)...\n"
+msgstr "%s ¤òÃµ¤·¤Æ¤¤¤Þ¤¹: (%s ¤ò»ÈÍÑ¤·¤Æ¤¤¤Þ¤¹)...\n"
+
+#: build/files.c:1758 build/files.c:1767
+#, fuzzy, c-format
+msgid "Failed to find %s:"
+msgstr "%s ¤ò¸«¤Ä¤±¤ë¤Î¤Ë¼ºÇÔ¤·¤Þ¤·¤¿:"
+
+#: build/files.c:1873
+#, fuzzy, c-format
+msgid "Processing files: %s-%s-%s\n"
+msgstr "¥Õ¥¡¥¤¥ë¤Î½èÍýÃæ: %s-%s-%s\n"
+
+#: build/names.c:41 build/names.c:73
+msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
+msgstr "RPMERR_INTERNAL: getUname() ¤Î¸Â³¦¤ËÃ£¤·¤Þ¤·¤¿\n"
+
+#: build/names.c:106 build/names.c:138
+msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
+msgstr "RPMERR_INTERNAL: getGname() ¤Î¸Â³¦¤ËÃ£¤·¤Þ¤·¤¿\n"
+
+#: build/names.c:176
+#, c-format
+msgid "Could not canonicalize hostname: %s\n"
+msgstr "¥Û¥¹¥ÈÌ¾¤òÀµ¼°¤Ê¤â¤Î¤Ë¤Ç¤­¤Þ¤»¤ó: %s\n"
+
+#: build/pack.c:132
+#, c-format
+msgid "Could not generate output filename for package %s: %s\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤Î ½ÐÎÏ¥Õ¥¡¥¤¥ëÌ¾¤òÀ¸À®¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s\n"
+
+#: build/pack.c:149
+#, fuzzy, c-format
+msgid "cannot create %s: %s\n"
+msgstr "%s ¤òºîÀ®¤Ç¤­¤Þ¤»¤ó: %s\n"
+
+#: build/pack.c:186
+#, fuzzy, c-format
+msgid "readRPM: open %s: %s\n"
+msgstr "readRPM: %s ¤Î¥ª¡¼¥×¥ó: %s\n"
+
+#: build/pack.c:196
+#, fuzzy, c-format
+msgid "readRPM: read %s: %s\n"
+msgstr "readRPM: %s ¤ÎÆÉ¤ß¹þ¤ß: %s\n"
+
+#: build/pack.c:217
+#, fuzzy, c-format
+msgid "readRPM: %s is not an RPM package\n"
+msgstr "readRPM: %s ¤Ï RPM ¥Ñ¥Ã¥±¡¼¥¸¤Ç¤Ï¤¢¤ê¤Þ¤»¤ó\n"
+
+#: build/pack.c:223
+#, fuzzy, c-format
+msgid "readRPM: reading header from %s\n"
+msgstr "readRPM: %s ¤«¤é¤Î¥Ø¥Ã¥À¤ÎÆÉ¤ß¹þ¤ß\n"
+
+#: build/pack.c:281
+msgid "Bad CSA data"
+msgstr "ÉÔÀµ¤Ê CSA ¥Ç¡¼¥¿"
+
+#: build/pack.c:316
+#, fuzzy, c-format
+msgid "Could not open %s: %s\n"
+msgstr "%s ¤Î¥ª¡¼¥×¥ó¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: build/pack.c:348
+#, c-format
+msgid "Unable to write package: %s"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Î½ñ¤­¹þ¤ß¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s"
+
+#: build/pack.c:363
+#, c-format
+msgid "Generating signature: %d\n"
+msgstr "½ðÌ¾¤ÎÀ¸À®Ãæ: %d\n"
+
+#: build/pack.c:379
+#, fuzzy, c-format
+msgid "Unable to open sigtarget %s: %s"
+msgstr "sigtarget ¤ÎÆÉ¤ß¹þ¤ß¤¬¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/pack.c:389
+#, fuzzy, c-format
+msgid "Unable to read sigtarget %s: %s"
+msgstr "sigtarget ¤ÎÆÉ¤ß¹þ¤ß¤¬¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/pack.c:399
+#, fuzzy, c-format
+msgid "Unable to write package %s: %s"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Î½ñ¤­¹þ¤ß¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s"
+
+#: build/pack.c:414
+#, c-format
+msgid "Wrote: %s\n"
+msgstr "½ñ¤­¹þ¤ßÃæ: %s\n"
+
+#: build/pack.c:430
+#, fuzzy, c-format
+msgid "create archive failed on file %s: %s"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤Ç¥¢¡¼¥«¥¤¥Ö¤ÎºîÀ®¤Ë¼ºÇÔ: %s"
+
+#: build/pack.c:449
+#, fuzzy, c-format
+msgid "cpio_copy write failed: %s"
+msgstr "cpio_copy ¤Ç½ñ¤­¹þ¤ß¼ºÇÔ: %s"
+
+#: build/pack.c:456
+#, fuzzy, c-format
+msgid "cpio_copy read failed: %s"
+msgstr "cpio_copy ¤ÇÆÉ¤ß¹þ¤ß¼ºÇÔ: %s"
+
+#: build/pack.c:536
+#, c-format
+msgid "Could not open PreIn file: %s"
+msgstr "PreIn ¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/pack.c:543
+#, c-format
+msgid "Could not open PreUn file: %s"
+msgstr "PreUn ¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/pack.c:550
+#, c-format
+msgid "Could not open PostIn file: %s"
+msgstr "PostIn ¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/pack.c:557
+#, c-format
+msgid "Could not open PostUn file: %s"
+msgstr "PostUn ¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/pack.c:565
+#, c-format
+msgid "Could not open VerifyScript file: %s"
+msgstr "VerifyScript ¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/pack.c:580
+#, c-format
+msgid "Could not open Trigger script file: %s"
+msgstr "¥È¥ê¥¬¡¼¥¹¥¯¥ê¥×¥È¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿: %s"
+
+#: build/parseBuildInstallClean.c:27
+#, c-format
+msgid "line %d: second %s"
+msgstr "%d ¹ÔÌÜ: 2ÈÖÌÜ¤Î %s"
+
+#: build/parseChangelog.c:103
+msgid "%%changelog entries must start with *"
+msgstr "%%chagelog ¥¨¥ó¥È¥ê¤Ï * ¤Ç»Ï¤Þ¤é¤Í¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: build/parseChangelog.c:111
+msgid "incomplete %%changelog entry"
+msgstr "ÉÔ´°Á´¤Ê %%changelog ¥¨¥ó¥È¥ê"
+
+#: build/parseChangelog.c:126
+msgid "bad date in %%changelog: %s"
+msgstr "%%changelog Ãæ¤ÎÉÔÀµ¤ÊÆüÉÕ: %s"
+
+#: build/parseChangelog.c:131
+msgid "%%changelog not in decending chronological order"
+msgstr "%%changelog ¤Ï½½¿Ê¿ô¤ÎÇ¯Âå½ç¤Ë¤Ê¤Ã¤Æ¤¤¤Þ¤»¤ó"
+
+#: build/parseChangelog.c:139 build/parseChangelog.c:150
+msgid "missing name in %%changelog"
+msgstr "%%changelog Ãæ¤ËÌ¾Á°¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: build/parseChangelog.c:157
+msgid "no description in %%changelog"
+msgstr "%%changelog Ãæ¤ËÀâÌÀ¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: build/parseDescription.c:33
+msgid "line %d: Error parsing %%description: %s"
+msgstr "%d ¹ÔÌÜ: %%description ¤Î²òÀÏ¥¨¥é¡¼: %s"
+
+#: build/parseDescription.c:46 build/parseFiles.c:40 build/parseScript.c:168
+#, c-format
+msgid "line %d: Bad option %s: %s"
+msgstr "%d ¹ÔÌÜ: ÉÔÀµ¤Ê¥ª¥×¥·¥ç¥ó %s:%s"
+
+#: build/parseDescription.c:59 build/parseFiles.c:53 build/parseScript.c:181
+#, c-format
+msgid "line %d: Too many names: %s"
+msgstr "%d ¹ÔÌÜ: Ì¾Á°¤¬Â¿¤¹¤®¤Þ¤¹: %s"
+
+#: build/parseDescription.c:69 build/parseFiles.c:63 build/parseScript.c:191
+#, c-format
+msgid "line %d: Package does not exist: %s"
+msgstr "%d ¹ÔÌÜ: ¥Ñ¥Ã¥±¡¼¥¸¤¬Â¸ºß¤·¤Þ¤»¤ó: %s"
+
+#: build/parseDescription.c:81
+#, c-format
+msgid "line %d: Second description"
+msgstr "%d ¹ÔÌÜ: 2ÈÖÌÜ¤ÎÀâÌÀ"
+
+#: build/parseFiles.c:27
+msgid "line %d: Error parsing %%files: %s"
+msgstr "%d ¹ÔÌÜ: %%files ¤Î²òÀÏ¥¨¥é¡¼: %s"
+
+#: build/parseFiles.c:71
+msgid "line %d: Second %%files list"
+msgstr "%d ¹ÔÌÜ: 2ÈÖÌÜ¤Î %%files ¥ê¥¹¥È"
+
+#: build/parsePreamble.c:145
+#, c-format
+msgid "Architecture is excluded: %s"
+msgstr "¥¢¡¼¥­¥Æ¥¯¥Á¥ã¤Ï½ü³°¤µ¤ì¤Æ¤¤¤Þ¤¹: %s"
+
+#: build/parsePreamble.c:150
+#, c-format
+msgid "Architecture is not included: %s"
+msgstr "¥¢¡¼¥­¥Æ¥¯¥Á¥ã¤Ï´Þ¤Þ¤ì¤Æ¤¤¤Þ¤»¤ó: %s"
+
+#: build/parsePreamble.c:155
+#, c-format
+msgid "OS is excluded: %s"
+msgstr "OS ¤Ï½ü³°¤µ¤ì¤Æ¤¤¤Þ¤¹: %s"
+
+#: build/parsePreamble.c:160
+#, c-format
+msgid "OS is not included: %s"
+msgstr "OS ¤Ï´Þ¤Þ¤ì¤Æ¤¤¤Þ¤»¤ó: %s"
+
+#: build/parsePreamble.c:174
+#, c-format
+msgid "%s field must be present in package: %s"
+msgstr "%s ¥Õ¥£¡¼¥ë¥É¤Ï¥Ñ¥Ã¥±¡¼¥¸Ãæ¤ËÉ¬Í×¤Ç¤¹: %s"
+
+#: build/parsePreamble.c:199
+#, c-format
+msgid "Duplicate %s entries in package: %s"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸Ãæ¤ÎÆó½Å¤Î %s ¥¨¥ó¥È¥ê: %s"
+
+#: build/parsePreamble.c:246
+#, fuzzy, c-format
+msgid "Unable to open icon %s: %s"
+msgstr "¥¢¥¤¥³¥ó¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: build/parsePreamble.c:264
+#, fuzzy, c-format
+msgid "Unable to read icon %s: %s"
+msgstr "¥¢¥¤¥³¥ó¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: build/parsePreamble.c:277
+#, c-format
+msgid "Unknown icon type: %s"
+msgstr "ÉÔÌÀ¤Ê¥¢¥¤¥³¥ó¥¿¥¤¥×: %s"
+
+#: build/parsePreamble.c:339
+#, c-format
+msgid "line %d: Malformed tag: %s"
+msgstr "%d ¹ÔÌÜ: ÉÔ´°Á´¤Ê·Á¤Î¥¿¥°: %s"
+
+#. Empty field
+#: build/parsePreamble.c:347
+#, c-format
+msgid "line %d: Empty tag: %s"
+msgstr "%d ¹ÔÌÜ: ¶õ¤Î¥¿¥°: %s"
+
+#: build/parsePreamble.c:370 build/parsePreamble.c:377
+#, fuzzy, c-format
+msgid "line %d: Illegal char '-' in %s: %s"
+msgstr "%d ¹ÔÌÜ: %s Ãæ¤ËÉÔÀµ¤ÊÊ¸»ú '-' : %s"
+
+#: build/parsePreamble.c:441 build/parseSpec.c:366
+#, fuzzy, c-format
+msgid "BuildRoot can not be \"/\": %s"
+msgstr "%d ¹ÔÌÜ: BuildRoot ¤Ï \"/\" ¤Ë¤¹¤ë¤³¤È¤Ï¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: build/parsePreamble.c:454
+#, c-format
+msgid "line %d: Prefixes must not end with \"/\": %s"
+msgstr "%d ¹ÔÌÜ: Prefixes ¤Ï \"/\" ¤Ç½ª¤ï¤Ã¤Æ¤Ï¤¤¤±¤Þ¤»¤ó: %s"
+
+#: build/parsePreamble.c:466
+#, c-format
+msgid "line %d: Docdir must begin with '/': %s"
+msgstr "%d ¹ÔÌÜ: Docdir ¤Ï '/' ¤Ç»Ï¤Þ¤é¤Ê¤¯¤Æ¤Ï¤¤¤±¤Þ¤»¤ó: %s"
+
+#: build/parsePreamble.c:478
+#, fuzzy, c-format
+msgid "line %d: Epoch/Serial field must be a number: %s"
+msgstr "%d ¹ÔÌÜ: Epoch/Serial ¥Õ¥£¡¼¥ë¥É¤ÏÈÖ¹æ¤Ç¤Ê¤±¤ì¤Ð¤¤¤±¤Þ¤»¤ó: %s"
+
+#: build/parsePreamble.c:541
+#, c-format
+msgid "line %d: Bad BuildArchitecture format: %s"
+msgstr "%d ¹ÔÌÜ: ÉÔÀµ¤Ê BuildArchitecture ¥Õ¥©¡¼¥Þ¥Ã¥È: %s"
+
+#: build/parsePreamble.c:551
+#, c-format
+msgid "Internal error: Bogus tag %d"
+msgstr "ÆâÉô¥¨¥é¡¼: ¤Ë¤»¤Î¥¿¥° %d"
+
+#: build/parsePreamble.c:689
+#, c-format
+msgid "Bad package specification: %s"
+msgstr "ÉÔÀµ¤Ê¥Ñ¥Ã¥±¡¼¥¸¤Î»ØÄê: %s"
+
+#: build/parsePreamble.c:695
+#, c-format
+msgid "Package already exists: %s"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ï¤¹¤Ç¤ËÂ¸ºß¤·¤Æ¤¤¤Þ¤¹: %s"
+
+#: build/parsePreamble.c:722
+#, c-format
+msgid "line %d: Unknown tag: %s"
+msgstr "%d ¹ÔÌÜ: ÉÔÌÀ¤Ê¥¿¥°: %s"
+
+#: build/parsePreamble.c:747
+msgid "Spec file can't use BuildRoot"
+msgstr "¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ë¤Ï BuildRoot ¤ò»ÈÍÑ¤Ç¤­¤Þ¤»¤ó"
+
+#: build/parsePrep.c:26
+#, c-format
+msgid "Bad source: %s: %s"
+msgstr "ÉÔÀµ¤Ê¥½¡¼¥¹: %s : %s"
+
+#: build/parsePrep.c:53
+#, c-format
+msgid "No patch number %d"
+msgstr "¥Ñ¥Ã¥ÁÈÖ¹æ %d ¤Ï¤¢¤ê¤Þ¤»¤ó"
+
+#: build/parsePrep.c:134
+#, c-format
+msgid "No source number %d"
+msgstr "¥½¡¼¥¹ÈÖ¹æ %d ¤Ï¤¢¤ê¤Þ¤»¤ó"
+
+#: build/parsePrep.c:153
+#, fuzzy, c-format
+msgid "Couldn't download nosource %s: %s"
+msgstr "nosource %s ¤ò¥À¥¦¥ó¥í¡¼¥É¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: build/parsePrep.c:219
+msgid "Error parsing %%setup: %s"
+msgstr "%%setup ¤Î¹½Ê¸²òÀÏ¥¨¥é¡¼: %s"
+
+#: build/parsePrep.c:234
+msgid "line %d: Bad arg to %%setup %c: %s"
+msgstr "%d ¹ÔÌÜ: %%setup %c ¤Ø¤ÎÉÔÀµ¤Ê°ú¿ô: %s"
+
+#: build/parsePrep.c:252
+msgid "line %d: Bad %%setup option %s: %s"
+msgstr "%d ¹ÔÌÜ: ÉÔÀµ¤Ê %%setup ¥ª¥×¥·¥ç¥ó %s: %s"
+
+#: build/parsePrep.c:379
+msgid "line %d: Need arg to %%patch -b: %s"
+msgstr "%d ¹ÔÌÜ: %%patch -b ¤Ë¤Ï°ú¿ô¤¬É¬Í×¤Ç¤¹: %s"
+
+#: build/parsePrep.c:387
+msgid "line %d: Need arg to %%patch -z: %s"
+msgstr "%d ¹ÔÌÜ: %%patch -z ¤Ë¤Ï°ú¿ô¤¬É¬Í×¤Ç¤¹: %s"
+
+#: build/parsePrep.c:399
+msgid "line %d: Need arg to %%patch -p: %s"
+msgstr "%d ¹ÔÌÜ: %%patch -p ¤Ë¤Ï°ú¿ô¤¬É¬Í×¤Ç¤¹: %s"
+
+#: build/parsePrep.c:405
+msgid "line %d: Bad arg to %%patch -p: %s"
+msgstr "%d ¹ÔÌÜ: ÉÔÀµ¤Ê %%patch -p ¤Ø¤Î°ú¿ô: %s"
+
+#: build/parsePrep.c:412
+msgid "Too many patches!"
+msgstr "¥Ñ¥Ã¥Á¤¬Â¿¤¹¤®¤Þ¤¹"
+
+#: build/parsePrep.c:416
+msgid "line %d: Bad arg to %%patch: %s"
+msgstr "%d ¹ÔÌÜ: %%patch ¤Ø¤ÎÉÔÀµ¤Ê°ú¿ô: %s"
+
+#: build/parsePrep.c:452
+msgid "line %d: second %%prep"
+msgstr "%d ¹ÔÌÜ: 2ÈÖÌÜ¤Î %%prep"
+
+#: build/parseReqs.c:91
+#, fuzzy, c-format
+msgid ""
+"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
+msgstr ""
+"%d ¹ÔÌÜ: °ÍÂ¸À­¥È¡¼¥¯¥ó¤Ï±Ñ¿ô»ú¡¢'_'¡¢'/' ¤Ç»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó: %s"
+
+#: build/parseReqs.c:102
+#, fuzzy, c-format
+msgid "line %d: File name not permitted: %s"
+msgstr "%d ¹ÔÌÜ: ¥Õ¥¡¥¤¥ëÌ¾¤Ïµö²Ä¤µ¤ì¤Æ¤¤¤Þ¤»¤ó: %s"
+
+#: build/parseReqs.c:134
+#, fuzzy, c-format
+msgid "line %d: Versioned file name not permitted: %s"
+msgstr "%d ¹ÔÌÜ: ¥Ð¡¼¥¸¥ç¥óÉÕ¤±¤µ¤ì¤¿¥Õ¥¡¥¤¥ëÌ¾¤Ïµö²Ä¤µ¤ì¤Æ¤¤¤Þ¤»¤ó: %s"
+
+#: build/parseReqs.c:146
+#, fuzzy, c-format
+msgid "line %d: Version not permitted: %s"
+msgstr "%d ¹ÔÌÜ: ¥Ð¡¼¥¸¥ç¥ó¤Ïµö²Ä¤µ¤ì¤Æ¤¤¤Þ¤»¤ó: %s"
+
+#: build/parseReqs.c:172
+#, fuzzy, c-format
+msgid "line %d: Version required: %s"
+msgstr "%d ¹ÔÌÜ: ¥Ð¡¼¥¸¥ç¥ó¤¬É¬Í×¤Ç¤¹: %s"
+
+#: build/parseScript.c:136
+#, c-format
+msgid "line %d: triggers must have --: %s"
+msgstr "%d ¹ÔÌÜ: ¥È¥ê¥¬¡¼¤Ï -- ¤¬¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó: %s"
+
+#: build/parseScript.c:146 build/parseScript.c:209
+#, c-format
+msgid "line %d: Error parsing %s: %s"
+msgstr "%d ¹ÔÌÜ: %s ¤Î¹½Ê¸²òÀÏ¥¨¥é¡¼: %s"
+
+#: build/parseScript.c:156
+#, c-format
+msgid "line %d: script program must begin with '/': %s"
+msgstr "%d ¹ÔÌÜ: ¥¹¥¯¥ê¥×¥È¥×¥í¥°¥é¥à¤Ï '/' ¤Ç»Ï¤Þ¤é¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó: %s"
+
+#: build/parseScript.c:200
+#, c-format
+msgid "line %d: Second %s"
+msgstr "%d ¹ÔÌÜ: 2ÈÖÌÜ¤Î %s"
+
+#: build/parseSpec.c:129
+#, c-format
+msgid "line %d: %s"
+msgstr "%d ¹ÔÌÜ: %s"
+
+#. XXX Fstrerror
+#: build/parseSpec.c:179
+#, fuzzy, c-format
+msgid "Unable to open %s: %s\n"
+msgstr "¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó: %s\n"
+
+#: build/parseSpec.c:191
+msgid "Unclosed %%if"
+msgstr "%%if ¤¬ÊÄ¤¸¤Æ¤¤¤Þ¤»¤ó"
+
+#: build/parseSpec.c:252
+#, c-format
+msgid "%s:%d: parseExpressionBoolean returns %d"
+msgstr "%s%d: parseExpressionBoolean ¤¬ %d ¤òÊÖ¤·¤Þ¤·¤¿"
+
+#. Got an else with no %if !
+#: build/parseSpec.c:260
+#, fuzzy
+msgid "%s:%d: Got a %%else with no if"
+msgstr "%s:%d: if ¤¬¤Ê¤¤¤Î¤Ë %%else ¤¬¤¢¤ê¤Þ¤¹"
+
+#. Got an end with no %if !
+#: build/parseSpec.c:271
+#, fuzzy
+msgid "%s:%d: Got a %%endif with no if"
+msgstr "%s:%d: if ¤¬¤Ê¤¤¤Î¤Ë %%endif ¤¬¤¢¤ê¤Þ¤¹"
+
+#: build/parseSpec.c:285 build/parseSpec.c:294
+msgid "malformed %%include statement"
+msgstr "¤ª¤«¤·¤Ê %%include ¥¹¥Æ¡¼¥È¥á¥ó¥È¤Ç¤¹"
+
+#: build/parseSpec.c:461
+msgid "No buildable architectures"
+msgstr "ºîÀ®(build)²ÄÇ½¤Ê¥¢¡¼¥­¥Æ¥¯¥Á¥ã¤Ï¤¢¤ê¤Þ¤»¤ó"
+
+#: build/parseSpec.c:509
+msgid "Package has no %%description: %s"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ï %%description ¤¬¤¢¤ê¤Þ¤»¤ó: %s"
+
+#: build/spec.c:31
+#, c-format
+msgid "archive = %s, fs = %s\n"
+msgstr "¥¢¡¼¥«¥¤¥Ö = %s, fs = %s\n"
+
+#: build/spec.c:237
+#, c-format
+msgid "line %d: Bad number: %s"
+msgstr "%d ¹ÔÌÜ: ÉÔÀµ¤ÊÈÖ¹æ: %s"
+
+#: build/spec.c:243
+#, c-format
+msgid "line %d: Bad no%s number: %d"
+msgstr "%d ¹ÔÌÜ: ÉÔÀµ¤Ê no%s ÈÖ¹æ: %d"
+
+#: build/spec.c:301
+#, c-format
+msgid "line %d: Bad %s number: %s\n"
+msgstr "%d ¹ÔÌÜ: ÉÔÀµ¤Ê %s ÈÖ¹æ: %s\n"
+
+#: lib/cpio.c:330
+#, fuzzy, c-format
+msgid "can't rename %s to %s: %s\n"
+msgstr "%s ¤ò %s ¤Ë¤¹¤ëÌ¾Á°¤ÎÊÑ¹¹¤¬¤Ç¤­¤Þ¤»¤ó: %s\n"
+
+#: lib/cpio.c:336
+#, fuzzy, c-format
+msgid "can't unlink %s: %s\n"
+msgstr "%s ¤òºï½ü(unlink)¤Ç¤­¤Þ¤»¤ó: %s\n"
+
+#: lib/cpio.c:527
+#, c-format
+msgid "getNextHeader: %s\n"
+msgstr ""
+
+#: lib/cpio.c:992
+#, fuzzy, c-format
+msgid "(error 0x%x)"
+msgstr "(¥¨¥é¡¼ 0x%x)"
+
+#: lib/cpio.c:995
+msgid "Bad magic"
+msgstr "ÉÔÀµ¤Ê¥Þ¥¸¥Ã¥¯"
+
+#: lib/cpio.c:996
+msgid "Bad/unreadable  header"
+msgstr "ÉÔÀµ¤Ê/ÉÔ²ÄÆÉ¤Ê¥Ø¥Ã¥À"
+
+#: lib/cpio.c:1014
+msgid "Header size too big"
+msgstr "¥Ø¥Ã¥À¥µ¥¤¥º¤¬Âç¤­¤¹¤®¤Þ¤¹"
+
+#: lib/cpio.c:1015
+#, fuzzy
+msgid "Unknown file type"
+msgstr "ÉÔÌÀ¤Ê¥Õ¥¡¥¤¥ë¥¿¥¤¥×"
+
+#: lib/cpio.c:1016
+msgid "Missing hard link"
+msgstr "¥Ï¡¼¥É¥ê¥ó¥¯¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó"
+
+#: lib/cpio.c:1017
+#, fuzzy
+msgid "Internal error"
+msgstr "ÆâÉô¥¨¥é¡¼"
+
+#: lib/cpio.c:1026
+#, fuzzy
+msgid " failed - "
+msgstr "¼ºÇÔ - "
+
+#: lib/dbindex.c:35
+#, fuzzy, c-format
+msgid "cannot open file %s: %s"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: lib/dbindex.c:87
+#, c-format
+msgid "error getting record %s from %s"
+msgstr "¥ì¥³¡¼¥É %s ¤Î¼èÆÀ¤Î¥¨¥é¡¼ (%s ¤«¤é)"
+
+#: lib/dbindex.c:114
+#, c-format
+msgid "error storing record %s into %s"
+msgstr "¥ì¥³¡¼¥É %s ¤ò %s ¤Ë¥¹¥È¥¢¤Ç¥¨¥é¡¼ "
+
+#: lib/dbindex.c:121
+#, c-format
+msgid "error removing record %s into %s"
+msgstr "¥ì¥³¡¼¥É %s ¤ò %s ¤Ëºï½ü¤Ç¥¨¥é¡¼"
+
+#. XXX legacy epoch-less requires/conflicts compatibility
+#: lib/depends.c:417
+#, c-format
+msgid ""
+"the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
+"\tA %s\tB %s\n"
+msgstr ""
+"\"B\" ¤Î°ÍÂ¸À­¤Ï epoch ¤òÉ¬Í×¤È¤·¤Þ¤¹(\"A\"¤ÈÆ±¤¸¤Ç¤¢¤ë¤È²¾Äê¤·¤Æ)\n"
+"\tA %s\tB %s\n"
+
+#: lib/depends.c:446
+#, c-format
+msgid "  %s    A %s\tB %s\n"
+msgstr ""
+
+#: lib/depends.c:538
+msgid "dbrecMatchesDepFlags() failed to read header"
+msgstr "dbrecMatchesDepFlags() ¤¬¥Ø¥Ã¥À¤òÆÉ¤à¤Î¤Ë¼ºÇÔ¤·¤Þ¤·¤¿"
+
+#: lib/depends.c:784
+#, c-format
+msgid "%s: %s satisfied by added file list.\n"
+msgstr "%s: %s ¤Ï¥Õ¥¡¥¤¥ë¥ê¥¹¥È¤Ë²Ã¤¨¤ë¤³¤È¤Ë¤è¤Ã¤ÆËþ¤µ¤ì¤Þ¤¹¡£\n"
+
+#: lib/depends.c:823
+#, fuzzy, c-format
+msgid "%s: %s satisfied by added package.\n"
+msgstr "%s: %s ¤Ï¥Ñ¥Ã¥±¡¼¥¸¤Ë²Ã¤¨¤ë¤³¤È¤Ë¤è¤Ã¤ÆËþ¤µ¤ì¤Þ¤¹¡£\n"
+
+#: lib/depends.c:840
+#, c-format
+msgid "%s: %s satisfied by added provide.\n"
+msgstr "%s: %s ¤Ï provide ¤Ë²Ã¤¨¤ë¤³¤È¤Ë¤è¤Ã¤ÆËþ¤µ¤ì¤Þ¤¹¡£\n"
+
+#: lib/depends.c:871
+#, c-format
+msgid "%s: %s satisfied by rpmrc provides.\n"
+msgstr "%s: %s ¤Ï rpmrc ¤¬Äó¶¡¤¹¤ë¤³¤È¤Ë¤è¤Ã¤ÆËþ¤µ¤ì¤Þ¤¹¡£\n"
+
+#: lib/depends.c:899
+#, c-format
+msgid "%s: %s satisfied by db file lists.\n"
+msgstr "%s: %s ¤Ï db ¥Õ¥¡¥¤¥ë¤¬¥ê¥¹¥È¤òºî¤ë¤³¤È¤Ë¤è¤Ã¤ÆËþ¤µ¤ì¤Þ¤¹¡£\n"
+
+#: lib/depends.c:921
+#, c-format
+msgid "%s: %s satisfied by db provides.\n"
+msgstr "%s: %s ¤Ï db ¤¬Äó¶¡¤¹¤ë¤³¤È¤Ë¤è¤Ã¤ÆËþ¤µ¤ì¤Þ¤¹¡£\n"
+
+#: lib/depends.c:943
+#, fuzzy, c-format
+msgid "%s: %s satisfied by db packages.\n"
+msgstr "%s: %s ¤Ï db ¥Ñ¥Ã¥±¡¼¥¸¤Ë¤è¤Ã¤ÆËþ¤µ¤ì¤Æ¤¤¤Þ¤¹¡£\n"
+
+#: lib/depends.c:956
+#, c-format
+msgid "%s: %s satisfied by rpmlib version.\n"
+msgstr "%s: %s ¤Ï rpmlib ¤Î¥Ð¡¼¥¸¥ç¥ó¤Ë¤è¤Ã¤ÆËþ¤µ¤ì¤Æ¤¤¤Þ¤¹¡£\n"
+
+#: lib/depends.c:966
+#, c-format
+msgid "%s: %s unsatisfied.\n"
+msgstr "%s: %s ¤ÏËþ¤µ¤ì¤Æ¤¤¤Þ¤»¤ó¡£\n"
+
+#. requirements are not satisfied.
+#: lib/depends.c:1014
+#, c-format
+msgid "package %s require not satisfied: %s\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤Ï require ¤¬Ëþ¤¿¤µ¤ì¤Æ¤¤¤Þ¤»¤ó: %s\n"
+
+#. conflicts exist.
+#: lib/depends.c:1076
+#, c-format
+msgid "package %s conflicts: %s\n"
+msgstr "%s ¤È¶¥¹ç¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤¬¤¢¤ê¤Þ¤¹: %s\n"
+
+#: lib/depends.c:1131 lib/depends.c:1430
+#, c-format
+msgid "cannot read header at %d for dependency check"
+msgstr "°ÍÂ¸À­¥Á¥§¥Ã¥¯¤Î¤¿¤á¤Ë %d ¤Ç¥Ø¥Ã¥À¤òÆÉ¤á¤Þ¤»¤ó"
+
+#: lib/depends.c:1226
+#, c-format
+msgid "loop in prerequisite chain: %s"
+msgstr "prerequisite ¥Á¥§¡¼¥ó¤Î¥ë¡¼¥×: %s"
+
+#: lib/falloc.c:124
+#, c-format
+msgid ""
+"free list corrupt (%u)- please run\n"
+"\t\"rpm --rebuilddb\"\n"
+"More information is available from http://www.rpm.org or the "
+"rpm-list@redhat.com mailing list\n"
+"if \"rpm --rebuilddb\" fails to correct the problem.\n"
+msgstr ""
+"free list corrupt (%u)- °Ê²¼¤ò¼Â¹Ô¤·¤Æ¤¯¤À¤µ¤¤\n"
+"\t\"rpm --rebuilddb\"\n"
+"¤â¤·ÌäÂê¤ò²ò·è¤¹¤ë¤¿¤á¤Ë¼Â¹Ô¤·¤¿ \"rpm --rebuilddb\" ¤¬¼ºÇÔ¤·¤¿¤é¡¢\n"
+"http://www.rpm.org ¤â¤·¤¯¤Ï rpm-list@redhat.com ¥á¡¼¥ê¥ó¥°¥ê¥¹¥È¤«¤é\n"
+"¾ÜºÙ¤Ê¾ðÊó¤¬¼èÆÀ¤Ç¤­¤Þ¤¹¡£\n"
+
+#: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
+#: lib/header.c:2189 lib/header.c:2206 lib/header.c:2226
+msgid "(not a number)"
+msgstr "(¿ô»ú¤Ç¤Ï¤¢¤ê¤Þ¤»¤ó)"
+
+#: lib/fs.c:56
+#, c-format
+msgid "mntctl() failed to return fugger size: %s"
+msgstr "mntctl() fugger ¥µ¥¤¥º¤òÊÖ¤¹¤Î¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s"
+
+#: lib/fs.c:91 lib/fs.c:261
+#, c-format
+msgid "failed to stat %s: %s"
+msgstr "stat %s ¤Ë¼ºÇÔ: %s"
+
+#: lib/fs.c:127
+msgid "getting list of mounted filesystems\n"
+msgstr "¥Þ¥¦¥ó¥È¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¥·¥¹¥Æ¥à¤Î¥ê¥¹¥È¤ò¼èÆÀ¤·¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/fs.c:132
+#, c-format
+msgid "failed to open %s: %s"
+msgstr "%s ¤Î¥ª¡¼¥×¥ó¤Ë¼ºÇÔ: %s"
+
+#: lib/fs.c:283
+#, c-format
+msgid "file %s is on an unknown device"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤ÏÉÔÌÀ¤Ê¥Ç¥Ð¥¤¥¹¤Ç¤¹"
+
+#. This should not be allowed
+#: lib/header.c:218
+msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+msgstr "grabDate() RPM_STRING_TYPE ¥«¥¦¥ó¥È¤Ï 1 ¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó¡£\n"
+
+#: lib/header.c:249 lib/header.c:812
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "¥Ç¡¼¥¿¥¿¥¤¥× %d ¤Ï¥µ¥Ý¡¼¥È¤µ¤ì¤Æ¤¤¤Þ¤»¤ó\n"
+
+#: lib/header.c:1171
+#, c-format
+msgid "Bad count for headerAddEntry(): %d\n"
+msgstr "headerAddEntry() ¤ÎÉÔÀµ¤Ê¥«¥¦¥ó¥È: %d\n"
+
+#: lib/header.c:1580
+#, c-format
+msgid "missing { after %"
+msgstr "% ¤Î¸å¤Ë { ¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: lib/header.c:1608
+msgid "missing } after %{"
+msgstr "%{ ¤Î¸å¤Ë } ¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: lib/header.c:1620
+msgid "empty tag format"
+msgstr "¶õ¤Î¥¿¥°¥Õ¥©¡¼¥Þ¥Ã¥È"
+
+#: lib/header.c:1630
+msgid "empty tag name"
+msgstr "¶õ¤Î¥¿¥°Ì¾"
+
+#: lib/header.c:1645
+msgid "unknown tag"
+msgstr "ÉÔÌÀ¤Ê¥¿¥°"
+
+#: lib/header.c:1671
+msgid "] expected at end of array"
+msgstr "ÇÛÎó¤Î¸å¤Ë ] ¤¬´üÂÔ¤µ¤ì¤Þ¤¹"
+
+#: lib/header.c:1687
+msgid "unexpected ]"
+msgstr "Í½´ü¤»¤Ì ]"
+
+#: lib/header.c:1689
+msgid "unexpected }"
+msgstr "Í½´ü¤»¤Ì }"
+
+#: lib/header.c:1743
+msgid "? expected in expression"
+msgstr "¼°Ãæ¤Ç ? ¤¬´üÂÔ¤µ¤ì¤Þ¤¹"
+
+#: lib/header.c:1750
+msgid "{ expected after ? in expression"
+msgstr "¼°Ãæ¤Ç ? ¤Î¸å¤Ë { ¤¬´üÂÔ¤µ¤ì¤Þ¤¹"
+
+#: lib/header.c:1760 lib/header.c:1795
+msgid "} expected in expression"
+msgstr "¼°Ãæ¤Ë } ¤¬´üÂÔ¤µ¤ì¤Þ¤¹"
+
+#: lib/header.c:1768
+msgid ": expected following ? subexpression"
+msgstr "°Ê²¼¤Î ? ¥µ¥Ö¼°¤Î ¤Ë: ¤¬´üÂÔ¤µ¤ì¤Þ¤¹"
+
+#: lib/header.c:1782
+msgid "{ expected after : in expression"
+msgstr "¼°Ãæ¤Ç : ¤Î¸å¤Ë { ¤¬´üÂÔ¤µ¤ì¤Þ¤¹"
+
+#: lib/header.c:1803
+msgid "| expected at end of expression"
+msgstr "¼°¤Î½ª¤ê¤Ë | ¤¬´üÂÔ¤µ¤ì¤Þ¤¹"
+
+#: lib/header.c:1972
+msgid "(unknown type)"
+msgstr "(ÉÔÌÀ¤Ê¥¿¥¤¥×)"
+
+#: lib/install.c:142 lib/uninstall.c:194
+#, fuzzy, c-format
+msgid "   file: %s action: %s\n"
+msgstr "¥Õ¥¡¥¤¥ë %s: ¥¢¥¯¥·¥ç¥ó: %s\n"
+
+#: lib/install.c:160
+#, c-format
+msgid "user %s does not exist - using root"
+msgstr "¥æ¡¼¥¶ %s ¤ÏÂ¸ºß¤·¤Þ¤»¤ó - root ¤ò»ÈÍÑ¤·¤Þ¤¹"
+
+#: lib/install.c:168
+#, c-format
+msgid "group %s does not exist - using root"
+msgstr "¥°¥ë¡¼¥× %s ¤ÏÂ¸ºß¤·¤Þ¤»¤ó - root ¤ò»ÈÍÑ¤·¤Þ¤¹"
+
+#: lib/install.c:196
+#, fuzzy
+msgid "%%instchangelog value in macro file should be a number, but isn't"
+msgstr ""
+"¥Þ¥¯¥í¥Õ¥¡¥¤¥ëÃæ¤Î %%instchangelog "
+"¤ÎÃÍ¤Ï¿ô¤Ç¤¢¤ë¤Ù¤­¤Ç¤¹¡¢¤·¤«¤·¤½¤¦¤Ç¤¢¤ê¤Þ¤»¤ó"
+
+#. this would probably be a good place to check if disk space
+#. was used up - if so, we should return a different error
+#: lib/install.c:362
+#, fuzzy, c-format
+msgid "unpacking of archive failed%s%s: %s"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤Î¥¢¡¼¥«¥¤¥Ö¤Î¿­Ä¹¤Ë¼ºÇÔ %s%s: %s"
+
+#: lib/install.c:363
+#, fuzzy
+msgid " on file "
+msgstr "¥Õ¥¡¥¤¥ë¾å"
+
+#: lib/install.c:406
+msgid "installing a source package\n"
+msgstr "¥½¡¼¥¹¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ë¤·¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/install.c:426
+#, fuzzy, c-format
+msgid "cannot create sourcedir %s"
+msgstr "%s ¤òºîÀ®¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: lib/install.c:432 lib/install.c:462
+#, c-format
+msgid "cannot write to %s"
+msgstr "%s ¤Ø½ñ¤­¹þ¤á¤Þ¤»¤ó"
+
+#: lib/install.c:436
+#, c-format
+msgid "sources in: %s\n"
+msgstr "¥½¡¼¥¹¤Ï: %s\n"
+
+#: lib/install.c:456
+#, fuzzy, c-format
+msgid "cannot create specdir %s"
+msgstr "%s ¤òºîÀ®¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: lib/install.c:466
+#, c-format
+msgid "spec file in: %s\n"
+msgstr "spec ¥Õ¥¡¥¤¥ë¤Ï: %s\n"
+
+#: lib/install.c:500 lib/install.c:528
+msgid "source package contains no .spec file"
+msgstr "¥½¡¼¥¹¥Ñ¥Ã¥±¡¼¥¸¤Ï .spec ¥Õ¥¡¥¤¥ë¤ò´Þ¤ó¤Ç¤¤¤Þ¤»¤ó"
+
+#: lib/install.c:550
+#, c-format
+msgid "renaming %s to %s\n"
+msgstr "%s ¤ò %s ¤ØÌ¾Á°¤òÊÑ¹¹¤·¤Þ¤¹\n"
+
+#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:27
+#, c-format
+msgid "rename of %s to %s failed: %s"
+msgstr "%s ¤ò %s ¤Ë¤¹¤ëÌ¾Á°¤ÎÊÑ¹¹¤Ë¼ºÇÔ: %s"
+
+#: lib/install.c:643
+msgid "source package expected, binary found"
+msgstr "¥½¡¼¥¹¥Ñ¥Ã¥±¡¼¥¸¤¬´üÂÔ¤µ¤ì¤Þ¤¹¡¢¥Ð¥¤¥Ê¥ê¤Ï¸«¤Ä¤«¤ê¤Þ¤·¤¿"
+
+#: lib/install.c:700
+#, c-format
+msgid "package: %s-%s-%s files test = %d\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸: %s-%s-%s ¥Õ¥¡¥¤¥ë¥Æ¥¹¥È = %d\n"
+
+#: lib/install.c:761
+msgid "stopping install as we're running --test\n"
+msgstr "--test ¤ò¼Â¹Ô¤¹¤ë¤è¤¦¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤òÃæ»ß¤·¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/install.c:766
+msgid "running preinstall script (if any)\n"
+msgstr "¥×¥ê¥¤¥ó¥¹¥È¡¼¥ë¥¹¥¯¥ê¥×¥È(¤¬Í­¤ì¤Ð)¤ò¼Â¹Ô¤·¤Þ¤¹\n"
+
+#: lib/install.c:791
+#, c-format
+msgid "warning: %s created as %s"
+msgstr "·Ù¹ð: %s ¤Ï %s ¤È¤·¤ÆºîÀ®¤µ¤ì¤Þ¤¹"
+
+#: lib/install.c:827
+#, c-format
+msgid "warning: %s saved as %s"
+msgstr "·Ù¹ð: %s ¤Ï %s ¤È¤·¤ÆÊÝÂ¸¤µ¤ì¤Þ¤¹"
+
+#: lib/install.c:901
+#, fuzzy
+msgid "running postinstall scripts (if any)\n"
+msgstr "¥Ý¥¹¥È¥¤¥ó¥¹¥È¡¼¥ë¥¹¥¯¥ê¥×¥È(¤¬Í­¤ì¤Ð)¤ò¼Â¹Ô¤·¤Þ¤¹\n"
+
+#: lib/lookup.c:35
+#, c-format
+msgid "cannot read header at %d for lookup"
+msgstr "¸¡º÷¤Î¤¿¤á¤Î %d ¤Ç ¥Ø¥Ã¥À¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó"
+
+#: lib/macro.c:161
+#, c-format
+msgid "======================== active %d empty %d\n"
+msgstr "======================== ¥¢¥¯¥Æ¥£¥Ö %d ¥¨¥ó¥×¥Æ¥£ %d\n"
+
+#. XXX just in case
+#: lib/macro.c:256
+#, c-format
+msgid "%3d>%*s(empty)"
+msgstr ""
+
+#: lib/macro.c:291
+#, c-format
+msgid "%3d<%*s(empty)\n"
+msgstr ""
+
+#: lib/macro.c:470
+msgid "Macro %%%s has unterminated body"
+msgstr "¥Þ¥¯¥í %%%s ¤Ï¥Ü¥Ç¥£¤¬½ªÃ¼¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
+
+#: lib/macro.c:496
+msgid "Macro %%%s has illegal name (%%define)"
+msgstr "¥Þ¥¯¥í %%%s ¤Ï°ãË¡¤ÊÌ¾Á°¤Ç¤¹(%%define)"
+
+#: lib/macro.c:502
+msgid "Macro %%%s has unterminated opts"
+msgstr "¥Þ¥¯¥í %%%s ¤Ï opts ¤¬½ªÃ¼¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
+
+#: lib/macro.c:507
+msgid "Macro %%%s has empty body"
+msgstr "¥Þ¥¯¥í %%%s ¤Ï¶õ¤Î¥Ü¥Ç¥£¤Ç¤¹"
+
+#: lib/macro.c:512
+msgid "Macro %%%s failed to expand"
+msgstr "¥Þ¥¯¥í %%%s ¤Ï¿­Ä¹¤Ë¼ºÇÔ¤·¤Þ¤·¤¿"
+
+#: lib/macro.c:537
+msgid "Macro %%%s has illegal name (%%undefine)"
+msgstr "¥Þ¥¯¥í %%%s ¤Ï°ãË¡¤ÊÌ¾Á°¤Ç¤¹(%%undefine)"
+
+#: lib/macro.c:614
+msgid "Macro %%%s (%s) was not used below level %d"
+msgstr "¥Þ¥¯¥í %%%s (%s) ¤Ï¥ì¥Ù¥ë %d °Ê²¼¤Ç»ÈÍÑ¤µ¤ì¤Þ¤»¤ó¤Ç¤·¤¿"
+
+#: lib/macro.c:711
+#, fuzzy, c-format
+msgid "Unknown option %c in %s(%s)"
+msgstr "ÉÔÌÀ¤Ê¥ª¥×¥·¥ç¥ó %c (%s(%s)Ãæ¤Ë)"
+
+#: lib/macro.c:891
+#, c-format
+msgid "Recursion depth(%d) greater than max(%d)"
+msgstr "ºÆµ¢¤Î¿¼¤µ(%d)¤¬ºÇÂçÃÍ(%d)¤è¤ê¤âÂç¤­¤¤"
+
+#: lib/macro.c:957 lib/macro.c:973
+#, fuzzy, c-format
+msgid "Unterminated %c: %s"
+msgstr "½ªÃ¼¤µ¤ì¤Æ¤¤¤Ê¤¤ %c: %s"
+
+#: lib/macro.c:1013
+msgid "A %% is followed by an unparseable macro"
+msgstr "A %% ¤Ï¹½Ê¸²òÀÏ¤Ç¤­¤Ê¤¤¥Þ¥¯¥í¤¬Â³¤¤¤Æ¤¤¤Þ¤¹"
+
+#: lib/macro.c:1139
+#, fuzzy
+msgid "Macro %%%.*s not found, skipping"
+msgstr "¥Þ¥¯¥í %%%.*s ¤Ï¸«¤Ä¤«¤ê¤Þ¤»¤ó¡¢¥¹¥­¥Ã¥×¤·¤Þ¤¹"
+
+#: lib/macro.c:1220
+msgid "Target buffer overflow"
+msgstr "¥¿¡¼¥²¥Ã¥È¥Ð¥Ã¥Õ¥¡¥ª¡¼¥Ð¡¼¥Õ¥í¡¼"
+
+#. XXX Fstrerror
+#: lib/macro.c:1400 lib/macro.c:1406
+#, c-format
+msgid "File %s: %s"
+msgstr "¥Õ¥¡¥¤¥ë %s: %s"
+
+#: lib/macro.c:1409
+#, c-format
+msgid "File %s is smaller than %d bytes"
+msgstr "¥Õ¥¡¥¤¥ë %s: ¤Ï %d ¥Ð¥¤¥È¤è¤ê¾®¤µ¤¤¤Ç¤¹"
+
+#: lib/messages.c:55
+msgid "warning: "
+msgstr "·Ù¹ð: "
+
+#: lib/messages.c:64
+msgid "error: "
+msgstr "¥¨¥é¡¼: "
+
+#: lib/messages.c:73
+msgid "fatal error: "
+msgstr "Ã×Ì¿Åª¤Ê¥¨¥é¡¼: "
+
+#: lib/messages.c:82
+msgid "internal error (rpm bug?): "
+msgstr "ÆâÉôÅª¤Ê¥¨¥é¡¼ (rpm ¤Î¥Ð¥°?)"
+
+#: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
+#, c-format
+msgid "error creating temporary file %s"
+msgstr "°ì»þ¥Õ¥¡¥¤¥ë %s ¤ÎºîÀ®¥¨¥é¡¼"
+
+#: lib/oldheader.c:301
+#, fuzzy, c-format
+msgid "bad file state: %s"
+msgstr "ÉÔÀµ¤Ê¥Õ¥¡¥¤¥ë¤Î¾õÂÖ: %s"
+
+#: lib/package.c:237
+msgid "package is a version one package!\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ï°ì¤Ä¤Î¥Ð¡¼¥¸¥ç¥ó¤Î¥Ñ¥Ã¥±¡¼¥¸!\n"
+
+#: lib/package.c:242
+msgid "old style source package -- I'll do my best\n"
+msgstr "¸Å¤¤¥¹¥¿¥¤¥ë¤Î¥½¡¼¥¹¥Ñ¥Ã¥±¡¼¥¸ -- ¥Ù¥¹¥È¤ò¿Ô¤¯¤·¤Þ¤¹\n"
+
+#: lib/package.c:245
+#, c-format
+msgid "archive offset is %d\n"
+msgstr "¥¢¡¼¥«¥¤¥Ö¥ª¥Õ¥»¥Ã¥È¤Ï %d\n"
+
+#: lib/package.c:256
+msgid "old style binary package\n"
+msgstr "¸Å¤¤¥¹¥¿¥¤¥ë¤Î¥Ð¥¤¥Ê¥ê¥Ñ¥Ã¥±¡¼¥¸\n"
+
+#: lib/package.c:316
+msgid ""
+"only packages with major numbers <= 3 are supported by this version of RPM"
+msgstr ""
+"¥á¥¸¥ã¡¼ÈÖ¹æ <=3 ¤Î¥Ñ¥Ã¥±¡¼¥¸¤Î¤ß¤³¤Î¥Ð¡¼¥¸¥ç¥ó¤Î RPM ¤Ï¥µ¥Ý¡¼¥È¤µ¤ì¤Æ¤¤¤Þ¤¹"
+
+#: lib/problems.c:43
+#, c-format
+msgid " is needed by %s-%s-%s\n"
+msgstr "¤Ï %s-%s-%s ¤ËÉ¬Í×¤È¤µ¤ì¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/problems.c:46
+#, c-format
+msgid " conflicts with %s-%s-%s\n"
+msgstr " %s-%s-%s ¤È¶¥¹ç¤·¤Þ¤¹\n"
+
+#: lib/problems.c:66
+#, c-format
+msgid "package %s-%s-%s is for a different architecture"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Ï°Û¤Ê¤ë¥¢¡¼¥­¥Æ¥¯¥Á¥ã¸þ¤±¤Ç¤¹"
+
+#: lib/problems.c:71
+#, c-format
+msgid "package %s-%s-%s is for a different operating system"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Ï°Û¤Ê¤ë OS ¸þ¤±¤Ç¤¹"
+
+#: lib/problems.c:76
+#, c-format
+msgid "package %s-%s-%s is already installed"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Ï¤¹¤Ç¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤Æ¤¤¤Þ¤¹"
+
+#: lib/problems.c:81
+#, fuzzy, c-format
+msgid "path %s is not relocateable for package %s-%s-%s"
+msgstr "¥Ñ¥¹ %s ¤ÏºÆÇÛÃÖ¤Ç¤­¤Þ¤»¤ó(¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤ËÂÐ¤·¤Æ)"
+
+#: lib/problems.c:86
+#, c-format
+msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
+msgstr ""
+"¥Õ¥¡¥¤¥ë %s ¤Ï %s-%s-%s ¤È %s-%s-%s ¤Î¥¤¥ó¥¹¥È¡¼¥ë¤Î¥Õ¥¡¥¤¥ë¤È¶¥¹ç¤·¤Æ¤¤¤Þ¤¹"
+
+#: lib/problems.c:92
+#, fuzzy, c-format
+msgid ""
+"file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
+msgstr ""
+"%s-%s-%s ¤Î¥¤¥ó¥¹¥È¡¼¥ë¤«¤é¤Î¥Õ¥¡¥¤¥ë %s ¤Ï¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s "
+"¤«¤é¤Î¥Õ¥¡¥¤¥ë¤È¶¥¹ç¤·¤Æ¤¤¤Þ¤¹"
+
+#: lib/problems.c:98
+#, fuzzy, c-format
+msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
+msgstr ""
+"¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s (%s-%s-%s¤è¤ê¤â¿·¤·¤¤¤â¤Î) "
+"¤Ï¤¹¤Ç¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤Æ¤¤¤Þ¤¹"
+
+#: lib/problems.c:104
+#, c-format
+msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
+msgstr ""
+"¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤Î¥¤¥ó¥¹¥È¡¼¥ë¤Ï %ld%cb ¤¬É¬Í×¤Ç¤¹(%s "
+"¥Õ¥¡¥¤¥ë¥·¥¹¥Æ¥à¾å¤Ç)"
+
+#: lib/problems.c:116
+#, c-format
+msgid "unknown error %d encountered while manipulating package %s-%s-%s"
+msgstr "ÉÔÌÀ¤Ê¥¨¥é¡¼ %d ¤¬¥Ñ¥Ã¥±¡¼¥¸ %s-%s-%s ¤ÎÁàºîÃæ¤Ë¤ª¤­¤Þ¤·¤¿"
+
+#: lib/query.c:138
+#, c-format
+msgid "error in format: %s\n"
+msgstr "¥Õ¥©¡¼¥Þ¥Ã¥ÈÃæ¤Î¥¨¥é¡¼: %s\n"
+
+#: lib/query.c:181
+msgid "(contains no files)"
+msgstr "¥Õ¥¡¥¤¥ë¤ò´Þ¤ó¤Ç¤¤¤Þ¤»¤ó"
+
+#: lib/query.c:238
+msgid "normal        "
+msgstr "ÄÌ¾ï"
+
+#: lib/query.c:240
+msgid "replaced      "
+msgstr "ÃÖ¤­´¹¤¨¤é¤ì¤Æ¤¤¤Þ¤¹"
+
+#: lib/query.c:242
+msgid "not installed "
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
+
+#: lib/query.c:244
+msgid "net shared    "
+msgstr "¥Í¥Ã¥È¶¦Í­"
+
+#: lib/query.c:246
+#, c-format
+msgid "(unknown %3d) "
+msgstr "(Ì¤ÃÎ¤Î %3d)"
+
+#: lib/query.c:250
+msgid "(no state)    "
+msgstr "(²¿¤Î¾õÂÖ¤â¤¢¤ê¤Þ¤»¤ó)"
+
+#: lib/query.c:267 lib/query.c:308
+msgid "package has neither file owner or id lists"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ï¥Õ¥¡¥¤¥ë½êÍ­¼Ô¤ä id ¥ê¥¹¥È¤ò¤É¤Á¤é¤â»ý¤Ã¤Æ¤¤¤Þ¤»¤ó"
+
+#: lib/query.c:421
+#, fuzzy, c-format
+msgid "record number %u\n"
+msgstr "¥ì¥³¡¼¥ÉÈÖ¹æ %u\n"
+
+#: lib/query.c:425
+msgid "error: could not read database record\n"
+msgstr "¥¨¥é¡¼: ¥Ç¡¼¥¿¥Ù¡¼¥¹¥ì¥³¡¼¥É¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿\n"
+
+#. XXX Fstrerror
+#: lib/query.c:471
+#, c-format
+msgid "open of %s failed: %s\n"
+msgstr "%s ¤Î¥ª¡¼¥×¥ó¤Ë¼ºÇÔ: %s\n"
+
+#: lib/query.c:489
+msgid "old format source packages cannot be queried\n"
+msgstr "µì·Á¼°¤Î¥½¡¼¥¹¥Ñ¥Ã¥±¡¼¥¸¤òÌä¤¤¹ç¤ï¤»¤ë¤³¤È¤Ï¤Ç¤­¤Þ¤»¤ó\n"
+
+#: lib/query.c:498 lib/rpminstall.c:231
+#, c-format
+msgid "%s does not appear to be a RPM package\n"
+msgstr "%s ¤Ï RPM ¥Ñ¥Ã¥±¡¼¥¸¤Ç¤Ï¤¢¤ê¤Þ¤»¤ó\n"
+
+#: lib/query.c:502
+#, c-format
+msgid "query of %s failed\n"
+msgstr "%s ¤Ø¤ÎÌä¤¤¹ç¤ï¤»¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: lib/query.c:535
+#, fuzzy, c-format
+msgid "query of specfile %s failed, can't parse\n"
+msgstr "¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ë %s ¤Ø¤ÎÌä¤¤¹ç¤ï¤»¤Ë¼ºÇÔ¤·¤Þ¤·¤¿¡¢¥Ñ¡¼¥¹¤Ç¤­¤Þ¤»¤ó\n"
+
+#: lib/query.c:560
+msgid "could not read database record!\n"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¥ì¥³¡¼¥É¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿!\n"
+
+#: lib/query.c:571
+#, c-format
+msgid "group %s does not contain any packages\n"
+msgstr "¥°¥ë¡¼¥× %s ¤ËÂ°¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤ÏÂ¸ºß¤·¤Þ¤»¤ó\n"
+
+#: lib/query.c:581
+#, c-format
+msgid "no package triggers %s\n"
+msgstr "%s ¤ò¥È¥ê¥¬¡¼¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤ÏÂ¸ºß¤·¤Þ¤»¤ó\n"
+
+#: lib/query.c:591
+#, c-format
+msgid "no package requires %s\n"
+msgstr "%s ¤òÉ¬Í×¤È¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤ÏÂ¸ºß¤·¤Þ¤»¤ó\n"
+
+#: lib/query.c:602
+#, c-format
+msgid "no package provides %s\n"
+msgstr "%s ¤òÄó¶¡¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤ÏÂ¸ºß¤·¤Þ¤»¤ó\n"
+
+#: lib/query.c:618
+#, c-format
+msgid "file %s: %s\n"
+msgstr "¥Õ¥¡¥¤¥ë %s: %s\n"
+
+#: lib/query.c:621
+#, c-format
+msgid "file %s is not owned by any package\n"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤Ï¤É¤Î¥Ñ¥Ã¥±¡¼¥¸¤Ë¤âÂ°¤·¤Æ¤¤¤Þ¤»¤ó\n"
+
+#: lib/query.c:634
+#, c-format
+msgid "invalid package number: %s\n"
+msgstr "Ìµ¸ú¤Ê¥Ñ¥Ã¥±¡¼¥¸ÈÖ¹æ: %s\n"
+
+#: lib/query.c:637
+#, fuzzy, c-format
+msgid "package record number: %d\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¥ì¥³¡¼¥ÉÈÖ¹æ %d\n"
+
+#: lib/query.c:640
+#, c-format
+msgid "record %d could not be read\n"
+msgstr "¥ì¥³¡¼¥É %d ¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿\n"
+
+#: lib/query.c:652 lib/rpminstall.c:435
+#, c-format
+msgid "package %s is not installed\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤Ï¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤Æ¤¤¤Þ¤»¤ó\n"
+
+#: lib/query.c:655
+#, c-format
+msgid "error looking for package %s\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤ÎÃµº÷¥¨¥é¡¼\n"
+
+#: lib/query.c:677
+#, fuzzy
+msgid "rpmQuery: rpmdbOpen() failed\n"
+msgstr "rpmQuery: rpmdbOpen() ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: lib/query.c:736
+#, fuzzy
+msgid "query package owning file"
+msgstr "¥Õ¥¡¥¤¥ë¤ò½êÍ­¤·¤Æ¤¤¤ë¥Ñ¥Ã¥±¡¼¥¸¤òÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: lib/query.c:738
+#, fuzzy
+msgid "query packages in group"
+msgstr "¥°¥ë¡¼¥×Ãæ¤Î¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ä¤¤¤ÆÌä¤¤¹ç¤ï¤»¤Þ¤¹\n"
+
+#: lib/query.c:740
+#, fuzzy
+msgid "query a package file"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¥Õ¥¡¥¤¥ë¤Ë¤Ä¤¤¤ÆÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: lib/query.c:744
+#, fuzzy
+msgid "query a spec file"
+msgstr "¥¹¥Ú¥Ã¥¯¥Õ¥¡¥¤¥ë¤òÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: lib/query.c:746
+#, fuzzy
+msgid "query the pacakges triggered by the package"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë¤è¤Ã¤Æ¥È¥ê¥¬¡¼¤µ¤ì¤ë¥Ñ¥Ã¥±¡¼¥¸¤òÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: lib/query.c:748
+#, fuzzy
+msgid "query the packages which require a capability"
+msgstr ""
+"µ¡Ç½¤òÉ¬Í×¤È¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ä¤¤¤Æ\n"
+"Ìä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: lib/query.c:750
+#, fuzzy
+msgid "query the packages which provide a capability"
+msgstr "µ¡Ç½¤òÄó¶¡¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤Ë¤Ä¤¤¤ÆÌä¤¤¹ç¤ï¤»¤Þ¤¹"
+
+#: lib/query.c:789
+#, fuzzy
+msgid "list all configuration files"
+msgstr "Á´¤Æ¤ÎÀßÄê¥Õ¥¡¥¤¥ë¤òÎóµó¤·¤Þ¤¹"
+
+#: lib/query.c:791
+#, fuzzy
+msgid "list all documentation files"
+msgstr "Á´¤Æ¤Î¥É¥­¥å¥á¥ó¥È¥Õ¥¡¥¤¥ë¤òÎóµó¤·¤Þ¤¹"
+
+#: lib/query.c:793
+#, fuzzy
+msgid "dump basic file information"
+msgstr "´ðËÜÅª¤Ê¥Õ¥¡¥¤¥ë¾ðÊó¤ò¥À¥ó¥×¤·¤Þ¤¹"
+
+#: lib/query.c:795
+#, fuzzy
+msgid "list files in package"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸Ãæ¤Î¥Õ¥¡¥¤¥ë¤òÎóµó¤·¤Þ¤¹\n"
+
+#: lib/query.c:799
+msgid "use the following query format"
+msgstr "°Ê²¼¤ÎÌä¤¤¹ç¤ï¤»¥Õ¥©¡¼¥Þ¥Ã¥È¤ò»ÈÍÑ¤·¤Þ¤¹"
+
+#: lib/query.c:801
+msgid "substitute i18n sections from the following catalogue"
+msgstr "°Ê²¼¤Î¥«¥¿¥í¥°¤«¤é i18n ¥»¥¯¥·¥ç¥ó¤òÃÖ¤­´¹¤¨¤Þ¤¹"
+
+#: lib/query.c:804
+msgid "display the states of the listed files"
+msgstr "Îóµó¤·¤¿¥Õ¥¡¥¤¥ë¤Î¾õÂÖ¤òÉ½¼¨¤·¤Þ¤¹"
+
+#: lib/query.c:806
+#, fuzzy
+msgid "display a verbose file listing"
+msgstr "¥Õ¥¡¥¤¥ë¥ê¥¹¥È¤ò¾éÄ¹¤ËÉ½¼¨¤·¤Þ¤¹"
+
+#: lib/rebuilddb.c:20
+#, c-format
+msgid "rebuilding database in rootdir %s\n"
+msgstr "rootdir %s Ãæ¤Ç¥Ç¡¼¥¿¥Ù¡¼¥¹¤òºÆ¹½ÃÛ¤·¤Þ¤¹\n"
+
+#: lib/rebuilddb.c:24 lib/rpmdb.c:249
+msgid "no dbpath has been set"
+msgstr "dbpath ¤¬ÀßÄê¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
+
+#: lib/rebuilddb.c:34
+#, c-format
+msgid "temporary database %s already exists"
+msgstr "°ì»þÅª¤Ê¥Ç¡¼¥¿¥Ù¡¼¥¹ %s ¤Ï¤¹¤Ç¤ËÂ¸ºß¤·¤Æ¤¤¤Þ¤¹"
+
+#: lib/rebuilddb.c:38
+#, c-format
+msgid "creating directory: %s\n"
+msgstr "¥Ç¥£¥ì¥¯¥È¥ê¤ÎºîÀ®: %s\n"
+
+#: lib/rebuilddb.c:40
+#, c-format
+msgid "error creating directory %s: %s"
+msgstr "¥Ç¥£¥ì¥¯¥È¥ê %s ¤ÎºîÀ®¥¨¥é¡¼: %s"
+
+#: lib/rebuilddb.c:44
+msgid "opening old database\n"
+msgstr "¸Å¤¤¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î¥ª¡¼¥×¥ó\n"
+
+#: lib/rebuilddb.c:51
+msgid "opening new database\n"
+msgstr "¿·¤·¤¤¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î¥ª¡¼¥×¥ó\n"
+
+#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
+#, c-format
+msgid "record number %d in database is bad -- skipping it"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹Ãæ¤Î¥ì¥³¡¼¥ÉÈÖ¹æ %d ¤ÏÉÔÀµ¤Ç¤¹ -- ¥¹¥­¥Ã¥×¤·¤Þ¤¹"
+
+#: lib/rebuilddb.c:73
+#, c-format
+msgid "cannot add record originally at %d"
+msgstr "%d ¤Ë ¥ª¥ê¥¸¥Ê¥ë¤Î¥ì¥³¡¼¥É¤òÉÕ²Ã¤Ç¤­¤Þ¤»¤ó"
+
+#: lib/rebuilddb.c:92
+msgid "failed to rebuild database; original database remains in place\n"
+msgstr ""
+"¥Ç¡¼¥¿¥Ù¡¼¥¹¤ÎºÆ¹½ÃÛ¤Ë¼ºÇÔ; ¥ª¥ê¥¸¥Ê¥ë¥Ç¡¼¥¿¥Ù¡¼¥¹¤¬¤Þ¤À¤½¤³¤Ë»Ä¤Ã¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/rebuilddb.c:100
+msgid "failed to replace old database with new database!\n"
+msgstr "¸Å¤¤¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò¿·¤·¤¤¥Ç¡¼¥¿¥Ù¡¼¥¹¤ËÃÖ¤­´¹¤¨¤ë¤Î¤Ë¼ºÇÔ!\n"
+
+#: lib/rebuilddb.c:102
+#, c-format
+msgid "replaces files in %s with files from %s to recover"
+msgstr "%s Ãæ¤Î¥Õ¥¡¥¤¥ë¤ò¥ê¥«¥Ð¡¼¤¹¤ë¤¿¤á¤Ë %s ¤«¤é¥Õ¥¡¥¤¥ë¤ÈÃÖ¤­´¹¤¨¤Þ¤¹"
+
+#: lib/rebuilddb.c:108
+#, fuzzy, c-format
+msgid "failed to remove directory %s: %s\n"
+msgstr "¥Ç¥£¥ì¥¯¥È¥ê %s ¤Îºï½ü¼ºÇÔ: %s\n"
+
+#: lib/rpmchecksig.c:31
+#, fuzzy, c-format
+msgid "%s: open failed: %s\n"
+msgstr "%s: fdOpen ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s\n"
+
+#: lib/rpmchecksig.c:42
+#, fuzzy
+msgid "makeTempFile failed\n"
+msgstr "makeTempFile ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: lib/rpmchecksig.c:74
+#, fuzzy, c-format
+msgid "%s: Fwrite failed: %s\n"
+msgstr "%s: Fwrite ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s\n"
+
+#: lib/rpmchecksig.c:80
+#, fuzzy, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr "%s: Fread ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s\n"
+
+#: lib/rpmchecksig.c:113 lib/rpmchecksig.c:243
+#, c-format
+msgid "%s: readLead failed\n"
+msgstr "%s: readLead ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: lib/rpmchecksig.c:118
+#, c-format
+msgid "%s: Can't sign v1.0 RPM\n"
+msgstr "%s: v1.0 ¤Î RPM ¤Ë¤Ï½ðÌ¾¤Ç¤­¤Þ¤»¤ó\n"
+
+#: lib/rpmchecksig.c:122
+#, c-format
+msgid "%s: Can't re-sign v2.0 RPM\n"
+msgstr "%s: v2.0 ¤Î RPM ¤Ë¤ÏºÆ½ðÌ¾¤Ç¤­¤Þ¤»¤ó\n"
+
+#: lib/rpmchecksig.c:130 lib/rpmchecksig.c:257
+#, c-format
+msgid "%s: rpmReadSignature failed\n"
+msgstr "%s: rpmReadSignature ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: lib/rpmchecksig.c:134 lib/rpmchecksig.c:262
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Í­¸ú¤Ê½ðÌ¾¤Ï¤¢¤ê¤Þ¤»¤ó\n"
+
+#: lib/rpmchecksig.c:167
+#, fuzzy, c-format
+msgid "%s: writeLead failed: %s\n"
+msgstr "%s: writedLead ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿: %s\n"
+
+#: lib/rpmchecksig.c:173
+#, fuzzy, c-format
+msgid "%s: rpmWriteSignature failed: %s\n"
+msgstr "%s: rpmWriteSignature ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: lib/rpmchecksig.c:249
+#, c-format
+msgid "%s: No signature available (v1.0 RPM)\n"
+msgstr "%s: Í­¸ú¤Ê½ðÌ¾¤Ï¤¢¤ê¤Þ¤»¤ó(v1.0 RPM)\n"
+
+#: lib/rpmchecksig.c:412
+msgid "NOT OK"
+msgstr ""
+
+#: lib/rpmchecksig.c:413 lib/rpmchecksig.c:427
+#, fuzzy
+msgid " (MISSING KEYS:"
+msgstr " (¥­¡¼¤ÎÊ¶¼º) "
+
+#: lib/rpmchecksig.c:415 lib/rpmchecksig.c:429
+msgid ") "
+msgstr ""
+
+#: lib/rpmchecksig.c:416 lib/rpmchecksig.c:430
+msgid " (UNTRUSTED KEYS:"
+msgstr " (¿®Íê¤Ç¤­¤Ê¤¤¸°:"
+
+#: lib/rpmchecksig.c:418 lib/rpmchecksig.c:432
+msgid ")"
+msgstr ""
+
+#: lib/rpmchecksig.c:426
+msgid "OK"
+msgstr ""
+
+#: lib/rpmdb.c:147
+#, fuzzy, c-format
+msgid "opening database mode 0x%x in %s\n"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¥â¡¼¥É 0x%x ¤Î¥ª¡¼¥×¥ó (%s)\n"
+
+#: lib/rpmdb.c:157 lib/url.c:442
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
+msgstr "%s ¤Î¥ª¡¼¥×¥ó¤Ë¼ºÇÔ: %s"
+
+#: lib/rpmdb.c:171 lib/rpmdb.c:179
+#, c-format
+msgid "cannot get %s lock on database"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î %s ¤ò¥í¥Ã¥¯¤Ç¤­¤Þ¤»¤ó"
+
+#: lib/rpmdb.c:172
+msgid "exclusive"
+msgstr "½ü³°"
+
+#: lib/rpmdb.c:180
+msgid "shared"
+msgstr "¶¦Í­"
+
+#: lib/rpmdb.c:211
+msgid ""
+"old format database is present; use --rebuilddb to generate a new format "
+"database"
+msgstr ""
+
+#: lib/rpmdb.c:469
+#, c-format
+msgid "package %s not listed in %s"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤Ï %s Ãæ¤Ë¥ê¥¹¥È¤µ¤ì¤Æ¤¤¤Þ¤»¤ó"
+
+#: lib/rpmdb.c:480
+#, c-format
+msgid "package %s not found in %s"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤Ï %s Ãæ¤Ë¸«¤Ä¤«¤ê¤Þ¤»¤ó"
+
+#: lib/rpmdb.c:504 lib/uninstall.c:86
+#, c-format
+msgid "cannot read header at %d for uninstall"
+msgstr "¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë¤Î¤¿¤á¤Ë %d ¤Ç¥Ø¥Ã¥À¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó"
+
+#: lib/rpmdb.c:512
+msgid "package has no name"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤ËÌ¾Á°¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: lib/rpmdb.c:514
+msgid "removing name index\n"
+msgstr "name ¥¤¥ó¥Ç¥Ã¥¯¥¹ºï½ü¤·¤Þ¤¹\n"
+
+#: lib/rpmdb.c:519
+msgid "package has no group\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë¥°¥ë¡¼¥×¤¬¤¢¤ê¤Þ¤»¤ó\n"
+
+#: lib/rpmdb.c:521
+msgid "removing group index\n"
+msgstr "group ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#: lib/rpmdb.c:528
+#, c-format
+msgid "removing provides index for %s\n"
+msgstr "%s ÍÑ¤Î provides ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#: lib/rpmdb.c:543
+#, c-format
+msgid "removing requiredby index for %s\n"
+msgstr "%s ÍÑ¤Î requiredby ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#: lib/rpmdb.c:555
+#, c-format
+msgid "removing trigger index for %s\n"
+msgstr "%s ÍÑ¤Î tigger ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#: lib/rpmdb.c:566
+#, c-format
+msgid "removing conflict index for %s\n"
+msgstr "%s ÍÑ¤Î confilict ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#: lib/rpmdb.c:577
+#, c-format
+msgid "removing file index for %s\n"
+msgstr "%s ÍÑ¤Î file ¥¤¥ó¥Ç¥Ã¥¯¥¹¤òºï½ü¤·¤Þ¤¹\n"
+
+#: lib/rpmdb.c:586
+msgid "package has no files\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸¤Ë¥Õ¥¡¥¤¥ë¤¬Í­¤ê¤Þ¤»¤ó\n"
+
+#: lib/rpmdb.c:692
+msgid "cannot allocate space for database"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹ÍÑ¤Î¶õ¤­ÍÆÎÌ¤¬Â­¤ê¤Þ¤»¤ó"
+
+#: lib/rpmdb.c:751
+#, c-format
+msgid "cannot read header at %d for update"
+msgstr "¥¢¥Ã¥×¥Ç¡¼¥ÈÍÑ¤Î %d ¤Ç¥Ø¥Ã¥À¤òÆÉ¤á¤Þ¤»¤ó"
+
+#: lib/rpmdb.c:764
+msgid "header changed size!"
+msgstr "¥Ø¥Ã¥À¤Î¥µ¥¤¥º¤¬ÊÑ¹¹¤µ¤ì¤Þ¤·¤¿"
+
+#: lib/rpminstall.c:126
+msgid "counting packages to install\n"
+msgstr "¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤ò¿ô¤¨¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/rpminstall.c:130
+#, c-format
+msgid "found %d packages\n"
+msgstr "%d ¸Ä¤Î¥Ñ¥Ã¥±¡¼¥¸¤ò¸«¤Ä¤±¤Þ¤·¤¿\n"
+
+#: lib/rpminstall.c:135
+msgid "looking for packages to download\n"
+msgstr "¥À¥¦¥ó¥í¡¼¥É¤¹¤ë¥Ñ¥Ã¥±¡¼¥¸¤òÃµ¤·¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/rpminstall.c:150
+#, fuzzy, c-format
+msgid "skipping %s - rpmGlob failed(%d)\n"
+msgstr "%s ¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹ - Å¾Á÷¼ºÇÔ - %s\n"
+
+#: lib/rpminstall.c:165
+#, c-format
+msgid "Retrieving %s\n"
+msgstr "%s ¤ò¼èÆÀ¤·¤Æ¤¤¤Þ¤¹\n"
+
+#. XXX undefined %{name}/%{version}/%{release} here
+#. XXX %{_tmpdir} does not exist
+#: lib/rpminstall.c:175
+#, c-format
+msgid " ... as %s\n"
+msgstr "%s ¤È¤·¤Æ...\n"
+
+#: lib/rpminstall.c:179
+#, fuzzy, c-format
+msgid "skipping %s - transfer failed - %s\n"
+msgstr "%s ¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹ - Å¾Á÷¼ºÇÔ - %s\n"
+
+#: lib/rpminstall.c:206
+#, c-format
+msgid "retrieved %d packages\n"
+msgstr "%d ¸Ä¤Î¥Ñ¥Ã¥±¡¼¥¸¤ò¼èÆÀ¤·¤Þ¤·¤¿\n"
+
+#: lib/rpminstall.c:217 lib/rpminstall.c:360
+#, fuzzy, c-format
+msgid "cannot open file %s: %s\n"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó: %s"
+
+#: lib/rpminstall.c:235 lib/rpminstall.c:512
+#, fuzzy, c-format
+msgid "%s cannot be installed\n"
+msgstr "%s ¤ò¥¤¥ó¥¹¥È¡¼¥ë¤Ç¤­¤Þ¤»¤ó\n"
+
+#: lib/rpminstall.c:270
+#, fuzzy, c-format
+msgid "package %s is not relocateable\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤ÏºÆÇÛÃÖ¤Ç¤­¤Þ¤»¤ó"
+
+#: lib/rpminstall.c:289
+#, fuzzy, c-format
+msgid "error reading from file %s\n"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤«¤é¤ÎÆÉ¤ß¹þ¤ß¥¨¥é¡¼ "
+
+#: lib/rpminstall.c:294
+#, c-format
+msgid "file %s requires a newer version of RPM\n"
+msgstr "¥Õ¥¡¥¤¥ë %s ¤Ë¤Ï¤è¤ê¿·¤·¤¤ RPM ¤Î¥Ð¡¼¥¸¥ç¥ó¤¬É¬Í×¤Ç¤¹\n"
+
+#: lib/rpminstall.c:311
+#, c-format
+msgid "found %d source and %d binary packages\n"
+msgstr "%d ¸Ä¤Î¥½¡¼¥¹¤È %d ¸Ä¤Î¥Ð¥¤¥Ê¥ê¥Ñ¥Ã¥±¡¼¥¸¤¬¸«¤Ä¤«¤ê¤Þ¤·¤¿\n"
+
+#: lib/rpminstall.c:322
+msgid "failed dependencies:\n"
+msgstr "°ÍÂ¸À­¤Î·çÇ¡:\n"
+
+#: lib/rpminstall.c:340
+msgid "installing binary packages\n"
+msgstr "¥Ð¥¤¥Ê¥ê¥Ñ¥Ã¥±¡¼¥¸¤ò¥¤¥ó¥¹¥È¡¼¥ëÃæ\n"
+
+#: lib/rpminstall.c:439
+#, fuzzy, c-format
+msgid "searching for package %s\n"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸ %s ¤ÎÃµº÷Ãæ\n"
+
+#: lib/rpminstall.c:448
+#, c-format
+msgid "\"%s\" specifies multiple packages\n"
+msgstr "\"%s\" ¤ÏÊ£¿ô¤Î¥Ñ¥Ã¥±¡¼¥¸¤ò»ØÄê¤·¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/rpminstall.c:474
+msgid "removing these packages would break dependencies:\n"
+msgstr "¤³¤ì¤é¤Î¥Ñ¥Ã¥±¡¼¥¸¤òºï½ü¤¹¤ë¤È°ÍÂ¸À­¤òÇË²õ¤·¤Þ¤¹:\n"
+
+#: lib/rpminstall.c:501
+#, fuzzy, c-format
+msgid "cannot open %s: %s\n"
+msgstr "%s ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó\n"
+
+#: lib/rpminstall.c:507
+#, c-format
+msgid "Installing %s\n"
+msgstr "%s ¤ò¥¤¥ó¥¹¥È¡¼¥ëÃæ\n"
+
+#: lib/rpmio.c:771
+msgid "Success"
+msgstr "À®¸ù"
+
+#: lib/rpmio.c:774
+#, fuzzy
+msgid "Bad server response"
+msgstr "¥µ¡¼¥Ð¤«¤éÀµ¾ï¤Ê±þÅú¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: lib/rpmio.c:777
+#, fuzzy
+msgid "Server IO error"
+msgstr "¥µ¡¼¥Ð IO ¥¨¥é¡¼"
+
+#: lib/rpmio.c:780
+#, fuzzy
+msgid "Server timeout"
+msgstr "¥µ¡¼¥Ð¥¿¥¤¥à¥¢¥¦¥È"
+
+#: lib/rpmio.c:783
+#, fuzzy
+msgid "Unable to lookup server host address"
+msgstr "¥µ¡¼¥Ð¤Î¥Û¥¹¥È¥¢¥É¥ì¥¹¤òÄ´¤Ù¤é¤ì¤Þ¤»¤ó"
+
+#: lib/rpmio.c:786
+#, fuzzy
+msgid "Unable to lookup server host name"
+msgstr "¥µ¡¼¥Ð¤Î¥Û¥¹¥ÈÌ¾¤òÄ´¤Ù¤é¤ì¤Þ¤»¤ó"
+
+#: lib/rpmio.c:789
+#, fuzzy
+msgid "Failed to connect to server"
+msgstr "¥µ¡¼¥Ð¤Ø¤ÎÀÜÂ³¤Ë¼ºÇÔ¤·¤Þ¤·¤¿"
+
+#: lib/rpmio.c:792
+#, fuzzy
+msgid "Failed to establish data connection to server"
+msgstr "¥µ¡¼¥Ð¤È¤Î¥Ç¡¼¥¿¥³¥Í¥¯¥·¥ç¥ó¤Î³ÎÎ©¤Ë¼ºÇÔ¤·¤Þ¤·¤¿"
+
+#: lib/rpmio.c:795
+msgid "IO error to local file"
+msgstr "¥í¡¼¥«¥ë¥Õ¥¡¥¤¥ë¤Î IO ¥¨¥é¡¼"
+
+#: lib/rpmio.c:798
+msgid "Error setting remote server to passive mode"
+msgstr "¥ê¥â¡¼¥È¥µ¡¼¥Ð¤Î¥Ñ¥Ã¥·¥Ö¥â¡¼¥ÉÀßÄê¥¨¥é¡¼"
+
+#: lib/rpmio.c:801
+msgid "File not found on server"
+msgstr "¥µ¡¼¥Ð¾å¤Ë¥Õ¥¡¥¤¥ë¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó"
+
+#: lib/rpmio.c:804
+msgid "Abort in progress"
+msgstr "½èÍýÃæ¤Î¥¢¥Ü¡¼¥È"
+
+#: lib/rpmio.c:808
+#, fuzzy
+msgid "Unknown or unexpected error"
+msgstr "ÉÔÌÀ¤â¤·¤¯¤ÏÍ½´ü¤»¤Ì¥¨¥é¡¼"
+
+#: lib/rpmio.c:1341
+#, c-format
+msgid "logging into %s as %s, pw %s\n"
+msgstr "%s ¤Ø %s pw %s ¤È¤·¤Æ¥í¥°¥¤¥óÃæ\n"
+
+#: lib/rpmlead.c:48
+#, c-format
+msgid "read failed: %s (%d)"
+msgstr "ÆÉ¤ß¹þ¤ß¤Î¼ºÇÔ: %s (%d)"
+
+#: lib/rpmrc.c:144
+#, c-format
+msgid "missing second ':' at %s:%d"
+msgstr "2ÈÖÌÜ¤Î ':' ¤¬¤¢¤ê¤Þ¤»¤ó(%s:%d ¤Ç)"
+
+#: lib/rpmrc.c:147
+#, c-format
+msgid "missing architecture name at %s:%d"
+msgstr "%s:%d ¤Ë¥¢¡¼¥­¥Æ¥¯¥Á¥ãÌ¾¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: lib/rpmrc.c:307
+#, c-format
+msgid "Incomplete data line at %s:%d"
+msgstr "%s:%d ¤Ç¥Ç¡¼¥¿¹Ô¤¬ÉÔ´°Á´¤Ç¤¹"
+
+#: lib/rpmrc.c:311
+#, c-format
+msgid "Too many args in data line at %s:%d"
+msgstr "%s:%d ¤Ç¥Ç¡¼¥¿¹Ô¤Ë°ú¿ô¤¬Â¿¤¹¤®¤Þ¤¹"
+
+#: lib/rpmrc.c:318
+#, c-format
+msgid "Bad arch/os number: %s (%s:%d)"
+msgstr "ÉÔÀµ¤Ê arch/os ÈÖ¹æ: %s (%s:%d)"
+
+#: lib/rpmrc.c:353
+#, c-format
+msgid "Incomplete default line at %s:%d"
+msgstr "%s:%d ¤ÇÉÔ´°Á´¤Ê¥Ç¥Õ¥©¥ë¥È¹Ô"
+
+#: lib/rpmrc.c:358
+#, c-format
+msgid "Too many args in default line at %s:%d"
+msgstr "%s:%d ¤Ç¥Ç¥Õ¥©¥ë¥È¹Ô¤Ï°ú¿ô¤¬Â¿¤¹¤®¤Þ¤¹"
+
+#: lib/rpmrc.c:547
+#, c-format
+msgid "Cannot expand %s"
+msgstr "¿­Ä¥¤Ç¤­¤Þ¤»¤ó %s"
+
+#: lib/rpmrc.c:562
+#, c-format
+msgid "Unable to open %s for reading: %s."
+msgstr "ÆÉ¤ß¹þ¤à¤¿¤á¤Ë %s ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó: %s¡£"
+
+#. XXX Feof(fd)
+#: lib/rpmrc.c:607
+#, c-format
+msgid "Failed to read %s: %s."
+msgstr "%s ¤òÆÉ¤à¤Î¤Ë¼ºÇÔ: $s¡£"
+
+#: lib/rpmrc.c:644
+#, fuzzy, c-format
+msgid "missing ':' (found 0x%02x) at %s:%d"
+msgstr "%s:%d ¤Ç ':' ¤¬¤¢¤ê¤Þ¤»¤ó"
+
+#: lib/rpmrc.c:661 lib/rpmrc.c:735
+#, c-format
+msgid "missing argument for %s at %s:%d"
+msgstr "%s ¤Î°ú¿ô¤¬¤¢¤ê¤Þ¤»¤ó %s:%d"
+
+#: lib/rpmrc.c:678 lib/rpmrc.c:700
+#, fuzzy, c-format
+msgid "%s expansion failed at %s:%d \"%s\""
+msgstr "%s ¤Î¿­Ä¥¼ºÇÔ %s:%d \"%s\""
+
+#: lib/rpmrc.c:687
+#, fuzzy, c-format
+msgid "cannot open %s at %s:%d: %s"
+msgstr "%s ¤ò¥ª¡¼¥×¥ó¤Ç¤­¤Þ¤»¤ó  %s:%d"
+
+#: lib/rpmrc.c:727
+#, c-format
+msgid "missing architecture for %s at %s:%d"
+msgstr "%s ÍÑ¤Î¥¢¡¼¥­¥Æ¥¯¥Á¥ã¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó %s:%d"
+
+#: lib/rpmrc.c:794
+#, c-format
+msgid "bad option '%s' at %s:%d"
+msgstr "'%s' ¤ÎÉÔÀµ¤Ê¥ª¡¼¥×¥ó %s:%d"
+
+#: lib/rpmrc.c:1162
+#, c-format
+msgid "Unknown system: %s\n"
+msgstr "ÉÔÌÀ¤Ê¥·¥¹¥Æ¥à: %s\n"
+
+#: lib/rpmrc.c:1163
+msgid "Please contact rpm-list@redhat.com\n"
+msgstr "rpm-list@redhat.com ¤ËÏ¢Íí¤ò²¼¤µ¤¤\n"
+
+#: lib/signature.c:107
+#, c-format
+msgid "sigsize         : %d\n"
+msgstr "½ðÌ¾¥µ¥¤¥º     : %d\n"
+
+#: lib/signature.c:108
+#, c-format
+msgid "Header + Archive: %d\n"
+msgstr "¥Ø¥Ã¥À + ¥¢¡¼¥«¥¤¥Ö: %d\n"
+
+#: lib/signature.c:109
+#, c-format
+msgid "expected size   : %d\n"
+msgstr "´üÂÔ¤µ¤ì¤ë¥µ¥¤¥º: %d\n"
+
+#: lib/signature.c:113
+msgid "file is not regular -- skipping size check\n"
+msgstr ""
+"¥Õ¥¡¥¤¥ë¤Ï°ìÈÌ¤Î¥Õ¥¡¥¤¥ë¤Ç¤Ï¤¢¤ê¤Þ¤»¤ó -- ¥µ¥¤¥º¥Á¥§¥Ã¥¯¤ò¥¹¥­¥Ã¥×¤·¤Þ¤¹\n"
+
+#: lib/signature.c:135
+msgid "No signature\n"
+msgstr "½ðÌ¾¤Ï¤¢¤ê¤Þ¤»¤ó\n"
+
+#: lib/signature.c:138
+msgid "Old PGP signature\n"
+msgstr "¸Å¤¤ PGP ½ðÌ¾\n"
+
+#: lib/signature.c:150
+msgid "Old (internal-only) signature!  How did you get that!?"
+msgstr "¸Å¤¤(ÆâÉô¤À¤±¤Î)½ðÌ¾!  ¤É¤¦¤ä¤Ã¤Æ¤½¤ì¤ò¼ê¤Ë¤¤¤ì¤Þ¤·¤¿¤«!?"
+
+#: lib/signature.c:154
+msgid "New Header signature\n"
+msgstr "¿·¤·¤¤¥Ø¥Ã¥À½ðÌ¾\n"
+
+#. 8-byte pad
+#: lib/signature.c:161 lib/signature.c:203
+#, c-format
+msgid "Signature size: %d\n"
+msgstr "½ðÌ¾¥µ¥¤¥º: %d\n"
+
+#: lib/signature.c:162 lib/signature.c:204
+#, c-format
+msgid "Signature pad : %d\n"
+msgstr "½ðÌ¾¥Ñ¥Ã¥É: %d\n"
+
+#: lib/signature.c:267
+#, fuzzy, c-format
+msgid "Couldn't exec pgp (%s)"
+msgstr "pgp ¤ò¼Â¹Ô¤Ç¤­¤Þ¤»¤ó(%s)"
+
+#: lib/signature.c:278
+msgid "pgp failed"
+msgstr "pgp ¼ºÇÔ"
+
+#. PGP failed to write signature
+#. Just in case
+#: lib/signature.c:285
+msgid "pgp failed to write signature"
+msgstr "pgp ¤¬½ðÌ¾¤ò½ñ¤­¹þ¤à¤Î¤Ë¼ºÇÔ¤·¤Þ¤·¤¿"
+
+#: lib/signature.c:290
+#, c-format
+msgid "PGP sig size: %d\n"
+msgstr "PGP ½ðÌ¾¥µ¥¤¥º: %s\n"
+
+#: lib/signature.c:301 lib/signature.c:378
+msgid "unable to read the signature"
+msgstr "½ðÌ¾¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó"
+
+#: lib/signature.c:306
+#, c-format
+msgid "Got %d bytes of PGP sig\n"
+msgstr "PGP ½ðÌ¾¤Î %d ¥Ð¥¤¥È¤ò¼èÆÀ\n"
+
+#: lib/signature.c:344 lib/signature.c:687
+#, fuzzy
+msgid "Couldn't exec gpg"
+msgstr "gpg ¤ò¼Â¹Ô¤Ç¤­¤Þ¤»¤ó"
+
+#: lib/signature.c:355
+#, fuzzy
+msgid "gpg failed"
+msgstr "gpg ¼ºÇÔ"
+
+#. GPG failed to write signature
+#. Just in case
+#: lib/signature.c:362
+#, fuzzy
+msgid "gpg failed to write signature"
+msgstr "gpg ¤¬½ðÌ¾¤ò½ñ¤­¹þ¤à¤Î¤Ë¼ºÇÔ¤·¤Þ¤·¤¿"
+
+#: lib/signature.c:367
+#, fuzzy, c-format
+msgid "GPG sig size: %d\n"
+msgstr "GPG ½ðÌ¾¥µ¥¤¥º: %s\n"
+
+#: lib/signature.c:383
+#, fuzzy, c-format
+msgid "Got %d bytes of GPG sig\n"
+msgstr "GPG ½ðÌ¾¤Î %d ¥Ð¥¤¥È¤ò¼èÆÀ\n"
+
+#: lib/signature.c:410
+#, fuzzy
+msgid "Generating signature using PGP.\n"
+msgstr "PGP ¤ò»ÈÍÑ¤·¤Æ½ðÌ¾¤ÎÀ¸À®Ãæ\n"
+
+#: lib/signature.c:416
+#, fuzzy
+msgid "Generating signature using GPG.\n"
+msgstr "GPG ¤ò»ÈÍÑ¤·¤Æ½ðÌ¾¤ÎÀ¸À®Ãæ\n"
+
+#: lib/signature.c:493 lib/signature.c:555
+msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
+msgstr ""
+"pgp ¤ò¼Â¹Ô¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿¡£\n"
+"PGP ¥Á¥§¥Ã¥¯¤ò¥¹¥­¥Ã¥×¤¹¤ë¤¿¤á¤Ë --nopgp ¤ò»ÈÍÑ¤·¤Æ¤¯¤À¤µ¤¤¡£"
+
+#: lib/signature.c:553 lib/signature.c:626
+msgid "exec failed!\n"
+msgstr "¼Â¹Ô¼ºÇÔ!\n"
+
+#: lib/signature.c:628
+#, fuzzy
+msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
+msgstr ""
+"gpg ¤ò¼Â¹Ô¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿¡£\n"
+"GPG ¥Á¥§¥Ã¥¯¤ò¥¹¥­¥Ã¥×¤¹¤ë¤¿¤á¤Ë --nogpg ¤ò»ÈÍÑ¤·¤Æ¤¯¤À¤µ¤¤¡£"
+
+#: lib/signature.c:716
+msgid "Couldn't exec pgp"
+msgstr "pgp ¤ò¼Â¹Ô¤Ç¤­¤Þ¤»¤ó"
+
+#. @notreached@
+#. This case should have been screened out long ago.
+#: lib/signature.c:720 lib/signature.c:773
+msgid "Invalid %%_signature spec in macro file"
+msgstr "¥Þ¥¯¥í¥Õ¥¡¥¤¥ëÃæ¤ÇÌµ¸ú¤Ê %%_signature ¥¹¥Ú¥Ã¥¯"
+
+#: lib/signature.c:753
+#, fuzzy
+msgid "You must set \"%%_gpg_name\" in your macro file"
+msgstr "¥Þ¥¯¥í¥Õ¥¡¥¤¥ë¤Ë \"%%_pgp_name\" ¤òÀßÄê¤·¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: lib/signature.c:765
+#, fuzzy
+msgid "You must set \"%%_pgp_name\" in your macro file"
+msgstr "¥Þ¥¯¥í¥Õ¥¡¥¤¥ë¤Ë \"%%_pgp_name\" ¤òÀßÄê¤·¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó"
+
+#: lib/transaction.c:389
+#, fuzzy, c-format
+msgid "excluding file %s%s\n"
+msgstr "¥Õ¥¡¥¤¥ë¤Î½ü³°: %s%s\n"
+
+#: lib/transaction.c:415 lib/transaction.c:499
+#, fuzzy, c-format
+msgid "excluding directory %s\n"
+msgstr "¥Ç¥£¥ì¥¯¥È¥ê¤Î½ü³°: %s\n"
+
+#: lib/transaction.c:420
+#, c-format
+msgid "relocating %s to %s\n"
+msgstr "%s ¤ò %s ¤ËºÆÇÛÃÖ¤·¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/transaction.c:492
+#, fuzzy, c-format
+msgid "relocating directory %s to %s\n"
+msgstr "¥Ç¥£¥ì¥¯¥È¥ê %s ¤ò %s ¤ËºÆÇÛÃÖ¤·¤Æ¤¤¤Þ¤¹\n"
+
+#: lib/transaction.c:643
+#, c-format
+msgid "%s skipped due to missingok flag\n"
+msgstr "%s ¤Ï missingok ¥Õ¥é¥°¤Î¤¿¤á¥¹¥­¥Ã¥×¤·¤Þ¤¹\n"
+
+#: lib/uninstall.c:38
+#, c-format
+msgid "cannot remove %s - directory not empty"
+msgstr "%s ¤òºï½ü¤Ç¤­¤Þ¤»¤ó - ¥Ç¥£¥ì¥¯¥È¥ê¤¬¶õ¤Ç¤¢¤ê¤Þ¤»¤ó"
+
+#: lib/uninstall.c:41
+#, c-format
+msgid "rmdir of %s failed: %s"
+msgstr "%s ¤Î rmdir ¤Ë¼ºÇÔ: %s"
+
+#: lib/uninstall.c:49
+#, c-format
+msgid "removal of %s failed: %s"
+msgstr "%s ¤Îºï½ü¤Ë¼ºÇÔ: %s"
+
+#: lib/uninstall.c:98
+#, c-format
+msgid "cannot read packages named %s for uninstall"
+msgstr ""
+"¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ë¤¿¤á¤Ë %s ¤ÈÌ¾ÉÕ¤±¤é¤ì¤¿¥Ñ¥Ã¥±¡¼¥¸¤òÆÉ¤à¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó"
+
+#: lib/uninstall.c:131
+#, c-format
+msgid "will remove files test = %d\n"
+msgstr "¥Õ¥¡¥¤¥ë test = %d ¤òºï½ü¤·¤Þ¤¹\n"
+
+#: lib/uninstall.c:208
+msgid "running postuninstall script (if any)\n"
+msgstr "¥Ý¥¹¥È¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë¥¹¥¯¥ê¥×¥È(¤¬Í­¤ì¤Ð)¤ò¼Â¹Ô¤·¤Þ¤¹\n"
+
+#: lib/uninstall.c:222
+msgid "removing database entry\n"
+msgstr "¥Ç¡¼¥¿¥Ù¡¼¥¹¥¨¥ó¥È¥ê¤òºï½ü¤·¤Þ¤¹\n"
+
+#: lib/uninstall.c:400
+msgid "execution of script failed"
+msgstr "¥¹¥¯¥ê¥×¥È¤Î¼Â¹Ô¤Ë¼ºÇÔ"
+
+#: lib/url.c:85
+#, c-format
+msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: lib/url.c:102
+#, c-format
+msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: lib/url.c:129
+#, c-format
+msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgstr ""
+
+#: lib/url.c:215
+#, c-format
+msgid "Password for %s@%s: "
+msgstr "%s@%s ¤Î¥Ñ¥¹¥ï¡¼¥É:"
+
+#: lib/url.c:240 lib/url.c:266
+#, fuzzy, c-format
+msgid "error: %sport must be a number\n"
+msgstr "¥¨¥é¡¼: %s¥Ý¡¼¥È¤Ï¿ô»ú¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó\n"
+
+#: lib/url.c:402
+#, fuzzy
+msgid "url port must be a number\n"
+msgstr "url ¥Ý¡¼¥È¤Ï¿ô»ú¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó\n"
+
+#. XXX Fstrerror
+#: lib/url.c:459
+#, fuzzy, c-format
+msgid "failed to create %s: %s\n"
+msgstr "%s ¤ÎºîÀ®¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#: lib/verify.c:38
+#, fuzzy
+msgid "don't verify files in package"
+msgstr "¥Ñ¥Ã¥±¡¼¥¸Ãæ¤Î¥Õ¥¡¥¤¥ë¤Î¸¡¾Ú¤ò¤·¤Þ¤»¤ó"
+
+#: lib/verify.c:213
+msgid "package lacks both user name and id lists (this should never happen)"
+msgstr ""
+"¥Ñ¥Ã¥±¡¼¥¸¤Ï ¥æ¡¼¥¶Ì¾¤È id "
+"¥ê¥¹¥È¤ÎÎ¾Êý¤¬·ç¤±¤Æ¤¤¤Þ¤¹(¤³¤ì¤Ï·è¤·¤Æµ¯¤­¤Æ¤Ï¤Ê¤é¤Ê¤¤)"
+
+#: lib/verify.c:231
+msgid "package lacks both group name and id lists (this should never happen)"
+msgstr ""
+"¥Ñ¥Ã¥±¡¼¥¸¤Ï¥°¥ë¡¼¥×Ì¾¤È id "
+"¥ê¥¹¥È¤ÎÎ¾Êý¤¬·ç¤±¤Æ¤¤¤Þ¤¹(¤³¤ì¤Ï·è¤·¤Æµ¯¤­¤Æ¤Ï¤Ê¤é¤Ê¤¤)"
+
+#: lib/verify.c:266
+#, c-format
+msgid "missing    %s\n"
+msgstr "%s ¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó\n"
+
+#: lib/verify.c:328
+#, c-format
+msgid "Unsatisfied dependencies for %s-%s-%s: "
+msgstr "%s-%s-%s ¤Î¤¿¤á¤Î°ÍÂ¸À­¤òËþ¤¿¤·¤Æ¤¤¤Þ¤»¤ó:"
+
+#: lib/verify.c:376
+#, fuzzy
+msgid "rpmVerify: rpmdbOpen() failed\n"
+msgstr "rpmVerify: rpmdbOen() ¤Ë¼ºÇÔ¤·¤Þ¤·¤¿\n"
+
+#, fuzzy
+#~ msgid "File not found by glob: %s"
+#~ msgstr "¥Õ¥¡¥¤¥ë¤¬¸«¤Ä¤«¤ê¤Þ¤»¤ó(by glob): %s"
+
+#, fuzzy
+#~ msgid "Unable to stat icon: %s"
+#~ msgstr "¥¢¥¤¥³¥ó¤Î¾õÂÖ¤ò¼èÆÀ¤Ç¤­¤Þ¤»¤ó: %s"
+
+#~ msgid "Timecheck value must be an integer: %s"
+#~ msgstr "¥¿¥¤¥à¥Á¥§¥Ã¥¯¤ÎÃÍ¤ÏÀ°¿ôÃÍ¤Ç¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó: %s"
+
+#~ msgid "Data type %d not supprted\n"
+#~ msgstr "¥Ç¡¼¥¿¥¿¥¤¥× %d ¤Ï¥µ¥Ý¡¼¥È¤µ¤ì¤Æ¤¤¤Þ¤»¤ó\n"
+
+#, fuzzy
+#~ msgid "cannot create %s"
+#~ msgstr "%s ¤òºîÀ®¤Ç¤­¤Þ¤»¤ó"
+
+#~ msgid "failed to open %s\n"
+#~ msgstr "%s ¤Î¥ª¡¼¥×¥ó¤Î¼ºÇÔ\n"
