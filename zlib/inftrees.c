@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1995-1998 Mark Adler
+ * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
@@ -56,7 +56,7 @@
 /*@-exportheadervar@*/
 /*@unused@*/ /*@observer@*/
 const char inflate_copyright[] =
-   " inflate 1.1.3 Copyright 1995-1998 Mark Adler ";
+   " inflate 1.1.4 Copyright 1995-2002 Mark Adler ";
 /*@=exportheadervar@*/
 
 /* simplify the use of the inflate_huft type with some defines */
@@ -96,8 +96,7 @@ local const uInt cpdext[30] = { /* Extra bits for distance codes */
  * Given a list of code lengths and a maximum table size, make a set of
  * tables to decode that set of codes.  Return Z_OK on success, Z_BUF_ERROR
  * if the given code set is incomplete (the tables are still built in this
- * case), Z_DATA_ERROR if the input is invalid (an over-subscribed set of
- * lengths), or Z_MEM_ERROR if not enough memory.
+ * case), or Z_DATA_ERROR if the input is invalid. */
  *
  * @param b		code lengths in bits (all assumed <= BMAX)
  * @param n		number of codes (assumed <= 288)
@@ -241,7 +240,7 @@ local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
 
         /* allocate new table */
         if (*hn + z > MANY)     /* (note: doesn't matter for fixed) */
-          return Z_MEM_ERROR;   /* not enough memory */
+          return Z_DATA_ERROR;  /* overflow of MANY */
         u[h] = q = hp + *hn;
         *hn += z;
 

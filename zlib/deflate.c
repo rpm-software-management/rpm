@@ -1,6 +1,6 @@
-/* @(#) $Id: deflate.c,v 1.4.2.1 2002/01/25 19:18:55 jbj Exp $ */
+/* @(#) $Id: deflate.c,v 1.5 2002/02/10 16:50:06 jbj Exp $ */
 /*
- * Copyright (C) 1995-1998 Jean-loup Gailly.
+ * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
@@ -58,7 +58,7 @@
 /*@-exportheadervar@*/
 /*@unused@*/ /*@observer@*/
 const char deflate_copyright[] =
-   " deflate 1.1.3 Copyright 1995-1998 Jean-loup Gailly ";
+   " deflate 1.1.4 Copyright 1995-2002 Jean-loup Gailly ";
 /*@=exportheadervar@*/
 
 /*
@@ -273,7 +273,7 @@ int ZEXPORT deflateInit2_(z_streamp strm, int level, int method, int windowBits,
         windowBits = -windowBits;
     }
     if (memLevel < 1 || memLevel > MAX_MEM_LEVEL || method != Z_DEFLATED ||
-        windowBits < 8 || windowBits > 15 || level < 0 || level > 9 ||
+        windowBits < 9 || windowBits > 15 || level < 0 || level > 9 ||
 	strategy < 0 || strategy > Z_HUFFMAN_ONLY) {
         return Z_STREAM_ERROR;
     }

@@ -1,6 +1,6 @@
-/* @(#) $Id: gzio.c,v 1.6.2.2 2002/01/30 00:30:45 jbj Exp $ */
+/* @(#) $Id: gzio.c,v 1.7 2002/02/10 16:50:06 jbj Exp $ */
 /*
- * Copyright (C) 1995-1998 Jean-loup Gailly.
+ * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 

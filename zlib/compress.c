@@ -1,6 +1,6 @@
-/* @(#) $Id: compress.c,v 1.3 2001/12/27 21:00:17 jbj Exp $ */
+/* @(#) $Id: compress.c,v 1.4 2002/02/10 16:50:06 jbj Exp $ */
 /*
- * Copyright (C) 1995-1998 Jean-loup Gailly.
+ * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 

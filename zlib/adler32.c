@@ -1,6 +1,6 @@
-/* @(#) $Id: adler32.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
+/* @(#) $Id: adler32.c,v 1.3 2001/12/27 21:00:17 jbj Exp $ */
 /*
- * Copyright (C) 1995-1998 Mark Adler
+ * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 

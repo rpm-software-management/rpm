@@ -1,6 +1,6 @@
-/* @(#) $Id: zutil.h,v 1.4.2.1 2002/01/25 19:18:55 jbj Exp $ */
+/* @(#) $Id: zutil.h,v 1.5 2002/02/10 16:50:06 jbj Exp $ */
 /*
- * Copyright (C) 1995-1998 Jean-loup Gailly.
+ * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 

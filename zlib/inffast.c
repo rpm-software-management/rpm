@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1995-1998 Mark Adler
+ * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
@@ -112,50 +112,60 @@ int ret;
             /* do the copy */
             m -= c;
 #if 1	/* { */
-            if ((uInt)(q - s->window) >= d)     /* offset before dest */
-            {                                   /*  just copy */
-              r = q - d;
-              *q++ = *r++;  c--;        /* minimum count is three, */
-              *q++ = *r++;  c--;        /*  so unroll loop a little */
-            }
-            else                        /* else offset after destination */
-            {
-              e = d - (uInt)(q - s->window); /* bytes from offset to end */
-              r = s->end - e;           /* pointer to offset */
-              if (c > e)                /* if source crosses, */
+	    r = q - d;
+	    if (r < s->window)		/* wrap if needed */
+	    {
+	      do {
+		r += s->end - s->window;	/* force pointer in window */
+	      } while (r < s->window);		/* covers invalid distances */
+	      e = s->end - r;
+	      if (c > e)
               {
-                c -= e;                 /* copy to end of window */
+                c -= e;			/* wrapped copy */
 #ifdef __i386__
-	{int delta = (int)q - (int)r;
-	if (delta <= 0 || delta > 3) {
-		quickmemcpy(q, r, e);
-		q += e;
-		e = 0;
-		goto rest;
-	}
-	}
+		{   int delta = (int)q - (int)r;
+		    if (delta <= 0 || delta > 3) {
+			quickmemcpy(q, r, e);
+			q += e;
+			e = 0;
+			goto rest;
+		    }
+		}
 #endif
                 do {
-                  *q++ = *r++;
+                    *q++ = *r++;
                 } while (--e);
 rest:
-                r = s->window;          /* copy rest from start of window */
+                r = s->window;
+              }
+              else                              /* normal copy */
+              {
+                *q++ = *r++;  c--;
+                *q++ = *r++;  c--;
+                do {
+                    *q++ = *r++;
+                } while (--c);
               }
             }
+            else                                /* normal copy */
+            {
+              *q++ = *r++;  c--;
+              *q++ = *r++;  c--;
+              do {
+                *q++ = *r++;
+              } while (--c);
+            }
 #ifdef __i386__
-	{int delta = (int)q - (int)r;
-	if (delta <= 0 || delta > 3) {
-		quickmemcpy(q, r, c);
-		q += c;
-		r += c;
-		c = 0;
-		break;
-	}
-	}
+	    {	int delta = (int)q - (int)r;
+		if (delta <= 0 || delta > 3) {
+		    quickmemcpy(q, r, c);
+		    q += c;
+		    r += c;
+		    c = 0;
+		    break;
+		}
+	    }
 #endif
-            do {                        /* copy all or what's left */
-              *q++ = *r++;
-            } while (--c);
 #endif	/* } */
             /*@innerbreak@*/ break;
           }

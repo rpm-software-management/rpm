@@ -1,9 +1,9 @@
 /**
  * \file zlib.h
  * Interface of the 'zlib' general purpose compression library.
- * version 1.1.3, July 9th, 1998
+ * version 1.1.4, March 11th, 2002
  *
- * Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
+ * Copyright (C) 1995-2002 Jean-loup Gailly and Mark Adler
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -59,7 +59,7 @@
 extern "C" {
 #endif
 
-#define ZLIB_VERSION "1.1.3"
+#define ZLIB_VERSION "1.1.4"
 
 typedef /*@only@*/ voidpf (*alloc_func) OF((voidpf opaque, uInt items, uInt size))
 	/*@*/;

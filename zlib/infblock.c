@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1995-1998 Mark Adler
+ * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
@@ -351,6 +351,7 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
         }
         s->sub.decode.codes = c;
       }
+      ZFREE(z, s->sub.trees.blens);
       s->mode = CODES;
       /*@fallthrough@*/
     case CODES:

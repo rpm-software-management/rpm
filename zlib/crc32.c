@@ -1,7 +1,7 @@
-/* @(#) $Id: crc32.c,v 1.5.2.1 2002/01/25 19:18:55 jbj Exp $ */
+/* @(#) $Id: crc32.c,v 1.6 2002/02/10 16:50:06 jbj Exp $ */
 /*@-globs@*/
 /*
- * Copyright (C) 1995-1998 Mark Adler
+ * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 

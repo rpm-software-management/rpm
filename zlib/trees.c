@@ -1,6 +1,6 @@
-/* @(#) $Id: trees.c,v 1.5 2001/12/27 21:00:18 jbj Exp $ */
+/* @(#) $Id: trees.c,v 1.6 2002/02/10 16:50:06 jbj Exp $ */
 /*
- * Copyright (C) 1995-1998 Jean-loup Gailly
+ * Copyright (C) 1995-2002 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
