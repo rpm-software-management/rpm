@@ -815,17 +815,17 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	otherPkgNum = j - 1;
 	otherFileNum = -1;			/* keep gcc quiet */
 	while (otherPkgNum >= 0) {
-	    if (recs[otherPkgNum]->type != ADDED) continue;
-
-	    /* TESTME: there are more efficient searches in the world... */
-	    for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc; 
-		 otherFileNum++)
-		if (FP_EQUAL(fi->fps[i], 
-			     recs[otherPkgNum]->fps[otherFileNum])) 
+	    if (recs[otherPkgNum]->type == ADDED) {
+		/* TESTME: there are more efficient searches in the world... */
+		for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc; 
+		     otherFileNum++)
+		    if (FP_EQUAL(fi->fps[i], 
+				 recs[otherPkgNum]->fps[otherFileNum])) 
+			break;
+		if ((otherFileNum >= 0) && 
+		    (recs[otherPkgNum]->actions[otherFileNum] == CREATE))
 		    break;
-	    if ((otherFileNum >= 0) && 
-		(recs[otherPkgNum]->actions[otherFileNum] == CREATE))
-		break;
+	    }
 	    otherPkgNum--;
 	}
 
