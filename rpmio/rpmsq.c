@@ -440,9 +440,8 @@ static int rpmsqWaitUnregister(rpmsq sq)
     int ret = 0;
     int xx;
 
-    if (same_thread)
-	ret = sighold(SIGCHLD);
-    else
+    ret = sighold(SIGCHLD);
+    if (!same_thread)
 	ret = pthread_mutex_lock(&sq->mutex);
 
     /* Start the child. */
@@ -457,20 +456,22 @@ static int rpmsqWaitUnregister(rpmsq sq)
     (void) rpmswEnter(&sq->op, -1);
 
     /*@-infloops@*/
-    while (ret == 0 && sq->reaped != sq->child) {
+    do {
 	if (same_thread)
 	    ret = sigpause(SIGCHLD);
-	else
+	else {
+	    xx = sigrelse(SIGCHLD);
 	    ret = pthread_cond_wait(&sq->cond, &sq->mutex);
-    }
+	    xx = sighold(SIGCHLD);
+	}
+    } while (ret == 0 && sq->reaped != sq->child);
     /*@=infloops@*/
 
     sq->ms_scriptlets += rpmswExit(&sq->op, -1)/1000;
 
-    if (same_thread)
-	xx = sigrelse(SIGCHLD);
-    else
+    if (!same_thread)
 	xx = pthread_mutex_unlock(&sq->mutex);
+    xx = sigrelse(SIGCHLD);
 
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
