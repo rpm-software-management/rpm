@@ -1,0 +1,38 @@
+readme
+Scott Bronson
+4 Oct 99
+
+
+These are the example programs from MaximumRPM, updated to today's rpmlib.
+You can find MaximumRPM on the http://www.rpm.org/ site.
+
+To build these, edit the makefile as appropriate (if you're using gcc,
+you should not have to change anything), then "make all".  3 utilities
+will be built:
+
+
+dumprpm:    % dumprpm filename
+
+   Dumps a textual description of the the contents of the named RPM
+   file on disk.
+
+
+showdb:     % showdb rpmname
+
+   Dumps a textual description of the named RPM.  The RPM must be
+   currently installed in the database.
+
+
+showdb2:    % showdb2 rpmname
+
+   Dumps a textual description of the named RPM, like showdb.  However,
+   uses a database query rather than a brute-force scan to locate the
+   rpm (should be much more efficient).
+
+
+
+You will also find the string.txt file.  This documents the only
+difficulty I had updating these programs.
+
+
+

@@ -1,0 +1,43 @@
+
+    string.txt
+    Scott Bronson
+    bronson@trestle.com
+
+
+This describes the format of RPM_I18NSTRING_TYPE or RPM_STRING_ARRAY_TYPE,
+I could not find this documented anywhere except the source of rpmlib.
+
+This memory block consists of count charptrs pointing to strings further
+along in the block.  A brief example for a count of 2 (as returned by
+headerGetEntry), using typedef to illustrate the structure:
+
+      count = 2;
+      typedef struct block {   # beginning of malloc'd block
+          char *c1 = &s1;      # points to s1 below
+          char *c2 = &s2;      # points to s2 below
+          char s1[] = "data for string 1";
+          char s2[] = "data for string 2";
+      }                        # end of malloc'd block
+
+
+And, if count were three, this would be the result:
+
+      count = 2;
+      typedef struct block {   # beginning of malloc'd block
+          char *c1 = &s1;      # points to s1 below
+          char *c2 = &s2;      # points to s2 below
+          char *c3 = &s3;      # points to s2 below
+          char s1[] = "data for string 1";
+          char s2[] = "data for string 2";
+          char s3[] = "data for string 3";
+      }                        # end of malloc'd block
+
+
+Therefore, to print out all the strings in one of these blocks in order...
+(p and count are values returned by rpmlib)
+
+      for( i=0; i<count; i++ ) {
+          printf( "String %d: %s\n", i, *((char**)p+i) );
+      }
+
+
