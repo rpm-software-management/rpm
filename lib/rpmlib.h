@@ -163,7 +163,8 @@ extern const int rpmTagTableSize;
 #define RPMVAR_DBPATH                   27
 #define RPMVAR_PACKAGER                 28
 #define RPMVAR_FTPPROXY                 29
-#define RPMVAR_LASTVAR	                30 /* IMPORTANT to keep right! */
+#define RPMVAR_TMPPATH                  30
+#define RPMVAR_LASTVAR	                31 /* IMPORTANT to keep right! */
 
 char *getVar(int var);
 int getBooleanVar(int var);
