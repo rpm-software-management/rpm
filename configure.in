@@ -168,8 +168,10 @@ dnl AmigaOS and IXEmul have a fork() dummy
 esac
 
 
-AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket"])
-AC_CHECK_LIB(nsl, gethostbyname, [LIBSOCKET="-lnsl"])
+AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -nsl"], [
+    AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket"])
+    AC_CHECK_LIB(nsl, gethostbyname, [LIBSOCKET="-lnsl"])
+])
 
 ZLIB=
 for zlib in z gz ; do
