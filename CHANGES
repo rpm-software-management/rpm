@@ -22,7 +22,8 @@
 	- fix: prevent return code wrap during packagage checking/resigning.
 	- permit multiple %lang(xx) markers on elements in %files.
 	- permit %lang(xx,yy,zz) constructs --  2 more dead strtoks.
-	- fix: --prefix should work properly during package installs
+	- fix: --prefix should work properly during package installs.
+	- add librpmbuild.a to the file list.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.
