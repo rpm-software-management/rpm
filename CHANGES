@@ -9,7 +9,8 @@
 	  more generic (w/ configure.in picking the right one)
 	- fix -Q
 	- The Great Renaming
-	- handle new ldd which returns 1 for non-executables
+	- use external OS specific script to generate requires lines
+	  (should work with ld.so 1.8.x)
 
 2.2.7 -> 2.2.8:
 	- added --ftpproxy, --ftpport (and wrote about them in rpm.8)
