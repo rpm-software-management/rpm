@@ -46,7 +46,7 @@ static void invokeCallbacksPOST(poptContext con, const struct poptOption * opt)
     for (; opt->longName || opt->shortName || opt->arg; opt++) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    /* Recurse on included sub-tables. */
-	    invokeCallbacksPRE(con, opt->arg);
+	    invokeCallbacksPOST(con, opt->arg);
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK &&
 		   (opt->argInfo & POPT_CBFLAG_POST))
 	{   poptCallbackType cb = (poptCallbackType)opt->arg;
