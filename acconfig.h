@@ -87,8 +87,26 @@
    directory and all necessary parent directories, ala `mkdir -p'        */
 #undef MKDIR_P
 
-/* define this to be whatever root's primary group is, in double quotes */
+/* Define this to be whatever root's primary group is, in double quotes */
 #undef ROOT_GROUP
+
+/* Full path to rpm configuration directory (usually /usr/lib/rpm) */
+#undef RPMCONFIGDIR
+
+/* Full path to find-provides script (usually /usr/lib/rpm/find-provides) */
+#undef FINDPROVIDES
+
+/* Full path to find-requires script (usually /usr/lib/rpm/find-requires) */
+#undef FINDREQUIRES
+
+/* Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt) */
+#undef LIBRPMALIAS_FILENAME
+
+/* Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc) */
+#undef LIBRPMRC_FILENAME
+
+/* Full path to macros configuration file (usually /usr/lib/rpm/macros) */
+#undef MACROFILES
 
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
