@@ -143,7 +143,9 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     fprintf(f, "umask 022\n");
     fprintf(f, "cd %s\n", rpmGetVar(RPMVAR_BUILDDIR));
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD) {
-	fprintf(f, "cd %s\n", spec->buildSubdir);
+	if (spec->buildSubdir) {
+	    fprintf(f, "cd %s\n", spec->buildSubdir);
+	}
     }
     if (what == RPMBUILD_RMBUILD) {
 	fprintf(f, "rm -rf %s\n", spec->buildSubdir);
