@@ -59,7 +59,7 @@ static Value valueMakeString(const char *s)
   return v;
 }
 
-static void valueFree(Value v)
+static void valueFree( /*@only@*/ Value v)
 {
   if (v) {
     if (v->type == VALUE_TYPE_STRING) free(v->data.s);
@@ -91,13 +91,12 @@ static void valueDump(const char *msg, Value v, FILE *fp)
  * Parser state.
  */
 
-typedef struct _parseState
-{
-  char *str;        /* expression string */
-  char *p;          /* current position in expression string */
-  int nextToken;    /* current lookahead token */
-  Value tokenValue; /* valid when TOK_INTEGER or TOK_STRING */
-  Spec spec;        /* spec file that we are parsing inside of */
+typedef struct _parseState {
+  /*@owned@*/ char *str;	/* expression string */
+  /*@dependent@*/ char *p;	/* current position in expression string */
+  int nextToken;		/* current lookahead token */
+  Value tokenValue;		/* valid when TOK_INTEGER or TOK_STRING */
+  Spec spec;			/* spec file that we are parsing inside of */
 } *ParseState;
 
 
@@ -377,7 +376,7 @@ static Value doPrimary(ParseState state)
     break;
   default:
     return NULL;
-    break;
+    /*@notreached@*/ break;
   }
 
   DEBUG(valueDump("doPrimary:", v, stdout));
@@ -628,8 +627,10 @@ int parseExpressionBoolean(Spec spec, char *expr)
   DEBUG(printf("parseExprBoolean(?, '%s')\n", expr));
 
   /* Initialize the expression parser state. */
-  state.str = state.p = xstrdup(expr);
+  state.p = state.str = xstrdup(expr);
   state.spec = spec;
+  state.nextToken = 0;
+  state.tokenValue = NULL;
   rdToken(&state);
 
   /* Parse the expression. */
@@ -673,8 +674,10 @@ char * parseExpressionString(Spec spec, char *expr)
   DEBUG(printf("parseExprString(?, '%s')\n", expr));
 
   /* Initialize the expression parser state. */
-  state.str = state.p = xstrdup(expr);
+  state.p = state.str = xstrdup(expr);
   state.spec = spec;
+  state.nextToken = 0;
+  state.tokenValue = NULL;
   rdToken(&state);
 
   /* Parse the expression. */

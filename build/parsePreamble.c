@@ -631,9 +631,8 @@ static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, 
     }
 
     *tag = p->tag;
-    if (macro) {
+    if (macro)
 	*macro = p->token;
-    }
     return 0;
 }
 

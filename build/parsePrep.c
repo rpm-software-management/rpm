@@ -33,7 +33,7 @@ static int checkOwners(const char *file)
     return 0;
 }
 
-static char *doPatch(Spec spec, int c, int strip, char *db,
+/*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
 {
     const char *fn = NULL;
@@ -100,7 +100,7 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
     return buf;
 }
 
-static char *doUntar(Spec spec, int c, int quietly)
+/*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
 {
     const char *fn;
     static char buf[BUFSIZ];
@@ -322,6 +322,7 @@ static int doPatchMacro(Spec spec, char *line)
     int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
     int patch_index, x;
 
+    memset(patch_nums, 0, sizeof(patch_nums));
     opt_P = opt_p = opt_R = opt_E = 0;
     opt_b = NULL;
     patch_index = 0;

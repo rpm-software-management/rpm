@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 /*@only@*/ StringBuf newStringBuf(void);
-void freeStringBuf(/*@only@*/ StringBuf sb);
+void freeStringBuf( /*@only@*/ StringBuf sb);
 void truncStringBuf(StringBuf sb);
 /*@observer@*/ char *getStringBuf(StringBuf sb);
 void stripTrailingBlanksStringBuf(StringBuf sb);

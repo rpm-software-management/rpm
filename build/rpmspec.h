@@ -82,11 +82,11 @@ struct SpecStruct {
     /*@owned@*/ struct OpenFileInfo *fileStack;
     char lbuf[BUFSIZ];
     char nextpeekc;
-    char *nextline;
-    char *line;
+    /*@dependent@*/ char *nextline;
+    /*@dependent@*/ char *line;
     int lineNum;
 
-    /*@only@*/ struct ReadLevelEntry *readStack;
+    /*@owned@*/ struct ReadLevelEntry *readStack;
 
     /*@refcounted@*/ Header buildRestrictions;
     /*@owned@*/ struct SpecStruct **buildArchitectureSpecs;
@@ -127,7 +127,7 @@ struct PackageStruct {
     /*@refcounted@*/ Header header;
 
     int cpioCount;
-    /*@only@*/ struct cpioFileMapping *cpioList;
+    /*@owned@*/ struct cpioFileMapping *cpioList;
 
     /*@owned@*/ struct Source *icon;
 
@@ -152,7 +152,7 @@ struct PackageStruct {
     /*@only@*/ char *fileFile;
     /*@only@*/ StringBuf fileList; /* If NULL, package will not be written */
 
-    /*@keep@*/ struct PackageStruct *next;
+    /*@dependent@*/ struct PackageStruct *next;
 };
 
 typedef struct PackageStruct *Package;

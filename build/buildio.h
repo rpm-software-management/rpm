@@ -9,7 +9,7 @@ typedef struct cpioSourceArchive {
     CFD_t	cpioCfd;
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
-    /*@only@*/struct cpioFileMapping *cpioList;
+    /*@dependent@*/ struct cpioFileMapping *cpioList;
     int		cpioCount;
     struct rpmlead *lead;	/* XXX FIXME: exorcize lead/arch/os */
 } CSA_t;

@@ -587,7 +587,7 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-const char * fileActionString(enum fileActions a)
+const char *const fileActionString(enum fileActions a)
 {
     switch (a) {
       case FA_UNKNOWN: return "unknown";

@@ -52,17 +52,17 @@ extern "C" {
 #define POPT_CONTEXT_POSIXMEHARDER (1 << 2) /* options can't follow args */
 
 struct poptOption {
-    const char * longName;	/* may be NULL */
+    /*@observer@*/ /*@null@*/ const char * longName;	/* may be NULL */
     char shortName;		/* may be '\0' */
     int argInfo;
-    void * arg;			/* depends on argInfo */
+    /*@dependent@*/ /*@null@*/ void * arg;		/* depends on argInfo */
     int val;			/* 0 means don't return, just update flag */
-    const char * descrip;	/* description for autohelp -- may be NULL */
-    const char * argDescrip;	/* argument description for autohelp */
+    /*@null@*/ const char * descrip;	/* description for autohelp -- may be NULL */
+    /*@null@*/ const char * argDescrip;	/* argument description for autohelp */
 };
 
 struct poptAlias {
-    const char * longName;	/* may be NULL */
+    /*@null@*/ const char * longName;	/* may be NULL */
     char shortName;		/* may be '\0' */
     int argc;
     const char ** argv;		/* must be free()able */

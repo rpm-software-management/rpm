@@ -45,8 +45,8 @@
 #define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
 
 struct cpioFileMapping {
-    /*@dependent@*/ const char * archivePath;
-    /*@dependent@*/ const char * fsPath;
+    /*@owned@*/ const char * archivePath;
+    /*@owned@*/ const char * fsPath;
     mode_t finalMode;
     uid_t finalUid;
     gid_t finalGid;
