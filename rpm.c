@@ -208,6 +208,7 @@ void printHelp(void) {
     puts(_("    --initdb            - make sure a valid database exists"));
     puts(_("    --rebuilddb         - rebuild database from existing database"));
     puts(_("      --dbpath <dir>    - use <dir> as the directory for the database"));
+    puts(_("      --root <dir>	    - use <dir> as the top level directory"));
 }
 
 int build(char *arg, int buildAmount, char *passPhrase,
