@@ -99,6 +99,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     char *scriptName;
     int pid;
     int status;
+    char *buildShell;
     
     switch (what) {
       case RPMBUILD_PREP:
@@ -164,7 +165,8 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     
     rpmMessage(RPMMESS_NORMAL, "Executing: %s\n", name);
     if (!(pid = fork())) {
-	execl("/bin/sh", "/bin/sh", "-e", scriptName, scriptName, NULL);
+	buildShell = rpmGetVar(RPMVAR_BUILDSHELL);
+	execl(buildShell, buildShell, "-e", scriptName, scriptName, NULL);
 	rpmError(RPMERR_SCRIPT, "Exec of %s failed (%s)",
 		 scriptName, name);
 	FREE(scriptName);

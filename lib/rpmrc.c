@@ -101,6 +101,7 @@ static struct tableType tables[RPM_MACHTABLE_COUNT] = {
 static struct rpmOption optionTable[] = {
     { "builddir",		RPMVAR_BUILDDIR,		0, 0 },
     { "buildroot",              RPMVAR_BUILDROOT,               0, 0 },
+    { "buildshell",             RPMVAR_BUILDSHELL,              0, 0 },
     { "dbpath",			RPMVAR_DBPATH,			0, 1 },
     { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0, 0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0, 0 },
@@ -465,6 +466,7 @@ static void setDefaults(void) {
     rpmSetVar(RPMVAR_SIGTYPE, "none");
     rpmSetVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
     rpmSetVar(RPMVAR_TOPDIR, "/usr/src/redhat");
+    rpmSetVar(RPMVAR_BUILDSHELL, "/bin/sh");
 }
 
 int rpmReadRC(char * file) {
