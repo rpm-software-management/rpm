@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.6 2000/06/14 09:27:39 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.7 2000/06/17 08:11:25 rjray Exp $";
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -19,8 +19,7 @@ static char * const rcsid = "$Id: Header.xs,v 1.6 2000/06/14 09:27:39 rjray Exp 
 /* And a no-return-value version: */
 #define header_from_object(s_ptr, header, object) \
     hv_fetch_nomg((s_ptr), (object), STRUCT_KEY, STRUCT_KEY_LEN, FALSE); \
-    (header) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Header *)SvIV(*(s_ptr)) : NULL; \
-    if (! (header)) return;
+    (header) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Header *)SvIV(*(s_ptr)) : NULL;
 
 
 /* Some simple functions to manage key-to-SV* transactions, since these
@@ -771,6 +770,7 @@ void rpmhdr_DESTROY(pTHX_ RPM__Header self)
     RPM_Header* hdr;
 
     header_from_object(svp, hdr, self);
+    if (! hdr) return;
 
     if (hdr->iterator)
         headerFreeIterator(hdr->iterator);
@@ -877,6 +877,34 @@ int rpmhdr_is_source(pTHX_ RPM__Header self)
         return 0;
     else
         return (hdr->isSource);
+}
+
+/*
+  A classic-style comparison function for two headers, returns -1 if a < b,
+  1 if a > b, and 0 if a == b. In terms of version/release, that is.
+*/
+int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
+{
+    RPM_Header* one;
+    RPM_Header* two;
+    SV** svp;
+
+    header_from_object(svp, one, self);
+    if (! one)
+    {
+        rpm_error(aTHX_ RPMERR_BADARG,
+                  "RPM::Header::rpmhdr_cmpver: Arg 1 has no header data");
+        return 0;
+    }
+    header_from_object(svp, two, self);
+    if (! two)
+    {
+        rpm_error(aTHX_ RPMERR_BADARG,
+                  "RPM::Header::rpmhdr_cmpver: Arg 2 has no header data");
+        return 0;
+    }
+
+    return rpmVersionCompare(one->hdr, two->hdr);
 }
 
 
@@ -1052,6 +1080,16 @@ rpmhdr_is_source(self)
     PROTOTYPE: $
     CODE:
     RETVAL = rpmhdr_is_source(aTHX_ self);
+    OUTPUT:
+    RETVAL
+
+int
+rpmhdr_cmpver(self, other)
+    RPM::Header self;
+    RPM::Header other;
+    PROTOTYPE: $$
+    CODE:
+    RETVAL = rpmhdr_cmpver(aTHX_ self, other);
     OUTPUT:
     RETVAL
 
