@@ -185,6 +185,7 @@
 	- add (but disable for now) rpm-perl subpackage from Perl-RPM.
 	- python: parameterize with PYVER to handle 1.5 and/or 2.1 builds.
 	- add build dependency on zlib-devel (#49575).
+	- enable rpm-perl subpackage.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

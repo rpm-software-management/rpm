@@ -1,5 +1,5 @@
 %define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@ %{nil}
-%define with_perl_subpackage	0
+%define with_perl_subpackage	1
 %define	with_bzip2		@WITH_BZIP2@ %{nil}
 %define	with_apidocs		@WITH_APIDOCS@ %{nil}
 %define with_internal_db	@WITH_INTERNAL_DB@ %{nil}
@@ -12,15 +12,16 @@
 %define	_noPayloadPrefix	1
 
 %define	__prefix	/usr
-%{expand:%%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
+%{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
 Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.1
+%{expand: %%define rpm_version %{version}}
+Release: 0.79
 Group: System Environment/Base
-Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
+Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
@@ -62,7 +63,7 @@ the package like its version, a description, etc.
 %package devel
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{version}, popt = 1.6.3
+Requires: rpm = %{rpm_version}, popt = 1.6.3
 
 %description devel
 This package contains the RPM C library and header files.  These
@@ -78,19 +79,35 @@ will manipulate RPM packages and databases.
 %package build
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
-Requires: rpm = %{version}
+Requires: rpm = %{rpm_version}
 
 %description build
 This package contains scripts and executable programs that are used to
 build packages using RPM.
 
+%if %{with_python_subpackage}
+%package python
+Summary: Python bindings for apps which will manipulate RPM packages.
+Group: Development/Libraries
+Requires: rpm = %{rpm_version}
+Requires: python >= 1.5.2
+Requires: popt = 1.6.3
+
+%description python
+The rpm-python package contains a module which permits applications
+written in the Python programming language to use the interface
+supplied by RPM (RPM Package Manager) libraries.
+
+This package should be installed if you want to develop Python
+programs that will manipulate RPM packages and databases.
+%endif
+
 %if %{with_perl_subpackage}
 %package perl
 Summary: Native bindings to the RPM API for Perl.
-Version: 0.32
 Group: Development/Languages
 URL: http://www.cpan.org
-Requires: rpm = %{version}
+Requires: rpm = %{rpm_version}
 Requires: perl >= 0:5.00503
 Requires: popt = 1.6.3
 Obsoletes: perl-Perl-RPM
@@ -113,22 +130,6 @@ is not yet installed.  Error management and the export of most defined
 constants, through RPM::Error and RPM::Constants, respectively, are
 also available.
 
-%endif
-
-%if %{with_python_subpackage}
-%package python
-Summary: Python bindings for apps which will manipulate RPM packages.
-Group: Development/Libraries
-Requires: rpm = %{version}
-Requires: python >= 1.5.2
-
-%description python
-The rpm-python package contains a module which permits applications
-written in the Python programming language to use the interface
-supplied by RPM (RPM Package Manager) libraries.
-
-This package should be installed if you want to develop Python
-programs that will manipulate RPM packages and databases.
 %endif
 
 %package -n popt
