@@ -1,13 +1,16 @@
 #include <alloca.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include "install.h"
 #include "messages.h"
+#include "md5.h"
 #include "misc.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
@@ -19,7 +22,8 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 			     char ** fileMd5List, int fileCount, 
 			     enum fileActions * fileActions);
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
-		      enum fileActions action, char * rmmess, int test);
+		      short mode, enum fileActions action, char * rmmess, 
+		      int test);
 
 static int sharedFileCmp(const void * one, const void * two) {
     if (((struct sharedFile *) one)->mainFileNumber <
@@ -172,6 +176,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
     char ** fileList, ** fileMd5List;
     int type;
     uint_32 * fileFlagsList;
+    int_16 * fileModesList;
     char * fileStatesList;
     enum { REMOVE, BACKUP, KEEP } * fileActions;
 
@@ -212,6 +217,8 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 		 &fileCount);
 	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
 		 &fileCount);
+	getEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
+		 &fileCount);
 
 	handleSharedFiles(db, offset, fileList, fileMd5List, fileCount, fileActions);
 
@@ -229,7 +236,8 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 	    }
 
 	    removeFile(fnbuffer, fileStatesList[i], fileFlagsList[i],
-		       fileMd5List[i], fileActions[i], rmmess, test);
+		       fileMd5List[i], fileModesList[i], fileActions[i], 
+		       rmmess, test);
 	}
 
 	free(fileList);
@@ -286,7 +294,6 @@ int runScript(char * prefix, Header h, int tag) {
 		execl("/bin/sh", "/bin/sh", "-x", NULL);
 	    else
 		execl("/bin/sh", "/bin/sh", NULL);
-	    printf("I SHOULDN'T BE HERE");
 	    exit(-1);
 	}
 	close(fd);
@@ -302,7 +309,11 @@ int runScript(char * prefix, Header h, int tag) {
 }
 
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
-		      enum fileActions action, char * rmmess, int test) {
+		      short mode, enum fileActions action, char * rmmess, 
+		      int test) {
+    char currentMd5[40];
+    int rc = 0;
+    char * newfile;
 	
     switch (state) {
       case RPMFILE_STATE_REPLACED:
@@ -310,13 +321,66 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	break;
 
       case RPMFILE_STATE_NORMAL:
-	if (action == REMOVE) {
-	    /* if it's a config file, we may not want to remove
-	       it */
+	if ((action == REMOVE) && (flags & RPMFILE_CONFIG)) {
+	    /* if it's a config file, we may not want to remove it */
+	    message(MESS_DEBUG, "finding md5sum of %s\n", file);
+	    if (mdfile(file, currentMd5)) 
+		message(MESS_DEBUG, "    failed - assuming file removed\n");
+	    else {
+		if (strcmp(currentMd5, md5)) {
+		    message(MESS_DEBUG, "    file changed - will save\n");
+		    action = BACKUP;
+		} else {
+		    message(MESS_DEBUG, "    file unchanged - will remove\n");
+		}
+	    }
 	}
 
-	message(MESS_DEBUG, "%s - removed\n", file, rmmess);
-	/* unlink(fnbuffer); */
-	break;
-    }
+	switch (action) {
+
+	  case KEEP:
+	    message(MESS_DEBUG, "keeping %s\n", file);
+
+	  case BACKUP:
+	    message(MESS_DEBUG, "saving %s as %s.rpmsave\n", file, file);
+	    if (!test) {
+		newfile = alloca(strlen(file) + 20);
+		strcpy(newfile, file);
+		strcat(newfile, ".rpmsave");
+		if (rename(file, newfile)) {
+		    error(RPMERR_RENAME, "rename of %s to %s failed: %s",
+				file, newfile, strerror(errno));
+		    rc = 1;
+		}
+	    }
+	    break;
+
+	  case REMOVE:
+	    message(MESS_DEBUG, "%s - %s\n", file, rmmess);
+	    if (S_ISDIR(mode)) {
+		if (!test) {
+		    if (rmdir(file)) {
+			if (errno == ENOTEMPTY)
+			    error(RPMERR_RMDIR, "cannot remove %s - directory "
+				  "not empty", file);
+			else
+			    error(RPMERR_RMDIR, "rmdir of %s failed: %s",
+					file, strerror(errno));
+			rc = 1;
+		    }
+		}
+	    } else {
+		if (!test) {
+		    if (unlink(file)) {
+			error(RPMERR_UNLINK, "removal of %s failed: %s",
+				    file, strerror(errno));
+			rc = 1;
+		    }
+		}
+	    }
+	    break;
+	}
+   }
+ 
+   return 0;
 }
