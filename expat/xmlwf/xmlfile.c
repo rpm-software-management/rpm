@@ -10,7 +10,9 @@
 #ifdef COMPILED_FROM_DSP
 #include "winconfig.h"
 #else
-#include "expat_config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #endif
 #include "expat.h"
 #include "xmlfile.h"

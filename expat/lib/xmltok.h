@@ -152,7 +152,8 @@ struct encoding {
                          int attsMax,
                          ATTRIBUTE *atts)
 	/*@*/;
-  int (PTRFASTCALL *charRefNumber)(const ENCODING *enc, const char *ptr);
+  int (PTRFASTCALL *charRefNumber)(const ENCODING *enc, const char *ptr)
+	/*@*/;
   int (PTRCALL *predefinedEntityName)(const ENCODING *,
                                       const char *,
                                       const char *)
@@ -283,26 +284,25 @@ int XmlParseXmlDecl(int isGeneralTextEntity,
                     const char **versionEndPtr,
                     const char **encodingNamePtr,
                     const ENCODING **namedEncodingPtr,
-                    int *standalonePtr);
+                    int *standalonePtr)
+	/*@*/;
 
-int XmlInitEncoding(INIT_ENCODING *p, const ENCODING **encPtr,
-		/*@null@*/ const char *name)
+int XmlInitEncoding(INIT_ENCODING *, const ENCODING **, const char *name)
 	/*@modifies p, *encPtr @*/;
 const ENCODING *XmlGetUtf8InternalEncoding(void)
 	/*@*/;
 const ENCODING *XmlGetUtf16InternalEncoding(void)
 	/*@*/;
 int FASTCALL XmlUtf8Encode(int charNumber, char *buf)
-	/*@modifies buf @*/;
+	/*@*/;
 int FASTCALL XmlUtf16Encode(int charNumber, unsigned short *buf)
-	/*@modifies buf @*/;
+	/*@*/;
 int XmlSizeOfUnknownEncoding(void)
 	/*@*/;
 
 typedef int (*CONVERTER)(void *userData, const char *p)
 	/*@*/;
 
-/*@null@*/
 ENCODING *
 XmlInitUnknownEncoding(void *mem,
                        int *table,
@@ -333,8 +333,7 @@ ENCODING *
 XmlInitUnknownEncodingNS(void *mem,
                          int *table,
                          CONVERTER convert,
-                         void *userData)
-	/*@modifies mem @*/;
+                         void *userData);
 #ifdef __cplusplus
 }
 #endif

@@ -1,12 +1,13 @@
 /* This is simple demonstration of how to use expat. This program
-reads an XML document from standard input and writes a line with the
-name of each element to standard output indenting child elements by
-one tab stop more than their parent element. */
+   reads an XML document from standard input and writes a line with
+   the name of each element to standard output indenting child
+   elements by one tab stop more than their parent element.
+*/
 
 #include <stdio.h>
 #include "expat.h"
 
-static void
+static void XMLCALL
 startElement(void *userData, const char *name, const char **atts)
 {
   int i;
@@ -17,7 +18,7 @@ startElement(void *userData, const char *name, const char **atts)
   *depthPtr += 1;
 }
 
-static void
+static void XMLCALL
 endElement(void *userData, const char *name)
 {
   int *depthPtr = userData;
@@ -36,11 +37,11 @@ main(int argc, char *argv[])
   do {
     size_t len = fread(buf, 1, sizeof(buf), stdin);
     done = len < sizeof(buf);
-    if (!XML_Parse(parser, buf, len, done)) {
+    if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
       fprintf(stderr,
-	      "%s at line %d\n",
-	      XML_ErrorString(XML_GetErrorCode(parser)),
-	      XML_GetCurrentLineNumber(parser));
+              "%s at line %d\n",
+              XML_ErrorString(XML_GetErrorCode(parser)),
+              XML_GetCurrentLineNumber(parser));
       return 1;
     }
   } while (!done);

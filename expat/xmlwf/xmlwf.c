@@ -20,7 +20,7 @@
 
 #define NSSEP T('\001')
 
-static void
+static void XMLCALL
 characterData(void *userData, const XML_Char *s, int len)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -58,7 +58,7 @@ characterData(void *userData, const XML_Char *s, int len)
   }
 }
 
-static void
+static void XMLCALL
 attributeValue(FILE *fp, const XML_Char *s)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/
@@ -118,7 +118,7 @@ attcmp(const void *att1, const void *att2)
   return tcscmp(*(const XML_Char **)att1, *(const XML_Char **)att2);
 }
 
-static void
+static void XMLCALL
 startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 	/*@globals fileSystem @*/
 	/*@modifies userData, *atts, fileSystem @*/
@@ -144,7 +144,7 @@ startElement(void *userData, const XML_Char *name, const XML_Char **atts)
   (void) puttc(T('>'), fp);
 }
 
-static void
+static void XMLCALL
 endElement(void *userData, const XML_Char *name)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -169,7 +169,7 @@ nsattcmp(const void *p1, const void *p2)
   return tcscmp(att1, att2);
 }
 
-static void
+static void XMLCALL
 startElementNS(void *userData, const XML_Char *name, const XML_Char **atts)
 	/*@globals fileSystem @*/
 	/*@modifies userData, *atts, fileSystem @*/
@@ -220,7 +220,7 @@ startElementNS(void *userData, const XML_Char *name, const XML_Char **atts)
   (void) puttc(T('>'), fp);
 }
 
-static void
+static void XMLCALL
 endElementNS(void *userData, const XML_Char *name)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -241,7 +241,7 @@ endElementNS(void *userData, const XML_Char *name)
 
 #ifndef W3C14N
 
-static void
+static void XMLCALL
 processingInstruction(void *userData, const XML_Char *target,
                       const XML_Char *data)
 	/*@globals fileSystem @*/
@@ -259,7 +259,7 @@ processingInstruction(void *userData, const XML_Char *target,
 
 #endif /* not W3C14N */
 
-static void
+static void XMLCALL
 defaultCharacterData(void *userData, /*@unused@*/ const XML_Char *s,
 		/*@unused@*/ int len)
 	/*@modifies userData @*/
@@ -267,7 +267,7 @@ defaultCharacterData(void *userData, /*@unused@*/ const XML_Char *s,
   XML_DefaultCurrent((XML_Parser) userData);
 }
 
-static void
+static void XMLCALL
 defaultStartElement(void *userData, /*@unused@*/ const XML_Char *name,
                     /*@unused@*/ const XML_Char **atts)
 	/*@modifies userData @*/
@@ -275,14 +275,14 @@ defaultStartElement(void *userData, /*@unused@*/ const XML_Char *name,
   XML_DefaultCurrent((XML_Parser) userData);
 }
 
-static void
+static void XMLCALL
 defaultEndElement(void *userData, /*@unused@*/ const XML_Char *name)
 	/*@modifies userData @*/
 {
   XML_DefaultCurrent((XML_Parser) userData);
 }
 
-static void
+static void XMLCALL
 defaultProcessingInstruction(void *userData,
 		/*@unused@*/ const XML_Char *target,
 		/*@unused@*/ const XML_Char *data)
@@ -292,25 +292,25 @@ defaultProcessingInstruction(void *userData,
 }
 
 /*@-paramuse@*/
-static void
+static void XMLCALL
 nopCharacterData(void *userData, const XML_Char *s, int len)
 	/*@*/
 {
 }
 
-static void
+static void XMLCALL
 nopStartElement(void *userData, const XML_Char *name, const XML_Char **atts)
 	/*@*/
 {
 }
 
-static void
+static void XMLCALL
 nopEndElement(void *userData, const XML_Char *name)
 	/*@*/
 {
 }
 
-static void
+static void XMLCALL
 nopProcessingInstruction(void *userData, const XML_Char *target,
                          const XML_Char *data)
 	/*@*/
@@ -318,7 +318,7 @@ nopProcessingInstruction(void *userData, const XML_Char *target,
 }
 /*@=paramuse@*/
 
-static void
+static void XMLCALL
 markup(void *userData, const XML_Char *s, int len)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -360,7 +360,7 @@ metaEndDocument(void *userData)
   (void) fputts(T("</document>\n"), XML_GetUserData((XML_Parser) userData));
 }
 
-static void
+static void XMLCALL
 metaStartElement(void *userData, const XML_Char *name,
                  const XML_Char **atts)
 	/*@globals fileSystem @*/
@@ -397,7 +397,7 @@ metaStartElement(void *userData, const XML_Char *name,
     (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaEndElement(void *userData, const XML_Char *name)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -409,7 +409,7 @@ metaEndElement(void *userData, const XML_Char *name)
   (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaProcessingInstruction(void *userData, const XML_Char *target,
                           const XML_Char *data)
 	/*@globals fileSystem @*/
@@ -424,7 +424,7 @@ metaProcessingInstruction(void *userData, const XML_Char *target,
   (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaComment(void *userData, const XML_Char *data)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -438,7 +438,7 @@ metaComment(void *userData, const XML_Char *data)
   (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaStartCdataSection(void *userData)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -450,7 +450,7 @@ metaStartCdataSection(void *userData)
   (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaEndCdataSection(void *userData)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -462,7 +462,7 @@ metaEndCdataSection(void *userData)
   (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaCharacterData(void *userData, const XML_Char *s, int len)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -476,7 +476,7 @@ metaCharacterData(void *userData, const XML_Char *s, int len)
   (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaStartDoctypeDecl(void *userData,
                      const XML_Char *doctypeName,
                      /*@unused@*/ const XML_Char *sysid,
@@ -492,7 +492,7 @@ metaStartDoctypeDecl(void *userData,
   (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaEndDoctypeDecl(void *userData)
 	/*@globals fileSystem @*/
 	/*@modifies userData, fileSystem @*/
@@ -504,7 +504,7 @@ metaEndDoctypeDecl(void *userData)
   (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaNotationDecl(void *userData,
                  const XML_Char *notationName,
                  /*@unused@*/ const XML_Char *base,
@@ -528,7 +528,7 @@ metaNotationDecl(void *userData,
 }
 
 
-static void
+static void XMLCALL
 metaEntityDecl(void *userData,
                const XML_Char *entityName,
                /*@unused@*/ int  is_param,
@@ -574,7 +574,7 @@ metaEntityDecl(void *userData,
   }
 }
 
-static void
+static void XMLCALL
 metaStartNamespaceDecl(void *userData,
                        const XML_Char *prefix,
                        const XML_Char *uri)
@@ -595,7 +595,7 @@ metaStartNamespaceDecl(void *userData,
     (void) fputts(T("/>\n"), fp);
 }
 
-static void
+static void XMLCALL
 metaEndNamespaceDecl(void *userData, const XML_Char *prefix)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -608,14 +608,14 @@ metaEndNamespaceDecl(void *userData, const XML_Char *prefix)
     ftprintf(fp, T("<endns prefix=\"%s\"/>\n"), prefix);
 }
 
-static int
+static int XMLCALL
 unknownEncodingConvert(void *data, const char *p)
 	/*@*/
 {
   return codepageConvert(*(int *)data, p);
 }
 
-static int
+static int XMLCALL
 unknownEncoding(/*@unused@*/ void *userData, const XML_Char *name,
 		XML_Encoding *info)
 	/*@modifies info @*/
@@ -657,7 +657,7 @@ unknownEncoding(/*@unused@*/ void *userData, const XML_Char *name,
 /*@=compdef@*/
 }
 
-static int
+static int XMLCALL
 notStandalone(/*@unused@*/ void *userData)
 	/*@*/
 {

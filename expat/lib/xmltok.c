@@ -7,7 +7,9 @@
 #elif defined(MACOS_CLASSIC)
 #include "macconfig.h"
 #else
-#include <expat_config.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #endif /* ndef COMPILED_FROM_DSP */
 
 #include "internal.h"
@@ -290,6 +292,7 @@ sb_byteToAscii(const ENCODING *enc, const char *p)
  (AS_NORMAL_ENCODING(enc)->charMatches(enc, p, c))
 static int PTRCALL
 sb_charMatches(const ENCODING *enc, const char *p, int c)
+	/*@*/
 {
   return *p == c;
 }
@@ -322,7 +325,6 @@ static void PTRCALL
 utf8_toUtf8(const ENCODING *enc,
             const char **fromP, const char *fromLim,
             char **toP, const char *toLim)
-	/*@modifies *fromP, *toP @*/
 {
   char *to;
   const char *from;
@@ -342,7 +344,6 @@ static void PTRCALL
 utf8_toUtf16(const ENCODING *enc,
              const char **fromP, const char *fromLim,
              unsigned short **toP, const unsigned short *toLim)
-	/*@modifies *fromP, *toP @*/
 {
   unsigned short *to = *toP;
   const char *from = *fromP;
@@ -733,6 +734,7 @@ little2_isNmstrtMin(const ENCODING *enc, const char *p)
 
 #ifdef XML_NS
 
+/*@unchecked@*/ /*@observer@*/
 static const struct normal_encoding little2_encoding_ns = {
   { VTABLE, 2, 0,
 #if BYTEORDER == 1234
@@ -821,7 +823,6 @@ big2_byteType(const ENCODING *enc, const char *p)
 
 static int PTRFASTCALL
 big2_byteToAscii(const ENCODING *enc, const char *p)
-	/*@*/
 {
   return BIG2_BYTE_TO_ASCII(enc, p);
 }
@@ -1133,6 +1134,7 @@ doParseXmlDecl(const ENCODING *(*encodingFinder)(const ENCODING *,
                /*@null@*/ int *standalone)
 	/*@modifies ptr, *badPtr, *versionPtr, *versionEndPtr,
 		*encodingName, *encoding, *standalone @*/
+
 {
   const char *val = NULL;
   const char *name = NULL;
@@ -1517,7 +1519,6 @@ static int FASTCALL
 getEncodingIndex(/*@null@*/ const char *name)
 	/*@*/
 {
-  /*@unchecked@*/ /*@observer@*/
   static const char *encodingNames[] = {
     KW_ISO_8859_1,
     KW_US_ASCII,
@@ -1552,12 +1553,11 @@ getEncodingIndex(/*@null@*/ const char *name)
 
 static int
 initScan(const ENCODING **encodingTable,
-		const INIT_ENCODING *enc,
-		int state,
-		const char *ptr,
-		const char *end,
-		const char **nextTokPtr)
-	/*@modifies enc, *nextTokPtr @*/
+         const INIT_ENCODING *enc,
+         int state,
+         const char *ptr,
+         const char *end,
+         const char **nextTokPtr)
 {
   const ENCODING **encPtr;
 

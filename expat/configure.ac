@@ -10,17 +10,18 @@ dnl   under the terms of the License (based on the MIT/X license) contained
 dnl   in the file COPYING that comes with this distribution.
 dnl
 
-
 AC_PREREQ(2.52)
-AC_INIT(expat, 1.95.6, expat-bugs@mail.libexpat.org)
+AC_INIT(expat, 1.95.7, expat-bugs@mail.libexpat.org)
+
 AC_CONFIG_SRCDIR(Makefile.in)
 AC_CONFIG_AUX_DIR(conftools)
-AM_CONFIG_HEADER(expat_config.h)
+AC_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 
 AC_LIBTOOL_WIN32_DLL
+
 
 dnl
 dnl Increment LIBREVISION if source code has changed at all
@@ -33,12 +34,14 @@ dnl
 dnl If the API changes incompatibly set LIBAGE back to 0
 dnl
 
-LIBCURRENT=4
+LIBCURRENT=5
 LIBREVISION=0
-LIBAGE=4
+LIBAGE=5
+
 
 sinclude(conftools/libtool.m4)
 sinclude(conftools/ac_c_bigendian_cross.m4)
+
 
 AC_SUBST(LIBCURRENT)
 AC_SUBST(LIBREVISION)
@@ -66,7 +69,6 @@ fi
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h unistd.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
@@ -75,12 +77,12 @@ dnl work in a cross compile.
 AC_C_BIGENDIAN_CROSS
 
 AC_C_CONST
-AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
+AC_CHECK_FUNCS(memmove bcopy)
 
-dnl Checks for library functions.
-
-AC_FUNC_MEMCMP
+dnl Only needed for xmlwf:
+AC_CHECK_HEADERS(fcntl.h unistd.h)
+AC_TYPE_OFF_T
 AC_FUNC_MMAP
 
 if test "$ac_cv_func_mmap_fixed_mapped" = "yes"; then
@@ -90,9 +92,10 @@ else
 fi
 AC_SUBST(FILEMAP)
 
-AC_CHECK_FUNCS(memmove bcopy)
+dnl Only needed for regression tests:
+AC_CHECK_HEADERS(check.h)
 
-dnl some basic configuration
+dnl Some basic configuration:
 AC_DEFINE([XML_NS], 1,
           [Define to make XML Namespaces functionality available.])
 AC_DEFINE([XML_DTD], 1,

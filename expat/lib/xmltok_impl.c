@@ -580,7 +580,7 @@ PREFIX(scanAtts)(const ENCODING *enc, const char *ptr, const char *end,
           return XML_TOK_INVALID;
         }
       }
-      /*@fallthrough@*/
+    /*@fallthrough@*/
     case BT_EQUALS:
       {
         int open;
@@ -898,7 +898,7 @@ PREFIX(scanPercent)(const ENCODING *enc, const char *ptr, const char *end,
 	/*@modifies *nextTokPtr @*/
 {
   if (ptr == end)
-    return XML_TOK_PARTIAL;
+    return -XML_TOK_PERCENT;
   switch (BYTE_TYPE(enc, ptr)) {
   CHECK_NMSTRT_CASES(enc, ptr, end, nextTokPtr)
   case BT_S: case BT_LF: case BT_CR: case BT_PERCNT:
@@ -1427,7 +1427,6 @@ PREFIX(isPublicId)(const ENCODING *enc, const char *ptr, const char *end,
     case BT_NMSTRT:
       if (!(BYTE_TO_ASCII(enc, ptr) & ~0x7f))
         break;
-      /*@fallthrough@*/
     default:
       switch (BYTE_TO_ASCII(enc, ptr)) {
       case 0x24: /* $ */
@@ -1448,7 +1447,6 @@ PREFIX(isPublicId)(const ENCODING *enc, const char *ptr, const char *end,
    first attsMax attributes are stored in atts.
 */
 
-/*@-mods@*/
 static int PTRCALL
 PREFIX(getAtts)(const ENCODING *enc, const char *ptr,
                 int attsMax, ATTRIBUTE *atts)
@@ -1542,7 +1540,6 @@ PREFIX(getAtts)(const ENCODING *enc, const char *ptr,
   }
   /*@notreached@*/
 }
-/*@=mods@*/
 
 static int PTRFASTCALL
 PREFIX(charRefNumber)(const ENCODING *enc, const char *ptr)
@@ -1656,7 +1653,7 @@ PREFIX(sameName)(const ENCODING *enc, const char *ptr1, const char *ptr2)
         return 0;
     LEAD_CASE(4) LEAD_CASE(3) LEAD_CASE(2)
 #undef LEAD_CASE
-      /* fall through */
+      /*@fallthrough@*/
       if (*ptr1++ != *ptr2++)
         return 0;
       break;

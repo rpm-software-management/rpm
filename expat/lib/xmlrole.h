@@ -100,10 +100,10 @@ typedef struct prolog_state {
 #endif /* XML_DTD */
 } PROLOG_STATE;
 
-void XmlPrologStateInit(PROLOG_STATE *state)
+void XmlPrologStateInit(PROLOG_STATE *)
 	/*@modifies state @*/;
 #ifdef XML_DTD
-void XmlPrologStateInitExternalEntity(PROLOG_STATE *state)
+void XmlPrologStateInitExternalEntity(PROLOG_STATE *)
 	/*@modifies state @*/;
 #endif /* XML_DTD */
 
