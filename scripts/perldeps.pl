@@ -7,7 +7,7 @@ my ($show_provides, $show_requires, $verbose, @ignores);
 
 my $result = GetOptions("provides" => \$show_provides,
 			"requires" => \$show_requires,
-			"verbose" => \$verbose,
+			"verbose"  => \$verbose,
 			"ignore=s" => \@ignores);
 my %ignores = map { $_ => 1 } @ignores;
 
@@ -90,8 +90,9 @@ sub line_number {
 
 sub to_string {
   my $self = shift;
+  my $type = $self->type;
 
-  if ($self->type eq 'perl version') {
+  if ($type eq 'perl version') {
     # we need to convert a perl release version to an rpm package
     # version
 
@@ -114,6 +115,9 @@ sub to_string {
     $version =~ s/\.$//;
 
     return sprintf "perl >= %d:%s", $epoch, $version;
+  }
+  elsif ($type eq 'virtual') { 
+   	return $self->value; 
   }
   else {
     return sprintf "perl(%s)", $self->value;
@@ -189,7 +193,7 @@ sub add_require {
 }
 
 sub process_file {
-  my $self = shift;
+  my $self     = shift;
   my $filename = shift;
 
   if (not open FH, "<$filename") {
@@ -234,6 +238,151 @@ sub process_file {
     }
     elsif (m/^require\s+([\w\:]+).*;/) {
       $self->add_require(-filename => $filename, -require => $1, -type => "require", -line => $.);
+    } 
+    #
+    # Allow for old perl.req Requires.  Support:
+    #
+    #    $RPM_Requires = "x y z";
+    #    our $RPM_Requires = "x y z";
+    # 
+    # where the rvalue is a space delimited list of provides.
+    elsif (m/^\s*(our\s+)?\$RPM_Requires\s*=\s*["'](.*)['"]/) {
+      foreach my $require (split(/\s+/, $2)) {
+      	$self->add_require(
+           -filename => $filename, 
+           -require  => $require, 
+           -type     => "virtual", 
+           -line     => $.
+        );
+      }
+    }
+    #
+    # Allow for old perl.req Provides.  Support:
+    #
+    #    $RPM_Provides = "x y z";
+    #    our $RPM_Provides = "x y z";
+    # 
+    # where the rvalue is a space delimited list of provides.
+    elsif ( m/^\s*(our\s+)?\$RPM_Provides\s*=\s*["'](.*)['"]/) {
+      foreach my $provide (split(/\s+/, $2)) {
+        $self->add_provide(
+           -filename => $filename, 
+           -provide  => $provide, 
+           -type     => "virtual", 
+           -line     => $.
+        );
+      }
     }
   }
+
+  close(FH);
 }
+
+#######
+# POD #
+#######
+__END__
+
+=head1 NAME
+
+perldeps.pl - Generate Dependency Sets For a Perl Script
+
+=head1 SYNOPSIS
+
+	perldeps.pl --provides [--verbose] 
+		[--ignore=(dep) ... --ignore=(depN)]
+	perldeps.pl --requires [--verbose] 
+		[--ignore=(dep) ... --ignore=(depN)]
+
+=head1 DESCRIPTION
+
+This script examines a perl script or library and determines what the
+set of provides and requires for that file.  Depending on whether you
+use the C<--provides> or C<--requires> switch it will print either
+the provides or requires it finds.  It will print each dependency 
+on a seperate line simular to:
+
+	perl(strict)
+	perl(warnings)
+	perl(Cmd)
+	perl(Dbug)
+	perl(Fdisk::Cmd)
+
+This is the standard output that rpm expects from all of its autodependency
+scripts.
+
+Provides are determined by C<package> lines such as:
+
+	package Great::Perl::Lib;
+
+Additionally, a script can infrom C<perldeps.pl> that it has additional
+provides by creating the variable C<$RPM_Provides>, and setting it to 
+a space delimited list of provides.  For instance:
+
+	$RPM_Provides = "great stuff";
+
+Would tell C<perldeps.pl> that this script provides C<great> and C<stuff>.
+
+Requires are picked up from several sources:
+
+=over 4
+
+=item *
+
+C<use> lines.   These can define either libraries to use or the version
+of perl required (see C<use> under C<perlfunc(1)).
+
+=item *
+
+C<require> lines.  Defines libraries to be sourced and evaled.
+
+=item *
+
+C<use base> lines.   These define base classes of the libraries and are 
+thus dependencies.  It can parse the following forms:
+
+	use base "somelib";
+	use base qw(somelib otherlib);
+	use base qw/somelib otherlib);
+
+=back
+
+Aditionally, you can define the variable C<$RPM_Requires> to define
+additonal non-perl requirments.  For instance your script may require
+sendmail, in which case might do:
+
+	$RPM_Requires = "sendmail";
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--provides>
+
+Print all provides.
+
+=item B<--requires>
+
+Print all requires.
+
+=item B<--ignore=(dep)>
+
+Ignore this dependency if found.
+
+=back
+
+=head1 EXIT STATUS
+
+0 success, 1 failure
+
+=head1 SEE ALSO
+
+/usr/lib/rpm/macros
+
+=head1 BUGS
+
+Does not generate version information on dependencies.  
+
+=head1 AUTHOR
+
+Chip Turner <cturner@redhat.com>
