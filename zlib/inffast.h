@@ -8,5 +8,4 @@
    subject to change. Applications should only use zlib.h.
  */
 
-void inflate_fast OF((z_streamp strm, unsigned start))
-	/*@modifies strm @*/;
+void inflate_fast OF((z_streamp strm, unsigned start));

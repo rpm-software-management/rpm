@@ -38,14 +38,13 @@ typedef unsigned short ush;
 typedef ush FAR ushf;
 typedef unsigned long  ulg;
 
-/*@unchecked@*/ /*@observer@*/
 extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
 
 #define ERR_MSG(err) z_errmsg[Z_NEED_DICT-(err)]
 
 #define ERR_RETURN(strm,err) \
-  return /*@-mods@*/ (strm->msg = (char*)ERR_MSG(err), (err)) /*@=mods@*/
+  return (strm->msg = (char*)ERR_MSG(err), (err))
 /* To be used only when the state is known to be valid */
 
         /* common constants */
@@ -190,9 +189,14 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define NO_vsnprintf
 #  endif
 #endif
+#ifdef VMS
+#  define NO_vsnprintf
+#endif
 
 #ifdef HAVE_STRERROR
-   extern char *strerror OF((int));
+#  ifndef VMS
+     extern char *strerror OF((int));
+#  endif
 #  define zstrerror(errnum) strerror(errnum)
 #else
 #  define zstrerror(errnum) ""
@@ -222,11 +226,9 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define zmemzero(dest, len) memset(dest, 0, len)
 #  endif
 #else
-   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len))
-	/*@modifies dest @*/;
-   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len))\		/*@*/;
-   extern void zmemzero OF((Bytef* dest, uInt len))
-	/*@modifies dest @*/;
+   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len));
+   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len));
+   extern void zmemzero OF((Bytef* dest, uInt len));
 #endif
 
 /* Diagnostic functions */
@@ -250,11 +252,8 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 
 
-/*@null@*/
-voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size))
-	/*@*/;
-void   zcfree  OF((voidpf opaque, /*@only@*/ voidpf ptr))
-	/*@modifies ptr @*/;
+voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size));
+void   zcfree  OF((voidpf opaque, voidpf ptr));
 
 #define ZALLOC(strm, items, size) \
            (*((strm)->zalloc))((strm)->opaque, (items), (size))

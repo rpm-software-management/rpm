@@ -101,9 +101,7 @@ struct inflate_state {
         /* for table and code decoding */
     unsigned extra;             /* extra bits needed */
         /* fixed and dynamic code tables */
-/*@shared@*/
     code const FAR *lencode;    /* starting table for length/literal codes */
-/*@shared@*/
     code const FAR *distcode;   /* starting table for distance codes */
     unsigned lenbits;           /* index bits for lencode */
     unsigned distbits;          /* index bits for distcode */
@@ -112,7 +110,6 @@ struct inflate_state {
     unsigned nlen;              /* number of length code lengths */
     unsigned ndist;             /* number of distance code lengths */
     unsigned have;              /* number of code lengths in lens[] */
-/*@shared@*/
     code FAR *next;             /* next available space in codes[] */
     unsigned short lens[320];   /* temporary storage for code lengths */
     unsigned short work[288];   /* work area for code table building */

@@ -1,5 +1,5 @@
 /* inffast.c -- fast decoding
- * Copyright (C) 1995-2003 Mark Adler
+ * Copyright (C) 1995-2004 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -19,7 +19,7 @@
    - none
    No measurable difference:
    - Pentium III (Anderson)
-   - 68060 (Nikl)
+   - M68060 (Nikl)
  */
 #ifdef POSTINC
 #  define OFF 0
@@ -64,7 +64,9 @@
       requires strm->avail_out >= 258 for each loop to avoid checking for
       output space.
  */
-void inflate_fast(z_streamp strm, unsigned start)
+void inflate_fast(strm, start)
+z_streamp strm;
+unsigned start;         /* inflate()'s starting value for strm->avail_out */
 {
     struct inflate_state FAR *state;
     unsigned char FAR *in;      /* local strm->next_in */
