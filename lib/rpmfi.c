@@ -673,6 +673,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int_32 * newDirIndexes;
     int_32 fileCount;
     int_32 dirCount;
+    uint_32 mydColor = rpmExpandNumeric("%{?_autorelocate_dcolor}");
     uint_32 * fFlags = NULL;
     uint_32 * fColors = NULL;
     uint_32 * dColors = NULL;
@@ -880,8 +881,14 @@ assert(fn != NULL);		/* XXX can't happen */
 	*fn = '\0';
 	fnlen = stpcpy( stpcpy(fn, dirNames[dirIndexes[i]]), baseNames[i]) - fn;
 
-if (fColors != NULL)
-dColors[dirIndexes[i]] |= fColors[i];
+if (fColors != NULL) {
+/* XXX pkgs may not have unique dirNames, so color all dirNames that match. */
+for (j = 0; j < dirCount; j++) {
+if (strcmp(dirNames[dirIndexes[i]], dirNames[j])) continue;
+dColors[j] |= fColors[i];
+}
+}
+
 	/*
 	 * See if this file path needs relocating.
 	 */
@@ -999,7 +1006,7 @@ dColors[dirIndexes[i]] |= fColors[i];
 
            /* XXX Don't autorelocate uncolored directories. */
            if (j == p->autorelocatex
-            && (dColors[i] == 0 || !(dColors[i] & 0x1)))
+            && (dColors[i] == 0 || !(dColors[i] & mydColor)))
                /*@innercontinue@*/ continue;
 
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */

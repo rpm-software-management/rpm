@@ -6,8 +6,8 @@ echo "
 *                                                                          *
 * This is source code from the development branch of rpm-4.4.              *
 *                                                                          *
-* If you want the "production" rpm-4.3.1 code, then you should use a       *
-* rpm-4.3.1 src.rpm. Alternatively, if using a CVS checkout, do            *
+* If you want the "production" rpm-4.3.2 code, then you should use a       *
+* rpm-4.3.2 src.rpm. Alternatively, if using a CVS checkout, do            *
 * the following:                                                           *
 *                                                                          *
 *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
@@ -15,7 +15,7 @@ echo "
 *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
 *       cd rpm                                                             *
 *                                                                          *
-* Here's the rpm-4_3 branch, latest is rpm-4.3.1:                          *
+* Here's the rpm-4_3 branch, latest is rpm-4.3.2:                          *
 *       cvs up -r rpm-4_3                                                  *
 *                                                                          *
 * Here's the rpm-4_2 branch, latest is rpm-4.2.2:                          *
@@ -881,6 +881,21 @@ if test $withval != no ; then
 fi
 AC_SUBST(WITH_SELINUX_LIB)
 
+WITH_LUA_LIB=
+WITH_LUA_SUBDIR=
+WITH_LUA_INCLUDE=
+withval=yes
+AC_ARG_WITH(lua, [  --with-lua              build with lua support ])
+if test $withval != no -a -d lua ; then
+  AC_DEFINE(WITH_LUA, 1, [Build with lua support?])
+  WITH_LUA_SUBDIR="lua"
+  WITH_LUA_INCLUDE="-I\${top_srcdir}/${WITH_LUA_SUBDIR}/include -I\${top_srcdir}/${WITH_LUA_SUBDIR}/local"
+  WITH_LUA_LIB="\$(top_builddir)/${WITH_LUA_SUBDIR}/liblua.la"
+fi
+AC_SUBST(WITH_LUA_LIB)
+AC_SUBST(WITH_LUA_SUBDIR)
+AC_SUBST(WITH_LUA_INCLUDE)
+
 if test $withval = yes; then
   WITH_APIDOCS_TARGET=apidocs
   WITH_APIDOCS=1
@@ -1094,6 +1109,7 @@ AC_SUBST(MARK64)
 
 dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
+autorelocate_dcolor='0'
 case "${build_cpu}" in
 *86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
 ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
@@ -1103,7 +1119,8 @@ alpha*)		RPMCANONCOLOR=0; RPMCANONARCH=alpha ;;
 sparc64*)	RPMCANONCOLOR=3; RPMCANONARCH=sparc64 ;;
 sparc*)		RPMCANONCOLOR=3; RPMCANONARCH=sparc ;;
 ia64*)		RPMCANONCOLOR=2; RPMCANONARCH=ia64;
-		autorelocate_path='/emul/%%{ARCH}-%%{OS}' ;;
+		autorelocate_path='/emul/%%{ARCH}-%%{OS}'
+		autorelocate_dcolor='1' ;;
 s390x*)		RPMCANONCOLOR=3; RPMCANONARCH=s390x ;;
 s390*)		RPMCANONCOLOR=0; RPMCANONARCH=s390 ;;
 powerpc64*|ppc64*)	RPMCANONCOLOR=3; RPMCANONARCH=ppc64 ;;
@@ -1135,6 +1152,7 @@ esac
 RPMCANONOS="$build_os_noversion"
 AC_SUBST(RPMCANONCOLOR)
 AC_SUBST(autorelocate_path)
+AC_SUBST(autorelocate_dcolor)
 AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
