@@ -64,6 +64,8 @@ os_canon:         OSF1: osf1    7
 os_canon:      FreeBSD: FreeBSD 8
 os_canon:       SCO_SV: SCO_SV3.2v5.0.2  9
 os_canon:	IRIX64: Irix64  10
+os_canon:     NEXTSTEP: NextStep 11
+os_canon:       BSD/OS: BSD_OS 12
 
 #############################################################
 # For a given uname().machine, the default build arch
