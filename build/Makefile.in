@@ -1,7 +1,8 @@
 srcdir = @srcdir@
 VPATH = $(srcdir)
 
-LIBOBJECTS = spec.o vspec.o build.o files.o names.o pack.o myftw.o reqprov.o
+LIBOBJECTS = spec.o vspec.o build.o files.o names.o pack.o myftw.o \
+		reqprov.o trigger.o
 LIBBUILD = libbuild.a
 LOADLIBES = -lrpm $(LIBEFENCE)
 
