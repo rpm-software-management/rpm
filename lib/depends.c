@@ -335,6 +335,7 @@ static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
     parseEVR(bEVR, &bE, &bV, &bR);
 
     /* Compare {A,B} [epoch:]version[-release] */
+    sense = 0;
     if (aE && *aE && bE && *bE)
 	sense = rpmvercmp(aE, bE);
     else if (aE && *aE)
@@ -692,8 +693,14 @@ static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(struct availabl
     }	break;
     case IET_PROVIDES:
 	for (i = 0; i < p->providesCount; i++) {
-	    const char *proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
-	    int proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
+	    const char *proEVR;
+	    int proFlags;
+
+	    /* Filter out provides that came along for the ride. */
+	    if (strcmp(p->provides[i], keyName))	continue;
+
+	    proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
+	    proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
 	    rc = rangesOverlap(p->provides[i], proEVR, proFlags,
 			keyName, keyEVR, keyFlags);
 	    if (rc) break;
