@@ -386,8 +386,8 @@ int	fdWritable(FD_t fd, int secs);
  */
 int	fdReadable(FD_t fd, int secs);
 
-/*
- * Support for FTP and HTTP I/O.
+/** \ingroup rpmio
+ * FTP and HTTP error codes.
  */
 typedef enum ftperrCode_e {
     FTPERR_BAD_SERVER_RESPONSE	= -1,	/*!< */
@@ -406,12 +406,15 @@ typedef enum ftperrCode_e {
 
 /** \ingroup rpmio
  */
+/*@observer@*/ const char *const ftpStrerror(int errorNumber);
+
+/** \ingroup rpmio
+ */
 /*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
 
 /** \ingroup rpmio
  */
 /*@observer@*/ const char * urlStrerror(const char * url);
-
 
 /** \ingroup rpmio
  */
@@ -423,8 +426,6 @@ int	ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 
 /** \ingroup rpmio
  */
-/*@observer@*/ const char *const ftpStrerror(int errorNumber);
-
 int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 #define	timedRead	ufdio->read
 

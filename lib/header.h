@@ -191,7 +191,7 @@ Header headerRead(FD_t fd, enum hMagic magicp)
  * @return		0 on success, 1 on error
  */
 int headerWrite(FD_t fd, Header h, enum hMagic magicp)
-	/*@modifies fd, h @*/;
+	/*@modifies fd @*/;
 
 /** \ingroup header
  * Return size of on-disk header representation in bytes.
@@ -199,8 +199,7 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
  * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
-unsigned int headerSizeof(Header h, enum hMagic magicp)
-	/*@modifies h @*/;
+unsigned int headerSizeof(Header h, enum hMagic magicp)	/*@*/;
 
 /** \ingroup header
  * Convert header to in-memory representation.
@@ -214,8 +213,15 @@ Header headerLoad(void *p)	/*@*/;
  * @param h		header (with pointers)
  * @return		on-disk header (with offsets)
  */
-void *headerUnload(Header h)
-	/*@modifes h @*/;
+void *headerUnload(Header h)	/*@*/;
+
+/** \ingroup header
+ * Convert header to on-disk representation, and then reload.
+ * This is used to insure that all header data is in one chunk.
+ * @param h		header (with pointers)
+ * @return		on-disk header (with offsets)
+ */
+Header headerReload(/*@only@*/ Header h)	/*@*/;
 
 /** \ingroup header
  * Create new (empty) header instance.
@@ -228,7 +234,8 @@ Header headerNew(void)	/*@*/;
  * @param h		header
  * @return		referenced header instance
  */
-Header headerLink(Header h)	/*@modifies h @*/;
+Header headerLink(Header h)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Dereference a header instance.
@@ -270,7 +277,7 @@ typedef const char * errmsg_t;
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extentions,
 		     /*@out@*/ errmsg_t * errmsg)
-	/*@modifies h, *errmsg @*/;
+	/*@modifies *errmsg @*/;
 
 /** \ingroup header
  * Add tag to header.
@@ -308,8 +315,7 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
  * @param h		header
  * @return		array of locales (or NULL on error)
  */
-char ** headerGetLangs(Header h)
-	/*@modifies h @*/;
+char ** headerGetLangs(Header h)	/*@*/;
 
 /** \ingroup header
  * Add locale specific tag to header.
@@ -379,7 +385,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
  */
 int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 	/*@out@*/ void **p, /*@out@*/int_32 *c)
-		/*@modifies h, *type, *p, *c @*/;
+		/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
  * Retrieve tag value using header internal array.
@@ -395,7 +401,7 @@ int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  */
 int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type,
 	/*@out@*/ void **p, /*@out@*/ int_32 *c)
-		/*@modifies h, *type, *p, *c @*/;
+		/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
  * Retrieve tag value with type match.
@@ -410,8 +416,8 @@ int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type,
  * @return		1 on success, 0 on failure
  */
 int headerGetRawEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
-	/*@out@*/ void **p, /*@out@*/ int_32 *c)
-		/*@modifies h, *type, *p, *c @*/;
+	/*@out@*/ const void **p, /*@out@*/ int_32 *c)
+		/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
  * Check if tag is in header.
@@ -419,8 +425,7 @@ int headerGetRawEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
-int headerIsEntry(Header h, int_32 tag)
-	/*@modifies h @*/;
+int headerIsEntry(Header h, int_32 tag)	/*@*/;
 
 /** \ingroup header
  * Delete tag in header.
@@ -440,7 +445,7 @@ int headerRemoveEntry(Header h, int_32 tag)
  * @return		header tag iterator
  */
 HeaderIterator headerInitIterator(Header h)
-	/*@modifies h @*/;
+	/*@modifies h*/;
 
 /** \ingroup header
  * Return next tag from header.
@@ -452,8 +457,8 @@ HeaderIterator headerInitIterator(Header h)
  * @return		1 on success, 0 on failure
  */
 int headerNextIterator(HeaderIterator iter,
-	/*@out@*/ int_32 *tag, /*@out@*/ int_32 *type, /*@out@*/ void **p,
-	/*@out@*/ int_32 *c)
+	/*@out@*/ int_32 * tag, /*@out@*/ int_32 * type,
+	/*@out@*/ const void ** p, /*@out@*/ int_32 * c)
 		/*@modifies iter, *tag, *type, *p, *c @*/;
 
 /** \ingroup header
@@ -475,6 +480,13 @@ Header headerCopy(Header h)
  * @param h		header
  */
 void headerSort(Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Restore tags in header to original ordering.
+ * @param h		header
+ */
+void headerUnsort(Header h)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -505,9 +517,11 @@ typedef enum rpmTagType_e {
 } rpmTagType;
 
 
-/* Tags -- general use tags should start at 1000 (RPM's tag space starts
-   there) */
-
+/**
+ * Header private tags.
+ * @note General use tags should start at 1000 (RPM's tag space starts there).
+ */
+#define	HEADER_IMAGE		90
 #define HEADER_I18NTABLE	100
 
 #ifdef __cplusplus

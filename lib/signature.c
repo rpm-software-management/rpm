@@ -128,7 +128,8 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
     int sigSize, pad;
     int_32 type, count;
     int_32 *archSize;
-    Header h;
+    Header h = NULL;
+    int rc = 1;		/* assume failure */
 
     if (headerp)
 	*headerp = NULL;
@@ -136,58 +137,52 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
     switch (sig_type) {
       case RPMSIG_NONE:
 	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
+	rc = 0;
 	break;
       case RPMSIG_PGP262_1024:
 	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
 	/* These are always 256 bytes */
 	if (timedRead(fd, buf, 256) != 256)
-	    return 1;
-	if (headerp) {
-	    *headerp = headerNew();
-	    headerAddEntry(*headerp, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
-	}
+	    break;
+	h = headerNew();
+	headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
+	rc = 0;
 	break;
       case RPMSIG_MD5:
       case RPMSIG_MD5_PGP:
 	rpmError(RPMERR_BADSIGTYPE,
 	      _("Old (internal-only) signature!  How did you get that!?"));
-	return 1;
-	/*@notreached@*/ break;
+	break;
       case RPMSIG_HEADERSIG:
 	rpmMessage(RPMMESS_DEBUG, _("New Header signature\n"));
 	/* This is a new style signature */
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	if (h == NULL)
-	    return 1;
+	    break;
 	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
-	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count)) {
-	    headerFree(h);
-	    return 1;
-	}
-	if (checkSize(fd, *archSize, sigSize + pad)) {
-	    headerFree(h);
-	    return 1;
-	}
+	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count))
+	    break;
+	if (checkSize(fd, *archSize, sigSize + pad))
+	    break;
 	if (pad) {
-	    if (timedRead(fd, buf, pad) != pad) {
-		headerFree(h);
-		return 1;
-	    }
+	    if (timedRead(fd, buf, pad) != pad)
+		break;
 	}
-	if (headerp) {
-	    *headerp = h;
-	} else {
-	    headerFree(h);
-	}
+	rc = 0;
 	break;
       default:
-	return 1;
+	break;
     }
 
-    return 0;
+    if (rc == 0 && headerp)
+	*headerp = h;
+    else
+	headerFree(h);
+
+    return rc;
 }
 
 int rpmWriteSignature(FD_t fd, Header header)

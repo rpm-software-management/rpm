@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-10-31 10:04-0500\n"
+"POT-Creation-Date: 2000-11-07 07:55-0500\n"
 "PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1549,7 +1549,7 @@ msgstr "ingen spec-filer angivna för tillverkning"
 msgid "no tar files given for build"
 msgstr "inga tar-filer angivna för tillverkning"
 
-#: build/build.c:111 build/pack.c:355
+#: build/build.c:111 build/pack.c:356
 msgid "Unable to open temp file."
 msgstr "Kan inte öppna temporär fil."
 
@@ -1856,71 +1856,71 @@ msgstr "Kunde inte öppna VerifyScript-fil: %s"
 msgid "Could not open Trigger script file: %s"
 msgstr "Kunde inte öppna Trigger-skriptfil: %s"
 
-#: build/pack.c:227
+#: build/pack.c:226
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: öppna %s: %s\n"
 
-#: build/pack.c:237
+#: build/pack.c:236
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: läs %s: %s\n"
 
-#: build/pack.c:258
+#: build/pack.c:257
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s är inte ett RPM-paket\n"
 
-#: build/pack.c:264
+#: build/pack.c:263
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: läser huvud från %s\n"
 
-#: build/pack.c:367
+#: build/pack.c:368
 msgid "Bad CSA data"
 msgstr "Felaktig CSA-data"
 
-#: build/pack.c:403
+#: build/pack.c:400
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:437
+#: build/pack.c:433
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Kunde inte skriva paket: %s"
 
-#: build/pack.c:452
+#: build/pack.c:445
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererar signatur: %d\n"
 
-#: build/pack.c:468
+#: build/pack.c:458
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Kan inte läsa signaturen %s: %s"
 
-#: build/pack.c:478
+#: build/pack.c:465
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Kan inte läsa signaturen %s: %s"
 
-#: build/pack.c:488
+#: build/pack.c:471
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Kan inte skriva paket %s: %s"
 
-#: build/pack.c:503
+#: build/pack.c:494
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:560
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:584
+#: build/pack.c:577
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
@@ -2106,53 +2106,53 @@ msgstr "Dålig källa: %s: %s"
 msgid "No patch number %d"
 msgstr "Inget patch-nummer %d"
 
-#: build/parsePrep.c:162
+#: build/parsePrep.c:163
 #, c-format
 msgid "No source number %d"
 msgstr "Inget källkodsnummer %d"
 
-#: build/parsePrep.c:181
+#: build/parsePrep.c:182
 #, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "Kunde inte hämta nosource %s: %s"
 
-#: build/parsePrep.c:254
+#: build/parsePrep.c:276
 msgid "Error parsing %%setup: %s"
 msgstr "Fel i parsning av %%setup: %s"
 
-#: build/parsePrep.c:269
+#: build/parsePrep.c:291
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr "rad %d: Felaktigt argument till %%setup %c: %s"
 
-#: build/parsePrep.c:287
+#: build/parsePrep.c:309
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr "rad %d: Felaktig %%setup-flagga %s: %s"
 
-#: build/parsePrep.c:420
+#: build/parsePrep.c:442
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr "rad %d: Behöver argument till %%patch -b: %s"
 
-#: build/parsePrep.c:428
+#: build/parsePrep.c:450
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr "rad %d: Behöver argument till %%patch -z: %s"
 
-#: build/parsePrep.c:440
+#: build/parsePrep.c:462
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr "rad %d: Behöver argument till %%patch -p: %s"
 
-#: build/parsePrep.c:446
+#: build/parsePrep.c:468
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr "rad %d: Felaktigt argument till %%patch -p: %s"
 
-#: build/parsePrep.c:453
+#: build/parsePrep.c:475
 msgid "Too many patches!"
 msgstr "För många patchar!"
 
-#: build/parsePrep.c:457
+#: build/parsePrep.c:479
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "rad %d: Felaktigt argument till %%patch: %s"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:515
 msgid "line %d: second %%prep"
 msgstr "rad %d: andra %%prep"
 
@@ -2351,58 +2351,58 @@ msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s JA (rpmlib tillhandahåller)\n"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1105
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:1117
+#: lib/depends.c:1118
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db tillhandahållande)\n"
 
-#: lib/depends.c:1130
+#: lib/depends.c:1132
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1151
+#: lib/depends.c:1153
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1209
+#: lib/depends.c:1211
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1276
+#: lib/depends.c:1278
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1462
+#: lib/depends.c:1464
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tar bort \"%s\" från %s-indexet.\n"
 
 #. Record all relations.
-#: lib/depends.c:1515
+#: lib/depends.c:1517
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1572
+#: lib/depends.c:1574
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1675
+#: lib/depends.c:1677
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1706
+#: lib/depends.c:1708
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2546,7 +2546,7 @@ msgstr ""
 "problemet.\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2174 lib/header.c:2191 lib/header.c:2211
+#: lib/header.c:2385 lib/header.c:2402 lib/header.c:2422
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -2575,92 +2575,92 @@ msgid "file %s is on an unknown device"
 msgstr "filen %s är på en okänd enhet"
 
 #. This should not be allowed
-#: lib/header.c:245
+#: lib/header.c:260
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
 
-#: lib/header.c:276 lib/header.c:747 lib/install.c:380
+#: lib/header.c:291 lib/header.c:872 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatyp %d stöds inte\n"
 
-#: lib/header.c:1110
+#: lib/header.c:1268
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Felaktigt antal till headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1526
+#: lib/header.c:1738
 #, c-format
 msgid "missing { after %"
 msgstr "{ fattas efter %"
 
 #. @-observertrans@
-#: lib/header.c:1556
+#: lib/header.c:1768
 msgid "missing } after %{"
 msgstr "} fattas efter %{"
 
 #. @-observertrans@
-#: lib/header.c:1570
+#: lib/header.c:1782
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
 #. @-observertrans@
-#: lib/header.c:1582
+#: lib/header.c:1794
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
 #. @-observertrans@
-#: lib/header.c:1599
+#: lib/header.c:1811
 msgid "unknown tag"
 msgstr "okänd tagg"
 
 #. @-observertrans@
-#: lib/header.c:1626
+#: lib/header.c:1838
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
 #. @-observertrans@
-#: lib/header.c:1644
+#: lib/header.c:1856
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
 #. @-observertrans@
-#: lib/header.c:1648
+#: lib/header.c:1860
 msgid "unexpected }"
 msgstr "oväntad }"
 
 #. @-observertrans@
-#: lib/header.c:1708
+#: lib/header.c:1920
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:1717
+#: lib/header.c:1929
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:1730 lib/header.c:1771
+#: lib/header.c:1942 lib/header.c:1983
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:1740
+#: lib/header.c:1952
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
 #. @-observertrans@
-#: lib/header.c:1756
+#: lib/header.c:1968
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:1781
+#: lib/header.c:1993
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: lib/header.c:1953
+#: lib/header.c:2164
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
@@ -2774,11 +2774,11 @@ msgstr "kör (eventuellt) postinstallationsskript\n"
 msgid "error creating temporary file %s"
 msgstr "fel när tämporärfil %s skapades"
 
-#: lib/package.c:62
+#: lib/package.c:61
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "paket med versionsnummer 1 stöds inte av denna version av RPM"
 
-#: lib/package.c:122
+#: lib/package.c:119
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr "endast paket med huvudnummer <= 4 stöds av denna version av RPM"
@@ -3670,15 +3670,15 @@ msgstr "förväntad storlek: %d\n"
 msgid "file is not regular -- skipping size check\n"
 msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 
-#: lib/signature.c:138
+#: lib/signature.c:139
 msgid "No signature\n"
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:141
+#: lib/signature.c:143
 msgid "Old PGP signature\n"
 msgstr "Gammal PGP-signatur\n"
 
-#: lib/signature.c:153
+#: lib/signature.c:154
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?"
 
@@ -3687,104 +3687,104 @@ msgid "New Header signature\n"
 msgstr "Ny huvudsignatur\n"
 
 #. 8-byte pad
-#: lib/signature.c:164 lib/signature.c:206
+#: lib/signature.c:164 lib/signature.c:201
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Signaturstorlek  : %d\n"
 
-#: lib/signature.c:165 lib/signature.c:207
+#: lib/signature.c:165 lib/signature.c:202
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Signaturutfyllnad: %d\n"
 
-#: lib/signature.c:270
+#: lib/signature.c:265
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Kunde inte köra pgp (%s)"
 
-#: lib/signature.c:281
+#: lib/signature.c:276
 msgid "pgp failed"
 msgstr "pgp misslyckades"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:288
+#: lib/signature.c:283
 msgid "pgp failed to write signature"
 msgstr "pgp misslyckades att skriva en signatur"
 
-#: lib/signature.c:293
+#: lib/signature.c:288
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP signaturstorlek: %d\n"
 
-#: lib/signature.c:304 lib/signature.c:381
+#: lib/signature.c:299 lib/signature.c:376
 msgid "unable to read the signature"
 msgstr "kan inte läsa signaturen"
 
-#: lib/signature.c:309
+#: lib/signature.c:304
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fick %d byte PGPsignatur\n"
 
-#: lib/signature.c:347 lib/signature.c:692
+#: lib/signature.c:342 lib/signature.c:687
 msgid "Couldn't exec gpg"
 msgstr "Kunde inte köra gpg"
 
-#: lib/signature.c:358
+#: lib/signature.c:353
 msgid "gpg failed"
 msgstr "gpg misslyckades"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:365
+#: lib/signature.c:360
 msgid "gpg failed to write signature"
 msgstr "gpg kunde inte skriva signatur"
 
-#: lib/signature.c:370
+#: lib/signature.c:365
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG signaturstorlek: %d\n"
 
-#: lib/signature.c:386
+#: lib/signature.c:381
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fick %d byte GPGsignatur\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:408
 msgid "Generating signature using PGP.\n"
 msgstr "Genererar signatur med PGP.\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:414
 msgid "Generating signature using GPG.\n"
 msgstr "Genererar signatur med GPG.\n"
 
-#: lib/signature.c:498 lib/signature.c:560
+#: lib/signature.c:493 lib/signature.c:555
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Kunde inte köra pgp.  Använd --nopgp för att hoppa över PGPkontroll."
 
-#: lib/signature.c:558 lib/signature.c:631
+#: lib/signature.c:553 lib/signature.c:626
 msgid "exec failed!\n"
 msgstr "exec misslyckades!\n"
 
-#: lib/signature.c:633
+#: lib/signature.c:628
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Kunde inte köra gpg.  Använd --nogpg för att hoppa över GPGkontroll."
 
-#: lib/signature.c:721
+#: lib/signature.c:716
 msgid "Couldn't exec pgp"
 msgstr "Kunde inte köra pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:725 lib/signature.c:778
+#: lib/signature.c:720 lib/signature.c:773
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Ogiltig %%_signature specifikation i makrofil"
 
-#: lib/signature.c:758
+#: lib/signature.c:753
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil"
 
-#: lib/signature.c:770
+#: lib/signature.c:765
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil"
 
@@ -3972,35 +3972,35 @@ msgstr "Makro %%%s (%s) var inte använd under nivå %d"
 msgid "Unknown option %c in %s(%s)"
 msgstr "Okänd flagga %c i %s(%s)"
 
-#: rpmio/macro.c:992
+#: rpmio/macro.c:995
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Rekursionsdjup(%d) större än max(%d)"
 
-#: rpmio/macro.c:1058 rpmio/macro.c:1074
+#: rpmio/macro.c:1061 rpmio/macro.c:1077
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Oavslutad %c: %s"
 
-#: rpmio/macro.c:1114
+#: rpmio/macro.c:1117
 msgid "A %% is followed by an unparseable macro"
 msgstr "Ett %% följs av ett makro som inte kan parsas"
 
-#: rpmio/macro.c:1240
+#: rpmio/macro.c:1243
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Inget makro %%%.*s hittat, hoppar över"
 
-#: rpmio/macro.c:1311
+#: rpmio/macro.c:1314
 msgid "Target buffer overflow"
 msgstr "Målbuffer översvämmad"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1491 rpmio/macro.c:1497
+#: rpmio/macro.c:1494 rpmio/macro.c:1500
 #, c-format
 msgid "File %s: %s"
 msgstr "Fil %s: %s"
 
-#: rpmio/macro.c:1500
+#: rpmio/macro.c:1503
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Filen %s är mindre än %d byte"

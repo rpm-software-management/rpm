@@ -53,7 +53,7 @@ int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
  * @return		0 always
  */
 int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
-	/*@out@*/ const char **rp) /*@modifies h, *np, *vp, *rp @*/;
+	/*@out@*/ const char **rp) /*@modifies *np, *vp, *rp @*/;
 
 /**
  * Retrieve file names from header.
@@ -87,7 +87,7 @@ void rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
  */
 int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
         /*@out@*/ void **p, /*@out@*/ int_32 *c)
-		/*@modifies h, *type, *p, *c @*/;
+		/*@modifies *type, *p, *c @*/;
 
 /**
  * Retrieve tag info from header.
@@ -104,7 +104,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  */
 int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
         int_32 tag, int_32 *type, void **p, int_32 *c)
-		/*@modifies sigs, h, *type, *p, *c @*/;
+		/*@modifies *type, *p, *c @*/;
 
 /**
  * Automatically generated table of tag name/value pairs.
@@ -132,10 +132,14 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 
 
 /**
- * Tags identify data in package headers
+ * Tags identify data in package headers.
  * @note tags should not have value 0!
  */
 typedef enum rpmTag_e {
+
+    RPMTAG_HEADERIMAGE		= HEADER_IMAGE,	/*!< Header allocated image. */
+
+    RPMTAG_HEADERI18NTABLE	= HEADER_I18NTABLE, /*!< I18N string locales. */
 
 /* Retrofit (and uniqify) signature tags for use by tagName() and rpmQuery. */
 /* the md5 sum was broken *twice* on big endian machines */
@@ -147,7 +151,7 @@ typedef enum rpmTag_e {
     RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,
     RPMTAG_SIGMD5	        = RPMTAG_SIG_BASE+5,
     RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,
-    RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/* internal */
+    RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/*!< internal */
 
     RPMTAG_NAME  		= 1000,
     RPMTAG_VERSION		= 1001,
@@ -912,7 +916,8 @@ typedef enum rpmtransFlags_e {
  * @return		no. of entries
  */
 int rpmGetRpmlibProvides(/*@out@*/ const char ***provNames,
-	/*@out@*/ int **provFlags, /*@out@*/ const char ***provVersions) /*@*/;
+	/*@out@*/ int **provFlags, /*@out@*/ const char ***provVersions)
+		/*@ modifies *provNames, *provFlags, *provVersions @*/;
 
 /** \ingroup rpmtrans
  * Compare two versioned dependency ranges, looking for overlap.

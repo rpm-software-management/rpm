@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-10-31 10:04-0500\n"
+"POT-Creation-Date: 2000-11-07 07:55-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1652,7 +1652,7 @@ msgstr "neboli zadané ¾iadne spec-súbory pre zostavenie"
 msgid "no tar files given for build"
 msgstr "neboli zadané ¾iadne tar-súbory pre zostavenie"
 
-#: build/build.c:111 build/pack.c:355
+#: build/build.c:111 build/pack.c:356
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Nie je mo¾né otvori» doèasný súbor"
@@ -1965,71 +1965,71 @@ msgstr "Nie je mo¾né otvori» VerifyScript súbor: %s"
 msgid "Could not open Trigger script file: %s"
 msgstr "Nie je mo¾né otvori» Trigger skriptový súbor: %s"
 
-#: build/pack.c:227
+#: build/pack.c:226
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: otvorenie %s: %s\n"
 
-#: build/pack.c:237
+#: build/pack.c:236
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: èítanie %s: %s\n"
 
-#: build/pack.c:258
+#: build/pack.c:257
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s nie je RPM balík\n"
 
-#: build/pack.c:264
+#: build/pack.c:263
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: èítanie hlavièky %s\n"
 
-#: build/pack.c:367
+#: build/pack.c:368
 msgid "Bad CSA data"
 msgstr "Chybné CSA dáta"
 
-#: build/pack.c:403
+#: build/pack.c:400
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: build/pack.c:437
+#: build/pack.c:433
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:452
+#: build/pack.c:445
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: build/pack.c:468
+#: build/pack.c:458
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Nie je preèíta» sigtarget: %s"
 
-#: build/pack.c:478
+#: build/pack.c:465
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Nie je preèíta» sigtarget: %s"
 
-#: build/pack.c:488
+#: build/pack.c:471
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:503
+#: build/pack.c:494
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:560
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
 
-#: build/pack.c:584
+#: build/pack.c:577
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie je mo¾né zapísa» do %s: "
@@ -2215,53 +2215,53 @@ msgstr "Chybný zdroj %s: %s"
 msgid "No patch number %d"
 msgstr "Neexistuje patch èíslo %d"
 
-#: build/parsePrep.c:162
+#: build/parsePrep.c:163
 #, c-format
 msgid "No source number %d"
 msgstr "Neexistuje zdroj èíslo %d"
 
-#: build/parsePrep.c:181
+#: build/parsePrep.c:182
 #, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "Nebolo mo¾né prenies» nie-zdroj %s: %s"
 
-#: build/parsePrep.c:254
+#: build/parsePrep.c:276
 msgid "Error parsing %%setup: %s"
 msgstr "Chyba pri analýze %%setup: %s"
 
-#: build/parsePrep.c:269
+#: build/parsePrep.c:291
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr "riadok %d: Chybný argument pre %%setup %c: %s"
 
-#: build/parsePrep.c:287
+#: build/parsePrep.c:309
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr "riadok %d: Chybná voµba pre %%setup %s: %s"
 
-#: build/parsePrep.c:420
+#: build/parsePrep.c:442
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr "riadok %d: %%patch -b potrebuje argument: %s"
 
-#: build/parsePrep.c:428
+#: build/parsePrep.c:450
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr "riadok %d: %%patch -z potrebuje argument: %s"
 
-#: build/parsePrep.c:440
+#: build/parsePrep.c:462
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr "riadok %d: %%patch -p potrebuje argument: %s"
 
-#: build/parsePrep.c:446
+#: build/parsePrep.c:468
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr "riadok %d: Chybný argument pre %%patch -p: %s"
 
-#: build/parsePrep.c:453
+#: build/parsePrep.c:475
 msgid "Too many patches!"
 msgstr "Priveµa záplat!"
 
-#: build/parsePrep.c:457
+#: build/parsePrep.c:479
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "riadok %d: Chybný argument pre %%patch: %s"
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:515
 msgid "line %d: second %%prep"
 msgstr "riadok %d: druhý %%prep"
 
@@ -2458,58 +2458,58 @@ msgstr ""
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1105
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1117
+#: lib/depends.c:1118
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1130
+#: lib/depends.c:1132
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1151
+#: lib/depends.c:1153
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1209
+#: lib/depends.c:1211
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1276
+#: lib/depends.c:1278
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/depends.c:1462
+#: lib/depends.c:1464
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuje sa index skupín\n"
 
 #. Record all relations.
-#: lib/depends.c:1515
+#: lib/depends.c:1517
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1572
+#: lib/depends.c:1574
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1675
+#: lib/depends.c:1677
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1706
+#: lib/depends.c:1708
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2648,7 +2648,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2174 lib/header.c:2191 lib/header.c:2211
+#: lib/header.c:2385 lib/header.c:2402 lib/header.c:2422
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
@@ -2677,92 +2677,92 @@ msgid "file %s is on an unknown device"
 msgstr "súbor %s sa nachádza na neznámom zariadení"
 
 #. This should not be allowed
-#: lib/header.c:245
+#: lib/header.c:260
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
 
-#: lib/header.c:276 lib/header.c:747 lib/install.c:380
+#: lib/header.c:291 lib/header.c:872 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ údajov %d nie je podorovaný\n"
 
-#: lib/header.c:1110
+#: lib/header.c:1268
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Chybný poèet pre headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1526
+#: lib/header.c:1738
 #, c-format
 msgid "missing { after %"
 msgstr "chýbajúce { po %"
 
 #. @-observertrans@
-#: lib/header.c:1556
+#: lib/header.c:1768
 msgid "missing } after %{"
 msgstr "chýbajúce } po %{"
 
 #. @-observertrans@
-#: lib/header.c:1570
+#: lib/header.c:1782
 msgid "empty tag format"
 msgstr "prázdny tag formát"
 
 #. @-observertrans@
-#: lib/header.c:1582
+#: lib/header.c:1794
 msgid "empty tag name"
 msgstr "prázdne meno tagu"
 
 #. @-observertrans@
-#: lib/header.c:1599
+#: lib/header.c:1811
 msgid "unknown tag"
 msgstr "neznámy tag"
 
 #. @-observertrans@
-#: lib/header.c:1626
+#: lib/header.c:1838
 msgid "] expected at end of array"
 msgstr "] oèakávané na konci poµa"
 
 #. @-observertrans@
-#: lib/header.c:1644
+#: lib/header.c:1856
 msgid "unexpected ]"
 msgstr "neoèakávané ]"
 
 #. @-observertrans@
-#: lib/header.c:1648
+#: lib/header.c:1860
 msgid "unexpected }"
 msgstr "neoèakávané }"
 
 #. @-observertrans@
-#: lib/header.c:1708
+#: lib/header.c:1920
 msgid "? expected in expression"
 msgstr "? oèakávané vo výraze"
 
 #. @-observertrans@
-#: lib/header.c:1717
+#: lib/header.c:1929
 msgid "{ expected after ? in expression"
 msgstr "{ oèakávané po ? vo výraze"
 
 #. @-observertrans@
-#: lib/header.c:1730 lib/header.c:1771
+#: lib/header.c:1942 lib/header.c:1983
 msgid "} expected in expression"
 msgstr "} oèakávané vo výraze"
 
 #. @-observertrans@
-#: lib/header.c:1740
+#: lib/header.c:1952
 msgid ": expected following ? subexpression"
 msgstr ": oèakávané po ? podvýraze"
 
 #. @-observertrans@
-#: lib/header.c:1756
+#: lib/header.c:1968
 msgid "{ expected after : in expression"
 msgstr "{ oèakávané po : vo výraze"
 
 #. @-observertrans@
-#: lib/header.c:1781
+#: lib/header.c:1993
 msgid "| expected at end of expression"
 msgstr "| oèakávené na konci výrazu"
 
-#: lib/header.c:1953
+#: lib/header.c:2164
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
@@ -2877,12 +2877,12 @@ msgstr "vykonávajú sa poin¹talaèné skripty (ak existujú)\n"
 msgid "error creating temporary file %s"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: lib/package.c:62
+#: lib/package.c:61
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
-#: lib/package.c:122
+#: lib/package.c:119
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
@@ -3768,15 +3768,15 @@ msgstr "oèakávaná veµkos»: %d\n"
 msgid "file is not regular -- skipping size check\n"
 msgstr "nejde o be¾ný súbor - kontrola veµkosti vynechaná\n"
 
-#: lib/signature.c:138
+#: lib/signature.c:139
 msgid "No signature\n"
 msgstr "Podpis nie je k dispozícii\n"
 
-#: lib/signature.c:141
+#: lib/signature.c:143
 msgid "Old PGP signature\n"
 msgstr "Starý PGP podpis\n"
 
-#: lib/signature.c:153
+#: lib/signature.c:154
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Starý (iba interný) podpis! Ako ste sa k tomu dostali?!"
 
@@ -3785,106 +3785,106 @@ msgid "New Header signature\n"
 msgstr "Nová hlavièka podpisu\n"
 
 #. 8-byte pad
-#: lib/signature.c:164 lib/signature.c:206
+#: lib/signature.c:164 lib/signature.c:201
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: lib/signature.c:165 lib/signature.c:207
+#: lib/signature.c:165 lib/signature.c:202
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Doplnenie podpisu: %d\n"
 
-#: lib/signature.c:270
+#: lib/signature.c:265
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Nie je mo¾né spusti» pgp"
 
-#: lib/signature.c:281
+#: lib/signature.c:276
 msgid "pgp failed"
 msgstr "pgp zlyhalo"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:288
+#: lib/signature.c:283
 msgid "pgp failed to write signature"
 msgstr "pgp sa nepodarilo zapísa» podpis"
 
-#: lib/signature.c:293
+#: lib/signature.c:288
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Veµkos» PGP podpisu: %d\n"
 
-#: lib/signature.c:304 lib/signature.c:381
+#: lib/signature.c:299 lib/signature.c:376
 msgid "unable to read the signature"
 msgstr "nie je mo¾né preèíta» podpis"
 
-#: lib/signature.c:309
+#: lib/signature.c:304
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Preèítaný PGP podpis obsahuje %d bajtov\n"
 
-#: lib/signature.c:347 lib/signature.c:692
+#: lib/signature.c:342 lib/signature.c:687
 msgid "Couldn't exec gpg"
 msgstr "Nie je mo¾né spusti» gpg"
 
-#: lib/signature.c:358
+#: lib/signature.c:353
 msgid "gpg failed"
 msgstr "gpg zlyhalo"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:365
+#: lib/signature.c:360
 msgid "gpg failed to write signature"
 msgstr "gpg sa nepodarilo zapísa» podpis"
 
-#: lib/signature.c:370
+#: lib/signature.c:365
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Veµkos» GPG podpisu: %d\n"
 
-#: lib/signature.c:386
+#: lib/signature.c:381
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Preèítaný GPG podpis obsahuje %d bajtov\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:408
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:414
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: lib/signature.c:498 lib/signature.c:560
+#: lib/signature.c:493 lib/signature.c:555
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Nie je mo¾né spusti» pgp. Pou¾ite --nopgp pre vynechanie PGP kontrol."
 
-#: lib/signature.c:558 lib/signature.c:631
+#: lib/signature.c:553 lib/signature.c:626
 msgid "exec failed!\n"
 msgstr "vykonanie zlyhalo!\n"
 
-#: lib/signature.c:633
+#: lib/signature.c:628
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Nie je mo¾né spusti» gpg. Pou¾ite --nogpg pre vynechanie GPG kontrol."
 
-#: lib/signature.c:721
+#: lib/signature.c:716
 msgid "Couldn't exec pgp"
 msgstr "Nie je mo¾né spusti» pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:725 lib/signature.c:778
+#: lib/signature.c:720 lib/signature.c:773
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Chybná ¹pecifikácia podpisu %%_signature v makro-súbore"
 
-#: lib/signature.c:758
+#: lib/signature.c:753
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "Musíte nastavi» \"%%gpg_name\" vo va¹om makro-súbore"
 
-#: lib/signature.c:770
+#: lib/signature.c:765
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Musíte nastavi» \"%%pgp_name\" vo va¹om makro-súbore"
 
@@ -4075,35 +4075,35 @@ msgstr "Makro %%%s (%s) nebolo pou¾ité pod úrovòou %d "
 msgid "Unknown option %c in %s(%s)"
 msgstr "Neznáma voµba %c v %s(%s)"
 
-#: rpmio/macro.c:992
+#: rpmio/macro.c:995
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Håbka rekurzie (%d) väè¹ia ako maximálna (%d)"
 
-#: rpmio/macro.c:1058 rpmio/macro.c:1074
+#: rpmio/macro.c:1061 rpmio/macro.c:1077
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Neukonèené %c: %s"
 
-#: rpmio/macro.c:1114
+#: rpmio/macro.c:1117
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: rpmio/macro.c:1240
+#: rpmio/macro.c:1243
 msgid "Macro %%%.*s not found, skipping"
 msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 
-#: rpmio/macro.c:1311
+#: rpmio/macro.c:1314
 msgid "Target buffer overflow"
 msgstr "Preplnenie cieµovej vyrovnávacej pamäti"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1491 rpmio/macro.c:1497
+#: rpmio/macro.c:1494 rpmio/macro.c:1500
 #, c-format
 msgid "File %s: %s"
 msgstr "Súbor %s: %s"
 
-#: rpmio/macro.c:1500
+#: rpmio/macro.c:1503
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Súbor %s je men¹í ako %d bajtov"

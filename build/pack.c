@@ -213,7 +213,6 @@ static int processScriptFiles(Spec spec, Package pkg)
     return 0;
 }
 
-/** */
 int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
 	    CSA_t *csa)
 {
@@ -268,27 +267,29 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
 
     if (specp)
 	*specp = spec;
+    else
+	freeSpec(spec);
 
-    if (csa) {
+    if (csa)
 	csa->cpioFdIn = fdi;
-    } else {
+    else
 	Fclose(fdi);
-    }
 
     return 0;
 }
 
-/** */
-int writeRPM(Header h, const char *fileName, int type,
-		    CSA_t *csa, char *passPhrase, char **cookie)
+int writeRPM(Header *hdrp, const char *fileName, int type,
+		    CSA_t *csa, char *passPhrase, const char **cookie)
 {
-    FD_t fd, ifd;
+    FD_t fd = NULL;
+    FD_t ifd = NULL;
     int rc, count, sigtype;
     int archnum, osnum;
     const char *sigtarget;
     const char * rpmio_flags = NULL;
     char *s;
     char buf[BUFSIZ];
+    Header h = *hdrp;
     Header sig;
     struct rpmlead lead;
 
@@ -370,12 +371,8 @@ int writeRPM(Header h, const char *fileName, int type,
     }
     if (rpmio_flags) xfree(rpmio_flags);
 
-    if (rc != 0) {
-	Fclose(fd);
-	unlink(sigtarget);
-	xfree(sigtarget);
-	return rc;
-    }
+    if (rc)
+	goto exit;
 
     /* Now set the real archive size in the Header */
     if (Fileno(csa->cpioFdIn) < 0) {
@@ -383,36 +380,30 @@ int writeRPM(Header h, const char *fileName, int type,
 		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
     }
 
+    *hdrp = h = headerReload(h);
+
     (void)Fseek(fd, 0,  SEEK_SET);
 
     if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	rc = RPMERR_NOSPACE;
 
     Fclose(fd);
-    unlink(fileName);
+    fd = NULL;
+    Unlink(fileName);
 
-    if (rc) {
-	unlink(sigtarget);
-	xfree(sigtarget);
-	return rc;
-    }
+    if (rc)
+	goto exit;
 
     /* Open the output file */
     fd = Fopen(fileName, "w.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
 		fileName, Fstrerror(fd));
-	unlink(sigtarget);
-	xfree(sigtarget);
-	return RPMERR_CREATE;
+	rc = RPMERR_CREATE;
+	goto exit;
     }
 
     /* Now write the lead */
-    {	const char *name, *version, *release;
-	headerNVR(h, &name, &version, &release);
-	sprintf(buf, "%s-%s-%s", name, version, release);
-    }
-
     archnum = -1;
     osnum = -1;
     if (Fileno(csa->cpioFdIn) < 0) {
@@ -432,15 +423,17 @@ int writeRPM(Header h, const char *fileName, int type,
     lead.archnum = archnum;
     lead.osnum = osnum;
     lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
-    strncpy(lead.name, buf, sizeof(lead.name));
+    {	const char *name, *version, *release;
+	headerNVR(h, &name, &version, &release);
+	sprintf(buf, "%s-%s-%s", name, version, release);
+	strncpy(lead.name, buf, sizeof(lead.name));
+    }
+
     if (writeLead(fd, &lead)) {
 	rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
 		 Fstrerror(fd));
-	Fclose(fd);
-	unlink(sigtarget);
-	xfree(sigtarget);
-	unlink(fileName);
-	return rc;
+	rc = RPMERR_NOSPACE;
+	goto exit;
     }
 
     /* Generate the signature */
@@ -452,57 +445,57 @@ int writeRPM(Header h, const char *fileName, int type,
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
 	rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
     }
-    if ((rc = rpmWriteSignature(fd, sig))) {
-	Fclose(fd);
-	unlink(sigtarget);
-	xfree(sigtarget);
-	unlink(fileName);
-	rpmFreeSignature(sig);
-	return rc;
-    }
+    sig = headerReload(sig);
+    rc = rpmWriteSignature(fd, sig);
     rpmFreeSignature(sig);
+    if (rc) {
+	goto exit;
+    }
 	
     /* Append the header and archive */
     ifd = Fopen(sigtarget, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
 	rpmError(RPMERR_READ, _("Unable to open sigtarget %s: %s"),
 		sigtarget, Fstrerror(ifd));
-	Fclose(fd);
-	Unlink(sigtarget);
-	xfree(sigtarget);
-	Unlink(fileName);
-	return RPMERR_READ;
+	rc = RPMERR_READ;
+	goto exit;
     }
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
 	    rpmError(RPMERR_READ, _("Unable to read sigtarget %s: %s"),
 		     sigtarget, Fstrerror(ifd));
-	    Fclose(ifd);
-	    Fclose(fd);
-	    unlink(sigtarget);
-	    xfree(sigtarget);
-	    unlink(fileName);
-	    return RPMERR_READ;
+	    rc = RPMERR_READ;
+	    goto exit;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) < 0) {
 	    rpmError(RPMERR_NOSPACE, _("Unable to write package %s: %s"),
 		     fileName, Fstrerror(fd));
-	    Fclose(ifd);
-	    Fclose(fd);
-	    unlink(sigtarget);
-	    xfree(sigtarget);
-	    unlink(fileName);
-	    return RPMERR_NOSPACE;
+	    rc = RPMERR_NOSPACE;
+	    goto exit;
 	}
     }
-    Fclose(ifd);
-    Fclose(fd);
-    unlink(sigtarget);
-    xfree(sigtarget);
+    rc = 0;
 
-    rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
+exit:
+    if (ifd) {
+	Fclose(ifd);
+	ifd = NULL;
+    }
+    if (fd) {
+	Fclose(fd);
+	fd = NULL;
+    }
+    if (sigtarget) {
+	Unlink(sigtarget);
+	xfree(sigtarget);
+    }
 
-    return 0;
+    if (rc == 0)
+	rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
+    else
+	Unlink(fileName);
+
+    return rc;
 }
 
 static int_32 copyTags[] = {
@@ -597,7 +590,7 @@ int packageBinaries(Spec spec)
 	csa->cpioList = pkg->cpioList;
 	csa->cpioCount = pkg->cpioCount;
 
-	rc = writeRPM(pkg->header, fn, RPMLEAD_BINARY,
+	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 	xfree(fn);
@@ -635,7 +628,7 @@ int packageSources(Spec spec)
 	csa->cpioList = spec->sourceCpioList;
 	csa->cpioCount = spec->sourceCpioCount;
 
-	rc = writeRPM(spec->sourceHeader, fn, RPMLEAD_SOURCE,
+	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 	xfree(fn);
