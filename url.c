@@ -353,7 +353,7 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 	if ((fd = fdNew()) == NULL)
 	    break;
 	fd->fd_url = u;
-	if (ftpGetFileDesc(fd) < 0)
+	if ((u->openError = ftpGetFileDesc(fd)) < 0)
 	    fd = NULL;	/* XXX fd already closed */
 	break;
     case URL_IS_HTTP:
@@ -443,7 +443,7 @@ int urlGetFile(const char * url, const char * dest) {
     return rc;
 }
 
-/* XXX This only works for httpOpen/ftpOpen failures */
+/* XXX This only works for httpOpen/ftpOpen/ftpGetFileDesc failures */
 const char *urlStrerror(const char *url)
 {
     urlinfo *u;
