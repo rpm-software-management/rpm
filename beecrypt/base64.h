@@ -60,13 +60,6 @@ extern const char * b64encode_eolstr;
 extern "C" {
 #endif
 
-#ifdef	DYING
-/**
- */
-BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
-char* b64enc(const memchunk* chunk)
-	/*@*/;
-#else
 /**
  * Encode chunks of 3 bytes of binary input into 4 bytes of base64 output.
  * @param data		binary data
@@ -76,15 +69,7 @@ char* b64enc(const memchunk* chunk)
 BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
 char * b64encode (const void * data, int ns)
 	/*@*/;
-#endif
 
-#ifdef	DYING
-/**
- */
-BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* b64dec(const char* string)
-	/*@*/;
-#else
 /**
  * Decode chunks of 4 bytes of base64 input into 3 bytes of binary output.
  * @param s		base64 string
@@ -95,7 +80,6 @@ memchunk* b64dec(const char* string)
 BEEDLLAPI /*@unused@*/
 int b64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ int *lenp)
 	/*@modifies *datap, *lenp @*/;
-#endif
 
 #ifdef __cplusplus
 }

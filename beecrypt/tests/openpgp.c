@@ -2,7 +2,7 @@
  * \file tests/openpgp.c
  */
 
-static int _debug = 1;
+static int _debug = 0;
 
 #include "base64.h"
 
@@ -692,10 +692,8 @@ NE++VzkxjikzpRb2+F5nGB2UdsElkgbXinswebiuOwOrocLbz6JFdDsJPcT5gVfi\n\
 z15FuA==\n\
 ";
 
-int
-main (int argc, char *argv[])
+static int doit(const char *sig)
 {
-    const char *sig = gpgsig;
     const char *s, *t;
     unsigned char * dec;
     unsigned char * d;
@@ -735,6 +733,22 @@ for (i = 0, s = sig, t = enc; *s & *t; i++, s++, t++) {
 fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xff), *s, *t);
     rc = 5;
 }
+
+    return rc;
+}
+
+int
+main (int argc, char *argv[])
+{
+    int rc;
+
+fprintf(stderr, "============================================== RPM-GPG-KEY\n");
+    if ((rc = doit(gpgsig)) != 0)
+	return rc;
+
+fprintf(stderr, "============================================== RPM-PGP-KEY\n");
+    if ((rc = doit(pgpsig)) != 0)
+	return rc;
 
     return rc;
 }
