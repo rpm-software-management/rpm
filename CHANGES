@@ -67,6 +67,7 @@
 	- API: uncouple fadio from rest of rpmio.
 	- API: externalize legacy fdOpen interface for rpmfind et al.
 	- put version on rpmpopt filename to avoid legacy filename collision.
+	- python: initdb binding (Dan Burcaw <dburcaw@terraplex.com>).
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.43
+Release: 0.44
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -260,6 +260,7 @@ fi
 - fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).
 - uname on i370 has s390 as arch (#11456).
 - put version on rpmpopt filename to avoid legacy filename collision.
+- python: initdb binding (Dan Burcaw <dburcaw@terraplex.com>).
 
 * Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
 - fix: typo in brp-compress caused i18n man pages not to compress.
