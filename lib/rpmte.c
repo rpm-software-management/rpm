@@ -339,6 +339,21 @@ int rpmteSetDepth(rpmte te, int ndepth)
     return odepth;
 }
 
+int rpmteBreadth(rpmte te)
+{
+    return (te != NULL ? te->depth : 0);
+}
+
+int rpmteSetBreadth(rpmte te, int nbreadth)
+{
+    int obreadth = 0;
+    if (te != NULL) {
+	obreadth = te->breadth;
+	te->breadth = nbreadth;
+    }
+    return obreadth;
+}
+
 int rpmteNpreds(rpmte te)
 {
     return (te != NULL ? te->npreds : 0);

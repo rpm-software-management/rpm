@@ -767,6 +767,8 @@ void rpmtsEmpty(rpmts ts)
     pi = rpmtsiFree(pi);
 
     ts->orderCount = 0;
+    ts->ntrees = 0;
+    ts->maxDepth = 0;
 
     ts->numRemovedPackages = 0;
 /*@-nullstate@*/	/* FIX: partial annotations */
@@ -1519,6 +1521,8 @@ rpmts rpmtsCreate(void)
     ts->orderAlloced = 0;
     ts->orderCount = 0;
     ts->order = NULL;
+    ts->ntrees = 0;
+    ts->maxDepth = 0;
 
     ts->probs = NULL;
 

@@ -83,9 +83,10 @@ struct rpmte_s {
 
     rpmte parent;		/*!< Parent transaction element. */
     int degree;			/*!< No. of immediate children. */
-    int depth;			/*!< Max. depth in dependency tree. */
     int npreds;			/*!< No. of predecessors. */
     int tree;			/*!< Tree index. */
+    int depth;			/*!< Depth in dependency tree. */
+    int breadth;		/*!< Breadth in dependency tree. */
     unsigned int db_instance;   /*!< Database Instance after add */
 /*@owned@*/
     tsortInfo tsi;		/*!< Dependency ordering chains. */
@@ -307,7 +308,7 @@ uint_32 rpmtePkgFileSize(rpmte te)
 	/*@*/;
 
 /**
- * Retrieve tsort tree depth of transaction element.
+ * Retrieve dependency tree depth of transaction element.
  * @param te		transaction element
  * @return		depth
  */
@@ -315,12 +316,29 @@ int rpmteDepth(rpmte te)
 	/*@*/;
 
 /**
- * Set tsort tree depth of transaction element.
+ * Set dependency tree depth of transaction element.
  * @param te		transaction element
  * @param ndepth	new depth
  * @return		previous depth
  */
 int rpmteSetDepth(rpmte te, int ndepth)
+	/*@modifies te @*/;
+
+/**
+ * Retrieve dependency tree breadth of transaction element.
+ * @param te		transaction element
+ * @return		breadth
+ */
+int rpmteBreadth(rpmte te)
+	/*@*/;
+
+/**
+ * Set dependency tree breadth of transaction element.
+ * @param te		transaction element
+ * @param nbreadth	new breadth
+ * @return		previous breadth
+ */
+int rpmteSetBreadth(rpmte te, int nbreadth)
 	/*@modifies te @*/;
 
 /**

@@ -7,7 +7,7 @@ LINT = splint
 pylibdir = ${prefix}/lib@MARK64@/python@WITH_PYTHON_VERSION@
 pyincdir = $(prefix)/include/python@WITH_PYTHON_VERSION@
 
-SUBDIRS = rpmdb rpm
+SUBDIRS = rpmdb # rpm
 
 EXTRA_DIST = system.h rpmdebug-py.c
 
@@ -38,16 +38,16 @@ mylibs= \
 LDADD =
 
 pythondir = $(pylibdir)/site-packages
-python_LTLIBRARIES = poptmodule.la
+python_LTLIBRARIES = rpmmodule.la poptmodule.la
 
-rpmdir = $(pylibdir)/site-packages/rpm
-rpm_LTLIBRARIES = _rpmmodule.la
+#rpmdir = $(pylibdir)/site-packages/rpm
+#rpm_LTLIBRARIES = rpmmodule.la
 
 rpmdbdir = $(pylibdir)/site-packages/rpmdb
 rpmdb_LTLIBRARIES = _rpmdb.la
 
-_rpmmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
-_rpmmodule_la_LIBADD =  @WITH_BEECRYPT_LIB@
+rpmmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
+rpmmodule_la_LIBADD =  @WITH_BEECRYPT_LIB@
 
 _rpmdb_la_SOURCES = _rpmdb.c
 _rpmdb_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
@@ -55,7 +55,7 @@ _rpmdb_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
 poptmodule_la_SOURCES = poptmodule.c
 poptmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
 
-_rpmmodule_la_SOURCES = rpmmodule.c header-py.c \
+rpmmodule_la_SOURCES = rpmmodule.c header-py.c \
 		       rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
 		       rpmfi-py.c rpmmi-py.c rpmps-py.c rpmrc-py.c rpmte-py.c \
 		       rpmts-py.c spec-py.c

@@ -294,6 +294,8 @@ struct rpmts_s {
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
     int unorderedSuccessors;	/*!< Index of 1st element of successors. */
+    int ntrees;			/*!< No. of dependency trees. */
+    int maxDepth;		/*!< Maximum depth of dependency tree(s). */
 
     int selinuxEnabled;		/*!< Is SE linux enabled? */
     int chrootDone;		/*!< Has chroot(2) been been done? */

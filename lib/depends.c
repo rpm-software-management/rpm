@@ -1126,6 +1126,8 @@ static inline int addRelation(rpmts ts,
 
     if (rpmteDepth(p) <= rpmteDepth(q))	/* Save max. depth in dependency tree */
 	(void) rpmteSetDepth(p, (rpmteDepth(q) + 1));
+    if (rpmteDepth(p) > ts->maxDepth)
+	ts->maxDepth = rpmteDepth(p);
 
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->tsi_suc = p;
@@ -1225,6 +1227,8 @@ int rpmtsOrder(rpmts ts)
     int newOrderCount = 0;
     orderListIndex orderList;
     int numOrderList;
+    int npeer = 128;	/* XXX more than deep enough for now. */
+    int * peer = memset(alloca(npeer*sizeof(*peer)), 0, (npeer*sizeof(*peer)));
     int nrescans = 10;
     int _printed = 0;
     char deptypechar;
@@ -1232,6 +1236,7 @@ int rpmtsOrder(rpmts ts)
     int oType = 0;
     int treex;
     int depth;
+    int breadth;
     int qlen;
     int i, j;
 
@@ -1340,6 +1345,7 @@ int rpmtsOrder(rpmts ts)
 	npreds = rpmteTSI(p)->tsi_count;
 
 	(void) rpmteSetNpreds(p, npreds);
+	(void) rpmteSetDepth(p, 1);
 
 	if (npreds == 0)
 	    (void) rpmteSetTree(p, treex++);
@@ -1351,9 +1357,10 @@ int rpmtsOrder(rpmts ts)
 
     }
     pi = rpmtsiFree(pi);
+    ts->ntrees = treex;
 
     /* T4. Scan for zeroes. */
-    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth)\n"));
+    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n"));
 
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
@@ -1396,15 +1403,19 @@ rescan:
 	}
 	deptypechar = (rpmteType(q) == TR_REMOVED ? '-' : '+');
 
-	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%5d%5d %*s%c%s\n",
+	treex = rpmteTree(q);
+	depth = rpmteDepth(q);
+	breadth = ((depth < npeer) ? peer[depth]++ : 0);
+	(void) rpmteSetBreadth(q, breadth);
+
+	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%5d%5d%5d %*s%c%s\n",
 			orderingCount, rpmteNpreds(q),
-			rpmteTSI(q)->tsi_qcnt, rpmteTree(q), rpmteDepth(q),
-			(2 * rpmteDepth(q)), "",
+			rpmteTSI(q)->tsi_qcnt,
+			treex, depth, breadth,
+			(2 * depth), "",
 			deptypechar,
 			(rpmteNEVRA(q) ? rpmteNEVRA(q) : "???"));
 
-	treex = rpmteTree(q);
-	depth = rpmteDepth(q);
 	(void) rpmteSetDegree(q, 0);
 	tsbytes += rpmtePkgFileSize(q);
 
