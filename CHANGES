@@ -61,7 +61,7 @@
 	- fixed bug when there is no %setup
 	- added -L$(topdir)/popt to Makefile.inc
 
-2.4.11 -> 2.4.99:
+2.4.12 -> 2.4.99:
 	- added many more i18n strings
         - merged in large rewrite of build code, which includes the following
 	  changes:
