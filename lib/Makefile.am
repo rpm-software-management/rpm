@@ -12,13 +12,12 @@ pkginc_HEADERS = \
 	header.h misc.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
-	md5.h rpm_malloc.h \
-	rpmdb.h rpmlead.h signature.h
+	md5.h rpmdb.h rpmlead.h signature.h
 
 mylibpaths =	-L$(top_builddir)/lib/.libs -L$(top_builddir)/rpmio/.libs \
 		-L$(top_builddir)/popt/.libs
 mylibs =	-lrpm -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
-LIBS=
+LIBS =
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
@@ -39,39 +38,6 @@ install-data-local:
 
 falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-
-#db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
-#	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-#	for F in $*.o $*.lo ; do \
-#	    @__LD@ -r -o $${F}.o $${F} @libdb3@ ; \
-#	    @__OBJCOPY@ `\
-#		@__NM@ -g --defined-only $${F}.o | \
-#		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
-#		grep -v '^-L $*'` $${F}.o $${F} ; \
-#	    rm -f $${F}.o ; \
-#	done
-
-#db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
-#	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-#	for F in $*.o $*.lo ; do \
-#	    @__LD@ -r -o $${F}.o $${F} @libdb2@ ; \
-#	    @__OBJCOPY@ `\
-#		@__NM@ -g --defined-only $${F}.o | \
-#		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
-#		grep -v '^-L $*'` $${F}.o $${F} ; \
-#	    rm -f $${F}.o ; \
-#	done
-
-#db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h rpmdb.h
-#	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-#	for F in $*.o $*.lo ; do \
-#	    @__LD@ -r -o $${F}.o $${F} falloc.lo @libdb1@ ; \
-#	    @__OBJCOPY@ `\
-#		@__NM@ -g --defined-only $${F}.o | \
-#		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
-#		grep -v '^-L $*' | grep -v '^-L fadio'` $${F}.o $${F} ; \
-#	    rm -f $${F}.o ; \
-#	done
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c
