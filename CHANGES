@@ -16,6 +16,9 @@
 	  rpm 2.4 - rpm 2.4.3 however (version of RPM before 2.4 will 
 	  work fine, however). An "error -2 reading header" happens when
 	  this is attempted
+	- removed cpiobin from rpmrc
+	- added rpmrc "provides" tag to allow easy fulfillment of 
+	  automatically generated dependencies
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites

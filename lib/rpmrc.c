@@ -111,6 +111,7 @@ static struct rpmOption optionTable[] = {
     { "packager",               RPMVAR_PACKAGER,                0, 0 },
     { "pgp_name",               RPMVAR_PGP_NAME,                0, 0 },
     { "pgp_path",               RPMVAR_PGP_PATH,                0, 0 },
+    { "provides",               RPMVAR_PROVIDES,                0, 0 },
     { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0, 0 },
     { "require_icon",		RPMVAR_REQUIREICON,		0, 0 },
     { "require_vendor",		RPMVAR_REQUIREVENDOR,		0, 0 },

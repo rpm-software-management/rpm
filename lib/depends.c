@@ -5,6 +5,7 @@
 # include <alloca.h>
 #endif
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -425,10 +426,22 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 			     struct availablePackage ** suggestion) {
     dbiIndexSet matches;
     int i;
-
+    char * rcProvidesString;
+    char * start;
+    
     rpmMessage(RPMMESS_DEBUG, "dependencies: looking for %s\n", reqName);
 
     if (suggestion) *suggestion = NULL;
+
+    if (!(reqFlags & RPMSENSE_SENSEMASK) &&
+	(rcProvidesString = rpmGetVar(RPMVAR_PROVIDES))) {
+	i = strlen(reqName);
+	while ((start = strstr(rcProvidesString, reqName))) {
+	    if (isspace(start[i]) || !start[i])
+		return 0;
+	    start += i;
+	}
+    }
 
     if (alSatisfiesDepend(&rpmdep->addedPackages, reqName, reqVersion, 
 			  reqFlags))
