@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
-"POT-Creation-Date: 2003-02-20 12:52-0500\n"
+"POT-Creation-Date: 2003-03-07 17:07-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1557,65 +1557,65 @@ msgstr "hvd SHA1: FEL, ej hex\n"
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hvd DSA: FEL, ej binär\n"
 
-#: lib/package.c:535 lib/package.c:576 lib/package.c:878 lib/package.c:902
-#: lib/package.c:932 lib/rpmchecksig.c:805
+#: lib/package.c:535 lib/package.c:575 lib/package.c:879 lib/package.c:903
+#: lib/package.c:933 lib/rpmchecksig.c:805
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature\n"
 msgstr "endast V3-signaturer kan verifieras, hoppar över V%u-signatur\n"
 
-#: lib/package.c:656
+#: lib/package.c:657
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hvdstorlek(%d): FEL, läsning returnerade %d\n"
 
-#: lib/package.c:660
+#: lib/package.c:661
 msgid "hdr magic: BAD\n"
 msgstr "hvdmagi: FEL\n"
 
-#: lib/package.c:668
+#: lib/package.c:669
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hvdtaggar: FEL, antal taggar(%d) utanför intervall\n"
 
-#: lib/package.c:677
+#: lib/package.c:678
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hvddata: FEL, antal byte(%d) utanför intervall\n"
 
-#: lib/package.c:691
+#: lib/package.c:692
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hvdklick(%d): FEL, läsning returnerade %d\n"
 
-#: lib/package.c:704
+#: lib/package.c:705
 msgid "hdr load: BAD\n"
 msgstr "hvdlast: FEL\n"
 
-#: lib/package.c:769
+#: lib/package.c:770
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "paket med versionsnummer 1 stöds inte av denna version av RPM\n"
 
-#: lib/package.c:777
+#: lib/package.c:778
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "endast paket med huvudnummer <= 4 stöds av denna version av RPM\n"
 
-#: lib/package.c:788 lib/rpmchecksig.c:229 lib/rpmchecksig.c:720
+#: lib/package.c:789 lib/rpmchecksig.c:229 lib/rpmchecksig.c:720
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature misslyckades: %s"
 
-#: lib/package.c:795 lib/rpmchecksig.c:236 lib/rpmchecksig.c:728
+#: lib/package.c:796 lib/rpmchecksig.c:236 lib/rpmchecksig.c:728
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
 
-#: lib/package.c:842
+#: lib/package.c:843
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead misslyckades: %s"
 
-#: lib/package.c:945 lib/rpmchecksig.c:117 lib/rpmchecksig.c:643
+#: lib/package.c:946 lib/rpmchecksig.c:117 lib/rpmchecksig.c:643
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
@@ -2262,7 +2262,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "paketet har varken filägare eller id-listor\n"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:462
-#: lib/rpminstall.c:593 lib/rpminstall.c:1005 lib/rpmts.c:462
+#: lib/rpminstall.c:593 lib/rpminstall.c:1004 lib/rpmts.c:462
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2575,7 +2575,7 @@ msgstr "filen %s behöver en nyare version av RPM\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "hittade %d käll- och %d binärpaket\n"
 
-#: lib/rpminstall.c:635 lib/rpminstall.c:805 lib/rpminstall.c:1226
+#: lib/rpminstall.c:635 lib/rpminstall.c:805 lib/rpminstall.c:1225
 #: tools/rpmgraph.c:195
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
@@ -2608,7 +2608,7 @@ msgstr "kan inte öppna %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpminstall.c:1220
+#: lib/rpminstall.c:1219
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
@@ -3032,7 +3032,7 @@ msgstr "hoppar över katalogen %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1066
+#: lib/transaction.c:1065
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "rimlighetskontrollerar %d element\n"
@@ -3045,7 +3045,7 @@ msgstr "rimlighetskontrollerar %d element\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1154
+#: lib/transaction.c:1153
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "beräknar %d filfingeravtryck\n"
@@ -3053,7 +3053,7 @@ msgstr "beräknar %d filfingeravtryck\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1231
+#: lib/transaction.c:1230
 msgid "computing file dispositions\n"
 msgstr "beräknar filåtgärder\n"
 

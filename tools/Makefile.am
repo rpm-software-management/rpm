@@ -36,6 +36,8 @@ bin_PROGRAMS =	rpmgraph
 convertdb1_SOURCES =	convertdb1.c
 
 debugedit_SOURCES =	debugedit.c hashtab.c
+debugedit_LDADD =	@LDFLAGS_STATIC@ @WITH_LIBELF_LIB@ \
+	$(top_builddir)/popt/libpopt.la
 
 javadeps_SOURCES =	javadeps.c
 

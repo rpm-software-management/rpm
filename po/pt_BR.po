@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-02-20 12:52-0500\n"
+"POT-Creation-Date: 2003-03-07 17:07-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
@@ -1723,68 +1723,68 @@ msgstr ""
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:535 lib/package.c:576 lib/package.c:878 lib/package.c:902
-#: lib/package.c:932 lib/rpmchecksig.c:805
+#: lib/package.c:535 lib/package.c:575 lib/package.c:879 lib/package.c:903
+#: lib/package.c:933 lib/rpmchecksig.c:805
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:656
+#: lib/package.c:657
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:660
+#: lib/package.c:661
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:668
+#: lib/package.c:669
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:677
+#: lib/package.c:678
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:691
+#: lib/package.c:692
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:704
+#: lib/package.c:705
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:769
+#: lib/package.c:770
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:777
+#: lib/package.c:778
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
 # , c-format
-#: lib/package.c:788 lib/rpmchecksig.c:229 lib/rpmchecksig.c:720
+#: lib/package.c:789 lib/rpmchecksig.c:229 lib/rpmchecksig.c:720
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/package.c:795 lib/rpmchecksig.c:236 lib/rpmchecksig.c:728
+#: lib/package.c:796 lib/rpmchecksig.c:236 lib/rpmchecksig.c:728
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
 # , c-format
-#: lib/package.c:842
+#: lib/package.c:843
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/package.c:945 lib/rpmchecksig.c:117 lib/rpmchecksig.c:643
+#: lib/package.c:946 lib/rpmchecksig.c:117 lib/rpmchecksig.c:643
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -2494,7 +2494,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "no foi passado pacote para instalao"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:462
-#: lib/rpminstall.c:593 lib/rpminstall.c:1005 lib/rpmts.c:462
+#: lib/rpminstall.c:593 lib/rpminstall.c:1004 lib/rpmts.c:462
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2847,7 +2847,7 @@ msgstr ""
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:635 lib/rpminstall.c:805 lib/rpminstall.c:1226
+#: lib/rpminstall.c:635 lib/rpminstall.c:805 lib/rpminstall.c:1225
 #: tools/rpmgraph.c:195
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2884,7 +2884,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1220
+#: lib/rpminstall.c:1219
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -3342,7 +3342,7 @@ msgstr "RPM verso %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1066
+#: lib/transaction.c:1065
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3355,7 +3355,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1154
+#: lib/transaction.c:1153
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3363,7 +3363,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1231
+#: lib/transaction.c:1230
 msgid "computing file dispositions\n"
 msgstr ""
 
