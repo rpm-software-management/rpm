@@ -51,6 +51,10 @@
 # define	_LARGEFILE64_SOURCE
 #endif
 
+#if defined(sun)
+# define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
+#endif
+
 #endif
 
 #include <sys/types.h>

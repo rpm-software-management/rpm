@@ -1286,7 +1286,7 @@ static struct dirent * ftpReaddir(DIR * dir)
     dp->d_ino = i + 1;		/* W2DO? */
     dp->d_reclen = 0;		/* W2DO? */
 
-#if !defined(hpux)
+#if !defined(hpux) && !defined(sun)
     dp->d_off = 0;		/* W2DO? */
 /*@-boundsread@*/
     dp->d_type = dt[i];
