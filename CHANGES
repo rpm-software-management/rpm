@@ -2,6 +2,9 @@
 	- use package build time as EVR comparison tie breaker.
 	- fix: don't add leading space to %* argv expansion (#119059).
 	- scareMem = 0 everywhere, document deprecation phase out.
+	- pentium3/pentium4 arch support (pluto@PLD).
+	- cpuid() cleanups for PIC/non-PIC and gcc 3.4 (pluto@PLD).
+	- rpmGlob() is now locale independent (wiget@PLD).
 
 4.3 -> 4.3.1:
 
