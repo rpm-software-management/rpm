@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Constants.xs,v 1.1 2000/05/27 03:54:14 rjray Exp $";
+static char * const rcsid = "$Id: Constants.xs,v 1.2 2000/05/30 01:03:13 rjray Exp $";
 
 static int
 not_here(char *s)
@@ -17,6 +17,7 @@ static int
 constant(char *name, int arg)
 {
     errno = 0;
+
     switch (*name) {
     case 'A':
         if (strEQ(name, "ADD_SIGNATURE"))

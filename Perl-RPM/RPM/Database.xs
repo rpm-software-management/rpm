@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.1 2000/05/27 03:54:15 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.2 2000/05/30 01:03:13 rjray Exp $";
 
 //
 // Use this define for deriving the saved rpmdb struct, rather than coding
@@ -30,7 +30,7 @@ static char * const rcsid = "$Id: Database.xs,v 1.1 2000/05/27 03:54:15 rjray Ex
 // arguments as needed. The return value is expected to be either NULL or a
 // valid RPM__Database value (which the XS wrapper will fix up).
 //
-RPM__Database rpmdb_TIEHASH(char* class, SV* opts)
+RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
 {
     char*  root  = (char *)NULL;
     int    mode  = O_RDONLY;
@@ -95,7 +95,7 @@ RPM__Database rpmdb_TIEHASH(char* class, SV* opts)
     return TIEHASH;
 }
 
-RPM__Header rpmdb_FETCH(RPM__Database self, SV* key)
+RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
 {
     const char* name = NULL; // For the actual name out of (SV *)key
     int namelen;             // Arg for SvPV(..., len)
@@ -106,7 +106,7 @@ RPM__Header rpmdb_FETCH(RPM__Database self, SV* key)
     RPM_Database* dbstruct;  // This is the struct used to hold C-level data
 
     // Any successful operation will re-assign this
-    FETCH = (RPM__Header)newSVsv(&sv_undef);
+    FETCH = (RPM__Header)newSVsv(&PL_sv_undef);
 
     dbstruct_from_object_ret(svp, dbstruct, self, FETCH);
     // De-reference key, if it is a reference
@@ -178,7 +178,7 @@ RPM__Header rpmdb_FETCH(RPM__Database self, SV* key)
     // An error results in hdr getting NULL, which is just fine
     if (hdr)
     {
-        FETCH = rpmhdr_TIEHASH(sv_2mortal(newSVpv("RPM::Header", 12)),
+        FETCH = rpmhdr_TIEHASH(aTHX_ sv_2mortal(newSVpv("RPM::Header", 12)),
                                sv_2mortal(newRV((SV *)hdr)),
                                RPM_HEADER_FROM_REF | RPM_HEADER_READONLY);
         // If name is no longer NULL, it means our vector in was a string
@@ -193,12 +193,12 @@ RPM__Header rpmdb_FETCH(RPM__Database self, SV* key)
     return FETCH;
 }
 
-int rpmdb_EXISTS(RPM__Database self, SV* key)
+int rpmdb_EXISTS(pTHX_ RPM__Database self, SV* key)
 {
     SV* tmp;
 
-    tmp = (SV *)rpmdb_FETCH(self, key);
-    // There is probably a cleaner test for (SV *)tmp == sv_undef
+    tmp = (SV *)rpmdb_FETCH(aTHX_ self, key);
+    // There is probably a cleaner test for (SV *)tmp == PL_sv_undef
     return (SvANY(tmp) != NULL);
 }
 
@@ -206,7 +206,7 @@ int rpmdb_EXISTS(RPM__Database self, SV* key)
 // In these cases, the transition is based on the last offset fetched, which
 // we store on the struct part of self. We don't have to worry about an
 // iterator struct.
-int rpmdb_FIRSTKEY(RPM__Database self, SV** key, RPM__Header* value)
+int rpmdb_FIRSTKEY(pTHX_ RPM__Database self, SV** key, RPM__Header* value)
 {
     RPM_Database* dbstruct;
     SV** svp;
@@ -219,15 +219,15 @@ int rpmdb_FIRSTKEY(RPM__Database self, SV** key, RPM__Header* value)
     if (! (dbstruct->current_rec = rpmdbFirstRecNum(dbstruct->dbp)))
         return 0;
 
-    *value = rpmdb_FETCH(self, newSViv(dbstruct->current_rec));
-    tmpav = rpmhdr_FETCH(*value, newSVpv("name", 4), Nullch, 0, 0);
+    *value = rpmdb_FETCH(aTHX_ self, newSViv(dbstruct->current_rec));
+    tmpav = rpmhdr_FETCH(aTHX_ *value, newSVpv("name", 4), Nullch, 0, 0);
     svp = av_fetch(tmpav, 0, FALSE);
     *key = newSVsv(*svp);
 
     return 1;
 }
 
-int rpmdb_NEXTKEY(RPM__Database self, SV* key,
+int rpmdb_NEXTKEY(pTHX_ RPM__Database self, SV* key,
                   SV** nextkey, RPM__Header* nextvalue)
 {
     RPM_Database* dbstruct;
@@ -240,15 +240,15 @@ int rpmdb_NEXTKEY(RPM__Database self, SV* key,
                                                    dbstruct->current_rec)))
         return 0;
 
-    *nextvalue = rpmdb_FETCH(self, newSViv(dbstruct->current_rec));
-    tmpav = rpmhdr_FETCH(*nextvalue, newSVpv("name", 4), Nullch, 0, 0);
+    *nextvalue = rpmdb_FETCH(aTHX_ self, newSViv(dbstruct->current_rec));
+    tmpav = rpmhdr_FETCH(aTHX_ *nextvalue, newSVpv("name", 4), Nullch, 0, 0);
     svp = av_fetch(tmpav, 0, FALSE);
     *nextkey = newSVsv(*svp);
 
     return 1;
 }
 
-void rpmdb_DESTROY(RPM__Database self)
+void rpmdb_DESTROY(pTHX_ RPM__Database self)
 {
     SV** svp;
     RPM_Database* dbstruct;  // This is the struct used to hold C-level data
@@ -273,7 +273,7 @@ int rpmdb_rebuild(const char* class, const char* root)
 // This is a front-end to all the rpmdbFindBy*() set, including FindByPackage
 // which differs from FETCH above in that if there is actually more than one
 // match, all will be returned.
-AV* rpmdb_find_by_whatever(RPM__Database self, SV* string, int idx)
+AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
 {
     const char* str = NULL; // For the actual string out of (SV *)string
     STRLEN len;             // Arg for SvPV(..., len)
@@ -322,7 +322,7 @@ AV* rpmdb_find_by_whatever(RPM__Database self, SV* string, int idx)
         for (loop = 0; loop < dbstruct->index_set->count; loop++)
         {
             idx = dbstruct->index_set->recs[loop].recOffset;
-            tmp_hdr = rpmdb_FETCH(self, sv_2mortal(newSViv(idx)));
+            tmp_hdr = rpmdb_FETCH(aTHX_ self, sv_2mortal(newSViv(idx)));
             av_store(return_val, loop, sv_2mortal(newSViv((I32)tmp_hdr)));
         }
     }
@@ -338,12 +338,20 @@ rpmdb_TIEHASH(class, opts=NULL)
     char* class;
     SV* opts;
     PROTOTYPE: $;$
+    CODE:
+    RETVAL = rpmdb_TIEHASH(aTHX_ class, opts);
+    OUTPUT:
+    RETVAL
 
 RPM::Header
 rpmdb_FETCH(self, key)
     RPM::Database self;
     SV* key;
     PROTOTYPE: $$
+    CODE:
+    RETVAL = rpmdb_FETCH(aTHX_ self, key);
+    OUTPUT:
+    RETVAL
 
 int
 rpmdb_STORE(self, key, value)
@@ -389,6 +397,10 @@ rpmdb_EXISTS(self, key)
     RPM::Database self;
     SV* key;
     PROTOTYPE: $$
+    CODE:
+    RETVAL = rpmdb_EXISTS(aTHX_ self, key);
+    OUTPUT:
+    RETVAL
 
 void
 rpmdb_FIRSTKEY(self)
@@ -401,10 +413,10 @@ rpmdb_FIRSTKEY(self)
     {
         RPM__Header hvalue;
 
-        if (! rpmdb_FIRSTKEY(self, &key, &hvalue))
+        if (! rpmdb_FIRSTKEY(aTHX_ self, &key, &hvalue))
         {
-            key = newSVsv(&sv_undef);
-            value = newSVsv(&sv_undef);
+            key = newSVsv(&PL_sv_undef);
+            value = newSVsv(&PL_sv_undef);
         }
         else
             value = newRV((SV *)hvalue);
@@ -426,10 +438,10 @@ rpmdb_NEXTKEY(self, key=NULL)
     {
         RPM__Header hvalue;
 
-        if (! rpmdb_NEXTKEY(self, key, &nextkey, &hvalue))
+        if (! rpmdb_NEXTKEY(aTHX_ self, key, &nextkey, &hvalue))
         {
-            nextkey = newSVsv(&sv_undef);
-            nextvalue = newRV(&sv_undef);
+            nextkey = newSVsv(&PL_sv_undef);
+            nextvalue = newRV(&PL_sv_undef);
         }
         else
             nextvalue = newRV((SV *)hvalue);
@@ -443,6 +455,8 @@ void
 rpmdb_DESTROY(self)
     RPM::Database self;
     PROTOTYPE: $
+    CODE:
+    rpmdb_DESTROY(self);
 
 int
 rpmdb_init(class, root=NULL, perms=O_RDWR)
@@ -464,17 +478,17 @@ rpmdb_rebuild(class, root=NULL)
         croak("RPM::Database::rebuild must be called as a static method");
 
 void
-rpmdb_FindByFile(self, string)
+rpmdb_find_by_file(self, string)
     RPM::Database self;
     SV* string;
     PROTOTYPE: $$
     ALIAS:
     # These should not be hard-coded, fix in later rev
-        FindByGroup = 1
-        FindByProvides = 2
-        FindByRequiredBy = 3
-        FindByConflicts = 4
-        FindByPackage = 5
+        find_by_group = 1
+        find_by_provides = 2
+        find_by_required_by = 3
+        find_by_conflicts = 4
+        find_by_package = 5
     PPCODE:
     {
         AV* matches;
@@ -483,7 +497,7 @@ rpmdb_FindByFile(self, string)
         RPM__Header hdr;
         SV* hdr_ptr;
 
-        matches = rpmdb_find_by_whatever(self, string, ix);
+        matches = rpmdb_find_by_whatever(aTHX_ self, string, ix);
         if ((len = av_len(matches)) != -1)
         {
             // We have (len+1) elements in the array to put onto the stack
@@ -501,7 +515,7 @@ rpmdb_FindByFile(self, string)
                     hv_magic(hdr, (GV *)Nullhv, 'P');
                 }
                 else
-                    hdr_ptr = newSVsv(&sv_undef);
+                    hdr_ptr = newSVsv(&PL_sv_undef);
                 PUSHs(hdr_ptr);
                 len--;
             }

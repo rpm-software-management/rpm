@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   $Id: Error.pm,v 1.1 2000/05/27 03:53:56 rjray Exp $
+#   $Id: Error.pm,v 1.2 2000/05/30 01:03:13 rjray Exp $
 #
 #   Description:    Error-management support that cooperates with the primary
 #                   Perl/C error glue.
@@ -34,7 +34,7 @@ require RPM;
 @ISA = qw(Exporter);
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(clear_errors set_error_callback rpm_error);
 @EXPORT_OK = @EXPORT;
@@ -90,7 +90,7 @@ Clears both the numeric and string values of C<$RPM::err>.
 =item $old_cb = set_error_callback($subr)
 
 Set a (new) callback to be invoked whenever a new error is flagged. Returns
-the old (existing) callback value if there was one.
+the old (existing) callback value if there was one, C<undef> otherwise.
 
 The parameter to this call should be either a subroutine reference or a
 closure. A subroutine name may be passed; if so, it should either be given
@@ -111,9 +111,6 @@ callback is set to a null value.
 
 The code value passed to B<rpm_error> is not checked against the list of
 valid constants before assignment.
-
-The B<set_error_callback> should return the current callback, which could then
-be restored. This does not currently work correctly, and should not be used.
 
 =head1 SEE ALSO
 

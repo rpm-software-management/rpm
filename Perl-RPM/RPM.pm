@@ -10,9 +10,9 @@ require Exporter;
 
 @ISA = qw(Exporter DynaLoader);
 $VERSION = '0.2';
-$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
-@EXPORT = qw(GetOsName GetArchName);
+@EXPORT = qw(rpm_osname rpm_archname);
 @EXPORT_OK = @EXPORT;
 
 bootstrap RPM $VERSION;
@@ -53,13 +53,13 @@ The following utility functions are exported by default from B<RPM>:
 
 =over
 
-=item GetOsName
+=item rpm_osname
 
 Returns the text name of the O/S, as derived from the B<rpm> configuration
 files. This is the O/S token that B<rpm> will use to refer to the running
 system.
 
-=item GetArchName
+=item rpm_archname
 
 As above, but returns the architecture string instead. Again, this may not
 directly match the running system, but rather is the value that B<rpm> is

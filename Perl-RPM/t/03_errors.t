@@ -9,7 +9,7 @@ use vars qw($called $string $oldcb);
 
 select(STDOUT); $| = 1;
 
-print "1..9\n";
+print "1..11\n";
 
 # tests 1-2: basic set
 rpm_error(RPMERR_BADARG, "Bad argument passed");
@@ -55,11 +55,21 @@ rpm_error(RPMERR_BADMAGIC, "badmagic");
 print 'not ' unless ($called == 1 and $RPM::err == RPMERR_BADMAGIC);
 print "ok 8\n";
 
-set_error_callback(undef);
+my $oldcb = set_error_callback(undef);
 $called = 0;
 rpm_error(RPMERR_BADDEV, "baddev");
 
 print 'not ' if ($called);
 print "ok 9\n";
+
+print 'not ' unless (ref $oldcb eq 'CODE');
+print "ok 10\n";
+
+set_error_callback($oldcb);
+$called = 0;
+rpm_error(RPMERR_BADMAGIC, "badmagic");
+
+print 'not ' unless ($called == 1 and $RPM::err == RPMERR_BADMAGIC);
+print "ok 11\n";
 
 exit 0;

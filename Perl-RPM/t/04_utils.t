@@ -18,10 +18,10 @@ while (defined($line = <PIPE>))
 }
 close(PIPE);
 
-print 'not ' unless ($arch eq GetArchName);
+print 'not ' unless ($arch eq rpm_archname);
 print "ok 1\n";
 
-print 'not ' unless ($os eq GetOsName);
+print 'not ' unless ($os eq rpm_osname);
 print "ok 2\n";
 
 exit;

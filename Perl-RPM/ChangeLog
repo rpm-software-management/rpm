@@ -13,7 +13,7 @@ Revision history for Perl extension RPM.
 	RPM namespace is present, but doesn't yet do anything useful. Some
 	basic test scripts are in place, but more are (always) needed.
 
-0.2
+0.2   Mon May 29 17:59:20 PDT 2000
 	- second alpha
 
 	Class for RPM::Error added. The code is in the RPM.xs file, but
@@ -32,3 +32,7 @@ Revision history for Perl extension RPM.
 
 	Added two utility functions under the RPM::* space for getting O/S
 	and architecture names.
+
+	Put in the start of thread-safing the module. But this part of the
+	API is still pretty black in the Lockheed Skunkworks sense of the
+	word, so it isn't at all complete.

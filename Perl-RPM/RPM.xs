@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: RPM.xs,v 1.2 2000/05/27 05:22:51 rjray Exp $";
+static char * const rcsid = "$Id: RPM.xs,v 1.3 2000/05/30 01:03:13 rjray Exp $";
 
 extern XS(boot_RPM__Constants);
 extern XS(boot_RPM__Header);
@@ -15,7 +15,7 @@ static HV* num2tag_priv;
 static SV* errSV;
 static CV* err_callback;
 
-static void setup_tag_mappings(void)
+static void setup_tag_mappings(pTHX)
 {
     const char* tag;
     int num;
@@ -42,7 +42,7 @@ static void setup_tag_mappings(void)
     }
 }
 
-int tag2num(const char* tag)
+int tag2num(pTHX_ const char* tag)
 {
     SV** svp;
 
@@ -55,10 +55,9 @@ int tag2num(const char* tag)
     return (SvIV(*svp));
 }
 
-const char* num2tag(int num)
+const char* num2tag(pTHX_ int num)
 {
     SV** svp;
-    STRLEN na;
     char str_num[8];
     SV* tmp;
 
@@ -68,10 +67,10 @@ const char* num2tag(int num)
     if (! (svp && SvPOK(*svp)))
         return Nullch;
 
-    return (SvPV(*svp, na));
+    return (SvPV(*svp, PL_na));
 }
 
-char* rpm_GetOsName(void)
+char* rpm_rpm_osname(void)
 {
     char* os_name;
     int os_val;
@@ -80,7 +79,7 @@ char* rpm_GetOsName(void)
     return os_name;
 }
 
-char* rpm_GetArchName(void)
+char* rpm_rpm_archname(void)
 {
     char* arch_name;
     int arch_val;
@@ -91,7 +90,7 @@ char* rpm_GetArchName(void)
 
 // This is a callback routine that the bootstrapper will register with the RPM
 // lib so as to catch any errors. (I hope)
-static void rpm_catch_errors(void)
+static void rpm_catch_errors(pTHX)
 {
     int error_code;
     char* error_string;
@@ -132,7 +131,7 @@ static void rpm_catch_errors(void)
 }
 
 // This is just to make available an easy way to clear both sides of $RPM::err
-void clear_errors(void)
+void clear_errors(pTHX)
 {
     sv_setsv(errSV, newSVpv("", 0));
     sv_setiv(errSV, 0);
@@ -141,11 +140,11 @@ void clear_errors(void)
     return;
 }
 
-SV* set_error_callback(SV* newcb)
+SV* set_error_callback(pTHX_ SV* newcb)
 {
-    CV* oldcb;
+    SV* oldcb;
 
-    oldcb = err_callback;
+    oldcb = (err_callback) ? newRV((SV *)err_callback) : newSVsv(&PL_sv_undef);
 
     if (SvROK(newcb)) newcb = SvRV(newcb);
     if (SvTYPE(newcb) == SVt_PVCV)
@@ -154,9 +153,8 @@ SV* set_error_callback(SV* newcb)
     {
         char* fn_name;
         char* sv_name;
-        STRLEN len;
 
-        sv_name = SvPV(newcb, len);
+        sv_name = SvPV(newcb, PL_na);
         if (! strstr(sv_name, "::"))
         {
             Newz(TRUE, fn_name, strlen(sv_name) + 7, char);
@@ -173,7 +171,7 @@ SV* set_error_callback(SV* newcb)
         err_callback = Null(CV *);
     }
 
-    return (SV *)oldcb;
+    return oldcb;
 }
 
 void rpm_error(int code, const char* message)
@@ -189,10 +187,16 @@ SV*
 set_error_callback(newcb)
     SV* newcb;
     PROTOTYPE: $
+    CODE:
+    RETVAL = set_error_callback(aTHX_ newcb);
+    OUTPUT:
+    RETVAL
 
 void
 clear_errors()
     PROTOTYPE:
+    CODE:
+    clear_errors(aTHX);
 
 void
 rpm_error(code, message)
@@ -205,11 +209,11 @@ MODULE = RPM            PACKAGE = RPM           PREFIX = rpm_
 
 
 char*
-rpm_GetOsName()
+rpm_rpm_osname()
     PROTOTYPE:
 
 char*
-rpm_GetArchName()
+rpm_rpm_archname()
     PROTOTYPE:
 
 
@@ -227,7 +231,7 @@ BOOT:
 
     setup_tag_mappings();
     rpmErrorSetCallback(rpm_catch_errors);
-    err_callback = Null(CV *);
+    err_callback = Nullcv;
 
     newXS("RPM::bootstrap_Constants", boot_RPM__Constants, file);
     newXS("RPM::bootstrap_Header", boot_RPM__Header, file);

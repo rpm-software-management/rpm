@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Database.pm,v 1.1 2000/05/27 03:54:14 rjray Exp $
+#   $Id: Database.pm,v 1.2 2000/05/30 01:03:13 rjray Exp $
 #
 #   Description:    The RPM::Database class provides access to the RPM database
 #                   as a tied hash, whose keys are taken as the names of
@@ -37,7 +37,7 @@ require RPM;
 require RPM::Header;
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -122,31 +122,31 @@ This rebuilds the database (same as "rpm --rebuilddb"). As with B<init>
 above, this requires adequate permissions and must be invoked as a static
 method.
 
-=item FindByFile(file)
+=item find_by_file(file)
 
 Returns a list of B<RPM::Header> objects that correspond to the package(s)
 claiming ownership of the file "file".
 
-=item FindByGroup(group)
+=item find_by_group(group)
 
 Returns of a list of headers for all packages flagged as being in the
 group specified.
 
-=item FindByProvides(provides)
+=item find_by_provides(provides)
 
 Search as above, but based on which packages provide the file/object
 specified as "provides".
 
-=item FindByRequiredBy(requires)
+=item find_by_required_by(requires)
 
 Return a list of headers for the packages that directly depend on the
 specified package for installation and operation.
 
-=item FindByConflicts(conflicts)
+=item find_by_conflicts(conflicts)
 
 List those packages that have conflicts based on the value of "conflicts".
 
-=item FindByPackage(package)
+=item find_by_package(package)
 
 This performs the search by a specific package name. This is the API call
 used by the FETCH tied-hash method, but this differs in that if there is

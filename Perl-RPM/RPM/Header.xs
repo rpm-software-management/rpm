@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.1 2000/05/27 03:54:15 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.2 2000/05/30 01:03:13 rjray Exp $";
 
 //
 // Use this define for deriving the saved Header struct, rather than coding
@@ -26,33 +26,30 @@ static char * const rcsid = "$Id: Header.xs,v 1.1 2000/05/27 03:54:15 rjray Exp 
 
 // Some simple functions to manage key-to-SV* transactions, since these
 // gets used frequently.
-const char* sv2key(SV* key)
+const char* sv2key(pTHX_ SV* key)
 {
     const char* new_key;
-    STRLEN na;
 
         // De-reference key, if it is a reference
     if (SvROK(key))
         key = SvRV(key);
-    new_key = SvPV(key, na);
+    new_key = SvPV(key, PL_na);
 
     return new_key;
 }
 
-SV* key2sv(const char* key)
+SV* key2sv(pTHX_ const char* key)
 {
-    STRLEN na;
-
-    return (sv_2mortal(newSVpv((char *)key, na)));
+    return (sv_2mortal(newSVpv((char *)key, PL_na)));
 }
 
-static SV* ikey2sv(int key)
+static SV* ikey2sv(pTHX_ int key)
 {
     return (sv_2mortal(newSViv(key)));
 }
 
 // This creates a header data-field from the passed-in data
-static AV* rpmhdr_create(const char* data, int type, int size)
+static AV* rpmhdr_create(pTHX_ const char* data, int type, int size)
 {
     char urk[2];
     AV* new_list;
@@ -147,7 +144,7 @@ static AV* rpmhdr_create(const char* data, int type, int size)
                 // Special case for exactly one RPM_STRING_TYPE
                 if (type == RPM_STRING_TYPE && size == 1)
                 {
-                    new_item = newSVsv(&sv_undef);
+                    new_item = newSVsv(&PL_sv_undef);
                     sv_setpvn(new_item, (char *)data, strlen((char *)data));
                     av_store(new_list, 0, sv_2mortal(new_item));
                     SvREFCNT_inc(new_item);
@@ -158,7 +155,7 @@ static AV* rpmhdr_create(const char* data, int type, int size)
                          idx < size;
                          idx++, loop++)
                     {
-                        new_item = newSVsv(&sv_undef);
+                        new_item = newSVsv(&PL_sv_undef);
                         sv_setpvn(new_item, *loop, strlen(*loop));
                         av_store(new_list, idx, sv_2mortal(new_item));
                         SvREFCNT_inc(new_item);
@@ -212,7 +209,7 @@ static int new_from_fname(const char* source, RPM_Header* new_hdr)
     return(new_from_fd_t(fd, new_hdr));
 }
 
-RPM__Header rpmhdr_TIEHASH(SV* class, SV* source, int flags)
+RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
 {
     char* fname;
     int fname_len;
@@ -236,7 +233,7 @@ RPM__Header rpmhdr_TIEHASH(SV* class, SV* source, int flags)
             fname = SvPV(source, fname_len);
             if (! new_from_fname(fname, hdr_struct))
             {
-                return ((RPM__Header)newSVsv(&sv_undef));
+                return ((RPM__Header)newSVsv(&PL_sv_undef));
             }
         }
         else if (IoIFP(sv_2io(source)))
@@ -244,7 +241,7 @@ RPM__Header rpmhdr_TIEHASH(SV* class, SV* source, int flags)
             if (! new_from_fd(PerlIO_fileno(IoIFP(sv_2io(source))),
                               hdr_struct))
             {
-                return ((RPM__Header)newSVsv(&sv_undef));
+                return ((RPM__Header)newSVsv(&PL_sv_undef));
             }
         }
         else
@@ -280,7 +277,7 @@ RPM__Header rpmhdr_TIEHASH(SV* class, SV* source, int flags)
     return TIEHASH;
 }
 
-AV* rpmhdr_FETCH(RPM__Header self, SV* key,
+AV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
                  const char* data_in, int type_in, int size_in)
 {
     const char* name;  // For the actual name out of (SV *)key
@@ -293,11 +290,11 @@ AV* rpmhdr_FETCH(RPM__Header self, SV* key,
     int i;
 
     FETCH = newAV();
-    av_store(FETCH, 0, newSVsv(&sv_undef));
+    av_store(FETCH, 0, newSVsv(&PL_sv_undef));
 
     header_from_object_ret(svp, hdr, self, FETCH);
 
-    name = sv2key(key);
+    name = sv2key(aTHX_ key);
     if (! (name && (namelen = strlen(name))))
         return FETCH;
 
@@ -327,7 +324,7 @@ AV* rpmhdr_FETCH(RPM__Header self, SV* key,
         {
             // In some cases (particarly the iterators) we could be called
             // with the data already available, but not on the hash just yet.
-            AV* new_item = rpmhdr_create(data_in, type_in, size_in);
+            AV* new_item = rpmhdr_create(aTHX_ data_in, type_in, size_in);
 
             hv_store_nomg(self, uc_name, namelen, newRV_noinc((SV *)new_item),
                           FALSE);
@@ -346,7 +343,7 @@ AV* rpmhdr_FETCH(RPM__Header self, SV* key,
             char urk[2];
 
             // Get the #define value for the tag from the hash made at boot-up
-            if (! (tag_by_num = tag2num(uc_name)))
+            if (! (tag_by_num = tag2num(aTHX_ uc_name)))
             {
                 // Later we need to set some sort of error message
                 Safefree(uc_name);
@@ -360,7 +357,7 @@ AV* rpmhdr_FETCH(RPM__Header self, SV* key,
                 Safefree(uc_name);
                 return FETCH;
             }
-            new_item = rpmhdr_create(new_item_p, new_item_type, size);
+            new_item = rpmhdr_create(aTHX_ new_item_p, new_item_type, size);
 
             hv_store_nomg(self, uc_name, namelen, newRV_noinc((SV *)new_item),
                           FALSE);
@@ -379,7 +376,7 @@ AV* rpmhdr_FETCH(RPM__Header self, SV* key,
 // Store the data in "value" both in the header and in the hash associated
 // with "self".
 //
-int rpmhdr_STORE(RPM__Header self, SV* key, AV* value)
+int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, AV* value)
 {
     SV** svp;
     const char* name;
@@ -394,7 +391,7 @@ int rpmhdr_STORE(RPM__Header self, SV* key, AV* value)
     if (hdr->read_only)
         return 0;
 
-    name = sv2key(key);
+    name = sv2key(aTHX_ key);
     if (! (name && (namelen = strlen(name))))
         return 0;
 
@@ -405,7 +402,7 @@ int rpmhdr_STORE(RPM__Header self, SV* key, AV* value)
 
     // Get the numerical tag value for this name. If none exists, this means
     // that there is no such tag, which is an error in this case
-    if (! (num_ent = tag2num(uc_name)))
+    if (! (num_ent = tag2num(aTHX_ uc_name)))
         return 0;
 
     // Setting/STORE-ing means do the following:
@@ -611,7 +608,7 @@ int rpmhdr_STORE(RPM__Header self, SV* key, AV* value)
     return 1;
 }
 
-int rpmhdr_DELETE(RPM__Header self, SV* key)
+int rpmhdr_DELETE(pTHX_ RPM__Header self, SV* key)
 {
     const char* name;  // For the actual name out of (SV *)key
     int namelen;       // Arg for SvPV(..., len)
@@ -624,7 +621,7 @@ int rpmhdr_DELETE(RPM__Header self, SV* key)
     if (hdr->read_only)
         return 0;
 
-    name = sv2key(key);
+    name = sv2key(aTHX_ key);
     if (! (name && (namelen = strlen(name))))
         return 0;
 
@@ -635,7 +632,7 @@ int rpmhdr_DELETE(RPM__Header self, SV* key)
 
     // Get the numerical tag value for this name. If none exists, this means
     // that there is no such tag, which isn't really an error (so return 1).
-    if (! (num = tag2num(uc_name)))
+    if (! (num = tag2num(aTHX_ uc_name)))
     {
         retval = 1;
     }
@@ -664,7 +661,7 @@ int rpmhdr_DELETE(RPM__Header self, SV* key)
     return retval;
 }
 
-int rpmhdr_EXISTS(RPM__Header self, SV* key)
+int rpmhdr_EXISTS(pTHX_ RPM__Header self, SV* key)
 {
     const char* name;
     char* uc_name;
@@ -673,7 +670,7 @@ int rpmhdr_EXISTS(RPM__Header self, SV* key)
     RPM_Header* hdr;
 
     header_from_object_ret(svp, hdr, self, 0);
-    name = sv2key(key);
+    name = sv2key(aTHX_ key);
     if (! (name && (namelen = strlen(name))))
         return 0;
 
@@ -684,7 +681,7 @@ int rpmhdr_EXISTS(RPM__Header self, SV* key)
     uc_name[i] = '\0';
 
     // Get the #define value for the tag from the hash made at boot-up
-    tag_by_num = tag2num(uc_name);
+    tag_by_num = tag2num(aTHX_ uc_name);
     Safefree(uc_name);
     if (! tag_by_num)
         // Later we need to set some sort of error message
@@ -693,7 +690,7 @@ int rpmhdr_EXISTS(RPM__Header self, SV* key)
     return (headerIsEntry(hdr->hdr, tag_by_num));
 }
 
-int rpmhdr_FIRSTKEY(RPM__Header self, SV** key, AV** value)
+int rpmhdr_FIRSTKEY(pTHX_ RPM__Header self, SV** key, AV** value)
 {
     SV** svp;
     RPM_Header* hdr;
@@ -718,14 +715,15 @@ int rpmhdr_FIRSTKEY(RPM__Header self, SV** key, AV** value)
     if (! headerNextIterator(hdr->iterator, &tag, &type, (void **)&ptr, &size))
         return 0;
 
-    tagname = num2tag(tag);
+    tagname = num2tag(aTHX_ tag);
     *key = newSVpv((char *)tagname, strlen(tagname));
-    *value = rpmhdr_FETCH(self, *key, ptr, type, size);
+    *value = rpmhdr_FETCH(aTHX_ self, *key, ptr, type, size);
 
     return 1;
 }
 
-int rpmhdr_NEXTKEY(RPM__Header self, SV* key, SV** nextkey, AV** nextvalue)
+int rpmhdr_NEXTKEY(pTHX_ RPM__Header self, SV* key,
+                   SV** nextkey, AV** nextvalue)
 {
     SV** svp;
     RPM_Header* hdr;
@@ -742,14 +740,14 @@ int rpmhdr_NEXTKEY(RPM__Header self, SV* key, SV** nextkey, AV** nextvalue)
     if (! headerNextIterator(hdr->iterator, &tag, &type, (void **)&ptr, &size))
         return 0;
 
-    tagname = num2tag(tag);
+    tagname = num2tag(aTHX_ tag);
     *nextkey = newSVpv((char *)tagname, strlen(tagname));
-    *nextvalue = rpmhdr_FETCH(self, *nextkey, ptr, type, size);
+    *nextvalue = rpmhdr_FETCH(aTHX_ self, *nextkey, ptr, type, size);
 
     return 1;
 }
 
-void rpmhdr_DESTROY(RPM__Header self)
+void rpmhdr_DESTROY(pTHX_ RPM__Header self)
 {
     SV** svp;
     RPM_Header* hdr;
@@ -762,7 +760,7 @@ void rpmhdr_DESTROY(RPM__Header self)
         headerFree(hdr->hdr);
 }
 
-unsigned int rpmhdr_size(RPM__Header self)
+unsigned int rpmhdr_size(pTHX_ RPM__Header self)
 {
     SV** svp;
     RPM_Header* hdr;
@@ -775,7 +773,7 @@ unsigned int rpmhdr_size(RPM__Header self)
         return(headerSizeof(hdr->hdr, HEADER_MAGIC_YES));
 }
 
-int rpmhdr_tagtype(RPM__Header self, SV* key)
+int rpmhdr_tagtype(pTHX_ RPM__Header self, SV* key)
 {
     STRLEN namelen;
     const char* name;
@@ -783,7 +781,7 @@ int rpmhdr_tagtype(RPM__Header self, SV* key)
     SV** svp;
     int i, retval;
 
-    name = sv2key(key);
+    name = sv2key(aTHX_ key);
     if (! (name && (namelen = strlen(name))))
         return RPM_NULL_TYPE;
 
@@ -807,7 +805,7 @@ int rpmhdr_tagtype(RPM__Header self, SV* key)
         // key that holds the type isn't available, either.
         //
         // Do a plain fetch (that is, leave magic on) to populate the other
-        AV* sub_fetch = rpmhdr_FETCH(self, key, Nullch, 0, 0);
+        AV* sub_fetch = rpmhdr_FETCH(aTHX_ self, key, Nullch, 0, 0);
 
         if (sub_fetch)
         {
@@ -824,7 +822,7 @@ int rpmhdr_tagtype(RPM__Header self, SV* key)
     return retval;
 }
 
-int rpmhdr_write(RPM__Header self, SV* gv_in, int magicp)
+int rpmhdr_write(pTHX_ RPM__Header self, SV* gv_in, int magicp)
 {
     IO* io;
     PerlIO* fp;
@@ -850,19 +848,20 @@ int rpmhdr_write(RPM__Header self, SV* gv_in, int magicp)
 }
 
 // Here starts the code for the RPM::Header::datum class
-RPM__Header__datum rpmdatum_TIESCALAR(SV* class, SV* datum, int size, int type)
+RPM__Header__datum rpmdatum_TIESCALAR(pTHX_ SV* class,
+                                      SV* datum, int size, int type)
 {
 }
 
-SV* rpmdatum_FETCH(RPM__Header__datum self)
+SV* rpmdatum_FETCH(pTHX_ RPM__Header__datum self)
 {
 }
 
-SV* rpmdatum_STORE(RPM__Header__datum self, RPM__Header__datum newval)
+SV* rpmdatum_STORE(pTHX_ RPM__Header__datum self, RPM__Header__datum newval)
 {
 }
 
-void rpmdatum_DESTROY(RPM__Header__datum self)
+void rpmdatum_DESTROY(pTHX_ RPM__Header__datum self)
 {
 }
 
@@ -886,6 +885,10 @@ rpmhdr_TIEHASH(class, source=NULL, flags=0)
     SV* source;
     int flags;
     PROTOTYPE: $;$$
+    CODE:
+    RETVAL = rpmhdr_TIEHASH(aTHX_ class, source, flags);
+    OUTPUT:
+    RETVAL
 
 AV*
 rpmhdr_FETCH(self, key)
@@ -893,9 +896,9 @@ rpmhdr_FETCH(self, key)
     SV* key;
     PROTOTYPE: $$
     CODE:
-        RETVAL = rpmhdr_FETCH(self, key, Nullch, 0, 0);
+    RETVAL = rpmhdr_FETCH(aTHX_ self, key, Nullch, 0, 0);
     OUTPUT:
-        RETVAL
+    RETVAL
 
 int
 rpmhdr_STORE(self, key, value)
@@ -915,7 +918,7 @@ rpmhdr_STORE(self, key, value)
             av_store(avalue, 0, value);
         }
 
-        RETVAL = rpmhdr_STORE(self, key, avalue);
+        RETVAL = rpmhdr_STORE(aTHX_ self, key, avalue);
     }
     OUTPUT:
         RETVAL
@@ -925,6 +928,10 @@ rpmhdr_DELETE(self, key)
     RPM::Header self;
     SV* key;
     PROTOTYPE: $$
+    CODE:
+    RETVAL = rpmhdr_DELETE(aTHX_ self, key);
+    OUTPUT:
+    RETVAL
 
 int
 rpmhdr_CLEAR(self)
@@ -943,6 +950,10 @@ rpmhdr_EXISTS(self, key)
     RPM::Header self;
     SV* key;
     PROTOTYPE: $$
+    CODE:
+    RETVAL = rpmhdr_EXISTS(aTHX_ self, key);
+    OUTPUT:
+    RETVAL
 
 void
 rpmhdr_FIRSTKEY(self)
@@ -954,9 +965,9 @@ rpmhdr_FIRSTKEY(self)
     int i;
     PPCODE:
     {
-        if (! rpmhdr_FIRSTKEY(self, &key, &value))
+        if (! rpmhdr_FIRSTKEY(aTHX_ self, &key, &value))
         {
-            key = newSVsv(&sv_undef);
+            key = newSVsv(&PL_sv_undef);
             value = newAV();
         }
 
@@ -975,9 +986,9 @@ rpmhdr_NEXTKEY(self, key=NULL)
     int i;
     PPCODE:
     {
-        if (! rpmhdr_NEXTKEY(self, key, &nextkey, &nextvalue))
+        if (! rpmhdr_NEXTKEY(aTHX_ self, key, &nextkey, &nextvalue))
         {
-            nextkey = newSVsv(&sv_undef);
+            nextkey = newSVsv(&PL_sv_undef);
             nextvalue = newAV();
         }
 
@@ -989,17 +1000,27 @@ void
 rpmhdr_DESTROY(self)
     RPM::Header self;
     PROTOTYPE: $
+    CODE:
+    rpmhdr_DESTROY(aTHX_ self);
 
 unsigned int
 rpmhdr_size(self)
     RPM::Header self;
     PROTOTYPE: $
+    CODE:
+    RETVAL = rpmhdr_size(aTHX_ self);
+    OUTPUT:
+    RETVAL
 
 int
 rpmhdr_tagtype(self, key)
     RPM::Header self;
     SV* key;
     PROTOTYPE: $$
+    CODE:
+    RETVAL = rpmhdr_tagtype(aTHX_ self, key);
+    OUTPUT:
+    RETVAL
 
 int
 rpmhdr_write(self, gv, magicp=0)
@@ -1016,45 +1037,7 @@ rpmhdr_write(self, gv, magicp=0)
         else
             flag = HEADER_MAGIC_YES;
 
-        RETVAL = rpmhdr_write(self, gv, flag);
+        RETVAL = rpmhdr_write(aTHX_ self, gv, flag);
     }
     OUTPUT:
         RETVAL
-
-
-MODULE = RPM::Header    PACKAGE = RPM::Header::datum    PREFIX = rpmdatum_
-
-
-RPM::Header::datum
-rpmdatum_TIESCALAR(class, data, size, type)
-    SV* class;
-    SV* data;
-    int size;
-    int type;
-    PROTOTYPE: $$$$
-
-SV*
-rpmdatum_FETCH(self)
-    RPM::Header::datum self;
-    PROTOTYPE: $
-
-SV*
-rpmdatum_STORE(self, newval)
-    RPM::Header::datum self;
-    RPM::Header::datum newval;
-    PROTOTYPE: $$
-
-void
-rpmdatum_DESTROY(self)
-    RPM::Header::datum self;
-    PROTOTYPE: $
-
-int
-rpmdatum_size(self)
-    RPM::Header::datum self;
-    PROTOTYPE: $
-
-int
-rpmdatum_type(self)
-    RPM::Header::datum self;
-    PROTOTYPE: $

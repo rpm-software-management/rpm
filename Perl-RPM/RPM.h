@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.2 2000/05/27 05:22:51 rjray Exp $
+ * $Id: RPM.h,v 1.3 2000/05/30 01:03:13 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -126,26 +126,26 @@ typedef RPM_Header_datum* RPM__Header__datum;
 // their native modules.
 //
 // RPM.xs:
-extern int tag2num(const char *);
-extern const char* num2tag(int);
-extern void clear_errors(void);
-extern SV* set_error_callback(SV *);
-extern void rpm_error(int, const char *);
+extern int tag2num(pTHX_ const char *);
+extern const char* num2tag(pTHX_ int);
+extern void clear_errors(pTHX);
+extern SV* set_error_callback(pTHX_ SV *);
+extern void rpm_error(pTHX_ int, const char *);
 
 // RPM/Header.xs:
-extern const char* sv2key(SV *);
-extern RPM__Header rpmhdr_TIEHASH(SV *, SV *, int);
-extern AV* rpmhdr_FETCH(RPM__Header, SV *, const char *, int, int);
-extern int rpmhdr_STORE(RPM__Header, SV *, AV *);
-extern int rpmhdr_DELETE(RPM__Header, SV *);
-extern int rpmhdr_EXISTS(RPM__Header, SV *);
-extern unsigned int rpmhdr_size(RPM__Header);
-extern int rpmhdr_tagtype(RPM__Header, SV *);
-extern int rpmhdr_write(RPM__Header, SV *, int);
+extern const char* sv2key(pTHX_ SV *);
+extern RPM__Header rpmhdr_TIEHASH(pTHX_ SV *, SV *, int);
+extern AV* rpmhdr_FETCH(pTHX_ RPM__Header, SV *, const char *, int, int);
+extern int rpmhdr_STORE(pTHX_ RPM__Header, SV *, AV *);
+extern int rpmhdr_DELETE(pTHX_ RPM__Header, SV *);
+extern int rpmhdr_EXISTS(pTHX_ RPM__Header, SV *);
+extern unsigned int rpmhdr_size(pTHX_ RPM__Header);
+extern int rpmhdr_tagtype(pTHX_ RPM__Header, SV *);
+extern int rpmhdr_write(pTHX_ RPM__Header, SV *, int);
 
 // RPM/Database.xs:
-extern RPM__Database rpmdb_TIEHASH(char *, SV *);
-extern RPM__Header rpmdb_FETCH(RPM__Database, SV *);
-extern int rpmdb_EXISTS(RPM__Database, SV *);
+extern RPM__Database rpmdb_TIEHASH(pTHX_ char *, SV *);
+extern RPM__Header rpmdb_FETCH(pTHX_ RPM__Database, SV *);
+extern int rpmdb_EXISTS(pTHX_ RPM__Database, SV *);
 
 #endif /* H_RPM_XS_HDR */

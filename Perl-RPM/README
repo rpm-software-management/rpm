@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.1 (first alpha)
+Version 0.2 (second alpha)
 
 
 WHAT IS IT
@@ -40,8 +40,9 @@ Please send any reports of problems or bugs to rjray@blackperl.com.
 
 CHANGES
 
-This is the first release. At present, only RPM::Database and RPM::Header
-are implemented.
+This is the second release. In addition to some bug fixes, this release adds
+some documentation, more test suites, and error management via the RPM::Error
+package.
 
 
 LICENSE

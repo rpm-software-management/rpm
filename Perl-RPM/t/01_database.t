@@ -45,7 +45,7 @@ $rpm = new RPM::Database;
 print "not " unless (defined $rpm and ref $rpm);
 print "ok 7\n";
 
-@matches = $rpm->FindByFile('/bin/rpm');
+@matches = $rpm->find_by_file('/bin/rpm');
 # There should be exactly one match:
 print "not " unless (@matches == 1);
 print "ok 8\n";
@@ -54,7 +54,7 @@ print "not " unless ($matches[0]->{name}->[0] eq 'rpm');
 print "ok 9\n";
 
 # There may be more than one package that depends on rpm
-@matches = $rpm->FindByRequiredBy('rpm');
+@matches = $rpm->find_by_required_by('rpm');
 for (@matches) { $_ = $_->{name}->[0] }
 # As long as we see this one (it has to be present to build this package)
 print "not " unless (grep 'rpm-devel', @matches);
