@@ -107,6 +107,9 @@ static void init_arch_os(void)
     } else if (!strcmp(un.machine, "alpha")) {
 	archnum = 2;
 	archname = "axp";
+    } else if (!strcmp(un.machine, "sparc")) {
+       archnum = 3;
+       archname = "sparc";
     } else {
 	/* XXX unknown arch - how should we handle this? */
     }
