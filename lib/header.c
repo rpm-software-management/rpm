@@ -424,6 +424,7 @@ Header headerLoad(void *pv)
     h->indexAlloced = il;
     h->indexUsed = il;
     h->index = malloc(il * sizeof(struct indexEntry));
+    h->usageCount = 1;
 
     /* This assumes you only headerLoad() something you headerUnload()-ed */
     h->sorted = 1;
