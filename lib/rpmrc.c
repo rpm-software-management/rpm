@@ -17,11 +17,14 @@ struct option {
     int archSpecific;
 } ;
 
+struct archEquiv {
+    char * arch, * equiv;
+};
 
 /* this *must* be kept in alphabetical order */
 struct option optionTable[] = {
-    { "arch",		        RPMVAR_ARCH,		        0 },
     { "arch_sensitive",		RPMVAR_ARCHSENSITIVE,		0 },
+    { "build_arch",	        RPMVAR_BUILDARCH,	        0 },
     { "builddir",		RPMVAR_BUILDDIR,		0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0 },
     { "docdir",			RPMVAR_DOCDIR,			0 },
@@ -52,9 +55,91 @@ static int readRpmrc(FILE * fd, char * fn, int readArchSpecific);
 static void setDefaults(void);
 static void setPathDefault(int var, char * s);
 static int optionCompare(const void * a, const void * b);
+static int numArchCompats = 0;
+static struct archEquiv * archCompatTable = NULL;
+
+static void addArchCompatibility(char * arch, char * equiv);
 
 static int optionCompare(const void * a, const void * b) {
     return strcmp(((struct option *) a)->name, ((struct option *) b)->name);
+}
+
+/* returns the score for this architecture */
+static int findArchScore(char * arch, char * test) {
+    int i;
+    int score, subscore;
+
+    if (!strcmp(arch, test)) return 1;
+
+    score = 1;
+    for (i = 0; i < numArchCompats; i++, score++) {
+	if (!strcmp(archCompatTable[i].arch, arch)) {
+	    score++;
+	    if (!strcmp(archCompatTable[i].equiv, test)) return score;
+	}
+    }
+
+    for (i = 0; i < numArchCompats; i++, score++) {
+	if (!strcmp(archCompatTable[i].arch, arch)) {
+	    subscore = findArchScore(archCompatTable[i].equiv, test);
+	    if (subscore) return (score + subscore);
+	}
+    }
+
+    return 0;
+}
+
+int rpmArchScore(char * test) {
+     return findArchScore(getArchName(), test);
+}
+
+static int addArchCompats(char * arg, char * fn, int linenum) {
+    char * chptr, * archs;
+  
+    chptr = arg;
+    while (*chptr && *chptr != ':') chptr++;
+    if (!*chptr) {
+	error(RPMERR_RPMRC, "missing second ':' at %s:%d\n", fn, linenum);
+	return 1;
+    } else if (chptr == arg) {
+	error(RPMERR_RPMRC, "missing architecture name at %s:%d\n", fn, 
+			     linenum);
+	return 1;
+    }
+
+    while (*chptr == ':' || isspace(*chptr)) chptr--;
+    *(++chptr) = '\0';
+    archs = chptr + 1;
+    while (*archs && isspace(*archs)) archs++;
+    if (!*archs) {
+	error(RPMERR_RPMRC, "missing equivalent architecture name at %s:%d\n", 
+				fn, linenum);
+	return 1;
+    }
+    
+    chptr = strtok(archs, " ");
+    while (chptr) {
+	if (!strlen(chptr)) return 0;
+	
+	addArchCompatibility(arg, chptr);
+	chptr = strtok(NULL, " ");
+    }
+
+    return 0;
+}
+
+static void addArchCompatibility(char * arch, char * equiv) {
+    if (!numArchCompats) {
+	numArchCompats = 1;
+	archCompatTable = malloc(sizeof(*archCompatTable) * numArchCompats);
+    } else {
+	numArchCompats++;
+	archCompatTable = realloc(archCompatTable, 
+				   sizeof(*archCompatTable) * numArchCompats);
+    }
+
+    archCompatTable[numArchCompats - 1].arch = strdup(arch);
+    archCompatTable[numArchCompats - 1].equiv = strdup(equiv);
 }
 
 static int readRpmrc(FILE * f, char * fn, int readArchSpecific) {
@@ -118,9 +203,15 @@ static int readRpmrc(FILE * f, char * fn, int readArchSpecific) {
 		  start, fn, linenum);
 	    return 1;
 	}
-	
 
 	message(MESS_DEBUG, "got var '%s' arg '%s'\n", start, chptr);
+
+	/* these are options that don't just get stuffed in a VAR somewhere */
+	if (!strcmp(start, "arch_compat")) {
+	    if (!readArchSpecific) 
+		if (addArchCompats(chptr, fn, linenum)) return 1;
+	    continue;
+	}
 
 	searchOption.name = start;
 	option = bsearch(&searchOption, optionTable, optionTableSize,
@@ -213,17 +304,22 @@ static int readConfigFilesAux(char *file, int readArchSpecific)
     return 0;
 }
 
-int readConfigFiles(char * file, char * arch, char * os) {
+int rpmReadConfigFiles(char * file, char * arch, char * os, int forbuild) {
     int rc = 0;
 
     setDefaults();
-    setVar(RPMVAR_ARCH, arch);
-    setVar(RPMVAR_OS, os);
+    if (forbuild) {
+	setVar(RPMVAR_BUILDARCH, arch);
+	setVar(RPMVAR_OS, os);
+    }
 
     rc = readConfigFilesAux(file, 0);  /* non-arch specific */
     if (rc) return rc;
 
-    initArchOs(getVar(RPMVAR_ARCH), getVar(RPMVAR_OS));
+    if (forbuild)
+	initArchOs(getVar(RPMVAR_BUILDARCH), getVar(RPMVAR_OS));
+    else
+	initArchOs(arch, os);
     
     rc = readConfigFilesAux(file, 1);  /* arch-sepcific     */
     if (rc) return rc;
